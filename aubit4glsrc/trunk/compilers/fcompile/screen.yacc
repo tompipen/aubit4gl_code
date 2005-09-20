@@ -383,6 +383,7 @@ table_qualifier : named_or_kw {sprintf($<str>$,"%s", $<str>1);}
         {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
 | named_or_kw ATSIGN named_or_kw COLON named_or_kw {sprintf($<str>$,"%s%s%s%s%s", $<str>1, $<str>2, $<str>3,$<str>4,$<str>5);}
 | named_or_kw DOT named_or_kw {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
+| CHAR_VALUE DOT named_or_kw
 ;
 
 

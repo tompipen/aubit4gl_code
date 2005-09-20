@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.20 2005-08-24 14:03:29 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.21 2005-09-20 13:41:29 mikeaubury Exp $
 #
 */
 
@@ -272,6 +272,8 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	lsrc=strlen(src);
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
+			
+			printf("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);
@@ -294,6 +296,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 		char buff[3000];
 		strncpy(buff,src,2999);
 		buff[2999]=0;
+		//A4GL_pause_execution();
 		A4GL_debug("Long string : %s\n",buff);
 	}
 
@@ -326,6 +329,7 @@ char *A4GL_strcat(char *dest,char *src,char *f,int l,int sd) {
 
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
+			printf("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);

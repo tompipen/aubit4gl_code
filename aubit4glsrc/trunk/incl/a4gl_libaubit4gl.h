@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.193 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.194 2005-09-20 13:41:28 mikeaubury Exp $
 #
 */
 
@@ -2464,6 +2464,9 @@ int A4GL_new_list_get_count(struct expr_str_list *l);
 void A4GL_print_expr_ret_list(struct expr_str_list *l);
 struct expr_str *A4GL_new_expr_list (void);
 struct expr_str_list *A4GL_new_prepend_ptr_list(struct expr_str_list *l,struct expr_str *p);
+struct expr_str *A4GL_new_expr_get_fldbuf(int sid, struct fh_field_list *fl,char *mod,int line);
+struct expr_str *A4GL_new_expr_current(int from, int to);
+struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,char *wrap_at);
 
 
 enum dt_display_type {
@@ -2515,6 +2518,321 @@ struct ow_open_window {
 
 
 typedef struct ow_open_window t_ow_open_window;
+
+
+struct sql_statement {
+        int stmt_type;
+        char *sql_string;
+        struct binding_comp *ibind;
+        struct binding_comp *obind;
+        int nibind;
+        int nobind;
+};
+
+struct ilist {
+	        int i0;
+	        int i1;
+	        int i2;
+	        int i3;
+	        int i4;
+	        int i5;
+} ;
+
+
+enum e_sli {
+	E_SLI_CHAR,
+	E_SLI_COLUMN,
+	E_SLI_SUBQUERY_EXPRESSION,
+	E_SLI_BUILTIN_CONST_TRUE,
+	E_SLI_BUILTIN_CONST_FALSE,
+	E_SLI_BUILTIN_CONST_USER,
+	E_SLI_BUILTIN_CONST_TODAY,
+	E_SLI_BUILTIN_CONST_STAR,
+	E_SLI_BUILTIN_CONST_COUNT_STAR,
+	E_SLI_BUILTIN_CONST_CURRENT,
+	E_SLI_BUILTIN_FUNC_YEAR,
+	E_SLI_BUILTIN_FUNC_MONTH,
+	E_SLI_BUILTIN_FUNC_DAY,
+	E_SLI_BUILTIN_FUNC_MDY,
+	E_SLI_BUILTIN_FUNC_WEEKDAY,
+	E_SLI_BUILTIN_FUNC_DOW,
+	E_SLI_BUILTIN_FUNC_DATE,
+	E_SLI_BUILTIN_AGG_AVG,
+	E_SLI_BUILTIN_AGG_MAX,
+	E_SLI_BUILTIN_AGG_MIN,
+	E_SLI_BUILTIN_AGG_SUM,
+	E_SLI_BUILTIN_AGG_COUNT,
+	E_SLI_BRACKET_EXPR,
+	E_SLI_UNITS_YEAR,
+	E_SLI_UNITS_MONTH,
+	E_SLI_UNITS_DAY,
+	E_SLI_UNITS_HOUR,
+	E_SLI_UNITS_MINUTE,
+	E_SLI_UNITS_SECOND,
+	E_SLI_OP,
+	E_SLI_BETWEEN,
+	E_SLI_NOT_BETWEEN,
+	E_SLI_DATETIME,
+	E_SLI_INTERVAL,
+	E_SLI_EXTEND,
+	E_SLI_LITERAL,
+	E_SLI_IN_VALUES,
+	E_SLI_IN_SELECT,
+	E_SLI_NOT_IN_VALUES,
+	E_SLI_NOT_IN_SELECT,
+	E_SLI_ISNULL,
+	E_SLI_ISNOTNULL,
+	E_SLI_NOT,
+	E_SLI_REGEX_LIKE,
+	E_SLI_REGEX_NOT_LIKE,
+	E_SLI_REGEX_MATCHES,
+	E_SLI_REGEX_NOT_MATCHES,
+	E_SLI_REGEX_ILIKE,
+	E_SLI_REGEX_NOT_ILIKE,
+	E_SLI_FCALL,
+	E_SLI_ASC,
+	E_SLI_DESC,
+	E_SLI_IBIND,
+	E_SLI_COLUMN_NOT_TRANSFORMED,
+	E_SLI_VARIABLE,
+	E_SLI_SUBQUERY,
+	E_SLI_QUERY_PLACEHOLDER,
+	E_SLI_JOIN
+
+};
+
+enum sq_expression_type {
+	E_SQE_DONT_CARE,
+	E_SQE_ALL,
+	E_SQE_ANY,
+	E_SQE_SOME,
+	E_SQE_EXISTS,
+	E_SQE_NOT_EXISTS
+	
+};
+
+struct s_select_list_item_list  {
+		int nlist;
+		struct s_select_list_item **list;
+};
+
+
+struct s_select_finish {
+		struct s_select_list_item_list *order_by;
+		char *into_temp;
+		int nolog;
+};
+
+
+struct sq_subquery {
+	char aud[20];
+	struct s_select_list_item_list *list;
+	struct tab_expression *te;
+};
+
+struct s_select_list_item  {
+        enum e_sli type;
+        union {
+                char *expression;
+                struct {
+                        char *tabname;
+                        char *colname;
+                        struct ilist subscript;
+                } column;
+		struct {
+			enum sq_expression_type type;
+			struct s_select_list_item *sq;
+		} sq_expression ;
+		struct {
+			struct s_select_list_item *left;
+			struct s_select_list_item *right;
+			char op[10];
+		} complex_expr;
+		struct {
+			struct s_select_list_item *val;
+			struct s_select_list_item *from;
+			struct s_select_list_item *to;
+		} between_expr;
+		struct {
+			struct s_select_list_item *left;
+			struct s_select_list_item *right;
+		} sli_expr;
+		struct {
+			struct s_select_list_item *left;
+			struct s_select_list_item_list *right_list;
+		} slil_expr;
+		struct {
+			char aud[20]; // All/unique/distinct
+			struct s_select_list_item *expr;
+		} agg_expr;
+		struct {
+			struct s_select_list_item_list *params;
+		} builtin_fcall;
+		struct {
+			char fname[32];
+			struct s_select_list_item_list *params;
+		} fcall;
+		struct {
+			struct s_select_list_item *expr;
+		} simple_op_expr;
+		struct {
+			struct s_select_list_item *expr;
+			char from[20];
+			char to[20];
+		} extend;
+		struct {
+			struct s_select_list_item *val;
+			struct s_select_list_item *regex;
+			char escape[20];
+		} regex;
+		struct s_select *subquery;
+        } u_data;
+        char *alias;
+	int sign;
+};
+
+
+
+struct s_table_list_element {
+	char *tabname;
+	char *alias;
+	int ncolumns;
+	char **columns;
+};
+
+
+struct s_table_list {
+	int ntables;
+	struct s_table_list_element *tables;
+};
+
+struct s_table {
+                char *tabname;
+                char *alias;
+		struct s_table *next;
+		struct s_table *outer_next;
+};
+
+
+int A4GLSQLPARSE_from_clause(struct s_table *t,char *fill,struct s_table_list *tl);
+
+struct s_select {
+                char *modifier; // ALL/DISTINCT/UNIQUE
+                struct {
+                        long start;
+                        long end;
+                        long offset;
+                } limit; // FIRST nnn
+                int ncolumns;
+
+		// Our select list itself 
+                struct s_select_list_item_list *select_list;
+                struct s_select_list_item_list list_of_items;
+
+
+		// Pointer to first table
+                struct s_table *first;
+
+		// A flat list of tables (generated from the previous structure)
+		struct s_table_list table_elements;
+
+		// The group by clause
+		struct s_select_list_item 	*where_clause;
+		struct s_select_list_item_list 	*group_by;
+		struct s_select_list_item 	*having;
+
+		struct s_select 		*next;
+		struct s_select_finish 		*sf;
+		char *into;
+		char *union_op;
+};
+
+struct s_select_list_item_list *new_select_list_item_list(struct s_select_list_item *i) ;
+struct s_select_list_item *new_select_list_item_char (char *s) ;
+struct s_select_list_item *new_select_list_item_literal (char *s) ;
+struct s_select_list_item *new_select_list_item_datetime (char *s) ;
+struct s_select_list_item *new_select_list_item_extend (struct s_select_list_item *dt_expr, char *from,char *to) ;
+struct s_select_list_item *new_select_list_item_interval (char *s) ;
+struct s_select_list_item *new_select_list_item_col (char *t,char *c,struct ilist *subscripts);
+struct s_select_list_item *new_select_list_item_sq (enum sq_expression_type type, struct s_select_list_item *s) ;
+struct s_select_list_item *new_select_list_item_builtin_const (enum e_sli type) ;
+struct s_select_list_item *new_select_list_item_agg1 (enum e_sli type,char *aud, struct s_select_list_item *i) ;
+struct s_select_list_item *new_select_list_item_op_sli (struct s_select_list_item *left, struct s_select_list_item *right, enum e_sli op) ;
+struct s_select_list_item *new_select_list_item_op_expr (struct s_select_list_item *left, struct s_select_list_item *right, char* op) ;
+struct s_select_list_item *new_select_list_item_op_between (char *not,struct s_select_list_item *v, struct s_select_list_item *from, struct s_select_list_item *to,int not_between) ;
+struct s_select_list_item *new_select_list_item_builtin_fcall (enum e_sli type, struct s_select_list_item_list *params) ;
+struct s_select_list_item *new_select_list_item_simple_expr (enum e_sli type, struct s_select_list_item *expr) ;
+struct s_select_list_item *new_select_list_item_regex (enum e_sli type, struct s_select_list_item *val,struct s_select_list_item *regex,char *escape);
+struct s_select_list_item_list *add_select_list_item_list(struct s_select_list_item_list *p,struct s_select_list_item *i);
+struct s_select_list_item *new_select_list_subquery(struct s_select *s);
+struct s_select_list_item *new_select_list_item_fcall (char *fname, struct s_select_list_item_list *params);
+struct s_table *A4GLSQLPARSE_append_tablename(struct s_table *t1,struct s_table *t2, int is_outer);
+struct s_table *A4GLSQLPARSE_new_tablename(char *tname,char *alias);
+struct s_select *new_empty_select (void);
+struct s_select_list_item *new_select_list_item_variable (char *s);
+struct s_select_list_item *new_select_list_item_column_from_transform(char *s);
+struct s_select_list_item *new_select_list_item_ibind (char *s);
+struct s_select_list_item *new_select_list_item_op_slil (struct s_select_list_item *left, struct s_select_list_item_list *right, enum e_sli op);
+char *make_select_stmt(struct s_select *select);
+char *make_table_expression(struct s_select *select);
+char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
+char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ifdef WORK_IN_PROGRESS
+/* SQL WHERE CLAUSE HANDLING */
+
+
+
+struct predicate {
+	union {
+		comparison;
+		in_predicate
+		exists_predicate
+	}
+	;
+};
+
+struct boolean_primary {
+	union {
+		struct predicate *p;
+		struct search_condition *s;
+	}
+};
+
+struct boolean_term {
+		struct boolean_factor factor;
+		struct boolean_term *and;
+}
+
+struct boolean_factor_ss {
+		struct boolean_primary *p;
+		short not;
+};
+
+
+struct search_condition {
+	struct boolean_term_ss *b;
+	struct search_condition *or;
+};
+#endif
+
 
 void *A4GL_esql_dbopen_connection(void) ;
 //char *A4GL_var_for_inp_array(char *s);

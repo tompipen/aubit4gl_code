@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.64 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.65 2005-09-20 13:41:29 mikeaubury Exp $
 #
 */
 
@@ -136,6 +136,7 @@ char *cvsql_names[]={
   "CVSQL_DTYPE_ALIAS"
 };
 
+/*
 struct ilist {
         int i0;
         int i1;
@@ -144,6 +145,7 @@ struct ilist {
         int i4;
         int i5;
 } ;
+*/
 
 
 enum cvsql_type
@@ -241,8 +243,8 @@ struct cvsql_data
 
 
 
-struct cvsql_data *conversion_rules = 0;
-int conversion_rules_cnt = 0;
+struct cvsql_data *current_conversion_rules = 0;
+int current_conversion_rules_cnt = 0;
 
 
 
@@ -253,7 +255,7 @@ int conversion_rules_cnt = 0;
 =====================================================================
 */
 
-static void A4GL_cv_fnlist (char *source, char *target);
+static void A4GL_cv_fnlist (char *source, char *target,char *name);
 int A4GL_cv_str_to_func (char *p, int len);
 int A4GL_strwscmp(char *a,char *b) ;
 int A4GL_strcasestr(char *h,char *n) ;
@@ -435,37 +437,34 @@ void
 A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 {
   char buff[256];
+
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
   A4GL_debug("Load convert : %s %s",source_dialect,target_dialect);
 
 
 
-  if (A4GL_has_pointer (buff, SQL_CONVERSION))
+  if (!A4GL_has_pointer (buff, SQL_CONVERSION))
     {
-      conversion_rules = A4GL_find_pointer (buff, SQL_CONVERSION);
-      conversion_rules_cnt = (long)A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
-    }
-  else
-    {
-      conversion_rules = 0;
-      conversion_rules_cnt = 0;
-      A4GL_cv_fnlist (source_dialect, target_dialect);
-      A4GL_add_pointer (buff, SQL_CONVERSION, (void *)conversion_rules);
-      A4GL_add_pointer (buff, SQL_CONVERSION_CNT, (void *)conversion_rules_cnt);
+      A4GL_cv_fnlist (source_dialect, target_dialect,buff);
     }
 
+
+    current_conversion_rules = A4GL_find_pointer (buff, SQL_CONVERSION);
+    current_conversion_rules_cnt = (long)A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
 }
 
 
 
 
-static void A4GL_cv_fnlist (char *source, char *target)
+static void A4GL_cv_fnlist (char *source, char *target,char *name)
 {
   char buff[201];
   char buff_sm[201];
   FILE *fh;
   char *t;
   int len;
+  struct cvsql_data *conversion_rules = 0;
+  int conversion_rules_cnt = 0;
 
 
   strcpy (buff, acl_getenv ("SQLCNVPATH"));
@@ -550,6 +549,9 @@ static void A4GL_cv_fnlist (char *source, char *target)
 
   fclose (fh);
 
+  A4GL_add_pointer (name, SQL_CONVERSION,(void *)conversion_rules);
+  A4GL_add_pointer (name, SQL_CONVERSION_CNT,(void *)conversion_rules_cnt);
+
   return;
 }
 
@@ -566,10 +568,10 @@ static char *buff=0;
 char *ptr;
 A4GL_assertion(s==0,"No pointer");
 A4GL_debug("check sql : %s\n",s);
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_REPLACE_CMD) {
-		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
-			return conversion_rules[b].data.to;
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_REPLACE_CMD) {
+		if (A4GL_strwscmp(s,current_conversion_rules[b].data.from)==0) {
+			return current_conversion_rules[b].data.to;
 		}
 	}
 }
@@ -577,10 +579,10 @@ for (b=0;b<conversion_rules_cnt;b++) {
 A4GL_debug("check sql 2\n");
 ptr=acl_malloc2(strlen(s)*2+1000);
 strcpy(ptr,s);
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_REPLACE) {
-		if (A4GL_strcasestr(ptr,conversion_rules[b].data.from)!=0 ) {
-			A4GL_cvsql_replace_str (ptr, conversion_rules[b].data.from,conversion_rules[b].data.to );
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_REPLACE) {
+		if (A4GL_strcasestr(ptr,current_conversion_rules[b].data.from)!=0 ) {
+			A4GL_cvsql_replace_str (ptr, current_conversion_rules[b].data.from,current_conversion_rules[b].data.to );
 		}
 	}
 }
@@ -631,11 +633,11 @@ if (A4GLSQLCV_check_requirement("OMIT_SERIAL_COL_FROM_INSERT") && dtype==DTYPE_S
 }
 
 
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
-		if (A4GL_strwscmp(sv,conversion_rules[b].data.from)==0) {
-			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-			return conversion_rules[b].data.to;
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
+		if (A4GL_strwscmp(sv,current_conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+			return current_conversion_rules[b].data.to;
 		}
 	}
 }
@@ -650,11 +652,11 @@ if (strchr(sv,'(')) {
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
-	for (b=0;b<conversion_rules_cnt;b++) {
-		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
-			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
-				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+	for (b=0;b<current_conversion_rules_cnt;b++) {
+		if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
+			if (A4GL_strwscmp(ptr,current_conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+				SPRINTF2(buff,"%s(%s",current_conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -662,11 +664,11 @@ if (strchr(sv,'(')) {
 }
 
 
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
-		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
-			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-			return conversion_rules[b].data.to;
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
+		if (A4GL_strwscmp(s,current_conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+			return current_conversion_rules[b].data.to;
 		}
 	}
 }
@@ -681,11 +683,11 @@ if (strchr(s,'(')) {
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
-	for (b=0;b<conversion_rules_cnt;b++) {
-		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
-			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
-				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+	for (b=0;b<current_conversion_rules_cnt;b++) {
+		if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_COLUMN) {
+			if (A4GL_strwscmp(ptr,current_conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+				SPRINTF2(buff,"%s(%s",current_conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -715,11 +717,11 @@ A4GL_debug("Alias : '%s'\n",s);
 
 A4GL_debug("Alias ? %s %s %s %x\n",t,c,v,dtype);
 
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
-		if (A4GL_strwscmp(sv,conversion_rules[b].data.from)==0) {
-			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-			return conversion_rules[b].data.to;
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
+		if (A4GL_strwscmp(sv,current_conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+			return current_conversion_rules[b].data.to;
 		}
 	}
 }
@@ -734,11 +736,11 @@ if (strchr(sv,'(')) {
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
-	for (b=0;b<conversion_rules_cnt;b++) {
-		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
-			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
-				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+	for (b=0;b<current_conversion_rules_cnt;b++) {
+		if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
+			if (A4GL_strwscmp(ptr,current_conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+				SPRINTF2(buff,"%s(%s",current_conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -746,11 +748,11 @@ if (strchr(sv,'(')) {
 }
 
 
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
-		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
-			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-			return conversion_rules[b].data.to;
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
+		if (A4GL_strwscmp(s,current_conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+			return current_conversion_rules[b].data.to;
 		}
 	}
 }
@@ -765,11 +767,11 @@ if (strchr(s,'(')) {
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
-	for (b=0;b<conversion_rules_cnt;b++) {
-		if (conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
-			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
-				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+	for (b=0;b<current_conversion_rules_cnt;b++) {
+		if (current_conversion_rules[b].type==CVSQL_INSERT_ALIAS_VALUE) {
+			if (A4GL_strwscmp(ptr,current_conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+				SPRINTF2(buff,"%s(%s",current_conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -787,11 +789,11 @@ char *A4GLSQLCV_dtype_alias(char *s ) {
 int b;
 A4GL_debug("Alias : '%s'\n",s);
 
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
-		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
-			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-			return conversion_rules[b].data.to;
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
+		if (A4GL_strwscmp(s,current_conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+			return current_conversion_rules[b].data.to;
 		}
 	}
 }
@@ -804,11 +806,11 @@ if (strchr(s,'(')) {
 	ptr2=strchr(ptr,'(');
 	*ptr2=0;
 	ptr2++;
-	for (b=0;b<conversion_rules_cnt;b++) {
-		if (conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
-			if (A4GL_strwscmp(ptr,conversion_rules[b].data.from)==0) {
-				A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
-				SPRINTF2(buff,"%s(%s",conversion_rules[b].data.to,ptr2);
+	for (b=0;b<current_conversion_rules_cnt;b++) {
+		if (current_conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
+			if (A4GL_strwscmp(ptr,current_conversion_rules[b].data.from)==0) {
+				A4GL_debug("Substitute : %s\n",current_conversion_rules[b].data.to);
+				SPRINTF2(buff,"%s(%s",current_conversion_rules[b].data.to,ptr2);
 				return buff;
 			}
 		}
@@ -880,18 +882,18 @@ static char *buff=0;
 buff=realloc(buff,strlen(s)*2+1000);
 strcpy(buff,s);
 
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
 			
-		if (A4GL_strcasestr(buff,conversion_rules[b].data.from)!=0) {
+		if (A4GL_strcasestr(buff,current_conversion_rules[b].data.from)!=0) {
 			char *to;
-			if (conversion_rules[b].data.to[0]=='$') {
-				to=get_dollared_sql_var(conversion_rules[b].data.to);
+			if (current_conversion_rules[b].data.to[0]=='$') {
+				to=get_dollared_sql_var(current_conversion_rules[b].data.to);
 			} else {
-				to=conversion_rules[b].data.to;
+				to=current_conversion_rules[b].data.to;
 			}
-			A4GL_debug("Converting %s to %s in %s\n",conversion_rules[b].data.from,to,buff);
-			A4GL_cvsql_replace_str (buff, conversion_rules[b].data.from,to );
+			A4GL_debug("Converting %s to %s in %s\n",current_conversion_rules[b].data.from,to,buff);
+			A4GL_cvsql_replace_str (buff, current_conversion_rules[b].data.from,to );
 			A4GL_debug("Converted: %s\n",buff);
 		}
 	}
@@ -916,7 +918,7 @@ hr=A4GLSQLCV_check_requirement("SQL_CURRENT_FUNCTION");
 
                 if (hr) {
 			char *ptr;
-			ptr=conversion_rules[hr-1].data.from;
+			ptr=current_conversion_rules[hr-1].data.from;
                         SPRINTF3(buff,"%s('%s','%s')",ptr,from,to);
                 } else {
                         SPRINTF2(buff,"CURRENT %s TO %s",from,to);
@@ -948,14 +950,14 @@ if (a==0) {
 	return 0; // I don't know what they are talking about...
 }
 
-if (conversion_rules==0) {
+if (current_conversion_rules==0) {
 A4GL_debug("A4GLSQLCV_check_requirement(%s) - No rules",s);
 	return 0;
 }
 
 // OK - now go through and have a look....
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==a) {
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==a) {
 		return b+1;
 	}
 }
@@ -967,6 +969,7 @@ return 0;
 
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) {
 static char buff[256];
+
 	if (tabname) {
 		SPRINTF2(buff,"%s.%s",tabname,colname);
 	} else {
@@ -1038,7 +1041,7 @@ if (!rule || n==0) {
 	if (n==2) { SPRINTF3(buff,"%s[%s,%s]",colname,l,r); return buff; } 
 } else {
 	char *func;
-        func=conversion_rules[rule-1].data.from;
+        func=current_conversion_rules[rule-1].data.from;
 	if (n==1) { SPRINTF3(buff,"%s(%s,%s,1)",func,colname,l); return buff; }  
 	if (n==2) { SPRINTF5(buff,"%s(%s,%s,(%s)-(%s)+1)",func,colname,l,r,l); return buff; } 
 }
@@ -1533,7 +1536,7 @@ char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,i
 	char *xx;
 	hr= A4GLSQLCV_check_requirement("INTERVAL_EXTEND_FUNCTION");
         if (hr) {
-		xx=conversion_rules[hr-1].data.from;
+		xx=current_conversion_rules[hr-1].data.from;
 		if (from_len==0) {
                 SPRINTF4(buff,"%s(%s,'%s',0,'%s')",xx, ival,from,to);
 		} else {
@@ -1566,7 +1569,7 @@ char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) {
 
         hr=A4GLSQLCV_check_requirement("DATETIME_EXTEND_FUNCTION");
         if (hr) {
-		xx=conversion_rules[hr-1].data.from;
+		xx=current_conversion_rules[hr-1].data.from;
                 SPRINTF4(buff,"%s(%s,'%s','%s')",xx, dval,from,to);
         } else {
 		if (extend) {
@@ -1589,7 +1592,7 @@ if (strncasecmp(s,"DATETIME(",9)==0) {
                 if (hr) {
                         char *ptr;
 			char *xx;
-			xx=conversion_rules[hr-1].data.from;
+			xx=current_conversion_rules[hr-1].data.from;
                         ptr=acl_strdup(&s[9]);
                         ptr[strlen(ptr)-1]=0;
                         SPRINTF2(buff,"%s(\"%s\")",xx,ptr);
@@ -1612,7 +1615,7 @@ if (strncasecmp(s,"INTERVAL(",9)==0) {
                 if (hr) {
                         char *ptr;
 			char *xx;
-			xx=conversion_rules[hr-1].data.from;
+			xx=current_conversion_rules[hr-1].data.from;
                         ptr=acl_strdup(&s[9]);
                         ptr[strlen(ptr)-1]=0;
                         SPRINTF2(buff,"%s(\"%s\")",xx,ptr);
@@ -1737,14 +1740,14 @@ char *A4GLSQLCV_get_sqlconst(char *s) {
 int b;
 //char *c;
 //static char buff[200];
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_REPLACE_SQLCONST) {
-		if (A4GL_aubit_strcasecmp(s,conversion_rules[b].data.from)==0) {
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_REPLACE_SQLCONST) {
+		if (A4GL_aubit_strcasecmp(s,current_conversion_rules[b].data.from)==0) {
 			char *to;
-			if (conversion_rules[b].data.to[0]=='$') {
-				to=get_dollared_sql_var(conversion_rules[b].data.to);
+			if (current_conversion_rules[b].data.to[0]=='$') {
+				to=get_dollared_sql_var(current_conversion_rules[b].data.to);
 			} else {
-				to=conversion_rules[b].data.to;
+				to=current_conversion_rules[b].data.to;
 			}
 
 			return to;
@@ -1752,14 +1755,14 @@ for (b=0;b<conversion_rules_cnt;b++) {
 	}
 }
 
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
-		if (A4GL_aubit_strcasecmp(s,conversion_rules[b].data.from)==0) {
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
+		if (A4GL_aubit_strcasecmp(s,current_conversion_rules[b].data.from)==0) {
 			char *to;
-			if (conversion_rules[b].data.to[0]=='$') {
-				to=get_dollared_sql_var(conversion_rules[b].data.to);
+			if (current_conversion_rules[b].data.to[0]=='$') {
+				to=get_dollared_sql_var(current_conversion_rules[b].data.to);
 			} else {
-				to=conversion_rules[b].data.to;
+				to=current_conversion_rules[b].data.to;
 			}
 			return to;
 		}
@@ -1777,10 +1780,10 @@ static char buff[256];
 int b;
 if (param==0) param="";
 SPRINTF2(buff,"%s(%s)",f,param);
-for (b=0;b<conversion_rules_cnt;b++) {
-	if (conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {
-		if (A4GL_aubit_strcasecmp(f,conversion_rules[b].data.from)==0) {
-			SPRINTF1(buff,conversion_rules[b].data.to,param);
+for (b=0;b<current_conversion_rules_cnt;b++) {
+	if (current_conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {
+		if (A4GL_aubit_strcasecmp(f,current_conversion_rules[b].data.from)==0) {
+			SPRINTF1(buff,current_conversion_rules[b].data.to,param);
 			break;
 		}
 	}

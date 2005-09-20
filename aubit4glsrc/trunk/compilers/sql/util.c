@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.24 2005-08-08 21:01:04 mikeaubury Exp $
+# $Id: util.c,v 1.25 2005-09-20 13:41:28 mikeaubury Exp $
 #
 */
 
@@ -959,6 +959,9 @@ A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
 
 int A4GL_db_used(void) {
 return 1;
+}
+
+A4GL_cursor_current(char *s)  {
 }
 
 

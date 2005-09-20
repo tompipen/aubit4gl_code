@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.12 2005-09-09 20:37:29 mikeaubury Exp $
+# $Id: sql_common.c,v 1.13 2005-09-20 13:41:29 mikeaubury Exp $
 #
 */
 
@@ -737,7 +737,7 @@ char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql ) {
 }
 
 
-#ifdef NEW_CODE
+/* Create a s_table structure holding a tablename and its alias */
 struct s_table *A4GLSQLPARSE_new_tablename(char *tname,char *alias) {
 	struct s_table *ptr;
 	ptr=malloc(sizeof(struct s_table));
@@ -752,6 +752,89 @@ struct s_table *A4GLSQLPARSE_new_tablename(char *tname,char *alias) {
 	return ptr;
 }
 
+
+
+/* Add a table structure to a structure representing the FROM clause of a select */
+struct s_table *A4GLSQLPARSE_append_tablename(struct s_table *t1,struct s_table *t2, int is_outer) {
+	struct s_table *p;
+	struct s_table *o;
+	p=t1;
+
+	if (is_outer) {
+			o=A4GLSQLPARSE_new_tablename("@","@");
+			o->outer_next=t2;
+			o->next=0;
+			t2=o;
+	}
+
+	while ( t1->next)  t1=t1->next;
+		t1->next=t2;
+
+
+	return p;
+}
+
+/*
+ * In order to make processing of the SQL select statement easier - we want to keep a flat
+ * list of all the tables we've encountered in our SQL statement
+ * 
+*/
+
+struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a) {
+	if (tl==0) {
+		tl=malloc(sizeof(struct s_table_list));
+		tl->ntables=0;
+		tl->tables=0;
+	}
+	tl->ntables++;
+	tl->tables=realloc(tl->tables,sizeof(struct s_table_list_element)*tl->ntables);
+	tl->tables[tl->ntables-1].tabname=0;
+	tl->tables[tl->ntables-1].alias	=0;
+	if (t) {
+		tl->tables[tl->ntables-1].tabname	=strdup(t);
+	}
+	if (a) {
+		tl->tables[tl->ntables-1].alias	=strdup(a);
+	}
+	return tl;
+}
+
+
+/* Generate the string representing the FROM clause for a SELECT */
+int A4GLSQLPARSE_from_clause(struct s_table *t,char *fill,struct s_table_list *tl) {
+	char buff[2000];
+	int a=0;
+	strcpy(buff,"");
+
+	while (t) {
+		/* A tablename of '@' is a placeholder for an outer - so we don't need
+		 * to print it...
+		 * */
+		if (strcmp(t->tabname,"@")!=0) {
+			if (a) strcat(buff,",");
+
+			A4GLSQLPARSE_add_table_to_table_list(tl,t->tabname,t->alias);
+			strcat(buff,A4GLSQLCV_make_tablename(t->tabname,t->alias));
+			a++;
+		}
+
+		if (t->outer_next) {
+			char outer[2000];
+			if (a) strcat(buff,","); 
+			a++;
+			strcpy(outer,"");
+			A4GLSQLPARSE_from_clause(t->outer_next,outer,tl);
+			strcat(buff," OUTER (");
+			strcat(buff,outer);
+			strcat(buff,")");
+		}
+		t=t->next;
+	}
+	strcpy(fill,buff);
+	return 1;
+}
+
+/*
 struct s_select_list *A4GLSQLPARSE_new_select_list_str(char *expr,char *alias) {
 	struct s_select_list *ptr;
 	ptr=malloc(sizeof(struct s_select_list));
@@ -764,6 +847,15 @@ struct s_select_list *A4GLSQLPARSE_new_select_list_str(char *expr,char *alias) {
 	}
 	return ptr;
 }
-#endif
+*/
+
+
+
+/*
+*/
+
+
+
+
 
 /* =============================== EOF ============================== */

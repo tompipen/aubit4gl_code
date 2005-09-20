@@ -99,7 +99,7 @@ static void A4GL_CV_print_exec_sql_bound(char *s);
 
 
 
-#include "ilist.h"
+//#include "ilist.h"
 
 static char* A4GL_get_into_part(int d,int n);
 static char *  fix_update_expr (int mode);
@@ -157,6 +157,14 @@ int db_used=0;
         char    str[1024];
    char *sql_string;
 	struct  ilist int_list;
+	struct s_table *u_table;
+	struct s_select_finish *s_select_finish;
+        struct s_select_list_item_list *s_select_list_item_list;
+        struct s_select_list_item *s_select_list_item;
+        struct s_select *s_select;
+        int     integer_val;
+        float   float_val;
+
 
 }
 %expect 175

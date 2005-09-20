@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.19 2005-03-09 15:14:29 mikeaubury Exp $
+# $Id: decompile.c,v 1.20 2005-09-20 13:41:24 mikeaubury Exp $
 #
 */
 
@@ -102,8 +102,8 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  printf ("Dumping form..\n");
-  dump_form_desc (&the_form);
+  //printf ("Dumping form..\n");
+  dump_form_desc (&the_form,argv[1]);
 return 0;
 }
 

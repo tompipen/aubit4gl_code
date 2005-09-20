@@ -1,5 +1,5 @@
 #
-# $Id: makefile,v 1.12 2005-04-15 06:59:26 mikeaubury Exp $
+# $Id: makefile,v 1.13 2005-09-20 13:41:28 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -74,6 +74,8 @@ endif
 #WARNING: order is IMPORTANT!
 sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
 	${SQLPACK_IFX_PATH}/schema.rule ${SQLPACK_IFX_PATH}/sql1.rule \
+	 ${SQLPACK_IFX_PATH}/select.rule \
+	 ${SQLPACK_IFX_PATH}/simple.rule \
 	80.reqd 99.reqd
 	${CAT} $^ > $@
 	

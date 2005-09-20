@@ -50,7 +50,6 @@
 			REJECT;
 	}
 	strcpy(yylval.str,yytext);
-	printf("Looking...");
 	if (graphics_mode) {
 		int test_extend=0;
 	        if (A4GL_isyes(acl_getenv("EXTENDED_GRAPHICS"))||extended_graphics==1) { 

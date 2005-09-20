@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.46 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: binding.c,v 1.47 2005-09-20 13:41:30 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.46 2005-09-11 16:30:00 mikeaubury Exp $";
+		"$Id: binding.c,v 1.47 2005-09-20 13:41:30 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -1241,6 +1241,42 @@ static char *decode_datetime(int a) {
 	char ps2[200];
 	static char buff[200];
 
+	//printf("Decode : %x\n",a);
+	if (((a/16)%16)<=10)  {
+		pt1=(((a/16)%16)-1);
+	} else {
+		pt1=6;
+	}
+	//printf("pt1=%d\n",pt1);
+	strcpy(ps1,dtparts[pt1]);
+	
+	if ((a%16)<=6) {
+		pt2=(a%16)-1;
+		//pt2=pt2/2;
+		strcpy(ps2,dtparts[pt2]);
+	} else {
+
+		pt2=6;
+		fr=(a % 16)-6;
+		//printf("pt2=%d x2\n",pt2);
+		sprintf(ps2,"%s(%d)",dtparts[pt2],fr);
+	}
+	sprintf(buff," %s TO %s",ps1,ps2);
+	//printf("%d to %d\n",pt1,pt2);
+	return buff;
+}
+
+
+
+static char *decode_datetime2(int a) {
+	int pt1;
+	int pt2;
+	int fr;
+	char ps1[200];
+	char ps2[200];
+	static char buff[200];
+
+	//printf("Decode : %d\n",a);
 	if (((a/16)%16)<=10)  {
 		pt1=(((a/16)%16)/2);
 	} else {
@@ -1259,6 +1295,9 @@ static char *decode_datetime(int a) {
 	sprintf(buff," %s TO %s",ps1,ps2);
 	return buff;
 }
+
+
+
 char *
 A4GL_dtype_sz (int d, int s)
 {

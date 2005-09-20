@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.17 2005-03-25 12:48:30 afalout Exp $
+# $Id: dump.c,v 1.18 2005-09-20 13:41:24 mikeaubury Exp $
 #*/
 
 /**
@@ -110,7 +110,7 @@ void print_lvl (int lvl);
  * @param f A pointer to the form description structure
  */
 void
-dump_form_desc (struct_form * f)
+dump_form_desc (struct_form * f,char *fname)
 {
   int a;
   printf ("DB         : '%s'\n", f->dbname);

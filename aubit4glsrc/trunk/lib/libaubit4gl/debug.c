@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.48 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: debug.c,v 1.49 2005-09-20 13:41:29 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,8 @@ void
 A4GL_debug_full (char *fmt, ...)
 {
   va_list args;
-  static char buff[40960];
+#define MAX_DEBUG 10000
+  static char buff[MAX_DEBUG+1];
   int a;
   int dbg_level;
   char buff_n[20];
@@ -173,7 +174,7 @@ A4GL_debug_full (char *fmt, ...)
   }
 
   if (strncmp(g_fname,"API",3)==0) {
-		char buff2[512];
+		char buff2[MAX_DEBUG+100];
 		SPRINTF1(buff2,"API %s\n",buff);
 		A4GL_monitor_puts_int(buff2);
   }
@@ -185,12 +186,12 @@ A4GL_debug_full (char *fmt, ...)
 	memset(buff,0,sizeof(buff));
 
 #ifdef  HAVE_VSNPRINTF
-	vsnprintf (buff, 400,fmt, args);
+	vsnprintf (buff, MAX_DEBUG,fmt, args);
 #else
       	vsprintf (buff, fmt, args);
 #endif
 
-	buff[400]=0;
+	buff[MAX_DEBUG]=0;
       if (buff[strlen (buff) - 1] != ':')
 	fprintf (debugfile, "%-20s %-6d (%6ld,%6ld,%1d)",
 		 g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg());

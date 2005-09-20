@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.249 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: compile_c.c,v 1.250 2005-09-20 13:41:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.249 2005-09-11 16:30:00 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.250 2005-09-20 13:41:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -145,7 +145,6 @@ extern int inp_flags;
 char *expr_name(enum e_expr_type e);
 
 
-#define CM
 dll_import struct rep_structure rep_struct;
 
 
@@ -277,22 +276,73 @@ static int is_just_expr_clipped(char *v,struct expr_str_list *ptr) {
 
 }
 
+#ifdef CM
 static char *is_single_string(struct expr_str_list *ptr) {
 	struct expr_str *p;
-	if (ptr->nlist!=1) { return 0; }
-	
-	p=ptr->list[0];
+	int a;
+	char *buff=0;
 
-	if (p->expr_type==ET_EXPR_PUSH_VARIABLE) { return "Yes"; }
-	if (p->expr_type==ET_EXPR_LITERAL_STRING) { return p->u_data.expr_string; }
-	if (p->expr_type==ET_EXPR_LITERAL_EMPTY_STRING) { return ""; }
+	if (ptr->nlist==1) { 
+		p=ptr->list[0];
+		if (p->expr_type==ET_EXPR_PUSH_VARIABLE) 	{ return "Yes"; }
+		if (p->expr_type==ET_EXPR_LITERAL_STRING) 	{ return p->u_data.expr_string; }
+		if (p->expr_type==ET_EXPR_LITERAL_EMPTY_STRING) { return ""; }
+	}
 
-#ifdef CM
-	printf("Check : %s (%s %d)\n",expr_name(p->expr_type),__FILE__,__LINE__);
+	for (a=0;a<ptr->nlist;a++) {
+		p=ptr->list[a];
+
+		if (p->expr_type==ET_EXPR_OP_CLIP) {
+			p=p->u_data.expr_op->left; // We'll ignore any clipping for the sake of determining if its a single string...
+		}
+
+		if (p->expr_type==ET_EXPR_OP_USING) {
+			p=p->u_data.expr_op->left; // We'll ignore any USING string and just use it as is..
+		}
+
+		if (p->expr_type==ET_EXPR_LITERAL_STRING) {
+			if (buff) {
+					buff=realloc(buff,(strlen(buff)+strlen(p->u_data.expr_string)+1));
+					strcat(buff,p->u_data.expr_string);
+			} else {
+				buff=strdup(p->u_data.expr_string);
+			}
+			continue;
+		}
+
+		if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
+			// If we're using variables here - we really ought to store them somewhere
+			// as we're replacing them with a '?'
+			if ((p->u_data.expr_push_variable->var_dtype&DTYPE_MASK)==DTYPE_CHAR) { // Its a character strings
+				int sz;
+				sz=p->u_data.expr_push_variable->var_dtype>>16;
+				if (sz>20) {
+
+					printf("DTYPE : %x\n",p->u_data.expr_push_variable->var_dtype);
+					return 0;
+				}
+			}
+			if (buff) {
+					buff=realloc(buff,(strlen(buff)+1+1));
+					strcat(buff,"`");
+			} else {
+					buff=strdup("`");
+			}
+			continue;
+		}
+		
+		//printf("Nope - %d. %d %s\n",a,p->expr_type,expr_name(p->expr_type));
+		return 0; 
+	}
+
+	return buff;
+}
 #endif
 
-	return 0;
-}
+
+
+
+
 /**
  * Open the ouput target C file
  */
@@ -1845,6 +1895,13 @@ real_print_expr (struct expr_str *ptr)
 
 	case ET_EXPR_OP_USING:
 	  real_print_expr (ptr->u_data.expr_op->left);
+#ifdef CM
+	  if (ptr->u_data.expr_op->right->expr_type==ET_EXPR_LITERAL_STRING) {
+	  	printf("USING_STR %s\n",ptr->u_data.expr_op->right->u_data.expr_char);
+	  } else {
+	  	printf("USING %s\n",expr_name(ptr->u_data.expr_op->right->expr_type));
+	  }
+#endif
 	  real_print_expr (ptr->u_data.expr_op->right);
 	  printc ("A4GL_pushop(OP_USING);");
 	  break;
@@ -2106,7 +2163,6 @@ LEXLIB_print_bind_pop2 (t_expr_str_list *ptr, char i)
   int a;
   a = 0;
 
-
   if (i == 'i')
     {
 	    A4GL_assertion(1,"Not Used");
@@ -2150,10 +2206,20 @@ LEXLIB_print_bind_pop2 (t_expr_str_list *ptr, char i)
 	      	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", obind[a].varname, (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 #ifdef CM
 
-		if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) { 	// If its a character string - 
+		if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) {
+		       	if (find_variable_scope(obind[a].varname)=='L'||1) { 	
+						// If its a local character string - 
 						// remember it's last assignment..
 						// this may come in useful ;-)
-			A4GL_add_pointer(obind[a].varname,LAST_STRING,ptr_str);
+						if (A4GL_has_pointer(obind[a].varname,LAST_STRING)) {
+							char *p;
+							//A4GL_add_pointer(obind[a].varname,LAST_STRING,"<set multiple times>");
+							p=A4GL_find_pointer(obind[a].varname,LAST_STRING);
+							A4GL_add_pointer(obind[a].varname,LAST_STRING,0);
+						} else {
+							A4GL_add_pointer(obind[a].varname,LAST_STRING,ptr_str);
+						}
+			}
 
 		}
 #endif
@@ -2328,8 +2394,16 @@ LEXLIB_print_param (char i,char*fname)
   int b;
   char *ptr;
   A4GL_debug ("Expanding binding.. - was %d entries", fbindcnt);
-  expand_bind (&fbind[0], 'F', fbindcnt);
+  expand_bind (&fbind[0], 'F', fbindcnt,1);
   A4GL_debug ("Expanded - now %d entries", fbindcnt);
+
+  //for (a=0;a<fbindcnt;a++) {
+	  //int c;
+	//c = find_variable_scope (fbind[a].varname);
+	//printf("Scope : %c\n",c);
+  //}
+  //
+  
   if (i == 'r')
     {
       printc ("static ");
@@ -2448,7 +2522,7 @@ LEXLIB_print_bind (char i)
 
   if (i == 'N')
     {
-      expand_bind (&nullbind[0], 'N', nullbindcnt);
+      expand_bind (&nullbind[0], 'N', nullbindcnt,0);
       printc ("\n");
       printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/",
 	      ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
@@ -2499,7 +2573,7 @@ LEXLIB_print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-      	expand_bind (&ordbind[0], 'O', ordbindcnt);
+      	expand_bind (&ordbind[0], 'O', ordbindcnt,0);
 
 
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
@@ -3756,19 +3830,64 @@ LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 	struct expr_str *from;
 	struct expr_str *to;
 	struct expr_str *step;
+	char buff_to[20];
+	char buff_from[20];
+	int have_from=0;
+	int have_to=0;
+	int have_step=0;
+	int from_l;
+	int to_l;
+	int step_l;
 
 	from=vfrom;
 	to=vto;
 	step=vstep;
-	print_expr(from);
-	print_expr(to);
-	print_expr(step);
 
-  printc
-    ("\n{int _s;int _e;int _step;\n_step=A4GL_pop_long();_e=A4GL_pop_long();_s=A4GL_pop_long();\n");
-  printc
-    ("for (%s=_s; (%s<=_e&&_step>0)||(%s>=_e&&_step<0);%s+=_step) {\n",
-     var, var, var, var);
+	if (from->expr_type==ET_EXPR_LITERAL_LONG) {
+			have_from=1;
+			from_l=from->u_data.expr_long;
+	}
+	if (to->expr_type==ET_EXPR_LITERAL_LONG) {
+			have_to=1;
+			to_l=to->u_data.expr_long;
+	}
+	if (step->expr_type==ET_EXPR_LITERAL_LONG) {
+			have_step=1;
+			step_l=step->u_data.expr_long;
+	}
+
+
+	if (!have_from) print_expr(from);
+	if (!have_to) print_expr(to);
+
+	printc("{");
+	if (!have_from) printc ("int _s;");
+	if (!have_to)   printc ("int _e;");
+	if (!have_to)   {printc ("_e=A4GL_pop_long();"); sprintf(buff_to,"_e");}
+	else { sprintf(buff_to,"%ld",to_l); }
+
+  	if (!have_step) printc ("int _step;");
+
+	if (!have_from) {printc ("_s=A4GL_pop_long();"); sprintf(buff_from,"_s");}
+	else { sprintf(buff_from,"%ld",from_l); }
+
+	if (have_step) {
+		if (step_l>=0) {
+  			printc ("for (%s=%s; %s<=%s;%s+=%d) {\n", var, buff_from,var, buff_to,var, step_l);
+		} else {
+			step_l=0-step_l;
+  			printc ("for (%s=%s; %s>=%s;%s-=%d) {\n", var, buff_from,var, buff_to,var, step_l);
+		}
+	} else {
+#ifdef CM
+			printf("FOR UNKNOWN_STEP_DIR %s - %d\n",expr_name(step->expr_type),yylineno);
+#endif
+			print_expr(step);
+			printc("_step=A4GL_pop_long();");
+  			printc ("for (%s=%s; (%s<=%s&&_step>0)||(%s>=%s&&_step<0);%s+=_step) {\n", var, buff_from,var, buff_to,var, buff_to,var);
+	}
+
+
 }
 
 /**
@@ -3791,7 +3910,7 @@ void *
 LEXLIB_get_for_default_step (void)
 {
 	struct expr_str *ptr;
-	ptr=A4GL_new_expr("A4GL_push_int(1);");
+	ptr=A4GL_new_literal_long_str("1");
 	return ptr;
   //printc ("A4GL_push_int(1);\n");
 }
@@ -4133,7 +4252,7 @@ LEXLIB_print_init (void)
   int cnt;
   printc ("{\n");
 
-  expand_bind (&nullbind[0], 'N', nullbindcnt);
+  expand_bind (&nullbind[0], 'N', nullbindcnt,0);
 
   for (cnt = 0; cnt < nullbindcnt; cnt++)
     {
@@ -5738,6 +5857,7 @@ extern int class_cnt;
 		add_function_to_header(fname,1,isstatic);
 
 #ifdef CM
+  	expand_bind (&fbind[0], 'F', fbindcnt,1);
 		printf("CPROTO %s (",fname);
 		for (a=0;a<fbindcnt;a++) {
 			int dtype;
@@ -7181,7 +7301,7 @@ LEXLIB_print_bind_definition (char i)
     {
       printc ("\n");
       
-      expand_bind (&ordbind[0], 'O', ordbindcnt);
+      expand_bind (&ordbind[0], 'O', ordbindcnt,0);
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
 	{
@@ -7206,7 +7326,7 @@ LEXLIB_print_bind_definition (char i)
 
   if (i == 'N')
     {
-      expand_bind (&nullbind[0], 'N', nullbindcnt);
+      expand_bind (&nullbind[0], 'N', nullbindcnt,0);
       printc ("\n");
       printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/",
               ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
