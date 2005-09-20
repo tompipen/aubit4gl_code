@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.250 2005-09-20 13:41:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.251 2005-09-20 13:44:59 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.250 2005-09-20 13:41:30 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.251 2005-09-20 13:44:59 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -436,7 +436,12 @@ open_outfile (void)
 	}
     }
 
+#ifdef CM
   strcat (filename_for_h, "_xxx.h");
+#else
+  strcat (filename_for_h, ".h");
+#endif
+
   strcat (err, ".err");
 
   outfile = A4GL_mja_fopen (filename_for_c, "w");

@@ -1301,7 +1301,9 @@ if mv_objects matches lv_chk then
 	# Its already in our list...
 	return
 end if
+
 let lv_chk="* ",lv_obj
+
 if mv_objects matches lv_chk then
 	# Its already in our list...
 	return

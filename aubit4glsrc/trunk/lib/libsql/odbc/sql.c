@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.135 2005-08-17 13:57:27 mikeaubury Exp $
+# $Id: sql.c,v 1.136 2005-09-20 13:41:30 mikeaubury Exp $
 #
 */
 
@@ -2144,6 +2144,8 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
 
   rc = SQLSetConnectOption (hdbc, SQL_ASYNC_ENABLE, 0);
   A4GLSQL_set_status (0, 1);
+
+  A4GLSQLCV_load_convert("INFORMIX",dbms_dialect);
 
   return 1;
 }
