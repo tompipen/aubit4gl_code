@@ -523,10 +523,10 @@ function_call_expr:
 
 	} 
         | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_without_waiting {
+                        char fname[64];
                 char buff[256];
                         sprintf(buff,"%s:%s(%p)",$<str>2,$<str>4,$<str>6);
                         ADDMAP("External",buff);
-                        char fname[64];
 
                         if (strcmp($<str>11,"WITHOUT WAITING")==0) {
                                 strcpy(fname,"1,");
