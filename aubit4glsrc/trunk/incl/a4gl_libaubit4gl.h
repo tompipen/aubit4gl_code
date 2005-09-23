@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.194 2005-09-20 13:41:28 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.195 2005-09-23 10:37:44 mikeaubury Exp $
 #
 */
 
@@ -315,6 +315,8 @@
 #define FEATURE_USED		'X'
 #define HP_IS_SERIAL		'V'
 #define LAST_STRING		'T'
+
+#define BLOCK_USED		'R'
 
 /* 
  * these seem to be used only in lib/extra_libs/channel - 
@@ -2326,6 +2328,15 @@ struct expr_external_call {
 	int line;
 };
 
+struct expr_substring {
+	char *str;
+	long len;
+	char *substring_start;
+	char *substring_end;
+	int type;
+};
+
+
 struct expr_current {
 	short from;
 	short to;
@@ -2408,6 +2419,7 @@ enum e_expr_type {
 		ET_EXPR_EXTERNAL,
 		ET_EXPR_GET_FLDBUF,
 		ET_EXPR_WORDWRAP,
+		ET_EXPR_SUBSTRING,
 
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
@@ -2430,6 +2442,7 @@ struct expr_str {
 		struct expr_current 			*expr_current;
 		struct expr_get_fldbuf 			*expr_get_fldbuf;
 		struct expr_wordwrap 			*expr_wordwrap;
+		struct expr_substring			*expr_substring;
 		long   expr_long;
 	  } u_data;
 	  struct expr_str *next;
@@ -2444,6 +2457,7 @@ struct expr_str *A4GL_new_literal_long_str (char *value);
 struct expr_str *A4GL_new_literal_long_long (long value);
 struct expr_str *A4GL_new_literal_string (char *value);
 struct expr_str *A4GL_new_literal_empty_str(void);
+struct expr_str *A4GL_new_substring_expr (char *str,long str_len,char *ptr_s, char *ptr_e,int type);
 
 struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
 

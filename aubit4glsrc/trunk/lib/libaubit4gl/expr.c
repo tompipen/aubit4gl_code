@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.2 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: expr.c,v 1.3 2005-09-23 10:38:38 mikeaubury Exp $
 #
 */
 
@@ -134,6 +134,7 @@ case ET_EXPR_LAST: return "ET_EXPR_LAST";
 case ET_EXPR_EXTERNAL: return "ET_EXPR_EXTERNAL";
 case ET_EXPR_GET_FLDBUF: return "ET_EXPR_GET_FLDBUF";
 case ET_EXPR_WORDWRAP: return "ET_EXPR_WORDWRAP";
+case ET_EXPR_SUBSTRING: return "ET_EXPR_SUBSTRING";
 }
 printf("%d\n",e);
 return "Oopps - dont know";
@@ -228,6 +229,23 @@ struct expr_str_list *A4GL_new_prepend_ptr_list(struct expr_str_list *l,struct e
 	}
 	free(old_list);
 	return l;
+}
+
+struct expr_str *A4GL_new_substring_expr (char *str,long str_len,char *ptr_s, char *ptr_e,int type) {
+  struct expr_str *ptr;
+    ptr=A4GL_new_expr_simple(ET_EXPR_SUBSTRING);
+    ptr->u_data.expr_substring=malloc(sizeof(struct expr_substring));
+    ptr->u_data.expr_substring->str=strdup(str);
+    A4GL_trim( ptr->u_data.expr_substring->str);
+    ptr->u_data.expr_substring->len=str_len;
+    if (ptr_s[0]==' ') ptr_s++;
+    ptr->u_data.expr_substring->substring_start=strdup(ptr_s);
+    A4GL_trim(ptr->u_data.expr_substring->substring_start);
+    if (ptr_e[0]==' ') ptr_e++;
+    ptr->u_data.expr_substring->substring_end=strdup(ptr_e);
+    A4GL_trim(ptr->u_data.expr_substring->substring_end);
+    ptr->u_data.expr_substring->type=type;
+  return ptr;
 }
 
 

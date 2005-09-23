@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.32 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: rexp2.c,v 1.33 2005-09-23 10:38:38 mikeaubury Exp $
 #
 */
 
@@ -139,7 +139,7 @@ appendchr (char *s, char c)
 int
 A4GL_mja_match (char *str1, char *str2, int likeormatch)
 {
-  char MULTICHAR, SINGLECHAR,BRACECHAR;
+  char MULTICHAR, SINGLECHAR, BRACECHAR;
   int error;
 
   A4GL_trim (str1);
@@ -154,44 +154,51 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
     {
       MULTICHAR = '%';
       SINGLECHAR = '.';
-	BRACECHAR=' ';
+      BRACECHAR = ' ';
     }
   else
     {
       MULTICHAR = '*';
       SINGLECHAR = '?';
-	BRACECHAR='[';
+      BRACECHAR = '[';
     }
 
   A4GL_debug ("Calling matche...");
-  error = A4GL_matche (str2, str1,MULTICHAR,SINGLECHAR,BRACECHAR);
-   A4GL_debug("A4GL_matche=%d (VALID=%d)\n",error,MATCH_VALID);
+  error = A4GL_matche (str2, str1, MULTICHAR, SINGLECHAR, BRACECHAR);
+  A4GL_debug ("A4GL_matche=%d (VALID=%d)\n", error, MATCH_VALID);
   if (error == MATCH_VALID)
     return 1;
   else
     return 0;
 }
 
-static char *A4GL_escape_single(char *s) {
-int a;
-int b;
-char *ptr;
+static char *
+A4GL_escape_single (char *s)
+{
+  int a;
+  int b;
+  char *ptr;
 
-A4GL_assertion(s==0,"Passed in a null pointer for A4GL_escape_single") ;
-if (!strchr(s,'\''))  return acl_strdup(s);
-ptr=acl_malloc2(strlen(s)*2+1);
-memset(ptr,0,strlen(s)*2+1);
-b=0;
-for (a=0;a<strlen(s);a++) {
-	if (s[a]=='\'') {
-		ptr[b++]='\'';
-		ptr[b++]='\'';
-	} else {
-		ptr[b++]=s[a];
+  A4GL_assertion (s == 0, "Passed in a null pointer for A4GL_escape_single");
+  if (!strchr (s, '\''))
+    return acl_strdup (s);
+  ptr = acl_malloc2 (strlen (s) * 2 + 1);
+  memset (ptr, 0, strlen (s) * 2 + 1);
+  b = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == '\'')
+	{
+	  ptr[b++] = '\'';
+	  ptr[b++] = '\'';
 	}
-}
+      else
+	{
+	  ptr[b++] = s[a];
+	}
+    }
 
-return ptr;
+  return ptr;
 
 }
 
@@ -201,7 +208,7 @@ return ptr;
  * @return
  */
 char *
-A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
+A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 {
   char *ptr2;
   int a;
@@ -216,24 +223,29 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   char lastchar;
   int ismatch;
   char colname[256];
-	char *ptr;
+  char *ptr;
 
-  if (tabname==0) {
-		tabname="";
-  }
-  A4GL_debug("A4GL_construct : '%s' '%s' '%s'",tabname,colname_s,val);
-  if (strlen(tabname)) {
-		SPRINTF2(colname,"%s.%s",tabname,colname_s);
-  } else {
-		strcpy(colname,colname_s);
-  }
+  if (tabname == 0)
+    {
+      tabname = "";
+    }
+  A4GL_debug ("A4GL_construct : '%s' '%s' '%s'", tabname, colname_s, val);
+  if (strlen (tabname))
+    {
+      SPRINTF2 (colname, "%s.%s", tabname, colname_s);
+    }
+  else
+    {
+      strcpy (colname, colname_s);
+    }
 
   A4GL_trim (val);
   ptr2 = val;
   strcpy (buff3, "");
 #ifdef DEBUG
   {
-    A4GL_debug ("Colname = %s , val = %s incq=%d\n", colname, val, inc_quotes);
+    A4GL_debug ("Colname = %s , val = %s incq=%d\n", colname, val,
+		inc_quotes);
   }
 #endif
   if (strcmp (val, "") == 0)
@@ -241,7 +253,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 
   constr_size = 0;
   constr_bits[constr_size++] = buffer;
-  		A4GL_debug("constr_size++ now %d",constr_size);
+  A4GL_debug ("constr_size++ now %d", constr_size);
 
   if (inc_quotes)
     strcpy (quote, "'");
@@ -251,31 +263,36 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   lastchar = -1;
   z = -1;
   ismatch = 0;
-  A4GL_debug("ptr2=%s",ptr2);
+  A4GL_debug ("ptr2=%s", ptr2);
   for (a = 0; a < strlen (ptr2); a++)
     {
 
-      if (ptr2[a] == '[' || ptr2[a] == '*' || ptr2[a] == '?') {
-	if (!A4GL_isyes(acl_getenv("CONSTRUCT_NO_MATCHES"))) {
-		ismatch = 1;
+      if (ptr2[a] == '[' || ptr2[a] == '*' || ptr2[a] == '?')
+	{
+	  if (!A4GL_isyes (acl_getenv ("CONSTRUCT_NO_MATCHES")))
+	    {
+	      ismatch = 1;
+	    }
 	}
-      }
 
-      if (ptr2[a] == '%' || ptr2[a] == '_') {
-	if (A4GL_isyes(acl_getenv("CONSTRUCT_LIKE"))) {
-		if (ismatch!=1) ismatch = 2;
+      if (ptr2[a] == '%' || ptr2[a] == '_')
+	{
+	  if (A4GL_isyes (acl_getenv ("CONSTRUCT_LIKE")))
+	    {
+	      if (ismatch != 1)
+		ismatch = 2;
+	    }
 	}
-      }
 
       lastchar = z;
       z = A4GL_is_construct_op (ptr2, a);
-	A4GL_debug("z=%d",z);
+      A4GL_debug ("z=%d", z);
       if (z > 0 && lastchar == 0)
 	{			/* last character was not a control */
 	  appendchr (buffer, '\n');
 	  constr_bits[constr_size++] = &buffer[strlen (buffer)];
 	  appendchr (buffer, ptr2[a]);
-  		A4GL_debug("constr_size++ now %d",constr_size);
+	  A4GL_debug ("constr_size++ now %d", constr_size);
 	  /*constr_bits[constr_size++]=&ptr2[a]; */
 	  /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1]; */
 	}
@@ -285,7 +302,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	  appendchr (buffer, '\n');
 	  constr_bits[constr_size++] = &buffer[strlen (buffer)];
 	  appendchr (buffer, ptr2[a]);
-  		A4GL_debug("constr_size++ now %d",constr_size);
+	  A4GL_debug ("constr_size++ now %d", constr_size);
 	  /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1]; */
 	}
       else if (z > 0 && lastchar > 0)
@@ -300,7 +317,7 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
 	      constr_bits[constr_size++] = &buffer[strlen (buffer)];
 	      appendchr (buffer, ptr2[a]);
 
-  		A4GL_debug("constr_size++ now %d",constr_size);
+	      A4GL_debug ("constr_size++ now %d", constr_size);
 	    }
 	}
       else
@@ -310,31 +327,35 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   convert_constr_buffer (buffer);
 
 
-  if (inc_quotes==0)
+  if (inc_quotes == 0)
     {
-	   A4GL_debug("constr_size = %d\n",constr_size);
+      A4GL_debug ("constr_size = %d\n", constr_size);
       for (z = 0; z < constr_size; z++)
 	{
-	  if (A4GL_is_construct_op (constr_bits[z], 0) == 0 || (z > 1 && A4GL_is_construct_op (constr_bits[z], 0) != OR))
+	  if (A4GL_is_construct_op (constr_bits[z], 0) == 0
+	      || (z > 1 && A4GL_is_construct_op (constr_bits[z], 0) != OR))
 	    {
 
-		char *eptr;
-		k=1;
-		strtod(constr_bits[z], &eptr);
-		//strtol(constr_bits[z], &eptr,10);
-		A4GL_debug("eptr=%p *eptr=%p\n",eptr,*eptr);
-		if (eptr==0) k=0;
-		if (eptr) {
-			if (*eptr != 0 ) {
-				k=0;
-			}
+	      char *eptr;
+	      k = 1;
+	      strtod (constr_bits[z], &eptr);
+	      //strtol(constr_bits[z], &eptr,10);
+	      A4GL_debug ("eptr=%p *eptr=%p\n", eptr, *eptr);
+	      if (eptr == 0)
+		k = 0;
+	      if (eptr)
+		{
+		  if (*eptr != 0)
+		    {
+		      k = 0;
+		    }
 		}
 
 	      if (k || k2);
 	      else
 		{
 		  /* error in numeric */
-			A4GL_debug("error in numeric");
+		  A4GL_debug ("error in numeric");
 		  return 0;
 		}
 	    }
@@ -342,19 +363,26 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
     }
 
 
-  if (inc_quotes==2) /* Its a date */
+  if (inc_quotes == 2)		/* Its a date */
     {
-	   A4GL_debug("constr_size = %d\n",constr_size);
+      A4GL_debug ("constr_size = %d\n", constr_size);
       for (z = 0; z < constr_size; z++)
 	{
-	  if (A4GL_is_construct_op (constr_bits[z], 0) == 0 || (z > 1 && A4GL_is_construct_op (constr_bits[z], 0) != OR))
+	  if (A4GL_is_construct_op (constr_bits[z], 0) == 0
+	      || (z > 1 && A4GL_is_construct_op (constr_bits[z], 0) != OR))
 	    {
-		int n;
-		if (A4GL_stod(constr_bits[z], &n, 0) && !A4GL_isnull(DTYPE_DATE,(void *)&n)) {
-			A4GL_debug("CDATE Returns true for %s n=%d",constr_bits[z],n);
-		} else {
-			return 0;
-			A4GL_debug("CDATE Returns false for %s or its null",constr_bits[z]);
+	      int n;
+	      if (A4GL_stod (constr_bits[z], &n, 0)
+		  && !A4GL_isnull (DTYPE_DATE, (void *) &n))
+		{
+		  A4GL_debug ("CDATE Returns true for %s n=%d",
+			      constr_bits[z], n);
+		}
+	      else
+		{
+		  return 0;
+		  A4GL_debug ("CDATE Returns false for %s or its null",
+			      constr_bits[z]);
 		}
 
 	    }
@@ -373,53 +401,63 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
     {
 #ifdef DEBUG
       {
- A4GL_debug ("Expression error");
+	A4GL_debug ("Expression error");
       }
 #endif
-	A4GL_debug("error in expression");
+      A4GL_debug ("error in expression");
       return 0;
     }
 
   if (z == 0 && z2 == 0)
     {
-      if (ismatch) {
-	if (ismatch==1) {
-		strcat (buff2, " matches ");
-        }
+      if (ismatch)
+	{
+	  if (ismatch == 1)
+	    {
+	      strcat (buff2, " matches ");
+	      if (A4GL_isyes(acl_getenv("CONSTRUCT_MATCH_FIX"))) {
+	      		return A4GLSQLCV_matches_string("", A4GL_escape_single (constr_bits[0]),"\"\\\"");
+	      }
+	    }
 
-	if (ismatch==2) {
-		strcat (buff2, " like ");
+	  if (ismatch == 2)
+	    {
+	      strcat (buff2, " like ");
+	    }
+
 	}
-
-      } else {
-	strcat (buff2, "=");
-      }
+      else
+	{
+	  strcat (buff2, "=");
+	}
       strcat (buff2, quote);
-	   A4GL_debug("constr_size = %d\n",constr_size);
+      A4GL_debug ("constr_size = %d\n", constr_size);
 
       for (cnt = 0; cnt < constr_size; cnt++)
 	{
-		char *ptr;
-	  	A4GL_debug("cat : %s %s",buff2,constr_bits[cnt]);
-		ptr=A4GL_escape_single(constr_bits[cnt]);
-	  	strcat (buff2, ptr);
-		free(ptr);
+	  char *ptr;
+	  A4GL_debug ("cat : %s %s", buff2, constr_bits[cnt]);
+	  ptr = A4GL_escape_single (constr_bits[cnt]);
+	  strcat (buff2, ptr);
+	  free (ptr);
 	}
       SPRINTF3 (buff3, "%s%s%s", colname, buff2, quote);
     }
 
-A4GL_debug("z=%d",z);
+  A4GL_debug ("z=%d", z);
   if (z > 0 && z < OR)
     {
-		ptr=A4GL_escape_single(constr_bits[0]);
-      strcat (buff2, ptr);	free(ptr);
+      ptr = A4GL_escape_single (constr_bits[0]);
+      strcat (buff2, ptr);
+      free (ptr);
 
 
       strcat (buff2, quote);
       for (z = 1; z < constr_size; z++)
 	{
-		ptr=A4GL_escape_single(constr_bits[z]);
-	  strcat (buff2, ptr); free(ptr);
+	  ptr = A4GL_escape_single (constr_bits[z]);
+	  strcat (buff2, ptr);
+	  free (ptr);
 	}
       strcat (buff2, quote);
 
@@ -453,8 +491,9 @@ A4GL_debug("z=%d",z);
 	      if (A4GL_is_construct_op (constr_bits[z], 0) == OR)
 		continue;
 	      strcat (buff3, quote);
-		ptr=A4GL_escape_single(constr_bits[z]);
-	      strcat (buff3, ptr); free(ptr);
+	      ptr = A4GL_escape_single (constr_bits[z]);
+	      strcat (buff3, ptr);
+	      free (ptr);
 	      strcat (buff3, quote);
 	      if (z < constr_size - 1)
 		strcat (buff3, ",");
@@ -472,8 +511,9 @@ A4GL_debug("z=%d",z);
 	      if (A4GL_is_construct_op (constr_bits[z], 0) == OR)
 		continue;
 	      strcat (buff3, quote);
-		ptr=A4GL_escape_single(constr_bits[z]);
-	      strcat (buff3, ptr); free(ptr);
+	      ptr = A4GL_escape_single (constr_bits[z]);
+	      strcat (buff3, ptr);
+	      free (ptr);
 	      strcat (buff3, quote);
 	      if (z < constr_size - 1)
 		strcat (buff3, ",");
@@ -490,24 +530,26 @@ A4GL_debug("z=%d",z);
 	  SPRINTF2 (buff3, "(%s  between '' and %s", colname, quote);
 	  for (z = 1; z < constr_size; z++)
 	    {
-		ptr=A4GL_escape_single(constr_bits[z]);
-	      strcat (buff3, ptr); free(ptr);
+	      ptr = A4GL_escape_single (constr_bits[z]);
+	      strcat (buff3, ptr);
+	      free (ptr);
 	    }
 	  strcat (buff3, quote);
 	}
       else
 	{
 	  SPRINTF4 (buff3, "%s  between %s%s%s and ", colname, quote,
-		   constr_bits[0], quote);
-	  	//A4GL_pause_execution();
+		    constr_bits[0], quote);
+	  //A4GL_pause_execution();
 	  if (constr_size >= 2)
 	    {
 	      strcat (buff3, quote);
 	      for (z = 2; z < constr_size; z++)
 		{
-		ptr=A4GL_escape_single(constr_bits[z]);
-		A4GL_assertion(ptr==0,"No returned pointer");
-		  strcat (buff3, ptr); free(ptr);
+		  ptr = A4GL_escape_single (constr_bits[z]);
+		  A4GL_assertion (ptr == 0, "No returned pointer");
+		  strcat (buff3, ptr);
+		  free (ptr);
 		}
 	      strcat (buff3, quote);
 	    }
