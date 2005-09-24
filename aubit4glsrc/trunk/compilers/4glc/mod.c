@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.232 2005-09-20 07:47:34 mikeaubury Exp $
+# $Id: mod.c,v 1.233 2005-09-24 08:30:39 mikeaubury Exp $
 #
 */
 
@@ -1685,7 +1685,7 @@ add_continue_blockcommand (char *cmd_type)
     {
       if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
 	{
-	  print_continue_block (command_stack[a].block_no, 0);
+	  print_continue_block (command_stack[a].block_no, 0,0);
 	  return;
 	}
     }
@@ -1746,7 +1746,7 @@ pop_blockcommand (char *cmd_type)
 
       if (iscontinuecmd (cmd_type))
 	{
-	  print_continue_block (command_stack[ccnt].block_no, 1);
+	  print_continue_block (command_stack[ccnt].block_no, 1,cmd_type);
 	}
       print_end_block (command_stack[ccnt].block_no);
     }
@@ -3583,10 +3583,10 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt,int must_be_loca
 			int c2;
 			int c3;
          		char buff2[256];
-         		char arrbuff[256];
+         		//char arrbuff[256];
 		
 		
-        		get_variable_dets_arr3 (buff,&type,&arrsize1,&arrsize2,&arrsize3,&size,&level,arrbuff);
+        		get_variable_dets_arr3 (buff,&type,&arrsize1,&arrsize2,&arrsize3,&size,&level,0);
 			//printf("%d %d %d\n",arrsize1,arrsize2,arrsize3);
 
 			if (arrsize3) {
@@ -4594,13 +4594,36 @@ A4GL_generate_variable_expr (char *s)
 
   if (a == -1)
     {
-	char buff[25600]; // Typically a substr...
-      	sprintf (buff, "A4GL_push_char(%s);", s);;
-	if (strstr(buff,"a4gl_substr")) ; 
-	else {
+	char buff[25600]; // Typically a substr-check for that first...
+	if (strstr(s,"a4gl_substr"))   {
+		char *ptr_str;
+		char *ptr_len;
+		char *ptr_s;
+		char *ptr_e;
+		char *ptr;
+		int type;
+		printf("split : %s\n",s);
+		
+		ptr_str=&s[13];
+		ptr_len=strchr(ptr_str,','); *ptr_len=0; ptr_len++;
+		ptr_s=strchr(ptr_len,','); *ptr_s=0; ptr_s++;
+		ptr_e=strchr(ptr_s,','); *ptr_e=0; ptr_e++;
+
+		ptr=strchr(ptr_e,',');
+		if (ptr) {*ptr=0; type=0;}
+		ptr=strchr(ptr_e,')');
+		if (ptr) {*ptr=0; type=1;}
+		printf("SUBSTR : %s:%s:%s:%s (%d)\n",ptr_str,ptr_len,ptr_s,ptr_e,type);
+      		//sprintf (buff, "A4GL_push_char(%s); /* SUBSTR EXPR */", s);;
+		
+      		p1 = A4GL_new_substring_expr (ptr_str,atol(ptr_len),ptr_s,ptr_e,type);
+		return p1;
+	} else {
 		A4GL_assertion(1,"Is this used for anything else ?");
 	}
-      p1 = A4GL_new_expr (buff);
+
+      	sprintf (buff, "A4GL_push_char(%s); /* NOT SUBSTR EXPR */", s);;
+      	p1 = A4GL_new_expr (buff);
     }
 
   if (a == -2)

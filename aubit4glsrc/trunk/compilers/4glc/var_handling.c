@@ -132,14 +132,14 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
   char tmpbuff[2048];
   int type=0;
   int arrsize, size, level;
-  char arrbuff[256];
+  //char arrbuff[256];
   arrsize=0;
 
   strcat (buff, var->variable_name);
 
   if (ident_flg != VAR_USG_SIMPLE && ident_flg != VAR_USG_IDENT)
     {
-      get_variable_dets (buff, &type, &arrsize, &size, &level, arrbuff);
+      get_variable_dets (buff, &type, &arrsize, &size, &level, 0);
     }
 
   if (ident_flg != VAR_USG_SIMPLE)

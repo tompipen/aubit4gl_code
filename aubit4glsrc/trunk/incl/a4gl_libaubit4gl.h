@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.195 2005-09-23 10:37:44 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.196 2005-09-24 08:30:05 mikeaubury Exp $
 #
 */
 
@@ -2086,6 +2086,9 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 // When we 'grep' for a printf (often used for debugging) - we'll ignore anything
 // using PRINTF (as these are known to not be used for debugging)
 
+
+#define FPRINTF fprintf
+#define VFPRINTF vfprintf
 #define PRINTF printf
 #define SPRINTF0(s,f)                        	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f)
 #define SPRINTF1(s,f,p1)                        A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1)

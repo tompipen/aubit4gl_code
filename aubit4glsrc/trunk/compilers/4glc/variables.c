@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.64 2005-09-20 07:47:34 mikeaubury Exp $
+# $Id: variables.c,v 1.65 2005-09-24 08:30:39 mikeaubury Exp $
 #
 */
 
@@ -71,17 +71,18 @@ static struct variable *find_variable_in (char *s, struct variable **list,
 
 static char get_current_variable_scope (void);
 
-static void make_arr_str (char *s, struct variable *v);
+void make_arr_str (char *s, struct variable *v);
 static void strip_bracket (char *s);
-static void print_variable (struct variable *v, char scope, int level);
-void print_Constant_1(char *name,struct constant_data *c);
-static char *rettype_integer (int n);
+char *rettype_integer (int n);
 static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       char *prefix_buff,
 					       struct variable *v);
 
 void make_function (char *name, int record_cnt);
-static int is_system_variable (char *s);
+
+
+int is_system_variable (char *s);
+
 char find_variable_scope (char *s_in);
 //struct variable *find_dim(char *s);
 
@@ -1611,7 +1612,7 @@ print_local_variables (void)
   A4GL_debug("printing local variables\n");
   for (a = 0; a < list_local_cnt; a++)
     {
-      print_variable (list_local[a], 'L', 0);
+      print_variable_new (list_local[a], 'L', 0);
     }
 
 }
@@ -1625,7 +1626,7 @@ print_class_variables (void)
 
   for (a = 0; a < list_class_cnt; a++)
     {
-      print_variable (list_class[a], 'C', 0);
+      print_variable_new (list_class[a], 'C', 0);
     }
 }
 
@@ -1638,7 +1639,7 @@ print_module_variables (void)
 
   for (a = 0; a < list_module_cnt; a++)
     {
-      print_variable (list_module[a], 'M', 0);
+      print_variable_new (list_module[a], 'M', 0);
     }
 
 }
@@ -1652,13 +1653,13 @@ print_global_variables (void)
   int a;
   for (a = 0; a < list_imported_global_cnt; a++)
     {
-      print_variable (list_imported_global[a], 'G', 0);
+      print_variable_new (list_imported_global[a], 'G', 0);
 
     }
 
   for (a = 0; a < list_global_cnt; a++)
     {
-      print_variable (list_global[a], 'g', 0);
+      print_variable_new (list_global[a], 'g', 0);
     }
 }
 
@@ -1818,7 +1819,9 @@ A4GL_debug("isrecvar1");
 }
 
 
-static void
+
+#ifdef MOVED
+void
 make_arr_str (char *s, struct variable *v)
 {
   int a;
@@ -1841,6 +1844,9 @@ make_arr_str (char *s, struct variable *v)
 	}
     }
 }
+#endif
+
+
 
 /******************************************************************************/
 long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr)
@@ -1890,7 +1896,8 @@ long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
 
   if (arr)
     {
-      make_arr_str (arr, v);
+	    A4GL_assertion(1,"Shouldn't be requesting arr");
+      //make_arr_str (arr, v);
     }
 
 
@@ -1956,7 +1963,8 @@ long get_variable_dets_arr3 (char *s, int *type, int *arrsize1,int *arrsize2,int
 
   if (arr)
     {
-      make_arr_str (arr, v);
+	    A4GL_assertion(1,"Shouldn't be requesting arr");
+      //make_arr_str (arr, v);
     }
 
 
@@ -2020,7 +2028,8 @@ get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, 
 
   if (arr)
     {
-      make_arr_str (arr, v);
+	    A4GL_assertion(1,"Shouldn't be requesting arr");
+      //make_arr_str (arr, v);
     }
 
 
@@ -2809,6 +2818,8 @@ clr_function_constants ()
 }
 
 
+#ifdef MOVED
+
 /******************************************************************************/
 static void
 print_variable (struct variable *v, char scope, int level)
@@ -2817,6 +2828,15 @@ print_variable (struct variable *v, char scope, int level)
   char arrbuff[256];
   char name[256];
   static_extern_flg = 0;
+      if (level==0 && is_system_variable (v->names.name)) {
+	      // Ignore all system variables
+	      return ;
+      }
+
+      if (strcmp(acl_getenv("A4GL_LEXTYPE"),"CM")==0 && strcasecmp (v->names.name, "int_flag")==0) {
+	      return;
+      }
+
   strcpy (arrbuff, "-1");
   /* are we dealing with the sqlca variable ?*/
 	A4GL_debug("v->names.name=%s",v->names.name);
@@ -2936,6 +2956,7 @@ print_variable (struct variable *v, char scope, int level)
 	}
       else
 	{
+		
 	  print_define (tmpbuff, static_extern_flg);
 	}
 
@@ -2986,7 +3007,7 @@ print_variable (struct variable *v, char scope, int level)
 
 }
 
-
+#endif
 
 
 /**
@@ -2995,7 +3016,7 @@ print_variable (struct variable *v, char scope, int level)
  * @param s A string with the numeric 4gl data type (@see find_type())
  * @return The string (static) with the C declaration
  */
-static char *
+char *
 rettype_integer (int n)
 {
   char s[200];
@@ -3158,10 +3179,9 @@ char find_variable_scope (char *s_in)
 
 
 
-static int is_system_variable (char *s)
+int is_system_variable (char *s)
 {
-  if (strcmp (s, "int_flag") == 0)
-    return 1;
+  //if (strcmp (s, "int_flag") == 0) return 1;
   if (strcmp (s, "quit_flag") == 0)
     return 1;
   if (strcmp (s, "a4gl_status") == 0)
@@ -3217,12 +3237,6 @@ char *get_last_class_var(void) {
 }
 
 
-void print_Constant_1(char *name,struct constant_data *c) {
-	//printf("name=%s %p\n",name,c); fflush(stdout);
-	if (c->consttype==CONST_TYPE_CHAR)    { print_Constant(1 ,name); }
-	if (c->consttype==CONST_TYPE_FLOAT)   { print_Constant(2 ,name); }
-	if (c->consttype==CONST_TYPE_INTEGER) { print_Constant(3 ,name); }
-}
 
 
 struct variable *find_dim(char *s) {

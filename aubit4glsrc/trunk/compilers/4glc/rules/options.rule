@@ -20,7 +20,7 @@ opt_allopts 	: COMMENT_LINE line_no 		{ print_options('C',$<str>2); }
 		| accept_key 			{ print_options('A',$<str>1); iskey=0; }
 		| KW_DELETE single_key_val 	{ print_options('D',$<str>2); iskey=0; }
 		| KW_INSERT single_key_val 	{ print_options('I',$<str>2); iskey=0; }
-		| KW_NEXT single_key_val 		{ print_options('N',$<str>2); }
+		| KW_NEXT single_key_val 	{ print_options('N',$<str>2); }
 		| KW_PREVIOUS single_key_val 	{ print_options('p',$<str>2); iskey=0; }
 		| KW_HELP single_key_val     	{ print_options('H',$<str>2); }
 		| HELP_FILE file_name    	{ print_set_helpfile($<str>2); }

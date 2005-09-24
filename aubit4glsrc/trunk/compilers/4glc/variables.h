@@ -141,4 +141,5 @@ struct record_list *split_record_list (char *s, char *prefix,
 				       struct record_list *list);
 void print_nullify (char type);
 
+typedef struct variable s_variable;
 #endif

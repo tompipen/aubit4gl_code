@@ -119,10 +119,11 @@ func_def	: ldeffunction {
   			sprintf(curr_func,"%s",$<str>3);
   			ADDMAP_MODULE("Declare Function",curr_func);
   			cnt=0;
+  			print_func_start_1($<str>1,$<str>3,0);
   			push_blockcommand("FUNC");
 		} define_section {
   			int c;
-  			print_func_start($<str>1,$<str>3,0);
+  			print_func_start_2($<str>1,$<str>3,0);
   			printDeclareFunctionStack($<str>3);
   			A4GL_lex_printcomment("/*end of define section */\n");
   			print_variables();
@@ -157,9 +158,9 @@ main_def:
     variable_action(-1,$<str>1,"","","add_function");
     sprintf(curr_func,"MAIN");
     clr_variable(); 
+    print_main_1();
     push_blockcommand("MAIN"); 
     ADDMAP_MODULE("MAIN","MAIN");
-    print_main_1();
   } 
   define_section
   {

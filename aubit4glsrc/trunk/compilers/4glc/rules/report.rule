@@ -772,7 +772,7 @@ pdf_functions :
    		}
    		opt_return
    		{
-	print_returning();
+	//print_returning();
    }
 ;
 

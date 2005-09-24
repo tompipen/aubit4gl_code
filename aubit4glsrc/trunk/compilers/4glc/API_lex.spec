@@ -20,6 +20,7 @@ HEADER_FILE "API_lex_int.h"
 #ifdef DEBUG
 #undef DEBUG
 #endif
+#include "variables.h"
 * ======================================================================
 * Function calls definitions:
 * func-name param-type param-name ... -> returns
@@ -51,7 +52,7 @@ print_range_check char* var,char* size -> void
 
 print_start_block int n -> void
 
-print_continue_block int n,int brace -> void
+print_continue_block int n,int brace char* why -> void
 
 print_end_block int n -> void
 
@@ -99,7 +100,7 @@ print_pop_variable char* s -> void
 
 print_getfldbuf char* fields -> void
 
-print_returning -> void
+* print_returning -> void
 
 
 print_form_is_compiled char* s char* packer char* formtype -> void
@@ -355,7 +356,9 @@ print_option_op int type,char* n,int mn -> void
 
 print_at_termination char* f -> void
 
-print_func_start char* isstatic,char* fname,int type -> void
+print_func_start_1 char* isstatic,char* fname,int type -> void
+print_func_start_2 char* isstatic,char* fname,int type -> void
+print_variable_new s_variable* v char scope int level
 
 print_func_args int c -> void
 
