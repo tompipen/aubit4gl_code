@@ -11,8 +11,9 @@ while_cmd : WHILE {
 		} fgl_expr_c {
 			print_while_2($<ptr>3);
 		} commands END_WHILE {
-		pop_blockcommand("WHILE");
-			print_while_3();
+			continue_blockcommand("WHILE");
+			print_while_end();
+			pop_blockcommand("WHILE");
 		}
 ;
 

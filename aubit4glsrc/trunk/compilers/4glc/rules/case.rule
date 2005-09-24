@@ -14,6 +14,8 @@ case_cmd	: CASE fgl_expr_c  {
 			setinc(1);
 		} when_unit_expr op_otherwise_command_expr end_case_command {
 			print_after_when(0);
+			continue_blockcommand("CASE");
+			print_case_end();
 			pop_blockcommand("CASE");
 		}
 		| CASE {  
@@ -25,6 +27,8 @@ case_cmd	: CASE fgl_expr_c  {
 			setinc(1);
 		} when_unit op_otherwise_command end_case_command {
 			print_after_when(0);
+			continue_blockcommand("CASE");
+			print_case_end();
 			pop_blockcommand("CASE");
 		}
 ;
@@ -38,10 +42,10 @@ when_unit_expr : when_command_expr | when_unit_expr when_command_expr
 end_case_command : END_CASE {setinc(-1);A4GL_incprint();}
 ;
 
-op_otherwise_command : | OTHERWISE { A4GL_incprint(); } commands {A4GL_incprint(); print_after_when(0); }
+op_otherwise_command : | OTHERWISE { A4GL_incprint();print_otherwise(); } commands {A4GL_incprint(); print_after_when(0); }
 ;
 
-op_otherwise_command_expr : | OTHERWISE {A4GL_incprint();} commands {A4GL_incprint(); print_after_when(0); }
+op_otherwise_command_expr : | OTHERWISE {A4GL_incprint();print_otherwise();} commands {A4GL_incprint(); print_after_when(0); }
 ;
 
 when_command		: WHEN fgl_expr_c { print_when(0,$<ptr>2); A4GL_incprint(); } commands {A4GL_incprint(); print_after_when(1); setinc(-1);}

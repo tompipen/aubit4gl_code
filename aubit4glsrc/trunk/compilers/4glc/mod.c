@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.234 2005-09-24 11:09:41 mikeaubury Exp $
+# $Id: mod.c,v 1.235 2005-09-24 17:15:21 mikeaubury Exp $
 #
 */
 
@@ -1705,13 +1705,10 @@ static int
 iscontinuecmd (char *s)
 {
 
-  if (strcmp (s, "FOR") == 0)
-    return 1;
+  //if (strcmp (s, "FOR") == 0) return 1;
   /* if (strcmp(s,"FOREACH")==0) return 1; */
-  if (strcmp (s, "WHILE") == 0)
-    return 1;
-  if (strcmp (s, "CASE") == 0)
-    return 1;
+  //if (strcmp (s, "WHILE") == 0) return 1;
+  //if (strcmp (s, "CASE") == 0) return 1;
   /*
      if (strcmp(s,"CONSTRUCT")==0) return 1;
      if (strcmp(s,"DISPLAY")==0) return 1;
@@ -1719,6 +1716,17 @@ iscontinuecmd (char *s)
    */
 
   return 0;
+}
+
+
+
+void
+continue_blockcommand (char *cmd_type)
+{
+  int a;
+
+  char err[80];
+  print_continue_block (command_stack[ccnt-1].block_no, 0,cmd_type);
 }
 
 /**
@@ -1746,7 +1754,7 @@ pop_blockcommand (char *cmd_type)
 
       if (iscontinuecmd (cmd_type))
 	{
-	  print_continue_block (command_stack[ccnt].block_no, 1,cmd_type);
+	  print_continue_block (command_stack[ccnt].block_no, 0,cmd_type);
 	}
       print_end_block (command_stack[ccnt].block_no);
     }

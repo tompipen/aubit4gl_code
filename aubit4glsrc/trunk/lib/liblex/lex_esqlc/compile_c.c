@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.253 2005-09-24 11:09:45 mikeaubury Exp $
+# $Id: compile_c.c,v 1.254 2005-09-24 17:15:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.253 2005-09-24 11:09:45 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.254 2005-09-24 17:15:33 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -908,7 +908,7 @@ void
 LEXLIB_print_start_block (int n)
 {
   printc ("\n");
-  printc ("START_BLOCK_%d:\n", n,n);
+  //printc ("START_BLOCK_%d:\n", n,n);
 }
 
 /**
@@ -3349,6 +3349,9 @@ LEXLIB_print_when (int has_expr,t_expr_str *expr)
   printc ("if (A4GL_pop_bool()) {\n");
 }
 
+void LEXLIB_print_otherwise(void ) {
+	// Does nothing - required by the API
+}
 
 
 /**
@@ -3887,37 +3890,48 @@ LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 	}
 
 
-	if (!have_from) print_expr(from);
-	if (!have_to) print_expr(to);
+	//if (!have_from) print_expr(from);
+	//if (!have_to) print_expr(to);
 
-	printc("{");
-	if (!have_from) printc ("int _s;");
-	if (!have_to)   printc ("int _e;");
-	if (!have_to)   {printc ("_e=A4GL_pop_long();"); SPRINTF0(buff_to,"_e");}
-	else { SPRINTF1(buff_to,"%ld",to_l); }
+        printc("{");
 
-  	if (!have_step) printc ("int _step;");
+        if (!have_from) printc ("int _s;");
+        else printc ("int _s=%ld;",from_l);
 
-	if (!have_from) {printc ("_s=A4GL_pop_long();"); SPRINTF0(buff_from,"_s");}
-	else { SPRINTF1(buff_from,"%ld",from_l); }
+        if (!have_to) printc ("int _e;");
+        else printc ("int _e=%ld;",to_l);
 
-	if (have_step) {
-		if (step_l>=0) {
-  			printc ("for (%s=%s; %s<=%s;%s+=%d) {\n", var, buff_from,var, buff_to,var, step_l);
-		} else {
-			step_l=0-step_l;
-  			printc ("for (%s=%s; %s>=%s;%s-=%d) {\n", var, buff_from,var, buff_to,var, step_l);
-		}
-	} else {
-#ifdef CM
-			printf("FOR UNKNOWN_STEP_DIR %s - %d\n",expr_name(step->expr_type),yylineno);
-#endif
-			print_expr(step);
-			printc("_step=A4GL_pop_long();");
-  			printc ("for (%s=%s; (%s<=%s&&_step>0)||(%s>=%s&&_step<0);%s+=_step) {\n", var, buff_from,var, buff_to,var, buff_to,var);
-	}
+        if (!have_step) printc ("int _step;");
+        else  printc ("int _step=%ld;",step_l);
+
+        if (!have_from) {print_expr(from); printc ("_s=A4GL_pop_long();"); }
+
+        printc("%s=_s;", var);
+        printc ("while (1) {");
+
+        if (!have_to)  { print_expr(to); printc("_e=A4GL_pop_long();"); }
+        if (have_step) {
+                if (step_l>=0) {
+                                printc("  if (%s>_e) break;",var);
+                } else {
+                                printc("  if (%s<_e) break;",var);
+                }
+        } else {
+                                print_expr(step);
+                                printc("  _step=A4GL_pop_long();");
+                                printc("  if (%s>_e && _step>=0) break;",var);
+                                printc("  if (%s<_e && _step<0) break;",var);
+
+                                //printc ("for (%s=%s; (%s<=%s&&_step>0)||(%s>=%s&&_step<0);%s+=_step) {\n", var, buff_from,var, buff_to,var, buff_to,var);
+       }
+
+}
 
 
+void
+LEXLIB_print_for_step (char *var,void *vfrom,void *vto, void*vstep) {
+  printc("%s+=_step;",var);
+  printc("}");
 }
 
 /**
@@ -3927,7 +3941,7 @@ LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
  *  Just finishes a C block.
  */
 void
-LEXLIB_print_for_end (void)
+LEXLIB_print_for_end (char *var,void *vfrom,void *vto, void*vstep)
 {
   printc ("}\n");
 }
@@ -5332,11 +5346,15 @@ LEXLIB_print_while_2 (t_expr_str *expr)
  * for future enhancement! 
  */
 void
-LEXLIB_print_while_3 (void)
+LEXLIB_print_while_end (void)
 {
-  /* for future enhancement! */
+	printc("}");
 }
 
+
+void LEXLIB_print_case_end(void){
+	printc("} /* Case end */");
+}
 
 
 

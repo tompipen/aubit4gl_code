@@ -129,6 +129,7 @@ print_case t_expr_str* expr -> void
 print_after_when int endofblock -> void
 
 print_when int has_expr t_expr_str* expr -> void
+print_otherwise -> void
 
 print_close char type,char* name -> void
 
@@ -179,8 +180,10 @@ print_error t_expr_str_list* expr char* s,int wait -> void
 print_exit_program t_expr_str* expr -> void
 
 print_for_start char* var void* from void* to void* step -> void
+print_for_step char* var void* from void* to void* step -> void
+print_for_end char* var void* from void* to void* step -> void
+print_case_end -> void
 
-print_for_end -> void
 
 get_for_default_step -> void*
 
@@ -296,7 +299,7 @@ print_while_1 -> void
 
 print_while_2 t_expr_str* expr -> void
 
-print_while_3 -> void
+print_while_end -> void
 
 print_put char* cname char* putvals -> void
 
