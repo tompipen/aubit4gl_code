@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.53 2005-09-20 13:41:30 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.54 2005-09-24 11:09:45 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.53 2005-09-20 13:41:30 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.54 2005-09-24 11:09:45 mikeaubury Exp $";
 #endif
 
 
@@ -296,7 +296,6 @@ LEXLIB_print_prepare (char *stmt, char *sqlvar)
 	if (p || sqlvar[0]=='"') {
 		printf("PREPARE %s %s %s - %s\n",curr_func,stmt,sqlvar,p);
 	} else {
-
 		printf("UNKNOWN_PREPARE %s %s %s\n",curr_func,stmt,sqlvar);
 	}
 	if (p) {

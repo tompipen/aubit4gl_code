@@ -77,7 +77,7 @@ var:
          int type,arrsize,size,level;
          char buff[256];
          char buff2[256];
-         char arrbuff[256];
+         //char arrbuff[256];
 
          A4GL_lex_printcomment("/* OPEN_SQUARE.. */\n");
 
@@ -93,14 +93,14 @@ var:
          }
 
          A4GL_lex_printcomment("/*variable with [...]*/");
-         get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
+         get_variable_dets (buff,&type,&arrsize,&size,&level,0);
          A4GL_lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
 	 
          if (arrsize>0)
          {
              A4GL_debug("Is array...");
              sprintf ($<str>$, "%s[%s]", buff, change_arr_elem($<str>4));
-             A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>4),num_arr_elem(arrbuff));
+             A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d */\n", $<str>$,num_arr_elem($<str>4));
          }
          else
          {
@@ -117,7 +117,7 @@ var:
          int type,arrsize,size,level;
          char buff[256];
          char buff2[256];
-         char arrbuff[256];
+         //char arrbuff[256];
 
          A4GL_lex_printcomment("/* OPEN_SQUARE.. */\n");
 
@@ -132,7 +132,7 @@ var:
          }
 
          A4GL_lex_printcomment("/*variable with [...]*/");
-         get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
+         get_variable_dets (buff,&type,&arrsize,&size,&level,0);
          A4GL_lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
 	 
          if (arrsize>0)
@@ -141,7 +141,7 @@ var:
              A4GL_debug("Is array...");
              sprintf (buff2, "%s[%s]", buff, change_arr_elem($<str>4));
              sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff2,0), (int)scan_variable (buff2), $<str>4);
-             A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>4),num_arr_elem(arrbuff));
+             A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d */\n", $<str>$,num_arr_elem($<str>4));
          }
          else
          {
@@ -199,11 +199,11 @@ identifier arr_subscripts
 {
 int type,arrsize,size,level;
 char buff2[256];
-char arrbuff[256];
+//char arrbuff[256];
 
   A4GL_debug("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
   A4GL_lex_printcomment("/*array variable nnn */");
-  get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
+  get_variable_dets ($<str>1,&type,&arrsize,&size,&level,0);
   A4GL_lex_printcomment("/*here %s %x */",$<str>1,type);
   if (scan_variable($<str>1)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (7)",$<str>1);

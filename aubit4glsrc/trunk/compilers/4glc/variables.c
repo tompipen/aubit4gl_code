@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.65 2005-09-24 08:30:39 mikeaubury Exp $
+# $Id: variables.c,v 1.66 2005-09-24 11:09:41 mikeaubury Exp $
 #
 */
 
@@ -1847,7 +1847,6 @@ make_arr_str (char *s, struct variable *v)
 #endif
 
 
-
 /******************************************************************************/
 long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr)
 {
@@ -1897,7 +1896,7 @@ long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
   if (arr)
     {
 	    A4GL_assertion(1,"Shouldn't be requesting arr");
-      //make_arr_str (arr, v);
+      	//make_arr_str (arr, v);
     }
 
 

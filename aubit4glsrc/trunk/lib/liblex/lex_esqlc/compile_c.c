@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.252 2005-09-24 08:27:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.253 2005-09-24 11:09:45 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.252 2005-09-24 08:27:51 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.253 2005-09-24 11:09:45 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -98,6 +98,7 @@ static void pr_nongroup_report_agg_clr (void);
 char *pdtype(int n) ;
 int doing_report_print=0;
 static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
+static void print_returning (void);
 
 /*
 =====================================================================
@@ -2211,7 +2212,9 @@ LEXLIB_print_bind_pop2 (t_expr_str_list *ptr, char i)
     {
 
       if (!is_just_expr_clipped(obind[a].varname,ptr)) {
+#ifdef CM
 		char *ptr_str=0;
+#endif
 		ptr=A4GL_rationalize_list_concat(ptr);
 #ifdef CM
 		if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) { 	// If its a character string - 
@@ -2953,8 +2956,7 @@ LEXLIB_print_getfldbuf (char *fields)
 /**
  * Print the C implementation of the returning substatement of CALL statement.
  */
-void
-print_returning (void)
+static void print_returning (void)
 {
   int cnt;
   printc ("{\n");
@@ -3244,7 +3246,7 @@ print_reset_state_after_call();
 
 void *
 LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) { 
-	char buff_small[200];
+	char buff_small[2000];
 	int ni;
 	int no;
 	void *ptr;
@@ -3877,8 +3879,11 @@ LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 	if (step->expr_type==ET_EXPR_LITERAL_LONG) {
 			have_step=1;
 			step_l=step->u_data.expr_long;
-	} else {
+	}
+       	else {
+#ifdef CM
 		printf("FOR VARIABLE_STEP %s - %d\n",expr_name(step->expr_type),yylineno);
+#endif
 	}
 
 
@@ -4128,6 +4133,7 @@ print_init_var (char *name, char *prefix, int alvl)
   int x;
   /*char buff[1024];*/
   char prefix2[1024];
+  char prefix3[1024];
   int arrsizes[10];
   int cnt = 0;
   int acnt;
@@ -4173,7 +4179,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	}
 
       /* is this an array ?*/
-      if (a0) // && prefix2[strlen (prefix2) - 1] != ']')
+      if (a0&& prefix2[strlen (prefix2) - 1] != ']')
 	{
 	  char buff_id[256];
 	  printing_arr = 1;
@@ -4229,9 +4235,12 @@ print_init_var (char *name, char *prefix, int alvl)
     }
   strcat (prefix2, name);
 
+strcpy(prefix3,prefix2);
 
-
+  //x = get_variable_dets (prefix3, &d, &a, &size, &lvl, 0);
   x = get_variable_dets_arr3 (prefix2, &d, &a0,&a1,&a2, &size, &lvl, 0);
+
+
 
   if (x < 0)
     {
@@ -4240,8 +4249,8 @@ print_init_var (char *name, char *prefix, int alvl)
     }
 
   dont_print=0;
-
-  if (a0) //  && prefix2[strlen (prefix2) - 1] != ']')
+  //printf("prefix2=%s\n",prefix2);
+  if (a0 && prefix2[strlen (prefix2) - 1] != ']')
     {
       char buff_id[256];
       printing_arr = 1;
@@ -4252,7 +4261,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	  if (a0) cnt=1;
 	  if (a1) cnt=2;
 	  if (a2) cnt=3;
-      if (a0 >= 0)
+      if (arrsizes[0] >= 0)
 	{
 	  for (acnt = 0; acnt < cnt; acnt++)
 	    {
@@ -4906,7 +4915,7 @@ char *wrap="0";
 			expr_l=expr->u_data.expr_list;
 			expr_l=A4GL_rationalize_list(expr_l);
 			printc("/* ---------------------------- */");
-			printf("%d elements in list\n",expr_l->nlist);
+			//printf("%d elements in list\n",expr_l->nlist);
 			for (a=0;a<expr_l->nlist;a++) {
 				LEXLIB_print_report_print(type,semi,expr_l->list[a]);
 			}
@@ -5895,8 +5904,6 @@ extern int class_cnt;
 
   if (type == 0) {
 	if (class_cnt==0) {
-		int a;
-
     		printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ \n", isstatic, get_namespace (fname), fname);
 		add_function_to_header(fname,1,isstatic);
 
@@ -5922,8 +5929,8 @@ LEXLIB_print_func_start_2 (char *isstatic, char *fname, int type)
 extern int class_cnt;
   if (type == 0) {
 	if (class_cnt==0) {
-		int a;
 #ifdef CM
+	int a;
   	expand_bind (&fbind[0], 'F', fbindcnt,1);
 		printf("CPROTO %s (",fname);
 		for (a=0;a<fbindcnt;a++) {

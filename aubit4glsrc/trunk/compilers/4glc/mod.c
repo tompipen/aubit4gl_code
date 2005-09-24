@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.233 2005-09-24 08:30:39 mikeaubury Exp $
+# $Id: mod.c,v 1.234 2005-09-24 11:09:41 mikeaubury Exp $
 #
 */
 
@@ -4602,7 +4602,7 @@ A4GL_generate_variable_expr (char *s)
 		char *ptr_e;
 		char *ptr;
 		int type;
-		printf("split : %s\n",s);
+		//printf("split : %s\n",s);
 		
 		ptr_str=&s[13];
 		ptr_len=strchr(ptr_str,','); *ptr_len=0; ptr_len++;
@@ -4613,7 +4613,7 @@ A4GL_generate_variable_expr (char *s)
 		if (ptr) {*ptr=0; type=0;}
 		ptr=strchr(ptr_e,')');
 		if (ptr) {*ptr=0; type=1;}
-		printf("SUBSTR : %s:%s:%s:%s (%d)\n",ptr_str,ptr_len,ptr_s,ptr_e,type);
+		//printf("SUBSTR : %s:%s:%s:%s (%d)\n",ptr_str,ptr_len,ptr_s,ptr_e,type);
       		//sprintf (buff, "A4GL_push_char(%s); /* SUBSTR EXPR */", s);;
 		
       		p1 = A4GL_new_substring_expr (ptr_str,atol(ptr_len),ptr_s,ptr_e,type);
