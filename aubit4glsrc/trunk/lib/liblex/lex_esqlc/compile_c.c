@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.254 2005-09-24 17:15:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.255 2005-09-25 10:38:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.254 2005-09-24 17:15:33 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.255 2005-09-25 10:38:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6549,7 +6549,7 @@ LEXLIB_A4GL_get_push_literal (char type, char *value)
  * @param s
  */
 char *
-LEXLIB_A4GL_decode_array_string (char *s)
+LEXLIB_A4GL_decode_array_string (char *var,char *s)
 {
   static char buff[2000] = "";
   int a;

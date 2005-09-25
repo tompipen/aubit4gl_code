@@ -178,6 +178,7 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 
       if (var->nsubscripts)
 	{
+		//printf("Decde 2\n");
 	  if (ident_flg == VAR_USG_VARIABLE)
 	    {
 	      strcat (buff, "[");

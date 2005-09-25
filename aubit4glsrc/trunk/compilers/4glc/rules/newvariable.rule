@@ -448,7 +448,7 @@ identifier arr_subscripts
 
   if (b != 0)
     {
-      sprintf ($<str>$, "%s[%s]", $<str>1, A4GL_decode_array_string($<str>2));
+      sprintf ($<str>$, "%s[%s]", $<str>1, A4GL_decode_array_string($<str>1,$<str>2));
       A4GL_debug ("/* array variable %s*/\n", $<str>$);
     }
   else

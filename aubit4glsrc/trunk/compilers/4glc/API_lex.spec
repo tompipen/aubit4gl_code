@@ -428,7 +428,7 @@ print_end_record char* vname char* arrsize int level -> void
 
 * A4GL_get_push_literal char type,char* value -> char*
 
-A4GL_decode_array_string char* s -> char*
+A4GL_decode_array_string char *var char* s -> char*
 
 printInitFunctionStack -> void
 
