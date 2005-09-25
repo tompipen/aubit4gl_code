@@ -17,13 +17,14 @@ ADD_CLEAN=
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 run: compile ; ${DEFAULT_DIFF} 
-	#${DEFAULT_DUMP_DIFF}
+#${DEFAULT_RUN}
+#${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This tests iterations within a for loop"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
