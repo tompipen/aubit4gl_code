@@ -52,6 +52,7 @@ struct record_variable
   int record_cnt;		// Number of slots used
   struct linked_variable *linked;	// Link to any table + pk or 0
   char *object_type; // Used for OBJECTS and RECORDs - for a record this will be 0
+  char user_ptr[32];
 };
 
 

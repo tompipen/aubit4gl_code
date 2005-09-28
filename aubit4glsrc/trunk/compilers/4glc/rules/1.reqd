@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.76 2005-09-20 07:47:39 mikeaubury Exp $
+# $Id: 1.reqd,v 1.77 2005-09-28 15:56:19 mikeaubury Exp $
 #
 */
 
@@ -286,6 +286,8 @@ void init_blk(void);
 	struct binding_comp *binding_comp;
 	struct binding_list *binding_list;
 	struct s_select_finish *s_select_finish;
+	struct s_fetch_place 	*s_fetch_place;
+	struct s_fetch 	*s_fetch;
 	}
 
 /* ============================== 1.reqd ============================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.63 2005-09-20 07:47:34 mikeaubury Exp $
+# $Id: 4glc.c,v 1.64 2005-09-28 15:56:08 mikeaubury Exp $
 #
 */
 
@@ -75,6 +75,7 @@ extern int initArguments (int argc, char *argv[]);
 #define SET_LIMIT
 #endif
 
+#undef SET_LIMIT
 #ifdef SET_LIMIT
        #include <sys/time.h>
        #include <sys/resource.h>

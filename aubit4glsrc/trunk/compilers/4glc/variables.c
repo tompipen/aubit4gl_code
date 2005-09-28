@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.66 2005-09-24 11:09:41 mikeaubury Exp $
+# $Id: variables.c,v 1.67 2005-09-28 15:56:08 mikeaubury Exp $
 #
 */
 
@@ -1679,6 +1679,28 @@ int
 find_type (char *s)
 {
   char errbuff[80];
+  static char types[20][80];
+  char buff[20];
+  int a;
+  int b;
+  static int set_types=0;
+
+  if (set_types==0) {
+	  for (a=0;a<15;a++) {
+		  //printf("SET : %s\n",rettype_integer(a));
+		  strcpy(types[a],rettype_integer(a));
+
+	  }
+	  set_types=1;
+  }
+
+  for (a=0;a<15;a++) {
+		  //printf("Compare : '%s' '%s' - %d\n",types[a],s,a);
+	  if (strcmp(types[a],s)==0) {
+		  //printf("Match : %s %s - %d\n",types[a],s,a);
+	  	return a;
+	  }
+  }
 
   A4GL_debug ("Looking for type '%s'", s);
 
@@ -1750,6 +1772,7 @@ find_type (char *s)
   if (strncmp ("struct _class_struct_", s,21) == 0) {
     return -3;
 	}
+
 
   A4GL_debug ("Invalid type : '%s'\n", s);
   sprintf (errbuff, "Internal Error (Invalid type : '%s')\n", s);

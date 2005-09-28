@@ -187,12 +187,10 @@ number_arr_list :
 		number_value_arr KW_COMMA number_value_arr KW_COMMA number_value_arr {
 		   sprintf($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5);
 		    A4GL_debug("Triplet");
-		   
 		} 
 	|	number_value_arr KW_COMMA number_value_arr {
 		   sprintf($<str>$,"%s][%s",$<str>1,$<str>3);
 		    A4GL_debug("double");
-		   
 		} 
 	|	number_value_arr {
 		   A4GL_debug("Single");

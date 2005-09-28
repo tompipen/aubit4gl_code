@@ -478,7 +478,7 @@ char *A4GL_CV_print_select_all(char *s) ;
 char *A4GL_compiled_sqlpack(void);
 char *A4GL_decode_packtype(char *s);
 void A4GL_cursor_defined(char *s,char type) ;
-void A4GL_cursor_fetch(char *s);
+void A4GL_cursor_fetch(char *s,t_fetch_place *fp);
 void A4GL_cursor_current(char *s) ;
 void A4GL_cursor_flush(char *s) ;
 char *A4GL_get_insert_prep(char *s) ;

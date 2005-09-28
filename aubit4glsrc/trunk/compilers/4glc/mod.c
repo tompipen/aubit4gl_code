@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.235 2005-09-24 17:15:21 mikeaubury Exp $
+# $Id: mod.c,v 1.236 2005-09-28 15:56:08 mikeaubury Exp $
 #
 */
 
@@ -1201,6 +1201,9 @@ open_db (char *s)
     db_used = 1;
 }
 
+
+
+#ifdef MOVED
 /**
  * Gets the C data type corresponding to 4gl data type
  *
@@ -1228,50 +1231,28 @@ rettype (char *s)
       A4GL_debug ("Returning %s\n", A4GL_null_as_null(rs));
       return rs;
     }
-
-  if (strcmp (s, "0") == 0)
-    strcpy (rs, "char");
-
-  if (strcmp (s, "1") == 0)
-    strcpy (rs, "short");
-
-  if (strcmp (s, "2") == 0)
-    strcpy (rs, "long");
-
-  if (strcmp (s, "3") == 0)
-    strcpy (rs, "double");
-
-  if (strcmp (s, "4") == 0)
-    strcpy (rs, "float");
-
-  if (strcmp (s, "5") == 0)
-    strcpy (rs, "fgldecimal");
-
-  if (strcmp (s, "6") == 0)
-    strcpy (rs, "long");
-
-  if (strcmp (s, "7") == 0)
-    strcpy (rs, "fgldate");
-
-  if (strcmp (s, "8") == 0)
-    strcpy (rs, "fglmoney");
-
-  if (strcmp (s, "10") == 0)
-    strcpy (rs, "struct_dtime");
-
-  if (strcmp (s, "11") == 0)
-    strcpy (rs, "fglbyte");
-
-  if (strcmp (s, "12") == 0)
-    strcpy (rs, "fgltext");
-
-  if (strcmp (s, "13") == 0)
-    strcpy (rs, "char");
-  if (strcmp (s, "14") == 0)
-    strcpy (rs, "struct_ival");
-
+  if (strcmp (s, "0") == 0) strcpy (rs, "char");
+  if (strcmp (s, "1") == 0) strcpy (rs, "short");
+  if (strcmp (s, "2") == 0) strcpy (rs, "long");
+  if (strcmp (s, "3") == 0) strcpy (rs, "double");
+  if (strcmp (s, "4") == 0) strcpy (rs, "float");
+  if (strcmp (s, "5") == 0) strcpy (rs, "fgldecimal");
+  if (strcmp (s, "6") == 0) strcpy (rs, "long");
+  if (strcmp (s, "7") == 0) strcpy (rs, "fgldate");
+  if (strcmp (s, "8") == 0) strcpy (rs, "fglmoney");
+  if (strcmp (s, "10") == 0) strcpy (rs, "struct_dtime");
+  if (strcmp (s, "11") == 0) strcpy (rs, "fglbyte");
+  if (strcmp (s, "12") == 0) strcpy (rs, "fgltext");
+  if (strcmp (s, "13") == 0) strcpy (rs, "char");
+  if (strcmp (s, "14") == 0) strcpy (rs, "struct_ival");
   return rs;
 }
+#endif
+
+
+
+
+
 
 /**
  * Trim the spaces at the right part of a string.

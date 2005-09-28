@@ -6,43 +6,42 @@
 
 
 fetch_statement:
-	FETCH 
-    {
-      print_fetch_1();
-    } 
-  fetch_part opt_into_fetch_part
+	FETCH { print_fetch_1(); } 
+  	fetch_part_f
+	opt_into_fetch_part
     {
       print_fetch_2();
-      print_fetch_3($<str>3,$<str>4);
+      print_fetch_3($<s_fetch>3,$<str>4);
     }
 ;
 
-declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1;
-						A4GL_cursor_defined($<str>1,0); }
+declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1; A4GL_cursor_defined($<str>1,0); }
 ;
 
-fetch_part: 
-	fetch_place  fetch_cursor_name
-{sprintf($<str>$,"%s, %s",$<str>2,$<str>1);
-A4GL_cursor_fetch($<str>2);
-ADDMAP("Fetch Cursor",$<str>2);
-}
-        | fetch_cursor_name
-{sprintf($<str>$,"%s, %d, 1",$<str>1,FETCH_RELATIVE);
-A4GL_cursor_fetch($<str>1);
-
-ADDMAP("Fetch Cursor",$<str>1);
-}
+fetch_part_f: 
+	fetch_place_fp  fetch_cursor_name {
+		/* sprintf($<str>$,"%s, %s",$<str>2,$<str>1); */
+		A4GL_cursor_fetch($<str>2,$<s_fetch_place>1);
+		ADDMAP("Fetch Cursor",$<str>2);
+		$<s_fetch>$=malloc(sizeof(struct s_fetch));
+		strcpy($<s_fetch>$->cname,$<str>2);
+		$<s_fetch>$->fp=$<s_fetch_place>1;
+	}
+        | fetch_cursor_name {
+		struct s_fetch_place *fp;
+		fp=malloc(sizeof(struct s_fetch_place));
+		fp->ab_rel=FETCH_RELATIVE;
+		fp->fetch_expr=A4GL_new_literal_long_long(1);
+		/* sprintf($<str>$,"%s, %d, 1",$<str>1,FETCH_RELATIVE); */
+		A4GL_cursor_fetch($<str>1,fp);
+		ADDMAP("Fetch Cursor",$<str>1);
+		$<s_fetch>$=malloc(sizeof(struct s_fetch));
+		strcpy($<s_fetch>$->cname,$<str>1);
+		$<s_fetch>$->fp=fp;
+	}
 ;
 
-opt_into_fetch_part: {
-A4GL_debug("no into\n");
-strcpy($<str>$,"0,0");
-} | INTO {
- A4GL_debug("FETCH INTO  ...");
-	/* start_bind('i',0,-1); */
-    start_bind('o',0);
-}
+opt_into_fetch_part: { strcpy($<str>$,"0,0"); } | INTO { start_bind('o',0); }
     obind_var_list 
 {
 	int no;
@@ -64,23 +63,71 @@ strcpy($<str>$,"0,0");
 }
 ;
 
-fetch_place : 
+fetch_place_fp : 
 	KW_FIRST {
-		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);  add_feature("FETCH_FIRST");}
-	| KW_LAST
-		{sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE); add_feature("FETCH_LAST");}
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
+		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(1);
+
+		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);  
+		add_feature("FETCH_FIRST");
+		}
+	| KW_LAST {
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
+		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
+		//sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE); 
+		add_feature("FETCH_LAST");
+		}
 	| KW_NEXT
-		{sprintf($<str>$,"%d,1",FETCH_RELATIVE); add_feature("FETCH_NEXT");}
+		{
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
+		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(1);
+		//sprintf($<str>$,"%d,1",FETCH_RELATIVE); 
+		add_feature("FETCH_NEXT");
+		}
+
 	| KW_PREVIOUS
-		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE); add_feature("FETCH_PREVIOUS");}
+		{
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
+		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
+		//sprintf($<str>$,"%d,-1",FETCH_RELATIVE); 
+		add_feature("FETCH_PREVIOUS");
+		}
 	| KW_PRIOR
-		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE); add_feature("FETCH_PREVIOUS");}
+		{
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
+		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
+		//sprintf($<str>$,"%d,-1",FETCH_RELATIVE); 
+		add_feature("FETCH_PREVIOUS");
+		}
 	| KW_CURRENT
-		{sprintf($<str>$,"%d,0",FETCH_RELATIVE); add_feature("FETCH_CURRENT");}
-	| KW_RELATIVE fgl_expr_x
-		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE); add_feature("FETCH_RELATIVE");}
-	| KW_ABSOLUTE fgl_expr_x
-		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE); add_feature("FETCH_ABSOLUTE");}
+		{
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
+		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(0);
+			//sprintf($<str>$,"%d,0",FETCH_RELATIVE); 
+		add_feature("FETCH_CURRENT");
+		}
+	| KW_RELATIVE fgl_expr_c
+		{
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
+		$<s_fetch_place>$->fetch_expr=$<ptr>2;
+		sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE); 
+		add_feature("FETCH_RELATIVE");
+		}
+	| KW_ABSOLUTE fgl_expr_c
+		{
+		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
+		$<s_fetch_place>$->fetch_expr=$<ptr>2;
+			//sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE); 
+		add_feature("FETCH_ABSOLUTE");
+		}
 ;
 
 

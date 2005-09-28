@@ -27,6 +27,9 @@ HEADER_FILE "API_lex_int.h"
 *
 
 /* ------------ functions from compile_[c|perl].c -------------- */
+* print_start_record int isstatic_extern char* varname char* arrsize int level -> void
+* print_end_record char* vname char* arrsize int level -> void
+* A4GL_get_push_literal char type,char* value -> char*
 
 A4GL_internal_lex_printc char* fmt va_list* ap -> void 
 
@@ -164,6 +167,7 @@ print_defer int quit -> void
 print_display_by_name char* attr -> void
 
 A4GL_get_display_str int type,char* s,char* f -> char*
+rettype char* s -> char*
 
 get_call_shared_bound_expr  char* lib char* name -> void*
 
@@ -389,7 +393,7 @@ print_fetch_1 -> void
 
 print_fetch_2 -> void
 
-print_fetch_3 char* ftp,char* into -> void
+print_fetch_3 t_fetch *ftp char* into -> void
 
 print_init_conn char* db -> void
 
@@ -422,13 +426,8 @@ print_define_char char* var,int size,int isstatic_extern -> void
 
 print_define char* varstring,int isstatic_extern -> void
 
-print_start_record int isstatic_extern char* varname char* arrsize int level -> void
 
-print_end_record char* vname char* arrsize int level -> void
-
-* A4GL_get_push_literal char type,char* value -> char*
-
-A4GL_decode_array_string char *var char* s -> char*
+A4GL_decode_array_string char* var char* s -> char*
 
 printInitFunctionStack -> void
 

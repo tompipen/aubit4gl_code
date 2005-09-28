@@ -44,7 +44,7 @@ static int add_cursor(char *s,int type,int u,int d) {
 }
 
 
-void A4GL_cursor_fetch(char *s) {
+void A4GL_cursor_fetch(char *s,t_fetch_place *fp) {
 	int a;
 	a=find_cursor(s);
 	if (a>=0) {
