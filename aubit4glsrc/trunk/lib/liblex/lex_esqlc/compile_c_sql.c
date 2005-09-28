@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.54 2005-09-24 11:09:45 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.55 2005-09-28 16:42:10 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.54 2005-09-24 11:09:45 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.55 2005-09-28 16:42:10 mikeaubury Exp $";
 #endif
 
 
@@ -437,9 +437,20 @@ LEXLIB_print_sql_commit (int t)
  * @param into The into variable list, taht includes:
  */
 void
-LEXLIB_print_fetch_3 (char *ftp, char *into)
+LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
 {
-  printc ("A4GLSQL_fetch_cursor(%s,%s);}\n}\n", ftp, into);
+  struct expr_str *e;
+char buff[200];
+e=fp->fp->fetch_expr;
+  if (e) {
+	if (e->expr_type==ET_EXPR_LITERAL_LONG) {
+		sprintf(buff,"%d",e->u_data.expr_long);
+	} else {
+		print_expr(e);
+		sprintf(buff,"A4GL_pop_long()");
+	}
+  }
+  printc ("A4GLSQL_fetch_cursor(%s,%d,%s,%s);}\n}\n", fp->cname,fp->fp->ab_rel, buff,into);
 }
 
 /**

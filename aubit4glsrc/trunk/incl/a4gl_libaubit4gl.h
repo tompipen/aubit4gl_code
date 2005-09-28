@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.196 2005-09-24 08:30:05 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.197 2005-09-28 16:42:34 mikeaubury Exp $
 #
 */
 
@@ -1722,6 +1722,20 @@ int A4GL_conversion_ok(int a);
     int extent;
     void *field;
   };
+
+
+  struct s_fetch_place {
+	long ab_rel;
+	struct expr_str *fetch_expr;
+  };
+  typedef struct s_fetch_place t_fetch_place;
+ 
+
+  struct s_fetch {
+	char cname[64];
+	struct s_fetch_place *fp;
+  };
+  typedef struct s_fetch t_fetch;
 
   struct s_screenio
   {

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.255 2005-09-25 10:38:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.256 2005-09-28 16:42:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.255 2005-09-25 10:38:02 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.256 2005-09-28 16:42:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6384,7 +6384,7 @@ LEXLIB_print_define (char *varstring, int isstatic_extern)
  * @param varname The record variable name. Not used
  */
 void
-LEXLIB_print_start_record (int isstatic_extern, char *varname, char *arrsize,
+print_start_record (int isstatic_extern, char *varname, char *arrsize,
 		    int level)
 {
   char buff[20] = "";
@@ -6455,7 +6455,7 @@ LEXLIB_print_start_record (int isstatic_extern, char *varname, char *arrsize,
  * @param arrsize The array size if is a record array
  */
 void
-LEXLIB_print_end_record (char *vname, char *arrsize, int level)
+print_end_record (char *vname, char *arrsize, int level)
 {
   int cnt;
   int arrsizes[10];
@@ -7857,4 +7857,47 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
 
 
 
+/**
+ *  * Gets the C data type corresponding to 4gl data type
+ *   *
+ *    * @param s A string with the numeric 4gl data type (@see find_type())
+ *     * @return The string (static) with the C declaration
+ *      */
+char *
+LEXLIB_rettype (char *s)
+{
+  static char rs[20] = "long";
+  int a;
+  A4GL_debug ("In rettype : %s", A4GL_null_as_null(s));
+
+  a = atoi (s);
+
+  A4GL_debug ("In rettype");
+  if (A4GL_has_datatype_function_i (a, "OUTPUT"))
+    {
+      /* char *(*function) (); */
+      char *(*function) (void);
+      A4GL_debug ("In datatype");
+      function = A4GL_get_datatype_function_i (a, "OUTPUT");
+      A4GL_debug ("Copy");
+      strcpy (rs, function ());
+      A4GL_debug ("Returning %s\n", A4GL_null_as_null(rs));
+      return rs;
+    }
+  if (strcmp (s, "0") == 0) strcpy (rs, "char");
+  if (strcmp (s, "1") == 0) strcpy (rs, "short");
+  if (strcmp (s, "2") == 0) strcpy (rs, "long");
+  if (strcmp (s, "3") == 0) strcpy (rs, "double");
+  if (strcmp (s, "4") == 0) strcpy (rs, "float");
+  if (strcmp (s, "5") == 0) strcpy (rs, "fgldecimal");
+  if (strcmp (s, "6") == 0) strcpy (rs, "long");
+  if (strcmp (s, "7") == 0) strcpy (rs, "fgldate");
+  if (strcmp (s, "8") == 0) strcpy (rs, "fglmoney");
+  if (strcmp (s, "10") == 0) strcpy (rs, "struct_dtime");
+  if (strcmp (s, "11") == 0) strcpy (rs, "fglbyte");
+  if (strcmp (s, "12") == 0) strcpy (rs, "fgltext");
+  if (strcmp (s, "13") == 0) strcpy (rs, "char");
+  if (strcmp (s, "14") == 0) strcpy (rs, "struct_ival");
+  return rs;
+}
 

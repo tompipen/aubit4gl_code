@@ -10,4 +10,4 @@ void set_suppress_lines(void) ;
 void clr_suppress_lines(void) ;
 
 
-//#define CM
+#define CM

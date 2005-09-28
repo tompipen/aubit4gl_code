@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.124 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.125 2005-09-28 16:42:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.124 2005-09-11 16:30:00 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.125 2005-09-28 16:42:10 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -881,7 +881,7 @@ A4GL_save_sql("COMMIT WORK",0);
  * @param into The into variable list, taht includes:
  */
 void
-LEXLIB_print_fetch_3 (char *ftp, char *into)
+LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
 {
   int fp1 = 0;
   int fp2 = 0;
@@ -890,6 +890,10 @@ LEXLIB_print_fetch_3 (char *ftp, char *into)
   int no;
   char cname[256];
   char sqcname[256];
+int ll;
+  struct expr_str *e;
+char bufffp[200];
+e=fp->fp->fetch_expr;
   sscanf (into, "%d,", &no);
   printc("{");
 	set_suppress_lines();
@@ -898,6 +902,9 @@ LEXLIB_print_fetch_3 (char *ftp, char *into)
   printc ("\nEXEC SQL END DECLARE SECTION;");
 	clr_suppress_lines();
 
+
+
+#ifdef OBSOLETE
   if (strstr (ftp, "pop_long") == 0)
     {
       char *ptr;
@@ -953,50 +960,57 @@ LEXLIB_print_fetch_3 (char *ftp, char *into)
       printc ("_fp=A4GL_pop_long();");
     }
 
-  strcpy (buff, "EMPTY");
 
-  strcpy(sqcname,A4GL_strip_quotes(cname));
+  strcpy (buff, "EMPTY");
+#endif
+
+
+
+  strcpy(sqcname,A4GL_strip_quotes(fp->cname));
   set_suppress_lines();
-  if (poped == 0)
-    {
-      if (fp1 == 1)
+
+  ll=-2;
+  if (e) {
+        if (e->expr_type==ET_EXPR_LITERAL_LONG) {
+		ll=e->u_data.expr_long;
+                sprintf(bufffp,"%d",e->u_data.expr_long);
+        } else {
+                print_expr(e);
+		printc("_fp=A4GL_pop_long();");
+                sprintf(bufffp,":_fp");
+        }
+  }
+
+
+
+      if (fp->fp->ab_rel == FETCH_ABSOLUTE)
 	{			/* FETCH ABSOLUTE*/
-	  switch (fp2)
+	  switch (ll)
 	    {
 	    case 1:
 	      sprintf (buff, "\nEXEC SQL FETCH FIRST %s ", sqcname);
 	      break;
+
 	    case -1:
 	      sprintf (buff, "\nEXEC SQL FETCH LAST %s ", sqcname);
 	      break;
+
+	   default:
+	      sprintf (buff, "\nEXEC SQL FETCH ABSOLUTE %s %s", bufffp,sqcname);
 
 	    }
 	}
       else
 	{			/* FETCH RELATIVE*/
-	  if (fp2 != 1)
+	  if (strcmp(bufffp,"1")!=0)
 	    {
-	      sprintf (buff, "\nEXEC SQL FETCH RELATIVE %d %s ", fp2,
-		       sqcname);
+	      sprintf (buff, "\nEXEC SQL FETCH RELATIVE %s %s ", bufffp, sqcname);
 	    }
 	  else
 	    {
 	      sprintf (buff, "\nEXEC SQL FETCH %s", sqcname);
 	    }
 	}
-    }
-  else
-    {
-      if (fp1 == 1)
-	{			/* FETCH ABSOLUTE*/
-	  sprintf (buff, "\nEXEC SQL FETCH ABSOLUTE :_fp %s", sqcname);
-	}
-      else
-	{
-	  sprintf (buff, "\nEXEC SQL FETCH RELATIVE :_fp %s",
-		   sqcname);
-	}
-    }
 
   if (strcmp (buff, "EMPTY") == 0)
     {
