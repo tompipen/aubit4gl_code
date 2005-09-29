@@ -164,7 +164,7 @@ print_defer int quit -> void
 
 /* print_display_line -> void */
 
-print_display_by_name char* attr -> void
+* print_display_by_name char* attr -> void
 
 A4GL_get_display_str int type,char* s,char* f -> char*
 rettype char* s -> char*
@@ -393,7 +393,7 @@ print_fetch_1 -> void
 
 print_fetch_2 -> void
 
-print_fetch_3 t_fetch *ftp char* into -> void
+print_fetch_3 t_fetch* ftp char* into -> void
 
 print_init_conn char* db -> void
 

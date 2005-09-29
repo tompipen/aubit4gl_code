@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.236 2005-09-28 15:56:08 mikeaubury Exp $
+# $Id: mod.c,v 1.237 2005-09-29 15:22:26 mikeaubury Exp $
 #
 */
 
@@ -4667,5 +4667,46 @@ struct binding_list *append_bind_list(struct binding_list *l,char *s) {
 	l->bindings[l->nbindings-1]=strdup(s);
 	return l;
 }
+
+
+void print_display_by_name (char *attr)
+{
+  int a;
+  char tabname[40];
+  char colname[40];
+
+  t_dt_display dt;
+  struct expr_str *e;
+  struct expr_str *l;
+  l=A4GL_new_ptr_list(0);
+  dt.u_data.field_list=new_field_list();
+
+  for (a=0;a<ibindcnt;a++) {
+        e=A4GL_new_expr_push_variable(ibind[a].varname,ibind[a].dtype);
+        l=A4GL_new_append_ptr_list(l,e);
+
+      A4GL_bname (ibind[a].varname, tabname, colname);
+        append_field_to_list(dt.u_data.field_list,new_field_entry(colname,"1",1));
+  }
+
+  dt.type=DT_DISPLAY_TYPE_FIELD_LIST;
+
+  print_display_new (l, &dt, attr);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ================================= EOF ============================= */

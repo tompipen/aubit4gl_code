@@ -69,7 +69,7 @@ fetch_place_fp :
 		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(1);
 
-		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);  
+		//sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);  
 		add_feature("FETCH_FIRST");
 		}
 	| KW_LAST {
@@ -117,7 +117,7 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=$<ptr>2;
-		sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE); 
+		//sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE); 
 		add_feature("FETCH_RELATIVE");
 		}
 	| KW_ABSOLUTE fgl_expr_c

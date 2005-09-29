@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.256 2005-09-28 16:42:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.257 2005-09-29 15:23:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.256 2005-09-28 16:42:10 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.257 2005-09-29 15:23:48 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -108,6 +108,8 @@ static void print_returning (void);
 
 #include "a4gl_lib_lex_esqlc_int.h"
 #define ONE_NOT_ZERO(x) (x?x:1)
+
+#include "field_handling.h"
 
 
 int rep_print_code;
@@ -3592,6 +3594,8 @@ LEXLIB_print_display_line (void)
 #endif
 
 
+
+#ifdef OBSOLETE
 /**
  * Print the generated C code for implementation of DISPLAY BY NAME statement.
  *
@@ -3610,6 +3614,7 @@ LEXLIB_print_display_by_name (char *attr)
   printc (",0);\n");
   printc ("}\n");
 }
+#endif
 
 
 /**
@@ -3664,6 +3669,7 @@ void
 LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr)
 {
 	int nexpr;
+	struct fh_field_list *fh;
         expr=A4GL_rationalize_list(expr);
 	nexpr=A4GL_new_list_get_count(expr);
 	
@@ -3697,6 +3703,11 @@ LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr
 				break;
 
 		case DT_DISPLAY_TYPE_FIELD_LIST		:
+			                fh=disp->u_data.field_list;
+                			if (nexpr!=fh->nfields) {
+						printf("FIELDMISMATCH %d != %d\n",nexpr,fh->nfields);
+					}
+
 				real_print_expr_list(expr);
   				printc ("A4GL_disp_fields(%d,%s,%s,0);\n", nexpr,attr,field_name_list_as_char(disp->u_data.field_list));
 				break;

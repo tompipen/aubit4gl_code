@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.55 2005-09-28 16:42:10 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.56 2005-09-29 15:23:48 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.55 2005-09-28 16:42:10 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.56 2005-09-29 15:23:48 mikeaubury Exp $";
 #endif
 
 
@@ -296,7 +296,8 @@ LEXLIB_print_prepare (char *stmt, char *sqlvar)
 	if (p || sqlvar[0]=='"') {
 		printf("PREPARE %s %s %s - %s\n",curr_func,stmt,sqlvar,p);
 	} else {
-		printf("UNKNOWN_PREPARE %s %s %s\n",curr_func,stmt,sqlvar);
+		extern long yylineno;
+		printf("UNKNOWN_PREPARE %s.4gl %d %s %s %s\n",A4GL_compiling_module(),yylineno,curr_func,stmt,sqlvar);
 	}
 	if (p) {
 			A4GL_del_pointer(sqlvar,LAST_STRING);
