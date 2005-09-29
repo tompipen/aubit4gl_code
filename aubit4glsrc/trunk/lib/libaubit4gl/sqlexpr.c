@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.1 2005-09-20 13:44:18 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.2 2005-09-29 15:29:47 mikeaubury Exp $
 #
 */
 
@@ -632,7 +632,7 @@ static char *find_table(struct s_select *select, struct s_select_list_item *i) {
 	int a;
 	char *colname;
 	A4GL_assertion(i->type!=E_SLI_COLUMN,"Expecting a column...");
-	printf("Find table : %s %s\n",i->u_data.column.tabname,i->u_data.column.colname);
+	//printf("Find table : %s %s\n",i->u_data.column.tabname,i->u_data.column.colname);
 
 	//colname=i->u_data.column.tabname;
 
@@ -720,12 +720,12 @@ A4GL_debug("That appears to have %d elements",select->list_of_items.nlist);
 						// Looks like a join....
 						p->type=E_SLI_JOIN;
 
-						printf("%s %s\n",l->u_data.column.colname,r->u_data.column.colname);
+						//printf("%s %s\n",l->u_data.column.colname,r->u_data.column.colname);
 
 						lt=find_table(select,l);
 						rt=find_table(select,r);
 
-						printf("JOIN %s.%s = %s.%s\n",lt, l->u_data.column.colname, rt, r->u_data.column.colname);
+						//printf("JOIN %s.%s = %s.%s\n",lt, l->u_data.column.colname, rt, r->u_data.column.colname);
 
 						
 

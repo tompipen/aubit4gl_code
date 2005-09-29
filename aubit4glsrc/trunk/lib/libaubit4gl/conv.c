@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.113 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: conv.c,v 1.114 2005-09-29 15:29:47 mikeaubury Exp $
 #
 */
 
@@ -1984,6 +1984,14 @@ A4GL_itoc (void *aa, void *zz, int size)
   local_a=*(short *)aa;
   local_a_int=local_a;
   z = (char *) zz;
+
+  if (size>10) {
+	SPRINTF1(z,"%d",local_a_int);
+	A4GL_pad_string(z,size);
+	return 1;
+  }
+
+
   if (A4GL_digittoc (&local_a_int, z, fmt, DTYPE_SMINT, size))
     {
 #ifdef DEBUG

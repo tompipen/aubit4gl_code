@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql_infx.h,v 1.27 2005-07-14 11:32:50 mikeaubury Exp $
+# $Id: a4gl_esql_infx.h,v 1.28 2005-09-29 15:29:47 mikeaubury Exp $
 #
 */
 
@@ -96,6 +96,9 @@ extern "C"
 #define A4GLSQL_SET_SQLCA_SQLWARN A4GL_copy_sqlca_sqlawarn_8chars(sqlca.sqlwarn.sqlwarn0,sqlca.sqlwarn.sqlwarn1,sqlca.sqlwarn.sqlwarn2,sqlca.sqlwarn.sqlwarn3,sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5, sqlca.sqlwarn.sqlwarn6, sqlca.sqlwarn.sqlwarn7)
 
 #endif
+
+#undef ALWAYS_CONVERT_PREPARED
+
 
 #ifdef ALWAYS_CONVERT_PREPARED
 #define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml("INFORMIX",s,_module_name,__LINE__)

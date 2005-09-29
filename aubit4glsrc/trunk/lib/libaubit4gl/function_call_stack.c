@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.26 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.27 2005-09-29 15:29:47 mikeaubury Exp $
 #*/
 
 /**
@@ -208,8 +208,8 @@ char * A4GLSTK_topFunction (void)
 char *
 A4GLSTK_getStackTrace (void)
 {
-  static char stackTrace[640];
-  static char tmpStackTrace[640];
+  static char stackTrace[6400];
+  static char tmpStackTrace[6400];
   int i;
 
   strcpy (stackTrace, "4gl function call stack :\n");

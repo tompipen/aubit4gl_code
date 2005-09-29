@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.20 2005-09-20 13:41:24 mikeaubury Exp $
+# $Id: decompile.c,v 1.21 2005-09-29 15:29:47 mikeaubury Exp $
 #
 */
 
@@ -81,7 +81,7 @@ int main (int argc, char *argv[])
 
   memset (&the_form, 0, sizeof (struct_form));
 
-  A4GL_build_user_resources ();
+  //A4GL_build_user_resources ();
 
   //xdrstdio_create(&xdrp,f,XDR_DECODE);
 
