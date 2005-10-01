@@ -422,9 +422,9 @@ print_declare_associate_1 char* variable,char* size,char* n -> void
 
 print_declare_associate_2 char* variable,char* size,char* n -> void
 
-print_define_char char* var,int size,int isstatic_extern -> void
+* print_define_char char* var,int size,int isstatic_extern -> void
 
-print_define char* varstring,int isstatic_extern -> void
+* print_define char* varstring,int isstatic_extern -> void
 
 
 A4GL_decode_array_string char* var char* s -> char*

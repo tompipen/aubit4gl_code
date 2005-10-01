@@ -18,12 +18,12 @@ extend_parameters: OPEN_BRACKET
 
 op_datetime_qual:  { 
 	char buff[50];
-	sprintf(buff,"A4GL_push_int(0x%x);",22); 
+	sprintf(buff,"A4GL_push_int(%d);",22); 
 	$<ptr>$=A4GL_new_expr(buff);
 }
 | KW_COMMA dtime_start TO dtime_end { 
 	char buff[50];
-	sprintf(buff,"A4GL_push_int(0x%x);",(atoi($<str>2)*16) +atoi($<str>4)  ); 
+	sprintf(buff,"A4GL_push_int(%d);",(atoi($<str>2)*16) +atoi($<str>4)  ); 
 	$<ptr>$=A4GL_new_expr(buff);
 }
 ;

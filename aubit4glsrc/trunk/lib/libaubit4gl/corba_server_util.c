@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.21 2005-09-20 13:41:29 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.22 2005-10-01 08:24:11 mikeaubury Exp $
 #
 */
 
@@ -366,7 +366,6 @@ We can end up with problems with overlapping - eg
         }
 
 // DO NOT CALL A4GL_debug from this function!!!!
-
 	if (sdest>sizeof(char *)) { // We do this one...
 	      va_start (args, fmt);
 	      c=acl_malloc2(sdest);

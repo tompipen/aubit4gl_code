@@ -225,7 +225,7 @@ char buff2[256];
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_substr(%s , 0x%x , %s , 0 ) /*1.1*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
+        sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.1*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
   } else {
  
   if ( ( (type & 0xffff) != DTYPE_CHAR &&  (type & 0xffff) != DTYPE_VCHAR) || (arrsize>0))
