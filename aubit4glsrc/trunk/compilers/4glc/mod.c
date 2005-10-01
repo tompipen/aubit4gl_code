@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.237 2005-09-29 15:22:26 mikeaubury Exp $
+# $Id: mod.c,v 1.238 2005-10-01 08:50:59 mikeaubury Exp $
 #
 */
 
@@ -1248,10 +1248,6 @@ rettype (char *s)
   return rs;
 }
 #endif
-
-
-
-
 
 
 /**

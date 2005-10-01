@@ -2330,9 +2330,11 @@ typedef union YYSTYPE {
 	struct binding_comp *binding_comp;
 	struct binding_list *binding_list;
 	struct s_select_finish *s_select_finish;
+	struct s_fetch_place 	*s_fetch_place;
+	struct s_fetch 	*s_fetch;
 	} YYSTYPE;
 /* Line 1285 of yacc.c.  */
-#line 2336 "y.tab.h"
+#line 2338 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

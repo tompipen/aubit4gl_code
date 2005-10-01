@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.258 2005-10-01 08:24:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.259 2005-10-01 08:51:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.258 2005-10-01 08:24:11 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.259 2005-10-01 08:51:01 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6327,7 +6327,7 @@ LEXLIB_print_declare_associate_2 (char *variable, char *size, char *n)
  *   - Otherwise : Not static and not extern
  */
 void
-LEXLIB_print_define_char (char *var, int size, int isstatic_extern)
+print_define_char (char *var, int size, int isstatic_extern)
 {
   char buff[20];
   strcpy (buff, "");
@@ -6365,7 +6365,7 @@ LEXLIB_print_define_char (char *var, int size, int isstatic_extern)
  *   - 2 : Variable should be declared as extern
  */
 void
-LEXLIB_print_define (char *varstring, int isstatic_extern)
+print_define (char *varstring, int isstatic_extern)
 {
   char buff[20];
   strcpy (buff, "");
