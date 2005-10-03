@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.125 2005-09-28 16:42:10 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.126 2005-10-03 10:55:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.125 2005-09-28 16:42:10 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.126 2005-10-03 10:55:21 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -99,6 +99,7 @@ void make_sql_bind (char *sql, char *type);
 
 int last_ni;
 int last_no;
+struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 //void set_suppress_lines(void);
 //void clr_suppress_lines(void);
@@ -883,12 +884,12 @@ A4GL_save_sql("COMMIT WORK",0);
 void
 LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
 {
-  int fp1 = 0;
-  int fp2 = 0;
-  int poped = 0;
+  //int fp1 = 0;
+  //int fp2 = 0;
+  //int poped = 0;
   char buff[256];
   int no;
-  char cname[256];
+  //char cname[256];
   char sqcname[256];
 int ll;
   struct expr_str *e;
@@ -973,7 +974,7 @@ e=fp->fp->fetch_expr;
   if (e) {
         if (e->expr_type==ET_EXPR_LITERAL_LONG) {
 		ll=e->u_data.expr_long;
-                sprintf(bufffp,"%d",e->u_data.expr_long);
+                sprintf(bufffp,"%ld",e->u_data.expr_long);
         } else {
                 print_expr(e);
 		printc("_fp=A4GL_pop_long();");
@@ -2068,7 +2069,7 @@ if (type=='R') {
 	/* print_execute needs an ibind - we have an fbind - so we need*/
 	/* to copy it across...*/
 	extern int ibindcnt;
-	extern int a_ibind;
+	extern long  a_ibind;
 	//extern int fbindcnt;
 	ibindcnt=fbindcnt;
 	ibind=ensure_bind(&a_ibind,ibindcnt,ibind);
@@ -2091,10 +2092,11 @@ if (type=='E') {
 
 if (type=='F') {
 	extern int obindcnt;
-	extern int a_obind;
+	extern long a_obind;
 	//extern int fbindcnt;
-	char buff[256];
+	//char buff[256];
         char buff2[256];
+	struct s_fetch f;
 	obindcnt=fbindcnt;
 	obind=ensure_bind(&a_obind,obindcnt,obind);
 	memcpy(obind,fbind,sizeof(struct binding_comp)*c+1);
@@ -2111,10 +2113,14 @@ if (type=='F') {
 
 	printc("/* MJAMJA - printing obind */");
 
+	strcpy(f.cname,cname);
+	f.fp=malloc(sizeof(struct s_fetch_place));
+	f.fp->ab_rel=FETCH_RELATIVE;
+	f.fp->fetch_expr=A4GL_new_literal_long_long(1);
 
-	sprintf(buff,"\"%s\",FETCH_RELATIVE,1",cname);
+	//sprintf(buff,"\"%s\",FETCH_RELATIVE,1",cname);
 	sprintf(buff2,"%d,_rbind",c);
-	print_fetch_3(buff,buff2);
+	print_fetch_3(&f,buff2);
 	printc("if (sqlca.sqlcode!=0) break;");
         printc("A4GL_push_params (obind, %d);",c);
 
@@ -2122,7 +2128,7 @@ if (type=='F') {
 
 if (type=='I') {
 	extern int current_ordbindcnt;
-	extern int ordbindcnt;
+	//extern int ordbindcnt;
 	//extern int fbindcnt;
 	extern struct binding_comp *ordbind;
 	char sql[1024];

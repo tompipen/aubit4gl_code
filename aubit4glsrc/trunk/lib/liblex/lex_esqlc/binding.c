@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.47 2005-09-20 13:41:30 mikeaubury Exp $
+# $Id: binding.c,v 1.48 2005-10-03 10:55:21 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.47 2005-09-20 13:41:30 mikeaubury Exp $";
+		"$Id: binding.c,v 1.48 2005-10-03 10:55:21 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -73,6 +73,7 @@ static char *get_sql_type_postgres (int a, char ioro);
 static char *get_sql_type_sap (int a, char ioro);
 static char *get_sql_type_ingres (int a, char ioro);
 char * A4GL_dtype_sz (int d, int s);
+struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 
 #ifdef NOT_USED
@@ -937,7 +938,7 @@ static char buff_ind[255];
 
 
 void liblex_add_ibind(int dtype,char *var) {
-	extern int a_ibind;
+	extern long a_ibind;
 	ibind=ensure_bind(&a_ibind,ibindcnt+1,ibind);
 	strcpy(ibind[ibindcnt].varname,var);
 	ibind[ibindcnt].start_char_subscript=0;
@@ -1267,7 +1268,7 @@ static char *decode_datetime(int a) {
 }
 
 
-
+/*
 static char *decode_datetime2(int a) {
 	int pt1;
 	int pt2;
@@ -1295,7 +1296,7 @@ static char *decode_datetime2(int a) {
 	sprintf(buff," %s TO %s",ps1,ps2);
 	return buff;
 }
-
+*/
 
 
 char *

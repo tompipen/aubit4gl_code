@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.57 2005-09-29 20:09:54 whaslbeck Exp $
+# $Id: compile_c_sql.c,v 1.58 2005-10-03 10:55:21 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.57 2005-09-29 20:09:54 whaslbeck Exp $";
+		"$Id: compile_c_sql.c,v 1.58 2005-10-03 10:55:21 mikeaubury Exp $";
 #endif
 
 
@@ -445,7 +445,7 @@ char buff[200];
 e=fp->fp->fetch_expr;
   if (e) {
 	if (e->expr_type==ET_EXPR_LITERAL_LONG) {
-		sprintf(buff,"%d",e->u_data.expr_long);
+		sprintf(buff,"%ld",e->u_data.expr_long);
 	} else {
 		print_expr(e);
 		sprintf(buff,"A4GL_pop_long()");

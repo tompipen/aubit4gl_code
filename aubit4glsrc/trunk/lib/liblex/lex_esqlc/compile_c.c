@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.260 2005-10-03 10:09:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.261 2005-10-03 10:55:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.260 2005-10-03 10:09:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.261 2005-10-03 10:55:21 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -76,8 +76,14 @@
 */
 
 #define FGL_PLUS_PLUS
+static void print_define_char (char *var, int size, int isstatic_extern);
+static void print_define (char *varstring, int isstatic_extern);
+static void print_start_record (int isstatic_extern, char *varname, char *arrsize, int level);
+static void print_end_record (char *vname, char *arrsize, int level);
+int is_system_variable (char *s);
 int isin_command (char *cmd_type);
 int print_bind_expr_portion (void *ptr, char i, int portion);
+char *rettype_integer (int n);
 
 int suppress_lines=0;
 char **get_field_codes(char *fields) ;
@@ -111,6 +117,7 @@ static void print_returning (void);
 
 #include "field_handling.h"
 
+void print_Constant_1 (char *name, struct constant_data *c);
 
 int rep_print_code;
 int last_orderby_type = -1;
@@ -223,7 +230,7 @@ void add_function_to_header (char *identifier, int parms,char *is_static);
 char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
-char *field_name_list_as_char(struct fh_field_list *fl);
+//char *field_name_list_as_char(struct fh_field_list *fl);
 //void LEXLIB_print_onaction_1 (char *key_list_str);
 //void LEXLIB_print_onaction_2 (void);
 //int is_builtin_func (char *s);
@@ -3869,8 +3876,8 @@ LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 	struct expr_str *from;
 	struct expr_str *to;
 	struct expr_str *step;
-	char buff_to[20];
-	char buff_from[20];
+	//char buff_to[20];
+	//char buff_from[20];
 	int have_from=0;
 	int have_to=0;
 	int have_step=0;
@@ -6126,7 +6133,7 @@ LEXLIB_print_return (t_expr_str_list *expr) {
 int z;
 int n;
 char *s;
-int c;
+//int c;
 expr=A4GL_rationalize_list(expr);
 n=A4GL_new_list_get_count(expr);
 
@@ -6326,8 +6333,7 @@ LEXLIB_print_declare_associate_2 (char *variable, char *size, char *n)
  *   - 2 : Extern
  *   - Otherwise : Not static and not extern
  */
-void
-print_define_char (char *var, int size, int isstatic_extern)
+void print_define_char (char *var, int size, int isstatic_extern)
 {
   char buff[20];
   strcpy (buff, "");
@@ -6364,8 +6370,7 @@ print_define_char (char *var, int size, int isstatic_extern)
  *   - 1 : Variable should be declared as static
  *   - 2 : Variable should be declared as extern
  */
-void
-print_define (char *varstring, int isstatic_extern)
+void print_define (char *varstring, int isstatic_extern)
 {
   char buff[20];
   strcpy (buff, "");
@@ -6394,9 +6399,7 @@ print_define (char *varstring, int isstatic_extern)
  *   - Otherwise : Not static and not extern
  * @param varname The record variable name. Not used
  */
-void
-print_start_record (int isstatic_extern, char *varname, char *arrsize,
-		    int level)
+void print_start_record (int isstatic_extern, char *varname, char *arrsize, int level)
 {
   char buff[20] = "";
 /*int n;*/
@@ -6465,8 +6468,7 @@ print_start_record (int isstatic_extern, char *varname, char *arrsize,
  * @param vname The record variable name
  * @param arrsize The array size if is a record array
  */
-void
-print_end_record (char *vname, char *arrsize, int level)
+void print_end_record (char *vname, char *arrsize, int level)
 {
   int cnt;
   int arrsizes[10];
@@ -7640,8 +7642,7 @@ char *pdtype(int n) {
 
 
 
-void
-print_Constant_1 (char *name, struct constant_data *c)
+void print_Constant_1 (char *name, struct constant_data *c)
 {
   if (c->consttype == CONST_TYPE_CHAR)
     {
