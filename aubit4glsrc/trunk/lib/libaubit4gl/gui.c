@@ -298,13 +298,13 @@ make_connection (service, type, netaddress)
     port = atoport (service, "udp");
   if (port == -1)
     {
-      fprintf (stderr, "make_connection:  Invalid socket type.\n");
+      FPRINTF (stderr, "make_connection:  Invalid socket type.\n");
       return -1;
     }
   addr = atoaddr (netaddress);
   if (addr == NULL)
     {
-      fprintf (stderr, "make_connection:  Invalid network address.\n");
+      FPRINTF (stderr, "make_connection:  Invalid network address.\n");
       return -1;
     }
 

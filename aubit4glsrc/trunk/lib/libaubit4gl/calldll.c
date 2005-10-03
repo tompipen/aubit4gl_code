@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.60 2005-09-04 22:03:01 mikeaubury Exp $
+# $Id: calldll.c,v 1.61 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -766,7 +766,7 @@ if (A4GL_isyes(acl_getenv("TRACEDLL"))) {
 	}
 
 	if (usg!=0) {
-		fprintf(usg,"%s\n",s);
+		FPRINTF(usg,"%s\n",s);
 	}
 }
 #endif

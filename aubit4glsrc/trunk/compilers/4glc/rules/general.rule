@@ -17,6 +17,7 @@ line_no		:
 file_name	:	CHAR_VALUE | cvariable 
 ;
 
+/*
 a_number	:	fgl_expr_c;
 
 coords_pl	:	a_number KW_COMMA a_number {
@@ -28,6 +29,7 @@ coords_pl	:	a_number KW_COMMA a_number {
 ;
 
 display_coords_pl	:	coords_pl;
+*/
 
 field_name_as_struct	:	
 		identifier { 

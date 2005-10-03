@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.22 2005-07-28 10:11:40 mikeaubury Exp $
+# $Id: translate.c,v 1.23 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -238,11 +238,11 @@ A4GL_dumpstring (char *s, long n, char *fname)
 
       if (A4GL_aubit_strcasecmp ((char *) acl_getenv ("DUMPSTRINGS"), "ident") == 0)
 	{
-	  fprintf (f, "%s:>%d\n", s, ident++);
+	  FPRINTF (f, "%s:>%d\n", s, ident++);
 	}
       else
 	{
-	  fprintf (f, "%s:=\n", s);
+	  FPRINTF (f, "%s:=\n", s);
 	}
     }
 }

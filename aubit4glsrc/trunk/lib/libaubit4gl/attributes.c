@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.36 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: attributes.c,v 1.37 2005-10-03 10:09:45 mikeaubury Exp $
 #*/
 
 /**
@@ -214,7 +214,7 @@ A4GL_get_curr_form_attr (void)
   int attr;
   char buff[20];
   ptr = A4GL_get_curr_form (0);
-  snprintf (buff, sizeof(buff),"%p", ptr);
+  SNPRINTF (buff, sizeof(buff),"%p", ptr);
   if (A4GL_has_pointer (buff, ATTRIBUTE))
     {
       attr = (int) A4GL_find_pointer (buff, ATTRIBUTE);

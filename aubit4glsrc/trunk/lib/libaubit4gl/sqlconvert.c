@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.65 2005-09-20 13:41:29 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.66 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -600,8 +600,10 @@ if (A4GL_isyes(acl_getenv("A4GL_DUMP_SQL"))) {
 	FILE *fout;
 	fout=fopen("/tmp/sql.log","a");
 	if (fout) {
-		fprintf(fout,"%s\n",buff);
+		FPRINTF(fout,"%s\n",buff);
+#ifdef CM
 		printf("IMMEDIATE %s\n",buff);
+#endif
 		fclose(fout);
 	}
 }
@@ -620,7 +622,7 @@ SPRINTF2(s,"%s.%s",t,c);
 #ifdef MSVC
 	SPRINTF3(sv,"%s.%s.%s",t,c,v);
 #else
-	snprintf(sv,512,"%s.%s.%s",t,c,v);
+	SNPRINTF(sv,512,"%s.%s.%s",t,c,v);
 #endif
 
 sv[511]=0;
@@ -710,7 +712,7 @@ SPRINTF2(s,"%s.%s",t,c);
 #ifdef MSVC
 SPRINTF3(sv,"%s.%s.%s",t,c,v);
 #else
-snprintf(sv,512,"%s.%s.%s",t,c,v);
+SNPRINTF(sv,512,"%s.%s.%s",t,c,v);
 #endif
 sv[511]=0;
 A4GL_debug("Alias : '%s'\n",s);

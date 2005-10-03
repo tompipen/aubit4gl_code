@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.37 2005-08-28 16:12:57 mikeaubury Exp $
+# $Id: keys.c,v 1.38 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -172,8 +172,8 @@ int A4GL_is_special_key(int k, int type) {
 	A4GL_debug("HELP=%d\n",A4GLKEY_HELP);
 	A4GL_debug("Unexpected internal key : hex=%x decimal=%d\n",type,type);
 
+	PRINTF("%x\n",type);
 	A4GL_exitwith("Internal error-unexpected keytype for A4GL_is_special_key");
-	printf("%x\n",type);
 	return 0;
 }
 

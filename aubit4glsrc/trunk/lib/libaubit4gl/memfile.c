@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.30 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: memfile.c,v 1.31 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -399,13 +399,13 @@ if (save) {
 
         if (buff[a]=='-'&&buff[a+1]=='-'&&type==0) {
 		if (buff[a+2]!='!') {
-			if (save_comment) fprintf(save_comment,"%d|",lineno);
+			if (save_comment) FPRINTF(save_comment,"%d|",lineno);
                 	for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
-				if (save_comment) fprintf(save_comment,"%c",buff[b]);
+				if (save_comment) FPRINTF(save_comment,"%c",buff[b]);
 				
 				buff[b]=' ';
 			}
-			if (save_comment) fprintf(save_comment,"\n");
+			if (save_comment) FPRINTF(save_comment,"\n");
                 	a=b-1;
                 	continue;
 		} else {
@@ -416,26 +416,26 @@ if (save) {
         }
 
         if (buff[a]=='#'&&type==0) {
-		if (save_comment) fprintf(save_comment,"%d|",lineno);
+		if (save_comment) FPRINTF(save_comment,"%d|",lineno);
                 for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
-			if (save_comment) fprintf(save_comment,"%c",buff[b]);
+			if (save_comment) FPRINTF(save_comment,"%c",buff[b]);
 			buff[b]=' ';
 		}
-			if (save_comment) fprintf(save_comment,"\n");
+			if (save_comment) FPRINTF(save_comment,"\n");
                 a=b-1;
                 continue;
         }
         if (buff[a]=='{'&&type==0&&buff[a+1]!='!') {
-		if (save_comment) fprintf(save_comment,"%d|",lineno);
+		if (save_comment) FPRINTF(save_comment,"%d|",lineno);
                 for (b=a;buff[b]!='}'&&b<buff_len;b++) {
 			if (buff[b]=='\n') {
-				if (save_comment) fprintf(save_comment," ");
+				if (save_comment) FPRINTF(save_comment," ");
 				continue;
 			}
-			if (save_comment&&b>a) fprintf(save_comment,"%c",buff[b]);
+			if (save_comment&&b>a) FPRINTF(save_comment,"%c",buff[b]);
 			buff[b]=' ';
 		}
-		if (save_comment) fprintf(save_comment,"\n");
+		if (save_comment) FPRINTF(save_comment,"\n");
 		buff[b]=' ';
                 a=b-1;
                 continue;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.91 2005-08-28 09:43:37 mikeaubury Exp $
+# $Id: builtin.c,v 1.92 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -681,7 +681,7 @@ aclfgl_err_get (int n)
   static char buff[200];
   a = A4GL_pop_int ();
   /* A4GLSQL_set_status(-3001,0); */
-  snprintf (buff,200, "Error : %d ", a);
+  SNPRINTF (buff,200, "Error : %d ", a);
   A4GL_push_char (buff);
   return 1;
 }
@@ -818,13 +818,13 @@ A4GL_errorlog (char *fname, int l, int n)
       A4GL_push_current (4, 6);
       time_str = A4GL_char_pop ();
 
-      fprintf (error_log_file, "Date: %s    Time: %s\n", date_str, time_str);
+      FPRINTF (error_log_file, "Date: %s    Time: %s\n", date_str, time_str);
       if (A4GL_isyes (acl_getenv ("EXTENDED_ERRORLOG")))
 	{
-	  fprintf (error_log_file, "MODULE : %s    Line: %d\n", fname, l);
+	  FPRINTF (error_log_file, "MODULE : %s    Line: %d\n", fname, l);
 
 	}
-      fprintf (error_log_file, "%s\n", s);
+      FPRINTF (error_log_file, "%s\n", s);
       fflush (error_log_file);
 
     }

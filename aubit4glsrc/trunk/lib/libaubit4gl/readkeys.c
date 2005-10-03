@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.13 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: readkeys.c,v 1.14 2005-10-03 10:09:45 mikeaubury Exp $
 #*/
 
 /**
@@ -211,7 +211,7 @@ void A4GL_logkey(long a) {
 		char buff[256];
 		SPRINTF1(buff,"F%d",k);
 		if (a==A4GL_key_val(buff)) {
-			fprintf(keylog,"\\%s\n",buff);fflush(keylog);
+			FPRINTF(keylog,"\\%s\n",buff);fflush(keylog);
 			return;
 		}
 	}
@@ -221,17 +221,17 @@ void A4GL_logkey(long a) {
 
 		if (a==A4GL_key_val(keys[k])) {
 				A4GL_debug("Log keypress %s in file %p",keys[k],keylog);
-				fprintf(keylog,"\\%s\n",keys[k]);fflush(keylog);
+				FPRINTF(keylog,"\\%s\n",keys[k]);fflush(keylog);
 				return;
 		}
 	}
 
 	if (a>=1&&a<=26) {
-		fprintf(keylog,"\\CONTROL-%c\n",(char)a+'A'-1);fflush(keylog);
+		FPRINTF(keylog,"\\CONTROL-%c\n",(char)a+'A'-1);fflush(keylog);
 		return;
 	}
 	if ((a_isprint(a)&&a!='\\') || A4GL_isyes(acl_getenv("LOGALL"))) {
-		fprintf(keylog,"%c",(char)a);fflush(keylog);
+		FPRINTF(keylog,"%c",(char)a);fflush(keylog);
 		return;
 	}
 	

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.3 2005-09-23 10:38:38 mikeaubury Exp $
+# $Id: expr.c,v 1.4 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -136,7 +136,7 @@ case ET_EXPR_GET_FLDBUF: return "ET_EXPR_GET_FLDBUF";
 case ET_EXPR_WORDWRAP: return "ET_EXPR_WORDWRAP";
 case ET_EXPR_SUBSTRING: return "ET_EXPR_SUBSTRING";
 }
-printf("%d\n",e);
+PRINTF("Expression Type : %d\n",e);
 return "Oopps - dont know";
 }
 /* =========================== EOF ================================ */
@@ -309,7 +309,6 @@ if (ptr->expr_type==ET_EXPR_LITERAL_LONG) {
 	ptr->u_data.expr_long=0-ptr->u_data.expr_long;
 	return ptr;
 } else {
-	printf("NEG : %d (%s)\n",ptr->expr_type,expr_name(ptr->expr_type));
 	ptr_new=A4GL_new_expr_simple_expr(ptr,ET_EXPR_NEG);
 	return ptr_new;
 }
@@ -523,7 +522,7 @@ A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
                   case ET_EXPR_STRING: new_ptr->u_data.expr_char=strdup(orig_ptr->u_data.expr_char); break;
                   case ET_EXPR_LITERAL_DOUBLE_STR: new_ptr->u_data.expr_char=strdup(orig_ptr->u_data.expr_char); break;
                   default : 
-				       	printf("%d - %s\n",orig_ptr->expr_type, expr_name(orig_ptr->expr_type));
+				       	PRINTF("%d - %s\n",orig_ptr->expr_type, expr_name(orig_ptr->expr_type));
 				       	A4GL_assertion(1,"Unhandled expr copy");
           }
           return A4GL_append_expr_expr (new_ptr,orig_ptr);

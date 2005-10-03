@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.46 2005-08-19 13:07:16 mikeaubury Exp $
+# $Id: ui.c,v 1.47 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -1054,7 +1054,7 @@ void A4GL_debug_dump_recall(char *field_name) {
 		}
 		e=e->next;
 	}
-	printf("---------------\n");
+	PRINTF("---------------\n");
 }
 
 
@@ -1073,7 +1073,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
 	int ok=1;
 	static char *last_val=0;
 	char field_name[256];
-	sprintf(field_name,"%s",c);
+	SPRINTF1(field_name,"%s",c);
 	if (last_val) {free(last_val); last_val=0;}
 
         if (A4GL_has_pointer(field_name,RECALL_LOG_ENTRIES)) {
@@ -1090,7 +1090,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
 				nvals++;
 				if (strlen(e->recall_value)>maxlen) {
 					if (show==0) { 
-						sprintf(field_name,"%s.%s",t,c);
+						SPRINTF2(field_name,"%s.%s",t,c);
 						// Return our value..
 						A4GL_push_char(e->recall_value);
 						A4GL_disp_fields(1,0xffffffff,field_name,1,0);
@@ -1104,7 +1104,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
         }
 	if (show==0) {
 		
-		sprintf(field_name,"%s.%s",t,c);
+		SPRINTF2(field_name,"%s.%s",t,c);
 		// Return our value..
 		A4GL_push_char(" " );
 		A4GL_disp_fields(1,0xffffffff,field_name,1,0);
@@ -1193,7 +1193,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
 	// Was it ok ?
 	if (ok==0) { return 0; }
 
-	sprintf(field_name,"%s.%s",t,c);
+	SPRINTF2(field_name,"%s.%s",t,c);
 	// Return our value..
 	A4GL_push_char(last_val);
 	A4GL_disp_fields(1,0xffffffff,field_name,1,0);

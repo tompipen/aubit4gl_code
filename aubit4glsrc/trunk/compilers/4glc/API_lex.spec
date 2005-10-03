@@ -451,21 +451,6 @@ print_event int type -> void
 
 print_event_2 -> void
 
-print_gtk_field int type,char* s -> void
-
-print_gtk_field_2 -> void
-
-print_gtk_menuhandler_1 char* name -> void
-
-print_gtk_menuhandler_bsm -> void
-
-print_gtk_menuhandler_bsm_end -> void
-
-print_gtk_menuhandler_on char* s -> void
-
-print_gtk_menuhandler_on_end -> void
-
-print_gtk_menuhandler_end -> void
 
 get_column_transform char* s -> char*
 
@@ -506,6 +491,14 @@ CLASS_add_method char* name char* sig -> void
 CLASS_print_class_variable_type char* buff -> void
 CLASS_get_variable char* s -> char**
 CLASS_get_members char* s -> char**
+print_gtk_field int type,char* s -> void
+print_gtk_field_2 -> void
+print_gtk_menuhandler_1 char* name -> void
+print_gtk_menuhandler_bsm -> void
+print_gtk_menuhandler_bsm_end -> void
+print_gtk_menuhandler_on char* s -> void
+print_gtk_menuhandler_on_end -> void
+print_gtk_menuhandler_end -> void
 
 /*  ============================== EOF ================================= */
 

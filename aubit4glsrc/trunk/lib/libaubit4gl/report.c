@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.81 2005-09-09 20:37:29 mikeaubury Exp $
+# $Id: report.c,v 1.82 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -295,7 +295,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 
   if (entry <= 0)
     entry = 0;
-  vsprintf (buff, fmt, ap);
+  VSPRINTF (buff, fmt, ap);
   A4GL_debug ("'%s' - %d\n", buff, entry);
   if (rep->print_section == SECTION_NORMAL)
     {
@@ -309,7 +309,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	    }
 	  else
 	    {
-	      fprintf (rep->output, "%s", rep->header);
+	      FPRINTF (rep->output, "%s", rep->header);
 	      free (rep->header);
 	      rep->header = 0;
 	    }
@@ -321,7 +321,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	}
       else
 	{
-	  fprintf (rep->output, "%s", buff);
+	  FPRINTF (rep->output, "%s", buff);
 	}
 
     }
@@ -349,7 +349,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	    }
 	  else
 	    {
-	      fprintf (rep->output, "%s", buff);
+	      FPRINTF (rep->output, "%s", buff);
 	    }
 
 	}
@@ -1307,7 +1307,7 @@ print_report_block_start (struct rep_structure *rep, char *mod, char *repname,
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
       print_lvl (rep, lvl);
-      fprintf (rep->output,
+      FPRINTF (rep->output,
 	       "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n",
 	       lineno, where, why, rb);
     }
@@ -1330,7 +1330,7 @@ print_report_block_end (struct rep_structure *rep, int rb)
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
       print_lvl (rep, lvl);
-      fprintf (rep->output, "</ACL_ENTRY_BLOCK block=%d>\n", rb);
+      FPRINTF (rep->output, "</ACL_ENTRY_BLOCK block=%d>\n", rb);
     }
   else
     {
@@ -1375,7 +1375,7 @@ print_lvl (struct rep_structure *rep, int lvl)
 
   for (a = 0; a < lvl; a++)
     {
-      fprintf (rep->output, "  ");
+      FPRINTF (rep->output, "  ");
     }
 }
 
@@ -1413,7 +1413,7 @@ print_data (struct rep_structure *rep, char *buff, int entry)
       if (strlen (s) && strcmp (s, "\n") != 0 && istop==0)
 	{
 	  print_lvl (rep, lvl);
-	  fprintf (rep->output, "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
+	  FPRINTF (rep->output, "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
 		   rep->page_no, rep->line_no, rep->col_no, entry, s);
 	}
     }
@@ -1509,7 +1509,7 @@ report_write_entry (struct rep_structure *rep, char type)
     {
       if (type == ENTRY_START)
 	{
-	  fprintf (rep->output,
+	  FPRINTF (rep->output,
 		   "<LAYOUT module=\"%s\" name=\"%s\" top=%d bottom=%d left=%d right=%d length=%d time=%ld />\n",
 		   rep->modName, rep->repName, rep->top_margin,
 		   rep->bottom_margin, rep->left_margin, rep->right_margin,

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.22 2005-10-01 08:24:11 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.23 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -273,7 +273,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
 			
-			printf("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
+			PRINTF("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);
@@ -329,7 +329,7 @@ char *A4GL_strcat(char *dest,char *src,char *f,int l,int sd) {
 
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
-			printf("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
+			PRINTF("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);
@@ -369,7 +369,7 @@ We can end up with problems with overlapping - eg
 	if (sdest>sizeof(char *)) { // We do this one...
 	      va_start (args, fmt);
 	      c=acl_malloc2(sdest);
-	      x=vsnprintf(c,sdest,fmt,args);
+	      x=VSNPRINTF(c,sdest,fmt,args);
 	      if (x>=sdest) {
                 sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
 			PRINTF("-->%s (%d>=%d)",fmt,x,sdest);
@@ -380,7 +380,7 @@ We can end up with problems with overlapping - eg
 // DO NOT CALL A4GL_debug from this function!!!!
 	} else {
 	      va_start (args, fmt);
-	      x=vsprintf(xbuff,fmt,args);
+	      x=VSPRINTF(xbuff,fmt,args);
 		if (x>sizeof(xbuff)) {
 			A4GL_assertion(1,"sprintf > 10,000 characters when using a pointer...");
 		}
@@ -1030,7 +1030,7 @@ etk_export_object_to_stream (CORBA_ORB          orb,
         if (etk_raised_exception(ev)) return;
  
         /* print ior to terminal */
-        fprintf (stream, "%s\n", objref);
+        FPRINTF (stream, "%s\n", objref);
         fflush (stream);
  
         CORBA_free (objref);

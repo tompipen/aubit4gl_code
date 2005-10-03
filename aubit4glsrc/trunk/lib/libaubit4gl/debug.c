@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.49 2005-09-20 13:41:29 mikeaubury Exp $
+# $Id: debug.c,v 1.50 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -186,22 +186,22 @@ A4GL_debug_full (char *fmt, ...)
 	memset(buff,0,sizeof(buff));
 
 #ifdef  HAVE_VSNPRINTF
-	vsnprintf (buff, MAX_DEBUG,fmt, args);
+	VSNPRINTF (buff, MAX_DEBUG,fmt, args);
 #else
-      	vsprintf (buff, fmt, args);
+      	VSPRINTF (buff, fmt, args);
 #endif
 
 	buff[MAX_DEBUG]=0;
       if (buff[strlen (buff) - 1] != ':')
-	fprintf (debugfile, "%-20s %-6d (%6ld,%6ld,%1d)",
+	FPRINTF (debugfile, "%-20s %-6d (%6ld,%6ld,%1d)",
 		 g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg());
       else
-	fprintf (debugfile, "%-20s                       "," ");
+	FPRINTF (debugfile, "%-20s                       "," ");
 
 	if (a_strchr(buff,'\n')) 
-      		fprintf (debugfile, " %s", buff);
+      		FPRINTF (debugfile, " %s", buff);
 	else
-      		fprintf (debugfile, " %s\n", buff);
+      		FPRINTF (debugfile, " %s\n", buff);
 
       fflush (debugfile);
     }

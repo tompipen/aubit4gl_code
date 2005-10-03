@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.31 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: error.c,v 1.32 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -194,7 +194,7 @@ A4GL_set_error (char *fmt, ...)
 {
   va_list args;
   va_start (args, fmt);
-  vsprintf (errorbuff, fmt, args);
+  VSPRINTF (errorbuff, fmt, args);
 #ifdef DEBUG
   /* {DEBUG} */
   {

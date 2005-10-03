@@ -1189,16 +1189,7 @@ put_val_int : CHAR_VALUE  {$<sql_string>$=strdup(convstrsql($<str>1));}
 
 
 
-where_clause_ss : where_clause_sli {
-	$<sql_string>$=make_sql_string_and_free(" WHERE ",get_select_list_item(0,$<s_select_list_item>1),0);
-}
-;
 
-
-upd_table_expression_2_ss: table_expression_2_select {
-	$<sql_string>$=make_table_expression($<s_select>1);
-}
-;
 
 
 query_specification_ss:  query_specification_select {

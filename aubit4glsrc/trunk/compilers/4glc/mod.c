@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.238 2005-10-01 08:50:59 mikeaubury Exp $
+# $Id: mod.c,v 1.239 2005-10-03 10:09:39 mikeaubury Exp $
 #
 */
 
@@ -125,6 +125,7 @@ char *A4GL_get_clobber_from_orig(char *s);
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
 char *sql_features=0;
+struct fh_field_list *new_field_list(void);
 //char *A4GL_decode_packtype(char *s) ;
 
 /*
@@ -284,7 +285,7 @@ char *get_default_database (void);
                     Functions prototypes
 =====================================================================
 */
-char *rettype (char *s);
+//char *rettype (char *s);
 int yywrap (void);
 struct sreports *get_sreports (int z);
 void a4gl_add_variable (char *name, char *type, char *n);
@@ -1700,9 +1701,9 @@ iscontinuecmd (char *s)
 void
 continue_blockcommand (char *cmd_type)
 {
-  int a;
+  //int a;
 
-  char err[80];
+  //char err[80];
   print_continue_block (command_stack[ccnt-1].block_no, 0,cmd_type);
 }
 
@@ -4673,7 +4674,7 @@ void print_display_by_name (char *attr)
 
   t_dt_display dt;
   struct expr_str *e;
-  struct expr_str *l;
+  struct expr_str_list *l;
   l=A4GL_new_ptr_list(0);
   dt.u_data.field_list=new_field_list();
 

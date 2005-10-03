@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.21 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: errfile.c,v 1.22 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -146,7 +146,7 @@ A4GL_write_cont (FILE * f)
 {
   int a, s = 1;
   a = 2048;
-  fprintf (fout, "\n");
+  FPRINTF (fout, "\n");
   while (s > 0)
     {
       /* if (feof(f)) break; */
@@ -200,13 +200,13 @@ void
 A4GL_prerrmark (FILE * f, int a)
 {
   int b;
-  fprintf (f, "|");
+  FPRINTF (f, "|");
   for (b = 1; b < a - 1; b++)
     {
-      fprintf (f, "_");
+      FPRINTF (f, "_");
     }
-  fprintf (f, "^\n");
-  fprintf (f, "| Error at line %d, character %d\n", errline, (int) le);
+  FPRINTF (f, "^\n");
+  FPRINTF (f, "| Error at line %d, character %d\n", errline, (int) le);
 
 }
 
@@ -253,13 +253,13 @@ int maxed=0;
 
     while (fgets(lnbuff,sizeof(lnbuff),fin)) {
 	ln++;
-	fprintf(fout,"%s",lnbuff);
+	FPRINTF(fout,"%s",lnbuff);
 	for (a=0;a<cnt;a++) {
 		if (e[a].lineno==ln) {
-			fprintf(fout,"|\n");
-			fprintf(fout,"|%s\n",e[a].err_str);
+			FPRINTF(fout,"|\n");
+			FPRINTF(fout,"|%s\n",e[a].err_str);
 			if (a==20 && maxed) {
-				fprintf(fout,"| ****  Too many errors - further errors ignored ****\n");
+				FPRINTF(fout,"| ****  Too many errors - further errors ignored ****\n");
 			}
 		}
 	}

@@ -504,7 +504,7 @@ strcpy($<str>$,"");
 }
 ;
 
-
+/*
 binding_list : binding_item {$<bind_list>$=new_bind_list($<str>1);}
 	| binding_list KW_COMMA binding_item {$<bind_list>=append_bind_list($<bind_list>1,$<str>3);}
 ;
@@ -516,6 +516,7 @@ binding_item : variable
 		| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
 		| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
 ;
+*/
 
 func_def_var : identifier | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
 ;

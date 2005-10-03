@@ -189,12 +189,13 @@ value_expression_pls_sli :
 	}
 ;
 
-
+/*
 column_specification_sli : value_expression_sli {
 	$<s_select_list_item>$=$<s_select_list_item>1;
 }
 
 ;
+*/
 
 
 
@@ -313,9 +314,11 @@ value_expr_list_slil :
 	
 ;
 
+/*
 value_specification:
 	 literal
 ;
+*/
 
 
 

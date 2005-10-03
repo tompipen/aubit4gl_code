@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gen_stack.c,v 1.2 2005-08-10 10:02:44 mikeaubury Exp $
+# $Id: gen_stack.c,v 1.3 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -169,7 +169,7 @@ void
 A4GL_4glc_dump_updvals (void)
 {
   int a;
-  printf("UPDCOL=%d UPDVAL=%d UPDVAL2=%d\n",UPDCOL,UPDVAL,UPDVAL2);
+  PRINTF("UPDCOL=%d UPDVAL=%d UPDVAL2=%d\n",UPDCOL,UPDVAL,UPDVAL2);
   for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
     {
       PRINTF ("UPDCOL[%d] : %s\n", a, gen_stack_ptr[UPDCOL][a]);

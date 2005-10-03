@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.100 2005-08-24 09:36:02 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.101 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -470,7 +470,7 @@ A4GL_chk_err (int lineno, char *fname)
 	f=fopen(buff,"w");
 
 	if (f) {
-		fprintf(f,"%s\n",s);
+		FPRINTF(f,"%s\n",s);
 		fclose(f);
 	}
 
@@ -1198,7 +1198,7 @@ A4GL_logsql (int lineno, char *module, char *s)
     }
   // if we've got to here - we've got a file to write to...
   //
-  fprintf (fout, "%s\n", s);
+  FPRINTF (fout, "%s\n", s);
   fclose (fout);
 
 }

@@ -143,7 +143,7 @@ fgl_expr_x:  fgl_expr_c {
    attached - and that we print the expressions as we are parsing rather than after we've
    parsed the print statements...
 */
-
+/*
 fgl_expr_y:  fgl_expr_c { 
 	struct expr_str *p;
 	int a;
@@ -161,6 +161,7 @@ fgl_expr_y:  fgl_expr_c {
 	}
 }
 ;
+*/
 
 /****************************************************************/
 

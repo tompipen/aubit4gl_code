@@ -290,35 +290,6 @@ in_select_statement_ss:
 ;
 
 
-var_ident_ibind_no_thru_ss :  var2_vu /* a1 */
-{
-        int sv_val;
-        char *str1;
-        str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
-
-        sv_val=scan_variable(str1);
-
-        if (strncmp(str1," a4gl_sub",9)==0) {
-                // Its a substring of a variable
-                sv_val=1;
-        }
-
-        if (sv_val!=-1&&(!system_var(str1)))
-        {
-                // Its a variable
-                int z = 0,a = 0;
-                a=get_bind_cnt('i');
-                z=add_bind('i',str1);
-                z-=a;
-                $<sql_string>$=acl_strdup(A4GL_set_var_sql(doing_declare,z));
-
-        } else {
-                // Its a column
-                $<sql_string>$=acl_strdup(get_column_transform(str1));
-        }
-free(str1);
-}
-;
 
 
 /* ========================= sql_4gl.rule ================================ */

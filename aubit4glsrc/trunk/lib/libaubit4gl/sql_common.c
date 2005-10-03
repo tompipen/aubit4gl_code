@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.13 2005-09-20 13:41:29 mikeaubury Exp $
+# $Id: sql_common.c,v 1.14 2005-10-03 10:09:45 mikeaubury Exp $
 #
 */
 
@@ -137,7 +137,7 @@ if (A4GL_isyes(acl_getenv("A4GL_LOGSQLERR")) && (strlen(m)||strlen(p))) {
 		flog=fopen("/tmp/flog.err","a");
 	}
 	if (flog) {
-		fprintf(flog,"%ld - %s - %s\n",a4gl_sqlca.sqlcode,m,p);
+		FPRINTF(flog,"%ld - %s - %s\n",a4gl_sqlca.sqlcode,m,p);
 	}
 }
         A4GL_debug("A4GLSQL_set_sqlerrm('%s','%s')", m, p);
@@ -681,7 +681,7 @@ void A4GL_log_sql_prepared(char *s) {
 	if (fout==0) return;
 	// if we've got to here - we've got a file to write to...
 	//
-	fprintf(fout,"%s\n",s);
+	FPRINTF(fout,"%s\n",s);
 	fclose(fout);
 }
 #endif
@@ -726,7 +726,7 @@ void A4GL_log_sql_prepared_map(char *s) {
 	A4GL_assertion(fout==0,"fout not set - shouldn't happen");
 	// if we've got to here - we've got a file to write to...
 	//
-	fprintf(fout,"%s\n",s);
+	FPRINTF(fout,"%s\n",s);
 	fclose(fout);
 }
 
