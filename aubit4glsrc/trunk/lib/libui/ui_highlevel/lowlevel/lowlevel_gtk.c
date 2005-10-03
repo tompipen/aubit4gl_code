@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.77 2005-08-17 13:43:15 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.78 2005-10-03 20:16:12 whaslbeck Exp $";
 #endif
 
 
@@ -88,6 +88,9 @@ static int A4GL_show_ok_cancel (int n);
 int A4GL_fake_a_keypress (GtkWidget * widget, int key);
 static void A4GL_default_attributes_in_ll (void *f, int dtype,
 					   int has_picture);
+
+void A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch, int curr_width,
+			  int curr_height, int iscurrborder, int currwinno);
 
 #define KEY_BUFFER_SIZE 256
 int keybuffer[KEY_BUFFER_SIZE];
@@ -1754,7 +1757,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
       //printf("NEW LABEL FOR : %d %d\n",x,y);
       lab = (GtkLabel *) gtk_label_new (lab_utf);
       g_free (lab_utf);
-
+printf("xxx: '%s' -> '%s'\n", cbuff, lab_utf);
       e = (GtkEventBox *) gtk_event_box_new ();
       gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (e), A4GL_getx_coords (x),
 		     A4GL_gety_coords (y));
@@ -1795,6 +1798,98 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
 	{
 	  //printf("Ign spc %s reset\n",buff_label);
 	}
+
+    }
+
+  if ((old_attr & 0xffffff00) == (ch & 0xffffff00) && has_old_attr);
+  else
+    {
+      A4GL_LL_set_field_back ((GtkWidget *) e, ch);
+      A4GL_LL_set_field_fore ((GtkWidget *) lab, ch);
+    }
+}
+
+
+void
+A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch, int curr_width,
+			  int curr_height, int iscurrborder, int currwinno)
+{
+  GtkFixed *cwin;
+  GtkEventBox *e;
+  GtkLabel *lab;
+
+  gchar label_text[256];
+
+  char buff_label[256];
+  char buff_evt[256];
+  char buff_char[256];
+  char buff_attr[256];
+
+  long old_attr = 0;
+  long has_old_attr = 0;
+
+  g_snprintf(label_text, sizeof(label_text), "%lc", ch);
+
+  sprintf (buff_label, "LABEL_%d_%d", x, y);
+  sprintf (buff_char, "LABEL_%d_%d_C", x, y);
+  sprintf (buff_evt, "EVENTBOX_%d_%d", x, y);
+  sprintf (buff_attr, "ATTR_%d_%d", x, y);
+
+  cwin = gtk_object_get_data (GTK_OBJECT (win), "FIXED");
+  lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff_label);
+  e = (GtkEventBox *) gtk_object_get_data (GTK_OBJECT (cwin), buff_evt);
+  old_attr = (long) gtk_object_get_data (GTK_OBJECT (cwin), buff_attr);
+
+
+  if (old_attr == ch && lab && e)
+    return;
+  gtk_object_set_data (GTK_OBJECT (cwin), buff_attr, (void *) ch);
+
+
+  // It did have...
+  if (ch == 32 || ch == 0 || ch == 0x10720 || ch == 0x10700)
+    {
+
+      if (lab == 0 && e == 0)
+	{
+	  return;
+	}
+    }
+
+  if (!lab)
+    {
+      lab = (GtkLabel *) gtk_label_new (label_text);
+
+      e = (GtkEventBox *) gtk_event_box_new ();
+      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (e), A4GL_getx_coords (x),
+		     A4GL_gety_coords (y));
+      gtk_container_add (GTK_CONTAINER (e), GTK_WIDGET (lab));
+
+      gtk_object_set_data (GTK_OBJECT (cwin), buff_label, lab);
+      gtk_object_set_data (GTK_OBJECT (cwin), buff_char,
+			   (void *) (ch & 0xff));
+
+      gtk_object_set_data (GTK_OBJECT (cwin), buff_evt, e);
+      gtk_misc_set_alignment (GTK_MISC (lab), 0.5f, 0.5f);
+#if GTK_CHECK_VERSION(2,0,0)
+      gtk_widget_set_size_request (GTK_WIDGET (e), gui_xwidth, gui_yheight);
+      gtk_widget_set_size_request (GTK_WIDGET (lab), gui_xwidth, gui_yheight);
+
+#endif
+
+      has_old_attr = 0;
+
+      gtk_widget_show (GTK_WIDGET (lab));
+      gtk_widget_show (GTK_WIDGET (e));
+
+    }
+  else
+    {
+      has_old_attr = 1;
+      gtk_label_set_text (lab, label_text);
+#if GTK_CHECK_VERSION(2,0,0)
+      gtk_widget_set_size_request (GTK_WIDGET (lab), gui_xwidth, gui_yheight);
+#endif
 
     }
 
@@ -2460,18 +2555,28 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 	      ptr =
 		gtk_object_get_data (GTK_OBJECT (form->widgets[a]),
 				     "MF_LABELSTR");
-	      //printf("Label : '%s'\n",ptr);
 	      if (strlen (ptr))
 		{
+
+		  /*
 		  for (b = 0; b < strlen (ptr); b++)
 		    {
-		      int c;
-		      c = ptr[b] & 0xff;
-		      //printf("%p %d %d=%d\n",drwin,x+b,y,c);
+		      int c = ptr[b] & 0xff;
 		      A4GL_LL_wadd_char_xy_col (drwin, x + b, y, c,
 						curr_width, curr_height,
 						iscurrborder, currwinno);
 		    }
+		    */
+
+		  /* wh: allow non-ascii labels */
+		  gchar *utf = g_locale_to_utf8(ptr, -1, NULL, NULL, NULL);
+		  for(b = 0; b < g_utf8_strlen(utf, -1); b++) {
+		      gunichar uni = g_utf8_get_char_validated(g_utf8_offset_to_pointer(utf, b), -1);
+		      A4GL_LL_wadd_gunichar_xy_col (drwin, x + b, y, uni,
+						curr_width, curr_height,
+						iscurrborder, currwinno);
+		  }
+		  g_free(utf);
 		}
 
 	    }
@@ -2758,7 +2863,7 @@ A4GL_LL_new_form (list_of_fields * vfd)
   for (a = 0; a < vfd->a.a_len; a++)
     {
       form->widgets[a] = (void *) vfd->a.a_val[a];
-      printf ("Make active : %p\n", form->widgets[a]);
+      //printf ("Make active : %p\n", form->widgets[a]);
       A4GL_gui_set_active (form->widgets[a], 0);
     }
   return form;
