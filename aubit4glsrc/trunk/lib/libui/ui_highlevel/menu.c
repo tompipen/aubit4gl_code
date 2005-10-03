@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.28 2005-08-17 13:43:15 mikeaubury Exp $";
+  "$Id: menu.c,v 1.29 2005-10-03 18:12:13 whaslbeck Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -37,7 +37,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   ACL_Menu *menu;
   menu = menuv;
 
-  printf("Displaying menu\n");
+  //printf("Displaying menu\n");
   /* Is the UI client going to do most of the work for us ? */
   if (A4GL_LL_menu_type () == 1)
     {
@@ -54,7 +54,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
       A4GL_LL_screen_update ();
       return;
     }
-  printf("-----------------\n");
+  //printf("-----------------\n");
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
   A4GL_debug ("Current metrics : %d %d %d", A4GL_get_curr_left (),
@@ -392,7 +392,7 @@ A4GL_highlevel_menu_loop (void *menuv)
     {
       a = A4GL_menu_loop_type_1 (menu, menu->num_opts);
       if (a) A4GL_clr_error_nobox ("menu_callback");
-      printf ("Return %d\n", a);
+      //printf ("Return %d\n", a);
       return a;
     }
 
@@ -594,10 +594,10 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
 
       if (key < 0)
 	{			// button pressed
-	  printf ("Key = %d\n", key);
+	  //printf ("Key = %d\n", key);
 
 	  menu_response = (key * -1) - 1000;
-	  printf ("menu_response=%d\n", menu_response);
+	  //printf ("menu_response=%d\n", menu_response);
 	}
       else
 	{
