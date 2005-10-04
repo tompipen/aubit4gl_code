@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.23 2005-06-30 22:15:28 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.24 2005-10-04 21:12:33 whaslbeck Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -237,11 +237,11 @@ A4GL_split_config (char *str)
     {
       if (strlen (args_val[0]) == 0 && strlen (args[0]))
 	{
-	  printf ("Looking at :%s\n", args[0]);
+	  fprintf (stderr, "Looking at :%s\n", args[0]);
 	  if (A4GL_key_val (args[0]) > 255)
 	    {
 	      // Looks like the config is just a key..
-	      printf ("Key ? %s\n", args[0]);
+	      fprintf (stderr, "Key ? %s\n", args[0]);
 	      args_type[0] = TYPE_CHAR;
 	      args_val[0] = strdup (args[0]);	//@FIXME - memory leak
 	      //if (args_val[0][0]=='f' && (args_arg[0][1]>='1' && args_val[0][1]<='9')) {a4gl_upshift(args_val[0]);}
@@ -316,7 +316,6 @@ A4GL_make_widget (char *widget, char *config, int w)
 	{
 	  char *key;
 	  widget_next_size = w;
-	  //printf("Making type %d - %s\n", a,widget);
 	  A4GL_debug ("Making type %d", a);
 	  ptr = widgets[a].make ();
 	  A4GL_debug ("SIzing widget (%p)", ptr);
@@ -342,8 +341,8 @@ A4GL_make_widget (char *widget, char *config, int w)
 
 
   A4GL_debug ("No widget of that type available...");
-  printf ("Invalid Widget : %s\n", widget);
-  fflush (stdout);
+  fprintf (stderr, "Invalid Widget : %s\n", widget);
+  fflush (stderr);
   A4GL_exitwith ("Invalid Widget");
   return 0;
 }
@@ -393,9 +392,6 @@ A4GL_fld_val_generic (GtkWidget * k)
   A4GL_debug ("in A4GL_fld_val_generic k=%p\n", k);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WIDGETSNAME");
-
-  //printf("fld_val_generic : %s\n",ptr);
-
 
   if (ptr == NULL)
     {
@@ -481,7 +477,7 @@ A4GL_fld_val_generic (GtkWidget * k)
 
   if (strcasecmp (ptr, "CALENDAR") == 0)
     {
-      int d, m, y;
+      unsigned int d, m, y;
       static char buff[256];
 
       gtk_calendar_get_date (GTK_CALENDAR (k), &y, &m, &d);
@@ -505,7 +501,7 @@ A4GL_fld_val_generic (GtkWidget * k)
       return buff;
     }
 
-  printf ("UNKNOWN WIDGET TYPE: '%s'\n", ptr);
+  fprintf (stderr, "UNKNOWN WIDGET TYPE: '%s'\n", ptr);
 /* NEWWIDGET - Add here */
 
 
@@ -646,7 +642,7 @@ UILIB_A4GL_make_pixmap_gw (char *filename)
 					   NULL, filename);
   if (p == 0)
     {
-      printf ("Bad pixmap...");
+      fprintf (stderr, "Bad pixmap...");
       //A4GL_exitwith ("Error creating pixmap");
       return 0;
     }
@@ -668,7 +664,7 @@ A4GL_make_pixbuf_gw (char *filename)
 
   if (filename == 0)
     filename = "";
-  printf ("Making pixmap from file:%s (1)\n", filename);
+  fprintf (stderr, "Making pixmap from file:%s (1)\n", filename);
   A4GL_trim (filename);
 
 
@@ -686,7 +682,7 @@ A4GL_make_pixbuf_gw (char *filename)
 
   if (pixbuf == 0 || resized == 0)
     {
-      printf ("Make pixmap failed...");
+      fprintf (stderr, "Make pixmap failed...");
     }
 
   gtk_image_set_from_pixbuf (GTK_IMAGE (widget), resized);
@@ -694,12 +690,10 @@ A4GL_make_pixbuf_gw (char *filename)
 
 
   gtk_widget_show (widget);
-  printf ("pixmap=%p\n", pixbuf);
+  fprintf (stderr, "pixmap=%p\n", pixbuf);
   //gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, FALSE, 2);
 
   g_object_unref (pixbuf);
-
-
 
 
   //gtk_widget_show(hbox);
@@ -765,16 +759,16 @@ A4GL_cr_pixbuf (void)
 {
   GtkWidget *pixmap = 0;
   char *filename;
-  printf ("Find param\n");
+  fprintf (stderr, "Find param\n");
 
   filename = A4GL_find_param ("FILENAME");
-  printf ("Found :%s\n", filename);
+  fprintf (stderr, "Found :%s\n", filename);
   A4GL_debug ("Making picture filename=%s PIXBUF\n", filename);
 #if GTK_CHECK_VERSION(2,0,0)
   pixmap = A4GL_make_pixbuf_gw (filename);
 #endif
   gtk_widget_show (pixmap);
-  printf ("Made : %p\n", pixmap);
+  fprintf (stderr, "Made : %p\n", pixmap);
   A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
   return pixmap;
 }
@@ -801,7 +795,7 @@ A4GL_cr_button (void)
   label = A4GL_find_param ("*LABEL");
   image = A4GL_find_param ("*IMAGE");
   key = A4GL_find_param ("*KEY");
-  printf ("key=%s\n", key);
+  fprintf (stderr,"key=%s\n", key);
 
   b = (GtkButton *) gtk_button_new ();
   v = (GtkVBox *) gtk_vbox_new (0, 3);
@@ -817,7 +811,6 @@ A4GL_cr_button (void)
       if (strlen (label))
 	{
 	  char *utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
-	  //printf ("utf=%s\n", utf);
 	  l = (GtkLabel *) gtk_label_new (utf);
 #if GTK_CHECK_VERSION(2,0,0)
 	  /*
@@ -850,7 +843,7 @@ A4GL_cr_button (void)
     {
       if (strlen (key))
 	{
-	  printf ("ISKEY:%s\n", key);
+	  fprintf (stderr, "ISKEY:%s\n", key);
 	  gtk_object_set_data (GTK_OBJECT (b), "KEY", key);
 	}
     }
@@ -860,7 +853,6 @@ A4GL_cr_button (void)
   if (strcmp (label, " ") == 0)
     {
       gtk_widget_hide (GTK_WIDGET (b));
-      //printf("Hiding empty button\n");
     }
   return GTK_WIDGET (b);
 }
@@ -1279,7 +1271,7 @@ A4GL_select_row_handler (GtkWidget * w,
 
   else
     {
-      printf ("Nothing to do\n");
+      fprintf (stderr, "Nothing to do\n");
     }
 }
 
@@ -1331,7 +1323,6 @@ A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data)
 void
 A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr)
 {
-//printf("Add clicked..\n");
   gtk_signal_connect (GTK_OBJECT (widget), "clicked",
 		      GTK_SIGNAL_FUNC (A4GL_clicked_handler), funcptr);
 }
@@ -1344,7 +1335,6 @@ A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr)
 void
 A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr)
 {
-//printf("Add grab focus..\n");
   gtk_signal_connect (GTK_OBJECT (widget), "grab-focus",
 		      GTK_SIGNAL_FUNC (A4GL_grab_focus_handler), funcptr);
 }
@@ -1356,7 +1346,6 @@ A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr)
 void
 A4GL_add_signal_changed (GtkWidget * widget, void *funcptr)
 {
-//printf("Add changed..\n");
   gtk_signal_connect (GTK_OBJECT (widget), "changed",
 		      GTK_SIGNAL_FUNC (A4GL_changed_handler), funcptr);
 }
@@ -1369,7 +1358,6 @@ A4GL_add_signal_changed (GtkWidget * widget, void *funcptr)
 void
 A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr)
 {
-//printf("Add select_row..\n");
   gtk_signal_connect (GTK_OBJECT (widget), "select_row",
 		      GTK_SIGNAL_FUNC (A4GL_select_row_handler), funcptr);
 }
@@ -1387,7 +1375,6 @@ void
 A4GL_func (GtkWidget * w, char *mode)
 {
 
-  //printf ("MJAMJA (func)- widget=%p\n", w);
   if (gtk_object_get_data (GTK_OBJECT (w), "HANDLER") != 0)
     {
       /* void (*hand)(); */
@@ -1400,16 +1387,12 @@ A4GL_func (GtkWidget * w, char *mode)
     }
 
   A4GL_debug ("in func");
-  //printf ("!**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
-  //fflush (stdout);
   A4GL_debug ("**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype,
 	      field);
 
   if (strcasecmp (mode, "grab_focus") == 0)
     {
       A4GL_debug ("grab focus detected...\n");
-      fflush (stdout);
-
       A4GL_debug ("setting A4GL_action field=%p", w);
       actionfield = w;
 
@@ -1420,20 +1403,19 @@ A4GL_func (GtkWidget * w, char *mode)
     {
       char *key;
       int m;
-      int keyn;
+      unsigned int keyn;
       keyn = 0;
       A4GL_debug ("setting A4GL_action field=%p", w);
       actionfield = w;
 
       key = gtk_object_get_data (GTK_OBJECT (w), "KEY");
 
-      printf ("Key=%p (%s)\n", key, key);
-      fflush (stdout);
+      fprintf (stderr, "Key=%p (%s)\n", key, key);
+      fflush (stderr);
 
       if (key)
 	{
 	  A4GL_debug ("Substituting specified key: %s\n", key);
-	  fflush (stdout);
 
 	  if (strcasecmp (key, "ACCEPT") == 0)
 	    {
@@ -1453,23 +1435,23 @@ A4GL_func (GtkWidget * w, char *mode)
 		  gtk_accelerator_parse (key, &keyn, (GdkModifierType *) ptr);
 		  if (keyn == 0 && m == 0)
 		    {
-		      printf ("Don't understand that key\n");
+		      fprintf (stderr, "Don't understand that key\n");
 		      a4gl_upshift (key);
 		      gtk_accelerator_parse (key, &keyn,
 					     (GdkModifierType *) ptr);
 		      if (keyn == 0 && m == 0)
 			{
 			  keyn = A4GL_key_val (key);
-			  printf
-			    ("Still dont understand that key - hope the aubit one just passed through...");
+			  fprintf
+			    (stderr, "Still dont understand that key - hope the aubit one just passed through...");
 			}
 		    }
 		  if (m & 4 && tolower (keyn) >= 'a' && tolower (keyn) <= 'z')
 		    keyn = tolower (keyn) - 'a' + 1;
 
 		  A4GL_fake_a_keypress (w, keyn);
-		  printf ("keyn=%x m=%x\n", keyn, m);
-		  fflush (stdout);
+		  fprintf (stderr, "keyn=%x m=%x\n", keyn, m);
+		  fflush (stderr);
 		}
 	    }
 	}
@@ -1580,8 +1562,8 @@ A4GL_display_generic (GtkWidget * k, char *s)
 
   if (strcasecmp (ptr, "LIST") == 0)
     {
-      printf ("Adding to list...\n");
-      fflush (stdout);
+      fprintf (stderr, "Adding to list...\n");
+      fflush (stderr);
       k = gtk_object_get_data (GTK_OBJECT (k), "Child");
       gtk_clist_append (GTK_CLIST (k), &utf);
       g_free (utf);
