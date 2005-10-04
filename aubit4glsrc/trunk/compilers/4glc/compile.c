@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.93 2005-09-09 20:44:36 mikeaubury Exp $
+# $Id: compile.c,v 1.94 2005-10-04 16:39:21 mikeaubury Exp $
 #*/
 
 /**
@@ -1843,17 +1843,17 @@ char buff[256];
 			return;
 		case ANSI_MODE_WARN:
 			if (severity == 0) {
-				printf ("Warning : Corrected ANSI violation : %s @ line %d\n", s,
+				fprintf (stderr,"Warning : Corrected ANSI violation : %s @ line %d\n", s,
 					yylineno);
 			} else {
-				printf ("Warning : ANSI violation : %s @ line %d\n", s, yylineno);
+				fprintf (stderr,"Warning : ANSI violation : %s @ line %d\n", s, yylineno);
 			}
 			return;
     }
 	
 	/* Must be an ansi error....*/
 	if (severity == 0) {
-		printf ("Warning : Corrected ANSI violation : %s @ line %d\n", s,
+		fprintf (stderr,"Warning : Corrected ANSI violation : %s @ line %d\n", s,
 	      	yylineno);
 		return;
     }

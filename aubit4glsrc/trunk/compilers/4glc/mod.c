@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.239 2005-10-03 10:09:39 mikeaubury Exp $
+# $Id: mod.c,v 1.240 2005-10-04 16:39:21 mikeaubury Exp $
 #
 */
 
@@ -3660,7 +3660,7 @@ chk_init_var (char *s)
     {
       if (isarrvariable (s))
 	{
-	  PRINTF ("Warning: Only initializing first element in array %s\n", s);
+	  FPRINTF (stderr,"Warning: Only initializing first element in array %s\n", s);
 	  strcat (s, "[0]");
 	  return;
 	}
@@ -3676,7 +3676,7 @@ chk_init_var (char *s)
     {
       char buff[1024];
       char *ptr;
-      PRINTF ("Warning: Only initializing first element in array %s\n", s);
+      FPRINTF (stderr,"Warning: Only initializing first element in array %s\n", s);
       strcpy (buff, s);
       ptr = strchr (s, '.');
       *ptr = 0;
