@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.240 2005-10-04 16:39:21 mikeaubury Exp $
+# $Id: mod.c,v 1.241 2005-10-05 09:08:14 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,7 @@
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 #include <ctype.h>
+#include "field_handling.h"
 #include <errno.h>
 #define GEN_STACK_HERE
 #include "a4gl_gen_stack.h"
@@ -1620,7 +1621,7 @@ push_menu_title (char *s)
  *
  * @param cmd_type The type of the command found:
  */
-void
+int
 push_blockcommand (char *cmd_type)
 {
   A4GL_debug ("START BLOCK %s", cmd_type);
@@ -1644,6 +1645,7 @@ push_blockcommand (char *cmd_type)
   A4GL_debug (" Added new block");
   ccnt++;
   file_out_indent(ccnt);
+  return command_stack[ccnt].block_no;
 }
 
 /**
@@ -4039,6 +4041,9 @@ void do_print_menu_block_end(void) {
 
 int get_blk_no() {
 	return command_stack[ccnt-1].block_no;
+}
+int get_blk_no_1() {
+	return command_stack[ccnt-2].block_no;
 }
 
 

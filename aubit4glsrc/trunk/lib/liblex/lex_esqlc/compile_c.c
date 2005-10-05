@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.261 2005-10-03 10:55:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.262 2005-10-05 09:08:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.261 2005-10-03 10:55:21 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.262 2005-10-05 09:08:14 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -106,6 +106,9 @@ int doing_report_print=0;
 static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
 static void print_returning (void);
 
+
+
+
 /*
 =====================================================================
 		                    Includes
@@ -117,6 +120,7 @@ static void print_returning (void);
 
 #include "field_handling.h"
 
+int print_bind_dir_definition(char i,struct binding_comp *bind, int bindcnt) ;
 void print_Constant_1 (char *name, struct constant_data *c);
 
 int rep_print_code;
@@ -151,7 +155,7 @@ extern int yylineno;
 extern int lastlineno;
 extern int inp_flags;
 
-char *expr_name(enum e_expr_type e);
+//char *expr_name(enum e_expr_type e);
 
 
 dll_import struct rep_structure rep_struct;
@@ -1482,6 +1486,7 @@ static void
 real_print_expr (struct expr_str *ptr)
 {
   void *optr;
+  int a;
   A4GL_debug ("Print expr... %p", ptr);
 
   A4GL_assertion (ptr == 0, "can't print a null pointer...");
@@ -1512,15 +1517,29 @@ real_print_expr (struct expr_str *ptr)
 	  A4GL_assertion (1,
 			  "ET_EXPR_EXTERNAL has not been implented as an expression yet");
 	  break;
+
 	case ET_EXPR_OP_IN:
-	  A4GL_assertion (1,
-			  "ET_EXPR_OP_IN has not been implented as an expression yet");
+	  	real_print_expr (ptr->u_data.expr_in->expr);
+		for (a=0;a<ptr->u_data.expr_in->elist->nlist;a++) {
+	  			real_print_expr (ptr->u_data.expr_in->elist->list[a]);
+		}
+	  	printc ("A4GL_push_int(%d);",ptr->u_data.expr_in->elist->nlist);
+	  	printc ("A4GL_pushop(OP_IN);",ptr->u_data.expr_in->elist->nlist);
 	  break;
-	case ET_EXPR_OP_NOTIN:
-	  A4GL_assertion (1,
-			  "ET_EXPR_OP_NOTIN has not been implented as an expression yet");
+	case ET_EXPR_OP_NOT_IN:
+	  	real_print_expr (ptr->u_data.expr_in->expr);
+		for (a=0;a<ptr->u_data.expr_in->elist->nlist;a++) {
+	  			real_print_expr (ptr->u_data.expr_in->elist->list[a]);
+		}
+	  	printc ("A4GL_push_int(%d);",ptr->u_data.expr_in->elist->nlist);
+	  	printc ("A4GL_pushop(OP_NOTIN);",ptr->u_data.expr_in->elist->nlist);
 	  break;
 
+
+	case ET_EXPR_NOT_EXISTS_SUBQUERY: 	print_exists_subquery(0, ptr->u_data.expr_exists_sq); break;
+	case ET_EXPR_EXISTS_SUBQUERY: 		print_exists_subquery(1, ptr->u_data.expr_exists_sq); break;
+	case ET_EXPR_OP_NOTIN_SUBQUERY: 	print_in_subquery(0, ptr->u_data.expr_in_sq); break;
+	case ET_EXPR_OP_IN_SUBQUERY: 		print_in_subquery(1, ptr->u_data.expr_in_sq); break;
 
 	case ET_EXPR_STRING:
 	  printc ("%s\n", ptr->u_data.expr_char);
@@ -2335,7 +2354,7 @@ print_arr_bind (char i)
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	}
       printc ("\n}; \n");
-	printcomment("/* end of binding */\n");
+	printcomment("/* end of binding.4 */\n");
       for (a = 0; a < ibindcnt; a++)
 	{
 	printc("ibind[%d].ptr= &%s;", a,ibind[a].varname);
@@ -2353,7 +2372,7 @@ print_arr_bind (char i)
 	  printc ("{0,%d,%d,0,0,0}", (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	}
       printc ("\n}; ");
-	printcomment("/* end of binding */\n");
+	printcomment("/* end of binding.5 */\n");
       for (a = 0; a < obindcnt; a++)
 	{
 	printc("obind[%d].ptr= &%s;", a,obind[a].varname);
@@ -2462,7 +2481,7 @@ LEXLIB_print_param (char i,char*fname)
     		}
 	}
   printc ("\n}; ");
-	printcomment("/* end of binding */\n");
+	printcomment("/* end of binding.6 */\n");
   if (i == 'r')
     {
       printc ("static char *_rbindvarname[%d]={\n", ONE_NOT_ZERO(fbindcnt));
@@ -2543,7 +2562,7 @@ LEXLIB_print_bind (char i)
 		  ibind[a].start_char_subscript, ibind[a].end_char_subscript);
 	}
       printc ("\n}; ");
-	printcomment("/* end of binding */\n");
+	printcomment("/* end of binding.7 */\n");
       if (doing_esql ())
 	{
 	  make_sql_bind (0, "i");
@@ -2571,7 +2590,7 @@ LEXLIB_print_bind (char i)
 		  (int) nullbind[a].dtype & 0xffff,
 		  (int) nullbind[a].dtype >> 16);
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; /* end of binding.8 */\n");
       start_bind (i, 0);
       return a;
     }
@@ -2593,7 +2612,7 @@ LEXLIB_print_bind (char i)
 		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16,
 		  ibind[a].start_char_subscript, ibind[a].end_char_subscript);
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; /* end of binding.9 */\n");
       if (doing_esql ())
 	{
 	  make_sql_bind (0, "o");
@@ -2622,7 +2641,7 @@ LEXLIB_print_bind (char i)
 		  (int) ordbind[a].dtype & 0xffff,
 		  (int) ordbind[a].dtype >> 16);
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; /* end of binding.10 */\n");
       current_ordbindcnt = ordbindcnt;
       start_bind (i, 0);
 
@@ -5371,6 +5390,7 @@ LEXLIB_print_while_end (void)
 
 
 void LEXLIB_print_case_end(void){
+	printc("break;");
 	printc("} /* Case end */");
 }
 
@@ -6133,13 +6153,18 @@ LEXLIB_print_return (t_expr_str_list *expr) {
 int z;
 int n;
 char *s;
-//int c;
+#ifdef CM
+int c;
+#endif
+
+
+
+
 expr=A4GL_rationalize_list(expr);
 n=A4GL_new_list_get_count(expr);
 
 
 #ifdef CM
-
 
   if (n==0) { printf ("RETURN %s\n",curr_func); }
   else {
@@ -7370,6 +7395,19 @@ if (x) {free(x);x=0;}
 int
 LEXLIB_print_bind_definition (char i)
 {
+
+	switch (i) {
+		case 'i': return print_bind_dir_definition(i,ibind,ibindcnt); 
+		case 'o': return print_bind_dir_definition(i,obind,obindcnt); 
+		case 'O': expand_bind (&ordbind[0], 'O', ordbindcnt,0);return print_bind_dir_definition(i,ordbind,ordbindcnt); 
+		case 'N': expand_bind (&nullbind[0], 'N', nullbindcnt,0); return print_bind_dir_definition(i,nullbind,nullbindcnt); 
+		default : A4GL_assertion(1,"Unhandled print_bind_definition");
+	}
+
+}
+
+
+int print_bind_dir_definition(char i,struct binding_comp *bind, int bindcnt) {
   int a;
 #ifdef DEBUG
   A4GL_debug ("/* %c */\n", i);
@@ -7377,7 +7415,7 @@ LEXLIB_print_bind_definition (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (ibindcnt), ibindcnt);
+      printc ("struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (bindcnt), bindcnt);
       if (ibindcnt == 0)
 	{
 	  printc ("{0,0,0,0,0,0}");
@@ -7385,9 +7423,7 @@ LEXLIB_print_bind_definition (char i)
       for (a = 0; a < ibindcnt; a++)
 	{
 	  //if (a > 0) printc (",\n");
-	  printc ("{0,%d,%d,%d,%d,0}%c", 
-		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
-		  ibind[a].start_char_subscript, ibind[a].end_char_subscript,(a<ibindcnt-1)?',':' ');
+	  printc ("{0,%d,%d,%d,%d,0}%c", (int) bind[a].dtype & 0xffff, (int) bind[a].dtype >> 16, bind[a].start_char_subscript, bind[a].end_char_subscript,(a<bindcnt-1)?',':' ');
 	}
       printc ("\n}; \n");
       if (doing_esql ())
@@ -7400,46 +7436,44 @@ LEXLIB_print_bind_definition (char i)
   if (i == 'o')
     {
       printc ("\n");
-      printc ("struct BINDING obind[%d]={\n", ONE_NOT_ZERO (obindcnt));
-      if (obindcnt == 0)
+      printc ("struct BINDING obind[%d]={\n", ONE_NOT_ZERO (bindcnt));
+      if (bindcnt == 0)
 	{
 	  printc ("{0,0,0,0,0,0}");
 	}
 
-      for (a = 0; a < obindcnt; a++)
+      for (a = 0; a < bindcnt; a++)
 	{
-	  printc ("{0,%d,%d,%d,%d,0}%c", 
-		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16,
-		  obind[a].start_char_subscript, obind[a].end_char_subscript, (a<obindcnt-1)?',':' '
-);
+	  printc ("{0,%d,%d,%d,%d,0}%c", (int) bind[a].dtype & 0xffff, (int) bind[a].dtype >> 16, bind[a].start_char_subscript, bind[a].end_char_subscript, (a<bindcnt-1)?',':' ');
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; /* end of binding.1 */\n");
       if (doing_esql ())
 	{
 	  make_sql_bind (0, "o");
 	}
       return a;
     }
+
   if (i == 'O')
     {
       printc ("\n");
       
-      expand_bind (&ordbind[0], 'O', ordbindcnt,0);
-      printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
-      if (ordbindcnt == 0)
+      //expand_bind (&bind[0], 'O', bindcnt,0);
+      printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (bindcnt));
+      if (bindcnt == 0)
 	{
 	  printc ("{0,0,0,0,0,0}");
 	}
-
-      for (a = 0; a < ordbindcnt; a++)
+      //printf("%d %d \n",bindcnt,ordbindcnt);
+      for (a = 0; a < bindcnt; a++)
 	{
 	  printc ("{0,%d,%d,%d,%d,0}%c", 
-		  (int) ordbind[a].dtype & 0xffff, (int) ordbind[a].dtype >> 16,
-		  ordbind[a].start_char_subscript, ordbind[a].end_char_subscript, (a<ordbindcnt-1)?',':' '
+		  (int) bind[a].dtype & 0xffff, (int) bind[a].dtype >> 16,
+		  bind[a].start_char_subscript, bind[a].end_char_subscript, (a<bindcnt-1)?',':' '
 );
 	}
-      printc ("\n}; /* end of binding */\n");
-      current_ordbindcnt = ordbindcnt;
+      printc ("\n}; /* end of binding.2 */\n");
+      current_ordbindcnt = bindcnt;
       if (doing_esql ())
 	{
 	  make_sql_bind (0, "O");
@@ -7449,10 +7483,9 @@ LEXLIB_print_bind_definition (char i)
 
   if (i == 'N')
     {
-      expand_bind (&nullbind[0], 'N', nullbindcnt,0);
+	    A4GL_assertion(bind!=nullbind,"Not implemented");
       printc ("\n");
-      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/",
-              ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
+      printc ("struct BINDING nullbind[%d]={\n /* nullbind %d*/", ONE_NOT_ZERO (nullbindcnt), nullbindcnt);
       if (nullbindcnt == 0)
         {
           printc ("{0,0,0,0,0,0}");
@@ -7466,17 +7499,59 @@ LEXLIB_print_bind_definition (char i)
                   (int) nullbind[a].dtype & 0xffff,
                   (int) nullbind[a].dtype >> 16);
         }
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; /* end of binding.3 */\n");
       return a;
     }
 
     printf("UNEXPECTED BINDING %c\n",i);
+	A4GL_assertion(1,"Unexpected binding");
     exit(3);
 
   return 0;
 }
 
 
+int
+print_bind_dir_set_value (char i,struct binding_comp *bind,int bindcnt)
+{
+  int a;
+
+  if (i == 'i')
+    {
+      for (a = 0; a < bindcnt; a++)
+	{
+	  printc ("ibind[%d].ptr= &%s;", a,bind[a].varname);
+	}
+      start_bind (i, 0);
+      return a;
+    }
+
+
+  if (i == 'o')
+    {
+      for (a = 0; a < bindcnt; a++)
+	{
+	  printc ("obind[%d].ptr= &%s;", a,bind[a].varname);
+	}
+      start_bind (i, 0);
+      return a;
+    }
+  if (i == 'O')
+    {
+	    	A4GL_assertion(1,"Not implemented");
+    }
+
+  if (i == 'N')
+    {
+      for (a = 0; a < bindcnt; a++)
+        {
+	  printc ("nullbind[%d].ptr=&%s;", a,bind[a].varname);
+        }
+      start_bind (i, 0);
+      return a;
+    }
+  return 0;
+}
 /**
  * Print the declaration of bind structure array in the generated C source code
  * and its initialization values.

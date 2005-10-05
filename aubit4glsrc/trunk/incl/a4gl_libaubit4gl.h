@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.198 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.199 2005-10-05 09:08:14 mikeaubury Exp $
 #
 */
 
@@ -2362,6 +2362,28 @@ struct expr_current {
 	short to;
 };
 
+
+struct expr_in {
+	struct expr_str *expr;
+	struct expr_str_list *elist;
+};
+
+
+
+struct expr_exists_sq {
+	char *subquery;
+	int nibind;
+	void *ibind;
+};
+
+struct expr_in_sq {
+	struct expr_str *expr;
+	char *subquery;
+	int nibind;
+	void *ibind;
+};
+
+
 enum e_expr_type {
 		//ET_EXPR_CHAR,
 		//ET_EXPR_EXPR,
@@ -2402,7 +2424,7 @@ enum e_expr_type {
 		ET_EXPR_OP_NOT_LIKE,
 		//ET_EXPR_OP_LENGTH,
 		ET_EXPR_OP_IN,
-		ET_EXPR_OP_NOTIN,
+		ET_EXPR_OP_NOT_IN,
 		ET_EXPR_OP_CONCAT,
 		ET_EXPR_OP_MATCHES,
 		ET_EXPR_OP_NOT_MATCHES,
@@ -2440,6 +2462,10 @@ enum e_expr_type {
 		ET_EXPR_GET_FLDBUF,
 		ET_EXPR_WORDWRAP,
 		ET_EXPR_SUBSTRING,
+		ET_EXPR_NOT_EXISTS_SUBQUERY,
+		ET_EXPR_EXISTS_SUBQUERY,
+		ET_EXPR_OP_IN_SUBQUERY,
+		ET_EXPR_OP_NOTIN_SUBQUERY,
 
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
@@ -2451,6 +2477,8 @@ struct expr_str {
 	  	char 					*expr_char; // We'd like to obsolete the use of this one....
 
 	  	char 					*expr_string; 
+		long   					expr_long;
+
 		struct expr_str 			*expr_expr;
 		struct expr_str_list 			*expr_list;
 		struct expr_push_variable 		*expr_push_variable;
@@ -2463,7 +2491,9 @@ struct expr_str {
 		struct expr_get_fldbuf 			*expr_get_fldbuf;
 		struct expr_wordwrap 			*expr_wordwrap;
 		struct expr_substring			*expr_substring;
-		long   expr_long;
+		struct expr_in				*expr_in;
+		struct expr_exists_sq			*expr_exists_sq;
+		struct expr_in_sq			*expr_in_sq;
 	  } u_data;
 	  struct expr_str *next;
 };
@@ -2478,6 +2508,10 @@ struct expr_str *A4GL_new_literal_long_long (long value);
 struct expr_str *A4GL_new_literal_string (char *value);
 struct expr_str *A4GL_new_literal_empty_str(void);
 struct expr_str *A4GL_new_substring_expr (char *str,long str_len,char *ptr_s, char *ptr_e,int type);
+struct expr_str *A4GL_expr_exists_sq(int invert,char *s,void *bind, int nbind);
+struct expr_str *A4GL_expr_in_sq(struct expr_str *expr, int invert,char *subquery,void *bind, int nbind);
+struct expr_str *A4GL_expr_in(struct expr_str *expr, int invert,struct expr_str_list *elist);
+char *expr_name(enum e_expr_type e);
 
 struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
 
@@ -2502,6 +2536,8 @@ struct expr_str *A4GL_new_expr_get_fldbuf(int sid, struct fh_field_list *fl,char
 struct expr_str *A4GL_new_expr_current(int from, int to);
 struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,char *wrap_at);
 
+
+void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param);
 
 enum dt_display_type {
         DT_DISPLAY_TYPE_LINE,

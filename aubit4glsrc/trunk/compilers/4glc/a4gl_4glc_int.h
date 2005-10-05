@@ -138,7 +138,7 @@ void push_like (char *t);
 void push_rectab (char *t);
 void dump_vars (void);
 void push_menu_title (char *s);
-void push_blockcommand (char *cmd_type);
+int push_blockcommand (char *cmd_type);
 void add_continue_blockcommand (char *cmd_type);
 void pop_blockcommand (char *cmd_type);
 int in_command (char *cmd_type);
@@ -499,8 +499,10 @@ void push_menu_timeout(int mn,int mnopt,char *s);
 int fglc_verbosity(void);
 char *A4GL_get_yyline(void);
 void do_yyerror(char *s);
+void continue_blockcommand (char *cmd_type);
 
 struct expr_str *A4GL_generate_variable_expr(char *s) ;
+void print_display_by_name (char *attr);
 
 long
 get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr);

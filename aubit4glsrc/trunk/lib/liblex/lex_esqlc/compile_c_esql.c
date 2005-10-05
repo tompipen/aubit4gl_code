@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.126 2005-10-03 10:55:21 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.127 2005-10-05 09:08:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.126 2005-10-03 10:55:21 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.127 2005-10-05 09:08:18 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2265,6 +2265,7 @@ void LEXLIB_A4GL_add_put_string(char *s) {
 }
 
 
+#ifdef OBSOLETE
 void *LEXLIB_get_in_exists_sql(char *sql, char type) {
 char buff[256];
 char cname[256];
@@ -2332,6 +2333,97 @@ extern char buff_in[];
        	A4GL_append_expr(ptr,buff);
         return ptr;
 }
+#endif
+
+
+void print_exists_subquery(int i,struct expr_exists_sq *e_expr) {
+char buff[256];
+char cname[256];
+char *buffer;
+int n;
+static int ncnt=0;
+void *ptr;
+extern char buff_in[];
+
+	sprintf(cname,"aclfgl_cE_%d",ncnt++);
+
+        printc("{");
+        printc("EXEC SQL BEGIN DECLARE SECTION;/*6*/");
+	printc("int _npc;");
+	printc("short _npi;");
+	printc("char _np[256];");
+	printc("EXEC SQL END DECLARE SECTION;");
+
+	print_bind_dir_definition('i',e_expr->ibind,e_expr->nibind);
+	print_bind_dir_set_value('i',e_expr->ibind,e_expr->nibind);
+	printc("%s",buff_in);
+	if (esql_type()==4) {
+		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;",cname,e_expr->subquery);
+	} else {
+		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR WITH HOLD FOR %s;",cname,e_expr->subquery);
+	}
+
+        printc("if (sqlca.sqlcode==0) {\nEXEC SQL OPEN %s;\n",cname);
+
+
+
+	if (i)  {
+        	printc("\nEXEC SQL FETCH %s INTO :_np;\n",cname);
+		printc("} if (sqlca.sqlcode==0) A4GL_push_int(1);");
+		printc("else A4GL_push_int(0);\n}");
+		return ptr;
+	} else {
+        	printc(buff,"\nEXEC SQL FETCH %s INTO :_np;\n",cname);
+		printc(buff,"} if (sqlca.sqlcode==100) A4GL_push_int(1);");
+		printc(buff,"else A4GL_push_int(0);\n}");
+		return ptr;
+	}
+}
+
+
+
+void print_in_subquery(int i,struct expr_in_sq *in_expr) {
+char buff[256];
+char cname[256];
+char *buffer;
+int n;
+static int ncnt=0;
+void *ptr;
+extern char buff_in[];
+
+	sprintf(cname,"aclfgl_cI_%d",ncnt++);
+        print_expr(in_expr->expr);
+        printc("{");
+        printc("EXEC SQL BEGIN DECLARE SECTION;/*6*/");
+	printc("int _npc;");
+	printc("short _npi;");
+	printc("char _np[256];");
+	printc("EXEC SQL END DECLARE SECTION;");
+
+	print_bind_dir_definition('i',in_expr->ibind,in_expr->nibind);
+	print_bind_dir_set_value('i',in_expr->ibind,in_expr->nibind);
+	printc("%s",buff_in);
+	
+	if (esql_type()==4) {
+		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;",cname,in_expr->subquery);
+	} else {
+		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR WITH HOLD FOR %s;",cname,in_expr->subquery);
+	}
+
+        printc("if (sqlca.sqlcode==0) {\nEXEC SQL OPEN %s;\n",cname);
+
+
+       	printc("_npc=0;while (1) {\n");
+      	printc("\nEXEC SQL FETCH %s INTO :_np INDICATOR :_npi;\n",cname);
+      	printc("if (sqlca.sqlcode!=0) break;\n");
+   	printc("if (_npi>=0) A4GL_push_char(_np); else A4GL_push_null(2,0); _npc++;\n");
+	printc("}\nA4GL_push_int(_npc);");
+
+	if (i) 	printc(" A4GL_pushop(OP_IN);");
+	else 	printc(" A4GL_pushop(OP_NOTIN);");
+        printc("} else {A4GL_push_int(0);}\n}");
+}
+
 
 /* ================================== EOF =============================== */
 

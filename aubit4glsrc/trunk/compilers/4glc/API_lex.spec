@@ -27,9 +27,6 @@ HEADER_FILE "API_lex_int.h"
 *
 
 /* ------------ functions from compile_[c|perl].c -------------- */
-* print_start_record int isstatic_extern char* varname char* arrsize int level -> void
-* print_end_record char* vname char* arrsize int level -> void
-* A4GL_get_push_literal char type,char* value -> char*
 
 A4GL_internal_lex_printc char* fmt va_list* ap -> void 
 
@@ -103,7 +100,6 @@ print_pop_variable char* s -> void
 
 print_getfldbuf char* fields -> void
 
-* print_returning -> void
 
 
 print_form_is_compiled char* s char* packer char* formtype -> void
@@ -162,9 +158,6 @@ print_onkey_2_prompt -> void
 
 print_defer int quit -> void
 
-/* print_display_line -> void */
-
-* print_display_by_name char* attr -> void
 
 A4GL_get_display_str int type,char* s,char* f -> char*
 rettype char* s -> char*
@@ -422,9 +415,6 @@ print_declare_associate_1 char* variable,char* size,char* n -> void
 
 print_declare_associate_2 char* variable,char* size,char* n -> void
 
-* print_define_char char* var,int size,int isstatic_extern -> void
-
-* print_define char* varstring,int isstatic_extern -> void
 
 
 A4GL_decode_array_string char* var char* s -> char*
@@ -471,13 +461,11 @@ A4GL_set_var_sql int d int n -> char*
 A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void
-* A4GL_expr_for_call char* ident long params int line char* file -> char*
 print_empty_bind char* name -> void
 
 print_dealloc_arr char* s -> void
 print_alloc_arr char* s char* dim -> void
 print_realloc_arr char* s char* dim -> void
-get_in_exists_sql char* s char t -> void*
 
 print_free_convertable char* report_name -> void
 print_convert_report char* report_name char* fout char* type char* layoutfile char* file_or_pipe -> void
@@ -500,6 +488,16 @@ print_gtk_menuhandler_on char* s -> void
 print_gtk_menuhandler_on_end -> void
 print_gtk_menuhandler_end -> void
 
+* get_in_exists_sql char* s char t -> void*
+* A4GL_expr_for_call char* ident long params int line char* file -> char*
+/* print_display_line -> void */
+* print_display_by_name char* attr -> void
+* print_start_record int isstatic_extern char* varname char* arrsize int level -> void
+* print_end_record char* vname char* arrsize int level -> void
+* A4GL_get_push_literal char type,char* value -> char*
+* print_define_char char* var,int size,int isstatic_extern -> void
+* print_define char* varstring,int isstatic_extern -> void
+* print_returning -> void
 /*  ============================== EOF ================================= */
 
 

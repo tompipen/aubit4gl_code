@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.4 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: expr.c,v 1.5 2005-10-05 09:08:14 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,13 @@
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
-
+struct binding_comp
+{
+	  char varname[132];
+	    int dtype;
+	      int start_char_subscript;
+	        int end_char_subscript;
+};
 /*
 =====================================================================
                     Variables definitions
@@ -97,7 +103,6 @@ case ET_EXPR_OP_LIKE: return "ET_EXPR_OP_LIKE";
 case ET_EXPR_OP_NOT_LIKE: return "ET_EXPR_OP_NOT_LIKE";
 //case ET_EXPR_OP_LENGTH: return "ET_EXPR_OP_LENGTH";
 case ET_EXPR_OP_IN: return "ET_EXPR_OP_IN";
-case ET_EXPR_OP_NOTIN: return "ET_EXPR_OP_NOTIN";
 case ET_EXPR_OP_CONCAT: return "ET_EXPR_OP_CONCAT";
 case ET_EXPR_OP_MATCHES: return "ET_EXPR_OP_MATCHES";
 case ET_EXPR_OP_NOT_MATCHES: return "ET_EXPR_OP_NOT_MATCHES";
@@ -135,6 +140,13 @@ case ET_EXPR_EXTERNAL: return "ET_EXPR_EXTERNAL";
 case ET_EXPR_GET_FLDBUF: return "ET_EXPR_GET_FLDBUF";
 case ET_EXPR_WORDWRAP: return "ET_EXPR_WORDWRAP";
 case ET_EXPR_SUBSTRING: return "ET_EXPR_SUBSTRING";
+case ET_EXPR_OP_NOT_IN:return "ET_EXPR_OP_NOT_IN";
+case ET_EXPR_NOT_EXISTS_SUBQUERY:return "ET_EXPR_NOT_EXISTS_SUBQUERY";
+case ET_EXPR_EXISTS_SUBQUERY:return "ET_EXPR_EXISTS_SUBQUERY";
+case ET_EXPR_OP_IN_SUBQUERY:return "ET_EXPR_OP_IN_SUBQUERY";
+case ET_EXPR_OP_NOTIN_SUBQUERY:return "ET_EXPR_OP_NOTIN_SUBQUERY";
+
+
 }
 PRINTF("Expression Type : %d\n",e);
 return "Oopps - dont know";
@@ -457,6 +469,61 @@ struct expr_str *A4GL_new_expr_list () {
 }
 
 
+struct expr_str *A4GL_expr_exists_sq(int invert,char *s,void *b,int nbind) {
+  struct expr_str *ptr;
+  int l;
+  if (invert) {
+  	ptr=A4GL_new_expr_simple (ET_EXPR_EXISTS_SUBQUERY);
+  } else {
+  	ptr=A4GL_new_expr_simple (ET_EXPR_NOT_EXISTS_SUBQUERY);
+  }
+  ptr->u_data.expr_exists_sq=malloc(sizeof(struct expr_exists_sq));
+  ptr->u_data.expr_exists_sq->subquery=strdup(s);
+
+  l=sizeof(struct binding_comp)*nbind;
+  ptr->u_data.expr_exists_sq->ibind=malloc(l);
+  memcpy(ptr->u_data.expr_exists_sq->ibind,b,l);
+
+  ptr->u_data.expr_exists_sq->nibind=nbind;
+  return ptr;
+}
+
+
+struct expr_str *A4GL_expr_in(struct expr_str *expr, int invert,struct expr_str_list *elist) {
+  struct expr_str *ptr;
+
+
+  if (invert) {
+  	ptr=A4GL_new_expr_simple (ET_EXPR_OP_IN);
+  } else {
+  	ptr=A4GL_new_expr_simple (ET_EXPR_OP_NOT_IN);
+  }
+  ptr->u_data.expr_in=malloc(sizeof(struct expr_in));
+  ptr->u_data.expr_in->expr=expr;
+  ptr->u_data.expr_in->elist=elist;
+
+  return ptr;
+}
+
+
+
+struct expr_str *A4GL_expr_in_sq(struct expr_str *expr, int invert,char *subquery,void *b,int nbind) {
+  struct expr_str *ptr;
+  long l;
+  if (invert) {
+  	ptr=A4GL_new_expr_simple (ET_EXPR_OP_IN_SUBQUERY);
+  } else {
+  	ptr=A4GL_new_expr_simple (ET_EXPR_OP_NOTIN_SUBQUERY);
+  }
+  ptr->u_data.expr_in_sq=malloc(sizeof(struct expr_in_sq));
+  ptr->u_data.expr_in_sq->expr=expr;
+  ptr->u_data.expr_in_sq->subquery=strdup(subquery);
+  l=sizeof(struct binding_comp)*nbind;
+  ptr->u_data.expr_in_sq->ibind=malloc(l);
+  memcpy(ptr->u_data.expr_in_sq->ibind,b,l);
+  ptr->u_data.expr_in_sq->nibind=nbind;
+  return ptr;
+}
 
 
 
@@ -574,4 +641,6 @@ A4GL_new_expr (char *value)
   A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
   return ptr;
 }
+
+
 

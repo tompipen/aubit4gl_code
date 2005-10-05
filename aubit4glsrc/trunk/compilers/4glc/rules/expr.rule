@@ -69,29 +69,35 @@ fgl_expr_c :
 	| fgl_expr_c UNITS_MINUTE { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_MINUTE,0); }
 	| fgl_expr_c UNITS_SECOND { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_SECOND,0); }
  	| fgl_expr_c KW_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-		// @@@ FIXME
-		$<ptr>$=get_in_exists_sql($<sql_string>4,'I');
+		//$<ptr>$=get_in_exists_sql($<sql_string>4,'I');
 		add_feature("ET_EXPR_IN_SELECT");
+		$<ptr>$=A4GL_expr_in_sq($<ptr>1,1,$<sql_string>4,ibind,ibindcnt);
 	}
  	| fgl_expr_c NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		// @@@ FIXME
-		$<ptr>$=get_in_exists_sql($<sql_string>4,'i');
+		//$<ptr>$=get_in_exists_sql($<sql_string>4,'i');
 		add_feature("ET_EXPR_NOT_IN_SELECT");
+		add_feature("ET_EXPR_IN_SELECT");
+		$<ptr>$=A4GL_expr_in_sq($<ptr>1,0,$<sql_string>4,ibind,ibindcnt);
 	}
  	| fgl_expr_c KW_IN OPEN_BRACKET inexpr_list CLOSE_BRACKET {
 		// @@@ FIXME
-		char buff[256];
-		sprintf(buff,"A4GL_push_int(%d);",A4GL_length_expr($<ptr>4));
-		$<ptr>$=A4GL_append_expr($<ptr>4,buff);
-		A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_IN);");
+		//char buff[256];
+		//sprintf(buff,"A4GL_push_int(%d);",A4GL_length_expr($<ptr>4));
+		//$<ptr>$=A4GL_append_expr($<ptr>4,buff);
+		//A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_IN);");
+
+		$<ptr>$=A4GL_expr_in($<ptr>1,1,$<ptr_list>4);
 		add_feature("ET_EXPR_IN");
 	}
 	| fgl_expr_c NOT_IN OPEN_BRACKET inexpr_list CLOSE_BRACKET {
 		char buff[256];
 		// @@@ FIXME
-		sprintf(buff,"A4GL_push_int(%d);",A4GL_length_expr($<ptr>3));
-		$<ptr>$=A4GL_append_expr($<ptr>4,buff);
-		A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_NOTIN);");
+		//sprintf(buff,"A4GL_push_int(%d);",A4GL_length_expr($<ptr>3));
+		//$<ptr>$=A4GL_append_expr($<ptr>4,buff);
+		//A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_NOTIN);");
+
+		$<ptr>$=A4GL_expr_in($<ptr>1,0,$<ptr_list>4);
 		add_feature("ET_EXPR_NOT_IN");
 	}
 ;
@@ -180,11 +186,14 @@ boolean_expr:
 	| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
 	| EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		add_feature("ET_EXPR_EXISTS");
-		$<ptr>$=get_in_exists_sql($<sql_string>3,'E');
+		/* $<ptr>$=get_in_exists_sql($<sql_string>3,'E'); */
+
+		$<ptr>$=A4GL_expr_exists_sq(1,$<sql_string>3,ibind,ibindcnt);
 	}
 	| NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		add_feature("ET_EXPR_NOT_EXISTS");
-		$<ptr>$=get_in_exists_sql($<sql_string>3,'e');
+		/*$<ptr>$=get_in_exists_sql($<sql_string>3,'e'); */
+		$<ptr>$=A4GL_expr_exists_sq(0,$<sql_string>3,ibind,ibindcnt);
 	}
 ;	
 
@@ -251,25 +260,13 @@ report_only_expr:
 ;
 
 
-
 inexpr_list : fgl_expr_c  {
-	$<ptr>$=$<ptr>1;
-	}
+			$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+		}
 	| inexpr_list KW_COMMA fgl_expr_c {
-		A4GL_debug("Adding to list...");
-		$<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>3);
+			$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
 	}
 ;
-
-
-
-
-
-
-
-
-
-
 
 
 

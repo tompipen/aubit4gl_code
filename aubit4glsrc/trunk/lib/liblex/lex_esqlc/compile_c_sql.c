@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.58 2005-10-03 10:55:21 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.59 2005-10-05 09:08:18 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.58 2005-10-03 10:55:21 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.59 2005-10-05 09:08:18 mikeaubury Exp $";
 #endif
 
 
@@ -794,6 +794,8 @@ if (s[0]=='\'') {
 
 
 
+#ifdef OBSOLETE
+
 void *LEXLIB_get_in_exists_sql(char *sql, char type) {
 char buff[2048];
 int n;
@@ -815,7 +817,32 @@ char *x;
 	return ptr;
 }
 
+#endif
 
+void print_exists_subquery(int i, struct expr_exists_sq *e) {
+	int n;
+	printc("A4GL_push_char(\"%s\");",e->subquery);
+	printc("{");
+	n=e->nibind;
+	print_bind('i');
+        printc("A4GL_push_binding(ibind,%d);",n);
+	if (i) printc("A4GL_pushop(OP_EXISTS);");
+	else   printc("A4GL_pushop(OP_NOTEXISTS);");
+	printc("}");
+}
+
+void print_in_subquery(int i, struct expr_in_sq *e) {
+	int n;
+	print_expr(e->expr);
+	printc("A4GL_push_char(\"%s\");",e->subquery);
+	printc("{");
+	n=e->nibind;
+	print_bind('i');
+        printc("A4GL_push_binding(ibind,%d);",n);
+ 	if (i) printc("A4GL_pushop(OP_IN_SELECT);");
+	else   printc("A4GL_pushop(OP_NOTIN_SELECT);");
+	printc("}");
+}
 
 static char *
 trans_quote (char *s)
