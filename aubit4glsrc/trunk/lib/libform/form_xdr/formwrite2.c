@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.39 2005-07-21 08:17:37 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.40 2005-10-05 12:40:18 mikeaubury Exp $
 #*/
 
 /**
@@ -1047,10 +1047,16 @@ static void
 real_add_str_attr (struct struct_scr_field *f, int type, char *str)
 {
   A4GL_debug ("add_str_attr %d - '%s'\n", type, str);
-  if (str[0] != '\n')
-    str = A4GL_char_val (str);
-  else
-    str++;
+
+  if (str[0] != '\n') {
+	                  if(str[0]=='\"' || str[0]=='\''){
+				                          str = A4GL_char_val (str);
+							                  }
+			    } else {
+				        str++;
+					  }
+
+
 
   if (!A4GL_has_str_attribute (f, type))
     {

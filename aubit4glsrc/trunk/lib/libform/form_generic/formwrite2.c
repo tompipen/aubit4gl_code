@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.32 2005-07-27 08:57:29 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.33 2005-10-05 12:40:11 mikeaubury Exp $
 #*/
 
 /**
@@ -1091,10 +1091,13 @@ see tools/loadmap/loadmap.4gl for loading example
 	  }
    }
 
-  if (str[0] != '\n')
-    str = A4GL_char_val (str);
-  else
+  if (str[0] != '\n') {
+	 	if(str[0]=='\"' || str[0]=='\''){
+    			str = A4GL_char_val (str);
+		}
+  } else {
     str++;
+  }
 
   if (!A4GL_has_str_attribute (f, type))
     {
