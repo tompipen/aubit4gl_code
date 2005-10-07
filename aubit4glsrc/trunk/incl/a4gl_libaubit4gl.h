@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.199 2005-10-05 09:08:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.200 2005-10-07 12:08:33 mikeaubury Exp $
 #
 */
 
@@ -2383,6 +2383,12 @@ struct expr_in_sq {
 	void *ibind;
 };
 
+struct expr_cast {
+		struct expr_str *expr;
+		int target_dtype;
+};
+
+
 
 enum e_expr_type {
 		//ET_EXPR_CHAR,
@@ -2467,6 +2473,8 @@ enum e_expr_type {
 		ET_EXPR_OP_IN_SUBQUERY,
 		ET_EXPR_OP_NOTIN_SUBQUERY,
 
+		ET_EXPR_CAST,
+
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
 
@@ -2494,6 +2502,7 @@ struct expr_str {
 		struct expr_in				*expr_in;
 		struct expr_exists_sq			*expr_exists_sq;
 		struct expr_in_sq			*expr_in_sq;
+		struct expr_cast			*expr_cast;
 	  } u_data;
 	  struct expr_str *next;
 };
