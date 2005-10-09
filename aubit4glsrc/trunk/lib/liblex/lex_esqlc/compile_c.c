@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.262 2005-10-05 09:08:14 mikeaubury Exp $
+# $Id: compile_c.c,v 1.263 2005-10-09 12:20:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.262 2005-10-05 09:08:14 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.263 2005-10-09 12:20:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -278,7 +278,7 @@ static int is_just_expr_clipped(char *v,struct expr_str_list *ptr) {
 	p=ptr->list[0];
 
 	if (p->expr_type==ET_EXPR_OP_CLIP) {
-		p=p->u_data.expr_op->left;
+		p=p->u_data.expr_expr;
 		if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
 			if (strcmp(p->u_data.expr_push_variable->variable,v)==0) {
 				return 1;
@@ -307,11 +307,11 @@ static char *is_single_string(struct expr_str_list *ptr) {
 		p=ptr->list[a];
 
 		if (p->expr_type==ET_EXPR_OP_CLIP) {
-			p=p->u_data.expr_op->left; // We'll ignore any clipping for the sake of determining if its a single string...
+			p=p->u_data.expr_expr; // We'll ignore any clipping for the sake of determining if its a single string...
 		}
 
 		if (p->expr_type==ET_EXPR_OP_USING) {
-			p=p->u_data.expr_op->left; // We'll ignore any USING string and just use it as is..
+			p=p->u_data.expr_left; // We'll ignore any USING string and just use it as is..
 		}
 
 		if (p->expr_type==ET_EXPR_LITERAL_STRING) {
@@ -1794,15 +1794,15 @@ real_print_expr (struct expr_str *ptr)
 	  printc ("A4GL_push_double_str(\"%s\");", ptr->u_data.expr_string);
 	  break;
 	case ET_EXPR_OP_CLIP:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_CLIP);");
 	  break;
 	case ET_EXPR_OP_ISNULL:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_ISNULL);");
 	  break;
 	case ET_EXPR_OP_ISNOTNULL:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_ISNOTNULL);");
 	  break;
 	case ET_EXPR_OP_MATCHES:
@@ -1960,27 +1960,27 @@ real_print_expr (struct expr_str *ptr)
 	  printc ("A4GL_pushop(OP_CONCAT);");
 	  break;
 	case ET_EXPR_OP_YEAR:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_YEAR);");
 	  break;
 	case ET_EXPR_OP_MONTH:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_MONTH);");
 	  break;
 	case ET_EXPR_OP_DAY:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_DAY);");
 	  break;
 	case ET_EXPR_OP_HOUR:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_HOUR);");
 	  break;
 	case ET_EXPR_OP_MINUTE:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_MINUTE);");
 	  break;
 	case ET_EXPR_OP_SECOND:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_pushop(OP_SECOND);");
 	  break;
 	case ET_EXPR_CURRENT:
@@ -1989,7 +1989,7 @@ real_print_expr (struct expr_str *ptr)
 	  break;
 
 	case ET_EXPR_OP_SPACES:
-	  real_print_expr (ptr->u_data.expr_op->left);
+	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_add_spaces();");
 	  break;
 
@@ -2001,6 +2001,14 @@ real_print_expr (struct expr_str *ptr)
 			  	ptr->u_data.expr_substring->substring_end
 				);
 	  break;
+
+	case ET_EXPR_CONCAT_LIST:
+	  	A4GL_assertion(1,"CONCAT_LIST NOT IMPLEMENTED YET"); break;
+
+	case ET_EXPR_CAST:
+	  	A4GL_assertion(1,"CASE NOT IMPLEMENTED YET"); break;
+
+
 
 	case ET_EXPR_GET_FLDBUF: 
 	  printc ("{");
@@ -7403,7 +7411,7 @@ LEXLIB_print_bind_definition (char i)
 		case 'N': expand_bind (&nullbind[0], 'N', nullbindcnt,0); return print_bind_dir_definition(i,nullbind,nullbindcnt); 
 		default : A4GL_assertion(1,"Unhandled print_bind_definition");
 	}
-
+	return -1;
 }
 
 

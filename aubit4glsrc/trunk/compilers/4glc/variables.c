@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.68 2005-10-03 10:09:39 mikeaubury Exp $
+# $Id: variables.c,v 1.69 2005-10-09 12:20:26 mikeaubury Exp $
 #
 */
 
@@ -169,7 +169,7 @@ static char buff[1024];
 int sl=-1;
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_') {
       if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && s[0]=='M') {
-		sl=strlen(A4GL_compiling_module())+3;
+		sl=strlen(A4GL_compiling_module_basename())+3;
       } else {
 		sl=2;
       }
@@ -965,11 +965,12 @@ add_to_scope (int record_cnt, int unroll)
       if (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")))
 	{
 	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))) {
-	  	sprintf (buff, "%c_%s_", get_current_variable_scope (),A4GL_compiling_module());
+	  	sprintf (buff, "%c_%s_", get_current_variable_scope (),A4GL_compiling_module_basename());
+		buff[0]=toupper(buff[0]);
 	  } else {
 	  	sprintf (buff, "%c_", get_current_variable_scope ());
+		buff[0]=toupper(buff[0]);
 	  }
-	  A4GL_convupper (buff);
 	  strcat (buff, curr_v[record_cnt]->names.name);
 	  curr_v[record_cnt]->names.alias = acl_strdup (buff);
 	}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.200 2005-10-07 12:08:33 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.201 2005-10-09 12:20:45 mikeaubury Exp $
 #
 */
 
@@ -2209,6 +2209,7 @@ int A4GLSQL_add_prepare (char *pname, void *vsid);
 
 void A4GL_write_errfile_many_errors(char *errfile,FILE *fin,struct s_module_error *e,int cnt);
 char *A4GL_compiling_module(void);
+char *A4GL_compiling_module_basename(void);
 
 ///
 
@@ -2386,6 +2387,7 @@ struct expr_in_sq {
 struct expr_cast {
 		struct expr_str *expr;
 		int target_dtype;
+		int src_dtype;
 };
 
 
@@ -2474,7 +2476,7 @@ enum e_expr_type {
 		ET_EXPR_OP_NOTIN_SUBQUERY,
 
 		ET_EXPR_CAST,
-
+		ET_EXPR_CONCAT_LIST,
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
 
@@ -2516,6 +2518,7 @@ struct expr_str *A4GL_new_literal_long_str (char *value);
 struct expr_str *A4GL_new_literal_long_long (long value);
 struct expr_str *A4GL_new_literal_string (char *value);
 struct expr_str *A4GL_new_literal_empty_str(void);
+struct expr_str *A4GL_new_concat_list(struct expr_str_list *params);
 struct expr_str *A4GL_new_substring_expr (char *str,long str_len,char *ptr_s, char *ptr_e,int type);
 struct expr_str *A4GL_expr_exists_sq(int invert,char *s,void *bind, int nbind);
 struct expr_str *A4GL_expr_in_sq(struct expr_str *expr, int invert,char *subquery,void *bind, int nbind);

@@ -8,6 +8,7 @@ opt_at : {
 		struct dt_display *d;
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_LINE;
+		add_feature("UI_DISPLAY_LINE_MODE");
 		$<display>$=d;
 	} 
 	| AT fgl_expr_c KW_COMMA fgl_expr_c 		{ 
@@ -17,6 +18,7 @@ opt_at : {
 		d->u_data.x_y.x=$<ptr>4;
 		d->u_data.x_y.y=$<ptr>2;
 		$<display>$=d;
+		add_feature("UI_DISPLAY_AT");
 	}
 	| TO_MENUITEM identifier	{ 
 		strcpy($<str>$,"#error not implemented yet"); 
@@ -33,6 +35,7 @@ opt_at : {
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_FIELD_LIST;
 		d->u_data.field_list=$<field_list>2;
+		add_feature("UI_DISPLAY_TO");
 		$<display>$=d;
 			}
 	| TO KWFORM identifier KWFIELD field_name_list_as_struct { 
@@ -41,6 +44,7 @@ opt_at : {
 		d->type=DT_DISPLAY_TYPE_FORM_FIELD;
 		d->u_data.form_field.form=strdup($<str>3);
 		d->u_data.form_field.field_list=$<field_list>5;
+		add_feature("UI_DISPLAY_FORM_FIELD");
 		$<display>$=d;
 	}
 	| TO KWFORM identifier CAPTION { 

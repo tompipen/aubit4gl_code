@@ -10,7 +10,7 @@ fgl_expr_c :
 	| fgl_expr_c KW_AND fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_AND,0); }
 	| fgl_expr_c KW_OR fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_OR,0); }
 	| fgl_expr_c SPACES 			{ 
-			$<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_SPACES,0);
+			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_SPACES);
 			add_feature("ET_EXPR_SPACES"); 
 	}
 	| fgl_expr_c CONCAT_PIPES fgl_expr_c 	{ 
@@ -53,21 +53,21 @@ fgl_expr_c :
 	| fgl_expr_c DIVIDE  fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_DIV,0); }
 	| fgl_expr_c MOD fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MOD,0); }
 	| fgl_expr_c POWER fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_POWER,0); }
-	| fgl_expr_c CLIPPED { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_CLIP,0); }
-        | fgl_expr_c IS_NULL { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_ISNULL,0); }
-        | fgl_expr_c IS_NOT_NULL { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_ISNOTNULL,0); }
+	| fgl_expr_c CLIPPED { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_CLIP); }
+        | fgl_expr_c IS_NULL { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_ISNULL); }
+        | fgl_expr_c IS_NOT_NULL { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_ISNOTNULL); }
 	| fgl_expr_c EQUAL           fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_EQUAL,0); }
 	| fgl_expr_c LESS_THAN       fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LESS_THAN,0); }
 	| fgl_expr_c GREATER_THAN    fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_GREATER_THAN,0); }
 	| fgl_expr_c NOT_EQUAL       fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_NOT_EQUAL,0); }
 	| fgl_expr_c LESS_THAN_EQ    fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LESS_THAN_EQ,0); }
 	| fgl_expr_c GREATER_THAN_EQ fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_GREATER_THAN_EQ,0); }
-	| fgl_expr_c UNITS_YEAR { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_YEAR,0); }
-	| fgl_expr_c UNITS_MONTH { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_MONTH,0); }
-	| fgl_expr_c UNITS_DAY { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_DAY,0); }
-	| fgl_expr_c UNITS_HOUR { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_HOUR,0); }
-	| fgl_expr_c UNITS_MINUTE { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_MINUTE,0); }
-	| fgl_expr_c UNITS_SECOND { $<ptr>$=A4GL_new_op_expr($<ptr>1,0,ET_EXPR_OP_SECOND,0); }
+	| fgl_expr_c UNITS_YEAR { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_YEAR); }
+	| fgl_expr_c UNITS_MONTH { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_MONTH); }
+	| fgl_expr_c UNITS_DAY { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_DAY); }
+	| fgl_expr_c UNITS_HOUR { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_HOUR); }
+	| fgl_expr_c UNITS_MINUTE { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_MINUTE); }
+	| fgl_expr_c UNITS_SECOND { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_SECOND); }
  	| fgl_expr_c KW_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		//$<ptr>$=get_in_exists_sql($<sql_string>4,'I');
 		add_feature("ET_EXPR_IN_SELECT");

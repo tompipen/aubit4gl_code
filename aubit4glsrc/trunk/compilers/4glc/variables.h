@@ -4,14 +4,15 @@
 #define MAX_ARR_SUB 15
 
 
-#define VARIABLE_TYPE_SIMPLE    0
-#define VARIABLE_TYPE_RECORD    1
-#define VARIABLE_TYPE_ASSOC     2
-#define VARIABLE_TYPE_CONSTANT  3
-#define VARIABLE_TYPE_FUNCTION_DECLARE  4
-#define VARIABLE_TYPE_OBJECT    5
-#define VARIABLE_TYPE_ASSOC_INTERNAL     6
-
+enum e_variable_type {
+	VARIABLE_TYPE_SIMPLE   ,
+	VARIABLE_TYPE_RECORD    ,
+	VARIABLE_TYPE_ASSOC     ,
+	VARIABLE_TYPE_CONSTANT  ,
+	VARIABLE_TYPE_FUNCTION_DECLARE  ,
+	VARIABLE_TYPE_OBJECT    ,
+	VARIABLE_TYPE_ASSOC_INTERNAL     
+};
 
 // This is used to store a list of
 // variables extrapolated from a .* or a 'thru' entry
@@ -52,7 +53,7 @@ struct record_variable
   int record_cnt;		// Number of slots used
   struct linked_variable *linked;	// Link to any table + pk or 0
   char *object_type; // Used for OBJECTS and RECORDs - for a record this will be 0
-  char user_ptr[32];
+  char user_ptr[256];
 };
 
 
@@ -92,7 +93,7 @@ struct linked_variable
 struct variable
 {
   struct name_list names;
-  int variable_type;
+  enum e_variable_type variable_type;
   char user_system;
   char scope;
   int is_array;

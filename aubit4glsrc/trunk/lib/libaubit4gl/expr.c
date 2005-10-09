@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.5 2005-10-05 09:08:14 mikeaubury Exp $
+# $Id: expr.c,v 1.6 2005-10-09 12:20:45 mikeaubury Exp $
 #
 */
 
@@ -145,6 +145,8 @@ case ET_EXPR_NOT_EXISTS_SUBQUERY:return "ET_EXPR_NOT_EXISTS_SUBQUERY";
 case ET_EXPR_EXISTS_SUBQUERY:return "ET_EXPR_EXISTS_SUBQUERY";
 case ET_EXPR_OP_IN_SUBQUERY:return "ET_EXPR_OP_IN_SUBQUERY";
 case ET_EXPR_OP_NOTIN_SUBQUERY:return "ET_EXPR_OP_NOTIN_SUBQUERY";
+case ET_EXPR_CAST: return "ET_EXPR_CAST";
+case ET_EXPR_CONCAT_LIST: return "ET_EXPR_CONCAT_LIST";
 
 
 }
@@ -362,6 +364,15 @@ struct expr_str *p2;
 	p->var_dtype=dtype;
 	p2->u_data.expr_push_variable=p;
 return p2;
+}
+
+
+struct expr_str *A4GL_new_concat_list(struct expr_str_list *params) {
+	struct expr_str *p2;
+        p2=A4GL_new_expr_simple (ET_EXPR_CONCAT_LIST);
+	p2->u_data.expr_list=params;
+
+	return p2;
 }
 
 struct expr_str *A4GL_new_expr_current(int from, int to) {

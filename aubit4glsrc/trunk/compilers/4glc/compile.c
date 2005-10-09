@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.94 2005-10-04 16:39:21 mikeaubury Exp $
+# $Id: compile.c,v 1.95 2005-10-09 12:20:25 mikeaubury Exp $
 #*/
 
 /**
@@ -76,6 +76,7 @@ extern int yylineno;
 
 /* -------- unknown --------- */
 int compiling_system_4gl = 0;
+
 char gcc_exec[128];
 char pass_options[1024] = "";
 int clean_aftercomp = 0;	/* clean intermediate files after compilation */
@@ -273,7 +274,6 @@ initArguments (int argc, char *argv[])
 	if (! strcmp (acl_getenv ("COMSPEC"), "") == 0) {
 		//On Windows
 		if (! strcmp (acl_getenv ("NUMBER_OF_PROCESSORS"), "") == 0) {
-			//printf ("On Windows NT/W2K/XP\n");			
 			/*
 			On NT, W2K or XP pro (Does home XP also have it?)
 			if not use COMSPEC='D:\WINNT\system32\cmd.exe'
@@ -282,13 +282,10 @@ initArguments (int argc, char *argv[])
 			*/
 		} else {
 			//we are on W95 or 98
-			//printf ("On Windows 95/98\n");
 			win_95_98=1;
 		}
-		//printf ("SH=%s\n",acl_getenv ("SH"));
 		if ((! strcmp (acl_getenv ("SH"), "") == 0) || (! strcmp (acl_getenv ("SHELL"), "") == 0)) {
 			shell_is_bash=1;
-			//printf ("yes, shell_is_bash=%d\n"),shell_is_bash;
 			//does not seem to work
 			//A4GL_setenv("A4GL_MV_CMD","mv",1);
 			//NOTE: Windows 'move' cmd is a cmd.exe built-in and will
@@ -428,9 +425,9 @@ initArguments (int argc, char *argv[])
 				}
 			}
 		} else {
-			printf ("Error: -o flag specified with no parameter\n");
-			printf ("optind=%s\n", argv[optind]);
-			printf ("option_index=%s\n", argv[option_index]);
+			PRINTF ("Error: -o flag specified with no parameter\n");
+			PRINTF ("optind=%s\n", argv[optind]);
+			PRINTF ("option_index=%s\n", argv[option_index]);
 			exit (5);
 		}
 		break;
@@ -574,14 +571,14 @@ initArguments (int argc, char *argv[])
 				   never happen since getopt_long() should reject
 				   all flags not defined in opt_list
 				 */
-	  printf ("Invalid option=%s\n", argv[optind]);
-	  printf ("Invalid option=%s\n", argv[option_index]);
+	  PRINTF ("Invalid option=%s\n", argv[optind]);
+	  PRINTF ("Invalid option=%s\n", argv[option_index]);
 	  exit (1);
 	}
     }
 
 	if (optind >= argc) {
-		printf ("No file name defined\n");
+		PRINTF ("No file name defined\n");
 		printUsage (argv);
 		exit (1);
     }
@@ -664,7 +661,7 @@ initArguments (int argc, char *argv[])
 				   gcc_exec, c, a, incl_path, pass_options);
 			#endif
 
-			if (verbose){ printf ("%s\n", buff); }
+			if (verbose){ PRINTF ("%s\n", buff); }
 			if ( ! win_95_98 ) {
 				/*this apparently works on NT, but not on W98:*/
 				SPRINTF2 (buff, "%s > %s.c.err 2>&1", buff, a);
@@ -677,8 +674,8 @@ initArguments (int argc, char *argv[])
 			ret = system (buff);
 			/*see function system_run() in fglwrap.c*/
 			if (ret) {
-				printf ("Error compiling %s.c - check %s.c.err\n", a, a);
-				printf ("Failed command was: %s\n", buff);
+				FPRINTF (stderr,"Error compiling %s.c - check %s.c.err\n", a, a);
+				FPRINTF (stderr,"Failed command was: %s\n", buff);
 				/*fixme: show err file*/
 				exit (ret);
 			} else {
@@ -703,7 +700,7 @@ initArguments (int argc, char *argv[])
 			}
 */			
 //aaaaaa
-//			printf ("all_objects=%s\n", all_objects);
+//			PRINTF ("all_objects=%s\n", all_objects);
 
 			strcpy (infilename, c);
 			#ifdef DEBUG
@@ -715,11 +712,11 @@ initArguments (int argc, char *argv[])
 					preserve_warn, each_obj_to_so, put_object_in_currdir,
 					all_objects);
 ///aaaaaaa
-//			printf ("after return all_objects=%s\n", all_objects);
+//			PRINTF ("after return all_objects=%s\n", all_objects);
 			//exit (1);
 			
 			if (x) {
-				printf ("Exit code is: %d\n", x);
+				PRINTF ("Exit code is: %d\n", x);
 				/*FIXME: if I use x, I get 0 on the shell?????*/
 				/*exit (x);*/
 				exit (99);
@@ -753,7 +750,7 @@ initArguments (int argc, char *argv[])
     */
 
 	if (!todo)  {
-		if (verbose) {printf ("Linking only - no 4gl input files.\n");}
+		if (verbose) {PRINTF ("Linking only - no 4gl input files.\n");}
 		#ifdef DEBUG
 			A4GL_debug ("Linking only - no 4gl input files.\n");
 		#endif
@@ -779,11 +776,11 @@ initArguments (int argc, char *argv[])
 				 //printf ("output_object=%s\n",output_object);
 				 //printf ("all_objects=%s\n",all_objects);
 				 if (strcmp (all_objects, output_object) == 0) {
-					if (verbose) {printf ("WARNING: compile_so or _lib active with only one input. Disbled.\n");}
+					if (verbose) {PRINTF ("WARNING: compile_so or _lib active with only one input. Disbled.\n");}
 					A4GL_debug ("WARNING: compile_so or _lib active with only one input. Disbled.");
 					compile_so=0;
 					compile_lib=0;
-					if (verbose) {printf ("Single input/output not exec - we are done.\n");}
+					if (verbose) {PRINTF ("Single input/output not exec - we are done.\n");}
 					A4GL_debug ("Single input/output not exec - we are done.");
 				 } else {
 					// output specified with -o is not the same we allready created - 
@@ -808,7 +805,7 @@ initArguments (int argc, char *argv[])
 	if (compile_exec) {
 		A4GL_debug ("Linking exec\n");
 		if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
-			printf("Linking exec\n");fflush(stdout);
+			PRINTF("Linking exec\n");fflush(stdout);
 			//This was \r not \n for some reason
 		}
 	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
@@ -906,7 +903,7 @@ initArguments (int argc, char *argv[])
   }
   if (compile_lib) {
 	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
-		printf("Linking\n");fflush(stdout); //\r
+		PRINTF("Linking\n");fflush(stdout); //\r
 	}
 	#ifndef __MINGW32__ /* UNIX */
 		A4GL_debug ("Linking static library\n");
@@ -952,7 +949,7 @@ initArguments (int argc, char *argv[])
 
   if (compile_so) {
 	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
-		printf("Linking Shared Library\n");fflush(stdout); //\r
+		PRINTF("Linking Shared Library\n");fflush(stdout); //\r
 	}
 	A4GL_debug ("Linking shared library\n");
 	#ifndef __MINGW32__ /* UNIX */
@@ -1006,7 +1003,7 @@ initArguments (int argc, char *argv[])
     }
 
 	if (compile_exec || compile_so || compile_lib) {
-		if (verbose) { printf ("%s\n", buff); }
+		if (verbose) { PRINTF ("%s\n", buff); }
 		SPRINTF2 (buff, "%s > %s.err", buff, output_object);
 		if ( ! win_95_98 ) { SPRINTF1 (buff, "%s 2>&1", buff); }
 		#ifdef DEBUG
@@ -1017,10 +1014,10 @@ initArguments (int argc, char *argv[])
 		  A4GL_debug ("Command returned code %d", ret);
 		#endif
 		if (ret) {
-		  printf ("Error compiling %s - check %s.err\n", output_object,
+		  FPRINTF (stderr,"Error compiling %s - check %s.err\n", output_object,
 			  output_object);
-		  printf ("Failed command was: %s\n", buff);
-		  printf ("Exit code is: %d\n", ret);
+		  FPRINTF (stderr,"Failed command was: %s\n", buff);
+		  FPRINTF (stderr,"Exit code is: %d\n", ret);
 		  /*fixme: show err file*/
 		  /*FIXME: if I exit with ret, I get 0 code on the shell:*/
 		  exit (99);
@@ -1028,7 +1025,7 @@ initArguments (int argc, char *argv[])
 			if (preserve_warn) {
 				// No error code from linking command - check if there was any output
 				SPRINTF1 (buff, "%s.err", output_object);
-				if (verbose) { printf ("checking for %s\n", buff); }
+				if (verbose) { PRINTF ("checking for %s\n", buff); }
 				filep = fopen (buff, "r");
 				/*  f = A4GL_mja_fopen (ii, "r");*/
 				fseek (filep, 0, SEEK_END);
@@ -1044,10 +1041,10 @@ initArguments (int argc, char *argv[])
 					 linker warnings only
 					*/
 					A4GL_debug ("%s file size is not zero %d\n", buff, flength);
-					if (verbose) { printf ("%s is non-zero\n", buff); }
+					if (verbose) { PRINTF ("%s is non-zero\n", buff); }
 	
 					//something wrong here - does not show 1 or 0 but large random integer
-					//if (verbose) { printf ("shell_is_bash=%d\n"),shell_is_bash;}
+					//if (verbose) { PRINTF ("shell_is_bash=%d\n"),shell_is_bash;}
 					if ( ! win_95_98 ) {
 						  SPRINTF3 (buff, "%s %s.err %s.warn", mv_cmd,
 							   output_object, output_object);
@@ -1059,11 +1056,11 @@ initArguments (int argc, char *argv[])
 					#ifdef DEBUG
 						A4GL_debug ("Runnung %s", buff);
 					#endif
-					if (verbose) { printf ("Running %s\n", buff); }
+					if (verbose) { PRINTF ("Running %s\n", buff); }
 					ret = system (buff);
 				} else {
 				  /*err file will be deleted if clean_aftercomp is set*/
-				  /*printf ("%s file size is zero %d\n",buff,flength);*/
+				  /*PRINTF ("%s file size is zero %d\n",buff,flength);*/
 				}
 			} else {
 				//just delete any .err file possibly created - it contains
@@ -1072,7 +1069,7 @@ initArguments (int argc, char *argv[])
 				#ifdef DEBUG
 					A4GL_debug ("Runnung %s\n", buff);
 				#endif
-				if (verbose) { printf ("Running %s\n", buff); }			
+				if (verbose) { PRINTF ("Running %s\n", buff); }			
 				ret = system (buff);
 			}
 		if (clean_aftercomp) {
@@ -1087,11 +1084,11 @@ initArguments (int argc, char *argv[])
 			#ifdef DEBUG
 				A4GL_debug ("Runnung %s\n", buff);
 			#endif
-			if (verbose) { printf ("Running %s\n", buff); }			
+			if (verbose) { PRINTF ("Running %s\n", buff); }			
 			ret = system (buff);
 			if (ret) {
-			  printf ("Clean of %s intermediate objects failed\n", a);
-			  printf ("Failed command was: %s\n", buff);
+			  FPRINTF (stderr,"Clean of %s intermediate objects failed\n", a);
+			  FPRINTF (stderr,"Failed command was: %s\n", buff);
 			}
 		}
 	}
@@ -1099,8 +1096,8 @@ initArguments (int argc, char *argv[])
 	if ((!todo) && (!c_to_o))  {
 	  A4GL_debug
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
-	  printf
-	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
+	  FPRINTF
+	    (stderr,"Error in parameters to 4glc - no 4gl input files and no linking.\n");
 	  return (5);
     }
 }
@@ -1145,6 +1142,8 @@ static char local_pass_options[1024] = "";
 	strcpy(compiling_module_name,fgl_basename);
 	//Note: output_object is empty when compilation is invoked because
 	//that 4gl file was specified as GLOBALS file
+	//
+
 	A4GL_debug ("Compiling: %s to %s\n", fgl_file,output_object);
 	if (verbose) {printf ("Compiling: %s to %s\n", fgl_file,output_object);}
 	
@@ -1193,6 +1192,7 @@ static char local_pass_options[1024] = "";
 	
 	if (yydebug) { printf ("Opened : %s\n", fgl_file); }
 	openmap (outputfilename);
+
 	if (!silent) {
 		if (globals_only) {
 			if (verbose) {
@@ -1899,6 +1899,15 @@ void add_module_error(int n,char *s) {
 char *A4GL_compiling_module(void) {
 	return  compiling_module_name;
 }
+
+char *A4GL_compiling_module_basename(void) {
+	char *n;
+	if (strrchr(compiling_module_name,'/')==0) return compiling_module_name;
+	else return strrchr(compiling_module_name,'/')+1;
+
+	//return  compiling_module_name;
+}
+
 
 int fglc_verbosity(void) {
 		return fglc_m_verbose;
