@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.263 2005-10-09 12:20:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.264 2005-10-09 13:22:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.263 2005-10-09 12:20:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.264 2005-10-09 13:22:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -311,7 +311,7 @@ static char *is_single_string(struct expr_str_list *ptr) {
 		}
 
 		if (p->expr_type==ET_EXPR_OP_USING) {
-			p=p->u_data.expr_left; // We'll ignore any USING string and just use it as is..
+			p=p->u_data.expr_op->left; // We'll ignore any USING string and just use it as is..
 		}
 
 		if (p->expr_type==ET_EXPR_LITERAL_STRING) {
