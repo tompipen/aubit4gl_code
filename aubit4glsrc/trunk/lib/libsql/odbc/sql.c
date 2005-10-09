@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.136 2005-09-20 13:41:30 mikeaubury Exp $
+# $Id: sql.c,v 1.137 2005-10-09 19:31:10 whaslbeck Exp $
 #
 */
 
@@ -2984,6 +2984,7 @@ ODBC_exec_select (SQLHSTMT hstmt)
 
 static void free_extra(void *id) {
 int nl;
+
 	nl=find_extras(id);
 
 	if (nl>1000) {
@@ -3037,7 +3038,6 @@ for (a=0;a<nextras;a++) {
 		nl=a;  return nl;
 	}
 }
-
 return -1;
 }
 
@@ -3048,6 +3048,13 @@ int nl=-1;
 for (a=0;a<nextras;a++) {
 	if (extras[a].orig_stmt==id) {
 		nl=a; break;
+	}
+}
+
+/* wh: reuse empty entrys */
+for(a = 0; a < nextras; a++) {
+	if(extras[a].orig_stmt == 0) {
+		nl = a; break;
 	}
 }
 
