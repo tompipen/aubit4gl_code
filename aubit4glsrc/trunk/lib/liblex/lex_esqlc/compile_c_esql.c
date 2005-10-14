@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.127 2005-10-05 09:08:18 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.128 2005-10-14 09:15:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.127 2005-10-05 09:08:18 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.128 2005-10-14 09:15:32 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2371,12 +2371,12 @@ extern char buff_in[];
         	printc("\nEXEC SQL FETCH %s INTO :_np;\n",cname);
 		printc("} if (sqlca.sqlcode==0) A4GL_push_int(1);");
 		printc("else A4GL_push_int(0);\n}");
-		return ptr;
+		return ; //ptr
 	} else {
         	printc(buff,"\nEXEC SQL FETCH %s INTO :_np;\n",cname);
 		printc(buff,"} if (sqlca.sqlcode==100) A4GL_push_int(1);");
 		printc(buff,"else A4GL_push_int(0);\n}");
-		return ptr;
+		return ; // ptr
 	}
 }
 

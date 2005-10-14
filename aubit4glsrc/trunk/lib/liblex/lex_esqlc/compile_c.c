@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.264 2005-10-09 13:22:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.265 2005-10-14 09:15:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.264 2005-10-09 13:22:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.265 2005-10-14 09:15:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -290,7 +290,6 @@ static int is_just_expr_clipped(char *v,struct expr_str_list *ptr) {
 
 }
 
-#ifdef CM
 static char *is_single_string(struct expr_str_list *ptr) {
 	struct expr_str *p;
 	int a;
@@ -332,7 +331,7 @@ static char *is_single_string(struct expr_str_list *ptr) {
 				sz=p->u_data.expr_push_variable->var_dtype>>16;
 				if (sz>20) {
 
-					printf("DTYPE : %x\n",p->u_data.expr_push_variable->var_dtype);
+					//printf("DTYPE : %x\n",p->u_data.expr_push_variable->var_dtype);
 					return 0;
 				}
 			}
@@ -351,7 +350,6 @@ static char *is_single_string(struct expr_str_list *ptr) {
 
 	return buff;
 }
-#endif
 
 
 
@@ -450,11 +448,11 @@ open_outfile (void)
 	}
     }
 
-#ifdef CM
-  strcat (filename_for_h, "_xxx.h");
-#else
-  strcat (filename_for_h, ".h");
-#endif
+  if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+  	strcat (filename_for_h, "_xxx.h");
+  } else {
+  	strcat (filename_for_h, ".h");
+  }
 
   strcat (err, ".err");
 
@@ -1606,7 +1604,8 @@ real_print_expr (struct expr_str *ptr)
 	  printc ("A4GL_push_ascii();");
 	  break;
 	case ET_EXPR_EXTEND:
-	  real_print_expr (ptr->u_data.expr_expr);
+	  real_print_expr (ptr->u_data.expr_extend->expr);
+	  printc("A4GL_push_int(%d);",ptr->u_data.expr_extend->to);
 	  printc ("aclfgli_extend();");
 	  break;
 
@@ -1934,13 +1933,6 @@ real_print_expr (struct expr_str *ptr)
 
 	case ET_EXPR_OP_USING:
 	  real_print_expr (ptr->u_data.expr_op->left);
-#ifdef CM
-	  if (ptr->u_data.expr_op->right->expr_type==ET_EXPR_LITERAL_STRING) {
-	  	printf("USING_STR %s\n",ptr->u_data.expr_op->right->u_data.expr_char);
-	  } else {
-	  	printf("USING %s\n",expr_name(ptr->u_data.expr_op->right->expr_type));
-	  }
-#endif
 	  real_print_expr (ptr->u_data.expr_op->right);
 	  printc ("A4GL_pushop(OP_USING);");
 	  break;
@@ -1994,7 +1986,7 @@ real_print_expr (struct expr_str *ptr)
 	  break;
 
 	case ET_EXPR_SUBSTRING:
-	  printc ("A4GL_push_char(a4gl_substr(%s,%ld,%s,%s,0));",
+	  printc ("A4GL_push_char(a4gl_substr(%s ,%ld ,%s ,%s  ,0   ));",
 			  	ptr->u_data.expr_substring->str,
 			  	ptr->u_data.expr_substring->len,
 			  	ptr->u_data.expr_substring->substring_start,
@@ -2009,7 +2001,57 @@ real_print_expr (struct expr_str *ptr)
 	  	A4GL_assertion(1,"CASE NOT IMPLEMENTED YET"); break;
 
 
+	case ET_EXPR_DTVAL:
+		printc("acli_datetime(%s,%d);",ptr->u_data.expr_datetime->dtval,ptr->u_data.expr_datetime->extend);
+		break;
 
+	case ET_EXPR_YEAR_FUNC:
+	  	real_print_expr (ptr->u_data.expr_expr);
+		printc("aclfgl_year(1);");break;
+
+	case ET_EXPR_DATE_FUNC:
+	  	real_print_expr (ptr->u_data.expr_expr);
+		printc("aclfgl_date(1);");break;
+
+	case ET_EXPR_MONTH_FUNC:
+	  	real_print_expr (ptr->u_data.expr_expr);
+		printc("aclfgl_month(1);");break;
+
+	case ET_EXPR_DAY_FUNC:
+	  	real_print_expr (ptr->u_data.expr_expr);
+		printc("aclfgl_day(1);");break;
+
+	case ET_EXPR_TIME_FUNC:
+	  	real_print_expr (ptr->u_data.expr_expr);
+		printc("aclfgl_time(1);");break;
+
+	case ET_EXPR_INFIELD:
+		if (ptr->u_data.expr_infield->sio_id!=-1) {
+			printc("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,0,0));",ptr->u_data.expr_infield->sio_id,field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+		} else {
+			printc("A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));",field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+		}
+	  	break;
+
+
+	case ET_EXPR_TEMP:
+			A4GL_assertion(1,"Not used for ESQL/C");
+			break;
+	case ET_EXPR_FCALL_SINGLE:
+			A4GL_assertion(1,"Not used for ESQL/C");
+			break;
+
+	case ET_EXPR_FIELD_TOUCHED:
+		printc("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",ptr->u_data.expr_field_touched->sio_id,field_name_list_as_char(ptr->u_data.expr_field_touched->field_list));
+		break;
+
+	case ET_EXPR_NOT_FIELD_TOUCHED:
+		printc("A4GL_push_int(!A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",ptr->u_data.expr_field_touched->sio_id,field_name_list_as_char(ptr->u_data.expr_field_touched->field_list));
+		break;
+
+	case ET_EXPR_IVAL_VAL:
+		printc("acli_interval(%s,%d);",ptr->u_data.expr_interval->intval,ptr->u_data.expr_interval->extend);
+		break;
 	case ET_EXPR_GET_FLDBUF: 
 	  printc ("{");
 	  printc ("int _retvars;");
@@ -2248,22 +2290,22 @@ LEXLIB_print_bind_pop2 (t_expr_str_list *ptr, char i)
     {
 
       if (!is_just_expr_clipped(obind[a].varname,ptr)) {
-#ifdef CM
 		char *ptr_str=0;
-#endif
-		ptr=A4GL_rationalize_list_concat(ptr);
-#ifdef CM
-		if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) { 	// If its a character string - 
-			ptr_str=is_single_string(ptr);
-		}
-#endif
+		
+  		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+			ptr=A4GL_rationalize_list_concat(ptr);
+			if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) { 	// If its a character string - 
+				ptr_str=is_single_string(ptr);
+			}
+  		}
 
       	A4GL_print_expr_list_concat(ptr);
 
       	if (scan_variable (obind[a].varname) != -1) {
 
 	      	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", obind[a].varname, (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
-#ifdef CM
+
+  		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
 
 		if ((obind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) {
 		       	if (find_variable_scope(obind[a].varname)=='L'||1) { 	
@@ -2281,7 +2323,7 @@ LEXLIB_print_bind_pop2 (t_expr_str_list *ptr, char i)
 			}
 
 		}
-#endif
+		}
 
       	} else {
 			printc ("%s;\n", obind[a].varname);
@@ -3007,6 +3049,7 @@ static void print_returning (void)
   printc ("A4GL_pop_params(ibind,%d);}\n", cnt);
   printc ("}\n");
   printc ("}\n");
+  start_bind('i',0);
 }
 
 
@@ -3505,6 +3548,7 @@ LEXLIB_print_construct_3 (int byname, char *constr_str, char *fld_list, char *at
   printc
     ("{int _sf; _sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) {_fld_dr=0;break;}\n}\n",sio_id);
   printc ("_fld_dr= -1;\n");
+  start_bind('i',0);
 }
 
 
@@ -3738,9 +3782,9 @@ LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr
 
 		case DT_DISPLAY_TYPE_FIELD_LIST		:
 			                fh=disp->u_data.field_list;
-                			if (nexpr!=fh->nfields) {
-						printf("FIELDMISMATCH %d != %d\n",nexpr,fh->nfields);
-					}
+                			//if (nexpr!=fh->nfields) {
+						//printf("FIELDMISMATCH %d != %d\n",nexpr,fh->nfields);
+					//}
 
 				real_print_expr_list(expr);
   				printc ("A4GL_disp_fields(%d,%s,%s,0);\n", nexpr,attr,field_name_list_as_char(disp->u_data.field_list));
@@ -3927,11 +3971,6 @@ LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 	if (step->expr_type==ET_EXPR_LITERAL_LONG) {
 			have_step=1;
 			step_l=step->u_data.expr_long;
-	}
-       	else {
-#ifdef CM
-		printf("FOR VARIABLE_STEP %s - %d\n",expr_name(step->expr_type),yylineno);
-#endif
 	}
 
 
@@ -4753,6 +4792,7 @@ LEXLIB_print_let_manyvars (t_expr_str_list *ptr)
 
   printc ("A4GL_pop_params(obind,%d);\n", from_exprs);
   printc ("}\n");
+  start_bind('o',0);
   return 1;
 }
 
@@ -5824,9 +5864,12 @@ LEXLIB_print_menu_block (int menu, int n)
  *   - COMMAND.
  */
 void
-LEXLIB_print_menu_block_end (int n)
+LEXLIB_print_menu_block_end (int mn,int n)
 {
-  printc ("cmd_no_%d= -4;goto MENU_START_%d; } ", n, n);
+  if (mn==-2) {
+	  printc("A4GL_finish_create_menu(m_%d);",n);
+ }
+  printc ("cmd_no_%d= -4;goto MENU_START_%d; } /* %d */", n, n,mn);
 }
 
 /**
@@ -5993,23 +6036,6 @@ LEXLIB_print_func_start_2 (char *isstatic, char *fname, int type)
 extern int class_cnt;
   if (type == 0) {
 	if (class_cnt==0) {
-#ifdef CM
-	int a;
-  	expand_bind (&fbind[0], 'F', fbindcnt,1);
-		printf("CPROTO %s (",fname);
-		for (a=0;a<fbindcnt;a++) {
-			int dtype;
-			if (a) printf(",");
-			dtype = scan_variable (fbind[a].varname);
-			if (strchr(fbind[a].varname,'.')) {
-				printf("%s p_%d",pdtype(dtype),a);
-			} else {	
-				printf("%s %s",pdtype(dtype),fbind[a].varname);
-			}
-		}
-		printf(");\n");
-#endif
-
 	} else {
 	;
 	}
@@ -6161,43 +6187,12 @@ LEXLIB_print_return (t_expr_str_list *expr) {
 int z;
 int n;
 char *s;
-#ifdef CM
-int c;
-#endif
 
 
 
 
 expr=A4GL_rationalize_list(expr);
 n=A4GL_new_list_get_count(expr);
-
-
-#ifdef CM
-
-  if (n==0) { printf ("RETURN %s\n",curr_func); }
-  else {
-
-    if (n==1) { printf ("RETURN_SINGLE %s\n", curr_func); }
-    else {
-      printf ("RETURN_MULTI  %s %d", curr_func,n);
-    }
-  }
-
-
-
-
-for (c=0;c<n;c++) {
-	struct expr_str *p;
-	p= expr->list[c];
-
-	printf(" %s",expr_name(p->expr_type));
-	if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
-		printf("(%lx)",p->u_data.expr_push_variable->var_dtype);
-	}
-}
-printf("\n");
-#endif
-
 
 
 real_print_expr_list(expr);
@@ -6231,10 +6226,6 @@ real_print_expr_list(expr);
 void
 LEXLIB_print_options (char n, char *s)
 {
-#ifdef CM
-  printf("OPTION %c %s\n",n,s);
-#endif
-
   printc ("A4GL_set_option_value('%c',%s);\n", n, s);
 }
 
