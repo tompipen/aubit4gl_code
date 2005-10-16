@@ -4,26 +4,23 @@
 =====================================================================
 */
 
-
+/*
 extend_parameters: OPEN_BRACKET
 			fgl_expr_c
-			op_datetime_qual
+			op_datetime_qual_i
 		CLOSE_BRACKET {
 			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>3);
 		}
 ;
+*/
 
 
 
+op_datetime_qual_i:  { 
+	$<integer_val>$=22;
 
-op_datetime_qual:  { 
-	char buff[50];
-	sprintf(buff,"A4GL_push_int(%d);",22); 
-	$<ptr>$=A4GL_new_expr(buff);
 }
 | KW_COMMA dtime_start TO dtime_end { 
-	char buff[50];
-	sprintf(buff,"A4GL_push_int(%d);",(atoi($<str>2)*16) +atoi($<str>4)  ); 
-	$<ptr>$=A4GL_new_expr(buff);
+	$<integer_val>$=(atoi($<str>2)*16) +atoi($<str>4);
 }
 ;

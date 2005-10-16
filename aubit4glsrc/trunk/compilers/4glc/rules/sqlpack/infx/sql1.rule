@@ -26,7 +26,9 @@ ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { i
 	| query_specification_ss {$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");}
 ;
 
-op_insert_column_list: {strcpy($<str>$,""); A4GL_4glc_push_gen(INSCOL,"*"); }
+op_insert_column_list: {
+			strcpy($<str>$,""); A4GL_4glc_push_gen(INSCOL,"*"); 
+	}
 	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
 			 add_feature("INSERT_COLUMNLIST_EQ_VALUELIST");
 		}
@@ -45,8 +47,24 @@ insert_column_list:
 
 insert_value_list_ss:
 	insert_value_ss {
+		char *s;
+		char *s2;
+		char *orig;
+		orig=strdup($<sql_string>1);
 		$<sql_string>$=$<sql_string>1;
-		A4GL_4glc_push_gen(INSVAL,$<sql_string>1);
+		if (strncmp($<sql_string>$,"?,",2)==0) {
+			s=$<sql_string>$;
+			while (s) {
+				s2=strchr(s,',');
+				if (s2) {*s2=0; s2++;}
+				A4GL_4glc_push_gen(INSVAL,s);
+				s=s2;
+			}	
+			free(s);
+			$<sql_string>$=orig;
+		} else {
+			A4GL_4glc_push_gen(INSVAL,$<sql_string>1);
+		}
 	}
 	| insert_value_list_ss KW_COMMA insert_value_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,0);

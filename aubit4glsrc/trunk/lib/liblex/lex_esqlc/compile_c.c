@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.265 2005-10-14 09:15:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.266 2005-10-16 15:50:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.265 2005-10-14 09:15:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.266 2005-10-16 15:50:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5579,7 +5579,9 @@ LEXLIB_print_open_form_gui (char *name,char *at_gui,char *like_gui,char *disable
 	  		return;
 		}
 		name=A4GL_get_important_from_clobber(name);
-		printc("A4GL_open_gui_form(&%s,%s,%s,%s,%s,hnd_e_%s,hnd_c_%s);",name,name,at_gui,like_gui,disable,formhandler,formhandler);
+		printc("A4GL_open_gui_form(&%s,\"%s\",%s,%s,%s,hnd_e_%s,hnd_c_%s);",name,name,
+						at_gui,like_gui,disable,
+							formhandler,formhandler);
   		//printc (fmt, A4GL_get_important_from_clobber(a1), a2);
 	}
 }

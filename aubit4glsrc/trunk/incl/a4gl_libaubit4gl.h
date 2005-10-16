@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.201 2005-10-09 12:20:45 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.202 2005-10-16 15:50:06 mikeaubury Exp $
 #
 */
 
@@ -315,6 +315,9 @@
 #define FEATURE_USED		'X'
 #define HP_IS_SERIAL		'V'
 #define LAST_STRING		'T'
+#define CURSOR_USED             'c'
+#define PREPARE_USED            'p'
+#define TMP_USED                't'
 
 #define BLOCK_USED		'R'
 
@@ -2317,7 +2320,23 @@ struct expr_shared_function_call {
 };
 
 
+struct expr_infield {
+	        long sio_id;
+	        struct fh_field_list *field_list;
+	        char *module;
+	        int line;
+};
+
+
 struct expr_get_fldbuf {
+	long sio_id;
+	struct fh_field_list *field_list;
+	char *module;
+	int line;
+};
+
+
+struct expr_field_touched {
 	long sio_id;
 	struct fh_field_list *field_list;
 	char *module;
@@ -2339,6 +2358,12 @@ struct expr_member_function_call {
 };
 
 
+struct expr_extend {
+	struct expr_str *expr;
+	int to;
+};
+
+
 struct expr_external_call {
 	char *host;
 	char *func;
@@ -2348,6 +2373,8 @@ struct expr_external_call {
 	char *module;
 	int line;
 };
+
+
 
 struct expr_substring {
 	char *str;
@@ -2370,6 +2397,20 @@ struct expr_in {
 };
 
 
+struct expr_datetime {
+	char *dtval;
+	int extend;
+};
+
+struct expr_tmp {
+	char *str;
+	int dtype;
+};
+
+struct expr_interval {
+	char *intval;
+	int extend;
+};
 
 struct expr_exists_sq {
 	char *subquery;
@@ -2477,6 +2518,18 @@ enum e_expr_type {
 
 		ET_EXPR_CAST,
 		ET_EXPR_CONCAT_LIST,
+		ET_EXPR_YEAR_FUNC,
+		ET_EXPR_MONTH_FUNC,
+		ET_EXPR_DAY_FUNC,
+		ET_EXPR_DATE_FUNC,
+		ET_EXPR_TIME_FUNC,
+		ET_EXPR_DTVAL,
+		ET_EXPR_INFIELD,
+		ET_EXPR_FIELD_TOUCHED,
+		ET_EXPR_NOT_FIELD_TOUCHED,
+		ET_EXPR_IVAL_VAL,
+		ET_EXPR_FCALL_SINGLE,
+		ET_EXPR_TEMP,
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
 
@@ -2489,6 +2542,7 @@ struct expr_str {
 	  	char 					*expr_string; 
 		long   					expr_long;
 
+		struct expr_extend			*expr_extend;
 		struct expr_str 			*expr_expr;
 		struct expr_str_list 			*expr_list;
 		struct expr_push_variable 		*expr_push_variable;
@@ -2499,12 +2553,18 @@ struct expr_str {
 		struct expr_op				*expr_op;
 		struct expr_current 			*expr_current;
 		struct expr_get_fldbuf 			*expr_get_fldbuf;
+		struct expr_infield 			*expr_infield;
 		struct expr_wordwrap 			*expr_wordwrap;
 		struct expr_substring			*expr_substring;
 		struct expr_in				*expr_in;
 		struct expr_exists_sq			*expr_exists_sq;
 		struct expr_in_sq			*expr_in_sq;
 		struct expr_cast			*expr_cast;
+		struct expr_datetime			*expr_datetime;
+		struct expr_interval			*expr_interval;
+		struct expr_field_touched		*expr_field_touched;
+		struct expr_tmp				*expr_tmp;
+	
 	  } u_data;
 	  struct expr_str *next;
 };
@@ -2513,10 +2573,16 @@ typedef struct expr_str t_expr_str;
 typedef struct expr_str_list t_expr_str_list;
 struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) ;
 struct expr_str *A4GL_new_expr_call_external(char *host,char *func,char *port,struct expr_str_list *params,int nowait,char *mod,int line);
+struct expr_str *A4GL_new_datetime_expr(char *str, int extent);
+struct expr_str *A4GL_new_interval_expr(char *str, int extent);
 struct expr_str *A4GL_new_literal_double_str (char *value);
+struct expr_str *A4GL_new_expr_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
+struct expr_str *A4GL_new_expr_not_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
+struct expr_str *A4GL_new_expr_extend(struct expr_str *ptr,int to);
 struct expr_str *A4GL_new_literal_long_str (char *value);
 struct expr_str *A4GL_new_literal_long_long (long value);
 struct expr_str *A4GL_new_literal_string (char *value);
+struct expr_str *A4GL_new_expr_temp(char *s,int dtype);
 struct expr_str *A4GL_new_literal_empty_str(void);
 struct expr_str *A4GL_new_concat_list(struct expr_str_list *params);
 struct expr_str *A4GL_new_substring_expr (char *str,long str_len,char *ptr_s, char *ptr_e,int type);
@@ -2545,6 +2611,7 @@ void A4GL_print_expr_ret_list(struct expr_str_list *l);
 struct expr_str *A4GL_new_expr_list (void);
 struct expr_str_list *A4GL_new_prepend_ptr_list(struct expr_str_list *l,struct expr_str *p);
 struct expr_str *A4GL_new_expr_get_fldbuf(int sid, struct fh_field_list *fl,char *mod,int line);
+struct expr_str *A4GL_new_expr_infield(int sid, struct fh_field_list *fl,char *mod,int line);
 struct expr_str *A4GL_new_expr_current(int from, int to);
 struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,char *wrap_at);
 

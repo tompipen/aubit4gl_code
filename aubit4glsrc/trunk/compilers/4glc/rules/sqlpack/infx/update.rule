@@ -8,6 +8,7 @@
 
 update_statement_ss:
 	KW_UPDATE table_name {
+		//A4GL_assertion(ibindcnt>0,"Ibind not zero");
 		strcpy(current_upd_table,$<str>2);
 		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=acl_strdup("");

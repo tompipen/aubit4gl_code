@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.6 2005-10-09 12:20:45 mikeaubury Exp $
+# $Id: expr.c,v 1.7 2005-10-16 15:50:06 mikeaubury Exp $
 #
 */
 
@@ -147,6 +147,18 @@ case ET_EXPR_OP_IN_SUBQUERY:return "ET_EXPR_OP_IN_SUBQUERY";
 case ET_EXPR_OP_NOTIN_SUBQUERY:return "ET_EXPR_OP_NOTIN_SUBQUERY";
 case ET_EXPR_CAST: return "ET_EXPR_CAST";
 case ET_EXPR_CONCAT_LIST: return "ET_EXPR_CONCAT_LIST";
+case ET_EXPR_YEAR_FUNC: return "ET_EXPR_YEAR_FUNC";
+case ET_EXPR_MONTH_FUNC: return "ET_EXPR_MONTH_FUNC";
+case ET_EXPR_DAY_FUNC: return "ET_EXPR_DAY_FUNC";
+case ET_EXPR_DATE_FUNC: return "ET_EXPR_DATE_FUNC";
+case ET_EXPR_DTVAL: return "ET_EXPR_DTVAL";
+case ET_EXPR_TIME_FUNC: return "ET_EXPR_TIME_FUNC";
+case ET_EXPR_INFIELD: return "ET_EXPR_INFIELD";
+case ET_EXPR_NOT_FIELD_TOUCHED: return "ET_EXPR_NOT_FIELD_TOUCHED";
+case ET_EXPR_FIELD_TOUCHED: return "ET_EXPR_FIELD_TOUCHED";
+case ET_EXPR_IVAL_VAL: return "ET_EXPR_IVAL_VAL";
+case ET_EXPR_FCALL_SINGLE: return "ET_EXPR_FCALL_SINGLE";
+case ET_EXPR_TEMP: return "ET_EXPR_TEMP";
 
 
 }
@@ -169,6 +181,7 @@ struct expr_str_list *A4GL_new_ptr_list(struct expr_str *ptr) {
 	return l;
 
 }
+
 
 struct expr_str_list *A4GL_new_append_ptr_list(struct expr_str_list *l,struct expr_str *ptr) {
 	        l->nlist++;
@@ -300,6 +313,14 @@ struct expr_str *A4GL_new_literal_long_long (long value)
   return ptr;
 }
 
+struct expr_str *A4GL_new_expr_temp(char *s,int dtype) {
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_TEMP);
+  ptr->u_data.expr_tmp=malloc(sizeof (struct expr_tmp));
+  ptr->u_data.expr_tmp->str=strdup(s);
+  ptr->u_data.expr_tmp->dtype=dtype;
+  return ptr;
+}
 
 struct expr_str *A4GL_new_literal_string (char *value)
 {
@@ -349,6 +370,7 @@ struct expr_str *A4GL_new_expr_simple (enum e_expr_type type)
 {
   struct expr_str *ptr;
   ptr = acl_malloc2 (sizeof (struct expr_str));
+  memset(ptr,0,sizeof(struct expr_str));
   ptr->next = 0;
   ptr->expr_type=type;
   return ptr;
@@ -372,6 +394,30 @@ struct expr_str *A4GL_new_concat_list(struct expr_str_list *params) {
         p2=A4GL_new_expr_simple (ET_EXPR_CONCAT_LIST);
 	p2->u_data.expr_list=params;
 
+	return p2;
+}
+
+
+struct expr_str *A4GL_new_datetime_expr(char *str, int extent) {
+	struct expr_datetime *p;
+	struct expr_str *p2;
+	p=malloc(sizeof(struct expr_datetime));
+	p2=A4GL_new_expr_simple (ET_EXPR_DTVAL);
+	p->dtval=strdup(str);
+	p->extend=extent;
+	p2->u_data.expr_datetime=p;
+	return p2;
+}
+
+
+struct expr_str *A4GL_new_interval_expr(char *str, int extent) {
+	struct expr_interval *p;
+	struct expr_str *p2;
+	p=malloc(sizeof(struct expr_interval));
+	p2=A4GL_new_expr_simple (ET_EXPR_IVAL_VAL);
+	p->intval=strdup(str);
+	p->extend=extent;
+	p2->u_data.expr_interval=p;
 	return p2;
 }
 
@@ -401,6 +447,34 @@ struct expr_str *p2;
 	return p2;
 }
 
+
+struct expr_str *A4GL_new_expr_field_touched(int sid, struct fh_field_list *fl,char *mod,int line) {
+struct expr_field_touched *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_field_touched));
+        p2=A4GL_new_expr_simple (ET_EXPR_FIELD_TOUCHED);
+	p->sio_id=sid;
+	p->field_list=fl;
+	p->module=mod;
+	p->line=line;
+	p2->u_data.expr_field_touched=p;
+	return p2;
+}
+
+struct expr_str *A4GL_new_expr_not_field_touched(int sid, struct fh_field_list *fl,char *mod,int line) {
+struct expr_field_touched *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_field_touched));
+        p2=A4GL_new_expr_simple (ET_EXPR_FIELD_TOUCHED);
+	p->sio_id=sid;
+	p->field_list=fl;
+	p->module=mod;
+	p->line=line;
+	p2->u_data.expr_field_touched=p;
+	return p2;
+}
+
+
 struct expr_str *A4GL_new_expr_get_fldbuf(int sid, struct fh_field_list *fl,char *mod,int line) {
 struct expr_get_fldbuf *p;
 struct expr_str *p2;
@@ -415,10 +489,25 @@ struct expr_str *p2;
 }
 
 
+
+struct expr_str *A4GL_new_expr_infield(int sid, struct fh_field_list *fl,char *mod,int line) {
+struct expr_infield *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct expr_infield));
+        p2=A4GL_new_expr_simple (ET_EXPR_INFIELD);
+	p->sio_id=sid;
+	p->field_list=fl;
+	p->module=mod;
+	p->line=line;
+	p2->u_data.expr_infield=p;
+	return p2;
+}
+
+
 struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,char *wrap_at) {
 	struct expr_wordwrap *p;
 	struct expr_str *p2;
-	p=malloc(sizeof(struct expr_get_fldbuf));
+	p=malloc(sizeof(struct expr_wordwrap));
         p2=A4GL_new_expr_simple (ET_EXPR_WORDWRAP);
 	p->expr=ptr;
 	p->wrap_at=strdup(wrap_at);
@@ -426,6 +515,16 @@ struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,char *wrap_at) {
 	return p2;
 }
 
+struct expr_str *A4GL_new_expr_extend(struct expr_str *ptr,int to) {
+	struct expr_extend *p;
+	struct expr_str *p2;
+	p=malloc(sizeof(struct expr_extend));
+        p2=A4GL_new_expr_simple (ET_EXPR_EXTEND);
+	p->expr=ptr;
+	p->to=to;
+	p2->u_data.expr_extend=p;
+	return p2;
+}
 
 struct expr_str *A4GL_new_expr_member_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line) {
 struct expr_member_function_call *p;
@@ -646,6 +745,11 @@ A4GL_new_expr (char *value)
 {
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);
+
+  //fprintf(stderr," shouldn't be using A4GL_new_expr : (%s)\n",value);
+
+  //A4GL_assertion(1,"Bad news - shouldn't be using A4GL_new_expr\n");
+
   ptr=A4GL_new_expr_simple (ET_EXPR_STRING);
   ptr->next = 0;
   ptr->u_data.expr_char = acl_strdup (value);

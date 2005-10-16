@@ -106,8 +106,10 @@ fix_insert_expr (int mode)
       		rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
       		strcpy (colname, "");
       		if (rval == 0) {
-	  		do_yyerror ("Table is not in the database");
+	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database\n",current_ins_table);
 	  		return 0;
+	  		//do_yyerror ("Table is not in the database");
+	  		//return 0;
 		}
 
 
@@ -131,7 +133,7 @@ fix_insert_expr (int mode)
 
 
       		if (rval == 0) {
-	  		do_yyerror ("Table is not in the database");
+	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database\n",current_ins_table);
 	  		return 0;
 		}
 
@@ -159,8 +161,10 @@ fix_insert_expr (int mode)
 
   if (A4GL_4glc_gen_cnt(INSCOL) != A4GL_4glc_gen_cnt(INSVAL))
     {
-      dump_insvals ();
-      do_yyerror ("Number of columns in insert not the same as number of values");
+	    char buff[256];
+	    sprintf(buff,"Number of columns in insert not the same as number of values (%d!=%d)",A4GL_4glc_gen_cnt(INSCOL),A4GL_4glc_gen_cnt(INSVAL));
+      		dump_insvals ();
+      		do_yyerror (buff);
     }
   strcpy (big_buff, "(");
 

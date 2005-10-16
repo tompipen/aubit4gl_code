@@ -55,6 +55,8 @@ int UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int ab
   char formname[256];
       handler_c=vhandler_c;
       handler_e=vhandler_e;
+      A4GL_assertion(name_orig==0,"Invalid name");
+      A4GL_debug("Name : %s",name_orig);
   strcpy (name, name_orig);
   A4GL_decode_gui_winname (name);
   if (like && strlen (like))
@@ -153,6 +155,7 @@ int UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int ab
 void
  UILIB_A4GLUI_ui_init (int argc, char *argv[])
 {
+
    gtk_init(&argc, &argv);
    glade_init();
    return;

@@ -535,6 +535,11 @@ interval_qual :
 		} 
 ;
 
+interval_qual_i :
+		int_start TO int_end {
+			$<integer_val>$=(atoi($<str>1)*16)+atoi($<str>3);
+		} 
+;
 
 dtime_start : dtime_val {
 		    strcpy($<str>$,$<str>1);

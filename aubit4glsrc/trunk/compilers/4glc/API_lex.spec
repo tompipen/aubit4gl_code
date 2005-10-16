@@ -350,7 +350,7 @@ print_end_menu_2 int n -> void
 
 print_menu_block int n int menu_no -> void
 
-print_menu_block_end int n -> void
+print_menu_block_end int m int n -> void
 
 print_option_op int type,char* n,int mn -> void
 

@@ -215,7 +215,7 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	    {
 	      if (ident_flg == VAR_USG_VARIABLE)
 		{
-		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s ,0) ", buff,
+		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s ,0) /*x*/", buff,
 			   type, var->substrings[0]);
 		  strcpy (buff, tmpbuff);
 		  strcpy (tmpbuff, "");
@@ -233,7 +233,7 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	    {
 	      if (ident_flg == VAR_USG_VARIABLE)
 		{
-		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s , %s , 0) ",
+		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s , %s , 0) /*y*/",
 			   buff, type, var->substrings[0],
 			   var->substrings[1]);
 		  strcpy (buff, tmpbuff);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.3 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.4 2005-10-16 15:50:06 mikeaubury Exp $
 #
 */
 
@@ -60,6 +60,7 @@ char *kw_cb=")";
 static char *get_select_list_item_i(struct s_select *select, struct s_select_list_item *p) ;
 static void make_list_item_list_from_select_list(struct s_select *select,struct s_select_list_item_list *p) ;
 static void make_list_item_list_from_select(struct s_select *select,struct s_select_list_item *p);
+static char *find_tabname_for_alias(struct s_select *select, char *alias) ;
 
 
 
@@ -208,6 +209,7 @@ struct s_select_list_item *new_select_list_item_col (char *t,char *c,struct ilis
 	}
 	if (c) {
 		p->u_data.column.colname=strdup(c);
+		A4GL_trim(c);
 	}
 	p->u_data.column.subscript.i0=-1;
 	p->u_data.column.subscript.i1=-1;
@@ -563,6 +565,7 @@ static char *get_select_list_item_i(struct s_select *select, struct s_select_lis
 					  	}
 						A4GL_assertion(p->u_data.column.colname==0,"Column name was null pointer");
 					  	if (p->u_data.column.tabname) {
+
 					  			return strdup(A4GLSQLCV_check_colname(p->u_data.column.tabname,p->u_data.column.colname));
 						}
 					  	return make_sql_string_and_free(strdup(p->u_data.column.colname),strdup(buff),0);
@@ -630,7 +633,7 @@ void make_list_in_subselect_stmt(struct s_select *orig, struct s_select *next) {
 
 static char *find_table(struct s_select *select, struct s_select_list_item *i) {
 	int a;
-	char *colname;
+	//char *colname;
 	A4GL_assertion(i->type!=E_SLI_COLUMN,"Expecting a column...");
 
 
@@ -663,9 +666,126 @@ static char *find_table(struct s_select *select, struct s_select_list_item *i) {
 void preprocess_sql_statement(struct s_select *select) {
 int a;
 struct s_select_list_item *p;
+struct s_select_list_item *pnew;
+struct s_select_list_item_list *n;
+int expand_many;
+
 //
 // Lets collect all our expressions in one place....
 //
+       if (A4GL_isyes(acl_getenv("EXPAND_COLUMNS"))) {
+
+	expand_many=0;
+       for (a=0;a<select->select_list->nlist;a++) {
+		   p=select->select_list->list[a];
+	       	   if (select->select_list->list[a]->type==E_SLI_BUILTIN_CONST_STAR) {
+			  	char *tname;
+				if (select->table_elements.ntables==1) {
+					tname=select->table_elements.tables[0].tabname;
+		   			select->select_list->list[a]=new_select_list_item_col(strdup(tname),"*",0);
+				} else {
+					expand_many=1;
+					//fprintf(stderr,"WARNING - Not currently expanding * for multiple tables\n");
+				}
+		   }
+       }
+
+
+       if (expand_many) {
+       		n=new_select_list_item_list(0);
+
+       		for (a=0;a<select->select_list->nlist;a++) {
+
+		   p=select->select_list->list[a];
+
+	       	   if (select->select_list->list[a]->type==E_SLI_BUILTIN_CONST_STAR) {
+			  	char *tname;
+			   	int b;
+			  		for (b=0;b<select->table_elements.ntables;b++) {
+						if (select->table_elements.tables[b].alias) {
+							tname=select->table_elements.tables[b].alias;
+						} else {
+							tname=select->table_elements.tables[b].tabname;
+						}
+						A4GL_assertion(tname==0,"No tablename?");
+						p=new_select_list_item_col(tname,"*",0);
+			   			add_select_list_item_list(n,p);
+			   		}
+		   } else {
+			   		add_select_list_item_list(n,p);
+			   		continue;
+		   }
+       }
+		select->select_list=n;
+       }
+
+
+       n=new_select_list_item_list(0);
+
+
+       for (a=0;a<select->select_list->nlist;a++) {
+		   p=select->select_list->list[a];
+
+	       	   if (p->type==E_SLI_COLUMN) {
+			   if (strcmp(p->u_data.column.colname,"*")!=0 ) {
+			   	add_select_list_item_list(n,p);
+			   	continue;
+			   } else {
+				int isize = 0;
+				int idtype = 0;
+				char colname[256] = "";
+				int rval;
+				char *ccol=0;
+				char *tname;
+
+				if (strcmp(p->u_data.column.tabname,"")==0) {
+					printf("No tabname - got %d tables...\n",select->table_elements.ntables);
+					if (select->table_elements.ntables==1) {
+						p->u_data.column.tabname=select->table_elements.tables[0].tabname;
+					}
+				}
+
+				if (strcmp(p->u_data.column.tabname,"")==0) {
+					printf("WARNING: No table specified for expansion - column expansion not possible\n");
+			   		add_select_list_item_list(n,p);
+			   		continue;
+				}
+
+				tname=find_tabname_for_alias(select,p->u_data.column.tabname);
+
+				rval = A4GLSQL_get_columns (tname, colname, &idtype, &isize);
+
+				if (rval==0) { //
+					printf("WARNING: Unable to locate %s in the database - column expansion not possible\n",tname);
+			   		add_select_list_item_list(n,p);
+			   		continue;
+				}
+
+				while (1) {
+					colname[0] = 0;
+					ccol=0;
+					rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+					if (rval == 0) { break;}
+					A4GL_trim(ccol);
+					pnew=new_select_list_item_col(p->u_data.column.tabname,ccol,0);
+			   		add_select_list_item_list(n,pnew);
+				}
+			   	continue;
+			   }
+		   }
+
+		   if (p->type==E_SLI_COLUMN_NOT_TRANSFORMED) {
+       				printf("PREPROCESS\n");
+					add_select_list_item_list(n,p);
+			   		//printf("COLUMN (NT) '%s' '%s'\n");
+			   		continue;
+		   }
+
+		add_select_list_item_list(n,p);
+       }
+       select->select_list=n;
+       }
+
        for (a=0;a<select->select_list->nlist;a++) {
                    make_list_item_list_from_select(select,select->select_list->list[a]);
        }
@@ -729,6 +849,20 @@ A4GL_debug("That appears to have %d elements",select->list_of_items.nlist);
 		}
 	}
 }
+
+
+char *find_tabname_for_alias(struct s_select *select, char *alias) {
+	int a;
+	for (a=0;a<select->table_elements.ntables;a++) {
+			if (select->table_elements.tables[a].alias) {
+			if (strcasecmp(alias,select->table_elements.tables[a].alias)==0) {
+				return select->table_elements.tables[a].tabname;
+			}
+			}
+	}
+	return alias;
+}
+
 
 char *make_select_stmt(struct s_select *select) {
 	char buff[40000];

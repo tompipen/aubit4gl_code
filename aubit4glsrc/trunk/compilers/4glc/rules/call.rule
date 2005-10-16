@@ -13,6 +13,7 @@ call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 call_ext: function_call_expr opt_return {
    		print_func_call($<ptr>1);
 		//print_returning();
+		start_bind('i',0);
 	}
    | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
 		print_form_is_compiled($<str>3,$<str>5,$<str>7);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.242 2005-10-09 12:20:25 mikeaubury Exp $
+# $Id: mod.c,v 1.243 2005-10-16 15:49:53 mikeaubury Exp $
 #
 */
 
@@ -126,7 +126,7 @@ char *A4GL_get_clobber_from_orig(char *s);
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
 char *sql_features=0;
-struct fh_field_list *new_field_list(void);
+//struct fh_field_list *new_field_list(void);
 //char *A4GL_decode_packtype(char *s) ;
 
 /*
@@ -1857,6 +1857,7 @@ add_bind (char i, char *var_i)
 char var[2048]="";
 A4GL_debug("add_bind: %c %s\n",i,A4GL_null_as_null(var_i));
 strcpy(var,var_i);
+//if (strcmp(var_i,"lr_array_line.review_date")==0 && i=='i') { A4GL_pause_execution(); }
 
   if (var_i[0] == '"')
     {
@@ -4035,14 +4036,14 @@ void do_print_menu_1(void) {
 	print_menu_1b(get_blk_no());
 }
 
-void do_print_menu_block_end(void) {
-	print_menu_block_end(get_blk_no());
+void do_print_menu_block_end(int mn) {
+	print_menu_block_end(mn,get_blk_no());
 }
 
-int get_blk_no() {
+int get_blk_no(void) {
 	return command_stack[ccnt-1].block_no;
 }
-int get_blk_no_1() {
+int get_blk_no_1(void) {
 	return command_stack[ccnt-2].block_no;
 }
 
@@ -4479,12 +4480,18 @@ int A4GL_escape_quote_owner(void) {
 char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         char buff[40000];
         if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
-                sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
-                free(s);
-                return acl_strdup(buff);
-        } else {
-                return s;
-        }
+		char *p;
+		p=fix_insert_expr(1);
+		if (p) {
+                	sprintf(buff,"INSERT INTO %s %s",current_ins_table,p);
+                	free(s);
+                	return acl_strdup(buff);
+		}
+        } 
+
+
+        return s;
+       
 }
 
 
@@ -4603,9 +4610,23 @@ A4GL_generate_variable_expr (char *s)
 		ptr_e=strchr(ptr_s,','); *ptr_e=0; ptr_e++;
 
 		ptr=strchr(ptr_e,',');
-		if (ptr) {*ptr=0; type=0;}
-		ptr=strchr(ptr_e,')');
-		if (ptr) {*ptr=0; type=1;}
+
+		if (ptr) {
+			*ptr=0; type=0;ptr++; 
+			if (ptr[0]==' '&&ptr[1]=='0' && ptr[2]==' ') {
+				*ptr=0;
+				type=1;
+				}
+		} else {
+			if (ptr_e[0]==' '&&ptr_e[1]=='0' && ptr_e[2]==' ') {
+				*ptr_e=0;
+				ptr_e="0";
+				//printf("...\n");
+			}
+		}
+		//if (ptr[strlen(ptr)-1]==')')  
+		//ptr=strchr(ptr_e,')');
+		//if (ptr) {*ptr=0; type=1;}
 		//printf("SUBSTR : %s:%s:%s:%s (%d)\n",ptr_str,ptr_len,ptr_s,ptr_e,type);
       		//sprintf (buff, "A4GL_push_char(%s); /* SUBSTR EXPR */", s);;
 		
@@ -4696,6 +4717,7 @@ void print_display_by_name (char *attr)
   dt.type=DT_DISPLAY_TYPE_FIELD_LIST;
 
   print_display_new (l, &dt, attr);
+  start_bind('i',0);
 
 }
 
