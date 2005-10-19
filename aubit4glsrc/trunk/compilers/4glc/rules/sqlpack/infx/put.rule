@@ -1,6 +1,6 @@
 /* =============================== put.rule ======================== */
 put_cmd :
-        PUT cursor_name  {
+        PUT put_cursor_name  {
 		add_feature("PUT_CURSOR");
 		start_bind('i',0);
 		}

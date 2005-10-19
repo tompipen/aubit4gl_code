@@ -57,18 +57,18 @@ insert_value_list_ss:
 			while (s) {
 				s2=strchr(s,',');
 				if (s2) {*s2=0; s2++;}
-				A4GL_4glc_push_gen(INSVAL,s);
+				A4GL_4glc_push_gen_expand(INSVAL,s);
 				s=s2;
 			}	
 			free(s);
 			$<sql_string>$=orig;
 		} else {
-			A4GL_4glc_push_gen(INSVAL,$<sql_string>1);
+			A4GL_4glc_push_gen_expand(INSVAL,$<sql_string>1);
 		}
 	}
 	| insert_value_list_ss KW_COMMA insert_value_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,0);
-		A4GL_4glc_push_gen(INSVAL,$<sql_string>3);
+		A4GL_4glc_push_gen_expand(INSVAL,$<sql_string>3);
 	}
 ;
 

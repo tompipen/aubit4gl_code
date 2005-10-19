@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.66 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.67 2005-10-19 19:30:54 mikeaubury Exp $
 #
 */
 
@@ -248,6 +248,14 @@ int current_conversion_rules_cnt = 0;
 
 
 
+struct column_remap {
+	char *tabname;
+	char *from_col;
+	char *to_col;
+};
+
+struct column_remap *column_mappings=0;
+int ncolumn_mappings=0;
 
 /*
 =====================================================================
@@ -624,7 +632,7 @@ SPRINTF2(s,"%s.%s",t,c);
 #else
 	SNPRINTF(sv,512,"%s.%s.%s",t,c,v);
 #endif
-
+c=A4GL_confirm_colname(t,c);
 sv[511]=0;
 A4GL_debug("Alias : '%s'\n",s);
 
@@ -971,7 +979,7 @@ return 0;
 
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) {
 static char buff[256];
-
+	colname=A4GL_confirm_colname(tabname,colname);
 	if (tabname) {
 		SPRINTF2(buff,"%s.%s",tabname,colname);
 	} else {
@@ -1979,9 +1987,65 @@ return ptr;
 }
 
 
+static void add_mapping(char *t,char *c1,char *c2) {
+ncolumn_mappings++;
+column_mappings=realloc(column_mappings,sizeof(struct column_remap)*ncolumn_mappings);
+column_mappings[ncolumn_mappings-1].tabname=strdup(t);
+column_mappings[ncolumn_mappings-1].from_col=strdup(c1);
+column_mappings[ncolumn_mappings-1].to_col=strdup(c2);
+printf("Add map : %s,%s,%s\n",t,c1,c2);
+}
+
+
+static void load_column_mappings(void) {
+char *ptr;
+FILE *f;
+char buff[256];
+char *t;
+char *c1;
+char *c2;
+char *c;
+ptr=acl_getenv("COLUMN_MAP");
+if (ptr==0) return;
+if (strlen(ptr)==0) return;
+f=fopen(ptr,"r");
+if (f==0) return;
+while (1) {
+	c1=0;
+	c2=0;
+	c=fgets(buff,256,f);
+	if (!c) break;
+	A4GL_trim_nl(buff);
+	if (buff[0]=='#') continue;
+	t=buff;
+	c1=strchr(buff,' ');
+	if (c1) {*c1=0; c1++;}
+	if (c1) {
+		c2=strchr(c1,' ');
+		if (c2) {*c2=0;c2++;}
+	}
+	if (c2==0) continue;
+	add_mapping(t,c1,c2);
+}
+}
 
 char *A4GL_confirm_colname(char *t,char *c) {
 	static char buff[256];
+        static int loaded_columns=0;
+	int a;
+	if (!loaded_columns) {
+		loaded_columns=1;
+		load_column_mappings();
+
+	}
+	for (a=0;a<ncolumn_mappings;a++) {
+		if (strcmp(t,column_mappings[a].tabname)==0 && strcmp(c,column_mappings[a].from_col)==0) {
+			strcpy(buff,column_mappings[a].to_col);
+			return buff;
+		}
+	}
+
+
 	strcpy(buff,c);
 	return c;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.243 2005-10-16 15:49:53 mikeaubury Exp $
+# $Id: mod.c,v 1.244 2005-10-19 19:30:43 mikeaubury Exp $
 #
 */
 
@@ -4220,8 +4220,8 @@ fgl_add_scope (char *s, int n)
 			}
 		} else {
       			if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && c=='M') {
-    				sprintf (buffer, "%c_%s_%s", c,A4GL_compiling_module_basename(),buffer2);
-				buffer[0]=toupper(buffer[0]);
+    					sprintf (buffer, "%c_%s_%s", c,A4GL_compiling_module_basename(),buffer2);
+					buffer[0]=toupper(buffer[0]);
 			} else {
     				sprintf (buffer, "%c_%s", c, buffer2);
 				buffer[0]=toupper(buffer[0]);
@@ -4723,7 +4723,37 @@ void print_display_by_name (char *attr)
 
 
 
+int A4GL_4glc_push_gen_expand(int n,char *v) {
+  int a;
+  struct record_list *list;
 
+  if (strncmp(v,"?,",2)==0) {
+	int x;
+	x=((strlen(v)+1)/2);
+	for (a=0;a<x;a++) {
+		A4GL_4glc_push_gen(n,"?");
+	}
+	return 1;
+  }
+
+  if (strstr(v,".*")==0) {
+	A4GL_4glc_push_gen(n,v);
+	return 1;
+  }
+
+  list = split_record_list (v, "", 0);
+  A4GL_debug ("Got list : %p", list);
+
+  if (list == 0) { a4gl_yyerror ("OOps\n"); return -1; }
+
+
+  for (a = 0; a < list->records_cnt; a++)
+    {
+	A4GL_4glc_push_gen(n,list->list[a]->name);
+    }
+
+  return 1;
+}
 
 
 

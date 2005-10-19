@@ -203,7 +203,7 @@ upd_val_list_ss  :
 		if (A4GL_4glc_gen_cnt(UPDVAL2)) {
 			A4GL_4glc_copy_gen(UPDVAL,UPDVAL2);
 		} else {
-                	A4GL_4glc_push_gen(UPDVAL,$<sql_string>1);
+                	A4GL_4glc_push_gen_expand(UPDVAL,$<sql_string>1);
 		}
 	}
 	| upd_val_list_ss KW_COMMA upd_val_ss { 

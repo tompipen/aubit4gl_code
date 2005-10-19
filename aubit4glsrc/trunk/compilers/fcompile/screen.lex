@@ -156,6 +156,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "IN" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWIN;}
 "BETWEEN" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWBETWEEN;}
 "NOT" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOT;}
+"%%DBNAME%%"    {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SPECIAL_DBNAME;}
 
 "." 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
 

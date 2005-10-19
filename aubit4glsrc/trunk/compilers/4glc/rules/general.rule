@@ -52,11 +52,13 @@ field_name_as_struct	:
 				char buff[256];
 				sprintf(buff,"%s.*",$<str>1);
 				$<field_entry>$=new_field_entry(buff,"1",1);
+				add_feature("SRECDOTSTAR");
 		}
 		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY {
 				char buff[256];
 				sprintf(buff,"%s.*",$<str>1);
 				$<field_entry>$=new_field_entry(buff,$<str>3,1);
+				add_feature("SRECDOTSTAR");
 		}
 		| identifier DOT identifier 	{
 				char buff[256];
@@ -92,6 +94,7 @@ cursor_name	:	ident_or_var {
 			}
 ;
 
+put_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
 
 fetch_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
 

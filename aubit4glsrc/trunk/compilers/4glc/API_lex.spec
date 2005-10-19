@@ -487,6 +487,7 @@ print_gtk_menuhandler_bsm_end -> void
 print_gtk_menuhandler_on char* s -> void
 print_gtk_menuhandler_on_end -> void
 print_gtk_menuhandler_end -> void
+get_keyval_str char* s -> char*
 
 * get_in_exists_sql char* s char t -> void*
 * A4GL_expr_for_call char* ident long params int line char* file -> char*
