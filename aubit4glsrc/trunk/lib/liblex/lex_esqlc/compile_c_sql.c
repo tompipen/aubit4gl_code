@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.60 2005-10-14 09:15:32 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.61 2005-10-19 19:30:54 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.60 2005-10-14 09:15:32 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.61 2005-10-19 19:30:54 mikeaubury Exp $";
 #endif
 
 
@@ -265,6 +265,7 @@ LEXLIB_print_put (char *cname,char *putvals)
 {
   int n;
   printc ("{\n");
+  print_pushchar(cname);
   n = print_bind_definition ('i');
   print_bind_set_value ('i');
   printc ("A4GLSQL_put_insert(ibind,%d);\n", n);

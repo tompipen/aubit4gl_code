@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.149 2005-09-09 20:08:38 mikeaubury Exp $
+# $Id: esql.ec,v 1.150 2005-10-19 19:30:54 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.149 2005-09-09 20:08:38 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.150 2005-10-19 19:30:54 mikeaubury Exp $";
 #endif
 
 
@@ -3785,11 +3785,12 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
       return 0;
     }
 
-  EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX:MaxColumns;
+  EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX 3000;
+	/*WITH MAX:MaxColumns; */
   if (sqlca.sqlcode == -480)
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns';
-      EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns';
+      EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns'  WITH MAX 3000;
     }
   if (isSqlError ())
     {
