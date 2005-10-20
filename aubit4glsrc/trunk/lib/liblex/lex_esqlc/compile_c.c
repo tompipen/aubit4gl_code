@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.267 2005-10-19 19:30:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.268 2005-10-20 11:49:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.267 2005-10-19 19:30:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.268 2005-10-20 11:49:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1028,6 +1028,11 @@ LEXLIB_print_rep_ret (int report_cntx,int addit)
 {
   if (addit) printc("A4GL_pop_report_section(&_rep,%d);",rep_print_code++);
   printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
+}
+
+
+void LEXLIB_print_report_2_1() {
+	// Does nothing in this output module - needed by API
 }
 
 /**

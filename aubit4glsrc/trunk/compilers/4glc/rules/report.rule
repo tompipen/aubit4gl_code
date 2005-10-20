@@ -660,6 +660,7 @@ report_def : REPORT
 		}
 	define_section 
 	{
+		print_report_2_1();
 		print_variables();
 		}
 	report_section 

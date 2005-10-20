@@ -277,6 +277,7 @@ print_report_1 char* name -> void
 print_report_end -> void
 
 print_report_2 int pdf,char* repordby -> void
+print_report_2_1 -> void
 
 print_pause char* msg -> void
 
