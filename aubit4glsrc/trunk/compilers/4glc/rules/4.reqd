@@ -13,7 +13,7 @@
 %left DIVIDE MULTIPLY
 %left POWER MOD
 %left UNITS
-%right UMINUS
+%left UMINUS
 
 %right COMMAND
 %token NUMBER_VALUE

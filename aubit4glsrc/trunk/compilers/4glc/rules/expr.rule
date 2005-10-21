@@ -20,7 +20,7 @@ fgl_expr_c :
 	| builtin_expr
 	| pdf_expr
 	| literal_expr 
-	| MINUS fgl_expr_c 	{ 
+	| MINUS fgl_expr_c %prec UMINUS	{ 
 		$<ptr>$=A4GL_new_expr_neg($<ptr>2); 
 	}
 	| PLUS fgl_expr_c 			{ $<ptr>$=$<ptr>2; }
