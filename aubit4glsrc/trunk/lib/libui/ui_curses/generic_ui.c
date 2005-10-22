@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.27 2005-07-28 08:26:41 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.28 2005-10-22 08:44:09 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -343,6 +343,7 @@ void
           f = 1;
 	  matches++;
           menu->curr_option = option;
+	  	menu->curr_page =option->page;
           break;
         }
       option =

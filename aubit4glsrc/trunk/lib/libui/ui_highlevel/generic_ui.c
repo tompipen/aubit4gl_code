@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.64 2005-09-01 07:07:03 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.65 2005-10-22 08:45:20 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -396,7 +396,7 @@ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
 	{
 	  f = 1;
 	  matches++;
-	  menu->curr_option = option;
+	  menu->curr_option = option;     menu->curr_page =option->page;
 	  break;
 	}
       option = (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
