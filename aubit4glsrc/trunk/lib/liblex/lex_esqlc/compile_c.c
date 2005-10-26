@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.269 2005-10-26 21:21:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.270 2005-10-26 21:44:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.269 2005-10-26 21:21:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.270 2005-10-26 21:44:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4587,7 +4587,7 @@ LEXLIB_print_input_2 (char *s)
  * @param fldlist The form field list from where the input is made.
  */
 void
-LEXLIB_print_input (int byname, char *defs, char *helpno, struct fh_field_list *fldlist_fh, int attr)
+LEXLIB_print_input_fl (int byname, char *defs, char *helpno, struct fh_field_list *fldlist_fh, int attr)
 {
   int ccc;
   int sio_id;
