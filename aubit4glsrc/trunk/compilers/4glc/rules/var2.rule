@@ -11,7 +11,11 @@ var_ident :  var2_vu
 		char buff[1024];
 		sprintf(buff,"%s",fgl_add_scope(variable_usage_as_string($<var_usg>1,VAR_USG_VARIABLE),0));
 		print_push_variable(buff);
-		strcpy($<str>$,"?");
+		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+			strcpy($<str>$,"?@@PARAM@@?");
+		} else {
+			strcpy($<str>$,"?");
+		}
 	} else {
 		strcpy($<str>$,variable_usage_as_string($<var_usg>1,VAR_USG_IDENT));
 	}

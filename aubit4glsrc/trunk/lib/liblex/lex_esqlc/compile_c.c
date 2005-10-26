@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.268 2005-10-20 11:49:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.269 2005-10-26 21:21:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.268 2005-10-20 11:49:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.269 2005-10-26 21:21:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -294,6 +294,7 @@ static char *is_single_string(struct expr_str_list *ptr) {
 	struct expr_str *p;
 	int a;
 	char *buff=0;
+	// LAST_STRING <- USE TO SEARCH...!
 
 	if (ptr->nlist==1) { 
 		p=ptr->list[0];
@@ -326,10 +327,11 @@ static char *is_single_string(struct expr_str_list *ptr) {
 		if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
 			// If we're using variables here - we really ought to store them somewhere
 			// as we're replacing them with a '?'
+			return 0;
 			if ((p->u_data.expr_push_variable->var_dtype&DTYPE_MASK)==DTYPE_CHAR) { // Its a character strings
 				int sz;
 				sz=p->u_data.expr_push_variable->var_dtype>>16;
-				if (sz>20) {
+				if (sz>10) {
 
 					//printf("DTYPE : %x\n",p->u_data.expr_push_variable->var_dtype);
 					return 0;
@@ -4585,10 +4587,14 @@ LEXLIB_print_input_2 (char *s)
  * @param fldlist The form field list from where the input is made.
  */
 void
-LEXLIB_print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
+LEXLIB_print_input (int byname, char *defs, char *helpno, struct fh_field_list *fldlist_fh, int attr)
 {
   int ccc;
   int sio_id;
+char *fldlist;
+  if (fldlist_fh) {
+	fldlist=field_name_list_as_char(fldlist_fh);
+  }
   printc ("/*");
   push_blockcommand ("INPUT");
   printc ("*/");

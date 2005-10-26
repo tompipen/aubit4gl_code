@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.244 2005-10-19 19:30:43 mikeaubury Exp $
+# $Id: mod.c,v 1.245 2005-10-26 21:21:02 mikeaubury Exp $
 #
 */
 
@@ -3479,7 +3479,11 @@ get_upd_using_queries (void)
     {
       if (strlen (buff) > 0)
 	strcat (buff, ",");
+	if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+      strcat (buff, "?@@PARAM@@?");
+	} else {
       strcat (buff, "?");
+	}
     }
   A4GL_debug ("Returning %s", buff);
   return buff;
@@ -3922,7 +3926,12 @@ fix_update_expr (int mode)
     {
       if (a)
 	strcat (big_buff, ",");
-      sprintf (buff, "%s=%s", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
+	if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+		if (strcmp(A4GL_4glc_get_gen(UPDVAL,a),"?")==0) {
+			A4GL_assertion(1,"How ?");
+		}
+	}
+      sprintf (buff, "%s=%s ", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
       strcat (big_buff, buff);
     }
 
@@ -4727,11 +4736,19 @@ int A4GL_4glc_push_gen_expand(int n,char *v) {
   int a;
   struct record_list *list;
 
-  if (strncmp(v,"?,",2)==0) {
+  if (strncmp(v,"?,",2)==0 || strncmp(v,"?@@PARAM@@?,",2)==0) {
 	int x;
-	x=((strlen(v)+1)/2);
+  	if (strncmp(v,"?,",2)==0) {
+		x=((strlen(v)+1)/2);
+	} else {
+		x=((strlen(v)+1)/12);
+	}
 	for (a=0;a<x;a++) {
-		A4GL_4glc_push_gen(n,"?");
+		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+			A4GL_4glc_push_gen(n,"?@@PARAM@@?");
+		} else {
+			A4GL_4glc_push_gen(n,"?");
+		}
 	}
 	return 1;
   }

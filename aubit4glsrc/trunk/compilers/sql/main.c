@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.5 2005-08-08 21:01:04 mikeaubury Exp $
+# $Id: main.c,v 1.6 2005-10-26 21:21:06 mikeaubury Exp $
 #
 */
 
@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <stdlib.h>               /* exit() */
 #include <stdarg.h>
+#include <string.h>
 #ifdef NDEF
 	#include "ilist.h"
 	#include "y.tab.h"
@@ -52,8 +53,9 @@
 	int sql_type;
 	extern int was_ok=0;
 #endif
+extern int db_used;
 
-extern int asql_yydebug;
+extern int sqlparse_yydebug;
 char * A4GLSQLCV_convert_file (char *target_dialect, char *sql); 
 	
 /**
@@ -65,12 +67,57 @@ char * A4GLSQLCV_convert_file (char *target_dialect, char *sql);
 int
 main(int argc,char *argv[]) {
 char *snew;
-	if (argc!=2) {
-		printf("Usage : %s filename\n",argv[0]);
+char *dialect;
+char *default_database;
+int pcnt=0;
+
+	if (argc<2) {
+		printf("Usage : %s filename [dbname]\n",argv[0]);
 		exit(2);
 	}
 	A4GL_init_gen_stack();
-	snew=A4GLSQLCV_convert_file("POSTGRES",argv[1]);
+	if (A4GL_isyes(acl_getenv("DOING_CM")) ) {
+  		A4GL_setenv ("EXPAND_COLUMNS", "Y", 1);
+  		A4GL_setenv ("FULL_INSERT", "Y", 1);
+	}
+
+	dialect=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
+	if (dialect==0) dialect="POSTGRES";
+	if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
+		printf("YYDEBUG\n");
+		sqlparse_yydebug=1;
+	}
+
+	if (argc==3) {
+		default_database=acl_getenv_not_set_as_0("DEFAULT_DATABASE");
+		if (default_database==0) {
+			default_database=argv[2];
+		}
+	        A4GLSQL_set_status (0, 1);
+  		A4GLSQL_init_connection (default_database);
+  		if (A4GLSQL_get_status () != 0) {
+			printf("Couldn't connect to database\n");
+			exit(1);
+    		}
+		//printf("Opened database : %s\n",default_database);
+		db_used=1;
+
+	}
+
+	snew=A4GLSQLCV_convert_file(dialect,argv[1]);
+	if (strcmp(snew,"<err>")==0) { exit(1); }
+
+	while (1) {
+		char *ptr;
+		ptr=strstr(snew,"?@@PARAM@@?");
+		if (ptr==0) break;
+		if (ptr) {
+			char buff[256];
+			      //      ?@@PARAM@@?
+			sprintf(buff,"@param_%04d",pcnt++);
+			strncpy(ptr,buff,strlen(buff));
+		}
+	}
 	printf("%s\n",snew);
 	return 0;
 }

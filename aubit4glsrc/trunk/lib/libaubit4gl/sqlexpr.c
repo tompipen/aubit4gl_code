@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.4 2005-10-16 15:50:06 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.5 2005-10-26 21:21:06 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@ char *kw_space=" ";
 char *kw_comma=",";
 char *kw_ob="(";
 char *kw_cb=")";
+int place_holder_cnt=0;
 
 //char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
 //char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;
@@ -122,7 +123,7 @@ struct s_select_list_item *new_select_list_item_variable (char *s) {
 
 struct s_select_list_item *new_select_list_item_column_from_transform(char *s) {
 	struct s_select_list_item *p;
-	if (strcmp(s,"?")==0) {
+	if (strcmp(s,"?")==0 || strcmp(s,"?@@PARAM@@?")==0) {
 		p=empty_select_list_item(E_SLI_QUERY_PLACEHOLDER);
 		p->u_data.expression=strdup(s);
 		return p;
@@ -552,7 +553,14 @@ static char *get_select_list_item_i(struct s_select *select, struct s_select_lis
 
 
 			case E_SLI_EXTEND: return make_sql_string_and_free(acl_strdup("EXTEND ("),get_select_list_item(select,p->u_data.extend.expr),strdup(","),p->u_data.extend.from,strdup(" TO "),strdup(p->u_data.extend.to),kw_cb,0);
-			case E_SLI_QUERY_PLACEHOLDER: return strdup("?");
+
+			case E_SLI_QUERY_PLACEHOLDER: 
+						if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+							return strdup("?@@PARAM@@?");
+							//      @param_NNNN
+						} else {
+							return strdup("?");
+						}
 
         		case E_SLI_COLUMN :  {
 						char buff[50]="";
@@ -756,7 +764,10 @@ int expand_many;
 				rval = A4GLSQL_get_columns (tname, colname, &idtype, &isize);
 
 				if (rval==0) { //
-					printf("WARNING: Unable to locate %s in the database - column expansion not possible\n",tname);
+					if (A4GL_isyes(acl_getenv("SHOW_WARNING"))) {
+					fprintf(stderr,"WARNING: Unable to locate %s in the database - column expansion not possible\n",tname);
+					}
+
 			   		add_select_list_item_list(n,p);
 			   		continue;
 				}
@@ -921,6 +932,23 @@ char *make_select_stmt(struct s_select *select) {
 			strcat(buff," ");
 		}
 	}
+
+
+
+	if (select->sf) {
+		if (select->sf->into_temp) {
+			if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_TEMP_HASH")) {
+                        	strcpy(into_temp," INTO TEMP #");
+                        	strcat(into_temp,select->sf->into_temp);
+				strcat(buff,into_temp);
+				strcat(buff, " ");
+			}
+		}
+	}
+
+
+
+
 	strcat(buff,"FROM ");
 
 		A4GL_debug("buff=%s",buff);
@@ -985,8 +1013,10 @@ char *make_select_stmt(struct s_select *select) {
 					}
 			}
 
-			strcpy(into_temp," INTO TEMP ");
-			strcat(into_temp,select->sf->into_temp);
+ 			if (!A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_TEMP_HASH")) {
+				strcpy(into_temp," INTO TEMP ");
+				strcat(into_temp,select->sf->into_temp);
+			}
 
 			if (select->sf->nolog) {
 				if (!A4GLSQLCV_check_requirement("OMIT_NO_LOG")) {

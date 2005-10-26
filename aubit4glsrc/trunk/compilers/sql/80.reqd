@@ -38,7 +38,13 @@ fgl_sql_statement: NOT_USED_3
 ;
 
 ident_or_var: identifier
-	| QUESTION_MARK
+	| QUESTION_MARK {
+			if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+				strcpy($<str>$,"?@@PARAM@@?");
+			} else {
+				strcpy($<str>$,"?");
+			}
+	}
 ;
 
 
@@ -107,7 +113,13 @@ var_ident_ibind_sli :  column_name_x { $<s_select_list_item>$=new_select_list_it
 ;
 
 var_ident_ibind_ss :  column_name_x { $<sql_string>$=strdup($<str>1);}
-	 | QUESTION_MARK {  $<sql_string>$=strdup($<str>1); }
+	 | QUESTION_MARK {  
+			if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+				$<sql_string>$=strdup("?@@PARAM@@?");
+			} else {
+				$<sql_string>$=strdup("?");
+			}
+	}
 ;
 
 column_name_x:
@@ -127,7 +139,7 @@ value_expression_initial_sli :
 ;
 
 
-op_fgl_expr :  {strcpy($<str>$,0);}
+op_fgl_expr :  {strcpy($<str>$,"");}
 	| INT_VALUE {strcpy($<str>$,$<str>1);}
 ;
 

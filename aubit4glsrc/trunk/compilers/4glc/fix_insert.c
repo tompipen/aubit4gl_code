@@ -106,7 +106,7 @@ fix_insert_expr (int mode)
       		rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
       		strcpy (colname, "");
       		if (rval == 0) {
-	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database\n",current_ins_table);
+	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database(1)\n",current_ins_table);
 	  		return 0;
 	  		//do_yyerror ("Table is not in the database");
 	  		//return 0;
@@ -133,7 +133,7 @@ fix_insert_expr (int mode)
 
 
       		if (rval == 0) {
-	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database\n",current_ins_table);
+	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database (2)\n",current_ins_table);
 	  		return 0;
 		}
 

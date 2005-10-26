@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.202 2005-10-16 15:50:06 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.203 2005-10-26 21:21:06 mikeaubury Exp $
 #
 */
 
@@ -2429,6 +2429,8 @@ struct expr_cast {
 		struct expr_str *expr;
 		int target_dtype;
 		int src_dtype;
+		int notnull;
+		int force;
 };
 
 

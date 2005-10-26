@@ -12,6 +12,8 @@ struct fh_field_list {
         int nfields;
 };
 
+typedef struct fh_field_list t_field_list;
+
 struct fh_field_entry *new_field_entry(char *f,char *n,int needs_quoting) ;
 void free_field(struct fh_field_entry *field) ;
 struct fh_field_list *new_field_list(void) ;

@@ -52,7 +52,9 @@ insert_value_list_ss:
 		char *orig;
 		orig=strdup($<sql_string>1);
 		$<sql_string>$=$<sql_string>1;
-		if (strncmp($<sql_string>$,"?,",2)==0) {
+
+
+		if (strncmp($<sql_string>$,"?,",2)==0 || strncmp($<sql_string>$,"?@@PARAM@@?,",2)==0  ) {
 			s=$<sql_string>$;
 			while (s) {
 				s2=strchr(s,',');
@@ -134,7 +136,6 @@ other_misc_infx_stmt  :
 
 misc_infx_stmt: 
 	MISC_INFX_SQL  {
-		if (strcmp($<str>1,"SET BUFFERED LOG")==0) add_feature("SET_BUFFERED_LOG");
 		if (strcmp($<str>1,"SET LOG")==0) add_feature("SET_LOG");
 		if (strncmp($<str>1,"START DATABASE",14)==0) {
 			if (strstr($<str>1,"ANSI")) {
@@ -143,6 +144,12 @@ misc_infx_stmt:
 				add_feature("START_DATABAE_WITH_LOG");
 			}
 		}
+	}
+	| SET_BUFFERED_LOG {
+		add_feature("SET_BUFFERED_LOG");
+	}
+	| SET_LOG {
+		add_feature("SET_LOG");
 	}
 	| other_misc_infx_stmt
 ;

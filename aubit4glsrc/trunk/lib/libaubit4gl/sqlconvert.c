@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.67 2005-10-19 19:30:54 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.68 2005-10-26 21:21:06 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,7 @@ static char *A4GL_space_out (char *s) ;
 /* empty string that can be pointed to */
 char empty[] = "";
 char *CV_matches(char *typ,char *string,char *esc) ;
+int set_sql_conv_success;
 
 char *cvsql_names[]={
   "CVSQL_NONE",
@@ -133,6 +134,8 @@ char *cvsql_names[]={
   
   "CVSQL_DTIME_AS_CHAR",
   "CVSQL_DATE_AS_CHAR",
+  "CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH",
+  "CVSQL_CREATE_TEMP_AS_CREATE_HASH",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -224,6 +227,8 @@ enum cvsql_type
   CVSQL_CLOSE_CURSOR_BEFORE_OPEN,
   CVSQL_DTIME_AS_CHAR,
   CVSQL_DATE_AS_CHAR,
+  CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH,
+  CVSQL_CREATE_TEMP_AS_CREATE_HASH,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -995,9 +1000,9 @@ static char buff[1024];
 
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
 		if (strstr(not,"NOT")==0) {
-		SPRINTF1(buff,"LIKE %s",CV_matches("LIKE",str,esc));
+			SPRINTF1(buff," LIKE %s",CV_matches("LIKE",str,esc));
 		} else {
-		SPRINTF1(buff,"NOT LIKE %s",CV_matches("LIKE",str,esc));
+			SPRINTF1(buff," NOT LIKE %s",CV_matches("LIKE",str,esc));
 		}
 
 		return buff;
@@ -1005,9 +1010,9 @@ if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
 
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
 		if (strstr(not,"NOT")==0) {
-			SPRINTF1(buff,"~ %s",CV_matches("~",str,esc));
+			SPRINTF1(buff," ~ %s",CV_matches("~",str,esc));
 		} else {
-			SPRINTF1(buff,"!~ %s",CV_matches("~",str,esc));
+			SPRINTF1(buff," !~ %s",CV_matches("~",str,esc));
 		}
 		return buff;
 }
@@ -1155,6 +1160,8 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "DATE_AS_CHAR", len) == 0) return CVSQL_DATE_AS_CHAR;
   if (strncasecmp (p, "DTIME_AS_CHAR", len) == 0) return CVSQL_DTIME_AS_CHAR;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
+  if (strncasecmp (p, "SELECT_INTO_TEMP_INTO_TEMP_HASH", len) == 0) return CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH;
+  if (strncasecmp (p, "CREATE_TEMP_AS_CREATE_HASH", len) == 0) return CVSQL_CREATE_TEMP_AS_CREATE_HASH;
   if (strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0) return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
@@ -1679,6 +1686,7 @@ if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS")) {
 }
 
 
+
 if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS")) {
 	ptr=acl_malloc2(strlen(sel)+2000);
 	SPRINTF2(ptr,"CREATE TEMPORARY TABLE %s AS %s ",tabname,sel);
@@ -1710,6 +1718,12 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	SPRINTF2(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,A4GL_space_out(elements));
 	return ptr;
 } 
+
+if (A4GLSQLCV_check_requirement("CREATE_TEMP_AS_CREATE_HASH")) {
+	SPRINTF4(ptr,"CREATE TABLE #%s (%s) %s %s",tabname,elements,extra,oplog);
+	return ptr;
+}
+
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_TEMPORARY")) {
 	SPRINTF4(ptr,"CREATE TEMPORARY TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
@@ -2050,3 +2064,10 @@ char *A4GL_confirm_colname(char *t,char *c) {
 	return c;
 }
 
+void A4GL_set_sql_conv(int n) {
+	set_sql_conv_success=n;
+}
+
+int A4GL_get_sql_conv(void) {
+	return set_sql_conv_success;
+}

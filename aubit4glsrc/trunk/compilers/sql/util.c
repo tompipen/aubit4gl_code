@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.26 2005-10-19 20:55:54 mikeaubury Exp $
+# $Id: util.c,v 1.27 2005-10-26 21:21:06 mikeaubury Exp $
 #
 */
 
@@ -307,9 +307,12 @@ fix_update_expr (int mode)
 
   for (a = 0; a < A4GL_4glc_gen_cnt(UPDCOL); a++)
     {
+	if (strcmp(A4GL_4glc_get_gen(UPDVAL,a),"?")==0) {
+		A4GL_assertion(1,"Failed");
+	}
       if (a)
         strcat (big_buff, ",");
-      sprintf (buff, "%s=%s", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
+      sprintf (buff, "%s=%s ", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
       strcat (big_buff, buff);
     }
 
@@ -455,10 +458,16 @@ A4GLSQLCV_loadbuffer(char *fname) {
 		input_from_file=1;
 		Sql_file=fopen(fname,"r");
 	}
+
 	if (Sql_file==0) {
 		printf("Unable to open input file\n");
 	}
-	if (stmts) { free(stmts); stmts=0;stmts_cnt=0; }
+
+	if (stmts) { 
+		free(stmts); 
+		stmts=0;
+		stmts_cnt=0; 
+	}
 	Sql=0;
 	
 }
@@ -820,8 +829,9 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect, char
 	int a;
 	static char *ptr=0;
 	int l;
-	yydebug=0;
 	add_sql(-1,"");
+	if (A4GL_isyes(acl_getenv("YYDEBUG"))) { yydebug=1;}
+
 	A4GL_debug("A4GLSQLCV_convert_sql_internal %s %s %s %d",source_dialect, target_dialect, sql, from_file);
 
 	sprintf(buff,"%s_%s",source_dialect, target_dialect);
@@ -830,21 +840,33 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect, char
 		strcpy(last_conversion,buff);
 	} 
 
+	
 	if (from_file) {
 		A4GLSQLCV_loadbuffer(sql);
 	} else {
+		if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
+			fprintf(stderr,"SQL:%s\n",sql);
+		}
 		A4GLSQLCV_setbuffer(sql);
 	}
 
 	A4GL_debug("stmts=%p stmts_cnt=%d Sql=%s",stmts,stmts_cnt,Sql);
 
 	if (A4GLSQLCV_process()) {
+		if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
+			fprintf(stderr,"Success\n");
+		}
+		A4GL_set_sql_conv(1);
 		// All ok !
 		A4GL_debug("SQL processed OK (%d statements)",stmts_cnt);
 	} else {
+		A4GL_set_sql_conv(0);
+		if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
+			fprintf(stderr,"Error\n");
+		}
 		// Some sql error....
 		A4GL_debug("Possible issue with the SQL",stmts_cnt);
-		if (from_file)  return "<err>";
+		if (from_file)  return "<err>"; 
 		else 		return sql;
 		
 	}
@@ -908,6 +930,9 @@ A4GLSQLCV_process(void) {
         was_ok=1;
 	sql_string_cnt=0;
 	this_sql_start=0;
+	if (Sql_file) {
+		sqlparse_yyin=Sql_file;
+	}
         sqlparse_yyparse();
         return was_ok;
 }
@@ -944,8 +969,14 @@ char *
 A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         char buff[40000];
         if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
-                sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
-                free(s);
+		char *p;
+		p=fix_insert_expr(1);
+		if (p) {
+                	sprintf(buff,"INSERT INTO %s %s",current_ins_table,p);
+                	free(s);
+		} else {
+			sprintf(buff,"%s",s);
+		}
                 return acl_strdup(buff);
         } else {
                 return s;
@@ -958,7 +989,7 @@ A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
 
 
 int A4GL_db_used(void) {
-return 1;
+	return db_used;
 }
 
 A4GL_cursor_current(char *s)  {

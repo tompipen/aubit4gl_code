@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.78 2005-10-05 09:08:14 mikeaubury Exp $
+# $Id: 1.reqd,v 1.79 2005-10-26 21:21:06 mikeaubury Exp $
 #
 */
 
@@ -118,6 +118,7 @@
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 #include "var_handling.h"
+#include "field_handling.h"
 #include "a4gl_gen_stack.h"
 
 /*

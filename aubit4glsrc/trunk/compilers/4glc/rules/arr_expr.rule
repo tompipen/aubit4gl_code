@@ -23,9 +23,9 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
 	char buff[20000];
 	sprintf(buff,"%s",fgl_add_scope($<str>1,0));
 	if (buff[0]=='M' || buff[0]=='G') {
-		sprintf($<str>$,"this.%s",fgl_add_scope($<str>1,0));
+		sprintf($<str>$,"(this.%s) As Int32",fgl_add_scope($<str>1,0));
 	} else {
-		sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
+		sprintf($<str>$,"(%s) As Int32",fgl_add_scope($<str>1,0));
 	}
   } else {
   	sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
