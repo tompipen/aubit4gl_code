@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.68 2005-10-26 21:21:06 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.69 2005-10-27 13:12:32 mikeaubury Exp $
 #
 */
 
@@ -2007,7 +2007,7 @@ column_mappings=realloc(column_mappings,sizeof(struct column_remap)*ncolumn_mapp
 column_mappings[ncolumn_mappings-1].tabname=strdup(t);
 column_mappings[ncolumn_mappings-1].from_col=strdup(c1);
 column_mappings[ncolumn_mappings-1].to_col=strdup(c2);
-printf("Add map : %s,%s,%s\n",t,c1,c2);
+//printf("Add map : %s,%s,%s\n",t,c1,c2);
 }
 
 
