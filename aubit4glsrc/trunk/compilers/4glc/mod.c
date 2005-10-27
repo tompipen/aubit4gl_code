@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.246 2005-10-27 11:43:22 mikeaubury Exp $
+# $Id: mod.c,v 1.247 2005-10-27 12:53:24 mikeaubury Exp $
 #
 */
 
@@ -102,6 +102,8 @@
 #define p11x17_width     (float) 792.0
 #define p11x17_height    (float) 1224.0
 
+int ui_elements=0;
+int arr_ui_elements[2000];
 
 
 static void A4GL_set_sql_features(void) ;
@@ -495,6 +497,10 @@ if (a==0) {
 return a;
 
 }
+
+
+
+
 /**
  * Print the declaration of a record.
  *
@@ -2192,6 +2198,10 @@ continue_loop (char *cmd_type)
   print_continue_loop (command_stack[a].block_no, cmd_type);
 }
 
+
+int get_block_no(int n) {
+	return command_stack[n].block_no;
+}
 /**
  * The parser found a EXIT instruction for a specific loop command.
  *
