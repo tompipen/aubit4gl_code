@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.69 2005-10-09 12:20:26 mikeaubury Exp $
+# $Id: variables.c,v 1.70 2005-10-27 11:43:22 mikeaubury Exp $
 #
 */
 
@@ -167,13 +167,18 @@ get_variable_user_system ()
 char *A4GL_unscope(char *s) {
 static char buff[1024];
 int sl=-1;
+sl=0;
+strcpy(buff,s);
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_') {
       if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && s[0]=='M') {
-		sl=strlen(A4GL_compiling_module_basename())+3;
+		if (strncmp(&s[2],A4GL_compiling_module_basename(),strlen(A4GL_compiling_module_basename()))==0) {
+			sl=strlen(A4GL_compiling_module_basename())+3;
+			strcpy(buff,&s[sl]);
+		}
       } else {
 		sl=2;
+		strcpy(buff,&s[sl]);
       }
-	strcpy(buff,&s[sl]);
   }
   return buff;
 }

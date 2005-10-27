@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.245 2005-10-26 21:21:02 mikeaubury Exp $
+# $Id: mod.c,v 1.246 2005-10-27 11:43:22 mikeaubury Exp $
 #
 */
 
@@ -4610,7 +4610,7 @@ A4GL_generate_variable_expr (char *s)
 		char *ptr_s;
 		char *ptr_e;
 		char *ptr;
-		int type;
+		int type=-1;
 		//printf("split : %s\n",s);
 		
 		ptr_str=&s[13];
@@ -4630,6 +4630,7 @@ A4GL_generate_variable_expr (char *s)
 			if (ptr_e[0]==' '&&ptr_e[1]=='0' && ptr_e[2]==' ') {
 				*ptr_e=0;
 				ptr_e="0";
+				type=0;
 				//printf("...\n");
 			}
 		}
@@ -4669,11 +4670,14 @@ struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b
 	long  a_bind;
 	a_bind=*a_bindp;
 	A4GL_debug("ensure bind %d %d\n",a_bind,need);
+
 	if (a_bind>need) return b;
 
-	if (a_bind==0) a_bind=1000; // Start off small :-)
-	else {
-		a_bind=a_bind*2; // just double it ?
+	while (a_bind<=need) {
+		if (a_bind==0) a_bind=2000; // Start off small :-)
+		else {
+			a_bind=a_bind*2; // just double it ?
+		}
 	}
 	b=realloc(b,sizeof(struct binding_comp)*a_bind);
 	A4GL_debug("ensure bind Allocted %d\n",a_bind);
