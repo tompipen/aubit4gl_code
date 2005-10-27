@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.270 2005-10-26 21:44:23 mikeaubury Exp $
+# $Id: compile_c.c,v 1.271 2005-10-27 07:25:55 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.270 2005-10-26 21:44:23 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.271 2005-10-27 07:25:55 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3506,14 +3506,18 @@ int sio_id;
  * @param attr The attribute list to be used.
  */
 void
-LEXLIB_print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
+LEXLIB_print_construct_fl (int byname, char *constr_str, t_field_list *f_list, char *attr,
 		   int cattr)
 {
   int ccc;
   int k;
   int sio_id;
+  char *fld_list;
   printc ("{\n");
   start_bind ('i', constr_str);
+  if (f_list) {
+	  	 fld_list=field_name_list_as_char(f_list);
+	  }
   k = print_bind_definition ('i');
   ccc = print_constr ();
   sio_id=get_sio_id("CONSTRUCT");

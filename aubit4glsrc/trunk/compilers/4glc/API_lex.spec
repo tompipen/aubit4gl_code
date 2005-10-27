@@ -137,7 +137,7 @@ print_construct_1 -> void
 
 print_construct_2 char* driver -> void
 
-print_construct_3 int byname,char* constr_str,char* field_list,char* attr,int cattr -> void
+print_construct_fl int byname,char* constr_str,t_field_list* field_list,char* attr,int cattr -> void
 
 print_befaft_field_1 char* fieldexpr -> void
 
