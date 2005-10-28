@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.79 2005-10-04 21:12:33 whaslbeck Exp $";
+  "$Id: lowlevel_gtk.c,v 1.80 2005-10-28 12:26:40 mikeaubury Exp $";
 #endif
 
 
@@ -3536,6 +3536,8 @@ A4GL_menu_pos (void)
   char *c;
   if (pos == 0)
     {
+
+	/*
       if (A4GL_isyes (acl_getenv ("MENUTOP")))
 	{
 	  pos = 'T';
@@ -3556,7 +3558,10 @@ A4GL_menu_pos (void)
 	  pos = 'R';
 	  return pos;
 	}
+	*/
+
       c = acl_getenv ("MENUPOSITION");
+
       if (c == 0)
 	{
 	  pos = 'R';
