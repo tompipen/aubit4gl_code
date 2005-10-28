@@ -44,6 +44,7 @@ grep "^$a[ 	]" ../4glc/rules/data/kwords | awk '
 {
     #print "/* " $0 " */"
     printf("\n");
+    if ($1=="SET_LOG") next;
     for (a=2;a<=NF;a++) {
         if (a!=2) printf("{ws}");
 	printed=0;

@@ -223,6 +223,7 @@ fix_insert_expr (int mode)
 		A4GL_assertion(idtypes==0,"idtypes=0");
 		A4GL_assertion(idtypes_t==0,"idtypes_t=0");
 		for (b=0;b<A4GL_4glc_gen_cnt(INSCOL);b++) {
+			idtypes=acl_realloc(idtypes,sizeof(int)*  A4GL_4glc_gen_cnt(INSCOL));
 			if (strcmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_4glc_get_gen(TCOL,a))==0) {
 				idtypes[b]=idtypes_t[a];
 				found++;

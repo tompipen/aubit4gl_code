@@ -99,6 +99,7 @@ colident: identifier
 
 
 set_cmd : SQLSEOFF 		 { print_exec_sql(acl_strdup($<str>1)); }
+	| SQLSEON 		 { print_exec_sql(acl_strdup($<str>1)); }
 	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); print_exec_sql(acl_strdup($<str>$)); }
 	| SQLSLMNW		 { print_exec_sql(acl_strdup($<str>1)); }
 	| SQLSIDR		 { print_exec_sql(acl_strdup($<str>1)); }

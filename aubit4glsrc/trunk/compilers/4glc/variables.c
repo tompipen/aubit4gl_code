@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.70 2005-10-27 11:43:22 mikeaubury Exp $
+# $Id: variables.c,v 1.71 2005-10-28 17:57:00 mikeaubury Exp $
 #
 */
 
@@ -2965,7 +2965,13 @@ print_nullify (char type)
 		
 	  if (print)
 	    {
-	      add_bind ('N', list[a]->names.name);
+		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+			if (!has_fbind(list[a]->names.name)) {
+	      			add_bind ('N', list[a]->names.name);
+			}
+		} else {
+	      		add_bind ('N', list[a]->names.name);
+		}
 	    }
 
 	}
@@ -3095,4 +3101,17 @@ void push_dim(char *s) {
   }
 
 variable_action (0, s, 0, 0, "push_dim");
+}
+
+
+int has_fbind(char *s) {
+int a;
+extern int fbindcnt;
+extern struct binding_comp *fbind;
+//printf("fbindcnt=%d\n",fbindcnt);
+for (a=0;a<fbindcnt;a++) {
+	//printf("%s %s\n",fbind[a].varname,s);
+	if (strcmp(A4GL_unscope(fbind[a].varname),s)==0) return 1;
+}
+return 0;
 }

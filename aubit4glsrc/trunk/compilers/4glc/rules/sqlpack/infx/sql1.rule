@@ -1034,12 +1034,29 @@ simple_column_name : identifier {
 
 
 
+execute_procedure:
+	EXECUTE_PROCEDURE identifier OPEN_BRACKET CLOSE_BRACKET {
+		if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
+			sprintf($<str>$,"EXEC %s",$<str>2);
+		} else {
+			sprintf($<str>$,"EXECUTE PROCEDURE %s ()",$<str>2);
+		}
+	}
+	| EXECUTE_PROCEDURE identifier OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
+			sprintf($<str>$,"EXEC %s %s",$<str>2, get_select_list_item_list(select, $<s_select_list_item_list>4));
+		} else {
+			sprintf($<str>$,"EXECUTE PROCEDURE %s (%s)",$<str>2, get_select_list_item_list(select, $<s_select_list_item_list>4));
+		}
+	}
+;
 
 
 misc_sql :
 	lock_stmt
 	| unlock_stmt
 	| rename_stmt
+	| execute_procedure
 ;
 
 rename_stmt :
@@ -1210,7 +1227,6 @@ search_condition_sli_as_string: search_condition_sli {
 put_val_int : CHAR_VALUE  {$<sql_string>$=strdup(convstrsql($<str>1));}
 	| var_ident_ibind_sli { $<sql_string>$=get_select_list_item(0,$<s_select_list_item>1); }
 ;
-
 
 
 

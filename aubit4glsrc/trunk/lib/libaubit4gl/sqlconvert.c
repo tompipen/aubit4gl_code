@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.69 2005-10-27 13:12:32 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.70 2005-10-28 17:57:04 mikeaubury Exp $
 #
 */
 
@@ -136,6 +136,7 @@ char *cvsql_names[]={
   "CVSQL_DATE_AS_CHAR",
   "CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH",
   "CVSQL_CREATE_TEMP_AS_CREATE_HASH",
+  "CVSQL_EXECUTE_PROCEDURE_AS_EXEC",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -229,6 +230,7 @@ enum cvsql_type
   CVSQL_DATE_AS_CHAR,
   CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH,
   CVSQL_CREATE_TEMP_AS_CREATE_HASH,
+  CVSQL_EXECUTE_PROCEDURE_AS_EXEC,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -1160,6 +1162,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "DATE_AS_CHAR", len) == 0) return CVSQL_DATE_AS_CHAR;
   if (strncasecmp (p, "DTIME_AS_CHAR", len) == 0) return CVSQL_DTIME_AS_CHAR;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
+  if (strncasecmp (p, "EXECUTE_PROCEDURE_AS_EXEC", len) == 0) return CVSQL_EXECUTE_PROCEDURE_AS_EXEC;
   if (strncasecmp (p, "SELECT_INTO_TEMP_INTO_TEMP_HASH", len) == 0) return CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH;
   if (strncasecmp (p, "CREATE_TEMP_AS_CREATE_HASH", len) == 0) return CVSQL_CREATE_TEMP_AS_CREATE_HASH;
   if (strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0) return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
@@ -2053,6 +2056,7 @@ char *A4GL_confirm_colname(char *t,char *c) {
 
 	}
 	for (a=0;a<ncolumn_mappings;a++) {
+		if (t==0) t="<NOTSET>";
 		if (strcmp(t,column_mappings[a].tabname)==0 && strcmp(c,column_mappings[a].from_col)==0) {
 			strcpy(buff,column_mappings[a].to_col);
 			return buff;
