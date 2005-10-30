@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.27 2005-10-26 21:21:06 mikeaubury Exp $
+# $Id: util.c,v 1.28 2005-10-30 14:43:52 mikeaubury Exp $
 #
 */
 
@@ -1005,6 +1005,9 @@ int A4GL_4glc_push_gen_expand(int n,char *v) {
 A4GL_4glc_push_gen(n,v) ;
 }
 
+void add_sql_function(char *s) {
+}
 
 /* ====================================== EOF ============================ */
+
 

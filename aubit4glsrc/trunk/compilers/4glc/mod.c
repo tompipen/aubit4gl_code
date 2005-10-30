@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.247 2005-10-27 12:53:24 mikeaubury Exp $
+# $Id: mod.c,v 1.248 2005-10-30 14:43:49 mikeaubury Exp $
 #
 */
 
@@ -4792,6 +4792,13 @@ int A4GL_4glc_push_gen_expand(int n,char *v) {
 
 
 
+void add_sql_function(char *s) {
+	FILE *f ;
+	f=fopen("/tmp/sqlcall.log","a");
+	if (!f) return;
+	fprintf(f,"%s %s %d\n",s,A4GL_compiling_module(),yylineno);
+	fclose(f);
+}
 
 
 

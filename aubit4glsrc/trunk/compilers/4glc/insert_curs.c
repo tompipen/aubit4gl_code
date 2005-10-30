@@ -94,6 +94,11 @@ int a;
 a=find_cursor(cname);
 if (a==-1) return;
 curs[a].prep=acl_strdup(stmt);
+printf(">>%s\n",stmt);
+if (strncasecmp(stmt,"insert",6)==0) {
+	printf("INSERT!");
+	curs[a].type='I';
+}
 }
 
 void A4GL_cursor_defined(char *s,char type) {
@@ -108,6 +113,7 @@ void A4GL_cursor_defined(char *s,char type) {
 
 
 void A4GL_cursor_is_insert(void) {
+	printf("cursor_is_insert\n");
 	if (curs[cursors_cnt-1].type==0) {
 			curs[cursors_cnt-1].type='I';
 	}

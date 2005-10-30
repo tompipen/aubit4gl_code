@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.114 2005-09-29 15:29:47 mikeaubury Exp $
+# $Id: conv.c,v 1.115 2005-10-30 14:43:52 mikeaubury Exp $
 #
 */
 
@@ -2867,7 +2867,9 @@ void A4GL_assertion_failed(char *s)  {
       fflush (stdout);
       A4GL_set_errm (s);
       A4GL_debug ("%s", A4GL_null_as_null(s));
-
+	if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+      		fprintf (stderr,"%s\n", A4GL_null_as_null(s));
+	}
       if (A4GL_isyes(acl_getenv("CORE_ON_ASSERT"))) {
 		char *ptr=0;
       		A4GL_exitwith ("Assertion failed %s");

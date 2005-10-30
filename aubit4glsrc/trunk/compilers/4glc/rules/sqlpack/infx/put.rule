@@ -1,6 +1,10 @@
 /* =============================== put.rule ======================== */
 put_cmd :
         PUT put_cursor_name  {
+                if (A4GLSQLCV_check_requirement("NO_INSERT_CURSOR")) {
+                        a4gl_yyerror("Insert cursors are not supported for this rdbms");
+                }
+
 		add_feature("PUT_CURSOR");
 		start_bind('i',0);
 		}

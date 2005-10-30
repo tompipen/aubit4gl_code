@@ -167,7 +167,9 @@ flush_cmd : opt_use FLUSH fetch_cursor_name  {
 
 declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
+
 		print_declare("",$<sql_string>6,$<str>3,0,0);
+
 		ADDMAP("Declare Cursor",$<str>3);
 		print_undo_use($<str>1);
 		doing_declare=0;

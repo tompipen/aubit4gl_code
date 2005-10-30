@@ -259,9 +259,11 @@ value_expression_complex_sli :
 		add_feature("SELECT_COUNT");
 	}
 	| NAMED OPEN_BRACKET CLOSE_BRACKET {
+		add_sql_function($<str>1);
 		$<s_select_list_item>$=new_select_list_item_fcall($<str>1,0);
 	}
 	| NAMED OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		add_sql_function($<str>1);
 		$<s_select_list_item>$=new_select_list_item_fcall($<str>1,$<s_select_list_item_list>3);
 	}
 	| YEAR OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
