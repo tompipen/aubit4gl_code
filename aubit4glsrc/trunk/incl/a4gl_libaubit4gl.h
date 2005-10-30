@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.204 2005-10-28 17:57:04 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.205 2005-10-30 18:46:19 mikeaubury Exp $
 #
 */
 
@@ -316,6 +316,8 @@
 #define HP_IS_SERIAL		'V'
 #define LAST_STRING		'T'
 #define CURSOR_USED             'c'
+#define CURSOR_BIND_I           'i'
+#define CURSOR_BIND_O           'o'
 #define PREPARE_USED            'p'
 #define TMP_USED                't'
 #define FUNCTION_IGNORE         'f'

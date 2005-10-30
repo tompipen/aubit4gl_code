@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.71 2005-10-28 17:57:00 mikeaubury Exp $
+# $Id: variables.c,v 1.72 2005-10-30 18:46:15 mikeaubury Exp $
 #
 */
 
@@ -1907,14 +1907,24 @@ long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
   if (v == 0)
     return -1;
 
+  if (v->variable_type != VARIABLE_TYPE_SIMPLE)
+    {
+      	A4GL_debug ("Expecting a simple variable ?");
+	*type=0;
+  	if (v->is_array) { *arrsize = v->arr_subscripts[0]; }
+	*size=0;
+	*level=0;
+
+      return -2;
+    }
 
   *type = v->data.v_simple.datatype + ((v->data.v_simple.dimensions[0]) << 16);
+	printf("Type : %d\n", v->data.v_simple.datatype );
+	printf("Type : %d\n",v->data.v_simple.dimensions[0]);
+	printf("Type : %d\n",*type);
   *level = 1;
 
-  if (v->is_array)
-    {
-      *arrsize = v->arr_subscripts[0];
-    }
+  if (v->is_array) { *arrsize = v->arr_subscripts[0]; }
   else
     {
       *arrsize = 0;
@@ -1930,11 +1940,6 @@ long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
 
 
 
-  if (v->variable_type != VARIABLE_TYPE_SIMPLE)
-    {
-      A4GL_debug ("Expecting a simple variable ?");
-      return -2;
-    }
 
   return *type;
 

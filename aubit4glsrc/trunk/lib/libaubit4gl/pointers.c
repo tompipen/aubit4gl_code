@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.39 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: pointers.c,v 1.40 2005-10-30 18:46:19 mikeaubury Exp $
 #
 */
 
@@ -252,6 +252,7 @@ A4GL_find_pointer (const char *pname, char t)
   struct s_node *anode;
   void *a;
 
+  if (strlen(pname)>=TXT_LEN-1) return 0;
   buff.name[0] = t;
   buff.name[1] = 0;
   strcat (buff.name, pname);

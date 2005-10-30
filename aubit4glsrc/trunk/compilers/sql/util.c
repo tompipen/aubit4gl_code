@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.28 2005-10-30 14:43:52 mikeaubury Exp $
+# $Id: util.c,v 1.29 2005-10-30 18:46:19 mikeaubury Exp $
 #
 */
 
@@ -874,6 +874,7 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect, char
 	l=0;
 	if (ptr) {free(ptr);}
 	ptr=0;
+	if (stmts_cnt==0) return "";
 	for (a=0;a<stmts_cnt;a++) {
 		l+=strlen(stmts[a].val)+1;
 		if (a+1!=stmts_cnt) l+=2;
@@ -1006,6 +1007,12 @@ A4GL_4glc_push_gen(n,v) ;
 }
 
 void add_sql_function(char *s) {
+        FILE *f ;
+        f=fopen("/tmp/sqlcall.log","a");
+        if (!f) return;
+        fprintf(f,"%s SQLCOMPILE\n",s);
+        fclose(f);
+
 }
 
 /* ====================================== EOF ============================ */

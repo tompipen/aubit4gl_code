@@ -1036,6 +1036,7 @@ simple_column_name : identifier {
 
 execute_procedure:
 	EXECUTE_PROCEDURE identifier OPEN_BRACKET CLOSE_BRACKET {
+		add_sql_function($<str>2);
 		if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
 			sprintf($<str>$,"EXEC %s",$<str>2);
 		} else {
@@ -1047,7 +1048,6 @@ execute_procedure:
 		if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
 			sprintf($<str>$,"EXEC %s %s",$<str>2, get_select_list_item_list(select, $<s_select_list_item_list>4));
 		} else {
-		add_sql_function($<str>2);
 			sprintf($<str>$,"EXECUTE PROCEDURE %s (%s)",$<str>2, get_select_list_item_list(select, $<s_select_list_item_list>4));
 		}
 	}

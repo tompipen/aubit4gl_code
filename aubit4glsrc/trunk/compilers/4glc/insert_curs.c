@@ -114,9 +114,13 @@ void A4GL_cursor_defined(char *s,char type) {
 
 void A4GL_cursor_is_insert(void) {
 	printf("cursor_is_insert\n");
+	A4GL_assertion(cursors_cnt==0,"No cursor added yet");
+	
 	if (curs[cursors_cnt-1].type==0) {
+	printf("cursor_is_insert - setting\n");
 			curs[cursors_cnt-1].type='I';
 	}
+	printf("cursor_is_insert - set\n");
 }
 
 void A4GL_cursor_is_select(void) {

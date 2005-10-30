@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.7 2005-10-28 17:57:04 mikeaubury Exp $
+# $Id: main.c,v 1.8 2005-10-30 18:46:19 mikeaubury Exp $
 #
 */
 
@@ -104,7 +104,12 @@ int pcnt=0;
 
 	}
 
+	
 	snew=A4GLSQLCV_convert_file(dialect,argv[1]);
+	if (snew==0) {
+		fprintf(stderr,"Fatal error...\n");
+		exit(2);
+	}
 	if (strcmp(snew,"<err>")==0) { exit(1); }
 	
 	snew=A4GLSQLCV_check_sql(snew); 
