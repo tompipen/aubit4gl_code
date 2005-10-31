@@ -542,7 +542,13 @@ function_call_expr:
    			a4gl_yyerror("get_fldbuf can only be used in an input or construct");
    			YYERROR;
 		}
-		$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
+		if (isin_command("INPUT")) {
+			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_ids("INPUT"),$<field_list>3,infilename,lastlineno);
+		} 
+		if (isin_command("CONSTRUCT")) {
+			
+			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_ids("CONSTRUCT"),$<field_list>3,infilename,lastlineno);
+		} 
 
 	} 
         | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_without_waiting {

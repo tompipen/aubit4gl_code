@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.248 2005-10-30 14:43:49 mikeaubury Exp $
+# $Id: mod.c,v 1.249 2005-10-31 15:33:15 mikeaubury Exp $
 #
 */
 
@@ -4802,5 +4802,10 @@ void add_sql_function(char *s) {
 
 
 
+int
+get_sio_ids (char *s)
+{
+  return get_block_no (get_sio_id (s) - 1);
+}
 
 /* ================================= EOF ============================= */
