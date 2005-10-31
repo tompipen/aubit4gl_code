@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.271 2005-10-27 07:25:55 mikeaubury Exp $
+# $Id: compile_c.c,v 1.272 2005-10-31 15:02:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.271 2005-10-27 07:25:55 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.272 2005-10-31 15:02:22 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3171,6 +3171,7 @@ real_print_func_call (t_expr_str * fcall)
     {
       struct expr_function_call *p;
       p = fcall->u_data.expr_function_call;
+      p->parameters=A4GL_rationalize_list(p->parameters);
       args_cnt = A4GL_new_list_get_count (p->parameters);
 
 
