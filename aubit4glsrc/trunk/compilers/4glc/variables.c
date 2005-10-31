@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.72 2005-10-30 18:46:15 mikeaubury Exp $
+# $Id: variables.c,v 1.73 2005-10-31 09:40:42 mikeaubury Exp $
 #
 */
 
@@ -472,8 +472,8 @@ A4GL_debug("scope=%c",scope);
   if (mode == 0)
     {
       /* This shouldn't happen....*/
-      printf ("Don't know what to do...\n");
-      printf ("%d Name = %s type = %s n=%s function = %s\n", category, name,
+      PRINTF ("Don't know what to do...\n");
+      PRINTF ("%d Name = %s type = %s n=%s function = %s\n", category, name,
 	      type, n, function);
       exit (1);
     }
@@ -489,7 +489,6 @@ A4GL_debug("scope=%c",scope);
       break;
 
     case MODE_ADD_FUNCTION:
-	//printf("Make function\n");
       make_function (name, record_cnt);
       break;
 
@@ -534,7 +533,6 @@ A4GL_debug("scope=%c",scope);
       break;
 
     case MODE_ADD_TYPE:
-	//printf("Add new type : %d %s %s\n",record_cnt,name,type);
       curr_v[record_cnt]->data.v_simple.datatype = find_type (name);
       curr_v[record_cnt]->data.v_simple.dimensions[0] = atoi (type);
       curr_v[record_cnt]->data.v_simple.dimensions[1] = 0;
@@ -591,8 +589,8 @@ A4GL_debug("scope=%c",scope);
       break;			/* We'll deal with this later*/
 
     default:
-      printf ("Run out of actions %d\n", mode);
-      printf ("%d Name = %s type = %s n=%s function = %s\n\n", category,
+      PRINTF ("Run out of actions %d\n", mode);
+      PRINTF ("%d Name = %s type = %s n=%s function = %s\n\n", category,
 	      name, type, n, function);
       exit (0);
     }
@@ -602,7 +600,6 @@ A4GL_debug("scope=%c",scope);
 
   if (mode == MODE_ADD_NAME)
     {
-	//printf("ADD NAME : %s\n",name);
       /* Is this the first name at this level ?*/
       if (curr_v[record_cnt] == 0)
 	{
@@ -686,7 +683,6 @@ make_function (char *name, int record_cnt)
 
   if (class_cnt==0) set_current_variable_scope ('g');
 
-//printf("MAKE FUNCTION : %s\n",name);
 
   //A4GL_debug ("MAKE FUNCTION : %s\n", name);
   local_v = (struct variable *) acl_malloc2 (sizeof (struct variable));
@@ -768,7 +764,7 @@ make_constant (char *name, char *value, char *int_or_char)
 	{
 	  char buff[256];
 	  strcpy (buff, upshift (name));
-	  printf ("#define %s %s\n", buff, value);
+	  PRINTF ("#define %s %s\n", buff, value);
 	}
     }
   return local_v;
@@ -832,7 +828,7 @@ add_to_scope (int record_cnt, int unroll)
 	  && curr_v[record_cnt - 1]->variable_type != VARIABLE_TYPE_ASSOC)
 	{
 	  /* We have a problem...*/
-	  printf ("Last variable level was not a record!\n");
+	  PRINTF ("Last variable level was not a record!\n");
 	  assert (0);
 	}
 
@@ -856,14 +852,14 @@ add_to_scope (int record_cnt, int unroll)
 	  alloc = &tmp_2;
 	}
 
-      sprintf (local_scope, "%d", record_cnt);
+      SPRINTF1 (local_scope, "%d", record_cnt);
     }
   else
     {
 
       if (scope == 'g')
 	{
-	  sprintf (local_scope, "g");
+	  SPRINTF0 (local_scope, "g");
 	  variable_holder = &list_global;
 	  counter = &list_global_cnt;
 	  alloc = &list_global_alloc;
@@ -871,8 +867,7 @@ add_to_scope (int record_cnt, int unroll)
 
       if (scope == 'C')
 	{
-		printf("SCOPE=C\n");
-	  sprintf (local_scope, "C");
+	  SPRINTF0 (local_scope, "C");
 	  variable_holder = &list_class;
 	  counter = &list_class_cnt;
 	  alloc = &list_class_alloc;
@@ -880,7 +875,7 @@ add_to_scope (int record_cnt, int unroll)
 
       if (scope == 'G')
 	{
-	  sprintf (local_scope, "g");
+	  SPRINTF0 (local_scope, "g");
 	  variable_holder = &list_imported_global;
 	  counter = &list_imported_global_cnt;
 	  alloc = &list_imported_global_alloc;
@@ -888,7 +883,7 @@ add_to_scope (int record_cnt, int unroll)
 
       if (scope == 'm')
 	{
-	  sprintf (local_scope, "m");
+	  SPRINTF0 (local_scope, "m");
 	  variable_holder = &list_module;
 	  counter = &list_module_cnt;
 	  alloc = &list_module_alloc;
@@ -896,7 +891,7 @@ add_to_scope (int record_cnt, int unroll)
 
       if (scope == 'l')
 	{
-	  sprintf (local_scope, "l");
+	  SPRINTF0 (local_scope, "l");
 	  variable_holder = &list_local;
 	  counter = &list_local_cnt;
 	  alloc = &list_local_alloc;
@@ -904,11 +899,10 @@ add_to_scope (int record_cnt, int unroll)
 
       if (scope == 'T')
 	{
-	  sprintf (local_scope, "T");
+	  SPRINTF0 (local_scope, "T");
 	  variable_holder = &list_types;
 	  counter = &list_types_cnt;
 	  alloc = &list_types_alloc;
-		//printf("SCOPE : T\n");
 	}
 
 
@@ -947,7 +941,7 @@ add_to_scope (int record_cnt, int unroll)
 
   if (variable_holder == 0)
     {
-      printf ("No variable holder!");
+      PRINTF ("No variable holder!");
       assert (0);
     }
 
@@ -958,7 +952,6 @@ add_to_scope (int record_cnt, int unroll)
   curr_v[record_cnt]->names.alias = 0;
 
   curr_v[record_cnt]->scope = get_current_variable_scope ();
-//printf("ADD TO SCOPE: %s : %c\n",curr_v[record_cnt]->names.name,get_current_variable_scope());
 
   if (record_cnt == 0 && get_current_variable_scope () != 'G'
       && (curr_v[record_cnt]->variable_type == VARIABLE_TYPE_SIMPLE
@@ -970,10 +963,10 @@ add_to_scope (int record_cnt, int unroll)
       if (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")))
 	{
 	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))) {
-	  	sprintf (buff, "%c_%s_", get_current_variable_scope (),A4GL_compiling_module_basename());
+	  	SPRINTF2 (buff, "%c_%s_", get_current_variable_scope (),A4GL_compiling_module_basename());
 		buff[0]=toupper(buff[0]);
 	  } else {
-	  	sprintf (buff, "%c_", get_current_variable_scope ());
+	  	SPRINTF1 (buff, "%c_", get_current_variable_scope ());
 		buff[0]=toupper(buff[0]);
 	  }
 	  strcat (buff, curr_v[record_cnt]->names.name);
@@ -1118,11 +1111,11 @@ find_variable_in (char *s, struct variable **list, int cnt)
 	  /* But if that is a record - we need to carry on doing our nextsection bits*/
 	  if (strlen (var_nextsection))
 	    {
-	      sprintf (buff, "%s.%s", ASSOC_INTERNAL, var_nextsection);
+	      SPRINTF2 (buff, "%s.%s", ASSOC_INTERNAL, var_nextsection);
 	    }
 	  else
 	    {
-	      sprintf (buff, "%s", ASSOC_INTERNAL);
+	      SPRINTF1 (buff, "%s", ASSOC_INTERNAL);
 	    }
 	  return find_variable_in (buff, v->data.v_assoc.variables, 1);
 	}
@@ -1200,7 +1193,7 @@ A4GL_debug("find_variable_ptr : %s",s);
 	char p[1024];
 	int levels;
 	set_last_class_var("");
-	sprintf(buff,"this.%s",s);
+	SPRINTF1(buff,"this.%s",s);
   	ptr = find_variable_in (buff, list_class, list_class_cnt); 
 	if (ptr) { 
 		return ptr; 
@@ -1376,26 +1369,25 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
   int a;
   int c;
   struct name_list *ptr;
-//printf("dump variable records %d %d\n",cnt,lvl);
   for (a = 0; a < cnt; a++)
     {
       for (c = 0; c < lvl; c++)
 	{
-	  printf ("  ");
+	  PRINTF ("  ");
 	}
       ptr = &v[a]->names;
       while (ptr)
 	{
 	if (ptr->name==0) {
-		printf("OOps - no name...\n");
+		PRINTF("OOps - no name...\n");
 		exit(99);
 	}
-	  printf ("%-18s", ptr->name);
+	  PRINTF ("%-18s", ptr->name);
 	  ptr = ptr->next;
 	  if (ptr)
-	    printf (",");
+	    PRINTF (",");
 	}
-      printf (" ");
+      PRINTF (" ");
 
 
 /* If its an array - tell them*/
@@ -1407,20 +1399,19 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 		{
 		  if (c == 0)
 		    {
-		      printf ("ARRAY");
+		      PRINTF ("ARRAY");
 		    }
-		  printf ("[%d]", v[a]->arr_subscripts[c]);
+		  PRINTF ("[%d]", v[a]->arr_subscripts[c]);
 		}
-	      printf (" ");
+	      PRINTF (" ");
 
 	    }
 	}
 
-//printf("a=%d type=%d\n",a,v[a]->variable_type);
       switch (v[a]->variable_type)
 	{
 	case VARIABLE_TYPE_ASSOC:
-	  printf ("ASSOCIATE CHAR(%d) ARRAY[%d] OF\n",
+	  PRINTF ("ASSOCIATE CHAR(%d) ARRAY[%d] OF\n",
 		  v[a]->data.v_assoc.char_size,
 		  v[a]->data.v_assoc.size);
 	  dump_variable_records (v[a]->data.v_assoc.variables, 1,
@@ -1428,13 +1419,13 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 	  break;
 
 	case VARIABLE_TYPE_SIMPLE:
-	  printf ("  %d(%d)\n", v[a]->data.v_simple.datatype,
+	  PRINTF ("  %d(%d)\n", v[a]->data.v_simple.datatype,
 		  v[a]->data.v_simple.dimensions[0]);
 	  break;
 
 
 	case VARIABLE_TYPE_RECORD:
-	  printf ("RECORD\n");fflush(stdout);
+	  PRINTF ("RECORD\n");fflush(stdout);
 	  dump_variable_records (v[a]->data.v_record.variables,
 				 v[a]->data.v_record.record_cnt,
 				 lvl + 1);
@@ -1442,55 +1433,55 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 
       for (c = 0; c < lvl; c++)
 	{
-	  printf ("  ");
+	  PRINTF ("  ");
 	}
-	  printf ("END RECORD\n");
+	  PRINTF ("END RECORD\n");
 
 	  if (v[a]->data.v_record.linked)
 	    {
 	      struct name_list *ptr;
-		printf("IS LINKED\n\n"); fflush(stdout);
-	      printf ("Linked to %s (",
+		PRINTF("IS LINKED\n\n"); fflush(stdout);
+	      PRINTF ("Linked to %s (",
 		      v[a]->data.v_record.linked->tabname);
 	      ptr = &v[a]->data.v_record.linked->col_list;
 
 	      while (ptr)
 		{
-		  printf ("%s", ptr->name);
+		  PRINTF ("%s", ptr->name);
 		  ptr = ptr->next;
 		  if (ptr)
-		    printf (" , ");
+		    PRINTF (" , ");
 		}
-	      printf (")\n");
+	      PRINTF (")\n");
 	    }
 
 	  break;
 
 	case VARIABLE_TYPE_CONSTANT:
-	  printf ("CONSTANT - ");
+	  PRINTF ("CONSTANT - ");
 	  if (v[a]->data.v_const.consttype == CONST_TYPE_CHAR
 	      || v[a]->data.v_const.consttype == CONST_TYPE_IDENT)
 	    {
-	      printf ("%s ", v[a]->data.v_const.data.data_c);
+	      PRINTF ("%s ", v[a]->data.v_const.data.data_c);
 	    }
 	  else
 	    {
-	      printf ("%d ", v[a]->data.v_const.data.data_i);
+	      PRINTF ("%d ", v[a]->data.v_const.data.data_i);
 	    }
-	  printf ("\n");
+	  PRINTF ("\n");
 	  break;
 
 	case VARIABLE_TYPE_FUNCTION_DECLARE:
-		printf(" FUNCTION\n");
+		PRINTF(" FUNCTION\n");
 			break;
 
 
 	case VARIABLE_TYPE_OBJECT :
-		printf("Object\n");
+		PRINTF("Object\n");
 		break;
 
 	default:
-	  printf ("Unknown type : %d\n", v[a]->variable_type);
+	  PRINTF ("Unknown type : %d\n", v[a]->variable_type);
 
 
 	}
@@ -1503,7 +1494,6 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 void
 set_current_variable_scope (char n)
 {
-//printf("SET CVS = %c\n",n);
   variable_scope = n;
 }
 
@@ -1693,7 +1683,6 @@ find_type (char *s)
 
   if (set_types==0) {
 	  for (a=0;a<15;a++) {
-		  //printf("SET : %s\n",rettype_integer(a));
 		  strcpy(types[a],rettype_integer(a));
 
 	  }
@@ -1701,9 +1690,7 @@ find_type (char *s)
   }
 
   for (a=0;a<15;a++) {
-		  //printf("Compare : '%s' '%s' - %d\n",types[a],s,a);
 	  if (strcmp(types[a],s)==0) {
-		  //printf("Match : %s %s - %d\n",types[a],s,a);
 	  	return a;
 	  }
   }
@@ -1781,7 +1768,7 @@ find_type (char *s)
 
 
   A4GL_debug ("Invalid type : '%s'\n", s);
-  sprintf (errbuff, "Internal Error (Invalid type : '%s')\n", s);
+  SPRINTF1 (errbuff, "Internal Error (Invalid type : '%s')\n", s);
   a4gl_yyerror (errbuff);
   return 0;
 }
@@ -1864,7 +1851,7 @@ make_arr_str (char *s, struct variable *v)
 	    {
 	      strcat (s, "][");
 	    }
-	  sprintf (buff, "%d", v->arr_subscripts[a]);
+	  SPRINTF1 (buff, "%d", v->arr_subscripts[a]);
 	  strcat (s, buff);
 	}
       else
@@ -1919,9 +1906,6 @@ long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
     }
 
   *type = v->data.v_simple.datatype + ((v->data.v_simple.dimensions[0]) << 16);
-	printf("Type : %d\n", v->data.v_simple.datatype );
-	printf("Type : %d\n",v->data.v_simple.dimensions[0]);
-	printf("Type : %d\n",*type);
   *level = 1;
 
   if (v->is_array) { *arrsize = v->arr_subscripts[0]; }
@@ -2093,7 +2077,7 @@ check_for_constant (char *name, char *buff)
     {
       if (in_define)
 	{
-	  printf ("In define..");
+	  PRINTF ("In define..\n");
 	}
     }
 
@@ -2106,7 +2090,7 @@ check_for_constant (char *name, char *buff)
 
   if (dbg)
     {
-      printf ("v=%p\n", v);
+      PRINTF ("v=%p\n", v);
     }
 
   if (v == 0)
@@ -2132,13 +2116,13 @@ check_for_constant (char *name, char *buff)
 
   if (v->data.v_const.consttype == CONST_TYPE_FLOAT)
     {
-      sprintf (buff, "%f", v->data.v_const.data.data_f);
+      SPRINTF1 (buff, "%f", v->data.v_const.data.data_f);
       return 2;
     }
 
   if (v->data.v_const.consttype == CONST_TYPE_INTEGER)
     {
-      sprintf (buff, "%d", v->data.v_const.data.data_i);
+      SPRINTF1 (buff, "%d", v->data.v_const.data.data_i);
       return 3;
     }
 
@@ -2253,7 +2237,7 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
 
       if (*v_record == 0)
 	{
-	  printf ("Whoops - %s record not found\n", buff);
+	  PRINTF ("Whoops - %s record not found\n", buff);
 	  a4gl_yyerror ("Record not found...");
 	  return 0;
 	}
