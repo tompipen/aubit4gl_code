@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.5 2005-10-26 21:21:06 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.6 2005-10-31 19:05:55 mikeaubury Exp $
 #
 */
 
@@ -938,7 +938,15 @@ char *make_select_stmt(struct s_select *select) {
 	if (select->sf) {
 		if (select->sf->into_temp) {
 			if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_TEMP_HASH")) {
+				save_temp_table(select->sf->into_temp);
                         	strcpy(into_temp," INTO TEMP #");
+                        	strcat(into_temp,select->sf->into_temp);
+				strcat(buff,into_temp);
+				strcat(buff, " ");
+			}
+			if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_HASH")) {
+				save_temp_table(select->sf->into_temp);
+                        	strcpy(into_temp," INTO #");
                         	strcat(into_temp,select->sf->into_temp);
 				strcat(buff,into_temp);
 				strcat(buff, " ");
@@ -1013,7 +1021,8 @@ char *make_select_stmt(struct s_select *select) {
 					}
 			}
 
- 			if (!A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_TEMP_HASH")) {
+ 			if (!  A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_TEMP_HASH") && !  A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_HASH")) {
+				save_temp_table(select->sf->into_temp);
 				strcpy(into_temp," INTO TEMP ");
 				strcat(into_temp,select->sf->into_temp);
 			}
@@ -1264,6 +1273,59 @@ if (p==0) return;
 								break;
 			default : ; 				// We don't care about doing any more with the others - as they don't have any embedded expressions...
 		}
+
+}
+
+void save_temp_table(char *tabname) {
+char *ptr;
+char buff[256];
+static int loaded=0;
+FILE *f=0;
+ptr=acl_getenv_not_set_as_0("WRITE_TEMP_TABLES");
+if (ptr==0) return;
+
+if (!loaded) {
+	loaded=1;
+	f=fopen(ptr,"r");
+	if (f!=0) {
+		while (fgets(buff,sizeof(buff),f)) {
+			A4GL_trim_nl(buff);
+			A4GL_add_pointer(buff,LOG_TEMP_TABLE,(void *)1); 
+		}
+	}
+}
+
+
+if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { 
+	f=fopen(ptr,"a");
+	A4GL_add_pointer(tabname,LOG_TEMP_TABLE,(void *)1); 
+	if (f) {
+		fprintf(f,"%s\n",tabname);
+		fclose(f);
+	}
+}
+}
+
+void load_temp_table(void) {
+char *ptr;
+char buff[256];
+static int loaded=0;
+FILE *f=0;
+
+ptr=acl_getenv_not_set_as_0("READ_TEMP_TABLES");
+if (ptr==0) return;
+
+if (!loaded) {
+	loaded=1;
+	f=fopen(ptr,"r");
+	if (f!=0) {
+		while (fgets(buff,sizeof(buff),f)) {
+			A4GL_trim_nl(buff);
+			A4GL_add_pointer(buff,LOG_TEMP_TABLE,(void *)1); 
+		}
+	}
+}
+
 
 }
 

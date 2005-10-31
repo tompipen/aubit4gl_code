@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.70 2005-10-28 17:57:04 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.71 2005-10-31 19:05:55 mikeaubury Exp $
 #
 */
 
@@ -135,6 +135,7 @@ char *cvsql_names[]={
   "CVSQL_DTIME_AS_CHAR",
   "CVSQL_DATE_AS_CHAR",
   "CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH",
+  "CVSQL_SELECT_INTO_TEMP_INTO_HASH",
   "CVSQL_CREATE_TEMP_AS_CREATE_HASH",
   "CVSQL_EXECUTE_PROCEDURE_AS_EXEC",
   "CVSQL_DTYPE_ALIAS"
@@ -229,6 +230,7 @@ enum cvsql_type
   CVSQL_DTIME_AS_CHAR,
   CVSQL_DATE_AS_CHAR,
   CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH,
+  CVSQL_SELECT_INTO_TEMP_INTO_HASH,
   CVSQL_CREATE_TEMP_AS_CREATE_HASH,
   CVSQL_EXECUTE_PROCEDURE_AS_EXEC,
   CVSQL_DTYPE_ALIAS
@@ -1164,6 +1166,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
   if (strncasecmp (p, "EXECUTE_PROCEDURE_AS_EXEC", len) == 0) return CVSQL_EXECUTE_PROCEDURE_AS_EXEC;
   if (strncasecmp (p, "SELECT_INTO_TEMP_INTO_TEMP_HASH", len) == 0) return CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH;
+  if (strncasecmp (p, "SELECT_INTO_TEMP_INTO_HASH", len) == 0) return CVSQL_SELECT_INTO_TEMP_INTO_HASH;
   if (strncasecmp (p, "CREATE_TEMP_AS_CREATE_HASH", len) == 0) return CVSQL_CREATE_TEMP_AS_CREATE_HASH;
   if (strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0) return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
 
@@ -1723,7 +1726,8 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 } 
 
 if (A4GLSQLCV_check_requirement("CREATE_TEMP_AS_CREATE_HASH")) {
-	SPRINTF4(ptr,"CREATE TABLE #%s (%s) %s %s",tabname,elements,extra,oplog);
+	save_temp_table(tabname);
+	SPRINTF4(ptr,"CREATE TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
 	return ptr;
 }
 
@@ -1825,6 +1829,17 @@ return buff;
 char *A4GLSQLCV_check_tablename(char *t) {
 static char b2[200];
 A4GL_debug("TABLE : %s\n",t);
+
+if (A4GL_has_pointer(t,LOG_TEMP_TABLE)) {
+	if (A4GLSQLCV_check_requirement("CREATE_TEMP_AS_CREATE_HASH") ||
+	A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_TEMP_HASH") ||
+	A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_INTO_HASH")) {
+		SPRINTF1(b2,"#%s",t);
+		return b2;
+	}
+}
+
+
 if (A4GLSQLCV_check_requirement("ADD_SESSION_TO_TEMP_TABLE")) {
 	if (A4GL_has_pointer(t,LOG_TEMP_TABLE)) {
 		SPRINTF1(b2,"session.%s",t);

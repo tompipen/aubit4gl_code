@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.8 2005-10-30 18:46:19 mikeaubury Exp $
+# $Id: main.c,v 1.9 2005-10-31 19:05:52 mikeaubury Exp $
 #
 */
 
@@ -82,6 +82,7 @@ int pcnt=0;
 	}
 
 	dialect=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
+	load_temp_table();
 	if (dialect==0) dialect="POSTGRES";
 	if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
 		printf("YYDEBUG\n");
