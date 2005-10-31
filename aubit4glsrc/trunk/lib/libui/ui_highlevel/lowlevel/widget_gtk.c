@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.24 2005-10-04 21:12:33 whaslbeck Exp $";
+  "$Id: widget_gtk.c,v 1.25 2005-10-31 15:55:26 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -446,6 +446,19 @@ A4GL_fld_val_generic (GtkWidget * k)
 			    NULL, NULL);
       strncpy (txt_buf, utf, 256);
       g_free (utf);
+      return txt_buf;
+    }
+
+
+  if (strcasecmp (ptr, "CHECK") == 0)
+    {
+	//utf = g_locale_from_utf8 (gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL, NULL, NULL);
+      if (gtk_toggle_button_get_active(k)) {
+      	strcpy (txt_buf, "1");
+      } else {
+      	strcpy (txt_buf, "0");
+      }
+      //g_free (utf);
       return txt_buf;
     }
 
@@ -1599,7 +1612,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
     {
       int da;
       int d, m, y;
-      char ss[21];
+      char ss[100];
       strcpy (ss, s);
       //A4GLSQL_set_status (0, 0);
       A4GL_trim (ss);

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.272 2005-10-31 15:02:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.273 2005-10-31 15:55:26 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.272 2005-10-31 15:02:22 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.273 2005-10-31 15:55:26 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -974,7 +974,7 @@ LEXLIB_print_continue_loop (int n, char *cmd_type)
   if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
     {
       printc
-	("if (_fld_dr==-95) {A4GL_req_field(&_sio_%d,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n",get_sio_id(cmd_type));
+	("if (_fld_dr==-95) {A4GL_req_field(&_sio_%d,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n",get_sio_ids(cmd_type));
       printc ("_fld_dr= -1;_exec_block= -1;\n");
     }
 
@@ -1011,7 +1011,7 @@ LEXLIB_print_exit_loop (int type, int n)
     }
   if (type == 'P')
     {
-      printc ("SET(\"s_prompt\",_sio_%d,\"mode\",1);\n",get_sio_id("PROMPT"));
+      printc ("SET(\"s_prompt\",_sio_%d,\"mode\",1);\n",get_sio_ids("PROMPT"));
     }
   if (type == 0)
     {
@@ -3034,7 +3034,7 @@ void
 LEXLIB_print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
-  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);\n",get_sio_id("ALL"), fields);
+  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);\n",get_sio_ids("ALL"), fields);
   start_bind ('i', 0);
 }
 
@@ -3098,11 +3098,11 @@ LEXLIB_print_field_func (char type, char *name, char *var)
     }
 
   if (type == 'I')
-    printc ("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,0,0));",get_sio_id("ALL"), name);
+    printc ("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,0,0));",get_sio_ids("ALL"), name);
 
   if (type == 'T')
     printc
-      ("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",get_sio_id("ALL"),
+      ("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",get_sio_ids("ALL"),
        name);
 
 
@@ -3485,7 +3485,7 @@ int sio_id;
 
   add_continue_blockcommand ("CONSTRUCT");
   printc ("\n}\n");
-  sio_id=get_sio_id("CONSTRUCT");
+  sio_id=get_sio_ids("CONSTRUCT");
   pop_blockcommand ("CONSTRUCT");
   printc (" A4GL_push_constr(&_sio_%d);\n ",sio_id);
   printc (" A4GL_pop_params(ibind,1);");
@@ -3521,9 +3521,9 @@ LEXLIB_print_construct_fl (int byname, char *constr_str, t_field_list *f_list, c
 	  }
   k = print_bind_definition ('i');
   ccc = print_constr ();
-  sio_id=get_sio_id("CONSTRUCT");
+  sio_id=get_sio_ids("CONSTRUCT");
   printc ("int _fld_dr= -100;int _exec_block= 0;char *fldname;");
-  printc("char _sio_%d[%d]; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", get_sio_id("CONSTRUCT"),sizeof (struct s_screenio) + 10,sio_id);
+  printc("char _sio_%d[%d]; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", get_sio_ids("CONSTRUCT"),sizeof (struct s_screenio) + 10,sio_id);
   printc ("int _forminit=1;\n");
    print_bind_set_value ('i');
   printc ("while(_fld_dr!=0){\n");
@@ -3861,7 +3861,7 @@ LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *att
 
   ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printcomment ("/* Display array */\n");
-  sio_id=get_sio_id("DISPLAY");
+  sio_id=get_sio_ids("DISPLAY");
   printc ("{int _fld_dr;int _exec_block= 0;\nchar _sio_%d[%d];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id,
 	  sizeof (struct s_disp_arr) + 10,sio_id);
   cnt = print_arr_bind ('o');
@@ -3888,7 +3888,7 @@ LEXLIB_print_display_array_p2 (void)
 {
   int sio_id;
   A4GL_add_event(A4GL_EVENT_AFTER_INP_CLEAN,"");
-  sio_id=get_sio_id("DISPLAY");
+  sio_id=get_sio_ids("DISPLAY");
   printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
@@ -4500,7 +4500,7 @@ LEXLIB_print_next_field (char *s)
 {
   int sio_id;
 
-  sio_id=get_sio_id("ALLINPUT"); 
+  sio_id=get_sio_ids("ALLINPUT"); 
   
   if (strcmp (s, "\"+\"") == 0)
     {
@@ -4565,7 +4565,7 @@ LEXLIB_print_input_2 (char *s)
 
   add_continue_blockcommand ("INPUT");
   printc ("\n}\n");
-  sio_id=get_sio_id("INPUT");
+  sio_id=get_sio_ids("INPUT");
   pop_blockcommand ("INPUT");
   printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",sio_id,sio_id);
 
@@ -4603,7 +4603,7 @@ char *fldlist;
   printc ("/*");
   push_blockcommand ("INPUT");
   printc ("*/");
-  sio_id=get_sio_id("INPUT");
+  sio_id=get_sio_ids("INPUT");
   printc
     ("{int _fld_dr= -100;int _exec_block= 0;char *fldname;char _sio_%d[%d]; char _inp_io_type='I';char *_sio_kw_%d=\"s_screenio\";", sio_id,sizeof (struct s_screenio) + 10,sio_id);
   printc ("int _forminit=1;\n");
@@ -4668,7 +4668,7 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printc ("/*");
   push_blockcommand ("INPUT");
-  sio_id=get_sio_id("INPUT");
+  sio_id=get_sio_ids("INPUT");
   printc ("*/");
   printcomment ("/* input */\n");
   printc ("{int _fld_dr= -100;int _exec_block= 0;\nchar *fldname;\nint _forminit=1;");
@@ -4747,7 +4747,7 @@ LEXLIB_A4GL_get_formloop_str (int type)
 {
 static char buff[256];
   if (type == 0)		/* Input, Input by name */ {
-	SPRINTF1(buff, "A4GL_form_loop_v2(&_sio_%d,_forminit,_sio_evt)",get_sio_id("ALLINPUT"));
+	SPRINTF1(buff, "A4GL_form_loop_v2(&_sio_%d,_forminit,_sio_evt)",get_sio_ids("ALLINPUT"));
 	return buff;
   }
 
@@ -5485,8 +5485,8 @@ void
 LEXLIB_print_prompt_1 (t_expr_str_list *expr, char *a1, char *a2, char *a3, char *a4, int timeout)
 {
   A4GL_print_expr_list_concat(expr);
-  printc ("{char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n",get_sio_id("PROMPT"), sizeof (struct s_prompt),get_sio_id("PROMPT"),timeout);
-  printc ("A4GL_start_prompt(&_sio_%d,%s,%s,%s,%s);\n", get_sio_id("PROMPT"),a1, a2, a3, a4);
+  printc ("{char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n",get_sio_ids("PROMPT"), sizeof (struct s_prompt),get_sio_ids("PROMPT"),timeout);
+  printc ("A4GL_start_prompt(&_sio_%d,%s,%s,%s,%s);\n", get_sio_ids("PROMPT"),a1, a2, a3, a4);
   printc ("while (1) {");
 }
 
@@ -5517,8 +5517,8 @@ LEXLIB_print_prompt_end (char *s)
 {
   printc("{");
   print_event_list();
-  printc("if ((int)GET(\"s_prompt\",_sio_%d,\"mode\")==2) break;",get_sio_id("PROMPT"));
-  printc("_exec_block=A4GL_prompt_loop_v2(&_sio_%d,_acl_prompt_timeout,_sio_evt);\n",get_sio_id("PROMPT"));
+  printc("if ((int)GET(\"s_prompt\",_sio_%d,\"mode\")==2) break;",get_sio_ids("PROMPT"));
+  printc("_exec_block=A4GL_prompt_loop_v2(&_sio_%d,_acl_prompt_timeout,_sio_evt);\n",get_sio_ids("PROMPT"));
   printc ("}\n");
   printc("}");
   print_pop_variable (s);
@@ -6218,11 +6218,11 @@ real_print_expr_list(expr);
 
   for (z=ccnt;z>=0;z--) {
 	s=command_type_for_stack_pos(z);
-    	if (strcmp(s,"INPUT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_id(s),get_sio_id(s)); }
-    	if (strcmp(s,"CONSTRUCT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_id(s),get_sio_id(s)); }
-    	if (strcmp(s,"DISPLAY")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_id(s),get_sio_id(s)); }
-    	if (strcmp(s,"PROMPT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_id(s),get_sio_id(s)); }
-    	//if (strcmp(s,"MENU")==0)  { printc("A4GL_finish_screenio(_m,\"MENU\");",get_sio_id(s),get_sio_id(s)); }
+    	if (strcmp(s,"INPUT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
+    	if (strcmp(s,"CONSTRUCT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
+    	if (strcmp(s,"DISPLAY")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
+    	if (strcmp(s,"PROMPT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
+    	//if (strcmp(s,"MENU")==0)  { printc("A4GL_finish_screenio(_m,\"MENU\");",get_sio_ids(s),get_sio_ids(s)); }
   }
 
   if (!isin_command ("REPORT"))
@@ -7635,7 +7635,7 @@ char* get_reset_state_after_call(void ) {
    if (isin_command ("INPUT")  || isin_command ("CONSTRUCT")) {
        int sio_id;
        static char buff[255];
-               sio_id=get_sio_id("ALLINPUT");
+               sio_id=get_sio_ids("ALLINPUT");
                SPRINTF2(buff, "A4GL_reset_state_for(_sio_%d,_sio_kw_%d);",sio_id,sio_id);
                return buff;
    }
