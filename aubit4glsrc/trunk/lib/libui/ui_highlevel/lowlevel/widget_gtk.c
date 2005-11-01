@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.25 2005-10-31 15:55:26 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.26 2005-11-01 10:28:00 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -628,7 +628,7 @@ A4GL_size_widget (GtkWidget * w, int width)
     {
       gtk_widget_set_usize (GTK_WIDGET (w), x, y);
     }
-
+  printf("%d %d\n",x,y);
   lastWidth = x;
   lastHeight = y;
 }
@@ -810,7 +810,7 @@ A4GL_cr_button (void)
   key = A4GL_find_param ("*KEY");
   fprintf (stderr,"key=%s\n", key);
 
-  b = (GtkButton *) gtk_button_new ();
+  b = (GtkButton *) gtk_button_new (); 
   v = (GtkVBox *) gtk_vbox_new (0, 3);
   gtk_container_add (GTK_CONTAINER (b), GTK_WIDGET (v));
 
@@ -819,12 +819,15 @@ A4GL_cr_button (void)
     label = " ";
   if (strlen (label) == 0)
     label = " ";
+
+  printf("Making button  - Label : %s\n",label);
+
   if (label)
     {
       if (strlen (label))
 	{
 	  char *utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
-	  l = (GtkLabel *) gtk_label_new (utf);
+		l = (GtkLabel *) gtk_label_new (utf);
 #if GTK_CHECK_VERSION(2,0,0)
 	  /*
 	     if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
@@ -834,9 +837,10 @@ A4GL_cr_button (void)
 	   */
 #endif
 	  g_free (utf);
-	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
 	  gtk_widget_show (GTK_WIDGET (l));
 	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
+	  gtk_object_set_data (GTK_OBJECT (b), "PERMLABEL", l);
+	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
 	}
     }
 
@@ -844,12 +848,14 @@ A4GL_cr_button (void)
     {
       if (strlen (image))
 	{
+	printf("Add image to button\n");
 	  pixmap = UILIB_A4GL_make_pixmap_gw (image);
 	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (pixmap));
 	  gtk_widget_show (pixmap);
 	  gtk_object_set_data (GTK_OBJECT (b), "IMAGE", image);
 	}
     }
+
   gtk_widget_show (GTK_WIDGET (v));	/* Vbox */
   gtk_widget_show (GTK_WIDGET (b));	/* Button itself.. */
   if (key != 0)
@@ -863,9 +869,13 @@ A4GL_cr_button (void)
 
   A4GL_add_signal_clicked ((GtkWidget *) b, 0);
   A4GL_add_signal_grab_focus ((GtkWidget *) b, 0);
-  if (strcmp (label, " ") == 0)
+  if (strcmp (label, " ") == 0 && A4GL_isyes(acl_getenv("HIDEEMPTYBUTTONS")))
     {
+	    	printf("Hide button");
       gtk_widget_hide (GTK_WIDGET (b));
+    } else {
+	    	printf("SHOW : %p\n",b);
+      gtk_widget_show (GTK_WIDGET (b));
     }
   return GTK_WIDGET (b);
 }
@@ -1521,18 +1531,33 @@ A4GL_display_generic (GtkWidget * k, char *s)
   if (strcasecmp (ptr, "BUTTON") == 0)
     {
       GtkWidget *w;
+      GtkWidget *w2;
       btn = strdup (s);
       A4GL_trim (btn);
 
       w = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
+      w2=gtk_object_get_data (GTK_OBJECT (k), "PERMLABEL");
+      if (w2) {
+	      	char *buff;
+	      	buff=strdup(s);
+		A4GL_trim(buff);
+		printf("MAYBE : '%s'\n",buff);
+	      	if (strlen(buff)==0) {
+				free(buff);
+					return;
+		}
+				free(buff);
+
+      }
       if (w)
 	{
 	  gtk_label_set_text (GTK_LABEL (w), utf);
 	  g_free (utf);
 	}
 
-      if (strlen (btn) == 0)
+      if (strlen (btn) == 0 && A4GL_isyes(acl_getenv("HIDEEMPTYBUTTONS")))
 	{
+			printf("Hide\n");
 	  gtk_widget_hide (GTK_WIDGET (k));
 	}
       else

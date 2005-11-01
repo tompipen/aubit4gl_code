@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.65 2005-10-22 08:45:20 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.66 2005-11-01 10:27:55 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -836,7 +836,6 @@ UILIB_A4GL_add_menu_option (void *menuv, char *txt, char *keys, char *desc,
       opt2->next_option = opt1;
       opt1->prev_option = opt2;
     }
-
   A4GL_debug ("menu->first=%p opt1=%p opt2=%p ", menu->first, opt1, opt2);
   A4GL_debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
   A4GL_debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
@@ -859,11 +858,13 @@ UILIB_A4GL_add_menu_option (void *menuv, char *txt, char *keys, char *desc,
     }
 
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+  opt1->page=1;
   opt1->optlength = strlen (opt1->opt_title);
   A4GL_debug ("MJAMJA helpno=%d", helpno);
   strcpy (opt1->optkey, keys);
   A4GL_debug ("MJAMJA helpno=%d", helpno);
   strncpy (opt1->shorthelp, desc, 80);
+  
   opt1->shorthelp[79] = 0;
   A4GL_debug ("MJA setting opt1->help_no = %d", helpno);
   opt1->help_no = helpno;

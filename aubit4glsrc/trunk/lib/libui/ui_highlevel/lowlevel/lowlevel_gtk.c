@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.80 2005-10-28 12:26:40 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.81 2005-11-01 10:28:00 mikeaubury Exp $";
 #endif
 
 
@@ -2425,7 +2425,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
     }
 
 
-  A4GL_LL_scale_form (frm, &rows, &cols);
+  A4GL_LL_scale_form (fd, &rows, &cols);
 
   rows = maxline;		//f->fileform->maxline - 1;
   cols = maxcol;		//f->fileform->maxcol;
@@ -2567,6 +2567,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 void
 A4GL_LL_scale_form (void *vfd, int *y, int *x)
 {
+  struct s_form_dets *f;
   struct s_a4gl_gtk_form *form;
   //struct s_form_dets *fd;
   GtkWidget *widget;
@@ -2574,10 +2575,16 @@ A4GL_LL_scale_form (void *vfd, int *y, int *x)
   int max_x = 0;
   int max_y = 0;
   int wx, wy, ww, wh;
+
+
+  f = vfd;
 //fd=vfd;
 
+  if (f==0) { A4GL_exitwith("INTERNAL ERROR BAD FORM"); return; }
+  form = f->form;
+  if (form==0) { A4GL_exitwith("INTERNAL ERROR BAD FORM"); return; }
 
-  form = vfd;
+
 /*
 if (form->frmMagic!=0xABC123) {
 	char *ptr=0;
@@ -2590,6 +2597,7 @@ if (form->frmMagic!=0xABC123) {
 */
 
 
+  A4GL_assertion(form->nwidgets && form->widgets==0,"No widgets on the form");
 
   for (a = 0; a < form->nwidgets; a++)
     {
@@ -3313,6 +3321,7 @@ A4GL_LL_hide_h_menu (void)
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0)
     return 0;
+  printf("HIDE hide_h_menu\n");
   gtk_widget_hide (bb);
   return 1;
 }
@@ -3395,6 +3404,7 @@ A4GL_LL_disp_h_menu (int num_opts)
       sprintf (buff, "BUTTON_%d", a);
       b = gtk_object_get_data (GTK_OBJECT (bb), buff);
       if (a >= num_opts) {
+	      printf("Hide b\n");
 	      	gtk_widget_hide (b);
       } else {
 	      	gtk_widget_show (b);

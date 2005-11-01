@@ -4,7 +4,7 @@ screen   size 15 by 60
 {
 	Widget Form
 
-       [f001   ]     [f002   ]
+       [f001   ]     [f002   ]  [f002a  ]
 
        [f003               ] 
 
@@ -21,7 +21,8 @@ screen   size 15 by 60
 }
 attributes
 f001=formonly.pixmap, WIDGET="pixmap",config="filename='linux.xpm'";
-f002=formonly.btn, WIDGET="button",config="height=2;label='OK';image='img1.xpm'" ,comments="ToolTip!";
+f002=formonly.btn, WIDGET="button",config="height=3;label='OK1';image='img1.xpm'" ,comments="ToolTip!";
+f002a=formonly.btna, WIDGET="button",config="height=3;label='Cancel'" ,comments="ToolTip!";
 f003=formonly.radio, WIDGET="radio",config="num=2;l1='Generic';l2='Specific';v1='g';v2='s'";
 f004=formonly.entry;
 f005=formonly.txt, WIDGET="text",config="height=2";
