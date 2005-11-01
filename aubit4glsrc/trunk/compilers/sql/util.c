@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.30 2005-11-01 08:26:17 mikeaubury Exp $
+# $Id: util.c,v 1.31 2005-11-01 14:51:41 mikeaubury Exp $
 #
 */
 
@@ -44,7 +44,7 @@
 
 
 #include "../4glc/fix_insert.c"
-#include "sqlcompiler.h"
+//#include "sqlcompiler.h"
 
 /*
 =====================================================================
