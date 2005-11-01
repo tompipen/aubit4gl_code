@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.29 2005-10-30 18:46:19 mikeaubury Exp $
+# $Id: util.c,v 1.30 2005-11-01 08:26:17 mikeaubury Exp $
 #
 */
 
@@ -44,6 +44,8 @@
 
 
 #include "../4glc/fix_insert.c"
+#include "sqlcompiler.h"
+
 /*
 =====================================================================
 		                    Variables
@@ -993,7 +995,8 @@ int A4GL_db_used(void) {
 	return db_used;
 }
 
-A4GL_cursor_current(char *s)  {
+int A4GL_cursor_current(char *s)  {
+	return 0;
 }
 
 
@@ -1004,6 +1007,7 @@ void do_yyerror(char *s) {
 
 int A4GL_4glc_push_gen_expand(int n,char *v) {
 A4GL_4glc_push_gen(n,v) ;
+return 1;
 }
 
 void add_sql_function(char *s) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.9 2005-10-31 19:05:52 mikeaubury Exp $
+# $Id: main.c,v 1.10 2005-11-01 08:26:17 mikeaubury Exp $
 #
 */
 
@@ -53,10 +53,12 @@
 	int sql_type;
 	extern int was_ok=0;
 #endif
+#include "a4gl_libaubit4gl.h"
+
 extern int db_used;
 
 extern int sqlparse_yydebug;
-char * A4GLSQLCV_convert_file (char *target_dialect, char *sql); 
+//char * A4GLSQLCV_convert_file (char *target_dialect, char *sql); 
 	
 /**
  * The main entry point function of SQL conversion command-line utility executable

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.7 2005-11-01 07:04:35 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.8 2005-11-01 08:26:17 mikeaubury Exp $
 #
 */
 
@@ -62,8 +62,8 @@ static char *get_select_list_item_i(struct s_select *select, struct s_select_lis
 static void make_list_item_list_from_select_list(struct s_select *select,struct s_select_list_item_list *p) ;
 static void make_list_item_list_from_select(struct s_select *select,struct s_select_list_item *p);
 static char *find_tabname_for_alias(struct s_select *select, char *alias) ;
-void save_temp_table(char *tabname) ;
-void load_temp_table(void) ;
+//void save_temp_table(char *tabname) ;
+//void load_temp_table(void) ;
 void make_list_in_subselect_stmt(struct s_select *orig, struct s_select *next);
 void preprocess_sql_statement(struct s_select *select) ;
 

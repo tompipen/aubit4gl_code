@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
+#include "sqlcompiler.h"
 
 #define SQL_SET_EXPLAIN_OFF 1
 #define SQL_SET_LOCK_MODE_WAIT_N 2
@@ -15,6 +16,10 @@
 
 
 #define add_feature A4GL_add_feature
+void add_sql_function(char *s);
+
+int A4GL_cursor_current(char *s);
+int sqlparse_yylex(void);
 extern int place_holder_cnt;
 char *kw_space=" ";
 char *kw_comma=",";
@@ -93,6 +98,7 @@ static int start_bind (char c,int n);
 static int A4GLSQLCV_process(void);
 //andrej static int meminput(char *buf,int maxsize);
 static int sqlparse_yyerror(char *s) ;
+int A4GL_4glc_push_gen_expand(int n,char *v);
 
 
 

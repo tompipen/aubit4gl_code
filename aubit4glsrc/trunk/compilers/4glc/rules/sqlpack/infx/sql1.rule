@@ -1046,9 +1046,9 @@ execute_procedure:
 	| EXECUTE_PROCEDURE identifier OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
 		add_sql_function($<str>2);
 		if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
-			sprintf($<str>$,"EXEC %s %s",$<str>2, get_select_list_item_list(select, $<s_select_list_item_list>4));
+			sprintf($<str>$,"EXEC %s %s",$<str>2, get_select_list_item_list(0, $<s_select_list_item_list>4));
 		} else {
-			sprintf($<str>$,"EXECUTE PROCEDURE %s (%s)",$<str>2, get_select_list_item_list(select, $<s_select_list_item_list>4));
+			sprintf($<str>$,"EXECUTE PROCEDURE %s (%s)",$<str>2, get_select_list_item_list(0, $<s_select_list_item_list>4));
 		}
 	}
 ;

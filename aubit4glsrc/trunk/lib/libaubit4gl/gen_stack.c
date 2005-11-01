@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gen_stack.c,v 1.3 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: gen_stack.c,v 1.4 2005-11-01 08:26:17 mikeaubury Exp $
 #
 */
 
@@ -52,8 +52,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "a4gl_libaubit4gl.h"
 #define GEN_STACK_HERE
+#include "a4gl_libaubit4gl.h"
 #include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
 
