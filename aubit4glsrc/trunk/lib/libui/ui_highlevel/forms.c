@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.32 2005-11-01 10:27:55 mikeaubury Exp $";
+  "$Id: forms.c,v 1.33 2005-11-03 21:21:29 whaslbeck Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -931,7 +931,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
   A4GL_debug ("display_form_new_win - name=%s got errorline as %d\n", name,
 	      f->form_details.error_line);
 
-  printf("Scale form : %p\n",f->form);
+  //printf("Scale form : %p\n",f->form);
 
   A4GL_LL_scale_form (f, &rows, &cols);
 
@@ -966,8 +966,8 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
     {
       nlines++;
     }
-  printf("Form=%p\n",f);
-  printf("Form->form=%p\n",f->form);
+  //printf("Form=%p\n",f);
+  //printf("Form->form=%p\n",f->form);
   w = (void *) A4GL_create_window (name, x, y, cols, nlines,
 				   1,
 				   f->form_details.form_line,
