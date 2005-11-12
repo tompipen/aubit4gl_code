@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.206 2005-11-01 08:26:17 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.207 2005-11-12 19:33:18 mikeaubury Exp $
 #
 */
 
@@ -321,6 +321,8 @@
 #define PREPARE_USED            'p'
 #define TMP_USED                't'
 #define FUNCTION_IGNORE         'f'
+#define EMULATE_CURRENT_OF      'u'
+#define ARRAYS_OF_RECORD        'a'
 
 #define BLOCK_USED		'R'
 
@@ -492,6 +494,11 @@
 #ifndef __NO_STDARG__
 	#include <stdarg.h>		/* va_start(), va-list ... */
 
+#endif
+
+#ifdef DOING_CM
+#include <stdio.h>
+#include "cm.h"
 #endif
 
 #ifndef _NO_SYSINCL_
@@ -670,12 +677,14 @@
      Must be after system includes, because stdlib.h sefines getenv()
    */
 
+#ifndef DOING_CM
 #ifndef GETENV_OK
 #define getenv(s)	assert("Do not use getenv() - use acl_getenv() instead" == 0)
 #endif
 
 #ifndef WGETENV_OK
 #define wgetenv(s)	assert("Do not use wgetenv() - use acl_getenv() instead" == 0)
+#endif
 #endif
 
 
@@ -2096,8 +2105,12 @@ int a4gl_tolower(int n);
 
 
 #ifndef NOSTRCPYMAP
+#ifndef strcpy
+#ifndef strcat
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
 #define strcat(d,s) A4GL_strcat(d,s,__FILE__,__LINE__,(long)sizeof(d))
+#endif
+#endif
 #endif
 
 char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest);
@@ -2756,7 +2769,10 @@ enum e_sli {
 	E_SLI_VARIABLE,
 	E_SLI_SUBQUERY,
 	E_SLI_QUERY_PLACEHOLDER,
-	E_SLI_JOIN
+	E_SLI_JOIN,
+	E_SLI_CASE,
+	E_SLI_CASE_ELEMENT,
+	E_SLI_COLUMN_ORDERBY
 
 };
 
@@ -2769,6 +2785,7 @@ enum sq_expression_type {
 	E_SQE_NOT_EXISTS
 	
 };
+
 
 struct s_select_list_item_list  {
 		int nlist;
@@ -2789,10 +2806,22 @@ struct sq_subquery {
 	struct tab_expression *te;
 };
 
+struct s_sli_case {
+	int nelements;
+	struct s_select_list_item **elements;
+};
+
+struct s_sli_case_element  {
+	struct s_select_list_item *condition;
+	struct s_select_list_item *response;
+};
+
 struct s_select_list_item  {
         enum e_sli type;
         union {
                 char *expression;
+		struct s_sli_case sqlcase;
+		struct s_sli_case_element sqlcaseelement;
                 struct {
                         char *tabname;
                         char *colname;
@@ -2873,7 +2902,8 @@ struct s_table {
 };
 
 
-int A4GLSQLPARSE_from_clause(struct s_table *t,char *fill,struct s_table_list *tl);
+int A4GLSQLPARSE_from_clause(struct s_select *s,struct s_table *t,char *fill,struct s_table_list *tl);
+char *A4GLSQLCV_make_case(struct s_select *select,struct s_sli_case *i);
 
 struct s_select {
                 char *modifier; // ALL/DISTINCT/UNIQUE
@@ -2936,6 +2966,11 @@ char *make_select_stmt(struct s_select *select);
 char *make_table_expression(struct s_select *select);
 char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
 char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;
+struct s_select_list_item *new_select_list_item_case(struct s_select_list_item  *i);
+struct s_select_list_item * append_select_list_item_case (struct s_select_list_item *l, struct s_select_list_item *w) ;
+struct s_select_list_item * new_select_list_item_case_element ( struct s_select_list_item *w,  struct s_select_list_item *e)  ;
+char *A4GLSQLCV_check_colname_alias(char *alias,char *tabname, char *colname);
+ 
 
 
 

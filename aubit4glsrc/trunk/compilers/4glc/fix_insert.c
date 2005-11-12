@@ -46,7 +46,11 @@ dump_insvals (void)
 
   for (a = 0; a < c; a++)
     {
-      PRINTF ("INSVAL[%d] : %s\n", a,A4GL_4glc_get_gen(INSVAL,a));
+	if (a<A4GL_4glc_gen_cnt(INSVAL)) {
+      			PRINTF ("INSVAL[%d] : %s\n", a,A4GL_4glc_get_gen(INSVAL,a));
+	} else {
+			PRINTF ("INSVAL[%d] : ...\n",a);
+	}
     }
 }
 
@@ -180,10 +184,14 @@ fix_insert_expr (int mode)
 				found++;
 				break;
 			}
+			if (strcasecmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_confirm_colname (current_ins_table,A4GL_4glc_get_gen(TCOL,a)))==0) {
+				found++;
+				break;
+			}
 		}
 	
 			if (!found) {
-				PRINTF("Warning : Table %s Column %s not found for insert\n",current_ins_table,A4GL_4glc_get_gen(INSCOL,b));
+				FPRINTF(stderr,"Warning : Table %s Column %s not found for insert\n",current_ins_table,A4GL_4glc_get_gen(INSCOL,b));
 		}
   	}
 
@@ -208,13 +216,18 @@ fix_insert_expr (int mode)
 				found++;
 				break;
 			}
+
+			if (strcmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_confirm_colname (current_ins_table,A4GL_4glc_get_gen(TCOL,a)))==0) {
+				found++;
+				break;
+			}
 		}
 	
 		if (!found) {
 	  			A4GL_4glc_push_gen (INSCOL, A4GL_4glc_get_gen(TCOL,a));
 	  			A4GL_4glc_push_gen (INSVAL, "NULL");
 		}
-  	}
+	}
 
 
 
@@ -229,6 +242,16 @@ fix_insert_expr (int mode)
 				found++;
 				break;
 			}
+			if (strcmp(A4GL_4glc_get_gen(INSCOL,b),
+				A4GL_confirm_colname (
+					current_ins_table,
+					A4GL_4glc_get_gen(TCOL,a)
+				))==0) {
+				idtypes[b]=idtypes_t[a];
+				found++;
+				break;
+		}
+			
 		}
 	
 		// This is a worry - it should have been added already

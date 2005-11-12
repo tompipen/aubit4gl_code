@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.138 2005-09-09 20:37:29 mikeaubury Exp $
+# $Id: stack.c,v 1.139 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -1480,13 +1480,16 @@ A4GL_push_user (void)
 {
   int a;
   struct passwd *p;
+#ifndef DOING_CM
 #ifndef __MINGW32__
   a = getuid ();
   p = getpwuid (a);
 #else
   PRINTF ("FIXME: no getuid() / getpwuid() on MinGW\n");
 #endif
+
   A4GL_push_char (p->pw_name);
+#endif
 }
 
 /**
@@ -1537,11 +1540,13 @@ A4GL_push_today (void)
   /*      setlocale(LC_ALL,""); */
   (void) time (&now);
   local_time = localtime (&now);
+#ifndef DOING_CM
   year = local_time->tm_year + 1900;
   month = local_time->tm_mon + 1;
   mja_day = local_time->tm_mday;
 
   z = A4GL_gen_dateno (mja_day, month, year);
+#endif
 
 #ifdef DEBUG
   A4GL_debug ("Here....%ld %d %d %d", z, mja_day, month, year);
@@ -1554,15 +1559,19 @@ A4GL_push_today (void)
 
 #include <sys/timeb.h>
 #include <sys/types.h>
+#ifndef DOING_CM
 #include <winsock.h>
+#endif
 
 void
 gettimeofday (struct timeval *t, void *timezone)
 {
+#ifndef DOING_CM
   struct _timeb timebuffer;
   _ftime (&timebuffer);
   t->tv_sec = timebuffer.time;
   t->tv_usec = 1000 * timebuffer.millitm;
+#endif
 }
 
 #endif
@@ -1625,10 +1634,13 @@ A4GL_push_current (int a, int b)
   int ptrs[] = { -1, 0, 5, 8, 11, 14, 17, 20, 21, 22, 23, 24, 25 };
   int ptrs2[] = { -1, 3, 6, 9, 12, 15, 18, 21, 22, 23, 24, 25, 26 };
   int pstart;
+#ifndef DOING_CM
   struct timeval tv1;
 
 
+
   gettimeofday (&tv1, 0);
+
   local_time = localtime (&tv1.tv_sec);
   year = local_time->tm_year + 1900;
   month = local_time->tm_mon + 1;
@@ -1656,6 +1668,7 @@ A4GL_push_current (int a, int b)
 
   acli_datetime (buff2, n);
   A4GL_debug ("All done - push_current...");
+#endif
 }
 
 
@@ -1687,6 +1700,7 @@ char buff[50];
 void
 A4GL_push_time (void)
 {
+#ifndef DOING_CM
   struct tm *local_time;
   time_t now;
   char buff[20];
@@ -1700,6 +1714,7 @@ A4GL_push_time (void)
 	   local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
   A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
   A4GL_push_char (buff);
+#endif
 }
 
 

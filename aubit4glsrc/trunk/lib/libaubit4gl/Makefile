@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2005-09-20 13:41:29 mikeaubury Exp $
+# $Id: Makefile,v 1.15 2005-11-12 19:29:13 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -59,8 +59,8 @@ CMODS_API   =${API_C} ${API_SPEC:.spec=.c}
 COMMONSRC= \
 	attributes.c \
 	builtin.c builtin_d.c \
-	calldll.c conv.c compat.c corba_server_util.c \
-	data_if.c dates.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
+	calldll.c assert.c fglextra.c net.c conv.c compat.c corba_server_util.c \
+	data_if.c common_ui.c dates.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
 	err.c error.c errfile.c sqlexpr.c expr.c  extfile.c eval_field.c \
 	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gen_stack.c gui_io.c gui.c \
@@ -70,7 +70,7 @@ COMMONSRC= \
 	load.c \
 	match.c maths.c memfile.c \
 	ns.c \
-	others.c ops.c \
+	others.c ops.c outer.c \
 	pointers.c \
 	read_dty.c readkeys.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
 	screen.c sql_common.c sqlconvert.c stack_ops.c stack.c string.c sqlca.c \

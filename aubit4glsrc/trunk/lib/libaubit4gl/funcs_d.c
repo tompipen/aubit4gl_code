@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.72 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.73 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -794,6 +794,25 @@ int A4GL_menu_opts_compare(char *a,char *b,int why) {
 
 // Shouldn't happen...
 	return 0;
+}
+
+
+
+int A4GL_strcasestr(char *h,char *n) {
+char *h1;
+char *n1;
+int r;
+A4GL_push_char(h);
+A4GL_upshift_stk();
+h1=A4GL_char_pop();
+
+A4GL_push_char(n);
+A4GL_upshift_stk();
+n1=A4GL_char_pop();
+if (strstr(h1,n1)) r=1; else r=0;
+free(h1);
+free(n1);
+return r;
 }
 
 /* ============================== EOF ========================== */

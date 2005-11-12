@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.113 2005-09-20 07:47:34 mikeaubury Exp $
+# $Id: lexer.c,v 1.114 2005-11-12 19:33:17 mikeaubury Exp $
 #*/
 
 /**
@@ -269,11 +269,21 @@ static void
 ccat (char *s, char a, int instr)
 {
   char buff[3];
+int dm;
   if (strlen (s) >= 1023)
     {
       a4gl_yyerror ("Internal error - word overflow..");
     }
-  if (instr == 0 || (a != '\n' && a != '\r' && a != '\t'))
+
+  dm=0;
+  if (a=='\t') dm=1;
+
+  if (a=='\t' && A4GL_isyes(acl_getenv("DOING_CM"))) {
+	dm=0;
+  } 
+
+
+  if (instr == 0 || (a != '\n' && a != '\r' && !dm)  )
     {
       buff[0] = a;
       buff[1] = 0;

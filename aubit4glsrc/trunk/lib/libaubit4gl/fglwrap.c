@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.101 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.102 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -200,7 +200,9 @@ char *p;
 	p_numargs = nargs;
   /* setlocale(LC_ALL, "") could break DECIMAL handling, if LC_NUMERIC != C */
   /* setlocale (LC_ALL, ""); */
+#ifndef DOING_CM
   setlocale (LC_CTYPE, "");
+#endif
 	#ifdef DEBUG
 	    A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);
 	#endif
@@ -789,6 +791,8 @@ A4GL_def_int (void)
 
 // ######################################################################
 #else //#if (defined(WIN32) && ! defined(__CYGWIN__))
+#ifdef DOING_CM
+#else
 // ######################################################################
 // This conditional will happen ONLY when NOT compiling on Windows, or when 
 // compiling on Windows
@@ -932,7 +936,7 @@ A4GL_def_int (void)
 		}
 	}
 #endif //CSCC
-
+#endif
 // ######################################################################
 #endif  //#if (defined(WIN32) && ! defined(__CYGWIN__))
 // ######################################################################
@@ -1087,11 +1091,15 @@ A4GL_fgl_error (int a, char *s, int err, int stat)
 static int
 initsig_child()
 {
-struct sigaction ServerSig;
+#ifndef DOING_CM
+	struct sigaction ServerSig;
+#endif
 
 if (A4GL_isyes(acl_getenv("NEED_SIGCHLD"))) {
 
 #if (HAS_SIGACTION_SA_HANDLER)
+#ifdef DOING_CM
+#else
 	A4GL_debug("Adding SIGCLD handler to stop defunct processes with informix..");
 	memset(&ServerSig,0,sizeof(struct sigaction));
 	ServerSig.sa_handler = SIG_IGN;
@@ -1102,6 +1110,8 @@ if (A4GL_isyes(acl_getenv("NEED_SIGCHLD"))) {
 		A4GL_exitwith("Unable to attach SIGCLD handler");
 		return 0;
 	}
+
+#endif
 #else
     A4GL_debug("SA_NOCLDWAIT on Windows? FIXME!");
 
@@ -1118,6 +1128,7 @@ if (A4GL_isyes(acl_getenv("NEED_SIGPIPE")) || 1 ) {
     A4GL_debug("SA_NOCLDWAIT on Windows? FIXME!");
 #else
 	A4GL_debug("Adding SIGPIPE handler to stop defunct processes with informix..");
+#ifndef DOING_CM
 	memset(&ServerSig,0,sizeof(struct sigaction));
 	ServerSig.sa_handler = SIG_IGN;
 	ServerSig.sa_flags = SA_NOCLDWAIT;
@@ -1127,7 +1138,7 @@ if (A4GL_isyes(acl_getenv("NEED_SIGPIPE")) || 1 ) {
 		A4GL_exitwith("Unable to attach SIGPIPE handler");
 		return 0;
 	}
-
+#endif
 #endif
 }
 

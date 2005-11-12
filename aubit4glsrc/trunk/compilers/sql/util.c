@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.31 2005-11-01 14:51:41 mikeaubury Exp $
+# $Id: util.c,v 1.32 2005-11-12 19:33:18 mikeaubury Exp $
 #
 */
 
@@ -973,6 +973,7 @@ A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         char buff[40000];
         if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
 		char *p;
+		if (strstr(s," VALUES ")) {
 		p=fix_insert_expr(1);
 		if (p) {
                 	sprintf(buff,"INSERT INTO %s %s",current_ins_table,p);
@@ -981,9 +982,10 @@ A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
 			sprintf(buff,"%s",s);
 		}
                 return acl_strdup(buff);
-        } else {
-                return s;
-        }
+		}
+        } 
+        return s;
+       
 }
 
 

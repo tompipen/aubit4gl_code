@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.249 2005-10-31 15:33:15 mikeaubury Exp $
+# $Id: mod.c,v 1.250 2005-11-12 19:33:17 mikeaubury Exp $
 #
 */
 
@@ -104,7 +104,12 @@
 
 int ui_elements=0;
 int arr_ui_elements[2000];
-
+struct s_replacements {
+	char *find;
+	char *replace;
+};
+struct s_replacements *replacements=0;
+int nreplacements=0;
 
 static void A4GL_set_sql_features(void) ;
 
@@ -2435,10 +2440,10 @@ char b2[256];
   A4GL_debug ("Scanning order by for %s %d", varname, ordbindcnt);
   for (a = 0; a <= cnt; a++)
     {
-	strcpy(b1,varname);
-	if (b1[0]>='A'&&b1[0]<='Z'&&b1[1]=='_') { strcpy(b1,&varname[2]); }
-	strcpy(b2,ordbind[a].varname);
-	if (b2[0]>='A'&&b2[0]<='Z'&&b2[1]=='_') { strcpy(b2,&ordbind[a].varname[2]); }
+	strcpy(b1,A4GL_unscope(varname));
+	//if (b1[0]>='A'&&b1[0]<='Z'&&b1[1]=='_') { strcpy(b1,&varname[2]); }
+	strcpy(b2,A4GL_unscope(ordbind[a].varname));
+	//if (b2[0]>='A'&&b2[0]<='Z'&&b2[1]=='_') { strcpy(b2,&ordbind[a].varname[2]); }
       A4GL_debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
       if (A4GL_aubit_strcasecmp (b1, b2) == 0)
 	return a;
@@ -3941,7 +3946,7 @@ fix_update_expr (int mode)
 			A4GL_assertion(1,"How ?");
 		}
 	}
-      sprintf (buff, "%s=%s ", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
+      sprintf (buff, "%s=%s ", A4GLSQLCV_check_colname(current_upd_table  ,A4GL_4glc_get_gen(UPDCOL,a)), A4GL_4glc_get_gen(UPDVAL,a));
       strcat (big_buff, buff);
     }
 
@@ -4500,11 +4505,13 @@ char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         char buff[40000];
         if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
 		char *p;
-		p=fix_insert_expr(1);
-		if (p) {
-                	sprintf(buff,"INSERT INTO %s %s",current_ins_table,p);
-                	free(s);
-                	return acl_strdup(buff);
+		if (strstr(s," VALUES ")) {
+			p=fix_insert_expr(1);
+			if (p) {
+                		sprintf(buff,"INSERT INTO %s %s",current_ins_table,p);
+                		free(s);
+                		return acl_strdup(buff);
+			}
 		}
         } 
 
@@ -4793,7 +4800,7 @@ int A4GL_4glc_push_gen_expand(int n,char *v) {
 
 
 void add_sql_function(char *s) {
-	FILE *f ;
+	FILE *f=0;
 	f=fopen("/tmp/sqlcall.log","a");
 	if (!f) return;
 	fprintf(f,"%s %s %d\n",s,A4GL_compiling_module(),yylineno);
@@ -4808,4 +4815,20 @@ get_sio_ids (char *s)
   return get_block_no (get_sio_id (s) - 1);
 }
 
+
+void add_replace(char *a,char *b) {
+nreplacements++;
+	replacements=realloc(replacements,sizeof(struct s_replacements)*nreplacements);
+	replacements[nreplacements-1].find=strdup(a);
+	replacements[nreplacements-1].replace=strdup(b);
+}
+
+
+void drop_replace(char *a) {
+int z;
+for (z=0;z<nreplacements;z++) {
+	if (replacements[z].find==0)  continue;
+	if (strcmp(replacements[z].find,a)==0) replacements[z].find=0;
+}
+}
 /* ================================= EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.95 2005-10-09 12:20:25 mikeaubury Exp $
+# $Id: compile.c,v 1.96 2005-11-12 19:33:17 mikeaubury Exp $
 #*/
 
 /**
@@ -1191,7 +1191,9 @@ static char local_pass_options[1024] = "";
 	
 	
 	if (yydebug) { printf ("Opened : %s\n", fgl_file); }
+if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 	openmap (outputfilename);
+}
 
 	if (!silent) {
 		if (globals_only) {
@@ -1902,8 +1904,13 @@ char *A4GL_compiling_module(void) {
 
 char *A4GL_compiling_module_basename(void) {
 	char *n;
+	static char buff[256];
 	if (strrchr(compiling_module_name,'/')==0) return compiling_module_name;
-	else return strrchr(compiling_module_name,'/')+1;
+	else {
+		sprintf(buff,"F%s", strrchr(compiling_module_name,'/')+1);
+		return buff;
+		return strrchr(compiling_module_name,'/')+1;
+	}
 
 	//return  compiling_module_name;
 }

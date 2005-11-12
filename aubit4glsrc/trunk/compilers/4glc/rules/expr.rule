@@ -632,8 +632,9 @@ numeric_time_unit_small :
 
 numeric_time_unit_big:
 		INT_VALUE
-		| INT_VALUE MINUS INT_VALUE 
-			{sprintf($<str>$,"%s-%s",$<str>1,$<str>3);}
+		| INT_VALUE MINUS INT_VALUE {
+			sprintf($<str>$,"%s-%s",$<str>1,$<str>3);
+		}
 	;
 
 

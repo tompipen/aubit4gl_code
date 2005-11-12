@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.23 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.24 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -245,7 +245,7 @@ etk_name_service_resolve (CosNaming_NamingContext  name_service,
 =====================================================================
 */
 
-int dying=0;
+//int dying=0;
 
 
 /*
@@ -347,7 +347,7 @@ char buff[256];
 int x;
 char *c;
 va_list args;
-char xbuff[10000]; 
+char xbuff[20000]; 
 
 
 // DO NOT CALL A4GL_debug from this function!!!!
@@ -371,7 +371,7 @@ We can end up with problems with overlapping - eg
 	      c=acl_malloc2(sdest);
 	      x=VSNPRINTF(c,sdest,fmt,args);
 	      if (x>=sdest) {
-                sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
+                	sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
 			PRINTF("-->%s (%d>=%d)",fmt,x,sdest);
 			A4GL_assertion(1,buff);
 	      }
@@ -382,7 +382,7 @@ We can end up with problems with overlapping - eg
 	      va_start (args, fmt);
 	      x=VSPRINTF(xbuff,fmt,args);
 		if (x>sizeof(xbuff)) {
-			A4GL_assertion(1,"sprintf > 10,000 characters when using a pointer...");
+			A4GL_assertion(1,"sprintf > 20,000 characters when using a pointer...");
 		}
 	      strcpy(dest,xbuff);
 	}
@@ -405,23 +405,10 @@ return s;
 
 
 
-// We're quitting - so close down any UI specific stuff
-// before we go...
-void A4GL_stop_ui(void) {
-
-  if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
-#endif
-      A4GL_gotolinemode ();
-    }
-
-}
 
 
 
-
+#ifdef MOVED
 // --- from fglwrap.c
 void
 A4GL_fgl_die_with_msg (int n, char *s)
@@ -450,37 +437,10 @@ A4GL_fgl_die_with_msg (int n, char *s)
   PRINTF ("%s\n", s);
   exit (n);
 }
-
-void
-A4GL_fgl_die (int n)
-{
-  if (dying)
-    return;
-  dying++;
-  if (dying > 1)
-    {
-      // Die quickly...
-      exit (n);
-    }
-
-
-
-  A4GL_stop_ui();
-
-
-  if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
 #endif
-      A4GL_stop_ui();
-      //A4GL_gotolinemode ();
-    }
-  A4GL_close_database ();
-  A4GL_close_errorlog_file ();
-  A4GL_debug ("End of program - exit(%d).", n);
-  exit (n);
-}
+
+
+
 
 
 // from funcs_d.c

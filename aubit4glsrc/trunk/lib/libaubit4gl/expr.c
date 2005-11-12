@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.7 2005-10-16 15:50:06 mikeaubury Exp $
+# $Id: expr.c,v 1.8 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -300,8 +300,18 @@ struct expr_str *A4GL_new_literal_double_str (char *value)
 struct expr_str *A4GL_new_literal_long_str (char *value)
 {
   struct expr_str *ptr;
+  FILE *f;
   ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_LONG);
   ptr->u_data.expr_long=atol(value);
+
+  if (A4GL_isyes(acl_getenv("LOG_STRINGS"))) {
+	if (value[0]=='"') {
+		f=fopen("/tmp/strings.log","w");
+		if (f) fprintf(f,"%s\n",value);
+		fclose(f);
+	}
+  }
+
   return ptr;
 }
 
@@ -325,8 +335,13 @@ struct expr_str *A4GL_new_expr_temp(char *s,int dtype) {
 struct expr_str *A4GL_new_literal_string (char *value)
 {
   struct expr_str *ptr;
+int a;
   ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_STRING);
+
   ptr->u_data.expr_string=strdup(value);
+	for (a=0;a<strlen(ptr->u_data.expr_string);a++) {
+		if (ptr->u_data.expr_string[a]=='\t') ptr->u_data.expr_string[a]=' ';
+	}
   return ptr;
 }
 
@@ -340,13 +355,22 @@ struct expr_str *A4GL_new_literal_empty_str (void)
 
 struct expr_str *A4GL_new_expr_neg(struct expr_str *ptr) {
 struct expr_str *ptr_new;
+
 if (ptr->expr_type==ET_EXPR_LITERAL_LONG) {
 	ptr->u_data.expr_long=0-ptr->u_data.expr_long;
 	return ptr;
-} else {
-	ptr_new=A4GL_new_expr_simple_expr(ptr,ET_EXPR_NEG);
-	return ptr_new;
 }
+if (ptr->expr_type==ET_EXPR_LITERAL_DOUBLE_STR) {
+	char buff[256];
+	sprintf(buff,"-%s",ptr->u_data.expr_char);
+	ptr->u_data.expr_char=strdup(buff);
+	return ptr;
+}
+
+
+ptr_new=A4GL_new_expr_simple_expr(ptr,ET_EXPR_NEG);
+return ptr_new;
+
 }
 
 struct expr_str *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type) {

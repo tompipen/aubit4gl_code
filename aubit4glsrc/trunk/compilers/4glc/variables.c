@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.73 2005-10-31 09:40:42 mikeaubury Exp $
+# $Id: variables.c,v 1.74 2005-11-12 19:33:17 mikeaubury Exp $
 #
 */
 
@@ -1933,6 +1933,7 @@ long get_variable_dets_arr3 (char *s, int *type, int *arrsize1,int *arrsize2,int
 {
   char buff[256];
   struct variable *v;
+  *type=0;
 
 
   if (s[0] == '.' && s[1] == 0)
@@ -1991,7 +1992,6 @@ long get_variable_dets_arr3 (char *s, int *type, int *arrsize1,int *arrsize2,int
       A4GL_debug ("Expecting a simple variable ?");
       return -2;
     }
-
   return *type;
 
 }
@@ -2964,6 +2964,7 @@ print_nullify (char type)
 	    }
 
 	}
+
       print_init ();
     }
   else
@@ -3099,8 +3100,15 @@ extern int fbindcnt;
 extern struct binding_comp *fbind;
 //printf("fbindcnt=%d\n",fbindcnt);
 for (a=0;a<fbindcnt;a++) {
+	char buff[256];
+	char *ptr;
 	//printf("%s %s\n",fbind[a].varname,s);
-	if (strcmp(A4GL_unscope(fbind[a].varname),s)==0) return 1;
+	strcpy(buff, A4GL_unscope(fbind[a].varname));
+	ptr=strchr(buff,'.');
+	if (ptr) {
+		*ptr=0;
+	}
+	if (strcmp(buff,s)==0) return 1;
 }
 return 0;
 }

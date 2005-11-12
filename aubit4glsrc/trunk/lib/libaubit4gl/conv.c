@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.115 2005-10-30 14:43:52 mikeaubury Exp $
+# $Id: conv.c,v 1.116 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -2862,7 +2862,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   return rval;
 }
 
-
+#ifdef MOVED
 void A4GL_assertion_failed(char *s)  {
       fflush (stdout);
       A4GL_set_errm (s);
@@ -2899,7 +2899,7 @@ if (a) {
 	A4GL_assertion_failed(s);
 }
 }
-
+#endif
 
 
 /**

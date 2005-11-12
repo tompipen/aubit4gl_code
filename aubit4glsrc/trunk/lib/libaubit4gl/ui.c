@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.47 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: ui.c,v 1.48 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -1200,4 +1200,107 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
 
 	return last_val;
 }
+
+/*
+ *
+ * @todo Describe function
+ */
+int
+A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
+{
+  char colname[40];
+  char tabname[40];
+  int aa;
+  int ab;
+   char s[256];
+
+     A4GL_debug ("Field : %p \n", field);
+
+strcpy(s,s_x);
+  A4GL_trim(s);
+     A4GL_debug ("attr_name_match : %s", s);
+  A4GL_bname (s, tabname, colname);
+
+
+     A4GL_debug ("Splits to %s & %s", tabname, colname);
+     A4GL_debug ("field is [%s %s]", field->tabname, field->colname);
+
+
+  aa = strcmp (field->tabname, tabname);
+  ab = strcmp (field->colname, colname);
+  /* A4GL_debug ("Matches = %d %d ", aa, ab); */
+  if ((ab == 0) || (colname[0] == '*'))
+    {
+      A4GL_debug ("Match on * (%s,%s,%s) (%s,%s)",s,tabname,colname,field->tabname,field->colname);
+      return 1;
+    }
+  if (ab == 0 && tabname[0] == 0)
+    {
+      A4GL_debug ("Matched %s.%s = %s.%s ",tabname,colname,field->tabname,field->colname);
+      return 1;
+    }
+
+     A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
+    field->colname, colname);
+
+  return 0;
+}
+// We're quitting - so close down any UI specific stuff
+// before we go...
+void A4GL_stop_ui(void) {
+
+  if (A4GL_isscrmode ())
+    {
+#ifdef DEBUG
+      A4GL_debug ("In screen mode - ending curses...");
+#endif
+      A4GL_gotolinemode ();
+    }
+
+}
+
+
+
+
+
+/**
+ * Gets the integer keyval from a string representing it.
+ *
+ * The string with the name is passed by the stack.
+ *
+ * The keyval is  returned by the stack.
+ *
+ * @param _np The number of para,eters passed by stack.
+ * @return Allways 1
+ */
+int
+A4GL_fgl_keyval (int _np)
+{
+  long _r;
+  char *v0;
+  char buff[20];
+
+  if (_np != 1)
+    {
+      A4GLSQL_set_status (-3000, 0);
+      A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1",
+             _np);
+
+      for (_r = 0; _r < _np; _r++)
+        {
+          A4GL_pop_char (buff, 10);
+        }
+    }
+
+  v0 = A4GL_char_pop ();
+  A4GL_debug ("TST1 - v0=%s", v0);
+
+  _r = A4GL_key_val (v0);
+  A4GL_debug ("TST1 - r=%d\n", _r);
+  A4GL_push_long (_r);
+  acl_free (v0);
+  return 1;
+}
+
+
 /* ============================= EOF ================================ */

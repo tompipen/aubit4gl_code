@@ -162,7 +162,12 @@ op_ad: {strcpy($<str>$,"");}
 		add_feature("SELECT_UNIQUE");
 		ansi_violation("Use DISTINCT not UNIQUE",0);
 		strcpy($<str>$," DISTINCT ");
-}
+	}
+	| KW_FIRST INT_VALUE {
+		add_feature("FIRST");
+		sprintf($<str>$,"FIRST %s",$<str>2);
+	}
+
 ;
 
 
@@ -302,9 +307,37 @@ value_expression_complex_sli :
 		$<s_select_list_item>$=new_select_list_item_interval($<str>1);
 		add_feature("FUNC_INTERVAL");
 	}
-
-
+	| CASE sql_case_stmt END {
+		$<s_select_list_item>$=$<s_select_list_item>2;
+	}
 ;
+
+
+
+sql_case_stmt :
+	sql_case_stmt_element {
+		$<s_select_list_item>$=new_select_list_item_case($<s_select_list_item>1);
+	}
+	| sql_case_stmt sql_case_stmt_element {
+		$<s_select_list_item>$=append_select_list_item_case(
+							$<s_select_list_item>1,
+							$<s_select_list_item>2);
+	}
+;
+
+
+sql_case_stmt_element: 
+	WHEN search_condition_sli THEN value_expression_sli {
+		$<s_select_list_item>$=new_select_list_item_case_element(
+				$<s_select_list_item>2,
+				$<s_select_list_item>4);
+
+	}
+	| ELSE value_expression_sli {
+		$<s_select_list_item>$=new_select_list_item_case_element( 0, $<s_select_list_item>2);
+	}
+;
+
 
 value_expr_list_slil : 
 	value_expression_sli {

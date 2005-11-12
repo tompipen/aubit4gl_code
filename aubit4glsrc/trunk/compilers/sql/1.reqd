@@ -21,10 +21,19 @@ void add_sql_function(char *s);
 int A4GL_cursor_current(char *s);
 int sqlparse_yylex(void);
 extern int place_holder_cnt;
+
+#ifndef DOING_CM
 char *kw_space=" ";
 char *kw_comma=",";
 char *kw_ob="(";
 char *kw_cb=")";
+#else
+extern char *kw_space;
+extern char *kw_comma;
+extern char *kw_ob;
+extern char *kw_cb;
+
+#endif
 int insql=0;
 static char *make_sql_string_and_free(char *,...);
 char last_tmp_name[256];
@@ -47,6 +56,7 @@ int doing_declare=0;
 
 static char *convstrsql(char *s) ;
 char current_upd_table[256];
+char current_del_table[256];
 #define DEFINED_INS_TABLE
 char current_ins_table[256];
 

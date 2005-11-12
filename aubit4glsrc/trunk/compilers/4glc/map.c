@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.37 2005-07-14 06:27:53 mikeaubury Exp $
+# $Id: map.c,v 1.38 2005-11-12 19:33:17 mikeaubury Exp $
 #*/
 
 /**
@@ -81,11 +81,17 @@ openmap (char *s)
 #ifdef DEBUG
   A4GL_debug ("openmap");
 #endif
+
   if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile == 0)
     {
 #ifdef DEBUG
       A4GL_debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
 #endif
+      if (A4GL_isyes(acl_getenv("LOCALOUTPUT"))) {
+		char *str;
+		str=rindex(s,'/');
+		if (str) s=str+1;
+      }
       sprintf (buff, "%s.map", s);
       mapfile = fopen (buff, "w");
 

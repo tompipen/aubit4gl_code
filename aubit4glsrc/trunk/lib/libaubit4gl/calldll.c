@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.61 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: calldll.c,v 1.62 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -44,7 +44,9 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
-
+#ifdef DOING_CM
+#define WIN32
+#endif
 // everything untill the end of this file is inside this ifdef...
 #ifndef CSCC
 
@@ -69,9 +71,11 @@
  ***********************************************************************
  */
 
+#ifndef DOING_CM
  	#ifndef WIN32
 		#include <dlfcn.h>
 	#endif
+#endif
 
 
 	#ifndef SO_EXT

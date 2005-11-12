@@ -74,8 +74,17 @@ select_statement_ss_str_cfu:
 
 
 curs_forupdate : {strcpy($<str>$,"");}
-                | FOR_UPDATE {strcpy($<str>$," FOR UPDATE");}
-                | FOR_UPDATE_OF cur_update_list {sprintf($<str>$," FOR UPDATE OF %s",$<str>2);}
+                | FOR_UPDATE {
+                        if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) { strcpy($<str>$,""); } else {
+			strcpy($<str>$," FOR UPDATE");
+			}
+		}
+                | FOR_UPDATE_OF cur_update_list {
+                        if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) { strcpy($<str>$,""); } else {
+
+			sprintf($<str>$," FOR UPDATE OF %s",$<str>2);
+}
+}
 ;
 
 cur_update_list : colident { strcpy($<str>$,$<str>1); } 
@@ -134,9 +143,9 @@ value_expression_initial_sli :
         value_expression_complex_sli { $<s_select_list_item>1=$<s_select_list_item>1; }
         | var_ident_ibind_sli    {$<s_select_list_item>1=$<s_select_list_item>1;}
         | subquery_sli {  $<s_select_list_item>$=new_select_list_item_sq(E_SQE_DONT_CARE,$<s_select_list_item>1); }
-        | ALL subquery_sli   { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ALL,$<s_select_list_item>1); }
-        | ANY subquery_sli   { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ANY,$<s_select_list_item>1); }
-        | SOME subquery_sli  { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_SOME,$<s_select_list_item>1); }
+        | ALL subquery_sli   { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ALL,$<s_select_list_item>2); }
+        | ANY subquery_sli   { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ANY,$<s_select_list_item>2); }
+        | SOME subquery_sli  { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_SOME,$<s_select_list_item>2); }
 ;
 
 
@@ -222,4 +231,8 @@ CONSTRAINT
 |KW_BYTE
 |KW_DATE
 |KW_DOW
+| CASE
+| THEN
+| WHEN
+| ELSE
 ;

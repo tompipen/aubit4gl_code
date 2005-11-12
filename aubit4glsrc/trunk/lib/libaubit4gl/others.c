@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.56 2005-07-21 08:17:36 mikeaubury Exp $
+# $Id: others.c,v 1.57 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -116,7 +116,7 @@ aclfgl_fgl_lastkey (int _np)
 }
 
 
-
+#ifdef MOVED
 
 int aclfgl_aclfgl_set_color (int _nargs){ 
    long c ; 
@@ -140,28 +140,15 @@ int aclfgl_aclfgl_set_color (int _nargs){
    return 0;
 }
 
+#endif
 
-
+#ifdef MOVED
 
 int aclfgl_aclfgl_get_user(int n) {
 	A4GL_push_user ();
 	return 1;
 }
 
-/**
- * Gets the keyval.
- *
- * @param _np the number of parameters passed by stack.
- * @return Allways 1
- */
-int
-aclfgl_fgl_keyval (int _np)
-{
-  int a;
-  a = A4GL_fgl_keyval (_np);
-  A4GL_debug ("TST1 Got %d\n", a);
-  return a;
-}
 
 /**
  * Gets the integer keyval from a string representing it.
@@ -201,58 +188,8 @@ A4GL_fgl_keyval (int _np)
   acl_free (v0);
   return 1;
 }
+#endif
 
-/**
- * Upshift a string.
- *
- * The origin string is getted from the stack.
- *
- * The string upshifted is returned by the stack.
- *
- * @param The number of parameters
- * @return Allways 1
- */
-int
-aclfgl_upshift (int _np)
-{
-  char *v1;
-  if (_np != 1)
-    {
-      A4GL_fgl_error (-3000, "", 0, 0);
-    }
-  v1 = A4GL_char_pop ();
-  A4GL_convupper (v1);
-  A4GL_push_char (v1);
-  acl_free (v1);
-  return 1;
-}
-
-/**
- * Downshift a string.
- *
- * The origin string is getted from the stack.
- *
- * The string downshifted is returned by the stack.
- *
- * @param The number of parameters
- * @return Allways 1
- */
-int
-aclfgl_downshift (int _np)
-{
-  char *v1;
-  if (_np != 1)
-    {
-      A4GL_fgl_error (-3000, "", 0, 0);
-    }
-  /* char_pop(v1); */
-  v1 = A4GL_char_pop ();
-  /* convupper(v1); */
-  A4GL_convlower (v1);
-  A4GL_push_char (v1);
-  acl_free (v1);
-  return 1;
-}
 
 /**
  * Upshift a string
@@ -285,6 +222,8 @@ A4GL_convlower (char *s)
 
 }
 
+
+#ifdef MOVED
 /**
  * Get the integer key value from a string.
  *
@@ -356,6 +295,8 @@ A4GL_net_keyval (char *v)
   A4GL_debug ("Not found in here");
   return 0;
 }
+
+#endif
 
 /**
  *
@@ -450,7 +391,7 @@ A4GL_replace_sql_var (char *s)
 
 
 
-
+#ifdef MOVED
 /**
  *
  * @todo Describe function
@@ -495,7 +436,7 @@ strcpy(s,s_x);
  
   return 0;
 }
-
+#endif
 
 
 /**
@@ -586,6 +527,7 @@ A4GL_char_val (char *s)
   return str;
 }
 
+#ifdef MOVED
 int aclfgl_aclfgl_random(int n) {
 int a;
 static int seeded=0;
@@ -598,6 +540,7 @@ static int seeded=0;
 	A4GL_push_int(a);
 	return 1;
 }
+#endif
 
 /** Moved from readforms.c
  *
@@ -719,6 +662,12 @@ char buff[2];
 
 
 
+
+
+
+#ifdef MOVED
+
+
 /* 
 // Added with permission :
 //___| read_pipe.c |______________________________________________________
@@ -771,6 +720,7 @@ int aclfgl_aclfgl_read_pipe(int nargs)
 }
 
 /* End of inclusion */
+#endif
 
 
 #if defined (__MINGW32__)

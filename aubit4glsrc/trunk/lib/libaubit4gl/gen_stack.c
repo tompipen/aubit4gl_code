@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gen_stack.c,v 1.4 2005-11-01 08:26:17 mikeaubury Exp $
+# $Id: gen_stack.c,v 1.5 2005-11-12 19:29:13 mikeaubury Exp $
 #
 */
 
@@ -100,7 +100,6 @@ A4GL_4glc_push_gen (int a, char *s)
 {
   int c;
   A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
-
   c=gen_stack_cnt[a];
 
   if (c>=gen_stack_alloc[a] || gen_stack_ptr[a]==0) { // Allocate some more space...

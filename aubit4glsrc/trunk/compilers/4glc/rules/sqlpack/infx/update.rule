@@ -8,14 +8,13 @@
 
 update_statement_ss:
 	KW_UPDATE table_name {
-		//A4GL_assertion(ibindcnt>0,"Ibind not zero");
 		strcpy(current_upd_table,$<str>2);
 		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=acl_strdup("");
 	} set_clause_list_ss  {
-		strcpy(current_upd_table,"");
 	} where_upd_ss {
 		$<sql_string>$=make_sql_string_and_free(acl_strdup("UPDATE "),acl_strdup($<str>2),kw_space,$<sql_string>4,kw_space,$<sql_string>6,0);
+		strcpy(current_upd_table,"");
 	}
 ;
 
@@ -26,14 +25,25 @@ where_upd_ss : {
 		$<sql_string>$=acl_strdup("");
 	}
 	| WHERE_CURRENT_OF fetch_cursor_name { 
+		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
+			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
+		} else {
+
 		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		rm_quotes($<str>2);
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
+		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
+		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
+                                sprintf($<str>$,"");
+		} else {
+			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+			A4GL_cursor_current($<str>2);
+		}
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>$),0);
 		add_feature("UPDATE_WHERE_CURRENT_OF");
-		A4GL_cursor_current($<str>2);
+		}
 	}
-	| WHERE search_condition_sli_as_string {
+	| WHERE upd_search_condition_sli_as_string {
 		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup("WHERE "),$<sql_string>2,0);
 	}
@@ -152,13 +162,13 @@ upd_column_name_specific: identifier col_arr {
                 i=&$<int_list>2;
                 if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
                 ADDMAP("Use Column",$<str>1);
-                strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
+                strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(current_upd_table,$<str>1), i->i0,i->i1,i->i2));
         }
         | table_name DOT identifier col_arr {
                 struct ilist *i;
                 if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(0,$<str>3));
+                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>3));
 		} else {
                 	sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
 		}
@@ -168,7 +178,7 @@ upd_column_name_specific: identifier col_arr {
         }
         | table_name  DOT MULTIPLY {
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(0,"*"));
+                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
 		} else {
                 	sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,"*"));
 		}
@@ -256,7 +266,7 @@ upd_value_expression_initial_ss :
 $<sql_string>$=make_sql_string_and_free(
 						acl_strdup(
 						A4GLSQLCV_make_substr(
-							A4GLSQLCV_check_colname(0,$<str>2),i->i0,i->i1,i->i2
+							A4GLSQLCV_check_colname(current_upd_table,$<str>2),i->i0,i->i1,i->i2
 							)
 						),0); 
 		}
