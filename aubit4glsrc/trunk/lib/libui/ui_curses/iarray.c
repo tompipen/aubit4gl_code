@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.105 2005-08-28 09:43:38 mikeaubury Exp $
+# $Id: iarray.c,v 1.106 2005-11-17 20:33:26 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.105 2005-08-28 09:43:38 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.106 2005-11-17 20:33:26 mikeaubury Exp $";
 #endif
 
 /**
@@ -103,7 +103,7 @@ void A4GL_set_field_attr_with_attr_already_determined (FIELD * field,
 static void init_arr_line (struct s_inp_arr *sio, int n);
 static int A4GL_has_something_on_control_stack (struct s_inp_arr *sio);
 
-static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op,
+static void A4GL_add_to_control_stack (struct s_inp_arr *sio, enum e_formcontrol op,
 				       FIELD * f, char *parameter,
 				       int extent);
 
@@ -747,8 +747,9 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	}
     }
 
-
-  A4GL_add_to_control_stack (arr, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  if (a!=0) {
+  		A4GL_add_to_control_stack (arr, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  }
   return -1;
 }
 
@@ -1518,7 +1519,7 @@ init_arr_line (struct s_inp_arr *sio, int n)
 *
 */
 static void
-A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
+A4GL_add_to_control_stack (struct s_inp_arr *sio, enum e_formcontrol op, FIELD * f,
 			   char *parameter, int extent)
 {
   char *field_name;

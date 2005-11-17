@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.121 2005-09-05 09:17:18 mikeaubury Exp $
+# $Id: newpanels.c,v 1.122 2005-11-17 20:33:26 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.121 2005-09-05 09:17:18 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.122 2005-11-17 20:33:26 mikeaubury Exp $";
 #endif
 
 /**
@@ -1310,6 +1310,7 @@ int
 A4GL_getch_swin (WINDOW * window_ptr)
 {
   int a;
+  static int no_delay=-1;
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
   a=A4GL_readkey();
@@ -1321,8 +1322,13 @@ A4GL_getch_swin (WINDOW * window_ptr)
   while (1)
     {
 #ifdef USE_HALF_DELAY
+	   if (no_delay==-1) {
+		    	no_delay=(A4GL_isno(acl_getenv("NOHALFDELAY")));
+	   }
 	A4GL_debug("HALF DELAY\n");
-      halfdelay (5); 
+	if(!no_delay) {
+      		halfdelay (5); 
+	}
 #endif
       A4GL_debug("Waiting for key press");
       a = getch (); // GETCH - getch_swin
@@ -1332,7 +1338,9 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
       if (a==-1) {
 #ifdef USE_HALF_DELAY
+	if(!no_delay) {
 	      	nocbreak();
+	}
 #endif
 	      	cbreak();
 	      	return 0;
@@ -1376,6 +1384,7 @@ int
 A4GL_real_getch_swin (WINDOW * window_ptr)
 {
   int a;
+  static int no_delay=-1;
 
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
@@ -1387,8 +1396,13 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
         }
 
 #ifdef USE_HALF_DELAY
+	   if (no_delay==-1) {
+		    	no_delay=(A4GL_isno(acl_getenv("NOHALFDELAY")));
+	   }
 	A4GL_debug("HALF DELAY\n");
+	if(!no_delay) {
       	halfdelay (5);
+	}
 	A4GL_debug("SET HALF DELAY\n");
 #endif
 
@@ -1430,7 +1444,9 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
       if (a==-1) {a=0; 
 #ifdef USE_HALF_DELAY
+	if(!no_delay) {
 	      nocbreak();
+	}
 #endif
 	      	cbreak();
 		return a;
@@ -1438,7 +1454,9 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
       	}
     }
 #ifdef USE_HALF_DELAY
+	if(!no_delay) {
 	      nocbreak();
+	}
 #endif
   cbreak ();
   A4GL_debug ("Got char from keyboard : %d LEFT=%d", a,KEY_LEFT);

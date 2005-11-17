@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.139 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: stack.c,v 1.140 2005-11-17 20:33:25 mikeaubury Exp $
 #
 */
 
@@ -2601,13 +2601,10 @@ A4GL_init_blob (struct fgl_int_loc *p)
 void
 A4GL_push_null (int dtype,int size)
 {
-  //static int a = 0;
   A4GL_debug ("7 ** Pushing null");
 
   A4GL_push_param (0, dtype+ENCODE_SIZE(size));
 
-  //if (a == 0) A4GL_setnull (2, (char *) &a, 0);
-  //A4GL_push_long (a);
 }
 
 
@@ -2694,7 +2691,7 @@ static int ln;
 		A4GL_assertion(1,"internal corruption");
 	}
 
-      A4GL_setnull (b[a].dtype, (char *) b[a].ptr, b[a].size);
+      A4GL_setnull (b[a].dtype &DTYPE_MASK, (char *) b[a].ptr, b[a].size);
     }
 }
 

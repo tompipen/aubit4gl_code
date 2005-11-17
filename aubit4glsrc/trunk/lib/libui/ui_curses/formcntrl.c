@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.87 2005-09-05 09:17:18 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.88 2005-11-17 20:33:26 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.87 2005-09-05 09:17:18 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.88 2005-11-17 20:33:26 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -54,7 +54,7 @@ void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 
 
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
-static void A4GL_add_to_control_stack (struct s_screenio *sio, int op,
+static void A4GL_add_to_control_stack (struct s_screenio *sio, enum e_formcontrol op,
 				       FIELD * f, char *parameter,
 				       int extent,int line);
 static void A4GL_newMovement (struct s_screenio *arr, int attrib);
@@ -117,7 +117,7 @@ char *ops[] = {
 *
 */
 static void
-A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f,
+A4GL_add_to_control_stack (struct s_screenio *sio, enum e_formcontrol op, FIELD * f,
 			   char *parameter, int extent,int line)
 {
   char *field_name;
@@ -1239,7 +1239,9 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 
 	
 	A4GL_debug("Got a key press - %d\n",a);
-  	A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a,__LINE__);
+	if (a) {
+  		A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a,__LINE__);
+	}
   }
   return -1;
 }
