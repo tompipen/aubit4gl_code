@@ -5,46 +5,4 @@
 */
 
 
-/*
-arr_val(int)
-arr_count()
-arr_curr()
-err_get(int)
-A4GL_err_print(int)
-err_quit(int)
-errorlog(char)
-fgl_drawbox(h,w,y,x)
-fgl_drawbox(h,w,y,x,c)
-fgl_getenv(char)
-A4GL_fgl_keyval(char)
-fgl_lastkey()
-length(char)
-num_args()
-scr_line()
-set_count(int)
-showhelp(int)
-sqlexit()
-startlog(char)
-upshift(char)
-AVG(int)
-count(*)
-MAX(int)
-MIN(int)
-SUM(int)
-PERCENT(int)
-
-date(date-expr)
-day(date-expr)
-extend
-field_touched(field_list)
-get_fldbuf(field_list)
-infield(field)
-mdy(m,d,y)
-month(date)
-ord(string)
-weekday(date)
-year(date)
-
-*/
-
 
