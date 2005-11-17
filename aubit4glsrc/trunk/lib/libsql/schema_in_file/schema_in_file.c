@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.18 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.19 2005-11-17 09:31:58 mikeaubury Exp $
 #*/
 
 /**
@@ -115,6 +115,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	  f=".schema";
   }
   strcpy(fname, dbName);
+	A4GL_trim(fname);
   strcat(fname,f);
   A4GL_debug("OPEN SCHEMA : %s",fname);
   f_db_in = A4GL_open_file_dbpath (fname);
@@ -229,6 +230,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	}
     }
   A4GL_set_errm (tabname);
+	A4GL_debug("tabname : %s not found",tabname);
   A4GL_exitwith ("Table not found\n");
   return 0;
 }

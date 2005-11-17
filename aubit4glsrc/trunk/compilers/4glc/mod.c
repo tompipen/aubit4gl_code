@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.250 2005-11-12 19:33:17 mikeaubury Exp $
+# $Id: mod.c,v 1.251 2005-11-17 09:31:47 mikeaubury Exp $
 #
 */
 
@@ -1475,7 +1475,12 @@ pushLikeAllTableColumns (char *tableName)
       A4GL_debug ("---> %s %s", A4GL_null_as_null(cdtype), A4GL_null_as_null(csize));
       A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", A4GL_null_as_null(colname), A4GL_null_as_null(cdtype),
 	     A4GL_null_as_null(csize));
-     cname=A4GL_confirm_colname(tableName,colname);
+
+
+      //cname=A4GL_confirm_colname(tableName,colname);
+      cname=strdup(colname);
+
+
       trim_spaces (cname);
       push_name (cname, 0);
       push_type (rettype (cdtype), csize, 0);

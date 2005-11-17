@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.207 2005-11-12 19:33:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.208 2005-11-17 09:31:58 mikeaubury Exp $
 #
 */
 
@@ -323,6 +323,7 @@
 #define FUNCTION_IGNORE         'f'
 #define EMULATE_CURRENT_OF      'u'
 #define ARRAYS_OF_RECORD        'a'
+#define SCHEMA_FILE_INDEX       'x'
 
 #define BLOCK_USED		'R'
 
@@ -2231,7 +2232,7 @@ char *A4GL_compiling_module(void);
 char *A4GL_compiling_module_basename(void);
 void A4GL_set_sql_conv(int n);
 void load_temp_table(void);
-void save_temp_table(char *tabname);
+void save_temp_table(char *tabname,int select_into);
 
 
 #include "a4gl_gen_stack.h"
@@ -2902,7 +2903,6 @@ struct s_table {
 };
 
 
-int A4GLSQLPARSE_from_clause(struct s_select *s,struct s_table *t,char *fill,struct s_table_list *tl);
 char *A4GLSQLCV_make_case(struct s_select *select,struct s_sli_case *i);
 
 struct s_select {
@@ -2972,8 +2972,29 @@ struct s_select_list_item * new_select_list_item_case_element ( struct s_select_
 char *A4GLSQLCV_check_colname_alias(char *alias,char *tabname, char *colname);
  
 
+int A4GLSQLPARSE_from_clause_collect_tables(struct s_select *select, struct s_table *t,struct s_table_list *tl);
 
+char * fix_delete_update_columns (char *table, struct s_select_list_item *i) ;
+char * get_select_list_item_list_ob (struct s_select *select, struct s_select_list_item_list *i);
+char * find_table (struct s_select *select, struct s_select_list_item *i);
+int A4GL_get_sql_conv (void);
 
+struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a);
+
+int
+A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
+                                struct s_table *t, char *fill,
+                                struct s_table_list *tl);
+int A4GLSQLPARSE_from_clause(struct s_select *select, struct s_table *t,char *fill,struct s_table_list *tl) ;
+
+int
+A4GLSQLPARSE_from_clause_join (struct s_select *select,
+                               struct s_table *t, char *fill,
+                               struct s_table_list *tl);
+
+int A4GL_fgl_keyval (int _np);
+int A4GL_strcasestr(char *h,char *n);
+int aclfgl_aclfgl_random(int n) ;
 
 
 

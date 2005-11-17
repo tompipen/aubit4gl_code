@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.15 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: sql_common.c,v 1.16 2005-11-17 09:31:58 mikeaubury Exp $
 #
 */
 
@@ -60,8 +60,7 @@ static char source_dialect[64] = "INFORMIX";
  * */
 static int must_convert = 0;
 
-char *
-find_table (struct s_select *select, struct s_select_list_item *i);
+//char *find_table (struct s_select *select, struct s_select_list_item *i);
 
 /*
 =====================================================================
@@ -897,6 +896,9 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
 	}
     strcat(buff,join);
     strcpy(fill,buff);
+
+
+    return 1;
 }
 
 /* Generate the string representing the FROM clause for a SELECT */

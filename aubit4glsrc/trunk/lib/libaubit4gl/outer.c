@@ -17,7 +17,7 @@ int ntables;
 struct s_table_join tables[200];
 
 static int
-find_table (char *s)
+xfind_table (char *s)
 {
   int a;
   for (a = 0; a < 200; a++)
@@ -108,8 +108,8 @@ join_tables (struct s_select *select)
 	  rt = r->u_data.column.tabname;
 	  lc = l->u_data.column.colname;
 	  rc = r->u_data.column.colname;
-	  tnl = find_table (lt);
-	  tnr = find_table (rt);
+	  tnl = xfind_table (lt);
+	  tnr = xfind_table (rt);
 	  if (tnl < 0)
 	    {
 	      printf ("Can't find table(%s)!\n", lt);
@@ -139,11 +139,11 @@ join_string ()
 }
 
 
-int can_outer( struct s_select *select,
-			       struct s_table *t, char *fill,
-			       struct s_table_list *tl)
+int
+can_outer (struct s_select *select,
+	   struct s_table *t, char *fill, struct s_table_list *tl)
 {
-int has_outer=0;
+  int has_outer = 0;
 
   while (t)
     {
@@ -153,8 +153,8 @@ int has_outer=0;
 
       if (strcmp (t->tabname, "@") != 0)
 	{
-		t=t->next;
-		continue;
+	  t = t->next;
+	  continue;
 	}
 
       if (t->outer_next)
@@ -162,21 +162,21 @@ int has_outer=0;
 	  struct s_table *t2;
 	  char *main_table;
 	  char *outer_table;
-		char alias_buff[255];
+	  char alias_buff[255];
 	  int b;
-		has_outer++;
+	  has_outer++;
 
 
 	  t2 = t->outer_next;
-	  if (t2->next == 0 && t2->outer_next == 0) ;
+	  if (t2->next == 0 && t2->outer_next == 0);
 	  else
 	    {
 	      return 0;
 	    }
 
-        }
+	}
 
-	t=t->next;
+      t = t->next;
 
     }
   return has_outer;
@@ -192,7 +192,8 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
   struct s_table *last_t;
   int a = 0;
   strcpy (buff, "");
-  if (!can_outer(select,t,fill,tl))  return;
+  if (!can_outer (select, t, fill, tl))
+    return;
 
 
 
@@ -220,12 +221,12 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	  struct s_table *t2;
 	  char *main_table;
 	  char *outer_table;
-		char alias_buff[255];
+	  char alias_buff[255];
 	  int b;
 
 
 	  t2 = t->outer_next;
-	  if (t2->next == 0 && t2->outer_next == 0) ;
+	  if (t2->next == 0 && t2->outer_next == 0);
 	  else
 	    {
 	      return 0;
@@ -235,12 +236,15 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	  if (!main_table)
 	    main_table = last_t->tabname;
 	  outer_table = t2->alias;
-	  if (!outer_table) {
-	    outer_table = t2->tabname;
-		sprintf(alias_buff,"%s ",t2->tabname);
-	  } else {
-		sprintf(alias_buff,"%s As %s",t2->tabname,t2->alias);
-	  }
+	  if (!outer_table)
+	    {
+	      outer_table = t2->tabname;
+	      sprintf (alias_buff, "%s ", t2->tabname);
+	    }
+	  else
+	    {
+	      sprintf (alias_buff, "%s As %s", t2->tabname, t2->alias);
+	    }
 
 
 	  for (b = 0; b < select->list_of_items.nlist; b++)
@@ -256,7 +260,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 		{
 		  int tnl;
 		  int tnr;
-			int found=0;
+		  int found = 0;
 		  p = select->list_of_items.list[b];
 		  l = p->u_data.complex_expr.left;
 		  r = p->u_data.complex_expr.right;
@@ -265,16 +269,25 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 		  lc = l->u_data.column.colname;
 		  rc = r->u_data.column.colname;
 
-		if (lt==0 || rt==0) continue;
-		if (strcmp(lt,main_table)==0 && strcmp(rt,outer_table)==0)  found=1;
-		if (strcmp(rt,main_table)==0 && strcmp(lt,outer_table)==0)  found=1;
-		if (found) {
-			char buff2[256];
-			sprintf(buff2," LEFT OUTER JOIN %s ON %s",alias_buff,get_select_list_item(select,select->list_of_items.list[b]));
-			select->list_of_items.list[b]->type=E_SLI_LITERAL;
-			p->u_data.expression=strdup("1");
-			strcat(buff,buff2);
-		}
+		  if (lt == 0 || rt == 0)
+		    continue;
+		  if (strcmp (lt, main_table) == 0
+		      && strcmp (rt, outer_table) == 0)
+		    found = 1;
+		  if (strcmp (rt, main_table) == 0
+		      && strcmp (lt, outer_table) == 0)
+		    found = 1;
+		  if (found)
+		    {
+		      char buff2[256];
+		      sprintf (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
+			       get_select_list_item (select,
+						     select->list_of_items.
+						     list[b]));
+		      select->list_of_items.list[b]->type = E_SLI_LITERAL;
+		      p->u_data.expression = strdup ("1");
+		      strcat (buff, buff2);
+		    }
 		}
 	    }
 	}

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.273 2005-10-31 15:55:26 mikeaubury Exp $
+# $Id: compile_c.c,v 1.274 2005-11-17 09:31:58 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.273 2005-10-31 15:55:26 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.274 2005-11-17 09:31:58 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5647,9 +5647,10 @@ LEXLIB_print_clr_form (char *formname, char *clr, char *defs)
  *   - 0 : Do not use the defaults table.
  */
 void
-LEXLIB_print_clr_fields (char *flds, char *defs)
+LEXLIB_print_clr_fields_fl (t_field_list *fl, char *defs)
 {
-
+  char *flds;
+  flds=field_name_list_as_char(fl);
   printc ("A4GL_clr_fields(%d,%s,0,0);", atoi (defs), flds);
 
   /*print_niy ("Clear Fields");*/

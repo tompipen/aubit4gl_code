@@ -22,9 +22,9 @@ clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"s
 		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1"); }
 		|	CLEAR_X_FORM form_name op_clr_fields  op_to_defs { print_clr_form($<str>2,$<str>3,$<str>4); }
 		|	CLEAR field_name_list_as_struct op_to_defs {
-	print_clr_fields(field_name_list_as_char($<field_list>2),$<str>3);
-		add_feature("UI_CLEAR_FIELD");
-}
+			print_clr_fields_fl($<field_list>2,$<str>3);
+				add_feature("UI_CLEAR_FIELD");
+		}
 ;
 
 

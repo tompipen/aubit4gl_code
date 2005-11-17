@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.74 2005-11-12 19:33:17 mikeaubury Exp $
+# $Id: variables.c,v 1.75 2005-11-17 09:31:47 mikeaubury Exp $
 #
 */
 
@@ -3016,8 +3016,8 @@ char find_variable_scope (char *s_in)
 int is_system_variable (char *s)
 {
   //if (strcmp (s, "int_flag") == 0) return 1;
-  if (strcmp (s, "quit_flag") == 0)
-    return 1;
+  //if (strcmp (s, "quit_flag") == 0) return 1;
+
   if (strcmp (s, "a4gl_status") == 0)
     return 1;
   if (strncmp (s, "a4gl_sqlca", 10) == 0)

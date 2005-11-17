@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.72 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.73 2005-11-17 09:31:58 mikeaubury Exp $
 #
 */
 
@@ -59,6 +59,7 @@ char empty[] = "";
 char *CV_matches (char *typ, char *string, char *esc);
 int set_sql_conv_success;
 int is_sqlserver_reserved_word (char *s);
+static void load_column_mappings_i (char *ptr);
 
 char *cvsql_names[] = {
   "CVSQL_NONE",
@@ -288,7 +289,7 @@ int ncolumn_mappings = 0;
 static void A4GL_cv_fnlist (char *source, char *target, char *name);
 int A4GL_cv_str_to_func (char *p, int len);
 int A4GL_strwscmp (char *a, char *b);
-int A4GL_strcasestr (char *h, char *n);
+//int A4GL_strcasestr (char *h, char *n);
 static void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
 
 void A4GL_cvsql_double_single (char *sql, char *args);
@@ -1298,7 +1299,11 @@ A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r)
 	}
       if (n == 2)
 	{
-	  SPRINTF5 (buff, "%s(%s,%s,(%s)-(%s)+1)", func, colname, l, r, l);
+	  if (strcmp(l,"1")==0) {
+	  	SPRINTF4 (buff, "%s(%s,%s,%s)", func, colname, l, r);
+	  } else {
+	  	SPRINTF5 (buff, "%s(%s,%s,(%s)-(%s)+1)", func, colname, l, r, l);
+	  }
 	  return buff;
 	}
     }
@@ -2144,6 +2149,8 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
     acl_malloc2 (strlen (tabname) + strlen (elements) + strlen (extra) +
 		 strlen (oplog) + 1000);
 
+  save_temp_table (tabname,0);
+
   if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
     {
       A4GL_debug ("Creating temp table called TABLE : %s", tabname);
@@ -2160,7 +2167,6 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_CREATE_HASH"))
     {
-      save_temp_table (tabname);
       SPRINTF4 (ptr, "CREATE TABLE %s (%s) %s %s", tabname, elements, extra,
 		oplog);
       return ptr;
@@ -2308,7 +2314,7 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
   static char buff[10000];
   char small_buff1[1000];
   char small_buff2[1000];
-  char small_buff3[1000];
+  //char small_buff3[1000];
   struct s_select_list_item *p;
   int a;
   if (A4GLSQLCV_check_requirement ("CASE_AS_PROCEDURE"))
@@ -3018,25 +3024,31 @@ add_mapping (char *t, char *c1, char *c2)
 //printf("Add map : %s,%s,%s\n",t,c1,c2);
 }
 
-
 static void
-load_column_mappings (void)
+load_column_mappings (void) {
+char *ptr;
+  ptr = acl_getenv ("COLUMN_MAP");
+  if (ptr) { if (strlen (ptr)) {load_column_mappings_i(ptr);}}
+  ptr = acl_getenv ("LOCAL_COLUMN_MAP");
+  if (ptr) { if (strlen (ptr)) {load_column_mappings_i(ptr);}}
+}
+
+
+
+
+static void load_column_mappings_i (char *ptr)
 {
-  char *ptr;
   FILE *f;
   char buff[256];
   char *t;
   char *c1;
   char *c2;
   char *c;
-  ptr = acl_getenv ("COLUMN_MAP");
-  if (ptr == 0)
-    return;
-  if (strlen (ptr) == 0)
-    return;
-  f = fopen (ptr, "r");
-  if (f == 0)
-    return;
+  //ptr = acl_getenv ("COLUMN_MAP");
+
+  f = fopen (ptr, "r"); if (f == 0) return;
+
+
   while (1)
     {
       c1 = 0;
@@ -3068,6 +3080,15 @@ load_column_mappings (void)
       add_mapping (t, c1, c2);
     }
 }
+
+
+
+
+
+
+
+
+
 
 char *
 A4GL_confirm_colname (char *t, char *c)

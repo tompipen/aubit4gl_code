@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.9 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.10 2005-11-17 09:31:58 mikeaubury Exp $
 #
 */
 
@@ -67,16 +67,16 @@ static void make_list_item_list_from_select_list (struct s_select *select,
 static void make_list_item_list_from_select (struct s_select *select,
 					     struct s_select_list_item *p);
 static char *find_tabname_for_alias (struct s_select *select, char *alias);
-void save_temp_table (char *tabname);
-void load_temp_table (void);
+//void save_temp_table (char *tabname,int select_into);
+//void load_temp_table (void);
 void make_list_in_subselect_stmt (struct s_select *orig,
 				  struct s_select *next);
 void preprocess_sql_statement (struct s_select *select);
-struct s_table_list *A4GLSQLPARSE_add_table_to_table_list (struct s_table_list
-							   *tl, char *t,
-							   char *a);
+//struct s_table_list *A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a);
 
 
+int A4GL_has_column (char *t, char *c);
+char * get_select_list_item_ob (struct s_select *select, struct s_select_list_item *p);
 
 static struct s_select_list_item *
 empty_select_list_item (enum e_sli type)
@@ -500,13 +500,12 @@ new_empty_select (void)
 
 
 
-char *
-fix_delete_update_columns (char *table, struct s_select_list_item *i)
+char * fix_delete_update_columns (char *table, struct s_select_list_item *i)
 {
 // This is passed a where clause - so we need to go 
   struct s_select *select;
   char *s;
-  extern char current_upd_table[];
+  //extern char current_upd_table[];
   select = new_empty_select ();
   select->select_list =
     new_select_list_item_list (new_select_list_item_literal ("1"));
@@ -578,13 +577,11 @@ get_select_list_item_list (struct s_select *select,
   return buff;
 }
 
-char *
-get_select_list_item_ob (struct s_select *select,
-			 struct s_select_list_item *p)
+char * get_select_list_item_ob (struct s_select *select, struct s_select_list_item *p)
 {
   char *s;
-  char *ptr;
-  int a;
+  //char *ptr;
+  //int a;
   dont_set_for_single_table = 1;
   s = get_select_list_item (select, p);
   dont_set_for_single_table = 0;
@@ -1129,7 +1126,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_COLUMN_ORDERBY:
       {
-	char buff[50] = "";
+	//char buff[50] = "";
 	int a;
 	if (p->u_data.column.subscript.i0 >= 1)
 	  {
@@ -1141,10 +1138,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	  {
 	    char *orig;
 	    orig = find_tabname_for_alias (select, p->u_data.column.tabname);
-	    return
-	      strdup (A4GLSQLCV_check_colname_alias
-		      (p->u_data.column.tabname, orig,
-		       p->u_data.column.colname));
+	    return strdup (A4GLSQLCV_check_colname_alias (p->u_data.column.tabname, orig, p->u_data.column.colname));
 	  }
 	if (select)
 	  {
@@ -1171,10 +1165,15 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		    (select->table_elements.tables[0].tabname,
 		     p->u_data.column.colname))
 		  {
-		    return
-		      strdup (A4GLSQLCV_check_colname
-			      (select->table_elements.tables[0].tabname,
-			       p->u_data.column.colname));
+
+			if (select->table_elements.tables[0].alias) {
+		    return strdup (A4GLSQLCV_check_colname_alias (
+		select->table_elements.tables[0].alias,
+		select->table_elements.tables[0].tabname
+		, p->u_data.column.colname));
+			} else {
+		    return strdup (A4GLSQLCV_check_colname (select->table_elements.tables[0].tabname, p->u_data.column.colname));
+			}
 		  }
 	      }
 
@@ -1315,8 +1314,7 @@ make_list_in_subselect_stmt (struct s_select *orig, struct s_select *next)
 
 
 
-char *
-find_table (struct s_select *select, struct s_select_list_item *i)
+char * find_table (struct s_select *select, struct s_select_list_item *i)
 {
   int a;
   //char *colname;
@@ -1756,15 +1754,15 @@ make_select_stmt (struct s_select *select)
 	{
 	  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH"))
 	    {
-	      save_temp_table (select->sf->into_temp);
+	      save_temp_table (select->sf->into_temp,1);
 	      strcpy (into_temp, " INTO TEMP #");
 	      strcat (into_temp, select->sf->into_temp);
 	      strcat (buff, into_temp);
 	      strcat (buff, " ");
 	    }
 	  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_HASH"))
-	    {
-	      save_temp_table (select->sf->into_temp);
+	    {   
+	      save_temp_table (select->sf->into_temp,1);
 	      strcpy (into_temp, " INTO #");
 	      strcat (into_temp, select->sf->into_temp);
 	      strcat (buff, into_temp);
@@ -1855,7 +1853,7 @@ make_select_stmt (struct s_select *select)
 	  if (!A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH")
 	      && !A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_HASH"))
 	    {
-	      save_temp_table (select->sf->into_temp);
+	      save_temp_table (select->sf->into_temp,1);
 	      strcpy (into_temp, " INTO TEMP ");
 	      strcat (into_temp, select->sf->into_temp);
 	    }
@@ -2274,7 +2272,7 @@ make_list_item_list_from_select (struct s_select *select,
 }
 
 void
-save_temp_table (char *tabname)
+save_temp_table (char *tabname,int select_into)
 {
   char *ptr;
   char buff[256];
@@ -2292,8 +2290,12 @@ save_temp_table (char *tabname)
 	{
 	  while (fgets (buff, sizeof (buff), f))
 	    {
-	      A4GL_trim_nl (buff);
-	      A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) 1);
+	      	char *ptr;
+		int s_into=1;
+		ptr=strchr(buff,' '); 
+		if (ptr) {*ptr=0; ptr++; s_into=atoi(ptr)+2; }
+	        A4GL_trim_nl (buff);
+	        A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) s_into);
 	    }
 	}
     }
@@ -2302,10 +2304,10 @@ save_temp_table (char *tabname)
   if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
     {
       f = fopen (ptr, "a");
-      A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
+      A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) select_into+2);
       if (f)
 	{
-	  fprintf (f, "%s\n", tabname);
+	  fprintf (f, "%s %d\n", tabname,select_into);
 	  fclose (f);
 	}
     }
@@ -2331,8 +2333,12 @@ load_temp_table (void)
 	{
 	  while (fgets (buff, sizeof (buff), f))
 	    {
-	      A4GL_trim_nl (buff);
-	      A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) 1);
+	      	char *ptr;
+		int select_into;
+		ptr=strchr(buff,' ');
+		if (ptr) {*ptr=0; ptr++; select_into=atoi(ptr)+2; }
+	        A4GL_trim_nl (buff);
+	        A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) select_into);
 	    }
 	}
     }
@@ -2341,10 +2347,9 @@ load_temp_table (void)
 }
 
 
-int
-A4GL_has_column (char *t, char *c)
+int A4GL_has_column (char *t, char *c)
 {
-  char colname[256];
+  //char colname[256];
   int rc;
   char *cptr;
   int dtype;

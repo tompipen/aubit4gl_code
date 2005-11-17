@@ -329,7 +329,7 @@ print_clr_window char* s -> void
 
 print_clr_form char* formname,char* clr,char* defs -> void
 
-print_clr_fields char* flds,char* defs -> void
+print_clr_fields_fl t_field_list* flds,char* defs -> void
 
 print_current_window char* s -> void
 

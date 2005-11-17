@@ -20,23 +20,6 @@ select_statement_ss_select :
 		$<s_select>$->select_list=$<s_select_list_item_list>4;
 		$<s_select>$->next=$<s_select>7;
 		$<s_select>$->sf=$<s_select_finish>8;
-
-
-
-	/*
-		if (!strstr($<sql_string>8,"INTO TEMP")) {
-			add_feature("SELECT");
-                	$<sql_string>$=make_sql_string_and_free(acl_strdup("SELECT "),acl_strdup($<str>2), 
-				$<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,kw_space,$<sql_string>7,$<sql_string>8,0);
-		} else {
-			char *ptr;
-			add_feature("SELECT_INTO_TEMP");
-                	ptr=make_sql_string_and_free(acl_strdup("SELECT "),acl_strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>5, kw_space,$<sql_string>6,kw_space,$<sql_string>7,0);
-			
-                	$<sql_string>$=A4GLSQLCV_select_into_temp(ptr, $<sql_string>8, last_tmp_name);
-		}
-	*/
-
 }
 ;
 
@@ -54,8 +37,7 @@ union_select_statement2_ss:
 ;
 
 uselect_statement2_ss:
-	select_statement21_ss  
-{
+	select_statement21_ss  {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
 	 }
 	| char_or_var {
