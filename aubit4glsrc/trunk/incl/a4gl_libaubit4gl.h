@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.209 2005-11-17 20:33:21 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.210 2005-11-18 15:22:47 mikeaubury Exp $
 #
 */
 
@@ -2995,7 +2995,7 @@ int A4GL_fgl_keyval (int _np);
 int A4GL_strcasestr(char *h,char *n);
 int aclfgl_aclfgl_random(int n) ;
 
-
+int A4GL_include_range_check (char *ss, char *ptr, int dtype);
 
 
 

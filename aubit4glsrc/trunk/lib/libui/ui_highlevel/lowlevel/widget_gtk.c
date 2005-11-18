@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.26 2005-11-01 10:28:00 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.27 2005-11-18 15:22:47 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -761,7 +761,7 @@ A4GL_cr_picture (void)
   if (pixmap)
     {
       A4GL_add_signal_grab_focus (pixmap, 0);
-      A4GL_add_signal_clicked (pixmap, 0);
+      /* A4GL_add_signal_clicked (pixmap, 0); */  // GLib-GObject-CRITICAL **: g_signal_connect_closure_by_id: assertion `signal_id > 0' failed
     }
   return pixmap;
 }
@@ -850,8 +850,10 @@ A4GL_cr_button (void)
 	{
 	printf("Add image to button\n");
 	  pixmap = UILIB_A4GL_make_pixmap_gw (image);
-	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (pixmap));
-	  gtk_widget_show (pixmap);
+	  if (pixmap) {
+	  	gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (pixmap));
+	  	gtk_widget_show (pixmap);
+	  	}
 	  gtk_object_set_data (GTK_OBJECT (b), "IMAGE", image);
 	}
     }
@@ -987,7 +989,7 @@ A4GL_cr_label (void)
   g_free (utf);
   gtk_widget_show (label);
   A4GL_add_signal_grab_focus (label, 0);
-  A4GL_add_signal_clicked (label, 0);
+  /* A4GL_add_signal_clicked (label, 0); */ // GLib-GObject-CRITICAL **: g_signal_connect_closure_by_id: assertion `signal_id > 0' failed
   return label;
 }
 
@@ -1346,8 +1348,10 @@ A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data)
 void
 A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr)
 {
+  if (widget) {
   gtk_signal_connect (GTK_OBJECT (widget), "clicked",
 		      GTK_SIGNAL_FUNC (A4GL_clicked_handler), funcptr);
+  }
 }
 
 

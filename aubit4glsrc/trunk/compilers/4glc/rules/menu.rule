@@ -13,24 +13,18 @@ menu_cmd	:	MENU {
         menu_blk[menu_cnt]=get_blk_no();
 	do_print_menu_1();
 	}
-	menu_title menu_commands end_menu_command {
-	}
-;
-
-
-end_menu_command  : END_MENU {
-   print_end_menu_1(menu_blk[menu_cnt]);
-   add_continue_blockcommand ("MENU");
-print_end_menu_2(menu_blk[menu_cnt]);
-   pop_blockcommand("MENU");
-   pop_menu();
-}
+	menu_title menu_commands END_MENU {
+   		print_end_menu_1(menu_blk[menu_cnt]);
+   		add_continue_blockcommand ("MENU");
+		print_end_menu_2(menu_blk[menu_cnt]);
+   		pop_blockcommand("MENU");
+   		pop_menu();
+		}
 ;
 
 menu_block_command : 
 	BEFORE_MENU 
 		{
-	 A4GL_lex_printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
 		print_menu_block(menu_blk[menu_cnt],-2) ;
                   }  
 	commands {
@@ -42,9 +36,7 @@ menu_block_command :
 	opt_help_no
 		{
 		int a;
-A4GL_debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,$<str>3,$<str>4,$<str>5);
-	 A4GL_lex_printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
 		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
 		a=menu_cmd_cnt[menu_cnt]++;
 		A4GL_assertion(a>=MAXMENUOPTS,"Ran out of menuoptions in compiler (Increase : MAXMENUOPTS)");

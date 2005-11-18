@@ -69,33 +69,20 @@ fgl_expr_c :
 	| fgl_expr_c UNITS_MINUTE { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_MINUTE); }
 	| fgl_expr_c UNITS_SECOND { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_SECOND); }
  	| fgl_expr_c KW_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-		//$<ptr>$=get_in_exists_sql($<sql_string>4,'I');
 		add_feature("ET_EXPR_IN_SELECT");
 		$<ptr>$=A4GL_expr_in_sq($<ptr>1,1,$<sql_string>4,ibind,ibindcnt);
 	}
  	| fgl_expr_c NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
-		// @@@ FIXME
-		//$<ptr>$=get_in_exists_sql($<sql_string>4,'i');
 		add_feature("ET_EXPR_NOT_IN_SELECT");
 		add_feature("ET_EXPR_IN_SELECT");
 		$<ptr>$=A4GL_expr_in_sq($<ptr>1,0,$<sql_string>4,ibind,ibindcnt);
 	}
  	| fgl_expr_c KW_IN OPEN_BRACKET inexpr_list CLOSE_BRACKET {
-		// @@@ FIXME
-		//char buff[256];
-		//sprintf(buff,"A4GL_push_int(%d);",A4GL_length_expr($<ptr>4));
-		//$<ptr>$=A4GL_append_expr($<ptr>4,buff);
-		//A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_IN);");
-
 		$<ptr>$=A4GL_expr_in($<ptr>1,1,$<ptr_list>4);
 		add_feature("ET_EXPR_IN");
 	}
 	| fgl_expr_c NOT_IN OPEN_BRACKET inexpr_list CLOSE_BRACKET {
 		char buff[256];
-		// @@@ FIXME
-		//sprintf(buff,"A4GL_push_int(%d);",A4GL_length_expr($<ptr>3));
-		//$<ptr>$=A4GL_append_expr($<ptr>4,buff);
-		//A4GL_append_expr($<ptr>$,"A4GL_pushop(OP_NOTIN);");
 
 		$<ptr>$=A4GL_expr_in($<ptr>1,0,$<ptr_list>4);
 		add_feature("ET_EXPR_NOT_IN");
@@ -142,32 +129,6 @@ fgl_expr_x:  fgl_expr_c {
 ;
 
 
-/* 
-   This is a bad fixup for report expressions 
-   they should be handled properly - but until they are this 
-   will have to to. The issue is because a report expression can have a 'wordwrap'
-   attached - and that we print the expressions as we are parsing rather than after we've
-   parsed the print statements...
-*/
-/*
-fgl_expr_y:  fgl_expr_c { 
-	struct expr_str *p;
-	int a;
-	p=$<ptr>1;
-	if (p) {
-		if (p->expr_type==ET_EXPR_EXPR_LIST) {
-			struct expr_str_list *pl;
-			pl=p->u_data.expr_list;
-			for (a=0;a<pl->nlist;a++) {
-				print_expr(pl->list[a]);
-			}
-		} else {
-			print_expr($<ptr>1);
-		}
-	}
-}
-;
-*/
 
 /****************************************************************/
 
@@ -186,13 +147,10 @@ boolean_expr:
 	| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
 	| EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		add_feature("ET_EXPR_EXISTS");
-		/* $<ptr>$=get_in_exists_sql($<sql_string>3,'E'); */
-
 		$<ptr>$=A4GL_expr_exists_sq(1,$<sql_string>3,ibind,ibindcnt);
 	}
 	| NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
 		add_feature("ET_EXPR_NOT_EXISTS");
-		/*$<ptr>$=get_in_exists_sql($<sql_string>3,'e'); */
 		$<ptr>$=A4GL_expr_exists_sq(0,$<sql_string>3,ibind,ibindcnt);
 	}
 ;	
@@ -250,7 +208,6 @@ report_only_expr:
         		a4gl_yyerror("This can only be done in a report!");YYERROR;
       		} 
 		insql=0; 
-		A4GL_lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
         	strcpy(buff,$<str>3);
 		A4GL_debug("report aggregate :  %s",buff);
 		$<ptr>$=A4GL_new_expr(buff);
@@ -272,10 +229,6 @@ inexpr_list : fgl_expr_c  {
 
 
 
-op_extend_d: {strcpy($<str>$,"-1");} | dtime_val TO dtime_val
-	{sprintf($<str>$,"%d",atoi($<str>1)*16+atoi($<str>3));}
-;
-
 op_extend_di: {$<integer_val>$=-1;} | dtime_val TO dtime_val
 	{$<integer_val>$=atoi($<str>1)*16+atoi($<str>3);}
 ;
@@ -286,24 +239,19 @@ op_extend_ii: interval_qual_i { $<integer_val>$=$<integer_val>1;}
 
 function_call_expr:
 	KW_DATE OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
-		//$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_date(1);");
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_DATE_FUNC);
 	}
 	| TIME OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_TIME_FUNC);
-		//$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_time(1);");
 	}
 	| MONTH OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_MONTH_FUNC);
-		//$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_month(1);");
 	} 
 	| DAY OPEN_BRACKET  fgl_expr_c  CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_DAY_FUNC);
-		//$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_day(1);");
 	} 
 	| YEAR OPEN_BRACKET  fgl_expr_c  CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_YEAR_FUNC);
-		//$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_year(1);");
 	} 
 
 
@@ -311,8 +259,6 @@ function_call_expr:
 
 	| INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_ii {
 		char buff[256];
-		//sprintf(buff,"acli_interval(%s,%s);",$<str>3,$<str>5);
-		//$<ptr>$=A4GL_new_expr(buff);
 		$<ptr>$=A4GL_new_interval_expr($<str>3,$<integer_val>5);
 	}
 
@@ -558,7 +504,6 @@ function_call_expr:
 
                         $<ptr>$=A4GL_new_expr_call_external($<str>2,$<str>4,$<str>6,$<ptr_list>9,$<integer_val>11,infilename,lastlineno);
 
-                        // ....    print_end_call_external(); ...
                 }
 
 

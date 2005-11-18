@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.48 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: ui.c,v 1.49 2005-11-18 15:22:47 mikeaubury Exp $
 #
 */
 
@@ -1300,6 +1300,158 @@ A4GL_fgl_keyval (int _np)
   A4GL_push_long (_r);
   acl_free (v0);
   return 1;
+}
+
+
+
+#define INC_EACH "\n"
+#define INC_RANGE '\t'
+int
+A4GL_include_range_check (char *ss, char *ptr, int dtype)
+{
+  static char buff[2048];       /* what we're checking */
+  static char buff2[2048];      /* what we're checking against */
+  static char buff3[2048];      /* used if its a range */
+  char *ptr1=0;
+  char *ptr2=0;
+  char *ptr3=0;
+  char *s;
+  int had_length;
+
+  memset(buff,0,sizeof(buff));
+  memset(buff2,0,sizeof(buff2));
+  memset(buff3,0,sizeof(buff3));
+  s = acl_malloc2 (strlen(ss)+10);
+  memset(s,0,strlen(ss)+10);
+  had_length=strlen(ss);
+  strcpy(s,ss);
+  A4GL_trim (s);
+  A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
+
+        if (strcasecmp(ptr,"NULL")==0) {
+                // Check for a null...
+                A4GL_debug("NULL ALLOWED");
+                if (strlen(s)==0) {
+                        return 1;
+                }
+        }
+
+
+  if (had_length && strlen(s)==0) {
+	strcpy(s," ");
+  }
+
+
+  ptr3 = strchr (ptr, INC_RANGE);
+
+  if (ptr3)
+    {
+      ptr3[0] = 0;
+      ptr3++;
+      A4GL_debug ("a range has been specified '%s' to '%s'", ptr, ptr3);
+    }
+
+  if (dtype != 0)
+    {
+        int dim=0;
+
+      if (dtype==5||dtype==8) {
+                dim=0x2010;
+        }
+      A4GL_debug ("Not a string expression");
+        A4GL_debug("Pushing '%s'",s);
+      A4GL_push_char (s);
+      A4GL_pop_param (&buff[0], dtype, dim);
+      ptr1 = buff;
+
+        if (dtype==1) { A4GL_debug("Popped ptr1 : %d",*(int *)ptr1); }
+        A4GL_debug("Pushing '%s'",ptr);
+      A4GL_push_char (ptr);
+      A4GL_pop_param (&buff2[0], dtype, dim);
+      ptr2 = buff2;
+        if (dtype==1) { A4GL_debug("Popped ptr2 : %d",*(int *)ptr2); }
+
+      /* do we have a range of values to check ? */
+      if (ptr3)
+        {
+        A4GL_debug("Pushing '%s'",ptr3);
+          A4GL_push_char (ptr3);
+          A4GL_pop_param (&buff3[0], dtype, dim);
+          ptr3 = buff3;
+          if (dtype==1) { A4GL_debug("Popped ptr3 : %d",*(int *)ptr3); }
+        }
+
+    }
+  else
+    {
+      A4GL_debug ("String expression");
+      ptr1 = s;
+      ptr2 = ptr;
+    }
+
+  if (ptr3 == 0)
+    {
+        int chk_again;
+      /* Not a range */
+        if (strcasecmp(ptr2,"NULL")==0) {
+                // Check for a null...
+                A4GL_trim(ptr1);
+                if (strlen(ptr1)==0) {
+                        return 1;
+                }
+        }
+
+        if (dtype==1) {
+                A4GL_debug("%x %x",*(int *)ptr1,*(int *)ptr2);
+        }
+
+      A4GL_push_param (ptr1, dtype);
+      A4GL_push_param (ptr2, dtype);
+      A4GL_debug_print_stack ();
+      A4GL_pushop (OP_EQUAL);
+      A4GL_debug ("Checking for equal");
+      free (s);
+
+
+      chk_again= A4GL_pop_bool ();
+      if ((dtype==DTYPE_SMINT||dtype==DTYPE_INT||dtype==DTYPE_DECIMAL ||dtype==DTYPE_FLOAT||dtype==DTYPE_SMFLOAT) && chk_again && !strncmp(ptr, "NULL", 4)) {
+
+        A4GL_debug ("zero not equal to NULL during form range checks");
+        chk_again = 0;
+      }
+      return chk_again;
+
+
+
+    }
+  else
+    {
+      if(dtype==1||dtype==2) {
+      A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
+        }
+      A4GL_push_param (ptr1, dtype);
+      A4GL_push_param (ptr2, dtype);
+      A4GL_debug_print_stack ();
+      A4GL_pushop (OP_GREATER_THAN_EQ);
+      A4GL_debug ("Checking for <=");
+      if (A4GL_pop_bool () == 0)
+        {
+          free (s);
+          return FALSE;
+        }
+
+      //A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr3);
+      A4GL_push_param (ptr1, dtype);
+      A4GL_push_param (ptr3, dtype);
+      A4GL_debug_print_stack ();
+      A4GL_pushop (OP_LESS_THAN_EQ);
+      A4GL_debug ("Checking for >=");
+      free (s);
+      if (A4GL_pop_bool () == 0)
+        return FALSE;
+      return TRUE;
+    }
+
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.32 2005-07-22 13:23:25 mikeaubury Exp $
+# $Id: readforms.c,v 1.33 2005-11-18 15:22:47 mikeaubury Exp $
 #*/
 
 /**
@@ -97,7 +97,7 @@ char dbname[64];
 /** @todo Take this prototype definition for a header file */
 static void do_translate_form (struct_form * the_form);
 static void read_attributes (struct s_form_dets *f);
-static int include_range_check (char *ss, char *ptr, int dtype);
+//static int include_range_check (char *ss, char *ptr, int dtype);
 static int real_has_bool_attribute (struct struct_scr_field *f, int boolval);
 
 char *read_string_dup (FILE * ofile);
@@ -327,13 +327,14 @@ A4GLFORM_A4GL_check_field_for_include (char *s, char *inc, int dtype)
   while (ptr)
     {
       A4GL_debug ("Checking token '%s'", ptr);
-      if (include_range_check (s, ptr, dtype))
+      if (A4GL_include_range_check (s, ptr, dtype))
 	return TRUE;
       ptr = strtok (0, INC_EACH);
     }
   return FALSE;
 }
 
+#ifdef MOVED
 /**
  *
  */
@@ -465,6 +466,7 @@ include_range_check (char *ss, char *ptr, int dtype)
     }
 
 }
+#endif
 
 
 /**
