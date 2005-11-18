@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.10 2005-11-17 09:31:58 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.11 2005-11-18 16:38:59 mikeaubury Exp $
 #
 */
 
@@ -1048,13 +1048,24 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
 
     case E_SLI_FCALL:
-      return make_sql_string_and_free (acl_strdup (p->u_data.fcall.fname),
+      	{
+             char *params;
+	     char *rval;
+	     params = get_select_list_item_list (select, p->u_data.fcall.params);
+
+	     rval = acl_strdup (A4GLSQLCV_sql_func (p->u_data.fcall.fname, params));
+             free (params);
+	     return rval;
+	     	}
+/*
+      return make_sql_string_and_free (acl_strdup (A4GLSQLCV_sql_func(p->u_data.fcall.fname)),
 				       kw_ob,
 				       get_select_list_item_list (select,
 								  p->u_data.
 								  fcall.
 								  params),
 				       kw_cb, 0);
+				       	*/
 
 
     case E_SLI_EXTEND:
