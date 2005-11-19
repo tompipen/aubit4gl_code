@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2005-09-20 07:47:34 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2005-11-19 10:35:22 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -67,7 +67,7 @@ endif
 CMODS_EXE       =4glc.c
 #--- KEEP IN APLPABETIC ORDER ---
 CMODS_LIB       =\
-				API_lex.c \
+				API_lex.c  \
 				compile.c class.c \
 				dim.c \
 				field_handling.c \
@@ -185,6 +185,8 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 
 API_lex.c: API_lex.spec ../../incl/a4gl_API_lex.h    ../../incl/a4gl_API_lex_lib.h
 	${SH} ../../lib/bin/dlmagic $< > $@
+	${SH} ../../lib/bin/dlmagic $^ -S > API_lex_self.c
+
 	
 ../../incl/a4gl_API_lex.h: API_lex.spec	
 	${SH} ../../lib/bin/dlmagic $< -h > $@

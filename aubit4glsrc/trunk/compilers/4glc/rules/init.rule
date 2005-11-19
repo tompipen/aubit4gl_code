@@ -5,8 +5,7 @@
 */
 
 
-init_cmd : INITIALIZE init_bind_var_list {A4GL_debug("init to\n");} TO KW_NULL
- {
+init_cmd : INITIALIZE init_bind_var_list {A4GL_debug("init to\n");} TO KW_NULL {
 	add_feature("INITIALIZE_NULL");
 	print_init();
  }
