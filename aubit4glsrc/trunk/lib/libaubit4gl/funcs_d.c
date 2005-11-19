@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.73 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.74 2005-11-19 14:33:05 mikeaubury Exp $
 #
 */
 
@@ -198,6 +198,7 @@ A4GL_bnamexxx (char *str, char *str1, char *str2)
 #endif
 }
 
+#ifdef MOVED
 /**
  * Aubit compiler malloc.
  *
@@ -247,6 +248,7 @@ acl_free_full (void *ptr, char *f, long line)
   A4GL_debug ("Free %p %s %d", ptr,f,line);
   free (ptr);
 }
+#endif
 
 /**
  * Pad a string with spaces until the string reaches a size.
