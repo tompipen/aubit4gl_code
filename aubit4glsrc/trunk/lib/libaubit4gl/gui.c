@@ -14,7 +14,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef MSVC
 #include <unistd.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>

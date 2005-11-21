@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.102 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.103 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -225,7 +225,9 @@ char *p;
 #ifdef _PRELOAD_REPORT_
   //A4GLREPORT_initlib ();
 #endif
+#ifdef USE_MONITOR
   A4GL_start_monitor();
+#endif
 #if (! defined(WIN32) && ! defined(__MINGW32__))
   //Mike, are you sure this is not going to work on MinGW, or where you just guessing,
   //since it's on Windows?

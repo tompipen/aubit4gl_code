@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.150 2005-10-19 19:30:54 mikeaubury Exp $
+# $Id: esql.ec,v 1.151 2005-11-21 18:29:42 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.150 2005-10-19 19:30:54 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.151 2005-11-21 18:29:42 mikeaubury Exp $";
 #endif
 
 
@@ -4426,7 +4426,7 @@ return 1;
 }
 
 
-struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
+static struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
 char *ptr2;
 char *ptrn;
 char buff[256];

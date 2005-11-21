@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.13 2005-03-31 13:35:52 afalout Exp $
+# $Id: loadmenu.c,v 1.14 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -91,7 +91,7 @@
  * @return A pointer to the menu widget created.
  */
 void *
-A4GL_load_menu (char *fname, char *menu_id, int mode, void *handler)
+A4GLMENU_A4GL_load_menu (char *fname, char *menu_id, int mode, void *handler)
 {
   struct menu_list the_menus;
   int a = 0;
@@ -123,7 +123,7 @@ A4GL_load_menu (char *fname, char *menu_id, int mode, void *handler)
  * @param handler The menu handler name.
  */
 void
-A4GL_show_menu (char *menuid, void *handler)
+A4GLMENU_A4GL_show_menu (char *menuid, void *handler)
 {
   char *fname;
   void (*p) (char *);
@@ -136,7 +136,7 @@ A4GL_show_menu (char *menuid, void *handler)
 
   fname = (char *) buff;
   A4GL_debug ("show_menu >%s<", fname);
-  A4GL_load_menu (fname, menuid, 0, handler);
+  A4GLMENU_A4GL_load_menu (fname, menuid, 0, handler);
   p ("__BSM__");
 }
 

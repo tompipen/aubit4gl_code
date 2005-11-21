@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.28 2005-05-23 20:54:36 whaslbeck Exp $
+# $Id: loadmenu.c,v 1.29 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -338,7 +338,7 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
  * @return A pointer to the menu widget created.
  */
 void *
-A4GL_load_menu (char *fname, char *menu_id, int mode, void *handler)
+A4GLMENU_A4GL_load_menu (char *fname, char *menu_id, int mode, void *handler)
 {
   return real_load_menu (fname, menu_id, mode, handler);
 }
@@ -397,7 +397,7 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
  * FIXME: not implemented
  */
 int
-A4GL_mn_itemexists (char *menuitem)
+A4GLMENU_A4GL_mn_itemexists (char *menuitem)
 {
 
   return 1;
@@ -410,7 +410,7 @@ A4GL_mn_itemexists (char *menuitem)
  * @param handler The menu handler name.
  */
 void
-A4GL_show_menu (char *menuid, void *handler)
+A4GLMENU_A4GL_show_menu (char *menuid, void *handler)
 {
   char *fname;
   void (*p) (char *);

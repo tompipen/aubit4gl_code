@@ -1,5 +1,6 @@
 LIBRARY EXREPORT
 VARIABLE A4GL_PDFTYPE
+LIB_PREFIX A4GLPDFREP_
 
 /* void A4GL_pdf_rep_print (void *rep, int a, int s, int right_margin) */
 /* void A4GL_pdf_fputmanyc (FILE * f, int c, int cnt) */

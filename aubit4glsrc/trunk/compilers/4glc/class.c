@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.12 2005-07-14 11:32:46 mikeaubury Exp $
+# $Id: class.c,v 1.13 2005-11-21 18:29:37 mikeaubury Exp $
 #
 */
 
@@ -140,8 +140,13 @@ char *fname;
 		a4gl_yyerror("Unable to open class file");
 		return 0;
 	}
+#ifndef MSVC
 	return A4GL_call_4gl_dll(fname,f,args);
+#else
+	A4GL_assertion(1,"Not implemented : class_call");
+#endif
 }
+
 
 
 static void escape (char *buff) {

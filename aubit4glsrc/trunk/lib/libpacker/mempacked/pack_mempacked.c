@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.9 2005-07-14 11:32:55 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.10 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -86,7 +86,7 @@ char *infile = 0;
 char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
 char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 
-//int input_short (char *name, short *val, int ptr, int isarr);
+//int A4GLPacker_A4GLPacker_input_short (char *name, short *val, int ptr, int isarr);
 
 /*
 =====================================================================
@@ -120,10 +120,10 @@ char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
  * @todo Describe function
  */
 int
-input_start_array (char *s, int type, int *len)
+A4GLPacker_input_start_array (char *s, int type, int *len)
 {
   int a;
-  a = input_int (s, len, 0, -1);
+  a = A4GLPacker_input_int (s, len, 0, -1);
   A4GL_debug ("ARRAY %s - Length of array=%d", s, *len);
   return a;
 }
@@ -133,7 +133,7 @@ input_start_array (char *s, int type, int *len)
  * @todo Describe function
  */
 int
-input_end_array (char *s, int type)
+A4GLPacker_input_end_array (char *s, int type)
 {
   return 1;
 }
@@ -143,7 +143,7 @@ input_end_array (char *s, int type)
  * @todo Describe function
  */
 int
-input_short (char *name, short *val, int ptr, int isarr)
+A4GLPacker_input_short (char *name, short *val, int ptr, int isarr)
 {
   int a;
   A4GL_debug ("Input short %s", name);
@@ -154,7 +154,7 @@ input_short (char *name, short *val, int ptr, int isarr)
 }
 
 int
-input_char (char *name, char *val, int ptr, int isarr)
+A4GLPacker_input_char (char *name, char *val, int ptr, int isarr)
 {
   int a;
   A4GL_debug ("Input short %s", name);
@@ -169,15 +169,15 @@ input_char (char *name, char *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_int (char *name, int *val, int ptr, int isarr)
+A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
 {
   if (sizeof (int) == sizeof (long))
     {
-      return input_long (name, (long *) val, ptr, isarr);
+      return A4GLPacker_input_long (name, (long *) val, ptr, isarr);
     }
   else
     {
-      return input_short (name, (short *) val, ptr, isarr);
+      return A4GLPacker_input_short (name, (short *) val, ptr, isarr);
     }
 }
 
@@ -186,7 +186,7 @@ input_int (char *name, int *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_long (char *name, long *val, int ptr, int isarr)
+A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
 {
   /* long n; */
   int a;
@@ -204,9 +204,9 @@ input_long (char *name, long *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_bool (char *name, int *val, int ptr, int isarr)
+A4GLPacker_input_bool (char *name, int *val, int ptr, int isarr)
 {
-  return input_short (name, (short *) val, ptr, isarr);
+  return A4GLPacker_input_short (name, (short *) val, ptr, isarr);
 }
 
 
@@ -215,12 +215,12 @@ input_bool (char *name, int *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_string (char *name, char **val, int ptr, int isarr)
+A4GLPacker_input_string (char *name, char **val, int ptr, int isarr)
 {
   long l;
   int a;
   A4GL_debug ("Inputing string %s", name);
-  if (!input_long ("", &l, 0, -1))
+  if (!A4GLPacker_input_long ("", &l, 0, -1))
     return 0;
   A4GL_debug ("Got length as %d", l);
   *val = acl_malloc2 (l + 1);	/* Extra 1 for the \0 */
@@ -236,7 +236,7 @@ input_string (char *name, char **val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_double (char *name, double *val, int ptr, int isarr)
+A4GLPacker_input_double (char *name, double *val, int ptr, int isarr)
 {
   return A4GL_memfile_fread ((char *)val, 1, sizeof (*val), (void *)infile);
 }
@@ -246,7 +246,7 @@ input_double (char *name, double *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_start_struct (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_struct (char *s, char *n, int ptr, int isarr)
 {
   return 1;
 }
@@ -256,7 +256,7 @@ input_start_struct (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_end_struct (char *s, char *n)
+A4GLPacker_input_end_struct (char *s, char *n)
 {
   return 1;
 }
@@ -266,7 +266,7 @@ input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-input_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *n, int ptr, int isarr)
 {
   return 1;
 }
@@ -276,7 +276,7 @@ input_start_union (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_ptr_ok ()
+A4GLPacker_input_ptr_ok ()
 {
   char n;
   A4GL_memfile_fread (&n, 1, sizeof (n),(void *) infile);
@@ -291,7 +291,7 @@ input_ptr_ok ()
  * @todo Describe function
  */
 int
-input_end_union (char *s, char *n)
+A4GLPacker_input_end_union (char *s, char *n)
 {
   return 1;
 }
@@ -301,9 +301,9 @@ input_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-input_enum (char *name, int *d)
+A4GLPacker_input_enum (char *name, int *d)
 {
-  return input_int (name, d, 0, -1);
+  return A4GLPacker_input_int (name, d, 0, -1);
 }
 
 
@@ -325,7 +325,7 @@ input_enum (char *name, int *d)
  * @todo Describe function
  */
 int
-A4GL_open_packer (char *basename, char dir)
+A4GLPacker_A4GL_open_packer (char *basename, char dir)
 {
   //char buff[256];
   char *ptr = 0;
@@ -364,7 +364,7 @@ A4GL_open_packer (char *basename, char dir)
  * @todo Describe function
  */
 void
-A4GL_close_packer (char dir)
+A4GLPacker_A4GL_close_packer (char dir)
 {
   if (toupper (dir) == 'I')
     {
@@ -377,7 +377,7 @@ A4GL_close_packer (char dir)
 
 
 int
-A4GL_can_pack_all (char *name)
+A4GLPacker_A4GL_can_pack_all (char *name)
 {
   return 0;
 }

@@ -27,7 +27,7 @@ function pind(rtype,rname) {
 BEGIN {
 FS="[ 	,]+"
 print "/*"
-print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+print " * lib=" xlib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
 print " * @file"
 print " * File definition"
 print " *"
@@ -57,7 +57,7 @@ print "#define DEBUG_SPEC"
 print "#endif"
 print "#endif"
 print "static void *libptr=0;"
-print "void A4GL" lib "_clrlibptr (void);"
+print "void A4GL" xlib "_clrlibptr (void);"
 print "int dlclose (void *__handle);"
 print ""
 print "/**"
@@ -67,7 +67,7 @@ print " * @todo : explain ussage and parameters."
 print " * @return ."
 print " */"
 print ""
-print "void A4GL" lib "_clrlibptr (void) {"
+print "void A4GL" xlib "_clrlibptr (void) {"
 if (selfonly) {
 	print "libptr=0;"
 } else {
@@ -76,19 +76,19 @@ if (selfonly) {
 }
 print "}"
 print ""
-print "int A4GL" lib "_initlib (void) {"
+print "int A4GL" xlib "_initlib (void) {"
 if (selfonly) {
 	print "libptr=1;"
-	print "return " lib_prefix "A4GL" lib "_initlib();"
+	print "return " lib_prefix "A4GL" xlib "_initlib();"
 } else {
 	print "typedef int (*x_func)(void);"
 	print "static x_func func;";
-	print "   libptr=(void *)A4GL_dl_openlibrary(\"" lib "\",acl_getenv(\"" env "\"));"
+	print "   libptr=(void *)A4GL_dl_openlibrary(\"" xlib "\",acl_getenv(\"" env "\"));"
 	print "   if (libptr==0) {"
-	print "      A4GL_exitwith(\"Unable to open " lib " library...\");"
+	print "      A4GL_exitwith(\"Unable to open " xlib " library...\");"
 	print "      return 0;"
 	print "   }"
-	print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" lib "_initlib\");"
+	print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" xlib "_initlib\");"
 	print ""
 	print "   if (func)"
 	print "      return func();"
@@ -218,7 +218,7 @@ print "A4GL_debug(\"" debug_args "\\n\"," dargs ");"
 else
 print "A4GL_debug(\"" debug_args "\\n\");"
 print "#endif"
-print "   if (libptr==0) A4GL" lib "_initlib();"
+print "   if (libptr==0) A4GL" xlib "_initlib();"
 if (map[call_fname]) cfname=map[call_fname];
 else cfname=call_fname;
 

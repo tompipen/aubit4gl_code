@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.11 2005-03-31 13:35:55 afalout Exp $
+# $Id: pack_perl.c,v 1.12 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -127,7 +127,7 @@ static void out_only (void);
  * @todo Describe function
  */
 int
-A4GL_open_packer (char *basename, char dir)
+A4GLPacker_A4GL_open_packer (char *basename, char dir)
 {
   char buff[256];
   sprintf (buff, "%s.pl", basename);
@@ -161,7 +161,7 @@ A4GL_open_packer (char *basename, char dir)
  * @todo Describe function
  */
 void
-A4GL_close_packer (char dir)
+A4GLPacker_A4GL_close_packer (char dir)
 {
   if (toupper (dir) == 'O')
     {
@@ -185,7 +185,7 @@ A4GL_close_packer (char dir)
  * @todo Describe function
  */
 int
-output_start_array (char *s, int type, int len)
+A4GLPacker_output_start_array (char *s, int type, int len)
 {
   A4GL_pr1 ();
   structs_cnt++;
@@ -200,7 +200,7 @@ output_start_array (char *s, int type, int len)
  * @todo Describe function
  */
 int
-output_end_array (char *s, int type)
+A4GLPacker_output_end_array (char *s, int type)
 {
   fprintf (outfile, "}");	/* Was ] */
   structs_cnt--;
@@ -228,7 +228,7 @@ A4GL_pr1 (void)
  * @todo Describe function
  */
 int
-output_int (char *name, int val, int ptr, int isarr)
+A4GLPacker_output_int (char *name, int val, int ptr, int isarr)
 {
   A4GL_pr1 ();
   if (isarr >= 0)
@@ -240,7 +240,7 @@ output_int (char *name, int val, int ptr, int isarr)
 
 
 int
-output_short (char *name, short val, int ptr, int isarr)
+A4GLPacker_output_short (char *name, short val, int ptr, int isarr)
 {
   A4GL_pr1 ();
   if (isarr >= 0)
@@ -255,7 +255,7 @@ output_short (char *name, short val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_long (char *name, long val, int ptr, int isarr)
+A4GLPacker_output_long (char *name, long val, int ptr, int isarr)
 {
   A4GL_pr1 ();
   if (isarr >= 0)
@@ -271,7 +271,7 @@ output_long (char *name, long val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_bool (char *name, int val, int ptr, int isarr)
+A4GLPacker_output_bool (char *name, int val, int ptr, int isarr)
 {
   A4GL_pr1 ();
   if (isarr >= 0)
@@ -287,7 +287,7 @@ output_bool (char *name, int val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_string (char *name, char *val, int ptr, int isarr)
+A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
 {
   A4GL_pr1 ();
   if (isarr >= 0)
@@ -298,7 +298,7 @@ output_string (char *name, char *val, int ptr, int isarr)
 }
 
 int
-output_char (char *name, char valc, int ptr, int isarr)
+A4GLPacker_output_char (char *name, char valc, int ptr, int isarr)
 {
 	char val[255];
 	val[0]=valc;
@@ -317,7 +317,7 @@ output_char (char *name, char valc, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_double (char *name, double val, int ptr, int isarr)
+A4GLPacker_output_double (char *name, double val, int ptr, int isarr)
 {
   A4GL_pr1 ();
   if (isarr >= 0)
@@ -332,7 +332,7 @@ output_double (char *name, double val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_start_struct (char *s, char *n, int ptr, int isarr)
+A4GLPacker_output_start_struct (char *s, char *n, int ptr, int isarr)
 {
   A4GL_pr1 ();
   structs_cnt++;
@@ -350,7 +350,7 @@ output_start_struct (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_end_struct (char *s, char *n)
+A4GLPacker_output_end_struct (char *s, char *n)
 {
   structs_cnt--;
   fprintf (outfile, "}");	/*, n, s); */
@@ -363,7 +363,7 @@ output_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-output_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_output_start_union (char *s, char *n, int ptr, int isarr)
 {
   A4GL_pr1 ();
   structs_cnt++;
@@ -384,7 +384,7 @@ output_start_union (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_nullptr (char *s)
+A4GLPacker_output_nullptr (char *s)
 {
   A4GL_pr1 ();
   fprintf (outfile, " \"hasvalue\"=>0 ");
@@ -396,7 +396,7 @@ output_nullptr (char *s)
  * @todo Describe function
  */
 int
-output_okptr (char *s)
+A4GLPacker_output_okptr (char *s)
 {
   A4GL_pr1 ();
   fprintf (outfile, " \"hasvalue\"=>1 ");
@@ -408,7 +408,7 @@ output_okptr (char *s)
  * @todo Describe function
  */
 int
-output_end_union (char *s, char *n)
+A4GLPacker_output_end_union (char *s, char *n)
 {
   structs_cnt--;
   fprintf (outfile, "}");
@@ -421,7 +421,7 @@ output_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-output_enum (char *name, char *s, int d)
+A4GLPacker_output_enum (char *name, char *s, int d)
 {
   A4GL_pr1 ();
   fprintf (outfile, "\"%s\"=>\"%s\"", name, s);
@@ -464,7 +464,7 @@ out_only (void)
  * @todo Describe function
  */
 int
-input_start_array (char *s, int type, int *len)
+A4GLPacker_input_start_array (char *s, int type, int *len)
 {
   out_only ();
   return 0;
@@ -475,30 +475,7 @@ input_start_array (char *s, int type, int *len)
  * @todo Describe function
  */
 int
-input_end_array (char *s, int type)
-{
-  out_only ();
-  return 0;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-input_int (char *name, int *val, int ptr, int isarr)
-{
-  out_only ();
-  return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-int
-input_long (char *name, long *val, int ptr, int isarr)
+A4GLPacker_input_end_array (char *s, int type)
 {
   out_only ();
   return 0;
@@ -510,7 +487,18 @@ input_long (char *name, long *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_bool (char *name, int *val, int ptr, int isarr)
+A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
+{
+  out_only ();
+  return 0;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
 {
   out_only ();
   return 0;
@@ -522,7 +510,19 @@ input_bool (char *name, int *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_string (char *name, char **val, int ptr, int isarr)
+A4GLPacker_input_bool (char *name, int *val, int ptr, int isarr)
+{
+  out_only ();
+  return 0;
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+A4GLPacker_input_string (char *name, char **val, int ptr, int isarr)
 {
   out_only ();
   return 0;
@@ -533,7 +533,7 @@ input_string (char *name, char **val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_double (char *name, double *val, int ptr, int isarr)
+A4GLPacker_input_double (char *name, double *val, int ptr, int isarr)
 {
   out_only ();
   return 0;
@@ -544,7 +544,7 @@ input_double (char *name, double *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_start_struct (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_struct (char *s, char *n, int ptr, int isarr)
 {
   out_only ();
   return 0;
@@ -555,7 +555,7 @@ input_start_struct (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_end_struct (char *s, char *n)
+A4GLPacker_input_end_struct (char *s, char *n)
 {
   out_only ();
   return 0;
@@ -566,7 +566,7 @@ input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-input_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *n, int ptr, int isarr)
 {
   out_only ();
   return 0;
@@ -577,7 +577,7 @@ input_start_union (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_ptr_ok (void)
+A4GLPacker_input_ptr_ok (void)
 {
   out_only ();
   return 0;
@@ -588,7 +588,7 @@ input_ptr_ok (void)
  * @todo Describe function
  */
 int
-input_end_union (char *s, char *n)
+A4GLPacker_input_end_union (char *s, char *n)
 {
   out_only ();
   return 0;
@@ -599,7 +599,7 @@ input_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-input_enum (char *name, int *d)
+A4GLPacker_input_enum (char *name, int *d)
 {
   out_only ();
   return 0;
@@ -645,7 +645,7 @@ A4GL_escape_str (char *s, char q, char e)
  * @todo Describe function
  */
 int
-A4GL_can_pack_all (char *name)
+A4GLPacker_A4GL_can_pack_all (char *name)
 {
   return 0;
 }

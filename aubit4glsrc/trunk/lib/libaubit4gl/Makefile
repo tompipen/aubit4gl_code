@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2005-11-19 14:33:05 mikeaubury Exp $
+# $Id: Makefile,v 1.17 2005-11-21 18:29:41 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -271,6 +271,7 @@ api.headers: $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
 #they are needed for all targets, because they are included in a4gl_aubit4gl.h:
 API_%.c: API_%.spec ${INCL_PATH}/a4gl_API_%.h
 	${SH} ${DLMAGIC} $< > $@
+	${SH} ${DLMAGIC} $< -S > ${@:.c=_self.c}
 
 ################
 #Rule to make API header from .spec file:

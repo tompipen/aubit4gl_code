@@ -193,7 +193,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
   int a = 0;
   strcpy (buff, "");
   if (!can_outer (select, t, fill, tl))
-    return;
+    return 0;
 
 
 

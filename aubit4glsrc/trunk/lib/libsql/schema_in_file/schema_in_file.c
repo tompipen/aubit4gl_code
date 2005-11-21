@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.19 2005-11-17 09:31:58 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.20 2005-11-21 18:29:42 mikeaubury Exp $
 #*/
 
 /**
@@ -65,7 +65,7 @@ char lasterrorstr[1024] = "";
 
 FILE *f_db_in;
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
-struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
+static struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
 						       char *val);
 //void * A4GL_new_expr (char *value);
 //void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
@@ -130,6 +130,11 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   return 0;
 }
 
+int A4GLSQLLIB_A4GLSQL_initlib(void) {
+	return 1;
+}
+
+#ifdef MOVED
 /**
  *
  * @todo Describe function
@@ -139,6 +144,7 @@ A4GLSQL_get_status (void)
 {
   return a4gl_sqlca.sqlcode;
 }
+#endif
 
 /**
  *
@@ -271,7 +277,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 }
 
 
-struct expr_str *
+static struct expr_str *
 A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
 {
   char *ptr2;

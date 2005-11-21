@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.11 2005-11-18 16:38:59 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.12 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -44,7 +44,7 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
-#ifdef HAVE_STRINGS_H
+#if HAVE_STRINGS_H
 #include <strings.h>
 #endif
 
@@ -2315,7 +2315,7 @@ save_temp_table (char *tabname,int select_into)
   if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
     {
       f = fopen (ptr, "a");
-      A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) select_into+2);
+      A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) (select_into+2));
       if (f)
 	{
 	  fprintf (f, "%s %d\n", tabname,select_into);

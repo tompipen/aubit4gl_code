@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.12 2005-03-31 13:35:57 afalout Exp $
+# $Id: xmlrpc_client.c,v 1.13 2005-11-21 18:29:42 mikeaubury Exp $
 #*/
 
 
@@ -358,7 +358,7 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
  * @param np The number of parameters.
  */
 int
-A4GL_remote_func_call (char *host, int async, char *func, int port, int np)
+A4GLRPC_A4GL_remote_func_call (char *host, int async, char *func, int port, int np)
 {
   int a;
   char buff[64];

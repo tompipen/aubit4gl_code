@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.50 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: debug.c,v 1.51 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -176,7 +176,9 @@ A4GL_debug_full (char *fmt, ...)
   if (strncmp(g_fname,"API",3)==0) {
 		char buff2[MAX_DEBUG+100];
 		SPRINTF1(buff2,"API %s\n",buff);
+#ifdef USE_MONITOR
 		A4GL_monitor_puts_int(buff2);
+#endif
   }
 
   if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0

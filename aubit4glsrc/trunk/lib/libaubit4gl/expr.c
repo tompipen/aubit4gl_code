@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.8 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: expr.c,v 1.9 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -45,7 +45,7 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
-#ifdef HAVE_STRINGS_H
+#if HAVE_STRINGS_H
 #include <strings.h>
 #endif
 struct binding_comp

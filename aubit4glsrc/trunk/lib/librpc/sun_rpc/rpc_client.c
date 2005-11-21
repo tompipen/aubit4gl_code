@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.17 2005-03-31 13:35:57 afalout Exp $
+# $Id: rpc_client.c,v 1.18 2005-11-21 18:29:42 mikeaubury Exp $
 #*/
 
 /**
@@ -218,6 +218,8 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
   return result_1->return_values_len - 1;
 }
 
+
+
 /**
  * Call a remote function using RPC protocol.
  *
@@ -228,7 +230,7 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
  * @param np The number of parameters.
  */
 int
-A4GL_remote_func_call (char *host, int async, char *func, int port, int np)
+A4GLRPC_A4GL_remote_func_call (char *host, int async, char *func, int port, int np)
 {
   int a;
   char buff[64];

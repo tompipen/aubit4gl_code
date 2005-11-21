@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.4 2005-03-31 13:35:54 afalout Exp $
+# $Id: pack_packed.c,v 1.5 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -90,8 +90,8 @@ int is_in_mem = 0;
 char *A4GL_find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
 char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 
-//int input_short (char *name, short *val, int ptr, int isarr);
-//int output_short (char *name, short val, int ptr, int isarr);
+//int A4GLPacker_input_short (char *name, short *val, int ptr, int isarr);
+//int A4GLPacker_output_short (char *name, short val, int ptr, int isarr);
 
 /*
 =====================================================================
@@ -251,7 +251,7 @@ A4GL_debug("Try4 : %s",ptr);
  * @todo Describe function
  */
 int
-A4GL_open_packer (char *basename, char dir)
+A4GLPacker_A4GL_open_packer (char *basename, char dir)
 {
   char buff[256];
   is_in_mem = 0;
@@ -290,7 +290,7 @@ A4GL_open_packer (char *basename, char dir)
  * @todo Describe function
  */
 void
-A4GL_close_packer (char dir)
+A4GLPacker_A4GL_close_packer (char dir)
 {
   if (toupper (dir) == 'O')
     fclose (outfile);
@@ -310,10 +310,10 @@ A4GL_close_packer (char dir)
  * @todo Describe function
  */
 int
-output_start_array (char *s, int type, int len)
+A4GLPacker_output_start_array (char *s, int type, int len)
 {
 
-  return output_long (s, len, 0, -1);
+  return A4GLPacker_output_long (s, len, 0, -1);
   /* return fwrite(&len,1,sizeof(len),outfile); */
 }
 
@@ -322,7 +322,7 @@ output_start_array (char *s, int type, int len)
  * @todo Describe function
  */
 int
-output_end_array (char *s, int type)
+A4GLPacker_output_end_array (char *s, int type)
 {
   return 1;
 }
@@ -333,7 +333,7 @@ output_end_array (char *s, int type)
  * @todo Describe function
  */
 int
-output_short (char *name, short val, int ptr, int isarr)
+A4GLPacker_output_short (char *name, short val, int ptr, int isarr)
 {
   A4GL_debug ("Outputing SHORT %s : 0x%x", name, val);
   val = a4gl_htons (val);
@@ -341,7 +341,7 @@ output_short (char *name, short val, int ptr, int isarr)
 }
 
 int
-output_char (char *name, char val, int ptr, int isarr)
+A4GLPacker_output_char (char *name, char val, int ptr, int isarr)
 {
   A4GL_debug ("Outputing CHAR %s : 0x%x", name, val);
   return fwrite (&val, 1, sizeof (char), outfile);
@@ -353,15 +353,15 @@ output_char (char *name, char val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_int (char *name, int val, int ptr, int isarr)
+A4GLPacker_output_int (char *name, int val, int ptr, int isarr)
 {
   if (sizeof (int) == sizeof (long))
     {
-      return output_long (name, val, ptr, isarr);
+      return A4GLPacker_output_long (name, val, ptr, isarr);
     }
   else
     {
-      return output_short (name, val, ptr, isarr);
+      return A4GLPacker_output_short (name, val, ptr, isarr);
     }
 }
 
@@ -370,7 +370,7 @@ output_int (char *name, int val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_long (char *name, long val, int ptr, int isarr)
+A4GLPacker_output_long (char *name, long val, int ptr, int isarr)
 {
   int a;
   A4GL_debug ("Outputing LONG %s - 0x%x\n", name, val);
@@ -386,10 +386,10 @@ output_long (char *name, long val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-//output_bool (char *name, short val, int ptr, int isarr)
-output_bool (char *name, int val, int ptr, int isarr)
+//A4GLPacker_output_bool (char *name, short val, int ptr, int isarr)
+A4GLPacker_output_bool (char *name, int val, int ptr, int isarr)
 {
-  return output_short (name, val, ptr, isarr);
+  return A4GLPacker_output_short (name, val, ptr, isarr);
 }
 
 /**
@@ -397,12 +397,12 @@ output_bool (char *name, int val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_string (char *name, char *val, int ptr, int isarr)
+A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
 {
   int a;
   A4GL_debug ("Output string - length first (%d) pos=%d", strlen (val),
 	 ftell (outfile));
-  output_long (name, strlen (val), ptr, isarr);
+  A4GLPacker_output_long (name, strlen (val), ptr, isarr);
   A4GL_debug ("outputing string itself (%s)", val);
   a = fwrite (val, 1, strlen (val), outfile);
 
@@ -417,7 +417,7 @@ output_string (char *name, char *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_double (char *name, double val, int ptr, int isarr)
+A4GLPacker_output_double (char *name, double val, int ptr, int isarr)
 {
 /*  FIX PORTABILITY.... */
   return fwrite (&val, 1, sizeof (val), outfile);
@@ -428,7 +428,7 @@ output_double (char *name, double val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_start_struct (char *s, char *n, int ptr, int isarr)
+A4GLPacker_output_start_struct (char *s, char *n, int ptr, int isarr)
 {
   A4GL_debug ("Starting struct %s\n", s);
   return 1;
@@ -439,7 +439,7 @@ output_start_struct (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_end_struct (char *s, char *n)
+A4GLPacker_output_end_struct (char *s, char *n)
 {
   return 1;
 }
@@ -449,7 +449,7 @@ output_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-output_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_output_start_union (char *s, char *n, int ptr, int isarr)
 {
   return 1;
 }
@@ -459,7 +459,7 @@ output_start_union (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-output_nullptr (char *s)
+A4GLPacker_output_nullptr (char *s)
 {
   char n = 0;
   return fwrite (&n, 1, sizeof (n), outfile);
@@ -470,7 +470,7 @@ output_nullptr (char *s)
  * @todo Describe function
  */
 int
-output_okptr (char *s)
+A4GLPacker_output_okptr (char *s)
 {
   char n = 1;
   return fwrite (&n, 1, sizeof (n), outfile);
@@ -481,7 +481,7 @@ output_okptr (char *s)
  * @todo Describe function
  */
 int
-output_end_union (char *s, char *n)
+A4GLPacker_output_end_union (char *s, char *n)
 {
   return 1;
 }
@@ -491,9 +491,9 @@ output_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-output_enum (char *name, char *s, int d)
+A4GLPacker_output_enum (char *name, char *s, int d)
 {
-  return output_int (name, d, 0, -1);
+  return A4GLPacker_output_int (name, d, 0, -1);
 }
 
 
@@ -509,10 +509,10 @@ output_enum (char *name, char *s, int d)
  * @todo Describe function
  */
 int
-input_start_array (char *s, int type, int *len)
+A4GLPacker_input_start_array (char *s, int type, int *len)
 {
   int a;
-  a = input_int (s, len, 0, -1);
+  a = A4GLPacker_input_int (s, len, 0, -1);
   A4GL_debug ("ARRAY %s - Length of array=%d", s, *len);
   return a;
 }
@@ -522,7 +522,7 @@ input_start_array (char *s, int type, int *len)
  * @todo Describe function
  */
 int
-input_end_array (char *s, int type)
+A4GLPacker_input_end_array (char *s, int type)
 {
   return 1;
 }
@@ -532,7 +532,7 @@ input_end_array (char *s, int type)
  * @todo Describe function
  */
 int
-input_short (char *name, short *val, int ptr, int isarr)
+A4GLPacker_input_short (char *name, short *val, int ptr, int isarr)
 {
   int a;
   a = fread (val, 1, sizeof (short), infile);
@@ -548,15 +548,15 @@ input_short (char *name, short *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_int (char *name, int *val, int ptr, int isarr)
+A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
 {
   if (sizeof (int) == sizeof (long))
     {
-      return input_long (name, (long *) val, ptr, isarr);
+      return A4GLPacker_input_long (name, (long *) val, ptr, isarr);
     }
   else
     {
-      return input_short (name, (short *) val, ptr, isarr);
+      return A4GLPacker_input_short (name, (short *) val, ptr, isarr);
     }
 }
 
@@ -565,7 +565,7 @@ input_int (char *name, int *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_long (char *name, long *val, int ptr, int isarr)
+A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
 {
   int a;
   /* long n; */
@@ -577,7 +577,7 @@ input_long (char *name, long *val, int ptr, int isarr)
 
 
 int
-input_char (char *name, char *val, int ptr, int isarr)
+A4GLPacker_input_char (char *name, char *val, int ptr, int isarr)
 {
   int a;
   /* long n; */
@@ -591,9 +591,9 @@ input_char (char *name, char *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_bool (char *name, int *val, int ptr, int isarr)
+A4GLPacker_input_bool (char *name, int *val, int ptr, int isarr)
 {
-  return input_short (name, (short *) val, ptr, isarr);
+  return A4GLPacker_input_short (name, (short *) val, ptr, isarr);
 }
 
 
@@ -602,15 +602,15 @@ input_bool (char *name, int *val, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_string (char *name, char **val, int ptr, int isarr)
+A4GLPacker_input_string (char *name, char **val, int ptr, int isarr)
 {
 long l;
 int a;
 
   A4GL_debug ("Inputing string '%s'", name);
-//  A4GL_debug ("xxxxxxxxxxxx calling input_long()");
+//  A4GL_debug ("xxxxxxxxxxxx calling A4GLPacker_input_long()");
 
-  if (!input_long ("", &l, 0, -1)) {
+  if (!A4GLPacker_input_long ("", &l, 0, -1)) {
 //	  A4GL_debug ("wwwwwwwwwwwwwww ZERO!");
 	return 0;
   }
@@ -628,7 +628,7 @@ int a;
  * @todo Describe function
  */
 int
-input_double (char *name, double *val, int ptr, int isarr)
+A4GLPacker_input_double (char *name, double *val, int ptr, int isarr)
 {
   int r;
 r=fread ((char *)val, 1, sizeof (*val), infile);
@@ -641,7 +641,7 @@ else return 1;
  * @todo Describe function
  */
 int
-input_start_struct (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_struct (char *s, char *n, int ptr, int isarr)
 {
   return 1;
 }
@@ -651,7 +651,7 @@ input_start_struct (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_end_struct (char *s, char *n)
+A4GLPacker_input_end_struct (char *s, char *n)
 {
   return 1;
 }
@@ -661,7 +661,7 @@ input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-input_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *n, int ptr, int isarr)
 {
   return 1;
 }
@@ -671,7 +671,7 @@ input_start_union (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-input_ptr_ok ()
+A4GLPacker_input_ptr_ok ()
 {
   char n;
   fread (&n, 1, sizeof (n), infile);
@@ -686,7 +686,7 @@ input_ptr_ok ()
  * @todo Describe function
  */
 int
-input_end_union (char *s, char *n)
+A4GLPacker_input_end_union (char *s, char *n)
 {
   return 1;
 }
@@ -696,9 +696,9 @@ input_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-input_enum (char *name, int *d)
+A4GLPacker_input_enum (char *name, int *d)
 {
-  return input_int (name, d, 0, -1);
+  return A4GLPacker_input_int (name, d, 0, -1);
 }
 
 /**
@@ -707,7 +707,7 @@ input_enum (char *name, int *d)
  */
 int
 //can_pack_all(void)
-A4GL_can_pack_all (char *name)
+A4GLPacker_A4GL_can_pack_all (char *name)
 {
   return 0;
 }

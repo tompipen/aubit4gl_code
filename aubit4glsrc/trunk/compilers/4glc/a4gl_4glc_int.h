@@ -10,7 +10,12 @@
 	/* header automatically created with AutoConf-configure 
 	must include here to be able to test for HAVE_GETOPT_H
 	*/
+#ifdef ALT_CONFIG
+	#include "a4gl_incl_config_alt.h"
+#else
 	#include "a4gl_incl_config.h"
+#endif
+
 #endif
 
 
@@ -22,7 +27,8 @@
 	#endif
 #else
 #ifndef _GETOPT_H
-	#if HAVE_GETOPT_H           /* struct option */
+	#if HAVE_GETOPT_H == 1          /* struct option */
+
 		#include <getopt.h>
 	#else
 		#include "tools/getopt/getopt.h"

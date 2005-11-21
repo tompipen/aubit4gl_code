@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.10 2005-03-31 13:35:55 afalout Exp $
+# $Id: pack_xdr.c,v 1.11 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -84,7 +84,7 @@ A4GLPACKER_initlib (void)
  * @todo Describe function
  */
 int
-A4GL_can_pack_all (char *name)
+A4GLPacker_A4GL_can_pack_all (char *name)
 {
   void *libptr;
   libptr = (void *) A4GL_dl_openlibrary ("XDRPACKER", name);
@@ -100,13 +100,13 @@ A4GL_can_pack_all (char *name)
    as we're doing the whole thing in one go using xdr
 */
 int
-A4GL_open_packer (char *fname, char dir)
+A4GLPacker_A4GL_open_packer (char *fname, char dir)
 {
   return 1;
 }
 
 void
-A4GL_close_packer (char dir)
+A4GLPacker_A4GL_close_packer (char dir)
 {
   return;
 }
@@ -117,7 +117,7 @@ A4GL_close_packer (char dir)
  * @todo Describe function
  */
 int
-A4GL_pack_all (char *name, void *s, char *filename)
+A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 {
   A4GL_debug ("Pack all ...");
   return process_xdr ('O', name, s, filename);
@@ -129,7 +129,7 @@ A4GL_pack_all (char *name, void *s, char *filename)
  * @todo Describe function
  */
 int
-A4GL_unpack_all (char *name, void *s, char *filename)
+A4GLPacker_A4GL_unpack_all (char *name, void *s, char *filename)
 {
   return process_xdr ('I', name, s, filename);
 }

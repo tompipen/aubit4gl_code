@@ -10,5 +10,6 @@
 #include <gtk/gtk.h>
 #define XWIDTH 10
 #define YHEIGHT 10
-
+#include "a4gl_API_menu_lib.h"
 #endif
+

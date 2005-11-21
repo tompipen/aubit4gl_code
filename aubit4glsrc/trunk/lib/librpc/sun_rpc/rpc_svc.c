@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.15 2005-03-31 13:35:57 afalout Exp $
+# $Id: rpc_svc.c,v 1.16 2005-11-21 18:29:42 mikeaubury Exp $
 #*/
 
 /**
@@ -150,7 +150,7 @@ A4GL_fgl_rpc_1 (struct svc_req *rqstp, register SVCXPRT * transp)
  * @todo Describe function
  */
 int
-A4GL_server_run (long port)
+A4GLRPC_A4GL_server_run (long port)
 {
   register SVCXPRT *transp;
   serviceport = port;
@@ -197,7 +197,7 @@ A4GL_server_run (long port)
  * @todo Describe function
  */
 int
-A4GL_register_func (char *s, void *ptr)
+A4GLRPC_A4GL_register_func (char *s, void *ptr)
 {
   A4GL_debug ("Registering function %s", s);
   if (A4GL_has_pointer (s, RPC_FUNC))
@@ -219,7 +219,7 @@ A4GL_register_func (char *s, void *ptr)
  * @todo Describe function
  */
 int
-A4GL_unregister_func (char *s)
+A4GLRPC_A4GL_unregister_func (char *s)
 {
   if (A4GL_has_pointer (s, RPC_FUNC))
     {

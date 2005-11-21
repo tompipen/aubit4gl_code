@@ -80,11 +80,11 @@ if [ "x$2" = "x-h" -o "x$2" = "x-H" -o "x$2" = "x-S" ] ; then
 		#
 		selfonly=1
 	fi
-	lib=$3
-	env=$4
+	lib="$3"
+	env="$4"
 else
-		lib=$2
-		env=$3
+		lib="$2"
+		env="$3"
 fi
 
 lib_prefix=
@@ -174,8 +174,16 @@ fi # "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2"
 		echo "dlmagic: making .c API code..." > /dev/stderr
 	fi
 
+	if [ "x$lib" = "x" ]
+	then
+		lib="not-set"
+	fi
+	if [ "x$env" = "x" ]
+	then
+		env="not-set"
+	fi
 
-	$AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -f $AUBITDIR/lib/bin/dlmagic_c.awk -v selfonly="$selfonly" < $specfile
+	$AWK --assign xlib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile
 
 
 exit

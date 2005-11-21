@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nopdf.c,v 1.9 2005-03-31 13:35:56 afalout Exp $
+# $Id: nopdf.c,v 1.10 2005-11-21 18:29:42 mikeaubury Exp $
 #*/
 
 /**
@@ -88,10 +88,10 @@ libPDF_NOPDF_is_dll (void)
 
 */
 
-extern void A4GLPDF_initlib (void);
+extern void A4GLPDFREP_A4GLPDF_initlib (void);
 
 void
-A4GLPDF_initlib (void)
+A4GLPDFREP_A4GLPDF_initlib (void)
 {
   /* Does nothing */
 }

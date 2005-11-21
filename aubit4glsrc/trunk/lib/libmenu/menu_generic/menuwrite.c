@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.15 2005-03-31 13:35:52 afalout Exp $
+# $Id: menuwrite.c,v 1.16 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -117,7 +117,7 @@ A4GL_error_with (char *s, char *a, char *b)
  * @todo Describe function
  */
 void
-A4GL_write_menu (void* ml)
+A4GLMENU_A4GL_write_menu (void* ml)
 {
   char fname[132];
   char fname2[132];

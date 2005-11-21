@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.210 2005-11-18 15:22:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.211 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -50,9 +50,17 @@
 #ifndef _AUBIT_LIB_INCL_EXT_
 #define _AUBIT_LIB_INCL_EXT_
 
+
+
 #ifdef HAVE_CONFIG_H
 	/* header automatically created with AutoConf-configure */
+	#ifdef ALT_CONFIG
+	#include "a4gl_incl_config_alt.h"
+	#else
+
 	#include "a4gl_incl_config.h"
+
+	#endif
 #endif
 
 
@@ -2282,6 +2290,11 @@ void A4GLSQLCV_add_temp_table(char *tabname);
  (On some platforms these may be the same, on others they won't be)
 -----------------------------------------------------------------------------
 */
+
+
+#ifdef MSVC
+#undef HAVE_NETINET_IN_H
+#endif
 
 
 #if HAVE_NETINET_IN_H

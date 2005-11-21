@@ -1,7 +1,7 @@
 
 
 #include "a4gl_lib_menu_int.h"
-
+#include "a4gl_API_menu_lib.h"
 
 	/* ============== from a4gl_menuxw.h ==================== */
 

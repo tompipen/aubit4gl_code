@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_nomenu.c,v 1.9 2005-03-31 13:35:53 afalout Exp $
+# $Id: menu_nomenu.c,v 1.10 2005-11-21 18:29:41 mikeaubury Exp $
 #*/
 
 /**
@@ -46,6 +46,7 @@
 #include "a4gl_lib_menu_int.h"
 
 #include "menu_x.x.h"
+#include "a4gl_API_menu_lib.h"
 
 //struct menu_list the_menus;
 
@@ -67,7 +68,7 @@ void A4GL_error_with (char *s, char *a, char *b);
  * @todo Describe function
  */
 void
-A4GL_write_menu (void*ml)
+A4GLMENU_A4GL_write_menu (void*ml)
 {
   char fname[132];
   char fname2[132];

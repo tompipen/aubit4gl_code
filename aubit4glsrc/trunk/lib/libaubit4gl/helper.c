@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.48 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: helper.c,v 1.49 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -1079,6 +1079,7 @@ A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
 		return 1;
 	#endif
 #endif
+
 	A4GL_log_changed_envvar(name,value);
 	return ret;
 }

@@ -10,6 +10,7 @@
 #endif
 
 #include "a4gl_lib_rpc_int.h"
+#include "a4gl_API_rpc_lib.h"
 
 #if (defined(__MACH__) && defined(__APPLE__))
 	/* need to include it explicity */

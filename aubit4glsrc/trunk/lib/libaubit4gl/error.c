@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.32 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: error.c,v 1.33 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -76,7 +76,7 @@ please use -DIGNOREEXITWITH on compile line, do not hard-code it! */
 */
 
 char errorbuff[256] = "";
-char lasterrorstr[1024] = "";
+static char lasterrorstr[1024] = "";
 int cache_status = 0;
 int cache_statusno = 0;
 static int int_err_flg;

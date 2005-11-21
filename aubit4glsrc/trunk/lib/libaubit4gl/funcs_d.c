@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.74 2005-11-19 14:33:05 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.75 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -44,7 +44,7 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
-#ifdef HAVE_STRINGS_H
+#if HAVE_STRINGS_H
 #include <strings.h>
 #endif
 

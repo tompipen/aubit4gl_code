@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.96 2005-11-12 19:33:17 mikeaubury Exp $
+# $Id: compile.c,v 1.97 2005-11-21 18:29:37 mikeaubury Exp $
 #*/
 
 /**
@@ -612,11 +612,13 @@ initArguments (int argc, char *argv[])
 	SPRINTF1 (incl_path, "-I\"%s/incl\" ",acl_getenv ("AUBITDIR"));
 
         /* add GTK_INC_PATH (only if set) */
+#ifndef MSVC
 	if((chrptr = acl_getenv ("GTK_INC_PATH")) != NULL) {
 		rm_quotes (chrptr);
 		strcat (incl_path, chrptr);
 		strcat (incl_path, " ");
         }
+#endif
 
 	SPRINTF1 (l_path, "-L\"%s/lib\" ",acl_getenv ("AUBITDIR"));
 	strcpy (l_libs, acl_getenv ("A4GL_LINK_LIBS"));

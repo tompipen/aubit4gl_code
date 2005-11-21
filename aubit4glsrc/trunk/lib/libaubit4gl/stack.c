@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.140 2005-11-17 20:33:25 mikeaubury Exp $
+# $Id: stack.c,v 1.141 2005-11-21 18:29:41 mikeaubury Exp $
 #
 */
 
@@ -55,7 +55,14 @@
 
 #include <ctype.h>
 
-
+#ifdef MSVC
+#ifdef HAVE_SYS_TIME_H
+#undef HAVE_SYS_TIME_H
+#endif
+#ifdef HAVE_UNISTD_H
+#undef HAVE_UNISTD_H
+#endif
+#endif
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -1480,8 +1487,12 @@ A4GL_push_user (void)
 {
   int a;
   struct passwd *p;
+#ifdef MSVC
+  A4GL_push_char("XXXX");
+#else
 #ifndef DOING_CM
 #ifndef __MINGW32__
+
   a = getuid ();
   p = getpwuid (a);
 #else
@@ -1489,6 +1500,7 @@ A4GL_push_user (void)
 #endif
 
   A4GL_push_char (p->pw_name);
+#endif
 #endif
 }
 

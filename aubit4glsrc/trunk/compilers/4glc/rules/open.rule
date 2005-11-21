@@ -51,7 +51,7 @@ op_like_gui: {strcpy($<str>$,"\"\"");} |
 ;
 
 op_absolute: {strcpy($<str>$,"0");}
-	| ABSOLUTE {strcpy($<str>$,"1");}
+	| KW_ABSOLUTE {strcpy($<str>$,"1");}
 ;
 
 open_session_cmd : 
