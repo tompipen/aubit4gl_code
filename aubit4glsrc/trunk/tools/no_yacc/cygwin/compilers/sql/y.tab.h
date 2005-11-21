@@ -29,23 +29,23 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2122,
-     NAMED = 2123,
-     NAMED_GEN = 2124,
-     CHAR_VALUE = 2125,
-     NOT_USED_1 = 2126,
-     NOT_USED_2 = 2127,
-     NOT_USED_3 = 2128,
-     NOT_USED_4 = 2129,
-     NOT_USED_5 = 2130,
-     NOT_USED_6 = 2131,
-     NOT_USED_7 = 2132,
-     NOT_USED_8 = 2133,
-     NUMBER_VALUE = 2134,
-     SEMICOLON = 2135,
-     QUESTION_MARK = 2136,
-     CLINE = 2137,
-     CH = 2138,
+     INT_VALUE = 2121,
+     NAMED = 2122,
+     NAMED_GEN = 2123,
+     CHAR_VALUE = 2124,
+     NOT_USED_1 = 2125,
+     NOT_USED_2 = 2126,
+     NOT_USED_3 = 2127,
+     NOT_USED_4 = 2128,
+     NOT_USED_5 = 2129,
+     NOT_USED_6 = 2130,
+     NOT_USED_7 = 2131,
+     NOT_USED_8 = 2132,
+     NUMBER_VALUE = 2133,
+     SEMICOLON = 2134,
+     QUESTION_MARK = 2135,
+     CLINE = 2136,
+     CH = 2137,
      REPLACE_STRING = 1012,
      STOP_REPLACE_STRING = 1013,
      IGNORE_FUNCTION = 1014,
@@ -264,34 +264,34 @@
      KW_ON = 1711,
      KW_OR = 1712,
      TO = 1713,
-     BEFORE = 1752,
-     END = 1755,
-     TILDE = 1762,
-     ILIKE = 1763,
-     FILLFACTOR = 1766,
-     KW_TODAY = 1778,
-     KW_IDLE = 2118,
-     CANCEL_INSERT = 2119,
-     CANCEL_DELETE = 2120
+     BEFORE = 1751,
+     END = 1754,
+     TILDE = 1761,
+     ILIKE = 1762,
+     FILLFACTOR = 1765,
+     KW_TODAY = 1777,
+     KW_IDLE = 2117,
+     CANCEL_INSERT = 2118,
+     CANCEL_DELETE = 2119
    };
 #endif
-#define INT_VALUE 2122
-#define NAMED 2123
-#define NAMED_GEN 2124
-#define CHAR_VALUE 2125
-#define NOT_USED_1 2126
-#define NOT_USED_2 2127
-#define NOT_USED_3 2128
-#define NOT_USED_4 2129
-#define NOT_USED_5 2130
-#define NOT_USED_6 2131
-#define NOT_USED_7 2132
-#define NOT_USED_8 2133
-#define NUMBER_VALUE 2134
-#define SEMICOLON 2135
-#define QUESTION_MARK 2136
-#define CLINE 2137
-#define CH 2138
+#define INT_VALUE 2121
+#define NAMED 2122
+#define NAMED_GEN 2123
+#define CHAR_VALUE 2124
+#define NOT_USED_1 2125
+#define NOT_USED_2 2126
+#define NOT_USED_3 2127
+#define NOT_USED_4 2128
+#define NOT_USED_5 2129
+#define NOT_USED_6 2130
+#define NOT_USED_7 2131
+#define NOT_USED_8 2132
+#define NUMBER_VALUE 2133
+#define SEMICOLON 2134
+#define QUESTION_MARK 2135
+#define CLINE 2136
+#define CH 2137
 #define REPLACE_STRING 1012
 #define STOP_REPLACE_STRING 1013
 #define IGNORE_FUNCTION 1014
@@ -510,15 +510,15 @@
 #define KW_ON 1711
 #define KW_OR 1712
 #define TO 1713
-#define BEFORE 1752
-#define END 1755
-#define TILDE 1762
-#define ILIKE 1763
-#define FILLFACTOR 1766
-#define KW_TODAY 1778
-#define KW_IDLE 2118
-#define CANCEL_INSERT 2119
-#define CANCEL_DELETE 2120
+#define BEFORE 1751
+#define END 1754
+#define TILDE 1761
+#define ILIKE 1762
+#define FILLFACTOR 1765
+#define KW_TODAY 1777
+#define KW_IDLE 2117
+#define CANCEL_INSERT 2118
+#define CANCEL_DELETE 2119
 
 
 
