@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.34 2005-08-28 09:43:38 mikeaubury Exp $
+# $Id: input_array.c,v 1.35 2005-11-22 14:37:03 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.34 2005-08-28 09:43:38 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.35 2005-11-22 14:37:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1788,10 +1788,10 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  if (arr->currentfield)
 	    {
 	      A4GL_debug ("Adding more..");
-	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0,
-					 0);
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW,
 					 arr->currentfield, 0, 0);
+	                    if (arr->curr_line_is_new) { A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0); }
+			                  arr->curr_line_is_new = 0;
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD,
 					 arr->currentfield, 0, 0);
 	    }
@@ -1799,13 +1799,18 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  rval = -1;
 	}
 
-
       if (arr->fcntrl[a].state == 50)
-	{
-	  new_state = 0;
-	  A4GL_debug ("All done..");
-	  rval = -1;
-	}
+	              {
+			                new_state = 10;
+					          A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+						            rval = -1;
+							            }
+      if (arr->fcntrl[a].state == 10)
+	              {
+			                new_state = 0;
+					          rval = -1;
+						          }
+
 
     }
 

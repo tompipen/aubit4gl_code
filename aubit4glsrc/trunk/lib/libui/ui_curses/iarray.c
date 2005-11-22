@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.106 2005-11-17 20:33:26 mikeaubury Exp $
+# $Id: iarray.c,v 1.107 2005-11-22 14:36:57 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.106 2005-11-17 20:33:26 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.107 2005-11-22 14:36:57 mikeaubury Exp $";
 #endif
 
 /**
@@ -2003,6 +2003,8 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	  if (arr->currentfield)
 	    {
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
+	      if (arr->curr_line_is_new) { A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0); }
+	      arr->curr_line_is_new = 0;
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, arr->currentfield, 0, 0);
 	    }
 	  new_state = 50;
