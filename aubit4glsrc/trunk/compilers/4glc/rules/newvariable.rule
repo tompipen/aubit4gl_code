@@ -299,7 +299,7 @@ if (strncmp($<str>1,"sqlca.",6)==0) {
         strcpy($<str>1,xbuff);
 }
 strcpy(buff,$<str>1);
-ADDMAP("Let Variable",buff);
+if (buff[0]!=' ') ADDMAP("Let Variable",buff);
 if (strncmp(buff," ASSOCIATE_",11)!=0) {
 A4GL_convlower(buff);
 }

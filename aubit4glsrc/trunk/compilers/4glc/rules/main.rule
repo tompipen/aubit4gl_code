@@ -220,6 +220,7 @@ A4GL_lex_printcomment("/* start of globals */\n");
 } 
 glob_section  {
 				file_out_nl("3");
+strcpy(curr_func,"Module");
 }
 ;
 
