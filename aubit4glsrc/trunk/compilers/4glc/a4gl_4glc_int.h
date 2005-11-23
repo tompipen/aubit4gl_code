@@ -507,6 +507,11 @@ int fglc_verbosity(void);
 char *A4GL_get_yyline(void);
 void do_yyerror(char *s);
 void continue_blockcommand (char *cmd_type);
+int get_sio_ids (char *s);
+void add_sql_function(char *s);
+int A4GL_4glc_push_gen_expand(int n,char *v);
+void add_replace(char *a,char *b);
+void drop_replace(char *a);
 
 struct expr_str *A4GL_generate_variable_expr(char *s) ;
 void print_display_by_name (char *attr);

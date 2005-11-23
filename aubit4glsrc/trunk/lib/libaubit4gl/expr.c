@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.9 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: expr.c,v 1.10 2005-11-23 09:41:40 mikeaubury Exp $
 #
 */
 
@@ -159,6 +159,7 @@ case ET_EXPR_FIELD_TOUCHED: return "ET_EXPR_FIELD_TOUCHED";
 case ET_EXPR_IVAL_VAL: return "ET_EXPR_IVAL_VAL";
 case ET_EXPR_FCALL_SINGLE: return "ET_EXPR_FCALL_SINGLE";
 case ET_EXPR_TEMP: return "ET_EXPR_TEMP";
+case ET_EXPR_BOUND_FCALL: return "ET_EXPR_BOUND_FCALL";
 
 
 }
@@ -563,6 +564,28 @@ struct expr_str *p2;
 	p2->u_data.expr_member_function_call=p;
 	return p2;
 }
+
+
+struct expr_str *A4GL_new_expr_bound_fcall(char *lib, char *function,char *mod,int line,int l_ibindcnt,void *l_ibind,int nibytes,int l_ebindcnt,void *l_ebind,int nebytes) {
+struct expr_bound_fcall *p;
+struct expr_str *p2;
+        p=malloc(sizeof(struct expr_bound_fcall));
+        p2=A4GL_new_expr_simple (ET_EXPR_BOUND_FCALL);
+        p->fname=strdup(function);
+        p->lib=strdup(lib);
+        p->module=mod;
+        p->line=line;
+	p->nibind=l_ibindcnt;
+	p->ibind=malloc(nibytes);
+	memcpy(p->ibind,l_ibind,nibytes);
+	p->nebind=l_ebindcnt;
+	p->ebind=malloc(nebytes);
+	memcpy(p->ebind,l_ebind,nebytes);
+        p2->u_data.expr_bound_fcall=p;
+        return p2;
+}
+
+
 
 
 struct expr_str *A4GL_new_expr_shared_fcall(char *lib, char *function,struct expr_str_list *params,char *mod,int line) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.251 2005-11-17 09:31:47 mikeaubury Exp $
+# $Id: mod.c,v 1.252 2005-11-23 09:41:35 mikeaubury Exp $
 #
 */
 
@@ -1991,6 +1991,8 @@ strcpy(var,var_i);
       else
 	{
 	  ebind=ensure_bind(&a_ebind,ebindcnt,ebind);
+	  ebind[ebindcnt].start_char_subscript = 0;
+	  ebind[ebindcnt].end_char_subscript = 0;
 	  strcpy (ebind[ebindcnt].varname, var);
 	  ebind[ebindcnt].dtype = dtype;
 	  ebindcnt++;
@@ -4836,4 +4838,29 @@ for (z=0;z<nreplacements;z++) {
 	if (strcmp(replacements[z].find,a)==0) replacements[z].find=0;
 }
 }
+
+
+
+struct expr_str * get_for_default_step (void)
+{
+	        struct expr_str *ptr;
+		        ptr=A4GL_new_literal_long_str("1");
+			        return ptr;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ================================= EOF ============================= */

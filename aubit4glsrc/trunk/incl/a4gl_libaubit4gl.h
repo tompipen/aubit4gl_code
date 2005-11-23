@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.211 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.212 2005-11-23 09:41:40 mikeaubury Exp $
 #
 */
 
@@ -2467,6 +2467,16 @@ struct expr_cast {
 		int force;
 };
 
+struct expr_bound_fcall {
+	char *lib;
+	char *fname;
+	char *module;
+	int line;
+	int nibind;
+	void *ibind;
+	int nebind;
+	void *ebind;
+};
 
 
 enum e_expr_type {
@@ -2566,6 +2576,7 @@ enum e_expr_type {
 		ET_EXPR_IVAL_VAL,
 		ET_EXPR_FCALL_SINGLE,
 		ET_EXPR_TEMP,
+		ET_EXPR_BOUND_FCALL,
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
 
@@ -2600,6 +2611,7 @@ struct expr_str {
 		struct expr_interval			*expr_interval;
 		struct expr_field_touched		*expr_field_touched;
 		struct expr_tmp				*expr_tmp;
+		struct expr_bound_fcall			*expr_bound_fcall;
 	
 	  } u_data;
 	  struct expr_str *next;
@@ -2631,6 +2643,7 @@ struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
 
 struct expr_str *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
 struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
+struct expr_str *A4GL_new_expr_bound_fcall(char *lib,char *function,char *mod,int line,int nibind,void *ibind, int nibytes,int nebind,void *ebind,int nebytes);
 struct expr_str *A4GL_new_expr_member_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
 struct expr_str_list *A4GL_rationalize_list(struct expr_str_list *l);
 struct expr_str *A4GL_new_expr_fcall(char *function,struct expr_str_list *params,char *mod,int line);

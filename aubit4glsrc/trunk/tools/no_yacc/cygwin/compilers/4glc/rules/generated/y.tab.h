@@ -2306,7 +2306,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 259 "fgl.yacc"
+#line 261 "fgl.yacc"
 typedef union YYSTYPE {
 
 

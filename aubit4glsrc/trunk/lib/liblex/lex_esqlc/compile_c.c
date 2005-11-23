@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.274 2005-11-17 09:31:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.275 2005-11-23 09:41:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.274 2005-11-17 09:31:58 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.275 2005-11-23 09:41:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1749,6 +1749,36 @@ real_print_expr (struct expr_str *ptr)
 	    }
 	    break;
 
+	case ET_EXPR_BOUND_FCALL : {
+		   extern long a_ibind;
+		   extern long a_ebind;
+		struct expr_bound_fcall *f;
+		int ni;
+		int ne;
+		f=ptr->u_data.expr_bound_fcall;
+		ibindcnt=f->nibind;
+		ebindcnt=f->nebind;
+	    	ibind=ensure_bind(&a_ibind,ibindcnt,ibind);
+	    	ebind=ensure_bind(&a_ebind,ebindcnt,ebind);
+		memcpy(ibind,f->ibind,ibindcnt*sizeof(struct binding_comp));
+		memcpy(ebind,f->ebind,ebindcnt*sizeof(struct binding_comp));
+	        printc("{ /*X1*/");
+	        printc("  int _retvars;");
+	        print_bind('i');
+	        print_bind('e');
+	        printc("  A4GLSQL_set_status(0,0);");
+		printc("  _retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);",f->lib, f->fname,f->nibind,f->nebind);
+
+		printc("  if (_retvars!= 1 && a4gl_status==0 ) {");
+		printc("    A4GLSQL_set_status(-3001,0);");
+		printc("    A4GL_chk_err(%d,_module_name);",f->line);
+		printc("  }");
+	   	printc("}");
+		break;
+	}
+
+
+
 	case ET_EXPR_MEMBER_FCALL:
 	    {
 	      int a;
@@ -2667,13 +2697,35 @@ LEXLIB_print_bind (char i)
 	    printc (",\n");
 	  printc ("{&%s,%d,%d,%d,%d,0}", obind[a].varname,
 		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16,
-		  ibind[a].start_char_subscript, ibind[a].end_char_subscript);
+		  obind[a].start_char_subscript, obind[a].end_char_subscript);
 	}
       printc ("\n}; /* end of binding.9 */\n");
       if (doing_esql ())
 	{
 	  make_sql_bind (0, "o");
 	}
+      start_bind (i, 0);
+      return a;
+    }
+
+  if (i == 'e')
+    {
+      printc ("\n");
+      printc ("struct BINDING ebind[%d]={\n", ONE_NOT_ZERO (ebindcnt));
+      if (ebindcnt == 0)
+	{
+	  printc ("{0,0,0,0,0,0}");
+	}
+
+      for (a = 0; a < ebindcnt; a++)
+	{
+	  if (a > 0)
+	    printc (",\n");
+	  printc ("{&%s,%d,%d,%d,%d,0}", ebind[a].varname,
+		  (int) ebind[a].dtype & 0xffff, (int) ebind[a].dtype >> 16,
+		  ebind[a].start_char_subscript, ebind[a].end_char_subscript);
+	}
+      printc ("\n}; /* end of binding.9 */\n");
       start_bind (i, 0);
       return a;
     }
@@ -3044,7 +3096,7 @@ LEXLIB_print_getfldbuf (char *fields)
 static void print_returning (void)
 {
   int cnt;
-  printc ("{\n");
+  printc ("{ /* print_returning */\n");
   cnt = print_bind_definition ('i');
    print_bind_set_value ('i');
   printc
@@ -3120,9 +3172,14 @@ LEXLIB_print_field_func (char type, char *name, char *var)
 void
 LEXLIB_print_func_call (t_expr_str *fcall)
 {
+	int t;
   A4GL_debug ("via print_func_call in lib");
+  t=fcall->expr_type;
   real_print_func_call (fcall);
-  print_returning();
+
+  if (t!=ET_EXPR_BOUND_FCALL) {
+  	print_returning();
+  }
 }
 
 /**
@@ -3198,6 +3255,15 @@ real_print_func_call (t_expr_str * fcall)
       print_reset_state_after_call ();
       return;
     }
+
+  if (fcall->expr_type==ET_EXPR_BOUND_FCALL)  {
+	  printc("/* EXPR_BOUND_FCALL */");
+	  real_print_expr (fcall);
+	  printc("/* END EXPR_BOUND_FCALL */");
+	  return;
+
+  }
+
 
   if (fcall->expr_type==ET_EXPR_SHARED_FCALL)  {
       struct expr_shared_function_call *p;
@@ -3321,16 +3387,20 @@ void
 LEXLIB_print_call_shared_bound (char *libfile, char *funcname)
 {
 int ni,no;
-  printc ("{int _retvars;\n");
+  printc ("{");
+  printc("int _retvars;\n");
   ni = print_bind_definition ('i');
   no = print_bind_definition ('o');
   print_bind_set_value ('i');
   print_bind_set_value ('o');
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,obind);}\n", libfile, funcname, ni,no);
+  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,obind);", libfile, funcname, ni,no);
+  printc("}");
 print_reset_state_after_call();
 }
 
+
+/*
 void *
 LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) { 
 	char buff_small[2000];
@@ -3345,7 +3415,7 @@ LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) {
 	SPRINTF5(buff_small,"{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}}}\n", lname, fname, ni,no,yylineno);
   	return A4GL_append_expr(ptr,buff_small);
 }
-
+*/
 
 
 
@@ -4042,6 +4112,8 @@ LEXLIB_print_for_end (char *var,void *vfrom,void *vto, void*vstep)
   printc ("}\n");
 }
 
+
+#ifdef OBSOLETE
 /**
  * The parser did not found a explicit STEP substatement in FOR statement and
  * it generates a push of 1 as default.
@@ -4054,6 +4126,7 @@ LEXLIB_get_for_default_step (void)
 	return ptr;
   //printc ("A4GL_push_int(1);\n");
 }
+#endif
 
 /**
  * Generate in the generated C output file, the implementation of the first

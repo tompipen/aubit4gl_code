@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.80 2005-11-12 19:32:57 mikeaubury Exp $
+# $Id: 1.reqd,v 1.81 2005-11-23 09:41:39 mikeaubury Exp $
 #
 */
 
@@ -241,6 +241,8 @@ extern char *kw_cb;
 
 extern struct binding_comp *ibind;
 extern int ibindcnt;
+extern struct binding_comp *ebind;
+extern int ebindcnt;
 
 /*
 =====================================================================

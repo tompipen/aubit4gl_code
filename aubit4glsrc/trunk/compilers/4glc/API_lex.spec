@@ -113,16 +113,17 @@ print_class_func_call char* var,char* identifier,void* args,int args_cnt -> void
 
 print_pdf_call char* a1,t_expr_str_list* args,char* a3 -> void
 
+
 print_call_shared t_expr_str_list* expr char* libfile,char* funcname -> void
 
 
-print_call_shared_bound char* libfile char* funcname -> void
+*   print_call_shared_bound char* libfile char* funcname -> void
 
-print_end_call_shared -> void
+*   print_end_call_shared -> void
 
-print_call_external t_expr_str_list* expr char* host,char* funcname,char* port -> void
+*   print_call_external t_expr_str_list* expr char* host,char* funcname,char* port -> void
 
-print_end_call_external -> void
+* print_end_call_external -> void
 
 print_case t_expr_str* expr -> void
 
@@ -163,7 +164,7 @@ print_defer int quit -> void
 A4GL_get_display_str int type,char* s,char* f -> char*
 rettype char* s -> char*
 
-get_call_shared_bound_expr  char* lib char* name -> void*
+* get_call_shared_bound_expr  char* lib char* name -> void*
 
 print_display_new t_expr_str_list* exprs t_dt_display* disp char* attr -> void
 
@@ -183,7 +184,7 @@ print_for_end char* var void* from void* to void* step -> void
 print_case_end -> void
 
 
-get_for_default_step -> void*
+* get_for_default_step -> void*
 
 print_foreach_start -> void
 

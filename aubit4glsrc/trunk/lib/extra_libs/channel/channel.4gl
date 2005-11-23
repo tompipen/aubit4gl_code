@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.13 2005-07-14 10:36:04 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.14 2005-11-23 09:41:40 mikeaubury Exp $
 }
 
 {**
@@ -451,7 +451,7 @@ ds[0]=delim_c;
 
 strcpy(ptr,"");
 for (a=1;a<n;a++) {
-	if (a>2) strcat(ptr,ds);
+	if (a>=2) strcat(ptr,ds);
 	strcat(ptr,px[a]);
 }
 

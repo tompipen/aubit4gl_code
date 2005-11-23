@@ -458,11 +458,17 @@ function_call_expr:
 		}
    	| KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
 		start_bind('i',$<str>3);
-                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+                //$<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+
+		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,ibindcnt,ibind,ibindcnt*sizeof(struct binding_comp),
+			ebindcnt,ebind,ebindcnt*sizeof(struct binding_comp));
         }
    	| KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA ebind_var_list CLOSE_BRACKET  {
 		start_bind('i',$<str>3);
-                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,ibindcnt,ibind,ibindcnt*sizeof(struct binding_comp),
+			ebindcnt,ebind,ebindcnt*sizeof(struct binding_comp));
+
+                //$<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
         }
    	| identifier DOUBLE_COLON identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno); 
