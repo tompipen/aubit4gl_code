@@ -35,16 +35,6 @@ define mv_tmpinfile array[10] of char(255) # Filename
 define mv_fin array[10] of integer         # fopen file handle
 
 
-function remove_tmpfile(lv_type)
-define lv_type CHAR(3)
-code
-if (init_filename==0) {
-	unlink(mv_tmpinfile[get_type_id(lv_type)]);
-}
-endcode
-
-end function
-
 
 
 ################################################################################
@@ -114,6 +104,27 @@ int get_type_id(char *s) {
 	return 9;
 }
 endcode
+
+
+################################################################################
+function remove_tmp_files(lv_type) 
+define lv_type char(3)
+define lv_fname char(256)
+define a integer
+for a=1 to 10 
+if lv_type="ALL" or get_type_id(lv_type)==a then
+	let lv_fname=mv_tmpinfile[a]
+code
+	A4GL_trim(lv_fname);
+	unlink(lv_fname);
+endcode
+end if
+end for
+
+
+end function
+
+
 
 ################################################################################
 function init_filename()

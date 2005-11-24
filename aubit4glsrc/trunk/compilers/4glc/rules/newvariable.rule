@@ -356,6 +356,7 @@ let_var: let_array_r_variable {
     {
       sprintf(buff,"%s.%s",$<str>1,$<str>3);
       sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M4 */", fgl_add_scope(buff,0), a, $<str>5);
+
       ADDMAP("Let Variable",buff);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
     }

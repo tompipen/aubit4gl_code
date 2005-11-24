@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.107 2005-11-22 14:36:57 mikeaubury Exp $
+# $Id: iarray.c,v 1.108 2005-11-24 14:04:45 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.107 2005-11-22 14:36:57 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.108 2005-11-24 14:04:45 mikeaubury Exp $";
 #endif
 
 /**
@@ -1894,7 +1894,10 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	{
 
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
+		A4GL_debug("Checking curr_line_is_new : %d",arr->curr_line_is_new);
 	  if (arr->curr_line_is_new) { A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, last_field, 0, 0); }
+	  	A4GL_debug("Setting curr_line_is_new to 0");
+	  
 	  arr->curr_line_is_new = 0;
 
 
@@ -2003,7 +2006,9 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	  if (arr->currentfield)
 	    {
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
+		A4GL_debug("Checking curr_line_is_new : %d",arr->curr_line_is_new);
 	      if (arr->curr_line_is_new) { A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0); }
+		A4GL_debug("Setting curr_line_is_new to 0");
 	      arr->curr_line_is_new = 0;
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, arr->currentfield, 0, 0);
 	    }
@@ -2140,16 +2145,19 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	      A4GL_set_arr_count (ptr_movement->arr_line);	// No new lines ...
 	      init_arr_line (arr, ptr_movement->arr_line);
 	      arr->curr_line_is_new = 1;
+		A4GL_debug("Setting curr_line_is_new to 1");
 	      arr->no_arr++;
 		A4GL_debug("BEFORE INSERT");
 		A4GL_debug("curr line is new");
 	    }
 	  else
 	    {
+		A4GL_debug("Setting curr_line_is_new to 0");
 	      arr->curr_line_is_new = 0;
 		A4GL_debug("curr line is not new");
 	    }
 
+	   A4GL_debug("checking curr_line_is_new %d",arr->curr_line_is_new);
 	  if (arr->curr_line_is_new)
 	    {
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, 0, 0, 0);
@@ -2219,6 +2227,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	{			// BEFORE INSERT 
 	  new_state = 0;
 	  rval = A4GL_EVENT_BEFORE_INSERT;
+	   A4GL_debug("setting curr_line_is_new to 1");
 	  arr->curr_line_is_new = 1;
 	}
 
@@ -2228,6 +2237,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 /******************************************************************************/
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INSERT)
     {
+	   A4GL_debug("setting curr_line_is_new to 0");
       arr->curr_line_is_new = 0;
       new_state = 0;
       rval = A4GL_EVENT_AFTER_INSERT;

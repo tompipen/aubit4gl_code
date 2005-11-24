@@ -155,7 +155,7 @@ end if
 
 call main_menu()
 
-call remove_tmpfile("ALL")
+call remove_tmp_files("ALL")
 end main
 
 

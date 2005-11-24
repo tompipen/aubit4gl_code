@@ -211,7 +211,7 @@ if lv_fname is not null then
 			return compile_form(lv_fname) 
 
 		command "Save-and-exit" "Save the form"
-			call remove_tmpfile("PER")
+			call remove_tmp_files("PER")
 			return 1
 
 		command "Discard-and-exit"
