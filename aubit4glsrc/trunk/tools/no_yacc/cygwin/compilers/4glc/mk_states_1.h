@@ -1,4 +1,4 @@
-const short *token_groups[]={
+const int *token_groups[]={
     token_group_0,
     token_group_1,
     token_group_2,
