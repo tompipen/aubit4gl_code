@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.32 2005-11-12 19:33:18 mikeaubury Exp $
+# $Id: util.c,v 1.33 2005-11-27 11:31:35 mikeaubury Exp $
 #
 */
 
@@ -62,7 +62,7 @@ int stmts_cnt=0;
 char last_conversion[256];
 char m_module[256]="unknown";
 char m_ln=0;
-
+int write_std_err_on_error=0;
 
 /*
 =====================================================================
@@ -507,12 +507,20 @@ static int meminput(char *buf,int maxsize) {
 */
 
 
+
+void set_write_std_err_on_error() {
+	write_std_err_on_error=1;
+}
+
 /**
  *
  * @todo Describe function
  */
 static int 
 sqlparse_yyerror(char *s) {
+if (write_std_err_on_error) {
+	fprintf(stderr,"%s",s);
+}
 	A4GL_debug("%s Sql=%p\n",s,Sql);
 	if (Sql) {
 		char buff[200];

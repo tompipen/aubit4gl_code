@@ -75,9 +75,9 @@ void A4GL_cursor_put_or_flush(char *s) {
 	if (a>=0) {
 		  if (curs[a].type=='S') {
 			if (A4GLSQLCV_check_requirement("EMULATE_INSERT_CURSOR")) {
-				printf("Warning - cursor %s was previously thought to be a SELECT cursor\n",s);
-				printf("but now turns out to be an INSERT cursor.");
-				printf("You will need to add \n   PRAGMA EMULATE INSERT CURSOR FOR %s\nto the top of your module\n",s);
+				PRINTF("Warning - cursor %s was previously thought to be a SELECT cursor\n",s);
+				PRINTF("but now turns out to be an INSERT cursor.");
+				PRINTF("You will need to add \n   PRAGMA EMULATE INSERT CURSOR FOR %s\nto the top of your module\n",s);
 				a4gl_yyerror("Change in cursor type - please use PRAGMA EMULATE INSERT CURSOR FOR <cursorname>");
 			}
 		  }
@@ -94,9 +94,7 @@ int a;
 a=find_cursor(cname);
 if (a==-1) return;
 curs[a].prep=acl_strdup(stmt);
-printf(">>%s\n",stmt);
 if (strncasecmp(stmt,"insert",6)==0) {
-	printf("INSERT!");
 	curs[a].type='I';
 }
 }
@@ -113,14 +111,11 @@ void A4GL_cursor_defined(char *s,char type) {
 
 
 void A4GL_cursor_is_insert(void) {
-	printf("cursor_is_insert\n");
 	A4GL_assertion(cursors_cnt==0,"No cursor added yet");
 	
 	if (curs[cursors_cnt-1].type==0) {
-	printf("cursor_is_insert - setting\n");
 			curs[cursors_cnt-1].type='I';
 	}
-	printf("cursor_is_insert - set\n");
 }
 
 void A4GL_cursor_is_select(void) {
@@ -137,7 +132,12 @@ char A4GL_cursor_type(char *s) {
 
 char *A4GL_get_insert_prep(char *s) {
 	int a;
+	if (curs==0) return 0;
 	a=find_cursor(s);
-	if (a==-1) return 0;
+	if (a==-1) {
+		A4GL_pause_execution();
+		return 0;
+	}
+	A4GL_pause_execution();
 	return curs[a].prep;
 }

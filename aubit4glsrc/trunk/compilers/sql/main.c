@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.10 2005-11-01 08:26:17 mikeaubury Exp $
+# $Id: main.c,v 1.11 2005-11-27 11:31:35 mikeaubury Exp $
 #
 */
 
@@ -82,7 +82,7 @@ int pcnt=0;
   		A4GL_setenv ("EXPAND_COLUMNS", "Y", 1);
   		A4GL_setenv ("FULL_INSERT", "Y", 1);
 	}
-
+	set_write_std_err_on_error();
 	dialect=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
 	load_temp_table();
 	if (dialect==0) dialect="POSTGRES";
@@ -130,29 +130,3 @@ int pcnt=0;
 	printf("%s\n",snew);
 	return 0;
 }
-
-/*
-
-char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest) {
-		strcpy(s,d);
-}
-char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest) {
-		strcat(s,d);
-}
-
-
-
-int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) {
-char buff[256];
-int x;
-char *c;
-va_list args;
-char xbuff[10000];
-
-
-              va_start (args, fmt);
-              x=vsprintf(xbuff,fmt,args);
-              strcpy(dest,xbuff);
-        return x;
-}
-*/

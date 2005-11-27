@@ -11,6 +11,7 @@ BEGIN  {
 	print "/* andrej moved to end to avoid re-declaring token_groups:"
 	print "int allow_token_state(int yystate,int yytoken) {"
 	print "int a;"
+        print "constr short tlist[];";
 	print "  if (yytoken<0) return 1;"
 	print "  for (a=0;token_groups[yystate][a]>=0;a++) {";
 	print "   if (token_groups[yystate][a]==yytoken) return 1;"
@@ -93,17 +94,27 @@ END {
    }
    print "#include \"mk_states_1.h\""
    
-	print "/* andrej moved here from top: */"
-	print "int allow_token_state(int yystate,int yytoken) {"
-	print "int a;"
-	print "  if (yytoken<0) return 1;"
-	print "  for (a=0;token_groups[yystate][a]>=0;a++) {";
-	print "   if (token_groups[yystate][a]==yytoken) return 1;"
-	print "  }"
-	print "  return 0;"
-	print "}"
-   
-   
+        print "/* andrej moved here from top: */"
+        print "int allow_token_state(int yystate,int yytoken) {"
+        print "int a;"
+        print "int c;"
+        print "const int *token_group;";
+        print "  if (yytoken<0) return 1;"
+        print "  token_group=token_groups[yystate];";
+        print "  a=0;"
+        print "  c=token_group[a];"
+        print "  while (c>=0) {"
+        print "    if (c==yytoken) return 1;"
+        print "    c=token_group[++a];";
+        print "  }"
+
+
+        #print "  for (a=0;token_group[a]>=0;a++) {";
+        #print "   if (token_groups[yystate][a]==yytoken) return 1;"
+        #print "  }"
+        print "  return 0;"
+        print "}"
+
    
 
 }' < rules/generated/y.output > mk_states.c

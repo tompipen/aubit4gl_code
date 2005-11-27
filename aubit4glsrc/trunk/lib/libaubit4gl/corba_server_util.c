@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.24 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.25 2005-11-27 11:31:36 mikeaubury Exp $
 #
 */
 
@@ -282,7 +282,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	strcpy(dest,src);
 
 
-#ifdef DEBUG
+#ifdef XDEBUG
 {
 // This just adds some debugging stuff - but this 
 // isn't applicable when called from the routines in dmy.c 
@@ -375,7 +375,7 @@ We can end up with problems with overlapping - eg
 			PRINTF("-->%s (%d>=%d)",fmt,x,sdest);
 			A4GL_assertion(1,buff);
 	      }
-	      strncpy(dest,c,sdest);
+	      strcpy(dest,c);
 	      free(c);
 // DO NOT CALL A4GL_debug from this function!!!!
 	} else {

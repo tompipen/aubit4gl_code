@@ -86,6 +86,7 @@ var_ident_ibind_sli : var2_vu {
 			a=get_bind_cnt('i');
 			z=add_bind('i',str1);
 			z-=a;
+			ADDMAP("Use Variable",str1);
 			$<s_select_list_item>$=new_select_list_item_variable(A4GL_set_var_sql(doing_declare,z));
 	
 		} else { 
@@ -110,6 +111,7 @@ var_ident_ibind_sli : var2_vu {
 		z=add_bind('i',buff);
 		z-=a;
 		strcpy(was_str,A4GL_set_var_sql(doing_declare,z));
+		ADDMAP("Use Variable",str1);
 		$<s_select_list_item>$=new_select_list_item_variable(A4GL_set_var_sql(doing_declare,z));
 		free(str1);
 		free(str3);
@@ -127,6 +129,7 @@ var_ident_ibind_ss :  var2_vu {
 		if (strncmp(str1," a4gl_sub",9)==0) {
 			// Its a substring of a variable
 			sv_val=1;
+			ADDMAP("Use Variable",str1);
 		}
 	
 		if (sv_val!=-1&&(!system_var(str1)))
@@ -137,6 +140,7 @@ var_ident_ibind_ss :  var2_vu {
 			z=add_bind('i',str1);
 			z-=a;
 			$<sql_string>$=acl_strdup(A4GL_set_var_sql(doing_declare,z));
+			ADDMAP("Use Variable",str1);
 	
 		} else { 
 			// Its a column
@@ -152,6 +156,7 @@ var_ident_ibind_ss :  var2_vu {
 		int z = 0,a = 0;
 		str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
 		str3=acl_strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
+			ADDMAP("Use Variable",str1);
 		strcpy(was_str,"");
 		sprintf(buff,"%s\n%s",str1,str3);
 		a=get_bind_cnt('i');
