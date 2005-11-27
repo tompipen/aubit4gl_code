@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.114 2005-11-12 19:33:17 mikeaubury Exp $
+# $Id: lexer.c,v 1.115 2005-11-27 12:11:43 mikeaubury Exp $
 #*/
 
 /**
@@ -70,7 +70,7 @@
 #else
 #include "kw.h"
 #endif
-#include "memfile.h"
+//#include "memfile.h"
 
 extern int isin_formhandler;
 

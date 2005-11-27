@@ -7,19 +7,7 @@ BEGIN  {
 	print "#else"
 	print "#include \"y.tab.h\""
 	print "#endif"
-	print "/* andrej const short *token_groups[]; */"
-	print "/* andrej moved to end to avoid re-declaring token_groups:"
-	print "int allow_token_state(int yystate,int yytoken) {"
-	print "int a;"
-        print "constr short tlist[];";
-	print "  if (yytoken<0) return 1;"
-	print "  for (a=0;token_groups[yystate][a]>=0;a++) {";
-	print "   if (token_groups[yystate][a]==yytoken) return 1;"
-	print "  }"
-	print "  return 0;"
-	print "}"
-	print "*/"	
-	print "const short *token_groups[]={" > "mk_states_1.h";
+	print "const int *token_groups[]={" > "mk_states_1.h";
 }
 
 /^state/ {
@@ -87,9 +75,9 @@ END {
 
    for (a in arr_vals) {
       if (printed[arr_vals[a]]!="") continue; printed[arr_vals[a]]="YES"
-      #print "const short *token_group_" arr_vals[a] ";" > "mk_states.h"
+      #print "const int *token_group_" arr_vals[a] ";" > "mk_states.h"
       if (a=="") a="-1"
-      print "const short token_group_" arr_vals[a] "[]={" a ",-1};"
+      print "const int token_group_" arr_vals[a] "[]={" a ",-1};"
       print " "
    }
    print "#include \"mk_states_1.h\""

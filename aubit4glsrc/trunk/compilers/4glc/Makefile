@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2005-11-27 11:31:14 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2005-11-27 12:11:43 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -75,7 +75,7 @@ CMODS_LIB       =\
 				import.c labels.c insert_curs.c fix_insert.c \
 				rules/generated/kw.c \
 				list.c lexer.c lex.c \
-				memfile.c mod.c map.c \
+				mod.c map.c \
 				../../lib/generated/std_funcs.c  \
 				var_handling.c variables.c \
                 ${Y_TAB_C} \

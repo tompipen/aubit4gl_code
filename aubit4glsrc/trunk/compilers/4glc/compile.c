@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.97 2005-11-21 18:29:37 mikeaubury Exp $
+# $Id: compile.c,v 1.98 2005-11-27 12:11:43 mikeaubury Exp $
 #*/
 
 /**
@@ -44,7 +44,7 @@
 */
 
 #include "a4gl_4glc_int.h"
-#include "memfile.h"
+//#include "memfile.h"
 
 /*
 =====================================================================
