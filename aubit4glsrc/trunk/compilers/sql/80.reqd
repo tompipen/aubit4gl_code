@@ -119,7 +119,11 @@ set_cmd : SQLSEOFF 		 { print_exec_sql(acl_strdup($<str>1)); }
 
 
 var_ident_ibind_sli :  column_name_x { $<s_select_list_item>$=new_select_list_item_column_from_transform($<str>1);}
-	 | QUESTION_MARK {  $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_QUERY_PLACEHOLDER);}
+	 | QUESTION_MARK {  
+		$<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_QUERY_PLACEHOLDER);}
+	| replace_with_variable {
+		$<s_select_list_item>$=new_select_list_item_replace_var($<sql_string>1);
+	}
 ;
 
 var_ident_ibind_ss :  column_name_x { $<sql_string>$=strdup($<str>1);}
@@ -130,7 +134,18 @@ var_ident_ibind_ss :  column_name_x { $<sql_string>$=strdup($<str>1);}
 				$<sql_string>$=strdup("?");
 			}
 	}
+	| replace_with_variable {
+		$<sql_string>$=$<sql_string>1;
+	}
 ;
+
+
+
+replace_with_variable : MARK_VAR CHAR_VALUE END_MARK_VAR {
+		$<sql_string>$=strdup($<str>2);
+}
+;
+
 
 column_name_x:
         column_name_specific { strcpy($<str>$,$<str>1); }

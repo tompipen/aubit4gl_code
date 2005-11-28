@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.212 2005-11-23 09:41:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.213 2005-11-28 20:02:00 mikeaubury Exp $
 #
 */
 
@@ -327,6 +327,7 @@
 #define CURSOR_BIND_I           'i'
 #define CURSOR_BIND_O           'o'
 #define PREPARE_USED            'p'
+#define PREPARE_PRINTED         'r'
 #define TMP_USED                't'
 #define FUNCTION_IGNORE         'f'
 #define EMULATE_CURRENT_OF      'u'
@@ -2798,7 +2799,8 @@ enum e_sli {
 	E_SLI_JOIN,
 	E_SLI_CASE,
 	E_SLI_CASE_ELEMENT,
-	E_SLI_COLUMN_ORDERBY
+	E_SLI_COLUMN_ORDERBY,
+	E_SLI_VAR_REPLACE
 
 };
 
@@ -2811,7 +2813,6 @@ enum sq_expression_type {
 	E_SQE_NOT_EXISTS
 	
 };
-
 
 struct s_select_list_item_list  {
 		int nlist;
@@ -2848,6 +2849,9 @@ struct s_select_list_item  {
                 char *expression;
 		struct s_sli_case sqlcase;
 		struct s_sli_case_element sqlcaseelement;
+		struct {
+			char *replace_var;
+		} replace_var;
                 struct {
                         char *tabname;
                         char *colname;

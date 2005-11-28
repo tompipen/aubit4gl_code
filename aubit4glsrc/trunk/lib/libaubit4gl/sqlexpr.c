@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.13 2005-11-28 11:27:47 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.14 2005-11-28 20:01:40 mikeaubury Exp $
 #
 */
 
@@ -142,6 +142,14 @@ new_select_list_item_char (char *s)
 }
 
 
+struct s_select_list_item *
+new_select_list_item_replace_var (char *s)
+{
+  struct s_select_list_item *p;
+  p = empty_select_list_item (E_SLI_VAR_REPLACE);
+  p->u_data.replace_var.replace_var = acl_strdup (s);
+  return p;
+}
 
 struct s_select_list_item *
 new_select_list_item_case (struct s_select_list_item *i)
@@ -1135,6 +1143,16 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 					 acl_strdup (buff), 0);
       }
 
+
+    case E_SLI_VAR_REPLACE: {
+			char buff[256];
+			sprintf(buff,"@@VARIABLE[%s]@@",p->u_data.replace_var.replace_var);
+			return strdup(buff);
+		}
+
+
+
+ 
     case E_SLI_COLUMN_ORDERBY:
       {
 	//char buff[50] = "";
@@ -1209,6 +1227,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
     case E_SLI_SUBQUERY:
       return make_select_stmt (p->u_data.subquery);
 
+    
     case E_SLI_SUBQUERY_EXPRESSION:
       switch (p->u_data.sq_expression.type)
 	{
@@ -2098,6 +2117,8 @@ get_sli_type (enum e_sli type)
       return "E_SLI_CASE_ELEMENT";
     case E_SLI_COLUMN_ORDERBY:
       return "E_SLI_COLUMN_ORDERBY";
+    case E_SLI_VAR_REPLACE:
+      return "E_SLI_VAR_REPLACE";
 
     }
   return "Unknown";
@@ -2345,7 +2366,7 @@ load_temp_table (void)
 	  while (fgets (buff, sizeof (buff), f))
 	    {
 	      	char *ptr;
-		int select_into;
+		int select_into=0;
 		ptr=strchr(buff,' ');
 		if (ptr) {*ptr=0; ptr++; select_into=atoi(ptr)+2; }
 	        A4GL_trim_nl (buff);

@@ -202,3 +202,5 @@ int db_used=0;
 %token QUESTION_MARK
 %token CLINE
 %token CH
+%token MARK_VAR
+%token END_MARK_VAR
