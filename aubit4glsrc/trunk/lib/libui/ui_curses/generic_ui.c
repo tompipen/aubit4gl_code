@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.28 2005-10-22 08:44:09 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.29 2005-11-28 17:19:25 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -802,8 +802,17 @@ void
  UILIB_A4GL_finish_create_menu (void* menuv)
 {
  ACL_Menu *menu;
+
  menu=menuv;
-   menu->curr_option = (ACL_Menu_Opts *) menu->first;
+
+
+ if (menu->curr_option) {
+ 	if (menu->curr_option->attributes & ACL_MN_HIDE) {
+   		menu->curr_option = (ACL_Menu_Opts *) menu->first;
+ 	}
+ } else {
+   		menu->curr_option = (ACL_Menu_Opts *) menu->first;
+ }
 
   while (menu->curr_option->attributes & ACL_MN_HIDE)
     {

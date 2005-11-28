@@ -127,6 +127,7 @@ while true
 				let lv_runnext=1
 			end if
 			call display_tmp_file()
+
 		when 4
 			if qry_edit() then
 				let lv_runnext=1
@@ -449,6 +450,7 @@ define p_modify char(6)
 
 	set pause mode off
 	call clear_screen_portion()
+	let int_flag=false
 	if not edit_load_file() then
 		call edit(p_modify)
 	else
