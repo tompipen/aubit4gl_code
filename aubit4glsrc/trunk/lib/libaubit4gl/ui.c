@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.49 2005-11-18 15:22:47 mikeaubury Exp $
+# $Id: ui.c,v 1.50 2005-11-28 11:27:47 mikeaubury Exp $
 #
 */
 
@@ -1003,7 +1003,7 @@ void A4GL_add_recall_value(char *field_name,char *value) {
 	e->prev=0;
 	e->next=0;
 
-	e->recall_value=strdup(value);
+	e->recall_value=acl_strdup(value);
 
 	if (s->first==0) { // First one...
 			s->first=e; s->last=e;
@@ -1124,7 +1124,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
 			if (strlen(e->recall_value)) {
 			memset(buff,' ',maxlen);
 			strncpy(buff,e->recall_value,strlen(e->recall_value));
-			values[cnt]=strdup(buff);
+			values[cnt]=acl_strdup(buff);
 			cnt++;
 			}
                 }
@@ -1182,7 +1182,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
 	A4GL_remove_window("a4gl_recall");
 
 	// Lets make a copy - so we can free all the values...
-	if (ok) { last_val=strdup(values[crow]); }
+	if (ok) { last_val=acl_strdup(values[crow]); }
 
 	// Free them
 	for (cnt=0;cnt<nvals;cnt++) {

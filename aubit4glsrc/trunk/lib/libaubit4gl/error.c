@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.34 2005-11-24 22:41:50 whaslbeck Exp $
+# $Id: error.c,v 1.35 2005-11-28 11:27:47 mikeaubury Exp $
 #
 */
 
@@ -201,6 +201,11 @@ A4GL_set_error (char *fmt, ...)
     A4GL_debug ("%s", errorbuff);
   }
 #endif
+}
+
+
+void A4GL_set_lasterrorstr(char *s) {
+	strcpy(lasterrorstr,s);
 }
 
 /**

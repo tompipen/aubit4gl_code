@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.10 2005-11-23 09:41:40 mikeaubury Exp $
+# $Id: expr.c,v 1.11 2005-11-28 11:27:47 mikeaubury Exp $
 #
 */
 
@@ -263,14 +263,14 @@ struct expr_str *A4GL_new_substring_expr (char *str,long str_len,char *ptr_s, ch
   struct expr_str *ptr;
     ptr=A4GL_new_expr_simple(ET_EXPR_SUBSTRING);
     ptr->u_data.expr_substring=malloc(sizeof(struct expr_substring));
-    ptr->u_data.expr_substring->str=strdup(str);
+    ptr->u_data.expr_substring->str=acl_strdup(str);
     A4GL_trim( ptr->u_data.expr_substring->str);
     ptr->u_data.expr_substring->len=str_len;
     if (ptr_s[0]==' ') ptr_s++;
-    ptr->u_data.expr_substring->substring_start=strdup(ptr_s);
+    ptr->u_data.expr_substring->substring_start=acl_strdup(ptr_s);
     A4GL_trim(ptr->u_data.expr_substring->substring_start);
     if (ptr_e[0]==' ') ptr_e++;
-    ptr->u_data.expr_substring->substring_end=strdup(ptr_e);
+    ptr->u_data.expr_substring->substring_end=acl_strdup(ptr_e);
     A4GL_trim(ptr->u_data.expr_substring->substring_end);
     ptr->u_data.expr_substring->type=type;
   return ptr;
@@ -328,7 +328,7 @@ struct expr_str *A4GL_new_expr_temp(char *s,int dtype) {
   struct expr_str *ptr;
   ptr=A4GL_new_expr_simple (ET_EXPR_TEMP);
   ptr->u_data.expr_tmp=malloc(sizeof (struct expr_tmp));
-  ptr->u_data.expr_tmp->str=strdup(s);
+  ptr->u_data.expr_tmp->str=acl_strdup(s);
   ptr->u_data.expr_tmp->dtype=dtype;
   return ptr;
 }
@@ -339,7 +339,7 @@ struct expr_str *A4GL_new_literal_string (char *value)
 int a;
   ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_STRING);
 
-  ptr->u_data.expr_string=strdup(value);
+  ptr->u_data.expr_string=acl_strdup(value);
 	for (a=0;a<strlen(ptr->u_data.expr_string);a++) {
 		if (ptr->u_data.expr_string[a]=='\t') ptr->u_data.expr_string[a]=' ';
 	}
@@ -364,7 +364,7 @@ if (ptr->expr_type==ET_EXPR_LITERAL_LONG) {
 if (ptr->expr_type==ET_EXPR_LITERAL_DOUBLE_STR) {
 	char buff[256];
 	sprintf(buff,"-%s",ptr->u_data.expr_char);
-	ptr->u_data.expr_char=strdup(buff);
+	ptr->u_data.expr_char=acl_strdup(buff);
 	return ptr;
 }
 
@@ -407,7 +407,7 @@ struct expr_push_variable *p;
 struct expr_str *p2;
 	p=malloc(sizeof(struct expr_push_variable));
         p2=A4GL_new_expr_simple (ET_EXPR_PUSH_VARIABLE);
-	p->variable=strdup(v);
+	p->variable=acl_strdup(v);
 	p->var_dtype=dtype;
 	p2->u_data.expr_push_variable=p;
 return p2;
@@ -428,7 +428,7 @@ struct expr_str *A4GL_new_datetime_expr(char *str, int extent) {
 	struct expr_str *p2;
 	p=malloc(sizeof(struct expr_datetime));
 	p2=A4GL_new_expr_simple (ET_EXPR_DTVAL);
-	p->dtval=strdup(str);
+	p->dtval=acl_strdup(str);
 	p->extend=extent;
 	p2->u_data.expr_datetime=p;
 	return p2;
@@ -440,7 +440,7 @@ struct expr_str *A4GL_new_interval_expr(char *str, int extent) {
 	struct expr_str *p2;
 	p=malloc(sizeof(struct expr_interval));
 	p2=A4GL_new_expr_simple (ET_EXPR_IVAL_VAL);
-	p->intval=strdup(str);
+	p->intval=acl_strdup(str);
 	p->extend=extent;
 	p2->u_data.expr_interval=p;
 	return p2;
@@ -464,7 +464,7 @@ struct expr_function_call *p;
 struct expr_str *p2;
 	p=malloc(sizeof(struct expr_function_call));
         p2=A4GL_new_expr_simple (ET_EXPR_FCALL);
-	p->fname=strdup(function);
+	p->fname=acl_strdup(function);
 	p->parameters=params;
 	p->module=mod;
 	p->line=line;
@@ -535,7 +535,7 @@ struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,char *wrap_at) {
 	p=malloc(sizeof(struct expr_wordwrap));
         p2=A4GL_new_expr_simple (ET_EXPR_WORDWRAP);
 	p->expr=ptr;
-	p->wrap_at=strdup(wrap_at);
+	p->wrap_at=acl_strdup(wrap_at);
 	p2->u_data.expr_wordwrap=p;
 	return p2;
 }
@@ -556,8 +556,8 @@ struct expr_member_function_call *p;
 struct expr_str *p2;
 	p=malloc(sizeof(struct expr_member_function_call));
         p2=A4GL_new_expr_simple (ET_EXPR_MEMBER_FCALL);
-	p->lib=strdup(lib);
-	p->fname=strdup(function);
+	p->lib=acl_strdup(lib);
+	p->fname=acl_strdup(function);
 	p->parameters=params;
 	p->module=mod;
 	p->line=line;
@@ -571,8 +571,8 @@ struct expr_bound_fcall *p;
 struct expr_str *p2;
         p=malloc(sizeof(struct expr_bound_fcall));
         p2=A4GL_new_expr_simple (ET_EXPR_BOUND_FCALL);
-        p->fname=strdup(function);
-        p->lib=strdup(lib);
+        p->fname=acl_strdup(function);
+        p->lib=acl_strdup(lib);
         p->module=mod;
         p->line=line;
 	p->nibind=l_ibindcnt;
@@ -593,8 +593,8 @@ struct expr_shared_function_call *p;
 struct expr_str *p2;
 	p=malloc(sizeof(struct expr_shared_function_call));
         p2=A4GL_new_expr_simple (ET_EXPR_SHARED_FCALL);
-	p->fname=strdup(function);
-	p->lib=strdup(lib);
+	p->fname=acl_strdup(function);
+	p->lib=acl_strdup(lib);
 	p->parameters=params;
 	p->module=mod;
 	p->line=line;
@@ -607,9 +607,9 @@ struct expr_external_call *p;
 struct expr_str *p2;
 	p=malloc(sizeof(struct expr_external_call));
         p2=A4GL_new_expr_simple (ET_EXPR_EXTERNAL);
-	p->host=strdup(host);
-	p->port=strdup(port);
-	p->func=strdup(func);
+	p->host=acl_strdup(host);
+	p->port=acl_strdup(port);
+	p->func=acl_strdup(func);
 	p->parameters=params;
 	p->module=mod;
 	p->line=line;
@@ -635,7 +635,7 @@ struct expr_str *A4GL_expr_exists_sq(int invert,char *s,void *b,int nbind) {
   	ptr=A4GL_new_expr_simple (ET_EXPR_NOT_EXISTS_SUBQUERY);
   }
   ptr->u_data.expr_exists_sq=malloc(sizeof(struct expr_exists_sq));
-  ptr->u_data.expr_exists_sq->subquery=strdup(s);
+  ptr->u_data.expr_exists_sq->subquery=acl_strdup(s);
 
   l=sizeof(struct binding_comp)*nbind;
   ptr->u_data.expr_exists_sq->ibind=malloc(l);
@@ -674,7 +674,7 @@ struct expr_str *A4GL_expr_in_sq(struct expr_str *expr, int invert,char *subquer
   }
   ptr->u_data.expr_in_sq=malloc(sizeof(struct expr_in_sq));
   ptr->u_data.expr_in_sq->expr=expr;
-  ptr->u_data.expr_in_sq->subquery=strdup(subquery);
+  ptr->u_data.expr_in_sq->subquery=acl_strdup(subquery);
   l=sizeof(struct binding_comp)*nbind;
   ptr->u_data.expr_in_sq->ibind=malloc(l);
   memcpy(ptr->u_data.expr_in_sq->ibind,b,l);
@@ -743,8 +743,8 @@ A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
           new_ptr->expr_type=orig_ptr->expr_type;
 
           switch(orig_ptr->expr_type) {
-                  case ET_EXPR_STRING: new_ptr->u_data.expr_char=strdup(orig_ptr->u_data.expr_char); break;
-                  case ET_EXPR_LITERAL_DOUBLE_STR: new_ptr->u_data.expr_char=strdup(orig_ptr->u_data.expr_char); break;
+                  case ET_EXPR_STRING: new_ptr->u_data.expr_char=acl_strdup(orig_ptr->u_data.expr_char); break;
+                  case ET_EXPR_LITERAL_DOUBLE_STR: new_ptr->u_data.expr_char=acl_strdup(orig_ptr->u_data.expr_char); break;
                   default : 
 				       	PRINTF("%d - %s\n",orig_ptr->expr_type, expr_name(orig_ptr->expr_type));
 				       	A4GL_assertion(1,"Unhandled expr copy");

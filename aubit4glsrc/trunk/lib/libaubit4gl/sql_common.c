@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.16 2005-11-17 09:31:58 mikeaubury Exp $
+# $Id: sql_common.c,v 1.17 2005-11-28 11:27:47 mikeaubury Exp $
 #
 */
 
@@ -742,9 +742,9 @@ char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql ) {
 struct s_table *A4GLSQLPARSE_new_tablename(char *tname,char *alias) {
 	struct s_table *ptr;
 	ptr=malloc(sizeof(struct s_table));
-	ptr->tabname=strdup(tname);
+	ptr->tabname=acl_strdup(tname);
 	if (alias) {
-		ptr->alias=strdup(alias);
+		ptr->alias=acl_strdup(alias);
 	} else {
 		ptr->alias=0;
 	}
@@ -792,10 +792,10 @@ struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *t
 	tl->tables[tl->ntables-1].tabname=0;
 	tl->tables[tl->ntables-1].alias	=0;
 	if (t) {
-		tl->tables[tl->ntables-1].tabname	=strdup(t);
+		tl->tables[tl->ntables-1].tabname	=acl_strdup(t);
 	}
 	if (a) {
-		tl->tables[tl->ntables-1].alias	=strdup(a);
+		tl->tables[tl->ntables-1].alias	=acl_strdup(a);
 	}
 	return tl;
 }

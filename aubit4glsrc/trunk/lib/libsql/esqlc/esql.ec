@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.151 2005-11-21 18:29:42 mikeaubury Exp $
+# $Id: esql.ec,v 1.152 2005-11-28 11:27:50 mikeaubury Exp $
 #
 */
 
@@ -177,11 +177,10 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.151 2005-11-21 18:29:42 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.152 2005-11-28 11:27:50 mikeaubury Exp $";
 #endif
 
 
-char lasterrorstr[1024] = "";
 
 /** The global (not named) statement count, to generate unique names */
 static int statementCount = 0;

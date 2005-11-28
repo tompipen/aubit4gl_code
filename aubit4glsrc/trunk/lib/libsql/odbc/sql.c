@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.137 2005-10-09 19:31:10 whaslbeck Exp $
+# $Id: sql.c,v 1.138 2005-11-28 11:27:50 mikeaubury Exp $
 #
 */
 
@@ -230,7 +230,7 @@ extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt,
 */
 
 /* extern: */
-extern char lasterrorstr[1024];
+
 
 /* static: */
 static char sess_name[32] = "default";
@@ -2450,7 +2450,7 @@ make[2]: *** [sql.o] Error 1
   RETCODE rc;
   memset (s1, 0, 80);
   memset (s2, 0, 255);
-  strcpy (lasterrorstr, "");
+  A4GL_set_lasterrorstr("");
   strcpy (s1, "00000");
 
   /* chk_rc (rc, hstmt, "SQLRowCount"); */
@@ -2510,7 +2510,7 @@ make[2]: *** [sql.o] Error 1
 #ifdef DEBUG
       A4GL_debug ("Setting lasterrorstr to '%s'", s2);
 #endif
-      strcpy (lasterrorstr, s2);
+  	A4GL_set_lasterrorstr(s2);
     }
   if (rc == 0 || rc == 100)
     {

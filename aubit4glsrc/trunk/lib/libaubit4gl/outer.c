@@ -285,7 +285,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 						     select->list_of_items.
 						     list[b]));
 		      select->list_of_items.list[b]->type = E_SLI_LITERAL;
-		      p->u_data.expression = strdup ("1");
+		      p->u_data.expression = acl_strdup ("1");
 		      strcat (buff, buff2);
 		    }
 		}
