@@ -112,15 +112,15 @@ join_tables (struct s_select *select)
 	  tnr = xfind_table (rt);
 	  if (tnl < 0)
 	    {
-	      printf ("Can't find table(%s)!\n", lt);
+	      A4GL_debug ("Can't find table(%s)!\n", lt);
 	      continue;
 	    }
 	  if (tnr < 0)
 	    {
-	      printf ("Can't find table(%s)!\n", rt);
+	      A4GL_debug ("Can't find table(%s)!\n", rt);
 	      continue;
 	    }
-	  printf ("JOIN :  %s %s %s %s\n", lt, lc, rt, rc);
+	  A4GL_debug ("JOIN :  %s %s %s %s\n", lt, lc, rt, rc);
 	  joins[tnl][tnr] = p;
 	  joins[tnr][tnl] = p;
 	}
@@ -280,7 +280,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 		  if (found)
 		    {
 		      char buff2[256];
-		      sprintf (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
+		      sA4GL_debug (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
 			       get_select_list_item (select,
 						     select->list_of_items.
 						     list[b]));
@@ -304,22 +304,22 @@ dump_joins ()
 {
   int a;
   int b;
-  printf ("---------------------------\n");
+  A4GL_debug ("---------------------------\n");
   for (a = 0; a < 10; a++)
     {
       if (tables[a].table == 0)
 	continue;
-      printf ("%-20s ", tables[a].table);
+      A4GL_debug ("%-20s ", tables[a].table);
       for (b = 0; b < a; b++)
 	{
 	  if (joins[a][b])
-	    printf ("1 ");
+	    A4GL_debug ("1 ");
 	  else
-	    printf ("0 ");
+	    A4GL_debug ("0 ");
 	}
-      printf ("\n");
+      A4GL_debug ("\n");
     }
-  printf ("---------------------------\n");
+  A4GL_debug ("---------------------------\n");
 
 }
 

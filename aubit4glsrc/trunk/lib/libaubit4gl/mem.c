@@ -1,4 +1,5 @@
 #include "a4gl_libaubit4gl.h"
+
 /**
  * Aubit compiler malloc.
  *
@@ -15,6 +16,7 @@ void *
 acl_malloc_full (long size, char *why, char *f, long line)
 {
   void *p;
+  if (size>2000000) { A4GL_assertion(1,"Dubious amount of memory to malloc"); }
   p = malloc (size);
   A4GL_assertion(p==0,"Unable to allocate memory");
   A4GL_debug ("alloc %d bytes : %p %s %s %d", size,p,why,f,line);
