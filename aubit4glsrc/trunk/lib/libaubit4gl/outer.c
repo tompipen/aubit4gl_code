@@ -312,10 +312,12 @@ dump_joins ()
       A4GL_debug ("%-20s ", tables[a].table);
       for (b = 0; b < a; b++)
 	{
-	  if (joins[a][b])
+	  if (joins[a][b]) {
 	    A4GL_debug ("1 ");
-	  else
+	  }
+	  else {
 	    A4GL_debug ("0 ");
+	    }
 	}
       A4GL_debug ("\n");
     }
