@@ -46,6 +46,8 @@
      QUESTION_MARK = 2135,
      CLINE = 2136,
      CH = 2137,
+     MARK_VAR = 2138,
+     END_MARK_VAR = 2139,
      REPLACE_STRING = 1012,
      STOP_REPLACE_STRING = 1013,
      IGNORE_FUNCTION = 1014,
@@ -292,6 +294,8 @@
 #define QUESTION_MARK 2135
 #define CLINE 2136
 #define CH 2137
+#define MARK_VAR 2138
+#define END_MARK_VAR 2139
 #define REPLACE_STRING 1012
 #define STOP_REPLACE_STRING 1013
 #define IGNORE_FUNCTION 1014
@@ -540,7 +544,7 @@ typedef union YYSTYPE {
 
 } YYSTYPE;
 /* Line 1285 of yacc.c.  */
-#line 544 "y.tab.h"
+#line 548 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
