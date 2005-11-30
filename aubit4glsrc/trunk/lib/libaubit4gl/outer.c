@@ -280,7 +280,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 		  if (found)
 		    {
 		      char buff2[256];
-		      sA4GL_debug (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
+		      A4GL_debug (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
 			       get_select_list_item (select,
 						     select->list_of_items.
 						     list[b]));
@@ -300,7 +300,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 }
 
 
-dump_joins ()
+void dump_joins ()
 {
   int a;
   int b;
