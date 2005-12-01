@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.253 2005-12-01 14:03:39 mikeaubury Exp $
+# $Id: mod.c,v 1.254 2005-12-01 20:26:28 mikeaubury Exp $
 #
 */
 
@@ -1901,6 +1901,8 @@ strcpy(var,var_i);
     {
       if (dtype == -2 || strstr (var, ".*"))
 	{
+	  char buff[2000];
+	  if (strstr(var,".*")==0) {strcpy(buff,var);strcat(buff,".*");}
 	  A4GL_debug ("push_bind_rec...");
 	  push_bind_rec (var, i);
 	}
@@ -1944,12 +1946,16 @@ strcpy(var,var_i);
       return ibindcnt;
     }
 
+if (yylineno==265) A4GL_pause_execution();
   if (i == 'N')
     {
       if (dtype == -2 || strstr (var, ".*"))
 	{
 	  A4GL_debug ("push_bind_rec...");
-	  push_bind_rec (var, i);
+	  char buff[2000];
+	  strcpy(buff,var);
+	  if (strstr(var,".*")==0) {strcpy(buff,var);strcat(buff,".*");}
+	  push_bind_rec (buff, i);
 	}
       else
 	{
