@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.252 2005-11-23 09:41:35 mikeaubury Exp $
+# $Id: mod.c,v 1.253 2005-12-01 14:03:39 mikeaubury Exp $
 #
 */
 
@@ -2973,6 +2973,10 @@ int
 add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 {
 
+
+
+
+
   A4GL_debug ("In add_report_agg a=%d\n", a);
   if (use_group)
     {
@@ -3006,34 +3010,44 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 
   if (t == 'C')
     {
+ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
       A4GL_lex_printh ("static long _g%d=0;\n", a);
+ }
       return 1;
     }
 
   if (t == 'P')
     {
+ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
       A4GL_lex_printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
+	}
       return 2;
     }
 
   if (t == 'S')
     {
+ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
       A4GL_lex_printh ("static int _g%dused=0;\n", a);
       A4GL_lex_printh ("static double _g%d=0;\n", a);
+}
       return 1;
     }
 
   if (t == 'N' || t == 'X')
     {
+ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
       A4GL_lex_printh ("static double _g%d=0;\n", a);
       A4GL_lex_printh ("static int _g%dused=0;\n", a);
+}
       return 1;
     }
 
   if (t == 'A')
     {
+ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
       A4GL_lex_printh ("static double _g%d=0;\n", a);
       A4GL_lex_printh ("static long   _g%d=0;\n", a + 1);
+}
       return 2;
     }
   use_group = 0;
