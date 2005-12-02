@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.75 2005-11-17 09:31:47 mikeaubury Exp $
+# $Id: variables.c,v 1.76 2005-12-02 10:03:12 mikeaubury Exp $
 #
 */
 
@@ -99,6 +99,7 @@ int isin_command (char *s);
 char *rettype (char *s);
 int last_record_cnt=0;
 static char last_class_var[1024];
+extern int nreturn_values;
 
 
 #define ASSOC_INTERNAL "Internal"
@@ -2832,6 +2833,8 @@ clr_function_constants ()
   list_local_cnt = 0;
   list_local_alloc = 0;
   list_local = 0;
+   
+  nreturn_values=-1;
 }
 
 

@@ -912,6 +912,7 @@ scale:
 
 authorization_identifier:
 	identifier
+	| CHAR_VALUE
 ;
 
 

@@ -772,9 +772,6 @@ pdf_functions :
 		print_pdf_call($<str>3,$<ptr_list>6,$<str>7);
    		}
    		opt_return
-   		{
-	//print_returning();
-   }
 ;
 
 op_wordwrap:

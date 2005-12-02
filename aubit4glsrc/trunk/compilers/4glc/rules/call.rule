@@ -12,7 +12,6 @@ call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 
 call_ext: function_call_expr opt_return {
    		print_func_call($<ptr>1);
-		//print_returning();
 		start_bind('i',0);
 	}
    | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
@@ -22,9 +21,8 @@ call_ext: function_call_expr opt_return {
 		struct expr_str_list *p1;
 		p1=A4GL_new_prepend_ptr_list($<ptr_list>5,$<ptr>3);
 		print_call_shared(p1, "\"channel\"","\"write\"");
- 	} opt_return {
-		//print_returning();
-	}
+ 	} opt_return 
+	
    | pdf_functions
 ;
 

@@ -176,8 +176,30 @@ pop_blockcommand("MAIN");
 print_main_end();
 A4GL_lex_printcomment("/*end main */\n");} ;
 
-return_cmd : KW_RETURN op_fgl_expr_ret_list_v2 {
+return_cmd : KW_RETURN op_fgl_expr_ret_list_v2 { 
+    int nreturn;
+    struct expr_str_list *pl;
     printPopFunction();
+    pl=$<ptr_list>2;
+    if (pl) {
+	pl=A4GL_rationalize_list(pl);
+        nreturn=pl->nlist;
+    } else {
+		nreturn=0;
+	}
+    if (nreturn_values!=-1) {
+		if ( nreturn_values!=nreturn) {
+			// There could be trouble ahead....
+			if (A4GL_isyes(acl_getenv("ERROR_ON_NVALS"))) {
+				char buff[256];
+				sprintf(buff,"%d!=%d",nreturn_values,nreturn);
+				set_yytext(buff);
+				a4gl_yyerror("Different number of return values");
+			}
+		}
+    }
+    nreturn_values=nreturn;
+  
     print_return($<ptr_list>2);
   }
 ;
