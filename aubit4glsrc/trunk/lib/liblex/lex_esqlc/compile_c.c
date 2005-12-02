@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.275 2005-11-23 09:41:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.276 2005-12-02 10:14:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.275 2005-11-23 09:41:40 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.276 2005-12-02 10:14:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8084,4 +8084,47 @@ char *LEXLIB_get_keyval_str(char *s) {
 	static char buff[256];
  	sprintf(buff,"A4GL_key_val(\"%s\")",s);
 	return buff;
+}
+
+
+
+
+
+int LEXLIB_print_agg_define(char t,int a) {
+
+
+  if (t == 'C')
+    {
+          A4GL_lex_printh ("static long _g%d=0;\n", a);
+      return 1;
+    }
+
+  if (t == 'P')
+    {
+          A4GL_lex_printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
+      return 2;
+    }
+
+  if (t == 'S')
+    {
+          A4GL_lex_printh ("static int _g%dused=0;\n", a);
+          A4GL_lex_printh ("static double _g%d=0;\n", a);
+      return 1;
+    }
+  if (t == 'N' || t == 'X')
+    {
+          A4GL_lex_printh ("static double _g%d=0;\n", a);
+          A4GL_lex_printh ("static int _g%dused=0;\n", a);
+      return 1;
+    }
+
+  if (t == 'A')
+    {
+          A4GL_lex_printh ("static double _g%d=0;\n", a);
+          A4GL_lex_printh ("static long   _g%d=0;\n", a + 1);
+      return 2;
+    }
+
+
+return 0;
 }

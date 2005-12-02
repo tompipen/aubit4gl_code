@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.255 2005-12-02 10:03:12 mikeaubury Exp $
+# $Id: mod.c,v 1.256 2005-12-02 10:14:44 mikeaubury Exp $
 #
 */
 
@@ -3128,11 +3128,7 @@ get_curr_block (void)
 int
 add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 {
-
-
-
-
-
+int rval;
   A4GL_debug ("In add_report_agg a=%d\n", a);
   if (use_group)
     {
@@ -3147,8 +3143,7 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
     {
 
       A4GL_debug ("Adding default where on report aggregate of 1");
-      sreports[sreports_cnt].rep_where_expr =
-	A4GL_new_expr ("A4GL_push_int(1);");
+      sreports[sreports_cnt].rep_where_expr =A4GL_new_literal_long_str("1");
     }
   else
     {
@@ -3165,53 +3160,11 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 
   sreports_cnt++;
 
-  if (t == 'C')
-    {
-      if (!A4GL_isyes (acl_getenv ("DOING_CM")))
-	{
-	  A4GL_lex_printh ("static long _g%d=0;\n", a);
-	}
-      return 1;
-    }
+  rval=print_agg_defines('t',a);
 
-  if (t == 'P')
-    {
-      if (!A4GL_isyes (acl_getenv ("DOING_CM")))
-	{
-	  A4GL_lex_printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
-	}
-      return 2;
-    }
 
-  if (t == 'S')
-    {
-      if (!A4GL_isyes (acl_getenv ("DOING_CM")))
-	{
-	  A4GL_lex_printh ("static int _g%dused=0;\n", a);
-	  A4GL_lex_printh ("static double _g%d=0;\n", a);
-	}
-      return 1;
-    }
+  if (rval) return rval;
 
-  if (t == 'N' || t == 'X')
-    {
-      if (!A4GL_isyes (acl_getenv ("DOING_CM")))
-	{
-	  A4GL_lex_printh ("static double _g%d=0;\n", a);
-	  A4GL_lex_printh ("static int _g%dused=0;\n", a);
-	}
-      return 1;
-    }
-
-  if (t == 'A')
-    {
-      if (!A4GL_isyes (acl_getenv ("DOING_CM")))
-	{
-	  A4GL_lex_printh ("static double _g%d=0;\n", a);
-	  A4GL_lex_printh ("static long   _g%d=0;\n", a + 1);
-	}
-      return 2;
-    }
   use_group = 0;
   return -1;
 }
