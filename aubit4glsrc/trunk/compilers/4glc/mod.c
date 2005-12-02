@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.259 2005-12-02 13:45:38 mikeaubury Exp $
+# $Id: mod.c,v 1.260 2005-12-02 17:05:01 mikeaubury Exp $
 #
 */
 
@@ -3123,7 +3123,7 @@ get_curr_block (void)
  * @return
  */
 int
-add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
+add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,char *buff)
 {
 int rval;
   A4GL_debug ("In add_report_agg a=%d\n", a);
@@ -3157,7 +3157,7 @@ int rval;
 
   sreports_cnt++;
 
-  rval=print_agg_defines(t,a);
+  rval=print_agg_defines(t,a,buff);
 
 
   if (rval) return rval;

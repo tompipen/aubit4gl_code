@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.277 2005-12-02 10:33:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.278 2005-12-02 17:05:53 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.277 2005-12-02 10:33:21 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.278 2005-12-02 17:05:53 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4669,7 +4669,7 @@ LEXLIB_print_input_fl (int byname, char *defs, char *helpno, struct fh_field_lis
 {
   int ccc;
   int sio_id;
-char *fldlist;
+char *fldlist=0;
   if (fldlist_fh) {
 	fldlist=field_name_list_as_char(fldlist_fh);
   }
@@ -8090,18 +8090,21 @@ char *LEXLIB_get_keyval_str(char *s) {
 
 
 
-int LEXLIB_print_agg_defines(char t,int a) {
+int LEXLIB_print_agg_defines(char t,int a,char *usage) {
 
 
   if (t == 'C')
     {
           A4GL_lex_printh ("static long _g%d=0;\n", a);
+	  sprintf(usage,"A4GL_push_int(_g%d);\n",a);
+
       return 1;
     }
 
   if (t == 'P')
     {
           A4GL_lex_printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
+	sprintf(usage,"A4GL_push_double((double)_g%d/(double)_g%d);\n",a,a+1);
       return 2;
     }
 
@@ -8109,12 +8112,14 @@ int LEXLIB_print_agg_defines(char t,int a) {
     {
           A4GL_lex_printh ("static int _g%dused=0;\n", a);
           A4GL_lex_printh ("static double _g%d=0;\n", a);
+	sprintf(usage,"if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",a,a);
       return 1;
     }
   if (t == 'N' || t == 'X')
     {
           A4GL_lex_printh ("static double _g%d=0;\n", a);
           A4GL_lex_printh ("static int _g%dused=0;\n", a);
+	sprintf(usage,"A4GL_push_double(_g%d);\n",a);
       return 1;
     }
 
@@ -8122,6 +8127,8 @@ int LEXLIB_print_agg_defines(char t,int a) {
     {
           A4GL_lex_printh ("static double _g%d=0;\n", a);
           A4GL_lex_printh ("static long   _g%d=0;\n", a + 1);
+	sprintf(usage,"A4GL_push_double(_g%d/(double)_g%d);\n",a,a+1);
+
       return 2;
     }
 
