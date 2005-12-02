@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.276 2005-12-02 10:14:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.277 2005-12-02 10:33:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.276 2005-12-02 10:14:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.277 2005-12-02 10:33:21 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8090,7 +8090,7 @@ char *LEXLIB_get_keyval_str(char *s) {
 
 
 
-int LEXLIB_print_agg_define(char t,int a) {
+int LEXLIB_print_agg_defines(char t,int a) {
 
 
   if (t == 'C')
