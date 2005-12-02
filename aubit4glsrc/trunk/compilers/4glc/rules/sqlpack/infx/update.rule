@@ -157,14 +157,14 @@ upd_column_name :
         }
 ;
 
-upd_column_name_specific: identifier col_arr {
+upd_column_name_specific: identifier op_col_arr {
                 struct ilist *i;
                 i=&$<int_list>2;
                 if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
                 ADDMAP("Use Column",$<str>1);
-                strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(current_upd_table,$<str>1), i->i0,i->i1,i->i2));
+                strcpy($<str>$,A4GLSQLCV_make_substr(A4GL_confirm_colname(current_upd_table,$<str>1), i->i0,i->i1,i->i2));
         }
-        | table_name DOT identifier col_arr {
+        | table_name DOT identifier op_col_arr {
                 struct ilist *i;
                 if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
@@ -260,7 +260,7 @@ upd_value_expression_ss:
 upd_value_expression_initial_ss :
         upd_var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
         | upd_subquery_ss { $<sql_string>$=$<sql_string>1; }
-        | ATSIGN identifier col_arr { 
+        | ATSIGN identifier op_col_arr { 
 			struct ilist *i;
 			i=&$<int_list>3;
 $<sql_string>$=make_sql_string_and_free(
@@ -270,7 +270,7 @@ $<sql_string>$=make_sql_string_and_free(
 							)
 						),0); 
 		}
-        | ATSIGN identifier DOT identifier col_arr { 
+        | ATSIGN identifier DOT identifier op_col_arr { 
 		char buff[256];
 			struct ilist *i;
 			i=&$<int_list>5;

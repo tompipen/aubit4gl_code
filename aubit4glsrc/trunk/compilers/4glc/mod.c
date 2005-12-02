@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.258 2005-12-02 12:48:31 mikeaubury Exp $
+# $Id: mod.c,v 1.259 2005-12-02 13:45:38 mikeaubury Exp $
 #
 */
 
@@ -4142,10 +4142,9 @@ fix_update_expr (int mode)
 	      A4GL_assertion (1, "How ?");
 	    }
 	}
-      sprintf (buff, "%s=%s ",
-	       A4GLSQLCV_check_colname (current_upd_table,
-					A4GL_4glc_get_gen (UPDCOL, a)),
-	       A4GL_4glc_get_gen (UPDVAL, a));
+
+      sprintf (buff, "%s=%s ", A4GLSQLCV_check_colname (current_upd_table, A4GL_4glc_get_gen (UPDCOL, a)), A4GL_4glc_get_gen (UPDVAL, a));
+
       strcat (big_buff, buff);
     }
 

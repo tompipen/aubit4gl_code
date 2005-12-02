@@ -917,7 +917,7 @@ authorization_identifier:
 
 
 
-col_arr : {$<int_list.i0>$=0;}
+op_col_arr : {$<int_list.i0>$=0;}
 	| OPEN_SQUARE INT_VALUE CLOSE_SQUARE {
 		$<int_list.i0>$=1;
 		$<int_list.i1>$=atoi($<str>2);
@@ -954,10 +954,10 @@ column_name_sli :
 
 
 
-column_name_sli_specific: identifier col_arr { 
+column_name_sli_specific: identifier op_col_arr { 
 		$<s_select_list_item>$=new_select_list_item_col(0,$<str>1,&$<int_list>2);
 	}
-	| table_name DOT identifier col_arr {
+	| table_name DOT identifier op_col_arr {
 		$<s_select_list_item>$=new_select_list_item_col($<str>1,$<str>3,&$<int_list>4);
 	}
 	| table_name  DOT MULTIPLY {
@@ -967,14 +967,14 @@ column_name_sli_specific: identifier col_arr {
 
 
 
-column_name_specific: identifier col_arr { 
+column_name_specific: identifier op_col_arr { 
 		struct ilist *i;
 		i=&$<int_list>2;
 		if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
 		ADDMAP("Use Column",$<str>1);
 		strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
 	}
-	| table_name DOT identifier col_arr {
+	| table_name DOT identifier op_col_arr {
 		struct ilist *i;
 		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
