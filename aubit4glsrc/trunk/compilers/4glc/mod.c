@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.257 2005-12-02 10:51:24 mikeaubury Exp $
+# $Id: mod.c,v 1.258 2005-12-02 12:48:31 mikeaubury Exp $
 #
 */
 
@@ -1951,7 +1951,6 @@ add_bind (char i, char *var_i)
   char var[2048] = "";
   A4GL_debug ("add_bind: %c %s\n", i, A4GL_null_as_null (var_i));
   strcpy (var, var_i);
-//if (strcmp(var_i,"lr_array_line.review_date")==0 && i=='i') { A4GL_pause_execution(); }
 
   if (var_i[0] == '"')
     {
@@ -2063,8 +2062,6 @@ add_bind (char i, char *var_i)
       return ibindcnt;
     }
 
-  if (yylineno == 265)
-    A4GL_pause_execution ();
   if (i == 'N')
     {
       if (dtype == -2 || strstr (var, ".*"))

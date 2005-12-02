@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.76 2005-12-02 10:03:12 mikeaubury Exp $
+# $Id: variables.c,v 1.77 2005-12-02 12:48:31 mikeaubury Exp $
 #
 */
 
@@ -1786,7 +1786,7 @@ isvartype (char *s, int mode)
   if(v==0) {
 	//extern char *yytext;
 	set_yytext(s);
-	A4GL_pause_execution();
+	//A4GL_pause_execution();
 	a4gl_yyerror("Variable not found");
 	return 0;
   }

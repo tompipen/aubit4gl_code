@@ -135,9 +135,9 @@ char *A4GL_get_insert_prep(char *s) {
 	if (curs==0) return 0;
 	a=find_cursor(s);
 	if (a==-1) {
-		A4GL_pause_execution();
+		//A4GL_pause_execution();
 		return 0;
 	}
-	A4GL_pause_execution();
+	//A4GL_pause_execution();
 	return curs[a].prep;
 }
