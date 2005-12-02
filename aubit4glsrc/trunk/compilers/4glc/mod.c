@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.256 2005-12-02 10:14:44 mikeaubury Exp $
+# $Id: mod.c,v 1.257 2005-12-02 10:51:24 mikeaubury Exp $
 #
 */
 
@@ -3160,7 +3160,7 @@ int rval;
 
   sreports_cnt++;
 
-  rval=print_agg_defines('t',a);
+  rval=print_agg_defines(t,a);
 
 
   if (rval) return rval;
