@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.68 2005-08-24 14:03:29 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.69 2005-12-02 12:28:11 mikeaubury Exp $
 #
 */
 
@@ -856,14 +856,16 @@ A4GL_push_interval (struct ival *p)
   struct ival *ptr;
   struct ival *ival;
 char buff[256];
+  int a;
   ptr = (struct ival *) acl_malloc (sizeof (struct ival), "push_ival");
   memset(ptr,0,sizeof(struct ival));
   memcpy (ptr, p, sizeof (struct ival));
   A4GL_debug ("Copied - %x %x", ptr->stime, ptr->ltime);
   A4GL_push_param (ptr, DTYPE_INTERVAL + DTYPE_MALLOCED);
-
+  //for (a=0;a<23;a++) { A4GL_debug("Ival %d %c",a,ival->data[a]); }
 
 ival=ptr;
+/*
   SPRINTF24 (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
            ival->data[0], ival->data[1], ival->data[2], ival->data[3],
            ival->data[4], ival->data[5],
@@ -876,6 +878,7 @@ ival=ptr;
            ival->data[19], ival->data[20], ival->data[21],
            ival->data[22], ival->data[23]);
 A4GL_debug("buff=%s",buff);
+*/
 
 //debug_print_stack();
 }

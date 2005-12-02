@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.152 2005-11-28 11:27:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.153 2005-12-02 12:28:11 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.152 2005-11-28 11:27:50 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.153 2005-12-02 12:28:11 mikeaubury Exp $";
 #endif
 
 
@@ -735,7 +735,8 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, 
 
 static void A4GL_sql_copy_interval(void *infxv, void *a4glv,int isnull,int size,int mode)
 {
-intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
+intrvl_t *infx; 
+struct ival *a4gl;
 if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'"); }
 
         infx=infxv;
@@ -775,16 +776,24 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
                         char *ptr;
                         if (risnull(CINVTYPE,(void*)infx)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4gl,size); return;}
 
+			memset(buff,0,255);
                         intoasc(infx,buff);
-                        A4GL_push_char(buff);
-                        A4GL_pop_param(a4gl,DTYPE_INTERVAL,size);
 
-			// DEBUG
-                        A4GL_push_interval((void *)a4gl);
-                        ptr=A4GL_char_pop();
-                A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
-                A4GL_debug("                Informix=%s\n",buff);
-                        free(ptr);
+			if (A4GL_ctoint(buff,a4gl,size)) {
+                        	//A4GL_push_char(buff);
+				//memset(a4gl,0,sizeof(struct ival));
+                        	//A4GL_pop_param(a4gl,DTYPE_INTERVAL,size);
+	
+				// DEBUG
+                        	A4GL_push_interval(a4gl);
+                        	ptr=A4GL_char_pop();
+                		A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
+                		A4GL_debug("                Informix=%s\n",buff);
+                        	free(ptr);
+			} else {
+				A4GL_debug("Couldn't convert");
+			}
+			
 			// End of DEBUG
                 }
 
@@ -1339,6 +1348,7 @@ bindOutputValue (struct s_sid *sid, char *descName, int idx, struct BINDING *bin
 {
   //static const char function[] = "bindOutputValue";
   EXEC SQL begin declare section;
+  int ncols;
   char *descriptorName = descName;
   int index = idx + 1;
   int length;
@@ -1388,7 +1398,7 @@ int type;
   //FglDatetime *fgl_dtime;
   //FglInterval *fgl_interval;
   char buff[10];
-
+  A4GL_debug("bindOutput %d",idx);
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
   dataType = getIfmxDataType (bind[idx].dtype);
@@ -1408,6 +1418,8 @@ int type;
  buff[3]=sqlca.sqlwarn.sqlwarn3;
  buff[4]=sqlca.sqlwarn.sqlwarn4;
  buff[5]=sqlca.sqlwarn.sqlwarn5;
+  EXEC SQL GET DESCRIPTOR :descriptorName :ncols=COUNT;
+  A4GL_debug("Ncols=%d\n",ncols);
 
   EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:indicator = INDICATOR,:length = LENGTH,:type=TYPE;
   
@@ -1432,9 +1444,10 @@ int type;
 
   if (indicator == -1)
     {
-      A4GL_debug ("Calling A4GL_setnull %d %p %d\n", dataType, bind[idx].ptr,
-		  length);
+      if (idx<ncols)  {
+      A4GL_debug ("Calling A4GL_setnull %d %p %d\n", dataType, bind[idx].ptr, length);
       A4GL_setnull (dataType, bind[idx].ptr, length);	/* Something wrong with this */
+      }
       return 0;
     }
 

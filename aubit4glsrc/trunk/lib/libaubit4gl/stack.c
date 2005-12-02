@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.141 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: stack.c,v 1.142 2005-12-02 12:28:11 mikeaubury Exp $
 #
 */
 
@@ -1650,7 +1650,6 @@ A4GL_push_current (int a, int b)
   struct timeval tv1;
 
 
-
   gettimeofday (&tv1, 0);
 
   local_time = localtime (&tv1.tv_sec);
@@ -1671,9 +1670,11 @@ A4GL_push_current (int a, int b)
     );
   buff[27] = 0;
   A4GL_debug ("Time is %s", A4GL_null_as_null(buff));
+  A4GL_assertion(b<0||b>12, "push_current parameter out of range") ;
   pstart = ptrs2[b] + 1;
   buff[pstart] = 0;
 
+  A4GL_assertion(a<0||a>12, "push_current parameter out of range") ;
   strcpy (buff2, &buff[ptrs[a]]);
 
   n = (a << 4) + b;
@@ -2400,7 +2401,7 @@ if (type>255) {
       i = (struct ival *) buff;
       i->stime = 0;
       i->ltime = 0;
-      i->data[0] = 0;
+      //i->data[0] = 0;
       return;
     }
 
@@ -2504,8 +2505,7 @@ A4GL_isnull (int type, char *buff)
       struct ival *i;
       i = (struct ival *) buff;
 
-      if (i->data[0] == 0)
-	return 1;
+      if (i->stime==0 && i->ltime==0) return 1;
       else
 	return 0;
     }

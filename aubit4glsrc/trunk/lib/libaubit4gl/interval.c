@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.20 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: interval.c,v 1.21 2005-12-02 12:28:11 mikeaubury Exp $
 #
 */
 
@@ -111,11 +111,11 @@ A4GL_get_rval_ival (void)
 int
 A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
 {
-  char fractions[6];
-  char *buff;
-  buff = i->data;
+  //char fractions[6];
+  //char *buff=0;
+  //buff = i->data;
 
-  A4GL_debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3, buff);
+  //A4GL_debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3, buff);
 
   A4GL_debug ("Y %d\n", data[0]);
   A4GL_debug ("M %d\n", data[1]);
@@ -124,7 +124,7 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
   A4GL_debug ("m %d\n", data[4]);
   A4GL_debug ("S %d\n", data[5]);
   A4GL_debug ("F %d\n", data[6]);
-  SPRINTF1 (fractions, "%05d", data[6]);
+  //SPRINTF1 (fractions, "%05d", data[6]);
 
   while (data[5] >= 60)
     {
@@ -191,6 +191,7 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
 );
 
 
+#ifdef OBSOLETE
   if (v1 >= 7)
     {
       fractions[v1 - 6] = 0;
@@ -219,7 +220,7 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
 
   if (v2 >= 7)
     SPRINTF1 (buff, "000000000000000%s", fractions);
-
+#endif
   A4GL_debug ("Copied data");
   return 1;
 }
@@ -293,11 +294,20 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
   A4GL_decode_interval (a, data_a);
   A4GL_decode_interval (b, data_b);
 
+  rval_ival.i_years=0;
+  rval_ival.i_months=0;
+  rval_ival.i_days=0;
+  rval_ival.i_hours=0;
+  rval_ival.i_minutes=0;
+  rval_ival.i_seconds=0;
+  rval_ival.i_fractions=0;
+
+
   A4GL_debug ("Got interval data");
   /* Clear down the return variable.. */
   for (cnt = 0; cnt < 10; cnt++)
     {
-      rval_ival.data[cnt] = '0';
+      //rval_ival.data[cnt] = '0';
       data_r[cnt] = 0;
     }
 
@@ -512,9 +522,9 @@ A4GL_decode_interval (struct ival *ival, int *data)
   s1 = ival->stime % 16;
   s2 = ival->stime / 16;
   A4GL_debug ("s1=%d s2=%d", s1, s2);
-  memset(buff,0,sizeof(buff));
-
-  memcpy(buff,ival->data,24);
+#ifdef OBSOLETE
+  //memset(buff,0,sizeof(buff));
+  //memcpy(buff,ival->data,24);
 
 
 
@@ -575,6 +585,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
     {
       A4GL_debug ("Data : %s %d\n", codes[c], data[c]);
     }
+#endif
 
   A4GL_debug ("Internals....");
   data[0] = ival->i_years;

@@ -601,7 +601,7 @@ field_name_list_or_char_as_struct : field_name_or_char_as_struct {
 
 
 curr_v_clause : KW_CURRENT { $<ptr>$=A4GL_new_expr_current(1, 10);}
-	| KW_CURRENT s_curr_v TO s_curr_v {$<ptr>$=A4GL_new_expr_current($<integer_val>1, $<integer_val>3);}
+	| KW_CURRENT s_curr_v TO s_curr_v {$<ptr>$=A4GL_new_expr_current($<integer_val>2, $<integer_val>4);}
 ;
 
 s_curr_v: YEAR 		{$<integer_val>$=1;} 

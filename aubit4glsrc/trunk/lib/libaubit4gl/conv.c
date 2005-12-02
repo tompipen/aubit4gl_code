@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.116 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: conv.c,v 1.117 2005-12-02 12:28:11 mikeaubury Exp $
 #
 */
 
@@ -345,7 +345,7 @@ A4GL_inttoint (void *a, void *b, int size)
   memset(buff,0,256);
   A4GL_inttoc (a, buff, 60);
   A4GL_trim (buff);
-  memset(d->data,0,sizeof(d->data));
+  //memset(d->data,0,sizeof(d->data));
   A4GL_debug ("Got Interval as : '%s'\n", A4GL_null_as_null(buff));
   return A4GL_ctoint (buff, b, size);
 
@@ -523,6 +523,8 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
   struct ival *d;
   int v1, v2, v3;
   char localchar[56];
+  memset(localchar,0,56);
+  memset(data,0,255);
 
   strcpy (localchar, a_char);
   d = (struct ival *) b_int;
@@ -3231,7 +3233,7 @@ A4GL_valid_int (char *s, int *data, int size)
   };
 
   if (strlen(s)==0) return 0;
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 32; i++)
     {
       data[i] = 0;
     }
