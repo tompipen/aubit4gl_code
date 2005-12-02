@@ -17297,81 +17297,81 @@ strcpy(yyval.str,"1");
   case 1204:
 #line 6640 "fgl.yacc"
     {
-int a;
-a=add_report_agg('S',yyvsp[-2].ptr,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",racnt,racnt);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('S',yyvsp[-2].ptr,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",racnt,racnt);
+		racnt+=a;
+		}
     break;
 
   case 1205:
 #line 6647 "fgl.yacc"
     {
-int a;
-a=add_report_agg('C',0,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"A4GL_push_int(_g%d);\n",racnt);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('C',0,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
+		racnt+=a;
+		}
     break;
 
   case 1206:
 #line 6654 "fgl.yacc"
     {
-int a;
-a=add_report_agg('C',0,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"A4GL_push_int(_g%d);\n",racnt);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('C',0,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
+		racnt+=a;
+		}
     break;
 
   case 1207:
 #line 6663 "fgl.yacc"
     {
-int a;
-a=add_report_agg('P',yyvsp[-2].ptr,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"A4GL_push_double((double)_g%d/(double)_g%d);\n",racnt,racnt+1);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('P',yyvsp[-2].ptr,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"A4GL_push_double((double)_g%d/(double)_g%d);\n",racnt,racnt+1);
+		racnt+=a;
+	}
     break;
 
   case 1208:
 #line 6670 "fgl.yacc"
     {
-int a;
-a=add_report_agg('A',yyvsp[-2].ptr,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"A4GL_push_double(_g%d/(double)_g%d);\n",racnt,racnt+1);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('A',yyvsp[-2].ptr,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"A4GL_push_double(_g%d/(double)_g%d);\n",racnt,racnt+1);
+		racnt+=a;
+		}
     break;
 
   case 1209:
 #line 6677 "fgl.yacc"
     {
-int a;
-a=add_report_agg('A',yyvsp[-2].ptr,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"A4GL_push_double(_g%d/_g%d);\n",racnt,racnt+1);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('A',yyvsp[-2].ptr,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"A4GL_push_double(_g%d/_g%d);\n",racnt,racnt+1);
+		racnt+=a;
+		}
     break;
 
   case 1210:
 #line 6684 "fgl.yacc"
     {
-int a;
-a=add_report_agg('N',yyvsp[-2].ptr,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"A4GL_push_double(_g%d);\n",racnt);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('N',yyvsp[-2].ptr,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
+		racnt+=a;
+		}
     break;
 
   case 1211:
 #line 6691 "fgl.yacc"
     {
-int a;
-a=add_report_agg('X',yyvsp[-2].ptr,yyvsp[0].ptr,racnt);
-sprintf(yyval.str,"A4GL_push_double(_g%d);\n",racnt);
-racnt+=a;
-}
+		int a;
+		a=add_report_agg('X',yyvsp[-2].ptr,yyvsp[0].ptr,racnt,yyval.str);
+		//sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
+		racnt+=a;
+		}
     break;
 
   case 1216:
