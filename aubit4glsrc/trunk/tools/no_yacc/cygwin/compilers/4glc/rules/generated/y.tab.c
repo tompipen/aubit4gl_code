@@ -4484,14 +4484,15 @@ static const char *const yytname[] =
   "predicate_sli", "op_all", "op_u_all", "data_type", "data_type_i",
   "char_string_type", "exact_numeric_type", "op_scale",
   "approx_numeric_type", "length", "precision", "scale",
-  "authorization_identifier", "col_arr", "column_name", "column_name_sli",
-  "column_name_sli_specific", "column_name_specific", "correlation_name",
-  "literal", "cur_part", "s_curr", "e_curr", "load_cmd", "opt_delim",
-  "opt_col_list", "col_list", "simple_column_name", "execute_procedure",
-  "misc_sql", "rename_stmt", "rentabname", "rencolname", "unlock_stmt",
-  "lock_stmt", "share_or_exclusive", "datetime_value_qualified",
-  "datetime_value", "interval_value_qualified", "interval_value",
-  "curr_clause", "order_by_clause_slil", "sort_specification_list_slil",
+  "authorization_identifier", "op_col_arr", "column_name",
+  "column_name_sli", "column_name_sli_specific", "column_name_specific",
+  "correlation_name", "literal", "cur_part", "s_curr", "e_curr",
+  "load_cmd", "opt_delim", "opt_col_list", "col_list",
+  "simple_column_name", "execute_procedure", "misc_sql", "rename_stmt",
+  "rentabname", "rencolname", "unlock_stmt", "lock_stmt",
+  "share_or_exclusive", "datetime_value_qualified", "datetime_value",
+  "interval_value_qualified", "interval_value", "curr_clause",
+  "order_by_clause_slil", "sort_specification_list_slil",
   "sort_specification_sli", "sort_spec_sli", "op_asc_desc",
   "group_by_clause_slil", "gr_column_specification_list_slil",
   "gr_column_specification_sli", "value_expression_sli_as_string",
@@ -22442,7 +22443,7 @@ A4GLSQLCV_check_requirement("NO_FOR_UPDATE")
                 i=&yyvsp[0].int_list;
                 if (strcmp(yyvsp[-1].str,"rowid")==0) { add_feature("ROWID"); }
                 ADDMAP("Use Column",yyvsp[-1].str);
-                strcpy(yyval.str,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(current_upd_table,yyvsp[-1].str), i->i0,i->i1,i->i2));
+                strcpy(yyval.str,A4GLSQLCV_make_substr(A4GL_confirm_colname(current_upd_table,yyvsp[-1].str), i->i0,i->i1,i->i2));
         }
     break;
 
@@ -22870,7 +22871,7 @@ lastlineno=yylineno;
     }
 
 /* Line 1010 of yacc.c.  */
-#line 22874 "y.tab.c"
+#line 22875 "y.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
