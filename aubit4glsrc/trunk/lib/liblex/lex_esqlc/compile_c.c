@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.278 2005-12-02 17:05:53 mikeaubury Exp $
+# $Id: compile_c.c,v 1.279 2005-12-05 20:31:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.278 2005-12-02 17:05:53 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.279 2005-12-05 20:31:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -82,7 +82,7 @@ static void print_start_record (int isstatic_extern, char *varname, char *arrsiz
 static void print_end_record (char *vname, char *arrsize, int level);
 int is_system_variable (char *s);
 int isin_command (char *cmd_type);
-int print_bind_expr_portion (void *ptr, char i, int portion);
+static int print_bind_expr_portion (void *ptr, char i, int portion);
 char *rettype_integer (int n);
 
 int suppress_lines=0;
@@ -561,7 +561,7 @@ printc (char *fmt, ...)
   va_list ap;
   /*A4GL_debug("via printc (a) in lib\n");*/
   va_start (ap, fmt);
-  A4GL_internal_lex_printc (fmt, &ap);
+  LEXLIB_A4GL_internal_lex_printc (fmt, &ap);
 }
 
 void
@@ -639,7 +639,7 @@ printh (char *fmt, ...)
 {
   va_list ap;
   va_start (ap, fmt);
-  A4GL_internal_lex_printh (fmt, &ap);
+  LEXLIB_A4GL_internal_lex_printh (fmt, &ap);
 }
 
 void
@@ -675,7 +675,7 @@ printcomment (char *fmt, ...)
 {
   va_list ap;
   va_start (ap, fmt);
-  A4GL_internal_lex_printcomment (fmt, &ap);
+  LEXLIB_A4GL_internal_lex_printcomment (fmt, &ap);
 }
 
 void
@@ -848,6 +848,16 @@ LEXLIB_print_report_ctrl (void)
   printc(" if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {");
 pr_nongroup_report_agg_clr();
   printc("}");
+
+
+  for (a = 0; a < report_stack_cnt; a++)
+    {
+      if (get_report_stack_whytype (a) == 'P') // First page header - ensure its printed before the page header..
+              printc ("if (acl_ctrl==REPORT_PAGEHEADER&&_rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+    }
+
+
+
   for (a = 0; a < report_stack_cnt; a++)
     {
       /* on last row */
@@ -882,10 +892,6 @@ pr_nongroup_report_agg_clr();
 	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-      if (get_report_stack_whytype (a) == 'P')
-	printc
-	  ("if (acl_ctrl==REPORT_PAGEHEADER&&_rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
-	   report_cnt, a);
 
       if (get_report_stack_whytype (a) == 'p')
 	printc
@@ -1616,6 +1622,31 @@ real_print_expr (struct expr_str *ptr)
 	  printc ("aclfgli_extend();");
 	  break;
 
+
+
+	case ET_EXPR_AGGREGATE :
+		if (ptr->u_data.expr_agg->agg_type == 'C') { 
+			printc("A4GL_push_int(_g%d);\n",ptr->u_data.expr_agg->expr_num);
+		}
+
+		if (ptr->u_data.expr_agg->agg_type == 'P') { 
+			printc("A4GL_push_double((double)_g%d/(double)_g%d);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1); 
+		}
+
+		if (ptr->u_data.expr_agg->agg_type == 'S') { 
+			printc("if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num); 
+		}
+
+		if (ptr->u_data.expr_agg->agg_type == 'N' || ptr->u_data.expr_agg->agg_type == 'X') {
+			printc("A4GL_push_double(_g%d);\n",ptr->u_data.expr_agg->expr_num);
+		}
+ 		if (ptr->u_data.expr_agg->agg_type == 'A') {
+			printc("A4GL_push_double(_g%d/(double)_g%d);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1);
+		}
+ 		break;
+	      
+
+
 	case ET_EXPR_MM:
 	  real_print_expr (ptr->u_data.expr_expr);
 	  printc ("A4GL_push_double(-28.3465);A4GL_pushop(OP_MULT);");
@@ -2089,6 +2120,37 @@ real_print_expr (struct expr_str *ptr)
 	case ET_EXPR_IVAL_VAL:
 		printc("acli_interval(%s,%d);",ptr->u_data.expr_interval->intval,ptr->u_data.expr_interval->extend);
 		break;
+
+
+	case ET_EXPR_FGL_SIZEOF:
+                printc("A4GL_push_long(sizeof(%s));",ptr->u_data.expr_string);
+		break;
+
+
+
+
+
+
+        case ET_EXPR_FGL_ADDRESSOF:
+                printc("A4GL_push_long(&(%s));",ptr->u_data.expr_string);
+		break;
+
+        case ET_EXPR_FGL_ISDYNARR_ALLOCATED:
+                printc("A4GL_isdynarr_allocated(&%s);",ptr->u_data.expr_string);		break;
+
+        case ET_EXPR_FGL_DYNARR_EXTENTSIZE:
+                printc("A4GL_dynarr_extent(&%s,%d);",ptr->u_data.expr_dynarr_extent->var,ptr->u_data.expr_dynarr_extent->n);
+		break;
+        
+        case ET_EXPR_FIELDTOWIDGET:
+                printc("A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char(ptr->u_data.expr_field_entry));
+		break;
+
+        case ET_EXPR_ID_TO_INT:
+                printc("A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char(ptr->u_data.expr_field_entry)); 
+		break;
+
+
 	case ET_EXPR_GET_FLDBUF: 
 	  printc ("{");
 	  printc ("int _retvars;");
@@ -2760,6 +2822,7 @@ LEXLIB_print_bind (char i)
 }
 
 
+#ifdef NDEF
 /**
  *
  * @todo Describe function
@@ -2863,8 +2926,12 @@ int LEXLIB_print_bind_expr (void *ptr, char i)
 
   return 0;
 }
+#endif
 
-int print_bind_expr_portion (void *ptr, char i, int portion)
+
+
+#ifdef OBSOLETE
+static int print_bind_expr_portion (void *ptr, char i, int portion)
 {
   int a=0;
 
@@ -2995,6 +3062,7 @@ int print_bind_expr_portion (void *ptr, char i, int portion)
 
   return 0;
 }
+#endif
 
 /* ***************************************************************************/
 /* The rest of this file is the stuff called from the parser..               */
@@ -3407,7 +3475,7 @@ LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) {
 	int ni;
 	int no;
 	void *ptr;
-	ptr=A4GL_new_expr("{");
+	//ptr=A4GL_new_expr("{");
 	print_bind_expr_portion(ptr,'i',1);
 	print_bind_expr_portion(ptr,'e',1);
 	ni=print_bind_expr_portion(ptr,'i',2);
@@ -4519,6 +4587,7 @@ LEXLIB_print_validate ()
   int cnt;
   int z;
   int a;
+  int b;
 
   z = get_bind_cnt ('N');
   cnt=get_validate_list_cnt();
@@ -4532,14 +4601,15 @@ LEXLIB_print_validate ()
   printc ("    A4GLSQL_set_status(0,0);\n");
   for (a=0;a<z;a++) {
         char buff[256];
-	struct expr_str *p;
-	p=(struct expr_str *)A4GL_get_validate_expr(a);
+	struct expr_str_list *p;
+	p=(struct expr_str_list *)A4GL_get_validate_expr(a);
 	if (p==0) continue;
 	printc ("A4GL_push_variable(&%s,0x%x);\n", nullbind[a].varname, nullbind[a].dtype );
-        SPRINTF1(buff,"A4GL_push_int(%d);",A4GL_length_expr(p));
-        p=A4GL_append_expr(p,buff);
-        p=A4GL_append_expr(p,"A4GL_pushop(OP_IN);");
-	print_expr(p);
+	for (b=0;b<p->nlist;b++) {
+		print_expr(p->list[b]);
+	}
+        printc("A4GL_push_int(%d);",p->nlist);
+        printc("A4GL_pushop(OP_IN);");
 	printc("if (!A4GL_pop_bool()) {A4GLSQL_set_status(-1321,0);}");
   }
 }
@@ -5162,6 +5232,10 @@ LEXLIB_print_report_print_img (char *scaling, char *blob, char *type, char *semi
   printc ("A4GL_pdf_blob_print(&_rep,&%s,\"%s\",%s);\n", blob, type, semi);
 }
 
+
+
+
+#ifdef OBSOLETE
 /**
  *  The parser did not found the SCALED BY statement.
  *
@@ -5172,6 +5246,7 @@ LEXLIB_A4GL_get_default_scaling (void)
 {
   return "A4GL_push_double(1.0);A4GL_push_double(1.0);";
 }
+#endif
 
 /**
  * Defines in the generated C code, the type of the order by used.
@@ -5789,7 +5864,9 @@ LEXLIB_print_show_menu (char *mname, char *mhand,void* ptr)
  */
 void *LEXLIB_get_def_mn_file (void) {
 	struct expr_str *ptr;
-	ptr=A4GL_new_expr("A4GL_push_char(\"menu\");");
+	ptr=A4GL_new_literal_string("menu");
+
+	//ptr=A4GL_new_expr("A4GL_push_char(\"menu\");");
 	return ptr;
 }
 
@@ -7304,12 +7381,15 @@ while (1) {
         if (ptrn==0) break;
         if (ptr2) {ptr2=0;}
 
-        SPRINTF1(buff,"A4GL_push_char(\"%s\");",ptrn);
+        //SPRINTF1(buff,"A4GL_push_char(\"%s\");",ptrn);
 
         if (ptr==0) {
-                ptr=A4GL_new_expr(buff);
+		ptr=A4GL_new_literal_string(ptrn);
+                //ptr=A4GL_new_expr(buff);
         } else {
-                A4GL_append_expr(ptr,buff);
+		struct expr_str *e;
+		e=A4GL_new_literal_string(ptrn);
+                ptr=A4GL_append_expr_expr(ptr,e);
         }
 
 }
@@ -8090,13 +8170,14 @@ char *LEXLIB_get_keyval_str(char *s) {
 
 
 
-int LEXLIB_print_agg_defines(char t,int a,char *usage) {
+int LEXLIB_print_agg_defines(char t,int a) {
 
 
   if (t == 'C')
     {
           A4GL_lex_printh ("static long _g%d=0;\n", a);
-	  sprintf(usage,"A4GL_push_int(_g%d);\n",a);
+
+	  //sprintf(usage,"A4GL_push_int(_g%d);\n",a);
 
       return 1;
     }
@@ -8104,7 +8185,7 @@ int LEXLIB_print_agg_defines(char t,int a,char *usage) {
   if (t == 'P')
     {
           A4GL_lex_printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
-	sprintf(usage,"A4GL_push_double((double)_g%d/(double)_g%d);\n",a,a+1);
+	//sprintf(usage,"A4GL_push_double((double)_g%d/(double)_g%d);\n",a,a+1);
       return 2;
     }
 
@@ -8112,14 +8193,14 @@ int LEXLIB_print_agg_defines(char t,int a,char *usage) {
     {
           A4GL_lex_printh ("static int _g%dused=0;\n", a);
           A4GL_lex_printh ("static double _g%d=0;\n", a);
-	sprintf(usage,"if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",a,a);
+	//sprintf(usage,"if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",a,a);
       return 1;
     }
   if (t == 'N' || t == 'X')
     {
           A4GL_lex_printh ("static double _g%d=0;\n", a);
           A4GL_lex_printh ("static int _g%dused=0;\n", a);
-	sprintf(usage,"A4GL_push_double(_g%d);\n",a);
+	//sprintf(usage,"A4GL_push_double(_g%d);\n",a);
       return 1;
     }
 
@@ -8127,7 +8208,7 @@ int LEXLIB_print_agg_defines(char t,int a,char *usage) {
     {
           A4GL_lex_printh ("static double _g%d=0;\n", a);
           A4GL_lex_printh ("static long   _g%d=0;\n", a + 1);
-	sprintf(usage,"A4GL_push_double(_g%d/(double)_g%d);\n",a,a+1);
+	//sprintf(usage,"A4GL_push_double(_g%d/(double)_g%d);\n",a,a+1);
 
       return 2;
     }

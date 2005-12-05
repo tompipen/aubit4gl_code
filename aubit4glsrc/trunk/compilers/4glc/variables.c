@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.77 2005-12-02 12:48:31 mikeaubury Exp $
+# $Id: variables.c,v 1.78 2005-12-05 20:31:01 mikeaubury Exp $
 #
 */
 
@@ -171,10 +171,27 @@ int sl=-1;
 sl=0;
 strcpy(buff,s);
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_') {
+
+	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE")) && s[0]=='R') {
+		  char b[200];
+		  int c;
+		  extern char curr_func[];
+		  sprintf(b,"%s_%s",A4GL_compiling_module_basename(),curr_func);
+
+		if (strncmp(&s[2],b,strlen(b))==0) {
+			strcpy(buff,&s[strlen(b)]+3);
+			return buff;
+		} else {
+			A4GL_assertion(1,"Didn't start as I'd expect");
+		}
+
+	  }
+
       if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && s[0]=='M') {
 		if (strncmp(&s[2],A4GL_compiling_module_basename(),strlen(A4GL_compiling_module_basename()))==0) {
 			sl=strlen(A4GL_compiling_module_basename())+3;
 			strcpy(buff,&s[sl]);
+			return buff;
 		}
       } else {
 		sl=2;
@@ -890,6 +907,14 @@ add_to_scope (int record_cnt, int unroll)
 	  alloc = &list_module_alloc;
 	}
 
+      if (scope == 'R')
+	{
+	  SPRINTF0 (local_scope, "R");
+	  variable_holder = &list_local;
+	  counter = &list_local_cnt;
+	  alloc = &list_local_alloc;
+	}
+
       if (scope == 'l')
 	{
 	  SPRINTF0 (local_scope, "l");
@@ -1137,6 +1162,7 @@ char buff[256];
 char buff2[256];
   struct variable *ptr;
 A4GL_debug("find_variable_ptr : %s",s);
+
       if (strncmp (s, " ASSOCIATE_", 11) == 0)
         {
           strcpy (buff, &s[11]);
@@ -1160,6 +1186,7 @@ A4GL_debug("find_variable_ptr : %s",s);
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_')
     {
       strcpy (s, A4GL_unscope(s));
+
     }
 
 /* First we look locally - then at module level - then globally*/
@@ -1504,8 +1531,20 @@ get_current_variable_scope (void)
 {
   char scope = 'm';
   if (variable_scope=='T') return 'T';
+  int is_inreport=0;
 
-  if (isin_command ("FUNC") || isin_command ("REPORT")
+  if (isin_command ("REPORT"))  {
+	  is_inreport=1;
+	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE"))) {
+		  	is_inreport=0;
+			return 'R';
+	  } else {
+	  	scope='m';
+	  }
+  }
+
+
+  if (isin_command ("FUNC") || is_inreport
       || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER")
       || isin_command ("MAIN"))
     {
@@ -1535,6 +1574,10 @@ get_current_variable_scope (void)
       if (variable_scope == 'm')
 	{
 	  scope = 'm';
+	}
+      if (variable_scope == 'R')
+	{
+	  scope = 'R';
 	}
     }
 
@@ -1566,7 +1609,7 @@ print_variables (void)
 
   A4GL_debug("Scope=%c\n",scope);
 
-  if (scope == 'l')
+  if (scope == 'l' || scope=='R')
     {
       print_local_variables ();
     }

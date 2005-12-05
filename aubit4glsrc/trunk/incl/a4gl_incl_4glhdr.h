@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.36 2005-07-14 11:32:50 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.37 2005-12-05 20:31:06 mikeaubury Exp $
 */
 
 /**
@@ -53,6 +53,7 @@ extern "C"
 #include <string.h>
 #include <stdlib.h>
 
+#include "a4gl_expr.h"
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_4gl_callable.h"
 #ifdef DMALLOC

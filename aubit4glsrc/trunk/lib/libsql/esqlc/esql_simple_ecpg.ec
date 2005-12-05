@@ -711,33 +711,32 @@ A4GL_trim(val);
 			if (ptrn==0) break;
 			if (ptr2) {ptr2=0;}
 	
-			sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
-	
-			if (ptr==0) {
-					//ptr=A4GL_new_expr(buff);
-					ptr=A4GL_new_expr((char *)buff);
-					/*
-					warning: assignment makes pointer from integer without a cast
-					void * A4GL_new_expr (char *value);
-					void *ptr
-					*/
-			} else {
-					A4GL_append_expr(ptr,buff);
-			}
+      if (ptr == 0)
+        {
+          ptr=A4GL_new_ptr_list(A4GL_new_literal_string(ptrn));
+          //ptr = A4GL_new_expr (buff);
+        }
+      else
+        {
+          ptr=A4GL_new_append_ptr_list(ptr,A4GL_new_literal_string(ptrn));
+        }
+
+
+
 	
 	}
 	return ptr;
 }
 
 
-void *
+t_expr_str_list *
 A4GLSQL_get_validation_expr(char *tabname,char *colname) 
 {
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 char val[65];
-char *ptr=0;
 EXEC SQL END DECLARE SECTION;
+t_expr_str_list *ptr=0;
 int cnt;
 	sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",acl_getenv("A4GL_SYSCOL_VAL"),tabname,colname);
 	EXEC SQL PREPARE p_get_val FROM :buff;

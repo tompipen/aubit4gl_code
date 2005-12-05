@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.260 2005-12-02 17:05:01 mikeaubury Exp $
+# $Id: mod.c,v 1.261 2005-12-05 20:31:01 mikeaubury Exp $
 #
 */
 
@@ -3122,10 +3122,10 @@ get_curr_block (void)
  *
  * @return
  */
-int
-add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,char *buff)
+struct expr_str *add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,long *n)
 {
 int rval;
+struct expr_str *x;
   A4GL_debug ("In add_report_agg a=%d\n", a);
   if (use_group)
     {
@@ -3150,20 +3150,16 @@ int rval;
 
 
   sreports[sreports_cnt].rep_cond_expr = s1;
-
   sreports[sreports_cnt].a = a;
-
   sreports[sreports_cnt].t = t;
-
   sreports_cnt++;
+  
+   rval=print_agg_defines(t,a);
+   *n=rval;
+   x=A4GL_new_expr_agg(t,a);
+   use_group = 0;
 
-  rval=print_agg_defines(t,a,buff);
-
-
-  if (rval) return rval;
-
-  use_group = 0;
-  return -1;
+   return x;
 }
 
 /**
@@ -4446,7 +4442,7 @@ char *
 fgl_add_scope (char *s, int n)
 {
   char c;
-  static char buffer[256];
+  static char buffer[2560];
   char buffer2[1024];
   //static char if1[2000]="";
   //static char if2[2000]="";
@@ -4513,14 +4509,20 @@ fgl_add_scope (char *s, int n)
 	}
       else
 	{
-	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && c == 'M')
+	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE"))) { if (isin_command ("REPORT")) { c='R'; } }
+	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && (c == 'M' || c=='R'))
 	    {
-	      sprintf (buffer, "%c_%s_%s", c,
-		       A4GL_compiling_module_basename (), buffer2);
+		    if (c=='R') {
+			    extern char curr_func[];
+	      			sprintf (buffer, "%c_%s_%s_%s", c, A4GL_compiling_module_basename (), curr_func,buffer2);
+		    } else {
+	      		sprintf (buffer, "%c_%s_%s", c, A4GL_compiling_module_basename (), buffer2);
+		    }
 	      buffer[0] = toupper (buffer[0]);
 	    }
 	  else
 	    {
+		
 	      sprintf (buffer, "%c_%s", c, buffer2);
 	      buffer[0] = toupper (buffer[0]);
 	    }
@@ -4929,6 +4931,7 @@ do_yyerror (char *s)
   a4gl_yyerror (s);
 }
 
+#ifdef NDEF
 char *
 A4GL_print_start_to_is_expr (struct expr_str *ptr)
 {
@@ -4936,6 +4939,7 @@ A4GL_print_start_to_is_expr (struct expr_str *ptr)
   print_expr (ptr);
   return "A4GL_get_rep_start()";
 }
+#endif
 
 
 
@@ -5062,8 +5066,9 @@ A4GL_generate_variable_expr (char *s)
 	  A4GL_assertion (1, "Is this used for anything else ?");
 	}
 
-      sprintf (buff, "A4GL_push_char(%s); /* NOT SUBSTR EXPR */", s);;
-      p1 = A4GL_new_expr (buff);
+	  A4GL_assertion (1, "Is this used for anything else too ?");
+     sprintf (buff, "A4GL_push_char(%s); /* NOT SUBSTR EXPR */", s);;
+      p1 = A4GL_new_expr_obsol (buff);
     }
 
   if (a == -2)

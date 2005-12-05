@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.62 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: calldll.c,v 1.63 2005-12-05 20:31:06 mikeaubury Exp $
 #
 */
 
@@ -43,6 +43,9 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+
+#define TRACE_DLL_CALLS
+
 
 #ifdef DOING_CM
 #define WIN32
@@ -133,7 +136,6 @@ static void inc_usage (char *s);
 	/* end dlfcn.h */
 	
 	static char errbuf[512];
-	#define TRACE_DLL_CALLS
 	/**
 	 * Windows dlopen wraper function.
 	 *
@@ -760,13 +762,12 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
 
 
-#define TRACE_DLL_CALLS
 void inc_usage (char *s) {
 static FILE *usg=0;
 #ifdef TRACE_DLL_CALLS
 if (A4GL_isyes(acl_getenv("TRACEDLL"))) {
 	if (usg==0) {
-		usg=fopen("trace.txt","w");
+		usg=fopen("/tmp/trace.txt","a");
 	}
 
 	if (usg!=0) {

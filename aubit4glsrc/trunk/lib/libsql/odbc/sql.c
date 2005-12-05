@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.138 2005-11-28 11:27:50 mikeaubury Exp $
+# $Id: sql.c,v 1.139 2005-12-05 20:31:07 mikeaubury Exp $
 #
 */
 
@@ -169,7 +169,7 @@ static struct s_cid * A4GLSQL_find_cursor (char *cname);
 //void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 //truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
-struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
+struct expr_str_list *A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr,
 						       char *val);
 //now in a4gl_libaubit4gl.h void *A4GL_new_expr (char *value);
 //now in a4gl_libaubit4gl.h void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
@@ -5133,8 +5133,8 @@ A4GLSQLLIB_A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
   return 0;
 }
 
-struct expr_str *
-A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
+struct expr_str_list *
+A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
 {
   char *ptr2;
   char *ptrn;
@@ -5151,15 +5151,17 @@ A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
 	  ptr2 = 0;
 	}
 
-      SPRINTF1 (buff, "A4GL_push_char(\"%s\");", ptrn);
+      
+      //SPRINTF1 (buff, "A4GL_push_char(\"%s\");", ptrn);
 
       if (ptr == 0)
 	{
-	  ptr = A4GL_new_expr (buff);
+	  ptr=A4GL_new_ptr_list(A4GL_new_literal_string(ptrn));
+	  //ptr = A4GL_new_expr (buff);
 	}
       else
 	{
-	  A4GL_append_expr (ptr, buff);
+	  ptr=A4GL_new_append_ptr_list(ptr,A4GL_new_literal_string(ptrn));
 	}
 
     }
@@ -5182,10 +5184,10 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
 
 
 
-void *A4GLSQLLIB_A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+t_expr_str_list *A4GLSQLLIB_A4GLSQL_get_validation_expr(char *tabname,char *colname) {
 char buff[300];
 char val[65];
-struct expr_str *ptr=0;
+struct expr_str_list *ptr=0;
 char *cptr=0;
 struct BINDING obind[1] = { {0, 0, 64, 0, 0} };                 /* end of binding */
 obind[0].ptr = &val;

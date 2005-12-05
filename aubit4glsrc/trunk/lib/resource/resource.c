@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.110 2005-07-29 20:42:57 mikeaubury Exp $
+# $Id: resource.c,v 1.111 2005-12-05 20:31:07 mikeaubury Exp $
 #
 */
 
@@ -173,6 +173,7 @@ struct str_resource builtin_resource[] = {
   {"EXTENDED_FETCH", "Y"},	/* This won't always work ! */
   {"BEEPONERROR","Y"},
   {"HELPTEXT", "Help"},
+  {"USE_INDICATOR", "Y"},
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
   {"FIELD_ERROR_MSG", " Error in field "},

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.30 2005-11-28 11:27:51 mikeaubury Exp $
+# $Id: simple.c,v 1.31 2005-12-05 20:31:07 mikeaubury Exp $
 #*/
 
 
@@ -92,7 +92,7 @@ char *pgoptions = NULL;
 char *pgtty = NULL;
 char *login = NULL;
 char *pwd = NULL;
-static struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str
+static struct expr_str_list *A4GL_add_validation_elements_to_expr (struct expr_str_list
 							      *ptr,
 							      char *val);
 
@@ -460,8 +460,8 @@ fixtype (char *type, int *d, int *s)
 
 
 
-static struct expr_str *
-A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
+static struct expr_str_list *
+A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
 {
   char *ptr2;
   char *ptrn;
@@ -478,27 +478,28 @@ A4GL_add_validation_elements_to_expr (struct expr_str *ptr, char *val)
 	  ptr2 = 0;
 	}
 
-      sprintf (buff, "A4GL_push_char(\"%s\");", ptrn);
 
       if (ptr == 0)
-	{
-	  ptr = (struct expr_str *) A4GL_new_expr (buff);
-	}
+        {
+          ptr=A4GL_new_ptr_list(A4GL_new_literal_string(ptrn));
+          //ptr = A4GL_new_expr (buff);
+        }
       else
-	{
-	  A4GL_append_expr (ptr, buff);
-	}
+        {
+          ptr=A4GL_new_append_ptr_list(ptr,A4GL_new_literal_string(ptrn));
+        }
+
 
     }
   return ptr;
 }
 
-void *
+t_expr_str_list *
 A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
 {
   char buff[300];
   char val[65];
-  struct expr_str *ptr = 0;
+  struct expr_str_list *ptr = 0;
   int nrows = 0;
   int a;
   PGresult *res2;

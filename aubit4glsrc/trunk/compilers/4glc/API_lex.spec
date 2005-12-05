@@ -83,7 +83,6 @@ print_bind_definition char i -> int
 
 print_bind_set_value char i -> int
 
-print_bind_expr void* ptr,char i -> int
 
 print_screen_mode int n -> void
 
@@ -270,7 +269,6 @@ print_report_print_file char* fname,char* semi -> void
 
 print_report_print_img char* scaling,char* blob,char* type,char* semi -> void
 
-A4GL_get_default_scaling -> char*
 
 print_order_by_type int type int size -> void
 
@@ -491,7 +489,7 @@ print_gtk_menuhandler_on char* s -> void
 print_gtk_menuhandler_on_end -> void
 print_gtk_menuhandler_end -> void
 get_keyval_str char* s -> char*
-print_agg_defines char t int a char* usage -> int
+print_agg_defines char t int a -> int
 
 * get_in_exists_sql char* s char t -> void*
 * A4GL_expr_for_call char* ident long params int line char* file -> char*
@@ -503,6 +501,11 @@ print_agg_defines char t int a char* usage -> int
 * print_define_char char* var,int size,int isstatic_extern -> void
 * print_define char* varstring,int isstatic_extern -> void
 * print_returning -> void
+*A4GL_get_default_scaling -> char*
+
+
+
+* print_bind_expr void* ptr,char i -> int
 /*  ============================== EOF ================================= */
 
 

@@ -185,7 +185,7 @@ char *convstrsql (char *s);
 void read_glob (char *s);
 char *upshift (char *a);
 char *downshift (char *a);
-int add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,char *usage);
+struct expr_str *add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,long *racnt);
 void set_curr_rep_name (char *s);
 char *get_curr_rep_name (void);
 void set_curr_block (int a);

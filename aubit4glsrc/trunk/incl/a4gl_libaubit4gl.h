@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.213 2005-11-28 20:02:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.214 2005-12-05 20:31:06 mikeaubury Exp $
 #
 */
 
@@ -2267,7 +2267,6 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 #include "a4gl_sql.h"	
 #include "a4gl_exdata.h"	
 #include "a4gl_API_exreport.h"
-#include "a4gl_API_sql.h"
 #include "a4gl_API_sqlparse.h"
 #include "a4gl_API_rpc.h"	
 #include "a4gl_API_esql.h"
@@ -2479,6 +2478,18 @@ struct expr_bound_fcall {
 	void *ebind;
 };
 
+struct expr_agg {
+	char agg_type;
+	int expr_num;
+	int in_group;
+};
+
+struct expr_dynarr_extent {
+	char *var;
+	int n;
+};
+
+
 
 enum e_expr_type {
 		//ET_EXPR_CHAR,
@@ -2578,8 +2589,18 @@ enum e_expr_type {
 		ET_EXPR_FCALL_SINGLE,
 		ET_EXPR_TEMP,
 		ET_EXPR_BOUND_FCALL,
+		ET_EXPR_AGGREGATE,
+		ET_EXPR_FGL_SIZEOF,
+		ET_EXPR_FGL_ADDRESSOF,
+		ET_EXPR_FGL_ISDYNARR_ALLOCATED,
+		ET_EXPR_FGL_DYNARR_EXTENTSIZE,
+		ET_EXPR_FIELDTOWIDGET,
+		ET_EXPR_ID_TO_INT,
+
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };
+
+
 
 
 struct expr_str {
@@ -2589,7 +2610,7 @@ struct expr_str {
 
 	  	char 					*expr_string; 
 		long   					expr_long;
-
+		struct fh_field_entry			*expr_field_entry;
 		struct expr_extend			*expr_extend;
 		struct expr_str 			*expr_expr;
 		struct expr_str_list 			*expr_list;
@@ -2613,17 +2634,26 @@ struct expr_str {
 		struct expr_field_touched		*expr_field_touched;
 		struct expr_tmp				*expr_tmp;
 		struct expr_bound_fcall			*expr_bound_fcall;
+		struct expr_agg				*expr_agg;
+		struct expr_dynarr_extent	        *expr_dynarr_extent;
 	
 	  } u_data;
 	  struct expr_str *next;
 };
 
 typedef struct expr_str t_expr_str;
+
+#define T_EXPR_LIST_DEFINED
 typedef struct expr_str_list t_expr_str_list;
+
 struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) ;
 struct expr_str *A4GL_new_expr_call_external(char *host,char *func,char *port,struct expr_str_list *params,int nowait,char *mod,int line);
 struct expr_str *A4GL_new_datetime_expr(char *str, int extent);
 struct expr_str *A4GL_new_interval_expr(char *str, int extent);
+
+struct expr_str *A4GL_new_expr_agg(char type, int nagg);
+
+
 struct expr_str *A4GL_new_literal_double_str (char *value);
 struct expr_str *A4GL_new_expr_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
 struct expr_str *A4GL_new_expr_not_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
@@ -3080,6 +3110,7 @@ struct search_condition {
 
 void *A4GL_esql_dbopen_connection(void) ;
 //char *A4GL_var_for_inp_array(char *s);
+#include "a4gl_API_sql.h"
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

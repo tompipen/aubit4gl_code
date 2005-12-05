@@ -200,7 +200,7 @@ report_only_expr:
    			YYERROR;
 		} 
 		insql=0;
-		$<ptr>$=A4GL_new_expr($<str>1);
+		$<ptr>$=$<ptr>1;
 	}  
 	| KW_GROUP {insql=1;set_ingroup();} rep_agg  {
 		char buff[256];
@@ -208,9 +208,7 @@ report_only_expr:
         		a4gl_yyerror("This can only be done in a report!");YYERROR;
       		} 
 		insql=0; 
-        	strcpy(buff,$<str>3);
-		A4GL_debug("report aggregate :  %s",buff);
-		$<ptr>$=A4GL_new_expr(buff);
+		$<ptr>$=$<ptr>3;
       	}
 
 
@@ -370,31 +368,27 @@ function_call_expr:
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
 	| FGL_SIZEOF OPEN_BRACKET variable CLOSE_BRACKET {
-		char buff[256];
-		sprintf(buff,"A4GL_push_long(sizeof(%s));",$<str>3);
-        	$<ptr>$=A4GL_new_expr(buff);
+		$<ptr>$=A4GL_new_expr_simple_string($<str>3,ET_EXPR_FGL_SIZEOF);
 	}
 	| FGL_ADDRESSOF OPEN_BRACKET variable CLOSE_BRACKET {
-		char buff[256];
-		sprintf(buff,"A4GL_push_long(&(%s));",$<str>3);
-        	$<ptr>$=A4GL_new_expr(buff);
+		$<ptr>$=A4GL_new_expr_simple_string($<str>3,ET_EXPR_FGL_ADDRESSOF);
 	}
 	| FGL_ISDYNARR_ALLOCATED OPEN_BRACKET variable CLOSE_BRACKET {
-		char buff[256];
-		sprintf(buff,"A4GL_isdynarr_allocated(&%s);",$<str>3);
-        	$<ptr>$=A4GL_new_expr(buff);
+		$<ptr>$=A4GL_new_expr_simple_string($<str>3,ET_EXPR_FGL_ISDYNARR_ALLOCATED);
 	}
 	| FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable KW_COMMA INT_VALUE CLOSE_BRACKET { 
-        	char buff[256];
-        	sprintf(buff,"A4GL_dynarr_extent(&%s,%d);",$<str>3,atoi($<str>5));
-        	$<ptr>$=A4GL_new_expr(buff);
+			$<ptr>$=A4GL_new_expr_simple(ET_EXPR_FGL_DYNARR_EXTENTSIZE);
+			$<ptr>$->u_data.expr_dynarr_extent=malloc(sizeof(struct expr_dynarr_extent));
+			$<ptr>$->u_data.expr_dynarr_extent->var=strdup($<str>3);
+			$<ptr>$->u_data.expr_dynarr_extent->n=atoi($<str>5);
 	}
 	| FIELDTOWIDGET OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {
-		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); 
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_FIELDTOWIDGET);
+		$<ptr>$->u_data.expr_field_entry=$<field_entry>3;
 	}
 	| ID_TO_INT OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {
-		sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char($<field_entry>3)); $<ptr>$=A4GL_new_expr($<str>$); 
-		ADDMAP("Get Field",field_name_as_char($<field_entry>3));
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_ID_TO_INT);
+		$<ptr>$->u_data.expr_field_entry=$<field_entry>3;
 	}
 	| INFIELD OPEN_BRACKET field_name_list_or_char_as_struct CLOSE_BRACKET {
 

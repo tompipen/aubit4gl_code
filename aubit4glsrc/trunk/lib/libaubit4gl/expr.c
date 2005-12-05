@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.11 2005-11-28 11:27:47 mikeaubury Exp $
+# $Id: expr.c,v 1.12 2005-12-05 20:31:06 mikeaubury Exp $
 #
 */
 
@@ -160,7 +160,7 @@ case ET_EXPR_IVAL_VAL: return "ET_EXPR_IVAL_VAL";
 case ET_EXPR_FCALL_SINGLE: return "ET_EXPR_FCALL_SINGLE";
 case ET_EXPR_TEMP: return "ET_EXPR_TEMP";
 case ET_EXPR_BOUND_FCALL: return "ET_EXPR_BOUND_FCALL";
-
+case ET_EXPR_AGGREGATE: return "ET_EXPR_AGGREGATE";
 
 }
 PRINTF("Expression Type : %d\n",e);
@@ -313,6 +313,18 @@ struct expr_str *A4GL_new_literal_long_str (char *value)
 	}
   }
 
+  return ptr;
+}
+
+
+struct expr_str *A4GL_new_expr_agg (char type,int nagg)
+{
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_AGGREGATE);
+  ptr->u_data.expr_agg=malloc(sizeof(struct expr_agg));
+  ptr->u_data.expr_agg->agg_type=type;
+  ptr->u_data.expr_agg->expr_num=nagg;
+  ptr->u_data.expr_agg->in_group=-1;
   return ptr;
 }
 
@@ -700,7 +712,7 @@ struct expr_str *A4GL_expr_in_sq(struct expr_str *expr, int invert,char *subquer
  * @return
  */
 void * 
-A4GL_append_expr (struct expr_str *orig_ptr, char *value)
+A4GL_append_expr_obsol (struct expr_str *orig_ptr, char *value)
 {
   struct expr_str *ptr;
   struct expr_str *start;
@@ -708,7 +720,7 @@ A4GL_append_expr (struct expr_str *orig_ptr, char *value)
 
   A4GL_debug ("MJA A4GL_append_expr %p (%s)", orig_ptr, value);
 
-  ptr = A4GL_new_expr (value);
+  ptr = A4GL_new_expr_obsol (value);
   if (orig_ptr->next != 0)
     {
       while (orig_ptr->next != 0)
@@ -777,6 +789,7 @@ int
 A4GL_length_expr (struct expr_str *ptr)
 {
   int c = 0;
+  A4GL_assertion(1,"No longer used");
   A4GL_debug ("Print expr... %p", ptr);
   while (ptr)
     {
@@ -788,7 +801,7 @@ A4GL_length_expr (struct expr_str *ptr)
 
 
 void * 
-A4GL_new_expr (char *value)
+A4GL_new_expr_obsol (char *value)
 {
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);

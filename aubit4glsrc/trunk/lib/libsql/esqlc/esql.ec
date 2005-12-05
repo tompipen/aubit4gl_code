@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.153 2005-12-02 12:28:11 mikeaubury Exp $
+# $Id: esql.ec,v 1.154 2005-12-05 20:31:06 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.153 2005-12-02 12:28:11 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.154 2005-12-05 20:31:06 mikeaubury Exp $";
 #endif
 
 
@@ -3782,7 +3782,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
   int numberOfColumns;
-  int MaxColumns = 1024;		//we will be able to process tables with maximum 1024 columns
+  //int MaxColumns = 1024;		//we will be able to process tables with maximum 1024 columns
   EXEC SQL END DECLARE SECTION;
 
   sprintf (strSelect, "select * from %s\n", tabname);
@@ -4330,7 +4330,7 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int s
 	int a;
 	$int mintid;
 	$char tabname[65];
-	int i;
+	//int i;
 	if (mode==1) mintid=99; else mintid=0;
 	$declare c_get_tables cursor for select tabname from systables where tabid>$mintid order by tabname;
 	$open c_get_tables;
@@ -4389,9 +4389,9 @@ long
 A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type) {
 $struct sqlda *udesc;
 $char *sql_stmt;
-$struct sqlvar_struct *col;
+//$struct sqlvar_struct *col;
 struct s_sid *sid;
-int i;
+//int i;
 
   sid = A4GLSQL_find_prepare (stmt);	// ,0
   
@@ -4438,23 +4438,23 @@ return 1;
 }
 
 
-static struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
+static struct expr_str_list *A4GL_add_validation_elements_to_expr(struct expr_str_list *ptr,char *val) {
 char *ptr2;
 char *ptrn;
-char buff[256];
+struct expr_str *ptr3;
+//char buff[256];
 A4GL_trim(val);
 ptr2=val;
 while (1) {
         ptrn=strtok(ptr2,",");
         if (ptrn==0) break;
         if (ptr2) {ptr2=0;}
-
-        sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
+	ptr3=A4GL_new_literal_string(ptrn);
 
         if (ptr==0) {
-                ptr=(struct expr_str *)A4GL_new_expr(buff);
+		ptr=A4GL_new_ptr_list(ptr3);
         } else {
-                A4GL_append_expr(ptr,buff);
+		ptr=A4GL_new_append_ptr_list(ptr,ptr3);
         }
 
 }
@@ -4462,13 +4462,14 @@ return ptr;
 }
 
 
-void *A4GLSQLLIB_A4GLSQL_get_validation_expr(char *tabname,char *colname) {
+t_expr_str_list *A4GLSQLLIB_A4GLSQL_get_validation_expr(char *tabname,char *colname) {
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 char val[65];
-struct expr_str *ptr=0;
+//struct expr_str *ptr=0;
 EXEC SQL END DECLARE SECTION;
 char *cptr=0;
+t_expr_str_list *plist=0;
 //int cnt;
 
 cptr=acl_getenv("A4GL_SYSCOL_VAL");
@@ -4491,11 +4492,10 @@ if (sqlca.sqlcode!=0) return (void *)-1;
 while (1) {
 	EXEC SQL FETCH c_get_val INTO  $val;
 	if (sqlca.sqlcode!=0) break;
-	ptr=A4GL_add_validation_elements_to_expr(ptr,val);
-	
+	plist=A4GL_add_validation_elements_to_expr(plist,val);
 	// Process it...
 }
-return ptr;
+return plist;
 
 }
 

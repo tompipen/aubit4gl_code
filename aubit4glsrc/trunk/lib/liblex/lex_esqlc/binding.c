@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.48 2005-10-03 10:55:21 mikeaubury Exp $
+# $Id: binding.c,v 1.49 2005-12-05 20:31:06 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.48 2005-10-03 10:55:21 mikeaubury Exp $";
+		"$Id: binding.c,v 1.49 2005-12-05 20:31:06 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -238,7 +238,7 @@ make_sql_bind (char *sql, char *type)
 	  if (obindcnt)
 	    {
 
-	      SPRINTF1 (buff_small, "A4GL_set_init(obind,%d);\n", obindcnt);
+	      //SPRINTF1 (buff_small, "A4GL_set_init(obind,%d);\n", obindcnt);
 	      strcpy (buff_out, buff_small);
 	      if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 		{
@@ -490,7 +490,7 @@ make_sql_bind_expr (char *sql, char *type)
 	  if (obindcnt)
 	    {
 
-	      SPRINTF1 (buff_small, "A4GL_set_init(obind,%d);\n", obindcnt);
+	      //SPRINTF1 (buff_small, "A4GL_set_init(obind,%d);\n", obindcnt);
 	      strcpy (buff_out, buff_small);
 	      for (a = 0; a < obindcnt; a++)
 		{
@@ -738,7 +738,7 @@ char buff_ind[255];
   if (ioro == 'o')
     {
 
- 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _voi_%d=-1;",a); } else { strcpy(buff_ind,""); }
+ 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _voi_%d=-2;",a); } else { strcpy(buff_ind,""); }
 
       switch (obind[a].dtype & 0xffff)
 	{

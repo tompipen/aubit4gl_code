@@ -426,7 +426,10 @@ print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi {
 ;
 
 opt_scaling :
-	{ $<ptr>$=A4GL_new_expr(A4GL_get_default_scaling());}
+	{ struct expr_str *p;
+		p=A4GL_new_literal_double_str("1.0");
+		$<ptr>$=A4GL_append_expr_expr(p,p);
+	}
 	| SCALED_BY fgl_expr_c { 
 			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>2);
 	}
@@ -480,60 +483,50 @@ rep_expr_p : fgl_expr_c op_wordwrap {
 rep_agg : 
 	SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 		{
-		int a;
-		a=add_report_agg('S',$<ptr>3,$<ptr>5,racnt,$<str>$);
-		//sprintf($<str>$,"if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",racnt,racnt);
+		long a;
+		$<ptr>$=add_report_agg('S',$<ptr>3,$<ptr>5,racnt,&a);
 		racnt+=a;
 		}
 	| COUNT_MULTIPLY rep_where
 		{
-		int a;
-		a=add_report_agg('C',0,$<ptr>2,racnt,$<str>$);
-		//sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
+		long a;
+		$<ptr>$=add_report_agg('C',0,$<ptr>2,racnt,&a);
 		racnt+=a;
 		}
 	| COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET rep_where
 		{
-		int a;
-		a=add_report_agg('C',0,$<ptr>5,racnt,$<str>$);
-		//sprintf($<str>$,"A4GL_push_int(_g%d);\n",racnt);
+		long a;
+		$<ptr>$=add_report_agg('C',0,$<ptr>5,racnt,&a);
 		racnt+=a;
 		}
-
-	
 	| PERCENT   OPEN_BRACKET MULTIPLY CLOSE_BRACKET  rep_where
 		{
-		int a;
-		a=add_report_agg('P',$<ptr>3,$<ptr>5,racnt,$<str>$);
-		//sprintf($<str>$,"A4GL_push_double((double)_g%d/(double)_g%d);\n",racnt,racnt+1);
+		long a;
+		$<ptr>$=add_report_agg('P',$<ptr>3,$<ptr>5,racnt,&a);
 		racnt+=a;
 	}
 	| AVERAGE   OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 		{
-		int a;
-		a=add_report_agg('A',$<ptr>3,$<ptr>5,racnt,$<str>$);
-		//sprintf($<str>$,"A4GL_push_double(_g%d/(double)_g%d);\n",racnt,racnt+1);
+		long a;
+		$<ptr>$=add_report_agg('A',$<ptr>3,$<ptr>5,racnt,&a);
 		racnt+=a;
 		}
-	| AVG       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+	| AVG   OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 		{
-		int a;
-		a=add_report_agg('A',$<ptr>3,$<ptr>5,racnt,$<str>$);
-		//sprintf($<str>$,"A4GL_push_double(_g%d/_g%d);\n",racnt,racnt+1);
+		long a;
+		$<ptr>$=add_report_agg('A',$<ptr>3,$<ptr>5,racnt,&a);
 		racnt+=a;
 		}
 	| XMIN       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 		{
-		int a;
-		a=add_report_agg('N',$<ptr>3,$<ptr>5,racnt,$<str>$);
-		//sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
+		long a;
+		$<ptr>$=add_report_agg('N',$<ptr>3,$<ptr>5,racnt,&a);
 		racnt+=a;
 		}
 	| XMAX       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 		{
-		int a;
-		a=add_report_agg('X',$<ptr>3,$<ptr>5,racnt,$<str>$);
-		//sprintf($<str>$,"A4GL_push_double(_g%d);\n",racnt);
+		long a;
+		$<ptr>$=add_report_agg('X',$<ptr>3,$<ptr>5,racnt,&a);
 		racnt+=a;
 		}
 ;

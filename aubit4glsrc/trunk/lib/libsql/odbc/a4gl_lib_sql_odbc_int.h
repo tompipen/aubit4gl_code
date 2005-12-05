@@ -4,7 +4,6 @@
 #endif
 
 
-#include "a4gl_API_sql_lib.h"
 
 
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
@@ -156,3 +155,4 @@ UDWORD A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname);
 
 
 #include "a4gl_lib_sql_int.h"
+#include "a4gl_API_sql_lib.h"
