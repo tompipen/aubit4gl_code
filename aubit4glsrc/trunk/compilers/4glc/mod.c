@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.261 2005-12-05 20:31:01 mikeaubury Exp $
+# $Id: mod.c,v 1.262 2005-12-09 17:01:43 mikeaubury Exp $
 #
 */
 
@@ -4509,7 +4509,7 @@ fgl_add_scope (char *s, int n)
 	}
       else
 	{
-	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE"))) { if (isin_command ("REPORT")) { c='R'; } }
+	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE")) && c=='L') { if (isin_command ("REPORT")) { c='R'; } }
 	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && (c == 'M' || c=='R'))
 	    {
 		    if (c=='R') {
