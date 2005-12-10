@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.40 2005-09-05 09:24:49 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.41 2005-12-10 22:29:31 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.40 2005-09-05 09:24:49 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.41 2005-12-10 22:29:31 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -639,8 +639,8 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 		{
 		  void *curses_form;
 		  curses_form = sio->currform->form;
-		  if ((void *) A4GL_LL_current_field (curses_form) !=
-		      sio->currentfield)
+		  A4GL_debug("CARAT=%d",A4GL_LL_get_carat (curses_form));
+		  if ((void *) A4GL_LL_current_field (curses_form) != sio->currentfield ||  A4GL_LL_get_carat (curses_form)==0)
 		    {
 
 		      if (std_dbscr.input_wrapmode == 0

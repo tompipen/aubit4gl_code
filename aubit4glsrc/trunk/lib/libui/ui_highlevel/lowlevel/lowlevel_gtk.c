@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.81 2005-11-01 10:28:00 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.82 2005-12-10 22:29:31 mikeaubury Exp $";
 #endif
 
 
@@ -2845,25 +2845,32 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       gint iopos;
       char buff[2];
       char *utf;
+      struct struct_scr_field *fprop;
+      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (cwidget));
+	int m;
+	m=gtk_object_get_data(GTK_OBJECT(cwidget),"MAXFIELD");
+	printf("Max field = %d curcol=%d\n",m,form->curcol);
       buff[0] = mode;
       buff[1] = 0;
       utf = g_locale_to_utf8 (buff, -1, NULL, NULL, NULL);
+      printf("form->ovlins=%d",form->ovlins);
       if (form->ovlins == 1)
 	{
+	  printf("Insert %s\n",buff);
 	  iopos = form->curcol;
-	  gtk_editable_insert_text (GTK_EDITABLE (cwidget), utf, strlen (utf),
-				    &iopos);
+	  gtk_editable_insert_text (GTK_EDITABLE (cwidget), utf, strlen (utf), &iopos);
 	  form->curcol++;
 	  //form->curcol+=strlen(utf);
+	  if (form->curcol>=m && A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)) form->curcol=0;
 	}
       else
 	{
-	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol,
-				    form->curcol + 1);
+	  printf("overwrite\n");
+	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol, form->curcol + 1);
 	  iopos = form->curcol;
-	  gtk_editable_insert_text (GTK_EDITABLE (cwidget), utf, strlen (utf),
-				    &iopos);
+	  gtk_editable_insert_text (GTK_EDITABLE (cwidget), utf, strlen (utf), &iopos);
 	  form->curcol++;
+	  if (form->curcol>=m && A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)) form->curcol=0;
 	  //form->curcol+=strlen(utf);
 	}
       g_free (utf);
@@ -3877,9 +3884,7 @@ A4GL_LL_disp_form_field_ap (int n, int attr, char *s, va_list * ap)
     {
 
       A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
-      fprop =
-	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (field_list[a]));
+      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field_list[a]));
       fprop->flags |= 2;
 
 

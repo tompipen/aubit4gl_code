@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.300 2005-09-04 22:01:47 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.301 2005-12-10 22:29:21 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1747,7 +1747,7 @@ case $host in
 		ARCHEXT=zip
 
         #check if we are using MinGW GCC with CygWin:
-		TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
+		TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
 		if test "$TMP_TMP" != ""; then
 			set `echo $TMP_TMP`
 			if test "$1" != ""; then
@@ -2569,7 +2569,7 @@ else
 	
 	AC_MSG_CHECKING(make version)
 	#this creates full set dump on Solaris
-	set `$MAKE --version | head -1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+	set `$MAKE --version | head -n 1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
 	if test "$1" != "" -a "$2" != ""; then
 		if test "$1" = "3" -a "$2" -lt "50"; then
 	        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
@@ -2618,7 +2618,7 @@ if test "$COMSPEC" != ""; then
 	regtool.exe check  "$PG_REG_ROOT" > /dev/null 2>&1
 	RET=$?
 	if test "$RET" = "0"; then
-		PG_REG_INST_NAME=`regtool list "$PG_REG_ROOT" | head -1`
+		PG_REG_INST_NAME=`regtool list "$PG_REG_ROOT" | head -n 1`
 		#Note: sed/dirname are to remove trailing backslash from registry,
 		#otherwise cygpath chokes (backslash escapes closing quote)
 		PG_REG_BASEDIR=`regtool.exe get "$PG_REG_ROOT/$PG_REG_INST_NAME/Base Directory" | sed -e 's/\\\\/\//g'`
@@ -2629,14 +2629,14 @@ if test "$COMSPEC" != ""; then
 	
 	UNINST_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"
 	
-	MSYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -1`
+	MSYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -n 1`
 	if test "$MSYS_REG_NAME" != ""; then 
 		MSYS_REG_PATH="$UNINST_REG_PATH/$MSYS_REG_NAME"	
 		MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
 		MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
 	fi
 
-	MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -1`
+	MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -n 1`
 	if test "$MINGW_REG_NAME" != ""; then	
 		MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"	
 		MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
@@ -2750,7 +2750,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 		if test "$BISON" != "no"; then
 			AC_MSG_CHECKING(Bison version)
-			TMP_TMP=`$BISON --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g' -e 's/[a-z]//g'`
+			TMP_TMP=`$BISON --version|head -n 1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g' -e 's/[a-z]//g'`
 			#On some versions of CygWin, did not strip letters -
 			#don't know why...so I had to use tr instead
 			TMP_TMP=`echo "$TMP_TMP" | tr -d '[[A-Z]]' | tr -d '[[a-z]]'`
@@ -2821,7 +2821,7 @@ else
 	if test "$LEX" = "flex"; then 
 		#flex 2.5.31 has a new incompatible API.  I had to downgrade back to 2.5.4a.
 		AC_MSG_CHECKING(Flex version)
-		TMP_TMP=`$LEX --version | head -1 | sed -e 's/^flex version //' -e 's/\./ /g' -e 's/[a-z]//g'`
+		TMP_TMP=`$LEX --version | head -n 1 | sed -e 's/^flex version //' -e 's/\./ /g' -e 's/[a-z]//g'`
 		TMP_TMP=`echo "$TMP_TMP" | tr -d '[[A-Z]]' | tr -d '[[a-z]]'`
 		set `echo $TMP_TMP`
 		AC_MSG_RESULT($1.$2.$3)
@@ -2953,7 +2953,7 @@ AC_PROG_CC
 
 if test "$CC" = "gcc"; then
 	AC_MSG_CHECKING(GCC version)
-	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
+	TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
 		if test "$1" != ""; then
@@ -4244,7 +4244,7 @@ else
 				#For 4glWorks: try to understand whether this is 4gl4 or 4gl6, as you
 				#have to free cursors & statements differently
 				AC_MSG_CHECKING(fglpc version)
-				set `fglpc -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+				set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
 				if test "$1" != ""; then
 					#if test "$1" = "4" -a "$2" -lt "50"; then
 		            if test "$1" -lt "5"; then
@@ -4267,7 +4267,7 @@ else
 			#aware, or is a special case, ie c4gl 4.x or is not esql/c
 			#aware in any way, shape or form (ie an rds only shop)
 				AC_MSG_CHECKING(c4gl version)
-				set `c4gl -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+				set `c4gl -v 2>/dev/null | head -n 1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
 				if test "$1" != ""; then
 					#if test "$1" = "4" -a "$2" -lt "50"; then
 		            if test "$1" -lt "5"; then
@@ -4335,7 +4335,7 @@ AC_ARG_WITH(httpd,
 				AC_MSG_CHECKING(Web server paths)
 				grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
 				CGI_DIR=`grep -v \# /tmp/tmp_config_.tmp | grep cgi-bin | awk '{print $3}' | sed -e 's/"//g'`
-				WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | head -1 | awk '{print $2}' | sed -e 's/"//g'`
+				WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | head -n 1 | awk '{print $2}' | sed -e 's/"//g'`
 				AC_MSG_RESULT(OK ($WWW_DOCUMENT_ROOT)($CGI_DIR))
 		    fi
 
@@ -4836,7 +4836,7 @@ AC_ARG_WITH(pgsqleng,
 		AC_PATH_PROG(POSTMASTER, postmaster, no, $PATH)
         if test "$POSTMASTER" != "no"; then
 			AC_MSG_CHECKING(PG engine version)
-			POSTMASTER_VER=`$POSTMASTER --version 2>&1 | head -1 | sed -e 's/postmaster (PostgreSQL) //'`
+			POSTMASTER_VER=`$POSTMASTER --version 2>&1 | head -n 1 | sed -e 's/postmaster (PostgreSQL) //'`
 			#7.1.3
 			case "$POSTMASTER_VER" in
 				*informix*) #7.4informix1.6 - Dave's patched code
@@ -5120,7 +5120,7 @@ if test "$withval" != "no"; then
 	if test "$PG_ESQLC" != "no"; then
 		AC_MSG_CHECKING(PG ESQL Informix compatibility)
 		#First, with -v
-		PG_ESQLC_VERSION=`$PG_ESQLC -v 2>&1  | head -1 | sed -e 's/ecpg - the postgresql preprocessor, version: //' | sed -e 's/ecpg, the PostgreSQL embedded C preprocessor, version //'`
+		PG_ESQLC_VERSION=`$PG_ESQLC -v 2>&1  | head -n 1 | sed -e 's/ecpg - the postgresql preprocessor, version: //' | sed -e 's/ecpg, the PostgreSQL embedded C preprocessor, version //'`
 		#Fri Jul 18 16:31:10 CEST 2003
 		#        - Set ecpg version to 3.0.0
 		#        - Set ecpg library to 4.0.0
@@ -5154,7 +5154,7 @@ if test "$withval" != "no"; then
 		if test "$enable_ac_debug" = "yes" ; then
 			$PG_ESQLC --version 2>&1 | sed -e 's/ecpg (PostgreSQL //' | sed -e 's/)//'
 		fi
-		PG_ESQLC_VERSION2=`$PG_ESQLC --version 2>&1  | head -1 | sed -e 's/ecpg (PostgreSQL //' | sed -e 's/)//' | awk '{print $1}'`
+		PG_ESQLC_VERSION2=`$PG_ESQLC --version 2>&1  | head -n 1 | sed -e 's/ecpg (PostgreSQL //' | sed -e 's/)//' | awk '{print $1}'`
 		if test "$PG_ESQLC_VERSION2" != ""; then
 			case "$PG_ESQLC_VERSION2" in
 
@@ -6597,15 +6597,15 @@ AC_ARG_WITH(gtk,
 			else
 				#pkg-config seems to work
 				#First try to see if pgk-config has info on GTK+ version 2
-				GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk+-2.0 " | head -1 | awk '{print $1}'`
-				GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk-2.0 " | head -1 | awk '{print $1}'`
-				GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib-2.0 " |  head -1 | awk '{print $1}'`
+				GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk+-2.0 " | head -n 1 | awk '{print $1}'`
+				GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk-2.0 " | head -n 1 | awk '{print $1}'`
+				GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib-2.0 " |  head -n 1 | awk '{print $1}'`
 	
 				if test "$GTK_NAME" = "" -o "$GDK_NAME" = "" -o "$GLIB_NAME" = ""; then
 					#No GTK+ version 2 info, try old 1.2
-					GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk " | head -1 | awk '{print $1}'`
-					GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk " | head -1 | awk '{print $1}'`
-					GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib " |  head -1 | awk '{print $1}'`
+					GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk " | head -n 1 | awk '{print $1}'`
+					GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk " | head -n 1 | awk '{print $1}'`
+					GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib " |  head -n 1 | awk '{print $1}'`
 					if test "$GTK_NAME" = "" -o "$GDK_NAME" = "" -o "$GLIB_NAME" = ""; then
 						#No 2 info, no 1.2 info
 						GTK_VERSION="0"; 
@@ -9123,7 +9123,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.300 2005-09-04 22:01:47 mikeaubury Exp $
+| $Id: configure.in,v 1.301 2005-12-10 22:29:21 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

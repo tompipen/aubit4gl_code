@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.88 2005-11-17 20:33:26 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.89 2005-12-10 22:29:31 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.88 2005-11-17 20:33:26 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.89 2005-12-10 22:29:31 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -588,13 +588,12 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  if (sio->fcntrl[a].extent >= 28 && sio->fcntrl[a].extent <= 255)
 	    {
 	      fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-
 	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT))
 		{
 		  FORM *curses_form;
 		  curses_form = sio->currform->form;
 
-		  if (current_field (curses_form) != sio->currentfield)
+		  if (current_field (curses_form) != sio->currentfield || curses_form->curcol==0)
 		    {
 	  		if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (sio, sio->currentfield)) {
 	      			A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_OK, 0, 0, 0,__LINE__);
