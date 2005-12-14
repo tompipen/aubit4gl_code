@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.78 2005-12-05 20:31:01 mikeaubury Exp $
+# $Id: variables.c,v 1.79 2005-12-14 14:47:42 mikeaubury Exp $
 #
 */
 
@@ -526,6 +526,7 @@ A4GL_debug("scope=%c",scope);
       curr_v[record_cnt]->data.v_record.record_cnt = 0;
       curr_v[record_cnt]->data.v_record.record_alloc = 0;
       curr_v[record_cnt]->data.v_record.linked = 0;
+      memset(curr_v[record_cnt]->data.v_record.user_ptr,0,sizeof(curr_v[record_cnt]->data.v_record.user_ptr));
       curr_v[record_cnt]->data.v_record.object_type = 0;
       record_cnt++;
       curr_v[record_cnt] = 0;	/* Make sure we're starting fresh...*/
@@ -537,6 +538,7 @@ A4GL_debug("scope=%c",scope);
       curr_v[record_cnt]->data.v_record.record_cnt = 0;
       curr_v[record_cnt]->data.v_record.record_alloc = 0;
       curr_v[record_cnt]->data.v_record.linked = 0;
+      memset(curr_v[record_cnt]->data.v_record.user_ptr,0,sizeof(curr_v[record_cnt]->data.v_record.user_ptr));
       curr_v[record_cnt]->data.v_record.object_type = name;
       record_cnt++;
       curr_v[record_cnt] = 0;	/* Make sure we're starting fresh...*/

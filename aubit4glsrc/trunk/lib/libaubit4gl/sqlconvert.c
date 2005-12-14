@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.73 2005-11-17 09:31:58 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.74 2005-12-14 14:47:50 mikeaubury Exp $
 #
 */
 
@@ -1689,6 +1689,11 @@ CV_matches (char *type, char *string, char *esc)
   static char buff[1024];
   int a;
 
+  if (strncmp(string,"'@@VARIABLE[",12)==0) {
+	return string;
+  }
+
+
   if (string[0] != '\'')
     {
       // Can't change a string we cant see....
@@ -1740,7 +1745,11 @@ CV_matches (char *type, char *string, char *esc)
 	  }
 	if (type[0] != '~' && (string[a] == '%' || string[a] == '_'))
 	  {
-	    strcat (buff, "\\");
+		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+	    		strcat (buff, "\\\\");
+		} else {
+	    		strcat (buff, "\\");
+		}
 	  }
 
 	smallvar[0] = string[a];
