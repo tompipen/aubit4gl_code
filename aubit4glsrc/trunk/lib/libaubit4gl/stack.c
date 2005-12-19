@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.142 2005-12-02 12:28:11 mikeaubury Exp $
+# $Id: stack.c,v 1.143 2005-12-19 18:44:44 mikeaubury Exp $
 #
 */
 
@@ -1784,9 +1784,9 @@ int first;
 #ifdef DEBUG
   A4GL_debug ("compare Data types %d %d \n", d1, d2);
 #endif
-  if (d1 == d2 || (d1 != d2 && d1 != 0 && d2 != 0))
+  if (d1 == d2 || (d1 != d2 && d1 != DTYPE_CHAR && d2 != DTYPE_CHAR))
     {
-      if (d1 == 0 && d2 == 0)
+      if (d1 == DTYPE_CHAR && d2 == DTYPE_CHAR)
 	{
 	  z1 = A4GL_char_pop ();
 	  A4GL_trim (z1);
@@ -1797,10 +1797,8 @@ int first;
 	  /* {DEBUG} */ A4GL_debug (" = %d\n", strcmp (z1, z2));
 #endif
 	  cmp = strcmp (z1, z2) * -1;
-	  if (cmp < 0)
-	    cmp = -1;
-	  if (cmp > 0)
-	    cmp = 1;
+	  if (cmp < 0) cmp = -1;
+	  if (cmp > 0) cmp = 1;
 	  acl_free (z1);
 	  acl_free (z2);
 	  z1 = 0;
@@ -1808,8 +1806,27 @@ int first;
 	  A4GL_debug ("String compare gives %d\n", cmp);
 	  return cmp;
 	}
-      else
-	{
+	if (d1==DTYPE_VCHAR ||d2==DTYPE_VCHAR) {
+		if ((d1==DTYPE_VCHAR||d1==DTYPE_CHAR)  && (d2==DTYPE_VCHAR||d2==DTYPE_CHAR)  ) {
+	  		z1 = A4GL_char_pop ();
+	  		z2 = A4GL_char_pop ();
+			if (d1==DTYPE_CHAR||d2==DTYPE_CHAR) {
+	  			A4GL_trim (z1);
+	  			A4GL_trim (z2);
+			}
+	  		cmp = strcmp (z1, z2) * -1;
+	  		if (cmp < 0) cmp = -1;
+	  		if (cmp > 0) cmp = 1;
+	  		acl_free (z1);
+	  		acl_free (z2);
+	  		z1 = 0;
+	  		z2 = 0;
+	  		A4GL_debug ("String compare gives %d\n", cmp);
+	  		return cmp;
+		}
+	}
+
+	
 	  a = A4GL_pop_double ();
 	  b = A4GL_pop_double ();
 	  A4GL_debug("%lf %lf",a,b);
@@ -1819,10 +1836,10 @@ int first;
 	  A4GL_debug ("check %.8lf %.8lf %.8lf ", a, b,diff);
 #endif
 	
-	if (diff<0.00000001 && a!=b) {
+	  if (diff<0.00000001 && a!=b) {
 		A4GL_debug("Near as dammit equal..");
 		return 0;
-	}
+	  }
 	  if (b > a)
 	    {
 	      return 1;
@@ -1833,7 +1850,7 @@ int first;
 	    }
 	  A4GL_debug ("Equal");
 	  return 0;
-	}
+	
     }
 
   /* comparison of char to number/date */
@@ -1842,7 +1859,7 @@ int first;
 
 
 
-  if (d1 == 0)
+  if (d1 == DTYPE_CHAR)
     {
 	//double aa;
       //A4GL_debug ("First is string");	
@@ -2197,6 +2214,7 @@ A4GL_push_disp_bind (void *vb, int n)
 }
 
 
+#ifdef MOVED
 /**
  *
  *
@@ -2241,6 +2259,9 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 #endif
 	      A4GL_push_param (mptr, b[cb].dtype);
 #ifdef DEBUG
+	      if (b[cb].dtype==DTYPE_VCHAR ) {
+		      	A4GL_debug(" : '%s' '%s'",b[cb].ptr,mptr);
+	      }
 	      /* {DEBUG} */
 	      A4GL_debug
 		("11   checking for equallity--------------------------------------------");
@@ -2266,7 +2287,7 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 #endif
   return -1;
 }
-
+#endif
 
 /**
  *

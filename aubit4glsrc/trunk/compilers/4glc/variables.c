@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.79 2005-12-14 14:47:42 mikeaubury Exp $
+# $Id: variables.c,v 1.80 2005-12-19 18:44:33 mikeaubury Exp $
 #
 */
 
@@ -2563,13 +2563,17 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       *ptr = 0;
       ptr++;
       strcpy (record2, ptr);
+
       if (record2[0] >= 'A' && record2[0] <= 'Z' && record2[1] == '_')
 	{
 	  strcpy (record2, A4GL_unscope(ptr));
 	}
 
+      A4GL_debug("Looking for dot in record1 : %s",record1);
       dot[0] = strrchr (record1, '.');
+      A4GL_debug("Looking for dot in record2 : %s",record2);
       dot[1] = strrchr (record2, '.');
+
       if (dot[0] == 0 || dot[1] == 0)
 	{
 	  /* Can't find a dot in a thru ?*/
@@ -2581,6 +2585,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       *dot[1] = 0;
       if (strcasecmp (record1, record2) != 0)
 	{
+	A4GL_debug("Thru is bad : '%s' '%s'",record1,record2);
 	  a4gl_yyerror ("The 'thru' contains different records..");
 	  return 0;
 	}

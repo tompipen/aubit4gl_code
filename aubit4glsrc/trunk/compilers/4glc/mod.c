@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.262 2005-12-09 17:01:43 mikeaubury Exp $
+# $Id: mod.c,v 1.263 2005-12-19 18:44:33 mikeaubury Exp $
 #
 */
 
@@ -1978,15 +1978,14 @@ add_bind (char i, char *var_i)
     }
 
 
-  A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype,
-	      A4GL_null_as_null (var), i);
+  A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype, A4GL_null_as_null (var), i);
 
   if (i == 'i')
     {
       if (dtype == -2 || strstr (var, ".*"))
 	{
 	  char buff[2000];
-	  if (strstr (var, ".*") == 0)
+	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0)
 	    {
 	      strcpy (buff, var);
 	      strcat (buff, ".*");
@@ -2069,7 +2068,7 @@ add_bind (char i, char *var_i)
 	  A4GL_debug ("push_bind_rec...");
 	  char buff[2000];
 	  strcpy (buff, var);
-	  if (strstr (var, ".*") == 0)
+	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0)
 	    {
 	      strcpy (buff, var);
 	      strcat (buff, ".*");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.82 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: report.c,v 1.83 2005-12-19 18:44:44 mikeaubury Exp $
 #
 */
 
@@ -1720,5 +1720,76 @@ cursor_for_rep_tab (void *b)
   SPRINTF1 (tbuff, "c_%lx", (unsigned long)b);
   return tbuff;
 }
+
+
+
+/**
+ *
+ *
+ * @return
+ */
+int
+A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
+{
+  int i;
+  int ca, cb;
+  char *mptr[2048];
+
+
+  for (ca = 0; ca < no; ca++)
+    {
+#ifdef DEBUG
+      /* {DEBUG} */ A4GL_debug ("ca=%d", ca);
+#endif
+      for (cb = 0; cb < nb; cb++)
+        {
+#ifdef DEBUG
+          /* {DEBUG} */ A4GL_debug ("   cb=%d", cb);
+#endif
+          if (b[cb].ptr == o[ca].ptr)
+            {
+#ifdef DEBUG
+              /* {DEBUG} */ A4GL_debug ("11   pointers %d %d are equal", cb, ca);
+#endif
+              /* check value in o.ptr against that on the stack */
+#ifdef DEBUG
+              /* {DEBUG} */ A4GL_debug ("11 nb=%d cb=%d ca=%d\n", nb, cb, ca);
+#endif
+              A4GL_read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
+              A4GL_push_param (b[cb].ptr, b[cb].dtype);
+#ifdef DEBUG
+              /* {DEBUG} */ A4GL_debug ("   pushing this data");
+#endif
+              A4GL_push_param (mptr, b[cb].dtype);
+#ifdef DEBUG
+              /* {DEBUG} */
+              A4GL_debug
+                ("11   checking for equallity--------------------------------------------");
+#endif
+              A4GL_pushop (OP_EQUAL);
+              i = A4GL_pop_bool ();
+#ifdef DEBUG
+              if ((b[cb].dtype & DTYPE_MASK)==DTYPE_VCHAR ) {
+                        A4GL_debug(" VARCHAR: '%s' '%s' i=%d",b[cb].ptr,mptr,i);
+              }
+              /* {DEBUG} */ A4GL_debug ("   i=%d", i);
+#endif
+              if (i == 0)
+                {
+#ifdef DEBUG
+                  /* {DEBUG} */
+                  A4GL_debug ("10 Param %d has changed in order by binding", ca);
+#endif
+                  return ca + 1;
+                }
+            }
+        }
+    }
+#ifdef DEBUG
+  /* {DEBUG} */ A4GL_debug ("10 No change");
+#endif
+  return -1;
+}
+
 
 /* ============================= EOF ================================ */
