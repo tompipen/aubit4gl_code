@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.128 2005-10-14 09:15:32 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.129 2005-12-20 15:00:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.128 2005-10-14 09:15:32 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.129 2005-12-20 15:00:46 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -1698,6 +1698,19 @@ doing_esql_unload=A4GLSQLCV_check_requirement("ESQL_UNLOAD");
 				ptr[b]=' ';
 			}
 		}
+		if (strncmp(&ptr[a],"INDICATOR :_vii_",16)==0) {
+			int b;
+			for (b=0;b<16;b++) {
+			ptr[a+b]=' ';
+			}
+
+			for (b=a+16;b<strlen(ptr);b++) {
+				if (ptr[b]<'0'||ptr[b]>'9') {a=b-1;break;}
+				ptr[b]=' ';
+			}
+		}
+
+
 		if (ptr[a]=='\n') ptr[a]=' ';
 	}
   print_conversions('i');
