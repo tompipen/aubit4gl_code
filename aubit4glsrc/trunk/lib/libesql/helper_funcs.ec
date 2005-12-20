@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.36 2005-12-05 20:31:06 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.37 2005-12-20 14:08:39 mikeaubury Exp $
 #
 */
 
@@ -766,7 +766,9 @@ for (a=0;a<n;a++) {
 		continue;
 		}
 	}
-	A4GL_setnull (a4gl_bind[a].dtype &DTYPE_MASK, (char *) a4gl_bind[a].ptr, a4gl_bind[a].size);
+        if (dir=='o') {
+		A4GL_setnull (a4gl_bind[a].dtype &DTYPE_MASK, (char *) a4gl_bind[a].ptr, a4gl_bind[a].size);
+        }
 	size=a4gl_bind[a].size;
 	x=a4gl_bind[a].start_char_subscript;
 	y=a4gl_bind[a].end_char_subscript;
