@@ -1,0 +1,66 @@
+
+
+
+     before row : 1 0    
+     before insert : 1 1 
+     before col2         
+     after col2          
+     after insert : 1 1  
+     after row : 1 1     
+     before row : 2 1    
+     before insert : 2 2 
+     before col2         
+     after col2          
+     after insert : 2 2  
+     after row : 2 2     
+     before row : 3 2    
+     before insert : 3 3 
+     before col2         
+     after col2          
+     after insert : 3 3  
+     after row : 3 3     
+     before row : 4 3    
+     before insert : 4 4 
+     before col2         
+     after col2          
+     after insert : 4 4  
+     after row : 4 4     
+     before row : 5 4    
+     before insert : 5 5 
+     after row : 5 4     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
