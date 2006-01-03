@@ -450,7 +450,10 @@ if sqlca.sqlcode>=0 then
 		message msg clipped
 	else
 code
+		fflush(stdout);
+		fflush(exec_out);
 		fprintf(stderr,"%s\n",msg);
+		fflush(stderr);
 endcode
 
 		display " "
@@ -480,6 +483,8 @@ else
 	else
 code
 	fprintf(stderr,"%s\n",msg);
+	fflush(stdout);
+	fflush(stderr);
 endcode
 		display " "
 	end if
