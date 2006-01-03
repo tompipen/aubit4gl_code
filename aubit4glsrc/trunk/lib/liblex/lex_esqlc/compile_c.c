@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.279 2005-12-05 20:31:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.280 2006-01-03 17:27:55 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.279 2005-12-05 20:31:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.280 2006-01-03 17:27:55 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4807,12 +4807,14 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   static char buff2[256];
   int cnt;
   int sio_id;
+  int i_defs;
   struct input_array_attribs *ptr_input_attr;
   ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printc ("/*");
   push_blockcommand ("INPUT");
   sio_id=get_sio_ids("INPUT");
   printc ("*/");
+  i_defs=atoi(defs);
   printcomment ("/* input */\n");
   printc ("{int _fld_dr= -100;int _exec_block= 0;\nchar *fldname;\nint _forminit=1;");
   printc ("char _sio_%d[%d];char _inp_io_type='A';char *_sio_kw_%d=\"s_inp_arr\";\n",sio_id,
@@ -4820,7 +4822,11 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_exec_block==0) {\n");
-  printc ("SET(\"s_inp_arr\",_sio_%d,\"no_arr\",A4GL_get_count());\n",sio_id);
+  if (i_defs) {
+  	printc ("SET(\"s_inp_arr\",_sio_%d,\"no_arr\",A4GL_get_count());\n",sio_id);
+  } else {
+  	printc ("SET(\"s_inp_arr\",_sio_%d,\"no_arr\",0);\n",sio_id);
+  }
   printc ("SET(\"s_inp_arr\",_sio_%d,\"binding\",obind);\n",sio_id);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"nbind\",%d);\n",sio_id, cnt);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"srec\",0);\n",sio_id);
@@ -6811,7 +6817,7 @@ LEXLIB_A4GL_get_into_part (int doing_declare, int no)
   int a;
   if (doing_esql ())
     {
-      char buff[30];
+      char buff[300];
 
 
       if (no == 0)

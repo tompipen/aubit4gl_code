@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.108 2005-11-24 14:04:45 mikeaubury Exp $
+# $Id: iarray.c,v 1.109 2006-01-03 17:27:55 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.108 2005-11-24 14:04:45 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.109 2006-01-03 17:27:55 mikeaubury Exp $";
 #endif
 
 /**
@@ -239,8 +239,8 @@ insert_line_in_array (struct s_inp_arr *inpa)
       dest_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
       memcpy (dest_ptr, src_ptr, inpa->arr_elemsize);
     }
-  inpa->no_arr++;
-  A4GL_set_arr_count (inpa->no_arr);
+  	  inpa->no_arr++;
+  	  A4GL_set_arr_count (inpa->no_arr);
 
   init_arr_line (inpa, inpa->arr_line);
 
@@ -833,6 +833,7 @@ process_key_press (struct s_inp_arr *arr, int a)
     case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
+			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
       A4GL_int_form_driver (mform, REQ_DEL_PREV);
       break;
 
@@ -842,11 +843,13 @@ process_key_press (struct s_inp_arr *arr, int a)
       break;
 
     case 24:
+			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
         A4GL_int_form_driver (mform, REQ_DEL_CHAR);
       	break;
 
     case 4:			// Control - D
       A4GL_debug ("MMMM - Clear EOF ^d");
+			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
       A4GL_int_form_driver (mform, REQ_CLR_EOF);
       break;
 
@@ -1079,6 +1082,26 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
 int
 UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
 		       int init, void *vevt) {
+
+	struct s_inp_arr *inpa;
+	if (init && defs==0) {
+		int  n;
+		int count;
+		// We should initialize our array variables to null...
+		// up to and the setcount value anyway...
+		inpa=vinpa;
+		count=A4GL_get_count();
+
+		if (count>=inpa->arr_size) {
+			count=inpa->arr_size;
+		}
+		for (n=1;n<=count;n++) {
+		    init_arr_line(vinpa,n);
+		}
+		inpa->no_arr=0;
+                A4GL_set_arr_count (0);
+	}
+
 
 A4GL_debug("inp_arr_v2 ... zz9pa");
 while (1) {
@@ -1503,7 +1526,9 @@ init_arr_line (struct s_inp_arr *sio, int n)
   struct BINDING *b;
 
   b = sio->binding;
-
+  if (n<=0) {
+	  A4GL_assertion(1,"array element must be 1 or more");
+  }
   for (a = sio->nbind - 1; a >= 0; a--)
     {
       A4GL_debug ("b[a].dtype=%d", b[a].dtype);
@@ -1525,6 +1550,12 @@ A4GL_add_to_control_stack (struct s_inp_arr *sio, enum e_formcontrol op, FIELD *
   char *field_name;
   int a;
   struct struct_scr_field *attr;
+
+
+  if (op==FORMCONTROL_BEFORE_ROW) {
+	  //A4GL_pause_execution();
+  }
+
   A4GL_debug ("add to control stack called with op=%d field=%p extent=%d", op,
 	      f, extent);
 
@@ -1780,10 +1811,14 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
 	A4GL_debug("db4.1 arr->scr_line=%d",arr->scr_line);
   
-  if (arr->scr_line > 0)
-    last_field = arr->currentfield;
-  else
+  if (arr->scr_line > 0) {
+	  A4GL_debug("setting last_field");
+    		last_field = arr->currentfield;
+  } else {
+	  A4GL_debug("clearing last_field");
     last_field = 0;
+  }
+
 
 	A4GL_debug("db5 - %d %d",scr_line - 1,attrib);
 
@@ -1811,7 +1846,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	      || (f->datatype == DTYPE_SERIAL))
 	    {
 	      A4GL_debug ("Darn - next field is no entry too dir=%c", why);
-	      if (why == 0 || why == 'R' || why == 'D')
+	      if (why == 0 || why == 'R' || why == 'D' || why=='Q')
 		{
 		  attrib++;
 		}
@@ -1819,25 +1854,33 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 		{
 		  attrib--;
 		}
-	      A4GL_debug ("attrib now : %d of %d", attrib,
-			  arr->srec->attribs.attribs_len);
+
+
+	      A4GL_debug ("attrib now : %d of %d", attrib, arr->srec->attribs.attribs_len);
+
+
 	      if (attrib >= arr->srec->attribs.attribs_len && attrib >= 0)
 		{
+			int sl;
+			int al;
+
 		  A4GL_debug ("attrib now : %d - too far to the right (%d)",
 			      attrib, arr->srec->attribs.attribs_len);
 		  attrib = 0;
-		  scr_line++;
-		  arr_line++;
-		  A4GL_debug
-		    ("arr_line now %d - scr_line=%d arr->arr_size=%d",
-		     arr_line, scr_line, arr->arr_size);
-		  if (arr_line > arr->arr_size)
+		  sl=scr_line+1;
+		  //scr_line++;
+		  //arr_line++;
+		  al=arr_line+1;
+		  A4GL_debug ("arr_line now %d - scr_line=%d arr->arr_size=%d", al, sl, arr->arr_size);
+		  if (al > arr->arr_size)
 		    {		// Attempting to move off the bottom of the array...
 		      A4GL_error_nobox (acl_getenv ("ARR_DIR_MSG"), 0);
-		      A4GL_debug
-			("Too far down - should really error at this point");
+		      A4GL_debug ("Too far down - should really error at this point");
 	A4GL_debug("Calling newmovement");
-		      A4GL_newMovement (arr, scr_line - 1, arr_line - 1, 0, why);	// So keep going...
+		      A4GL_newMovement (arr, sl - 1, al - 1, 0, why);	// So keep going...
+		      return;
+		    } else {
+		      A4GL_newMovement (arr, sl, al, 0, why);	// So keep going...
 		      return;
 		    }
 		}
@@ -1857,8 +1900,8 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	    {
 	      A4GL_debug ("Found somewhere free... %d %d %d", scr_line,
 			  arr_line, attrib);
-	A4GL_debug("Calling newmovement");
-	      A4GL_newMovement (arr, scr_line, arr_line, attrib, why);	// So keep going...
+		A4GL_debug("Calling newmovement");
+	        A4GL_newMovement (arr, scr_line, arr_line, attrib, why);	// So keep going...
 	      return;
 	    }
 	}
@@ -1890,19 +1933,23 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
       A4GL_debug ("Add aftr controls ?  - %p", last_field);
 
-      if (last_field)
+      if (last_field|| why=='Q')
 	{
 
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
 		A4GL_debug("Checking curr_line_is_new : %d",arr->curr_line_is_new);
-	  if (arr->curr_line_is_new) { A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, last_field, 0, 0); }
-	  	A4GL_debug("Setting curr_line_is_new to 0");
-	  
+	  if (arr->curr_line_is_new) { 
+		A4GL_debug("check curr_line_is_new for after insert");
+		A4GL_debug("XYXY : %p %c %d\n",last_field,why,arr->curr_line_is_new);
+		A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, last_field, 0, 0); 
+	  }
+  	  A4GL_debug("Setting curr_line_is_new to 0");
 	  arr->curr_line_is_new = 0;
 
-
-	  A4GL_debug ("Adding AFTER FIELD..");
-	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
+		if (last_field) {
+	  		A4GL_debug ("Adding AFTER FIELD..");
+	  		A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
+		}
 
 	}
     }
@@ -2006,9 +2053,19 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	  if (arr->currentfield)
 	    {
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
-		A4GL_debug("Checking curr_line_is_new : %d",arr->curr_line_is_new);
-	      if (arr->curr_line_is_new) { A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0); }
-		A4GL_debug("Setting curr_line_is_new to 0");
+		A4GL_debug("Checking curr_line_is_new : %d for after insert",arr->curr_line_is_new);
+	      if (arr->curr_line_is_new==2) {  // If its just 1 then they've not changed anything here...
+		      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0); 
+	      }
+
+	      if (arr->curr_line_is_new==1) { // They didn't change anything - so not a real insert...
+		      arr->no_arr--;
+	        	A4GL_set_arr_count (arr->no_arr);	// No new lines ...
+	      }
+
+
+
+	      A4GL_debug("Setting curr_line_is_new to 0");
 	      arr->curr_line_is_new = 0;
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, arr->currentfield, 0, 0);
 	    }
@@ -2135,20 +2192,20 @@ process_control_stack_internal (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_ROW)
     {
 
+	//A4GL_pause_execution();
       if (arr->fcntrl[a].state == 99)
 	{
 	  ptr_movement = (struct s_movement *) arr->fcntrl[a].parameter;
 
-		A4GL_debug("ptr->movement->arr_line=%d no_arr=%d",ptr_movement->arr_line , arr->no_arr);
+	  A4GL_debug("ptr->movement->arr_line=%d no_arr=%d",ptr_movement->arr_line , arr->no_arr);
+
 	  if (ptr_movement->arr_line > arr->no_arr)
 	    {
-	      A4GL_set_arr_count (ptr_movement->arr_line);	// No new lines ...
 	      init_arr_line (arr, ptr_movement->arr_line);
 	      arr->curr_line_is_new = 1;
-		A4GL_debug("Setting curr_line_is_new to 1");
-	      arr->no_arr++;
-		A4GL_debug("BEFORE INSERT");
-		A4GL_debug("curr line is new");
+	      A4GL_debug("Setting curr_line_is_new to 1");
+	      A4GL_debug("BEFORE INSERT");
+	      A4GL_debug("curr line is new");
 	    }
 	  else
 	    {
@@ -2156,23 +2213,20 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	      arr->curr_line_is_new = 0;
 		A4GL_debug("curr line is not new");
 	    }
-
 	   A4GL_debug("checking curr_line_is_new %d",arr->curr_line_is_new);
-	  if (arr->curr_line_is_new)
-	    {
-	      A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, 0, 0, 0);
-	    }
+
+
 
 	  arr->scr_line = ptr_movement->scr_line;
+	  A4GL_set_scr_line (ptr_movement->scr_line);
+
 	  arr->arr_line = ptr_movement->arr_line;
 	  A4GL_set_arr_curr (ptr_movement->arr_line);
-	  A4GL_set_scr_line (ptr_movement->scr_line);
-	  A4GL_debug ("MJAMJA a=%d s=%d", ptr_movement->arr_line,
-		      ptr_movement->scr_line);
+	  A4GL_debug ("MJAMJA a=%d s=%d", ptr_movement->arr_line, ptr_movement->scr_line);
 
-	  if (arr->scr_line != ptr_movement->scr_line);	
-	  else
+	  if (arr->scr_line == ptr_movement->scr_line) {
 	    ireinpalay_arr (arr, 2);
+	  }
 
 
 	  for (cnt = 0; cnt < arr->nbind; cnt++)
@@ -2187,12 +2241,24 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	}
 
 
+
+
+
       if (arr->fcntrl[a].state == 50)
 	{
-	  new_state = 0;
+
+	  ptr_movement = (struct s_movement *) arr->fcntrl[a].parameter;
+	      	//arr->no_arr++;
+	        A4GL_set_arr_count (ptr_movement->arr_line);	// No new lines ...
+	  	if (arr->curr_line_is_new) { 
+				A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, 0, 0, 0); 
+		}
+	  	new_state = 25;
 	}
 
-
+      if (arr->fcntrl[a].state == 25) {
+	      	new_state=0;
+	      }
 
     }
 
@@ -2323,6 +2389,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 			case DTYPE_DECIMAL:
 			case DTYPE_MONEY:
 			  A4GL_debug ("MMMM - Clear EOF first pos typing zz9pa");
+			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
 			  A4GL_int_form_driver (arr->currform->form,
 						REQ_CLR_EOF);
 			}
@@ -2376,6 +2443,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
 	      if (ok == 1)
 		{
+			if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
 		  A4GL_int_form_driver (arr->currform->form,
 					arr->fcntrl[a].extent);
 		  A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
@@ -3105,7 +3173,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 		  arr->currentfield = 0;
 	A4GL_debug("Calling newmovement");
 		  A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a,
-				    'R');
+				    'Q');
 		}
 	      return 1;
 	    }

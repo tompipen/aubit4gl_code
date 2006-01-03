@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.143 2005-12-19 18:44:44 mikeaubury Exp $
+# $Id: stack.c,v 1.144 2006-01-03 17:27:40 mikeaubury Exp $
 #
 */
 
@@ -3213,7 +3213,11 @@ to be debugged...
 
 */
 void A4GL_pause_execution(void) {
-	PRINTF("--PAUSE EXECUTION->\n");
+	A4GL_pause_execution_msg("");
+}
+
+void A4GL_pause_execution_msg(char *s) {
+	PRINTF("--PAUSE EXECUTION->%s\n",s);
 }
 
 void a4gl_upshift(char *s) {

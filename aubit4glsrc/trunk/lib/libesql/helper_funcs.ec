@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.37 2005-12-20 14:08:39 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.38 2006-01-03 17:27:55 mikeaubury Exp $
 #
 */
 
@@ -791,6 +791,7 @@ for (a=0;a<n;a++) {
 		case 11: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
 		case 12: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
 		case 13: ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
+		case 14: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
 	}
 }
 
