@@ -1,0 +1,5 @@
+char field 8 ISNULL
+int field 8 ISNULL
+char field 8 ISNOTNULL
+int field 8 ISNOTNULL
+char field 8 ISNOTNULL

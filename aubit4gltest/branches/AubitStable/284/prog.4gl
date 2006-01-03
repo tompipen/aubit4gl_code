@@ -1,0 +1,26 @@
+MAIN
+	DEFINE 
+		i	SMALLINT,
+		x	ARRAY[30] OF RECORD
+		    number	CHAR(3)
+		END RECORD
+	OPTIONS 
+		INSERT KEY control-b,
+		INPUT ATTRIBUTE (WHITE,REVERSE),
+		DISPLAY ATTRIBUTE (WHITE)
+
+	OPEN FORM array FROM "array"
+	DISPLAY FORM array ATTRIBUTE (CYAN)
+
+	FOR i=1 to 30
+		INITIALIZE x[i].number TO NULL
+	END FOR
+
+	INPUT ARRAY x WITHOUT DEFAULTS FROM sc_arr.*
+		ON KEY(F1) EXIT INPUT
+ 		on key(control-e) call aclfgl_dump_screen("out")
+	END INPUT
+
+	CLOSE FORM array
+END MAIN
+

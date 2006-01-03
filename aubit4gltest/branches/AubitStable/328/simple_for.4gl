@@ -1,0 +1,8 @@
+
+MAIN
+	DEFINE i SMALLINT
+
+  FOR I = 0 TO 100
+	  DISPLAY "I have ", i
+  END FOR
+END MAIN

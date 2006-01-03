@@ -1,0 +1,38 @@
+rm -f ./test_319.rpt
+
+./r1.4ae
+
+if diff $DIFF_FLAGS test_319.rpt test_319.out.expected
+then
+	:
+else
+	exit 1
+fi
+
+exit 0
+
+
+
+#We have -eci -ecpg , etc swhitches for this in run_tests script
+
+./r1_i.4ae 
+cp test_319.rpt test_319_i.rpt
+
+export A4GL_LEXDIALECT=INFORMIX
+./r1_iec.4ae 
+cp test_319.rpt test_319_iec.rpt
+
+export A4GL_LEXDIALECT=POSTGRES
+./r1_pec.4ae
+cp test_319.rpt test_319_pec.rpt
+
+for a in test_319_i.rpt test_319_iec.rpt test_319_pec.rpt
+do
+if diff $DIFF_FLAGS $a test_319.out.expected
+then
+	:
+else
+	exit 1
+fi
+done
+exit 0

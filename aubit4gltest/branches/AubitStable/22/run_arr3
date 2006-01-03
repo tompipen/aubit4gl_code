@@ -1,0 +1,11 @@
+export A4GL_TRIMDUMP=24x80
+export A4GL_KEYFILE=keys.in
+export A4GL_KEYDELAY=10000
+
+$DBG ./arr3.4ae 
+if [ $? = 0 ]
+then
+	exit 0
+else
+	exit 1
+fi

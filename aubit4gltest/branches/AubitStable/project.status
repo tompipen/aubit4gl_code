@@ -1,0 +1,6 @@
+Name: x4GL regression tests
+Description: Fully automated framework of regression tests for x4GL compilers
+Maintainer: MA AF
+Status: 3
+Todo: Expand Aubit features coverage
+Notes: Some documentation in aubit4gltest/docs folder.

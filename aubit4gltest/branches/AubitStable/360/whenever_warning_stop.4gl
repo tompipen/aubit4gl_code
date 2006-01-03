@@ -1,0 +1,11 @@
+DATABASE test1
+
+
+FUNCTION test_whenever()
+  DEFINE i SMALLINT
+
+database test1
+
+	WHENEVER WARNING STOP
+	SELECT count(*) INTO i FROM SYSTABLES
+END FUNCTION

@@ -1,0 +1,29 @@
+database formonly
+
+screen
+{
+=================================================================
+
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+         [a      ][b      ][c      ][d      ][e       ]
+
+}
+
+attributes
+
+a = formonly.col1;
+b = formonly.col2;
+c = formonly.col3;
+d = formonly.col4;
+e = formonly.col5, noentry, autonext;
+
+instructions
+
+screen record s_arr[9] (formonly.col1 thru formonly.col5);

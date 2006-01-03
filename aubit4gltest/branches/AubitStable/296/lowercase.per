@@ -1,0 +1,23 @@
+DATABASE formonly 
+SCREEN
+{
+        
+       A: [a ] 
+       B: [b]
+       C: [c ] 
+       D: [d ]
+
+}
+
+	
+ATTRIBUTES
+a = formonly.a type char;
+b = formonly.b type char, include = (NULL, "Y", "N"), UPSHIFT;
+c = formonly.c type char;
+--d = formonly.d type char;
+--c = formonly.c type char, UPSHIFT;
+d = formonly.d type char, include = (NULL, "YY", "NN"), UPSHIFT;
+END
+
+INSTRUCTIONS
+DELIMITERS " "

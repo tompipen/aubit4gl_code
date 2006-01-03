@@ -1,0 +1,7 @@
+#Please do not force run-time settings here - not everyone will have 
+#required libaries (in this case HL_GTK) and test will fail.
+#use 'run_tests -gtk' instead
+#export A4GL_UI=HL_GTK
+#export DISPLAY=:0
+export A4GL_KEYFILE=keys.in
+./progname.4ae

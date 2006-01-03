@@ -1,0 +1,19 @@
+
+DATABASE test1
+
+MAIN
+	WHENEVER ERROR CONTINUE 
+	DROP TABLE xpto
+	DROP view vxpto
+	WHENEVER ERROR STOP 
+  CREATE TABLE xpto (
+	  anIntField INTEGER,
+		secondField CHAR(10)
+	)
+
+	CREATE VIEW vXpto AS SELECT * FROM xpto
+	DROP VIEW vXpto
+	DROP TABLE xpto
+END MAIN
+
+

@@ -1,0 +1,25 @@
+export A4GL_KEYFILE=keys.in
+export A4GL_TRIMDUMP=24x80
+#allready system default - export DBDATE=MDY4/
+./prog.4ae
+if diff $DIFF_FLAGS screen1.out screen1.out.infx 
+then
+	:
+else
+	exit 1
+fi
+
+if diff $DIFF_FLAGS screen2.out screen2.out.infx
+then
+	:
+else
+	exit 2
+fi
+
+if diff $DIFF_FLAGS screen3.out screen3.out.infx
+then
+	:
+else
+	exit 3
+fi
+

@@ -1,0 +1,15 @@
+
+export A4GL_KEYDELAY=10000
+export A4GL_KEYFILE=keyfile
+export A4GL_TRIMDUMP=24x80
+$DBG ./ui_contrl.4ae
+for a in input.out menu.out menu_bef.out open_window_form.out prompt.out
+do
+echo $a
+if diff $DIFF_FLAGS $a $a.expected
+then
+	:
+else
+	exit 1
+fi
+done

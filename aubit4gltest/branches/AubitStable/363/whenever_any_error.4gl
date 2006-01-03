@@ -1,0 +1,30 @@
+DATABASE test1
+
+function anyErrorHandler()
+	display "anyErrorHandler"
+end function
+
+FUNCTION test_whenever()
+  DEFINE i SMALLINT
+
+	WHENEVER ANY ERROR STOP
+	SELECT count(*) INTO i FROM SYSTABLES
+	WHENEVER ANY ERROR CONTINUE
+	SELECT count(*) INTO i FROM SYSTABLES
+	WHENEVER ANY ERROR CALL anyErrorHandler
+	SELECT count(*) INTO i FROM SYSTABLES
+	WHENEVER ANY ERROR GOTO anyErrorLabel
+	SELECT count(*) INTO i FROM SYSTABLES
+	WHENEVER ANY ERROR GOTO :anyErrorLabel
+	SELECT count(*) INTO i FROM SYSTABLES
+	WHENEVER ANY ERROR GOTO anyErrorLabel
+	SELECT count(*) INTO i FROM SYSTABLES
+	WHENEVER ANY ERROR GO TO :anyErrorLabel
+	SELECT count(*) INTO i FROM SYSTABLES
+  RETURN
+
+LABEL anyErrorLabel:
+  display "ERROR"
+END FUNCTION
+
+

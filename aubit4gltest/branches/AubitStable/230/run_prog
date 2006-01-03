@@ -1,0 +1,37 @@
+export A4GL_KEYFILE=keys.in
+export A4GL_TRIMDUMP=24x80
+export A4GL_KEYDELAY=20000
+
+#olines=$LINES
+#ocolumns=$COLUMNS
+
+export A4GL_LINES=24
+export A4GL_COLUMNS=80
+./progname.4ae 
+d=0
+echo "" > diffs.out
+for a in screen10_M screen11_P screen12_M screen1_P screen2_M screen3_P screen4_M screen14_M screen14_P screen13_M screen13_P \
+	screen5_P screen6_M screen7_P screen8_M screen9_P screenS1_P screenS2_M \
+	screenS3_P screenS4_M screenT1_P screenT2_M screenT3_P screenT4_M screenW1_P screenW2_M screenW3_P screenW4_M
+do
+if diff $DIFF_FLAGS $a $a.infx  > /dev/null
+then
+	:
+	echo "$a ok" >> diffs.out
+else
+	echo "diff in $a"  >> diffs.out
+	diff $a $a.infx  >> diffs.out
+	d=1
+fi
+done
+
+COLUMNS=$ocolumns
+LINES=$olines
+
+if [ "$d" = 1 ]
+then
+	cat diffs.out
+	exit 1
+else
+	exit 0
+fi

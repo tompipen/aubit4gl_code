@@ -1,0 +1,18 @@
+
+DATABASE test1
+
+MAIN
+	WHENEVER ERROR CONTINUE 
+	DROP TABLE xpto
+	WHENEVER ERROR STOP 
+  CREATE TABLE xpto (
+	  anIntField INTEGER,
+		secondField CHAR(10)
+	)
+
+	RENAME COLUMN xpto.anIntField TO firstField
+	DROP TABLE xpto
+END MAIN
+
+
+

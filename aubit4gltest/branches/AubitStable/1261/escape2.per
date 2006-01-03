@@ -1,0 +1,31 @@
+database formonly
+screen
+{
+
+
+
+=============================================================================
+
+                      lkjw e;lkjw e;flkj qw;elfj ;lwkej ;lj
+
+
+
+
+          jklhlkjh lkjh lkjh lkh  g\[Y/L\]: [f]
+                            BATCH NUMBER: [f1  ]
+                              BATCH DATE: [f2        ]
+
+
+
+
+
+
+
+}
+
+attributes
+
+f = formonly.in_typ type char, upshift, required, reverse, autonext,include = ("L","Y");
+f1 = formonly.in_batch type integer, upshift, required, reverse,autonext;
+f2 = formonly.in_dt type date,upshift, required, reverse, autonext;
+end

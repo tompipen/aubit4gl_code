@@ -1,0 +1,30 @@
+MAIN
+	DEFINE 
+		a CHAR(20),
+		b CHAR(20),
+		c CHAR(20),
+		d CHAR(20)
+	OPTIONS 
+		#INPUT ATTRIBUTE (WHITE,REVERSE),
+		#DISPLAY ATTRIBUTE (WHITE,REVERSE),
+		INPUT WRAP,
+		FORM LINE 	10,
+		MESSAGE LINE 	23,
+		COMMENT LINE	23,
+		PROMPT LINE	23,
+		ERROR LINE	24
+
+	OPEN FORM lowercase FROM "lowercase"
+	DISPLAY FORM lowercase ATTRIBUTE (CYAN)
+
+	INPUT BY NAME a, b, c, d  WITHOUT DEFAULTS
+		ON KEY(F1)
+		    EXIT INPUT
+		on key(control-b) 
+			call aclfgl_dump_screen("out")
+			exit program 0
+	END INPUT
+
+	CLOSE FORM chdis
+END MAIN
+

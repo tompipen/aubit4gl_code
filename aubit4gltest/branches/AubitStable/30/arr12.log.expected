@@ -1,0 +1,7 @@
+char field 1 is null
+int field 1 is null
+char field 2 is null
+int field 2 is null
+char field 3 is not null
+int field 3 is not null
+char field 4 is null

@@ -1,0 +1,14 @@
+$DBG ./expr.4ae > expr.out
+
+
+
+if diff $DIFF_FLAGS expr.out expr.out.expected
+then
+:
+else
+	echo "DIFF 1"
+	exit 1
+fi
+
+
+exit 0

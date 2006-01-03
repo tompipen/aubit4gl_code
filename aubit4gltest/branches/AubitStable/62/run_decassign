@@ -1,0 +1,3 @@
+./decassign.4ae > da.out
+diff $DIFF_FLAGS da.out da.out.expected
+

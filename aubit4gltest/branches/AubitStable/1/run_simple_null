@@ -1,0 +1,7 @@
+./simple_null.4ae > simple_null.out
+if diff $DIFF_FLAGS simple_null.out simple_null.out.expected
+then
+	exit 0
+else
+	exit 1
+fi

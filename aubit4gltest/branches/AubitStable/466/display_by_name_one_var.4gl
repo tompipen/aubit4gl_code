@@ -1,0 +1,11 @@
+
+MAIN
+	DEFINE a_field CHAR(10)
+	DEFINE ans CHAR(1)
+
+  OPEN WINDOW w_ AT 2, 2 WITH FORM "a_form" ATTRIBUTE(BORDER)
+	LET a_field = "Hello"
+	DISPLAY BY NAME a_field
+	#PROMPT "" FOR CHAR ans
+END MAIN
+

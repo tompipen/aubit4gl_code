@@ -1,0 +1,22 @@
+
+DATABASE test1
+
+SCREEN {
+  Tabname  [a0                ]
+  Owner    [a1       ]
+  Tabid    [a2    ]
+  Rowsize  [a3 ]
+  NCols    [a4 ]
+  NIndexes [a5 ]
+}
+
+tables
+  systables
+
+attributes
+  a0 = systables.tabname;
+  a1 = systables.owner;
+  a2 = systables.tabid;
+  a3 = systables.rowsize;
+  a4 = systables.ncols;
+  a5 = systables.nindexes;

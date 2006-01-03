@@ -1,0 +1,20 @@
+database formonly
+screen 
+{
+
+IP Address [a              ]   Hostname    [e      ]
+Router     [b              ]   Domain      [f                ]
+Network    [c              ]   WAN Address [g              ]
+Broadcast  [d              ]   NATed       [h]
+}
+attributes
+a=formonly.ipaddress,picture="XXX.XXX.XXX.XXX";
+b=formonly.router,picture="XXX.XXX.XXX.XXX";
+c=formonly.network,picture="XXX.XXX.XXX.XXX";
+d=formonly.broadcast,picture="XXX.XXX.XXX.XXX";
+e=formonly.hostname;
+f=formonly.domain;
+g=formonly.wanaddr,picture="XXX.XXX.XXX.XXX";
+h=formonly.nat, upshift, include=("Y","N");
+
+

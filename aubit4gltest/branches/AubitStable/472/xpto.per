@@ -1,0 +1,28 @@
+
+DATABASE FORMONLY
+
+screen 
+{
+  Num    Str
+----------------------
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+  [a0  ]  [a1       ]
+}
+
+attributes
+  a0 = formonly.num type smallint;
+  a1 = formonly.str type char, default = "XXXXXX";
+
+instructions
+   screen record sa[13] (num,str)

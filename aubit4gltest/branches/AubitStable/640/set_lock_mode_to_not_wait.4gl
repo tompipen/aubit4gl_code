@@ -1,0 +1,17 @@
+
+DATABASE test1
+
+MAIN
+	WHENEVER ERROR CONTINUE
+	DROP TABLE xpto_xxx
+	WHENEVER ERROR STOP
+	CREATE TABLE xpto_xxx (
+	  firstColumn SMALLINT,
+    secondColumn CHAR(10)
+	)
+
+  SET LOCK MODE TO NOT WAIT 
+	INSERT INTO xpto_xxx VALUES (1,"Xpto")
+
+	DROP TABLE xpto_xxx
+END MAIN

@@ -1,0 +1,7 @@
+./desc.4ae > desc.out
+if diff $DIFF_FLAGS desc.out desc.out.expected 
+then
+	:
+else
+	exit 1
+fi

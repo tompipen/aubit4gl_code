@@ -1,0 +1,17 @@
+
+MAIN
+  MENU "Menu"
+	  COMMAND "Hello"
+		  DISPLAY "Hello" AT 10,1
+		COMMAND "World"
+		  DISPLAY "World" AT 10,1
+		COMMAND "Hide"
+		  HIDE OPTION ALL
+		COMMAND "Show"
+		  SHOW OPTION ALL
+		COMMAND KEY (CONTROL-E)
+		  EXIT MENU
+		COMMAND "Exit"
+		  EXIT MENU
+	END MENU
+END MAIN

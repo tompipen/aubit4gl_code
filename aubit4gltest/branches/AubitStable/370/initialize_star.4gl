@@ -1,0 +1,8 @@
+
+DATABASE test1
+
+MAIN
+  DEFINE prSyst RECORD LIKE systables.*
+
+	INITIALIZE prSyst.* TO NULL
+END MAIN

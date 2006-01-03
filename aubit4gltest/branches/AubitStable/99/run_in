@@ -1,0 +1,9 @@
+
+./in.4ae > in.out
+./in_db.4ae > in_db.out
+if grep BAD in.out in_db.out 
+then
+	exit 1
+else
+	exit 0
+fi

@@ -1,0 +1,14 @@
+
+dt.4ae: dt.4gl
+	${FGLC} dt.4gl -o dt.4ae
+
+compile: dt.4ae
+	
+run: dt.4ae
+	sh ./run_dt
+
+ansi_sql_compat:
+	@echo "1"
+
+desc:
+	@echo "Very basic datetime arithmetic"

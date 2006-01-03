@@ -1,0 +1,12 @@
+
+MAIN
+	DEFINE i SMALLINT
+  CASE i
+	  WHEN 1
+		  DISPLAY "One"
+	  WHEN 2
+		  DISPLAY "Two"
+	  OTHERWISE
+		  DISPLAY "Otherwise"
+	END CASE
+END MAIN

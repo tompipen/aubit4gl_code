@@ -1,0 +1,9 @@
+
+DATABASE test1
+
+MAIN
+  DROP TRIGGER trg
+END MAIN
+
+
+

@@ -1,0 +1,35 @@
+database formonly
+
+screen
+{
+
+          Report   Description
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+           [rp ]   [desc      ]
+
+
+
+ F1=Quit   F6=Insert
+}
+end
+
+
+attributes
+	rp	= formonly.rcode type integer,
+		  comments = " Enter Report Code. Should go to desc. ";
+	desc	= formonly.item_rpt_desc,
+		  comments = " Enter Description. Will loop. ";
+end
+
+instructions
+	delimiters " "
+	screen record scr_arr[10] (rcode, item_rpt_desc);
+end

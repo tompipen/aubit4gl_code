@@ -1,0 +1,24 @@
+#export A4GL_KEYFILE=keys.in
+#export A4GL_KEYDELAY=10000
+#export A4GL_TRIMDUMP=24x80
+
+$DBG ./dec_round.4ae > dec_round.out
+$DBG ./dec_round2.4ae > dec_round2.out
+$DBG ./dec_round3.4ae > dec_round3.out
+$DBG ./dec_round4.4ae > dec_round4.out
+$DBG ./dec_round5.4ae > dec_round5.out
+$DBG ./dec_round6.4ae > dec_round6.out
+
+for a in dec_round.out dec_round2.out dec_round3.out dec_round4.out dec_round5.out dec_round6.out
+do
+if diff $DIFF_FLAGS $a $a.expected
+then
+	:
+else
+	echo "DIFF $a"
+	exit 1
+fi
+done
+
+
+exit 0

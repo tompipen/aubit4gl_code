@@ -1,0 +1,12 @@
+export A4GL_TRIMDUMP=24x80
+$DBG ./disp.4ae
+if [ $? != 0  ]
+then
+	exit 1
+fi
+if diff $DIFF_FLAGS screen.out screen.out.expected
+then
+	exit 0
+else
+	exit 1
+fi

@@ -1,0 +1,28 @@
+database formonly
+                                                                                
+screen
+{
+UNAUDITED SUBSCRIPTIONS
+              -----Sterling   N/S
+Previous     [f1 ] [f001   ] [g1 ]
+This batch   [f2 ] [f002   ] [g2 ]
+Cumulative   [f3 ] [f003   ] [g3 ]
+                                                                                
+UNBANKED     [f4 ] [f004   ] [g4 ]
+}
+                                                                                
+attributes
+f1   = formonly.s_nasn type smallint ;
+f001 = formonly.s_nasv type dec(7,2) ;
+g1   = formonly.s_naon type smallint ;
+f2   = formonly.btsno type smallint ;
+f002 = formonly.btval type dec(7,2) ;
+g2   = formonly.btono type smallint ;
+f3   = formonly.ttsno type smallint ;
+f003 = formonly.ttval type dec(7,2) ;
+g3   = formonly.ttono type smallint ;
+f4   = formonly.s_nbsn type smallint ;
+f004 = formonly.s_nbsv type dec(7,2) ;
+g4   = formonly.s_nbon type smallint ;
+                                                                                
+end

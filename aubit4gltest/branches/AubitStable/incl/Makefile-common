@@ -1,0 +1,443 @@
+
+#This make file used as include from ALL make files in build_tests tree
+
+
+## ======================================================================
+##                  Common Setings
+## ======================================================================
+
+#Root directory of our current Aubit source tree:
+#ROOT=../../../..
+
+ifeq "${AUBITDIR}" ""
+	AUBITDIR=$(shell aubit-config AUBITDIR)
+	ifeq "${AUBITDIR}" ""	
+	#If you are looking here because you received error from make
+	# commands commence before first target.  Stop.
+	#...then your AUBITDIR IS NOT SET! 
+	echo "ERROR: AUBITDIR not set"
+	endif	
+endif
+
+ifeq "${MAKE_VERBOSE}" "1"
+	SILENT=
+else
+	#prevent make commands from echo-ing
+	SILENT=@
+endif
+
+#############
+#While compiling source code, force priority of 'aubitrc' present in this 
+#source code tree. Also applies to aubit-config calls made from makefles 
+A4GL_INIFILE				=${AUBITDIR}/etc/aubitrc
+
+
+#Make sure we will be using programs and libraries in our current source tree
+#and NOT something elese, like installed compiler
+#AUBITDIR=${ROOT}
+
+#Include ALL Amake compilers rules 
+include ${AUBITDIR}/incl/?4gl.mk
+
+ifeq "${USE_COMP}" ""
+	USE_COMP=aubit
+endif
+
+#This should be obsolete - we use lists now, not a single file diff
+OUT_CREATED=out
+OUT_EXPECTED=out.expected
+
+#First look for type-specific .expected files
+#ifeq "${USE_ECP}" "1"
+#ifeq "${A4GL_LEXTYPE}" "EC"
+#ifeq "${A4GL_LEXDIALECT}" "POSTGRES"
+ifeq "${USE_PG}" "1"
+	EXPECTED_EXT=.expected.pg
+	OUT_EXPECTED_LIST=$(wildcard *${EXPECTED_EXT})	
+endif
+
+#If no type-specific .expected files whre found, try default extension
+ifeq "${OUT_EXPECTED_LIST}" ""
+	EXPECTED_EXT=.expected
+	OUT_EXPECTED_LIST=$(wildcard *${EXPECTED_EXT})	
+endif
+
+OUT_LIST=$(subst ${EXPECTED_EXT},,$(OUT_EXPECTED_LIST))
+
+ifeq "${USE_COMP}" "aubit"
+
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${A4GL_RUN_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${A4GL_FRM_EXT}
+	OBJ_EXT			=${A4GL_OBJ_EXT}
+	TARGET_EXT		=${A4GL_EXE_EXT}
+	
+
+	#Force Aubit UI to TUI: (unless specified on make command line)
+	ifeq "${A4GL_UI}" ""
+		A4GL_UI=TUI
+	endif
+
+	ifeq "${A4GL_KEYLOG}" ""
+		#if A4GL_KEYLOG is set, it means we are to record, not playback keystrokes
+		#Set defaults for scripted execution
+		A4GL_KEYFILE=$(wildcard *keys.in)
+		A4GL_KEYDELAY=10000
+		A4GL_TRIMDUMP=24x80
+
+		#Export needed variables to environment
+		export A4GL_PRG A4GL_UI A4GL_TRIMDUMP
+	endif
+	
+	ifeq "${A4GL_FAKELEXTYPE}" "PCODE"
+		DEFAULT_LINK=cp prog${A4GL_OBJ_EXT} progname${A4GL_EXE_EXT}
+	else
+	#define default linking action
+		DEFAULT_LINK=${A4GL_FGLC} ${A4GL_OTHERS} $^ -o $@
+	endif
+	OUT_EXT=
+	RUNNER=
+	
+endif
+
+
+ifeq "${USE_COMP}" "ifx-p"
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${I4GL_PRG_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${I4GL_FRM_EXT}
+	OBJ_EXT			=${I4GL_OBJ_EXT}
+	TARGET_EXT		=${I4GL_PRG_EXT}
+
+	DEFAULT_LINK=\
+		${I4GL_PL} $^ > $@; \
+		if test "$$?" != "0"; then \
+			echo "CAT failed, removing progname.4gi"; \
+			rm progname.4gi; \
+			exit 1; \
+		fi
+	ifeq "${RUNNER}" ""	
+		RUNNER=fglgo
+	endif
+	OUT_EXT=.infx
+	
+endif
+
+ifeq "${USE_COMP}" "4js-p"
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${D4GL_PRG_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${D4GL_FRM_EXT}
+	OBJ_EXT			=${D4GL_OBJ_EXT}
+	TARGET_EXT		=${D4GL_PRG_EXT}
+
+	DEFAULT_LINK	=${D4GL_PC} -o $@ $(subst .42r,.42m,$(notdir $^))
+	ifeq "${RUNNER}" ""
+		RUNNER			=fglrun
+	endif
+	OUT_EXT=.4js
+	
+endif
+
+ifeq "${USE_COMP}" "querix"
+	#Map extensions from compiler specific to general:
+	RUN_EXT			=${Q4GL_PRG_EXT}
+
+	#Used in Makefiles so must be here:
+	A4GL_FORMEXT	=${Q4GL_FRM_EXT}
+	OBJ_EXT			=${Q4GL_OBJ_EXT}
+	TARGET_EXT		=${Q4GL_PRG_EXT}
+
+	#DEFAULT_LINK	=${Q4GL_PL} $^ > $@;
+	DEFAULT_LINK	=${FAIL_LINK}${Q4GL_CL} -o $@ $(subst ${Q4GL_PRG_EXT},${Q4GL_OBJ_EXT},$(notdir $^)) ${Q4GL_CL_LDFLAGS} ${QXI_LIBS} ${SRC_CUSTOM} 	
+	RUNNER			=
+	OUT_EXT=.querix
+endif
+
+################
+#Default list of all form files that need to be compiled. All .per files
+#in test's directory will be automatically listed. User can overide it in
+#test specific makefile.
+PER=$(wildcard *.per)
+
+################
+#List of all 4GL modules that need to be compiled to objects.  All .4gl files
+#in test's directory will be automatically listed. User can overide it in
+#test specific makefile.
+FGL=$(wildcard *.4gl)
+
+################
+#Default list of all help files that need to be compiled. All .msg files
+#in test's directory will be automatically listed. User can overide it in
+#test specific makefile.
+MSG=$(wildcard *.msg)
+
+
+################
+#All targets in this make file are "phony" targets - they do not create files
+.PHONY: compile run clean 
+	
+#When targets are listed as phony, and are missing, make just say "nothing to 
+#be done" But we need to know when any of the settings targets are missing, so
+#they must NOT be listed as phony:
+#	obsolete_test desc ec_test nosilent_test tui_test db_test 
+#	form_test report_test graphic_test console_prompt_test dump_screen_test 
+#	long_test cert_test unknown_test
+
+################
+
+DEFAULT_RUN2=123
+
+ifneq "${COMPILE_ONLY}" "1"
+
+	ifeq "${SHOW_CONFIG_IN_MAKE}" "1"
+		#Do not run; just show configuration as the programs 
+		#would see it at point of execution
+		str=\
+			echo "A4GL_INIFILE=$$A4GL_INIFILE" ;\
+			aubit-config -a ;\
+			echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`" ;\
+			echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`" ;\
+			echo "in environment: DBMONEY=$$DBMONEY"; \
+			\
+			unset A4GL_INIFILE ;\
+			echo "A4GL_INIFILE=$A4GL_INIFILE" ;\
+			\
+			echo "aubit-config A4GL_AUBITRC returns :`aubit-config A4GL_AUBITRC`" ;\
+			echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`" ;\
+			echo "in environment: DBMONEY=$$DBMONEY"; \
+			\
+			aubit-config A4GL_LEXTYPE ;\
+			aubit-config A4GL_LEXDIALECT ;\
+			aubit-config A4GL_SQLTYPE ;\
+			echo "Above config is at point of RUN incovation in test makefile"; \
+			exit 0;
+			
+		#DEFAULT_RUN=@echo ${str}
+		DEFAULT_RUN=@${str}
+	else
+		#Define default run action
+		#NOTE: should never exit with returned code here - make will not exit with
+		# it anyway, so we must expect 0 for success in run_test script
+		
+		#Run explicitly named test program and test for exit code.
+		NAMED_RUN=${RUN_EXT}; \
+			RET=$$?; \
+			if test "$$RET" = "${EXPECT_CODE}"; then \
+				echo "Success ($$RET)"; \
+				exit 0; \
+			else \
+				if test "$$RET" != "0" -a "${EXPECT_CODE}" = "x"; then \
+					echo "Success ($$RET)"; \
+					exit 0; \
+				else \
+					echo "Fail ($$RET but expecting ${EXPECT_CODE})"; \
+					exit 1; \
+				fi \
+			fi
+		#Same as NAMED_RUN, but uses fixed default test program name (./progname)
+		DEFAULT_RUN=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_RUN}
+			
+			
+		#Snippet to be used after running a test program, when succcess
+		#is not only determined by exit code, but also by comparing 
+		#results. Used to prevent failure in program execution from 
+		#becoming masked by subsequent failure in comparing results
+		TEST_RUN=\
+			RET=$$?; \
+			if test "$$RET" != "${EXPECT_CODE}"; then \
+				if test "$$RET" != "0" -a "${EXPECT_CODE}" = "x"; then \
+					echo "Run OK ($$RET)"; \
+				else \
+					echo "Run FAILED ($$RET but expecting ${EXPECT_CODE})"; \
+					if test -f ./out ; then \
+						cat ./out ; \
+					fi ; \
+					exit 1; \
+				fi \
+			fi
+			
+		#Snippet for use in NAMED_DIFF and therefore in DEFAULT_DIFF 
+		REDIRECT_RUN=${RUN_EXT} > ${OUT_CREATED}${OUT_EXT}; ${TEST_RUN}
+	
+		#Snipped for use in NAMED_DIFF and therefore in DEFAULT_DIFF
+		DIFF_COMMON=\
+			if diff ${DIFF_FLAGS} ${OUT_CREATED}${OUT_EXT} ${OUT_EXPECTED}; then \
+				echo "Success";  \
+				exit 0; \
+			else \
+				exit 1; \
+			fi
+			
+		#Snippet to be used in NAMED_DUMP_DIFF and therefore in DEFAULT_DUMP_DIFF
+		DIFF_MULTI=\
+			for outfile in $(OUT_LIST); do \
+				if diff ${DIFF_FLAGS} $$outfile $$outfile${EXPECTED_EXT} ; then \
+					echo "OK: $$outfile and $$outfile${EXPECTED_EXT}"; \
+				else \
+					echo "ERROR: $$outfile and $$outfile${EXPECTED_EXT} are DIFFERENT";  \
+					exit 1; \
+				fi; \
+			done; \
+			echo "Success";  \
+			exit 0; \
+	
+		
+		#This runs named test program, checks exit code, and then compares 
+		#file created by running progams output redirection to file, with 
+		#.expected file (single file only)
+		NAMED_DIFF=${REDIRECT_RUN}; ${DIFF_COMMON}
+		#Same, but uses fixed default program name (./progname)	
+		DEFAULT_DIFF=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_DIFF}
+		
+		#This runs named test program, checks exit code, and then compares 
+		#one or more out files created by dump_screen() function with one or more 
+		#out.expected files
+		NAMED_DUMP_DIFF=${RUN_EXT}; ${TEST_RUN}; ${DIFF_MULTI}
+		#Same, but uses fixed default program name (./progname)	
+		DEFAULT_DUMP_DIFF=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_DUMP_DIFF}
+	endif
+else 
+	#Compile only
+	NAMED_RUN=@echo "** NOTE: Test is compile-time only, execution will not be attempted"
+	DEFAULT_RUN=${NAMED_RUN}
+	NAMED_DIFF=${NAMED_RUN}
+	DEFAULT_DIFF=${NAMED_RUN}
+	NAMED_DUMP_DIFF=${NAMED_RUN}
+	DEFAULT_DUMP_DIFF=${NAMED_RUN}	
+endif
+
+CLEAN_FILES=*.bak *.o *.4ae *.ao *.ec *.cpc *.h *.glb \
+    ${MODULES} ${FORMS} *.4pe.dat *.4pe.xml ${ADD_CLEAN}  out *.err  \
+    pcode.run *.tmp out.ifx out.querix out.4js *.4go *.warn *~ \
+	$(subst .4gl,.c,$(FGL))
+	
+ifneq "${TARGET_EXT}" ""
+	CLEAN_FILES+=*${TARGET_EXT}
+endif
+ifneq "${OBJ_EXT}" ""
+	CLEAN_FILES+=*${OBJ_EXT}
+endif
+	
+## ======================================================================
+##                  Common targets and rules
+## ======================================================================
+
+#remove all 3 - now using rules in Amake
+
+################
+#Rule to compile form file:
+#%${A4GL_FORMEXT}: %.per
+#	fcompile $<
+
+################
+#Rule to complie 4gl module to object
+#%${OBJ_EXT}: %.4gl
+#	${FGLC} $< -c -o $@
+
+#%${A4GL_HLP_EXT}: %.msg
+#	amkmessage $^ $@
+	
+	
+.o.c:
+	echo "Hello $<"
+################
+#Clean everything created by compiling and running the test
+#since this is the will be first target listed in makefile when this make file is
+#included this becomes the default target (when user types just "make" without
+#specifying the target)
+clean:
+	@-$(foreach file,${PRESERVE},echo "Preserving ${file}"; mv ${file} ${file}.preserve)
+	rm  -f ${CLEAN_FILES}
+	@-$(foreach file,${PRESERVE},echo "Restoring ${file}"; mv ${file}.preserve ${file})
+	
+show:
+	@echo "PER=${PER}"
+	@echo "FGL=${FGL}"	
+	@echo "MSG=${MSG}"
+	@echo "COMPILE_ONLY=${COMPILE_ONLY}"
+	@echo "RUN_EXT=${RUN_EXT}"
+	@echo "EXPECT_CODE=${EXPECT_CODE}"	
+	@echo "CLEAN_FILES=${CLEAN_FILES}"
+	@echo "USE_COMP=${USE_COMP}"
+	@echo "A4GL_FORMEXT=${A4GL_FORMEXT}"
+	@echo "OBJ_EXT=${OBJ_EXT}"
+	@echo "TARGET_EXT=${TARGET_EXT}"
+	@echo "A4GL_UI=${A4GL_UI}"
+	@echo "A4GL_KEYFILE=${A4GL_KEYFILE}"
+	@echo "A4GL_KEYDELAY=${A4GL_KEYDELAY}"
+	@echo "DEFAULT_RUN2=${DEFAULT_RUN2}"
+	@echo 'DEFAULT_RUN=${DEFAULT_RUN}'
+	@echo 'NAMED_RUN=${NAMED_RUN}'
+	@echo 'DEFAULT_DIFF=${DEFAULT_DIFF}'
+	@echo 'MODULES=${MODULES}'
+	@echo 'NAMED_DIFF=${NAMED_DIFF}'	
+	@echo "OUT_EXPECTED_LIST=$(OUT_EXPECTED_LIST)"
+	@echo "OUT_LIST=$(OUT_LIST)"
+	
+#######################################
+#create dummy setting output to preserve the order
+dummy_timestamp: 			; @echo ""
+dummy_test_no: 				; @echo ""
+dummy_invalid: 				; @echo ""
+dummy_is_described: 		; @echo ""
+dummy_se_required: 			; @echo ""
+dummy_no_prefix: 			; @echo ""
+dummy_need_compat: 			; @echo ""
+dummy_old_makefile: 		; @echo ""
+dummy_is_pcode_enabled: 	; @echo ""
+dummy_is_no_cron: 			; @echo ""
+dummy_scripted: 			; @echo ""
+dummy_is_window: 			; @echo ""
+dummy_test_ver: 			; @echo ""
+dummy_run_tests_ver: 		; @echo ""
+dummy_last_update: 			; @echo ""
+dummy_expect_fail_cert: 	; @echo ""
+dummy_expect_fail_esqli: 	; @echo ""
+dummy_expect_fail_ecp: 		; @echo ""
+dummy_expect_fail_ifx_p: 	; @echo ""
+dummy_expect_fail_4js: 		; @echo ""
+dummy_expect_fail_querix: 	; @echo ""
+
+	
+#######################################
+#ordered as per order we have in catalogue.unl
+all_desc: dummy_timestamp dummy_test_no dummy_invalid \
+	db_test ec_test nosilent_test \
+	tui_test form_test report_test \
+	graphic_test console_prompt_test dump_screen_test \
+	long_test unknown_test cert_test \
+	obsolete_test dummy_is_described desc \
+    compat_test expect_code dummy_se_required \
+	compile_only need_ifx_version transaction \
+	dummy_no_prefix dummy_need_compat dummy_old_makefile \
+	dummy_is_pcode_enabled dummy_is_no_cron dummy_scripted \
+	dummy_is_window dummy_test_ver dummy_run_tests_ver \
+	dummy_last_update dummy_expect_fail_cert dummy_expect_fail_esqli \
+	dummy_expect_fail_ecp dummy_expect_fail_ifx_p dummy_expect_fail_4js \
+	dummy_expect_fail_querix sql_features_used ansi_sql_compat
+	
+#NOT USED: runtime_err_check need_rdbms need_plugin 
+
+#Note: features that use dummy target are marked with "*"
+#1)timestamp*			2)test_no* 				3)invalid*
+#4)is_db			  	5)is_ec					6)is_nosilent
+#7)is_tui   			8)is_form				9)is_report
+#10)is_graphics 		11)is_prompt			12)is_dump_screen
+#13)is_long 			14)is_unknown			15)is_cert
+#16)is_obsolete			17)is_described*		18)test_desc_txt
+#19)test_compat_test	20)expect_code			21)se_required*
+#22)compile_only		23)need_ifx_ver			24)need_trans
+#25)no_prefix*			26)need_compat*			27)old_makefile*
+#28)is_pcode_enabled*	29)is_no_cron*			30)scripted*
+#31)is_window* 			32)test_ver*			33)run_tests_ver*
+#34)last_update*		35)expect_fail_cert*	36)expect_fail_esqli*
+#37)expect_fail_ecp*	38)expect_fail_ifx_p*	39)expect_fail_4js*
+#40)expect_fail_querix*	41)sql_features_used	42)ansi_sql
+	
+	
+# ============================= EOF ================================

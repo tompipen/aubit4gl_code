@@ -1,0 +1,27 @@
+
+$DBG ./rep.4ae > rep.4ae.out
+
+
+#Disabled:
+if test "1" = "2"; then 
+	#and how is rep.out created?
+	if diff $DIFF_FLAGS rep.out rep.out.expected
+	then
+	:
+	else
+		echo "DIFF 1"
+		exit 1
+	fi
+fi
+
+if diff $DIFF_FLAGS rep.4ae.out rep.4ae.out.expected
+then
+:
+else
+	echo "DIFF 2"
+	exit 2
+fi
+
+
+
+exit 0

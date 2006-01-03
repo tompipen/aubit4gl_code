@@ -1,0 +1,9 @@
+export A4GL_KEYFILE=keys.in
+./test_271.4ae 
+grep -v Date 271.errlog > test.nodate.out
+if diff $DIFF_FLAGS test.nodate.out test.out.expected
+then
+	:
+else
+	exit 1
+fi

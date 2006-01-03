@@ -1,0 +1,19 @@
+DATABASE test1
+
+MAIN
+  DEFINE strSql CHAR(128)
+
+	WHENEVER ERROR CONTINUE
+	DROP TABLE a_table
+	WHENEVER ERROR STOP
+
+	CREATE TABLE a_table (
+	  a_column INTEGER DEFAULT 1,
+		another_column CHAR(20) DEFAULT user,
+		date_column DATE DEFAULT today
+	)
+	DROP TABLE a_table
+END MAIN
+
+
+

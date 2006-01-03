@@ -1,0 +1,24 @@
+database formonly
+
+screen
+{
+
+	  Header:[hdr     ] Desc:[hdesc ]
+
+
+ F1=Quit   F3=PressToSeeDebugMsg
+}
+end
+
+
+attributes
+	hdr	= formonly.hdr,
+		  comments = " Enter header";
+	hdesc	= formonly.hdr_desc,
+		  comments = " Enter header desc";
+end
+
+instructions
+	delimiters " "
+	screen record scr_rec (hdr, hdr_desc);
+end

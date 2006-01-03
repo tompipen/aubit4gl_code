@@ -1,0 +1,13 @@
+export A4GL_TRIMDUMP=24x80
+./fgldb.4ae
+for a in w1.out w2.out w3.out w4.out
+do
+if diff $DIFF_FLAGS $a $a.expected
+then
+	:
+else
+	echo "diff in $a"
+	exit 1
+fi
+done
+exit 0

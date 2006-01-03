@@ -1,0 +1,22 @@
+database formonly
+screen
+{
+
+  [a] [b   ] [c]
+  [a] [b   ] [c]
+  [a] [b   ] [c]
+
+f1=quit
+}
+end
+
+attributes
+a		= formonly.f1 type char;
+b		= formonly.f2 type integer, noentry;
+c		= formonly.f3 type char;
+end
+
+instructions
+	delimiters " "
+	screen record parm_scr[3] (f1 thru f3)
+end

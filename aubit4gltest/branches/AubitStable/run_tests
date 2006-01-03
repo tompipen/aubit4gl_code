@@ -1,0 +1,2453 @@
+###########################################################################
+# 		Use this script to run unit tests (see -help)
+#
+###########################################################################
+
+START_TIME=`date +%s`
+
+#Function called when user interupts execution
+function on_abort () {
+	if test "$ENTERED_TEST_LOOP" = "1"; then
+		show_results ABORTED
+	fi
+	echo ">>>>>>>>>>>>>>>> A B O R T E D <<<<<<<<<<<<<<<<<<<<"
+	exit 1
+}
+
+#use 'trap -l' to see full sig list
+# 2) SIGINT	9) SIGKILL	15) SIGTERM	
+trap "on_abort" 2 9 15
+
+
+#create a file called 'sql_features' when compiling 4GL code
+export A4GL_DUMP_FEATURES=yes
+export A4GL_RESTARTLOG=Y
+export FCOMPILE_SILENT=Y
+
+
+###########################################
+#Include task specific shell script files:
+#List of all tests expected to fail:
+. incl/fail_list_inc.sh
+#Definitions of all functions used in this script:
+. incl/functions_inc.sh
+#Tests descriptions for old style makefiles:
+. incl/legacy_descriptions_inc.sh
+#Global variables and setting, and utility flags and flags pre-processing:
+. incl/init_inc.sh
+#Loop for runing multiple configurations of tests and tests matrix:
+. incl/multiple_test_inc.sh
+
+#Make sure we don't have a left-over watcher
+WATCHIT_SH="./bin/watchit.sh"
+WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
+
+if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
+	echo "Killing left-over watcher (pid $WATCH_PID)"
+	kill $WATCH_PID > /dev/null 2>&1
+	KILL_RET=$?
+	if test "$VERBOSE" = "1" ; then
+		echo "Killing watcher (pid $WATCH_PID) returned code $KILL_RET"
+	fi
+	WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
+	if test "$WATCH_PID" != ""; then
+		echo "error: still have one or more running:"
+		ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH"
+		exit 5
+	fi
+fi
+unset WATCH_PID
+
+##############################################################################
+#                           Process command line switches
+##############################################################################
+
+#process comand line parameters that affect processing of other parameters:
+###################
+for a in $FLAGS; do
+###################
+	##########
+	case $a in
+	##########
+			
+        -noecho)    #Don't show any non-critical messages while running tests
+                    #NOTE: this is NOT the same as -silent
+			NO_ECHO=1
+			;;
+		-shdbg) 	#run_tests shell script debugging 
+			SH_DBG=1
+			;;
+        -verbose | --verbose)   #Show more information about what is going on
+            VERBOSE=1
+			;;
+        -verbose-results | --verbose-results)   #Show more information about results			
+			VERBOSE_RESULTS=1
+			;;
+
+		-help-all | --help-all)			
+			FLAGS="-help -help-general -help-utility -help-test -help-debug \
+				-help-db -help-other -help-results -help-short -help-examples "
+			HELP_ALL=1
+			;;
+			
+			
+	####
+	esac
+	####
+####
+done
+####
+
+#######################
+#Create list of all available tests
+ALL_DIRS=[0-9]*
+ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
+LIBS_DIR="$AUBITDIR_UNIX/lib"
+BINS_DIR="$AUBITDIR_UNIX/bin"
+
+#process comand line parameters:
+###################
+for a in $FLAGS; do
+###################
+   ##########
+   case $a in
+   ##########
+
+   -sqlt)
+   #test of SQL translation using SQLFairy
+   #http://sqlfairy.sourceforge.net/
+   	# Parsers:
+		# DBI DBI-MySQL DBI-PostgreSQL DBI-SQLite DBI-Sybase
+		# Excel MySQL Oracle PostgreSQL SQLite Storable Sybase
+		# XML XML-SQLFairy YAML xSV
+    # Producers:
+		# ClassDBI Diagram GraphViz HTML MySQL Oracle POD PostgreSQL
+		# SQLite Storable Sybase TTSchema XML XML-SQLFairy YAML
+      # General Options:
+        # -d|--debug         Print debug info
+        # -v|--validate      Validate the schema
+        # --trace            Print parser trace info
+        # --show-warnings    Print warnings to STDERR
+      # DBI Parser Options:
+        # --dsn              DSN for connecting to database
+        # --db-user          Database user
+        # --db-password      Database password              
+      # DB Producer Options:
+        # --add-drop-table   Add 'DROP TABLE' statements before creates
+        # --no-comments      Don't include comments in SQL output
+      # Diagram Producer Options:
+        # --imap-file        Filename to put image map data
+        # --imap-url         URL to use for image map
+
+		#PG:
+		cat ./testdb-ddl.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > testdb-tmp.sql
+		#$PSQL -d $TEST_DB -f testdb-tmp.sql  > /tmp/testdb.log 2>&1
+		
+		TO=XML
+		OUTFILE=testdb.xml
+		OPTIONS=
+		
+		#can't load GD.pm
+		TO=Diagram
+		OUTFILE=testdb.dia
+		OPTIONS=		
+
+		#Can't locate GraphViz.pm
+		TO=GraphViz
+		OUTFILE=testdb.gv
+		OPTIONS=		
+		
+		TO=SQLite
+		OUTFILE=testdb-$TO.sql
+		OPTIONS=		
+		
+		
+		DOIT="sqlt --from PostgreSQL --to $TO $OPTIONS testdb-tmp.sql > $OUTFILE"
+		echo $DOIT
+		eval $DOIT
+		RET=$?
+		if test "$RET" != "0"; then 
+			echo "ERROR: sqlt failed"
+		else
+			less $OUTFILE
+		fi
+		exit $RET
+		;;
+
+	-check-dump-screen)
+		#Make sure we have IS_DUMP_SCREEN_TEST set right
+		ALL_DIRS=[0-9]*
+		ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
+		for TEST_NO in $ALL_TESTS
+		do
+			export RUNNING_TEST=$TEST_NO
+			IN_MAKE=0
+			IN_STRING=0
+			IS_DUMP_SCREEN_TEST=0
+			x=0
+			for b in $INVALID_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					x=1
+					continue
+				fi
+			done
+			if test "$x" = "1"; then 
+				continue
+			fi
+			
+			#check list
+			for b in $DUMP_SCREEN_TESTS; do
+				if test "$b" = "$TEST_NO"; then
+					IS_DUMP_SCREEN_TEST=1
+					IN_STRING=1
+				fi
+			done
+			if test "$IS_DUMP_SCREEN_TEST" = "0"; then 
+				#check makefile
+				IS_DUMP_SCREEN_TEST=`$MAKE -s -C $TEST_NO dump_screen_test 2>/dev/null`
+				if test "$IS_DUMP_SCREEN_TEST" = ""; then
+					IS_DUMP_SCREEN_TEST=0
+				fi
+				if test "$IS_DUMP_SCREEN_TEST" = "1"; then
+					IN_MAKE=1
+				fi
+			fi
+			
+			#check for real
+			TMP1=`$FIND $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_dump_screen {} \;`
+			if test "$TMP1" != ""; then 
+				REALLY_IS_DUMP_SCREEN_TEST=1
+			else
+				REALLY_IS_DUMP_SCREEN_TEST=0
+			fi
+			TMP1=`$FIND $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i A4GL_clr_window {} \;`
+			if test "$TMP1" != ""; then 
+				REALLY_IS_CLR_WINDOW_TEST=1
+			else
+				REALLY_IS_CLR_WINDOW_TEST=0
+			fi
+			TMP1=`$FIND $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l -i aclfgl_fgl_drawbox {} \;`
+			if test "$TMP1" != ""; then 
+				REALLY_IS_FGL_DRAWBOX_TEST=1
+			else
+				REALLY_IS_FGL_DRAWBOX_TEST=0
+			fi
+			
+			if test "$REALLY_IS_FGL_DRAWBOX_TEST" = "1" -o "$REALLY_IS_CLR_WINDOW_TEST" = "1" -o "$REALLY_IS_DUMP_SCREEN_TEST" = "1"; then 
+				SHOULD_BE=1
+			else
+				SHOULD_BE=0
+			fi
+			if test "$SHOULD_BE" != "$IS_DUMP_SCREEN_TEST"; then
+				echo "$TEST_NO : SHOULD_BE=$SHOULD_BE but $IS_DUMP_SCREEN_TEST (IN_MAKE=$IN_MAKE IN_STRING=$IN_STRING)"
+				echo "DUMP_SCREEN=$REALLY_IS_DUMP_SCREEN_TEST CLR_WINDOW=$REALLY_IS_CLR_WINDOW_TEST FGL_DRAWBOX=$REALLY_IS_FGL_DRAWBOX_TEST"
+			fi
+		done
+		exit 0
+		;;
+		
+	-info) 	#Show information about the test; allready procesed before - skip it
+		;;
+	-show-config)
+		#don't run any tests - just show configuration under which they would be executed
+		#at the point of makefile incovation in this script
+		SHOW_CONFIG=1
+		#break
+		;;
+		
+	-show )
+		#don't run any tests - just show configuration under which they would be executed
+		#at the point of COMPILATIOn in the test makefile
+		SHOW_CONFIG_IN_MAKE=1
+		export SHOW_CONFIG_IN_MAKE
+		#break
+		;;
+
+	-show-make) 	
+		#Dont run "run" target in makefile - run "show" target instead
+		MAKE_TARGET=show
+		;;
+	-runner-ifx) 	#Create p-code runner for Informix P-code compiler 
+		create_runner informix
+		exit 0
+		;;
+	-runner-4js) 	#Create p-code runner for Four J's P-code compiler 
+		create_runner 4js
+		exit 0
+		;;
+	-noecho)    #Don't show any non-critical messages while running tests
+        #we already got this one set
+		;;
+	-shdbg) 	#run_tests shell script debugging
+		#got that allready
+		;;
+
+    -verbose | --verbose)   #Show more information about what is going on
+        #we already got this one set
+        ;;
+    -verbose-results | --verbose-results)   #Show more information about results
+        #we already got this one set
+        ;;
+
+	-cat-dbg) #used for debugging CATALOGUE_UNL function
+		CATALOGUE_UNL_DBG=1
+		;;
+		
+	-new-unl-db)
+		#Create database & tables to hold date from catalogues and test results
+		#.unl files
+		create_unl_db_tables
+		load_unl_tables
+		echo "Data loaded" 
+		exit 0
+		;;
+	-log-text*) #custom text to log to unl file
+		LOG_TEXT=`echo $a | sed -e 's/-log-text=//' | tr "_" " "`
+		export LOG_TEXT
+		;;
+		
+	-loop-10)
+		LOOP_TIMES=10
+		;;
+	-loop-100)
+		LOOP_TIMES=100
+		;;
+		
+	-aubitrc-test)	#Use aubitrc in aubit4gltest directory to override local installation settings
+		if test "$PLATFORM" = "MINGW"; then 
+			#export A4GL_INIFILE="d:/cygwin/usr/src/aubit/aubit4gltest/etc/aubitrc-testing"
+			echo "FIXME: On Windows DBMONEY ends up empty after reading A4GL_INIFILE"
+			echo "FIXME: Try -show-config"
+			unset A4GL_INIFILE
+		else
+			export A4GL_INIFILE="$CURR_DIR/etc/aubitrc-testing"
+		fi
+		if test "$A4GL_INIFILE" != ""; then 
+			if test ! -f $A4GL_INIFILE; then 
+				echo "ERROR: Aubit RC file ($A4GL_INIFILE) missing. Stop."
+				exit 4
+			fi
+		fi
+		;;
+		
+	-alldbrun)       #this script was invoked from alltests loop
+        NO_ECHO=1; ALL_DB=1
+        ;;
+
+    -debug)         #set DEBUG=ALL
+        export DEBUG=ALL
+        ;;
+    -show-time)     #Show timing results for each test
+		MEASURE_TIME=1
+		SHOW_TIME=1
+        ;;
+    -measure-time)     #time results for each test
+		MEASURE_TIME=1
+        ;;
+	-db-features-report) #Show support status by db features for current db
+		SHOW_DB_FEATURES_REPORT=1
+		;;
+	-disable-sql-features-check) #Do not test for incompatible SQL features
+		DISABLE_SQL_FEATURES_CHECK=1
+		;;
+	-disable-sql-features-skip) #Check, but do not skip incompatible SQL features
+		DISABLE_SQL_FEATURES_SKIP=1
+		;;
+	-skip-only-impossible)
+		SKIP_ONLY_IMPOSSIBLE=1
+		;;
+	-clean)         #clean and exit
+		CLEAN=1
+		;;
+
+	-clean-all) 	#clean completely to CVS state and exit
+		CLEAN_ALL=1
+		CLEAN=1		
+		;;
+	-ignore-compat)	#Skip testing for test compatibility with no-aubit compilers
+		IGNORE_COMPAT=1
+		;;
+	-ignore-conf-error) #Ignore configuration errors and continue
+		IGNORE_CONF_ERR=1 
+		;;
+	-stop)          #stop on error
+		ERROR_STOP=1
+	    ;;
+	-showerr) 		#Show compile errors in 4gl code for given test
+		SHOW_4GL_ERROR=1
+		;;
+		
+
+    -memdbg)        #Use 'valgrind' to perform memory checking ar run-time
+		export DBG=valgrind
+        ;;
+
+	-gdb)			#use gdb to run programs with (not 4clc - just compiled programs)
+		if test "$COMSPEC" = ""; then 
+			export DBG="gdb --args "
+		else
+			export DBG="gdb "
+		fi
+		;;
+
+	-itemised) 		#Show result for each executed test
+		SHOW_ITEM_RESULT=1
+		;;
+		
+    -onlydb)        #run only db based tests
+		ONLY_DB=1
+		activate_use_cache
+	    ;;
+    -nodb)          #skip db dependent tests
+		activate_use_cache
+		NO_DB=1
+	    ;;
+		
+	-skip-unknown-trans) #Skip tests with explicit pref for trans, when cant 
+						#determine state of trans in current RDBMS
+		SKIP_UNKNOWN_TRANS=1
+		;;
+		
+	-xterm)
+		export TERM=xterm
+		;;
+		
+	-skip-expectfail) #Skip tests expected to fail 
+		SKIP_EXPECT_FAIL=1
+		;;
+		
+    -onlytui)       #Run only TUI tests listed in TUI_TESTS
+		ONLY_TUI=1
+        ;;
+	-show-passed)	#Show full list of tests that passed 
+		SHOW_PASSED=1
+		;;
+	-norunec)       #don't run EC compiled programs
+		export SKIP_EC_RUN=1
+        ;;
+
+	-silent)        #don't show ANY output of running test
+                    #NOTE: this is NOT the same as -noecho
+		SILENT=1
+		SHOW_TIME=0
+		#if ! test "$NO_ECHO"; then
+		if test "$VERBOSE" = "1"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** Some tests can't run in silent mode and will be skipped"
+			echo "** "
+        fi
+		if test "$COMSPEC" != ""; then 
+			#export A4GL_LINES=24
+			#export A4GL_COLUMNS=80
+			echo "Cant run in silent mode using PDcurses - 'LINES/COLUMNS too small' problem"
+			exit 5
+		fi
+		
+		;;
+	-no-test-output) #silence output of running test - same as -silent?
+		NO_TEST_OUTPUT=1
+		;;
+		
+	-short)          #show only short summary
+		SHORT_SUMMARY=1
+        ;;
+
+	-record) 	#record keystrokes to file while running program
+		export A4GL_KEYLOG="keys.in"
+		export A4GL_KEYFILE=
+		echo "NOTE: recording keystrokes - DONT FORGET TO ADD keys.in TO CVS!"
+		;;
+		
+	-retest-fail) 		#Run only tests that are expected to fail
+		RETEST_FAIL=1
+		;;
+		
+	-retest-invalid) #Run only tests that are flaged as invalid
+		ALL_TESTS="$INVALID_TESTS"
+		NO_SKIP=1
+		;;
+
+	-use-cache) 	#Use cached test descriptions to loop faster
+		activate_use_cache
+		;;
+		
+    -noskip)        #do not skip any tests whatever the reason is
+        NO_SKIP=1
+        ;;
+
+	-compile-only) # Do not run any tests, just compile them
+		ALL_COMPILE_ONLY=1
+		;;
+
+	-tuin)        #use HL_TUIN UI for tests
+		if ! test -f $LIBS_DIR/libUI_HL_TUIN$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find HL_TUIN plug in"
+            fi
+            exit 9
+        fi
+        UI=HL_TUIN;	export A4GL_UI=$UI
+        ;;
+
+	-tuins)        #use HL_TUINs (statically linked TUIN) UI for tests
+		if ! test -f $LIBS_DIR/libUI_HL_TUINs$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find HL_TUINs plug in"
+            fi
+            exit 9
+        fi
+        UI=HL_TUINs; export A4GL_UI=$UI
+        ;;
+		
+	-hl_tui)        #use HL_TUI UI for tests
+		if ! test -f $LIBS_DIR/libUI_HL_TUI$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find HL_TUI plug in"
+            fi
+            exit 9
+        fi
+        UI=HL_TUI;	export A4GL_UI=$UI
+        ;;
+
+	-console)        #use CONSOLE UI for tests
+		UI=CONSOLE
+		if ! test -f $LIBS_DIR/libUI_$UI$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find $UI plug in"
+            fi
+            exit 9
+        fi
+        export A4GL_UI=$UI
+		if ! test "$NO_ECHO"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** Some tests can't run in $UI mode and will be skipped"
+			echo "** "
+        fi
+        ;;
+
+	-gtk)			#Use GTK UI for running tests
+		UI=HL_GTK
+		if ! test -f $LIBS_DIR/libUI_$UI$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find $UI plug in"
+            fi
+            exit 9
+        fi
+		export A4GL_UI=$UI
+		#What is this for?
+		#export DISPLAY=:0
+		if ! test "$NO_ECHO"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** Some tests can't run in $UI mode and will be skipped"
+			echo "** "
+        fi
+        ;;
+	
+	-sqlite)        #Use SQLite as database for db tests
+		unset A4GL_SQLTYPE
+		if test -f $LIBS_DIR/libSQL_sqlite3S$SO_EXT; then
+			export A4GL_SQLTYPE=sqlite3S
+        fi
+		if test "$A4GL_SQLTYPE" = ""; then
+			if test -f $LIBS_DIR/libSQL_sqlite3$SO_EXT; then
+				export A4GL_SQLTYPE=sqlite3
+			fi
+		fi
+		if test "$A4GL_SQLTYPE" = ""; then
+			if test -f $LIBS_DIR/libSQL_sqliteS$SO_EXT; then
+				export A4GL_SQLTYPE=sqliteS
+			fi
+		fi
+		if test "$A4GL_SQLTYPE" = ""; then
+			if test -f $LIBS_DIR/libSQL_sqlite$SO_EXT; then
+				export A4GL_SQLTYPE=sqlite
+			fi
+		fi
+		
+		if test "$A4GL_SQLTYPE" = ""; then 
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find SQLite plug-in ($LIBS_DIR/libSQL_sqlite$SO_EXT)"
+			fi
+			exit 9
+		fi
+		USE_SQLITE=1; export SKIP_EC_RUN=1; 
+		export USE_ESQLI=0; export USE_ECI=0;export A4GL_LEXTYPE=C;
+        ;;
+
+	-sqlite-new)    #Create new SQLite database from scripts
+		USE_SQLITE=1; NEW_SQLITE=1
+        ;;
+
+    -esqli)         #Use Informix ESQL/C plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_esql$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find ESQL/C plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=1; export SKIP_EC_RUN=1; USE_ECI=0
+		export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=esql
+
+        ;;
+
+    -eci)   		#Use Informix ESQL/C EC output in for db tests
+		USE_SQLITE=0; USE_ESQLI=1; USE_ECI=1; export SKIP_EC_RUN=0
+		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=INFORMIX
+        #this will be used only by 4glc/fcompile compilers:
+		export A4GL_SQLTYPE=esql
+
+		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in $A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
+            fi
+			#It seems Cron on Windows runs ./configure in a way that it does not
+			#detect ESQL/C
+			make -C $AUBITDIR_UNIX/lib libSQL_$A4GL_SQLTYPE$SO_EXT
+			if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+				echo "Attempt to make it failed. Stop."
+            	exit 9
+			fi
+		else
+			if test "$VERBOSE" = "1" ; then
+				echo "Found: $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT"
+			fi
+        fi
+		
+		if ! test -f $LIBS_DIR/libESQL_INFORMIX$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in ESQL_INFORMIX ($LIBS_DIR/libESQL_INFORMIX$SO_EXT)"
+            fi
+			#It seems Cron on Windows runs ./configure in a way that it does not
+			#detect ESQL/C
+			make -C $AUBITDIR_UNIX/lib libESQL_INFORMIX$SO_EXT
+			if ! test -f $LIBS_DIR/libESQL_INFORMIX$SO_EXT; then
+				echo "Attempt to make it failed. Stop."
+            	exit 9
+			fi
+		else
+			if test "$VERBOSE" = "1" ; then
+				echo "Found: $LIBS_DIR/libESQL_INFORMIX$SO_EXT"
+			fi
+        fi
+		
+		#***must*** make sure that A4GL_ESQL_UNLOAD=N for informix ec generation.
+		export A4GL_ESQL_UNLOAD=N
+
+		;;
+
+    -ecs)   		#Use SAP DB ESQL/C EC output in for db tests
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECS=1; export SKIP_EC_RUN=0
+		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=SAP
+        #this will be used only by 4glc/fcompile compilers:
+		export A4GL_SQLTYPE=esqlSAP; USE_ECI=0
+
+
+		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in SQL_$A4GL_SQLTYPE"
+            fi
+            exit 9
+        fi
+
+		;;
+
+    -ecp)   		#Use PostgreSQL ESQL/C EC output in for db tests
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECP=1; export SKIP_EC_RUN=0
+		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=POSTGRES
+		USE_PG=1; USE_ECI=0
+        #this will be used only by 4glc/fcompile compilers:
+
+		if [ "$A4GL_SYSCOL_VAL" = "" ]; then
+			A4GL_SYSCOL_VAL=a4gl_syscolval
+			export A4GL_SYSCOL_VAL
+		fi
+		#export A4GL_SQLTYPE=esqlPG
+		#export A4GL_SQLTYPE=c_ecpg
+		#export A4GL_SQLTYPE=pgodbc
+		export A4GL_SQLTYPE=pg
+		# This "cascade" drops views when the tables they are based on are dropped
+		export A4GL_USE_CASCADE=Y
+		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in SQL_$A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
+            fi
+            exit 9
+        fi
+		#Test #1 fails without it:
+		export A4GL_USE_INDICATOR=Y
+		
+		#See also check_postgresql () in functions_inc.sh 
+		
+		;;
+
+
+    -ecq)   		#Use Querix EC output in for db tests
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECQ=1; export SKIP_EC_RUN=0
+		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=QUERIX
+        #this will be used only by 4glc/fcompile compilers:
+		export A4GL_SQLTYPE=esqlQ
+
+		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in SQL_$A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
+            fi
+            exit 9
+        fi
+		;;
+    -ecg)   		#Use Ingres EC output in for db tests
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECG=1; export SKIP_EC_RUN=0
+		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=INGRES
+        		#this will be used only by 4glc/fcompile compilers:
+		export A4GL_SQLTYPE=ingres
+		export FGLC=4glpc
+
+		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in SQL_$A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
+            fi
+            exit 9
+        fi
+		;;
+
+
+
+    -informix-new) 	#Create new Informix database from scripts
+		USE_ESQLI=1; NEW_IFMX=1
+        ;;
+
+    -pg)   			#Use PostgreSQL plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_pg$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find PostgreSQL plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=1
+		export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=pg
+		if ! test "$NO_ECHO"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** PG native driver is not fully functional."
+			echo "** "
+        fi
+		;;
+
+
+    -pg-new)         	#Create new PostgreSQL database from scripts
+		USE_PG=1; NEW_PG=1
+        ;;
+
+    -unixodbc)   		#Use UnixODBC plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_unixodbc$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find UnixODBC plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=1
+        IS_ODBC=1; IS_ODBC_MANAGER=1; export SKIP_EC_RUN=1;
+		export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=unixodbc
+        ;;
+
+    -iodbc)   			#Use iODBC plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_iodbc$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find iODBC plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
+        USE_IODBC=1; IS_ODBC=1; IS_ODBC_MANAGER=1; export SKIP_EC_RUN=1
+		export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=iodbc
+        ;;
+
+    -winodbc)   			#Use odbc32 plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_odbc32$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find Windows ODBC plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
+        USE_IODBC=0; USE_ODBC_32=1; IS_ODBC=1; IS_ODBC_MANAGER=1
+		export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=odbc32
+        ;;
+
+
+    -ifxodbc)   		#Use Informix ODBC plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_ifxodbc$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find Informix ODBC plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
+        USE_IODBC=0; IS_ODBC=1; USE_IFXODBC=1; ODBC_USE_DB=IFX; 
+		export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=ifxodbc
+		export A4GL_TRANSMODE=0
+		BLACKLIST_TESTS="$BLACKLIST_TESTS $BLACKLIST_TESTS_IFXODBC"
+        ;;
+
+    -sqliteodbc)   		#Use SQLite ODBC plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_sqliteodbc$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find SQLite ODBC plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
+        USE_IODBC=0; IS_ODBC=1; USE_IFXODBC=0; USE_SQLITEODBC=1
+        ODBC_USE_DB=SQLITE; export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C
+		export A4GL_SQLTYPE=sqliteodbc
+        ;;
+
+
+    -pgodbc)   			#Use PostgreSQL ODBC plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_pgodbc$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find PostgreSQL ODBC plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
+        USE_IODBC=0; IS_ODBC=1; USE_IFXODBC=0; USE_SQLITEODBC=0
+        USE_PGODBC=1; ODBC_USE_DB=PG; export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C
+		export A4GL_SQLTYPE=pgodbc;
+		if ! test "$NO_ECHO"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** PG ODBC will fail unless you set up /etc/odbc.ini manually"
+			echo '** because PG ODBC driver ignores $ODBCINI setting.'
+			echo "** "
+        fi
+        ;;
+
+    -err-with-log)      #Send stderr to same destination that logs stdout
+        ERR_WITH_LOG=1
+        ;;
+	-fail-full) #Show full list of tests that failed, db/nondb (need -verbose-results)
+		FAIL_FULL_LIST=1
+		;;
+	-pass-full) #Show full list of tests that passed, db/nondb (need -verbose-results)		
+		PASS_FULL_LIST=1
+		;;
+		
+    -sapodbc)   			#Use SAP ODBC ODBC plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_sapodbc$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find SAP DB ODBC plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
+        USE_IODBC=0; IS_ODBC=1; USE_IFXODBC=0; USE_SQLITEODBC=0; USE_PGODBC=0
+		USE_SAP=1; ODBC_USE_DB=SAP; export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C
+		export A4GL_SQLTYPE=sapodbc; export SQLPWD=dba; export SQLUID=dba
+        export LD_LIBRARY_PATH="$SAPDBROOT/indep_prog/runtime/7300/lib:$LD_LIBRARY_PATH"
+
+		;;
+
+    -sap-new)         	#Create new SAP DB database from scripts
+		NEW_SAP=1; USE_SAP=1
+		;;
+
+	-log-unl)
+		activate_log_unl
+		;;
+		
+    -odbcdb-ifx)        #Use Informix RDBMS for ODBC manager connections
+		ODBC_USE_DB=IFX
+        ;;
+    -odbcdb-pg)         #Use PostgreSQL RDBMS for ODBC manager connections
+		if ! test "$NO_ECHO"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** PG ODBC will fail unless you set up /etc/odbc.ini manually"
+			echo '** because PG ODBC driver ignores $ODBCINI setting.'
+			echo "** "
+        fi
+		ODBC_USE_DB=PG
+        ;;
+		
+    -odbcdb-sqlite)    	#Use SQLite RDBMS for ODBC manager connections
+		ODBC_USE_DB=SQLITE
+        ;;
+
+	-odbcdb-sap)    	#Use SAP DB RDBMS for ODBC manager connections
+		ODBC_USE_DB=SAP; export SQLPWD=dba; export SQLUID=dba
+		;;
+
+
+    -noclean)           #Don't clean
+        NO_CLEAN=1
+        ;;
+
+    -packed)            #use PACKED packer for resource files
+		export A4GL_FORMTYPE=GENERIC; export A4GL_MENUTYPE=GENERIC
+		export A4GL_PACKER=PACKED
+        ;;
+
+	-disable-sqlconvert) #Disable run-time conversion of SQL dialects
+		export A4GL_SQLCONVERT=NO
+		;;
+
+	-sqlconvert) #Enable run-time conversion of SQL dialects
+		export A4GL_SQLCONVERT=YES
+		;;
+
+		
+    -xml)            	#use XML packer for resource files
+		export A4GL_FORMTYPE=GENERIC; export A4GL_MENUTYPE=GENERIC
+		export A4GL_PACKER=XML
+        ;;
+
+    -xdr)               #Use Sun RCP XDR packer for resource files
+		#There are two ways to do this test; are they different?
+		if test 0 ; then
+			export A4GL_FORMTYPE=GENERIC; export A4GL_MENUTYPE=GENERIC
+			export A4GL_PACKER=XDR
+        else
+			export A4GL_FORMTYPE=XDR; export A4GL_MENUTYPE=XDR
+        fi
+        ;;
+
+    -pcode)
+			#This isn't strictly needed - but it generates smaller C code:
+			export A4GL_FAKELEXTYPE=PCODE
+			#$ 4glc mysrc.4gl
+			#$ c2pcode_fgl mysrc.c
+			#(Should generate mysrc.4pe.dat or .xml etc)
+			#$ runner_fgl mysrc.4pe
+    		#No .xml or .dat - thats added by the packer
+            export A4GL_PRG=".4pe"
+            export DBG="runner_fgl"
+			#RUN_ONE=3
+			export FGLC="$FGLC --verbose"
+        ;;
+
+    -ccode)         #default
+            export A4GL_PRG=".4ae"
+            unset A4GL_FAKELEXTYPE
+			export A4GL_LEXTYPE=C
+			unset A4GL_LEXDIALECT
+
+        ;;
+
+	-watch)		#kill tests that take more then 100 secconds to run
+		WATCHIT=1
+		;;
+		
+    -nospace)	#Ignore changes in the amount of white space when diff-ing
+		export DIFF_FLAGS="$DIFF_FLAGS --ignore-space-change"
+        ;;
+
+    -nodosdiff)	#Ignore changes in DOS/UNIX file format when diff-ing
+		export DIFF_FLAGS="$DIFF_FLAGS --strip-trailing-cr"
+        ;;
+
+    -nolong)           #Skip tests that take a long time to run
+        SKIP_LONG=1
+        ;;
+		
+	-skip-non-ansi) 	#Skip tests with ANSI SQL incompatible statements
+		SKIP_NON_ANSI=1
+		;;
+	-ifx-p)				#Use Informix P-code compiler instead of Aubit compiler
+		USE_COMP=ifx-p
+		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_IFX"
+		if test "$FAIL_NON_ANSI" = "1"; then
+			#this is obsolete, use -skip-non-ansi
+			#force Informix compiler to check all SQL for ANSI compliance
+			#(tests 234 256 ...)
+			#NOTE: fglpc will exit with exit code eqial to number of ANSI
+			#warning, so all non-ANSI tests will fail
+			#I4GL_PC_FLAGS variable used in i4gl.mk
+			I4GL_PC_FLAGS="$I4GL_PC_FLAGS -ansi"
+			export I4GL_PC_FLAGS
+		fi
+		if test -f "$IFX_RUNNER" ; then
+			if test "$VERBOSE" = "1"; then
+				echo "Note: using custom runner"
+			fi
+			RUNNER=$IFX_RUNNER
+			FGLRUN=$IFX_RUNNER
+			export FGLRUN RUNNER
+		else
+			create_runner informix
+			if test -f "$IFX_RUNNER" ; then
+				if test "$VERBOSE" = "1"; then
+					echo "Note: using custom runner"
+				fi
+				RUNNER=$IFX_RUNNER
+				FGLRUN=$IFX_RUNNER
+				export FGLRUN RUNNER
+			else
+				echo "Note: creation of Informix custom runner failed."
+				echo "All tests using dump_screen() will fail"
+			fi
+		fi
+		#Indicate that we will use Informix RDBMS
+		USE_SQLITE=0; USE_ESQLI=1
+		
+		#get version
+		set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+		if test "$1" != "" -a "$2" != ""; then
+			I4GL_PCOMPILER_VER_MAJOR=$1
+			I4GL_PCOMPILER_VER_MINOR=$2				
+		else
+			echo "ERROR: Cannot get fglpc version."
+		fi
+		;;
+	-4js-p)				#Use FourJs P-code compiler instead of Aubit compiler
+		USE_COMP=4js-p; USE_ECI=0
+		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_4JS"
+		if test -f "$FJSRUNNER" ; then
+			if test "$VERBOSE" = "1"; then		
+				echo "Note: using custom runner"
+			fi
+			RUNNER=$FJSRUNNER
+			FGLRUN=$FJSRUNNER
+			export FGLRUN RUNNER
+		else
+			create_runner 4js
+			if test -f "$FJSRUNNER" ; then
+				if test "$VERBOSE" = "1"; then		
+					echo "Note: using custom runner"
+				fi
+				RUNNER=$FJSRUNNER
+				FGLRUN=$FJSRUNNER
+				export FGLRUN RUNNER
+			else
+				echo "Note: creation of 4Js custom runner failed."
+				echo "All tests using dump_screen() will fail"
+			fi
+		fi
+		#Indicate that we will use Informix RDBMS
+		USE_SQLITE=0; USE_ESQLI=1
+		if ! test -f "./etc/$TEST_DB.sch"; then 
+			#-c : Enable Database to 4GL data type conversion.
+			#Database type          4GL type
+			#--------------------------------------
+			#BOOLEAN                CHAR(1)
+			#INT8                   DECIMAL(19,0)
+			#SERIAL8                DECIMAL(19,0)
+			#Note- fglschema will fail without -c - not sure why
+			# -c : Enable Database to 4GL data type conversion
+			#Not sure if DBDELIMITER has anything to do with it, but
+			#i had a case where fglschema failed with -c too
+			#but it works from command line!!
+			echo "$DBDELIMITER"
+			#fglschema -c $TEST_DB
+			fglschema $TEST_DB
+			RET=$?
+			if test "$RET" != "0"; then 
+				rm -f ./etc/$TEST_DB.sch
+			fi
+			if ! test -f "./etc/$TEST_DB.sch"; then
+				echo "ERROR: failed to create 4Js schema file for $TEST_DB"
+				exit 8
+			fi
+		fi
+		export FGLDBPATH=$CURR_DIR
+		
+		;;
+	-querix)				#Use Querix compiler instead of Aubit compiler
+		USE_COMP=querix; USE_ECI=0
+		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_QUERIX"
+		#Force Querix compiler to check SQL for ANSI compliance
+		#Q4GL_CC_FLAGS variable used in q4gl.mk
+		Q4GL_CC_FLAGS="$Q4GL_CC_FLAGS -ansi"
+		export Q4GL_CC_FLAGS
+		#Indicate that we will use Informix RDBMS
+		USE_SQLITE=0; USE_ESQLI=1
+		;;
+
+    -nographic)         #skip tests that use platform specific characters
+		NO_GRAPHIC=1
+        ;;
+
+    -noprogress)         #do not show testing progress counter and other 
+						#special characters (for outout to log file)
+		NO_PROGRESS=1
+		T_MD=
+		T_ME=
+        ;;
+
+	-cron)		#passed when test is invoked as cron job
+		CRON_JOB=1
+		NO_PROGRESS=1
+		T_MD=
+		T_ME=
+		;;
+		
+	-nodefaults)        #Do not use platform default settings
+        #nothing to set; this is just to cause $@ not to be empty
+        ;;
+
+    -defaults)        	#Use platform default settings
+        #nothing to set; this is intercepted earlier
+        ;;
+
+	-cert)	#Use settings for expected for certified tests
+		#Nothing to do; this was intercepted earlier
+		;;
+
+	-compare)
+		compare_settings
+		exit
+		;;
+	
+	-compare2)
+		COMPARE_SETTINGS=1
+		;;
+	
+	-t1)	#Time from start of this script to test invocation point
+		TIME_SCRIPT=1
+		;;
+
+	-t2)	#Time from start of test loop to test invocation point
+		TIME_LOOP=1
+		;;
+	-t3)	#Time from start of test loop to test invocation point
+		TIME_LOOP2=1
+		;;
+		
+	-described)         #run only described tests
+        DESCRIBED_ONLY=1
+		#if ! test "$NO_ECHO"; then
+		if test "$VERBOSE" = "1"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** Tests not described will be skipped"
+			echo "** "
+        fi
+        ;;
+
+	-help)
+		echo "Aubit 4GL build testing script (run_tests)"
+		echo ""
+		echo "Usage: run_tests [flags] [x]"
+		echo " x=number of the test to run (default=all tests):"
+
+		echo "HELP BY GROUP:"
+		echo " -help-general   General flags help"
+		echo " -help-utility   Utility options"
+		echo " -help-test      Selecting tests to run"
+		echo " -help-debug     Debugging"
+		echo " -help-db        Selecting database to run tests against"
+		echo " -help-results   Output of test results"		
+		echo " -help-other     Misc options" 
+		echo " -help-examples  Examples of flags and options"
+		echo " -help-short     Shortcuts (flags that expand to multiple flags)"
+		echo " -help-all       Show ALL help sections at once"
+		echo " -help           This help summary page"
+		echo ""
+		if test "$HELP_ALL" != "1"; then 
+			exit 0
+		fi
+        ;;
+
+	-help-general)		
+		echo "GENERAL:"
+		echo " -clean [x]  Clean all tests (or test x) and exit"
+		echo " -clean-all  Clean completely to CVS state and exit (SLOW)"		
+		echo " -noclean    Don't clean before running tests"
+		echo " -stop       Stop on error"
+		echo " -stop-after x Stop after running x tests (must be last)"
+		echo " -stop-after-fail x Stop after x tests fail (must be last)"
+		echo " -stop-after-pass x Stop after x tests pass (must be last)"
+		echo " -stop-after-skip x Stop after x tests where skipped (must be last)"		
+		echo " -nospace    Ignore changes in the amount of white space when diff-ing"
+		echo " -nodefaults Do not use platform default settings"
+		echo " -compile-only Do not run any tests, just compile them"
+		echo " -ifx-p      Use Informix P-code compiler instead of Aubit compiler"
+		echo " -4js-p      Use FourJs P-code compiler instead of Aubit compiler"
+		echo " -querix     Use Querix compiler instead of Aubit compiler"
+		echo " -aubitrc-test Use testing specific aubitrc to override local Aubit"
+		echo "             settings settings"
+		echo ""
+		if test "$HELP_ALL" != "1"; then		
+			exit 0
+		fi
+        ;;
+
+	-help-short)
+		echo "SHORTCUTS:"
+		echo " -cert       Use settings expected by certified tests. Currently:"
+		echo "   $CERT_DEFAULT_FLAGS"
+		echo " -defaults   Use platform default settings. Currently:"
+		echo "   $DEFAULT_FLAGS"
+		echo "             NOTE: additional flags on command line take priority."
+		echo " -cert-loop  Short for: '-cert -silent -verbose-results -log-unl'"
+		echo ""		
+		if test "$HELP_ALL" != "1"; then		
+			exit 0
+		fi
+        ;;
+		
+	-help-debug)
+		echo "DEBUGGING:"
+		echo " -debug     Turn on DEBUG=ALL to produce debug.out"
+		echo " -memdbg    Use 'valgrind' to perform memory checking ar run-time"
+		echo " -gdb       Use gdb to run compiled programs with (not compiler)"
+		echo " -shdbg     run_tests shell script debugging"
+		echo ""		
+		if test "$HELP_ALL" != "1"; then		
+			exit 0
+		fi
+        ;;
+		
+	-help-test)
+		echo "SELECTING TEST(S) TO RUN:"
+		echo " -nographic  Skip tests that use platform specific characters"
+		echo " -nolong     Skip tests that take a long time to run"
+		echo " -onlytui    Run only TUI tests listed in TUI_TESTS"
+		echo " -described  Skip all not desctibed tests"
+		echo " -noskip     Do not skip any tests whatever the reason is"
+		echo " -range x y  Run tests between x and y (inclusive)"
+		echo " -retest-fail Run only tests that are expected to fail"
+		echo " -retest-invalid Run only tests that are flaged as invalid"
+		echo " -alltests[-db|-nodb] Run all available combinations of tests"
+		echo " -console    Use CONSOLE UI for tests"
+		echo " -gtk        Use GTK+ UI for running tests"		
+		echo " -tuin       use HL_TUIN UI for tests"
+		echo " -hl_tui     use HL_TUI UI for tests (default is TUI)"
+		echo " -ignore-compat Skip testing for test compatibility with non-aubit compilers"
+		echo " -ignore-conf-error Ignore configuration errors and continue"
+		echo " -skip-expectfail Skip tests expected to fail"
+		echo " -use-cache  Use cached test descriptions to loop faster"
+		echo " -loop-[10|100] Loop same test 10 or 100 times"
+		echo ""
+		if test "$HELP_ALL" != "1"; then
+			exit 0
+		fi
+        ;;
+		
+    -help-db)
+		echo "DATABASE:"
+		echo " -nodb       Skip db dependent tests"
+		echo " -onlydb     Run only db based tests"
+		echo " -norunec    Don't run EC compiled programs"
+		echo " -skip-unknown-trans Skip tests with explicit pref "
+		echo "             for trans, when cant determine state of trans in current RDBMS"
+		echo " -disable-sql-features-check Do not skip tests with incompatible SQL features"
+		echo " -disable-sql-features-skip Check, but do not skip incompatible SQL features"
+		echo " -db-features-report Show support status by db features for current db"
+		echo " -skip-only-impossible Skip only db/SQL features known to be impossible on "
+		echo "             current db, but NOT the ones that are possible but not working"
+		echo " -sqlite     Use SQLite as database for db tests"
+		echo " -esqli      Use Informix ESQL/C plug-in for db tests"
+		echo " -ec[i|s|p|q] Use Informix/SAP/PG/Querix ESQL/C EC output in for db tests"
+		echo " -pg         Use PostgreSQL plug-in for db tests"
+
+		echo " -<x>odbc    Use <x> plug-in for db tests. <x> = "
+		echo "             unix | i | ifx | sqlite | pg | sap | win"
+
+
+		echo " -odbcdb-<x> Use <x> RDBMS for ODBC manager connections. <x>="
+		echo "             ifx | pg | sqlite | sap "
+        echo "             Note: this settings apply only to ODBC managers."
+        echo "             Default is to use automaticaly detected RDBMS"
+
+
+		echo " TEST DATABASE CREATION:"
+		echo " -<x>-new    Create new database from scripts. <x>="
+		echo "             sqlite | pg | informix | sap"
+		echo ""
+		echo " -disable-sqlconvert Disable run-time conversion of SQL dialects"
+		echo " -sqlconvert         Enable run-time conversion of SQL dialects"
+		echo ""
+		if test "$HELP_ALL" != "1"; then
+			exit 0
+		fi
+        ;;
+		
+	-help-results)
+		echo "RESULTS DISPLAY OPTIONS:"	
+		echo " -noprogress Do not show testing progress counter"		
+		echo " -fail-full  Show full list of failed tests, db/nodb (need -verbose-results)"
+		echo " -pass-full  Show full list of passed tests, db/nodb (need -verbose-results)"
+        echo " -verbose-results Show more information about results"
+		echo " -err-with-log Send stderr to same destination that logs stdout"
+		echo " -short      Show only short summary"
+		echo " -show-time  Show timing results for each test"
+		echo " -itemised   Show result for each executed test"
+		echo " -show-passed Show full list of tests that passed"
+		
+		echo ""
+		if test "$HELP_ALL" != "1"; then
+			exit 0
+		fi
+        ;;
+		
+	-help-utility)
+		echo "UTILITY OPTIONS:"	
+		echo " -info [x]   Show test x description, or list descriptions for all tests"
+		echo " -catalogue  Create catalogue.txt file using -info flag"
+		echo " -new x      Create new test x from files in template/, add to CVS"
+		echo " -add-makefile Add makefile from template to tests that don't have one" 
+		echo " -add-cvsignore Add .cvsignore from template to tests that don't have one"
+		echo " -record     record keystrokes to file while running program"
+		echo " -runner-[ifx|4js] Create p-code runner for specified compiler"		
+		echo " -update     Update tests souce code from CVS"
+		echo " -commit     commit changes to tests source code to CVS"
+		echo " -certify	x  flage the test as certified in the makefile"
+		echo " -showerr x  Show compile errors in 4gl code for given test"
+		echo ""
+		if test "$HELP_ALL" != "1"; then
+			exit 0
+		fi
+        ;;
+
+    -help-other)
+		echo "OUTPUT:"
+		echo " -silent     Don't show output of programs execution"
+		echo " -noecho     Don't show any non-critical messages while running tests"
+		echo " -verbose    Show more information about what is going on"
+		echo " -watch      kill tests that take more then 100 secconds to run"
+		echo " FORMATS (resource files):"
+		echo " -packed     Use PACKED packer for resource files"
+		echo " -xml        Use XML packer for resource files"
+		echo " -xdr        Use Sun RCP XDR packer for resource files"
+
+		echo ""
+		if test "$HELP_ALL" != "1"; then
+        	exit 0
+		fi
+        ;;
+
+    -help-examples)
+		echo "EXAMPLES:"
+		echo " -default -debug 45"
+		echo "   Run only test 45, apply defaults and turn on debugging"
+		echo " -defaults -eci -range 5 50"
+		echo "   Run tests between 5 and 50, apply defaults but use Informix ESQL/C generation"
+		echo " -info 45"
+		echo "   Show information about test 45"
+		echo " -cert -short -silent"
+		echo "   Set defaults as for testing ceritfied results, short summary, don't "
+		echo "   show programs execution"
+		echo ""		
+        exit 0
+        ;;
+
+	-range) #run tests beween x and y 
+		TEST_RANGE=1
+		;;
+
+	-stop-after) #Stop after running x tests
+		STOP_AFTER="RUN"
+		;;
+	-stop-after-fail) #Stop after x tests fail
+		STOP_AFTER="FAIL"
+		;;
+	-stop-after-pass) #Stop after x tests pass
+		STOP_AFTER="PASS"
+		;;
+	-stop-after-skip) #Stop after x tests pass
+		STOP_AFTER="SKIP"
+		;;
+		
+	*)              #everything else should be a test number
+		if test "$SHOW_4GL_ERROR" = "1"; then 
+			#echo "a=$a"
+			x=`eval $FIND $CURR_DIR/$a -name \'*.err\'`
+			#echo $x
+			#exit
+			if test "$x" = ""; then
+				echo "No .err files found in test $a"
+			else
+				echo "-----------------------------------------------------------------------"			
+				grep -n -B 5 "^|" $x | head -n 20
+				echo "-----------------------------------------------------------------------"
+				echo "Above error(s) occured in file: `basename $x`"
+			fi
+			exit
+		fi
+	
+		if test "$STOP_AFTER" != ""; then
+			STOP_AFTER_NUM=$a
+		elif test "$TEST_RANGE" = "1"; then
+			if test "$TEST_RANGE_FROM" = ""; then 
+				TEST_RANGE_FROM=$a
+			else
+				if test "$TEST_RANGE_TO" = ""; then 
+					TEST_RANGE_TO=$a
+					echo "Runing tests between $TEST_RANGE_FROM and $TEST_RANGE_TO" 
+				else
+					echo "ERROR: too many parameters after -range flag"
+					exit 4
+				fi
+			fi
+		else
+			if test -d $a; then
+    			RUN_ONE=$a
+				SHOW_ITEM_RESULT=1
+			else
+            	echo ""
+				echo "ERROR: unknown switch or test does not exist: $a"
+				echo "Try -help. Stop."
+				echo ""
+				exit 4
+			fi
+		fi
+		;;
+
+  ####
+  esac
+  ####
+####
+done
+####
+
+if test "$A4GL_UI" = "CONSOLE" -a "$UI" != "CONSOLE"; then
+	echo "WARNING: A4GL_UI is set to CONSOLE in environment"
+fi
+
+#Check if we can/should use load tests info from .unl file or not
+if test -f "docs/catalogue.unl"; then
+	LINES_IN_CATALOGUE_UNL=`cat docs/catalogue.unl | wc -l`
+else
+	LINES_IN_CATALOGUE_UNL=0
+fi
+if test "$LINES_IN_CATALOGUE_UNL" -lt "600" -o "$CATALOGUE_UNL" = "1"; then
+	#too few lines in the file, file obvieosly not complete, or user specified
+	#-catalogue on command line explicitly.
+	#Have to load test info from makefiles and/or strings:
+	DISABLE_CAT_INFO=1
+	verbose "Loading of test info from cataloguie.unl disabled"
+fi
+
+if test "$A4GL_FORMTYPE" = "GENERIC" -a "$A4GL_PACKER" = "PACKED" -a "$PLATFORM" = "MINGW"; then
+	EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_MINGW_PACKED"
+fi	
+
+if test "$LOOP_TIMES" != ""; then 
+	if test "$RUN_ONE" != ""; then
+		ALL_TESTS=""
+		CNT=0
+		while [ "1" = "1" ] ; do
+			let CNT=CNT+1
+			ALL_TESTS="$ALL_TESTS $RUN_ONE"
+			if test "$CNT" = "$LOOP_TIMES"; then 
+				break
+			fi
+		done
+		echo "Looping test #$RUN_ONE $LOOP_TIMES times" 
+		RUN_ONE=""
+	else
+		echo "Cant loop multiple tests"
+		exit 5
+	fi
+fi
+
+
+if test "$TEST_RANGE" = "1"; then
+	if test "$TEST_RANGE_FROM" = "" -o "$TEST_RANGE_TO" = ""; then
+		echo "ERROR: missing from or to value with -range"
+		exit 5
+	fi
+fi
+
+#Fixme - do we need to move this lower, if script decides to use IFX with unixODBC
+#because rdbms was not specified?
+if test "$A4GL_SQLTYPE" = "unixodbc" -a "$ODBC_USE_DB" = "IFX"; then  
+	EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX"
+fi	
+
+
+##############################################################################
+#                           Configure test(s) to run
+##############################################################################
+
+#####################
+#Determine which datbase back-end we will use for ODBC managers, if user did not
+#specify it using -odbcdb-xxx flag
+if test "$IS_ODBC_MANAGER" = "1" && test "$ODBC_USE_DB" = ""; then
+	if test "`dbaccess -V 2>/dev/null`" != ""; then
+		ODBC_USE_DB=IFX
+	elif test "`$PSQL -V 2>/dev/null`" != ""; then
+		ODBC_USE_DB=PG
+	elif test "`sqlite -version 2>/dev/null`" != ""; then
+	    ODBC_USE_DB=SQLITE
+	elif test "`sqlite3 -version 2>/dev/null`" != ""; then
+	    ODBC_USE_DB=SQLITE
+	elif test "`echo quit | dbmcli -V 2>/dev/null`" != ""; then
+	    ODBC_USE_DB=SAP
+	else
+		echo "ERROR: cannot determine RDBMS to use for ODBC. Stop."
+	    exit 8
+	fi
+fi
+
+#####################
+#Show user a message which RDBMS is used when using ODBC manager
+if test "$IS_ODBC_MANAGER" = "1"; then
+    if test "$USE_UNIXODBC" = "1"; then
+		if test "$SILENT" != "1"; then
+			echo "Using $ODBC_USE_DB via UnixODBC"
+        fi
+    elif test "$USE_IODBC" = "1"; then
+		if test "$SILENT" != "1"; then
+			echo "Using $ODBC_USE_DB via iODBC"
+        fi
+    elif test "$USE_ODBC_32" = "1"; then
+		if test "$SILENT" != "1"; then
+			echo "Using $ODBC_USE_DB via ODBC32"
+        fi
+	else
+        echo "ERROR: invalid USE_ setting for ODBC. Stop."
+        exit 3
+	fi
+fi
+
+#for now - don't delete the .c files - some of them are NOT generated
+# but in the scripts
+#watch for empty variables 
+if test "$OUTPUT_LOG" = "" -o "$ERROR_LOG" = "" -o "$SO_EXT" = ""; then 
+	echo "ERROR: variable used with asterix is empty. Stop"
+	exit 4
+fi
+CLEAN_FIND_FILES='"(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*" 
+		-o -name "*.o" -o -name "*.ao" -o -name "*.out" -o -name "*.glb" 
+		-o -name "*.err" -o -name "$OUTPUT_LOG" -o -name "$ERROR_LOG" 
+		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
+		-o -name "*.ec" -o -name "*.h" -o -name "pcode.run" 
+		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
+		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"  -o -name "*.42f"
+		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
+		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp" -o -name "*.pic"
+		-o -name "*.4js" -o -name "*.querix"
+		")"'
+
+#######################
+#Clean rubbish
+if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
+	if test "$SILENT" != "1"; then
+		echo "Cleaning all tests..."
+	fi
+
+	EXEC="$FIND . $CLEAN_FIND_FILES -exec rm -f {} \;"
+	eval $EXEC
+
+	if test "$CLEAN_ALL" = "1"; then
+		for a in $ALL_TESTS
+		do
+			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bCleaning $a..."
+			$MAKE -C $a clean > /dev/null 2>&1
+		done
+		
+		#editor's backup files
+		EXEC='	$FIND . "(" -name "*~" -o -name "*.bak"
+		-o -name ".#*"  -o -name ".*~"
+		")" -exec rm  -f {} \;'
+		
+		eval $EXEC
+	fi
+	echo " "
+	echo "Done."
+	exit 0
+fi
+
+#######################
+#General Settings:
+
+#Make sure we all use same setting for DBDATE
+export DBDATE=MDY4/
+
+########################
+#Set format for 'time' command
+TIME_FILE="time.log"
+TIME_TMPFILE="time.tmp"
+#TIME_FORMAT="\t%E real,\t%U user,\t%S sys"
+#Default format:
+#TIME_FORMAT="%Uuser %Ssystem %Eelapsed %PCPU (%Xtext+%Ddata %Mmax)k %Iinputs+%Ooutputs (%Fmajor+%Rminor)pagefaults %Wswaps"
+#Default output: 2.29user 0.35system 0:07.35elapsed 35%CPU (0text+0data 0max)k 0inputs+0outputs (3701major+2149minor)pagefaults 0swaps
+#legend:    user system elapsed CPU text data max inputs outputs major minor swaps
+#TIME_FORMAT="%U	%S	%E	%P	%X	%D	%M	%I	%O	%F	%R	%W"
+#TIME_LEGEND="user system elapsed CPU text data max inputs outputs major minor swaps"
+TIME_FORMAT="%U	%S	%E	%P	%X	%D	%I	%O	%F	%W"
+TIME_LEGEND="user system elapsed CPU text data inputs outputs major swaps"
+if test -f "/usr/bin/time$EXE_EXT"; then
+	TIME_EXE="/usr/bin/time$EXE_EXT"
+fi
+if test "$TIME_EXE" != "" -a "$MEASURE_TIME" = "1"; then
+	TIME_CMD='/usr/bin/time --format="$TIME_FORMAT" --output=$TIME_TMPFILE'
+else
+    #disable timing:
+	MEASURE_TIME=0
+	SHOW_TIME=0
+fi
+if test "$ALL_DB" = "1"; then
+    #disable timing display:
+	SHOW_TIME=0
+fi
+
+############
+#UI default
+if test "$A4GL_UI" = ""; then
+	#Mike say that HL_TUI is still experimental
+	#export A4GL_UI=HL_TUI
+	export A4GL_UI=TUI
+fi
+
+export PATH="$AUBITDIR_UNIX/bin:$PATH"
+if test "$COMSPEC" != ""; then
+	#On windows dll's have to be in the PATH - there is no LD_LIBRARY_PATH
+	#equivalent on Windows
+	export PATH="$AUBITDIR_UNIX/lib:$PATH"
+else
+	export LD_LIBRARY_PATH=$AUBITDIR_UNIX/lib:$LD_LIBRARY_PATH
+fi
+LOGFILE=$CURR_DIR/build.log
+RESLOGFILE=$CURR_DIR/resources.log
+if test "$DEBUG" != ""; then
+	echo "** "
+	echo "** WARNING:"
+	echo "** DEBUG is on; tests will run really slow now..."
+	echo "** "
+fi
+
+############################################
+#Include task specific shell script files:
+#ODBC related processing"
+. incl/odbc_inc.sh
+#Database related processing"
+. incl/db_inc.sh
+
+if test "$SH_DBG" = "1"; then 
+	echo "Entering 'Finalise settings' section"
+fi
+
+##############################################################################
+#                           Finalise settings
+##############################################################################
+
+define_expect_fail_list
+
+#Define list(s) of recognized SQL features, when running multiple tests
+#(when running one test, features are loaded after test info is loaded, to 
+#avoid loading db features for non-db tests)
+if test "$RUN_ONE" = ""; then
+	if test "$TIME_SCRIPT" = "1"; then
+		BEFORE_FEATURES_LOAD_TIME=`date +%s`
+	fi
+	define_sql_features
+	if test "$TIME_SCRIPT" = "1"; then
+		AFTER_FEATURES_LOAD_TIME=`date +%s`
+	fi
+fi
+
+
+if test "$RETEST_FAIL" = "1"; then
+	ALL_TESTS="$EXPECT_TO_FAIL_TESTS"
+fi
+
+init_result_logs
+
+##############################################################################
+#							Run test(s)
+##############################################################################
+
+	init_vars_before_loop
+	
+#reset cache files:
+if test "$USE_CACHE" != "1" -a "$RUN_ONE" = "" -a "$TEST_RANGE" != "1" \
+		-a "$LOOP_TIMES" = "" -a "$TIME_SCRIPT" != "1"; then
+		#-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
+	#Full loop means we are going to loop troug ALL tests and read 
+	#actuall descriptions for ALL tests, which will allow us to create 
+	#new cache files.
+	FULL_LOOP=1
+	rm -f $CURR_DIR/etc/cache_IS_DB_TEST.txt
+fi
+
+if test "$CATALOGUE_UNL" != "1" ; then 
+	#When CATALOGUE_UNL is allready 1, it means that user passed -catalogue
+	#flag explicitly.
+	if test "$FULL_LOOP" = "1" 	-a "$ONLY_DB" != "1" -a "$ONLY_TUI" != "1"; then
+		#Activate loging of results to unl, creation of unl catalogue
+		activate_log_unl
+		#Cannot activate catalogue to .txt because that uses redirection of output
+		#of this script to a file, but can still create new .unl catalogue
+		rm -f $CURR_DIR/docs/catalogue.unl
+		export CATALOGUE_UNL=1
+		date_stamp=`date +%d-%m-%Y_%H-%M-%S`
+		verbose "Creating tests catalogue file (docs/catalogue.unl)"
+		#$SH run_tests -info  > $CURR_DIR/docs/catalogue.txt
+	fi
+fi
+
+
+if test "$SILENT" = "1" -a "$NO_ECHO" != "1"; then
+	echo "Running test(s)..."
+fi
+
+ENTERED_TEST_LOOP=1
+#########################
+for TEST_NO in $ALL_TESTS
+#########################
+do
+	#if test "$SH_DBG" = "1"; then
+	#	echo "Loop start: test $TEST_NO"
+	#fi
+	export RUNNING_TEST=$TEST_NO
+
+	if test "$TIME_LOOP" = "1"; then 
+		LOOP_START_TIME=`date +%s`
+	fi
+
+	#Make sure we are in tests root
+	cd $CURR_DIR
+
+	if test -f $CURR_DIR/$OUTPUT_LOG ; then 
+		fsize=`ls -l $CURR_DIR/$OUTPUT_LOG | awk '{ print $5 }'`
+		if test "$fsize" -gt "1000000"; then #1MB 
+			echo "Error: log file size exceded the size limit"
+			ls -lh $CURR_DIR/$OUTPUT_LOG | awk '{ print $5 }'
+			exit 5
+		fi
+	fi
+	
+	if test "$TEST_RANGE" = "1"; then 
+		if test "$TEST_NO" -lt "$TEST_RANGE_FROM"; then
+			if test "$VERBOSE" = "1"; then 
+				echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bSkipping to test $TEST_RANGE_FROM ($TEST_NO)     "
+			fi
+			continue
+		fi
+		if test "$TEST_NO" -gt "$TEST_RANGE_TO"; then 
+			break
+		fi
+	fi
+
+	case $STOP_AFTER in
+		RUN)
+			if test "$STOP_AFTER_NUM" = "$RUN_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after running $STOP_AFTER_NUM tests"
+				fi
+				break
+			fi
+		;;
+		FAIL)
+			if test "$STOP_AFTER_NUM" = "$FAIL_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after $STOP_AFTER_NUM tests failed"
+				fi
+				break
+			fi
+		;;
+		PASS)
+			if test "$STOP_AFTER_NUM" = "$PASS_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after $STOP_AFTER_NUM tests passed"
+				fi
+				break
+			fi
+		;;
+		SKIP)
+			if test "$STOP_AFTER_NUM" = "$SKIP_CNT"; then
+				if test "$VERBOSE" = "1"; then 
+					echo "Exiting after $STOP_AFTER_NUM tests where skipped"
+				fi
+				break
+			fi
+		;;
+		
+	esac
+	
+	if test "$SHOW_CONFIG" = "1"; then
+		show_config_in_loop
+		exit 0
+	fi
+	
+	init_vars_in_loop
+	
+    #################################
+    #See if we should skip this test:
+    if test "$RUN_ONE" != "" -a "$RUN_ONE" != "$TEST_NO"; then
+		continue
+    fi
+
+	if test "$USE_CACHE" = "1"; then
+		#Instead of reading descriptions for each test before we can determine
+		#if this test should be skiped, use allready loaded cached descriptions
+		check_cached_skip_reasons
+		
+		#decide if we WANT to skip it
+		do_skip
+		if test "$DO_SKIP" = "1"; then
+			if test "$VERBOSE" = "1"; then
+				echo "Skip $TEST_NO based on cached info"
+			fi
+			continue
+		fi
+	fi
+	if test "$TIME_SCRIPT" = "1"; then
+		BEFORE_TEST_INFO_TIME=`date +%s`
+	fi
+	collect_test_info
+	if test "$TIME_SCRIPT" = "1"; then
+		AFTER_TEST_INFO_TIME=`date +%s`
+	fi
+
+	if test "$RUN_ONE" != ""; then
+		#When runnig only one test we can load only features support status
+		#for features actually used by this test to speed up, but then we
+		#need to know which features test uses
+		if test "$IS_DB_TEST" = "1" -a "$SQL_FEATURES_USED" != ""; then
+		
+			if test "$TIME_SCRIPT" = "1"; then
+				BEFORE_FEATURES_LOAD_TIME=`date +%s`
+			fi
+			define_sql_features
+			if test "$TIME_SCRIPT" = "1"; then
+				AFTER_FEATURES_LOAD_TIME=`date +%s`
+			fi
+		fi
+	fi
+	
+	
+	if test "$FULL_LOOP" = "1"; then
+		#create test descriptions cache files, but only when 
+		#running full test loop
+		if test "$IS_DB_TEST" = "1"; then 
+			echo " $TEST_NO" >> $CURR_DIR/etc/cache_IS_DB_TEST.txt
+		fi
+	fi
+		
+	if test "$INFO_TEST" = "1" -o "$RUN_AND_INFO" = "1"; then
+		show_test_info
+	fi
+	
+	if test "$CATALOGUE_UNL" = "1"; then 
+		catalogue_unl
+		if test "$INFO_TEST" = "1"; then
+			continue
+		fi
+	fi
+	
+	#See if we can/should run this test
+	check_skip
+	
+	#decide if we WANT to skip it
+	do_skip
+	if test "$DO_SKIP" = "1"; then
+		if test "$SH_DBG" = "1"; then 
+			echo "Skipping test $TEST_NO"
+		fi
+		continue
+	fi
+	
+	if test "$SILENT" != "1"; then
+		echo " "
+		echo "------------------------- Running test #$TEST_NO ---------------------------"
+		if test "$desc_txt" != "" -a "$VERBOSE" = "1" ; then
+			echo "Description: $desc_txt"
+		fi
+	else
+		if test "$NO_PROGRESS" != "1"; then
+		
+			########################
+			#calculate success percentage
+			if test "$RUN_CNT" != "0"; then 
+				VAR1=$PASS_CNT
+				VAR2=$RUN_CNT
+				RESULT=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $VAR1 $VAR2`
+			else
+				RESULT=0
+			fi
+			#echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $TEST_NO..."
+			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $TEST_NO...($RESULT %)  "
+		fi
+    fi
+
+	if test "$ALL_COMPILE_ONLY" = "1"; then 
+		COMPILE_ONLY=1
+	fi
+#echo "COMPILE_ONLY=$COMPILE_ONLY"
+#exit
+
+	#we will need that in make file
+	if test "$EXPECT_CODE" = ""; then
+		EXPECT_CODE=0
+	fi
+	export EXPECT_CODE
+	export COMPILE_ONLY
+	export USE_COMP
+	#Exporting VERBOSE would propagate to 'aubit' and 'amake' too
+	MAKE_VERBOSE=$VERBOSE
+	export MAKE_VERBOSE
+
+	#make never exits with exit code of the program that caused the error,
+	#so we cannot expect EXPECT_CODE to be returned here
+	MAKE_EXPECT_CODE=0
+
+	##################################
+    # No skip - clean first:
+
+	if test "$NO_CLEAN" != "1"; then
+		#Clean old run
+		if test "$VERBOSE"; then
+			echo "Cleaning $CURR_DIR/$TEST_NO ..."
+		fi
+
+		EXEC="$FIND $CURR_DIR/$TEST_NO $CLEAN_FIND_FILES -exec rm  -f {} \;"
+		eval $EXEC
+
+		if test "$VERBOSE" = "1"; then 
+			$MAKE -C $CURR_DIR/$TEST_NO clean 
+		else
+			$MAKE -C $CURR_DIR/$TEST_NO clean  > /dev/null 2>&1
+		fi
+		RET=$?
+		#Old makefiles do not have 'clean' target so this will allways fail
+		if test "$RET" != "0"; then
+			if test "$VERBOSE" = "1"; then
+				echo "WARNING: make clean failed - old makefile? (no 'clean' target)"
+			fi
+		fi
+		if test "$CLEAN" = "1" -a "$RUN_ONE" != ""; then
+			echo "Clean only - done."
+			exit 0
+		fi
+    fi
+	
+	if test "$WATCHIT" = "1"; then
+		#Create watchdog script:
+		echo 'RUN_CNT=0' > $WATCHIT_SH
+		echo "TEST_NO=$TEST_NO" >> $WATCHIT_SH		
+		echo "echo 'Begin, test $TEST_NO' > /tmp/watchit.log" >> $WATCHIT_SH		
+		echo 'while [ "1" = "1" ] ; do' >> $WATCHIT_SH
+		echo '	let RUN_CNT=RUN_CNT+1' >> $WATCHIT_SH
+		echo '	if test "$RUN_CNT" = "10"; then' >> $WATCHIT_SH
+		echo '		echo "Max loop 10 - exit" >> /tmp/watchit.log' >> $WATCHIT_SH
+		echo "		MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -n 1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
+		echo '		if test "$MAKE_PID" != "" -a "$MAKE_PID" != "0"; then' >> $WATCHIT_SH
+		echo '			echo "Killing $MAKE_PID" >> /tmp/watchit.log' >> $WATCHIT_SH
+		echo '			kill $MAKE_PID' >> $WATCHIT_SH
+		echo '		else' >> $WATCHIT_SH
+		echo '			echo "No PID ($MAKE_PID)" >> /tmp/watchit.log' >> $WATCHIT_SH		
+		echo '		fi' >> $WATCHIT_SH
+		echo '		break' >> $WATCHIT_SH
+		echo '	fi' >> $WATCHIT_SH
+		echo "#	ps -ef | grep -v 'grep' | grep 'make run' | head -n 1  >> /tmp/watchit.log " >> $WATCHIT_SH		
+		echo "	MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -n 1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
+		echo '	echo "Test $TEST_NO Loop $RUN_CNT , make pid=$MAKE_PID" >> /tmp/watchit.log' >> $WATCHIT_SH
+		echo '	sleep 10' >> $WATCHIT_SH
+		echo 'done' >> $WATCHIT_SH
+		#exit
+	
+		#See this for explanation on how to silence kill:
+		#http://www.experts-exchange.com/Programming/Programming_Platforms/Linux_Programming/Q_21078930.html
+		#bash $WATCHIT_SH &
+		(
+		bash $WATCHIT_SH & > /dev/null &
+		) 2>/dev/null
+		
+		#This $! will not work when we are starting watcher in another shell
+		#by using ( )
+		#PID1=$!
+		#WATCH_PID=$!
+		WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
+		#if test "$WATCH_PID" = "$PID1"; then
+		#	echo "same"
+		#	exit
+		#fi
+		if test "$WATCH_PID" = ""; then
+			echo "ERROR: no PID for watcher:"
+			ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1
+			exit 3
+		fi
+	fi #"$WATCHIT" = "1"
+	
+	##################################
+    # run it:
+	let RUN_CNT=RUN_CNT+1
+
+	cd $CURR_DIR/$TEST_NO
+    if test "$SILENT" = "1" -o "$NO_TEST_OUTPUT" = "1"; then
+		if test "$ERR_WITH_LOG" != "1"; then
+			echo "Test : " $TEST_NO   >> $CURR_DIR/$ERROR_LOG
+            ERRLOG="2>$CURR_DIR/$ERROR_LOG"
+        else
+            ERRLOG="2>&1"
+		fi
+        RUN_CMD="$TIME_CMD $MAKE $MAKE_TARGET >> $CURR_DIR/$OUTPUT_LOG $ERRLOG"
+	else
+		if test "$ERR_WITH_LOG" != "1"; then
+			echo "Test : " $TEST_NO   >> $CURR_DIR/$ERROR_LOG
+            ERRLOG="2>> $CURR_DIR/$ERROR_LOG"
+        else
+            ERRLOG=
+        fi
+		RUN_CMD="$TIME_CMD $MAKE $MAKE_TARGET $ERRLOG"
+	fi
+
+	if test "$VERBOSE"; then
+		echo "Running: $RUN_CMD"
+	fi
+
+	if test "$COMPARE_SETTINGS" = "1"; then
+			compare_settings
+			exit 0
+	fi
+	if test "$TIME_SCRIPT" = "1"; then
+		EXIT_TIME=`date +%s`
+		let TOOK_TIME=EXIT_TIME-START_TIME
+		echo "From start of run_tests to execution point=$TOOK_TIME"
+		
+		let TEST_INFO_TOOK_TIME=AFTER_TEST_INFO_TIME-BEFORE_TEST_INFO_TIME
+		let TO_INFO_LOAD=BEFORE_TEST_INFO_TIME-START_TIME
+		echo "To load of test info=$TO_INFO_LOAD"
+		echo "Loading test info=$TEST_INFO_TOOK_TIME"
+		
+		if test "$BEFORE_FEATURES_LOAD_TIME" != ""; then
+			let FEATURES_LOAD_TOOK_TIME=AFTER_FEATURES_LOAD_TIME-BEFORE_FEATURES_LOAD_TIME
+			let TO_FEATURES_LOAD=BEFORE_FEATURES_LOAD_TIME-START_TIME
+			echo "To load of db features=$TO_FEATURES_LOAD"
+			echo "Loading db features=$FEATURES_LOAD_TOOK_TIME"
+		else
+			echo "DB featurs not loaded"
+		fi
+		
+		if test "$TIME_LOOP" != "1"; then
+			exit 0
+		else
+			TIME_SCRIPT=0
+		fi
+	fi
+	if test "$TIME_LOOP" = "1"; then
+		LOOP_EXIT_TIME=`date +%s`
+		let LOOP_TOOK_TIME=LOOP_EXIT_TIME - LOOP_START_TIME
+		echo "Took $LOOP_TOOK_TIME seconds from start of test loop to execution point"
+		continue
+	fi
+
+	if test "$TIME_LOOP2" = "1"; then	
+		LOOP_START_TIME2=`date +%s`
+	else
+		#############
+		eval $RUN_CMD
+		#############
+		RET=$?
+	fi
+
+	if test "$SHOW_CONFIG_IN_MAKE" = "1"; then
+		message "end of config output"
+		exit 0
+	fi
+	
+	
+	if [ "$RET" != "$MAKE_EXPECT_CODE" ]; then
+		if test "$SILENT" != "1"; then
+			stty sane # Just it case it bombed...
+		fi
+	fi
+
+	if test "$WATCHIT" = "1"; then
+		TMP1=`grep "Killing" /tmp/watchit.log`
+		if test "$TMP1" != ""; then
+			if test "$VERBOSE" = "1" -o "$RUN_ONE" != ""; then
+				echo
+				echo "WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING!"
+				echo "Had to kill test #$TEST_NO - took more then 100 seconds to run"
+				echo "Probably an endless loop - investigate"			
+				echo "WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING!"
+			fi
+			RET="kill"
+			KILL_LIST="$KILL_LIST $TEST_NO"
+			let KILL_CNT=KILL_CNT+1
+		else
+			#VERBOSE=1
+			if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
+				echo "Killing watcher (pid $WATCH_PID)" >> /tmp/killwatch.log
+				if test "$VERBOSE" = "1" ; then
+					echo "Killing watcher (pid $WATCH_PID)"
+				fi
+				#kill $WATCH_PID > /dev/null 2>&1
+				#/bin/kill $WATCH_PID  2> /dev/null > /dev/null
+				
+				#export $WATCH_PID
+				#bash -c kill $WATCH_PID 2>&1 > /dev/null
+				#See this for explanation on how to silence kill:
+				#http://www.experts-exchange.com/Programming/Programming_Platforms/Linux_Programming/Q_21078930.html
+				kill $WATCH_PID
+				KILL_RET=$?
+				if test "$KILL_RET" != "0"; then
+					echo 
+					echo "WARNING: Killing watcher (pid $WATCH_PID) returned code $KILL_RET"
+					echo 
+				else
+					if test "$VERBOSE" = "1" ; then
+						echo "Killing watcher (pid $WATCH_PID) returned code $KILL_RET"
+					fi
+				fi
+
+				#Check again to make sure we don't have another one still running				
+				NOW_WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -n 1 | awk '{print $2}'`
+				if test "$NOW_WATCH_PID" != ""; then 
+					echo "ERROR: still have one or more $WATCHIT_SH running:"
+					ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH"
+					exit 6
+				fi
+			else
+				echo "No pid for watcher"
+			fi
+			#exit
+		fi
+	fi
+	
+	if test -f $TIME_TMPFILE; then
+		if test "$SHOW_TIME" = "1"; then
+			#TIME_STRING=`cat $TIME_TMPFILE`
+			set `cat $TIME_TMPFILE`
+	        #echo $@
+
+		    TIME_COUNTER=0
+			for t in $TIME_LEGEND
+			do
+				#let TIME_COUNTER=TIME_COUNTER+1
+	            #eval "TIME_$TIME_COUNTER=$t"
+				echo -e -n "$t\t"
+	        done
+	        echo
+			echo "______________________________________________________________________________"
+
+			TIME_COUNTER=0
+			for t in $@
+			do
+				let TIME_COUNTER=TIME_COUNTER+1
+	            eval "TIME_$TIME_COUNTER=$t"
+				echo -e -n "$t\t"
+	        done
+        fi
+		cat $TIME_TMPFILE >> $CURR_DIR/$TIME_FILE
+	fi
+
+    ################################
+    #Check the result
+	if test "$VERBOSE" = "1" ; then 
+		#almost meaningless - make does not return exit code of failed command
+		echo "$MAKE returned code $RET"	
+	fi
+	
+	if test "$RET" = "$MAKE_EXPECT_CODE"; then
+		#Test passed
+		RESULT=1
+		if test "$IS_DB_TEST" = "1"; then
+			PASS_DB_TESTS="$PASS_DB_TESTS $TEST_NO"
+			let PASS_DB_CNT=PASS_DB_CNT+1
+		else
+			PASS_NONDB_TESTS="$PASS_NONDB_TESTS $TEST_NO"
+			let PASS_NONDB_CNT=PASS_NONDB_CNT+1
+		fi
+
+		#Compile list of all working SQL features:
+		#We need to check features even for compile only tests, 
+		#because when ew use EC they may fail to even compile, because
+		#of incompatible SQL feature in the code
+		#if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+		if test "$SQL_FEATURES_USED" != ""; then
+			for used_feature in $SQL_FEATURES_USED ; do
+				ALLREADY_LISTED=0
+				for working_feature in $SQL_FEATURES_PASS_LIST ; do
+					if test "$used_feature" = "$working_feature" ; then 
+						ALLREADY_LISTED=1
+						break
+					fi
+				done
+				if test "$ALLREADY_LISTED" = "0"; then 
+					SQL_FEATURES_PASS_LIST="$SQL_FEATURES_PASS_LIST $used_feature"
+				fi
+			done
+		fi
+		
+		if test "$SKIP_REASON_NOTSKIP" != "" ; then
+			#This test has what we expected to be incompatible SQL feature, 
+			#but it passed
+			#echo "WARNING: $TEST_NO passed, but has incompatible SQL feature(s):" 
+			#echo "$SKIP_REASON_NOTSKIP"
+			PASS_INCOMPAT_SQL="$PASS_INCOMPAT_SQL $TEST_NO=$SKIP_REASON_NOTSKIP"
+			SKIP_REASON_NOTSKIP=
+		fi
+		
+		if test "$compat_test" != "1" -a "$USE_COMP" != "aubit"; then
+			#test is not described as compatible, but even using no-aubit compiler 
+			#it passed, so it should be described as compatible
+			NOT_COMPAT_BUT_PASSED="$NOT_COMPAT_BUT_PASSED $TEST_NO"
+			#we do not want to automatically declare test compatible, just because
+			#one compiler can do it. NB; Querix sometimes fails with error, but 
+			#does not exit with error code
+			#change_setting "compat_test" "1" "$TEST_NO"
+		fi
+	
+		if test "$RUNTIME_ERR_CHECK" = "0"; then 
+			if test "$SHOW_ITEM_RESULT" = "1"; then 
+				echo "NOTE: $TEST_NO does not perform ANY run-time erorr checking!"  >> $LOGFILE
+				echo "NOTE: Therefore, PASS result is questionable."  >> $LOGFILE
+			fi
+			NO_RUNTIME_ERR_CHECK_LIST="$NO_RUNTIME_ERR_CHECK_LIST $TEST_NO"
+			let NO_RUNTIME_ERR_CHECK_CNT=NO_RUNTIME_ERR_CHECK_CNT+1
+		fi
+		
+		if test "$COMPILE_ONLY" = "1"; then 		
+			if test "$SHOW_ITEM_RESULT" = "1"; then 
+				echo "NOTE: $TEST_NO is compile-only!"  >> $LOGFILE
+				echo "NOTE: Therefore, PASS result is questionable."  >> $LOGFILE
+			fi
+			COMPILE_ONLY_PASS_LIST="$COMPILE_ONLY_PASS_LIST $TEST_NO"
+			let COMPILE_ONLY_PASS_CNT=COMPILE_ONLY_PASS_CNT+1
+		fi
+		
+		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then
+			if test "$SHOW_ITEM_RESULT" = "1"; then 
+				echo "NOTE: $TEST_NO was expected to fail, but passed!"  >> $LOGFILE
+			fi
+			EXPECTED_TO_FAIL_PASSED_LIST="$EXPECTED_TO_FAIL_PASSED_LIST $TEST_NO"
+			let EXPECTED_TO_FAIL_PASSED_CNT=EXPECTED_TO_FAIL_PASSED_CNT+1
+		fi
+		let PASS_CNT=PASS_CNT+1
+		PASS_LIST="$PASS_LIST $TEST_NO"
+		if test "$IS_CERT_TEST" = "0"; then
+			if test "$SHOW_ITEM_RESULT" = "1"; then
+				echo "$TEST_NO Pass - NOT CERTIFIED" >> $LOGFILE
+			fi
+			let NOT_CERT_CNT=NOT_CERT_CNT+1
+			NOT_CERT_LIST="$NOT_CERT_LIST $TEST_NO"
+        else
+			if test "$SHOW_ITEM_RESULT" = "1"; then		
+				echo "$TEST_NO Pass" >> $LOGFILE
+			fi
+		fi
+	else
+		#test failed
+		RESULT=0
+		let FAIL_CNT=FAIL_CNT+1
+		
+		#Compile list of all failed SQL features:
+		#We need to check features even for compile only tests, 
+		#because when ew use EC they may fail to even compile, because
+		#of incompatible SQL feature in the code
+		#if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+		if test "$SQL_FEATURES_USED" != ""; then
+			#If test is not compile only and has SQL features described...
+		
+			for used_feature in $SQL_FEATURES_USED ; do
+				#...for every feature used in this failed test... 
+				ALLREADY_LISTED=0
+				for failed_feature in $SQL_FEATURES_FAIL_LIST ; do
+					#...look for it in allready recorded failed features list
+					if test "$used_feature" = "$failed_feature" ; then
+						#Found, allreaddy got it listed as failed
+						ALLREADY_LISTED=1
+						break
+					fi
+				done
+				if test "$ALLREADY_LISTED" = "0"; then
+					#Did not find it, its a new feied feature, add it to the list
+					#of all features used in failed tests
+					SQL_FEATURES_FAIL_LIST="$SQL_FEATURES_FAIL_LIST $used_feature"
+				fi
+			done
+		fi
+
+		if test "$SQL_FEATURES_COMPATIBLE" = "1" -a "$IS_DB_TEST" = "1" \
+			-a "$SQL_FEATURES_USED" != ""; then 
+			#This db test had what we expected to be compatible SQL
+			#features, but it still failed. This does not mean in all cases
+			#that we clasified it wrong, since it can fail for other reasons,
+			#but it's worth knowing
+			FAIL_COMPAT_SQL="$FAIL_COMPAT_SQL ($TEST_NO=$SQL_FEATURES_USED)"
+		fi
+
+		if test "$IS_DB_TEST" = "1"; then
+			FAIL_DB_TESTS="$FAIL_DB_TESTS $TEST_NO"
+			let FAIL_DB_CNT=FAIL_DB_CNT+1
+		else
+			FAIL_NONDB_TESTS="$FAIL_NONDB_TESTS $TEST_NO"
+			let FAIL_NONDB_CNT=FAIL_NONDB_CNT+1
+		fi
+		if test "$compat_test" != "1" -a "$USE_COMP" != "aubit"; then
+			IS_EXPECT_TO_FAIL_TEST=1
+		fi
+		
+		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then 
+			TMPNOTE="(expected)"
+			EXPECTED_TO_FAIL_LIST="$EXPECTED_TO_FAIL_LIST $TEST_NO"
+			let EXPECTED_TO_FAIL_CNT=EXPECTED_TO_FAIL_CNT+1
+		else
+			TMPNOTE=
+			NOT_EXPECTED_TO_FAIL_LIST="$NOT_EXPECTED_TO_FAIL_LIST $TEST_NO"
+			let NOT_EXPECTED_TO_FAIL_CNT=NOT_EXPECTED_TO_FAIL_CNT+1			
+		fi
+		
+		if test "$IS_CERT_TEST" = "1" -a "$USE_ECI" = "1" ; then
+			if test "$SHOW_ITEM_RESULT" = "1"; then
+				echo "$TEST_NO Fail $TMPNOTE<<< WARNING - TEST WAS CERTIFIED TO RUN, BUT FAILED ($MAKE_EXPECT_CODE/$RET)" >> $LOGFILE
+			fi
+
+			if test "$NO_ECHO" != "1" -a "$SILENT" != "1"; then
+				echo
+				echo "WARNNING! WARNNING! WARNNING! WARNNING! WARNNING! WARNNING! WARNNING!"
+	            echo        $TMPNOTE
+				echo "  This test was certified to run, but now it failed - INVESTIGATE ($MAKE_EXPECT_CODE/$RET)"
+	            echo
+	            echo "WARNNING! WARNNING! WARNNING! WARNNING! WARNNING! WARNNING! WARNNING!"
+	            echo
+            fi
+		else
+			if test "$SHOW_ITEM_RESULT" = "1"; then
+				if test "$IS_CERT_TEST" = "1" ; then 
+					echo "$TEST_NO Fail $TMPNOTE($MAKE_EXPECT_CODE/$RET) (-eci certified) <<<" >> $LOGFILE			
+				else
+					echo "$TEST_NO Fail $TMPNOTE($MAKE_EXPECT_CODE/$RET) <<<" >> $LOGFILE
+				fi
+			fi
+		fi
+		if test "$ERROR_STOP" = "1"; then
+			echo "Exiting after ERROR..." >> $LOGFILE
+            break
+        fi
+	fi
+	
+	if test "$A4GL_DUMP_FEATURES" != "" \
+		-a "$A4GL_DUMP_FEATURES" != "no" \
+		-a "$A4GL_DUMP_FEATURES" != "NO" \
+		-a "$IS_DB_TEST" = "1" \
+		-a "$USE_COMP" = "aubit" \
+		; then
+		SQL_FEATURES_DUMPFILE="$CURR_DIR/$TEST_NO/sql_features"
+		if test -f "$SQL_FEATURES_DUMPFILE" ; then
+			SQL_FEATURES_USED_4GLC=`cat "$SQL_FEATURES_DUMPFILE"`
+			#get rid of the newline:
+			SQL_FEATURES_USED_4GLC=`echo "$SQL_FEATURES_USED_4GLC" | tr "\n" " "`
+			#SQL_FEATURES_COMPATIBLE=""
+			IN_4G_NOT_IN_MK=""
+			IN_MK_NOT_IN_4GLC=""
+			
+			#Create list of features that do not match in both
+			for FEATURE_MK in $SQL_FEATURES_USED ; do
+				has_match=0
+				for FEATURE_4G in $SQL_FEATURES_USED_4GLC ; do
+					if test "$FEATURE_MK" = "ANSI_SELECT"; then
+						#4glc uses SELECT, not ANSI_SELECT
+						FEATURE_MK="SELECT"
+					fi
+					if test "$FEATURE_MK" = "$FEATURE_4G"; then
+						has_match=1
+						break
+					fi
+				done
+				if test "$has_match" = "0"; then
+					IN_MK_NOT_IN_4GLC="$IN_MK_NOT_IN_4GLC $FEATURE_MK"
+				fi
+			done
+			for FEATURE_4G in $SQL_FEATURES_USED_4GLC ; do
+				if test "$FEATURE_4G" = "SELECT" \
+					-o "$FEATURE_4G" = "DATABASE_USED"; then
+						#Ignore above descriptors. 
+						#DATABASE_USED has no significance (all IS_DB_TEST use it)
+						#SELECT is equivalent to ANSI_SELECT
+						continue
+				fi
+				has_match=0
+				for FEATURE_MK in $SQL_FEATURES_USED ; do
+					if test "$FEATURE_4G" = "$FEATURE_MK"; then
+						has_match=1
+						break
+					fi
+				done
+				if test "$has_match" = "0"; then
+					IN_4G_NOT_IN_MK="$IN_4G_NOT_IN_MK $FEATURE_4G"
+				fi
+			done
+			if test "$RUN_ONE" != ""; then
+				if test "$IN_4G_NOT_IN_MK" != ""; then
+					verbose	"WARNING: features listed by 4glc but not in Makefile:"
+					verbose "$IN_4G_NOT_IN_MK"
+				fi
+				if test "$IN_MK_NOT_IN_4GLC" != ""; then
+					verbose "WARNING: features listed in Makefile but not by 4glc:"
+					verbose "$IN_MK_NOT_IN_4GLC"
+				fi
+				verbose "DB features (makefile) :$SQL_FEATURES_USED" 
+				verbose "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
+			else
+				if test "$IN_4G_NOT_IN_MK" != ""; then
+					LIST_IN_4G_NOT_IN_MK="$LIST_IN_4G_NOT_IN_MK ($TEST_NO:$IN_4G_NOT_IN_MK)"
+				fi
+				if test "$IN_MK_NOT_IN_4GLC" != ""; then
+					LIST_IN_MK_NOT_IN_4GLC="$LIST_IN_MK_NOT_IN_4GLC ($TEST_NO:$IN_MK_NOT_IN_4GLC)"
+				fi
+			fi
+		else
+			if test "$RUN_ONE" != ""; then
+				verbose "WARNING: '$SQL_FEATURES_DUMPFILE' was not created"
+			fi
+		fi
+	fi
+	
+	if test "$UNL_LOG" = "1"; then
+		#test_no=$1 result=$2 skip_reason=$3 expect_fail=$4 test_version=$5 db_has_trans=$6
+		result_unl $TEST_NO $RESULT "" $IS_EXPECT_TO_FAIL_TEST "" $DB_HAS_TRANSACTION
+	fi
+	
+	if test "$TIME_LOOP2" = "1"; then
+		LOOP_EXIT_TIME2=`date +%s`
+		let LOOP_TOOK_TIME2=LOOP_EXIT_TIME2 - LOOP_START_TIME2
+		message "Took $LOOP_TOOK_TIME2 seconds from execution point to end of loop"
+	fi
+#####
+done
+#####
+
+cd $CURR_DIR
+
+	if test "$INFO_ALL" = "1" ; then
+		#Show all tests summary statiscics
+		echo "--------------------------------------------------------------"
+		echo "Total tests: $COUNTER"
+		echo "Still has template comment: $TEMPLATE_COMMENT_CNT ($TEMPLATE_COMMENT_LIST)"
+		echo "Old makefile: $MIGRATE_DESC_CNT ($MIGRATE_DESC_LIST)"			
+		echo "Not described: $NOT_DESCRIBED_CNT ($NOT_DESCRIBED_LIST)"
+		echo "Invalid: $IS_INVALID_CNT ($IS_INVALID_LIST)"
+		echo "Expected to fail (because of Aubit bug): $EXPECT_FAIL_CNT ($EXPECT_FAIL_LIST)"
+		echo "Obsolete: $IS_OBSOLETE_CNT ($IS_OBSOLETE_LIST)"
+		echo " "		
+		echo "Has description text: $HAS_DESC_TXT_CNT"
+		echo "Expect non-zero exit status: $NON_ZERO_EXIT_CNT"
+		echo "Test is compile only: $COMPILE_ONLY_CNT"
+		echo "P-code enabled: $IS_PCODE_ENABLED_CNT"
+		echo "Needs database: $IS_DB_TEST_CNT"
+		echo "EC only test: $IS_EC_TEST_CNT"
+		echo "Cannot run silent: $IS_NOSILENT_CNT"
+		echo "Uses TUI UI: $IS_TUI_TEST_CNT"
+		echo "Uses forms: $IS_FORM_TEST_CNT"
+		echo "Uses graphic characterts: $IS_GRAPHIC_TEST_CNT"
+		echo "Expects manual input: $IS_CONSOLE_PROMPT_CNT"
+		echo "Uses dump screen function: $IS_DUMP_SCREEN_CNT"
+		echo "Long running: $IS_LONG_CNT"
+		echo "Certified: $IS_CERT_CNT"
+		echo "x4GL compatible: $IS_COMPAT_CNT"
+		echo "Uses REPORT block: $IS_REPORT_TEST_CNT"
+		echo "All other unsorted tests: $UNKNOWN_TEST_CNT"
+		echo " "
+		echo "End of -info (all) output"
+		exit 0
+	fi
+	
+	if test "$INFO_TEST" = "1" ; then
+		exit 0
+	fi
+
+show_results
+exit $RESULT
+
+# =================================== EOF =================================
+
+

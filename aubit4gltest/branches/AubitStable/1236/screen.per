@@ -1,0 +1,27 @@
+database formonly
+
+screen
+{
+
+column1:[a         ]
+
+column2:[b         ]
+
+column3:[c         ]
+
+}
+end
+
+attributes
+
+a = formonly.column1;
+b = formonly.column2;
+c = formonly.column3,noentry;
+
+instructions
+
+screen record samp (formonly.column1 thru formonly.column3);
+
+delimiters "  "
+
+end

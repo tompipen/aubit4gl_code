@@ -1,0 +1,21 @@
+DATABASE formonly
+
+SCREEN
+{
+  Enter Number1: [                   a]
+  Enter Number2: [                                   b]
+
+
+
+}
+
+
+ATTRIBUTES
+a  = formonly.num1 TYPE MONEY(9,2), INCLUDE = (0 TO 9999.99);
+b  = formonly.num2 TYPE MONEY(9,2), INCLUDE = (0 TO 99999.99);
+
+END
+
+INSTRUCTIONS
+DELIMITERS " "
+

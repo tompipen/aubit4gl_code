@@ -1,0 +1,6 @@
+MAIN
+  DEFINE i SMALLINT
+
+	LET i = 10
+	SLEEP i/2
+END MAIN

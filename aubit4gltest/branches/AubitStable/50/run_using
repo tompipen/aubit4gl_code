@@ -1,0 +1,7 @@
+$DBG ./using.4ae > using.out
+if diff $DIFF_FLAGS using.out using.out.expected
+then
+exit 0
+else
+exit 1
+fi

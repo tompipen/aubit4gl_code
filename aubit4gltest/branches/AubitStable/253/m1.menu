@@ -1,0 +1,34 @@
+MENU file
+ OPTION mn_new  "New"
+ OPTION mn_open "Open"
+ OPTION mn_save  "Save"
+ OPTION mn_saveas "Save As"
+ OPTION mn_exit  "Exit"
+END MENU
+
+MENU mymenu
+
+	SUBMENU mn_file "_File" USE file
+	SUBMENU mn_edit "_Edit"
+		OPTION mn_cut IMAGE="gui/img1.xpm" "Cut"
+ 		OPTION mn_copy Image="gui/linux.xpm" "Copy"
+		OPTION mn_paste "Paste"
+		SUBMENU mn_zoom "Zoom"
+ 			OPTION mn_in "In"
+ 			OPTION mn_out "Out"
+ 			OPTION mn_fit "To Fit"
+ 		END SUBMENU
+ END SUBMENU
+
+ SUBMENU mn_useful "Useful Stuff"
+ 	OPTION mn_form "Open Window & Form"
+ 	OPTION mn_sform "Open small Window & Form"
+ 	OPTION mn_screen "Open Form on Screen"
+ 	OPTION mn_lots "Open lots of windows"
+ 	OPTION mn_loop "Loop windows"
+ 	OPTION mn_closewin "Close windows"
+ END SUBMENU
+
+ OPTION mn_help "Help" ATTRIBUTES(RIGHT)
+
+END MENU

@@ -1,0 +1,23 @@
+./rpc_server > server.log &
+lpid=$!
+echo "Server : $lpid"
+sleep 1
+echo "Starting client"
+./rpc_client > client.log
+
+kill $lpid 2> /dev/null 
+
+if diff $DIFF_FLAGS server.log server.log.expected
+then
+	:
+else
+	exit 1
+fi
+
+if diff $DIFF_FLAGS client.log client.log.expected
+then
+	:
+else
+	exit 2
+fi
+exit 0

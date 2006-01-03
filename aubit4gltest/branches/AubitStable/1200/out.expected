@@ -1,0 +1,45 @@
+------Testing single select
+name 1                                                      
+------Testing single select w/o into
+FOUND
+------Testing foreach select w/ output binding
+FOUND ONE
+FOUND ONE
+------Testing foreach select w/ output binding in declare
+FOUND ONE
+------Testing cursor select w/ output binding
+name 1                                                      
+name 2                                                      
+NOT FOUND IN CURSOR FETCH
+------Testing cursor select w/ no output binding
+FOUND ONE IN CURSOR FETCH
+------Testing cursor select w/ output binding in declare
+FOUND ONE IN CURSOR FETCH
+------Testing cursor within cursor (w/ prepare)
+          0
+>>     1
+          0
+       1sub 1-1                                                     
+       1sub 1-2                                                     
+NOT FOUND curs1
+>>     2
+          0
+       2sub 2-1                                                     
+       2sub 2-2                                                     
+NOT FOUND curs1
+NOT FOUND IN curs0
+------Testing single select
+NOT FOUND
+------Testing single select w/o into
+NOT FOUND
+------Testing foreach select w/ output binding
+------Testing foreach select w/ output binding in declare
+------Testing cursor select w/ output binding
+NOT FOUND IN CURSOR FETCH
+------Testing cursor select w/ no output binding
+NOT FOUND IN CURSOR FETCH
+------Testing cursor select w/ output binding in declare
+NOT FOUND IN CURSOR FETCH
+------Testing cursor within cursor (w/ prepare)
+          0
+NOT FOUND IN curs0

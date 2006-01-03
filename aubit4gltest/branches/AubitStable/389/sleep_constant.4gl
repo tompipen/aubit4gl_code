@@ -1,0 +1,4 @@
+
+MAIN 
+  SLEEP 3
+END MAIN

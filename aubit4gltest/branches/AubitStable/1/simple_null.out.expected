@@ -1,0 +1,16 @@
+xchar is null
+xsint is null
+xint is null
+xflt is null
+xdec is null
+xdate is null
+xmon is null
+xdt is null
+xchar is 1         
+xsint is      1
+xint is           1
+xflt is           1.00
+xdec is                               1.00
+xdate is 01/01/2001
+xmon is         $1.00
+xdt is 12:01:02

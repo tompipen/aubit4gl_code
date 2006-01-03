@@ -1,0 +1,21 @@
+
+if [ "$1" = "" ]
+then
+	echo "Usage $0 type"
+	exit 1
+fi
+
+echo "delete from results where timestamp in (select timestamp from test_run where log_text='$1')" | dbaccess aubit_tests -
+
+echo "delete from test_run where log_text='$1'" | dbaccess aubit_tests -
+
+for a in test_run*.unl
+do
+	echo "load from $a insert into test_Run" | dbaccess aubit_tests -
+done
+
+for a in results*.unl
+do
+	echo "load from $a insert into results" | dbaccess aubit_tests -
+done
+

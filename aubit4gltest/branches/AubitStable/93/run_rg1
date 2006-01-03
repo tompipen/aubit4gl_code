@@ -1,0 +1,7 @@
+./rg1.4ae
+if diff $DIFF_FLAGS rg1.out rg1.out.expected
+then
+	:
+else
+	exit 1
+fi

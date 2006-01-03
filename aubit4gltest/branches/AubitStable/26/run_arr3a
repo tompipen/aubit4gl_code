@@ -1,0 +1,4 @@
+export A4GL_KEYFILE=keys.in
+$DBG ./arr3a.4ae
+exit $?
+

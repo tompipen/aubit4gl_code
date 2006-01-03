@@ -1,0 +1,6 @@
+
+FUNCTION run_it()
+	DEFINE comm CHAR(64)
+	LET comm = "ls"
+  RUN comm WITHOUT WAITING
+END FUNCTION
