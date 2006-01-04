@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.80 2005-12-19 18:44:33 mikeaubury Exp $
+# $Id: variables.c,v 1.81 2006-01-04 17:24:19 mikeaubury Exp $
 #
 */
 
@@ -1532,8 +1532,8 @@ static char
 get_current_variable_scope (void)
 {
   char scope = 'm';
-  if (variable_scope=='T') return 'T';
   int is_inreport=0;
+  if (variable_scope=='T') return 'T';
 
   if (isin_command ("REPORT"))  {
 	  is_inreport=1;
