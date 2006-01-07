@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.49 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: helper.c,v 1.50 2006-01-07 11:53:21 mikeaubury Exp $
 #
 */
 
@@ -461,9 +461,10 @@ int_get_info_connection (char *ptr, char *info)
     {
     case 1:
       A4GL_push_char (A4GLSQL_get_currdbname ());
+      return 1;
       break;
     case 0:
-      A4GL_exitwith ("Invalid Window info request");
+      A4GL_exitwith ("Invalid Connection info request");
       return 0;
     }
 
