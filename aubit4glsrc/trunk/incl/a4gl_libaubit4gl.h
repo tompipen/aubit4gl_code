@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.215 2005-12-14 14:47:50 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.216 2006-01-08 09:39:45 mikeaubury Exp $
 #
 */
 
@@ -2190,6 +2190,7 @@ int aclfgl_fgl_buffertouched(int n);
 int aclfgl_aclfgl_get_user(int n);
 int aclfgl_aclfgl_read_pipe(int nargs);
 void A4GL_pause_execution(void);
+void A4GL_pause_execution_msg(char *s);
 void A4GL_start_monitor (void);
 void A4GL_monitor_close (void);
 int A4GL_has_monitor(void);
