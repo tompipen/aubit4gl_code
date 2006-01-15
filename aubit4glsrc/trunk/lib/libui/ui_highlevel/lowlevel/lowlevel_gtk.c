@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.82 2005-12-10 22:29:31 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.83 2006-01-15 15:29:06 mikeaubury Exp $";
 #endif
 
 
@@ -264,7 +264,7 @@ add_keypress (int a)
 static int
 ok_callback (gpointer data)
 {
-  add_keypress (27);
+  add_keypress (std_dbscr.acckey);
   return TRUE;
 }
 
@@ -707,13 +707,19 @@ KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
       A4GL_keypress (grab_widget, event, func_data);
     }
 
-  if (strcmp (gtk_accelerator_name (event->keyval, event->state), "Escape") ==
-      0)
+
+
+  /*
+  if (strcmp (gtk_accelerator_name (event->keyval, event->state), "Escape") == 0)
     {
       //event->keyval=27;
       A4GL_keypress (grab_widget, event, func_data);
     }
+    */
   //A4GL_clr_error_gtk ();
+  //
+  //
+  //
   return 0;
 }
 
