@@ -564,7 +564,7 @@ get_size (int dtype, int size)
     case DTYPE_MONEY:
       return 17;
     case DTYPE_DTIME:
-      return 17;
+      return 19;
     case DTYPE_BYTE:
       return 20;
     case DTYPE_TEXT:
