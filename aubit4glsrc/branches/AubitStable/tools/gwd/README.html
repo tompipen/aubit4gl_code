@@ -1,0 +1,388 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>GWD-4GL</title>
+</head>
+
+<body>
+
+<h2 align="center">                            GWD-4GL Version 0.2</h2>
+<h4 align="center">				Client/server IDE/editor integration scripts for 4GL development using GWD Text editor</h4>
+<p align="center">                              16/11/2002</p>
+<p align="center">                             By <a href="mailto:afalout@ihug.co.nz"> Andrej Falout</a></p>
+<hr>
+<h3 align="left">Please note:</h3>
+<p align="left">This software is assembled as a "Proof of concept" , and for my personal
+use. It works for me. Making it work for you will require some skill and time.</p>
+<hr>
+<h3><a name="Table Of Contains">Table Of Contents</a>:</h3>
+<ol>
+  <li><a href="#Background">Background</a></li>
+  <li><a href="#What is it">What is it</a>?</li>
+  <li><a href="#How does it work">How does it work</a></li>
+  <li><a href="#Status">Status</a></li>
+  <li><a href="#Files">Files</a></li>
+  <li><a href="#System requirements">System requirements</a></li>
+  <li><a href="#Installation">Installation</a></li>
+  <li><a href="#People">People</a></li>
+  <li><a href="#License">License</a></li>
+</ol>
+<hr>
+<h3>1:<a name="Background">Background</a></h3>
+<p>For a long time people who have courage to admit that they do not like (to say
+it politely) vi and commands that look like</p>
+<blockquote>
+  <p>        <i>        wrex 'bljak -4//\\\@-r | "$RT" > brlj ?##*('</i></p>
+</blockquote>
+<p>as a part of there daily development routine when developing 4GL
+applications, and accept the risk of being called incompetent, amateurs, beginners...
+had several problems. One was how to get there source files into some user
+friendly and 4GL friendly, more productive editor/IDE. Second was how to get IDE
+functionality for 4GL programming language in that editor/DE. Third was how to
+get all the actions in development cycle (compile/debug/run) still execute on
+the server where compiler is installed.</p>
+<p>In most commercial development installations, 4gl compiler and database are
+installed on some UNIX server, and in most cases developers are provided with
+Windows workstations to access this server. Source files also reside on the
+server, shared between all developers, and under control of the versioning
+system.</p>
+<p> To take file from server and open it in editor, Samba server, or any NFS client like "FTP Software's InterDrive" will
+do that, but how will you tell version control software like SCCS or CVS, that resides on server to let go of that file? How will you compile it, and
+at the end, how will you run without resorting to "green-screen"?</p>
+<p>Pat Morita explained the problem to Ralph Machio, with wisdom, and profoundness that I cannot compete whit, so I will just quote:</p>
+<blockquote>
+  <p>"You walk left side of street. That's OK.<br>
+ You walk right side of street. Also OK.<br>
+ But....<br>
+ You walk in the middle, Swisshhhhh, you get squashed.<br>
+ You karate do, or you karate don't."<br>
+  <br>
+                        "Karate Kid III"</p>
+</blockquote>
+<p>Don't you feel there is something wrong with developing GUI software on command line green-screen?</p>
+<p>After seeing <a href="mailto:jleffler@informix.com"> Jonathan Leffler</a>'s noble effort to adapt r4gl/i4gl application from RDS system to run in GUI,
+(<a href="http://www.informix.com/idn" target="_blank">http://www.informix.com/idn</a>), I felt that even that is still to much
+"walking in the middle", and that it have several problems with integrating with tool that every P/A uses the most - the editor.</p>
+<p>So I decided to move everything <b> INSIDE </b> the editor.</p>
+<p>It might be interesting to note, that recently <a href="http://www.4js.com">4Js</a>
+developed an interesting IDE for there version of 4GL compiler. Querix also
+attempted something, with less success, in my opinion. I work various 4GL
+compilers, so I needed one solution to support all of the tools I will use:
+Aubit 4GL, Informix-4GL, 4Js, Querix, Plexus.</p>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>2:<a name="What is it">What is it</a>?</h3>
+<p>This is a collection of C, BAT and SH scripts that can turn GWD Windows text editor (<a href="http://www.gwdsoft.com" target="_blank">www.gwdsoft.com</a>) into 2-tier Interactive Developer
+Environment.</p>
+<p>Essentially what I did, is a combination of powerful, full featured GUI text editor that knows how to run interpreted
+ANSI C language inside editor, using C as his "macro" language, and added client side rsh for
+executing commands on server, plus rcp for copying files from/to server, and added a few shell scripts that
+wait on the server to do requested job, like Agents.</p>
+<p>Since people that will use this are programmers anyway, and every 4gl environment is inherently different than the others, the fact that this
+package is instantly customizable to the lowest level that you can imagine thanks to its script nature (C, SH) is actually a benefit, not a
+limitation in my opinion, and is certainly something no IDE I have seen have.</p>
+<p>This code can just as well operate with everything (source code, compiler)
+installed on the same computer - providing most is not all functions you would typically
+find in an IDE with support for a particular programming language.&nbsp;</p>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>3: <a name="How does it work"> How does it work</a>?</h3>
+<p>    <i>    You click icon, or select item from menu, or press ctrl+shift+t, in    editor, and that calls specific C program.</i></p>
+<blockquote>
+  <p>        <i>        Interpreted C program running inside editor collects necessary data        form ini files and/or opens GUI dialogs, and calls BAT file</i></p>
+  <blockquote>
+    <p>            <i>            (This stage will be removed in implementation phase 2) Bat            file does additional processing, and then executes RSH            and/or RCP.</i></p>
+    <blockquote>
+      <p>                <i>                (This stage exists only if rsh was called) RCP passes                parameters and executes shell script on server.</i></p>
+      <blockquote>
+        <p>                    <i>                    (This stage exists only if rsh was called) Shell                    script do something, and return success and other                    results to bat script</i></p>
+      </blockquote>
+    </blockquote>
+    <p>            <i>            Bat script continues from the point where the rsh or rcp was            called, do additional processing, and returns control to C            script running in editor that originally called it</i></p>
+  </blockquote>
+  <p>        <i>        C script resumes from the point it called bat script, and do        additional processing...</i></p>
+</blockquote>
+<p>    <i>    GWD editor informs you about results, opens a document, opens    dialog window, etc...</i></p>
+<p>It will allow you to perform full circle of usual development icicle, like Take file from version control, Copy file from server to client
+and open it in editor, Edit file in rich, fully configurable GUI environment, execute compile or make of sourcefile/program on server,
+run or run in debugger program you just compiled, and then Copy sourcefile back to server and put it back to version control system, without the
+need to use character terminals.</p>
+<p>It is specially well suited for Informix Dynamic 4GL and 4Js 4GL, because they have GUI client-side presentation layers, but it is possible to
+use it in classic CHUI 4GL environments also (if You have Terminal emulator that can execute scripts on server on startup, like PLwin)</p>
+<p>This scripts are VERY BETA, and are very far from being generic; they are specific to the customer site I'm currently working on, so...God help you,
+or you should wait another few months.</p>
+<p>WARNING: You will have to do a lot of modifications to adjust for your         environment, at this stage. You will need to know ANSI C,         DOS Batch files and UNIX Shell scripting to do so.         No guaranties, no promises,</p>
+<p>         Also, there is danger that your employer will say something         like this, before thanking you for your services:</p>
+<p>         "If you really had xx years of 4gl experience as you said you have,         you would be comfortable and happy using vi and UNIX prompt command         lines, and would not be constantly trying to run away from it."</p>
+<p>         Only support that I can offer to you in relation to any of         these, including all the files in this zip, is replay to that:</p>
+<p>         "If you really had your drivers license for xx years as you said         you had, you would be comfortable and happy driving xx years old         Ford Escort, not this brand new BMW. Liar."</p>
+<p>(&quot;Based on the true story")</p>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>4: <a name="Status">Status</a>:</h3>
+<h4>Phase 1: (Proof of concept - Completed)</h4>
+<div align="left">
+  <table border="1" width="100%">
+    <tr>
+      <td> GWD<br>
+ MACRO<br>
+ MENU<br>
+ ITEM</td>
+      <td>         FUNCTION&nbsp;</td>
+      <td>                           c</td>
+      <td>      BAT</td>
+      <td>      sh</td>
+    </tr>
+    <tr>
+      <td>  1</td>
+      <td>      Open</td>
+      <td>+</td>
+      <td>+</td>
+      <td>      N/A</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>      TakeOut</td>
+      <td>+</td>
+      <td>+</td>
+      <td>?</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>      Compile</td>
+      <td>+</td>
+      <td>+</td>
+      <td>+</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>      Make</td>
+      <td>+</td>
+      <td>+</td>
+      <td>+</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>      Run&nbsp;</td>
+      <td>+</td>
+      <td>+</td>
+      <td>+</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>      Debug</td>
+      <td>+</td>
+      <td>+</td>
+      <td>+</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>      Save</td>
+      <td>+</td>
+      <td>+</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>      PutBack</td>
+      <td>+</td>
+      <td>+</td>
+      <td>?</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>      Configure<br>
+        - Makefile/TOC open&nbsp;<br>
+        - Search/grep based on Makefile/Toc</td>
+      <td>+<br>
+        +<br>
+        ?</td>
+      <td>N/A<br>
+        +<br>
+        ?</td>
+      <td>N/A<br>
+        +<br>
+        +</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>YOUR IDEA HERE</td>
+      <td>?</td>
+      <td>?</td>
+      <td>?</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</div>
+<h4>
+Phase 2: (In progress)</h4>
+<blockquote>
+  <p>    Replace batch files (.BAT) functionality with c - move all client    processing into editor script, just call external rcp/rsh</p>
+</blockquote>
+<h4>Phase 3:</h4>
+<blockquote>
+  <p>Replace external rcp/rsh with DLLs from <a href="http://www.denicomp.com/"> http://www.denicomp.com/</a></p>
+</blockquote>
+<h4>Phase 4:</h4>
+<blockquote>
+  <p>    Provide ODBC links to database for:<br>
+        "Define ... like" control<br>
+        Table/field browser<br>
+        Project/Application/Program repository/definition/browser<br>
+        Source code repository with version control<br>
+    YOUR IDEA HERE</p>
+</blockquote>
+<p>I'm also working on 4gl code beautifiers/formatters integration with GWD (adapted versions of CodeBeuty, DbBeauty, InfmxTidy and kw from IIUG).</p>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>5: <a name="Files"> Files</a> </h3>
+<h4>Directory <i>Client\script\remote</i>:</h4>
+<blockquote>
+  <p>            Destination:&nbsp;&nbsp;&nbsp;&nbsp; %GWDinstalllDir%\script\remote<br>
+            Contains:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C scripts</p>
+</blockquote>
+<h4>    Directory <i>Client\bat</i>:</h4>
+<blockquote>
+  <p>            Destination:&nbsp;&nbsp;&nbsp;&nbsp; %GWDinstalllDir%\bat<br>
+            Contains:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Batch (BAT) scripts - Will be
+  obsolete after conversion to c</p>
+</blockquote>
+<h4>    Directory <i>Client\I-GWD</i>:</h4>
+<div align="left">
+  <blockquote>
+    <table border="1">
+      <tr>
+        <td>
+          <p align="center"><b>Contains</b></p>
+        </td>
+        <td>                                            
+          <p align="center"><b>Destination</b></p>
+        </td>
+      </tr>
+      <tr>
+        <td>   GWD.ini</td>
+        <td>             %windir%, but this is my configuration provided for your
+          information</td>
+      </tr>
+      <tr>
+        <td>                        plwin.ini</td>
+        <td>           This is just example of                                            PLwin terminal APP ini file                                            with section of login script                                            written directly from GWD to                                            initiate run of CHUI mode apps</td>
+      </tr>
+      <tr>
+        <td>                        *.bmp</td>
+        <td>               %GWDinstalllDir%</td>
+      </tr>
+      <tr>
+        <td>                        syntax.hgl&nbsp;</td>
+        <td>          %GWDinstalllDir%</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<h4>    Directory Server\GWDagents</h4>
+<blockquote>
+  <p>            Destination: $HOME/GWDagents (on remote UNIX server)<br>
+            Contains: Shell scripts that act like agents for client side                        scripts</p>
+</blockquote>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>6: <a name="System requirements"> System requirements</a>:</h3>
+<h4>    Client :</h4>
+<ul>
+  <li>Windows (any) or any Linux/*NIX with Wine installed</li>
+  <li>GWD Text editor from <a href="http://www.iridis.com/gwd">www.gwdsoft.com</a></li>
+  <li>For Windows 95/98, rcp/rsh executables pack from                http://www.denicomp.com/ or similar rsh and rcp.
+    NT rcp works fine on Windows 95/98, NT rsh/rexec DOES NOT</li>
+  <li>4Js or Informix D4gl GUI client "server" (if you want to run and debug                apps in GUI)</li>
+  <li>Terminal app for Windows that uses ini file to execute                login scripts on startup, like PLwin, if you will be                running apps in CHUI</li>
+</ul>
+<h4>    Server:</h4>
+<p>             Nothing that i can think of. Maybe Perl, but you do have this             anyway, don't you? And if you have Perl, you also have             Jonathan Leffler's DBD::Informix (http://www.perl.com/CPAN),             don't you? (Not that you will need it for this, but...)</p>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>7: <a name="Installation">Installation</a>:</h3>
+<ol>
+  <li>Download and Install GWD Text editor</li>
+  <li>Download and Install rsh/rcp somewhere in the path</li>
+  <li>Copy files in appropriate locations, as described in "5: Files in zip".   Make
+    sure you have enough space in your client environment to accept   all environment variables set by BAT programs. You can do
+    that by inserting line<br>
+    <br>
+    &nbsp;&nbsp;&nbsp; <i>SHELL=C:\windows\COMMAND.COM C:\ /E:1200 /P&nbsp;<br>
+    </i><br>
+   in your <i> config.sys</i> file.</li>
+  <li>Edit <i>.rhosts</i> file in your home directory to enable rsh/rcp access    authorization. Also, check
+    <i>/etc/hosts.equiv</i> and check that your client    is in the DNS tables or in
+    <i> /etc/hosts</i> file and that your client name is    known to the server</li>
+  <li>To create Macro menu entries in GWD:&nbsp;<br>
+    <br>
+    <i>&nbsp;&nbsp;&nbsp; Options-&gt;Customise Macro Menu->Add</i><br>
+    <br>
+                                Enter description and select C file                                associated with option<br>
+    <br>
+                                ...repeat 9 times...</li>
+  <li>To create keyboard shortcuts in GWD:<br>
+                                (Only necessary if you want to activate functions with keyboard shortcuts and/or                                icons)<br>
+    <br>
+    &nbsp;&nbsp;&nbsp; <i>Macro-&gt;Macro-&gt;New-&gt;Entrer name and shortcut</i><br>
+    <br>
+                               Enter Macro body like:<br>
+    <br>
+    &nbsp;&nbsp;<i>&nbsp; Param1 "\\remote\\takeout"<br>
+    &nbsp;&nbsp;&nbsp; ExecScript</i><br>
+    <br>
+                               Answer YES to "Compile?" Question</li>
+  <li>To put Icons on toolbar in GWD:<br>
+    <br>
+    &nbsp;&nbsp;&nbsp; <i>Options-&gt;customise Toolbars->Select "Script or macro 1-9"<br>
+    </i>
+    <br>
+                If you want to customize bmp pictures to be displayed
+                for icons, put bmp files named <i> macro1.bmp, macro2.bmp</i>
+                in GWD install directory. You can start playing with
+                ones I made, in directory <i> Client\I-GWD</i></li>
+  <li>Select&nbsp;<br>
+    <br>
+    <i>&nbsp;&nbsp;&nbsp; Macro->"Remote Options/misc"&nbsp;<br>
+    </i><br>
+ (or whatever mane you gave to        config.c in step e), and select <i> "Configure options and defaults..."</i>        from list, them answer the questions...</li>
+  <li>copy <i>sintax.hgl</i> file from Client\I-GWD over the one that GWD installed.        It contains 4gl, 5gl, SQL, sh, spl and so on syntax highlighter        definitions</li>
+  <li>Select&nbsp;<br>
+    <i>&nbsp;&nbsp;&nbsp; Options->Help Options<br>
+    </i>and select hlp files with 4gl help files        from Informix 4gl for Windows
+    (<i>4glref.hlp</i>) and/or error messages        help files from ROM, etc...(If you have them)</li>
+  <li>Take a deep breath, and start exploring code. You will need to modify        A LOT to make it run in your environment, and I suggest to start        with rOpen.c / rOpen.bat (there is no rOpen.sh, no need for it)        because that is the simplest pair.</li>
+  <li>Email me your results, insults,  ideas...</li>
+  <li>I you find any good use for GWD and/or rshrcp32, please do remember that    these are shareware product that need to be registered after trial    period.</li>
+</ol>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>8: <a name="People"> People</a></h3>
+<p>After my initial idea was presented to him, original base scripts for <i> TakeOut, PutBack</i> and
+<i> Config</i> have been written by Vedran Gaco
+(gwd@iridis.com), author of GWD Editor and many other excellent shareware application (www.iridis.com/gwd).</p>
+<p>From that point on, I have completed that and other scripts, but I continue to work closely with Vedran. Hopefully, he will do the "nasty"
+parts of c code to eliminate BAT scripts totally.</p>
+<p><a href="http://www.ztt.com/artofnoise/index.html" target="_blank">Have Fun!</a></p>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<h3>9: <a name="License"> License</a></h3>
+<p>This software is released under GNU General public license.</p>
+<p><a href="#Table Of Contains">Back to top</a> </p>
+<hr>
+<p align="center"><a href="#Table Of Contains">Back to top</a> <a href="http://aubit4gl.sf.net" target="_blank">Aubit
+4GL project home</a></p>
+
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+Name: libSQL_c_ecpg
+Parent: aubit4glsrc
+Description: Compile-time ONLY native plug-in for PostgreSQL.  Not sure it it has any use other to demonstrate use of "simple" template?
+Functionality: SQL
+Build:
+Example: A4GL_SQLTYPE
+Depends: PostgreSQL ecpg compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 1
+Todo: Obsolete it? Replaced by libSQL_pg.so
+Notes:
+
+Name: libSQL_esql
+Parent: aubit4glsrc
+Description: Native mode Informix plug-in.  Fully featured plug-in for native mode Informix database access. Also used by compilers when compiling in EC output mode for Informix ESQL/C compiler.
+Functionality: SQL
+Build:
+Example: A4GL_SQLTYPE
+Depends: Informix esql compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 5
+Todo:
+Notes:

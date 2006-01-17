@@ -1,0 +1,20 @@
+/*
+=====================================================================
+                        Source: defer.rule
+=====================================================================
+*/
+
+
+defer_cmd	:	DEFER_INTERRUPT {
+				add_feature("DEFER_INTERRUPT");
+				print_defer(0);
+			}
+
+		|	DEFER_QUIT {
+				add_feature("DEFER_QUIT");
+				print_defer(1);
+			}
+		;
+
+
+

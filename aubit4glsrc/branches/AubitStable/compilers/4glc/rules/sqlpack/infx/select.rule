@@ -1,0 +1,434 @@
+
+
+
+select_statement_ss_str: select_statement_ss_select  {
+		$<sql_string>$=make_select_stmt($<s_select>1);
+}
+;
+
+
+select_statement_ss_select : 
+	KW_SELECT op_ad { start_bind('i',0); } select_list_slil
+        opt_into_sel_ss 
+	table_expression_2_select
+        sel_p2_select sel_finish_sf {
+
+
+		$<s_select>$=$<s_select>6;
+		$<s_select>$->modifier=strdup($<str>2);
+		$<s_select>$->into=$<sql_string>5;
+		$<s_select>$->select_list=$<s_select_list_item_list>4;
+		$<s_select>$->next=$<s_select>7;
+		$<s_select>$->sf=$<s_select_finish>8;
+}
+;
+
+
+union_select_statement2_ss: 
+	KW_SELECT op_ad select_list_slil
+	table_expression_2_select
+        sel_p2_select  {
+	        $<s_select>$=$<s_select>4;
+                $<s_select>$->modifier=strdup($<str>2);
+                $<s_select>$->into=0;
+                $<s_select>$->select_list=$<s_select_list_item_list>3;
+		$<s_select>$->next=$<s_select>5;
+	}
+;
+
+uselect_statement2_ss:
+	select_statement21_ss  {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
+	 }
+	| char_or_var {
+		$<sql_string>$=acl_strdup($<str>1);
+	}
+;
+
+select_statement21_ss:
+	KW_SELECT  op_ad select_list_slil
+        opt_into_sel_ss
+	table_expression_2_select
+        sel_p2_select sel_ordby_unload_slil {
+		struct s_select_finish *sf;
+
+		$<s_select>$=$<s_select>5;
+		$<s_select>$->modifier=strdup($<str>2);
+		$<s_select>$->into=$<sql_string>4;
+		$<s_select>$->select_list=$<s_select_list_item_list>3;
+		$<s_select>$->next=$<s_select>6;
+		sf=malloc(sizeof(struct s_select_finish));
+		sf->into_temp=0;
+		sf->nolog=0;
+		sf->order_by=$<s_select_list_item_list>6;
+		$<s_select>$->sf=sf;
+		$<sql_string>$=make_select_stmt($<s_select>$);
+}
+;
+
+
+sel_p2_select : { $<s_select>$=0;}
+	| UNION op_u_all union_select_statement2_ss { 
+		$<s_select>$=$<s_select>3;
+		$<s_select>$->union_op=strdup($<str>2);
+		add_feature("SELECT_UNION"); 
+	}
+;
+
+
+sel_ordby_unload_slil: {$<s_select_list_item_list>$=0;}
+	| order_by_clause_slil {  $<s_select_list_item_list>$=$<s_select_list_item_list>1;}
+;
+
+
+sel_finish_sf: {
+		$<s_select_finish>$=0;
+	}
+	| order_by_clause_slil  {  
+		$<s_select_finish>$=malloc(sizeof(struct s_select_finish));
+		$<s_select_finish>$->order_by=$<s_select_list_item_list>1;
+		$<s_select_finish>$->into_temp=0;
+		$<s_select_finish>$->nolog=0;
+	}
+	| order_by_clause_slil INTO_TEMP tmp_tabname op_no_log_i { 
+		$<s_select_finish>$=malloc(sizeof(struct s_select_finish));
+		add_feature("SELECT_INTO_TEMP_ORDER_BY");
+		$<s_select_finish>$->order_by=$<s_select_list_item_list>1;
+		$<s_select_finish>$->into_temp=$<str>3;
+		$<s_select_finish>$->nolog=$<integer_val>4;
+
+	}
+	| INTO_TEMP tmp_tabname op_no_log_i { 
+		$<s_select_finish>$=malloc(sizeof(struct s_select_finish));
+		add_feature("SELECT_INTO_TEMP");
+		$<s_select_finish>$->order_by=0;
+		$<s_select_finish>$->into_temp=$<str>2;
+		$<s_select_finish>$->nolog=$<integer_val>3;
+} 
+;
+
+
+tmp_tabname: identifier;
+
+
+opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string_and_free(acl_strdup(""),0); }
+	| INTO  obind_var_list { 
+		$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GL_get_into_part(doing_declare,get_bind_cnt('o'))),0 ); 
+
+	}
+;
+
+
+
+query_specification_select:
+	KW_SELECT op_ad select_list_slil table_expression_2_select {
+		$<s_select>$=$<s_select>4;
+		$<s_select>$->modifier=strdup($<str>2);
+		$<s_select>$->select_list=$<s_select_list_item_list>3;
+	}
+;
+
+subquery_sli:
+	OPEN_BRACKET KW_SELECT op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
+		$<s_select>$=$<s_select>5;
+		$<s_select>$->modifier=strdup($<str>3);
+		$<s_select>$->select_list=$<s_select_list_item_list>4;
+		$<s_select_list_item>$=new_select_list_subquery($<s_select>$);
+	}
+;
+
+op_ad: {strcpy($<str>$,"");}
+	| ALL {strcpy($<str>$,"ALL "); add_feature("SELECT_ALL");}
+	| DISTINCT {strcpy($<str>$," DISTINCT "); add_feature("SELECT_DISTINCT");}
+	| UNIQUE {strcpy($<str>$," DISTINCT ");
+		add_feature("SELECT_UNIQUE");
+		ansi_violation("Use DISTINCT not UNIQUE",0);
+		strcpy($<str>$," DISTINCT ");
+	}
+	| KW_FIRST INT_VALUE {
+		add_feature("FIRST");
+		sprintf($<str>$,"FIRST %s",$<str>2);
+	}
+
+;
+
+
+select_list_slil: 
+	value_expression_pls_sli  { 
+		 $<s_select_list_item_list>$=new_select_list_item_list($<s_select_list_item>1);
+	}
+	| select_list_slil KW_COMMA value_expression_pls_sli { 
+		$<s_select_list_item_list>$=add_select_list_item_list($<s_select_list_item_list>1,$<s_select_list_item>3);
+	}	
+;
+
+value_expression_pls_sli : 
+	value_expression_sli {
+		$<s_select_list_item>$=$<s_select_list_item>1;
+	}
+	| value_expression_sli  identifier {
+		$<s_select_list_item>$=$<s_select_list_item>1;
+		$<s_select_list_item>$->alias=strdup($<str>2);
+	}
+	| value_expression_sli AS identifier {
+		$<s_select_list_item>$=$<s_select_list_item>1;
+		$<s_select_list_item>$->alias=strdup($<str>3);
+	}
+;
+
+/*
+column_specification_sli : value_expression_sli {
+	$<s_select_list_item>$=$<s_select_list_item>1;
+}
+
+;
+*/
+
+
+
+
+value_expression_sli:
+	value_expression_initial_sli {
+		$<s_select_list_item>$=$<s_select_list_item>1; /* A4GLSQLCV_check_expr($<sql_string>1) */
+	}
+	| MINUS value_expression_initial_sli {
+		$<s_select_list_item>$=$<s_select_list_item>2;
+		$<s_select_list_item>$->sign='-';
+	}
+	| PLUS value_expression_initial_sli {
+		$<s_select_list_item>$=$<s_select_list_item>2;
+	}
+;
+
+
+value_expression_complex_sli :
+	value_expression_initial_sli DIVIDE value_expression_sli {
+			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "/");
+	}
+	| value_expression_initial_sli units_qual_i {
+			$<s_select_list_item>$=new_select_list_item_simple_expr((enum e_sli)$<integer_val>2, $<s_select_list_item>1);
+	}
+	| value_expression_initial_sli MULTIPLY value_expression_sli {
+			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "*");
+	}
+	| value_expression_initial_sli PLUS value_expression_sli {
+			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "+");
+	}
+	| value_expression_initial_sli MINUS value_expression_sli {
+			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "-");
+	}
+	| literal 		{ $<s_select_list_item>$=new_select_list_item_literal($<str>1); }
+	| KW_TRUE 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TRUE); }
+	| KW_FALSE 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_FALSE); }
+	| USER 			{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_USER); }
+	| KW_TODAY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TODAY); }
+	| MULTIPLY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_STAR); }
+	| COUNT_MULTIPLY 	{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_COUNT_STAR); }
+
+ 	| AVG OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_AVG,$<str>3,$<s_select_list_item>4);
+		add_feature("SELECT_AVG");
+	}
+	| XMAX OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_MAX,$<str>3,$<s_select_list_item>4);
+		add_feature("SELECT_MAX");
+	}
+	| XMIN OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_MIN,$<str>3,$<s_select_list_item>4);
+		add_feature("SELECT_MIN");
+	}
+	| SUM OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_SUM,$<str>3,$<s_select_list_item>4);
+		add_feature("SELECT_SUM");
+	}
+	| COUNT OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_COUNT,$<str>3,$<s_select_list_item>4);
+		add_feature("SELECT_COUNT");
+	}
+	| NAMED OPEN_BRACKET CLOSE_BRACKET {
+		add_sql_function($<str>1);
+		$<s_select_list_item>$=new_select_list_item_fcall($<str>1,0);
+	}
+	| NAMED OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		add_sql_function($<str>1);
+		$<s_select_list_item>$=new_select_list_item_fcall($<str>1,$<s_select_list_item_list>3);
+	}
+	| YEAR OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_YEAR,$<s_select_list_item_list>3);
+	}
+	| MONTH OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_MONTH,$<s_select_list_item_list>3);
+	}
+	| DAY OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_DAY,$<s_select_list_item_list>3);
+	}
+	| MDY OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_MDY,$<s_select_list_item_list>3);
+	}
+	| WEEKDAY OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_WEEKDAY,$<s_select_list_item_list>3);
+	}
+	| KW_DOW OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_DOW,$<s_select_list_item_list>3);
+	}
+	| KW_DATE OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_DATE,$<s_select_list_item_list>3);
+	}
+	| OPEN_BRACKET value_expression_sli CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_builtin_fcall(E_SLI_BRACKET_EXPR,$<s_select_list_item_list>2);
+	}
+	| EXTEND OPEN_BRACKET extend_qual_sli CLOSE_BRACKET { 
+		add_feature("EXTEND"); 
+		$<s_select_list_item>$=$<s_select_list_item>3;
+	}
+	| datetime_value_qualified { 
+		$<s_select_list_item>$=new_select_list_item_datetime($<str>1);
+		add_feature("FUNC_DATETIME");
+	}
+	| interval_value_qualified {
+		$<s_select_list_item>$=new_select_list_item_interval($<str>1);
+		add_feature("FUNC_INTERVAL");
+	}
+	| CASE sql_case_stmt END {
+		$<s_select_list_item>$=$<s_select_list_item>2;
+	}
+;
+
+
+
+sql_case_stmt :
+	sql_case_stmt_element {
+		$<s_select_list_item>$=new_select_list_item_case($<s_select_list_item>1);
+	}
+	| sql_case_stmt sql_case_stmt_element {
+		$<s_select_list_item>$=append_select_list_item_case(
+							$<s_select_list_item>1,
+							$<s_select_list_item>2);
+	}
+;
+
+
+sql_case_stmt_element: 
+	WHEN search_condition_sli THEN value_expression_sli {
+		$<s_select_list_item>$=new_select_list_item_case_element(
+				$<s_select_list_item>2,
+				$<s_select_list_item>4);
+
+	}
+	| ELSE value_expression_sli {
+		$<s_select_list_item>$=new_select_list_item_case_element( 0, $<s_select_list_item>2);
+	}
+;
+
+
+value_expr_list_slil : 
+	value_expression_sli {
+		$<s_select_list_item_list>$=new_select_list_item_list($<s_select_list_item>1);
+	}
+	| value_expr_list_slil KW_COMMA value_expression_sli {
+			$<s_select_list_item_list>$=add_select_list_item_list($<s_select_list_item_list>1,$<s_select_list_item>3);
+	}
+	
+;
+
+/*
+value_specification:
+	 literal
+;
+*/
+
+
+
+
+unload_cmd :  opt_use UNLOAD_TO ufile opt_delim uselect_statement2_ss  {
+	add_feature("UNLOAD_TO");
+	if (strcasecmp($<sql_string>5," WHERE ")==0) {
+		add_feature("UNLOAD_TO_SELECT_WHERE");
+	}
+	add_feature("UNLOAD_TO");
+	print_unload($<str>3,$<str>4,$<sql_string>5);
+	print_undo_use($<str>1);
+}
+;
+
+
+
+
+
+
+
+
+
+
+
+
+ufile : CHAR_VALUE | variable;
+
+
+
+
+
+
+
+
+
+extend_qual_sli:
+        KW_CURRENT KW_COMMA s_curr TO e_curr {
+			$<s_select_list_item>$=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),$<str>3,$<str>5);
+	}
+        | var_ident_ibind_sli KW_COMMA s_curr TO e_curr {
+			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str>3,$<str>5);
+	}
+        | KW_CURRENT s_curr TO e_curr {
+			$<s_select_list_item>$=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),$<str>2,$<str>4);
+	}
+	| value_expression_sli KW_COMMA s_curr TO e_curr {
+			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str>3,$<str>5);
+	}
+;
+
+units_qual_i :
+        UNITS_YEAR 	{$<integer_val>$=E_SLI_UNITS_YEAR;}
+        | UNITS_MONTH 	{$<integer_val>$=E_SLI_UNITS_MONTH;}
+        | UNITS_DAY 	{$<integer_val>$=E_SLI_UNITS_DAY;}
+        | UNITS_HOUR 	{$<integer_val>$=E_SLI_UNITS_HOUR;}
+        | UNITS_MINUTE 	{$<integer_val>$=E_SLI_UNITS_MINUTE;}
+        | UNITS_SECOND 	{$<integer_val>$=E_SLI_UNITS_SECOND;}
+;
+
+
+in_predicate_sli:
+        value_expression_sli KW_IN OPEN_BRACKET in_value_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_op_slil($<s_select_list_item>1,$<s_select_list_item_list>4,E_SLI_IN_VALUES);
+                add_feature("WHERE_IN");
+        }
+        | value_expression_sli KW_IN subquery_sli {
+		$<s_select_list_item>$=new_select_list_item_op_sli($<s_select_list_item>1,$<s_select_list_item>3,E_SLI_IN_SELECT);
+                add_feature("WHERE_IN_SELECT");
+        }
+        | value_expression_sli NOT_IN OPEN_BRACKET in_value_list_slil CLOSE_BRACKET {
+		$<s_select_list_item>$=new_select_list_item_op_slil($<s_select_list_item>1,$<s_select_list_item_list>4,E_SLI_NOT_IN_VALUES);
+                add_feature("WHERE_IN");
+        }
+        | value_expression_sli NOT_IN subquery_sli {
+		$<s_select_list_item>$=new_select_list_item_op_sli($<s_select_list_item>1,$<s_select_list_item>3,E_SLI_NOT_IN_SELECT);
+                add_feature("WHERE_IN_SELECT");
+        }
+;
+
+in_value_list_slil:
+	in_value_specification_sli {
+		$<s_select_list_item_list>$=new_select_list_item_list($<s_select_list_item>1);
+	}
+        | in_value_list_slil KW_COMMA in_value_specification_sli {
+                $<s_select_list_item_list>$=add_select_list_item_list($<s_select_list_item_list>1,$<s_select_list_item>3);
+	}
+;
+
+in_value_specification_sli : var_ident_ibind_sli { $<s_select_list_item>$=$<s_select_list_item>1;}
+         | literal { $<s_select_list_item>$=new_select_list_item_literal($<str>1); }
+;
+
+
+
+/* ========================= select.rule ================================ */

@@ -1,0 +1,14 @@
+Name: xgen
+Parent: aubit4glsrc
+Description: Generates data structures needed by compiler. A rpcgen tool replacement
+Functionality: Internal compiler tool
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed: used in Aubit build
+Maintainer: MA
+Status: 5
+Todo:
+Notes: This is used internally to replace calls to XDR routines
+

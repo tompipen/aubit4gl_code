@@ -1,0 +1,164 @@
+/*
+=====================================================================
+                        Source: display.rule
+=====================================================================
+*/
+
+opt_at : { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->type=DT_DISPLAY_TYPE_LINE;
+		add_feature("UI_DISPLAY_LINE_MODE");
+		$<display>$=d;
+	} 
+	| AT fgl_expr_c KW_COMMA fgl_expr_c 		{ 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->type=DT_DISPLAY_TYPE_AT;
+		d->u_data.x_y.x=$<ptr>4;
+		d->u_data.x_y.y=$<ptr>2;
+		$<display>$=d;
+		add_feature("UI_DISPLAY_AT");
+	}
+	| TO_MENUITEM identifier	{ 
+		strcpy($<str>$,"#error not implemented yet"); 
+	}
+	| TO_MAIN_CAPTION { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->type=DT_DISPLAY_TYPE_MAIN_CAPTION;
+		$<display>$=d;
+
+	}
+	| TO field_name_list_as_struct { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->type=DT_DISPLAY_TYPE_FIELD_LIST;
+		d->u_data.field_list=$<field_list>2;
+		add_feature("UI_DISPLAY_TO");
+		$<display>$=d;
+			}
+	| TO KWFORM identifier KWFIELD field_name_list_as_struct { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->type=DT_DISPLAY_TYPE_FORM_FIELD;
+		d->u_data.form_field.form=strdup($<str>3);
+		d->u_data.form_field.field_list=$<field_list>5;
+		add_feature("UI_DISPLAY_FORM_FIELD");
+		$<display>$=d;
+	}
+	| TO KWFORM identifier CAPTION { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->type=DT_DISPLAY_TYPE_FORM_CAPTION;
+		d->u_data.caption=strdup($<str>3);
+		$<display>$=d;
+	}
+	| TO_STATUSBOX identifier { 
+			strcpy($<str>$,"#error not implemented yet");
+ 	}
+;
+
+display_b_n_cmd : DISPLAY_BY_NAME ibind_var_list display_attr {
+		add_feature("DISPLAY_BY_NAME");
+		print_display_by_name($<str>3);
+                } 
+;
+
+
+display_cmd : KW_DISPLAY fgl_expr_list_ptr opt_at display_attr { 
+				add_feature("DISPLAY");
+				print_display_new($<ptr_list>2,$<display>3,$<str>4);
+		} 
+;
+
+display_form_cmd : DISPLAY_FORM form_name display_attr {
+		add_feature("UI_DISPLAY_FORM");
+		print_display_form($<str>2,$<str>3);
+	}
+;
+
+display_array_cmd : DISPLAY_ARRAY {
+		add_feature("UI_DISPLAY_ARRAY");
+		push_blockcommand("DISPLAY");
+		curr_input_array_attribs.curr_row_display=0;
+		} 
+	use_arr_var TO idm_input_array
+
+	opt_scroll opt_attributes 
+		{
+		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>6,$<str>7,&curr_input_array_attribs);
+	  	A4GL_new_events();
+		}
+	disp_rest {
+		add_continue_blockcommand ("DISPLAY");  
+		print_display_array_p2();
+		pop_blockcommand("DISPLAY");
+	  	A4GL_drop_events();
+}
+;
+
+
+
+opt_scroll: 
+{
+strcpy($<str>$,"0,0");
+} | SCROLL_USING field_name_as_struct {
+	strcpy($<str>$,field_name_as_char($<field_entry>2));
+}
+;
+
+display_attr	:	opt_attributes {
+				if (strncmp($<str>1,"A4GL_",5)==0)  {
+					strcpy($<str>$,$<str>1);
+				} else {
+					sprintf($<str>$,"0x%lx",atol($<str>1));
+				}
+			}
+		;
+
+disp_rest : | disp_field_commands END_DISPLAY | END_DISPLAY;
+
+
+
+disp_field_commands : disp_field_command | disp_field_commands disp_field_command;
+
+disp_field_command :  
+	AFTROW {
+		A4GL_add_event(A4GL_EVENT_AFT_ROW,"");
+		print_befaft_field_1("AFT_ROW");
+		} 
+	commands {
+		print_befaft_field_2();
+	}
+	| BEFROW {
+		A4GL_add_event(A4GL_EVENT_BEF_ROW,"");
+		print_befaft_field_1("BEF_ROW");
+		} 
+	commands {
+		print_befaft_field_2();
+	}
+	| on_key_command {
+		A4GL_add_onkey_key($<str>1);
+		print_onkey_1($<str>1);
+		} 
+	commands {
+		print_onkey_2();
+	}
+	| on_action { A4GL_add_onaction($<str>1);  print_onaction_1($<str>1);} commands { print_onaction_2(); }
+	| on_timer { A4GL_add_ontimer($<str>1);  print_ontimer_1($<str>1);} commands { print_ontimer_2(); }
+	| AFTER_DISPLAY {
+		      A4GL_add_event(A4GL_EVENT_AFTER_INP,"");
+		      print_befaft_field_1("AFTER_INP");
+		} commands {
+	             print_befaft_field_2();
+		}
+        | BEFORE_DISPLAY { A4GL_add_event(A4GL_EVENT_BEFORE_INP,"");
+	          print_befaft_field_1("BEFORE_INP");
+	} commands {
+	        print_befaft_field_2();
+	}
+
+;
+
+/* ============================ display.rule ====================== */

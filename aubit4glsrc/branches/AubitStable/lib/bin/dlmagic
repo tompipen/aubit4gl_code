@@ -1,0 +1,190 @@
+#!/bin/sh
+
+##########################################################################
+#
+#This script is used to create API C source file for Aubit libraraies
+#to be loaded at run-time using dlopen() function call.
+#
+#
+#
+#
+#
+#
+##########################################################################
+
+#Include both headers:
+#In file included from console.c:58:
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui_lib.h:38: warning: redundant redeclaration of `A4GLUI_initlib' in same scope
+#/opt/aubit/aubit4glsrc/incl/a4gl_API_ui.h:38: warning: previous declaration of `A4GLUI_initlib'
+
+
+
+#Get settings
+if [ "$AUBITDIR" != "" ]; then
+	. $AUBITDIR/etc/aubitrc
+else
+	echo "WARNING: AUBITDIR not set"
+	echo "ERROR: cannot read settings. STOP."
+	exit 3
+fi
+
+if [ $# -lt 1 -o "$1" = "--help" ]; then
+	echo "Creates run-time loadable library API definition source code "
+	echo " "
+	echo "Usage:   dlmagic <SpecFile> [<APIName>] [<EnvVar>] > <APIname>.c"
+	echo "  SpecFile - contains specifications for the API"
+	echo "  APIName - API name (will be overwritten by LIBRARY tag if declared"
+	echo "      in SpecFile)"
+	echo "  EnvVar - Environment variable to read (will be overwritten by"
+	echo "      VARIABLE tag if declared in the SpecFile)"
+	echo " "
+	echo "Example: "
+	echo "  dlmagic sqlapi.spec SQL SQLTYPE > API_SQL.c "
+	echo " "
+	echo "SpecFile file format:"
+	echo "  func-name param-type param-name ... -> returns"
+	echo "  line beginning with * is a comment"
+	echo "  line beginning with # or / is included in the output Eg #define //comment etc"
+	echo " "
+	echo "Example input File :"
+	echo "	LIBRARY TEST"
+	echo "	VARIABLE VTEST"
+	echo "	* This is a comment - Note - there are no spaces for void* int* etc."
+	echo "	pdf_rep_print void* rep,int a,int s,int right_margin -> int*"
+	echo "	disp_fields int n int attr ... -> int"
+	echo " "
+
+	exit 0
+fi
+
+specfile=$1
+VERBOSE=0
+selfonly=0
+
+if [ "x$2" = "x-h" -o "x$2" = "x-H" -o "x$2" = "x-S" ] ; then
+	if [ "$2" = "-h" ]
+	then
+		#make header only; use api_prefix for function names
+		MAKE_HEADER=1 		#use_prefix=0 (printf rtype " " api_prefix fname)
+		#for instance, in case of API_ui.spec, this will generate a4gl_API_ui.h
+	fi
+	if [ "$2" = "-H" ] ; then
+		#make header only; use lib_prefix for function names
+		MAKE_HEADER=2 	#use_prefix=1 (printf rtype " " lib_prefix fname)
+		#for instance, in case of API_ui.spec, this will generate a4gl_API_ui_lib.h
+	fi
+	if [ "$2" = "-S" ] ; then
+		# Self only mode doesn't include any of the dlopen stuff - instead  it links directly
+		# with the plugin...
+		# You *HAVE* to have a LIB_PREFIX in order for this to work...
+		#
+		selfonly=1
+	fi
+	lib="$3"
+	env="$4"
+else
+		lib="$2"
+		env="$3"
+fi
+
+lib_prefix=
+api_prefix=
+
+if test "$lib" = ""; then
+	#Potentially already passed on command line 
+	if grep "^LIBRARY " $specfile > /dev/null ; then
+		lib=`$AWK '/^LIBRARY /{print $2}' $specfile`
+	fi
+fi
+if test "$env" = ""; then
+	#Potentially already passed on command line
+	if grep "^VARIABLE " $specfile > /dev/null ; then
+		env=`$AWK '/^VARIABLE /{print $2}' $specfile`
+	fi
+fi
+
+#if you want prefix to be added to API function names
+if grep "^API_PREFIX " $specfile > /dev/null ; then
+	api_prefix=`$AWK '/^API_PREFIX /{print $2}' $specfile`
+fi
+
+#if you want prefix to be added to LIB functions calls
+if grep "^LIB_PREFIX " $specfile > /dev/null ; then
+	lib_prefix=`$AWK '/^LIB_PREFIX /{print $2}' $specfile`
+fi
+
+#name of the headers file to be refgerenced with #include
+if grep "^HEADER_FILE " $specfile > /dev/null ; then
+	HEADER_FILE=`$AWK '/^HEADER_FILE /{print $2}' $specfile`
+fi
+
+if [ "$selfonly" = 1 -a "$lib_prefix" = "" ]
+then
+	echo "You cannot use self mode without specifying a lib_prefix"
+	exit 2
+fi
+
+#echo "/* Library=$lib env=$env */"
+
+if [ "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2" ]; then
+	################################################################
+	#					Output a header file (.h)
+	################################################################
+	if  [ $MAKE_HEADER = "2" ] ; then
+		use_prefix=1
+		if test "$lib_prefix" = ""; then
+			if test "$VERBOSE" = "1" ; then
+				echo "WARNING: LIB_PREFIX not set in .spec file (-H)" > /dev/stderr
+			fi
+			#exit 4
+		fi
+		if test "$VERBOSE" = "1" ; then 
+			echo "dlmagic: making header using LIB_PREFIX=$lib_prefix (-H)" > /dev/stderr
+		fi
+	else
+		use_prefix=0
+		if test "$api_prefix" = ""; then
+			if test "$VERBOSE" = "1" ; then
+				echo "WARNING: API_PREFIX not set in .spec file (-h)" > /dev/stderr
+			fi
+			#exit 4
+		fi
+		if test "$VERBOSE" = "1" ; then 
+			echo "dlmagic: making header using API_PREFIX=$api_prefix (-h)" > /dev/stderr
+		fi
+		
+	fi
+
+	$AWK -v use_prefix=$use_prefix -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -f $AUBITDIR/lib/bin/dlmagic_h.awk < $specfile
+
+	echo "#ifdef __cplusplus"
+	echo "}"
+	echo "#endif"
+	echo "#endif  /* #ifdef __($lib)_H__  */"
+	echo ""
+
+    exit 0
+fi # "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2"
+
+############################################################################
+#						Output API .c code
+############################################################################
+
+	if test "$VERBOSE" = "1" ; then 
+		echo "dlmagic: making .c API code..." > /dev/stderr
+	fi
+
+	if [ "x$lib" = "x" ]
+	then
+		lib="not-set"
+	fi
+	if [ "x$env" = "x" ]
+	then
+		env="not-set"
+	fi
+
+	$AWK --assign xlib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile
+
+
+exit
+

@@ -1,0 +1,14 @@
+Name: libSQL_ingres
+Parent: aubit4glsrc
+Description: Native mode Ingres plug-in.  Plug-in for native mode Ingres database access
+Functionality:  SQL
+Build:
+Example: A4GL_SQLTYPE
+Depends: Ingres esqlc compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 1
+Todo:
+Notes: Ingres esql/c compiler is rubbish - this port has been abandoned...
+

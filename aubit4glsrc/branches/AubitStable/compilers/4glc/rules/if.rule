@@ -1,0 +1,42 @@
+if_cmd	: 
+	IF 
+	fgl_expr_c
+	THEN  {
+		add_feature("IF");
+		if_print_stack_cnt++;
+		if_print_stack[if_print_stack_cnt][0]=0;
+		if_print_stack[if_print_stack_cnt][1]=0;
+		if_print_section[if_print_stack_cnt]=0;
+		print_if_start($<ptr>2);
+	}
+		commands {
+		if_print_section[if_print_stack_cnt]=1;
+	} op_else END_IF {
+		char wt;
+		print_if_end();
+	        wt=get_curr_report_stack_whytype_1();
+		//if (wt=='P'||wt=='p'||wt=='T') {
+		if (wt=='T') {
+			if (if_print_stack[if_print_stack_cnt][0]!=if_print_stack[if_print_stack_cnt][0]) {
+				a4gl_yyerror("Number of lines printed in an IF.. THEN must be the same for TRUE and FALSE");
+				YYERROR;
+			}
+			
+			if (if_print_stack_cnt>=1) {
+				if_print_stack[if_print_stack_cnt-1][if_print_section[if_print_stack_cnt-1]]+=if_print_stack[if_print_stack_cnt][0];
+			}
+		}
+		if_print_stack_cnt--;
+	}
+;
+
+op_else : | ELSE {
+		print_if_else();
+	} commands 
+	| ELIF { print_if_else(); } fgl_expr_c THEN {
+		add_feature("ELIF");
+		print_if_start($<ptr>3);
+	} commands op_else {
+		print_if_end();
+	};
+

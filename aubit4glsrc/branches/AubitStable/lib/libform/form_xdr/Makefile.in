@@ -1,0 +1,142 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.13 2004-09-28 09:49:17 afalout Exp $
+#
+
+ROOT		=../../..
+LIBROOT     =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+#require XDR frunctions, part of Sun RPClib:
+CMODS_FORM_XDR		=${ROOT}/compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
+OBJS_FORM_XDR		=${CMODS_FORM_XDR:.c=.o}
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#ifdef COMSPEC
+#	ifneq "@HAVE_RPCLIB@" "0"
+#		ALL			+=dllFORM_XDR
+#    endif
+#else
+	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			+=${LIBROOT}/libFORM_XDR${SO_EXT}
+    endif
+#endif
+
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile ${CFLAGS} -I${ROOT}/common/dataio
+
+## RPC type and XDR are not the same thing. RPC type represents Remote
+#Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
+#but regardless of that, XDR functions (also conatained in Sun RPC libraries)
+#are needed by forms and menus functionality, and without it user would not
+#ba able to compile or open forms and menus, since they compiled output
+#file format is outpudte in XDR format for portability:
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+endif
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: note ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
+
+note:
+	@echo "Building: ${ALL}"
+
+${LIBROOT}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
+	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^ ${LINKLIBS}
+
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
+
+#.PHONY : dllFORM_XDR
+#dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
+#	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+#	${CP} libFORM_XDR.dll ${LIBROOT}
+
+
+## ==================================================================
+##                             Sub Targets
+## ==================================================================
+
+ci: $(CMODS)
+	ci -l  $^
+
+${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+
+${ROOT}/compilers/fcompile/form_x_xdr.o:
+	${MAKE} -C ${ROOT}/compilers/fcompile form_x_xdr.o
+
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
+#error.c : generated/tmperrs.h
+#array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
+#builtin.c: ${ROOT}/compilers/fcompile/form_x.h
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} $(OBJS_DEBUG) menu_x.h menu_x_xdr.c form_x_xdr.c form_x.h project.c \
+	aubit-config core *.out *.glb *${SO_EXT} *.a  \
+	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp *.def
+
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

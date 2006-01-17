@@ -1,0 +1,60 @@
+/*
+=====================================================================
+                        Source: prepare.rule
+=====================================================================
+*/
+
+
+prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char 
+{
+		print_prepare($<str>3,$<str>5);
+		ADDMAP("Prepare",$<str>3);
+		print_undo_use($<str>1);
+		add_feature("PREPARE");
+}
+;
+
+var_or_char: variable | CHAR_VALUE;
+
+execute_cmd : EXECUTE stmt_id {
+		print_execute($<str>2,0);
+		ADDMAP("Execute",$<str>2);
+		add_feature("EXECUTE");
+		}
+        | EXECUTE stmt_id KW_USING ibind_var_list {
+		add_feature("EXECUTE_USING");
+		ADDMAP("Execute",$<str>2);
+		print_execute($<str>2,1);
+		add_feature("EXECUTE");
+	}
+        | EXECUTE stmt_id INTO obind_var_list {
+		add_feature("EXECUTE_INTO");
+		ADDMAP("Execute",$<str>2);
+		print_execute($<str>2,2);
+		add_feature("EXECUTE");
+	}
+        | EXECUTE stmt_id INTO obind_var_list KW_USING ibind_var_list {
+		add_feature("EXECUTE_INTO_USING");
+		ADDMAP("Execute",$<str>2);
+		print_execute($<str>2,3);
+		add_feature("EXECUTE");
+	}
+        | EXECUTE stmt_id KW_USING ibind_var_list INTO obind_var_list {
+		add_feature("EXECUTE_INTO_USING");
+		ADDMAP("Execute",$<str>2);
+		print_execute($<str>2,3);
+		add_feature("EXECUTE");
+	}
+	| EXECUTE_IMMEDIATE var_or_char {
+		add_feature("EXECUTE_IMMEDIATE");
+		print_execute_immediate($<str>2);
+		add_feature("EXECUTE");
+	}
+;
+
+stmt_id : ident_or_var ;
+
+
+/* ========================== prepare.rule ========================= */
+
+

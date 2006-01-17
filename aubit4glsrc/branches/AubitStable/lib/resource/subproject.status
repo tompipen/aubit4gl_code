@@ -1,0 +1,13 @@
+Name:  aubit-config
+Parent: aubit4glsrc
+Description: Command line tool that provides information about the state of various Aubit configuration options, as "seen" by Aubit tools and compiled programs.
+Functionality: Configuration info tool
+Build: Always built by root makefile
+Example: see --help
+Depends:
+Documentation: see --help
+Regressed:
+Maintainer: MA
+Status: 5
+Todo:
+Notes:

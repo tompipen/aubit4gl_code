@@ -1,0 +1,28 @@
+/*
+=====================================================================
+                        Source: for.rule
+=====================================================================
+*/
+
+
+for_cmd	:	FOR variable EQUAL fgl_expr_c TO fgl_expr_c for_step
+{
+add_feature("FOR");
+print_for_start($<str>2,$<ptr>4,$<ptr>6,$<ptr>7);
+push_blockcommand("FOR");
+}
+commands 
+END_FOR { 
+	continue_blockcommand("FOR"); 
+	print_for_step($<str>2,$<ptr>4,$<ptr>6,$<ptr>7); 
+	pop_blockcommand("FOR"); 
+	print_for_end($<str>2,$<ptr>4,$<ptr>6,$<ptr>7); }
+;
+
+for_step :	{ $<ptr>$=get_for_default_step(); }
+	|	STEP fgl_expr_c {$<ptr>$=$<ptr>2;}
+;
+
+
+/* ============================= for.rule =========================== */
+

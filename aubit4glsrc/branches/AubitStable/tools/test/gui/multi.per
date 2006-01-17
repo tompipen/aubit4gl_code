@@ -1,0 +1,87 @@
+database formonly
+screen title "Address" size 20 by 60 
+{
+
+
+            [x                                   ]
+
+
+                 Company  Details
+
+	Company Name [f001                   ]
+
+	Address      [f002                   ]
+	             [f003                   ]
+	             [f004                   ]
+	             [f005                   ]
+	             [f006                   ]
+
+	Postcode     [f007     ]
+}
+screen title "Contact" size 15 by 60
+{
+
+
+            [x                                   ]
+
+
+                 Contact  Details
+
+	   Name      [f008                   ]
+	   Title     [f009                   ]
+
+	   Tel    [f010                      ]
+	   Mobile [f011                      ]
+	   Fax    [f012                      ]
+	   Email  [f013                      ]
+	   Other  [f014                      ]
+}
+screen title "Jobs" size 15 by 62
+{
+
+
+            [x                                   ]
+
+
+                 Jobs
+
+     Job Number  [f015  ]
+     Description [f016                          ]
+     Hours       [f017    ]
+     Completed   [d]
+
+                 Tasks
+
+     Date       Task                               Time
+    [f018    ]  [f019                           ] [f020 ]
+    [f018    ]  [f019                           ] [f020 ]
+    [f018    ]  [f019                           ] [f020 ]
+    [f018    ]  [f019                           ] [f020 ]
+          
+}
+
+attributes	
+	f001=formonly.cname;
+	f002=formonly.add1;
+	f003=formonly.add2;
+	f004=formonly.add3;
+	f005=formonly.add4;
+	f006=formonly.add5;
+	f007=formonly.postcode;
+
+	f008=formonly.contact_name;
+	f009=formonly.job_title;
+	f010=formonly.tel_no;
+	f011=formonly.mobile_no;
+	f012=formonly.fax_no;
+	f013=formonly.email;
+	f014=formonly.other;
+	f015=formonly.job_no;
+	f016=formonly.job_description;
+	f017=formonly.job_hours;
+	f018=formonly.task_date;
+	f019=formonly.task_desc;
+	f020=formonly.task_time;
+	x=formonly.img1,WIDGET="pixmap",config="filename='aubit.xpm'";
+	d=formonly.completed,WIDGET="CHECK";
+

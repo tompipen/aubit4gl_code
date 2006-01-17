@@ -1,0 +1,58 @@
+Name: default_frm
+Parent: aubit4glsrc
+Description: Creates default form file (.per) based on database table
+Functionality: Default form generator
+Build: Always built by root makefile
+Example: default_frm -d dbname -t tabname [-t tabname ..]  [-o outputfile]
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+Name: fcompile
+Parent: aubit4glsrc
+Description: Parses .per files and creates compiled forms in various formats using plug-ins
+Functionality: Core form compiler
+Build: Always built by root makefile
+Example:
+Depends: If forms compiled reference a database, then at least one Aubit SQL plug-in capable of accessing that database
+Documentation: Manual
+Regressed: mostly
+Maintainer: MA
+Status: 5
+Todo:
+Notes:
+
+
+Name: fdecompile
+Parent: aubit4glsrc
+Description: De-compiles compiled form (in ? format) back to .per format
+Functionality: Form de-compiler
+Build: Always built by root makefile
+Example:
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Primarily useful for debugging
+
+
+Name: fshow
+Parent: aubit4glsrc
+Description: Command line tool to show how form will look
+Functionality: Form display utility
+Build: Always built by root makefile
+Example:
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Written in 4GL
+

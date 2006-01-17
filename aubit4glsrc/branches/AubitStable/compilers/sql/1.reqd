@@ -1,0 +1,206 @@
+%{
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "a4gl_libaubit4gl.h"
+//#include "sqlcompiler.h"
+
+#define SQL_SET_EXPLAIN_OFF 1
+#define SQL_SET_LOCK_MODE_WAIT_N 2
+#define SQL_SET_LOCK_MODE_NOT_WAIT 3
+#define SQL_SET_ISOLATION_DIRTY_READ 4
+#define SQL_SET_ISOLATION_REPEATABLE_READ 5
+#define SQL_SET_ISOLATION_CURSOR_STABILITY 6 
+#define SQL_SET_ISOLATION_COMMITTED_READ 7
+
+
+#define add_feature A4GL_add_feature
+void add_sql_function(char *s);
+
+int A4GL_cursor_current(char *s);
+int sqlparse_yylex(void);
+extern int place_holder_cnt;
+
+//#ifndef DOING_CM
+//char *kw_space=" ";
+//char *kw_comma=",";
+//char *kw_ob="(";
+//char *kw_cb=")";
+//#else
+extern char *kw_space;
+extern char *kw_comma;
+extern char *kw_ob;
+extern char *kw_cb;
+
+//#endif
+int insql=0;
+static char *make_sql_string_and_free(char *,...);
+char last_tmp_name[256];
+//char *a4gl_upshift(char *a);
+#define ADDMAP(x,y) addmap_runtime(x,y)
+#define ADDMAP_MODULE(x,y) addmap_runtime(x,y)
+
+int yylineno;
+int table_cnt=0;
+char* curr_func="";
+char *infilename="";
+int doing_declare=0;
+//#define UPDCOL 0
+//#define UPDVAL 1
+//#define UPDVAL2 4
+//#define INSCOL 5
+//#define INSVAL 6
+//#define TCOL 6
+#define YY_NEVER_INTERACTIVE 1
+
+static char *convstrsql(char *s) ;
+char current_upd_table[256];
+char current_del_table[256];
+#define DEFINED_INS_TABLE
+char current_ins_table[256];
+
+#define a4gl_yyerror sqlparse_yyerror
+/*
+char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
+char *A4GLSQLCV_check_expr(char *s ) ;
+char *A4GLSQLCV_datetime_value(char *s) ;
+char *A4GLSQLCV_dtype_alias(char *s ) ;
+char *A4GLSQLCV_dtype_alias(char *s ) ;
+char *A4GLSQLCV_generate_current(char *from,char *to) ;
+char *A4GLSQLCV_make_tablename(char *t,char *c);
+char *A4GLSQLCV_interval_value(char *s) ;
+char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) ;
+char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,int extend) ;
+//char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
+//char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
+char *A4GLSQLCV_matches_string(char *str,char *esc);
+char *A4GLSQLCV_rencol(char *tabname,char *colname,char *ncolname) ;
+char *A4GLSQLCV_rentab(char *tabname,char *ntabname) ;
+char *A4GLSQLCV_get_sqlconst(char *s);
+char *A4GLSQLCV_sqlfunc(char *s,char *p);
+int A4GLSQLCV_check_requirement(char *s) ;
+*/
+
+//static void push_gen (int a, char *s);
+//static void copy_gen (int a, int b);
+//static void pop_all_gen (int a, char *s);
+static char * convstr_dbl_to_single (char *s);
+static int get_bind_cnt (char i);
+static void rm_quotes (char *s);
+static void A4GL_CV_print_exec_sql(char *s);
+
+//andrej static void print_set_conn(char *conn) ;
+static void print_load (char *fname,char *delim,char *tab,char *col) ;
+static void print_load_str (char *fname,char *delim,char *query) ;
+static void print_sql_commit (int n) ;
+//andrej static void print_select_all (char *s) ;
+static void print_exec_sql (char *s) ;
+//andrej static void print_exec_sql_bound (char *s) ;
+static void print_exec_select (char *s)    ;
+static void print_undo_use (char *use_stuff) ;
+static void print_unload (char *fname,char *delim,char *sql) ;
+static void print_use_session (char *conn_id) ;
+static void print_init_conn (char *s) ;
+static void print_unable_to_parse(void) ;
+//andrej static int yywrap(void) ;
+static int start_bind (char c,int n);
+static int A4GLSQLCV_process(void);
+//andrej static int meminput(char *buf,int maxsize);
+static int sqlparse_yyerror(char *s) ;
+int A4GL_4glc_push_gen_expand(int n,char *v);
+
+
+
+static void A4GL_CV_print_exec_sql_bound(char *s);
+
+
+
+//#include "ilist.h"
+
+static char* A4GL_get_into_part(int d,int n);
+static char *  fix_update_expr (int mode);
+static char *A4GL_get_undo_use(void);
+//static char *A4GL_strip_quotes (char *s);
+//static int gen_cnt (int a);
+static void ansi_violation(char *s,int n);
+static int A4GL_escape_quote_owner(void);
+static void A4GL_lex_printcomment (char *fmt,...);
+static void addmap_runtime (char *s,char *f);
+static int scan_variable (char *s);
+
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#ifdef SIMPLIFIED
+#include "y_tab.h"
+#else
+#include "y.tab.h"
+#endif
+
+#define GEN_STACK_HERE
+#include "a4gl_gen_stack.h"
+
+int sql_string_cnt=0;
+int this_sql_start=0;
+char *Sql=0;
+FILE *Sql_file;
+int input_from_file=0;
+extern char* yytext;
+
+extern FILE *yyin;
+extern int sqlparse_yydebug;
+int process(void) ;
+char *sql_string;
+int sql_type;
+int was_ok=0;
+/*
+struct sql_stmt {
+        int type;
+        char *val;
+};
+
+struct sql_stmt *stmts=0;
+*/
+
+int db_used=0;
+//char *acl_getenv(char *s);
+
+%}
+%name-prefix="sqlparse_yy"
+%start sql_statement
+%union    {
+        char    str[1024];
+   char *sql_string;
+	struct  ilist int_list;
+	struct s_table *u_table;
+	struct s_select_finish *s_select_finish;
+        struct s_select_list_item_list *s_select_list_item_list;
+        struct s_select_list_item *s_select_list_item;
+        struct s_select *s_select;
+        int     integer_val;
+        float   float_val;
+
+
+}
+//%expect 175
+%token INT_VALUE
+%token NAMED
+%token NAMED_GEN
+%token CHAR_VALUE
+%token NOT_USED_1
+%token NOT_USED_2
+%token NOT_USED_3
+%token NOT_USED_4
+%token NOT_USED_5
+%token NOT_USED_6
+%token NOT_USED_7
+%token NOT_USED_8
+%token NUMBER_VALUE
+%token SEMICOLON
+%token QUESTION_MARK
+%token CLINE
+%token CH
+%token MARK_VAR
+%token END_MARK_VAR

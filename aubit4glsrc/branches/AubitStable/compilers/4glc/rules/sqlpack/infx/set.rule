@@ -1,0 +1,44 @@
+/*
+=====================================================================
+                        Source: set.rule
+=====================================================================
+*/
+
+
+set_cmd :
+	SQLSEON {A4GL_CV_print_exec_sql($<str>1);add_feature("SET_EXPLAIN");}
+	| SQLSEOFF {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_EXPLAIN");}
+	| SQLSLMW op_int_val {sprintf($<str>$,"%s %s",$<str>1,$<str>2); A4GL_CV_print_exec_sql($<str>$);  add_feature("SET_LOCK_MODE");}
+	| SQLSLMNW  {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_LOCK_MODE");}
+	| SQLSIDR   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION"); }
+	| SQLSIRR   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION");}
+	| SQLSICS   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION");}
+	| SQLSICR   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION");}
+	| SET_SESSION_TO conn_id { 
+		print_set_conn($<str>2);
+	}
+	| SET_SESSION op_conn_id OPTION char_or_var TO char_or_var {
+		print_set_options("conn",$<str>2,$<str>4,$<str>6);
+	}
+	| SET_CURSOR cursor_name OPTION char_or_var TO char_or_var {
+		print_set_options("stmt",$<str>2,$<str>4,$<str>6);
+	}
+;
+
+op_conn_id : 
+	{strcpy($<str>$,"\"default\"");} | conn_id
+;
+
+
+
+op_int_val :
+	{strcpy($<str>$,"");} | INT_VALUE
+;
+
+/*
+op_fgl_expr :
+{strcpy($<str>$,"");} | fgl_expr;
+*/
+
+/* ================================================================ */
+

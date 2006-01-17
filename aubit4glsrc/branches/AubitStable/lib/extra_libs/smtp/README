@@ -1,0 +1,12 @@
+
+This uses libsmtp (http://libsmtp.berlios.de) - which in turn required GLIB..
+
+
+There are some patches on belios for this - which may be needed :
+
+	Some mail servers need to recognize the boundary end for ending the attachment. 
+	Otherwise the attachment may be truncated. This libsmtp_part_end() is called after the last libsmtp_part_send() 
+	call and before the libsmtp_body_end() call for sending a boundary end line.
+
+See http://developer.berlios.de/patch/?group_id=149
+

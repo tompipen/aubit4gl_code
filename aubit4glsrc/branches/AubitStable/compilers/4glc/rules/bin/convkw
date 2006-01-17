@@ -1,0 +1,124 @@
+#!/bin/sh
+###############################################################
+#This script is invoked from compilers/4glc/rules/Makefile:
+#
+#generated/kw.h generated/kw.c: generated/single_words
+#	${SH} bin/convkw
+#
+#NOTE: convkw.single script is disabled, therefore generated/single_words file
+#will be empty!
+#
+#       The getline command returns 0 on end of file and -1 on  an
+#       error.   Upon an error, ERRNO contains a string describing
+#       the problem.
+#
+#       NOTE: If using a pipe or co-process to  getline,  or  from
+#       print  or  printf  within  a loop, you must use close() to
+#       create new instances of the command.  AWK does  not  auto­
+#       matically  close  pipes  or  co-processes when they return
+#       EOF.
+#
+#
+#     close(file [, how])   Close file, pipe or co-process.  The
+#                             optional  how  should  only  be used
+#                             when closing one end  of  a  two-way
+#                             pipe  to a co-process.  It must be a
+#                             string value, either "to" or "from".
+#
+#
+###############################################################
+
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
+
+MODE=$1
+
+if test "$MODE" = "test" ; then
+echo "MODE=test"
+$AWK '
+BEGIN {
+doverbose="0"
+while (getline < "generated/single_words") {
+	if (length($1)>1) {
+		single_words[$1]=1
+		print "Defined " $1 " as single word"
+    } else {
+		print "Input line: " $1 " was empty. Stop."
+#		exit
+    }
+}
+
+close (generated/single_words)
+}
+' < data/kwords
+exit
+fi
+
+$AWK '
+BEGIN {
+doverbose="0"
+while (getline < "generated/single_words") {
+	if (length($1)>1) {
+		single_words[$1]=1
+		print "Defined " $1 " as single word"
+    } else {
+		print "Input line: " $1 " was empty. Stop."
+		exit
+    }
+}
+
+a=1000
+	print "#ifdef SIMPLIFIED " > "generated/kw.c"
+	print "#include \"kw.h\"" > "generated/kw.c"
+	print "#else" > "generated/kw.c"
+	print "#include \"generated/kw.h\"" > "generated/kw.c"
+	print "#endif" > "generated/kw.c"
+	print "struct s_kw {" > "generated/kw.h"
+	print "    int id;" > "generated/kw.h"
+	print "	   int mode;" > "generated/kw.h"
+	print "    char *vals[20];" > "generated/kw.h"
+	print "    char *name;" > "generated/kw.h"
+	print "};" > "generated/kw.h"
+	print "struct s_kw kwords[]={" > "generated/kw.c"
+}
+/^#/ {next}
+(NF>=1) {
+kw= $1
+if (NF==1) {s=1} else {s=2}
+issingle=0
+if (single_words[kw]==1)  {kw="KWS_" kw
+issingle=1
+}
+if (doverbose == "1") {
+print "Check : " kw " - "  def[kw]
+}
+if (def[kw]!=1) {
+		print "#define " kw " " a > "generated/kw.h"
+		print "%token " kw " " a > "generated/kw.yh"
+		def[kw]=1
+		a++
+}
+
+if (issingle==0)
+	printf "{" kw ",1,{" > "generated/kw.c"
+else
+	#printf "{" kw ",0,{" > "generated/kw.c"
+	printf "{" kw ",1,{" > "generated/kw.c"
+
+for (z=s;z<=NF;z++) {
+	printf "\"" $z "\"," > "generated/kw.c"
+}
+printf "0}" > "generated/kw.c"
+printf "\"" kw "\"}" > "generated/kw.c"
+print "}," > "generated/kw.c"
+}
+END {
+print "{0}" > "generated/kw.c"
+print "};" > "generated/kw.c"
+}
+' < data/kwords
+
+echo $0 : Done
+
+

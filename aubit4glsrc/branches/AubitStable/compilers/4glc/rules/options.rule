@@ -1,0 +1,57 @@
+/*
+=====================================================================
+                        Source: options.rule
+=====================================================================
+*/
+
+
+options_cmd : OPTIONS opt_options;
+
+opt_options : opt_allopts
+	| opt_options KW_COMMA opt_allopts
+;
+
+opt_allopts 	: COMMENT_LINE line_no 		{ print_options('C',$<str>2); }
+		| ERROR_LINE line_no 		{ print_options('E',$<str>2); }
+		| FORM_LINE line_no 		{ print_options('F',$<str>2); }
+		| MENU_LINE line_no 		{ print_options('M',$<str>2); }
+		| MSG_LINE line_no 		{ print_options('m',$<str>2); }
+		| PROMPT_LINE line_no 		{ print_options('P',$<str>2); }
+		| accept_key 			{ print_options('A',$<str>1); iskey=0; }
+		| KW_DELETE single_key_val 	{ print_options('D',$<str>2); iskey=0; }
+		| KW_INSERT single_key_val 	{ print_options('I',$<str>2); iskey=0; }
+		| KW_NEXT single_key_val 	{ print_options('N',$<str>2); }
+		| KW_PREVIOUS single_key_val 	{ print_options('p',$<str>2); iskey=0; }
+		| KW_HELP single_key_val     	{ print_options('H',$<str>2); }
+		| HELP_FILE file_name    	{ print_set_helpfile($<str>2); }
+		| LANG_FILE file_name    	{ print_set_langfile($<str>2); }
+		| DISPLAY_ATTR_FORM        	{ print_options('Z',"1"); }
+		| DISPLAY_ATTR_WINDOW      	{ print_options('Z',"2"); }
+		| INPUT_ATTR_FORM        	{ print_options('Y',"1"); }
+		| INPUT_ATTR_WINDOW      	{ print_options('Y',"2"); }
+		| KW_DISPLAY attributes_def 	{ print_options('d',$<str>2);print_options('Z',"0"); }
+		| KW_INPUT attributes_def   	{ print_options('i',$<str>2); print_options('Y',"0");}
+		| INPUT_WRAP 			{ print_options('W',"1"); }
+		| INPUT_NO_WRAP 		{ print_options('W',"0"); }
+		| FOCONSTR 			{ print_options('f',"1"); }
+		| FOUNCONSTR 			{ print_options('f',"0"); }
+		| SQL_INTERRUPT_OFF 		{ print_options('S',"0"); }
+		| SQL_INTERRUPT_ON  		{ print_options('S',"1"); }
+		| KW_RUN option_run_mode 		{ print_options('r',$<str>2); }
+		| KW_PIPE option_pipe_mode 	{ print_options('|',$<str>2); }
+;
+
+option_run_mode :
+	IN_LINE_MODE {strcpy($<str>$,"1");}
+	| IN_FORM_MODE {strcpy($<str>$,"2");}
+;
+
+option_pipe_mode :
+	IN_LINE_MODE {strcpy($<str>$,"1");}
+	| IN_FORM_MODE {strcpy($<str>$,"2");}
+;
+
+
+/* =========================== options.rule =========================== */
+
+

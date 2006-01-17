@@ -1,0 +1,242 @@
+/*
+=====================================================================
+                        Source: var2.rule
+=====================================================================
+*/
+
+
+var_ident :  var2_vu
+{
+	if (scan_variable(variable_usage_as_string($<var_usg>1,VAR_USG_ANY))!=-1) {
+		char buff[1024];
+		sprintf(buff,"%s",fgl_add_scope(variable_usage_as_string($<var_usg>1,VAR_USG_VARIABLE),0));
+		print_push_variable(buff);
+		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+			strcpy($<str>$,"?@@PARAM@@?");
+		} else {
+			strcpy($<str>$,"?");
+		}
+	} else {
+		strcpy($<str>$,variable_usage_as_string($<var_usg>1,VAR_USG_IDENT));
+	}
+
+}
+;
+
+
+
+var2_vu :
+	DOLLAR  var3_vu {
+		$<var_usg>$=$<var_usg>2;
+	} | var3_vu {
+		$<var_usg>$=$<var_usg>1;
+	}
+;
+
+
+
+var3_vu:
+	var4_vu
+	| CHAR_VALUE DOT var4_vu {
+		if (A4GL_escape_quote_owner()) {
+			$<var_usg>$=new_variable_usage(0,$<str>1,0); 
+			$<var_usg>$=append_variable_usage($<var_usg>$,$<var_usg>3);
+		} else {
+			$<var_usg>$=$<var_usg>3;
+		}
+	}
+;
+
+var4_vu:
+	var4_item_vu
+	| var4_vu DOT var4_item_vu {
+		$<var_usg>$=append_variable_usage($<var_usg>1,$<var_usg>3);
+	}
+	| var4_vu DOT MULTIPLY {
+		$<var_usg>$=new_variable_usage($<var_usg>1,"*",0);
+	}
+;
+
+
+var4_item_vu:
+        array_r_variable_or_ident_vu {
+			$<var_usg>$=$<var_usg>1;
+	} 
+	| identifier { $<var_usg>$=new_variable_usage(0,$<str>1,0); }
+;
+
+
+
+var_ident_ibind_sli : var2_vu {
+		int sv_val;
+        	char *str1;
+		str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+	
+		sv_val=scan_variable(str1);
+	
+		if (strncmp(str1," a4gl_sub",9)==0) {
+			// Its a substring of a variable
+			sv_val=1;
+		}
+	
+		if (sv_val!=-1&&(!system_var(str1)))
+		{
+			// Its a variable
+			int z = 0,a = 0;
+			a=get_bind_cnt('i');
+			z=add_bind('i',str1);
+			z-=a;
+			ADDMAP("Use Variable",str1);
+			$<s_select_list_item>$=new_select_list_item_variable(A4GL_set_var_sql(doing_declare,z));
+	
+		} else { 
+			// Its a column
+			$<s_select_list_item>$=new_select_list_item_column_from_transform(str1);
+				/* acl_strdup(get_column_transform(str1)); */
+		}
+		free(str1);
+	}
+	| var2_vu THRU var2_vu { /* a2 */
+		char buff[256];
+		char *str1;
+		char *str3;
+		char was_str[40000];
+		int z = 0,a = 0;
+		str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+		str3=acl_strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
+		strcpy(was_str,"");
+		sprintf(buff,"%s\n%s",str1,str3);
+		a=get_bind_cnt('i');
+		/*printf("get_bind_cnt=%d\n",a); */
+		z=add_bind('i',buff);
+		z-=a;
+		strcpy(was_str,A4GL_set_var_sql(doing_declare,z));
+		ADDMAP("Use Variable",str1);
+		$<s_select_list_item>$=new_select_list_item_variable(A4GL_set_var_sql(doing_declare,z));
+		free(str1);
+		free(str3);
+	}
+;
+
+
+var_ident_ibind_ss :  var2_vu {
+		int sv_val;
+        	char *str1;
+		str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+	
+		sv_val=scan_variable(str1);
+	
+		if (strncmp(str1," a4gl_sub",9)==0) {
+			// Its a substring of a variable
+			sv_val=1;
+			ADDMAP("Use Variable",str1);
+		}
+	
+		if (sv_val!=-1&&(!system_var(str1)))
+		{
+			// Its a variable
+			int z = 0,a = 0;
+			a=get_bind_cnt('i');
+			z=add_bind('i',str1);
+			z-=a;
+			$<sql_string>$=acl_strdup(A4GL_set_var_sql(doing_declare,z));
+			ADDMAP("Use Variable",str1);
+	
+		} else { 
+			// Its a column
+			$<sql_string>$=acl_strdup(get_column_transform(str1));
+		}
+		free(str1);
+	}
+	| var2_vu THRU var2_vu { /* a2 */
+		char buff[256];
+		char *str1;
+		char *str3;
+		char was_str[40000];
+		int z = 0,a = 0;
+		str1=acl_strdup(variable_usage_as_string($<var_usg>1,VAR_USG_ANY));
+		str3=acl_strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
+			ADDMAP("Use Variable",str1);
+		strcpy(was_str,"");
+		sprintf(buff,"%s\n%s",str1,str3);
+		a=get_bind_cnt('i');
+		/*printf("get_bind_cnt=%d\n",a); */
+		z=add_bind('i',buff);
+		z-=a;
+		strcpy(was_str,A4GL_set_var_sql(doing_declare,z));
+		$<sql_string>$=acl_strdup(was_str);
+		free(str1);
+		free(str3);
+	}
+;
+
+
+array_r_variable_or_ident_vu: identifier arr_subscripts_al
+{
+  struct num_list *array;
+  struct num_list *substr;
+  struct array_list *al;
+
+  $<var_usg>$=new_variable_usage(0,$<str>1,0);
+  al=$<array_list>2;
+  array=al->array;
+  substr=al->substr;
+
+  if (array) {
+	int cnt;
+	cnt=0;
+	while (array) {
+		set_variable_usage_subscript($<var_usg>$,cnt,array->num);
+		cnt++;
+		array=array->next;
+	}
+  }
+
+  if (substr) {
+	int cnt;
+	cnt=0;
+	while (substr) {
+		set_variable_usage_substr($<var_usg>$,cnt,substr->num);
+		cnt++;
+		substr=substr->next;
+	}
+  }
+}
+;
+
+arr_subscripts_al :
+        OPEN_SQUARE num_list_nl CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript or substring");
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=$<num_list>2;
+		al->substr=0;
+		$<array_list>$=al;
+
+        } 
+	| OPEN_SQUARE num_list_nl CLOSE_SQUARE OPEN_SQUARE num_list_nl CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript & substring");
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=$<num_list>2;
+		al->substr=$<num_list>5;
+		$<array_list>$=al;
+        }
+;
+
+
+num_list_nl:	num_list_element_nl { 
+			$<num_list>$=$<num_list>1; 
+		}
+		| num_list_nl KW_COMMA num_list_element_nl { 
+			$<num_list>$=append_num_list_items($<num_list>1,$<num_list>3); 
+		}
+;
+
+num_list_element_nl: arr_expr
+{
+  $<num_list>$=new_num_list_item($<str>1);
+};
+
+
+/* ================================ var2.rule ===================== */

@@ -1,0 +1,13 @@
+Name: libA4GL_MQ
+Parent: aubit4glsrc
+Description: Interface to IBM Websphere MQ middleware
+Functionality: MQ middleware support
+Build:  	make in home dir
+Example:  	See test_mq.4gl
+Depends: IBM MQ toolset
+Documentation: See link to original article in test_mq.4gl
+Regressed:
+Maintainer:  AF
+Status: 4
+Todo: Currently works only using I-4GL;
+Notes: Written by Claus Samuelsen

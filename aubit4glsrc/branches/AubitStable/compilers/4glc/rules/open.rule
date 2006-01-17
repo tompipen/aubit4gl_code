@@ -1,0 +1,110 @@
+/*
+=====================================================================
+                        Source: open.rule
+=====================================================================
+*/
+
+open_window_cmd :
+	OPEN_WINDOW open_win_name AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
+			add_feature("UI_OPEN_WINDOW");
+			form_attrib.iswindow=1;
+			print_open_window($<str>2,$<open_window_type>8,$<ptr>4,$<ptr>6);
+			sprintf($<str>$,"open window");
+			}
+;
+
+op_at_statusbox : 
+	| AT OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET op_size_statusbox
+;
+
+op_size_statusbox : 
+	| KW_SIZE OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET
+;
+
+open_statusbox_cmd :
+	OPEN_STATUSBOX identifier op_at_statusbox { print_niy("OPEN_STATUSBOX"); }
+;
+
+formhandler_name:identifier {
+ADDMAP("Call Formhandler",$<str>1); 
+}
+;
+open_form_cmd :
+	OPEN_FORM open_form_name FROM fgl_expr_c { 
+		add_feature("USES_FORM");
+		form_attrib.iswindow=0;
+		print_open_form($<str>2,$<ptr>4);
+		}
+	| OPEN_FORM open_form_name op_at_gui op_like_gui op_disable KW_USING formhandler_name {
+		print_open_form_gui($<str>2,$<str>3,$<str>4,$<str>5,$<str>7);
+	}
+;
+
+
+
+op_at_gui:{strcpy($<str>$,"0,0");} | AT op_absolute OPEN_BRACKET fgl_expr_x KW_COMMA fgl_expr_x CLOSE_BRACKET 
+	{sprintf($<str>$,"%s,2",$<str>2);}
+;
+
+op_like_gui: {strcpy($<str>$,"\"\"");} |
+	LIKE ident_or_var {strcpy($<str>$,$<str>2);}
+;
+
+op_absolute: {strcpy($<str>$,"0");}
+	| KW_ABSOLUTE {strcpy($<str>$,"1");}
+;
+
+open_session_cmd : 
+ OPEN_SESSION conn_id TO_DATABASE var_ident user_details
+ {
+add_feature("OPEN_SESSION");
+print_open_session($<str>2,$<str>4,$<str>5);
+
+}
+
+;
+open_cursor_cmd :
+	OPEN fetch_cursor_name 					{ print_open_cursor($<str>2,0); add_feature("OPEN_CURSOR");}
+	| OPEN fetch_cursor_name KW_USING ibind_var_list 	{ print_open_cursor($<str>2,1); add_feature("OPEN_CURSOR");}
+;
+
+
+user_details :  {sprintf($<str>$,"0,0");}
+	| AS USER char_or_var PASSWORD char_or_var
+              {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
+	| AS USER char_or_var KW_COMMA PASSWORD char_or_var
+              {sprintf($<str>$,"%s, %s",$<str>3,$<str>6);}
+	| AS char_or_var KW_COMMA char_or_var
+              {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
+;
+
+op_disable : {strcpy($<str>$,"0");} | DISABLE_PROGRAM {strcpy($<str>$,"1");}
+| DISABLE_ALL {strcpy($<str>$,"2");}
+;
+
+
+connect_cmd :
+CONNECT TO var_ident op_connect_as con_user_details {
+	add_feature("CONNECT");
+	print_open_session($<str>4,$<str>3,$<str>5);
+}
+;
+
+
+
+op_connect_as :
+        {strcpy($<str>$,"\"default_conn\"");}
+        | AS ident_or_var {strcpy($<str>$,$<str>2);}
+
+;
+
+con_user_details :
+        {sprintf($<str>$,"0,0");}
+        | AS USER char_or_var KW_USING char_or_var
+              {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
+        | USER char_or_var KW_USING char_or_var
+              {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
+;
+
+/* ======================= open.rule =========================== */
+

@@ -1,0 +1,97 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.18 2005-09-20 07:47:39 mikeaubury Exp $
+#
+
+ROOT		=../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ifeq "${YACC}" "no"
+	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
+#	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/fgl.yacc
+	Y_TAB_C_DEP	=
+    CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
+else
+	Y_TAB_C		=generated/y.tab.c
+	Y_TAB_C_DEP	=generated/fgl.yacc
+endif
+
+CFLAGS  +=-I..
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: generated/kw.c generated/single_words.rule generated/y.tab.c 
+
+generated/kw.h generated/kw.c generated/kw.yh: generated/single_words
+	${SH} bin/convkw_hash
+
+#generated/kw.c: generated/single_words
+#	${SH} bin/convkw
+
+generated/single_words: data/kwords
+	${SH} bin/convkw.single
+
+
+generated/single_words.rule: generated/single_words
+	${SH} bin/make_enable
+
+generated/fgl.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule sqlpack/infx/*.rule
+	${SH} bin/mkyacc
+
+
+# 4glc/rules/bin/mkyacc script builds "generated/fgl.yacc" files from several files
+# A Bison parser, will use fgl.yacc to create y.tab.c from it
+generated/y.tab.c: ${Y_TAB_C_DEP}
+ifeq "${YACC}" "no"
+	${CP} ${Y_TAB_C} .
+else
+	(cd generated; unset DEBUG; ${YACC}  -r all -d -v fgl.yacc)
+endif
+
+## ==================================================================
+##                           Clean targets
+## ==================================================================
+
+
+clean: clean.generated clean.data
+	${RM} y.tab.c *.bak bin/*.bak .\#*
+
+clean.generated:
+	(cd generated; ${RM} *.yacc *.c *.h *.yh *.rule *.output single_words)
+
+clean.data:
+	(cd data; ${RM} .\#* *.bak .*.bak)
+
+#----------------------------- EOF -------------------------------------

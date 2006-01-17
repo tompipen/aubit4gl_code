@@ -1,0 +1,19 @@
+/*
+=====================================================================
+                        Source: exit_prog.rule
+=====================================================================
+*/
+
+
+exit_prog_cmd :
+EXIT_PROGRAM {
+	add_feature("EXIT_PROGRAM");
+	print_exit_program(0);
+} 
+| EXIT_PROGRAM fgl_expr_c {
+	add_feature("EXIT_PROGRAM_EXPR");
+	print_exit_program($<ptr>2);
+} 
+;
+
+

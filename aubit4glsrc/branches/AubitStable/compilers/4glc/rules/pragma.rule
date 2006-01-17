@@ -1,0 +1,14 @@
+pragma: PRAGMA pragma_entry;
+
+
+pragma_entry: SYSTEM_4GL { compiling_system_4gl=1; }
+	| SQL_FEATURE NAMED { add_feature(upshift($<str>2));}
+	| EMULATE_INSERT_CURSOR_FOR NAMED { emulate_insert($<str>2); }
+	| COLUMN NAMED DOT NAMED IS_SERIAL { add_serial_column($<str>2,$<str>4); }
+	| REPLACE_STRING CHAR_VALUE WITH CHAR_VALUE { add_replace($<str>2,$<str>4); }
+	| STOP_REPLACE_STRING CHAR_VALUE  { drop_replace($<str>2); }
+	| IGNORE_FUNCTION  NAMED { A4GL_add_pointer ($<str>2, FUNCTION_IGNORE, (void *)1); }
+;
+
+
+

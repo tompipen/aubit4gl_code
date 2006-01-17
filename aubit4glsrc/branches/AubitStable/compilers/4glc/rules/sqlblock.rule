@@ -1,0 +1,50 @@
+sql_block_cmd : SQL {
+		sql_mode=1;
+		add_feature("SQL_BLOCK");
+		start_bind('i',0);
+		start_bind('o',0);
+	} sql_block END_SQL {
+			sql_mode=0;
+			print_sql_block_cmd($<sql_string>3);
+	}
+;
+
+
+sql_block :
+	sql_block_entry  {
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),0);
+	}
+	| sql_block sql_block_entry  {
+			if (strlen($<str>2)) {
+				$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,acl_strdup($<str>2),0);
+			} else {
+				$<sql_string>$=$<sql_string>1;
+			}
+	}
+;
+
+sql_block_entry:
+	SQL_TEXT  { strcpy($<str>$,$<str>1); }
+	| INTO obind_var_list { 
+		strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o')));
+		}
+	| DOLLAR var_ident_ibind_ss { strcpy($<str>$,$<sql_string>2); }
+	| sqlblock_kw
+	
+;
+
+sqlblock_kw : 
+	KW_COMMA {strcpy($<str>$,",");}
+	| OPEN_SQUARE {strcpy($<str>$,"[");}
+	| CLOSE_SQUARE {strcpy($<str>$,"]");}
+	| OPEN_BRACKET {strcpy($<str>$,"(");}
+	| CLOSE_BRACKET {strcpy($<str>$,")");}
+	| DOLLAR {strcpy($<str>$,"$");}
+	| DOT {strcpy($<str>$,".");}
+	| NAMED_GEN {strcpy($<str>$,$<str>1);}
+	| CONCAT_PIPES  {strcpy($<str>$,"||");}
+	| LESS_THAN_EQ  {strcpy($<str>$,"<=");}
+	| GREATER_THAN_EQ  {strcpy($<str>$,">=");}
+	| NOT_EQUAL {char buff[255];sprintf(buff,$<str>1); if (buff[0]=='<') {strcpy($<str>$,"<>");} else {strcpy($<str>$,"!=");} }
+;
+

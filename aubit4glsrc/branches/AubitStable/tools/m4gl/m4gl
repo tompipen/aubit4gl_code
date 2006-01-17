@@ -1,0 +1,49 @@
+:	"@(#)m4gl.sh	1.3 90/09/20"
+#
+#	Preprocess I4GL files with M4.
+#	Be very careful in changing the control script.
+#	There are far too many quotes for comfort.
+
+set -- `getopt o: $*`
+outfile=
+err=no
+while [ $# -gt 0 ]
+do
+	case "$1" in
+	-o)	outfile=">$2"; shift 2;;
+	--) shift; break;;
+	*)	err=yes; break;;
+	esac
+done
+
+if [ $# = 0 -o "$err" = yes ]
+then
+	echo "Usage: `basename $0 .sh` [-o file] file [...]" >&2
+	exit 1
+fi
+
+# All leading tabs in document are removed by the shell, not m4!
+cat - <<-'EOF' |
+define(i4gl_include,
+	`dnl
+	ifelse(eval(in_i4gl_include == 0), 1,
+		`popdef(`define')popdef(`index')popdef(`len')')dnl
+	pushdef(`x', `eval(in_i4gl_include + 1)')dnl
+	define(`in_i4gl_include', x)popdef(`x')dnl
+	ifelse(eval(in_i4gl_include == 1), 1, ``#i4gl_include($*)'
+											divert(-1)')dnl
+	include($*)
+	ifelse(eval(in_i4gl_include == 1), 1, `divert(0)')dnl
+	pushdef(`x', `eval(in_i4gl_include - 1)')dnl
+	define(`in_i4gl_include', x)popdef(`x')dnl
+	ifelse(eval(in_i4gl_include == 0), 1,
+		`pushdef(`define',``define'')dnl
+		pushdef(`index',``index'')dnl
+		pushdef(`len',``len'')')dnl
+	dnl')dnl
+define(in_i4gl_include, 0)dnl
+pushdef(`define',``define'')dnl
+pushdef(`index',``index'')dnl
+pushdef(`len',``len'')dnl
+EOF
+eval m4 - $* $outfile

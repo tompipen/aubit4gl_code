@@ -1,0 +1,14 @@
+Name: lib/libsql/sapdb
+Parent: aubit4glsrc
+Description: Prototype native mode SAP DB (MySQL MaxDB) plug-in
+Functionality: SQL
+Build: 
+Example: A4GL_SQLTYPE
+Depends: SAP DB (MySQL MaxDB) ESQL/C compiler
+Documentation: Write the plug-in
+Regressed:
+Maintainer: AF
+Status: 0
+Todo:
+Notes: Collection of examples for accessing SAP DB from ESQL/C. To be used to create plug-in
+

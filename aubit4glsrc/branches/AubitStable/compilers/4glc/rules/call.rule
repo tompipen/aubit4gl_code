@@ -1,0 +1,67 @@
+/*
+=====================================================================
+                        Source: call.rule
+=====================================================================
+*/
+
+
+call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
+;
+
+
+
+call_ext: function_call_expr opt_return {
+   		print_func_call($<ptr>1);
+		start_bind('i',0);
+	}
+   | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
+		print_form_is_compiled($<str>3,$<str>5,$<str>7);
+	}
+   | KW_CHANNEL_WRITE OPEN_BRACKET  fgl_expr_c KW_COMMA opt_cw_func_call_args CLOSE_BRACKET {
+		struct expr_str_list *p1;
+		p1=A4GL_new_prepend_ptr_list($<ptr_list>5,$<ptr>3);
+		print_call_shared(p1, "\"channel\"","\"write\"");
+ 	} opt_return 
+	
+   | pdf_functions
+;
+
+
+
+
+
+
+opt_return 	: {start_bind('i',0);strcpy($<str>$,"0");} 
+	| RETURNING ibind_var_list {strcpy($<str>$,$<str>2); }
+;
+
+
+
+opt_without_waiting: {$<integer_val>$=0;} | WITHOUT_WAITING {$<integer_val>$=1;}
+;
+
+
+opt_func_call_args : { $<ptr_list>$=0; }
+		|  func_expr_call_args { $<ptr_list>$=$<ptr_list>1; }
+;
+
+func_expr_call_args	: func_arg { $<ptr_list>$=A4GL_new_ptr_list($<ptr>1); }
+	| func_expr_call_args KW_COMMA func_arg { $<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3); }
+
+;
+
+
+
+func_arg :	fgl_expr_c  {$<ptr>$=$<ptr>1;}
+	| KW_NULL 		{$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);}
+;
+
+remote_host_name : CHAR_VALUE | identifier { sprintf($<str>$,"\"%s\"",$<str>1); }
+;
+
+remote_func_name : identifier 			{ sprintf($<str>$,"\"%s\"",$<str>1); } 
+		|  identifier DOT identifier 	{ sprintf($<str>$,"\"%s.%s\"",$<str>1,$<str>3); }
+;
+
+
+/* ============================= call.rule ========================== */

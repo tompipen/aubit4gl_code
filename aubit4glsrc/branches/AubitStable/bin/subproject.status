@@ -1,0 +1,43 @@
+Name: amake
+Parent: aubit4glsrc
+Description: Command line tool for compiling x4GL programs using simplified program specifications and multiple x4GL compilers
+Functionality: 4GL make front end
+Build: N/A (script)
+Example: see --help; extensively used in OneMaxx
+Depends: make; reads rules from incl/
+Documentation: See Documents sections on SF
+Regressed: used in regression tests and compiler build itself
+Maintainer: AF
+Status:  3
+Todo: code and rules clean-up
+Notes: Amake makefiles can be automatically generated using Doc4GL
+
+
+Name: aubit
+Parent: aubit4glsrc
+Description: Enables usage of compilers, tools and compiled programs without manually setting PATH, LD_LIBRARY_PATH and other configuration
+Functionality: Aubit tools wrapper script
+Build: N/A (script)
+Example: see --help
+Depends: bash
+Documentation: see --help
+Regressed: used in regression tests and by Amake
+Maintainer: AF
+Status: 4
+Todo:
+Notes: Shell script; needed especially for RPM package. If user sets needed environment by himself, it is not needed. Using it is however recommended for consistency
+
+
+Name: aubitbuild
+Parent: aubit4glsrc
+Description: Enambles fully automatic scheduled builds and uploads
+Functionality: Automatic build script
+Build: N/A (script)
+Example: make install.cron
+Depends: bash, wget, scp, ssh
+Documentation: See comments in code
+Regressed: used daily for automated builds
+Maintainer: AF
+Status: 3
+Todo:
+Notes: Shell script - primarily used for automatic nightly builds page

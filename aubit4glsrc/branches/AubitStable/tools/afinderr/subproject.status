@@ -1,0 +1,13 @@
+Name: afinderr
+Parent: aubit4glsrc
+Description: Enables user to look-op a corresponding error description, using a error message number
+Functionality: Informix-like finderr utility
+Build: make in home dir
+Example: see --help
+Depends: none (reads compiled help files - sources are in help/)
+Documentation: To be added to manual
+Regressed: none
+Maintainer: MA
+Status: 3
+Todo: Need to remove need for Informix help files
+Notes: User has to manually copy original Informix .iem message files to to the Aubit directory, in order to get standard error message descriptions

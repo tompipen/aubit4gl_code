@@ -1,0 +1,16 @@
+/*
+=====================================================================
+                        Source: error.rule
+=====================================================================
+*/
+
+
+error_cmd	: KW_ERROR fgl_expr_concat opt_attributes {
+			add_feature("ERROR");
+			print_error($<ptr_list>2, $<str>3,0);
+		}
+		| KW_ERROR fgl_expr_concat opt_attributes  WAIT_FOR_KEY { 
+			add_feature("ERROR_WAIT");
+			print_error($<ptr_list>2, $<str>3,1);
+			}
+;

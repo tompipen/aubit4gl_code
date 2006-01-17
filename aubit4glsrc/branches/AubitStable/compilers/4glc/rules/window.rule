@@ -1,0 +1,111 @@
+/*
+=====================================================================
+                        Source: window.rule
+=====================================================================
+*/
+
+
+op_clr_fields : {$<field_list>$=0;}| KWFIELD field_name_list_as_struct {
+	$<field_list>$=$<field_list>2;
+}
+;
+
+op_to_defs : 
+{ strcpy($<str>$,"0"); }
+| TO_DEFAULTS { strcpy($<str>$,"1"); }
+;
+
+clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"screen\""); add_feature("UI_CLEAR_SCREEN");}
+		|	CLEARWIN win_name { print_clr_window($<str>2); add_feature("UI_CLEAR_WINDOW");}
+		|	CLEARSTAT win_name { print_clr_window($<str>2); }
+		|	CLEARFORM { print_clr_form(0,0,"0"); add_feature("UI_CLEAR_FORM");}
+		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1"); }
+		|	CLEAR_X_FORM form_name op_clr_fields  op_to_defs { print_clr_form($<str>2,$<str>3,$<str>4); }
+		|	CLEAR field_name_list_as_struct op_to_defs {
+			print_clr_fields_fl($<field_list>2,$<str>3);
+				add_feature("UI_CLEAR_FIELD");
+		}
+;
+
+
+
+
+
+
+
+current_win_cmd	:	CWIS {
+	print_current_window("\"screen\"");
+		add_feature("CURRENT_WINDOW_IS_SCREEN");
+}
+		|	CURRENT_WINDOW_IS win_name 
+{
+		add_feature("CURRENT_WINDOW_IS");
+	print_current_window($<str>2);
+};
+
+window_type	:	fgl_expr_c ROWS KW_COMMA fgl_expr_c COLUMNS {
+				struct ow_open_window *p;
+				p=malloc(sizeof(struct ow_open_window));
+				p->type=OW_AT;
+				p->u_data.x_y.x=$<ptr>4;
+				p->u_data.x_y.y=$<ptr>1;
+				reset_attrib(&form_attrib); 
+
+				$<open_window_type>$=p;
+
+		}
+		|	KWFORM fgl_expr_c { 
+				struct ow_open_window *p;
+				p=malloc(sizeof(struct ow_open_window));
+				p->type=OW_FORM;
+				p->u_data.formname=$<ptr>2;
+				add_feature("USES_FORM"); 
+				reset_attrib(&form_attrib); 
+				$<open_window_type>$=p;
+
+		}
+;
+
+show_cmd : SHOW_WINDOW win_name {
+	print_show_window($<str>2);
+		add_feature("SHOW_WINDOW");
+	ADDMAP("Show Window",$<str>2); 
+}
+| SHOW_MENU menu_name KW_USING menu_handler op_mnfile {
+	add_feature("SHOW_MENU");
+	print_show_menu($<str>2,$<str>4,$<ptr>5);
+	ADDMAP("Call Menuhandler",$<str>4); 
+}
+;
+
+
+
+op_mnfile : { $<ptr>$=get_def_mn_file(); } | FROM fgl_expr_c {$<ptr>$=$<ptr>2;}
+;
+
+menu_name: identifier {ADDMAP("Use Menu",$<str>1); }
+;
+
+menu_handler: identifier;
+
+
+hide_cmd : KW_HIDE_WINDOW win_name {
+	print_hide_window($<str>2);
+		add_feature("HIDE_WINDOW");
+}
+;
+
+move_cmd : MOVE_WINDOW win_name TO fgl_expr_c KW_COMMA fgl_expr_c
+{
+		print_move_window($<str>2,$<ptr>4,$<ptr>6,0);
+		add_feature("MOVE_WINDOW");
+}
+          |  MOVE_WINDOW win_name BY fgl_expr_c KW_COMMA fgl_expr_c
+{
+		add_feature("MOVE_WINDOW");
+		print_move_window($<str>2,$<ptr>4,$<ptr>6,1);
+}
+;
+
+/* ========================== window.rule ========================= */
+

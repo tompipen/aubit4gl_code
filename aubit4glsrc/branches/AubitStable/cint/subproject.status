@@ -1,0 +1,14 @@
+Name: libA4GL_cint
+Parent: aubit4glsrc
+Description: Runs 4GL programs compiled to C with interpreter instead of compiling it with C compiler
+Functionality: Interpreted C run-time
+Build: lib makefile:  make libA4GL_cint.[so|dll]
+Example: See cint/runner script
+Depends: cint interpreter
+Documentation:
+Regressed: none, simple test in tools/test makefile
+Maintainer: MA
+Status: 2
+Todo:
+Notes: Needs checking - this code has not be touched in some time
+

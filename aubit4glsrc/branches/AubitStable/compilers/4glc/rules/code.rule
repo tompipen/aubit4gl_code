@@ -1,0 +1,25 @@
+/*
+=====================================================================
+                        Source: code.rule
+=====================================================================
+*/
+
+code_cmd : KW_CSTART emb_code KW_CEND
+{
+add_feature("EMBEDDED_C_CODE");
+}
+;
+
+emb_code : sql_code | c_code;
+sql_code : sql_code_part | sql_code sql_code_part
+;
+
+sql_code_part: SQLLINE { A4GL_lex_printc("%s",$<str>1); }
+;
+
+c_code : c_code_part | c_code c_code_part
+
+;
+
+c_code_part  : CLINE { A4GL_lex_printc("%s\n",$<str>1); }
+;

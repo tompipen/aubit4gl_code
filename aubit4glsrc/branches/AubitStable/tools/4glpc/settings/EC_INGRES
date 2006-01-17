@@ -1,0 +1,8 @@
+A4GL_EC_EXT=.sc
+A4GL_ESQL_TO_C_FIRST=Y
+A4GL_C_COMP=gcc 
+A4GL_EC_COMP=esqlc
+A4GL_PREC_COMP=esqlc
+A4GL_C_OPTS=
+A4GL_LINK=gcc 
+A4GL_LINK_OPTS=-L/opt/CA/IngresII/ingres/lib -L/lib -L/usr/lib -L/usr/local/lib -L$II_SYSTEM/ingres/lib -linterp.1 -lframe.1 -lq.1 -lcompat.1

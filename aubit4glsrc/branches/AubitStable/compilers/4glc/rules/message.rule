@@ -1,0 +1,34 @@
+message_cmd : KWMESSAGE { 
+	      } msg_next 
+;
+
+msg_next : fgl_expr_list_ptr {
+		print_message($<ptr_list>1,0,"0",0);
+		add_feature("MESSAGE");
+	}
+ 	| fgl_expr_list_ptr attributes_def op_msg_wait { 
+		print_message($<ptr_list>1,0,$<str>2,atoi($<str>3));
+		add_feature("MESSAGE");
+	} 
+ 	| fgl_expr_list_ptr msg_wait { 
+			print_message($<ptr_list>1, 0,"0",atoi($<str>2));
+			add_feature("MESSAGE");
+	} 
+	| fgl_expr_list_ptr gui_message 
+;
+
+gui_message:
+	 	gm_caption
+   		| gm_icon
+   		| gm_buttons
+   		| gm_disable_msg
+   		| gm_returning_msg 
+;
+
+
+
+op_msg_wait : {strcpy($<str>$,"0");} | WAIT_FOR_KEY {strcpy($<str>$,"1");} 
+;
+
+msg_wait :  WAIT_FOR_KEY {strcpy($<str>$,"1");} 
+;
