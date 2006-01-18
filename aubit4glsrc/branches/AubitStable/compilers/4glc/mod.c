@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.264 2005-12-20 22:01:52 mikeaubury Exp $
+# $Id: mod.c,v 1.264.2.1 2006-01-18 18:57:06 mikeaubury Exp $
 #
 */
 
@@ -4081,6 +4081,7 @@ fix_update_expr (int mode)
   char colname[256] = "";
   char buff[1000];
   char *ccol;
+  char *notab;
   strcpy (big_buff, "SET ");
 
   if (mode == 1)
@@ -4137,8 +4138,13 @@ fix_update_expr (int mode)
 	      A4GL_assertion (1, "How ?");
 	    }
 	}
+      notab=A4GLSQLCV_check_colname (current_upd_table, A4GL_4glc_get_gen (UPDCOL, a));
 
-      sprintf (buff, "%s=%s ", A4GLSQLCV_check_colname (current_upd_table, A4GL_4glc_get_gen (UPDCOL, a)), A4GL_4glc_get_gen (UPDVAL, a));
+      while (strchr(notab,'.')) {
+           notab=strchr(notab,'.')+1;
+      }
+
+      sprintf (buff, "%s=%s ", notab, A4GL_4glc_get_gen (UPDVAL, a));
 
       strcat (big_buff, buff);
     }
