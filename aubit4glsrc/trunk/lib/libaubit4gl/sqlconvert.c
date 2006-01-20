@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.74 2005-12-14 14:47:50 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.75 2006-01-20 10:54:19 mikeaubury Exp $
 #
 */
 
@@ -1038,6 +1038,10 @@ A4GLSQLCV_check_expr (char *s)
 {
   int b;
   static char *buff = 0;
+
+  //if (strcmp(s,"systables.tabid")) { A4GL_pause_execution(); }
+  A4GL_debug("%s\n",s);
+
   buff = realloc (buff, strlen (s) * 2 + 1000);
   strcpy (buff, s);
 

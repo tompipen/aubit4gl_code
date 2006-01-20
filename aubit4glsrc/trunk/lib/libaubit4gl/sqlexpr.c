@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.14 2005-11-28 20:01:40 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.15 2006-01-20 10:54:19 mikeaubury Exp $
 #
 */
 
@@ -649,6 +649,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       return acl_strdup (p->u_data.expression);
 
     case E_SLI_COLUMN_NOT_TRANSFORMED:
+      	A4GL_debug("Not transformed : %s",p->u_data.expression);
       return acl_strdup (p->u_data.expression);
 
     case E_SLI_OP:
@@ -1099,11 +1100,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_COLUMN:
       {
+	      char *rval;
 	char buff[50] = "";
 	if (p->u_data.column.subscript.i0 >= 1)
 	  {
-	    return
-	      acl_strdup (A4GLSQLCV_make_substr
+	      rval=acl_strdup (A4GLSQLCV_make_substr
 		      (A4GLSQLCV_check_colname_alias
 		       (p->u_data.column.tabname,
 			find_tabname_for_alias (select,
@@ -1112,18 +1113,22 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		       p->u_data.column.subscript.i0,
 		       p->u_data.column.subscript.i1,
 		       p->u_data.column.subscript.i2));
+	      A4GL_debug("returning %s\n",rval);
+	      return rval;
 	  }
 	A4GL_assertion (p->u_data.column.colname == 0,
 			"Column name was null pointer");
 	if (p->u_data.column.tabname)
 	  {
 	    char *orig;
+	    char *rval;
 	    orig = find_tabname_for_alias (select, p->u_data.column.tabname);
-	    return
-	      acl_strdup (A4GLSQLCV_check_colname_alias
-		      (p->u_data.column.tabname, orig,
-		       p->u_data.column.colname));
+	    rval=acl_strdup (A4GLSQLCV_check_colname_alias (p->u_data.column.tabname, orig, p->u_data.column.colname));
+	      A4GL_debug("returning %s\n",rval);
+	      return rval;
 	  }
+
+
 	if (select)
 	  {
 	    if (select->table_elements.ntables == 1)
@@ -1132,15 +1137,20 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		    (select->table_elements.tables[0].tabname,
 		     p->u_data.column.colname))
 		  {
-		    return
+			  rval=
 		      acl_strdup (A4GLSQLCV_check_colname
 			      (select->table_elements.tables[0].tabname,
 			       p->u_data.column.colname));
+	      A4GL_debug("returning %s\n",rval);
+			  return rval;
 		  }
 	      }
 	  }
-	return make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
+
+		rval = make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
 					 acl_strdup (buff), 0);
+	      A4GL_debug("returning %s\n",rval);
+		return rval;
       }
 
 

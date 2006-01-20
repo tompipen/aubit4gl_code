@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.38 2006-01-03 17:27:55 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.39 2006-01-20 10:50:34 mikeaubury Exp $
 #
 */
 
@@ -761,9 +761,9 @@ for (a=0;a<n;a++) {
 	} else {
 		i=0;
 	}
-	if (i) {
+	if (i && dir=='o') {
 		if(*i==-2) {
-		continue;
+			continue;
 		}
 	}
         if (dir=='o') {
