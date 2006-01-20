@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.14 2005-11-28 20:01:40 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.14.2.1 2006-01-20 11:01:02 mikeaubury Exp $
 #
 */
 
@@ -649,6 +649,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       return acl_strdup (p->u_data.expression);
 
     case E_SLI_COLUMN_NOT_TRANSFORMED:
+      	A4GL_debug("Not transformed : %s",p->u_data.expression);
       return acl_strdup (p->u_data.expression);
 
     case E_SLI_OP:
@@ -741,7 +742,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		  isdigit (p->u_data.expression[10]))
 		{		// Well - it looks like a date..
 
-		  sprintf (buff, "Cast(%s as DateTime)",
+		  SPRINTF1 (buff, "Cast(%s as DateTime)",
 			   p->u_data.expression);
 		  return acl_strdup (buff);
 
@@ -1099,11 +1100,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_COLUMN:
       {
+	      char *rval;
 	char buff[50] = "";
 	if (p->u_data.column.subscript.i0 >= 1)
 	  {
-	    return
-	      acl_strdup (A4GLSQLCV_make_substr
+	      rval=acl_strdup (A4GLSQLCV_make_substr
 		      (A4GLSQLCV_check_colname_alias
 		       (p->u_data.column.tabname,
 			find_tabname_for_alias (select,
@@ -1112,18 +1113,22 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		       p->u_data.column.subscript.i0,
 		       p->u_data.column.subscript.i1,
 		       p->u_data.column.subscript.i2));
+	      A4GL_debug("returning %s\n",rval);
+	      return rval;
 	  }
 	A4GL_assertion (p->u_data.column.colname == 0,
 			"Column name was null pointer");
 	if (p->u_data.column.tabname)
 	  {
 	    char *orig;
+	    char *rval;
 	    orig = find_tabname_for_alias (select, p->u_data.column.tabname);
-	    return
-	      acl_strdup (A4GLSQLCV_check_colname_alias
-		      (p->u_data.column.tabname, orig,
-		       p->u_data.column.colname));
+	    rval=acl_strdup (A4GLSQLCV_check_colname_alias (p->u_data.column.tabname, orig, p->u_data.column.colname));
+	      A4GL_debug("returning %s\n",rval);
+	      return rval;
 	  }
+
+
 	if (select)
 	  {
 	    if (select->table_elements.ntables == 1)
@@ -1132,21 +1137,26 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		    (select->table_elements.tables[0].tabname,
 		     p->u_data.column.colname))
 		  {
-		    return
+			  rval=
 		      acl_strdup (A4GLSQLCV_check_colname
 			      (select->table_elements.tables[0].tabname,
 			       p->u_data.column.colname));
+	      A4GL_debug("returning %s\n",rval);
+			  return rval;
 		  }
 	      }
 	  }
-	return make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
+
+		rval = make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
 					 acl_strdup (buff), 0);
+	      A4GL_debug("returning %s\n",rval);
+		return rval;
       }
 
 
     case E_SLI_VAR_REPLACE: {
 			char buff[256];
-			sprintf(buff,"@@VARIABLE[%s]@@",p->u_data.replace_var.replace_var);
+			SPRINTF1(buff,"@@VARIABLE[%s]@@",p->u_data.replace_var.replace_var);
 			return strdup(buff);
 		}
 
@@ -1489,8 +1499,9 @@ preprocess_sql_statement (struct s_select *select)
 
 		  if (strcmp (p->u_data.column.tabname, "") == 0)
 		    {
-		      printf ("No tabname - got %d tables...\n",
-			      select->table_elements.ntables);
+		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
+		      PRINTF ("No tabname - got %d tables...\n", select->table_elements.ntables);
+		      }
 		      if (select->table_elements.ntables == 1 && !dont_set_for_single_table)	// A
 			{
 			  p->u_data.column.tabname =
@@ -1500,8 +1511,9 @@ preprocess_sql_statement (struct s_select *select)
 
 		  if (strcmp (p->u_data.column.tabname, "") == 0)
 		    {
-		      printf
-			("WARNING: No table specified for expansion - column expansion not possible\n");
+		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
+		      		PRINTF ("WARNING: No table specified for expansion - column expansion not possible\n");
+		      }
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
@@ -1516,7 +1528,7 @@ preprocess_sql_statement (struct s_select *select)
 		    {		//
 		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
 			{
-			  fprintf (stderr,
+			  FPRINTF (stderr,
 				   "WARNING: Unable to locate %s in the database - column expansion not possible\n",
 				   tname);
 			}
@@ -1546,9 +1558,7 @@ preprocess_sql_statement (struct s_select *select)
 
 	  if (p->type == E_SLI_COLUMN_NOT_TRANSFORMED)
 	    {
-	      printf ("PREPROCESS\n");
 	      add_select_list_item_list (n, p);
-	      //printf("COLUMN (NT) '%s' '%s'\n");
 	      continue;
 	    }
 
@@ -2339,7 +2349,7 @@ save_temp_table (char *tabname,int select_into)
       A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) (select_into+2));
       if (f)
 	{
-	  fprintf (f, "%s %d\n", tabname,select_into);
+	  FPRINTF (f, "%s %d\n", tabname,select_into);
 	  fclose (f);
 	}
     }

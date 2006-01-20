@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.15 2006-01-20 10:54:19 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.16 2006-01-20 10:58:05 mikeaubury Exp $
 #
 */
 
@@ -742,7 +742,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		  isdigit (p->u_data.expression[10]))
 		{		// Well - it looks like a date..
 
-		  sprintf (buff, "Cast(%s as DateTime)",
+		  SPRINTF1 (buff, "Cast(%s as DateTime)",
 			   p->u_data.expression);
 		  return acl_strdup (buff);
 
@@ -1156,7 +1156,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_VAR_REPLACE: {
 			char buff[256];
-			sprintf(buff,"@@VARIABLE[%s]@@",p->u_data.replace_var.replace_var);
+			SPRINTF1(buff,"@@VARIABLE[%s]@@",p->u_data.replace_var.replace_var);
 			return strdup(buff);
 		}
 
@@ -1499,8 +1499,9 @@ preprocess_sql_statement (struct s_select *select)
 
 		  if (strcmp (p->u_data.column.tabname, "") == 0)
 		    {
-		      printf ("No tabname - got %d tables...\n",
-			      select->table_elements.ntables);
+		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
+		      PRINTF ("No tabname - got %d tables...\n", select->table_elements.ntables);
+		      }
 		      if (select->table_elements.ntables == 1 && !dont_set_for_single_table)	// A
 			{
 			  p->u_data.column.tabname =
@@ -1510,8 +1511,9 @@ preprocess_sql_statement (struct s_select *select)
 
 		  if (strcmp (p->u_data.column.tabname, "") == 0)
 		    {
-		      printf
-			("WARNING: No table specified for expansion - column expansion not possible\n");
+		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
+		      		PRINTF ("WARNING: No table specified for expansion - column expansion not possible\n");
+		      }
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
@@ -1526,7 +1528,7 @@ preprocess_sql_statement (struct s_select *select)
 		    {		//
 		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
 			{
-			  fprintf (stderr,
+			  FPRINTF (stderr,
 				   "WARNING: Unable to locate %s in the database - column expansion not possible\n",
 				   tname);
 			}
@@ -1556,9 +1558,7 @@ preprocess_sql_statement (struct s_select *select)
 
 	  if (p->type == E_SLI_COLUMN_NOT_TRANSFORMED)
 	    {
-	      printf ("PREPROCESS\n");
 	      add_select_list_item_list (n, p);
-	      //printf("COLUMN (NT) '%s' '%s'\n");
 	      continue;
 	    }
 
@@ -2349,7 +2349,7 @@ save_temp_table (char *tabname,int select_into)
       A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) (select_into+2));
       if (f)
 	{
-	  fprintf (f, "%s %d\n", tabname,select_into);
+	  FPRINTF (f, "%s %d\n", tabname,select_into);
 	  fclose (f);
 	}
     }

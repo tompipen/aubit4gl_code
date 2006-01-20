@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.75 2006-01-20 10:54:19 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.76 2006-01-20 10:58:05 mikeaubury Exp $
 #
 */
 
@@ -674,7 +674,7 @@ A4GLSQLCV_check_sql (char *s)
 	{
 	  FPRINTF (fout, "%s\n", buff);
 #ifdef CM
-	  printf ("IMMEDIATE %s\n", buff);
+	  PRINTF ("IMMEDIATE %s\n", buff);
 #endif
 	  fclose (fout);
 	}
@@ -2339,7 +2339,7 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
 	    {
 	      // Looks like an IF - THEN - ELSE 
 	      //
-	      sprintf (buff, "DECODE(%s,%s,%s)",
+	      SPRINTF3 (buff, "DECODE(%s,%s,%s)",
 		       get_select_list_item (select,
 					     i->elements[0]->u_data.
 					     sqlcaseelement.condition),
@@ -2352,7 +2352,7 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
 	      return buff;
 	    }
 	}
-      sprintf (buff, "casefunc(");
+      SPRINTF0 (buff, "casefunc(");
 
     }
   else
@@ -2364,12 +2364,12 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
 	  ii = &p->u_data.sqlcaseelement;
 	  if (ii->condition)
 	    {
-	      sprintf (small_buff1, " WHEN %s THEN ",
+	      SPRINTF1 (small_buff1, " WHEN %s THEN ",
 		       get_select_list_item (select, ii->condition));
 	    }
 	  else
 	    {
-	      sprintf (small_buff1, " ELSE ");
+	      SPRINTF0 (small_buff1, " ELSE ");
 	    }
 	  strcat (buff, small_buff1);
 	  strcpy (small_buff2, get_select_list_item (select, ii->response));
@@ -2440,7 +2440,7 @@ A4GLSQLCV_check_tablename (char *t)
       if (is_sqlserver_reserved_word (t))
 	{
 	  static char buff[256];
-	  sprintf (buff, "[%s]", t);
+	  SPRINTF1 (buff, "[%s]", t);
 	  return buff;
 	}
     }
