@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.280 2006-01-03 17:27:55 mikeaubury Exp $
+# $Id: compile_c.c,v 1.280.2.1 2006-01-25 17:02:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.280 2006-01-03 17:27:55 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.280.2.1 2006-01-25 17:02:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4748,7 +4748,10 @@ char *fldlist=0;
   printc ("*/");
   sio_id=get_sio_ids("INPUT");
   printc
-    ("{int _fld_dr= -100;int _exec_block= 0;char *fldname;char _sio_%d[%d]; char _inp_io_type='I';char *_sio_kw_%d=\"s_screenio\";", sio_id,sizeof (struct s_screenio) + 10,sio_id);
+    ("{\nint _fld_dr= -100;\nint _exec_block= 0;\nchar *fldname;\n");
+  printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
+  printc("char _inp_io_type='I';");
+  printc("char *_sio_kw_%d=\"s_screenio\";", sio_id);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
@@ -4756,34 +4759,34 @@ char *fldlist=0;
   ccc = print_bind_definition ('i');
   print_bind_set_value ('i');
   printc
-    ("SET(\"s_screenio\",_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
+    ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("if ((int)GET(\"s_screenio\",_sio_%d,\"currform\")==0) break;\n",sio_id);
-  printc ("SET(\"s_screenio\",_sio_%d,\"vars\",ibind);\n",sio_id);
-  printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",%d);\n",sio_id, attr);
-  printc ("SET(\"s_screenio\",_sio_%d,\"novars\",%d);\n",sio_id, ccc);
-  printc ("SET(\"s_screenio\",_sio_%d,\"help_no\",%s);\n",sio_id, helpno);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"vars\",ibind);\n",sio_id);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",%d);\n",sio_id, attr);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"novars\",%d);\n",sio_id, ccc);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"help_no\",%s);\n",sio_id, helpno);
 
-  printc ("SET(\"s_screenio\",_sio_%d,\"processed_onkey\",0);\n",sio_id);
-  printc ("SET(\"s_screenio\",_sio_%d,\"field_list\",0);\n",sio_id);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"processed_onkey\",0);\n",sio_id);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"field_list\",0);\n",sio_id);
 
-  printc ("SET(\"s_screenio\",_sio_%d,\"currentfield\",0);\n",sio_id);
-  printc ("SET(\"s_screenio\",_sio_%d,\"currentmetrics\",0);\n",sio_id);
-  printc ("SET(\"s_screenio\",_sio_%d,\"mode\",%d+%s);\n",sio_id, MODE_INPUT, defs);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"currentfield\",0);\n",sio_id);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"currentmetrics\",0);\n",sio_id);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"mode\",%d+%s);\n",sio_id, MODE_INPUT, defs);
   if (byname)
     {
       printc
-	("SET(\"s_screenio\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),",sio_id,sio_id,sio_id);
+	("SET(\"s_screenio\",&_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),",sio_id,sio_id,sio_id);
       print_field_bind (ccc);
       printc
-	(",0)); if ((int)GET(\"s_screenio\",_sio_%d,\"nfields\")==-1) break;\n",sio_id);
+	(",0)); if ((int)GET(\"s_screenio\",&_sio_%d,\"nfields\")==-1) break;\n",sio_id);
     }
   else
     {
       printc
-	("SET(\"s_screenio\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),%s,0));\n", sio_id,sio_id,sio_id,
+	("SET(\"s_screenio\",&_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",&_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",&_sio_%d,\"currform\"),%s,0));\n", sio_id,sio_id,sio_id,
 	 fldlist);
       printc
-	("if ((int)GET(\"s_screenio\",_sio_%d,\"nfields\")==-1) break;\n",sio_id);
+	("if ((int)GET(\"s_screenio\",&_sio_%d,\"nfields\")==-1) break;\n",sio_id);
     }
   printc
     ("{int _sf; _sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) {_fld_dr=0;break;}\n}\n",sio_id);

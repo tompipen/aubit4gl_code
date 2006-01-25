@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.132 2005-08-19 12:40:12 mikeaubury Exp $
+# $Id: ioform.c,v 1.132.2.1 2006-01-25 17:02:33 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.132 2005-08-19 12:40:12 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.132.2.1 2006-01-25 17:02:33 mikeaubury Exp $";
 #endif
 
 /**
@@ -2690,6 +2690,9 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   int xerrno;
   
   b = A4GL_get_field_width_w (field);
+  if (strlen(buff)>=sizeof(buff2)) {
+		  	A4GL_assertion(1,"Buffer too small");
+  }
   strcpy (buff2, buff);
   a = strlen (buff2);
   b = A4GL_get_field_width_w (field);
@@ -2703,7 +2706,13 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
     {
       A4GL_debug ("No padding required '%s'", buff);
     }
+  A4GL_debug("setting field buffer to %s",buff2);
+
   xerrno = set_field_buffer (field, nbuff, buff2);
+
+  if (xerrno!=E_OK) {
+	  A4GL_debug("ERROR SETTING FIELD BUFFER %d\n",xerrno);
+  }
   A4GL_debug ("Setting %p %d to %s (%d)", field, nbuff, buff2, xerrno);
   A4GL_debug ("field buffer set to '%s'", field_buffer (field, 0));
   A4GL_debug ("Currwin=%p", currwin);
