@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.281 2006-01-25 16:51:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.282 2006-01-25 19:47:12 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.281 2006-01-25 16:51:10 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.282 2006-01-25 19:47:12 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4710,7 +4710,7 @@ LEXLIB_print_input_2 (char *s)
   printc ("\n}\n");
   sio_id=get_sio_ids("INPUT");
   pop_blockcommand ("INPUT");
-  printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",sio_id,sio_id);
+  printc("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",sio_id,sio_id);
 
   printc ("}\n");
 
@@ -4749,6 +4749,7 @@ char *fldlist=0;
   sio_id=get_sio_ids("INPUT");
   printc
     ("{\nint _fld_dr= -100;\nint _exec_block= 0;\nchar *fldname;\n");
+  ccc = print_bind_definition ('i');
   printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
   printc("char _inp_io_type='I';");
   printc("char *_sio_kw_%d=\"s_screenio\";", sio_id);
@@ -4756,11 +4757,10 @@ char *fldlist=0;
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
   printc ("/* input by name */");
-  ccc = print_bind_definition ('i');
   print_bind_set_value ('i');
   printc
     ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
-  printc ("if ((int)GET(\"s_screenio\",_sio_%d,\"currform\")==0) break;\n",sio_id);
+  printc ("if ((int)GET(\"s_screenio\",&_sio_%d,\"currform\")==0) break;\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"vars\",ibind);\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",%d);\n",sio_id, attr);
   printc ("SET(\"s_screenio\",&_sio_%d,\"novars\",%d);\n",sio_id, ccc);
@@ -4775,7 +4775,7 @@ char *fldlist=0;
   if (byname)
     {
       printc
-	("SET(\"s_screenio\",&_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),",sio_id,sio_id,sio_id);
+	("SET(\"s_screenio\",&_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",&_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",&_sio_%d,\"currform\"),",sio_id,sio_id,sio_id);
       print_field_bind (ccc);
       printc
 	(",0)); if ((int)GET(\"s_screenio\",&_sio_%d,\"nfields\")==-1) break;\n",sio_id);
@@ -6378,8 +6378,8 @@ real_print_expr_list(expr);
 
   for (z=ccnt;z>=0;z--) {
 	s=command_type_for_stack_pos(z);
-    	if (strcmp(s,"INPUT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
-    	if (strcmp(s,"CONSTRUCT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
+    	if (strcmp(s,"INPUT")==0)  { printc("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
+    	if (strcmp(s,"CONSTRUCT")==0)  { printc("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
     	if (strcmp(s,"DISPLAY")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
     	if (strcmp(s,"PROMPT")==0)  { printc("A4GL_finish_screenio(_sio_%d,_sio_kw_%d);",get_sio_ids(s),get_sio_ids(s)); }
     	//if (strcmp(s,"MENU")==0)  { printc("A4GL_finish_screenio(_m,\"MENU\");",get_sio_ids(s),get_sio_ids(s)); }
