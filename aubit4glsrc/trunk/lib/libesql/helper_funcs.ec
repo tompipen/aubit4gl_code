@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.39 2006-01-20 10:50:34 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.40 2006-01-25 16:51:09 mikeaubury Exp $
 #
 */
 
@@ -478,9 +478,7 @@ A4GL_debug("Copy char : y=%d",y);
 A4GL_debug("Copy char : p_indicat=%p",p_indicat);
 
 
-if (p_indicat) {
-	A4GL_debug("Copy char : *p_indicat=%p",*p_indicat);
-}
+//if (p_indicat && dir='o') { A4GL_debug("Copy char : *p_indicat=%p",*p_indicat); }
 
 	if (mode=='i') {
 		A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
@@ -766,9 +764,21 @@ for (a=0;a<n;a++) {
 			continue;
 		}
 	}
+
+	if (dir=='i') {
+		if (i) {
+			*i=0;
+		}
+		if (A4GL_isnull(a4gl_bind[a].dtype&DTYPE_MASK,a4gl_bind[a].ptr)) {
+			*i=-1;
+		}
+	}
+
+
         if (dir=='o') {
 		A4GL_setnull (a4gl_bind[a].dtype &DTYPE_MASK, (char *) a4gl_bind[a].ptr, a4gl_bind[a].size);
         }
+
 	size=a4gl_bind[a].size;
 	x=a4gl_bind[a].start_char_subscript;
 	y=a4gl_bind[a].end_char_subscript;
