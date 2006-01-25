@@ -23,6 +23,7 @@ define mv_export_symbols char(256)
 define mv_import_symbols char(256)
 define mv_objects char(20480)
 define mv_errfile char(256)
+define mv_warnfile char(256)
 define mv_newest_obj char(256)
 DEFINE mv_output_type CHAR(20)
 define mv_dump_strings integer
@@ -1012,6 +1013,9 @@ if mv_system4gl then
 end if
 
 let mv_errfile=lv_base clipped,get_ext("ERR")
+let mv_warnfile=lv_base clipped,get_ext("WARN")
+
+
 let lv_runstr=lv_runstr clipped," ",lv_fname clipped," 2> ",mv_errfile
 
 if mv_verbose>=2 then
@@ -1031,6 +1035,8 @@ define p_filename char(512)
 define p_runstr char(10240)
 define lv_runstr char(10240)
 define lv_errsize integer
+
+#call remove_file(mv_warnfile)
 
 if p_status<0 then
 	let p_status=1
@@ -1053,6 +1059,7 @@ if lv_errsize>0 then
 		if mv_verbose>4 then
 			call head_file(mv_errfile,55)
 		end if
+		call rename_file(mv_errfile,mv_warnfile)
 	end if
 end if
 
@@ -1105,9 +1112,14 @@ if mv_makecompile then
 end if
 
 if 0 then
+
 let mv_errfile=lv_base clipped,get_ext("ERR")
+
+let mv_warnfile=lv_base clipped,get_ext("WARN")
 let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped," 2> ",mv_errfile
 else
+
+let mv_warnfile=lv_base clipped,get_ext("WARN")
 let mv_errfile=lv_base clipped,get_ext("ERR")
 let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",lv_fname clipped," 2> ",mv_errfile
 end if
@@ -1150,6 +1162,7 @@ if mv_makecompile then
 end if
 
 let mv_errfile=lv_base clipped,get_ext("ERR")
+let mv_warnfile=lv_base clipped,get_ext("WARN")
 if mv_verbose>=4 then
 	display "compile_c=",mv_compile_c clipped
 	display "compile_c_opts=",mv_compile_c_opts clipped
@@ -1211,6 +1224,7 @@ DISPLAY "RUN_COMP_ESQL :",lv_fname clipped," ",lv_new clipped
 end if
 
 
+let mv_warnfile=lv_base clipped,get_ext("WARN")
 let mv_errfile=lv_base clipped,get_ext("ERR")
 
 let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped
@@ -1250,6 +1264,7 @@ end if
 
 
 
+let mv_warnfile=lv_output clipped,get_ext("WARN")
 let mv_errfile=lv_output clipped,get_ext("ERR")
 
 let lv_runstr=mv_link clipped," ",mv_link_opts clipped," "
@@ -1325,6 +1340,18 @@ end if
 		let mv_newest_obj=lv_obj
 	end if
 end function
+
+
+function rename_file(m1, m2)
+define m1 char(255)
+define m2 char(255)
+define lv_str char(1000)
+define a integer
+let lv_str=fgl_getenv("A4GL_CP_CMD")," ",m1 clipped, " ",m2 clipped
+run lv_str 
+
+end function
+
 
 
 function tail_file(mv_file,n)
