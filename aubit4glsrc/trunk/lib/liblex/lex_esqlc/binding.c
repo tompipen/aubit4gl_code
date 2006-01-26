@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.50 2005-12-05 20:52:37 mikeaubury Exp $
+# $Id: binding.c,v 1.51 2006-01-26 18:28:26 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.50 2005-12-05 20:52:37 mikeaubury Exp $";
+		"$Id: binding.c,v 1.51 2006-01-26 18:28:26 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -837,7 +837,7 @@ static char buff_ind[255];
 	  	SPRINTF1 (buff,"money _vi_%d;", a);
 	  } else {
 	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
-	  		SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+	  		SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype), a);
 		} else {
 	  		SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 		}
