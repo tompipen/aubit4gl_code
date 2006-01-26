@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.129 2005-12-20 15:00:46 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.129.2.1 2006-01-26 20:06:59 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.129 2005-12-20 15:00:46 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.129.2.1 2006-01-26 20:06:59 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -763,7 +763,9 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 	//printc("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
 	//print_close('D',"");
 	//printc("}");
-A4GL_save_sql("CONNECT TO '%s'", v);
+	//
+	A4GL_save_sql("CONNECT TO '%s'", v);
+
   	printc ("\nEXEC SQL CONNECT TO  '%s' AS %s", v,s);
 	if (strlen(user)) {
 		printc("USER :_u USING :_p");
@@ -1120,7 +1122,7 @@ A4GL_save_sql("DATABASE $s",0);
       switch (esql_type ())
 	{
 	case 1: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
-	case 2: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
+	case 2: printc ("\nEXEC SQL CONNECT TO :s AS 'default';\n"); break;
 	case 3: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
 	case 4: printc ("\nEXEC SQL CONNECT :s ;\n"); break;
 	}
