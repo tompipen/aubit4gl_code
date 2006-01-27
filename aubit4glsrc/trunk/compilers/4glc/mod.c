@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.265 2006-01-18 18:45:05 mikeaubury Exp $
+# $Id: mod.c,v 1.266 2006-01-27 16:49:48 mikeaubury Exp $
 #
 */
 
@@ -278,7 +278,7 @@ struct cmds
 }
 command_stack[200];
 
-extern int ccnt;		/* in lexer.c */
+//extern int ccnt;		/* in lexer.c */
 
 
 /** Array index to the last variable filled in the variables array  */
@@ -441,7 +441,9 @@ int
 isin_command (char *cmd_type)
 {
   int z;
-  if (ccnt == 0)
+  int ccnt;
+  ccnt=get_ccnt();
+  if (ccnt== 0)
     {
       return 0;
     }
@@ -484,6 +486,8 @@ get_sio_id (char *cmd_type)
   int a;
   int max_id = 0;
   int anymode = 0;
+  int ccnt;
+  ccnt=get_ccnt();
   for (a = 0; a < 10; a++)
     stack_ids[a] = 0;
 /* Are we looking for anything ? */
@@ -1716,6 +1720,8 @@ push_menu_title (char *s)
 int
 push_blockcommand (char *cmd_type)
 {
+int ccnt;
+ccnt=get_ccnt();
   A4GL_debug ("START BLOCK %s", cmd_type);
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
   A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);
@@ -1737,6 +1743,7 @@ push_blockcommand (char *cmd_type)
   A4GL_debug (" Added new block");
   ccnt++;
   file_out_indent (ccnt);
+  set_ccnt(ccnt);
   return command_stack[ccnt].block_no;
 }
 
@@ -1750,6 +1757,8 @@ void
 add_continue_blockcommand (char *cmd_type)
 {
   int a;
+  int ccnt;
+  ccnt=get_ccnt();
 
   /* more checks here ! */
 
@@ -1795,6 +1804,8 @@ iscontinuecmd (char *s)
 void
 continue_blockcommand (char *cmd_type)
 {
+	int ccnt;
+	ccnt=get_ccnt();
   //int a;
 
   //char err[80];
@@ -1813,13 +1824,14 @@ void
 pop_blockcommand (char *cmd_type)
 {
   int a;
-
+  int ccnt;
   char err[80];
   A4GL_debug ("END BLOCK %s", cmd_type);
-
+  ccnt=get_ccnt();
   /* more checks here ! */
 
   ccnt--;
+  set_ccnt(ccnt);
   file_out_indent (ccnt);
   if (command_stack[ccnt].block_no > 0)
     {
@@ -1863,9 +1875,10 @@ int
 in_command (char *cmd_type)
 {
 
+	int ccnt;
   int z;
   char buff[255];
-
+ccnt=get_ccnt();
   A4GL_debug ("Check for %s %d \n", cmd_type, ccnt);
 
   if (ccnt == 0)
@@ -2309,7 +2322,8 @@ continue_loop (char *cmd_type)
   int a;
   int g = 0;
   char *internal_cmd_type;
-
+int ccnt;
+ccnt=get_ccnt();
 
 
 /* We have to do some messing around here...*/
@@ -2377,8 +2391,10 @@ void
 exit_loop (char *cmd_type)
 {
   int a;
+  int ccnt;
   int g = 0;
   int printed = 0;
+  ccnt=get_ccnt();
 
   for (a = ccnt - 1; a >= 0; a--)
     {
@@ -4282,12 +4298,16 @@ do_print_menu_block_end (int mn)
 int
 get_blk_no (void)
 {
+	int ccnt;
+	ccnt=get_ccnt();
   return command_stack[ccnt - 1].block_no;
 }
 
 int
 get_blk_no_1 (void)
 {
+	int ccnt;
+	ccnt=get_ccnt();
   return command_stack[ccnt - 2].block_no;
 }
 

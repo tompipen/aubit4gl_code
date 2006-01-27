@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.282 2006-01-25 19:47:12 mikeaubury Exp $
+# $Id: compile_c.c,v 1.283 2006-01-27 16:50:00 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.282 2006-01-25 19:47:12 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.283 2006-01-27 16:50:00 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -164,7 +164,7 @@ dll_import struct rep_structure rep_struct;
 extern struct pdf_rep_structure pdf_rep_struct;
 extern struct form_attr form_attrib;
 extern int menu_cnt;
-extern int ccnt;					/**< Block counter - defined in lexer.c */
+//extern int ccnt;					/**< Block counter - defined in lexer.c */
 extern char mmtitle[132][132];		/** Menu titles */
 extern int report_stack_cnt;
 extern int report_cnt;
@@ -255,6 +255,8 @@ static void
 print_space (void)
 {
   static char buff[256];
+  int ccnt;
+  ccnt=get_ccnt();
   memset (buff, ' ', 255);
   buff[ccnt * 3] = 0;
   FPRINTF (outfile, "%s", buff);
@@ -6365,6 +6367,8 @@ LEXLIB_print_return (t_expr_str_list *expr) {
 int z;
 int n;
 char *s;
+int ccnt;
+ccnt=get_ccnt();
 
 
 

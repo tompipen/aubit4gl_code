@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.111 2005-12-05 20:31:07 mikeaubury Exp $
+# $Id: resource.c,v 1.112 2006-01-27 16:50:01 mikeaubury Exp $
 #
 */
 
@@ -139,11 +139,13 @@ struct str_resource builtin_resource[] = {
 #if (defined (__MINGW32__))
   {"AUBITETC", _AUBITETC_},	/* points to default location of Aubit config files as determined by Autoconf in variable @AUBITRC@ */
   {"A4GL_MV_CMD", "move"},
+  {"A4GL_CP_CMD", "cp"},
 #else
 //TODO: should we use _AUBITETC_ here too? Not all users installing Aubit will have sufficient 
 //privileges to install aubitrc under /etc
   {"AUBITETC", "/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
   {"A4GL_MV_CMD", "mv"},
+  {"A4GL_CP_CMD", "cp"},
 #endif
   {"A4GL_RESERVEWORDS", "NO"},
   {"DBDATE", "MDY4/"},

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.115 2005-11-27 12:11:43 mikeaubury Exp $
+# $Id: lexer.c,v 1.116 2006-01-27 16:49:47 mikeaubury Exp $
 #*/
 
 /**
@@ -149,7 +149,7 @@ extern struct translate_string *translate_list;
 extern int translate_list_cnt;
 extern int chk4var;
 
-extern int ccnt;		/* defined in others.c */
+//extern int ccnt;		/* defined in others.c */
 static void turn_state_all (int kw, int v, int arr);
 static int get_hash_val (char *s);
 int current_yylex_state;
@@ -1515,7 +1515,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   lastword = buff;
   lastlex = a;
-  A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d", yylineno, ccnt, a, buff, xccode, fpos, chk4var);
+  A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d", yylineno, get_ccnt(), a, buff, xccode, fpos, chk4var);
   word_cnt = 0;
   if (file_out) { 
 		char*buff2;
