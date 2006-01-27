@@ -9,12 +9,12 @@ struct s_table_join
 };
 
 
-struct s_select_list_item *joins[10][10];
+static struct s_select_list_item *joins[10][10];
 
 
 
-int ntables;
-struct s_table_join tables[200];
+static int ntables;
+static struct s_table_join tables[200];
 
 static int
 xfind_table (char *s)

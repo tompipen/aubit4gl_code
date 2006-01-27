@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.58 2005-11-17 09:31:58 mikeaubury Exp $
+# $Id: others.c,v 1.59 2006-01-27 11:47:38 mikeaubury Exp $
 #
 */
 
@@ -61,15 +61,15 @@
 also referenced from 4glc.c and other places.
 Move it to a4gl_libaubit4gl.h
 */
-char *outputfilename;
-int ccnt = 0;			/* was in lexer.c */
+static char *outputfilename;
+static int ccnt = 0;			/* was in lexer.c */
 
 
 
-struct struct_form the_form;
-struct struct_scr_field *fld;
-int as_c = 1;
-int m_lastkey = 0;
+static struct struct_form the_form;
+static struct struct_scr_field *fld;
+static int as_c = 1;
+static int m_lastkey = 0;
 
 
 /*

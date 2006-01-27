@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.76 2006-01-20 10:58:05 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.77 2006-01-27 11:47:38 mikeaubury Exp $
 #
 */
 
@@ -57,11 +57,11 @@ static char *A4GL_space_out (char *s);
 /* empty string that can be pointed to */
 char empty[] = "";
 char *CV_matches (char *typ, char *string, char *esc);
-int set_sql_conv_success;
+static int set_sql_conv_success;
 int is_sqlserver_reserved_word (char *s);
 static void load_column_mappings_i (char *ptr);
 
-char *cvsql_names[] = {
+static char *cvsql_names[] = {
   "CVSQL_NONE",
   "CVSQL_REPLACE",
   "CVSQL_REPLACE_EXPR",

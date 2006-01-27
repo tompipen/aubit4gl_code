@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.25 2005-08-17 13:43:14 mikeaubury Exp $
+# $Id: datatypes.c,v 1.26 2006-01-27 11:47:38 mikeaubury Exp $
 #
 */
 
@@ -93,7 +93,7 @@ struct s_datatype
 
 
 
-struct s_datatype dtypes[MAX_DTYPE];
+static struct s_datatype dtypes[MAX_DTYPE];
 
 static void *libptr = 0;
 
