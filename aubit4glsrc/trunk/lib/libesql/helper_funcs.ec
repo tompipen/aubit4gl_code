@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.40 2006-01-25 16:51:09 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.41 2006-01-27 15:16:32 mikeaubury Exp $
 #
 */
 
@@ -769,7 +769,7 @@ for (a=0;a<n;a++) {
 		if (i) {
 			*i=0;
 		}
-		if (A4GL_isnull(a4gl_bind[a].dtype&DTYPE_MASK,a4gl_bind[a].ptr)) {
+		if (i&&A4GL_isnull(a4gl_bind[a].dtype&DTYPE_MASK,a4gl_bind[a].ptr)) {
 			*i=-1;
 		}
 	}
