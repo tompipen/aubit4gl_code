@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.59 2006-01-27 11:47:38 mikeaubury Exp $
+# $Id: others.c,v 1.60 2006-01-27 16:03:38 mikeaubury Exp $
 #
 */
 
@@ -61,15 +61,17 @@
 also referenced from 4glc.c and other places.
 Move it to a4gl_libaubit4gl.h
 */
-static char *outputfilename;
+
+
+ char *outputfilename;
 static int ccnt = 0;			/* was in lexer.c */
 
 
 
-static struct struct_form the_form;
-static struct struct_scr_field *fld;
-static int as_c = 1;
-static int m_lastkey = 0;
+struct struct_form the_form;
+ struct struct_scr_field *fld;
+int as_c = 1;
+int m_lastkey = 0;
 
 
 /*
@@ -90,6 +92,15 @@ static int m_lastkey = 0;
 =====================================================================
 */
 
+
+
+int get_ccnt() {
+	return ccnt;
+}
+
+void set_ccnt(int a) {
+	ccnt=a;
+}
 
 /**
  * Get the laskey typed by the user.

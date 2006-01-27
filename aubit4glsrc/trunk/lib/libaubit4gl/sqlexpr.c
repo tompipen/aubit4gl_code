@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.16 2006-01-20 10:58:05 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.17 2006-01-27 16:03:38 mikeaubury Exp $
 #
 */
 
@@ -1586,10 +1586,10 @@ preprocess_sql_statement (struct s_select *select)
 	  int b;
 	  if (p->u_data.column.tabname == 0)
 	    {
-	      A4GL_debug ("No tabname for column : %s %d\n",
-			  p->u_data.column.colname,
-			  select->table_elements.ntables);
-	      for (b = 0; b < select->table_elements.ntables; b++)
+		    int nelements;
+		    nelements=select->table_elements.ntables;
+	      A4GL_debug ("No tabname for column : %s %d\n", p->u_data.column.colname, select->table_elements.ntables);
+	      for (b = nelements-1; b >=0 ; b--) 
 		{
 		  char *t;
 		  A4GL_debug ("Looking in %s\n",
@@ -1599,8 +1599,10 @@ preprocess_sql_statement (struct s_select *select)
 		       p->u_data.column.colname))
 		    {
 		      t = select->table_elements.tables[b].alias;
-		      if (!t)
-			t = select->table_elements.tables[b].tabname;
+		      if (!t) {
+			      		t = select->table_elements.tables[b].tabname;
+			}
+		      
 		      p->u_data.column.tabname = acl_strdup (t);
 		      A4GL_debug ("Setting to %s\n", t);
 		      break;
