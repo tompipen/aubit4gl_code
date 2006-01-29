@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.283 2006-01-27 16:50:00 mikeaubury Exp $
+# $Id: compile_c.c,v 1.284 2006-01-29 16:39:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.283 2006-01-27 16:50:00 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.284 2006-01-29 16:39:11 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -76,13 +76,14 @@
 */
 
 #define FGL_PLUS_PLUS
+int get_ccnt(void);
 static void print_define_char (char *var, int size, int isstatic_extern);
 static void print_define (char *varstring, int isstatic_extern);
 static void print_start_record (int isstatic_extern, char *varname, char *arrsize, int level);
 static void print_end_record (char *vname, char *arrsize, int level);
 int is_system_variable (char *s);
 int isin_command (char *cmd_type);
-static int print_bind_expr_portion (void *ptr, char i, int portion);
+//static int print_bind_expr_portion (void *ptr, char i, int portion);
 char *rettype_integer (int n);
 
 int suppress_lines=0;
@@ -120,7 +121,6 @@ static void print_returning (void);
 
 #include "field_handling.h"
 
-int print_bind_dir_definition(char i,struct binding_comp *bind, int bindcnt) ;
 void print_Constant_1 (char *name, struct constant_data *c);
 
 int rep_print_code;
@@ -232,7 +232,7 @@ void printh (char *fmt, ...);
 
 void add_function_to_header (char *identifier, int parms,char *is_static);
 char *get_namespace (char *s);
-void print_init_var (char *name, char *prefix, int alvl);
+void print_init_var (char *name, char *prefix, int alvl,int explicit);
 void printcomment (char *fmt, ...);
 //char *field_name_list_as_char(struct fh_field_list *fl);
 //void LEXLIB_print_onaction_1 (char *key_list_str);
@@ -1786,8 +1786,8 @@ real_print_expr (struct expr_str *ptr)
 		   extern long a_ibind;
 		   extern long a_ebind;
 		struct expr_bound_fcall *f;
-		int ni;
-		int ne;
+		//int ni;
+		//int ne;
 		f=ptr->u_data.expr_bound_fcall;
 		ibindcnt=f->nibind;
 		ebindcnt=f->nebind;
@@ -1900,6 +1900,11 @@ real_print_expr (struct expr_str *ptr)
 	    }
 	  printc ("A4GL_pushop(OP_MATCHES);A4GL_pushop(OP_NOT);");
 	  break;
+
+
+	case ET_EXPR_PROMPT_RESULT:
+	  	A4GL_assertion(1,"Prompt Result not required here..");
+		break;
 
 	case ET_EXPR_OP_LIKE:
 	  real_print_expr (ptr->u_data.expr_op->left);
@@ -3453,6 +3458,7 @@ LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
   print_returning();
 }
 
+#ifdef OBSOLETE
 void
 LEXLIB_print_call_shared_bound (char *libfile, char *funcname)
 {
@@ -3468,6 +3474,7 @@ int ni,no;
   printc("}");
 print_reset_state_after_call();
 }
+#endif
 
 
 /*
@@ -3489,6 +3496,7 @@ LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) {
 
 
 
+#ifdef OBSOLETE
 /**
  * Print the C implementation of a call to a remote function (RPC call).
  *
@@ -3509,7 +3517,9 @@ LEXLIB_print_call_external (t_expr_str_list *expr, char *host, char *func, char 
 
 print_reset_state_after_call();
 }
+#endif
 
+#ifdef OBSOLETE
 /**
  * Print the C implementation of te last part of a call to a remote function.
  */
@@ -3518,6 +3528,7 @@ LEXLIB_print_end_call_external (void)
 {
   printc ("\n");
 }
+#endif
 
 /**
  * Print the C implementation to the CASE 4gl statement.
@@ -4373,7 +4384,7 @@ split_arrsizes (char *s, int *arrsizes)
 }
 
 void
-print_init_var (char *name, char *prefix, int alvl)
+print_init_var (char *name, char *prefix, int alvl,int explicit)
 {
   int d;
   //int a;
@@ -4465,7 +4476,7 @@ print_init_var (char *name, char *prefix, int alvl)
 	}
 
       if (dont_print==0)
-	print_init_var (ptr, prefix2, alvl);
+	print_init_var (ptr, prefix2, alvl,explicit);
 
       if (printing_arr && dont_print==0)
 	{
@@ -4532,7 +4543,24 @@ strcpy(prefix3,prefix2);
 	}
     }
 
-  if (dont_print==0) printc ("A4GL_setnull(%d,&%s,0x%x);\n", d & 0xffff, prefix2, size);
+  if (dont_print==0) {
+	  int d1;
+	  d1=d&DTYPE_MASK;
+	  if (explicit==0 && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY)) {
+		  if (d1==DTYPE_INT||d1==DTYPE_SMINT) {
+				printc("%s=0;",prefix2);
+		  } else {
+			if (d1==DTYPE_MONEY||d1==DTYPE_DECIMAL) {
+				printc("A4GL_push_int(0);");
+				printc("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
+			} else {
+				printc("%s=0.0;",prefix2);
+			}
+		  }
+	  } else {
+	  	printc ("A4GL_setnull(%d,&%s,0x%x);\n", d & 0xffff, prefix2, size);
+	  }
+  }
 
   if (printing_arr && !dont_print)
     {
@@ -4550,7 +4578,7 @@ strcpy(prefix3,prefix2);
  * INITIALIZE <variable_list> TO NULL 4gl statement.
  */
 void
-LEXLIB_print_init (void)
+LEXLIB_print_init (int explicit)
 {
   int cnt;
   printc ("{\n");
@@ -4559,11 +4587,9 @@ LEXLIB_print_init (void)
 
   for (cnt = 0; cnt < nullbindcnt; cnt++)
     {
-      print_init_var (nullbind[cnt].varname, "", 0);
+      print_init_var (nullbind[cnt].varname, "", 0,explicit);
     }
 
-  /*cnt = print_bind ('N');*/
-  /*printc ("A4GL_set_init(nullbind,%d);\n", cnt);*/
   printc ("}\n");
 }
 
@@ -4602,7 +4628,7 @@ LEXLIB_print_validate ()
   printc("/* VALIDATE */");
   printc ("    A4GLSQL_set_status(0,0);\n");
   for (a=0;a<z;a++) {
-        char buff[256];
+        //char buff[256];
 	struct expr_str_list *p;
 	p=(struct expr_str_list *)A4GL_get_validate_expr(a);
 	if (p==0) continue;
@@ -7386,7 +7412,7 @@ LEXLIB_print_dealloc_arr (char *s)
 struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
 char *ptr2;
 char *ptrn;
-char buff[256];
+//char buff[256];
 A4GL_trim(val);
 ptr2=val;
 while (1) {

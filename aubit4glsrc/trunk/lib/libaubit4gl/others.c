@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.60 2006-01-27 16:03:38 mikeaubury Exp $
+# $Id: others.c,v 1.61 2006-01-29 16:39:10 mikeaubury Exp $
 #
 */
 
@@ -64,7 +64,7 @@ Move it to a4gl_libaubit4gl.h
 
 
  char *outputfilename;
-static int ccnt = 0;			/* was in lexer.c */
+int ccnt = 0;			/* was in lexer.c */
 
 
 

@@ -202,7 +202,7 @@ print_if_end -> void
 
 print_import char* funcname,int nargs -> void
 
-print_init -> void
+print_init int explicit -> void
 
 print_init_table char* s -> void
 

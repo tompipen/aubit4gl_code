@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.81 2006-01-04 17:24:19 mikeaubury Exp $
+# $Id: variables.c,v 1.82 2006-01-29 16:39:04 mikeaubury Exp $
 #
 */
 
@@ -79,6 +79,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       struct variable *v);
 
 void make_function (char *name, int record_cnt);
+int has_fbind(char *s) ;
 
 
 int is_system_variable (char *s);
@@ -96,7 +97,7 @@ int A4GL_findex (char *str, char c);
 /*void dump_gvars (void);*/
 //void set_yytext (char *s);
 int isin_command (char *s);
-char *rettype (char *s);
+//char *rettype (char *s);
 int last_record_cnt=0;
 static char last_class_var[1024];
 extern int nreturn_values;
@@ -174,7 +175,7 @@ strcpy(buff,s);
 
 	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE")) && s[0]=='R') {
 		  char b[200];
-		  int c;
+		  //int c;
 		  extern char curr_func[];
 		  sprintf(b,"%s_%s",A4GL_compiling_module_basename(),curr_func);
 
@@ -1722,9 +1723,9 @@ find_type (char *s)
 {
   char errbuff[80];
   static char types[20][80];
-  char buff[20];
+  //char buff[20];
   int a;
-  int b;
+  //int b;
   static int set_types=0;
 
   if (set_types==0) {
@@ -3018,7 +3019,7 @@ print_nullify (char type)
 
 	}
 
-      print_init ();
+      print_init (0);
     }
   else
     {
@@ -3028,6 +3029,11 @@ print_nullify (char type)
 
 }
 
+
+
+void print_init_explicit(void) {
+	print_init(1);
+}
 
 char find_variable_scope (char *s_in)
 {

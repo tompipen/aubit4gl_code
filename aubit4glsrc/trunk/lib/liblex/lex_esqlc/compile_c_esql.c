@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.130 2006-01-26 20:04:22 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.131 2006-01-29 16:39:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.130 2006-01-26 20:04:22 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.131 2006-01-29 16:39:11 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -99,7 +99,7 @@ void make_sql_bind (char *sql, char *type);
 
 int last_ni;
 int last_no;
-struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
+//struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 //void set_suppress_lines(void);
 //void clr_suppress_lines(void);
@@ -637,7 +637,11 @@ LEXLIB_print_execute (char *stmt, int using)
 	{
 	  if (a)
 	    printc (",");
+ 	if (! A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
 	  printc (":_vi_%d\n", a);
+	} else {
+	  printc (":_vi_%d INDICATOR :_vii_%d\n", a,a);
+	}
 	}
 
       printc (";");
@@ -659,7 +663,11 @@ clr_suppress_lines();
 	{
 	  if (a)
 	    printc (",");
+ if (! A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
 	  printc (":_vo_%d\n", a);
+	} else {
+	  printc (":_vo_%d INDICATOR :_voi_%d\n", a,a);
+	}
 	}
 
       printc (";");
@@ -692,7 +700,11 @@ A4GL_save_sql("EXECUTE %s INTO ... USING ...", A4GL_strip_quotes (stmt));
 	{
 	  if (a)
 	    printc (",");
+ 	if (! A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
 	  printc (":_vo_%d\n", a);
+	} else {
+	  printc (":_vo_%d INDICATOR :_voi_%d\n", a,a);
+	}
 
 	}
 	printc(" USING ");
@@ -700,7 +712,11 @@ A4GL_save_sql("EXECUTE %s INTO ... USING ...", A4GL_strip_quotes (stmt));
 	{
 	  if (a)
 	    printc (",");
+ 	if (! A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
 	  printc (":_vi_%d\n", a);
+	} else {
+	  printc (":_vi_%d INDICATOR :_vii_%d\n", a,a);
+	}
 	}
 
       printc (";");
@@ -2354,10 +2370,10 @@ extern char buff_in[];
 void print_exists_subquery(int i,struct expr_exists_sq *e_expr) {
 char buff[256];
 char cname[256];
-char *buffer;
-int n;
+//char *buffer;
+//int n;
 static int ncnt=0;
-void *ptr;
+//void *ptr;
 extern char buff_in[];
 
 	sprintf(cname,"aclfgl_cE_%d",ncnt++);
@@ -2398,12 +2414,12 @@ extern char buff_in[];
 
 
 void print_in_subquery(int i,struct expr_in_sq *in_expr) {
-char buff[256];
+//char buff[256];
 char cname[256];
-char *buffer;
-int n;
+//char *buffer;
+//int n;
 static int ncnt=0;
-void *ptr;
+//void *ptr;
 extern char buff_in[];
 
 	sprintf(cname,"aclfgl_cI_%d",ncnt++);

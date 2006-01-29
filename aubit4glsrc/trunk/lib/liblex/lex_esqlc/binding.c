@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.51 2006-01-26 18:28:26 mikeaubury Exp $
+# $Id: binding.c,v 1.52 2006-01-29 16:39:11 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.51 2006-01-26 18:28:26 mikeaubury Exp $";
+		"$Id: binding.c,v 1.52 2006-01-29 16:39:11 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -73,7 +73,7 @@ static char *get_sql_type_postgres (int a, char ioro);
 static char *get_sql_type_sap (int a, char ioro);
 static char *get_sql_type_ingres (int a, char ioro);
 char * A4GL_dtype_sz (int d, int s);
-struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
+//struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 
 #ifdef NOT_USED
