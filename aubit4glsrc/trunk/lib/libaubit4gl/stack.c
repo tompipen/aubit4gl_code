@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.145 2006-01-25 16:49:42 mikeaubury Exp $
+# $Id: stack.c,v 1.146 2006-01-29 19:20:15 mikeaubury Exp $
 #
 */
 
@@ -159,6 +159,8 @@ int nset[MAX_DTYPE][9] = {
 
 #endif
 
+char *
+A4GL_char_pop_size (int *sz);
 /**
  * Parameter definition type
  */
@@ -495,11 +497,16 @@ int dtype_alloc_char_size[] = {
 
 
 
+char *A4GL_char_pop(void ) {
+	int a;
+	return A4GL_char_pop_size(&a);
+}
+
 /**
  * create a perfectly sized string to hold the info 
  */
 char *
-A4GL_char_pop (void)
+A4GL_char_pop_size (int *sz)
 {
   int a;
   char *s;
@@ -561,7 +568,8 @@ A4GL_char_pop (void)
   s = A4GL_new_string (a);
   A4GL_debug("a=%d\n",a);
   if (a==0) s[1]=1;
-  a = A4GL_pop_param (s, DTYPE_CHAR, a);
+  *sz=a;
+  A4GL_pop_param (s, DTYPE_CHAR, a);
   A4GL_debug("A4GL_char_pop - returning '%s' (%s)\n",s,A4GL_isnull(DTYPE_CHAR,s)?"null":"not null");
   return s;
 }
@@ -729,6 +737,7 @@ A4GL_push_param (void *p, int d)
   int dn1;
   int dn2;
   int ob;
+
 
 
   size = DECODE_SIZE (d);
@@ -1345,7 +1354,9 @@ A4GL_debug("51 Have data");
       A4GL_debug ("In concat %d %d", n1, n2);
       /* if (n1) {drop_param (); return;} */
 
-      if (n1 == 1 && n2 == 0)
+      if ((n1||n2)) {
+	if (!get_null_as_pad_string()) {
+      	if (n1 == 1 && n2 == 0)
 	{
 	  char *s1;
 	  char *s2;
@@ -1356,7 +1367,8 @@ A4GL_debug("51 Have data");
 	  free (s2);
 	  return;
 	}
-      if (n2 == 1 && n1 == 0)
+
+      	if (n2 == 1 && n1 == 0)
 	{
 	  char *s1;
 	  char *s2;
@@ -1370,9 +1382,32 @@ A4GL_debug("51 Have data");
 	  A4GL_debug ("Fudging...");
 	  return;
 	}
+      } else {
+	  char *s1;
+	  char *s2;
+	  char *z1;
+	  int sz1;
+	  int sz2;
+	  int a;
+	  s1 = A4GL_char_pop_size (&sz1);
 
-      if (A4GL_chknull (2, n1, n2,dn1,dn2))
-	return;
+	  if (s1&&n1 && sz1>0)  { A4GL_pad_string(s1,sz1); }
+	  s2 = A4GL_char_pop_size (&sz2);
+	  if (s2&&n2 && sz2>0)  { A4GL_pad_string(s2,sz2); }
+
+	    a = (int)strlen (s1) + (int)strlen (s2) + 1;
+	      z1 = A4GL_new_string (a);
+	        strcpy (z1, s2);
+		  strcat (z1, s1);
+		      acl_free (s1);
+		        acl_free (s2);
+			  A4GL_push_char (z1);
+	  return;
+      }
+      }
+
+      //if (A4GL_chknull (2, n1, n2,dn1,dn2)) return;
+      
       A4GL_func_concat ();
       break;
 
@@ -3227,4 +3262,19 @@ void a4gl_upshift(char *s) {
 		s[a]=toupper(s[a]);
 	}
 }
+
+
+int get_null_as_pad_string() {
+	static int x=-1;
+	if (x==-1) {
+		if (A4GL_isno(acl_getenv("PADNULLSTRING"))) {
+			x=0;
+		} else {
+			x=1;
+		}
+	}
+	return x;
+}
+
+
 // ================================ EOF ================================
