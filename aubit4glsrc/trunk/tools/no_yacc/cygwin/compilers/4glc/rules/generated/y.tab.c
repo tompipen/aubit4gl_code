@@ -14139,7 +14139,7 @@ print_gui_do_form(field_name_list_as_char(yyvsp[-2].field_list),yyvsp[0].str,'E'
 #line 4339 "fgl.yacc"
     {
 	add_feature("INITIALIZE_NULL");
-	print_init();
+	print_init_explicit();
  }
     break;
 
@@ -22277,7 +22277,7 @@ A4GLSQLCV_check_requirement("NO_FOR_UPDATE")
 		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
 		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
 		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
-                                sprintf(yyval.str,"");
+                                strcpy(yyval.str,"");
 		} else {
 			sprintf(yyval.str,"%s %s",yyvsp[-1].str,yyvsp[0].str);
 			A4GL_cursor_current(yyvsp[0].str);
