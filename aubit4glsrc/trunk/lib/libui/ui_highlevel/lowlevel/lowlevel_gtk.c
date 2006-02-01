@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.85 2006-02-01 12:55:51 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.86 2006-02-01 15:52:48 mikeaubury Exp $";
 #endif
 
 
@@ -896,11 +896,11 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
       gtk_fixed_set_has_window (GTK_FIXED (fixed), 1);
 #endif
       gtk_widget_show (GTK_WIDGET (fixed));
-#ifdef USE_FRAMES
-      frame = gtk_frame_new (0);
-#else
-      frame = gtk_handle_box_new ();
-#endif
+      if (A4GL_isyes(acl_getenv("GTKUSEFRAMES"))) {
+      	frame = gtk_frame_new (0);
+      } else {
+      	frame = gtk_handle_box_new ();
+      }
       gtk_widget_set_name (GTK_WIDGET (frame), "AppWindow");
 
       if (A4GL_menu_pos () == 'L' || A4GL_menu_pos () == 'R')
@@ -921,11 +921,11 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	{
 	  GtkWidget *f;
 	  GtkWidget *vbox;
-#ifdef USE_FRAMES
+      if (A4GL_isyes(acl_getenv("GTKUSEFRAMES"))) {
 	  f = gtk_frame_new (0);
-#else
+      } else {
 	  f = gtk_handle_box_new ();
-#endif
+      }
 	  gtk_widget_set_name (GTK_WIDGET (f), "MenuButtons");
 	  vbox = gtk_vbox_new (0, 0);
 	  if (A4GL_menu_pos () == 'L' || A4GL_menu_pos () == 'R')
@@ -1010,14 +1010,15 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	  gtk_fixed_put (GTK_FIXED (win_screen), wxx, x - XWIDTH,
 			 y - YHEIGHT);
 	  // Create a frame to go in our eventbox
-#ifdef USE_FRAMES
+      if (A4GL_isyes(acl_getenv("GTKUSEFRAMES"))) {
+
 	  frame = (GtkWidget *) gtk_frame_new (0);
 	  gtk_frame_set_shadow_type (GTK_FRAME (frame), frame_style);
-#else
+      } else {
 	  frame = (GtkWidget *) gtk_handle_box_new ();
 	  gtk_handle_box_set_shadow_type (GTK_HANDLE_BOX (frame),
 					  frame_style);
-#endif
+      }
 	  gtk_widget_set_usize (GTK_WIDGET (frame), w + XWIDTH, h + YHEIGHT);
 	  // Add our frame to the eventbox
 	  gtk_container_add (GTK_CONTAINER (wxx), GTK_WIDGET (frame));
