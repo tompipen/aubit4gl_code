@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.84 2006-02-01 10:57:37 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.85 2006-02-01 12:55:51 mikeaubury Exp $";
 #endif
 
 
@@ -343,7 +343,7 @@ setup_ok_cancel (GtkWidget * ok_cancel)
 int
 A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
-
+	
   if (event->state & 4)
     {				/*  Control key held down... */
       if (a4gl_tolower (event->keyval) >= 'a'
@@ -1252,6 +1252,39 @@ A4GL_which_key_aubit (int gdk_key)
   if (a == GDK_F35)
     return A4GLKEY_F (35);
 
+  if (a == GDK_KP_0) return '0';
+  if (a == GDK_KP_1) return '1';
+  if (a == GDK_KP_2) return '2';
+  if (a == GDK_KP_3) return '3';
+  if (a == GDK_KP_4) return '4';
+  if (a == GDK_KP_5) return '5';
+  if (a == GDK_KP_6) return '6';
+  if (a == GDK_KP_7) return '7';
+  if (a == GDK_KP_8) return '8';
+  if (a == GDK_KP_9) return '9';
+
+if (a==GDK_KP_Space ) return ' ';
+if (a==GDK_KP_Tab ) return 9;
+if (a==GDK_KP_Enter ) return ' ';
+
+if (a==GDK_KP_F1 ) return A4GLKEY_F (1);
+if (a==GDK_KP_F2 ) return A4GLKEY_F (2);
+if (a==GDK_KP_F3 ) return A4GLKEY_F (3);
+if (a==GDK_KP_F4 ) return A4GLKEY_F (4);
+if (a==GDK_KP_Left ) return A4GLKEY_LEFT;
+if (a==GDK_KP_Up ) return A4GLKEY_UP;
+if (a==GDK_KP_Right ) return A4GLKEY_RIGHT;
+if (a==GDK_KP_Down) return A4GLKEY_DOWN;
+if (a==GDK_KP_Equal) return '=';
+if (a==GDK_KP_Multiply ) return '*';
+if (a==GDK_KP_Add ) return '+';
+if (a==GDK_KP_Subtract) return '-';
+if (a==GDK_KP_Decimal) return '.';
+if (a==GDK_KP_Divide ) return '/';
+  if (a == GDK_KP_Page_Up) return A4GLKEY_PGUP;
+  if (a == GDK_KP_Page_Down) return A4GLKEY_PGDN;
+  if (a == GDK_KP_Home) return A4GLKEY_HOME;
+  if (a == GDK_KP_End) return A4GLKEY_END;
 
 
 
@@ -2856,14 +2889,14 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (cwidget));
 	int m;
 	m=gtk_object_get_data(GTK_OBJECT(cwidget),"MAXFIELD");
-	printf("Max field = %d curcol=%d\n",m,form->curcol);
+	//printf("Max field = %d curcol=%d\n",m,form->curcol);
       buff[0] = mode;
       buff[1] = 0;
       utf = g_locale_to_utf8 (buff, -1, NULL, NULL, NULL);
-      printf("form->ovlins=%d",form->ovlins);
+      //printf("form->ovlins=%d",form->ovlins);
       if (form->ovlins == 1)
 	{
-	  printf("Insert %s\n",buff);
+	  //printf("Insert %s\n",buff);
 	  iopos = form->curcol;
 	  gtk_editable_insert_text (GTK_EDITABLE (cwidget), utf, strlen (utf), &iopos);
 	  form->curcol++;
@@ -2872,7 +2905,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	}
       else
 	{
-	  printf("overwrite\n");
+	  //printf("overwrite\n");
 	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol, form->curcol + 1);
 	  iopos = form->curcol;
 	  gtk_editable_insert_text (GTK_EDITABLE (cwidget), utf, strlen (utf), &iopos);
