@@ -733,12 +733,24 @@ comparison_predicate_sli:
 ;
 
 comp_op:
-	NOT_EQUAL {strcpy($<str>$,"!=");}
-	| LESS_THAN
-	| GREATER_THAN 
-	| TILDE
-	| LESS_THAN_EQ {strcpy($<str>$,"<=");}
-	| GREATER_THAN_EQ {strcpy($<str>$,">=");}
+	NOT_EQUAL {
+			if (A4GLSQLCV_check_requirement("NOT_EQUAL_AS_LESS_GREATER_THAN"))  {
+				strcpy($<str>$," <> ");
+			} else {
+				strcpy($<str>$," != ");
+			}
+	}
+	| LESS_THAN {
+			strcpy($<str>$," < ");
+	}
+	| GREATER_THAN  {
+			strcpy($<str>$," > ");
+	}
+	| TILDE {
+			strcpy($<str>$," ~ ");
+	}
+	| LESS_THAN_EQ {strcpy($<str>$," <= ");}
+	| GREATER_THAN_EQ {strcpy($<str>$," >= ");}
 ;
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.77 2006-01-27 11:47:38 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.78 2006-02-01 18:03:40 mikeaubury Exp $
 #
 */
 
@@ -146,6 +146,7 @@ static char *cvsql_names[] = {
   "CVSQL_ESCAPE_PLAN",
   "CVSQL_CASE_AS_PROCEDURE",
   "CVSQL_FIX_OUTER_JOINS",
+  "CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -246,6 +247,7 @@ enum cvsql_type
   CVSQL_ESCAPE_PLAN,
   CVSQL_CASE_AS_PROCEDURE,
   CVSQL_FIX_OUTER_JOINS,
+  CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -1491,6 +1493,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_DTYPE_ALIAS;
   if (strncasecmp (p, "FIX_OUTER_JOINS", len) == 0)
     return CVSQL_FIX_OUTER_JOINS;
+  if (strncasecmp (p, "NOT_EQUAL_AS_LESS_GREATER_THAN", len) == 0)
+    return CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN;
   if (strncasecmp (p, "ESCAPE_PLAN", len) == 0)
     return CVSQL_ESCAPE_PLAN;
   if (strncasecmp (p, "CASE_AS_PROCEDURE", len) == 0)
