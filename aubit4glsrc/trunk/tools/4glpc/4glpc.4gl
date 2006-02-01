@@ -189,7 +189,7 @@ define lv_pack char(256)
 	if mv_link_opts is null or mv_link_opts matches " " then
 		let mv_link_opts	="-L",fgl_getenv("AUBITDIR") clipped,"/lib"
 	end if
-	if mv_link_libs is null or mv_link_opts matches " " then
+	if mv_link_libs is null or mv_link_libs matches " " then
 		let mv_link_libs=" "
 	end if
 		
