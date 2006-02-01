@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.86 2006-02-01 15:52:48 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.87 2006-02-01 16:07:15 mikeaubury Exp $";
 #endif
 
 
@@ -1266,7 +1266,7 @@ A4GL_which_key_aubit (int gdk_key)
 
 if (a==GDK_KP_Space ) return ' ';
 if (a==GDK_KP_Tab ) return 9;
-if (a==GDK_KP_Enter ) return ' ';
+if (a==GDK_KP_Enter ) return A4GLKEY_ENTER;
 
 if (a==GDK_KP_F1 ) return A4GLKEY_F (1);
 if (a==GDK_KP_F2 ) return A4GLKEY_F (2);
