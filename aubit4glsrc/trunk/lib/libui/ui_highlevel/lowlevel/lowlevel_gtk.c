@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.83 2006-01-15 15:29:06 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.84 2006-02-01 10:57:37 mikeaubury Exp $";
 #endif
 
 
@@ -2491,7 +2491,8 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 
   if (iscurrborder)
     {
-      gtk_fixed_put (cwin, drwin, 1, (fl + 1) * gui_yheight);
+      //gtk_fixed_put (cwin, drwin, 1, (fl + 1) * gui_yheight);
+      gtk_fixed_put (cwin, drwin, 1, (fl ) * gui_yheight);
     }
   else
     {
