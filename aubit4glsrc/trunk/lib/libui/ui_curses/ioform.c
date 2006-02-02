@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.133 2006-01-25 16:51:10 mikeaubury Exp $
+# $Id: ioform.c,v 1.134 2006-02-02 07:11:25 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.133 2006-01-25 16:51:10 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.134 2006-02-02 07:11:25 mikeaubury Exp $";
 #endif
 
 /**
@@ -2707,6 +2707,10 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
       A4GL_debug ("No padding required '%s'", buff);
     }
   A4GL_debug("setting field buffer to %s",buff2);
+
+  if (A4GL_isyes(acl_getenv("TRIMFIELD"))) {
+	  buff2[b]=0;
+  }
 
   xerrno = set_field_buffer (field, nbuff, buff2);
 
