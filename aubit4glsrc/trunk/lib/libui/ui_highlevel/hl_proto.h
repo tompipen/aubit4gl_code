@@ -99,7 +99,7 @@ int A4GL_getch_internal(void *win);
 
 struct list_of_fields {
         struct {
-                u_int a_len;
+                unsigned int a_len;
                 long *a_val;
         } a;
 };

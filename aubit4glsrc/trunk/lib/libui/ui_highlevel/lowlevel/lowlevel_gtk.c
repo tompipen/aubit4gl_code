@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.87 2006-02-01 16:07:15 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.88 2006-02-02 21:27:45 mikeaubury Exp $";
 #endif
 
 
@@ -2887,8 +2887,8 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       char buff[2];
       char *utf;
       struct struct_scr_field *fprop;
-      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (cwidget));
 	int m;
+      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (cwidget));
 	m=gtk_object_get_data(GTK_OBJECT(cwidget),"MAXFIELD");
 	//printf("Max field = %d curcol=%d\n",m,form->curcol);
       buff[0] = mode;
