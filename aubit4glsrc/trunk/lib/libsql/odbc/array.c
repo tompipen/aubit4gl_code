@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.18 2005-08-17 13:43:14 mikeaubury Exp $
+# $Id: array.c,v 1.19 2006-02-03 13:41:40 mikeaubury Exp $
 #
 */
 
@@ -252,6 +252,8 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 
   while (cnt < mx)
     {
+	    memset(tn,0,sizeof(tn));
+	    memset(tr,0,sizeof(tr));
       rc = SQLFetch (hstmt);
       chk_rc (rc, hstmt, "SQLFetch");
 
@@ -285,10 +287,14 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	    }
 	}
 
-      if (arr1 != 0)
-	strncpy (&arr1[cnt * (szarr1 + 1)], tn, szarr1);
-      if (arr2 != 0)
-	strncpy (&arr2[cnt * (szarr2 + 1)], tr, szarr2);
+
+      if (arr1!=0) {tn[szarr1+1]=0;A4GL_trim(tn);A4GL_debug("TN: %s",tn);}
+      if (arr2!=0) {tr[szarr2+1]=0;A4GL_trim(tr);A4GL_debug("TR: %s",tr);}
+
+      if (arr1) { memset(&arr1[cnt * (szarr1 + 1)],0,szarr1+1); }
+      if (arr2) { memset(&arr2[cnt * (szarr2 + 1)],0,szarr2+1); }
+      if (arr1 != 0) strncpy (&arr1[cnt * (szarr1 + 1)], tn, szarr1);
+      if (arr2 != 0) strncpy (&arr2[cnt * (szarr2 + 1)], tr, szarr2);
       cnt++;
 #ifdef DEBUG
       A4GL_debug ("fill array tables : Rc= %d", rc);

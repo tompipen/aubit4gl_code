@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.139 2005-12-05 20:31:07 mikeaubury Exp $
+# $Id: sql.c,v 1.140 2006-02-03 13:41:40 mikeaubury Exp $
 #
 */
 
@@ -193,7 +193,7 @@ void ODBC_set_dbms_info (void);
 int A4GL_sqlerrwith (int rc, HSTMT h);
 int A4GL_chk_need_blob (int rc, HSTMT hstmt);
 int A4GL_chk_getenv (char *s, int a);
-static int conv_sqldtype (int sqldtype, int sdim);
+static unsigned long conv_sqldtype (int sqldtype, int sdim);
 char *A4GL_decode_rc (int a);
 RETCODE SQL_API A4GL_newSQLSetParam (SQLHSTMT hstmt, UWORD ipar, SWORD fCType,
 				     SWORD fSqlType, UDWORD cbColDef,
@@ -3171,7 +3171,7 @@ IGNOREEXITWITH
  *   - -1 : An error ocurred.
  *   - Otherwise : The datatype code.
  */
-  int
+int
 A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
   HSTMT hstmt;
@@ -3221,6 +3221,20 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
   return conv_sqldtype (coltype, collen[0]);
 }
 
+
+int conv_sqlprec(int ndtype,int sdim) {
+    if (ndtype==DTYPE_DECIMAL) {
+	    	if (strcmp (dbms_dialect, "ORACLE"))  { 
+			int size;
+			// We can't generate proper precision on a decimal..
+			// because we don't have the scale - assume 2..
+			size=((sdim+2)<<8)+2;
+			return size;
+		}
+    }
+    return sdim;
+}
+
 /**
  * Convert the SQL data type to the 4gl data type.
  *
@@ -3230,7 +3244,7 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
  * @param sdim
  * @return The 4gl data type.
  */
-static int
+static unsigned long
 conv_sqldtype (int sqldtype, int sdim)
 {
   int ndtype;
@@ -3252,6 +3266,7 @@ if (sqldtype==SQL_TIME) {
     ndtype = convpos_sql_to_4gl[sqldtype];
   else
     ndtype = convneg_sql_to_4gl[sqldtype * -1];
+
 
   if (ndtype == 0)
     {
@@ -3444,6 +3459,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
   static char to[256];
   static char tn[256];
   static char dtname[256];
+  char tabname2[256];
   static long len;
   static long scale;
   static long radix;
@@ -3480,6 +3496,11 @@ A4GL_debug("Here1");
 #ifdef DEBUG
       A4GL_debug ("Got Statement");
 #endif
+      if (A4GL_isyes(acl_getenv("UCASETNAME"))|| strcmp (dbms_dialect, "ORACLE")) {
+		strcpy(tabname2,tabname);
+		A4GL_convupper(tabname2);
+		tabname=tabname2;
+      }
 
       rc = SQLColumns (hstmtGetColumns,
 		       NULL, 0, NULL, 0, tabname, SQL_NTS, NULL, 0);
@@ -3637,7 +3658,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   *colname = cn;
   *dtype = conv_sqldtype (dt, prec);
   if (dt==SQL_TIME) { *dtype=DTYPE_DTIME; prec=0x46; }
-  *size = prec;
+  *size = conv_sqlprec(*dtype,prec);
   return 1;
 }
 
@@ -3864,9 +3885,11 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *
     }
   strcpy (colname, cn);
   A4GL_convlower(colname);
+
   *dtype = conv_sqldtype (dt, prec);
   if (dt==SQL_TIME) { *dtype=DTYPE_DTIME; prec=0x46; }
-  *size = prec;
+  *size = conv_sqlprec(*dtype,prec);
+
 #ifdef DEBUG
   A4GL_debug ("Set dtype to %d\n", *dtype);
 #endif

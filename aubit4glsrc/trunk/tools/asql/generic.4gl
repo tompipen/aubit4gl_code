@@ -259,6 +259,8 @@ endcode
 for lv_cnt=1 to lv_num_tables
         call set_pick(lv_cnt,lv_arr[lv_cnt])
 end for
+
+
 call set_pick_cnt(lv_cnt-1)
 
 while true
