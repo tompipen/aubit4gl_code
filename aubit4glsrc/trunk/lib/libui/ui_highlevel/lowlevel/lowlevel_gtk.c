@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.88 2006-02-02 21:27:45 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.89 2006-02-03 13:30:09 mikeaubury Exp $";
 #endif
 
 
@@ -86,8 +86,11 @@ static int cancel_callback (gpointer data);
 static int ok_callback (gpointer data);
 static int A4GL_show_ok_cancel (int n);
 int A4GL_fake_a_keypress (GtkWidget * widget, int key);
-static void A4GL_default_attributes_in_ll (void *f, int dtype,
-					   int has_picture);
+static void A4GL_default_attributes_in_ll (void *f, int dtype,int has_picture);
+#if GTK_CHECK_VERSION(2,0,0)
+#else
+#define gunichar unsigned int
+#endif
 
 void A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch, int curr_width,
 			  int curr_height, int iscurrborder, int currwinno);
