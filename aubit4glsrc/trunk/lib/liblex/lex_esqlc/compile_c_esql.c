@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.131 2006-01-29 16:39:11 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.132 2006-02-03 16:53:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.131 2006-01-29 16:39:11 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.132 2006-02-03 16:53:22 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -746,9 +746,6 @@ clr_suppress_lines();
 void
 LEXLIB_print_open_session (char *s, char *v, char *user)
 {
-
-
-
   	printc("{");
 	set_suppress_lines();
 	printc("\nEXEC SQL BEGIN DECLARE SECTION;/*8*/");
@@ -782,9 +779,16 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 	//
 	A4GL_save_sql("CONNECT TO '%s'", v);
 
-  	printc ("\nEXEC SQL CONNECT TO  '%s' AS %s", v,s);
-	if (strlen(user)) {
-		printc("USER :_u USING :_p");
+	if (esql_type()==2) { // Postgres...
+  		printc ("\nEXEC SQL CONNECT TO  '%s' AS %s", v,A4GL_strip_quotes(s));
+		if (strlen(user)) {
+			printc("USER :_u USING :_p");
+		}
+	} else {
+  		printc ("\nEXEC SQL CONNECT TO  '%s' AS %s", v,s);
+		if (strlen(user)) {
+			printc("USER :_u USING :_p");
+		}
 	}
 	printc("/* s=%s v=%s user=%s */",s,v,user);
 
