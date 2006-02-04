@@ -10539,7 +10539,7 @@ ROOT_FILES_CONF="install.sh"
 #Warning: ROOT_FILES variable is used by make install target
 ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
 
-ETC_FILES="gtkrc_2 odbc.ini.example 4glpc.hlp"
+ETC_FILES="gtkrc_2 odbc.ini.example"
 
 ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
 		$INST_BASE/etc/config/config.sub $INST_BASE/etc/config/install-sh \
@@ -36274,9 +36274,20 @@ if test "$default_ui" != ""; then
 	#User can force UI driver default with --default-ui=xxxx switch
 	A4GL_UI="$default_ui"
 else
+
+	if test "$HAVE_XCURSES" = "1"; then
+	#	A4GL_UI="HL_TUIX"
+		A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIX"
+	fi
+
+	if test "$GTKBUILD" != "no"; then
+		A4GL_UI="HL_GTK"
+		A4GL_UI_DETECTED="$A4GL_UI_DETECTED $A4GL_UI"
+        fi
+
 	if test "$HAVE_CURSES" = "1" ; then
 		A4GL_UI="TUI"
-        #HL_TUI is still not as good as TUI according to Mike
+        	#HL_TUI is still not as good as TUI according to Mike
 		#A4GL_UI="HL_TUI"
 		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI HL_TUIN"
 	else
@@ -36290,17 +36301,6 @@ else
 				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs"
 		fi
 	fi
-
-	if test "$HAVE_XCURSES" = "1"; then
-	#	A4GL_UI="HL_TUIX"
-		A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIX"
-	fi
-
-	if test "$GTKBUILD" != "no"; then
-		A4GL_UI="HL_GTK"
-		A4GL_UI_DETECTED="$A4GL_UI_DETECTED $A4GL_UI"
-    fi
-
 
 	if test "$A4GL_UI" = "CONSOLE" ; then
 		WARN_UI=1
@@ -39652,7 +39652,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.328 2006-01-20 10:54:10 mikeaubury Exp $
+| $Id: configure,v 1.329 2006-02-04 17:31:50 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
