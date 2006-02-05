@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.78 2006-02-01 18:03:40 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.79 2006-02-05 16:50:13 mikeaubury Exp $
 #
 */
 
@@ -705,7 +705,6 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
   A4GL_debug ("Alias : '%s'\n", s);
 
   A4GL_debug ("Alias ? %s %s %s %x\n", t, c, v, dtype);
-
   if (A4GLSQLCV_check_requirement ("OMIT_SERIAL_COL_FROM_INSERT")
       && dtype == DTYPE_SERIAL)
     {
