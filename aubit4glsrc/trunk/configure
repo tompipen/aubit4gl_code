@@ -10315,7 +10315,7 @@ COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 ## ==================================================================
 
 AMAKE_SH="amake genmake prepmake"
-ALL_SH="aubit $AMAKE_SH"
+ALL_SH="aubit ecpg_wrap $AMAKE_SH"
 #obsolete: ecpg_wrap esql_wrap
 #ALL_SH="4glpc $AMAKE_SH"
 #abug.sh
@@ -39652,7 +39652,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.329 2006-02-04 17:31:50 mikeaubury Exp $
+| $Id: configure,v 1.330 2006-02-06 11:46:38 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
