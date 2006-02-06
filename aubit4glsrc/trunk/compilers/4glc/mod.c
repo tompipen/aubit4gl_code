@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.267 2006-02-06 09:20:37 mikeaubury Exp $
+# $Id: mod.c,v 1.268 2006-02-06 11:32:20 mikeaubury Exp $
 #
 */
 
@@ -138,6 +138,7 @@ int get_validate_list_cnt (void);
 char *sql_features = 0;
 int get_ccnt(void);
 void set_ccnt(int a);
+int get_block_no (int n);
 //struct fh_field_list *new_field_list(void);
 //char *A4GL_decode_packtype(char *s) ;
 

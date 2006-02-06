@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.13 2005-12-05 21:10:50 whaslbeck Exp $
+# $Id: expr.c,v 1.14 2006-02-06 11:32:21 mikeaubury Exp $
 #
 */
 
@@ -66,7 +66,6 @@ struct binding_comp
                     Prototypes
 =====================================================================
 */
-void * A4GL_new_expr_obsol (char *value);
 
 char *expr_name(enum e_expr_type e) {
 switch (e) {
@@ -167,6 +166,15 @@ case ET_EXPR_FCALL_SINGLE: return "ET_EXPR_FCALL_SINGLE";
 case ET_EXPR_TEMP: return "ET_EXPR_TEMP";
 case ET_EXPR_BOUND_FCALL: return "ET_EXPR_BOUND_FCALL";
 case ET_EXPR_AGGREGATE: return "ET_EXPR_AGGREGATE";
+case ET_EXPR_FGL_SIZEOF: return "ET_EXPR_FGL_SIZEOF";
+case ET_EXPR_FGL_ADDRESSOF: return "ET_EXPR_FGL_ADDRESSOF";
+case ET_EXPR_FGL_ISDYNARR_ALLOCATED: return "ET_EXPR_FGL_ISDYNARR_ALLOCATED";
+case ET_EXPR_FGL_DYNARR_EXTENTSIZE: return "ET_EXPR_FGL_DYNARR_EXTENTSIZE";
+case ET_EXPR_FIELDTOWIDGET: return "ET_EXPR_FIELDTOWIDGET";
+case ET_EXPR_ID_TO_INT: return "ET_EXPR_ID_TO_INT";
+case ET_EXPR_PROMPT_RESULT: return "ET_EXPR_PROMPT_RESULT";
+
+
 
 }
 PRINTF("Expression Type : %d\n",e);
@@ -717,7 +725,7 @@ struct expr_str *A4GL_expr_in_sq(struct expr_str *expr, int invert,char *subquer
  * @param value
  * @return
  */
-void * 
+struct expr_str * 
 A4GL_append_expr_obsol (struct expr_str *orig_ptr, char *value)
 {
   struct expr_str *ptr;
@@ -806,7 +814,7 @@ A4GL_length_expr (struct expr_str *ptr)
 }
 
 
-void * 
+struct expr_str * 
 A4GL_new_expr_obsol (char *value)
 {
   struct expr_str *ptr;

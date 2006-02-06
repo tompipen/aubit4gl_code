@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.217 2006-02-06 08:24:25 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.218 2006-02-06 11:32:21 mikeaubury Exp $
 #
 */
 
@@ -2673,6 +2673,8 @@ struct expr_str *A4GL_expr_in(struct expr_str *expr, int invert,struct expr_str_
 char *expr_name(enum e_expr_type e);
 
 struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
+struct expr_str * A4GL_new_expr_obsol (char *value);
+struct expr_str * A4GL_append_expr_obsol (struct expr_str *orig_ptr, char *value);
 
 struct expr_str *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
 struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
