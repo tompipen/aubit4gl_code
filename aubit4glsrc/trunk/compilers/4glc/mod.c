@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.266 2006-01-27 16:49:48 mikeaubury Exp $
+# $Id: mod.c,v 1.267 2006-02-06 09:20:37 mikeaubury Exp $
 #
 */
 
@@ -136,6 +136,8 @@ char *A4GL_get_clobber_from_orig (char *s);
 int get_rep_no_orderby (void);
 int get_validate_list_cnt (void);
 char *sql_features = 0;
+int get_ccnt(void);
+void set_ccnt(int a);
 //struct fh_field_list *new_field_list(void);
 //char *A4GL_decode_packtype(char *s) ;
 
@@ -4613,8 +4615,7 @@ push_validate_column (char *tabname, char *colname)
   strcpy (validate_list[validate_list_cnt - 1].tabname, tabname);
   strcpy (validate_list[validate_list_cnt - 1].colname, colname);
 
-  validate_list[validate_list_cnt - 1].expr =
-    A4GLSQL_get_validation_expr (tabname, colname);
+  validate_list[validate_list_cnt - 1].expr =(void*) A4GLSQL_get_validation_expr (tabname, colname);
   if (validate_list[validate_list_cnt - 1].expr == (void *) -1)
     {
       a4gl_yyerror
