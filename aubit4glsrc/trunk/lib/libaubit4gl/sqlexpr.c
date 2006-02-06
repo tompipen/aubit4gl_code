@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.17 2006-01-27 16:03:38 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.18 2006-02-06 08:24:25 mikeaubury Exp $
 #
 */
 
@@ -917,6 +917,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       return acl_strdup (A4GLSQLCV_get_sqlconst ("USER"));
     case E_SLI_BUILTIN_CONST_TODAY:
       return acl_strdup (A4GLSQLCV_get_sqlconst ("TODAY"));
+    case E_SLI_BUILTIN_CONST_TIME:
+      return acl_strdup (A4GLSQLCV_get_sqlconst ("TIME"));
     case E_SLI_BUILTIN_CONST_STAR:
       return acl_strdup ("*");
     case E_SLI_BUILTIN_CONST_COUNT_STAR:
@@ -1965,6 +1967,9 @@ get_sli_type (enum e_sli type)
       break;
     case E_SLI_BUILTIN_CONST_TODAY:
       return "E_SLI_BUILTIN_CONST_TODAY";
+      break;
+    case E_SLI_BUILTIN_CONST_TIME:
+      return "E_SLI_BUILTIN_CONST_TIME";
       break;
     case E_SLI_BUILTIN_CONST_STAR:
       return "E_SLI_BUILTIN_CONST_STAR";

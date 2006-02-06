@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.79 2006-02-05 16:50:13 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.80 2006-02-06 08:24:25 mikeaubury Exp $
 #
 */
 
@@ -2532,6 +2532,7 @@ get_dollared_sql_var (char *s)
 {
   static char buff[256];
   char *c;
+
   if (A4GL_aubit_strcasecmp (s, "$TODAY") == 0)
     {
       A4GL_push_today ();
@@ -2540,6 +2541,16 @@ get_dollared_sql_var (char *s)
       free (c);
       return buff;
     }
+
+  if (A4GL_aubit_strcasecmp (s, "$TIME") == 0)
+    {
+      A4GL_push_time ();
+      c = A4GL_char_pop ();
+      SPRINTF1 (buff, "'%s'", c);
+      free (c);
+      return buff;
+    }
+
   if (A4GL_aubit_strcasecmp (s, "$USER") == 0)
     {
       A4GL_push_user ();

@@ -222,6 +222,7 @@ value_expression_complex_sli :
 	| KW_FALSE 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_FALSE); }
 	| USER 			{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_USER); }
 	| KW_TODAY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TODAY); }
+	| TIME 			{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TIME); }
 	| MULTIPLY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_STAR); }
 	| COUNT_MULTIPLY 	{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_COUNT_STAR); }
 

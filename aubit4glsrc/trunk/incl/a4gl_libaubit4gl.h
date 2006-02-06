@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.216 2006-01-08 09:39:45 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.217 2006-02-06 08:24:25 mikeaubury Exp $
 #
 */
 
@@ -2832,7 +2832,8 @@ enum e_sli {
 	E_SLI_CASE,
 	E_SLI_CASE_ELEMENT,
 	E_SLI_COLUMN_ORDERBY,
-	E_SLI_VAR_REPLACE
+	E_SLI_VAR_REPLACE,
+	E_SLI_BUILTIN_CONST_TIME
 
 };
 

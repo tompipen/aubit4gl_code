@@ -106,6 +106,7 @@ REPLACE_SQLCONST user = cast(user as char(8))
 
 # These are only needed for non-patched postgres :
 REPLACE_SQLCONST today = date(now())
+REPLACE_SQLCONST time = current_time(0)
 REPLACE_SQLFUNC year = date_part('YEAR',%s::timestamp with time zone)
 REPLACE_SQLFUNC month = date_part('MONTH',%s::timestamp with time zone)
 REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)
