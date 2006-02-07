@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2005-03-23 08:24:16 afalout Exp $
+# $Id: Makefile.in,v 1.14 2006-02-07 20:06:41 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -51,6 +51,7 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 		-D"CONFIGURED_TARGET=\"${TARGET}\"" \
 		-D"CONFIGURED_TARGET_OS=\"${TARGET_OS}\"" \
 		-D"_AUBITETC_=\"${WINDOWS_DRIVE}${CYGWIN_PATH}@AUBITETC@\"" 
+		-D"POSTGRESDIR=\"@POSTGRESDIR@\"" 
 		
 #		-D"_WINDOWS_DRIVE_=\"${WINDOWS_DRIVE}\"" \
 #		-D"_CYGWIN_PATH_=\"${CYGWIN_PATH}\"" 

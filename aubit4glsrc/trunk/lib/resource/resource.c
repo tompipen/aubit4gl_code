@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.112 2006-01-27 16:50:01 mikeaubury Exp $
+# $Id: resource.c,v 1.113 2006-02-07 20:06:41 mikeaubury Exp $
 #
 */
 
@@ -379,7 +379,9 @@ struct str_resource builtin_resource[] = {
   {"GDB_ATTACH", "N"}, /* set to Y to attach debugger after crash */
   {"GDB_EXE", "gdb"},  /* set it to the name of your prefered debugger */
   {"SWAP_SQLCA62", "N"}, /* to get OID after INSERT on unpatched PostgreSQL */
-
+#ifdef POSTGRESDIR
+  {"POSTGRESDIR",POSTGRESDIR},
+#endif
   /* End of definitions */
   {"", "0"}
 };

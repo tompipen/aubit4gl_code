@@ -909,7 +909,7 @@ end function
 ################################################################################
 function runit(lv_str)
 define lv_str char(10240)
-run lv_str
+RUN lv_str
 end function
 
 ################################################################################
@@ -1022,7 +1022,8 @@ if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
-run lv_runstr clipped returning lv_status
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
 
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 
@@ -1128,7 +1129,8 @@ if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
-run lv_runstr clipped returning lv_status
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 end function
 
@@ -1190,7 +1192,10 @@ let lv_runstr=lv_runstr clipped, " ",mv_include clipped," -o ",lv_new clipped,
 if mv_verbose>=2 then
 	display "Running : ",lv_runstr clipped
 end if
-run lv_runstr clipped returning lv_status
+
+
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 
 call add_obj(lv_new)
@@ -1237,7 +1242,10 @@ let lv_runstr=lv_runstr clipped ," ",mv_include clipped," -o ",lv_new clipped, "
 if mv_verbose>=2 then
         display lv_runstr clipped
 end if
-run lv_runstr clipped returning lv_status
+
+
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr clipped RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 call add_obj(lv_new)
 end function
@@ -1295,7 +1303,8 @@ if mv_verbose>=4 then
 	display "OBJECTS       : ",mv_objects clipped
 end if
 
-run lv_runstr clipped returning lv_status
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
 
 if mv_verbose>=5 then
 	display "Ran command"
@@ -1348,8 +1357,7 @@ define m2 char(255)
 define lv_str char(1000)
 define a integer
 let lv_str=fgl_getenv("A4GL_CP_CMD")," ",m1 clipped, " ",m2 clipped
-run lv_str 
-
+call runit(lv_str)
 end function
 
 

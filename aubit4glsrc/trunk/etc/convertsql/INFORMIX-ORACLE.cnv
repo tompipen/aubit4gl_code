@@ -10,4 +10,3 @@ SUBSTRING_FUNCTION = substr
 REPLACE rowid = oid
 REPLACE today = trunc(sysdate)
 REPLACE current year to second = sysdate
-
