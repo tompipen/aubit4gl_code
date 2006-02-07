@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.132 2006-02-03 16:53:22 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.133 2006-02-07 08:44:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.132 2006-02-03 16:53:22 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.133 2006-02-07 08:44:22 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2058,7 +2058,7 @@ nm (int n)
 	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) return "DECIMAL";
 	else return "MONEY";
     case 10:
-      return "DATETIME ";
+      return "DATETIME";
     case 11:
       return "BYTE";
     case 12:
@@ -2186,7 +2186,6 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 		for (a=0;a<current_ordbindcnt;a++) {
 			int found=0;
 			if (a) strcat(sql,",");
-			printf("a=%d\n",a);
 
 			for (b=0;b<fbindcnt;b++) {
 				if (strcmp(ordbind[a].varname,fbind[b].varname)==0) {
@@ -2235,26 +2234,30 @@ if (type=='M') { /* Make the table */
 	char *xptr;
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	printc("A4GLSQLCV_add_temp_table(\"%s\");",&reptab[8]);
-  	sprintf (buff, "DECLARE GLOBAL TEMPORARY TABLE %s( /* AA */\n",reptab);
+  	sprintf (buff, "DECLARE GLOBAL TEMPORARY TABLE %s( \n",reptab);
 
 } else {
-  	sprintf (buff, "CREATE TEMP TABLE %s( /* AA */\n",reptab);
+  	sprintf (buff, "CREATE TEMP TABLE %s( \n",reptab);
 }
 	sprintf(ins_str,"\"INSERT INTO %s VALUES (",reptab);
   	rcnt++;
   	for (a = 0; a < c; a++) {
+		char dtype_char[256];
+		char dtype_char2[256];;
       		if (a) {
 			strcat (buff,",\n");
 			strcat (ins_str,",");
 		}
       		sprintf (tmpbuff, "c%d ",a);
+      		strcat(buff, tmpbuff);
 		l_dt=fbind[a].dtype&0xffff;
 		l_sz=DECODE_SIZE(fbind[a].dtype);
-		strcat(tmpbuff, nm (l_dt));
+
+		strcpy(dtype_char, nm (l_dt));
 		
-		strcat(tmpbuff, (char *)A4GL_dtype_sz (l_dt,l_sz));
-		
-      		strcat (buff, tmpbuff);
+		strcat(dtype_char, (char *)A4GL_dtype_sz (l_dt,l_sz));
+		strcpy(dtype_char2,A4GLSQLCV_dtype_alias(dtype_char));
+		strcat(buff,dtype_char2);
 		strcat (ins_str,"?");
     	}
 

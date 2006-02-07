@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.304 2006-02-06 11:32:02 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.305 2006-02-07 08:44:01 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -6168,22 +6168,24 @@ AC_ARG_WITH(unixodbc,
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 
+		old_CFLAGS=$CFLAGS
+		CFLAGS="$CFLAGS -I$withval/include"
 		if test $ac_cv_lib_odbc_main = yes; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				#CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
 				AC_CHECK_HEADERS([sql.h])
 				TMP=`eval echo '${'$as_ac_Header'}'`
-		        if test "$TMP" = "yes"; then
+		        	if test "$TMP" = "yes"; then
 					AC_CHECK_HEADERS([sqlext.h])
 					TMP=`eval echo '${'$as_ac_Header'}'`
-			        if test "$TMP" = "yes"; then
+			        	if test "$TMP" = "yes"; then
 						AC_CHECK_HEADERS([odbcinst.h])
 						TMP=`eval echo '${'$as_ac_Header'}'`
-				        if test "$TMP" = "yes"; then
+				        	if test "$TMP" = "yes"; then
 						    HAVE_UNIXODBC_HEADERS=1
-                        fi
-                    fi
-                fi
+                        			fi
+                    			fi
+                		fi
 			else
 			    HAVE_UNIXODBC_HEADERS=1
 			fi
@@ -6197,15 +6199,16 @@ AC_ARG_WITH(unixodbc,
 
 			    ODBC_TYPE=unixODBC
 			    AC_DEFINE(HAVE_UNIXODBC,1,[ ])
-            else
+            		else
 				AC_MSG_WARN(unixODBC libraries present but headers are missing.)
 				AC_DEFINE(HAVE_UNIXODBC,0,[ ])
 				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbcdev"
-            fi
+            		fi
 		else
 		    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbc"
 		fi
+		CFLAGS=$old_CFLAGS
 	else
 		AC_MSG_RESULT(disbled)
 	    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
@@ -9123,7 +9126,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.304 2006-02-06 11:32:02 mikeaubury Exp $
+| $Id: configure.in,v 1.305 2006-02-07 08:44:01 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

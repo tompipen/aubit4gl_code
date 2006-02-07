@@ -24503,6 +24503,8 @@ fi
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 
+		old_CFLAGS=$CFLAGS
+		CFLAGS="$CFLAGS -I$withval/include"
 		if test $ac_cv_lib_odbc_main = yes; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				#CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
@@ -24657,7 +24659,7 @@ fi
 done
 
 				TMP=`eval echo '${'$as_ac_Header'}'`
-		        if test "$TMP" = "yes"; then
+		        	if test "$TMP" = "yes"; then
 
 for ac_header in sqlext.h
 do
@@ -24809,7 +24811,7 @@ fi
 done
 
 					TMP=`eval echo '${'$as_ac_Header'}'`
-			        if test "$TMP" = "yes"; then
+			        	if test "$TMP" = "yes"; then
 
 for ac_header in odbcinst.h
 do
@@ -24961,11 +24963,11 @@ fi
 done
 
 						TMP=`eval echo '${'$as_ac_Header'}'`
-				        if test "$TMP" = "yes"; then
+				        	if test "$TMP" = "yes"; then
 						    HAVE_UNIXODBC_HEADERS=1
-                        fi
-                    fi
-                fi
+                        			fi
+                    			fi
+                		fi
 			else
 			    HAVE_UNIXODBC_HEADERS=1
 			fi
@@ -24983,7 +24985,7 @@ cat >>confdefs.h <<\_ACEOF
 #define HAVE_UNIXODBC 1
 _ACEOF
 
-            else
+            		else
 				{ echo "$as_me:$LINENO: WARNING: unixODBC libraries present but headers are missing." >&5
 echo "$as_me: WARNING: unixODBC libraries present but headers are missing." >&2;}
 
@@ -24992,7 +24994,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbcdev"
-            fi
+            		fi
 		else
 
 cat >>confdefs.h <<\_ACEOF
@@ -25001,6 +25003,7 @@ _ACEOF
 
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbc"
 		fi
+		CFLAGS=$old_CFLAGS
 	else
 		echo "$as_me:$LINENO: result: disbled" >&5
 echo "${ECHO_T}disbled" >&6
@@ -33791,7 +33794,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 33794 "configure"' > conftest.$ac_ext
+  echo '#line 33797 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -34347,7 +34350,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34350 "configure"
+#line 34353 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -34445,7 +34448,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34448 "configure"
+#line 34451 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -39652,7 +39655,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.330 2006-02-06 11:46:38 mikeaubury Exp $
+| $Id: configure,v 1.331 2006-02-07 08:43:54 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

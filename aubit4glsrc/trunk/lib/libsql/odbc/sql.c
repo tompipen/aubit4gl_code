@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.140 2006-02-03 13:41:40 mikeaubury Exp $
+# $Id: sql.c,v 1.141 2006-02-07 08:44:23 mikeaubury Exp $
 #
 */
 
@@ -3224,7 +3224,7 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
 
 int conv_sqlprec(int ndtype,int sdim) {
     if (ndtype==DTYPE_DECIMAL) {
-	    	if (strcmp (dbms_dialect, "ORACLE"))  { 
+	    	if (strcmp (dbms_dialect, "ORACLE")==0)  { 
 			int size;
 			// We can't generate proper precision on a decimal..
 			// because we don't have the scale - assume 2..
@@ -3496,7 +3496,7 @@ A4GL_debug("Here1");
 #ifdef DEBUG
       A4GL_debug ("Got Statement");
 #endif
-      if (A4GL_isyes(acl_getenv("UCASETNAME"))|| strcmp (dbms_dialect, "ORACLE")) {
+      if (A4GL_isyes(acl_getenv("UCASETNAME"))|| strcmp (dbms_dialect, "ORACLE")==0) {
 		strcpy(tabname2,tabname);
 		A4GL_convupper(tabname2);
 		tabname=tabname2;
@@ -3706,6 +3706,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *
   static char remarks[256];
   static int colsize;
   static char szcolsize[20];
+  char tabname2[256];
   static int a, b;
   static int rc;
   short nColumns;
@@ -3715,6 +3716,11 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *
       A4GL_exitwith ("Not connected to database");
       return 0;
     }
+      if (A4GL_isyes(acl_getenv("UCASETNAME"))|| strcmp (dbms_dialect, "ORACLE")==0) {
+		strcpy(tabname2,tabname);
+		A4GL_convupper(tabname2);
+		tabname=tabname2;
+	}
 #ifdef DEBUG
   A4GL_debug ("In read column tabname='%s' colname='%s'", tabname, colname);
 #endif
