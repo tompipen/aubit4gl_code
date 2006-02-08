@@ -181,6 +181,7 @@ code
 lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,0,0,"TABLES",1,0);
 endcode
 
+
 call add_to_display_file("TableName")
 call add_to_display_file(" ")
 
@@ -255,6 +256,9 @@ code
 lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,0,0,"TABLES",1,0);
 endcode
 
+code
+A4GL_pause_execution();
+endcode
 
 for lv_cnt=1 to lv_num_tables
         call set_pick(lv_cnt,lv_arr[lv_cnt])
