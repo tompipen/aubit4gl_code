@@ -27,6 +27,7 @@
 # +----------------------------------------------------------------------+
 code
 int init_filename=1;
+char *get_tmp_dir();
 
 
 endcode
@@ -61,6 +62,7 @@ define p_mode char(1)
 code
 A4GL_debug("OPENING TMP : %s ",mv_tmpinfile[get_type_id(lv_type)]);
 mv_fin[get_type_id(lv_type)]=(long)fopen(mv_tmpinfile[get_type_id(lv_type)],p_mode);
+	add_temp_file(mv_tmpinfile[get_type_id(lv_type)]);
 A4GL_assertion(mv_fin[get_type_id(lv_type)]==0,"Tried to open tmpfile failed");
 endcode
 end function
@@ -137,25 +139,13 @@ int a;
 do_init=init_filename;
 for (a=0;a<10;a++) { mv_fin[a]=0;}
 init_filename=0;
-#if defined(__MINGW32__)
-sprintf(mv_tmpinfile[get_type_id("SQL")],"c:\\a4gl_sql_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("PER")],"c:\\a4gl_per_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("4GL")],"c:\\a4gl_4gl_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("ACE")],"c:\\a4gl_ace_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("MSG")],"c:\\a4gl_msg_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("FRM")],"c:\\a4gl_frm_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("C")],"c:\\a4gl_frm_%d",getpid());
-#else
-sprintf(mv_tmpinfile[get_type_id("SQL")],"/tmp/a4gl_sql_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("PER")],"/tmp/a4gl_per_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("4GL")],"/tmp/a4gl_4gl_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("ACE")],"/tmp/a4gl_ace_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("MSG")],"/tmp/a4gl_msg_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("FRM")],"/tmp/a4gl_frm_%d",getpid());
-sprintf(mv_tmpinfile[get_type_id("C")],"/tmp/a4gl_frm_%d",getpid());
-
-
-#endif
+sprintf(mv_tmpinfile[get_type_id("SQL")],"%s/a4gl_sql_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("PER")],"%s/a4gl_per_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("4GL")],"%s/a4gl_4gl_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("ACE")],"%s/a4gl_ace_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("MSG")],"%s/a4gl_msg_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("FRM")],"%s/a4gl_frm_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("C")],  "%s/a4gl_frm_%d",get_tmp_dir(),getpid());
 endcode
 
 call open_tmpfile("SQL","w")
@@ -226,6 +216,7 @@ if (!f)  {
 
 if (f) {
 	fo=(long)fopen(dest,"w");
+	add_temp_file(dest);
 }
 
 if (fo&&f) {
@@ -255,7 +246,68 @@ end function
 
 
 code
-long get_curr_mvfin(char *lv_type) {
-	return mv_fin[get_type_id(lv_type)];
+
+
+
+long
+get_curr_mvfin (char *lv_type)
+{
+  return mv_fin[get_type_id (lv_type)];
+}
+
+
+char *used_files[1000];
+int nused_files = 0;
+
+
+void clean_up_temp_files(void) {
+int a;
+for (a=0;a<1000;a++) {
+	if (used_files[a]) {
+		//printf("DELETE %s\n",used_files[a]);
+		unlink(used_files[a]);
+	}
+}
+}
+
+
+void
+add_temp_file (char *s)
+{
+  char buff[1000];
+  int a;
+  int found = 0;
+  static int inited = 0;
+  if (inited == 0)
+    {
+      for (a = 0; a < 1000; a++)
+	used_files[a] = 0;
+      inited = 1;
+      nused_files = 0;
+    }
+  strcpy (buff, s);
+  A4GL_trim (buff);
+  found = -1;
+  for (a = 0; a < 1000; a++)
+    {
+      if (used_files[a] == 0)
+	break;
+      if (strcmp (used_files[a], buff) == 0)
+	{
+	  found = a;
+	  break;
+	}
+    }
+
+  if (found == -1)
+    {
+      for (a = 0; a < 1000; a++)
+	{
+	  if (used_files[a])
+	    continue;
+	  used_files[a] = strdup (buff);
+	  break;
+	}
+    }
 }
 endcode

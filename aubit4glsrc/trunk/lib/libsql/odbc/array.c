@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.19 2006-02-03 13:41:40 mikeaubury Exp $
+# $Id: array.c,v 1.20 2006-02-09 11:20:52 mikeaubury Exp $
 #
 */
 
@@ -133,8 +133,8 @@ int A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 int
 A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
 {
-  char buff1[80];
-  char buff2[255];
+  char buff1[100]="";
+  char buff2[255]="";
   SWORD a;
   SWORD b;
   int rc;
@@ -150,27 +150,33 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr
 #ifdef DEBUG
   A4GL_debug ("Filling database array...");
 #endif
+
+
+  if (henv==0) {
+	  A4GL_debug("No environment configured");
+	  return 0;
+  }
+
+
+
   while (cnt < mx)
     {
-#ifdef DEBUG
-      A4GL_debug ("Fetch mode=%d", fetch_mode);
-#endif
-      rc = SQLDataSources (henv, fetch_mode, buff1, 79, &a, buff2, 254, &b);
+
+      rc=SQLDataSources (henv, fetch_mode, buff1, sizeof(buff1), &a, buff2, sizeof(buff2), &b);
       chk_rc (rc, 0, "SQLDataSources");
+
 #ifdef DEBUG
       A4GL_debug ("  rc=%d", rc);
       A4GL_debug ("  Buff1=%s Buff2=%s", buff1, buff2);
       A4GL_debug ("  a=%d b=%d", a, b);
 #endif
+      if (rc!=SQL_SUCCESS) break;
       fetch_mode = SQL_FETCH_NEXT;
       if (rc == SQL_NO_DATA_FOUND)
 	break;
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
 	{
 	  A4GL_set_sqlca (0, "fill_array_database", 0);
-#ifdef DEBUG
-	  A4GL_debug ("Some error getting data....");
-#endif
 	  break;
 	}
 
@@ -187,6 +193,7 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr
       A4GL_debug ("    b=%d", b);
 #endif
     }
+  A4GL_debug("Found : %d\n",cnt);
 
   return cnt;
 
@@ -271,7 +278,7 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	}
 
 #ifdef DEBUG
-      A4GL_debug (" tq= %s to= %s", tq, to);
+      A4GL_debug (" cnt=%d of %d tq= %s to= %s", cnt,mx,tq, to);
       A4GL_debug (" tn= %s tt= %s", tn, tt);
       A4GL_debug (" tr= %s", tr);
       A4GL_debug ("Mode=%d", mode);

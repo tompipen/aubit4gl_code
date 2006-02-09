@@ -256,9 +256,6 @@ code
 lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,0,0,"TABLES",1,0);
 endcode
 
-code
-A4GL_pause_execution();
-endcode
 
 for lv_cnt=1 to lv_num_tables
         call set_pick(lv_cnt,lv_arr[lv_cnt])
@@ -403,7 +400,7 @@ p=s;
 
 int execute_query_1(int *raffected) {
                 *raffected=0;
-		A4GLSQL_execute_sql("m1_stexec",0,0);
+		A4GLSQL_execute_sql("generic_stexec",0,0);
 		if (a4gl_sqlca.sqlcode!=0)  return 0;
                 *raffected=a4gl_sqlca.sqlerrd[0];
         	return 1;

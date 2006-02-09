@@ -550,6 +550,7 @@ if (!strstr(outfile,".per")) {
 
 if (strlen(outfile)) {
         gen_out=fopen(outfile,"w");
+	add_temp_file(outfile);
         if (gen_out==0) {
                 printf("Unable to open output file (%s)\n",outfile);
                 exit(2);

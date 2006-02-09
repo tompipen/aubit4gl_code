@@ -50,6 +50,10 @@ code
 is_echo_c() {
 return lv_echo;
 }
+
+bye() {
+	clean_up_temp_files();
+}
 endcode
 
 main
@@ -57,6 +61,7 @@ define lv_a integer
 define lv_cnt integer
 define lv_dummy char(255)
 initialize mv_curr_db to null
+
 let lv_actions_cnt=0
 let lv_actions_used=0
 call edit_init()
@@ -73,6 +78,7 @@ defer interrupt
 defer quit
 code
 A4GL_setenv("A4GL_AUTOBANG","Y",1);
+atexit(bye);
 endcode
 
 let lv_cnt=1

@@ -538,6 +538,7 @@ code
 	char little_buff[256];
 	A4GL_trim(lv_fname);
 	f=fopen(lv_fname,"w");
+	add_temp_file(lv_fname);
 
 	if (!f) {
 		err=1;

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.141 2006-02-07 08:44:23 mikeaubury Exp $
+# $Id: sql.c,v 1.142 2006-02-09 11:20:52 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,7 @@ static void free_extra(void *id) ;
 static void set_extra_data(void *id,int in_out,int position, int data,void *val) ;
 static int setup_extras(void *id) ;
 void * A4GL_bind_decimal (void *ptr_to_decimal);
+void initenv(void ) ;
 
 #ifdef DATE_AS_CHAR
 	int date_as_char=1;
@@ -204,7 +205,7 @@ int print_err (HDBC hdbc, HSTMT hstmt);
 long A4GL_describecolumn (SQLHSTMT hstmt, int colno, int type);
 int set_stmt_options (char *cursname, char *opt, char *val);
 
-#ifndef DONTINCLUDEDATASOURCES
+#ifdef DONTINCLUDEDATASOURCES
 	#ifdef PGODBC
 		RETCODE SQL_API SQLDataSources (HENV henv, UWORD fDirection,
 						UCHAR FAR * szDSN, SWORD cbDSNMax,
@@ -237,7 +238,7 @@ static char sess_name[32] = "default";
 //must be long enough to hold full path for SQLlite database file
 //static char OldDBname[64] = "";
 static char OldDBname[2048] = "";
-static char dbms_name[64] = "";
+static char dbms_name[1065] = "";
 static char dbms_dialect[64] = "";
 static HSTMT hstmtGetColumns = 0;	/** Statement used to iterate getting column information */
 static char cn[256];					/** Column name */
@@ -504,8 +505,7 @@ A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
 void
 A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
 {
-  A4GL_debug ("Chk_rc_full : rc=%d (%s) stmt=%p c=%s line=%d file=%s", rc,
-	      A4GL_decode_rc (rc), hstmt, c, line, file);
+  A4GL_debug ("Chk_rc_full : rc=%d (%s) stmt=%p c=%s line=%d file=%s", rc, A4GL_decode_rc (rc), hstmt, c, line, file);
 
   if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
     {
@@ -1055,9 +1055,11 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *c
       if (!A4GL_isyes(acl_getenv("NO_ATTR_CURSOR"))) {
       	A4GL_debug("Setting cursor type to scrollable");
       	rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_TYPE, (SQLPOINTER)SQL_CURSOR_STATIC, 0);
+      chk_rc (rc, nsid->hstmt, "SQLSetStmtAttr - CURSOR TYPE");
       	A4GL_debug("set stmt attr rc=%d",rc);
 	
       	rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER)SQL_SCROLLABLE, 0);
+      chk_rc (rc, nsid->hstmt, "SQLSetStmtAttr - CURSOR SCROLLABLE" );
       	A4GL_debug("set stmt attr rc=%d",rc);
 	
 		if (rc==-1) { // Well - we tried...
@@ -1815,12 +1817,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
 
 
 
-      // Do we actually need this ?
-      if (A4GL_isyes (acl_getenv ("AUTOCOMMIT"))) { rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 1); }
-      if (A4GL_isno (acl_getenv ("AUTOCOMMIT"))) { rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0); }
 
-
-      chk_rc (rc, 0, "SQLSetConnectOption");
 #ifdef DEBUG
       A4GL_debug ("AUTOCOM rc=%d", rc);
 #endif
@@ -2074,6 +2071,7 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
   RETCODE rc;
   char uid[256] = "";
   char pwd[256] = "";
+  RETCODE xrc;
 
 #ifdef DEBUG
   A4GL_debug ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s",
@@ -2107,17 +2105,7 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
      uid by mistake...
    */
 
-  if (henv == 0)
-    {
-      A4GL_debug ("Calling SQLAllocEnv()");
-      //This call core dumps on SQLite/MinGW:
-      rc = SQLAllocEnv (&henv);
-      //rc = SQLAllocEnv (henv);
-      chk_rc (rc, 0, "SQLAllocEnv");
-#ifdef DEBUG
-      A4GL_debug ("SQLAllocEnv returns %d %p", rc, henv);
-#endif
-    }
+  initenv();
   rc = SQLAllocConnect (henv, &hdbc);
   chk_rc (rc, 0, "SQLAllocConnect");
 #ifdef DEBUG
@@ -2125,9 +2113,47 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
   A4GL_debug ("Connecting to >%s< as >%s</>%s<", server, uid, pwd);
 #endif
 
+
+
+      // Do we actually need this ?
+      if (A4GL_isyes (acl_getenv ("AUTOCOMMIT"))) { rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 1); }
+      if (A4GL_isno (acl_getenv ("AUTOCOMMIT"))) { rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0); }
+      chk_rc (rc, 0, "SQLSetConnectOption");
+
+#if (ODBCVER >= 0x0300)
+#ifdef SQL_CUR_USE_IF_NEEDED
+	A4GL_debug("Cursor use if needed");
+	if (A4GL_isyes(acl_getenv("ALWAYS_ODBC_CURSOR"))) {
+      		rc=SQLSetConnectAttr(hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER)SQL_CUR_USE_ODBC,(SQLINTEGER)0);
+	} else {
+		//rc = SQLSetConnectOption(hdbc, SQL_ODBC_CURSORS,SQL_CUR_USE_IF_NEEDED );
+      		rc=SQLSetConnectAttr(hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER)SQL_CUR_USE_IF_NEEDED,(SQLINTEGER)0);
+      	}
+#else
+	A4GL_debug("Cursor use odbc");
+	//rc = SQLSetConnectOption(hdbc, SQL_ODBC_CURSORS,SQL_CUR_USE_ODBC );
+      rc=SQLSetConnectAttr(hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER)SQL_CUR_USE_ODBC,(SQLINTEGER)0);
+#endif
+#else
+	A4GL_debug("ConnectOption - not ConnectAttr");
+      rc=SQLSetConnectOption(hdbc, SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED);
+#endif
+
+
+      chk_rc (rc, 0, "SQLSetConnectOption");
+
+
+
+
+
   rc = SQLConnect (hdbc, server, SQL_NTS, uid, SQL_NTS, pwd, SQL_NTS);
 
   chk_rc (rc, 0, "SQLConnect");
+
+
+
+
+
 
 #ifdef DEBUG
   A4GL_debug ("SQLConnect status = %d", rc);
@@ -2187,9 +2213,11 @@ void
 ODBC_set_dbms_info (void)
 {
   int rc;
-  short len;
-
+  short len=0;
+  memset(dbms_name,0,64);
   rc = SQLGetInfo (hdbc, SQL_DBMS_NAME, dbms_name, (short) 64, &len);
+
+
   A4GL_debug ("DIALECT : %s\n", dbms_name);
   strcpy (dbms_dialect, "");
 
@@ -4995,7 +5023,9 @@ A4GL_decode_rc (int a)
   return "Unknown";
 }
 
-#ifndef DONTINCLUDEDATASOURCES
+
+
+#ifdef INCLUDEDATASOURCES
 RETCODE SQL_API
 SQLDataSources (HENV henv, UWORD fDirection,
 		UCHAR FAR * szDSN, SWORD cbDSNMax, SWORD FAR * pcbDSN,
@@ -5150,8 +5180,9 @@ A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
  * called from fglwrap.c
  */
 int
-A4GLSQL_initsqllib (void)
+A4GLSQLLIB_A4GLSQL_initlib (void)
 {
+  initenv();
   A4GLSQL_make_connection (0, 0, 0);
   return 1;
 }
@@ -5248,7 +5279,49 @@ return ptr;
 
 
 
+void initenv(void ) {
+  if (henv == 0)
+    {
+      A4GL_debug ("Calling SQLAllocEnv()");
+      //This call core dumps on SQLite/MinGW:
+      rc = SQLAllocEnv (&henv);
+      //rc = SQLAllocEnv (henv);
+      chk_rc (rc, 0, "SQLAllocEnv");
+#ifdef DEBUG
+      A4GL_debug ("SQLAllocEnv returns %d %p", rc, henv);
+#endif
+      if (rc==SQL_SUCCESS) { ListDSN(); }
+    }
 
+
+
+
+}
+
+void
+ListDSN (void)
+{
+  char l_dsn[100], l_desc[100];
+  short int l_len1, l_len2, l_next;
+  int rc;
+
+  l_next = SQL_FETCH_FIRST;
+  rc = SQL_SUCCESS;
+
+  A4GL_debug("Listing DSNs");
+
+  while (rc == SQL_SUCCESS)
+    {
+      rc =
+	SQLDataSources (henv, l_next, l_dsn, sizeof (l_dsn), &l_len1, l_desc,
+			sizeof (l_desc), &l_len2);
+      if (rc != SQL_SUCCESS)
+	break;
+
+      A4GL_debug ("Server=(%s) Description=(%s)\n", l_dsn, l_desc);
+      l_next = SQL_FETCH_NEXT;
+    }
+}
 
 /* =================================================== */
 /* Folowing code examples taken from sqliteodbc.c file */

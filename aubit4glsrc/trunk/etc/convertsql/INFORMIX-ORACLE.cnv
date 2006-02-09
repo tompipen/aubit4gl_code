@@ -10,3 +10,8 @@ SUBSTRING_FUNCTION = substr
 REPLACE rowid = oid
 REPLACE today = trunc(sysdate)
 REPLACE current year to second = sysdate
+TEMP_AS_TEMPORARY
+SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()
+
+
+

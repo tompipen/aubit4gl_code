@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.80 2006-02-06 08:24:25 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.81 2006-02-09 11:20:52 mikeaubury Exp $
 #
 */
 
@@ -115,6 +115,7 @@ static char *cvsql_names[] = {
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS",
+  "CVSQL_SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()",
   "CVSQL_SWAP_SQLCA62",
   "CVSQL_NO_ORDBY_INTO_TEMP",
   "CVSQL_ADD_SESSION_TO_TEMP_TABLE",
@@ -217,6 +218,7 @@ enum cvsql_type
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS,
+  CVSQL_SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY_BRACKETS,
   CVSQL_SWAP_SQLCA62,
   CVSQL_NO_ORDBY_INTO_TEMP,
   CVSQL_ADD_SESSION_TO_TEMP_TABLE,
@@ -1334,185 +1336,213 @@ A4GLSQLCV_make_substr (char *colname, int i0, int i1, int i2)
 }
 
 
+static int match_strncasecmp(char *s1,char *s2,int len) {
+	char p1[200];
+	char p2[200];
+	strncpy(p1,s1,199);
+	strncpy(p2,s2,199);
+	p1[199]=0;
+	p2[199]=0;
+	A4GL_trim(p1);
+	A4GL_trim(p2);
+
+	if (strlen(p1)==strlen(p2)) {
+		if (strncasecmp(p1,p2,len)==0) return 0;
+		else return 1;
+	}
+
+	if (strlen(p1)>strlen(p2)) {
+		return strncasecmp(p1,p2,len);
+	}
+
+	// If p2 is greater than p1 - it can't match...
+	if (strlen(p1)<strlen(p2)) {
+		return 1;
+	}
+
+A4GL_assertion(1,"Surely this cant happen");
+return 1;
+}
 
 int
 A4GL_cv_str_to_func (char *p, int len)
 {
-
-  if (strncasecmp (p, "REPLACE", len) == 0)
+  if (match_strncasecmp (p, "REPLACE", len) == 0)
     return CVSQL_REPLACE;
-  if (strncasecmp (p, "REPLACE_EXPR", len) == 0)
+  if (match_strncasecmp (p, "REPLACE_EXPR", len) == 0)
     return CVSQL_REPLACE_EXPR;
-  if (strncasecmp (p, "REPLACE_COMMAND", len) == 0)
+  if (match_strncasecmp (p, "REPLACE_COMMAND", len) == 0)
     return CVSQL_REPLACE_CMD;
-  if (strncasecmp (p, "REPLACE_SQLCONST", len) == 0)
+  if (match_strncasecmp (p, "REPLACE_SQLCONST", len) == 0)
     return CVSQL_REPLACE_SQLCONST;
-  if (strncasecmp (p, "REPLACE_SQLFUNC", len) == 0)
+  if (match_strncasecmp (p, "REPLACE_SQLFUNC", len) == 0)
     return CVSQL_REPLACE_SQLFUNC;
-  if (strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0)
+  if (match_strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0)
     return CVSQL_DOUBLE_TO_SINGLE;
-  if (strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
+  if (match_strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
     return CVSQL_MATCHES_TO_LIKE;
-  if (strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)
+  if (match_strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)
     return CVSQL_MATCHES_TO_REGEX;
-  if (strncasecmp (p, "MATCHES_TO_REGEXP", len) == 0)
+  if (match_strncasecmp (p, "MATCHES_TO_REGEXP", len) == 0)
     return CVSQL_MATCHES_TO_REGEXP;
-  if (strncasecmp (p, "MATCHES_TO_GLOB", len) == 0)
+  if (match_strncasecmp (p, "MATCHES_TO_GLOB", len) == 0)
     return CVSQL_MATCHES_TO_GLOB;
-  if (strncasecmp (p, "SUBSTRING_FUNCTION", len) == 0)
+  if (match_strncasecmp (p, "SUBSTRING_FUNCTION", len) == 0)
     return CVSQL_SUBSTRING_FUNCTION;
-  if (strncasecmp (p, "TABLE_ALIAS_AS", len) == 0)
+  if (match_strncasecmp (p, "TABLE_ALIAS_AS", len) == 0)
     return CVSQL_TABLE_ALIAS_AS;
-  if (strncasecmp (p, "COLUMN_ALIAS_AS", len) == 0)
+  if (match_strncasecmp (p, "COLUMN_ALIAS_AS", len) == 0)
     return CVSQL_COLUMN_ALIAS_AS;
-  if (strncasecmp (p, "ANSI_UPDATE_SYNTAX", len) == 0)
+  if (match_strncasecmp (p, "ANSI_UPDATE_SYNTAX", len) == 0)
     return CVSQL_ANSI_UPDATE;
 
-  if (strncasecmp (p, "MONEY_AS_DECIMAL", len) == 0)
+  if (match_strncasecmp (p, "MONEY_AS_DECIMAL", len) == 0)
     return CVSQL_MONEY_AS_DECIMAL;
-  if (strncasecmp (p, "MONEY_AS_MONEY", len) == 0)
+  if (match_strncasecmp (p, "MONEY_AS_MONEY", len) == 0)
     return CVSQL_MONEY_AS_MONEY;
-  if (strncasecmp (p, "SQL_CURRENT_FUNCTION", len) == 0)
+  if (match_strncasecmp (p, "SQL_CURRENT_FUNCTION", len) == 0)
     return CVSQL_SQL_CURRENT_FUNCTION;
-  if (strncasecmp (p, "STRIP_ORDER_BY_INTO_TEMP", len) == 0)
+  if (match_strncasecmp (p, "STRIP_ORDER_BY_INTO_TEMP", len) == 0)
     return CVSQL_STRIP_ORDER_BY_INTO_TEMP;
-  if (strncasecmp (p, "ADD_CASCADE", len) == 0)
+  if (match_strncasecmp (p, "ADD_CASCADE", len) == 0)
     return CVSQL_ADD_CASCADE;
-  if (strncasecmp (p, "OMIT_NO_LOG", len) == 0)
+  if (match_strncasecmp (p, "OMIT_NO_LOG", len) == 0)
     return CVSQL_OMIT_NO_LOG;
-  if (strncasecmp (p, "QUOTE_OWNER", len) == 0)
+  if (match_strncasecmp (p, "QUOTE_OWNER", len) == 0)
     return CVSQL_QUOTE_OWNER;
-  if (strncasecmp (p, "CHAR_TO_DATETIME", len) == 0)
+  if (match_strncasecmp (p, "CHAR_TO_DATETIME", len) == 0)
     return CVSQL_CHAR_TO_DATETIME;
-  if (strncasecmp (p, "CHAR_TO_INTERVAL", len) == 0)
+  if (match_strncasecmp (p, "CHAR_TO_INTERVAL", len) == 0)
     return CVSQL_CHAR_TO_INTERVAL;
-  if (strncasecmp (p, "NO_OWNER_QUOTE", len) == 0)
+  if (match_strncasecmp (p, "NO_OWNER_QUOTE", len) == 0)
     return CVSQL_NO_OWNER_QUOTE;
-  if (strncasecmp (p, "IGNORE_OWNER", len) == 0)
+  if (match_strncasecmp (p, "IGNORE_OWNER", len) == 0)
     return CVSQL_IGNORE_OWNER;
-  if (strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0)
+  if (match_strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0)
     return CVSQL_CONSTRAINT_NAME_BEFORE;
-  if (strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0)
+  if (match_strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0)
     return CVSQL_CONSTRAINT_NAME_AFTER;
-  if (strncasecmp (p, "USE_INDICATOR", len) == 0)
+  if (match_strncasecmp (p, "USE_INDICATOR", len) == 0)
     return CVSQL_USE_INDICATOR;
-  if (strncasecmp (p, "USE_DATABASE_STMT", len) == 0)
+  if (match_strncasecmp (p, "USE_DATABASE_STMT", len) == 0)
     return CVSQL_USE_DATABASE_STMT;
-  if (strncasecmp (p, "USE_BINDING_FOR_PUT", len) == 0)
+  if (match_strncasecmp (p, "USE_BINDING_FOR_PUT", len) == 0)
     return CVSQL_USE_BINDING_FOR_PUT;
-  if (strncasecmp (p, "IGNORE_CLOSE_ERROR", len) == 0)
+  if (match_strncasecmp (p, "IGNORE_CLOSE_ERROR", len) == 0)
     return CVSQL_IGNORE_CLOSE_ERROR;
-  if (strncasecmp (p, "OMIT_INDEX_CLUSTER", len) == 0)
+  if (match_strncasecmp (p, "OMIT_INDEX_CLUSTER", len) == 0)
     return CVSQL_OMIT_INDEX_CLUSTER;
-  if (strncasecmp (p, "OMIT_INDEX_ORDER", len) == 0)
+  if (match_strncasecmp (p, "OMIT_INDEX_ORDER", len) == 0)
     return CVSQL_OMIT_INDEX_ORDER;
 
-  if (strncasecmp (p, "ESQL_UNLOAD", len) == 0)
+  if (match_strncasecmp (p, "ESQL_UNLOAD", len) == 0)
     return CVSQL_ESQL_UNLOAD;
-  if (strncasecmp (p, "ESQL_UNLOAD_FULL_PATH", len) == 0)
+  if (match_strncasecmp (p, "ESQL_UNLOAD_FULL_PATH", len) == 0)
     return CVSQL_ESQL_UNLOAD_FULL_PATH;
-  if (strncasecmp (p, "ESQL_AFTER_INSERT", len) == 0)
+  if (match_strncasecmp (p, "ESQL_AFTER_INSERT", len) == 0)
     return CVSQL_ESQL_AFTER_INSERT;
-  if (strncasecmp (p, "ESQL_AFTER_UPDATE", len) == 0)
+  if (match_strncasecmp (p, "ESQL_AFTER_UPDATE", len) == 0)
     return CVSQL_ESQL_AFTER_UPDATE;
-  if (strncasecmp (p, "ESQL_AFTER_DELETE", len) == 0)
+  if (match_strncasecmp (p, "ESQL_AFTER_DELETE", len) == 0)
     return CVSQL_ESQL_AFTER_DELETE;
-  if (strncasecmp (p, "IGNORE_DTYPE_VARCHAR_MIN", len) == 0)
+  if (match_strncasecmp (p, "IGNORE_DTYPE_VARCHAR_MIN", len) == 0)
     return CVSQL_IGNORE_DTYPE_VARCHAR_MIN;
-  if (strncasecmp (p, "INTERVAL_EXTEND_FUNCTION", len) == 0)
+  if (match_strncasecmp (p, "INTERVAL_EXTEND_FUNCTION", len) == 0)
     return CVSQL_INTERVAL_EXTEND_FUNCTION;
-  if (strncasecmp (p, "DATETIME_EXTEND_FUNCTION", len) == 0)
+  if (match_strncasecmp (p, "DATETIME_EXTEND_FUNCTION", len) == 0)
     return CVSQL_DATETIME_EXTEND_FUNCTION;
-  if (strncasecmp (p, "IGNORE_DTYPE_VARCHAR_MIN", len) == 0)
+  if (match_strncasecmp (p, "IGNORE_DTYPE_VARCHAR_MIN", len) == 0)
     return CVSQL_IGNORE_DTYPE_VARCHAR_MIN;
-  if (strncasecmp (p, "NO_SERIAL_START_VALUE", len) == 0)
+  if (match_strncasecmp (p, "NO_SERIAL_START_VALUE", len) == 0)
     return CVSQL_NO_SERIAL_START_VALUE;
-  if (strncasecmp (p, "SIMPLE_GRANT_UPDATE", len) == 0)
+  if (match_strncasecmp (p, "SIMPLE_GRANT_UPDATE", len) == 0)
     return CVSQL_SIMPLE_GRANT_UPDATE;
-  if (strncasecmp (p, "SIMPLE_GRANT_SELECT", len) == 0)
+  if (match_strncasecmp (p, "SIMPLE_GRANT_SELECT", len) == 0)
     return CVSQL_SIMPLE_GRANT_SELECT;
-  if (strncasecmp (p, "RENAME_TABLE_AS_ALTER_TABLE", len) == 0)
+  if (match_strncasecmp (p, "RENAME_TABLE_AS_ALTER_TABLE", len) == 0)
     return CVSQL_RENAME_TABLE_AS_ALTER_TABLE;
-  if (strncasecmp (p, "RENAME_COLUMN_AS_ALTER_TABLE", len) == 0)
+  if (match_strncasecmp (p, "RENAME_COLUMN_AS_ALTER_TABLE", len) == 0)
     return CVSQL_RENAME_COLUMN_AS_ALTER_TABLE;
-  if (strncasecmp (p, "FAKE_IMMEDIATE", len) == 0)
+  if (match_strncasecmp (p, "FAKE_IMMEDIATE", len) == 0)
     return CVSQL_FAKE_IMMEDIATE;
-  if (strncasecmp (p, "TEMP_AS_DECLARE_GLOBAL", len) == 0)
+  if (match_strncasecmp (p, "TEMP_AS_DECLARE_GLOBAL", len) == 0)
     return CVSQL_TEMP_AS_DECLARE_GLOBAL;
-  if (strncasecmp (p, "TEMP_AS_TEMPORARY", len) == 0)
+  if (match_strncasecmp (p, "TEMP_AS_TEMPORARY", len) == 0)
     return CVSQL_TEMP_AS_TEMPORARY;
-  if (strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0)
+  if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL;
-  if (strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMP_AS", len) == 0)
+  if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMP_AS", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS;
-  if (strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS", len) == 0)
+  if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()", len) == 0)
+    return CVSQL_SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY_BRACKETS;
+  if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS;
-  //if (strncasecmp (p, "", len) == 0) return CVSQL_;
+  //if (match_strncasecmp (p, "", len) == 0) return CVSQL_;
 
 
-  if (strncasecmp (p, "SWAP_SQLCA62", len) == 0)
+  if (match_strncasecmp (p, "SWAP_SQLCA62", len) == 0)
     return CVSQL_SWAP_SQLCA62;
-  if (strncasecmp (p, "NO_ORDBY_INTO_TEMP", len) == 0)
+  if (match_strncasecmp (p, "NO_ORDBY_INTO_TEMP", len) == 0)
     return CVSQL_NO_ORDBY_INTO_TEMP;
-  if (strncasecmp (p, "ADD_SESSION_TO_TEMP_TABLE", len) == 0)
+  if (match_strncasecmp (p, "ADD_SESSION_TO_TEMP_TABLE", len) == 0)
     return CVSQL_ADD_SESSION_TO_TEMP_TABLE;
-  if (strncasecmp (p, "LIMIT_LINE", len) == 0)
+  if (match_strncasecmp (p, "LIMIT_LINE", len) == 0)
     return CVSQL_LIMIT_LINE;
-  if (strncasecmp (p, "NO_DECLARE_INTO", len) == 0)
+  if (match_strncasecmp (p, "NO_DECLARE_INTO", len) == 0)
     return CVSQL_NO_DECLARE_INTO;
-  if (strncasecmp (p, "NO_FETCH_WITHOUT_INTO", len) == 0)
+  if (match_strncasecmp (p, "NO_FETCH_WITHOUT_INTO", len) == 0)
     return CVSQL_NO_FETCH_WITHOUT_INTO;
-  if (strncasecmp (p, "NO_SELECT_WITHOUT_INTO", len) == 0)
+  if (match_strncasecmp (p, "NO_SELECT_WITHOUT_INTO", len) == 0)
     return CVSQL_NO_SELECT_WITHOUT_INTO;
-  if (strncasecmp (p, "NO_PUT", len) == 0)
+  if (match_strncasecmp (p, "NO_PUT", len) == 0)
     return CVSQL_NO_PUT;
-  if (strncasecmp (p, "FULL_INSERT", len) == 0)
+  if (match_strncasecmp (p, "FULL_INSERT", len) == 0)
     return CVSQL_FULL_INSERT;
-  if (strncasecmp (p, "INSERT_ALIAS_VALUE", len) == 0)
+  if (match_strncasecmp (p, "INSERT_ALIAS_VALUE", len) == 0)
     return CVSQL_INSERT_ALIAS_VALUE;
-  if (strncasecmp (p, "INSERT_ALIAS_COLUMN", len) == 0)
+  if (match_strncasecmp (p, "INSERT_ALIAS_COLUMN", len) == 0)
     return CVSQL_INSERT_ALIAS_COLUMN;
-  if (strncasecmp (p, "OMIT_SERIAL_COL_FROM_INSERT", len) == 0)
+  if (match_strncasecmp (p, "OMIT_SERIAL_COL_FROM_INSERT", len) == 0)
     return CVSQL_OMIT_SERIAL_COL_FROM_INSERT;
-  if (strncasecmp (p, "OMIT_UPDATE_TABLE", len) == 0)
+  if (match_strncasecmp (p, "OMIT_UPDATE_TABLE", len) == 0)
     return CVSQL_OMIT_UPDATE_TABLE;
-  if (strncasecmp (p, "NO_INSERT_CURSOR", len) == 0)
+  if (match_strncasecmp (p, "NO_INSERT_CURSOR", len) == 0)
     return CVSQL_NO_INSERT_CURSOR;
-  if (strncasecmp (p, "EMULATE_INSERT_CURSOR", len) == 0)
+  if (match_strncasecmp (p, "EMULATE_INSERT_CURSOR", len) == 0)
     return CVSQL_EMULATE_INSERT_CURSOR;
-  if (strncasecmp (p, "ESQL_UNLOAD_STRING", len) == 0)
+  if (match_strncasecmp (p, "ESQL_UNLOAD_STRING", len) == 0)
     return CVSQL_ESQL_UNLOAD_STRING;
-  if (strncasecmp (p, "ESQL_UNLOAD_LIB_FALLBACK", len) == 0)
+  if (match_strncasecmp (p, "ESQL_UNLOAD_LIB_FALLBACK", len) == 0)
     return CVSQL_ESQL_UNLOAD_LIB_FALLBACK;
-  if (strncasecmp (p, "DATE_AS_CHAR", len) == 0)
+  if (match_strncasecmp (p, "DATE_AS_CHAR", len) == 0)
     return CVSQL_DATE_AS_CHAR;
-  if (strncasecmp (p, "DTIME_AS_CHAR", len) == 0)
+  if (match_strncasecmp (p, "DTIME_AS_CHAR", len) == 0)
     return CVSQL_DTIME_AS_CHAR;
-  if (strncasecmp (p, "DTYPE_ALIAS", len) == 0)
+  if (match_strncasecmp (p, "DTYPE_ALIAS", len) == 0)
     return CVSQL_DTYPE_ALIAS;
-  if (strncasecmp (p, "FIX_OUTER_JOINS", len) == 0)
+  if (match_strncasecmp (p, "FIX_OUTER_JOINS", len) == 0)
     return CVSQL_FIX_OUTER_JOINS;
-  if (strncasecmp (p, "NOT_EQUAL_AS_LESS_GREATER_THAN", len) == 0)
+  if (match_strncasecmp (p, "NOT_EQUAL_AS_LESS_GREATER_THAN", len) == 0)
     return CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN;
-  if (strncasecmp (p, "ESCAPE_PLAN", len) == 0)
+  if (match_strncasecmp (p, "ESCAPE_PLAN", len) == 0)
     return CVSQL_ESCAPE_PLAN;
-  if (strncasecmp (p, "CASE_AS_PROCEDURE", len) == 0)
+  if (match_strncasecmp (p, "CASE_AS_PROCEDURE", len) == 0)
     return CVSQL_CASE_AS_PROCEDURE;
-  if (strncasecmp (p, "DATE_STRING_TO_CAST_DATE", len) == 0)
+  if (match_strncasecmp (p, "DATE_STRING_TO_CAST_DATE", len) == 0)
     return CVSQL_DATE_STRING_TO_CAST_DATE;
-  if (strncasecmp (p, "NO_FOR_UPDATE", len) == 0)
+  if (match_strncasecmp (p, "NO_FOR_UPDATE", len) == 0)
     return CVSQL_NO_FOR_UPDATE;
-  if (strncasecmp (p, "EMULATE_FOR_UPDATE", len) == 0)
+  if (match_strncasecmp (p, "EMULATE_FOR_UPDATE", len) == 0)
     return CVSQL_EMULATE_FOR_UPDATE;
-  if (strncasecmp (p, "EXECUTE_PROCEDURE_AS_EXEC", len) == 0)
+  if (match_strncasecmp (p, "EXECUTE_PROCEDURE_AS_EXEC", len) == 0)
     return CVSQL_EXECUTE_PROCEDURE_AS_EXEC;
-  if (strncasecmp (p, "SELECT_INTO_TEMP_INTO_TEMP_HASH", len) == 0)
+  if (match_strncasecmp (p, "SELECT_INTO_TEMP_INTO_TEMP_HASH", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH;
-  if (strncasecmp (p, "SELECT_INTO_TEMP_INTO_HASH", len) == 0)
+  if (match_strncasecmp (p, "SELECT_INTO_TEMP_INTO_HASH", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_INTO_HASH;
-  if (strncasecmp (p, "CREATE_TEMP_AS_CREATE_HASH", len) == 0)
+  if (match_strncasecmp (p, "CREATE_TEMP_AS_CREATE_HASH", len) == 0)
     return CVSQL_CREATE_TEMP_AS_CREATE_HASH;
-  if (strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0)
+  if (match_strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0)
     return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
@@ -2137,6 +2167,12 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
       return ptr;
     }
 
+  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()"))
+    {
+      ptr = acl_malloc2 (strlen (sel) + 2000);
+      SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s AS ( %s )", tabname, sel);
+      return ptr;
+    }
 
   ptr = acl_malloc2 (strlen (sel) + 2000);
   SPRINTF2 (ptr, "%s %s", sel, lp);

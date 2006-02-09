@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2005-06-10 13:37:37 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2006-02-09 11:20:52 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -47,7 +47,7 @@ LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
 OBJECTS					=sql.o sqlex.o array.o
 #LD_RUN_PATH 			=${INFORMIXDIR}/lib/esql
 
-CFLAGS_SQLITE	=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -DHAVE_LIBVERSION=1 \
+CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 				-DWITHOUT_DRIVERMGR ${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
 				-L${SQLITE_LDPATH} -I${ROOT}/tools/odbtest/incl -I.
 

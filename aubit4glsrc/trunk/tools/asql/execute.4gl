@@ -57,7 +57,7 @@ int field_widths(void) ;
 char **columnNames=0;
 int *columnWidths=0;
 int *columnAlign=0;
-
+char * acl_getenv_not_set_as_0 (char *s);
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2
@@ -540,16 +540,37 @@ int get_exec_mode_c() {
 	return exec_mode;
 }
 
-void set_outfname(void) {
+
+char *get_tmp_dir(void ) {
+	static char tmpdir[1024];
+	char *ptr;
 	static int have_made_dir=0;
+
+	ptr=acl_getenv_not_set_as_0("AUBITDIRTMP");
+
+	if (ptr) {
+		strcpy(tmpdir,ptr);
+	} else {
+#if defined(__MINGW32__)
+	sprintf(tmpdir,"c:\\tmp\\aubit4gl");
+#else
+	sprintf(tmpdir,"/tmp/aubit4gl");
+#endif
+	}
+
 	if (have_made_dir==0) {
-		char buff[1024];
-		sprintf(buff,"%s/tmp",acl_getenv("AUBITDIR"));
-		mkdir(buff,0777);
-		chmod (buff,0777);
+		mkdir(tmpdir,0777);
+		chmod (tmpdir,0777);
 		have_made_dir=1;
 	}
-	sprintf(outfname,"%s/tmp/out%d.txt",acl_getenv("AUBITDIR"),getpid());
+
+	return tmpdir;
+}
+
+	
+void set_outfname(void) {
+	sprintf(outfname,"%s/out%d.txt",get_tmp_dir(),getpid());
+	add_temp_file(outfname);
 }
 
 
@@ -575,6 +596,7 @@ if (file_out_result==0) {
 		file_out_result=fopen(outfname,"w");
 		first_open=0;
 	}
+	add_temp_file(outfname);
 	A4GL_debug("Open file : %s failed  ? %p",outfname,file_out_result);
 	
 	A4GL_assertion((file_out_result==0),"Unable to open output file (4)");
@@ -757,6 +779,7 @@ A4GL_trim(lv_name);
 if (lv_fmode[0]=='f')  {
 	A4GL_debug("OUTPUT fopen(%s,%s)",lv_name,lv_amode);
 	lv_out=(long)fopen(lv_name,lv_amode);
+	add_temp_file(lv_name);
 } else {
 	A4GL_push_char("DISPLAY");
 	A4GL_push_int(-1);
