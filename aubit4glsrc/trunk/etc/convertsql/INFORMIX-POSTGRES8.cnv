@@ -49,7 +49,7 @@ DTYPE_ALIAS DATETIME YEAR TO FRACTION=CHAR(20)
 DTYPE_ALIAS DATETIME YEAR TO HOUR=CHAR(13)
 DTYPE_ALIAS DATETIME YEAR TO MINUTE=CHAR(16)
 DTYPE_ALIAS DATETIME YEAR TO MONTH=CHAR(7)
-DTYPE_ALIAS DATETIME YEAR TO SECOND=CHAR(16)
+DTYPE_ALIAS DATETIME YEAR TO SECOND=CHAR(19)
 DTYPE_ALIAS DATETIME YEAR TO YEAR=SMALLINT
 DTYPE_ALIAS INTERVAL YEAR TO YEAR=CHAR(20)
 DTYPE_ALIAS INTERVAL YEAR (4) TO YEAR=CHAR(20)
@@ -105,7 +105,8 @@ REPLACE_SQLCONST rowid = oid
 REPLACE_SQLCONST user = cast(user as char(8))
 
 # These are only needed for non-patched postgres :
-REPLACE_SQLCONST today = date(now())
+#REPLACE_SQLCONST today = date(now())
+REPLACE_SQLCONST today = current_date
 REPLACE_SQLCONST time = current_time(0)
 REPLACE_SQLFUNC year = date_part('YEAR',%s::timestamp with time zone)
 REPLACE_SQLFUNC month = date_part('MONTH',%s::timestamp with time zone)
@@ -117,7 +118,8 @@ REPLACE_SQLFUNC ord = ascii(%s)
 
 REPLACE_EXPR current year to fraction(3) = now()
 REPLACE_EXPR current year to fraction(5) = now()
-REPLACE_EXPR current year to second = now()
+#REPLACE_EXPR current year to second = now()
+REPLACE_EXPR current year to second = current_timestamp(0)
 
 # No obvious replacement for these - so effectively remove them
 REPLACE_COMMAND SET EXPLAIN ON = 
