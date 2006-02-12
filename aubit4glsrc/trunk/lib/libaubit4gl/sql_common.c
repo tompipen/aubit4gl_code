@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.17 2005-11-28 11:27:47 mikeaubury Exp $
+# $Id: sql_common.c,v 1.18 2006-02-12 09:56:31 mikeaubury Exp $
 #
 */
 
@@ -844,7 +844,7 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
       a++;
     }
 
-  sprintf (buff, " %s", t->tabname);
+  SPRINTF1 (buff, " %s", t->tabname);
   a++;
   strcpy (outer, "");
 
@@ -867,7 +867,7 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
 	  if (strcmp (t->tabname, lt) == 0 &&  strcmp (left, rt) == 0)
 		{
 		  char tmpbuff[256];
-		  sprintf (tmpbuff, " ON %s.%s=%s.%s",
+		  SPRINTF4 (tmpbuff, " ON %s.%s=%s.%s",
 			   l->u_data.column.tabname,
 			   l->u_data.column.colname,
 			   r->u_data.column.tabname,
@@ -882,7 +882,7 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
 	  if (strcmp (t->tabname, rt) == 0 && strcmp (left, lt) == 0)
 		{	
 		  char tmpbuff[256];
-		  sprintf (tmpbuff, " ON %s.%s=%s.%s",
+		  SPRINTF4 (tmpbuff, " ON %s.%s=%s.%s",
 			   l->u_data.column.tabname,
 			   l->u_data.column.colname,
 			   r->u_data.column.tabname,
@@ -966,68 +966,5 @@ struct s_select_list *A4GLSQLPARSE_new_select_list_str(char *expr,char *alias) {
 /*
 */
 
-
-#ifdef NDEF
-int A4GLSQLPARSE_from_clause_join(struct s_select *select, struct s_table *t,
-			char *fill,struct s_table_list *tl) {
-	char buff[2000];
-	char lastt[2000];
-	int a=0;
-	strcpy(buff,"");
-
-// First - lets have a look at our joins...
-
-  for (a = 0; a < select->list_of_items.nlist; a++)
-    {
-      if (select->list_of_items.list[a]->type == E_SLI_JOIN)
-	{
-	  struct s_select_list_item *p;
-	  struct s_select_list_item *l;
-	  struct s_select_list_item *r;
-	  char *lt;
-	  char *rt;
-	  char *lc;
-	  char *rc;
-	  p = select->list_of_items.list[a];
-	  l = p->u_data.complex_expr.left;
-	  r = p->u_data.complex_expr.right;
-	  lt = l->u_data.column.tabname;
-	  rt = r->u_data.column.tabname;
-	  lc = l->u_data.column.colname;
-	  rc = r->u_data.column.colname;
-	  printf("%s %s %s %s\n",lt,lc,rt,rc);
-	}
-    }
-return;
-
-
-	while (t) {
-		/* A tablename of '@' is a placeholder for an outer - so we don't need
-		 * to print it...
-		 * */
-		printf("t->tabname=%s\n",t->tabname);
-		if (strcmp(t->tabname,"@")!=0) {
-			if (a) strcat(buff,",");
-			strcat(buff,A4GLSQLCV_make_tablename(t->tabname,t->alias));
-			a++;
-			strcpy(lastt,t->tabname);
-		}
-
-		if (t->outer_next) {
-			char outer[2000];
-			struct s_table *t2;	
-			strcat(buff," LEFT JOIN(");
-			//A4GLSQLPARSE_from_clause_join(select,t->outer_next,outer,tl,lastt);
-			strcat(buff,outer);
-			strcat(buff,")");
-		}
-		t=t->next;
-	}
-	strcpy(fill,buff);
-	return 1;
-}
-
-
-#endif
 
 /* =============================== EOF ============================== */

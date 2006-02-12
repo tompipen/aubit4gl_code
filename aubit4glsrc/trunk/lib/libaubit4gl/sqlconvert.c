@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.81 2006-02-09 11:20:52 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.82 2006-02-12 09:56:31 mikeaubury Exp $
 #
 */
 
@@ -647,7 +647,7 @@ A4GLSQLCV_check_sql (char *s)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE)
 	{
-	  if (A4GL_strcasestr (ptr, current_conversion_rules[b].data.from) !=
+	  if (A4GL_aubit_strcasestr (ptr, current_conversion_rules[b].data.from) !=
 	      0)
 	    {
 	      A4GL_cvsql_replace_str (ptr,
@@ -1053,7 +1053,7 @@ A4GLSQLCV_check_expr (char *s)
       if (current_conversion_rules[b].type == CVSQL_REPLACE_EXPR)
 	{
 
-	  if (A4GL_strcasestr (buff, current_conversion_rules[b].data.from) !=
+	  if (A4GL_aubit_strcasestr (buff, current_conversion_rules[b].data.from) !=
 	      0)
 	    {
 	      char *to;
@@ -1941,32 +1941,6 @@ A4GL_strwscmp (char *a, char *b)
 }
 
 
-#ifdef MOVED
-int
-A4GL_strcasestr (char *h, char *n)
-{
-  char *h1;
-  char *n1;
-  int r;
-  A4GL_push_char (h);
-  A4GL_upshift_stk ();
-  h1 = A4GL_char_pop ();
-
-  A4GL_push_char (n);
-  A4GL_upshift_stk ();
-  n1 = A4GL_char_pop ();
-  if (strstr (h1, n1))
-    r = 1;
-  else
-    r = 0;
-  free (h1);
-  free (n1);
-  return r;
-}
-#endif
-
-
-
 
 
 char *
@@ -2533,25 +2507,6 @@ A4GLSQLCV_make_tablename (char *t, char *c)
   return buff;
 }
 
-/*
-char *A4GL_strcasestr(char *s,char *t) {
-	char *p1;
-	char *p2;
-	char *a;
-	int b;
-	p1=acl_strdup(s);
-	p2=acl_strdup(t);
-	a4gl_upshift(p1);
-	a4gl_upshift(p2);
-	a=strstr(p1,p2);
-	b=a-p1;
-	free(p1);
-	free(p2);
-	return &s[b];
-
-}
-*/
-
 
 #ifdef DOING_CM
 
@@ -3084,7 +3039,6 @@ add_mapping (char *t, char *c1, char *c2)
   column_mappings[ncolumn_mappings - 1].tabname = strdup (t);
   column_mappings[ncolumn_mappings - 1].from_col = strdup (c1);
   column_mappings[ncolumn_mappings - 1].to_col = strdup (c2);
-//printf("Add map : %s,%s,%s\n",t,c1,c2);
 }
 
 static void
@@ -3392,4 +3346,24 @@ is_sqlserver_reserved_word (char *s)
 	return 1;
     }
   return 0;
+}
+
+
+int  A4GL_aubit_strcasestr (char *h, char *n) {
+	char *s1;
+	char *s2;
+	int rval;
+	int a;
+
+	s1=strdup(h);
+	s2=strdup(n);
+	for (a=0;a<strlen(s1);a++) { s1[a]=toupper(h[a]); }
+	for (a=0;a<strlen(s2);a++) { s2[a]=toupper(n[a]); }
+
+	if (strstr(s1,s2)) rval=1;
+	else rval=0;
+
+	free(s1);
+	free(s2);
+	return rval;
 }

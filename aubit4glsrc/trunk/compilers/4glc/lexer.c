@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.116 2006-01-27 16:49:47 mikeaubury Exp $
+# $Id: lexer.c,v 1.117 2006-02-12 09:56:16 mikeaubury Exp $
 #*/
 
 /**
@@ -384,7 +384,7 @@ isnum (char *s)
 	}
 
 	a_d=strtod(orig,0);
-	sprintf(s,"%.8lf",a_d); /* ... */
+	SPRINTF1 (s,"%.8lf",a_d); /* ... */
     }
 
   if (strchr (s, '.'))
@@ -471,7 +471,6 @@ read_word2 (FILE * f, int *t)
 	}
 
 
-      /* printf("Read %d = %c\n",a,a); */
 
       if (a == '#' && instrs == 0 && instrd == 0 && xccode == 0)
 	{
@@ -571,7 +570,7 @@ read_word2 (FILE * f, int *t)
 	{
 	  if (instrs || instrd)
 	    {
-	      printf ("Unterminated string escp=%d?\n", escp);
+	      FPRINTF (stderr,"Unterminated string escp=%d?\n", escp);
 	      *t = TYPE_USTRING;
 	    }
 	  if (strlen (word) > 0)
@@ -594,20 +593,16 @@ read_word2 (FILE * f, int *t)
       if (ispunct (a) && a != '.' && a != '_' && instrs == 0 && instrd == 0)
 	{
 		//char *ptr;
-	  	//printf("Word : %s a=%c\n",word,a); 
 	  	if ((a=='+' || a=='-') && strlen(word)>=2 && toupper(word[strlen(word)-1])=='E') {
 		char *ptr;
-		//printf("a=%c\n",a);
 		ptr=acl_strdup(word);
 		ptr[strlen(ptr)-1]=0;
 		if (isnum(ptr))  {
 				free(ptr);
       				ccat (word, a, instrs || instrd);
-					//printf("Its a number : %s\n",ptr);
 				continue;
 
 		} else {
-			//printf("Its not a number : %s\n",ptr);
 		}
 		free(ptr);
 	} else {
@@ -831,7 +826,6 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
 
   strcpy (buff, kwords[cnt].vals[pos]);
 
-  //printf("words : %s - %d buff=%s\n",p,t_last,buff);
 
   if (buff[0] == '*' && strlen (buff) > 1)
     {
@@ -842,7 +836,6 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
   if (proc==0&&stricmp (buff, "<ident>") == 0)
     {
 
-      /* printf("check %s\n",p); */
       if (isident (p) == 0) return 0;
         strcpy (idents[idents_cnt++], p);
 	proc=1;
@@ -905,7 +898,6 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
 
   if (z == 0)
     {
-	//printf("No match\n");
       return 0;
     }
   return 1;
@@ -984,7 +976,6 @@ chk_word (FILE * f, char *str)
   set_yytext(p);
 
 
-  //printf("Setting yytext to %s\n",p);
 
 
 
@@ -1014,7 +1005,7 @@ chk_word (FILE * f, char *str)
 
   if (t == TYPE_EOF && xccode)
     {
-      printf ("Unexpected end of file - no endcode\n");
+      FPRINTF (stderr, "Unexpected end of file - no endcode\n");
       exit (1);
     }
 
@@ -1182,7 +1173,6 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 	  static char tmpbuff[20000];
 	  A4GL_memfile_fseek (f, yyline_fpos, SEEK_SET);
 	  tl = A4GL_memfile_ftell (f);
-	  /*printf("a-tl = %d\n",a-tl);*/
 	  A4GL_memfile_fread (tmpbuff, a - tl, 1, f);
 	  tmpbuff[a - tl] = 0;
 	  strcpy (&yyline[yyline_len], tmpbuff);
@@ -1320,17 +1310,12 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 /*short *stack_cnt;*/
   strcpy(buff,"");
 
-  /*printf("In yylex ... yystate=%d\n", yystate);*/
-  /*printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);*/
-  /*for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {*/
-  /*printf(" ==>%d\n",*stack_cnt);*/
-  /*}*/
 
   current_yylex_state = yystate;
 
   if (yyin == 0)
     {
-      printf ("No input...\n");
+      FPRINTF (stderr, "No input...\n");
       exit (0);
     }
 
@@ -1348,7 +1333,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	{
 	  last_pc = a;
 	  if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0)
-	    printf ("%d %% complete\r", last_pc);fflush(stdout);
+	    PRINTF ("%d %% complete\r", last_pc);fflush(stdout);
 	
 	}
     }
@@ -1424,7 +1409,6 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
       /*r = wants_kw_token (yystate, a);*/
 
 
-      /*printf ("wants_kw_token -> %d state = %d a=%d", r,yystate,a);*/
       switch (r)
 	{
 	case 0:
@@ -1496,9 +1480,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
       to_lower_str (buff);
     }
 
-  /*printf("Buff=%s\n",buff);*/
   if (strlen(buff)) fix_bad_strings (buff);
-  /*printf("After Buff=%s\n",buff);*/
 
   /* call set_str() to send back to the parser the text/value 
    * associated with the token.
@@ -1525,7 +1507,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		} else {
 			upshift(buff2);
 		}
-		fprintf(file_out,":%s\n",buff2);
+		FPRINTF(file_out,":%s\n",buff2);
 		free(buff2);
 	}
   A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
@@ -1536,13 +1518,13 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
 void file_out_nl(char *why) {
 if (file_out) {
-	fprintf(file_out,"NL %s\n",why);
+	FPRINTF(file_out,"NL %s\n",why);
 }
 }
 
 void file_out_indent(int cnt) {
 if (file_out) {
-	fprintf(file_out,"INDENT %d\n",cnt);
+	FPRINTF(file_out,"INDENT %d\n",cnt);
 }
 }
 
@@ -1674,54 +1656,6 @@ get_idents (int a)
 }
 
 
-/*
-chk_for_kw_in(short *yys1,short *yys2,int a,char *buff) {
-short *stack_cnt;
-int r;
-int could_be;
-could_be=0;
-
-  for (stack_cnt=yys2;stack_cnt>=yys1;stack_cnt--) {
-      		r = wants_kw_token (*stack_cnt, a);
-		if (r==1) {
-			if (scan_variable (buff) == -1) r=0;
-			else return a;
-		}
-		printf("r=%d\n",r);
-		if (r==2) {
-			printf("Y");
-			could_be++;
-		}
-		if (r==3) {
-			printf("X");
-			could_be++;
-		}
- }
- if (could_be) return 2;
- return 0;
-
-		if (r==0) {
-			return a;
-		}
-
-		if (r==2) {
-			//return NAMED_GEN;
-			continue;
-		}
-
-		if (r==3) {
-			continue;
-		}
-
- 		if (r==1) {
-			if (scan_variable (buff) != -1) return NAMED_GEN;
-			else return a;
-		}
-  }
-
-  return NAMED_GEN;
-}
-*/
 
 // Anything allowed in here needs to be added to the sqlblock.rule function as a possible sql_block_entry
 // (with the obvious exceptions...)

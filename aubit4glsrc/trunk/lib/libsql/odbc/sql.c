@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.142 2006-02-09 11:20:52 mikeaubury Exp $
+# $Id: sql.c,v 1.143 2006-02-12 09:56:31 mikeaubury Exp $
 #
 */
 
@@ -205,14 +205,12 @@ int print_err (HDBC hdbc, HSTMT hstmt);
 long A4GL_describecolumn (SQLHSTMT hstmt, int colno, int type);
 int set_stmt_options (char *cursname, char *opt, char *val);
 
-#ifdef DONTINCLUDEDATASOURCES
-	#ifdef PGODBC
+#ifdef INCLUDEDATASOURCES
 		RETCODE SQL_API SQLDataSources (HENV henv, UWORD fDirection,
 						UCHAR FAR * szDSN, SWORD cbDSNMax,
 						SWORD FAR * pcbDSN, UCHAR FAR * szDescription,
 						SWORD cbDescriptionMax,
 						SWORD FAR * pcbDescription);
-	#endif
 #endif
 
 /* in sqlex.c */
@@ -3512,7 +3510,7 @@ A4GL_debug("Here1");
 #ifdef DEBUG
       A4GL_debug ("Creating new statement");
 #endif
-      A4GL_new_hstmt ((SQLHSTMT *) & hstmtGetColumns);
+      A4GL_new_hstmt (& hstmtGetColumns);
     }
 
   if (tabname != 0)
@@ -3530,8 +3528,7 @@ A4GL_debug("Here1");
 		tabname=tabname2;
       }
 
-      rc = SQLColumns (hstmtGetColumns,
-		       NULL, 0, NULL, 0, tabname, SQL_NTS, NULL, 0);
+      rc = SQLColumns (hstmtGetColumns, NULL, 0, NULL, 0, tabname, SQL_NTS, NULL, 0);
 
       if (rc != SQL_SUCCESS)
 	{
@@ -5257,9 +5254,8 @@ cptr=acl_getenv("A4GL_SYSCOL_VAL");
 if (cptr==0) return 0;
 if (strlen(cptr)==0) return 0;
 if (strcmp(cptr,"NONE")==0) return 0;
-SPRINTF3(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
-cptr ,tabname,colname);
-A4GLSQL_add_prepare ("p_get_val", (void *) A4GLSQL_prepare_select (0, 0, 0, 0, buff));
+SPRINTF3(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", cptr ,tabname,colname);
+A4GLSQL_add_prepare ("p_get_val", (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0, buff));
 if (a4gl_sqlca.sqlcode!=0) return (void *)-1;
 A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0, A4GLSQL_find_prepare ("p_get_val"), 0, "c_get_val");
 if (a4gl_sqlca.sqlcode!=0) return (void *)-1;

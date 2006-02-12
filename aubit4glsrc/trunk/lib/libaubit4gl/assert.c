@@ -7,7 +7,7 @@ void A4GL_assertion_failed(char *s)  {
       A4GL_debug ("%s", A4GL_null_as_null(s));
 
 	if (A4GL_isyes(acl_getenv("DOING_CM"))) {
-      		fprintf (stderr,"%s\n", A4GL_null_as_null(s));
+      		FPRINTF (stderr,"%s\n", A4GL_null_as_null(s));
 	}
 
       if (A4GL_isyes(acl_getenv("CORE_ON_ASSERT"))) {

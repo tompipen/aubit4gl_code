@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.18 2006-02-06 08:24:25 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.19 2006-02-12 09:56:31 mikeaubury Exp $
 #
 */
 
@@ -2406,7 +2406,6 @@ int A4GL_has_column (char *t, char *c)
   int opened = 0;
   int found = 0;
   rc = A4GLSQL_get_columns (t, "", &dtype, &size);
-
   while (rc)
     {
       char *s = 0;
@@ -2423,9 +2422,8 @@ int A4GL_has_column (char *t, char *c)
 	  break;
 	}
       free (s);
-
-
     }
+
   if (opened)
     A4GLSQL_end_get_columns ();
   return found;

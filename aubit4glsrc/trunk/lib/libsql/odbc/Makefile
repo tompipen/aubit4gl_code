@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2006-02-09 11:20:52 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2006-02-12 09:56:31 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -132,7 +132,7 @@ ${LIBROOT}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
 
 ################################
 #Aubit ODBC plug-in code linked with (PG) ODBC driver library, for use without ODBC manager
-${LIBROOT}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${LIBROOT}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC -DINCLUDEDATASOURCES ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${LIBROOT}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -l${PGODBC_LIBNAME} ${PGODBC_LFLAGS}
 

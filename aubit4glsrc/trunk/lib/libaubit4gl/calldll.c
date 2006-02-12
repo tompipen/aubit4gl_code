@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.63 2005-12-05 20:31:06 mikeaubury Exp $
+# $Id: calldll.c,v 1.64 2006-02-12 09:56:30 mikeaubury Exp $
 #
 */
 
@@ -264,7 +264,7 @@ static void
 badfunc (void)
 {
   /* A4GL_exitwith ("No DLL Loaded"); */
-  A4GL_exitwith ("0: Non-existing function called in DLL\n");
+  //A4GL_exitwith ("0: Non-existing function called in DLL\n");
 }
 
 /**
@@ -434,7 +434,7 @@ inc_usage(func);
     {
       A4GL_debug ("Not found - bad handle (%s)",func);
       A4GL_exitwith ("Could not open shared library");
-      /* return badfunc; */
+      return badfunc; 
     }
 #ifdef USE_SHL
   if (!shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { 
@@ -451,7 +451,7 @@ inc_usage(func);
       A4GL_exitwith ("Could not find function in shared library");
 	SPRINTF1(buff,"Error:Could not find function in shared library (%s)- STOP",func);
       A4GL_fgl_die_with_msg(43,buff);
-      /* return badfunc; */
+      return badfunc; 
     }
 
 

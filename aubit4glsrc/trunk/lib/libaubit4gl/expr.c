@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.14 2006-02-06 11:32:21 mikeaubury Exp $
+# $Id: expr.c,v 1.15 2006-02-12 09:56:30 mikeaubury Exp $
 #
 */
 
@@ -322,7 +322,7 @@ struct expr_str *A4GL_new_literal_long_str (char *value)
   if (A4GL_isyes(acl_getenv("LOG_STRINGS"))) {
 	if (value[0]=='"') {
 		f=fopen("/tmp/strings.log","w");
-		if (f) fprintf(f,"%s\n",value);
+		if (f) FPRINTF(f,"%s\n",value);
 		fclose(f);
 	}
   }
@@ -389,7 +389,7 @@ if (ptr->expr_type==ET_EXPR_LITERAL_LONG) {
 }
 if (ptr->expr_type==ET_EXPR_LITERAL_DOUBLE_STR) {
 	char buff[256];
-	sprintf(buff,"-%s",ptr->u_data.expr_char);
+	SPRINTF1(buff,"-%s",ptr->u_data.expr_char);
 	ptr->u_data.expr_char=acl_strdup(buff);
 	return ptr;
 }
@@ -820,7 +820,6 @@ A4GL_new_expr_obsol (char *value)
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);
 
-  //fprintf(stderr," shouldn't be using A4GL_new_expr : (%s)\n",value);
 
   //A4GL_assertion(1,"Bad news - shouldn't be using A4GL_new_expr\n");
 

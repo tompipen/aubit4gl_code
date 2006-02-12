@@ -25,13 +25,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: field_handling.c,v 1.5 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: field_handling.c,v 1.6 2006-02-12 09:56:16 mikeaubury Exp $
 #*/
 
 #include "field_handling.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "a4gl_libaubit4gl.h"
 #include "a4gl_memhandling.h"
 
 
@@ -44,9 +45,9 @@ struct fh_field_entry *new_field_entry(char *f,char *n,int needs_quoting) {
 	char buff[256];
 	field=acl_malloc2(sizeof(struct fh_field_entry));
 	if (needs_quoting) {
-		sprintf(buff,"\"%s\"",f);
+		SPRINTF1 (buff,"\"%s\"",f);
 	} else {
-		sprintf(buff,"%s",f);
+		SPRINTF1 (buff,"%s",f);
 	}
 	field->field_name =acl_strdup(buff);
 	field->field_sub  =acl_strdup(n);
@@ -88,7 +89,7 @@ struct fh_field_list *append_field_name_to_list (struct fh_field_list *field_lis
 
 char *field_name_as_char(struct fh_field_entry *f) {
 	static char buff[256];
-	sprintf(buff,"%s,%s",f->field_name,f->field_sub);
+	SPRINTF2(buff,"%s,%s",f->field_name,f->field_sub);
 	return buff;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.82 2006-01-29 16:39:04 mikeaubury Exp $
+# $Id: variables.c,v 1.83 2006-02-12 09:56:16 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ strcpy(buff,s);
 		  char b[200];
 		  //int c;
 		  extern char curr_func[];
-		  sprintf(b,"%s_%s",A4GL_compiling_module_basename(),curr_func);
+		  SPRINTF2(b,"%s_%s",A4GL_compiling_module_basename(),curr_func);
 
 		if (strncmp(&s[2],b,strlen(b))==0) {
 			strcpy(buff,&s[strlen(b)]+3);
@@ -226,7 +226,6 @@ void push_scope(void) {
 }
 
 void pop_scope(void) {
-	//printf("poped variable scope\n");
 	scopes_cnt--;
 	set_current_variable_scope(scopes[scopes_cnt]);
 }
@@ -1375,19 +1374,19 @@ A4GL_debug("-->%s",s);
 void
 dump_var_records (void)
 {
-  printf ("\n\n\nImported Globals\n");
+  PRINTF ("\n\n\nImported Globals\n");
   dump_variable_records (list_imported_global, list_imported_global_cnt, 0);
 
-  printf ("Globals\n");
+  PRINTF ("Globals\n");
   dump_variable_records (list_global, list_global_cnt, 0);
 
-  printf ("Module\n");
+  PRINTF ("Module\n");
   dump_variable_records (list_module, list_module_cnt, 0);
-  printf ("Local\n");
+  PRINTF ("Local\n");
   dump_variable_records (list_local, list_local_cnt, 0);
-  printf ("Types\n");
+  PRINTF ("Types\n");
   dump_variable_records (list_types, list_types_cnt, 0);
-  printf ("END\n\n");
+  PRINTF ("END\n\n");
 }
 
 
@@ -2301,19 +2300,19 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
 
   if ((*v_record)->variable_type != VARIABLE_TYPE_RECORD && (*v_record)->variable_type != VARIABLE_TYPE_OBJECT)
     {
-      printf ("Couldn't identify start as a record\n");
+      PRINTF ("Couldn't identify start as a record\n");
       return 0;
     }
 
   if ((*v1)->variable_type != VARIABLE_TYPE_SIMPLE)
     {
-      printf ("Variable is not simple\n");
+      PRINTF ("Variable is not simple\n");
       return 0;
     }
 
   if ((*v2)->variable_type != VARIABLE_TYPE_SIMPLE)
     {
-      printf ("Variable is not simple\n");
+      PRINTF ("Variable is not simple\n");
       return 0;
     }
 
@@ -2345,7 +2344,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 
   if (list == 0)
     {
-      printf ("List is empty\n");
+      PRINTF ("List is empty\n");
       exit (0);
     }
 
@@ -2375,14 +2374,14 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 
 
       if (dim==0) {
-      		sprintf (buff, "%s.%s", prefix_buff, v->names.name);
+      		SPRINTF2 (buff, "%s.%s", prefix_buff, v->names.name);
       		list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
       }
 
         if (dim==1)  {
                 for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
-                                                        sprintf(subscript,fmt,b0);
-      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+                                                        SPRINTF1(subscript,fmt,b0);
+      							SPRINTF3 (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
       							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                 }
         }
@@ -2391,8 +2390,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
         if (dim==2)  {
                 for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
                         for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
-                                                        sprintf(subscript,fmt,b0,b1);
-      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+                                                        SPRINTF2(subscript,fmt,b0,b1);
+      							SPRINTF3 (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
       							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                         }
                 }
@@ -2402,8 +2401,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
                 for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
                         for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
                                 for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
-                                                        sprintf(subscript,fmt,b0,b1,b2);
-      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+                                                        SPRINTF3(subscript,fmt,b0,b1,b2);
+      							SPRINTF3 (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
       							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                                 }
                         }
@@ -2415,8 +2414,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
                         for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
                                 for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
                                         for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
-                                                        sprintf(subscript,fmt,b0,b1,b2,b3);
-      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+                                                        SPRINTF4(subscript,fmt,b0,b1,b2,b3);
+      							SPRINTF3 (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
       							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                                         }
                                 }
@@ -2430,8 +2429,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
                                 for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
                                         for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
                                                 for (b4 = 0; b4 < v->arr_subscripts[4]; b4++) {
-                                                        sprintf(subscript,fmt,b0,b1,b2,b3,b4);
-      							sprintf (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
+                                                        SPRINTF5(subscript,fmt,b0,b1,b2,b3,b4);
+      							SPRINTF3 (buff, "%s.%s%s", prefix_buff, v->names.name,subscript);
       							list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
                                                 }
                                         }
@@ -2469,14 +2468,14 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 
 
 	if (dim==0) {
-      		sprintf (buff, "%s.%s.*", prefix_buff, v->names.name);
+      		SPRINTF2 (buff, "%s.%s.*", prefix_buff, v->names.name);
       		return split_record_list (buff, buff, list);
 	}
 
 	if (dim==1)  {
 		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
-							sprintf(subscript,fmt,b0);
-      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+							SPRINTF1(subscript,fmt,b0);
+      							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
       							split_record_list (buff, buff, list);
 		}
 	}
@@ -2485,8 +2484,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	if (dim==2)  {
 		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
     			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
-							sprintf(subscript,fmt,b0,b1);
-      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+							SPRINTF2(subscript,fmt,b0,b1);
+      							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
       							split_record_list (buff, buff, list);
   			}
 		}
@@ -2496,7 +2495,9 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
     			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
 				for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
-							sprintf(subscript,fmt,b0,b1,b2);
+							SPRINTF3(subscript,fmt,b0,b1,b2);
+      							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+      							split_record_list (buff, buff, list);
 	      			}
   			}
 		}
@@ -2507,8 +2508,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
     			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
 				for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
 	    				for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
-							sprintf(subscript,fmt,b0,b1,b2,b3);
-      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+							SPRINTF4(subscript,fmt,b0,b1,b2,b3);
+      							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
       							split_record_list (buff, buff, list);
 		  			}
 	      			}
@@ -2522,8 +2523,8 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 				for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
 	    				for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
 						for (b4 = 0; b4 < v->arr_subscripts[4]; b4++) {
-							sprintf(subscript,fmt,b0,b1,b2,b3,b4);
-      							sprintf (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
+							SPRINTF5(subscript,fmt,b0,b1,b2,b3,b4);
+      							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
       							split_record_list (buff, buff, list);
 						}
 		  			}
@@ -2597,7 +2598,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
       if (prefix != 0 && strlen (prefix))
 	{
-	  sprintf (prefix_buff, "%s.", prefix);
+	  SPRINTF1 (prefix_buff, "%s.", prefix);
 	}
       else
 	{
@@ -2625,7 +2626,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       /* Can we find it - is it declared ?*/
       if (v_record == 0)
 	{
-	  printf ("Whoops - record not found for %s (1)\n", record2);
+	  PRINTF ("Whoops - record not found for %s (1)\n", record2);
 	  a4gl_yyerror ("Record not found");
 	  return 0;
 	}
@@ -2666,7 +2667,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
       if (v_record == 0)
 	{
-	  printf ("Whoops - record not found for %s(2)\n", record1);
+	  PRINTF ("Whoops - record not found for %s(2)\n", record1);
 	  a4gl_yyerror ("Record not found");
 	  return 0;
 	}
@@ -2687,7 +2688,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 	  char buff2[255];
 	  char *ptr;
 	  struct record_list_entry *e;
-	  printf ("WARNING : Using a .* on a non-record - %s\n", s);
+	  FPRINTF (stderr,"WARNING : Using a .* on a non-record - %s\n", s);
 	  strcpy (buff, s);
 	  strip_bracket (buff);
 	  ptr = strstr (buff, ".*");
@@ -2701,7 +2702,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 	  list->records_cnt = 0;
 	  list->list = acl_malloc2 (sizeof (struct record_list_entry *));
 	  e = acl_malloc2 (sizeof (struct record_list_entry));
-	  sprintf (buff2, "%s", buff);
+	  SPRINTF1 (buff2, "%s", buff);
 	  e->variable = (struct variable *) curr_v;
 	  e->name = acl_strdup (buff2);
 	  list->list[list->records_cnt] = e;
@@ -2747,7 +2748,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       if (add_to_record_list
 	  (&list, prefix_buff, v_record->data.v_record.variables[a]) == 0)
 	{
-	  printf ("Bugger -  something went wrong...\n");
+	  PRINTF ("Bugger -  something went wrong...\n");
 	  /* Should free list here...*/
 	  return 0;
 	}
@@ -2852,7 +2853,6 @@ print_push_rec (char *s, void **b, int always_list)
 
 	  p = A4GL_new_expr_push_variable (list->list[a]->name, dtype);
 
-	  //sprintf (buff, "A4GL_push_variable(&%s,0x%x);", list->list[a]->name, dtype);
 	  //
 		A4GL_new_append_ptr_list(vlist->u_data.expr_list,p);
 	}
@@ -2907,7 +2907,7 @@ rettype_integer (int n)
 
   A4GL_debug ("rettype_integer : %d\n", n);
 
-  sprintf (s, "%d", n);
+  SPRINTF1 (s, "%d", n);
   return rettype (s);
 }
 
@@ -3053,7 +3053,6 @@ char find_variable_scope (char *s_in)
 
   strip_bracket (s);
 
-//printf("find_variable_scope (%s)\n",s);
 
   ptr = find_variable_ptr (s);
 
@@ -3066,7 +3065,6 @@ char find_variable_scope (char *s_in)
     {
       return 'G';
     }
-  //printf("=--->%c\n",ptr->scope);
   return toupper (ptr->scope);
 }
 
@@ -3121,11 +3119,9 @@ int is_system_variable (char *s)
 
 
 void set_last_class_var(char *s) {
-	//printf("set last_class_var : -->%s\n",s);
 	strcpy(last_class_var,s);
 }
 char *get_last_class_var(void) {
-	//printf("Get last_class_var : %s\n",last_class_var);
 	return last_class_var;
 }
 
@@ -3157,11 +3153,9 @@ int has_fbind(char *s) {
 int a;
 extern int fbindcnt;
 extern struct binding_comp *fbind;
-//printf("fbindcnt=%d\n",fbindcnt);
 for (a=0;a<fbindcnt;a++) {
 	char buff[256];
 	char *ptr;
-	//printf("%s %s\n",fbind[a].varname,s);
 	strcpy(buff, A4GL_unscope(fbind[a].varname));
 	ptr=strchr(buff,'.');
 	if (ptr) {

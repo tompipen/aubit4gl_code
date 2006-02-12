@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.65 2006-02-05 16:49:55 mikeaubury Exp $
+# $Id: 4glc.c,v 1.66 2006-02-12 09:56:15 mikeaubury Exp $
 #
 */
 
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
   x = initArguments (argc, argv);
   if (a4gl_yydebug)
     {
-      printf ("Exit\n");
+      PRINTF ("Exit\n");
     }
 
   /* dump_var_records();*/

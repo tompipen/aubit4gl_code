@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.69 2005-12-02 12:28:11 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.70 2006-02-12 09:56:30 mikeaubury Exp $
 #
 */
 
@@ -360,6 +360,7 @@ A4GL_push_char (char *p)
   char *ptr;
   last_was_empty=0;
   A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
+
   A4GL_debug("Push char...'%s'",p);
   if (p[0] == 0 && p[1] != 0)
     {

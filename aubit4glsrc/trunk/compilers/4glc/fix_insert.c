@@ -3,7 +3,6 @@
 
 
 char *fix_insert_expr (int mode);
-#define PRINTF printf
 void do_yyerror (char *s);
 //void push_gen (int a, char *s);
 
@@ -25,9 +24,8 @@ extern char current_ins_table[256];
 
 static int is_serial_column(char *tabname,char *colname) {
 	char buff[256];
-	sprintf(buff,"%s.%s",tabname,colname);
+	SPRINTF2(buff,"%s.%s",tabname,colname);
 	if (A4GL_has_pointer(buff,'V')) {
-		printf("SERIAL\n");
 		return 1;
 	}
 	return 0;
@@ -98,7 +96,7 @@ fix_insert_expr (int mode)
     {
       if (A4GL_db_used() == 0)
 	{
-	  sprintf (buff, "You cannot use insert into this table without specifying a database");
+	  SPRINTF0 (buff, "You cannot use insert into this table without specifying a database");
 	  do_yyerror (buff);
 	  return 0;
 	}
@@ -166,7 +164,7 @@ fix_insert_expr (int mode)
   if (A4GL_4glc_gen_cnt(INSCOL) != A4GL_4glc_gen_cnt(INSVAL))
     {
 	    char buff[256];
-	    sprintf(buff,"Number of columns in insert not the same as number of values (%d!=%d)",A4GL_4glc_gen_cnt(INSCOL),A4GL_4glc_gen_cnt(INSVAL));
+	    SPRINTF2 (buff,"Number of columns in insert not the same as number of values (%d!=%d)",A4GL_4glc_gen_cnt(INSCOL),A4GL_4glc_gen_cnt(INSVAL));
       		dump_insvals ();
       		do_yyerror (buff);
     }
@@ -270,7 +268,7 @@ fix_insert_expr (int mode)
 
   for (a = 0; a < A4GL_4glc_gen_cnt(INSVAL); a++)
     {
-      sprintf (buff, "%s", A4GLSQLCV_insert_alias_value (current_ins_table, A4GL_4glc_get_gen(INSCOL,a), 
+      SPRINTF1 (buff, "%s", A4GLSQLCV_insert_alias_value (current_ins_table, A4GL_4glc_get_gen(INSCOL,a), 
 			      		A4GL_4glc_get_gen(INSVAL,a),idtypes[a]));
 	strcpy(A4GL_4glc_get_gen(INSVAL,a),buff);
     }
@@ -278,7 +276,7 @@ fix_insert_expr (int mode)
   added=0;
   for (a = 0; a < A4GL_4glc_gen_cnt(INSCOL); a++)
     {
-      sprintf (buff, "%s", A4GLSQLCV_insert_alias_column (current_ins_table, 
+      SPRINTF1 (buff, "%s", A4GLSQLCV_insert_alias_column (current_ins_table, 
 			      		A4GL_4glc_get_gen(INSCOL,a), 
 					A4GL_4glc_get_gen(INSVAL,a),idtypes[a]));
 	if (strlen(buff)) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.268 2006-02-06 11:32:20 mikeaubury Exp $
+# $Id: mod.c,v 1.269 2006-02-12 09:56:16 mikeaubury Exp $
 #
 */
 
@@ -320,50 +320,6 @@ int A4GL_db_used (void);
 
 
 
-/*
-void
-A4GL_print_expr_ret_list (struct expr_str_list *l)
-{
-  int a;
-  printf("PLEASE OBSOLETE USAGE OF A4GL_print_expr_ret_list\n");
-  if (l == 0)
-    return;
-  l=A4GL_rationalize_list(l);
-  for (a = 0; a < l->nlist; a++)
-    {
-      struct expr_str *p;
-      p=l->list[a];
-      if (p->expr_type==ET_EXPR_EXPR_LIST) {
-		A4GL_print_expr_ret_list (p->u_data.expr_list);
-      } else {
-      		print_expr (l->list[a]);
-      }
-    }
-}
-*/
-
-/*
-void
-print_expr_list_concat (struct expr_str_list *l)
-{
-  int a;
-
-  printf("PLEASE OBSOLETE USAGE OF print_expr_list_concat\n");
-  if (l == 0) return;
-  l=A4GL_rationalize_list(l);
-
-  for (a = 0; a < l->nlist; a++)
-    {
-      struct expr_str *p;
-      p=l->list[a];
-      if (a) {
-		print_op("OP_CONCAT");
-      }
-      print_expr (l->list[a]);
-    }
-
-}
-*/
 
 
 
@@ -1264,7 +1220,7 @@ open_db (char *s)
   A4GLSQL_init_connection (db);
   if (A4GLSQL_get_status () != 0)
     {
-      sprintf (buff, "Could not connect to database %s (%s)",
+      SPRINTF2 (buff, "Could not connect to database %s (%s)",
 	       A4GL_null_as_null (db),
 	       A4GL_null_as_null (A4GLSQL_get_sqlerrm ()));
       a4gl_yyerror (buff);
@@ -1383,13 +1339,13 @@ pushLikeTableColumn (char *tableName, char *columnName)
 
   if (rval == 0)
     {
-      sprintf (buff, "%s.%s does not exist in the database", tableName,
+      SPRINTF2 (buff, "%s.%s does not exist in the database", tableName,
 	       columnName);
       a4gl_yyerror (buff);
       return 0;
     }
-  sprintf (cdtype, "%d", idtype & 15);
-  sprintf (csize, "%d", isize);
+  SPRINTF1 (cdtype, "%d", idtype & 15);
+  SPRINTF1 (csize, "%d", isize);
 
   trim_spaces (cname);
   push_type (rettype (cdtype), csize, (char *) 0);
@@ -1411,13 +1367,11 @@ pushValidateTableColumn (char *tableName, char *columnName)
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
   if (rval == 0)
     {
-      sprintf (buff, "%s.%s does not exist in the database", tableName,
+      SPRINTF2 (buff, "%s.%s does not exist in the database", tableName,
 	       columnName);
       a4gl_yyerror (buff);
       return 0;
     }
-  /*sprintf (cdtype, "%d", idtype & 15); */
-  /*sprintf (csize, "%d", isize); */
   trim_spaces (columnName);
   push_validate_column (tableName, columnName);
   return 1;
@@ -1445,7 +1399,7 @@ pushValidateAllTableColumns (char *tableName)
   A4GL_debug ("rval = %d", rval);
   if (rval == 0 && tableName)
     {
-      sprintf (buff, "%s does not exist in the database", tableName);
+      SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
       return 1;
     }
@@ -1509,7 +1463,7 @@ pushLikeAllTableColumns (char *tableName)
   A4GL_debug ("rval = %d", rval);
   if (rval == 0 && tableName)
     {
-      sprintf (buff, "%s does not exist in the database", tableName);
+      SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
       return 1;
     }
@@ -1545,8 +1499,8 @@ pushLikeAllTableColumns (char *tableName)
        */
 
 
-      sprintf (cdtype, "%d", idtype & 15);
-      sprintf (csize, "%d", isize);
+      SPRINTF1 (cdtype, "%d", idtype & 15);
+      SPRINTF1 (csize, "%d", isize);
       A4GL_debug ("%d %d", idtype, isize);
       A4GL_debug ("---> %s %s", A4GL_null_as_null (cdtype),
 		  A4GL_null_as_null (csize));
@@ -1567,7 +1521,7 @@ pushLikeAllTableColumns (char *tableName)
   if (ncol == 0)
     {
 
-      sprintf (buff, "%s does not exist in the database", tableName);
+      SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
       return 1;
     }
@@ -1593,7 +1547,7 @@ push_like2 (char *t2)
 
   if (db_used == 0)
     {
-      sprintf (buff, "You cannot use LIKE without specifying a database");
+      SPRINTF0 (buff, "You cannot use LIKE without specifying a database");
       a4gl_yyerror (buff);
       return;
     }
@@ -1643,7 +1597,7 @@ push_validate (char *t2)
 
   if (db_used == 0)
     {
-      sprintf (buff, "You cannot use VALIDATE without specifying a database");
+      SPRINTF0 (buff, "You cannot use VALIDATE without specifying a database");
       a4gl_yyerror (buff);
       return;
     }
@@ -1857,7 +1811,7 @@ pop_blockcommand (char *cmd_type)
 
     }
 
-  sprintf (err, "%s was not last block command (I've got a %s @ %d)\n",
+  SPRINTF3 (err, "%s was not last block command (I've got a %s @ %d)\n",
 	   cmd_type, command_stack[ccnt].cmd_type, ccnt);
   A4GL_debug (err);
   A4GL_debug ("------------------\n");
@@ -1904,7 +1858,7 @@ ccnt=get_ccnt();
     }
 
   //PRINTF ("Not in a %s command\n", cmd_type);
-  sprintf (buff,
+  SPRINTF1 (buff,
 	   "Can't exit/continue '%s' command (because you're not in one)",
 	   cmd_type);
   a4gl_yyerror (buff);
@@ -1929,21 +1883,6 @@ trim(char *s)
     s[strlen (s) - 1] = 0;
 }
 
-*/
-
-
-/**
- * Not used
- */
-/*
-static a4gl_yyerrorf (char *fmt, ...)
-{
-  char buff[256];
-  va_list args;
-  va_start (args, fmt);
-  vsprintf (buff, fmt, args);
-  a4gl_yyerror (buff);
-}
 */
 
 
@@ -2035,19 +1974,16 @@ add_bind (char i, char *var_i)
 	      if (ptrs[1])
 		{
 		  *ptrs[1] = 0; ptrs[1]++;
-		  printf("1\n");
 		  strcpy (buff, ptrs[0]);
 		  ptrs[2] = strstr (ptrs[1] + 3, " , ");
 		  if (ptrs[2])
 		    {
 		      *ptrs[2] = 0; ptrs[2]++;
-			printf("2\n");
 		      s_dtype = atol (ptrs[1]);
 		      ptrs[3] = strstr (ptrs[2] + 3, " , ");
 		      if (ptrs[3])
 			{
 			  *ptrs[3] = 0; ptrs[3]++;
-			  printf("3\n");
 			  s_sstart = atol (ptrs[2]);
 			  s_send = atol (ptrs[3]);
 			}
@@ -2997,7 +2933,7 @@ push_construct_table (char *tableName)
   A4GL_debug ("rval = %d", rval);
   if (rval == 0 && tableName)
     {
-      sprintf (buff, "%s does not exist in the database", tableName);
+      SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
       return 1;
     }
@@ -3768,7 +3704,6 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
 
 	      get_variable_dets_arr3 (buff, &type, &arrsize1, &arrsize2,
 				      &arrsize3, &size, &level, 0);
-	      //printf("%d %d %d\n",arrsize1,arrsize2,arrsize3);
 
 	      if (arrsize3)
 		{
@@ -3778,7 +3713,7 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
 			{
 			  for (c3 = 0; c3 < arrsize3; c3++)
 			    {
-			      sprintf (buff2, "%s[%d][%d][%d]", buff, c1, c2,
+			      SPRINTF4 (buff2, "%s[%d][%d][%d]", buff, c1, c2,
 				       c3);
 			      if (scan_variable (buff2) == -2)
 				{
@@ -3798,7 +3733,7 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
 			{
 			  for (c2 = 0; c2 < arrsize2; c2++)
 			    {
-			      sprintf (buff2, "%s[%d][%d]", buff, c1, c2);
+			      SPRINTF3 (buff2, "%s[%d][%d]", buff, c1, c2);
 			      if (scan_variable (buff2) == -2)
 				{
 				  strcat (buff2, ".*");
@@ -3811,7 +3746,7 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
 		    {
 		      for (c1 = 0; c1 < arrsize1; c1++)
 			{
-			  sprintf (buff2, "%s[%d]", buff, c1);
+			  SPRINTF2 (buff2, "%s[%d]", buff, c1);
 			  if (scan_variable (buff2) == -2)
 			    {
 			      strcat (buff2, ".*");
@@ -4108,7 +4043,7 @@ fix_update_expr (int mode)
       /* It will only be a '*' anyway.... */
       if (db_used == 0)
 	{
-	  sprintf (buff,
+	  SPRINTF0 (buff,
 		   "You cannot use update * =  without specifying a database");
 	  a4gl_yyerror (buff);
 	  return 0;
@@ -4164,7 +4099,7 @@ fix_update_expr (int mode)
 	      notab=strchr(notab,'.')+1;
       }
 
-      sprintf (buff, "%s=%s ", notab, A4GL_4glc_get_gen (UPDVAL, a));
+      SPRINTF2 (buff, "%s=%s ", notab, A4GL_4glc_get_gen (UPDVAL, a));
 
       strcat (big_buff, buff);
     }
@@ -4426,7 +4361,7 @@ add_clobber (char *buff_orig, char *important)
 
   strcpy (b1, important);
   b1[9] = 0;
-  sprintf (buff_new, "\"a4gl_%03d_%s\"", p++, b1);
+  SPRINTF2 (buff_new, "\"a4gl_%03d_%s\"", p++, b1);
   clob_arr[clob_arr_cnt - 1].orig = acl_strdup (buff_orig);
   clob_arr[clob_arr_cnt - 1].new = acl_strdup (buff_new);
   clob_arr[clob_arr_cnt - 1].important = acl_strdup (important);
@@ -4440,7 +4375,7 @@ do_clobbering (char *f, char *s)
 
   if (A4GL_isyes (acl_getenv ("NOCLOBBER")))
     {
-      sprintf (buff, "\"%s\"", s);
+      SPRINTF1 (buff, "\"%s\"", s);
       if (!has_clobber (buff))
 	{
 	  add_clobber (buff, s);
@@ -4448,7 +4383,7 @@ do_clobbering (char *f, char *s)
       return buff;
     }
 
-  sprintf (buff, "\"%s_%s\"", f, s);
+  SPRINTF2 (buff, "\"%s_%s\"", f, s);
 
   if (A4GL_isyes (acl_getenv ("ALWAYSCLOBBER")))
     {
@@ -4528,12 +4463,12 @@ fgl_add_scope (char *s, int n)
 	{
 	  if (c == 'C')
 	    {
-	      sprintf (buffer, "CLASS_COPY->%s", buffer2);
+	      SPRINTF1 (buffer, "CLASS_COPY->%s", buffer2);
 	    }
 	  else
 	    {
 	      find_variable_ptr (buffer2);
-	      sprintf (buffer, "CLASS_COPY->%s", get_last_class_var ());
+	      SPRINTF1 (buffer, "CLASS_COPY->%s", get_last_class_var ());
 	    }
 	}
       else
@@ -4543,23 +4478,23 @@ fgl_add_scope (char *s, int n)
 	    {
 		    if (c=='R') {
 			    extern char curr_func[];
-	      			sprintf (buffer, "%c_%s_%s_%s", c, A4GL_compiling_module_basename (), curr_func,buffer2);
+	      			SPRINTF4 (buffer, "%c_%s_%s_%s", c, A4GL_compiling_module_basename (), curr_func,buffer2);
 		    } else {
-	      		sprintf (buffer, "%c_%s_%s", c, A4GL_compiling_module_basename (), buffer2);
+	      		SPRINTF3 (buffer, "%c_%s_%s", c, A4GL_compiling_module_basename (), buffer2);
 		    }
 	      buffer[0] = toupper (buffer[0]);
 	    }
 	  else
 	    {
 		
-	      sprintf (buffer, "%c_%s", c, buffer2);
+	      SPRINTF2 (buffer, "%c_%s", c, buffer2);
 	      buffer[0] = toupper (buffer[0]);
 	    }
 	}
     }
   else
     {
-      sprintf (buffer, "%s", buffer2);
+      SPRINTF1 (buffer, "%s", buffer2);
     }
 
   return buffer;
@@ -4834,7 +4769,7 @@ A4GL_add_feature (char *feature)
 	  return;
 	}
       A4GL_add_pointer (feature, FEATURE_USED, (void *) 1);
-      fprintf (f, "%s\n", feature);
+      FPRINTF (f, "%s\n", feature);
       fclose (f);
     }
 }
@@ -4906,7 +4841,7 @@ A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s)
 	  p = fix_insert_expr (1);
 	  if (p)
 	    {
-	      sprintf (buff, "INSERT INTO %s %s", current_ins_table, p);
+	      SPRINTF2 (buff, "INSERT INTO %s %s", current_ins_table, p);
 	      free (s);
 	      return acl_strdup (buff);
 	    }
@@ -4941,7 +4876,7 @@ void
 emulate_insert (char *s)
 {
   char buff[256];
-  sprintf (buff, "\"%s\"", s);
+  SPRINTF1 (buff, "\"%s\"", s);
   A4GL_cursor_defined (buff, 'I');
 }
 
@@ -5023,7 +4958,7 @@ A4GL_generate_variable_expr (char *s)
 
       if (p1 == 0)
 	{
-	  printf ("Thought I'd got all of these :%s\n", s);
+	  PRINTF ("Thought I'd got all of these :%s\n", s);
 	  A4GL_assertion (1, "Thought I'd got all of these");
 	  //p1 = A4GL_new_expr (s);
 	}
@@ -5042,7 +4977,6 @@ A4GL_generate_variable_expr (char *s)
 	  char *ptr_e;
 	  char *ptr;
 	  int type = -1;
-	  //printf("split : %s\n",s);
 
 	  ptr_str = &s[13];
 	  ptr_len = strchr (ptr_str, ',');
@@ -5075,14 +5009,8 @@ A4GL_generate_variable_expr (char *s)
 		  *ptr_e = 0;
 		  ptr_e = "0";
 		  type = 0;
-		  //printf("...\n");
 		}
 	    }
-	  //if (ptr[strlen(ptr)-1]==')')  
-	  //ptr=strchr(ptr_e,')');
-	  //if (ptr) {*ptr=0; type=1;}
-	  //printf("SUBSTR : %s:%s:%s:%s (%d)\n",ptr_str,ptr_len,ptr_s,ptr_e,type);
-	  //sprintf (buff, "A4GL_push_char(%s); /* SUBSTR EXPR */", s);;
 
 	  p1 =
 	    A4GL_new_substring_expr (ptr_str, atol (ptr_len), ptr_s, ptr_e,
@@ -5095,7 +5023,7 @@ A4GL_generate_variable_expr (char *s)
 	}
 
 	  A4GL_assertion (1, "Is this used for anything else too ?");
-     sprintf (buff, "A4GL_push_char(%s); /* NOT SUBSTR EXPR */", s);;
+     SPRINTF1 (buff, "A4GL_push_char(%s); /* NOT SUBSTR EXPR */", s);;
       p1 = A4GL_new_expr_obsol (buff);
     }
 
@@ -5267,7 +5195,7 @@ add_sql_function (char *s)
   f = fopen ("/tmp/sqlcall.log", "a");
   if (!f)
     return;
-  fprintf (f, "%s %s %d\n", s, A4GL_compiling_module (), yylineno);
+  FPRINTF (f, "%s %s %d\n", s, A4GL_compiling_module (), yylineno);
   fclose (f);
 }
 

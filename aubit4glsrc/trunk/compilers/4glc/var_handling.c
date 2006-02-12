@@ -151,17 +151,12 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
       if (var->nsubscripts && var->nsubstrings == 0)
 	{
 	  // It might be a substring..
-	  //printf("Type = %x\n",type);
 	  //
 	  //
 
-	//if (arrsize==0) { printf("%d\n",arrsize); }
-	//if (type==-1) { printf("%d\n",type); }
-	//if (ident_flg==VAR_USG_IDENT)  { printf("%d\n",ident_flg); }
 
 	  if (arrsize == 0 || type == -1 || ident_flg == VAR_USG_IDENT)
 	    {
-	      //printf("Fix it...\n");
 	      // This is a substring - not a subscript...
 	      var->nsubstrings = var->nsubscripts;
 	      var->substrings[0] = var->subscripts[0];
@@ -178,7 +173,6 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 
       if (var->nsubscripts)
 	{
-		//printf("Decde 2\n");
 	  if (ident_flg == VAR_USG_VARIABLE)
 	    {
 	      strcat (buff, "[");
@@ -187,7 +181,7 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 		{
 		  if (a)
 		    strcat (buff, "][");
-		  sprintf (tmpbuff, "((%s)-1)", var->subscripts[a]);
+		  SPRINTF1 (tmpbuff, "((%s)-1)", var->subscripts[a]);
 		  strcat (buff, tmpbuff);
 		}
 	      strcat (buff, "]");
@@ -215,7 +209,7 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	    {
 	      if (ident_flg == VAR_USG_VARIABLE)
 		{
-		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s ,0) /*x*/", buff,
+		  SPRINTF3 (tmpbuff, " a4gl_substr(%s , %d , %s ,0) /*x*/", buff,
 			   type, var->substrings[0]);
 		  strcpy (buff, tmpbuff);
 		  strcpy (tmpbuff, "");
@@ -233,7 +227,7 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	    {
 	      if (ident_flg == VAR_USG_VARIABLE)
 		{
-		  sprintf (tmpbuff, " a4gl_substr(%s , %d , %s , %s , 0) /*y*/",
+		  SPRINTF4 (tmpbuff, " a4gl_substr(%s , %d , %s , %s , 0) /*y*/",
 			   buff, type, var->substrings[0],
 			   var->substrings[1]);
 		  strcpy (buff, tmpbuff);

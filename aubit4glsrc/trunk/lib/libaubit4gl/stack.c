@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.146 2006-01-29 19:20:15 mikeaubury Exp $
+# $Id: stack.c,v 1.147 2006-02-12 09:56:31 mikeaubury Exp $
 #
 */
 
@@ -100,6 +100,7 @@ struct passwd
 #define IGN 0xee
 #define UC (unsigned char)
 #define LOCAL_BINDINGS 20
+int get_null_as_pad_string(void) ;
 //void A4GL_process_stack_op_other (int d);
 //int A4GL_stof (void *aa, void *zz, int sz_ignore);
 
@@ -570,7 +571,9 @@ A4GL_char_pop_size (int *sz)
   if (a==0) s[1]=1;
   *sz=a;
   A4GL_pop_param (s, DTYPE_CHAR, a);
-  A4GL_debug("A4GL_char_pop - returning '%s' (%s)\n",s,A4GL_isnull(DTYPE_CHAR,s)?"null":"not null");
+
+  A4GL_debug("A4GL_char_pop - returning '%s' (%s)\n",s,(A4GL_isnull(DTYPE_CHAR,s)?"null":"not null"));
+
   return s;
 }
 
