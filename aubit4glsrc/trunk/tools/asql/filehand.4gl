@@ -29,6 +29,7 @@ code
 int init_filename=1;
 char *get_tmp_dir();
 
+void add_temp_file (char *s);
 
 endcode
 
@@ -271,8 +272,7 @@ for (a=0;a<1000;a++) {
 }
 
 
-void
-add_temp_file (char *s)
+void add_temp_file (char *s)
 {
   char buff[1000];
   int a;

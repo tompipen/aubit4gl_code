@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2006-02-12 09:56:31 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2006-02-13 15:57:49 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -120,7 +120,7 @@ ${LIBROOT}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
 
 ################################
 #Aubit ODBC plug-in code linked with unixODBC ODBC manager library
-${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${CFLAGS}
+${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${UNIXODBC_INCLUDE} ${CFLAGS}
 ${LIBROOT}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${UNIXODBC_LIBS} ${UNIXODBC_LFLAGS}
 

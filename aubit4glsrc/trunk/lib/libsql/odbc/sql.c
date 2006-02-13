@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.144 2006-02-13 14:57:10 mikeaubury Exp $
+# $Id: sql.c,v 1.145 2006-02-13 15:57:49 mikeaubury Exp $
 #
 */
 
@@ -864,12 +864,17 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, 
 
   sid = acl_malloc2 (sizeof (struct s_sid));
   sid->select = strdup (s);
-  sid->ibind = ibind;
-  A4GL_debug ("sid->ni=%d", ni);
-  sid->ni = ni;
-  sid->obind = obind;
-  sid->no = no;
 
+  // I'm going to copy the bindings....
+
+  sid->ibind = malloc(sizeof(struct BINDING)*ni);
+  memcpy(sid->ibind,ibind,sizeof(struct BINDING)*ni);
+
+  sid->obind = malloc(sizeof(struct BINDING)*no);
+  memcpy(sid->obind,obind,sizeof(struct BINDING)*no);
+
+  sid->ni = ni;
+  sid->no = no;
 
   A4GLSQL_set_status (0, 1);
 
@@ -1141,6 +1146,12 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
 
   	free (sid->select);
   	sid->select = 0;
+
+	// Should probably free the obind too..
+	// leave that for later...
+	if (sid->ibind) free(sid->ibind);
+
+
   	free (sid);
     }
 
@@ -1208,6 +1219,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
       A4GL_debug ("a not set");
     }
   free (sid->select);
+  if (sid->obind) free(sid->obind);
+  if (sid->ibind) free(sid->ibind);
   free (sid);
 
   return a;
