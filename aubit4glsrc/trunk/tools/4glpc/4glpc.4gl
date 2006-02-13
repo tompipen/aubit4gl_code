@@ -1051,8 +1051,8 @@ end if
 let lv_errsize=file_size(mv_errfile)
 
 if lv_errsize<0 then
-	display "Error - unable to find the size of the error file (",mv_errfile clipped,")"
-	exit program 99
+	#display "Error - unable to find the size of the error file (",mv_errfile clipped,")"
+	return
 end if
 
 if lv_errsize>0 then
