@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.4 2004-09-28 09:49:14 afalout Exp $
+# $Id: makefile,v 1.5 2006-02-13 09:04:22 mikeaubury Exp $
 #
 
 ROOT					=../../..
@@ -41,7 +41,7 @@ include 				${ROOT}/incl/a4gl.mk
 ## ==================================================================
 
 CFLAGS					+=-g -I${ROOT}/incl
-4GLPC					=${FGLPCEXEC} -debug
+4GLPC					=4glpc -g
 
 ################
 #Aubit compiler settings. infx.4gl contains Informix ESQL/C code
@@ -49,8 +49,10 @@ A4GL_LEXTYPE			=EC
 A4GL_USE_DATABASE_STMT	=Y
 A4GL_LEXDIALECT			=INFORMIX
 
-OBJ						= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
-						execute.ao simple_parse.o lex.yy.o main.ao
+#OBJ						= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
+						#execute.ao simple_parse.o lex.yy.o main.ao
+BASE_4GL				= editor.4gl infx.4gl ../common/pick.4gl ../common/about.4gl \
+						execute.4gl simple_parse.c lex.yy.c main.4gl
 
 ifneq "${IFMX_ESQLC}" "no"
 	ALL						=${ROOT}/bin/sqleditor.4ae
@@ -72,8 +74,8 @@ no_esql:
 	@echo "| Informix ESQL/C not detected - cannot compile Glade SQL editor     |"
 	@echo "+--------------------------------------------------------------------+"
 
-${ROOT}/bin/sqleditor.4ae: ${OBJ}
-	${4GLPC} $^ -o $@
+${ROOT}/bin/sqleditor.4ae: ${BASE_4GL}
+	4glpc -I../common -g $^ -o $@
 	
 ## ==================================================================
 ##                              Sub-targets

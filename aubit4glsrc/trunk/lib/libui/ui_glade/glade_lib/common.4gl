@@ -32,19 +32,26 @@ code
 	static int lfield=0;
 	static llv_ok=0;
 
-	if ((void *)lv_form==lform && lv_field==lfield ) lv_ok=llv_ok;
+	printf("get_widget_for : %d %d\n",lv_form,lv_field);
+
+	if ((void *)lv_form==lform && lv_field==lfield ) {
+		printf("Cached - %d\n",llv_ok);
+		lv_ok=llv_ok;
+	}
 	else {
 		w=(GtkWidget *)lv_form;
 		if (w==0) {
 			A4GL_exitwith("Invalid Form");
+			printf("Invalid form");
 			lv_ok=0;
 		} else {
 			wname=(char *)A4GL_find_gui_id_name_from_id(lv_field);
 			if (wname==0) {
+				printf("Bad widget");
 				A4GL_exitwith("Unknown widget ID");
 				lv_ok=0;
 			} else {
-				//printf("Getting widget by name : %s from %p\n",wname,w);
+				printf("Getting widget by name : %s from %p\n",wname,w);
 				widget=gtk_object_get_data(GTK_OBJECT(w),wname);
 				lv_ok=(long)widget;
 				lform=(void *)lv_form;
@@ -54,7 +61,7 @@ code
 		}
 	}
 }
-//printf("Returning : %d\n",lv_ok);
+printf("get_widget_for - returning : %d\n",lv_ok);
 endcode
 return lv_ok
 end function
