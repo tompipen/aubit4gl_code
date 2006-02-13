@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.35 2005-11-22 14:37:03 mikeaubury Exp $
+# $Id: input_array.c,v 1.36 2006-02-13 08:51:18 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.35 2005-11-22 14:37:03 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.36 2006-02-13 08:51:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1278,22 +1278,11 @@ A4GL_set_fields_inp_arr (void *vsio, int n)
       if (field == 0)
 	continue;
 
-      //if (A4GL_LL_field_opts (field_list[a]) & AUBIT_O_BLANK)
-      //{
-      //A4GL_debug ("AUBIT_O_BLANK MMMM turning off");
-      //}
 
       if (A4GL_turn_field_off (formdets->form_fields[a]))
 	{
 	  firstfield = formdets->form_fields[a];
 	}
-
-      //if (A4GL_LL_field_opts (field_list[a]) & AUBIT_O_BLANK)
-      //{
-      //A4GL_debug ("AUBIT_O_BLANK MMMM turned off");
-      //}
-
-
     }
 
   nofields = sio->nfields;
@@ -1333,11 +1322,9 @@ A4GL_set_fields_inp_arr (void *vsio, int n)
 
 	      A4GL_turn_field_on2 (sio->field_list[a][b], 1);
 	    }
-	  //if (field_opts(sio->field_list[a][b])&AUBIT_O_BLANK) { A4GL_debug("AUBIT_O_BLANK MMMM %d %d",a,b); }
 	  field =
 	    (struct struct_scr_field
 	     *) (A4GL_LL_get_field_userptr (sio->field_list[a][b]));
-	  //A4GL_debug ("Settings flags to 0 for %d %d", a, b);
 
 	  if (n == 2)
 	    field->flags = 0;
@@ -2060,7 +2047,6 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  if (arr->processed_onkey != 0)
 	    {
 	      A4GL_debug ("process_key_press");
-	      //if (field_opts(arr->currentfield)&AUBIT_O_BLANK) { A4GL_debug("AUBIT_O_BLANK MMMM"); }
 	      process_key_press (arr, arr->fcntrl[a].extent);
 	    }
 	  else
@@ -3383,16 +3369,11 @@ A4GL_turn_field_on2 (void *f, int a)
   A4GL_field_opts_on (f, AUBIT_O_ACTIVE);
   A4GL_field_opts_on (f, AUBIT_O_EDIT);
 
-  //if ((fprop->datatype&255)!=0) { field_opts_on (f, AUBIT_O_BLANK); }
 
   A4GL_set_field_attr_for_ll (f);
-  //if (a)
-  //{
-
 
 
   A4GL_debug ("STATIC");
-  //A4GL_field_opts_on (f, AUBIT_O_STATIC);
 
   A4GL_LL_set_max_field (f, A4GL_get_field_width (f));
 

@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.89 2006-02-03 13:30:09 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.90 2006-02-13 08:51:38 mikeaubury Exp $";
 #endif
 
 
@@ -1078,7 +1078,10 @@ int
 A4GL_LL_getch_swin (void *window_ptr)
 {
   int a;
+  GtkWidget *f;
+
   A4GL_set_abort (0);
+
   //a = A4GL_readkey ();
   //if (a != 0) {
   //A4GL_debug ("Read %d from keyfile", a);
@@ -1114,7 +1117,7 @@ A4GL_LL_getch_swin (void *window_ptr)
     }
 
   a = A4GL_which_key_aubit (a);
-  //A4GL_logkey(a);
+
   return a;
 }
 
@@ -2898,6 +2901,10 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       buff[1] = 0;
       utf = g_locale_to_utf8 (buff, -1, NULL, NULL, NULL);
       //printf("form->ovlins=%d",form->ovlins);
+
+      if (A4GL_LL_field_opts(cwidget)&AUBIT_O_BLANK && form->curcol==0) {
+	      A4GL_clr_field(cwidget);
+      }
       if (form->ovlins == 1)
 	{
 	  //printf("Insert %s\n",buff);

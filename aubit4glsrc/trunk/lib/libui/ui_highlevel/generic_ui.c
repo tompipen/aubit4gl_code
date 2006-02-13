@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.66 2005-11-01 10:27:55 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.67 2006-02-13 08:51:18 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3263,7 +3263,7 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
   strcpy (buff2, buff);
   a = strlen (buff2);
   b = A4GL_get_field_width (field);
-  A4GL_debug ("field_buffer %p %d %s", field, nbuff, buff);
+  A4GL_debug ("YYZ field_buffer %p %d %s", field, nbuff, buff);
   width = A4GL_get_field_width (field);
   if (width > 2048)
     {
@@ -3365,7 +3365,7 @@ A4GL_default_attributes (void *f, int dtype, int has_picture)
 
       A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
 
-      if ((dtype & 255) == 0)
+      if ((dtype & 255) == DTYPE_CHAR ||(dtype & 255) == DTYPE_VCHAR )
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_LL_set_field_opts (f,
@@ -3383,8 +3383,9 @@ A4GL_default_attributes (void *f, int dtype, int has_picture)
 	  A4GL_debug ("BLANK BLANK");
 	  A4GL_LL_set_field_opts (f,
 				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT |
-				  AUBIT_O_BLANK);
+				  AUBIT_O_PUBLIC | AUBIT_O_EDIT
+				 		 | AUBIT_O_BLANK 
+				  );
 	}
 
     }
