@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.143 2006-02-12 09:56:31 mikeaubury Exp $
+# $Id: sql.c,v 1.144 2006-02-13 14:57:10 mikeaubury Exp $
 #
 */
 
@@ -64,6 +64,7 @@
 
 #define DTIME_AS_CHAR
 
+void ListDSN (void);
 static int find_extras(void *id) ;
 static void free_extra(void *id) ;
 static void set_extra_data(void *id,int in_out,int position, int data,void *val) ;
@@ -5294,8 +5295,7 @@ void initenv(void ) {
 
 }
 
-void
-ListDSN (void)
+void ListDSN (void)
 {
   char l_dsn[100], l_desc[100];
   short int l_len1, l_len2, l_next;
