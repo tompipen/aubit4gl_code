@@ -1016,7 +1016,8 @@ let mv_errfile=lv_base clipped,get_ext("ERR")
 let mv_warnfile=lv_base clipped,get_ext("WARN")
 
 
-let lv_runstr=lv_runstr clipped," ",lv_fname clipped," 2> ",mv_errfile
+let lv_runstr=lv_runstr clipped," ",lv_fname clipped
+#," 2> ",mv_errfile
 
 if mv_verbose>=2 then
 	display lv_runstr clipped
@@ -1117,12 +1118,12 @@ if 0 then
 let mv_errfile=lv_base clipped,get_ext("ERR")
 
 let mv_warnfile=lv_base clipped,get_ext("WARN")
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped," 2> ",mv_errfile
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped ," 2> ",mv_errfile
 else
 
 let mv_warnfile=lv_base clipped,get_ext("WARN")
 let mv_errfile=lv_base clipped,get_ext("ERR")
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",lv_fname clipped," 2> ",mv_errfile
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",lv_fname clipped ," 2> ",mv_errfile
 end if
 
 if mv_verbose>=2 then
