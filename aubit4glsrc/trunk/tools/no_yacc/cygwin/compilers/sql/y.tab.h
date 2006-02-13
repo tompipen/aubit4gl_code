@@ -271,6 +271,7 @@
      TILDE = 1761,
      ILIKE = 1762,
      FILLFACTOR = 1765,
+     TIME = 1770,
      KW_TODAY = 1777,
      KW_IDLE = 2117,
      CANCEL_INSERT = 2118,
@@ -519,6 +520,7 @@
 #define TILDE 1761
 #define ILIKE 1762
 #define FILLFACTOR 1765
+#define TIME 1770
 #define KW_TODAY 1777
 #define KW_IDLE 2117
 #define CANCEL_INSERT 2118
@@ -544,7 +546,7 @@ typedef union YYSTYPE {
 
 } YYSTYPE;
 /* Line 1285 of yacc.c.  */
-#line 548 "y.tab.h"
+#line 550 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
