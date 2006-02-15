@@ -17,6 +17,7 @@ main
 		tabname char(20)
 	)
 	whenever error stop
+	delete from scv
 	insert into scv values("dummy","tabname","INCLUDE","AAA,BBB")
 end main
 
