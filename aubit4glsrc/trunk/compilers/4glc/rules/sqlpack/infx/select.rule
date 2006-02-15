@@ -428,6 +428,9 @@ in_value_list_slil:
 
 in_value_specification_sli : var_ident_ibind_sli { $<s_select_list_item>$=$<s_select_list_item>1;}
          | literal { $<s_select_list_item>$=new_select_list_item_literal($<str>1); }
+	 | MINUS INT_VALUE { 
+		char buff[256]; sprintf(buff,"-%s",$<str>2); $<s_select_list_item>$=new_select_list_item_literal(buff); }
+	 | MINUS  real_number { char buff[256]; sprintf(buff,"-%s",$<str>2); $<s_select_list_item>$=new_select_list_item_literal(buff); }
 ;
 
 

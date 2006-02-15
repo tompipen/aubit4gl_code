@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.122 2005-11-17 20:33:26 mikeaubury Exp $
+# $Id: newpanels.c,v 1.123 2006-02-15 14:27:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.122 2005-11-17 20:33:26 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.123 2006-02-15 14:27:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -2431,8 +2431,10 @@ A4GL_debug("Colours - BKG=%d\n",bkgcolor);
 
 
 A4GL_debug("Assume default colors : %d %d",bkgcolor,fg);
+#ifndef PDCURSES
 #ifdef NCURSES_VERSION
   assume_default_colors(fg,bkgcolor);
+#endif
 #endif
 
   return 0;

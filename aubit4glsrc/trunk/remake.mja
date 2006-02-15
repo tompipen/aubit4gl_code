@@ -12,7 +12,7 @@ then
 	fi
 	make cleanall
 	export CFLAGS=-g
-	./configure  --with-unixodbc --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-pgodbc=/usr/local
+	./configure  --with-unixodbc --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-pgodbc=/usr/local 
 
 
 #--with-curses=/usr/local/widec
