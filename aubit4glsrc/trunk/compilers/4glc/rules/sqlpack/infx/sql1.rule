@@ -571,22 +571,32 @@ op_where_clause_2_select:
 op_group_by_clause_2_select: {
 		$<s_select>$=new_empty_select();
 	}
-	| group_by_clause_slil op_having_clause_2_sli {
+	| group_by_clause_slil  {
+		$<s_select>$=new_empty_select();
+		$<s_select>$->group_by=$<s_select_list_item_list>1;
+		$<s_select>$->having=0;
+	}
+	| group_by_clause_slil having_clause_sli {
 		$<s_select>$=new_empty_select();
 		$<s_select>$->group_by=$<s_select_list_item_list>1;
 		$<s_select>$->having=$<s_select_list_item>2;
 	}
-				/* op_having_clause_2_sli { $<sql_string>$=$<sql_string>1; } */ /* Can you have a 'HAVING' with no GROUP BY ? */
+	| having_clause_sli {
+		$<s_select>$=new_empty_select();
+		$<s_select>$->group_by=0;
+		$<s_select>$->having=$<s_select_list_item>1;
+
+	}
 ;
 
 
 
 
-
+/*
 op_having_clause_2_sli :  {$<s_select_list_item>$=0;}
 	| having_clause_sli {$<s_select_list_item>$=$<s_select_list_item>1;}
 ;
-
+*/
 
 
 
