@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.41 2006-01-27 15:16:32 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.42 2006-02-18 13:28:22 mikeaubury Exp $
 #
 */
 
@@ -544,9 +544,14 @@ long orig_date;
 
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
-#ifdef DIALECT_POSTGRES
-	if (*infx==0) indicat=-1;
-#endif
+
+
+// I don't understand what this is trying to do...
+// but it looks wrong....
+//
+//#ifdef DIALECT_POSTGRES
+	//if (*infx==0) indicat=-1;
+//#endif
 		if (indicat==-2) return;
 		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);

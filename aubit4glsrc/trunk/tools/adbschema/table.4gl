@@ -94,7 +94,7 @@ define lv_c integer
 	
 	
 	# Get our basic table information
-	select tabid,owner,tabtype,partnum into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum
+	select systables.tabid,systables.owner,systables.tabtype,systables.partnum into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum
 	from systables where tabname=lv_t
 	
 	if sqlca.sqlcode=100 then
