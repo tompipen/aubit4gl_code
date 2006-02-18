@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.19 2006-02-12 09:56:31 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.20 2006-02-18 10:23:39 mikeaubury Exp $
 #
 */
 
@@ -1130,7 +1130,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	      return rval;
 	  }
 
-
+	
 	if (select)
 	  {
 	    if (select->table_elements.ntables == 1)
@@ -2405,6 +2405,11 @@ int A4GL_has_column (char *t, char *c)
   int size;
   int opened = 0;
   int found = 0;
+
+  if (strcmp(acl_getenv("SQLTYPE"),"nosql")==0) {
+	  return 0;
+  }
+
   rc = A4GLSQL_get_columns (t, "", &dtype, &size);
   while (rc)
     {
