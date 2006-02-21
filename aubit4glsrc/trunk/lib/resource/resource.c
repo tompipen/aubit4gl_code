@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.113 2006-02-07 20:06:41 mikeaubury Exp $
+# $Id: resource.c,v 1.114 2006-02-21 19:08:08 mikeaubury Exp $
 #
 */
 
@@ -381,6 +381,11 @@ struct str_resource builtin_resource[] = {
   {"SWAP_SQLCA62", "N"}, /* to get OID after INSERT on unpatched PostgreSQL */
 #ifdef POSTGRESDIR
   {"POSTGRESDIR",POSTGRESDIR},
+#endif
+#ifdef POSTGRESDIR
+#ifdef PG_ESQLC
+  {"PG_ESQLC",PG_ESQLC},
+#endif
 #endif
   /* End of definitions */
   {"", "0"}

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.30 2005-12-20 14:08:39 mikeaubury Exp $
+# $Id: Makefile,v 1.31 2006-02-21 19:08:08 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -173,7 +173,7 @@ endif
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
-	${CC} ${CFLAGS} -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl
 
 ###################
 #SAP ESQL/C compiler

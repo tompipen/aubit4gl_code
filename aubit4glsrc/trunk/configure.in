@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.305 2006-02-07 08:44:01 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.306 2006-02-21 19:07:31 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -436,6 +436,7 @@ AC_SUBST(ECPG_LFLAGS)
 AC_SUBST(ECPG_IFLAGS)
 AC_SUBST(POSTGRESDIR)
 AC_SUBST(HAVE_PGSQL_LIB)
+AC_SUBST(PG_ESQLC_HASV3)
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -1606,6 +1607,7 @@ HAVE_IODBC=no
 HAVE_UNIXODBC=no
 HAVE_IFXODBC=no
 HAVE_PGODBC=no
+PG_ESQLC_HASV3=0
 PIC="-fPIC"
 ODBC_LIB_NAME=noodbc
 USE_PDF=no
@@ -4962,7 +4964,7 @@ AC_ARG_WITH(pgsql,
 	if test "$PGSQL_INCDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine include path)
 	fi
-
+	AC_MSG_RESULT( INCLUDE : $PGSQL_INCDIR)
 	#Find PG lib dir under $withval
 	test -d $withval/lib && PGSQL_LIBDIR=$withval/lib
 	if test "$PGSQL_LIBDIR" = "" ; then 
@@ -5137,6 +5139,7 @@ if test "$withval" != "no"; then
 				3.*.*) #3.0.0 and up
 			    	AC_MSG_RESULT(Maybe-$PG_ESQLC_VERSION)
 					PG_ESQLC_IFXCOMPAT=maybe
+					PG_ESQLC_V3=1
 		            ;;
 				*)
 			    	AC_MSG_RESULT(No-Invalid version number format-$PG_ESQLC_VERSION)
@@ -5163,12 +5166,21 @@ if test "$withval" != "no"; then
 					PG_ESQLC_IFXCOMPAT=yes
 		            ;;
 				*)
-					if test "$GCC_MINGW" != "yes"; then
+					if test "$PG_ESQLC_V3" != "1"; then
 				    	AC_MSG_RESULT(No-'informix' identifier not found-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
 						PG_ESQLC_IFXCOMPAT=no
+						case $PG_ESQLC_VERSION2 in 
+							8.*) 	PG_ESQLC_IFXCOMPAT=yes 
+								PG_ESQLC_HASV3=1
+								AC_MSG_RESULT(allow it anyway - set HASV3)
+							;;
+							*) 	PG_ESQLC_IFXCOMPAT=no
+								AC_MSG_RESULT(not allowed)
+							;;
+						esac
 					else
-				    	AC_MSG_RESULT(No-'informix' identifier not found-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
-						AC_MSG_RESULT(On Windows (PG8) so will allow it anyway)
+				    		AC_MSG_RESULT(No-'informix' identifier not found-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
+						AC_MSG_RESULT(recent ECPG so will allow it anyway)
 						PG_ESQLC_IFXCOMPAT=yes
 					fi
 				    ;;
@@ -5336,13 +5348,30 @@ if test "$withval" != "no"; then
 		
 		unset ac_cv_header_pgsql_informix_esql_decimal_h
 		unset ac_cv_header_postgresql_informix_esql_decimal_h
-		AC_CHECK_HEADERS([ pgsql/informix/esql/decimal.h postgresql/informix/esql/decimal.h])
+		HAVE_PG_ESQL_DECIMAL_H=no
+		AC_CHECK_HEADERS([ pgsql/informix/esql/decimal.h postgresql/informix/esql/decimal.h ])
 		if test "$ac_cv_header_pgsql_informix_esql_decimal_h" = "yes" ; then
 			HAVE_PG_ESQL_DECIMAL_H=yes
 		fi
 		if test "$ac_cv_header_postgresql_informix_esql_decimal_h" = "yes" ; then
 			HAVE_PG_ESQL_DECIMAL_H=yes
 		fi
+
+		old_xCFLAGS="$CFLAGS"
+		if test "$HAVE_PG_ESQL_DECIMAL_H" = "no" 
+		then
+			AC_MSG_CHECKING(Double checking for PG Decimal.h in $PGSQL_INCDIR)
+			unset ac_cv_header_informix_esql_decimal_h
+			CFLAGS="$CFLAGS -I$PGSQL_INCDIR"
+			AC_CHECK_HEADERS([ informix/esql/decimal.h ])
+			if test "$ac_cv_header_informix_esql_decimal_h" = "yes" ; then
+				AC_MSG_RESULT(Found PGSQL decimal.h)
+				HAVE_PG_ESQL_DECIMAL_H=yes
+			fi
+		fi
+		CFLAGS="$old_xCFLAGS"
+
+
 		if test "$HAVE_PG_ESQL_DECIMAL_H" != "yes"; then
 			unset ac_cv_header_decimal_h			
 			AC_CHECK_HEADERS([ decimal.h ])
@@ -5358,7 +5387,7 @@ if test "$withval" != "no"; then
 			fi
 		fi
 		
-		if test "$GCC_MINGW" = "yes"; then
+		if test "$PG_ESQLC_V3" = "1"; then
 			#On Windows (ecpg 3.2.0) there is no decimal.h - seems to be in ecpg_informix.h now		
 			HAVE_PG_ESQL_DECIMAL_H=yes
 			if test "$enable_ac_debug" = "yes" ; then
@@ -5427,7 +5456,7 @@ if test "$withval" != "no"; then
 			AC_CHECK_LIB([pgtypes], [main])
 			AC_CHECK_LIB([ecpg_compat], [main])
 
-			AC_MSG_CHECKING(PG ESQL libraryes compatibility)
+			AC_MSG_CHECKING(PG ESQL librarys compatibility)
 			if test "$ac_cv_lib_ecpg_main" = "yes" \
 					-a "$ac_cv_lib_pgtypes_main" = "yes" \
 					-a "$ac_cv_lib_ecpg_compat_main" = "yes"; then
@@ -5468,6 +5497,8 @@ fi
 ##   Check all PostgreSQL components for Aubit/Informix compatibility
 ## ==================================================================
 
+AC_MSG_CHECKING(Check for postgres - 1-$POSTMASTER 2-$PGSQL_LIBS 3-$HAS_LIB_PQ 4-$HAVE_PGSQL_LIB 5-$PG_ESQLC )
+
 if test "$POSTMASTER" != "" -a "$PGSQL_LIBS" != "" -a "$HAS_LIB_PQ" != "0" \
 		-a "$HAVE_PGSQL_LIB" != "no" -a "$PG_ESQLC" != "no"; then 
 
@@ -5478,12 +5509,12 @@ AC_ARG_WITH(pgcompat,
 	if test "$withval" != "no"; then
 		PG_AUBIT_COMPAT=1
 		
-		if test "$PG_ENGINE_IFXCOMPAT" != "yes" -a "$POSTMASTER" != "no"; then 
-			AC_MSG_WARN(Local engine NOT compatible)
+		if test "$PG_ENGINE_IFXCOMPAT" = "no" -a "$POSTMASTER" != "no"; then 
+			AC_MSG_WARN(Local engine NOT compatible - wont allow pgsql)
 			PG_AUBIT_COMPAT=0
 		fi
 		if test "$PG_ESQLC_IFXCOMPAT" != "yes"; then 
-			AC_MSG_WARN(ecpg NOT compatible)
+			AC_MSG_WARN(ecpg NOT compatible - wont allow pgsql)
 			PG_AUBIT_COMPAT=0
 		fi
 		
@@ -5535,6 +5566,7 @@ AC_ARG_WITH(pgcompat,
 ])
 
 else
+	AC_MSG_RESULT(wont allow pgsql)
 	PG_AUBIT_COMPAT=0
 fi
 
@@ -6148,16 +6180,16 @@ AC_ARG_WITH(unixodbc,
                           install directory, defaults to /usr/local.],
 [
 	#PHP_WITH_SHARED
-	if test "$withval" = "yes"; then
+if test "$withval" = "yes"; then
     	withval=/usr/local
-	else
+else
 		#user specified custom withval
 		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON unixODBC"
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-    fi
+fi
 
-	if test "$withval" != "no"; then
+if test "$withval" != "no"; then
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
@@ -6167,30 +6199,30 @@ AC_ARG_WITH(unixodbc,
 		AC_CHECK_LIB([odbc], [main])
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
+                old_CFLAGS=$CFLAGS
+                CFLAGS="$CFLAGS -I$withval/include"
 
-		old_CFLAGS=$CFLAGS
-		CFLAGS="$CFLAGS -I$withval/include"
 		if test $ac_cv_lib_odbc_main = yes; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				#CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
 				AC_CHECK_HEADERS([sql.h])
 				TMP=`eval echo '${'$as_ac_Header'}'`
-		        	if test "$TMP" = "yes"; then
+		        if test "$TMP" = "yes"; then
 					AC_CHECK_HEADERS([sqlext.h])
 					TMP=`eval echo '${'$as_ac_Header'}'`
-			        	if test "$TMP" = "yes"; then
+			        if test "$TMP" = "yes"; then
 						AC_CHECK_HEADERS([odbcinst.h])
 						TMP=`eval echo '${'$as_ac_Header'}'`
-				        	if test "$TMP" = "yes"; then
+				        if test "$TMP" = "yes"; then
 						    HAVE_UNIXODBC_HEADERS=1
-                        			fi
-                    			fi
-                		fi
-			else
+                        		fi
+                    		fi
+                	fi
+		else
 			    HAVE_UNIXODBC_HEADERS=1
-			fi
+		fi
 
-			if test "$HAVE_UNIXODBC_HEADERS" = "1" ; then
+		if test "$HAVE_UNIXODBC_HEADERS" = "1" ; then
 				ODBC_LIB_NAME=odbc
 				HAVE_UNIXODBC=yes
 			    UNIXODBC_INCLUDE=-I$withval/include
@@ -6199,20 +6231,20 @@ AC_ARG_WITH(unixodbc,
 
 			    ODBC_TYPE=unixODBC
 			    AC_DEFINE(HAVE_UNIXODBC,1,[ ])
-            		else
+            	else
 				AC_MSG_WARN(unixODBC libraries present but headers are missing.)
 				AC_DEFINE(HAVE_UNIXODBC,0,[ ])
 				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbcdev"
-            		fi
-		else
+            	fi
+                CFLAGS=$old_CFLAGS
+	else
 		    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbc"
-		fi
-		CFLAGS=$old_CFLAGS
-	else
+	fi
+else
 		AC_MSG_RESULT(disbled)
 	    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
-	fi
+fi
 ],[
 	AC_MSG_RESULT(--with-unixodbc not specified)
 ])
@@ -9126,7 +9158,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.305 2006-02-07 08:44:01 mikeaubury Exp $
+| $Id: configure.in,v 1.306 2006-02-21 19:07:31 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
