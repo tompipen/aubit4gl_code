@@ -10496,7 +10496,7 @@ ROOT_FILES_DOC="README.txt"
 ## ==================================================================
 
 CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
-		INFORMIX-POSTGRESQL.cnv POSTGRESQL-INFORMIX.cnv \
+		INFORMIX-POSTGRESQL.cnv INFORMIX-POSTGRES8.cnv POSTGRESQL-INFORMIX.cnv \
 		INFORMIX-POSTGRES.cnv INFORMIX-SQLITE.cnv INFORMIX-INGRES.cnv"
 
 #It looks like INFORMIX-POSTGRESQL.cnv is obsolete - confirm and remove
@@ -39844,7 +39844,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.332 2006-02-21 19:07:04 mikeaubury Exp $
+| $Id: configure,v 1.333 2006-02-22 09:31:40 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

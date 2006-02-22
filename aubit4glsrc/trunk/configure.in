@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.306 2006-02-21 19:07:31 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.307 2006-02-22 09:31:46 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2325,7 +2325,7 @@ ROOT_FILES_DOC="README.txt"
 ## ==================================================================
 
 CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
-		INFORMIX-POSTGRESQL.cnv POSTGRESQL-INFORMIX.cnv \
+		INFORMIX-POSTGRESQL.cnv INFORMIX-POSTGRES8.cnv POSTGRESQL-INFORMIX.cnv \
 		INFORMIX-POSTGRES.cnv INFORMIX-SQLITE.cnv INFORMIX-INGRES.cnv"
 
 #It looks like INFORMIX-POSTGRESQL.cnv is obsolete - confirm and remove
@@ -9158,7 +9158,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.306 2006-02-21 19:07:31 mikeaubury Exp $
+| $Id: configure.in,v 1.307 2006-02-22 09:31:46 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

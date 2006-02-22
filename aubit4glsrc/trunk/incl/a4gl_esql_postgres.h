@@ -18,6 +18,7 @@ extern "C"
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
 
+
 #ifdef __WIN32__
 				/* PG 8 on windows have ecpg_informix.h and no decimal.h */
 				#include "ecpg_informix.h"
@@ -217,53 +218,45 @@ extern "C"
 #endif
 
 
+
 #ifdef HAVE_CONFIG_H
 	/* header automatically created with AutoConf-configure */
 	#include "a4gl_incl_config.h"
+#endif
 
-	#if (HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H == 1)
-		#define GOT_DECIMAL
-		#include "pgsql/informix/esql/decimal.h"
+
+#if (HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H == 1)
+	#include "pgsql/informix/esql/decimal.h"
+#else
+	#if (HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H == 1)
+		#include "postgresql/informix/esql/decimal.h"
 	#else
-		#if (HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H == 1)
-			#include "postgresql/informix/esql/decimal.h"
+		#if (HAVE_DECIMAL_H == 1)
+		/* This is dangerous; Informix esqlc and Aubit also have decimal.h */
+			/* Who knows which one we will actually include like this... */
+			#include "decimal.h"
 		#else
-			#if (HAVE_DECIMAL_H == 1)
-				/* This is dangerous; Informix esqlc and Aubit also have decimal.h */
-				/* Who knows which one we will actually include like this... */
-				#include "decimal.h"
-		#define GOT_DECIMAL
-			#else
-				#ifndef __WIN32__			
-					/* configure did not find decimal.h, in whic case compiling ECPG PG */
-					/* stuff should have been disabled, but you are still here somehow... */
-					/* #include "decimal.h" */
-					/* make sure we cause compile-time error here: */
-					#include "informix/esql/decimal.h"
-		#define GOT_DECIMAL
-				#endif
+			#ifndef __WIN32__			
+				/* configure did not find decimal.h, in whic case compiling ECPG PG */
+				/* stuff should have been disabled, but you are still here somehow... */
+				/* #include "decimal.h" */
+				/* make sure we cause compile-time error here: */
+				#include "informix/esql/decimal.h"
 			#endif
 		#endif
 	#endif
-#else
-	#ifndef __WIN32__
-		/* this header is needed in binary installation too, */
-		/* where there is no a4gl_incl_config.h to hold Autoconf results... */
-		/* so we just have to include decimal.h without the path and hope for the best... */
-		/* on my system, it will compile even without it (which is scarry) */
-		#include "decimal.h"
-		#define GOT_DECIMAL
-	#endif
-#endif	
+#endif
+
+
 
 #ifndef __WIN32__
-#if PG_ESQLC_V3
-	#include "informix/esql/sqltypes.h"
-	#include "informix/esql/datetime.h"
-	#include "informix/esql/decimal.h"
-#else
-	#include "sqltypes.h"
-#endif
+	#if PG_ESQLC_V3
+		#include "informix/esql/sqltypes.h"
+		#include "informix/esql/datetime.h"
+		#include "informix/esql/decimal.h"
+	#else
+		#include "sqltypes.h"
+	#endif
 #endif
 
 #define COPY_DATA_IN_0(a4gl,pgres,i,size,x,y) A4GL_copy_char(pgres,a4gl,i,size,'i',x,y)

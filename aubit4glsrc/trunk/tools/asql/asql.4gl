@@ -51,7 +51,7 @@ is_echo_c() {
 return lv_echo;
 }
 
-bye() {
+void bye(void) {
 	clean_up_temp_files();
 }
 endcode

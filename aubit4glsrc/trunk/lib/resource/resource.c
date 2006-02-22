@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.114 2006-02-21 19:08:08 mikeaubury Exp $
+# $Id: resource.c,v 1.115 2006-02-22 09:31:53 mikeaubury Exp $
 #
 */
 
@@ -382,11 +382,26 @@ struct str_resource builtin_resource[] = {
 #ifdef POSTGRESDIR
   {"POSTGRESDIR",POSTGRESDIR},
 #endif
+
 #ifdef POSTGRESDIR
-#ifdef PG_ESQLC
-  {"PG_ESQLC",PG_ESQLC},
+
+	#ifdef PG_ESQLC
+  	{"PG_ESQLC",PG_ESQLC},
+	#endif
+	
+	#if HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H
+  		{"PG_COPTS","-DHAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=1"},
+	#else
+		#if HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H
+  		{"PG_COPTS","-DHAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H=1"},
+		#else
+			#if HAVE_DECIMAL_H
+  			{"PG_COPTS","-DHAVE_DECIMAL_H=1"},
+			#endif
+		#endif
+	#endif
 #endif
-#endif
+
   /* End of definitions */
   {"", "0"}
 };

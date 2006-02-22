@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.99 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: compile.c,v 1.100 2006-02-22 09:31:52 mikeaubury Exp $
 #*/
 
 /**
@@ -1329,8 +1329,8 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 						need_cc=1;
 						//WARNING: ORDER IS IMPORTANT! think about /usr/include!
 						//why did I have hasd-codes -I\"/usr/include/pgsql\" in here?
-						SPRINTF3 (incl_path, "%s -I\"%s/include/postgresql/informix/esql\" -I\"%s/include\" ",
-							  incl_path, acl_getenv ("POSTGRESDIR"),acl_getenv ("POSTGRESDIR"));
+						SPRINTF4 (incl_path, "%s -I\"%s/include/postgresql/informix/esql\" -I\"%s/include\" %s",
+							  incl_path, acl_getenv ("POSTGRESDIR"),acl_getenv ("POSTGRESDIR"),acl_getenv("PG_COPTS"));
 						/* FIXME: this can be in different places - see ./configure
 						/opt/ecpg-cvs/include/postgresql/informix/esql/decimal.h
 						/usr/include/pgsql/libpq-fe.h
