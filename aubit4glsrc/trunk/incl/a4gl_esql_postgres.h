@@ -227,14 +227,20 @@ extern "C"
 
 #if (HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H == 1)
 	#include "pgsql/informix/esql/decimal.h"
+		#include "pgsql/informix/esql/sqltypes.h"
+		#include "pgsql/informix/esql/datetime.h"
 #else
 	#if (HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H == 1)
 		#include "postgresql/informix/esql/decimal.h"
+		#include "postgresql/informix/esql/sqltypes.h"
+		#include "postgresql/informix/esql/datetime.h"
 	#else
 		#if (HAVE_DECIMAL_H == 1)
 		/* This is dangerous; Informix esqlc and Aubit also have decimal.h */
 			/* Who knows which one we will actually include like this... */
 			#include "decimal.h"
+			#include "sqltypes.h"
+			#include "datetime.h"
 		#else
 			#ifndef __WIN32__			
 				/* configure did not find decimal.h, in whic case compiling ECPG PG */
@@ -242,22 +248,14 @@ extern "C"
 				/* #include "decimal.h" */
 				/* make sure we cause compile-time error here: */
 				#include "informix/esql/decimal.h"
+				#include "informix/esql/sqltypes.h"
+				#include "informix/esql/datetime.h"
 			#endif
 		#endif
 	#endif
 #endif
 
 
-
-#ifndef __WIN32__
-	#if PG_ESQLC_V3
-		#include "informix/esql/sqltypes.h"
-		#include "informix/esql/datetime.h"
-		#include "informix/esql/decimal.h"
-	#else
-		#include "sqltypes.h"
-	#endif
-#endif
 
 #define COPY_DATA_IN_0(a4gl,pgres,i,size,x,y) A4GL_copy_char(pgres,a4gl,i,size,'i',x,y)
 #define COPY_DATA_IN_1(a4gl,pgres,i,size) A4GL_copy_smint(pgres,a4gl,i,size,'i')
