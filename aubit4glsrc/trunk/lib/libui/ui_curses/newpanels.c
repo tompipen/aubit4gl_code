@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.123 2006-02-15 14:27:38 mikeaubury Exp $
+# $Id: newpanels.c,v 1.124 2006-02-23 17:14:50 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.123 2006-02-15 14:27:38 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.124 2006-02-23 17:14:50 mikeaubury Exp $";
 #endif
 
 /**
@@ -494,7 +494,7 @@ void
 #endif
   w = A4GL_find_pointer (win_name, WINCODE);
   win = A4GL_find_pointer (win_name, S_WINDOWSCODE);
-  wclear (w);
+  werase (w);
 
   if (win->winattr.border)
     {
@@ -512,7 +512,7 @@ void
     {
       if (strcmp (windows[a].name, win_name) == 0)
 	{
-	  wclear (panel_window (windows[a].pan));
+	  werase (panel_window (windows[a].pan));
 	  break;
 	}
     }
@@ -935,7 +935,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
 
 
-  wclear (drwin);
+  werase (drwin);
 
   a = set_form_win (f->form, w);
 
