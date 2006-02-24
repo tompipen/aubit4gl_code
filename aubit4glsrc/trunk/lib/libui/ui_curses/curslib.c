@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.115 2005-07-15 13:26:49 mikeaubury Exp $
+# $Id: curslib.c,v 1.116 2006-02-24 09:54:31 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.115 2005-07-15 13:26:49 mikeaubury Exp $";
+		"$Id: curslib.c,v 1.116 2006-02-24 09:54:31 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -253,7 +253,7 @@ A4GL_debug("Before");
   print_panel_stack();
   
   show_panel(curr_error_panel);
-  wclear(curr_error_window);
+  werase(curr_error_window);
 
 A4GL_debug("After");
   print_panel_stack();
