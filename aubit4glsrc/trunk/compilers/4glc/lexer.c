@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.117 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: lexer.c,v 1.118 2006-02-25 10:33:05 mikeaubury Exp $
 #*/
 
 /**
@@ -1660,6 +1660,7 @@ get_idents (int a)
 // Anything allowed in here needs to be added to the sqlblock.rule function as a possible sql_block_entry
 // (with the obvious exceptions...)
 int is_sql_kw(int a) {
+	if (a==INSERT_INTO) return 1;
 	if (a==INTO) return 1;
 	if (a==KW_COMMA) return 1;
 	if (a==OPEN_SQUARE) return 1;

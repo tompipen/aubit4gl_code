@@ -25,6 +25,8 @@ sql_block :
 
 sql_block_entry:
 	SQL_TEXT  { strcpy($<str>$,$<str>1); }
+	| INSERT_INTO {
+		strcpy($<str>$,"INSERT INTO");}
 	| INTO obind_var_list { 
 		strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o')));
 		}
