@@ -235,23 +235,9 @@ extern "C"
 		#include "postgresql/informix/esql/sqltypes.h"
 		#include "postgresql/informix/esql/datetime.h"
 	#else
-		#if (HAVE_DECIMAL_H == 1)
-		/* This is dangerous; Informix esqlc and Aubit also have decimal.h */
-			/* Who knows which one we will actually include like this... */
-			#include "decimal.h"
-			#include "sqltypes.h"
-			#include "datetime.h"
-		#else
-			#ifndef __WIN32__			
-				/* configure did not find decimal.h, in whic case compiling ECPG PG */
-				/* stuff should have been disabled, but you are still here somehow... */
-				/* #include "decimal.h" */
-				/* make sure we cause compile-time error here: */
-				#include "informix/esql/decimal.h"
-				#include "informix/esql/sqltypes.h"
-				#include "informix/esql/datetime.h"
-			#endif
-		#endif
+		#include "decimal.h"
+		#include "sqltypes.h"
+		#include "datetime.h"
 	#endif
 #endif
 

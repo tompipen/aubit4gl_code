@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.90 2006-02-13 08:51:38 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.91 2006-03-06 10:43:33 mikeaubury Exp $";
 #endif
 
 
@@ -1409,6 +1409,14 @@ A4GL_LL_initialize_display (void)
 
   A4GL_run_gtkrc ();
 
+#ifdef DEBUG
+          g_log_set_always_fatal( G_LOG_FLAG_RECURSION |
+		                  G_LOG_FLAG_FATAL |
+		                  G_LOG_LEVEL_ERROR |
+		                  G_LOG_LEVEL_CRITICAL |
+		                  G_LOG_LEVEL_WARNING );
+#endif /*DEBUG*/
+
   A4GL_alloc_colors ();
   gtk_key_snooper_install (KeySnooper, 0);
   A4GL_create_console ();
@@ -1722,10 +1730,10 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
 
   A4GL_debug ("Wadd_char to window %p %d %d %x", win, x, y, ch);
 
-  sprintf (buff_label, "LABEL_%d_%d", x, y);
-  sprintf (buff_char, "LABEL_%d_%d_C", x, y);
-  sprintf (buff_evt, "EVENTBOX_%d_%d", x, y);
-  sprintf (buff_attr, "ATTR_%d_%d", x, y);
+  sprintf (buff_label, "LABEL_%p_%d_%d", win,x, y);
+  sprintf (buff_char, "LABEL_%p_%d_%d_C", win,x, y);
+  sprintf (buff_evt, "EVENTBOX_%p_%d_%d", win,x, y);
+  sprintf (buff_attr, "ATTR_%p_%d_%d", win,x, y);
 
   cwin = gtk_object_get_data (GTK_OBJECT (win), "FIXED");
   lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff_label);

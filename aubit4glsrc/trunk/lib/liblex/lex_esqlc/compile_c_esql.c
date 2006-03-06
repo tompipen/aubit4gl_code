@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.133 2006-02-07 08:44:22 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.134 2006-03-06 10:43:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.133 2006-02-07 08:44:22 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.134 2006-03-06 10:43:33 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -1085,7 +1085,7 @@ if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
   if (db == 0) {
       printc ("{");
 	set_suppress_lines();
-      printc ("\nEXEC SQL BEGIN DECLARE SECTION /*2*/;\n");
+      printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
       printc ("char *s;");
       printc ("char setdb[256];");
       printc ("\nEXEC SQL END DECLARE SECTION;\n");
