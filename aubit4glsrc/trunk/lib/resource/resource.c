@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.115 2006-02-22 09:31:53 mikeaubury Exp $
+# $Id: resource.c,v 1.116 2006-03-07 13:44:31 mikeaubury Exp $
 #
 */
 
@@ -390,13 +390,17 @@ struct str_resource builtin_resource[] = {
 	#endif
 	
 	#if HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H
-  		{"PG_COPTS","-DHAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=1"},
+  		{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=1"},
 	#else
 		#if HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H
-  		{"PG_COPTS","-DHAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H=1"},
+  		{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H=1"},
 		#else
-			#if HAVE_DECIMAL_H
-  			{"PG_COPTS","-DHAVE_DECIMAL_H=1"},
+			#if HAVE_PG_INFORMIX_ESQL_DECIMAL_H
+  				{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_PG_INFORMIX_ESQL_DECIMAL_H=1"},
+			#else
+				#if HAVE_DECIMAL_H
+  				{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_DECIMAL_H=1"},
+				#endif
 			#endif
 		#endif
 	#endif

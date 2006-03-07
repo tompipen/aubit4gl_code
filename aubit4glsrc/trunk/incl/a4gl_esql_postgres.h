@@ -224,21 +224,32 @@ extern "C"
 	#include "a4gl_incl_config.h"
 #endif
 
-
-#if (HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H == 1)
-	#include "pgsql/informix/esql/decimal.h"
-		#include "pgsql/informix/esql/sqltypes.h"
-		#include "pgsql/informix/esql/datetime.h"
-#else
-	#if (HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H == 1)
-		#include "postgresql/informix/esql/decimal.h"
-		#include "postgresql/informix/esql/sqltypes.h"
-		#include "postgresql/informix/esql/datetime.h"
+#if (USING_PG_COPTS == 1 ) 
+	#if (HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H == 1)
+		#include "pgsql/informix/esql/decimal.h"
+			#include "pgsql/informix/esql/sqltypes.h"
+			#include "pgsql/informix/esql/datetime.h"
 	#else
-		#include "decimal.h"
-		#include "sqltypes.h"
-		#include "datetime.h"
+		#if (HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H == 1)
+			#include "postgresql/informix/esql/decimal.h"
+			#include "postgresql/informix/esql/sqltypes.h"
+			#include "postgresql/informix/esql/datetime.h"
+		#else
+			#if (HAVE_PG_INFORMIX_ESQL_DECIMAL_H == 1)
+				#include "informix/esql/decimal.h"
+				#include "informix/esql/sqltypes.h"
+				#include "informix/esql/datetime.h"
+			#else
+				#include "decimal.h"
+				#include "sqltypes.h"
+				#include "datetime.h"
+			#endif
+		#endif
 	#endif
+#else
+	#include "decimal.h"
+	#include "sqltypes.h"
+	#include "datetime.h"
 #endif
 
 
