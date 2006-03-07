@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2006-02-21 19:08:08 mikeaubury Exp $
+# $Id: Makefile.in,v 1.16 2006-03-07 15:56:02 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -52,7 +52,12 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 		-D"CONFIGURED_TARGET_OS=\"${TARGET_OS}\"" \
 		-D"_AUBITETC_=\"${WINDOWS_DRIVE}${CYGWIN_PATH}@AUBITETC@\"" \
 		-D"POSTGRESDIR=\"@POSTGRESDIR@\""  \
-		-D"PG_ESQLC=\"@PG_ESQLC@\"" 
+		-D"PG_ESQLC=\"@PG_ESQLC@\""  
+
+
+		#-D"HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=\"@HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H@\""  \
+		#-D"HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H=\"@HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H@\""  \
+		#-D"HAVE_PG_INFORMIX_ESQL_DECIMAL_H=\"@HAVE_PG_INFORMIX_ESQL_DECIMAL_H@\""  
 		
 #		-D"_WINDOWS_DRIVE_=\"${WINDOWS_DRIVE}\"" \
 #		-D"_CYGWIN_PATH_=\"${CYGWIN_PATH}\"" 

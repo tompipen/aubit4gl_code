@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.308 2006-03-07 13:44:21 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.309 2006-03-07 15:55:36 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -437,9 +437,9 @@ AC_SUBST(ECPG_IFLAGS)
 AC_SUBST(POSTGRESDIR)
 AC_SUBST(HAVE_PGSQL_LIB)
 AC_SUBST(PG_ESQLC_HASV3)
-AC_SUBST(HAVE_PG_INFORMIX_ESQL_DECIMAL_H)
-AC_SUBST(HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H)
-AC_SUBST(HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H)
+#AC_SUBST(HAVE_PG_INFORMIX_ESQL_DECIMAL_H)
+#AC_SUBST(HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H)
+#AC_SUBST(HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H)
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -1609,6 +1609,7 @@ GTKBUILD=no
 HAVE_IODBC=no
 HAVE_UNIXODBC=no
 HAVE_IFXODBC=no
+HAVE_PG_ESQL_DECIMAL_H=no
 HAVE_PGODBC=no
 PG_ESQLC_HASV3=0
 PIC="-fPIC"
@@ -5356,10 +5357,12 @@ if test "$withval" != "no"; then
 		if test "$ac_cv_header_pgsql_informix_esql_decimal_h" = "yes" ; then
 			HAVE_PG_ESQL_DECIMAL_H=yes
 			HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=yes
+			AC_DEFINE(HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H,1,[ ])
 		fi
 		if test "$ac_cv_header_postgresql_informix_esql_decimal_h" = "yes" ; then
 			HAVE_PG_ESQL_DECIMAL_H=yes
 			HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H=yes
+			AC_DEFINE(HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H,1,[ ])
 		fi
 
 		old_xCFLAGS="$CFLAGS"
@@ -5370,9 +5373,10 @@ if test "$withval" != "no"; then
 			CFLAGS="$CFLAGS -I$PGSQL_INCDIR"
 			AC_CHECK_HEADERS([ informix/esql/decimal.h ])
 			if test "$ac_cv_header_informix_esql_decimal_h" = "yes" ; then
-				AC_MSG_RESULT(Found PGSQL decimal.h)
+				AC_MSG_RESULT(Found PGSQL decimal.h in informix/esql/decimal.h)
 				HAVE_PG_ESQL_DECIMAL_H=yes
 				HAVE_PG_INFORMIX_ESQL_DECIMAL_H=yes
+				AC_DEFINE(HAVE_PG_INFORMIX_ESQL_DECIMAL_H,1,[ ])
 			fi
 		fi
 		CFLAGS="$old_xCFLAGS"
@@ -9164,7 +9168,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.308 2006-03-07 13:44:21 mikeaubury Exp $
+| $Id: configure.in,v 1.309 2006-03-07 15:55:36 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

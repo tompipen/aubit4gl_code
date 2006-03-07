@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.31 2006-02-21 19:08:08 mikeaubury Exp $
+# $Id: Makefile,v 1.32 2006-03-07 15:56:02 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -84,7 +84,7 @@ ifdef COMSPEC
     #export PWD
 
 #from Mikes Makefile.cygwin:
-	CFLAGS		:=-g -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl ${CFLAGS}
+	CFLAGS		:=-g -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl ${CFLAGS} 
 	ESQL		=esql -g
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=
@@ -173,7 +173,7 @@ endif
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
-	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `aubit-config PG_COPTS`
 
 ###################
 #SAP ESQL/C compiler
