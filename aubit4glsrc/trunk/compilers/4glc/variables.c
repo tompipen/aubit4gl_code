@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.83 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: variables.c,v 1.84 2006-03-10 10:01:08 mikeaubury Exp $
 #
 */
 
@@ -3008,7 +3008,7 @@ print_nullify (char type)
 		
 	  if (print)
 	    {
-		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+		if (A4GL_isyes(acl_getenv("DOING_CM")) || strcmp(acl_getenv("A4GL_LEXTYPE"),"php")==0) {
 			if (!has_fbind(list[a]->names.name)) {
 	      			add_bind ('N', list[a]->names.name);
 			}

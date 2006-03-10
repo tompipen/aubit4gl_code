@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.89 2005-12-10 22:29:31 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.90 2006-03-10 10:01:40 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.89 2005-12-10 22:29:31 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.90 2006-03-10 10:01:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1155,7 +1155,8 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
     }
 
   mform = form->form;
-  A4GL_mja_wrefresh (currwin);
+
+ A4GL_mja_wrefresh (currwin);
 
   if (init)
     {
@@ -1188,20 +1189,32 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   A4GL_mja_set_current_field (mform, form->currentfield);
   A4GL_mja_pos_form_cursor (mform);
 
-    blk=A4GL_has_evt_timeout(evt);
-    if (blk) { return blk; }
+  while (1) {
+
+    	blk=A4GL_has_evt_timeout(evt);
+    	if (blk) { return blk; }
 
 
   // cc 2004.09.14 fprop may have been changed, always read it again
   fprop = (struct struct_scr_field *) field_userptr (current_field (mform));
 // Wait for a key..
-  a = A4GL_getch_win ();
 
-  if (a!=0&&a!=-1) {
-	  A4GL_evt_not_idle(evt);
+
+  	a = A4GL_getch_win ();
+
+
+  	if (a!=0&&a!=-1) {
+	  	A4GL_evt_not_idle(evt);
+		break;
+  	}
+
+  	if (abort_pressed) {
+	  	A4GL_evt_not_idle(evt);
+		a = A4GLKEY_INTERRUPT;
+		break;
+	}
   }
 
-  if (abort_pressed) a = A4GLKEY_INTERRUPT;
 
   if (a!=0) {
   	s->processed_onkey = a;

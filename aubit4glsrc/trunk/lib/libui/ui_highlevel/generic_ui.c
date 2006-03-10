@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.67 2006-02-13 08:51:18 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.68 2006-03-10 10:01:40 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2601,13 +2601,6 @@ static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
           return  0;
   }
 
-  if (promptx->mode==0) { // Check for any timeouts...
-          int blk;
-          blk=A4GL_has_evt_timeout(evt);
-          if (blk) {
-                 return blk;
-        }
-  }
 
 
   if (promptx->mode == 1)
@@ -2636,7 +2629,16 @@ static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
   was_aborted = 0;
   A4GL_LL_set_carat (promptx->f);
   A4GL_LL_screen_update ();
-  a = A4GL_getch_internal (p);
+
+  while (1) {
+          int blk;
+          blk=A4GL_has_evt_timeout(evt);
+          if (blk) { return blk; }
+  	  a = A4GL_getch_internal (p);
+	  if (abort_pressed) break;
+	  if (a!=-1) break;
+  }
+
   if (a) A4GL_clr_error_nobox ("prompt");
 
   promptx->processed_onkey = a;

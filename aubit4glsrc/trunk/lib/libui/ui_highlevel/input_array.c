@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.36 2006-02-13 08:51:18 mikeaubury Exp $
+# $Id: input_array.c,v 1.37 2006-03-10 10:01:40 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.36 2006-02-13 08:51:18 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.37 2006-03-10 10:01:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -633,8 +633,13 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
       //A4GL_LL_set_carat (mform);
       //A4GL_LL_screen_update();
       abort_pressed = 0;
-      a = A4GL_getch_win (1);
-        if (a!=0&&a!=-1) { A4GL_evt_not_idle(evt); }
+      while (1) {
+	      int blk;
+   		blk=A4GL_has_evt_timeout(evt); if (blk) { return blk; }
+      		a = A4GL_getch_win (1);
+        	if (a!=0&&a!=-1) { A4GL_evt_not_idle(evt); break;}
+		if (abort_pressed) break;
+      }
 
 
       if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
@@ -1167,10 +1172,6 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
       return -1;
     }
   A4GL_debug ("inpaarr4");
-   blk=A4GL_has_evt_timeout(evt);
-    if (blk) {
-                      return blk;
-    }
 
   rval = iarr_loop (inpa, evt);
   A4GL_debug ("DEBUGGING rval=%d", rval);

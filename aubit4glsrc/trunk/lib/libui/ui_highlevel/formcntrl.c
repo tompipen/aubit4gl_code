@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.41 2005-12-10 22:29:31 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.42 2006-03-10 10:01:40 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.41 2005-12-10 22:29:31 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.42 2006-03-10 10:01:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1295,20 +1295,24 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
   A4GL_mja_set_current_field (mform, form->currentfield);
 //}
 
-   blk=A4GL_has_evt_timeout(evt);
-   if (blk) {
-		             return blk;
-   }
 
 // Wait for a key..
   A4GL_LL_set_carat (mform);
-  fprop =
-    (struct struct_scr_field *)
-    A4GL_LL_get_field_userptr (A4GL_LL_current_field (mform));
-  a = A4GL_getch_win (1);
+  fprop = (struct struct_scr_field *)
+  A4GL_LL_get_field_userptr (A4GL_LL_current_field (mform));
 
-  if (a!=0&&a!=-1) {
-       A4GL_evt_not_idle(evt);
+  while (1) {
+   	blk=A4GL_has_evt_timeout(evt);
+   	if (blk) {
+		       	return blk;
+   	}
+  	a = A4GL_getch_win (1);
+	
+  	if (a!=0&&a!=-1) {
+       		A4GL_evt_not_idle(evt);
+       		break;
+  	}
+  	if (abort_pressed) {break;}
   }
 
   if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
@@ -1895,8 +1899,13 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt)
   A4GL_debug ("su");
   A4GL_LL_screen_update ();
 
-  a = A4GL_getch_internal (0);
-  construct_last_key = a;
+
+ //blk=A4GL_has_evt_timeout(evt);
+ //if (blk) { return blk; }
+ //
+  	a = A4GL_getch_internal (0);
+  	construct_last_key = a;
+
 
   A4GL_debug ("construct_large a=%d abort_pressed=%d", a, abort_pressed);
 

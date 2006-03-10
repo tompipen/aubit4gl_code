@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.284 2006-01-29 16:39:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.285 2006-03-10 10:01:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.284 2006-01-29 16:39:11 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.285 2006-03-10 10:01:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4020,6 +4020,14 @@ LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *att
   printc ("SET(\"s_disp_arr\",_sio_%d,\"binding\",obind);\n",sio_id);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"nbind\",%d);\n",sio_id, cnt);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"srec\",0);\n",sio_id);
+
+  if (ptr_input_attr->curr_row_display)
+    printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",%s);\n",sio_id,
+	    ptr_input_attr->curr_row_display);
+  else
+    printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id,
+	    ptr_input_attr->curr_row_display);
+
   printc
     ("SET(\"s_disp_arr\",_sio_%d,\"arr_elemsize\",sizeof(%s[0]));\n",sio_id, arrvar);
   printc ("_fld_dr= -1;_exec_block=0;\n");

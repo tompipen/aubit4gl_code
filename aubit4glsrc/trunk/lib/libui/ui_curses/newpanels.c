@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.124 2006-02-23 17:14:50 mikeaubury Exp $
+# $Id: newpanels.c,v 1.125 2006-03-10 10:01:40 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.124 2006-02-23 17:14:50 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.125 2006-03-10 10:01:40 mikeaubury Exp $";
 #endif
 
 /**
@@ -1323,9 +1323,11 @@ A4GL_getch_swin (WINDOW * window_ptr)
     {
 #ifdef USE_HALF_DELAY
 	   if (no_delay==-1) {
-		    	no_delay=(A4GL_isno(acl_getenv("NOHALFDELAY")));
+		    	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
 	   }
+
 	A4GL_debug("HALF DELAY\n");
+
 	if(!no_delay) {
       		halfdelay (5); 
 	}
@@ -1397,7 +1399,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
 #ifdef USE_HALF_DELAY
 	   if (no_delay==-1) {
-		    	no_delay=(A4GL_isno(acl_getenv("NOHALFDELAY")));
+		    	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
 	   }
 	A4GL_debug("HALF DELAY\n");
 	if(!no_delay) {

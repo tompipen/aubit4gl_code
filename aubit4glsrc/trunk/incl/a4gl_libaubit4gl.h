@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.219 2006-02-12 09:56:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.220 2006-03-10 10:01:38 mikeaubury Exp $
 #
 */
 
@@ -1800,6 +1800,7 @@ FORMCONTROL_HIDE_FIELD
     int cntrl;
     int attribute;
     int processed_onkey;
+    char *curr_display;
   };
 
   struct s_inp_arr
