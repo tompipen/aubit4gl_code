@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.54 2006-03-10 10:01:40 mikeaubury Exp $
+# $Id: prompt.c,v 1.55 2006-03-10 20:29:59 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.54 2006-03-10 10:01:40 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.55 2006-03-10 20:29:59 mikeaubury Exp $";
 #endif
 
 /**
@@ -314,11 +314,11 @@ int
 struct aclfgl_event_list *evt;
 int was_aborted=0;
   FORM *mform;
-
+  int blk;
   struct s_prompt *prompt;
+
   prompt = vprompt;
   evt=vevt;
-  int blk;
 
   if (prompt->mode==-1) { // Initialize prompt...
   	//int a;
