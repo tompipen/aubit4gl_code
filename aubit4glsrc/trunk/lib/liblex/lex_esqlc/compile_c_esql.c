@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.134 2006-03-06 10:43:33 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.135 2006-03-10 11:56:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.134 2006-03-06 10:43:33 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.135 2006-03-10 11:56:48 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -1462,12 +1462,12 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   printh
     ("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *nii,struct BINDING *noi) {\n",
      cname3);
-  printh ("acli_bi_%s=i;\n", cname3);
-  printh ("acli_bo_%s=o;\n", cname3);
-  printh ("acli_nbi_%s=ni;\n", cname3);
-  printh ("acli_nbo_%s=no;\n", cname3);
-  printh ("acli_nbii_%s=nii;\n", cname3);
-  printh ("acli_nboi_%s=noi;\n", cname3);
+  printh ("acli_bi_%s  =bind_recopy(acli_bi_%s,  %d,i);\n",  cname3,cname3,last_ni);
+  printh ("acli_bo_%s  =bind_recopy(acli_bo_%s,  %d,o);\n",  cname3,cname3,last_no);
+  printh ("acli_nbi_%s =bind_recopy(acli_nbi_%s, %d,ni);\n",  cname3,cname3,last_ni);
+  printh ("acli_nbo_%s =bind_recopy(acli_nbo_%s, %d,no);\n",  cname3,cname3,last_no);
+  printh ("acli_nbii_%s=bind_recopy(acli_nbii_%s,%d,nii);\n", cname3,cname3,last_ni);
+  printh ("acli_nboi_%s=bind_recopy(acli_nboi_%s,%d,noi);\n", cname3,cname3,last_no);
   printh ("}\n");
 
   intprflg = 0;
