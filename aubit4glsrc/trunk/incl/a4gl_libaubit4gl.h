@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.221 2006-03-17 19:01:22 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.222 2006-03-17 23:46:47 mikeaubury Exp $
 #
 */
 
@@ -3009,6 +3009,10 @@ struct s_select {
 		struct s_select_finish 		*sf;
 		char *into;
 		char *union_op;
+
+		// optional extra statement that need to be executed before this statement
+		// NULL indicates that extra statement is not used
+		char *extra_statement;
 };
 
 struct s_select_list_item_list *new_select_list_item_list(struct s_select_list_item *i) ;
