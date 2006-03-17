@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.64 2006-02-12 09:56:30 mikeaubury Exp $
+# $Id: calldll.c,v 1.65 2006-03-17 19:01:30 mikeaubury Exp $
 #
 */
 
@@ -411,6 +411,16 @@ void *
 A4GL_find_func (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
+  char buff[256];
+  sprintf(buff,"%p_%s",dllhandle,func);
+
+
+
+  // Have we found it once before ?
+  if (A4GL_has_pointer(buff,FUNC_POINTER)) {
+	// Don't bother looking again then....
+	return A4GL_find_pointer(buff,FUNC_POINTER);
+  }
 
 /*
  FIXME:
@@ -454,7 +464,7 @@ inc_usage(func);
       return badfunc; 
     }
 
-
+  A4GL_add_pointer(buff,FUNC_POINTER,func_ptr);
   return (void *)func_ptr;
 }
 

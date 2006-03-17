@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.16 2006-03-10 11:56:21 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.17 2006-03-17 19:01:31 mikeaubury Exp $
 #
 */
 
@@ -207,7 +207,7 @@ struct BINDING *
 bind_recopy (struct BINDING *b, int n, struct BINDING *c)
 {
 static char *tmpcp=0;
-  if (n == 0)
+  if (n == 0 || c==0)
     {
       free (b);
       return 0;

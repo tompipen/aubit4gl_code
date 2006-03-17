@@ -94,7 +94,7 @@ dummy_not_used_prevent_warning(void)
 {
 	/* Someone commented this out - please don't, or give a reason why */
 	/* static void *yy_flex_realloc YY_PROTO(( void *, yy_size_t )); */ 
-	yy_flex_realloc (0,0); 
+	//yy_flex_realloc (0,0); 
 
 	/* static void yyunput YY_PROTO(( int c, char *buf_ptr )); */
 	yyunput (0,0); 

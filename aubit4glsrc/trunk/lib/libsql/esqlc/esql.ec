@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.154 2005-12-05 20:31:06 mikeaubury Exp $
+# $Id: esql.ec,v 1.155 2006-03-17 19:01:46 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.154 2005-12-05 20:31:06 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.155 2006-03-17 19:01:46 mikeaubury Exp $";
 #endif
 
 
@@ -242,6 +242,9 @@ esqlWarningHandler (void)
 }
 
 
+int A4GLSQLLIB_A4GLSQL_initlib(void) {
+	return 1;
+}
 
 void strmaxcpy (char *dest, char *src, int atmost) {
 	strncpy(dest,src,atmost);
@@ -270,7 +273,9 @@ void A4GL_sql_exitwith(char *s) {
 static int
 internal_isSqlError (char *s,int l)
 {
+#ifdef DEBUG
 A4GL_debug("isSqlError Called from : %s %d",s,l);
+#endif
   A4GL_set_a4gl_sqlca_sqlcode (sqlca.sqlcode);
   strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
   strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
@@ -278,7 +283,9 @@ A4GL_debug("isSqlError Called from : %s %d",s,l);
 
 
 
+#ifdef DEBUG
 A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_sqlca.sqlawarn[1], a4gl_sqlca.sqlawarn[2], a4gl_sqlca.sqlawarn[3], a4gl_sqlca.sqlawarn[4], a4gl_sqlca.sqlawarn[5], a4gl_sqlca.sqlawarn[6], a4gl_sqlca.sqlawarn[7]);
+#endif
   
 
 
@@ -308,6 +315,8 @@ isNotFound ()
   return 0;
 }
 
+
+#ifdef  LIBAUBIT4GL
 /**
  * Get the status value.
  *
@@ -318,6 +327,9 @@ A4GLSQL_get_status (void)
 {
   return sqlca.sqlcode;
 }
+#endif
+
+
 
 /**
  * Get the current SQL error message.
@@ -3674,7 +3686,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
   return 0;
 */
 }
-
+#ifdef libaubit4gl
 /**
  * Find a prepared statement.
  *
@@ -3700,6 +3712,7 @@ A4GLSQL_find_prepare (char *pname)
     return ptr;
   return (struct s_sid *) 0;
 }
+#endif
 
 /**
  * FLUSH CURSOR 4gl statement implementation.
@@ -3728,6 +3741,8 @@ A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
 */
 }
 
+
+#ifdef libaubit4gl
 /**
  * Execute an allready preparted SQL statement.
  *
@@ -3758,6 +3773,7 @@ ibind=vibind;
     return 1;
   return 0;
 }
+#endif
 
 /**
  * Start getting information about all columns from a table in the database 
@@ -4430,12 +4446,14 @@ A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
   return "INFORMIX";
 }
 
+#ifdef XX
 int
 A4GLSQL_initlib ()
 {
 // Does nothing
 return 1;
 }
+#endif
 
 
 static struct expr_str_list *A4GL_add_validation_elements_to_expr(struct expr_str_list *ptr,char *val) {

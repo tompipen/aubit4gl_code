@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.148 2006-03-10 11:56:21 mikeaubury Exp $
+# $Id: stack.c,v 1.149 2006-03-17 19:01:31 mikeaubury Exp $
 #
 */
 
@@ -70,6 +70,9 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
+#define AInt32 long
+#define AInt16 short
 
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 //int A4GL_conversion_ok(int);
@@ -159,6 +162,7 @@ int nset[MAX_DTYPE][9] = {
 };
 
 #endif
+static int A4GL_null_other(char *buff,int type) ;
 
 char *
 A4GL_char_pop_size (int *sz);
@@ -249,19 +253,25 @@ A4GL_pop_bool (void)
 {
   long ptr;
   ptr = 0;
-
+#ifdef DEBUG
   A4GL_debug ("8 Popping boolean..");
+#endif
+
   //debug_print_stack();
 
 
   ptr = A4GL_pop_long ();
 
+#ifdef DEBUG
   A4GL_debug("pop bool : ptr=%x\n",ptr);
+#endif
   if (A4GL_isnull(DTYPE_INT,(void *)&ptr)) {
 		A4GL_debug("8 Null can't be true..");
 		return 0;
   }
+#ifdef DEBUG
   A4GL_debug ("8 Popping boolean gets %d %x", ptr, ptr);
+#endif
 
   if (ptr != 0 && ptr != 1)
     {
@@ -400,7 +410,7 @@ A4GL_pop_var2 (void *p, int d, int s)
   char *pl;
 
 #ifdef DEBUG
-  A4GL_debug ("8 pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
+  //A4GL_debug ("8 pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
 #endif
 
   if (d == 0)
@@ -428,7 +438,9 @@ A4GL_pop_var2 (void *p, int d, int s)
 	  A4GL_debug ("8 pop_var2: error in conversion %d d=0 s=%d\n", z, s);
 #endif
 	}
+#ifdef DEBUG
       A4GL_debug ("9 Copying string '%s' to p", A4GL_null_as_null(pl));
+#endif
       strncpy ((char *) p, pl,s);
 	free(pl);
       pl = (char *) p;
@@ -513,7 +525,9 @@ A4GL_char_pop_size (int *sz)
   char *s;
   int f;
 
+#ifdef DEBUG
   A4GL_debug("A4GL_char_pop...");
+#endif
   if (params_cnt <= 0)
     {
       A4GL_debug ("Stack got corrupted");
@@ -553,13 +567,17 @@ A4GL_char_pop_size (int *sz)
 	}
 
       //trim (s);
+#ifdef DEBUG
       A4GL_debug ("8 char_pop - pushing char : '%s'", A4GL_null_as_null(s));
+#endif
       A4GL_push_char (s);
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }				/* if last entry is not a character string make it one */
   else
     {
+#ifdef DEBUG
 	    A4GL_debug("Looks like it was a string..'%s'",params[params_cnt - 1].ptr);
+#endif
 	if (params[params_cnt - 1].ptr)
       		params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }
@@ -567,12 +585,15 @@ A4GL_char_pop_size (int *sz)
 
   a = params[params_cnt - 1].size;
   s = A4GL_new_string (a);
+#ifdef DEBUG
   A4GL_debug("a=%d\n",a);
+#endif
   if (a==0) s[1]=1;
   *sz=a;
   A4GL_pop_param (s, DTYPE_CHAR, a);
-
+#ifdef DEBUG
   A4GL_debug("A4GL_char_pop - returning '%s' (%s)\n",s,(A4GL_isnull(DTYPE_CHAR,s)?"null":"not null"));
+#endif
 
   return s;
 }
@@ -591,7 +612,6 @@ A4GL_pop_param (void *p, int d, int size)
   char *ptr;
 
 A4GL_conversion_ok(1);
-A4GL_debug("pop_param");
   A4GL_assertion(p==0,"No pointer to pop into");
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
   params_cnt--;
@@ -606,13 +626,17 @@ A4GL_debug("pop_param");
 
   if (ptr1==0) {
 		A4GL_conversion_ok(1);
+#ifdef DEBUG
 		A4GL_debug("ptr1=0");
+#endif
 		A4GL_setnull(d&DTYPE_MASK,p,size);
 		return 1;
   } else {
   	if (A4GL_isnull(d1,ptr1)) {
 		A4GL_conversion_ok(1);
+#ifdef DEBUG
 		A4GL_debug("Isnull\n");
+#endif
 		A4GL_setnull(d&DTYPE_MASK,p,size);
 		b=1;
   	} else {
@@ -621,7 +645,9 @@ A4GL_debug("pop_param");
   		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK, params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 		
 		if (b==0 ) {
+#ifdef DEBUG
 			A4GL_debug("d=%d d=%d",params[params_cnt].dtype & DTYPE_MASK, d & DTYPE_MASK);
+#endif
 			if ((d & DTYPE_MASK) == DTYPE_SMINT)  {
 			// Do nothing 
 			} else {
@@ -834,7 +860,9 @@ A4GL_debug("51 Have data");
     }
 
   n1 = 0;
+#ifdef DEBUG
   A4GL_debug ("7 params_cnt=%d\n", params_cnt);
+#endif
 
   dn1=0;
   dn2=0;
@@ -868,7 +896,10 @@ A4GL_debug("51 Have data");
     }
 
   n2 = 0;
+#ifdef DEBUG
   A4GL_debug ("9 Checking 2nd");
+#endif
+
   if (params_cnt > 1)
     {
       dtype_2 = params[params_cnt - 2].dtype;
@@ -886,7 +917,9 @@ A4GL_debug("51 Have data");
 	n2 = 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("7 Checked %d %d", n1, n2);
+#endif
 
 
   /*
@@ -900,13 +933,20 @@ A4GL_debug("51 Have data");
   if (dtype_1 != -1)
     {
       void (*function) (int);
+#ifdef DEBUG
       A4GL_debug ("7 Calling OP function ?");
+#endif
 
       function = 0;
 
 
-      if (d==OP_EQUAL) { A4GL_debug("OP_EQUAL"); 
+#ifdef DEBUG
+      if (d==OP_EQUAL) { 
+	      	
+	      	A4GL_debug("OP_EQUAL"); 
       }
+
+#endif
 
 
 /* 
@@ -930,7 +970,10 @@ A4GL_debug("51 Have data");
        if (function==0 && ((dtype_1 & DTYPE_MASK) == DTYPE_CHAR || (dtype_1 & DTYPE_MASK) == DTYPE_VCHAR )) {
 		int dx;
 		int sx;
+#ifdef DEBUG
+
 		A4GL_debug("Using a string for the second part : %s op=%d  ",params[params_cnt - 1].ptr,d);
+#endif
 		A4GL_whats_in_a_string(params[params_cnt - 1].ptr,&dx,&sx);
 	
 	}
@@ -939,59 +982,74 @@ A4GL_debug("51 Have data");
 
 
 
-      //A4GL_debug ("7 Looked for GENERIC MATH handing - %d %d %d - got %p\n", dtype_2, dtype_1, OP_MATH, function);
 
       if (function == 0)
 	{
 	  /* Nope - try a specific */
 	  function = A4GL_find_op_function (dtype_2, dtype_1, d);
-	  //A4GL_debug ("7 Looked for SPECIFIC handing - %d %d %d - got %p\n", dtype_2, dtype_1, d, function);
 	}
 
 
       if (function)
 	{
 	  /* We've got something to play with */
+
+#ifdef DEBUG
 	  A4GL_debug ("7 Calling specified function for %d %d, %d", dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
+#endif
 	  function (d);
+#ifdef DEBUG
 	  A4GL_debug ("7 Called function returning");
+#endif
 	  return;
 	}
 
     }
 
+#ifdef DEBUG
   A4GL_debug("No specific function for this - try the default - dtype1=%d dtype2=%d",dtype_1 & DTYPE_MASK,dtype_2 & DTYPE_MASK);
+
+#endif
   
 
 
   if ((d) == (OP_ISNULL))
     {
+
+#ifdef DEBUG
       A4GL_debug ("7 d=%d OP_ISNULL=%d", d, OP_ISNULL);
       A4GL_debug ("10 Checking ISNULL");
+#endif
       A4GL_drop_param ();
+#ifdef DEBUG
       A4GL_debug ("16 Dropped param");
+#endif
 
       if (n1)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("7 Yep");
+#endif
 	  A4GL_push_int (1);
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("7 Nope");
+#endif
 	  A4GL_push_int (0);
 	}
+#ifdef DEBUG
       A4GL_debug ("15 Finished..");
+#endif
       return;
     }
 
   if (d == OP_ISNOTNULL)
     {
       A4GL_pop_char (buff, 79);
-      if (n1)
- A4GL_push_int (0);
-      else
- A4GL_push_int (1);
+      if (n1) A4GL_push_int (0);
+      else A4GL_push_int (1);
       return;
     }
 
@@ -1000,26 +1058,36 @@ A4GL_debug("51 Have data");
       int a;
       int ok = 0;
       int eql;
+#ifdef DEBUG
 	A4GL_debug("OP IN\n");
+#endif
       a = A4GL_pop_int ();
       while (a >= 1)
 	{
 	  A4GL_get_top_of_stack (a + 1, &d1, &s1, (void **) &ptr1);
 	  A4GL_push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
+#ifdef DEBUG
 	A4GL_debug("Comparing...");
+#endif
 	  A4GL_pushop (OP_EQUAL);
 	  eql = A4GL_pop_int ();
+#ifdef DEBUG
 		A4GL_debug("GOT MATCH @ %d = %d\n",a,eql);
+#endif
 	  if (eql) ok = 1;
 	  a--;
 	}
       A4GL_drop_param ();		/* Get rid of the base... */
       if (d == OP_IN) {
  		A4GL_push_int (ok);
+#ifdef DEBUG
 		A4GL_debug("OK=%d\n",ok);
+#endif
 	} else {
  		A4GL_push_int (!ok);
+#ifdef DEBUG
 		A4GL_debug("OK=%d\n",!ok);
+#endif
 	}
       return;
     }
@@ -1099,7 +1167,9 @@ A4GL_debug("51 Have data");
 
       int n;
 
+#ifdef DEBUG
       A4GL_debug ("OP_EXISTS - OP_NOTEXISTS...");
+#endif
       SPRINTF1 (cname, "chkex%d", cntsql_1++);
       A4GL_debug ("Popping binding...");
 
@@ -1198,7 +1268,9 @@ A4GL_debug("51 Have data");
 	return;
       c2 = A4GL_char_pop ();
       c1 = A4GL_char_pop ();
+#ifdef DEBUG
 	A4GL_debug("Doing OP_LIKE...");
+#endif
       A4GL_push_int (A4GL_mja_match (c1, c2, 'L'));
       acl_free (c1);
       acl_free (c2);
@@ -1211,7 +1283,9 @@ A4GL_debug("51 Have data");
 	  return;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("OP_EQUAL");
+#endif
 
 	ob=A4GL_opboolean ();
 	if (ob==-2) {
@@ -1219,21 +1293,29 @@ A4GL_debug("51 Have data");
 		return;
 	}
         if (ob == 0) {
+#ifdef DEBUG
 		A4GL_debug("IS TRUE....");
+#endif
  		A4GL_push_int (1);
+
 	} else {
+#ifdef DEBUG
 		A4GL_debug("IS FALSE....");
+#endif
  		A4GL_push_int (0);
 	}
       break;
 
     case OP_NOT_EQUAL:
+#ifdef DEBUG
       A4GL_debug ("Checking OP NOT EQUAL");
+#endif
       if (A4GL_chknull_boolean (2, n1, n2,dn1,dn2))
 	return;
 
-
+#ifdef DEBUG
         A4GL_debug ("OP_NOT_EQUAL");
+#endif
 	ob=A4GL_opboolean ();
 	if (ob==-2) {
 		A4GL_push_null(DTYPE_INT,0);
@@ -1250,7 +1332,9 @@ A4GL_debug("51 Have data");
       break;
 
     case OP_OR:
+#ifdef DEBUG
       A4GL_debug ("OP_OR");
+#endif
 
       if (n1&&n2)  {
       	if (A4GL_chknull (2, n1, n2,dn1,dn2)) { A4GL_debug("One of null..."); return; }
@@ -1273,10 +1357,14 @@ A4GL_debug("51 Have data");
     case OP_AND:
       if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
+#ifdef DEBUG
       A4GL_debug ("OP_AND");
+#endif
       i1 = A4GL_pop_int ();
       i2 = A4GL_pop_int ();
+#ifdef DEBUG
       A4GL_debug (" OP_AND : %d %d", i1, i2);
+#endif
       A4GL_push_int (i1 && i2);
       break;
 
@@ -1568,8 +1656,11 @@ A4GL_push_char(A4GL_using_date(l,"ddd mmm dd yyyy"));
 }
 
 void A4GL_push_time_expr(void) {
-//struct_dtime a ;
-A4GL_push_current( 4 ,5);
+	char *ptr;
+	A4GL_push_current( 4 ,6);
+	ptr=A4GL_char_pop();
+	A4GL_push_char(ptr);
+	free(ptr);
 }
 
 
@@ -1788,7 +1879,9 @@ A4GL_pushop (int a)
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("PUSHOP : %x", a);
+#endif
   if (a == OP_IN || a == OP_NOTIN
       || a == OP_IN_SELECT || a == OP_NOTIN_SELECT
       || a == OP_EXISTS || a == OP_NOTEXISTS)
@@ -2417,8 +2510,9 @@ if (type>255) {
 
 
 
-
+#ifdef DEBUG
   A4GL_debug ("Set nulli %d %p %d",type,vbuff,size);
+#endif
   buff = (char *) vbuff;
 
   if (A4GL_has_datatype_function_i (type, "INIT"))
@@ -2449,7 +2543,9 @@ if (type>255) {
   if (type == DTYPE_DTIME)
     {
       struct A4GLSQL_dtime *i;
+#ifdef DEBUG
 	A4GL_debug("Setting : %p",buff);
+#endif
       i = (struct A4GLSQL_dtime *) buff;
       i->data[0] = 0;
       return;
@@ -2520,58 +2616,130 @@ int
 A4GL_isnull (int type, char *buff)
 {
   int a;
+  struct A4GLSQL_dtime *i;
+  struct ival *iv;
+  struct fgl_int_loc *ptr;
+  static AInt16 i_int=0;
+  static AInt32 i_long=0;
+
+
+  static void *nullfuncs[]={
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1,
+	  	(void *)-1};
   type = type & DTYPE_MASK;
-  A4GL_debug ("20 ISNULL - %d %p\n", type, buff);
+  //A4GL_debug ("20 ISNULL - %d %p\n", type, buff);
 
   if (buff==0) return 1;
 
-  if (A4GL_has_datatype_function_i (type, "ISNULL"))
-    {
-      int (*function) (char *);
-      A4GL_debug ("20 Calling ISNULL for datatype");
-      function = A4GL_get_datatype_function_i (type, "ISNULL");
-      return function (buff);
-    }
-
-  A4GL_debug ("30 ISNULL - No specific function");
-
-  if (type == DTYPE_BYTE || type == DTYPE_TEXT)
-    {
-      struct fgl_int_loc *ptr;
-      ptr = (struct fgl_int_loc *) buff;
-      return ptr->where == 'N';
-    }
-  if (type == DTYPE_DTIME)
-    {
-      struct A4GLSQL_dtime *i;
-      i = (struct A4GLSQL_dtime *) buff;
-      if (i->data[0] == 0)
-	return 1;
-      else
-	return 0;
-    }
-
-  if (type == DTYPE_CHAR)
-    {
-	//A4GL_debug("Got '%s' (%c %c)",buff,buff[0],buff[1]);
-      if (buff[0] == 0 && buff[1]==0)
-	return 1;
-      else
-	return 0;
-    }
-
-  if (type == DTYPE_INTERVAL)
-    {
-      struct ival *i;
-      i = (struct ival *) buff;
-
-      if (i->stime==0 && i->ltime==0) return 1;
-      else
-	return 0;
-    }
+  if (nullfuncs[type]==(void *)-1) {
+	 // We've never seen this type before...
+  	if (A4GL_has_datatype_function_i (type, "ISNULL")) {
+      		int (*function) (char *);
+      		function = A4GL_get_datatype_function_i (type, "ISNULL");
+		// has function
+		nullfuncs[type]=function;
+      		return function (buff);
+    	}
+	// No function
+	nullfuncs[type]=0;
+  } else {
+  	if (nullfuncs[type]!=0) {
+      		int (*function) (char *);
+      		function = nullfuncs[type];
+      		return function (buff);
+  	}
+  }
 
 
-  A4GL_debug("25 Checking bytes...");
+
+  switch (type) {
+	  case DTYPE_BYTE:
+	  case DTYPE_TEXT:
+      		ptr = (struct fgl_int_loc *) buff;
+      		return ptr->where == 'N';
+    
+
+	  case DTYPE_DTIME:
+     			i = (struct A4GLSQL_dtime *) buff;
+      			if (i->data[0] == 0)
+				return 1;
+      			else
+				return 0;
+
+	  case DTYPE_CHAR:
+      			if (buff[0] == 0 && buff[1]==0)
+				return 1;
+      			else
+				return 0;
+
+	  case DTYPE_INTERVAL:
+      			iv = (struct ival *) buff;
+      			if (iv->stime==0 && iv->ltime==0) return 1;
+      			else return 0;
+
+	  case DTYPE_SMINT:
+			if (i_int==0) {
+				if (A4GL_null_other(buff,type)==1 && i_int==0) { 
+					i_int=*(AInt16 *)buff;
+					return 1;
+				}
+				return 0;
+			} else {
+				if (i_int==*(AInt16 *)buff) {
+					if (A4GL_null_other(buff,type)!=1) { A4GL_assertion(1,"Null test failed 31"); }
+					return 1;
+				} else  {
+					if (A4GL_null_other(buff,type)!=0) { A4GL_assertion(1,"Null test failed 32"); }
+					return 0;
+				}
+			}
+
+	  case DTYPE_INT:
+			if (i_long==0) {
+				if (A4GL_null_other(buff,type)==1 && i_long==0) { 
+					i_long=*(AInt32 *)buff;
+					return 1;
+				}
+				return 0;
+			} else {
+				if (i_long==*(AInt32 *)buff) {
+					if (A4GL_null_other(buff,type)!=1) { A4GL_assertion(1,"Null test failed 31"); }
+					return 1;
+				} else  {
+					if (A4GL_null_other(buff,type)!=0) { A4GL_assertion(1,"Null test failed 32"); }
+					return 0;
+				}
+			}
+  }
+
+
+  return A4GL_null_other(buff,type);
+}
+
+
+
+
+static int A4GL_null_other(char *buff,int type) {
+int a;
+  A4GL_debug("25 Checking byte %d",type);
+
 
   for (a = 0; a < 9; a++)
     {
@@ -2579,7 +2747,6 @@ A4GL_isnull (int type, char *buff)
 	{
 	  if ((unsigned char) (buff[a]) != (unsigned char) (nset[type][a]))
 	    {
-		A4GL_debug("40 Not null @ %d (%d!=%d)",a,buff[a],nset[type][a]);
 	      return 0;
 	    }
 	}
@@ -3277,6 +3444,15 @@ int get_null_as_pad_string() {
 		}
 	}
 	return x;
+}
+ 
+double get_now_as_double(void) {
+	  struct timeval tv1;
+	    double d;
+	      gettimeofday (&tv1, 0);
+	        d=(double)tv1.tv_sec+(((double)tv1.tv_usec)/1000000.0);
+		  return d;
+
 }
 
 

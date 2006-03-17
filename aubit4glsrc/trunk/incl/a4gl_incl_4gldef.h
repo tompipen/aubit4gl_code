@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.89 2005-12-02 12:28:11 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.90 2006-03-17 19:01:22 mikeaubury Exp $
 */
 
 /**
@@ -182,7 +182,6 @@ extern "C"
   {
     int stime;		   /**< The start qualifier */
     int ltime;		   /**< The end qualifier */
-    //char data[32];	   /**< The value of the interval variable */
     int i_years;
     int i_months;
     int i_days;
@@ -438,6 +437,11 @@ void A4GL_set_report_dim(int with_page_length,int with_left_margin,int with_righ
 int A4GL_set_report_dim_int(char *type,int value);
 
 struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
+#ifndef BIND_RECOPY
+#define BIND_RECOPY
+struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
+#endif
+
 #ifndef REP_STRUCTURE
 #define REP_STRUCTURE
   /* report stuff */

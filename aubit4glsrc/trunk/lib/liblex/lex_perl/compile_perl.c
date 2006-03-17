@@ -1,406 +1,520 @@
-/*
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
-# +----------------------------------------------------------------------+
-#
-# $Id: compile_perl.c,v 1.63 2005-09-04 22:03:03 mikeaubury Exp $
-#
-*/
+#include "compile_perl.h"
 
-/**
- * @file
- * Generate .pl modules from 4GL source code
- *
- * VERY EARLY STAGES OF DEVELOPMENT!
- *
- *
- */
-
-/*
-=====================================================================
-
-
-
-
-
-
-
-
-                WHEN EDITING THIS FILE, PLEASE REMEMBER TO DO
-                THE SAME CHANGES TO EQUIVALENT FILE(s) IN OTHER
-                LANGUAGE OUTPUT TARGETS, LIKE:
-
-                    compile_c.c
-                    compile_c_gtk.c
-                    compile_perl.c
-                    API_lex.c
-                    ...etc...
-
-
-
-
-
-
-
-
-
-
-
-
-=====================================================================
-*/
-
-
-
-/*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
-
-#include "a4gl_lib_lex_perl_int.h"
-
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-#ifdef FIXME
 FILE *outfile = 0;
-FILE *hfile = 0;
-int print_sqlca;
-extern char *outputfilename;
-extern char *curr_func;
-extern char *infilename;
-extern int yylineno;
-extern int lastlineno;
-extern int inp_flags;
-extern struct rep_structure rep_struct;
-extern struct pdf_rep_structure pdf_rep_struct;
-extern struct form_attr form_attrib;
-extern int menu_cnt;
-extern int ccnt;		/* Block counter */
-extern char mmtitle[132][132];
-extern int report_stack_cnt;
-extern int report_cnt;
-extern int rep_type;
-extern int sreports_cnt;
-extern char when_to_tmp[64];
-
-//#ifdef __NEED_DLL_IMPORT__
-dll_import int when_code[8];
-dll_import struct s_report sreports[1024];
-dll_import struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-dll_import struct binding_comp ibind[NUMBINDINGS];
-dll_import struct binding_comp nullbind[NUMBINDINGS];
-dll_import struct binding_comp obind[NUMBINDINGS];
-dll_import struct binding_comp fbind[NUMBINDINGS];
-dll_import struct binding_comp ordbind[NUMBINDINGS];
-dll_import struct s_constr_buff constr_buff[256];
-dll_import char when_to[64][8];
-dll_import struct s_report_stack report_stack[REPORTSTACKSIZE];
-/*
-#else
-	extern int 			when_code[8];
-	extern struct 		s_report sreports[1024];
-	extern struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-	extern struct 		binding_comp ibind[NUMBINDINGS];
-	extern struct 		binding_comp nullbind[NUMBINDINGS];
-	extern struct 		binding_comp obind[NUMBINDINGS];
-	extern struct 		binding_comp fbind[NUMBINDINGS];
-	extern struct 		binding_comp ordbind[NUMBINDINGS];
-	extern struct 		s_constr_buff constr_buff[256];
-	extern char 		when_to[64][8];
-	extern struct 		s_report_stack report_stack[REPORTSTACKSIZE];
-#endif
-*/
+FILE *outfile_h = 0;
 
 
 extern int ordbindcnt;
 extern int ibindcnt;
 extern int nullbindcnt;
 extern int obindcnt;
+extern int ebindcnt;
 extern int fbindcnt;
-extern int constr_cnt;
+extern char *outputfilename;
+extern char curr_func[];
+dll_import struct binding_comp *ibind;
+dll_import struct binding_comp *nullbind;
+dll_import struct binding_comp *obind;
+dll_import struct binding_comp *ebind;
+dll_import struct binding_comp *fbind;
+dll_import struct binding_comp *ordbind;
+int suppress_lines = 0;
+int suppress_newlines = 0;
+int need_space = 0;
+int temp_indent = 0;
+extern int ccnt;					/**< Block counter - defined in lexer.c */
+extern int yylineno;
+int setting_module_to_null = 0;
 
-char unwind[256][256];
-int unwindcnt = 0;
-int printing_record = 0;
+int when_case_has_expr;
+
+
+static void add_used_block (int n, char *btype);
+static int is_used_block (int n, char *btype);
+static void free_need_globals (void);
+
+
+static char *
+Cname (char *s)
+{
+  static char buff[256];
+  sprintf (buff, "DC_C%s_%s", A4GL_compiling_module_basename (), s);
+  need_globals (buff);
+  return buff;
+}
+
+static char *
+Rname (char *s)
+{
+  static char buff[256];
+  sprintf (buff, "DR_R%s_%s", A4GL_compiling_module_basename (), s);
+  need_globals (buff);
+  return buff;
+}
+
+static char *
+Pname (char *s)
+{
+  static char buff[256];
+  if (strcmp (s, "KFREE_SQL_MEM") == 0)
+    {
+      A4GL_assertion (1, "Rubbish detected");
+    }
+  sprintf (buff, "DP_P%s_%s", A4GL_compiling_module_basename (), s);
+  need_globals (buff);
+  return buff;
+}
+
+struct s_save_binding
+{
+  int nbind;
+  struct binding_comp *bind;
+};
+
+
+int
+print_bind_set_value_param (char *cname, char i)
+{
+  int a = 0;
+  char *xx;
+  xx = strdup (A4GL_strip_quotes (cname));
+  if (i == 'i')
+    {
+      for (a = 0; a < ibindcnt; a++)
+	{
+	  A4GL_assertion (cname[0] != '"',
+			  "Cursor name doesn't start with \"");
+	  printc ("$%s->Parameter(%d,$%s);", Cname (xx), a,
+		  use_scope (ibind[a].varname));
+	}
+      start_bind (i, 0);
+      return a;
+    }
+
+
+
+  if (i == 'o')
+    {
+      int nmem;
+      struct s_save_binding *s;
+      a = obindcnt;
+      if (obindcnt)
+	{
+	  s = malloc (sizeof (struct s_save_binding));
+	  s->nbind = obindcnt;
+	  nmem = sizeof (struct binding_comp) * obindcnt;
+	  s->bind = malloc (nmem);
+	  memcpy (s->bind, obind, nmem);
+	  A4GL_add_pointer (xx, CURSOR_BIND_O, s);
+	}
+
+      start_bind (i, 0);
+      return a;
+    }
+
+
+  A4GL_assertion (1, "End of function");
+  return 0;
+}
+
+void
+print_prepare_in_header (char *xx)
+{
+  if (A4GL_has_pointer (xx, PREPARE_PRINTED))
+    return;
+  A4GL_add_pointer (xx, PREPARE_PRINTED, (void *) 1);
+}
+
+
+
+int
+am_setting_module ()
+{
+  return setting_module_to_null;
+}
+
+
 
 /*
-=====================================================================
-                    Functions prototypes
-=====================================================================
+static void
+niy (char *f)
+{
+  printf ("Not implemented %s.\n", f);
+}
 */
 
-static void print_space (void);
-void open_outfile (void);
+static void
+niy_assert (char *s)
+{
+  printf ("%s\n", s);
+  A4GL_assertion (1, "Not implemented.\n");
+}
 
 
-static void print_output_rep (struct rep_structure *rep);
-static void print_form_attrib (struct form_attr *form_attrib);
-static int print_field_bind (int ccc);
-static int print_arr_bind (char i);
-static int print_constr (void);
-static int print_field_bind_constr (void);
-static int pr_when_do (char *when_str, int when_code, int l, char *f,
-		       char *when_to);
-static void pr_report_agg (void);
-static void pr_report_agg_clr (void);
-static void print_menu (int mn);
+open_outfile ()
+{
+  char buff[1024];
+  sprintf (buff, "%s.pl", outputfilename);
+  outfile = fopen (buff, "w");
+
+  sprintf (buff, "%s.plh", outputfilename);
+  outfile_h = fopen (buff, "w");
+
+  if (outfile)
+    {
+      fprintf (outfile, "#!/usr/bin/perl\n");
+      fprintf (outfile, "require aubit4gl;\n");
+    }
 
 
-/* static void real_lex_printc(char *fmt, va_list *ap); */
 
-void printh (char *fmt, ...);
-static void printcomment (char *fmt, ...);
-void dump_unwind (void);
+  if (outfile_h)
+    {
+      fprintf (outfile_h, "#START\n");
+    }
+}
 
 
-void internal_A4GL_lex_printc (char *fmt, va_list * ap);
-void internal_A4GL_lex_printcomment (char *fmt, va_list * ap);
-void internal_A4GL_lex_printh (char *fmt, va_list * ap);
 
-static void real_print_expr (struct expr_str *ptr);
-static void real_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt);
-static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
+void
+LEXLIB_A4GLLEX_initlib (void)
+{
+  A4GL_setenv ("MARK_SCOPE_MODULE", "Y", 1);
+  open_outfile ();
+}
 
-void printc (char *fmt, ...);
 
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
+static void
+print_space (void)
+{
+  static char buff[256];
+  if (need_space == 0)
+    return;
+  if (suppress_newlines)
+    return;
+  need_space = 0;
+  A4GL_assertion (temp_indent < 0, "temp indent<0");
+  memset (buff, ' ', 255);
+  buff[(ccnt + temp_indent) * 3] = 0;
+  FPRINTF (outfile, "%s", buff);
+}
 
-/* this one is used only form this file and compile_c_gtk.c */
-//static
+
+
+void
+printc_nl (void)
+{
+  need_space = 1;
+  FPRINTF (outfile, "\n");
+}
+
 void
 printc (char *fmt, ...)
 {
   va_list ap;
-  A4GL_debug ("via printc in lib");
+  /*A4GL_debug("via printc (a) in lib\n"); */
   va_start (ap, fmt);
-  /* real_lex_printc(fmt,&ap); */
-  internal_A4GL_lex_printc (fmt, &ap);
+  LEXLIB_A4GL_internal_lex_printc (fmt, &ap);
 }
 
-/* this oen gets called freom API */
-/*
-void
-internal_A4GL_lex_printc(char* fmt,... )
-{
-va_list ap;
-	A4GL_debug("via A4GL_lex_printc (2) in lib");
-	va_start(ap,fmt);
-	real_lex_printc(fmt,&ap);
-        A4GL_debug("Done....");
-}
-*/
 
 
-/**
- *
- * @param
- * @return
- */
-/*
-static void
-real_lex_printc(char *fmt, va_list *ap)
-*/
-void
-internal_A4GL_lex_printc (char *fmt, va_list * ap)
-/*
-void
-printc (char *fmt, ...)
-*/
-{
-/*  va_list args; */
-  char buff[40960];
-  char *ptr;
-  int a;
-  char buff2[40960];
-
-  if (outfile == 0)
-    {
-      open_outfile ();
-    }
-
-  if (outfile == 0)
-    return;
-
-  /* va_start (args, fmt); */
-  vsprintf (buff, fmt, *ap);
-
-  A4GL_debug ("buff in lib=%s\n", buff);
-  strcpy (buff2, fmt);
-  A4GL_debug ("fmt in lib=%s\n", buff2);
-
-
-  if (acl_getenv ("INCLINES"))
-    {
-      /* vsprintf (buff, fmt, args); */
-      for (a = 0; a < strlen (buff); a++)
-	{
-	  if (buff[a] == '\n')
-	    {
-	      if (infilename != 0)
-		{
-		  fprintf (outfile, "\n");
-		  //fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
-		  //outputfilename);
-		}
-	      else
-		{
-		  fprintf (outfile, "\n");
-		  //fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
-		  /*  outputfilename); */
-		}
-	    }
-	  else
-	    {
-	      fprintf (outfile, "%c", buff[a]);
-	      fflush (outfile);
-	    }
-	}
-    }
-  else
-    {
-      /* vsprintf (buff, fmt, args); */
-      ptr = strtok (buff, "\n");
-
-      while (ptr)
-	{
-	  print_space ();
-	  fprintf (outfile, "%s\n", ptr);
-	  ptr = strtok (0, "\n");
-	}
-    }
-}
-
-/**
- *
- * @param
- * @return
- */
-static void
-print_space (void)
-{
-  char buff[256];
-  memset (buff, ' ', 255);
-  buff[ccnt * 3] = 0;
-  fprintf (outfile, "%s", buff);
-}
-
-/**
- *
- * @param
- * @return
- */
 void
 printh (char *fmt, ...)
 {
-  va_list args;
+  va_list ap;
+  va_start (ap, fmt);
+  LEXLIB_A4GL_internal_lex_printh (fmt, &ap);
+}
+
+
+void
+LEXLIB_A4GL_internal_lex_printc (char *fmt, va_list * ap)
+{
+  static char buff[40960] = "ERROR-empty init";
+  char *ptr;
+  int a;
+  int os;
+
   if (outfile == 0)
     {
       open_outfile ();
+      if (outfile == 0)
+	return;
     }
-  if (outfile == 0)
-    return;
+  os = vsnprintf (buff, sizeof (buff), fmt, *ap);
+  if (os >= sizeof (buff))
+    {
+      a4gl_yyerror ("Internal error - string too big\n");
+      exit (0);
+    }
+  if (strcmp (buff, "\n") == 0)
+    {
+      printc_nl ();
+      return;
+    }
 
-  va_start (args, fmt);
-  vfprintf (hfile, fmt, args);
+  ptr = strtok (buff, "\n");
+  while (ptr)
+    {
+      if (!suppress_newlines)
+	{
+	  print_space ();
+	  fprintf (outfile, "%s", ptr);
+	  printc_nl ();
+	}
+      else
+	{
+	  fprintf (outfile, "%s", ptr);
+	}
+      ptr = strtok (0, "\n");
+    }
 }
 
-/**
- *
- * @param
- * @return
- */
+
 void
-open_outfile (void)
+LEXLIB_A4GL_internal_lex_printcomment (char *fmt, va_list * ap)
 {
-  char h[132];
-  char c[132];
-  char err[132];
-  char *ptr;
-  if (outputfilename == 0)
+//
+}
+
+void
+LEXLIB_A4GL_internal_lex_printh (char *fmt, va_list * ap)
+{
+  vfprintf (outfile_h, fmt, *ap);
+}
+
+
+
+
+
+char *
+LEXLIB_A4GL_decode_array_string (char *var, char *s)
+{
+  static char buff[2000] = "";
+  int a;
+  char tmp[2] = "X";		/*  Just to get a terminator on it */
+  strcpy (buff, "(");
+
+  for (a = 0; a < strlen (s); a++)
     {
-      A4GL_debug ("NO output file name");
-    }
-
-  strcpy (c, outputfilename);
-  strcpy (h, outputfilename);
-  strcpy (err, outputfilename);
-
-  if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
-    {
-      A4GL_debug ("Clobbering...");
-      set_clobber (outputfilename);
-    }
-
-  A4GL_debug ("Opening output map");
-
-  openmap (outputfilename);
-
-  ptr = acl_getenv ("NOCFILE");
-  if (strlen (ptr))
-    {
-      if (ptr[0] == 'Y' || ptr[0] == 'y')
+      if (s[a] == ',')
 	{
-	  A4GL_debug (">>> NO C FILES... %s", ptr);
-	  return;
+	  strcat (buff, ")-1][(");
+	}
+      else
+	{
+	  tmp[0] = s[a];
+	  strcat (buff, tmp);
 	}
     }
+  strcat (buff, ")-1");
+  return buff;
 
-  strcat (c, ".pl");
-  strcat (h, ".pm");
-  strcat (err, ".err");
-  outfile = A4GL_mja_fopen (c, "w");
-  if (outfile == 0)
-    {
-      printf ("Unable to open file %s (Check permissions)\n", c);
-      exit (3);
-    }
-
-  fprintf (outfile, "#!/usr/bin/perl\n");
-  fprintf (outfile, "require aubit4gl;\n");
-  fprintf (outfile, "package aubit4gl_pl;\n");
-  if (strcmp (acl_getenv ("A4GL_UI"), "GTK") == 0)
-    fprintf (outfile, "require aubit4gl_gtk\n");
-/*  fprintf (outfile, "$aubit_compiler_ser=\"%s\";\n", get_serno ()); */
-  fprintf (outfile, "$aubit_module_name=\"%s.4gl\";\n", outputfilename);
-  hfile = A4GL_mja_fopen (h, "w");
 }
 
 
-/**
- *
- * @param
- * @return
- */
+char *
+LEXLIB_A4GL_get_into_part (int d, int n)
+{
+  return ""; // INTO PART
+}
+
+
+
+
+char *
+LEXLIB_A4GL_set_var_sql (int d, int n)
+{
+  static char buff[20000];
+  int a;
+  extern char *current_upd_table;
+  strcpy (buff, "");
+  for (a = 0; a < n; a++)
+    {
+      if (a > 0)
+	{
+	  strcat (buff, ",");
+	}
+
+      if (current_upd_table)
+	{
+	  A4GL_4glc_push_gen (UPDVAL2, "?");
+	}
+      strcat (buff, "?");
+    }
+  return buff;
+
+}
+
+
+char *
+LEXLIB_get_column_transform (char *s)
+{
+  return s;
+}
+
+
+
+char *
+LEXLIB_print_arr_expr_fcall (void *ptr)
+{
+
+  niy_assert (__PRETTY_FUNCTION__);
+  return "";
+}
+
+char *
+LEXLIB_print_curr_spec (int type, char *s)
+{
+  static char buff[3000];
+  int ni;
+  int no;
+  int bt;
+
+  extern int obindcnt, ibindcnt;
+  //printc ("{ #3\n");
+  if (type == 1)
+    {
+      bt = 0;
+      ni = ibindcnt;
+      no = obindcnt;
+      if (obindcnt)
+	{
+	  bt++;
+	  print_bind_definition ('o');
+	}
+      if (ibindcnt)
+	{
+	  bt += 2;
+	  print_bind_definition ('i');
+	}
+      if (obindcnt)
+	{
+	  print_bind_set_value ('o');
+	}
+      if (ibindcnt)
+	{
+	  print_bind_set_value ('i');
+	}
+
+      switch (bt)
+	{
+	case 0:
+	  sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\")", s);
+	  break;
+	case 1:
+	  sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\")", no,
+		   s);
+	  break;
+	case 2:
+	  sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\")", ni,
+		   s);
+	  break;
+	case 3:
+	  sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")",
+		   no, ni, s);
+	  break;
+	}
+    }
+  if (type == 2)
+    sprintf (buff, "%s", s);
+  return buff;
+}
+
+char *
+LEXLIB_print_select_all (char *buff)
+{
+  //int ni, no;
+  //static char b2[20000];
+  //int os;
+  char *p;
+  //printc ("{\n");
+  //ni = print_bind_definition ('i');
+  //no = print_bind_definition ('o');
+  p = anon_prepare (buff);
+  //strcpy(b2,p);
+  //os=snprintf (b2, sizeof(b2),"%s", p);
+  //if (os>=sizeof(b2)) {
+  ////A4GL_debug("print_select_all failed");
+  //a4gl_yyerror("Internal error - string too long\n");
+  //exit(2);
+  //}
+  return strdup (p);
+
+}
+
+char *
+LEXLIB_rettype (char *s)
+{
+  return "var";
+}
+
+int
+LEXLIB_A4GL_bad_identifiers (char *ident)
+{
+  return 0;
+}
+
+int
+LEXLIB_print_bind (char i)
+{
+  printf ("print_bind... %c\n", i);
+  return 0;
+}
+
+int
+LEXLIB_print_bind_definition (char i)
+{
+  return 0;
+}
+
+int
+LEXLIB_print_bind_set_value (char i)
+{
+  return 0;
+}
+
+int
+LEXLIB_print_let_manyvars (t_expr_str_list * expr_list)
+{
+printf("let_manyvars\n");
+}
+
+int
+LEXLIB_print_param (char i, char *funcname)
+{
+  int a;
+  int b;
+  char *ptr;
+  int dtype;
+
+  if (fbindcnt)
+    {
+      for (a = 0; a < fbindcnt; a++)
+	{
+	  dtype = scan_variable (fbind[a].varname);
+	  if (strchr (fbind[a].varname, '.'))
+	    {
+	      printc ("$%s=$p_%d;", fbind[a].varname, a);
+	    }
+	}
+    }
+  return fbindcnt;
+}
+
+void
+LEXLIB_A4GL_add_put_string (char *buff)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_A4GL_generate_or (char *out, char *in1, char *in2)
+{
+  SPRINTF2 (out, "%s||%s", in1, in2);
+}
+
 void
 LEXLIB_A4GL_incprint (void)
 {
@@ -409,4000 +523,2862 @@ LEXLIB_A4GL_incprint (void)
 
   for (a = 0; a <= getinc (); a++)
     {
-
       printc ("   ");
-
     }
 }
 
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_repctrl_block (void)
+LEXLIB_A4GL_lex_parsed_fgl (void)
 {
-  printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_report_ctrl (void)
-{
-  int a;
-  A4GL_debug
-    ("/* ********************************************************** */\n");
-  A4GL_debug
-    ("/*                 Report Control Block                       */\n");
-  A4GL_debug
-    ("/* ********************************************************** */\n");
-  printc ("report%d_ctrl:\n", report_cnt);
-  //printc ("A4GL_debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
-/*
-   printc("    if (acl_ctrl==REPORT_START) goto start_%d;\n",report_cnt);
-   printc("    if (acl_ctrl==REPORT_FINISH) goto finish_%d;\n",report_cnt);
- */
-  printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
-  printc ("    if (acl_ctrl==REPORT_SENDDATA) {\n");
-  printc ("   /* check for after group of */\n");
-  printc ("       %s(0,REPORT_DATA);\n", get_curr_rep_name ());
-  printc ("   /* check for before group of */\n");
-  printc ("    }\n\n");
-
-  /*if (report_stack[a].whytype=='F') printc("if (acl_ctrl==REPORT_FINISH) call %s(0,REPORT_LASTROW)\n", report_cnt,a); */
-
-  printc ("if (acl_ctrl==REPORT_FINISH) {%s(0,REPORT_LASTDATA);return;}\n",
-	  get_curr_rep_name ());
-  if (rep_type == REP_TYPE_NORMAL)
+  if (outfile)
     {
-      printc
-	("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;fclose(rep.output);return;}\n",
-	 get_curr_rep_name ());
+      fprintf (outfile, "# END\n");
+      fprintf (outfile, "AppEntry();\n");
+      fclose (outfile);
+      outfile = 0;
     }
-  else
+
+  if (outfile_h)
     {
-      printc
-	("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;pdf_rep_close(&rep);return;}\n",
-	 get_curr_rep_name ());
-
-    }
-  printc ("    if (acl_ctrl==REPORT_AFTERDATA ) {\n");
-  pr_report_agg ();
-  printc ("    }\n");
-
-  for (a = 0; a < report_stack_cnt; a++)
-    {
-/* on last row */
-      if (report_stack[a].whytype == 'L')
-	printc
-	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
-	   report_cnt, a);
-
-/* on every row */
-      if (report_stack[a].whytype == 'E')
-	printc
-	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
-	   report_cnt, a);
-
-/* before group of */
-      if (report_stack[a].whytype == 'B')
-	printc
-	  ("if (acl_ctrl==REPORT_BEFOREGROUP && nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   report_stack[a].why, report_cnt, a);
-
-/* after group of */
-      if (report_stack[a].whytype == 'A')
-	printc
-	  ("if (acl_ctrl==REPORT_AFTERGROUP && nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   report_stack[a].why, report_cnt, a);
-
-      if (report_stack[a].whytype == 'T')
-	printc
-	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n",
-	   report_cnt, a);
-
-      if (report_stack[a].whytype == 'P')
-	printc
-	  ("if (acl_ctrl==REPORT_PAGEHEADER && rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
-	   report_cnt, a);
-
-      if (report_stack[a].whytype == 'p')
-	printc
-	  ("if (acl_ctrl==REPORT_PAGEHEADER && (rep.page_no!=1||(rep.page_no==1 && rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
-	   report_cnt, a);
-    }
-  pr_report_agg_clr ();
-}
-
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_range_check (char *var, char *size)
-{
-  printc ("range_chk(%s,%d);\n", var, atoi (size));
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_start_block (int n)
-{
-  printc ("\n");
-  printc ("START_BLOCK_%d:\n", n);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_continue_block (int n, int brace)
-{
-  printc ("\n");
-  printc ("CONTINUE_BLOCK_%d:  ", n);
-  if (brace)
-    printc ("}\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_end_block (int n)
-{
-  printc ("END_BLOCK_%d: ;\n\n", n);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_continue_loop (int n, char *s)
-{
-  printc ("goto CONTINUE_BLOCK_%d;", n);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_exit_loop (int type, int n)
-{
-  if (type == 'M')
-    {
-      printc ("$cmd_no=-3;next;\n");
-    }
-  if (type == 'P')
-    {
-      printc ("_p.mode=1;\n");
-    }
-  if (type == 0)
-    {
-      printc ("goto END_BLOCK_%d;", n);
+      fprintf (outfile_h, "# END\n");
+      fclose (outfile_h);
+      outfile_h = 0;
     }
 }
 
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_rep_ret (int report_cnt, int n)
-{
-  printc ("goto report%d_ctrl;\n\n", report_cnt);
-}
-
-/**
- *
- * @param
- * @return
- */
-static void
-print_output_rep (struct rep_structure *rep)
-{
-  printc ("output_%d:\n", report_cnt);
-  printc ("rep.top_margin=%d;\n", rep->top_margin);
-  printc ("rep.bottom_margin=%d;\n", rep->bottom_margin);
-  printc ("rep.left_margin=%d;\n", rep->left_margin);
-  printc ("rep.right_margin=%d;\n", rep->right_margin);
-  printc ("rep.page_length=%d;\n", rep->page_length);
-  printc ("rep.page_no=%d;\n", rep->page_no);
-  printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
-  printc ("rep.line_no=%d;\n", rep->line_no);
-  printc ("rep.col_no=%d;\n", rep->col_no);
-  printc ("if (strlen(_rout2)==0)\n");
-  printc ("strcpy(rep.output_loc,%s);\n", rep->output_loc);
-  printc ("else strcpy(rep.output_loc,_rout2);\n");
-  printc ("if (strlen(_rout1)==0)\n");
-  printc ("rep.output_mode='%c';\n", rep->output_mode);
-  printc ("else rep.output_mode=_rout1[0];\n");
-  printc ("rep.report=&%s;\n", get_curr_rep_name ());
-  printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt, 0);
-
-}
-
-/**
- *
- * @param
- * @return
- */
-static void
-pdf_print_output_rep (struct pdf_rep_structure *rep)
-{
-  printc ("output_%d:\n", report_cnt);
-  printc ("strcpy(rep.font_name,%s);\n", rep->font_name);
-  printc ("rep.font_size=%f;\n", rep->font_size);
-  printc ("rep.paper_size=%d;\n", rep->paper_size);
-
-  printc ("rep.top_margin=pdf_size(%f,'l',&rep);\n", rep->top_margin);
-  printc ("rep.bottom_margin=pdf_size(%f,'l',&rep);\n", rep->bottom_margin);
-  printc ("rep.page_length=pdf_size(%f,'l',&rep);\n", rep->page_length);
-  printc ("rep.left_margin=pdf_size(%f,'c',&rep);\n", rep->left_margin);
-  printc ("rep.right_margin=pdf_size(%f,'c',&rep);\n", rep->right_margin);
-  printc ("rep.page_width=pdf_size(%f,'c',&rep);\n", rep->page_width);
-
-  printc ("rep.page_no=%d;\n", rep->page_no);
-  printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
-
-  printc ("rep.line_no=%f;\n", rep->line_no);
-  printc ("rep.col_no=%f;\n", rep->col_no);
-
-  printc ("if (strlen(_rout2)==0)\n");
-  printc ("strcpy(rep.output_loc,%s);\n", rep->output_loc);
-  printc ("else strcpy(rep.output_loc,_rout2);\n");
-  printc ("if (strlen(_rout1)==0)\n");
-  printc ("rep.output_mode='%c';\n", rep->output_mode);
-  printc ("else rep.output_mode=_rout1[0];\n");
-  printc ("rep.report=&%s;\n", get_curr_rep_name ());
-  printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt, 0);
-}
-
-/**
- *
- * @param
- * @return
- */
-static void
-pr_report_agg (void)
-{
-  int z;
-  int a;
-  int t;
-/*
-  char s1[5024];
-  char s2[5024];
-*/
-
-  for (z = 0; z < sreports_cnt; z++)
-    {
-
-      //strcpy (s2, sreports[z].rep_cond);
-      //strcpy (s1, sreports[z].rep_expr);
-
-      a = sreports[z].a;
-      t = sreports[z].t;
-
-      if (t == 'C')
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {_g%d++;}\n", a);
-	}
-
-      if (t == 'P')
-	{
-	  printc ("_g%d++;", a + 1);
-	  print_expr (sreports[z].rep_where_expr);
-	  printc (" if (A4GL_pop_bool()) {_g%d++;} \n", a);
-	}
-
-      if (t == 'S')
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  print_expr (sreports[z].rep_cond_expr);
-	  printc ("_res=A4GL_pop_double(); _g%d+=_res;}\n ", a);
-	}
-
-      if (t == 'A')
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  print_expr (sreports[z].rep_cond_expr);
-
-	  printc ("_res=A4GL_pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
-	}
-
-      if (t == 'N')
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  print_expr (sreports[z].rep_cond_expr);
-	  printc
-	    ("_res=A4GL_pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
-	     a, a, a, a);
-	}
-
-      if (t == 'X')
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  print_expr (sreports[z].rep_cond_expr);
-	  printc
-	    ("_res=A4GL_pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
-	     a, a, a, a);
-	}
-
-    }
-}
-
-/**
- *
- * @param
- * @return
- */
-static void
-pr_report_agg_clr (void)
-{
-  int z;
-  int a;
-  int t;
-  int in_b;
-
-/*
-  char s1[1024];
-  char s2[1024];
-*/
-
-  for (z = 0; z < sreports_cnt; z++)
-    {
-/*
-      strcpy (s2, sreports[z].rep_cond);
-      strcpy (s1, sreports[z].rep_expr);
-*/
-      a = sreports[z].a;
-      t = sreports[z].t;
-      in_b = sreports[z].in_b;
-      if (in_b > 0)
-	{
-	  printc ("if (nargs==-%d&&acl_ctrl==REPORT_AFTERGROUP) {\n", in_b);
-	  printc ("/* t=%c */\n", t);
-	  if (t == 'C' || t == 'N' || t == 'X' || t == 'S')
-	    {
-	      printc ("_g%d=0;\n", a);
-	    }
-
-	  if (t == 'N' || t == 'X')
-	    {
-	      printc ("_g%dused=0;\n", a);
-	    }
-
-	  if (t == 'P' || t == 'A')
-	    {
-	      printc ("_g%d=0;_g%d=0;\n", a + 1, a);
-	    }
-	  printc ("}\n");
-	}
-    }
-}
-
-
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_clr_status (void)
-{
-  printc ("xset_status(0);\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
 void
 LEXLIB_A4GL_prchkerr (int l, char *f)
 {
-  int a;
-/* 0 = continue */
-/* 1 = stop */
-/* 2 = call */
-/* 3 = goto */
-  A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
-  printc
-    ("if ($aubit4gl_pl::a4gl_sqlca_sqlcode !=0 || $aubit4gl_pl::a4gl_status !=0 || %d) {\n",
-     when_code[A_WHEN_SUCCESS] == WHEN_CALL
-     || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
-  /*printc("A4GL_debug(\"status=%%d a4gl_sqlca_sqlcode=%%d\",status,a4gl_sqlca_sqlcode);\n"); */
-  printcomment ("/* NOTFOUND */");
-  a =
-    pr_when_do ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==100)",
-		when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
-  printcomment ("/* SQLERROR */");
-  a =
-    pr_when_do
-    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode<0 && $aubit4gl_pl::a4gl_status==$aubit4gl_pl::a4gl_sqlca_sqlcode)",
-     when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
-  printcomment ("/* ANYERROR */");
-  a =
-    pr_when_do
-    ("   if ($aubit4gl_pl::a4gl_status<0 || $aubit4gl_pl::a4gl_sqlca_sqlcode<0)",
-     when_code[A_WHEN_ANYERROR], l, f, when_to[A_WHEN_ANYERROR]);
-  printcomment ("/* ERROR */");
-  a =
-    pr_when_do ("   if ($aubit4gl_pl::a4gl_status<0)", when_code[A_WHEN_ERROR], l,
-		f, when_to[A_WHEN_ERROR]);
-  printcomment ("/* SQLWARNING */");
-  a =
-    pr_when_do
-    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && $aubit4gl_pl::sqlca_sqlawarn[0]=='W')",
-     when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
-  printcomment ("/* WARNING */");
-  a =
-    pr_when_do
-    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && ($aubit4gl_pl::sqlca_sqlawarn[0]=='w'||$aubit4gl_pl::sqlca_sqlawarn[0]=='W'))",
-     when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
-  printcomment ("/* SQLSUCCESS */");
-  a =
-    pr_when_do
-    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && $aubit4gl_pl::a4gl_status==0)",
-     when_code[A_WHEN_SQLSUCCESS], l, f, when_to[A_WHEN_SQLSUCCESS]);
-  printcomment ("/* SUCCESS */");
-  a =
-    pr_when_do
-    ("   if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0 && $aubit4gl_pl::a4gl_status==0)",
-     when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
-  printc ("}\n");
 }
 
-/**
- *
- * @param
- * @return
- */
-static int
-pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
-{
-
-  if ((when_code & 15) == WHEN_CONTINUE)
-    return 0;
-  if ((when_code & 15) == WHEN_NOTSET)
-    return 0;
-  if (when_code == WHEN_STOP)
-    {
-      printc ("%s {aubit4gl_pl::A4GL_chk_err(%d,aubit_module_name);}\n", when_str,
-	      l, f);
-      printcomment ("/* WHENSTOP */");
-    }
-  if (when_code == WHEN_CALL)
-    {
-      printc ("%s aclfgl_%s(0);\n", when_str, when_to);
-      printcomment ("/* WHENCALL */");
-    }
-
-  if (when_code == WHEN_GOTO)
-    {
-      printc ("%s goto %s;\n", when_str, when_to);
-      printcomment ("/* WHENGOTO */");
-    }
-  return 1;
-}
-
-
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_expr (void *ptr)
+LEXLIB_printDeclareFunctionStack (char *functionName)
 {
-  A4GL_debug ("via print_expr in lib");
-  real_print_expr (ptr);
-}
-static void
-real_print_expr (struct expr_str *ptr)
-{
-  void *optr;
-  A4GL_debug ("Print expr... %p", ptr);
-  while (ptr)
-    {
-	    
-      switch (ptr->expr_type) {
-        case ET_EXPR_STRING: printc ("%s\n", ptr->u_data.expr_char); free (ptr->u_data.expr_char); break;
-        default: A4GL_assertion(1,"Unhandled expression type");
-								         }
-
-      optr = ptr;
-      A4GL_debug ("going to %p", ptr->next);
-      ptr = ptr->next;
-      free (optr);
-    }
+  /* do nothing */
 }
 
-/**
- *
- * @param
- * @return
- */
-static void
-print_form_attrib (struct form_attr *form_attrib)
+void
+LEXLIB_printInitFunctionStack (void)
 {
-  printc ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)",
-	  form_attrib->iswindow,
-	  form_attrib->form_line,
-	  form_attrib->error_line,
-	  form_attrib->prompt_line,
-	  form_attrib->menu_line,
-	  form_attrib->border,
-	  form_attrib->comment_line,
-	  form_attrib->message_line, form_attrib->attrib);
-  A4GL_debug ("Printing attributes\n");
-  A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
-	      form_attrib->form_line, form_attrib->error_line,
-	      form_attrib->prompt_line, form_attrib->menu_line,
-	      form_attrib->border, form_attrib->comment_line,
-	      form_attrib->message_line, form_attrib->attrib);
+  /* do nothing */
 }
 
-/**
- *
- * @param
- * @return
- */
-static int
-print_field_bind (int ccc)
+void
+LEXLIB_printPopFunction (void)
 {
-  char tabname[40];
-  char colname[40];
-  int a;
-  A4GL_debug ("%d\n", ibindcnt);
-  for (a = 0; a < ccc; a++)
-    {
-      A4GL_bname (ibind[a].varname, tabname, colname);
-      if (a > 0)
-	printc (",");
-      if (colname[0] != 0)
-	printc ("\"%s\",1", colname);
-      else
-	printc ("\"%s\",1", tabname);
-    }
-  return a;
+  /* do nothing */
 }
 
-/**
- *
- * @param
- * @return
- */
+void
+LEXLIB_printPushFunction (void)
+{
+  /* do nothing */
+}
+
+void
+LEXLIB_print_Constant (int type, char *v)
+{
+  /* do nothing */
+}
+
+void
+LEXLIB_print_after_when (int endofblock)
+{
+
+  if (when_case_has_expr)
+    printc ("break;");
+  else
+    printc ("}");
+  temp_indent--;
+
+}
+
 void
 LEXLIB_print_bind_pop1 (char i)
 {
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+
+
+
+
+void
+LEXLIB_print_bind_pop2 (t_expr_str_list * ptr, char i)
+{
   int a;
+  //int dtype;
+  struct expr_str *p;
+  char *ptr_str = 0;
   a = 0;
-  if (i == 'i')
+
+  if (i != 'o')
     {
-      if (scan_variable (obind[a].varname) != -1)
-	printc ("%s=A4GL_pop_var2(%d,%d);\n", ibind[a].varname,
-		(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-      else
-	printc ("%s;\n", ibind[a].varname);
+      A4GL_assertion (1, "Not Used");
+    }
+  A4GL_debug ("bind_pop2\n");
+
+  if (is_just_expr_clipped (obind[a].varname, ptr))
+    return;
+
+
+
+  ptr = A4GL_rationalize_list_concat (ptr);
+
+  if ((obind[a].dtype & DTYPE_MASK) == DTYPE_CHAR)
+    {				// If its a character string -
+      ptr_str = is_single_string (ptr);
     }
 
-  if (i == 'o')
+
+  A4GL_debug ("Checking ignore : %s ", obind[a].varname);
+
+
+  if (scan_variable (obind[a].varname) != -1)
     {
-      if (scan_variable (obind[a].varname) != -1)
-	printc ("%s=A4GL_pop_var2(%d,%d);\n", obind[a].varname,
-		(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
-      else
-	printc ("%s;\n", obind[a].varname);
-    }
 
-}
+      A4GL_debug ("XXX\n");
 
-
-
-/**
- *
- * @param
- * @return
- */
-static int
-print_arr_bind (char i)
-{
-  int a;
-
-  A4GL_debug ("/* %c */\n", i);
-  /* dump_vars (); */
-  if (i == 'i')
-    {
-      printc ("\n");
-      printc ("struct BINDING ibind[]={\n");
-      for (a = 0; a < ibindcnt; a++)
+      set_suppress_newlines ();
+      if (!is_ignore_var (obind[a].varname))
 	{
-	  if (a > 0)
-	    printc (",\n");
-	  printc ("{%s,%d,%d}", ibind[a].varname,
-		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	  printc ("$%s=", use_scope (fixup_squares (obind[a].varname)));
 	}
-      printc ("\n}; # /* end of binding */\n");
-      return a;
-    }
 
-  if (i == 'o')
-    {
-      printc ("\n");
-      printc ("struct BINDING obind[]={\n");
-      for (a = 0; a < obindcnt; a++)
+      if (ptr->nlist > 1)
 	{
-	  if (a > 0)
-	    printc (",\n");
-	  printc ("{%s,%d,%d}", obind[a].varname,
-		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	  p = A4GL_new_concat_list (ptr);
 	}
-      printc ("\n}; # /* end of binding */\n");
-      return a;
-    }
-
-  return 0;
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-static int
-print_constr (void)
-{
-  int a;
-  printc
-    ("struct s_constr_list {char *tabname;char *colname;} constr_flds[]={\n");
-  for (a = 0; a < constr_cnt; a++)
-    {
-      if (a > 0)
-	printc (",\n");
-      printc ("{\"%s\",\"%s\"}", constr_buff[a].tab, constr_buff[a].col);
-    }
-  printc ("\n};");
-  return a;
-}
-
-/**
- *
- * @param
- * @return
- */
-static int
-print_field_bind_constr (void)
-{
-  int a;
-
-  for (a = 0; a < constr_cnt; a++)
-    {
-      if (a > 0)
-	printc (",");
-      if (constr_buff[a].tab[0] != 0)
-	printc ("\"%s.%s\",1", constr_buff[a].tab, constr_buff[a].col);
       else
-	printc ("\"%s\",1", constr_buff[a].col);
-    }
-  return a;
-}
-
-
-
-
-
-/**
- *
- * @param
- * @return
- */
-int
-LEXLIB_print_param (char i)
-{
-  int a;
-
-  A4GL_debug ("Expanding binding.. - was %d entries", fbindcnt);
-  expand_bind ((void *) &fbind, 'F', fbindcnt);
-  A4GL_debug ("Expanded - now %d entries", fbindcnt);
-  if (i == 'r')
-    {
-      printc ("static ");
-    }
-
-  printc ("my @%cbind=[ ", i);
-  for (a = 0; a < fbindcnt; a++)
-    {
-
-      fbind[a].dtype = scan_variable (fbind[a].varname);
-      if (a > 0)
-	printc (",\n");
-      printc ("[\\%s,%d,%d]", fbind[a].varname,
-	      (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
-    }
-  printc ("\n]; # /* end of binding */\n");
-  return a;
-}
-
-
-
-
-/**
- *
- * @param
- * @return
- */
-int
-LEXLIB_print_bind (char i)
-{
-  int a;
-  int bcnt;
-  char name[256];
-
-  if (i == 'i')
-    {
-      strcpy (name, "ibind");
-      bcnt = ibindcnt;
-    }
-
-  unwindcnt = 0;
-
-  A4GL_debug ("/* %c */\n", i);
-  if (i == 'i')
-    {
-      printc ("\n");
-      printc ("my $ibind=aubit4gl_pl::dif_start_bind();\n");
-      for (a = 0; a < ibindcnt; a++)
 	{
-	  switch (ibind[a].dtype & 0xffff)
+	  p = ptr->list[0];
+	}
+
+      if (p->expr_type == ET_EXPR_NULL)
+	{
+	  if (!is_ignore_var (obind[a].varname))
 	    {
-	    case 0:
-	      printc ("aubit4gl_pl::dif_add_bind_char($ibind,$%s,%d);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_char($ibind);",
-		       ibind[a].varname);
+	      LEXLIB_print_expr (p);
+	    }
+	}
+      else
+	{
+	  int bit_like_null;
+	  bit_like_null = 0;
+	  if ((obind[a].dtype & DTYPE_MASK) == DTYPE_DECIMAL
+	      || (obind[a].dtype & DTYPE_MASK) == DTYPE_INT
+	      || (obind[a].dtype & DTYPE_MASK) == DTYPE_SMINT
+	      || (obind[a].dtype & DTYPE_MASK) == DTYPE_FLOAT
+	      || (obind[a].dtype & DTYPE_MASK) == DTYPE_SMFLOAT)
+	    {
+
+	      if (p->expr_type == ET_EXPR_LITERAL_STRING)
+		{
+		  if (strcmp (p->u_data.expr_string, "") == 0)
+		    bit_like_null = 1;
+		  if (strcmp (p->u_data.expr_string, " ") == 0)
+		    bit_like_null = 1;
+		}
+
+	      if (bit_like_null)
+		{
+		  if (!is_ignore_var (obind[a].varname))
+		    {
+		      printc ("null #Bit like null");
+		    }
+		}
+	    }
+
+
+	  if (!bit_like_null)
+	    {
+	      ensure_dtype (p, obind[a].dtype & DTYPE_MASK, 0);
+	      if (!is_ignore_var (obind[a].varname))
+		{
+		  LEXLIB_print_expr (p);
+		}
+	    }
+	}
+      if (!is_ignore_var (obind[a].varname))
+	{
+	  printc (";\n");
+	}
+
+      clr_suppress_newlines ();
+
+      if ((obind[a].dtype & DTYPE_MASK) == DTYPE_CHAR)
+	{
+	  if (find_variable_scope (obind[a].varname) == 'L' || 1)
+	    {
+	      // If its a local character string -
+	      // remember it's last assignment..
+	      // this may come in useful ;-)
+
+	    }
+	}
+    }
+  else
+    {
+      char buff[1024];
+      char *var;
+      char *len;
+      char *start;
+      //int x;
+      char *end;
+      char *zero;
+      char *cptr;
+      A4GL_debug ("obind[a].varname='%s' @ %d", obind[a].varname, yylineno);
+      strcpy (buff, obind[a].varname);
+      cptr = strchr (buff, '(');
+      if (!cptr)
+	{
+	  A4GL_assertion (1, "Can't find start a4gl_let_substr");
+	}
+      var = cptr + 1;
+      cptr = strchr (var, ',');
+      if (!cptr)
+	{
+	  A4GL_assertion (1, "Can't find start a4gl_let_substr(1)");
+	}
+      *cptr = 0;
+      len = cptr + 1;
+      cptr = strchr (len, ',');
+      if (!cptr)
+	{
+	  A4GL_assertion (1, "Can't find start a4gl_let_substr(2)");
+	}
+      *cptr = 0;
+      start = cptr + 1;
+      cptr = strchr (start, ',');
+      if (!cptr)
+	{
+	  A4GL_assertion (1, "Can't find start a4gl_let_substr(3)");
+	}
+      *cptr = 0;
+      end = cptr + 1;
+      cptr = strchr (end, ',');
+      if (cptr)
+	{
+	  *cptr = 0;
+	  zero = cptr + 1;
+	}
+      else
+	{
+	  zero = end;
+	  end = 0;
+	}
+      cptr = strchr (zero, ')');
+      if (!cptr)
+	{
+	  A4GL_assertion (1, "Can't find start a4gl_let_substr(4)");
+	}
+      *cptr = 0;
+
+      if (strcmp (zero, "0") != 0)
+	{
+	  A4GL_assertion (1, "Can't decode the let_substr (0!=0)....\n");
+	}
+
+      if (end == 0)
+	end = start;
+
+      p = ptr->list[0];
+
+      if (is_ignore_var (obind[a].varname));
+      else
+	{
+	  printc ("$%s=substring($%s,%s,%s,", use_scope (var), use_scope (var),
+		  start, end);
+	  ensure_char (p, 0);
+	  LEXLIB_print_expr (p);
+	  printc (");");
+	}
+
+
+    }
+}
+
+
+
+
+
+
+
+
+
+void
+ensure_char (struct expr_str *p, int f)
+{
+  return;
+}
+
+
+
+
+
+
+
+
+void
+LEXLIB_print_case (t_expr_str * expr)
+{
+  set_suppress_newlines ();
+  if (expr)
+    {
+      printc ("switch (");
+      print_expr (expr);
+      printc (") {");
+    }
+  clr_suppress_newlines ();
+
+}
+
+void
+LEXLIB_print_case_end (void)
+{
+  printc ("}");
+}
+
+
+void
+LEXLIB_print_close (char type, char *name)
+{
+}
+void
+LEXLIB_print_cmd_end (void)
+{
+  /* doesn't need to do anything */
+}
+void
+LEXLIB_print_cmd_start (void)
+{
+  /* doesn't need to do anything */
+}
+
+void
+LEXLIB_print_continue_block (int n, int brace, char *why)
+{
+  printc ("# CB\n");
+  if (is_used_block (n, "C") || 1)
+    {
+      printc ("CONTINUE_BLOCK_%d:       # %d  ", n, yylineno);
+    }
+
+  if (brace)
+    {
+      if (strcmp (why, "FOR") == 0)
+	{
+	  return;
+	}
+
+      if (strcmp (why, "WHILE") == 0)
+	{
+	  return;
+	}
+
+      printc ("} #  CB %s \n", why);
+    }
+
+}
+void
+LEXLIB_print_declare (char *sa1, char *a2, char *a3, int h1, int h2)
+{
+  int a1;
+  char *xx;
+  char *yy;
+  int ign;
+  xx = strdup (A4GL_strip_quotes (a3));
+
+  yy = strdup (A4GL_strip_quotes (a2));
+  if (strlen (sa1))
+    a1 = 1;
+  else
+    a1 = 0;
+
+  if (h2)
+    {
+
+      //printf ("--->%s %s \n", xx, a3);
+      if (!A4GL_find_pointer (xx, CURSOR_USED) && !ign)
+	{
+	  A4GL_add_pointer (xx, CURSOR_USED, (void *) 1);
+	}
+      printc ("$%s=new FGLScrollCursor();", Cname (xx));
+    }
+  else
+    {
+      if (!A4GL_find_pointer (xx, CURSOR_USED) && !ign)
+	{
+	  A4GL_add_pointer (xx, CURSOR_USED, (void *) 1);
+	}
+      printc ("$%s=new FGLCursor();", Cname (xx));
+    }
+  print_bind_set_value_param (a3, 'i');
+  print_bind_set_value_param (a3, 'o');
+  print_prepare_in_header (yy);
+
+  printc ("$%s->CursorDeclare(%d,$%s);", Cname (xx), a1 + h1, Pname (yy));
+  start_bind ('i', 0);
+  start_bind ('o', 0);
+}
+
+
+
+
+
+void
+LEXLIB_print_defer (int quit)
+{
+	printc("print defer");
+}
+
+void
+LEXLIB_print_do_select (char *s)
+{
+int l = 0;
+
+if (ibindcnt) l++;
+if (obindcnt) l += 2;
+LEXLIB_print_execute (s, l);
+return;
+
+}
+
+void
+LEXLIB_print_empty_bind (char *name)
+{
+	printc("print empty bind");
+}
+
+void
+LEXLIB_print_end_block (int n)
+{
+  if (is_used_block (n, "E"))
+    {
+      printc ("END_BLOCK_%d:  # %d - %s\n\n", n, yylineno,
+	      A4GL_compiling_module ());
+    }
+
+}
+
+void
+LEXLIB_print_exec_sql (char *s)
+{
+  char *p;
+
+  p = anon_prepare (s);
+  LEXLIB_print_execute (p, 0);
+  printc ("$%s->Free();", Pname (p));
+}
+
+void
+LEXLIB_print_exec_sql_bound (char *s)
+{
+  char *p;
+
+  p = anon_prepare (s);
+  LEXLIB_print_execute (p, 1);
+
+}
+
+void
+LEXLIB_print_execute (char *stmt, int using)
+{
+  int ni;
+  int no;
+  char buff[2000];
+  char *xx;
+  stmt = strdup (stmt);
+  if (stmt[0] != '"')
+    {
+      sprintf (buff, "\"%s\"", stmt);
+    }
+  else
+    {
+      strcpy (buff, stmt);
+    }
+
+  xx = strdup (A4GL_strip_quotes (stmt));
+
+
+  if (A4GL_has_pointer (xx, EMULATE_CURRENT_OF))
+    {
+      if (ibindcnt)
+        {
+          print_bind_set_value_param_3 (buff, 'i');
+        }
+          print_prepare_in_header(xx);
+      printc ("$%s->Update($%s);\n", Pname (xx),
+              Cname (A4GL_find_pointer (xx, EMULATE_CURRENT_OF)));
+    }
+  else
+    {
+
+      if (using == 0)
+        {
+          print_prepare_in_header(xx);
+          printc ("$%s->ExecuteSql(0);\n", Pname (xx));
+        }
+
+      if (using == 1)
+        {
+          ni = ibindcnt;
+          print_bind_set_value_param_3 (buff, 'i');
+          print_prepare_in_header(xx);
+          printc ("$%s->ExecuteSql(%d);\n", Pname (xx), ni);
+        }
+
+      if (using == 2)
+        {
+          no = obindcnt;        //print_bind_definition ('o');
+
+          print_prepare_in_header(xx);
+
+          printc ("@%s=$%s->ExecuteSqlWithResults(0); \n",
+             Rname (xx), Pname (xx));
+          print_bind_set_value_param_3 (stmt, 'o');
+        }
+      if (using == 3)
+        {
+          ni = ibindcnt;
+          print_bind_set_value_param_3 (buff, 'i');
+          print_prepare_in_header(xx);
+          printc
+            ("@%s=$%s->ExecuteSqlWithResults(%d); \n",
+             Rname (xx), Pname (xx), ni);
+          print_bind_set_value_param_3 (stmt, 'o');
+        }
+    }
+}
+
+void
+LEXLIB_print_execute_immediate (char *stmt)
+{
+	printc("EXECUTE IMMEDIATE\n");
+}
+
+void
+LEXLIB_print_exit_loop (int type, int n)
+{
+  if (type == 0)
+    {
+      printc ("goto END_BLOCK_%d ; # EB ", n);
+      add_used_block (n, "E");
+    }
+  A4GL_assertion(1,"Can't EXIT anything else");
+}
+
+
+
+void
+LEXLIB_print_exit_program (t_expr_str * expr)
+{
+  if (expr)
+    {
+      set_suppress_newlines ();
+      printc ("die(\"Exit : \".");
+      real_print_expr (expr);
+      printc (");");
+      clr_suppress_newlines ();
+    }
+  else
+    {
+      printc ("die(\"Exit\");");
+    }
+
+}
+
+
+void
+LEXLIB_print_fetch_1 (void)
+{
+	printc("print fetch_1");
+}
+
+
+void
+LEXLIB_print_fetch_2 (void)
+{
+	printc("print fetch_2");
+}
+
+
+
+void
+LEXLIB_print_fgllib_start (char *db)
+{
+  extern int is_schema;
+  if (db[0] != 0)
+    {
+      if (!is_schema)
+	{
+	  print_init_conn (db);
+	}
+      else
+	{
+	  printc ("#  NO DATABASE - SCHEMA ONLY ");
+	}
+    }
+  print_function_variable_init ();
+}
+
+
+
+
+void
+LEXLIB_print_flush_cursor (char *s)
+{
+	printc("print flush");
+}
+
+void
+LEXLIB_print_for_end (char *var, void *from, void *to, void *step)
+{
+  temp_indent--;
+  printc ("}");
+}
+
+void
+LEXLIB_print_for_start (char *var, void *from, void *to, void *step)
+{
+	static int f=0;
+  set_suppress_newlines();
+  printc ("$%s=", var);
+  print_expr (from);
+  printc(";");
+  clr_suppress_newlines();
+  printc ("for_loop_%d: while (1) {",++f);
+  temp_indent++;
+  set_suppress_newlines();
+  printc ("$for_step=");
+  print_expr (step);
+  printc(";");
+  clr_suppress_newlines();
+  set_suppress_newlines();
+  printc ("$for_end=");
+  print_expr (to);
+  printc(";");
+  clr_suppress_newlines();
+  printc ("if ($for_step>0) {");
+  printc ("   last for_loop_%d if ($%s>$for_end);",f,var);
+  printc ("} else {");
+  printc ("   last for_loop_%d if ($%s<$for_end);",f,var);
+  printc ("}");
+
+  //printc ("<=_e&&_step>0)||(%s>=_e&&_step<0);%s+=_step) {\n", var, var, var, var);
+
+}
+
+void
+LEXLIB_print_for_step (char *var, void *from, void *to, void *step)
+{
+  printc ("$%s=$%s+$for_step;", var, var);
+}
+
+void
+LEXLIB_print_foreach_close (char *cname)
+{
+  print_close ('C', cname);
+}
+
+void
+LEXLIB_print_foreach_end (char *cname)
+{
+  char *xx;
+  temp_indent--;
+  xx = strdup (A4GL_strip_quotes (cname));
+  printc ("}");
+  printc ("$%s->CloseCursor(); # %c\n", Cname (xx),
+	  A4GL_cursor_type (cname));
+  printc ("# END FOREACH");
+
+}
+
+void
+LEXLIB_print_foreach_next (char *cursorname, int has_using, char *into)
+{
+  char *xx;
+  print_open_cursor (cursorname, has_using);
+  xx = strdup (A4GL_strip_quotes (cursorname));
+
+  printc ("$%s->ResetCursor();", Cname (xx));
+
+  //Oban.dataSet(cursorname) do \n");
+
+  printc ("while (1) {");
+  temp_indent++;
+
+  printc ("if (!$%s->MoveNext()) {break;}", Cname (xx));
+
+
+  printc ("@%s=$%s->GetCurrent();", Rname (xx), Cname (xx));
+  print_bind_set_value_param_2 (cursorname, 'o');
+
+}
+
+void
+LEXLIB_print_foreach_start (void)
+{
+/* doesn't need to do anything */
+  printc ("# FOREACH...");
+}
+
+void
+LEXLIB_print_free_cursor (char *s)
+{
+}
+void
+LEXLIB_print_func_args (int c)
+{
+  print_function_variable_init ();
+}
+
+static void
+real_print_func_call (t_expr_str * fcall)
+{
+  int a;
+  //int f;
+  int function_no;
+
+  if (fcall->expr_type == ET_EXPR_FCALL)
+    {
+      struct expr_function_call *p;
+      int n;
+
+      p = fcall->u_data.expr_function_call;
+
+      if (strcmp (p->fname, "fgl_drawbox") == 0)
+	{
+	  // Don't bother...
+	  return;
+	}
+
+
+
+
+      set_suppress_newlines();
+	if (ibindcnt) {
+		printc("list(");
+		for (a=0;a<ibindcnt;a++) {
+				if (a) printc(",");
+				printc("$%s", use_scope (fixup_squares (ibind[a].varname)));
+
+		}
+		printc(")=");
+	}
+
+      printc ("%s(\n", valid_func_name (p->fname));
+
+
+      if (p->parameters)
+	{
+	  p->parameters = A4GL_rationalize_list (p->parameters);
+	  for (a = 0; a < p->parameters->nlist; a++)
+	    {
+	      set_suppress_newlines ();
+
+	      print_expr (p->parameters->list[a]);
+	      if (a < p->parameters->nlist - 1)
+		printc (", ");
+	      clr_suppress_newlines ();
+	    }
+	}
+      printc (");");
+    }
+    clr_suppress_newlines();
+
+
+
+}
+
+
+
+
+
+void
+LEXLIB_print_func_call (t_expr_str * call)
+{
+  real_print_func_call (call);
+}
+
+
+void
+LEXLIB_print_func_defret0 (void)
+{
+	printc("return;\n");
+}
+
+
+void
+LEXLIB_print_func_end (void)
+{
+  printc ("}");
+  printc ("\n");
+  printc ("\n");
+  printc ("\n");
+}
+
+
+void
+LEXLIB_print_func_start_1 (char *isstatic, char *fname, int type)
+{
+  free_need_globals ();
+  if (type == 0)
+    {
+      //int a;
+      //int dtype;
+      //extern int yylineno;
+      printc (" \n");
+      printc (" \n");
+      printc (" \n");
+
+      printc
+	("\n\n\n#******************************************************************************");
+
+      printc ("\nsub  %s {", valid_func_name (fname));
+    }
+
+}
+
+
+
+void
+LEXLIB_print_func_start_2 (char *isstatic, char *fname, int type)
+{
+  extern int class_cnt;
+  char *p;
+
+  if (fbindcnt==0) return;
+
+  set_suppress_newlines();
+
+  printc("my (");
+  if (type == 0)
+    {
+      int a;
+      int dtype;
+      expand_bind (&fbind[0], 'F', fbindcnt, 1);
+      for (a = 0; a < fbindcnt; a++)
+	{
+	  if (a) printc(",");
+	  dtype = scan_variable (fbind[a].varname);
+	  if (strchr (fbind[a].varname, '.'))
+	    {
+	      printc ("$p_%d", a);
+	    }
+	  else
+	    {
+	      char *l;
+	      char *r;
+	      l = fbind[a].varname;
+	      r = rettype_integer_internal (dtype & DTYPE_MASK);
+	      printc ("$%s", l);
+	    }
+	}
+
+    }
+  printc(")=@_;");
+  clr_suppress_newlines ();
+}
+
+
+void
+LEXLIB_print_goto (char *label)
+{
+	A4GL_assertion(1,"Can't goto in php\n");
+}
+
+void
+LEXLIB_print_if_else (void)
+{
+  ccnt--;
+  printc ("} else {\n");
+  ccnt++;
+
+}
+
+void
+LEXLIB_print_if_end (void)
+{
+  ccnt--;
+  printc ("}");
+
+}
+
+void
+LEXLIB_print_if_start (t_expr_str * ptr)
+{
+  set_suppress_newlines ();
+  printc ("if (");
+  LEXLIB_print_expr (ptr);
+  printc (") {");
+  ccnt++;
+  clr_suppress_newlines ();
+
+}
+
+
+
+
+
+void
+print_init_var (char *name, char *prefix, int alvl, int mlvl)
+{
+  int d;
+  char tmpbuff[1024];
+  int a0;
+  int a1;
+  int a2;
+  int size;
+  int lvl;
+  int x;
+  char prefix2[1024];
+  int arrsizes[10];
+  int cnt = 0;
+  int acnt;
+  int printing_arr;
+  int dont_print = 0;
+  static int ccc = 0;
+  printing_arr = 0;
+  int c;
+  int count_squares = 0;
+  memset (tmpbuff, 0, sizeof (tmpbuff));
+
+  strcpy (tmpbuff, name);
+
+  if (find_record_dot (tmpbuff))
+    {
+      char buffx[1024];
+      char *ptr;
+      char *sptr;
+      /* OK - we're going to break this down... */
+      strcpy (buffx, name);
+      sptr = buffx;
+      while (1)
+	{
+	  ptr = find_record_dot (sptr);
+	  if (ptr)
+	    {
+	      if (ptr[-1] == 's' && ptr[-2] == 'i' && ptr[-3] == 'h' && ptr[-4] == 't')	// 'this' backwards...
+		{
+		  // Ignore it...
+		  sptr = ptr + 1;
+		  continue;
+		}
 	      break;
-	    case 1:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_smint($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_smint($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 2:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_int($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_int($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 3:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_float($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_float($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 4:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_smfloat($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_smfloat($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 5:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_dec($ibind,$%s,%d);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_dec($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 6:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_int($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_int($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 7:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_date($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_date($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 8:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_money($ibind,$%s,%d);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_money($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 10:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_dtime($ibind,$%s,%d);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_dtime($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 11:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_byte($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_byte($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 12:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_text($ibind,$%s);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_text($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 13:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_vchar($ibind,$%s,%d);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_vchar($ibind);",
-		       ibind[a].varname);
-	      break;
-	    case 14:
-	      printc ("aubit4gl_pl::A4GL_dif_add_bind_interval($ibind,$%s,%d);\n",
-		      ibind[a].varname, ibind[a].dtype >> 16);
-	      sprintf (unwind[unwindcnt++],
-		       "$%s=aubit4gl_pl::A4GL_dif_pop_bind_interval($ibind);",
-		       ibind[a].varname);
+	    }
+	  else
+	    {
 	      break;
 	    }
 
 	}
-      printc (" #  end of binding \n");
-      start_bind (i, 0);
-      return a;
+      /* We've found the next '.' */
+      /* put the LHS onto 'prefix' */
+      /* and the RHS into name... */
+      *ptr = 0;
+      ptr++;
+      strcpy (prefix2, prefix);
+      if (strlen (prefix2))
+	{
+	  strcat (prefix2, ".");
+	}
+      strcat (prefix2, buffx);
+
+      x = get_variable_dets_arr3 (prefix2, &d, &a0, &a1, &a2, &size, &lvl, 0);
+
+      if (x == -1)
+	{
+	  a4gl_yyerror ("Couldn't find variable to null it...[2]");
+	  return;
+	}
+
+      if (x != -2)
+	{
+	  a4gl_yyerror ("I was expecting a record...");
+	  return;
+	}
+      if (a0 && prefix2[strlen (prefix2) - 1] != ']')
+	{
+	  char buff_id[256];
+	  printing_arr = 1;
+	  //cnt = split_arrsizes (arr, (int *) &arrsizes);
+	  arrsizes[0] = a0;
+	  arrsizes[1] = a1;
+	  arrsizes[2] = a2;
+	  if (a0)
+	    cnt = 1;
+	  if (a1)
+	    cnt = 2;
+	  if (a2)
+	    cnt = 3;
+	  if (arrsizes[0] > 0)
+	    {
+	      for (acnt = 0; acnt < cnt; acnt++)
+		{
+		  SPRINTF2 (buff_id, "$fglcnt1_%d_%d", ccc++, alvl);
+		  printc ("for (%s=0;%s<=%d;%s++) {", buff_id, buff_id,
+			  arrsizes[acnt] - 1, buff_id);
+		  temp_indent++;
+		  strcat (prefix2, "[");
+		  strcat (prefix2, buff_id);
+		  strcat (prefix2, "]");
+		  alvl++;
+		}
+	    }
+	  else
+	    {
+	      dont_print = 1;
+	    }
+	}
+
+      if (dont_print == 0)
+	{
+	  //printc ("/print_init 2");
+	  print_init_var (ptr, prefix2, alvl, mlvl);
+	}
+
+      if (printing_arr && dont_print == 0)
+	{
+	  for (acnt = 0; acnt < cnt; acnt++)
+	    {
+	      temp_indent--;
+	      printc ("}");
+	      alvl--;
+
+	    }
+	}
+
+      return;
     }
 
-  if (i == 'N')
+
+/* If we've got to here we can only be dealing with a leaf on a record*/
+  strcpy (prefix2, prefix);
+
+  if (strlen (prefix2))
     {
-      expand_bind ((void *) &nullbind, 'N', nullbindcnt);
-      printc ("\n");
-      printc ("struct BINDING nullbind[]={\n /* nullbind %d*/", nullbindcnt);
-      if (nullbindcnt == 0)
-	{
-	  printc ("{0,0,0}");
-	}
-      for (a = 0; a < nullbindcnt; a++)
-	{
-	  if (a > 0)
-	    printc (",\n");
-	  chk_init_var (nullbind[a].varname);
-	  printc ("{&%s,%d,%d}", nullbind[a].varname,
-		  (int) nullbind[a].dtype & 0xffff,
-		  (int) nullbind[a].dtype >> 16);
-	}
-      printc ("\n}; # /* end of binding */\n");
-      start_bind (i, 0);
-      return a;
+      strcat (prefix2, ".");
     }
 
-  if (i == 'o')
+  strcat (prefix2, name);
+
+
+  x = get_variable_dets_arr3 (prefix2, &d, &a0, &a1, &a2, &size, &lvl, 0);
+  if (x < 0)
     {
-
-      printc ("\n");
-      printc ("struct BINDING obind[]={\n");
-      if (obindcnt == 0)
-	{
-	  printc ("{0,0,0}");
-	}
-
-      for (a = 0; a < obindcnt; a++)
-	{
-	  if (a > 0)
-	    printc (",\n");
-	  printc ("{&%s,%d,%d}", obind[a].varname,
-		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
-	}
-      printc ("\n}; # /* end of binding */\n");
-      start_bind (i, 0);
-      return a;
+      a4gl_yyerror ("Couldn't find variable to null it...[1]");
+      return;
     }
-
-  if (i == 'O')
+  dont_print = 0;
+  if (a0 && prefix2[strlen (prefix2) - 1] != ']')
     {
-      printc ("\n");
-      expand_bind ((void *) &ordbind, 'O', ordbindcnt);
-      printc ("static struct BINDING _ordbind[]={\n");
-      if (ordbindcnt == 0)
+      char buff_id[256];
+      printing_arr = 1;
+      arrsizes[0] = a0;
+      arrsizes[1] = a1;
+      arrsizes[2] = a2;
+      if (a0)
+	cnt = 1;
+      if (a1)
+	cnt = 2;
+      if (a2)
+	cnt = 3;
+      //cnt = split_arrsizes (arr, (int *) &arrsizes);
+      if (arrsizes[0] >= 0)
 	{
-	  printc ("{0,0,0}");
+	  for (acnt = 0; acnt < cnt; acnt++)
+	    {
+	      SPRINTF2 (buff_id, "$fglcnt2_%d_%d", ccc++, alvl);
+	      printc ("for (%s=0;%s<=%d;%s++) {", buff_id, buff_id,
+		      arrsizes[acnt] - 1, buff_id);
+	      strcat (prefix2, "[");
+	      strcat (prefix2, buff_id);
+	      strcat (prefix2, "]");
+	      alvl++;
+	    }
 	}
-
-      for (a = 0; a < ordbindcnt; a++)
+      else
 	{
-	  if (a > 0)
-	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ordbind[a].varname,
-		  (int) ordbind[a].dtype & 0xffff,
-		  (int) ordbind[a].dtype >> 16);
+	  dont_print = 1;
 	}
-      printc ("\n}; # /* end of binding */\n");
-      start_bind (i, 0);
-      return a;
     }
 
-  return 0;
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-dump_unwind (void)
-{
-  int a;
-  for (a = unwindcnt - 1; a >= 0; a--)
+  if (dont_print == 0)
     {
-      printc ("%s", unwind[a]);
+      int d1;
+      d1 = d & DTYPE_MASK;
+      if (d1 == DTYPE_INT ||
+	  d1 == DTYPE_SMINT ||
+	  d1 == DTYPE_FLOAT ||
+	  d1 == DTYPE_SMFLOAT || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY)
+	{
+	  if (d1 == DTYPE_DECIMAL)
+	    {
+	      printc ("$%s=0;", use_scope (fixup_squares (prefix2)));
+	    }
+	  else
+	    {
+	      printc ("$%s=0;", use_scope (fixup_squares (prefix2)));
+	    }
+	}
+      else
+	{
+	  if (d1 == DTYPE_BYTE || d1 == DTYPE_TEXT)
+	    {
+	      printc ("$%s=new FGLBlob();",
+		      use_scope (fixup_squares (prefix2)));
+	    }
+	  else
+	    {
+	      printc ("$%s=$null;", use_scope (fixup_squares (prefix2)));
+	    }
+	}
     }
-}
 
-/**
- *
- * @param
- * @return
- */
-int
-LEXLIB_print_bind_expr (void *ptr, char i)
-{
-  int a;
-  char buff[256];
-  if (i == 'i')
+  if (printing_arr && !dont_print)
     {
-      A4GL_append_expr (ptr, "struct BINDING ibind[]={");
-      if (ibindcnt == 0)
+      for (acnt = 0; acnt < cnt; acnt++)
 	{
-	  A4GL_append_expr (ptr, "{0,0,0}");
+	  printc ("}\n");
+	  alvl--;
 	}
-
-      for (a = 0; a < ibindcnt; a++)
-	{
-	  if (a > 0)
-	    A4GL_append_expr (ptr, ",");
-	  sprintf (buff, "{&%s,%d,%d}", ibind[a].varname,
-		   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-	  A4GL_append_expr (ptr, buff);
-	}
-
-      A4GL_append_expr (ptr, "};");
-      start_bind (i, 0);
-      return a;
     }
 
-  return 0;
 }
 
 
-/************************************************************************/
-/* The rest of this file is the stuff called from the parser..               */
-/************************************************************************/
 
 
 
-/**
- *
- * @param
- * @return
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void
-LEXLIB_print_screen_mode (int n)
+LEXLIB_print_init_conn (char *db)
 {
-  printc ("screen_mode(%d);", n);
+  if (db == 0)
+    {
+      printc ("DBConnect();\n");
+    }
+  else
+    {
+      printc ("DBConnect(\"%s\");\n", db);
+    }
+
 }
 
 /**
- *
- * @param
- * @return
+ * Print in the generated output file the C implementation of the
+ * INITIALIZE <variable_list> TO NULL 4gl statement.
  */
 void
-LEXLIB_print_start_server (char *port, char *funclist)
-/* void print_start_server (int port, char *funclist) */
-{
-  printc ("server_run(%s+0x2000000);", port);
-
-  printc ("%s\n", funclist);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_stop_external (void)
-{
-  printc ("stop_serving();");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_remote_func (char *identifier)
-{
-  printh ("int aclfgl_%s(int np);\n", identifier);
-  printc
-    ("$aubit4gl_pl::a4gl_status=0;register_func(\"%s\",aclfgl_%s);if ($aubit4gl_pl::a4gl_status<0) {aubit4gl_pl::A4GL_chk_err(%d,aubit_module_name);}\n",
-     identifier, identifier, yylineno);
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_exec_sql (char *s)
-{
-  printc ("execute_implicit_sql(prepare_glob_sql(\"%s\",0,0));\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_exec_sql_bound (char *s)
-{
-  int c;
-  printc ("{\n");
-  c = print_bind ('i');
-  printc ("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));\n", s, c);
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_pop_variable (char *s)
-{
-  printc ("pop_var(&%s,%d);\n", s, scan_variable (s));
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_getfldbuf (char *fields)
-{
-  printc ("{$a4gl_retvars;\n");
-  printc ("$a4gl_retvars=fgl_getfldbuf(%s);\n", fields);
-  start_bind ('i', 0);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_returning (void)
+LEXLIB_print_init (int explicit)
 {
   int cnt;
-  printc ("{\n");
-  cnt = print_bind ('i');
-  printc
-    ("if ($a4gl_retvars!= %d ) {if ($a4gl_retvars!=-1) {aubit4gl_pl::xset_status(-3001);aubit4gl_pl::A4GL_pop_args($a4gl_retvars);}\n} else {aubit4gl_pl::xset_status(0);\n",
-     cnt);
-  printc ("aubit4gl_pl::pop_params(aubit4gl::dif_get_bind($ibind),%d);}\n",
-	  cnt);
-  dump_unwind ();
-  printc ("aubit4gl_pl::dif_free_bind($ibind);");
-  printc ("}\n");
-  printc ("}\n");
-}
 
 
+  //expand_bind (&nullbind[0], 'N', nullbindcnt, 0);
 
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_form_is_compiled (char *s, char *packer, char *formtype)
-{
-  printc ("add_compiled_form(\"%s\",compiled_form_%s);\n", s, s);
-  printh ("extern char compiled_form_%s[];\n", s);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_field_func (char type, char *name, char *var)
-{
-  if (type == 'I')
-    printc ("aubit4gl_pl::A4GL_push_int(aubit4gl_pl::A4GL_fgl_infield(%s));", name);
-  if (type == 'T')
-    printc ("aubit4gl_pl::A4GL_push_int(aubit4gl_pl::A4GL_fgl_fieldtouched(%s));",
-	    name);
-
-  print_pop_variable (var);
-}
-
-
-/**
- * Prints the function call in perl language.
- *
- * @param identifier The function name 
- * @param args The arguments
- * @param args_cnt The number of arguments
- */
-void
-LEXLIB_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt)
-{
-  A4GL_debug ("via print_func_call in lib");
-  real_print_func_call (identifier, args, args_cnt);
-}
-
-
-static void real_print_expr_list(t_expr_str_list *l) {
-	  int a;
-
-	        if (l)
-			        {
-					          for (a = 0; a < l->nlist; a++)
-							              {
-									                    real_print_expr (l->list[a]);
-											                }
-						          }
-
-}
-
-
-static void
-real_print_func_call (char *identifier, t_expr_str_list *args, int args_cnt)
-{
-  real_print_expr_list (args);
-  printc ("{my $a4gl_retvars; aubit4gl_pl::A4GL_xset_status(0);\n");
-  printc ("$a4gl_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
-}
-
-/**
- * Prints a call to the corresponding pdf report in the generated perl code
- *
- * @param a1 The pdf function name
- * @param args The pdf function arguments
- * @param a3 The returning values
- */
-void
-LEXLIB_print_pdf_call (char *a1, void *args, char *a3)
-{
-  A4GL_debug ("via print_pdf_call in lib");
-  real_print_pdf_call (a1, args, a3);
-}
-static void
-real_print_pdf_call (char *a1, struct expr_str *a2, char *a3)
-{
-  printc ("%s {int _retvars;xset_status(0);\n", a2);
-  printc ("_retvars=aclpdf(&rep,%s,%s);\n", a1, a3);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
-{
-	  int nargs;
-	      real_print_expr_list (expr);
-	       nargs=A4GL_new_list_get_count(expr);
-  		printc ("{int _retvars;\n");
-  		printc ("xset_status(0);_retvars=call_4gl_dll(%s,%s,%d);\n", libfile, funcname, nargs);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_end_call_shared (void)
-{
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_call_external (t_expr_str_list *expr, char *host, char *func, char *port)
-{
-	        int nargs;
-		        real_print_expr_list(expr);
-			        nargs=A4GL_new_list_get_count(expr);
-
-  printc ("{int _retvars;\n");
-  printc ("_retvars=remote_func_call(%s,%s,%s,%s);\n", host, func,
-	  port, nargs);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_end_call_external (void)
-{
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_case (int has_expr)
-{
-  if (has_expr)
-    printc ("while (1==1) {char *s=0;if (s==0) {s=A4GL_char_pop();}\n");
-  else
-    printc ("while (1==1) {\n");
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_after_when (int endofblock)
-{
-  printc ("break;\n");
-  if (endofblock)
+  printc ("# print_init");
+  for (cnt = 0; cnt < nullbindcnt; cnt++)
     {
-      printc ("}");
-    }
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_when (int has_expr)
-{
-  if (has_expr)
-    {
-      printc ("push_char(s);");
-      printc ("pushop(OP_EQUAL);\n");
-    }
-  printc ("if (aubit4gl_pl::A4GL_pop_bool()) {\n");
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_close (char type, char *name)
-{
-  switch (type)
-    {
-    case 'F':
-      printc ("aubit4gl_pl::A4GL_close_form(%s);\n", name);
-      break;
-    case 'W':
-      printc ("aubit4gl_pl::A4GL_remove_window(%s);\n", name);
-      break;
-    case 'D':
-      printc ("aubit4gl_pl::close_database();\n");
-      break;
-    case 'S':
-      printc ("aubit4gl_pl::close_session(%s);\n", name);
-      break;
-    case 'C':
-      printc ("aubit4gl_pl::close_cursor(%s);\n", name);
-      break;
-    }
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_construct_1 (void)
-{
-  printc ("} # end of initialization \n");
-}
-
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_construct_2 (char *driver)
-{
-  printc ("if (_fld_dr==-95) {\n");
-  printc ("   break;\n}\n");
-  printc ("if (_fld_dr==-98) {\n");
-  printc ("   fldname=A4GL_char_pop(); _fld_dr=-97;continue;\n}\n");
-  printc ("_fld_dr=%s;\n", driver);
-  printc ("if (_fld_dr==-1) {\n");
-  printc ("   fldname=A4GL_char_pop(); _fld_dr=-98;continue;\n}\n");
-  printc ("if (_fld_dr==0) {\n");
-  printc ("   _fld_dr=-95;continue;\n}\n");
-  add_continue_blockcommand ("CONSTRUCT");
-  //printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
-  printc
-    ("\n}\n push_constr(&_inp_io);\n aubit4gl_pl::pop_params(ibind,1);\n }\n");
-  pop_blockcommand ("CONSTRUCT");	/* FIXME */
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_construct_3 (int byname, char *constr_str, char *field_list, char *attr,
-		   int cattr)
-{
-  int ccc;
-  int k;
-  printc ("{\n");
-  start_bind ('i', constr_str);
-  k = print_bind ('i');
-  ccc = print_constr ();
-  printc ("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",
-	  sizeof (struct s_screenio) + 10);
-  printc ("while(_fld_dr!=0){\n");
-  printc ("if (_fld_dr==-100) {\n");
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"vars\",ibind);\n");
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"novars\",%d);\n", ccc);
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"attrib\",%d);\n", cattr);
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"currform\",get_curr_form());\n");
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"currentfield\",0);\n");
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"currentmetrics\",0);\n");
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"constr\",constr_flds);\n");
-  printc ("SET(\"s_screenio\",\"_inp_io\",\"mode\",%d);\n", MODE_CONSTRUCT);
-  if (byname == 1)
-    {
-      printc
-	("SET(\"s_screenio\",\"_inp_io\",\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
-      print_field_bind_constr ();
-      printc (" /* */,0));\n");
-    }
-  else
-    {
-      printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
-	 field_list);
+      if (is_ignore_var (nullbind[cnt].varname))
+	continue;
+      print_init_var (nullbind[cnt].varname, "", 0, am_setting_module ());
     }
 
-  printc
-    ("{int _sf; _sf=set_fields(&_inp_io); A4GL_debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
-  printc ("_fld_dr=-99;\n");
+  /*cnt = print_bind ('N'); */
+  /*printc ("A4GL_set_init(nullbind,%d);\n", cnt); */
 }
 
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_befaft_field_1 (char *fieldexpr)
-{
-  printc ("if (%s) {", fieldexpr);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_befaft_field_2 (void)
-{
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_onkey_1 (char *key_list_str)
-{
-  printc ("ON_KEY(\"%s\") {\n", key_list_str);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_onkey_2 (void)
-{
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_onkey_2_prompt (void)
-{
-  printc ("continue;}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_defer (int quit)
-{
-  if (quit)
-    printc ("def_quit();");
-  else
-    printc ("def_int();");
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_display_line (void)
-{
-  printc ("aubit4gl_pl::A4GL_push_int(-1);aubit4gl_pl::A4GL_push_int(-1);\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_display_by_name (char *attr)
-/* void print_display_by_name (int attr) */
-{
-  int a;
-  printc ("{\n");
-  a = print_bind ('i');
-  printc ("push_disp_bind(&ibind,%d);\n", a);
-  printc ("disp_fields(%d,%d,", a, attr);
-  print_field_bind (a);
-  printc (",0);\n");
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_A4GL_get_display_str (int type, char *s, char *f)
-{
-  static char buff[1024];
-  if (type == 0)
-    strcpy (buff, "aubit4gl_pl::A4GL_display_at(%s,%s);\n");
-  if (type == 1)
-    strcpy (buff, "aubit4gl_pl::A4GL_display_at(%s,%s);");
-  if (type == 2)
-    sprintf (buff, "aubit4gl_pl::A4GL_disp_fields(%%s,%%s,%s,0);\n", s);
-  if (type == 3)
-    sprintf (buff, "aubit4gl_pl::A4GL_disp_form_fields(%%s,%%s,%s,%s,0);\n", f, s);
-  if (type == 4)
-    sprintf (buff, "aubit4gl_pl::A4GL_disp_main_caption();\n");
-  if (type == 5)
-    sprintf (buff, "aubit4gl_pl::A4GL_disp_form_caption(%s);\n", s);
-  return buff;
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_display (t_expr_str_list *expr, char *fmt,  char *attr)
-{
-	        int nexpr;
-		        real_print_expr_list(expr);
-			        nexpr=A4GL_new_list_get_count(expr);
-
-  printc (fmt, nexpr, attr);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_display_form (char *s, char *a)
-{
-  printc ("disp_form(%s,%s);\n", s, a);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scrollfield,
-			char *attr, void *v_input_attr)
-/* void print_display_array_p1 (char *arrvar, char *srec, char *attr) */
-{
-  int cnt;
-  struct input_array_attribs *ptr_input_attr;
-  ptr_input_attr = (struct input_array_attribs *) v_input_attr;
-  printcomment ("/* Display array */\n");
-  printc ("{int _fld_dr;\nchar _dispio[%d];\n",
-	  sizeof (struct s_disp_arr) + 10);
-  cnt = print_arr_bind ('o');
-  printc ("SET(\"s_disp_arr\",_dispio,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_disp_arr\",_dispio,\"binding_comp\",obind);\n");
-  printc ("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n", cnt);
-  printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
-  printc
-    ("SET(\"s_disp_arr\",_dispio,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
-  printc ("_fld_dr=-1;\n");
-  printc ("while (_fld_dr!=0) {\n");
-  printc ("_fld_dr=disp_arr(&_dispio,%s,\"%s\",%s);\n", arrvar, srec, attr);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_display_array_p2 (void)
-{
-  printc ("}\n}\n");
-  printcomment ("/* end display */\n");
-
-  pop_blockcommand ("DISPLAY");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_error (t_expr_str_list *expr, char *s, int wait)
-{
-  printc ("display_error(%s,%d);\n", s, wait);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_exit_program (int has_expr)
-{
-  if (has_expr)
-    printc ("aubit4gl_pl::A4GL_fgl_end();exit(aubit4gl_pl::A4GL_pop_int());");
-  else
-    printc ("aubit4gl_pl::A4GL_fgl_end();exit(0);");
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
-{
-	        struct expr_str *from;
-		        struct expr_str *to;
-			        struct expr_str *step;
-
-				        from=vfrom;
-					        to=vto;
-						        step=vstep;
-							        print_expr(from);
-								        print_expr(to);
-									        print_expr(step);
-  printc("\n{my $_s;my $_e;my $_step;\n");
-  printc("$_step=aubit4gl_pl::A4GL_pop_int();");
-  printc("$_e=aubit4gl_pl::A4GL_pop_int();\n");
-  printc("$_s=aubit4gl_pl::A4GL_pop_int();\n");
-  printc ("$%s=$_s;\nwhile (($%s<=$_e && $_step>0)||($%s>=$_e &&  $_step<0)) {\n$%s+=$_step;\n", var, var, var, var);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_for_end (void)
-{
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void *
-LEXLIB_get_for_default_step (void)
-{
-return A4GL_new_expr("aubit4gl_pl::A4GL_push_int(1);");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_foreach_start (void)
-{
-  printc ("{");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_foreach_next (char *cursorname, int using, char *into)
-{
-  printc ("set_sqlca_sqlcode(0);\n");
-  //printc ("open_cursor(0,%s);\n", cursorname);
-  print_open_cursor (cursorname, using);
-  printc ("if ($aubit4gl_pl::a4gl_sqlca_sqlcode==0) {");
-  printc ("while (1) {\n");
-  printc ("fetch_cursor(%s,%d,1,%s);\n", cursorname, FETCH_RELATIVE, into);
-  printc
-    ("if ($aubit4gl_pl::a4gl_sqlca_sqlcode<0||$aubit4gl_pl::a4gl_sqlca_sqlcode==100) break;\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_foreach_end (char *cname)
-{
-  printc ("}");
-  printcomment ("# end of foreach while loop \n");
-  printc ("}\n");
-  print_close ('C', cname);
-  printc ("}");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_free_cursor (char *s)
-{
-  printc ("/* FREE CUROSR .. FIXME */\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_pushchar (char *s)
-{
-  printc ("aubit4gl_pl::push_char(%s);\n", s);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_goto (char *label)
-{
-  printc ("goto %s;\n", label);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_gui_do_menuitems (char *list, int mode)
-{
-  if (mode == 'U')
-    printc ("aubit4gl_pl::uncheck_menuitems(%s,0);\n", list);
-  if (mode == 'C')
-    printc ("aubit4gl_pl::check_menuitems(%s,0);\n", list);
-  if (mode == 'D')
-    printc ("aubit4gl_pl::endis_menuitems(0,%s,0);\n", list);
-  if (mode == 'E')
-    printc ("aubit4gl_pl::endis_menuitems(1,%s,0);\n", list);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_gui_do_fields (char *list, int mode)
-{
-  if (mode == 'D')
-    printc ("aubit4gl_pl::endis_fields(0,%s,0);\n", list);
-  if (mode == 'E')
-    printc ("aubit4gl_pl::endis_fields(1,%s,0);\n", list);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_gui_do_form (char *name, char *list, int mode)
-{
-  if (mode == 'D')
-    printc ("aubit4gl_pl::endis_form(0,%s,%s,0);\n", name, list);
-  if (mode == 'E')
-    printc ("aubit4gl_pl::endis_form(1,%s,%s,0);\n", name, list);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_if_start (t_expr_str *ptr)
-{
-	print_expr(ptr);
-  printc ("if (aubit4gl_pl::pop_bool()) {\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_if_else (void)
-{
-  printc ("} else {\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_if_end (void)
-{
-  printc ("}");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_import (char *func, int nargs)
-{
-  int a;
-  char buff[1024];
-  char buff2[1024];
-  printc ("\n\naclfgl_%s (int nargs) {\n", func);
-  printc ("my _argc[%s];\n", nargs);
-  printc ("my _retval;");
-  printc
-    ("   if (nargs!=%d) {$aubit4gl_pl::a4gl_status=-30174;A4GL_pop_args(nargs);return 0;}\n",
-     nargs, yylineno);
-  for (a = 1; a <= nargs; a++)
-    {
-      printc ("   _argc[%d]=aubit4gl_pl::A4GL_pop_int();\n", nargs - a);
-    }
-  sprintf (buff, "_retval=%s(", func);
-  for (a = 0; a <= nargs - 1; a++)
-    {
-      if (a > 0)
-	strcat (buff, ",");
-      sprintf (buff2, "_argc[%d]", a);
-      strcat (buff, buff2);
-    }
-  strcat (buff, ");\n   aubit4gl_pl::A4GL_push_int(_retval);\n   return 1;\n");
-  strcat (buff, "}\n\n\n");
-  printc (buff);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_init (void)
-{
-  int cnt;
-  printc ("{\n");
-  cnt = print_bind ('N');
-  printc ("aubit4gl_pl::set_init(nullbind,%d);\n", cnt);
-  printc ("}\n");
-}
-
-/**
- *
- * @param
- * @return
- */
 void
 LEXLIB_print_init_table (char *s)
 {
-  int cnt;
-  printc ("{\n");
-  cnt = print_bind ('N');
-  printc ("aubit4gl_pl::set_init(nullbind,%d);\n", cnt);
-  printc ("}\n");
 }
 
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_A4GL_generate_or (char *out, char *in1, char *in2)
-{
-  sprintf (out, "%s||%s", in1, in2);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_next_field (char *s)
-{
-  printc ("aubit4gl_pl::req_field(&_inp_io,%s);\n", s);
-}
-
-/************************************************************************/
-/* INPUT */
-/************************************************************************/
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_input_1 (void)
-{
-  printc ("} # /* end of initialization */\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_input_2 (char *s)
-{
-  printc ("if (_fld_dr==-95) {/* after input */\n");
-  printc ("   break;\n}\n");
-  printc ("if (_fld_dr==-98) {/* before field */\n");
-  printc
-    ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-97;continue;\n}\n");
-  printc ("_fld_dr=%s;_forminit=0;\n", s);
-  printc ("if (_fld_dr==-1) {/* after field */\n");
-  printc
-    ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-98;continue;\n}\n");
-  printc ("if (_fld_dr==0) { /* after input 2 */\n");
-  printc ("   _fld_dr=-95;continue;\n}\n");
-  add_continue_blockcommand ("INPUT");
-  printc ("\n}\n");
-  pop_blockcommand ("INPUT");
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
-{
-  int ccc;
-  printc ("{int _fld_dr=-100;char *fldname;char _inp_io[%d];",
-	  sizeof (struct s_screenio));
-  printc ("int _forminit=1;\n");
-  printc ("while(_fld_dr!=0){\n");
-  printc ("if (_fld_dr==-100) {\n");
-  printc ("/*");
-  push_blockcommand ("INPUT");
-  printc ("*/");
-  printc ("/* input by name */");
-  ccc = print_bind ('i');
-  printc
-    ("SET(\"s_screenio\",_inp_io,\"currform\",aubit4gl_pl::get_curr_form());\n");
-  printc ("if (GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
-  printc ("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n", helpno);
-  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%s);\n", attr);
-  printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
-  if (byname)
-    {
-      printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
-      print_field_bind (ccc);
-      printc
-	(",0)); if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
-    }
-  else
-    {
-      printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
-	 fldlist);
-      printc ("if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
-    }
-  printc
-    ("{int _sf; _sf=set_fields(&_inp_io); A4GL_debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
-  printc ("_fld_dr=-99;\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
-		   char *attr, void *inp_attr)
-{
-  static char buff2[256];
-  int cnt;
-  printc ("/*");
-  push_blockcommand ("INPUT");
-  printc ("*/");
-  printcomment ("/* input */\n");
-  printc ("{int _fld_dr=-100;\nchar *fldname;\nint _forminit;");
-  printc ("char _inp_io[%d];\n", sizeof (struct s_inp_arr));
-  cnt = print_arr_bind ('o');
-  printc ("while (_fld_dr!=0) {\n");
-  printc ("if (_fld_dr==-100) {\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"binding_comp\",obind);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"help_no\",%s);\n", helpno);
-  printc
-    ("SET(\"s_inp_arr\",_inp_io,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
-  printc
-    ("SET(\"s_inp_arr\",_inp_io,\"arr_size\",sizeof(%s)/sizeof(%s[0]));\n",
-     arrvar, arrvar);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currform\",get_curr_form());\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
-  printc ("if (GET(\"s_inp_arr\",_inp_io,\"currform\")==0) break;\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currentfield\",0);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
-  printc
-    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
-     srec);
-  printc ("_fld_dr=-1;continue;\n");
-  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s);\n", defs, srec, attr);
-  return buff2;
-}
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_A4GL_get_formloop_str (int type)
-{
-  if (type == 0)		/* Input, Input by name */
-    return "form_loop(&_inp_io,_forminit)";
-
-  return 0;
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_scroll (char *flds, char *updown)
-{
-  printc ("scroll(gen_field_chars(%s),%s,%s);\n", flds, updown);
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
 void
 LEXLIB_print_label (char *s)
 {
-  printc ("%s:\n", s);
+  printc ("%s:  \n", s);
 }
 
-/**
- *
- * @param
- * @return
- */
-int
-LEXLIB_print_let_manyvars (t_expr_str_list *exprs)
-{
-  int from_exprs;
-  int to_vars;
-  printc ("{");
-  to_vars = print_bind ('o');
-  from_exprs = A4GL_new_list_get_count(exprs);
-  if (to_vars != from_exprs)
-    {
-      return 0;
-    }
-  printc ("aubit4gl_pl::pop_params(obind,%d);\n", from_exprs);
-  printc ("}\n");
-  return 1;
-}
 
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_push_null ()
+LEXLIB_print_load (char *file, char *delim, char *tab, char *list)
 {
-  printc ("push_null();\n");
+	printc("LOAD\n");
 }
 
-/* Linked stuff */
-
-
-/**
- *
- * @param
- * @return
- */
-int
-LEXLIB_print_linked_cmd (int type, char *var)
+void
+LEXLIB_print_load_str (char *file, char *delim, char *sql)
 {
-  char tabname[64];
-  char pklist[256];
-  int ni;
-  if (last_var_is_linked (tabname, pklist))
-    {
-      char buff[80];
-      char buff2[80];
-      int no = 0;
-      int no_keys;
-      int azcnt;
-      printc ("{\n");
-      if (type == 'S')
-	{
-	  start_bind ('o', 0);
-	  sprintf (buff, "%s.*", var);
-	  add_bind ('o', buff);
-	}
-
-      A4GL_debug ("Finding number of keys...\n");
-      no_keys = linked_split (pklist, 0, 0);
-      A4GL_debug ("No of keys=%d", no_keys);
-      start_bind ('i', 0);
-      if (type == 'U')
-	{
-	  char buffer[256];
-	  set_pklist (pklist);
-	  sprintf (buffer, "%s.*", var);
-	  push_bind_rec (buffer, 'u');
-	}
-      for (azcnt = 1; azcnt <= no_keys; azcnt++)
-	{
-	  A4GL_debug ("Getting key no %d", azcnt);
-	  linked_split (pklist, azcnt, buff2);
-	  sprintf (buff, "%s.%s", var, buff2);
-	  A4GL_debug ("Adding linked %s", buff);
-	  add_bind ('i', buff);
-	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
-	}
-      if (type == 'S')
-	no = print_bind ('o');
-      ni = print_bind ('i');
-      if (type == 'S')
-	sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
-      if (type == 'D')
-	sprintf (buff, "DELETE FROM %s WHERE ", tabname);
-      if (type == 'U')
-	sprintf (buff, "UPDATE %s SET (%s)=(%s) WHERE ", tabname,
-		 get_upd_using_notpk (), get_upd_using_queries ());
-      for (azcnt = 1; azcnt <= no_keys; azcnt++)
-	{
-	  if (azcnt > 1)
-	    strcat (buff, "AND");
-	  linked_split (pklist, azcnt, buff2);
-	  strcat (buff, " ");
-	  strcat (buff, buff2);
-	  strcat (buff, "=? ");
-	}
-      if (type == 'S')
-	printc
-	  ("execute_implicit_select(prepare_select(ibind,%d,obind,%d,\"%s\"));",
-	   ni, no, buff);
-      if (type == 'D' || type == 'U')
-	printc
-	  ("execute_implicit_sql(prepare_glob_sql(\"%s\",%d,ibind));",
-	   buff, ni);
-      printc ("}\n");
-    }
-  else
-    {
-      return 0;
-    }
-  return 1;
+	printc("LOADSTR\n");
 }
-
-
-
-/**
- *
- * @param
- * @return
- */
 void
 LEXLIB_print_locate (char where, char *var, char *fname)
 {
-  printc ("locate_var(&%s,'%c',%s);\n", var, where, fname);
+	printc("LOCATE\n");
+}
+
+void
+LEXLIB_print_main_1 (void)
+{
+  free_need_globals ();
+  printc
+    ("\n\n\n#******************************************************************************");
+  printc ("\n\n\nsub AppEntry() {\n", outputfilename);
 }
 
 
-/**************************** REPORT **********************/
-
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_start_report (char *where, void *out, char *repname,char *dim)
+LEXLIB_print_main_end (void)
 {
-  if (out) {
-        print_expr(out);
-  	printc("_rout_to=A4GL_char_pop();");
+  printc ("}");
+}
+
+
+void
+LEXLIB_print_niy_assert (char *type)
+{
+}
+
+void
+LEXLIB_print_op (char *type)
+{
+	printc("print op\n");
+}
+
+void
+LEXLIB_print_open_cursor (char *cname, int has_using)
+{
+  char *xx;
+  int ign;
+
+
+  xx = strdup (A4GL_strip_quotes (cname));
+
+  if (A4GL_cursor_type (cname) == 'I')
+    {
+      printc ("# Dont open cursor - %s - its not real!", cname);
+      return;
+    }
+
+  if (!A4GL_find_pointer (xx, CURSOR_USED))
+    {
+      A4GL_add_pointer (xx, CURSOR_USED, (void *) 1);
+    }
+
+  if (has_using)
+    {
+      int ni;
+      ni = ibindcnt;		// print_bind_definition ('i');
+      print_bind_set_value_param_2 (cname, 'i');
+      printc ("$%s->OpenCursor();\n", Cname (xx));
+    }
+  else
+    {
+      printc ("$%s->OpenCursor();\n", Cname (xx));
+
+    }
+
+}
+
+void
+LEXLIB_print_open_session (char *s, char *v, char *user)
+{
+	printc("open session\n");
+}
+
+void
+LEXLIB_print_option_op (int type, char *n, int mn)
+{
+}
+
+void
+LEXLIB_print_options (char n, char *s)
+{
+}
+
+void
+LEXLIB_print_otherwise (void)
+{
+  printc ("default:");
+  temp_indent++;
+}
+
+void
+LEXLIB_print_pop_variable (char *s)
+{
+	printc("print_pop_variable\n");
+}
+
+
+void
+LEXLIB_print_prepare (char *stmt, char *sqlvar)
+{
+
+  char *xx = 0;
+  char *p = 0;
+  int use_repository = 0;
+  sqlvar = strdup (sqlvar);
+  stmt = strdup (stmt);
+  xx = strdup (A4GL_strip_quotes (stmt));
+
+
+
+  print_prepare_in_header (xx);
+  A4GL_add_pointer (xx, PREPARE_USED, 0);
+
+  printc ("$%s=new FGLEmulPrepare();", Pname (xx));
+  if (sqlvar[0]=='"') {
+  	printc ("$%s->PrepareFromDynamic(%s);", Pname (xx), sqlvar);
   } else {
-        printc("_rout_to=0;");
+  	printc ("$%s->PrepareFromDynamic(%s);", Pname (xx), use_scope (sqlvar));
   }
-  printc ("push_char(\"%s\");\n", where);
-  printc ("A4GL_set_report_dim(%s);", dim);
-  printc ("acl_fglr_%s(2,REPORT_START);", repname);
+
 }
 
 
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_output_to_report (t_expr_str_list *expr, char *repname)
+LEXLIB_print_push_null (void)
 {
-long nvalues;
-
-nvalues=A4GL_new_list_get_count(expr);
-real_print_expr_list(expr);
-
-  printc ("acl_fglr_%s(%d,REPORT_SENDDATA);\n", repname, nvalues);
+  printc ("$null");
 }
 
-
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_finish_report (char *repname)
+LEXLIB_print_push_variable (char *s)
 {
-  printc ("acl_fglr_%s(0,REPORT_FINISH);\n", repname);
+	printc("print_push_variable\n");
 }
 
-/**
- *
- * @param
- * @return
- */
+
+void
+LEXLIB_print_pushchar (char *s)
+{
+	printc("print_push_char\n");
+}
+
+
+void
+LEXLIB_print_put (char *cname, char *putvals)
+{
+	printc("print_put\n");
+}
+
+
+void
+LEXLIB_print_range_check (char *var, char *size)
+{
+}
+
+void
+LEXLIB_print_return (t_expr_str_list * expr)
+{
+  int n;
+  expr = A4GL_rationalize_list (expr);
+  n = A4GL_new_list_get_count (expr);
+  if (n == 0)
+    printc ("return;");
+  if (n == 1)
+    {
+      set_suppress_newlines ();
+      printc ("return ");
+
+      real_print_expr (expr->list[0]);
+      printc(";");
+      clr_suppress_newlines ();
+    }
+
+  if (n > 1)
+    {
+      int a;
+      set_suppress_newlines ();
+      printc ("return array(");
+      for (a = 0; a < expr->nlist; a++)
+	{
+	  real_print_expr (expr->list[a]);
+	  printc (",");
+	}
+      printc (");");
+      clr_suppress_newlines ();
+
+    }
+
+}
+
+void
+LEXLIB_print_set_conn (char *conn)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_set_helpfile (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_set_langfile (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_set_options (char *type, char *id, char *var, char *val)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_sleep (t_expr_str * expr)
+{
+  /* do nothing */
+}
+
+
+void
+LEXLIB_print_sql_block_cmd (char *sql)
+{
+
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+void
+LEXLIB_print_sql_commit (int t)
+{
+	if (t==-1) {
+		printc("Transaction('BEGIN');");
+	}
+	if (t==0) {
+		printc("Transaction('ROLLBACK');");
+	}
+	if (t==1) {
+		printc("Transaction('COMMIT');");
+	}
+}
+
+
+void
+LEXLIB_print_start_block (int n)
+{
+  printc(" # START BLOCK : %d %d\n",n,get_ccnt());
+  /* do nothing */
+}
+
+
+void
+LEXLIB_print_system_run (void *expr, int type, char *rvar)
+{
+  set_suppress_newlines ();
+  if (rvar)
+    {
+      printc ("$%s=", use_scope (fixup_squares (rvar)));
+    }
+
+  printc ("system(", type);
+  print_expr (expr);
+  printc (");");
+
+}
+
+void
+LEXLIB_print_unload (char *file, char *delim, char *sql)
+{
+	if (file[0]!='"') {
+	printc("Unload($%s,%s,\"%s\");",use_scope(file),delim,sql);
+	} else {
+	printc("Unload(%s,%s,\"%s\");",use_scope(file),delim,sql);
+	}
+}
+
+
+void
+LEXLIB_print_validate (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+void
+LEXLIB_print_variable_new (struct variable *v, char scope, int level)
+{
+  int static_extern_flg;
+  char arrbuff[256];
+  char name[256];
+  int a;
+  static_extern_flg = 0;
+
+
+
+  return ;
+
+
+
+  if (scope == 'G')
+    return;			// We can't be doing with printing global variables for each file - because we're only going to end up with a single file...
+  if (level > 0)
+    {
+      for (a = 0; a < level; a++)
+	{
+	  printh ("  ");
+	}
+    }
+
+
+
+
+  if ((level == 0 && is_system_variable (v->names.name))
+      || (strcmp (acl_getenv ("A4GL_LEXTYPE"), "CM") == 0
+	  && strcasecmp (v->names.name, "int_flag") == 0))
+    {
+      // Ignore all system variables
+      return;
+    }
+
+  if ((level == 0 && is_system_variable (v->names.name))
+      || (strcmp (acl_getenv ("A4GL_LEXTYPE"), "CM") == 0
+	  && strcasecmp (v->names.name, "quit_flag") == 0))
+    {
+      // Ignore all system variables
+      return;
+    }
+
+
+  strcpy (arrbuff, "-1");
+  /* are we dealing with the sqlca variable ? */
+  A4GL_debug ("v->names.name=%s", v->names.name);
+  if (level == 0 && strcmp (v->names.name, "sqlca") == 0)
+    {
+#ifdef DEBUG
+      A4GL_debug ("SQLCA!!!\n");
+#endif
+      if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+	{
+	  return;
+	}
+    }
+
+  if (scope == 'G' && strcasecmp (v->names.name, "time") == 0 && level == 0)
+    {
+#ifdef DEBUG
+      A4GL_debug ("Ignore time....\n");
+#endif
+      return;
+    }
+
+
+  if (v->is_array)
+    {
+      make_arr_str (arrbuff, v);
+    }
+  else
+    {
+      strcpy (arrbuff, "-1");
+    }
+
+
+
+
+  if (level == 0)		/* We only print 'static' or 'extern' at the start of a record/variable - not a nested record */
+    {
+      if (scope == 'G')
+	{
+	  static_extern_flg += 2;
+	}
+
+      if (scope == 'M' || scope == 'R')
+	{
+	  static_extern_flg += 1;
+	}
+      else
+	{
+
+	  if (v->is_static == 1)
+	    {
+	      static_extern_flg += 1;
+	    }
+	}
+    }
+  strcpy (name, v->names.name);
+  if (level == 0
+      && (A4GL_isyes (acl_getenv ("MARK_SCOPE"))
+	  || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))))
+    {
+      if (is_system_variable (name) && strncmp (name, "a4gl_sqlca", 10) != 0);
+      else
+	{
+	  if (v->scope == 'G' || v->scope == 'g')
+	    {
+	      SPRINTF1 (name, "G_%s", v->names.name);
+	    }
+	  if (v->scope == 'M' || v->scope == 'm' || v->scope == 'R')
+	    {
+	      if (v->scope == 'R')
+		{
+		  SPRINTF3 (name, "R_%s_%s_%s",
+			    A4GL_compiling_module_basename (),
+			    curr_func, v->names.name);
+		}
+	      else
+		{
+		  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")))
+		    {
+		      SPRINTF2 (name, "M_%s_%s",
+				A4GL_compiling_module_basename (),
+				v->names.name);
+		    }
+		  else
+		    {
+		      SPRINTF1 (name, "M_%s", v->names.name);
+		    }
+		}
+	    }
+	  if (v->scope == 'L' || v->scope == 'l')
+	    {
+	      SPRINTF1 (name, "L_%s", v->names.name);
+
+
+	      /*
+	         if (strcmp(v->names.name,"to")==0) {
+	         SPRINTF1 (name, "L_xxx_to", v->names.name);
+	         }
+	         if (strcmp(v->names.name,"from")==0) {
+	         SPRINTF1 (name, "L_xxx_from", v->names.name);
+	         }
+	       */
+
+
+	    }
+	}
+    }
+
+  if (level == 0)
+    {
+      if (is_ignore_var (name))
+	{
+	  return;
+	}
+    }
+
+
+  if (is_param (name))
+    return;
+
+
+  if (v->variable_type == VARIABLE_TYPE_SIMPLE)
+    {
+      char vbuff[256] = "";
+      char abuff[256] = "";
+      char tbuff[256] = "";
+      strcpy (vbuff, name);
+      strcpy (tbuff,
+	      rettype_integer_internal (v->data.v_simple.
+					datatype & DTYPE_MASK));
+      //SPRINTF2 (vbuff, "%s %s", name, rettype_integer_internal (v->data.v_simple.datatype));
+      if (v->is_array)
+	{
+	  if (strchr (arrbuff, '-') == 0)
+	    {
+	      strcat (abuff, "[");
+	      strcat (abuff, arrbuff);
+	      strcat (abuff, "]");
+	    }
+	  else
+	    {
+	      SPRINTF1 (tbuff, "%s *",
+			rettype_integer_internal (v->data.v_simple.datatype));
+	    }
+	}
+
+      if (v->data.v_simple.datatype == DTYPE_CHAR
+	  || v->data.v_simple.datatype == DTYPE_VCHAR)
+	{			/* Its a 'char' (may need varchar & friends too... */
+
+
+	  if (v->data.v_simple.datatype == 0)
+	    {
+	      print_define_char (vbuff, tbuff, abuff,
+				 v->data.v_simple.dimensions[0],
+				 static_extern_flg, level);
+	    }
+	  else
+	    {
+	      print_define_char (vbuff, tbuff, abuff, v->data.v_simple.dimensions[0], static_extern_flg, level);	// Allow extra space to store the size...
+	    }
+	}
+      else
+	{
+
+	  print_define (vbuff, tbuff, abuff, static_extern_flg, level);
+	}
+
+      return;
+    }
+
+  if (v->variable_type == VARIABLE_TYPE_RECORD)
+    {
+      //int a;
+      char *name_ptr;
+      name_ptr = name;
+
+      if (strcmp (name, "to") == 0)
+	{
+	  name_ptr = "xxx_to";
+	}
+      if (strcmp (name, "from") == 0)
+	{
+	  name_ptr = "xxx_from";
+	}
+      if (level == 0)
+	{
+	  print_structures_in (&v->data.v_record, level + 1, scope);
+	}
+
+      if (arrbuff && strcmp (arrbuff, "-1") == 0)
+	{
+	  if (level)
+	    {
+	      printh ("$%s=$%s;\n", name_ptr, v->data.v_record.user_ptr);
+	    }
+	  else
+	    {
+	      printc ("$%s=$%s;", name_ptr, v->data.v_record.user_ptr);
+	    }
+	}
+      else
+	{
+	  if (level)
+	    {
+	      printh ("$%s $%s[%s];\n", name_ptr,
+		      v->data.v_record.user_ptr, arrbuff);
+	    }
+	  else
+	    {
+	      printc ("$%s $%s[%s];", name_ptr,
+		      v->data.v_record.user_ptr, arrbuff);
+	    }
+	}
+
+
+      return;
+    }
+
+
+  if (v->variable_type == VARIABLE_TYPE_ASSOC)
+    {
+      A4GL_assertion (1, "Not implemented");
+    }
+
+  if (v->variable_type == VARIABLE_TYPE_CONSTANT)
+    {
+      /* Maybe we should print out #define's for these ? */
+      /* Maybe not - they should already have been converted by lexer.c */
+      A4GL_assertion (1, "Not implemented");
+    }
+
+
+}
+
+
+void
+LEXLIB_print_when (int has_expr, t_expr_str * expr)
+{
+  set_suppress_newlines ();
+  if (has_expr)
+    {
+      printc ("case ");
+      print_expr (expr);
+      printc (": ");
+      when_case_has_expr = 1;
+    }
+  else
+    {
+      printc ("if ($case_expr==");
+      print_expr (expr);
+      printc ("{ # 1");
+      when_case_has_expr = 0;
+    }
+  clr_suppress_newlines ();
+  temp_indent++;
+}
+
+
+void
+LEXLIB_print_while_1 (void)
+{
+	printf("/* WHILE 1 */");
+}
+void
+LEXLIB_print_while_2 (t_expr_str * expr)
+{
+  set_suppress_newlines ();
+    printc ("while (");
+        real_print_expr (expr);
+	  printc (") { #2");
+	    clr_suppress_newlines ();
+	      temp_indent++;
+
+}
+
+void
+LEXLIB_print_while_end (void)
+{
+	temp_indent--;
+	printc("}");
+}
+
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+
+/* Reports */
+
 void
 LEXLIB_print_format_every_row (void)
 {
-  printc ("#error FORMAT EVERY ROW not implemented yet");
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**
- *
- * @param
- * @return
- */
+int
+LEXLIB_print_agg_defines (char t, int a)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+  return 0;
+}
+
 void
-LEXLIB_print_need_lines (void)
+LEXLIB_print_pause (char *msg)
 {
-  printc ("%sneed_lines(&rep);\n", ispdf ());
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_skip_lines (double d)
+LEXLIB_print_rep_ret (int report_cnt, int dolog)
 {
-  printc ("A4GL_push_int(%d)", (int) d);
-  printc ("A4GL_%saclfgli_skip_lines(&rep);\n", ispdf ());
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_skip_top (void)
+LEXLIB_print_repctrl_block (void)
 {
-  printc ("%sskip_top_of_page(&rep);\n", ispdf ());
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_skip_by (double nval)
-{
-  printc ("pdf_skip_by(&rep,%d);\n", (int) nval);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_skip_to (char *nval)
-{
-  printc ("pdf_skip_to(&rep,%s);\n", nval);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_report_print (int type, char *semi, char *wordwrap)
-{
-
-  if (type == 0)
-    printc ("%sA4GL_rep_print(&rep,0,%s,0);\n", ispdf (), semi);
-  if (type == 1)
-
-    printc ("%sA4GL_rep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_report_print_file (char *fname, char *semi)
-{
-  printc ("%sA4GL_rep_file_print(&rep,%s,%s);\n", ispdf (), fname, semi);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_report_print_img (char *scaling, char *blob, char *type, char *semi)
-{
-  printc ("%s pdf_blob_print(&rep,&%s,\"%s\",%s);\n", scaling,
-	  blob, type, semi);
-}
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_A4GL_get_default_scaling (void)
-{
-  return "push_double(1.0);push_double(1.0);";
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_order_by_type (int type, int cnt)
-{
-  printc ("static int fgl_rep_orderby=%d;\n", type);
-}
-
-
-/**
- *
- * @param
- * @return
- */
 void
 LEXLIB_print_report_1 (char *name)
 {
-  printc ("int acl_fglr_%s (int nargs,int acl_ctrl) {\n", name, name);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_report_end (void)
-{
-  printc ("\n} # /* end of report */\n");
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
 LEXLIB_print_report_2 (int pdf, char *repordby)
 {
-  int cnt;
-  printc ("static struct rep_structure rep;\n");
-  printc ("static char _rout1[256];\n");
-  printc ("static char _rout2[256];\n");
-  printc ("static int _useddata=0;\n");
-  printc ("static int _started=0;\n");
-  cnt = print_param ('r');
-  printc
-    ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
-  printc ("   aubit4gl_pl::xsetstatus(-5555);\n");
-  printc ("    return;\n");
-  printc ("    }\n");
-  printc ("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
-  printc ("fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(nargs);return 0;}\n");
-  printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
-  printc
-    ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
-     get_curr_rep_name ());
-  printc ("}\n");
-  printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
-  printc
-    ("aubit4gl_pl::pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}",
-     cnt, cnt);
-  printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
-  printc ("   int _g,_p;\n");
-  printc ("   _g=chk_params(&rbind,%d,&_ordbind,%s);\n", cnt, repordby);
-  printc
-    ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
-     get_curr_rep_name ());
-  printc ("   aubit4gl_pl::pop_params(rbind,%d);\n", cnt);
-  printc ("   if (_useddata==0) {_g=1;}\n");
-  printc
-    ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
-     get_curr_rep_name ());
-  printc ("   _useddata=1;\n");
-  print_rep_ret (report_cnt, 0);
-  printc ("}\n\n");
-  printc ("if (acl_ctrl==REPORT_FINISH) {\n");
-  printc ("    if (fgl_rep_orderby==1) {\n");
-  printc ("        struct BINDING *reread;\n");
-  printc ("        fgl_rep_orderby=-1;\n");
-  printc ("   push_char(_rout1,254);\n");
-  printc ("   push_char(_rout2,254);\n");
-  printc ("        %s(2,REPORT_START);\n", get_curr_rep_name ());
-  printc
-    ("        init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n",
-     cnt);
-  printc
-    ("        while (report_table_fetch(reread,%d,&rbind)) %s(%d,REPORT_SENDDATA);\n",
-     cnt, get_curr_rep_name (), cnt);
-  printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
-  printc ("        end_report_table(&rbind,%d,reread);\nreturn;", cnt);
-  printc ("    }\n");
-  printc ("}\n");
-  printc ("if (acl_ctrl==REPORT_START) {\n");
-  printc ("   pop_char(_rout2,254);\n");
-  printc ("   pop_char(_rout1,254);\n");
-  printc
-    ("    if (fgl_rep_orderby==1) {make_report_table(&rbind,%d);return;}\n",
-     cnt);
-  printc ("   _useddata=0;\n");
-  printc ("   _started=1;\n");
-  printc ("goto output_%d;\n", report_cnt);
-  printc ("}\n\n");
-  print_rep_ret (report_cnt, 0);
-  if (pdf)
-    pdf_print_output_rep (&pdf_rep_struct);
-  else
-    print_output_rep (&rep_struct);
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_pause (char *msg)
+LEXLIB_print_report_2_1 (void)
 {
-  printc ("acllib_pause(%s);\n", msg);
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/* MISC */
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_sleep (void)
-{
-  printc ("aubit4gl_pl::sleep_i();\n");
-}
-
-
-/* EXPRESSIONS */
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_op (char *type)
-{
-  printc ("aubit4gl_pl::pushop(%s);\n", type);
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_niy (char *type)
-{
-  printc ("#error Not Implemented Yet %s", type);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_push_variable (char *s)
-{
-  printc ("aubit4gl_pl::push_param(&%s,0x%x);\n", s, scan_variable (s));
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_message (t_expr_str_list *expr, int type, char *attr, int wait)
-{
- int exprs;
- exprs=A4GL_new_list_get_count(expr);
- real_print_expr_list(expr);
-
-  if (type == 0)
-    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message(%s,%d,%d);\n", attr, wait, exprs);
-  else
-    printc ("aubit4gl_pl::A4GL_aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait, exprs);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_system_run (void *ptr,int type, char *rvar)
-{
-	print_expr(ptr);
-  printc ("aubit4gl_pl::system_run(%d);", type);
-
-  if (rvar)
-    print_pop_variable (rvar);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_set_conn (char *conn)
-{
-  printc ("aubit4gl_pl::set_conn(%s);\n", conn);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_set_options (char *type, char *id, char *var, char *val)
-{
-  printc ("aubit4gl_pl::set_%s_options(%s,%s,%s);\n", type, id, var, val);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_while_1 (void)
-{
-  printc ("while (1==1) {\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_while_2 (void)
-{
-  printc ("if (!(aubit4gl_pl::pop_bool())) break;\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_while_3 (void)
-{
-  /* for future enhancement! */
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_put (char *cname, char *putvals)
-{
-  int n;
-  printc ("{\n");
-  n = print_bind ('i');
-  printc ("aubit4gl_pl::A4GLSQL_put_insert(&ibind,%d);\n", n);
-  printc ("}\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_prepare (char *stmt, char *sqlvar)
-{
-  printc ("aubit4gl_pl::add_prepare(%s,aubit4gl_pl::prepare_sql(%s));\n",
-	  stmt, sqlvar);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_undo_use (char *s)
-{
-  printc (s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_execute (char *stmt, int using)
-{
-  int ni;
-  if (using == 0)
-    printc ("aubit4gl_pl::execute_sql(%s,0,0);\n", stmt);
-  else
-    {
-      printc ("{\n");
-      ni = print_bind ('i');
-      printc ("aubit4gl_pl::execute_sql(%s,%d,ibind);\n", stmt, ni);
-      printc ("}\n");
-    }
-
-}
-
-
-void
-LEXLIB_print_execute_immediate (char *stmt)
-{
-  static int cnt = 0;
-  char buff[256];
-  sprintf (buff, "p_%d_%lx", cnt++, time (0));
-  print_prepare (buff, stmt);
-  print_execute (buff, 0);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
-{
-  printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
-  printc ("aubit4gl_pl::start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc
-    ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=aubit4gl_pl::prompt_loop(&_p,%d);\n",
-     timeout);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_prompt_forchar (void)
-{
-  printc ("if (_fld_dr) break;\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_prompt_end (char *s)
-{
-  printc ("}\n");
-  print_pop_variable (s);
-  printc ("}\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_open_window (char *name, char *type)
-{
-  printc ("aubit4gl_pl::%s(%s,", type, name);
-  print_form_attrib (&form_attrib);
-  printc (");\n");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_open_form (char *fmt, char *a1, char *a2)
-{
-  printc (fmt, a1, a2);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_open_session (char *s, char *v, char *user)
-{
-  printc ("aubit4gl_pl::init_session(%s", s);
-  if (strcmp (user, "?") == 0)
-    {
-      printc (",aubit4gl_pl::A4GL_char_pop(),%s);\n", user);
-    }
-  else
-    {
-      printc (",\"%s\",%s);\n", v, user);
-    }
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_open_cursor (char *cname, int has_using)
-{
-  if (has_using)
-    {
-      printc ("aubit4gl_pl::open_cursor(%s,ni,ibind);\n", cname);
-    }
-  else
-    {
-      printc ("aubit4gl_pl::open_cursor(%s,0,0);\n", cname);
-    }
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_clr_window (char *s)
-{
-  printc ("aubit4gl_pl::clr_window(%s);\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_clr_form (char *formname, char *clr, char *defs)
-{
-  print_niy ("Clear Form");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_clr_fields (char *flds, char *defs)
-{
-  print_niy ("Clear Fields");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_current_window (char *s)
-{
-  printc ("aubit4gl_pl::current_window(%s);\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_show_window (char *s)
-{
-  printc ("aubit4gl_pl::show_window(%s);\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_hide_window (char *s)
-{
-  printc ("aubit4gl_pl::hide_window(%s);\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_show_menu (char *mname, char *mhand,void *ptr)
-{
-	print_expr(ptr);
-  printh ("void aclfglmn_%s(char *);\n", mhand);
-  printc ("aubit4gl_pl::show_menu(\"%s\",aclfglmn_%s);\n", mname, mhand);
-}
-
-/**
- *
- * @param
- * @return
- */
-void*
-LEXLIB_get_def_mn_file (void)
-{
-return A4GL_new_expr( "aubit4gl_pl::push_char(\"menu\");");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_move_window (char *n, void *ptr1,void *ptr2,int rel)
-{
-	print_expr(ptr1);
-	print_expr(ptr2);
-  if (rel == 0)
-    printc ("aubit4gl_pl::movewin(%s,1);", n);
-  else
-    printc ("aubit4gl_pl::movewin(%s,0);", n);
-}
-
-/*********** MENU *********/
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_menu_1 (int n)
-{
-  printc ("{my ($m);\n\nmy ($cmd_no);\n$cmd_no=-1;\n");
-  printc ("while ($cmd_no!=-3) {\nMENU_WHILE_LABEL:\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_end_menu_1 (int n)
-{
-  printc ("if ($cmd_no==-1) {\n");
-  print_menu (menu_cnt);
-  printc ("}\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_end_menu_2 (int n)
-{
-  printc
-    ("$cmd_no=aubit4gl_pl::menu_loop($m);\n}\naubit4gl_pl::free_menu($m);\n");
-  printcomment ("/* end cwhile */\n");
-  printcomment ("/* end menu */\n \n");
-  printc ("}\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_menu_block (int mnno, int n)
-{
-  printc (" if ($cmd_no==%d) {\n", n);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_menu_block_end (int n)
-{
-  printc ("}\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_option_op (int type, char *n, int mn)
-{
-  if (type == 'N')
-    printc ("aubit4gl_pl::next_option(m,%s);\n", n);
-  if (type == 'S')
-    printc ("aubit4gl_pl::menu_show(m,%s,0);\n", n);
-  if (type == 'H')
-    printc ("aubit4gl_pl::menu_show(m,%s,0);\n", n);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_at_termination (char *f)
-{
-  print_niy ("AT TERMINATION");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_func_start (char *isstatic, char *fname, int type)
-{
-  printc (" \n");
-  printc (" \n");
-  printc (" \n");
-  if (type == 0)
-    printc ("\nsub aclfgl_%s () { my $nargs=$_[0];\n", fname);
-  if (type == 1)
-    printc ("\nsub aclfglm_%s () { my $nargs=$_[0];\n", fname);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_func_args (int c)
-{
-  printc
-    ("if ($nargs!=%d) {$aubit4gl_pl::a4gl_status=-30174;aubit4gl_pl::A4GL_pop_args($nargs);return 0;}\n",
-     c, yylineno);
-  printc ("aubit4gl_pl::pop_params(fbind,%d);\n", c);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_func_defret0 (void)
-{
-  printc ("return 0;\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_func_end (void)
-{
-  printc ("}\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_main_1 (void)
-{
-  printc ("\n\nsub a4gl_main() {\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_fgllib_start (char *db)
-{
-  printc ("\naubit4gl_pl::A4GL_fgl_start(0,$ARGS);\n");
-  if (db[0] != 0)
-    {
-      print_init_conn (db);
-      printc
-	("if ($aubit4gl_pl::a4gl_sqlca_sqlcode<0) {aubit4gl_pl::A4GL_chk_err(%d,aubit_module_name);}\n",
-	 lastlineno);
-    }
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_main_end (void)
-{
-  printc ("aubit4gl_pl::A4GL_fgl_end();\n}");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_return (t_expr_str_list *expr)
-{
-	int n;
-	n=A4GL_new_list_get_count(expr);
-	real_print_expr_list(expr);
-
-  printc ("return %d;", n);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_options (char n, char *s)
-{
-  printc ("set_option_value('%c',%s);\n", n, s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_set_helpfile (char *s)
-{
-  printc ("set_help_file(%s);\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_sql_commit (int t)
-{
-  printc ("commit_rollback(%d);\n", t);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_fetch_1 (void)
-{
-  printc ("{");
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_fetch_2 (void)
-{
-  printc ("{");
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_fetch_3 (char *ftp, char *into)
-{
-  printc ("fetch_cursor(%s,%s);}\n}\n", ftp, into);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_init_conn (char *db)
-{
-  if (db == 0)
-    printc ("init_connection(A4GL_char_pop());\n");
-  else
-    printc ("init_connection(\"%s\");\n", db);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_do_select (char *s)
-{
-  printc ("execute_implicit_select(%s);\n}\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_flush_cursor (char *s)
-{
-  printc ("flush_cursor(%s);\n\n", s);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
-{
-  printc ("declare_cursor(%s+%d,%s,%d,%s);\n}\n", a1, h1, a2, h2, a3);
-}
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_print_curr_spec (int type, char *s)
-{
-  static char buff[3000];
-  printc ("{\n");
-  if (type == 1)
-    sprintf (buff, "prepare_sql(\"%s\")", s);
-  if (type == 2)
-
-    sprintf (buff, "find_prepare(%s)", s);
-  return buff;
-}
-
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_print_select_all (char *buff)
-{
-  int ni, no;
-  static char b2[2000];
-  printc ("{\n");
-  ni = print_bind ('i');
-  no = print_bind ('o');
-  sprintf (b2, "prepare_select(ibind,%d,obind,%d,\"%s\")", ni, no, buff);
-  return b2;
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_unload (char *file, char *delim, char *sql)
-{
-  printc ("unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim, sql);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_load (char *file, char *delim, char *tab, char *list)
-{
-  printc ("load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_use_session (char *sess)
-{
-  printc ("{char _sav_cur_conn[32];\n");
-  printc ("strcpy(_sav_cur_conn,get_curr_conn());\n");
-  printc ("set_conn(%s);\n", sess);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_A4GL_get_undo_use (void)
-{
-  return "set_conn(_sav_cur_conn);}";
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_next_form_field (char *form, char *field)
-{
-  print_niy ("NEXT FORM FIELD");
-}
-
-/************************************************************************/
-/*                                     Ex mod.c stuff                   */
-/************************************************************************/
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_declare_associate_1 (char *variable, char *size, char *n)
-{
-  printc ("DEF_ASS (_usg%s,%s+1);\n", downshift (variable), size);
-  printc
-    ("#define ASSOCIATE_%s(w,rw) %s[ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
-     upshift (variable), downshift (variable), downshift (variable),
-     n, size, downshift (variable));
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_declare_associate_2 (char *variable, char *size, char *n)
-{
-  printc
-    ("#define ASSOCIATE_%s(w) %s[ass_hash(_usg%s,%s,%s+1,w,sizeof(_usg%s))]\n",
-     upshift (variable), downshift (variable),
-     downshift (variable), n, size, downshift (variable));
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_define_char (char *varstring, int size, int isstatic_extern)
-{
-  char dtype[32];
-  char vname[32];
-if (print_sqlca) return;
-  sscanf (varstring, "%s %s", dtype, vname);
-
-
-  if (!printing_record)
-    {
-      printc ("my $%s; \n", vname);
-    }
-  else
-    {
-      printc ("%s => '$',\n", vname);
-    }
-
-}
-
-/**
- *
- * @param
- * @return
- */
-void
-LEXLIB_print_define (char *varstring, int isstatic_extern)
-{
-  char dtype[32];
-  char vname[32];
-if (print_sqlca) return;
-  /*
-     if (isstatic_extern == 1)
-     printc ("static ");
-     if (isstatic_extern == 1)
-     printc ("extern ");
-   */
-  sscanf (varstring, "%s %s", dtype, vname);
-  if (!printing_record)
-    printc ("my $%s;\n", vname);
-  else
-    printc ("%s => '$',\n", vname);
-}
-
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_start_record (int isstatic_extern, char *vname, char *arrsize,
-		    int level)
+LEXLIB_print_report_ctrl (void)
 {
-  if (strcmp(vname,"a4gl_sqlca")==0) { print_sqlca=1; return ;}
-  printing_record++;
-  printc ("struct (a4glStruct_%s => {\n", vname);
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**
- *
- * @param
- * @return
- */
 void
-LEXLIB_print_end_record (char *vname, char *arrsize, int level)
-{
-  if (strcmp(vname,"a4gl_sqlca")==0) { print_sqlca=0; return; }
-  printing_record--;
-  if (atoi (arrsize) == -1)
-    {
-      printc ("}); \n", vname);
-    }
-  else
-    {
-      printc ("});");
-    }
-  if (arrsize) {
-  	printc ("my $%s=a4glStruct_%s->new(); \n", vname, vname,arrsize);
-  } else {
-  	printc ("my $%s=a4glStruct_%s->new();", vname, vname);
-  }
-}
-
-
-
-/**
- *
- * @param
- * @return
- */
-static void
-print_menu (int mn)
-{
-
-  int a;
-  int c;
-  c = 0;
-  /*
-     Just so you all know...
-     I really hate the way this does this - this will change to a menu item
-     binding I think..
-   */
-  for (a = 0; menu_stack[mn][a].menu_title[0] != 0 ||
-       menu_stack[mn][a].menu_key[0] != 0 ||
-       menu_stack[mn][a].menu_help[0] != 0; a++)
-    c = a;
-  printc ("$m=aubit4gl_pl::new_menu_create(%s,1,1,%d,0);\n", mmtitle[mn], 2);
-  for (a = 0;
-       menu_stack[mn][a].menu_title[0] != 0
-       || menu_stack[mn][a].menu_key[0] != 0
-       || menu_stack[mn][a].menu_help[0] != 0; a++)
-    {
-      printc ("aubit4gl_pl::add_menu_option($m, %s,%s,%s,%d,0);\n",
-	      menu_stack[mn][a].menu_title,
-	      menu_stack[mn][a].menu_key,
-	      menu_stack[mn][a].menu_help, menu_stack[mn][a].menu_helpno);
-    }
-
-  printc
-    ("aubit4gl_pl::finish_create_menu($m);\naubit4gl_pl::disp_h_menu($m);$cmd_no=-2;goto MENU_WHILE_LABEL;\n");
-}
-
-/**
- *
- * @param
- * @return
- */
-char *
-LEXLIB_A4GL_get_push_literal (char type, char *value)
-{
-  static char buff[80];
-  if (type == 'D')
-    {
-      sprintf (buff, "aubit4gl_pl::A4GL_push_double(%f);\n", atof (value));
-    }
-
-  if (type == 'L')
-    {
-      sprintf (buff, "aubit4gl_pl::A4GL_push_long(%d);\n", atoi (value));
-    }
-
-  if (type == 'S')
-    {
-      sprintf (buff, "aubit4gl_pl::A4GL_push_char(%s);\n", value);
-    }
-  return buff;
-}
-
-/**
- * FIXME: what is this?
- *
- * @param s
- */
-char *
-LEXLIB_A4GL_decode_array_string (char *s)
+LEXLIB_print_report_end (void)
 {
-/*
-static char buff[2000]="";
-int a;
-char tmp[2]="X"; // Just to get a terminator on it
-strcpy(buff,"(");
-
-	for (a=0;a<strlen(s);a++) {
-		if (s[a]==',') {
-			strcat(buff,")-1][(");
-		} else {
-			tmp[0]=s[a];
-			strcat(buff,tmp);
-		}
-	}
-	strcat(buff,")-1");
-return buff;
-*/
-
-  A4GL_exitwith ("decode_array_string not implemented");
-
-  return 0;
+  niy_assert (__PRETTY_FUNCTION__);
 }
-
 
-/**
- * Print in the C generated code the change of the language file.
- *
- * Called by the parser when it founds the OPTIONS LANGUAGE FILE statement.
- *
- * @param s The help file name.
- */
 void
-LEXLIB_print_set_langfile (char *s)
-{
-  /*  printc ("set_lang_file(%s);\n", s); */
-  A4GL_exitwith ("print_set_langfile not implemented");
-}
-
-
-/* =========== below: copied from print_c.c ===================== */
-
-
-/**
- * Print comments to the C output file.
- *
- * If the output file is not opened call the open function.
- *
- * @param fmt the format to be passed to vsprintf
- * @param ... The variadic parameters to be passed to vsprintf
- */
-static void
-printcomment (char *fmt, ...)
+LEXLIB_print_report_print (int type, char *semi, t_expr_str * expr)
 {
-  va_list ap;
-  va_start (ap, fmt);
-  internal_A4GL_lex_printcomment (fmt, &ap);
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
-/* internal_printcomment (char *fmt,...) */
-internal_A4GL_lex_printcomment (char *fmt, va_list * ap)
+LEXLIB_print_report_print_file (char *fname, char *semi)
 {
-
-  return;
-
-#ifdef USE_PRINTCOMMENT
-/*  va_list args; */
-  if (outfile == 0)
-    {
-      open_outfile ();
-    }
-
-  if (outfile == 0)
-    return;
-
-  if (acl_getenv ("COMMENTS"))
-    {
-      /*
-         va_start (args, fmt);
-         vfprintf (outfile, fmt, args);
-       */
-      vfprintf (outfile, fmt, ap);
-    }
-#else
-	/**
-	 * Empty function for linking purposes when compiling without generation of
-	 * comments in the output C module
-	 */
-
-  /* Do nothing... */
-
-#endif
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-
-/**
- * If defined (as compiler option) print the C code for the call to the
- * initialization function to the calling stack.
- */
 void
-LEXLIB_printInitFunctionStack (void)
+LEXLIB_print_terminate_report (char *repname)
 {
-  return;
-
-  if (!isGenStackInfo ())
-    return;
-  printc ("A4GLSTK_initFunctionCallStack();");
-
+  niy_assert (__PRETTY_FUNCTION__);
 }
-
 
-/**
- * If defined (as compiler option) print the C code for the call to the
- * declaration function to the calling stack.
- */
 void
-LEXLIB_printDeclareFunctionStack (char *_functionName)
+LEXLIB_print_start_report (char *where, t_expr_str * out,
+			   char *repname, char *dimsetting)
 {
-
-  return;
-
-  printf ("Function %s\n", _functionName);
-  if (isGenStackInfo ())
-    printc ("\nstatic char _functionName[] = \"%s\";\n", _functionName);
+  niy_assert (__PRETTY_FUNCTION__);
 }
-
 
-/**
- * If defined (as compiler option) print the C code for the call to the
- * push function to the calling stack.
- */
 void
-LEXLIB_printPushFunction (void)
+LEXLIB_print_skip_by (double nval)
 {
-  return;
-
-  if (!isGenStackInfo ())
-    return;
-  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,nargs);\n");
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**
- * Print the C C code to the call to the pop function of the calling stack.
- *
- * It only does it if defined as compiler option.
- */
 void
-LEXLIB_printPopFunction (void)
-{
-  return;
-
-  if (!isGenStackInfo ())
-    return;
-  printc ("A4GLSTK_popFunction();\n");
-}
-
-
-
-char *reserved_words_in_perl[] = {
-  "asm",
-  "auto",
-  "break",
-  "case",
-  "char",
-  "const",
-  "continue",
-  "default",
-  "do",
-  "double",
-  "else",
-  "enum",
-  "extern",
-  "float",
-  "for",
-  "goto",
-  "if",
-  "int",
-  "long",
-  "register",
-  "return",
-  "short",
-  "signed",
-  "sizeof",
-  "static",
-  "struct",
-  "switch",
-  "typedef",
-  "union",
-  "unsigned",
-  "void",
-  "volatile",
-  "while",
-  "bool",
-  0
-};
-
-int
-LEXLIB_A4GL_bad_identifiers (char *s)
+LEXLIB_print_skip_lines (double n)
 {
-  int a;
-  for (a = 0; reserved_words_in_perl[a]; a++)
-    {
-      if (strcasecmp (s, reserved_words_in_perl[a]) == 0)
-	return 1;
-    }
-  return 0;
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
-LEXLIB_print_module_variable_init (void)
+LEXLIB_print_skip_to (char *nval)
 {
-// Do nothing
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
-LEXLIB_print_cmd_start ()
+LEXLIB_print_skip_top (void)
 {
-  printc ("\n\naubit4gl_pl::aclfgli_clr_err_flg();\n\n");
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
-/**                                             
- *                                              
-* @todo Describe function                      
-  */
 void
-LEXLIB_print_cmd_end ()
-{
-  //printc("\naclfgli_clr_err_flg()\n\n");      
-  //printc ("\n/* End command */\n");
-}
-
-char *
-LEXLIB_get_column_transform (char *s)
+LEXLIB_print_need_lines (t_expr_str * expr)
 {
-  return s;
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
-LEXLIB_A4GL_lex_parsed_fgl ()
+LEXLIB_print_order_by_type (int type, int size)
 {
-  //printc ("/* END OF 4GL */");
+  niy_assert (__PRETTY_FUNCTION__);
 }
-
 
+/* Enhancements/GUI */
 
 void
-LEXLIB_print_alloc_arr (char *s, char *d)
+LEXLIB_print_call_shared (t_expr_str_list * expr, char *libfile,
+			  char *funcname)
 {
-  char *ptr;
-  int a;
-  int l;
-  int dim[5] = { 0, 0, 0, 0, 0 };
-  int dimcnt = 0;
-  l = strlen (d);
-  ptr = d;
-  for (a = 0; a < l; a++)
-    {
-      if (d[a] == '(' && a == 0)
-	{
-	  ptr = &d[a + 1];
-	  continue;
-	}
-
-      if (d[a] == '[' && d[a + 1] == '(')
-	{
-	  ptr = &d[a + 2];
-	  continue;
-	}
-
-      if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
-	  && d[a + 3] == ']')
-	{
-	  d[a] = 0;
-	  a += 3;
-	  dim[dimcnt++] = atoi (ptr);
-
-	}
-    }
-  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
-  if (dim[4] == 0)
-    {
-      dim[4] = 1;
-    }
-  if (dim[3] == 0)
-    {
-      dim[3] = 1;
-    }
-  if (dim[2] == 0)
-    {
-      dim[2] = 1;
-    }
-  if (dim[1] == 0)
-    {
-      dim[1] = 1;
-    }
-  if (dim[0] == 0)
-    {
-      dim[0] = 1;
-    }
-  l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
-  printc ("%s=malloc(%d * sizeof(%s[0]));", s, l, s);
 }
 
 void
-LEXLIB_print_realloc_arr (char *s, char *d)
+LEXLIB_print_include (char *s)
 {
-  char *ptr;
-  int a;
-  int l;
-  int dim[5] = { 0, 0, 0, 0, 0 };
-  int dimcnt = 0;
-  l = strlen (d);
-  ptr = d;
-  for (a = 0; a < l; a++)
-    {
-      if (d[a] == '(' && a == 0)
-	{
-	  ptr = &d[a + 1];
-	  continue;
-	}
-
-      if (d[a] == '[' && d[a + 1] == '(')
-	{
-	  ptr = &d[a + 2];
-	  continue;
-	}
-
-      if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
-	  && d[a + 3] == ']')
-	{
-	  d[a] = 0;
-	  a += 3;
-	  dim[dimcnt++] = atoi (ptr);
-
-	}
-    }
-  printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
-  if (dim[4] == 0)
-    {
-      dim[4] = 1;
-    }
-  if (dim[3] == 0)
-    {
-      dim[3] = 1;
-    }
-  if (dim[2] == 0)
-    {
-      dim[2] = 1;
-    }
-  if (dim[1] == 0)
-    {
-      dim[1] = 1;
-    }
-  if (dim[0] == 0)
-    {
-      dim[0] = 1;
-    }
-  l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
-  printc ("%s=realloc(%s,%d * sizeof(%s[0]));", s, s, l, s);
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
 LEXLIB_print_dealloc_arr (char *s)
 {
-  printc ("free(%s);", s);
+  niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
-LEXLIB_A4GL_add_put_string (char *s)
+LEXLIB_print_at_termination (char *f)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_alloc_arr (char *s, char *dim)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+int
+LEXLIB_print_linked_cmd (int type, char *var)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+  return 0;
+}
+
+void
+LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll,
+			       char *attr, void *iattr)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_display_array_p2 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_display_form (char *s, char *a)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+
+
+void
+LEXLIB_print_display_new (t_expr_str_list * exprs,
+			  t_dt_display * disp, char *attr)
+{
+  int a;
+  exprs = A4GL_rationalize_list (exprs);
+  if (exprs)
+    {
+      set_suppress_newlines ();
+      printc ("print ");
+      for (a = 0; a < exprs->nlist; a++)
+	{
+	  if (a)
+	    {
+	      printc (".");
+	    }
+	  real_print_expr (exprs->list[a]);
+	}
+      printc (".\"\\n\";");
+      clr_suppress_newlines ();
+    }
+
+}
+
+void
+LEXLIB_print_remote_func (char *identifier)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_start_server (char *port, char *funclist)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_stop_external (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_import (char *funcname, int nargs)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_import_legacy (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_report_print_img (char *scaling, char *blob, char *type,
+			       char *semi)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_realloc_arr (char *s, char *dim)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void *
+LEXLIB_get_def_mn_file (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_field (int type, char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_field_2 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_menuhandler_1 (char *name)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_menuhandler_bsm (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_menuhandler_bsm_end (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_menuhandler_end (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_menuhandler_on (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gtk_menuhandler_on_end (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gui_do_fields (char *list, int mode)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gui_do_form (char *name, char *list, int mode)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_gui_do_menuitems (char *list, int mode)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_hide_window (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+char **
+LEXLIB_CLASS_get_members (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+  return 0;
+}
+
+char **
+LEXLIB_CLASS_get_variable (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+  return 0;
+}
+
+void
+LEXLIB_CLASS_add_method (char *name, char *sig)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_CLASS_print_class_variable_type (char *buff)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_CLASS_print_reflector (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_CLASS_set_class_name (char *name)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_CLASS_set_parent_name (char *name)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+char *
+LEXLIB_A4GL_get_undo_use (void)
+{
+  return "";
+}
+
+void
+LEXLIB_print_undo_use (char *s)
+{
+  /* doesn't need to do anything */
+}
+
+void
+LEXLIB_print_end_formhandler (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_formhandler (char *name)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_convert_report (char *report_name, char *fout,
+			     char *type, char *layoutfile, char *file_or_pipe)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_free_convertable (char *report_name)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_class_func_call (char *var, char *identifier, void *args,
+			      int args_cnt)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_declare_associate_1 (char *variable, char *size, char *n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_declare_associate_2 (char *variable, char *size, char *n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_use_session (char *sess)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+void
+LEXLIB_print_pdf_call (char *a1, t_expr_str_list * args, char *a3)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+/* UI */
+void
+LEXLIB_print_input_1 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_input_2 (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_input_fl (int byname, char *defs, char *helpno,
+		       t_field_list * fldlist, int attr)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_prompt_1 (t_expr_str_list * expr, char *a1, char *a2,
+		       char *a3, char *a4, int timeout)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_prompt_end (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_prompt_forchar (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_menu_1 (int n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_menu_1b (int n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_befaft_field_1 (char *fieldexpr)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_befaft_field_2 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+char *
+LEXLIB_A4GL_get_formloop_str (int type)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+  return 0;
+}
+
+char *
+LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs,
+			  char *srec, char *attr, void *inp_attr)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+  return 0;
+}
+
+char *
+LEXLIB_get_keyval_str (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+  return 0;
+}
+
+char *
+LEXLIB_A4GL_get_display_str (int type, char *s, char *f)
 {
 }
+void
+LEXLIB_print_clr_fields_fl (t_field_list * flds, char *defs)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_clr_form (char *formname, char *clr, char *defs)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_clr_status (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_clr_window (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_continue_loop (int n, char *s)
+{
+	printc ("goto CONTINUE_BLOCK_%d;", n);
+}
+
+void
+LEXLIB_print_current_window (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_show_menu (char *mname, char *mhand, void *ptr)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_show_window (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_screen_mode (int n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_scroll (char *flds, char *updown)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_onaction_1 (char *action)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_onaction_2 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_onkey_1 (char *key_list_str)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_onkey_2 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_onkey_2_prompt (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_ontimer_1 (char *action)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_ontimer_2 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_next_field (char *s)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_next_form_field (char *form, char *field)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_move_window (char *n, void *y_expr, void *x_expr, int rel)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_menu_block (int n, int menu_no)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_menu_block_end (int m, int n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_message (t_expr_str_list * expr, int type, char *attr, int wait)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_getfldbuf (char *fields)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_getwin (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_open_form (char *a1, t_expr_str * a2)
+{
+	printf("//print_open_form\n");
+}
+
+void
+LEXLIB_print_open_form_gui (char *fname, char *at_gui, char *like_gui,
+			    char *disable, char *formhandler)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_open_window (char *name, t_ow_open_window * type,
+			  t_expr_str * y, t_expr_str * x)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_event (int type)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_error (t_expr_str_list * exprs, char *s, int wait)
+{
+  int a;
+  exprs = A4GL_rationalize_list (exprs);
+  if (exprs)
+    {
+      set_suppress_newlines ();
+      printc ("echo \"Error:\"");
+      for (a = 0; a < exprs->nlist; a++)
+	{
+	  printc (".");
+	  real_print_expr (exprs->list[a]);
+	}
+      printc (";");
+      clr_suppress_newlines ();
+    }
+
+}
+
+void
+LEXLIB_print_end_menu_1 (int n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_end_menu_2 (int n)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_event_2 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_construct_1 (void)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_construct_2 (char *driver)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_construct_fl (int byname, char *constr_str,
+			   t_field_list * field_list, char *attr, int cattr)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_form_is_compiled (char *s, char *packer, char *formtype)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_output_to_report (t_expr_str_list * expr, char *repname)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_field_func (char type, char *name, char *var)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+void
+LEXLIB_print_finish_report (char *repname)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+
+
+
+
+
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
+/*********************************************************************************************************************/
 
 
 
@@ -4412,18 +3388,890 @@ LEXLIB_A4GL_add_put_string (char *s)
 
 
 
-void LEXLIB_print_Constant(int type, char *vv) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static int
+is_just_expr_clipped (char *v, struct expr_str_list *ptr)
+{
+  struct expr_str *p;
+  if (ptr->nlist != 1)
+    {
+      return 0;
+    }
+  p = ptr->list[0];
+
+  if (p->expr_type == ET_EXPR_OP_CLIP)
+    {
+      p = p->u_data.expr_expr;
+      if (p->expr_type == ET_EXPR_PUSH_VARIABLE)
+	{
+	  if (strcmp (p->u_data.expr_push_variable->variable, v) == 0)
+	    {
+	      return 1;
+	    }
+	}
+
+    }
+  return 0;
 
 }
 
 
-void LEXLIB_A4GL_internal_lex_printcomment (char *fmt, va_list * ap) {
+struct expr_str_list *
+A4GL_rationalize_list_concat (struct expr_str_list *l)
+{
+  int a;
+  struct expr_str *p;
+  struct expr_str *p2;
+  struct expr_str_list *l2;
+  //int b;
+  //int printed = 0;
+
+  if (l == 0)
+    return 0;
+  l = A4GL_rationalize_list (l);
+
+  if ((l->nlist) > 1)
+    {
+      for (a = 0; a < l->nlist - 1; a++)
+	{
+	  //int pt1;
+	  //int pt2;
+	  p = l->list[a];
+	  p2 = l->list[a + 1];
+
+
+	  if (p->expr_type == ET_EXPR_LITERAL_STRING
+	      && p2->expr_type == ET_EXPR_LITERAL_STRING)
+	    {
+	      // They're concating two literal strings - lets make the second one empty..
+	      // and concat the strings *now* rather than runtime...
+	      char *x1;
+	      char *x2;
+	      char *x3;
+	      x1 = p->u_data.expr_string;
+	      x2 = p2->u_data.expr_string;
+	      x3 = malloc (strlen (x1) + strlen (x2) + 1);
+	      strcpy (x3, x1);
+	      strcat (x3, x2);
+	      p->expr_type = ET_EXPR_REDUCED;
+	      p2->u_data.expr_string = x3;
+	    }
+	}
+    }
+
+
+
+  l2 = A4GL_new_ptr_list (0);
+
+  for (a = 0; a < l->nlist; a++)
+    {
+      p = l->list[a];
+      if (p->expr_type != ET_EXPR_REDUCED)
+	{
+	  A4GL_new_append_ptr_list (l2, p);
+	}
+    }
+
+  l = l2;
+
+  return l;
+}
+
+
+char *
+is_single_string (struct expr_str_list *ptr)
+{
+  return 0;
 }
 
 
 
 
+int
+is_ignore_var (char *var)
+{
+  return 0;
+}
 
-#endif
 
-/* ================================ EOF ============================== */
+char *need_globals_var[20000];
+int need_globals_var_cnt = 0;
+
+
+void
+free_need_globals (void)
+{
+  int a;
+  if (need_globals_var_cnt)
+    {
+      for (a = 0; a < need_globals_var_cnt; a++)
+	{
+	  free (need_globals_var[a]);
+	  need_globals_var[a] = 0;
+	}
+      need_globals_var_cnt = 0;
+    }
+}
+
+void
+need_globals (char *s)
+{
+  char buff[255];
+  char *ptr;
+  int a;
+// Does nothing yet
+// we need to issue a "global" statement at the top of any functions
+// for any module or global variable used within that function
+  if (strcmp (curr_func, "Module") == 0)
+    return;
+  strcpy (buff, s);
+  ptr = strchr (buff, '.');
+  if (ptr)
+    *ptr = 0;
+  ptr = strchr (buff, '[');
+  if (ptr)
+    *ptr = 0;
+  for (a = 0; a < need_globals_var_cnt; a++)
+    {
+      if (strcmp (need_globals_var[a], buff) == 0)
+	return;
+    }
+  need_globals_var[need_globals_var_cnt++] = strdup (buff);
+
+  //printf ("%s %s\n", curr_func, buff);
+}
+
+
+encode_records (char *s)
+{
+  static char buff[20000];
+  int a;
+  int c;
+  int b = 0;
+  int last;
+  int using_globals_var=0;
+
+  if (s[0]=='M'||s[0]=='G') {
+	  //strcpy(buff,"GLOBALS[\"");
+	  //b=strlen(buff);
+	  //using_globals_var=1;
+  }
+
+
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] != '.')
+	{
+	  buff[b++] = s[a];
+	  continue;
+	}
+      last = -1;
+      for (c = a + 1; c < strlen (s) + 1; c++)
+	{
+	  if (s[c] >= 'a' && s[c] <= 'z')
+	    continue;
+	  if (s[c] >= 'A' && s[c] <= 'Z')
+	    continue;
+	  if (s[c] == '_')
+	    continue;
+	  // found the last character!
+	  last = c;
+	  break;
+	}
+
+      if (last >= 0)
+	{
+		if (using_globals_var) {
+			using_globals_var=0;
+			buff[b++]='\'';
+			buff[b++]=']';
+		}
+	  buff[b++] = '[';
+	  buff[b++] = '"';
+	  for (c = a + 1; c < last; c++)
+	    {
+	      buff[b++] = s[c];
+	    }
+	  buff[b++] = '"';
+	  buff[b++] = ']';
+	  a = last - 1;
+	} 
+    }
+
+
+  if (using_globals_var) {
+	    	using_globals_var=0;
+		buff[b++]='\'';
+		buff[b++]=']';
+		buff[b]=0;
+  }
+  buff[b++] = 0;
+  return buff;
+}
+
+
+
+char *
+use_scope (char *s)
+{
+  static char buff[2000];
+  //printf("USE SCOPE %s\n",s);
+  if (s[0] == 'G' || s[0] == 'M' || s[0] == 'R')
+    {
+      need_globals (s);
+      sprintf (buff, "%s", s);
+      return encode_records (check_for_reserved_words (buff));
+    }
+
+
+/*
+  if (strcmp (s, "a4gl_status") == 0)
+    {
+      return "a4gl_status";
+    }
+  if (strncmp (s, "a4gl_sqlca", 10) == 0)
+    {
+      sprintf (buff, "%s", s);
+      return strdup (buff);
+    }
+*/
+
+  return encode_records (check_for_reserved_words (s));
+}
+
+
+
+void
+set_suppress_lines (void)
+{
+  suppress_lines++;
+}
+
+void
+clr_suppress_lines (void)
+{
+  suppress_lines--;
+}
+
+void
+set_suppress_newlines (void)
+{
+  if (suppress_newlines == 0)
+    {
+      print_space ();
+    }
+  suppress_newlines++;
+}
+
+void
+clr_suppress_newlines (void)
+{
+  suppress_newlines--;
+
+  if (suppress_newlines == 0)
+    {
+      printc_nl ();
+    }
+}
+
+char *
+fixup_squares (char *s)
+{
+  return s;
+
+/*
+  static char buff[20000];
+  int a;
+  strcpy (buff, s);
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == ']' && s[a + 1] == '[')
+	{
+	  buff[a] = ',';
+	  buff[a + 1] = ' ';
+	}
+    }
+  return buff;
+*/
+}
+
+
+void
+ensure_dtype (struct expr_str *e, int dtype, int notnull)
+{
+  return;
+}
+
+
+char *
+check_for_reserved_words (char *s)
+{
+  //static char buff[256];
+  char *ptr;
+
+  return s;
+
+
+
+
+
+  if (strstr (s, "to") || strstr (s, "from"));
+  else
+    {
+      return s;
+    }
+
+  //ptr = has_reserved (s, "to", "xxx_to");
+  //if (ptr)
+  //return ptr;
+//
+  //ptr = has_reserved (s, "from", "xxx_from");
+  //if (ptr)
+  //return ptr;
+
+  return s;
+}
+
+
+
+char *
+anon_prepare (char *s)
+{
+  static char buff[20000];
+  static char buff2[20000];
+  static int cnt = 0;
+  char *s2;
+
+  if (A4GL_isyes (acl_getenv ("LEGACY")))
+    {
+      SPRINTF2 (buff, "__%s_%d", A4GL_compiling_module_basename (), yylineno);
+    }
+  else
+    {
+      SPRINTF2 (buff, "__%s_%d", A4GL_compiling_module_basename (), cnt++);
+    }
+  SPRINTF1 (buff2, "\"%s\"", buff);
+
+  s2 = malloc (strlen (s) + 10);
+  if (s[0] != '"')
+    {
+      SPRINTF1 (s2, "\"%s\"", s);
+    }
+  else
+    {
+      strcpy (s2, s);
+    }
+  LEXLIB_print_prepare (buff2, s2);
+  free (s2);
+  return buff;
+
+}
+
+
+
+
+void
+LEXLIB_print_module_variable_init (void)
+{
+  printc ("$Done_init_module_variables_%s=0;\n",
+	  A4GL_compiling_module_basename ());
+  printc ("sub Init_module_variables_%s() {",
+	  A4GL_compiling_module_basename ());
+  temp_indent++;
+  printc ("if ($Done_init_module_variables_%s) {return;}",
+	  A4GL_compiling_module_basename ());
+  printc ("$Done_init_module_variables_%s=1;",
+	  A4GL_compiling_module_basename ());
+  setting_module_to_null = 1;
+  print_nullify ('M');
+  setting_module_to_null = 0;
+  temp_indent--;
+  printc ("}");
+  printc ("\n");
+
+}
+
+
+void
+print_function_variable_init (void)
+{
+  printc ("Init_module_variables_%s();", A4GL_compiling_module_basename ());
+  print_nullify ('F');
+}
+
+static char *
+make_arr_str (char *s, struct variable *v)
+{
+  int a;
+  char buff[256];
+  int tot;
+  strcpy (s, "");
+  tot = 1;
+  for (a = 0; a < MAX_ARR_SUB; a++)
+    {
+      if (v->arr_subscripts[a])
+	{
+	  tot *= v->arr_subscripts[a];
+	  if (a)
+	    strcat (s, ",");
+	  SPRINTF1 (buff, "%d", v->arr_subscripts[a]);
+	  strcat (s, buff);
+	}
+      else
+	{
+	  break;
+	}
+    }
+  return strdup (s);
+}
+
+
+
+int
+is_param (char *s)
+{
+  int a;
+  char buff[256];
+  if (fbindcnt == 0)
+    return 0;
+  if (isin_command ("REPORT"))
+    return 0;
+
+  //expand_bind (&fbind[0], 'F', fbindcnt, 1);
+  for (a = 0; a < fbindcnt; a++)
+    {
+      //char *ptr;
+      strcpy (buff, fbind[a].varname);
+      //ptr=strchr(buff,'.'); if (ptr) { *ptr=0; }
+
+      if (strcmp (s, buff) == 0)
+	{
+	  return 1;
+	}
+    }
+  return 0;
+}
+
+
+char *
+rettype_integer_internal (int n)
+{
+  return rettype_integer (n & DTYPE_MASK);
+}
+
+
+
+
+/**
+ * Print the declaration of a char variable.
+ *
+ * The type of the variable comes in the first parameter.
+ *
+ * @param var The variable name and type.
+ * @param size The size of the variable.
+ * @param isstatic_extern The storage class used:
+ *   - 1 : Static
+ *   - 2 : Extern
+ *   - Otherwise : Not static and not extern
+ */
+
+//vbuff,tbuff,abuff
+static void
+print_define_char (char *vbuff, char *tbuff, char *abuff,
+		   int size, int isstatic_extern, int lvl)
+{
+  char buff[20];
+  strcpy (buff, "");
+
+
+return;
+
+
+  if (lvl)
+    {
+      printh ("var $%s%s%s;\n", buff, vbuff, abuff);
+    }
+  else
+    {
+      if (strlen (abuff) || 1)
+	{
+	  if (isin_command ("REPORT"))
+	    {
+	      printh ("var $%s%s%s;\n", buff, vbuff, abuff);
+	    }
+	  else
+	    {
+	      printc ("var $%s%s%s;\n", buff, vbuff, abuff);
+	    }
+	}
+      else
+	{
+	  if (isin_command ("REPORT"))
+	    {
+	      printh ("var $%s%s%s=$null #VSET;\n", buff, vbuff, abuff);
+	    }
+	  else
+	    {
+	      printc ("var $%s%s%s=$null #VSET;\n", buff, vbuff, abuff);
+	    }
+	}
+    }
+}
+
+
+
+
+/**
+ * Prints a variable declaration to the generated file.
+ *
+ * The type of the variable comes in the first parameter.
+ *
+ * @param varstring String with variable declaration
+ * @param isstatic_extern The modifier of variable:
+ *   - 1 : Variable should be declared as static
+ *   - 2 : Variable should be declared as extern
+ */
+static void
+print_define (char *vbuff, char *tbuff, char *abuff,
+	      int isstatic_extern, int lvl)
+{
+  char buff[20];
+
+
+
+  return;
+
+
+
+  strcpy (buff, "");
+/*
+  if (is_ignore_var (vbuff) && lvl == 0)
+    {
+      return;
+    }
+*/
+
+  if (strcmp (vbuff, "to") == 0)
+    {
+      vbuff = "xxx_to";
+    }
+  if (strcmp (vbuff, "from") == 0)
+    {
+      vbuff = "xxx_from";
+    }
+
+  if (lvl)
+    {
+
+      printh ("%s%s%s;\n", buff, vbuff, abuff);
+    }
+  else
+    {
+      if (isin_command ("REPORT"))
+	{
+	  if (strlen (abuff) == 0 && 0)
+	    {
+	      printh ("$%s%s%s=$null /*VSET*/;\n", buff, vbuff, abuff);
+	    }
+	  else
+	    {
+	      printh ("$%s%s%s=$null;\n", buff, vbuff, abuff);
+	    }
+
+	}
+      else
+	{
+
+	  if (strlen (abuff) == 0 && 0)
+	    {
+	      printc ("$%s%s%s=$null #VSET;\n", buff, vbuff, abuff);
+	    }
+	  else
+	    {
+	      printc ("$%s%s%s=$null;\n", buff, vbuff, abuff);
+	    }
+	}
+    }
+}
+
+
+void
+print_structures_in (struct record_variable *v, int lvl, int scope)
+{
+  struct variable *vn;
+  int a;
+  static int c = 0;
+  char buff[20055];
+  char sbuff[20];
+  temp_indent++;
+  for (a = 0; a < v->record_cnt; a++)
+    {
+      vn = v->variables[a];
+      if (vn->variable_type == VARIABLE_TYPE_RECORD)
+	{
+	  print_structures_in (&vn->data.v_record, lvl + 1, scope);
+	}
+    }
+  temp_indent--;
+  SPRINTF2 (v->user_ptr, "Fake_%s_%d",
+	    A4GL_compiling_module_basename (), c++);
+
+  SPRINTF0 (buff, "array (\n   ");
+
+  for (a = 0; a < v->record_cnt; a++)
+    {
+      vn = v->variables[a];
+      if (a)
+	{
+	  strcat (buff, ",\n   ");
+	}
+      sprintf (sbuff, "\"%s\"=>\"\"", vn->names.name);
+      strcat (buff, sbuff);
+
+      //LEXLIB_print_variable_new (vn, scope, lvl + 1);
+    }
+  strcat (buff, ");");
+
+  printh ("$%s=%s\n", v->user_ptr, buff);
+  printh ("\n");
+}
+
+
+char *
+valid_func_name (char *s)
+{
+  return s;
+}
+
+
+static void
+add_used_block (int n, char *btype)
+{
+  char buff[200];
+  SPRINTF2 (buff, "%s_%d", btype, n);
+  A4GL_add_pointer (buff, BLOCK_USED, (void *) 1);
+}
+
+static int
+is_used_block (int n, char *btype)
+{
+  char buff[200];
+  SPRINTF2 (buff, "%s_%d", btype, n);
+  return A4GL_has_pointer (buff, BLOCK_USED);
+}
+
+
+
+
+int
+print_bind_set_value_param_2 (char *cname, char i)
+{
+  int a;
+  char *xx;
+
+  xx = strdup (A4GL_strip_quotes (cname));
+
+  if (i == 'o')
+    {
+      if (A4GL_has_pointer (xx, CURSOR_BIND_O))
+	{
+	  struct s_save_binding *s;
+	  // Saved results....
+	  if (obindcnt == 0)
+	    {
+	      s = A4GL_find_pointer (xx, CURSOR_BIND_O);
+	      if (s)
+		{
+		  //int a;
+		  extern long a_obind;
+		  obind = ensure_bind (&a_obind, s->nbind + 1, obind);
+		  obindcnt = s->nbind;
+		  memcpy (obind, s->bind,
+			  sizeof (struct binding_comp) * s->nbind);
+		}
+	    }
+	}
+
+      for (a = 0; a < obindcnt; a++)
+	{
+	  printc ("@%s=$%s[%d];\n", use_scope (obind[a].varname),
+		  Rname (xx), a);
+	}
+      start_bind (i, 0);
+      return a;
+    }
+  if (i == 'i')
+    {
+
+      for (a = 0; a < ibindcnt; a++)
+	{
+	  printc ("$%s->Parameter(%d,$%s);", Cname (xx), a,
+		  use_scope (ibind[a].varname));
+	}
+      start_bind (i, 0);
+      return a;
+    }
+
+  A4GL_assertion (1, "End of function");
+  return 0;
+}
+
+
+char *
+find_record_dot (char *s)
+{
+  int c;
+  int count_squares = 0;
+  for (c = 0; c < strlen (s); c++)
+    {
+      if (s[c] == '[')
+	count_squares++;
+      if (s[c] == ']')
+	count_squares--;
+      if (count_squares == 0 && s[c] == '.')
+	{
+	  return &s[c];
+	}
+    }
+  return 0;
+}
+
+
+
+int
+print_bind_set_value_param_3 (char *cname, char i)
+{
+  int a;
+  char *xx;
+  cname = strdup (cname);
+  xx = strdup (A4GL_strip_quotes (cname));
+
+  if (i == 'o')
+    {
+      printc("if (@%s) {",Rname (xx));
+      for (a = 0; a < obindcnt; a++)
+        {
+          printc ("$%s=$%s[%d];\n", use_scope (obind[a].varname),Rname (xx), a);
+        }
+      printc("}");
+      start_bind (i, 0);
+      return a;
+    }
+
+
+  if (i == 'i')
+    {
+
+      for (a = 0; a < ibindcnt; a++)
+        {
+          if (ibind[a].varname[0] == 'G' || ibind[a].varname[0] == 'M')
+            {
+              print_prepare_in_header(xx);
+              printc ("$%s->Parameter(%d,$%s);", Pname (xx), a,
+                      use_scope(ibind[a].varname));
+            }
+          else
+            {
+              print_prepare_in_header(xx);
+              printc ("$%s->Parameter(%d,$%s);", Pname (xx), a,
+                      use_scope(ibind[a].varname));
+            }
+        }
+      start_bind (i, 0);
+      return a;
+    }
+  A4GL_assertion (1, "End of function");
+  return 0;
+}
+
+
+
+void
+LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
+{
+  int x;
+  struct expr_str *p;
+  char *xx;
+  x = obindcnt;
+
+  xx = strdup (A4GL_strip_quotes (fp->cname));
+
+  p = fp->fp->fetch_expr;
+  if (fp->fp->ab_rel == FETCH_RELATIVE)
+    {
+      if (p->expr_type == ET_EXPR_LITERAL_LONG)
+        {
+          if (p->u_data.expr_long == 1)
+            {
+              printc ("$DC_%s->MoveNext();", Cname (xx));
+            }
+          if (p->u_data.expr_long == -1)
+            {
+              printc ("$DC_%s->MovePrevious();", Cname (xx));
+            }
+          if (p->u_data.expr_long != 1 && p->u_data.expr_long != -1)
+            {
+              printc ("$DC_%s->MoveRelative(%d);", Cname (xx),
+                      p->u_data.expr_long);
+            }
+        }
+      else
+        {
+          set_suppress_newlines ();
+          printc ("$DC_%s->MoveRelative(", Cname (xx),
+                  p->u_data.expr_long);
+          print_expr (fp->fp->fetch_expr);
+          printc (");");
+          clr_suppress_newlines ();
+        }
+    }
+  else
+    {
+      if (p->expr_type == ET_EXPR_LITERAL_LONG)
+        {
+          if (p->u_data.expr_long == 1)
+            {
+              printc ("$DC_%s->MoveFirst();", Cname (xx));
+            }
+          if (p->u_data.expr_long == -1)
+            {
+              printc ("$DC_%s->MoveLast();", Cname (xx));
+            }
+          if (p->u_data.expr_long != 1 && p->u_data.expr_long != -1)
+            {
+              printc ("$DC_%s->MoveAbsolute(%d);", Cname (xx), p->u_data.expr_long);
+            }
+        }
+      else
+        {
+          set_suppress_newlines ();
+          printc ("$DC_%s->MoveAbsolute(", Cname (xx));
+                //ensure_int(fp->fp->fetch_expr,1);
+          print_expr (fp->fp->fetch_expr);
+          printc (");");
+          clr_suppress_newlines ();
+        }
+    }
+
+  printc ("if  (a4gl_sqlca.sqlcode==0) {");
+  temp_indent++;
+  printc ("@DR_%s=$DC_%s->Current();", Rname (xx), Cname (xx));
+  print_bind_set_value_param_2 (fp->cname, 'o');
+  temp_indent--;
+  printc ("}");
+  obindcnt = 0;
+}
+

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.82 2006-02-12 09:56:31 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.83 2006-03-17 19:01:31 mikeaubury Exp $
 #
 */
 
@@ -323,19 +323,105 @@ char *A4GL_cv_lastnonblank (char *str);
 #define SQL_CONVERSION '@'
 #define SQL_CONVERSION_CNT '&'
 
+long last_cnt=0;
+
+struct save_queries {
+	char *fromsql;
+	char *tosql;
+	int last_cnt;
+} ;
+
+int init_saved_queries=1;
+
+
+#define NUM_SAVED_QUERIES 100
+
+struct save_queries saved_queries[NUM_SAVED_QUERIES];
+
+
 /*
 =====================================================================
                     Function definitions
 =====================================================================
 */
+
+
+static void do_init_saved_queries() {
+	int  a;
+		init_saved_queries=0;
+	for (a=0;a<NUM_SAVED_QUERIES;a++) {
+		saved_queries[a].fromsql=0;
+		saved_queries[a].tosql=0;
+		saved_queries[a].last_cnt=-1;
+	}
+}
+
+
+
+
+static void add_query(char *fromsql,char *tosql) {
+int a;
+int low_cnt=-1;
+int low_cnt_a=-1;
+	for (a=0;a<NUM_SAVED_QUERIES;a++) {
+		if (saved_queries[a].fromsql==0) {
+				saved_queries[a].fromsql=strdup(fromsql);
+				saved_queries[a].tosql=strdup(tosql);
+				saved_queries[a].last_cnt=last_cnt++;
+				return ;
+		}
+		if (low_cnt==-1 || saved_queries[a].last_cnt<low_cnt) {
+			low_cnt=saved_queries[a].last_cnt;
+			low_cnt_a=a;
+		}
+	}
+	A4GL_assertion(low_cnt_a==-1,"Ooops");
+	A4GL_assertion(low_cnt==-1,"Ooops");
+
+	free(saved_queries[low_cnt_a].fromsql);
+	free(saved_queries[low_cnt_a].tosql);
+	saved_queries[low_cnt_a].fromsql=strdup(fromsql);
+	saved_queries[low_cnt_a].tosql=strdup(tosql);
+	saved_queries[low_cnt_a].last_cnt=last_cnt++;
+}
+
+
+
+
+
+static int has_query(char *s,char **cp) {
+	int a;
+	if (init_saved_queries) {
+		do_init_saved_queries();
+		return 0;
+	}
+
+	for (a=0;a<NUM_SAVED_QUERIES;a++) {
+		if (saved_queries[a].fromsql==0) continue;
+
+		if  (strcmp(saved_queries[a].fromsql,s)==0) {
+			saved_queries[a].last_cnt=last_cnt++;
+			*cp=saved_queries[a].tosql;
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
 char *
 A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx)
 {
   char *sql_new;
   char *sql;
+
   //int a;
   sql = sqlx;
   A4GL_debug ("A4GL_convert_sql_new : %s", sql);
+
+  if (has_query(sqlx,&sql_new)) {
+	return sql_new;
+  }
 
   if (strcmp (source_dialect, target_dialect) == 0
       && (!A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
@@ -381,6 +467,8 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx)
   free (sql);
   //for (a=0;a<strlen(sql_new);a++) { if (sql_new[a]=='\n') sql_new[a]=' '; }
   A4GL_debug ("check_sql.. %s", sql_new);
+
+  add_query(sqlx,sql_new);
   return sql_new;
 }
 
@@ -486,7 +574,6 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
   A4GL_debug ("Load convert : %s %s", source_dialect, target_dialect);
-
 
 
   if (!A4GL_has_pointer (buff, SQL_CONVERSION))
@@ -1339,19 +1426,23 @@ A4GLSQLCV_make_substr (char *colname, int i0, int i1, int i2)
 static int match_strncasecmp(char *s1,char *s2,int len) {
 	char p1[200];
 	char p2[200];
-	strncpy(p1,s1,199);
-	strncpy(p2,s2,199);
-	p1[199]=0;
-	p2[199]=0;
+	int l1;
+	int l2;
+	strncpy(p1,s1,len+1);
+	strncpy(p2,s2,len+1);
+	p1[len+1]=0;
+	p2[len+1]=0;
 	A4GL_trim(p1);
 	A4GL_trim(p2);
+	l1=strlen(p1);
+	l2=strlen(p2);
 
-	if (strlen(p1)==strlen(p2)) {
+	if (l1==l2) {
 		if (strncasecmp(p1,p2,len)==0) return 0;
 		else return 1;
 	}
 
-	if (strlen(p1)>strlen(p2)) {
+	if (l1>l2) {
 		return strncasecmp(p1,p2,len);
 	}
 

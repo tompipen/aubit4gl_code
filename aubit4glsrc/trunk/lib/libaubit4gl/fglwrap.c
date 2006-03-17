@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.104 2006-02-07 20:06:41 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.105 2006-03-17 19:01:31 mikeaubury Exp $
 #
 */
 
@@ -268,8 +268,8 @@ char *p;
 #endif
 
   if (A4GL_isyes(acl_getenv("START_ALLOC"))) {
-  ptr = acl_malloc (1024 * 1024 * 10,"START ALLOC");
-  acl_free (ptr);
+  	ptr =malloc (1024 * 1024 * 10);
+  	free (ptr);
   }
 
 /*endwin(); *//* switch straight back to terminal mode */

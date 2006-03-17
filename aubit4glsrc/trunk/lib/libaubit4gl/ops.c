@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.88 2006-02-18 10:23:38 mikeaubury Exp $
+# $Id: ops.c,v 1.89 2006-03-17 19:01:31 mikeaubury Exp $
 #
 */
 
@@ -308,12 +308,16 @@ char *ptr2;
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
   A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
 
+#ifdef DEBUG
   A4GL_debug(" About to pop '%s'(%s) '%s'(%s)",ptr1,A4GL_isnull(d1,ptr1)?"null":"not null",ptr2,A4GL_isnull(d2,ptr2)?"null":"not null");
+#endif
 
   b = A4GL_char_pop ();
   a = A4GL_char_pop ();
 
+#ifdef DEBUG
   A4GL_debug("a='%s' b='%s' op=%d\n",a,b,op);
+#endif
 
   if (A4GL_isnull (DTYPE_CHAR, (void *) a) || A4GL_isnull (DTYPE_CHAR, (void *) b)) { 
 		A4GL_debug("One of them is null...");
@@ -321,13 +325,20 @@ char *ptr2;
 		free(a); free(b); 
 		return; 
 	}
-  else { A4GL_debug ("OK - neither is null"); } 
+
+  else { 
+#ifdef DEBUG
+	  	A4GL_debug ("OK - neither is null"); 
+#endif
+  } 
 
   A4GL_trim(b);
   A4GL_trim(a);
 
 
+#ifdef DEBUG
   A4GL_debug("a='%s' b='%s' op=%d and they're trimmed\n",a,b,op);
+#endif
 
   switch (op)
     {
@@ -1124,13 +1135,17 @@ A4GL_int_int_ops (int op)
   if (A4GL_isnull (DTYPE_INT, (void *) &a)
       || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("int_int - one is null");
+#endif
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG

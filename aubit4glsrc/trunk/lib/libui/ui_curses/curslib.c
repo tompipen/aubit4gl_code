@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.116 2006-02-24 09:54:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.117 2006-03-17 19:01:51 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.116 2006-02-24 09:54:31 mikeaubury Exp $";
+		"$Id: curslib.c,v 1.117 2006-03-17 19:01:51 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1996,6 +1996,8 @@ curs_err (char *str)
 }
 */
 
+
+#ifdef VERY_OLD
 /**
  *
  * @todo Describe function
@@ -2133,7 +2135,6 @@ A4GL_load_formdata (char *fname2, char *ftitle, int fno)
 
 
 
-
 /**
  *
  * @todo Describe function
@@ -2217,6 +2218,7 @@ A4GL_mfgets (char *s, int n, FILE * fp)
   return z;
 }
 
+#endif
 
 
 

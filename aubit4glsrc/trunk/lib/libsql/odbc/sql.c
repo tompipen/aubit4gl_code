@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.146 2006-03-16 08:47:51 mikeaubury Exp $
+# $Id: sql.c,v 1.147 2006-03-17 19:01:48 mikeaubury Exp $
 #
 */
 
@@ -51,22 +51,13 @@
 =====================================================================
 */
 
+void AddColumn (char *s, int d, int sz);
+int GetColNo = 0;
+char GetColTab[2000];
+int GetColCached = 0;
+int first_open=1;
 
-char *months[] = {
-  "",
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC", 0
-};
+#define CACHE_COLUMN '&'
 
 #if (ODBCVER >= 0x0300)
 #define USE_TIMESTAMP
@@ -240,9 +231,7 @@ extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt,
 			       int colno);
 
 
-#ifndef DEBUG
-#error No debug
-#endif
+
 /*
 =====================================================================
                     Variables definitions
@@ -458,8 +447,91 @@ dll_import sqlca_struct a4gl_sqlca;
 */
 
 static void
+reformat_sql (char *sql, struct BINDING *ibind, int nibind)
+{
+  int c;
+  FILE *f;
+  int a;
+  char buff[20000];
+  char sbuff[20000];
+  int b;
+  c = 0;
+  b = 0;
+
+  if (first_open)
+    {
+      first_open = 0;
+      f = fopen ("/tmp/log.sql", "w");
+    }
+  else
+    {
+      f = fopen ("/tmp/log.sql", "a");
+    }
+  if (ibind == 0)
+    {
+      if (!strchr (sql, '?'))
+        {
+          fprintf (f, "%s;\n", sql);
+        }
+      fclose (f);
+      return;
+    }
+
+
+  for (a = 0; a < strlen (sql); a++)
+    {
+      if (sql[a] != '?')
+        {
+          buff[b++] = sql[a];
+          continue;
+        }
+
+      sprintf (sbuff, "'?%d'", ibind[c].dtype);
+
+      if (ibind[c].dtype == 0)
+        {
+          sprintf (sbuff, "'%s'", (char *)ibind[c].ptr);
+        }
+
+      if (ibind[c].dtype == 1)
+        {
+          sprintf (sbuff, "%d", *(short *) ibind[c].ptr);
+        }
+
+      if (ibind[c].dtype == 2)
+        {
+          sprintf (sbuff, "%ld", *(long *) ibind[c].ptr);
+        }
+      if (ibind[c].dtype == 3)
+        {
+          sprintf (sbuff, "%lf", *(double *) ibind[c].ptr);
+        }
+
+      if (ibind[c].dtype == 7)
+        {
+          char *ptr;
+          A4GL_push_date (*(long *) ibind[c].ptr);
+          ptr = A4GL_char_pop ();
+          sprintf (sbuff, "'%s'", ptr);
+          free (ptr);
+        }
+      buff[b] = 0;
+      strcat (buff, sbuff);
+      b = strlen (buff);
+      c++;
+    }
+  buff[b] = 0;
+  fprintf (f, "%s;\n", buff);
+  fclose (f);
+}
+
+
+static void
 ensure_as_char (void)
 {
+static int ensured=0;
+if (ensured) return;
+ensured++;
 
   if (A4GLSQLCV_check_requirement ("DATE_AS_CHAR"))
     {
@@ -515,6 +587,8 @@ set_conv_4gl_to_c (void)
     }
 }
 
+
+#ifdef IN_LIBAUBIT4GL
 /**
  * Assign a value to the status global variable.
  *
@@ -532,6 +606,7 @@ A4GLSQL_set_status (int a, int sql)
     a4gl_sqlca.sqlcode = a;
   A4GL_debug ("Status set to %d", a);
 }
+#endif
 
 char *
 A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
@@ -842,6 +917,7 @@ A4GLSQL_prepare_sql_internal (char *s)
 #ifdef DEBUG
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
 #endif
+	A4GL_assertion (sid->hstmt == 0, "No statement");
       rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
 
@@ -943,6 +1019,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, 
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
       A4GL_debug ("statement = %s", sid->select);
 #endif
+	A4GL_assertion (sid->hstmt == 0, "No statement");
       rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_select : After Prepare", 0); */
@@ -1014,6 +1091,7 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)	/* mja */
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
       A4GL_debug ("Preparing %p %s\n", sid->hstmt, sid->select);
 #endif
+	A4GL_assertion (sid->hstmt == 0, "No statement");
       rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_glob_sql : After Prepare", 0); */
@@ -1329,9 +1407,10 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
   char *curs;
   SQLINTEGER rowcount;
   int save_ni = -1;
+  int rc;
   struct s_sid *sid;
   struct BINDING *save_ibind = 0;
-  int rc;
+  int rc2;
 
   A4GL_debug ("XXX s=%s ni=%d ibind=%p", s, ni, ibind);
 
@@ -1359,6 +1438,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
   if (strncasecmp (sid->select, "INSERT", 6) == 0
       || strncasecmp (sid->select, " INSERT", 7) == 0)
     {
+	A4GL_assertion (cid->statement->hstmt == 0, "No statement");
       rc =
 	SQLPrepare ((SQLHSTMT) cid->statement->hstmt, cid->statement->select,
 		    SQL_NTS);
@@ -1378,6 +1458,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
     }
 
 
+	A4GL_assertion (cid->statement->hstmt == 0, "No statement");
   rc =
     SQLPrepare ((SQLHSTMT) cid->statement->hstmt, cid->statement->select,
 		SQL_NTS);
@@ -1499,8 +1580,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 #endif
 
   rc = SQLExecute ((SQLHSTMT) cid->statement->hstmt);
-  rc = A4GL_chk_need_blob (rc, (SQLHSTMT) & cid->statement->hstmt);
   chk_rc (rc, cid->statement->hstmt, "SQLExecute");
+  rc2 = A4GL_chk_need_blob (rc, (SQLHSTMT) & cid->statement->hstmt);
 
 #ifdef DEBUG
   A4GL_debug ("Executed...");
@@ -1943,27 +2024,6 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
   return 0;
 }
 
-/**
- * Assign the 4gl global variable status.
- *
- * @param a The value to be assigned to status.
- */
-void
-A4GLSQL_xset_status (int a)
-{
-  A4GLSQL_set_status (a, 0);
-}
-
-/**
- * Get the value of the status 4gl global variable.
- *
- * @return The value of sqlca.sqlcode
- */
-int
-A4GLSQL_get_status (void)
-{
-  return a4gl_sqlca.sqlcode;
-}
 
 /**
  * Get the current SQL error message.
@@ -2180,7 +2240,7 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
   RETCODE rc;
   char uid[256] = "";
   char pwd[256] = "";
-  RETCODE xrc;
+  //RETCODE xrc;
 
 #ifdef DEBUG
   A4GL_debug ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s",
@@ -2881,16 +2941,15 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
       if (date_as_char)
 	{
 	  A4GL_debug ("date_as_char");
-
-	  if (strcmp (dbms_dialect, "ORACLE") == 0)
-	    {
-	      A4GL_push_date (*(int *) ptr);
-	      SPRINTF3 (p->uDate.date_c, "%02d-%s-%04d", d, months[m], y);
-	      printf ("%s\n", p->uDate.date_c);
-	    }
-	  else
-	    {
-	      SPRINTF3 (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
+          if (A4GL_isyes (acl_getenv ("BINDDBDATE")))
+            {
+              char *x;
+              	A4GL_push_date (*(long *) ptr);
+              	x = A4GL_char_pop ();
+              	SPRINTF1 (p->uDate.date_c, "%s", x);
+              	free (x);
+            } else {
+	      	SPRINTF3 (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
 	    }
 	  size_c = strlen (p->uDate.date_c);
 	  ptr_to_use = &p->uDate.date_c;
@@ -3742,6 +3801,15 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
   static int a, b;
   static int rc;
   short nColumns;
+  char buff[200];
+
+
+
+
+
+  GetColNo = 0;
+  GetColCached = 0;
+
 
 
   A4GL_debug ("Get columns...");
@@ -3777,6 +3845,17 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	  A4GL_convupper (tabname2);
 	  tabname = tabname2;
 	}
+
+
+      strcpy (GetColTab, tabname);
+      sprintf (buff, "%s_1", tabname);
+      if (A4GL_has_pointer (buff, CACHE_COLUMN))
+        {
+          GetColCached = 1;
+          GetColNo = 0;
+          return 1;
+        }
+
 
       rc =
 	SQLColumns (hstmtGetColumns, NULL, 0, NULL, 0, tabname, SQL_NTS, NULL,
@@ -3911,6 +3990,37 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 int
 A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
+
+  char buff[200];
+  GetColNo++;
+
+  if (GetColCached)
+    {
+      sprintf (buff, "%s_%d", GetColTab, GetColNo);
+      if (A4GL_has_pointer (buff, CACHE_COLUMN))
+        {
+          static char buffx[2000];
+          char *ptr;
+
+          ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
+
+          if (ptr)
+            {
+              //printf("Scanning from %s\n",ptr);
+              sscanf (ptr, "%s %d %d", buffx, dtype, size);
+              *colname = buffx;
+              return 1;
+            }
+          else
+            {
+              A4GL_assertion (1, "Shouldn't happen");
+            }
+        }
+      return 0;
+    }
+
+
+
   rc = SQLFetch (hstmtGetColumns);
 #ifdef DEBUG
   A4GL_debug ("A4GLSQL_next_column fetch rc = %d, cn = %s\n", rc, cn);
@@ -3940,8 +4050,33 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
       prec = 0x46;
     }
   *size = conv_sqlprec (*dtype, prec);
+  if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
+    {
+      AddColumn (*colname, *dtype, *size);
+    }
   return 1;
 }
+
+
+void
+AddColumn (char *s, int d, int sz)
+{
+  char buff[256];
+  char buff2[256];
+
+  sprintf (buff, "%s_%d", GetColTab, GetColNo);
+  if (A4GL_has_pointer (buff, CACHE_COLUMN))
+    {
+      // Got the column cached !
+      return;
+    }
+  sprintf (buff2, "%s %d %d", s, d, sz);
+  //printf("Adding %s to %s\n",buff,buff2);
+  A4GL_add_pointer (buff, CACHE_COLUMN, strdup (buff2));
+}
+
+
+
 
 /**
  * Free all resources allocated in getting information about columns
@@ -3992,6 +4127,32 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
   static int a, b;
   static int rc;
   short nColumns;
+  char buff[200] = "";
+
+
+
+
+
+  if (tabname && colname)
+    {
+      if (strlen (tabname) && strlen (colname))
+        {
+          sprintf (buff, ":%s %s", tabname, colname);
+        }
+    }
+
+
+  if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
+    {
+      if (A4GL_has_pointer (buff, CACHE_COLUMN))
+        {
+          char *ptr;
+          ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
+          sscanf (ptr, "%d %d", dtype, size);
+          return 1;
+        }
+    }
+
 
   if (hdbc == 0)
     {
@@ -4183,6 +4344,17 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
       prec = 0x46;
     }
   *size = conv_sqlprec (*dtype, prec);
+
+  if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
+    {
+      char buff2[2000];
+      sprintf (buff2, "%d %d", *dtype, *size);
+      if (!A4GL_has_pointer (buff, CACHE_COLUMN))
+        {
+          A4GL_add_pointer (buff, CACHE_COLUMN, strdup (buff2));
+        }
+    }
+
 
 #ifdef DEBUG
   A4GL_debug ("Set dtype to %d\n", *dtype);
@@ -5110,6 +5282,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 
   sql2 = strdup (sql1);
 
+	A4GL_assertion (hstmt == 0, "No statement");
   SQLPrepare ((SQLHSTMT) hstmt, sql2, SQL_NTS);
   A4GL_proc_bind (ibind, nbind, 'i', (SQLHSTMT) hstmt);
   rc = SQLExecute (hstmt);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.42 2006-02-18 13:28:22 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.43 2006-03-17 19:01:37 mikeaubury Exp $
 #
 */
 
@@ -122,7 +122,11 @@ void *ptr=0;
 {
 	struct connection *ret = NULL;
 	ret=ECPGget_connection((char *)0);
-	ptr=ret->connection;
+	if (ret) {
+		ptr=ret->connection;
+	} else {
+		ptr=0;
+	}
 	//printf("ptr=%p\n",ptr);
 }
 #endif

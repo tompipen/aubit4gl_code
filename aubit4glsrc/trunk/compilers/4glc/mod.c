@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.269 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: mod.c,v 1.270 2006-03-17 19:01:05 mikeaubury Exp $
 #
 */
 
@@ -2347,6 +2347,8 @@ exit_loop (char *cmd_type)
     }
   if (g == 0)
     {
+
+    printf("wanted to exit a %s but wasnt in one!\n",cmd_type);
       A4GL_debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
       return;
     }

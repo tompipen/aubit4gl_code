@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.26 2005-07-06 09:26:46 mikeaubury Exp $
+# $Id: console.c,v 1.27 2006-03-17 19:01:50 mikeaubury Exp $
 #*/
 
 /**
@@ -688,6 +688,11 @@ void UILIB_A4GL_show_window(char* winname) NOPE
 
 void UILIB_A4GL_ui_exit(void) {
 	// Does nothing - required by the API
+}
+
+
+int UILIB_A4GLUI_initlib(void) {
+	return 1;
 }
 
 /* ========================== EOF =============================== */

@@ -886,13 +886,13 @@ echo X"$0" |
   	  /^X\(\/\).*/{ s//\1/; q; }
   	  s/.*/./; q'`
   srcdir=$ac_confdir
-  if test ! -r $srcdir/$ac_unique_file; then
+  if test ! -r "$srcdir/$ac_unique_file"; then
     srcdir=..
   fi
 else
   ac_srcdir_defaulted=no
 fi
-if test ! -r $srcdir/$ac_unique_file; then
+if test ! -r "$srcdir/$ac_unique_file"; then
   if test "$ac_srcdir_defaulted" = yes; then
     { echo "$as_me: error: cannot find sources ($ac_unique_file) in $ac_confdir or .." >&2
    { (exit 1); exit 1; }; }
@@ -901,7 +901,7 @@ if test ! -r $srcdir/$ac_unique_file; then
    { (exit 1); exit 1; }; }
   fi
 fi
-(cd $srcdir && test -r ./$ac_unique_file) 2>/dev/null ||
+(cd $srcdir && test -r "./$ac_unique_file") 2>/dev/null ||
   { echo "$as_me: error: sources are in $srcdir, but \`cd $srcdir' does not work" >&2
    { (exit 1); exit 1; }; }
 srcdir=`echo "$srcdir" | sed 's%\([^\\/]\)[\\/]*$%\1%'`
@@ -10218,7 +10218,7 @@ fi
 COMP_LIBS="LEX_EC LEX_C"
 
 if test "$enable_minimal" != "yes"; then
-	COMP_LIBS="$COMP_LIBS LEX_CS LEX_PERL"
+	COMP_LIBS="$COMP_LIBS"
 fi
 
 #Libraries that need 4glc (and in some cases fcompile) to build, and are
@@ -11573,16 +11573,13 @@ echo $ECHO_N "checking Flex version... $ECHO_C" >&6
 		echo "$as_me:$LINENO: result: $1.$2.$3" >&5
 echo "${ECHO_T}$1.$2.$3" >&6
 
-		if test "$1" = "2" -a "$2" -gt "4"; then
+		#if test "$1" = "2" -a "$2" -gt "4"; then
 			#Version is >= 2.5
-			if test "$3" -gt "4"; then
-				{ echo "$as_me:$LINENO: WARNING: Flex introduced incompatible API in post 2.5.4a versions" >&5
-echo "$as_me: WARNING: Flex introduced incompatible API in post 2.5.4a versions" >&2;}
-				{ { echo "$as_me:$LINENO: error: Please downgrade to Flex 2.5.4a or earlier. Stop." >&5
-echo "$as_me: error: Please downgrade to Flex 2.5.4a or earlier. Stop." >&2;}
-   { (exit 1); exit 1; }; }
-			fi
-		fi
+			#if test "$3" -gt "4"; then
+				#AC_MSG_WARN(Flex introduced incompatible API in post 2.5.4a versions)
+				#AC_MSG_ERROR(Please downgrade to Flex 2.5.4a or earlier. Stop.)
+			#fi
+		#fi
 	fi
 fi
 if test "$enable_stop_lex" = "yes" ; then
@@ -34004,7 +34001,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 34007 "configure"' > conftest.$ac_ext
+  echo '#line 34004 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -34560,7 +34557,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34563 "configure"
+#line 34560 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -34658,7 +34655,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34661 "configure"
+#line 34658 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -37112,11 +37109,12 @@ fi
 #    chmod +x pdflib-config
 #])
 
+                #lib/liblex/lex_perl/Makefile
 
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files etc/aubitrc etc/aubit-rpm.spec etc/aubit-InnoSetup.iss incl/Makefile-common common/dataio/Makefile compilers/4glc/mk_states_c compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/ace/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_esqlc/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/mempacked/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/ide/Makefile tools/4glunit/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile tools/test/ace/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files etc/aubitrc etc/aubit-rpm.spec etc/aubit-InnoSetup.iss incl/Makefile-common common/dataio/Makefile compilers/4glc/mk_states_c compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/ace/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_esqlc/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/mempacked/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/ide/Makefile tools/4glunit/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile tools/test/ace/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
 
 
 else
@@ -37685,7 +37683,6 @@ do
   "lib/libmsg/msg_native/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libmsg/msg_native/Makefile" ;;
   "lib/liblex/lex_c/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/liblex/lex_c/Makefile" ;;
   "lib/liblex/lex_esqlc/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/liblex/lex_esqlc/Makefile" ;;
-  "lib/liblex/lex_perl/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/liblex/lex_perl/Makefile" ;;
   "lib/libpdf/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libpdf/Makefile" ;;
   "lib/libui/ui_console/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libui/ui_console/Makefile" ;;
   "lib/libui/ui_curses/Makefile" ) CONFIG_FILES="$CONFIG_FILES lib/libui/ui_curses/Makefile" ;;
@@ -39866,7 +39863,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.335 2006-03-07 15:55:09 mikeaubury Exp $
+| $Id: configure,v 1.336 2006-03-17 18:59:55 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

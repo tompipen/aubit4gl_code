@@ -19,7 +19,7 @@ acl_malloc_full (long size, char *why, char *f, long line)
   if (size>2000000) { A4GL_assertion(1,"Dubious amount of memory to malloc"); }
   p = malloc (size);
   A4GL_assertion(p==0,"Unable to allocate memory");
-  A4GL_debug ("alloc %d bytes : %p %s %s %d", size,p,why,f,line);
+  //A4GL_debug ("alloc %d bytes : %p %s %s %d", size,p,why,f,line);
   return p;
 }
 
@@ -45,7 +45,7 @@ void *acl_realloc_full(void *a,long b,char *r,char *f,int l) {
 void
 acl_free_full (void *ptr, char *f, long line)
 {
-  A4GL_debug ("Free %p %s %d", ptr,f,line);
+  //A4GL_debug ("Free %p %s %d", ptr,f,line);
   free (ptr);
 }
 

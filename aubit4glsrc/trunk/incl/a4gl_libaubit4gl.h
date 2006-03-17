@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.220 2006-03-10 10:01:38 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.221 2006-03-17 19:01:22 mikeaubury Exp $
 #
 */
 
@@ -333,6 +333,7 @@
 #define EMULATE_CURRENT_OF      'u'
 #define ARRAYS_OF_RECORD        'a'
 #define SCHEMA_FILE_INDEX       'x'
+#define FUNC_POINTER            ';'
 
 #define BLOCK_USED		'R'
 
@@ -808,6 +809,7 @@ struct s_module_error {
   int A4GL_check_type (char c, char type, int flg, int len);
   int A4GL_ask_int (char *prompt);	/*  prompt for an integer from user  */
   double A4GL_ask_dbl (char *prompt);	/*  prompt for an integer from user  */
+  double get_now_as_double(void);
   int A4GL_ask_verify (char *prompt);	/*  prompt for verification  */
   unsigned int getcursor (void);	/* Returns the shape of the current cursor */
   void A4GL_strip_nl (char *str);
@@ -1151,6 +1153,7 @@ enum cmd_types {
 #define DECODE_SIZE(x) 	(x>>16)
 
   char *A4GL_new_string (int a);
+  void A4GL_set_lasterrorstr(char *s);
 
 
 #ifndef ALREADY_DONE_POP_PUSH_ETC
@@ -1164,6 +1167,7 @@ enum cmd_types {
   void A4GLSTK_popFunction (void);
   void A4GL_pushop (int a);
   void A4GL_chk_err (int lineno, char *fname);
+
   void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
   void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
   void A4GL_push_null (int dtype,int size);
@@ -2753,6 +2757,12 @@ struct ow_open_window {
 
 typedef struct ow_open_window t_ow_open_window;
 
+
+
+#ifndef BIND_RECOPY
+#define BIND_RECOPY
+struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
+#endif
 
 struct sql_statement {
         int stmt_type;

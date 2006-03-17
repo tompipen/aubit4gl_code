@@ -27,7 +27,6 @@
 # +----------------------------------------------------------------------+
 
 
-
 code
 
 FILE *unloadFile=0;
@@ -372,7 +371,7 @@ p=s;
 	//aclfgl_prepareit(1);
    //P0REPARE stExec from :p;
 	A4GL_trim(p);
-   A4GLSQL_add_prepare("generic_stexec",(void *)A4GLSQL_prepare_select(0,0,0,0,s));
+   A4GLSQL_add_prepare("generic_stexecp",(void *)A4GLSQL_prepare_select(0,0,0,0,s));
    cp_sqlca();
 
 
@@ -400,7 +399,7 @@ p=s;
 
 int execute_query_1(int *raffected) {
                 *raffected=0;
-		A4GLSQL_execute_sql("generic_stexec",0,0);
+		A4GLSQL_execute_sql("generic_stexecp",0,0);
 		if (a4gl_sqlca.sqlcode!=0)  return 0;
                 *raffected=a4gl_sqlca.sqlerrd[0];
         	return 1;
@@ -431,17 +430,16 @@ static int done_alloc=0;
 
 
 open_display_file_c();
-if (need_cursor_free) {
-    execute_select_free();
-}
-ptr=A4GLSQL_find_prepare("generic_stexec");
-A4GL_assertion(ptr==0,"Unable to find statement to execute...");
 
-A4GLSQL_declare_cursor(0+0,ptr,0,"generic_crexec");
-cp_sqlca();
+
+      ptr=A4GLSQL_find_prepare("generic_stexecp");
+      A4GL_assertion(ptr==0,"Unable to find statement to execute...");
+
+      A4GLSQL_declare_cursor(0+0,ptr,0,"generic_crexec");
+      cp_sqlca();
       if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
 
-      need_cursor_free=1;
+        need_cursor_free=1;
    	A4GLSQL_open_cursor("generic_crexec",0,0);
         if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
         need_cursor_free=3;
@@ -587,7 +585,7 @@ int size;
 char *columnName;
 int totsize=0;
 
-numberOfColumns=A4GLSQL_describe_stmt ("generic_stexec",0,5);
+numberOfColumns=A4GLSQL_describe_stmt ("generic_stexecp",0,5);
 A4GL_assertion(numberOfColumns==0,"No number of columns found...");
 if (columnNames) {
         int a;
@@ -612,9 +610,9 @@ columnWidths=acl_malloc2(sizeof(int) * (numberOfColumns+1));
 columnAlign=acl_malloc2(sizeof(int) * (numberOfColumns+1));
 for(index=1;index<=numberOfColumns;index++) {
 
-	columnName=A4GLSQL_describe_stmt ("generic_stexec",index,1);
-        datatype=A4GLSQL_describe_stmt ("generic_stexec",index,0);
-        size=A4GLSQL_describe_stmt ("generic_stexec",index,3);
+	columnName=A4GLSQL_describe_stmt ("generic_stexecp",index,1);
+        datatype=A4GLSQL_describe_stmt ("generic_stexecp",index,0);
+        size=A4GLSQL_describe_stmt ("generic_stexecp",index,3);
         A4GL_trim(columnName);
         columnNames[index-1]=strdup(columnName);
 
@@ -691,9 +689,9 @@ int execute_sql_fetch(int *raffected) {
 		gen_obind=acl_malloc2(sizeof(struct BINDING)*numberOfColumns);
 		gen_obind_copy=acl_malloc2(sizeof(struct BINDING)*numberOfColumns);
 		for (a=0;a<numberOfColumns;a++) {
-			colname=A4GLSQL_describe_stmt ("generic_stexec",a+1,1);
-			coltype=A4GLSQL_describe_stmt ("generic_stexec",a+1,0);
-			colsize=A4GLSQL_describe_stmt ("generic_stexec",a+1,3);
+			colname=A4GLSQL_describe_stmt ("generic_stexecp",a+1,1);
+			coltype=A4GLSQL_describe_stmt ("generic_stexecp",a+1,0);
+			colsize=A4GLSQL_describe_stmt ("generic_stexecp",a+1,3);
 
 			//if (coltype==DTYPE_DATE) { coltype=DTYPE_CHAR; colsize=12; }
 
@@ -853,9 +851,11 @@ endcode
 
 
 function execute_select_free()
-          CLOSE crexec
-          FREE stExec;
-          FREE crexec; 
+code
+   A4GLSQL_close_cursor("generic_crexec");
+   A4GLSQL_free_cursor ("generic_stexecp");
+   A4GLSQL_free_cursor ("generic_crexec");
+endcode
 code
 free_bind();
 endcode
@@ -863,7 +863,12 @@ end function
 
 function prepareit(p)
 define p char(20000)
-   PREPARE stExec from p
+code
+	if (need_cursor_free) { 
+		printf("----> %d\n",need_cursor_free); execute_select_free(); 
+	}
+endcode
+   PREPARE stExecP from p
 end function
 
 

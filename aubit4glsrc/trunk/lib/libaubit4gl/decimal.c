@@ -75,7 +75,9 @@ if (decimal_char!=',') {
 
 A4GL_trim(str);
 
+#ifdef DEBUG
 	A4GL_debug("XYXY str to dec : '%s'",str);
+#endif
 
 	digits  =dec->dec_data[0]&127;
 	decimals=dec->dec_data[1];
@@ -133,7 +135,9 @@ A4GL_trim(str);
   /* We should now have two strings - head and tail */
   
   head_i=atoi(head);
+#ifdef DEBUG
   A4GL_debug("digits=%d decimals=%d\n",digits,decimals);
+#endif
 	
   head_len=digits-decimals;
 	if (head_len<0) {
@@ -173,8 +177,10 @@ A4GL_trim(str);
 	}
 
   tail[decimals]=0;
+#ifdef DEBUG
   A4GL_debug("head_len=%d",head_len);
   A4GL_debug("head_i=%d head='%s'",head_i,head);
+#endif
   SPRINTF2(buff,"%0*ld",head_len,head_i);
   memset(head2,'0',255);
 
@@ -188,7 +194,9 @@ A4GL_trim(str);
 	  }
   }
   strcpy(buff,head2);
+#ifdef DEBUG
   A4GL_debug("head2=%s\n",head2);
+#endif
   
   
   strcpy(&dec->dec_data[2],buff);
@@ -200,7 +208,9 @@ A4GL_trim(str);
 
   if (isneg) dec->dec_data[0]+=128;
 
+#ifdef DEBUG
   A4GL_debug("----> %s\n",&dec->dec_data[2]);
+#endif
   return dec;
 }
 
@@ -220,7 +230,9 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
   strcpy(buff," ");
   if (dec->dec_data[0]&128) { has_neg=1; }
   
+#ifdef DEBUG
   A4GL_debug("XYXY dec to str : %s",&dec->dec_data[2]);
+#endif
   ptr=&dec->dec_data[2];
   strcat(buff,ptr);
 	for (a=has_neg;a<strlen(buff);a++) {
@@ -234,8 +246,10 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
   A4GL_trim(buff);
   if (buff[strlen(buff)-1]=='.') buff[strlen(buff)-1]=0;
 
-
+#ifdef DEBUG
   A4GL_debug("--->XYXY '%s'",buff);
+#endif
+
   if (has_neg) {
     for (a=0;a<strlen(buff);a++) {
 	    if (buff[a]!=' ') {buff[a-1]='-'; break;}
