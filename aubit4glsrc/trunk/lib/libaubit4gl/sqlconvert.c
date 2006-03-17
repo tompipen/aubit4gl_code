@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.83 2006-03-17 19:01:31 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.84 2006-03-17 20:03:10 mikeaubury Exp $
 #
 */
 
@@ -113,6 +113,7 @@ static char *cvsql_names[] = {
   "CVSQL_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_TEMP_AS_TEMPORARY",
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL",
+  "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_INSERT",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()",
@@ -216,6 +217,7 @@ enum cvsql_type
   CVSQL_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_TEMP_AS_TEMPORARY,
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL,
+  CVSQL_SELECT_INTO_TEMP_AS_DECLARE_INSERT,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY_BRACKETS,
@@ -1562,6 +1564,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_TEMP_AS_TEMPORARY;
   if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL;
+  if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_INSERT", len) == 0)
+    return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_INSERT;
   if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMP_AS", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS;
   if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()", len) == 0)
@@ -2214,6 +2218,18 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 		"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",
 		tabname, sel);
       return ptr;
+    }
+
+  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
+    {
+	ptr = acl_malloc2 (strlen (sel) + 2000);
+	A4GL_debug ("Creating temp table called %s (declare+insert) ", tabname);
+	if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
+	  {
+	    A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
+	  }
+        SPRINTF2 (ptr, "INSERT INTO SESSION.%s %s", tabname, sel);
+	return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS"))

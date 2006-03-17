@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.147 2006-03-17 19:01:48 mikeaubury Exp $
+# $Id: sql.c,v 1.148 2006-03-17 20:03:25 mikeaubury Exp $
 #
 */
 
@@ -2213,8 +2213,12 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
 
       return 26;		/* yyyy-mm-dd hh:mm:ss.ffffff */
 
-    case 91:
-      return 12;		/* date */
+    case 91:			/* date */
+      return 10;
+    case 92:			/* time */
+      return 8;
+    case 93:			/* datetime/timestamp */
+      return collen;
 
     case 10:
       return 8;
@@ -2451,6 +2455,12 @@ ODBC_set_dbms_info (void)
       strcpy (dbms_dialect, "INGRES");
       return;
     }
+  if (strncasecmp (dbms_name, "DB2", 3) == 0)
+    {
+      strcpy (dbms_dialect, "DB2");
+      return;
+    }
+
 
 
   strcpy (dbms_dialect, dbms_name);
@@ -3536,17 +3546,25 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
 
 
 int
-conv_sqlprec (int ndtype, int sdim)
+conv_sqlprec (int ndtype, int sdim, int scale)
 {
   if (ndtype == DTYPE_DECIMAL)
     {
       if (strcmp (dbms_dialect, "ORACLE") == 0)
 	{
-	  int size;
-	  // We can't generate proper precision on a decimal..
-	  // because we don't have the scale - assume 2..
-	  size = ((sdim + 2) << 8) + 2;
-	  return size;
+	  //size=((sdim+2)<<8)+2;
+	  return ((sdim + scale) << 8) + scale;
+	}
+      if (strcmp (dbms_dialect, "INFORMIX") == 0)
+	{
+	  return (sdim << 8) + scale;
+	}
+      if (strcmp (dbms_dialect, "DB2") == 0)
+	{
+	  A4GL_debug ("conv_sqlprec: ndtype=%i sdim=%i scale=%i ret=%i(0x%x)",
+		      ndtype, sdim, scale, (sdim << 8) + scale,
+		      (sdim << 8) + scale);
+	  return (sdim << 8) + scale;
 	}
     }
   return sdim;
@@ -3839,7 +3857,8 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       A4GL_debug ("Got Statement");
 #endif
       if (A4GL_isyes (acl_getenv ("UCASETNAME"))
-	  || strcmp (dbms_dialect, "ORACLE") == 0)
+	  || strcmp (dbms_dialect, "ORACLE") == 0
+	  || strcmp (dbms_dialect, "DB2") == 0)
 	{
 	  strcpy (tabname2, tabname);
 	  A4GL_convupper (tabname2);
@@ -4049,7 +4068,11 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
       *dtype = DTYPE_DTIME;
       prec = 0x46;
     }
-  *size = conv_sqlprec (*dtype, prec);
+
+    // We can't generate proper precision on a decimal..
+    // because we don't have the scale - assume 2..
+    *size = conv_sqlprec (*dtype, prec, 2);
+
   if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
     {
       AddColumn (*colname, *dtype, *size);
@@ -4160,7 +4183,8 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
       return 0;
     }
   if (A4GL_isyes (acl_getenv ("UCASETNAME"))
-      || strcmp (dbms_dialect, "ORACLE") == 0)
+      || strcmp (dbms_dialect, "ORACLE") == 0
+      || strcmp (dbms_dialect, "DB2") == 0)
     {
       strcpy (tabname2, tabname);
       A4GL_convupper (tabname2);
@@ -4343,7 +4367,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
       *dtype = DTYPE_DTIME;
       prec = 0x46;
     }
-  *size = conv_sqlprec (*dtype, prec);
+  *size = conv_sqlprec (*dtype, prec, scale);
 
   if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
     {

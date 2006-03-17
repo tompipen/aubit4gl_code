@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.20 2006-02-18 10:23:39 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.21 2006-03-17 20:03:10 mikeaubury Exp $
 #
 */
 
@@ -500,6 +500,7 @@ new_empty_select (void)
   p->sf = 0;
   p->union_op = 0;
   p->into = 0;
+  p->extra_statement = 0;
 
 
 
@@ -1912,6 +1913,16 @@ make_select_stmt (struct s_select *select)
 	  ptr =
 	    A4GLSQLCV_select_into_temp (buff, into_temp,
 					select->sf->into_temp);
+
+	  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
+	    {
+		select->extra_statement = acl_malloc2(strlen (buff) + 200);
+		SPRINTF2 (select->extra_statement,
+			  "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS ( %s ) "
+			  "DEFINITION ONLY ON COMMIT PRESERVE ROWS",
+			  select->sf->into_temp, buff);
+	    }
+
 	  strcpy (buff, ptr);
 	  free (ptr);
 
