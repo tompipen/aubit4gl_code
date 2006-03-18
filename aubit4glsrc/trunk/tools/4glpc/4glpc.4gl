@@ -1278,7 +1278,7 @@ end if
 let mv_warnfile=lv_output clipped,get_ext("WARN")
 let mv_errfile=lv_output clipped,get_ext("ERR")
 
-let lv_runstr=""
+let lv_runstr=mv_link
 
 if mv_make_dll then
 	let lv_runstr=lv_runstr clipped," ",mv_dll_opts
@@ -1292,8 +1292,7 @@ if mv_debug then
 	let lv_runstr=lv_runstr clipped," ",mv_link_debug
 end if
 
-#let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped, mv_link clipped," ",mv_link_opts clipped," 2>",mv_errfile clipped
-let lv_runstr=mv_link clipped, " ", lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped, " ",mv_link_opts clipped," 2>",mv_errfile clipped
+let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped, mv_link clipped," ",mv_link_opts clipped," 2>",mv_errfile clipped
 
 if mv_verbose>=1 then
 	display "Linking ",lv_output  clipped
