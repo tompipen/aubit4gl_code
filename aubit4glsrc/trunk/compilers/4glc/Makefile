@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2006-03-18 01:20:40 briantan Exp $
+# $Id: Makefile,v 1.14 2006-03-18 01:35:17 briantan Exp $
 #
 
 ROOT		=../..
-#LIBROOT		=../../lib
 LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -104,7 +103,6 @@ RULES_SRC		=$(wildcard rules/*.reqd) $(wildcard rules/*.rule) $(wildcard rules/s
 ## ==================================================================
 
 ifdef COMSPEC
-#SO_EXT=".dll"
 	ALL			=${ROOT}/lib/lib4glc${SO_EXT}
     CMODS		=${CMODS_EXE}
 	4GLCAOBJ	=${CMODS:.c=.o}
@@ -161,7 +159,6 @@ endif
 ##                            Windows Targets
 ## ==================================================================
 
-#SO_EXT=".dll"
 lib4glc${SO_EXT}: ${ROOT}/lib/lib4glc${SO_EXT}
 ${ROOT}/lib/lib4glc${SO_EXT}: ${OBJS_LIB}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
