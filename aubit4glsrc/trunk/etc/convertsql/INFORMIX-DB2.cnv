@@ -1,0 +1,32 @@
+# rules for converting Informix SQL to DB2-compatible syntax
+#
+# WARNING: NOT COMPLETED YET
+#
+
+DOUBLE_TO_SINGLE_QUOTES
+MATCHES_TO_LIKE
+SELECT_INTO_TEMP_AS_DECLARE_INSERT
+ADD_SESSION_TO_TEMP_TABLE
+TABLE_ALIAS_AS
+COLUMN_ALIAS_AS
+
+# - works, but not in all cases; DB2 does not recognize expressions
+#   in form of set substr(col,2,3)='foo' (informix style is: set col[2,4]='foo')
+SUBSTRING_FUNCTION = substr 
+MONEY_AS_DECIMAL
+STRIP_ORDER_BY_INTO_TEMP
+REPLACE_COMMAND SET EXPLAIN ON = SET CURRENT EXPLAIN MODE YES
+REPLACE_COMMAND SET EXPLAIN OFF = SET CURRENT EXPLAIN MODE NO
+
+# UPDATE STATISTICS does not exist in DB2 UDB, so we have to ignore it
+# first two forms should work, but not yet tested.
+# The third one cannot be easily ignored in similar way, because of
+# the table name at the end of the expression (wildcard support would
+# be useful...)
+#REPLACE UPDATE STATISTICS =
+#REPLACE UPDATE STATISTICS FOR TABLE =
+#REPLACE UPDATE STATISTICS FOR TABLE .... =
+
+#
+# WARNING: NOT COMPLETED YET
+#
