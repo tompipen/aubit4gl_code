@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.30 2005-11-01 10:27:55 mikeaubury Exp $";
+  "$Id: menu.c,v 1.31 2006-03-19 14:08:23 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -237,8 +237,8 @@ A4GL_display_menu (ACL_Menu * menu)
 	      A4GL_debug ("Option %s is out of view", opt1->opt_title);
 	      if (prev_opt)
 		{
-				printf("%d\n",prev_opt->page);
-				printf("%d\n",menu->curr_page);
+				//printf("%d\n",prev_opt->page);
+				//printf("%d\n",menu->curr_page);
 		  if (prev_opt->page == menu->curr_page)
 		    {
 		      A4GL_debug ("More More More!!!");
