@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.135 2006-03-10 11:56:48 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.136 2006-03-20 08:59:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.135 2006-03-10 11:56:48 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.136 2006-03-20 08:59:25 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2461,6 +2461,18 @@ extern char buff_in[];
 	else 	printc(" A4GL_pushop(OP_NOTIN);");
         printc("} else {A4GL_push_int(0);}\n}");
 }
+
+
+/**
+ *  *
+ *   * @todo Describe function
+ *    */
+int
+doing_esql ()
+{
+        return 1;
+}
+
 
 
 /* ================================== EOF =============================== */

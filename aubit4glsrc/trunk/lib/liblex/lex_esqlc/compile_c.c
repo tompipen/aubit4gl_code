@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.285 2006-03-10 10:01:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.286 2006-03-20 08:59:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.285 2006-03-10 10:01:39 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.286 2006-03-20 08:59:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6948,6 +6948,7 @@ LEXLIB_A4GL_set_var_sql (int doing_declare, int n)
 }
 
 
+#ifdef MOVED
 /**
  *
  * @todo Describe function
@@ -6963,6 +6964,7 @@ doing_esql ()
 
   return 0;
 }
+#endif
 
 
 /**
@@ -8262,4 +8264,9 @@ int LEXLIB_print_agg_defines(char t,int a) {
 
 
 return 0;
+}
+
+
+int LEXLIB_A4GLLEX_initlib() {
+return 1;
 }

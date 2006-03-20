@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.61 2005-10-19 19:30:54 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.62 2006-03-20 08:59:25 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.61 2005-10-19 19:30:54 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.62 2006-03-20 08:59:25 mikeaubury Exp $";
 #endif
 
 
@@ -862,3 +862,15 @@ static char buff[64000];
     }
   return buff;
 }
+
+
+/**
+ *  *
+ *   * @todo Describe function
+ *    */
+int
+doing_esql ()
+{
+	    return 0;
+}
+

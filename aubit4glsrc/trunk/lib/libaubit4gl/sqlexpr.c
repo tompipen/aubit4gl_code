@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.21 2006-03-17 20:03:10 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.22 2006-03-20 08:59:24 mikeaubury Exp $
 #
 */
 
@@ -1136,6 +1136,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	  {
 	    if (select->table_elements.ntables == 1)
 	      {
+
 		if (A4GL_has_column
 		    (select->table_elements.tables[0].tabname,
 		     p->u_data.column.colname))
@@ -1597,6 +1598,9 @@ preprocess_sql_statement (struct s_select *select)
 		  char *t;
 		  A4GL_debug ("Looking in %s\n",
 			      select->table_elements.tables[b].tabname);
+		  if (A4GL_isyes(acl_getenv ("NEVER_CONVERT"))) {
+			  // Do nothing...
+		  } else {
 		  if (A4GL_has_column
 		      (select->table_elements.tables[b].tabname,
 		       p->u_data.column.colname))
@@ -1610,6 +1614,7 @@ preprocess_sql_statement (struct s_select *select)
 		      A4GL_debug ("Setting to %s\n", t);
 		      break;
 		    }
+		  }
 		}
 	    }
 
@@ -2418,6 +2423,9 @@ int A4GL_has_column (char *t, char *c)
   int found = 0;
 
   if (strcmp(acl_getenv("SQLTYPE"),"nosql")==0) {
+	  return 0;
+  }
+  if (A4GL_isyes(acl_getenv ("NEVER_CONVERT"))) {
 	  return 0;
   }
 

@@ -91,11 +91,17 @@ define lv_c integer
 		end foreach
 		return
 	end if
-	
-	
-	# Get our basic table information
-	select systables.tabid,systables.owner,systables.tabtype,systables.partnum into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum
-	from systables where tabname=lv_t
+        if is_online() then
+                # Get our basic table information for online
+                select systables.tabid,systables.owner,systables.tabtype,systables.partnum into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum
+                from systables where tabname=lv_t
+        else
+                # Get our basic table information for SE
+                let lv_st.partnum=-1
+                select systables.tabid,systables.owner,systables.tabtype into lv_st.tabid,lv_st.owner,lv_st.tabtype
+                from systables where tabname=lv_t
+        end if
+
 	
 	if sqlca.sqlcode=100 then
 		DISPLAY "Table ",lv_t clipped," not found"
@@ -824,6 +830,21 @@ if mv_located is null or mv_located=0 then
         locate  mv_exprtext in memory
         let mv_located=1
 end if
+
+end function
+
+
+function is_online()
+define a integer
+
+let a=0
+select 1 into a from syscolumns
+where colname="partnum" and tabid=1
+if sqlca.sqlcode=100 then
+        return 0
+end if
+
+return a
 
 end function
 
