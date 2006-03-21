@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.27 2006-03-10 10:01:40 mikeaubury Exp $
+# $Id: display_array.c,v 1.28 2006-03-21 17:51:30 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.27 2006-03-10 10:01:40 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.28 2006-03-21 17:51:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -947,7 +947,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
       int nattr;
       f =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (field_list[a]));
+	 *) (A4GL_ll_get_field_userptr (field_list[a]));
       A4GL_debug ("f=%p", f);
 
 

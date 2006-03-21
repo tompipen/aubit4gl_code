@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.33 2005-11-03 21:21:29 whaslbeck Exp $";
+  "$Id: forms.c,v 1.34 2006-03-21 17:51:30 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -925,15 +925,15 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 {
   void *w;
   int nlines;
-  int rows, cols;
+  int rows=-1, cols=-1;
   char buff[80];
   A4GL_chkwin ();
   A4GL_debug ("display_form_new_win - name=%s got errorline as %d\n", name,
 	      f->form_details.error_line);
 
   //printf("Scale form : %p\n",f->form);
+  //A4GL_LL_scale_form (f, &rows, &cols);
 
-  A4GL_LL_scale_form (f, &rows, &cols);
 
   if (f->form_details.border)
     {
@@ -1583,7 +1583,7 @@ A4GL_set_field_attr_with_attr (void *field, int attr, int cmd_type)
   int r;
   int nattr;
   struct struct_scr_field *f;
-  f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field));
+  f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field));
 
   nattr = A4GL_determine_attribute (cmd_type, attr, f, 0);
   A4GL_debug ("Passed in attribute: %x, determined attribute should be %x",
@@ -1611,7 +1611,7 @@ A4GL_set_field_colour_attr (void *field, int do_reverse, int colour)
   struct struct_scr_field *f;
   int fg;
   int bg;
-  f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field));
+  f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field));
   A4GL_debug ("set_field_colour_attr - do_reverse=%d colour=%d - %d\n",
 	      do_reverse, colour, A4GL_decode_colour_attr_aubit (colour));
 

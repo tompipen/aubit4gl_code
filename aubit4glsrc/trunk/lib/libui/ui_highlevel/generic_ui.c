@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.68 2006-03-10 10:01:40 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.69 2006-03-21 17:51:30 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1276,9 +1276,7 @@ UILIB_A4GL_read_fields (void *formdetsv)
 	      if (ptr != 0)
 		{
 		  A4GL_debug ("Has associated attribute!");
-		  A4GL_LL_set_field_userptr ((void *) formdets->fileform->
-					     metrics.metrics_val[metric_no].
-					     field, ptr);
+		  A4GL_ll_set_field_userptr ((void *) formdets->fileform-> metrics.metrics_val[metric_no].  field, ptr);
 		  A4GL_set_field_attr_for_ll ((void *) formdets->fileform->
 					      metrics.metrics_val[metric_no].
 					      field);
@@ -1299,7 +1297,7 @@ UILIB_A4GL_read_fields (void *formdetsv)
       A4GL_exitwith ("Failed to create the loaded the form");
       return 0;
     }
-  A4GL_LL_set_form_userptr (formdets->form, formdets);
+  A4GL_ll_set_form_userptr (formdets->form, formdets);
   A4GL_debug ("Loaded form...");
   return 1;
 }
@@ -1352,7 +1350,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
       A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
       fprop =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (field_list[a]));
+	 *) (A4GL_ll_get_field_userptr (field_list[a]));
       fprop->flags |= 2;
 
 
@@ -1378,7 +1376,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
 
 
-  f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field));
+  f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field));
 
   if (A4GL_has_bool_attribute (f, FA_B_REVERSE))
     a = 1;
@@ -1673,7 +1671,7 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 
 
   A4GL_debug ("In display_field_contents");
-  f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (field));
+  f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field));
   ff = A4GL_new_string (A4GL_get_field_width (field));
 
   field_width = A4GL_get_field_width (field);
@@ -1826,7 +1824,7 @@ A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, void *f)
 
       fprop =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (s->field_list[a]));
+	 *) (A4GL_ll_get_field_userptr (s->field_list[a]));
 
       if (!A4GL_field_is_noentry ((s->mode == MODE_CONSTRUCT), fprop)
 	  || (fprop->datatype == DTYPE_SERIAL && s->mode != MODE_CONSTRUCT))
@@ -1894,12 +1892,12 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
       fprop = 0;
 
       if (form->currentfield != 0)
-	if (A4GL_LL_get_field_userptr (form->currentfield) != 0)
+	if (A4GL_ll_get_field_userptr (form->currentfield) != 0)
 	  {
 	    A4GL_debug ("Is a proper field");
 	    fprop =
 	      (struct struct_scr_field
-	       *) (A4GL_LL_get_field_userptr (form->currentfield));
+	       *) (A4GL_ll_get_field_userptr (form->currentfield));
 	    A4GL_debug ("fprop=%p", fprop);
 	    if (fprop != 0)
 	      {
@@ -2221,11 +2219,11 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
     {
       /* fprop = 0; */
       if (form->currentfield != 0
-	  && (A4GL_LL_get_field_userptr (form->currentfield) != 0))
+	  && (A4GL_ll_get_field_userptr (form->currentfield) != 0))
 	{
 	  fprop =
 	    (struct struct_scr_field
-	     *) (A4GL_LL_get_field_userptr (form->currentfield));
+	     *) (A4GL_ll_get_field_userptr (form->currentfield));
 	  if (fprop != 0)
 	    {
 	      if ((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK))
@@ -2244,7 +2242,7 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
     {
       fprop =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (A4GL_LL_current_field (mform)));
+	 *) (A4GL_ll_get_field_userptr (A4GL_LL_current_field (mform)));
       A4GL_debug ("Moving to %s", fprop->colname);
       if (fprop != 0)
 	{
@@ -2259,7 +2257,7 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
 
       fprop =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (form->currentfield));
+	 *) (A4GL_ll_get_field_userptr (form->currentfield));
       if (fprop != 0)
 	{
 	  if (fprop->colname != 0)
@@ -2290,7 +2288,7 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
 
   fprop =
     (struct struct_scr_field
-     *) (A4GL_LL_get_field_userptr (form->currentfield));
+     *) (A4GL_ll_get_field_userptr (form->currentfield));
   if (fprop != 0)
     A4GL_comments (fprop);
 
@@ -2417,7 +2415,7 @@ A4GL_clr_field (void *f)
   char *str;
   int w;
   struct struct_scr_field *fprop;
-  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
 
   w = A4GL_get_field_width (f);
   str = acl_malloc2 (w + 1);
@@ -2481,7 +2479,7 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	A4GL_debug ("   Field buffer = %s", A4GL_LL_field_buffer (f, 0));
       }
 #endif
-      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
       A4GL_push_char (A4GL_fld_data_ignore_format
 		      (fprop, A4GL_LL_field_buffer (f, 0)));
 #ifdef DEBUG
@@ -2496,7 +2494,7 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	{
 	  A4GL_debug ("Got current field %p\n", sio->currform->currentfield);
 	  mform = sio->currform->form;
-	  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+	  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
 
 	  A4GL_debug ("Got form %p", sio->currform->form);
 	  if (A4GL_check_field_for_include
@@ -2514,7 +2512,7 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
     }
   else
     {
-      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
       if (fprop != 0)
 	{
 	  if (fprop->colname != 0)
@@ -3235,7 +3233,7 @@ A4GL_set_field_attr_for_ll (void *field)
   int compress;
   int has_picture;
 
-  fprop = (struct struct_scr_field *) A4GL_LL_get_field_userptr (field);
+  fprop = (struct struct_scr_field *) A4GL_ll_get_field_userptr (field);
 
   autonext = A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT);
   invis = A4GL_has_bool_attribute (fprop, FA_B_INVISIBLE);
@@ -3414,5 +3412,46 @@ UILIB_A4GL_screen_mode (int a)
 
 void UILIB_A4GL_ui_exit(void) {
         // Does nothing - required by the API
+}
+
+
+
+void *A4GL_ll_get_field_userptr(void *f) {
+	char buff[256];
+	sprintf(buff,"PFLD_%p",f);
+	if (A4GL_has_pointer(buff,':')) {
+		return A4GL_find_pointer(buff,':');
+	}
+	return 0;
+}
+
+void A4GL_ll_set_field_userptr(void *f, void *r) {
+	char buff[256];
+	sprintf(buff,"PFLD_%p",f);
+	if (A4GL_has_pointer(buff,':')) {
+		A4GL_del_pointer(buff,':');
+	}
+	A4GL_add_pointer(buff,':',r);
+	return 0;
+}
+
+
+void *A4GL_ll_get_form_userptr(void *f) {
+	char buff[256];
+	sprintf(buff,"PFRM_%p",f);
+	if (A4GL_has_pointer(buff,':')) {
+		return A4GL_find_pointer(buff,':');
+	}
+	return 0;
+}
+
+void A4GL_ll_set_form_userptr(void *f, void *r) {
+	char buff[256];
+	sprintf(buff,"PFRM_%p",f);
+	if (A4GL_has_pointer(buff,':')) {
+		A4GL_del_pointer(buff,':');
+	}
+	A4GL_add_pointer(buff,':',r);
+	return 0;
 }
 

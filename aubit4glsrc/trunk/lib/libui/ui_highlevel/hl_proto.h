@@ -104,3 +104,12 @@ struct list_of_fields {
         } a;
 };
 typedef struct list_of_fields list_of_fields;
+
+
+
+
+void *A4GL_ll_get_field_userptr(void *f) ;
+void A4GL_ll_set_field_userptr(void *f, void *r) ;
+void *A4GL_ll_get_form_userptr(void *f) ;
+void A4GL_ll_set_form_userptr(void *f, void *r) ;
+
