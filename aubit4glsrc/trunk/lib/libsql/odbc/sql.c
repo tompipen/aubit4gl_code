@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.148 2006-03-17 20:03:25 mikeaubury Exp $
+# $Id: sql.c,v 1.149 2006-03-21 10:38:37 mikeaubury Exp $
 #
 */
 
@@ -2825,10 +2825,9 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   A4GL_assertion (conv_4gl_to_c[bind->dtype] < 0,
 		  "Invalid 4GL<->ODBC conversion of datatype..");
 
-  printf (" SQLBindCol (%p,%d,%d,%p,%d,%p)\n", (SQLHSTMT) hstmt, pos,
-	  conv_4gl_to_c[bind->dtype], ptr_to_use, fgl_size (bind->dtype,
-							    bind->size),
-	  &outlen[pos]);
+
+  //printf (" SQLBindCol (%p,%d,%d,%p,%d,%p)\n", (SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use, fgl_size (bind->dtype, bind->size), &outlen[pos]);
+  //
   rc =
     SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use,
 		fgl_size (bind->dtype, bind->size), &outlen[pos]);
