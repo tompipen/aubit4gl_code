@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.103 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.103.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -94,6 +94,7 @@ void A4GL_def_quit (void);
 char *A4GL_clob (char *s, char *p);
 //int A4GLUI_initlib(void);
 
+char *expand_env_vars_in_cmdline(char *s) ;
 static char running_program[256];
 
 /*
@@ -267,8 +268,8 @@ char *p;
 #endif
 
   if (A4GL_isyes(acl_getenv("START_ALLOC"))) {
-  ptr = acl_malloc (1024 * 1024 * 10,"START ALLOC");
-  acl_free (ptr);
+  	ptr =malloc (1024 * 1024 * 10);
+  	free (ptr);
   }
 
 /*endwin(); *//* switch straight back to terminal mode */
@@ -1264,6 +1265,74 @@ int a;
 	}
 
 }
+
+
+int aclfgl_expand_env_vars_in_cmdline(int n) {
+	char *s;
+	char *s2;
+	if (n!=1) {
+		return 0;
+	}
+	s=A4GL_char_pop();
+	
+	s2=expand_env_vars_in_cmdline(s);
+	free(s);
+	A4GL_trim(s2);
+	A4GL_push_char(s2);
+	return 1;
+}
+
+
+
+
+char *expand_env_vars_in_cmdline(char *s) {
+	static char buff[20000];
+	char varname[200];
+	int a;
+	int start_var;
+	int len;
+	int b=0;
+
+	for (a=0;a<strlen(s);a++) {
+		if (s[a]!='$') {
+			buff[b++]=s[a];
+			buff[b]=0;
+			continue;
+		}
+
+
+		//Eg
+		//   $VAR 
+		// 0123456
+		// a=2
+
+		start_var=a+1;
+
+		// start_var=3
+		while (1) {
+			a++;
+			if (s[a]>='A'&&s[a]<='Z') continue;
+			if (s[a]>='a'&&s[a]<='z') continue;
+			if (s[a]=='_') continue;
+			break;
+		}
+		// a=6
+		//
+		// len=6-3 = 3
+		len=a-start_var;
+		a--;
+		// a=5
+		strncpy(varname,&s[start_var],len);
+		varname[len]=0;
+		buff[b]=0;
+		strcat(buff,acl_getenv(varname));
+		b=strlen(buff);
+	}
+	return buff;
+}
+
+
+
 
 
 

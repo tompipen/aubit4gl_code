@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.33 2005-11-27 11:31:35 mikeaubury Exp $
+# $Id: util.c,v 1.33.2.1 2006-03-24 17:23:39 mikeaubury Exp $
 #
 */
 
@@ -43,8 +43,26 @@
 #include "a4gl_libaubit4gl.h"
 
 
+#ifdef SIMPLIFIED
+#include "../4glc/lib4glc/fix_insert.c"
+#else
 #include "../4glc/fix_insert.c"
+#endif
 //#include "sqlcompiler.h"
+
+
+
+// the maintaners of flex (in their infinite wisdom fixed flex 
+// so that the following are properly prefixed in later versions
+#ifndef yy_delete_buffer
+#define DELETE_BUFFER sqlparse_yy_delete_buffer
+#define THEYYWRAP sqlparse_yywrap
+#define YYSCANSTRING sqlparse_yy_scan_string
+#else
+#define DELETE_BUFFER yy_delete_buffer
+#define THEYYWRAP yywrap
+#define YYSCANSTRING yy_scan_string
+#endif
 
 /*
 =====================================================================
@@ -84,7 +102,7 @@ void
 dummy_prevent_sqlparse_warnings_dummy(void) {
 void * dummy;
 	
-	dummy=yy_flex_realloc( 0,0 );
+	//dummy=yy_flex_realloc( 0,0 );
 	yyunput( 0, 0);
 
 }
@@ -451,7 +469,7 @@ static char *get_bad_sql(void) {
  */
 static void 
 A4GLSQLCV_loadbuffer(char *fname) {
-	if (nbs) yy_delete_buffer(nbs);
+	if (nbs) DELETE_BUFFER(nbs);
 
 	if (strcmp(fname,"-")==0) {
 		Sql_file=stdin;
@@ -481,11 +499,11 @@ A4GLSQLCV_loadbuffer(char *fname) {
  */
 static void 
 A4GLSQLCV_setbuffer(char *s) {
-	if (nbs) yy_delete_buffer(nbs);
+	if (nbs) DELETE_BUFFER(nbs);
 	if (Sql) free(Sql);
 	Sql=acl_strdup(s);
 	A4GL_trim(Sql);
-	nbs=yy_scan_string(Sql);
+	nbs=YYSCANSTRING(Sql);
 	if (stmts) { free(stmts); stmts=0;stmts_cnt=0; }
 	input_from_file=0;
 	Sql_file=0;
@@ -595,7 +613,7 @@ convstr_dbl_to_single (char *s)
  * @todo Describe function
  */
 //andrej static 
-int yywrap() {
+int THEYYWRAP() {
 	return 1;
 }
 

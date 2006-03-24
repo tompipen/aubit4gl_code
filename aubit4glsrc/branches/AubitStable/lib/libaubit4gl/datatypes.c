@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.25 2005-08-17 13:43:14 mikeaubury Exp $
+# $Id: datatypes.c,v 1.25.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -93,7 +93,7 @@ struct s_datatype
 
 
 
-struct s_datatype dtypes[MAX_DTYPE];
+static struct s_datatype dtypes[MAX_DTYPE];
 
 static void *libptr = 0;
 
@@ -166,7 +166,9 @@ A4GL_init_datatypes (void)
       A4GL_add_default_datatypes ();
 
     }
+#ifdef DEBUG
   A4GL_debug ("Finished initializing data types");
+#endif
 }
 
 
@@ -207,9 +209,9 @@ int
 A4GL_has_datatype_function_i (int a, char *funcname)
 {
   int n;
-  if (!inited)
-    A4GL_init_datatypes ();
+  if (!inited) A4GL_init_datatypes ();
   a = a & DTYPE_MASK;
+
   for (n = 0; n < dtypes[a].funcs_len; n++)
     {
 

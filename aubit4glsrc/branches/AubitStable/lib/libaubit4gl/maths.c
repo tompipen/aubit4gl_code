@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.18 2005-07-14 11:32:52 mikeaubury Exp $
+# $Id: maths.c,v 1.18.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -223,12 +223,16 @@ A4GL_find_op_function (int dtype1, int dtype2, int op)
     {
       if (ptr_orig->op == op)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Got it -> %p", ptr_orig->function);
+#endif
 	  return ptr_orig->function;
 	}
       ptr_orig = ptr_orig->next;
     }
+#ifdef DEBUG
   A4GL_debug ("Nope - use standard");
+#endif
   return 0;
 
 }

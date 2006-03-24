@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.21 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: dim.c,v 1.21.2.1 2006-03-24 17:23:25 mikeaubury Exp $
 #*/
 
 /**
@@ -119,7 +119,6 @@ dim_add (int a, char *s1, char *s2, char *s3)
   struct s_dimitem *itm;
   struct s_dimitem *itm2;
 
-  printf ("dim_add %d %s %s %p\n", a, s1, s2, s3);
   A4GL_debug ("dim_add %d %p %p %p\n", a, s1, s2, s3);
 
   if (a == SETNAME)

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.30 2005-11-01 10:27:55 mikeaubury Exp $";
+  "$Id: menu.c,v 1.30.2.1 2006-03-24 17:24:29 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -48,7 +48,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
       // Seems so...
       for (a = 0; a < menu->num_opts; a++)
 	{
-	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title, mo->attributes);
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title, mo->shorthelp, mo->attributes);
 	  mo = mo->next_option;
 	}
       A4GL_LL_screen_update ();
@@ -237,8 +237,8 @@ A4GL_display_menu (ACL_Menu * menu)
 	      A4GL_debug ("Option %s is out of view", opt1->opt_title);
 	      if (prev_opt)
 		{
-				printf("%d\n",prev_opt->page);
-				printf("%d\n",menu->curr_page);
+				//printf("%d\n",prev_opt->page);
+				//printf("%d\n",menu->curr_page);
 		  if (prev_opt->page == menu->curr_page)
 		    {
 		      A4GL_debug ("More More More!!!");
@@ -579,8 +579,7 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
       mo = menu->first;
       for (a = 0; a < menu->num_opts; a++)
 	{
-	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,
-				   mo->attributes);
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,mo->shorthelp, mo->attributes);
 	  mo = mo->next_option;
 	}
     }

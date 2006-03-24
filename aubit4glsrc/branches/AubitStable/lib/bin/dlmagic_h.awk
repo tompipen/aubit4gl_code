@@ -73,8 +73,7 @@ BEGIN {
   if (use_prefix)
     {
     print "#ifdef LIBTOOL_PREFIX"
-    print "#define " lib_prefix fname " PRELOADED_LTX_ ## " lib_prefix
-	fname 
+    print "#define " lib_prefix fname " PRELOADED_LTX_ ## " lib_prefix fname 
     print "#endif"
   }
 

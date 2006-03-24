@@ -153,6 +153,7 @@ void pop_all_gen (int a, char *s);
 int start_bind (char i, char *var);
 void add_serial_column(char *t,char *c);
 int get_bind_cnt (char i);
+void print_init_explicit(void);
 int get_sio_id(char *cmd_type);
 char *command_type_for_stack_pos(int n);
 int add_bind (char i, char *var);

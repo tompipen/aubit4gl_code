@@ -4,7 +4,17 @@ CLIENT *UI_clnt=0;
 
 
 int init_client(void) {
-	char *host="localhost";
+	char host[256];
+	char *ptr;
+
+	ptr=acl_getenv_not_set_as_0("AFGLSERVER");
+	if (ptr) {
+			strcpy(host,ptr);
+	} else {
+			strcpy(host,"localhost");
+		
+	}
+
 	UI_clnt = clnt_create (host, FGL_RPC, FGL_RPC_VER, "udp");
 	if (UI_clnt == NULL) {
 		clnt_pcreateerror (host);

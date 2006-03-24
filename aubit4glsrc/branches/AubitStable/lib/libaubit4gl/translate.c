@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.23 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: translate.c,v 1.23.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -288,7 +288,6 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
       if (quote == 0)
 	{
 	  /* formwrite2.c: */
-	  //ORIGINAL: sprintf(buff,"A4GL_get_translated_id:%s",to);
 	  SPRINTF1 (buff, "A4GL_get_translated_id(\"%s\")", to);
 	}
       else

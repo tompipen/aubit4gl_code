@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.117 2005-12-02 12:28:11 mikeaubury Exp $
+# $Id: conv.c,v 1.117.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -670,13 +670,17 @@ A4GL_ctodt (void *av, void *b, int size)
 
   a=(char *)av;
 
+#ifdef DEBUG
   A4GL_debug ("ctodt : %s %p %d\n", a, b, size);
   A4GL_debug ("a-->%s\n", A4GL_null_as_null(a));
+#endif
   d = (struct A4GLSQL_dtime *) b;
 
   d->ltime = size % 16;
   d->stime = size >> 4;
+#ifdef DEBUG
   A4GL_debug ("d->ltime=%d d->stime=%d\n", d->ltime, d->stime);
+#endif
 data[0]=0;
 data[1]=0;
 data[2]=0;
@@ -688,11 +692,14 @@ data[6]=0;
  
 
   valid=A4GL_valid_dt (a, data,size);
+#ifdef DEBUG
 	A4GL_debug("valid=%d\n",valid);
+#endif
 
   if (valid==2 && (d->ltime!=d->stime)) valid=0;
 
   if (valid) {
+#ifdef DEBUG
       A4GL_debug ("Y %d\n", data[0]);
       A4GL_debug ("M %d\n", data[1]);
       A4GL_debug ("D %d\n", data[2]);
@@ -700,6 +707,7 @@ data[6]=0;
       A4GL_debug ("m %d\n", data[4]);
       A4GL_debug ("S %d\n", data[5]);
       A4GL_debug ("F %d\n", data[6]);
+#endif
 
       SPRINTF7 (d->data, "%04d%02d%02d%02d%02d%02d%05d00000",
 	       data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
@@ -775,8 +783,12 @@ A4GL_dttoc (void *a, void *b, int size)
 
   if ((int)strlen (buff) > size)
     {
+      // Its too small to fit into our string
+      char *ptr;
       A4GL_debug ("does not fit '%s' %d", A4GL_null_as_null(buff), size);
-      A4GL_exitwith ("does not fit\n");
+      memset(b,'*',size);
+      ptr=b;
+      ptr[size]=0;
       return 0;
     }
 
@@ -2033,11 +2045,6 @@ A4GL_itol (void *aa, void *zz, int sz_ignore)
   long *z;
   z = (long *) zz;
   a = (short *) aa;
-#ifdef DEBUG
-  {
-    A4GL_debug ("itol");
-  }
-#endif
   *z = (long) *a;
 
   return 1;
@@ -2870,7 +2877,7 @@ void A4GL_assertion_failed(char *s)  {
       A4GL_set_errm (s);
       A4GL_debug ("%s", A4GL_null_as_null(s));
 	if (A4GL_isyes(acl_getenv("DOING_CM"))) {
-      		fprintf (stderr,"%s\n", A4GL_null_as_null(s));
+      		FPRINTF (stderr,"%s\n", A4GL_null_as_null(s));
 	}
       if (A4GL_isyes(acl_getenv("CORE_ON_ASSERT"))) {
 		char *ptr=0;
@@ -2930,7 +2937,9 @@ int A4GL_valid_dt (char *s, int *data,int size)
   };
 
 
+#ifdef DEBUG
   A4GL_debug ("In valid_dt\n");
+#endif
   if (strlen (s) > 25)
     {
       A4GL_debug ("Too long\n");
@@ -2939,7 +2948,9 @@ int A4GL_valid_dt (char *s, int *data,int size)
 
   strcpy (buff, s);
   ptr[0] = &buff[0];
+#ifdef DEBUG
   A4GL_debug ("Splitting '%s' size=%d\n", A4GL_null_as_null(s),size);
+#endif
   cnt = 0;
   buff_size = strlen (buff);
   for (a = 0; a < buff_size; a++)
@@ -2988,8 +2999,10 @@ int A4GL_valid_dt (char *s, int *data,int size)
 
   type[cnt] = 0;
   dt_type = -1;
+#ifdef DEBUG
   A4GL_debug ("cnt=%d\n", cnt);
   A4GL_debug ("type=%s\n", A4GL_null_as_null(type));
+#endif
 
   if (strcmp (type, "") == 0)
     {
@@ -3098,7 +3111,9 @@ int A4GL_valid_dt (char *s, int *data,int size)
   if (dt_type == 0 && strlen (ptr[0])) {
   	a = size>> 4;
   	b = size& 15;
+#ifdef DEBUG
 	A4GL_debug("DIGIT %d %d",a,b);
+#endif
 	if (a==b) { 
 		if (a==1) data[0]=atoi(ptr[0]);
 		if (a==2) data[1]=atoi(ptr[0]);
@@ -3110,7 +3125,9 @@ int A4GL_valid_dt (char *s, int *data,int size)
         return 2;			/* single number.. */
 	}
   if (dt_type == 0 && strlen (ptr[0]) == 0) {
+#ifdef DEBUG
 	A4GL_debug("Nothing");
+#endif
     return 0;			/* nothing... */
   }
 

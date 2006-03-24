@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.98 2005-11-27 12:11:43 mikeaubury Exp $
+# $Id: compile.c,v 1.98.2.1 2006-03-24 17:23:25 mikeaubury Exp $
 #*/
 
 /**
@@ -78,7 +78,7 @@ extern int yylineno;
 int compiling_system_4gl = 0;
 
 char gcc_exec[128];
-char pass_options[1024] = "";
+char pass_options[2048] = "";
 int clean_aftercomp = 0;	/* clean intermediate files after compilation */
 char currinfile_dirname[1024] = "";	/* path to 4gl file we are currently compiling - used when compiling global files */
 char errbuff[1024] = "";
@@ -192,9 +192,9 @@ initArguments (int argc, char *argv[])
   char incl_path[1028] = "";
   char l_path[1028] = "";
   char l_libs[1028] = "";
-  char buff[4000] = "";
+  char buff[6000] = "";
   //char all_objects[4000] = "";
-  char *all_objects = acl_malloc2(4000);
+  char *all_objects = acl_malloc2(6000);
   
   char extra_ldflags[1024] = "";
 
@@ -775,8 +775,6 @@ initArguments (int argc, char *argv[])
 		if (compile_exec == 0) {
 			 if (compile_so || compile_lib) {
 				 //unless -o was different from input
-				 //printf ("output_object=%s\n",output_object);
-				 //printf ("all_objects=%s\n",all_objects);
 				 if (strcmp (all_objects, output_object) == 0) {
 					if (verbose) {PRINTF ("WARNING: compile_so or _lib active with only one input. Disbled.\n");}
 					A4GL_debug ("WARNING: compile_so or _lib active with only one input. Disbled.");
@@ -1147,7 +1145,7 @@ static char local_pass_options[1024] = "";
 	//
 
 	A4GL_debug ("Compiling: %s to %s\n", fgl_file,output_object);
-	if (verbose) {printf ("Compiling: %s to %s\n", fgl_file,output_object);}
+	if (verbose) {PRINTF ("Compiling: %s to %s\n", fgl_file,output_object);}
 	
 	if (strchr (buff, '/')) {
 		ptr = strrchr (buff, '/');
@@ -1168,15 +1166,12 @@ static char local_pass_options[1024] = "";
 	*/
 	yyin = A4GL_memfile_fopen (fgl_file, "rb");
 
-	/*printf("Buffer size : %d\n",BUFSIZ);*/
-	/*file_buffer=malloc(30000);*/
-	/*setbuf(yyin,file_buffer);*/
 
 	if (yyin == 0) {
 		#ifdef DEBUG
 			A4GL_debug ("Error opening file : %s\n", fgl_file);
 		#endif
-		printf ("Error opening file : %s\n", fgl_file);
+		FPRINTF (stderr,"Error opening file : %s\n", fgl_file);
 		exit (1);
 	}
 
@@ -1192,7 +1187,7 @@ static char local_pass_options[1024] = "";
 
 	
 	
-	if (yydebug) { printf ("Opened : %s\n", fgl_file); }
+	if (yydebug) { PRINTF ("Opened : %s\n", fgl_file); }
 if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 	openmap (outputfilename);
 }
@@ -1200,14 +1195,14 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 	if (!silent) {
 		if (globals_only) {
 			if (verbose) {
-				printf ("Preparing globals file for: %s\n", fgl_file);
+				PRINTF ("Preparing globals file for: %s\n", fgl_file);
 			}
 			#ifdef DEBUG
 		  		A4GL_debug ("Preparing globals file for: %s\n", fgl_file);
 			#endif
 		} else {
 			if (verbose) {
-				printf ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"),fgl_file);
+				PRINTF ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"),fgl_file);
 			}
 			#ifdef DEBUG
 				A4GL_debug ("Translating to %s: %s\n", acl_getenv ("A4GL_LEXTYPE"), fgl_file);
@@ -1220,7 +1215,7 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 	#endif
 	A4GL_lex_parsed_fgl ();
 
-	if (yydebug) { printf ("Closing map : %d\n", yyparse_ret); }
+	if (yydebug) { PRINTF ("Closing map : %d\n", yyparse_ret); }
 	dump_gvars ();
 	closemap ();
 	if (A4GL_db_used()) {
@@ -1237,17 +1232,17 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 		rewind(yyin);
 		A4GL_write_errfile_many_errors(errfile,yyin,module_errors,module_errors_cnt);
 		fclose(yyin);
-	        printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
+	        FPRINTF (stderr,"Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
  		exit (2);
 
 	}
 
 
 	if (yyparse_ret == 0) {
-		if (verbose) { printf ("4GL module compiled successfuly.\n"); }
+		if (verbose) { PRINTF ("4GL module compiled successfuly.\n"); }
 		if (compile_object) {
 			if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
-				printf("Compiling Object\n");fflush(stdout); //\r
+				PRINTF("Compiling Object\n");fflush(stdout); //\r
 			}
 			A4GL_bname (output_object, a_part, b_part);
 			strcpy (ext, ".");
@@ -1310,7 +1305,7 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 					
 					SPRINTF4 (buff, "%s/bin/ecpg -C INFORMIX -t %s.cpc %s %s",
 					   acl_getenv ("POSTGRESDIR"), fgl_basename, incl_path, pass_options);
-					if (verbose){printf ("%s\n", buff);	}
+					if (verbose){PRINTF ("%s\n", buff);	}
 					if ( ! win_95_98 ) {
 						/*this apparently works on NT, but not on W98:*/
 						SPRINTF2 (buff2, "%s > %s.cpc.err 2>&1", buff, fgl_basename);
@@ -1325,17 +1320,17 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 					ret = system (buff);
 					/*see function system_run() in fglwrap.c*/
 					if (ret) {
-						printf ("Error compiling %s.cpc - check %s.cpc.err\n", fgl_basename, fgl_basename);
-						printf ("Failed command was: %s\n", buff);
+						FPRINTF (stderr,"Error compiling %s.cpc - check %s.cpc.err\n", fgl_basename, fgl_basename);
+						FPRINTF (stderr,"Failed command was: %s\n", buff);
 						/*fixme: show err file*/
 						return ret;
 					} else {
-						if (verbose) { printf ("PG EC compilation of the object successfull.\n");}
+						if (verbose) { PRINTF ("PG EC compilation of the object successfull.\n");}
 						need_cc=1;
 						//WARNING: ORDER IS IMPORTANT! think about /usr/include!
 						//why did I have hasd-codes -I\"/usr/include/pgsql\" in here?
-						SPRINTF3 (incl_path, "%s -I\"%s/include/postgresql/informix/esql\" -I\"%s/include\" ",
-							  incl_path, acl_getenv ("POSTGRESDIR"),acl_getenv ("POSTGRESDIR"));
+						SPRINTF4 (incl_path, "%s -I\"%s/include/postgresql/informix/esql\" -I\"%s/include\" %s",
+							  incl_path, acl_getenv ("POSTGRESDIR"),acl_getenv ("POSTGRESDIR"),acl_getenv("PG_COPTS"));
 						/* FIXME: this can be in different places - see ./configure
 						/opt/ecpg-cvs/include/postgresql/informix/esql/decimal.h
 						/usr/include/pgsql/libpq-fe.h
@@ -1355,7 +1350,6 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 					   fgl_basename,  incl_path,
 					   pass_options);
 
-					printf("--->%s\n",buff);
 
 				} else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/ {
 					//we must add this include paths becuse we use qualified 
@@ -1372,7 +1366,7 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 						*/
 						SPRINTF4 (buff, "%s -thread -e %s.ec %s %s",
 							informix_esql, fgl_basename, incl_path, pass_options);
-						if (verbose){printf ("%s\n", buff);	}
+						if (verbose){PRINTF ("%s\n", buff);	}
 						if ( ! win_95_98 ) {
 							/*this apparently works on NT, but not on W98:*/
 							SPRINTF2 (buff, "%s > %s.ec.err 2>&1", buff, fgl_basename);
@@ -1385,12 +1379,12 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 						ret = system (buff);
 						/*see function system_run() in fglwrap.c*/
 						if (ret) {
-							printf ("Error compiling %s.ec - check %s.ec.err\n", fgl_basename, fgl_basename);
-							printf ("Failed command was: %s\n", buff);
+							FPRINTF (stderr,"Error compiling %s.ec - check %s.ec.err\n", fgl_basename, fgl_basename);
+							FPRINTF (stderr,"Failed command was: %s\n", buff);
 							/*fixme: show err file*/
 							return ret;
 						} else {
-							if (verbose) { printf ("IFX EC compilation of the .ec successfull.\n");}
+							if (verbose) { PRINTF ("IFX EC compilation of the .ec successfull.\n");}
 							need_cc=1;
 						}
 					#else
@@ -1431,7 +1425,7 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 				#endif
 			}
 			
-			if (verbose){ printf ("%s\n", buff); }
+			if (verbose){ PRINTF ("%s\n", buff); }
 			if ( ! win_95_98 ) {
 				/*this apparently works on NT, but not on W98:*/
 				SPRINTF2 (buff, "%s > %s.c.err 2>&1", buff, fgl_basename);
@@ -1444,18 +1438,16 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 			ret = system (buff);
 			/*see function system_run() in fglwrap.c*/
 			if (ret) {
-				printf ("Error compiling %s.c - check %s.c.err\n", fgl_basename, fgl_basename);
-				printf ("Failed command was: %s\n", buff);
+				FPRINTF (stderr,"Error compiling %s.c - check %s.c.err\n", fgl_basename, fgl_basename);
+				FPRINTF (stderr,"Failed command was: %s\n", buff);
 				/*fixme: show err file*/
 				return ret;
 			} else {
-				if (verbose) { printf ("C/EC compilation of the object successfull.\n"); }
+				if (verbose) { PRINTF ("C/EC compilation of the object successfull.\n"); }
 ///aaaaaa				
-//printf ("2 all_objects=%s\n", all_objects);
 				//Add this output pbject to the list of all objects, we can use
 				//for final linking of library or executable:
 				SPRINTF1 (all_objects, "%s",single_output_object);
-//printf ("3 all_objects=%s\n", all_objects);
 				
 				if (preserve_warn) {
 					/* determine the c.err file size */
@@ -1493,12 +1485,11 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 						#endif
 						ret = system (buff);
 						if (ret) {
-							printf ("Error executing: %s\n",buff);
-							printf ("%s.c.err file size = %d\n", fgl_basename, flength);
+							FPRINTF (stderr,"Error executing: %s\n",buff);
+							FPRINTF (stderr,"%s.c.err file size = %d\n", fgl_basename, flength);
 						}
 					} else {
 						/*c.err file will be deleted if clean_aftercomp is set*/
-						/*printf ("%s file size is zero %d\n",buff,flength);*/
 					}
 				} else {
 					//just delete any .err file possibly created - it contains
@@ -1520,8 +1511,8 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 					#endif
 					ret = system (buff);
 					if (ret) {
-						printf ("Clean of %s intermediate files failed\n", fgl_basename);
-						printf ("Failed command was: %s\n", buff);
+						FPRINTF (stderr,"Clean of %s intermediate files failed\n", fgl_basename);
+						FPRINTF (stderr,"Failed command was: %s\n", buff);
 					}
 				}
 			}
@@ -1540,11 +1531,11 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 void
 printUsage (char *argv[])
 {
-  printf ("\n");
-  printf ("Aubit 4GL compiler usage:\n");
-  printf (" %s [options] -oOutFile.ext file.ext [file.ext ...]\n", argv[0]);
-  printf ("  Try -help for more.\n");
-  printf ("\n");
+  PRINTF ("\n");
+  PRINTF ("Aubit 4GL compiler usage:\n");
+  PRINTF (" %s [options] -oOutFile.ext file.ext [file.ext ...]\n", argv[0]);
+  PRINTF ("  Try -help for more.\n");
+  PRINTF ("\n");
 }
 
 /**
@@ -1556,77 +1547,77 @@ printUsage_help (char *argv[])
   /* FIXME: make sure we don't have conflict with GCC options - for pass-trough */
   /* FIXME: verify we have all options of 4glpc script here */
 
-  printf ("\n");
-  printf
+  PRINTF ("\n");
+  PRINTF
     ("Aubit 4GL compiler usage: %s [options] -oOutFile.ext file.ext [file.ext ...]\n",
      argv[0]);
-  printf ("\n");
-  printf ("Extensions (.ext):\n");
-  printf
+  PRINTF ("\n");
+  PRINTF ("Extensions (.ext):\n");
+  PRINTF
     ("  In files list, all .4gl files will be compield to C, other files passed to linker.\n");
-  printf ("  In -o flag, extendion will decide type of linking:\n");
-  printf
+  PRINTF ("  In -o flag, extendion will decide type of linking:\n");
+  PRINTF
     ("    ao=object, aox=static library, aso=shared lib, 4ae=executable.\n");
-  printf ("\n");
+  PRINTF ("\n");
 
-  printf ("Options:\n");
-  printf ("\n");
-  printf ("When A4GL_LEXTYPE=C :\n");
-  printf ("  -o[outfile] name outpout file\n");
-  printf ("  (no flags) compile to C only\n");
-  printf ("\n");
+  PRINTF ("Options:\n");
+  PRINTF ("\n");
+  PRINTF ("When A4GL_LEXTYPE=C :\n");
+  PRINTF ("  -o[outfile] name outpout file\n");
+  PRINTF ("  (no flags) compile to C only\n");
+  PRINTF ("\n");
 
-  printf ("When A4GL_LEXTYPE=PERL :\n");
-  printf ("  (no flags) compile to Perl only\n");
-  printf ("\n");
+  PRINTF ("When A4GL_LEXTYPE=PERL :\n");
+  PRINTF ("  (no flags) compile to Perl only\n");
+  PRINTF ("\n");
 
-  printf ("Other options :\n");
-  printf ("  -I -L -l : ");
-  printf ("  -G     | --globals         : Generate the globals map file\n");
-  printf ("  -S     | --silent          : no output other then errors\n");
-  printf ("  -V     | --verbose         : Verbose output\n");
-  printf ("  -N name| --namespace name         : Prefix all functions with name (default 'aclfgl_')\n");
-  printf ("  -v     | --version         : Show compiler version and exit\n");
-  printf ("  -f     | --version_full    : Show full compiler version and details\n");
-  printf ("  -?     | --help            : Show this help and exit\n");
-  printf ("  -tTYPE | --lextype         : output language, TYPE=C(default) or PERL\n");
-  printf ("  -k     | --keep            : keep intermediate files (default)\n");
-  printf ("  -w     | --keep-warn       : keep warnings output file [.warn](default=do not)\n");  
-  printf ("  -K     | --clean           : clean intermediate files when done\n");
-  printf ("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
-  printf ("  -h     | --as-dll          : Make -o by linking all resulting object into shared library\n");
-  printf ("  -H     | --shared          : Compile each input object into shared object (.so/.aso/.dll)\n");  
+  PRINTF ("Other options :\n");
+  PRINTF ("  -I -L -l : ");
+  PRINTF ("  -G     | --globals         : Generate the globals map file\n");
+  PRINTF ("  -S     | --silent          : no output other then errors\n");
+  PRINTF ("  -V     | --verbose         : Verbose output\n");
+  PRINTF ("  -N name| --namespace name         : Prefix all functions with name (default 'aclfgl_')\n");
+  PRINTF ("  -v     | --version         : Show compiler version and exit\n");
+  PRINTF ("  -f     | --version_full    : Show full compiler version and details\n");
+  PRINTF ("  -?     | --help            : Show this help and exit\n");
+  PRINTF ("  -tTYPE | --lextype         : output language, TYPE=C(default) or PERL\n");
+  PRINTF ("  -k     | --keep            : keep intermediate files (default)\n");
+  PRINTF ("  -w     | --keep-warn       : keep warnings output file [.warn](default=do not)\n");  
+  PRINTF ("  -K     | --clean           : clean intermediate files when done\n");
+  PRINTF ("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
+  PRINTF ("  -h     | --as-dll          : Make -o by linking all resulting object into shared library\n");
+  PRINTF ("  -H     | --shared          : Compile each input object into shared object (.so/.aso/.dll)\n");  
   
-  printf ("                             : 0-Don't generate  1-Generate(Default)\n");
+  PRINTF ("                             : 0-Don't generate  1-Generate(Default)\n");
   
   
-  printf ("If 'outfile' was not specified, it is generated from first 4gl file name\n");
-  printf ("specified. All options that are not recognised, are passed to C compiler,\n");
-  printf ("if -c -o -d or -l was specified.\n");
-  printf ("\n");
+  PRINTF ("If 'outfile' was not specified, it is generated from first 4gl file name\n");
+  PRINTF ("specified. All options that are not recognised, are passed to C compiler,\n");
+  PRINTF ("if -c -o -d or -l was specified.\n");
+  PRINTF ("\n");
 
 /*FIXME: move this to -vfull*/
 
 
-  printf ("Compiled with platform settings:\n");
+  PRINTF ("Compiled with platform settings:\n");
   #if ( defined(__MINGW32__) )
-  	printf ("__MINGW32__ ");
+  	PRINTF ("__MINGW32__ ");
   #endif
 
   #if ( defined (_WIN32) )
-  	printf ("_WIN32 ");
+  	PRINTF ("_WIN32 ");
   #endif
 
   #if ( defined(WIN32) )
-  	printf ("WIN32 ");
+  	PRINTF ("WIN32 ");
   #endif
 
   #if ( defined(__CYGWIN__) )
-  	printf ("__CYGWIN__ ");
+  	PRINTF ("__CYGWIN__ ");
   #endif
 
-  printf ("\n");
-  printf ("\n");
+  PRINTF ("\n");
+  PRINTF ("\n");
 
   /*command line options parser (opt_long()) will call this function */
   /*automatically when it encounters an error in options, so we must exit*/
@@ -1672,7 +1663,6 @@ a4gl_yyerror (char *s)
   if (A4GL_isyes(acl_getenv("LIST_ERRS"))) {
 	if (strcmp(s,"Variable not found")==0) return;
 	add_module_error(yylineno,s);
-  	//printf("Line %d - %s\n",yylineno,s);
   	return;
   }
 
@@ -1707,32 +1697,9 @@ a4gl_yyerror (char *s)
         }
   }
   A4GL_write_cont (yyin);
-  printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
+  fprintf (stderr,"Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
  exit (2);
 }
-
-/************************* same function from fcompile:
-
-FIXME: merge all yyerror() finction in libaubit4gl
-
-void a4gl_yyerror(char *s)
-{
-  char errfile[256];
-  FILE *f;
-  long ld;
-
-  ld=buffpos();
-  SPRINTF1(errfile,"%s.err",outputfile);
-  f=write_errfile(memfile_yyin,errfile,ld-1,yylineno);
-  fprintf (f, "| %s", s);
-  write_cont(memfile_yyin);
-  printf("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
-	  outputfile,outputfile,lineno,yylineno
-  );
-  exit (2);
-}
-
-**************************************************************/
 
 
 /**

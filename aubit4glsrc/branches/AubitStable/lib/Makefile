@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2005-06-10 13:37:36 mikeaubury Exp $
+# $Id: Makefile,v 1.5.2.1 2006-03-24 17:23:53 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -63,7 +63,6 @@ LIBPACKERXDR_PATH   =libpacker/xdr
 LIBPACKERXML_PATH   =libpacker/xml
 #LIBLEXC_PATH   		=liblex/lex_c
 LIBLEXEC_PATH  		=liblex/lex_esqlc
-LIBLEXPERL_PATH   	=liblex/lex_perl
 LIBEXREPORTPDF_PATH =libpdf
 LIBFILE_PATH		=extra_libs/file
 LIBSTRING_PATH		=extra_libs/string
@@ -151,8 +150,6 @@ LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXM
 #					$(wildcard ${LIBLEXC_PATH}/Makefile) ${ALL_H}
 LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h) ${ROOT}/compilers/4glc/API_lex.h \
 					$(wildcard ${LIBLEXEC_PATH}/Makefile) ${ALL_H}
-LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PATH}/*.h) \
-					$(wildcard ${LIBLEXPERL_PATH}/Makefile) ${ALL_H}
 LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXREPORTPDF_PATH}/*.h) \
 					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile) ${ALL_H}
 LIBFILE_DEPS		=$(wildcard ${LIBFILE_PATH}/*.c) $(wildcard ${LIBFILE_PATH}/*.h) \
@@ -219,8 +216,8 @@ libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 #libLEX_C${SO_EXT}: ${LIBLEXC_DEPS}
 #	${MAKE} -C ${LIBLEXC_PATH}
 
-libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
-	${MAKE} -C ${LIBLEXPERL_PATH}
+#libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
+#	${MAKE} -C ${LIBLEXPERL_PATH}
 
 libLEX_C${SO_EXT} libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
 	${MAKE} -C ${LIBLEXEC_PATH}
@@ -614,7 +611,6 @@ clean.other:
 	${MAKE} -C ${AUBITCONFIG_PATH} clean
 	${MAKE} -C ${LOADMAP_PATH} clean
 	${MAKE} -C ${LIBLEXEC_PATH} clean
-	${MAKE} -C ${LIBLEXPERL_PATH} clean
 	${MAKE} -C ${LIBEXDATA_PATH} clean
 	${MAKE} -C ${LIBESQL_PATH} clean
 	${MAKE} -C ${LIBSTRING_PATH} clean

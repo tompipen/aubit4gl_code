@@ -337,9 +337,40 @@ int fgl_call( int (*func_ptr) (int),int n) {
 	return func_ptr(n);
 }
 
+void popdate_native(void *x) {
+	long a4gl;
+	short indic;
+	a4gl=A4GL_pop_date();
+
+	//if (A4GL_isnull(DTYPE_DATE,(void *)&a4gl)) { indic=-1; } else { indic=0; }
+	
+	// Copy date will do our null checking for us....
+	A4GL_copy_date(x,(void *)&a4gl,0,4,'i');
+}
+
+
+void retdate_native(void *x,short indic) {
+	long a4gl;
+
+	if (A4GL_isnull(DTYPE_DATE,(void *)&x)) {
+		indic=-1;
+	} else {
+		indic=0;
+	}
+	
+	A4GL_copy_date(x,(void *)&a4gl,&indic,4,'o');
+
+	A4GL_push_date(a4gl);
+}
+
+
+
 int pushlocator(void *x) {
 		A4GL_assertion(1,"push_locator not implemented");
+		return 0;
 }
+
 int _locate(void*b,int x,int y,char *z) {
 		A4GL_assertion(1,"_locate not implemented");
+		return 0;
 }

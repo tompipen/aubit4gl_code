@@ -216,11 +216,13 @@ int ec_check_and_report_error() {
 
 
 void set_display_lines() {
+
 	if (exec_mode==EXEC_MODE_INTERACTIVE) {
 	if (display_lines==-1) {
-        	display_lines=A4GL_get_curr_height()-6;
+        	display_lines=18;
 	}
 	}
+
 }
 endcode
 

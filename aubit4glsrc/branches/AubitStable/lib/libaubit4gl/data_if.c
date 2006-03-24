@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.30 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: data_if.c,v 1.30.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -1290,8 +1290,9 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
     void *binding;
     int nbind;
     int cntrl;
-	int attribute;
-	int processed_onkey;
+    int attribute;
+    int processed_onkey;
+    char *curr_display;
   };
 
   struct s_s_disp_arr_1 *val;
@@ -1490,6 +1491,19 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
+
+  if (strcmp(name,"curr_display")==0) {
+      if (mode == GETSETGET)
+	return (void *) val->curr_display;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->curr_display);
+      if (mode == GETSETSET)
+	{
+	  val->curr_display = (int) var;
+	  return (void *) 1;
+	}
+	  
+  }
 
   A4GL_assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_disp_arr");
   return (void *) 0;		/* unknown value */

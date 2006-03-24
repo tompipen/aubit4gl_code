@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.111 2005-12-05 20:31:07 mikeaubury Exp $
+# $Id: resource.c,v 1.111.2.1 2006-03-24 17:24:31 mikeaubury Exp $
 #
 */
 
@@ -139,11 +139,13 @@ struct str_resource builtin_resource[] = {
 #if (defined (__MINGW32__))
   {"AUBITETC", _AUBITETC_},	/* points to default location of Aubit config files as determined by Autoconf in variable @AUBITRC@ */
   {"A4GL_MV_CMD", "move"},
+  {"A4GL_CP_CMD", "cp"},
 #else
 //TODO: should we use _AUBITETC_ here too? Not all users installing Aubit will have sufficient 
 //privileges to install aubitrc under /etc
   {"AUBITETC", "/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
   {"A4GL_MV_CMD", "mv"},
+  {"A4GL_CP_CMD", "cp"},
 #endif
   {"A4GL_RESERVEWORDS", "NO"},
   {"DBDATE", "MDY4/"},
@@ -377,6 +379,32 @@ struct str_resource builtin_resource[] = {
   {"GDB_ATTACH", "N"}, /* set to Y to attach debugger after crash */
   {"GDB_EXE", "gdb"},  /* set it to the name of your prefered debugger */
   {"SWAP_SQLCA62", "N"}, /* to get OID after INSERT on unpatched PostgreSQL */
+#ifdef POSTGRESDIR
+  {"POSTGRESDIR",POSTGRESDIR},
+#endif
+
+#ifdef POSTGRESDIR
+
+	#ifdef PG_ESQLC
+  	{"PG_ESQLC",PG_ESQLC},
+	#endif
+	
+	#if HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H
+  		{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=1"},
+	#else
+		#if HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H
+  		{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H=1"},
+		#else
+			#if HAVE_PG_INFORMIX_ESQL_DECIMAL_H
+  				{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_PG_INFORMIX_ESQL_DECIMAL_H=1"},
+			#else
+				#if HAVE_DECIMAL_H
+  				{"PG_COPTS","-DUSING_PG_COPTS=1 -DHAVE_DECIMAL_H=1"},
+				#endif
+			#endif
+		#endif
+	#endif
+#endif
 
   /* End of definitions */
   {"", "0"}

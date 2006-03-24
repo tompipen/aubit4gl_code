@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.13 2005-11-21 18:29:37 mikeaubury Exp $
+# $Id: class.c,v 1.13.2.1 2006-03-24 17:23:25 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ do_append (void)
 static void
 write_class_int (char *name, int val)
 {
-  sprintf (tmpbuff, "%s=%d\n", name, val);
+  SPRINTF2 (tmpbuff, "%s=%d\n", name, val);
   do_append ();
 }
 
@@ -135,7 +135,6 @@ char *fname;
 	strcpy(buff,s);
 	strcat(buff,acl_getenv("A4GL_DLL_EXT"));
 	fname=A4GL_fullpath_classpath(buff);
-	printf("fname=%p (%s)\n",fname,buff);
 	if (fname==0) {
 		a4gl_yyerror("Unable to open class file");
 		return 0;
@@ -172,7 +171,7 @@ write_class_string (char *name, char *val)
   char buff[1024];
 strcpy(buff,val);
 	escape(buff);
-  sprintf (tmpbuff, "%s=%s\n", name, buff);
+  SPRINTF2 (tmpbuff, "%s=%s\n", name, buff);
   do_append ();
 }
 
@@ -184,7 +183,7 @@ strcpy(buff,val);
 static void
 write_class_char (char *name, char val)
 {
-  sprintf (tmpbuff, "%s=%c\n", name, val);
+  SPRINTF2 (tmpbuff, "%s=%c\n", name, val);
   do_append ();
 }
 
@@ -196,7 +195,7 @@ write_class_char (char *name, char val)
 static void
 write_class_float (char *name, double val)
 {
-  sprintf (tmpbuff, "%s=%f\n", name, val);
+  SPRINTF2 (tmpbuff, "%s=%f\n", name, val);
   do_append ();
 
 }
@@ -220,13 +219,11 @@ dump_class (void)
   write_class_string ("DATABASE", get_hdrdbname ());
   write_class_int ("SCHEMA_ONLY", is_schema);
   write_class_int ("NUMVARS", list_class_cnt);
-  //printf ("DC\n");
   for (a = 0; a < list_class_cnt; a++)
     {
       v = list_class[a];
       write_variable_header (v);
     }
-  //printf ("EDC\n");
   CLASS_print_class_variable_type (allbuff);
 
 }
@@ -307,7 +304,7 @@ write_variable_header (struct variable *v)
       write_variable_function (v);
       return;
     }
-  printf ("Warning - unknown variable type : %d\n", v->variable_type);
+  FPRINTF (stderr,"Warning - unknown variable type : %d\n", v->variable_type);
 }
 
 
@@ -375,8 +372,6 @@ static void
 write_variable_record (struct variable *v)
 {
   int a;
-  //printf("Count=%d\n", v->data.v_record.record_cnt);
-  //printf ("VR\n");
   write_class_int ("COUNT", v->data.v_record.record_cnt);
   if (v->data.v_record.record_cnt == 0)
     return;
@@ -402,11 +397,8 @@ write_variable_record (struct variable *v)
 
   for (a = 0; a < v->data.v_record.record_cnt; a++)
     {
-      //printf ("Writing %s ->%d of %d\n", v->names.name, a, v->data.v_record.record_cnt);
-      //fflush(stdout);
       write_variable_header (v->data.v_record.variables[a]);
     }
-  //printf ("EVR\n");
 }
 
 
@@ -420,8 +412,6 @@ static void
 write_variable_object (struct variable *v)
 {
   int a;
-  //printf("Count=%d\n", v->data.v_record.record_cnt);
-  //printf ("VR\n");
   write_class_int ("COUNT", v->data.v_record.record_cnt);
   if (v->data.v_record.record_cnt == 0)
     return;
@@ -447,12 +437,9 @@ write_variable_object (struct variable *v)
 
   for (a = 0; a < v->data.v_record.record_cnt; a++)
     {
-      //printf ("Writing %s ->%d of %d\n", v->names.name, a, v->data.v_record.record_cnt);
-      //fflush(stdout);
       write_variable_header (v->data.v_record.variables[a]);
     }
 	write_class_string("OBJECT_TYPE",v->data.v_record.object_type);
-  //printf ("EVR\n");
 }
 
 
@@ -507,7 +494,6 @@ write_variable_constant (struct variable *v)
 static void
 write_variable_function (struct variable *v)
 {
-  //printf ("function : %s\n", v->names.name);
 }
 
 
@@ -528,7 +514,6 @@ read_class (char *s, int is_parent)
   struct variable *nptr;
   nline = 0;
 
-  printf("read_class : %s - is_parent=%d\n",s,is_parent);
 
   class_variable_data = CLASS_get_variable (s);
   class_members = CLASS_get_members (s);
@@ -543,7 +528,7 @@ read_class (char *s, int is_parent)
     {
       if (strcmp (s, "default_object") != 0)
 	{
-	  printf ("Warning - unable to open class file for %s\n", s);
+	  FPRINTF (stderr,"Warning - unable to open class file for %s\n", s);
 	}
       return 0;
     }
@@ -578,11 +563,9 @@ read_class (char *s, int is_parent)
     {
       // First - read our parent 
 
-	printf("----------------\n");
       if (pvars >= 0)
 	{
 	  int a;
-	  //printf("Allocating space for %d entries\n",pvars + 1+list_class_cnt);
 	  list_class = acl_realloc (list_class, sizeof (struct variable *) * (pvars + 1 + list_class_cnt));
 	  list_class_alloc += pvars;
 	  if (list_class_cnt == 0)
@@ -611,7 +594,6 @@ read_class (char *s, int is_parent)
 	  list_class[0]->data.v_record.record_alloc++;
 	  list_class[0]->data.v_record.record_cnt++;
 	  pid = list_class[0]->data.v_record.record_cnt - 1;
-	  printf ("pid=%d\n", list_class[0]->data.v_record.record_cnt - 1);
 	  list_class[0]->data.v_record.variables =
 	    acl_realloc (list_class[0]->data.v_record.variables,
 		     sizeof (struct variable *) *
@@ -623,7 +605,6 @@ read_class (char *s, int is_parent)
 	  list_class[0]->data.v_record.variables[pid] =
 	    acl_malloc2 (sizeof (struct variable));
 
-//printf("THISCNT= %d\n",list_class[0]->data.v_record.record_cnt);
 	  memcpy (list_class[0]->data.v_record.variables[pid], &np,
 		  sizeof (struct variable));
 
@@ -640,7 +621,7 @@ read_class (char *s, int is_parent)
 		  if (list_class[a + list_class_cnt]->variable_type == 4)
 		    {
 		      char buff[1024];
-		      sprintf (buff, "%s.%s", s, list_class[a + list_class_cnt]->names.name);
+		      SPRINTF2 (buff, "%s.%s", s, list_class[a + list_class_cnt]->names.name);
 		      list_class[a + list_class_cnt]->names.name =
 			acl_strdup (buff);
 
@@ -654,7 +635,7 @@ read_class (char *s, int is_parent)
 	}
       else
 	{
-	  printf ("Nothing to read in...\n");
+			/* Does nothing */
 	}
 
       dump_variable_records (list_class, list_class_cnt, 0);
@@ -665,13 +646,7 @@ read_class (char *s, int is_parent)
 	char buff[256];
 	int sz;
 
-        printf ("Reading %d list_class_cnt=%d\n", pvars, list_class_cnt);
-       //for (a = 0; a < list_class_cnt; a++) { printf ("    %s \n", list_class[a]->names.name); }
-
-
-	printf("dim_Set_name : %s\n",s);
 	sz=class_call(s,"aclfglclass__sizeof",0);
-	printf("sz=%d\n",sz);
 
 	read_variable_header (&np);
 
@@ -682,10 +657,8 @@ read_class (char *s, int is_parent)
 	}
 
 
-	printf("variable_type=%d src_module=%s\n",np.variable_type,np.src_module);
 
 
-	printf("%s == THIS \n",np.names.name);
 	if (np.variable_type!=VARIABLE_TYPE_RECORD) {
 		a4gl_yyerror("Not a record in class");
 		return 0;
@@ -694,7 +667,7 @@ read_class (char *s, int is_parent)
 
 
 	push_scope();
-	sprintf(buff,"%d",sz);
+	SPRINTF1(buff,"%d",sz);
 	set_current_variable_scope('T');
 	push_name(s,0);
 	push_object(s);
@@ -716,23 +689,24 @@ read_class (char *s, int is_parent)
 	A4GL_pause_execution();
 
   	//class_members = CLASS_get_members (s);
+	//
+#ifdef DEBUG
 
-	printf("class_members=%p\n",class_members);
 	if ((long) class_members==-1 || (long) class_members==0) ; 
 	else {
 		for (a=0;class_members[a];a++) {
-			printf("MEMBER : %s\n",class_members[a]);
+			PRINTF("MEMBER : %s\n",class_members[a]);
 		}
 	}
-	printf("class_variable=%p\n",class_variable_data);
+
 	if ((long) class_variable_data==-1 || (long) class_variable_data==0) ; 
 	else {
 		for (a=0;class_variable_data[a];a++) {
-			//printf("VARIABLES : %s\n",class_variable_data[a]);
+			PRINTF("VARIABLES : %s\n",class_variable_data[a]);
 		}
 	}
 
-
+#endif
 
 
 	//dim_set_name(s);
@@ -768,7 +742,7 @@ read_class_int (char *name, int *val)
   char buff[256];
   char buff2[256];
 
-  sprintf (buff, "%s=%%d\n", name);
+  SPRINTF1 (buff, "%s=%%d\n", name);
   *val = 0;
   strcpy (buff2, class_variable_data[nline++]);
   A4GL_debug ("buff2=%s", buff2);
@@ -794,7 +768,7 @@ read_class_string (char *name, char **val, int alloc)
   strcpy (buff3, class_variable_data[nline++]);
   A4GL_debug ("buff3=%s", buff3);
   strcpy (buff2, "");
-  sprintf (buff, "%s=%%s\n", name);
+  SPRINTF1 (buff, "%s=%%s\n", name);
 
   a = sscanf (buff3, buff, buff2);
   if (a == 0 && strcmp (buff, buff3) != 0)
@@ -826,7 +800,7 @@ read_class_char (char *name, char *val)
 
   strcpy (buff3, class_variable_data[nline++]);
   A4GL_debug ("buff3=%s", buff3);
-  sprintf (buff, "%s=%%c\n", name);
+  SPRINTF1 (buff, "%s=%%c\n", name);
   if (sscanf (buff3, buff, val) != 1)
     {
       a4gl_yyerror ("Error in .glb file (char)- is it an old version ?");
@@ -846,7 +820,7 @@ read_class_float (char *name, double *val)
 
   strcpy (buff3, class_variable_data[nline++]);
   A4GL_debug ("buff3=%s", buff3);
-  sprintf (buff, "%s=%%lf\n", name);
+  SPRINTF1 (buff, "%s=%%lf\n", name);
   if (sscanf (buff3, buff, val) != 1)
     {
       a4gl_yyerror ("Error in .glb file (float)- is it an old version ?");
@@ -875,14 +849,12 @@ read_variable_header (struct variable *v)
     {
       v->names.name = acl_strdup ("parent");
     }
-  //printf ("-> %s\n", v->names.name);
   v->names.next = 0;
 #ifdef DEBUG
   A4GL_debug ("Read variable : %s", v->names.name);
 #endif
   v->is_static = 0;
   read_class_int ("TYPE", &v->variable_type);
-  //printf ("Type=%d\n", v->variable_type);
   read_class_char ("USER_SYSTEM", &v->user_system);
   read_class_int ("IS_ARRAY", &v->is_array);
   read_class_string ("SRC_MODULE", &v->src_module, 1);
@@ -929,7 +901,6 @@ read_variable_header (struct variable *v)
 
   if (v->variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
     {
-      //printf ("READ FUNCTION\n");
       read_variable_function (v);
     }
 
@@ -996,7 +967,6 @@ read_variable_record (struct variable *v)
 
   read_class_int ("LINKED", &is_linked);
 
-  //printf("Read record : %d %d\n",v->data.v_record.record_cnt, is_linked);
 
   if (is_linked)
     {
@@ -1037,7 +1007,6 @@ char buff[255];
 
   read_class_int ("LINKED", &is_linked);
 
-  //printf("Read record : %d %d\n",v->data.v_record.record_cnt, is_linked);
 
   if (is_linked)
     {
@@ -1123,12 +1092,10 @@ rm_class_copy (char *s)
 {
   static char buff[1024];
   char *ptr = 0;
-//printf("Cleaning %s\n",s);
   if (strncmp (s, "CLASS_COPY->", 12) != 0)
     return s;
   strcpy (buff, &s[12]);
   ptr = buff;
-//printf("used to return : %s as clean\n",ptr);
   return ptr;
   while (strncmp (s, "parent", 6) == 0)
     ptr += 6;

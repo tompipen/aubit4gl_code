@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: generic.c,v 1.7 2005-07-14 11:32:47 mikeaubury Exp $
+# $Id: generic.c,v 1.7.2.1 2006-03-24 17:23:25 mikeaubury Exp $
 #*/
 
 /**
@@ -211,9 +211,9 @@ struct field_entry *new_field_entry(char *f,char *n,int needs_quoting) {
 	char buff[256];
 	field=acl_malloc2(sizeof(struct field_entry));
 	if (needs_quoting) {
-		sprintf(buff,"\"%s\"",f);
+		SPRINTF1(buff,"\"%s\"",f);
 	} else {
-		sprintf(buff,"%s",f);
+		SPRINTF1(buff,"%s",f);
 	}
 	field_entry.field_name=acl_strdup(buff);
 	field_entry.field_sub=acl_strdup(n);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.33 2005-09-23 10:38:38 mikeaubury Exp $
+# $Id: rexp2.c,v 1.33.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -416,7 +416,11 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	    {
 	      strcat (buff2, " matches ");
 	      if (A4GL_isyes(acl_getenv("CONSTRUCT_MATCH_FIX"))) {
-	      		return A4GLSQLCV_matches_string("", A4GL_escape_single (constr_bits[0]),"\"\\\"");
+		      	char *ptr;
+			static char ptr2[2000];
+			ptr=A4GL_escape_single (constr_bits[0]);
+			SPRINTF3(ptr2,"%s%s%s",quote,ptr,quote);
+	      		return A4GLSQLCV_matches_string("", ptr2,"\"\\\"");
 	      }
 	    }
 

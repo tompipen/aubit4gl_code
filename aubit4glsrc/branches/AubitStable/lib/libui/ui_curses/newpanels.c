@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.122 2005-11-17 20:33:26 mikeaubury Exp $
+# $Id: newpanels.c,v 1.122.2.1 2006-03-24 17:24:24 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.122 2005-11-17 20:33:26 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.122.2.1 2006-03-24 17:24:24 mikeaubury Exp $";
 #endif
 
 /**
@@ -494,7 +494,7 @@ void
 #endif
   w = A4GL_find_pointer (win_name, WINCODE);
   win = A4GL_find_pointer (win_name, S_WINDOWSCODE);
-  wclear (w);
+  werase (w);
 
   if (win->winattr.border)
     {
@@ -512,7 +512,7 @@ void
     {
       if (strcmp (windows[a].name, win_name) == 0)
 	{
-	  wclear (panel_window (windows[a].pan));
+	  werase (panel_window (windows[a].pan));
 	  break;
 	}
     }
@@ -935,7 +935,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
 
 
-  wclear (drwin);
+  werase (drwin);
 
   a = set_form_win (f->form, w);
 
@@ -1323,9 +1323,11 @@ A4GL_getch_swin (WINDOW * window_ptr)
     {
 #ifdef USE_HALF_DELAY
 	   if (no_delay==-1) {
-		    	no_delay=(A4GL_isno(acl_getenv("NOHALFDELAY")));
+		    	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
 	   }
+
 	A4GL_debug("HALF DELAY\n");
+
 	if(!no_delay) {
       		halfdelay (5); 
 	}
@@ -1397,7 +1399,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
 #ifdef USE_HALF_DELAY
 	   if (no_delay==-1) {
-		    	no_delay=(A4GL_isno(acl_getenv("NOHALFDELAY")));
+		    	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
 	   }
 	A4GL_debug("HALF DELAY\n");
 	if(!no_delay) {
@@ -2431,8 +2433,10 @@ A4GL_debug("Colours - BKG=%d\n",bkgcolor);
 
 
 A4GL_debug("Assume default colors : %d %d",bkgcolor,fg);
+#ifndef PDCURSES
 #ifdef NCURSES_VERSION
   assume_default_colors(fg,bkgcolor);
+#endif
 #endif
 
   return 0;

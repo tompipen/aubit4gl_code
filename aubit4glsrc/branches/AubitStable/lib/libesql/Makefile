@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.30 2005-12-20 14:08:39 mikeaubury Exp $
+# $Id: Makefile,v 1.30.2.1 2006-03-24 17:24:01 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -84,7 +84,7 @@ ifdef COMSPEC
     #export PWD
 
 #from Mikes Makefile.cygwin:
-	CFLAGS		:=-g -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl ${CFLAGS}
+	CFLAGS		:=-g -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl ${CFLAGS} 
 	ESQL		=esql -g
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=
@@ -114,7 +114,7 @@ ${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 ifneq "${COMSPEC}" ""
 	$(CC) $(LDFLAGS) -g -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
-	${IFMX_ESQLC}  ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} 
+	${IFMX_ESQLC}  ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}  
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
@@ -162,7 +162,7 @@ ifneq "${COMSPEC}" ""
 	-@rm $(basename $<).c $(basename $<).c_*
 else
 	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
-		-I"${INFORMIXDIR}/incl"
+		-I"${INFORMIXDIR}/incl" 
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl
 #	libtool --mode=compile gcc -fPIC -I$INFORMIXDIR/incl/esql -I.. \ 
@@ -173,7 +173,7 @@ endif
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
-	${CC} ${CFLAGS} -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `aubit-config PG_COPTS`
 
 ###################
 #SAP ESQL/C compiler

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.36 2005-09-04 22:02:59 mikeaubury Exp $
+# $Id: globals.c,v 1.36.2.1 2006-03-24 17:23:25 mikeaubury Exp $
 #
 */
 
@@ -122,7 +122,7 @@ static void read_variable_function (FILE * f, struct variable *v) ;
 static void
 write_global_int (FILE * f, char *name, int val)
 {
-  fprintf (f, "%s=%d\n", name, val);
+  FPRINTF (f, "%s=%d\n", name, val);
 }
 
 /**
@@ -133,7 +133,7 @@ write_global_int (FILE * f, char *name, int val)
 static void
 write_global_string (FILE * f, char *name, char *val)
 {
-  fprintf (f, "%s=%s\n", name, val);
+  FPRINTF (f, "%s=%s\n", name, val);
 }
 
 /**
@@ -144,7 +144,7 @@ write_global_string (FILE * f, char *name, char *val)
 static void
 write_global_char (FILE * f, char *name, char val)
 {
-  fprintf (f, "%s=%c\n", name, val);
+  FPRINTF (f, "%s=%c\n", name, val);
 }
 
 /**
@@ -155,7 +155,7 @@ write_global_char (FILE * f, char *name, char val)
 static void
 write_global_float (FILE * f, char *name, double val)
 {
-  fprintf (f, "%s=%f\n", name, val);
+  FPRINTF (f, "%s=%f\n", name, val);
 }
 
 
@@ -189,7 +189,7 @@ dump_gvars (void)
 
   if (f == 0)
     {
-      fprintf (stderr, "Critical error - couldnt open output file %s\n", ii);
+      FPRINTF (stderr, "Critical error - couldnt open output file %s\n", ii);
       exit (0);
     }
 
@@ -285,7 +285,7 @@ write_variable_header (FILE * f, struct variable *v)
       write_variable_function (f, v);
 	return;
     }
-  printf("Warning - unknown variable type : %d\n",v->variable_type);
+  FPRINTF(stderr,"Warning - unknown variable type : %d\n",v->variable_type);
 }
 
 
@@ -520,14 +520,13 @@ generate_globals_for (char *s)
 
   if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
     {
-      sprintf (buff, "mv debug.out debug1.out");
+      SPRINTF0 (buff, "mv debug.out debug1.out");
       A4GL_debug ("Preserving debug.out: %s\n", buff);
-      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
       system (buff);
     }
 #endif
   /*why cd? just pass the path in file name... */
-  /*sprintf (buff, "cd %s; 4glc --globals %s.4gl", dirname, fname);*/
   
 
 // cc 2004.11.24 need to check for -d flag from parent process 
@@ -537,11 +536,11 @@ generate_globals_for (char *s)
  	strcpy (db, get_default_database ()); 
  	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
  	A4GL_trim (db); 
- 	sprintf (buff, "4glc -d %s --globals %s/%s.4gl", db, dirname, fname); 
+ 	SPRINTF3 (buff, "4glc -d %s --globals %s/%s.4gl", db, dirname, fname); 
  } 
  else 
  { 
- 	sprintf (buff, "4glc --globals %s/%s.4gl", dirname, fname); 
+ 	SPRINTF2 (buff, "4glc --globals %s/%s.4gl", dirname, fname); 
  } 
  // cc end change 
 
@@ -550,7 +549,7 @@ generate_globals_for (char *s)
 #ifdef DEBUG
   A4GL_debug ("Executing system call: %s\n", buff);
 #endif
-      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
   system (buff);
 #ifdef MSVC
   putenv("NOCFILE=Y");
@@ -560,13 +559,13 @@ generate_globals_for (char *s)
 #ifdef DEBUG
   if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
     {
-      sprintf (buff, "mv debug.out debug-globals.out");
+      SPRINTF (buff, "mv debug.out debug-globals.out");
       A4GL_debug ("Preserving debug.out: %s\n", buff);
-      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
       system (buff);
-      sprintf (buff, "mv debug1.out debug.out");
+      SPRINTF (buff, "mv debug1.out debug.out");
       A4GL_debug ("Restoring debug.out: %s\n", buff);
-      if (fglc_verbosity()) { printf("Executing :%s\n",buff);}
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
       system (buff);
     }
 #endif
@@ -626,7 +625,7 @@ read_glob (char *s)
       f = A4GL_mja_fopen (iii, "r");
       if (f == 0)
 	{
-	  fprintf (stderr, "Couldnt open globals file %s, in . and %s\n", ii,
+	  FPRINTF (stderr, "Couldnt open globals file %s, in . and %s\n", ii,
 		   currinfile_dirname);
 	  exit (7);
 	}
@@ -674,7 +673,7 @@ read_global_int (FILE * f, char *name, int *val)
   char buff[256];
   char buff2[256];
 
-  sprintf (buff, "%s=%%d\n", name);
+  SPRINTF1 (buff, "%s=%%d\n", name);
   *val = 0;
   fgets (buff2, 255, f);
 
@@ -699,7 +698,7 @@ read_global_string (FILE * f, char *name, char **val, int alloc)
 
   fgets (buff3, 2000, f);
   strcpy (buff2, "");
-  sprintf (buff, "%s=%%s\n", name);
+  SPRINTF1 (buff, "%s=%%s\n", name);
   a = sscanf (buff3, buff, buff2);
   if (a == 0 && strcmp (buff, buff3) != 0)
     {
@@ -729,7 +728,7 @@ read_global_char (FILE * f, char *name, char *val)
   char buff3[256];
 
   fgets (buff3, 255, f);
-  sprintf (buff, "%s=%%c\n", name);
+  SPRINTF1 (buff, "%s=%%c\n", name);
   if (sscanf (buff3, buff, val) != 1)
     {
       a4gl_yyerror ("Error in .glb file (char)- is it an old version ?");
@@ -748,7 +747,7 @@ read_global_float (FILE * f, char *name, double *val)
   char buff3[256];
 
   fgets (buff3, 255, f);
-  sprintf (buff, "%s=%%lf\n", name);
+  SPRINTF1 (buff, "%s=%%lf\n", name);
   if (sscanf (buff3, buff, val) != 1)
     {
       a4gl_yyerror ("Error in .glb file (float)- is it an old version ?");

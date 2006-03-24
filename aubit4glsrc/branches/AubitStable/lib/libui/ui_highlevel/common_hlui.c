@@ -27,7 +27,7 @@ A4GL_mja_set_field_buffer_contrl (void *field, int nbuff, int ch)
     }
   buff[0] = ch & 0xff;
   buff[1] = 0;
-  A4GL_debug ("Adding char %d %c", ch, ch);
+  A4GL_debug ("YYZ Adding char %d %c", ch, ch);
   A4GL_LL_set_field_buffer (field, nbuff, buff);
 }
 

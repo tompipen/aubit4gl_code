@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.43 2005-07-14 11:32:56 mikeaubury Exp $
+# $Id: array.c,v 1.43.2.1 2006-03-24 17:24:24 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.43 2005-07-14 11:32:56 mikeaubury Exp $";
+		"$Id: array.c,v 1.43.2.1 2006-03-24 17:24:24 mikeaubury Exp $";
 #endif
 
 
@@ -380,16 +380,27 @@ draw_arr (arr, -1, arr->arr_line);
     {
 	//A4GL_zrefresh();
 	arr->processed_onkey=0;
-        a = A4GL_getch_win ();
-        if (a!=0&&a!=-1) {
-                A4GL_evt_not_idle(evt);
-        }
-	if (abort_pressed) {
-		int_flag=1;
-		a=A4GLKEY_INTERRUPT;
-		A4GL_debug("Abort pressed");
-	}
 
+
+	while (1) {
+		int blk;
+   		blk=A4GL_has_evt_timeout(evt);
+
+   		if (blk) { return blk; }
+
+        	a = A4GL_getch_win ();
+        	if (a!=0&&a!=-1) {
+                	A4GL_evt_not_idle(evt);
+			break;
+        	}
+		if (abort_pressed) {
+			int_flag=1;
+			a=A4GLKEY_INTERRUPT;
+			A4GL_debug("Abort pressed");
+			break;
+		}
+
+	}
 /*
 // Traditional key handling
 // Assume F1 is the Accept Key...
@@ -644,7 +655,7 @@ void *dispv, void *ptr, char *srecname, int attrib, int scrollf,int scrollw,void
   int a;
 struct s_disp_arr *disp;
 struct aclfgl_event_list *evt;
-int blk;
+//int blk;
 disp=dispv;
 evt=vevt;
 
@@ -743,8 +754,6 @@ evt=vevt;
       if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
     }
   A4GL_debug ("disparr4");
-   blk=A4GL_has_evt_timeout(evt);
-   if (blk) { return blk; }
 
   return disp_loop (disp,evt);
 }

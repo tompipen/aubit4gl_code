@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.110 2006-01-12 09:58:59 mikeaubury Exp $
+# $Id: iarray.c,v 1.110.2.1 2006-03-24 17:24:24 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.110 2006-01-12 09:58:59 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.110.2.1 2006-03-24 17:24:24 mikeaubury Exp $";
 #endif
 
 /**
@@ -690,11 +690,21 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
       A4GL_mja_pos_form_cursor (mform);
       abort_pressed = 0;
 
-      a = A4GL_getch_win ();
-      if (abort_pressed) { a = A4GLKEY_INTERRUPT; }
+      while (1) {
+	      	int blk;
+  		blk=A4GL_has_evt_timeout(evt);
+  		if (blk) { 
+			return blk; 
+		}
+      		a = A4GL_getch_win ();
+      		if (abort_pressed) { a = A4GLKEY_INTERRUPT; }
 
-      A4GL_debug("a=%d",a);
-      if (a!=0 && a!=-1) { A4GL_evt_not_idle(evt); }
+      		A4GL_debug("a=%d",a);
+      		if (a!=0 && a!=-1) { 
+			A4GL_evt_not_idle(evt); 
+			break;
+		}
+	}
 
 
       if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
@@ -709,11 +719,6 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	a = A4GLKEY_PREV;
 
       arr->processed_onkey = a;
-
-
-
-
-
 
       A4GL_debug ("calling set_last_key : %d", a);
       A4GL_set_last_key (a);
@@ -1136,7 +1141,6 @@ int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
   FIELD ***fld_list;
   int rval;
   struct aclfgl_event_list *evt;
-  int blk;
 
   struct s_inp_arr *inpa;
   inpa = (struct s_inp_arr *) vinpa;
@@ -1279,10 +1283,8 @@ int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
       return -1;
     }
   A4GL_debug ("inpaarr4");
-  blk=A4GL_has_evt_timeout(evt);
-  if (blk) {
-            return blk;
-  }
+
+
   rval = iarr_loop (inpa, evt);
   A4GL_debug ("DEBUGGING rval=%d", rval);
 

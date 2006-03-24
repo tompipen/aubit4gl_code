@@ -118,7 +118,14 @@ define lv_title char(255)
 define lv_cnt integer
 
 let lv_widget=get_widget_for(lv_form,lv_field)
-if lv_widget=0 then return 0 end if
+if lv_widget=0 then 
+code
+{
+printf("set header : Couldn't find form : %p field %p\n",lv_form,lv_field);
+}
+endcode
+	return 
+end if
 code
 {
 GtkTreeViewColumn *c;

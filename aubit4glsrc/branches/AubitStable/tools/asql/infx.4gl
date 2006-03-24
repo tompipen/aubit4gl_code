@@ -1992,7 +1992,12 @@ int lineno=0;
                 }
                 strcat(ins_str,")");
                 EXEC SQL prepare p_loadit from :ins_str;
-                EXEC SQL execute p_loadit;
+		if (get_sqlcode()!=0) {
+			// Some error...	
+			break;
+		} else {
+                	EXEC SQL execute p_loadit;
+		} 
                 if (get_sqlcode()!=0) { break; }
         }
         fclose(loadFile);

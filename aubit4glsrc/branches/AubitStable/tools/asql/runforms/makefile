@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.4 2005-05-05 09:04:23 mikeaubury Exp $
+# $Id: makefile,v 1.4.2.1 2006-03-24 17:24:38 mikeaubury Exp $
 #
 
 ROOT    		=../../..
@@ -35,7 +35,7 @@ include 		${ROOT}/incl/Makefile-common
 
 #Include rules for compiling 4GL source code using Aubit compiler
 include 		${ROOT}/incl/a4gl.mk
-FGLC=4glpc -V1 -g --make-compile 
+FGLC=4glpc -V1 -g  
 
 runforms: globals.4gl dbi.4gl runform.4gl   list.4gl
 	$(FGLC) $^ -o $@

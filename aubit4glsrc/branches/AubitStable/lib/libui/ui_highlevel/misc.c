@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.38 2005-07-15 13:26:49 mikeaubury Exp $";
+  "$Id: misc.c,v 1.38.2.1 2006-03-24 17:24:29 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -127,7 +127,7 @@ UILIB_A4GL_clr_form (int to_default)
 	    {
 	      struct struct_scr_field *prop;
 	      prop =
-		(struct struct_scr_field *) A4GL_LL_get_field_userptr (f);
+		(struct struct_scr_field *) A4GL_ll_get_field_userptr (f);
 	      A4GL_mja_set_field_buffer (f, 0,
 					 (char *)
 					 A4GL_replace_sql_var ((char *)
@@ -163,7 +163,7 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
       A4GL_mja_set_field_buffer (field_list[a], 0, "");
       f =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (field_list[a]));
+	 *) (A4GL_ll_get_field_userptr (field_list[a]));
       if (f)
 	A4GL_default_attributes (field_list[a], f->datatype,
 				 A4GL_has_str_attribute (f, FA_S_PICTURE));
@@ -233,7 +233,7 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 	  A4GL_LL_int_form_driver (s->currform->form, AUBIT_REQ_VALIDATION);
 	  fprop =
 	    (struct struct_scr_field
-	     *) (A4GL_LL_get_field_userptr (field_list[a]));
+	     *) (A4GL_ll_get_field_userptr (field_list[a]));
 
 	  if (fprop->flags & 2)
 	    {
@@ -313,7 +313,7 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 		  // Found @ position b....
 		  fprop =
 		    (struct struct_scr_field
-		     *) (A4GL_LL_get_field_userptr (s->
+		     *) (A4GL_ll_get_field_userptr (s->
 						    field_list[s->scr_line -
 							       1][b]));
 		  if (fprop->flags & 2)
@@ -593,7 +593,7 @@ UILIB_A4GL_push_constr (void *vs)
       A4GL_debug ("Looping a=%d\n", a);
       f = s->field_list[a];
       A4GL_debug ("f=%p", f);
-      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
       A4GL_debug ("fprop=%p", fprop);
       if (fprop != 0)
 	{
@@ -679,7 +679,7 @@ UILIB_A4GL_set_fields (void *vsio)
     {
       field =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (formdets->form_fields[a]));
+	 *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
       if (field == 0)
 	continue;
 
@@ -755,7 +755,7 @@ UILIB_A4GL_set_fields (void *vsio)
 	{
 	  prop =
 	    (struct struct_scr_field *)
-	    A4GL_LL_get_field_userptr (field_list[a]);
+	    A4GL_ll_get_field_userptr (field_list[a]);
 	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT)
 	      && sio->mode != MODE_CONSTRUCT)
 	    {
@@ -782,7 +782,7 @@ UILIB_A4GL_set_fields (void *vsio)
 	{
 	  prop =
 	    (struct struct_scr_field *)
-	    A4GL_LL_get_field_userptr (field_list[a]);
+	    A4GL_ll_get_field_userptr (field_list[a]);
 	  strcpy (buff, A4GL_LL_field_buffer (field_list[a], 0));
 	  A4GL_trim (buff);
 
@@ -807,7 +807,7 @@ UILIB_A4GL_set_fields (void *vsio)
 
 
       prop =
-	(struct struct_scr_field *) A4GL_LL_get_field_userptr (field_list[a]);
+	(struct struct_scr_field *) A4GL_ll_get_field_userptr (field_list[a]);
 
       attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, prop, 0);
 
@@ -855,6 +855,17 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
       return;
     }
   A4GL_debug ("MJA - Got message line as %d - %s\n", ml, s);
+
+
+
+
+  if (A4GL_LL_can_show_message(ml,s,wait)) {
+	  return;
+  }
+	
+
+
+
   width = UILIB_A4GL_get_curr_width ();
   //A4GL_push_char(s);
 
@@ -904,7 +915,7 @@ chk_for_picture (void *f, char *buff)
   struct struct_scr_field *fprop;
   char *picture;
 
-  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
 
   if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
     {
@@ -957,7 +968,7 @@ A4GL_turn_field_off (void *f)
 {
   struct struct_scr_field *fprop;
   int a;
-  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
   a = A4GL_field_opts_off (f, AUBIT_O_ACTIVE);
   a += A4GL_field_opts_off (f, AUBIT_O_EDIT);
   if (a == 0)
@@ -1060,8 +1071,12 @@ UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 int
 UILIB_aclfgl_set_window_title (int nargs)
 {
+  char *s;
+  int rval;
   A4GL_chkwin ();
-  return A4GL_LL_set_window_title (A4GL_get_currwin (), nargs);
+  s=A4GL_char_pop();
+  rval=A4GL_LL_set_window_title (A4GL_get_currwin (), s);
+  return rval;
 }
 
 
@@ -1197,10 +1212,15 @@ A4GL_get_field_width (void *f)
   int w;
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
-  fprop = (struct s_scr_field *) (A4GL_LL_get_field_userptr (f));
-  formdets = (struct s_form_dets *) A4GL_get_curr_form (0);
+
+  if (f==0) return 0;
+
+  fprop 	= (struct s_scr_field *) (A4GL_ll_get_field_userptr (f));
+  formdets 	= (struct s_form_dets *) A4GL_get_curr_form (0);
+
   if (formdets == 0 || fprop == 0)
     {
+	    	A4GL_pause_execution();
       return A4GL_LL_get_field_width_dynamic (f);
     }
 

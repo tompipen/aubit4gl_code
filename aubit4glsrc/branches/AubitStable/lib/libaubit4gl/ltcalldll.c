@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ltcalldll.c,v 1.1 2005-11-28 11:27:47 mikeaubury Exp $
+# $Id: ltcalldll.c,v 1.1.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -179,7 +179,7 @@ A4GL_dl_openlibrary (char *type, char *p)
 	  		if (errors) { A4GL_debug("lt_dladdsearchdir fails : %s",lt_dlerror()); }
 		}
 	  if (acl_getenv_not_set_as_0("AUBITDIR")) {
-	  	sprintf(buff,"%s/lib/aubit4gl",acl_getenv("AUBITDIR"));
+	  	SPRINTF1(buff,"%s/lib/aubit4gl",acl_getenv("AUBITDIR"));
 		  	A4GL_debug("Adding %s to searchpath",buff);
 	  	errors=lt_dladdsearchdir(buff);
 	  	if (errors) { A4GL_debug("lt_dladdsearchdir fails : %s",lt_dlerror()); }

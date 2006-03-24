@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.216 2006-01-08 09:39:45 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.216.2.1 2006-03-24 17:23:51 mikeaubury Exp $
 #
 */
 
@@ -333,6 +333,7 @@
 #define EMULATE_CURRENT_OF      'u'
 #define ARRAYS_OF_RECORD        'a'
 #define SCHEMA_FILE_INDEX       'x'
+#define FUNC_POINTER            ';'
 
 #define BLOCK_USED		'R'
 
@@ -808,6 +809,7 @@ struct s_module_error {
   int A4GL_check_type (char c, char type, int flg, int len);
   int A4GL_ask_int (char *prompt);	/*  prompt for an integer from user  */
   double A4GL_ask_dbl (char *prompt);	/*  prompt for an integer from user  */
+  double get_now_as_double(void);
   int A4GL_ask_verify (char *prompt);	/*  prompt for verification  */
   unsigned int getcursor (void);	/* Returns the shape of the current cursor */
   void A4GL_strip_nl (char *str);
@@ -1151,6 +1153,7 @@ enum cmd_types {
 #define DECODE_SIZE(x) 	(x>>16)
 
   char *A4GL_new_string (int a);
+  void A4GL_set_lasterrorstr(char *s);
 
 
 #ifndef ALREADY_DONE_POP_PUSH_ETC
@@ -1164,6 +1167,7 @@ enum cmd_types {
   void A4GLSTK_popFunction (void);
   void A4GL_pushop (int a);
   void A4GL_chk_err (int lineno, char *fname);
+
   void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
   void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
   void A4GL_push_null (int dtype,int size);
@@ -1177,6 +1181,8 @@ enum cmd_types {
   float A4GL_pop_float (void);
   double A4GL_pop_double (void);
   double A4GL_pop_double_null_as_zero(void);
+  void A4GL_pop_into_double_null_as_zero(double *d );
+  void A4GL_pop_into_double (double *d);
   int A4GL_pop_var (void *p, int d);
   int A4GL_pop_var2 (void *p, int d, int s);
   int A4GL_pop_char (char *z, int size);
@@ -1800,6 +1806,7 @@ FORMCONTROL_HIDE_FIELD
     int cntrl;
     int attribute;
     int processed_onkey;
+    char *curr_display;
   };
 
   struct s_inp_arr
@@ -2673,6 +2680,8 @@ struct expr_str *A4GL_expr_in(struct expr_str *expr, int invert,struct expr_str_
 char *expr_name(enum e_expr_type e);
 
 struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
+struct expr_str * A4GL_new_expr_obsol (char *value);
+struct expr_str * A4GL_append_expr_obsol (struct expr_str *orig_ptr, char *value);
 
 struct expr_str *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
 struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line);
@@ -2750,6 +2759,12 @@ struct ow_open_window {
 
 typedef struct ow_open_window t_ow_open_window;
 
+
+
+#ifndef BIND_RECOPY
+#define BIND_RECOPY
+struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
+#endif
 
 struct sql_statement {
         int stmt_type;
@@ -2832,7 +2847,8 @@ enum e_sli {
 	E_SLI_CASE,
 	E_SLI_CASE_ELEMENT,
 	E_SLI_COLUMN_ORDERBY,
-	E_SLI_VAR_REPLACE
+	E_SLI_VAR_REPLACE,
+	E_SLI_BUILTIN_CONST_TIME
 
 };
 
@@ -2995,6 +3011,10 @@ struct s_select {
 		struct s_select_finish 		*sf;
 		char *into;
 		char *union_op;
+
+		// optional extra statement that need to be executed before this statement
+		// NULL indicates that extra statement is not used
+		char *extra_statement;
 };
 
 struct s_select_list_item_list *new_select_list_item_list(struct s_select_list_item *i) ;
@@ -3054,7 +3074,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
                                struct s_table_list *tl);
 
 int A4GL_fgl_keyval (int _np);
-int A4GL_strcasestr(char *h,char *n);
+int A4GL_aubit_strcasestr(char *h,char *n);
 int aclfgl_aclfgl_random(int n) ;
 
 int A4GL_include_range_check (char *ss, char *ptr, int dtype);

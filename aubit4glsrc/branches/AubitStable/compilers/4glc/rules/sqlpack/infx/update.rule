@@ -34,7 +34,7 @@ where_upd_ss : {
 		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
 		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
 		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
-                                sprintf($<str>$,"");
+                                strcpy($<str>$,"");
 		} else {
 			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 			A4GL_cursor_current($<str>2);
@@ -283,6 +283,7 @@ $<sql_string>$=make_sql_string_and_free(
         | KW_FALSE {$<sql_string>$=make_sql_string_and_free(acl_strdup("FALSE"),0);}
         | USER {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("USER")),0);}
         | KW_TODAY {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("TODAY")),0);}
+        | TIME {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("TIME")),0);}
         | COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(acl_strdup("COUNT(*)"),0);}
 ;
 

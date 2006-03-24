@@ -3,6 +3,10 @@
 
 select_statement_ss_str: select_statement_ss_select  {
 		$<sql_string>$=make_select_stmt($<s_select>1);
+
+		//run an extra statement
+		if ($<s_select>1->extra_statement != NULL)
+		    A4GL_CV_print_exec_sql($<s_select>1->extra_statement);
 }
 ;
 
@@ -222,6 +226,7 @@ value_expression_complex_sli :
 	| KW_FALSE 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_FALSE); }
 	| USER 			{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_USER); }
 	| KW_TODAY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TODAY); }
+	| TIME 			{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TIME); }
 	| MULTIPLY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_STAR); }
 	| COUNT_MULTIPLY 	{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_COUNT_STAR); }
 
@@ -427,6 +432,9 @@ in_value_list_slil:
 
 in_value_specification_sli : var_ident_ibind_sli { $<s_select_list_item>$=$<s_select_list_item>1;}
          | literal { $<s_select_list_item>$=new_select_list_item_literal($<str>1); }
+	 | MINUS INT_VALUE { 
+		char buff[256]; sprintf(buff,"-%s",$<str>2); $<s_select_list_item>$=new_select_list_item_literal(buff); }
+	 | MINUS  real_number { char buff[256]; sprintf(buff,"-%s",$<str>2); $<s_select_list_item>$=new_select_list_item_literal(buff); }
 ;
 
 

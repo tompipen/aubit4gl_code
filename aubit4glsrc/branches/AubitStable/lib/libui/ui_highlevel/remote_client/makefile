@@ -1,4 +1,4 @@
-CFLAGS=-g -fPIC -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libaubit4gl -DCONFIGURED_TARGET=\"X\" -DCONFIGURED_TARGET_OS=\"X\" 
+CFLAGS=-g -fPIC -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libaubit4gl -DCONFIGURED_TARGET=\"X\" -DCONFIGURED_TARGET_OS=\"X\"  
 CC=gcc
 
 
@@ -6,6 +6,10 @@ all: ../../../libUI_client.so server_tui server_gtk
 
 ../../../libUI_client.so:  ui_lowlevel_xdr.o ui_lowlevel_clnt.o clnt_main.o marshall_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o ../common_hlui.o 
 	gcc -g -fPIC -shared ui_lowlevel_xdr.o ui_lowlevel_clnt.o clnt_main.o marshall_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o  ../common_hlui.o -o ../../../libUI_client.so
+
+
+libUI_xmlclient.so:  clnt_main_xml.o marshall_xml_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o ../common_hlui.o 
+	gcc -g -fPIC -shared ui_lowlevel_xdr.o clnt_main_xml.o marshall_xml_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o  ../common_hlui.o -o ../../../libUI_xmlclient.so
 
 
 libLL_server.so:  ui_lowlevel_xdr.o ui_lowlevel_svc.o  marshall_server.o
@@ -39,9 +43,14 @@ ui_lowlevel_xdr.c: ui_lowlevel.x
 marshall_client.c: API_lowlevel.spec dlrpc_marshall
 	sh dlrpc_marshall  API_lowlevel.spec  client > marshall_client.c
 
+marshall_xml_client.c: API_lowlevel.spec dlrpc_marshall_xml
+	sh dlrpc_marshall_xml  API_lowlevel.spec  client > marshall_xml_client.c
+
 marshall_server.c: API_lowlevel.spec dlrpc_marshall
 	sh dlrpc_marshall  API_lowlevel.spec  server > marshall_server.c
 
+marshall_xml_server.c: API_lowlevel.spec dlrpc_marshall_xml
+	sh dlrpc_marshall_xml  API_lowlevel.spec  server > marshall_xml_server.c
 
 clean: 
-	rm marshall_client.c marshall_server.c *.o  libLL_server.so ui_lowlevel_clnt.c ui_lowlevel_svc.c ui_lowlevel_xdr.c ui_lowlevel.h ui_lowlevel.x server_tui  server_gtk
+	rm marshall_client.c marshall_server.c *.o  libLL_server.so ui_lowlevel_clnt.c ui_lowlevel_svc.c ui_lowlevel_xdr.c ui_lowlevel.h ui_lowlevel.x server_tui  server_gtk 

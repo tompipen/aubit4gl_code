@@ -122,6 +122,7 @@ code
 			char nfname[256];
 			sprintf(nfname,"%s.tmp",outfname);
 			out2=fopen(nfname,"w");
+			add_temp_file(nfname);
 			outlines=0;
 			while (1) {
 				fgets(buff,sizeof(buff),in);

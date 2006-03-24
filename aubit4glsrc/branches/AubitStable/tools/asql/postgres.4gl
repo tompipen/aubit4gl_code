@@ -1283,16 +1283,15 @@ end function
 code
 
 int get_sqlcode(void ) {
-return sqlca.sqlcode;
+	return sqlca.sqlcode;
 }
 
 void set_sqlcode(int n) {
-sqlca.sqlcode=n;
+	sqlca.sqlcode=n;
 }
 
 
 int ec_check_and_report_error() {
-
         if (sqlca.sqlcode<0) {
                 aclfgl_check_and_report_error(0);
                 return 1;
@@ -1417,9 +1416,19 @@ int lineno=0;
                         strcat(ins_str,smbuff);
                 }
                 strcat(ins_str,")");
+		A4GLSQL_set_sqlerrm("",""); 
                 EXEC SQL prepare p_loadit from :ins_str;
-                EXEC SQL execute p_loadit;
-                if (get_sqlcode()!=0) { break; }
+
+                if (get_sqlcode()!=0) { 
+			A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp); 
+			break; 
+		} else {
+                	EXEC SQL execute p_loadit;
+                	if (get_sqlcode()!=0) { 
+				A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp); 
+				break; 
+			}
+		}
         }
         fclose(loadFile);
         loadFile=0;

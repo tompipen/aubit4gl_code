@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.103 2005-07-27 19:58:16 whaslbeck Exp $
+# $Id: Makefile-install.mki,v 1.103.2.1 2006-03-24 17:23:51 mikeaubury Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -104,7 +104,7 @@ ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
 	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
 else
-	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
+	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable - won't install 'aubit' there"
 endif
 
 
@@ -165,10 +165,10 @@ install.libs.links: deinstall.libs.links
 	${MKPATH} ${LIB_INSTALL_LINK}
 ifeq "$(shell  if test -w ${LIB_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
-else
-	@echo "WARNING: ${LIB_INSTALL_LINK} is not writable."
-endif
 	@echo "Links to Aubit libraries installed to ${LIB_INSTALL_LINK}/ "
+else
+	@echo "WARNING: ${LIB_INSTALL_LINK} is not writable - won't install Aubit libraries there"
+endif
 
 ## ==================================================================
 ##                    deinstall targets
@@ -239,12 +239,25 @@ endif
 #######################################
 #remove links to libraries:
 deinstall.libs.links:
+ifeq "$(shell  if test -w ${LIB_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+else
+ifeq "$(shell  if test -f ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT} ; then echo 1; fi)" "1"
+	@echo "WARNING : Unable to remove ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}"
+endif
+endif
 
 #######################################
 #remove links to binaries:
 deinstall.bin.links:
+ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
+else
+ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
+	@echo "WARNING  :Unable to remove the aubit-config and aubit files in the ${BIN_INSTALL_LINK} directory"
+endif
+	
+endif
 
 #######################################
 #stuff left over from automatic nightly builds (aubitbuild.sh):

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.63 2005-12-05 20:31:06 mikeaubury Exp $
+# $Id: calldll.c,v 1.63.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -264,7 +264,7 @@ static void
 badfunc (void)
 {
   /* A4GL_exitwith ("No DLL Loaded"); */
-  A4GL_exitwith ("0: Non-existing function called in DLL\n");
+  //A4GL_exitwith ("0: Non-existing function called in DLL\n");
 }
 
 /**
@@ -411,6 +411,16 @@ void *
 A4GL_find_func (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
+  char buff[256];
+  sprintf(buff,"%p_%s",dllhandle,func);
+
+
+
+  // Have we found it once before ?
+  if (A4GL_has_pointer(buff,FUNC_POINTER)) {
+	// Don't bother looking again then....
+	return A4GL_find_pointer(buff,FUNC_POINTER);
+  }
 
 /*
  FIXME:
@@ -434,7 +444,7 @@ inc_usage(func);
     {
       A4GL_debug ("Not found - bad handle (%s)",func);
       A4GL_exitwith ("Could not open shared library");
-      /* return badfunc; */
+      return badfunc; 
     }
 #ifdef USE_SHL
   if (!shl_findsym (&dllhandle, tempbuff,TYPE_PROCEDURE,&func_ptr)==-1) { 
@@ -451,10 +461,10 @@ inc_usage(func);
       A4GL_exitwith ("Could not find function in shared library");
 	SPRINTF1(buff,"Error:Could not find function in shared library (%s)- STOP",func);
       A4GL_fgl_die_with_msg(43,buff);
-      /* return badfunc; */
+      return badfunc; 
     }
 
-
+  A4GL_add_pointer(buff,FUNC_POINTER,func_ptr);
   return (void *)func_ptr;
 }
 

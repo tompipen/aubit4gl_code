@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.69 2005-12-02 12:28:11 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.69.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -230,7 +230,9 @@ A4GL_push_dec (char *p, int ismoney,int size)
   int l;
   int d;
   int plen ;
+#ifdef DEBUG
   A4GL_debug("push_dec with size=%x\n",size);
+#endif
 
   if (p==0) {
 	if (ismoney) A4GL_push_param(0,DTYPE_MONEY+  DTYPE_MALLOCED+ENCODE_SIZE(size));
@@ -360,17 +362,23 @@ A4GL_push_char (char *p)
   char *ptr;
   last_was_empty=0;
   A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
+#ifdef DEBUG
   A4GL_debug("Push char...'%s'",p);
+#endif
   if (p[0] == 0 && p[1] != 0)
     {
+#ifdef DEBUG
       A4GL_debug("blank first not second ('%s')",p);
+#endif
       ptr = (char *) A4GL_new_string_set ((int)strlen (p) + 1, p);
       ptr[0] = 0;
       ptr[1] = 1;
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug("not (blank first not second) '%s'",p);
+#endif
       ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
     }
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int)strlen (p))));
@@ -899,12 +907,14 @@ A4GL_push_variable (void *ptr, int dtype)
 		return;
   }
 
+#ifdef DEBUG
   A4GL_debug ("In push variable dtype = %d (%x)", dtype, dtype);
 
   if ((dtype & 0xff) == 0)
     {
       A4GL_debug ("Value = '%s'\n", A4GL_null_as_null(ptr));
     }
+
   if (A4GL_isnull (dtype, ptr))
     {
       A4GL_debug ("In push variable... ptr is null");
@@ -913,6 +923,7 @@ A4GL_push_variable (void *ptr, int dtype)
     {
       A4GL_debug ("In push variable... ptr is not null");
     }
+#endif
 
 #ifdef DEBUG
   {
@@ -932,7 +943,9 @@ A4GL_push_variable (void *ptr, int dtype)
       return;
     }
 
+#ifdef DEBUG
   A4GL_debug ("DOING SWITCH");
+#endif
   switch (dtype & DTYPE_MASK)
     {
     case 0:
@@ -942,35 +955,51 @@ A4GL_push_variable (void *ptr, int dtype)
       A4GL_push_char (ptr);
       return;
     case 1:
+#ifdef DEBUG
       A4GL_debug ("SMALLINT= %d\n", *(short *) ptr);
+#endif
       A4GL_push_int (*(short *) ptr);
       return;
     case 2:
+#ifdef DEBUG
       A4GL_debug ("LONG");
+#endif
       A4GL_push_long (*(long *) ptr);
       return;
     case 6:
+#ifdef DEBUG
       A4GL_debug ("LONG");
+#endif
       A4GL_push_long (*(long *) ptr);
       return;
     case 7:
+#ifdef DEBUG
       A4GL_debug ("DATE");
+#endif
       A4GL_push_date (*(long *) ptr);
       return;
     case 3:
+#ifdef DEBUG
       A4GL_debug ("DOUBLE");
+#endif
       A4GL_push_double (*(double *) ptr);
       return;
     case 5:
+#ifdef DEBUG
       	A4GL_debug ("DECIMAL");
+#endif
       	A4GL_push_dec (ptr, 0,dtype>>16);
       return;
     case 8:
+#ifdef DEBUG
       A4GL_debug ("MONEY");
+#endif
       A4GL_push_dec (ptr, 1,dtype>>16);
       return;
     case 4:
+#ifdef DEBUG
       A4GL_debug ("FLOAT");
+#endif
       A4GL_push_float (*(float *) ptr);
       return;
     case DTYPE_TEXT:
@@ -979,11 +1008,15 @@ A4GL_push_variable (void *ptr, int dtype)
       return;
 
     case DTYPE_DTIME:
+#ifdef DEBUG
       A4GL_debug ("pushing dtime");
+#endif
       A4GL_push_dtime (ptr);
       return;
     case DTYPE_INTERVAL:
+#ifdef DEBUG
 		A4GL_debug("Interval - %d %d",dtype,DTYPE_INTERVAL);
+#endif
       A4GL_push_interval (ptr);
       return;
     }

@@ -9,12 +9,12 @@ struct s_table_join
 };
 
 
-struct s_select_list_item *joins[10][10];
+static struct s_select_list_item *joins[10][10];
 
 
 
-int ntables;
-struct s_table_join tables[200];
+static int ntables;
+static struct s_table_join tables[200];
 
 static int
 xfind_table (char *s)
@@ -239,11 +239,11 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	  if (!outer_table)
 	    {
 	      outer_table = t2->tabname;
-	      sprintf (alias_buff, "%s ", t2->tabname);
+	      SPRINTF1 (alias_buff, "%s ", t2->tabname);
 	    }
 	  else
 	    {
-	      sprintf (alias_buff, "%s As %s", t2->tabname, t2->alias);
+	      SPRINTF2 (alias_buff, "%s As %s", t2->tabname, t2->alias);
 	    }
 
 
@@ -280,7 +280,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 		  if (found)
 		    {
 		      char buff2[256];
-		      sprintf (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
+		      SPRINTF2 (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
 			       get_select_list_item (select,
 						     select->list_of_items.
 						     list[b]));

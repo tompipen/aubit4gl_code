@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.92 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: builtin.c,v 1.92.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -288,7 +288,7 @@ aclfgl_length (int nargs)
       return 0;
     }
   g = A4GL_char_pop ();
-  if (A4GL_isnull(0,g)) {
+  if (A4GL_isnull(DTYPE_CHAR,g)) {
 		A4GL_push_int(0);
 		return 1;
 	}
@@ -318,7 +318,7 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   va_start (ap, b);
   va_end (ap);
   A4GL_debug("Entering a4gl_substr");
-  if (A4GL_isnull(0,ca)) return "";
+  if (A4GL_isnull(DTYPE_CHAR,ca)) return "";
 
 
 #ifdef DEBUG
@@ -810,6 +810,7 @@ A4GL_errorlog (char *fname, int l, int n)
   s=A4GL_pull_off_data_for_display(n,DISPLAY_TYPE_DISPLAY_AT);
   A4GL_debug ("ERROR LOG - %s Line:%d %s\n", A4GL_null_as_null(fname), l, A4GL_null_as_null(s));
 
+  A4GL_trim(s);
   if (error_log_file)
     {
       A4GL_push_current (1, 3);

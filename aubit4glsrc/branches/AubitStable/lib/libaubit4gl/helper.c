@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.50 2006-01-07 11:53:21 mikeaubury Exp $
+# $Id: helper.c,v 1.50.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -1008,6 +1008,9 @@ A4GL_read_form (char *s, char *p)
   char old_formtype[256] = "";
   char buff[256];
   void *ptr;
+  char formpath[256];
+  int found=0;
+  FILE *f;
 
   #ifdef DEBUG
   	A4GL_debug ("read_form %s %s", s, p);
@@ -1024,8 +1027,52 @@ A4GL_read_form (char *s, char *p)
       A4GL_setenv ("A4GL_PACKER", A4GL_find_pointer_val (s, COMPILED_FORM_PACKER), 1);
     }
   strcpy (buff, s);
-  strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
+
+
+
+  strcpy(formpath,acl_getenv("A4GL_FRM_BASE_LIST"));
+
+  if (strlen(formpath)) {
+	char *ptr1;
+	char *ptr2;
+	char buff_path[256];
+	char buff_file[512];
+
+	strcpy(buff_path,formpath);
+	ptr1=strchr(buff_path,':');
+	ptr2=&buff_path[0];
+
+	while (ptr1)  {
+		*ptr1=0;
+		strcpy(buff_file,buff);
+  		strcat (buff_file, ptr2);
+  		f=A4GL_open_file_dbpath(buff_file);
+		if (f) { 
+			found=1;
+			strcpy(buff,buff_file); 
+			break; 
+		}
+
+		ptr2=ptr1+1;
+		ptr1=strchr(ptr2,':');
+	}
+	if (!found) {
+		strcpy(buff_file,buff);
+  		strcat (buff_file, ptr2);
+  		f=A4GL_open_file_dbpath(buff_file);
+		if (f) { 
+			strcpy(buff,buff_file); 
+		} else {
+  			strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
+		}
+	}
+  } else {
+  	strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
+  }
   ptr = A4GL_read_form_internal (buff, p);
+
+
+
 
   if (A4GL_has_pointer (s, COMPILED_FORM))
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.48 2005-09-11 16:30:00 mikeaubury Exp $
+# $Id: fcompile.c,v 1.48.2.1 2006-03-24 17:23:38 mikeaubury Exp $
 #*/
 
 /**
@@ -84,6 +84,7 @@ int newscreen = 0;
 int fstart;
 char *default_database = 0;
 //int A4GLF_open_db (char *s);
+int opened_db=0;
 void usage (char *s);
 void a4gl_form_yyerror (char *s);
 char *rm_dup_quotes(char *s) ;
@@ -94,6 +95,14 @@ char *rm_dup_quotes(char *s) ;
 =====================================================================
 */
 int fcompile=0;
+
+
+
+void bye(void ) {
+  if (opened_db) {
+        A4GL_close_database();
+  }
+}
 
 
 /**
@@ -242,7 +251,9 @@ main (int argc, char *argv[])
     }
   A4GL_init_form ();
 
+  atexit(bye);
   waserr=a4gl_form_yyparse ();
+
   if (!silent) {
   	if (waserr) {
 		  printf("    The form compilation was ** not ** successful.\nPlease look at the relevant .err file\n\n");
@@ -250,8 +261,8 @@ main (int argc, char *argv[])
 		  printf("    The form compilation was successful.\n\n");
 	}
   }
-  return waserr;
 
+  return waserr;
 }
 
 #ifdef DO_DEBUG
@@ -264,7 +275,15 @@ YYSTYPE;
 
 YYSTYPE yylval;
 
+
+
+
+
 #endif
+
+
+
+
 /**
  * Executed by the parser when it enconters some error
  *
@@ -366,6 +385,8 @@ usage (char *s)
 int
 A4GLF_open_db (char *s)
 {
+
+  opened_db=1;
   if (default_database == 0)
     {
       return A4GLSQL_init_connection (s);

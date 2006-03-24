@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.87 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: ops.c,v 1.87.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -124,6 +124,8 @@ static char *make_using_sz (char *ptr, int sz, int dig, int dec);
 char *A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in);
 
 void A4GL_in_date_ops (int op);
+void A4GL_dt_date_ops (int op);
+void A4GL_date_dt_ops (int op);
 int A4GL_days_in_month (int m, int y);
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
@@ -306,12 +308,16 @@ char *ptr2;
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
   A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
 
+#ifdef DEBUG
   A4GL_debug(" About to pop '%s'(%s) '%s'(%s)",ptr1,A4GL_isnull(d1,ptr1)?"null":"not null",ptr2,A4GL_isnull(d2,ptr2)?"null":"not null");
+#endif
 
   b = A4GL_char_pop ();
   a = A4GL_char_pop ();
 
+#ifdef DEBUG
   A4GL_debug("a='%s' b='%s' op=%d\n",a,b,op);
+#endif
 
   if (A4GL_isnull (DTYPE_CHAR, (void *) a) || A4GL_isnull (DTYPE_CHAR, (void *) b)) { 
 		A4GL_debug("One of them is null...");
@@ -319,13 +325,20 @@ char *ptr2;
 		free(a); free(b); 
 		return; 
 	}
-  else { A4GL_debug ("OK - neither is null"); } 
+
+  else { 
+#ifdef DEBUG
+	  	A4GL_debug ("OK - neither is null"); 
+#endif
+  } 
 
   A4GL_trim(b);
   A4GL_trim(a);
 
 
+#ifdef DEBUG
   A4GL_debug("a='%s' b='%s' op=%d and they're trimmed\n",a,b,op);
+#endif
 
   switch (op)
     {
@@ -622,6 +635,52 @@ A4GL_dt_in_ops (int op)
   A4GL_push_int (0);
 }
 
+void
+A4GL_dt_date_ops (int op)
+{
+	struct A4GLSQL_dtime dt2;
+	void *ptr1;
+	void *ptr2;
+	int dtype1;
+	int dtype2;
+	int sz1;
+	int sz2;
+
+  	A4GL_get_top_of_stack (1, &dtype1, &sz1, (void *) &ptr1);
+  	A4GL_get_top_of_stack (2, &dtype2, &sz2, (void *) &ptr2);
+	dtype1=dtype1&DTYPE_MASK; dtype2=dtype2&DTYPE_MASK;
+
+	A4GL_pop_param(&dt2,DTYPE_DTIME,0x13); 
+	A4GL_push_variable(&dt2,0x13000a);
+	A4GL_dt_dt_ops(op);
+}
+
+void
+A4GL_date_dt_ops (int op)
+{
+	struct A4GLSQL_dtime dt1;
+	struct A4GLSQL_dtime *pdt1;
+	void *ptr2;
+	struct A4GLSQL_dtime dt2; // Was formerly the date...
+	int dtype1;
+	int dtype2;
+	int sz1;
+	int sz2;
+  	A4GL_get_top_of_stack (1, &dtype1, &sz1, (void *) &pdt1);
+  	A4GL_get_top_of_stack (2, &dtype2, &sz2, (void *) &ptr2);
+
+	dtype1=dtype1&DTYPE_MASK; dtype2=dtype2&DTYPE_MASK;
+	A4GL_assertion((dtype1&DTYPE_MASK)!=DTYPE_DTIME,"Internal error - expecting a datetime");
+	dt1.stime=pdt1->stime;
+	dt1.ltime=pdt1->ltime;
+        A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
+	A4GL_pop_param(&dt2,DTYPE_DTIME,0x13); 
+	A4GL_push_variable(&dt2,0x13000a);
+	A4GL_push_dtime (&dt1);
+	A4GL_dt_dt_ops(op);
+}
+
+
 
 void
 A4GL_in_date_ops (int op)
@@ -662,8 +721,7 @@ A4GL_in_date_ops (int op)
       return;
     }
   A4GL_push_variable (&dt, 0x13000a);
-  A4GL_push_variable (&in,
-		      ((in.stime * 16 + in.ltime) < 16) + DTYPE_INTERVAL);
+  A4GL_push_variable (&in, ((in.stime * 16 + in.ltime) < 16) + DTYPE_INTERVAL);
   A4GL_debug_print_stack ();
 
 // Now do it as a datetime/interval...
@@ -1077,13 +1135,17 @@ A4GL_int_int_ops (int op)
   if (A4GL_isnull (DTYPE_INT, (void *) &a)
       || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("int_int - one is null");
+#endif
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG
@@ -3019,6 +3081,10 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_DATE, DTYPE_INTERVAL, OP_MATH, A4GL_in_date_ops);
 
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_DTIME, OP_MATH, A4GL_dt_dt_ops);
+
+
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_DTIME, OP_MATH, A4GL_date_dt_ops);
+  A4GL_add_op_function (DTYPE_DTIME, DTYPE_DATE, OP_MATH, A4GL_dt_date_ops);
 
   A4GL_debug ("Finished adding default operations");
 

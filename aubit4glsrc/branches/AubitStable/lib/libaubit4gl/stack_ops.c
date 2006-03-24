@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.15 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.15.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -199,4 +199,29 @@ A4GL_debug("A4GL_process_stack_op_other");
       return;
     }
 
+}
+
+
+
+struct BINDING *
+bind_recopy (struct BINDING *b, int n, struct BINDING *c)
+{
+static char *tmpcp=0;
+  if (n == 0 || c==0)
+    {
+      free (b);
+      return 0;
+    }
+
+  //
+  // Make sure that if the source and destination overlap that we do no harm
+  // by copying to a temp area first...
+  //
+  tmpcp = realloc (tmpcp, sizeof (struct BINDING) * n);
+  memcpy (tmpcp, c, sizeof (struct BINDING) * n);
+
+  b = realloc (b, sizeof (struct BINDING) * n);
+  memcpy (b, tmpcp, sizeof (struct BINDING) * n);
+
+  return b;
 }

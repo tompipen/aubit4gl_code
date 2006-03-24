@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.53 2005-07-15 13:26:49 mikeaubury Exp $
+# $Id: prompt.c,v 1.53.2.1 2006-03-24 17:24:24 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.53 2005-07-15 13:26:49 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.53.2.1 2006-03-24 17:24:24 mikeaubury Exp $";
 #endif
 
 /**
@@ -314,8 +314,9 @@ int
 struct aclfgl_event_list *evt;
 int was_aborted=0;
   FORM *mform;
-
+  int blk;
   struct s_prompt *prompt;
+
   prompt = vprompt;
   evt=vevt;
 
@@ -338,13 +339,6 @@ int was_aborted=0;
 
 
 
-  if (prompt->mode==0) { // Check for any timeouts...
-	  int blk;
-	  blk=A4GL_has_evt_timeout(evt);
-	  if (blk) {
-		 return blk;
-	}
-  }
 
   if (prompt->mode == 1)
     {
@@ -370,16 +364,32 @@ int was_aborted=0;
 
 
 
-  if (prompt->mode > 0)
-    return 0;
+  if (prompt->mode > 0) {
+    	return 0;
+  }
 
-A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
+  A4GL_assertion(prompt->mode!=0,"prompt mode is not zero...");
+
+
+
+
   	pos_form_cursor (mform);
 	abort_pressed=0;
 	was_aborted=0;
         A4GL_debug("Timeout : %d\n",timeout);
-  	a=A4GL_real_getch_swin (p);
-//printf("a=%d\n",a);fflush(stdout);
+
+
+	while (1) {
+	  	blk=A4GL_has_evt_timeout(evt);
+	  	if (blk) { return blk; }
+  		a=A4GL_real_getch_swin (p);
+		if (a!=0&&a!=-1) {
+			A4GL_evt_not_idle(evt);
+			break;
+		}
+		if (abort_pressed) break;
+	}
+
         prompt->processed_onkey=a;
 	A4GL_debug("Read character... %d",a);
   	if (a) {A4GL_clr_error_nobox("prompt");}
@@ -388,9 +398,6 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
   	A4GL_set_last_key (a);
   	prompt->lastkey = A4GL_get_lastkey ();
 
-	if (a!=0&&a!=-1) {
-		A4GL_evt_not_idle(evt);
-	}
 
 	if (A4GL_has_event_for_keypress(a,evt)|| abort_pressed) {
       		A4GL_push_null (DTYPE_CHAR,1);

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.41 2005-12-10 22:29:31 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.41.2.1 2006-03-24 17:24:29 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.41 2005-12-10 22:29:31 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.41.2.1 2006-03-24 17:24:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -136,7 +136,7 @@ A4GL_add_to_control_stack (struct s_screenio *sio, int op, void *f,
 
   if (f)
     {
-      attr = (struct struct_scr_field *) A4GL_LL_get_field_userptr (f);
+      attr = (struct struct_scr_field *) A4GL_ll_get_field_userptr (f);
       field_name = attr->colname;
     }
   a = sio->fcntrl_cnt;
@@ -273,7 +273,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 
   A4GL_debug ("last field was : %p", sio->currform->currentfield);
   next_field = sio->field_list[attrib];
-  f = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (next_field));
+  f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (next_field));
 
   if (A4GL_field_is_noentry ((sio->mode == MODE_CONSTRUCT), f)
       || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
@@ -297,7 +297,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 	  next_field = sio->field_list[attrib];
 	  f =
 	    (struct struct_scr_field
-	     *) (A4GL_LL_get_field_userptr (next_field));
+	     *) (A4GL_ll_get_field_userptr (next_field));
 
 	  if (A4GL_field_is_noentry ((sio->mode == MODE_CONSTRUCT), f)
 	      || (f->datatype == DTYPE_SERIAL && sio->mode != MODE_CONSTRUCT))
@@ -483,7 +483,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 
 		if (kr && fcntrl.extent==kr && ignore==0) {
 	  			struct struct_scr_field *fprop;
-	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
+	  			fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
 				A4GL_recall_field(fprop->tabname,fprop->colname,1,1,1);
 	      			new_state = 0;
 	      			rval = -1;
@@ -492,7 +492,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 
 		if (kr_q && fcntrl.extent==kr_q && ignore==0) {
 	  			struct struct_scr_field *fprop;
-	  			fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
+	  			fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
 				A4GL_recall_field(fprop->tabname,fprop->colname,1,1,0);
 	      			new_state = 0;
 	      			rval = -1;
@@ -517,7 +517,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	  int ok = 0;
 	  new_state = 10;
 
-	  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (sio->currentfield));
+	  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
 
 	  A4GL_debug ("Checking key state.. %d", fcntrl.extent);
 	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
@@ -633,7 +633,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	    {
 	      fprop =
 		(struct struct_scr_field
-		 *) (A4GL_LL_get_field_userptr (sio->currentfield));
+		 *) (A4GL_ll_get_field_userptr (sio->currentfield));
 
 	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT))
 		{
@@ -719,7 +719,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 		    {
 		      fprop =
 			(struct struct_scr_field
-			 *) (A4GL_LL_get_field_userptr (sio->currentfield));
+			 *) (A4GL_ll_get_field_userptr (sio->currentfield));
 		      if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT)
 			  && a4gl_isupper (k) && a4gl_isalpha (k))
 			{
@@ -785,7 +785,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	  A4GL_LL_set_carat (sio->currform->form);
 	  fprop =
 	    (struct struct_scr_field
-	     *) (A4GL_LL_get_field_userptr (sio->currentfield));
+	     *) (A4GL_ll_get_field_userptr (sio->currentfield));
 	  attr =
 	    A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop,
 				      (char *) A4GL_LL_field_buffer (sio->
@@ -919,7 +919,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	  new_state = 0;
 	  fprop =
 	    (struct struct_scr_field
-	     *) (A4GL_LL_get_field_userptr (sio->currentfield));
+	     *) (A4GL_ll_get_field_userptr (sio->currentfield));
 	  if (sio->mode != MODE_CONSTRUCT)
 	    {
 	      //int has_picture=0;
@@ -1060,7 +1060,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 
 	      fprop =
 		(struct struct_scr_field
-		 *) (A4GL_LL_get_field_userptr (sio->currentfield));
+		 *) (A4GL_ll_get_field_userptr (sio->currentfield));
 	      attr =
 		A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop,
 					  A4GL_LL_field_buffer (sio->
@@ -1282,7 +1282,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 
   fprop =
     (struct struct_scr_field *)
-    A4GL_LL_get_field_userptr (A4GL_LL_current_field (mform));
+    A4GL_ll_get_field_userptr (A4GL_LL_current_field (mform));
   metrics = &form->fileform->metrics.metrics_val[A4GL_get_curr_metric (form)];
 
   if (metrics && (int) metrics != -1)
@@ -1295,20 +1295,24 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
   A4GL_mja_set_current_field (mform, form->currentfield);
 //}
 
-   blk=A4GL_has_evt_timeout(evt);
-   if (blk) {
-		             return blk;
-   }
 
 // Wait for a key..
   A4GL_LL_set_carat (mform);
-  fprop =
-    (struct struct_scr_field *)
-    A4GL_LL_get_field_userptr (A4GL_LL_current_field (mform));
-  a = A4GL_getch_win (1);
+  fprop = (struct struct_scr_field *)
+  A4GL_ll_get_field_userptr (A4GL_LL_current_field (mform));
 
-  if (a!=0&&a!=-1) {
-       A4GL_evt_not_idle(evt);
+  while (1) {
+   	blk=A4GL_has_evt_timeout(evt);
+   	if (blk) {
+		       	return blk;
+   	}
+  	a = A4GL_getch_win (1);
+	
+  	if (a!=0&&a!=-1) {
+       		A4GL_evt_not_idle(evt);
+       		break;
+  	}
+  	if (abort_pressed) {break;}
   }
 
   if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
@@ -1482,7 +1486,7 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
 	      at_last, A4GL_LL_current_field (mform));
 
   //int npage;
-  fd = A4GL_LL_get_form_userptr (mform);
+  fd = A4GL_ll_get_form_userptr (mform);
   form = &fd->form_details;
   do_input_nowrap = 0;
 
@@ -1492,7 +1496,7 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
   if (a != 10)
     {
       A4GL_debug ("Getting fprop");
-      fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
+      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
       A4GL_debug ("fprop=%p\n", fprop);
 
       if (fprop != 0)
@@ -1761,6 +1765,11 @@ A4GL_comments (struct struct_scr_field *fprop)
   buff[A4GL_get_curr_width ()] = 0;
   A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
 
+
+ if (A4GL_LL_can_show_comments(buff)) {
+	 return;
+ }
+
   if (cline > UILIB_A4GL_get_curr_height ())
     {
       cline = UILIB_A4GL_get_curr_height ();
@@ -1895,8 +1904,13 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt)
   A4GL_debug ("su");
   A4GL_LL_screen_update ();
 
-  a = A4GL_getch_internal (0);
-  construct_last_key = a;
+
+ //blk=A4GL_has_evt_timeout(evt);
+ //if (blk) { return blk; }
+ //
+  	a = A4GL_getch_internal (0);
+  	construct_last_key = a;
+
 
   A4GL_debug ("construct_large a=%d abort_pressed=%d", a, abort_pressed);
 

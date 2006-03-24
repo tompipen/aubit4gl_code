@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.51 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: debug.c,v 1.51.2.1 2006-03-24 17:23:56 mikeaubury Exp $
 #
 */
 
@@ -122,22 +122,25 @@ if (strlen(debugfilename)==0) {
 void
 A4GL_debug_full (char *fmt, ...)
 {
-  va_list args;
+  static va_list args;
 #define MAX_DEBUG 10000
   static char buff[MAX_DEBUG+1];
-  int a;
-  int dbg_level;
-  char buff_n[20];
+  static int a;
+  static int dbg_level;
+  static char buff_n[20];
   static int indebug=0;
+
+
+  if (nodebug == DEBUG_NOTREQUIRED) { return; }
 
   if (indebug) return;
   indebug++;
+
+
   if (strlen(fmt)==0) {
 		A4GL_assertion(1,"No format for debug");
 		A4GL_pause_execution();
   }
-  if (nodebug == DEBUG_NOTREQUIRED)
-    return;
 
   if (nodebug == DEBUG_DONTKNOW)
     {
@@ -218,6 +221,7 @@ A4GL_debug_full (char *fmt, ...)
 int
 A4GL_set_line (char *fname, long lineno)
 {
+  if (nodebug == DEBUG_NOTREQUIRED) { return 0; }
   if (nodebug == 1)
     {
       strcpy (g_fname, fname);

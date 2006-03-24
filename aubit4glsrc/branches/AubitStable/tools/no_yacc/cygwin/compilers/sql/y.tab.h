@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875d.  */
+/* A Bison parser, made by GNU Bison 2.1.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
@@ -196,9 +196,6 @@
      PUBLIC = 1536,
      REVOKE = 1539,
      SECOND = 1543,
-     IDLE_SECONDS = 1544,
-     IDLE_MINUTES = 1545,
-     IDLE_HOURS = 1546,
      KW_SELECT = 1547,
      SERIAL = 1548,
      UNIQUE = 1551,
@@ -271,12 +268,14 @@
      TILDE = 1761,
      ILIKE = 1762,
      FILLFACTOR = 1765,
+     TIME = 1770,
      KW_TODAY = 1777,
      KW_IDLE = 2117,
      CANCEL_INSERT = 2118,
      CANCEL_DELETE = 2119
    };
 #endif
+/* Tokens.  */
 #define INT_VALUE 2121
 #define NAMED 2122
 #define NAMED_GEN 2123
@@ -444,9 +443,6 @@
 #define PUBLIC 1536
 #define REVOKE 1539
 #define SECOND 1543
-#define IDLE_SECONDS 1544
-#define IDLE_MINUTES 1545
-#define IDLE_HOURS 1546
 #define KW_SELECT 1547
 #define SERIAL 1548
 #define UNIQUE 1551
@@ -519,6 +515,7 @@
 #define TILDE 1761
 #define ILIKE 1762
 #define FILLFACTOR 1765
+#define TIME 1770
 #define KW_TODAY 1777
 #define KW_IDLE 2117
 #define CANCEL_INSERT 2118
@@ -543,8 +540,8 @@ typedef union YYSTYPE {
 
 
 } YYSTYPE;
-/* Line 1285 of yacc.c.  */
-#line 548 "y.tab.h"
+/* Line 1447 of yacc.c.  */
+#line 545 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

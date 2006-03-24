@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.70 2005-08-17 13:57:27 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.70.2.1 2006-03-24 17:24:30 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.70 2005-08-17 13:57:27 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.70.2.1 2006-03-24 17:24:30 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 
@@ -673,21 +673,26 @@ A4GL_LL_display_form (void *vf, int attrib, int curr_width, int curr_height,
     {
       A4GL_LL_error_box ("NO WINDOW", 0);
     }
-
+  
   fl = form_line;
   for (a = fl; a <= curr_height; a++)
     {
       if (iscurrborder)
 	{
+		char buff[2000];
+		memset(buff,' ',curr_width);
+		buff[curr_width]=0;
 
-	  A4GL_wprintw (currwin, 0, 1, a + 1, curr_width, curr_height,
-			iscurrborder, currwinno, " ");
+	  A4GL_wprintw (currwin, 0, 1, a + 1, curr_width, curr_height, iscurrborder, currwinno, buff);
 	  //A4GL_display_internal (1, a + 1, " ", 0, 1);
 	}
       else
 	{
+		char buff[2000];
+		memset(buff,' ',curr_width);
+		buff[curr_width]=0;
 	  A4GL_wprintw (currwin, 0, 1, a, curr_width, curr_height,
-			iscurrborder, currwinno, " ");
+			iscurrborder, currwinno, buff);
 	  //A4GL_display_internal (1, a, " ", 0, 1);
 	}
     }
@@ -764,7 +769,7 @@ A4GL_LL_display_form (void *vf, int attrib, int curr_width, int curr_height,
 
 
 
-  wclear (drwin);
+  werase (drwin);
   a = A4GL_form_set_form_sub (f_form, drwin);
 
 
@@ -1338,6 +1343,7 @@ A4GL_LL_set_new_page (void *field, int n)
 }
 
 
+#ifdef REMOVED
 /**
  * PLEASE DESCRIBE THE BL*** FUNCTION!
  *
@@ -1361,6 +1367,7 @@ A4GL_LL_get_field_userptr (void *field)
 {
   return A4GL_form_field_userptr (field);
 }
+#endif
 
 /**
  * PLEASE DESCRIBE THE BL*** FUNCTION!
@@ -1470,6 +1477,7 @@ A4GL_LL_new_form (list_of_fields * flist)
   return frm;
 }
 
+#ifdef REMOVED
 /**
  * PLEASE DESCRIBE THE BL*** FUNCTION!
  *
@@ -1493,6 +1501,7 @@ A4GL_LL_get_form_userptr (void *form)
 {
   return A4GL_form_form_userptr (form);
 }
+#endif
 
 
 
@@ -1620,6 +1629,7 @@ int
 A4GL_LL_getch_swin (void *window_ptr)
 {
   int a;
+  static int no_delay=-1;
 
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
 
@@ -1634,9 +1644,16 @@ A4GL_LL_getch_swin (void *window_ptr)
 
   while (1)
     {
+
 #ifndef XCURSES
+
       // Half delay seems to mess up pdcurses (at least under X)
-      halfdelay (10);
+      if (no_delay==-1) {
+      	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
+      }
+      if (!no_delay) {
+      	halfdelay (10);
+      }
 #endif
       //a = wgetch (window_ptr);
       abort_pressed = 0;
@@ -2598,23 +2615,20 @@ A4GL_mja_get_field_width (void *f)
   int fcol;
   int nrow;
   int nbuf;
-  //struct s_form_dets *formdets;
   struct struct_scr_field *fprop;
-  fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
 
-  //formdets = (struct s_form_dets *)A4GL_get_curr_form (0); 
-
-  //if (formdets==0||fprop==0) {
   return A4GL_LL_get_field_width_dynamic (f);
-  //}
 
-  A4GL_form_field_info (f, &rows, &cols, &frow, &fcol, &nrow, &nbuf);
 
-  //w=A4GL_form_field_width(f);
-  //w=formdets->fileform->metrics. metrics_val[A4GL_get_metric_for (formdets, f)].w;
 
-  return cols;
+
+  //A4GL_form_field_info (f, &rows, &cols, &frow, &fcol, &nrow, &nbuf);
+  //return cols;
 }
+
+
+
+
 
 
 void
@@ -2701,7 +2715,7 @@ A4GL_LL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 
 
 int
-A4GL_LL_set_window_title (void *currwin, int nargs)
+A4GL_LL_set_window_title (void *currwin, char *s)
 {
 
   return 0;
@@ -3116,7 +3130,7 @@ A4GL_LL_get_value (char *s)
 }
 
 int
-A4GL_LL_disp_h_menu_opt (int a, int n, char *title, int attr)
+A4GL_LL_disp_h_menu_opt (int a, int n, char *title, char *shorthelp, int attr)
 {
   // Does nothing - but is required by the API...
   return 0;
@@ -3252,7 +3266,7 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
   A4GL_debug ("STATIC");
   A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field (f, A4GL_mja_get_field_width (f));
+  A4GL_LL_set_max_field (f,A4GL_mja_get_field_width(f) );
 
 }
 
@@ -3283,6 +3297,13 @@ A4GL_LL_pause_mode (int a)
 }
 
 
+int A4GL_LL_can_show_comments(char *s) {
+	return 0;
+}
+
+int A4GL_LL_can_show_message(int ml,char *s,int wait) {
+	        return 0;
+}
 
 void A4GL_LL_init_color(int c,int r,int g, int b) {
 	// Does nothing yet..

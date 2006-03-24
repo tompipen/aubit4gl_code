@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.83 2005-12-19 18:44:44 mikeaubury Exp $
+# $Id: report.c,v 1.83.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -892,7 +892,9 @@ char *
 A4GL_decode_datatype (int dtype, int dim)
 {
   static char buff_2[256];
+  char *s;
   SPRINTF2 (buff_2, "%s %s", nm (dtype), sz (dtype, dim));
+  //s=A4GLSQLCV_dtype_alias(buff_2);
   return buff_2;
 }
 
@@ -912,7 +914,6 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
      as the same report cannot be running twice at the same time.....
      Andrej say: yes it can!
    */
-
 
 
   SPRINTF1 (buff_3, "create temp table %s (\n", gen_rep_tab_name (b));

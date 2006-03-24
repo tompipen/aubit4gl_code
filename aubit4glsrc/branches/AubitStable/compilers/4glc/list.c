@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: list.c,v 1.15 2005-03-31 13:35:35 afalout Exp $
+# $Id: list.c,v 1.15.2.1 2006-03-24 17:23:25 mikeaubury Exp $
 #*/
 
 /**
@@ -79,7 +79,7 @@ char *
 list_prompt (char *s)
 {
   static char buff[256];
-  printf ("Please enter %s:\n", s);
+  PRINTF ("Please enter %s:\n", s);
   fgets (buff, 255, stdin);
   A4GL_stripnl (buff);
   return buff;
@@ -166,7 +166,7 @@ list_find_id (char *id)
 	}
     }
 
-  sprintf (buff, "ID %s is unknown to the template", id);
+  SPRINTF1 (buff, "ID %s is unknown to the template", id);
   a4gl_yyerror (buff);
   exit (0);
 }
@@ -239,70 +239,6 @@ list_copy (char *id, char *id2)
 
 }
 
-/**
- *
- * @todo Describe function
- */
-/*
-static void
-list_use (char *id1, char *id2, char *str, char *idnew)
-{
-  int iid1;
-  int iid2;
-  int iid3;
-  int a;
-  char buff[256];
-  iid1 = list_find_id (id1);
-  iid2 = list_find_id (id2);
-  iid3 = list_find_id (str);
-  str = lists[iid3].list_values[0];
-  if (lists[iid1].list_count != lists[iid2].list_count)
-    {
-      a4gl_yyerror ("List are different length....\n");
-      exit (0);
-    }
-  strcpy (lists[list_cnt].list_id, idnew);
-  lists[list_cnt].list_count = lists[iid1].list_count;
-
-  for (a = 0; a < lists[iid1].list_count; a++)
-    {
-      sprintf (buff, "%s%s%s", lists[iid1].list_values[a], str,
-	       lists[iid2].list_values[a]);
-      strcpy (lists[list_cnt].list_values[a], buff);
-    }
-  list_cnt++;
-}
-*/
-
-/**
- *
- * @todo Describe function
- */
-/*
-static void
-list_gen (char *id, char *newid, char *sep)
-{
-  char buff[256];
-  int a;
-  int orig_id;
-  int ppid;
-  orig_id = list_find_id (id);
-  ppid = list_find_id (sep);
-  sep = lists[ppid].list_values[0];
-  strcpy (lists[list_cnt].list_id, newid);
-  lists[list_cnt].list_count = 1;
-  strcpy (buff, "");
-  strcpy (lists[list_cnt].list_values[0], "");
-  for (a = 0; a < lists[orig_id].list_count; a++)
-    {
-      if (a > 0)
-	strcat (lists[list_cnt].list_values[0], sep);
-      strcat (lists[list_cnt].list_values[0], lists[orig_id].list_values[a]);
-    }
-  list_cnt++;
-
-}
-*/
 
 /**
  *
@@ -315,13 +251,13 @@ list_print_all (void)
   int a;
   for (id = 0; id < list_cnt; id++)
     {
-      printf (" List '%s' - %d has %d elements\n", lists[id].list_id, id,
+      PRINTF (" List '%s' - %d has %d elements\n", lists[id].list_id, id,
 	      lists[id].list_count);
       for (a = 0; a < lists[id].list_count; a++)
 	{
-	  printf ("    %s\n", lists[id].list_values[a]);
+	  PRINTF ("    %s\n", lists[id].list_values[a]);
 	}
-      printf ("---------------------------------\n");
+      PRINTF ("---------------------------------\n");
     }
 }
 
@@ -340,8 +276,8 @@ list_print (char *cid)
   for (a = 0; a < lists[id].list_count; a++)
     {
       if (a > 0)
-	printf (" ");
-      printf ("%s", lists[id].list_values[a]);
+	PRINTF (" ");
+      PRINTF ("%s", lists[id].list_values[a]);
     }
 }
 */
@@ -354,7 +290,7 @@ char *
 new_id (void)
 {
   static char buff[256];
-  sprintf (buff, "_list_%d", list_cnt);
+  SPRINTF1 (buff, "_list_%d", list_cnt);
   return buff;
 }
 

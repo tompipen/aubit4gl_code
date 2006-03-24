@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.75 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.75.2.1 2006-03-24 17:23:57 mikeaubury Exp $
 #
 */
 
@@ -800,6 +800,7 @@ int A4GL_menu_opts_compare(char *a,char *b,int why) {
 
 
 
+#ifdef QUERY
 int A4GL_strcasestr(char *h,char *n) {
 char *h1;
 char *n1;
@@ -816,6 +817,7 @@ free(h1);
 free(n1);
 return r;
 }
+#endif
 
 /* ============================== EOF ========================== */
 

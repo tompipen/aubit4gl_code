@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.64 2005-09-28 15:56:08 mikeaubury Exp $
+# $Id: 4glc.c,v 1.64.2.1 2006-03-24 17:23:25 mikeaubury Exp $
 #
 */
 
@@ -125,6 +125,9 @@ main (int argc, char *argv[])
 
 
   if (dialect) {
+	  char *transfile;
+	  transfile=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
+	  if (transfile) dialect=transfile;
 	// We're only going to load our pack now if we are generating a dialect...
   	A4GLSQLCV_load_convert(A4GL_compiled_sqlpack(),dialect);
   }  else {
@@ -142,7 +145,7 @@ main (int argc, char *argv[])
   x = initArguments (argc, argv);
   if (a4gl_yydebug)
     {
-      printf ("Exit\n");
+      PRINTF ("Exit\n");
     }
 
   /* dump_var_records();*/

@@ -55,7 +55,7 @@ grep "^$a[ 	]" ../4glc/rules/data/kwords | awk '
         	printf "\"" $a "\""
 	}
     }
-    printf(" { a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return %s;}\n",$1)
+    printf(" { a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return %s;} /* %d */\n",$1,NR)
 }
 '
 

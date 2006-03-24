@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2005-06-10 13:37:37 mikeaubury Exp $
+# $Id: Makefile,v 1.2.2.1 2006-03-24 17:24:19 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -47,7 +47,7 @@ LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
 OBJECTS					=sql.o sqlex.o array.o
 #LD_RUN_PATH 			=${INFORMIXDIR}/lib/esql
 
-CFLAGS_SQLITE	=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -DHAVE_LIBVERSION=1 \
+CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 				-DWITHOUT_DRIVERMGR ${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
 				-L${SQLITE_LDPATH} -I${ROOT}/tools/odbtest/incl -I.
 
@@ -120,7 +120,7 @@ ${LIBROOT}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
 
 ################################
 #Aubit ODBC plug-in code linked with unixODBC ODBC manager library
-${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${CFLAGS}
+${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${UNIXODBC_INCLUDE} ${CFLAGS}
 ${LIBROOT}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${UNIXODBC_LIBS} ${UNIXODBC_LFLAGS}
 
@@ -132,7 +132,7 @@ ${LIBROOT}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
 
 ################################
 #Aubit ODBC plug-in code linked with (PG) ODBC driver library, for use without ODBC manager
-${LIBROOT}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${LIBROOT}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC -DINCLUDEDATASOURCES ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${LIBROOT}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -l${PGODBC_LIBNAME} ${PGODBC_LFLAGS}
 

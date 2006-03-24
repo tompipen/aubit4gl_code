@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.190 2005-04-22 06:06:15 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.190.2.1 2006-03-24 17:23:51 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -280,6 +280,9 @@ ifeq "${GCC_VER}" "3.2"
 	GCC_NEW_STYLE=1
 endif
 ifeq "${GCC_VER}" "3.3"
+	GCC_NEW_STYLE=1
+endif
+ifeq "${GCC_VER}" "3.4"
 	GCC_NEW_STYLE=1
 endif
 
@@ -978,6 +981,7 @@ IODBC_LIBS			=@IODBC_LIBS@
 
 # UnixODBC
 UNIXODBC_LFLAGS		=@UNIXODBC_LFLAGS@
+UNIXODBC_INCLUDE	=@UNIXODBC_INCLUDE@
 UNIXODBC_LIBS		=@UNIXODBC_LIBS@ 
 
 # PostgreSQL
@@ -990,6 +994,7 @@ PGSQL_LIBS			=@PGSQL_LIBS@
 PGSQL_INCDIR		=@PGSQL_INCDIR@
 PGSQL_INCLUDE		=@PGSQL_INCLUDE@
 PGSQL_LIBDIR		=@PGSQL_LIBDIR@
+PG_ESQLC_V3             =@PG_ESQLC_HASV3@
 PG_ESQLC			=@PG_ESQLC@
 ECPG_INCDIR			=@ECPG_INCDIR@
 ECPG_LIBDIR			=@ECPG_LIBDIR@

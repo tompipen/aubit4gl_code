@@ -24,9 +24,10 @@
 # +----------------------------------------------------------------------+
 
 ROOT    =../..
+LIBROOT    =${ROOT}/lib
 
 #
-# $Id: Makefile.in,v 1.11 2004-10-04 13:50:06 afalout Exp $
+# $Id: Makefile.in,v 1.11.2.1 2006-03-24 17:24:41 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:

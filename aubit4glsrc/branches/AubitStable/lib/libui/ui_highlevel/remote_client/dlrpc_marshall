@@ -146,11 +146,17 @@ BEGIN {
 
 
 	if (mode=="client") {
+		plist=""
 		printf("%s %s(",rtype , fname )
 		if (c) {
 			for (b=0;b<c;b++) {
 				if (b) printf(",");
 				printf(" %s %s", param_type[b], param_name[b]);
+				if (plist=="") {
+				plist= param_name[b]
+				} else {
+				plist=plist "," param_name[b]
+				}
 			}
 			printf(") {");
 		} else {
@@ -182,7 +188,7 @@ BEGIN {
 		}
 		
 		xfname=tolower(fname) "_1"
-		print "printf(\"Calling " fname "\\n\");"
+		print "printf(\"Calling " fname "(" plist  ")\\n\");"
 		if (rtype!="void") {
 			print "ret=rpc_" xfname " (" params  ");"
 			print "chk_result(ret); "

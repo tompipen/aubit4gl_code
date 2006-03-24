@@ -20,7 +20,7 @@ A4GL_LL_current_field void* form -> void*
 A4GL_LL_decode_aubit_attr int a char s -> int
 A4GL_LL_delete_errorwindow void* curr_error_window -> void
 A4GL_LL_disp_h_menu int num_opts -> int
-A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title int attrib -> int
+A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title char* shorthelp int attrib -> int
 A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol -> void* 
 A4GL_LL_dump_screen int n char* fname int mode -> int
 A4GL_LL_endis_fields_ap int n void* ap -> int
@@ -30,8 +30,6 @@ A4GL_LL_field_opts void* field -> int
 A4GL_LL_field_status void* field -> int 
 A4GL_LL_form_page void* form -> int
 A4GL_LL_get_carat void* form -> int
-A4GL_LL_get_field_userptr void* field -> void* 
-A4GL_LL_get_form_userptr void* form -> void* 
 A4GL_LL_get_value char* s -> void*
 A4GL_LL_getch_swin void* window_ptr -> int 
 A4GL_LL_gui_run_til_no_more -> void 
@@ -60,18 +58,16 @@ A4GL_LL_set_bkg void* win int attr -> void
 A4GL_LL_set_carat void* form -> void
 A4GL_LL_set_chars_normal int* n -> int
 A4GL_LL_set_current_field void* form void* field -> void
-A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture -> void
+A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture  -> void
 A4GL_LL_set_field_back void* field int attr -> void
 A4GL_LL_set_field_buffer void* field int n char* str -> void
 A4GL_LL_set_field_fore void* field int attr -> void
 A4GL_LL_set_field_opts void* field int oopt -> int
 A4GL_LL_set_field_status void* f int stat -> int
-A4GL_LL_set_field_userptr void* field void* ptr -> void
 A4GL_LL_set_form_page void* form int page -> void
-A4GL_LL_set_form_userptr void* form void* data -> void
 A4GL_LL_set_max_field void* f int n -> void
 A4GL_LL_set_new_page void* field int n -> int
-A4GL_LL_set_window_title void* win int nargs -> int
+A4GL_LL_set_window_title void* win char* title -> int
 A4GL_LL_show_window void* w -> void
 A4GL_LL_sleep int n -> void
 A4GL_LL_start_prompt void* vprompt char* promptstr int ap int c int h int af int curr_width int cb int prompt_line void* cw int prompt_mode -> int
@@ -81,3 +77,11 @@ A4GL_LL_wadd_char_xy_col_w void* win int x int y int ch int curr_width int curr_
 A4GL_LL_widget_name_match void* w char* name -> int
 A4GL_LL_pause_mode int pm -> int
 A4GL_LL_get_field_width_dynamic void* f -> int
+A4GL_LL_can_show_comments char* s -> int
+A4GL_LL_can_show_message int ml char* s int wait -> int
+
+
+* A4GL_LL_get_field_userptr void* field -> void*  
+* A4GL_LL_get_form_userptr void* form -> void* 
+* A4GL_LL_set_form_userptr void* form void* data -> void
+* A4GL_LL_set_field_userptr void* field void* ptr -> void

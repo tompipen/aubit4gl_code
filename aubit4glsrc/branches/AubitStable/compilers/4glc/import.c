@@ -42,8 +42,8 @@ for (a=0;a<nfiles;a++) {
 	for (b=0;b<files[a].nlist;b++) {
 		if (strcmp(s,files[a].list[b].name)==0) {
 			if (file) {
-				if (files[a].name[0]!=':') sprintf(buff,"\"%s\"",files[a].name);
-				else sprintf(buff,"%s",&files[a].name[1]);
+				if (files[a].name[0]!=':') SPRINTF1 (buff,"\"%s\"",files[a].name);
+				else SPRINTF1 (buff,"%s",&files[a].name[1]);
 				strcpy(file,buff);
 			}
 			if (ptr) ptr=&files[a].list[b];
@@ -99,7 +99,7 @@ char buff[512];
 FILE *f;
 strcpy(buff,s);
 strcat(buff,acl_getenv("A4GL_DLL_EXT"));
-printf("Looking for : %s\n",buff);
+A4GL_debug("Looking for : %s\n",buff);
 f=A4GL_open_file_classpath(buff);
 
 if (f) { // We've found our dll...

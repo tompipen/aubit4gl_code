@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.26 2005-07-05 12:03:35 mikeaubury Exp $
+# $Id: display_array.c,v 1.26.2.1 2006-03-24 17:24:29 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.26 2005-07-05 12:03:35 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.26.2.1 2006-03-24 17:24:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -378,11 +378,22 @@ disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
       arr->processed_onkey = 0;
       A4GL_LL_set_carat (form->form);
 
+	while (1) {
+		int blk;
+  		blk=A4GL_has_evt_timeout(evt);
+  		if (blk) { return blk; }
+      		a = A4GL_getch_win (1);
+      		if (abort_pressed) {
+			a = A4GLKEY_INTERRUPT;
+		}
+        	if (a!=0&&a!=-1) { 
+			A4GL_evt_not_idle(evt); 
+			break;
+		}
+		if (a!=-1) break;
 
-      a = A4GL_getch_win (1);
-      if (abort_pressed)
-	a = A4GLKEY_INTERRUPT;
-        if (a!=0&&a!=-1) { A4GL_evt_not_idle(evt); }
+	}
+
 /*
 // Traditional key handling
 // Assume F1 is the Accept Key...
@@ -772,10 +783,6 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,
       //return -10;
     }
   A4GL_debug ("disparr4");
-  blk=A4GL_has_evt_timeout(evt);
-  if (blk) {
-         return blk;
-  }
   return disp_loop (disp, evt);
 }
 
@@ -940,7 +947,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
       int nattr;
       f =
 	(struct struct_scr_field
-	 *) (A4GL_LL_get_field_userptr (field_list[a]));
+	 *) (A4GL_ll_get_field_userptr (field_list[a]));
       A4GL_debug ("f=%p", f);
 
 

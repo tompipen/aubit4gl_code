@@ -143,7 +143,10 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
                         A4GL_assertion(1,buff);
                 }
         }
+#ifdef strcpy
+#undef strcpy
         strcpy(dest,src);
+#endif
 
 
 #ifdef DEBUG

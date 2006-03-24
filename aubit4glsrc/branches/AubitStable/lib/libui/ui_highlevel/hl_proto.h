@@ -99,8 +99,17 @@ int A4GL_getch_internal(void *win);
 
 struct list_of_fields {
         struct {
-                u_int a_len;
+                unsigned int a_len;
                 long *a_val;
         } a;
 };
 typedef struct list_of_fields list_of_fields;
+
+
+
+
+void *A4GL_ll_get_field_userptr(void *f) ;
+void A4GL_ll_set_field_userptr(void *f, void *r) ;
+void *A4GL_ll_get_form_userptr(void *f) ;
+void A4GL_ll_set_form_userptr(void *f, void *r) ;
+

@@ -23,6 +23,7 @@ define mv_export_symbols char(256)
 define mv_import_symbols char(256)
 define mv_objects char(20480)
 define mv_errfile char(256)
+define mv_warnfile char(256)
 define mv_newest_obj char(256)
 DEFINE mv_output_type CHAR(20)
 define mv_dump_strings integer
@@ -188,7 +189,7 @@ define lv_pack char(256)
 	if mv_link_opts is null or mv_link_opts matches " " then
 		let mv_link_opts	="-L",fgl_getenv("AUBITDIR") clipped,"/lib"
 	end if
-	if mv_link_libs is null or mv_link_opts matches " " then
+	if mv_link_libs is null or mv_link_libs matches " " then
 		let mv_link_libs=" "
 	end if
 		
@@ -908,7 +909,7 @@ end function
 ################################################################################
 function runit(lv_str)
 define lv_str char(10240)
-run lv_str
+RUN lv_str
 end function
 
 ################################################################################
@@ -1012,13 +1013,18 @@ if mv_system4gl then
 end if
 
 let mv_errfile=lv_base clipped,get_ext("ERR")
-let lv_runstr=lv_runstr clipped," ",lv_fname clipped," 2> ",mv_errfile
+let mv_warnfile=lv_base clipped,get_ext("WARN")
+
+
+let lv_runstr=lv_runstr clipped," ",lv_fname clipped
+#," 2> ",mv_errfile
 
 if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
-run lv_runstr clipped returning lv_status
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
 
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 
@@ -1032,6 +1038,8 @@ define p_runstr char(10240)
 define lv_runstr char(10240)
 define lv_errsize integer
 
+#call remove_file(mv_warnfile)
+
 if p_status<0 then
 	let p_status=1
 end if
@@ -1043,8 +1051,8 @@ end if
 let lv_errsize=file_size(mv_errfile)
 
 if lv_errsize<0 then
-	display "Error - unable to find the size of the error file (",mv_errfile clipped,")"
-	exit program 99
+	#display "Error - unable to find the size of the error file (",mv_errfile clipped,")"
+	return
 end if
 
 if lv_errsize>0 then
@@ -1053,6 +1061,7 @@ if lv_errsize>0 then
 		if mv_verbose>4 then
 			call head_file(mv_errfile,55)
 		end if
+		call rename_file(mv_errfile,mv_warnfile)
 	end if
 end if
 
@@ -1105,18 +1114,24 @@ if mv_makecompile then
 end if
 
 if 0 then
+
 let mv_errfile=lv_base clipped,get_ext("ERR")
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped," 2> ",mv_errfile
+
+let mv_warnfile=lv_base clipped,get_ext("WARN")
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped ," 2> ",mv_errfile
 else
+
+let mv_warnfile=lv_base clipped,get_ext("WARN")
 let mv_errfile=lv_base clipped,get_ext("ERR")
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",lv_fname clipped," 2> ",mv_errfile
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",lv_fname clipped ," 2> ",mv_errfile
 end if
 
 if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
-run lv_runstr clipped returning lv_status
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 end function
 
@@ -1150,6 +1165,7 @@ if mv_makecompile then
 end if
 
 let mv_errfile=lv_base clipped,get_ext("ERR")
+let mv_warnfile=lv_base clipped,get_ext("WARN")
 if mv_verbose>=4 then
 	display "compile_c=",mv_compile_c clipped
 	display "compile_c_opts=",mv_compile_c_opts clipped
@@ -1174,10 +1190,15 @@ end if
 
 let lv_runstr=lv_runstr clipped, " ",mv_include clipped," -o ",lv_new clipped,
 		" -c ",lv_fname clipped," 2> ",mv_errfile
+
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+
 if mv_verbose>=2 then
 	display "Running : ",lv_runstr clipped
 end if
-run lv_runstr clipped returning lv_status
+
+
+RUN lv_runstr CLIPPED RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 
 call add_obj(lv_new)
@@ -1211,6 +1232,7 @@ DISPLAY "RUN_COMP_ESQL :",lv_fname clipped," ",lv_new clipped
 end if
 
 
+let mv_warnfile=lv_base clipped,get_ext("WARN")
 let mv_errfile=lv_base clipped,get_ext("ERR")
 
 let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped
@@ -1223,7 +1245,10 @@ let lv_runstr=lv_runstr clipped ," ",mv_include clipped," -o ",lv_new clipped, "
 if mv_verbose>=2 then
         display lv_runstr clipped
 end if
-run lv_runstr clipped returning lv_status
+
+
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr clipped RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 call add_obj(lv_new)
 end function
@@ -1250,9 +1275,10 @@ end if
 
 
 
+let mv_warnfile=lv_output clipped,get_ext("WARN")
 let mv_errfile=lv_output clipped,get_ext("ERR")
 
-let lv_runstr=mv_link clipped," ",mv_link_opts clipped," "
+let lv_runstr=mv_link
 
 if mv_make_dll then
 	let lv_runstr=lv_runstr clipped," ",mv_dll_opts
@@ -1266,7 +1292,7 @@ if mv_debug then
 	let lv_runstr=lv_runstr clipped," ",mv_link_debug
 end if
 
-let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped," 2>",mv_errfile clipped
+let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped, " ",mv_link_opts clipped," 2>",mv_errfile clipped
 
 if mv_verbose>=1 then
 	display "Linking ",lv_output  clipped
@@ -1280,7 +1306,8 @@ if mv_verbose>=4 then
 	display "OBJECTS       : ",mv_objects clipped
 end if
 
-run lv_runstr clipped returning lv_status
+let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
 
 if mv_verbose>=5 then
 	display "Ran command"
@@ -1325,6 +1352,17 @@ end if
 		let mv_newest_obj=lv_obj
 	end if
 end function
+
+
+function rename_file(m1, m2)
+define m1 char(255)
+define m2 char(255)
+define lv_str char(1000)
+define a integer
+let lv_str=fgl_getenv("A4GL_CP_CMD")," ",m1 clipped, " ",m2 clipped
+call runit(lv_str)
+end function
+
 
 
 function tail_file(mv_file,n)
