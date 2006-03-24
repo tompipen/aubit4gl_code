@@ -1,6 +1,7 @@
 # rules for converting Informix SQL to Postgres-compatible syntax
 
 
+
 #Seems like INFORMIX-POSTGRESQL.cnv is obsolete? 
 
 

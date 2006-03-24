@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.149 2006-03-21 10:38:37 mikeaubury Exp $
+# $Id: sql.c,v 1.150 2006-03-24 16:36:31 mikeaubury Exp $
 #
 */
 
@@ -447,7 +447,7 @@ dll_import sqlca_struct a4gl_sqlca;
 */
 
 static void
-reformat_sql (char *sql, struct BINDING *ibind, int nibind)
+reformat_sql (char *sql, struct BINDING *ibind, int nibind,char *fromwhere)
 {
   int c;
   FILE *f;
@@ -488,26 +488,66 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind)
 
       sprintf (sbuff, "'?%d'", ibind[c].dtype);
 
-      if (ibind[c].dtype == 0)
+      if (ibind[c].dtype == DTYPE_CHAR)
         {
-          sprintf (sbuff, "'%s'", (char *)ibind[c].ptr);
+                static char *buff=0;
+                char *ptr;
+                int a=0;
+                int b=0;
+                ptr=ibind[c].ptr;
+
+                if (strchr(ptr,'\'')) {
+                        buff=realloc(buff,(strlen(ibind[c].ptr)*2)+1);
+                        for (a=0;a<strlen(ptr);a++) {
+                                if (ptr[a]!='\'') {
+                                        buff[b++]=ptr[a];
+                                } else {
+                                        buff[b++]='\'';
+                                        buff[b++]='\'';
+                                }
+                        }
+                        buff[b]=0;
+
+                        sprintf (sbuff, "'%s'", buff);
+                } else {
+                        sprintf (sbuff, "'%s'", ptr);
+                }
         }
 
-      if (ibind[c].dtype == 1)
+
+      if (ibind[c].dtype == DTYPE_SMINT)
         {
           sprintf (sbuff, "%d", *(short *) ibind[c].ptr);
         }
 
-      if (ibind[c].dtype == 2)
+      if (ibind[c].dtype == DTYPE_INT)
         {
           sprintf (sbuff, "%ld", *(long *) ibind[c].ptr);
         }
-      if (ibind[c].dtype == 3)
+
+
+      if (ibind[c].dtype == DTYPE_FLOAT)
         {
           sprintf (sbuff, "%lf", *(double *) ibind[c].ptr);
         }
 
-      if (ibind[c].dtype == 7)
+      if (ibind[c].dtype == DTYPE_SMFLOAT)
+        {
+          sprintf (sbuff, "%f", *(float *) ibind[c].ptr);
+        }
+
+      if (ibind[c].dtype == DTYPE_DECIMAL)
+        {
+          char *ptr;
+	  	int dtype;
+      		dtype = ibind[c].dtype + ENCODE_SIZE (ibind[c].size);
+      		A4GL_push_variable (ibind[c].ptr, dtype);
+          	ptr = A4GL_char_pop ();
+          sprintf (sbuff, "%s", ptr);
+          free (ptr);
+        }
+
+      if (ibind[c].dtype == DTYPE_DATE)
         {
           char *ptr;
           A4GL_push_date (*(long *) ibind[c].ptr);
@@ -968,7 +1008,11 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
   A4GL_debug (" prepare statement - Sid=%p ", sid);
   A4GL_debug ("Binding any data... ni=%d hstmt=%p", ni, sid->hstmt);
 #endif
+
   A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
+  reformat_sql(sid->select,ibind,ni,"1");
+
+
 #ifdef DEBUG
   A4GL_debug ("Bound any data... ni=%d", ni);
 #endif
@@ -1289,6 +1333,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
   A4GL_debug ("Calling ODBC_exec_stmt()");
 #endif
 
+
+
+  reformat_sql(sid->select,sid->ibind,sid->ni,"2");
+
   rc = ODBC_exec_stmt ((SQLHSTMT) sid->hstmt);
   A4GL_debug ("Got rc as %d\n", rc);
 
@@ -1350,6 +1398,14 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 #ifdef DEBUG
   A4GL_debug (" Bound data ... ni=%d no=%d", sid->ni, sid->no);
 #endif
+
+
+
+
+
+  reformat_sql(sid->select,sid->ibind,sid->ni,"3");
+
+
   a = ODBC_exec_select ((SQLHSTMT) sid->hstmt);
 
   nresultcols = 0;
@@ -1498,8 +1554,10 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 
   A4GL_debug ("XXX s=%s ni=%d ibind=%p", s, ni, ibind);
 
+
   if (ni == 0)
     {				/* No USING on the open.. */
+      reformat_sql(cid->statement->select,cid->statement->ibind,cid->statement->ni,"4");
       A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i',
 		      (SQLHSTMT) cid->statement->hstmt);
 
@@ -1536,6 +1594,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 #endif
 
       A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) cid->statement->hstmt);
+      reformat_sql(cid->statement->select,ibind,ni,"5");
 
     }
 
@@ -1579,7 +1638,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
   A4GL_debug ("Opening cursor %p", cid->statement->hstmt);
 #endif
 
-  rc = SQLExecute ((SQLHSTMT) cid->statement->hstmt);
+  rc = SQLExecute ((SQLHSTMT) cid->statement->hstmt); //Reformatted
   chk_rc (rc, cid->statement->hstmt, "SQLExecute");
   rc2 = A4GL_chk_need_blob (rc, (SQLHSTMT) & cid->statement->hstmt);
 
@@ -2518,6 +2577,9 @@ ODBC_exec_sql (UCHAR * sqlstr)
 
   if (A4GL_new_hstmt ((SQLHSTMT *) & hstmt))
     {
+
+      reformat_sql(sqlstr,0,0,"6");
+
       rc = SQLExecDirect ((SQLHSTMT) hstmt, sqlstr, SQL_NTS);
       chk_rc (rc, 0, "SQLExecDirect");
 #ifdef DEBUG
@@ -2582,7 +2644,7 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
     }
 
 
-  rc = SQLExecute ((SQLHSTMT) hstmt);
+  rc = SQLExecute ((SQLHSTMT) hstmt); // Reformatted in caller
 
 #ifdef DEBUG
   A4GL_debug ("SQLExecute returns %d\n", rc);
@@ -3131,7 +3193,9 @@ ODBC_exec_select (SQLHSTMT hstmt)
 #ifdef DEBUG
   A4GL_debug ("Before Execute hstmt=%p", hstmt);
 #endif
-  rc = SQLExecute (hstmt);
+
+
+  rc = SQLExecute (hstmt); // Reformatted in caller
   chk_rc (rc, hstmt, "SQLExecute3");
   if (rc != 0)
     {
@@ -3446,7 +3510,7 @@ ODBC_exec_prepared_sql (SQLHSTMT hstmt)
   A4GL_debug ("In exec_prepared_sql");
 #endif
 
-  rc = SQLExecute (hstmt);
+  rc = SQLExecute (hstmt); // reformatted in callers
   chk_rc (rc, hstmt, "SQLExecute");
   //rc = SQLNumResultCols (hstmt, &nresultcols);
   //chk_rc (rc, hstmt, "SQLNumResultCols");
@@ -3610,6 +3674,12 @@ conv_sqldtype (int sqldtype, int sdim)
 #endif
       ndtype = ENCODE_SIZE (sdim);
     }
+
+
+if (A4GL_isyes(acl_getenv("NODATETIMES"))) { 
+		if (ndtype == DTYPE_DTIME) { ndtype = DTYPE_DATE; }
+}
+
 
 #ifdef DEBUG
   A4GL_debug ("Datatype (%d,%d) is 0x%x ", sqldtype, sdim, ndtype);
@@ -5308,7 +5378,10 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 	A4GL_assertion (hstmt == 0, "No statement");
   SQLPrepare ((SQLHSTMT) hstmt, sql2, SQL_NTS);
   A4GL_proc_bind (ibind, nbind, 'i', (SQLHSTMT) hstmt);
-  rc = SQLExecute (hstmt);
+
+  reformat_sql(sql2,ibind,nbind,"7");
+
+  rc = SQLExecute (hstmt); // Reformatted
   chk_rc (rc, hstmt, "unload_data");
   if (a4gl_sqlca.sqlcode < 0)
     return;
@@ -5641,6 +5714,7 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
     }
   sid = cid->statement;
   A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
+  reformat_sql(sid->select,ibind,ni,"8");
   ODBC_exec_prepared_sql ((SQLHSTMT) sid->hstmt);
 
 }

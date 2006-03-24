@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.31 2006-03-19 14:08:23 mikeaubury Exp $";
+  "$Id: menu.c,v 1.32 2006-03-24 16:36:36 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -48,7 +48,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
       // Seems so...
       for (a = 0; a < menu->num_opts; a++)
 	{
-	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title, mo->attributes);
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title, mo->shorthelp, mo->attributes);
 	  mo = mo->next_option;
 	}
       A4GL_LL_screen_update ();
@@ -579,8 +579,7 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
       mo = menu->first;
       for (a = 0; a < menu->num_opts; a++)
 	{
-	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,
-				   mo->attributes);
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,mo->shorthelp, mo->attributes);
 	  mo = mo->next_option;
 	}
     }

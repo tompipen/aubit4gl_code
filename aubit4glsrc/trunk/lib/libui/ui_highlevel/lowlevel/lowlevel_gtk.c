@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.92 2006-03-21 17:51:44 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.93 2006-03-24 16:36:40 mikeaubury Exp $";
 #endif
 
 
@@ -50,6 +50,7 @@ void A4GL_console_toggle (void);
 void A4GL_add_to_console (char *s);
 void A4GL_clear_console (char *s);
 void A4GL_create_console (void);
+int use_frames() ;
 //void A4GL_logkey(long a);
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt,
 		    int dis, char *msg);
@@ -899,8 +900,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
       gtk_fixed_set_has_window (GTK_FIXED (fixed), 1);
 #endif
       gtk_widget_show (GTK_WIDGET (fixed));
-      if (!A4GL_isno (acl_getenv ("GTKUSEFRAMES")))
-	{
+      if (use_frames()) {
 	  frame = gtk_frame_new (0);
 	}
       else
@@ -927,7 +927,8 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	{
 	  GtkWidget *f;
 	  GtkWidget *vbox;
-	  if (A4GL_isyes (acl_getenv ("GTKUSEFRAMES")))
+
+	  if (use_frames())
 	    {
 	      f = gtk_frame_new (0);
 	    }
@@ -1019,7 +1020,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	  gtk_fixed_put (GTK_FIXED (win_screen), wxx, x - XWIDTH,
 			 y - YHEIGHT);
 	  // Create a frame to go in our eventbox
-	  if (A4GL_isyes (acl_getenv ("GTKUSEFRAMES")))
+	  if (use_frames())
 	    {
 
 	      frame = (GtkWidget *) gtk_frame_new (0);
@@ -1765,6 +1766,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
   char cbuff[10];
   cbuff[0] = ch & 0xff;
   cbuff[1] = 0;
+  
 
   A4GL_debug ("Wadd_char to window %p %d %d %x", win, x, y, ch);
 
@@ -3259,31 +3261,11 @@ find_curr_window (void *currwin)
 }
 
 int
-A4GL_LL_set_window_title (void *currwin, int nargs)
+A4GL_LL_set_window_title (void *currwin, char *s)
 {
-  static char *_functionName = "set_window_title";
-  char s[256 + 1];
-  struct BINDING fbind[1] = {	/* print_param */
-    {&s, 0, 256}
-  };				/* end of binding */
-  char *_paramnames[1] = {
-    "s"
-  };
-  A4GLSTK_pushFunction (_functionName, _paramnames, nargs);
-  if (nargs != 1)
-    {
-      a4gl_status = -30174;
-      A4GL_pop_args (nargs);
-      return 0;
-    }
-  {
-    A4GL_setnull (0, &s, 256);
-  }
-  A4GL_pop_params (fbind, 1);
   A4GL_trim (s);
   gtk_window_set_title (GTK_WINDOW (find_curr_window (currwin)), s);
   /* End of code */
-  A4GLSTK_popFunction ();
   return 0;
 }
 
@@ -3561,7 +3543,7 @@ A4GL_LL_disp_h_menu (int num_opts)
 
 
 int
-A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,
+A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthelp,
 			 int attributes)
 {
   GtkWidget *b;
@@ -3633,6 +3615,13 @@ A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch, int curr_width,
 }
 
 
+int A4GL_LL_can_show_comments(char *s) {
+	return 0;
+}
+
+int A4GL_LL_can_show_message(int ml,char *s,int wait) {
+	return 0;
+}
 
 
 void
@@ -4147,4 +4136,14 @@ void
 A4GL_LL_init_color (int c, int r, int g, int b)
 {
   // Does nothing yet
+}
+
+
+
+int use_frames() {
+      if (A4GL_isno (acl_getenv ("GTKUSEFRAMES"))) {
+	      	return 0;
+      }
+
+      return 1;
 }

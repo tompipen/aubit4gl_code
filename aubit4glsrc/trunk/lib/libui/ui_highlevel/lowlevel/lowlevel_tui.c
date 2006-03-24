@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.72 2006-03-21 17:51:44 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.73 2006-03-24 16:36:40 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.72 2006-03-21 17:51:44 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.73 2006-03-24 16:36:40 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 
@@ -2715,7 +2715,7 @@ A4GL_LL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 
 
 int
-A4GL_LL_set_window_title (void *currwin, int nargs)
+A4GL_LL_set_window_title (void *currwin, char *s)
 {
 
   return 0;
@@ -3130,7 +3130,7 @@ A4GL_LL_get_value (char *s)
 }
 
 int
-A4GL_LL_disp_h_menu_opt (int a, int n, char *title, int attr)
+A4GL_LL_disp_h_menu_opt (int a, int n, char *title, char *shorthelp, int attr)
 {
   // Does nothing - but is required by the API...
   return 0;
@@ -3297,6 +3297,13 @@ A4GL_LL_pause_mode (int a)
 }
 
 
+int A4GL_LL_can_show_comments(char *s) {
+	return 0;
+}
+
+int A4GL_LL_can_show_message(int ml,char *s,int wait) {
+	        return 0;
+}
 
 void A4GL_LL_init_color(int c,int r,int g, int b) {
 	// Does nothing yet..

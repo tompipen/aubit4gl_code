@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.43 2006-03-21 17:51:30 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.44 2006-03-24 16:36:36 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.43 2006-03-21 17:51:30 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.44 2006-03-24 16:36:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1764,6 +1764,11 @@ A4GL_comments (struct struct_scr_field *fprop)
   cline = A4GL_getcomment_line ();
   buff[A4GL_get_curr_width ()] = 0;
   A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
+
+
+ if (A4GL_LL_can_show_comments(buff)) {
+	 return;
+ }
 
   if (cline > UILIB_A4GL_get_curr_height ())
     {

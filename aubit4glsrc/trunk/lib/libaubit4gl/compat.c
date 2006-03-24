@@ -341,12 +341,11 @@ void popdate_native(void *x) {
 	long a4gl;
 	short indic;
 	a4gl=A4GL_pop_date();
-	if (A4GL_isnull(DTYPE_DATE,(void *)&a4gl)) {
-		indic=-1;
-	} else {
-		indic=0;
-	}
-	A4GL_copy_date(x,(void *)&a4gl,&indic,4,'i');
+
+	//if (A4GL_isnull(DTYPE_DATE,(void *)&a4gl)) { indic=-1; } else { indic=0; }
+	
+	// Copy date will do our null checking for us....
+	A4GL_copy_date(x,(void *)&a4gl,0,4,'i');
 }
 
 

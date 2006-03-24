@@ -1,0 +1,190 @@
+###############################################################################
+#
+# Simple makefile for generating static libraries
+#
+# you must already have compiled to get the .o's that this will use....
+# 
+###############################################################################
+#
+# Configuration section : 
+#
+###############################################################################
+
+
+# SQL : DYNAMIC FILESCHEMA c_ecpg esql ifxodbc nosql pg pgodbc sqlite3 unixodbc
+SQL=esql
+
+# UI : DYNAMIC TUI HL_TUI HL_GTK CONSOLE
+UI=CONSOLE
+
+# ESQL:DYNAMIC POSTGRES INFORMIX
+ESQL=INFORMIX
+
+# FORM:  DYNAMIC XDR GENERIC
+FORM=DYNAMIC
+
+# PACKER: DYNAMIC PACKED XML PERL
+PACKER=DYNAMIC
+
+
+
+###############################################################################
+
+API=
+APPEXTRA=
+
+###############################################################################
+#####
+##### SQL
+#####
+###############################################################################
+ifeq "${SQL}" "DYNAMIC"
+	API+=API_sql.o
+else
+	API+=API_sql_self.o
+	SETOBJ=0
+
+	ifeq "${SQL}" "esql"
+		SETOBJ=1
+		API += ../../lib/libsql/esqlc/esql.o 
+	endif
+
+	ifeq "${SQL}" "odbc" # Will be the last ODBC compiled....
+		SETOBJ=1
+		API += ../../lib/libsql/odbc/sql.o ../../lib/libsql/odbc/sqlex.o ../../lib/libsql/odbc/array.o
+	endif
+
+	ifeq "${SQL}" "FILESCHEMA" # Will be the last ODBC compiled....
+		SETOBJ=1
+		API += ../../lib/libsql/schema_in_file/schema_in_file.o
+	endif
+
+	ifeq "${SQL}" "pg" # Will be the last ODBC compiled....
+		SETOBJ=1
+		APPEXTRA=-lpq
+		API += ../../lib/libsql/postgresql/simple.o
+	endif
+
+	ifeq "${SETOBJ}" "0"
+		echo "No SQL modules set"
+	endif
+endif
+
+
+###############################################################################
+#####
+##### SQL
+#####
+###############################################################################
+
+ifeq "${UI}" "DYNAMIC"
+	API+=API_ui.o
+else
+	API+=API_ui_self.o
+
+	SETOBJ=0
+	ifeq "${UI}" "CONSOLE"
+		API+= ../libui/ui_console/*.o  
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "TUI"
+		API+= ../libui/ui_curses/curslib.o ../libui/ui_curses/dump_scr.o ../libui/ui_curses/newpanels.o ../libui/ui_curses/formcntrl.o ../libui/ui_curses/ioform.o ../libui/ui_curses/colours.o ../libui/ui_curses/array.o ../libui/ui_curses/iarray.o ../libui/ui_curses/prompt.o ../libui/ui_curses/generic_ui.o
+		APPEXTRA=-lncurses -lform -lpanel
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "HL_TUI"
+		API+= ../libui/ui_highlevel/forms.o ../libui/ui_highlevel/generic_ui.o ../libui/ui_highlevel/menu.o ../libui/ui_highlevel/display_array.o ../libui/ui_highlevel/formcntrl.o ../libui/ui_highlevel/input_array.o ../libui/ui_highlevel/common_hlui.o ../libui/ui_highlevel/misc.o  ../libui/ui_highlevel/lowlevel_tui.o ../libui/ui_highlevel/width_narrow.o
+		APPEXTRA=-lncurses -lform -lpanel
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "HL_GTK"
+		API+=  ../libui/ui_highlevel/forms.o ../libui/ui_highlevel/generic_ui.o ../libui/ui_highlevel/menu.o ../libui/ui_highlevel/display_array.o ../libui/ui_highlevel/formcntrl.o ../libui/ui_highlevel/input_array.o ../libui/ui_highlevel/common_hlui.o ../libui/ui_highlevel/misc.o  ../libui/ui_highlevel/lowlevel_gtk.o ../libui/ui_highlevel/widget_gtk.o ../libui/ui_highlevel/menu_gtk.o ../libui/ui_highlevel/width_narrow.o
+		APPEXTRA=`/usr/bin/pkg-config --libs gtk+-2.0`
+		SETOBJ=1
+	endif
+
+	ifeq "${SETOBJ}" "0"
+		echo "No UI modules set"
+	endif
+
+endif
+
+
+
+
+###############################################################################
+#####
+##### ESQL
+#####
+###############################################################################
+
+
+ifeq "${ESQL}" "DYNAMIC"
+	API+=API_esql.o
+else
+	API+=API_esql_self.o
+	SETOBJ=0
+
+	ifeq "${ESQL}" "INFORMIX"
+		SETOBJ=1
+		API+=../libesql/helper_funcs_informix.o
+	endif
+
+	ifeq "${ESQL}" "POSTGRES"
+		SETOBJ=1
+		API+=../libesql/helper_funcs_postgres.o
+	endif
+
+
+	ifeq "${SETOBJ}" "0"
+		echo "No ESQL modules set"
+	endif
+endif
+
+
+
+###############################################################################
+#####
+##### FORM
+#####
+###############################################################################
+ifeq "${FORM}" "DYNAMIC"
+	API+=API_form.o
+else
+	API+=API_form_self.o
+endif
+
+
+
+
+
+
+
+
+
+
+###############################################################################
+
+CORE_OBJS=attributes.o builtin.o builtin_d.o calldll.o mem.o assert.o fglextra.o net.o conv.o compat.o corba_server_util.o data_if.o common_ui.o dates.o dmy.o datatypes.o dataio.o decimal.o dynmem.o debug.o err.o error.o errfile.o sqlexpr.o expr.o  extfile.o eval_field.o fglwrap.o funcs_d.o function_call_stack.o gtime.o gen_stack.o gui_io.o gui.o helper.o io.o interval.o keys.o load.o match.o maths.o memfile.o ns.o others.o ops.o outer.o pointers.o read_dty.o readkeys.o report.o rexp2.o ../resource/resource.o screen.o sql_common.o sqlconvert.o stack_ops.o stack.o string.o sqlca.o translate.o ui.o ../generated/project.o  API_sqlparse_self.o API_help.o API_menu.o API_packer.o API_form.o API_rpc.o API_exreport.o  ../../compilers/sql/y.tab.o 
+
+ALL_OBJS=$(CORE_OBJS) $(API)
+
+
+
+libaubit4gl.a: $(ALL_OBJS)
+	ar rc $@ $(ALL_OBJS)
+	ranlib $@
+
+
+
+API_%_self.c: API_%.spec
+	sh ../bin/dlmagic  $^ -S > $@
+
+API_%_self.o: API_%_self.c
+	gcc -c -I$(AUBITDIR)/incl $<
+
+appextra: 
+	@echo "$(APPEXTRA)"

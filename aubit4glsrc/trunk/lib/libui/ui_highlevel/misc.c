@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.39 2006-03-21 17:51:30 mikeaubury Exp $";
+  "$Id: misc.c,v 1.40 2006-03-24 16:36:36 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -855,6 +855,17 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
       return;
     }
   A4GL_debug ("MJA - Got message line as %d - %s\n", ml, s);
+
+
+
+
+  if (A4GL_LL_can_show_message(ml,s,wait)) {
+	  return;
+  }
+	
+
+
+
   width = UILIB_A4GL_get_curr_width ();
   //A4GL_push_char(s);
 
@@ -1060,8 +1071,12 @@ UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 int
 UILIB_aclfgl_set_window_title (int nargs)
 {
+  char *s;
+  int rval;
   A4GL_chkwin ();
-  return A4GL_LL_set_window_title (A4GL_get_currwin (), nargs);
+  s=A4GL_char_pop();
+  rval=A4GL_LL_set_window_title (A4GL_get_currwin (), s);
+  return rval;
 }
 
 
@@ -1197,10 +1212,15 @@ A4GL_get_field_width (void *f)
   int w;
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
-  fprop = (struct s_scr_field *) (A4GL_ll_get_field_userptr (f));
-  formdets = (struct s_form_dets *) A4GL_get_curr_form (0);
+
+  if (f==0) return 0;
+
+  fprop 	= (struct s_scr_field *) (A4GL_ll_get_field_userptr (f));
+  formdets 	= (struct s_form_dets *) A4GL_get_curr_form (0);
+
   if (formdets == 0 || fprop == 0)
     {
+	    	A4GL_pause_execution();
       return A4GL_LL_get_field_width_dynamic (f);
     }
 

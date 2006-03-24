@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.69 2006-03-21 17:51:30 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.70 2006-03-24 16:36:36 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3432,7 +3432,7 @@ void A4GL_ll_set_field_userptr(void *f, void *r) {
 		A4GL_del_pointer(buff,':');
 	}
 	A4GL_add_pointer(buff,':',r);
-	return 0;
+	//return 0;
 }
 
 
@@ -3452,6 +3452,6 @@ void A4GL_ll_set_form_userptr(void *f, void *r) {
 		A4GL_del_pointer(buff,':');
 	}
 	A4GL_add_pointer(buff,':',r);
-	return 0;
+	//return 0;
 }
 

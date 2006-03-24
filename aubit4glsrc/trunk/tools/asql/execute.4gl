@@ -748,12 +748,27 @@ if (get_sqlcode()>=0) {
 	}
 } else {
 	char *ptr;
+	char *r;
 	A4GL_push_int(get_sqlcode());
 	aclfgl_get_db_err_msg(1);
 	ptr=A4GL_char_pop();
 	A4GL_trim(ptr);
-	sprintf(buff,"Error %d : %s",get_sqlcode(),ptr);
+
+	if (A4GL_isno(acl_getenv("ASQLERRM"))) {
+		r=strdup("");
+	} else {
+	r=strdup(a4gl_sqlca.sqlerrm);
+
+	if (strstr(r," in line ")!=0) {
+		char *r2;
+		r2=strstr(r," in line ");
+		*r2=0;
+	}
+	}
+	
+	sprintf(buff,"Error %d : %s %s",get_sqlcode(),ptr,r);
 	free(ptr);
+	free(r);
 }
 	return buff;
 }

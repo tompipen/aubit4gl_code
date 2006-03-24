@@ -51,14 +51,22 @@ A4GL_LL_get_carat void* form -> int
 
 A4GL_LL_init_color int c int r int g int b -> void
 
-/* void* A4GL_LL_get_field_userptr void* field */
-A4GL_LL_get_field_userptr void* field -> void* 
 
 /* int A4GL_LL_get_field_width void* f */
 A4GL_LL_get_field_width void* f -> int
 
-/* void* A4GL_LL_get_form_userptr void* form */
-A4GL_LL_get_form_userptr void* form -> void* 
+
+
+
+
+
+/* A4GL_LL_get_field_userptr void* field -> void*  */
+/* A4GL_LL_get_form_userptr void* form -> void*  */
+/* A4GL_LL_set_form_userptr void* form void* data -> void */
+/* A4GL_LL_set_field_userptr void* field void* ptr -> void */
+
+
+
 
 /* int A4GL_LL_getch_swin void* window_ptr */
 A4GL_LL_getch_swin void* window_ptr -> int 
@@ -123,7 +131,7 @@ A4GL_LL_set_carat void* form -> void
 /* void A4GL_LL_set_current_field void* form void* field */
 A4GL_LL_set_current_field void* form void* field -> void
 
-A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture -> void
+A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture  -> void
 
 /* void A4GL_LL_set_field_back void* field int attr */
 A4GL_LL_set_field_back void* field int attr -> void
@@ -143,14 +151,10 @@ A4GL_LL_set_field_opts void* field int oopt -> int
 /* int A4GL_LL_set_field_status void* f int stat */
 A4GL_LL_set_field_status void* f int stat -> int
 
-/* void A4GL_LL_set_field_userptr void* field void* ptr */
-A4GL_LL_set_field_userptr void* field void* ptr -> void
 
 /* void A4GL_LL_set_form_page void* form int page */
 A4GL_LL_set_form_page void* form int page -> void
 
-/* void A4GL_LL_set_form_userptr void* form void* data */
-A4GL_LL_set_form_userptr void* form void* data -> void
 
 /* void A4GL_LL_set_max_field void* f int n */
 A4GL_LL_set_max_field void* f int n -> void
@@ -185,7 +189,7 @@ A4GL_LL_endis_fields_ap int n void* ap -> int
 A4GL_LL_disp_form_fields_ap int n int attr char* formname va_list* ap -> int
 A4GL_LL_open_gui_form char* name_orig  int absolute  int nat  char* like  int disable  void* handler_e void* phandler_c -> int
 
-A4GL_LL_set_window_title void* currwin int nargs -> int
+A4GL_LL_set_window_title void* currwin char* s -> int
 A4GL_LL_widget_name_match void* w char* name -> int
 A4GL_LL_clr_form_fields int to_defaults char* defs  -> void
 A4GL_LL_clr_menu_disp void* menu int curr_width int curr_height int iscurrborder int currwinno void* cw int menu_offset int gw_y -> void 
@@ -197,7 +201,7 @@ A4GL_LL_get_value char* s -> void*
 A4GL_LL_clear_prompt void* f void* p -> void
 
 A4GL_LL_disp_h_menu int num_opts -> int
-A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title int attrib -> int
+A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title char* shorthelp int attrib -> int
 A4GL_LL_menu_type -> int
 A4GL_LL_hide_h_menu -> int
 A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin int currisborder  -> void*

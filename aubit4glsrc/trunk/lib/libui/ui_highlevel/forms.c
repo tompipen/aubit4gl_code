@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.34 2006-03-21 17:51:30 mikeaubury Exp $";
+  "$Id: forms.c,v 1.35 2006-03-24 16:36:36 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1537,7 +1537,8 @@ A4GL_get_currwinno (void)
 {
   void *w;
   w = A4GL_get_currwin ();
-  return A4GL_find_win (w);
+  w=A4GL_find_win (w);
+  return w;
 }
 
 
