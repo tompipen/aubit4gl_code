@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.44 2006-03-24 16:36:36 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.45 2006-03-25 19:33:17 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.44 2006-03-24 16:36:36 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.45 2006-03-25 19:33:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1842,11 +1842,12 @@ int
 A4GL_get_curr_metric (struct s_form_dets *form)
 {
   int a;
+  void *cfield;
+	cfield=A4GL_LL_current_field (form->form);
   A4GL_debug ("In curr metric");
   for (a = 0; a < form->fileform->metrics.metrics_len; a++)
     {
-      if (A4GL_LL_current_field (form->form) ==
-	  (void *) form->fileform->metrics.metrics_val[a].field)
+      if (cfield == (void *) form->fileform->metrics.metrics_val[a].field)
 	{
 	  A4GL_debug ("Returning %d\n", a);
 	  return a;

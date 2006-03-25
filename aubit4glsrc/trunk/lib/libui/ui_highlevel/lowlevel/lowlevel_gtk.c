@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.93 2006-03-24 16:36:40 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.94 2006-03-25 19:33:22 mikeaubury Exp $";
 #endif
 
 
@@ -2255,7 +2255,6 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   int promptline;
   void *p;
   void *cw;
-  //struct s_form_dets fd;
   struct s_a4gl_gtk_form *f;
   int width;
   char buff[300];
@@ -2482,7 +2481,6 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 		      int iscurrborder, int currwinno, int form_line,
 		      void *currwin, void *frm, int maxline, int maxcol)
 {
-  //struct s_form_dets *f;
 
   int rows, cols;
   int b;
@@ -2679,6 +2677,8 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
   return drwin;
 }
 
+
+#ifdef NO_LONGER_REQUIRED
 void
 A4GL_LL_scale_form (void *vfd, int *y, int *x)
 {
@@ -2752,6 +2752,8 @@ if (form->frmMagic!=0xABC123) {
   *x = max_x;
 
 }
+
+#endif
 
 
 int
@@ -2907,7 +2909,6 @@ A4GL_LL_set_form_page (void *vform, int page)
 void *
 A4GL_LL_new_form (list_of_fields * vfd)
 {
-//struct s_form_dets *fd;
   struct s_a4gl_gtk_form *form;
   int a;
 
