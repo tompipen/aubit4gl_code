@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.94 2006-03-25 19:33:22 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.95 2006-03-27 07:37:15 mikeaubury Exp $";
 #endif
 
 
@@ -2351,7 +2351,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   A4GL_LL_set_new_page (widgets[field_cnt - 1], 1);
 
   widgets[field_cnt++] =
-    (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0,
+    (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0,0,
 				      0, 0);
 
   gtk_fixed_put (GTK_FIXED (p), widgets[field_cnt - 1],
@@ -2776,7 +2776,7 @@ A4GL_LL_get_carat (void *vform)
 
 void *
 A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
-		    char *config, void *id)
+		    char *config, char *incl, void *id)
 {
   //struct struct_scr_field *fprop;
   void *widget;
@@ -3344,7 +3344,7 @@ A4GL_LL_construct_large (char *orig, void *vevt, int init_key, int initpos,
   //fd.form_fields[0]=gtk_label_new("[");
   //fd.form_fields[2]=gtk_label_new("]");
 
-  fd.form_fields[0] = A4GL_LL_make_field (0, 0, 0, fwidth, 0, 0, 0);	// gtk_entry_new();
+  fd.form_fields[0] = A4GL_LL_make_field (0, 0, 0, fwidth, 0, 0, 0, 0);	// gtk_entry_new();
 
   fd.form_fields[1] = 0;
 

@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.74 2006-03-25 19:33:22 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.75 2006-03-27 07:37:15 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.74 2006-03-25 19:33:22 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.75 2006-03-27 07:37:15 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 
@@ -1118,7 +1118,7 @@ A4GL_LL_decode_colour_attr_aubit (int a)
  */
 void *
 A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget,
-		    char *config, void *id)
+		    char *config, char *incl, void *id)
 {
   FIELD *f;
   A4GL_debug ("Creating new field entry y=%d x=%d rows=%d width=%d\n", frow,
@@ -2467,7 +2467,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 	      width - 1);
   A4GL_form_set_new_page (sarr[field_cnt - 1], 1);
   sarr[field_cnt++] =
-    (void *) A4GL_LL_make_field (0, strlen (promptstr), 1, width + 1, 0, 0,
+    (void *) A4GL_LL_make_field (0, strlen (promptstr), 1, width + 1, 0, 0,0,
 				 0);
 
 
@@ -2782,7 +2782,7 @@ A4GL_LL_construct_large (char *orig,
   drwin = derwin (panel_window ((PANEL *) cwin), 1, fwidth, fl - 1, isborder);
   last_construct_drwin = drwin;
   buff[0] = A4GL_LL_make_label (0, 0, left);
-  buff[1] = A4GL_LL_make_field (0, 1, 1, fwidth - 2, 0, 0, 0);
+  buff[1] = A4GL_LL_make_field (0, 1, 1, fwidth - 2, 0, 0, 0,0);
 
 
   A4GL_fld_opts_on (buff[1], AUBIT_O_ACTIVE);

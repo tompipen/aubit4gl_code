@@ -38,7 +38,7 @@ A4GL_LL_hide_h_menu -> int
 A4GL_LL_hide_window void* w -> void
 A4GL_LL_initialize_display -> void
 A4GL_LL_int_form_driver void* mform int mode -> int
-A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config void* id -> void* 
+A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* inc void* id -> void* 
 A4GL_LL_make_label int frow int fcol char* label -> void* 
 A4GL_LL_make_window_top void* w -> void
 A4GL_LL_menu_type -> int
@@ -47,7 +47,7 @@ A4GL_LL_new_form list_of_fields* fields -> void*
 A4GL_LL_open_gui_form char* name_orig  int absolute  int nat  char* like  int disable  void* handler_e void* phandler_c -> int
 A4GL_LL_out_linemode char* s -> void
 A4GL_LL_remove_window void* x -> void
-A4GL_LL_scale_form void* f int* y int* x -> void
+* A4GL_LL_scale_form void* f int* y int* x -> void
 A4GL_LL_screen_height -> int
 A4GL_LL_screen_mode  -> void
 A4GL_LL_screen_redraw  -> void

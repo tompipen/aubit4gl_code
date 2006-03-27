@@ -84,7 +84,7 @@ A4GL_LL_initialize_display  -> void
 A4GL_LL_int_form_driver void* mform int mode -> int
 
 /* void* A4GL_LL_make_field int frow int fcol int rows int cols */
-A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config void* fprop_id -> void* 
+A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* incl void* fprop_id -> void* 
 
 /* void* A4GL_LL_make_label int frow int fcol char* label */
 A4GL_LL_make_label int frow int fcol char* label -> void* 
