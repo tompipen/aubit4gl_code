@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.40 2006-03-24 16:36:36 mikeaubury Exp $";
+  "$Id: misc.c,v 1.41 2006-04-05 06:54:38 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1121,7 +1121,7 @@ UILIB_A4GL_finish_screenio (void *sio, char *siotype)
     {
       A4GL_comments (0);
     }
-
+  A4GL_LL_finished_with_events(sio);
 }
 
 void *

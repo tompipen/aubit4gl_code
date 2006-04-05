@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.38 2006-03-21 17:51:30 mikeaubury Exp $
+# $Id: input_array.c,v 1.39 2006-04-05 06:54:38 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.38 2006-03-21 17:51:30 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.39 2006-04-05 06:54:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -662,6 +662,14 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	a = A4GLKEY_NEXT;
       if (A4GL_is_special_key (a, A4GLKEY_PREV))
 	a = A4GLKEY_PREV;
+
+
+      if (a==A4GLKEY_EVENT) {
+	            int rval;
+		              rval=A4GL_LL_get_triggered_event();
+			                return rval;
+					  }
+
 
       arr->processed_onkey = a;
       if (abort_pressed)
@@ -3407,7 +3415,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 void
 A4GL_turn_field_on2 (void *f, int a)
 {
-
+int fo;
   struct struct_scr_field *fprop;
 
   A4GL_assertion (f == 0, "Field is zero in turn_field_on2");
@@ -3416,10 +3424,11 @@ A4GL_turn_field_on2 (void *f, int a)
   fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
   A4GL_assertion (fprop == 0, "Field has no properties");
 
+  fo=A4GL_ll_field_opts(f);
+  if (!(fo&AUBIT_O_ACTIVE)) { fo+=AUBIT_O_ACTIVE; }
+  if (!(fo&AUBIT_O_EDIT))   { fo+=AUBIT_O_EDIT;   }
 
-  A4GL_field_opts_on (f, AUBIT_O_ACTIVE);
-  A4GL_field_opts_on (f, AUBIT_O_EDIT);
-
+  A4GL_ll_set_field_opts (f, fo);
 
   A4GL_set_field_attr_for_ll (f);
 

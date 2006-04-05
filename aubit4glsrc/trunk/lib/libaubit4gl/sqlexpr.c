@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.22 2006-03-20 08:59:24 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.23 2006-04-05 06:54:37 mikeaubury Exp $
 #
 */
 
@@ -1415,7 +1415,7 @@ preprocess_sql_statement (struct s_select *select)
 //
 // Lets collect all our expressions in one place....
 //
-  if (A4GL_isyes (acl_getenv ("EXPAND_COLUMNS")))
+  if (A4GLSQLCV_check_requirement ("EXPAND_COLUMNS"))
     {
 
       expand_many = 0;
@@ -1428,8 +1428,7 @@ preprocess_sql_statement (struct s_select *select)
 	      if (select->table_elements.ntables == 1)
 		{
 		  tname = select->table_elements.tables[0].tabname;
-		  select->select_list->list[a] =
-		    new_select_list_item_col (acl_strdup (tname), "*", 0);
+		  select->select_list->list[a] = new_select_list_item_col (acl_strdup (tname), "*", 0);
 		}
 	      else
 		{
@@ -1551,6 +1550,8 @@ preprocess_sql_statement (struct s_select *select)
 			  break;
 			}
 		      A4GL_trim (ccol);
+		      if (is_fake_rowid_column(ccol)) {continue;}
+
 		      pnew =
 			new_select_list_item_col (p->u_data.column.tabname,
 						  ccol, 0);

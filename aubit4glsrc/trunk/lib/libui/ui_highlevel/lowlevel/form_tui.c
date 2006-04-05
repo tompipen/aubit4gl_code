@@ -1006,3 +1006,5 @@ A4GL_form_form_driver (FORM * form, long c)
   redraw_current_field (form);
   return E_OK;
 }
+
+

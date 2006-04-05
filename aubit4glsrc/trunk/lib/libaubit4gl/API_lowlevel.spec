@@ -38,7 +38,7 @@ A4GL_LL_error_box char* str int attr  -> void
 A4GL_LL_field_buffer void* field int n -> char* 
 
 /* int A4GL_LL_field_opts void* field */
-A4GL_LL_field_opts void* field -> int
+* A4GL_LL_field_opts void* field -> int
 
 /* int A4GL_LL_field_status void* field */
 A4GL_LL_field_status void* field -> int 
@@ -84,7 +84,7 @@ A4GL_LL_initialize_display  -> void
 A4GL_LL_int_form_driver void* mform int mode -> int
 
 /* void* A4GL_LL_make_field int frow int fcol int rows int cols */
-A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* incl void* fprop_id -> void* 
+A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* incl void* fprop_id char* ref -> void* 
 
 /* void* A4GL_LL_make_label int frow int fcol char* label */
 A4GL_LL_make_label int frow int fcol char* label -> void* 
@@ -208,3 +208,9 @@ A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left 
 A4GL_LL_construct_large_finished void* f -> char*
 A4GL_LL_pause_mode int pm -> int
 A4GL_LL_get_field_width_dynamic void* f -> int
+A4GL_LL_submit_event int a void* s int event_type int block int keycode char* field -> void
+A4GL_LL_activate_events void* s -> void
+A4GL_LL_finished_with_events void* s -> void
+A4GL_LL_get_triggered_event -> int
+A4GL_LL_can_show_comments char* str -> int
+A4GL_LL_can_show_message int msgline char* str int wait -> int

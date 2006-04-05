@@ -10,6 +10,9 @@ define mv_mode integer
 define mv_perms integer
 
 DEFINE gv_filter_out_table_prefix char (16)
+code
+FILE *fout=0;
+endcode
 
 main
 define 
@@ -27,6 +30,7 @@ define
 	let mv_mode=0
 	let mv_perms=1
 	let lv_4gl=0
+	initialize lv_output to null
 	
 	let lv_systables = false
 	let lv_prefix_idx = false
@@ -213,7 +217,9 @@ define
 			end if
 		end if
 	end if
-
+code
+if (fout) {fclose(fout);}
+endcode
 
 end main
 
@@ -221,7 +227,25 @@ end main
 
 function outstr(lv_s)
 define lv_s char(20000)
+define lv_f char(200)
+if lv_output is null then
 display lv_s clipped
+else
+	let lv_f=lv_output
+code
+if (fout==0) {
+	A4GL_trim(lv_f);
+	fout=fopen(lv_f,"w");
+	if (fout==0) {
+		printf("Unable to open output file : %s\n",lv_f);
+		exit(2);
+	}
+}
+	A4GL_trim(lv_s);
+fprintf(fout,"%s\n",lv_s);
+endcode
+end if
+
 end function
 
 

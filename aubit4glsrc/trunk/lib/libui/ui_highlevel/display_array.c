@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.28 2006-03-21 17:51:30 mikeaubury Exp $
+# $Id: display_array.c,v 1.29 2006-04-05 06:54:38 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.28 2006-03-21 17:51:30 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.29 2006-04-05 06:54:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -426,6 +426,12 @@ disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
 		a = A4GLKEY_ACCEPT;
 	    }
 	}
+
+       if (a==A4GLKEY_EVENT) {
+	            int rval;
+		              rval=A4GL_LL_get_triggered_event();
+			                return rval;
+					  }
 
       arr->processed_onkey = a;
       m_lastkey = a;
@@ -920,7 +926,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
     {
       int n;
       int n2;
-      n = A4GL_LL_field_opts (field_list[0]);
+      n = A4GL_ll_field_opts (field_list[0]);
       orig_set = n;
       n2 = n;
       nofields = 0;
@@ -936,7 +942,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
 	}
       A4GL_debug ("First only set now  %x %x %x", n2, AUBIT_O_ACTIVE,
 		  AUBIT_O_EDIT);
-      A4GL_LL_set_field_opts (field_list[0], n2);
+      A4GL_ll_set_field_opts (field_list[0], n2);
 
 
 
@@ -1006,7 +1012,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
 	  A4GL_LL_set_carat (formdets->form);
 	  A4GL_LL_screen_update ();
 	  if (orig_set)
-	    A4GL_LL_set_field_opts (field_list[0], orig_set);
+	    A4GL_ll_set_field_opts (field_list[0], orig_set);
 	}
 
     }

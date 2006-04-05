@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.95 2006-03-27 07:37:15 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.96 2006-04-05 06:54:38 mikeaubury Exp $";
 #endif
 
 
@@ -2352,7 +2352,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 
   widgets[field_cnt++] =
     (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0,0,
-				      0, 0);
+				      0, 0,"");
 
   gtk_fixed_put (GTK_FIXED (p), widgets[field_cnt - 1],
 		 (strlen (promptstr) + 1) * gui_xwidth, 0);
@@ -2776,7 +2776,7 @@ A4GL_LL_get_carat (void *vform)
 
 void *
 A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
-		    char *config, char *incl, void *id)
+		    char *config, char *incl, void *id,char *tab_and_col)
 {
   //struct struct_scr_field *fprop;
   void *widget;
@@ -3344,7 +3344,7 @@ A4GL_LL_construct_large (char *orig, void *vevt, int init_key, int initpos,
   //fd.form_fields[0]=gtk_label_new("[");
   //fd.form_fields[2]=gtk_label_new("]");
 
-  fd.form_fields[0] = A4GL_LL_make_field (0, 0, 0, fwidth, 0, 0, 0, 0);	// gtk_entry_new();
+  fd.form_fields[0] = A4GL_LL_make_field (0, 0, 0, fwidth, 0, 0, 0, 0,"");	// gtk_entry_new();
 
   fd.form_fields[1] = 0;
 
@@ -4067,7 +4067,8 @@ A4GL_LL_pause_mode (int a)
       return smode;
     }
   smode = 1;
-  A4GL_zrefresh ();
+  A4GL_LL_screen_refresh();
+  //A4GL_zrefresh ();
   return smode;
 }
 
@@ -4147,4 +4148,29 @@ int use_frames() {
       }
 
       return 1;
+}
+
+
+void
+A4GL_LL_submit_event (int a, void *s, int event_type, int block, int keycode,
+		      char *field)
+{
+  // Does nothing in GTK mode..
+}
+
+
+void
+A4GL_LL_activate_events (void *s)
+{
+  // Does nothing in GTK mode..
+}
+
+void
+A4GL_LL_finished_with_events (void *s)
+{
+  // Does nothing in GTK mode..
+}
+
+int A4GL_LL_get_triggered_event() {
+	return -1; /* Does nothing in GTK mode */
 }

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.45 2006-03-25 19:33:17 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.46 2006-04-05 06:54:38 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.45 2006-03-25 19:33:17 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.46 2006-04-05 06:54:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1206,7 +1206,16 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
     }
 }
 
-
+void A4GL_submit_events(void *s, struct aclfgl_event_list *evt )
+{
+	int a;
+	for (a=0;evt[a].event_type;a++)  {
+		char *p;
+		p=evt[a].field;
+		if (p==0) p="";
+		A4GL_LL_submit_event(a,s,evt[a].event_type, evt[a].block,evt[a].keycode,p);
+	}
+}
 
 
 /**
@@ -1236,6 +1245,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
   form = s->currform;
   A4GL_set_abort (0);
   //A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,field_status(form->currentfield));
+  //
 
   if (form != (struct s_form_dets *) UILIB_A4GL_get_curr_form (0))
     {
@@ -1261,7 +1271,11 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
       A4GL_newMovement (s, 0);
       A4GL_clr_evt_timeouts(evt);
       A4GL_add_to_control_stack (s, FORMCONTROL_BEFORE_INPUT, 0, 0, 0);
+      A4GL_submit_events(s,evt);
+    } else {
+      A4GL_LL_activate_events(s);
     }
+
 
   if (A4GL_has_something_on_control_stack (s))
     {
@@ -1280,9 +1294,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 
   //pos_form_cursor (mform);
 
-  fprop =
-    (struct struct_scr_field *)
-    A4GL_ll_get_field_userptr (A4GL_LL_current_field (mform));
+  fprop = (struct struct_scr_field *) A4GL_ll_get_field_userptr (A4GL_LL_current_field (mform));
   metrics = &form->fileform->metrics.metrics_val[A4GL_get_curr_metric (form)];
 
   if (metrics && (int) metrics != -1)
@@ -1306,6 +1318,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
    	if (blk) {
 		       	return blk;
    	}
+
   	a = A4GL_getch_win (1);
 	
   	if (a!=0&&a!=-1) {
@@ -1313,6 +1326,12 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
        		break;
   	}
   	if (abort_pressed) {break;}
+  }
+
+  if (a==A4GLKEY_EVENT) {
+	  int rval;
+	  rval=A4GL_LL_get_triggered_event();
+	  return rval;
   }
 
   if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
@@ -1356,7 +1375,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
     }
 
 
-
+  
 
   A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
   }

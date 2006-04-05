@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.150 2006-03-24 16:36:31 mikeaubury Exp $
+# $Id: sql.c,v 1.151 2006-04-05 06:54:37 mikeaubury Exp $
 #
 */
 
@@ -114,6 +114,7 @@ void *A4GL_bind_datetime (void *ptr_to_dtime_var);
 void *A4GL_bind_interval (void *ptr_to_ival);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 int A4GL_inttoc (void *a1, void *b, int size);
+char scratch[255][255];
 
 #define FETCH_ABSOLUTE 		1
 #define FETCH_RELATIVE 		2
@@ -814,7 +815,9 @@ int
 A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 {
   int a;
+
   SWORD nin = 0;
+  SWORD nout = 0;
 
   if (b == 0)
     return 0;
@@ -859,10 +862,17 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 
     }
 
+  nout=-1;
+
+  if (t=='o') {
+	 	rc=SQLNumResultCols(hstmt,&nout);
+		if (rc<0) {
+			nout=-1;
+		}
+  }
+
   for (a = 1; a <= n; a++)
     {
-
-
 #ifdef DEBUG
       A4GL_debug ("Binding parameter %d ", a);
 #endif
@@ -875,11 +885,22 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 	{
 	  A4GL_ibind_column (a, &b[a - 1], hstmt);
 	}
-
 #ifdef DEBUG
       A4GL_debug ("DOne...");
 #endif
     }
+
+  if (nout!=-1 && n<nout) {
+	  int b=0;
+	  struct BINDING bind;
+		bind.ptr=scratch[b];
+		bind.dtype=0;
+		bind.size=254;
+	  // We've got too few!
+	  for (a=n+1;a<=nout;a++) {
+	  	A4GL_obind_column (a, &bind, hstmt);
+	  }
+  }
   return 1;
 }
 
@@ -2889,10 +2910,10 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
 
   //printf (" SQLBindCol (%p,%d,%d,%p,%d,%p)\n", (SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use, fgl_size (bind->dtype, bind->size), &outlen[pos]);
-  //
-  rc =
-    SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use,
-		fgl_size (bind->dtype, bind->size), &outlen[pos]);
+  
+
+
+  rc = SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use, fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
 
   chk_rc (rc, hstmt, "SQLBindCol");

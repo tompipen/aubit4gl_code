@@ -707,9 +707,8 @@ define lv_qry char(256)
 				
 	if lv_st.tabtype = "T" then
 		case lv_type
-			when "U" DISPLAY "UNLOAD TO '",lv_t clipped,".unl' SELECT * FROM ",lv_t clipped,";"
-			when "L" 
-				DISPLAY "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
+			when "U" call outstr("UNLOAD TO '"||lv_t clipped||".unl' SELECT * FROM "||lv_t clipped||";")
+			when "L" call outstr("LOAD FROM '"||lv_t clipped,".unl' INSERT INTO "||lv_t clipped||";")
 {				
 issue - when loading data using LOAD FROM .... INSERT INTO ...
 that contains SERIAL column, data will be loaded, but associated sequence will 
@@ -722,15 +721,11 @@ Add this stmt after every LOAD FROM statement:
 	SELECT setval('tablename_colname_seq', max(colname)) FROM tablename;
 }				
 				if lv_serial_colname is not NULL then
-					DISPLAY "IF dbms_dialect()='POSTGRESQL' THEN"
-					DISPLAY "	let lv = \"SELECT setval('",
-						lv_t clipped,"_",
-						lv_serial_colname clipped,"_seq', max(",
-						lv_serial_colname clipped,")) FROM ",
-						lv_t clipped,";\""
-					DISPLAY "	PREPARE cur1 FROM lv"
-					DISPLAY "	EXECUTE cur1"
-					DISPLAY "END IF"
+					call outstr( "IF dbms_dialect()='POSTGRESQL' THEN")
+					call outstr( "	let lv = \"SELECT setval('"|| lv_t clipped||"_"||lv_serial_colname clipped||"_seq', max("||lv_serial_colname clipped||")) FROM "||lv_t clipped||";\"")
+					call outstr( "	PREPARE cur1 FROM lv")
+					call outstr( "	EXECUTE cur1")
+					call outstr( "END IF")
 				end if
 				
 			otherwise

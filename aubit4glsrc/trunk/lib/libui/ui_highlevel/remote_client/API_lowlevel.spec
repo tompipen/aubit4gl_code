@@ -26,7 +26,7 @@ A4GL_LL_dump_screen int n char* fname int mode -> int
 A4GL_LL_endis_fields_ap int n void* ap -> int
 A4GL_LL_error_box char* str int attr  -> void 
 A4GL_LL_field_buffer void* field int n -> char* 
-A4GL_LL_field_opts void* field -> int
+* A4GL_LL_field_opts void* field -> int
 A4GL_LL_field_status void* field -> int 
 A4GL_LL_form_page void* form -> int
 A4GL_LL_get_carat void* form -> int
@@ -38,7 +38,7 @@ A4GL_LL_hide_h_menu -> int
 A4GL_LL_hide_window void* w -> void
 A4GL_LL_initialize_display -> void
 A4GL_LL_int_form_driver void* mform int mode -> int
-A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* inc void* id -> void* 
+A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* inc void* id char* tab_and_col -> void* 
 A4GL_LL_make_label int frow int fcol char* label -> void* 
 A4GL_LL_make_window_top void* w -> void
 A4GL_LL_menu_type -> int
@@ -79,6 +79,11 @@ A4GL_LL_pause_mode int pm -> int
 A4GL_LL_get_field_width_dynamic void* f -> int
 A4GL_LL_can_show_comments char* s -> int
 A4GL_LL_can_show_message int ml char* s int wait -> int
+
+A4GL_LL_submit_event int a void* s int event_type int block int keycode char* field -> void
+A4GL_LL_activate_events void* s -> void
+A4GL_LL_finished_with_events void* s -> void
+A4GL_LL_get_triggered_event -> int
 
 
 * A4GL_LL_get_field_userptr void* field -> void*  

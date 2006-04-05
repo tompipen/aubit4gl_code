@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.223 2006-03-24 16:36:21 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.224 2006-04-05 06:54:36 mikeaubury Exp $
 #
 */
 
@@ -262,6 +262,7 @@
 #define A4GLKEY_BACKSPACE 	0xff0e
 #define A4GLKEY_SHTAB 		0xff0f
 
+#define A4GLKEY_EVENT  		2017
 #define A4GLKEY_ACCEPT 		2016
 #define A4GLKEY_DELETE		2015
 #define A4GLKEY_INSERT		2014
@@ -334,6 +335,8 @@
 #define ARRAYS_OF_RECORD        'a'
 #define SCHEMA_FILE_INDEX       'x'
 #define FUNC_POINTER            ';'
+#define FIELDOPTS            	'{'
+#define USERPTR            	':'
 
 #define BLOCK_USED		'R'
 

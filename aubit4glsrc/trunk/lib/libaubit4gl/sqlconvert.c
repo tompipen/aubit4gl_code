@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.84 2006-03-17 20:03:10 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.85 2006-04-05 06:54:37 mikeaubury Exp $
 #
 */
 
@@ -60,6 +60,7 @@ char *CV_matches (char *typ, char *string, char *esc);
 static int set_sql_conv_success;
 int is_sqlserver_reserved_word (char *s);
 static void load_column_mappings_i (char *ptr);
+char fake_rowid_column[256];
 
 static char *cvsql_names[] = {
   "CVSQL_NONE",
@@ -149,6 +150,8 @@ static char *cvsql_names[] = {
   "CVSQL_CASE_AS_PROCEDURE",
   "CVSQL_FIX_OUTER_JOINS",
   "CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN",
+  "CVSQL_FAKE_ROWID_NAME",
+  "CVSQL_EXPAND_COLUMNS",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -252,6 +255,8 @@ enum cvsql_type
   CVSQL_CASE_AS_PROCEDURE,
   CVSQL_FIX_OUTER_JOINS,
   CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN,
+  CVSQL_FAKE_ROWID_NAME,
+  CVSQL_EXPAND_COLUMNS,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -1619,6 +1624,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_FIX_OUTER_JOINS;
   if (match_strncasecmp (p, "NOT_EQUAL_AS_LESS_GREATER_THAN", len) == 0)
     return CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN;
+  if (match_strncasecmp (p, "FAKE_ROWID_NAME", len) == 0)
+    return CVSQL_FAKE_ROWID_NAME;
   if (match_strncasecmp (p, "ESCAPE_PLAN", len) == 0)
     return CVSQL_ESCAPE_PLAN;
   if (match_strncasecmp (p, "CASE_AS_PROCEDURE", len) == 0)
@@ -1639,6 +1646,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_CREATE_TEMP_AS_CREATE_HASH;
   if (match_strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0)
     return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
+  if (match_strncasecmp (p, "EXPAND_COLUMNS", len) == 0)
+    return CVSQL_EXPAND_COLUMNS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 
@@ -2036,6 +2045,23 @@ A4GL_strwscmp (char *a, char *b)
 }
 
 
+
+int is_fake_rowid_column(char*s) {
+  int hr;
+
+  hr = A4GLSQLCV_check_requirement ("FAKE_ROWID_NAME");
+
+  if (hr) {
+      char *x;
+     	x = current_conversion_rules[hr - 1].data.from;
+		if (x) {
+	  		if (strcmp(s,x)==0) {
+		  			return 1;
+	  		}
+		}
+  }
+  return 0;
+}
 
 
 char *

@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.71 2006-03-27 07:37:15 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.72 2006-04-05 06:54:38 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1064,7 +1064,11 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *evt)
 
 
 
-
+static char *make_tab_and_col(char *t,char * c) {
+	static char buff[256];
+	sprintf(buff,"%s.%s",t,c);
+	return buff;
+}
 
 /**
  *
@@ -1182,7 +1186,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 				      metrics_val[metric_no].h,
 				      formdets->fileform->metrics.
 				      metrics_val[metric_no].w, widget,
-				      config, include, fprop);
+				      config, include, fprop,make_tab_and_col(fprop->tabname,fprop->colname));
 
 	  A4GL_debug ("Making field 2");
 
@@ -1430,7 +1434,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   A4GL_display_field_contents (field, d1, s1, ptr1);
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
-  oopt = A4GL_LL_field_opts (field);
+  oopt = A4GL_ll_field_opts (field);
   A4GL_set_field_attr_for_ll (field);
   A4GL_debug ("Determining attribute - field_buffer=%s",
 	      A4GL_LL_field_buffer (field, 0));
@@ -1452,7 +1456,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
 
   f->do_reverse = a;
   A4GL_debug ("done ");
-  A4GL_LL_set_field_opts (field, oopt);
+  A4GL_ll_set_field_opts (field, oopt);
   A4GL_debug ("ZZZZ - SET OPTS");
   A4GL_debug ("Calling display_field_contents");
 
@@ -3346,18 +3350,18 @@ int
 A4GL_field_opts_on (void *v, int n)
 {
 
-  if (A4GL_LL_field_opts (v) & n)
+  if (A4GL_ll_field_opts (v) & n)
     return 1;
-  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) + n);
+  A4GL_ll_set_field_opts (v, A4GL_ll_field_opts (v) + n);
   return 1;
 }
 
 int
 A4GL_field_opts_off (void *v, int n)
 {
-  if (!(A4GL_LL_field_opts (v) & n))
+  if (!(A4GL_ll_field_opts (v) & n))
     return 1;
-  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) - n);
+  A4GL_ll_set_field_opts (v, A4GL_ll_field_opts (v) - n);
   return 1;
 }
 
@@ -3404,9 +3408,7 @@ A4GL_default_attributes (void *f, int dtype, int has_picture)
   if (has_picture)
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_LL_set_field_opts (f,
-			      AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-			      AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+      A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
       done = 1;
     }
 
@@ -3422,7 +3424,7 @@ A4GL_default_attributes (void *f, int dtype, int has_picture)
       if ((dtype & 255) == DTYPE_CHAR || (dtype & 255) == DTYPE_VCHAR)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
-	  A4GL_LL_set_field_opts (f,
+	  A4GL_ll_set_field_opts (f,
 				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
 				  AUBIT_O_PUBLIC | AUBIT_O_EDIT);
 
@@ -3435,7 +3437,7 @@ A4GL_default_attributes (void *f, int dtype, int has_picture)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_debug ("BLANK BLANK");
-	  A4GL_LL_set_field_opts (f,
+	  A4GL_ll_set_field_opts (f,
 				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
 				  AUBIT_O_PUBLIC | AUBIT_O_EDIT
 				  | AUBIT_O_BLANK);
@@ -3513,11 +3515,87 @@ void
 A4GL_ll_set_form_userptr (void *f, void *r)
 {
   char buff[256];
+
   sprintf (buff, "PFRM_%p", f);
-  if (A4GL_has_pointer (buff, ':'))
+  if (A4GL_has_pointer (buff,':' ))
     {
       A4GL_del_pointer (buff, ':');
     }
   A4GL_add_pointer (buff, ':', r);
   //return 0;
+}
+
+
+int A4GL_ll_set_field_opts (void *f,int l) {
+  char buff[30];
+  int hadit=0;
+  sprintf(buff,"%p",f);
+  int last=0;
+  printf("set_field_opts : %p %x\n",f,l);
+  if (A4GL_has_pointer (buff, FIELDOPTS))
+    {
+    	last=A4GL_find_pointer (buff, FIELDOPTS);
+	hadit=1;
+    } else {
+	    // Lets make certain that 'last' and 'l' are different and force the set
+	    if (l!=-1) {
+	    	last=-1;
+	    } else {
+		    last=0;
+	    }
+    }
+  printf("Last %x, this %x\n",last,l);
+  if (last!=l) {
+	printf("Sending\n");
+	if (hadit) {
+		A4GL_del_pointer(buff,FIELDOPTS);
+	}
+	printf("ADDING POINTER %s for %x",buff,l);
+  	A4GL_add_pointer (buff, FIELDOPTS, (void *)l);
+	// We'll mark this as OK - so if we grep for A4GL_LL_set_field_opts - we'll know this is ok...
+	// we should be using A4GL_ll_set_field_opts everywhere else so we'll hit this code...
+	A4GL_LL_set_field_opts(f,l); 		// OK
+
+  }
+
+}
+
+
+
+
+
+
+
+
+int A4GL_ll_field_opts (void *f) {
+  char buff[30];
+  
+  // Lets cache our result - might save a round trip or two...
+  //
+  static int last=0;
+  static void *lastf=0;
+
+
+  printf("field_opts : %p %x\n",f);
+
+  if (f==lastf) {
+	  	printf("Cached : %x\n",last);
+	  	return last;
+  }
+
+  sprintf(buff,"%p",f);
+
+  last=0;
+  lastf=f;
+
+  printf("Looking for POINTER %s ",buff);
+  if (A4GL_has_pointer (buff, FIELDOPTS))
+    {
+      last=A4GL_find_pointer (buff, FIELDOPTS);
+    }
+
+
+  printf("Not cached : %x\n",last);
+  return last;
+
 }

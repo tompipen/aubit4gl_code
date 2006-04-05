@@ -84,3 +84,5 @@ extern int A4GL_LL_int_form_driver (void *mform, int mode) ;
 extern int A4GL_LL_field_status(void *field) ;
 extern void A4GL_LL_set_carat(void *form) ;
 
+int A4GL_ll_set_field_opts (void *field, int oopt);
+int A4GL_ll_field_opts (void *field);

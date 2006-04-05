@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.101 2006-03-17 23:46:42 mikeaubury Exp $
+# $Id: compile.c,v 1.102 2006-04-05 06:53:58 mikeaubury Exp $
 #*/
 
 /**
@@ -1831,6 +1831,17 @@ char buff[256];
 	SPRINTF1 (buff, "Error: ANSI violation - %s", s);
 	a4gl_yyerror (buff);
 }
+
+
+
+void A4GL_warn(char *s) {
+	if (!A4GL_isyes(acl_getenv("SUPPRESSWARNINGS"))) {
+		fprintf(stderr,"Warning : %s @ line %d\n",s,yylineno);
+	}
+}
+
+
+
 
 /**
  *
