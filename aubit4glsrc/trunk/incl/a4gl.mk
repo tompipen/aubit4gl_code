@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.58 2005-06-08 07:53:14 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.59 2006-04-09 09:33:25 mikeaubury Exp $
 
 ##########################################################################
 #
@@ -300,8 +300,9 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #build x.${A4GL_EXE_EXT} and we have x.4gl, this rule will be invoked
 #with just one (${A4GL_EXE_EXT}.4gl) source file, instead with all the 4gl
 #files needed:
+#warning we depend on this rule in tools/test/makefile
 #.4gl${A4GL_EXE_EXT}:
-xxxxx%${A4GL_EXE_EXT}: %.4gl
+%${A4GL_EXE_EXT}: %.4gl
 	${A4GL_CL} -o$@ $< ${A4GL_CL_LDFLAGS}
 
 

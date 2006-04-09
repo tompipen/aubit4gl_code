@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.286 2006-03-20 08:59:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.287 2006-04-09 09:28:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.286 2006-03-20 08:59:25 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.287 2006-04-09 09:28:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -161,7 +161,8 @@ extern int inp_flags;
 dll_import struct rep_structure rep_struct;
 
 
-extern struct pdf_rep_structure pdf_rep_struct;
+//extern struct pdf_rep_structure pdf_rep_struct;
+dll_import struct pdf_rep_structure pdf_rep_struct;
 extern struct form_attr form_attrib;
 extern int menu_cnt;
 //extern int ccnt;					/**< Block counter - defined in lexer.c */

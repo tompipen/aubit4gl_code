@@ -1,4 +1,11 @@
 
+#if (defined(WIN32) && ! defined(__CYGWIN__))
+	//BOOL __stdcall
+	//set_intr_win32 (DWORD type)
+	int set_intr_win32 (int type);
+#endif
+
+
 #include "a4gl_libaubit4gl.h"
 #include "hl_proto.h"
 #include "a4gl_API_lowlevel.h"
@@ -12,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.96 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.97 2006-04-09 09:28:57 mikeaubury Exp $";
 #endif
 
 
@@ -1152,8 +1159,9 @@ Under mingw I think it should be calling :
  * @param type
  * @return
  */
-BOOL __stdcall
-set_intr_win32 (DWORD type)
+//BOOL __stdcall
+//set_intr_win32 (DWORD type)
+int set_intr_win32 (int type)
 {
   if (type == CTRL_C_EVENT || type == CTRL_BREAK_EVENT)
     {
