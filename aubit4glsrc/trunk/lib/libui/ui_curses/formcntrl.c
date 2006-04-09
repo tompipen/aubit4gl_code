@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.90 2006-03-10 10:01:40 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.91 2006-04-09 10:10:25 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.90 2006-03-10 10:01:40 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.91 2006-04-09 10:10:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1544,7 +1544,7 @@ int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,
         static char rbuff[1024];
         FIELD *buff[4];
         WINDOW *cwin;
-        WINDOW *drwin;
+        WINDOW *drwin=0;
         FORM *f;
         int ins_ovl='o';
         int looping=1;
@@ -1571,13 +1571,23 @@ m_d2[1]=0;
         fwidth=UILIB_A4GL_get_curr_width ();
         if (fwidth>80) fwidth=80;
         cwin = (WINDOW *) A4GL_get_currwin ();
+
+
+
+	// Construct normally drops to the comment line...
         fl = A4GL_getcomment_line ();
-       if (UILIB_A4GL_iscurrborder()) {
+
+	if (fl==0) {
+		fl = UILIB_A4GL_get_curr_height ();
+	}
+
+       	if (UILIB_A4GL_iscurrborder()) {
                fl++;
                x++;
-       }
-        if (fl > UILIB_A4GL_get_curr_height ()) fl = UILIB_A4GL_get_curr_height ();
-        drwin = derwin (cwin, 1, fwidth, fl-1, x);
+        }
+
+       	if (fl > UILIB_A4GL_get_curr_height ()) fl = UILIB_A4GL_get_curr_height ();
+       	drwin = derwin (cwin, 1, fwidth, fl-1, x);
 
         buff[0]=A4GL_make_label(0,0,m_d1);
         buff[1]=A4GL_make_field(0,1,1,fwidth-2);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.119 2006-03-17 19:01:31 mikeaubury Exp $
+# $Id: conv.c,v 1.120 2006-04-09 10:10:24 mikeaubury Exp $
 #
 */
 
@@ -3550,6 +3550,14 @@ A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data)
   data[6] = data[6] * 10 + data_internal[8];	//F3
   data[6] = data[6] * 10 + data_internal[9];	//F4
   data[6] = data[6] * 10 + data_internal[10];	//F5
+  A4GL_debug("%d %d %d %d %d %d %d",
+		  	data[0],
+		  	data[1],
+		  	data[2],
+		  	data[3],
+		  	data[4],
+		  	data[5],
+		  	data[6]);
 }
 
 

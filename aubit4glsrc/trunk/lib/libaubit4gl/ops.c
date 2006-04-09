@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.89 2006-03-17 19:01:31 mikeaubury Exp $
+# $Id: ops.c,v 1.90 2006-04-09 10:10:24 mikeaubury Exp $
 #
 */
 
@@ -2058,6 +2058,9 @@ A4GL_dt_dt_ops (int op)
   A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime);
 
 
+  memset(dtime_data1,0,sizeof(dtime_data1));
+  memset(dtime_data2,0,sizeof(dtime_data2));
+
   A4GL_decode_datetime (&dt1, &dtime_data1[0]);
   A4GL_decode_datetime (&dt2, &dtime_data2[0]);
 
@@ -2151,6 +2154,9 @@ A4GL_dt_dt_ops (int op)
       A4GL_debug ("Op LT : %d (-%d <%d >%d", op, OP_SUB, OP_LESS_THAN,
 		  OP_GREATER_THAN);
 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data1[0], dtime_data1[1], dtime_data1[2], dtime_data1[3], dtime_data1[4], dtime_data1[5], dtime_data1[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+
       dtime_data2[0] -= dtime_data1[0];	// Y
       dtime_data2[1] -= dtime_data1[1];	//
       dtime_data2[2] -= dtime_data1[2];
@@ -2159,6 +2165,7 @@ A4GL_dt_dt_ops (int op)
       dtime_data2[5] -= dtime_data1[5];
       dtime_data2[6] -= dtime_data1[6];
 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
 // Borrow some seconds for fractions
       while (dtime_data2[6] < 0)
 	{
@@ -2166,6 +2173,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[5]--;
 	}
 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
 // Borrow some minutes for seconds
       while (dtime_data2[5] < 0)
 	{
@@ -2173,6 +2181,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[4]--;
 	}
 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
 // Borrow some hours for minutes
       while (dtime_data2[4] < 0)
 	{
@@ -2180,6 +2189,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[3]--;
 	}
 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
 // Borrow some days for some hours..
       while (dtime_data2[3] < 0)
 	{
@@ -2187,24 +2197,28 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[2]--;
 	}
 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
 // Borrow some months for some days. @ FIXME @todo fix days in months
       while (dtime_data2[2] < 0)
 	{
-	  dtime_data2[2] += A4GL_days_in_month(dtime_data2[1],dtime_data2[0]);
-	  dtime_data2[1]--;
+			if (dtime_data2[0]<0||dtime_data2[1]<0) {
+	  			dtime_data2[2] += 31;
+	  			dtime_data2[1]--;
+			} else {
+	  			dtime_data2[2] += A4GL_days_in_month(dtime_data2[1],dtime_data2[0]);
+	  			dtime_data2[1]--;
+	  	}
 	}
 
 
-      A4GL_debug ("Y %d M %d D %d H %d M %d S %d", dtime_data2[0],
-		  dtime_data2[1], dtime_data2[2], dtime_data2[3],
-		  dtime_data2[4], dtime_data2[5], dtime_data2[6]);
-
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
 // Borrow some years for some months.
       while (dtime_data2[1] < 0)
 	{
 	  dtime_data2[1] += 12;
 	  dtime_data2[0]--;
 	}
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
 
       A4GL_debug ("Y %d M %d D %d H %d M %d S %d", dtime_data2[0],
 		  dtime_data2[1], dtime_data2[2], dtime_data2[3],

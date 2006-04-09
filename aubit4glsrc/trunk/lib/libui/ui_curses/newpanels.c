@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.125 2006-03-10 10:01:40 mikeaubury Exp $
+# $Id: newpanels.c,v 1.126 2006-04-09 10:10:25 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.125 2006-03-10 10:01:40 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.126 2006-04-09 10:10:25 mikeaubury Exp $";
 #endif
 
 /**
@@ -1546,6 +1546,10 @@ A4GL_decode_line (int l)
 int
 A4GL_decode_line_ib (int l)
 {
+
+  if (l==0) return 0;
+
+
   if (l > 0)
     {
       if (A4GL_get_curr_border ())

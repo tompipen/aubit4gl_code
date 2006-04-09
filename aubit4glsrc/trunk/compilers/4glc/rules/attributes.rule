@@ -80,6 +80,10 @@ wattribute	: attribute { form_attrib.attrib      =form_attrib.attrib|atoi($<str>
 			sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>3); 
 			form_attrib.attrib_str=(long)acl_strdup($<str>$);
 		}
+		|  var_or_string  {
+			sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>1); 
+			form_attrib.attrib_str=(long)acl_strdup($<str>$);
+		}
 		| KW_STYLE EQUAL CHAR_VALUE
 		| KW_TEXT EQUAL CHAR_VALUE
 ;
