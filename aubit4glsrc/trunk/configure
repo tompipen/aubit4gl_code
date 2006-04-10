@@ -9914,11 +9914,12 @@ echo "${ECHO_T}$REDHAT_NAME ($REDHAT_VER)" >&6
 		ARCHEXT=zip
 
         #check if we are using MinGW GCC with CygWin:
-		TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
+		#WARNING: THIS TEST OCCURS ONE MORE TIME, LATER IN THIS FILE!
+		TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
 		if test "$TMP_TMP" != ""; then
 			set `echo $TMP_TMP`
 			if test "$1" != ""; then
-				if test "$3" = "mingw" -o "$4" = "mingw"; then
+				if test "$3" = "mingw" -o "$4" = "mingw" -o "$4" = "mingw-special" ; then
 					GCC_MINGW=yes
 					#Autoconf will set TARGET and target_os to CygWin when we use
 					#CygWin tools with MinGW GCC
@@ -12694,7 +12695,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 if test "$CC" = "gcc"; then
 	echo "$as_me:$LINENO: checking GCC version" >&5
 echo $ECHO_N "checking GCC version... $ECHO_C" >&6
-	TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
+	#WARNING: THIS TEST OCURS ONE MORE TIME, EARLIER IN THIS FILE
+	TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/)//' -e 's/\.exe//' -e 's/\./ /g'`
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
 		if test "$1" != ""; then
@@ -12705,7 +12707,7 @@ echo $ECHO_N "checking GCC version... $ECHO_C" >&6
 echo "${ECHO_T}$1.$2.$3" >&6
 	            GCC_VERSION_MAJOR=$1
 				GCC_VERSION_MINOR=$2
-                if test "$3" = "mingw" -o "$4" = "mingw"; then
+				if test "$3" = "mingw" -o "$4" = "mingw" -o "$4" = "mingw-special" ; then
 					GCC_MINGW=yes
 					#should not really need drive letter?
                     #also, if adding drive letter with : , it then we add AUBITDIR to PATH, : will be
@@ -28475,6 +28477,7 @@ fi;
 	#with CygWin Curses using CygWin GCC, and then use that with the rest
 	#of Aubit compielr compiled natively (using MinGW GCC) - if we make
     #cygwin1.dll accessible at run-time.
+	#but since we are now using native pdcurses on windows, this is irrelevant
 
 
   echo "$as_me:$LINENO: result: " >&5
@@ -28521,7 +28524,9 @@ if test "${with_pdcurses+set}" = set; then
 		#cr** - how do this paths work anyway?
 		#AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no, "$withval/bin" $PATH )
 		export PATH="$withval/bin:$PATH"
-		# Extract the first word of "xcurses-config", so it can be a program name with args.
+
+		if test "$GCC_MINGW" != "yes"; then
+			# Extract the first word of "xcurses-config", so it can be a program name with args.
 set dummy xcurses-config; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
@@ -28711,23 +28716,26 @@ fi
 
 done
 
-		echo "$as_me:$LINENO: checking Xcurses" >&5
-echo $ECHO_N "checking Xcurses... $ECHO_C" >&6
-		if test "$XCURSES_CONFIG" != "no" -a "$ac_cv_header_xpanel_h" = "yes"; then
-			if test "$COMSPEC" = ""; then
+			echo "$as_me:$LINENO: checking PDcurses Xcurses support" >&5
+echo $ECHO_N "checking PDcurses Xcurses support... $ECHO_C" >&6
+			if test "$XCURSES_CONFIG" != "no" -a "$ac_cv_header_xpanel_h" = "yes"; then
+				#found xcurses - possible only unix
 				XCURSES_CFLAGS=`$XCURSES_CONFIG --cflags`
 				XCURSES_LIBS=`$XCURSES_CONFIG --libs`
 				HAVE_XCURSES=1
 				echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
 			else
-				#No X on Windows - what would we do with Xcurses...
-				echo "$as_me:$LINENO: result: no-no Xcurses on Windows" >&5
-echo "${ECHO_T}no-no Xcurses on Windows" >&6
+				echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
 			fi
 		else
-			echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
+			#on windows
+			#No X on Windows - what would we do with Xcurses...
+			echo "$as_me:$LINENO: checking PDcurses Xcurses support" >&5
+echo $ECHO_N "checking PDcurses Xcurses support... $ECHO_C" >&6
+			echo "$as_me:$LINENO: result: no Xcurses on Windows" >&5
+echo "${ECHO_T}no Xcurses on Windows" >&6
 		fi
 
 		if test -d "$withval"; then
@@ -28741,14 +28749,27 @@ echo "${ECHO_T}no" >&6
 				PD_CURSES_LIB_NAME="-l$withval/lib/curses.so $withval/lib/panel.lib"
 				HAVE_PDCURSES=1
 			fi
+			#renamed since 2.7 - MS VC package
+			#if test -f "$withval/pdcurses.lib"; then
+			#	PD_CURSES_LIB_PATH="-L$withval"
+			#	PD_CURSES_LIB_NAME="-l$withval/pdcurses.lib $withval/panel.lib"
+			#	HAVE_PDCURSES=1
+			#fi
+			#renamed since 2.7 - mingw package:
+			#if test -f "$withval/pdcurses.a"; then
+			#	PD_CURSES_LIB_PATH="-L$withval"
+			#	PD_CURSES_LIB_NAME="-l$withval/pdcurses.a $withval/panel.a"
+			#	HAVE_PDCURSES=1
+			#fi
+
 			if test -d "$withval/incl"; then
 				PD_CURSES_INC_PATH="-I$withval/incl"
 			else
 				#On windows everything is in one directory
 				PD_CURSES_INC_PATH="-I$withval"
 			fi
-			echo "$as_me:$LINENO: checking PDcurses" >&5
-echo $ECHO_N "checking PDcurses... $ECHO_C" >&6
+			echo "$as_me:$LINENO: checking PDcurses-dynamic" >&5
+echo $ECHO_N "checking PDcurses-dynamic... $ECHO_C" >&6
 			if test "$HAVE_PDCURSES" = "1"; then
 
 cat >>confdefs.h <<\_ACEOF
@@ -28757,6 +28778,7 @@ _ACEOF
 
 				echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
+				HAS_PDCURSES_DYNAMIC_OBJS=1
 			else
 
 cat >>confdefs.h <<\_ACEOF
@@ -28765,7 +28787,12 @@ _ACEOF
 
 				echo "$as_me:$LINENO: result: no - missing curses library (curses.so or .dll)" >&5
 echo "${ECHO_T}no - missing curses library (curses.so or .dll)" >&6
+				HAS_PDCURSES_DYNAMIC_OBJS=0
 			fi
+
+
+			#below note applies to version 2.5 of pdcurses. now there are both
+			#mingw and vc packages available, but only .a or .lib and no .dll at all
 
 			#Note: pre-compiled binaries of PDcurses for Windows are currently
 			#available only as MS VC compiled, which includes .dll only,
@@ -28951,15 +28978,24 @@ echo $ECHO_N "checking PDcurses static link objects... $ECHO_C" >&6
 					echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
 					HAS_PDCURSES_STATIC_OBJS=1
+					HAVE_PDCURSES=1
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_PDCURSES 1
+_ACEOF
+
 			else
 				echo "$as_me:$LINENO: checking PDcurses static link objects" >&5
 echo $ECHO_N "checking PDcurses static link objects... $ECHO_C" >&6
 				echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
+				HAS_PDCURSES_STATIC_OBJS=0
 			fi
 
 		else
+			#given path does not exist
 			HAVE_PDCURSES=0
+			HAS_PDCURSES_STATIC_OBJS=0
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_PDCURSES 0
@@ -34001,7 +34037,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 34004 "configure"' > conftest.$ac_ext
+  echo '#line 34040 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -34557,7 +34593,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34560 "configure"
+#line 34596 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -34655,7 +34691,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34658 "configure"
+#line 34694 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -39863,7 +39899,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.336 2006-03-17 18:59:55 mikeaubury Exp $
+| $Id: configure,v 1.337 2006-04-10 10:18:48 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

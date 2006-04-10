@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.32 2005-12-14 14:47:50 mikeaubury Exp $
+# $Id: memfile.c,v 1.33 2006-04-10 10:19:04 mikeaubury Exp $
 #
 */
 
@@ -398,7 +398,17 @@ if (save) {
 
 
         if (buff[a]=='-'&&buff[a+1]=='-'&&type==0) {
-		if (buff[a+2]!='!') {
+		int no_comment_char=0;
+
+		if (no_comment_char==0) {
+			if (A4GL_isyes(acl_getenv("HASHNOCOMMENT"))) {
+				no_comment_char='#'; // some 'other' non-comment character...
+			} else {
+				no_comment_char='!'; // aubit non-comment character...
+			}
+		}
+
+		if (buff[a+2]!=no_comment_char) {
 			if (save_comment) FPRINTF(save_comment,"%d|",lineno);
                 	for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
 				if (save_comment&&b>a+2) FPRINTF(save_comment,"%c",buff[b]);

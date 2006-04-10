@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.72 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.73 2006-04-10 10:19:04 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1176,7 +1176,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	    include = "";
 
 
-	  printf ("Make field : w=%s c=%s i=%s\n", widget, config, include);
+	  //printf ("Make field : w=%s c=%s i=%s\n", widget, config, include);
 	  formdets->fileform->metrics.metrics_val[metric_no].field =
 	    (int) A4GL_LL_make_field (formdets->fileform->metrics.
 				      metrics_val[metric_no].y,
@@ -3037,7 +3037,7 @@ A4GL_find_attrib_from_field (struct_form * f, int field_no)
   A4GL_debug ("field_no=%d\n", field_no);
   if (field_no == -1)
     return -1;
-  printf("Finding attrib for field :%d",field_no);
+  //printf("Finding attrib for field :%d",field_no);
   for (a = 0; a < f->attributes.attributes_len; a++)
     {
       if (f->attributes.attributes_val[a].field_no == field_no)
@@ -3531,7 +3531,7 @@ int A4GL_ll_set_field_opts (void *f,int l) {
   int hadit=0;
   sprintf(buff,"%p",f);
   int last=0;
-  printf("set_field_opts : %p %x\n",f,l);
+  //printf("set_field_opts : %p %x\n",f,l);
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {
     	last=A4GL_find_pointer (buff, FIELDOPTS);
@@ -3544,13 +3544,13 @@ int A4GL_ll_set_field_opts (void *f,int l) {
 		    last=0;
 	    }
     }
-  printf("Last %x, this %x\n",last,l);
+  //printf("Last %x, this %x\n",last,l);
   if (last!=l) {
-	printf("Sending\n");
+	//printf("Sending\n");
 	if (hadit) {
 		A4GL_del_pointer(buff,FIELDOPTS);
 	}
-	printf("ADDING POINTER %s for %x",buff,l);
+	//printf("ADDING POINTER %s for %x",buff,l);
   	A4GL_add_pointer (buff, FIELDOPTS, (void *)l);
 	// We'll mark this as OK - so if we grep for A4GL_LL_set_field_opts - we'll know this is ok...
 	// we should be using A4GL_ll_set_field_opts everywhere else so we'll hit this code...
@@ -3576,10 +3576,10 @@ int A4GL_ll_field_opts (void *f) {
   static void *lastf=0;
 
 
-  printf("field_opts : %p %x\n",f);
+  //printf("field_opts : %p %x\n",f);
 
   if (f==lastf) {
-	  	printf("Cached : %x\n",last);
+	  	//printf("Cached : %x\n",last);
 	  	return last;
   }
 
@@ -3588,14 +3588,14 @@ int A4GL_ll_field_opts (void *f) {
   last=0;
   lastf=f;
 
-  printf("Looking for POINTER %s ",buff);
+  //printf("Looking for POINTER %s ",buff);
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {
       last=A4GL_find_pointer (buff, FIELDOPTS);
     }
 
 
-  printf("Not cached : %x\n",last);
+  //printf("Not cached : %x\n",last);
   return last;
 
 }
