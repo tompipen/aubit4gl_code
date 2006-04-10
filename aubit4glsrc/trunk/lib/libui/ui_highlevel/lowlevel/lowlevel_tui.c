@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.76 2006-04-05 06:54:38 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.77 2006-04-10 13:43:01 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,9 +85,10 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.76 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.77 2006-04-10 13:43:01 mikeaubury Exp $";
 #endif
 int inprompt = 0;
+static void A4GL_local_mja_endwin (void);
 
 
 //
@@ -342,7 +343,7 @@ void
 A4GL_LL_switch_to_line_mode (void)
 {
   A4GL_debug ("Switch to line mode");
-  endwin ();
+  A4GL_local_mja_endwin ();
 
   // A4GL_set_scrmode ('L');
 }
@@ -863,6 +864,7 @@ void
 A4GL_LL_out_linemode (char *s)
 {
   printf ("%s\n", s);
+  fflush(stdout);
 }
 
 
@@ -3330,6 +3332,18 @@ A4GL_LL_finished_with_events (void *s)
 
 int A4GL_LL_get_triggered_event() {
 	        return -1; /* Does nothing in tui mode */
+}
+
+
+static void A4GL_local_mja_endwin (void)
+{
+	  if (A4GL_isscrmode ())
+		      {
+			            A4GL_set_scrmode ('L');
+				          printf ("\n");
+					        fflush (stdout);
+						      endwin ();
+						          }
 }
 
 

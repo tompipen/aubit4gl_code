@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.73 2006-04-10 10:19:04 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.74 2006-04-10 13:42:52 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3071,6 +3071,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	  A4GL_set_scrmode ('L');
 	}
       A4GL_LL_out_linemode (s);
+      return;
     }
   else
     {
