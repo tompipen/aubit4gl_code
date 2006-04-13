@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.287 2006-04-09 09:28:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.288 2006-04-13 12:42:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.287 2006-04-09 09:28:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.288 2006-04-13 12:42:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4772,7 +4772,7 @@ LEXLIB_print_input_2 (char *s)
  * @param fldlist The form field list from where the input is made.
  */
 void
-LEXLIB_print_input_fl (int byname, char *defs, char *helpno, struct fh_field_list *fldlist_fh, int attr)
+LEXLIB_print_input_fl (int byname, char *defs, char *helpno, struct fh_field_list *fldlist_fh, char *sattr)
 {
   int ccc;
   int sio_id;
@@ -4799,7 +4799,7 @@ char *fldlist=0;
     ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("if ((int)GET(\"s_screenio\",&_sio_%d,\"currform\")==0) break;\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"vars\",ibind);\n",sio_id);
-  printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",%d);\n",sio_id, attr);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",%s);\n",sio_id, sattr);
   printc ("SET(\"s_screenio\",&_sio_%d,\"novars\",%d);\n",sio_id, ccc);
   printc ("SET(\"s_screenio\",&_sio_%d,\"help_no\",%s);\n",sio_id, helpno);
 

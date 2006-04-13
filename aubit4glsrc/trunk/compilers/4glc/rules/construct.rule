@@ -23,15 +23,15 @@ start_bind('i',0);
 
 
 constr_rest:
-BY_NAME variable KW_ON constr_col_list opt_defs op_help opt_attributes
+BY_NAME variable KW_ON constr_col_list opt_defs op_help input_attributes
 {
-	print_construct_fl(1,$<str>2,0,$<str>7,atoi($<str>7));
+	print_construct_fl(1,$<str>2,0,$<str>7,$<str>7);
 	strcpy($<str>$,A4GL_get_formloop_str(0));
 	reset_constr();
 }
-| variable KW_ON constr_col_list opt_defs FROM field_name_list_as_struct op_help opt_attributes
+| variable KW_ON constr_col_list opt_defs FROM field_name_list_as_struct op_help input_attributes
 {
-	print_construct_fl(0,$<str>1,$<field_list>6,$<str>8,atoi($<str>8));
+	print_construct_fl(0,$<str>1,$<field_list>6,$<str>8,$<str>8);
 	strcpy($<str>$,A4GL_get_formloop_str(0));
 	reset_constr();
 }

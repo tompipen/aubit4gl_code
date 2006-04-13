@@ -85,7 +85,7 @@ display_array_cmd : DISPLAY_ARRAY {
 		} 
 	use_arr_var TO idm_input_array
 
-	opt_scroll opt_attributes 
+	opt_scroll display_attr
 		{
 		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>6,$<str>7,&curr_input_array_attribs);
 	  	A4GL_new_events();

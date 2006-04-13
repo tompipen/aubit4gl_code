@@ -216,7 +216,7 @@ print_input_1 -> void
 
 print_input_2 char* s -> void
 
-print_input_fl int byname,char* defs,char* helpno,t_field_list* fldlist,int attr -> void
+print_input_fl int byname,char* defs,char* helpno,t_field_list* fldlist,char* attr -> void
 
 print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr -> char*
 

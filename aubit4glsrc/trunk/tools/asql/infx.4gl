@@ -27,6 +27,7 @@
 # +----------------------------------------------------------------------+
 code
 #include "simple.h"
+#include <fcntl.h>
 EXEC SQL include sqltypes;
 EXEC SQL BEGIN DECLARE SECTION;
 int numberOfColumns=0;
@@ -37,27 +38,112 @@ extern int outlines;
 extern int display_mode;
 extern int fetchFirst;
 static int get_size(int dtype,int size) ;
+#include <datetime.h>
+#include <decimal.h>
+#include <locator.h>
+#include <sqlca.h>
+#include <sqlda.h>
+#include <sqlstype.h>
+#include <sqltypes.h>
+#include <varchar.h>
+#include "esqltype.h"
+#define loc_mode        lc_union.lc_file.lc_mode
+#define sqlva           sqlvar_struct
+#define NIL(x)         ((x)0)
+typedef loc_t               Blob;
+typedef struct decimal  Decimal;
+typedef struct dtime    Datetime;
+typedef struct intrvl   Interval;
+
+//int pflag=SQLRELOAD;
+struct RecLoc
+{
+        size_t  rownum;     /* Record number */
+        size_t  line_1;     /* First line number */
+        size_t  line_2;     /* Last  line number */
+};
+
+typedef struct RecLoc RecLoc;
+typedef unsigned char Uchar;
+struct Memory
+{
+                size_t   mem_size;      /* Number of bytes allocated */
+                        Uchar   *mem_base;      /* Start of buffer */
+                                Uchar   *mem_endp;      /* Pointer one beyond last allocated byte */
+                                        Uchar   *mem_next;      /* Next location to write to */
+                                                Uchar   *mem_read;      /* Next location to read from */
+};
+
+typedef struct Memory Memory;
+
+size_t mem_len(Memory *m);
+void    mem_add(Memory *m, Uchar c);
+int mem_char(Memory *m);
+int mem_pop(Memory *m);
+void    mem_new(Memory *m);
+void    mem_del(Memory *m);
+void    mem_zap(Memory *m);
+
+
 
 extern char *delim;
+#define syntaxerror()  (sqlca.sqlcode = -201, sql_error())
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
 #define DISPLAY_UNLOAD 3
+#define FILENAMESIZE    128
+#define ESQLC_PASTE2(x, y)      x ## y
+#define ESQLC_PASTE(x, y)       ESQLC_PASTE2(x, y)
+#define ESQLC_VERSION_CHECKER   ESQLC_PASTE(esqlc_version_, ESQLC_VERSION)
 
+
+#ifndef DEFAULT_TMPDIR
+#define DEFAULT_TMPDIR  "/tmp"
+#endif
+
+
+enum BlobLocn
+{
+        BLOB_DEFAULT, BLOB_IN_MEMORY, BLOB_IN_ANONFILE, BLOB_IN_NAMEFILE
+};
+typedef enum BlobLocn BlobLocn;
 int stdin_screen_width=-1;
 int colnamesize=-1;
+static BlobLocn def_blob_locn = BLOB_IN_MEMORY;
+static Blob zero_blob = { 0 };
+static char *blob_dir = 0;
+int load_ok;
+char load_err_msg[256];
+int load_err_line;
+
 
 extern char **columnNames;
 extern int *columnWidths;
 extern int *columnAlign; // CA1
+
 
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2
 FILE *unloadFile=0;
 
+typedef struct sqlca_s  Sqlca;
+typedef struct sqlda    Sqlda;
+typedef struct sqlva    Sqlva;
+
+
 
 #define LOADBUFFSIZE 32000
 char loadbuff[LOADBUFFSIZE];
+#define SQL_NAMELEN     128
+#define SQL_USERLEN     32
+
+#define MAXDBS 100
+#define FASIZ (MAXDBS * 256)
+
+#define SQL_TABNAMELEN  (3 * SQL_NAMELEN + SQL_USERLEN + sizeof("@:''."))
+#define SQL_COLNAMELEN  (SQL_NAMELEN + 1)
+
 
 void trim_trailing_0(char *buffer) {
 int a;
@@ -71,6 +157,17 @@ else break;
 }
 if (buffer[strlen(buffer)-1]=='.') buffer[strlen(buffer)-1]=0;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 endcode
@@ -1205,8 +1302,8 @@ let lv_curr_db=get_db();
 
 code
 {
-#define MAXDBS 100
-#define FASIZ (MAXDBS * 256)
+//#define MAXDBS 100
+//#define FASIZ (MAXDBS * 256)
 char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
 ndbs=0;
@@ -1271,8 +1368,6 @@ let lv_curr_db=get_db();
 
 code
 {
-#define MAXDBS 100
-#define FASIZ (MAXDBS * 19)
 char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
 
@@ -1895,7 +1990,7 @@ c=0;
 // First - escape any quotes
 for(a=0;a<strlen(p2);a++) {
                 if (p2[a]!='\'') {p[c++]=p2[a];continue;}
-                p[c++]='\\';
+                p[c++]='\'';
                 p[c++]='\'';
 }
 p[c]=0;
@@ -1954,78 +2049,284 @@ find_delims (char delim)
 */
 
 
-int asql_load_data(struct element *e) {
-EXEC SQL BEGIN DECLARE SECTION;
-char ins_str[32000];
-EXEC SQL END DECLARE SECTION;
-int raffected;
-int b;
-int a;
-int ok;
-char smbuff[2048];
-int nfields;
-int lineno=0;
-        delim=&delims[0];
-        strcpy(delim,"|");
 
-        if (loadFile) fclose(loadFile);
-        if (e->delim) { if (strlen(e->delim)) { strcpy(delim,e->delim); } }
-        loadFile=fopen(e->fname,"r");
-        if (loadFile==0) { set_sqlcode(-805); return 0; }
-        ok=0;
-        while (1) {
-                fgets (loadbuff, LOADBUFFSIZE - 1, loadFile);
-                if (feof (loadFile)) {
-                        A4GL_debug ("Got to end of the file");
-                        break;
-                }
-                lineno++;
-                stripnlload (loadbuff, delim[0]);
-                nfields = find_delims (delim[0]);
-                sprintf(ins_str,e->stmt);
-                strcat(ins_str," values (");
-                for (a=0;a<nfields;a++) {
-                        if (a) strcat(ins_str,",");
-                        sprintf(smbuff,"'%s'",safe_quotes(colptr[a]));
-                        if (strcmp(smbuff,"''")==0) {strcpy(smbuff,"NULL");}
-                        strcat(ins_str,smbuff);
-                }
-                strcat(ins_str,")");
-                EXEC SQL prepare p_loadit from :ins_str;
-		if (get_sqlcode()!=0) {
-			// Some error...	
-			break;
-		} else {
-                	EXEC SQL execute p_loadit;
-		} 
-                if (get_sqlcode()!=0) { break; }
-        }
-        fclose(loadFile);
-        loadFile=0;
-        return lineno;
 
+
+
+
+
+/*
+** Return number of columns in table, or zero if table name invalid.
+** Allow for 'owner'.tablename, "owner".tablename and owner.tablename
+** This version does (finally) allow for temporary tables!
+**
+** The subterfuge with a_stmt circumvents the idiotic ESQL/C
+** compiler which does not recognize that even though it cannot evaluate
+** the size of an array, the C compiler is able to do so -- so it complains
+** with a warning:
+** Warning -33208: Runtime error is possible because size of 'stmt'
+** is unknown.
+*/
+static int      cols_in_table(char *tabname)
+{
+	char            a_stmt[sizeof("SELECT * FROM ") + SQL_TABNAMELEN];
+	EXEC SQL BEGIN DECLARE SECTION;
+	char           *stmt = a_stmt;
+	EXEC SQL END DECLARE SECTION;
+	int             n_columns = 0;
+	Sqlda          *d;
+
+	sprintf(stmt, "SELECT * FROM %s", tabname);
+	EXEC SQL PREPARE p_cols FROM :stmt;
+	if (sqlca.sqlcode != 0)
+	{
+		sqlca.sqlcode = -206;	/* Table is not in database */
+		strcpy(sqlca.sqlerrm,  tabname);
+		sql_error();
+	}
+	else
+	{
+		EXEC SQL DESCRIBE p_cols INTO d;
+		if (sqlca.sqlcode != 0 || d == 0)
+		{
+			sprintf(stmt, "Unexpected error on DESCRIBE for table %s\n", tabname);
+			sqlca.sqlcode=-746;
+        		sqlca.sqlerrd[1] = 0;
+        		strcpy(sqlca.sqlerrm,  stmt);
+
+
+			
+		}
+		n_columns = d->sqld;
+		EXEC SQL FREE p_cols;
+		if (sqlca.sqlcode != 0)
+		{
+			sprintf(stmt, "Unexpected error on FREE for table %s\n",
+					tabname);
+			sqlca.sqlcode=-746;
+        		sqlca.sqlerrd[1] = 0;
+        		strcpy(sqlca.sqlerrm, stmt);
+		}
+	}
+	return(n_columns);
 }
 
+/*
+** Process the INSERT part of a LOAD statement
+*/
+int   asql_load_data(struct element *e)
+{
+	Sqlda          *idesc = NIL(Sqlda *);
+	char           *buffer = NIL(char *);
+	int ncols;
+	EXEC SQL BEGIN DECLARE SECTION;
+	char           *new_stmt;
+	EXEC SQL END DECLARE SECTION;
+	RecLoc			rec;
+	int             nblobs = 0;
+	int             stage = 0;
+	Sqlca           save;
+	FILE           *file ;
+	//char           *name = ctxt_loadfile();
+	int             nskip = 0; 
+	int             nput = 0;
+	int             txsize = 50; // ctxt_gettransize();
+	char stmt[20000];
+
+	set_delim('|');
+
+	if (e->delim) { 
+		if (strlen(e->delim)) { 
+			set_delim(e->delim[0]); 
+		} 
+        }
+	
+	memset(&rec,0,sizeof(rec));
+
+        file=fopen(e->fname,"r");
+
+        if (file==0) { 
+		set_sqlcode(-805); 
+		return 0; 
+	}
+
+	/* This is a one-cycle loop that simplifies error handling */
+	do
+	{
+                /* INSERT statement in LOAD does not have VALUES clause */
+                if ((new_stmt = mk_insert(e->stmt)) == NIL(char *))
+                        break;
 
 
+		/* Compile INSERT statement */
+		stage = 0;
+		EXEC SQL PREPARE s_insert FROM :new_stmt;
+		if (sqlca.sqlcode < 0)
+			break;
+
+		stage = 1;
+		EXEC SQL DESCRIBE s_insert INTO idesc;
+		if (sqlca.sqlcode < 0)
+			break;
+
+		if (sqlca.sqlcode != SQ_INSERT)
+		{
+			sqlca.sqlcode = -201;
+			break;
+		}
+		nblobs = count_blobs(idesc);
+
+		/* Allocate space for SQLDA structure */
+		buffer = (char *)sql_describe(idesc);	/*=C++=*/
+		//jb_register(buffer);
+
+		/* DECLARE INSERT CURSOR */
+		stage = 2;
+		EXEC SQL DECLARE c_insert CURSOR FOR s_insert;
+		if (sqlca.sqlcode < 0)
+			break;
+
+#ifdef SQLRELOAD
+		if (pflag == SQLRELOAD)
+		{
+			EXEC SQL BEGIN WORK;
+			/* Do not care if it worked or not */
+			sqlca.sqlcode = 0;
+		}
+#endif
+
+		stage = 3;
+		EXEC SQL OPEN c_insert;
+		if (sqlca.sqlcode < 0)
+			break;
+
+		/* Fetch and print data */
+		stage = 4;
+		sqlca.sqlcode = 0;
+		{
+		Memory          line;
+		mem_new(&line);
+		while (sqlca.sqlcode == 0)
+		{
+			if (scanrecord(file, idesc, &rec, e->fname, &line) == EOF ||
+				sqlca.sqlcode < 0)
+				break;
+			if (rec.rownum > nskip)
+			{
+				nput++;
+				EXEC SQL PUT c_insert USING DESCRIPTOR idesc;
+#ifdef DEBUG
+				if (db_getdebug() >= 9)
+					dump_sqlda(db_getfileptr(), "LOAD: PUT", idesc);
+#endif /* DEBUG */
+				if (sqlca.sqlcode < 0)
+					break;
+			}
+			else
+			if (nblobs > 0)
+				free_blobs(idesc);
+#ifdef SQLRELOAD
+			if (pflag == SQLRELOAD && txsize > 0 && nput > 0 && nput % txsize == 0)
+			{
+				/* Intermediate transaction */
+				EXEC SQL CLOSE c_insert;
+				if (sqlca.sqlcode < 0)
+					break;
+				EXEC SQL COMMIT WORK;
+				/* Do not care if it worked or not */
+				sqlca.sqlcode = 0;
+				if (ctxt_getsilence() == OP_OFF)
+					fprintf(ctxt_output(), "%d rows committed\n", nput);
+				EXEC SQL BEGIN WORK;
+				/* Do not care if it worked or not */
+				sqlca.sqlcode = 0;
+				EXEC SQL OPEN c_insert;
+				if (sqlca.sqlcode < 0)
+					break;
+			}
+#endif
+		}
+		mem_del(&line);
+		}
+		if (sqlca.sqlcode < 0)
+			break;
+
+	} while (0);
+
+	/* Clean up: preserve first error if there was one */
+	save = sqlca;
+	if (stage >= 4)
+	{
+		EXEC SQL CLOSE c_insert;
+		if (save.sqlcode == 0 && sqlca.sqlcode < 0)
+			save = sqlca;
+	}
+
+	if (stage >= 3)
+	{
+#ifdef SQLRELOAD
+		if (pflag == SQLRELOAD)
+		{
+			EXEC SQL COMMIT WORK;
+			/* Do not care if it worked or not */
+			sqlca.sqlcode = 0;
+			if (ctxt_getsilence() == OP_OFF)
+			{
+				if (nput == 0 || (txsize == 0 || nput % txsize != 0))
+					fprintf(ctxt_output(), "%s%d rows committed%s\n",
+							(save.sqlcode == 0 || nput <= 1) ? "" : "Up to ",
+							(save.sqlcode == 0 || nput == 0) ? nput : nput - 1,
+							(save.sqlcode == 0) ? "" : " successfully");
+			}
+		}
+#endif
+		EXEC SQL FREE c_insert;
+		if (save.sqlcode == 0 && sqlca.sqlcode < 0)
+			save = sqlca;
+	}
+
+	if (stage >= 2)
+	{
+		//jb_unregister(buffer);
+		free(buffer);
+	}
+
+	if (stage >= 1)
+	{
+		EXEC SQL FREE s_insert;
+		if (save.sqlcode == 0 && sqlca.sqlcode < 0)
+			save = sqlca;
+		if (idesc != (Sqlda *)0)
+			free(idesc);
+	}
+
+	/**
+	** NB: cannot release sqlda space -- the next time DESCRIBE is used, it
+	** also frees the sqlda space, which corrupts malloc very effectively!
+	** FREE(sqlda);
+	** Note that this is an ESQL/C version-specific problem.  The code
+	** which is actually in use at the moment *does* free the sqlda memory
+	** with no adverse effects on 7.2x ESQL/C on Solaris, nor on 9.1x, nor,
+	** it is thought, on 5.08.
+	*/
+
+	sqlca = save;
+	if (sqlca.sqlcode < 0)
+		sql_error();
 
 
+       return rec.rownum-1;
+}
 
+int load_err(int row,char *msg) {
+	if (load_ok) {
+		load_err_line=row;
+		if (msg) {
+			strcpy(load_err_msg,msg);
+		}
+	}
+	load_ok=0;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#include "jtypes.c"
 endcode
