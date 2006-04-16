@@ -19,7 +19,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #ifdef XCURSES
 extern bool trace_on;
 #endif
-
+int scr_mode=0;
 
 /*
 
@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.77 2006-04-10 13:43:01 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.78 2006-04-16 11:22:04 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.77 2006-04-10 13:43:01 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.78 2006-04-16 11:22:04 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -343,6 +343,7 @@ void
 A4GL_LL_switch_to_line_mode (void)
 {
   A4GL_debug ("Switch to line mode");
+
   A4GL_local_mja_endwin ();
 
   // A4GL_set_scrmode ('L');
@@ -3337,13 +3338,9 @@ int A4GL_LL_get_triggered_event() {
 
 static void A4GL_local_mja_endwin (void)
 {
-	  if (A4GL_isscrmode ())
-		      {
-			            A4GL_set_scrmode ('L');
-				          printf ("\n");
-					        fflush (stdout);
-						      endwin ();
-						          }
+	      endwin ();
+	          printf ("\n");
+				        fflush (stdout);
 }
 
 
