@@ -1,13 +1,9 @@
 A4GL_EC_EXT=.ec
 A4GL_ESQL_TO_C_FIRST=Y
-#A4GL_C_COMP=esql  -c 
 A4GL_C_COMP=gcc 
 A4GL_C_OPTS=-I$INFORMIXDIR/incl -I$INFORMIXDIR/incl/esql
 A4GL_EC_COMP=esql -e
 A4GL_EC_OPTS=-I$INFORMIXDIR/incl -I$AUBITDIR/incl
-#A4GL_EC_COMP=esql
 A4GL_PREC_COMP=esql -E -I$AUBITDIR/incl
-#A4GL_LINK=esql
-#A4GL_LINK=gcc -mms-bitfields -Wl,--export-all-symbols  "C:/PROGRA~1/IBM/Informix/CLIENT~1/bin/isqlt09a.dll" "C:/PROGRA~1/IBM/Informix/CLIENT~1/bin/igl4n304.dll" "C:/PROGRA~1/IBM/Informix/CLIENT~1/bin/iglxn304.dll" "C:/PROGRA~1/IBM/Informix/CLIENT~1/bin/igo4n304.dll"     -o asql_i.4ae -L"C:/gnu/cygwin/usr/src/aubit/aubit4glsrc/lib"  
 A4GL_LINK=gcc -mms-bitfields -Wl,--export-all-symbols $IFX_LIBS
-#-laubit4gl
+
