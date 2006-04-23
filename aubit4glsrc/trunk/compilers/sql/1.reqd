@@ -21,6 +21,7 @@ void add_sql_function(char *s);
 int A4GL_cursor_current(char *s);
 int sqlparse_yylex(void);
 extern int place_holder_cnt;
+void A4GL_warn(char *s);
 
 //#ifndef DOING_CM
 //char *kw_space=" ";

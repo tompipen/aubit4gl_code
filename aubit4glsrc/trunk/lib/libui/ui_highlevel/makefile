@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.44 2005-07-26 16:20:18 mikeaubury Exp $
+# $Id: makefile,v 1.45 2006-04-23 21:15:20 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -205,6 +205,11 @@ ${LIBROOT}/libUI_HL_TUI${SO_EXT}: clean $(OBJS) ${OBJS2}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS2} \
 		${LINKLIBS} ${CURSES_LIB_NAME} 
 
+libUI_HL_TUIw.dll: ${LIBROOT}/libUI_HL_TUIw.dll
+${LIBROOT}/libUI_HL_TUIw.dll: clean $(OBJS) lowlevel_tui_win32.o width_narrow.o
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
+		${LINKLIBS} -L../win32 -lform ${CURSES_LIB_NAME} 
+
 #TUI mode plug-in with Aubit's own implementation of Curses libform
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 
 #no libform implementation (PDcurses are only Curses implementation available for Windows)
@@ -277,6 +282,9 @@ width_wide.o: width.c
 
 lowlevel_tui.o: lowlevel/lowlevel_tui.c
 	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+
+lowlevel_tui_win32.o: lowlevel/lowlevel_tui.c
+	${CC} ${CFLAGS} -I../win32 -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
 lowlevel_thin.o: lowlevel/lowlevel_thin.c
 	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@

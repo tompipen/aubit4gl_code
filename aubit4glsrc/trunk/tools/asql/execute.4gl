@@ -552,7 +552,7 @@ char *get_tmp_dir(void ) {
 		strcpy(tmpdir,ptr);
 	} else {
 #if defined(__MINGW32__)
-	sprintf(tmpdir,"c:\\tmp\\aubit4gl");
+	sprintf(tmpdir,"c:\\temp\\aubit4gl");
 #else
 	sprintf(tmpdir,"/tmp/aubit4gl");
 #endif
