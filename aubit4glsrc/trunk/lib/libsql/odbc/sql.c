@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.151 2006-04-05 06:54:37 mikeaubury Exp $
+# $Id: sql.c,v 1.152 2006-04-23 12:13:53 mikeaubury Exp $
 #
 */
 
@@ -456,8 +456,17 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind,char *fromwhere)
   char buff[20000];
   char sbuff[20000];
   int b;
+  static int log_sql=-1;
+
   c = 0;
   b = 0;
+
+  if (log_sql==-1) {
+	  log_sql=A4GL_isyes(acl_getenv("LOGODBCSQL"));
+  }
+
+  if (!log_sql)  return;
+
 
   if (first_open)
     {
@@ -3532,6 +3541,7 @@ ODBC_exec_prepared_sql (SQLHSTMT hstmt)
 #endif
 
   rc = SQLExecute (hstmt); // reformatted in callers
+
   chk_rc (rc, hstmt, "SQLExecute");
   //rc = SQLNumResultCols (hstmt, &nresultcols);
   //chk_rc (rc, hstmt, "SQLNumResultCols");

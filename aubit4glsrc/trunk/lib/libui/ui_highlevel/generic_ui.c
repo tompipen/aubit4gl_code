@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.74 2006-04-10 13:42:52 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.75 2006-04-23 12:13:53 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3530,8 +3530,9 @@ A4GL_ll_set_form_userptr (void *f, void *r)
 int A4GL_ll_set_field_opts (void *f,int l) {
   char buff[30];
   int hadit=0;
-  sprintf(buff,"%p",f);
   int last=0;
+
+  sprintf(buff,"%p",f);
   //printf("set_field_opts : %p %x\n",f,l);
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {

@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.36 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: forms.c,v 1.37 2006-04-23 12:13:53 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -394,15 +394,34 @@ A4GL_getprompt_line (void)
 int
 A4GL_getcomment_line (void)
 {
+int default_comment_line;
+int currwinno;
+
+
+currwinno=A4GL_get_currwinno ();
+
   A4GL_debug ("Comment line for currwin=%d std_dbscr=%d",
 	      windows[A4GL_get_currwinno ()].winattr.comment_line,
 	      std_dbscr.comment_line);
+
+
+if (std_dbscr.comment_line==0xff) {
+	        if (currwinno==0) {
+			                default_comment_line=-2; // Last-1 for SCREEN
+					        } else {
+							                default_comment_line=-1; // Last for all other windows...
+									        }
+} else {
+	                default_comment_line=std_dbscr.comment_line;
+}
+
+
   if (windows[A4GL_get_currwinno ()].winattr.comment_line != 0xff)
     {
       return A4GL_decode_line_ib (windows[A4GL_get_currwinno ()].winattr.
 				  comment_line);
     }
-  return A4GL_decode_line_ib (std_dbscr.comment_line);
+  return A4GL_decode_line_ib (default_comment_line);
 }
 
 /**
@@ -699,7 +718,7 @@ A4GL_decode_line_ib (int l)
 		  UILIB_A4GL_get_curr_height ());
       l = 0 - l;
       l--;
-      return UILIB_A4GL_get_curr_height () - l + 1;
+      return UILIB_A4GL_get_curr_height () - l ;
     }
   else
     {
@@ -707,7 +726,7 @@ A4GL_decode_line_ib (int l)
       l--;
       A4GL_debug ("Decoded (4) line %d to %d ", l,
 		  UILIB_A4GL_get_curr_height ());
-      return UILIB_A4GL_get_curr_height () - l + 1;
+      return UILIB_A4GL_get_curr_height () - l ;
     }
 
 

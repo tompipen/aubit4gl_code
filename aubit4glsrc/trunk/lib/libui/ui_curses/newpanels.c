@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.126 2006-04-09 10:10:25 mikeaubury Exp $
+# $Id: newpanels.c,v 1.127 2006-04-23 12:13:53 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.126 2006-04-09 10:10:25 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.127 2006-04-23 12:13:53 mikeaubury Exp $";
 #endif
 
 /**
@@ -1576,14 +1576,14 @@ A4GL_decode_line_ib (int l)
 	  A4GL_debug ("Decoded (3) line %d to %d (because of border)", l, UILIB_A4GL_get_curr_height ());
 	  l=0-l;
 	  l--;
-	  return UILIB_A4GL_get_curr_height () - l+1;
+	  return UILIB_A4GL_get_curr_height () - l;
     }
   else
     {
 	  l=0-l;
 	  l--;
 	  A4GL_debug ("Decoded (4) line %d to %d ", l, UILIB_A4GL_get_curr_height ());
-	  return UILIB_A4GL_get_curr_height () - l +1;
+	  return UILIB_A4GL_get_curr_height () - l ;
     }
 
 
@@ -1656,6 +1656,7 @@ int
 A4GL_getmenu_line (void)
 {
 int a;
+
   if (windows[currwinno].winattr.menu_line!=0xff) {
 	a=A4GL_decode_line_ib (windows[currwinno].winattr.menu_line);
 	if (a<=0) return 1;
@@ -1663,9 +1664,9 @@ int a;
 	return a;
   }
   a=A4GL_decode_line_ib (std_dbscr.menu_line);
-	if (a<=0) return 1;
-	while (a>=A4GL_get_curr_height()) a--;
-	return a;
+  if (a<=0) return 1;
+  while (a>=A4GL_get_curr_height()) a--;
+  return a;
 }
 
 /**
@@ -2682,11 +2683,25 @@ A4GL_debug("Get formline...%d",windows[currwinno].winattr.form_line);
 int
 A4GL_getcomment_line (void)
 {
+int default_comment_line;
+
 A4GL_debug("Comment line for currwin=%d std_dbscr=%d",windows[currwinno].winattr.comment_line,std_dbscr.comment_line);
+
+if (std_dbscr.comment_line==0xff) {
+	if (currwinno==0) {
+		default_comment_line=-2; // Last for SCREEN
+	} else {
+		default_comment_line=-1; // Last-1 for all other windows...
+	}
+} else {
+		default_comment_line=std_dbscr.comment_line;
+}
+
   if (windows[currwinno].winattr.comment_line!=0xff) {
 	return A4GL_decode_line_ib (windows[currwinno].winattr.comment_line);
   }
-  return A4GL_decode_line_ib (std_dbscr.comment_line);
+
+  return A4GL_decode_line_ib (default_comment_line);
 }
 
 /**
