@@ -34,16 +34,18 @@ define lv_str char(80)
 	call set_count(3)
 
 	input array p_parm without defaults from parm_scr.*
+
+
 	before row
 		let xrow = arr_curr()
 		let xscr = scr_line()
-		#error "total : ",arr_count()
+
 	after insert
 		let xrow = arr_curr()
 		let xscr = scr_line()
-		#error "total : ",arr_count()
 	
 	end input
+
 	let lv_str="ARR_CURR=",arr_curr() call errorlog(lv_str clipped)
 	let lv_str="ARR_COUNT=",arr_count() call errorlog(lv_str clipped)
 	let lv_str="SCR_LINE=",scr_line() call errorlog(lv_str clipped)
