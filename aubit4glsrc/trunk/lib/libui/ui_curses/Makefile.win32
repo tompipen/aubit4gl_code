@@ -1,0 +1,117 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libtui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.win32,v 1.1 2006-04-24 07:06:55 mikeaubury Exp $
+#
+
+##########################################################################
+#							Important note
+# This tree is still the main curses support - not the ui_highlevel
+##########################################################################
+
+LIBROOT=../..
+ROOT=../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#Curses path must be BEFORE system paths:
+CFLAGS		:= -Ic:/gnu/pdc27_ming_w32 -I$(ROOT)/tools/cygwin/libform ${CFLAGS}  -I.. -I. -I${ROOT}/incl
+#Note: On CygWin term.h is in -I/usr/include/ncurses
+#
+#-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
+
+ifneq "0" "0"
+	ALL			=${LIBROOT}/libUI_TUI${SO_EXT}
+endif
+
+#TODO: We will need to explicitly specify ncusrses or pdcurses when both are
+#present, because otherwise they will conflict
+ifneq "1" "0"
+	ALL			=${LIBROOT}/libUI_TUI${SO_EXT}
+	#-Lc:/gnu/pdc27_ming_w32
+	#-Ic:/gnu/pdc27_ming_w32
+	#c:/gnu/pdc27_ming_w32/pdcurses.a c:/gnu/pdc27_ming_w32/panel.a
+	
+endif
+
+ifeq "${NON_PEDANTIC_OK}" "1"
+	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
+else
+	CFLAGS_NO_PEDANTIC  =${CFLAGS}
+endif
+
+LINKLIBS	=-L${LIBROOT} -Lc:/gnu/pdc27_ming_w32 -L$(ROOT)/tools/cygwin/libform -lform c:/gnu/pdc27_ming_w32/panel.a c:/gnu/pdc27_ming_w32/pdcurses.a  -laubit4gl 
+
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o \
+	array.o iarray.o prompt.o generic_ui.o
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all : ${ALL}
+	@echo "Default targets (${ALL}) successfully compiled."
+
+${LIBROOT}/libUI_TUI${SO_EXT}: ${ALLOBJ}
+	${LD} ${SO_LDFLAGS} -o $@ $^   ${LINKLIBS}
+#If on CygWin, store libUI_TUI so we can package it with native Windows installer (MinGW)
+ifneq "${COMSPEC}" ""
+ifneq "${GCC_MINGW}" "yes"
+	cp $@ /tmp
+endif
+endif
+
+## ==================================================================
+##                            Sub Targets
+## ==================================================================
+
+#${ROOT}/compilers/fcompile/form_x.h:
+#	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+
+#invalid lvalue in assignment
+curslib.o: curslib.c
+	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
+
+
+## ==================================================================
+##                            Clean Targets
+## ==================================================================
+
+clean:
+	${RM} *.o *${SO_EXT} *.bak *.ao *.err *.a *.def *.glb \
+	debug.out core  gmon.out
+
+#------------------------------- EOF --------------------------------

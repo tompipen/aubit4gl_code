@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.118 2006-04-09 10:10:25 mikeaubury Exp $
+# $Id: curslib.c,v 1.119 2006-04-24 07:06:55 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.118 2006-04-09 10:10:25 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.119 2006-04-24 07:06:55 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1289,10 +1289,11 @@ A4GL_init_curses_stuff ()
       refresh ();
 #ifndef __sun__
 #ifndef __sparc__
+#ifndef __MINGW32__
       //curses function not available on Solaris (!!!!?????)
       use_default_colors ();
       have_default_colors = 1;
-
+#endif
 #endif
 #endif
     }
