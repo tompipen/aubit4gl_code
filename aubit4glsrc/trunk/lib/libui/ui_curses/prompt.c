@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.55 2006-03-10 20:29:59 mikeaubury Exp $
+# $Id: prompt.c,v 1.56 2006-04-24 14:58:52 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.55 2006-03-10 20:29:59 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.56 2006-04-24 14:58:52 mikeaubury Exp $";
 #endif
 
 /**
@@ -125,6 +125,10 @@ int
   if (strlen(promptstr)) {
 	sarr[field_cnt++] = (FIELD *) A4GL_make_label (0, 0, promptstr);
   }
+  if (width<=0) {
+	  A4GL_exitwith("Prompt message is too long to fit in the window.");
+	  return 0;
+  }
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
   set_new_page (sarr[field_cnt-1], 1);
   sarr[field_cnt++] = (FIELD *) A4GL_make_field (0, strlen (promptstr), 1, width + 1);
@@ -179,9 +183,18 @@ int
   A4GL_debug ("Made fields");
   A4GL_debug ("Field attr : %d", field_opts (prompt->field));
 
+  A4GLSQL_set_status (0, 0);
   f = new_form (sarr);
+
   A4GL_debug ("Form f = %p", f);
+
+  if (a4gl_status!=0 || f==0) {
+	  A4GL_exitwith("Prompt message is too long to fit in the window.");
+	  return 0;
+  }
+
   prompt->f = f;
+
   A4GLSQL_set_status (0, 0);
   if (a4gl_status != 0)
     return (prompt->mode = 2);

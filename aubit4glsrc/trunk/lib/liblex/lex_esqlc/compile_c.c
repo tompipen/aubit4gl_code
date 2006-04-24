@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.288 2006-04-13 12:42:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.289 2006-04-24 14:58:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.288 2006-04-13 12:42:50 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.289 2006-04-24 14:58:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5680,7 +5680,7 @@ LEXLIB_print_prompt_1 (t_expr_str_list *expr, char *a1, char *a2, char *a3, char
 {
   A4GL_print_expr_list_concat(expr);
   printc ("{char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n",get_sio_ids("PROMPT"), sizeof (struct s_prompt),get_sio_ids("PROMPT"),timeout);
-  printc ("A4GL_start_prompt(&_sio_%d,%s,%s,%s,%s);\n", get_sio_ids("PROMPT"),a1, a2, a3, a4);
+  printc ("if (A4GL_start_prompt(&_sio_%d,%s,%s,%s,%s)) {\n", get_sio_ids("PROMPT"),a1, a2, a3, a4);
   printc ("while (1) {");
 }
 
@@ -5716,6 +5716,7 @@ LEXLIB_print_prompt_end (char *s)
   printc ("}\n");
   printc("}");
   print_pop_variable (s);
+  printc ("}\n");
   printc ("}\n");
 }
 
