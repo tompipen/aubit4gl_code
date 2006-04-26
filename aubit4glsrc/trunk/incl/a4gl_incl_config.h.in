@@ -138,7 +138,24 @@
         #define HAVE_VSNPRINTF 0	
 	#define HAVE_FEATURES_H 0
 
-
-
+	//See a4gl_esql_posthres.h and resource.c for usage of USING_PG_COPTS
+	//needed because of inconsistand locations of this header files, and
+	//to prevent wrong header file with same name (from another library)
+	//to be included instead of the one we want
+	#if HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H
+  		#define USING_PG_COPTS 1
+	#else
+		#if HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H
+  			#define USING_PG_COPTS 1
+		#else
+			#if HAVE_PG_INFORMIX_ESQL_DECIMAL_H
+  				#define USING_PG_COPTS 1
+			#else
+				#if HAVE_DECIMAL_H
+  					#define USING_PG_COPTS 1
+				#endif
+			#endif
+		#endif
+	#endif
 
 #endif /* #ifndef CONFIG_H_INCL */
