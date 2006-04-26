@@ -10988,7 +10988,9 @@ echo "$as_me: WARNING: *** pkg-config ($PKG_CONFIG_VERSION) too old; version 0.1
 
 if test "$COMSPEC" != ""; then
 #Collect info from Windows registry:
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "------- reg: GTK"
+	fi
 	GTK_DEV_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Gtk+ Development Environment for Windows"
 	regtool.exe check  "$GTK_DEV_REG_PATH" > /dev/null 2>&1
 	RET=$?
@@ -10996,7 +10998,9 @@ if test "$COMSPEC" != ""; then
 		GTK_DEV_VER=`regtool get "$GTK_DEV_REG_PATH/DisplayVersion"`
 		#Also has keys: Cygwin and MSYS
 	fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "---------reg: pg"
+	fi
 	PG_REG_ROOT="/machine/SOFTWARE/PostgreSQL/Installations"
 	regtool.exe check  "$PG_REG_ROOT" > /dev/null 2>&1
 	RET=$?
@@ -11009,23 +11013,44 @@ if test "$COMSPEC" != ""; then
 		PG_REG_BASEDIR=`$CYGPATH -ws "$PG_REG_BASEDIR"`
 		PG_REG_BASEDIR_CYGPATH=`$CYGPATH -u "$PG_REG_BASEDIR"`
 	fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "--------- reg: msys"
+	fi
 	UNINST_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"
-
-	MSYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -n 1`
+	SYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -n 1`
 	if test "$MSYS_REG_NAME" != ""; then
 		MSYS_REG_PATH="$UNINST_REG_PATH/$MSYS_REG_NAME"
-		MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
-		MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
+		regtool.exe check  "$MSYS_REG_PATH" > /dev/null 2>&1
+		RET=$?
+		if test "$RET" = "0"; then
+			MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
+			MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
+		fi
 	fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "--------- reg: mingw"
+	fi
 	MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -n 1`
 	if test "$MINGW_REG_NAME" != ""; then
+#echo "--------- 2"
 		MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"
-		MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
-		MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
+#echo "--------- 3"
+#echo "xxx $MINGW_REG_NAME xxx"
+#echo "regtool get"
+#echo "$MINGW_REG_PATH/Inno Setup: App Path"
+#echo "regtool get \"$MINGW_REG_PATH/Inno Setup: App Path\""
+#regtool get "/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/MinGW/Inno Setup: App Path"
+		regtool.exe check  "$MINGW_REG_PATH" > /dev/null 2>&1
+		RET=$?
+		if test "$RET" = "0"; then
+			MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
+#echo "--------- 4"
+			MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
+		fi
 	fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "--------- reg: ifx"
+	fi
 	#IFX_REG_PATH="/HKEY_CURRENT_USER/Software/Informix"
 	IFX_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Informix"
 	regtool.exe check  "$IFX_REG_PATH/Environment" > /dev/null 2>&1
@@ -11050,6 +11075,10 @@ if test "$COMSPEC" != ""; then
 			#echo "regtool get '$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR'"
 			DATE_INFORMIXDIR_INSTALLED=`regtool get "$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR" 2>/dev/null`
 		fi
+	else
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "no $IFX_REG_PATH/Environment in reegistry"
+		fi
 	fi
 
 	if test "$INFORMIXDIR" = "" -a "$REG_INFORMIXDIR" != "" ; then
@@ -11059,7 +11088,9 @@ if test "$COMSPEC" != ""; then
 			echo "$INFORMIXDIR"
 		fi
 	fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "------ reg: ISsetup"
+	fi
 #ISTool:
 #HKEY_CURRENT_USER\Software\Bjornar Henden\ISTool\Prefs
 #Usefull: ExtFolder InnoFolder LanguageFile
@@ -18497,15 +18528,16 @@ if test "${with_informix+set}" = set; then
 echo "${ECHO_T}no" >&6
 		else
 			if test "$withval" = "yes"; then
-				if test "$INFORMIXDIR" = ""; then
-					echo "########################################################"
-					echo "THIS SHOULD NOT HAPPEN ANYMORE"
-					echo "since we get INFORMIXDIR from registry??!!"
-					echo "and on UNIX INFORMIXDIR _MUST_ be set for anything Informix to work"
-					echo "########################################################"
-					if test "$enable_ac_debug" = "yes" ; then
-						echo "INFORMIXDIR='$INFORMIXDIR'"
+				if test "$INFORMIXDIR" = "" ; then
+					if test "$COMSPEC" != ""; then
+						echo "########################################################"
+						#echo "THIS SHOULD NOT HAPPEN ANYMORE"
+						echo "Could not get INFORMIXDIR from registry."
+						echo "It seems you dont have Informix CSDK installed."
+						#echo "and on UNIX INFORMIXDIR _MUST_ be set for anything Informix to work"
+						echo "########################################################"
 					fi
+					#try to find INFORMIXDIR by looking for esqlc in the PATH:
 					# Extract the first word of "esql", so it can be a program name with args.
 set dummy esql; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -18578,6 +18610,10 @@ echo "$as_me: WARNING: INFORMIXDIR not set in environment and" >&2;}
 echo "$as_me: WARNING: not specified with --with-informix=DIR and" >&2;}
 						{ echo "$as_me:$LINENO: WARNING: cant find esql executable" >&5
 echo "$as_me: WARNING: cant find esql executable" >&2;}
+					fi
+				else
+					if test "$enable_ac_debug" = "yes" ; then
+						echo "INFORMIXDIR='$INFORMIXDIR'"
 					fi
 				fi
 				IFX_INCDIR="$INFORMIXDIR/incl/esql"
@@ -20277,6 +20313,12 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
+
+	if test "$COMSPEC" != "" -a "$PG_ESQLC" != "no"; then
+		#Convert back to native Windows path
+		PG_ESQLC="`$CYGPATH --mixed $PG_ESQLC`"
+		echo "Converted back to native path: $PG_ESQLC"
+	fi
 
 	if test "$PG_ESQLC" != "no"; then
 		echo "$as_me:$LINENO: checking PG ESQL Informix compatibility" >&5
@@ -34037,7 +34079,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 34040 "configure"' > conftest.$ac_ext
+  echo '#line 34082 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -34593,7 +34635,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34596 "configure"
+#line 34638 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -34691,7 +34733,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 34694 "configure"
+#line 34736 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -39899,7 +39941,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.337 2006-04-10 10:18:48 mikeaubury Exp $
+| $Id: configure,v 1.338 2006-04-26 12:03:43 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

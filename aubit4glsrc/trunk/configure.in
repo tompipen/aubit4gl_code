@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.311 2006-04-09 13:26:17 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.312 2006-04-26 12:01:35 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2612,7 +2612,9 @@ PHP_CONFIGURE_PART(Checking standard programs:)
 
 if test "$COMSPEC" != ""; then
 #Collect info from Windows registry:
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "------- reg: GTK"
+	fi
 	GTK_DEV_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Gtk+ Development Environment for Windows"
 	regtool.exe check  "$GTK_DEV_REG_PATH" > /dev/null 2>&1
 	RET=$?
@@ -2620,7 +2622,9 @@ if test "$COMSPEC" != ""; then
 		GTK_DEV_VER=`regtool get "$GTK_DEV_REG_PATH/DisplayVersion"`
 		#Also has keys: Cygwin and MSYS
 	fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "---------reg: pg"
+	fi
 	PG_REG_ROOT="/machine/SOFTWARE/PostgreSQL/Installations"
 	regtool.exe check  "$PG_REG_ROOT" > /dev/null 2>&1
 	RET=$?
@@ -2633,23 +2637,44 @@ if test "$COMSPEC" != ""; then
 		PG_REG_BASEDIR=`$CYGPATH -ws "$PG_REG_BASEDIR"`
 		PG_REG_BASEDIR_CYGPATH=`$CYGPATH -u "$PG_REG_BASEDIR"`
 	fi
-	
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "--------- reg: msys"
+	fi
 	UNINST_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"
-	
-	MSYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -n 1`
+	SYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -n 1`
 	if test "$MSYS_REG_NAME" != ""; then 
-		MSYS_REG_PATH="$UNINST_REG_PATH/$MSYS_REG_NAME"	
-		MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
-		MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
+		MSYS_REG_PATH="$UNINST_REG_PATH/$MSYS_REG_NAME"
+		regtool.exe check  "$MSYS_REG_PATH" > /dev/null 2>&1
+		RET=$?
+		if test "$RET" = "0"; then
+			MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
+			MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
+		fi
 	fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "--------- reg: mingw"
+	fi
 	MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -n 1`
-	if test "$MINGW_REG_NAME" != ""; then	
-		MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"	
-		MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
-		MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
+	if test "$MINGW_REG_NAME" != ""; then
+#echo "--------- 2"
+		MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"
+#echo "--------- 3"
+#echo "xxx $MINGW_REG_NAME xxx"
+#echo "regtool get"
+#echo "$MINGW_REG_PATH/Inno Setup: App Path"
+#echo "regtool get \"$MINGW_REG_PATH/Inno Setup: App Path\""
+#regtool get "/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/MinGW/Inno Setup: App Path"
+		regtool.exe check  "$MINGW_REG_PATH" > /dev/null 2>&1
+		RET=$?
+		if test "$RET" = "0"; then
+			MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
+#echo "--------- 4"
+			MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
+		fi
 	fi
-	
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "--------- reg: ifx"
+	fi
 	#IFX_REG_PATH="/HKEY_CURRENT_USER/Software/Informix"
 	IFX_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Informix"
 	regtool.exe check  "$IFX_REG_PATH/Environment" > /dev/null 2>&1
@@ -2674,6 +2699,10 @@ if test "$COMSPEC" != ""; then
 			#echo "regtool get '$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR'"
 			DATE_INFORMIXDIR_INSTALLED=`regtool get "$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR" 2>/dev/null`
 		fi
+	else
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "no $IFX_REG_PATH/Environment in reegistry"
+		fi
 	fi
 
 	if test "$INFORMIXDIR" = "" -a "$REG_INFORMIXDIR" != "" ; then
@@ -2683,7 +2712,9 @@ if test "$COMSPEC" != ""; then
 			echo "$INFORMIXDIR"
 		fi
 	fi
-	
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "------ reg: ISsetup"
+	fi
 #ISTool:
 #HKEY_CURRENT_USER\Software\Bjornar Henden\ISTool\Prefs
 #Usefull: ExtFolder InnoFolder LanguageFile
@@ -4574,15 +4605,16 @@ AC_ARG_WITH(informix,
 			AC_MSG_RESULT(no)
 		else
 			if test "$withval" = "yes"; then
-				if test "$INFORMIXDIR" = ""; then
-					echo "########################################################"
-					echo "THIS SHOULD NOT HAPPEN ANYMORE"
-					echo "since we get INFORMIXDIR from registry??!!"
-					echo "and on UNIX INFORMIXDIR _MUST_ be set for anything Informix to work"
-					echo "########################################################"
-					if test "$enable_ac_debug" = "yes" ; then
-						echo "INFORMIXDIR='$INFORMIXDIR'"
+				if test "$INFORMIXDIR" = "" ; then
+					if test "$COMSPEC" != ""; then
+						echo "########################################################"
+						#echo "THIS SHOULD NOT HAPPEN ANYMORE"
+						echo "Could not get INFORMIXDIR from registry."
+						echo "It seems you dont have Informix CSDK installed."
+						#echo "and on UNIX INFORMIXDIR _MUST_ be set for anything Informix to work"
+						echo "########################################################"
 					fi
+					#try to find INFORMIXDIR by looking for esqlc in the PATH:
 					AC_PATH_PROG(TMPIFMX_ESQLC, esql, no)
 					if test "$TMPIFMX_ESQLC" != "no"; then
 						if test "$enable_ac_debug" = "yes" ; then
@@ -4611,6 +4643,10 @@ AC_ARG_WITH(informix,
 						AC_MSG_WARN(INFORMIXDIR not set in environment and)
 						AC_MSG_WARN(not specified with --with-informix[=DIR] and)
 						AC_MSG_WARN(cant find esql executable)
+					fi
+				else
+					if test "$enable_ac_debug" = "yes" ; then
+						echo "INFORMIXDIR='$INFORMIXDIR'"
 					fi
 				fi
 				IFX_INCDIR="$INFORMIXDIR/incl/esql"
@@ -5125,6 +5161,12 @@ if test "$withval" != "no"; then
 	export PATH="$withval/bin:$PATH"
 	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$PATH)
 
+	if test "$COMSPEC" != "" -a "$PG_ESQLC" != "no"; then
+		#Convert back to native Windows path
+		PG_ESQLC="`$CYGPATH --mixed $PG_ESQLC`"
+		echo "Converted back to native path: $PG_ESQLC"
+	fi
+	
 	if test "$PG_ESQLC" != "no"; then
 		AC_MSG_CHECKING(PG ESQL Informix compatibility)
 		#First, with -v
@@ -9199,7 +9241,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.311 2006-04-09 13:26:17 mikeaubury Exp $
+| $Id: configure.in,v 1.312 2006-04-26 12:01:35 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -473,6 +473,8 @@ ECPG_IFLAGS="@ECPG_IFLAGS@"
 #PostgreSQL engine installation directory. Used by ecpg_wrap script and 4glc
 POSTGRESDIR="@POSTGRESDIR@"
 LIBPQ_FE_H_IFLAGS="@LIBPQ_FE_H_IFLAGS@"
+#Path and name of PostgreSQL ESQL compiler (ecpg):
+PG_ESQLC="@PG_ESQLC@"
 
 #####################
 #Workaround for PG ecpg problem (see test #24)
@@ -496,6 +498,16 @@ IFMX_ESQLC=@IFMX_ESQLC@
 
 #Location of Aubit regression tests; used in root makefile
 AUBIT_TEST_DIR=/usr2/aubit/aubit4gltest
+
+#need to be able to find PG headers like decimal.h
+#Which means I need to run configure and create config.h even in binary distros!
+#but on Win we will not have autoconf, so we will need to replace this by
+#specifying -I$POSTGRESDIR/x where x is ALL possible combinations of locations
+#of PG headers!!!! OK, on Windows hopefully this will be in only one place, as
+#PG windows installer is hopefully more consistent then  Linux distros and 
+#PG Linux packages?
+PG_COPTS="-DUSING_PG_COPTS=1 -DHAVE_CONFIG_H"
+#not set in configure.in atm: PG_COPTS="@PG_COPTS@"
 
 #-------------------------------- EOF -----------------------------
 
