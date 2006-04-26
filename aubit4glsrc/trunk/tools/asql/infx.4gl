@@ -87,7 +87,7 @@ void    mem_zap(Memory *m);
 
 
 extern char *delim;
-#define syntaxerror()  (sqlca.sqlcode = -201, sql_error())
+#define syntaxerror()  (sqlca.sqlcode = -201, sql_error("",""))
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
 #define DISPLAY_UNLOAD 3
@@ -143,6 +143,14 @@ char loadbuff[LOADBUFFSIZE];
 
 #define SQL_TABNAMELEN  (3 * SQL_NAMELEN + SQL_USERLEN + sizeof("@:''."))
 #define SQL_COLNAMELEN  (SQL_NAMELEN + 1)
+
+
+
+
+
+#include "jtypes.c"
+
+
 
 
 void trim_trailing_0(char *buffer) {
@@ -2082,7 +2090,7 @@ static int      cols_in_table(char *tabname)
 	{
 		sqlca.sqlcode = -206;	/* Table is not in database */
 		strcpy(sqlca.sqlerrm,  tabname);
-		sql_error();
+		sql_error("","");
 	}
 	else
 	{
@@ -2312,7 +2320,7 @@ int   asql_load_data(struct element *e)
 
 	sqlca = save;
 	if (sqlca.sqlcode < 0)
-		sql_error();
+		sql_error("","");
 
 
        return rec.rownum-1;
@@ -2328,5 +2336,4 @@ int load_err(int row,char *msg) {
 	load_ok=0;
 }
 
-#include "jtypes.c"
 endcode

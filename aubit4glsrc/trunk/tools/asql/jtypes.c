@@ -57,7 +57,26 @@ ustrtod (const Uchar * s, Uchar ** e)
 #endif /* USE_USTRTOD_FUNCTION */
 
 
+typedef enum { SQL_NOCOMMENT, SQL_OPTIMIZERHINT, SQL_COMMENT, SQL_INCOMPLETE } SQLComment;
+
+
+
+
 char delimchar;
+char *acl_getenv_not_set_as_0 (char *v);
+char * skipblanks (char *s);
+char * iustoken (const char *input, const char **end);
+void free_blobs (Sqlda * u);
+char           *cvt_dbdate(const char *dbdate);
+char * skiptabname (char *s);
+char * blob_newfilename (void);
+char * sqltoken (const char *input, const char **end);
+const char * blob_getdirectory (void);
+
+SQLComment sqlcomment (const char *input, int style, const char **bgn, const char **end);
+
+BlobLocn blob_getlocmode (void);
+static int      cols_in_table(char *tabname);
 
 
 void
@@ -229,6 +248,7 @@ static int scantextfield (Sqlva * col, Memory * line, Memory * field,
 			  int fnum, Uchar escape, Uchar delim, Uchar quote,
 			  BSSP * bssp);
 
+static int scanfield (Memory * line, Memory * field, Uchar escape, Uchar delim, BSSP * bssp);
 
 static int jtypcsize (int sqltyp, int sqllen);
 static int jtypctype (int stype);
@@ -1024,7 +1044,7 @@ mk_insert (char *old_stmt)
   /* Watch the constant string -- the spaces are ALL needed */
   new_stmt = (char *) malloc (sizeof ("insert into values () ") + strlen (tab) + 2 * ncols);	/*=C++=*/
 
-  s = sprintf (new_stmt, "insert into %s values(", tab);
+  s = (char*)sprintf (new_stmt, "insert into %s values(", tab);
   pad = "";
   for (i = 0; i < ncols; i++)
     {
@@ -1060,8 +1080,7 @@ count_blobs (Sqlda * u)
 /*
 **	Release the memory associated with the blobs.
 */
-void
-free_blobs (Sqlda * u)
+void free_blobs (Sqlda * u)
 {
   Sqlva *c;
   Sqlva *e;
@@ -1133,10 +1152,6 @@ enum
     (JLSS_CSTYLE_COMMENT | JLSS_ISOSQL_COMMENT | JLSS_INFORMIX_COMMENT)
 };
 
-typedef enum
-{ SQL_NOCOMMENT, SQL_OPTIMIZERHINT, SQL_COMMENT, SQL_INCOMPLETE } SQLComment;
-
-
 int
 tokencmp (const char *str, size_t len, const char *token, size_t toklen)
 {
@@ -1181,8 +1196,7 @@ sql_error (char *s1, char *s2)
 }
 
 /* Skip over table name of form [database[@server]:]["owner".]tablename */
-char *
-skiptabname (char *s)
+char * skiptabname (char *s)
 {
   register unsigned char c;
 
@@ -1197,8 +1211,7 @@ skiptabname (char *s)
 
 
 /* Skip over blanks */
-char *
-skipblanks (char *s)
+char * skipblanks (char *s)
 {
   while (isspace ((unsigned char) *s))
     s++;
@@ -1378,8 +1391,7 @@ blob_locinmem (Blob * blob)
   return (0);
 }
 
-char *
-blob_newfilename (void)
+char * blob_newfilename (void)
 {
   char tmp[FILENAMESIZE];
   char *rv;
@@ -1408,8 +1420,7 @@ blob_getdirectory (void)
   return rv;
 }
 
-BlobLocn
-blob_getlocmode (void)
+BlobLocn blob_getlocmode (void)
 {
   return (def_blob_locn);
 }
@@ -1823,8 +1834,7 @@ convertdata (Memory * mem, Sqlva * col, BSSP bssp)
   return (retval);
 }
 
-char *
-iustoken (const char *input, const char **end)
+char * iustoken (const char *input, const char **end)
 {
   const char *token;
   size_t len;
@@ -1898,8 +1908,7 @@ iustoken (const char *input, const char **end)
 **     ...interest, they can be picked up in the body of the loop.
 */
 
-SQLComment
-sqlcomment (const char *input, int style, const char **bgn, const char **end)
+SQLComment sqlcomment (const char *input, int style, const char **bgn, const char **end)
 {
   const char *token = input;
   unsigned char c = *input;
@@ -1998,8 +2007,7 @@ sqlcomment (const char *input, int style, const char **bgn, const char **end)
 ** KLUDGE: Outer while loop should be unnecessary now...
 ** 2004-12-24: Permit hexadecimal constants (0xFFFFFFFF etc).
 */
-char *
-sqltoken (const char *input, const char **end)
+char * sqltoken (const char *input, const char **end)
 {
   const char *token;
   unsigned char c;

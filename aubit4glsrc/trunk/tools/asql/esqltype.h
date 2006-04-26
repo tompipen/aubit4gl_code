@@ -1,7 +1,7 @@
 /*
 @(#)File:           $RCSfile: esqltype.h,v $
-@(#)Version:        $Revision: 1.1 $
-@(#)Last changed:   $Date: 2006-04-26 07:34:59 $
+@(#)Version:        $Revision: 1.2 $
+@(#)Last changed:   $Date: 2006-04-26 07:52:57 $
 @(#)Purpose:        Platform and Version Independent Types for ESQL/C
 @(#)Author:         J Leffler
 @(#)Copyright:      (C) JLSS 1992-93,1995-97,2003-05
@@ -15,7 +15,7 @@
 
 #ifdef MAIN_PROGRAM
 #ifndef lint
-static const char esqltype_h[] = "@(#)$Id: esqltype.h,v 1.1 2006-04-26 07:34:59 mikeaubury Exp $";
+static const char esqltype_h[] = "@(#)$Id: esqltype.h,v 1.2 2006-04-26 07:52:57 mikeaubury Exp $";
 #endif	/* lint */
 #endif	/* MAIN_PROGRAM */
 
@@ -228,4 +228,13 @@ typedef mulong	ixMulong;
 
 #endif /* MI_LONG_SIZE */
 
+
+
+void set_delim (char q);
+
+
+
 #endif	/* ESQLTYPE_H */
+
+
+
