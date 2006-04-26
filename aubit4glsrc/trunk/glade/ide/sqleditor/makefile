@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.5 2006-02-13 09:04:22 mikeaubury Exp $
+# $Id: makefile,v 1.6 2006-04-26 09:29:54 mikeaubury Exp $
 #
 
 ROOT					=../../..
@@ -41,7 +41,17 @@ include 				${ROOT}/incl/a4gl.mk
 ## ==================================================================
 
 CFLAGS					+=-g -I${ROOT}/incl
-4GLPC					=4glpc -g
+#WARNING: currently, 4glpc is not hanling GCC on Windows, and will just pass everything
+#to esql compiler - which will try to invoke MSVC "cl" which most probably
+#will not exist on the system. OTOH, 4glc will handle ec compilation as 
+#discreate steps of 4gl->.ec->.c->.dll/.exe
+#If you are tempted to use 4glpc (instead 4glc
+#directly) please make sure it will work for all platforms and ESQL dialects
+#in this makefile. Andrej.
+#4GLPC					=4glpc -g
+#4GLPC				=${FGLPCEXEC}
+#FGLPC_VERBOSE_FLAG=-V5
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}
 
 ################
 #Aubit compiler settings. infx.4gl contains Informix ESQL/C code
@@ -49,7 +59,7 @@ A4GL_LEXTYPE			=EC
 A4GL_USE_DATABASE_STMT	=Y
 A4GL_LEXDIALECT			=INFORMIX
 
-#OBJ						= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
+#OBJ					= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
 						#execute.ao simple_parse.o lex.yy.o main.ao
 BASE_4GL				= editor.4gl infx.4gl ../common/pick.4gl ../common/about.4gl \
 						execute.4gl simple_parse.c lex.yy.c main.4gl
@@ -75,7 +85,7 @@ no_esql:
 	@echo "+--------------------------------------------------------------------+"
 
 ${ROOT}/bin/sqleditor.4ae: ${BASE_4GL}
-	4glpc -I../common -g $^ -o $@
+	${4GLPC} -I../common -g $^ -o $@
 	
 ## ==================================================================
 ##                              Sub-targets

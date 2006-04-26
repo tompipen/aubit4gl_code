@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.3 2004-09-28 09:49:13 afalout Exp $
+# $Id: makefile,v 1.4 2006-04-26 09:29:42 mikeaubury Exp $
 #
 
 ROOT			=../..
@@ -41,7 +41,16 @@ include 		${ROOT}/incl/a4gl.mk
 ## ==================================================================
 
 CFLAGS			+=-I${ROOT}/incl
-4GLPC			=${FGLPCEXEC}
+#WARNING: currently, 4glpc is not hanling GCC on Windows, and will just pass everything
+#to esql compiler - which will try to invoke MSVC "cl" which most probably
+#will not exist on the system. OTOH, 4glc will handle ec compilation as 
+#discreate steps of 4gl->.ec->.c->.dll/.exe
+#If you are tempted to use 4glpc (instead 4glc
+#directly) please make sure it will work for all platforms and ESQL dialects
+#in this makefile. Andrej.
+#4GLPC			=${FGLPCEXEC}
+#FGLPC_VERBOSE_FLAG=-V5
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}
 
 ALL				=${ROOT}/bin/ide1.4ae ${ROOT}/bin/sqleditor.4ae
 
