@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.105 2006-03-17 19:01:31 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.106 2006-04-26 08:58:13 mikeaubury Exp $
 #
 */
 
@@ -94,7 +94,7 @@ void A4GL_def_quit (void);
 char *A4GL_clob (char *s, char *p);
 //int A4GLUI_initlib(void);
 
-char *expand_env_vars_in_cmdline(char *s) ;
+char *expand_env_vars_in_cmdline(char *s,int showerr) ;
 static char running_program[256];
 
 /*
@@ -1275,7 +1275,7 @@ int aclfgl_expand_env_vars_in_cmdline(int n) {
 	}
 	s=A4GL_char_pop();
 	
-	s2=expand_env_vars_in_cmdline(s);
+	s2=expand_env_vars_in_cmdline(s,0);
 	free(s);
 	A4GL_trim(s2);
 	A4GL_push_char(s2);
@@ -1285,7 +1285,7 @@ int aclfgl_expand_env_vars_in_cmdline(int n) {
 
 
 
-char *expand_env_vars_in_cmdline(char *s) {
+char *expand_env_vars_in_cmdline(char *s,int showerrs) {
 	static char buff[20000];
 	char varname[200];
 	int a;
@@ -1325,7 +1325,28 @@ char *expand_env_vars_in_cmdline(char *s) {
 		strncpy(varname,&s[start_var],len);
 		varname[len]=0;
 		buff[b]=0;
-		strcat(buff,acl_getenv(varname));
+		if (acl_getenv_not_set_as_0(varname)) {
+			char *ptr;
+			ptr=acl_getenv(varname);
+
+			if (A4GL_isyes(acl_getenv("WARNCYGDRIVE")) ||strcpy(acl_getenv("TARGET_OS"),"mingw")==0) {
+				if (strstr(ptr,"cygdrive")) {
+					printf("ERROR: variable %s contains non-native windows path mangling\n",varname);
+				}
+			}
+
+			strcat(buff,ptr);
+		} else {
+			strcat(buff,"$");
+			strcat(buff,varname);
+
+			if (showerrs) {
+				printf("ERROR: environment variable %s\n",varname);
+				printf("ERROR: specified in 4glpc configuration file is undefined\n");
+				printf("ERROR: in current environment.\n");
+			}
+
+		}
 		b=strlen(buff);
 	}
 	return buff;

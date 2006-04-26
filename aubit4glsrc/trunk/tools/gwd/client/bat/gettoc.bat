@@ -128,10 +128,10 @@ rem ***rsh -l %5 %4 rrun.sh %9 %1
 rem ***echo command was: rsh -l %5 %4 rrun.sh %9 %1
 rem must use -a (ASCII) option to translate cr/lf on the end of strings
 rem that will be used as variables
-rem start /w /m rexec -a -l %5 -p 11sajonara  %4 gettoc.sh %9 %1 > setTOC.BAT
-rexec -a -l %5 -p 11sajonara  %4 gettoc.sh %9 %1 %6 > setTOC.BAT
+rem start /w /m rexec -a -l %5 -p mypass  %4 gettoc.sh %9 %1 > setTOC.BAT
+rexec -a -l %5 -p mypass  %4 gettoc.sh %9 %1 %6 > setTOC.BAT
 rem type setTOC.BAT
-rem echo command was: rexec -l %5 -p 11sajonara  %4 gettoc.sh %9 %1 %6
+rem echo command was: rexec -l %5 -p mypass  %4 gettoc.sh %9 %1 %6
 rem pause
 
 if errolevel==9 goto :err9

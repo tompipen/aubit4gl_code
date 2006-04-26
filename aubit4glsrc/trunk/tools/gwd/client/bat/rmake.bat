@@ -130,17 +130,17 @@ if errolevel==1 goto :err1
 
 
 :RunMake
-rem if %DBG%==yes echo Running rexec -a -l %5 -p 11sajonara  %4 rmake.sh %9 %1 %2
-rem if %DBG%==yes rexec -a -l %5 -p 11sajonara  %4 rmake.sh %9 %1 %2
+rem if %DBG%==yes echo Running rexec -a -l %5 -p mypass  %4 rmake.sh %9 %1 %2
+rem if %DBG%==yes rexec -a -l %5 -p mypass  %4 rmake.sh %9 %1 %2
 rem if %DBG%==yes pause
 
 rem if %DBG%==yes echo Now same thing into file...
 rem 2: call rcompile.sh script to perform compile, and check for errors
-rem start /w /m rexec -a -l %5 -p 11sajonara  %4 rmake.sh %9 %1 %2 > rmkerr.bat
+rem start /w /m rexec -a -l %5 -p mypass  %4 rmake.sh %9 %1 %2 > rmkerr.bat
 rem rmkerr.bat
-if %DBG%==yes if %site%==CSI echo rexec -a -l %5 -p 11sajonara %4 rmake.sh %9 %1 %2
+if %DBG%==yes if %site%==CSI echo rexec -a -l %5 -p mypass %4 rmake.sh %9 %1 %2
 
-if %site%==Fujitsu rexec -a -l %5 -p 11sajonara %4 rmake.sh %9 %1 %2  > rmkerr.bat
+if %site%==Fujitsu rexec -a -l %5 -p mypass %4 rmake.sh %9 %1 %2  > rmkerr.bat
 if %site%==CSI rexec -a -l %5 -p %6 %4 GWDagents/rmake.sh %9 %1 %2 > rmkerr.bat
 
 if %DBG%==yes echo -------------------------------------------------- START rmkerr.bat

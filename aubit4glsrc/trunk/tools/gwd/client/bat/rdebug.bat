@@ -127,8 +127,8 @@ rem with specified user:
 start /m rsh -l %5 %4 %AGENTDIR%/rrun.sh %9 %1
 rem WORKS !!!! rsh -l andrejf nezsdc $HOME/rrun.sh pc_calc.4gl VJ
 rem ***echo command was: rsh -l %5 %4 rrun.sh %9 %1
-rem rexec -l %5 -p 11sajonara  %4 rrun.sh %9 %1
-echo command was: rexec -l %5 -p 11sajonara  %4 rrun.sh %9 %1
+rem rexec -l %5 -p mypass  %4 rrun.sh %9 %1
+echo command was: rexec -l %5 -p mypass  %4 rrun.sh %9 %1
 rem pause
 if errolevel==9 goto :err9
 if errolevel==8 goto :err8

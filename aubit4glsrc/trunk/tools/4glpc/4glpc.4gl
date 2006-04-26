@@ -78,6 +78,7 @@ define lv_pack char(256)
 	call read_pack(lv_pack)
 
 	let lv_pack=fgl_getenv("TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+	call read_pack(lv_pack)
 
 
 

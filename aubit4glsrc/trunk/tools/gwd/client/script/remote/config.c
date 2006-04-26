@@ -1,7 +1,8 @@
 /********************************************************************
                          CONFIG
 ********************************************************************/  
-  
+  
+
 #include <dir.h>
 #include <windows.h>
 #include <stdio.h>
@@ -26,27 +27,43 @@
   
 // global variables
 char g_szTakeOutCmd[MAX_CMDLEN];
-char g_szPutBackCmd[MAX_CMDLEN];
-char g_szMakeCmd[MAX_CMDLEN];
-char g_szServerInitDir[MAX_INIT_DIR];
-char g_szClientInitDir[MAX_INIT_DIR];
-char g_szServerName[MAX_SERVER_NAME];
-char g_szUserName[MAX_USER_NAME];
-char g_szPassword[MAX_PASSWORD];
-char g_szArea[MAX_CMDLEN];
-char g_szSysName[MAX_CMDLEN];
-char g_szFileLocation[MAX_FILE_LOCATION];
-char g_szFileName[MAX_FILE_NAME];
-char TMPg_szClientInitDir[MAX_INIT_DIR];
-char g_szDebug[MAX_FILE_NAME];
-char *psz;
-
+
+char g_szPutBackCmd[MAX_CMDLEN];
+
+char g_szMakeCmd[MAX_CMDLEN];
+
+char g_szServerInitDir[MAX_INIT_DIR];
+
+char g_szClientInitDir[MAX_INIT_DIR];
+
+char g_szServerName[MAX_SERVER_NAME];
+
+char g_szUserName[MAX_USER_NAME];
+
+char g_szPassword[MAX_PASSWORD];
+
+char g_szArea[MAX_CMDLEN];
+
+char g_szSysName[MAX_CMDLEN];
+
+char g_szFileLocation[MAX_FILE_LOCATION];
+
+char g_szFileName[MAX_FILE_NAME];
+
+char TMPg_szClientInitDir[MAX_INIT_DIR];
+
+char g_szDebug[MAX_FILE_NAME];
+
+char *psz;
+
+
 // function prototypes
 void UnixPathToDosPath (char *);	// Common
 void DosPathToUnixPath (char *);	// Common
 void ReplaceNonDOSchar (char *);	// Common
 BOOL MakeDir (const char *pszDir);	// Common
-void OpenTOC (void);		// Menu 1
+
+void OpenTOC (void);		// Menu 1
 //void OpenMakefile(void);              // Menu 2
 //void GrepToc(void);                   // Menu 3
 //void GrepMakefile(void);              // Menu 4
@@ -57,21 +74,30 @@ void TerminalIniFile (void);	// Menu 7
 //void ReadFileTest(HDOC hdoc)            //
 //void ReadLine(HDOC hdoc)                //
 void test_4gl_version (void);
-void select_4gl_version (void);
-void test_env_read (void);
-void test_time (void);
-
+
+void select_4gl_version (void);
+
+void test_env_read (void);
+
+void test_time (void);
+
+
 /*-------------------------------------------------------------------
             main function - menu
 -------------------------------------------------------------------*/ 
-  int
+  
+int
 main (int argc, char *argv[]) 
 {
-  
+  
+
+
     // List box used as a menu
 //   while(TRUE)
 //   {
-  char *pMenu[] = { "Open TOC for active document",	// 1
+  char *pMenu[] = 
+{ 
+"Open TOC for active document",	// 1
     "Open Makefile for active document",	// 2
     "Search all files in TOC for active document",	// 3
     "Search all files in Makefile for active document",	// 4
@@ -80,16 +106,25 @@ main (int argc, char *argv[])
     "Test reading and writing from plwin ini file",	// 7
     "Display 4GL version configuration info",	// 8
     "Test reading environment",	// 9
-    "Test compare file time", NULL 
+    "Test compare file time", 
+NULL 
   };
-  int nIdx;
-  nIdx = Gte_ListBoxDlg ("Choose Command", pMenu);
-  if (nIdx == 0)
-    return (0);
-  switch (nIdx)
+  
+int nIdx;
+  
+
+nIdx = Gte_ListBoxDlg ("Choose Command", pMenu);
+  
+if (nIdx == 0)
+    
+return (0);
+  
+
+switch (nIdx)
     
     {
-    case 1:
+    
+case 1:
       OpenTOC ();
       return (0);		// break;
     case 2:
@@ -107,116 +142,175 @@ main (int argc, char *argv[])
     case 7:
       TerminalIniFile ();
       return (0);
-    case 8:
+    
+case 8:
       test_4gl_version ();
       return (0);
-    case 9:
+    
+case 9:
       test_env_read ();
       return (0);
-    case 10:
+    
+case 10:
       test_time ();
       return (0);
       
 	//       ReadFile(HDOC);
 //                ReadFileTest(HDOC hdoc)
-    }
+    
+
+
+}
   
 //   }
-    return 0;
-}
+    
+return 0;
 
-
+
+}
+
+
+
+
 /*-------------------------------------------------------------------
         RemoteOptionsConfig - Configure options and defaults for
         all Remote functions
 -------------------------------------------------------------------*/ 
-  void
+  
+void
 RemoteOptionsConfig (void) 
 {
   
     // read configuration from ini file
     GetPrivateProfileString ("Remote", "TakeOutCmd", "", g_szTakeOutCmd,
 			     sizeof (g_szTakeOutCmd), "remote.ini");
-  GetPrivateProfileString ("Remote", "PutBackCmd", "", g_szPutBackCmd,
+  
+GetPrivateProfileString ("Remote", "PutBackCmd", "", g_szPutBackCmd,
 			    sizeof (g_szPutBackCmd), "remote.ini");
-  GetPrivateProfileString ("Remote", "MakeCmd", "", g_szMakeCmd,
+  
+GetPrivateProfileString ("Remote", "MakeCmd", "", g_szMakeCmd,
 			    sizeof (g_szMakeCmd), "remote.ini");
-  GetPrivateProfileString ("Remote", "ServerInitDir", "", g_szServerInitDir,
+  
+GetPrivateProfileString ("Remote", "ServerInitDir", "", g_szServerInitDir,
 			    sizeof (g_szServerInitDir), "remote.ini");
-  GetPrivateProfileString ("Remote", "ClientInitDir", "", g_szClientInitDir,
+  
+GetPrivateProfileString ("Remote", "ClientInitDir", "", g_szClientInitDir,
 			    sizeof (g_szClientInitDir), "remote.ini");
-  GetPrivateProfileString ("Remote", "ServerName", "", g_szServerName,
+  
+GetPrivateProfileString ("Remote", "ServerName", "", g_szServerName,
 			    sizeof (g_szServerName), "remote.ini");
-  GetPrivateProfileString ("Remote", "UserName", "", g_szUserName,
+  
+GetPrivateProfileString ("Remote", "UserName", "", g_szUserName,
 			    sizeof (g_szUserName), "remote.ini");
-  GetPrivateProfileString ("Remote", "Password", "", g_szPassword,
+  
+GetPrivateProfileString ("Remote", "Password", "", g_szPassword,
 			    sizeof (g_szPassword), "remote.ini");
-  select_4gl_version ();
-  if (Gte_GetStringDlg
-	("TakeOut command", "&TakeOut command:", g_szTakeOutCmd,
+  
+
+select_4gl_version ();
+  
+
+if (Gte_GetStringDlg
+	("TakeOut command", "&TakeOut command:", 
+g_szTakeOutCmd,
 	 sizeof (g_szTakeOutCmd)) != FALSE)
     
     {
-      WritePrivateProfileString ("Remote", "TakeOutCmd", g_szTakeOutCmd,
+      
+WritePrivateProfileString ("Remote", "TakeOutCmd", g_szTakeOutCmd,
 				  "remote.ini");
-    }
-  if (Gte_GetStringDlg
-	("PutBack command", "&PutBack command:", g_szPutBackCmd,
+    
+}
+  
+
+if (Gte_GetStringDlg
+	("PutBack command", "&PutBack command:", 
+g_szPutBackCmd,
 	 sizeof (g_szPutBackCmd)) != FALSE)
     
     {
-      WritePrivateProfileString ("Remote", "PutBackCmd", g_szPutBackCmd,
+      
+WritePrivateProfileString ("Remote", "PutBackCmd", g_szPutBackCmd,
 				  "remote.ini");
-    }
-  if (Gte_GetStringDlg ("Make command", "&Make command:", 
+    
+}
+  
+
+if (Gte_GetStringDlg ("Make command", "&Make command:", 
 //      g_szPutBackCmd, sizeof(g_szMakeCmd)) != FALSE)
 			  g_szMakeCmd, sizeof (g_szMakeCmd)) != FALSE)
-    
+    
+
     {
-      WritePrivateProfileString ("Remote", "MakeCmd", g_szMakeCmd,
+      
+WritePrivateProfileString ("Remote", "MakeCmd", g_szMakeCmd,
 				  "remote.ini");
-    }
-  if (Gte_GetStringDlg
+    
+}
+  
+
+if (Gte_GetStringDlg
 	("Server Initial Directory", "&Server initial dir:",
-	 g_szServerInitDir, sizeof (g_szServerInitDir)) != FALSE)
+	 
+g_szServerInitDir, sizeof (g_szServerInitDir)) != FALSE)
     
     {
-      WritePrivateProfileString ("Remote", "ServerInitDir",
+      
+WritePrivateProfileString ("Remote", "ServerInitDir",
 				  g_szServerInitDir, "remote.ini");
-    }
-  MsgBox ("Select client (WinNT) initial directory", MB_OK);
-  if (Gte_BrowseForDirDlg
+    
+}
+  
+
+MsgBox ("Select client (WinNT) initial directory", MB_OK);
+  
+if (Gte_BrowseForDirDlg
        (g_szClientInitDir, sizeof (g_szClientInitDir), FALSE) != FALSE)
-    WritePrivateProfileString ("Remote", "ClientInitDir", g_szClientInitDir,
+    
+WritePrivateProfileString ("Remote", "ClientInitDir", g_szClientInitDir,
 				"remote.ini");
-  if (Gte_GetStringDlg
+  
+
+if (Gte_GetStringDlg
 	("Server Name", "&Server name:", g_szServerName,
 	 sizeof (g_szServerName)) != FALSE)
-    WritePrivateProfileString ("Remote", "ServerName", g_szServerName,
+    
+WritePrivateProfileString ("Remote", "ServerName", g_szServerName,
 				"remote.ini");
-  if (Gte_GetStringDlg
+  
+
+if (Gte_GetStringDlg
 	("User Name", "&User name:", g_szUserName,
 	 sizeof (g_szUserName)) != FALSE)
-    WritePrivateProfileString ("Remote", "UserName", g_szUserName,
+    
+WritePrivateProfileString ("Remote", "UserName", g_szUserName,
 				"remote.ini");
-  if (MsgBox
+  
+
+if (MsgBox
 	("Do you want to specify password? If you specify password here, it will not be "
-	  "encripted and everyone will be able to see it",
+	 
+ "encripted and everyone will be able to see it",
 	 MB_YESNO) == IDYES)
     
     {
-      if (Gte_GetStringDlg
+      
+if (Gte_GetStringDlg
 	   ("Password", "&Password:", g_szPassword,
 	    sizeof (g_szPassword)) != FALSE)
-	
+	
+
 //         return 
 	  WritePrivateProfileString ("Remote", "Password", g_szPassword,
 				     "remote.ini");
-    }
-  
+    
+}
+  
+
 //   return 0;
     return;
-}
+
+}
 
 
 //-------------------------------------------------- RemoteOptionsConfig()
@@ -224,39 +318,56 @@ RemoteOptionsConfig (void)
 /*-------------------------------------------------------------------
          Get_TOC - open TOC file for active document
 -------------------------------------------------------------------*/ 
-  void
+  
+void
 OpenTOC (void) 
 {
-  HDOC hDoc;
-  char szCmdLine[1024];
-  hDoc = Gte_GetActiveDocument ();
-  if (hDoc == NULL)
+  
+HDOC hDoc;
+  
+char szCmdLine[1024];
+  
+
+hDoc = Gte_GetActiveDocument ();
+  
+if (hDoc == NULL)
     {
-      MsgBox ("Document must be open in editor, to find TOC file for it !",
+      
+MsgBox ("Document must be open in editor, to find TOC file for it !",
 	       MB_OK);
-      return 1;
-    }
+      
+return 1;
+    
+}
   
     // save cursor position
     GM_SaveCursorPos (hDoc);
-  
+  
+
     // Save file if is modified
     if (Gte_IsModified (hDoc))
-    GM_SaveFile (hDoc);
-  
+    
+GM_SaveFile (hDoc);
+  
+
     // read configuration from ini file
 //   GetPrivateProfileString("Remote", "PutBackCmd", "", g_szPutBackCmd, sizeof(g_szPutBackCmd), "remote.ini");
     GetPrivateProfileString ("Remote", "ServerInitDir", "", g_szServerInitDir,
 			     sizeof (g_szServerInitDir), "remote.ini");
-  GetPrivateProfileString ("Remote", "ClientInitDir", "", g_szClientInitDir,
+  
+GetPrivateProfileString ("Remote", "ClientInitDir", "", g_szClientInitDir,
 			    sizeof (g_szClientInitDir), "remote.ini");
-  GetPrivateProfileString ("Remote", "ServerName", "", g_szServerName,
+  
+GetPrivateProfileString ("Remote", "ServerName", "", g_szServerName,
 			    sizeof (g_szServerName), "remote.ini");
-  GetPrivateProfileString ("Remote", "UserName", "", g_szUserName,
+  
+GetPrivateProfileString ("Remote", "UserName", "", g_szUserName,
 			    sizeof (g_szUserName), "remote.ini");
-  GetPrivateProfileString ("Remote", "Password", "", g_szPassword,
+  
+GetPrivateProfileString ("Remote", "Password", "", g_szPassword,
 			    sizeof (g_szPassword), "remote.ini");
-  
+  
+
     // check configuration parameters and ask for them is necessary
 /*
    if(strlen(g_szPutBackCmd) == 0) {
@@ -269,95 +380,156 @@ OpenTOC (void)
 */ 
     if (strlen (g_szServerInitDir) == 0)
     {
-      if (Gte_GetStringDlg
+      
+if (Gte_GetStringDlg
 	   ("Server Initial Directory", "&Server initial dir:",
-	    g_szServerInitDir, sizeof (g_szServerInitDir)) == FALSE)
+	    
+g_szServerInitDir, sizeof (g_szServerInitDir)) == FALSE)
 	
 	{
-	  return;
-	}
-      if (strlen (g_szServerInitDir) == 0)
+	  
+return;
+	
+}
+      
+if (strlen (g_szServerInitDir) == 0)
 	{
-	  MsgBox ("Invalid initial dir", MB_OK);
-	  return;
-	}
-    }
-  if (strlen (g_szClientInitDir) == 0)
+	  
+MsgBox ("Invalid initial dir", MB_OK);
+	  
+return;
+	
+}
+    
+}
+  
+if (strlen (g_szClientInitDir) == 0)
     {
-      MsgBox ("Select client initial directory", MB_OK);
-      if (Gte_BrowseForDirDlg
+      
+MsgBox ("Select client initial directory", MB_OK);
+      
+if (Gte_BrowseForDirDlg
 	   (g_szClientInitDir, sizeof (g_szClientInitDir), FALSE) == FALSE)
-	return;
-      if (strlen (g_szClientInitDir) == 0)
+	
+return;
+      
+if (strlen (g_szClientInitDir) == 0)
 	{
-	  MsgBox ("Invalid client initial dir", MB_OK);
-	  return;
-	}
-    }
-  if (strlen (g_szServerName) == 0)
+	  
+MsgBox ("Invalid client initial dir", MB_OK);
+	  
+return;
+	
+}
+    
+}
+  
+if (strlen (g_szServerName) == 0)
     {
-      if (Gte_GetStringDlg
+      
+if (Gte_GetStringDlg
 	   ("Server Name", "&Server name:", g_szServerName,
 	    sizeof (g_szServerName)) == FALSE)
-	return;
-      if (strlen (g_szServerName) == 0)
+	
+return;
+      
+if (strlen (g_szServerName) == 0)
 	{
-	  MsgBox ("Invalid server name", MB_OK);
-	  return;
-	}
-    }
-  if (strlen (g_szUserName) == 0)
+	  
+MsgBox ("Invalid server name", MB_OK);
+	  
+return;
+	
+}
+    
+}
+  
+if (strlen (g_szUserName) == 0)
     {
-      if (Gte_GetStringDlg
+      
+if (Gte_GetStringDlg
 	   ("User Name", "&User name:", g_szUserName,
 	    sizeof (g_szUserName)) == FALSE)
-	return;
-      if (strlen (g_szUserName) == 0)
+	
+return;
+      
+if (strlen (g_szUserName) == 0)
 	{
-	  MsgBox ("Invalid user name", MB_OK);
-	  return;
-	}
-    }
-  if (strlen (g_szPassword) == 0)
+	  
+MsgBox ("Invalid user name", MB_OK);
+	  
+return;
+	
+}
+    
+}
+  
+if (strlen (g_szPassword) == 0)
     {
-      if (Gte_GetStringDlg
+      
+if (Gte_GetStringDlg
 	   ("Password", "&Password:", g_szPassword,
 	    sizeof (g_szPassword)) == FALSE)
-	return;
-      if (strlen (g_szPassword) == 0)
+	
+return;
+      
+if (strlen (g_szPassword) == 0)
 	{
-	  MsgBox ("Invalid password", MB_OK);
-	  return;
-	}
-    }
-  
+	  
+MsgBox ("Invalid password", MB_OK);
+	  
+return;
+	
+}
+    
+}
+  
+
     // from the filename and takeout.ini determine default filename and location
   {
-    char szDocFileName[FILENAME_MAX];
-    char szTakeOutFile[FILENAME_MAX];
-    szDocFileName[0] = 0;
-    Gte_GetFileName (hDoc, szDocFileName, sizeof (szDocFileName));
-    UnixPathToDosPath (szDocFileName);
-    GetPrivateProfileString ("Remote", "LastTakeOutLocation", "",
+    
+char szDocFileName[FILENAME_MAX];
+    
+char szTakeOutFile[FILENAME_MAX];
+    
+
+szDocFileName[0] = 0;
+    
+Gte_GetFileName (hDoc, szDocFileName, sizeof (szDocFileName));
+    
+UnixPathToDosPath (szDocFileName);
+    
+
+GetPrivateProfileString ("Remote", "LastTakeOutLocation", "",
 			       g_szFileLocation, sizeof (g_szFileLocation),
 			       "remote.ini");
-    if (szDocFileName)
-      GetPrivateProfileString ("TakeOutLocation", szDocFileName,
+    
+
+if (szDocFileName)
+      
+GetPrivateProfileString ("TakeOutLocation", szDocFileName,
 				g_szFileLocation, g_szFileLocation,
 				sizeof (g_szFileLocation), "takeout.ini");
-    GetPrivateProfileString ("Remote", "LastTakeOutFileName", "",
+    
+GetPrivateProfileString ("Remote", "LastTakeOutFileName", "",
 			      g_szFileName, sizeof (g_szFileName),
 			      "remote.ini");
-    if (szDocFileName)
-      GetPrivateProfileString ("TakeOutFileName", szDocFileName,
+    
+if (szDocFileName)
+      
+GetPrivateProfileString ("TakeOutFileName", szDocFileName,
 				g_szFileName, g_szFileName,
 				sizeof (g_szFileName), "takeout.ini");
-    
+    
+
       // Check if this is the right file
       strcpy (szTakeOutFile, g_szClientInitDir);
-    strcat (szTakeOutFile, g_szFileLocation);
-    strcat (szTakeOutFile, g_szFileName);
-    UnixPathToDosPath (szTakeOutFile);
+    
+strcat (szTakeOutFile, g_szFileLocation);
+    
+strcat (szTakeOutFile, g_szFileName);
+    
+UnixPathToDosPath (szTakeOutFile);
     
 /*-------------------------------------------------------------------
 //  out because of removed "C:" from local path (rcp don't like disk label
@@ -386,7 +558,8 @@ OpenTOC (void)
 
 -------------------------------------------------------------------*/ 
   }
-  
+  
+
     // ask for location
     while (TRUE)
     
@@ -406,36 +579,54 @@ OpenTOC (void)
 	    || g_szFileLocation[0] == '\\')
 	
 	{
-	  MsgBox ("Invalid file location", MB_OK);
-	}
+	  
+MsgBox ("Invalid file location", MB_OK);
+	
+}
       
       else
-	break;
-    }
-  
+	
+break;
+    
+}
+  
+
     // ask for file name
     while (TRUE)
     
     {
-      if (Gte_GetStringDlg
+      
+
+if (Gte_GetStringDlg
 	    ("File Name", "&File name:", g_szFileName,
-	     sizeof (g_szFileName)) == FALSE)
+	     
+sizeof (g_szFileName)) == FALSE)
 	
 	{
 	  
 	    // user click Cancel
 	    return;
-	}
-      if (strpbrk (g_szFileName, "\\/:*?"))
+	
+}
+      
+
+if (strpbrk (g_szFileName, "\\/:*?"))
 	
 	{
-	  MsgBox ("Invalid file name", MB_OK);
-	}
+	  
+MsgBox ("Invalid file name", MB_OK);
+	
+}
       
       else
-	break;
-    }			//xxxxxx
-  
+	
+break;
+    
+
+
+}			//xxxxxx
+  
+
     // ask for system name
 //   while(TRUE)
 //   {
@@ -443,65 +634,92 @@ OpenTOC (void)
     // read previous system name form ini file
     GetPrivateProfileString ("Remote", "LastSysRun", "", g_szSysName,
 			     sizeof (g_szSysName), "remote.ini");
-  if (Gte_GetStringDlg
+  
+
+if (Gte_GetStringDlg
 	("System name", "&System name:", g_szSysName,
-	 sizeof (g_szSysName)) == FALSE)
+	 
+sizeof (g_szSysName)) == FALSE)
     
     {
       
 	// user click Cancel
 	return;
-    }
-  
+    
+}
+  
+
     // Ask for Area name to do sw (Fujitsu NZ special)
     
     // read previous Area name form ini file
     GetPrivateProfileString ("Remote", "LastArea", "", g_szArea,
 			     sizeof (g_szArea), "remote.ini");
-  if (Gte_GetStringDlg
-	("Area name", "&Area name:", g_szArea, sizeof (g_szArea)) == FALSE)
+  
+
+if (Gte_GetStringDlg
+	("Area name", "&Area name:", g_szArea, 
+sizeof (g_szArea)) == FALSE)
     
     {
       
 	// user click Cancel
 	return;
-    }
+    
+}
   
     //   }
     // write last Area name to ini file
     WritePrivateProfileString ("Remote", "LastArea", g_szArea, "remote.ini");
-  
+  
+
+
     // write last system name to ini file
     WritePrivateProfileString ("Remote", "LastSysRun", g_szSysName,
 			       "remote.ini");
-  
+  
+
+
 //   }
     
     // add "/" at the end of directory strings if necessary
     if (g_szServerInitDir[0] != 0
 	&& g_szServerInitDir[strlen (g_szServerInitDir) - 1] != '\\'
-	&& g_szServerInitDir[strlen (g_szServerInitDir) - 1] != '/')
+	&& 
+g_szServerInitDir[strlen (g_szServerInitDir) - 1] != '/')
     
     {
-      strcat (g_szServerInitDir, "/");
-      DosPathToUnixPath (g_szServerInitDir);
-    }
-  if (g_szClientInitDir[0] != 0
+      
+strcat (g_szServerInitDir, "/");
+      
+DosPathToUnixPath (g_szServerInitDir);
+    
+}
+  
+if (g_szClientInitDir[0] != 0
        && g_szClientInitDir[strlen (g_szClientInitDir) - 1] != '\\'
-       && g_szClientInitDir[strlen (g_szClientInitDir) - 1] != '/')
+       && 
+g_szClientInitDir[strlen (g_szClientInitDir) - 1] != '/')
     
     {
-      strcat (g_szClientInitDir, "/");
-      UnixPathToDosPath (g_szClientInitDir);
-    }
-  if (g_szFileLocation[0] != 0
+      
+strcat (g_szClientInitDir, "/");
+      
+UnixPathToDosPath (g_szClientInitDir);
+    
+}
+  
+if (g_szFileLocation[0] != 0
        && g_szFileLocation[strlen (g_szFileLocation) - 1] != '\\'
-       && g_szFileLocation[strlen (g_szFileLocation) - 1] != '/')
+       && 
+g_szFileLocation[strlen (g_szFileLocation) - 1] != '/')
     
     {
-      strcat (g_szFileLocation, "/");
-    }
-  
+      
+strcat (g_szFileLocation, "/");
+    
+}
+  
+
     // we have all informations needed for put back file
     // g_szServerInitDir, g_szClientInitDir and g_szFileLocation ends with '/' or '\'
     // even if user didn't specify them
@@ -530,50 +748,95 @@ START [options] document.ext
 */ 
 //   strcpy(szCmdLine, "start /m GetTOC.bat ");
     strcpy (szCmdLine, "bat\\GetTOC.bat ");
-  if (strchr (g_szSysName, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, g_szSysName);
-  if (strchr (g_szSysName, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, " ");
-  if (strchr (g_szServerInitDir, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, g_szServerInitDir);
-  if (strchr (g_szServerInitDir, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, " ");
-  
+  
+
+if (strchr (g_szSysName, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, g_szSysName);
+  
+if (strchr (g_szSysName, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, " ");
+  
+
+if (strchr (g_szServerInitDir, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, g_szServerInitDir);
+  
+if (strchr (g_szServerInitDir, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, " ");
+  
+
     // Remove Disk label an semiclolon from clinets path
     // because of problems with Microsoft rcp.exe
     strcpy (TMPg_szClientInitDir, g_szClientInitDir);
-  psz = TMPg_szClientInitDir;
-  if (*psz == 'C' || *psz == 'c')
+  
+psz = TMPg_szClientInitDir;
+  
+if (*psz == 'C' || *psz == 'c')
     {
-      if (*(psz + 1) == ':')
+      
+if (*(psz + 1) == ':')
 	{
-	  psz = psz + 2;
-	  strcpy (TMPg_szClientInitDir, psz);
-	}
-    }
-  if (strchr (TMPg_szClientInitDir, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, TMPg_szClientInitDir);
-  if (strchr (TMPg_szClientInitDir, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, " ");
-  if (strchr (g_szServerName, '"'))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, g_szServerName);
-  if (strchr (g_szServerName, '"'))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, " ");
-  if (strchr (g_szUserName, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, g_szUserName);
-  if (strchr (g_szUserName, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, " ");
-  
+	  
+psz = psz + 2;
+	  
+strcpy (TMPg_szClientInitDir, psz);
+	
+}
+    
+}
+  
+
+
+if (strchr (TMPg_szClientInitDir, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, TMPg_szClientInitDir);
+  
+if (strchr (TMPg_szClientInitDir, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, " ");
+  
+
+if (strchr (g_szServerName, '"'))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, g_szServerName);
+  
+if (strchr (g_szServerName, '"'))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, " ");
+  
+
+if (strchr (g_szUserName, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, g_szUserName);
+  
+if (strchr (g_szUserName, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, " ");
+  
+
 /*
    if(strchr(g_szPassword, ' '))
      strcat(szCmdLine, "\"");
@@ -588,158 +851,271 @@ START [options] document.ext
     use environment generated by sw command and Jmk for Make
 
 */ 
-    if (strchr (g_szArea, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, g_szArea);
-  if (strchr (g_szArea, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, " ");
-  
+    
+if (strchr (g_szArea, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, g_szArea);
+  
+if (strchr (g_szArea, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, " ");
+  
+
+
     // UNIX FileLocation
   {
-    char szUnixFileLoc[MAX_FILE_LOCATION];
-    strcpy (szUnixFileLoc, g_szFileLocation);
-    DosPathToUnixPath (szUnixFileLoc);
-    if (strchr (szUnixFileLoc, ' '))
-      strcat (szCmdLine, "\"");
-    strcat (szCmdLine, szUnixFileLoc);
-    if (strchr (szUnixFileLoc, ' '))
-      strcat (szCmdLine, "\"");
-    strcat (szCmdLine, " ");
-  }
+    
+char szUnixFileLoc[MAX_FILE_LOCATION];
+    
+
+strcpy (szUnixFileLoc, g_szFileLocation);
+    
+DosPathToUnixPath (szUnixFileLoc);
+    
+
+if (strchr (szUnixFileLoc, ' '))
+      
+strcat (szCmdLine, "\"");
+    
+strcat (szCmdLine, szUnixFileLoc);
+    
+if (strchr (szUnixFileLoc, ' '))
+      
+strcat (szCmdLine, "\"");
+    
+strcat (szCmdLine, " ");
+  
+}
   
     // NT FileLocation
   {
-    char szWinFileLoc[MAX_FILE_LOCATION];
-    strcpy (szWinFileLoc, g_szFileLocation);
-    UnixPathToDosPath (szWinFileLoc);
-    if (strchr (szWinFileLoc, ' '))
-      strcat (szCmdLine, "\"");
-    strcat (szCmdLine, szWinFileLoc);
-    if (strchr (szWinFileLoc, ' '))
-      strcat (szCmdLine, "\"");
-    strcat (szCmdLine, " ");
-  }
-  if (strchr (g_szFileName, ' '))
-    strcat (szCmdLine, "\"");
-  strcat (szCmdLine, g_szFileName);
-  if (strchr (g_szFileName, ' '))
-    strcat (szCmdLine, "\"");
-  
+    
+char szWinFileLoc[MAX_FILE_LOCATION];
+    
+
+strcpy (szWinFileLoc, g_szFileLocation);
+    
+UnixPathToDosPath (szWinFileLoc);
+    
+
+if (strchr (szWinFileLoc, ' '))
+      
+strcat (szCmdLine, "\"");
+    
+strcat (szCmdLine, szWinFileLoc);
+    
+if (strchr (szWinFileLoc, ' '))
+      
+strcat (szCmdLine, "\"");
+    
+strcat (szCmdLine, " ");
+  
+}
+  
+
+if (strchr (g_szFileName, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+strcat (szCmdLine, g_szFileName);
+  
+if (strchr (g_szFileName, ' '))
+    
+strcat (szCmdLine, "\"");
+  
+
 //    MsgBox(szCmdLine, MB_OK);
-    system (szCmdLine);
-  
+    
+system (szCmdLine);
+  
+
     // restore cursor position
     GM_RestoreCursorPos (hDoc);
-  Gte_FixWindowPos (hDoc);
-  
-//   return 0;
-    return;
-}
+  
+Gte_FixWindowPos (hDoc);
+  
 
-
+//   return 0;
+    
+return;
+
+
+}
+
+
+
+
 /*-------------------------------------------------------------------
                     UnixPathToDosPath
 -------------------------------------------------------------------*/ 
-  void
+  
+void
 UnixPathToDosPath (char *psz) 
 {
-  while (*psz)
+  
+while (*psz)
     
     {
-      if (*psz == '/')
-	*psz = '\\';
-      psz++;
-    }
-}
+      
+if (*psz == '/')
+	
+*psz = '\\';
+      
+psz++;
+    
+}
 
-
+}
+
+
+
 /*-------------------------------------------------------------------
                     DosPathToUnixPath
 -------------------------------------------------------------------*/ 
-  void
+  
+void
 DosPathToUnixPath (char *psz) 
 {
-  while (*psz)
+  
+while (*psz)
     
     {
-      if (*psz == '\\')
-	*psz = '/';
-      psz++;
-    }
-}
+      
+if (*psz == '\\')
+	
+*psz = '/';
+      
+psz++;
+    
+}
 
-
+}
+
+
+
 //----------------------------------------------------------------EOF
-  
+  
+
 //###################################################################
   void
 MkDirFromFile (void) 
 //###################################################################
 {
-  int nWordWrapCol;
-  char *pszLine;
-  long lLine;
-  char szCmdLine[1024];
-  char szMessage[1024];
-  char pszMakeDir[1024];
-  char pszInitialPath[1024];
-  char szFileName[FILENAME_MAX];
-  HDOC hdoc;
-  szFileName[0] = 0;
-  if (Gte_BrowseForFileDlg
+  
+int nWordWrapCol;
+  
+char *pszLine;
+  
+long lLine;
+  
+char szCmdLine[1024];
+  
+char szMessage[1024];
+  
+char pszMakeDir[1024];
+  
+char pszInitialPath[1024];
+  
+char szFileName[FILENAME_MAX];
+  
+HDOC hdoc;
+  
+
+szFileName[0] = 0;
+  
+if (Gte_BrowseForFileDlg
        (szFileName, sizeof (szFileName),
-	"DirStr file (dirstr.txt)|dirstr.txt|Txt files (*.txt)|*.txt|",
-	"Select file with directory structure to be created", FALSE, FALSE,
+	
+"DirStr file (dirstr.txt)|dirstr.txt|Txt files (*.txt)|*.txt|",
+	
+"Select file with directory structure to be created", FALSE, FALSE,
 	NULL))
     
     {
-      if (access (szFileName, 0) == 0)
+      
+
+if (access (szFileName, 0) == 0)
 	
 	{
-	  Gte_OpenDocument (szFileName);
-	  hdoc = Gte_GetActiveDocument ();
-	}
+	  
+Gte_OpenDocument (szFileName);
+	  
+hdoc = Gte_GetActiveDocument ();
+	
+}
       
       else
 	
 	{
-	  strcpy (szMessage, szFileName);
-	  strcat (szMessage, " does not exist");
-	  MsgBox (szMessage, MB_OK);
-	  return;
-	}
-    }
+	  
+strcpy (szMessage, szFileName);
+	  
+strcat (szMessage, " does not exist");
+	  
+MsgBox (szMessage, MB_OK);
+	  
+return;
+	
+}
+    
+}
   
   else
     
     {
-      return;
-    }
-  strcpy (pszInitialPath, "/Program files/GDWedit/remote/nezsdc");
-  strcpy (szMessage,
+      
+return;
+    
+}
+  
+
+strcpy (pszInitialPath, "/Program files/GDWedit/remote/nezsdc");
+  
+
+strcpy (szMessage,
 	    "Are youre shure you want to create directory structure based on this file, starting from ");
-  strcat (szMessage, pszInitialPath);
-  strcat (szMessage, " ?");
-  if (MsgBox (szMessage, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) ==
+  
+strcat (szMessage, pszInitialPath);
+  
+strcat (szMessage, " ?");
+  
+
+if (MsgBox (szMessage, 
+MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) ==
 	IDNO)
     
     {
-      Gte_CloseDocument (hdoc);
-      return;
-    }
-  
+      
+Gte_CloseDocument (hdoc);
+      
+return;
+    
+}
+  
+
+
     // reserve memory for line
     pszLine = (char *) malloc (Gte_GetMaxLineLen () + 1);
-  if (pszLine == NULL)
+  
+if (pszLine == NULL)
     {
-      MsgBox ("Not enought memory", MB_OK);
-      return;
-    }
-  
+      
+MsgBox ("Not enought memory", MB_OK);
+      
+return;
+    
+}
+  
+
+
     // Show wait mouse cursor (hourglass)
     WaitCursor ();
-  
+  
+
     // for each line in the document (be careful we must always call
     // Gte_GetNumOfLines because number of lines in the document will
     // be probably increased in the loop)
@@ -749,14 +1125,16 @@ MkDirFromFile (void)
     for (lLine = 1; lLine <= Gte_GetNumberOfLines (hdoc); lLine++)
     
     {
-      
+      
+
 //        Gte_SetCursorPos(hdoc, 1, lLine, FALSE);
 //        Gte_SetCursorPos(hdoc, 1, lLine+1, FALSE);
 	
       {
 	
 //         char *psz;
-	  Gte_GetLine (hdoc, lLine + 1, pszLine, Gte_GetMaxLineLen () + 1);
+	  
+Gte_GetLine (hdoc, lLine + 1, pszLine, Gte_GetMaxLineLen () + 1);
 	
 /*
          if(MsgBox(pszLine,
@@ -768,62 +1146,108 @@ MkDirFromFile (void)
 	  
 	  // Add Path to remote directory
 	  strcpy (pszMakeDir, pszInitialPath);
-	strcat (pszMakeDir, pszLine);
-	
+	
+strcat (pszMakeDir, pszLine);
+	
+
 //      MsgBox(pszMakeDir, MB_OK);
-	  UnixPathToDosPath (pszMakeDir);
-	
+	  
+UnixPathToDosPath (pszMakeDir);
+	
+
 //      MsgBox(pszMakeDir, MB_OK);
-	  if (strpbrk (pszMakeDir, ":*?\"<>|"))
+	  
+
+if (strpbrk (pszMakeDir, ":*?\"<>|"))
 	  
 	  {
-	    ReplaceNonDOSchar (pszMakeDir);
-	  }
-	if (strpbrk (pszMakeDir, ":*?\"<>|"))
+	    
+ReplaceNonDOSchar (pszMakeDir);
+	  
+}
+	
+
+if (strpbrk (pszMakeDir, ":*?\"<>|"))
 	  
 	  {
-	    strcpy (szMessage, "Invalid dir name: ");
-	    strcat (szMessage, pszMakeDir);
-	    MsgBox (szMessage, MB_OK);
-	    return;
-	  }
-	if (MakeDir (pszMakeDir) == FALSE)
+	    
+strcpy (szMessage, "Invalid dir name: ");
+	    
+strcat (szMessage, pszMakeDir);
+	    
+MsgBox (szMessage, MB_OK);
+	    
+return;
+	  
+}
+	
+
+if (MakeDir (pszMakeDir) == FALSE)
 	  
 	  {
-	    char szMsg[512];
-	    sprintf (szMsg, "Cannot create %s directory", pszMakeDir);
-	    MsgBox (szMsg, MB_OK | MB_ICONSTOP);
-	    Gte_CloseDocument (hdoc);
-	    RestoreCursor ();
-	    return;
+	    
+char szMsg[512];
+	    
+
+sprintf (szMsg, "Cannot create %s directory", pszMakeDir);
+	    
+
+MsgBox (szMsg, MB_OK | MB_ICONSTOP);
+	    
+Gte_CloseDocument (hdoc);
+	    
+RestoreCursor ();
+	    
+return;
 	    
 //                break;
 	  }
-      }
-      
+      
+
+}
+      
+
 	// Display progress on status bar after every 10 lines
 	if (lLine % 10 == 0)
 	
 	{
-	  char szMsg[80];
-	  sprintf (szMsg,
+	  
+char szMsg[80];
+	  
+
+sprintf (szMsg,
 		     "Press Ctrl-Break to cancel operation: %0d%% completed",
 		     (int) (lLine * 100 / Gte_GetNumberOfLines (hdoc)));
-	  Gte_StatusBarMsg (szMsg);
-	}
-    }
-  Gte_CloseDocument (hdoc);
-  RestoreCursor ();
-  free (pszLine);
-}
+	  
+Gte_StatusBarMsg (szMsg);
+	
+}
+    
 
-
+}
+  
+
+
+
+Gte_CloseDocument (hdoc);
+  
+
+RestoreCursor ();
+  
+
+free (pszLine);
+
+}
+
+
+
 //###################################################################
   void
 TerminalIniFile (void) 
 //###################################################################
 {
-  
+  
+
     // Test reading and writing from plwin ini file:
     
     //  ...
@@ -832,56 +1256,87 @@ TerminalIniFile (void)
     //  macro key 1 line 2=SEND("andrejf")
     //  macro key 1 line 3=RETURN
     //  macro key 1 line 4=WAIT("Password:")
-    //  macro key 1 line 5=SEND("11sajonara")
+    //  macro key 1 line 5=SEND("mypass")
     //  macro key 1 line 6=RETURN
     //  macro key 1 line 7=
     //  ...
-    GetPrivateProfileString ("doc18-8-c", "macro key 1 line 2", "",
+    
+GetPrivateProfileString ("doc18-8-c", "macro key 1 line 2", "",
 			      g_szDebug, FILENAME_MAX,
 			      "c:\\plwin\\plwin.ini");
-  MsgBox (g_szDebug, MB_OK);
-  WritePrivateProfileString ("doc18-8-c", "macro key 1 line 2",
-			       "SEND ahaha", "c:\\plwin\\plwin.ini");
-  GetPrivateProfileString ("doc18-8-c", "macro key 1 line 2", "", g_szDebug,
-			     FILENAME_MAX, "c:\\plwin\\plwin.ini");
-  MsgBox (g_szDebug, MB_OK);
-}
+  
+MsgBox (g_szDebug, MB_OK);
+  
 
-
+WritePrivateProfileString ("doc18-8-c", "macro key 1 line 2",
+			       "SEND ahaha", "c:\\plwin\\plwin.ini");
+  
+
+GetPrivateProfileString ("doc18-8-c", "macro key 1 line 2", "", g_szDebug,
+			     FILENAME_MAX, "c:\\plwin\\plwin.ini");
+  
+MsgBox (g_szDebug, MB_OK);
+
+
+}
+
+
+
+
 //###################################################################
   void
 ReadFileTest (HDOC hdoc) 
 //###################################################################
 {
-  int nWordWrapCol;
-  char *pszLine;
-  long lLine;
-  char szCmdLine[1024];
-  char szMessage[1024];
-  
+  
+int nWordWrapCol;
+  
+char *pszLine;
+  
+long lLine;
+  
+char szCmdLine[1024];
+  
+char szMessage[1024];
+  
+
+
 //   nWordWrapCol = Gte_GetWordWrapCol();
     
     // reserve memory for line
     pszLine = (char *) malloc (Gte_GetMaxLineLen () + 1);
-  if (pszLine == NULL)
+  
+if (pszLine == NULL)
     {
-      MsgBox ("Not enought memory", MB_OK);
-      return;
-    }
-  
+      
+MsgBox ("Not enought memory", MB_OK);
+      
+return;
+    
+}
+  
+
+
 //   strcpy(szCmdLine, "c:\\progra~1\\GDWedit\\");
 //   strcat(szCmdLine, "VJ_todo.log");
     
 //   strcpy(szCmdLine, "VJ_todo.log");
-    strcpy (szCmdLine, hdoc);
-  if (access (szCmdLine, 0) == 0)
+    
+strcpy (szCmdLine, hdoc);
+  
+
+
+if (access (szCmdLine, 0) == 0)
     
     {
       
 //        hdoc = szCmdLine;
-	Gte_OpenDocument (szCmdLine);
-      hdoc = Gte_GetActiveDocument ();
-      
+	
+Gte_OpenDocument (szCmdLine);
+      
+hdoc = Gte_GetActiveDocument ();
+      
+
 //       MsgBox(szCmdLine, MB_OK);
 //          Gte_GetLine( hdoc, lLine+1, pszLine, 10);
 	
@@ -896,21 +1351,30 @@ ReadFileTest (HDOC hdoc)
   else
     
     {
-      strcat (szCmdLine, " does not exist");
-      MsgBox (szCmdLine, MB_OK);
-      return;
-    }
-  
+      
+
+strcat (szCmdLine, " does not exist");
+      
+
+MsgBox (szCmdLine, MB_OK);
+      
+return;
+    
+}
+  
+
     // Show wait mouse cursor (hourglass)
     WaitCursor ();
-  
+  
+
     // for each line in the document (be careful we must always call
     // Gte_GetNumOfLines because number of lines in the document will
     // be probably increased in the loop)
     for (lLine = 0; lLine <= Gte_GetNumberOfLines (hdoc); lLine++)
     
     {
-      
+      
+
 //        Gte_SetCursorPos(hdoc, 1, lLine, FALSE);
 //        Gte_SetCursorPos(hdoc, 1, lLine+1, FALSE);
 //        Gte_SetCursorPos("VJ_todo.log",1, lLine, FALSE);
@@ -918,33 +1382,44 @@ ReadFileTest (HDOC hdoc)
 //      if(Gte_GetLineLen(hdoc, lLine, FALSE) > nWordWrapCol)
 //        if ( 1 == 1 )
       {
-	char *psz;
+	
+char *psz;
 	
 //         int  nWrapAtCol = 0; // insert new line at this column pos
-	  
+	  
+
 //         MsgBox("before getline...", MB_OK);
 //         Gte_GetLine(hdoc, lLine, pszLine, Gte_GetMaxLineLen()+1);
 //OKOKOK     Gte_GetLine("c:\\progra~1\\GDWedit\\VJ_todo.log", lLine+1, pszLine, Gte_GetMaxLineLen()+1);
 	  
 //ok     Gte_GetLine("VJ_todo.log", lLine+1, pszLine, 10);
 //last          Gte_GetLine( szCmdLine, lLine+1, pszLine, 10);
-	  Gte_GetLine (hdoc, lLine + 1, pszLine, Gte_GetMaxLineLen () + 1);
-	if (MsgBox (pszLine, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
+	  
+Gte_GetLine (hdoc, lLine + 1, pszLine, Gte_GetMaxLineLen () + 1);
+	
+
+
+if (MsgBox (pszLine, 
+MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
 	       != IDNO)
 	  
 	  {
 	    
 //            return;
 	      break;
-	  }
-	
+	  
+}
+	
+
+
 //         Gte_GetLine(hdoc, lLine+1, pszLine, sizeof(pszLine));
 //         Gte_GetLine(hdoc, 1, pszLine, 5);
 //         Gte_GetLine(hdoc, 1, pszLine, Gte_GetMaxLineLen()+1);
 //         Gte_GetLine(hdoc, 1, pszLine, Gte_GetMaxLineLen()+1);
 //         MsgBox("after getline...", MB_OK);
 //         psz = pszLine;
-	  
+	  
+
 //
 	  
 //         MsgBox(psz, MB_OK);
@@ -970,7 +1445,8 @@ ReadFileTest (HDOC hdoc)
          }
 */ 
       }
-      
+      
+
 /*
       // Display progress on status bar after every 10 lines
       if(lLine % 10 == 0)
@@ -982,64 +1458,99 @@ ReadFileTest (HDOC hdoc)
       }
 */ 
     }
-  Gte_CloseDocument (hdoc);
-  RestoreCursor ();
-  free (pszLine);
-}
+  
+
+Gte_CloseDocument (hdoc);
+  
+
+RestoreCursor ();
+  
+
+free (pszLine);
+
+}
 
 
 //###################################################################
-  
+  
+
 //###################################################################
   void
 ReadFile (HDOC hdoc) 
 //###################################################################
 {
-  int nWordWrapCol;
-  char *pszLine;
-  long lLine;
-  char szCmdLine[1024];
-  char szMessage[1024];
-  
+  
+int nWordWrapCol;
+  
+char *pszLine;
+  
+long lLine;
+  
+char szCmdLine[1024];
+  
+char szMessage[1024];
+  
+
     // reserve memory for line
     pszLine = (char *) malloc (Gte_GetMaxLineLen () + 1);
-  if (pszLine == NULL)
+  
+if (pszLine == NULL)
     {
-      MsgBox ("Not enought memory", MB_OK);
-      return;
-    }
-  strcpy (szCmdLine, hdoc);
-  if (access (szCmdLine, 0) == 0)
+      
+MsgBox ("Not enought memory", MB_OK);
+      
+return;
+    
+}
+  
+
+strcpy (szCmdLine, hdoc);
+  
+
+if (access (szCmdLine, 0) == 0)
     
     {
-      Gte_OpenDocument (szCmdLine);
-      hdoc = Gte_GetActiveDocument ();
-    }
+      
+Gte_OpenDocument (szCmdLine);
+      
+hdoc = Gte_GetActiveDocument ();
+    
+}
   
   else
     
     {
-      strcat (szCmdLine, " does not exist");
-      MsgBox (szCmdLine, MB_OK);
-      return;
-    }
-  
+      
+strcat (szCmdLine, " does not exist");
+      
+MsgBox (szCmdLine, MB_OK);
+      
+return;
+    
+}
+  
+
     // Show wait mouse cursor (hourglass)
     WaitCursor ();
-  
+  
+
     // for each line in the document (be careful we must always call
     // Gte_GetNumOfLines because number of lines in the document will
     // be probably increased in the loop)
     for (lLine = 0; lLine <= Gte_GetNumberOfLines (hdoc); lLine++)
     
     {
-      
+      
+
 //        Gte_SetCursorPos(hdoc, 1, lLine, FALSE);
 //        Gte_SetCursorPos(hdoc, 1, lLine+1, FALSE);
 	
       {
-	char *psz;
-	Gte_GetLine (hdoc, lLine + 1, pszLine, Gte_GetMaxLineLen () + 1);
+	
+char *psz;
+	
+
+Gte_GetLine (hdoc, lLine + 1, pszLine, Gte_GetMaxLineLen () + 1);
 	
 /*
          if(MsgBox(pszLine,
@@ -1049,94 +1560,152 @@ ReadFile (HDOC hdoc)
          }
 */ 
       }
-      
+      
+
+
 	// Display progress on status bar after every 10 lines
 	if (lLine % 10 == 0)
 	
 	{
-	  char szMsg[80];
-	  sprintf (szMsg,
+	  
+char szMsg[80];
+	  
+
+sprintf (szMsg,
 		     "Press Ctrl-Break to cancel operation: %0d%% completed",
 		     (int) (lLine * 100 / Gte_GetNumberOfLines (hdoc)));
-	  Gte_StatusBarMsg (szMsg);
-	}
-    }
-  Gte_CloseDocument (hdoc);
-  RestoreCursor ();
-  free (pszLine);
-}
+	  
+Gte_StatusBarMsg (szMsg);
+	
+}
+    
+
+}
+  
+
+Gte_CloseDocument (hdoc);
+  
+
+RestoreCursor ();
+  
+
+free (pszLine);
+
+}
 
 
 //###################################################################
-  
+  
+
 //###################################################################
   void
 ReadLine (HDOC hdoc) 
 //###################################################################
 {
-  int nWordWrapCol;
-  char *pszLine;
-  long lLine;
-  char szCmdLine[1024];
-  char szMessage[1024];
-  
+  
+int nWordWrapCol;
+  
+char *pszLine;
+  
+long lLine;
+  
+char szCmdLine[1024];
+  
+char szMessage[1024];
+  
+
+
 //   nWordWrapCol = Gte_GetWordWrapCol();
     
     // reserve memory for line
     pszLine = (char *) malloc (Gte_GetMaxLineLen () + 1);
-  if (pszLine == NULL)
+  
+if (pszLine == NULL)
     {
-      MsgBox ("Not enought memory", MB_OK);
-      return;
-    }
-  
+      
+MsgBox ("Not enought memory", MB_OK);
+      
+return;
+    
+}
+  
+
+
 //   strcpy(szCmdLine, "c:\\progra~1\\GDWedit\\");
 //   strcat(szCmdLine, "VJ_todo.log");
     
 //   strcpy(szCmdLine, "VJ_todo.log");
-    strcpy (szCmdLine, hdoc);
-  if (access (szCmdLine, 0) == 0)
+    
+strcpy (szCmdLine, hdoc);
+  
+
+
+
+if (access (szCmdLine, 0) == 0)
     
     {
       
 //        hdoc = szCmdLine;
-	Gte_OpenDocument (szCmdLine);
-      hdoc = Gte_GetActiveDocument ();
-      
+	
+Gte_OpenDocument (szCmdLine);
+      
+hdoc = Gte_GetActiveDocument ();
+      
+
 //       MsgBox(szCmdLine, MB_OK);
 //          Gte_GetLine( hdoc, lLine+1, pszLine, 10);
 	Gte_GetLine (hdoc, 1, pszLine, Gte_GetMaxLineLen () + 1);
       
 //        Gte_GetLine(hdoc, ypos, pszLine, Gte_GetMaxLineLen() + 1);
-	MsgBox (pszLine, MB_OK);
-      Gte_CloseDocument (hdoc);
-      return;
-    }
+	
+MsgBox (pszLine, MB_OK);
+      
+Gte_CloseDocument (hdoc);
+      
+
+return;
+    
+}
   
   else
     
     {
-      strcat (szCmdLine, " does not exist");
-      MsgBox (szCmdLine, MB_OK);
-      return;
-    }
-  
+      
+
+strcat (szCmdLine, " does not exist");
+      
+
+MsgBox (szCmdLine, MB_OK);
+      
+return;
+    
+}
+  
+
     // Show wait mouse cursor (hourglass)
     WaitCursor ();
-  
+  
+
     // for each line in the document (be careful we must always call
     // Gte_GetNumOfLines because number of lines in the document will
     // be probably increased in the loop)
     for (lLine = 1; lLine <= Gte_GetNumberOfLines (hdoc); lLine++)
     
     {
-      if (MsgBox ("in for ...", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
+      
+
+if (MsgBox ("in for ...", 
+MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2)
 	    != IDYES)
 	
 	{
-	  return;
-	}
-      
+	  
+return;
+	
+}
+      
+
+
 //        Gte_SetCursorPos(hdoc, 1, lLine, FALSE);
 //        Gte_SetCursorPos(hdoc, 1, lLine+1, FALSE);
 //        Gte_SetCursorPos("VJ_todo.log",1, lLine, FALSE);
@@ -1144,10 +1713,13 @@ ReadLine (HDOC hdoc)
 //      if(Gte_GetLineLen(hdoc, lLine, FALSE) > nWordWrapCol)
 //        if ( 1 == 1 )
       {
-	char *psz;
+	
+char *psz;
 	
 //         int  nWrapAtCol = 0; // insert new line at this column pos
-	  MsgBox ("before getline...", MB_OK);
+	  
+
+MsgBox ("before getline...", MB_OK);
 	
 //         Gte_GetLine(hdoc, lLine, pszLine, Gte_GetMaxLineLen()+1);
 //OKOKOK     Gte_GetLine("c:\\progra~1\\GDWedit\\VJ_todo.log", lLine+1, pszLine, Gte_GetMaxLineLen()+1);
@@ -1160,11 +1732,16 @@ ReadLine (HDOC hdoc)
 //         Gte_GetLine(hdoc, 1, pszLine, Gte_GetMaxLineLen()+1);
 //         Gte_GetLine(hdoc, 1, pszLine, Gte_GetMaxLineLen()+1);
 	  MsgBox ("after getline...", MB_OK);
-	psz = pszLine;
-	
+	
+psz = pszLine;
+	
+
+
 //
-	  MsgBox (psz, MB_OK);
-	MsgBox (pszLine, MB_OK);
+	  
+MsgBox (psz, MB_OK);
+	
+MsgBox (pszLine, MB_OK);
 	
 /*
          while(*psz == ' ' || *psz == '\t')
@@ -1187,7 +1764,8 @@ ReadLine (HDOC hdoc)
          }
 */ 
       }
-      
+      
+
 /*
       // Display progress on status bar after every 10 lines
       if(lLine % 10 == 0)
@@ -1199,41 +1777,70 @@ ReadLine (HDOC hdoc)
       }
 */ 
     }
-  RestoreCursor ();
-  free (pszLine);
-}
+  
+
+RestoreCursor ();
+  
+
+free (pszLine);
+
+}
 
 
 //################################################### void ReadLine()
-  
+  
+
+
 /*-------------------------------------------------------------------
                     ReplaceNonDOSchar
 -------------------------------------------------------------------*/ 
-  void
+  
+void
 ReplaceNonDOSchar (char *psz) 
 {
-  while (*psz)
+  
+while (*psz)
     
     {
-      if (*psz == '?')
-	*psz = '-';
-      if (*psz == ':')
-	*psz = '-';
-      if (*psz == '*')
-	*psz = '-';
-      if (*psz == '\"')
-	*psz = '-';
-      if (*psz == '<')
-	*psz = '-';
-      if (*psz == '>')
-	*psz = '-';
-      if (*psz == '|')
-	*psz = '-';
-      psz++;
-    }
-}
+      
+if (*psz == '?')
+	
+*psz = '-';
+      
+if (*psz == ':')
+	
+*psz = '-';
+      
+if (*psz == '*')
+	
+*psz = '-';
+      
+if (*psz == '\"')
+	
+*psz = '-';
+      
+if (*psz == '<')
+	
+*psz = '-';
+      
+if (*psz == '>')
+	
+*psz = '-';
+      
+if (*psz == '|')
+	
+*psz = '-';
+      
 
-
+psz++;
+    
+}
+
+}
+
+
+
+
 /*-------------------------------------------------------------------
                          MakeDir
 
@@ -1242,31 +1849,49 @@ ReplaceNonDOSchar (char *psz)
 
   Returns TRUE on success, FALSE on error.
 -------------------------------------------------------------------*/ 
-  BOOL MakeDir (const char *pszDir) 
+  
+BOOL MakeDir (const char *pszDir) 
 {
-  char szOldDir[FILENAME_MAX];
-  char szSubdirList[FILENAME_MAX + 1];
-  char szDirReceived[FILENAME_MAX + 1];
-  char szMkDir[FILENAME_MAX + 1];
-  char *psz;
-  if (pszDir == NULL || *pszDir == 0)
+  
+char szOldDir[FILENAME_MAX];
+  
+char szSubdirList[FILENAME_MAX + 1];
+  
+char szDirReceived[FILENAME_MAX + 1];
+  
+char szMkDir[FILENAME_MAX + 1];
+  
+char *psz;
+  
+
+if (pszDir == NULL || *pszDir == 0)
     {
-      return FALSE;
-    }
-  
+      
+return FALSE;
+    
+}
+  
+
 //   MsgBox("1", MB_OK);
-    getcwd (szOldDir, FILENAME_MAX);
-  
+    
+getcwd (szOldDir, FILENAME_MAX);
+  
+
     // copy pszDir into szSubdirList and replace \ and / with null
     // terminator. At the end we will have list of directory components
     // terminated with two null terimator characters
     strcpy (szSubdirList, pszDir);
-  strcpy (szDirReceived, pszDir);
-  psz = szSubdirList;
-  while (*psz)
+  
+strcpy (szDirReceived, pszDir);
+  
+
+psz = szSubdirList;
+  
+while (*psz)
     
     {
-      if (*psz == '/' || *psz == '\\')
+      
+if (*psz == '/' || *psz == '\\')
 	
 	{
 	  
@@ -1274,14 +1899,18 @@ ReplaceNonDOSchar (char *psz)
 	    if (psz == szSubdirList)
 	    
 	    {
-	      if (*(psz + 1) == '\\' || *(psz + 1) == '/')
-		psz++;
-	    }
+	      
+if (*(psz + 1) == '\\' || *(psz + 1) == '/')
+		
+psz++;
+	    
+}
 	  
 	  else
 	    
 	    {
-	      if (psz == szSubdirList + 2 && *(psz - 1) == ':')
+	      
+if (psz == szSubdirList + 2 && *(psz - 1) == ':')
 		
 		{
 		  
@@ -1289,36 +1918,53 @@ ReplaceNonDOSchar (char *psz)
 		}
 	      
 	      else
-		*psz = 0;
-	    }
-	}
-      psz++;
-    }
-  *psz = 0;			// second null terminator
+		
+*psz = 0;
+	    
+}
+	
+}
+      
+psz++;
+    
+}
+  
+*psz = 0;			// second null terminator
   
     // Contact directory components and try to make dir
     // During while loop szMkDir will be "c:\dir1", "c:\dir1\dir2", "c:\dir1\dir2\dir3"
     // AF: Except when is "C:\DATA\VJ\src\(*#&_$&"
     szMkDir[0] = 0;
-  psz = szSubdirList;
-  
+  
+psz = szSubdirList;
+  
+
 //This is C:\DATA   MsgBox(szSubdirList, MB_OK);
-    while (*psz != 0)
+    
+while (*psz != 0)
     
     {
-      strcat (szMkDir, psz);
+      
+strcat (szMkDir, psz);
       
 	// if dir does not exist create it
 	if (chdir (szMkDir) != 0)
 	{
-	  if (mkdir (szMkDir) != 0)
+	  
+if (mkdir (szMkDir) != 0)
 	    
 	    {			// Fail point
-	      MsgBox (szDirReceived, MB_OK);
-	      strcpy (g_szDebug, "Last psz cat to szMkDir -->");
-	      strcat (g_szDebug, psz);
-	      strcat (g_szDebug, "<--");
-	      MsgBox (g_szDebug, MB_OK);	//  --#||  (psz gets garbage!!!)
+	      
+MsgBox (szDirReceived, MB_OK);
+	      
+
+strcpy (g_szDebug, "Last psz cat to szMkDir -->");
+	      
+strcat (g_szDebug, psz);
+	      
+strcat (g_szDebug, "<--");
+	      
+MsgBox (g_szDebug, MB_OK);	//  --#||  (psz gets garbage!!!)
 	      
 		// It looks that if there is no slash/backslahs on
 		// the end of path string, szSubdirList dos not receive
@@ -1328,37 +1974,61 @@ ReplaceNonDOSchar (char *psz)
 		
 		// Some times it works fine (but it does not create
 		// directories), some times it does not
-		
+		
+
 		//This is always first dir under root, because of null terminators
 //                    strcpy(g_szDebug,"szSubdirList --");
 //                    strcat(g_szDebug, szSubdirList);
 //                    MsgBox(g_szDebug, MB_OK);       //  C:\Data
-		strcpy (g_szDebug, "Error Trying to MD -->");
-	      strcat (g_szDebug, szMkDir);
-	      strcat (g_szDebug, "<--");
-	      MsgBox (g_szDebug, MB_OK);	//  C:\Data\VJ\src...and then full screen of garbage....
+		
+
+strcpy (g_szDebug, "Error Trying to MD -->");
+	      
+strcat (g_szDebug, szMkDir);
+	      
+strcat (g_szDebug, "<--");
+	      
+MsgBox (g_szDebug, MB_OK);	//  C:\Data\VJ\src...and then full screen of garbage....
 	      //  C:\Data\VJ\src\#||
-	      MsgBox (szOldDir, MB_OK);
-	      chdir (szOldDir);
-	      return FALSE;
-	    }
-	}
-      strcat (szMkDir, "\\");
-      psz += strlen (psz) + 1;
-    }
-  
+	      
+
+MsgBox (szOldDir, MB_OK);
+	      
+
+
+chdir (szOldDir);
+	      
+return FALSE;
+	    
+}
+	
+}
+      
+strcat (szMkDir, "\\");
+      
+
+psz += strlen (psz) + 1;
+    
+}
+  
+
     // return original directory
     chdir (szOldDir);
-  return TRUE;
-}
+  
 
-
+return TRUE;
+
+}
+
+
+
 //###################################################################
   void
 test_4gl_version (void) 
 //###################################################################
 {
-  int n4glVer;
+  
+int n4glVer;
   
 /*
 char n4glVerASCII[2];
@@ -1366,51 +2036,77 @@ GetPrivateProfileString("Remote", "4GLVersion","", n4glVerASCII, sizeof(n4glVerA
 MsgBox(n4glVerASCII, MB_OK);
 */ 
     n4glVer = GetPrivateProfileInt ("Remote", "4GLVersion", 0, "remote.ini");
-  if (n4glVer == 0)
+  
+
+if (n4glVer == 0)
     
     {
-      MsgBox ("4GLVersion in remote.ini is not defined", MB_OK);
-    }
+      
+MsgBox ("4GLVersion in remote.ini is not defined", MB_OK);
+    
+}
   
   else
     
     {
-      switch (n4glVer)
+      
+switch (n4glVer)
 	
 	{
-	case 1:
+	
+case 1:
 	  strcpy (g_szDebug, "Type 1 is local 4GL for DOS");
 	  MsgBox (g_szDebug, MB_OK);
-	  return;
-	case 2:
+	  
+return;
+	
+case 2:
 	  strcpy (g_szDebug, "Type 2 is local 4GL for Windows");
 	  MsgBox (g_szDebug, MB_OK);
-	  return;
-	case 3:
+	  
+return;
+	
+case 3:
 	  strcpy (g_szDebug, "Type 3 is remote Informix 4GL");
 	  MsgBox (g_szDebug, MB_OK);
-	  return;
-	case 4:
+	  
+return;
+	
+case 4:
 	  strcpy (g_szDebug, "Type 4 is remote 4Js/Informix D4GL GUI");
 	  MsgBox (g_szDebug, MB_OK);
-	  return;
-	case 5:
+	  
+return;
+	
+case 5:
 	  strcpy (g_szDebug, "Type 5 is remote 4Js/Informix D4GL CHUI");
 	  MsgBox (g_szDebug, MB_OK);
-	  return;
-	}
-    }
-}
+	  
+return;
+	
+}
+    
 
-
+}
+
+}
+
+
+
 //###################################################################
   void
 select_4gl_version (void) 
 //###################################################################
 {
-  int n4glVer;
-  int nIdx;
-  char *pMenu[] = { "Keep current selection",	// 1
+  
+int n4glVer;
+  
+int nIdx;
+  
+
+char *pMenu[] = 
+{ 
+"Keep current selection",	// 1
     "1: local 4GL for DOS",	// 2
     "2: local 4GL for Windows",	// 3
     "3: remote Informix 4GL",	// 4
@@ -1418,80 +2114,139 @@ select_4gl_version (void)
     "5: remote 4Js/Informix D4GL CUI",	// 6
     NULL 
   };
-  n4glVer = GetPrivateProfileInt ("Remote", "4GLVersion", 0, "remote.ini");
-  strcpy (g_szDebug, "Select 4GL type (Current selection: ");
-  if (n4glVer == 0)
+  
+
+
+n4glVer = GetPrivateProfileInt ("Remote", "4GLVersion", 0, "remote.ini");
+  
+strcpy (g_szDebug, "Select 4GL type (Current selection: ");
+  
+
+if (n4glVer == 0)
     
     {
-      strcat (g_szDebug, "Not set)");
-    }
+      
+strcat (g_szDebug, "Not set)");
+    
+}
   
   else
     
     {
-      switch (n4glVer)
+      
+switch (n4glVer)
 	
 	{
-	case 1:
+	
+case 1:
 	  strcat (g_szDebug, "local 4GL for DOS)");
-	  break;
-	case 2:
+	  
+break;
+	
+case 2:
 	  strcat (g_szDebug, "local 4GL for Windows)");
-	  break;
-	case 3:
+	  
+break;
+	
+case 3:
 	  strcat (g_szDebug, "remote Informix 4GL)");
-	  break;
-	case 4:
+	  
+break;
+	
+case 4:
 	  strcat (g_szDebug, "remote 4Js/Informix D4GL GUI)");
-	  break;
-	case 5:
+	  
+break;
+	
+case 5:
 	  strcat (g_szDebug, "remote 4Js/Informix D4GL CHUI)");
-	  break;
-	}
-    }
-  nIdx = Gte_ListBoxDlg (g_szDebug, pMenu);
-  if (nIdx == 0)
-    return;
-  switch (nIdx)
+	  
+break;
+	
+}
+    
+}
+  
+
+nIdx = Gte_ListBoxDlg (g_szDebug, pMenu);
+  
+if (nIdx == 0)
+    
+return;
+  
+
+switch (nIdx)
     
     {
-    case 1:			// keep current
+    
+case 1:			// keep current
       return;
-    case 2:
+    
+case 2:
       WritePrivateProfileString ("Remote", "4GLVersion", "1", "remote.ini");
-      return;
-    case 3:
+      
+return;
+    
+case 3:
       WritePrivateProfileString ("Remote", "4GLVersion", "2", "remote.ini");
-      return;
-    case 4:
+      
+return;
+    
+case 4:
       WritePrivateProfileString ("Remote", "4GLVersion", "3", "remote.ini");
-      return;
-    case 5:
+      
+return;
+    
+case 5:
       WritePrivateProfileString ("Remote", "4GLVersion", "4", "remote.ini");
-      return;
-    case 6:
+      
+return;
+    
+case 6:
       WritePrivateProfileString ("Remote", "4GLVersion", "5", "remote.ini");
-      return;
-    }
-}
+      
+return;
+    
 
-
+}
+
+
+}
+
+
+
+
 //###################################################################
   void
 test_env_read (void) 
 //###################################################################
 {
-  char szEnvVar[50];
-  char *szChar;
-  char szEnvName[20];
-  
+  
+
+char szEnvVar[50];
+  
+char *szChar;
+  
+char szEnvName[20];
+  
+
+
 //   strcpy(szEnvName,"COMSPEC");
 //   strcpy(szEnvName,"TEST");
     strcpy (szEnvName, "BLASTER");
-  szChar = getenv (szEnvName);
-  strcpy (szEnvVar, szEnvName);
-  strcat (szEnvVar, " is set to -");
-  if (szChar != 0)
+  
+
+
+szChar = getenv (szEnvName);
+  
+
+strcpy (szEnvVar, szEnvName);
+  
+
+strcat (szEnvVar, " is set to -");
+  
+
+if (szChar != 0)
     
     {
       strcat (szEnvVar, szChar);
@@ -1502,11 +2257,17 @@ test_env_read (void)
     {
       strcat (szEnvVar, "");
     }
-  strcat (szEnvVar, "-");
-  MsgBox (szEnvVar, MB_OK);
-}
+  
 
-
+strcat (szEnvVar, "-");
+  
+MsgBox (szEnvVar, MB_OK);
+
+
+}
+
+
+
   // test reading parameters passed from macro calling this c code:
   
   /*
@@ -1515,13 +2276,16 @@ test_env_read (void)
      MsgBox(g_szFileName, MB_OK);
      return 1;
    */ 
-  
+  
+
+
 //###################################################################
   void
 test_time (void) 
 //###################################################################
 {
-  
+  
+
 /*
  char * asctime(const struct tm * timeptr)
  The asctime function converts a tm structure to a 26-character string in
@@ -1574,33 +2338,60 @@ typedef struct {
 } stat_t;
 
 */ 
-  char szFileName1[FILENAME_MAX];
-  char szFileName2[FILENAME_MAX];
-  char szTime1[50];
-  char szTime2[50];
-  stat_t statbuf1;
-  stat_t statbuf2;
-  int nIdx;
-  strcpy (szFileName1, "c:\\autoexec.bat");
-  strcpy (szFileName2, "c:\\config.sys");
-  nIdx = stat (szFileName1, &statbuf1);
-  nIdx = stat (szFileName2, &statbuf2);
-  sprintf (szTime1, " %0d ", (int) (statbuf1.st_mtime));
-  sprintf (szTime2, " %0d ", (int) (statbuf2.st_mtime));
-  if (statbuf1.st_mtime > statbuf2.st_mtime)
+  
+char szFileName1[FILENAME_MAX];
+  
+char szFileName2[FILENAME_MAX];
+  
+char szTime1[50];
+  
+char szTime2[50];
+  
+stat_t statbuf1;
+  
+stat_t statbuf2;
+  
+int nIdx;
+  
+
+strcpy (szFileName1, "c:\\autoexec.bat");
+  
+strcpy (szFileName2, "c:\\config.sys");
+  
+
+nIdx = stat (szFileName1, &statbuf1);
+  
+nIdx = stat (szFileName2, &statbuf2);
+  
+
+sprintf (szTime1, " %0d ", (int) (statbuf1.st_mtime));
+  
+sprintf (szTime2, " %0d ", (int) (statbuf2.st_mtime));
+  
+
+if (statbuf1.st_mtime > statbuf2.st_mtime)
     
     {
       
 	// first is bigger
 	strcpy (g_szDebug, szFileName1);
-      strcat (g_szDebug, " is newer than ");
-      strcat (g_szDebug, szFileName2);
-      strcat (g_szDebug, " (");
-      strcat (g_szDebug, szTime1);
-      strcat (g_szDebug, ">");
-      strcat (g_szDebug, szTime2);
-      strcat (g_szDebug, ")");
-    }
+      
+strcat (g_szDebug, " is newer than ");
+      
+strcat (g_szDebug, szFileName2);
+      
+strcat (g_szDebug, " (");
+      
+strcat (g_szDebug, szTime1);
+      
+strcat (g_szDebug, ">");
+      
+strcat (g_szDebug, szTime2);
+      
+strcat (g_szDebug, ")");
+    
+
+}
   
   else
     
@@ -1608,18 +2399,32 @@ typedef struct {
       
 	// second is bigger, or they are equal
 	strcpy (g_szDebug, szFileName2);
-      strcat (g_szDebug, " is newer or equal than ");
-      strcat (g_szDebug, szFileName1);
-      strcat (g_szDebug, " (");
-      strcat (g_szDebug, szTime2);
-      strcat (g_szDebug, ">");
-      strcat (g_szDebug, szTime1);
-      strcat (g_szDebug, ")");
-    }
-  MsgBox (g_szDebug, MB_OK);
-}
+      
+strcat (g_szDebug, " is newer or equal than ");
+      
+strcat (g_szDebug, szFileName1);
+      
+strcat (g_szDebug, " (");
+      
+strcat (g_szDebug, szTime2);
+      
+strcat (g_szDebug, ">");
+      
+strcat (g_szDebug, szTime1);
+      
+strcat (g_szDebug, ")");
+    
 
-
+}
+  
+
+MsgBox (g_szDebug, MB_OK);
+
+
+}
+
+
+
 /*
 
 Otvoren u GWD Text Editoru kao text file ili u GWD C Scriptu funkcijom fopen?

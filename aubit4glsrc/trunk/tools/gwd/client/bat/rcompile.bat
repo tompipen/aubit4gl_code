@@ -136,7 +136,7 @@ rem -------------------------------------------------------------------
 :RunCmpl
 rem -------------------------------------------------------------------
 rem 2: call rcompile.sh script to perform compile, and check for errors
-if %site%==Fujitsu start /w /m rexec -a -l %5 -p 11sajonara  %4 rcompile.sh %2%7%9 %1 %2%7 > rcmplerr.bat
+if %site%==Fujitsu start /w /m rexec -a -l %5 -p mypass  %4 rcompile.sh %2%7%9 %1 %2%7 > rcmplerr.bat
 rem CSI: rexec -l afalout -p aaa chaix GWDagents/rcompile.sh /apps/max_4.00/repw/csi_p.4gl dummy /apps/max_4.00/repw samba
 rem if %site%==CSI rexec -a -l %5 -p %6 %4 GWDagents/rcompile.sh %2%9 dummy %2 %3 > rcmplerr.bat
 if %site%==CSI rexec -a -l %5 -p %6 %4 GWDagents/rcompile.sh %7/%9 dummy %7 %3 > rcmplerr.bat
@@ -144,7 +144,7 @@ if %site%==CSI rexec -a -l %5 -p %6 %4 GWDagents/rcompile.sh %7/%9 dummy %7 %3 >
 rem echo -------------------------------------------------- START rcmplerr.bat
 rem type rcmplerr.bat
 rem echo -------------------------------------------------- END rcmplerr.bat
-rem echo Done: rexec -a -l %5 -p 11sajonara  %4 rcompile.sh %2%7%9 %1 %2%7
+rem echo Done: rexec -a -l %5 -p mypass  %4 rcompile.sh %2%7%9 %1 %2%7
 rem pause
 rem 3: call created bat file to set variables inedtifyng errors
 SET COMP_EXT=
