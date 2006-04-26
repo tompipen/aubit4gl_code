@@ -74,7 +74,7 @@ function try_session()
     sleep 2
 
      open session session1 to database maxdev
-       as user "root" password "babaroga"
+       as user "root" password "mypassword"
 
 
 	display "setting session..."
