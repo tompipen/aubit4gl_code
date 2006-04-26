@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.39 2005-08-08 21:01:22 mikeaubury Exp $
+# $Id: Makefile,v 1.40 2006-04-26 07:57:30 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -112,8 +112,18 @@ ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
 
 ################
 #4gl compiler command line to use
+#WARNING: currently, 4glpc is not hanling GCC on Windows, and will just pass everything
+#to esql compiler - which will try to invoke MSVC "cl" which most probably
+#will not exist on the system. OTOH, 4glc will handle ec compilation as 
+#discreate steps of 4gl->.ec->.c->.dll/.exe
+#If you are tempted to use 4glpc (instead 4glc
+#directly) please make sure it will work for all platforms and ESQL dialects
+#in this makefile. Andrej.
+#PS. trying to use 4glpc configuration files - ignore above if it works:
+VERBOSE_FLAG	=--verbose
 #4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
-4GLPC			=4glpc
+#FGLPC_VERBOSE_FLAG=-V5
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}
 
 ################
 #4gl compiler flags
@@ -276,7 +286,7 @@ clean:
 	${RM} ${ALL} ${OBJS_PG} ${OBJS_IFX} ${OBJS_GEN} \
     ${CLEAN_OBJS:.ao=.h} ${CLEAN_OBJS:.ao=.glb} ${CLEAN_OBJS:.ao=.cpc} \
 	${CLEAN_OBJS:.ao=.ec} ${CLEAN_OBJS:.ao=.c} \
-    *.bak *.err *.warn lex.asql_yy.c lex.asql_yy.c
+    *.bak *.err *.warn lex.asql_yy.c lex.asql_yy.c *.c_ *~ debug.out
 
 
 # ============================= EOF =================================
