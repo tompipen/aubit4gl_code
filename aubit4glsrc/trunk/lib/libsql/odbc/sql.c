@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.152 2006-04-23 12:13:53 mikeaubury Exp $
+# $Id: sql.c,v 1.153 2006-04-27 13:18:56 mikeaubury Exp $
 #
 */
 
@@ -2675,6 +2675,7 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
 
 
   rc = SQLExecute ((SQLHSTMT) hstmt); // Reformatted in caller
+  chk_rc (rc, hstmt, "SQLExecute2");
 
 #ifdef DEBUG
   A4GL_debug ("SQLExecute returns %d\n", rc);
