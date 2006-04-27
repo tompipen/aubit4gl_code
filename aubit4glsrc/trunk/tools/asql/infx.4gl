@@ -1315,6 +1315,9 @@ code
 char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
 ndbs=0;
+
+sqlca.sqlcode=0;
+
 sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
 endcode
 
@@ -1355,6 +1358,9 @@ if lv_newname is not null and lv_newname not matches " " then
                 message "Database Opened" 
         else
                 if check_and_report_error() then
+			whenever error continue
+			close database
+			whenever error stop
 			return
 		end if
         end if

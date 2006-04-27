@@ -224,11 +224,14 @@ end function
 function qry_edit()
 define lv_systemstr char(255)
 define lv_stat integer
+
 let lv_systemstr=fgl_getenv("DBEDIT")
 if lv_systemstr is null or lv_systemstr is null matches " " then
 	let lv_systemstr="vi"
 end if
+
 let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname("SQL")
+
 run lv_systemstr returning lv_stat
 
 call display_tmp_file()

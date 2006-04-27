@@ -171,7 +171,7 @@ end function
 
 function display_tmp_file() 
 define l integer
-define buff char(255)
+define buff char(256)
 call clear_screen_portion()
 let l=6
 call open_tmpfile("SQL","r")
@@ -179,8 +179,9 @@ code
 while (1) {
 	strcpy(buff,"");
 	fgets(buff,255,(FILE *)mv_fin[get_type_id("SQL")]);
+	A4GL_debug("Temp file : %s",buff);
 	if (feof((FILE *)mv_fin[get_type_id("SQL")])) break;
-	buff[80]=0;
+	buff[255]=0;
 endcode
 	display buff,"" at l,1
 code

@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.79 2006-04-24 14:58:53 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.80 2006-04-27 06:59:17 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.79 2006-04-24 14:58:53 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.80 2006-04-27 06:59:17 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -2443,6 +2443,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 
   if (p == 0)
     {
+A4GL_debug("no prompt window");
       A4GL_exitwith ("No prompt window created");
       return 0;
     }
@@ -2461,6 +2462,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   width -= strlen (promptstr);
   width--;
   if (width<=0) {
+A4GL_debug("Too small");
 	  A4GL_exitwith("Prompt message is too long to fit in the window.");
 	  return 0;
   }
@@ -2573,7 +2575,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 
   A4GL_LL_set_carat (f);
   A4GL_LL_screen_update ();
-  return 0;
+  return 1;
 }
 
 

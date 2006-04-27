@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.76 2006-04-24 14:58:52 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.77 2006-04-27 06:58:59 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2620,7 +2620,9 @@ int
 UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt)
 {
   int a;
+A4GL_debug("Prompt loop\n");
   a = A4GL_prompt_loop_v2_int (vprompt, timeout, evt);
+A4GL_debug("Returns %d\n",a);
   return a;
 }
 
@@ -2839,6 +2841,7 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
       promptx->mode = 2;
       return 2;
     }
+A4GL_debug("Start prompt returning : %d",x);
   return x;
 }
 
