@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.97 2006-04-09 09:28:57 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.98 2006-04-27 07:44:10 mikeaubury Exp $";
 #endif
 
 
@@ -2425,7 +2425,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   //A4GLSQL_set_status (0, 0);
   A4GL_LL_screen_update ();
   fprintf (stderr, "All ok\n");
-  return 0;
+  return 1;
 }
 
 

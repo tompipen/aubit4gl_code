@@ -332,6 +332,7 @@ else
 	end if
 end if
 
+
 if lv_value is null or lv_value matches " " then
 	let lv_value=mv_arr[mv_curr_option]
 end if

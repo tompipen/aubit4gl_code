@@ -1328,7 +1328,6 @@ if sqlca.sqlcode!=0 then
         	return
 	end if
 end if
-error "OK - got : ",ndbs," databases"
 for a=1 to ndbs
 code
         strcpy(lv_name,dbsname[a-1]);
