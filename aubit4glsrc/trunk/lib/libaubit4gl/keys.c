@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.39 2006-04-23 12:13:53 mikeaubury Exp $
+# $Id: keys.c,v 1.40 2006-04-28 12:27:26 mikeaubury Exp $
 #
 */
 
@@ -405,5 +405,15 @@ A4GL_debug("init_stddbscr - form_line");
   std_dbscr.pipe_ui_mode=0;
   std_dbscr.run_ui_mode=0;
 }
+
+
+int A4GL_get_dbscr_commentline(void) { return std_dbscr.comment_line; }
+int A4GL_get_dbscr_formline(void)    { return std_dbscr.form_line; }
+int A4GL_get_dbscr_errorline(void)   { return std_dbscr.error_line; }
+int A4GL_get_dbscr_promptline(void)  { return std_dbscr.prompt_line; }
+int A4GL_get_dbscr_messageline(void)  { return std_dbscr.message_line; }
+int A4GL_get_dbscr_menuline(void)  { return std_dbscr.menu_line; }
+int A4GL_get_dbscr_inputmode(void)  { return std_dbscr.input_wrapmode; }
+
 
 /* ============================== EOF ============================= */
