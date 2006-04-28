@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.37 2006-04-23 12:13:53 mikeaubury Exp $";
+  "$Id: forms.c,v 1.38 2006-04-28 12:07:09 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -322,7 +322,7 @@ A4GL_getprompt_line (void)
     }
   else
     {
-      a = std_dbscr.prompt_line;	// MJAMJA
+      a = A4GL_get_dbscr_promptline();	// MJAMJA
       b = 2;
     }
 
@@ -402,17 +402,17 @@ currwinno=A4GL_get_currwinno ();
 
   A4GL_debug ("Comment line for currwin=%d std_dbscr=%d",
 	      windows[A4GL_get_currwinno ()].winattr.comment_line,
-	      std_dbscr.comment_line);
+	      A4GL_get_dbscr_commentline());
 
 
-if (std_dbscr.comment_line==0xff) {
+if (A4GL_get_dbscr_commentline()==0xff) {
 	        if (currwinno==0) {
 			                default_comment_line=-2; // Last-1 for SCREEN
 					        } else {
 							                default_comment_line=-1; // Last for all other windows...
 									        }
 } else {
-	                default_comment_line=std_dbscr.comment_line;
+	                default_comment_line=A4GL_get_dbscr_commentline();
 }
 
 
@@ -441,9 +441,8 @@ A4GL_geterror_line (void)
       return A4GL_decode_line_scr (windows[A4GL_get_currwinno ()].winattr.
 				   error_line);
     }
-  A4GL_debug ("geterror_line - from options : %d", std_dbscr);
 
-  return A4GL_decode_line_scr (std_dbscr.error_line);
+  return A4GL_decode_line_scr (A4GL_get_dbscr_errorline());
 }
 
 
@@ -468,7 +467,7 @@ A4GL_getmessage_line (void)
     }
   else
     {
-      a = std_dbscr.message_line;	// MJAMJA
+      a =A4GL_get_dbscr_messageline() ;	// MJAMJA
       b = 2;
     }
 
@@ -552,7 +551,7 @@ A4GL_getform_line (void)
     }
   else
     {
-      a = std_dbscr.form_line;
+      a = A4GL_get_dbscr_formline();
     }
 
 /* There seems to be some sort of bug in informix -
@@ -651,7 +650,7 @@ A4GL_getmenu_line (void)
       A4GL_debug ("MENU LINE : %d", a);
       return a;
     }
-  a = A4GL_decode_line_ib (std_dbscr.menu_line);
+  a = A4GL_decode_line_ib (A4GL_get_dbscr_menuline());
   if (a <= 0)
     return 1;
   while (a >= UILIB_A4GL_get_curr_height ())
@@ -979,7 +978,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
     }
   else
     {
-      nlines = rows + std_dbscr.form_line - 1;
+      nlines = rows + A4GL_get_dbscr_formline() - 1;
     }
   if (f->form_details.border)
     {

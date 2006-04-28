@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.119 2006-04-24 07:06:55 mikeaubury Exp $
+# $Id: curslib.c,v 1.120 2006-04-28 12:07:09 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.119 2006-04-24 07:06:55 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.120 2006-04-28 12:07:09 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -3293,7 +3293,29 @@ UILIB_A4GL_screen_mode (int a)
 
 
 
+/* Dummy functions here - required by the API */
+int A4GL_widget_name_match(void* w,char* name) {
+	return 0;
+}
+void A4GL_clr_form_fields(int to_defaults,char* defs) {
+}
+void A4GL_gui_run_til_no_more() {
+}
+int aclfgl_a4gl_run_gui(int nargs)  {
+	return 0;
+}
+int A4GL_fgl_fieldnametoid(char* f,char* s,int n) {
+	return 0;
+}
+int aclfgl_set_window_title(int nargs) {
+	return 0;
 
-
+}
+void* A4GL_make_pixmap_gw(char* filename) {
+	return 0;
+}
+void* A4GL_create_menu(void* m,char* id,int mode,void* handler) {
+	return 0;
+}
 
 /* ============================== EOF ============================== */

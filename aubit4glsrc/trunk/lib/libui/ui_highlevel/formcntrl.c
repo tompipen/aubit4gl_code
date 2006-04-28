@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.46 2006-04-05 06:54:38 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.47 2006-04-28 12:07:09 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.46 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.47 2006-04-28 12:07:09 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -233,7 +233,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
       A4GL_debug ("Too far to the left");
       // cc 2004.11.15
       if (sio->currform->currentfield == sio->field_list[0]
-	  && std_dbscr.input_wrapmode != 0)
+	  && A4GL_get_dbscr_inputmode() != 0)
 	{
 	  A4GL_debug ("Wrap around from top to bottom");
 	  A4GL_newMovement (sio, sio->nfields);
@@ -307,7 +307,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 		{
 
 
-		  if (std_dbscr.input_wrapmode == 0)
+		  if (A4GL_get_dbscr_inputmode() == 0)
 		    {
 		      A4GL_add_to_control_stack (sio,
 						 FORMCONTROL_EXIT_INPUT_OK, 0,
@@ -643,7 +643,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 		  if ((void *) A4GL_LL_current_field (curses_form) != sio->currentfield ||  A4GL_LL_get_carat (curses_form)==0)
 		    {
 
-		      if (std_dbscr.input_wrapmode == 0
+		      if (A4GL_get_dbscr_inputmode() == 0
 			  && A4GL_curr_metric_is_used_last_s_screenio (sio,
 								       sio->
 								       currentfield))
@@ -1437,7 +1437,7 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
       if (at_last)
 	{			// Acts like KEY_DOWN at last position in the field
 	  A4GL_debug ("AT LAST");
-	  if (std_dbscr.input_wrapmode == 0
+	  if (A4GL_get_dbscr_inputmode() == 0
 	      && A4GL_curr_metric_is_used_last_s_screenio (s, f))
 	    {
 	      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0,
@@ -1629,7 +1629,7 @@ break;
     case 13:
     case 10:
     case A4GLKEY_DOWN:
-      if (std_dbscr.input_wrapmode == 0
+      if (A4GL_get_dbscr_inputmode() == 0
 	  && A4GL_curr_metric_is_used_last_s_screenio (s, f))
 	{
 	  A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
