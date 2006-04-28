@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.128 2006-04-28 12:07:09 mikeaubury Exp $
+# $Id: newpanels.c,v 1.129 2006-04-28 15:03:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.128 2006-04-28 12:07:09 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.129 2006-04-28 15:03:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -66,6 +66,7 @@ dll_import sqlca_struct sqlca;
 
 
 void A4GL_monitor_key_pressed(int a) ;
+int monitoring=-1;
 
 WINDOW * A4GL_window_on_top_ign_menu (void);
 void A4GL_make_window_with_this_form_current(void *form);
@@ -699,6 +700,9 @@ int
 void
  UILIB_A4GL_zrefresh (void)
 {
+	if (monitoring==-1) {
+		monitoring=A4GL_isyes(acl_getenv("MONITOR4GL"));
+	}
 
   if (A4GL_screen_mode (-1))
     {
@@ -707,8 +711,9 @@ void
 
       update_panels ();
       doupdate ();
-
-      A4GL_monitor_screen();
+	if (monitoring) {
+      		A4GL_monitor_screen();
+	}
     }
 }
 
