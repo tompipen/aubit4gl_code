@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.79 2006-05-02 13:34:57 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.80 2006-05-02 18:11:06 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2662,6 +2662,7 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
     {
       char buff[10024];
 	A4GL_debug("Think we're done here...");
+	//A4GL_pause_execution();
       strcpy (buff, A4GL_LL_field_buffer (promptx->field, 0));
 	A4GL_debug("prompt buff=%s",buff);
       A4GL_trim (buff);

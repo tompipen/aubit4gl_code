@@ -55,6 +55,16 @@ typedef struct decimal  Decimal;
 typedef struct dtime    Datetime;
 typedef struct intrvl   Interval;
 
+#ifdef __WIN32__
+#ifndef __CYGWIN__
+#include <windows.h>
+#define USE_REGISTRY_SQLHOSTS
+LONG createkey_infx (void);
+static HKEY newkey_infx=0;
+#endif
+#endif
+
+
 //int pflag=SQLRELOAD;
 struct RecLoc
 {
@@ -497,9 +507,26 @@ clear screen
 call display_banner()
 #
 # In order to find out what connections are available
-# Have a look in the sqlhosts file
+# Have a look in the sqlhosts file on unix
+# or the HKEY_LOCAL_MACHINE/SOFTWARE/INFORMIX/SQLHOSTS
+# possibly on an computer specified by INFORMIXSQLHOSTS
 #
 code
+#ifdef USE_REGISTRY_SQLHOSTS
+{
+char buff[256];
+LONG a;
+a=createkey_infx();
+while (1) {
+	if (RegEnumKey(newkey_infx,lv_cnt-1,buff,255)!=ERROR_SUCCESS) break;
+endcode
+                                call  set_pick(lv_cnt,buff)
+code
+	lv_cnt++;
+}
+}
+
+#else
 {
 char fname[1024];
 FILE *f_in;
@@ -507,6 +534,11 @@ char *ptr;
 A4GL_trim(lv_informixdir);
 sprintf(fname,"%s/etc/sqlhosts",lv_informixdir);
 f_in=fopen(fname,"r");
+if (f_in==0) {
+endcode
+	error "Can't get list of database servers"
+code
+}
 if (f_in!=0)  {
         while (1) {
                 if (feof(f_in)) break;
@@ -524,11 +556,17 @@ code
                         lv_cnt++;
                 }
         }
+	
+	fclose(f_in);
 }
-fclose(f_in);
 }
+#endif
 endcode
+
+
+
 call set_pick_cnt(lv_cnt-1)
+
 if lv_cnt=1 then
         error "Either the SQLHOSTS file cannot be read - or it is empty"
 end if
@@ -2340,5 +2378,21 @@ int load_err(int row,char *msg) {
 	}
 	load_ok=0;
 }
+
+#ifdef USE_REGISTRY_SQLHOSTS
+LONG createkey_infx (void)
+{
+  LONG a;
+  DWORD disp;
+  a = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
+                      "Software\\Informix\\SQLHOSTS",
+                      0,
+                      "AclClass",
+                      REG_OPTION_NON_VOLATILE,
+                      KEY_ALL_ACCESS, NULL, &newkey_infx, &disp);
+  return a;
+}
+#endif
+
 
 endcode

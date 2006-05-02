@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.10 2005-06-16 17:01:57 mikeaubury Exp $
+# $Id: menu_gtk.c,v 1.11 2006-05-02 18:11:19 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu_gtk.c,v 1.10 2005-06-16 17:01:57 mikeaubury Exp $";
+  "$Id: menu_gtk.c,v 1.11 2006-05-02 18:11:19 mikeaubury Exp $";
 #endif
 
 
@@ -175,7 +175,7 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
     {
       mm = &xdrm->menus.menus_val[a];
       A4GL_debug ("Found menu %s - %s\n", mm->id, id);
-      if (strcasecmp (mm->id, id) == 0)
+      if (A4GL_aubit_strcasecmp (mm->id, id) == 0)
 	{			/* We've found our menu */
 	  A4GL_debug ("Found it\n");
 	  nmenu = gtk_menu_new ();

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.46 2006-04-24 07:06:55 mikeaubury Exp $
+# $Id: makefile,v 1.47 2006-05-02 18:11:06 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -208,7 +208,7 @@ ${LIBROOT}/libUI_HL_TUI${SO_EXT}: clean $(OBJS) ${OBJS2}
 libUI_HL_TUIw.dll: ${LIBROOT}/libUI_HL_TUIw.dll
 ${LIBROOT}/libUI_HL_TUIw.dll: clean $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
-		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform ${CURSES_LIB_NAME} 
+		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform_g ${CURSES_LIB_NAME} 
 
 #TUI mode plug-in with Aubit's own implementation of Curses libform
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 

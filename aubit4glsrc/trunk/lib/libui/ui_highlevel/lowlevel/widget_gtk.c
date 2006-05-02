@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.27 2005-11-18 15:22:47 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.28 2006-05-02 18:11:19 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -271,7 +271,7 @@ A4GL_find_param (char *name)
     }
   for (a = 0; a < args_cnt; a++)
     {
-      if (strcasecmp (args[a], name) == 0)
+      if (A4GL_aubit_strcasecmp (args[a], name) == 0)
 	{
 	  if (args_type[a] == TYPE_CHAR)
 	    return args_val[a];
@@ -312,7 +312,7 @@ A4GL_make_widget (char *widget, char *config, int w)
   A4GL_debug ("Making widget %s, %s\n", widget, config);
   for (a = 0; widgets[a].name; a++)
     {
-      if (strcasecmp (widget, widgets[a].name) == 0)
+      if (A4GL_aubit_strcasecmp (widget, widgets[a].name) == 0)
 	{
 	  char *key;
 	  widget_next_size = w;
@@ -330,8 +330,8 @@ A4GL_make_widget (char *widget, char *config, int w)
 
 	  gtk_object_set_data (GTK_OBJECT (ptr), "WIDGETSNAME", widget);
 
-	  if (strcasecmp (widget, "PIXMAP") != 0
-	      && strcasecmp (widget, "LIST") != 0)
+	  if (A4GL_aubit_strcasecmp (widget, "PIXMAP") != 0
+	      && A4GL_aubit_strcasecmp (widget, "LIST") != 0)
 	    {
 	      gtk_widget_set_sensitive (ptr, 0);
 	    }
@@ -401,7 +401,7 @@ A4GL_fld_val_generic (GtkWidget * k)
 
   A4GL_debug ("Widgettye=%s\n", ptr);
 
-  if (strcasecmp (ptr, "LABEL") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "LABEL") == 0)
     {
       gtk_label_get (GTK_LABEL (k), &txt);
       utf = g_locale_from_utf8 (txt, -1, NULL, NULL, NULL);
@@ -412,7 +412,7 @@ A4GL_fld_val_generic (GtkWidget * k)
 
 
 
-  if (strcasecmp (ptr, "BUTTON") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "BUTTON") == 0)
     {
       GtkWidget *l;
       l = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
@@ -439,7 +439,7 @@ A4GL_fld_val_generic (GtkWidget * k)
     }
 
 
-  if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "ENTRY") == 0 || A4GL_aubit_strcasecmp (ptr, "TEXT") == 0)
     {
       utf =
 	g_locale_from_utf8 (gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL,
@@ -450,7 +450,7 @@ A4GL_fld_val_generic (GtkWidget * k)
     }
 
 
-  if (strcasecmp (ptr, "CHECK") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "CHECK") == 0)
     {
 	//utf = g_locale_from_utf8 (gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL, NULL, NULL);
       if (gtk_toggle_button_get_active(k)) {
@@ -462,7 +462,7 @@ A4GL_fld_val_generic (GtkWidget * k)
       return txt_buf;
     }
 
-  if (strcasecmp (ptr, "RADIO") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "RADIO") == 0)
     {
       int a;
       GtkWidget *btn;
@@ -488,7 +488,7 @@ A4GL_fld_val_generic (GtkWidget * k)
     }
 
 
-  if (strcasecmp (ptr, "CALENDAR") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "CALENDAR") == 0)
     {
       unsigned int d, m, y;
       static char buff[256];
@@ -506,7 +506,7 @@ A4GL_fld_val_generic (GtkWidget * k)
       return txt_buf;
     }
 
-  if (strcasecmp (ptr, "SCROLLBAR") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "SCROLLBAR") == 0)
     {
       static char buff[20];
       /* d=gtk_adjustment_get_value (GTK_ADJUSTMENT(k)); */
@@ -536,7 +536,7 @@ A4GL_gui_set_active (GtkWidget * w, int en_dis)
   wtype = gtk_object_get_data (GTK_OBJECT (w), "WIDGETSNAME");
   if (wtype)
     {
-      if (strcasecmp (wtype, "pixmap") == 0)
+      if (A4GL_aubit_strcasecmp (wtype, "pixmap") == 0)
 	en_dis = 1;
     }
   gtk_widget_set_sensitive (p, en_dis);
@@ -1417,7 +1417,7 @@ A4GL_func (GtkWidget * w, char *mode)
   A4GL_debug ("**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype,
 	      field);
 
-  if (strcasecmp (mode, "grab_focus") == 0)
+  if (A4GL_aubit_strcasecmp (mode, "grab_focus") == 0)
     {
       A4GL_debug ("grab focus detected...\n");
       A4GL_debug ("setting A4GL_action field=%p", w);
@@ -1444,13 +1444,13 @@ A4GL_func (GtkWidget * w, char *mode)
 	{
 	  A4GL_debug ("Substituting specified key: %s\n", key);
 
-	  if (strcasecmp (key, "ACCEPT") == 0)
+	  if (A4GL_aubit_strcasecmp (key, "ACCEPT") == 0)
 	    {
 	      keyn = 27;	/* FIXME */
 	    }
 	  else
 	    {
-	      if (strcasecmp (key, "INTERRUPT") == 0)
+	      if (A4GL_aubit_strcasecmp (key, "INTERRUPT") == 0)
 		{
 		  keyn = 3;	/* FIXME */
 		}
@@ -1532,7 +1532,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
 
   utf = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
 
-  if (strcasecmp (ptr, "BUTTON") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "BUTTON") == 0)
     {
       GtkWidget *w;
       GtkWidget *w2;
@@ -1573,7 +1573,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
 
 
 
-  if (strcasecmp (ptr, "LABEL") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "LABEL") == 0)
     {
       /* check whether a Gtk+ version equal to or greater than
        * major.minor.micro is present.
@@ -1595,14 +1595,14 @@ A4GL_display_generic (GtkWidget * k, char *s)
       return 1;
     }
 
-  if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "ENTRY") == 0 || A4GL_aubit_strcasecmp (ptr, "TEXT") == 0)
     {
       gtk_entry_set_text (GTK_ENTRY (k), utf);
       g_free (utf);
       return 1;
     }
 
-  if (strcasecmp (ptr, "LIST") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "LIST") == 0)
     {
       fprintf (stderr, "Adding to list...\n");
       fflush (stderr);
@@ -1611,7 +1611,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
       g_free (utf);
     }
 
-  if (strcasecmp (ptr, "RADIO") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "RADIO") == 0)
     {
       int a;
       GtkWidget *btn;
@@ -1637,7 +1637,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
       return 0;
     }
 
-  if (strcasecmp (ptr, "CALENDAR") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "CALENDAR") == 0)
     {
       int da;
       int d, m, y;
@@ -1677,7 +1677,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
       return 1;
     }
 
-  if (strcasecmp (ptr, "SCROLLBAR") == 0)
+  if (A4GL_aubit_strcasecmp (ptr, "SCROLLBAR") == 0)
     {
       gdouble d;
       d = atof (s);

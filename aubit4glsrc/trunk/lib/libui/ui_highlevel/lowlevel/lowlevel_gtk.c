@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.98 2006-04-27 07:44:10 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.99 2006-05-02 18:11:19 mikeaubury Exp $";
 #endif
 
 
@@ -1706,7 +1706,7 @@ A4GL_LL_set_field_opts (void *field, int oopt)
       wtype = gtk_object_get_data (GTK_OBJECT (field), "WIDGETSNAME");
       if (gtk_object_get_data (GTK_OBJECT (field), "MF_ISLABEL")
 	  || gtk_object_get_data (GTK_OBJECT (field), "DISPLAY_LABEL")
-	  || strcasecmp (wtype, "pixmap") == 0)
+	  || A4GL_aubit_strcasecmp (wtype, "pixmap") == 0)
 	{
 	  // Labels are always active :)
 	  A4GL_gui_set_active (field, 1);
@@ -2433,7 +2433,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 void
 A4GL_LL_clear_prompt (void *f, void *w)
 {
-  A4GL_pause_execution ();
+  //A4GL_pause_execution ();
   gtk_widget_destroy (w);
 }
 
@@ -2823,7 +2823,7 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
   gtk_object_set_data (GTK_OBJECT (widget), "MF_COLS", (void *) cols);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ISLABEL", (void *) 0);
 
-  if (strcasecmp ("LABEL", widget_str) == 0)
+  if (A4GL_aubit_strcasecmp ("LABEL", widget_str) == 0)
     {
       gtk_object_set_data (GTK_OBJECT (widget), "DISPLAY_LABEL", (void *) 1);
       gtk_widget_set_name (GTK_WIDGET (widget), "AppWindow");

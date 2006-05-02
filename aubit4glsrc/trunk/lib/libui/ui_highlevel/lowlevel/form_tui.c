@@ -736,7 +736,7 @@ A4GL_form_form_driver (FORM * form, long c)
   if (c >= 0x100 && c < 0x6000)
     {
       A4GL_debug ("FX1 INVALID CALL TO FORM DRIVER : %x", c);
-      A4GL_pause_execution ();
+      //A4GL_pause_execution ();
     }
   if (c == REQ_FIRST_FIELD)
     {

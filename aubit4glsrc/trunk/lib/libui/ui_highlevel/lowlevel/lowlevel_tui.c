@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.80 2006-04-27 06:59:17 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.81 2006-05-02 18:11:19 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.80 2006-04-27 06:59:17 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.81 2006-05-02 18:11:19 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1653,10 +1653,12 @@ A4GL_LL_getch_swin (void *window_ptr)
       if (no_delay==-1) {
       	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
       }
+#else
+	no_delay=1;
+#endif
       if (!no_delay) {
       	halfdelay (10);
       }
-#endif
       //a = wgetch (window_ptr);
       abort_pressed = 0;
       a = getch ();
@@ -1733,7 +1735,7 @@ A4GL_LL_int_form_driver (void *mform, int mode)
   if (mode >= 0x6000)
     {
       A4GL_debug ("FX1 Should be called with AUBIT_REQ not REQ %x\n", mode);
-      A4GL_pause_execution ();
+      //A4GL_pause_execution ();
     }
 
   nmode = -1;
@@ -1955,28 +1957,28 @@ A4GL_LL_dump_screen (int n, char *ptr, int mode)
   sh = A4GL_LL_screen_height ();
   sw = A4GL_LL_screen_width ();
 
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x80") == 0)
+  if (A4GL_aubit_strcasecmp (acl_getenv ("TRIMDUMP"), "24x80") == 0)
     {
       if (sh > 24)
 	sh = 24;
       if (sw > 80)
 	sw = 80;
     }
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x80") == 0)
+  if (A4GL_aubit_strcasecmp (acl_getenv ("TRIMDUMP"), "25x80") == 0)
     {
       if (sh > 24)
 	sh = 25;
       if (sw > 80)
 	sw = 80;
     }
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "24x132") == 0)
+  if (A4GL_aubit_strcasecmp (acl_getenv ("TRIMDUMP"), "24x132") == 0)
     {
       if (sh > 24)
 	sh = 24;
       if (sw > 132)
 	sw = 132;
     }
-  if (strcasecmp (acl_getenv ("TRIMDUMP"), "25x132") == 0)
+  if (A4GL_aubit_strcasecmp (acl_getenv ("TRIMDUMP"), "25x132") == 0)
     {
       if (sh > 24)
 	sh = 25;

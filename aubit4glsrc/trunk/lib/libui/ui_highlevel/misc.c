@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.41 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: misc.c,v 1.42 2006-05-02 18:11:06 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1220,7 +1220,7 @@ A4GL_get_field_width (void *f)
 
   if (formdets == 0 || fprop == 0)
     {
-	    	A4GL_pause_execution();
+	    	//A4GL_pause_execution();
       return A4GL_LL_get_field_width_dynamic (f);
     }
 
