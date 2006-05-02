@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.78 2006-04-27 07:43:57 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.79 2006-05-02 13:34:57 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -408,12 +408,9 @@ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
       option = old_option;
       A4GL_debug ("Menu Option %s not found", nextopt);
     }
-  if (menu->gw_x < 0)
-    {
-      char *ptr = 0;
-      *ptr = 0;
-    }
-  //A4GL_gui_setfocus ((int) menu->curr_option);
+
+  A4GL_assertion( menu->gw_x < 0,"gw_x out of range");
+
   if (matches == 0)
     {
       A4GL_exitwith ("The NEXT OPTION name is not in the menu");
@@ -888,7 +885,16 @@ UILIB_A4GL_finish_create_menu (void *menuv)
 {
   ACL_Menu *menu;
   menu = menuv;
-  menu->curr_option = (ACL_Menu_Opts *) menu->first;
+
+
+
+ if (menu->curr_option) {
+	         if (menu->curr_option->attributes & ACL_MN_HIDE) {
+			                 menu->curr_option = (ACL_Menu_Opts *) menu->first;
+					         }
+		  } else {
+			                  menu->curr_option = (ACL_Menu_Opts *) menu->first;
+					   }
 
   while (menu->curr_option->attributes & ACL_MN_HIDE)
     {
