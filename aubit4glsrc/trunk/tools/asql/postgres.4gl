@@ -56,7 +56,7 @@ extern int *columnAlign; // CA1
 char loadbuff[LOADBUFFSIZE];
 
 
-FILE *unloadFile=0;
+FILE *f_unloadFile=0;
 int firstFetchInit=0;
 extern char *delim;// delimiters for load/unload
 
@@ -556,7 +556,7 @@ if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
         } 
 
 	if (display_mode==DISPLAY_UNLOAD) {
-                        fprintf(unloadFile,"%s%s",escape_delim(buffer),delim);
+                        fprintf(f_unloadFile,"%s%s",escape_delim(buffer),delim);
 	}
 
 	if (display_mode==DISPLAY_ACROSS) {
@@ -850,7 +850,7 @@ int a;
         }
 
         if (display_mode==DISPLAY_UNLOAD) {
-		fprintf(unloadFile,"\n");
+		fprintf(f_unloadFile,"\n");
 	}
 
         if (display_mode==DISPLAY_DOWN) {

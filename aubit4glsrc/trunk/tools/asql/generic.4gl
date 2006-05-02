@@ -29,7 +29,7 @@
 
 code
 
-FILE *unloadFile=0;
+FILE *f_unloadFile=0;
 struct BINDING *gen_obind=0;
 struct BINDING *gen_obind_copy=0;
 int gen_obindcnt=0;
@@ -535,8 +535,8 @@ printField (FILE * outputFile, int idx, char *descName) {
 	break;
 
   case DISPLAY_UNLOAD:
-      fprintf (unloadFile, "%s", escape_delim (buff));
-      fprintf (unloadFile, "%s", delim);
+      fprintf (f_unloadFile, "%s", escape_delim (buff));
+      fprintf (f_unloadFile, "%s", delim);
 	break;
 	}
 }
@@ -824,7 +824,7 @@ int execute_sql_fetch(int *raffected) {
 
   if (display_mode == DISPLAY_UNLOAD)
     {
-      fprintf (unloadFile, "\n");
+      fprintf (f_unloadFile, "\n");
 
     }
   if (display_mode == DISPLAY_DOWN)

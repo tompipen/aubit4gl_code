@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.40 2006-04-26 07:57:30 mikeaubury Exp $
+# $Id: Makefile,v 1.41 2006-05-02 07:24:39 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -228,7 +228,7 @@ lex.asql_yy.c: parse.l
 ################
 #Rule to make objects from 4GL file - Informix version
 ifx_%${A4GL_OBJ_EXT}: %.4gl
-	${COMP4GL}
+	${COMP4GL} -DSTATIC_LIBAUBIT4GL
 
 gen_%${A4GL_OBJ_EXT}: %.4gl
 	A4GL_LEXTYPE=C ${COMP4GL}

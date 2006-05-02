@@ -125,7 +125,7 @@ extern int *columnAlign; // CA1
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2
-FILE *unloadFile=0;
+FILE *f_unloadFile=0;
 
 typedef struct sqlca_s  Sqlca;
 typedef struct sqlda    Sqlda;
@@ -865,8 +865,8 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 
   if (display_mode == DISPLAY_UNLOAD)
     {
-      fprintf (unloadFile, "%s", escape_delim (buffer));
-      fprintf (unloadFile, "%s", delim);
+      fprintf (f_unloadFile, "%s", escape_delim (buffer));
+      fprintf (f_unloadFile, "%s", delim);
     }
 
 
@@ -1239,7 +1239,7 @@ execute_sql_fetch (int *raffected)
 
   if (display_mode == DISPLAY_UNLOAD)
     {
-      fprintf (unloadFile, "\n");
+      fprintf (f_unloadFile, "\n");
 
     }
 

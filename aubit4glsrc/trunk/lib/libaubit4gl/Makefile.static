@@ -15,7 +15,7 @@
 SQL=esql
 
 # UI : DYNAMIC TUI HL_TUI HL_GTK CONSOLE
-UI=CONSOLE
+UI=TUIw
 
 # ESQL:DYNAMIC POSTGRES INFORMIX
 ESQL=INFORMIX
@@ -91,6 +91,12 @@ else
 	ifeq "${UI}" "TUI"
 		API+= ../libui/ui_curses/curslib.o ../libui/ui_curses/dump_scr.o ../libui/ui_curses/newpanels.o ../libui/ui_curses/formcntrl.o ../libui/ui_curses/ioform.o ../libui/ui_curses/colours.o ../libui/ui_curses/array.o ../libui/ui_curses/iarray.o ../libui/ui_curses/prompt.o ../libui/ui_curses/generic_ui.o
 		APPEXTRA=-lncurses -lform -lpanel
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "TUIw"
+		API+= ../libui/ui_curses/curslib.o ../libui/ui_curses/dump_scr.o ../libui/ui_curses/newpanels.o ../libui/ui_curses/formcntrl.o ../libui/ui_curses/ioform.o ../libui/ui_curses/colours.o ../libui/ui_curses/array.o ../libui/ui_curses/iarray.o ../libui/ui_curses/prompt.o ../libui/ui_curses/generic_ui.o
+		APPEXTRA=-LC:/gnu/cygwin/usr/src/aubit/aubit4glsrc  -lncurses -lform_g -lpanel
 		SETOBJ=1
 	endif
 

@@ -42,7 +42,7 @@ char *delim;
 
 static char *safe_quotes(char *s);
 
-extern FILE *unloadFile;
+extern FILE *f_unloadFile;
 
 
 
@@ -58,9 +58,9 @@ int b;
 		}
 	}
 
-	unloadFile=fopen(e->fname,"w");
+	f_unloadFile=fopen(e->fname,"w");
 
-	if (unloadFile==0) {
+	if (f_unloadFile==0) {
 		set_sqlcode(-806);
 		return 0;
 	}
@@ -76,8 +76,8 @@ int b;
 	} else {
 		raffected=-1;
 	}
-	if (unloadFile) fclose(unloadFile);
-	unloadFile=0;
+	if (f_unloadFile) fclose(f_unloadFile);
+	f_unloadFile=0;
 	display_mode_unload(0);
 	return raffected;
 }

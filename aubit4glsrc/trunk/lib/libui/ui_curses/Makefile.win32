@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.win32,v 1.1 2006-04-24 07:06:55 mikeaubury Exp $
+# $Id: Makefile.win32,v 1.2 2006-05-02 07:24:39 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -68,7 +68,7 @@ else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
-LINKLIBS	=-L${LIBROOT} -Lc:/gnu/pdc27_ming_w32 -L$(ROOT)/tools/cygwin/libform -lform c:/gnu/pdc27_ming_w32/panel.a c:/gnu/pdc27_ming_w32/pdcurses.a  -laubit4gl 
+LINKLIBS	=-L${LIBROOT} -Lc:/gnu/pdc27_ming_w32 -L$(ROOT)/tools/cygwin/libform -lform_g c:/gnu/pdc27_ming_w32/panel.a c:/gnu/pdc27_ming_w32/pdcurses.a  -laubit4gl 
 
 
 ## ==================================================================
