@@ -138,7 +138,7 @@ code
 			A4GL_debug("rename %s %s",nfname,outfname);
 			unlink(outfname);
 			if (rename(nfname,outfname)!=0) {
-				A4GL_debug("rename failed! %d\n",errno);
+				A4GL_debug("rename failed! %d\n");
 			}
 	
 			open_display_file_c();
