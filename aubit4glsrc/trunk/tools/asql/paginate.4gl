@@ -135,8 +135,11 @@ code
 			}
 			fclose(in);
 			fclose(out2);
-			rename(nfname,outfname);
 			A4GL_debug("rename %s %s",nfname,outfname);
+			unlink(outfname);
+			if (rename(nfname,outfname)!=0) {
+				A4GL_debug("rename failed! %d\n",errno);
+			}
 	
 			open_display_file_c();
 endcode
