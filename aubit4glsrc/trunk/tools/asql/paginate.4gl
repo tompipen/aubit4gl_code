@@ -120,7 +120,9 @@ code
 
 		if (lv_action==0) {
 			char nfname[256];
+			A4GL_debug("PAGINATE continue...");
 			sprintf(nfname,"%s.tmp",outfname);
+			A4GL_debug("nfname = %s",nfname);
 			out2=fopen(nfname,"w");
 			add_temp_file(nfname);
 			outlines=0;
@@ -129,10 +131,12 @@ code
 				if (feof(in)) break;
 				outlines++;
 				fprintf(out2,"%s",buff);
+				A4GL_debug("out2..%s",buff);
 			}
 			fclose(in);
 			fclose(out2);
 			rename(nfname,outfname);
+			A4GL_debug("rename %s %s",nfname,outfname);
 	
 			open_display_file_c();
 endcode
