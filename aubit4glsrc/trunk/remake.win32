@@ -1,0 +1,30 @@
+
+export AUBITDIR=/gnu/cygwin/usr/src/aubit/aubit4glsrc
+
+cd /usr/src/aubit/aubit4glsrc
+
+if [ "$1" = "Clean" ]
+then
+	./configure --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug
+	make cleanall
+
+fi
+
+make
+
+cd $AUBITDIR/lib/libui/ui_highlevel
+make libUI_HL_TUIw.dll
+
+cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_curses
+make -f makefile.win32
+
+cd /usr/src/aubit/aubit4glsrc/lib/libaubit4gl
+make -f makefile.static
+
+cd /usr/src/aubit/aubit4glsrc/tools/asql
+
+
+export PATH="/usr/bin:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/gnu/MinGW/bin:C:/gnu/pdc27_vc_w32:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/gnu/pdc27_vc_w32:/cygdrive/c/Program Files/IBM/Informix/Client-SDK/bin:/cygdrive/c/WINDOWS/system32::/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/lib:/bin/custom:/usr/sbin:c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/bin:c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/lib:/usr/src/aubit/aubit4glsrc/bin:/usr/src/aubit/aubit4glsrc/lib"
+
+sh makestatic_win32.sh 4gl
+
