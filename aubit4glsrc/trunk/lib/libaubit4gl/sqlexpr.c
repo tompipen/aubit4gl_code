@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.23 2006-04-05 06:54:37 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.24 2006-05-02 18:00:47 mikeaubury Exp $
 #
 */
 
@@ -1704,7 +1704,7 @@ find_tabname_for_alias (struct s_select *select, char *alias)
     {
       if (select->table_elements.tables[0].alias)
 	{
-	  if (strcasecmp (alias, select->table_elements.tables[0].alias) == 0)
+	  if (A4GL_aubit_strcasecmp (alias, select->table_elements.tables[0].alias) == 0)
 	    {
 	      return select->table_elements.tables[0].tabname;
 	    }
@@ -1715,7 +1715,7 @@ find_tabname_for_alias (struct s_select *select, char *alias)
     {
       if (select->table_elements.tables[a].alias)
 	{
-	  if (strcasecmp (alias, select->table_elements.tables[a].alias) == 0)
+	  if (A4GL_aubit_strcasecmp (alias, select->table_elements.tables[a].alias) == 0)
 	    {
 	      return select->table_elements.tables[a].tabname;
 	    }
@@ -2440,7 +2440,7 @@ int A4GL_has_column (char *t, char *c)
 	break;
       s = acl_strdup (cptr);
       A4GL_trim (s);
-      if (strcasecmp (s, c) == 0)
+      if (A4GL_aubit_strcasecmp (s, c) == 0)
 	{
 	  free (s);
 	  found = 1;

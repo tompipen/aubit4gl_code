@@ -15,7 +15,7 @@
 SQL=esql
 
 # UI : DYNAMIC TUI HL_TUI HL_GTK CONSOLE
-UI=TUIw
+UI=HL_TUIw
 
 # ESQL:DYNAMIC POSTGRES INFORMIX
 ESQL=INFORMIX
@@ -32,6 +32,7 @@ PACKER=DYNAMIC
 
 API=
 APPEXTRA=
+CFLAGS=-g -DDEBUG
 
 ###############################################################################
 #####
@@ -96,6 +97,13 @@ else
 
 	ifeq "${UI}" "TUIw"
 		API+= ../libui/ui_curses/curslib.o ../libui/ui_curses/dump_scr.o ../libui/ui_curses/newpanels.o ../libui/ui_curses/formcntrl.o ../libui/ui_curses/ioform.o ../libui/ui_curses/colours.o ../libui/ui_curses/array.o ../libui/ui_curses/iarray.o ../libui/ui_curses/prompt.o ../libui/ui_curses/generic_ui.o
+		APPEXTRA=-LC:/gnu/cygwin/usr/src/aubit/aubit4glsrc  -lncurses -lform_g -lpanel
+		SETOBJ=1
+	endif
+
+
+	ifeq "${UI}" "HL_TUIw"
+		API+= ../libui/ui_highlevel/forms.o ../libui/ui_highlevel/generic_ui.o ../libui/ui_highlevel/menu.o ../libui/ui_highlevel/display_array.o ../libui/ui_highlevel/formcntrl.o ../libui/ui_highlevel/input_array.o ../libui/ui_highlevel/common_hlui.o ../libui/ui_highlevel/misc.o  ../libui/ui_highlevel/lowlevel_tui_win32.o ../libui/ui_highlevel/width_narrow.o
 		APPEXTRA=-LC:/gnu/cygwin/usr/src/aubit/aubit4glsrc  -lncurses -lform_g -lpanel
 		SETOBJ=1
 	endif
@@ -190,7 +198,9 @@ API_%_self.c: API_%.spec
 	sh ../bin/dlmagic  $^ -S > $@
 
 API_%_self.o: API_%_self.c
-	gcc -c -I$(AUBITDIR)/incl $<
+	gcc -DDEBUG -mms-bitfields -g -c -I$(AUBITDIR)/incl $<
 
 appextra: 
 	@echo "$(APPEXTRA)"
+
+

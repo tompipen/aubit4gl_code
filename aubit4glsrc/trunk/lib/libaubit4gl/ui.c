@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.52 2006-04-28 12:27:26 mikeaubury Exp $
+# $Id: ui.c,v 1.53 2006-05-02 18:00:47 mikeaubury Exp $
 #
 */
 
@@ -1328,7 +1328,7 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
   A4GL_trim (s);
   A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
 
-        if (strcasecmp(ptr,"NULL")==0) {
+        if (A4GL_aubit_strcasecmp(ptr,"NULL")==0) {
                 // Check for a null...
                 A4GL_debug("NULL ALLOWED");
                 if (strlen(s)==0) {
@@ -1393,7 +1393,7 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
     {
         int chk_again;
       /* Not a range */
-        if (strcasecmp(ptr2,"NULL")==0) {
+        if (A4GL_aubit_strcasecmp(ptr2,"NULL")==0) {
                 // Check for a null...
                 A4GL_trim(ptr1);
                 if (strlen(ptr1)==0) {

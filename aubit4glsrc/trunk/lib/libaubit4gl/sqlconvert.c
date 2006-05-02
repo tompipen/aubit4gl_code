@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.85 2006-04-05 06:54:37 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.86 2006-05-02 18:00:47 mikeaubury Exp $
 #
 */
 
@@ -3470,12 +3470,12 @@ is_sqlserver_reserved_word (char *s)
   for (a = 0; sql_reserved_words[a]; a++)
     {
       int c;
-      c = strcasecmp (s, sql_reserved_words[a]);
+      c = A4GL_aubit_strcasecmp (s, sql_reserved_words[a]);
       if (c < 0)
 	{
 	  break;
 	}
-      if (strcasecmp (s, sql_reserved_words[a]) == 0)
+      if (A4GL_aubit_strcasecmp (s, sql_reserved_words[a]) == 0)
 	return 1;
     }
   return 0;
