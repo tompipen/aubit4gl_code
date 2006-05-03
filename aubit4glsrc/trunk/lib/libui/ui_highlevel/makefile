@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.47 2006-05-02 18:11:06 mikeaubury Exp $
+# $Id: makefile,v 1.48 2006-05-03 08:01:12 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -128,6 +128,7 @@ else
 	endif
 	ifneq "${HAS_PDCURSES_STATIC_OBJS}" "0"
 		ALL				+=${LIBROOT}/libUI_HL_TUINs${SO_EXT}
+		ALL				+=libUI_HL_TUIw${SO_EXT}
 		DO_PDCURSES		=1
 	endif
 		
@@ -205,8 +206,15 @@ ${LIBROOT}/libUI_HL_TUI${SO_EXT}: clean $(OBJS) ${OBJS2}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS2} \
 		${LINKLIBS} ${CURSES_LIB_NAME} 
 
-libUI_HL_TUIw.dll: ${LIBROOT}/libUI_HL_TUIw.dll
-${LIBROOT}/libUI_HL_TUIw.dll: clean $(OBJS) lowlevel_tui_win32.o width_narrow.o
+#PDcurses with libform from CygWin added
+libUI_HL_TUIw${SO_EXT}: ${LIBROOT}/libUI_HL_TUIw${SO_EXT}
+${LIBROOT}/libUI_HL_TUIw${SO_EXT}: clean $(OBJS) lowlevel_tui_win32.o width_narrow.o
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
+		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform ${CURSES_LIB_NAME} 
+
+#PDcurses with libform from CygWin added - STATICALLY linked
+libUI_HL_TUIws${SO_EXT}: ${LIBROOT}/libUI_HL_TUIws${SO_EXT}
+${LIBROOT}/libUI_HL_TUIws${SO_EXT}: clean $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
 		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform_g ${CURSES_LIB_NAME} 
 

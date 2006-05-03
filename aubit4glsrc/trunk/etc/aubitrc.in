@@ -509,6 +509,9 @@ AUBIT_TEST_DIR=/usr2/aubit/aubit4gltest
 PG_COPTS="-DUSING_PG_COPTS=1 -DHAVE_CONFIG_H"
 #not set in configure.in atm: PG_COPTS="@PG_COPTS@"
 
+MSYS_ROOTDIR=@MSYS_ROOTDIR@
+MINGW_ROOTDIR=@MINGW_ROOTDIR@
+
 #-------------------------------- EOF -----------------------------
 
 

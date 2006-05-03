@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.193 2006-03-10 22:24:56 briantan Exp $
+# $Id: Makefile-common.in,v 1.194 2006-05-03 07:55:43 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -973,6 +973,7 @@ IKSEMEL_L_FLAGS		=@IKSEMEL_L_FLAGS@
 # SQLite
 SQLITE_LIBNAME		=@SQLITE_LIBNAME@
 SQLITE_LDPATH		=@SQLITE_LDPATH@
+SQLITE_LDPATH2		=@SQLITE_LDPATH2@
 
 # iODBC
 IODBC_INCLUDE		=@IODBC_INCLUDE@ 
@@ -1043,6 +1044,9 @@ YYDEBUG				=@YYDEBUG@
 
 POP_INC_PATH		=@POP_INC_PATH@
 POP_LIB_PATH		=@POP_LIB_PATH@
+
+INNO_ROOTDIR		=@INNO_ROOTDIR@
+ISTOOL_ROOTDIR		=@ISTOOL_ROOTDIR@
 
 ifeq "${POP_INC_PATH}" ""
 POP_INC_PATH		=/usr/include
@@ -1193,7 +1197,12 @@ endif
 #$(filter %.o,$(files))
 BIN_EXE_NOT_4AE=$(filter-out %.4ae,${BIN_EXE})
 BIN_EXE_4AE=$(filter %.4ae,${BIN_EXE})
-SETTINGS_FILES=C C_INFORMIX EC EC_INFORMIX EC_INGRES EC_POSTGRES EC_SAP INFORMIX
+
+#This needs to be moved into configure.in, otherwise this files will not
+#be included in packaging (rpm, windows installer, etc...)
+#SETTINGS_FILES=C C_INFORMIX EC EC_INFORMIX EC_INGRES EC_POSTGRES EC_SAP INFORMIX
+SETTINGS_FILES=$(filter-out CVS,$(notdir $(wildcard ${AUBITDIR}/tools/4glpc/settings/*)))
+
 BIN_FILES   =${BIN_SCRIPTS} ${RUNTIME_RESOURCE} ${BIN_EXE_4AE} \
 			$(addsuffix ${EXE_EXT},${BIN_EXE_NOT_4AE})
 AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${AMAKE_BIN_EXE})

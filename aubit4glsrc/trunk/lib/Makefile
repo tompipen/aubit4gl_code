@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2006-03-17 19:01:28 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2006-05-03 07:57:24 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -237,9 +237,15 @@ libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
 libUI_HL_TUI${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 
-libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
+libUI_HL_TUIw${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 
+libUI_HL_TUIws${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH} $@
+
+libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH} $@
+	
 libUI_HL_TUINs${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 

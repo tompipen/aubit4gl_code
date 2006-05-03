@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.11 2005-03-23 08:24:07 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.12 2006-05-03 07:53:25 mikeaubury Exp $
 #
 
 ########################################################################
@@ -900,15 +900,17 @@ do
 			echo "OK: No missing dependencies detected."
 			exit 0
 		fi	
-	else
+	else ######################## Windows #############################
 		#Check libs built on Windows for dependencies we should include in installer
 		#ALL_LIBS="libMENU_GENERIC.dll"
 		#ALL_LIBS="libLOGREP_PDF.so"
 		ALL_LIBS="$AUBITDIR/lib/lib*.dll"
 
 		#Places we can search:
-		SEARCH_PATHS="/  /cygdrive/f/MinGW/ /cygdrive/d/msys/ \
-			/cygdrive/d/tmp/ d:/Progra~1/GnuWin32"
+		#SEARCH_PATHS="/  /cygdrive/f/MinGW/ /cygdrive/d/msys/ \
+		#	/cygdrive/d/tmp/ d:/Progra~1/GnuWin32"
+		SEARCH_PATHS="/	`cygpath -a "$MSYS_ROOTDIR"` `cygpath -a "$MINGW_ROOTDIR"`"
+		echo "SEARCH_PATHS=$SEARCH_PATHS"
 		
 		#List of libs we will ignore as user needs to install them
 		#GTK+ libs:
@@ -919,9 +921,10 @@ do
 		IGNORE_MISSING="$IGNORE_MISSING libecpg_compat libecpg"
 
 		#libSQL_pg uses libintl-2 - it is NOT part of GTK+ - Its GetText
-		#its in GnuWin dir on Windows - seels like libpq is linked with it, so 
+		#its in GnuWin dir on Windows - seems like libpq is linked with it, so 
 		#PostgreSQL istaller would supply it?
-		IGNORE_MISSING="$IGNORE_MISSING libintl-"
+		#-libpq is provided by PG client install, so we wont package it 
+		IGNORE_MISSING="$IGNORE_MISSING libintl- libpq"
 		
 #$ cygcheck lib/libSQL_pg.dll
 #    D:\WINNT\system32\libeay32.dll
@@ -941,7 +944,7 @@ do
 		MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -1`
 		if test "$MSYS_REG_NAME" != ""; then	
 			MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"	
-			MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
+			MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/InstallLocation"`
 			MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
 		fi
 		MINGW_ROOTDIR_CYG=`cygpath -u $MINGW_ROOTDIR`

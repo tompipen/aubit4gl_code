@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2006-02-13 15:57:49 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2006-05-03 08:01:12 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -49,7 +49,7 @@ OBJECTS					=sql.o sqlex.o array.o
 
 CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 				-DWITHOUT_DRIVERMGR ${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
-				-L${SQLITE_LDPATH} -I${ROOT}/tools/odbtest/incl -I.
+				-L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -I${ROOT}/tools/odbtest/incl -I.
 
 ifneq "${COMSPEC}" ""
 	LINKLIBS		=-L${LIBROOT} -laubit4gl
@@ -58,8 +58,9 @@ ifneq "${COMSPEC}" ""
 	#WARNING: paths for MinGW GCC MUST use forward slash - NOT backslash!!!
 	CYGWIN_PATH_WIN :=$(shell cygpath -m "${CYGWIN_PATH_WIN}")
 	SQLITE_LDPATH	:=$(shell cygpath -m "${SQLITE_LDPATH}")
+	SQLITE_LDPATH2	:=$(shell cygpath -m "${SQLITE_LDPATH2}")
 	#SQLITE_LINKLIBS	=-L${CYGWIN_PATH_WIN}/lib -L${SQLITE_LDPATH}
-	SQLITE_LINKLIBS	=-L${SQLITE_LDPATH}
+	SQLITE_LINKLIBS	=-L${SQLITE_LDPATH} -L${SQLITE_LDPATH2}
 	CFLAGS_SQLITE	+=-DDLL_EXPORT -DPIC -DMEMORY_DEBUG=2
 
 else
@@ -194,7 +195,7 @@ ${LIBROOT}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 #NOTE: no static SQLite library supplied for Windows in version 2.x
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
-	${LD} ${SO_LDFLAGS} -Wl,-static $^ -o $@ -L${SQLITE_LDPATH} \
+	${LD} ${SO_LDFLAGS} -Wl,-static $^ -o $@ -L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} \
 		${SQLITE_LINKLIBS} -l${SQLITE_LIBNAME} ${LINKLIBS}
 
 ###############################
@@ -203,7 +204,7 @@ ${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
 libSQL_sqlite3S${SO_EXT}: ${LIBROOT}/libSQL_sqlite3S${SO_EXT}
 ${LIBROOT}/libSQL_sqlite3S${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
 ${LIBROOT}/libSQL_sqlite3S${SO_EXT}: ${OBJECTS} sqlite3odbc.o
-	${LD} ${SO_LDFLAGS} $^ ${SQLITE_LINKLIBS} ${LINKLIBS} -L${SQLITE_LDPATH} -o $@  \
+	${LD} ${SO_LDFLAGS} $^ ${SQLITE_LINKLIBS} ${LINKLIBS} -L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -o $@  \
 		${LINKLIBS} -Wl,-static -l${SQLITE_LIBNAME} 
 #ifdef COMSPEC
 	@echo "Should be empty: '`cygcheck $@ | grep ${SQLITE_LIBNAME}.dll`'"

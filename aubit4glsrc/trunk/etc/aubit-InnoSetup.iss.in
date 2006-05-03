@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.22 2005-04-17 01:05:59 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.23 2006-05-03 07:54:06 mikeaubury Exp $
 ;
 
 
@@ -110,7 +110,7 @@ EnableISX=true
 Name: runtime; Description: Aubit 4GL runtime libraries; Types: full standard compact custom runtime; Flags: fixed
 Name: compiler; Description: Aubit 4GL compiler; Types: full standard compact custom
 Name: help; Description: Help and manual files; Types: full standard
-Name: 4GLexamples; Description: 4GL source code example files; Types: full standard
+Name: FGLexamples; Description: 4GL source code example files; Types: full standard
 Name: Shell; Description: Shell scripts files; Types: full
 Name: Make; Description: Make files (Amake and examples); Types: full
 ;Name: GTK; Description: GTK+ GUI libraries; Types: full standard runtime
@@ -179,7 +179,7 @@ Name: "{group}\@FULLNAME@ on the Web"; Filename: "{app}\@FULLNAME@ on the Web.ur
 Name: {group}\Uninstall @FULLNAME@; Filename: {uninstallexe}; Components: runtime
 Name: {group}\@FULLNAME@ Hello World; Filename: {app}\bin\run.exe; Parameters: hello.exe; WorkingDir: {app}\tools\test; IconFilename: {app}\docs\aubit4gl.ico; IconIndex: 1; Components: runtime
 Name: "{group}\Aubit Support Website"; Filename: "http://www.sf.net/projects/aubit4gl";
-Name: {group}\SQLite Explorer; Filename: {app}\bin\sqliteExplorer.exe; WorkingDir: {app}\tools; Components: SQLITE
+Name: {group}\SQLite Explorer; Filename: {app}\bin\sqlite3Explorer.exe; WorkingDir: {app}\tools; Components: SQLITE
 Name: {group}\@FULLNAME@ DOS prompt; Filename: {cmd}; WorkingDir: {app}\tools\test; IconFilename: {app}\docs\aubit4gl.ico; IconIndex: 1; Components: runtime
 ; On desktop:
 Name: "{userdesktop}\Aubit"; Filename: "http://www.aubit4gl.sf.net"; Tasks: desktopicon; Comment: "Aubit project web site";
@@ -284,7 +284,8 @@ Type: files; Name: {app}\tools\test\*.warn
 
 ; download dll needed by example code showing how to call DLL functions at 
 ; runtime from a [Code] section.
-Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontcopy
+;Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontcopy
+Source: @ISTOOL_ROOTDIR@\isxdl.dll; DestDir: {tmp}; CopyMode: dontcopy
 
 
 ;=========================
@@ -810,7 +811,7 @@ Source: @IS_SOURCE@\tools\aubit.db; DestDir: {app}\tools; Components: SQLITE
 
 ; sqliteex.zip - 653 KB "SQLite Explorer" - schema browswe, query builder, no author/copyright
 ;                runs as exe only (439 kb not compresed), no help, does not remember last db, explain
-Source: @SYSDRIVE@\tmp\sqliteExplorer.exe; DestDir: {app}\bin; Components: SQLITE
+Source: @SQLITE_ROOT@\sqlite3Explorer.exe; DestDir: {app}\bin; Components: SQLITE
 
 ; Discarded:
 ; Tadpole - very simple, has installer, 2.88 MB BDS style license
@@ -819,12 +820,13 @@ Source: @SYSDRIVE@\tmp\sqliteExplorer.exe; DestDir: {app}\bin; Components: SQLIT
 
 ;=========================
 ;SQLite ODBC Windows driver
-Source: @SYSDRIVE@\tmp\sqliteodbc\inst.exe; DestDir: {app}\bin; Components: SQLITEODBC; Check: SetSQLiteODBCinstalled
-Source: @SYSDRIVE@\tmp\sqliteodbc\uninst.exe; DestDir: {app}\bin; Components: SQLITEODBC
-Source: @SYSDRIVE@\tmp\sqliteodbc\license.terms; DestDir: {app}\bin; Components: SQLITEODBC
-Source: @SYSDRIVE@\tmp\sqliteodbc\README; DestDir: {app}\bin; Components: SQLITEODBC
-Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbc.dll; DestDir: {app}\bin; Components: SQLITEODBC
-Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Components: SQLITEODBC
+;Source: @SYSDRIVE@\tmp\sqliteodbc\inst.exe; DestDir: {app}\bin; Components: SQLITEODBC; Check: SetSQLiteODBCinstalled
+;Source: @SYSDRIVE@\tmp\sqliteodbc\uninst.exe; DestDir: {app}\bin; Components: SQLITEODBC
+;Source: @SYSDRIVE@\tmp\sqliteodbc\license.terms; DestDir: {app}\bin; Components: SQLITEODBC
+;Source: @SYSDRIVE@\tmp\sqliteodbc\README; DestDir: {app}\bin; Components: SQLITEODBC
+;Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbc.dll; DestDir: {app}\bin; Components: SQLITEODBC
+;Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SQLITE_ROOT@\sqliteodbc.exe; DestDir: {app}\bin; Components: SQLITEODBC
 
 ;=========================
 ; Curses UI

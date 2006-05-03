@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.23 2006-03-17 18:59:55 mikeaubury Exp $
+# $Id: Makefile,v 1.24 2006-05-03 07:52:33 mikeaubury Exp $
 #
 
 ## ==================================================================
@@ -1472,6 +1472,13 @@ show:
 	@echo "FGLPC_SETTINGS_DEST=${FGLPC_SETTINGS_DEST}"
 	@echo "FGLPC_SETTINGS_PATH=${FGLPC_SETTINGS_PATH}"
 
+show.windows:
+	@echo "MSYS_SH=${MSYS_SH}"
+	@echo "MSYS_CONF=${MSYS_CONF}"
+	@echo "MSYS_ROOTDIR=${MSYS_ROOTDIR}"
+	@echo "MSYS_VERSION=${MSYS_VERSION}"
+	@echo "MINGW_ROOTDIR=${MINGW_ROOTDIR}"
+	@echo "MINGW_VERSION=${MINGW_VERSION}"
 	
 show.platform: OUT="/tmp/showplatform"
 show.platform: platform.common

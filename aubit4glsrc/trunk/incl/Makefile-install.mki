@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.104 2006-02-04 17:32:06 mikeaubury Exp $
+# $Id: Makefile-install.mki,v 1.105 2006-05-03 07:55:43 mikeaubury Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -494,7 +494,9 @@ ifndef NOREFRESH
 endif
 	unix2dos -D ${AUBITDIR}/etc/aubit-InnoSetup.iss
 #	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${WIN_CYGPATH}/${AUBITDIR}/etc/aubit-InnoSetup.iss")
-	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${AUBITDIR}/etc/aubit-InnoSetup.iss")
+#	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${AUBITDIR}/etc/aubit-InnoSetup.iss")
+	(cd "${INNO_ROOTDIR}"; iscc "${AUBITDIR}/etc/aubit-InnoSetup.iss")
+
 #Setup program should now be at ${AUBITDIR}\etc\Output\setup.exe
 
 #</block for binary install Makefile ===================================>
@@ -521,8 +523,12 @@ install.winsetup.silent:
 ##                    Third-party products installation settings
 ## ==================================================================
 
-#MSYS_SH		=${MSYS_ROOTDIR}/bin/sh.exe -c
-MSYS_SH		=/cygdrive/d/msys/1.0/bin/sh.exe -c 
+#			echo "MSYS_ROOTDIR=$MSYS_ROOTDIR"
+#			echo "MSYS_VERSION=$MSYS_VERSION"
+#			echo "MINGW_ROOTDIR=$MINGW_ROOTDIR"
+#			echo "MINGW_VERSION=$MINGW_VERSION"
+
+MSYS_SH		=$(shell cygpath -a "${MSYS_ROOTDIR}")/bin/sh.exe -c
 MSYS_CONF	=. /etc/profile
 
 ##################
@@ -544,8 +550,8 @@ IODBC_GUI_RPM       =libiodbc-admin-3.51.2-1.i386-rh9.rpm
 PDFLIB_INFO			=http://www.pdflib.com
 
 #Unix source code:
-PDFLIB_PATH			=http://www.pdflib.com/products/pdflib/download/601src
-PDFLIB_SRC          =PDFlib-Lite-6.0.1
+PDFLIB_PATH			=http://www.pdflib.com/products/pdflib/download/603src
+PDFLIB_SRC          =PDFlib-Lite-6.0.3
 PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
 
 #Linux binary:
@@ -1004,6 +1010,7 @@ install.iodbc: ${IODBC_RUNTIME_RPM} ${IODBC_SDK_RPM} ${IODBC_GUI_RPM}
 ########################
 # 2: Install PDFlib:
 ifdef COMSPEC
+#Windows:
 install.pdflib: ${PDFLIB_WIN_ZIP}
 ifeq "${PDF_WIN_TYPE}" "bin"
 	${UNZIP} $^ -d ${SYSTEMDRIVE}/tmp
@@ -1018,12 +1025,20 @@ else
 #so it has to be compiled using MSYS
 #TODO - can I invoke MYSYS shell directly form here? something like:
 #${MSYS_SH} "{$MSYS_CONF}; cd /f/cygwin/tmp/PDFlib-Lite-6.0.1; make install"
+ifeq "${WINCOMP_PFD}" "cygwin"
 	${UNZIP} $^ -d /tmp
-#	${UNZIP} $^ -d ${SYSTEMDRIVE}/tmp
 	cd /tmp/${PDFLIB_WIN_NAME}; ./configure; make; make install
-#	cd ${SYSTEMDRIVE}/tmp; ./configure; make; make install
+else
+#Use Msys to compile source code: xxxxxx
+#	${UNZIP} $^ -d ${TEMP}
+#	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${XMLRPC_SRC_NAME}; ./configure"
+#	${MSYS_SH} "${MSYS_CONF}; cd $(shell cygpath -m "${TEMP}/${PDFLIB_WIN_NAME}"); ./configure"
+#	${MSYS_SH} "${MSYS_CONF}; cd $(shell cygpath -m "${TEMP}/${PDFLIB_WIN_NAME}"); make" 
+	${MSYS_SH} "${MSYS_CONF}; cd $(shell cygpath -m "${TEMP}/${PDFLIB_WIN_NAME}"); make install"
+endif
 endif
 else
+#UNIX:
 install.pdflib: ${PDFLIB_SRC_TGZ}
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${PDFLIB_SRC}; ./configure; make; make install

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.312 2006-04-26 12:01:35 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.313 2006-05-03 08:00:39 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -574,12 +574,15 @@ AC_SUBST(EFENCE)
 AC_SUBST(CINT)
 AC_SUBST(CINTSYSDIR)
 AC_SUBST(SQLITE_LDPATH)
+AC_SUBST(SQLITE_LDPATH2)
 AC_SUBST(SQLITE_LIBNAME)
+AC_SUBST(SQLITE_ROOT)
 AC_SUBST(Q_ESQLC)
 AC_SUBST(AUBIT_LICENSE)
 AC_SUBST(PCRE_INC_PATH)
 AC_SUBST(PCRE_LIB_PATH)
 AC_SUBST(MSYS_ROOTDIR)
+AC_SUBST(MINGW_ROOTDIR)
 AC_SUBST(HAVE_MQLIB)
 AC_SUBST(HAVE_SXMLLIB)
 AC_SUBST(I4GL_PCOMPILER)
@@ -588,6 +591,9 @@ AC_SUBST(enable_minimal)
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
 #AC_SUBST(IS_SOURCE_GTK)
+AC_SUBST(INNO_ROOTDIR)
+AC_SUBST(INNO_VERSION)
+AC_SUBST(ISTOOL_ROOTDIR)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
@@ -2225,13 +2231,13 @@ ALL_EXAMP_GUI="gui.per calc.per form-gui.per gui.4gl calc.4gl hello-gui.4gl \
 	for FILE in $ALL_EXAMP ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/$FILE'"
-		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\\$FILE; DestDir: {app}\tools\test; Components: 4GLexamples'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\\$FILE; DestDir: {app}\tools\test; Components: FGLexamples'"
 	done
 
 	for FILE in $ALL_EXAMP_GUI ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/gui/$FILE'"
-		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\gui\\$FILE; DestDir: {app}\tools\test\gui; Components: 4GLexamples'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\gui\\$FILE; DestDir: {app}\tools\test\gui; Components: FGLexamples'"
 	done
 
 #Now add Makefile to be used for installation only:
@@ -2613,7 +2619,7 @@ PHP_CONFIGURE_PART(Checking standard programs:)
 if test "$COMSPEC" != ""; then
 #Collect info from Windows registry:
 	if test "$enable_ac_debug" = "yes" ; then
-		echo "------- reg: GTK"
+		echo "--------- reg: GTK"
 	fi
 	GTK_DEV_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Gtk+ Development Environment for Windows"
 	regtool.exe check  "$GTK_DEV_REG_PATH" > /dev/null 2>&1
@@ -2623,7 +2629,7 @@ if test "$COMSPEC" != ""; then
 		#Also has keys: Cygwin and MSYS
 	fi
 	if test "$enable_ac_debug" = "yes" ; then
-		echo "---------reg: pg"
+		echo "--------- reg: pg"
 	fi
 	PG_REG_ROOT="/machine/SOFTWARE/PostgreSQL/Installations"
 	regtool.exe check  "$PG_REG_ROOT" > /dev/null 2>&1
@@ -2641,13 +2647,14 @@ if test "$COMSPEC" != ""; then
 		echo "--------- reg: msys"
 	fi
 	UNINST_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"
-	SYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -n 1`
+	MSYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -n 1`
 	if test "$MSYS_REG_NAME" != ""; then 
 		MSYS_REG_PATH="$UNINST_REG_PATH/$MSYS_REG_NAME"
 		regtool.exe check  "$MSYS_REG_PATH" > /dev/null 2>&1
 		RET=$?
 		if test "$RET" = "0"; then
 			MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
+			MSYS_ROOTDIR=`cygpath -m "$MSYS_ROOTDIR"`
 			MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
 		fi
 	fi
@@ -2656,19 +2663,13 @@ if test "$COMSPEC" != ""; then
 	fi
 	MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -n 1`
 	if test "$MINGW_REG_NAME" != ""; then
-#echo "--------- 2"
 		MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"
-#echo "--------- 3"
-#echo "xxx $MINGW_REG_NAME xxx"
-#echo "regtool get"
-#echo "$MINGW_REG_PATH/Inno Setup: App Path"
-#echo "regtool get \"$MINGW_REG_PATH/Inno Setup: App Path\""
-#regtool get "/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/MinGW/Inno Setup: App Path"
 		regtool.exe check  "$MINGW_REG_PATH" > /dev/null 2>&1
 		RET=$?
 		if test "$RET" = "0"; then
-			MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
-#echo "--------- 4"
+			#MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
+			MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/InstallLocation"`
+			MINGW_ROOTDIR=`cygpath -m "$MINGW_ROOTDIR"`
 			MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
 		fi
 	fi
@@ -2715,34 +2716,44 @@ if test "$COMSPEC" != ""; then
 	if test "$enable_ac_debug" = "yes" ; then
 		echo "------ reg: ISsetup"
 	fi
-#ISTool:
-#HKEY_CURRENT_USER\Software\Bjornar Henden\ISTool\Prefs
-#Usefull: ExtFolder InnoFolder LanguageFile
-#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\ISTool_is1
-#Inno Setup: App Path and DisplayVersion
-#Also in HKEY_USERS\S-1-5-21-682003330-813497703-2111712231-500\Software\Bjornar Henden\ISTool
 
-#Inno Setup:
-#HKEY_CURRENT_USER\Software\Jordan Russell\Inno Setup
-#But has no paths there!
-#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 3_is1
-#Inno Setup: App Path and DisplayVersion
-#Also in : HKEY_USERS\S-1-5-21-682003330-813497703-2111712231-500\Software\Jordan Russell\Inno Setup
-
-#My Inno Setup Extensions:
-#HKEY_CURRENT_USER\Software\Martijn Laan\My Inno Setup Extensions
-#No paths there!
-#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\My Inno Setup Extensions 3_is1
-#Inno Setup: App Path and DisplayVersion
-
-
+	INNO_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "Inno" | head -n 1`
+	if test "$INNO_REG_NAME" != ""; then 
+		INNO_REG_PATH="$UNINST_REG_PATH/$INNO_REG_NAME"
+		regtool.exe check  "$INNO_REG_PATH" > /dev/null 2>&1
+		RET=$?
+		if test "$RET" = "0"; then
+			INNO_ROOTDIR=`regtool get "$INNO_REG_PATH/Inno Setup: App Path"`
+			INNO_VERSION=`regtool get "$INNO_REG_PATH/DisplayVersion"`
+		fi
+	fi
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "------ reg: ISTool"
+	fi	
+	TMP_LIST="`regtool list "$UNINST_REG_PATH" | grep {`"
+	for a in $TMP_LIST; do
+		echo "a=$a"
+		TMP_LIST2=`regtool list "$UNINST_REG_PATH/$a" | grep -i DisplayName`
+		if test "$TMP_LIST2" != ""; then
+			echo "Have DisplayName in $a"
+			TMP_NAME=`regtool get "$UNINST_REG_PATH/$a/DisplayName" | grep -i ISTool`
+			if test "$TMP_NAME" != ""; then
+				ISTOOL_ROOTDIR=`regtool get "$UNINST_REG_PATH/$a/InstallLocation"`
+				break
+			fi
+		fi
+	done
+	
 		if test "$enable_ac_debug" = "yes" ; then
 			echo "GTK_DEV_VER=$GTK_DEV_VER"
 			echo "MSYS_ROOTDIR=$MSYS_ROOTDIR"
 			echo "MSYS_VERSION=$MSYS_VERSION"
 			echo "MINGW_ROOTDIR=$MINGW_ROOTDIR"
 			echo "MINGW_VERSION=$MINGW_VERSION"
-			echo "PG_REG_INST_NAME=$PG_REG_INST_NAME"
+			echo "INNO_ROOTDIR=$INNO_ROOTDIR"
+			echo "INNO_VERSION=$INNO_VERSION"
+			echo "ISTOOL_ROOTDIR=$ISTOOL_ROOTDIR"
+			#echo "PG_REG_INST_NAME=$PG_REG_INST_NAME"
 			echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"
 			echo "PG_REG_BASEDIR_CYGPATH=$PG_REG_BASEDIR_CYGPATH"
 			echo "REG_INFORMIXDIR=$REG_INFORMIXDIR"
@@ -2750,7 +2761,7 @@ if test "$COMSPEC" != ""; then
 		fi
 
 fi	
-
+#exit
 if test "$AUBIT_SOURCE" = "1" ; then
 
 ## ==================================================================
@@ -3956,31 +3967,45 @@ AC_ARG_WITH(pdf,
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
-
+		
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+        old_CFLAGS=$CFLAGS
+        old_CPPFLAGS=$CPPFLAGS
+		old_PATH="$PATH"
+		
+		if test "$MSYS_ROOTDIR" != ""; then
+			PATH="$MSYS_ROOTDIR/local/bin:$PATH"
+			echo "PATH=$PATH"
+		fi
+		
 		AC_PATH_PROG(PDFLIB_CONFIG, pdflib-config, no)
 		
 		if test "$PDFLIB_CONFIG" != "no"; then 
 			PDF_LIBDIR=`pdflib-config --libdir`
 			PDF_INCDIR=`pdflib-config --includedir`
 			PDF_VERSION=`pdflib-config --version`
-			#PDF_LDFLAGS=`pdflib-config --ldflags`
-			#PDF_CFLAGS=`pdflib-config --cflags`
+			PDF_LDFLAGS=`pdflib-config --ldflags`
+			PDF_CFLAGS=`pdflib-config --cflags`
 		fi
+			
+			#if test "$GCC_MINGW" != "yes"; then
+			#	TEST_PDFLIB_I_FLAGS="-I$withval/include"
+			#	TEST_PDFLIB_L_FLAGS="-L$withval/lib"
+			#else
+			if test "$GCC_MINGW" = "yes" \
+				-a "$MSYS_ROOTDIR" != "" \
+				-a "$PDFLIB_CONFIG" != "no" ; then
+				#On mingw, pdflib-config would return paths relative to 
+				#it's installation dir (which is by default Msys install dir)
+				#so we cant use it
+				withval="$MSYS_ROOTDIR"
+				withval="`$CYGPATH -m $withval`"		
+				TEST_PDFLIB_I_FLAGS="-I$withval/local/include"
+				TEST_PDFLIB_L_FLAGS="-L$withval/local/lib"
+			fi
+			#fi
 		
-		old_LIBS=$LIBS
-		old_LDFLAGS=$LDFLAGS
-        old_CFLAGS=$CFLAGS
-        old_CPPFLAGS=$CPPFLAGS
-
-		if test "$GCC_MINGW" != "yes"; then
-			TEST_PDFLIB_I_FLAGS="-I$withval/include"
-			TEST_PDFLIB_L_FLAGS="-L$withval/lib"
-        else
-			withval="`$CYGPATH -m $withval`"		
-			TEST_PDFLIB_I_FLAGS="-I$withval/include"
-			TEST_PDFLIB_L_FLAGS="-L$withval/lib"
-        fi
-
 		TEST_PDFLIB_FLAGS="$TEST_PDFLIB_I_FLAGS $TEST_PDFLIB_L_FLAGS"
 		LDFLAGS="$LDFLAGS $TEST_PDFLIB_FLAGS -lm"
 		CFLAGS="$CFLAGS $TEST_PDFLIB_FLAGS"
@@ -3993,18 +4018,24 @@ AC_ARG_WITH(pdf,
 			echo "PDF_LIBDIR=$PDF_LIBDIR"
 			echo "PDF_INCDIR=$PDF_INCDIR"
 			echo "PDF_VERSION=$PDF_VERSION"
-			
+			echo "PDF_LDFLAGS=$PDF_LDFLAGS"
+			echo "PDF_CFLAGS=$PDF_CFLAGS"
+			echo "TEST_PDFLIB_I_FLAGS=$TEST_PDFLIB_I_FLAGS"
+			echo "TEST_PDFLIB_L_FLAGS=$TEST_PDFLIB_L_FLAGS"
+	
 		fi
 		
 		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-lpdf':
 		AC_CHECK_LIB([pdf], [main])
 		AC_CHECK_HEADERS([ pdflib.h ])
+		
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 		CFLAGS=$old_CFLAGS
         CPPFLAGS=$old_CPPFLAGS
-
+		PATH="$old_PATH"
+		
 		AC_MSG_CHECKING(if we can use PDF)
 		if test $ac_cv_lib_pdf_main = yes -a "$ac_cv_header_pdflib_h" = "yes"; then
 			USE_PDF=yes
@@ -5659,9 +5690,11 @@ fi
 				else
 					withval="/usr"
 				fi
+			else 
+				echo "Using $withval"
 			fi
 
-			PATH="$withval/bin:$old_PATH"
+			PATH="$withval:$withval/bin:$old_PATH"
 
 			#readline library is needed to link SQLite
 			AC_CHECK_LIB([readline], [main])
@@ -5697,9 +5730,10 @@ fi
 			AC_MSG_RESULT($SQLITE_ROOT)
 			
 			SQLITE_LDPATH="$SQLITE_ROOT/lib"
-			LDFLAGS="-L$SQLITE_LDPATH $LDFLAGS"
-			CFLAGS="-I$SQLITE_ROOT/include $CFLAGS"
-			CPPFLAGS="-I$SQLITE_ROOT/include $CPPFLAGS"
+			SQLITE_LDPATH2="$SQLITE_ROOT"
+			LDFLAGS="-L$SQLITE_LDPATH -L$SQLITE_LDPATH2 $LDFLAGS"
+			CFLAGS="-I$SQLITE_ROOT/include -I$SQLITE_ROOT $CFLAGS"
+			CPPFLAGS="-I$SQLITE_ROOT/include -I$SQLITE_ROOT $CPPFLAGS"
 
 			if test "$SQLITE_VER" = "3"; then
 				# FIXME: Replace `main' with a function in `-lc':
@@ -5748,14 +5782,18 @@ fi
 				fi
 				
 				if test "$COMSPEC" != "" -a "$COLLECT_THIRD_PARTY" = "1"; then
-					a=`$CYGPATH -u "$WINDIR"`
+					#a=`$CYGPATH -u "$WINDIR"`
 					#b=`$CYGPATH -u "$CYGWIN_PATH_WIN"`
-					b=
+					#b="/lib"
+					a="$withval"
+					b="$withval"
 					if test "$SQLITE_VER" = "3"; then
 						THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
 							SQLITE#$a/sqlite3.exe \
-							SQLITE#$b/lib/libsqlite3.dll \
-							SQLITE#$b/lib/libsqlite3.dll!sqlite3.dll"
+							SQLITE#$b/libsqlite3.dll \
+							SQLITE#$b/sqlite3.dll \
+							SQLITE#$b/sqlite3.dll!libsqlite3.dll \
+							SQLITE#$b/libsqlite3.dll!sqlite3.dll"
 					else
 						THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
 							SQLITE#$a/sqlite.exe \
@@ -8261,18 +8299,18 @@ else
 
 	if test "$HAVE_CURSES" = "1" ; then
 		A4GL_UI="TUI"
-        	#HL_TUI is still not as good as TUI according to Mike
+        #HL_TUI is still not as good as TUI according to Mike
 		#A4GL_UI="HL_TUI"
 		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI HL_TUIN"
 	else
 		#we can compile only HL_TUIN with PDcurses
 		if test "$HAVE_PDCURSES" = "1"; then
 			A4GL_UI="HL_TUIN"
-			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN"
+			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN UI_HL_TUIw"
 		fi
 		if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
 				A4GL_UI="HL_TUINs"
-				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs"
+				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs UI_HL_TUIws"
 		fi
 	fi
 
@@ -8345,14 +8383,14 @@ PLUGIN_NO_LINKABLE=
 			#no curses, but found PDcurses
 			#can make only UI_TUIN with PDcurses
 			if test "$HAVE_PDCURSES" = "1"; then 
-    	    	PLUGIN_YES="$PLUGIN_YES UI_HL_TUIN"
+    	    	PLUGIN_YES="$PLUGIN_YES UI_HL_TUIN UI_HL_TUIw"
 			else
-				PLUGIN_NO="$PLUGIN_NO UI_HL_TUIN"
+				PLUGIN_NO="$PLUGIN_NO UI_HL_TUIN UI_HL_TUIw"
 			fi
 			if test "$HAS_PDCURSES_STATIC_OBJS" = "1"; then 
-				PLUGIN_YES="$PLUGIN_YES UI_HL_TUINs"
+				PLUGIN_YES="$PLUGIN_YES UI_HL_TUINs UI_HL_TUIws"
 			else
-				PLUGIN_NO="$PLUGIN_NO UI_HL_TUINs"
+				PLUGIN_NO="$PLUGIN_NO UI_HL_TUINs UI_HL_TUIws"
 			fi
 			if test "$GCC_MINGW" != "yes"; then
 				#Does not exist for MinGW anyway
@@ -8366,7 +8404,7 @@ PLUGIN_NO_LINKABLE=
 			#no Curses and no PDcurses
 			if test "$GCC_MINGW" != "yes"; then
 				#Does not exist for MinGW anyway
-				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN UI_HL_TUINs"
+				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN UI_HL_TUINs UI_HL_TUIw UI_HL_TUIws"
 				#Will be on all known Linux installations, but not by default on CygWin
 				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
 			else
@@ -9241,7 +9279,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.312 2006-04-26 12:01:35 mikeaubury Exp $
+| $Id: configure.in,v 1.313 2006-05-03 08:00:39 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
