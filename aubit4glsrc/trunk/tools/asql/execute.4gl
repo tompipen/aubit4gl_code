@@ -551,8 +551,13 @@ char *get_tmp_dir(void ) {
 	if (ptr) {
 		strcpy(tmpdir,ptr);
 	} else {
+
 #if defined(__MINGW32__)
 	sprintf(tmpdir,"c:\\temp\\aubit4gl");
+	if (have_made_dir==0) {
+		mkdir("c:\\temp",0777);
+		chmod (tmpdir,0777);
+	}
 #else
 	sprintf(tmpdir,"/tmp/aubit4gl");
 #endif
