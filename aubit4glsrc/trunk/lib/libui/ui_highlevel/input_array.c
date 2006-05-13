@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.39 2006-04-05 06:54:38 mikeaubury Exp $
+# $Id: input_array.c,v 1.40 2006-05-13 12:34:40 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.39 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.40 2006-05-13 12:34:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -641,7 +641,7 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	    {
 	      return blk;
 	    }
-	  a = A4GL_getch_win (1);
+	  a = A4GL_getch_win (1,"input array");
 	  if (a != 0 && a != -1)
 	    {
 	      A4GL_evt_not_idle (evt);
@@ -1049,7 +1049,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
   void ***fld_list;
   int rval;
   struct aclfgl_event_list *evt;
-  int blk;
+  //int blk;
   struct s_inp_arr *inpa;
   evt = vevt;
   //int a;

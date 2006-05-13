@@ -29,7 +29,7 @@ int A4GL_get_currwinno(void);
 int A4GL_get_field_width(void *field);
 int A4GL_get_metric_for(struct s_form_dets *form, void *f);
 int A4GL_get_metric_no(struct s_form_dets *form, void *f);
-int A4GL_getch_win(int allow_acc_intr);
+int A4GL_getch_win(int allow_acc_intr,char* why);
 int A4GL_getcomment_line(void);
 int A4GL_geterror_line(void);
 int A4GL_getform_line(void);
@@ -93,7 +93,7 @@ void chk_for_picture(void *f, char *buff);
 void debug_print_flags(void *sv, char *txt);
 void* A4GL_add_window(int x, int y, int w, int h, char *name, void *fd, void *win);
 void A4GL_wprintw_window (void *win, int attr, int x, int y, int curr_width,int curr_height,int iscurrborder,int currwinno, char *fmt, ...);
-int A4GL_getch_internal(void *win);
+int A4GL_getch_internal(void *win,char *why);
 
 
 
@@ -112,4 +112,15 @@ void *A4GL_ll_get_field_userptr(void *f) ;
 void A4GL_ll_set_field_userptr(void *f, void *r) ;
 void *A4GL_ll_get_form_userptr(void *f) ;
 void A4GL_ll_set_form_userptr(void *f, void *r) ;
+
+int A4GL_get_dbscr_promptline(void);
+int A4GL_get_dbscr_messageline(void);
+int A4GL_get_dbscr_commentline(void);
+int A4GL_get_dbscr_errorline(void);
+int A4GL_get_dbscr_formline(void);
+int A4GL_get_dbscr_menuline(void);
+int A4GL_get_dbscr_inputmode(void);
+int A4GL_ll_field_opts (void *f);
+void A4GL_ll_set_field_opts (void *f,int l);
+void A4GL_submit_events(void *s, struct aclfgl_event_list *evt );
 

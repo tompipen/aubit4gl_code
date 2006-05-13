@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.17 2005-08-17 13:43:12 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.18 2006-05-13 12:34:38 mikeaubury Exp $
 #*/
 
 /**
@@ -69,7 +69,8 @@ int debug_mode = 0;
 
 static char fout[256] = "a.4pe";
 
-struct module this_module;
+static struct module this_module;
+struct module *this_module_ptr=0;
 
 /*
 =====================================================================
@@ -101,6 +102,7 @@ main (int argc, char *argv[])
   int got_input = 0;
   int ignore_next = 0;
 
+  this_module_ptr=&this_module;
   this_module.fglc_magic = FGLC_XDR_MAGIC;
   this_module.fglc_version = FGLC_XDR_VERSION;
 
@@ -261,7 +263,7 @@ main (int argc, char *argv[])
 
   {
     char *ptr;
-    ptr = acl_malloc2 (1024 * 1024 * 16);
+    ptr = acl_malloc2 (1024 * 1024 * 1);
     free (ptr);			// Should speed things up a little...
   }
 

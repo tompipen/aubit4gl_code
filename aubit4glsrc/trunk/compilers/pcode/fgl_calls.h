@@ -63,7 +63,10 @@ int A4GL_pcode_ecall(char *x,int a,int params) {
 
   nset_param(0,param_id);
   //printf("cleared param_id %d\n",param_id);
-  if (rval!=1) { A4GLSQL_set_status(-3001,0);A4GL_chk_err(a,this_module.module_name);}
+  if (rval!=1) { 
+	  	A4GLSQL_set_status(-3001,0);
+		A4GL_chk_err(a,this_module_ptr->module_name);
+  }
 return 1;
 }
 
@@ -148,8 +151,8 @@ void init_calls(int argc,char *argv[]) {
 
 void *resolve_externs(char *name) {
 	      if (strcmp (name, "a4gl_sqlca") == 0) { return &a4gl_sqlca; }
-	      if (strcmp (name, "int_flag") == 0) { return &int_flag; }
-	      if (strcmp (name, "quit_flag") == 0) { return &quit_flag; }
+	      if (strcmp (name, "G_int_flag") == 0) { return &int_flag; }
+	      if (strcmp (name, "G_quit_flag") == 0) { return &quit_flag; }
 	      if (strcmp (name, "a4gl_status") == 0) { return &a4gl_status; }
 	      if (strcmp (name, "today") == 0) { return 0; }
 	      if (strcmp (name, "user") == 0) { return 0; }
@@ -195,18 +198,18 @@ int special_cmd(struct cmd *c) {
 
 
 	if (c->cmd_type==CMD_PUSH_CHAR) {
-			A4GL_push_char(this_module.string_table.string_table_val[c->cmd_u.c_push_char].s);
+			A4GL_push_char(this_module_ptr->string_table.string_table_val[c->cmd_u.c_push_char].s);
 			return 1;
 	}
 
         if (c->cmd_type==CMD_ECALL) {
 /*
-		printf("ECALL : %s %d %d\n", this_module.string_table.string_table_val[c->cmd_u.c_ecall->func_id].s,
+		printf("ECALL : %s %d %d\n", this_module_ptr->string_table.string_table_val[c->cmd_u.c_ecall->func_id].s,
 				c->cmd_u.c_ecall->ln,
 				c->cmd_u.c_ecall->nparam);
 		fflush(stdout);
 */
-                A4GL_pcode_ecall(this_module.string_table.string_table_val[c->cmd_u.c_ecall->func_id].s,
+                A4GL_pcode_ecall(GET_ID(c->cmd_u.c_ecall->func_id),
 				c->cmd_u.c_ecall->ln,
 				c->cmd_u.c_ecall->nparam);
 		return 1;
@@ -219,8 +222,8 @@ int special_cmd(struct cmd *c) {
 	}
 
 	if (c->cmd_type==CMD_CHK_ERR) {
-			fprintf(logfile,"CHKERR %ld %s\n",c->cmd_u.c_chk_err_lineno,this_module.module_name);
-			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module.module_name);
+			fprintf(logfile,"CHKERR %ld %s\n",c->cmd_u.c_chk_err_lineno,this_module_ptr->module_name);
+			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module_ptr->module_name);
 			return 1;
 	}
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.25 2005-11-27 11:31:36 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.26 2006-05-13 12:34:38 mikeaubury Exp $
 #
 */
 
@@ -296,7 +296,6 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 		char buff[3000];
 		strncpy(buff,src,2999);
 		buff[2999]=0;
-		//A4GL_pause_execution();
 		A4GL_debug("Long string : %s\n",buff);
 	}
 

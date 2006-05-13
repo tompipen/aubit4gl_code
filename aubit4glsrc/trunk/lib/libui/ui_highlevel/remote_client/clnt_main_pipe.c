@@ -54,11 +54,11 @@ void A4GL_LL_switch_to_line_mode(void) {
 }
 
 
-int A4GL_LL_getch_swin( void* window_ptr) {
+int A4GL_LL_getch_swin( void* window_ptr,char *why) {
 	ret_23 ret;
 	init_client();
 	struct client_result *resultP;
-	resultP = client_call("A4GL_LL_getch_swin", "i",(long)window_ptr);
+	resultP = (struct client_result *)client_call("A4GL_LL_getch_swin", "is",(long)window_ptr,why);
 	if (client_result_ok(resultP)) {
 
 		   client_get_value( resultP, "i", &ret);

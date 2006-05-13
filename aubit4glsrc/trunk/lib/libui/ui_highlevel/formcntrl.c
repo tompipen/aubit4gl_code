@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.47 2006-04-28 12:07:09 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.48 2006-05-13 12:34:40 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.47 2006-04-28 12:07:09 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.48 2006-05-13 12:34:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1319,7 +1319,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 		       	return blk;
    	}
 
-  	a = A4GL_getch_win (1);
+  	a = A4GL_getch_win (1,"input");
 	
   	if (a!=0&&a!=-1) {
        		A4GL_evt_not_idle(evt);
@@ -1928,7 +1928,7 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt)
  //blk=A4GL_has_evt_timeout(evt);
  //if (blk) { return blk; }
  //
-  	a = A4GL_getch_internal (0);
+  	a = A4GL_getch_internal (0,"construct");
   	construct_last_key = a;
 
 

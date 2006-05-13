@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.36 2006-04-13 12:42:50 mikeaubury Exp $
+# $Id: load.c,v 1.37 2006-05-13 12:34:38 mikeaubury Exp $
 #
 */
 
@@ -240,7 +240,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   delim = delims[0];
 
 
-  A4GL_debug ("In load_data");
+  A4GL_debug ("In load_data - LOAD_ORIG");
   strncpy (filename, fname,sizeof(filename));
   filename[1023]=0; // Just to make sure...
 

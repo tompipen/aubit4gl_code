@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.270 2006-03-17 19:01:05 mikeaubury Exp $
+# $Id: mod.c,v 1.271 2006-05-13 12:34:38 mikeaubury Exp $
 #
 */
 
@@ -3649,7 +3649,7 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
   int dim;
   int xxxa;
   static struct binding_comp *save_bind = 0;
-  char c;
+  char variable_scope;
 
   xxxa = 0;
 
@@ -3670,9 +3670,13 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
       strcpy (buff, save_bind[xxxa].varname);
       if (must_be_local)
 	{
-	  c = find_variable_scope (buff);
-	  if (c != 'L')
+	  variable_scope = find_variable_scope (buff);
+	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE"))) {
+		  if (variable_scope=='R') variable_scope='L';
+	  }
+	  if (variable_scope != 'L' && variable_scope!='R')
 	    {
+		   A4GL_debug("scope = %c - variable not defined locally",variable_scope);
 	      set_yytext (buff);
 	      a4gl_yyerror ("Variable has not been defined locally");
 	      return;

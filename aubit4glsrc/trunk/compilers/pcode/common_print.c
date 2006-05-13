@@ -18,7 +18,7 @@
 
 #include "npcode_defs.h"
 
-extern module this_module;
+extern module *this_module_ptr;
 
 
 char *op_str[]={
@@ -103,14 +103,13 @@ print_module_functions ()
   int a;
 
 
-  for (func_cnt = 0; func_cnt < this_module.functions.functions_len;
+  for (func_cnt = 0; func_cnt < this_module_ptr->functions.functions_len;
        func_cnt++)
     {
       struct npfunction *f;
-      f = &this_module.functions.functions_val[func_cnt];
-      printf ("FUNCTION : %s\n",
-	      GET_ID (this_module.functions.functions_val[func_cnt].
-		      func_name_id));
+      f = &this_module_ptr->functions.functions_val[func_cnt];
+      printf ("FUNCTION : %s\n", GET_ID (this_module_ptr->functions.functions_val[func_cnt].  func_name_id));
+      printf ("  Module : %s\n", GET_ID (this_module_ptr->functions.functions_val[func_cnt].  module_name_id));
       printf ("%d parameters\n", f->param_vars.param_vars_len);
 
 
@@ -122,11 +121,11 @@ print_module_functions ()
 
       for (cmd_cnt = 0;
 	   cmd_cnt <
-	   this_module.functions.functions_val[func_cnt].cmds.cmds_len;
+	   this_module_ptr->functions.functions_val[func_cnt].cmds.cmds_len;
 	   cmd_cnt++)
 	{
 	  print_command (func_cnt, cmd_cnt,
-			 &this_module.functions.functions_val[func_cnt].cmds.
+			 &this_module_ptr->functions.functions_val[func_cnt].cmds.
 			 cmds_val[cmd_cnt]);
 	}
     }
@@ -228,7 +227,7 @@ print_if (struct npcmd_if *i)
 }
 
 void print_ecall(struct ecall *e) {
-	printf("ECALL %d %d %d",e->func_id,e->ln,e->nparam);
+	printf("ECALL %s %d %d %d",GET_ID (e->func_id),e->func_id,e->ln,e->nparam);
 }
 void print_set_stat(int n) {
 	printf("SET STATUS : %d\n",n);
@@ -463,9 +462,9 @@ print_params (long e_l)
 static int lvl=0;
 int pa;
 struct param *e;
-
 if (e_l<0) e=nget_param(e_l);
-else e=&PARAM_ID(e_l);
+else e=&PARAM_ID(this_module_ptr, e_l);
+printf("{%d}",e_l);
 
 
 for (pa=0;pa<lvl;pa++) printf("  ");
@@ -476,19 +475,19 @@ for (pa=0;pa<lvl;pa++) printf("  ");
       return;
     }
 
-
+  
 
   switch (e->param_type)
     {
     case PARAM_TYPE_LITERAL_INT:
-      printf ("INT %ld", e->param_u.n);
+      printf ("INT %lx", e->param_u.n);
       break;
     case PARAM_TYPE_LITERAL_CHAR:
       printf ("char %c\n", e->param_u.c);
       break;
     case PARAM_TYPE_LITERAL_STRING:
       printf ("string[%ld] - %s\n", e->param_u.str_entry,
-	      this_module.string_table.string_table_val[e->param_u.str_entry].
+	      this_module_ptr->string_table.string_table_val[e->param_u.str_entry].
 	      s);
       break;
     case PARAM_TYPE_LITERAL_DOUBLE:
@@ -570,19 +569,20 @@ print_module ()
   int a;
   int tbytes;
 
-  printf ("MAGIC   : %lx VERSION : %ld SIZE : %ld\n", this_module.fglc_magic,
-	  this_module.fglc_version, this_module.file_size);
-  printf ("NAME    : %s\n", this_module.module_name);
-  printf ("CREATED : %s\n", ctime (&this_module.compiled_time));
+  printf ("MAGIC   : %lx VERSION : %ld SIZE : %ld\n", this_module_ptr->fglc_magic,
+	  this_module_ptr->fglc_version, this_module_ptr->file_size);
+  printf ("NAME    : %s\n", this_module_ptr->module_name);
+  printf ("CREATED : %s", ctime (&this_module_ptr->compiled_time)); // ctime adds a \n
+  printf ("Max VID : %d\n", this_module_ptr->max_variable_id);
   printf ("\n\nString Table\n\n");
   tbytes=0;
 
-  for (a = 0; a < this_module.string_table.string_table_len; a++)
+  for (a = 0; a < this_module_ptr->string_table.string_table_len; a++)
     {
       printf ("%d. \"%s\" %d references\n", a,
-	      this_module.string_table.string_table_val[a].s,
-	      this_module.string_table.string_table_val[a].rcnt);
-	tbytes+=strlen(this_module.string_table.string_table_val[a].s)+4+4;
+	      this_module_ptr->string_table.string_table_val[a].s,
+	      this_module_ptr->string_table.string_table_val[a].rcnt);
+	tbytes+=strlen(this_module_ptr->string_table.string_table_val[a].s)+4+4;
     }
 
   printf("Bytes=%d\n",tbytes);
@@ -590,42 +590,42 @@ print_module ()
 
 tbytes=0;
   printf ("\n\nID Table\n\n");
-  for (a = 0; a < this_module.id_table.id_table_len; a++)
+  for (a = 0; a < this_module_ptr->id_table.id_table_len; a++)
     {
       printf ("%d. %s %d references\n", a,
-	      this_module.id_table.id_table_val[a].s,
-	      this_module.id_table.id_table_val[a].rcnt);
-	tbytes+=strlen(this_module.id_table.id_table_val[a].s)+4+4;
+	      this_module_ptr->id_table.id_table_val[a].s,
+	      this_module_ptr->id_table.id_table_val[a].rcnt);
+	tbytes+=strlen(this_module_ptr->id_table.id_table_val[a].s)+4+4;
     }
   printf("Bytes=%d\n",tbytes);
 
   printf ("\n\nExternal Function Call Table\n\n");
   for (a = 0;
-       a < this_module.external_function_table.external_function_table_len;
+       a < this_module_ptr->external_function_table.external_function_table_len;
        a++)
     {
       printf ("%d. %s\n", a,
-	      GET_ID (this_module.external_function_table.
+	      GET_ID (this_module_ptr->external_function_table.
 		      external_function_table_val[a]));
     }
 
 
-  printf("\n\n%d parameters\n\n",this_module.params.params_len);
-  for (a=0;a<this_module.params.params_len;a++) {
+  printf("\n\n%d parameters\n\n",this_module_ptr->params.params_len);
+  for (a=0;a<this_module_ptr->params.params_len;a++) {
 		printf("%d.",a);
 		print_params(a);
 		printf("\n");
   }
 
   //printf ("\n\nModule Level variables\n\n");
-  //for (a = 0; a < this_module.module_variables.c_vars.c_vars_len; a++)
+  //for (a = 0; a < this_module_ptr->module_variables.c_vars.c_vars_len; a++)
   //{
-  //print_variable (1, &this_module.module_variables.c_vars.c_vars_val[a]);
+  //print_variable (1, &this_module_ptr->module_variables.c_vars.c_vars_val[a]);
   //}
 
-  //for (a = 0; a < this_module.commands.commands_len; a++)
+  //for (a = 0; a < this_module_ptr->commands.commands_len; a++)
   //{
-  //print_command (a, &this_module.commands.commands_val[a]);
+  //print_command (a, &this_module_ptr->commands.commands_val[a]);
   //}
 
   print_module_functions ();

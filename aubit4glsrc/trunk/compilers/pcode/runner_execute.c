@@ -23,7 +23,7 @@ void A4GL_breakpoint (void);
 
 
 long find_pcode_function (char *s);
-extern module this_module;
+extern module *this_module_ptr;
 extern FILE *logfile;
 
 extern long int_flag;
@@ -208,7 +208,7 @@ set_var (long pc, struct cmd_set_var *sv)
 #endif
   if (sv->value_param_id >= 0)
     {
-      uset_var = &PARAM_ID (sv->value_param_id);
+      uset_var = &PARAM_ID (this_module_ptr, sv->value_param_id);
     }
   else
     {
@@ -431,7 +431,7 @@ set_var (long pc, struct cmd_set_var *sv)
 
 	      //printf("Got Param ID %d\n",i);
 
-	      p2 = &PARAM_ID (i);
+	      p2 = &PARAM_ID (this_module_ptr, i);
 	      if (p2->param_type != PARAM_TYPE_LIST)
 		{
 		  printf ("Expecting a list\n");
@@ -520,8 +520,6 @@ set_var (long pc, struct cmd_set_var *sv)
 	      *(long *) ptr = x;
 	    }
 
-	  //fprintf (logfile, "     Setting =%ld (size=%d)\n", x, size);
-	  //*(int *) ptr = x; 
 	}
 
 
@@ -555,7 +553,7 @@ set_var_once (long pc, struct cmd_set_var1 *sv)
 
   if (ptr)
     {
-      fprintf (logfile, "     Setting =%ld (size=%d)", x, size);
+      fprintf (logfile, "     Setting =%lx (size=%d)\n", x, size);
       if (size == 1)
 	*(char *) ptr = x;
       if (size == 2)
@@ -580,24 +578,25 @@ call_function (long pc, struct npcmd_call *c)
   npc = find_pcode_function (x);
   if (npc != -1)
     {
-      fprintf (logfile, "     Call PCODE function param=%ld\n",
-	       c->func_params_param_id);
+      fprintf (logfile, "     Call PCODE function param=%ld\n", c->func_params_param_id);
       fflush (logfile);
       if (c->func_params_param_id != 0)
 	{
-	  return run_function (npc, &PARAM_ID (c->func_params_param_id));
+	  return run_function (npc, &PARAM_ID (this_module_ptr, c->func_params_param_id));
 	}
       else
 	{
 	  return run_function (npc, 0);
 	}
     }
-  fprintf (logfile, "     Call C function\n");
+
+  fprintf (logfile, "     Call C function (ID : %d - %s)\n",c->func_id,x);
+
   fflush (logfile);
 
   if (c->func_params_param_id != 0)
     {
-      call_c_function (x, &PARAM_ID (c->func_params_param_id), &rval);
+      call_c_function (x, &PARAM_ID (this_module_ptr, c->func_params_param_id), &rval);
     }
   else
     {
@@ -633,10 +632,8 @@ get_var_ptr (struct use_variable *uv, int *size)
     {
       call_stack_entry = callstack_cnt - 1;
     }
-
   for (a = 0; a < callstack[call_stack_entry].c_vars.c_vars_len; a++)
     {
-      //printf("Examining %d %d\n",uv->variable_id,callstack[call_stack_entry].c_vars.c_vars_val[a].variable_id);
       if (uv->variable_id ==
 	  callstack[call_stack_entry].c_vars.c_vars_val[a].variable_id)
 	{
@@ -647,11 +644,9 @@ get_var_ptr (struct use_variable *uv, int *size)
 
   if (found == -1)
     {
-      fprintf (stderr, "Unable to find variable id %d in stack:\n",
-	       uv->variable_id);
+      fprintf (stderr, "Unable to find variable id %d in stack: (%d,%d)\n", uv->variable_id,call_stack_entry,uv->defined_in_block_pc);
       //print_use_variable(uv);
       fprintf (stderr, "\n");
-      printf ("E1\n");
       exit (2);
     }
 

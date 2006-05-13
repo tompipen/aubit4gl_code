@@ -18,7 +18,7 @@
 #include "a4gl_memhandling.h"
 
 //#include "a4gl_incl_4glhdr.h"
-extern module this_module;
+extern module *this_module_ptr;
 #define FglMoney long
 #define FglDecimal long
 #define fgldate long
@@ -60,6 +60,7 @@ extern char curr_file_name[32 + 1];
 extern long curr_line_no;
 extern long err_status;
 extern long aiplib_status;
+extern int callstack_cnt;
 
 
 long run_function_int (int func_no, int module_special, struct param *p);
@@ -70,10 +71,20 @@ run_function (int func_no, struct param *p)
   return run_function_int (func_no, 0, p);
 }
 
-long
+void
 run_module_init ()
 {
-  return run_function_int (0, 1, 0);
+	int a;
+  for (a=0;a<this_module_ptr->functions.functions_len;a++) {
+	  if (strcmp(GET_ID(this_module_ptr->functions.functions_val[a].func_name_id),"__MODULE")==0) {
+		  	fprintf(logfile,"Module init : %d\n",a);
+ 			if (a==0) {
+				run_function_int (a, 1, 0);
+			} else {
+				run_function_int (a, 2, 0); // we dont want to keep these on the stack - they are just initializing for us...
+			}
+	  }
+  }
 }
 
 
@@ -86,18 +97,18 @@ run_module ()
   struct param main_params_2;
   int param_id;
 
-  if (this_module.fglc_magic != FGLC_XDR_MAGIC)
+  if (this_module_ptr->fglc_magic != FGLC_XDR_MAGIC)
     {
       fprintf (stderr, "This does not appear to be a valid 4GL file\n");
       exit (1);
     }
 
-  if (this_module.fglc_version != FGLC_XDR_VERSION)
+  if (this_module_ptr->fglc_version != FGLC_XDR_VERSION)
     {
       fprintf
 	(stderr,
 	 "This module was compiled as pcode version %4.2f - this is a version %4.2f runner\n",
-	 (((float) this_module.fglc_version) / 100.0),
+	 (((float) this_module_ptr->fglc_version) / 100.0),
 	 (((float) FGLC_XDR_VERSION) / 100.0));
       exit (1);
     }
@@ -113,10 +124,10 @@ run_module ()
 
 // 0  will always be __MODULE - so no point checking that...
 //
-  for (a = 1; a < this_module.functions.functions_len; a++)
+  for (a = 1; a < this_module_ptr->functions.functions_len; a++)
     {
       if (strcmp
-	  (GET_ID (this_module.functions.functions_val[a].func_name_id),
+	  (GET_ID (this_module_ptr->functions.functions_val[a].func_name_id),
 	   "main") == 0)
 	{
 	  pc_for_main = a;
@@ -154,10 +165,10 @@ long
 find_pcode_function (char *s)
 {
   int a;
-  for (a = 0; a < this_module.functions.functions_len; a++)
+  for (a = 0; a < this_module_ptr->functions.functions_len; a++)
     {
       if (strcmp
-	  (GET_ID (this_module.functions.functions_val[a].func_name_id),
+	  (GET_ID (this_module_ptr->functions.functions_val[a].func_name_id),
 	   s) == 0)
 	{
 	  return a;
@@ -178,20 +189,26 @@ run_function_int (int func_no, int module_special, struct param *p)
 First things first - initialize our block 
 this should be the first thing in our function, always @ PC=0
 */
-  c = &this_module.functions.functions_val[func_no].cmds.cmds_val[pc];
+  c = &this_module_ptr->functions.functions_val[func_no].cmds.cmds_val[pc];
   if (c->cmd_type != CMD_BLOCK)
     {
       fprintf (stderr,
 	       "First thing in a function should always be a block...\n");
       exit (74);
     }
-  execute_start_block (0, c->cmd_u.c_block);
+
+
+  if (module_special!=2) {
+  	execute_start_block (0, c->cmd_u.c_block);
+  }
   pc++;
 
 
-  fprintf (logfile, "******************* Entering function %s *****************\n",
-	   GET_ID (this_module.functions.functions_val[func_no].
-		   func_name_id));fflush(logfile);
+  fprintf (logfile, "******************* Entering function %s in %s *****************\n",
+	   GET_ID (this_module_ptr->functions.functions_val[func_no].  func_name_id),
+	   GET_ID (this_module_ptr->functions.functions_val[func_no].  module_name_id)
+	   );
+  fflush(logfile);
 
 /* 
 Now - did we get any parameters passed in at all 
@@ -213,7 +230,7 @@ Normally we should get a value for p - even if it contains a 0 length list
 	  int a;
 	  struct cmd_set_var sv;
 	  expecting =
-	    this_module.functions.functions_val[func_no].param_vars.
+	    this_module_ptr->functions.functions_val[func_no].param_vars.
 	    param_vars_len;
 	  got = p->param_u.p_list->list_param_id.list_param_id_len;
 	  if (got != expecting)
@@ -233,7 +250,7 @@ Normally we should get a value for p - even if it contains a 0 length list
 	      //long sv_val;
 	      sv_var = &sv.variable;
 	      sv.value_param_id=p->param_u.p_list->list_param_id.list_param_id_val[a];
-	      memcpy (sv_var, &this_module.functions.functions_val[func_no].  param_vars.param_vars_val[a], sizeof (struct use_variable));
+	      memcpy (sv_var, &this_module_ptr->functions.functions_val[func_no].  param_vars.param_vars_val[a], sizeof (struct use_variable));
 	      set_var (0, &sv);
 	    }
 	}
@@ -254,7 +271,7 @@ Now we've done our function startup - we can get on with actually running it...
 
       fprintf (logfile, "  %04d-%04ld ", func_no, pc);fflush(logfile);
 
-      if (pc >= this_module.functions.functions_val[func_no].cmds.cmds_len)
+      if (pc >= this_module_ptr->functions.functions_val[func_no].cmds.cmds_len)
 	{
 	  if (module_special)
 	    return 0;
@@ -262,7 +279,7 @@ Now we've done our function startup - we can get on with actually running it...
 	  exit (1);
 	}
 
-      c = &this_module.functions.functions_val[func_no].cmds.cmds_val[pc];
+      c = &this_module_ptr->functions.functions_val[func_no].cmds.cmds_val[pc];
       fprintf (logfile, "%-20.20s %03d\n", cmd_type_str[c->cmd_type], c->cmd_type); fflush(logfile);
 
 
@@ -335,7 +352,9 @@ fprintf (logfile,"Condition is false : %ld\n",i);
 	    }
 
 	  fprintf (logfile, "Leaving function\n");fflush(logfile);
-	  execute_end_block ();
+	  if (module_special!=2) {
+	  	execute_end_block ();
+	  }
 	  return i;
 
 

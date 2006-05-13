@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2005-09-20 13:41:30 mikeaubury Exp $
+# $Id: Makefile.in,v 1.16 2006-05-13 12:34:39 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -43,11 +43,12 @@ include ${ROOT}/incl/Makefile-common
 #be linked in C as well, because there cannot be any unsresolved symbols at link time on Windows:
 COMMON_OBJ      =compile_c.o compile_c_gtk.o binding.o init.o bad_idents.o class.o
 
-4GLCOBJ_C		=compile_c_sql.o ${COMMON_OBJ}
+4GLCOBJ_C		=compile_c_sql.o ${COMMON_OBJ} 
 
 #binding.c:268: undefined reference to `A4GL_dtype_sz'
 #4GLCOBJ_C		+=compile_c_esql.o
 
+4GLCOBJ_PCODEC		=compile_c_sql.o ${COMMON_OBJ}
 
 4GLCOBJ_CS		=compile_c_sql.o ${COMMON_OBJ}
 4GLCOBJ_EC		=compile_c_esql.o ${COMMON_OBJ}
@@ -78,6 +79,7 @@ endif
 ALL         	+=${LIBROOT}/libLEX_C${SO_EXT}
 ALL         	+=${LIBROOT}/libLEX_CS${SO_EXT}
 ALL         	+=${LIBROOT}/libLEX_EC${SO_EXT}
+ALL         	+=${LIBROOT}/libLEX_PCODEC${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -93,6 +95,10 @@ ${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C} ${LINKDEPS}
 # C# (Mono) output
 ${LIBROOT}/libLEX_CS${SO_EXT} : ${4GLCOBJ_CS} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_CS} ${LINKLIBS}
+
+# PCODE C output
+${LIBROOT}/libLEX_PCODEC${SO_EXT} : ${4GLCOBJ_PCODEC} ${LINKDEPS}
+	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_PCODEC} ${LINKLIBS}
 
 #Embededd SQL/C output, for Informix ESQL/C, PostgreSQL, Querix or
 #SAP DB EC compilers:

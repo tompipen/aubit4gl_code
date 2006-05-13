@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.80 2006-05-02 18:11:06 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.81 2006-05-13 12:34:40 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2697,7 +2697,7 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 	{
 	  return blk;
 	}
-      a = A4GL_getch_internal (p);
+      a = A4GL_getch_internal (p,"prompt");
       if (abort_pressed)
 	break;
       if (a != -1)
@@ -2860,7 +2860,7 @@ A4GL_debug("Start prompt returning : %d",x);
 int
 UILIB_A4GL_get_key (int timeout)
 {
-  return A4GL_getch_internal ((void *) A4GL_window_on_top ());
+  return A4GL_getch_internal ((void *) A4GL_window_on_top (),"A4GL_get_key");
 }
 
 
@@ -3381,7 +3381,7 @@ A4GL_field_opts_off (void *v, int n)
 
 
 int
-A4GL_getch_internal (void *win)
+A4GL_getch_internal (void *win,char *why)
 {
   int a;
   A4GL_set_abort (0);
@@ -3391,7 +3391,7 @@ A4GL_getch_internal (void *win)
       A4GL_debug ("Read %d from keyfile", a);
       return a;
     }
-  a = A4GL_LL_getch_swin (win);
+  a = A4GL_LL_getch_swin (win,why);
   a = A4GL_key_map (a);
   A4GL_chk_for_screen_print (a);
   A4GL_logkey (a);
@@ -3539,7 +3539,7 @@ A4GL_ll_set_form_userptr (void *f, void *r)
 }
 
 
-int A4GL_ll_set_field_opts (void *f,int l) {
+void A4GL_ll_set_field_opts (void *f,int l) {
   char buff[30];
   int hadit=0;
   int last=0;
@@ -3548,7 +3548,7 @@ int A4GL_ll_set_field_opts (void *f,int l) {
   //printf("set_field_opts : %p %x\n",f,l);
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {
-    	last=A4GL_find_pointer (buff, FIELDOPTS);
+    	last=(int)A4GL_find_pointer (buff, FIELDOPTS);
 	hadit=1;
     } else {
 	    // Lets make certain that 'last' and 'l' are different and force the set
@@ -3571,7 +3571,6 @@ int A4GL_ll_set_field_opts (void *f,int l) {
 	A4GL_LL_set_field_opts(f,l); 		// OK
 
   }
-
 }
 
 
@@ -3605,7 +3604,7 @@ int A4GL_ll_field_opts (void *f) {
   //printf("Looking for POINTER %s ",buff);
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {
-      last=A4GL_find_pointer (buff, FIELDOPTS);
+      last=(int)A4GL_find_pointer (buff, FIELDOPTS);
     }
 
 

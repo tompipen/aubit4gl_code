@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.289 2006-04-24 14:58:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.290 2006-05-13 12:34:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.289 2006-04-24 14:58:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.290 2006-05-13 12:34:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -106,7 +106,7 @@ char *pdtype(int n) ;
 int doing_report_print=0;
 static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
 static void print_returning (void);
-
+char cmodname[256]="";
 
 
 
@@ -527,13 +527,17 @@ open_outfile (void)
     {
       FPRINTF (outfile, "static string module_name=\"%s.4gl\";\n",
 	       outputfilename);
+
     }
   else
     {
-      FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n",
-	       outputfilename);
+	    if (A4GL_doing_pcode()) {
+      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", outputfilename);
+	    } else {
+      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", outputfilename);
+      	    }
     }
-
+  sprintf(cmodname,"%s.4gl",outputfilename);
 
   hfile = A4GL_mja_fopen (filename_for_h, "w");
   if (hfile == 0)
@@ -785,7 +789,7 @@ LEXLIB_print_report_ctrl (void)
 
   order_by_report_stack ();
 
-  printc ("A4GL_debug(\"ctrl=%%d _nargs=%%d\",acl_ctrl,_nargs);\n");
+  //printc ("A4GL_debug(\"ctrl=%%d _nargs=%%d\",acl_ctrl,_nargs);\n");
   printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
   printc ("    if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   /* check for after group of */\n");
@@ -1196,7 +1200,15 @@ pr_report_agg (void)
 	  A4GL_debug ("X2");
 	  print_expr (sreports[z].rep_cond_expr);
 	  A4GL_debug ("X3");
-	  printc ("_res=A4GL_pop_double_null_as_zero(); _g%dused++; _g%d+=_res;}\n ", a,a);
+
+
+ 		if (A4GL_doing_pcode()) {
+	  		printc ("A4GL_pop_into_double_null_as_zero(&_res);");
+		} else {
+	  		printc ("_res=A4GL_pop_double_null_as_zero();");
+		}
+
+	  printc ("_g%dused++; _g%d+=_res;}\n ", a,a);
 	}
 
       if (t == 'A')
@@ -1205,7 +1217,13 @@ pr_report_agg (void)
 	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
 
-	  printc ("_res=A4GL_pop_double(); if (!A4GL_isnull(3,&_res)) { _g%d+=_res;_g%d++;}}\n", a, a + 1);
+ 	  if (A4GL_doing_pcode()) {
+	  	printc ("A4GL_pop_double_into(&_res); ");
+	  } else {
+	  	printc ("_res=A4GL_pop_double(); ");
+	  }
+
+	  printc ("if (!A4GL_isnull(3,&_res)) { _g%d+=_res;_g%d++;}}\n", a, a + 1);
 	}
 
       if (t == 'N')
@@ -1213,9 +1231,12 @@ pr_report_agg (void)
 	  print_expr (sreports[z].rep_where_expr);
 	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
-	  printc
-	    ("_res=A4GL_pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
-	     a, a, a, a);
+ 	  if (A4GL_doing_pcode()) {
+	  	printc ("A4GL_pop_double_into(&_res); ");
+	  } else {
+	  	printc ("_res=A4GL_pop_double();");
+	  }
+	  printc ("if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
 	}
 
       if (t == 'X')
@@ -1223,9 +1244,12 @@ pr_report_agg (void)
 	  print_expr (sreports[z].rep_where_expr);
 	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  print_expr (sreports[z].rep_cond_expr);
-	  printc
-	    ("_res=A4GL_pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
-	     a, a, a, a);
+ 	  if (A4GL_doing_pcode()) {
+	  	printc ("A4GL_pop_double_into(&_res); ");
+	  } else {
+	  	printc ("_res=A4GL_pop_double();");
+	  }
+	  printc ("if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
 	}
 
     }
@@ -1442,7 +1466,12 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
     return 0;
   if (when_code == WHEN_STOP)
     {
-      printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l, f);
+	    
+	  if (A4GL_doing_pcode()) {
+      		printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l, f);
+	  } else {
+      		printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l, f);
+      }
       printcomment ("/* WHENSTOP */");
     }
   if (when_code == WHEN_CALL)
@@ -2102,10 +2131,18 @@ real_print_expr (struct expr_str *ptr)
 		printc("aclfgl_time(1);");break;
 
 	case ET_EXPR_INFIELD:
+		if (A4GL_doing_pcode()) {
+		if (ptr->u_data.expr_infield->sio_id!=-1) {
+			printc("A4GL_pushint_fgl_infield(_sio_%d,_inp_io_type,%s,0,0);",ptr->u_data.expr_infield->sio_id,field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+		} else {
+			printc("A4GL_pushint_fgl_infield(0,0,%s,0,0);",field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+		}
+		} else {
 		if (ptr->u_data.expr_infield->sio_id!=-1) {
 			printc("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,0,0));",ptr->u_data.expr_infield->sio_id,field_name_list_as_char(ptr->u_data.expr_infield->field_list));
 		} else {
 			printc("A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));",field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+		}
 		}
 	  	break;
 
@@ -2662,6 +2699,8 @@ LEXLIB_print_param (char i,char*fname)
       printc ("};\n");
     }
 
+
+if (!A4GL_doing_pcode()) {
   printc ("char *_paramnames[%d]={ /* %d */", fbindcnt+1,fbindcnt);
 
   for (a = 0; a < fbindcnt; a++)
@@ -2670,12 +2709,13 @@ LEXLIB_print_param (char i,char*fname)
     }
     printc("0");
   printc ("};");
+}
 
   for (a=0;a<fbindcnt;a++) {
 	if (i=='r') {
-    		printc ("_rbind[%d].ptr=&%s;\n", a,fbind[a].varname);
+    		printc ("_rbind[%d].ptr= (&%s);\n", a,fbind[a].varname);
 	} else {
-    		printc ("fbind[%d].ptr=&%s;\n", a,fbind[a].varname);
+    		printc ("fbind[%d].ptr= (&%s);\n", a,fbind[a].varname);
 
 	}
   }
@@ -3213,7 +3253,14 @@ LEXLIB_print_form_is_compiled (char *s, char *packer, char *formtype)
 void
 LEXLIB_print_field_func (char type, char *name, char *var)
 {
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+
+	
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
+	  } else {
+  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  }
+
   if (!isin_command ("INPUT") && !isin_command ("CONSTRUCT"))
     {
 
@@ -3316,7 +3363,11 @@ real_print_func_call (t_expr_str * fcall)
       if (has_function (p->fname, lib, 0))
 	{
 	  printc ("{int _retvars;\n");
-	  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, p->line);
+	  } else {
+	  	printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  }
 	  printc
 	    ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d); /* 1 */\n",
 	     lib, p->fname, args_cnt);
@@ -3324,9 +3375,16 @@ real_print_func_call (t_expr_str * fcall)
       else
 	{
 	  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-	  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
-	  printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname,
-		  args_cnt);
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, p->line);
+	  } else {
+	  	printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  }
+	  if (A4GL_doing_pcode()) {
+	  	printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
+	  } else {
+	  	printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
+	  }
 	}
       print_reset_state_after_call ();
       return;
@@ -3350,7 +3408,11 @@ real_print_func_call (t_expr_str * fcall)
       nargs = A4GL_new_list_get_count (expr);
       printc ("{int _retvars;\n");
       real_print_expr_list (expr);
-      printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, p->line);
+	  } else {
+      		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  }
       printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d); /* 2 */\n", p->lib, p->fname, nargs);
       print_reset_state_after_call();
       return;
@@ -3381,7 +3443,11 @@ real_print_func_call (t_expr_str * fcall)
 	real_print_expr_list(expr); 
 	nargs=A4GL_new_list_get_count(expr);
   	printc ("{int _retvars;\n");
-  	printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, p->line);
+	  } else {
+  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	}
   	printc ("_retvars=A4GL_remote_func_call(%s,%d,%s,%s,%d);\n", p->host, p->without_waiting,p->func, p->port, nargs);
 	print_reset_state_after_call();
 	return;
@@ -3402,7 +3468,11 @@ real_print_class_func_call (char *var, char *identifier,
   real_print_expr (args);
   printcomment ("/* done printing parameters */");
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
+	  } else {
+  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  }
 
   printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n",
 	  var, scan_variable (var), identifier, args_cnt);
@@ -3431,7 +3501,11 @@ real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3)
 {
   real_print_expr_list (args);
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname,yylineno);
+	  } else {
+  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  }
   printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", a1, a3);
 }
 
@@ -3452,7 +3526,12 @@ LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
   expr=A4GL_rationalize_list(expr);
   real_print_expr_list (expr);
   nargs=A4GL_new_list_get_count(expr);
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+
+  if (A4GL_doing_pcode()) {
+	printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname,yylineno);
+  } else {
+  	printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+  }
   printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
   print_reset_state_after_call();
@@ -3470,7 +3549,11 @@ int ni,no;
   no = print_bind_definition ('o');
   print_bind_set_value ('i');
   print_bind_set_value ('o');
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
+	  } else {
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  }
   printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,obind);", libfile, funcname, ni,no);
   printc("}");
 print_reset_state_after_call();
@@ -3513,7 +3596,11 @@ LEXLIB_print_call_external (t_expr_str_list *expr, char *host, char *func, char 
 	real_print_expr_list(expr); 
 	nargs=A4GL_new_list_get_count(expr);
   	printc ("{int _retvars;\n");
-  	printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  if (A4GL_doing_pcode()) {
+  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
+	  } else {
+  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+	  }
   	printc ("_retvars=A4GL_remote_func_call(%s,%s,%s,%d);\n", host, func, port, nargs);
 
 print_reset_state_after_call();
@@ -3682,7 +3769,7 @@ LEXLIB_print_construct_fl (int byname, char *constr_str, t_field_list *f_list, c
   printc ("if (_exec_block == 0) {\n");
   printc ("SET(\"s_screenio\",_sio_%d,\"vars\",ibind);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"novars\",%d);\n", sio_id,ccc);
-  printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",%d);\n", sio_id,cattr);
+  printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",%s);\n", sio_id,attr);
   printc
     ("SET(\"s_screenio\",_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"currentfield\",0);\n",sio_id);
@@ -3911,6 +3998,7 @@ void
 LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr)
 {
 	int nexpr;
+	int cnt;
 	struct fh_field_list *fh;
         expr=A4GL_rationalize_list(expr);
 	nexpr=A4GL_new_list_get_count(expr);
@@ -3951,7 +4039,16 @@ LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr
 					//}
 
 				real_print_expr_list(expr);
-  				printc ("A4GL_disp_fields(%d,%s,%s,0);\n", nexpr,attr,field_name_list_as_char(disp->u_data.field_list));
+					if (A4GL_doing_pcode()) {
+					for (cnt=fh->nfields-1;cnt>=0;cnt--) {
+					char *ptr_field;
+					        ptr_field=field_name_as_char(&fh->fields[cnt]);
+  						printc ("A4GL_disp_fields(%d,%s,%s,0);\n", nexpr,attr,ptr_field);
+					}
+	}
+					else {
+					printc ("A4GL_disp_fields(%d,%s,%s,0);\n", nexpr,attr,field_name_list_as_char(disp->u_data.field_list));
+					}
 				break;
 
 		case DT_DISPLAY_TYPE_FORM_FIELD		:
@@ -6183,6 +6280,7 @@ LEXLIB_printPushFunction (void)
 {
   if (!isGenStackInfo ())
     return;
+if (A4GL_doing_pcode()) { return;}
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs);\n");
 }
@@ -6197,6 +6295,8 @@ LEXLIB_printPopFunction (void)
 {
   if (!isGenStackInfo ())
     return;
+
+if (A4GL_doing_pcode()) { return;}
   printc ("A4GLSTK_popFunction();\n");
 }
 
@@ -6271,9 +6371,11 @@ LEXLIB_print_func_args (int c)
 {
 
 // cc 2005.01.25 return 0 changed to -1 to catch wrong parameter size
-  printc
-    ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);A4GLSTK_popFunction();return -1;}\n",
-     c, yylineno);
+if (A4GL_doing_pcode()) {
+  printc ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n", c, yylineno);
+} else {
+  printc ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);A4GLSTK_popFunction();return -1;}\n", c, yylineno);
+}
   print_function_variable_init ();
   printc ("A4GL_pop_params(fbind,%d);\n", c);
 
@@ -6355,9 +6457,12 @@ LEXLIB_print_fgllib_start (char *db)
       if (!is_schema)
 	{
 	  print_init_conn (db);
-	  printc
-	    ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,_module_name);\n",
-	     lastlineno);
+
+	  if (A4GL_doing_pcode()) {
+	  	printc ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,\"%s\");\n", lastlineno,cmodname);
+	  } else {
+	  	printc ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,_module_name);\n", lastlineno);
+	  }
 	}
       else
 	{
@@ -7119,10 +7224,9 @@ LEXLIB_print_foreach_close (char *cname)
 int
 A4GL_doing_pcode (void)
 {
-  if (strcmp (acl_getenv ("LEXTYPE"), "PCODE") == 0)
+  if (strcmp (acl_getenv ("LEXTYPE"), "PCODEC") == 0)
     return 1;
-  if (strcmp (acl_getenv ("FAKELEXTYPE"), "PCODE") == 0)
-    return 1;
+
   return 0;
 }
 
@@ -7477,7 +7581,7 @@ print_event_list ()
 
   if (A4GL_doing_pcode ())
     {
-      printc ("struct aclfgl_event_list _sio_evt[%d]={", n);
+      printc ("struct aclfgl_event_list _sio_evt[%d]={", n+1);
     }
   else
     {
@@ -8268,7 +8372,18 @@ int LEXLIB_print_agg_defines(char t,int a) {
 return 0;
 }
 
+void LEXLIB_A4GL_initlex() {
+	/* does nothing - but required by the API...
+	calling this function will force initlib to be called - which is what we're really after.... */
+}
 
 int LEXLIB_A4GLLEX_initlib() {
+  if (A4GL_doing_pcode()) {
+    	A4GL_setenv ("MARK_SCOPE_MODULE", "Y", 1);
+    	A4GL_setenv ("NAMESPACE", "", 1);
+    	A4GL_setenv ("REPORT_VARS_AT_MODULE", "Y", 1);
+  }
+
+
 return 1;
 }

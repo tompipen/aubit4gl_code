@@ -29,6 +29,7 @@ HEADER_FILE "API_lex_int.h"
 
 /* ------------ functions from compile_[c|perl].c -------------- */
 
+A4GL_initlex -> void
 A4GL_internal_lex_printc char* fmt va_list* ap -> void 
 
 A4GL_internal_lex_printh char* fmt   va_list* ap -> void 

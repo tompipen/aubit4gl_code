@@ -31,7 +31,7 @@ A4GL_LL_field_status void* field -> int
 A4GL_LL_form_page void* form -> int
 A4GL_LL_get_carat void* form -> int
 A4GL_LL_get_value char* s -> void*
-A4GL_LL_getch_swin void* window_ptr -> int 
+A4GL_LL_getch_swin void* window_ptr char* why -> int 
 A4GL_LL_gui_run_til_no_more -> void 
 A4GL_LL_h_disp_title void* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw int gw_y -> void
 A4GL_LL_hide_h_menu -> int

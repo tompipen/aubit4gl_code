@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.35 2006-02-12 09:56:31 mikeaubury Exp $
+# $Id: rexp2.c,v 1.36 2006-05-13 12:34:38 mikeaubury Exp $
 #
 */
 
@@ -544,7 +544,6 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	{
 	  SPRINTF4 (buff3, "%s  between %s%s%s and ", colname, quote,
 		    constr_bits[0], quote);
-	  //A4GL_pause_execution();
 	  if (constr_size >= 2)
 	    {
 	      strcat (buff3, quote);

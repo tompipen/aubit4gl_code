@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.53 2006-05-02 18:00:47 mikeaubury Exp $
+# $Id: ui.c,v 1.54 2006-05-13 12:34:39 mikeaubury Exp $
 #
 */
 
@@ -429,6 +429,27 @@ int a=-1;
 
   va_end(ap);
 
+  return a;
+
+}
+
+
+
+int A4GL_pushint_fgl_infield (void *inp,char itype,...)
+{
+int a=-1;
+  va_list ap;
+
+  va_start (ap, itype);
+
+  if (itype=='I' || itype=='C') {
+  	a=A4GL_fgl_infield_ap (inp,&ap); 
+  } else {
+  	a=A4GL_fgl_infield_ia_ap (inp,&ap); 
+  }
+
+  va_end(ap);
+  A4GL_push_int(a);
   return a;
 
 }

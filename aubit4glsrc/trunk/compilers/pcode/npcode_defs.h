@@ -48,6 +48,17 @@ void A4GL_debug_full (char *fmt, ...);
 #define DUNKNOWN -1
 
 
+
+int compare_list (struct param *pa, struct param *pb);
+int compare_call (struct param *pa, struct param *pb);
+int compare_op (struct param *pa, struct param *pb);
+
+
+
+int
+compare_uv (struct param *pa, struct param *pb);
+
+int check_for_duplicate_param (int n);
 void append_param_list (long plist, long newparam);
 long new_param_list_returns_long (long p);
 long new_param_fcall_returns_long (char *fname, long plist);
@@ -61,7 +72,7 @@ long do_end_block (void);
 void set_externs (void);
 int process_xdr (char dir, void *s, char *filename);
 void print_variable (int lvl, struct npvariable *n);
-#define GET_ID(x) ((char *)this_module.id_table.id_table_val[x].s)
+#define GET_ID(x) ((char *)this_module_ptr->id_table.id_table_val[x].s)
 void allocate_variable (int module_level, int offset, struct npvariable *n);
 int add_id (char *s);
 long call_c_function (char *s, struct param *p, long *r);
@@ -81,7 +92,7 @@ int evaluate_param_i_into_char (long e_i, char *x);     // NOT FOR STRINGS !
 void *get_var_ptr (struct use_variable *use_var,int *size);
 void optimize ();
 
-long add_set_var (struct use_variable *var, long value_i, int once,int lvl);
+long add_set_var (struct use_variable *var, long value_i, int once,int lvl,int ismoduleid);
 
 int nset_param(struct param *p,int n);
 void execute_start_block (long pc, struct cmd_block *c);
@@ -166,7 +177,7 @@ int yyerror (char *s);
 void print_errchk (struct cmd_errchk *e);
 long find_pcode_function (char *s);
 int add_string (char *s);
-#define PARAM_ID(x) this_module.params.params_val[x]
+#define PARAM_ID(mptr,x) mptr->params.params_val[x]
 long add_push_op(char *n);
 struct param *nget_param(int n);
 long add_set_stat(int a);

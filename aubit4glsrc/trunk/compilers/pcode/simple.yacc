@@ -24,7 +24,7 @@ int if_stack[256];
 int if_stack_cnt=0;
 
 static char buff[20];
-extern module this_module;
+extern module *this_module_ptr;
 
 void make_named_struct (char *name, struct define_variables *v);
 
@@ -195,6 +195,9 @@ fgl_funcs :
 	| KW_A_SETLINE '(' IDENTIFIER ',' int_val ')' {
 			add_set_line($<str>3,atoi($<str>5));
 	}
+	| KW_A_SETLINE '(' STRING_LITERAL ',' int_val ')' {
+			add_set_line($<str>3,atoi($<str>5));
+	}
 	| KW_A_ECALL '(' STRING_LITERAL ',' int_val ',' int_val ')' {
 			//printf("ECALL....\n"); 
 			add_ecall($<str>3, get_expr_n($<e_id>5),get_expr_n($<e_id>7));
@@ -207,6 +210,9 @@ fgl_funcs :
 		add_push_charv($<e_id>3);
 	}
 	| KW_A_CHK_ERR '(' int_val ',' IDENTIFIER ')' {
+			add_chk_err(get_expr_n($<e_id>3));
+	}
+	| KW_A_CHK_ERR '(' int_val ',' STRING_LITERAL ')' {
 			add_chk_err(get_expr_n($<e_id>3));
 	}
 	| KW_A_CLR_ERR '(' ')' {
@@ -551,7 +557,9 @@ dtype :
 ;
 
 struct_has_define: 
-		IDENTIFIER {$<define_variables>$=(struct define_variables *)add_named_struct($<str>1);}
+		IDENTIFIER {
+			$<define_variables>$=(struct define_variables *)add_named_struct($<str>1);
+		}
 		| TYPE_NAME {$<define_variables>$=(struct define_variables *)add_named_struct($<str>1);}
 		|  '{' has_structparam '}' {
 			A4GL_debug("Structure : %p\n",$<define_variables>2);
@@ -619,7 +627,7 @@ for :
 	}
 	assign_common ')' cmd 
 	{
-			add_set_var($<assignment>9.v,$<assignment>9.p,0,0);
+			add_set_var($<assignment>9.v,$<assignment>9.p,0,0,0);
 
 
                         sprintf(buff,"_while_c_%d",$<i>5);
@@ -770,11 +778,16 @@ int_constant_val :
 	
 int_val: int_constant_val {
 			char buff[256];
-			int n=0;
+			unsigned long n=0;
 			sprintf(buff,$<str>1);
 			if (buff[0]=='0') {
+				
 				if (buff[1]=='x'||buff[1]=='X') {
-					n=strtol(buff,0,16);
+					if (strcmp(buff,"0xffffffff")==0) {
+						n=0xffffffff;
+					}  else {
+						n=strtol(buff,0,16);
+					}
 				} else {
 					n=strtol(buff,0,8);
 				}
@@ -789,7 +802,7 @@ int_val: int_constant_val {
 
 
 assign: assign_common {
-	add_set_var($<assignment>1.v,$<assignment>1.p,0,0);
+	add_set_var($<assignment>1.v,$<assignment>1.p,0,0,0);
 	}
 ;
 
@@ -797,7 +810,7 @@ assign: assign_common {
 assign_common: variable '=' expr {
 	struct param *e;
 	struct use_variable *v;
-	e=&PARAM_ID($<e_id>1);
+	e=&PARAM_ID(this_module_ptr,$<e_id>1);
 	v=get_use_variable($<e_id>1);
 	$<assignment>$.p=$<e_id>3;
 	$<assignment>$.v=v;

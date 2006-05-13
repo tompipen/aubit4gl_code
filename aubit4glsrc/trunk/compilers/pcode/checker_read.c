@@ -12,7 +12,9 @@
 
 #include "npcode_defs.h"
 void print_module (void);
+
 module this_module;
+module *this_module_ptr=0;
 
 
 
@@ -28,7 +30,7 @@ int
 main (int argc, char *argv[])
 {
   int a;
-
+  this_module_ptr=&this_module;
   if (argc != 2)
     {
       printf ("Usage %s filename.4pe\n", argv[0]);

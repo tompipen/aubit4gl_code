@@ -2,7 +2,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel.c,v 1.5 2005-06-16 17:01:57 mikeaubury Exp $";
+  "$Id: lowlevel.c,v 1.6 2006-05-13 12:34:40 mikeaubury Exp $";
 #endif
 
 
@@ -272,7 +272,7 @@ A4GL_LL_set_carat (void *form)
 
 
 int
-A4GL_LL_getch_swin ()
+A4GL_LL_getch_swin (char*why)
 {
 }
 

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.153 2006-04-27 13:18:56 mikeaubury Exp $
+# $Id: sql.c,v 1.154 2006-05-13 12:34:40 mikeaubury Exp $
 #
 */
 
@@ -873,11 +873,15 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 
   nout=-1;
 
+  if (!A4GL_isyes(acl_getenv("NOSCRATCHOBIND"))) {
   if (t=='o') {
+	  	A4GL_debug("Getting num result cols");
 	 	rc=SQLNumResultCols(hstmt,&nout);
 		if (rc<0) {
+	  		A4GL_debug("Getting num result cols rc=%d",rc);
 			nout=-1;
 		}
+  }
   }
 
   for (a = 1; a <= n; a++)
@@ -899,16 +903,20 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 #endif
     }
 
-  if (nout!=-1 && n<nout) {
+  if (!A4GL_isyes(acl_getenv("NOSCRATCHOBIND"))) {
+  	if (nout!=-1 && n<nout) {
 	  int b=0;
 	  struct BINDING bind;
+	  	A4GL_debug("Binding scratch !!");
 		bind.ptr=scratch[b];
 		bind.dtype=0;
 		bind.size=254;
 	  // We've got too few!
 	  for (a=n+1;a<=nout;a++) {
+	  	A4GL_debug("Binding scratch @ %d",a);
 	  	A4GL_obind_column (a, &bind, hstmt);
 	  }
+  	}
   }
   return 1;
 }

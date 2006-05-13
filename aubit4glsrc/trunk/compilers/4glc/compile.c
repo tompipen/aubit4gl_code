@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.103 2006-04-23 12:13:50 mikeaubury Exp $
+# $Id: compile.c,v 1.104 2006-05-13 12:34:37 mikeaubury Exp $
 #*/
 
 /**
@@ -1136,7 +1136,7 @@ char ext[256];
 static char local_pass_options[1024] = "";
 
 
-if (A4GL_isyes(acl_getenv("REMOVE_ERR"))) {
+if (!A4GL_isno(acl_getenv("REMOVE_ERR"))) {
 	SPRINTF1 (buff, "%s.err", output_object);
 	if (verbose) { PRINTF ("checking for %s\n", buff); }
 

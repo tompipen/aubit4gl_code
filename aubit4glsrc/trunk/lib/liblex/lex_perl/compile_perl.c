@@ -4275,3 +4275,7 @@ LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
   obindcnt = 0;
 }
 
+		
+void LEXLIB_A4GL_initlex() {
+	// required by API
+}

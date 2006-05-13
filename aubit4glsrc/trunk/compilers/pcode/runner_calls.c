@@ -79,6 +79,7 @@
 
 /* void print_module(void) ; */
 module this_module;
+module *this_module_ptr;
 static int chk_func_sigs (void);
 extern FILE *logfile;
 
@@ -88,7 +89,7 @@ static void * find_by_dlself(char *s);
 char *
 get_string (int a)
 {
-  return this_module.string_table.string_table_val[a].s;
+  return this_module_ptr->string_table.string_table_val[a].s;
 }
 
 
@@ -99,8 +100,8 @@ open_and_run (char *lv_progname)
   int a;
   int ok = 1;
 
-
-  a = process_xdr ('I', &this_module, lv_progname);
+  this_module_ptr=&this_module;
+  a = process_xdr ('I', this_module_ptr, lv_progname);
 
   
   if (a)
@@ -465,7 +466,7 @@ call_c_function (char *s, struct param *p, long *r)
 	      //printf("Param %d - %d\n",a,list->list.list_param_id_val[a]);
 		struct param *p;
 		if (list->list_param_id.list_param_id_val[a]>0) {
-			p=&PARAM_ID(list->list_param_id.list_param_id_val[a]);
+			p=&PARAM_ID(this_module_ptr, list->list_param_id.list_param_id_val[a]);
 		} else {
 			p=nget_param(list->list_param_id.list_param_id_val[a]);
 		}

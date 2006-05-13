@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.37 2005-10-03 10:09:45 mikeaubury Exp $
+# $Id: attributes.c,v 1.38 2006-05-13 12:34:38 mikeaubury Exp $
 #*/
 
 /**
@@ -445,8 +445,7 @@ A4GL_determine_attribute_as_std_attr (int cmd_type,
       int_options = A4GL_get_option_value ('d');
       int_disp_form = A4GL_get_curr_form_attr ();
       int_open_window = A4GL_get_curr_window_attr ();
-      A4GL_debug ("30 int_options=%x int_disp_form=%x int_open_window=%x",
-		  int_options, int_disp_form, int_open_window);
+      A4GL_debug ("30 int_options=%x int_disp_form=%x int_open_window=%x", int_options, int_disp_form, int_open_window);
       break;
 
     case FGL_CMD_INPUT:

@@ -22,7 +22,7 @@ int is_in_function = 0;
 long called[1000];
 
 long find_function (char *s);
-extern module this_module;
+extern module *this_module_ptr;
 void print_set_var (struct cmd_set_var *v);
 
 	// An individual command
@@ -69,15 +69,15 @@ set_externs ()
     return; 
 
 
-   this_module.external_function_table.external_function_table_val = acl_malloc2 (sizeof (char *) * n);
-  this_module.external_function_table.external_function_table_len = n;
+   this_module_ptr->external_function_table.external_function_table_val = acl_malloc2 (sizeof (char *) * n);
+  this_module_ptr->external_function_table.external_function_table_len = n;
   n = 0;
 
 
   for (a = 0; a < ncalls; a++)
     {
       if (find_function (call_list[a]) != -1) continue;
-      this_module.external_function_table.external_function_table_val[n] = add_id (call_list[a]);
+      this_module_ptr->external_function_table.external_function_table_val[n] = add_id (call_list[a]);
       A4GL_debug ("CALLS : %s\n", call_list[a]);
 	printf("%s %ld\n",call_list[a],called[a]);
       n++;
@@ -109,10 +109,10 @@ long
 find_function (char *s)
 {
   int a;
-  for (a = 0; a < this_module.functions.functions_len; a++)
+  for (a = 0; a < this_module_ptr->functions.functions_len; a++)
     {
       if (strcmp
-	  (GET_ID (this_module.functions.functions_val[a].func_name_id),
+	  (GET_ID (this_module_ptr->functions.functions_val[a].func_name_id),
 	   s) == 0)
 	{
 	  return a;
@@ -127,7 +127,7 @@ long
 new_command (enum cmd_type cmd_type, void *ptr)
 {
 //int a;
-  if (this_module.functions.functions_len == 0)
+  if (this_module_ptr->functions.functions_len == 0)
     {
       printf ("No current function to add a command to....\n");
       exit (1);
@@ -139,7 +139,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
       exit (2);
     }
   current_function =
-    &this_module.functions.functions_val[this_module.functions.functions_len -
+    &this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len -
 					 1];
 /*
   for (a=0;a<current_function->cmds.cmds_len;a++) {
@@ -275,11 +275,11 @@ new_command (enum cmd_type cmd_type, void *ptr)
       printf ("Unknown Command : %d", cmd_type);
       exit (1);
     }
-  //printf("New command : %d in %p -> %d\n",this_module.functions.functions_val[this_module.functions.functions_len-1].cmds.cmds_len-1,&this_module.functions.functions_val[this_module.functions.functions_len-1],cmd_type);
-  return this_module.functions.functions_val[this_module.functions.
+  //printf("New command : %d in %p -> %d\n",this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len-1].cmds.cmds_len-1,&this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len-1],cmd_type);
+  return this_module_ptr->functions.functions_val[this_module_ptr->functions.
 					     functions_len -
 					     1].cmds.cmds_len - 1;
-//this_module.functions.functions_len - 1;
+//this_module_ptr->functions.functions_len - 1;
 }
 
 
@@ -341,7 +341,7 @@ printf("\n\nAdd set var\n");
   memcpy (&(v->variable), var, sizeof (struct use_variable));
   memcpy (&(v1->variable), var, sizeof (struct use_variable));
 
-  if (this_module.params.params_val[value].param_type == PARAM_TYPE_LIST)
+  if (this_module_ptr->params.params_val[value].param_type == PARAM_TYPE_LIST)
     {
       struct cmd_block *base;
       int a;
@@ -351,14 +351,12 @@ printf("\n\nAdd set var\n");
       vid = v->variable.variable_id;
       block = v->variable.defined_in_block_pc;
       printf ("PARAM TYPE LIST IN ASSIGNMENT %d %d\n", vid, block);
-      //this_module.
+      //this_module_ptr->
       base = (struct cmd_block *) get_base (block);
       printf ("Base=%p\n", base);
 
       for (a = 0; a < base->c_vars.c_vars_len; a++)
 	{
-	  printf ("Bibble\n");
-	  printf ("ID : %ld\n", base->c_vars.c_vars_val[a].variable_id);
 	  if (base->c_vars.c_vars_val[a].variable_id == vid)
 	    {
 	      found = a;
@@ -442,10 +440,10 @@ printf("\n\nAdd set var\n");
 		  memcpy (var2, var, sizeof (struct use_variable));
 
 		  printf ("---> %d %d\n", a,
-			  this_module.params.params_val[value].param_u.
+			  this_module_ptr->params.params_val[value].param_u.
 			  p_list->list_param_id.list_param_id_len);
 		  if (a >=
-		      this_module.params.params_val[value].param_u.p_list->
+		      this_module_ptr->params.params_val[value].param_u.p_list->
 		      list_param_id.list_param_id_len)
 		    break;
 		  if (a >= var_element->i_arr_size[0])
@@ -455,10 +453,10 @@ printf("\n\nAdd set var\n");
 		    }
 
 		  n =
-		    this_module.params.params_val[value].param_u.p_list->
+		    this_module_ptr->params.params_val[value].param_u.p_list->
 		    list_param_id.list_param_id_val[a];
 		  subparam = acl_malloc2 (sizeof (struct param));
-		  memcpy (subparam, &this_module.params.params_val[n],
+		  memcpy (subparam, &this_module_ptr->params.params_val[n],
 			  sizeof (struct param));
 		  if (subparam->param_type != PARAM_TYPE_LIST)
 		    {
@@ -530,7 +528,7 @@ printf("\n\nAdd set var\n");
 		      printf ("New param=%d\n", nb);
 		      printf ("sub type4 : %d\n", subparam->param_type);
 		printf("Calling add_set_Var (1)...\n");
-		      pc = add_set_var (var2, nb, once,0);
+		      pc = add_set_var (var2, nb, once,0,0);
 		      printf ("sub type5 : %d\n", subparam->param_type);
 		      printf ("PC=%d for %d,%d (%d %d)\n", pc, a, b, npid_a,
 			      npid_b);
@@ -549,7 +547,7 @@ printf("\n\nAdd set var\n");
 	      while (1)
 		{
 		  int npid;
-		  if (a >= this_module.params.params_val[value].param_u.p_list-> list_param_id.list_param_id_len) break;
+		  if (a >= this_module_ptr->params.params_val[value].param_u.p_list-> list_param_id.list_param_id_len) break;
 
 		  if (a >= var_element->i_arr_size[0])
 		    {
@@ -570,7 +568,7 @@ printf("\n\nAdd set var\n");
 		  var2->sub.sub_val[0].x1subscript_param_id[0] = npid;
 		  print_use_variable (var2);
 		printf("Calling add_set_Var (2)... (var_element->x1element=%d)\n",var_element->next.next_len);
-		  pc = add_set_var (var2, this_module.params.params_val[value].param_u.  p_list->list_param_id.list_param_id_val[a], once,0);
+		  pc = add_set_var (var2, this_module_ptr->params.params_val[value].param_u.  p_list->list_param_id.list_param_id_val[a], once,0,0);
 		  printf ("PC=%d\n", pc);
 		  a++;
 		}
@@ -586,7 +584,7 @@ printf("\n\nAdd set var\n");
 		{
 		  int npid;
 			printf("Straight assign\n");
-		  if (a >= this_module.params.params_val[value].param_u.p_list-> list_param_id.list_param_id_len) break;
+		  if (a >= this_module_ptr->params.params_val[value].param_u.p_list-> list_param_id.list_param_id_len) break;
 
 		if (a>=var_element->next.next_len) {
 			printf("Excess elements for structure (4)\n");
@@ -604,7 +602,7 @@ printf("\n\nAdd set var\n");
 		  npid = new_param_returns_long ('I', (void *) a);
 
 		printf("Calling add_set_Var (3)...\n");
-		  pc = add_set_var (var2, this_module.params.params_val[value].param_u.  p_list->list_param_id.list_param_id_val[a], once,0);
+		  pc = add_set_var (var2, this_module_ptr->params.params_val[value].param_u.  p_list->list_param_id.list_param_id_val[a], once,0,0);
 		  printf ("npid = %d for %d for straight assign\n", npid, a);
 		a++;
 		}
@@ -636,7 +634,7 @@ long
 current_pc ()
 {
   current_function =
-    &this_module.functions.functions_val[this_module.functions.functions_len -
+    &this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len -
 					 1];
   return current_function->cmds.cmds_len - 1;
 }
@@ -671,13 +669,13 @@ end_function ()
 {
   int a;
   do_end_block ();
-  if (this_module.params.params_val[1].param_type != PARAM_TYPE_EMPTY)
+  if (this_module_ptr->params.params_val[1].param_type != PARAM_TYPE_EMPTY)
     {
       printf ("NOT EMPTY\n");
     }
   new_command (CMD_RETURN, (void *) 1);
   is_in_function = 0;
-  a = this_module.functions.functions_len - 1;
+  a = this_module_ptr->functions.functions_len - 1;
   resolve_gotos_func (a);
 
   return 0;
@@ -781,7 +779,7 @@ long add_ecall (char *s, int a, int b)
   eptr = &ptr[strlen (ptr) - 1];
   *eptr = 0;
 
-  xptr->func_id = add_string (ptr);
+  xptr->func_id = add_id (ptr);
   xptr->ln = a;
   xptr->nparam = b;
   return new_command (CMD_ECALL, (void *) xptr);
@@ -904,7 +902,7 @@ resolve_gotos_func (int function_cnt)
 
 
 
-  current_function = &this_module.functions.functions_val[function_cnt];
+  current_function = &this_module_ptr->functions.functions_val[function_cnt];
   for (cmd_cnt = 0; cmd_cnt < current_function->cmds.cmds_len; cmd_cnt++)
     {
 
@@ -980,10 +978,10 @@ resolve_gotos ()
   int b;
   return;
 
-  for (function_cnt = 0; function_cnt < this_module.functions.functions_len;
+  for (function_cnt = 0; function_cnt < this_module_ptr->functions.functions_len;
        function_cnt++)
     {
-      current_function = &this_module.functions.functions_val[function_cnt];
+      current_function = &this_module_ptr->functions.functions_val[function_cnt];
       for (cmd_cnt = 0; cmd_cnt < current_function->cmds.cmds_len; cmd_cnt++)
 	{
 
@@ -1060,28 +1058,28 @@ int add_id (char *s)
 {
   int a;
   A4GL_debug ("Finding %s\n", s);
-  for (a = 0; a < this_module.id_table.id_table_len; a++)
+  for (a = 0; a < this_module_ptr->id_table.id_table_len; a++)
     {
-      if (strcmp (s, this_module.id_table.id_table_val[a].s) == 0)
+      if (strcmp (s, this_module_ptr->id_table.id_table_val[a].s) == 0)
 	{
 	  A4GL_debug ("Found it %d\n", a);
-	  this_module.id_table.id_table_val[a].rcnt++;
+	  this_module_ptr->id_table.id_table_val[a].rcnt++;
 	  return a;
 	}
     }
 
 // Its new....
-  this_module.id_table.id_table_len++;
-  this_module.id_table.id_table_val =
-    realloc (this_module.id_table.id_table_val,
-	     sizeof (struct vstring) * this_module.id_table.id_table_len);
-  this_module.id_table.id_table_val[this_module.id_table.id_table_len - 1].s =
+  this_module_ptr->id_table.id_table_len++;
+  this_module_ptr->id_table.id_table_val =
+    realloc (this_module_ptr->id_table.id_table_val,
+	     sizeof (struct vstring) * this_module_ptr->id_table.id_table_len);
+  this_module_ptr->id_table.id_table_val[this_module_ptr->id_table.id_table_len - 1].s =
     acl_strdup (s);
-  this_module.id_table.id_table_val[this_module.id_table.id_table_len -
+  this_module_ptr->id_table.id_table_val[this_module_ptr->id_table.id_table_len -
 				    1].rcnt = 1;
 
-  A4GL_debug ("Created it @ %d\n", this_module.id_table.id_table_len - 1);
-  return this_module.id_table.id_table_len - 1;
+  A4GL_debug ("Created it @ %d\n", this_module_ptr->id_table.id_table_len - 1);
+  return this_module_ptr->id_table.id_table_len - 1;
 }
 
 
@@ -1100,15 +1098,13 @@ void add_function (char *function_name, struct define_variables *v, int is_stati
       labels_cnt = 0;
     }
 
-  this_module.functions.functions_len++;
-  this_module.functions.functions_val =
-    realloc (this_module.functions.functions_val,
-	     sizeof (struct npfunction) *
-	     this_module.functions.functions_len);
+  this_module_ptr->functions.functions_len++;
+  this_module_ptr->functions.functions_val = realloc (this_module_ptr->functions.functions_val, sizeof (struct npfunction) * this_module_ptr->functions.functions_len);
   curr_func =
-    &this_module.functions.functions_val[this_module.functions.functions_len -
+    &this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len -
 					 1];
-  curr_func->func_name_id = add_id (function_name);
+  curr_func->func_name_id   = add_id (function_name);
+  curr_func->module_name_id = add_id (this_module_ptr->module_name);
   curr_func->function_class = is_static;
   curr_func->cmds.cmds_len = 0;
   curr_func->cmds.cmds_val = 0;

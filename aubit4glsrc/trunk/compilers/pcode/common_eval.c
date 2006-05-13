@@ -13,7 +13,7 @@
 #endif
 #include "npcode_defs.h"
 //#include "a4gl_incl_4glhdr.h"
-extern module this_module;
+extern module *this_module_ptr;
 #define FglMoney long
 #define FglDecimal long
 #define fgldate long
@@ -65,7 +65,7 @@ int nset_param(struct param *p,int n) {
 		}
 	}
 	if (n<0||n>=10) {
-		printf("Internal error - param out of range\n");
+		printf("Internal error - param out of range (1)\n");
 		exit(33);
 	}
 	last_set[n]=p;
@@ -87,7 +87,7 @@ struct param *nget_param(int n) {
 	if (n==-10) return nget_param(9);
 
 	if (n<0||n>=10) {
-		printf("Internal error - param out of range\n");
+		printf("Internal error - param out of range(2 - n=%d)\n",n);
 		exit(33);
 	}
 	return last_set[n];
@@ -111,7 +111,7 @@ if (e_i<0) {
 	if (e_i==-10) e=nget_param(9);
 
 } else {
-	e=&PARAM_ID(e_i);
+	e=&PARAM_ID(this_module_ptr, e_i);
 }
 a=evaluate_param_into_integer(e,x);
 //printf("PARAM %d --->%d\n",e_i,a);
@@ -147,13 +147,13 @@ evaluate_param_into_integer(struct param *e, long *x)
 
     case PARAM_TYPE_LITERAL_STRING:
       *x =
-	(int) this_module.string_table.string_table_val[e->param_u.str_entry].
+	(int) this_module_ptr->string_table.string_table_val[e->param_u.str_entry].
 	s;
       A4GL_debug ("EVALUATE Set to %p\n",
-		  this_module.string_table.string_table_val[e->param_u.
+		  this_module_ptr->string_table.string_table_val[e->param_u.
 							    str_entry].s);
       A4GL_debug ("EVALUATE Set to '%s'\n",
-		  this_module.string_table.string_table_val[e->param_u.
+		  this_module_ptr->string_table.string_table_val[e->param_u.
 							    str_entry].s);
       return 1;
     case PARAM_TYPE_LITERAL_DOUBLE:

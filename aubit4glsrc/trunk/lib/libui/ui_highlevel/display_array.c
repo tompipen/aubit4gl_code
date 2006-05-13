@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.29 2006-04-05 06:54:38 mikeaubury Exp $
+# $Id: display_array.c,v 1.30 2006-05-13 12:34:40 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.29 2006-04-05 06:54:38 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.30 2006-05-13 12:34:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -382,7 +382,7 @@ disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
 		int blk;
   		blk=A4GL_has_evt_timeout(evt);
   		if (blk) { return blk; }
-      		a = A4GL_getch_win (1);
+      		a = A4GL_getch_win (1,"display array");
       		if (abort_pressed) {
 			a = A4GLKEY_INTERRUPT;
 		}
@@ -691,7 +691,7 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,
   int a;
   struct s_disp_arr *disp;
   struct aclfgl_event_list *evt;
-  int blk;
+  //int blk;
   evt = vevt;
   disp = dispv;
   A4GL_chkwin ();

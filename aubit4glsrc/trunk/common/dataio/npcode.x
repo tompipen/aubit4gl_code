@@ -143,7 +143,8 @@ enum enumop {
 	EOP_LOGAND,
 	EOP_LOGOR,
 	EOP_NE,
-	EOP_NOT
+	EOP_NOT,
+	EOP_MOD
 };
 
 
@@ -324,6 +325,7 @@ struct call_stack {
 
 struct npfunction {
 	long 			func_name_id;
+	long 			module_name_id;
 	struct use_variable 	param_vars<>;
 	long 			function_class;
 	struct cmd 		cmds<>;
@@ -343,4 +345,14 @@ struct module {
 	long  			external_function_table<>; 
 	struct npfunction 	functions<>;
 	struct param		params<>;
+	int 			max_variable_id;
+};
+
+
+
+struct module_list {
+	long 			fglc_magic;
+	long 			fglc_version;
+	long 			file_size;
+	struct module 		modules<>;
 };

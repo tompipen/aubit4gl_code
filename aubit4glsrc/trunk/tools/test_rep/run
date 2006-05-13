@@ -1,0 +1,17 @@
+echo "Short"
+nice -n 20 ./report SHORT 
+echo "Specific shorts 1"
+nice -n 20 ./report SHORT ECP 
+echo "Specific shorts 2"
+nice -n 20 ./report SHORT SQLITE 
+echo "Specific shorts 3"
+nice -n 20 ./report SHORT PGODBC 
+echo "Specific shorts 4"
+nice -n 20 ./report SHORT IFXODBC 
+echo "Specific shorts 5"
+nice -n 20 ./report SHORT MYODBC 
+echo "DB"
+./report DB
+echo "LONG"
+./report
+

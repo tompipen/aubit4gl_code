@@ -38,7 +38,7 @@
 struct npfunction *current_function;
 
 
-extern module this_module;
+extern module *this_module_ptr;
 int created = 0;
 
 void
@@ -47,7 +47,7 @@ add_label (char *label)
   ENTRY e, *ep;
 
   current_function =
-    &this_module.functions.functions_val[this_module.functions.functions_len -
+    &this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len -
 					 1];
 
   if (created == 1)

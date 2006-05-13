@@ -20,6 +20,7 @@ struct npvariable *master_variable = 0;
 
 int vid = 0;
 int m_type;
+int module_id_id=-1;
 
 
 #define MAXSTACK 100
@@ -57,7 +58,7 @@ int named_structs_cnt = 0;
 
 
 //int variable_id = 1;
-extern module this_module;
+extern module *this_module_ptr;
 
 
 
@@ -144,7 +145,7 @@ void
 set_master_set (long e_i)
 {
 //struct param *set;
-
+int ismodulevar=0;
   struct use_variable *uv;
   uv = acl_malloc2 (sizeof (struct use_variable));
   uv->variable_id = master_variable->variable_id;
@@ -154,13 +155,17 @@ set_master_set (long e_i)
   uv->sub.sub_len = 0;
   uv->sub.sub_val = 0;
 
+    if (master_variable->var->name_id==module_id_id) {
+	    	ismodulevar=1;
+    }
+
   if (m_type == 1)
     {
-      add_set_var (uv, e_i, 1,0);
+      add_set_var (uv, e_i, 1,0,ismodulevar);
     }
   else
     {
-      add_set_var (uv, e_i, 0,0);
+      add_set_var (uv, e_i, 0,0,ismodulevar);
     }
 }
 
@@ -175,11 +180,16 @@ add_variable (int type, struct variable_element *e, char *id, long set_i) // @to
   A4GL_debug ("Add variable .. %s type=%d \n", id, type);
 
   master_variable = v;
+  this_module_ptr->max_variable_id=vid;
   master_variable->variable_id = vid++;
   master_variable->category = type;
 
   master_variable->var = e;
+
   e->name_id = add_id (id);
+  if (strcmp(id,"_module_name")==0) {
+	  module_id_id= e->name_id;
+  }
 
   if (in_function ())
     {
@@ -194,7 +204,7 @@ add_variable (int type, struct variable_element *e, char *id, long set_i) // @to
       A4GL_debug ("Not in function\n");
       master_variable->def_block = -1;
       base = vstack[0];
-      //&this_module.module_variables;
+      //&this_module_ptr->module_variables;
     }
 
   base->c_vars.c_vars_len++;
@@ -338,16 +348,16 @@ find_variable (int sid, char *s, short *block_no)
 
       // Not there - check module variables...
 /*
-      for (b = 0; b < this_module.module_variables.c_vars.c_vars_len; b++)
+      for (b = 0; b < this_module_ptr->module_variables.c_vars.c_vars_len; b++)
 	{
 
-	  //printf ("   -> %s %d\n", s, this_module.module_variables.c_vars.c_vars_val[b].var);
+	  //printf ("   -> %s %d\n", s, this_module_ptr->module_variables.c_vars.c_vars_val[b].var);
 	  if (strcmp
 	      (s,
-	       GET_ID (this_module.module_variables.c_vars.c_vars_val[b].var-> name_id)) == 0)
+	       GET_ID (this_module_ptr->module_variables.c_vars.c_vars_val[b].var-> name_id)) == 0)
 	    {
 	      *block_no = -1;
-	      return this_module.module_variables.c_vars.c_vars_val[b].
+	      return this_module_ptr->module_variables.c_vars.c_vars_val[b].
 		variable_id;
 	    }
 	}
@@ -401,7 +411,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 	{
       	//struct cmd *command;
  
-// command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
+// command = &this_module_ptr->functions.functions_val[this_module_ptr->functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
 	 
 	  sub = acl_malloc2 (sizeof (struct use_variable_sub));
 	  sub->x1element = -1;
@@ -436,7 +446,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
       struct cmd *command;
       struct param *p;
 	if (p_i!=-1) {
-		p=&PARAM_ID(p_i);
+		p=&PARAM_ID(this_module_ptr, p_i);
 	} else {
 		p=nget_param(0);
 	}
@@ -449,13 +459,13 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
       if (p->param_u.uv->defined_in_block_pc == -1)
 	{			// Its module level
 	 //printf("Module level variable\n");
-	  command = &this_module.functions.functions_val[0].cmds.cmds_val[0];
+	  command = &this_module_ptr->functions.functions_val[0].cmds.cmds_val[0];
 	}
       else
 	{
 
 	  //printf("Local variable in block @ PC=%d\n",p->param_u.uv->defined_in_block_pc);
-	  command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
+	  command = &this_module_ptr->functions.functions_val[this_module_ptr->functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
 
 	}
       if (command->cmd_type != CMD_BLOCK)
@@ -467,7 +477,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 
 
 /*
-	    this_module.functions.functions_val[this_module.functions.
+	    this_module_ptr->functions.functions_val[this_module_ptr->functions.
 						functions_len -
 						1].cmds.cmds_val[p->param_u.
 								 uv->
@@ -751,6 +761,7 @@ add_default_named_structs ()
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "size"));
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "start_char_subscript"));
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "end_char_subscript"));
+  add_default_struct_list (v, make_default_struct_element ("VoidPointer", 0, "libptr"));
   make_named_struct ("BINDING", v);
 
   v = add_default_struct_list (0, make_default_struct_element ("LONG", 0, "event_type"));
@@ -898,6 +909,11 @@ void
 move_define (struct cmd_block *from, struct cmd_block *to)
 {
   int a;
+
+
+  //printf("Move define : %p to %p\n",from,to);
+
+
   if (from->c_vars.c_vars_len == 0)
     return;			/* Nothing to copy */
 
@@ -942,9 +958,9 @@ move_defines ()
   int nop = 0;
   struct npfunction *func;
 
-  for (a = 0; a < this_module.functions.functions_len; a++)
+  for (a = 0; a < this_module_ptr->functions.functions_len; a++)
     {
-      func = &this_module.functions.functions_val[a];
+      func = &this_module_ptr->functions.functions_val[a];
       // 0 will always be the functions block...
       if (func->cmds.cmds_val[0].cmd_type != CMD_BLOCK)
 	{
@@ -983,11 +999,11 @@ struct cmd_block *get_base(int block_pc) {
       struct cmd *command;
       if (block_pc == -1)
 	{			// Its module level
-	  command = &this_module.functions.functions_val[0].cmds.cmds_val[0];
+	  command = &this_module_ptr->functions.functions_val[0].cmds.cmds_val[0];
 	}
       else
 	{
-	  command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[block_pc];
+	  command = &this_module_ptr->functions.functions_val[this_module_ptr->functions.  functions_len - 1].cmds.cmds_val[block_pc];
 
 	}
       if (command->cmd_type != CMD_BLOCK)

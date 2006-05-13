@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.99 2006-05-02 18:11:19 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.100 2006-05-13 12:34:40 mikeaubury Exp $";
 #endif
 
 
@@ -1092,7 +1092,7 @@ A4GL_LL_field_buffer (void *field, int n)
 
 
 int
-A4GL_LL_getch_swin (void *window_ptr)
+A4GL_LL_getch_swin (void *window_ptr,char *why)
 {
   int a;
   GtkWidget *f;
