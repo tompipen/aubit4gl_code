@@ -42,8 +42,10 @@ else
     let ret_code = a4gl_file::closedir(dir_handle)
 end if
 if lv_foundme then
+display "OK"
 	exit program 0
 else
+display "Not ok"
 	exit program 1
 end if
 end main

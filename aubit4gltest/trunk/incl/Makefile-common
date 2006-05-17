@@ -227,7 +227,7 @@ ifneq "${COMPILE_ONLY}" "1"
 		#Run explicitly named test program and test for exit code.
 		NAMED_RUN=${RUN_EXT}; \
 			RET=$$?; \
-			if test "$$RET" = "${EXPECT_CODE}"; then \
+			if test "$$RET" = "${EXPECT_CODE}" -o "${EXPECT_CODE}" = ""; then \
 				echo "Success ($$RET)"; \
 				exit 0; \
 			else \

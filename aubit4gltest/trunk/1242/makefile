@@ -49,7 +49,6 @@ include ${MAKEFILE_COMMON}
 FORMS=${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
 HELP=${MSG:.msg=${HLP_EXT}}
-
 ################
 #export to environment:
 ifneq "${A4GL_KEYFILE}" ""
