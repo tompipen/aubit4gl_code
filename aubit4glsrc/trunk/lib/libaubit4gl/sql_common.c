@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.18 2006-02-12 09:56:31 mikeaubury Exp $
+# $Id: sql_common.c,v 1.19 2006-05-17 15:49:22 mikeaubury Exp $
 #
 */
 
@@ -943,6 +943,92 @@ int A4GLSQLPARSE_from_clause(struct s_select *select, struct s_table *t,char *fi
 }
 
 
+
+
+int A4GL_sqlid_from_aclfile(char *dbname, char *uname,char *passwd) {
+FILE *f;
+char fname[256];
+char buff[300];
+char *ptr_fields[3];
+char *ptr;
+char *ptr_next;
+ptr=acl_getenv_not_set_as_0("A4GL_SQLACL");
+if (ptr==0) {
+#if defined( __MINGW32__ ) || defined(MSVC)
+	if (strlen(fname)==0) {
+		strcpy(fname,"c:\\aubit4gl\\aubit4gl.acl");
+	}
+#else
+	strcpy(fname,acl_getenv("HOME"));
+	if (strlen(fname)==0) {
+		strcpy(fname,"/etc/aubit4gl.acl");
+	} else {
+		strcat(fname,"/.aubit4gl.acl");
+	}
+#endif
+} else {
+	strcpy(fname,ptr);
+}
+f=fopen(fname,"r");
+if (f==0) return 0;
+
+while (1) {
+	if (!fgets(buff,256,f)) break;
+	A4GL_debug("Read : %s\n",buff);
+	ptr=strchr(buff,'#');
+	if (ptr) { *ptr=0; }
+	ptr=strchr(buff,'\n');
+	if (ptr) { *ptr=0; }
+	ptr=&buff[0];
+
+	// File should contain fields like this :
+	// dbname:username:passwd
+	ptr_next=strchr(buff,':');  // end of dbname
+
+	ptr_fields[0]=0;
+	ptr_fields[1]=0;
+	ptr_fields[2]=0;
+
+	ptr_fields[0]=&buff[0];
+	if (ptr_next!=0) { 
+		*ptr_next=0; 
+		A4GL_debug("compare dbname : %s to %s\n",buff,dbname);
+		if (strcmp(buff,dbname)!=0) {
+			continue;
+		}
+
+		ptr=ptr_next+1;
+
+		ptr_fields[1]=ptr;
+
+		ptr_next=strchr(ptr,':');  // end of username
+
+		if (ptr_next!=0) { 
+			*ptr_next=0;
+			ptr=ptr_next+1; 
+			ptr_fields[2]=ptr;
+
+			ptr_next=strchr(ptr,':');  // chances are this isn't there...
+
+			if (ptr_next!=0) { 
+				*ptr_next=0;
+				ptr=ptr_next+1; 
+			}
+
+			// if we've got to here - we've got the username as password..
+			A4GL_debug("uname=%s passwd=%s",ptr_fields[1],ptr_fields[2]);
+			strcpy(uname,ptr_fields[1]);
+			strcpy(passwd,ptr_fields[2]);
+			fclose(f);
+			return 1;
+		}
+
+	}
+
+}
+fclose(f);
+return 0;
+}
 
 
 

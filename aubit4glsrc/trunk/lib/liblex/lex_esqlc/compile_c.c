@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.290 2006-05-13 12:34:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.291 2006-05-17 15:49:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.290 2006-05-13 12:34:39 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.291 2006-05-17 15:49:22 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6094,14 +6094,17 @@ print_menu (int mn, int n)
 			|| menu_stack[mn][a].menu_help[0] != 0 
 			|| menu_stack[mn][a].idle_interval != 0; a++) {
 
+
+	      if (menu_stack[mn][a].idle_interval=='A') {
+	      	printc ("A4GL_add_menu_action(m_%d, %s,%d);\n", n, menu_stack[mn][a].action,a);
+		continue;
+	      }
+
 	      printc ("A4GL_add_menu_option(m_%d, %s,%s,%s,%d,0);\n", n,
 	      		menu_stack[mn][a].menu_title,
 	      		menu_stack[mn][a].menu_key,
 	      		menu_stack[mn][a].menu_help, menu_stack[mn][a].menu_helpno);
 
-	      if (menu_stack[mn][a].idle_interval=='A') {
-	      	printc ("A4GL_add_menu_action(m_%d, '%s',%d);\n", n, menu_stack[mn][a].action,a);
-	      }
 	      if (menu_stack[mn][a].idle_interval=='D') {
 	    	printh("static long a4gl_idle%d=0;\n",idle_cnt);
 	      	printc ("A4GL_add_menu_timeout(m_%d, 'D',%d,%d,&a4gl_idle%d);a4gl_idle%d=0;\n", n, menu_stack[mn][a].timeout_val,a,idle_cnt,idle_cnt);

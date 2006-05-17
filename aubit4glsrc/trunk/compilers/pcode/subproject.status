@@ -87,3 +87,16 @@ Status:  2
 Todo:
 Notes:
 
+Name: link_fgl
+Parent: pcode
+Description: Compiles byte-code (Pseudo-code) modules into a program
+Functionality: P-code compiler for 4GL
+Build: manual
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status:  2
+Todo:
+Notes:

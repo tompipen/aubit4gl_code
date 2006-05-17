@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.25 2005-03-25 12:48:31 afalout Exp $
+# $Id: Makefile,v 1.26 2006-05-17 15:49:21 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -82,13 +82,15 @@ OBJ_RUNNER_C		=${OBJ_COMMON} ${OBJ_RUNNER_COMMON} ${OBJ_COMMON_C} \
 OBJ_RUNNER_A4GL		=${OBJ_COMMON} ${OBJ_RUNNER_COMMON} ${OBJ_COMMON_A4GL} \
 					runner_calls_fgl.o runner_execute_fgl.o
 
+OBJ_LINKER	=  link.o common_io_fgl.o  compiler_optimize.o common_eval.o
+
 #open.c write.c print.c missing from CVS:
 OBJ_OPEN        	=npcode_xdr.o open.o write.o print.o
 
 CMODS           =runner_calls.c checker_read.c common_eval.c \
 				common_io.c common_print.c compiler_list.c compiler_main.c \
 				compiler_param.c compiler_pcode.c compiler_variables.c \
-				runner_execute.c runner_main.c runner_vars.c
+				runner_execute.c runner_main.c runner_vars.c link.c
 
 SRCS			=Makefile npcode.x npcode_defs.h calls.h \
 				fgl_calls.h std_calls.h simple.lex simple.yacc ${CMODS}
@@ -102,7 +104,7 @@ ifeq "${DBG}" "yes"
 endif
 
 #Targets we can compile in any case
-ALL             =${BINROOT}/c2pcode_fgl ${BINROOT}/checker_fgl ${BINROOT}/runner_fgl
+ALL             =${BINROOT}/c2pcode_fgl ${BINROOT}/checker_fgl ${BINROOT}/runner_fgl ${BINROOT}/link_fgl
 #Targets we can compile only if we have RPC
 ALL_RPC			=${BINROOT}/c2pcode ${BINROOT}/checker ${BINROOT}/runner
 
@@ -181,6 +183,9 @@ ${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
 ${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.xs.h
 	$(CC) -g -DRPCGEN_HEADERS -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} 
 #${RPCLINKLIBS}
+
+${BINROOT}/link_fgl:  $(OBJ_LINKER) npcode.xs.h
+	$(CC) -g -o $@ $(OBJ_LINKER) ${LINKLIBS} 
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
 	$(CC) --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS}

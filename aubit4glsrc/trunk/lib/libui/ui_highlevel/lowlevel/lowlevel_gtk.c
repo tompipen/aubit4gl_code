@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.100 2006-05-13 12:34:40 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.101 2006-05-17 15:49:23 mikeaubury Exp $";
 #endif
 
 
@@ -4181,4 +4181,9 @@ A4GL_LL_finished_with_events (void *s)
 
 int A4GL_LL_get_triggered_event() {
 	return -1; /* Does nothing in GTK mode */
+}
+
+
+void A4GL_LL_ui_exit() {
+	// Does nothing - required by api..
 }

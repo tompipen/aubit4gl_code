@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.48 2006-05-13 12:34:40 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.49 2006-05-17 15:49:23 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.48 2006-05-13 12:34:40 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.49 2006-05-17 15:49:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1320,7 +1320,12 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
    	}
 
   	a = A4GL_getch_win (1,"input");
-	
+	      if (a==A4GLKEY_EVENT) {
+		A4GL_debug("input fired event...");
+       		A4GL_evt_not_idle(evt);
+		return A4GL_LL_get_triggered_event();
+	      	}
+
   	if (a!=0&&a!=-1) {
        		A4GL_evt_not_idle(evt);
        		break;
@@ -1933,6 +1938,12 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt)
 
 
   A4GL_debug ("construct_large a=%d abort_pressed=%d", a, abort_pressed);
+              if (a==A4GLKEY_EVENT) {
+		                      A4GL_debug("construct fired event...");
+				                      A4GL_evt_not_idle(evt);
+						                      return A4GL_LL_get_triggered_event();
+								                      }
+
 
   if (abort_pressed || a == A4GLKEY_INTERRUPT || a == A4GLKEY_CANCEL)
     {

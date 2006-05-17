@@ -22,8 +22,15 @@ void replace_id (module * nm, int oldid, int newid);
 void replace_id_in_var (struct variable_element *var, int oldid, int newid);
 void link_make_new_param (int *n, struct param **p);
 void replace_variable_id (struct module *new_module, long *newid);
+int link_add_id (char *s, int cnt);
+int add_param (struct param *p);
+void replace_param (struct module *mptr, int from, int to);
+int link_add_string (char *s, int cnt);
+void A4GL_assertion (int fail, char*msg);
 
 module *this_module;
+char out_linked_name[256]="linked.4pp";
+int optimised=0;
 
 module *this_module_ptr;
 module *modules;
@@ -32,8 +39,7 @@ int allocated_params;
 #define GET_NEW_ID(m,x) get_new_id(m,x)
 #define GET_OLD_ID(x) get_new_id(this_module,x)
 
-char *
-get_new_id (module * new_module, int x)
+char * get_new_id (module * new_module, int x)
 {
   if (x >= new_module->id_table.id_table_len)
     {
@@ -46,34 +52,97 @@ get_new_id (module * new_module, int x)
 
 
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   int a;
-  module smod;
+  int *skip;
+  //module smod;
+  //
+  do_compiler_start (argc, argv);
   modules = malloc (sizeof (module) * argc);
+  int fmodule=-1;
+  skip=malloc(sizeof(int)*argc);
+
+  for(a=0;a<argc;a++) {
+	  skip[a]=1;
+  }
 
   for (a = 1; a < argc; a++)
     {
-      char *lv_progname;
-      lv_progname = argv[a];
+       char *lv_progname;
+        lv_progname = argv[a];
+	skip[a]=1;
+	if (strcmp(lv_progname,"-o")==0) {
+		a++;
+		skip[a]=1;
+      		lv_progname = argv[a];
+		strcpy(out_linked_name,lv_progname);
+		continue;
+	}
 
+	if (
+			strcmp(lv_progname,"-O")==0  ||
+			strcmp(lv_progname,"-O1")==0  ||
+			strcmp(lv_progname,"-O2")==0  ||
+			strcmp(lv_progname,"-O3")==0  ||
+			strcmp(lv_progname,"-O4")==0  ||
+			strcmp(lv_progname,"-O5")==0  
+			 ) {
+				optimised=1;
+			continue;
+	}
+
+	if (strncmp(lv_progname,"-l",2)==0) { // -llibname or -l libname
+		if (strlen(lv_progname)==2) { // -l libname
+			a++;
+			skip[a]=1;
+		}
+		continue;
+	}
+
+	if (strncmp(lv_progname,"-L",2)==0) { // -Ldir or -L dir
+		if (strlen(lv_progname)==2) { // -L dir
+			a++;
+			skip[a]=1;
+		}
+		continue;
+	}
+
+
+	skip[a]=0;
+      if (fmodule==-1) fmodule=a;
       if (!process_xdr ('I', &modules[a - 1], lv_progname))
 	{
 	  printf ("Error loading %s\n", lv_progname);
 	  exit(2);
 	}
     }
-  this_module = &modules[0];
+
+  if (fmodule==-1) {
+	  printf("Nothing to link\n");
+  }
+
+  this_module = &modules[fmodule-1];
   this_module->module_name = strdup ("PROGRAM");
   this_module_ptr = this_module;
+	      printf("first module : %s\n",argv[fmodule]);
 
-  for (a = 2; a < argc; a++)
+  for (a = fmodule+1; a < argc; a++)
     {
-      merge_module (&modules[a - 1]);
+      if (!skip[a]) {
+	      printf("merge_module : %s\n",argv[a]);
+      		merge_module (&modules[a - 1]);
+      }
     }
-  // @todo optimize
-// @todo - write back 
-  a = process_xdr ('O', this_module, "linked.4pe");
+
+
+  if (optimised) {
+  	optimize();
+  }
+
+printf("Writing to : %s\n",out_linked_name);
+  a = process_xdr ('O', this_module, out_linked_name);
+
   if (a)
     {
       A4GL_debug ("Written ok %d\n", a);
@@ -83,39 +152,27 @@ main (int argc, char *argv[])
       printf ("Failed to write %d\n", a);
       exit (1);
     }
-#ifdef OPTIMIZETOO
-  optimize();
-  a = process_xdr ('O', this_module, "linkedO.4pe");
-  if (a)
-    {
-      A4GL_debug ("Written ok %d\n", a);
-    }
-  else
-    {
-      printf ("Failed to write %d\n", a);
-      exit (1);
-    }
-#endif
 
+return 0;
 }
 
 int
 is_system_var (char *s)
 {
-  printf ("Is system : %s ", s);
+  //printf ("Is system : %s ", s);
 // because we mark scope on all the aubit stuff - 
 // anything not marked should be global...
   if (s[0] >= 'a' && s[0] <= 'z')
     {
-      printf ("Yes\n");
+      //printf ("Yes\n");
       return 1;
     }
   if (s[0] == 'G')
     {
-      printf ("Yes\n");
+      //printf ("Yes\n");
       return 1;
     }
-  printf ("No\n");
+  //printf ("No\n");
   return 0;
 }
 
@@ -147,12 +204,13 @@ merge_module (module * new_module)
 {
   int a;
   int b;
-  int c;
-  int d;
+  //int c;
+  //int d;
   long *newid = 0;
   struct npfunction *module_func;
   struct cmd_block *blk;
-  int orig_len;
+A4GL_assertion(new_module==0,"new module=0 ?");
+  //int orig_len;
 /*
 // In order to merge our module - we need to merge these items :
 //    string_table
@@ -168,7 +226,7 @@ merge_module (module * new_module)
   for (a = 0; a < new_module->string_table.string_table_len; a++)
     {
       int nid;
-      int nsid;
+      //int nsid;
 
       // generate a new string ID...
       nid =
@@ -297,13 +355,13 @@ merge_module (module * new_module)
     }
 
   module_func = &new_module->functions.functions_val[0];
+  A4GL_assertion(module_func==0,"No module function");
   blk = module_func->cmds.cmds_val[0].cmd_u.c_block;
   for (a = 0; a < blk->c_vars.c_vars_len; a++)
     {
       struct cmd_block *base;
       int id;
 
-      printf ("Match : %d - %d\n", blk->c_vars.c_vars_val[a].var->name_id);
       base = this_module->functions.functions_val[0].cmds.cmds_val[0].cmd_u.  c_block;
 
       if (is_system_var (GET_ID (blk->c_vars.c_vars_val[a].var->name_id)))
@@ -312,7 +370,7 @@ merge_module (module * new_module)
 	  id = find_old_mod_var (new_module, GET_ID (blk->c_vars.c_vars_val[a].var-> name_id));
 	  if (id >= 0)
 	    {
-	      printf ("Merge top level variables : Old ID : %d new id %d\n", blk->c_vars.c_vars_val[a].variable_id, id);
+	      //printf ("Merge top level variables : Old ID : %d new id %d\n", blk->c_vars.c_vars_val[a].variable_id, id);
 	      if (base->c_vars.c_vars_val[id].category==CAT_EXTERN) {// Was previously extern
 		      if (blk->c_vars.c_vars_val[a].category==CAT_NORMAL) {
 			      // Result ! - we've got our external variable !
@@ -325,7 +383,7 @@ merge_module (module * new_module)
 	      continue;
 	    }
 	}
-      printf ("Add variable to top __MODULE function\n");
+      A4GL_debug ("Add variable to top __MODULE function\n");
       // variable doesn't currently exist at in our base modules top area..
       // lets add it..
       base->c_vars.c_vars_len++;
@@ -335,7 +393,7 @@ merge_module (module * new_module)
       id = base->c_vars.c_vars_len - 1;
       memcpy (&base->c_vars.c_vars_val[id], &blk->c_vars.c_vars_val[a], sizeof (struct npvariable));
       base->mem_to_alloc+=blk->c_vars.c_vars_val[a].var->total_size;
-      printf("Increasing memtoalloc : %d\n",blk->c_vars.c_vars_val[a].var->total_size);
+      //printf("Increasing memtoalloc : %d\n",blk->c_vars.c_vars_val[a].var->total_size);
       // We'll keep the variable ID we've just guessed -  but we'll need to set that in our base module...
       // 
       base->c_vars.c_vars_val[id].variable_id = newid[blk->c_vars.c_vars_val[a].variable_id];
@@ -454,8 +512,7 @@ replace_variable_id (struct module *new_module, long *newid)
 
 
 
-int
-add_param (struct param *p)
+int add_param (struct param *p)
 {
   int n;
   link_make_new_param (&n, 0);
@@ -479,7 +536,7 @@ replace_id (module * nm, int oldid, int newid)
 
 
 
-  printf("Replace ID : %d %d\n",oldid,newid);
+  //printf("Replace ID : %d %d\n",oldid,newid);
 
 
   for (a = 0; a < nm->params.params_len; a++)
@@ -574,13 +631,15 @@ replace_id_in_var (struct variable_element *var, int oldid, int newid)
 long
 call_function (long pc, struct npcmd_call *c)
 {
-
+// Dummy function
+return 0;
 }
 
 void *
 get_var_ptr (struct use_variable *use_var, int *size)
 {
-
+// Dummy function
+return 0;
 }
 
 
@@ -588,8 +647,7 @@ get_var_ptr (struct use_variable *use_var, int *size)
 
 
 
-int
-link_add_string (char *s, int cnt)
+int link_add_string (char *s, int cnt)
 {
   int nsize;
   int a;
@@ -630,16 +688,15 @@ link_add_string (char *s, int cnt)
 
 
 
-int
-link_add_id (char *s, int cnt)
+int link_add_id (char *s, int cnt)
 {
   int a;
-  printf ("link_add_id - Finding '%s'\n", s);
+  //printf ("link_add_id - Finding '%s'\n", s);
   for (a = 0; a < this_module->id_table.id_table_len; a++)
     {
       if (strcmp (s, this_module->id_table.id_table_val[a].s) == 0)
 	{
-	  printf ("Found it %d\n", a);
+	  //printf ("Found it %d\n", a);
 	  this_module->id_table.id_table_val[a].rcnt += cnt;
 	  return a;
 	}
@@ -655,7 +712,7 @@ link_add_id (char *s, int cnt)
   this_module->id_table.id_table_val[this_module->id_table.id_table_len -
 				     1].rcnt = cnt;
 
-  printf ("Created it @ %d\n", this_module->id_table.id_table_len - 1);
+  A4GL_debug ("Created it @ %d\n", this_module->id_table.id_table_len - 1);
   return this_module->id_table.id_table_len - 1;
 }
 
@@ -691,7 +748,7 @@ link_make_new_param (int *n, struct param **p)
 
 int has_function(char *s,int curr) {
 	int a;
-	for (a=curr+1;a<this_module->functions.functions_len;a++;a++) {
+	for (a=curr+1;a<this_module->functions.functions_len;a++) {
 		if (strcmp(GET_ID(this_module->functions.functions_val[a].func_name_id),s)==0) return 1;
 	}
 	return 0;
@@ -699,6 +756,7 @@ int has_function(char *s,int curr) {
 
 
 int cross_check() {
+int a;
 int ok=1;
 
 // lets check for duplicate functions first...
@@ -710,5 +768,5 @@ for (a=0;a<this_module->functions.functions_len;a++) {
 	}
 }
 
-
+return 1;
 }

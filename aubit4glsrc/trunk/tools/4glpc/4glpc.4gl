@@ -356,6 +356,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	if lv_arg matches "*.o" 
 	   or lv_arg matches "*.ao" 
 	   or lv_arg matches "*.4go" 
+	   or lv_arg matches "*.4pe" 
 	   or lv_arg matches lv_type then
 		LET mv_output_type="OBJ"
 	end if
@@ -642,6 +643,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	let lv_type=generate_ext("OBJ")
 	if lv_arg matches "*.o" 
 	   or lv_arg matches "*.4go" 
+	   or lv_arg matches "*.4pe" 
 	   or lv_arg matches "*.ao" 
 	   or lv_arg matches lv_type then
 		call add_obj(lv_arg)

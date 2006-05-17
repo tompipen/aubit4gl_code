@@ -1,0 +1,4 @@
+A4GL_OBJ_EXT=.4pe
+A4GL_C_COMP=c2pcode_fgl
+A4GL_EXE_EXT=.4pm
+A4GL_LINK=link_fgl

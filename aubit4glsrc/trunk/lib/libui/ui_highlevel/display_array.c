@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.30 2006-05-13 12:34:40 mikeaubury Exp $
+# $Id: display_array.c,v 1.31 2006-05-17 15:49:23 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.30 2006-05-13 12:34:40 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.31 2006-05-17 15:49:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -383,6 +383,12 @@ disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
   		blk=A4GL_has_evt_timeout(evt);
   		if (blk) { return blk; }
       		a = A4GL_getch_win (1,"display array");
+		      if (a==A4GLKEY_EVENT) {
+		                      A4GL_debug("display array fired event...");
+				      A4GL_evt_not_idle(evt); 
+		                      return A4GL_LL_get_triggered_event();
+		       }
+
       		if (abort_pressed) {
 			a = A4GLKEY_INTERRUPT;
 		}

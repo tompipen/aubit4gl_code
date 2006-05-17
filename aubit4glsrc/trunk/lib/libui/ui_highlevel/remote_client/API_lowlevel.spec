@@ -84,6 +84,7 @@ A4GL_LL_submit_event int a void* s int event_type int block int keycode char* fi
 A4GL_LL_activate_events void* s -> void
 A4GL_LL_finished_with_events void* s -> void
 A4GL_LL_get_triggered_event -> int
+A4GL_LL_ui_exit -> void
 
 
 * A4GL_LL_get_field_userptr void* field -> void*  

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.224 2006-04-05 06:54:36 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.225 2006-05-17 15:49:21 mikeaubury Exp $
 #
 */
 
@@ -263,6 +263,8 @@
 #define A4GLKEY_SHTAB 		0xff0f
 
 #define A4GLKEY_EVENT  		2017
+#define A4GLKEY_SYNC  		2018
+
 #define A4GLKEY_ACCEPT 		2016
 #define A4GLKEY_DELETE		2015
 #define A4GLKEY_INSERT		2014
@@ -2165,29 +2167,22 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define A4GL_EVENT_AFTER_DELETE  	-13
 #define A4GL_EVENT_BEFORE_INSERT  	-14
 #define A4GL_EVENT_AFTER_INSERT  	-15
-/* */
 #define A4GL_EVENT_BEF_INSERT_DELETE  	-17
 #define A4GL_EVENT_AFT_INSERT_DELETE  	-18
 
-/* ... */
 
 #define A4GL_EVENT_ON_IDLE  		-50
 #define A4GL_EVENT_ON_INTERVAL 		-51
 #define A4GL_EVENT_ON_TIME 		-52
 
-/* ... */
 
 #define A4GL_EVENT_KEY_PRESS  		-90
 #define A4GL_EVENT_ON_ACTION  		-91
-/* */
-/* */
 #define A4GL_EVENT_AFTER_INP_CLEAN 	-94
 #define A4GL_EVENT_AFTER_INP  		-95
-/* */
 #define A4GL_EVENT_BEFORE_FIELD 	-97
 #define A4GL_EVENT_AFTER_FIELD 		-98
 #define A4GL_EVENT_BEFORE_INP  		-99
-/* */
 #define A4GL_EVENT_BEFORE_FIELD_1 	-197
 #define A4GL_EVENT_AFTER_FIELD_1 	-198
 
@@ -2327,6 +2322,7 @@ void * A4GL_new_expr (char *value);
 void A4GL_add_recall_value(char *field_name,char *value);
 void A4GL_debug_dump_recall(char *field_name);
 char *A4GL_recall_field(char *t,char *c,int x,int y,int show);
+int A4GL_sqlid_from_aclfile(char *dbname,char *uname,char *passwd);
 
 
 char *A4GL_confirm_colname(char *t,char *c);

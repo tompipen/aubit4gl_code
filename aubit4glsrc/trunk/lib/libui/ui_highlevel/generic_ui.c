@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.81 2006-05-13 12:34:40 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.82 2006-05-17 15:49:23 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2652,11 +2652,13 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
   if (promptx->mode == -1)
     {				// Initialize prompt...
       A4GL_clr_evt_timeouts (evt);
+      A4GL_submit_events(vprompt,evt);
       promptx->mode = 0;
       return 0;
     }
 
 
+  A4GL_LL_activate_events(vprompt);
 
   if (promptx->mode == 1)
     {
@@ -2698,6 +2700,15 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 	  return blk;
 	}
       a = A4GL_getch_internal (p,"prompt");
+
+              if (a==A4GLKEY_EVENT) {
+		                      A4GL_debug("prompt fired event...");
+				                      A4GL_evt_not_idle(evt);
+						                      return A4GL_LL_get_triggered_event();
+								                      }
+
+
+
       if (abort_pressed)
 	break;
       if (a != -1)
@@ -3481,7 +3492,7 @@ UILIB_A4GL_screen_mode (int a)
 void
 UILIB_A4GL_ui_exit (void)
 {
-  // Does nothing - required by the API
+	A4GL_LL_ui_exit();
 }
 
 

@@ -63,6 +63,7 @@ menu_block_command :
 | on_action {
 		int a;
 		push_menu_action(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>1);
+
 		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
 		a=menu_cmd_cnt[menu_cnt]++;
 		A4GL_assertion((a>=MAXMENUOPTS),"Ran out of menuoptions in compiler (Increase : MAXMENUOPTS)");

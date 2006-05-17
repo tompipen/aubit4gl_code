@@ -126,8 +126,7 @@ replace_param_in_list (struct module *mptr, struct param_list *p_list,
 }
 
 
-void
-replace_param (struct module *mptr, int from, int to)
+void replace_param (struct module *mptr, int from, int to)
 {
   int a;
   int b;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.54 2006-05-13 12:34:39 mikeaubury Exp $
+# $Id: ui.c,v 1.55 2006-05-17 15:49:22 mikeaubury Exp $
 #
 */
 
@@ -1277,7 +1277,7 @@ void A4GL_stop_ui(void) {
 #endif
       A4GL_gotolinemode ();
     }
-
+    A4GL_ui_exit();
 }
 
 

@@ -1,7 +1,7 @@
 #include "a4gl_libaubit4gl.h"
 #include "ui_lowlevel.h"
 
-char url[256] = "http://localhost:8081/RPC2";
+char url[256] = "";
 
 static int inited=0;
 
@@ -12,12 +12,16 @@ int init_client(void) {
 	if (!inited) {
 		char *ptr;
 		inited=1;
-		printf("Init client");
+		printf("Init client\n");
 		ptr=acl_getenv_not_set_as_0("AFGLSERVER");
 		if (ptr) {
 			strcpy(url,ptr);
-		}
 		ok=client_connect(ptr,"1300");
+		}   else {
+			printf("No server specified - please set AFGLSERVER\n");
+			ok=0;
+		}
+
 		if (ok==0) {
 			A4GL_fgl_die_with_msg(45,"Cannot connect");
 			exit(1);

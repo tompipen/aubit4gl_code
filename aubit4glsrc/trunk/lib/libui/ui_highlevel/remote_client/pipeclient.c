@@ -137,7 +137,10 @@ pipe_make_connection (char *service, char *netaddress)
       FPRINTF (stderr, "make_connection:  Invalid socket type.\n");
       return 0;
     }
-
+  if (netaddress==0) {
+	  // No host to connect to....
+	  return 0;
+  }
   addr = internal_atoaddr (netaddress);
 
   if (addr == NULL)

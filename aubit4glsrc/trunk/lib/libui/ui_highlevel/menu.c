@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.33 2006-05-13 12:34:40 mikeaubury Exp $";
+  "$Id: menu.c,v 1.34 2006-05-17 15:49:23 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -440,6 +440,14 @@ A4GL_highlevel_menu_loop (void *menuv)
       }
       
       A4GL_debug ("menu_getkey returns %d", a);
+
+
+      if (a==A4GLKEY_EVENT) {
+	      	A4GL_debug("Menu fired event...");
+		return A4GL_LL_get_triggered_event();
+      }
+
+
       if (a == 23 || A4GL_is_special_key (a, A4GLKEY_HELP))
 	{
 	  if (menu->curr_option->help_no)
@@ -535,6 +543,9 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	      return a;
 	    }
 	}
+
+
+
 
       A4GL_debug (">>>>>>>>>>>A=%d %c\n", a, a_isprint (a) ? a : '.');
 #ifdef WIN32_BROKEN

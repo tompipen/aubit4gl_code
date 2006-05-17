@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.154 2006-05-13 12:34:40 mikeaubury Exp $
+# $Id: sql.c,v 1.155 2006-05-17 15:49:23 mikeaubury Exp $
 #
 */
 
@@ -55,7 +55,7 @@ void AddColumn (char *s, int d, int sz);
 int GetColNo = 0;
 char GetColTab[2000];
 int GetColCached = 0;
-int first_open=1;
+int first_open = 1;
 
 #define CACHE_COLUMN '&'
 
@@ -448,7 +448,7 @@ dll_import sqlca_struct a4gl_sqlca;
 */
 
 static void
-reformat_sql (char *sql, struct BINDING *ibind, int nibind,char *fromwhere)
+reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 {
   int c;
   FILE *f;
@@ -456,16 +456,18 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind,char *fromwhere)
   char buff[20000];
   char sbuff[20000];
   int b;
-  static int log_sql=-1;
+  static int log_sql = -1;
 
   c = 0;
   b = 0;
 
-  if (log_sql==-1) {
-	  log_sql=A4GL_isyes(acl_getenv("LOGODBCSQL"));
-  }
+  if (log_sql == -1)
+    {
+      log_sql = A4GL_isyes (acl_getenv ("LOGODBCSQL"));
+    }
 
-  if (!log_sql)  return;
+  if (!log_sql)
+    return;
 
 
   if (first_open)
@@ -480,9 +482,9 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind,char *fromwhere)
   if (ibind == 0)
     {
       if (!strchr (sql, '?'))
-        {
-          fprintf (f, "%s;\n", sql);
-        }
+	{
+	  fprintf (f, "%s;\n", sql);
+	}
       fclose (f);
       return;
     }
@@ -491,80 +493,87 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind,char *fromwhere)
   for (a = 0; a < strlen (sql); a++)
     {
       if (sql[a] != '?')
-        {
-          buff[b++] = sql[a];
-          continue;
-        }
+	{
+	  buff[b++] = sql[a];
+	  continue;
+	}
 
       sprintf (sbuff, "'?%d'", ibind[c].dtype);
 
       if (ibind[c].dtype == DTYPE_CHAR)
-        {
-                static char *buff=0;
-                char *ptr;
-                int a=0;
-                int b=0;
-                ptr=ibind[c].ptr;
+	{
+	  static char *buff = 0;
+	  char *ptr;
+	  int a = 0;
+	  int b = 0;
+	  ptr = ibind[c].ptr;
 
-                if (strchr(ptr,'\'')) {
-                        buff=realloc(buff,(strlen(ibind[c].ptr)*2)+1);
-                        for (a=0;a<strlen(ptr);a++) {
-                                if (ptr[a]!='\'') {
-                                        buff[b++]=ptr[a];
-                                } else {
-                                        buff[b++]='\'';
-                                        buff[b++]='\'';
-                                }
-                        }
-                        buff[b]=0;
+	  if (strchr (ptr, '\''))
+	    {
+	      buff = realloc (buff, (strlen (ibind[c].ptr) * 2) + 1);
+	      for (a = 0; a < strlen (ptr); a++)
+		{
+		  if (ptr[a] != '\'')
+		    {
+		      buff[b++] = ptr[a];
+		    }
+		  else
+		    {
+		      buff[b++] = '\'';
+		      buff[b++] = '\'';
+		    }
+		}
+	      buff[b] = 0;
 
-                        sprintf (sbuff, "'%s'", buff);
-                } else {
-                        sprintf (sbuff, "'%s'", ptr);
-                }
-        }
+	      sprintf (sbuff, "'%s'", buff);
+	    }
+	  else
+	    {
+	      sprintf (sbuff, "'%s'", ptr);
+	    }
+	}
 
 
       if (ibind[c].dtype == DTYPE_SMINT)
-        {
-          sprintf (sbuff, "%d", *(short *) ibind[c].ptr);
-        }
+	{
+	  sprintf (sbuff, "%d", *(short *) ibind[c].ptr);
+	}
 
       if (ibind[c].dtype == DTYPE_INT)
-        {
-          sprintf (sbuff, "%ld", *(long *) ibind[c].ptr);
-        }
+	{
+	  sprintf (sbuff, "%ld", *(long *) ibind[c].ptr);
+	}
 
 
       if (ibind[c].dtype == DTYPE_FLOAT)
-        {
-          sprintf (sbuff, "%lf", *(double *) ibind[c].ptr);
-        }
+	{
+	  sprintf (sbuff, "%lf", *(double *) ibind[c].ptr);
+	}
 
       if (ibind[c].dtype == DTYPE_SMFLOAT)
-        {
-          sprintf (sbuff, "%f", *(float *) ibind[c].ptr);
-        }
+	{
+	  sprintf (sbuff, "%f", *(float *) ibind[c].ptr);
+	}
 
       if (ibind[c].dtype == DTYPE_DECIMAL)
-        {
-          char *ptr;
-	  	int dtype;
-      		dtype = ibind[c].dtype + ENCODE_SIZE (ibind[c].size);
-      		A4GL_push_variable (ibind[c].ptr, dtype);
-          	ptr = A4GL_char_pop ();
-          sprintf (sbuff, "%s", ptr);
-          free (ptr);
-        }
+	{
+	  char *ptr;
+	  int dtype;
+	  dtype = ibind[c].dtype + ENCODE_SIZE (ibind[c].size);
+	  A4GL_push_variable (ibind[c].ptr, dtype);
+	  ptr = A4GL_char_pop ();
+	  sprintf (sbuff, "%s", ptr);
+	  free (ptr);
+	}
 
       if (ibind[c].dtype == DTYPE_DATE)
-        {
-          char *ptr;
-          A4GL_push_date (*(long *) ibind[c].ptr);
-          ptr = A4GL_char_pop ();
-          sprintf (sbuff, "'%s'", ptr);
-          free (ptr);
-        }
+	{
+	  char *ptr;
+	  A4GL_push_date (*(long *) ibind[c].ptr);
+	  ptr = A4GL_char_pop ();
+	  sprintf (sbuff, "'%s'", ptr);
+	  free (ptr);
+	}
       buff[b] = 0;
       strcat (buff, sbuff);
       b = strlen (buff);
@@ -579,9 +588,10 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind,char *fromwhere)
 static void
 ensure_as_char (void)
 {
-static int ensured=0;
-if (ensured) return;
-ensured++;
+  static int ensured = 0;
+  if (ensured)
+    return;
+  ensured++;
 
   if (A4GLSQLCV_check_requirement ("DATE_AS_CHAR"))
     {
@@ -871,18 +881,21 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 
     }
 
-  nout=-1;
+  nout = -1;
 
-  if (!A4GL_isyes(acl_getenv("NOSCRATCHOBIND"))) {
-  if (t=='o') {
-	  	A4GL_debug("Getting num result cols");
-	 	rc=SQLNumResultCols(hstmt,&nout);
-		if (rc<0) {
-	  		A4GL_debug("Getting num result cols rc=%d",rc);
-			nout=-1;
-		}
-  }
-  }
+  if (!A4GL_isyes (acl_getenv ("NOSCRATCHOBIND")))
+    {
+      if (t == 'o')
+	{
+	  A4GL_debug ("Getting num result cols");
+	  rc = SQLNumResultCols (hstmt, &nout);
+	  if (rc < 0)
+	    {
+	      A4GL_debug ("Getting num result cols rc=%d", rc);
+	      nout = -1;
+	    }
+	}
+    }
 
   for (a = 1; a <= n; a++)
     {
@@ -903,21 +916,24 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 #endif
     }
 
-  if (!A4GL_isyes(acl_getenv("NOSCRATCHOBIND"))) {
-  	if (nout!=-1 && n<nout) {
-	  int b=0;
+  if (!A4GL_isyes (acl_getenv ("NOSCRATCHOBIND")))
+    {
+      if (nout != -1 && n < nout)
+	{
+	  int b = 0;
 	  struct BINDING bind;
-	  	A4GL_debug("Binding scratch !!");
-		bind.ptr=scratch[b];
-		bind.dtype=0;
-		bind.size=254;
+	  A4GL_debug ("Binding scratch !!");
+	  bind.ptr = scratch[b];
+	  bind.dtype = 0;
+	  bind.size = 254;
 	  // We've got too few!
-	  for (a=n+1;a<=nout;a++) {
-	  	A4GL_debug("Binding scratch @ %d",a);
-	  	A4GL_obind_column (a, &bind, hstmt);
-	  }
-  	}
-  }
+	  for (a = n + 1; a <= nout; a++)
+	    {
+	      A4GL_debug ("Binding scratch @ %d", a);
+	      A4GL_obind_column (a, &bind, hstmt);
+	    }
+	}
+    }
   return 1;
 }
 
@@ -995,7 +1011,7 @@ A4GLSQL_prepare_sql_internal (char *s)
 #ifdef DEBUG
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
 #endif
-	A4GL_assertion (sid->hstmt == 0, "No statement");
+      A4GL_assertion (sid->hstmt == 0, "No statement");
       rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
 
@@ -1048,7 +1064,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 #endif
 
   A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
-  reformat_sql(sid->select,ibind,ni,"1");
+  reformat_sql (sid->select, ibind, ni, "1");
 
 
 #ifdef DEBUG
@@ -1101,7 +1117,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, 
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
       A4GL_debug ("statement = %s", sid->select);
 #endif
-	A4GL_assertion (sid->hstmt == 0, "No statement");
+      A4GL_assertion (sid->hstmt == 0, "No statement");
       rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_select : After Prepare", 0); */
@@ -1173,7 +1189,7 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)	/* mja */
       A4GL_debug ("after alloc sid->hstmt=%p", sid->hstmt);
       A4GL_debug ("Preparing %p %s\n", sid->hstmt, sid->select);
 #endif
-	A4GL_assertion (sid->hstmt == 0, "No statement");
+      A4GL_assertion (sid->hstmt == 0, "No statement");
       rc = SQLPrepare ((SQLHSTMT) sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_glob_sql : After Prepare", 0); */
@@ -1373,7 +1389,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
 
 
 
-  reformat_sql(sid->select,sid->ibind,sid->ni,"2");
+  reformat_sql (sid->select, sid->ibind, sid->ni, "2");
 
   rc = ODBC_exec_stmt ((SQLHSTMT) sid->hstmt);
   A4GL_debug ("Got rc as %d\n", rc);
@@ -1441,7 +1457,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
 
 
-  reformat_sql(sid->select,sid->ibind,sid->ni,"3");
+  reformat_sql (sid->select, sid->ibind, sid->ni, "3");
 
 
   a = ODBC_exec_select ((SQLHSTMT) sid->hstmt);
@@ -1532,7 +1548,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
   if (strncasecmp (sid->select, "INSERT", 6) == 0
       || strncasecmp (sid->select, " INSERT", 7) == 0)
     {
-	A4GL_assertion (cid->statement->hstmt == 0, "No statement");
+      A4GL_assertion (cid->statement->hstmt == 0, "No statement");
       rc =
 	SQLPrepare ((SQLHSTMT) cid->statement->hstmt, cid->statement->select,
 		    SQL_NTS);
@@ -1552,7 +1568,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
     }
 
 
-	A4GL_assertion (cid->statement->hstmt == 0, "No statement");
+  A4GL_assertion (cid->statement->hstmt == 0, "No statement");
   rc =
     SQLPrepare ((SQLHSTMT) cid->statement->hstmt, cid->statement->select,
 		SQL_NTS);
@@ -1595,7 +1611,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 
   if (ni == 0)
     {				/* No USING on the open.. */
-      reformat_sql(cid->statement->select,cid->statement->ibind,cid->statement->ni,"4");
+      reformat_sql (cid->statement->select, cid->statement->ibind,
+		    cid->statement->ni, "4");
       A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i',
 		      (SQLHSTMT) cid->statement->hstmt);
 
@@ -1632,7 +1649,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 #endif
 
       A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) cid->statement->hstmt);
-      reformat_sql(cid->statement->select,ibind,ni,"5");
+      reformat_sql (cid->statement->select, ibind, ni, "5");
 
     }
 
@@ -1676,7 +1693,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
   A4GL_debug ("Opening cursor %p", cid->statement->hstmt);
 #endif
 
-  rc = SQLExecute ((SQLHSTMT) cid->statement->hstmt); //Reformatted
+  rc = SQLExecute ((SQLHSTMT) cid->statement->hstmt);	//Reformatted
   chk_rc (rc, cid->statement->hstmt, "SQLExecute");
   rc2 = A4GL_chk_need_blob (rc, (SQLHSTMT) & cid->statement->hstmt);
 
@@ -1953,6 +1970,8 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
   char *u, *p;
   HDBC *hh = 0;
   int rc = 0;
+  char uname_acl[256];
+  char passwd_acl[256];
 
 
   strcpy (dbName, dbName_f);
@@ -2048,48 +2067,71 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
       chk_rc (rc, 0, "SQLFreeConnect");
     }
 
-  /* get the user name and password from SQLUID, SQLPWD.
-   *  if SQLUID not set, then try getlogin() or $LOGNAME
-   *  if SQLPWD not set, then prompt user if we can
-   */
-  u = acl_getenv ("SQLUID");
-#if ( ! defined(__MINGW32__))
-  /*
-     FIXME:
-     can we find out if there is user name/password specified in odbc.ini
-     before we just override it ?
-   */
 
-  if (u == 0 || *u == '\0')
-    u = getlogin ();
-  /*
-     FIXME
-     we have something simmilar somewhere in libaubit4gl for WIN32 - find it 
-     and use it instead getlogin()
-   */
+  if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl))
+    {
+      A4GL_debug ("Found in ACL File...");
+      u=0;
+      p=0;
+      u = acl_getenv_only ("SQLUID");
+      p = acl_getenv_only ("SQLPWD");
+      if (u&&strlen(u)==0) u=0;
+      if (p&&strlen(p)==0) p=0;
+      if (!u || !p)
+	{
+	  u = uname_acl;
+	  p = passwd_acl;
+	} 
+    }
+  else
+    {
+
+      A4GL_debug ("**not** found in ACL File...");
+      /* get the user name and password from SQLUID, SQLPWD.
+       *  if SQLUID not set, then try getlogin() or $LOGNAME
+       *  if SQLPWD not set, then prompt user if we can
+       */
+      u = acl_getenv ("SQLUID");
+#if ( ! defined(__MINGW32__))
+      /*
+         FIXME:
+         can we find out if there is user name/password specified in odbc.ini
+         before we just override it ?
+       */
+
+      if (u == 0 || *u == '\0')
+	u = getlogin ();
+      /*
+         FIXME
+         we have something simmilar somewhere in libaubit4gl for WIN32 - find it 
+         and use it instead getlogin()
+       */
 #else
 #ifdef DEBUG
-  A4GL_debug ("avoided getlogin() call");
+      A4GL_debug ("avoided getlogin() call");
 #endif
 #endif
 
-  /* FIXME: what is LOGNAME ? */
-  if (u == 0 || *u == '\0')
-    u = acl_getenv ("LOGNAME");
-  if (u == 0)
-    u = empty;
+      /* FIXME: what is LOGNAME ? */
+      if (u == 0 || *u == '\0')
+	u = acl_getenv ("LOGNAME");
+      if (u == 0)
+	u = empty;
 
-  p = acl_getenv ("SQLPWD");
-  if ((p == 0 || *p == '\0') && *u > '\0')
-    {
-      /*  prompt user for password - if not specified in odbc.ini -not yet implemented  */
+      p = acl_getenv ("SQLPWD");
+      if ((p == 0 || *p == '\0') && *u > '\0')
+	{
+	  /*  prompt user for password - if not specified in odbc.ini -not yet implemented  */
+	}
+      if (p == 0)
+	p = empty;
     }
-  if (p == 0)
-    p = empty;
 
 #ifdef DEBUG
   A4GL_debug ("u=%s p=%s", u, p);
 #endif
+
+
 
   if (A4GLSQL_make_connection (dbName, u, p))
     {
@@ -2616,7 +2658,7 @@ ODBC_exec_sql (UCHAR * sqlstr)
   if (A4GL_new_hstmt ((SQLHSTMT *) & hstmt))
     {
 
-      reformat_sql(sqlstr,0,0,"6");
+      reformat_sql (sqlstr, 0, 0, "6");
 
       rc = SQLExecDirect ((SQLHSTMT) hstmt, sqlstr, SQL_NTS);
       chk_rc (rc, 0, "SQLExecDirect");
@@ -2682,7 +2724,7 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
     }
 
 
-  rc = SQLExecute ((SQLHSTMT) hstmt); // Reformatted in caller
+  rc = SQLExecute ((SQLHSTMT) hstmt);	// Reformatted in caller
   chk_rc (rc, hstmt, "SQLExecute2");
 
 #ifdef DEBUG
@@ -2928,10 +2970,12 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
 
   //printf (" SQLBindCol (%p,%d,%d,%p,%d,%p)\n", (SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use, fgl_size (bind->dtype, bind->size), &outlen[pos]);
-  
 
 
-  rc = SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use, fgl_size (bind->dtype, bind->size), &outlen[pos]);
+
+  rc =
+    SQLBindCol ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use,
+		fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
 
   chk_rc (rc, hstmt, "SQLBindCol");
@@ -3051,15 +3095,17 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
       if (date_as_char)
 	{
 	  A4GL_debug ("date_as_char");
-          if (A4GL_isyes (acl_getenv ("BINDDBDATE")))
-            {
-              char *x;
-              	A4GL_push_date (*(long *) ptr);
-              	x = A4GL_char_pop ();
-              	SPRINTF1 (p->uDate.date_c, "%s", x);
-              	free (x);
-            } else {
-	      	SPRINTF3 (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
+	  if (A4GL_isyes (acl_getenv ("BINDDBDATE")))
+	    {
+	      char *x;
+	      A4GL_push_date (*(long *) ptr);
+	      x = A4GL_char_pop ();
+	      SPRINTF1 (p->uDate.date_c, "%s", x);
+	      free (x);
+	    }
+	  else
+	    {
+	      SPRINTF3 (p->uDate.date_c, "%04d-%02d-%02d", y, m, d);
 	    }
 	  size_c = strlen (p->uDate.date_c);
 	  ptr_to_use = &p->uDate.date_c;
@@ -3234,7 +3280,7 @@ ODBC_exec_select (SQLHSTMT hstmt)
 #endif
 
 
-  rc = SQLExecute (hstmt); // Reformatted in caller
+  rc = SQLExecute (hstmt);	// Reformatted in caller
   chk_rc (rc, hstmt, "SQLExecute3");
   if (rc != 0)
     {
@@ -3549,7 +3595,7 @@ ODBC_exec_prepared_sql (SQLHSTMT hstmt)
   A4GL_debug ("In exec_prepared_sql");
 #endif
 
-  rc = SQLExecute (hstmt); // reformatted in callers
+  rc = SQLExecute (hstmt);	// reformatted in callers
 
   chk_rc (rc, hstmt, "SQLExecute");
   //rc = SQLNumResultCols (hstmt, &nresultcols);
@@ -3716,9 +3762,13 @@ conv_sqldtype (int sqldtype, int sdim)
     }
 
 
-if (A4GL_isyes(acl_getenv("NODATETIMES"))) { 
-		if (ndtype == DTYPE_DTIME) { ndtype = DTYPE_DATE; }
-}
+  if (A4GL_isyes (acl_getenv ("NODATETIMES")))
+    {
+      if (ndtype == DTYPE_DTIME)
+	{
+	  ndtype = DTYPE_DATE;
+	}
+    }
 
 
 #ifdef DEBUG
@@ -3978,11 +4028,11 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       strcpy (GetColTab, tabname);
       sprintf (buff, "%s_1", tabname);
       if (A4GL_has_pointer (buff, CACHE_COLUMN))
-        {
-          GetColCached = 1;
-          GetColNo = 0;
-          return 1;
-        }
+	{
+	  GetColCached = 1;
+	  GetColNo = 0;
+	  return 1;
+	}
 
 
       rc =
@@ -4126,24 +4176,24 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
     {
       sprintf (buff, "%s_%d", GetColTab, GetColNo);
       if (A4GL_has_pointer (buff, CACHE_COLUMN))
-        {
-          static char buffx[2000];
-          char *ptr;
+	{
+	  static char buffx[2000];
+	  char *ptr;
 
-          ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
+	  ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
 
-          if (ptr)
-            {
-              //printf("Scanning from %s\n",ptr);
-              sscanf (ptr, "%s %d %d", buffx, dtype, size);
-              *colname = buffx;
-              return 1;
-            }
-          else
-            {
-              A4GL_assertion (1, "Shouldn't happen");
-            }
-        }
+	  if (ptr)
+	    {
+	      //printf("Scanning from %s\n",ptr);
+	      sscanf (ptr, "%s %d %d", buffx, dtype, size);
+	      *colname = buffx;
+	      return 1;
+	    }
+	  else
+	    {
+	      A4GL_assertion (1, "Shouldn't happen");
+	    }
+	}
       return 0;
     }
 
@@ -4178,9 +4228,9 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
       prec = 0x46;
     }
 
-    // We can't generate proper precision on a decimal..
-    // because we don't have the scale - assume 2..
-    *size = conv_sqlprec (*dtype, prec, 2);
+  // We can't generate proper precision on a decimal..
+  // because we don't have the scale - assume 2..
+  *size = conv_sqlprec (*dtype, prec, 2);
 
   if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
     {
@@ -4268,21 +4318,21 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
   if (tabname && colname)
     {
       if (strlen (tabname) && strlen (colname))
-        {
-          sprintf (buff, ":%s %s", tabname, colname);
-        }
+	{
+	  sprintf (buff, ":%s %s", tabname, colname);
+	}
     }
 
 
   if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
     {
       if (A4GL_has_pointer (buff, CACHE_COLUMN))
-        {
-          char *ptr;
-          ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
-          sscanf (ptr, "%d %d", dtype, size);
-          return 1;
-        }
+	{
+	  char *ptr;
+	  ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
+	  sscanf (ptr, "%d %d", dtype, size);
+	  return 1;
+	}
     }
 
 
@@ -4483,9 +4533,9 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
       char buff2[2000];
       sprintf (buff2, "%d %d", *dtype, *size);
       if (!A4GL_has_pointer (buff, CACHE_COLUMN))
-        {
-          A4GL_add_pointer (buff, CACHE_COLUMN, strdup (buff2));
-        }
+	{
+	  A4GL_add_pointer (buff, CACHE_COLUMN, strdup (buff2));
+	}
     }
 
 
@@ -4531,6 +4581,8 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn,
 {
   char empty[10] = "None";
   char *u, *p = 0;
+  char uname_acl[256];
+  char passwd_acl[256];
   HDBC *hh;
 
   if (sessname == 0 || strlen (sessname) == 0)
@@ -4551,15 +4603,32 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn,
 
   A4GL_set_errm (dsn);
 
-  if (usr == 0)
-    u = acl_getenv ("SQLUID");
+  if (A4GL_sqlid_from_aclfile (dsn, uname_acl, passwd_acl))
+    {
+      // If we've got a match - it must be explicitly overridden by the environment
+      // so we'll use getenv rather than acl_getenv....
+      u = acl_getenv_only ("SQLUID");
+      p = acl_getenv_only ("SQLPWD");
+      if (u&&strlen(u)==0) u=0;
+      if (p&&strlen(p)==0) p=0;
+      if (!u || !p)
+	{
+	  u = uname_acl;
+	  p = passwd_acl;
+	}
+    }
   else
-    u = usr;
+    {
+      if (usr == 0)
+	u = acl_getenv ("SQLUID");
+      else
+	u = usr;
 
-  if (pwd == 0)
-    p = acl_getenv ("SQLPWD");
-  else
-    p = pwd;
+      if (pwd == 0)
+	p = acl_getenv ("SQLPWD");
+      else
+	p = pwd;
+    }
 
 #ifdef DEBUG
   A4GL_debug ("Got environment variables");
@@ -5415,13 +5484,13 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 
   sql2 = strdup (sql1);
 
-	A4GL_assertion (hstmt == 0, "No statement");
+  A4GL_assertion (hstmt == 0, "No statement");
   SQLPrepare ((SQLHSTMT) hstmt, sql2, SQL_NTS);
   A4GL_proc_bind (ibind, nbind, 'i', (SQLHSTMT) hstmt);
 
-  reformat_sql(sql2,ibind,nbind,"7");
+  reformat_sql (sql2, ibind, nbind, "7");
 
-  rc = SQLExecute (hstmt); // Reformatted
+  rc = SQLExecute (hstmt);	// Reformatted
   chk_rc (rc, hstmt, "unload_data");
   if (a4gl_sqlca.sqlcode < 0)
     return;
@@ -5754,7 +5823,7 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
     }
   sid = cid->statement;
   A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
-  reformat_sql(sid->select,ibind,ni,"8");
+  reformat_sql (sid->select, ibind, ni, "8");
   ODBC_exec_prepared_sql ((SQLHSTMT) sid->hstmt);
 
 }
@@ -5799,7 +5868,7 @@ A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
 {
   char *ptr2;
   char *ptrn;
-  char buff[256];
+  //char buff[256];
   A4GL_trim (val);
   ptr2 = val;
   while (1)

@@ -24,6 +24,7 @@ A4GL_fgl_die_with_msg (int n, char *s)
       A4GL_debug ("In screen mode - ending curses...");
 #endif
       A4GL_gotolinemode ();
+      A4GL_stop_ui();
     }
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
