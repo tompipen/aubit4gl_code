@@ -105,6 +105,8 @@ REPORT_TERMINATE	{strcpy(yytext,"-9999"); count(); return CONSTANT;}
 "AFT_ROW" {count(); return AFT_ROW;}
 "AFTER_INP" {count(); return AFTER_INP;}
 
+"ERR_BADNOARGS" 		{strcpy(yytext,"1000"); count(); return CONSTANT;}
+"ABORT" 		{strcpy(yytext,"1"); count(); return CONSTANT;}
 "REPORT_START" 			{strcpy(yytext,"-1"); count(); return CONSTANT;}
 "REPORT_FINISH" 		{strcpy(yytext,"-2"); count(); return CONSTANT;}
 "REPORT_DATA" 			{strcpy(yytext,"-3"); count(); return CONSTANT;}

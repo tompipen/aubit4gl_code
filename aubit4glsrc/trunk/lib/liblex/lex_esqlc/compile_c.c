@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.291 2006-05-17 15:49:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.292 2006-05-17 16:18:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.291 2006-05-17 15:49:22 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.292 2006-05-17 16:18:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1094,7 +1094,11 @@ print_output_rep (struct rep_structure *rep)
   printc ("if (strlen(_rout1)==0)\n");
   printc ("_rep.output_mode='%c';\n", rep->output_mode);
   printc ("else _rep.output_mode=_rout1[0];\n");
-  printc ("_rep.report=(void *)&%s;\n", get_curr_rep_name ());
+  if (A4GL_doing_pcode()) {
+  	printc ("_rep.report=0;\n", get_curr_rep_name ());
+  } else {
+  	printc ("_rep.report=(void *)&%s;\n", get_curr_rep_name ());
+  }
   printc ("A4GL_trim(_rep.output_loc);");
   printc ("A4GL_%srep_print(&_rep,-1,-1,-1,-1);",ispdf());
   print_rep_ret (report_cnt,0);
@@ -5497,7 +5501,7 @@ if (!A4GL_doing_pcode()) {
     }
 
   printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
-  printc ("   int _g,_p;\n");
+  printc ("   int _g;int _p;\n");
 
 
   /* This was put in to force a page header if*/
@@ -8384,7 +8388,7 @@ int LEXLIB_A4GLLEX_initlib() {
   if (A4GL_doing_pcode()) {
     	A4GL_setenv ("MARK_SCOPE_MODULE", "Y", 1);
     	A4GL_setenv ("NAMESPACE", "", 1);
-    	A4GL_setenv ("REPORT_VARS_AT_MODULE", "Y", 1);
+    	//A4GL_setenv ("REPORT_VARS_AT_MODULE", "Y", 1);
   }
 
 

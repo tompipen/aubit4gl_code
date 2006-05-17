@@ -17,6 +17,7 @@
 
 struct cmd_block *curr_block = 0;
 struct npvariable *master_variable = 0;
+extern int yylineno;
 
 int vid = 0;
 int m_type;
@@ -363,7 +364,7 @@ find_variable (int sid, char *s, short *block_no)
 	}
 */
       // Not found at all...
-      printf ("Couldn't find variable : %s \n", s);
+      printf ("Couldn't find variable : %s @ line %d\n", s,yylineno);
       exit (1);
       return 0;
     }
@@ -756,6 +757,7 @@ add_default_named_structs ()
   struct define_variables *v;
 
 /* Struct BINDING */
+
   v = add_default_struct_list (0, make_default_struct_element ("VoidPointer", 0, "ptr"));
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "dtype"));
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "size"));
@@ -763,6 +765,7 @@ add_default_named_structs ()
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "end_char_subscript"));
   add_default_struct_list (v, make_default_struct_element ("VoidPointer", 0, "libptr"));
   make_named_struct ("BINDING", v);
+
 
   v = add_default_struct_list (0, make_default_struct_element ("LONG", 0, "event_type"));
   add_default_struct_list (v, make_default_struct_element ("LONG", 0, "block"));
@@ -773,6 +776,38 @@ add_default_named_structs ()
   v = add_default_struct_list (0, make_default_struct_element ("String", 0, "tabname"));
   add_default_struct_list (v, make_default_struct_element ("String", 0, "colname"));
   make_named_struct ("s_constr_list", v);
+
+
+
+
+  v = add_default_struct_list (0, make_default_struct_element ("LONG", 0, "top_margin"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "bottom_margin"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "left_margin"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "right_margin"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "page_length"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "has_first_page"));
+      add_default_struct_list (v, make_default_struct_element ("String", 0, "next_page"));
+      add_default_struct_list (v, make_default_struct_element ("String", 0, "rep_table"));
+      add_default_struct_list (v, make_default_struct_element ("VoidPointer", 0, "group_data"));
+      add_default_struct_list (v, make_default_struct_element ("Char", 0, "output_mode"));
+      add_default_struct_list (v, make_default_struct_element ("Char", 256, "output_loc"));
+      add_default_struct_list (v, make_default_struct_element ("Char", 256, "top_of_page"));
+      add_default_struct_list (v, make_default_struct_element ("VoidPointer", 0, "output"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "page_no"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "printed_page_no"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "line_no"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "col_no"));
+      add_default_struct_list (v, make_default_struct_element ("VoidPointer", 0, "report"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "lines_in_header"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "lines_in_first_header"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "lines_in_trailer"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "print_section"));
+      add_default_struct_list (v, make_default_struct_element ("String", 0, "header"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "finishing"));
+      add_default_struct_list (v, make_default_struct_element ("String", 0, "repName"));
+      add_default_struct_list (v, make_default_struct_element ("String", 0, "modName"));
+      add_default_struct_list (v, make_default_struct_element ("LONG", 0, "convertable"));
+  make_named_struct ("rep_structure", v);
 
 
 /* All Done... */
