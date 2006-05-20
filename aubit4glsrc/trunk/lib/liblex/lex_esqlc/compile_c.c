@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.292 2006-05-17 16:18:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.293 2006-05-20 10:20:58 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.292 2006-05-17 16:18:18 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.293 2006-05-20 10:20:58 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6769,7 +6769,7 @@ void print_start_record (int isstatic_extern, char *varname, char *arrsize, int 
 
        */
 #ifdef __NEED_DLL_IMPORT__
-      if (strcmp (varname, "a4gl_sqlca") == 0)
+      if (strcmp (varname, "a4gl_sqlca") == 0 && !A4GL_doing_pcode())
 	{
 	  strcat (buff, "dll_import ");
 	}
