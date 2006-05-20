@@ -636,16 +636,20 @@ void * find_by_dlself(char *s)
 		  	fname=acl_getenv(buff);
 #endif
 		  	if (fname==0||strlen(fname)==0) {
+				A4GL_debug("No variable defined at %d",a);
 			  	so_libs[a]=0;
 			  	continue;
-		  	}
+		  	} else {
+			}
 	  	}
 	
 
+		A4GL_debug("Try to open %s @ %d",fname,a);
 		so_libs[a] = (void *)dlopen (fname, RTLD_LAZY);
 
 		if (fname) {
 			A4GL_debug("Opening %s -> %p",fname,so_libs[a]);
+		
 		} else {
 			A4GL_debug("Opening self -> %p",so_libs[a]);
 		}

@@ -438,7 +438,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 	      if (var->sub.sub_len)
 		{
 		  memcpy (new_sub_val, var->sub.sub_val,
-			  sizeof (struct use_variable_sub) * new_sub_len - 1);
+			  sizeof (struct use_variable_sub) * (new_sub_len - 1));
 		}
 	      new_sub_val[new_sub_len - 1].x1element = -1;
 	      new_sub_val[new_sub_len - 1].x1subscript_param_id[0] = 0;

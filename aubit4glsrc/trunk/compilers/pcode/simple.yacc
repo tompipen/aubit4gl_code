@@ -67,7 +67,7 @@ void make_named_struct (char *name, struct define_variables *v);
 
 
 %start translation_unit
-
+%name-prefix="pcode_yy"
 %union {
 	char str[10000];
 	struct cmd *cmd;

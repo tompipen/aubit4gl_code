@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.18 2006-05-13 12:34:38 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.19 2006-05-20 12:31:06 mikeaubury Exp $
 #*/
 
 /**
@@ -63,7 +63,7 @@ int do_optimise=0;
 */
 
 extern FILE *yyin;
-extern int yydebug;
+extern int pcode_yydebug;
 
 int debug_mode = 0;
 
@@ -78,7 +78,7 @@ struct module *this_module_ptr=0;
 =====================================================================
 */
 
-int yyparse (void);
+int pcode_yyparse (void);
 
 
 /*
@@ -152,7 +152,7 @@ main (int argc, char *argv[])
 	    {
 	      //printf("got -y\n");
 	      debug_mode = 1;
-	      yydebug = 1;
+	      pcode_yydebug = 1;
 	    }
 	  else if (strcmp (c12, "-I") == 0)
 	    {
@@ -284,7 +284,7 @@ main (int argc, char *argv[])
 
   if (yyin)
     {
-      yyparse ();
+      pcode_yyparse ();
     }
   else
     {
@@ -334,7 +334,7 @@ main (int argc, char *argv[])
 
 
 int
-yyerror (char *s)
+pcode_yyerror (char *s)
 {
   extern int yylineno;
   printf ("%s @ line %d\n", s, yylineno);

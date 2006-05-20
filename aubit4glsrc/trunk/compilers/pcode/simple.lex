@@ -1,5 +1,6 @@
 %option yylineno
 %{
+#define yylex pcode_yylex
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
 	/* missing from rpcgen generated .h on CygWin: */
 	#define bool_t int
@@ -318,7 +319,7 @@ count ()
   }
 
 
-strcpy(yylval.str,yytext);
+strcpy(pcode_yylval.str,yytext);
 
 
 }

@@ -779,7 +779,6 @@ add_default_named_structs ()
 
 
 
-
   v = add_default_struct_list (0, make_default_struct_element ("LONG", 0, "top_margin"));
       add_default_struct_list (v, make_default_struct_element ("LONG", 0, "bottom_margin"));
       add_default_struct_list (v, make_default_struct_element ("LONG", 0, "left_margin"));
@@ -808,7 +807,6 @@ add_default_named_structs ()
       add_default_struct_list (v, make_default_struct_element ("String", 0, "modName"));
       add_default_struct_list (v, make_default_struct_element ("LONG", 0, "convertable"));
   make_named_struct ("rep_structure", v);
-
 
 /* All Done... */
 }
