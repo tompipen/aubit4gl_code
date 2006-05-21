@@ -46,6 +46,7 @@ add_set_var (struct use_variable *var_orig, long value, int once, int lvl,int is
   {
     long x1subscript_param_id[3];
     long x1element;
+    long subscript_all;
   };
 
 
@@ -270,6 +271,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 			      1);
 		    }
 		  new_sub_val[new_sub_len - 1].x1element = -1;
+		  new_sub_val[new_sub_len - 1].subscript_all=0;
 		  new_sub_val[new_sub_len - 1].x1subscript_param_id[0] = 0;
 		  new_sub_val[new_sub_len - 1].x1subscript_param_id[1] = 0;
 		  new_sub_val[new_sub_len - 1].x1subscript_param_id[2] = 0;
@@ -353,6 +355,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 				  new_sub_len - 1);
 			}
 		      new_sub_val[new_sub_len - 1].x1element = -1;
+		      new_sub_val[new_sub_len - 1].subscript_all=0;
 		      new_sub_val[new_sub_len - 1].x1subscript_param_id[0] =
 			0;
 		      new_sub_val[new_sub_len - 1].x1subscript_param_id[1] =
@@ -441,6 +444,7 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 			  sizeof (struct use_variable_sub) * (new_sub_len - 1));
 		}
 	      new_sub_val[new_sub_len - 1].x1element = -1;
+	      new_sub_val[new_sub_len - 1].subscript_all=0;
 	      new_sub_val[new_sub_len - 1].x1subscript_param_id[0] = 0;
 	      new_sub_val[new_sub_len - 1].x1subscript_param_id[1] = 0;
 	      new_sub_val[new_sub_len - 1].x1subscript_param_id[2] = 0;

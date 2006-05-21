@@ -392,6 +392,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
   u->indirection = indirection;
   u->sub.sub_len=0;
   u->sub.sub_val=0;
+  
 
   if (p_i == 0)
     {
@@ -419,6 +420,8 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 	  sub->x1subscript_param_id[0] = arr_i1;
 	  sub->x1subscript_param_id[1] = arr_i2;
 	  sub->x1subscript_param_id[2] = arr_i3;
+	  sub->subscript_all=0;
+
 	  u->sub.sub_len++;
 	  u->sub.sub_val = realloc (u->sub.sub_val, sizeof (struct use_variable_sub) * u->sub.sub_len);
 	  memcpy (&u->sub.sub_val[u->sub.sub_len - 1], sub, sizeof (struct use_variable_sub));
@@ -553,6 +556,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
       sub->x1subscript_param_id[0] = 0;
       sub->x1subscript_param_id[1] = 0;
       sub->x1subscript_param_id[2] = 0;
+      sub->subscript_all=0;
 
 
       if (arr_i1)
