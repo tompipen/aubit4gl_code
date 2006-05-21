@@ -932,6 +932,10 @@ resolve_gotos_func (int function_cnt)
 
 	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false)
 	    {
+
+
+		    printf("Finding label : %s\n",(char *)current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false);
+
 	      b =
 		find_label ((char *) current_function->cmds.
 			    cmds_val[cmd_cnt].cmd_u.c_if->goto_false);
@@ -946,6 +950,10 @@ resolve_gotos_func (int function_cnt)
 	      A4GL_debug ("find label returns %d\n", b);
 	      current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
 		goto_false = b - cmd_cnt;
+  		if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false>100000) {
+	  		printf("Dubious false...\n");
+	  		A4GL_pause_execution();
+  		}
 
 	    }
 
@@ -1027,6 +1035,10 @@ resolve_gotos ()
 		  A4GL_debug ("find label returns %d\n", b);
 		  current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
 		    goto_false = b - cmd_cnt;
+  		if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false>100000) {
+	  		printf("Dubious false...\n");
+	  		A4GL_pause_execution();
+  		}
 		}
 
 	      if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
