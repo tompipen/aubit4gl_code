@@ -951,7 +951,6 @@ resolve_gotos_func (int function_cnt)
 	      current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
 		goto_false = b - cmd_cnt;
   		if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false>100000) {
-	  		printf("Dubious false...\n");
 	  		A4GL_pause_execution();
   		}
 
@@ -1036,7 +1035,6 @@ resolve_gotos ()
 		  current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
 		    goto_false = b - cmd_cnt;
   		if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false>100000) {
-	  		printf("Dubious false...\n");
 	  		A4GL_pause_execution();
   		}
 		}
