@@ -16,7 +16,23 @@
 #include "npcode_defs.h"
 #include "a4gl_memhandling.h"
 
+#if (defined(__CYGWIN__)) || defined(__MINGW32__)
+#define hsearch hsearch_local
+#define hcreate hcreate_local
+#define FIND  1001
+#define ENTER 1002
+typedef struct local_entry {
+	char*key;
+	void *data;
+} LOCAL_ENTRY;
+#define ENTRY LOCAL_ENTRY
+ENTRY *hsearch_local(LOCAL_ENTRY  itm, int act) ;
+int hcreate_local(int n) ;
+
+#else
+
 #if HAVE_SEARCH_H
+
 	#include <search.h>		/* VISIT-used in pointers.c */
 #else
 	  
@@ -33,6 +49,8 @@
 	  VISIT;
         */
 #endif
+#endif
+
 #include <string.h>
 
 struct npfunction *current_function;
@@ -44,7 +62,7 @@ int created = 0;
 void
 add_label (char *label)
 {
-  ENTRY e, *ep;
+  ENTRY e, *ep=0;
 
   current_function =
     &this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len -
@@ -61,6 +79,7 @@ add_label (char *label)
   else
     {
 	  hcreate (100000);
+	created++;
     }
 
 
@@ -110,3 +129,45 @@ acl_strdup_full (void *a, char *r, char *f, int l)
 	        return p;
 }
 
+#if (defined(__CYGWIN__)) || defined(__MINGW32__)
+
+struct local_entry *entries=0;
+int nentries;
+
+int hcreate_local(int n) {
+int a;
+entries=malloc(n*sizeof(struct local_entry));
+if (entries==0) return 0;
+nentries=n;
+for (a=0;a<n;a++) {
+	entries[a].key=0;
+	entries[a].data=0;
+}
+return 1;
+}
+
+LOCAL_ENTRY *hsearch_local(struct local_entry  itm, int act) {
+int a;
+int first_zero=-1;
+if (entries==0) return 0;
+
+for (a=0;a<nentries;a++) {
+  if (entries[a].key==0) {
+	first_zero=a;
+	break;
+  }
+  if (strcmp(entries[a].key,itm.key)==0) {
+	return &entries[a];
+  }
+}
+// Not found....
+
+if (act==FIND) return 0;
+if (act==ENTER) {
+   	entries[first_zero].key=itm.key;
+   	entries[first_zero].data=itm.data;
+	return &entries[first_zero];
+}
+return 0;
+}
+#endif

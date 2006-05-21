@@ -934,7 +934,6 @@ resolve_gotos_func (int function_cnt)
 	    {
 
 
-		    printf("Finding label : %s\n",(char *)current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false);
 
 	      b =
 		find_label ((char *) current_function->cmds.
