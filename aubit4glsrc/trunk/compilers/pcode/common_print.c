@@ -171,7 +171,7 @@ print_goto_pc (long p)
   if (p > 0)
     printf ("+");
 
-  printf ("%ld", p);
+  printf ("%ld (%lx)", p,p);
 }
 
 

@@ -386,11 +386,14 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-
   if (getenv("LOGPCODE")) {
   	logfile = fopen ("pcode.run", "w");
   } else {
+#if (defined(__CYGWIN__)) || defined(__MINGW32__)
+  	logfile = fopen ("NUL:", "a");
+#else
   	logfile = fopen ("/dev/null", "a");
+#endif
   }
 
   if (logfile == 0)
