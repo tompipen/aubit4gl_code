@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.26 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.27 2006-05-22 07:53:08 mikeaubury Exp $
 #*/
 
 /**
@@ -184,11 +184,23 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir)
 void
 A4GLPacker_A4GL_close_packer (char dir)
 {
-  if (toupper (dir) == 'O')
-    fclose (outfile);
+  if (toupper (dir) == 'O') {
+    if (outfile) {
+	    fclose (outfile);
+    } else {
+	    // funny - nothing opened...
+	    A4GL_debug("Couldn't close packer - it wasn't open");
+    }
+  }
 
-  if (toupper (dir) == 'I')
-    fclose (infile);
+  if (toupper (dir) == 'I') {
+	  if (infile) {
+    		fclose (infile);
+	  } else {
+	    // funny - nothing opened...
+	    A4GL_debug("Couldn't close packer - it wasn't open");
+	  }
+  }
 }
 
 /*
