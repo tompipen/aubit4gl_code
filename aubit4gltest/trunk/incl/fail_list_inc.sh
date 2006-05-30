@@ -71,10 +71,12 @@ BLACKLIST_TESTS_IFXODBC="107 286 287"
 ######################
 #Tests that should not be run on MinGW, because they go into endless loop 
 #and never exit
-BLACKLIST_TESTS_MINGW="69 215 241 335 376"
+#BLACKLIST_TESTS_MINGW="69 215 241 335 376"
+BLACKLIST_TESTS_MINGW="59 76 348 349 350 351 1300"
 #215 241 - error in field (seem like only sigle char read from keys.in?)
 #335 - 4glc freezzes
-#376 - core dump
+#376 76 348 349 350 351 1300 - core dump
+#59 - This value is not ammong the ... (waits for input)
 
 EXPECT_TO_FAIL_TESTS_MINGW="242 244 246 252 254 272 273 274 276 277 288 535 1060 \
 	22 24 26 27 31 33 34 38 40 42 57 59 63 70 77 79 86 104 203 \

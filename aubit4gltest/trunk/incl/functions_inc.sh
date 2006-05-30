@@ -6,21 +6,27 @@
 
 ######################################
 # Message functions 
+#'verbose' is shown only if VERBOSE=1
 function verbose () {
 	message "$1" "V"
 }
+#'error' ais shown allways
 function error () {
 	message "$1" "E" "$2"
 }
+#'warning' is shown allways
 function warning () {
 	message "$1" "W"
 }
+#'debug' is shown if SH_DBG (-shdbg)
 function debug () {
 	message "$1" "D"
 }
+#'note' is shown if not SILENT=1
 function note () {
 	message "$1" "N"
 }
+#Do not call this function directly - use one of the above functions instead
 function message () {
 MSG_TEXT=$1
 MSG_TYPE=$2
@@ -28,7 +34,7 @@ EXIT_CODE=$3
 msg=""
 	case $MSG_TYPE in 
 	V) if test "$VERBOSE" = "1"; then msg="VERBOSE: $MSG_TEXT"; fi ;;
-	D) if test "$DEBUG" = "1"; then msg="DEBUG: $MSG_TEXT"; fi ;;	
+	D) if test "$SH_DBG" = "1"; then msg="DEBUG: $MSG_TEXT"; fi ;;	
 	E) 	msg="ERROR: $MSG_TEXT"; 
 		if test "$EXIT_CODE" != ""; then msg="$msg STOP." ; fi
 		;;
@@ -441,7 +447,7 @@ function db_features_doc () {
 							0) LIST_0="$LIST_0 $t"; let CNT_0=CNT_0+1;;
 							2) LIST_2="$LIST_2 $t"; let CNT_2=CNT_2+1;;
 							3) LIST_3="$LIST_3 $t"; let CNT_3=CNT_3+1;;
-							xx4) LIST_4="$LIST_4 $t"; let CNT_4=CNT_4+1;;
+							4) LIST_4="$LIST_4 $t"; let CNT_4=CNT_4+1;;
 							5) LIST_5="$LIST_5 $t"; let CNT_5=CNT_5+1;;
 							*) echo "ERROR: THIS_TEST_CONFIDENCE=$THIS_TEST_CONFIDENCE"; exit 3;;
 						esac
@@ -546,9 +552,9 @@ function db_features_doc () {
 				TYPE_NAME=`echo $TYPE_NAME | tr "_" " "`
 				
 				if test "$HTML" = "1"; then
-					TMP=$TEST_LIST
+					TMPee=$TEST_LIST
 					TEST_LIST=""
-					for test_no in $TMP; do
+					for test_no in $TMPee; do
 						if test "$test_no" != "..." -a "$test_no" != "NONE"; then
 							make_test_attrib_label "$test_no" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
 							TEST_LIST="$TEST_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no$DESC</a>"
@@ -557,9 +563,9 @@ function db_features_doc () {
 						fi
 					done
 					if test "$TEST_WORKING_LIST" != ""; then
-						TMP=$TEST_WORKING_LIST
+						TMPee=$TEST_WORKING_LIST
 						TEST_WORKING_LIST=""
-						for test_no in $TMP; do
+						for test_no in $TMPee; do
 							if test "$test_no" != "..." -a "$test_no" != "NONE"; then
 								make_test_attrib_label "$test_no" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
 								TEST_WORKING_LIST="$TEST_WORKING_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no$DESC</a>"
@@ -873,6 +879,7 @@ LOAD_ONLY_USED_FEATURES=1
 LOAD_ONLY_CURR_DB=1
 
 	if test "$DISABLE_SQL_FEATURES_CHECK" = "1"; then
+		debug "define_sql_features - DISABLED"
 		return 
 	fi
 	
@@ -886,10 +893,8 @@ LOAD_ONLY_CURR_DB=1
 		fi
 		return
 	fi
-	
-	if test "$SH_DBG" = "1"; then 
-		echo "Loading SQL features list...."
-	fi
+	 
+	debug "Loading SQL features list...."
 	
 	#Determine which feature status applies to this db
 	if test "$DB_TYPE" != "PG-IFX-74" -a "$DB_TYPE" != "PG-74" \
@@ -1144,21 +1149,17 @@ LOAD_ONLY_CURR_DB=1
 			echo "Total $CNT features described unloaded to all_sql_features.txt"
 			exit
 		fi
-								
-	if test "$SH_DBG" = "1"; then 
-		echo "Loaded SQL features list."
-		#exit
-	fi
+								 
+		debug "Loaded SQL features list."
 
 }
 
 ####################################################################
 #Check for incompatible SQL dialect features (tests 234 256 etc...)
 function chech_sql_features () {
-	
-if test "$SH_DBG" = "1"; then 
-	echo "Checking SQL features..."
-fi
+	 
+	debug "Checking SQL features..."
+
 	#NOTE: All tests should at least compile, regardless of what 
 	#SQL features are used in the code - so we will skip testing for SQL
 	#features if test is compile only, otherwise it might appear that some 
@@ -1173,16 +1174,12 @@ fi
 	#checking" in test description...
 	
 	if test "$DISABLE_SQL_FEATURES_CHECK" = "1"; then
-		if test "$SH_DBG" = "1"; then
-			echo "DISABLE_SQL_FEATURES_CHECK=$DISABLE_SQL_FEATURES_CHECK"
-		fi
+		debug "DISABLE_SQL_FEATURES_CHECK=$DISABLE_SQL_FEATURES_CHECK"
 		return
 	fi
 
 	if test "$COMPILE_ONLY" = "1"; then
-		if test "$SH_DBG" = "1"; then
-			echo "COMPILE_ONLY=$COMPILE_ONLY"
-		fi
+		debug "COMPILE_ONLY=$COMPILE_ONLY"
 		#We cant ignore checking of SQL features for compile only tests,
 		#because even compile can fail when for instance -ecp is used
 		#because the SQL is incompatible
@@ -1195,9 +1192,7 @@ fi
 	if test "$SQL_FEATURES_USED" = ""; then
 		#If test has no SQL/db features description, skip it - should never 
 		#happen if this is a db test
-		if test "$SH_DBG" = "1"; then
-			echo "SQL_FEATURES_USED ie empty"
-		fi
+		debug "SQL_FEATURES_USED ie empty"
 		return
 	fi
 
@@ -1316,14 +1311,11 @@ fi
 		fi
 	fi
 
-	#if test "$VERBOSE" = "1"; then
-	if test "$SH_DBG" = "1"; then
-		echo "INCOMPAT_SQL_LIST=$INCOMPAT_SQL_LIST"
-		echo "SQL_FEATURES_COMPATIBLE=$SQL_FEATURES_COMPATIBLE"
-		echo "DISABLE_SQL_FEATURES_SKIP=$DISABLE_SQL_FEATURES_SKIP"
-		echo "SQL_FEATURES_USED=$SQL_FEATURES_USED"
-		#exit
-	fi
+		debug "INCOMPAT_SQL_LIST=$INCOMPAT_SQL_LIST"
+		debug "SQL_FEATURES_COMPATIBLE=$SQL_FEATURES_COMPATIBLE"
+		debug "DISABLE_SQL_FEATURES_SKIP=$DISABLE_SQL_FEATURES_SKIP"
+		debug "SQL_FEATURES_USED=$SQL_FEATURES_USED"
+
 }
 
 ###############################################################
@@ -1455,8 +1447,8 @@ new_db=$1
             echo "Failed (code $RET). See /tmp/credbtmp.log"
             exit 19
         else
-            TMP=`cat /tmp/credbtmp.log | grep "Database created"`
-            if test "$TMP" != ""; then
+            TMPrr=`cat /tmp/credbtmp.log | grep "Database created"`
+            if test "$TMPrr" != ""; then
                 echo "Database $new_db Created"
             else
                 echo "Database creation failed. See /tmp/credbtmp.log"
@@ -1585,7 +1577,7 @@ check_informix () {
 #####################################################################
 check_postgresql () {
 	if test "$VERBOSE" = "1"; then 
-		echo "PostgreSQL specified (PSQL=$PSQL)"
+		echo "PostgreSQL specified (2=$PSQL)"
 	fi
 	if test "`$PSQL -V 2>/dev/null`" = ""; then
         echo "ERROR: $PSQL not found - no PostgreSQL engine?"
@@ -1664,6 +1656,15 @@ check_postgresql () {
 			#posmaster even when visible in Windows Services tool
 			if test "$PGUSER_POSTGRES_PWD" = ""; then
 				PGUSER_POSTGRES_PWD=`aubit-config PGUSER_POSTGRES_PWD`
+			fi
+			if test "$PGPASSWORD" = ""; then
+				PGPASSWORD="`aubit-config PGPASSWORD`"
+			fi
+			if test "$PGPASSWORD" != ""; then
+				PGUSER_POSTGRES_PWD="$PGPASSWORD"
+			fi
+			if test "$PGUSER_POSTGRES_PWD" != ""; then
+				PGPASSWORD="$PGUSER_POSTGRES_PWD"
 			fi
 			if test "$PGUSER_POSTGRES_PWD" = ""; then
 				echo "On Windows environment variable PGUSER_POSTGRES_PWD must be"
@@ -1759,7 +1760,7 @@ check_postgresql () {
 	#fi
 	RET=$?
 	if test "$RET" != "0"; then 
-		echo "$PSQL returned code $RET trying to connect to db $TEST_DB ."
+		echo "(37) $PSQL returned code $RET trying to connect to db $TEST_DB ."
 		cat /tmp/tmp.dbaccess
 		TEST=`cat /tmp/tmp.dbaccess | grep "could not connect to server"`
 		if test "$TEST" != ""; then
@@ -1768,7 +1769,15 @@ check_postgresql () {
 				#FIXME - only on SuSE
 				rcpostgresql start
 			fi
-		#else
+		else
+			TMP4=`cat /tmp/tmp.dbaccess | grep "FATAL:  user"`
+			if test "$TMP4" != ""; then
+				check_pg_user_create
+			fi
+			TMP4=`cat /tmp/tmp.dbaccess | grep "FATAL:  password authentication failed for user"`
+			if test "$TMP4" != ""; then
+				check_pg_user_create
+			fi
 		#	echo "ERROR: unknown fault (1)"		
 		#	exit $RET
 		fi
@@ -1780,7 +1789,7 @@ check_postgresql () {
 		#fi
 		RET=$?
 		if test "$RET" != "0"; then 
-			echo "$PSQL returned code $RET trying to connect to db $TEST_DB ."
+			echo "(38) $PSQL returned code $RET trying to connect to db $TEST_DB ."
 			cat /tmp/tmp.dbaccess
 			TEST=`cat /tmp/tmp.dbaccess | grep "does not exist"`
 			if test "$TEST" != ""; then
@@ -1822,52 +1831,16 @@ check_postgresql () {
         RET=$?
         if test "$RET" != "0"; then
 			TMP4=`cat /tmp/credbtmp.log | grep "FATAL:  user"`
-			if test "$TMP4" != ""; then 
-				#need to create user first - FATAL:  user "root" does not exist
-				USERNAME=`whoami`
-				echo "Need to create user '$USERNAME' first..."
-				SCRIPT=/tmp/pg-create-user.sql
-				echo "create user $USERNAME createdb createuser ;" > $SCRIPT
-			 	run_sql_script postgres template1 $SCRIPT /tmp/pg-create-user.log postgres
-				#we need this for future tests
-				#if test "$COMSPEC" != ""; then 
-				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
-				#else
-					$POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
-				#fi
-				#xxxxx
-				#su postgres
-				#$PSQL -d template1
-				#template1=# create user root createdb createuser ;
-
-				echo "Again: Creating PostgreSQL database $TEST_DB"
-				#if test "$COMSPEC" != ""; then 
-				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-				#else
-					$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-				#fi
-				RET=$?
-				if test "$RET" != "0"; then
-					echo "Failed again (code $RET)."
-					cat /tmp/credbtmp.log
-					exit 29
-				else
-					TMP=`cat /tmp/credbtmp.log | grep "CREATE DATABASE"`
-					if test "$TMP" != ""; then
-						echo "Database Created"
-					else
-						echo "Database creation failed. See /tmp/credbtmp.log"
-						exit 8
-					fi
-				fi
+			if test "$TMP4" != ""; then
+				check_pg_user_create
 			else
 	            echo "Failed (code $RET)."
 				cat /tmp/credbtmp.log
 				exit 29
 			fi
         else
-            TMP=`cat /tmp/credbtmp.log | grep "CREATE DATABASE"`
-            if test "$TMP" != ""; then
+            TMPzz=`cat /tmp/credbtmp.log | grep "CREATE DATABASE"`
+            if test "$TMPzz" != ""; then
                 echo "Database Created"
             else
                 echo "Database creation failed. See /tmp/credbtmp.log"
@@ -1915,9 +1888,14 @@ check_postgresql () {
 	#if test "$COMSPEC" != ""; then 
 	#	TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show datestyle;" 2>/dev/null | grep -i "informix"`
 	#else
-		TMP=`$PSQL -d $TEST_DB -c "show datestyle;" | grep -i "informix"`
+		TMPff=`$PSQL -d $TEST_DB -c "show datestyle;" | grep -i "informix"`
 	#fi
-	if test "$TMP" = ""; then 
+	if test "$COMSPEC" != ""; then
+		echo "WARNING: Windows versions of PG engine are currently not"
+		echo "WARNING: fully compatible with Aubit in ecpg mode, since they"
+		echo "WARNING: do not contain Informix compatibility patch"
+	fi
+	if test "$TMPff" = "" -a "$COMSPEC" = ""; then 
 		echo "WARNING: PostgreSQL config file ($PG_CONF)"
 		echo "does not contain needed setting:"
 		echo "datestyle = 'informix, mdy'"
@@ -1931,9 +1909,13 @@ check_postgresql () {
 	#if test "$COMSPEC" != ""; then
 	#	TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show default_delim;" 2>/dev/null | grep "\|"`
 	#else
-		TMP=`$PSQL -d $TEST_DB -c "show default_delim;"| grep "\|"`
+		if test "$COMSPEC" = ""; then
+			TMPhh=`$PSQL -d $TEST_DB -c "show default_delim;"| grep "\|"`
+			#On Windows, we would get:
+			#ERROR:  unrecognized configuration parameter "default_delim"
+		fi
 	#fi
-	if test "$TMP" = ""; then 
+	if test "$TMPhh" = "" -a "$COMSPEC" = ""; then 
 		echo "WARNING: PostgreSQL config file ($PG_CONF)"
 		echo "does not contain needed setting:"
 		echo "default_delim = '|'"
@@ -2002,6 +1984,103 @@ check_postgresql () {
 	#This is apparently needed only with PostgreSQL (with IFX compatibility patches)
 	export SWAP_SQLCA62=Y 
 
+#A4GL_SQLDIALECT COMPILE/RUNTIME/SQL SQL Dialect used for the source file
+	#Declares the SQL dialect of SQL code in 4GL source code.
+	#an 4GL directive to change the default SQL dialect at runtime is:
+	#       SET SQL DIALECT TO ORACLE
+	#by default the system assumes the 4GL application is using Informix SQL
+	#syntax, but this can be changed by setting, for example:
+	export A4GL_SQLDIALECT="INFORMIX"
+
+#A4GL_SQLCNVPATH RUNTIME/SQL Specifies the location of the conversion details for SQL grammers
+	#CONFIG FILE BASED CONVERSIONS
+	#convert_sql() now uses configuration files.  These are by default
+	#located in /opt/aubit4gl/etc/convertsql/, but that can be changed
+	#with A4GL_SQLCNVPATH.
+
+#A4GL_TARGETDIALECT COMPILE Specify target part of .cnv file
+	#at runtime - it would be A4GL_SQLDIALECT
+	#you need to be careful with that that you dont process statements twice 
+	#(dont use TARGETDIALECT and SQLDIALECT unless you are using ESQL/C generation)
+	#By default, value of this setting is decided based on type of database
+	#plug-in (A4GL_SQLTYPE) or based on connected database in case of ODBC
+	#connection.
+	
+# INFORMIX-POSTGRES8.cnv   - for PostgreSQL V8 using ecpg 
+# INFORMIX-POSTGRES.cnv    - for PostgreSQL V7.4 (with IFX patch) using ecpg
+# INFORMIX-POSTGRESSQL.cnv - for PostgreSQL V7.4 or 8 over ODBC
+	
+	if test "$DB_TYPE" = "PG-IFX-74"; then
+		if test "$A4GL_LEXTYPE" = "EC"; then
+			PG_TYPE="7_ECPG_IFX"
+		else
+			PG_TYPE="7_ODBC_IFX"
+		fi
+	elif test "$DB_TYPE" = "PG-74"; then
+		if test "$A4GL_LEXTYPE" = "EC"; then
+			PG_TYPE="7_ECPG"
+		else
+			PG_TYPE="7_ODBC"
+		fi
+	elif test "$DB_TYPE" = "PG-80" ; then 
+		if test "$A4GL_LEXTYPE" = "EC"; then
+			PG_TYPE="8_ECPG"
+		else
+			PG_TYPE="8_ODBC"
+		fi
+	else
+		echo "Unknown PG DB_TYPE=$DB_TYPE"
+		exit 5
+	fi
+	
+	if test "$PG_TYPE" = "8_ECPG"; then
+		#Success % (May 2006)
+		#--- Postgres engine:				WinPG8+ECPG
+		#A4GL_TARGETDIALECT="POSTGRES8"			74 %
+		#A4GL_TARGETDIALECT="POSTGRESSQL"		37 %
+		#A4GL_TARGETDIALECT="POSTGRES"	 		76 %	
+		export A4GL_TARGETDIALECT="POSTGRES"
+		export A4GL_ESQL_UNLOAD=NO
+	elif test "$PG_TYPE" = "8_ODBC"; then
+		export A4GL_TARGETDIALECT="POSTGRESSQL"
+		export A4GL_ESQL_UNLOAD=NO
+	elif test "$PG_TYPE" = "7_ODBC"; then
+		export A4GL_TARGETDIALECT="POSTGRESSQL"
+		export A4GL_ESQL_UNLOAD=NO
+	elif test "$PG_TYPE" = "7_ECPG_IFX"; then
+		export A4GL_TARGETDIALECT="POSTGRES"
+		export A4GL_ESQL_UNLOAD=YES
+	elif test "$PG_TYPE" = "7_ECPG"; then
+		echo "WARNING: PG V7 >WITHOUT< IFX patch is not supported"
+		export A4GL_TARGETDIALECT="POSTGRES"
+		export A4GL_ESQL_UNLOAD=NO		
+	else
+		echo "WARNING: PG_TYPE not set or unknown ($PG_TYPE)"
+		echo "Using default target SQL dialect for PostgreSQL 8 using ecpg"
+		export A4GL_TARGETDIALECT="POSTGRES8"
+	fi
+	#echo "DB_TYPE=$DB_TYPE FEATURE_DB_TYPE=$FEATURE_DB_TYPE PG_TYPE=$PG_TYPE A4GL_LEXTYPE=$A4GL_LEXTYPE"
+	#exit
+	
+	#Note: using POSTGRES8 is more or less pointless because of:
+	#Warning: Can't fix insert statement - Table testunlo is not in the database(1)
+	
+	#Manual overrides:
+		#A4GL_TARGETDIALECT="POSTGRES8"
+		#A4GL_TARGETDIALECT="POSTGRESSQL"
+		#A4GL_TARGETDIALECT="POSTGRES"
+
+	note "Using conversion: ${A4GL_SQLDIALECT}-$A4GL_TARGETDIALECT.cnv"
+	export A4GL_SQLDIALECT
+	export A4GL_TARGETDIALECT
+	#exit
+#A4GL_SQLCONVERT COMPILE/RUNTIME/SQL Autoconvert SQL from sources files dialect to runtime dialect
+	#Conversion of SQL statements in 4GL code, to the SQL dialect of target RDBMS
+	#Conversion is only done if you set A4GL_SQLCONVERT=YES and only if
+	#the dialect used by the program differs from that used by the DBMS
+	#interface.
+	export A4GL_SQLCONVERT=YES
+	
 	#See also settigs under -ecp flag in run_tests - AND MERGE THEM ALL IN ONE PLACE! 
 	
 }
@@ -2377,7 +2456,7 @@ if test "$A4GL_LEXTYPE" = "" -o "$A4GL_SQLTYPE" = ""; then
 	#We are called before run_test script set this 
 	AUBIT_DB="export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=esql;"
 fi
-FGLCOMP_CMD="export A4GL_ANSI_WARN=Yes; $AUBIT_DB aubit 4glc --verbose"
+FGLCOMP_CMD="export A4GL_ANSI_WARN=Yes; $AUBIT_DB aubit $FGLC --verbose"
 
 		TMP_TMP=`eval $FGLCOMP_CMD $FGL 2>&1`
 		RET=$?
@@ -2803,9 +2882,10 @@ platform="$PLATFORM"
 os_name="$MACHTYPE"
 #os_version="`uname -r`"
 os_version="`uname -a`"
+#Flags passed to run_tests:
 flags="$FLAGS"
-aubit_version=`aubit 4glc -v | grep Version | awk '{print $2}'`
-aubit_build=`aubit 4glc -v | grep Build | awk '{print $3}'`
+aubit_version=`aubit $FGLC -v | grep Version | awk '{print $2}'`
+aubit_build=`aubit $FGLC -v | grep Build | awk '{print $3}'`
 #Only when non-Aubit 4gl compiler is used
 comp_version=""
 
@@ -2963,9 +3043,9 @@ compare_settings() {
 				if test "$VALUES" != "Built-in"; then
 					let cnt=cnt+1
 					#echo $VALUES
-					TMP=`echo $VALUES | sed -e 's/=/ /'`
-					NAME=`echo $TMP |  awk '{print $1}'`
-					VALUE=`echo $TMP |  awk '{print $2}'`
+					TMPgg=`echo $VALUES | sed -e 's/=/ /'`
+					NAME=`echo $TMPgg |  awk '{print $1}'`
+					VALUE=`echo $TMPgg |  awk '{print $2}'`
 					#echo "$cnt: Name=$NAME Value=$VALUE"
 					dollar="$"
 					EXEC="if test \"$dollar$NAME\" != \"\"; then echo \"$dollar$NAME\"; fi"
@@ -3352,10 +3432,19 @@ LOGFILE=$4
 LOGFILE_CMD="> $LOGFILE 2>&1"
 AS_USER=$5
 
-if test "$VERBOSE" = "1"; then
-	echo "Running script $SCRIPT"
-	#exit
-fi
+	if test -f $SCRIPT ; then
+		if test "$COMSPEC" != ""; then
+			#Native Windows executables know nothing about CygWin paths
+			#so we need to translate
+			SCRIPT=`cygpath -m "$SCRIPT"`
+		fi
+		if test "$VERBOSE" = "1"; then
+			echo "Running script $SCRIPT"
+		fi
+	else
+		echo "ERROR: named script $SCRIPT does not exist"
+		exit 6
+	fi
 
    case $RDBMS in
 	informix)
@@ -3373,9 +3462,30 @@ fi
 		#	EXEC="echo "$PGUSER_POSTGRES_PWD" | \"$PSQL\" -d $DB -f $SCRIPT $LOGFILE_CMD"
 		#else
 			EXEC="$PSQL -d $DB -f $SCRIPT $LOGFILE_CMD"
+			
 		#fi
-		if test "$AS_USER" != ""; then 
-			EXEC="su -l $AS_USER -c '$EXEC'"
+		if test "$AS_USER" != ""; then
+			echo "As user: $AS_USER"
+			if test "$COMSPEC" = ""; then #On UNIX
+				EXEC="su -l $AS_USER -c '$EXEC'"
+			else
+				#On Windows, 'postgres' OS account is created WITHOUT 
+				#login privilege, so we cant su it
+				if test "$PGUSER_POSTGRES_PWD" = ""; then 
+					echo "PGUSER_POSTGRES_PWD is empty. STOP."
+					exit 6
+				fi
+				if test "$PGPASSWORD" = ""; then 
+					#used by all PG tools to supply password
+					echo "PGPASSWORD is empty. STOP."
+					exit 6
+				fi
+				#EXEC="echo "$PGUSER_POSTGRES_PWD" | \"$PSQL\" -d $DB -f $SCRIPT $LOGFILE_CMD"
+				#EXEC="$PSQL -h localhost -p 5432 postgres "template1" -f $SCRIPT $LOGFILE_CMD"
+				#On Windows, default host is "local socket" whatever that is, so
+				#we need to be explict and add -h localhost
+				EXEC="$PSQL -h localhost -d $DB -U $AS_USER -f $SCRIPT $LOGFILE_CMD"
+			fi
 		fi
 		if test "$VERBOSE" = "1"; then
 			echo "Running: $EXEC"
@@ -3411,7 +3521,12 @@ fi
 	if test "$RET" != "0"; then
 		echo "Statement:"
 		echo $EXEC
-		echo "returned code $RET. See $LOGFILE"
+		if test -f $LOGFILE ; then
+			echo "returned code $RET. See $LOGFILE : (head only:...)"
+			head $LOGFILE
+		else
+			echo "returned code $RET. Logfile $LOGFILE was not created."
+		fi
 		exit $RET
 	else
 		if test "$VERBOSE" = "1"; then
@@ -3706,10 +3821,8 @@ function check_skip_non_db() {
 # @param 
 ##
 function check_skip() {
-	
-	if test "$SH_DBG" = "1"; then 
-		echo "Determining if we can/should run test $TEST_NO"
-	fi
+
+	debug "Determining if we can/should run test $TEST_NO"
 	
 	if test "$IS_OBSOLETE_TEST" = "1"; then
 		if test "$VERBOSE" = "1"; then
@@ -3940,9 +4053,8 @@ function check_skip() {
 		
 	fi #IS_INVALID_TEST
 
-	if test "$SH_DBG" = "1"; then
-		echo "exiting function check_skip()"
-	fi
+	debug "exiting function check_skip()"
+	
 
 }
 
@@ -4426,17 +4538,17 @@ function log_sqlfeatures () {
 		#no pass list - nothing to filter out
 		FILTERED_SQL_FEATURES_FAIL_LIST="$SQL_FEATURES_FAIL_LIST"
 	fi
-	if test "$SH_DBG" = "1"; then 
-		echo ""	
-		echo "SQL_FEATURES_PASS_LIST=$SQL_FEATURES_PASS_LIST"
-		echo ""
-		echo "SQL_FEATURES_FAIL_LIST=$SQL_FEATURES_FAIL_LIST"
-		echo "---------------------------------------------------------"
-		echo "ELIMINATED_SQL_FEATURES_FAIL_LIST=$ELIMINATED_SQL_FEATURES_FAIL_LIST"
-		echo ""
-		echo "FILTERED_SQL_FEATURES_FAIL_LIST=$FILTERED_SQL_FEATURES_FAIL_LIST"
-		echo ""
-	fi
+	 
+		debug " "	
+		debug "SQL_FEATURES_PASS_LIST=$SQL_FEATURES_PASS_LIST"
+		debug " "
+		debug "SQL_FEATURES_FAIL_LIST=$SQL_FEATURES_FAIL_LIST"
+		debug "---------------------------------------------------------"
+		debug "ELIMINATED_SQL_FEATURES_FAIL_LIST=$ELIMINATED_SQL_FEATURES_FAIL_LIST"
+		debug " "
+		debug "FILTERED_SQL_FEATURES_FAIL_LIST=$FILTERED_SQL_FEATURES_FAIL_LIST"
+		echo " "
+	
 	
 	if test "$FAIL_COMPAT_SQL" != ""; then
 		#This is not nececeraly an error - test can fail for some other reason,
@@ -4654,6 +4766,8 @@ function load_info_makefile_only () {
 #Load info that is allways in script strings, and never in makefile
 function load_info_script_only () {
 
+	debug "Entering load_info_script_only"
+	
 		#################
 		#Proces test information that is allways held only in this script, 
 		#and NEVER in makefiles	
@@ -4672,6 +4786,8 @@ function load_info_script_only () {
 				IS_BLACKLIST_TEST=1
 			fi
 		done
+
+	debug "Exiting load_info_script_only"
 }
 
 #################################
@@ -4797,6 +4913,8 @@ function define_expect_fail_list () {
 			#*)	#Any other database back-end
 		esac
 	fi
+	
+	debug "Exiting define_expect_fail_list"
 }
 
 
@@ -4822,8 +4940,9 @@ function init_result_logs () {
 		#we want exact time here - do not use $DATE
 		date >> $LOGFILE
 		echo "Aubit version/build:" >> $LOGFILE	
-		$AUBITDIR/bin/4glc -v | grep Version >> $LOGFILE
-		$AUBITDIR/bin/4glc -v | grep Build >> $LOGFILE
+		aubit $FGLC -v | grep Version >> $LOGFILE
+		aubit $FGLC -v | grep Build >> $LOGFILE
+		debug "Finished collecting compiler version info"
 		#TODO: show versions of 4Js/Informix/Querix compiler - if used
 	fi
 	
@@ -4862,9 +4981,13 @@ function show_config_in_loop () {
 		echo "aubit-config DBMONEY returns      :`aubit-config DBMONEY`"
 		echo "in environment: DBMONEY=$DBMONEYc"
 		
-		aubit-config A4GL_LEXTYPE
-		aubit-config A4GL_LEXDIALECT
-		aubit-config A4GL_SQLTYPE
+		echo "A4GL_LEXTYPE:`aubit-config A4GL_LEXTYPE`"
+		echo "A4GL_LEXDIALECT:`aubit-config A4GL_LEXDIALECT`"
+		echo "A4GL_SQLTYPE:`aubit-config A4GL_SQLTYPE`"
+		
+		echo "A4GL_TARGETDIALECT:`aubit-config A4GL_TARGETDIALECT`"
+		echo "A4GL_ESQL_UNLOAD:`aubit-config A4GL_ESQL_UNLOAD`"
+		
 		note "Above config is at point of makefile incovation in run_tests"
 		note "and NOT in test makefile itself"
 }
@@ -4876,10 +4999,8 @@ function collect_test_info () {
 #DISABLE_CAT_INFO=1
 load_in_one_go=1
 CAT_FILE="docs/catalogue.unl"
-
-	if test "$SH_DBG" = "1"; then 
-		debug "Loading test info..."
-	fi
+ 
+	debug "Loading test info..."
 	
 	if test "$DISABLE_CAT_INFO" != "1"; then
 		if test "$CATALOGUE_UNL" != "1" -a "$INFO_TEST" != "1"; then
@@ -4905,6 +5026,7 @@ CAT_FILE="docs/catalogue.unl"
 		fi
 	fi
 	if test "$TRY_CAT" = "1"; then
+		debug "Loading from catalogue..."
 		load_info_from_catalogue
 	fi
 	
@@ -4943,17 +5065,19 @@ CAT_FILE="docs/catalogue.unl"
 		#can we skip this one when loading in one go?
 		load_info_makefile_only
 		
-		#This one has to be called even when loading in one go:
-		load_info_script_only
+
 	else
+		debug "Got info from catalogue"
 		if test "$DBG_collect_test_info" = "1"; then
 			note "Got info from catalogue"
 		fi
 	fi
 	
-	if test "$SH_DBG" = "1"; then 
-		debug "Finished loading test info..."
-	fi
+	#This one has to be called even when loading in one go:
+	load_info_script_only	
+	
+ 	debug "Finished loading test info..."
+
 	if test "$DBG_collect_test_info" = "1"; then
 		show_test_info_vars
 		exit
@@ -5254,3 +5378,44 @@ CHG_SETTING_MAKEFILE="$TEST_NO/makefile-new"
 
 }
 
+#Create PG database user (and database)
+function check_pg_user_create () {
+#need to create user first - FATAL:  user "root" does not exist
+				USERNAME=`whoami`
+				echo "Need to create user '$USERNAME' first..."
+				#Note: there is also a PG command line utility 'createuser'
+				SCRIPT=/tmp/pg-create-user.sql
+				echo "create user $USERNAME WITH PASSWORD '$PGPASSWORD' createdb createuser ;" > $SCRIPT
+			 	run_sql_script postgres template1 $SCRIPT /tmp/pg-create-user.log postgres
+				#we need this for future tests
+				#if test "$COMSPEC" != ""; then 
+				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
+				#else
+					$POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
+				#fi
+				#
+				#su postgres
+				#$PSQL -d template1
+				#template1=# create user root createdb createuser ;
+
+				echo "Again: Creating PostgreSQL database $TEST_DB"
+				#if test "$COMSPEC" != ""; then 
+				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+				#else
+					$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+				#fi
+				RET=$?
+				if test "$RET" != "0"; then
+					echo "Failed again (code $RET)."
+					cat /tmp/credbtmp.log
+					exit 29
+				else
+					TMPAA=`cat /tmp/credbtmp.log | grep "CREATE DATABASE"`
+					if test "$TMPAA" != ""; then
+						echo "Database Created"
+					else
+						echo "Database creation failed. See /tmp/credbtmp.log"
+						exit 8
+					fi
+				fi
+}				

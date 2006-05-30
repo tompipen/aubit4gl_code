@@ -87,8 +87,11 @@ if test "$AUBITDIR_SRC" = ""; then
 	if test -f "$AUBITDIR/lib/libaubit4gl/io.c"; then 
 		AUBITDIR_SRC="$AUBITDIR"
 	else
-		#Just guessing
-		AUBITDIR_SRC=/opt/aubit/aubit4glsrc
+		AUBITDIR_SRC="`aubit-config AUBITDIR_SRC`"
+		if test "$AUBITDIR_SRC" = ""; then
+			#Just guessing
+			AUBITDIR_SRC=/opt/aubit/aubit4glsrc
+		fi
 	fi
 fi
 if test -d "$AUBITDIR_SRC"; then  
@@ -144,16 +147,14 @@ else
 	echo "WARNING: POSTGRESDIR is empty"
 fi
 
-#remove this:
-if test "$HOSTNAME" = "xxxaptiva.falout.org"; then
-	#is actually a ecpg installation dir:
-	export POSTGRESDIR=/opt/ecpg-cvs
-
-	#libpq-fe.h :
-	export CFLAGS="-I/usr/include/pgsql $CFLAGS"
-    #FIXME: store @PGSQL_INCLUDE@ (@ECPG_IFLAGS@ ?) in aubitrc and retrive \
-	#with aubit-config
+if test "$COMSPEC" != ""; then
+	PSQL=`cygpath -u "$PSQL"`
+	POSTGRES_BIN_CYG=`cygpath -a "$POSTGRES_BIN"`
+	export PATH="$POSTGRES_BIN_CYG:$PATH"
+	#echo $PATH
+	#exit
 fi
+
 
 #define emphasis characters for terminal display
 a4gl_shtool=$AUBITDIR_SRC/tools/project/shtool
@@ -194,7 +195,8 @@ else
         PLATFORM=UNIX
     fi
 fi
-
+#echo $BLACKLIST_TESTS
+#exit
 #######################
 #Check if we have TUI lib, set AUBITDIR:
 #fixme - we now have UI_TUIN on MinGW (PDcurses)
@@ -219,8 +221,13 @@ fi
 #Define platform defaults
 if test "$PLATFORM" = "MINGW"; then
 	#DEFAULT_FLAGS="-xml -nodb -nographic"
-	DEFAULT_FLAGS="-esqli -tuins -nodosdiff"
-	CERT_DEFAULT_FLAGS="-eci -tuins -nodosdiff"
+	#DEFAULT_FLAGS="-esqli -tuins -nodosdiff"
+	#CERT_DEFAULT_FLAGS="-eci -tuins -nodosdiff"
+	#DEFAULT_FLAGS="-ecp -tuins -nodosdiff"
+	#NOTE: Mike say there are KNOWN pronlems in all HL_ code. Should try 
+	#to compile old TUI, uisng PDcurses plus our forms.c code
+	DEFAULT_FLAGS="-ecp -tuinw -nodosdiff"
+	CERT_DEFAULT_FLAGS="$DEFAULT_FLAGS"
 	SO_EXT=.dll
 fi
 #Obsolete; Cygwin unsupported
@@ -243,7 +250,9 @@ fi
 DEFAULTS_COMMON="-described -nolong -err-with-log -aubitrc-test -nospace"
 DEFAULT_FLAGS="$DEFAULT_FLAGS $DEFAULTS_COMMON"
 CERT_DEFAULT_FLAGS="$CERT_DEFAULT_FLAGS $DEFAULTS_COMMON"
-
+#echo DEFAULT_FLAGS $DEFAULT_FLAGS 
+#echo CERT_DEFAULT_FLAGS $CERT_DEFAULT_FLAGS
+#exit
 #######################
 #Apply platform defaults, see if we are to run multiple tests
 FLAGS="$@"
@@ -696,6 +705,9 @@ for a in $FLAGS; do
 
    esac
 done
+
+#echo "FLAGS=$FLAGS"
+#exit
 
 if test "$NEW_TEST" = "1"; then
     echo "ERROR: new test number missing"

@@ -24,7 +24,11 @@ MAIN
 	  secondColumn CHAR(10)
 	)
   INSERT INTO xpto VALUES (1,"XPTO")
-  INSERT INTO xpta VALUES (1,"XPTO")
+  #Note that Informix accepts inserting strings ("1" below) in number 
+  #columns and performs conversion  automatically:
+  INSERT INTO xpta VALUES ("1","XPTO")
+  INSERT INTO xpta VALUES (NULL,"XPTO")
+  INSERT INTO xpta VALUES ("","XPTO")
 	DELETE FROM xpto 
 	  WHERE firstColumn = ALL (SELECT firstColumn FROM xpta )
 	SELECT * INTO r.* FROM xpto

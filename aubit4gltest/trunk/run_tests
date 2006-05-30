@@ -76,6 +76,7 @@ for a in $FLAGS; do
 			;;
 		-shdbg) 	#run_tests shell script debugging 
 			SH_DBG=1
+			VERBOSE=1
 			;;
         -verbose | --verbose)   #Show more information about what is going on
             VERBOSE=1
@@ -109,6 +110,8 @@ BINS_DIR="$AUBITDIR_UNIX/bin"
 ###################
 for a in $FLAGS; do
 ###################
+
+	#echo ">>>$a<<<"
    ##########
    case $a in
    ##########
@@ -490,6 +493,23 @@ for a in $FLAGS; do
         UI=HL_TUIN;	export A4GL_UI=$UI
         ;;
 
+	-tuiw)        #use HL_TUIw UI for tests (HL+PDcurses + liform from nCurses)
+		if ! test -f $LIBS_DIR/libUI_HL_TUIw$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find HL_TUIw plug in"
+            fi
+            exit 9
+        fi
+        UI=HL_TUIw;	export A4GL_UI=$UI
+        ;;
+		
+	-tui)        #use UI_TUI UI for tests
+		if ! test -f $LIBS_DIR/libUI_TUI$SO_EXT; then
+			error "ERROR: cannot find HL_TUIN plug in" 9
+        fi
+        UI=TUI;	export A4GL_UI=$UI
+        ;;
+		
 	-tuins)        #use HL_TUINs (statically linked TUIN) UI for tests
 		if ! test -f $LIBS_DIR/libUI_HL_TUINs$SO_EXT; then
 			if ! test "$NO_ECHO"; then
@@ -498,6 +518,16 @@ for a in $FLAGS; do
             exit 9
         fi
         UI=HL_TUINs; export A4GL_UI=$UI
+        ;;
+
+	-tuinw)        #use HL_TUIws (statically linked TUIw) UI for tests
+		if ! test -f $LIBS_DIR/libUI_HL_TUIws$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find HL_TUIws plug in"
+            fi
+            exit 9
+        fi
+        UI=HL_TUIws; export A4GL_UI=$UI
         ;;
 		
 	-hl_tui)        #use HL_TUI UI for tests
@@ -1214,7 +1244,9 @@ for a in $FLAGS; do
 		echo " -console    Use CONSOLE UI for tests"
 		echo " -gtk        Use GTK+ UI for running tests"		
 		echo " -tuin       use HL_TUIN UI for tests"
-		echo " -hl_tui     use HL_TUI UI for tests (default is TUI)"
+		echo " -tui        use UI_TUI UI for tests (DEFAULT on *NIX))"
+		echo " -tuiw       use HL_TUIw UI for tests (DEFAULT on Windows)"
+		echo " -hl_tui     use HL_TUI UI for tests"
 		echo " -ignore-compat Skip testing for test compatibility with non-aubit compilers"
 		echo " -ignore-conf-error Ignore configuration errors and continue"
 		echo " -skip-expectfail Skip tests expected to fail"
@@ -1617,16 +1649,16 @@ fi
 . incl/odbc_inc.sh
 #Database related processing"
 . incl/db_inc.sh
-
-if test "$SH_DBG" = "1"; then 
-	echo "Entering 'Finalise settings' section"
-fi
+ 
+	debug "Entering 'Finalise settings' section"
 
 ##############################################################################
 #                           Finalise settings
 ##############################################################################
 
 define_expect_fail_list
+
+debug "back in run_rests after define_expect_fail_list"
 
 #Define list(s) of recognized SQL features, when running multiple tests
 #(when running one test, features are loaded after test info is loaded, to 
@@ -1635,7 +1667,9 @@ if test "$RUN_ONE" = ""; then
 	if test "$TIME_SCRIPT" = "1"; then
 		BEFORE_FEATURES_LOAD_TIME=`date +%s`
 	fi
+	debug "Calling define_sql_features..."
 	define_sql_features
+	debug "Returned from define_sql_features"
 	if test "$TIME_SCRIPT" = "1"; then
 		AFTER_FEATURES_LOAD_TIME=`date +%s`
 	fi
@@ -1646,12 +1680,14 @@ if test "$RETEST_FAIL" = "1"; then
 	ALL_TESTS="$EXPECT_TO_FAIL_TESTS"
 fi
 
+debug "Initialising logs..."
 init_result_logs
 
 ##############################################################################
 #							Run test(s)
 ##############################################################################
 
+	debug "Calling init_vars_before_loop"
 	init_vars_before_loop
 	
 #reset cache files:
