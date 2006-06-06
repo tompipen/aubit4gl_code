@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.155 2006-05-17 15:49:23 mikeaubury Exp $
+# $Id: sql.c,v 1.156 2006-06-06 10:31:18 mikeaubury Exp $
 #
 */
 
@@ -916,7 +916,8 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 #endif
     }
 
-  if (!A4GL_isyes (acl_getenv ("NOSCRATCHOBIND")))
+  if (t=='o') {
+  if (!A4GL_isyes (acl_getenv ("NOSCRATCHOBIND")) )
     {
       if (nout != -1 && n < nout)
 	{
@@ -934,6 +935,7 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 	    }
 	}
     }
+  }
   return 1;
 }
 
