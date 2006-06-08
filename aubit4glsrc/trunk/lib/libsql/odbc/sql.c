@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.156 2006-06-06 10:31:18 mikeaubury Exp $
+# $Id: sql.c,v 1.157 2006-06-08 17:58:20 mikeaubury Exp $
 #
 */
 
@@ -916,26 +916,27 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 #endif
     }
 
-  if (t=='o') {
-  if (!A4GL_isyes (acl_getenv ("NOSCRATCHOBIND")) )
+  if (t == 'o')
     {
-      if (nout != -1 && n < nout)
+      if (!A4GL_isyes (acl_getenv ("NOSCRATCHOBIND")))
 	{
-	  int b = 0;
-	  struct BINDING bind;
-	  A4GL_debug ("Binding scratch !!");
-	  bind.ptr = scratch[b];
-	  bind.dtype = 0;
-	  bind.size = 254;
-	  // We've got too few!
-	  for (a = n + 1; a <= nout; a++)
+	  if (nout != -1 && n < nout)
 	    {
-	      A4GL_debug ("Binding scratch @ %d", a);
-	      A4GL_obind_column (a, &bind, hstmt);
+	      int b = 0;
+	      struct BINDING bind;
+	      A4GL_debug ("Binding scratch !!");
+	      bind.ptr = scratch[b];
+	      bind.dtype = 0;
+	      bind.size = 254;
+	      // We've got too few!
+	      for (a = n + 1; a <= nout; a++)
+		{
+		  A4GL_debug ("Binding scratch @ %d", a);
+		  A4GL_obind_column (a, &bind, hstmt);
+		}
 	    }
 	}
     }
-  }
   return 1;
 }
 
@@ -1491,12 +1492,17 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     {
       A4GL_debug ("a not set");
     }
-  free (sid->select);
-  if (sid->obind)
-    free (sid->obind);
-  if (sid->ibind)
-    free (sid->ibind);
-  free (sid);
+
+  if (singleton)
+    {
+      free (sid->select);
+
+      if (sid->obind)
+	free (sid->obind);
+      if (sid->ibind)
+	free (sid->ibind);
+      free (sid);
+    }
 
   return a;
 }
@@ -2073,17 +2079,19 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
   if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl))
     {
       A4GL_debug ("Found in ACL File...");
-      u=0;
-      p=0;
+      u = 0;
+      p = 0;
       u = acl_getenv_only ("SQLUID");
       p = acl_getenv_only ("SQLPWD");
-      if (u&&strlen(u)==0) u=0;
-      if (p&&strlen(p)==0) p=0;
+      if (u && strlen (u) == 0)
+	u = 0;
+      if (p && strlen (p) == 0)
+	p = 0;
       if (!u || !p)
 	{
 	  u = uname_acl;
 	  p = passwd_acl;
-	} 
+	}
     }
   else
     {
@@ -2327,6 +2335,7 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
 #endif
   switch (coltype)
     {
+    case 0:
     case SQL_CHAR:
     case SQL_VARCHAR:
       A4GL_debug ("Character string");
@@ -2363,6 +2372,7 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
 
     case 10:
       return 8;
+
     default:
       printf ("Unknown datatype, %d\n", coltype);
       return (0);
@@ -2440,29 +2450,29 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
     }
   chk_rc (rc, 0, "SQLSetConnectOption");
 
+  rc=0;
 #if (ODBCVER >= 0x0300)
 #ifdef SQL_CUR_USE_IF_NEEDED
   A4GL_debug ("Cursor use if needed");
+
+  if (!A4GL_isno(acl_getenv("NOSETODBCCURSORS")))  {
   if (A4GL_isyes (acl_getenv ("ALWAYS_ODBC_CURSOR")))
     {
-      rc =
-	SQLSetConnectAttr (hdbc, SQL_ATTR_ODBC_CURSORS,
-			   (SQLPOINTER) SQL_CUR_USE_ODBC, (SQLINTEGER) 0);
+      		rc = SQLSetConnectAttr (hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER) SQL_CUR_USE_ODBC, (SQLINTEGER) 0);
     }
   else
     {
-      //rc = SQLSetConnectOption(hdbc, SQL_ODBC_CURSORS,SQL_CUR_USE_IF_NEEDED );
-      rc =
-	SQLSetConnectAttr (hdbc, SQL_ATTR_ODBC_CURSORS,
-			   (SQLPOINTER) SQL_CUR_USE_IF_NEEDED,
-			   (SQLINTEGER) 0);
+      		rc = SQLSetConnectAttr (hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER) SQL_CUR_USE_IF_NEEDED, (SQLINTEGER) 0);
     }
+  }
 #else
+  if (!A4GL_isno(acl_getenv("NOSETODBCCURSORS")))  {
   A4GL_debug ("Cursor use odbc");
   //rc = SQLSetConnectOption(hdbc, SQL_ODBC_CURSORS,SQL_CUR_USE_ODBC );
   rc =
     SQLSetConnectAttr (hdbc, SQL_ATTR_ODBC_CURSORS,
 		       (SQLPOINTER) SQL_CUR_USE_ODBC, (SQLINTEGER) 0);
+  }
 #endif
 #else
   A4GL_debug ("ConnectOption - not ConnectAttr");
@@ -2471,7 +2481,6 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
 
 
   chk_rc (rc, 0, "SQLSetConnectOption");
-
 
 
 
@@ -2599,6 +2608,11 @@ ODBC_set_dbms_info (void)
   if (strncasecmp (dbms_name, "DB2", 3) == 0)
     {
       strcpy (dbms_dialect, "DB2");
+      return;
+    }
+  if (strncasecmp (dbms_name, "Microsoft SQL Server",20) == 0)
+    {
+      strcpy (dbms_dialect, "SQLSERVER");
       return;
     }
 
@@ -3982,7 +3996,8 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
   short nColumns;
   char buff[200];
 
-
+  int dt2;
+  int sz;
 
 
 
@@ -4141,10 +4156,55 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       rc =
 	SQLBindCol (hstmtGetColumns, 12, SQL_C_CHAR, remarks, 255,
 		    &outlen[12]);
+
+
+
+
+
+
 #ifdef DEBUG
       A4GL_debug ("Rc=%d", rc);
       A4GL_debug ("Bound columns\n");
 #endif
+
+      if (1)
+	{
+
+	  rc = SQLFetch (hstmtGetColumns);
+	  //printf ("Add column '%s' %d %d\n", cn, dt, prec);
+
+	  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
+	    {
+	      return 1;
+	    }
+
+	  colsize = A4GL_display_size (dt, prec, "");
+	  SPRINTF1 (szcolsize, "%d", colsize);
+
+	  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+	    {
+	      SQLFreeStmt (hstmtGetColumns, SQL_DROP);
+	      free_extra (hstmtGetColumns);
+	      hstmtGetColumns = 0;
+	      return 0;
+	    }
+	  A4GL_convlower (cn);
+	  dt2 = conv_sqldtype (dt, prec);
+	  if (dt == SQL_TIME)
+	    {
+	      dt2 = DTYPE_DTIME;
+	      prec = 0x46;
+	    }
+
+	  // We can't generate proper precision on a decimal..
+	  // because we don't have the scale - assume 2..
+	  sz = conv_sqlprec (dt2, prec, 2);
+	  //printf ("Add column '%s' %d %d\n", cn, dt2, sz);
+	  AddColumn (cn, dt2, sz);
+
+	}
+
+
 
     }
   return 1;
@@ -4611,8 +4671,10 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn,
       // so we'll use getenv rather than acl_getenv....
       u = acl_getenv_only ("SQLUID");
       p = acl_getenv_only ("SQLPWD");
-      if (u&&strlen(u)==0) u=0;
-      if (p&&strlen(p)==0) p=0;
+      if (u && strlen (u) == 0)
+	u = 0;
+      if (p && strlen (p) == 0)
+	p = 0;
       if (!u || !p)
 	{
 	  u = uname_acl;

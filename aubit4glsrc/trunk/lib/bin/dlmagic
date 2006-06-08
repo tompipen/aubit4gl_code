@@ -183,7 +183,7 @@ fi # "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2"
 		env="not-set"
 	fi
 
-	$AWK --assign xlib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile
+	$AWK -v xlib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile
 
 
 exit

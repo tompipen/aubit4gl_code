@@ -760,11 +760,10 @@ pdf_functions :
    		{
 		sprintf($<str>$,"%d",get_counter_val());drop_counter();
 		}
-   		CLOSE_BRACKET
+   		CLOSE_BRACKET opt_return
    		{
 		print_pdf_call($<str>3,$<ptr_list>6,$<str>7);
    		}
-   		opt_return
 ;
 
 op_wordwrap:
