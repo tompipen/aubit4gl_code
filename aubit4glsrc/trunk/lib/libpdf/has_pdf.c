@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.26 2005-11-21 18:29:42 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.27 2006-06-08 08:24:07 mikeaubury Exp $
 #*/
 
 /**
@@ -198,7 +198,6 @@ int entry=0;
           if (rep->line_no >
               rep->page_length - rep->lines_in_trailer - rep->bottom_margin)
             {
-              //printf("Adding trailer..\n");
               rep->print_section = SECTION_TRAILER;
               rep->report (0, REPORT_PAGETRAILER);      /* report.c:180: too many arguments to function */
               rep->print_section = SECTION_NORMAL;
@@ -250,7 +249,7 @@ int entry=0;
 
 	  A4GL_debug ("A\n");
 	  str =  A4GL_report_char_pop ();
-	  A4GL_pdf_move (rep);
+	  A4GL_pdf_move (rep); 
 	  PDF_show (rep->pdf_ptr, str);
 	  A4GL_debug ("Adding %f to col_no\n",
 		      A4GL_pdf_metric (strlen (str), 'c', rep));
@@ -312,10 +311,15 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
   double needn;
   double req;
   struct pdf_rep_structure *rep;
+  int force_move;
   rep = vrep;
 
   A4GL_debug ("Set column");
   req = (double) A4GL_pop_double ();
+  force_move=0;
+  if (req<0) {
+	  force_move=1;
+  }
   a = A4GLPDFREP_A4GL_pdf_size (req, 'c', rep);
 
   if (rep->col_no == 0.0)
@@ -341,22 +345,23 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
       rep->col_no += needn;
 #ifdef DEBUG
       {
-	//printf ("Colno increased by %f\n", needn);
 	A4GL_debug ("Colno increased by %d", needn);
       }
 #endif
     }
   else
     {
+	    if (force_move) {
+		    rep->col_no=a+rep->left_margin;
+	    }
 #ifdef DEBUG
       {
-	//printf("Already past it\n");
 	A4GL_debug ("Already past that point");
       }
 #endif
     }
   A4GL_push_char ("");
-  A4GL_pdf_move (rep);
+  A4GL_pdf_move (rep); 
 
 }
 
@@ -373,7 +378,6 @@ A4GLPDFREP_A4GL_pdf_skip_to (void *vrep, double a)
 
   A4GL_debug ("pdf_skip_by");
   a = A4GLPDFREP_A4GL_pdf_size (a, 'l', rep);
-  //printf("SKIP TO : %f",a);
   rep->line_no = a;
 }
 
@@ -545,7 +549,6 @@ void
 A4GL_pdf_move (struct pdf_rep_structure *p)
 {
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
-  //printf ("Move to %f %f\n", p->col_no, p->line_no);
   PDF_set_text_pos (p->pdf_ptr, p->col_no, p->page_length - p->line_no);
 }
 
@@ -786,6 +789,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc (void *vp, char *fname, int n)
       acl_free (ptr2);
       return 0;
     }
+
   if (strcmp (fname, "moveto") == 0)
     {
       float f1;
@@ -795,12 +799,59 @@ A4GLPDFREP_A4GL_pdf_pdffunc (void *vp, char *fname, int n)
       PDF_moveto (p->pdf_ptr, f1, f2);
       return 0;
     }
+
+  if (strcmp (fname, "setcolor") == 0)
+    {
+      float f1;
+      float f2;
+      float f3;
+      f3 = A4GL_pop_double ();
+      f2 = A4GL_pop_double ();
+      f1 = A4GL_pop_double ();
+      PDF_setcolor (p->pdf_ptr, "both","rgb",f1, f2,f3,0);
+      return 0;
+    }
+  if (strcmp (fname, "setstrokecolor") == 0)
+    {
+      float f1;
+      float f2;
+      float f3;
+      f3 = A4GL_pop_double ();
+      f2 = A4GL_pop_double ();
+      f1 = A4GL_pop_double ();
+      PDF_setcolor (p->pdf_ptr, "stroke","rgb",f1, f2,f3,0);
+      return 0;
+    }
+
+  if (strcmp (fname, "setfillcolor") == 0)
+    {
+      float f1;
+      float f2;
+      float f3;
+      f3 = A4GL_pop_double ();
+      f2 = A4GL_pop_double ();
+      f1 = A4GL_pop_double ();
+      PDF_setcolor (p->pdf_ptr, "fill","rgb",f1, f2,f3,0);
+      return 0;
+    }
+
   if (strcmp (fname, "stroke") == 0)
     {
       PDF_stroke (p->pdf_ptr);
       return 0;
     }
 
+  if (strcmp (fname, "fill_stroke") == 0)
+    {
+      PDF_fill_stroke (p->pdf_ptr);
+      return 0;
+    }
+
+  if (strcmp (fname, "fill") == 0)
+    {
+      PDF_fill (p->pdf_ptr);
+      return 0;
+    }
 
   if (strcmp (fname, "lineto") == 0)
     {
@@ -812,6 +863,38 @@ A4GLPDFREP_A4GL_pdf_pdffunc (void *vp, char *fname, int n)
       return 0;
     }
 
+  if (strcmp(fname,"page_col_inches")==0) {
+	  double f1;
+      	f1 = A4GL_pop_double ();
+	f1*=72.0;
+	A4GL_push_double(p->left_margin+f1);
+	return 1;
+  }
+
+  if (strcmp(fname,"page_line_inches")==0) {
+	  double f1;
+      	f1 = A4GL_pop_double ();
+	f1*=72.0;
+	A4GL_push_double(p->page_length-f1);
+	return 1;
+  }
+
+  if (strcmp(fname,"line_height")==0) {
+	  double f1;
+      	f1 = A4GL_pop_double ();
+	
+  	a = A4GLPDFREP_A4GL_pdf_size (f1, 'l', p);
+	A4GL_push_double(a);
+	return 1;
+  }
+
+  if (strcmp(fname,"char_width")==0) {
+	  double f1;
+      	f1 = A4GL_pop_double ();
+  	a = A4GLPDFREP_A4GL_pdf_size (f1, 'c', p);
+	A4GL_push_double(a);
+	return 1;
+  }
 
 
   if (strcmp (fname, "set_value") == 0)
