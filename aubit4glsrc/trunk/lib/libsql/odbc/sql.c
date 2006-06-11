@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.157 2006-06-08 17:58:20 mikeaubury Exp $
+# $Id: sql.c,v 1.158 2006-06-11 10:51:33 mikeaubury Exp $
 #
 */
 
@@ -2455,7 +2455,7 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
 #ifdef SQL_CUR_USE_IF_NEEDED
   A4GL_debug ("Cursor use if needed");
 
-  if (!A4GL_isno(acl_getenv("NOSETODBCCURSORS")))  {
+  if (!A4GL_isno(acl_getenv("SETODBCCURSORS")))  {
   if (A4GL_isyes (acl_getenv ("ALWAYS_ODBC_CURSOR")))
     {
       		rc = SQLSetConnectAttr (hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER) SQL_CUR_USE_ODBC, (SQLINTEGER) 0);
