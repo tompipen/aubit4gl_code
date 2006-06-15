@@ -20,9 +20,9 @@ MAIN
 			if get_fldbuf(account_number) = " "  or  get_fldbuf(account_number) is null then
 				error "Insufficient" sleep 2
 				let lv_i=lv_i-1
-				exit program 99
-				#Had to disable, on Windows got in the endless loop here:
-				#continue construct
+				#	 f*ck windows - the test stays as it is..
+				# fix the bug - not the test...
+				continue construct
 			else
 				error "---> " # ,get_fldbuf(account_number) sleep 2
 				exit program lv_i
