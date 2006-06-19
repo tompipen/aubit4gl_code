@@ -99,7 +99,6 @@ Environment variables recognised:
   -maponly
   --verbose ($A4GLVERBOSE=yes) show additional info while compiling
   -as-ddl
-  $A4GLRC - full path to file to be used instead of .a4glrc
 
 Note: $FGLCEXEC, cc and other compilers invoked by this script will
       recognise additional variables that might affect this script
