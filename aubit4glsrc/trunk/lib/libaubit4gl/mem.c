@@ -1,5 +1,15 @@
 #include "a4gl_libaubit4gl.h"
 
+static void *last_orig=0;
+
+struct mem_extra {
+	int nmemalloc;
+	void **ptr;
+};
+
+
+
+
 /**
  * Aubit compiler malloc.
  *
@@ -49,3 +59,74 @@ acl_free_full (void *ptr, char *f, long line)
   free (ptr);
 }
 
+
+/*
+ *  Allocate some memory - but associate it with some other pointer
+ *  that way - we can 'link' them so we can remove all the associated memory just by
+ *  freeing the parent...
+ */
+void *A4GL_alloc_associated_mem(void *orig,int nbytes) {
+	char buff[256]="";
+	static struct mem_extra *ptr;
+
+	if (last_orig!=orig)  {
+		sprintf(buff,"%p",orig);
+		if (A4GL_has_pointer(buff,MEMEXTRA)) {
+			ptr=A4GL_find_pointer(buff,MEMEXTRA);
+		//printf("USED %s\n",buff);
+		} else {
+			ptr=malloc(nbytes);
+			if (ptr==0) {
+				A4GL_assertion(1,"Unable to allocate memory");
+			}
+			A4GL_add_pointer(buff,MEMEXTRA,ptr);
+			ptr->nmemalloc=0;
+			ptr->ptr=0;
+		//printf("CREATED %s\n",buff);
+		}
+		last_orig=orig;
+	} else {
+		// ptr will be set to point to the last one already...
+	}
+
+	// ptr will point to our mem_extra area now..
+	ptr->nmemalloc++;
+	ptr->ptr=realloc(ptr->ptr,sizeof (void *)*ptr->nmemalloc);
+	ptr->ptr[ptr->nmemalloc-1]=malloc(nbytes);
+	return ptr->ptr[ptr->nmemalloc-1];
+}
+
+
+void A4GL_free_associated_mem(void *orig) {
+	char buff[256];
+	struct mem_extra *ptr;
+	int a;
+	if (last_orig==orig) {
+		last_orig=0;
+	}
+	sprintf(buff,"%p",orig);
+
+	if (A4GL_has_pointer(buff,MEMEXTRA)) {
+		ptr=A4GL_find_pointer(buff,MEMEXTRA);
+	} else {
+		// Nothing allocated...
+		return;
+	}
+
+	for (a=0;a<ptr->nmemalloc;a++) {
+		A4GL_free_associated_mem(ptr->ptr[a]);	// free any children...
+		free(ptr->ptr[a]); 			// free the allocated memory..
+	}
+	ptr->nmemalloc=0;
+
+	// free the array that holds our pointers..
+	free(ptr->ptr);
+	ptr->ptr=0;
+
+	// free the mem_extra structure iteself..
+	free(ptr);
+
+	// Finally - get rid of the A4GL_..._pointer...
+	A4GL_del_pointer(buff,MEMEXTRA);
+	//printf("DELETED %s\n",buff);
+}
