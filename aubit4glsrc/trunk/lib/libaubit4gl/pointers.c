@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.40 2005-10-30 18:46:19 mikeaubury Exp $
+# $Id: pointers.c,v 1.41 2006-06-19 09:30:36 mikeaubury Exp $
 #
 */
 
@@ -49,8 +49,8 @@
 #define TXT_LEN 128
 
 
-#define  FIND_X(a) (tfind((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
-#define  ADD_X(a) (tsearch((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
+#define  FIND_X(a)   (tfind((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
+#define  ADD_X(a)    (tsearch((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
 #define  DELETE_X(a) (tdelete((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
 
 /*
@@ -210,6 +210,8 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 	  anode = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
 	  DELETE_X (&buff2);
+#else
+      A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
 
 	  //A4GL_debug ("Try to free %p\n", anode);
@@ -318,12 +320,16 @@ A4GL_del_pointer (char *pname, char t)
 	  anode = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
 	  DELETE_X (&buff2);
+#else
+      A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
 	  strcpy (anode->name, "======");
 	  free (anode);
 	}
 #if ! defined(__MINGW32__)
       DELETE_X (buff);
+#else
+      A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
       free (buff);
     }
