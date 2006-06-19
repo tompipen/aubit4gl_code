@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.51 2006-03-17 19:01:31 mikeaubury Exp $
+# $Id: helper.c,v 1.52 2006-06-19 09:33:14 mikeaubury Exp $
 #
 */
 
@@ -48,6 +48,8 @@
 #include <ctype.h>
 void A4GLPACKER_clrlibptr (void);
 void A4GLFORM_clrlibptr (void);
+static void tea_8c_encipher(const unsigned long *const v,unsigned long *const w, const unsigned long * const k);
+static void tea_8c_decipher(const unsigned long *const v,unsigned long *const w, const unsigned long * const k);
 
 /*
 =====================================================================
@@ -1168,6 +1170,183 @@ int a4gl_isupper(int n) {
 if (n>=0&&n<=255) return isupper(n);
 else return 0;
 }
+
+static char hex_digit(int n) {
+	if (n>=0&&n<=9) return n+'0';
+	if (n==10) return 'a';
+	if (n==11) return 'b';
+	if (n==12) return 'c';
+	if (n==13) return 'd';
+	if (n==14) return 'e';
+	if (n==15) return 'f';
+	return 'x';
+}
+
+
+char *A4GL_tea_string_encipher(char *s) {
+	char buff[1000];
+	static char buff_out[1000];
+	char smbuff[20];
+	int a;
+	long key[4];
+	char rbuff[10];
+	long *x;
+	//long b[10];
+	memset(rbuff,0,sizeof(rbuff));
+
+	memset(&key[0],0,sizeof(key));
+			key[0]=0x12447469;
+			key[1]=0x87873739;
+			key[2]=0x908acd69;
+			key[3]=0xfc892782;
+
+	memset(buff,0,1000);
+	strcpy(buff,s);
+	strcpy(buff_out,"");
+
+	for (a=0;a<strlen(buff);a+=8) {
+		x=(long *)rbuff;
+		tea_8c_encipher((long *)&buff[a],x,key);
+		smbuff[8]=0;
+		smbuff[7]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0x???????X
+		smbuff[6]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0x??????X
+		smbuff[5]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0x?????X
+		smbuff[4]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0x????X
+		smbuff[3]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0x???X
+		smbuff[2]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0x??X.
+		smbuff[1]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0x?X..
+		smbuff[0]=hex_digit(x[0]&0xf); x[0]=x[0]>>4; // 0xX...
+		strcat(buff_out,smbuff);
+
+		smbuff[8]=0;
+		smbuff[7]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0x???????X
+		smbuff[6]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0x??????X
+		smbuff[5]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0x?????X
+		smbuff[4]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0x????X
+		smbuff[3]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0x???X
+		smbuff[2]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0x??X.
+		smbuff[1]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0x?X..
+		smbuff[0]=hex_digit(x[1]&0xf); x[1]=x[1]>>4; // 0xX...
+		strcat(buff_out,smbuff);
+
+	}
+	return buff_out;
+}
+
+
+static int hexToInt(int h){
+	  if( h>='0' && h<='9' ){
+		      return h - '0';
+		        }else if( h>='a' && h<='f' ){
+				    return h - 'a' + 10;
+				      }else if( h>='A' && h<='F' ){
+					          return h - 'A' + 10;
+						    }else{
+							        return 0;
+								  }
+}
+
+
+char *A4GL_tea_string_decipher(char *s) {
+	char buff[1000];
+	static char buff_out[1000];
+	char smbuff[5];
+	int a;
+	long key[4];
+	char rbuff[9];
+	int l;
+	long lgptr[2];
+
+	memset(&key[0],0,sizeof(key));
+	key[0]=0x12447469;
+	key[1]=0x87873739;
+	key[2]=0x908acd69;
+	key[3]=0xfc892782;
+	memset(buff,0,1000);
+	strcpy(buff,s);
+	strcpy(buff_out,"");
+
+	for (a=0;a<strlen(buff);a+=16) {
+		l=hexToInt(buff[a]);
+		l=(l*16)+hexToInt(buff[a+1]);
+		l=(l*16)+hexToInt(buff[a+2]);
+		l=(l*16)+hexToInt(buff[a+3]);
+		l=(l*16)+hexToInt(buff[a+4]);
+		l=(l*16)+hexToInt(buff[a+5]);
+		l=(l*16)+hexToInt(buff[a+6]);
+		l=(l*16)+hexToInt(buff[a+7]);
+		lgptr[0]=l;
+		
+		l=hexToInt(buff[a+8]);
+		l=(l*16)+hexToInt(buff[a+9]);
+		l=(l*16)+hexToInt(buff[a+10]);
+		l=(l*16)+hexToInt(buff[a+11]);
+		l=(l*16)+hexToInt(buff[a+12]);
+		l=(l*16)+hexToInt(buff[a+13]);
+		l=(l*16)+hexToInt(buff[a+14]);
+		l=(l*16)+hexToInt(buff[a+15]);
+		lgptr[1]=l;
+
+		tea_8c_decipher(&lgptr[0],(long *)&rbuff[0],&key[0]);
+		smbuff[0]=rbuff[0];
+		smbuff[1]=rbuff[1];
+		smbuff[2]=rbuff[2];
+		smbuff[3]=rbuff[3];
+		smbuff[4]=rbuff[4];
+		smbuff[5]=rbuff[5];
+		smbuff[6]=rbuff[6];
+		smbuff[7]=rbuff[7];
+		smbuff[8]=0;
+		strcat(buff_out,smbuff);
+	}
+	return buff_out;
+}
+
+void tea_8c_encipher(const unsigned long * v,unsigned long * w, const unsigned long *  k)
+{
+	   unsigned long       y;
+	   unsigned long       z;
+	   unsigned long       sum;
+	   unsigned long       delta;
+	   unsigned long       n;
+	   //unsigned long l;
+	   y=v[0];
+	   z=v[1];
+	   sum=0;
+	   delta=0x9E3779B9;
+	   n=32;
+
+	      while((n--) > 0)
+		            {
+			          y += ((z << 4) ^ (z >> 5)) + (z ^ sum) + k[sum&3];
+					      sum += delta;
+					z+=((y << 4) ^ (y >> 5)) + (y ^ sum) + k[(sum>>11)&3];
+	          }
+
+	         w[0]=y; 
+		 w[1]=z;
+}
+
+
+
+void tea_8c_decipher(const unsigned long *const v,unsigned long *const w,
+		   const unsigned long * const k)
+{
+	   register unsigned long       y=v[0],z=v[1],sum=0xC6EF3720,
+		    				delta=0x9E3779B9,n=32;
+
+	      /* sum = delta<<5, in general sum = delta * n */
+
+	      while(n-->0)
+		            {
+				          z -= (y << 4 ^ y >> 5) + (y ^ sum) + k[sum>>11 & 3];
+					        sum -= delta;
+						      y -= (z << 4 ^ z >> 5) + (z ^ sum) + k[sum&3];
+						            }
+	         
+	         w[0]=y; w[1]=z;
+}
+
 
 
 /* =================================== EOF ============================= */
