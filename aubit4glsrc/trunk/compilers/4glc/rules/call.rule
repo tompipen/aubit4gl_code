@@ -9,10 +9,32 @@ call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 ;
 
 
+simple_int: variable {
+                if (scan_variable($<str>1)!=2) {
+                char buff[256];
+                        strcpy(buff,"variable must be an integer");
+                        a4gl_yyerror(buff);
+                        YYERROR;
+                }
+        } | INT_VALUE
+;
+
 
 call_ext: function_call_expr opt_return {
    		print_func_call($<ptr>1);
 		start_bind('i',0);
+	}
+   | DIALOGKEYSETLABEL OPEN_BRACKET CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
+	/* Does nothing yet */
+	printf("dialog.keysetlabel is not implemented yet\n");
+	}
+   | DIALOGSETCURRLINE OPEN_BRACKET simple_int KW_COMMA simple_int CLOSE_BRACKET {
+	/* Does nothing yet */
+	printf("dialog.setcurrline is not implemented yet\n");
+	}
+   | DIALOGX DOT NAMED OPEN_BRACKET fgl_expr_list_ptr CLOSE_BRACKET {
+	/* Does nothing yet */
+	printf("dialog.(%s) is not implemented yet\n",$<str>3);
 	}
    | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
 		print_form_is_compiled($<str>3,$<str>5,$<str>7);

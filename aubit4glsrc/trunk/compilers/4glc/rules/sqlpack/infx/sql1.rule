@@ -147,12 +147,13 @@ other_misc_infx_stmt  :
 
 misc_infx_stmt: 
 	MISC_INFX_SQL  {
+		printf("(%s)\n",$<str>1);
 		if (strcmp($<str>1,"SET LOG")==0) add_feature("SET_LOG");
 		if (strncmp($<str>1,"START DATABASE",14)==0) {
 			if (strstr($<str>1,"ANSI")) {
-				add_feature("START_DATABAE_WITH_LOG_MODE_ANSI");
+				add_feature("START_DATABASE_WITH_LOG_MODE_ANSI");
 			} else {
-				add_feature("START_DATABAE_WITH_LOG");
+				add_feature("START_DATABASE_WITH_LOG");
 			}
 		}
 	}

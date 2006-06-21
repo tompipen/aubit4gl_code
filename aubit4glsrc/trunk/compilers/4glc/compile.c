@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.104 2006-05-13 12:34:37 mikeaubury Exp $
+# $Id: compile.c,v 1.105 2006-06-21 12:34:41 mikeaubury Exp $
 #*/
 
 /**
@@ -1136,7 +1136,6 @@ char ext[256];
 static char local_pass_options[1024] = "";
 
 
-if (!A4GL_isno(acl_getenv("REMOVE_ERR"))) {
 	SPRINTF1 (buff, "%s.err", output_object);
 	if (verbose) { PRINTF ("checking for %s\n", buff); }
 
@@ -1145,7 +1144,6 @@ if (!A4GL_isno(acl_getenv("REMOVE_ERR"))) {
 			fclose(filep);
 			unlink(buff);
 	}
-}
 
 	/* store the directory part of file name, if any, so we can use it for GLOBALS
     file compilation, if nececery */

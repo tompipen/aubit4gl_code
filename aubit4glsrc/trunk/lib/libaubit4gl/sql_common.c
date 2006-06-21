@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.20 2006-06-19 09:29:26 mikeaubury Exp $
+# $Id: sql_common.c,v 1.21 2006-06-21 12:34:48 mikeaubury Exp $
 #
 */
 
@@ -1359,8 +1359,10 @@ A4GL_sqlid_encrypt (void)
 
   fclose (fout);
   fclose (f);
-  unlink(fname);
-  rename("encrypted.aclfile",fname);
+
+  if (unlink(fname)==0) { // All good!
+  	rename("encrypted.aclfile",fname);
+  }
 
   return 1;
 }

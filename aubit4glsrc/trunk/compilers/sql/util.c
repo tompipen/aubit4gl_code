@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.36 2006-04-05 06:54:36 mikeaubury Exp $
+# $Id: util.c,v 1.37 2006-06-21 12:34:47 mikeaubury Exp $
 #
 */
 
@@ -70,17 +70,18 @@
 =====================================================================
 */
 
-void *nbs=0;
-struct sql_stmt {
-        int type;
-        char *val;
+void *nbs = 0;
+struct sql_stmt
+{
+  int type;
+  char *val;
 };
-struct sql_stmt *stmts=0;
-int stmts_cnt=0;
+struct sql_stmt *stmts = 0;
+int stmts_cnt = 0;
 char last_conversion[256];
-char m_module[256]="unknown";
-char m_ln=0;
-int write_std_err_on_error=0;
+char m_module[256] = "unknown";
+char m_ln = 0;
+int write_std_err_on_error = 0;
 
 /*
 =====================================================================
@@ -89,7 +90,7 @@ int write_std_err_on_error=0;
 */
 
 //extern int yydebug; //y.tab.c:3742: warning: previous declaration of `sqlparse_yydebug'
-static void add_sql(int n,char *s) ;
+static void add_sql (int n, char *s);
 
 /*
 =====================================================================
@@ -97,13 +98,14 @@ static void add_sql(int n,char *s) ;
 =====================================================================
 */
 
-void dummy_prevent_sqlparse_warnings_dummy(void);
-void 
-dummy_prevent_sqlparse_warnings_dummy(void) {
-void * dummy;
-	
-	//dummy=yy_flex_realloc( 0,0 );
-	yyunput( 0, 0);
+void dummy_prevent_sqlparse_warnings_dummy (void);
+void
+dummy_prevent_sqlparse_warnings_dummy (void)
+{
+  void *dummy;
+
+  //dummy=yy_flex_realloc( 0,0 );
+  yyunput (0, 0);
 
 }
 
@@ -114,10 +116,11 @@ void * dummy;
  * @todo Describe function
  */
 static char *
-pop_gen (int a) {
-  /*printf ("Popgen called\n");*/
-  /*printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);*/
-  /*dump_updvals();*/
+pop_gen (int a)
+{
+  /*printf ("Popgen called\n"); */
+  /*printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]); */
+  /*dump_updvals(); */
   gen_stack_cnt[a]--;
   return gen_stack[a][gen_stack_cnt[a]];
 
@@ -149,38 +152,46 @@ make_sql_string_and_free (char *first, ...)
   ptr = acl_strdup (first);
 
 
-        if (first!=kw_comma && first!=kw_space && first!=kw_ob && first!=kw_cb) {
-                //A4GL_debug("FREE %p (%s)\n",first,first);
-                if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
-                        free(first);
-                }
-                        first=0;
-        }
+  if (first != kw_comma && first != kw_space && first != kw_ob
+      && first != kw_cb)
+    {
+      //A4GL_debug("FREE %p (%s)\n",first,first);
+      if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
+	{
+	  free (first);
+	}
+      first = 0;
+    }
   l = strlen (ptr);
 
   while (1)
     {
-	
+
       n++;
       next = va_arg (ap, char *);
       if (next == 0)
-        break;
+	break;
 
-	if (next==kw_space|| (strlen(next)==1 && next[0]==' ')) {
-		if (ptr[strlen(ptr)-1]==' ') continue;
+      if (next == kw_space || (strlen (next) == 1 && next[0] == ' '))
+	{
+	  if (ptr[strlen (ptr) - 1] == ' ')
+	    continue;
 	}
 
       l += strlen (next);
-      l++;                      /* Extra space...*/
+      l++;			/* Extra space... */
       ptr = realloc (ptr, l);
       strcat (ptr, next);
 
-        if (next!=kw_comma && next!=kw_space && next!=kw_ob && next!=kw_cb) {
-                //A4GL_debug("FREE %p (%s)\n",next,next);
-                if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
-                        free(next);
-                }
-        }
+      if (next != kw_comma && next != kw_space && next != kw_ob
+	  && next != kw_cb)
+	{
+	  //A4GL_debug("FREE %p (%s)\n",next,next);
+	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
+	    {
+	      free (next);
+	    }
+	}
     }
   return ptr;
 }
@@ -195,8 +206,9 @@ make_sql_string_and_free (char *first, ...)
 void
 push_gen (int a, char *s)
 {
-  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
-  /*printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);*/
+  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null (s),
+	      gen_stack_cnt[a]);
+  /*printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]); */
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
       printf ("Out of stack!\n");
@@ -217,7 +229,7 @@ copy_gen (int a, int b)
 
   if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
     {
-      /*printf ("POP\n");*/
+      /*printf ("POP\n"); */
       pop_gen (a);
     }
 
@@ -237,9 +249,10 @@ copy_gen (int a, int b)
  * @todo Describe function
  */
 static int
-gen_cnt (int a) {
- return gen_stack_cnt[a];
-} 
+gen_cnt (int a)
+{
+  return gen_stack_cnt[a];
+}
 
 /**
  *
@@ -252,16 +265,19 @@ pop_all_gen (int a, char *s)
   for (z = 0; z < gen_stack_cnt[a]; z++)
     {
       if (z > 0)
- A4GL_debug ("%s ", A4GL_null_as_null(s));
+	A4GL_debug ("%s ", A4GL_null_as_null (s));
 
-      A4GL_debug ("%s", A4GL_null_as_null(gen_stack[a][z]));
+      A4GL_debug ("%s", A4GL_null_as_null (gen_stack[a][z]));
     }
   gen_stack_cnt[a] = 0;
 }
 
 #endif
 
-static void ansi_violation(char *s,int n) { }
+static void
+ansi_violation (char *s, int n)
+{
+}
 
 /**
  *
@@ -276,8 +292,8 @@ fix_update_expr (int mode)
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  /*char csize[20];*/
-  /*char cdtype[20];*/
+  /*char csize[20]; */
+  /*char cdtype[20]; */
   char buff[1000];
   char *ccol;
   strcpy (big_buff, "SET ");
@@ -285,54 +301,58 @@ fix_update_expr (int mode)
 
   if (mode == 1)
     {
-      /* It will only be a '*' anyway....*/
+      /* It will only be a '*' anyway.... */
       if (db_used == 0)
-        {
-          sprintf (buff, "You cannot use update * =  without specifying a database");
-          sqlparse_yyerror (buff);
-          return 0;
-        }
+	{
+	  sprintf (buff,
+		   "You cannot use update * =  without specifying a database");
+	  sqlparse_yyerror (buff);
+	  return 0;
+	}
 
-      A4GL_4glc_clr_gen(UPDCOL);
+      A4GL_4glc_clr_gen (UPDCOL);
       strcpy (colname, "");
       rval =
-        A4GLSQL_get_columns (current_upd_table, colname, &idtype, &isize);
+	A4GLSQL_get_columns (current_upd_table, colname, &idtype, &isize);
       if (rval == 0)
-        {
-          sqlparse_yyerror ("Table is not in the database");
-          return 0;
-        }
+	{
+	  sqlparse_yyerror ("Table is not in the database");
+	  return 0;
+	}
 
 
       while (1)
-        {
-          colname[0] = 0;
-          rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-          strcpy (colname, ccol);
-          if (rval == 0)
-            break;
-          trim_spaces (colname);
-          A4GL_4glc_push_gen (UPDCOL, colname);
-        }
+	{
+	  colname[0] = 0;
+	  rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+	  strcpy (colname, ccol);
+	  if (rval == 0)
+	    break;
+	  trim_spaces (colname);
+	  A4GL_4glc_push_gen (UPDCOL, colname);
+	}
       A4GLSQL_end_get_columns ();
     }
 
-  if (A4GL_4glc_gen_cnt(UPDCOL) != A4GL_4glc_gen_cnt(UPDVAL))
+  if (A4GL_4glc_gen_cnt (UPDCOL) != A4GL_4glc_gen_cnt (UPDVAL))
     {
-	//dump_updvals();
-	printf("%d!=%d\n",A4GL_4glc_gen_cnt(UPDCOL),A4GL_4glc_gen_cnt(UPDVAL));
+      //dump_updvals();
+      printf ("%d!=%d\n", A4GL_4glc_gen_cnt (UPDCOL),
+	      A4GL_4glc_gen_cnt (UPDVAL));
       sqlparse_yyerror
-        ("Number of columns in update not the same as number of values");
+	("Number of columns in update not the same as number of values");
     }
 
-  for (a = 0; a < A4GL_4glc_gen_cnt(UPDCOL); a++)
+  for (a = 0; a < A4GL_4glc_gen_cnt (UPDCOL); a++)
     {
-	if (strcmp(A4GL_4glc_get_gen(UPDVAL,a),"?")==0) {
-		A4GL_assertion(1,"Failed");
+      if (strcmp (A4GL_4glc_get_gen (UPDVAL, a), "?") == 0)
+	{
+	  A4GL_assertion (1, "Failed");
 	}
       if (a)
-        strcat (big_buff, ",");
-      sprintf (buff, "%s=%s ", A4GL_4glc_get_gen(UPDCOL,a), A4GL_4glc_get_gen(UPDVAL,a));
+	strcat (big_buff, ",");
+      sprintf (buff, "%s=%s ", A4GL_4glc_get_gen (UPDCOL, a),
+	       A4GL_4glc_get_gen (UPDVAL, a));
       strcat (big_buff, buff);
     }
 
@@ -345,67 +365,90 @@ fix_update_expr (int mode)
  *
  * @todo Describe function
  */
-static int 
-A4GL_escape_quote_owner(void) {
-        if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"Y")==0) return 1;
-        if (strcmp(acl_getenv("A4GL_QUOTE_OWNER"),"N")==0) return 1;
-        if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
-        return 1;
-}
-
-/**
- *
- * @todo Describe function
- */
-static char *A4GL_get_into_part (int a,int b) { return 0;} 
-
-/**
- *
- * @todo Describe function
- */
-static char *A4GL_get_undo_use (void) { return 0;} 
-
-/**
- *
- * @todo Describe function
- */
-static void A4GL_lex_printcomment (char *fmt,...) { } 
-
-/**
- *
- * @todo Describe function
- */
-static void addmap_runtime (char *s,char *f) { 
-	char buff[1024];
- 	sprintf(buff,"%s|%s|%s|%d|%s|",s,f,A4GLSTK_topFunction(),m_ln,m_module);
-	A4GL_log_sql_prepared_map(buff);
-} 
-
-/**
- *
- * @todo Describe function
- */
-static int get_bind_cnt (char i)
+static int
+A4GL_escape_quote_owner (void)
 {
-	return 0;
+  if (strcmp (acl_getenv ("A4GL_QUOTE_OWNER"), "Y") == 0)
+    return 1;
+  if (strcmp (acl_getenv ("A4GL_QUOTE_OWNER"), "N") == 0)
+    return 1;
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+    return 0;
+  return 1;
 }
 
 /**
  *
  * @todo Describe function
  */
-static int scan_variable (char *S) {
-// Can't be a variable - we don't have 'em
-return 0; 
-} 
+static char *
+A4GL_get_into_part (int a, int b)
+{
+  return 0;
+}
 
 /**
  *
  * @todo Describe function
  */
-static int start_bind (char c,int n) { 
-return 0;
-} 
+static char *
+A4GL_get_undo_use (void)
+{
+  return 0;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+static void
+A4GL_lex_printcomment (char *fmt, ...)
+{
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+static void
+addmap_runtime (char *s, char *f)
+{
+  char buff[1024];
+  sprintf (buff, "%s|%s|%s|%d|%s|", s, f, A4GLSTK_topFunction (), m_ln,
+	   m_module);
+  A4GL_log_sql_prepared_map (buff);
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+static int
+get_bind_cnt (char i)
+{
+  return 0;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+static int
+scan_variable (char *S)
+{
+// Can't be a variable - we don't have 'em
+  return 0;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+static int
+start_bind (char c, int n)
+{
+  return 0;
+}
 
 
 
@@ -423,10 +466,10 @@ rm_quotes (char *s)
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
-        {
-          buff[b++] = s[a];
-          buff[b] = 0;
-        }
+	{
+	  buff[b++] = s[a];
+	  buff[b] = 0;
+	}
     }
   strcpy (s, buff);
 }
@@ -436,8 +479,10 @@ rm_quotes (char *s)
  *
  * @todo Describe function
  */
-static void mark_sql_start(void) {
-	this_sql_start=sql_string_cnt+1;
+static void
+mark_sql_start (void)
+{
+  this_sql_start = sql_string_cnt + 1;
 
 }
 
@@ -448,17 +493,24 @@ static void mark_sql_start(void) {
  *
  * @todo Describe function
  */
-static char *get_bad_sql(void) {
-	static char buff[2000];
-	memset(buff,0,2000);
-	if (input_from_file) {
-		return "BAD SQL";
-	} else {
-		if (sql_string_cnt-this_sql_start>0) {
-			strncpy(buff,&Sql[this_sql_start],sql_string_cnt-this_sql_start);
-		}
+static char *
+get_bad_sql (void)
+{
+  static char buff[2000];
+  memset (buff, 0, 2000);
+  if (input_from_file)
+    {
+      return "BAD SQL";
+    }
+  else
+    {
+      if (sql_string_cnt - this_sql_start > 0)
+	{
+	  strncpy (buff, &Sql[this_sql_start],
+		   sql_string_cnt - this_sql_start);
 	}
-	return buff;
+    }
+  return buff;
 }
 
 
@@ -467,29 +519,36 @@ static char *get_bad_sql(void) {
  *
  * @todo Describe function
  */
-static void 
-A4GLSQLCV_loadbuffer(char *fname) {
-	if (nbs) DELETE_BUFFER(nbs);
+static void
+A4GLSQLCV_loadbuffer (char *fname)
+{
+  if (nbs)
+    DELETE_BUFFER (nbs);
 
-	if (strcmp(fname,"-")==0) {
-		Sql_file=stdin;
-		input_from_file=1;
-	} else {
-		input_from_file=1;
-		Sql_file=fopen(fname,"r");
-	}
+  if (strcmp (fname, "-") == 0)
+    {
+      Sql_file = stdin;
+      input_from_file = 1;
+    }
+  else
+    {
+      input_from_file = 1;
+      Sql_file = fopen (fname, "r");
+    }
 
-	if (Sql_file==0) {
-		printf("Unable to open input file\n");
-	}
+  if (Sql_file == 0)
+    {
+      printf ("Unable to open input file\n");
+    }
 
-	if (stmts) { 
-		free(stmts); 
-		stmts=0;
-		stmts_cnt=0; 
-	}
-	Sql=0;
-	
+  if (stmts)
+    {
+      free (stmts);
+      stmts = 0;
+      stmts_cnt = 0;
+    }
+  Sql = 0;
+
 }
 
 
@@ -497,16 +556,24 @@ A4GLSQLCV_loadbuffer(char *fname) {
  *
  * @todo Describe function
  */
-static void 
-A4GLSQLCV_setbuffer(char *s) {
-	if (nbs) DELETE_BUFFER(nbs);
-	if (Sql) free(Sql);
-	Sql=acl_strdup(s);
-	A4GL_trim(Sql);
-	nbs=YYSCANSTRING(Sql);
-	if (stmts) { free(stmts); stmts=0;stmts_cnt=0; }
-	input_from_file=0;
-	Sql_file=0;
+static void
+A4GLSQLCV_setbuffer (char *s)
+{
+  if (nbs)
+    DELETE_BUFFER (nbs);
+  if (Sql)
+    free (Sql);
+  Sql = acl_strdup (s);
+  A4GL_trim (Sql);
+  nbs = YYSCANSTRING (Sql);
+  if (stmts)
+    {
+      free (stmts);
+      stmts = 0;
+      stmts_cnt = 0;
+    }
+  input_from_file = 0;
+  Sql_file = 0;
 }
 
 /* andrej
@@ -526,33 +593,41 @@ static int meminput(char *buf,int maxsize) {
 
 
 
-void set_write_std_err_on_error() {
-	write_std_err_on_error=1;
+void
+set_write_std_err_on_error ()
+{
+  write_std_err_on_error = 1;
 }
 
 /**
  *
  * @todo Describe function
  */
-static int 
-sqlparse_yyerror(char *s) {
-if (write_std_err_on_error) {
-	fprintf(stderr,"%s",s);
-}
-	A4GL_debug("%s Sql=%p\n",s,Sql);
-	if (Sql) {
-		char buff[200];
-		int c;
-		A4GL_debug("Here\n");
-		c=sql_string_cnt;
-		c-=20;
-		if (c<0) {c=0; }
-		strncpy(buff,&Sql[sql_string_cnt],199);
-		buff[199]=0;
-		A4GL_debug("MEMREAD syntax error: %s\n",buff);
+static int
+sqlparse_yyerror (char *s)
+{
+  if (write_std_err_on_error)
+    {
+      fprintf (stderr, "%s", s);
+    }
+  A4GL_debug ("%s Sql=%p\n", s, Sql);
+  if (Sql)
+    {
+      char buff[200];
+      int c;
+      A4GL_debug ("Here\n");
+      c = sql_string_cnt;
+      c -= 20;
+      if (c < 0)
+	{
+	  c = 0;
 	}
-	was_ok=0;
-	return 0;
+      strncpy (buff, &Sql[sql_string_cnt], 199);
+      buff[199] = 0;
+      A4GL_debug ("MEMREAD syntax error: %s\n", buff);
+    }
+  was_ok = 0;
+  return 0;
 }
 
 
@@ -561,9 +636,11 @@ if (write_std_err_on_error) {
  * @todo Describe function
  */
 static char *
-convstrsql(char *s) {
-	if (s[0]=='\'') return s;
-	return convstr_dbl_to_single(s) ;
+convstrsql (char *s)
+{
+  if (s[0] == '\'')
+    return s;
+  return convstr_dbl_to_single (s);
 }
 
 
@@ -581,25 +658,32 @@ convstr_dbl_to_single (char *s)
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '"')
-        {
-          if (a == 0)
-            buff[b++] = '\'';
-          else
-            {
-              if (s[a - 1] != '\\')
-                {
-                  buff[b++] = '\'';
-                }
-            }
-          continue;
-        }
+	{
+	  if (a == 0 || (s[a]=='"' && a == strlen (s) - 1))
+	    {
+	      buff[b++] = '\'';
+	    }
+	  else
+	    {
+	      if (s[a - 1] != '\\')
+		{
+		  buff[b++] = '\'';
+		}
+	      else
+		{
+		  buff[b++] = '"';
+		}
+	    }
 
-      if (s[a] == '\'' && a && a!=strlen(s)-1)
-        {
-          buff[b++] = '\\';
-          buff[b++] = '\'';
-          continue;
-        }
+	  continue;
+	}
+
+      if (s[a] == '\'' && a && a != strlen (s) - 1)
+	{
+	  buff[b++] = '\\';
+	  buff[b++] = '\'';
+	  continue;
+	}
       buff[b++] = s[a];
 
     }
@@ -613,8 +697,10 @@ convstr_dbl_to_single (char *s)
  * @todo Describe function
  */
 //andrej static 
-int THEYYWRAP() {
-	return 1;
+int
+THEYYWRAP ()
+{
+  return 1;
 }
 
 
@@ -630,12 +716,14 @@ static void a4gl_char_cpy(char *dest,char *src,int dbl) {
  *
  * @todo Describe function
  */
-static void 
-A4GL_CV_print_exec_sql(char *s) {
-	sql_type=1;
-	if (sql_string) sql_string=0;
-	sql_string=acl_strdup(s);
-	add_sql(sql_type,sql_string);
+static void
+A4GL_CV_print_exec_sql (char *s)
+{
+  sql_type = 1;
+  if (sql_string)
+    sql_string = 0;
+  sql_string = acl_strdup (s);
+  add_sql (sql_type, sql_string);
 }
 
 
@@ -643,13 +731,16 @@ A4GL_CV_print_exec_sql(char *s) {
  *
  * @todo Describe function
  */
-static void 
-A4GL_CV_print_exec_sql_bound(char *s) {
-	sql_type=2;
-	if (sql_string) sql_string=0;
-	sql_string=acl_strdup(s);
-	add_sql(sql_type,sql_string);
+static void
+A4GL_CV_print_exec_sql_bound (char *s)
+{
+  sql_type = 2;
+  if (sql_string)
+    sql_string = 0;
+  sql_string = acl_strdup (s);
+  add_sql (sql_type, sql_string);
 }
+
 /* andrej 
 static void print_exec_sql_bound (char *s) {
 	add_sql(8,acl_strdup(s));
@@ -682,42 +773,48 @@ char s[256];
  *
  * @todo Describe function
  */
-static void 
-print_load (char *fname,char *delim,char *tab,char *cols) {
-        printf("Load can't be prepared...");
+static void
+print_load (char *fname, char *delim, char *tab, char *cols)
+{
+  printf ("Load can't be prepared...");
 }
 
 /**
  *
  * @todo Describe function
  */
-static void 
-print_load_str (char *fname,char *delim,char *sql) {
-        printf("Invalid syntax for a prepare statement");
+static void
+print_load_str (char *fname, char *delim, char *sql)
+{
+  printf ("Invalid syntax for a prepare statement");
 }
 
 /**
  *
  * @todo Describe function
  */
-static void 
-print_sql_commit (int n) { 
-char *s=0;
-  if (n==-1) {
-	sql_type=3;
-    	s=acl_strdup("BEGIN WORK");
-	add_sql(sql_type,s);
-  }
-  if (n==0) {
-	sql_type=4;
-    	s=acl_strdup("ROLLBACK WORK");
-	add_sql(sql_type,s);
-  }
-  if (n==1) {
-	sql_type=5;
-    	s=acl_strdup("COMMIT WORK");
-	add_sql(sql_type,s);
-  }
+static void
+print_sql_commit (int n)
+{
+  char *s = 0;
+  if (n == -1)
+    {
+      sql_type = 3;
+      s = acl_strdup ("BEGIN WORK");
+      add_sql (sql_type, s);
+    }
+  if (n == 0)
+    {
+      sql_type = 4;
+      s = acl_strdup ("ROLLBACK WORK");
+      add_sql (sql_type, s);
+    }
+  if (n == 1)
+    {
+      sql_type = 5;
+      s = acl_strdup ("COMMIT WORK");
+      add_sql (sql_type, s);
+    }
 
 }
 
@@ -739,20 +836,22 @@ print_select_all (char *s) {
  *
  * @todo Describe function
  */
-static void 
-print_exec_sql (char *s) {
-	add_sql(7,acl_strdup(s));
-	free(s);
+static void
+print_exec_sql (char *s)
+{
+  add_sql (7, acl_strdup (s));
+  free (s);
 }
 
 /**
  *
  * @todo Describe function
  */
-static void 
-print_exec_select (char *s)    {
-	add_sql(9,acl_strdup(s));
-	free(s);
+static void
+print_exec_select (char *s)
+{
+  add_sql (9, acl_strdup (s));
+  free (s);
 }
 
 
@@ -761,53 +860,28 @@ print_exec_select (char *s)    {
  *
  * @todo Describe function
  */
-static void 
-print_undo_use (char *s) {
-        printf("Invalid in prepare");
+static void
+print_undo_use (char *s)
+{
+  printf ("Invalid in prepare");
 }
 
 /**
  *
  * @todo Describe function
  */
-static void 
-print_unload (char *f,char *d,char *sql) {
+static void
+print_unload (char *f, char *d, char *sql)
+{
 }
 
 /**
  *
  * @todo Describe function
  */
-static void 
-print_use_session (char *s) { }
-
-
-/**
- *
- * @todo Describe function
- */
-static void 
-print_init_conn (char *s) {
-char buff[256];
-	if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
-	 	sprintf(buff,"DATABASE %s",s);
-		add_sql(10,acl_strdup(buff));
-        } else {
-	 	sprintf(buff,"CONNECT TO  %s AS 'default'",s);
-		add_sql(10,acl_strdup(buff));
-        }
-}
-
-/**
- *
- * @todo Describe function
- */
-static void 
-print_unable_to_parse() {
-	char *s;
-	s=get_bad_sql();
-	add_sql(11,acl_strdup(s));
-	
+static void
+print_use_session (char *s)
+{
 }
 
 
@@ -815,155 +889,232 @@ print_unable_to_parse() {
  *
  * @todo Describe function
  */
-static void 
-add_sql(int n,char *s) {
-static int last_was_err=0;
-static char *last_s=0;
+static void
+print_init_conn (char *s)
+{
+  char buff[256];
+  if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT"))
+    {
+      sprintf (buff, "DATABASE %s", s);
+      add_sql (10, acl_strdup (buff));
+    }
+  else
+    {
+      sprintf (buff, "CONNECT TO  %s AS 'default'", s);
+      add_sql (10, acl_strdup (buff));
+    }
+}
 
-	if (n==-1) {
-		last_s=0;
-		return;
+/**
+ *
+ * @todo Describe function
+ */
+static void
+print_unable_to_parse ()
+{
+  char *s;
+  s = get_bad_sql ();
+  add_sql (11, acl_strdup (s));
+
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+static void
+add_sql (int n, char *s)
+{
+  static int last_was_err = 0;
+  static char *last_s = 0;
+
+  if (n == -1)
+    {
+      last_s = 0;
+      return;
+    }
+  if (n != 11)
+    {
+      if (last_was_err && last_s)
+	{
+	  last_was_err = 0;
+	  add_sql (12, last_s);
+	  last_was_err = 0;
 	}
-	if (n!=11) {
-		if (last_was_err&&last_s) {
-			last_was_err=0;
-			add_sql(12,last_s);
-			last_was_err=0;
-		}
-		if (stmts==0) { stmts_cnt=0; }
-
-		stmts_cnt++;
-		stmts=realloc(stmts,sizeof(struct sql_stmt)*stmts_cnt);
-		stmts[stmts_cnt-1].type=n;
-		stmts[stmts_cnt-1].val=s;
-		mark_sql_start();
-	} else {
-		last_was_err=1;
-		last_s=s;
-	}
-
-
-}
-
-
-
-/**
- *
- * @todo Describe function
- */
-static char * 
-A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect, char *sql,int from_file) {
-	char buff[255];
-	int a;
-	static char *ptr=0;
-	int l;
-	add_sql(-1,"");
-	if (A4GL_isyes(acl_getenv("YYDEBUG"))) { yydebug=1;}
-
-	A4GL_debug("A4GLSQLCV_convert_sql_internal %s %s %s %d",source_dialect, target_dialect, sql, from_file);
-
-	sprintf(buff,"%s_%s",source_dialect, target_dialect);
-	if (strcmp(last_conversion,buff)!=0) {
-		A4GLSQLCV_load_convert(source_dialect,target_dialect);
-		strcpy(last_conversion,buff);
-	} 
-
-	
-	if (from_file) {
-		A4GLSQLCV_loadbuffer(sql);
-	} else {
-		if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
-			fprintf(stderr,"SQL:%s\n",sql);
-		}
-		A4GLSQLCV_setbuffer(sql);
+      if (stmts == 0)
+	{
+	  stmts_cnt = 0;
 	}
 
-	A4GL_debug("stmts=%p stmts_cnt=%d Sql=%s",stmts,stmts_cnt,Sql);
+      stmts_cnt++;
+      stmts = realloc (stmts, sizeof (struct sql_stmt) * stmts_cnt);
+      stmts[stmts_cnt - 1].type = n;
+      stmts[stmts_cnt - 1].val = s;
+      mark_sql_start ();
+    }
+  else
+    {
+      last_was_err = 1;
+      last_s = s;
+    }
 
-	if (A4GLSQLCV_process()) {
-		if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
-			fprintf(stderr,"Success\n");
-		}
-		A4GL_set_sql_conv(1);
-		// All ok !
-		A4GL_debug("SQL processed OK (%d statements)",stmts_cnt);
-	} else {
-		A4GL_set_sql_conv(0);
-		if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
-			fprintf(stderr,"Error\n");
-		}
-		// Some sql error....
-		A4GL_debug("Possible issue with the SQL",stmts_cnt);
-		if (from_file)  return "<err>"; 
-		else 		return sql;
-		
+
+}
+
+
+
+/**
+ *
+ * @todo Describe function
+ */
+static char *
+A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
+				char *sql, int from_file)
+{
+  char buff[255];
+  int a;
+  static char *ptr = 0;
+  int l;
+  add_sql (-1, "");
+  if (A4GL_isyes (acl_getenv ("YYDEBUG")))
+    {
+      yydebug = 1;
+    }
+
+  A4GL_debug ("A4GLSQLCV_convert_sql_internal %s %s %s %d", source_dialect,
+	      target_dialect, sql, from_file);
+
+  sprintf (buff, "%s_%s", source_dialect, target_dialect);
+  if (strcmp (last_conversion, buff) != 0)
+    {
+      A4GLSQLCV_load_convert (source_dialect, target_dialect);
+      strcpy (last_conversion, buff);
+    }
+
+
+  if (from_file)
+    {
+      A4GLSQLCV_loadbuffer (sql);
+    }
+  else
+    {
+      if (A4GL_isyes (acl_getenv ("YYDEBUG")))
+	{
+	  fprintf (stderr, "SQL:%s\n", sql);
 	}
+      A4GLSQLCV_setbuffer (sql);
+    }
 
-	l=0;
-	if (ptr) {free(ptr);}
-	ptr=0;
-	if (stmts_cnt==0) return "";
-	for (a=0;a<stmts_cnt;a++) {
-		l+=strlen(stmts[a].val)+1;
-		if (a+1!=stmts_cnt) l+=2;
-		if (ptr==0) {
-			ptr=malloc(l);
-			strcpy(ptr,"");
-		} else {
-			ptr=realloc(ptr,l);
-		}
-		A4GL_debug("Statement %d = %s",a,stmts[a].val);
-		strcat(ptr,stmts[a].val);
-		if (a+1!=stmts_cnt) strcat(ptr,";\n");
+  A4GL_debug ("stmts=%p stmts_cnt=%d Sql=%s", stmts, stmts_cnt, Sql);
+
+  if (A4GLSQLCV_process ())
+    {
+      if (A4GL_isyes (acl_getenv ("YYDEBUG")))
+	{
+	  fprintf (stderr, "Success\n");
 	}
-		
-	A4GL_debug("-->%s\n",ptr);
-return ptr;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-char * 
-A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,char *module,int ln) {
-char *ptr;
-	sql=acl_strdup(sql);
-	strcpy(m_module,module);
-	m_ln=ln;
-	A4GL_logsql(ln,module,sql);
-	ptr=A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
-	if (ptr!=sql) free(sql);
-	strcpy(m_module,"unknown");
-	m_ln=0;
-	return ptr;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-char * 
-A4GLPARSE_A4GLSQLCV_convert_file (char *target_dialect, char *sql) {
-	return A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,1) ;
-}
-
-/**
- *
- * @todo Describe function
- */
-static int 
-A4GLSQLCV_process(void) {
-        was_ok=1;
-	sql_string_cnt=0;
-	this_sql_start=0;
-	if (Sql_file) {
-		sqlparse_yyin=Sql_file;
+      A4GL_set_sql_conv (1);
+      // All ok !
+      A4GL_debug ("SQL processed OK (%d statements)", stmts_cnt);
+    }
+  else
+    {
+      A4GL_set_sql_conv (0);
+      if (A4GL_isyes (acl_getenv ("YYDEBUG")))
+	{
+	  fprintf (stderr, "Error\n");
 	}
-        sqlparse_yyparse();
-        return was_ok;
+      // Some sql error....
+      A4GL_debug ("Possible issue with the SQL", stmts_cnt);
+      if (from_file)
+	return "<err>";
+      else
+	return sql;
+
+    }
+
+  l = 0;
+  if (ptr)
+    {
+      free (ptr);
+    }
+  ptr = 0;
+  if (stmts_cnt == 0)
+    return "";
+  for (a = 0; a < stmts_cnt; a++)
+    {
+      l += strlen (stmts[a].val) + 1;
+      if (a + 1 != stmts_cnt)
+	l += 2;
+      if (ptr == 0)
+	{
+	  ptr = malloc (l);
+	  strcpy (ptr, "");
+	}
+      else
+	{
+	  ptr = realloc (ptr, l);
+	}
+      A4GL_debug ("Statement %d = %s", a, stmts[a].val);
+      strcat (ptr, stmts[a].val);
+      if (a + 1 != stmts_cnt)
+	strcat (ptr, ";\n");
+    }
+
+  A4GL_debug ("-->%s\n", ptr);
+  return ptr;
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+char *
+A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
+				    char *module, int ln)
+{
+  char *ptr;
+  sql = acl_strdup (sql);
+  strcpy (m_module, module);
+  m_ln = ln;
+  A4GL_logsql (ln, module, sql);
+  ptr = A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql, 0);
+  if (ptr != sql)
+    free (sql);
+  strcpy (m_module, "unknown");
+  m_ln = 0;
+  return ptr;
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+char *
+A4GLPARSE_A4GLSQLCV_convert_file (char *target_dialect, char *sql)
+{
+  return A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql, 1);
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+static int
+A4GLSQLCV_process (void)
+{
+  was_ok = 1;
+  sql_string_cnt = 0;
+  this_sql_start = 0;
+  if (Sql_file)
+    {
+      sqlparse_yyin = Sql_file;
+    }
+  sqlparse_yyparse ();
+  return was_ok;
 }
 
 
@@ -972,9 +1123,10 @@ A4GLSQLCV_process(void) {
  *
  * @todo Describe function
  */
-void 
-A4GL_add_feature(char *feature) {
-        /* Reserved for future use */
+void
+A4GL_add_feature (char *feature)
+{
+  /* Reserved for future use */
 }
 
 //opbsolte note - remove:
@@ -985,9 +1137,10 @@ A4GL_add_feature(char *feature) {
  *
  * @todo Describe function
  */
-int 
-A4GLPARSE_A4GLSQLPARSE_initlib(void) {
-	return 0;
+int
+A4GLPARSE_A4GLSQLPARSE_initlib (void)
+{
+  return 0;
 }
 
 /**
@@ -995,61 +1148,79 @@ A4GLPARSE_A4GLSQLPARSE_initlib(void) {
  * @todo Describe function
  */
 char *
-A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
-        char buff[40000];
-        if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
-		char *p;
-		if (strstr(s," VALUES ")) {
-		p=fix_insert_expr(1);
-		if (p) {
-                	sprintf(buff,"INSERT INTO %s %s",current_ins_table,p);
-                	free(s);
-		} else {
-			sprintf(buff,"%s",s);
-		}
-                return acl_strdup(buff);
-		}
-        } 
-        return s;
-       
-}
-
-
-
-
-
-
-int A4GL_db_used(void) {
-	return db_used;
-}
-
-int A4GL_cursor_current(char *s)  {
-	return 0;
-}
-
-
-void do_yyerror(char *s) {
-          sqlparse_yyerror (s);
-}
-
-
-int A4GL_4glc_push_gen_expand(int n,char *v) {
-A4GL_4glc_push_gen(n,v) ;
-return 1;
-}
-
-void add_sql_function(char *s) {
-        FILE *f ;
-        f=fopen("/tmp/sqlcall.log","a");
-        if (!f) return;
-        fprintf(f,"%s SQLCOMPILE\n",s);
-        fclose(f);
+A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s)
+{
+  char buff[40000];
+  if (A4GLSQLCV_check_requirement ("FULL_INSERT"))
+    {
+      char *p;
+      if (strstr (s, " VALUES "))
+	{
+	  p = fix_insert_expr (1);
+	  if (p)
+	    {
+	      sprintf (buff, "INSERT INTO %s %s", current_ins_table, p);
+	      free (s);
+	    }
+	  else
+	    {
+	      sprintf (buff, "%s", s);
+	    }
+	  return acl_strdup (buff);
+	}
+    }
+  return s;
 
 }
 
-void A4GL_warn(char *s) {
-	// Does nothing
+
+
+
+
+
+int
+A4GL_db_used (void)
+{
+  return db_used;
 }
+
+int
+A4GL_cursor_current (char *s)
+{
+  return 0;
+}
+
+
+void
+do_yyerror (char *s)
+{
+  sqlparse_yyerror (s);
+}
+
+
+int
+A4GL_4glc_push_gen_expand (int n, char *v)
+{
+  A4GL_4glc_push_gen (n, v);
+  return 1;
+}
+
+void
+add_sql_function (char *s)
+{
+  FILE *f;
+  f = fopen ("/tmp/sqlcall.log", "a");
+  if (!f)
+    return;
+  fprintf (f, "%s SQLCOMPILE\n", s);
+  fclose (f);
+
+}
+
+void
+A4GL_warn (char *s)
+{
+  // Does nothing
+}
+
 /* ====================================== EOF ============================ */
-
-

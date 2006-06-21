@@ -8,7 +8,7 @@
 //fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
 //int A4GL_conversion_ok(int);
 //char *A4GL_dec_to_str (fgldecimal *dec, int size) ;
-char decimal_char=0;
+char master_decimal_char=0;
 
 
 /**
@@ -51,19 +51,32 @@ fgldecimal *A4GL_str_to_dec (char *str_orig, fgldecimal *dec) {
 char str[1024];
   int round_cnt;
   int carry;
-  if (decimal_char==0) {
+  int local_decimal_char=0;
+
+  if (master_decimal_char==0) {
 	  SPRINTF1(buff,"%f",1.2);
-	  if (strchr(buff,'.')) decimal_char='.';
-	  if (strchr(buff,',')) decimal_char=',';
+	  if (strchr(buff,'.')) master_decimal_char='.';
+	  if (strchr(buff,',')) master_decimal_char=',';
+
   }
-  if (decimal_char==0) {
-	  decimal_char='.';
+
+  if (master_decimal_char==0) {
+	  master_decimal_char='.';
+  }
+
+  local_decimal_char=master_decimal_char;
+
+
+  if (A4GL_isyes(acl_getenv("ALLOWCOMMAINDECIMAL"))) {
+	  if (local_decimal_char=='.' && !strchr(str_orig,'.') && strchr(str_orig,',')) {
+		  local_decimal_char=',';
+	  }
   }
 
 strcpy(str,str_orig);
 
 
-if (decimal_char!=',') {
+if (local_decimal_char!=',') {
        int b=0;
        for (a=0;a<strlen(str_orig);a++) {
                if (str_orig[a]==',') continue;
@@ -106,7 +119,7 @@ A4GL_trim(str);
 		  continue;
 	  }
 
-	  if (str[a]==decimal_char&&(sec=='h'||sec=='f')) {
+	  if (str[a]==local_decimal_char&&(sec=='h'||sec=='f')) {
 		  sec='t';
 		  continue;
 	  }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.225 2006-05-17 15:49:21 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.226 2006-06-21 12:34:48 mikeaubury Exp $
 #
 */
 
@@ -339,6 +339,7 @@
 #define FUNC_POINTER            ';'
 #define FIELDOPTS            	'{'
 #define USERPTR            	':'
+#define MEMEXTRA            	'y'
 
 #define BLOCK_USED		'R'
 
@@ -2187,6 +2188,9 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define A4GL_EVENT_AFTER_FIELD_1 	-198
 
 
+void A4GL_free_associated_mem(void *orig);
+void *A4GL_alloc_associated_mem(void *orig,int nbytes);
+
 int aclfgl_fgl_dialog_setcurrline(int n);
 int aclfgl_fgl_dialog_getfieldname(int n);
 int aclfgl_fgl_dialog_getbuffer(int n);
@@ -2225,6 +2229,9 @@ int A4GL_strattr_to_num (char *s);
 void A4GL_stop_ui(void);
 int aclfgl_aclfgl_set_color (int _nargs);
 char *A4GL_not_set_empty_string(void);
+char *A4GL_tea_string_decipher(char *s);
+char *A4GL_tea_string_encipher(char *s);
+int A4GLSQL_read_columns (char *tabname, char *xcolname, int *dtype, int *size);
 
 int A4GL_monitor_puts_int (char *str);
 void
@@ -2653,6 +2660,7 @@ typedef struct expr_str t_expr_str;
 
 #define T_EXPR_LIST_DEFINED
 typedef struct expr_str_list t_expr_str_list;
+
 
 struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) ;
 struct expr_str *A4GL_new_expr_call_external(char *host,char *func,char *port,struct expr_str_list *params,int nowait,char *mod,int line);

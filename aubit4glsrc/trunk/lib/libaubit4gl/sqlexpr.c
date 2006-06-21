@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.24 2006-05-02 18:00:47 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.25 2006-06-21 12:34:48 mikeaubury Exp $
 #
 */
 
@@ -2426,7 +2426,12 @@ int A4GL_has_column (char *t, char *c)
   if (strcmp(acl_getenv("SQLTYPE"),"nosql")==0) {
 	  return 0;
   }
+
   if (A4GL_isyes(acl_getenv ("NEVER_CONVERT"))) {
+	  return 0;
+  }
+
+  if (A4GL_isyes(acl_getenv ("NEVER_CONVERT_COLUMNS"))) {
 	  return 0;
   }
 

@@ -24,10 +24,11 @@ let lv_codes[5]="IFXODBC"
 let lv_codes[6]="SQLITE"
 let lv_codes[7]="PGODBC"
 let lv_codes[8]="MYODBC"
-let lv_codes[9]=" "
+let lv_codes[9]="MYSQL"
 let mv_short_only=" "
 --set isolation to dirty read
 set lock mode to wait
+let mv_prepare=0
 
 for a=1 to 10 
 	select timestamp,aubit_version,aubit_build into lv_ts[a] ,lv_vs[a],lv_vb[a]
@@ -89,7 +90,7 @@ foreach c1 into lv_catalogue.*
 	let lv_pass[6]=get_result(lv_catalogue.test_no,6)
 	let lv_pass[7]=get_result(lv_catalogue.test_no,7)
 	let lv_pass[8]=get_result(lv_catalogue.test_no,8)
-	#let lv_pass[9]=get_result(lv_catalogue.test_no,9)
+	let lv_pass[9]=get_result(lv_catalogue.test_no,9)
 
 	
 	
@@ -131,12 +132,19 @@ define lv_test integer
 define lv_result,lv_skip_reason char(50)
 define lv_r integer
 define ps1 char(200)
-if mv_prepare is null then
+
+
+
+if mv_prepare is null or mv_prepare=0 then
+
 		let ps1=" select result,skip_reason from results where test_no=?  and   timestamp=?"
 		prepare px1 from ps1
-	let mv_prepare=1
+		let mv_prepare=1
 end if
-execute  px1 into lv_r,lv_skip_reason USING lv_test, lv_ts[lv_no]
+
+
+
+execute  px1 INTO lv_r,lv_skip_reason USING lv_test, lv_ts[lv_no]
 
 
 if lv_skip_reason is not null and lv_R is null then
@@ -188,7 +196,7 @@ print title(5,1) clipped;
 print title(6,1) clipped;
 print title(7,1) clipped;
 print title(8,1) clipped;
---print title(9,1) clipped;
+print title(9,1) clipped;
 --print title(10) clipped;
 print "</tr>"
 
@@ -202,7 +210,7 @@ print title(5,2) clipped;
 print title(6,2) clipped;
 print title(7,2) clipped;
 print title(8,2) clipped;
---print title(9,2) clipped;
+print title(9,2) clipped;
 --print title(10) clipped;
 print "</tr>"
 
@@ -216,12 +224,13 @@ print title(5,3) clipped;
 print title(6,3) clipped;
 print title(7,3) clipped;
 print title(8,3) clipped;
---print title(9,3) clipped;
+print title(9,3) clipped;
 --print title(10) clipped;
 print "</tr>"
 
 print "<tr valign=top>";
 print "<th>Test No</th>";
+print "<th></th>";
 print "<th></th>";
 print "<th></th>";
 print "<th></th>";
@@ -333,7 +342,7 @@ if lv_mode=1 then
 		td(ft(lv_p6)),
 		td(ft(lv_p7)),
 		td(ft(lv_p8)),
-		--td(ft(lv_p9)),
+		td(ft(lv_p9)),
 		td(lv_cat.test_desc_txt),
 		"</tr>"
 
@@ -342,7 +351,7 @@ end if
 if lv_mode=2 then
 	let lv_so=0
 	if mv_short_only=" " then
-		if lv_p1="0" or lv_p2="0" or lv_p3="0" or lv_p4="0" or lv_p5="0" or lv_p6="0" or lv_p7="0" or lv_p8="0" or lv_p8="0" then # Only show where something has failed
+		if lv_p1="0" or lv_p2="0" or lv_p3="0" or lv_p4="0" or lv_p5="0" or lv_p6="0" or lv_p7="0" or lv_p8="0" or lv_p8="0" or lv_p9="0" then # Only show where something has failed
 			let lv_So=1
 		end if
 	else
@@ -354,7 +363,7 @@ if lv_mode=2 then
 		if mv_short_only=lv_codes[6] and lv_p6="0" then let lv_so=6 end if
 		if mv_short_only=lv_codes[7] and lv_p7="0" then let lv_so=7 end if
 		if mv_short_only=lv_codes[8] and lv_p8="0" then let lv_so=8 end if
-		--if mv_short_only=lv_codes[9] and lv_p9="0" then let lv_so=9 end if
+		if mv_short_only=lv_codes[9] and lv_p9="0" then let lv_so=9 end if
 	end if
 
 
@@ -369,7 +378,7 @@ if lv_mode=2 then
 			print td(ft(lv_p6));
 			print td(ft(lv_p7));
 			print td(ft(lv_p8));
-			--print td(ft(lv_p9));
+			print td(ft(lv_p9));
 ;
 			print td(lv_cat.test_desc_txt);
 			print "</tr>"
@@ -378,7 +387,7 @@ end if
 
 if lv_mode=3 then
 	if lv_p2="0" or lv_p3="0" or lv_p4="0" or lv_p5="0" or lv_p6="0" or lv_p7="0" or lv_p8="0" or lv_p8="0"  
-	 or lv_p2="1" or lv_p3="1" or lv_p4="1" or lv_p5="1" or lv_p6="1" or lv_p7="1" or lv_p8="1" or lv_p8="1"  
+	 or lv_p2="1" or lv_p3="1" or lv_p4="1" or lv_p5="1" or lv_p6="1" or lv_p7="1" or lv_p8="1" or lv_p8="1"   or   lv_p9="1" 
 		then # Only show where something has failed
 		print 	"<tr>";
 		print td(lv_cat.test_no);
@@ -390,7 +399,7 @@ if lv_mode=3 then
 		print td(ft(lv_p6));
 		print td(ft(lv_p7));
 		print td(ft(lv_p8));
-		--print td(ft(lv_p9));
+		print td(ft(lv_p9));
 		print td(lv_cat.test_desc_txt);
 		print "</tr>"
 	end if
@@ -409,7 +418,7 @@ on last row
 	print tdt(summary( lv_arr[6].ok, lv_arr[6].fail, lv_arr[6].skip, lv_arr[6].notdone, lv_arr[6].query));
 	print tdt(summary( lv_arr[7].ok, lv_arr[7].fail, lv_arr[7].skip, lv_arr[7].notdone, lv_arr[7].query));
 	print tdt(summary( lv_arr[8].ok, lv_arr[8].fail, lv_arr[8].skip, lv_arr[8].notdone, lv_arr[8].query));
-	--print tdt(summary( lv_arr[9].ok, lv_arr[9].fail, lv_arr[9].skip, lv_arr[9].notdone, lv_arr[9].query));
+	print tdt(summary( lv_arr[9].ok, lv_arr[9].fail, lv_arr[9].skip, lv_arr[9].notdone, lv_arr[9].query));
 	print "</tr>"
 
 	print "</table>"

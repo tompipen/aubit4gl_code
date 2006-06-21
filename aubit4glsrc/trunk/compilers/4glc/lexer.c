@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.118 2006-02-25 10:33:05 mikeaubury Exp $
+# $Id: lexer.c,v 1.119 2006-06-21 12:34:41 mikeaubury Exp $
 #*/
 
 /**
@@ -1208,9 +1208,11 @@ A4GL_debug("p=%s buff=%s",p,buff);
       strcpy (str, p);
       return INT_VALUE;
     }
-  if (a == 2)
+
+  if (a == 2 && strcmp(p,".")!=0) // Just a dot...
     {
       strcpy (str, p);
+
       return NUMBER_VALUE;
     }
 

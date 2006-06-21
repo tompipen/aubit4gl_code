@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.271 2006-05-13 12:34:38 mikeaubury Exp $
+# $Id: mod.c,v 1.272 2006-06-21 12:34:41 mikeaubury Exp $
 #
 */
 
@@ -2995,20 +2995,23 @@ convstrsql (char *s)
     {
       if (s[a] == '"')
 	{
-	  if (a == 0)
+	  if (a == 0 || (s[0]=='"' && a==strlen(s)-1)) {
 	    buff[b++] = '\'';
+	  }
 	  else
 	    {
 	      if (s[a - 1] != '\\')
 		{
 		  buff[b++] = '\'';
+		} else {
+	  	  buff[b++] = '"';
 		}
 	    }
 	  continue;
 	}
       if (s[a] == '\'')
 	{
-	  buff[b++] = '\\';
+	  buff[b++] = '\'';
 	  buff[b++] = '\'';
 	  continue;
 	}

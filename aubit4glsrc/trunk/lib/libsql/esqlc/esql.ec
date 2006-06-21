@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.155 2006-03-17 19:01:46 mikeaubury Exp $
+# $Id: esql.ec,v 1.156 2006-06-21 12:34:49 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.155 2006-03-17 19:01:46 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.156 2006-06-21 12:34:49 mikeaubury Exp $";
 #endif
 
 
@@ -2335,7 +2335,6 @@ char buff[255];
   sid=vsid;
 
   A4GL_debug ("In execute_implicit_sql");
-
   if (sid == (struct s_sid *) 0)
     {
       A4GL_debug ("Bugger - failed");
@@ -2349,6 +2348,22 @@ char buff[255];
       error_just_in_case ();
       return 1;
     }
+
+
+
+
+
+switch(getStatementBindType(sid)) {
+    case OUTPUT_BIND:
+    case INPUT_OUTPUT_BIND:
+		A4GL_assertion(1,"Not expected");
+}
+
+
+
+
+
+
   if (executeStatement (sid) == 1)
     {
 

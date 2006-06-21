@@ -37,6 +37,14 @@ extern "C"
     struct s_sid *statement;        /**< The statement used to declare the cursor */
     int mode;                       /**< The cursor mode */
     void *hstmt;                    /**< A pointer to the satetement handle */
+
+    struct BINDING *o_ibind;                  /**< The input bind array */
+    struct BINDING *o_obind;                  /**< The output bind array */
+    int o_ni;                                 /**< Number of elements in the input bind array*/
+    int o_no;                                 /**< Number of elements in the output bind array*/
+    int sql_no;
+    int currpos; 			/** Current position in the resultset */
+    int nrows;				/** number of rows in the dataset */
   };
 
         /** A better name to the cursor descriptor */

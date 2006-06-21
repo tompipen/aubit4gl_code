@@ -16,7 +16,17 @@ sql_block :
 	}
 	| sql_block sql_block_entry  {
 			if (strlen($<str>2)) {
-				$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,acl_strdup($<str>2),0);
+				if (strcmp($<str>2,".")==0) {
+					$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
+				} else {
+					char *ptr;
+					ptr=$<sql_string>1;
+					if (ptr[strlen(ptr)-1]=='.') {
+						$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
+					} else {
+						$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,acl_strdup($<str>2),0);
+					}
+				}
 			} else {
 				$<sql_string>$=$<sql_string>1;
 			}
