@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.37 2006-06-21 12:34:47 mikeaubury Exp $
+# $Id: util.c,v 1.38 2006-06-21 12:46:32 mikeaubury Exp $
 #
 */
 
@@ -1209,11 +1209,13 @@ void
 add_sql_function (char *s)
 {
   FILE *f;
+    if (A4GL_isyes(acl_getenv("LOGSQLFUNCTIONS"))) {
   f = fopen ("/tmp/sqlcall.log", "a");
   if (!f)
     return;
   fprintf (f, "%s SQLCOMPILE\n", s);
   fclose (f);
+    }
 
 }
 
