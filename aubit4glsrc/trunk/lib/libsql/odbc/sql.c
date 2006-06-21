@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.158 2006-06-11 10:51:33 mikeaubury Exp $
+# $Id: sql.c,v 1.159 2006-06-21 14:36:07 mikeaubury Exp $
 #
 */
 
@@ -4167,7 +4167,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       A4GL_debug ("Bound columns\n");
 #endif
 
-      if (1)
+      if (0)
 	{
 
 	  rc = SQLFetch (hstmtGetColumns);
