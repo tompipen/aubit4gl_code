@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include "../a4gl_lib_sql_int.h"
 
-dll_export sqlca_struct a4gl_sqlca;
-dll_export int status;
+//dll_export sqlca_struct a4gl_sqlca;
+//dll_export int status;
 #define CACHE_COLUMN '&'
 int GetColNo = 0;
 char GetColTab[2000];
-
+char warnings[9];
+char sqlerrm[80]="";
 
 #define PHASE_PRE_FETCH 0
 #define PHASE_POST_FETCH 1
@@ -95,7 +96,7 @@ A4GLSQLLIB_A4GLSQL_get_curr_conn (void)
 char *
 A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 {
-  return a4gl_sqlca.sqlerrm;
+  return sqlerrm;
 }
 
 // *************************************************************************
@@ -324,6 +325,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
     {
       strcpy (last_err, (char *) mysql_error (conn));
       A4GL_set_errm (dbname);
+      strcpy(sqlerrm,dbname);
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
       A4GL_exitwith ("Could not connect to database");
     }
@@ -388,8 +390,9 @@ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
   if (a > 0 && a != 100)
     a = 0 - a;
-  a4gl_status = a;
-  a4gl_sqlca.sqlcode = a;
+  A4GL_set_a4gl_status(a); // a4gl_status = a;
+  A4GL_set_a4gl_sqlca_sqlcode(a);
+  //a4gl_sqlca.sqlcode = a;
   A4GLSQL_set_status (a, 1);
 }
 
@@ -1337,6 +1340,7 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	{
 	  A4GL_debug ("Error : %s\n", mysql_error (conn));
 	  A4GL_set_errm ((char *)mysql_error (conn));
+      		strcpy(sqlerrm,(char *)mysql_error (conn));
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
 	  return 0;		// Failed
 	}
@@ -1374,21 +1378,34 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
       // Some error ? 
       A4GL_debug ("Error : %s (%p)\n", mysql_stmt_error (stmt), stmt);
       A4GL_set_errm ((char *)mysql_stmt_error (stmt));
+      		strcpy(sqlerrm,(char *)mysql_stmt_error (stmt));
+	if (mysql_warning_count(conn)) {
+		warnings[0]='W';
+		A4GL_copy_sqlca_sqlawarn_string8(warnings);
+	}
+
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
       return 0;
     }
-
+ 
   id = mysql_stmt_insert_id (stmt);
   if (id == 0)
     {
-      a4gl_sqlca.sqlerrd[1] = mysql_stmt_affected_rows (stmt);
+	    A4GL_set_a4gl_sqlca_errd(1,mysql_stmt_affected_rows (stmt));
+      			//a4gl_sqlca.sqlerrd[1] = mysql_stmt_affected_rows (stmt);
     }
   else
     {
-      a4gl_sqlca.sqlerrd[1] = id;
+	    A4GL_set_a4gl_sqlca_errd(1,id);
+      //a4gl_sqlca.sqlerrd[1] = id;
     }
 
-  strcpy (a4gl_sqlca.sqlstate, (char *)mysql_stmt_sqlstate (stmt));
+	if (mysql_warning_count(conn)) {
+		A4GL_pause_execution();
+		warnings[0]='W';
+		A4GL_copy_sqlca_sqlawarn_string8(warnings);
+	}
+  A4GL_set_a4gl_sqlca_sqlstate((char *)mysql_stmt_sqlstate (stmt));
   return 1;
 }
 
@@ -1424,7 +1441,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
   A4GL_debug ("Execute : %s\n", sid->select);
 
-  strcpy (a4gl_sqlca.sqlawarn, "       ");
+  strcpy (warnings, "       ");
+  A4GL_copy_sqlca_sqlawarn_string8(warnings);
 
 
   if (execute_sql (sid->hstmt, sid->select, ibind, nibind, 0, 0))
@@ -1456,9 +1474,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
       if (nresultcols && nresultcols != sid->no)
 	{
-	  strcpy (a4gl_sqlca.sqlawarn, "       ");
-	  a4gl_sqlca.sqlawarn[0] = 'W';
-	  a4gl_sqlca.sqlawarn[3] = 'W';
+	  	warnings[0] = 'W';
+	  	warnings[3] = 'W';
+		A4GL_copy_sqlca_sqlawarn_string8(warnings);
 	}
 
 
@@ -1523,6 +1541,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
     }
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
+	  strcpy (warnings, "       ");
+  A4GL_copy_sqlca_sqlawarn_string8(warnings);
 
   if (execute_sql (sid->hstmt, sid->select, ibind, nibind, 0, 0))
     {
@@ -1610,7 +1630,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
       ni = cid->statement->ni;
     }
 
-  strcpy (a4gl_sqlca.sqlawarn, "       ");
+  strcpy (warnings, "       ");
+  A4GL_copy_sqlca_sqlawarn_string8(warnings);
 
   if (!execute_sql
       (cid->statement->hstmt, cid->statement->select, ibind, ni, 0, 0))
@@ -1634,14 +1655,6 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   nresultcols = mysql_stmt_field_count (cid->statement->hstmt);
 
   cid->sql_no = nresultcols;
-  /*
-     if (nresultcols && nresultcols !=no)
-     {
-     strcpy (a4gl_sqlca.sqlawarn, "       ");
-     a4gl_sqlca.sqlawarn[0] = 'W';
-     a4gl_sqlca.sqlawarn[3] = 'W';
-     }
-   */
 
 }
 

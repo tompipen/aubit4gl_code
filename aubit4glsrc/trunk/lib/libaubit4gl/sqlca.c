@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlca.c,v 1.5 2005-03-09 15:14:41 mikeaubury Exp $
+# $Id: sqlca.c,v 1.6 2006-06-22 10:42:36 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,14 @@ A4GL_get_a4gl_sqlca_sqlcode (void)
   return a4gl_sqlca.sqlcode;
 }
 
+int A4GL_set_a4gl_sqlca_errd(int n,int v) {
+	a4gl_sqlca.sqlerrd[n]=v;
+}
+
+
+int A4GL_set_a4gl_sqlca_sqlstate(char *s) {
+	strcpy(a4gl_sqlca.sqlstate,s);
+}
 
 void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7) {
 
