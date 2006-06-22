@@ -24,17 +24,22 @@ call_ext: function_call_expr opt_return {
    		print_func_call($<ptr>1);
 		start_bind('i',0);
 	}
-   | DIALOGKEYSETLABEL OPEN_BRACKET CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
-	/* Does nothing yet */
-	printf("dialog.keysetlabel is not implemented yet\n");
+   | DIALOGKEYSETLABEL OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_fcall("fgl_dialog_setkeylabel",$<ptr_list>3,infilename,lastlineno);
+   		print_func_call($<ptr>$);
+		start_bind('i',0);
 	}
-   | DIALOGSETCURRLINE OPEN_BRACKET simple_int KW_COMMA simple_int CLOSE_BRACKET {
-	/* Does nothing yet */
-	printf("dialog.setcurrline is not implemented yet\n");
+   | DIALOGSETCURRLINE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_fcall("fgl_dialog_setcurrline",$<ptr_list>3,infilename,lastlineno);
+   		print_func_call($<ptr>$);
+		start_bind('i',0);
 	}
-   | DIALOGX DOT NAMED OPEN_BRACKET fgl_expr_list_ptr CLOSE_BRACKET {
-	/* Does nothing yet */
-	printf("dialog.(%s) is not implemented yet\n",$<str>3);
+   | DIALOGX DOT NAMED OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		char buff[256];
+		sprintf(buff,"fgl_dialog_%s",$<str>3);
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>5,infilename,lastlineno);
+   		print_func_call($<ptr>$);
+		start_bind('i',0);
 	}
    | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
 		print_form_is_compiled($<str>3,$<str>5,$<str>7);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.25 2006-06-21 12:34:48 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.26 2006-06-22 09:42:46 mikeaubury Exp $
 #
 */
 
@@ -722,8 +722,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				  acl_strdup (" NOT IN ("),
 				  get_select_list_item (select,
 							p->u_data.
-							complex_expr.right),
-				  kw_cb, 0);
+							complex_expr.right), kw_cb, 0);
 
     case E_SLI_LITERAL:
       if (A4GLSQLCV_check_requirement ("DATE_STRING_TO_CAST_DATE"))
@@ -746,6 +745,40 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		  SPRINTF1 (buff, "Cast(%s as DateTime)",
 			   p->u_data.expression);
 		  return acl_strdup (buff);
+
+		}
+	    }
+	}
+
+      if (A4GLSQLCV_check_requirement ("DATE_STRING_TO_YMD"))
+	{
+	  if (p->u_data.expression[0] == '\'')
+	    {
+	      char buff[256];
+	      if (isdigit (p->u_data.expression[1]) &&
+		  isdigit (p->u_data.expression[2]) &&
+		  p->u_data.expression[3] == '/' &&
+		  isdigit (p->u_data.expression[4]) &&
+		  isdigit (p->u_data.expression[5]) &&
+		  p->u_data.expression[6] == '/' &&
+		  isdigit (p->u_data.expression[7]) &&
+		  isdigit (p->u_data.expression[8]) &&
+		  isdigit (p->u_data.expression[9]) &&
+		  isdigit (p->u_data.expression[10]))
+		{		// Well - it looks like a date..
+			char *dbdate;
+		dbdate=A4GL_get_dbdate();
+		if (dbdate[0]=='D'||dbdate[0]=='d') {
+		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", p->u_data.expression[7], p->u_data.expression[8],
+				  	p->u_data.expression[9], p->u_data.expression[10], p->u_data.expression[4],
+				  	p->u_data.expression[5], p->u_data.expression[1], p->u_data.expression[2]);
+		  return acl_strdup (buff);
+		} else {
+		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", p->u_data.expression[7], p->u_data.expression[8], p->u_data.expression[9], p->u_data.expression[10], 
+				  		p->u_data.expression[1], p->u_data.expression[2], 
+						p->u_data.expression[4], p->u_data.expression[5]);
+		  return acl_strdup (buff);
+		}
 
 		}
 	    }

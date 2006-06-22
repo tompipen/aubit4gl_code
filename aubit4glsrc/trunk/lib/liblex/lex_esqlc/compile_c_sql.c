@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.62 2006-03-20 08:59:25 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.63 2006-06-22 09:42:48 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.62 2006-03-20 08:59:25 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.63 2006-06-22 09:42:48 mikeaubury Exp $";
 #endif
 
 
@@ -352,11 +352,11 @@ LEXLIB_print_execute (char *stmt, int using)
       printc("void *_isave_bind_ptr;");
       printc("int   _isave_bind_cnt;");
       no = print_bind_definition ('o');
-      no = print_bind_definition ('i');
+      ni = print_bind_definition ('i');
       print_bind_set_value ('o');
       print_bind_set_value ('i');
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);",stmt,no);
-      printc ("A4GLSQL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);",stmt,no);
+      printc ("A4GLSQL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);",stmt,ni);
       printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s),0); /* 3 */\n", stmt);
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',0,0,_osave_bind_ptr,_osave_bind_cnt);",stmt);
       printc ("A4GLSQL_swap_bind_stmt(%s,'i',0,0,_isave_bind_ptr,_isave_bind_cnt);",stmt);

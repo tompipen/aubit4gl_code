@@ -929,13 +929,18 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DATE:
       {
 	int d, m, y;
-	mytime =
-	  A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
 	A4GL_get_date (*(long *) ibind->ptr, &d, &m, &y);
 
 	mytime->year = y;
 	mytime->month = m;
 	mytime->day = d;
+	mytime->hour = 0;
+	mytime->minute = 0;
+	mytime->second = 0;
+	mytime->neg = 0;
+	mytime->second_part = 0;
+
 
 	mibind->buffer_type = MYSQL_TYPE_DATE;
 	mibind->buffer = mytime;
@@ -981,8 +986,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	char *ptr;
 	int data[10];
 	MYSQL_TIME *mytime;
-	mytime =
-	  A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
 	A4GL_decode_datetime (ibind->ptr, &data);
 	mibind->buffer_type = MYSQL_TYPE_DATETIME;
 	mytime->year = data[0];
@@ -1094,6 +1098,11 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer_length = obind->size;
 	  mobind->length = len;
 	}
+      if (phase==PHASE_POST_FETCH) {
+		if ((obind->dtype & DTYPE_MASK)==DTYPE_CHAR) {
+			A4GL_pad_string(obind->ptr,obind->size);
+		}
+      }
       break;
 
     case DTYPE_SMINT:
@@ -1152,8 +1161,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DATE:
       if (phase == PHASE_PRE_FETCH)
 	{
-	  mytime =
-	    A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	  mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
 	  mobind->buffer_type = MYSQL_TYPE_DATE;
 	  mobind->buffer = mytime;
 	  mobind->is_null = ind;
@@ -1164,7 +1172,6 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	{
 	  int i_date;
 	  mytime = mobind->buffer;
-	  //i_date=0;
 	  i_date = A4GL_gen_dateno (mytime->day, mytime->month, mytime->year);
 	  *(long *) obind->ptr = i_date;
 	}
@@ -1436,12 +1443,14 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
       if (nrows == 0)
 	{
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
+	  return 0;
 	}
       else
 	{
 	  if (nrows > 1)
 	    {
 	      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-284);
+	      return 0;
 	    }
 	}
 

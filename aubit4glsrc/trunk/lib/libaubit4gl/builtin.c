@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.94 2006-03-17 19:01:30 mikeaubury Exp $
+# $Id: builtin.c,v 1.95 2006-06-22 09:42:46 mikeaubury Exp $
 #
 */
 
@@ -1364,6 +1364,37 @@ int aclfgl_fgl_dialog_setkeylabel(int n)  {
 	free(p2);
 	return 0;
 }
+
+
+int aclfgl_fgl_compare(int n) {
+	int a;
+	int ok;
+	int half;
+	char **compares;
+	if (n%2!=0) {
+		        A4GL_push_int(0);
+			        return 1;
+	}
+
+	half=n/2;
+	compares=malloc(sizeof(char*)*n);
+
+	for (a=n-1;a>=0;a--) {
+		        compares[a]=A4GL_char_pop();
+	}
+	ok=1;
+	for (a=0;a<half;a++) {
+		        A4GL_push_char(compares[a]);
+			        A4GL_push_char(compares[a+half]);
+				        A4GL_pushop(OP_EQUAL);
+					        if (!A4GL_pop_bool()) {
+							                ok=0; break;
+									        }
+	}
+	A4GL_push_int(ok);
+	return 1;
+}
+
 
 
 int A4GL_strstartswith(char *s,char *w) {
