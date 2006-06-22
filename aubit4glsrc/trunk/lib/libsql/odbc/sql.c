@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.159 2006-06-21 14:36:07 mikeaubury Exp $
+# $Id: sql.c,v 1.160 2006-06-22 07:58:12 mikeaubury Exp $
 #
 */
 
@@ -2715,7 +2715,8 @@ ODBC_exec_sql (UCHAR * sqlstr)
 int
 ODBC_exec_stmt (SQLHSTMT hstmt)
 {
-  int rc;
+  int rc1;
+  int rc2;
   int fake_tr = 0;
   SQLINTEGER rowcount;
 #ifdef DEBUG
@@ -2740,8 +2741,8 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
     }
 
 
-  rc = SQLExecute ((SQLHSTMT) hstmt);	// Reformatted in caller
-  chk_rc (rc, hstmt, "SQLExecute2");
+  rc1 = SQLExecute ((SQLHSTMT) hstmt);	// Reformatted in caller
+  chk_rc (rc1, hstmt, "SQLExecute2");
 
 #ifdef DEBUG
   A4GL_debug ("SQLExecute returns %d\n", rc);
@@ -2750,7 +2751,7 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
 // And finish it
   if (fake_tr)
     {
-      if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
+      if (rc1 == SQL_SUCCESS || rc1 == SQL_SUCCESS_WITH_INFO)
 	A4GLSQL_commit_rollback (1);
       else
 	A4GLSQL_commit_rollback (0);
@@ -2758,23 +2759,24 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
 
 
 
-
-  rc = A4GL_chk_need_blob (rc, hstmt);
+  if (rc1==SQL_SUCCESS) {
+  rc2 = A4GL_chk_need_blob (rc1, hstmt);
 
 #ifdef DEBUG
   A4GL_debug ("chk_need_blob returns %d\n", rc);
 #endif
 
-  chk_rc (rc, hstmt, "SQLExecute2");
+  chk_rc (rc2, hstmt, "SQLExecute2");
+  }
 
 #ifdef DEBUG
   A4GL_debug ("chk_rc: Result=%d (Success==%d)", rc, SQL_SUCCESS);
 #endif
 
-  if (rc != SQL_SUCCESS)
+  if (rc1 != SQL_SUCCESS)
     {
       int a;
-      a = A4GL_sqlerrwith (rc, hstmt);
+      a = A4GL_sqlerrwith (rc1, hstmt);
       return a;
 
     }
@@ -2898,6 +2900,8 @@ make[2]: *** [sql.o] Error 1
 #endif
       A4GL_set_lasterrorstr (s2);
     }
+
+
   if (rc == 0 || rc == 100)
     {
       if (rc == 100)
