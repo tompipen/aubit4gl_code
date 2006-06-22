@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.38 2006-06-21 12:46:32 mikeaubury Exp $
+# $Id: util.c,v 1.39 2006-06-22 07:33:28 mikeaubury Exp $
 #
 */
 
@@ -680,7 +680,7 @@ convstr_dbl_to_single (char *s)
 
       if (s[a] == '\'' && a && a != strlen (s) - 1)
 	{
-	  buff[b++] = '\\';
+	  buff[b++] = '\'';
 	  buff[b++] = '\'';
 	  continue;
 	}

@@ -1187,7 +1187,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  dtype = obind->dtype + ENCODE_SIZE (obind->size);
 	  d = *(double *) mobind->buffer;
 	  A4GL_push_double (d);
-	  A4GL_pop_variable (obind->ptr, dtype);
+	  A4GL_pop_var2 (obind->ptr, dtype,obind->size);
 	}
       break;
 
@@ -1207,7 +1207,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  dtype = obind->dtype + ENCODE_SIZE (obind->size);
 	  d = *(double *) mobind->buffer;
 	  A4GL_push_double (d);
-	  A4GL_pop_variable (obind->ptr, dtype);
+	  A4GL_pop_var2 (obind->ptr, dtype,obind->size);
 	}
       break;
 
