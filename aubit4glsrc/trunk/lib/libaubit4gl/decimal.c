@@ -53,6 +53,10 @@ char str[1024];
   int carry;
   int local_decimal_char=0;
 
+
+  local_decimal_char=A4GL_get_decimal_char(str_orig);
+
+#ifdef OLD
   if (master_decimal_char==0) {
 	  SPRINTF1(buff,"%f",1.2);
 	  if (strchr(buff,'.')) master_decimal_char='.';
@@ -72,6 +76,7 @@ char str[1024];
 		  local_decimal_char=',';
 	  }
   }
+#endif
 
 strcpy(str,str_orig);
 
@@ -269,4 +274,50 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
     }
   }
   return buff;
+}
+
+
+
+char
+A4GL_get_decimal_char (char *str_orig)
+{
+  int local_decimal_char = 0;
+  char buff[256];
+  if (master_decimal_char == 0)
+    {
+      SPRINTF1 (buff, "%f", 1.2);
+      if (strchr (buff, '.'))
+	master_decimal_char = '.';
+      if (strchr (buff, ','))
+	master_decimal_char = ',';
+
+    }
+
+  if (master_decimal_char == 0)
+    {
+      master_decimal_char = '.';
+    }
+
+  local_decimal_char = master_decimal_char;
+
+
+  if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL")))
+    {
+      if (str_orig)
+	{
+	  if (local_decimal_char == '.' && !strchr (str_orig, '.')
+	      && strchr (str_orig, ','))
+	    {
+	      local_decimal_char = ',';
+	    }
+	}
+      else {
+      if (local_decimal_char == '.')
+	{
+		local_decimal_char=',';
+	}
+      }
+    }
+  return local_decimal_char;
+
 }

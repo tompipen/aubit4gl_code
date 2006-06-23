@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.151 2006-05-13 12:34:39 mikeaubury Exp $
+# $Id: stack.c,v 1.152 2006-06-23 14:08:44 mikeaubury Exp $
 #
 */
 
@@ -1144,7 +1144,7 @@ A4GL_debug("51 Have data");
 	ibind = A4GL_pop_binding (&n);
 	A4GLSQL_declare_cursor (0,(void *)
 				A4GLSQL_prepare_select (ibind, n, obind, 0,
-							s), 0, cname);
+							s,"__internal_stack",1), 0, cname);
       }
       free (s);
       if (a4gl_status != 0)
@@ -1207,7 +1207,7 @@ A4GL_debug("51 Have data");
       A4GL_debug ("s=%s\n", A4GL_null_as_null(s));
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GL_debug ("Prepare seelct...");
-      prep = (void *)A4GLSQL_prepare_select (dbind, n, obind, 0, s);
+      prep = (void *)A4GLSQL_prepare_select (dbind, n, obind, 0, s,"__internal_stack",2);
       A4GL_debug ("Declare");
       free (s);
       A4GLSQL_declare_cursor (0, prep, 0, cname);

@@ -108,7 +108,10 @@ end main
 	Each call to fetchiem increases the static var charcount by the
 	length of the line read from the message.
 }
-function aclfgl_fetchiem()
+
+
+
+function local_aclfgl_fetchiem()
 	define ok integer
 	
 	let ok = true
@@ -246,7 +249,7 @@ end function
 	Note the file I/O is done in code ... endcode blocks
 -------------------------------------------------------------------------
 }
-function aclfgl_openiem( filename, n )
+function local_aclfgl_openiem( filename, n )
 	define filename char(128)
 	define n integer
 
@@ -399,11 +402,6 @@ end function {aclfgl_openiem}
 
 
 
-code
-int HELPLIB_aclfgl_aclfgl_libhelp_showhelp(int n) {
-	return HELPLIB_aclfgl_libhelp_showhelp(n);
-}
-endcode
 
 {---------------------------------------------------------------------
 
@@ -411,7 +409,7 @@ endcode
 
 }
 
-function libhelp_showhelp(filename, n)
+function local_libhelp_showhelp(filename, n)
 	define filename char(128)
 	define n integer
 
@@ -466,7 +464,7 @@ endcode
 end function
 
 
-function aclfgl_closeiem()
+function local_aclfgl_closeiem()
 	let msgno = 0
 	let msgcount = 0
 	let msglen = 0
@@ -542,4 +540,22 @@ xx_dont_need_thistrim(char *s, int len)
 	s[len-1]='\0';
 	return(strlen(s));
 }
+
+
+int HELPLIB_aclfgl_aclfgl_libhelp_showhelp(int n) {
+	return HELPLIB_aclfgl_local_libhelp_showhelp(n);
+}
+
+int HELPLIB_aclfgl_aclfgl_openiem(int n) {
+	return HELPLIB_aclfgl_local_aclfgl_openiem(n);
+}
+
+int HELPLIB_aclfgl_aclfgl_closeiem(int n) {
+	return HELPLIB_aclfgl_local_aclfgl_closeiem(n);
+}
+
+int HELPLIB_aclfgl_aclfgl_fetchiem(int n) {
+	return HELPLIB_aclfgl_local_aclfgl_fetchiem(n);
+}
+
 endcode

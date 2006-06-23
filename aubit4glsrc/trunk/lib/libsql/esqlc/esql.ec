@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.156 2006-06-21 12:34:49 mikeaubury Exp $
+# $Id: esql.ec,v 1.157 2006-06-23 14:08:46 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.156 2006-06-21 12:34:49 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.157 2006-06-23 14:08:46 mikeaubury Exp $";
 #endif
 
 
@@ -921,9 +921,7 @@ getConnectionForDatabase (char *databaseName)
  * @param s A string containing the select statement.
  * @return A pointer to the statement identification structure.
  */
-static struct s_sid *
-newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
-	      char *s)
+static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *uniqid)
 {
   struct s_sid *sid = acl_malloc2 (sizeof (struct s_sid));
 
@@ -932,7 +930,13 @@ newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
   sid->ni = ni;
   sid->obind = obind;
   sid->no = no;
-  sid->statementName = strdup (getGlobalStatementName ());
+  if (uniqid==0) {
+		uniqid=getGlobalStatementName();
+  }
+  if (strlen(uniqid)==0) {
+		uniqid=getGlobalStatementName();
+  }
+  sid->statementName = strdup (uniqid);
   sid->inputDescriptorName = 0;
   sid->outputDescriptorName = 0;
   sid->extra_info = 0;
@@ -949,9 +953,7 @@ newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
  * @param s A string containing the select statement.
  * @return A pointer to the statement identification structure.
  */
-static struct s_sid *
-prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
-		     int no, char *s)
+static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *uniqId)
 {
   EXEC SQL begin declare section;
   char *statementName;
@@ -961,7 +963,7 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
   struct s_sid *sid;
 
 
-  sid = newStatement (ibind, ni, obind, no, s);
+  sid = newStatement (ibind, ni, obind, no, s,uniqId);
 
   s_internal = strdup (s);
   A4GL_trim (s_internal);
@@ -975,6 +977,7 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
 	EXEC SQL FREE :statementName;
   }
 
+//printf("Add : %s\n",sid->statementName);
   A4GLSQL_add_prepare(sid->statementName,sid);
 
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
@@ -994,6 +997,9 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
   return sid;
 }
 
+
+#ifdef NO_LONGER_REQUIRED_OBSOLETE
+
 /**
  * Prepare a global SQL statement (not named).
  *
@@ -1011,10 +1017,12 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)
   struct BINDING *ibind;
   ibind=vibind;
   A4GL_debug ("S=%s\n", s);
-  ptr = prepareSqlStatement (ibind, ni, (struct BINDING *) 0, 0, s);
+
+  ptr = prepareSqlStatement (ibind, ni, (struct BINDING *) 0, 0, s,"");
   //A4GL_debug ("Got ptr as %p -> %d %d", ptr,ptr->no,ptr->ni);
   return ptr;
 }
+#endif
 
 /** 
  * Convert the aubit data type of aubit 4gl to the informix specific.
@@ -1855,6 +1863,9 @@ executeStatement (struct s_sid *sid)
   return rc;
 }
 
+
+#ifdef OBSOLETE
+
 /**
  * Prepare an sql statement.
  *
@@ -1867,13 +1878,12 @@ void *
 A4GLSQL_prepare_sql_internal (char *s)
 {
   struct s_sid *sid;
-  sid =
-    prepareSqlStatement ((struct BINDING *) 0, 0, (struct BINDING *) 0, 0, s);
+  sid = prepareSqlStatement ((struct BINDING *) 0, 0, (struct BINDING *) 0, 0, s,uniqId);
   A4GLSQL_set_status (sqlca.sqlcode, 1);
   return sid;
 }
 
-
+#endif
 
 
 /**
@@ -2450,10 +2460,9 @@ A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_s
  * @return A pointer to the statement identification structure.
  */
 void *
-A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
-			int no, char *s)
+A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind, int no, char *s,char *uniqid)
 {
-  return (prepareSqlStatement (ibind, ni, obind, no, s));
+  return (prepareSqlStatement (ibind, ni, obind, no, s,uniqid));
 }
 
 
@@ -2612,6 +2621,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 	      //A4GL_exitwith("Statement/Cursor not found"); 
 	      return;
 	    }
+
 	  EXEC SQL FREE:cursorName;
 	  A4GL_del_pointer (s, PRECODE);
 	  A4GL_del_pointer (s, PRECODE_R);

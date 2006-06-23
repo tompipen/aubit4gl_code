@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.21 2006-06-21 12:34:48 mikeaubury Exp $
+# $Id: sql_common.c,v 1.22 2006-06-23 14:08:44 mikeaubury Exp $
 #
 */
 
@@ -307,6 +307,7 @@ A4GLSQL_close_session (char *sessname)
 
 
 
+#ifdef REMOVED_NO_LONGER_REQUIRED
 /**
  * Prepare an sql statement.
  *
@@ -315,11 +316,12 @@ A4GLSQL_close_session (char *sessname)
  */
 /* int --- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_sql (char *s)
+XxxA4GLSQL_prepare_sql (char *s)
 {
-  return (struct s_sid *) A4GLSQL_prepare_select (0, 0, 0, 0, s);
+	A4GL_assertion(1,"FIXME");
+  return (struct s_sid *) A4GLSQL_prepare_select (0, 0, 0, 0, s,"__prepare",0);
 }
-
+#endif
 
 
 
@@ -335,18 +337,29 @@ A4GLSQL_prepare_sql (char *s)
  */
 /* int -- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
-			int no, char *s)
+A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *mod,int line)
 {
+	char buff[256];
   A4GL_debug ("must_convert=%d\n", must_convert);
+  char uniq_id[100];
+  char *ptr;
+
+  sprintf(buff,"%s",mod);
+
+  ptr=strchr(buff,'.');
+
+  if (ptr) {
+	 *ptr=0;
+  }
+  
   if (must_convert)
     {
       //s = A4GL_apisql_strdup (s);
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
       s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
     }
-  return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind,
-							   no, s);
+  sprintf(uniq_id,"a4gl_st_%s_%d",buff,line);
+  return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id); 
 }
 
 
@@ -646,6 +659,13 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
 {
   struct s_sid *sid;
   sid = vsid;
+
+
+  //if (A4GL_has_pointer (pname, PRECODE))  {
+	  //A4GLSQL_free_cursor(pname);
+  //}
+
+
   if (sid)
     {
       char rname[256];

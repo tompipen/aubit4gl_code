@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.226 2006-06-21 12:34:48 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.227 2006-06-23 14:08:43 mikeaubury Exp $
 #
 */
 
@@ -2016,6 +2016,7 @@ void *A4GL_pop_binding (int *n);
 int A4GL_push_binding (void *ptr, int num);
 int A4GL_stof (void *aa, void *zz, int sz_ignore);
 int A4GL_nullfunc (void);
+char A4GL_get_decimal_char(char *s);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
 char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s);
 void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;

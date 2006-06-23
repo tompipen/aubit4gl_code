@@ -70,7 +70,7 @@ char *A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sq
   int A4GLSQL_swap_bind_stmt(char *stmt, char t, char **sb,int *sc,void *bind, int cnt);
 struct s_sid *
 A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
-                        int no, char *s);
+                        int no, char *s,char *mod, int line);
 
 
 

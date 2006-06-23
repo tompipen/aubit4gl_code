@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.84 2006-02-07 08:44:22 mikeaubury Exp $
+# $Id: report.c,v 1.85 2006-06-23 14:08:44 mikeaubury Exp $
 #
 */
 
@@ -939,7 +939,7 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_sql (A4GL_mk_temp_tab (b, n)),
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99),
 				1);
 }
 
@@ -976,7 +976,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
     }
   strcat (buff, ")");
   A4GL_debug ("Attempting to execute %s\n", buff);
-  x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff);
+  x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff,"__internal_report",1);
   A4GL_debug ("x=%p\n", x);
   A4GLSQL_execute_implicit_sql (x, 1);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
@@ -1048,7 +1048,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
 
   A4GL_debug ("prepare...");
-  pstmt = A4GLSQL_prepare_select (ibind, 0, obind, 0, buff);
+  pstmt = A4GLSQL_prepare_select (ibind, 0, obind, 0, buff,"__internal_report",2);
   A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
   if (a4gl_sqlca.sqlcode != 0)
     {

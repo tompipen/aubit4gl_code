@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.119 2006-06-21 12:34:41 mikeaubury Exp $
+# $Id: lexer.c,v 1.120 2006-06-23 14:08:42 mikeaubury Exp $
 #*/
 
 /**
@@ -1583,10 +1583,14 @@ set_namespace (char *s)
 char *
 get_namespace (char *s)
 {
+//printf("get namespace for %s : ",s);
+  if (is_builtin_func (s)) {
 
-  if (is_builtin_func (s))
+		//printf("aclfgl_\n");
     return "aclfgl_";		/* Always has aclfgl_...*/
+  }
 
+//printf("%s\n",namespace);
   return namespace;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.95 2006-06-22 09:42:46 mikeaubury Exp $
+# $Id: builtin.c,v 1.96 2006-06-23 14:08:44 mikeaubury Exp $
 #
 */
 
@@ -130,7 +130,6 @@ aclfgl_set_count (int nargs)
       /* A4GL_pop_args(nargs);set_status(-3001); */
       A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
-
       return 0;
     }
   A4GLSQL_set_status (0, 0);
@@ -1371,9 +1370,12 @@ int aclfgl_fgl_compare(int n) {
 	int ok;
 	int half;
 	char **compares;
+
+
 	if (n%2!=0) {
+			A4GL_pop_args(n);
 		        A4GL_push_int(0);
-			        return 1;
+		        return 1;
 	}
 
 	half=n/2;
@@ -1391,6 +1393,10 @@ int aclfgl_fgl_compare(int n) {
 							                ok=0; break;
 									        }
 	}
+	for (a=0;a<n;a++) {
+		free(compares[a]);
+	}
+	free(compares);
 	A4GL_push_int(ok);
 	return 1;
 }
@@ -1399,4 +1405,24 @@ int aclfgl_fgl_compare(int n) {
 
 int A4GL_strstartswith(char *s,char *w) {
 	return (strncmp(s,w,strlen(w))==0);
+}
+
+int aclfgl_fgl_round(int nargs) {
+	double d;
+	char buff[256];
+	char smbuff[200];
+	int places;
+  if (nargs != 2)
+    {
+      /* A4GL_pop_args(nargs);set_status(-3001); */
+      A4GL_pop_args (nargs);
+      A4GLSQL_set_status (-3001, 0);
+      return 0;
+    }
+	places=A4GL_pop_int();
+	d=A4GL_pop_double();
+	sprintf(buff,"%%.%dlf",places);
+	sprintf(smbuff,buff,d);
+	A4GL_push_char(smbuff);
+	return 1;
 }

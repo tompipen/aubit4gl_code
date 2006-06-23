@@ -136,15 +136,16 @@ define ps1 char(200)
 
 
 if mv_prepare is null or mv_prepare=0 then
-
 		let ps1=" select result,skip_reason from results where test_no=?  and   timestamp=?"
 		prepare px1 from ps1
 		let mv_prepare=1
 end if
 
 
-
+initialize lv_r,lv_skip_reason to null
 execute  px1 INTO lv_r,lv_skip_reason USING lv_test, lv_ts[lv_no]
+
+
 
 
 if lv_skip_reason is not null and lv_R is null then

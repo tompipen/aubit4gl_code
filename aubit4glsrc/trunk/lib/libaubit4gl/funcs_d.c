@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.76 2006-02-12 09:56:30 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.77 2006-06-23 14:08:44 mikeaubury Exp $
 #
 */
 
@@ -673,7 +673,17 @@ A4GL_debug("str=%s",str);
 		}
 	}
    }
+ if (A4GL_get_decimal_char(0)==',') {
+	 char *p;
+	 p=strdup(str);
 
+	 for (a=0;a<strlen(p);a++) {
+		 if (str[a]==',') p[a]='.';
+		 if (str[a]=='.') p[a]=',';
+	 }
+	 strcpy(str,p);
+	 free(p);
+ }
   A4GL_debug ("using: result str=%s", str);
 }
 

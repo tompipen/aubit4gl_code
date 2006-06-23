@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.160 2006-06-22 07:58:12 mikeaubury Exp $
+# $Id: sql.c,v 1.161 2006-06-23 14:08:48 mikeaubury Exp $
 #
 */
 
@@ -1089,7 +1089,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
  * @param s The text of the select statement.
  */
 void *
-A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s)	/* mja */
+A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s,char *uniqid)	/* mja */
 {
   struct s_sid *sid;
   int rc;
@@ -6004,9 +6004,7 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
   SPRINTF3 (buff,
 	    "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
 	    cptr, tabname, colname);
-  A4GLSQL_add_prepare ("p_get_val",
-		       (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0,
-								 buff));
+  A4GLSQL_add_prepare ("p_get_val", (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0, buff,"__internal_sql_1"));
   if (a4gl_sqlca.sqlcode != 0)
     return (void *) -1;
   A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0,
@@ -6025,7 +6023,7 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
       if (a4gl_sqlca.sqlcode != 0)
 	break;
       ptr = A4GL_add_validation_elements_to_expr (ptr, val);
-      // Process it...
+      /* Process it... */
     }
   return ptr;
 

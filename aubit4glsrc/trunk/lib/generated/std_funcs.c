@@ -1,99 +1,94 @@
-/*
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
-# +----------------------------------------------------------------------+
-#
-# $Id: std_funcs.c,v 1.7 2005-03-09 15:14:34 mikeaubury Exp $
-#
-*/
-
-
-/**
- * @file
- * Array contatining list of all built in functions
- *
- * @todo Describe purpose and ussage
- * @todo Should this be a .h file? Maybe just a part of a4gl_incl_4gldefs.h ?
- */
-
- /*
-    =====================================================================
-    Variables definitions
-    =====================================================================
-  */
-
-
-char *builtin_aclfgl_functions[] = {
-  "a4gl_dump_screen",
-  "a4gl_get_info",
-  "a4gl_show_help",
-  "abs",
-  "arg_val",
-  "arr_count",
-  "arr_curr",
-  "ascii",
-  "date",
-  "day",
-  "dbms_dialect",
-  "downshift",
-  "err_get",
-  "err_print",
-  "err_quit",
-  "fgl_drawbox",
-  "fgl_getenv",
-  "fgl_keyval",
-  "fgl_lastkey",
-  "fgl_prtscr",
-  "a4gl_get_page",
-  "a4gl_get_ui_mode",
-  "hex",
-  "i_rowid_s",
-  "startlog",
-  "errorlog",
-  "length",
-  "a4gl_load_datatype",
-  "m_rowid_s",
-  "mdy",
-  "month",
-  "num_args",
-  "r_rowid_s",
-  "root",
-  "a4gl_run_gui",
-  "s_rowid_s",
-  "scr_line",
-  "set_count",
-  "set_page",
-  "set_window_title",
-  "showhelp",
-  "sqrt",
-  "upshift",
-  "w_rowid_s",
-  "weekday",
-  "year",
-  "aclfgl_libhelp_showhelp",
-  0
-};
-
-
-/* ================================= EOF ============================== */
+char *builtin_aclfgl_functions[]={
+"a4gl_dump_screen",
+"a4gl_get_info",
+"a4gl_get_page",
+"a4gl_get_ui_mode",
+"a4gl_load_datatype",
+"a4gl_run_gui",
+"a4gl_set_page",
+"a4gl_show_help",
+"abs",
+"aclfgl_add_keymap",
+"aclfgl_byte_as_str",
+"aclfgl_closeiem",
+"aclfgl_dump_screen",
+"aclfgl_fetchiem",
+"aclfgl_get_curr_height",
+"aclfgl_get_curr_width",
+"aclfgl_get_user",
+"aclfgl_libhelp_showhelp",
+"aclfgl_openiem",
+"aclfgl_random",
+"aclfgl_read_pipe",
+"aclfgl_set_color",
+"aclfgl_setenv",
+"arg_val",
+"arr_count",
+"arr_curr",
+"ascii",
+"date",
+"day",
+"dbms_dialect",
+"ddeconnect",
+"ddeexecute",
+"ddefinish",
+"ddefinishall",
+"ddegeterror",
+"ddepeek",
+"ddepoke",
+"downshift",
+"err_get",
+"err_print",
+"err_quit",
+"errorlog",
+"expand_env_vars_in_cmdline",
+"fgl_buffertouched",
+"fgl_compare",
+"fgl_dialog_getbuffer",
+"fgl_dialog_getfieldname",
+"fgl_dialog_setbuffer",
+"fgl_dialog_setcurrline",
+"fgl_dialog_setkeylabel",
+"fgl_drawbox",
+"fgl_getenv",
+"fgl_getkey",
+"fgl_getkey_wait",
+"fgl_keysetlabel",
+"fgl_keyval",
+"fgl_lastkey",
+"fgl_prtscr",
+"fgl_round",
+"fgl_scr_size",
+"fgl_set_arrline",
+"fgl_set_scrline",
+"fgl_setkeylabel",
+"fgl_strtosend",
+"fgl_winmessage",
+"get_info",
+"hex",
+"i_rowid_s",
+"length",
+"load_datatype",
+"m_rowid_s",
+"mdy",
+"month",
+"num_args",
+"ord",
+"r_rowid_s",
+"root",
+"s_rowid_s",
+"scr_line",
+"set_count",
+"set_page",
+"set_window_title",
+"showhelp",
+"sqrt",
+"startlog",
+"time",
+"upshift",
+"w_rowid_s",
+"weekday",
+"winexec",
+"winexecwait",
+"year",
+0};
