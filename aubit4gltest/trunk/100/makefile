@@ -8,7 +8,7 @@ run: rep.4ae
 	sh ./run_rep
 	
 desc:
-	@echo "Old makefile"
+	@echo "insert cursor (in a similar way to an order by report)"
 	
 	
 ################

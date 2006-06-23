@@ -19,6 +19,9 @@ MAIN
 	EXECUTE st USING intVar, chVar
 	PREPARE stSel 
 	  FROM "SELECT firstColumn,secondColumn FROM xpto WHERE firstColumn=?"
+
+	initialize selVar,chVar to null
+
   	EXECUTE stSel INTO selVar, chVar USING intVar
 	DROP TABLE xpto
 	display selVar, chVar

@@ -14,10 +14,11 @@
 // so it was renamed to xx_left - seems unused, since tests still work
 */
 
- create table dummy (tabname varchar (128,0),tabid integer);
+/*
+ create table dummy (tabname char (128),tabid integer);
  
  create table systables (
- 	tabname varchar (128,0),
+ 	tabname char (128),
 	owner char(32),
 	partnum integer,
 	tabid integer,
@@ -33,8 +34,8 @@
 	fextsize integer,
 	nextsize integer,
 	flags smallint,
-	site varchar(128,0),
-	dbname varchar(128,0),
+	site char(128),
+	dbname char(128),
 	type_xid integer,
 	am_id integer   
  );
@@ -52,8 +53,9 @@ CREATE TABLE update_table_perm (
   thirdColumn INTEGER
 );
 
-CREATE VIEW v_upd_tbl_perm AS SELECT * FROM update_table_perm;
-
+}
+--CREATE VIEW v_upd_tbl_perm AS SELECT * FROM update_table_perm;
+*/
 
 create table tab1
 (   x      integer,
@@ -64,24 +66,24 @@ create table tab1
 
 create table a4gl_syscolval 
   (
-    tabname nchar(18),
-    colname nchar(18),
-    attrname nchar(10),
-    attrval nchar(64)
+    tabname char(18),
+    colname char(18),
+    attrname char(10),
+    attrval char(64)
   );
 
 create table a4gl_syscolatt 
   (
-    tabname nchar(18),
-    colname nchar(18),
+    tabname char(18),
+    colname char(18),
     seqno serial not null ,
     color smallint,
-    inverse nchar(1),
-    underline nchar(1),
-    blink nchar(1),
-    xx_left nchar(1),
-    def_format nchar(64),
-    condition nchar(64)
+    inverse char(1),
+    underline char(1),
+    blink char(1),
+    xx_left char(1),
+    def_format char(64),
+    condition char(64)
   );
     
 

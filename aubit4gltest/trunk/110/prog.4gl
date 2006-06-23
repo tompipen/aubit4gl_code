@@ -41,14 +41,14 @@ define
 	end if	
 		
 	if db_dialect() = 5 then # SQLITE
-		display "Performing PostgreSQL compatible load"
+		display "Performing SQLite compatible load"
 		#Informix 4GL has a problem with this:
 		load from filename delimiter "\n" insert into tmp_tmp
 		#Invalid delimiter. Do not use '\\' or hex digits (0-9, A-F, a-f).
 		let done_load = 1
 	end if	
 	if db_dialect() = 6 then # MYODBC
-		display "Performing PostgreSQL compatible load"
+		display "Performing MYSQL compatible load"
 		#Informix 4GL has a problem with this:
 		load from filename delimiter "\n" insert into tmp_tmp
 		#Invalid delimiter. Do not use '\\' or hex digits (0-9, A-F, a-f).
@@ -109,6 +109,8 @@ define DIALECT char (20)
 			
 			when "SQLITE"
 				return 5
+			when "MYSQLDIRECT" 
+				return 6
 			when "MYSQL"
 				return 6
 			otherwise

@@ -40,7 +40,7 @@ MAIN
     DISPLAY "Diferent string value"
     LET exitStatus = 1
   END IF
-  IF a_float != 45.56 THEN
+  IF fgl_round(a_float,2) != 45.56 THEN
     DISPLAY "Diferent float value"
     LET exitStatus = 1
   END IF

@@ -17,9 +17,10 @@ MAIN
 	)
 	LET exitStatus = 0
 	SELECT keyColumn FROM xpto
-  IF sqlca.sqlerrd[1] <= 0 THEN
+
+  	IF sqlca.sqlerrd[1] <= 0 THEN
 	  DISPLAY "The estimated number of rows select was not positive"
-		LET exitStatus = 1
+	  LET exitStatus = 1
 	END IF
 	DROP TABLE xpto
 	EXIT PROGRAM exitStatus

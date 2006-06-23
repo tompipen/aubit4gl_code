@@ -28,15 +28,15 @@ MAIN
     FROM xpto AS x
     WHERE x.keyColumn = 1
   IF lv_keyColumn != 1 THEN
-    DISPLAY "Diferent key value"
+    DISPLAY "Different key value"
     LET exitStatus = 1
   END IF
   IF lv_string != "a string" THEN
-    DISPLAY "Diferent string value"
+    DISPLAY "Different string value"
     LET exitStatus = 1
   END IF
-  IF a_float != 45.56 THEN
-    DISPLAY "Diferent float value"
+  IF fgl_round(a_float,2) != 45.56 THEN
+    DISPLAY "Different float value",a_float
     LET exitStatus = 1
   END IF
 
@@ -45,15 +45,15 @@ MAIN
     FROM xpto x
     WHERE x.keyColumn = 1
   IF lv_keyColumn != 1 THEN
-    DISPLAY "Diferent key value"
+    DISPLAY "Different key value"
     LET exitStatus = 1
   END IF
   IF lv_string != "a string" THEN
-    DISPLAY "Diferent string value"
+    DISPLAY "Different string value"
     LET exitStatus = 1
   END IF
-  IF a_float != 45.56 THEN
-    DISPLAY "Diferent float value"
+  IF fgl_round(a_float,2) != 45.56 THEN
+    DISPLAY "Different float value : ",a_float
     LET exitStatus = 1
   END IF
 

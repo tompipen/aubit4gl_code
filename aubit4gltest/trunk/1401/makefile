@@ -9,6 +9,9 @@ ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
 ADD_CLEAN=
+# Force the allowance of the comma in the decimal
+# this is normally dependant on the locale setting...
+export A4GL_ALLOWCOMMAINDECIMAL=Y
 
 ## ======================================================================
 ##                 	Local Targets
@@ -16,19 +19,16 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_DIFF}
-# ${DEFAULT_DUMP_DIFF}
-# ${DEFAULT_RUN}
-#	
+run: compile ; ${DEFAULT_RUN}
+#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "declare.. into..  fetch (no var)";
+desc: ; @echo "check comma in decimal (may not work with informix)"
 
-
-db_test: 				; @echo "1"
+db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
@@ -46,7 +46,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "CREATE_TEMP_TABLE ANSI_INSERT CURSOR_SELECT"
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""

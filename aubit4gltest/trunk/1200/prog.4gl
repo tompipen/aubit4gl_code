@@ -8,23 +8,23 @@ MAIN
 		PROMPT LINE	23,
 		ERROR LINE	24
 
-	CREATE TEMP TABLE xxTEST (relrec integer, ename char(20), securityx integer)
-	CREATE TEMP TABLE xxTEST1 (relrec integer, ename char(20))
-	INSERT INTO xxTEST VALUES(1, 'name 1', 10)
-	INSERT INTO xxTEST VALUES(2, 'name 2', 20)
-	INSERT INTO xxTEST1 VALUES(1, 'sub 1-1')
-	INSERT INTO xxTEST1 VALUES(1, 'sub 1-2')
-	INSERT INTO xxTEST1 VALUES(2, 'sub 2-1')
-	INSERT INTO xxTEST1 VALUES(2, 'sub 2-2')
+	CREATE TEMP TABLE xxtest (relrec integer, ename char(20), securityx integer)
+	CREATE TEMP TABLE xxtest1 (relrec integer, ename char(20))
+	INSERT INTO xxtest VALUES(1, 'name 1', 10)
+	INSERT INTO xxtest VALUES(2, 'name 2', 20)
+	INSERT INTO xxtest1 VALUES(1, 'sub 1-1')
+	INSERT INTO xxtest1 VALUES(1, 'sub 1-2')
+	INSERT INTO xxtest1 VALUES(2, 'sub 2-1')
+	INSERT INTO xxtest1 VALUES(2, 'sub 2-2')
 	# do the one with data
-	CALL TEST(10) 
+	CALL test(10) 
 	# now do the one where we expect no data
-	CALL TEST(50)
-	DROP TABLE xxTEST
-	DROP TABLE xxTEST1
+	CALL test(50)
+	DROP TABLE xxtest
+	DROP TABLE xxtest1
 END MAIN
 ######################################################################
-FUNCTION TEST(i_secx)
+FUNCTION test(i_secx)
 	DEFINE 
 		i_secx   SMALLINT,
 		o_ename  CHAR(60),
@@ -33,7 +33,7 @@ FUNCTION TEST(i_secx)
 
 	DISPLAY '------Testing single select'
 	LET o_ename = 'Not found'
-    SELECT ENAME INTO o_ename FROM xxTEST WHERE SECURITYX = i_secx
+    SELECT ENAME INTO o_ename FROM xxtest WHERE SECURITYX = i_secx
 	IF status = NOTFOUND THEN
 	    DISPLAY 'NOT FOUND'
 	ELSE
@@ -41,7 +41,7 @@ FUNCTION TEST(i_secx)
 	END IF
 
 	DISPLAY '------Testing single select w/o into'
-    SELECT ENAME FROM xxTEST WHERE SECURITYX = i_secx
+    SELECT ENAME FROM xxtest WHERE SECURITYX = i_secx
 	IF status = NOTFOUND THEN
 	    DISPLAY 'NOT FOUND'
 	ELSE
@@ -49,21 +49,21 @@ FUNCTION TEST(i_secx)
 	END IF
 
 	DISPLAY '------Testing foreach select w/ output binding'
-    DECLARE f_curs CURSOR FOR SELECT ENAME FROM xxTEST WHERE SECURITYX >= i_secx
+    DECLARE f_curs CURSOR FOR SELECT ENAME FROM xxtest WHERE SECURITYX >= i_secx
 	FOREACH f_curs INTO o_ename
 		DISPLAY 'FOUND ONE'
 	END FOREACH
 	FREE f_curs
 
 	DISPLAY '------Testing foreach select w/ output binding in declare'
-    DECLARE g_curs CURSOR FOR SELECT ENAME INTO o_ename FROM xxTEST WHERE SECURITYX > i_secx
+    DECLARE g_curs CURSOR FOR SELECT ENAME INTO o_ename FROM xxtest WHERE SECURITYX > i_secx
 	FOREACH g_curs
 		DISPLAY 'FOUND ONE'
 	END FOREACH
 	FREE g_curs
 
 	DISPLAY '------Testing cursor select w/ output binding'
-    DECLARE e_curs CURSOR FOR SELECT ENAME FROM xxTEST WHERE SECURITYX >= i_secx
+    DECLARE e_curs CURSOR FOR SELECT ENAME FROM xxtest WHERE SECURITYX >= i_secx
 	OPEN e_curs
 	WHILE TRUE
 	    FETCH e_curs INTO o_ename
@@ -78,7 +78,7 @@ FUNCTION TEST(i_secx)
 	FREE e_curs
 
 	DISPLAY '------Testing cursor select w/ no output binding'
-    DECLARE n_curs CURSOR FOR SELECT ENAME FROM xxTEST WHERE SECURITYX >= i_secx
+    DECLARE n_curs CURSOR FOR SELECT ENAME FROM xxtest WHERE SECURITYX >= i_secx
 	OPEN n_curs
 	WHILE TRUE
 	    FETCH n_curs 
@@ -94,7 +94,7 @@ FUNCTION TEST(i_secx)
 	FREE n_curs
 
 	DISPLAY '------Testing cursor select w/ output binding in declare'
-    DECLARE d_curs CURSOR FOR SELECT ENAME INTO o_ename FROM xxTEST WHERE SECURITYX >= i_secx
+    DECLARE d_curs CURSOR FOR SELECT ENAME INTO o_ename FROM xxtest WHERE SECURITYX >= i_secx
 	OPEN d_curs
 	WHILE TRUE
 	    FETCH d_curs 
@@ -110,9 +110,9 @@ FUNCTION TEST(i_secx)
 	FREE d_curs
 
 	DISPLAY '------Testing cursor within cursor (w/ prepare)'
-	PREPARE stmt0 FROM "SELECT RELREC FROM xxTEST WHERE SECURITYX >= ?"
+	PREPARE stmt0 FROM "SELECT RELREC FROM xxtest WHERE SECURITYX >= ?"
     DECLARE curs0 CURSOR FOR  stmt0
-	PREPARE stmt1 FROM "SELECT RELREC, ENAME FROM xxTEST1 WHERE RELREC = ?"
+	PREPARE stmt1 FROM "SELECT RELREC, ENAME FROM xxtest1 WHERE RELREC = ?"
     DECLARE curs1 CURSOR FOR  stmt1
 	OPEN curs0 USING i_secx
 	DISPLAY sqlca.sqlcode

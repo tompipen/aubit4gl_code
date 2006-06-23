@@ -24,7 +24,7 @@ run: compile ; ${DEFAULT_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "Substring checking"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

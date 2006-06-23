@@ -249,8 +249,8 @@ ifneq "${COMPILE_ONLY}" "1"
 		#becoming masked by subsequent failure in comparing results
 		TEST_RUN=\
 			RET=$$?; \
-			if test "$$RET" != "${EXPECT_CODE}"; then \
-				if test "$$RET" != "0" -a "${EXPECT_CODE}" = "x"; then \
+			if test "$$RET" != "${EXPECT_CODE}" -o "${EXPECT_CODE}" = ""; then \
+				if test "$$RET" != "0" -o "x${EXPECT_CODE}" = "x"; then \
 					echo "Run OK ($$RET)"; \
 				else \
 					echo "Run FAILED ($$RET but expecting ${EXPECT_CODE})"; \
@@ -276,6 +276,10 @@ ifneq "${COMPILE_ONLY}" "1"
 		#Snippet to be used in NAMED_DUMP_DIFF and therefore in DEFAULT_DUMP_DIFF
 		DIFF_MULTI=\
 			for outfile in $(OUT_LIST); do \
+				if test "${NODATES}" = "1" ; then \
+					grep -v Date $$outfile > $$outfile.1; \
+					cp $$outfile.1 $$outfile ;\
+				fi ;\
 				if diff ${DIFF_FLAGS} $$outfile $$outfile${EXPECTED_EXT} ; then \
 					echo "OK: $$outfile and $$outfile${EXPECTED_EXT}"; \
 				else \

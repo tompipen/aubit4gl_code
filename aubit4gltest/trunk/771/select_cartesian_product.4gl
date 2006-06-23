@@ -41,15 +41,15 @@ MAIN
 	OPEN cr
 	FETCH cr
   IF lv_keyColumn != 1 THEN
-    DISPLAY "Diferent key value on first iteration"
+    DISPLAY "Different key value on first iteration"
     LET exitStatus = 1
   END IF
   IF lv_string != "a string" THEN
-    DISPLAY "Diferent string value on first iteration"
+    DISPLAY "Different string value on first iteration"
     LET exitStatus = 1
   END IF
-  IF a_float != 45.56 THEN
-    DISPLAY "Diferent float value on first iteration"
+  IF fgl_round(a_float,2) != 45.56 THEN
+    DISPLAY "Different float value on first iteration"
     LET exitStatus = 1
   END IF
 
@@ -58,15 +58,15 @@ MAIN
     DISPLAY "Did not make second iteration"
 	END IF
   IF lv_keyColumn != 1 THEN
-    DISPLAY "Diferent key value on second iteration"
+    DISPLAY "Different key value on second iteration"
     LET exitStatus = 1
   END IF
   IF lv_string != "other string" THEN
-    DISPLAY "Diferent string value on second iteration"
+    DISPLAY "Different string value on second iteration"
     LET exitStatus = 1
   END IF
-  IF a_float != 54 THEN
-    DISPLAY "Diferent float value on second iteration"
+  IF fgl_round(a_float,2) != 54 THEN
+    DISPLAY "Different float value on second iteration"
     LET exitStatus = 1
   END IF
 
@@ -75,15 +75,15 @@ MAIN
     DISPLAY "Did not make third iteration"
 	END IF
   IF lv_keyColumn != 2 THEN
-    DISPLAY "Diferent key value on third iteration"
+    DISPLAY "Different key value on third iteration"
     LET exitStatus = 1
   END IF
   IF lv_string != "a string" THEN
-    DISPLAY "Diferent string value on third iteration"
+    DISPLAY "Different string value on third iteration"
     LET exitStatus = 1
   END IF
-  IF a_float != 45.56 THEN
-    DISPLAY "Diferent float value on third iteration"
+  IF fgl_round(a_float,2) != 45.56 THEN
+    DISPLAY "Different float value on third iteration"
     LET exitStatus = 1
   END IF
 
@@ -92,15 +92,15 @@ MAIN
     DISPLAY "Did not make forth iteration"
 	END IF
   IF lv_keyColumn != 2 THEN
-    DISPLAY "Diferent key value on forth iteration"
+    DISPLAY "Different key value on forth iteration"
     LET exitStatus = 1
   END IF
   IF lv_string != "other string" THEN
-    DISPLAY "Diferent string value on forth iteration"
+    DISPLAY "Different string value on forth iteration"
     LET exitStatus = 1
   END IF
   IF a_float != 54 THEN
-    DISPLAY "Diferent float value on forth iteration"
+    DISPLAY "Different float value on forth iteration"
     LET exitStatus = 1
   END IF
 	CLOSE cr
