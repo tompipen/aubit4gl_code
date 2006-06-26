@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.273 2006-06-21 12:46:31 mikeaubury Exp $
+# $Id: mod.c,v 1.274 2006-06-26 12:24:23 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,7 @@
 #include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
 
+extern char force_ui[];
 /*
 =====================================================================
                     Constants definitions
@@ -5258,6 +5259,9 @@ get_for_default_step (void)
 
 
 
+char *get_force_ui() {
+	return force_ui;
+}
 
 
 

@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.82 2006-05-17 15:49:23 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.83 2006-06-26 12:26:57 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3470,6 +3470,7 @@ A4GL_default_attributes (void *f, int dtype, int has_picture)
     }
 
   A4GL_debug ("STATIC");
+
   A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_max_field (f, A4GL_get_field_width (f));

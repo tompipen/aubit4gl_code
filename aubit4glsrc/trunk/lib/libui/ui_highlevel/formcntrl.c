@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.49 2006-05-17 15:49:23 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.50 2006-06-26 12:26:57 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.49 2006-05-17 15:49:23 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.50 2006-06-26 12:26:57 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1276,7 +1276,6 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
       A4GL_LL_activate_events(s);
     }
 
-
   if (A4GL_has_something_on_control_stack (s))
     {
       int rval;
@@ -1319,7 +1318,8 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 		       	return blk;
    	}
 
-  	a = A4GL_getch_win (1,"input");
+		A4GL_set_active_fields(s,1);
+  		a = A4GL_getch_win (1,"input");
 	      if (a==A4GLKEY_EVENT) {
 		A4GL_debug("input fired event...");
        		A4GL_evt_not_idle(evt);

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.41 2006-05-17 15:49:23 mikeaubury Exp $
+# $Id: input_array.c,v 1.42 2006-06-26 12:26:58 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.41 2006-05-17 15:49:23 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.42 2006-06-26 12:26:58 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3440,15 +3440,15 @@ int fo;
 
   A4GL_set_field_attr_for_ll (f);
 
-
   A4GL_debug ("STATIC");
 
-  A4GL_LL_set_max_field (f, A4GL_get_field_width (f));
 
   if (!a)
     {
-      A4GL_debug ("CONSTRUCT - SET NO MAX on field...");
-      A4GL_LL_set_max_field (f, 0);
+      	A4GL_debug ("CONSTRUCT - SET NO MAX on field...");
+      	A4GL_LL_set_max_field (f, 0);
+    } else {
+  	A4GL_LL_set_max_field (f, A4GL_get_field_width (f));
     }
 
   //}

@@ -37,14 +37,14 @@ int A4GL_get_connection (int socket_type, u_short port, int *listener);
 
 
 #include "pipeclient.h"
-static struct in_addr * internal_atoaddr (char *address);
-static int
-internal_atoport (char *service, char *proto);
+static struct in_addr *internal_atoaddr (char *address);
+static int internal_atoport (char *service, char *proto);
 
 
 int serversocket = 0;
 
-static struct in_addr * internal_atoaddr (char *address)
+static struct in_addr *
+internal_atoaddr (char *address)
 {
   struct hostent *host;
   static struct in_addr saddr;
@@ -89,9 +89,11 @@ pipe_sock_gets (int sockfd, char *str, size_t count)
 	  retval = 1;
 
 
-	  if (retval > 0) {
-	    bytes_read = recv (sockfd, &last_read, 1, 0);
-	  } else
+	  if (retval > 0)
+	    {
+	      bytes_read = recv (sockfd, &last_read, 1, 0);
+	    }
+	  else
 	    {
 	      continue;
 	    }
@@ -137,10 +139,11 @@ pipe_make_connection (char *service, char *netaddress)
       FPRINTF (stderr, "make_connection:  Invalid socket type.\n");
       return 0;
     }
-  if (netaddress==0) {
-	  // No host to connect to....
-	  return 0;
-  }
+  if (netaddress == 0)
+    {
+      // No host to connect to....
+      return 0;
+    }
   addr = internal_atoaddr (netaddress);
 
   if (addr == NULL)
@@ -229,9 +232,10 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 
   while (bytes_sent < count)
     {
-      do {
-	this_write = write (sockfd, buf, count - bytes_sent);
-      }
+      do
+	{
+	  this_write = write (sockfd, buf, count - bytes_sent);
+	}
       while ((this_write < 0) && (A4GL_last_error () == EINTR));
       if (this_write <= 0)
 	{
@@ -287,8 +291,8 @@ client_encode_list_of_fields (list_of_fields * p)
 	    {
 	      buff2 = malloc (strlen (buff) + 10 + strlen (smbuff));	// Allow extra for the trailing NULL and the ) thats appended later
 	      sprintf (buff2, "%s,%s", buff, smbuff);
-	      free(buff);
-	      buff=buff2;
+	      free (buff);
+	      buff = buff2;
 	    }
 	}
       strcat (buff, ")");
@@ -469,47 +473,57 @@ struct client_result *
 pipe_get_result (struct client_result *r)
 {
   char buff[2000];
-  if (pipe_sock_gets (serversocket, buff, sizeof (buff))==0) {
-	  A4GL_exitwith("Invalid response - did the client die ?");
-	  printf("Invalid response - did the client die ?\n");
-	  exit(2);
-  }
-
-  r->result = 0;
-
-  if (strcmp (buff, "OK") == 0)
+  while (1)
     {
+
+      if (pipe_sock_gets (serversocket, buff, sizeof (buff)) == 0)
+	{
+	  A4GL_exitwith ("Invalid response - did the client die ?");
+	  printf ("Invalid response - did the client die ?\n");
+	  exit (2);
+	}
+
       r->result = 0;
-      r->state = CALL_RESULT;
-      printf("Function returned with no value\n");
-      return r;
-    }
 
-  if (strncmp (buff, "RETURN INT", 10) == 0)
-    {
-      char *b;
-      b = &buff[11];
-      r->result = atol (b);
-      r->state = CALL_RESULT;
-      printf ("Got int : %d\n", r->result);
-      return r;
-    }
 
-  if (strncmp (buff, "RETURN STR", 10) == 0)
-    {
-      char *b;
-      b = &buff[11];
-      r->result = (long)client_decode_str (b);
-      r->state = CALL_RESULT_MALLOC;
-      printf ("Got string : %s\n", r->result);
-      return r;
+      if (strcmp (buff, "OK") == 0)
+	{
+	  r->result = 0;
+	  r->state = CALL_RESULT;
+	  printf ("Function returned with no value\n");
+	  return r;
+	}
+
+      if (strncmp (buff, "RETURN INT", 10) == 0)
+	{
+	  char *b;
+	  b = &buff[11];
+	  r->result = atol (b);
+	  r->state = CALL_RESULT;
+	  printf ("Got int : %d\n", r->result);
+	  return r;
+	}
+
+      if (strncmp (buff, "RETURN STR", 10) == 0)
+	{
+	  char *b;
+	  b = &buff[11];
+	  r->result = (long) client_decode_str (b);
+	  r->state = CALL_RESULT_MALLOC;
+	  printf ("Got string : %s\n", r->result);
+	  return r;
+	}
+
+
+      printf ("Unexpected return...");
+
     }
   return r;
 
 }
 
 struct client_result *
-client_call (char *func, char *fmt, ...)
+client_call (char *func, int expectresult, char *fmt, ...)
 {
   va_list ap;
   struct client_result *r;
@@ -571,10 +585,11 @@ client_call (char *func, char *fmt, ...)
     }
 
   strcat (buff, "\n");
-  if (!pipe_sock_puts (serversocket, buff)) {
-	  	A4GL_exitwith("Socket write failed");
-		return 0;
-  }
+  if (!pipe_sock_puts (serversocket, buff))
+    {
+      A4GL_exitwith ("Socket write failed");
+      return 0;
+    }
   return pipe_get_result (r);
 }
 
@@ -608,7 +623,7 @@ client_get_value (struct client_result *result, char *fmt, void *p)
     }
   if (strcmp (fmt, "s") == 0)
     {
-      *(char **) p = (char *)result->result;
+      *(char **) p = (char *) result->result;
     }
   printf ("Fmt=%s\n", fmt);
 }

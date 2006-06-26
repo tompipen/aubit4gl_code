@@ -279,9 +279,13 @@ BEGIN {
 				
 			}
 			print "init_client();";
-			print "resultP = client_call(\"" fname "\", \"" params "\"," values ");"
+			if (rtype=="void") expectresult=0;
+			else expectresult=1
+			print "resultP = client_call(\"" fname "\"," expectresult ", \"" params "\"," values ");"
 		}  else {
-		        print "resultP = client_call(\"" fname "\", \"\");"
+			if (rtype=="void") expectresult=0;
+			else expectresult=1
+		        print "resultP = client_call(\"" fname "\","  expectresult ",\"\");"
 		}
 		
 		xfname=tolower(fname) "_1"

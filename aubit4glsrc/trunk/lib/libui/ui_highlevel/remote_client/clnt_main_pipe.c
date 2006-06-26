@@ -53,8 +53,7 @@ int A4GL_LL_colour_code(int a) {
 
 
 void A4GL_LL_switch_to_line_mode(void) {
-	 client_call("A4GL_LL_switch_to_line_mode", "");
-	//if (client_result_ok(resultP)) { client_free_result(resultP); return; /* no return value */ }
+	 client_call("A4GL_LL_switch_to_line_mode", 1,"");
 }
 
 
@@ -62,7 +61,7 @@ int A4GL_LL_getch_swin( void* window_ptr,char *why) {
 	ret_23 ret;
 	init_client();
 	struct client_result *resultP;
-	resultP = (struct client_result *)client_call("A4GL_LL_getch_swin", "is",(long)window_ptr,why);
+	resultP = (struct client_result *)client_call("A4GL_LL_getch_swin", 1,"is",(long)window_ptr,why);
 	if (client_result_ok(resultP)) {
 
 		   client_get_value( resultP, "i", &ret);

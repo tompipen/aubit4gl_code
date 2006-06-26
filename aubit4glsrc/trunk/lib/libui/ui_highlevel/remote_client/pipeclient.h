@@ -16,6 +16,6 @@ struct client_result {
 
 
 
-struct client_result *client_call(char *func, char *fmt,...);
+struct client_result *client_call(char *func, int expectresult, char *fmt,...);
 
 char *client_decode_str (char *ptr);

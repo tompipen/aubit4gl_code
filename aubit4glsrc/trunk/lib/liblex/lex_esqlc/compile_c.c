@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.293 2006-05-20 10:20:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.294 2006-06-26 12:26:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.293 2006-05-20 10:20:58 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.294 2006-06-26 12:26:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -85,6 +85,11 @@ int is_system_variable (char *s);
 int isin_command (char *cmd_type);
 //static int print_bind_expr_portion (void *ptr, char i, int portion);
 char *rettype_integer (int n);
+
+
+char *get_force_ui();
+
+
 
 int suppress_lines=0;
 char **get_field_codes(char *fields) ;
@@ -1149,7 +1154,7 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("if (strlen(_rout1)==0)\n");
   printc ("_rep.output_mode='%c';\n", rep->output_mode);
   printc ("else _rep.output_mode=_rout1[0];\n");
-  printc ("_rep.report=&%s;\n", get_curr_rep_name ());
+  printc ("_rep.report=(void *)&%s;\n", get_curr_rep_name ());
   printc ("A4GL_trim(_rep.output_loc);");
   print_rep_ret (report_cnt,0);
 }
@@ -6447,6 +6452,9 @@ LEXLIB_print_fgllib_start (char *db)
 {
   extern int is_schema;
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
+  if (strlen(get_force_ui())) {
+	    printc("A4GL_setenv (\"A4GL_UI\",\"%s\", 1);",get_force_ui());
+  }
   if (!A4GL_doing_pcode ())
     {
       if (doing_cs ())

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.106 2006-04-26 08:58:13 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.107 2006-06-26 12:26:21 mikeaubury Exp $
 #
 */
 
@@ -244,7 +244,7 @@ char *p;
 
   fgl_callback(nargs,argv);
 
-
+  
 #ifdef _PRELOAD_UI_
   /* Initialize the UI library (ie load the dll) */
   A4GL_debug("PRELOADING UI - %s\n",acl_getenv("A4GL_UI"));

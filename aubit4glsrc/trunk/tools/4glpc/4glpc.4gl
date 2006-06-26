@@ -1,3 +1,6 @@
+
+pragma force ui "CONSOLE"
+
 define
 	mv_debug,
 	mv_echomode,
@@ -254,6 +257,7 @@ DEFINE lv_type CHAR(40)
 DEFINE lv_output char(255)
 DEFINE lv_cnt integer
 DEFINE lv_minus_c, lv_minus_e INTEGER
+  call aclfgl_setenv("A4GL_UI","CONSOLE")
 
   LET lv_num_args=num_args()
   IF lv_num_args=0 then

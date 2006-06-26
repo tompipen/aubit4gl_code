@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.43 2006-05-13 12:34:40 mikeaubury Exp $";
+  "$Id: misc.c,v 1.44 2006-06-26 12:26:58 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1229,4 +1229,63 @@ A4GL_get_field_width (void *f)
     metrics_val[A4GL_get_metric_for (formdets, f)].w;
 
   return w;
+}
+
+
+
+
+int
+A4GL_set_active_fields (void *vsio)
+{
+  int wid;
+  int a;
+  int nv;
+  int flg;
+  char buff[8048];
+  struct s_form_dets *formdets;
+  struct struct_scr_field *field;
+  struct struct_scr_field *prop;
+  void **field_list;
+  void *firstfield = 0;
+  int nofields;
+  struct s_screenio *sio;
+  int attr;
+
+  sio = vsio;
+
+  if (sio) {
+  	formdets = sio->currform;
+  } else {
+  	formdets = UILIB_A4GL_get_curr_form(0);
+	if (formdets==0) return 1; // Nothing to do - no form...
+  }
+  if (formdets == 0)
+    {
+      A4GL_exitwith ("No form");
+      return 0;
+    }
+  A4GL_debug ("set fdets");
+
+  flg = 0;
+
+  A4GL_debug ("Turning off all");
+
+  for (a = 0; formdets->form_fields[a] != 0; a++)
+    {
+      field = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
+      if (field == 0) continue;
+       A4GL_field_opts_off (formdets->form_fields[a], AUBIT_O_ACTIVE);
+
+
+    }
+
+
+  if (sio) {
+  field_list = (void **) sio->field_list;
+  for (a = 0; field_list[a] != 0; a++) {
+       A4GL_field_opts_on (field_list[a], AUBIT_O_ACTIVE);
+  }
+  }
+
+  return 1;
 }

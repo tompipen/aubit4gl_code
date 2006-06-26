@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.82 2005-12-02 10:03:21 mikeaubury Exp $
+# $Id: 1.reqd,v 1.83 2006-06-26 12:25:45 mikeaubury Exp $
 #
 */
 
@@ -150,6 +150,7 @@ int table_cnt=0;
 int sql_mode=0;
 
 char 		menuhandler[256];
+char 		force_ui[256]="";
 char 		last_var [256];
 char 		larr[4096]="";
 char 		larr2[4096]="";
