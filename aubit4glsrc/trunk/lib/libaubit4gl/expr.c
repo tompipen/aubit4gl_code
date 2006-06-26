@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.15 2006-02-12 09:56:30 mikeaubury Exp $
+# $Id: expr.c,v 1.16 2006-06-26 17:08:40 mikeaubury Exp $
 #
 */
 
@@ -173,6 +173,7 @@ case ET_EXPR_FGL_DYNARR_EXTENTSIZE: return "ET_EXPR_FGL_DYNARR_EXTENTSIZE";
 case ET_EXPR_FIELDTOWIDGET: return "ET_EXPR_FIELDTOWIDGET";
 case ET_EXPR_ID_TO_INT: return "ET_EXPR_ID_TO_INT";
 case ET_EXPR_PROMPT_RESULT: return "ET_EXPR_PROMPT_RESULT";
+case ET_EXPR_MODULE_FUNC: return "ET_EXPR_MODULE_FUNC";
 
 
 

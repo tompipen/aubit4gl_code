@@ -274,6 +274,8 @@ enum e_expr_type {
 		ET_EXPR_FGL_DYNARR_EXTENTSIZE,
 		ET_EXPR_FIELDTOWIDGET,
 		ET_EXPR_ID_TO_INT,
+		ET_EXPR_PROMPT_RESULT,
+		ET_EXPR_MODULE_FUNC,
 
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };

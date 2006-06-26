@@ -251,10 +251,6 @@ function_call_expr:
 	| YEAR OPEN_BRACKET  fgl_expr_c  CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_YEAR_FUNC);
 	} 
-
-
-
-
 	| INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_ii {
 		char buff[256];
 		$<ptr>$=A4GL_new_interval_expr($<str>3,$<integer_val>5);
@@ -401,8 +397,6 @@ function_call_expr:
 		} else {
 			$<ptr>$=A4GL_new_expr_infield(-1,$<field_list>3,infilename,lastlineno);
 		}
-
-
 	}
 	| FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
 		{ 
@@ -532,6 +526,9 @@ builtin_expr : curr_v_clause {
 	}
        | TIME  { 
 		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_TIME_EXPR);
+	}
+	| FGL_MODULE {
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_MODULE_FUNC);
 	}
 
 ;

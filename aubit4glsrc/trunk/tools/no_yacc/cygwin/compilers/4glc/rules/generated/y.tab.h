@@ -29,7 +29,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2124,
+     NAME = 2126,
      KW_COMMA = 1675,
      FINPUT = 1756,
      WORDWRAP = 1457,
@@ -60,21 +60,21 @@
      DIVIDE = 1621,
      MOD = 1689,
      POWER = 1593,
-     UNITS = 2125,
-     UMINUS = 2126,
+     UNITS = 2127,
+     UMINUS = 2128,
      COMMAND = 1468,
-     NUMBER_VALUE = 2127,
-     CHAR_VALUE = 2128,
-     INT_VALUE = 2129,
-     NAMED_GEN = 2130,
-     CLINE = 2131,
-     SQLLINE = 2132,
-     KW_CSTART = 2133,
-     KW_CEND = 2134,
-     USER_DTYPE = 2135,
-     SQL_TEXT = 2136,
-     KW_WHENEVER_SET = 2137,
-     COMMENT = 2138,
+     NUMBER_VALUE = 2129,
+     CHAR_VALUE = 2130,
+     INT_VALUE = 2131,
+     NAMED_GEN = 2132,
+     CLINE = 2133,
+     SQLLINE = 2134,
+     KW_CSTART = 2135,
+     KW_CEND = 2136,
+     USER_DTYPE = 2137,
+     SQL_TEXT = 2138,
+     KW_WHENEVER_SET = 2139,
+     COMMENT = 2140,
      MEMBER_FUNCTION = 1000,
      DIALOGSETCURRLINE = 1001,
      DIALOGKEYSETLABEL = 1002,
@@ -1166,11 +1166,13 @@
      KW_ACTION = 2119,
      KW_IDLE = 2120,
      CANCEL_INSERT = 2121,
-     CANCEL_DELETE = 2122
+     CANCEL_DELETE = 2122,
+     FORCE_UI = 2123,
+     FGL_MODULE = 2124
    };
 #endif
 /* Tokens.  */
-#define NAME 2124
+#define NAME 2126
 #define KW_COMMA 1675
 #define FINPUT 1756
 #define WORDWRAP 1457
@@ -1201,21 +1203,21 @@
 #define DIVIDE 1621
 #define MOD 1689
 #define POWER 1593
-#define UNITS 2125
-#define UMINUS 2126
+#define UNITS 2127
+#define UMINUS 2128
 #define COMMAND 1468
-#define NUMBER_VALUE 2127
-#define CHAR_VALUE 2128
-#define INT_VALUE 2129
-#define NAMED_GEN 2130
-#define CLINE 2131
-#define SQLLINE 2132
-#define KW_CSTART 2133
-#define KW_CEND 2134
-#define USER_DTYPE 2135
-#define SQL_TEXT 2136
-#define KW_WHENEVER_SET 2137
-#define COMMENT 2138
+#define NUMBER_VALUE 2129
+#define CHAR_VALUE 2130
+#define INT_VALUE 2131
+#define NAMED_GEN 2132
+#define CLINE 2133
+#define SQLLINE 2134
+#define KW_CSTART 2135
+#define KW_CEND 2136
+#define USER_DTYPE 2137
+#define SQL_TEXT 2138
+#define KW_WHENEVER_SET 2139
+#define COMMENT 2140
 #define MEMBER_FUNCTION 1000
 #define DIALOGSETCURRLINE 1001
 #define DIALOGKEYSETLABEL 1002
@@ -2308,12 +2310,14 @@
 #define KW_IDLE 2120
 #define CANCEL_INSERT 2121
 #define CANCEL_DELETE 2122
+#define FORCE_UI 2123
+#define FGL_MODULE 2124
 
 
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 262 "fgl.yacc"
+#line 263 "fgl.yacc"
 typedef union YYSTYPE {
 
 
@@ -2351,7 +2355,7 @@ typedef union YYSTYPE {
 	struct s_fetch 	*s_fetch;
 	} YYSTYPE;
 /* Line 1447 of yacc.c.  */
-#line 2355 "y.tab.h"
+#line 2359 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

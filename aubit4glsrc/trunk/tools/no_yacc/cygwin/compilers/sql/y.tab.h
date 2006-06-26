@@ -29,25 +29,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2124,
-     NAMED = 2125,
-     NAMED_GEN = 2126,
-     CHAR_VALUE = 2127,
-     NOT_USED_1 = 2128,
-     NOT_USED_2 = 2129,
-     NOT_USED_3 = 2130,
-     NOT_USED_4 = 2131,
-     NOT_USED_5 = 2132,
-     NOT_USED_6 = 2133,
-     NOT_USED_7 = 2134,
-     NOT_USED_8 = 2135,
-     NUMBER_VALUE = 2136,
-     SEMICOLON = 2137,
-     QUESTION_MARK = 2138,
-     CLINE = 2139,
-     CH = 2140,
-     MARK_VAR = 2141,
-     END_MARK_VAR = 2142,
+     INT_VALUE = 2126,
+     NAMED = 2127,
+     NAMED_GEN = 2128,
+     CHAR_VALUE = 2129,
+     NOT_USED_1 = 2130,
+     NOT_USED_2 = 2131,
+     NOT_USED_3 = 2132,
+     NOT_USED_4 = 2133,
+     NOT_USED_5 = 2134,
+     NOT_USED_6 = 2135,
+     NOT_USED_7 = 2136,
+     NOT_USED_8 = 2137,
+     NUMBER_VALUE = 2138,
+     SEMICOLON = 2139,
+     QUESTION_MARK = 2140,
+     CLINE = 2141,
+     CH = 2142,
+     MARK_VAR = 2143,
+     END_MARK_VAR = 2144,
      DIALOGSETCURRLINE = 1001,
      DIALOGKEYSETLABEL = 1002,
      DIALOGX = 1003,
@@ -275,29 +275,31 @@
      KW_TODAY = 1780,
      KW_IDLE = 2120,
      CANCEL_INSERT = 2121,
-     CANCEL_DELETE = 2122
+     CANCEL_DELETE = 2122,
+     FORCE_UI = 2123,
+     FGL_MODULE = 2124
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2124
-#define NAMED 2125
-#define NAMED_GEN 2126
-#define CHAR_VALUE 2127
-#define NOT_USED_1 2128
-#define NOT_USED_2 2129
-#define NOT_USED_3 2130
-#define NOT_USED_4 2131
-#define NOT_USED_5 2132
-#define NOT_USED_6 2133
-#define NOT_USED_7 2134
-#define NOT_USED_8 2135
-#define NUMBER_VALUE 2136
-#define SEMICOLON 2137
-#define QUESTION_MARK 2138
-#define CLINE 2139
-#define CH 2140
-#define MARK_VAR 2141
-#define END_MARK_VAR 2142
+#define INT_VALUE 2126
+#define NAMED 2127
+#define NAMED_GEN 2128
+#define CHAR_VALUE 2129
+#define NOT_USED_1 2130
+#define NOT_USED_2 2131
+#define NOT_USED_3 2132
+#define NOT_USED_4 2133
+#define NOT_USED_5 2134
+#define NOT_USED_6 2135
+#define NOT_USED_7 2136
+#define NOT_USED_8 2137
+#define NUMBER_VALUE 2138
+#define SEMICOLON 2139
+#define QUESTION_MARK 2140
+#define CLINE 2141
+#define CH 2142
+#define MARK_VAR 2143
+#define END_MARK_VAR 2144
 #define DIALOGSETCURRLINE 1001
 #define DIALOGKEYSETLABEL 1002
 #define DIALOGX 1003
@@ -526,6 +528,8 @@
 #define KW_IDLE 2120
 #define CANCEL_INSERT 2121
 #define CANCEL_DELETE 2122
+#define FORCE_UI 2123
+#define FGL_MODULE 2124
 
 
 
@@ -547,7 +551,7 @@ typedef union YYSTYPE {
 
 } YYSTYPE;
 /* Line 1447 of yacc.c.  */
-#line 551 "y.tab.h"
+#line 555 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.227 2006-06-23 14:08:43 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.228 2006-06-26 17:08:38 mikeaubury Exp $
 #
 */
 
@@ -2612,6 +2612,7 @@ enum e_expr_type {
 		ET_EXPR_FIELDTOWIDGET,
 		ET_EXPR_ID_TO_INT,
 		ET_EXPR_PROMPT_RESULT,
+		ET_EXPR_MODULE_FUNC,
 
 		ET_EXPR_LAST // NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...)
 };

@@ -1127,3 +1127,5 @@ struct s_kw {
 #define KW_IDLE 2120
 #define CANCEL_INSERT 2121
 #define CANCEL_DELETE 2122
+#define FORCE_UI 2123
+#define FGL_MODULE 2124
