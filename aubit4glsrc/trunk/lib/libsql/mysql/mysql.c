@@ -219,7 +219,8 @@ conv_sqldtype (int dt, int len, int prec, int *fgldtype, int *fglprc)
       *fglprc = 0;
       break;
     case MYSQL_TYPE_LONGLONG:
-      niy_dtype (dt);
+      *fgldtype = DTYPE_FLOAT;
+      *fglprc = 0;
       break;
     case MYSQL_TYPE_INT24:
       niy_dtype (dt);
@@ -517,7 +518,7 @@ A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type)
     }
 
 
-  field = mysql_fetch_field_direct (prepare_meta_result, colno);
+  field = mysql_fetch_field_direct (prepare_meta_result, colno-1);
   // Now - which part of 'field' do we want...
   //
   //

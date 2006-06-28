@@ -203,7 +203,13 @@ int need_tabname=0;
 			if (a==KW_INFO_PRIV) {e->type='4';need_tabname=1;}
 			if (a==KW_INFO_IDX) {e->type='5';need_tabname=1;}
 
-			if (e->type=='?') e->type='O';
+			if (e->type=='?') {
+				if (A4GL_aubit_strcasecmp(yylval.str,"SHOW")==0) {
+					e->type='S';
+				} else {
+					e->type='O';
+				}
+			}
 
 			e->lineno=line;
 			into_temp=0;

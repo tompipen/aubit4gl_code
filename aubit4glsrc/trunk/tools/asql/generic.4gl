@@ -479,6 +479,7 @@ printField (FILE * outputFile, int idx, char *descName) {
 		strcpy(buff,"");
 	} else {
 		switch (gen_obind[idx-1].dtype) {
+			case DTYPE_VCHAR:
 			case DTYPE_CHAR: strcpy(buff,gen_obind[idx-1].ptr); A4GL_trim(buff); break;
 			case DTYPE_SERIAL:
 			case DTYPE_INT: if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD) { sprintf (buff, "%ld", *(long *)gen_obind[idx-1].ptr); } else { sprintf (buff, "%*ld", columnWidths[idx - 1], *(long *)gen_obind[idx-1].ptr); } break;
@@ -496,8 +497,20 @@ printField (FILE * outputFile, int idx, char *descName) {
 				break;
 				}
 
+			case DTYPE_DTIME: 
+				{
+
+          				if (!A4GL_dttoc (gen_obind[idx-1].ptr, buff,25)) {
+						strcpy(buff,"");
+              					A4GL_debug ("Bad dtime");
+            				} else {
+          					A4GL_trim (buff);
+					}
+					break;
+				}
+
 			default :
-				sprintf(buff,">%d<",gen_obind[idx-1].dtype);
+				sprintf(buff,">Unhandled datatype %d<",gen_obind[idx-1].dtype);
 	
 
 		}
