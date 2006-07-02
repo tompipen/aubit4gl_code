@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.12 2005-02-20 19:34:40 mikeaubury Exp $
+# $Id: form_x.x,v 1.13 2006-07-02 11:40:16 mikeaubury Exp $
 #*/
 
 /**
@@ -103,7 +103,8 @@ enum FA_ATTRIBUTES_STRING {
 	FA_S_WIDGET,
 	FA_S_CONFIG,
 	FA_S_COMMENTS,
-	FA_S_CLASS
+	FA_S_CLASS,
+	FA_S_ACTION
 };
 
 struct struct_field_attr_string {

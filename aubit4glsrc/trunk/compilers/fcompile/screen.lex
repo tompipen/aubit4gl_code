@@ -113,6 +113,7 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "validate" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return VALIDATE;}
 
 
+"action"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_ACTION);}
 "record"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(RECORD);}
 "formonly"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(FORMONLY);}
 "size"		{ if (ignorekw) REJECT;strcpy(yylval.str, yytext); return(KW_SIZE);}

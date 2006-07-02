@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.274 2006-06-26 12:24:23 mikeaubury Exp $
+# $Id: mod.c,v 1.275 2006-07-02 11:40:12 mikeaubury Exp $
 #
 */
 
@@ -5267,7 +5267,9 @@ char *get_force_ui() {
 
 
 
-
+void A4GL_is_internal_class_function(char *class,char *name) {
+	return 1;
+}
 
 
 

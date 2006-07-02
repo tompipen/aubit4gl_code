@@ -439,7 +439,17 @@ function_call_expr:
 /* These can potentially return more than one value...                   */
 /*                                                                       */
 /*************************************************************************/
-
+	| UI_INTERFACE_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		char buff[256];
+		sprintf(buff,"aclfgl_ui_interface_%s",$<str>2);
+		if (!A4GL_is_internal_class_function("ui_interface",$<str>2)) {
+			char buff[256];
+			sprintf(buff,"%s is not a member of the UI.Interface class");
+   			a4gl_yyerror(buff);
+   			YYERROR;
+		}
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
+	}
  	| identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		ADDMAP("Call",$<str>1);
 		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,infilename,lastlineno);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.18 2005-09-20 13:41:24 mikeaubury Exp $
+# $Id: dump.c,v 1.19 2006-07-02 11:40:16 mikeaubury Exp $
 #*/
 
 /**
@@ -60,6 +60,8 @@ char *desc_str[] = {
   "WIDGET",
   "CONFIG",
   "COMMENTS",
+  "CLASS",
+  "ACTION",
   0
 };
 

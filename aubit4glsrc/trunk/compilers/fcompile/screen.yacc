@@ -105,6 +105,7 @@ FORMONLY COMMENT
 %token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_NEXTFIELD
 %token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_END KW_TOTAL KW_RIGHT KW_ZEROFILL
 %token KW_USES_EXTENDED SPECIAL_DBNAME
+%token KW_ACTION
 
 
 %%
@@ -620,6 +621,7 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); A4GL_add_str_attr(fld,FA_S_INCLUDE,$<str>$); }
 | WIDGET EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_WIDGET,$<str>3); }
 | CONFIG EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_CONFIG,$<str>3); }
+| KW_ACTION EQUAL named_or_kw { A4GL_add_str_attr(fld,FA_S_ACTION,$<str>3); }
 | INVISIBLE { A4GL_add_bool_attr(fld,FA_B_INVISIBLE); }
 | DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4);
 A4GL_debug("fld->dynamic=%d",fld->dynamic); }
@@ -1341,7 +1343,7 @@ any_kword :
 |MINUTE 
 |SECOND 
 |FRACTION
-
+| KW_ACTION
 ;
 %%
 
