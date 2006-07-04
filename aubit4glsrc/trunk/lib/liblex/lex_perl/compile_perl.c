@@ -1978,7 +1978,7 @@ LEXLIB_print_sql_commit (int t)
 void
 LEXLIB_print_start_block (int n)
 {
-  printc(" # START BLOCK : %d %d\n",n,get_ccnt());
+  printc(" # START BLOCK : %d %d\n",n,A4GL_get_ccnt());
   /* do nothing */
 }
 
@@ -4279,3 +4279,8 @@ LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
 void LEXLIB_A4GL_initlex() {
 	// required by API
 }
+
+int LEXLIB_compile_time_convert() {
+	        return 1;
+}
+

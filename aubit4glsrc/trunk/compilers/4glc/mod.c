@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.275 2006-07-02 11:40:12 mikeaubury Exp $
+# $Id: mod.c,v 1.276 2006-07-04 14:22:32 mikeaubury Exp $
 #
 */
 
@@ -137,8 +137,8 @@ char *A4GL_get_clobber_from_orig (char *s);
 int get_rep_no_orderby (void);
 int get_validate_list_cnt (void);
 char *sql_features = 0;
-int get_ccnt(void);
-void set_ccnt(int a);
+//int get_ccnt(void);
+//void set_ccnt(int a);
 int get_block_no (int n);
 //struct fh_field_list *new_field_list(void);
 //char *A4GL_decode_packtype(char *s) ;
@@ -402,7 +402,7 @@ isin_command (char *cmd_type)
 {
   int z;
   int ccnt;
-  ccnt=get_ccnt();
+  ccnt=A4GL_get_ccnt();
   if (ccnt== 0)
     {
       return 0;
@@ -447,7 +447,7 @@ get_sio_id (char *cmd_type)
   int max_id = 0;
   int anymode = 0;
   int ccnt;
-  ccnt=get_ccnt();
+  ccnt=A4GL_get_ccnt();
   for (a = 0; a < 10; a++)
     stack_ids[a] = 0;
 /* Are we looking for anything ? */
@@ -1679,7 +1679,7 @@ int
 push_blockcommand (char *cmd_type)
 {
 int ccnt;
-ccnt=get_ccnt();
+ccnt=A4GL_get_ccnt();
   A4GL_debug ("START BLOCK %s", cmd_type);
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
   A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);
@@ -1701,7 +1701,7 @@ ccnt=get_ccnt();
   A4GL_debug (" Added new block");
   ccnt++;
   file_out_indent (ccnt);
-  set_ccnt(ccnt);
+  A4GL_set_ccnt(ccnt);
   return command_stack[ccnt].block_no;
 }
 
@@ -1716,7 +1716,7 @@ add_continue_blockcommand (char *cmd_type)
 {
   int a;
   int ccnt;
-  ccnt=get_ccnt();
+  ccnt=A4GL_get_ccnt();
 
   /* more checks here ! */
 
@@ -1763,7 +1763,7 @@ void
 continue_blockcommand (char *cmd_type)
 {
 	int ccnt;
-	ccnt=get_ccnt();
+	ccnt=A4GL_get_ccnt();
   //int a;
 
   //char err[80];
@@ -1785,11 +1785,11 @@ pop_blockcommand (char *cmd_type)
   int ccnt;
   char err[80];
   A4GL_debug ("END BLOCK %s", cmd_type);
-  ccnt=get_ccnt();
+  ccnt=A4GL_get_ccnt();
   /* more checks here ! */
 
   ccnt--;
-  set_ccnt(ccnt);
+  A4GL_set_ccnt(ccnt);
   file_out_indent (ccnt);
   if (command_stack[ccnt].block_no > 0)
     {
@@ -1836,7 +1836,7 @@ in_command (char *cmd_type)
 	int ccnt;
   int z;
   char buff[255];
-ccnt=get_ccnt();
+ccnt=A4GL_get_ccnt();
   A4GL_debug ("Check for %s %d \n", cmd_type, ccnt);
 
   if (ccnt == 0)
@@ -2263,7 +2263,7 @@ continue_loop (char *cmd_type)
   int g = 0;
   char *internal_cmd_type;
 int ccnt;
-ccnt=get_ccnt();
+ccnt=A4GL_get_ccnt();
 
 
 /* We have to do some messing around here...*/
@@ -2334,7 +2334,7 @@ exit_loop (char *cmd_type)
   int ccnt;
   int g = 0;
   int printed = 0;
-  ccnt=get_ccnt();
+  ccnt=A4GL_get_ccnt();
 
   for (a = ccnt - 1; a >= 0; a--)
     {
@@ -4247,7 +4247,7 @@ int
 get_blk_no (void)
 {
 	int ccnt;
-	ccnt=get_ccnt();
+	ccnt=A4GL_get_ccnt();
   return command_stack[ccnt - 1].block_no;
 }
 
@@ -4255,7 +4255,7 @@ int
 get_blk_no_1 (void)
 {
 	int ccnt;
-	ccnt=get_ccnt();
+	ccnt=A4GL_get_ccnt();
   return command_stack[ccnt - 2].block_no;
 }
 
@@ -4790,8 +4790,13 @@ void
 A4GL_CV_print_exec_sql (char *s)
 {
   char *ptr;
-  ptr = A4GLSQLCV_check_sql (s);
-  print_exec_sql (ptr);
+  int converted=0;
+  if (A4GL_compile_time_convert()) {
+  	ptr = A4GLSQLCV_check_sql (s,&converted);
+  } else {
+	  ptr=s;
+  }
+  print_exec_sql (ptr,converted);
 }
 
 
@@ -4799,15 +4804,19 @@ void
 A4GL_CV_print_exec_sql_bound (char *s)
 {
   char *ptr;
-  ptr = A4GLSQLCV_check_sql (s);
-  print_exec_sql_bound (ptr);
+  int converted=0;
+  if (A4GL_compile_time_convert()) {
+  	ptr = A4GLSQLCV_check_sql (s,&converted);
+  } else {
+	  ptr=s;
+  }
+  print_exec_sql_bound (ptr,converted);
 }
 
 void
 A4GL_CV_print_do_select (char *s)
 {
-  //print_do_select(A4GLSQLCV_check_sql(s));
-  print_do_select (s);
+  print_do_select (s,0);
 
 }
 
@@ -4815,7 +4824,14 @@ A4GL_CV_print_do_select (char *s)
 char *
 A4GL_CV_print_select_all (char *s)
 {
-  return print_select_all (A4GLSQLCV_check_sql (s));
+  char *ptr;
+  int converted=0;
+  if (A4GL_compile_time_convert()) {
+  		ptr = A4GLSQLCV_check_sql (s,&converted);
+  } else {
+	  	ptr=s;
+  }
+  return print_select_all (ptr,converted);
 }
 
 
@@ -5267,7 +5283,7 @@ char *get_force_ui() {
 
 
 
-void A4GL_is_internal_class_function(char *class,char *name) {
+int A4GL_is_internal_class_function(char *class,char *name) {
 	return 1;
 }
 

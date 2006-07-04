@@ -84,7 +84,7 @@ A4GL_LL_initialize_display  -> void
 A4GL_LL_int_form_driver void* mform int mode -> int
 
 /* void* A4GL_LL_make_field int frow int fcol int rows int cols */
-A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* incl void* fprop_id char* ref -> void* 
+A4GL_LL_make_field int frow int fcol int rows int cols char* widget char* config char* incl void* fprop_id char* ref char* action -> void* 
 
 /* void* A4GL_LL_make_label int frow int fcol char* label */
 A4GL_LL_make_label int frow int fcol char* label -> void* 
@@ -146,10 +146,10 @@ A4GL_LL_set_field_buffer void* field int n char* str -> void
 A4GL_LL_set_field_fore void* field int attr -> void
 
 /* int A4GL_LL_set_field_opts void* field int oopt */
-A4GL_LL_set_field_opts void* field int oopt -> int
+A4GL_LL_set_field_opts void* field int oopt ->  void
 
 /* int A4GL_LL_set_field_status void* f int stat */
-A4GL_LL_set_field_status void* f int stat -> int
+A4GL_LL_set_field_status void* f int stat -> void
 
 
 /* void A4GL_LL_set_form_page void* form int page */
@@ -201,7 +201,7 @@ A4GL_LL_get_value char* s -> void*
 A4GL_LL_clear_prompt void* f void* p -> void
 
 A4GL_LL_disp_h_menu int num_opts -> int
-A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title char* shorthelp int attrib -> int
+A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title char* shorthelp int attrib -> void
 A4GL_LL_menu_type -> int
 A4GL_LL_hide_h_menu -> int
 A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left char* right int curr_width int curr_height int comment_line void* currwin int currisborder  -> void*

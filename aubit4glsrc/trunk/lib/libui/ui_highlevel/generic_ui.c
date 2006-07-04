@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.83 2006-06-26 12:26:57 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.84 2006-07-04 14:22:56 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -20,7 +20,7 @@ int A4GL_gen_field_list_from_slist_internal (void ***field_list,
 					     struct s_form_dets *formdets,
 					     int a,
 					     struct s_field_name_list *list);
-int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
 //int UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv);
 
 
@@ -1097,6 +1097,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   char *widget;
   char *config;
   char *include;
+  char *action;
   int attr_no;
 
   formdets = formdetsv;
@@ -1166,12 +1167,22 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 		{
 		  include = 0;
 		}
+	      action = 0;
+	      if (A4GL_has_str_attribute (fprop, FA_S_ACTION))
+		{
+		  action = A4GL_get_str_attribute (fprop, FA_S_ACTION);
+		}
+	      else
+		{
+		  action = 0;
+		}
 	    }
 	  else
 	    {
 	      widget = 0;
 	      config = 0;
 	      include = 0;
+	      action=0;
 	    }
 
 	  if (widget == 0)
@@ -1180,6 +1191,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	    config = "";
 	  if (include == 0)
 	    include = "";
+	  if (action == 0)
+	    action = "";
 
 
 	  //printf ("Make field : w=%s c=%s i=%s\n", widget, config, include);
@@ -1192,7 +1205,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 				      metrics_val[metric_no].h,
 				      formdets->fileform->metrics.
 				      metrics_val[metric_no].w, widget,
-				      config, include, fprop,make_tab_and_col(fprop->tabname,fprop->colname));
+				      config, include, fprop,make_tab_and_col(fprop->tabname,fprop->colname),action);
 
 	  A4GL_debug ("Making field 2");
 
@@ -1423,6 +1436,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   int d1;
   int s1;
   void *ptr1;
+  char *currbuff;
 
 
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
@@ -1437,16 +1451,16 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
 
   A4GL_debug ("f->do_reverse=%d attr=%x", a, attr);
 
-  A4GL_display_field_contents (field, d1, s1, ptr1);
+  currbuff=A4GL_display_field_contents (field, d1, s1, ptr1);
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = A4GL_ll_field_opts (field);
   A4GL_set_field_attr_for_ll (field);
-  A4GL_debug ("Determining attribute - field_buffer=%s",
-	      A4GL_LL_field_buffer (field, 0));
-  attr =
-    A4GL_determine_attribute (cmd_type, attr, f,
-			      A4GL_LL_field_buffer (field, 0));
+  if (currbuff==0) {
+  	currbuff=A4GL_LL_field_buffer (field, 0);
+  }
+  A4GL_debug ("Determining attribute - field_buffer=%s", currbuff) ;
+  attr = A4GL_determine_attribute (cmd_type, attr, f, currbuff);
 
   if (attr != 0)
     {
@@ -1710,14 +1724,14 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list,
 }
 
 
-void
-A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
+char * A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 {
   int field_width;
   int has_format;
   int ignore_formatting = 0;
   struct struct_scr_field *f;
   char *ff;
+  static char *buff=0;
 
 
 
@@ -1805,7 +1819,10 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
   A4GL_debug ("set_field_contents : '%s'", ff);
   A4GL_add_recall_value (f->colname, ff);
   A4GL_mja_set_field_buffer (field, 0, ff);
+  if (buff) free(buff);
+  buff=strdup(ff);
   free (ff);
+  return buff;
 
 }
 
@@ -1826,9 +1843,7 @@ A4GL_error_nobox (char *str, int attr)
   A4GL_debug ("Eline=%d\n", eline);
 
 
-  w =
-    A4GL_LL_create_errorwindow (1, A4GL_LL_screen_width () - 1, eline, 0,
-				attr, str);
+  w = A4GL_LL_create_errorwindow (1, A4GL_LL_screen_width () - 1, eline, 0, attr, str);
   A4GL_debug ("Error Window=%p", w);
   curr_error_window = w;
   A4GL_LL_screen_update ();
@@ -2658,7 +2673,6 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
     }
 
 
-  A4GL_LL_activate_events(vprompt);
 
   if (promptx->mode == 1)
     {
@@ -2699,6 +2713,9 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 	{
 	  return blk;
 	}
+
+  	A4GL_LL_activate_events(vprompt);
+
       a = A4GL_getch_internal (p,"prompt");
 
               if (a==A4GLKEY_EVENT) {
@@ -3374,8 +3391,7 @@ int
 A4GL_field_opts_on (void *v, int n)
 {
 
-  if (A4GL_ll_field_opts (v) & n)
-    return 1;
+  if (A4GL_ll_field_opts (v) & n) return 1;
   A4GL_ll_set_field_opts (v, A4GL_ll_field_opts (v) + n);
   return 1;
 }
@@ -3385,7 +3401,9 @@ A4GL_field_opts_off (void *v, int n)
 {
   if (!(A4GL_ll_field_opts (v) & n))
     return 1;
+  //printf("SFO I think field %p has %d (%d)- removing it\n",v,n,A4GL_ll_field_opts (v));
   A4GL_ll_set_field_opts (v, A4GL_ll_field_opts (v) - n);
+  //printf("SFO                     now (%d)\n",A4GL_ll_field_opts (v));
   return 1;
 }
 
@@ -3554,30 +3572,48 @@ A4GL_ll_set_form_userptr (void *f, void *r)
 void A4GL_ll_set_field_opts (void *f,int l) {
   char buff[30];
   int hadit=0;
-  int last=0;
+  int last=-1;
 
   sprintf(buff,"%p",f);
   //printf("set_field_opts : %p %x\n",f,l);
+  //printf("SFO Looking for pointer : %s\n",buff);
+
+
+  // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {
     	last=(int)A4GL_find_pointer (buff, FIELDOPTS);
+  	// has pointer won't work with 0 - so we'll use -9997 to mean 0... 
+	if (last==-9997) {
+			last=0;
+	}
+	//printf("SFO Found : %d\n",last);
 	hadit=1;
     } else {
 	    // Lets make certain that 'last' and 'l' are different and force the set
-	    if (l!=-1) {
-	    	last=-1;
+	    if (l==-1) {
+	    		last=-2;
 	    } else {
-		    last=0;
+		    	last=-1;
 	    }
     }
+
+
   //printf("Last %x, this %x\n",last,l);
   if (last!=l) {
-	//printf("Sending\n");
+	//printf("SFO Sending A4GL_LL_set_field_opts because %d != %d\n",last,l);
 	if (hadit) {
 		A4GL_del_pointer(buff,FIELDOPTS);
 	}
 	//printf("ADDING POINTER %s for %x",buff,l);
-  	A4GL_add_pointer (buff, FIELDOPTS, (void *)l);
+  	//printf("SFO Adding pointer for : %s\n",buff);
+  	// has pointer won't work with 0 - so we'll use -9997 to mean 0... 
+	A4GL_assertion(l<0,"'l' can't be less than zero");
+	if (l!=0) {
+  		A4GL_add_pointer (buff, FIELDOPTS, (void *)l);
+	} else {
+  		A4GL_add_pointer (buff, FIELDOPTS, (void *)-9997);
+	}
 	// We'll mark this as OK - so if we grep for A4GL_LL_set_field_opts - we'll know this is ok...
 	// we should be using A4GL_ll_set_field_opts everywhere else so we'll hit this code...
 	A4GL_LL_set_field_opts(f,l); 		// OK
@@ -3601,10 +3637,11 @@ int A4GL_ll_field_opts (void *f) {
   static void *lastf=0;
 
 
-  //printf("field_opts : %p %x\n",f);
+  //printf("SFO field_opts : %p\n",f);
 
   if (f==lastf) {
 	  	//printf("Cached : %x\n",last);
+  		//printf("SFO cached : %d\n",last);
 	  	return last;
   }
 
@@ -3617,10 +3654,16 @@ int A4GL_ll_field_opts (void *f) {
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {
       last=(int)A4GL_find_pointer (buff, FIELDOPTS);
+      if (last==-9997) {
+	      last=0;
+      }
+  	//printf("SFO stored : %d\n",last);
+	return last;
     }
 
 
-  //printf("Not cached : %x\n",last);
+  //printf("SFO not stored : %d\n",last);
+
   return last;
 
 }

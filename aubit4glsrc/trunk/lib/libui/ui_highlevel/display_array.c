@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.31 2006-05-17 15:49:23 mikeaubury Exp $
+# $Id: display_array.c,v 1.32 2006-07-04 14:22:56 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.31 2006-05-17 15:49:23 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.32 2006-07-04 14:22:56 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -51,8 +51,8 @@ static char const module_id[] =
 #include "hl_proto.h"
 #include "formdriver.h"
 #include "a4gl_API_lowlevel.h"
-int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event (int a, struct aclfgl_event_list *evt);
 #define PRINTF printf
 /*
 =====================================================================

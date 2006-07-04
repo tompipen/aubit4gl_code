@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.35 2006-06-26 12:26:58 mikeaubury Exp $";
+  "$Id: menu.c,v 1.36 2006-07-04 14:22:56 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -39,7 +39,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
 
   //printf("Displaying menu\n");
   /* Is the UI client going to do most of the work for us ? */
-  if (A4GL_LL_menu_type () == 1)
+  if (A4GL_ll_menu_type () == 1)
     {
       ACL_Menu_Opts *mo;
       int a;
@@ -385,12 +385,12 @@ A4GL_highlevel_menu_loop (void *menuv)
   ACL_Menu *menu;
 
 
-
+printf("Highlevel menu loop\n");
   menu = menuv;
   A4GL_chkwin ();
 
   A4GL_current_window (menu->parent_window_name);
-  if (A4GL_LL_menu_type () == 1)
+  if (A4GL_ll_menu_type () == 1)
     {
       a = A4GL_menu_loop_type_1 (menu, menu->num_opts);
       if (a) A4GL_clr_error_nobox ("menu_callback");
@@ -529,7 +529,9 @@ A4GL_menu_getkey (ACL_Menu * menu)
       sprintf (buff, "%s:", menu->menu_title);
       A4GL_h_disp_title (menu, buff);
       A4GL_LL_screen_update ();
-	A4GL_set_active_fields(0);
+
+      A4GL_set_active_fields(0,0);
+
       a = A4GL_getch_internal (A4GL_get_currwin (),"menu");
       A4GL_debug ("Clearing error box");
       if (a) A4GL_clr_error_nobox ("Menu");
@@ -582,7 +584,8 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
   int menu_response = -1;
 
   A4GL_LL_disp_h_menu (menu->num_opts);
-  if (A4GL_LL_menu_type () == 1)
+printf("menu_loop_type_1\n");
+  if (A4GL_ll_menu_type () == 1)
     {
       ACL_Menu_Opts *mo;
       int a;
@@ -599,8 +602,10 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
   while (menu_response == -1)
     {
       A4GL_LL_screen_update ();
-      A4GL_set_active_fields(0);
+      A4GL_set_active_fields(0,0);
+      A4GL_LL_enable_menu();
       key = A4GL_getch_internal (0,"menu");
+      A4GL_LL_disable_menu();
 
       if (key == 0)
 	continue;
@@ -699,3 +704,10 @@ void UILIB_A4GL_add_menu_action(void *vmenu,char *action,int cmd_on_timeout) {
 }
 
 
+  int A4GL_ll_menu_type (void ) {
+	  static int menu_type=9999;
+	  if (menu_type==9999) {
+		  menu_type=A4GL_LL_menu_type();
+	  }
+	  return menu_type;
+  }

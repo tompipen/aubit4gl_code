@@ -67,7 +67,7 @@ individual_sql_statement :
 ;
 
 select_statement_ss_str_cfu:
-	select_statement_ss_str curs_forupdate { $<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
+	select_statement_ss_str_converted curs_forupdate { $<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
 }
 
 ;

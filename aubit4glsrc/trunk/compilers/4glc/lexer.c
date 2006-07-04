@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.120 2006-06-23 14:08:42 mikeaubury Exp $
+# $Id: lexer.c,v 1.121 2006-07-04 14:22:32 mikeaubury Exp $
 #*/
 
 /**
@@ -1499,7 +1499,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   lastword = buff;
   lastlex = a;
-  A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d", yylineno, get_ccnt(), a, buff, xccode, fpos, chk4var);
+  A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d", yylineno, A4GL_get_ccnt(), a, buff, xccode, fpos, chk4var);
   word_cnt = 0;
   if (file_out) { 
 		char*buff2;

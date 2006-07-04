@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.25 2006-06-23 14:08:42 mikeaubury Exp $
+# $Id: data.c,v 1.26 2006-07-04 14:22:49 mikeaubury Exp $
 #*/
 
 /**
@@ -666,7 +666,7 @@ execute_selects (void)
 
       psql =
 	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
-					 dif_get_bind (xo), 0, nstatement,"__internal_data",1);
+					 dif_get_bind (xo), 0, nstatement,"__internal_data",1,0);
       a4gl_status = 0;
       if (psql == 0)
 	{

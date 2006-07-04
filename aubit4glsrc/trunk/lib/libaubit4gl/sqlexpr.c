@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.26 2006-06-22 09:42:46 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.27 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -617,7 +617,7 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
     }
   if (p->alias)
     {
-      if (A4GLSQLCV_check_requirement ("COLUMN_ALIAS_AS"))
+      if (A4GLSQLCV_check_runtime_requirement ("COLUMN_ALIAS_AS"))
 	{
 	  rval = make_sql_string_and_free (rval, " AS ", p->alias, 0);
 	}
@@ -725,7 +725,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 							complex_expr.right), kw_cb, 0);
 
     case E_SLI_LITERAL:
-      if (A4GLSQLCV_check_requirement ("DATE_STRING_TO_CAST_DATE"))
+      if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DATE"))
 	{
 	  if (p->u_data.expression[0] == '\'')
 	    {
@@ -750,7 +750,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    }
 	}
 
-      if (A4GLSQLCV_check_requirement ("DATE_STRING_TO_YMD"))
+      if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_YMD"))
 	{
 	  if (p->u_data.expression[0] == '\'')
 	    {
@@ -1448,7 +1448,7 @@ preprocess_sql_statement (struct s_select *select)
 //
 // Lets collect all our expressions in one place....
 //
-  if (A4GLSQLCV_check_requirement ("EXPAND_COLUMNS"))
+  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS"))
     {
 
       expand_many = 0;
@@ -1836,7 +1836,7 @@ make_select_stmt (struct s_select *select)
     {
       if (select->sf->into_temp)
 	{
-	  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH"))
+	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH"))
 	    {
 	      save_temp_table (select->sf->into_temp,1);
 	      strcpy (into_temp, " INTO TEMP #");
@@ -1844,7 +1844,7 @@ make_select_stmt (struct s_select *select)
 	      strcat (buff, into_temp);
 	      strcat (buff, " ");
 	    }
-	  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_HASH"))
+	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_HASH"))
 	    {   
 	      save_temp_table (select->sf->into_temp,1);
 	      strcpy (into_temp, " INTO #");
@@ -1924,7 +1924,7 @@ make_select_stmt (struct s_select *select)
 
 	  if (select->sf->order_by)
 	    {
-	      if (!A4GLSQLCV_check_requirement ("STRIP_ORDER_BY_INTO_TEMP"))
+	      if (!A4GLSQLCV_check_runtime_requirement ("STRIP_ORDER_BY_INTO_TEMP"))
 		{
 		  strcat (into_temp, " ORDER BY ");
 		  strcat (into_temp,
@@ -1934,8 +1934,8 @@ make_select_stmt (struct s_select *select)
 		}
 	    }
 
-	  if (!A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH")
-	      && !A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_INTO_HASH"))
+	  if (!A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH")
+	      && !A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_HASH"))
 	    {
 	      save_temp_table (select->sf->into_temp,1);
 	      strcpy (into_temp, " INTO TEMP ");
@@ -1944,7 +1944,7 @@ make_select_stmt (struct s_select *select)
 
 	  if (select->sf->nolog)
 	    {
-	      if (!A4GLSQLCV_check_requirement ("OMIT_NO_LOG"))
+	      if (!A4GLSQLCV_check_runtime_requirement ("OMIT_NO_LOG"))
 		{
 		  strcat (into_temp, " WITH NO LOG");
 		}
@@ -1953,7 +1953,7 @@ make_select_stmt (struct s_select *select)
 	    A4GLSQLCV_select_into_temp (buff, into_temp,
 					select->sf->into_temp);
 
-	  if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
+	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
 	    {
 		select->extra_statement = acl_malloc2(strlen (buff) + 200);
 		SPRINTF2 (select->extra_statement,

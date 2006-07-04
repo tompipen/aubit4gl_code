@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.136 2006-03-20 08:59:25 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.137 2006-07-04 14:22:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.136 2006-03-20 08:59:25 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.137 2006-07-04 14:22:54 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -164,7 +164,7 @@ if (A4GL_isyes(acl_getenv("A4GL_EC_LOGSQL"))) {
  * @param The string with the sql statement to be executed.
  */
 void
-LEXLIB_print_exec_sql (char *s)
+LEXLIB_print_exec_sql (char *s,int converted)
 {
   A4GL_debug("In print_exec_sql");
   A4GL_save_sql(s,0);
@@ -196,7 +196,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
  * @param
  */
 void
-LEXLIB_print_exec_sql_bound (char *s)
+LEXLIB_print_exec_sql_bound (char *s,int converted)
 {
   int c;
   printc ("{/* Start exec_sql_bound */\n");
@@ -1199,7 +1199,7 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
  * @param s A string with the complete SQL select statement text.
  */
 void
-LEXLIB_print_do_select (char *s)
+LEXLIB_print_do_select (char *s,int converted)
 {
 //int no;
 A4GL_save_sql(s,0);
@@ -1582,7 +1582,7 @@ extern int obindcnt;
  * @return A string with the C implementation
  */
 char *
-LEXLIB_print_select_all (char *buff)
+LEXLIB_print_select_all (char *buff,int converted)
 {
   int ni, no;
   static char *b2;
@@ -1746,9 +1746,9 @@ if (strncmp(sql,"SELECT ",7)==0) isvar=0;
 
 
   if (isvar==0) {
-  	printc ("A4GLSQL_unload_data(%s,%s, \"%s\",%d,native_binding_i);\n", file, delim,conv_owner(ptr),ni);
+  	printc ("A4GLSQL_unload_data(%s,%s, \"%s\",%d,native_binding_i,0);\n", file, delim,conv_owner(ptr),ni);
   } else {
-  	printc ("A4GLSQL_unload_data(%s,%s, %s,%d,native_binding_i);\n", file, delim,conv_owner(ptr),ni);
+  	printc ("A4GLSQL_unload_data(%s,%s, %s,%d,native_binding_i,0);\n", file, delim,conv_owner(ptr),ni);
   }
 	printc("}");
   }
@@ -2087,6 +2087,7 @@ char tmpbuff[256];
 char ins_str[10000];
 static int rcnt=0;
 int a;
+int converted=0;
 int l_dt;
 int l_sz;
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
@@ -2206,7 +2207,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 
 		start_bind('i',0);
 		start_bind('o',0);
-		p=print_select_all(sql);
+		p=print_select_all(sql,0);
 		print_declare("0",p,cname,0,0);
 		print_open_cursor(cname,0);
 
@@ -2227,7 +2228,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 		print_close ('C', cname);
 		start_bind('i',0);
 		sprintf(buff,"DROP TABLE %s",reptab);
-		print_exec_sql_bound(buff);
+		print_exec_sql_bound(buff,0);
 }
 
 if (type=='M') { /* Make the table */
@@ -2273,14 +2274,14 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	start_bind('i',0);
 	set_suppress_lines();
 
-	xptr= A4GLSQLCV_check_sql(buff);
-	print_exec_sql_bound(xptr);
+	xptr= A4GLSQLCV_check_sql(buff,&converted);
+	print_exec_sql_bound(xptr,converted);
 
 	clr_suppress_lines();
 
 	sprintf(buff,"DELETE FROM %s",reptab);
-	xptr= A4GLSQLCV_check_sql(buff);
-	print_exec_sql_bound(xptr);
+	xptr= A4GLSQLCV_check_sql(buff,&converted);
+	print_exec_sql_bound(xptr,converted);
 
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
@@ -2471,6 +2472,11 @@ int
 doing_esql ()
 {
         return 1;
+}
+
+
+int LEXLIB_compile_time_convert() {
+	        return 1;
 }
 
 

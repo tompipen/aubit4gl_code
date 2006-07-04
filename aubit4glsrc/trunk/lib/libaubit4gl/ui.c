@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.55 2006-05-17 15:49:22 mikeaubury Exp $
+# $Id: ui.c,v 1.56 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -80,9 +80,10 @@ char *A4GL_pull_off_data_for_display(int n,int display_type);
 void A4GL_processed_onkey_v2(char *iot,char *base) ;
 void A4GL_ensure_column(void ) ;
 void A4GL_add_key_mapping(int src,int dest) ;
-int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
-int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
-int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+//int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+//int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+//int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+//int A4GL_has_event_for_action(char *a,struct aclfgl_event_list *evt) ;
 int aclfgl_aclfgl_add_keymap(int n) ;
 char  *A4GL_find_gui_id_name_from_id(int id) ;
 int A4GL_find_gui_id_from_name(char *s) ;
@@ -797,6 +798,20 @@ for (n=0;evt[n].event_type;n++) {
 return 0;
 }
 
+int A4GL_has_event_for_action(char *a,struct aclfgl_event_list *evt) {
+int n;
+int cde;
+for (n=0;evt[n].event_type;n++) {
+	cde=A4GL_EVENT_ON_ACTION;
+        if (evt[n].event_type==cde) {
+	       	if (A4GL_aubit_strcasecmp(evt[n].field,a) ==0) {
+			A4GL_debug("FOUND ONE HEF");
+			return evt[n].block;
+		}
+	}
+}
+return 0;
+}
 
 
 /* These functions are used internally for ID_TO_INT and INT_TO_ID functions */
@@ -1269,7 +1284,15 @@ strcpy(s,s_x);
 // We're quitting - so close down any UI specific stuff
 // before we go...
 void A4GL_stop_ui(void) {
+	static int  stopping=0;
+	if (!stopping) {
+    		A4GL_ui_exit();
+	}
 
+	stopping++;
+
+
+    /*
   if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
@@ -1277,7 +1300,7 @@ void A4GL_stop_ui(void) {
 #endif
       A4GL_gotolinemode ();
     }
-    A4GL_ui_exit();
+    */
 }
 
 

@@ -371,7 +371,7 @@ p=s;
 	//aclfgl_prepareit(1);
    //P0REPARE stExec from :p;
 	A4GL_trim(p);
-   A4GLSQL_add_prepare("generic_stexecp",(void *)A4GLSQL_prepare_select(0,0,0,0,s,"__internal_generic",__LINE__));
+   A4GLSQL_add_prepare("generic_stexecp",(void *)A4GLSQL_prepare_select(0,0,0,0,s,"__internal_generic",__LINE__,0));
    cp_sqlca();
 
 

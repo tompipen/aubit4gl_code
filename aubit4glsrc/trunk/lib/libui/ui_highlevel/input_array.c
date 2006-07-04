@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.42 2006-06-26 12:26:58 mikeaubury Exp $
+# $Id: input_array.c,v 1.43 2006-07-04 14:22:56 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.42 2006-06-26 12:26:58 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.43 2006-07-04 14:22:56 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -57,10 +57,9 @@ static char const module_id[] =
 
 #include <ctype.h>
 
-int A4GL_has_event (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_field (int cat, char *a,
-			      struct aclfgl_event_list *evt);
+//int A4GL_has_event (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt);
 //int A4GL_conversion_ok(int);
 
 //void A4GL_set_field_attr_with_attr (void * field, int attr, int cmd_type);

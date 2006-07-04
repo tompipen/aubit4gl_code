@@ -40,6 +40,9 @@ int A4GL_get_connection (int socket_type, u_short port, int *listener);
 static struct in_addr *internal_atoaddr (char *address);
 static int internal_atoport (char *service, char *proto);
 
+#define STREAM_BUFF_SIZE 10240
+
+char sock_buff[20000]="";
 
 int serversocket = 0;
 
@@ -249,16 +252,60 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 
 
 
+/* this isn't a real socket flush - just emptying our buffer... */
+int pipe_flush(int sockfd) {
+	if (strlen(sock_buff)) {
+		pipe_sock_puts(sockfd,0);
+	}
+}
+
 /**
  *  * Writes a character string out to a socket.
  *   *
  *    * @return -1 if the connection is closed while it is trying to write.
+ *    * str=0 means flush.....
  *     */
 int
 pipe_sock_puts (int sockfd, char *str)
 {
-  printf ("SENDING : %s\n", str);
-  return pipe_sock_write (sockfd, str, strlen (str));
+	int sz_buff;
+	int sz_str=0;
+	int ok=1;
+
+	sz_buff=strlen(sock_buff);
+	if (str) {
+		sz_str=strlen(str);
+	}
+
+	// Do we need to send what we've got ? 
+	if (sz_buff>STREAM_BUFF_SIZE || sz_str+sz_buff>STREAM_BUFF_SIZE || sz_str>STREAM_BUFF_SIZE || str==0) { // Yes - i know if sz_str>STREAM_BUFF_SIZE then sz_str+sz_buff>STREAM_BUFF_SIZE anyway...
+		if (str!=0) {
+			printf("BUFFER FULL ;-) %d %d\n",sz_buff,sz_str);
+		}
+		printf("SENDING CACHE :\n----'%s'\n\n----\n",sock_buff);
+	  	ok=pipe_sock_write (sockfd, sock_buff, strlen (sock_buff));
+		sz_buff=0;
+		strcpy(sock_buff,"");
+	}
+
+	if (str==0) {
+		fsync(sockfd);
+		return 1;
+	}
+
+	if (sz_str>STREAM_BUFF_SIZE) {
+		// Its too large to cache...
+		if (ok) {
+			printf("SENDING NEW :\n----'%s'\n\n----\n",str);
+	  		ok=pipe_sock_write (sockfd, str, strlen (str));
+		}
+		return ok;
+	
+	}
+	//printf("ADDING TO CACHE : '%s'\n",str);
+	strcat(sock_buff,str);
+
+  return ok;
 }
 
 
@@ -316,7 +363,7 @@ client_encode_string (char *ptr)
   int a;
   static int maxlen = 0;
   l = strlen (ptr);
-  printf ("Encoding : %s\n", ptr);
+  A4GL_debug ("Encoding : %s\n", ptr);
   if (l > maxlen)
     {
       buff = realloc (buff, (l * 2) + 1);
@@ -331,7 +378,7 @@ client_encode_string (char *ptr)
       sprintf (smbuff, "%02X", ptr[a]);
       strcat (buff, smbuff);
     }
-  printf ("Encoding : %s -> %s\n", ptr, buff);
+  A4GL_debug ("Encoding : %s -> %s\n", ptr, buff);
   return buff;
 }
 
@@ -341,6 +388,9 @@ pipe_expect (char *s)
 {
   char buff[256];
   memset (buff, 0, sizeof (buff));
+
+  pipe_flush(serversocket);
+
   pipe_sock_gets (serversocket, buff, 255);
   if (strcmp (buff, s) != 0)
     {
@@ -358,20 +408,20 @@ static int
 handshake ()
 {
   char buff[256];
-  printf ("Handshaking\n");
+  A4GL_debug ("Handshaking\n");
   if (!pipe_expect ("WELCOME"))
     return 0;
-  pipe_sock_puts (serversocket, "PROTOCOL 1\n");
+  pipe_sock_puts (serversocket, "PROTOCOL 1\n"); pipe_flush(serversocket);
   if (!pipe_expect ("OK"))
     return 0;
 
-  sprintf (buff, "NAME %s\n", A4GL_get_running_program ());
-  pipe_sock_puts (serversocket, buff);
+  sprintf (buff, "NAME %s\n", A4GL_get_running_program ()); 
+  pipe_sock_puts (serversocket, buff); pipe_flush(serversocket);
   if (!pipe_expect ("OK"))
     return 0;
 
 
-  printf ("handshake OK\n");
+  A4GL_debug ("handshake OK\n");
   return 1;
 }
 
@@ -470,9 +520,19 @@ client_decode_str (char *ptr)
 
 
 struct client_result *
-pipe_get_result (struct client_result *r)
+pipe_get_result (char *func,struct client_result *r,int expectresult)
 {
   char buff[2000];
+  if (!expectresult) {
+	      r->result = 0;
+	      r->state = CALL_RESULT;
+              A4GL_debug ("Function should return with no value\n");
+              return r;
+  }
+
+  printf("%s is causing flush\n",func);
+  pipe_flush(serversocket);
+
   while (1)
     {
 
@@ -482,7 +542,7 @@ pipe_get_result (struct client_result *r)
 	  printf ("Invalid response - did the client die ?\n");
 	  exit (2);
 	}
-
+     printf(">>>%s\n",buff);
       r->result = 0;
 
 
@@ -490,7 +550,7 @@ pipe_get_result (struct client_result *r)
 	{
 	  r->result = 0;
 	  r->state = CALL_RESULT;
-	  printf ("Function returned with no value\n");
+	  A4GL_debug ("Function returned with no value\n");
 	  return r;
 	}
 
@@ -500,7 +560,7 @@ pipe_get_result (struct client_result *r)
 	  b = &buff[11];
 	  r->result = atol (b);
 	  r->state = CALL_RESULT;
-	  printf ("Got int : %d\n", r->result);
+	  A4GL_debug ("Got int : %d\n", r->result);
 	  return r;
 	}
 
@@ -510,7 +570,7 @@ pipe_get_result (struct client_result *r)
 	  b = &buff[11];
 	  r->result = (long) client_decode_str (b);
 	  r->state = CALL_RESULT_MALLOC;
-	  printf ("Got string : %s\n", r->result);
+	  A4GL_debug ("Got string : %s\n", r->result);
 	  return r;
 	}
 
@@ -547,7 +607,7 @@ client_call (char *func, int expectresult, char *fmt, ...)
   r->func = strdup (func);
   r->state = INITIALIZED;
   r->result = 0;
-
+  A4GL_debug("CALL %s - expectresult=%d\n",func,expectresult);
   sprintf (buff, "CALL %s %s", func, fmt);
 
   if (strlen (fmt))
@@ -590,7 +650,7 @@ client_call (char *func, int expectresult, char *fmt, ...)
       A4GL_exitwith ("Socket write failed");
       return 0;
     }
-  return pipe_get_result (r);
+  return pipe_get_result (func,r,expectresult);
 }
 
 
@@ -616,7 +676,7 @@ client_result_ok (struct client_result *result)
 void
 client_get_value (struct client_result *result, char *fmt, void *p)
 {
-  printf ("Get Value : %s\n", fmt);
+  //printf ("Get Value : %s\n", fmt);
   if (strcmp (fmt, "i") == 0)
     {
       *(long *) p = result->result;
@@ -625,7 +685,7 @@ client_get_value (struct client_result *result, char *fmt, void *p)
     {
       *(char **) p = (char *) result->result;
     }
-  printf ("Fmt=%s\n", fmt);
+  //printf ("Fmt=%s\n", fmt);
 }
 
 
@@ -633,7 +693,7 @@ client_get_value (struct client_result *result, char *fmt, void *p)
 void
 client_free_result (struct client_result *result)
 {
-  printf ("free result : %p\n", result);
+  //printf ("free result : %p\n", result);
   free (result->func);
   if (result->state == CALL_RESULT_MALLOC)
     {

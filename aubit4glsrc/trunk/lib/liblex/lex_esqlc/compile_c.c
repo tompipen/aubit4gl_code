@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.295 2006-06-26 17:08:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.296 2006-07-04 14:22:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.295 2006-06-26 17:08:41 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.296 2006-07-04 14:22:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -76,7 +76,7 @@
 */
 
 #define FGL_PLUS_PLUS
-int get_ccnt(void);
+//int get_ccnt(void);
 static void print_define_char (char *var, int size, int isstatic_extern);
 static void print_define (char *varstring, int isstatic_extern);
 static void print_start_record (int isstatic_extern, char *varname, char *arrsize, int level);
@@ -262,7 +262,7 @@ print_space (void)
 {
   static char buff[256];
   int ccnt;
-  ccnt=get_ccnt();
+  ccnt=A4GL_get_ccnt();
   memset (buff, ' ', 255);
   buff[ccnt * 3] = 0;
   FPRINTF (outfile, "%s", buff);
@@ -6526,7 +6526,7 @@ int z;
 int n;
 char *s;
 int ccnt;
-ccnt=get_ccnt();
+ccnt=A4GL_get_ccnt();
 
 
 
@@ -8400,7 +8400,14 @@ int LEXLIB_A4GLLEX_initlib() {
     	A4GL_setenv ("NAMESPACE", "", 1);
     	//A4GL_setenv ("REPORT_VARS_AT_MODULE", "Y", 1);
   }
+  if (doing_esql()) {
+	  // Can we have compile time conversions please....
+	A4GL_set_compile_time_convert(1);
+  } else {
+	A4GL_set_compile_time_convert(0);
+  }
 
 
 return 1;
 }
+

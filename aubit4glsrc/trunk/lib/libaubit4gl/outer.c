@@ -9,13 +9,14 @@ struct s_table_join
 };
 
 
-static struct s_select_list_item *joins[10][10];
+//static struct s_select_list_item *joins[10][10];
 
 
 
-static int ntables;
-static struct s_table_join tables[200];
+//static int ntables=0;
+//static struct s_table_join tables[200];
 
+#ifdef OBSOLETE
 static int
 xfind_table (char *s)
 {
@@ -42,8 +43,7 @@ xfind_table (char *s)
 }
 
 
-static void
-init_tables ()
+static void init_tables (void)
 {
   int a;
   int b;
@@ -71,6 +71,7 @@ add_table (char *tabname, char *alias)
   tables[ntables].alias = alias;
   ntables++;
 }
+#endif
 
 
 
@@ -84,6 +85,7 @@ for  (a=0;a<select->table_elements.ntables;a++) {
 
 
 
+#ifdef OBSOLETE
 static void
 join_tables (struct s_select *select)
 {
@@ -129,17 +131,18 @@ join_tables (struct s_select *select)
 
 
 
-char *
-join_string ()
+static char *
+join_string (void)
 {
   if (ntables == 1)
     return "";
 
   return "JOIN";
 }
+#endif
 
 
-int
+static int
 can_outer (struct s_select *select,
 	   struct s_table *t, char *fill, struct s_table_list *tl)
 {
@@ -160,10 +163,10 @@ can_outer (struct s_select *select,
       if (t->outer_next)
 	{
 	  struct s_table *t2;
-	  char *main_table;
-	  char *outer_table;
-	  char alias_buff[255];
-	  int b;
+	  //char *main_table;
+	  //char *outer_table;
+	  //char alias_buff[255];
+	  //int b;
 	  has_outer++;
 
 
@@ -258,8 +261,8 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	      char *rc;
 	      if (select->list_of_items.list[b]->type == E_SLI_JOIN)
 		{
-		  int tnl;
-		  int tnr;
+		  //int tnl;
+		  //int tnr;
 		  int found = 0;
 		  p = select->list_of_items.list[b];
 		  l = p->u_data.complex_expr.left;
@@ -300,7 +303,8 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 }
 
 
-void dump_joins ()
+#ifdef OBSOLETE
+static void dump_joins (void)
 {
   int a;
   int b;
@@ -324,6 +328,7 @@ void dump_joins ()
   A4GL_debug ("---------------------------\n");
 
 }
+#endif
 
 
 

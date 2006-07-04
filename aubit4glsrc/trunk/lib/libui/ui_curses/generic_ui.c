@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.29 2005-11-28 17:19:25 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.30 2006-07-04 14:22:55 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -969,5 +969,15 @@ void UILIB_A4GLUI_set_intr(void) {
 
 void UILIB_A4GL_ui_exit(void) {
         // Does nothing - required by the API
+	  if (A4GL_isscrmode ())
+		      {
+#ifdef DEBUG
+			            A4GL_debug ("In screen mode - ending curses...");
+#endif
+				          A4GL_gotolinemode ();
+					      }
+
 }
+
+
 

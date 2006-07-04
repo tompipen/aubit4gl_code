@@ -1,7 +1,7 @@
 
 
 
-select_statement_ss_str: select_statement_ss_select  {
+select_statement_ss_str_converted : select_statement_ss_select  {
 		$<sql_string>$=make_select_stmt($<s_select>1);
 
 		//run an extra statement
@@ -40,8 +40,8 @@ union_select_statement2_ss:
 	}
 ;
 
-uselect_statement2_ss:
-	select_statement21_ss  {
+uselect_statement2_ss_converted:
+	select_statement21_ss_converted  {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
 	 }
 	| char_or_var {
@@ -49,7 +49,7 @@ uselect_statement2_ss:
 	}
 ;
 
-select_statement21_ss:
+select_statement21_ss_converted:
 	KW_SELECT  op_ad select_list_slil
         opt_into_sel_ss
 	table_expression_2_select
@@ -345,7 +345,7 @@ value_specification:
 
 
 
-unload_cmd :  opt_use UNLOAD_TO ufile opt_delim uselect_statement2_ss  {
+unload_cmd :  opt_use UNLOAD_TO ufile opt_delim uselect_statement2_ss_converted  {
 	add_feature("UNLOAD_TO");
 	if (strcasecmp($<sql_string>5," WHERE ")==0) {
 		add_feature("UNLOAD_TO_SELECT_WHERE");

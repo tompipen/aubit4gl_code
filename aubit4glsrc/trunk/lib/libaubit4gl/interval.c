@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.21 2005-12-02 12:28:11 mikeaubury Exp $
+# $Id: interval.c,v 1.22 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -486,21 +486,24 @@ A4GL_mk_int_size (int s, int l)
 void
 A4GL_decode_interval (struct ival *ival, int *data)
 {
-  char buff[256];
   int i;
+  /*char buff[256];
   int cnt = 0;
-  char buff2[64];
+  char buff2[64]; */
   int s1;
   int s2;
-  int c;
+  /*int c;
   int cpc;
   int c2;
-  int ltime;
+  int ltime; */
 
+  /*
   char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION",
     0
   };
+  */
+  /*
   int spc[] = {
     0,
     4,
@@ -511,7 +514,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
     2,
     5
   };
-
+*/
   A4GL_debug ("Decoding interval into component parts");
 
   for (i = 0; i < 10; i++)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.61 2006-01-29 16:39:10 mikeaubury Exp $
+# $Id: others.c,v 1.62 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -94,11 +94,11 @@ int m_lastkey = 0;
 
 
 
-int get_ccnt() {
+int A4GL_get_ccnt(void) {
 	return ccnt;
 }
 
-void set_ccnt(int a) {
+void A4GL_set_ccnt(int a) {
 	ccnt=a;
 }
 

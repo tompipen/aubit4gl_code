@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.229 2006-07-02 11:40:17 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.230 2006-07-04 14:22:51 mikeaubury Exp $
 #
 */
 
@@ -1189,6 +1189,7 @@ enum cmd_types {
   float A4GL_pop_float (void);
   double A4GL_pop_double (void);
   double A4GL_pop_double_null_as_zero(void);
+  void A4GL_pop_doubleinto (double *ptr);
   void A4GL_pop_into_double_null_as_zero(double *d );
   void A4GL_pop_into_double (double *d);
   int A4GL_pop_var (void *p, int d);
@@ -1227,6 +1228,14 @@ enum cmd_types {
   void print_stack (void);
   void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
   void A4GL_whats_in_a_string(char *s,int *d,int *sz);
+
+
+int aclfgl_fgl_compare(int n);
+int aclfgl_fgl_round(int nargs);
+	int A4GL_set_a4gl_sqlca_errd(int n,int v);
+	int A4GL_set_a4gl_sqlca_sqlstate(char *s);
+  int A4GL_pushint_fgl_infield (void *inp,char itype,...);
+  void fgl_fatal(char *mod,long ln,long stat);
 
 
 #define GETSETNEW 		-1
@@ -1675,6 +1684,17 @@ int A4GL_conversion_ok(int a);
   int A4GL_check_key (int val, char *a, int ln);
 
 
+int A4GL_get_dbscr_commentline(void) ;
+int A4GL_get_dbscr_formline(void);
+int A4GL_get_dbscr_errorline(void);
+int A4GL_get_dbscr_promptline(void);
+int A4GL_get_dbscr_messageline(void);
+int A4GL_get_dbscr_menuline(void);
+int A4GL_get_dbscr_inputmode(void);
+int A4GL_get_ccnt(void);
+void A4GL_set_ccnt(int a);
+
+
   /* ============================ pointers.c ============================= */
   int A4GL_has_pointer (char *pname, char t);
   void A4GL_add_pointer (char *orig_name, char type, void *ptr);
@@ -2022,7 +2042,7 @@ char A4GL_get_decimal_char(char *s);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
 char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s);
 void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
-char *A4GLSQLCV_check_sql(char *s ) ;
+char *A4GLSQLCV_check_sql(char *s ,int *converted) ;
 char *A4GLSQLCV_dtype_alias(char *s ) ;
 char *A4GLSQLCV_check_expr(char *s ) ;
 char *A4GLSQLCV_sql_func(char *f,char *param);
@@ -2200,6 +2220,7 @@ int aclfgl_fgl_dialog_getbuffer(int n);
 int aclfgl_fgl_dialog_setbuffer(int n);
 int aclfgl_fgl_buffertouched(int n);
 int aclfgl_aclfgl_get_user(int n);
+int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
 int aclfgl_aclfgl_read_pipe(int nargs);
 void A4GL_pause_execution(void);
 void A4GL_pause_execution_msg(char *s);
@@ -2265,7 +2286,10 @@ void save_temp_table(char *tabname,int select_into);
 int A4GL_has_evt_timeout(struct aclfgl_event_list *evt) ;
 void A4GL_clr_evt_timeouts(struct aclfgl_event_list *evt) ;
 void A4GL_evt_not_idle(struct aclfgl_event_list *evt) ;
-
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_action(char *a,struct aclfgl_event_list *evt);
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt);
+int A4GL_has_event(int a,struct aclfgl_event_list *evt);
 ///
 
 
@@ -3061,6 +3085,8 @@ char *get_select_list_item(struct s_select *select, struct s_select_list_item *p
 struct s_select_list_item *new_select_list_item_case(struct s_select_list_item  *i);
 struct s_select_list_item * append_select_list_item_case (struct s_select_list_item *l, struct s_select_list_item *w) ;
 struct s_select_list_item * new_select_list_item_case_element ( struct s_select_list_item *w,  struct s_select_list_item *e)  ;
+struct s_select_list_item * new_select_list_item_replace_var (char *s);
+int is_fake_rowid_column(char*s);
 char *A4GLSQLCV_check_colname_alias(char *alias,char *tabname, char *colname);
  
 

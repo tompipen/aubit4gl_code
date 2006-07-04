@@ -93,9 +93,9 @@ print_stop_external -> void
 
 print_remote_func char* identifier -> void
 
-print_exec_sql char* s -> void
+print_exec_sql char* s int converted -> void
 
-print_exec_sql_bound char* s -> void
+print_exec_sql_bound char* s int converted -> void
 
 print_pop_variable char* s -> void
 
@@ -383,7 +383,7 @@ print_fetch_3 t_fetch* ftp char* into -> void
 
 print_init_conn char* db -> void
 
-print_do_select char* s -> void
+print_do_select char* s int converted -> void
 
 print_flush_cursor char* s -> void
 
@@ -391,7 +391,7 @@ print_declare char* a1,char* a2,char* a3,int h1,int h2 -> void
 
 print_curr_spec int type,char* s -> char*
 
-print_select_all char* buff -> char*
+print_select_all char* buff int converted -> char*
 
 print_unload char* file,char* delim,char* sql -> void
 

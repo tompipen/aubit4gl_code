@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.50 2006-06-26 12:26:57 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.51 2006-07-04 14:22:56 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.50 2006-06-26 12:26:57 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.51 2006-07-04 14:22:56 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -55,10 +55,9 @@ char *last_field_name;
 int construct_last_key;
 
 static int A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt);
-int A4GL_has_event (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_field (int cat, char *a,
-			      struct aclfgl_event_list *evt);
+//int A4GL_has_event (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt);
 void *A4GL_get_currwin (void);
 //int A4GL_conversion_ok(int);
 //void A4GL_fgl_die_with_msg(int n,char *s);
@@ -1273,7 +1272,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
       A4GL_add_to_control_stack (s, FORMCONTROL_BEFORE_INPUT, 0, 0, 0);
       A4GL_submit_events(s,evt);
     } else {
-      A4GL_LL_activate_events(s);
+      //A4GL_LL_activate_events(s);
     }
 
   if (A4GL_has_something_on_control_stack (s))
@@ -1303,14 +1302,15 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 
 //if (current_field(mform)!=form->currentfield) {
   //A4GL_debug("CHANGE OF FIELD\n");
-  A4GL_mja_set_current_field (mform, form->currentfield);
 //}
 
 
 // Wait for a key..
-  A4GL_LL_set_carat (mform);
   fprop = (struct struct_scr_field *)
   A4GL_ll_get_field_userptr (A4GL_LL_current_field (mform));
+
+
+  A4GL_mja_set_current_field (mform, form->currentfield);
 
   while (1) {
    	blk=A4GL_has_evt_timeout(evt);
@@ -1318,7 +1318,10 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 		       	return blk;
    	}
 
-		A4GL_set_active_fields(s,1);
+		A4GL_set_active_fields(s,evt); 
+      		A4GL_LL_activate_events(s);
+  		A4GL_LL_set_carat (mform);
+
   		a = A4GL_getch_win (1,"input");
 	      if (a==A4GLKEY_EVENT) {
 		A4GL_debug("input fired event...");

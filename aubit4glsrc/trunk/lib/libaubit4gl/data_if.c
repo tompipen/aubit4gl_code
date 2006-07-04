@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.31 2006-03-10 10:01:39 mikeaubury Exp $
+# $Id: data_if.c,v 1.32 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -1499,7 +1499,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
 	return (void *) &(val->curr_display);
       if (mode == GETSETSET)
 	{
-	  val->curr_display = (int) var;
+	  val->curr_display = (void *) var;
 	  return (void *) 1;
 	}
 	  

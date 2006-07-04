@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.18 2006-06-23 14:08:44 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.19 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -99,7 +99,7 @@ A4GL_debug("A4GL_process_stack_op_other");
 	struct BINDING obind[] = { {0, 0, 0,0,0,0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
 		A4GL_debug("declare - binding : %d\n",n);
-	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, n, obind, 0, s,"__internal_stackops",1), 0, cname);
+	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, n, obind, 0, s,"__internal_stackops",1,0), 0, cname);
       }
       if (a4gl_status != 0)
 	{
@@ -161,7 +161,7 @@ A4GL_debug("A4GL_process_stack_op_other");
       A4GL_debug ("s=%s\n", s);
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GL_debug ("Prepare seelct...");
-      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s,"__internal_stackops",2);
+      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s,"__internal_stackops",2,0);
       A4GL_debug ("Declare");
       free (s);
       A4GLSQL_declare_cursor (0, prep, 0, cname);

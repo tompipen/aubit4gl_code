@@ -339,7 +339,7 @@ int fgl_call( int (*func_ptr) (int),int n) {
 
 void popdate_native(void *x) {
 	long a4gl;
-	short indic;
+	//short indic;
 	a4gl=A4GL_pop_date();
 
 	//if (A4GL_isnull(DTYPE_DATE,(void *)&a4gl)) { indic=-1; } else { indic=0; }

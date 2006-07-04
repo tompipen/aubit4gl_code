@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.88 2006-06-22 09:42:46 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.89 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -46,6 +46,7 @@
 static char *get_dollared_sql_var (char *s);
 static char *A4GL_cv_next_token (char *p, int *len, int dot);
 static char *A4GL_space_out (char *s);
+int is_compile_time_convert=1;
 
 /*
 =====================================================================
@@ -355,7 +356,7 @@ struct save_queries saved_queries[NUM_SAVED_QUERIES];
 */
 
 
-static void do_init_saved_queries() {
+static void do_init_saved_queries(void) {
 	int  a;
 		init_saved_queries=0;
 	for (a=0;a<NUM_SAVED_QUERIES;a++) {
@@ -419,10 +420,11 @@ static int has_query(char *s,char **cp) {
 
 
 char *
-A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx)
+A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int converted)
 {
   char *sql_new;
   char *sql;
+  //int converted=0;
 
   //int a;
   sql = sqlx;
@@ -463,7 +465,9 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx)
 	}
 
       A4GL_debug ("Translates to %s", sql_new);
-      sql_new = A4GLSQLCV_check_sql (sql_new);
+      if (converted!=1) {
+      	sql_new = A4GLSQLCV_check_sql (sql_new,&converted);
+      }
       if (sql_new == 0)
 	{
 	  A4GL_assertion (1, "Failed to convert SQL (2)");
@@ -718,13 +722,14 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 // it will be called from the main SQL parser to do the final tidying up....
 //
 char *
-A4GLSQLCV_check_sql (char *s)
+A4GLSQLCV_check_sql (char *s,int *converted)
 {
   int b;
   static char *buff = 0;
   char *ptr;
   A4GL_assertion (s == 0, "No pointer");
   A4GL_debug ("check sql : %s\n", s);
+  *converted=1;
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_CMD)
@@ -1208,10 +1213,17 @@ A4GLSQLCV_generate_current (char *from, char *to)
 }
 
 
+int A4GLSQLCV_check_runtime_requirement (char *s) {
+	if (A4GL_compile_time_convert()) {
+		return 0;
+	} else {
+		return A4GLSQLCV_check_requirement(s) ;
+	}
+}
 
 
-int
-A4GLSQLCV_check_requirement (char *s)
+
+int A4GLSQLCV_check_requirement (char *s)
 {
   int a;
   int b;
@@ -2449,9 +2461,14 @@ A4GLSQLCV_sql_func (char *f, char *param)
 {
   static char buff[256];
   int b;
+
+
   if (param == 0)
     param = "";
   SPRINTF2 (buff, "%s(%s)", f, param);
+
+  if (!A4GL_compile_time_convert()) return buff;
+
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_SQLFUNC)
@@ -3502,4 +3519,12 @@ int  A4GL_aubit_strcasestr (char *h, char *n) {
 	free(s1);
 	free(s2);
 	return rval;
+}
+
+void A4GL_set_compile_time_convert(int a) {
+	is_compile_time_convert=a;
+}
+
+int A4GL_compile_time_convert() {
+	return is_compile_time_convert;
 }

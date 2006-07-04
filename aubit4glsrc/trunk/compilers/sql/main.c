@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.11 2005-11-27 11:31:35 mikeaubury Exp $
+# $Id: main.c,v 1.12 2006-07-04 14:22:51 mikeaubury Exp $
 #
 */
 
@@ -72,6 +72,7 @@ char *snew;
 char *dialect;
 char *default_database;
 int pcnt=0;
+int converted=0;
 
 	if (argc<2) {
 		printf("Usage : %s filename [dbname]\n",argv[0]);
@@ -115,7 +116,7 @@ int pcnt=0;
 	}
 	if (strcmp(snew,"<err>")==0) { exit(1); }
 	
-	snew=A4GLSQLCV_check_sql(snew); 
+	snew=A4GLSQLCV_check_sql(snew,&converted); 
 	while (1) {
 		char *ptr;
 		ptr=strstr(snew,"?@@PARAM@@?");

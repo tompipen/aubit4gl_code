@@ -258,7 +258,7 @@ cursor_specification_sel_ss:
 		start_bind('o',0);
 		$<sql_string>$=make_sql_string_and_free(acl_strdup(print_curr_spec(2,$<str>1)) ,0);
 	}
-	| select_statement_ss_str  curs_forupdate {
+	| select_statement_ss_str_converted  curs_forupdate { /* SQL HAS ALREADY BEEN CONVERTED */
 		 char *ptr;
 		A4GL_cursor_is_select();
 		ptr=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
@@ -286,7 +286,7 @@ fgl_sql_statement: delete_statement_position {
                 strcpy($<str>$,"Delete where current...");
         }
 	| fetch_statement { strcpy($<str>$,"Fetch"); A4GL_lex_printcomment("/*  fetch */\n"); }
-	| select_statement_ss_str curs_forupdate {
+	| select_statement_ss_str_converted curs_forupdate { /* SQL HAS ALREADY BEEN CONVERTED */
 		char *ptr;
         	ptr=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
  		$<sql_string>$=acl_strdup(A4GL_CV_print_select_all(ptr)); free(ptr); 

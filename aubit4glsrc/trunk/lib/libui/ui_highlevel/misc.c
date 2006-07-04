@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.44 2006-06-26 12:26:58 mikeaubury Exp $";
+  "$Id: misc.c,v 1.45 2006-07-04 14:22:56 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -677,9 +677,7 @@ UILIB_A4GL_set_fields (void *vsio)
 
   for (a = 0; formdets->form_fields[a] != 0; a++)
     {
-      field =
-	(struct struct_scr_field
-	 *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
+      field = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
       if (field == 0)
 	continue;
 
@@ -1235,7 +1233,7 @@ A4GL_get_field_width (void *f)
 
 
 int
-A4GL_set_active_fields (void *vsio)
+A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt)
 {
   int wid;
   int a;
@@ -1245,20 +1243,23 @@ A4GL_set_active_fields (void *vsio)
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
   struct struct_scr_field *prop;
-  void **field_list;
   void *firstfield = 0;
   int nofields;
   struct s_screenio *sio;
   int attr;
+  int *enabled=0;
+  int nfields;
 
   sio = vsio;
-
+  
   if (sio) {
   	formdets = sio->currform;
   } else {
   	formdets = UILIB_A4GL_get_curr_form(0);
 	if (formdets==0) return 1; // Nothing to do - no form...
   }
+  
+
   if (formdets == 0)
     {
       A4GL_exitwith ("No form");
@@ -1268,24 +1269,71 @@ A4GL_set_active_fields (void *vsio)
 
   flg = 0;
 
-  A4GL_debug ("Turning off all");
+  A4GL_debug ("Turning off everything");
+
+
+  nfields=0;
+  for (a = 0; formdets->form_fields[a] != 0; a++) {
+	  nfields++;
+  }
+
+  enabled=malloc(sizeof(int)*nfields);
+
 
   for (a = 0; formdets->form_fields[a] != 0; a++)
     {
       field = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
       if (field == 0) continue;
-       A4GL_field_opts_off (formdets->form_fields[a], AUBIT_O_ACTIVE);
-
-
+	enabled[a]=0;
     }
 
 
   if (sio) {
-  field_list = (void **) sio->field_list;
-  for (a = 0; field_list[a] != 0; a++) {
-       A4GL_field_opts_on (field_list[a], AUBIT_O_ACTIVE);
+	  int b;
+  	void **field_list;
+  	field_list = (void **) sio->field_list;
+  	for (a = 0; a<=sio->nfields; a++) {
+		for (b=0;formdets->form_fields[b];b++) {
+				if (formdets->form_fields[b]==field_list[a]) {
+					// We've found our field...
+					enabled[b]=1;
+						}
+
+		}
+  	}
   }
+
+
+
+
+  if (evt) {
+      struct struct_scr_field *field;
+      for (a = 0; formdets->form_fields[a] != 0; a++)
+        {
+         field = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
+         if (field == 0) continue;
+		
+	  if (A4GL_has_str_attribute (field, FA_S_ACTION)) {
+		char *action;
+      		action = A4GL_get_str_attribute (field, FA_S_ACTION);
+		if (A4GL_has_event_for_action(action,evt)) {
+			enabled[a]=1;
+			// YES! This is a live action - make sure the field is on
+		}
+	  }
+
+        }
+	  
   }
+
+  for (a=0;a<nfields;a++) {
+	  if (enabled[a]) {
+   		A4GL_field_opts_on (formdets->form_fields[a], AUBIT_O_ACTIVE);
+	  } else {
+		A4GL_field_opts_off (formdets->form_fields[a], AUBIT_O_ACTIVE);
+	  }
+  }
+  free(enabled);
 
   return 1;
 }

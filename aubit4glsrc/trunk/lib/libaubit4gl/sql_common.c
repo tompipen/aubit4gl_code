@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.22 2006-06-23 14:08:44 mikeaubury Exp $
+# $Id: sql_common.c,v 1.23 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -337,7 +337,7 @@ XxxA4GLSQL_prepare_sql (char *s)
  */
 /* int -- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *mod,int line)
+A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *mod,int line,int converted)
 {
 	char buff[256];
   A4GL_debug ("must_convert=%d\n", must_convert);
@@ -356,7 +356,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
     {
       //s = A4GL_apisql_strdup (s);
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
-      s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
+      s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s,converted);
     }
   sprintf(uniq_id,"a4gl_st_%s_%d",buff,line);
   return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id); 
@@ -374,15 +374,14 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
  */
 /* int -- void in sql;.c */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind,
-		     struct BINDING *ibind)
+A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDING *ibind,int converted)
 {
   if (must_convert)
     {
       //sql1 = A4GL_apisql_strdup (sql1);
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
       sql1 =
-	A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1);
+	A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1,converted);
     }
   A4GL_trim (fname);
   A4GLSQL_unload_data_internal (fname, delims, sql1, nbind, ibind);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.107 2006-06-26 12:26:21 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.108 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -133,13 +133,8 @@ A4GL_fgl_die (1);
 void
 A4GL_fgl_end ()
 {
-  if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
-#endif
-      A4GL_gotolinemode ();
-    }
+A4GL_stop_ui();
+
 A4GL_debug("Close db");
   A4GL_close_database ();
 A4GL_debug("Close errlog");
@@ -1267,7 +1262,7 @@ int a;
 }
 
 
-int aclfgl_expand_env_vars_in_cmdline(int n) {
+int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n) {
 	char *s;
 	char *s2;
 	if (n!=1) {

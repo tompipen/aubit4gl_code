@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.85 2006-06-23 14:08:44 mikeaubury Exp $
+# $Id: report.c,v 1.86 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -892,7 +892,6 @@ char *
 A4GL_decode_datatype (int dtype, int dim)
 {
   static char buff_2[256];
-  char *s;
   SPRINTF2 (buff_2, "%s %s", nm (dtype), sz (dtype, dim));
   //s=A4GLSQLCV_dtype_alias(buff_2);
   return buff_2;
@@ -939,8 +938,7 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99),
-				1);
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99,0), 1);
 }
 
 
@@ -952,7 +950,7 @@ A4GL_unload_report_table (struct BINDING *b)
   struct BINDING *ibind = 0;
   return;
   SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b));
-  A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind);
+  A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind,0);
 }
 
 /**
@@ -976,7 +974,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
     }
   strcat (buff, ")");
   A4GL_debug ("Attempting to execute %s\n", buff);
-  x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff,"__internal_report",1);
+  x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff,"__internal_report",1,0);
   A4GL_debug ("x=%p\n", x);
   A4GLSQL_execute_implicit_sql (x, 1);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
@@ -1048,7 +1046,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
 
   A4GL_debug ("prepare...");
-  pstmt = A4GLSQL_prepare_select (ibind, 0, obind, 0, buff,"__internal_report",2);
+  pstmt = A4GLSQL_prepare_select (ibind, 0, obind, 0, buff,"__internal_report",2,0);
   A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
   if (a4gl_sqlca.sqlcode != 0)
     {

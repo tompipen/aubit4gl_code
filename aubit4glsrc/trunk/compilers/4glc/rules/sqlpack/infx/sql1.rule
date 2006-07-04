@@ -27,7 +27,7 @@ ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),
 							acl_strdup(" ("),$<sql_string>4,kw_cb,0);
 	}
-	| query_specification_ss {
+	| query_specification_ss_converted {
 			$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");
 	}
 ;
@@ -268,7 +268,7 @@ grantee:
 
 
 view_definition_ss:
-	CREATE_VIEW table_name op_view_column_list AS query_specification_ss op_with_check_option {
+	CREATE_VIEW table_name op_view_column_list AS query_specification_ss_converted op_with_check_option {
 		add_feature("CREATE_VIEW_AS_SELECT");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,$<sql_string>5,kw_space,acl_strdup($<str>6),0);
 	
@@ -1284,7 +1284,7 @@ put_val_int : CHAR_VALUE  {$<sql_string>$=strdup(convstrsql($<str>1));}
 
 
 
-query_specification_ss:  query_specification_select {
+query_specification_ss_converted:  query_specification_select {
 	$<sql_string>$=make_select_stmt($<s_select>1);
 }
 ;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.34 2005-11-20 10:13:19 mikeaubury Exp $
+# $Id: io.c,v 1.35 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -90,20 +90,21 @@ A4GL_read_int (FILE * ofile)
 
 }
 
+#ifdef OBSOLETE
 /**
  * Write a string to a file.
  *
  * @param ofile A pointer to the opened file. If 0 use oufile.
  * @param la The integer to be writed in the file.
  */
-void
-A4GL_write_string (FILE * ofile, char*a)
+void A4GL_write_string (FILE * ofile, char*a)
 {
   int sizeo;
   sizeo=strlen(a);
   A4GL_write_int(ofile,sizeo);
   fwrite(a,sizeo,1,ofile);
 }
+#endif
 
 
 /**

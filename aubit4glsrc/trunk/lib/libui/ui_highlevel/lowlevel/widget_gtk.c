@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.28 2006-05-02 18:11:19 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.29 2006-07-04 14:22:57 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1548,7 +1548,7 @@ A4GL_display_generic (GtkWidget * k, char *s)
 		printf("MAYBE : '%s'\n",buff);
 	      	if (strlen(buff)==0) {
 				free(buff);
-					return;
+					return 0;
 		}
 				free(buff);
 

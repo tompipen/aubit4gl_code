@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.101 2006-05-17 15:49:23 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.102 2006-07-04 14:22:57 mikeaubury Exp $";
 #endif
 
 
@@ -42,10 +42,9 @@ static void setup_ok_cancel (GtkWidget * ok_cancel);
 int A4GL_LL_fieldnametoid (char *f, char *s, int n);
 void A4GL_win_stack (struct s_windows *w, int op);
 int A4GL_display_generic (GtkWidget * k, char *s);
-int A4GL_has_event (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_field (int cat, char *a,
-			      struct aclfgl_event_list *evt);
+//int A4GL_has_event (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt);
 GtkWidget *A4GL_make_widget (char *widget, char *config, int w);
 //void A4GL_clear_prompt(struct s_prompt *prmt) ;
 void A4GL_getxy_coords (int *x, int *y);
@@ -1690,7 +1689,7 @@ A4GL_LL_set_field_fore (void *field, int attr)
 
 
 
-int
+void
 A4GL_LL_set_field_opts (void *field, int oopt)
 {
   char *wtype;
@@ -1716,7 +1715,7 @@ A4GL_LL_set_field_opts (void *field, int oopt)
 	  A4GL_gui_set_active (field, 0);
 	}
     }
-  return 1;
+  return ;
 }
 
 void
@@ -2040,11 +2039,10 @@ A4GL_LL_set_field_userptr (void *field, void *ptr)
 }
 #endif
 
-int
+void
 A4GL_LL_set_field_status (void *f, int stat)
 {
   gtk_object_set_data (GTK_OBJECT (f), "STATUS", (void *) stat);
-  return stat;
 }
 
 void
@@ -2360,7 +2358,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 
   widgets[field_cnt++] =
     (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0,0,
-				      0, 0,"");
+				      0, 0,"","");
 
   gtk_fixed_put (GTK_FIXED (p), widgets[field_cnt - 1],
 		 (strlen (promptstr) + 1) * gui_xwidth, 0);
@@ -2784,7 +2782,7 @@ A4GL_LL_get_carat (void *vform)
 
 void *
 A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
-		    char *config, char *incl, void *id,char *tab_and_col)
+		    char *config, char *incl, void *id,char *tab_and_col,char* action)
 {
   //struct struct_scr_field *fprop;
   void *widget;
@@ -3352,7 +3350,7 @@ A4GL_LL_construct_large (char *orig, void *vevt, int init_key, int initpos,
   //fd.form_fields[0]=gtk_label_new("[");
   //fd.form_fields[2]=gtk_label_new("]");
 
-  fd.form_fields[0] = A4GL_LL_make_field (0, 0, 0, fwidth, 0, 0, 0, 0,"");	// gtk_entry_new();
+  fd.form_fields[0] = A4GL_LL_make_field (0, 0, 0, fwidth, 0, 0, 0, 0,"","");	// gtk_entry_new();
 
   fd.form_fields[1] = 0;
 
@@ -3551,7 +3549,7 @@ A4GL_LL_disp_h_menu (int num_opts)
 
 
 
-int
+void
 A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthelp,
 			 int attributes)
 {
@@ -3562,7 +3560,7 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
   fprintf (stderr, "disp_h_menu_opt\n");
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0)
-    return 0;
+    return ;
   sprintf (buff, "BUTTON_%d", opt_num);
   b = gtk_object_get_data (GTK_OBJECT (bb), buff);
 
@@ -3601,7 +3599,6 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
     gtk_widget_show (b);
 
 
-  return 1;
 }
 
 
@@ -4185,5 +4182,12 @@ int A4GL_LL_get_triggered_event() {
 
 
 void A4GL_LL_ui_exit() {
+	// Does nothing - required by api..
+}
+
+void A4GL_LL_enable_menu() {
+	// Does nothing - required by api..
+}
+void A4GL_LL_disable_menu() {
 	// Does nothing - required by api..
 }

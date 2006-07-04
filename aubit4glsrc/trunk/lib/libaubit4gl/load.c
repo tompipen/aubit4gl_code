@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.38 2006-06-23 14:08:44 mikeaubury Exp $
+# $Id: load.c,v 1.39 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -101,7 +101,9 @@ find_delims (char delim)
 {
   int cnt = 1;
   int a;
+#ifndef LOAD_ORIG
   int ml;
+#endif
   colptr[0] = &loadbuff[0];
 #ifdef LOAD_ORIG
   for (a = 0; a < strlen(loadbuff); a++)
@@ -289,7 +291,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   A4GL_debug ("Adding prepare.. for %s",insertstr);
 
 
-  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",23)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",23,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
 
 
   while (1)
@@ -670,7 +672,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 			strcat(sqlstmt,")");
 		}
 
-  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,sqlstmt,"_internal_load",24)) != 1) { 
+  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,sqlstmt,"_internal_load",24,0)) != 1) { 
 			A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
 			return 0; 
 		}

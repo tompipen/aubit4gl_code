@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.71 2006-03-17 19:01:30 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.72 2006-07-04 14:22:53 mikeaubury Exp $
 #
 */
 
@@ -863,8 +863,6 @@ A4GL_push_interval (struct ival *p)
 {
   struct ival *ptr;
   struct ival *ival;
-char buff[256];
-  int a;
   ptr = (struct ival *) acl_malloc (sizeof (struct ival), "push_ival");
   memset(ptr,0,sizeof(struct ival));
   memcpy (ptr, p, sizeof (struct ival));

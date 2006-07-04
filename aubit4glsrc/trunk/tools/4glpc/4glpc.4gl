@@ -1030,7 +1030,7 @@ if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
-let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 RUN lv_runstr CLIPPED RETURNING lv_status
 
 call check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -1137,7 +1137,7 @@ if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
-let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 RUN lv_runstr CLIPPED RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 end function
@@ -1198,7 +1198,7 @@ end if
 let lv_runstr=lv_runstr clipped, " ",mv_include clipped," -o ",lv_new clipped,
 		" -c ",lv_fname clipped," 2> ",mv_errfile
 
-let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
 if mv_verbose>=2 then
 	display "Running : ",lv_runstr clipped
@@ -1254,7 +1254,7 @@ if mv_verbose>=2 then
 end if
 
 
-let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 RUN lv_runstr clipped RETURNING lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 call add_obj(lv_new)
@@ -1313,7 +1313,7 @@ if mv_verbose>=4 then
 	display "OBJECTS       : ",mv_objects clipped
 end if
 
-let lv_runstr=expand_env_vars_in_cmdline(lv_runstr)
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 RUN lv_runstr CLIPPED RETURNING lv_status
 
 if mv_verbose>=5 then

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.64 2006-06-23 14:08:46 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.65 2006-07-04 14:22:54 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.64 2006-06-23 14:08:46 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.65 2006-07-04 14:22:54 mikeaubury Exp $";
 #endif
 
 
@@ -52,9 +52,9 @@ extern int lastlineno;
  * @param The string with the sql statement to be executed.
  */
 void
-LEXLIB_print_exec_sql (char *s)
+LEXLIB_print_exec_sql (char *s,int converted)
 {
-  printc ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d),1);\n", s,lastlineno);
+  printc ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d),1);\n", s,lastlineno,converted);
 }
 
 
@@ -65,14 +65,14 @@ LEXLIB_print_exec_sql (char *s)
  * @param
  */
 void
-LEXLIB_print_exec_sql_bound (char *s)
+LEXLIB_print_exec_sql_bound (char *s,int converted)
 {
   int c;
   printc ("{\n");
   c = print_bind_definition ('i');
   print_bind_set_value ('i');
   printc
-    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d),1);\n", c,s,lastlineno);
+    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d),1);\n", c,s,lastlineno,converted);
   printc ("}\n");
 }
 
@@ -216,11 +216,11 @@ LEXLIB_print_linked_cmd (int type, char *var)
 	}
       if (type == 'S')
 	printc
-	  ("A4GLSQL_execute_implicit_select((void *)A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d),1); /* 1 */",
+	  ("A4GLSQL_execute_implicit_select((void *)A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,1),1); /* 1 */",
 	   ni, no, buff,lastlineno);
       if (type == 'D' || type == 'U')
 	printc
-	  ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d),1);",  ni,buff,lastlineno);
+	  ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,1),1);",  ni,buff,lastlineno);
       printc ("}\n");
     }
   else
@@ -306,7 +306,7 @@ LEXLIB_print_prepare (char *stmt, char *sqlvar)
 	}
 	}
 
-  	printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s,_module_name,%d));\n", stmt, sqlvar,lastlineno);
+  	printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s,_module_name,%d,0));\n", stmt, sqlvar,lastlineno);
 }
 
 
@@ -486,7 +486,7 @@ LEXLIB_print_init_conn (char *db)
  * @param s A string with the complete SQL select statement text.
  */
 void
-LEXLIB_print_do_select (char *s)
+LEXLIB_print_do_select (char *s,int converted)
 {
 if (strstr(s," INTO TEMP ")==0) {
   printc ("A4GLSQL_execute_implicit_select(%s,1); /* 0 */\n}\n", s);
@@ -570,10 +570,10 @@ LEXLIB_print_curr_spec (int type, char *s)
 		if (ibindcnt) {print_bind_set_value('i');}
 		
 		switch(bt) {
-    		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d)", s,lastlineno);break;
-   		case 1: sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",_module_name,%d)", no,s,lastlineno); break;
-    		case 2: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d)", ni,s,lastlineno); break;
-    		case 3: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d)", no,ni,s,lastlineno); break;
+    		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0)", s,lastlineno);break;
+   		case 1: sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",_module_name,%d,0)", no,s,lastlineno); break;
+    		case 2: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,0)", ni,s,lastlineno); break;
+    		case 3: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,0)", no,ni,s,lastlineno); break;
 		}
   }
   if (type == 2)
@@ -597,7 +597,7 @@ LEXLIB_print_curr_spec (int type, char *s)
  * @return A string with the C implementation
  */
 char *
-LEXLIB_print_select_all (char *buff)
+LEXLIB_print_select_all (char *buff,int converted)
 {
   int ni, no;
   static char b2[20000];
@@ -607,7 +607,7 @@ LEXLIB_print_select_all (char *buff)
   no = print_bind_definition ('o');
   print_bind_set_value ('i');
   print_bind_set_value ('o');
-  os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d)", ni, no, buff,lastlineno);
+  os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,%d)", ni, no, buff,lastlineno,converted);
   if (os>=sizeof(b2)) {
 		A4GL_debug("print_select_all failed");
 		a4gl_yyerror("Internal error - string too long\n");
@@ -648,9 +648,9 @@ if (isvar==-1) {
 }
 
 if (isvar==0) {
-  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,%d,ibind);\n", file, delim, sql,ni);
+  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,%d,ibind,0);\n", file, delim, sql,ni);
 } else {
-  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ %s /*2*/,%d,ibind);\n", file, delim, sql,ni);
+  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ %s /*2*/,%d,ibind,0);\n", file, delim, sql,ni);
 }
  printc("}");
 
@@ -724,7 +724,7 @@ char tmpbuff[256];
   if (get_bind_cnt('o')) u+=2;
   if (get_bind_cnt('i')) u+=1;
   sprintf(tmpbuff,"\"A4GLsb_%d%d\"",sqlblock++,yylineno);
-  printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d));",tmpbuff,trans_quote(s),lastlineno);
+  printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d));",tmpbuff,trans_quote(s),lastlineno,0 /* never converted */);
   print_execute(tmpbuff,u);
 }
 
@@ -873,5 +873,9 @@ int
 doing_esql ()
 {
 	    return 0;
+}
+
+int LEXLIB_compile_time_convert() {
+	        return 0;
 }
 

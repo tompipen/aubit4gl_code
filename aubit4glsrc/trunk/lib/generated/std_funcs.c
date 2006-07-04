@@ -41,7 +41,7 @@ char *builtin_aclfgl_functions[]={
 "err_print",
 "err_quit",
 "errorlog",
-"expand_env_vars_in_cmdline",
+"aclfgl_expand_env_vars_in_cmdline",
 "fgl_buffertouched",
 "fgl_compare",
 "fgl_dialog_getbuffer",
