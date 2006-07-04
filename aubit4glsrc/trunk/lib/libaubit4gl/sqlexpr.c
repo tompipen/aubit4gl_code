@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.27 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.28 2006-07-04 15:17:10 mikeaubury Exp $
 #
 */
 
@@ -615,6 +615,7 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
     {
       rval = make_sql_string_and_free ("-", rval, 0);
     }
+
   if (p->alias)
     {
       if (A4GLSQLCV_check_runtime_requirement ("COLUMN_ALIAS_AS"))

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.89 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.90 2006-07-04 15:17:10 mikeaubury Exp $
 #
 */
 
@@ -1214,7 +1214,7 @@ A4GLSQLCV_generate_current (char *from, char *to)
 
 
 int A4GLSQLCV_check_runtime_requirement (char *s) {
-	if (A4GL_compile_time_convert()) {
+	if (!A4GL_compile_time_convert()) {
 		return 0;
 	} else {
 		return A4GLSQLCV_check_requirement(s) ;

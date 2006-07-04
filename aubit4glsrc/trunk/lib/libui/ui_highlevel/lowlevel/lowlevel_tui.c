@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.84 2006-07-04 14:22:57 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.85 2006-07-04 15:17:40 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.84 2006-07-04 14:22:57 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.85 2006-07-04 15:17:40 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -667,7 +667,7 @@ A4GL_LL_display_form (void *vf, int attrib, int curr_width, int curr_height,
   A4GL_debug ("In display_form");
   w = (PANEL *) currwin;	// A4GL_get_currwin ();
 
-  sprintf (buff, "%p", vf);
+  SPRINTF (buff, "%p", vf);
 
   if (w == 0)
     {
@@ -863,7 +863,7 @@ A4GL_LL_display_form (void *vf, int attrib, int curr_width, int curr_height,
 void
 A4GL_LL_out_linemode (char *s)
 {
-  printf ("%s\n", s);
+  PRINTF ("%s\n", s);
   fflush(stdout);
 }
 
@@ -2035,7 +2035,7 @@ A4GL_LL_dump_screen (int n, char *ptr, int mode)
 	    {
 	      buff = (char *) &attr;
 	      /* @todo - Fix for different ENDISMS */
-	      fprintf (f, "%c%c", buff[2], attr & 255);
+	      FPRINTF (f, "%c%c", buff[2], attr & 255);
 	    }
 
 	  if (mode == 1)
@@ -2095,10 +2095,10 @@ A4GL_LL_dump_screen (int n, char *ptr, int mode)
 		  attr = (int) '+';
 		}
 
-	      fprintf (f, "%c", attr & 255);
+	      FPRINTF (f, "%c", attr & 255);
 	    }
 	}
-      fprintf (f, "\n");
+      FPRINTF (f, "\n");
     }
   fclose (f);
   return 0;
@@ -3134,7 +3134,7 @@ A4GL_LL_get_value (char *s)
     return (void *) last_prompt_win;
   if (strcmp (s, "prompt.mode") == 0)
     return (void *) last_prompt_mode;
-  printf ("Unknown value...%s\n", s);
+  PRINTF ("Unknown value...%s\n", s);
   return (void *) 0;
 }
 
@@ -3169,7 +3169,7 @@ A4GL_do_pause (int curr_width, int curr_height, int iscurrborder,
   char buff[80];
   char buff_b[80];
   w = A4GL_LL_screen_width ();
-  sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
+  SPRINTF1 (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
   memset (buff_b, ' ', 80);
   buff_b[strlen (buff)] = 0;
@@ -3346,7 +3346,7 @@ int A4GL_LL_get_triggered_event() {
 static void A4GL_local_mja_endwin (void)
 {
 	      endwin ();
-	          printf ("\n");
+	          PRINTF ("\n");
 				        fflush (stdout);
 }
 

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.36 2006-07-04 14:22:56 mikeaubury Exp $";
+  "$Id: menu.c,v 1.37 2006-07-04 15:17:39 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -37,7 +37,6 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   ACL_Menu *menu;
   menu = menuv;
 
-  //printf("Displaying menu\n");
   /* Is the UI client going to do most of the work for us ? */
   if (A4GL_ll_menu_type () == 1)
     {
@@ -54,7 +53,6 @@ UILIB_A4GL_disp_h_menu (void *menuv)
       A4GL_LL_screen_update ();
       return;
     }
-  //printf("-----------------\n");
 #ifdef DEBUG
   A4GL_debug ("Adding window for menu");
   A4GL_debug ("Current metrics : %d %d %d", A4GL_get_curr_left (),
@@ -104,11 +102,11 @@ UILIB_A4GL_disp_h_menu (void *menuv)
     {
       if (menu->menu_type == ACL_MN_HORIZ_NOTBOXED)
 	{
-	  sprintf (disp_str, "%s:  ", menu->menu_title);
+	  SPRINTF1 (disp_str, "%s:  ", menu->menu_title);
 	  disp_cnt = strlen (disp_str) + 1;
 	}
       else
-	sprintf (disp_str, " %s ", menu->menu_title);
+	SPRINTF1 (disp_str, " %s ", menu->menu_title);
     }
   menu->menu_offset = disp_cnt;
 #ifdef DEBUG
@@ -182,11 +180,11 @@ A4GL_display_menu (ACL_Menu * menu)
     {
       if (menu->menu_type == ACL_MN_HORIZ_NOTBOXED)
 	{
-	  sprintf (disp_str, "%s: ", menu->menu_title);
+	  SPRINTF1 (disp_str, "%s: ", menu->menu_title);
 	  disp_cnt = strlen (disp_str) + 1;
 	}
       else
-	sprintf (disp_str, " %s ", menu->menu_title);
+	SPRINTF1 (disp_str, " %s ", menu->menu_title);
     }
 
   A4GL_h_disp_title (menu, disp_str);
@@ -237,8 +235,6 @@ A4GL_display_menu (ACL_Menu * menu)
 	      A4GL_debug ("Option %s is out of view", opt1->opt_title);
 	      if (prev_opt)
 		{
-				//printf("%d\n",prev_opt->page);
-				//printf("%d\n",menu->curr_page);
 		  if (prev_opt->page == menu->curr_page)
 		    {
 		      A4GL_debug ("More More More!!!");
@@ -367,12 +363,10 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 void
 A4GL_clr_menu_disp (ACL_Menu * menu)
 {
-//printf("clr_menu_disp\n");
   A4GL_LL_clr_menu_disp (menu, UILIB_A4GL_get_curr_width (),
 			 UILIB_A4GL_get_curr_height (),
 			 UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
 			 A4GL_get_currwin (), menu->menu_offset, menu->gw_y);
-//printf("done clr_menu_disp\n");
 }
 
 
@@ -385,7 +379,6 @@ A4GL_highlevel_menu_loop (void *menuv)
   ACL_Menu *menu;
 
 
-printf("Highlevel menu loop\n");
   menu = menuv;
   A4GL_chkwin ();
 
@@ -394,7 +387,6 @@ printf("Highlevel menu loop\n");
     {
       a = A4GL_menu_loop_type_1 (menu, menu->num_opts);
       if (a) A4GL_clr_error_nobox ("menu_callback");
-      //printf ("Return %d\n", a);
       return a;
     }
 
@@ -526,7 +518,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
       A4GL_debug ("wprintw - printing menu title %s @ %d %d",
 		  menu->menu_title, menu->gw_x, menu->gw_y);
 
-      sprintf (buff, "%s:", menu->menu_title);
+      SPRINTF1 (buff, "%s:", menu->menu_title);
       A4GL_h_disp_title (menu, buff);
       A4GL_LL_screen_update ();
 
@@ -584,7 +576,6 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
   int menu_response = -1;
 
   A4GL_LL_disp_h_menu (menu->num_opts);
-printf("menu_loop_type_1\n");
   if (A4GL_ll_menu_type () == 1)
     {
       ACL_Menu_Opts *mo;
@@ -612,10 +603,8 @@ printf("menu_loop_type_1\n");
 
       if (key < 0)
 	{			// button pressed
-	  //printf ("Key = %d\n", key);
 
 	  menu_response = (key * -1) - 1000;
-	  //printf ("menu_response=%d\n", menu_response);
 	}
       else
 	{

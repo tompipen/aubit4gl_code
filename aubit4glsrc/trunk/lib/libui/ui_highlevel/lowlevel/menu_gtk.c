@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.11 2006-05-02 18:11:19 mikeaubury Exp $
+# $Id: menu_gtk.c,v 1.12 2006-07-04 15:17:40 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu_gtk.c,v 1.11 2006-05-02 18:11:19 mikeaubury Exp $";
+  "$Id: menu_gtk.c,v 1.12 2006-07-04 15:17:40 mikeaubury Exp $";
 #endif
 
 
@@ -255,10 +255,10 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm,
 	      gtk_object_set_data (GTK_OBJECT (w), "Caption",
 				   A4GL_mn_caption (o->caption));
 	      gtk_object_set_data (GTK_OBJECT (w), "ID", o->id);
-	      sprintf (buff, "ID:%s", o->id);
+	      SPRINTF1 (buff, "ID:%s", o->id);
 	      gtk_object_set_data (GTK_OBJECT (menubar), buff, w);
 
-	      sprintf (buff, "MENUITEM%d", cnt++);
+	      SPRINTF1 (buff, "MENUITEM%d", cnt++);
 	      gtk_object_set_data (GTK_OBJECT (menubar), buff, w);
 	      if (parent == menubar)
 		{
@@ -394,7 +394,6 @@ A4GL_endis_menuitems (int en_dis, ...)
   char *ptr = 0;
   char buff[256];
   va_start (ap, en_dis);
-  printf ("endis:%d\n", en_dis);
   A4GL_debug ("*****enable/disable menuitems\n");
   //cwin = GTK_WIDGET (A4GL_get_curr_win_gtk ());
 
@@ -411,7 +410,6 @@ A4GL_endis_menuitems (int en_dis, ...)
 
   if (menubar == 0)
     {
-      printf ("No menu");
       A4GL_exitwith ("No menu displayed");
       return;
     }
@@ -419,10 +417,9 @@ A4GL_endis_menuitems (int en_dis, ...)
   while (ptr)
     {
       ptr = va_arg (ap, char *);
-      printf ("ptr=%s\n", ptr);
       if (ptr == 0)
 	break;
-      sprintf (buff, "ID:%s", ptr);
+      SPRINTF1 (buff, "ID:%s", ptr);
       A4GL_debug ("Looking for %s", buff);
       w = gtk_object_get_data (GTK_OBJECT (menubar), buff);
       if (w)
@@ -432,7 +429,6 @@ A4GL_endis_menuitems (int en_dis, ...)
 	}
       else
 	{
-	  printf ("No Widget\n");
 	  A4GL_debug ("No widget\n");
 	  A4GL_exitwith ("Invalid menu ID");
 	  return;

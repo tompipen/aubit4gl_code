@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.43 2006-07-04 14:22:56 mikeaubury Exp $
+# $Id: input_array.c,v 1.44 2006-07-04 15:17:38 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.43 2006-07-04 14:22:56 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.44 2006-07-04 15:17:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2990,7 +2990,7 @@ A4GL_field_name_match (void *f, char *s)
 	      0)
 	    {
 	      char buff[256];
-	      sprintf (buff, "%s.%s",
+	      SPRINTF2 (buff, "%s.%s",
 		       fdets->fileform->attributes.attributes_val[attr_no].
 		       tabname,
 		       fdets->fileform->attributes.attributes_val[attr_no].

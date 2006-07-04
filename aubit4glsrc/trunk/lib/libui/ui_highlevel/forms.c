@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.38 2006-04-28 12:07:09 mikeaubury Exp $";
+  "$Id: forms.c,v 1.39 2006-07-04 15:17:38 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -270,7 +270,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
   A4GL_clr_form (0);
   A4GL_LL_screen_update ();
 
-  sprintf (buff, "%p", f);
+  SPRINTF1 (buff, "%p", f);
   A4GL_add_pointer (buff, ATTRIBUTE, (void *) attr);
   f->form_details.border = UILIB_A4GL_iscurrborder ();
   f->form_details.insmode = 0;
@@ -889,7 +889,7 @@ UILIB_A4GL_get_curr_form (int warn_if_no_form)
 {
   char buff[80];
   A4GL_chkwin ();
-  sprintf (buff, "A4GL_get_currwinno()=%d", A4GL_get_currwinno ());
+  SPRINTF1 (buff, "A4GL_get_currwinno()=%d", A4GL_get_currwinno ());
 
 #ifdef DEBUG
   {
@@ -949,7 +949,6 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
   A4GL_debug ("display_form_new_win - name=%s got errorline as %d\n", name,
 	      f->form_details.error_line);
 
-  //printf("Scale form : %p\n",f->form);
   //A4GL_LL_scale_form (f, &rows, &cols);
 
 
@@ -966,7 +965,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 	      cols, x, y);
 
   A4GL_debug ("display_form_new_win - border=%d", f->form_details.border);
-  sprintf (buff, "%d %d", cols, rows);
+  SPRINTF2 (buff, "%d %d", cols, rows);
 #ifdef DEBUG
   {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line);
 				 */
@@ -984,8 +983,6 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
     {
       nlines++;
     }
-  //printf("Form=%p\n",f);
-  //printf("Form->form=%p\n",f->form);
   w = (void *) A4GL_create_window (name, x, y, cols, nlines,
 				   1,
 				   f->form_details.form_line,
@@ -1010,7 +1007,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
     {
       f->form_details.border = UILIB_A4GL_iscurrborder ();
       f->form_details.insmode = 0;
-      sprintf (buff, "%p", f);
+      SPRINTF1 (buff, "%p", f);
       A4GL_add_pointer (buff, ATTRIBUTE, (void *) attr);
       A4GL_clr_form (0);
       A4GL_LL_screen_update ();
@@ -1861,7 +1858,6 @@ A4GL_add_window (int x, int y, int w, int h, char *name, void *fd, void *win)
   void *ww = 0;
 
 
-//printf("Add window : %s %p %p",name,fd,win);
 
 
   for (a = 0; a < MAXWIN; a++)
@@ -1870,7 +1866,6 @@ A4GL_add_window (int x, int y, int w, int h, char *name, void *fd, void *win)
 	{
 	  strcpy (windows[a].name, name);
 	  A4GL_add_pointer (name, S_WINDOWSCODE, &windows[a]);
-	  //printf ("Setting form to %p\n", fd);
 	  windows[a].form = fd;
 	  windows[a].winattr.comment_line = 0;	//comment_line;
 	  windows[a].winattr.menu_line = 0;	//menu_line;

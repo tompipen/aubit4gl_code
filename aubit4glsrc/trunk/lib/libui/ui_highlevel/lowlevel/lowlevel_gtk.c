@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.102 2006-07-04 14:22:57 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.103 2006-07-04 15:17:40 mikeaubury Exp $";
 #endif
 
 
@@ -856,7 +856,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	  additional = 15;
 	}
       win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-      fprintf (stderr, "Screen size : %d %d\n",
+      FPRINTF (stderr, "Screen size : %d %d\n",
 	       (A4GL_LL_screen_width () + additional) * gui_xwidth,
 	       (A4GL_LL_screen_height () + 1) * gui_yheight);
       gtk_widget_set_usize (GTK_WIDGET (win),
@@ -1110,10 +1110,10 @@ A4GL_LL_getch_swin (void *window_ptr,char *why)
     {
       if (menu_response != -1)
 	{
-	  fprintf (stderr, "MENU RESPONSE : %d\n", menu_response);
+	  FPRINTF (stderr, "MENU RESPONSE : %d\n", menu_response);
 	  a = 0 - (menu_response + 1000);
 	  menu_response = -1;
-	  fprintf (stderr, "Returning : %d\n", a);
+	  FPRINTF (stderr, "Returning : %d\n", a);
 	  return a;
 	}
       a = get_keypress_from_buffer ();
@@ -1404,14 +1404,14 @@ A4GL_run_gtkrc (void)
 
   if (strlen (gtkrc) == 0)
     {
-      sprintf (buff2, "%s/etc/gtkrc", acl_getenv ("AUBITDIR"));
+      SPRINTF1 (buff2, "%s/etc/gtkrc", acl_getenv ("AUBITDIR"));
       gtkrc = buff2;
     }
 
 #if GTK_CHECK_VERSION(2,0,0)
-  sprintf (buff, "%s_2", gtkrc);
+  SPRINTF1 (buff, "%s_2", gtkrc);
 #else
-  sprintf (buff, "%s", gtkrc);
+  SPRINTF1 (buff, "%s", gtkrc);
 #endif
 
   A4GL_debug ("Reading RC File (gtk_rc_parse('%s')", buff);
@@ -1636,7 +1636,7 @@ A4GL_LL_set_field_back (void *field, int attr)
   //gtk_widget_set_style (field, rcolorStyles[attr & 7]);
 
   attr = attr & 0xffffff00;
-  sprintf (buff, "%x", attr >> 8);
+  SPRINTF1 (buff, "%x", attr >> 8);
   gtk_widget_set_name (GTK_WIDGET (field), buff);
 
 
@@ -1667,7 +1667,7 @@ A4GL_LL_set_field_fore (void *field, int attr)
   if (allocated_colors == 0)
     A4GL_alloc_colors ();
   attr = attr & 0xffffff00;
-  sprintf (buff, "%x", attr >> 8);
+  SPRINTF1 (buff, "%x", attr >> 8);
   gtk_widget_set_name (GTK_WIDGET (field), buff);
 
   /*
@@ -1777,10 +1777,10 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
 
   A4GL_debug ("Wadd_char to window %p %d %d %x", win, x, y, ch);
 
-  sprintf (buff_label, "LABEL_%p_%d_%d", win, x, y);
-  sprintf (buff_char, "LABEL_%p_%d_%d_C", win, x, y);
-  sprintf (buff_evt, "EVENTBOX_%p_%d_%d", win, x, y);
-  sprintf (buff_attr, "ATTR_%p_%d_%d", win, x, y);
+  SPRINTF3 (buff_label, "LABEL_%p_%d_%d", win, x, y);
+  SPRINTF3 (buff_char, "LABEL_%p_%d_%d_C", win, x, y);
+  SPRINTF3 (buff_evt, "EVENTBOX_%p_%d_%d", win, x, y);
+  SPRINTF3 (buff_attr, "ATTR_%p_%d_%d", win, x, y);
 
   cwin = gtk_object_get_data (GTK_OBJECT (win), "FIXED");
   lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff_label);
@@ -1818,10 +1818,6 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
 #endif
     }
 
-  if ((ch & 0xff) == 32)
-    {
-      //printf("Ign spc %s\n",buff_label);
-    }
 
 
   if (!lab)
@@ -1865,10 +1861,6 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
       gtk_widget_set_size_request (GTK_WIDGET (lab), gui_xwidth, gui_yheight);
 #endif
 
-      if ((ch & 0xff) == 32)
-	{
-	  //printf("Ign spc %s reset\n",buff_label);
-	}
 
     }
 
@@ -1904,10 +1896,10 @@ A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch,
 
   g_snprintf (label_text, sizeof (label_text), "%lc", ch);
 
-  sprintf (buff_label, "LABEL_%d_%d", x, y);
-  sprintf (buff_char, "LABEL_%d_%d_C", x, y);
-  sprintf (buff_evt, "EVENTBOX_%d_%d", x, y);
-  sprintf (buff_attr, "ATTR_%d_%d", x, y);
+  SPRINTF2 (buff_label, "LABEL_%d_%d", x, y);
+  SPRINTF2 (buff_char, "LABEL_%d_%d_C", x, y);
+  SPRINTF2 (buff_evt, "EVENTBOX_%d_%d", x, y);
+  SPRINTF2 (buff_attr, "ATTR_%d_%d", x, y);
 
   cwin = gtk_object_get_data (GTK_OBJECT (win), "FIXED");
   lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff_label);
@@ -2147,16 +2139,16 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
   gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5f);
   if (attr == 0 || attr == -1)
     {
-      sprintf (buff, "Error");
-      fprintf (stderr, "Error string : '%s'\n", str);
+      SPRINTF0 (buff, "Error");
+      FPRINTF (stderr, "Error string : '%s'\n", str);
       gtk_widget_set_name (GTK_WIDGET (frame), buff);
       gtk_widget_set_name (GTK_WIDGET (evt), buff);
       gtk_widget_set_name (GTK_WIDGET (label), buff);
     }
   else
     {
-      fprintf (stderr, "ATTR = %x\n", attr);
-      sprintf (buff, "%x", attr >> 8);
+      FPRINTF (stderr, "ATTR = %x\n", attr);
+      SPRINTF1 (buff, "%x", attr >> 8);
       gtk_widget_set_name (GTK_WIDGET (frame), buff);
       gtk_widget_set_name (GTK_WIDGET (evt), buff);
       gtk_widget_set_name (GTK_WIDGET (label), buff);
@@ -2165,7 +2157,6 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
 
 
 
-//printf("SET FIELD FORE 2: %x\n",att,attrr);
 //if (attr&0xffffff00) { A4GL_LL_set_field_back ((GtkWidget *) evt  , attr&0xffffff00); A4GL_LL_set_field_fore ((GtkWidget *) label, attr&0xffffff00); }
 
   gtk_widget_show (evt);
@@ -2205,7 +2196,7 @@ A4GL_LL_set_bkg (void *win, int attr)
   char buff[256];
   void *x;
   char *ptr;
-  sprintf (buff, "%x", attr >> 8);
+  SPRINTF1 (buff, "%x", attr >> 8);
   ptr = (char *) gtk_widget_get_name (GTK_WIDGET (win));
   // If its an appwindow - we don't want to rename it..
   if (strcmp (ptr, "AppWindow") == 0)
@@ -2286,7 +2277,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   cw = gtk_object_get_data (GTK_OBJECT (cw), "FIXED");
   if (cw == 0)
     {
-      fprintf (stderr, "NO FIXED...\n");
+      FPRINTF (stderr, "NO FIXED...\n");
     }
 
   if (iscurrborder)
@@ -2308,7 +2299,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   if (p == 0)
     {
       A4GL_exitwith ("No prompt window created");
-      fprintf (stderr, "Nope1\n");
+      FPRINTF (stderr, "Nope1\n");
       return 0;
     }
   last_prompt_win = p;
@@ -2412,7 +2403,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   if (a4gl_status != 0)
     {
       //last_prompt_mode = 2;
-      fprintf (stderr, "Nope2\n");
+      FPRINTF (stderr, "Nope2\n");
       return 2;
     }
 
@@ -2422,7 +2413,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
   //A4GLSQL_set_status (0, 0);
   A4GL_LL_screen_update ();
-  fprintf (stderr, "All ok\n");
+  FPRINTF (stderr, "All ok\n");
   return 1;
 }
 
@@ -2524,7 +2515,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
     {
       for (x = 0; x < 255; x++)
 	{
-	  sprintf (buff_label, "LABEL_%d_%d", x, a);
+	  SPRINTF2 (buff_label, "LABEL_%d_%d", x, a);
 	  labwidget = gtk_object_get_data (GTK_OBJECT (w), buff_label);
 	  if (labwidget)
 	    {
@@ -2714,16 +2705,6 @@ A4GL_LL_scale_form (void *vfd, int *y, int *x)
     }
 
 
-/*
-if (form->frmMagic!=0xABC123) {
-	char *ptr=0;
-	
-	A4GL_exitwith("INTERNAL ERROR BAD FORM");
-	printf("BAD FORM DETECTED\n");
-	*ptr=0;
-	exit(0);
-}
-*/
 
 
   A4GL_assertion (form->nwidgets
@@ -2804,7 +2785,7 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
     {
       // Ooops - didn't make a widget...
       widget = (void *) A4GL_make_widget ("ENTRY", "", cols);
-      fprintf (stderr,
+      FPRINTF (stderr,
 	       "WARNING - Coulnd't make widget as %s %s, made an entry field instead\n",
 	       widget_str, config_str);
       if (widget == 0)
@@ -2842,12 +2823,12 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
 
   if (strcmp (label, "[") == 0)
     {
-      fprintf (stderr, "Wimping out and not making a '[' label\n");
+      FPRINTF (stderr, "Wimping out and not making a '[' label\n");
       return 0;
     }
   if (strcmp (label, "]") == 0)
     {
-      fprintf (stderr, "Wimping out and not making a ']' label\n");
+      FPRINTF (stderr, "Wimping out and not making a ']' label\n");
       return 0;
     }
 
@@ -2986,11 +2967,9 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 
 
       m = gtk_object_get_data (GTK_OBJECT (cwidget), "MAXFIELD");
-      //printf("Max field = %d curcol=%d\n",m,form->curcol);
       buff[0] = mode;
       buff[1] = 0;
       utf = g_locale_to_utf8 (buff, -1, NULL, NULL, NULL);
-      //printf("form->ovlins=%d",form->ovlins);
 
       if (A4GL_LL_field_opts (cwidget) & AUBIT_O_BLANK && form->curcol == 0)
 	{
@@ -3007,7 +2986,6 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	}
       else
 	{
-	  //printf("overwrite\n");
 	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol,
 				    form->curcol + 1);
 	  iopos = form->curcol;
@@ -3114,7 +3092,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	default:
 	  if (mode > 255)
 	    {
-	      fprintf (stderr, "Unknown mode : %d\n", mode);
+	      FPRINTF (stderr, "Unknown mode : %d\n", mode);
 	      {
 		char *ptr = 0;
 		*ptr = 0;
@@ -3221,7 +3199,7 @@ tstamp (char *s)
       lltime = ntime;
       return;
     }
-  fprintf (ts, "%s Since START %f Since Last TS %f\n", s, ntime - ltime,
+  FPRINTF (ts, "%s Since START %f Since Last TS %f\n", s, ntime - ltime,
 	   ntime - lltime);
   lltime = ntime;
 }
@@ -3447,7 +3425,7 @@ A4GL_LL_hide_h_menu (void)
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0)
     return 0;
-  printf ("HIDE hide_h_menu\n");
+  A4GL_debug ("HIDE hide_h_menu\n");
   gtk_widget_hide (bb);
   return 1;
 }
@@ -3491,7 +3469,7 @@ A4GL_LL_disp_h_menu (int num_opts)
   int nbuttons;
   int a;
   char buff[255];
-  fprintf (stderr, "disp_h_menu\n");
+  FPRINTF (stderr, "disp_h_menu\n");
   if (A4GL_isyes (acl_getenv ("TRADMENU")))
     return 0;
 
@@ -3505,7 +3483,7 @@ A4GL_LL_disp_h_menu (int num_opts)
     {
       GtkWidget *b;
       GtkWidget *l;
-      sprintf (buff, "BUTTON_%d", nbuttons);
+      SPRINTF1 (buff, "BUTTON_%d", nbuttons);
       l = gtk_label_new (" ");
       b = gtk_button_new ();
       gtk_container_add (GTK_CONTAINER (b), l);
@@ -3527,11 +3505,11 @@ A4GL_LL_disp_h_menu (int num_opts)
 
   for (a = 0; a < nbuttons; a++)
     {
-      sprintf (buff, "BUTTON_%d", a);
+      SPRINTF1 (buff, "BUTTON_%d", a);
       b = gtk_object_get_data (GTK_OBJECT (bb), buff);
       if (a >= num_opts)
 	{
-	  printf ("Hide b\n");
+	  A4GL_debug ("Hide b\n");
 	  gtk_widget_hide (b);
 	}
       else
@@ -3557,17 +3535,17 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
   GtkWidget *bb;
   GtkWidget *l = 0;
   char buff[255];
-  fprintf (stderr, "disp_h_menu_opt\n");
+  FPRINTF (stderr, "disp_h_menu_opt\n");
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0)
     return ;
-  sprintf (buff, "BUTTON_%d", opt_num);
+  SPRINTF1 (buff, "BUTTON_%d", opt_num);
   b = gtk_object_get_data (GTK_OBJECT (bb), buff);
 
 
 
 
-  fprintf (stderr, "option %d =%s\n", opt_num, opt_title);
+  FPRINTF (stderr, "option %d =%s\n", opt_num, opt_title);
 
 
 #if GTK_CHECK_VERSION(2,0,0)
@@ -3578,14 +3556,14 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
     {
       gtk_button_set_label (GTK_BUTTON (b), stock_item (opt_title));
       gtk_button_set_use_stock (GTK_BUTTON (b), 1);
-      fprintf (stderr, "Stock\n");
+      FPRINTF (stderr, "Stock\n");
     }
   else
     {
       char *label_utf = g_locale_to_utf8 (opt_title, -1, NULL, NULL, NULL);
       l = gtk_object_get_data (GTK_OBJECT (b), "LABEL");
       gtk_label_set_text (GTK_LABEL (l), label_utf);
-      fprintf (stderr, "Set text (%s)\n", opt_title);
+      FPRINTF (stderr, "Set text (%s)\n", opt_title);
       //gtk_button_set_label(GTK_BUTTON(b), label_utf);
       g_free (label_utf);
     }
@@ -3778,7 +3756,7 @@ stock_item (char *s)
     }
   A4GL_trim (buff);
   a4gl_upshift (buff);
-  sprintf (buff2, "A4GL_STOCK_%s", buff);
+  SPRINTF1 (buff2, "A4GL_STOCK_%s", buff);
   ptr = acl_getenv (buff2);
   if (ptr == 0)
     return 0;
@@ -3803,7 +3781,7 @@ A4GL_LL_get_value (char *s)
 {
   if (strcmp (s, "prompt.field") == 0)
     {
-      fprintf (stderr, "last_prompt_field : %p\n", last_prompt_field);
+      FPRINTF (stderr, "last_prompt_field : %p\n", last_prompt_field);
       return (void *) last_prompt_field;
     }
   if (strcmp (s, "prompt.f") == 0)
@@ -3812,7 +3790,7 @@ A4GL_LL_get_value (char *s)
     return (void *) last_prompt_win;
   if (strcmp (s, "prompt.mode") == 0)
     return (void *) last_prompt_mode;
-  fprintf (stderr, "Unknown value...%s\n", s);
+  FPRINTF (stderr, "Unknown value...%s\n", s);
   return (void *) 0;
 }
 
