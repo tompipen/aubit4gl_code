@@ -32,6 +32,10 @@ int when_case_has_expr;
 static void add_used_block (int n, char *btype);
 static int is_used_block (int n, char *btype);
 static void free_need_globals (void);
+static char * find_record_dot (char *s);
+void need_globals (char *s);
+char *encode_records (char *s);
+int print_bind_set_value_param_3 (char *cname, char i);
 
 
 static char *
@@ -423,7 +427,7 @@ LEXLIB_print_curr_spec (int type, char *s)
 }
 
 char *
-LEXLIB_print_select_all (char *buff)
+LEXLIB_print_select_all (char *buff,int converted)
 {
   //int ni, no;
   //static char b2[20000];
@@ -934,7 +938,7 @@ LEXLIB_print_defer (int quit)
 }
 
 void
-LEXLIB_print_do_select (char *s)
+LEXLIB_print_do_select (char *s,int converted)
 {
 int l = 0;
 
@@ -963,7 +967,7 @@ LEXLIB_print_end_block (int n)
 }
 
 void
-LEXLIB_print_exec_sql (char *s)
+LEXLIB_print_exec_sql (char *s,int converted)
 {
   char *p;
 
@@ -973,7 +977,7 @@ LEXLIB_print_exec_sql (char *s)
 }
 
 void
-LEXLIB_print_exec_sql_bound (char *s)
+LEXLIB_print_exec_sql_bound (char *s,int converted)
 {
   char *p;
 
@@ -1457,7 +1461,7 @@ print_init_var (char *name, char *prefix, int alvl, int mlvl)
       sptr = buffx;
       while (1)
 	{
-	  ptr = find_record_dot (sptr);
+	  ptr = (char *)find_record_dot (sptr);
 	  if (ptr)
 	    {
 	      if (ptr[-1] == 's' && ptr[-2] == 'i' && ptr[-3] == 'h' && ptr[-4] == 't')	// 'this' backwards...
@@ -1978,7 +1982,7 @@ LEXLIB_print_sql_commit (int t)
 void
 LEXLIB_print_start_block (int n)
 {
-  printc(" # START BLOCK : %d %d\n",n,A4GL_get_ccnt());
+  printc(" # START BLOCK : %d %d\n",n,get_ccnt());
   /* do nothing */
 }
 
@@ -2629,7 +2633,7 @@ LEXLIB_print_linked_cmd (int type, char *var)
 
 void
 LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll,
-			       char *attr, void *iattr)
+			       char *attr, void *iattr,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -2641,7 +2645,7 @@ LEXLIB_print_display_array_p2 (void)
 }
 
 void
-LEXLIB_print_display_form (char *s, char *a)
+LEXLIB_print_display_form (char *s, char *a,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -2651,7 +2655,7 @@ LEXLIB_print_display_form (char *s, char *a)
 
 void
 LEXLIB_print_display_new (t_expr_str_list * exprs,
-			  t_dt_display * disp, char *attr)
+			  t_dt_display * disp, char *attr,char *Style)
 {
   int a;
   exprs = A4GL_rationalize_list (exprs);
@@ -2923,14 +2927,14 @@ LEXLIB_print_input_2 (char *s)
 
 void
 LEXLIB_print_input_fl (int byname, char *defs, char *helpno,
-		       t_field_list * fldlist, int attr)
+		       t_field_list * fldlist, char* attr,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
 
 void
 LEXLIB_print_prompt_1 (t_expr_str_list * expr, char *a1, char *a2,
-		       char *a3, char *a4, int timeout)
+		       char *a3, char *a4, int timeout,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -2980,7 +2984,7 @@ LEXLIB_A4GL_get_formloop_str (int type)
 
 char *
 LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs,
-			  char *srec, char *attr, void *inp_attr)
+			  char *srec, char *attr, void *inp_attr,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
   return 0;
@@ -3130,7 +3134,7 @@ LEXLIB_print_menu_block_end (int m, int n)
 }
 
 void
-LEXLIB_print_message (t_expr_str_list * expr, int type, char *attr, int wait)
+LEXLIB_print_message (t_expr_str_list * expr, int type, char *attr, int wait,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -3162,7 +3166,7 @@ LEXLIB_print_open_form_gui (char *fname, char *at_gui, char *like_gui,
 
 void
 LEXLIB_print_open_window (char *name, t_ow_open_window * type,
-			  t_expr_str * y, t_expr_str * x)
+			  t_expr_str * y, t_expr_str * x,char *Text,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -3174,7 +3178,7 @@ LEXLIB_print_event (int type)
 }
 
 void
-LEXLIB_print_error (t_expr_str_list * exprs, char *s, int wait)
+LEXLIB_print_error (t_expr_str_list * exprs, char *s, int wait,char *Style)
 {
   int a;
   exprs = A4GL_rationalize_list (exprs);
@@ -3225,7 +3229,7 @@ LEXLIB_print_construct_2 (char *driver)
 
 void
 LEXLIB_print_construct_fl (int byname, char *constr_str,
-			   t_field_list * field_list, char *attr, int cattr)
+			   t_field_list * field_list, char *attr, int cattr,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -3526,8 +3530,7 @@ free_need_globals (void)
     }
 }
 
-void
-need_globals (char *s)
+void need_globals (char *s)
 {
   char buff[255];
   char *ptr;
@@ -3555,7 +3558,7 @@ need_globals (char *s)
 }
 
 
-encode_records (char *s)
+char *encode_records (char *s)
 {
   static char buff[20000];
   int a;
@@ -4130,8 +4133,7 @@ print_bind_set_value_param_2 (char *cname, char i)
 }
 
 
-char *
-find_record_dot (char *s)
+char * find_record_dot (char *s)
 {
   int c;
   int count_squares = 0;
@@ -4151,8 +4153,7 @@ find_record_dot (char *s)
 
 
 
-int
-print_bind_set_value_param_3 (char *cname, char i)
+int print_bind_set_value_param_3 (char *cname, char i)
 {
   int a;
   char *xx;
@@ -4279,8 +4280,3 @@ LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
 void LEXLIB_A4GL_initlex() {
 	// required by API
 }
-
-int LEXLIB_compile_time_convert() {
-	        return 1;
-}
-

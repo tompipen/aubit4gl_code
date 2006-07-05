@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.19 2005-04-22 06:06:15 mikeaubury Exp $
+# $Id: mkyacc,v 1.20 2006-07-05 12:40:54 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -35,10 +35,21 @@
 #. ../../../../etc/aubitrc
 . ../../../etc/aubitrc
 
-if [ ! -w generated/fgl.yacc ] &&  [ -f generated/fgl.yacc ]
+ofile=$1
+if [ "$ofile" = "" ]
 then
-	chmod 666 generated/fgl.yacc
-	touch generated/fgl.yacc
+	ofile="generated/fgl.yacc"
+fi
+
+if [ ! -w $ofile ] &&  [ -f $ofile ]
+then
+	chmod 666 $ofile
+	touch $ofile
+fi
+
+if [ "$2" != "" ]
+then
+	A4GL_SQLPACK=$2
 fi
 
 if [ "$A4GL_SQLPACK" = "" ]
@@ -46,11 +57,11 @@ then
 	A4GL_SQLPACK="infx"
 fi
 
-cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule sqlpack/$A4GL_SQLPACK/*.rule  generated/single_words.rule > generated/fgl.yacc
-echo "/* ========================== from mkyacc =========================== */" >> generated/fgl.yacc
-echo "commands : | command1 ;" >> generated/fgl.yacc
+cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule sqlpack/$A4GL_SQLPACK/*.rule  generated/single_words.rule > $ofile
+echo "/* ========================== from mkyacc =========================== */" >> $ofile
+echo "commands : | command1 ;" >> $ofile
 
-echo "all_commands : commands_all opt_semi ;" >> generated/fgl.yacc
+echo "all_commands : commands_all opt_semi ;" >> $ofile
 
 echo 'command1	: all_commands  {
 chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",$<str>$);
@@ -67,19 +78,23 @@ A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstr
 A4GL_prchkerr(lastlineno,infilename);
 lastlineno=yylineno;
 }
-;' >> generated/fgl.yacc
+;' >> $ofile
+
 echo "
 commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
-commands_all1 	:" >> generated/fgl.yacc
-grep -h "^[^ ]*_cmd.*:" generated/fgl.yacc  | $AWK '
-(NR==1) {print " 		" $1 >> "generated/fgl.yacc"}
-(NR!=1) {print "	|	" $1 >> "generated/fgl.yacc"}'
-echo " | error;" >> generated/fgl.yacc
+commands_all1 	:" >> $ofile
 
-echo "/* ========================== end from mkyacc =========================== */" >> generated/fgl.yacc
-cat last.reqd >> generated/fgl.yacc
-echo "char *A4GL_compiled_sqlpack(void ) {char *s=\"$A4GL_SQLPACK\"; return A4GL_decode_packtype(s);}" >>  generated/fgl.yacc
-chmod 444 generated/fgl.yacc
+grep -h "^[^ ]*_cmd.*:" $ofile | $AWK '
+(NR==1) {print " 		" $1 }
+(NR!=1) {print "	|	" $1 }' > /tmp/aaa$$
+cat /tmp/aaa$$ >> $ofile
+rm /tmp/aaa$$
+echo " | error;" >> $ofile
+
+echo "/* ========================== end from mkyacc =========================== */" >> $ofile
+cat last.reqd >> $ofile
+echo "char *A4GL_compiled_sqlpack(void ) {char *s=\"$A4GL_SQLPACK\"; return A4GL_decode_packtype(s);}" >>  $ofile
+chmod 444 $ofile
 
 
 #------------------------------ EOF --------------------------------

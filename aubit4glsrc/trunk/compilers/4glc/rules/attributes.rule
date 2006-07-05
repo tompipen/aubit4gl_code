@@ -6,16 +6,41 @@
 
 
 opt_attributes:	/*empty*/ {
-	 A4GL_debug("Using default attribute of WHITE");
-		sprintf($<str>$,"-1");}
+	 	A4GL_debug("Using default attribute of WHITE");
+		sprintf($<str>$,"-1");
+		if (last_text) { free(last_text); }
+		if (last_style) { free(last_style); }
+		last_style=0; last_text=0;
+		}
 		| attributes_def {strcpy($<str>$,$<str>1);}
 ;
 
-attributes_def	: ATTRIBUTES OPEN_BRACKET attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>3); }
-| VARIABLE_ATTRIBUTES OPEN_BRACKET var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>3); }
-| ATTRIBUTES OPEN_BRACKET VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>5); }
-| ATTRIBUTES OPEN_BRACKET var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>3); }
-| KW_SIZE OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
+attributes_def	: ATTRIBUTES OPEN_BRACKET {
+				if (last_text) { free(last_text); }
+				if (last_style) { free(last_style); }
+				last_style=0; last_text=0;
+				} 
+		attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>4); }
+		| VARIABLE_ATTRIBUTES OPEN_BRACKET  {
+				if (last_text) { free(last_text); }
+				if (last_style) { free(last_style); }
+				last_style=0; last_text=0;
+				} 
+				var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>4); }
+		| ATTRIBUTES OPEN_BRACKET  {
+				if (last_text) { free(last_text); }
+				if (last_style) { free(last_style); }
+				last_style=0; last_text=0;
+				} 
+				VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>6); }
+		| ATTRIBUTES OPEN_BRACKET  {
+				if (last_text) { free(last_text); }
+				if (last_style) { free(last_style); }
+				last_style=0; last_text=0;
+				} 
+				var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>4); }
+		| KW_SIZE OPEN_BRACKET 
+			INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
 ;
 
 attribs_sec	: attribute {strcpy($<str>$,$<str>1);}
@@ -41,6 +66,13 @@ attribute	:BLACK     {sprintf($<str>$,"%d",attr_code("BLACK"));}
 		|DIM       {sprintf($<str>$,"%d",attr_code("DIM"));}
               	|NO_NEW_LINES {inp_flags=inp_flags | 0x1; strcpy($<str>$,"0");}  
 		| input_array_attributes {strcpy($<str>$,"0");}
+		| KW_STYLE EQUAL CHAR_VALUE {
+			if (last_style) {
+				free(last_style);
+			}
+			last_style=strdup($<str>3);
+			strcpy($<str>$,"0");
+		}
 	;
 
 win_attributes:	/*empty*/
@@ -48,19 +80,23 @@ win_attributes:	/*empty*/
 ;
 
 win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET {
-A4GL_debug("win_attributes_def");
-A4GL_debug("Started states");
-form_attrib.attrib=0;
-form_attrib.attrib_str=0;
-form_attrib.comment_line=0xff;
-form_attrib.form_line=0xff;
-form_attrib.error_line=0xff;
-form_attrib.menu_line=0xff;
-form_attrib.message_line=0xff;
-form_attrib.prompt_line=0xff;
-} wattribs_sec CLOSE_BRACKET {
-strcpy($<str>$,"");
-}
+		A4GL_debug("win_attributes_def");
+		A4GL_debug("Started states");
+		form_attrib.attrib=0;
+		form_attrib.attrib_str=0;
+		form_attrib.comment_line=0xff;
+		form_attrib.form_line=0xff;
+		form_attrib.error_line=0xff;
+		form_attrib.menu_line=0xff;
+		form_attrib.message_line=0xff;
+		form_attrib.prompt_line=0xff;
+		if (last_text) free(last_text);
+		if (last_style) free(last_style);
+		last_text=0;
+		last_style=0;
+		} wattribs_sec CLOSE_BRACKET {
+				strcpy($<str>$,"");
+		}
 ;
 
 wattribs_sec	: 	wattribute {strcpy($<str>$,$<str>1);}
@@ -84,8 +120,13 @@ wattribute	: attribute { form_attrib.attrib      =form_attrib.attrib|atoi($<str>
 			sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>1); 
 			form_attrib.attrib_str=(long)acl_strdup($<str>$);
 		}
-		| KW_STYLE EQUAL CHAR_VALUE
-		| KW_TEXT EQUAL CHAR_VALUE
+		| KW_TEXT EQUAL CHAR_VALUE {
+			if (last_text) {
+				free(last_text);
+			}
+			last_text=strdup($<str>3);
+			strcpy($<str>$,"0");
+		}
 ;
 
 

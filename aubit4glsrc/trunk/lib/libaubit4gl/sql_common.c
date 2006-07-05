@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.23 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: sql_common.c,v 1.24 2006-07-05 12:40:55 mikeaubury Exp $
 #
 */
 
@@ -1124,8 +1124,8 @@ A4GLSQL_read_columns (char *tabname, char *xcolname, int *dtype, int *size)
     }
 
   // NCHAR ? 
-  if (*dtype == 15)
-    *dtype = 0;
+  if (*dtype == DTYPE_NCHAR)
+    *dtype = DTYPE_CHAR;
   return rval;
 }
 

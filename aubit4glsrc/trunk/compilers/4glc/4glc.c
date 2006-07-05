@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.67 2006-05-13 12:34:37 mikeaubury Exp $
+# $Id: 4glc.c,v 1.68 2006-07-05 12:40:52 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,7 @@
 =====================================================================
 */
 
-extern int a4gl_yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set, otherwise in map.c */
+//extern int a4gl_yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set, otherwise in map.c */
 extern FILE *ferr;
 extern int yyleng;
 extern int chk4var;
@@ -103,15 +103,17 @@ main (int argc, char *argv[])
 
   A4GL_setarg0 (argv[0]);
   A4GL_debug ("Initializing 4glc\n");
-  memset(infilename,0,sizeof(infilename));
-   init_blk();
+  //memset(infilename,0,sizeof(infilename));
+   //init_blk();
   //init_states ();
-  a4gl_yydebug = 1;
+  
+  //a4gl_yydebug = 1;
 
   /* load settings from config file(s): */
   user_resource = A4GL_build_user_resources ();
 
-A4GL_initlex();
+  A4GL_initlex();
+
   import_package("default");
 
   ptr=acl_getenv_not_set_as_0("NAMESPACE");
@@ -145,10 +147,10 @@ A4GL_initlex();
 #endif
 
   x = initArguments (argc, argv);
-  if (a4gl_yydebug)
-    {
-      PRINTF ("Exit\n");
-    }
+  //if (a4gl_yydebug)
+    //{
+      //PRINTF ("Exit\n");
+    //}
 
   /* dump_var_records();*/
   A4GL_debug ("Exiting 4glc");

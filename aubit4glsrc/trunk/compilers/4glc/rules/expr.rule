@@ -441,10 +441,33 @@ function_call_expr:
 /*************************************************************************/
 	| UI_INTERFACE_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
-		sprintf(buff,"aclfgl_ui_interface_%s",$<str>2);
+		sprintf(buff,"aclfgl_ui_interface_%s",downshift($<str>2));
 		if (!A4GL_is_internal_class_function("ui_interface",$<str>2)) {
 			char buff[256];
 			sprintf(buff,"%s is not a member of the UI.Interface class");
+   			a4gl_yyerror(buff);
+   			YYERROR;
+		}
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
+	}
+	| UI_WINDOW_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		char buff[256];
+		sprintf(buff,"aclfgl_ui_window_%s",downshift($<str>2));
+		if (!A4GL_is_internal_class_function("ui_window",$<str>2)) {
+			char buff[256];
+			sprintf(buff,"%s is not a member of the UI.Window class");
+   			a4gl_yyerror(buff);
+   			YYERROR;
+		}
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
+	}
+	| UI_DOT_FORM_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		char buff[256];
+		
+		sprintf(buff,"aclfgl_ui_form_%s",downshift($<str>2));
+		if (!A4GL_is_internal_class_function("ui_form",$<str>2)) {
+			char buff[256];
+			sprintf(buff,"%s is not a member of the UI.Form class");
    			a4gl_yyerror(buff);
    			YYERROR;
 		}

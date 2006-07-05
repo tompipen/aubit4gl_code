@@ -61,20 +61,20 @@ opt_at : {
 
 display_b_n_cmd : DISPLAY_BY_NAME ibind_var_list display_attr {
 		add_feature("DISPLAY_BY_NAME");
-		print_display_by_name($<str>3);
+		print_display_by_name($<str>3,last_style);
                 } 
 ;
 
 
 display_cmd : KW_DISPLAY fgl_expr_list_ptr opt_at display_attr { 
 				add_feature("DISPLAY");
-				print_display_new($<ptr_list>2,$<display>3,$<str>4);
+				print_display_new($<ptr_list>2,$<display>3,$<str>4,last_style);
 		} 
 ;
 
 display_form_cmd : DISPLAY_FORM form_name display_attr {
 		add_feature("UI_DISPLAY_FORM");
-		print_display_form($<str>2,$<str>3);
+		print_display_form($<str>2,$<str>3,last_style);
 	}
 ;
 
@@ -87,7 +87,7 @@ display_array_cmd : DISPLAY_ARRAY {
 
 	opt_scroll display_attr
 		{
-		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>6,$<str>7,&curr_input_array_attribs);
+		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>6,$<str>7,&curr_input_array_attribs,last_style);
 	  	A4GL_new_events();
 		}
 	disp_rest {

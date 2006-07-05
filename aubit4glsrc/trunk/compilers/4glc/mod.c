@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.276 2006-07-04 14:22:32 mikeaubury Exp $
+# $Id: mod.c,v 1.277 2006-07-05 12:40:52 mikeaubury Exp $
 #
 */
 
@@ -58,6 +58,11 @@
 #define FEATURE_USED            'X'
 
 extern char force_ui[];
+extern int a4gl_yydebug;
+
+int             menu_cmd_cnt[MAXMENUOPTS] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int             menu_blk[MAXMENU]         ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
 /*
 =====================================================================
                     Constants definitions
@@ -158,7 +163,8 @@ int get_block_no (int n);
 //void copy_gen (int a, int b);
 extern int menu_cnt;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
-extern char *infilename;    /** The input (4gl file name */
+//extern char infilename[];    /** The input (4gl file name */
+char             infilename[132];
 extern int in_define;
 extern int doing_a_print;
 
@@ -169,6 +175,11 @@ static char upd_using_notpk[5000] = "";
 static int upd_using_notpk_cnt = 0;
 extern char current_upd_table[64];
 extern char current_ins_table[256];
+
+char *menu_attrib_comment=0;
+char *menu_attrib_style=0;
+char *menu_attrib_image=0;
+
 /*static int    const_cnt = 0;*/
 
 int rep_type = 0;	      /** The report type */
@@ -5122,7 +5133,7 @@ append_bind_list (struct binding_list *l, char *s)
 
 
 void
-print_display_by_name (char *attr)
+print_display_by_name (char *attr,char *Style)
 {
   int a;
   char tabname[40];
@@ -5146,7 +5157,7 @@ print_display_by_name (char *attr)
 
   dt.type = DT_DISPLAY_TYPE_FIELD_LIST;
 
-  print_display_new (l, &dt, attr);
+  print_display_new (l, &dt, attr,Style);
   start_bind ('i', 0);
 
 }
@@ -5280,14 +5291,55 @@ char *get_force_ui() {
 }
 
 
+void init_blk(void) {
+	int a;
+	for (a=0;a<MAXMENUOPTS;a++) menu_cmd_cnt[a] =0;
+	for (a=0;a<MAXMENU;a++) menu_blk[a]=0;
+}
 
 
+void clr_menu_attribs(void) {
+if (menu_attrib_comment) 	free(menu_attrib_comment);
+if (menu_attrib_style) 		free(menu_attrib_style);
+if (menu_attrib_image) 		free(menu_attrib_image);
+
+
+menu_attrib_comment=0;
+menu_attrib_style=0;
+menu_attrib_image=0;
+
+}
+
+void set_menu_attrib(char type, char*value) {
+	if (type=='S') {
+		if (menu_attrib_style) 		free(menu_attrib_style);
+		menu_attrib_style=strdup(value);
+	}
+	if (type=='C') {
+		if (menu_attrib_comment) 	free(menu_attrib_comment);
+		menu_attrib_comment=strdup(value);
+	}
+	if (type=='I') {
+		if (menu_attrib_image) 	free(menu_attrib_image);
+		menu_attrib_image=strdup(value);
+	}
+}
 
 int A4GL_is_internal_class_function(char *class,char *name) {
 	return 1;
 }
 
 
+void A4GLPARSER_initlib(void) {
+	init_blk();
+	  a4gl_yydebug = 1;
+	memset(infilename,0,sizeof(infilename));
+}
+
+
+int A4GLPARSE_doparse(void) {
+	return a4gl_yyparse();
+}
 
 
 /* ================================= EOF ============================= */

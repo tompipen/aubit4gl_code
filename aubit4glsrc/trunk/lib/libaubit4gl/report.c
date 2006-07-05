@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.86 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: report.c,v 1.87 2006-07-05 12:40:55 mikeaubury Exp $
 #
 */
 
@@ -810,35 +810,35 @@ A4GL_add_spaces (void)
 static char *
 nm (int n)
 {
-  switch (n & 15)
+  switch (n & DTYPE_MASK)
     {
-    case 0:
+    case DTYPE_CHAR:
       return "CHAR";
-    case 1:
+    case TYPE_SMINT:
       return "SMALLINT";
-    case 2:
+    case DTYPE_INT:
       return "INTEGER";
-    case 3:
+    case DTYPE_FLOAT:
       return "FLOAT";
-    case 4:
+    case DTYPE_SMFLOAT:
       return "SMALLFLOAT";
-    case 5:
+    case DTYPE_DECIMAL:
       return "DECIMAL";
-    case 6:
+    case DTYPE_SERIAL:
       return "INTEGER";
-    case 7:
+    case DTYPE_DATE:
       return "DATE";
-    case 8:
+    case DTYPE_MONEY:
       return "MONEY";
-    case 10:
+    case DTYPE_DTIME:
       return "DATETIME ";
-    case 11:
+    case DTYPE_BYTE:
       return "BYTE";
-    case 12:
+    case DTYPE_TEXT:
       return "TEXT";
-    case 13:
+    case DTYPE_VCHAR:
       return "VARCHAR";
-    case 14:
+    case DTYPE_INTERVAL:
       return "INTERVAL ";
     }
   return "CHAR";
@@ -852,31 +852,31 @@ static char *
 sz (int d, int s)
 {
   static char buff_1[256];
-  switch (d & 15)
+  switch (d & DTYPE_MASK)
     {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 7:
-    case 6:
-    case 11:
-    case 12:
+    case DTYPE_SMINT:
+    case DTYPE_INT:
+    case DTYPE_FLOAT:
+    case DTYPE_SMFLOAT:
+    case DTYPE_DATE:
+    case DTYPE_SERIAL:
+    case DTYPE_BYTE:
+    case DTYPE_TEXT:
       return "";
 
-    case 10:
+    case DTYPE_DTIME:
       return " YEAR TO FRACTION(5)";
 
-    case 8:
-    case 5:			/* decimal */
+    case DTYPE_MONEY:
+    case DTYPE_DECIMAL:			/* decimal */
       return "(32,16)";
 
-    case 0:
-    case 13:
+    case DTYPE_CHAR:
+    case DTYPE_VCHAR:
       SPRINTF1 (buff_1, "(%d)", s);
       return buff_1;
 
-    case 14:
+    case DTYPE_INTERVAL:
       SPRINTF0 (buff_1, " year to second(5)");
       return buff_1;
     }

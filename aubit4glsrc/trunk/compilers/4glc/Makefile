@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2006-03-18 01:35:17 briantan Exp $
+# $Id: Makefile,v 1.15 2006-07-05 12:40:52 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -197,7 +197,24 @@ API_lex.c: API_lex.spec ../../incl/a4gl_API_lex.h    ../../incl/a4gl_API_lex_lib
 ../../incl/a4gl_API_lex_lib.h: API_lex.spec	
 	${SH} ../../lib/bin/dlmagic $< -H > $@
 
+
+	
+#../../incl/a4gl_API_lex.h: API_lex.spec	
+#${SH} ../../lib/bin/dlmagic $< -h > $@
+
+#../../incl/a4gl_API_lex_lib.h: API_lex.spec	
+#${SH} ../../lib/bin/dlmagic $< -H > $@
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
+
+API_parse.c: API_parse.spec ../../incl/a4gl_API_parse.h    ../../incl/a4gl_API_parse_lib.h
+	${SH} ../../lib/bin/dlmagic $< > $@
+	${SH} ../../lib/bin/dlmagic $< -S > API_parse_self.c
+
+../../incl/a4gl_API_parse.h: API_parse.spec	
+	${SH} ../../lib/bin/dlmagic $< -h > $@
+
+../../incl/a4gl_API_parse_lib.h: API_parse.spec	
+	${SH} ../../lib/bin/dlmagic $< -H > $@
 
 mk_states.c: mk_states_c ${Y_OUTPUT}
 ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"

@@ -8,7 +8,7 @@ open_window_cmd :
 	OPEN_WINDOW open_win_name AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
 			add_feature("UI_OPEN_WINDOW");
 			form_attrib.iswindow=1;
-			print_open_window($<str>2,$<open_window_type>8,$<ptr>4,$<ptr>6);
+			print_open_window($<str>2,$<open_window_type>8,$<ptr>4,$<ptr>6,last_text,last_style);
 			sprintf($<str>$,"open window");
 			}
 ;

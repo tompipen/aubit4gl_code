@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.296 2006-07-04 14:22:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.297 2006-07-05 12:40:56 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.296 2006-07-04 14:22:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.297 2006-07-05 12:40:56 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -85,9 +85,12 @@ int is_system_variable (char *s);
 int isin_command (char *cmd_type);
 //static int print_bind_expr_portion (void *ptr, char i, int portion);
 char *rettype_integer (int n);
+//void LEXLIB_A4GL_initlex(void);
 
 
-char *get_force_ui();
+char *get_force_ui(void);
+void A4GL_set_compile_time_convert(int a);
+int LEXLIB_A4GLLEX_initlib(void) ;
 
 
 
@@ -3223,17 +3226,23 @@ LEXLIB_print_getfldbuf (char *fields)
 static void print_returning (void)
 {
   int cnt;
-  printc ("{ /* print_returning */\n");
-  cnt = print_bind_definition ('i');
-   print_bind_set_value ('i');
-  printc
-    /* warning! :       void    A4GLSQL_set_status      (int a, int sql); */
-/* I've added the check back in - even if its -1....*/
-/* I'm not sure why it went in...*/
-    ("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\nA4GL_pop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
-     cnt);
-  printc ("A4GL_pop_params(ibind,%d);}\n", cnt);
-  printc ("}\n");
+  if (ibindcnt) {
+  	printc ("{ /* print_returning */\n");
+  	cnt = print_bind_definition ('i');
+  	print_bind_set_value ('i');
+  } else {
+	  cnt=0;
+  }
+
+
+  //printc ("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\nA4GL_pop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n", cnt);
+  if (cnt) {
+  	printc("CHECK_RETURN_AND_POP(%d);",cnt);
+	printc("}");
+  } else {
+  	printc("CHECK_NO_RETURN;");
+  }
+  //printc ("}\n");
   printc ("}\n");
   start_bind('i',0);
 }
@@ -3758,7 +3767,7 @@ int sio_id;
  */
 void
 LEXLIB_print_construct_fl (int byname, char *constr_str, t_field_list *f_list, char *attr,
-		   int cattr)
+		   int cattr,char *Style)
 {
   int ccc;
   int k;
@@ -4006,7 +4015,7 @@ LEXLIB_A4GL_get_display_str (int type, char *s, char *f)
  * @param attr The attributes used in display.
  */
 void
-LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr)
+LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr,char *Style)
 {
 	int nexpr;
 	int cnt;
@@ -4088,7 +4097,7 @@ LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr
  * @param a The attributes used to open the form.
  */
 void
-LEXLIB_print_display_form (char *s, char *a)
+LEXLIB_print_display_form (char *s, char *a,char *Style)
 {
   printc ("A4GL_disp_form(%s,%s);\n", s, a);
 }
@@ -4109,7 +4118,7 @@ char *l_arrvar; char *l_srec; char *l_scroll; char *l_attr;
  * @param attr The attributes
  */
 void
-LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void *v_input_attr)
+LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void *v_input_attr,char *Style)
 {
   int cnt;
   struct input_array_attribs *ptr_input_attr;
@@ -4178,7 +4187,7 @@ LEXLIB_print_display_array_p2 (void)
  * @param wait The flag that indicates that should wait for some key.
  */
 void
-LEXLIB_print_error (t_expr_str_list *expr, char *s, int wait)
+LEXLIB_print_error (t_expr_str_list *expr, char *s, int wait,char *Style)
 {
   A4GL_print_expr_list_concat(expr);
   printc ("A4GL_display_error(%s,%d);\n", s, wait);
@@ -4880,7 +4889,7 @@ LEXLIB_print_input_2 (char *s)
  * @param fldlist The form field list from where the input is made.
  */
 void
-LEXLIB_print_input_fl (int byname, char *defs, char *helpno, struct fh_field_list *fldlist_fh, char *sattr)
+LEXLIB_print_input_fl (int byname, char *defs, char *helpno, struct fh_field_list *fldlist_fh, char *sattr,char *Style)
 {
   int ccc;
   int sio_id;
@@ -4950,7 +4959,7 @@ char *fldlist=0;
  */
 char *
 LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
-		   char *attr, void *v_input_attr)
+		   char *attr, void *v_input_attr,char *Style)
 {
   static char buff2[256];
   int cnt;
@@ -5673,7 +5682,7 @@ LEXLIB_print_push_variable (char *s)
  * @param wait The time that it waits.
  */
 void
-LEXLIB_print_message (t_expr_str_list *expr, int type, char *attr, int wait) 
+LEXLIB_print_message (t_expr_str_list *expr, int type, char *attr, int wait,char *Style) 
 {
 	int exprs;
         expr=A4GL_rationalize_list(expr);
@@ -5784,7 +5793,7 @@ LEXLIB_print_undo_use (char *s)
  * @param a4 The prompt attributes
  */
 void
-LEXLIB_print_prompt_1 (t_expr_str_list *expr, char *a1, char *a2, char *a3, char *a4, int timeout)
+LEXLIB_print_prompt_1 (t_expr_str_list *expr, char *a1, char *a2, char *a3, char *a4, int timeout,char *Style)
 {
   A4GL_print_expr_list_concat(expr);
   printc ("{char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n",get_sio_ids("PROMPT"), sizeof (struct s_prompt),get_sio_ids("PROMPT"),timeout);
@@ -5839,7 +5848,7 @@ LEXLIB_print_prompt_end (char *s)
  * @param type I think it is allways fixed with "cr_window"
  */
 void
-LEXLIB_print_open_window (char *name, t_ow_open_window *type,t_expr_str *y,t_expr_str *x)
+LEXLIB_print_open_window (char *name, t_ow_open_window *type,t_expr_str *y,t_expr_str *x,char *Text,char *Style)
 {
   if (type->type==OW_AT) {
   	  real_print_expr(y);
@@ -8389,12 +8398,12 @@ int LEXLIB_print_agg_defines(char t,int a) {
 return 0;
 }
 
-void LEXLIB_A4GL_initlex() {
+void LEXLIB_A4GL_initlex(void) {
 	/* does nothing - but required by the API...
 	calling this function will force initlib to be called - which is what we're really after.... */
 }
 
-int LEXLIB_A4GLLEX_initlib() {
+int LEXLIB_A4GLLEX_initlib(void) {
   if (A4GL_doing_pcode()) {
     	A4GL_setenv ("MARK_SCOPE_MODULE", "Y", 1);
     	A4GL_setenv ("NAMESPACE", "", 1);

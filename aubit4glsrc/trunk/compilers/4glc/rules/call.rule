@@ -34,10 +34,10 @@ call_ext: function_call_expr opt_return {
    		print_func_call($<ptr>$);
 		start_bind('i',0);
 	}
-   | DIALOGX DOT NAMED OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+   | DIALOG_DOT NAMED OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
-		sprintf(buff,"fgl_dialog_%s",$<str>3);
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>5,infilename,lastlineno);
+		sprintf(buff,"fgl_dialog_%s",downshift($<str>2));
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
    		print_func_call($<ptr>$);
 		start_bind('i',0);
 	}

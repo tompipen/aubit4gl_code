@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.91 2006-05-02 07:24:27 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.92 2006-07-05 12:40:55 mikeaubury Exp $
 */
 
 /**
@@ -290,6 +290,11 @@ assist.c:774: warning: no previous declaration for `aclfgl_list_delete'
 assist.c:801: warning: no previous declaration for `aclfgl_list_insert'
 assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 */
+
+
+
+#define CHECK_RETURN_AND_POP(x) if (_retvars!= x) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);A4GL_pop_params(ibind,x);}
+#define CHECK_NO_RETURN if (_retvars!= 0) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);}
 
 
 

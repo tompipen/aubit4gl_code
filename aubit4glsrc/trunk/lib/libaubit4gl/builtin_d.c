@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.72 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.73 2006-07-05 12:40:55 mikeaubury Exp $
 #
 */
 
@@ -908,7 +908,7 @@ A4GL_push_variable (void *ptr, int dtype)
 #ifdef DEBUG
   A4GL_debug ("In push variable dtype = %d (%x)", dtype, dtype);
 
-  if ((dtype & 0xff) == 0)
+  if ((dtype & DTYPE_MASK) == DTYPE_CHAR)
     {
       A4GL_debug ("Value = '%s'\n", A4GL_null_as_null(ptr));
     }
@@ -925,8 +925,7 @@ A4GL_push_variable (void *ptr, int dtype)
 
 #ifdef DEBUG
   {
-    A4GL_debug ("Pushing variable %p dtype %d   %d", ptr, dtype & DTYPE_MASK,
-	   dtype);
+    A4GL_debug ("Pushing variable %p dtype %d   %d", ptr, dtype & DTYPE_MASK, dtype);
   }
 #endif
 

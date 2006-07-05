@@ -131,7 +131,7 @@ print_construct_1 -> void
 
 print_construct_2 char* driver -> void
 
-print_construct_fl int byname,char* constr_str,t_field_list* field_list,char* attr,int cattr -> void
+print_construct_fl int byname,char* constr_str,t_field_list* field_list,char* attr,int cattr char* style -> void
 
 print_befaft_field_1 char* fieldexpr -> void
 
@@ -158,15 +158,15 @@ A4GL_get_display_str int type,char* s,char* f -> char*
 rettype char* s -> char*
 
 
-print_display_new t_expr_str_list* exprs t_dt_display* disp char* attr -> void
+print_display_new t_expr_str_list* exprs t_dt_display* disp char* attr char* style -> void
 
-print_display_form char* s,char* a -> void
+print_display_form char* s,char* a char* style -> void
 
-print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr,void* iattr -> void
+print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr,void* iattr char* style  -> void
 
 print_display_array_p2 -> void
 
-print_error t_expr_str_list* expr char* s,int wait -> void
+print_error t_expr_str_list* expr char* s,int wait char* style -> void
 
 print_exit_program t_expr_str* expr -> void
 
@@ -217,9 +217,9 @@ print_input_1 -> void
 
 print_input_2 char* s -> void
 
-print_input_fl int byname,char* defs,char* helpno,t_field_list* fldlist,char* attr -> void
+print_input_fl int byname,char* defs,char* helpno,t_field_list* fldlist,char* attr char* style -> void
 
-print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr -> char*
+print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr char* style -> char*
 
 A4GL_get_formloop_str int type -> char*
 
@@ -277,7 +277,7 @@ print_op char* type -> void
 
 print_niy char* type -> void
 
-print_message t_expr_str_list* expr int type,char* attr,int wait -> void
+print_message t_expr_str_list* expr int type,char* attr,int wait char* style -> void
 
 print_system_run void* runstr int type,char* rvar -> void
 
@@ -301,13 +301,13 @@ print_execute char* stmt,int exec_using -> void
 
 print_execute_immediate char* stmt -> void
 
-print_prompt_1 t_expr_str_list* expr char* a1,char* a2,char* a3,char* a4,int timeout -> void
+print_prompt_1 t_expr_str_list* expr char* a1,char* a2,char* a3,char* a4,int timeout char* style -> void
 
 print_prompt_forchar -> void
 
 print_prompt_end char* s -> void
 
-print_open_window char* name,t_ow_open_window* type t_expr_str* y t_expr_str* x -> void
+print_open_window char* name,t_ow_open_window* type t_expr_str* y t_expr_str* x char* text char* style -> void
 
 print_open_form 	char* a1 t_expr_str* a2 -> void
 print_open_form_gui 	char* fname char* at_gui,char* like_gui char* disable char* formhandler  -> void

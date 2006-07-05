@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.39 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: load.c,v 1.40 2006-07-05 12:40:55 mikeaubury Exp $
 #
 */
 
@@ -331,7 +331,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
 
 	  ibind[a].ptr = colptr[a];
-	  ibind[a].dtype = 0;
+	  ibind[a].dtype = DTYPE_CHAR;
 	  ibind[a].start_char_subscript = 0;
 	  ibind[a].end_char_subscript = 0;
 	
@@ -468,7 +468,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	         for (a = 0; a < cnt; a++) {
 	  			ibind[a].ptr = colptr[a];
 				colptr[a]="";
-	                        ibind[a].dtype = 0;
+	                        ibind[a].dtype = DTYPE_CHAR;
 	                        ibind[a].start_char_subscript = 0;
 	                        ibind[a].end_char_subscript = 0;
 	         }
@@ -525,7 +525,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 			colptr[a]="";
 	  		ibind[a].ptr = colptr[a];
 			
-	  		ibind[a].dtype = 0;
+	  		ibind[a].dtype = DTYPE_CHAR;
 	  		ibind[a].start_char_subscript = 0;
 	  		ibind[a].end_char_subscript = 0;
 	  	}
@@ -689,7 +689,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 	{
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
 	  ibind[a].ptr = colptr[a];
-	  ibind[a].dtype = 0;
+	  ibind[a].dtype = DTYPE_CHAR;
 	  ibind[a].size = strlen (colptr[a]);
 	}
       A4GL_debug ("EXECUTE SQL nfields=%d", nfields);

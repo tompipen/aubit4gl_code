@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.56 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: ui.c,v 1.57 2006-07-05 12:40:55 mikeaubury Exp $
 #
 */
 
@@ -1395,11 +1395,11 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
       A4GL_debug ("a range has been specified '%s' to '%s'", ptr, ptr3);
     }
 
-  if (dtype != 0)
+  if (dtype != DTYPE_CHAR)
     {
         int dim=0;
 
-      if (dtype==5||dtype==8) {
+      if (dtype==DTYPE_DECIMAL||dtype==DTYPE_MONEY) {
                 dim=0x2010;
         }
       A4GL_debug ("Not a string expression");

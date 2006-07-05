@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.83 2006-06-26 12:25:45 mikeaubury Exp $
+# $Id: 1.reqd,v 1.84 2006-07-05 12:40:53 mikeaubury Exp $
 #
 */
 
@@ -160,7 +160,7 @@ char 		curr_func[256]="Module";
 char 		where_having[1024];
 char		menu[2048];
 char 		varstring[100];
-char 		infilename[132]="";
+extern char 		infilename[];
 char 		hdr_dbname[64]="";
 char 		current_upd_table[64]="";
 char 		current_del_table[64]="";
@@ -185,8 +185,8 @@ int 		iskey=0;
 int 		insql=0;
 int 		menu_cnt=0;
 int 		chk4var=0;
-int 		menu_cmd_cnt[MAXMENUOPTS] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int 		menu_blk[MAXMENU]         ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+extern int 		menu_cmd_cnt[MAXMENUOPTS] ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+extern int 		menu_blk[MAXMENU]         ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int 		in_sql=0;
 int 		continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
 int 		in_cmd[]={0,0,0,0,0,0,0,0,0,0};
@@ -196,6 +196,9 @@ int 		message_cnt=0;
 int 		doing_a_print=0;
 int 		class_cnt  =0;
 char mv_parent_class[255];
+char *last_style=0;
+char *last_text=0;
+
 
 struct 		rep_structure rep_struct;
 struct 		pdf_rep_structure pdf_rep_struct;

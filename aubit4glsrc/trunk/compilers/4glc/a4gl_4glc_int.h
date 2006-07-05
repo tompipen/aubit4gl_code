@@ -515,7 +515,10 @@ void add_replace(char *a,char *b);
 void drop_replace(char *a);
 
 struct expr_str *A4GL_generate_variable_expr(char *s) ;
-void print_display_by_name (char *attr);
+void print_display_by_name (char *attr,char *Style);
+void set_menu_attrib(char type, char*value);
+void clr_menu_attribs(void);
+void A4GL_warn(char *s);
 
 long
 get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr);

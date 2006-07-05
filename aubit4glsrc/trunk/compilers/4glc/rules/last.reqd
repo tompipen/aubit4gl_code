@@ -53,12 +53,13 @@ set_str(void *p, char *s)
 	y = (YYSTYPE *) p;
 	strcpy( y->str, s );
 }
-
+/*
 void init_blk(void) {
 int a;
 for (a=0;a<MAXMENUOPTS;a++) menu_cmd_cnt[a] =0;
 for (a=0;a<MAXMENU;a++) menu_blk[a]=0;
 }
+*/
 
 /* ====================== last.reqd =============================== */
 

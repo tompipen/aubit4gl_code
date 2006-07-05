@@ -12,14 +12,31 @@ menu_cmd	:	MENU {
    	push_blockcommand("MENU");
         menu_blk[menu_cnt]=get_blk_no();
 	do_print_menu_1();
+	clr_menu_attribs();
 	}
-	menu_title menu_commands END_MENU {
+	menu_title op_menu_attribs menu_commands END_MENU {
    		print_end_menu_1(menu_blk[menu_cnt]);
    		add_continue_blockcommand ("MENU");
 		print_end_menu_2(menu_blk[menu_cnt]);
    		pop_blockcommand("MENU");
    		pop_menu();
 		}
+;
+
+op_menu_attribs: 
+	| menu_attribs
+;
+	
+menu_attribs: 
+	menu_attrib
+	| menu_attribs KW_COMMA menu_attrib
+;
+
+menu_attrib : 
+	KW_STYLE   EQUAL CHAR_VALUE { set_menu_attrib('S',$<str>3); }
+| 	KW_COMMENT EQUAL CHAR_VALUE { set_menu_attrib('C',$<str>3); }
+| 	KW_IMAGE EQUAL CHAR_VALUE   { set_menu_attrib('I',$<str>3); }
+
 ;
 
 menu_block_command : 

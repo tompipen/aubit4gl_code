@@ -3,8 +3,8 @@ int vtype;
 int a;
 		add_feature("LOCATE_MEM");
 for (a=0;a<get_bind_cnt('o');a++) {
-	vtype=scan_variable(get_bind_varname('o',a))&0xf;
-	if (vtype!=11&&vtype!=12) {
+	vtype=scan_variable(get_bind_varname('o',a))&DTYPE_MASK;
+	if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
 		a4gl_yyerror("Only Byte & Text may be located...");
 		YYERROR;
 	}
@@ -16,8 +16,8 @@ int vtype;
 int a;
 		add_feature("LOCATE_FILE");
 for (a=0;a<get_bind_cnt('o');a++) {
-	vtype=scan_variable(get_bind_varname('o',a))&0xf;
-	if (vtype!=11&&vtype!=12) {
+	vtype=scan_variable(get_bind_varname('o',a))&DTYPE_MASK;
+	if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
 		printf("vtype=%d (%x)\n",vtype,vtype);
 		a4gl_yyerror("Only Byte & Text may be located...");
 		YYERROR;

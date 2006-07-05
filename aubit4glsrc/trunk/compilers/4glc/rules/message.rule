@@ -3,15 +3,15 @@ message_cmd : KWMESSAGE {
 ;
 
 msg_next : fgl_expr_list_ptr {
-		print_message($<ptr_list>1,0,"0",0);
+		print_message($<ptr_list>1,0,"0",0,last_style);
 		add_feature("MESSAGE");
 	}
  	| fgl_expr_list_ptr attributes_def op_msg_wait { 
-		print_message($<ptr_list>1,0,$<str>2,atoi($<str>3));
+		print_message($<ptr_list>1,0,$<str>2,atoi($<str>3),last_style);
 		add_feature("MESSAGE");
 	} 
  	| fgl_expr_list_ptr msg_wait { 
-			print_message($<ptr_list>1, 0,"0",atoi($<str>2));
+			print_message($<ptr_list>1, 0,"0",atoi($<str>2),last_style);
 			add_feature("MESSAGE");
 	} 
 	| fgl_expr_list_ptr gui_message 
