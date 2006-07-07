@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.65 2006-07-04 14:22:54 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.66 2006-07-07 15:10:22 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.65 2006-07-04 14:22:54 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.66 2006-07-07 15:10:22 mikeaubury Exp $";
 #endif
 
 
@@ -69,8 +69,8 @@ LEXLIB_print_exec_sql_bound (char *s,int converted)
 {
   int c;
   printc ("{\n");
-  c = print_bind_definition ('i');
-  print_bind_set_value ('i');
+  c = LEXLIB_print_bind_definition ('i');
+  LEXLIB_print_bind_set_value ('i');
   printc
     ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d),1);\n", c,s,lastlineno,converted);
   printc ("}\n");
@@ -112,12 +112,12 @@ LEXLIB_print_foreach_next (char *cursorname, int has_using, char *into)
 {
   int ni;
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
-  print_open_cursor(cursorname,has_using);
+  LEXLIB_print_open_cursor(cursorname,has_using);
   /*printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);*/
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
   printc ("while (1) {\n");
-  ni = print_bind_definition ('o');
-  print_bind_set_value('o');
+  ni = LEXLIB_print_bind_definition ('o');
+  LEXLIB_print_bind_set_value('o');
   printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
 	  FETCH_RELATIVE, ni);
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
@@ -192,11 +192,11 @@ LEXLIB_print_linked_cmd (int type, char *var)
 	  add_bind ('i', buff);
 	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
 	}
-      if (type == 'S') no = print_bind_definition ('o');
-      ni = print_bind_definition ('i');
+      if (type == 'S') no = LEXLIB_print_bind_definition ('o');
+      ni = LEXLIB_print_bind_definition ('i');
 
-      if (type == 'S') print_bind_set_value ('o');
-      print_bind_set_value ('i');
+      if (type == 'S') LEXLIB_print_bind_set_value ('o');
+      LEXLIB_print_bind_set_value ('i');
 	
       if (type == 'S')
 	sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
@@ -266,9 +266,9 @@ LEXLIB_print_put (char *cname,char *putvals)
 {
   int n;
   printc ("{\n");
-  print_pushchar(cname);
-  n = print_bind_definition ('i');
-  print_bind_set_value ('i');
+  LEXLIB_print_pushchar(cname);
+  n = LEXLIB_print_bind_definition ('i');
+  LEXLIB_print_bind_set_value ('i');
   printc ("A4GLSQL_put_insert(ibind,%d);\n", n);
   printc ("}\n");
 }
@@ -328,8 +328,8 @@ LEXLIB_print_execute (char *stmt, int using)
 
   if (using==1) {
       printc ("{\n");
-      ni = print_bind_definition ('i');
-      print_bind_set_value ('i');
+      ni = LEXLIB_print_bind_definition ('i');
+      LEXLIB_print_bind_set_value ('i');
       printc ("A4GLSQL_execute_sql(%s,%d,ibind);\n", stmt, ni);
       printc ("}\n");
     }
@@ -338,8 +338,8 @@ LEXLIB_print_execute (char *stmt, int using)
       printc ("{\n");
       printc("void *_save_bind_ptr;");
       printc("int   _save_bind_cnt;");
-      no = print_bind_definition ('o');
-      print_bind_set_value ('o');
+      no = LEXLIB_print_bind_definition ('o');
+      LEXLIB_print_bind_set_value ('o');
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_save_bind_ptr,&_save_bind_cnt,obind,%d);",stmt,no);
       printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s),0); /* 2 */\n", stmt);
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',0,0,_save_bind_ptr,_save_bind_cnt);",stmt);
@@ -352,10 +352,10 @@ LEXLIB_print_execute (char *stmt, int using)
       printc("int   _osave_bind_cnt;");
       printc("void *_isave_bind_ptr;");
       printc("int   _isave_bind_cnt;");
-      no = print_bind_definition ('o');
-      ni = print_bind_definition ('i');
-      print_bind_set_value ('o');
-      print_bind_set_value ('i');
+      no = LEXLIB_print_bind_definition ('o');
+      ni = LEXLIB_print_bind_definition ('i');
+      LEXLIB_print_bind_set_value ('o');
+      LEXLIB_print_bind_set_value ('i');
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);",stmt,no);
       printc ("A4GLSQL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);",stmt,ni);
       printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s),0); /* 3 */\n", stmt);
@@ -406,8 +406,8 @@ LEXLIB_print_open_cursor (char *cname, int has_using)
    if (has_using) {
 	int ni;
       	printc ("{\n");
-      	ni = print_bind_definition ('i');
-      	print_bind_set_value ('i');
+      	ni = LEXLIB_print_bind_definition ('i');
+      	LEXLIB_print_bind_set_value ('i');
   	printc ("A4GLSQL_open_cursor(%s,%d,ibind);\n", cname,ni);
   	printc("}");
   } else {
@@ -448,7 +448,7 @@ e=fp->fp->fetch_expr;
 	if (e->expr_type==ET_EXPR_LITERAL_LONG) {
 		sprintf(buff,"%ld",e->u_data.expr_long);
 	} else {
-		print_expr(e);
+		LEXLIB_print_expr(e);
 		sprintf(buff,"A4GL_pop_long()");
 	}
   }
@@ -564,10 +564,10 @@ LEXLIB_print_curr_spec (int type, char *s)
 		bt=0;
 		ni=ibindcnt;
 		no=obindcnt;
-		if (obindcnt) {bt++;print_bind_definition('o');}
-		if (ibindcnt) {bt+=2;print_bind_definition('i');}
-		if (obindcnt) {print_bind_set_value('o');}
-		if (ibindcnt) {print_bind_set_value('i');}
+		if (obindcnt) {bt++;LEXLIB_print_bind_definition('o');}
+		if (ibindcnt) {bt+=2;LEXLIB_print_bind_definition('i');}
+		if (obindcnt) {LEXLIB_print_bind_set_value('o');}
+		if (ibindcnt) {LEXLIB_print_bind_set_value('i');}
 		
 		switch(bt) {
     		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0)", s,lastlineno);break;
@@ -603,10 +603,10 @@ LEXLIB_print_select_all (char *buff,int converted)
   static char b2[20000];
   int os;
   printc ("{\n");
-  ni = print_bind_definition ('i');
-  no = print_bind_definition ('o');
-  print_bind_set_value ('i');
-  print_bind_set_value ('o');
+  ni = LEXLIB_print_bind_definition ('i');
+  no = LEXLIB_print_bind_definition ('o');
+  LEXLIB_print_bind_set_value ('i');
+  LEXLIB_print_bind_set_value ('o');
   os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,%d)", ni, no, buff,lastlineno,converted);
   if (os>=sizeof(b2)) {
 		A4GL_debug("print_select_all failed");
@@ -638,8 +638,8 @@ LEXLIB_print_unload (char *file, char *delim, char *sql)
   //int os;
   int isvar=-1;
   printc ("{\n");
-  ni = print_bind_definition ('i');
-  print_bind_set_value ('i');
+  ni = LEXLIB_print_bind_definition ('i');
+  LEXLIB_print_bind_set_value ('i');
 
 if (strncmp(sql,"SELECT ",7)==0) isvar=0;
 
@@ -725,7 +725,7 @@ char tmpbuff[256];
   if (get_bind_cnt('i')) u+=1;
   sprintf(tmpbuff,"\"A4GLsb_%d%d\"",sqlblock++,yylineno);
   printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d));",tmpbuff,trans_quote(s),lastlineno,0 /* never converted */);
-  print_execute(tmpbuff,u);
+  LEXLIB_print_execute(tmpbuff,u);
 }
 
 
@@ -825,7 +825,7 @@ void print_exists_subquery(int i, struct expr_exists_sq *e) {
 	printc("A4GL_push_char(\"%s\");",e->subquery);
 	printc("{");
 	n=e->nibind;
-	print_bind('i');
+	LEXLIB_print_bind('i');
         printc("A4GL_push_binding(ibind,%d);",n);
 	if (i) printc("A4GL_pushop(OP_EXISTS);");
 	else   printc("A4GL_pushop(OP_NOTEXISTS);");
@@ -834,11 +834,11 @@ void print_exists_subquery(int i, struct expr_exists_sq *e) {
 
 void print_in_subquery(int i, struct expr_in_sq *e) {
 	int n;
-	print_expr(e->expr);
+	LEXLIB_print_expr(e->expr);
 	printc("A4GL_push_char(\"%s\");",e->subquery);
 	printc("{");
 	n=e->nibind;
-	print_bind('i');
+	LEXLIB_print_bind('i');
         printc("A4GL_push_binding(ibind,%d);",n);
  	if (i) printc("A4GL_pushop(OP_IN_SELECT);");
 	else   printc("A4GL_pushop(OP_NOTIN_SELECT);");
@@ -870,12 +870,12 @@ static char buff[64000];
  *   * @todo Describe function
  *    */
 int
-doing_esql ()
+doing_esql (void)
 {
 	    return 0;
 }
 
-int LEXLIB_compile_time_convert() {
+int LEXLIB_compile_time_convert(void) {
 	        return 0;
 }
 

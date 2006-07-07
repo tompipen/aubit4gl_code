@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.19 2006-01-27 11:47:38 mikeaubury Exp $
+# $Id: Makefile,v 1.20 2006-07-07 15:10:20 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -218,9 +218,9 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 builtin.o: builtin.c
 	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 stack.o: stack.c
-	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
+	${CC}  ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 stack_ops.o: stack_ops.c
-	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
+	${CC}  ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 debug.o: debug.c
 	${CC} ${CFLAGS_API_C} -c -o $@ $^
 

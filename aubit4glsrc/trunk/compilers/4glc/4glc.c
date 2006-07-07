@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.68 2006-07-05 12:40:52 mikeaubury Exp $
+# $Id: 4glc.c,v 1.69 2006-07-07 15:10:08 mikeaubury Exp $
 #
 */
 
@@ -56,6 +56,7 @@ extern FILE *yyin;
 extern char *outputfilename;	/* Defined in libaubit4gl */
 extern char infilename[132];
 extern int yyin_len;		/*now in map.c*/
+extern char                clobber[64];
 //void import_package(char *s);
 /*
 =====================================================================
@@ -82,7 +83,6 @@ extern int initArguments (int argc, char *argv[]);
 #endif
 
 
-void init_blk(void);
 /**
  * The main entry point function of 4glc compiler.
  *
@@ -103,7 +103,7 @@ main (int argc, char *argv[])
 
   A4GL_setarg0 (argv[0]);
   A4GL_debug ("Initializing 4glc\n");
-  //memset(infilename,0,sizeof(infilename));
+  memset(infilename,0,sizeof(infilename));
    //init_blk();
   //init_states ();
   
@@ -111,10 +111,11 @@ main (int argc, char *argv[])
 
   /* load settings from config file(s): */
   user_resource = A4GL_build_user_resources ();
+  //if (A4GL_isno (acl_getenv ("NOCLOBBER"))) { set_clobber (outputfilename); }
 
-  A4GL_initlex();
+  //A4GL_initlex();
 
-  import_package("default");
+  A4GL_lexer_import_package("default");
 
   ptr=acl_getenv_not_set_as_0("NAMESPACE");
   if (ptr!=0) {
@@ -146,6 +147,7 @@ main (int argc, char *argv[])
 	}
 #endif
 
+
   x = initArguments (argc, argv);
   //if (a4gl_yydebug)
     //{
@@ -155,6 +157,20 @@ main (int argc, char *argv[])
   /* dump_var_records();*/
   A4GL_debug ("Exiting 4glc");
   exit (x);
+}
+void
+set_clobber(char *c)
+{
+	        char *ptr;
+		        //char *ptr2;
+		        ptr=strrchr(c,'/');
+			        if (ptr) { strcpy(clobber,ptr+1); return; }
+
+				/* Do dos mode ? */
+				        ptr=strrchr(c,'\\');
+					        if (ptr) { strcpy(clobber,ptr+1); return; }
+
+						        strcpy(clobber,c);
 }
 
 

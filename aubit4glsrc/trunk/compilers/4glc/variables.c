@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.84 2006-03-10 10:01:08 mikeaubury Exp $
+# $Id: variables.c,v 1.85 2006-07-07 15:10:08 mikeaubury Exp $
 #
 */
 
@@ -56,6 +56,12 @@ extern char *outputfilename;
 char scopes[200];
 int scopes_cnt=0;
 
+
+int class_cnt=0;
+
+
+
+
 /******************************************************************************/
 /* Prototypes of static functions in this module...*/
 static int has_name (struct name_list *namelist, char *name);
@@ -79,7 +85,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       struct variable *v);
 
 void make_function (char *name, int record_cnt);
-int has_fbind(char *s) ;
+//int has_fbind(char *s) ;
 
 
 int is_system_variable (char *s);
@@ -96,7 +102,7 @@ void set_last_class_var(char *s);
 int A4GL_findex (char *str, char c);
 /*void dump_gvars (void);*/
 //void set_yytext (char *s);
-int isin_command (char *s);
+//int isin_command (char *s);
 //char *rettype (char *s);
 int last_record_cnt=0;
 static char last_class_var[1024];
@@ -553,7 +559,7 @@ A4GL_debug("scope=%c",scope);
       break;
 
     case MODE_ADD_TYPE:
-      curr_v[record_cnt]->data.v_simple.datatype = find_type (name);
+      curr_v[record_cnt]->data.v_simple.datatype = A4GL_lexer_find_type (name);
       curr_v[record_cnt]->data.v_simple.dimensions[0] = atoi (type);
       curr_v[record_cnt]->data.v_simple.dimensions[1] = 0;
       mode = MODE_ADD_TO_SCOPE;
@@ -564,7 +570,7 @@ A4GL_debug("scope=%c",scope);
       curr_v[record_cnt]->data.v_assoc.size = atoi (n);
       curr_v[record_cnt]->data.v_assoc.char_size = atoi (type);
       curr_v[record_cnt]->data.v_assoc.variables = 0;
-      print_declare_associate_1 (curr_v[record_cnt]->names.name, n, type);
+      do_print_declare_associate_1 (curr_v[record_cnt]->names.name, n, type);
       record_cnt++;
       curr_v[record_cnt] = acl_malloc2 (sizeof (struct variable));
       set_arr_subscripts (0, record_cnt);
@@ -697,7 +703,6 @@ make_function (char *name, int record_cnt)
   struct variable *local_v;
   int c;
   char scope;
- extern int class_cnt;
 
   scope = get_current_variable_scope ();
 
@@ -1555,32 +1560,20 @@ get_current_variable_scope (void)
   else
     {
       if (variable_scope == 'G')
-	{
-	  scope = 'G';
-	}
+	{ scope = 'G'; }
 
       if (variable_scope == 'C') // Class
-	{
-	  scope = 'C';
-	}
+	{ scope = 'C'; }
 
       if (variable_scope == 'P') // Class Parent
-	{
-	  scope = 'P';
-	}
+	{ scope = 'P'; }
 
       if (variable_scope == 'g')
-	{
-	  scope = 'g';
-	}
+	{ scope = 'g'; }
       if (variable_scope == 'm')
-	{
-	  scope = 'm';
-	}
+	{ scope = 'm'; }
       if (variable_scope == 'R')
-	{
-	  scope = 'R';
-	}
+	{ scope = 'R'; }
     }
 
   return scope;
@@ -1589,6 +1582,7 @@ get_current_variable_scope (void)
 
 
 
+#ifdef MOVED
 
 /******************************************************************************/
 void
@@ -1642,9 +1636,11 @@ print_variables (void)
     }
 
 }
+#endif
 
 
 
+#ifdef MOVED
 /******************************************************************************/
 void
 print_local_variables (void)
@@ -1706,6 +1702,10 @@ print_global_variables (void)
 }
 
 
+#endif
+
+
+#ifdef MOVED
 
 /******************************************************************************/
 /**
@@ -1726,23 +1726,16 @@ find_type (char *s)
   int a;
   //int b;
   static int set_types=0;
-
   if (set_types==0) {
-	  for (a=0;a<15;a++) {
-		  strcpy(types[a],rettype_integer(a));
-
-	  }
+	  for (a=0;a<15;a++) { strcpy(types[a],rettype_integer(a)); }
 	  set_types=1;
   }
 
   for (a=0;a<15;a++) {
-	  if (strcmp(types[a],s)==0) {
-	  	return a;
-	  }
+	  if (strcmp(types[a],s)==0) { return a; }
   }
 
   A4GL_debug ("Looking for type '%s'", s);
-
 
   if (A4GL_find_datatype_out (s) != -1)
     {
@@ -1752,72 +1745,31 @@ find_type (char *s)
 
   A4GL_debug ("Not found - keep looking");
   A4GL_debug ("find_type %s\n", s);
-
-
-  if (strcmp ("char", s) == 0)
-    return 0;
-
-  if (strcmp ("long", s) == 0)
-    return 2;
-
-  if (strcmp ("integer", s) == 0)
-    return 1;
-
-  if (strcmp ("int", s) == 0)
-    return 1;
-  if (strcmp ("short", s) == 0)
-    return 1;
-
-  if (strcmp ("double", s) == 0)
-    return 3;
-
-  if (strcmp ("float", s) == 0)
-    return 4;
-
-  if (strcmp ("fgldecimal", s) == 0)
-    return 5;
-
-  if (strcmp ("serial", s) == 0)
-    return 6;
-
-  if (strcmp ("fgldate", s) == 0)
-    return 7;
-
-  if (strcmp ("fglmoney", s) == 0)
-    return 8;
-
-  if (strcmp ("struct_dtime", s) == 0)
-    return 10;
-
-
-  if (strcmp ("fglbyte", s) == 0)
-    return 11;
-
-  if (strcmp ("fgltext", s) == 0)
-    return 12;
-
-  if (strcmp ("varchar", s) == 0)
-    return 13;
-
-  if (strcmp ("struct_ival", s) == 0)
-    return 14;
-
-  if (strcmp ("_RECORD", s) == 0)
-    return -2;
-
-  if (strcmp ("form", s) == 0)
-    return 9;
-
-  if (strncmp ("struct _class_struct_", s,21) == 0) {
-    return -3;
-	}
-
-
+  if (strcmp ("char", s) == 0) return 0;
+  if (strcmp ("long", s) == 0) return 2;
+  if (strcmp ("integer", s) == 0) return 1;
+  if (strcmp ("int", s) == 0) return 1;
+  if (strcmp ("short", s) == 0) return 1;
+  if (strcmp ("double", s) == 0) return 3;
+  if (strcmp ("float", s) == 0) return 4;
+  if (strcmp ("fgldecimal", s) == 0) return 5;
+  if (strcmp ("serial", s) == 0) return 6;
+  if (strcmp ("fgldate", s) == 0) return 7;
+  if (strcmp ("fglmoney", s) == 0) return 8;
+  if (strcmp ("struct_dtime", s) == 0) return 10;
+  if (strcmp ("fglbyte", s) == 0) return 11;
+  if (strcmp ("fgltext", s) == 0) return 12;
+  if (strcmp ("varchar", s) == 0) return 13;
+  if (strcmp ("struct_ival", s) == 0) return 14;
+  if (strcmp ("_RECORD", s) == 0) return -2;
+  if (strcmp ("form", s) == 0) return 9;
+  if (strncmp ("struct _class_struct_", s,21) == 0) { return -3; }
   A4GL_debug ("Invalid type : '%s'\n", s);
   SPRINTF1 (errbuff, "Internal Error (Invalid type : '%s')\n", s);
   a4gl_yyerror (errbuff);
   return 0;
 }
+#endif
 
 
 
@@ -2890,6 +2842,7 @@ clr_function_constants ()
 
 
 
+#ifdef MOVED
 
 /**
  * Gets the C data type corresponding to 4gl data type
@@ -2910,6 +2863,7 @@ rettype_integer (int n)
   SPRINTF1 (s, "%d", n);
   return rettype (s);
 }
+#endif
 
 
 
@@ -2962,6 +2916,8 @@ last_var_is_linked (char *tabname, char *pklist)
     return 1;
 }
 
+
+#ifdef MOVED
 
 void
 print_nullify (char type)
@@ -3034,6 +2990,11 @@ print_nullify (char type)
 void print_init_explicit(void) {
 	print_init(1);
 }
+
+#endif
+
+
+
 
 char find_variable_scope (char *s_in)
 {

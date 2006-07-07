@@ -9,6 +9,7 @@ call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 ;
 
 
+/*
 simple_int: variable {
                 if (scan_variable($<str>1)!=2) {
                 char buff[256];
@@ -18,6 +19,7 @@ simple_int: variable {
                 }
         } | INT_VALUE
 ;
+*/
 
 
 call_ext: function_call_expr opt_return {

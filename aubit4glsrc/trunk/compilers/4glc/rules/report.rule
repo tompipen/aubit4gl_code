@@ -14,7 +14,6 @@ start_cmd :
 			print_start_report("P",p,$<str>2,$<str>4);
 			}
 	| START_REPORT rep_name TO_EMAIL  op_with_dim {
-			char buff[256];
 			struct expr_str *p;
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
@@ -143,7 +142,6 @@ op_fgl_expr_list_ptr:  {$<ptr_list>$=0;}
 
 
 output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET op_fgl_expr_list_ptr CLOSE_BRACKET {
-		int c;
 		add_feature("USE_REPORT");
 		ADDMAP("Output to report",$<str>2);
 		print_output_to_report($<ptr_list>5,$<str>2); 

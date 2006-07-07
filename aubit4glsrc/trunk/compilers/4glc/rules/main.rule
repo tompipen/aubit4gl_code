@@ -166,7 +166,7 @@ main_def:
   {
 	print_variables();
     printDeclareFunctionStack("MAIN");
-    print_fgllib_start(hdr_dbname);
+    print_fgllib_start(get_hdrdbname() );
     printInitFunctionStack();
     printPushFunction();
   }
@@ -208,7 +208,7 @@ return_cmd : KW_RETURN op_fgl_expr_ret_list_v2 {
 db_section	:	  DATABASE dbase_name {
 					add_feature("DATABASE_USED");
 					open_db($<str>2);
-					strcpy(hdr_dbname,$<str>2);
+					set_hdrdbname($<str>2);
 					lastlineno=yylineno;
 					is_schema=0;
 				file_out_nl("1");
@@ -216,7 +216,7 @@ db_section	:	  DATABASE dbase_name {
 		| SCHEMA dbase_name {
 					add_feature("SCHEMA_USED");
 					open_db($<str>2);
-					strcpy(hdr_dbname,$<str>2);
+					set_hdrdbname($<str>2);
 					lastlineno=yylineno;
 					is_schema=1;
 				file_out_nl("2");

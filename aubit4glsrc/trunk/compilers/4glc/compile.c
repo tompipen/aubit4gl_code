@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.105 2006-06-21 12:34:41 mikeaubury Exp $
+# $Id: compile.c,v 1.106 2006-07-07 15:10:08 mikeaubury Exp $
 #*/
 
 /**
@@ -114,10 +114,8 @@ void printUsage (char *argv[]);
 static void printUsage_help (char *argv[]);
 int initArguments (int argc, char *argv[]);
 void setGenStackInfo (int _genStackInfo);
-//void set_yytext (char *s);
 int has_default_database (void);
 char *get_default_database (void);
-int A4GL_db_used(void );
 static void add_module_error(int n,char *s) ;
 char compiling_module_name[256]="notset";
 
@@ -1219,11 +1217,16 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 			#endif
 		}
     }
-	yyparse_ret = a4gl_yyparse ();		/* we core A4GL_dump here on Darwin */
+	yyparse_ret = doparse ();		/* we core A4GL_dump here on Darwin */
 	#ifdef DEBUG
 		A4GL_debug ("after yyparse\n");
 	#endif
-	A4GL_lex_parsed_fgl ();
+
+
+
+	A4GL_lexer_parsed_fgl ();
+
+
 
 	if (yydebug) { PRINTF ("Closing map : %d\n", yyparse_ret); }
 	dump_gvars ();
@@ -1893,7 +1896,6 @@ char *A4GL_compiling_module(void) {
 }
 
 char *A4GL_compiling_module_basename(void) {
-	char *n;
 	static char buff[256];
 	if (strrchr(compiling_module_name,'/')==0) return compiling_module_name;
 	else {

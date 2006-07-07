@@ -345,7 +345,7 @@ dtype :
 			}
 		}
 
-	|	USER_DTYPE {
+	| USER_DTYPE_NEW {
 		    	A4GL_debug("Using specified type...");
 			if (find_dim($<str>1)) {
 		    		push_dim($<str>1);
@@ -353,6 +353,26 @@ dtype :
 				a4gl_yyerror("Unknown datatype");
 			}
 		}
+
+       |  USER_DTYPE_ORIG {
+                        char buff[256];
+                        strcpy(buff,$<str>1);
+                        if (A4GL_find_datatype(upshift(buff))!=-1)
+                        {
+                                char *(*function) (void);
+                                function=A4GL_get_datatype_function_n(upshift(buff),"OUTPUT");
+                                if ((int)function != -1 && (int)function != 0)
+                                {
+                                        strcpy(buff,function());
+                                        push_type(function(),0,0);
+                                }
+                        } else {
+                               a4gl_yyerror("Unknown datatype");
+                        }
+                }
+
+
+
 
 	|	SMALLINT {
 		   push_type("int",0,0);

@@ -42,9 +42,11 @@ BEGIN {
     print "{" 
     print "#endif" 
     print "" 
-    if (use_prefix == 0) { 
+    if (use_prefix == 0 ) { 
        print "int A4GL" lib "_initlib (void);" 
-    } 
+    }  else {
+       print "int " lib_prefix lib "_initlib(void);"
+    }
 }
 
 

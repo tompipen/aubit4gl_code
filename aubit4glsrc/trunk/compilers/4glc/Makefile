@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2006-07-05 12:40:52 mikeaubury Exp $
+# $Id: Makefile,v 1.16 2006-07-07 15:10:08 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -67,7 +67,7 @@ endif
 CMODS_EXE       =4glc.c
 #--- KEEP IN APLPABETIC ORDER ---
 CMODS_LIB       =\
-				API_lex.c  \
+				API_lex.c API_parse_self.c  \
 				compile.c class.c \
 				dim.c \
 				field_handling.c \
@@ -75,7 +75,7 @@ CMODS_LIB       =\
 				import.c labels.c insert_curs.c fix_insert.c \
 				rules/generated/kw.c \
 				list.c lexer.c lex.c \
-				mod.c map.c \
+				mod.c map.c parsehelp.c \
 				../../lib/generated/std_funcs.c  \
 				var_handling.c variables.c \
                 ${Y_TAB_C} \
@@ -208,6 +208,8 @@ API_lex.c: API_lex.spec ../../incl/a4gl_API_lex.h    ../../incl/a4gl_API_lex_lib
 
 API_parse.c: API_parse.spec ../../incl/a4gl_API_parse.h    ../../incl/a4gl_API_parse_lib.h
 	${SH} ../../lib/bin/dlmagic $< > $@
+
+API_parse_self.c: API_parse.spec ../../incl/a4gl_API_parse.h    ../../incl/a4gl_API_parse_lib.h
 	${SH} ../../lib/bin/dlmagic $< -S > API_parse_self.c
 
 ../../incl/a4gl_API_parse.h: API_parse.spec	

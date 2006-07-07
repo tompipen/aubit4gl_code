@@ -126,9 +126,9 @@ void variable_action (int category, char *name, char *type, char *n,
 		      char *function);
 void dump_var_records (void);
 struct variable *find_variable_ptr (char *s);
-void print_local_variables (void);
-void print_module_variables (void);
-void print_global_variables (void);
+//void print_local_variables (void);
+//void print_module_variables (void);
+//void print_global_variables (void);
 int find_variable (char *s, int *dtype, int *size, int *is_array,struct variable **var_ptr);
 void print_variables (void);
 int find_type (char *s);

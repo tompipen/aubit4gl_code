@@ -9,7 +9,7 @@ import_m : IMPORT_FUNCTION identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 
 import_package:
 	 IMPORT_PACKAGE identifier {
-		import_package($<str>2);
+		A4GL_lexer_import_package($<str>2);
 	}
 ;
 

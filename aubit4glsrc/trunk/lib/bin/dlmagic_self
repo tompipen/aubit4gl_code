@@ -311,8 +311,8 @@ print "static void *libptr=0;"
 print "static int (*func)();"
 #print "static double (*func_d)();"
 #print "void *A4GL_find_func(void *p,char *s);"
-print "int A4GL" lib "_initlib (void);"
-print "void A4GL" lib "_clrlibptr (void);"
+print "int A4GLself" lib "_initlib (void);"
+print "void A4GLself" lib "_clrlibptr (void);"
 print ""
 print "/**"
 print " * Library init function."
@@ -321,13 +321,13 @@ print " * @todo : explain ussage and parameters."
 print " * @return ."
 print " */"
 print ""
-print "void A4GL" lib "_clrlibptr (void) {"
-print "    libptr=0;"
+print "void A4GLself" lib "_clrlibptr (void) {"
+print "    libptr=(void *)0;"
 print "}"
 print ""
-print "int A4GL" lib "_initlib (void) {"
-print "  libptr=1;"
-print "  return " lib_prefix "A4GL" lib "_initlib();"
+print "int A4GLself" lib "_initlib (void) {"
+print "  libptr=(void *)1;"
+print "  return " lib_prefix "A4GLself" lib "_initlib();"
 
 print "}"
 print ""
@@ -429,7 +429,7 @@ if (rtype!="void") {
 	print rtype " rval;"
 }
 
-print "   if (libptr==0) A4GL" lib "_initlib();"
+print "   if (libptr==0) A4GLself" lib "_initlib();"
 if (map[call_fname]) cfname=map[call_fname];
 else cfname=call_fname;
 

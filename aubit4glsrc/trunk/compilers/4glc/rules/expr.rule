@@ -33,7 +33,6 @@ fgl_expr_c :
 		add_feature("ET_EXPR_NOT_MATCHES");
 	}
  	| fgl_expr_c LIKE fgl_expr_c expr_escape {
-		char buff[40];
 		$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LIKE,0);
 	}
 	| fgl_expr_c NOT_LIKE fgl_expr_c expr_escape {
@@ -44,7 +43,7 @@ fgl_expr_c :
 		add_feature("ET_EXPR_MATCHES");
  	}
  	| fgl_expr_c NOT_MATCHES fgl_expr_c  { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_NOT_MATCHES,0); add_feature("ET_EXPR_NOT_MATCHES"); }
- 	| fgl_expr_c LIKE fgl_expr_c  { char buff[40]; $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LIKE,0); }
+ 	| fgl_expr_c LIKE fgl_expr_c  { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LIKE,0); }
 	| fgl_expr_c NOT_LIKE fgl_expr_c  { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_NOT_LIKE,0); }
 	| fgl_expr_c KW_USING fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_USING,0); }
  	| fgl_expr_c PLUS fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_ADD,0); }
@@ -82,8 +81,6 @@ fgl_expr_c :
 		add_feature("ET_EXPR_IN");
 	}
 	| fgl_expr_c NOT_IN OPEN_BRACKET inexpr_list CLOSE_BRACKET {
-		char buff[256];
-
 		$<ptr>$=A4GL_expr_in($<ptr>1,0,$<ptr_list>4);
 		add_feature("ET_EXPR_NOT_IN");
 	}
@@ -203,7 +200,6 @@ report_only_expr:
 		$<ptr>$=$<ptr>1;
 	}  
 	| KW_GROUP {insql=1;set_ingroup();} rep_agg  {
-		char buff[256];
       		if (!isin_command("REPORT")) {
         		a4gl_yyerror("This can only be done in a report!");YYERROR;
       		} 
@@ -252,7 +248,6 @@ function_call_expr:
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_YEAR_FUNC);
 	} 
 	| INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_ii {
-		char buff[256];
 		$<ptr>$=A4GL_new_interval_expr($<str>3,$<integer_val>5);
 	}
 
@@ -444,7 +439,7 @@ function_call_expr:
 		sprintf(buff,"aclfgl_ui_interface_%s",downshift($<str>2));
 		if (!A4GL_is_internal_class_function("ui_interface",$<str>2)) {
 			char buff[256];
-			sprintf(buff,"%s is not a member of the UI.Interface class");
+			sprintf(buff,"%s is not a member of the UI.Interface class",$<str>2);
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
@@ -455,7 +450,7 @@ function_call_expr:
 		sprintf(buff,"aclfgl_ui_window_%s",downshift($<str>2));
 		if (!A4GL_is_internal_class_function("ui_window",$<str>2)) {
 			char buff[256];
-			sprintf(buff,"%s is not a member of the UI.Window class");
+			sprintf(buff,"%s is not a member of the UI.Window class",$<str>2);
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
@@ -467,7 +462,7 @@ function_call_expr:
 		sprintf(buff,"aclfgl_ui_form_%s",downshift($<str>2));
 		if (!A4GL_is_internal_class_function("ui_form",$<str>2)) {
 			char buff[256];
-			sprintf(buff,"%s is not a member of the UI.Form class");
+			sprintf(buff,"%s is not a member of the UI.Form class",$<str>2);
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
@@ -491,15 +486,24 @@ function_call_expr:
 
                 //$<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
         }
+
    	| identifier DOUBLE_COLON identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno); 
 	}
+
    	| SHARED identifier KW_IN identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno); 
 	}
-   	| identifier MEMBER_FUNCTION identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
+
+   	| identifier USE_MEMBER_FUNCTION identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
 		$<ptr>$=A4GL_new_expr_member_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno); 
         }
+
+/*
+   	| MEMBER_FUNCTION_OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
+		$<ptr>$=A4GL_new_expr_member_fcall(get_idents(0),get_idents(1),$<ptr_list>2,infilename,lastlineno); 
+        }
+*/
 	| GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET {
 		add_feature("ET_EXPR_GET_FLDBUF");
 		if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 

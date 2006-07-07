@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.37 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: globals.c,v 1.38 2006-07-07 15:10:08 mikeaubury Exp $
 #
 */
 
@@ -769,6 +769,7 @@ read_variable_header (FILE * f, struct variable *v)
 /*struct name_list *ptr;*/
   int a;
   int cnt;
+  int vt;
 
   read_global_string (f, "NAME", &v->names.name, 1);
   v->names.next = 0;
@@ -776,7 +777,9 @@ read_variable_header (FILE * f, struct variable *v)
   A4GL_debug ("Read variable : %s", v->names.name);
 #endif
   v->is_static=0;
-  read_global_int (f, "TYPE", &v->variable_type);
+
+  read_global_int (f, "TYPE", &vt);
+ v->variable_type=vt;
   read_global_char (f, "USER_SYSTEM", &v->user_system);
   read_global_int (f, "IS_ARRAY", &v->is_array);
   read_global_string (f, "SRC_MODULE", &v->src_module, 1);

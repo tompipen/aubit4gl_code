@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.14 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: class.c,v 1.15 2006-07-07 15:10:08 mikeaubury Exp $
 #
 */
 
@@ -148,6 +148,8 @@ char *fname;
 
 
 
+
+
 static void escape (char *buff) {
 char buff2[1024];
 int a;
@@ -160,6 +162,7 @@ buff2[b]=0;
 strcpy(buff,buff2);
 
 }
+
 /**
  *
  *
@@ -499,8 +502,7 @@ write_variable_function (struct variable *v)
 
 int nline = 0;
 
-int
-read_class (char *s, int is_parent)
+int read_class (char *s, int is_parent)
 {
   char *dbname;
   int is_schema;
@@ -641,7 +643,7 @@ read_class (char *s, int is_parent)
       dump_variable_records (list_class, list_class_cnt, 0);
 
     } else {
-	int a;
+	//int a;
 	//struct variable v;
 	char buff[256];
 	int sz;
@@ -686,7 +688,7 @@ read_class (char *s, int is_parent)
 	//nptr->v_record,np;
 
 
-	A4GL_pause_execution();
+	//A4GL_pause_execution();
 
   	//class_members = CLASS_get_members (s);
 	//
@@ -842,6 +844,7 @@ read_variable_header (struct variable *v)
 /*struct name_list *ptr;*/
   int a;
   int cnt;
+  int vt;
  v->names.alias=0;
   memset(v,0, sizeof(struct variable));
   read_class_string ("NAME", &v->names.name, 1);
@@ -854,7 +857,9 @@ read_variable_header (struct variable *v)
   A4GL_debug ("Read variable : %s", v->names.name);
 #endif
   v->is_static = 0;
-  read_class_int ("TYPE", &v->variable_type);
+
+  read_class_int ("TYPE", &vt);
+  v->variable_type=vt;
   read_class_char ("USER_SYSTEM", &v->user_system);
   read_class_int ("IS_ARRAY", &v->is_array);
   read_class_string ("SRC_MODULE", &v->src_module, 1);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.90 2006-07-04 15:17:10 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.91 2006-07-07 15:10:20 mikeaubury Exp $
 #
 */
 
@@ -3525,6 +3525,6 @@ void A4GL_set_compile_time_convert(int a) {
 	is_compile_time_convert=a;
 }
 
-int A4GL_compile_time_convert() {
+int A4GL_compile_time_convert(void) {
 	return is_compile_time_convert;
 }

@@ -76,7 +76,7 @@ static int add_function(int n, char *func,int type,char *special) {
 
 
 
-static int read_package_contents(FILE *f) {
+int read_package_contents(FILE *f) {
 char buff[1024];
 char module[128];
 char function[128];
@@ -94,6 +94,7 @@ while (fgets(buff,255,f)) {
 return 1;
 }
 
+#ifdef MOVED
 int A4GL_open_class_dll(char *s) {
 char buff[512];
 FILE *f;
@@ -135,3 +136,4 @@ if (f==0 ) {
 read_package_contents(f);
 
 }
+#endif

@@ -71,8 +71,19 @@
 /* ==================== from a4gl_4glc_4glc.h ===================== */
 
 
+
+
+struct cmds
+{
+	  char cmd_type[20];
+	    int block_no;
+
+} ;
+
+#define SREPORTS_SIZE 1024
+#define CMD_STACK_SIZE 200
 /* ============================= in mk_states.c ======================= */
-int allow_token_state(int yystate,int yytoken);
+//int allow_token_state(int yystate,int yytoken);
 
 	/* ========================= in globals.c =========================== */
 void dump_gvars (void);
@@ -85,6 +96,10 @@ void adderr (char *s, char *p, char *q);
 int only_doing_globals (void);
 int isGenStackInfo (void);
 void a4gl_yyerror (char *s);
+int get_curr_block (void);
+//void set_whenever (int c, char *p);
+
+
 
 
 	/* ========================== Implemented in lexer.c ================= */
@@ -109,6 +124,14 @@ void list_columns (char *id, char *s);
 void list_set_plus (char *newid, char *cid1, char *cid2);
 void list_set_minus (char *newid, char *cid1, char *cid2);
 void list_in (void);
+struct expr_str * get_for_default_step (void);
+
+int
+A4GL_db_used (void);
+void init_blk(void);
+char *get_force_ui(void);
+
+
 char *get_idents (int a);
 
 	/* =================== Implemented in mod.c ========================== */
@@ -483,7 +506,7 @@ void A4GL_CV_print_do_select(char *s) ;
 
 
 char *A4GL_CV_print_select_all(char *s) ;
-char *A4GL_compiled_sqlpack(void);
+//char *A4GL_compiled_sqlpack(void);
 char *A4GL_decode_packtype(char *s);
 void A4GL_cursor_defined(char *s,char type) ;
 void A4GL_cursor_fetch(char *s,t_fetch_place *fp);
@@ -516,13 +539,20 @@ void drop_replace(char *a);
 
 struct expr_str *A4GL_generate_variable_expr(char *s) ;
 void print_display_by_name (char *attr,char *Style);
-void set_menu_attrib(char type, char*value);
+void set_menu_attrib(char type, struct expr_str *value);
 void clr_menu_attribs(void);
 void A4GL_warn(char *s);
 
+int isin_command (char *cmd_type);
+int read_package_contents(FILE *f);
+int has_fbind(char *s) ;
+
+#define FORCE_UI_SIZE 256
+int A4GL_is_internal_class_function(char *classn,char *name);
 long
 get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
 #include "gen_stack.h"
+#include "a4gl_API_parse.h"
 #define add_feature A4GL_add_feature
 
 

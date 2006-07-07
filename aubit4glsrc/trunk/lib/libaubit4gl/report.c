@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.87 2006-07-05 12:40:55 mikeaubury Exp $
+# $Id: report.c,v 1.88 2006-07-07 15:10:20 mikeaubury Exp $
 #
 */
 
@@ -814,7 +814,7 @@ nm (int n)
     {
     case DTYPE_CHAR:
       return "CHAR";
-    case TYPE_SMINT:
+    case DTYPE_SMINT:
       return "SMALLINT";
     case DTYPE_INT:
       return "INTEGER";

@@ -12,6 +12,7 @@
 # include "lexify.c"
 */
 
+#ifdef MOVED
 void
 set_clobber(char *c)
 {
@@ -26,7 +27,9 @@ set_clobber(char *c)
 
 	strcpy(clobber,c);
 }
+#endif
 
+#ifdef MOVED
 char *
 get_hdrdbname(void)
 {
@@ -38,6 +41,7 @@ set_hdrdbname(char *s)
 {
 	strcpy(hdr_dbname,s);
 }
+#endif
 
 //use this set_str() if YYPURE and YYLEX_PARAM are not set
 //void
@@ -46,13 +50,24 @@ set_hdrdbname(char *s)
 //}
 
 //use this set_str() if YYPURE and YYLEX_PARAM are set
+
+
 void
-set_str(void *p, char *s)
+FGLPARSE_A4GL_lexer_set_str(void *p, char *s)
 {
 	YYSTYPE *y;
 	y = (YYSTYPE *) p;
 	strcpy( y->str, s );
 }
+
+int FGLPARSE_doparse() {
+	return a4gl_yyparse();
+}
+
+void *FGLPARSE_A4GL_lexer_get_hashed_list(int a) {
+	return (void *)hashed_list[a];
+}
+
 /*
 void init_blk(void) {
 int a;
@@ -60,6 +75,18 @@ for (a=0;a<MAXMENUOPTS;a++) menu_cmd_cnt[a] =0;
 for (a=0;a<MAXMENU;a++) menu_blk[a]=0;
 }
 */
+
+
+int FGLPARSE_PARSER_initlib (void) {
+        init_blk();
+        a4gl_yydebug = 1;
+	A4GL_initlex();
+	return 1;
+}
+
+
+
+
 
 /* ====================== last.reqd =============================== */
 

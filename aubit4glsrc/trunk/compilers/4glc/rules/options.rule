@@ -37,8 +37,9 @@ opt_allopts 	: COMMENT_LINE line_no 		{ print_options('C',$<str>2); }
 		| FOUNCONSTR 			{ print_options('f',"0"); }
 		| SQL_INTERRUPT_OFF 		{ print_options('S',"0"); }
 		| SQL_INTERRUPT_ON  		{ print_options('S',"1"); }
-		| KW_RUN option_run_mode 		{ print_options('r',$<str>2); }
+		| KW_RUN option_run_mode 	{ print_options('r',$<str>2); }
 		| KW_PIPE option_pipe_mode 	{ print_options('|',$<str>2); }
+		| ON_CLOSE_APPLICATION_STOP     { print_options('~',"1");}
 ;
 
 option_run_mode :

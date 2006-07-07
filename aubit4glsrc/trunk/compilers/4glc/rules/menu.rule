@@ -24,7 +24,7 @@ menu_cmd	:	MENU {
 ;
 
 op_menu_attribs: 
-	| menu_attribs
+	| ATTRIBUTES OPEN_BRACKET menu_attribs CLOSE_BRACKET
 ;
 	
 menu_attribs: 
@@ -33,9 +33,9 @@ menu_attribs:
 ;
 
 menu_attrib : 
-	KW_STYLE   EQUAL CHAR_VALUE { set_menu_attrib('S',$<str>3); }
-| 	KW_COMMENT EQUAL CHAR_VALUE { set_menu_attrib('C',$<str>3); }
-| 	KW_IMAGE EQUAL CHAR_VALUE   { set_menu_attrib('I',$<str>3); }
+	KW_STYLE   EQUAL fgl_expr_c { set_menu_attrib('S',$<ptr>3); }
+| 	KW_COMMENT EQUAL fgl_expr_c { set_menu_attrib('C',$<ptr>3); }
+| 	KW_IMAGE EQUAL fgl_expr_c   { set_menu_attrib('I',$<ptr>3); }
 
 ;
 

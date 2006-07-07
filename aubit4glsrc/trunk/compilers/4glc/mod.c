@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.277 2006-07-05 12:40:52 mikeaubury Exp $
+# $Id: mod.c,v 1.278 2006-07-07 15:10:08 mikeaubury Exp $
 #
 */
 
@@ -56,9 +56,16 @@
 #define GEN_STACK_HERE
 #include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
+char                 hdr_dbname[64]="";
 
-extern char force_ui[];
+char force_ui[FORCE_UI_SIZE];
 extern int a4gl_yydebug;
+int             chk4var=0;
+char            curr_func[256]="Module";
+int isin_formhandler=0;
+int sql_mode=0;
+int             is_schema=0;
+
 
 int             menu_cmd_cnt[MAXMENUOPTS] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int             menu_blk[MAXMENU]         ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -161,11 +168,11 @@ int get_block_no (int n);
 //char *pop_gen (int a);
 /*int gen_cnt (int a);*/
 //void copy_gen (int a, int b);
-extern int menu_cnt;			/** The count of menus found */
+int menu_cnt=0;			/** The count of menus found */
 extern int yylineno;			/** The source file line number */
 //extern char infilename[];    /** The input (4gl file name */
 char             infilename[132];
-extern int in_define;
+int in_define=0;
 extern int doing_a_print;
 
 static int db_used = 0;		 /** Flag that indicate that a database is being used */
@@ -173,12 +180,12 @@ static int inc = 0;
 static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
 static int upd_using_notpk_cnt = 0;
-extern char current_upd_table[64];
-extern char current_ins_table[256];
+char current_upd_table[64]="";
+char current_ins_table[256]="";
 
-char *menu_attrib_comment=0;
-char *menu_attrib_style=0;
-char *menu_attrib_image=0;
+struct expr_str *menu_attrib_comment=0;
+struct expr_str *menu_attrib_style=0;
+struct expr_str *menu_attrib_image=0;
 
 /*static int    const_cnt = 0;*/
 
@@ -187,7 +194,7 @@ int rep_type = 0;	      /** The report type */
 /*int           last_var_found = -1;*/
 
 /*int           var_hdr_finished;*/
-int isin_command (char *cmd_type);
+//int isin_command (char *cmd_type);
 
 
 /**
@@ -218,7 +225,7 @@ int use_group = 0;
 char curr_rep_name[256];
 int curr_rep_block;
 int max_menu_no = 0;
-struct s_report sreports[1024];
+struct s_report sreports[SREPORTS_SIZE];
 int sreports_cnt = 0;
 char mmtitle[132][132];				/** Menu titles */
 extern char *outputfilename;			/** Variables A4GL_dump output file name */
@@ -229,6 +236,60 @@ struct s_report_stack report_stack[REPORTSTACKSIZE];
 int report_stack_cnt = 0;
 int report_cnt = 1;
 int nblock_no = 1;
+
+/******************************************************************************/
+int with_page_length=-1;
+int with_left_margin=-1;
+int with_right_margin=-1;
+int with_top_margin=-1;
+int with_bottom_margin=-1;
+char *with_top_of_page="";
+int table_cnt=0;
+char            menuhandler[256];
+char            last_var [256];
+char            larr[4096]="";
+char            larr2[4096]="";
+char            clobber[64]="";
+char            dtypelist[2048];
+char            where_having[1024];
+char            menu[2048];
+char            varstring[100];
+char            current_del_table[64]="";
+int             rordcnt;
+int             racnt=0;
+int             ccode=0;
+int             errbomb=0;
+int             glob_only=0;
+int             inp_flags=0;
+int             lcnt;
+int             vcnt;
+int             rcnt;
+int             lastlineno=0;
+int             cnt;
+int             inrec=0;
+int             iskey=0;
+int             insql=0;
+int             in_sql=0;
+int             continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
+int             in_cmd[]={0,0,0,0,0,0,0,0,0,0};
+int             fcall_cnt=0;
+int             doing_declare=0;
+int             message_cnt=0;
+int             doing_a_print=0;
+char mv_parent_class[255];
+char *last_style=0;
+char *last_text=0;
+char *into_temp_clause=0;
+struct          rep_structure rep_struct;
+struct          pdf_rep_structure pdf_rep_struct;
+struct          form_attr form_attrib;
+struct          input_array_attribs curr_input_array_attribs;
+int             if_print_stack[100][2];
+int     if_print_stack_cnt=0;
+int     if_print_section[100]={0,0,0,0};
+char    last_tmp_name[256]="";
+
+/******************************************************************************/
 
 /*#define GEN_STACK_SIZE 5000*/
 #define GEN_STACK_SIZE 10000
@@ -285,13 +346,7 @@ struct binding_list *append_bind_list (struct binding_list *l, char *s);
 int modlevel = -1;
 
 /** Command stack array */
-struct cmds
-{
-  char cmd_type[20];
-  int block_no;
-
-}
-command_stack[200];
+struct cmds command_stack[CMD_STACK_SIZE];
 
 //extern int ccnt;		/* in lexer.c */
 
@@ -323,7 +378,6 @@ char *make_sql_string_and_free (char *first, ...);
 char *do_clobbering (char *f, char *s);
 char *pg_make_sql_string_and_free (char *first, ...);
 
-int A4GL_db_used (void);
 /*
 =====================================================================
                     Functions definitions
@@ -1304,24 +1358,12 @@ rettype (char *s)
 #endif
 
 
-/**
- * Trim the spaces at the right part of a string.
- *
- * @param s The string to be trimmed
- */
-static void
-trim_spaces (char *s)
-{
-  int l;
-  for (l = strlen (s) - 1; l >= 0; l--)
-    {
-      if (s[l] == ' ')
-	s[l] = 0;
-      else
-	break;
-    }
-}
 
+#include "trim_spaces.h"
+
+
+
+#ifdef MOVED
 /**
  * Acces to the database and push a variable declaration for a simple
  * like variable (the ones that are not like table.*)
@@ -1363,6 +1405,7 @@ pushLikeTableColumn (char *tableName, char *columnName)
   push_type (rettype (cdtype), csize, (char *) 0);
   return 1;
 }
+#endif
 
 
 static int
@@ -1447,6 +1490,7 @@ pushValidateAllTableColumns (char *tableName)
 }
 
 
+#ifdef MOVED
 /**
  * Find all columns of a table from the database to declare a record like
  * table.*
@@ -1540,7 +1584,9 @@ pushLikeAllTableColumns (char *tableName)
   A4GLSQL_end_get_columns ();
   return 0;
 }
+#endif
 
+#ifdef MOVED
 /**
  * The parser found a variable declared like table.column
  * It needs to go to the database to find the data type in order to do the
@@ -1582,6 +1628,7 @@ push_like2 (char *t2)
   pushLikeAllTableColumns (tableName);
   return;
 }
+#endif 
 
 
 void
@@ -1637,6 +1684,7 @@ push_validate (char *t2)
 
 
 
+#ifdef MOVED
 /**
  * The parser found a new variable like table.column.
  *
@@ -1663,6 +1711,7 @@ push_rectab (char *t)
 {
   push_like (t);
 }
+#endif
 
 /**
  * Insert a new menu title in the menu titles array.
@@ -1676,7 +1725,7 @@ push_menu_title (char *s)
 {
   strcpy (mmtitle[menu_cnt], s);
 }
-
+#ifdef MOVED
 /**
  * The parser found the begining of a new block command
  *
@@ -1716,32 +1765,11 @@ ccnt=A4GL_get_ccnt();
   return command_stack[ccnt].block_no;
 }
 
-/**
- * The parser found a CONTINUE statement.
- *
- * @param cmd_type The type of continue found (the keyword found after
- * the CONTINUE token).
- */
-void
-add_continue_blockcommand (char *cmd_type)
-{
-  int a;
-  int ccnt;
-  ccnt=A4GL_get_ccnt();
 
-  /* more checks here ! */
+#endif
 
-  for (a = ccnt - 1; a > 0; a--)
-    {
-      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
-	{
-	  print_continue_block (command_stack[a].block_no, 0, 0);
-	  return;
-	}
-    }
 
-}
-
+#ifdef MOVED
 /**
  * Check if is a continue of a command.
  *
@@ -1767,8 +1795,10 @@ iscontinuecmd (char *s)
 
   return 0;
 }
+#endif
 
 
+#ifdef MOVED
 
 void
 continue_blockcommand (char *cmd_type)
@@ -1780,7 +1810,10 @@ continue_blockcommand (char *cmd_type)
   //char err[80];
   print_continue_block (command_stack[ccnt - 1].block_no, 0, cmd_type);
 }
+#endif
 
+
+#ifdef MOVED
 /**
  * An end of a block command was ocurred.
  *
@@ -1836,6 +1869,7 @@ pop_blockcommand (char *cmd_type)
   //exit (0);
 }
 
+#endif
 /**
  *
  * @param cmd_type
@@ -2247,6 +2281,7 @@ how_many_in_bind (char i)
   return 0;
 }
 
+#ifdef MOVED
 /**
  * The parser found a CONTINUE instruction for a specific loop command.
  *
@@ -2311,13 +2346,14 @@ ccnt=A4GL_get_ccnt();
   print_continue_loop (command_stack[a].block_no, cmd_type);
 }
 
+#endif
 
 int
 get_block_no (int n)
 {
   return command_stack[n].block_no;
 }
-
+#ifdef MOVED
 /**
  * The parser found a EXIT instruction for a specific loop command.
  *
@@ -2359,30 +2395,27 @@ exit_loop (char *cmd_type)
     }
   if (g == 0)
     {
-
     printf("wanted to exit a %s but wasnt in one!\n",cmd_type);
       A4GL_debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
       return;
     }
-
   if (strcmp (cmd_type, "MENU") == 0)
     {
       print_exit_loop ('M', command_stack[a].block_no);
       printed = 1;
     }
-
   if (strcmp (cmd_type, "PROMPT") == 0)
     {
       print_exit_loop ('P', 0);
       printed = 1;
     }
-
-
   if (printed == 0)
     {
       print_exit_loop (0, command_stack[a].block_no);
     }
 }
+
+#endif
 
 /**
  *
@@ -2395,6 +2428,8 @@ set_curr_block (int a)
   curr_rep_block = a;
 }
 
+
+#ifdef MOVED
 /**
  * The parser found a new report block
  *
@@ -2413,6 +2448,7 @@ push_report_block (char *why, char whytype)
   report_stack_cnt++;
   lines_printed = 0;
 }
+#endif
 
 
 /**
@@ -3077,12 +3113,14 @@ downshift (char *a)
  *
  * @return The current block.
  */
-static int
+int
 get_curr_block (void)
 {
   return curr_rep_block;
 }
 
+
+#ifdef MOVED
 /**
  * Add a report ???
  *
@@ -3132,6 +3170,7 @@ struct expr_str *x;
 
    return x;
 }
+#endif
 
 /**
  * Generate the name for the current report.
@@ -3205,6 +3244,8 @@ set_whenever_store (int c, char *p)
     whenever_store_p = 0;
 }
 
+
+#ifdef MOVED
 /**
  * Define the error handling after a certain point of the program.
  *
@@ -3293,6 +3334,7 @@ set_whenever_from_store (void)
   set_whento (whentostore_p);
   set_whenever (whenever_store_c, whenever_store_p);
 }
+#endif
 
 
 /**
@@ -3980,6 +4022,7 @@ get_sreports (int z)
 }
 
 
+#ifdef MOVED
 /**
  *
  *
@@ -3993,7 +4036,7 @@ add_ex_dtype (char *sx)
   strcpy (s, sx);
   A4GL_trim (s);
   strcpy (s, downshift (s));
-  A4GL_debug ("Initializing datatype : %s\n");
+  A4GL_debug ("Initializing datatype : %s\n",s);
 
   A4GLEXDATA_initlib (s);
 
@@ -4013,6 +4056,7 @@ add_ex_dtype (char *sx)
       print_include (ss);
     }
 }
+#endif
 
 /**
  *
@@ -4239,7 +4283,7 @@ pg_make_sql_string_and_free (char *first, ...)
 
 
 
-
+#ifdef MOVED
 
 void
 do_print_menu_1 (void)
@@ -4253,6 +4297,12 @@ do_print_menu_block_end (int mn)
 {
   print_menu_block_end (mn, get_blk_no ());
 }
+
+#endif 
+
+
+
+
 
 int
 get_blk_no (void)
@@ -4498,7 +4548,6 @@ fgl_add_scope (char *s, int n)
 	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && (c == 'M' || c=='R'))
 	    {
 		    if (c=='R') {
-			    extern char curr_func[];
 	      			SPRINTF4 (buffer, "%c_%s_%s_%s", c, A4GL_compiling_module_basename (), curr_func,buffer2);
 		    } else {
 	      		SPRINTF3 (buffer, "%c_%s_%s", c, A4GL_compiling_module_basename (), buffer2);
@@ -4796,6 +4845,7 @@ A4GL_add_feature (char *feature)
 }
 
 
+#ifdef MOVED
 
 void
 A4GL_CV_print_exec_sql (char *s)
@@ -4830,8 +4880,10 @@ A4GL_CV_print_do_select (char *s)
   print_do_select (s,0);
 
 }
+#endif
 
 
+#ifdef MOVED
 char *
 A4GL_CV_print_select_all (char *s)
 {
@@ -4844,6 +4896,7 @@ A4GL_CV_print_select_all (char *s)
   }
   return print_select_all (ptr,converted);
 }
+#endif
 
 
 int
@@ -5132,6 +5185,7 @@ append_bind_list (struct binding_list *l, char *s)
 }
 
 
+#ifdef MOVED
 void
 print_display_by_name (char *attr,char *Style)
 {
@@ -5161,6 +5215,7 @@ print_display_by_name (char *attr,char *Style)
   start_bind ('i', 0);
 
 }
+#endif
 
 
 
@@ -5286,7 +5341,7 @@ get_for_default_step (void)
 
 
 
-char *get_force_ui() {
+char *get_force_ui(void) {
 	return force_ui;
 }
 
@@ -5299,10 +5354,6 @@ void init_blk(void) {
 
 
 void clr_menu_attribs(void) {
-if (menu_attrib_comment) 	free(menu_attrib_comment);
-if (menu_attrib_style) 		free(menu_attrib_style);
-if (menu_attrib_image) 		free(menu_attrib_image);
-
 
 menu_attrib_comment=0;
 menu_attrib_style=0;
@@ -5310,18 +5361,15 @@ menu_attrib_image=0;
 
 }
 
-void set_menu_attrib(char type, char*value) {
+void set_menu_attrib(char type, struct expr_str *value) {
 	if (type=='S') {
-		if (menu_attrib_style) 		free(menu_attrib_style);
-		menu_attrib_style=strdup(value);
+		menu_attrib_style=value;
 	}
 	if (type=='C') {
-		if (menu_attrib_comment) 	free(menu_attrib_comment);
-		menu_attrib_comment=strdup(value);
+		menu_attrib_comment=value;
 	}
 	if (type=='I') {
-		if (menu_attrib_image) 	free(menu_attrib_image);
-		menu_attrib_image=strdup(value);
+		menu_attrib_image=value;
 	}
 }
 
@@ -5330,16 +5378,19 @@ int A4GL_is_internal_class_function(char *class,char *name) {
 }
 
 
-void A4GLPARSER_initlib(void) {
-	init_blk();
-	  a4gl_yydebug = 1;
-	memset(infilename,0,sizeof(infilename));
+char *
+get_hdrdbname(void)
+{
+	        return hdr_dbname;
+}
+
+void
+set_hdrdbname(char *s)
+{
+	        strcpy(hdr_dbname,s);
 }
 
 
-int A4GLPARSE_doparse(void) {
-	return a4gl_yyparse();
-}
 
 
 /* ================================= EOF ============================= */

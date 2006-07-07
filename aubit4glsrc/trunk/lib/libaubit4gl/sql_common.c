@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.24 2006-07-05 12:40:55 mikeaubury Exp $
+# $Id: sql_common.c,v 1.25 2006-07-07 15:10:20 mikeaubury Exp $
 #
 */
 
@@ -1264,12 +1264,9 @@ A4GL_sqlid_encrypt (void)
   int printed = 0;
   FILE *fout;
   ptr = acl_getenv_not_set_as_0 ("A4GL_SQLACL");
-  fout = fopen ("encrypted.aclfile", "w");
 
-  if (fout == 0)
-    {
-      return 0;
-    }
+
+
 
   if (ptr == 0)
     {
@@ -1298,6 +1295,12 @@ A4GL_sqlid_encrypt (void)
 
   if (f == 0)
     return 0;
+
+  fout = fopen ("encrypted.aclfile", "w");
+  if (fout == 0)
+    {
+      return 0;
+    }
 
   while (1)
     {

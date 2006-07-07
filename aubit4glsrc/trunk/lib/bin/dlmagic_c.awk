@@ -69,7 +69,7 @@ print " */"
 print ""
 print "void A4GL" xlib "_clrlibptr (void) {"
 if (selfonly) {
-	print "libptr=0;"
+	print "libptr=(void *)0;"
 } else {
 	print "    if (libptr) {dlclose(libptr);}"
 	print "    libptr=0;"
@@ -78,8 +78,8 @@ print "}"
 print ""
 print "int A4GL" xlib "_initlib (void) {"
 if (selfonly) {
-	print "libptr=1;"
-	print "return " lib_prefix "A4GL" xlib "_initlib();"
+	print "libptr=(void *)1;"
+	print "return " lib_prefix xlib "_initlib();"
 } else {
 	print "typedef int (*x_func)(void);"
 	print "static x_func func;";

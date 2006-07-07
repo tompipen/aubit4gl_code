@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.121 2006-07-04 14:22:32 mikeaubury Exp $
+# $Id: lexer.c,v 1.122 2006-07-07 15:10:08 mikeaubury Exp $
 #*/
 
 /**
@@ -136,9 +136,9 @@ char namespace[256] = "aclfgl_";
 /* Extern reserved words table */
 #ifdef NEWLIST
 struct s_kw *kwords;
-extern struct s_kw *hashed_list[];
+//extern struct s_kw *hashed_list[];
 #else
-extern struct s_kw kwords[];
+#error REMOVED
 #endif
 
 extern char curr_func[];
@@ -251,6 +251,7 @@ static int
 isident (char *p)
 {
   int a;
+
   for (a = 0; a < strlen (p); a++)
     {
       if (isalnum (p[a]) || p[a] == '_')
@@ -324,6 +325,7 @@ isnum (char *s)
   int is_e = 0;
   char orig[256];
   //int exp_n;
+  if (strcmp(s,".")==0) return 0;
 
   strcpy(orig,s);
 
@@ -802,26 +804,46 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
   int t;
   char buff[132];
   int states = -1;
-  int proc=0;
+  int proc = 0;
 
+  A4GL_debug("In words...");
 
-  if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
+  if (cnt > 10000 || cnt < 0)
+    {
+      char *ptr = 0;
+      *ptr = 0;
+    }				/* Sanity check */
 
-  if (!always_allow(kwords[cnt].id,kwords[cnt].name)) {
-	if (isin_formhandler) {
-		int ok=0;
-		if (kwords[cnt].id==KW_INPUT) {
-  			if(allow_token_state (current_yylex_state, kwords[cnt].id)) ok=1;
-			else {
-  				if(allow_token_state (current_yylex_state, FINPUT)) ok=1;
-			}
-			if (!ok) return 0;
+  if (!always_allow (kwords[cnt].id, kwords[cnt].name))
+    {
+      if (isin_formhandler)
+	{
+	  int ok = 0;
+	  if (kwords[cnt].id == KW_INPUT)
+	    {
+	      if (allow_token_state (current_yylex_state, kwords[cnt].id))
+		ok = 1;
+	      else
+		{
+		  if (allow_token_state (current_yylex_state, FINPUT))
+		    ok = 1;
 		}
-	} else {
-  	if(!allow_token_state (current_yylex_state, kwords[cnt].id)) { return 0; }
+	      if (!ok) {
+      		//A4GL_debug ("Not allowing %d : %d %s '%s'\n",pos, kwords[cnt].id, kwords[cnt].name,p);
+		return 0;
+	      }
+	    }
 	}
-	A4GL_debug("Allowing : %d %s\n",kwords[cnt].id,kwords[cnt].name);
-  }
+      else
+	{
+	  if (!allow_token_state (current_yylex_state, kwords[cnt].id))
+	    {
+      		//A4GL_debug ("Not allowing %d : %d %s '%s'\n",pos, kwords[cnt].id, kwords[cnt].name,p);
+	      return 0;
+	    }
+	}
+      A4GL_debug ("Allowing %d : %d %s '%s'\n", pos, kwords[cnt].id, kwords[cnt].name,p);
+    }
 
 
   strcpy (buff, kwords[cnt].vals[pos]);
@@ -833,46 +855,55 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
       states = 1;
     }
 
-  if (proc==0&&stricmp (buff, "<ident>") == 0)
+  if (proc == 0 && stricmp (buff, "<ident>") == 0)
     {
 
-      if (isident (p) == 0) return 0;
-        strcpy (idents[idents_cnt++], p);
-	proc=1;
+      if (isident (p) == 0)
+	return 0;
+      strcpy (idents[idents_cnt++], p);
+      proc = 1;
 
     }
 
 
-  if (proc==0&&stricmp (buff, "<num>") == 0) {
-	int a;
-  	a = isnum (p);
-	if (a==0) return 0;
-        strcpy (idents[idents_cnt++], p);
-	proc=1;
-  }
+  if (proc == 0 && stricmp (buff, "<num>") == 0)
+    {
+      int a;
+      a = isnum (p);
+      if (a == 0)
+	return 0;
+      strcpy (idents[idents_cnt++], p);
+      proc = 1;
+    }
 
-  if (proc==0&&stricmp (buff, "<int_num>") == 0) {
-	int a;
-  	a = isnum (p);
-	if (a!=1) return 0;
-        strcpy (idents[idents_cnt++], p);
-	proc=1;
-  }
+  if (proc == 0 && stricmp (buff, "<int_num>") == 0)
+    {
+      int a;
+      a = isnum (p);
+      if (a != 1)
+	return 0;
+      strcpy (idents[idents_cnt++], p);
+      proc = 1;
+    }
 
 
-  if (proc==0&&stricmp (buff, "<char_value>") == 0) {
-	//int a;
-	if (t_last==CHAR_VALUE) {
-        	strcpy (idents[idents_cnt++], p);
-		proc=1;
-	} else {
-		return 0;
+  if (proc == 0 && stricmp (buff, "<char_value>") == 0)
+    {
+      //int a;
+      if (t_last == CHAR_VALUE)
+	{
+	  strcpy (idents[idents_cnt++], p);
+	  proc = 1;
 	}
-  }
+      else
+	{
+	  return 0;
+	}
+    }
 
 
 
-  if (proc==0)
+  if (proc == 0)
     {
       if (stricmp (p, buff) != 0)
 	{
@@ -882,24 +913,33 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
 
   /* if (states != -1) start_state (buff, states); */
 
-	
-  if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
+
+  if (cnt > 10000 || cnt < 0)
+    {
+      char *ptr = 0;
+      *ptr = 0;
+    }				/* Sanity check */
   if (kwords[cnt].vals[pos + 1] == 0)
     {
-	//int a;
-  if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
-  	A4GL_debug("token = %d %s \n",kwords[cnt].id,kwords[cnt].name);
+      //int a;
+      if (cnt > 10000 || cnt < 0)
+	{
+	  char *ptr = 0;
+	  *ptr = 0;
+	}			/* Sanity check */
+      A4GL_debug ("token = %d %s \n", kwords[cnt].id, kwords[cnt].name);
       return 1;
     }
 
   p = read_word (f, &t);
 
-  z = words (cnt, pos + 1, f, p,t);
+  z = words (cnt, pos + 1, f, p, t);
 
   if (z == 0)
     {
       return 0;
     }
+  A4GL_debug("Accepted");
   return 1;
 }
 
@@ -1143,7 +1183,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
   /* check if the current word is a known reserved/key word */
 
 #ifdef NEWLIST
-  kwords = hashed_list[get_hash_val (p)];
+  kwords = A4GL_lexer_get_hashed_list(get_hash_val (p));
 #endif
  
   while (kwords[cnt].id > 0)
@@ -1212,7 +1252,6 @@ A4GL_debug("p=%s buff=%s",p,buff);
   if (a == 2 && strcmp(p,".")!=0) // Just a dot...
     {
       strcpy (str, p);
-
       return NUMBER_VALUE;
     }
 
@@ -1370,7 +1409,10 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		int t;
 		t=isnum(buff);
 		if (t==1) a=INT_VALUE;
-		if (t==2) a=NUMBER_VALUE;
+		if (t==2) {
+				a=NUMBER_VALUE;
+				printf("SETTING TO NUMBER VALUE 2 : %s\n",buff);
+			}
 		if (t!=1&&t!=2) {
 		 	if (isident (buff)) {
 				a = NAMED_GEN;
@@ -1378,12 +1420,29 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		}
 	}
 
-      if (allow_token_state (yystate, USER_DTYPE) && a == NAMED_GEN)
+
+
+      if (allow_token_state (yystate, USER_DTYPE_NEW) && a == NAMED_GEN)
 	{
+
 	  if (find_dim (downshift (buff))) {
-	      a = USER_DTYPE;
+	      a = USER_DTYPE_ORIG;
 	    }
 	}
+
+
+      if (allow_token_state (yystate, USER_DTYPE_ORIG) && a == NAMED_GEN) {
+	  if (A4GL_find_datatype(upshift(buff))!=-1) {
+
+	      a = USER_DTYPE_ORIG;
+	  }
+	}
+
+
+
+
+
+
     }
   else
     {
@@ -1394,51 +1453,6 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
 
   A4GL_debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
-#ifdef OLDSTUFF
-  /* variables/identifiers with the same names as 4GL keywords 
-   * can easily be confused - any keyword tokens (they start from 1000) 
-   * need to be checked. If the current parser state is expecting an
-   * identifier but not this keyword, then assume it's an identifier
-   */
-  if (a >= 1000 && isident (buff) && a != KW_TRUE &&
-      a != KW_FALSE && a != KW_NULL &&
-      (strcmp (acl_getenv ("A4GL_RESERVEWORDS"), "YES") != 0))
-    {
-      /*r=chk_for_kw_in(yys1,yys2,a,buff);*/
-
-
-
-      /*r = wants_kw_token (yystate, a);*/
-
-
-      switch (r)
-	{
-	case 0:
-	  /* use the keyword token */
-	  break;
-	case 1:
-	  /* identifier only if defined variable */
-	  to_lower_str (buff);
-	  if (scan_variable (buff) == -1)
-	    break;
-	case 2:
-	  if (is_commandkw (a) == 0 && !sql_kword (a))
-	    {
-	      a = NAMED_GEN;
-	    }
-	  break;
-	case 3:
-	  /* treat as identifier, unless token starts a command */
-	  if (is_commandkw (a) == 0)
-	    a = NAMED_GEN;
-	}
-
-
-
-
-    }
-#endif
-
 
   if (a == 2 || a == NAMED_GEN)
     {
@@ -1458,6 +1472,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	case 2:
 	  A4GL_debug (" Constant switch %s Float", buffval);
 	  strcpy (buff, buffval);
+				printf("SETTING TO NUMBER VALUE 3\n");
 	  a = NUMBER_VALUE;
 	  break;		/* 'f' */
 	case 3:
@@ -1495,7 +1510,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		/* a4gl_upshift(buff);  */ /* This would appear to be a bad idea... */
 	}
 
-  set_str (pyylval, buff);
+  A4GL_lexer_set_str (pyylval, buff);
 
   lastword = buff;
   lastlex = a;
@@ -1631,7 +1646,7 @@ turn_state_all (int kw, int v, int arr)
 {
   struct s_kw *local_kwords;
   int a;
-  local_kwords = hashed_list[arr];
+  local_kwords = A4GL_lexer_get_hashed_list(arr);
 
 /* debug("State changes %d to %d\n",kw,v); */
   for (a = 0; local_kwords[a].id > 0; a++)

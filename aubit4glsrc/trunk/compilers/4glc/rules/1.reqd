@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.84 2006-07-05 12:40:53 mikeaubury Exp $
+# $Id: 1.reqd,v 1.85 2006-07-07 15:10:16 mikeaubury Exp $
 #
 */
 
@@ -120,6 +120,7 @@
 #include "var_handling.h"
 #include "field_handling.h"
 #include "a4gl_gen_stack.h"
+#include "a4gl_API_parse_lib.h"
 
 /*
 =====================================================================
@@ -138,97 +139,99 @@ extern int 	rep_type;
 extern int 	yylineno;
 extern int compiling_system_4gl;
 extern int nreturn_values;
-int isin_formhandler=0;
-int with_page_length=-1;
-int with_left_margin=-1;
-int with_right_margin=-1;
-int with_top_margin=-1;
-int with_bottom_margin=-1;
-char *with_top_of_page="";
-
-int table_cnt=0;
-int sql_mode=0;
-
-char 		menuhandler[256];
-char 		force_ui[256]="";
-char 		last_var [256];
-char 		larr[4096]="";
-char 		larr2[4096]="";
-char 		clobber[64]="";
-char 		dtypelist[2048];
-char 		curr_func[256]="Module";
-char 		where_having[1024];
-char		menu[2048];
-char 		varstring[100];
+extern int isin_formhandler;
+extern int sql_mode;
+extern char 		force_ui[FORCE_UI_SIZE];
+extern char 		curr_func[256];
 extern char 		infilename[];
-char 		hdr_dbname[64]="";
-char 		current_upd_table[64]="";
-char 		current_del_table[64]="";
-char 		current_ins_table[64]="";
-
-int 		is_schema=0;
-int 		in_define=0;
-int 		rordcnt;
-int 		racnt=0;
-int 		ccode=0;
-int 		errbomb=0;
-int 		glob_only=0;
-int 		inp_flags=0;
-int 		lcnt;
-int 		vcnt;
-int 		rcnt;
-int 		lastlineno=0;
-int 		cnt;
-//int 		mcnt=0;
-int 		inrec=0;
-int 		iskey=0;
-int 		insql=0;
-int 		menu_cnt=0;
-int 		chk4var=0;
+extern char 		current_upd_table[64];
+extern char 		current_ins_table[64];
+extern int 		is_schema;
+extern int 		in_define;
+extern struct s_kw *hashed_list[];
+extern int 		menu_cnt;
+extern int 		chk4var;
 extern int 		menu_cmd_cnt[MAXMENUOPTS] ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 extern int 		menu_blk[MAXMENU]         ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int 		in_sql=0;
-int 		continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
-int 		in_cmd[]={0,0,0,0,0,0,0,0,0,0};
-int 		fcall_cnt=0;
-int 		doing_declare=0;
-int 		message_cnt=0;
-int 		doing_a_print=0;
-int 		class_cnt  =0;
-char mv_parent_class[255];
-char *last_style=0;
-char *last_text=0;
-
-
-struct 		rep_structure rep_struct;
-struct 		pdf_rep_structure pdf_rep_struct;
-struct 		form_attr form_attrib;
-char *		make_sql_string_and_free(char *first,...);
-char *into_temp_clause=0;
-//void copy_gen (int a, int b);
-char *get_namespace (char *s);
-//void set_yytext (char *s);
-int isin_command (char *cmd_type);
-int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
-char *do_clobbering(char *f,char *s);
-//void A4GL_copy_fbind_to_Obind(void);
-struct input_array_attribs curr_input_array_attribs;
-void
-print_expr_list_concat (struct expr_str_list *l);
-
-int if_print_stack[100][2];
-int if_print_stack_cnt=0;
-int if_print_section[100]={0,0,0,0};
-char last_tmp_name[256]="";
+extern int 		class_cnt ;
 extern char *kw_comma;
 extern char *kw_space;
 extern char *kw_ob;
 extern char *kw_cb;
+extern struct binding_comp *ibind;
+extern int ibindcnt;
+extern struct binding_comp *ebind;
+extern int ebindcnt;
+
+
+
+extern int with_page_length;
+extern int with_left_margin;
+extern int with_right_margin;
+extern int with_top_margin;
+extern int with_bottom_margin;
+extern char *with_top_of_page;
+extern int table_cnt;
+
+extern char 		menuhandler[256];
+extern char 		last_var [256];
+extern char 		larr[4096];
+extern char 		larr2[4096];
+extern char 		clobber[64];
+extern char 		dtypelist[2048];
+extern char 		where_having[1024];
+extern char		menu[2048];
+extern char 		varstring[100];
+extern char 		current_del_table[64];
+
+extern int 		rordcnt;
+extern int 		racnt;
+extern int 		ccode;
+extern int 		errbomb;
+extern int 		glob_only;
+extern int 		inp_flags;
+extern int 		lcnt;
+extern int 		vcnt;
+extern int 		rcnt;
+extern int 		lastlineno;
+extern int 		cnt;
+extern int 		inrec;
+extern int 		iskey;
+extern int 		insql;
+extern int 		in_sql;
+extern int 		continue_cmd[];
+extern int 		in_cmd[];
+extern int 		fcall_cnt;
+extern int 		doing_declare;
+extern int 		message_cnt;
+extern int 		doing_a_print;
+extern char mv_parent_class[255];
+extern char *last_style;
+extern char *last_text;
+extern char *into_temp_clause;
+extern struct 		rep_structure rep_struct;
+extern struct 		pdf_rep_structure pdf_rep_struct;
+extern struct 		form_attr form_attrib;
+extern struct 		input_array_attribs curr_input_array_attribs;
+extern int 		if_print_stack[100][2];
+extern int 	if_print_stack_cnt;
+extern int 	if_print_section[100];
+extern char 	last_tmp_name[256];
+
+
+
+
+char *		make_sql_string_and_free(char *first,...);
+char *		get_namespace (char *s);
+int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
+char *do_clobbering(char *f,char *s);
+void print_expr_list_concat (struct expr_str_list *l);
+
+
 
 #define ADDMAP(x,y) addmap(x,y,curr_func,yylineno,infilename)
 #define ADDMAP_MODULE(x,y) addmap(x,y,"MODULE",yylineno,infilename) 
 
-//char *A4GL_strcpy(char *d,char *s,char *fname,int l,int sdest);
 #ifndef A4GL_strcpy_defined
 #define A4GL_strcpy_defined
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
@@ -244,10 +247,6 @@ extern char *kw_cb;
 #endif
 
 
-extern struct binding_comp *ibind;
-extern int ibindcnt;
-extern struct binding_comp *ebind;
-extern int ebindcnt;
 
 /*
 =====================================================================
@@ -255,7 +254,6 @@ extern int ebindcnt;
 =====================================================================
 */
 
-void init_blk(void);
 
 %}
 %name-prefix="a4gl_yy"
