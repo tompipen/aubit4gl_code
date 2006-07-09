@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2006-05-13 12:34:39 mikeaubury Exp $
+# $Id: Makefile.in,v 1.17 2006-07-09 21:55:12 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -125,7 +125,12 @@ a4gl_lib_lex_esqlc_int.h: ../a4gl_lib_lex_int.h
 	${MAKE} -C ${ROOT}/compilers/4glc ../../incl/a4gl_API_lex_lib.h
 	${MAKE} -C ${ROOT}/compilers/4glc ../../incl/a4gl_API_lex.h
 
-../a4gl_lib_lex_int.h: ../../incl/a4gl_API_lex.h 
+../a4gl_lib_lex_int.h: ../../incl/a4gl_API_lex.h  ../../incl/a4gl_API_parse.h
+
+../../incl/a4gl_API_parse_lib.h ../../incl/a4gl_API_parse.h: ${ROOT}/compilers/4glc/API_parse.spec
+	${MAKE} -C ${ROOT}/compilers/4glc ../../incl/a4gl_API_parse_lib.h
+	${MAKE} -C ${ROOT}/compilers/4glc ../../incl/a4gl_API_parse.h
+
 
 ${LIBROOT}/lib4glc${SO_EXT}:
 	${MAKE} -C ${ROOT}/compilers/4glc lib4glc${SO_EXT}
