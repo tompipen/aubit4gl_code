@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.85 2006-07-04 15:17:40 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.86 2006-07-10 11:53:49 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,7 +85,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.85 2006-07-04 15:17:40 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.86 2006-07-10 11:53:49 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -667,7 +667,7 @@ A4GL_LL_display_form (void *vf, int attrib, int curr_width, int curr_height,
   A4GL_debug ("In display_form");
   w = (PANEL *) currwin;	// A4GL_get_currwin ();
 
-  SPRINTF (buff, "%p", vf);
+  sprintf (buff, "%p", vf);
 
   if (w == 0)
     {
@@ -3169,7 +3169,7 @@ A4GL_do_pause (int curr_width, int curr_height, int iscurrborder,
   char buff[80];
   char buff_b[80];
   w = A4GL_LL_screen_width ();
-  SPRINTF1 (buff, " %s ", acl_getenv ("ERROR_MSG"));
+  sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
   memset (buff_b, ' ', 80);
   buff_b[strlen (buff)] = 0;
