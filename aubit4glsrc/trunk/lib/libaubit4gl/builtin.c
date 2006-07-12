@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.96 2006-06-23 14:08:44 mikeaubury Exp $
+# $Id: builtin.c,v 1.97 2006-07-12 14:57:00 mikeaubury Exp $
 #
 */
 
@@ -1425,4 +1425,51 @@ int aclfgl_fgl_round(int nargs) {
 	sprintf(smbuff,buff,d);
 	A4GL_push_char(smbuff);
 	return 1;
+}
+
+
+int aclfgl_fgl_settitle(int n) {
+	return aclfgl_set_window_title(n);
+}
+
+int aclfgl_fgl_getpid(int n) {
+	A4GL_push_int(getpid());
+	return 1;
+}
+
+
+
+/*
+ fgl_winquestion(title, text, default_value, possible_values, icon, danger)
+  
+  - title Title of the dialog box.
+  - text Text of the question (\n stands for new line).
+  - default_value Answer on which the focus has to be positioned.
+  - possible_values List of values separated by the pipe character (|).
+  - icon Name of the icon to be used in the dialog box.
+  - danger Number of the warning item: a skull with crossbones
+           appears each time the pointer enters the corresponding
+	    button (on X11 only).
+*/
+int aclfgl_fgl_winquestion(int nargs) {
+	char *title;
+	char *text;
+	char *def;
+	char *pos;
+	char *icon;
+	int danger;
+	if (nargs!=6) {
+      		A4GL_pop_args (nargs);
+      		A4GLSQL_set_status (-3001, 0);
+      		return 0;
+	}
+
+	danger=A4GL_pop_int();
+	icon=A4GL_char_pop();
+	pos=A4GL_char_pop();
+	def=A4GL_char_pop();
+	text=A4GL_char_pop();
+	title=A4GL_char_pop();
+	A4GL_push_char(A4GL_ui_fgl_winquestion(title,text,def,pos,icon,danger));
+	return 0;
 }

@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.30 2006-07-04 14:22:55 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.31 2006-07-12 14:57:06 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -961,7 +961,9 @@ A4GL_new_menu (char *title,
   return menu;
 }
 
-
+char *UILIB_A4GL_ui_fgl_winquestion(char *title,char *text,char *def,char *pos,char *icon,int danger) {
+	return "Nope";
+}
 
 void UILIB_A4GLUI_set_intr(void) {
 	// Does nothing - required by the API - called if a program issues DEFER INTERRUPT
