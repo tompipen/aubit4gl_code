@@ -91,9 +91,9 @@ Installation
 	compiler, and then install it. Basically:
 
 		cd <where_you_unpack>
-	    ./configure
-	    make
-	    make install
+	        export AUBITDIR=<where_you_unpack>
+	        ./configure
+	        make
 
 
     If some library or program, that you know is on your system, is not
@@ -136,13 +136,13 @@ Installation
 		#"MyAubitSource" is just for example - you can of cource change this
 		mkdir MyAubitSource
 		cd MyAubitSource
+	        export AUBITDIR=`pwd`
 	    echo "When prompted for a password for anonymous, simply press the Enter key:"
 		cvs -d:pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl login
 		cvs -z3 -d:pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl co aubit4glsrc
 	    cd aubit4glsrc
 	    ./configure
 	    make
-	    make install
 	    cd ..
         #to make sure we are not picking anything up from source tree,
         #we will rename it; just in case.
