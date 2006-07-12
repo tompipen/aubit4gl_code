@@ -35,6 +35,9 @@ n=scan_variable(buff2);
 
   A4GL_debug("scan variable returns -> %d\n",n);
 
+if (A4GL_is_class_static(buff)) {
+	strcpy($<str>$,buff);
+} else {
   if (n == -1&&buff[0]!=' ') {
            sprintf(buff2,"'%s' does not represent a defined variable (1)",buff);
            a4gl_yyerror(buff2);
@@ -52,9 +55,9 @@ n=scan_variable(buff2);
                 
 		sprintf($<str>$,"%s",fgl_add_scope(buff,0));
   } else {
-                	sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
+               	sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
   }
-
+}
  
 }
 ;

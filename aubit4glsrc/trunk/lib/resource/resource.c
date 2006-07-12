@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.116 2006-03-07 13:44:31 mikeaubury Exp $
+# $Id: resource.c,v 1.117 2006-07-12 12:58:56 mikeaubury Exp $
 #
 */
 
@@ -124,7 +124,10 @@ struct str_resource builtin_resource[] = {
   {"A4GL_HELPTYPE", "std"},
   {"ODDOPTIONS", "N"},
   {"EXDTYPE", ""},
-//  {"AUBITDIR",                        "@aubitdir@  we should try setting AUBITDIR relative to 
+
+#ifdef CONFAUBITDIR
+  {"AUBITDIR", CONFAUBITDIR},
+#endif
 //location of invoked executable, if not already set
 
   /*
@@ -138,12 +141,16 @@ struct str_resource builtin_resource[] = {
   
 #if (defined (__MINGW32__))
   {"AUBITETC", _AUBITETC_},	/* points to default location of Aubit config files as determined by Autoconf in variable @AUBITRC@ */
-  {"A4GL_MV_CMD", "move"},
-  {"A4GL_CP_CMD", "cp"},
+  {"A4GL_MV_CMD", "ren"},
+  {"A4GL_CP_CMD", "copy"},
 #else
 //TODO: should we use _AUBITETC_ here too? Not all users installing Aubit will have sufficient 
 //privileges to install aubitrc under /etc
+#ifdef AUBITETC
+  {"AUBITETC", AUBITETC},	/* points to default location of Aubit config files */
+#else
   {"AUBITETC", "/etc/opt/aubit4gl"},	/* points to default location of Aubit config files */
+#endif
   {"A4GL_MV_CMD", "mv"},
   {"A4GL_CP_CMD", "cp"},
 #endif

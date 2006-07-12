@@ -381,7 +381,21 @@ dtype :
 		} 
 	|	KWFORM {
 		   push_type("form",0,0);
-		   
+		} 
+	|	UIWINDOW {
+		   push_type("uiwindow",0,0);
+		} 
+	|	OMDOMNODE {
+		   push_type("omdomnode",0,0);
+		} 
+	|	OMNODELIST {
+		   push_type("omnodelist",0,0);
+		} 
+	|	STRING {
+		   push_type("string",0,0);
+		} 
+	|	BASECHANNEL {
+		   push_type("basechannel",0,0);
 		} 
 	|	STATUSBOX {
 		   push_type("form",0,0);

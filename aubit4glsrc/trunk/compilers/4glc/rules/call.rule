@@ -53,6 +53,22 @@ call_ext: function_call_expr opt_return {
  	} opt_return 
 	
    | pdf_functions
+   | variable OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
+                char *p;
+		struct expr_str *ptr;
+                p=strrchr($<str>1,'.');
+                if (!p) {
+                        a4gl_yyerror("Not a member function");
+                        YYERROR;
+                        $<ptr>$=0;
+                }
+                *p=0;
+                p++;
+                ptr=A4GL_new_expr_member_fcall($<str>1,p,$<ptr_list>3,infilename,lastlineno);
+   		print_func_call(ptr);
+		start_bind('i',0);
+        }
+
 ;
 
 

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.161 2006-06-23 14:08:48 mikeaubury Exp $
+# $Id: sql.c,v 1.162 2006-07-12 12:58:55 mikeaubury Exp $
 #
 */
 
@@ -446,6 +446,34 @@ dll_import sqlca_struct a4gl_sqlca;
                     Functions definitions
 =====================================================================
 */
+
+static char *lower(char *s) {
+	static char *last=0;
+	if (last) free(last);
+	last=strdup(s);
+	A4GL_convlower(last);
+	return last;
+}
+
+static int A4GL_has_cache_column (char *buff) {
+	int r;
+	 r=A4GL_has_pointer (lower(buff), CACHE_COLUMN);
+
+	 return r;
+}
+
+
+static char *A4GL_find_cache_column(char *buff) {
+	char *buffx;
+	char *ptr;
+	ptr=A4GL_find_pointer (lower(buff), CACHE_COLUMN);
+	return  ptr;
+}
+
+static void A4GL_add_cache_column(char*buff,char*def) {
+  	A4GL_add_pointer (lower(buff), CACHE_COLUMN, strdup (def));
+}
+
 
 static void
 reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
@@ -4048,7 +4076,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
       strcpy (GetColTab, tabname);
       sprintf (buff, "%s_1", tabname);
-      if (A4GL_has_pointer (buff, CACHE_COLUMN))
+      if (A4GL_has_cache_column (buff))
 	{
 	  GetColCached = 1;
 	  GetColNo = 0;
@@ -4241,12 +4269,12 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   if (GetColCached)
     {
       sprintf (buff, "%s_%d", GetColTab, GetColNo);
-      if (A4GL_has_pointer (buff, CACHE_COLUMN))
+      if (A4GL_has_cache_column (buff))
 	{
 	  static char buffx[2000];
 	  char *ptr;
 
-	  ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
+	  ptr = A4GL_find_cache_column (buff);
 
 	  if (ptr)
 	    {
@@ -4313,14 +4341,14 @@ AddColumn (char *s, int d, int sz)
   char buff2[256];
 
   sprintf (buff, "%s_%d", GetColTab, GetColNo);
-  if (A4GL_has_pointer (buff, CACHE_COLUMN))
+  if (A4GL_has_cache_column (buff))
     {
       // Got the column cached !
       return;
     }
   sprintf (buff2, "%s %d %d", s, d, sz);
   //printf("Adding %s to %s\n",buff,buff2);
-  A4GL_add_pointer (buff, CACHE_COLUMN, strdup (buff2));
+  A4GL_add_cache_column (buff, buff2);
 }
 
 
@@ -4392,10 +4420,10 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
 
   if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
     {
-      if (A4GL_has_pointer (buff, CACHE_COLUMN))
+      if (A4GL_has_cache_column (buff))
 	{
 	  char *ptr;
-	  ptr = A4GL_find_pointer (buff, CACHE_COLUMN);
+	  ptr = A4GL_find_cache_column (buff);
 	  sscanf (ptr, "%d %d", dtype, size);
 	  return 1;
 	}
@@ -4598,9 +4626,9 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
     {
       char buff2[2000];
       sprintf (buff2, "%d %d", *dtype, *size);
-      if (!A4GL_has_pointer (buff, CACHE_COLUMN))
+      if (!A4GL_has_cache_column (buff))
 	{
-	  A4GL_add_pointer (buff, CACHE_COLUMN, strdup (buff2));
+	  A4GL_add_cache_column (buff, buff2);
 	}
     }
 

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.298 2006-07-07 15:10:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.299 2006-07-12 12:58:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.298 2006-07-07 15:10:21 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.299 2006-07-12 12:58:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8420,6 +8420,12 @@ void LEXLIB_A4GL_initlex(void) {
 	/* does nothing - but required by the API...
 	calling this function will force initlib to be called - which is what we're really after.... */
 }
+
+int LEXLIB_LEX_initlib(void) {
+	/* does nothing - but required by the API... */
+	return 1;
+}
+
 
 int LEXLIB_A4GLLEX_initlib(void) {
   if (A4GL_doing_pcode()) {

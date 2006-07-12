@@ -65,6 +65,10 @@ code
 void HELPLIB_A4GLHELP_initlib(void) {
 // Does nothing - required by the API
 }
+
+void HELPLIB_HELP_initlib(void) {
+// Does nothing - required by the API
+}
 endcode
 
 ----------------------------------------------------------------------

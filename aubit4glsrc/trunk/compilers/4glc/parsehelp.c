@@ -1186,6 +1186,11 @@ FGLPARSE_A4GL_lexer_find_type (char *s)
   if (strcmp ("struct_ival", s) == 0) return 14;
   if (strcmp ("_RECORD", s) == 0) return -2;
   if (strcmp ("form", s) == 0) return 9;
+  if (strcmp ("uiwindow", s) == 0) return 9;
+  if (strcmp ("omdomnode", s) == 0) return 9;
+  if (strcmp ("omnodelist", s) == 0) return 9;
+  if (strcmp ("basechannel", s) == 0) return 9;
+  if (strcmp ("string", s) == 0) return 9;
   if (strncmp ("struct _class_struct_", s,21) == 0) { return -3; }
   A4GL_debug ("Invalid type : '%s'\n", s);
   SPRINTF1 (errbuff, "Internal Error (Invalid type : '%s')\n", s);
@@ -1261,6 +1266,10 @@ print_nullify (char type)
 }
 
 
+int A4GL_is_class_static(char *s) {
+	if (strncmp(s,"base.",5)==0) return 1;
+	return 0;
+}
 
 
 
@@ -1273,3 +1282,4 @@ void print_init_explicit(void) {
 void FGLPARSE_A4GL_lexer_parsed_fgl(void) {
 	A4GL_lex_parsed_fgl ();
 }
+

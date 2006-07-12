@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.40 2005-10-05 12:40:18 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.41 2006-07-12 12:58:53 mikeaubury Exp $
 #*/
 
 /**
@@ -1189,6 +1189,10 @@ real_isolated_xdr_struct_form (XDR * xdrp, struct struct_form *the_form)
   a = xdr_struct_form (xdrp, the_form);
   A4GL_debug ("DOne");
   return a;
+}
+
+int A4GLFORM_FORM_initlib() {
+	return 1;
 }
 
 /* =============================== EOF ========================== */

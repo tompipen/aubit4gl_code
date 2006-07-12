@@ -20,6 +20,7 @@ fgl_expr_c :
 	| builtin_expr
 	| pdf_expr
 	| literal_expr 
+	| variable_entry {$<ptr>$=$<ptr>1;}
 	| MINUS fgl_expr_c %prec UMINUS	{ 
 		$<ptr>$=A4GL_new_expr_neg($<ptr>2); 
 	}
@@ -168,18 +169,39 @@ literal_expr:
 	| INT_VALUE {
 		$<ptr>$=A4GL_new_literal_long_str($<str>1);
 	} 
-	| variable_entry {$<ptr>$=$<ptr>1;}
 ;
 
 
+/*
 variable_entry_2 :
 	variable 
 	| variable THRU variable {
 		sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
 	}
 ;
+*/
 
-variable_entry : variable_entry_2 { $<ptr>$=A4GL_generate_variable_expr ($<str>1); }
+variable_entry : 
+	variable {
+			 $<ptr>$=A4GL_generate_variable_expr ($<str>1); 
+		}
+	| variable OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
+		char *p;
+		p=strrchr($<str>1,'.');
+		if (!p) {
+   			a4gl_yyerror("Not a member function");
+   			YYERROR;
+			$<ptr>$=0;
+		}
+		*p=0;
+		p++;
+		$<ptr>$=A4GL_new_expr_member_fcall($<str>1,p,$<ptr_list>3,infilename,lastlineno); 
+	}
+	| variable THRU variable {
+		char buff[2560];
+		sprintf(buff,"%s\n%s",$<str>1,$<str>3);
+		 $<ptr>$=A4GL_generate_variable_expr (buff); 
+	}
 ;
 
 
@@ -495,9 +517,11 @@ function_call_expr:
 		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno); 
 	}
 
+/*
    	| identifier USE_MEMBER_FUNCTION identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
 		$<ptr>$=A4GL_new_expr_member_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno); 
         }
+*/
 
 /*
    	| MEMBER_FUNCTION_OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
