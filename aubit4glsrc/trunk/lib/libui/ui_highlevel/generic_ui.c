@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.86 2006-07-12 14:57:07 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.87 2006-07-12 16:09:33 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3652,6 +3652,6 @@ int A4GL_ll_field_opts (void *f) {
 }
 
 
-char *UILIB_A4GL_ui_fgl_winquestion(char *title,char *text,char *def,char *pos,char *icon,int danger) {
+char *UILIB_A4GL_ui_fgl_winquestion(char *title,char *text,char *def,char *pos,char *icon,int danger,int winbutton) {
 	return "nope";
 }
