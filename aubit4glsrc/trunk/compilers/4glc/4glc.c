@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.69 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: 4glc.c,v 1.70 2006-07-13 10:11:07 mikeaubury Exp $
 #
 */
 
@@ -56,7 +56,7 @@ extern FILE *yyin;
 extern char *outputfilename;	/* Defined in libaubit4gl */
 extern char infilename[132];
 extern int yyin_len;		/*now in map.c*/
-extern char                clobber[64];
+//extern char                clobber[64];
 //void import_package(char *s);
 /*
 =====================================================================
@@ -158,6 +158,8 @@ main (int argc, char *argv[])
   A4GL_debug ("Exiting 4glc");
   exit (x);
 }
+
+#ifdef MOVED
 void
 set_clobber(char *c)
 {
@@ -172,6 +174,7 @@ set_clobber(char *c)
 
 						        strcpy(clobber,c);
 }
+#endif
 
 
 /* ============================== EOF =============================== */

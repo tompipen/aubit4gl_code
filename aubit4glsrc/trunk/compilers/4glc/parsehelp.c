@@ -38,7 +38,7 @@ extern int list_global_alloc ;      /* Space allocated for our list*/
 extern struct variable **list_imported_global ;     /* Our List*/
 extern int list_imported_global_cnt ;       /* Number used in our list*/
 extern int list_imported_global_alloc ;     /* Space allocated for our list*/
-
+extern char                clobber[64];
 
 
 extern struct variable **list_class ;
@@ -1265,6 +1265,28 @@ print_nullify (char type)
 
 }
 
+void
+A4GL_set_clobber (char *c)
+{
+  char *ptr;
+  //char *ptr2;
+  ptr = strrchr (c, '/');
+  if (ptr)
+    {
+      strcpy (clobber, ptr + 1);
+      return;
+    }
+
+  /* Do dos mode ? */
+  ptr = strrchr (c, '\\');
+  if (ptr)
+    {
+      strcpy (clobber, ptr + 1);
+      return;
+    }
+
+  strcpy (clobber, c);
+}
 
 int A4GL_is_class_static(char *s) {
 	if (strncmp(s,"base.",5)==0) return 1;

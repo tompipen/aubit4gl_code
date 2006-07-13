@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.299 2006-07-12 12:58:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.300 2006-07-13 10:11:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.299 2006-07-12 12:58:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.300 2006-07-13 10:11:11 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -402,7 +402,7 @@ open_outfile (void)
   if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
     {
       A4GL_debug ("Clobbering...");
-      set_clobber (outputfilename);
+      A4GL_set_clobber (outputfilename);
     }
     
 

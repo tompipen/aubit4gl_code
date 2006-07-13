@@ -15,16 +15,16 @@ let a="400000000001"
 
 for b=1 to 10
 	# This one returns a value...
-	call a:.:nextprime() returning a
+	call a.nextprime() returning a
 	display a
-	display a:.:nextprime()
+	display a.nextprime()
 end for
 
 
 display "Setting fib numbers"
 
 for b=1 to 10
-	call a:.:setfib(b)  # This has been defined as an 'inplace' function
+	call a.setfib(b)  # This has been defined as an 'inplace' function
 			  # ie. it changes the internal value rather than returning a value...
 	display a
 end for
