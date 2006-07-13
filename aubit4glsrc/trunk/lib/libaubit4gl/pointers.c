@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.41 2006-06-19 09:30:36 mikeaubury Exp $
+# $Id: pointers.c,v 1.42 2006-07-13 11:10:36 mikeaubury Exp $
 #
 */
 
@@ -211,7 +211,8 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 #if ! defined(__MINGW32__)
 	  DELETE_X (&buff2);
 #else
-      A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
+	  DELETE_X (&buff2);
+      //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
 
 	  //A4GL_debug ("Try to free %p\n", anode);
@@ -321,7 +322,8 @@ A4GL_del_pointer (char *pname, char t)
 #if ! defined(__MINGW32__)
 	  DELETE_X (&buff2);
 #else
-      A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
+	  DELETE_X (&buff2);
+      //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
 	  strcpy (anode->name, "======");
 	  free (anode);
@@ -329,7 +331,8 @@ A4GL_del_pointer (char *pname, char t)
 #if ! defined(__MINGW32__)
       DELETE_X (buff);
 #else
-      A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
+      DELETE_X (buff);
+      //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
       free (buff);
     }
