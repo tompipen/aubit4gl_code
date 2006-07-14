@@ -1366,8 +1366,12 @@ define m1 char(255)
 define m2 char(255)
 define lv_str char(1000)
 define a integer
-let lv_str=fgl_getenv("A4GL_CP_CMD")," ",m1 clipped, " ",m2 clipped
-call runit(lv_str)
+code
+A4GL_trim(m1);
+A4GL_trim(m2);
+A4GL_move_file(m1,m2);
+endcode
+
 end function
 
 
@@ -1449,14 +1453,8 @@ define l integer
 let l=-1
 code
 {
-FILE *f;
 A4GL_trim(s);
-f=fopen(s,"r");
-if (f) {
-	fseek(f,0,SEEK_END);
-	l=ftell(f);
-	fclose(f);
-}
+l=A4GL_file_length(s);
 }
 endcode
 return l

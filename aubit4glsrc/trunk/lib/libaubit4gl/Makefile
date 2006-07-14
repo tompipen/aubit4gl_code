@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.20 2006-07-07 15:10:20 mikeaubury Exp $
+# $Id: Makefile,v 1.21 2006-07-14 16:11:54 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -66,7 +66,7 @@ COMMONSRC= \
 	gtime.c gen_stack.c gui_io.c gui.c \
 	helper.c \
 	io.c interval.c \
-	keys.c  \
+	keys.c  file.c \
 	load.c \
 	match.c maths.c memfile.c \
 	ns.c \

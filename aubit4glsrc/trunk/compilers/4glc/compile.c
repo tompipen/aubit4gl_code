@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.106 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: compile.c,v 1.107 2006-07-14 16:11:37 mikeaubury Exp $
 #*/
 
 /**
@@ -182,7 +182,7 @@ initArguments (int argc, char *argv[])
   
   char *chrptr;
   char opt_list[80] = "";
-  char mv_cmd[40] = "";  
+  //char mv_cmd[40] = "";  
   char a[128] = "";
   char b[128] = "";
   char c[128] = "";
@@ -268,7 +268,7 @@ initArguments (int argc, char *argv[])
     } else /* all other A4GL_LEXTYPE types*/ {
 		strcpy (opt_list, "G4s:N:kwKco::l::L::?hSgVvftd:C:");
     }
-	SPRINTF1 (mv_cmd, "%s", acl_getenv ("A4GL_MV_CMD"));
+
 	if (! strcmp (acl_getenv ("COMSPEC"), "") == 0) {
 		//On Windows
 		if (! strcmp (acl_getenv ("NUMBER_OF_PROCESSORS"), "") == 0) {
@@ -285,10 +285,9 @@ initArguments (int argc, char *argv[])
 		if ((! strcmp (acl_getenv ("SH"), "") == 0) || (! strcmp (acl_getenv ("SHELL"), "") == 0)) {
 			shell_is_bash=1;
 			//does not seem to work
-			//A4GL_setenv("A4GL_MV_CMD","mv",1);
 			//NOTE: Windows 'move' cmd is a cmd.exe built-in and will
 			//only be available when cmd.exe is shell - NOT when bash is a shell
-			SPRINTF0 (mv_cmd, "mv");
+			/* SPRINTF0 (mv_cmd, "mv"); */
 		}
 	}
 	
@@ -1003,7 +1002,9 @@ initArguments (int argc, char *argv[])
 	if (compile_exec || compile_so || compile_lib) {
 		if (verbose) { PRINTF ("%s\n", buff); }
 		SPRINTF2 (buff, "%s > %s.err", buff, output_object);
-		if ( ! win_95_98 ) { SPRINTF1 (buff, "%s 2>&1", buff); }
+		if ( ! win_95_98 ) { 
+			strcat(buff, " 2>&1"); 
+		}
 		#ifdef DEBUG
 		  A4GL_debug ("Runnung %s", buff);
 		#endif
@@ -1024,38 +1025,27 @@ initArguments (int argc, char *argv[])
 				// No error code from linking command - check if there was any output
 				SPRINTF1 (buff, "%s.err", output_object);
 				if (verbose) { PRINTF ("checking for %s\n", buff); }
-				filep = fopen (buff, "r");
-				/*  f = A4GL_mja_fopen (ii, "r");*/
-				fseek (filep, 0, SEEK_END);
-				flength = ftell (filep);
-				fclose (filep);
-				/* The 'proper' way to do it is with 'stat' - but this isn't 
-					too portable (even though it should be). */
-		
+				flength=A4GL_file_length(buff);
+				//filep = fopen (buff, "r");
+				//fseek (filep, 0, SEEK_END);
+				//flength = ftell (filep);
+				//fclose (filep);
 				if (flength) {
 					/*
 					 Since there was no error code returned from C compiler/linker,
 					 *.xxx.err file (when it exist and is not 0 size ) will contain
 					 linker warnings only
 					*/
+					char fbuff[2000];
+					char tbuff[2000];
 					A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 					if (verbose) { PRINTF ("%s is non-zero\n", buff); }
 	
 					//something wrong here - does not show 1 or 0 but large random integer
 					//if (verbose) { PRINTF ("shell_is_bash=%d\n"),shell_is_bash;}
-					if ( ! win_95_98 ) {
-						  SPRINTF3 (buff, "%s %s.err %s.warn", mv_cmd,
-							   output_object, output_object);
-					} else {
-						  /*suppress silly message from move command on w98*/
-						  SPRINTF3 (buff, "%s %s.err %s.warn > nul", mv_cmd,
-							   output_object, output_object);
-					}
-					#ifdef DEBUG
-						A4GL_debug ("Runnung %s", buff);
-					#endif
-					if (verbose) { PRINTF ("Running %s\n", buff); }
-					ret = system (buff);
+						sprintf(fbuff,"%s.err",output_object);
+						sprintf(tbuff,"%s.warn",output_object);
+						ret=A4GL_move_file(fbuff,tbuff);
 				} else {
 				  /*err file will be deleted if clean_aftercomp is set*/
 				  /*PRINTF ("%s file size is zero %d\n",buff,flength);*/
@@ -1063,14 +1053,13 @@ initArguments (int argc, char *argv[])
 			} else {
 				//just delete any .err file possibly created - it contains
 				// only warnings, and preserve_warn=0
-				SPRINTF2 (buff, "%s %s.err", acl_getenv ("A4GL_RM_CMD"), output_object);
-				#ifdef DEBUG
-					A4GL_debug ("Runnung %s\n", buff);
-				#endif
-				if (verbose) { PRINTF ("Running %s\n", buff); }			
-				ret = system (buff);
+				char fbuff[2000];
+				sprintf(fbuff,"%s.err",output_object);
+				ret=A4GL_delete_file(fbuff);
 			}
+
 		if (clean_aftercomp) {
+			char fbuff[2000];
 			/*
 				 FIXME:
 				 do we really want to remove all objects?, that includes libraries,
@@ -1078,13 +1067,8 @@ initArguments (int argc, char *argv[])
 				 shared objects to be compiled over and over again...
 				 Maybe just make sure you clean only in current directory?
 			*/
-			SPRINTF2 (buff, "%s %s.err", acl_getenv ("A4GL_RM_CMD"), output_object);
-			#ifdef DEBUG
-				A4GL_debug ("Runnung %s\n", buff);
-			#endif
-			if (verbose) { PRINTF ("Running %s\n", buff); }			
-			ret = system (buff);
-			if (ret) {
+			sprintf(fbuff,"%s.err",output_object);
+			if (!  A4GL_delete_file(fbuff)) {
 			  FPRINTF (stderr,"Clean of %s intermediate objects failed\n", a);
 			  FPRINTF (stderr,"Failed command was: %s\n", buff);
 			}
@@ -1465,15 +1449,10 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 				if (preserve_warn) {
 					/* determine the c.err file size */
 					SPRINTF1 (buff, "%s.c.err", fgl_basename);
-					filep = fopen (buff, "r");
-					/*  f = A4GL_mja_fopen (ii, "r");*/
-					fseek (filep, 0, SEEK_END);
-					flength = ftell (filep);
-					fclose (filep);
-					/* The 'proper' way to do it is with 'stat' - but this isn't too 
-					portable (even though it should be). */
-	
+					flength = A4GL_file_length (buff);
 					if (flength) {
+							char tbuff[2000];
+							char fbuff[2000];
 						/*
 						 Since there was no error code returned from C compiler,
 						 *.c.err file (when it exist and is not 0 size ) will contain
@@ -1484,20 +1463,11 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 							A4GL_debug ("%s file size is not zero %d\n", buff, flength);
 						#endif
 					  
-						if ( ! win_95_98 ) {
-							SPRINTF3 (buff, "%s %s.c.err %s.c.warn",
-							   acl_getenv ("A4GL_MV_CMD"), fgl_basename, fgl_basename);
-						} else {
-							/*suppress silly message from move command on w98*/
-							SPRINTF3 (buff, "%s %s.c.err %s.c.warn > nul",
-								acl_getenv ("A4GL_MV_CMD"), fgl_basename, fgl_basename);
-						}
+								sprintf(fbuff,"%s.err",output_object);
+								sprintf(tbuff,"%s.warn",output_object);
+							ret=A4GL_move_file(fbuff,tbuff);
 	
-						#ifdef DEBUG
-							A4GL_debug ("Runnung %s", buff);
-						#endif
-						ret = system (buff);
-						if (ret) {
+						if (!ret) {
 							FPRINTF (stderr,"Error executing: %s\n",buff);
 							FPRINTF (stderr,"%s.c.err file size = %d\n", fgl_basename, flength);
 						}
@@ -1505,28 +1475,23 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 						/*c.err file will be deleted if clean_aftercomp is set*/
 					}
 				} else {
+					char fbuff[2000];
 					//just delete any .err file possibly created - it contains
 					// only warnings, and preserve_warn=0
 					//FIXME - use A4GL_EC_EXT instead of listing .cpc. ec ...etc
-					SPRINTF5 (buff, "%s %s.err %s.c.err %s.ec.err %s.cpc.err",
-						acl_getenv ("A4GL_RM_CMD"), fgl_basename, fgl_basename,fgl_basename, fgl_basename);
-					#ifdef DEBUG
-						A4GL_debug ("Runnung %s", buff);
-					#endif
-					ret = system (buff);
+					sprintf(fbuff,"%s.err",fgl_basename); A4GL_delete_file(fbuff);
+					sprintf(fbuff,"%s.c.err",fgl_basename); A4GL_delete_file(fbuff);
+					sprintf(fbuff,"%s.ec.err",fgl_basename); A4GL_delete_file(fbuff);
+					sprintf(fbuff,"%s.cpc.err",fgl_basename); A4GL_delete_file(fbuff);
+
+					//SPRINTF5 (buff, "%s %s.err %s.c.err %s.ec.err %s.cpc.err", acl_getenv ("A4GL_RM_CMD"), fgl_basename, fgl_basename,fgl_basename, fgl_basename);
 				}
 				if (clean_aftercomp) {
-					/*is it smart to delete .glb files?*/
-					SPRINTF5 (buff, "%s %s.err %s.c.err %s.h %s.c ",	/*%s.glb*/
-						acl_getenv ("A4GL_RM_CMD"), fgl_basename, fgl_basename, fgl_basename, fgl_basename);	/*,fgl_basename*/
-					#ifdef DEBUG
-						A4GL_debug ("Runnung %s", buff);
-					#endif
-					ret = system (buff);
-					if (ret) {
-						FPRINTF (stderr,"Clean of %s intermediate files failed\n", fgl_basename);
-						FPRINTF (stderr,"Failed command was: %s\n", buff);
-					}
+					char fbuff[2000];
+					sprintf(fbuff,"%s.err",fgl_basename); A4GL_delete_file(fbuff);
+					sprintf(fbuff,"%s.c.err",fgl_basename); A4GL_delete_file(fbuff);
+					sprintf(fbuff,"%s.h",fgl_basename); A4GL_delete_file(fbuff);
+					sprintf(fbuff,"%s.c",fgl_basename); A4GL_delete_file(fbuff);
 				}
 			}
 		}

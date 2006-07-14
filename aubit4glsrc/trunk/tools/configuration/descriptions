@@ -82,8 +82,8 @@ $AUBITDIR/lib/libLEX_?.so
 	Options: (C), PERL, EC, CS
 	Note: EC (Embedded SQL C) can be Informix ESQL/C, SAP DB pre-compiler, Querix
 	esqlc or PostgreSQL ecpg.
-	using EC will limit Aubit DB connectivity at run-time to that of used EC compiler, ignoring
-	setting of A4GL_SQLTYPE
+	using EC will limit Aubit DB connectivity at run-time to that of used EC 
+	compiler, ignoring setting of A4GL_SQLTYPE
 	Note: CS is C#
 
 A4GL_LIB_EXT COMPILE Extension to use for libraries created by Aubit compiler
@@ -96,14 +96,14 @@ $AUBITDIR/lib/libMENU_?.so
 	Generic implies that format specified with A4GL_PACKER will be used
 
 A4GL_MNU_BASE_EXT COMPILE/RUNTIME/MENU Base extension for compiled menu files
-	Base extension (without packer extension) to use when compiling/opening menu files
+	Base extension (without packer extension) to use when 
+	compiling/opening menu files
 A4GL_MSGTYPE HELP/RUNTIME Determine library for help message handling
 $AUBITDIR/lib/libMSG_?.so
 	Default help message driver to be loaded:
 	When used: run-time only
 	Options: (NATIVE), XML (??? XML? chech this!)
 
-A4GL_MV_CMD COMPILE Command to ise to move files on the file system
 A4GL_OBJ_EXT COMPILE extension to use when compiling 4GL modules to objects
 A4GL_OMIT_NO_LOG SQL Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently removed
 =YES|NO
@@ -142,7 +142,6 @@ A4GL_RESERVEWORDS COMPILE --obsolete?-- Reserved word handling
 	disable this functionality. When set to NO, compiler will try to process
 	most reserved words, instead of reporting the error.
 
-A4GL_RM_CMD COMPILE Command to use for deleting files on the file system
 A4GL_SAPDB_ESQLC ESQL/COMPILE Full path to SAP DB ESQL/C compiler
 	full path to SAP-DB ESQL/C pre-compiler executable used when compiling EC output for
 	SAP DB(does not have to be in the path)
@@ -151,10 +150,10 @@ $AUBITDIR/libSQL_?.so
 	Name of default SQL library plug-in to use.
 	When used: run-time and compile-time
 	Options: (nosql)
-	   <ODBC MANAGERS> iodbc unixodbc odbc32 (Windows only)
-		<DIRECT ODBC> 	ifxodbc pgodbc  sapodbc sqliteodbc
-	   <NATIVE> 		esql esqpPG esqlSAP esqlQ sqlite sqliteS pg
-		<SPECIAL> 		FILESCHEMA
+	  <ODBC MANAGERS> iodbc unixodbc odbc32 (Windows only)
+	  <DIRECT ODBC> 	ifxodbc pgodbc  sapodbc sqliteodbc
+	  <NATIVE> 		esql esqpPG esqlSAP esqlQ sqlite sqliteS pg mysql
+	  <SPECIAL> 		FILESCHEMA
 	FILESCHEMA is to be used for compiling programs where either the database
 	doesn't exist yet - or you can't get immediate access to it.
 	This takes the 'database' as a filename (with a .schema extension) and uses
@@ -327,6 +326,7 @@ A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from for
 	well as when you run program that will use form file compiled this way
 
 A4GL_FAKELEXTYPE PCODE/COMPILE Compile C code resulting from 4gl compilation to P-code
+	This is no longer required
 A4GL_FAKE_IMMEDIATE COMPILE Affects EXECUTE IMMEDIATE
 =YES|NO
 	This option instructs the compiler to generate a prepare/execute pair for esql/c generation
@@ -334,7 +334,7 @@ A4GL_FAKE_IMMEDIATE COMPILE Affects EXECUTE IMMEDIATE
 	useful where the native ESQL/C compiler does not support the EXECUTE IMMEDIATE statement 
 	(Postgres ecpg for example)
 	For example, to use:
-		EXECUTE IMMEDIATE "set enable_seqscan to on" 
+		EXECUTE IMMEDIATE 'set enable_seqscan to on' 
 	with PostgreSQL RDBMS, you'd have to have A4GL_FAKE_IMMEDIATE set
 
 A4GL_FIELD_CONSTR_EXPR UI/TUI/LANG Message to display when a fields value cannot be used for a construct statement
@@ -493,7 +493,7 @@ A4GL_TRANSLATEFILE COMPILE Specifies the location of a translation file
 A4GL_TRANSMODE RUNTIME/SQL Set transactions behaviour (PodtgreSQL EC mode only??)
 	-1 	= silently ignore transactions
 	0	= Use odbc's SQLTransact call
-	1	= Use SQLExecDirect with "BEGIN WORK" etc
+	1	= Use SQLExecDirect with 'BEGIN WORK' etc
 	See also: A4GL_AUTOCOMMIT
 	
 A4GL_AUTOCOMMIT RUNTIME/SQL Set transaction commit behaviour (PostgreSQL EC mode only??)
@@ -548,6 +548,12 @@ A4GL_FIRSTCOL_ONERR UI/TUI Move to the beginning of a field after an error
 A4GL_CLR_FIELD_ON_ERROR UI/TUI Clears a field after an error
 =YES|NO
 	If this is set them FIRSTCOL_ONERR will never be triggered
+	See FIRSTCOL_ONERR
+FIRSTCOL_ONERR_INCL UI Move to the beginning of a field if there is an error
+=YES|NO
+	In some UI modules you can set this to force the cursor to move to the beginning 
+	of the input field when there is a data entry error only involving data not present
+	in the include list
 	See FIRSTCOL_ONERR
 A4GL_NO_REFRESH_AFTER_SYSTEM UI Issue a screen refresh after any sysem command
 =YES|NO
@@ -620,7 +626,7 @@ TUICANCELKEY TUI Allows the assigning of interrupt key.  For example in aterm's 
 A4GL_USE_PANGO_ML UI Allow markup for GUI widgets labels 
 =YES|NO
 	When set to Yes, any form label can use the pango-markup-language:
-	(e.g.: DISPLAY "<span background='blue'>Blue BG</span>" to my_label)
+	(e.g.: DISPLAY '<span background='blue'>Blue BG</span>' to my_label)
 SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) translation 
 =Y|N
 	This is apparently needed only with PostgreSQL (with IFX compatibility patches)
@@ -628,12 +634,11 @@ A4GL_SYSCOL_VAL SQL the name of the 'syscolval' table
 A4GL_SYSCOL_ATT SQL the name of the 'syscolatt' table
 A4GL_CLASSPATH UNKNOWN Path to search for import packages
 RESTARTLOG RUNTIME Restart the error log
-	This causes the CALL startlog("...") to restart with an empty log file
+	This causes the CALL startlog('...') to restart with an empty log file
 	each time the program is run. The default is to append to the end of the
 	current log
 A4GL_EC_LOGSQL  UNKNOWN UNKNOWN
 ALWAYS_CONVERT  UNKNOWN UNKNOWN
-BEEP_BADMENUKEY UNKNOWN UNKNOWN
 BINDDATEASINT UNKNOWN UNKNOWN
 COMSPEC COMPILE/RUNTIME On Windows used to determine that we are on Windows
 	Not to be changed by user - this is a Windows system environment variable
@@ -683,22 +688,49 @@ CASEOPTIONS UI Always use case when matching for NEXT OPTION/SHOW OPTION/HIDE OP
 	This setting will ensure a case sensitive match for all the menu operations
 	This is the default behaviour for NEXT OPTION under informix, SHOW and HIDE option
 	seem to be case insenitive on informix
-CASEIGNOPTIONS Never use case when matching for NEXT OPTION/SHOW OPTION/HIDE OPTION
+CASEIGNOPTIONS UI Never use case when matching for NEXT OPTION/SHOW OPTION/HIDE OPTION
 =YES|NO
 	This setting will ensure a case insensitive match for all the menu operations
 	This is the default behaviour for SHOW/HIDE OPTION under informix, NEXT OPTION
 	seem to be case senitive on informix
-EMAIL_RECIPIENT UNKNOWN UNKNOWN
-FGLFRMCOMPILE UNKNOWN UNKNOWN
-FIRSTCOL_ONERR_INCL UNKNOWN UNKNOWN
-FLASH_BADMENUKEY UNKNOWN UNKNOWN
-FORCE_CLOSE UNKNOWN UNKNOWN
-FORCE_ROLLBACK_AT_EXIT UNKNOWN UNKNOWN
-FREE_SQL_MEM UNKNOWN UNKNOWN
-FUDGE_STATUS UNKNOWN UNKNOWN
+EMAIL_RECIPIENT REPORT Email address to use for START REPORT TO EMAIL
+	This setting is used to specify a default email address to send a convertable report to.
+	Emails are sent using 'send_report' function in the fgl_smtp module
+FGLFRMCOMPILE FORM Explicitly state if a form compile is to use 4GL rather than PERFORM syntax
+=YES|NO
+	Setting this will enable/disable the use of keywords used only in the INSTRUCTIONS section of
+	a perform screen which may otherwise interfere with otherwise legitimate identifiers
+FLASH_BADMENUKEY UI Flash the screen when an error occurs in a menu	
+=YES|NO
+	When a key is pressed in a menu which does not correspond to an option, then
+	this indicates that the screen should flash as a non-audiable warning.
+	See BEEP_BADMENUKEY
+BEEP_BADMENUKEY UI Ring the terminal bell when an error occurs in a menu
+=YES|NO
+	When a key is pressed in a menu which does not correspond to an option, then
+	this indicates that the terminal should beep as a audiable warning.
+	Note : Not all terminals are capable of making the beep noise.
+	See FLASH_BADMENUKEY
+FORCE_CLOSE SQL Force the closing of the current database connection
+=YES|NO
+	This option will force the closing of the database connection when the program
+	exits
+FORCE_ROLLBACK_AT_EXIT SQL Send an explicit rollback work on closing the connection
+=YES|NO
+	ODBC specific. This option requests that a rollback work be sent before closing a 
+	database connection
+FREE_SQL_MEM SQL/COMPILE Free SQL memory when compiling the 4gl code
+=YES|NO
+	This option should not be required as the 4gl compiler will free all the memory 
+	at the end of compiling a module. If you are finding you are running out of memory
+	you could try setting this option. 
+FUDGE_STATUS COMPILE Add some extra code to clear down the status variable
+=YES|NO
+	EC/C generation only. This option forces the clearing down of the status variable.
 IFMX_ESQLC UNKNOWN UNKNOWN
 IFX_LIBS UNKNOWN UNKNOWN
 IGNORE_DATEFMT UNKNOWN UNKNOWN
+=YES|NO
 INFORMIX_ROUNDING UNKNOWN UNKNOWN
 LOGALL UNKNOWN UNKNOWN
 MONITORPORT UNKNOWN UNKNOWN
@@ -718,4 +750,48 @@ TRACE_AS_TEXT UNKNOWN UNKNOWN
 WAIT_FOR_GDB_ATTACH UNKNOWN UNKNOWN
 DBL2DEC_USING UNKNOWN UNKNOWN
 DEBUGFILE UNKNOWN UNKNOWN
+A4GL_DLL_EXT UNKNOWN UNKNOWN
+A4GL_FRM_BASE_LIST UNKNOWN UNKNOWN
+A4GL_LOGSQLERR UNKNOWN UNKNOWN
+A4GL_PARSER UNKNOWN UNKNOWN
+A4GL_QUOTE_OWNER UNKNOWN UNKNOWN
+A4GL_RDYNAMIC UNKNOWN UNKNOWN
+ALLOWCOMMAINDECIMAL UNKNOWN UNKNOWN
+ALWAYS_CONVERT_PREPARED UNKNOWN UNKNOWN
+ASQLERRM UNKNOWN UNKNOWN
+AUBITPLUGINDIR UNKNOWN UNKNOWN
+CONSTRUCT_MATCH_FIX UNKNOWN UNKNOWN
+DBNAME UNKNOWN UNKNOWN
+DOING_CM UNKNOWN UNKNOWN
+DROP_WHERE_CURRENT_OF UNKNOWN UNKNOWN
+ENV_NOT_SET_AS_STR UNKNOWN UNKNOWN
+ERROR_ON_NVALS UNKNOWN UNKNOWN
+FCOMPILE_SILENT UNKNOWN UNKNOWN
+HALFDELAY UNKNOWN UNKNOWN
+HASHNOCOMMENT UNKNOWN UNKNOWN
+HIDEEMPTYBUTTONS UNKNOWN UNKNOWN
+KEEPNLONREAD UNKNOWN UNKNOWN
+KEY_RECALL UNKNOWN UNKNOWN
+KEY_RECALL_LAST UNKNOWN UNKNOWN
+LIST_ERRS UNKNOWN UNKNOWN
+LOCALOUTPUT UNKNOWN UNKNOWN
+LOGREP UNKNOWN UNKNOWN
+LOGSQLFUNCTIONS UNKNOWN UNKNOWN
+LOG_STRINGS UNKNOWN UNKNOWN
+LOG_TEXT UNKNOWN UNKNOWN
+MAPSQL UNKNOWN UNKNOWN
+MONITOR4GL UNKNOWN UNKNOWN
+NOSETODBCCURSORS UNKNOWN UNKNOWN
+NO_INIT_COL_CLR UNKNOWN UNKNOWN
+PADNULLSTRING UNKNOWN UNKNOWN
+PG_COPTS UNKNOWN UNKNOWN
+PREFIX_DLLFUNCTION UNKNOWN UNKNOWN
+RUNNING_TEST UNKNOWN UNKNOWN
+SAVE_COMMENTS UNKNOWN UNKNOWN
+SETODBCCURSORS UNKNOWN UNKNOWN
+SO_EXT UNKNOWN UNKNOWN
+SUPPRESSWARNINGS UNKNOWN UNKNOWN
+TARGET_OS UNKNOWN UNKNOWN
+TRIMFIELD UNKNOWN UNKNOWN
+USECURSORFORLOAD UNKNOWN UNKNOWN
 
