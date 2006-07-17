@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.28 2006-07-17 14:09:23 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.29 2006-07-17 15:29:37 mikeaubury Exp $
 #*/
 
 /**
@@ -58,6 +58,7 @@
 
 #else
 
+#define USE_PDFLIB_H
 #include "a4gl_lib_exreport_pdf_int.h"
 
 #endif
