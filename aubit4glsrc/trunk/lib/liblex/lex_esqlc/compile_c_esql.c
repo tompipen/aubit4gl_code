@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.138 2006-07-07 15:10:22 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.139 2006-07-17 17:28:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.138 2006-07-07 15:10:22 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.139 2006-07-17 17:28:35 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -751,12 +751,17 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 	printc("\nEXEC SQL BEGIN DECLARE SECTION;/*8*/");
 	printc("char _u[256];");
 	printc("char _p[256];");
+	printc("char _d[256];");
 	printc("\nEXEC SQL END DECLARE SECTION;");
 	clr_suppress_lines();
+	if (strcmp(v,"?")==0) {
+		printc("strcpy(_d,A4GL_char_pop()); A4GL_trim(_d);");
+	}
+	
 	if (strlen(user)) {
   	if (strcmp (user, "?") == 0)
     	{
-		printc("strcpy(_u,A4GL_char_pop());");
+		printc("strcpy(_u,A4GL_char_pop());A4GL_trim(_u);");
     	} else {
 		char buff[256];
 		char *ptr;
@@ -766,9 +771,9 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 			 *ptr=0;
 			ptr++;
 		}
-		printc("strcpy(_u,%s);",buff);
+		printc("strcpy(_u,%s);A4GL_trim(_u);",buff);
 		if (ptr) {
-			printc("strcpy(_p,%s);",ptr);
+			printc("strcpy(_p,%s);A4GL_trim(_p);",ptr);
 		}
 	}	
 	}
@@ -779,6 +784,19 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 	//
 	A4GL_save_sql("CONNECT TO '%s'", v);
 
+	if (strcmp(v,"?")==0) {
+	if (esql_type()==2) { // Postgres...
+  		printc ("\nEXEC SQL CONNECT TO  :_d AS %s", A4GL_strip_quotes(s));
+		if (strlen(user)) {
+			printc("USER :_u USING :_p");
+		}
+	} else {
+  		printc ("\nEXEC SQL CONNECT TO  :_d AS %s", s);
+		if (strlen(user)) {
+			printc("USER :_u USING :_p");
+		}
+	}
+				} else {
 	if (esql_type()==2) { // Postgres...
   		printc ("\nEXEC SQL CONNECT TO  '%s' AS %s", v,A4GL_strip_quotes(s));
 		if (strlen(user)) {
@@ -790,6 +808,7 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 			printc("USER :_u USING :_p");
 		}
 	}
+				}
 	printc("/* s=%s v=%s user=%s */",s,v,user);
 
   printc(";");
@@ -2469,13 +2488,13 @@ extern char buff_in[];
  *   * @todo Describe function
  *    */
 int
-doing_esql ()
+doing_esql (void)
 {
         return 1;
 }
 
 
-int LEXLIB_compile_time_convert() {
+int LEXLIB_compile_time_convert(void) {
 	        return 1;
 }
 
