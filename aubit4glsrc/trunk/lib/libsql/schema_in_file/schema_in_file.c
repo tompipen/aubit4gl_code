@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.22 2005-12-05 20:31:07 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.23 2006-07-17 14:09:27 mikeaubury Exp $
 #*/
 
 /**
@@ -129,7 +129,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   return 0;
 }
 
-int A4GLSQLLIB_A4GLSQL_initlib(void) {
+int A4GLSQLLIB_SQL_initlib(void) {
 	return 1;
 }
 

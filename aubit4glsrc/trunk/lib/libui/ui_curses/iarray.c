@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.111 2006-03-10 10:01:40 mikeaubury Exp $
+# $Id: iarray.c,v 1.112 2006-07-17 14:09:30 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.111 2006-03-10 10:01:40 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.112 2006-07-17 14:09:30 mikeaubury Exp $";
 #endif
 
 /**
@@ -112,10 +112,13 @@ static void A4GL_newMovement (struct s_inp_arr *arr, int scr_line,
 static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
 
 static int A4GL_set_fields_inp_arr (void *vsio, int n);
-int A4GL_has_event (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
-int A4GL_has_event_for_field (int cat, char *a,
-			      struct aclfgl_event_list *evt);
+//int A4GL_has_event (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
+//int A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt);
+//
+
+
+
 /*
 =====================================================================
                     Functions definitions

@@ -296,7 +296,7 @@ A4GLSQL_find_cursor (char *cname)
 
 /*****************************************************************************/
 int
-A4GLSQLLIB_A4GLSQL_initlib (void)
+A4GLSQLLIB_SQL_initlib (void)
 {
   conn = mysql_init (NULL);
   isconnected = 0;

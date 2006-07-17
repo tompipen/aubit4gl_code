@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.29 2006-07-12 16:09:29 mikeaubury Exp $
+# $Id: console.c,v 1.30 2006-07-17 14:09:28 mikeaubury Exp $
 #*/
 
 /**
@@ -692,7 +692,7 @@ void UILIB_A4GL_ui_exit(void) {
 
 char *UILIB_A4GL_ui_fgl_winquestion(char *title,char *text,char *def,char *pos,char *icon,int danger,int winbutton) NOPE0
 
-int UILIB_A4GLUI_initlib(void) {
+int UILIB_UI_initlib(void) {
 	return 1;
 }
 

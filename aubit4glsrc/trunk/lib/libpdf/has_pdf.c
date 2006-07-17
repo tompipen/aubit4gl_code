@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.27 2006-06-08 08:24:07 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.28 2006-07-17 14:09:23 mikeaubury Exp $
 #*/
 
 /**
@@ -974,11 +974,11 @@ A4GL_report_char_pop (void)
  *
  * @todo Describe function
  */
-void
-A4GLPDFREP_A4GLREPORT_initlib (void)
+int  A4GLPDFREP_EXREPORT_initlib(void)
 {
   A4GL_debug ("Calling PDF_boot");
   PDF_boot ();
+  return 1;
 }
 
 /* ================================ EOF ============================== */

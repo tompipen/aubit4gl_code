@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.39 2006-06-22 07:33:28 mikeaubury Exp $
+# $Id: util.c,v 1.40 2006-07-17 14:08:55 mikeaubury Exp $
 #
 */
 
@@ -1138,7 +1138,7 @@ A4GL_add_feature (char *feature)
  * @todo Describe function
  */
 int
-A4GLPARSE_A4GLSQLPARSE_initlib (void)
+A4GLPARSE_SQLPARSE_initlib (void)
 {
   return 0;
 }

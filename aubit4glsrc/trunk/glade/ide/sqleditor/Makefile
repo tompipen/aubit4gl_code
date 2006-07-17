@@ -24,33 +24,51 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.5 2004-10-12 00:40:51 afalout Exp $
+# $Id: Makefile,v 1.1 2006-07-17 14:09:07 mikeaubury Exp $
 #
 
-ROOT			=../../../..
-LIBROOT			=${ROOT}/lib
+ROOT					=../../..
+LIBROOT					=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
-include 		${ROOT}/incl/Makefile-common
+include 				${ROOT}/incl/Makefile-common
 
 #Include rules for compiling 4GL source code using Aubit compiler
-#include 		${ROOT}/incl/a4gl.mk
+include 				${ROOT}/incl/a4gl.mk
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-CFLAGS			+=-I${ROOT}/incl
-ALL				=${LIBROOT}/libA4GL_glade${SO_EXT}
-OBJS			=list.ao common.ao form.ao sbar.ao field.ao entry.ao \
-					text_view.ao mlist.ao
-LINKLIBS		=$(shell pkg-config libglade-2.0 --libs)
-#LINKLIBS		=$(shell pkg-config libglade-2.0 --libs-only-L) \
-#					$(shell pkg-config libglade-2.0 --libs-only-l)
-GLADE_CFLAGS	=$(shell pkg-config libglade-2.0 --cflags)
+CFLAGS					+=-g -I${ROOT}/incl
+#WARNING: currently, 4glpc is not hanling GCC on Windows, and will just pass everything
+#to esql compiler - which will try to invoke MSVC "cl" which most probably
+#will not exist on the system. OTOH, 4glc will handle ec compilation as 
+#discreate steps of 4gl->.ec->.c->.dll/.exe
+#If you are tempted to use 4glpc (instead 4glc
+#directly) please make sure it will work for all platforms and ESQL dialects
+#in this makefile. Andrej.
+#4GLPC					=4glpc -g
+#4GLPC				=${FGLPCEXEC}
+#FGLPC_VERBOSE_FLAG=-V5
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}
 
-A4GL_LEXTYPE=C
-export A4GL_LEXTYPE
+################
+#Aubit compiler settings. infx.4gl contains Informix ESQL/C code
+A4GL_LEXTYPE			=EC
+A4GL_USE_DATABASE_STMT	=Y
+A4GL_LEXDIALECT			=INFORMIX
+
+#OBJ					= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
+						#execute.ao simple_parse.o lex.yy.o main.ao
+BASE_4GL				= editor.4gl infx.4gl ../common/pick.4gl ../common/about.4gl \
+						execute.4gl simple_parse.c lex.yy.c main.4gl
+
+ifneq "${IFMX_ESQLC}" "no"
+	ALL						=${ROOT}/bin/sqleditor.4ae
+else
+	ALL						=no_esql
+endif
 
 ## ==================================================================
 ##                              Targets
@@ -58,67 +76,57 @@ export A4GL_LEXTYPE
 
 all: ${ALL}
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| Default targets (${ALL}) successfuly compiled"
+	@echo "| Default target (${ALL}) succesfully compiled"
 	@echo "+--------------------------------------------------------------------+"	
 
-${LIBROOT}/libA4GL_glade${SO_EXT} : ${OBJS}
-#	export A4GL_LEXTYPE=C && 
-	${FGLPCEXEC} -g ${AS_DLL} $^ -o $@ ${LINKLIBS}
-#	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+no_esql:
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Informix ESQL/C not detected - cannot compile Glade SQL editor     |"
+	@echo "+--------------------------------------------------------------------+"
+
+${ROOT}/bin/sqleditor.4ae: ${BASE_4GL}
+	${4GLPC} -I../common -g $^ -o $@
 	
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
 
+#FIXME: not targets to compile ide.glade
+#ide.glade also in ..
+
 #Amake will do this automatically:
 
-%.ao: %.4gl
-	export A4GL_LEXTYPE=C && ${ROOT}/bin/4glc $< 
-	${CC} -g -c $*.c -o $@ ${GLADE_CFLAGS} -I$(ROOT)/incl 
+#../common/pick.ao: ../common/pick.4gl 
+#	${4GLPC} $^ -c -o $@
 
-#list.ao: list.4gl
-#	export A4GL_LEXTYPE=C && 4glc $^ 
-#	${CC} -g -c $*.c -o $@ `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl 
-
-#mlist.ao: mlist.4gl
-#	export A4GL_LEXTYPE=C && 4glc mlist.4gl 
-#	gcc -g  -c mlist.c -o mlist.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl 
-
-#common.ao: common.4gl
-#	export A4GL_LEXTYPE=C && 4glc common.4gl 
-#	gcc -g  -c common.c -o common.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl
-
-#form.ao: form.4gl
-#	export A4GL_LEXTYPE=C && 4glc form.4gl 
-#	gcc -g  -c form.c -o form.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl
-
-#sbar.ao: sbar.4gl
-#	export A4GL_LEXTYPE=C && 4glc sbar.4gl 
-#	gcc -g  -c sbar.c -o sbar.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl
-
-#field.ao: field.4gl
-#	export A4GL_LEXTYPE=C && 4glc field.4gl 
-#	gcc -g  -c field.c -o field.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl
-
-#entry.ao: entry.4gl
-#	export A4GL_LEXTYPE=C && 4glc entry.4gl 
-#	gcc -g  -c entry.c -o entry.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl
-
-#text_view.ao: text_view.4gl
-#	export A4GL_LEXTYPE=C && 4glc text_view.4gl 
-#	gcc -g  -c text_view.c -o text_view.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl
-
-show:
-	@echo "FGLPCEXEC=${FGLPCEXEC}"
-	@echo "AS_DLL=${AS_DLL}"
-	@echo "LINKLIBS=${LINKLIBS}"
-	@echo ""
+#../common/about.ao: ../common/about.4gl
+#	${4GLPC} $^ -c -o $@
 	
+#editor.ao: editor.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#infx.ao: infx.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#main.ao: main.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#edtprog.ao: edtprog.4gl
+#	${4GLPC} $^ -c -o $@
+
+#execute.ao: execute.4gl
+#	${4GLPC} $^ -c -o $@
+
+lex.yy.c: parse.l
+	${LEX} -i $^
+
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	${RM} *.ao *.ec *.glb *.o *.c *.h *.err *.warn debug.out *~ *.bak ${ALL}
+	${RM} *.ec *.ao *.glb *.o lex.yy.c about.c about.h editor.c editor.h edtprog.c \
+	edtprog.h execute.c execute.h ide1.c ide1.h infx.c infx.h lex.yy.c pick.c \
+	pick.h ${ALL} *.warn *.err debug.out *.bak *~ ${OBJ} main.c main.h
 
 

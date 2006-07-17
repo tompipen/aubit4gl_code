@@ -16,8 +16,8 @@ int ok;
 int max_page_no = -1;
 int max_line_no = -1;
 int max_col_no = -1;
-static void read_block ();
-void free_report() ;
+static void read_block (void);
+void free_report(void *report) ;
 
 struct r_report *report;
 /*
@@ -33,11 +33,11 @@ int isblank(int n) {
 #endif
 */
 
-static int read_int ()
+static int read_int (void)
 {
   int n;
-  short s;
-  unsigned char c;
+  //short s;
+  //unsigned char c;
 
 
 /* Keep it simple for now */
@@ -54,7 +54,7 @@ static int read_int ()
   return a4gl_ntohl(n);
 }
 
-static char read_char ()
+static char read_char (void)
 {
   char n;
   int p;
@@ -67,7 +67,7 @@ static char read_char ()
   return n;
 }
 
-static char * read_string ()
+static char * read_string (void)
 {
   int n;
   char *p;
@@ -180,7 +180,7 @@ struct r_report *read_report_output(char *fname) {
       if (buff_c != ENTRY_BLOCK)
         {
           printf ("Unexpected block (1) Got %d\n", buff_c);
-	  free_report();
+	  free_report(report);
 	  return 0;
         }
       read_block ();
@@ -285,9 +285,9 @@ void read_entry(struct r_report_block *block) {
         }
 }
 
-void free_report() {
+void free_report(void *report) {
 	// need to go through and unallocate all the other stuff too...
-	free(report);
+	if (report) free(report);
 }
 
 
@@ -376,9 +376,11 @@ int b;
 			int slen;
 		//printf("Have length for %d/%d\n",rblock_cnt,entry_cnt);
                     eid = report->blocks[rblock_cnt].entries[entry_cnt].entry_id;
+			/*
 			if (entry_cnt>= rbx[block_cnt].max_size_entry) {
 				printf("OOPS1\n");
 			}
+			*/
                     rbx[block_cnt].entry_nos[entry_cnt] = eid;
                     slen=strlen (report->blocks[rblock_cnt].entries[entry_cnt].  string);
                     rbx[block_cnt].max_size_entry[entry_cnt] =slen;

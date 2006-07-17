@@ -88,7 +88,7 @@ if (selfonly) {
 	print "      A4GL_exitwith(\"Unable to open " xlib " library...\");"
 	print "      return 0;"
 	print "   }"
-	print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" xlib "_initlib\");"
+	print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix xlib "_initlib\");"
 	print ""
 	print "   if (func)"
 	print "      return func();"

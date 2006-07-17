@@ -180,11 +180,12 @@ open_outfile ()
 
 
 
-void
-LEXLIB_A4GLLEX_initlib (void)
+int
+LEXLIB_LEX_initlib (void)
 {
   A4GL_setenv ("MARK_SCOPE_MODULE", "Y", 1);
   open_outfile ();
+  return 1;
 }
 
 

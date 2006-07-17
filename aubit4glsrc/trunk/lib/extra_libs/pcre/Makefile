@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.7 2005-03-04 08:07:14 afalout Exp $
+# $Id: Makefile,v 1.1 2006-07-17 14:09:09 mikeaubury Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nopdf.c,v 1.10 2005-11-21 18:29:42 mikeaubury Exp $
+# $Id: nopdf.c,v 1.11 2006-07-17 14:09:23 mikeaubury Exp $
 #*/
 
 /**
@@ -44,6 +44,7 @@
 */
 
 #include <stdio.h>
+#include "a4gl_lib_exreport_pdf_int.h"
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 #include <windows.h>
@@ -88,12 +89,13 @@ libPDF_NOPDF_is_dll (void)
 
 */
 
-extern void A4GLPDFREP_A4GLPDF_initlib (void);
+//extern void A4GLPDFREP_A4GLPDF_initlib (void);
 
-void
-A4GLPDFREP_A4GLPDF_initlib (void)
+int
+A4GLPDFREP_EXREPORT_initlib(void)
 {
   /* Does nothing */
+	return 1;
 }
 
 /* ======================== EOF =============================== */

@@ -49,7 +49,6 @@ code
 
 	static void myseterr( char *s);
 	static void fileerror(FILE *f, char *s);
-void HELPLIB_A4GLHELP_initlib(void) ;
 endcode
 
 define constant HELPMAXLEN 256
@@ -67,9 +66,6 @@ define msgerror array[17] of record errline char(HELPMAXLEN) end record
 define msgerrcnt integer
 
 code
-void HELPLIB_A4GLHELP_initlib(void) {
-// Does nothing - required by the API
-}
 
 int  HELPLIB_HELP_initlib(void) {
 // Does nothing - required by the API

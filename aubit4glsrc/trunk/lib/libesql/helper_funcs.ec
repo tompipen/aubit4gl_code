@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.44 2006-07-17 11:08:42 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.45 2006-07-17 14:09:15 mikeaubury Exp $
 #
 */
 
@@ -822,14 +822,10 @@ for (a=0;a<n;a++) {
  *
  * @todo describe function
  */
-void ESQLAPI_A4GLESQL_initlib() 
+int ESQLAPI_ESQL_initlib() 
 {
-
+return 0;
 }
-void ESQLAPI_ESQL_initlib() 
-{
-
-
 
 
 

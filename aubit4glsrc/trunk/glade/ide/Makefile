@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,40 +24,81 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.8 2004-12-13 01:55:33 afalout Exp $
+# $Id: Makefile,v 1.1 2006-07-17 14:09:05 mikeaubury Exp $
 #
 
-LIBROOT		=../../..
-ROOT		=../../../..
+ROOT			=../..
+LIBROOT			=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ${ROOT}/incl/Makefile-common
+include 		${ROOT}/incl/Makefile-common
+
+#Include rules for compiling 4GL source code using Aubit compiler
+include 		${ROOT}/incl/a4gl.mk
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -Wall -I$(ROOT)/incl -I../common -I../../common -fPIC
+CFLAGS			+=-I${ROOT}/incl
+#WARNING: currently, 4glpc is not hanling GCC on Windows, and will just pass everything
+#to esql compiler - which will try to invoke MSVC "cl" which most probably
+#will not exist on the system. OTOH, 4glc will handle ec compilation as 
+#discreate steps of 4gl->.ec->.c->.dll/.exe
+#If you are tempted to use 4glpc (instead 4glc
+#directly) please make sure it will work for all platforms and ESQL dialects
+#in this makefile. Andrej.
+#4GLPC			=${FGLPCEXEC}
+#FGLPC_VERBOSE_FLAG=-V5
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}
 
-OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
+ALL				=${ROOT}/bin/ide1.4ae ${ROOT}/bin/sqleditor.4ae
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
+all: ${ALL}
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Default targets (${ALL}) successfuly compiled"
+	@echo "+--------------------------------------------------------------------+"	
 
-${LIBROOT}/libLOGREPPROC_CSV${SO_EXT}: ${OBJS}
-	${CC} -fPIC -shared ${OBJS} -o $@ -L${LIBROOT} -laubit4gl
-	
-process_csv.o: ../../processor/API_process.h
+${ROOT}/bin/ide1.4ae: ide1.ao common/pick.ao common/about.ao edtprog.ao options.ao
+	${4GLPC} $^ -o $@
 
-../../processor/API_process.h:
-	${MAKE} -C ../../processor
+${ROOT}/bin/sqleditor.4ae:
+	${MAKE} -C sqleditor
 	
+#FIXME: no target to compile ide.glade
+	
+## ==================================================================
+##                              Sub-targets
+## ==================================================================
+
+#Amake will do this automatically:
+
+#common/pick.ao: common/pick.4gl
+#	${4GLPC} $^ -c -o $@
+
+#common/about.ao: common/about.4gl
+#	${4GLPC} $^ -c -o $@
+	
+#options.ao: options.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#ide1.ao: ide1.4gl
+#	${4GLPC} $^ -c -o $@ 
+
+#edtprog.ao: edtprog.4gl
+#	${4GLPC} $^ -c -o $@
+
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	${RM} *.o ${LIBROOT}/libLOGREP_PROC_CSV${SO_EXT}
+	${RM} *.ao *.ec *.glb *.o *.c *.h *.err *.warn debug.out *~ *.bak ${ALL}
+	${MAKE} -C sqleditor clean
+	cd common; ${RM} *.ao *.c *.glb *.h *.err *.warn debug.out *~ *.bak
 	
+

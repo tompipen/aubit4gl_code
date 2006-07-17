@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.122 2006-07-17 11:08:44 mikeaubury Exp $
+# $Id: curslib.c,v 1.123 2006-07-17 14:09:30 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.122 2006-07-17 11:08:44 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.123 2006-07-17 14:09:30 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -141,9 +141,9 @@ int UILIB_A4GLUI_initlib (void);
 
 static void a4gl_gettext (int l, int t, int r, int b, char *buf);
 static void message (textarea * area, char *str, int x, int a);
-static void A4GL_chktag (char *buff, int fno);
+//static void A4GL_chktag (char *buff, int fno);
 static void A4GL_menu_setcolor (ACL_Menu * menu, int typ);
-static void A4GL_set_value (int fno, char *buffer);
+//static void A4GL_set_value (int fno, char *buffer);
 static int A4GL_menu_getkey (ACL_Menu * menu);
 //static void A4GL_clear_menu (ACL_Menu * menu);
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -160,8 +160,8 @@ static int A4GL_getkey (void);
 static void A4GL_puttext (int x1, int y1, int x2, int y2, char *buf);
 static void A4GL_horiz_disp_opt (int row, int x, int y, int type);
 static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
-static char *A4GL_mfgets (char *s, int n, FILE * fp);
-static int A4GL_load_formdata (char *fname2, char *ftitle, int fno);
+//static char *A4GL_mfgets (char *s, int n, FILE * fp);
+//static int A4GL_load_formdata (char *fname2, char *ftitle, int fno);
 //static int wrapper_wgetch (WINDOW * w);
 //static void A4GL_flatten_menu (ACL_Menu * menu);
 //void A4GL_tui_printr (int refreshwin, char *fmt, ...);
@@ -3318,7 +3318,8 @@ void* UILIB_A4GL_create_menu(void* m,char* id,int mode,void* handler) {
 	return 0;
 }
 
-void UILIB_UI_initlib() {
+int UILIB_UI_initlib() {
+	return 1;
 
 }
 

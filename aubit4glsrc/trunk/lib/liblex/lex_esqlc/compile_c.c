@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.300 2006-07-13 10:11:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.301 2006-07-17 14:09:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.300 2006-07-13 10:11:11 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.301 2006-07-17 14:09:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -90,7 +90,6 @@ char *rettype_integer (int n);
 
 //char *get_force_ui(void);
 //void A4GL_set_compile_time_convert(int a);
-int LEXLIB_A4GLLEX_initlib(void) ;
 
 
 
@@ -8421,13 +8420,8 @@ void LEXLIB_A4GL_initlex(void) {
 	calling this function will force initlib to be called - which is what we're really after.... */
 }
 
+
 int LEXLIB_LEX_initlib(void) {
-	/* does nothing - but required by the API... */
-	return 1;
-}
-
-
-int LEXLIB_A4GLLEX_initlib(void) {
   if (A4GL_doing_pcode()) {
     	A4GL_setenv ("MARK_SCOPE_MODULE", "Y", 1);
     	A4GL_setenv ("NAMESPACE", "", 1);

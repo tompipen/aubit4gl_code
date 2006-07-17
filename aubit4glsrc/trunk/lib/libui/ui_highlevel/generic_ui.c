@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.87 2006-07-12 16:09:33 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.88 2006-07-17 14:09:34 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -32,7 +32,7 @@ int A4GL_find_attrib_from_field (struct_form * f, int field_no);
 
 
 int aclfgl_a4gl_show_help (int n);
-int UILIB_A4GLUI_initlib (void);
+//int UILIB_A4GLUI_initlib (void);
 int A4GL_UI_int_get_inc_quotes (int a);
 //int A4GL_conversion_ok(int);
 
@@ -1032,8 +1032,10 @@ UILIB_A4GLUI_ui_init (int argc, char *argv[])
 
 
 int
-UILIB_A4GLUI_initlib (void)
+UILIB_UI_initlib (void)
 {
+  A4GL_set_scrmode ('L');
+  started = 1;
   return 1;
 }
 

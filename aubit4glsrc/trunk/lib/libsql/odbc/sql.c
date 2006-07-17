@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.163 2006-07-17 11:16:10 mikeaubury Exp $
+# $Id: sql.c,v 1.164 2006-07-17 14:09:26 mikeaubury Exp $
 #
 */
 
@@ -4368,6 +4368,7 @@ A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 }
 
 
+#ifdef REMOVED
 /**
  * Gets information about columns from a table in the database engine.
  *
@@ -4638,6 +4639,8 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
 #endif
   return 1;
 }
+
+#endif
 
 /**
  *
@@ -5946,7 +5949,7 @@ A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
  * called from fglwrap.c
  */
 int
-A4GLSQLLIB_A4GLSQL_initlib (void)
+A4GLSQLLIB_SQL_initlib (void)
 {
   initenv ();
   A4GLSQL_make_connection (0, 0, 0);

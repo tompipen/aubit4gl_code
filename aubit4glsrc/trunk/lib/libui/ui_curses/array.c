@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.44 2006-03-10 10:01:40 mikeaubury Exp $
+# $Id: array.c,v 1.45 2006-07-17 14:09:30 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.44 2006-03-10 10:01:40 mikeaubury Exp $";
+		"$Id: array.c,v 1.45 2006-07-17 14:09:30 mikeaubury Exp $";
 #endif
 
 
@@ -83,9 +83,9 @@ int cmode = 0;
 #define INTERRUPT_HANDLER_NEW_WAY 
 
 static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_line,int first_only,...);
-int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
-int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
-int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+//int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+//int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+//int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 void A4GL_make_window_with_this_form_current(void *form);
 /*
 =====================================================================
