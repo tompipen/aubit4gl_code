@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.162 2006-07-12 12:58:55 mikeaubury Exp $
+# $Id: sql.c,v 1.163 2006-07-17 11:16:10 mikeaubury Exp $
 #
 */
 
@@ -4076,6 +4076,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
       strcpy (GetColTab, tabname);
       sprintf (buff, "%s_1", tabname);
+
       if (A4GL_has_cache_column (buff))
 	{
 	  GetColCached = 1;
@@ -4083,15 +4084,14 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	  return 1;
 	}
 
-
-      rc =
-	SQLColumns (hstmtGetColumns, NULL, 0, NULL, 0, tabname, SQL_NTS, NULL,
-		    0);
+	
+      rc = SQLColumns (hstmtGetColumns, NULL, 0, NULL, 0, tabname, SQL_NTS, NULL, 0);
 
       if (rc != SQL_SUCCESS)
 	{
 #ifdef DEBUG
-	  A4GL_debug ("Some problem with SQLColumns rc=%d", rc);
+	  A4GL_debug ("Some problem with SQLColumns for table %s rc=%d",tabname,rc);
+	  //A4GL_set_sqlca (hstmtGetColumns, "SQLColumns",0)
 #endif
 	}
 
@@ -4470,7 +4470,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
       if (rc != SQL_SUCCESS)
 	{
 #ifdef DEBUG
-	  A4GL_debug ("Some problem with SQLColumns");
+	  A4GL_debug ("Some problem with SQLColumns for table %s",tabname);
 #endif
 	}
 

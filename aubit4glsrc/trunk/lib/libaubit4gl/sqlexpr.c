@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.28 2006-07-04 15:17:10 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.29 2006-07-17 11:16:08 mikeaubury Exp $
 #
 */
 
@@ -527,6 +527,31 @@ char * fix_delete_update_columns (char *table, struct s_select_list_item *i)
 
 
 
+static char *
+decode_month (char m1, char m2)
+{
+  static char buff[20];
+  int m1i = -1;
+  int m2i = -1;
+  sprintf (buff, "%c%c", m1, m2);
+  if (m1 >= '0' && m1 <= '9')
+    {
+      m1i = m1 - '0';
+    }
+  if (m2 >= '0' && m2 <= '9')
+    {
+      m2i = m2 - '0';
+    }
+  if (m1i >= 0 && m2i >= 0)
+    {
+      m1i = m1i * 10 + m2i;
+      if (m1i < 1 || m1i > 12)
+	return buff;		// Well - thats stuffed!
+      strcpy (buff, A4GL_find_str_resource_int ("_MON", m1i));
+    }
+  return buff;
+}
+
 char *
 get_select_list_item_list_ob (struct s_select *select,
 			      struct s_select_list_item_list *i)
@@ -743,9 +768,48 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		  isdigit (p->u_data.expression[10]))
 		{		// Well - it looks like a date..
 
+			
 		  SPRINTF1 (buff, "Cast(%s as DateTime)",
 			   p->u_data.expression);
 		  return acl_strdup (buff);
+
+		}
+	    }
+	}
+
+      if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DMY"))
+	{
+	  if (p->u_data.expression[0] == '\'')
+	    {
+	      char buff[256];
+	      if (isdigit (p->u_data.expression[1]) &&
+		  isdigit (p->u_data.expression[2]) &&
+		  p->u_data.expression[3] == '/' &&
+		  isdigit (p->u_data.expression[4]) &&
+		  isdigit (p->u_data.expression[5]) &&
+		  p->u_data.expression[6] == '/' &&
+		  isdigit (p->u_data.expression[7]) &&
+		  isdigit (p->u_data.expression[8]) &&
+		  isdigit (p->u_data.expression[9]) &&
+		  isdigit (p->u_data.expression[10]))
+		{		// Well - it looks like a date..
+			char *dbdate;
+		dbdate=A4GL_get_dbdate();
+		if (dbdate[0]=='D'||dbdate[0]=='d') {
+		  SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)", 
+								p->u_data.expression[1], p->u_data.expression[2],
+				  				decode_month(p->u_data.expression[4], p->u_data.expression[5]), 
+				  				p->u_data.expression[7], p->u_data.expression[8], p->u_data.expression[9], p->u_data.expression[10]
+								);
+		  return acl_strdup (buff);
+		} else {
+		  SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)", 
+								p->u_data.expression[4], p->u_data.expression[5],
+				  				decode_month(p->u_data.expression[1], p->u_data.expression[2]), 
+				  				p->u_data.expression[7], p->u_data.expression[8], p->u_data.expression[9], p->u_data.expression[10] 
+								);
+		  return acl_strdup (buff);
+		}
 
 		}
 	    }

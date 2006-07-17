@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.91 2006-07-07 15:10:20 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.92 2006-07-17 11:16:08 mikeaubury Exp $
 #
 */
 
@@ -148,6 +148,7 @@ static char *cvsql_names[] = {
   "CVSQL_EMULATE_FOR_UPDATE",
   "CVSQL_DATE_STRING_TO_CAST_DATE",
   "CVSQL_DATE_STRING_TO_YMD",
+  "CVSQL_DATE_STRING_TO_CAST_DMY",
   "CVSQL_ESCAPE_PLAN",
   "CVSQL_CASE_AS_PROCEDURE",
   "CVSQL_FIX_OUTER_JOINS",
@@ -254,6 +255,7 @@ enum cvsql_type
   CVSQL_EMULATE_FOR_UPDATE,
   CVSQL_DATE_STRING_TO_CAST_DATE,
   CVSQL_DATE_STRING_TO_YMD,
+  CVSQL_DATE_STRING_TO_CAST_DMY,
   CVSQL_ESCAPE_PLAN,
   CVSQL_CASE_AS_PROCEDURE,
   CVSQL_FIX_OUTER_JOINS,
@@ -1647,6 +1649,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_DATE_STRING_TO_CAST_DATE;
   if (match_strncasecmp (p, "DATE_STRING_TO_YMD", len) == 0)
     return CVSQL_DATE_STRING_TO_YMD;
+  if (match_strncasecmp (p, "DATE_STRING_TO_CAST_DMY", len) == 0)
+    return CVSQL_DATE_STRING_TO_CAST_DMY;
   if (match_strncasecmp (p, "NO_FOR_UPDATE", len) == 0)
     return CVSQL_NO_FOR_UPDATE;
   if (match_strncasecmp (p, "EMULATE_FOR_UPDATE", len) == 0)

@@ -8,7 +8,7 @@ help.4gl	Aubit4GL help routines (work with Informix .iem files)
 		Note: Uses inline C code for I/O
 }
 code
-#define PORTABLE
+#include "a4gl_API_help_lib.h"
 	#include <errno.h>
 
 
@@ -71,8 +71,9 @@ void HELPLIB_A4GLHELP_initlib(void) {
 // Does nothing - required by the API
 }
 
-void HELPLIB_HELP_initlib(void) {
+int  HELPLIB_HELP_initlib(void) {
 // Does nothing - required by the API
+return 1;
 }
 endcode
 
@@ -527,6 +528,7 @@ myseterr( char *s)
 	//fprintf(stderr, "%s\n", t );
 }
 
+#ifdef REMOVED
 
 /*****************************************************************
  *
@@ -553,6 +555,7 @@ xx_dont_need_thistrim(char *s, int len)
 	s[len-1]='\0';
 	return(strlen(s));
 }
+#endif
 
 
 int HELPLIB_aclfgl_aclfgl_libhelp_showhelp(int n) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.234 2006-07-17 11:08:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.235 2006-07-17 11:16:07 mikeaubury Exp $
 #
 */
 
@@ -1215,6 +1215,7 @@ enum cmd_types {
   void A4GL_push_double (double p);
   void A4GL_push_chars (char *p, int dtype, int size);
   void A4GL_push_char (char *p);
+  void A4GL_push_empty_char(void);
   void A4GL_push_variable (void *ptr, int dtype);
   void A4GL_push_interval (struct ival *p);
   void A4GL_pop_args (int a);

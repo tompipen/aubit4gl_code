@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.22 2006-07-04 14:22:51 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.23 2006-07-17 11:16:07 mikeaubury Exp $
 */
 
 /**
@@ -128,6 +128,7 @@ void A4GL_push_float (float p);
 void A4GL_push_dec (char *p, int ismoney,int size);
 void A4GL_push_double (double p);
 void A4GL_push_chars (char *p, int dtype, int size);
+void A4GL_push_empty_char(void);
 void A4GL_push_char (char *p);
 void A4GL_push_variable (void *ptr, int dtype);
 void A4GL_push_interval (struct ival *p);
