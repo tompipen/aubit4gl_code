@@ -596,6 +596,9 @@ A4GL_setenv("INFORMIXSERVER",lv_server,1);
 }
 endcode
 call set_username(lv_username,lv_passwd)
+let lv_server="@",lv_server
+connect to lv_server user lv_username using lv_passwd
+
 call select_db()
 end function
 
@@ -1965,7 +1968,7 @@ let lv_pass=get_password()
 IF lv_uname is null OR lv_uname matches " " THEN
 	DATABASE lv_dbname
 ELSE
-	connect to lv_dbname  user lv_uname using lv_pass
+	connect to lv_dbname user lv_uname using lv_pass
 END IF
 end function
 
