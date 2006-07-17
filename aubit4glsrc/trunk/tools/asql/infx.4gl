@@ -1342,6 +1342,8 @@ define lv_cnt integer
 define lv_curr_db char(255)
 define lv_name char(255)
 define lv_newname char(255)
+define lv_username char(80)
+define lv_password char(80)
 define ndbs integer
 define a integer
 let lv_curr_db=get_db();
@@ -1386,7 +1388,7 @@ if lv_newname is not null and lv_newname not matches " " then
         whenever error continue
 
         close database
-        database lv_newname
+	call connect_to_db(lv_newname)
 	whenever error stop
 
         if sqlca.sqlcode=0 then
@@ -1954,9 +1956,22 @@ end foreach
 return 1
 end function
 
+
+function connect_to_db(lv_dbname)
+define lv_dbname char(64)
+define lv_uname,lv_pass char(64)
+let lv_uname=get_username()
+let lv_pass=get_password()
+IF lv_uname is null OR lv_uname matches " " THEN
+	DATABASE lv_dbname
+ELSE
+	connect to lv_dbname  user lv_uname using lv_pass
+END IF
+end function
+
 function sql_select_db(lv_dbname)
 define lv_dbname char(64)
-database lv_dbname
+call connect_to_db(lv_dbname)
 end function
 
 code

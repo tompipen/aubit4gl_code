@@ -136,6 +136,13 @@ end function
 
 
 
+function get_username() 
+	return mv_username
+end function
+
+function get_password() 
+	return mv_passwd
+end function
 
 function set_username(p_username,p_passwd)
 define p_username,p_passwd char(255)
