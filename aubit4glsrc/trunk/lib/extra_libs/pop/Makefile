@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2005-04-20 13:06:21 afalout Exp $
+# $Id: Makefile,v 1.16 2006-07-17 14:43:51 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -72,9 +72,9 @@ ${LIBROOT}/libA4GL_pop${SO_EXT}: pop.o
 		-laubit4gl -lspopc ${LINKLIBS}
 	@echo "POP library sucesfully compiled."
 
-pop.o: pop.4gl
+pop.c: pop.4gl
 	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; \
-		${4GLC} ${POP_INC_FLAGS} -c ${VERBOSE_FLAG} $^
+		${4GLC} ${POP_INC_FLAGS} ${VERBOSE_FLAG} $^
 
 #Move this test in tools/test/build_test
 test.4ae: test.4gl test.per

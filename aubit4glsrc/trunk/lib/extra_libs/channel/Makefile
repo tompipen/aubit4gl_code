@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2005-07-26 16:17:04 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2006-07-17 14:43:47 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -53,8 +53,8 @@ ${ALL}: channel.o
 	${LD} -g ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
 	@echo "Channel library sucesfully compiled."
 
-channel.o: channel.4gl
-	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} -c ${VERBOSE_FLAG} $^
+channel.c: channel.4gl
+	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
 
 ## ==================================================================
 ##                              Clean
