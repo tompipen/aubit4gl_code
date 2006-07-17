@@ -1,5 +1,7 @@
 export A4GL_LEXTYPE=EC
 export A4GL_LEXDIALECT=INFORMIX
+export AUBITDIR=c:/gnu/cygwin/usr/src/aubit/aubit4glsrc
+export PATH=$PATH:$AUBITDIR/bin:$AUBITDIR/lib
 
 if [ "$1" = 4gl ]
 then

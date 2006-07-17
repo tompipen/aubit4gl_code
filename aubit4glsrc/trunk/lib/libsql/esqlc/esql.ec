@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.157 2006-06-23 14:08:46 mikeaubury Exp $
+# $Id: esql.ec,v 1.158 2006-07-17 11:08:43 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.157 2006-06-23 14:08:46 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.158 2006-07-17 11:08:43 mikeaubury Exp $";
 #endif
 
 
@@ -243,6 +243,11 @@ esqlWarningHandler (void)
 
 
 int A4GLSQLLIB_A4GLSQL_initlib(void) {
+	return 1;
+}
+
+
+int A4GLSQLLIB_SQL_initlib(void) {
 	return 1;
 }
 

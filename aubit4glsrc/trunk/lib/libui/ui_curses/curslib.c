@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.121 2006-04-28 13:26:04 mikeaubury Exp $
+# $Id: curslib.c,v 1.122 2006-07-17 11:08:44 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.121 2006-04-28 13:26:04 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.122 2006-07-17 11:08:44 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -3316,6 +3316,10 @@ void* UILIB_A4GL_make_pixmap_gw(char* filename) {
 }
 void* UILIB_A4GL_create_menu(void* m,char* id,int mode,void* handler) {
 	return 0;
+}
+
+void UILIB_UI_initlib() {
+
 }
 
 /* ============================== EOF ============================== */

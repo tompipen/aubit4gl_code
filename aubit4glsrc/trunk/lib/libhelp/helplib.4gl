@@ -30,15 +30,20 @@ code
         //#endif
 	#else
 		#ifndef htonl
-			#define htonl(x) (x)
-			#define htons(x) (x)
-			#define ntohl(x) (x)
-			#define ntohs(x) (x)
+			#ifndef __WIN32__
+				#define htonl(x) (x)
+				#define htons(x) (x)
+				#define ntohl(x) (x)
+				#define ntohs(x) (x)
+			#else
+				#define htons(x) win_htons(x)
+				#define ntohs(x) win_ntohs(x)
+			#endif
 		#endif
 	#endif
 
 
-	#define HELPMAXLEN 80
+	#define HELPMAXLEN 256
 	static FILE * infile;
 	unsigned char indexrec[8];
 
@@ -47,7 +52,7 @@ code
 void HELPLIB_A4GLHELP_initlib(void) ;
 endcode
 
-define constant HELPMAXLEN 80
+define constant HELPMAXLEN 256
 ---------   Module (static) Vars  ------------------------------------
 #define no integer	-- message no we are seeking
 define msgno smallint	-- message no found (while looping thru index)
@@ -278,15 +283,16 @@ code
 	} else {
 		infile = NULL;
 	}
+
 	if(infile == NULL ) 
 	{
 		ok = 0;
 		filenotfound = 1;
+
 		snprintf(errmsg, HELPMAXLEN-1,"Cannot open %s \n", filename);
 		myseterr(errmsg);
 		
 	}
-	//fprintf(stderr, "opened %s;ok = %d\n", filename, ok);
 		
 	if(ok)
 	{  
@@ -328,10 +334,10 @@ code
 		//	msgcount );
 		for(i=0; i<msgcount; i++)
 		{
-			if(fread(indexrec,1,8,infile)< 8) ok = 0;
+			if(fread(&indexrec[0],1,8,infile)< 8) ok = 0;
 
 			if(ok ) {
-				A4GL_debug("%d %d %d %d %d %d %d %d",
+				A4GL_debug("%02x %02x %02x %02x %02x %02x %02x %02x",
 indexrec[0],
 indexrec[1],
 indexrec[2],
@@ -340,7 +346,10 @@ indexrec[4],
 indexrec[5],
 indexrec[6],
 indexrec[7]);
-                                memcpy(&msgno,indexrec,2);
+
+	
+                                memcpy(&msgno,&indexrec[0],2);
+				A4GL_debug("now msgno=%d (n=%d)",msgno,n);
                                 msgno=ntohs(msgno);
 				A4GL_debug("now msgno=%d (n=%d)",msgno,n);
 

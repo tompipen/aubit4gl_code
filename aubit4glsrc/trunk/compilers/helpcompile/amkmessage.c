@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.13 2005-07-21 08:13:23 mikeaubury Exp $
+# $Id: amkmessage.c,v 1.14 2006-07-17 11:08:35 mikeaubury Exp $
 #*/
 
 /**
@@ -135,7 +135,7 @@ main (int argc, char *argv[])
   if (argc < 2)
 
     {
-      fprintf (stderr, "Usage: %s sourcefile binfile\n", argv[0]);
+      FPRINTF (stderr, "Usage: %s sourcefile binfile\n", argv[0]);
       exit (1);
     }
   strcpy (progname, argv[0]);
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   if (count < 1)
 
     {
-      fprintf (stderr, "%s: %s contains no messages!\n", argv[0], argv[1]);
+      FPRINTF (stderr, "%s: %s contains no messages!\n", argv[0], argv[1]);
       exit (2);
     }
   A4GL_debug ("%d messages found\n", count);
@@ -194,7 +194,7 @@ main (int argc, char *argv[])
   if (s == NULL)
 
     {
-      fprintf (stderr, "%s:empty file\n", progname);
+      FPRINTF (stderr, "%s:empty file\n", progname);
       exit (4);
     }
   while (1)
@@ -269,7 +269,7 @@ main (int argc, char *argv[])
       else
 
 	{
-	  fprintf (outfile, "%s", s);
+	  FPRINTF (outfile, "%s", s);
 	}
     }
   fclose (outfile);
@@ -289,7 +289,7 @@ mychkerr (FILE * f, char *s)
 {
   int e;
   char errmsg[80];
-  sprintf (errmsg, "%s:%5s\n", progname, s);
+  SPRINTF2 (errmsg, "%s:%5s\n", progname, s);
   if (f <= 0)
 
     {
@@ -342,7 +342,7 @@ out2 (int n, FILE * f)
 {
   char s[2];
   short nn;
-  nn = htons (n);
+  nn = a4gl_htons (n);
   memcpy (s, &nn, 2);
   nn = fwrite2 (&s[0], f);
   return nn;

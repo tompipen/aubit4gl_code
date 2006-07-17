@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.233 2006-07-14 16:11:52 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.234 2006-07-17 11:08:40 mikeaubury Exp $
 #
 */
 
@@ -2342,10 +2342,22 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 	#include <netinet/in.h>
 #else
 	#ifndef htonl
+	#ifdef __WIN32__
+		/* short win_ntohs(short x);
+		short win_htons(short x);
+		long  win_ntohl(long x);
+		long  win_htonl(long x);
+		#define htonl(x) win_htonl(x) 
+		#define htons(x) win_htons(x) 
+		#define ntohl(x) win_ntohl(x) 
+		#define ntohs(x) win_ntohs(x) 
+		*/
+	#else
 		#define htonl(x) (x)
 		#define htons(x) (x)
 		#define ntohl(x) (x)
 		#define ntohs(x) (x)
+	#endif
 	#endif
 #endif
 
