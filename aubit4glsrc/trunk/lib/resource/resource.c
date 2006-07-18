@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.117 2006-07-12 12:58:56 mikeaubury Exp $
+# $Id: resource.c,v 1.118 2006-07-18 10:08:23 mikeaubury Exp $
 #
 */
 
@@ -162,7 +162,11 @@ struct str_resource builtin_resource[] = {
   {"DBDELIMITER", "|"},
   {"FORCE_ROLLBACK_AT_EXIT","Y"},
   {"TRANMODE","1"},
+#ifdef __WIN32__
+  {"DBEDIT", "notepad.exe"},
+#else
   {"DBEDIT", "vi"},
+#endif
   {"DBFLTMASK", "2"},
   {"DBLANG", "<ACLDIR>"},
   {"DBMONEY", "#."},

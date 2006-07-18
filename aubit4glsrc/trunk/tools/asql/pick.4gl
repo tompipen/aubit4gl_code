@@ -212,10 +212,10 @@ call clear_screen_portion()
 if mv_cnt >=1 then
 	let int_flag=false
 
-		let lv_counter=0
-		#let lv_txt2=lv_txt clipped ,lv_Counter using "<<<<<<"
-		let lv_txt2=lv_txt
-		display lv_txt2 clipped ,"" at 1,1
+	let lv_counter=0
+	#let lv_txt2=lv_txt clipped ,lv_Counter using "<<<<<<"
+	let lv_txt2=lv_txt
+	display lv_txt2 clipped ,"" at 1,1
 	while true
 		let lv_counter=lv_counter+1
 		call show_pick()
@@ -321,6 +321,8 @@ if mv_cnt >=1 then
 	
 	if int_flag=true then
 		call clear_screen_portion()
+		display "----------------------------------","" at 1,1
+		display " ","" at 2,1
 		return ""
 	end if
 else
@@ -328,6 +330,8 @@ else
 	prompt lv_txt clipped for lv_value
 	if int_flag=true then
 		call clear_screen_portion()
+		display "----------------------------------","" at 1,1
+		display " ","" at 2,1
 		return ""
 	end if
 end if
@@ -338,6 +342,8 @@ if lv_value is null or lv_value matches " " then
 end if
 	
 call clear_screen_portion()
+		display "----------------------------------","" at 1,1
+		display " ","" at 2,1
 return lv_value
 end function
 
