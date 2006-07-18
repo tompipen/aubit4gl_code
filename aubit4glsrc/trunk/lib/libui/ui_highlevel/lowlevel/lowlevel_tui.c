@@ -20,6 +20,9 @@ static int A4GL_curses_to_aubit_int (int a);
 extern bool trace_on;
 #endif
 int scr_mode=0;
+void A4GL_LL_ui_exit(void) ;
+void A4GL_LL_enable_menu (void);
+void A4GL_LL_disable_menu (void);
 
 /*
 
@@ -42,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.87 2006-07-18 10:09:59 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.88 2006-07-18 16:12:37 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -85,11 +88,12 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.87 2006-07-18 10:09:59 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.88 2006-07-18 16:12:37 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
 
+static int A4GL_LL_field_opts (void *field);
 
 //
 // In order to get around a limitation of C not returning more than one value
@@ -1540,8 +1544,7 @@ A4GL_LL_set_field_buffer (void *field, int n, char *str)
  * @param 
  * @return 
  */
-int
-A4GL_LL_field_opts (void *field)
+static int A4GL_LL_field_opts (void *field)
 {
   return A4GL_form_field_opts (field);
 }
@@ -2400,8 +2403,8 @@ int prompt_last_key = 0;
 
 
 int
-A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
-		      int af, int curr_width, int iscurrborder,
+A4GL_LL_start_prompt (void *vprompt, char *promptstr, int prompt_attribute, int c, int h,
+		      int field_attribute, int curr_width, int iscurrborder,
 		      int prompt_line, void *currwin, int prompt_mode)
 {
   //char *promptstr;
@@ -2421,7 +2424,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   int field_cnt = 0;
   //A4GL_chkwin ();
   //promptx = vprompt;
-  //A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
+  //A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, field_attribute);
   prompt_last_key = 0;
   memset (buff, ' ', 255);
   promptline = prompt_line;	// A4GL_getprompt_line ();
@@ -2504,33 +2507,35 @@ A4GL_debug("Too small");
   A4GL_debug ("STATIC OFF");
   A4GL_form_field_opts_off (prompt_field, O_STATIC);
 
-  A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
+  A4GL_debug ("ap=%d(%x) field_attribute=%d(%x)", prompt_attribute, prompt_attribute, field_attribute, field_attribute);
   //ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
-  //af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
+  //field_attribute = A4GL_determine_attribute (FGL_CMD_INPUT, field_attribute, 0, 0);
 
-  if (ap)
+  if (prompt_attribute)
     {
       A4GL_debug ("AP...");
       if (strlen (promptstr))
 	{
-	  A4GL_LL_set_field_fore (sarr[0],
-				  A4GL_LL_decode_aubit_attr (ap, 'f'));
-	  A4GL_LL_set_field_back (sarr[0], A4GL_LL_decode_aubit_attr (ap, 'b'));	// maybe need 'B' for whole field..
+	  A4GL_LL_set_field_fore (sarr[0], A4GL_LL_decode_aubit_attr (prompt_attribute, 'f'));
+	  A4GL_LL_set_field_back (sarr[0], A4GL_LL_decode_aubit_attr (prompt_attribute, 'b'));	// maybe need 'B' for whole field..
 	}
     }
 
-  if (af)
+  if (field_attribute)
     {
-      A4GL_debug ("AF... %d", af);
-      A4GL_LL_set_field_back (prompt_field,
-			      A4GL_LL_decode_aubit_attr (af, 'b'));
-      A4GL_LL_set_field_fore (prompt_field, A4GL_LL_decode_aubit_attr (af, 'f'));	// maybe need 'B' for whole field..
-      if (af & AUBIT_ATTR_INVISIBLE)
+      A4GL_debug ("AF... %d", field_attribute);
+      A4GL_LL_set_field_back (prompt_field, A4GL_LL_decode_aubit_attr (field_attribute, 'b'));
+      A4GL_LL_set_field_fore (prompt_field, A4GL_LL_decode_aubit_attr (field_attribute, 'f'));	// maybe need 'B' for whole field..
+
+      if (field_attribute & AUBIT_ATTR_INVISIBLE)
 	{
 	  A4GL_debug ("Invisible");
 	  A4GL_form_field_opts_off (prompt_field, O_PUBLIC);
 	}
 
+    } else {
+      A4GL_LL_set_field_back (prompt_field, A4GL_LL_colour_code (COLOR_BLACK));
+      A4GL_LL_set_field_fore (prompt_field, A4GL_LL_colour_code (COLOR_BLACK));	// maybe need 'B' for whole field..
     }
 
   A4GL_form_field_opts_on (prompt_field, AUBIT_O_NULLOK);
@@ -2618,13 +2623,13 @@ A4GL_mja_get_field_width (void *f)
 {
   //int x, y, a;
   //int w;
-  int rows;
-  int cols;
-  int frow;
-  int fcol;
-  int nrow;
-  int nbuf;
-  struct struct_scr_field *fprop;
+  //int rows;
+  //int cols;
+  //int frow;
+  //int fcol;
+  //int nrow;
+  //int nbuf;
+  //struct struct_scr_field *fprop;
 
   return A4GL_LL_get_field_width_dynamic (f);
 
@@ -3352,19 +3357,18 @@ static void A4GL_local_mja_endwin (void)
 
 
 
-void A4GL_LL_ui_exit() {
+void A4GL_LL_ui_exit(void) {
 A4GL_LL_switch_to_line_mode ();
 	        // Does nothing - required by api..
 }
 
-void
-A4GL_LL_enable_menu ()
+void A4GL_LL_enable_menu (void)
 {
   // Does nothing - required by api..
 }
 
 void
-A4GL_LL_disable_menu ()
+A4GL_LL_disable_menu (void)
 {
   // Does nothing - required by api..
 }

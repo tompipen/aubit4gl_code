@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.45 2006-07-04 14:22:56 mikeaubury Exp $";
+  "$Id: misc.c,v 1.46 2006-07-18 16:12:19 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1235,18 +1235,18 @@ A4GL_get_field_width (void *f)
 int
 A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt)
 {
-  int wid;
+  //int wid;
   int a;
-  int nv;
+  //int nv;
   int flg;
-  char buff[8048];
+  //char buff[8048];
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
-  struct struct_scr_field *prop;
-  void *firstfield = 0;
-  int nofields;
+  //struct struct_scr_field *prop;
+  //void *firstfield = 0;
+  //int nofields;
   struct s_screenio *sio;
-  int attr;
+  //int attr;
   int *enabled=0;
   int nfields;
 

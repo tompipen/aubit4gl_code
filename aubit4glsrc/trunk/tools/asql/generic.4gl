@@ -85,6 +85,9 @@ function connection_connect()
 error "Not Implemented connection_connect"
 end function
 
+
+
+
 FUNCTION do_paginate()
 define rpaginate integer
 MESSAGE ""
@@ -858,6 +861,18 @@ int execute_sql_fetch(int *raffected) {
 cp_sqlca() {
 // Do nothing - 'cos we don't need too...
 }
+
+
+
+int can_do_unload() {
+return 0;
+}
+
+
+int do_unload(struct element *e) {
+return 0;
+}
+
 
 endcode
 

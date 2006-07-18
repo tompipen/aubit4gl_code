@@ -28,16 +28,19 @@
 code
 #include "simple.h"
 #include <fcntl.h>
+#include <limits.h>
 EXEC SQL include sqltypes;
 EXEC SQL BEGIN DECLARE SECTION;
 int numberOfColumns=0;
 EXEC SQL END DECLARE SECTION;
 extern FILE *file_out_result;
+static const char chexdigit[] = "0123456789abcdef";
 extern FILE *exec_out;
 extern int outlines;
 extern int display_mode;
 extern int fetchFirst;
 static int get_size(int dtype,int size) ;
+static void     outbyte(FILE *unlfile, char *buffer, long len);
 #include <datetime.h>
 #include <decimal.h>
 #include <locator.h>
@@ -54,7 +57,32 @@ typedef loc_t               Blob;
 typedef struct decimal  Decimal;
 typedef struct dtime    Datetime;
 typedef struct intrvl   Interval;
+int strip( char *str, int len );
+int charcpy( unsigned char *target, unsigned char *source, long len );
 
+
+off_t bpos = 0;
+
+
+#define min(a, b ) ((a < b) ? a : b)
+
+
+int global_length;
+int writeit( loc_t *loc, char *buf, int nbytes );
+int closeit( loc_t *loc );
+int openit( loc_t *loc, int flags, int bsize );
+int DetermineEndianNess(void);
+int bbsize=0;
+char *blobbuff;
+#if !defined LITTLE_ENDIAN
+#       define LITTLE_ENDIAN 1234
+#endif
+
+int EndianNess=-1;
+int no_buf=0;
+int bufsz=0;
+int has_trans=0;
+int is_ansi=0;
 #ifdef __WIN32__
 #ifndef __CYGWIN__
 #include <windows.h>
@@ -259,6 +287,7 @@ in any derivative of this work.
 Cheers,
 Kerry Sainsbury (kerry@kcbbs.gen.nz, kerry@quanta.co.nz)
 }
+
 
 
 FUNCTION load_info_columns(l_tabname)
@@ -1965,11 +1994,13 @@ define lv_dbname char(64)
 define lv_uname,lv_pass char(64)
 let lv_uname=get_username()
 let lv_pass=get_password()
+whenever error continue
 IF lv_uname is null OR lv_uname matches " " THEN
 	DATABASE lv_dbname
 ELSE
 	connect to lv_dbname user lv_uname using lv_pass
 END IF
+whenever error stop
 end function
 
 function sql_select_db(lv_dbname)
@@ -2411,6 +2442,636 @@ LONG createkey_infx (void)
   return a;
 }
 #endif
+
+int can_do_unload() {
+return 1;
+}
+
+
+
+
+int
+do_unload (struct element *e,long *raffected)
+{
+  int b;
+
+  //int lineno;
+  //char type;
+  //char *stmt;
+  //char *delim;
+  //char *fname;
+  register int pos;
+  register char *cp;
+  register int len;
+  register int i;
+  struct sqlda *udesc;
+  struct sqlvar_struct *col;
+  FILE *unlfile;
+  char *fname;
+  char delim = '|';
+  char *buffer = NULL;
+  int counter = 0, filerecs = 0, ret = 0, align;
+  char fname2[1025];
+  static int fnum = 0;
+  int nblobs = 0, flen, rlen, outbsize = 0, blobn;
+  int *bbufs[1024];
+  char *outbuff, *iptr, *optr, str[100];
+  long long filebytes = (long long) 0;
+  short *indicators, *qualifiers;
+  intrvl_t *ivp;
+  EXEC SQL BEGIN DECLARE SECTION;
+  char *slctstmt;
+  loc_t *locator=0;
+  EXEC SQL END DECLARE SECTION;
+static char *string=0;
+static int string_len=0;
+
+
+  *raffected=0;
+
+
+  slctstmt = e->stmt;
+
+
+if (e->delim) {
+  	delim = e->delim[0];
+} else {
+	delim='|';
+}
+
+  fname = e->fname;
+  if (EndianNess == -1)
+    {
+      EndianNess = DetermineEndianNess ();
+    }
+
+  EXEC SQL PREPARE usqlobj FROM:slctstmt;
+
+  if (sqlca.sqlcode != 0)
+    {
+      return 0;
+    }
+
+  EXEC SQL DESCRIBE usqlobj INTO udesc;
+
+  if (sqlca.sqlcode != 0)
+    {
+      return 0;
+    }
+
+  unlfile = fopen (fname, "w");
+
+  if (unlfile == NULL)
+    {
+      set_sqlcode (-806);
+      return 0;
+    }
+
+
+  if (no_buf)
+    setvbuf (unlfile, (char *) NULL, _IONBF, 0);
+  else if (bufsz)
+    setvbuf (unlfile, (char *) NULL, _IOFBF, bufsz);
+
+
+  /* Step 1: analyze udesc to determine type and memory requirements
+   *         of each item in the select list.  rtypalign() returns a
+   *         pointer to the next appropriate boundary (starting at
+   *         pos) for the indicated data type.
+   */
+  pos = 0;
+
+  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+    {
+      long fld_len = col->sqllen;
+
+      switch (col->sqltype)
+	{
+	case SQLSMFLOAT:
+	  col->sqltype = CFLOATTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLFLOAT:
+	  col->sqltype = CDOUBLETYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLMONEY:
+	case SQLDECIMAL:
+	  col->sqltype = CDECIMALTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLSERIAL:
+	case SQLINT:
+	  col->sqltype = CLONGTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLSMINT:
+	  col->sqltype = CSHORTTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLVCHAR:
+	case SQLCHAR:
+	  col->sqltype = CFIXCHARTYPE;	/* get all bytes */
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLDATE:
+	  col->sqltype = CFIXCHARTYPE;
+	  col->sqllen=11; //dd-mm-yyyy
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLINTERVAL:
+	  col->sqltype = CFIXCHARTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
+	  break;
+
+	case SQLDTIME:
+	  col->sqltype = CFIXCHARTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
+	  break;
+
+	case SQLBYTES:
+	case SQLTEXT:
+	  col->sqltype = CLOCATORTYPE;
+	  fld_len = col->sqllen = sizeof (loc_t);
+	  break;
+
+	default:
+	  A4GL_assertion (1, "Unsupported data type\n");
+	  return 0;
+	}
+      pos = (int) rtypalign (pos, col->sqltype) + fld_len;
+    }
+
+  buffer = (char *) malloc (pos);
+  if (buffer == (char *) NULL)
+    {
+      // Out of memory...
+      return 0;
+    }
+
+  indicators = (short *) malloc (udesc->sqld * sizeof (short));
+  memset (indicators, 0, udesc->sqld * sizeof (short));
+  qualifiers = (short *) malloc (udesc->sqld * sizeof (short));
+  memset (qualifiers, 0, udesc->sqld * sizeof (short));
+
+  /* Initialize buffer to Nulls */
+  memset (buffer, 0, pos);
+
+  /* Step 3: Set pointers in the allocated memory to receive each
+   *         item in the select list.
+   */
+  pos = 0;
+  cp = buffer;
+  rlen = 0;
+  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+    {
+      switch (col->sqltype)
+	{
+
+
+	case CLOCATORTYPE:
+	  locator = (loc_t *) malloc (sizeof (loc_t));
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = (char *) locator;
+	  cp += col->sqllen;
+	  rlen += 4;		/* Only need room in output row for BLOB length. */
+
+
+          locator->loc_status = 0;
+          locator->loc_type = SQLTEXT;
+          locator->loc_xfercount = 0;
+
+	  locator->loc_loctype = LOCMEMORY;
+	  locator->loc_bufsize = -1;
+	  locator->loc_buffer = (char *)0;
+	  locator->loc_size=0;
+	  locator->loc_indicator=0;
+	  locator->loc_oflags=0;
+
+
+	  if (nblobs > 1023)
+	    {
+	      fprintf (stderr, ">1023 blob columns in record\n");
+	      exit (9);
+	    }
+
+	  nblobs++;
+	  break;
+
+	case CDOUBLETYPE:
+	  break;
+	case CSHORTTYPE:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  cp += col->sqllen;
+	  rlen += col->sqllen;
+	  break;
+	case CDTIMETYPE:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  ((dtime_t *) (col->sqldata))->dt_qual =
+	    TU_ENCODE (TU_LEN (col->sqllen),
+		       TU_START (col->sqllen), TU_END (col->sqllen));
+	  /* Save the qualifier for later */
+	  qualifiers[i] = htons (((dtime_t *) (col->sqldata))->dt_qual);
+	  col->sqllen = ((dtime_t *) (col->sqldata))->dt_qual;
+	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
+	  rlen += flen;
+	  break;
+
+	
+	case CINVTYPE:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  ((intrvl_t *) (col->sqldata))->in_qual =
+	    TU_IENCODE (TU_LEN (col->sqllen),
+			TU_START (col->sqllen), TU_END (col->sqllen));
+	  /* Save the qualifier for later */
+	  qualifiers[i] = htons (((intrvl_t *) (col->sqldata))->in_qual);
+	  col->sqllen = ((intrvl_t *) (col->sqldata))->in_qual;
+	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
+	  rlen += flen;
+	  break;
+	default:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  cp += col->sqllen;
+	  rlen += col->sqllen;
+	  break;
+	}
+      col->sqlitype = CSHORTTYPE;
+      col->sqlilen = sizeof (short);
+      col->sqlidata = (char *) indicators;
+      col->sqlind = indicators++;
+    }
+  pos = (long) cp - (long) buffer;
+
+
+  EXEC SQL WHENEVER ERROR CONTINUE;
+
+  EXEC SQL DECLARE usqlcurs CURSOR FOR usqlobj;
+
+  if (sqlca.sqlcode < 0)
+    {
+      return 0;
+    }
+
+  if (has_trans && !is_ansi)
+    EXEC SQL BEGIN WORK;
+
+  EXEC SQL OPEN usqlcurs;
+  if (sqlca.sqlcode < 0)
+    {
+	return 0;
+    }
+
+  sqlca.sqlcode = 0;
+  col = udesc->sqlvar;
+  while (sqlca.sqlcode == 0)
+    {
+      bpos = 0;
+      global_length = 0;
+      /* Initialize buffer to Nulls */
+      /* memset( buffer, 0, pos ); */
+
+      for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+	{
+	  switch (col->sqltype)
+	    {
+	    case CDTIMETYPE:
+	      /* Get the saved qualifier. */
+	      ((dtime_t *) (col->sqldata))->dt_qual = ntohs (qualifiers[i]);
+	      break;
+	    case CINVTYPE:
+	      /* Get the saved qualifier. */
+	      ((intrvl_t *) (col->sqldata))->in_qual = ntohs (qualifiers[i]);
+	      break;
+	    default:
+	      break;
+	    }
+	}
+      EXEC SQL FETCH usqlcurs USING DESCRIPTOR udesc;
+
+      if (sqlca.sqlcode < 0)
+	{
+	  return 0;
+	}
+
+      if (sqlca.sqlcode == 100)
+	{
+	  break;
+	}
+
+      for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+	{
+	      long templ, tmplp1, tmplp2;
+	      short temps;
+	      float tempf;
+	      double tempd;
+
+
+
+	  if (*col->sqlind == -1) 
+	    {
+		fprintf(unlfile,"|");
+		continue;
+	    }
+
+
+
+	      switch (col->sqltype)
+		{
+		case CINTTYPE:
+		case CLONGTYPE:
+		  fprintf (unlfile,"%ld", *(long *) (col->sqldata));
+		  break;
+		case CSHORTTYPE:
+		  fprintf (unlfile,"%d", *(short *) (col->sqldata));
+		  break;
+
+
+		case CFIXCHARTYPE:
+			{
+			int alen;
+			int flen;
+			if (string_len<col->sqllen*3+1) {
+				string=realloc(string, col->sqllen*3+1);
+				string_len=col->sqllen*3+1;
+			}
+                	alen = strip( (char *)col->sqldata, col->sqllen );
+                	flen = charcpy( (unsigned char *)string, (unsigned char *)col->sqldata, alen );
+			if (strlen(string)==0) {
+		  		fprintf (unlfile," ");
+			} else {
+		  		fprintf (unlfile,"%s", string);
+			}
+			}
+		  break;
+
+		case CFLOATTYPE:
+		  fprintf (unlfile,"%f", *(float *) (col->sqldata));
+		  break;
+
+		case CDECIMALTYPE:
+		case CMONEYTYPE:
+		  {
+		    dec_t *dec = (dec_t *) (col->sqldata);
+		     char buff[33];
+		    dectoasc (dec, buff, 32, -1);
+		    buff[32]=0;
+		    A4GL_trim (buff);
+		    fprintf (unlfile,"%s", buff);
+		    break;
+		  }
+		case CDOUBLETYPE:
+		  fprintf (unlfile,"%lf", *(double *) (col->sqldata));
+		  break;
+
+		case CDTIMETYPE:
+		  {
+		    char buff[33];
+		    dtime_t *dtp = (dtime_t *) (col->sqldata);
+
+		    if (dttoasc (dtp, buff))
+		      {
+		    buff[32]=0;
+			A4GL_trim (buff);
+			fprintf (unlfile,"%s", buff);
+		      }
+		    break;
+		  }
+		
+
+		case CINVTYPE:
+		  {
+		    char buff[33];
+		    intrvl_t *itvl = (intrvl_t *) (col->sqldata);
+		    if (intoasc (itvl, buff))
+		      {
+		    buff[32]=0;
+			A4GL_trim (buff);
+			fprintf (unlfile,"%s", buff);
+
+		      }
+			break;
+		  }
+
+		case CLOCATORTYPE:
+			{
+			loc_t *blob;
+			blob=(loc_t *) (col->sqldata);
+                	if (blob->loc_buffer != NIL(char *))
+                	{
+                        if (blob->loc_type == SQLTEXT)
+                                outbyte(unlfile,blob->loc_buffer, blob->loc_size );
+                        else
+                                outbyte(unlfile,blob->loc_buffer, blob->loc_size);
+                	}
+			}
+			break;
+
+		default :
+			{
+			fprintf(unlfile,"<<%d>>",col->sqltype);
+			}
+		} // End of switch
+
+		fprintf(unlfile,"|");
+
+	} // End for (columns)
+	fprintf(unlfile,"\n");
+	  (*raffected)++;
+    }				/* end fetch loop */
+
+  fclose (unlfile);
+
+  if (sqlca.sqlcode && sqlca.sqlcode != SQLNOTFOUND)
+    {
+return 0;
+    }
+
+  free (buffer);
+      for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+	{
+	  if (col->sqltype==CLOCATORTYPE) {
+			loc_t *blob;
+			blob=col->sqldata;
+			if (blob->loc_buffer) free(blob->loc_buffer);
+			free(col->sqldata);
+		}
+	}
+  if (sqlca.sqlcode && sqlca.sqlcode != SQLNOTFOUND)
+    {
+	return 0;
+    }
+  EXEC SQL CLOSE usqlcurs;
+  return 1;
+}
+
+
+#ifdef REDUNDANT
+
+int writeit( loc_t *loc, char *buf, int nbytes )
+{
+    unsigned long toread;
+
+printf("writeit...\n");
+    if ((bpos + nbytes) > bbsize) {
+        bbsize += (2 * (nbytes < 1024 ? 1024 : nbytes));
+        blobbuff = (char *)realloc( blobbuff, bbsize );
+    }
+    if (loc->loc_size != -1)
+        toread = min( nbytes, (loc->loc_size - loc->loc_xfercount) );
+    else
+        toread = nbytes;
+    memcpy( &blobbuff[bpos], buf, toread );
+    bpos += toread;
+
+    loc->loc_xfercount += toread;
+    global_length += toread;
+
+    return toread;
+}
+#endif
+
+
+#ifdef REDUNDANT
+int openit( loc_t *loc, int flags, int bsize )
+{
+    if ((flags & LOC_WONLY) && loc->loc_size < -1) {
+        fprintf( stderr, "Blob fetched with length: %d.\n", loc->loc_size );
+        return -1;
+    }
+    loc->loc_status = 0;
+    loc->loc_xfercount = 0L;
+    global_length = 0 ;
+
+    return 0;
+}
+#endif
+
+
+
+int DetermineEndianNess()
+{
+    int testint = 0x04030201, ii, result = 0, mult=1000;
+    char *p = (char *)&testint;
+
+    for ( ii=0; ii < 4; ii++) {
+        result += mult * p[ii];
+        mult /= 10;
+    }
+
+    return result;
+}
+
+
+#ifdef REDUNDANT
+int closeit( loc_t *loc )
+{
+    unsigned long count;
+
+    loc->loc_status = 0;
+    if (loc->loc_oflags & LOC_WONLY) {
+        /* Fetching, cleanup. */
+        loc->loc_indicator = 0;
+        loc->loc_size = loc->loc_xfercount;
+    }
+
+    return 0;
+}
+#endif
+
+
+
+int charcpy( unsigned char *target, unsigned char *source, long len )
+{
+    int rlen = 0;
+char ldelim;
+ldelim=get_delim();
+
+    while (len) {
+        if (*source == ldelim) {
+            *target++ = '\\';
+            *target++ = ldelim;
+        } else if ((*source < ' ' || *source > '~') && *source!=0xa3 && *source!='\t') {
+            /* Non-printable, convert to hex. */
+            target += sprintf( (char *)target, "\\%2.2x", *source );
+        } else {
+		if (*source=='\\') {
+            		*target++ = '\\';
+            		*target = *source;
+            		target++;
+		} else {
+            		*target = *source;
+            		target++;
+		}
+        }
+        source++;
+        len--;
+        rlen++;
+    }
+    /*    *target++ = *delim; */
+    *target = (char)0;
+    rlen++;
+
+    return rlen;
+}
+
+
+int strip( char *str, int len )
+{
+    char *p;
+    int alen = len;
+
+    for (p = (str + len - 1); p > str; p--, alen--) {
+        if (*p == ' ' || *p == (char)0)
+            *p = (char)0;
+        else
+            break;
+    }
+    return alen;
+}
+
+
+static void     outbyte(FILE *unlfile, char *buffer, long len)
+{
+        static char *spc_orig=0;
+        char *spc=0;
+        static int slen=0;
+        char            c;
+        char           *dst;
+        char           *src;
+        char           *end;
+        if (len>slen) {
+                spc_orig = (char *)realloc(spc_orig, 2 * len + 1);
+                slen=len;
+        }
+	spc=spc_orig;
+        src = buffer;
+        dst = spc;
+        end = buffer + len;
+        while (src < end)
+        {
+                c = *src++;
+                *dst++ = chexdigit[(c >> 4)& 0xF];
+                *dst++ = chexdigit[c & 0xF];
+        }
+        *dst = '\0';
+        fprintf(unlfile,"%s",spc) ;
+}
 
 
 endcode

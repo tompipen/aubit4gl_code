@@ -208,6 +208,8 @@ Kerry Sainsbury (kerry@kcbbs.gen.nz, kerry@quanta.co.nz)
 }
 
 
+
+
 FUNCTION load_info_columns(l_tabname)
 DEFINE   i            INTEGER,
          l_tabid      INTEGER,
@@ -1437,6 +1439,13 @@ int lineno=0;
 }
 
 
+int can_do_unload() {
+return 0;
+}
+
+int do_unload(struct element *e) {
+return 0;
+}
 
 
 endcode

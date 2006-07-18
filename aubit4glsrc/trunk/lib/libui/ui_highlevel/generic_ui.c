@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.88 2006-07-17 14:09:34 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.89 2006-07-18 16:12:19 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -30,6 +30,7 @@ int A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
 int A4GL_find_fields_no_metric (struct_form * f, int metric_no);
 int A4GL_find_attrib_from_field (struct_form * f, int field_no);
 
+void A4GL_LL_ui_exit(void) ;
 
 int aclfgl_a4gl_show_help (int n);
 //int UILIB_A4GLUI_initlib (void);
@@ -76,7 +77,7 @@ A4GL_decode_str_fprop (struct_scr_field * fprop, int type)
 char *
 A4GL_string_width (char *s)
 {
-  char buff[10];
+  char buff[20];
   int a;
   static char buff2[10024];
 
@@ -1771,7 +1772,7 @@ char * A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 	{
 	  A4GL_exitwith ("Format is wider than the field");
 	  A4GL_drop_param ();
-	  return;
+	  return 0 ;
 	}
 
 // I think these 2 can be removed...

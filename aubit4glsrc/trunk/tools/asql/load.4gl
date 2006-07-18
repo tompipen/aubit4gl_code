@@ -58,6 +58,15 @@ int b;
 		}
 	}
 
+	if (can_do_unload()) {
+		raffected=0;
+		if (do_unload(e,&raffected)) {
+			return raffected;
+		} else {
+			return 0;
+		}
+	}
+
 	f_unloadFile=fopen(e->fname,"w");
 
 	if (f_unloadFile==0) {

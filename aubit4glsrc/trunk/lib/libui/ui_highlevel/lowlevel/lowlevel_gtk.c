@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.103 2006-07-04 15:17:40 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.104 2006-07-18 16:12:37 mikeaubury Exp $";
 #endif
 
 
@@ -56,7 +56,8 @@ void A4GL_console_toggle (void);
 void A4GL_add_to_console (char *s);
 void A4GL_clear_console (char *s);
 void A4GL_create_console (void);
-int use_frames() ;
+static int A4GL_LL_field_opts (void *field);
+static int use_frames(void) ;
 //void A4GL_logkey(long a);
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt,
 		    int dis, char *msg);
@@ -1094,7 +1095,7 @@ int
 A4GL_LL_getch_swin (void *window_ptr,char *why)
 {
   int a;
-  GtkWidget *f;
+  //GtkWidget *f;
 
   A4GL_set_abort (0);
 
@@ -2966,7 +2967,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       //fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (cwidget));
 
 
-      m = gtk_object_get_data (GTK_OBJECT (cwidget), "MAXFIELD");
+      m = (int)gtk_object_get_data (GTK_OBJECT (cwidget), "MAXFIELD");
       buff[0] = mode;
       buff[1] = 0;
       utf = g_locale_to_utf8 (buff, -1, NULL, NULL, NULL);
@@ -4125,7 +4126,7 @@ A4GL_LL_init_color (int c, int r, int g, int b)
 
 
 
-int use_frames() {
+int use_frames(void) {
       if (A4GL_isno (acl_getenv ("GTKUSEFRAMES"))) {
 	      	return 0;
       }

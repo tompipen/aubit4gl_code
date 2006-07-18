@@ -71,8 +71,11 @@ extern void A4GL_LL_set_field_userptr (void *field, void *ptr) ;
 extern void A4GL_LL_set_field_attr ( void *field) ;
 //extern void *A4GL_LL_new_form(void **fields) ;
 extern void A4GL_LL_set_form_userptr(void *form,void *data) ;
+
+void A4GL_LL_enable_menu (void);
+
 extern void *A4GL_LL_get_field_userptr (void *field) ;
-extern int A4GL_LL_field_opts (void *field) ;
+/* extern int A4GL_LL_field_opts (void *field) ; */
 extern char *A4GL_LL_field_buffer(void *field,int n) ;
 extern int A4GL_LL_set_field_opts (void *field, int oopt) ;
 extern int A4GL_screen_width(void) ;
