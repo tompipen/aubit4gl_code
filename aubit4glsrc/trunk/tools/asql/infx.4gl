@@ -2860,7 +2860,7 @@ if (e->delim) {
 		    intrvl_t *itvl = (intrvl_t *) (col->sqldata);
 		    if (intoasc (itvl, buff))
 		      {
-		    buff[32]=0;
+		    	buff[32]=0;
 			A4GL_trim (buff);
 			fprintf (unlfile,"%s", buff);
 

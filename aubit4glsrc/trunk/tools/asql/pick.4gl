@@ -48,6 +48,7 @@ end record
 define mv_max_option_width integer
 define mv_npages integer
 
+################################################################################
 function size_picklist() 
 define a,x,y integer
 define yinc integer
@@ -131,7 +132,7 @@ let mv_npages=this_page
 end function
 
 
-
+################################################################################
 function show_pick() 
 define a,x,y integer
 
@@ -167,6 +168,7 @@ set pause mode off
 end function
 
 
+################################################################################
 function set_pick(lv_sub,lv_value)
 define lv_sub integer
 define lv_value char(255)
@@ -174,6 +176,7 @@ let mv_arr[lv_sub]=lv_value
 end function
 
 
+################################################################################
 function set_pick_cnt(lv_cnt)
 define lv_cnt integer
 let mv_cpage=-1
@@ -182,12 +185,14 @@ let mv_curr_option=1
 end function
 
 
+################################################################################
 function set_picked_option_cnt(lv_cnt)
 define lv_cnt integer
 let mv_curr_option=lv_cnt
 end function
 
 
+################################################################################
 function set_picked_option(lv_value)
 define lv_value char(255)
 define lv_cnt integer
@@ -199,6 +204,7 @@ for lv_cnt=1 to mv_cnt
 end for
 end function
 
+################################################################################
 function prompt_pick(lv_txt,lv_value)
 define lv_txt2,lv_txt char(80)
 define lv_value char(80)
@@ -321,7 +327,7 @@ if mv_cnt >=1 then
 	
 	if int_flag=true then
 		call clear_screen_portion()
-		display "----------------------------------","" at 1,1
+		display "                                  ","" at 1,1
 		display " ","" at 2,1
 		return ""
 	end if
@@ -330,7 +336,7 @@ else
 	prompt lv_txt clipped for lv_value
 	if int_flag=true then
 		call clear_screen_portion()
-		display "----------------------------------","" at 1,1
+		display "                                  ","" at 1,1
 		display " ","" at 2,1
 		return ""
 	end if
@@ -342,7 +348,7 @@ if lv_value is null or lv_value matches " " then
 end if
 	
 call clear_screen_portion()
-		display "----------------------------------","" at 1,1
+		display "                                  ","" at 1,1
 		display " ","" at 2,1
 return lv_value
 end function
