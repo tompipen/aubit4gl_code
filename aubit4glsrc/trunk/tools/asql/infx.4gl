@@ -2683,7 +2683,7 @@ if (e->delim) {
 	    TU_ENCODE (TU_LEN (col->sqllen),
 		       TU_START (col->sqllen), TU_END (col->sqllen));
 	  /* Save the qualifier for later */
-	  qualifiers[i] = htons (((dtime_t *) (col->sqldata))->dt_qual);
+	  qualifiers[i] =  (((dtime_t *) (col->sqldata))->dt_qual);
 	  col->sqllen = ((dtime_t *) (col->sqldata))->dt_qual;
 	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
 	  rlen += flen;
@@ -2698,7 +2698,7 @@ if (e->delim) {
 	    TU_IENCODE (TU_LEN (col->sqllen),
 			TU_START (col->sqllen), TU_END (col->sqllen));
 	  /* Save the qualifier for later */
-	  qualifiers[i] = htons (((intrvl_t *) (col->sqldata))->in_qual);
+	  qualifiers[i] =  (((intrvl_t *) (col->sqldata))->in_qual);
 	  col->sqllen = ((intrvl_t *) (col->sqldata))->in_qual;
 	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
 	  rlen += flen;
@@ -2752,11 +2752,11 @@ if (e->delim) {
 	    {
 	    case CDTIMETYPE:
 	      /* Get the saved qualifier. */
-	      ((dtime_t *) (col->sqldata))->dt_qual = ntohs (qualifiers[i]);
+	      ((dtime_t *) (col->sqldata))->dt_qual = qualifiers[i];
 	      break;
 	    case CINVTYPE:
 	      /* Get the saved qualifier. */
-	      ((intrvl_t *) (col->sqldata))->in_qual = ntohs (qualifiers[i]);
+	      ((intrvl_t *) (col->sqldata))->in_qual = qualifiers[i];
 	      break;
 	    default:
 	      break;
