@@ -40,7 +40,7 @@ define lv_actions  array[100] of record
 end record
 define lv_actions_cnt integer
 define lv_actions_used integer
-	
+define first_init integer
 
 function is_echo()
 	return lv_echo
@@ -169,7 +169,12 @@ function open_db()
 	define lv_db char(255)
 	define lv_exit integer
 	whenever error continue
+	if first_init is null or first_init=0 then
+		call init_sql()
+		let first_init=1
+	end if
 	call check_db(mv_curr_db) returning lv_db
+	
 	database mv_curr_db
 	whenever error stop
 	if sqlca.sqlcode<0 then

@@ -34,6 +34,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 int numberOfColumns=0;
 EXEC SQL END DECLARE SECTION;
 extern FILE *file_out_result;
+static int inited=0;
 static const char chexdigit[] = "0123456789abcdef";
 extern FILE *exec_out;
 extern int outlines;
@@ -1995,11 +1996,13 @@ define lv_uname,lv_pass char(64)
 let lv_uname=get_username()
 let lv_pass=get_password()
 whenever error continue
+
 IF lv_uname is null OR lv_uname matches " " THEN
 	DATABASE lv_dbname
 ELSE
 	connect to lv_dbname user lv_uname using lv_pass
 END IF
+
 whenever error stop
 end function
 
@@ -3075,3 +3078,30 @@ static void     outbyte(FILE *unlfile, char *buffer, long len)
 
 
 endcode
+
+function init_sql()
+define lv_server char(60)
+define lv_uname,lv_passwd char(50)
+define lv_hasacl integer
+let lv_server=fgl_getenv("INFORMIXSERVER")
+
+if lv_server is null or lv_server matches " " then
+	return
+end if
+
+code
+if (inited) {
+	// don't reconnect if we've already connected
+	lv_hasacl=0;
+} else {
+	inited++;
+	lv_hasacl=A4GL_sqlid_from_aclfile("default",lv_uname,lv_passwd);
+}
+endcode
+
+if lv_hasacl then
+	let lv_server="@",lv_server
+	connect to lv_server user lv_uname using lv_passwd
+end if
+
+end function

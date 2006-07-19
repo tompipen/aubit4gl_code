@@ -1074,3 +1074,7 @@ RETURN type_text
 
 END FUNCTION
 
+
+function init_sql()
+end function
+

@@ -10,7 +10,7 @@ Regressed: some tests in regression tests are p-code enabled
 Maintainer:  MA
 Status: 2
 Todo:
-Notes: P-code programs without _fgl suffix do not use any Aubit headers or libraries
+Notes: P-code programs without _fgl suffix do not use any Aubit headers or libraries which should mean they can be used as a generic C pcode-compiler
 
 
 Name: runner_fgl
@@ -40,7 +40,7 @@ Regressed:
 Maintainer: MA
 Status:  2
 Todo:
-Notes: Primarily useful for debugging. P-code programs without _fgl suffix do not use Aubit headers or libraries
+Notes: Primarily useful for debugging. P-code programs without _fgl suffix do not use Aubit headers or libraries which should mean they can be used as a generic C pcode-compiler
 
 
 Name: checker_fgl
@@ -70,7 +70,7 @@ Regressed:
 Maintainer: MA
 Status: 2
 Todo:
-Notes: P-code programs without _fgl suffix do not use Aubit headers or libraries
+Notes: P-code programs without _fgl suffix do not use Aubit headers or libraries which should mean they can be used as a generic C pcode-compiler
 
 
 Name: c2pcode_fgl
