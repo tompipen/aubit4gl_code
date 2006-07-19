@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.107 2006-07-14 16:11:37 mikeaubury Exp $
+# $Id: compile.c,v 1.108 2006-07-19 08:29:27 mikeaubury Exp $
 #*/
 
 /**
@@ -86,6 +86,7 @@ char yytext[1024] = "";
 int globals_only = 0;
 int yyin_len;
 char *default_database = 0;
+void remove_file(char *base,char *ext) ;
 
 #ifdef YYDEBUG
 extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
@@ -196,7 +197,7 @@ initArguments (int argc, char *argv[])
   
   char extra_ldflags[1024] = "";
 
-  static FILE *filep = 0;
+  //static FILE *filep = 0;
   static char output_object[128] = "";
   static struct option long_options[] = {
     {"globals", 0, 0, 'G'},
@@ -661,6 +662,7 @@ initArguments (int argc, char *argv[])
 			#endif
 
 			if (verbose){ PRINTF ("%s\n", buff); }
+			remove_file(a,".c.err");
 			if ( ! win_95_98 ) {
 				/*this apparently works on NT, but not on W98:*/
 				SPRINTF2 (buff, "%s > %s.c.err 2>&1", buff, a);
@@ -1001,6 +1003,7 @@ initArguments (int argc, char *argv[])
 
 	if (compile_exec || compile_so || compile_lib) {
 		if (verbose) { PRINTF ("%s\n", buff); }
+		remove_file(output_object,".err");
 		SPRINTF2 (buff, "%s > %s.err", buff, output_object);
 		if ( ! win_95_98 ) { 
 			strcat(buff, " 2>&1"); 
@@ -1113,19 +1116,19 @@ char single_output_object[128] = "";
 char fgl_file[128];			/*The 4gl file*/
 char a_part[128], b_part[128];	//for bname()
 char *ptr;
-static FILE *filep = 0;
+//static FILE *filep = 0;
 char ext[256];
 static char local_pass_options[1024] = "";
 
 
-	SPRINTF1 (buff, "%s.err", output_object);
-	if (verbose) { PRINTF ("checking for %s\n", buff); }
-
+	remove_file(fgl_basename,".err");
+	/*
 	filep = fopen (buff, "r");
 	if (filep) {
 			fclose(filep);
 			unlink(buff);
 	}
+	*/
 
 	/* store the directory part of file name, if any, so we can use it for GLOBALS
     file compilation, if nececery */
@@ -1303,6 +1306,7 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 					SPRINTF4 (buff, "%s/bin/ecpg -C INFORMIX -t %s.cpc %s %s",
 					   acl_getenv ("POSTGRESDIR"), fgl_basename, incl_path, pass_options);
 					if (verbose){PRINTF ("%s\n", buff);	}
+						remove_file(fgl_basename,".cpc.err");
 					if ( ! win_95_98 ) {
 						/*this apparently works on NT, but not on W98:*/
 						SPRINTF2 (buff2, "%s > %s.cpc.err 2>&1", buff, fgl_basename);
@@ -1373,6 +1377,7 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 						#ifdef DEBUG
 							A4GL_debug ("Runnung %s", buff);
 						#endif
+						remove_file(fgl_basename,".ec.err");
 						ret = system (buff);
 						/*see function system_run() in fglwrap.c*/
 						if (ret) {
@@ -1432,6 +1437,7 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 			#ifdef DEBUG
 		  		A4GL_debug ("Runnung %s", buff);
 			#endif
+						remove_file(fgl_basename,".c.err");
 			ret = system (buff);
 			/*see function system_run() in fglwrap.c*/
 			if (ret) {
@@ -1877,5 +1883,19 @@ int fglc_verbosity(void) {
 		return fglc_m_verbose;
 }
 
+void remove_file(char *base,char *ext) {
+	FILE *f;
+	char buff[2000];
+	A4GL_assertion(strlen(base)+strlen(ext)+1> sizeof(buff), "Buffer too small");
+	sprintf(buff,"%s%s",base,ext);
+	
+	f=fopen(buff,"r");
+	if (f) {
+		fclose(f);
+		unlink(buff);
+		if (fglc_m_verbose){ PRINTF ("Removed %s\n", buff); }
+	}
+
+}
 
 /* ==================================== EOF =============================== */
