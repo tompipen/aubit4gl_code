@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.25 2006-07-07 15:10:20 mikeaubury Exp $
+# $Id: sql_common.c,v 1.26 2006-07-19 08:03:47 mikeaubury Exp $
 #
 */
 
@@ -1151,7 +1151,17 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
 #if defined( __MINGW32__ ) || defined(MSVC)
       if (strlen (fname) == 0)
 	{
-	  strcpy (fname, "c:\\aubit4gl\\aubit4gl.acl");
+		char *aubitdir;
+		aubitdir=acl_getenv("AUBITDIR");
+		if (aubitdir) {
+			if (strlen(aubitdir)) {
+				strcpy(fname,aubitdir);
+				strcat(fname,"\\etc\\aubit4gl.acl");
+			}
+		}
+	  	if (strlen(fname)==0) {
+			strcpy (fname, "c:\\aubit4gl\\aubit4gl.acl");
+		}
 	}
 #else
       strcpy (fname, acl_getenv ("HOME"));
