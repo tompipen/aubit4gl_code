@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.65 2006-03-17 19:01:30 mikeaubury Exp $
+# $Id: calldll.c,v 1.66 2006-07-21 06:43:40 mikeaubury Exp $
 #
 */
 
@@ -314,7 +314,6 @@ A4GL_dl_openlibrary (char *type, char *p)
   char *plugin_name;
   char *aplugins;
 
-  //need to hide this pointer, something in the way we read registry is messing it up! >>>>>>>>>STATIC!!!!!!<<<<<<<<<FIX IT!!!!!
   SPRINTF1 (tmpbuff, "%s", p);
   plugin_name = tmpbuff;
 
@@ -326,7 +325,7 @@ A4GL_dl_openlibrary (char *type, char *p)
       //FIXME: why is A4GL_exitwith not exiting???
 	A4GL_fgl_die_with_msg(43,"Cannot determine AUBITDIR");
     }
-
+A4GL_debug("AUBITDIR=%s",acl_getenv("AUBITDIR"));
   aplugins=acl_getenv("AUBITPLUGINDIR");
 
   if (aplugins) {

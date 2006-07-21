@@ -531,6 +531,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "--link"			let a=a+1 let mv_link        =arg_val(a) continue for
 	
 		WHEN "--version"		call show_version(0) continue for
+		WHEN "--version-4glpc"		call show_version(2) continue for
 		WHEN "--version-full"		call show_version(1) continue for
 		WHEN "--version_full"		call show_version(1) continue for
 
@@ -904,6 +905,10 @@ end function
 ################################################################################
 function show_version(lv_type)
 define lv_type integer
+if lv_type=2 then
+	display "4glpc v0.8 (c) 2005-2006 Aubit Computing Ltd"
+	exit program 0
+end if
 if lv_type=0 then
 	call runit("4glc --version")
 else

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.118 2006-07-18 10:08:23 mikeaubury Exp $
+# $Id: resource.c,v 1.119 2006-07-21 06:43:41 mikeaubury Exp $
 #
 */
 
@@ -823,9 +823,8 @@ char *ptr=0;
         provides RegQueryValueEx function... (?)
 
 	  */
-      /* why was this static? */
-      //static char buff[1024];
-      char buff[1024];
+      /* why was this static? - because we return a pointer to it... */
+      static char buff[1024];
 		if (get_regkey (s, buff, 1023)) {
 			//ptr = (char *)buff;
 			ptr = buff;
@@ -836,6 +835,7 @@ char *ptr=0;
 			}
         }
 	#endif
+
 
 	return ptr;
 }

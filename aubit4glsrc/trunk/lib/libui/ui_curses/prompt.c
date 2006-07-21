@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.57 2006-07-17 14:09:30 mikeaubury Exp $
+# $Id: prompt.c,v 1.58 2006-07-21 06:43:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.57 2006-07-17 14:09:30 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.58 2006-07-21 06:43:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -104,7 +104,13 @@ int
   if (A4GL_iscurrborder()) promptline++;
   p = derwin (cw, 1, width, promptline-1  , UILIB_A4GL_iscurrborder ());
 
-  
+#ifdef __WIN32__
+   wbkgd(p,'.');
+   wbkgdset(p,'.');
+
+   //wbkgd(p,'!');
+   //wbkgdset(p,'!');
+#endif
   if (p==0) {
 		A4GL_exitwith("No prompt window created");
 		return 0;
@@ -199,6 +205,10 @@ int
   if (a4gl_status != 0)
     return (prompt->mode = 2);
   d = derwin (p, 0, 0, width + 1, 1);
+#ifdef __WIN32__
+   //wbkgd(d,'?');
+   //wbkgdset(d,'?');
+#endif
   set_form_win (f, p);
   set_form_sub (f, d);
   A4GL_debug ("Set form win");

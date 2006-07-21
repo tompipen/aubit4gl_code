@@ -2,6 +2,7 @@
 export AUBITDIR=/gnu/cygwin/usr/src/aubit/aubit4glsrc
 
 cd /usr/src/aubit/aubit4glsrc
+export CFLAGS=-g
 
 if [ "$1" = "Clean" ]
 then

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.129 2006-04-28 15:03:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.130 2006-07-21 06:43:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.129 2006-04-28 15:03:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.130 2006-07-21 06:43:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -79,7 +79,11 @@ void A4GL_make_window_with_this_form_current(void *form);
 #define MAXWIN 200
 #define MAXPOINTERS 2000
 
+
 #define USE_HALF_DELAY
+
+
+
 /*
 =====================================================================
                     Variables definitions
@@ -1338,7 +1342,13 @@ A4GL_getch_swin (WINDOW * window_ptr)
 	}
 #endif
       A4GL_debug("Waiting for key press");
+#ifdef __WIN32__
+	A4GL_debug("WINDOW KEYPRESS");
+	keypad(stdscr,TRUE);
+      a = wgetch (stdscr); // GETCH - getch_swin
+#else
       a = getch (); // GETCH - getch_swin
+#endif
       A4GL_debug("key press : %d",a);
 
 

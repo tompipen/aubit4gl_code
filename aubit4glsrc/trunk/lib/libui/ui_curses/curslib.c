@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.123 2006-07-17 14:09:30 mikeaubury Exp $
+# $Id: curslib.c,v 1.124 2006-07-21 06:43:41 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.123 2006-07-17 14:09:30 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.124 2006-07-21 06:43:41 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1275,6 +1275,7 @@ A4GL_init_curses_stuff ()
   A4GL_debug ("Initializing curses environment");
 #endif
   initscr ();
+  //traceon();
 
 
   if (A4GL_isyes (acl_getenv ("NO_ALT_SCR")))
@@ -1884,18 +1885,35 @@ A4GL_clear_menu (ACL_Menu * menu)
 void
 A4GL_clear_prompt (struct s_prompt *prmt)
 {
-  PANEL *p;
+  WINDOW *p;
+  WINDOW *cw;
+int width;
+char *buff;
 #ifdef DEBUG
   A4GL_debug ("Clearing prompt...");
 #endif
   p = prmt->win;
-  if (p)
+#ifdef __WIN32__
+  width = UILIB_A4GL_get_curr_width ();
+  cw = (WINDOW *) A4GL_get_currwin ();
+  buff=malloc(width+1);
+  memset(buff,' ',width);
+  buff[width]=0;
+  wmove(cw,0,0);
+  wprintw(cw,buff);
+
+free(buff);
+      UILIB_A4GL_zrefresh ();
+#else
+if (p)
     {
-      delwin ((WINDOW *) p);
+      werase(p);
+      delwin (p);
       A4GL_debug ("delwin : %p", p);
       prmt->win = 0;
       UILIB_A4GL_zrefresh ();
     }
+#endif
 }
 
 
@@ -2610,6 +2628,7 @@ A4GL_set_bkg (WINDOW * win, int attr)
     }
   else
     {
+      A4GL_debug ("MJAMJA set_bkg : %x\n", 0);
       wbkgdset (win, 0);
     }
 
