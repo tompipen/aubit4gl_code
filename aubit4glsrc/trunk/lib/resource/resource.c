@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.119 2006-07-21 06:43:41 mikeaubury Exp $
+# $Id: resource.c,v 1.120 2006-07-21 09:55:29 mikeaubury Exp $
 #
 */
 
@@ -179,10 +179,10 @@ struct str_resource builtin_resource[] = {
   {"TARGET", CONFIGURED_TARGET},
   {"TARGET_OS", CONFIGURED_TARGET_OS},
   {"AUBIT_Y2K", "70"},
-  {"MAP4GL", "N"},
+  {"A4GL_MAP4GL", "N"},
   {"SCROLLBACKTO1","Y"}, // Allow Display Array to move back to srec[1] when scr_line>1
   {"LOGNAME", "UNKNOWN"},
-  {"NOCLOBBER", "Y"},
+  {"A4GL_NOCLOBBER", "Y"},
   {"EXTENDED_FETCH", "Y"},	/* This won't always work ! */
   {"BEEPONERROR","Y"},
   {"HELPTEXT", "Help"},

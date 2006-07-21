@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.278 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: mod.c,v 1.279 2006-07-21 09:55:24 mikeaubury Exp $
 #
 */
 
@@ -4444,7 +4444,7 @@ do_clobbering (char *f, char *s)
 {
   static char buff[256];
 
-  if (A4GL_isyes (acl_getenv ("NOCLOBBER")))
+  if (A4GL_isyes (acl_getenv ("A4GL_NOCLOBBER")))
     {
       SPRINTF1 (buff, "\"%s\"", s);
       if (!has_clobber (buff))
@@ -4456,7 +4456,7 @@ do_clobbering (char *f, char *s)
 
   SPRINTF2 (buff, "\"%s_%s\"", f, s);
 
-  if (A4GL_isyes (acl_getenv ("ALWAYSCLOBBER")))
+  if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSCLOBBER")))
     {
       if (!has_clobber (buff))
 	{

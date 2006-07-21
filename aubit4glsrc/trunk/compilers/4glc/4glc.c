@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.70 2006-07-13 10:11:07 mikeaubury Exp $
+# $Id: 4glc.c,v 1.71 2006-07-21 09:55:24 mikeaubury Exp $
 #
 */
 
@@ -111,7 +111,7 @@ main (int argc, char *argv[])
 
   /* load settings from config file(s): */
   user_resource = A4GL_build_user_resources ();
-  //if (A4GL_isno (acl_getenv ("NOCLOBBER"))) { set_clobber (outputfilename); }
+  //if (A4GL_isno (acl_getenv ("A4GL_NOCLOBBER"))) { set_clobber (outputfilename); }
 
   //A4GL_initlex();
 

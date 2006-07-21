@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.75 2006-07-13 10:11:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.76 2006-07-21 09:55:27 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -205,7 +205,7 @@ open_outfile (void)
   strcpy (h, outputfilename);
   strcpy (err, outputfilename);
 
-  if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
+  if (strcmp (acl_getenv ("A4GL_NOCLOBBER"), "N") == 0)
     {
       A4GL_debug ("Clobbering...");
       A4GL_set_clobber (outputfilename);
@@ -215,7 +215,7 @@ open_outfile (void)
 
   openmap (outputfilename);
 
-  ptr = acl_getenv ("NOCFILE");
+  ptr = acl_getenv ("A4GL_NOCFILE");
   if (strlen (ptr))
     {
       if (ptr[0] == 'Y' || ptr[0] == 'y')

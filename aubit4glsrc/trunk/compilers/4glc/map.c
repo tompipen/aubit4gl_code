@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.39 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: map.c,v 1.40 2006-07-21 09:55:24 mikeaubury Exp $
 #*/
 
 /**
@@ -82,12 +82,12 @@ openmap (char *s)
   A4GL_debug ("openmap");
 #endif
 
-  if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile == 0)
+  if (strcmp (acl_getenv ("A4GL_MAP4GL"), "Y") == 0 && mapfile == 0)
     {
 #ifdef DEBUG
-      A4GL_debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
+      A4GL_debug ("Opening map file..%s \n", acl_getenv ("A4GL_MAP4GL"));
 #endif
-      if (A4GL_isyes(acl_getenv("LOCALOUTPUT"))) {
+      if (A4GL_isyes(acl_getenv("A4GL_LOCALOUTPUT"))) {
 		char *str;
 		str=rindex(s,'/');
 		if (str) s=str+1;
@@ -113,7 +113,7 @@ openmap (char *s)
  * Add a new map to the opened file.
  *
  * Just adds if the mapfile was opened (controled by environment variable
- * MAP4GL)
+ * A4GL_MAP4GL)
  *
  * @param t The x4gl element type
  * @param s The name of the element

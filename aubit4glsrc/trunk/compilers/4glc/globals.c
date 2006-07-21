@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.38 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: globals.c,v 1.39 2006-07-21 09:55:24 mikeaubury Exp $
 #
 */
 
@@ -173,7 +173,7 @@ dump_gvars (void)
   char ii[FNAMESIZE];
   struct variable *v;
 
-  if (!A4GL_env_option_set("LOCALOUTPUT")) {
+  if (!A4GL_env_option_set("A4GL_LOCALOUTPUT")) {
         strcpy (ii, outputfilename);
   } else {
           char *ptr;
@@ -507,11 +507,11 @@ generate_globals_for (char *s)
       strcpy (fname, buff);
     }
 
-  strcpy (nocfile, acl_getenv ("NOCFILE"));
+  strcpy (nocfile, acl_getenv ("A4GL_NOCFILE"));
 #ifdef MSVC
-  putenv("NOCFILE=Yes");
+  putenv("A4GL_NOCFILE=Yes");
 #else
-  A4GL_setenv ("NOCFILE", "Yes", 1);
+  A4GL_setenv ("A4GL_NOCFILE", "Yes", 1);
 #endif
   ptr = strchr (fname, '.');
   *ptr = 0;
@@ -552,9 +552,9 @@ generate_globals_for (char *s)
       if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
   system (buff);
 #ifdef MSVC
-  putenv("NOCFILE=Y");
+  putenv("A4GL_NOCFILE=Y");
 #else
-  A4GL_setenv ("NOCFILE", nocfile, 1);
+  A4GL_setenv ("A4GL_NOCFILE", nocfile, 1);
 #endif
 #ifdef DEBUG
   if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)

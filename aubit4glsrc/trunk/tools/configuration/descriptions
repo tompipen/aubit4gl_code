@@ -86,8 +86,8 @@ $AUBITDIR/lib/libLEX_?.so
 	compiler, ignoring setting of A4GL_SQLTYPE
 	Note: CS is C#
 
-A4GL_LIB_EXT COMPILE Extension to use for libraries created by Aubit compiler
-A4GL_LINK_LIBS COMPILE Libraries to link against when producing executables
+A4GL_LIB_EXT 4GLC Extension to use for static libraries created by Aubit compiler
+A4GL_LINK_LIBS 4GLC Libraries to link against when producing executables
 A4GL_MENUTYPE MENU/COMPILE/RUNTIME Determine library to use for menuhandlers (not normal 4GL menus)
 $AUBITDIR/lib/libMENU_?.so
 	Default menu driver to be loaded:
@@ -246,7 +246,7 @@ A4GL_COLOR_TUI_YELLOW UI/TUI Remap yellow screen color to alternative
 A4GL_COLUMNS  UI/TUI Specify the width of the screen
 	See A4GL_LINES for sescription
 A4GL_COMMENTS COMPILE Add comments to the generated code
-
+=YES|NO
 A4GL_COMMENT_LIKE_DISPLAY UI Specify comments to be in current display color
 =YES|NO
 A4GL_COMMENT_LIKE_INPUT UI Specify comments to be in current input color
@@ -295,10 +295,9 @@ A4GL_DEBUG DEBUG/COMPILE/RUNTIME Log extensive information for tracing bugs in A
 	FIXME: add note about priority numbers
 	Default=<not set>
 
-A4GL_DEBUG_CFG DEBUG
-A4GL_DEBUG_DECIMAL DEBUG
+A4GL_DEBUG_CFG DEBUG Dump all debug messages to stdout
+=YES|NO
 A4GL_DEBUG_LEVEL DEBUG/COMPILE/RUNTIME Specify the detail in which debug messages will be logged
-A4GL_DEFPRINTER PRINT
 A4GL_DUMPCOMMENTS FORMS/COMPILE Dump form file attributes when compiling form to stdout
 A4GL_DUMPSTRINGS COMPILE Dump all the strings in a 4GL to a file called strings.out
 =YES|NO
@@ -306,7 +305,6 @@ A4GL_DUMPSTRINGS COMPILE Dump all the strings in a 4GL to a file called strings.
 A4GL_DUMP_CORE DEBUG/RUNTIME Action to perform when aubit/4gl programs crash
 =YES|NO
 	either print a sorry message (Internal Error...) , or dump core (seg fault)
-A4GL_ERROR_MSG
 A4GL_ESQL_UNLOAD ESQL/RUNTIME PostgreSQL ecpg Informix compatibility
 =YES|NO
 	When needed use the ecpg UNLOAD statement rather than the aubit code
@@ -325,8 +323,6 @@ A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from for
 	Note - you'll need to set this before you compile the form as
 	well as when you run program that will use form file compiled this way
 
-A4GL_FAKELEXTYPE PCODE/COMPILE Compile C code resulting from 4gl compilation to P-code
-	This is no longer required
 A4GL_FAKE_IMMEDIATE COMPILE Affects EXECUTE IMMEDIATE
 =YES|NO
 	This option instructs the compiler to generate a prepare/execute pair for esql/c generation
@@ -353,7 +349,6 @@ A4GL_GTK_INC_PATH UI/COMPILE Path to includes needed ghen compiling GTK gui enab
 	FIXME: why do we need this?
 
 A4GL_GUIPORT UI/RUNTIME ---obsolete?---
-A4GL_HELPTEXT HELP
 A4GL_HIDE_MENU MENU/UI/TUI Remove menu when finished with it, default is to leave it displayed
 =YES|NO
 A4GL_DIM_INACTIVE_MENU MENU/UI/TUI Leave menu displayed - but as DIM rather than NORMAL to show its inactive
@@ -374,8 +369,6 @@ A4GL_INIT_COL_REFRESH  UI/TUI Reinitialise curses colors on exit
 	(terminal specific)
 =YES|NO
 A4GL_INPARRAY_FULL_MSG UI/TUI/LANG Message to display when input array becomes full
-A4GL_KEEP_QUALIFIER
-=YES|NO
 A4GL_KEYFILE DEBUG/UI/RUNTIME Read keystokes from a file and replay them
 	Mechanism for doing automated testing
 	A4GL_KEYFILE=(some filename in DBPATH)
@@ -391,7 +384,6 @@ A4GL_NEEDALLKEYS DEBUG/UI/RUNTIME Keyfile handling
 	(otherwise -return to keyboard input)
 	SEE ALSO: A4GL_KEYFILE
 A4GL_KEYLOG DEBUG/UI/RUNTIME Log all keystokes to the specified file
-A4GL_LANGUAGE
 A4GL_LINES UI/TUI Number of rows on the screen
 	Terminal size
 	This should make programs work with a normal (not xterm) terminal session.
@@ -403,11 +395,17 @@ A4GL_LINES UI/TUI Number of rows on the screen
 	SEE ALSO: A4GL_COLUMNS
 
 
-A4GL_LOGNAME DEBUG/RUNTIME
-MAKE
-A4GL_MAP4GL
+A4GL_MAP4GL COMPILE Generate a map file
 =YES|NO
-A4GL_MARK_SCOPE
+	This option specifies that a mapfile should be generated which contains
+	details of columns, tables, statements, windows, variables etc
+	These can then be loaded up and used for further analysis and reporting
+A4GL_MARK_SCOPE COMPILE Prefix variables with indicators of scope
+=YES|NO
+	This option make the variables within a compiled module use 'G', 'M', and 'L' prefixes
+	to indicate where they are defined.
+	For module level variables - the variable will also be prefixed with the module name
+	This should ensure that the variable names are always unique at any scope.
 A4GL_MONEY_AS_DECIMAL COMPILE/ESQL Treat MONEY type as DECIMAL when compiling to POSTGRES EC LEXTYPE
 =YES|NO
 	Because PG EC compiler (ecpg) does not know about MONEY type. Without it,
@@ -418,18 +416,20 @@ A4GL_MONEY_AS_MONEY COMPILE/ESQL Treat MONEY type as MONEY when compiling to POS
 	MONEY datatype (ERROR: invalid datatype 'money').
 A4GL_MONO UI/TUI Force monochrome output
 =YES|NO
-A4GL_NOCFILE
+A4GL_NOCFILE COMPILE Dont generate the normal files when compiling
 =YES|NO
-A4GL_NOCLOBBER COMPILE Turn off window names clobbering
+	This option is used internally when generating the globals .glb file
+A4GL_NOCLOBBER COMPILE Turn off names clobbering
 =YES|NO
-	Each time you use a window/form etc - t is automatically preprended with the name of the module to form a unique name across the program.
+	Each time you use a window/form etc - it is automatically preprended with the name of the module to form a unique name across the program.
 	This means that you can safely use window 'w1' in a module without worrying if you are using window w1 in another module..
 	If you want to turn this off (so thatt it works the same way as Informix) - try setting A4GL_NOCLOBBER=Y
 	NOCLOBBER defaults to 'Y' since Jan 2005, for Informix-4GL compatibility
 	See also: A4GL_ALWAYSCLOBBER
 A4GL_NO_INVIS_ATTR UI/TUI Disable usage of A_INVIS in curses - attempt alternative method for concealment
 =YES|NO
-A4GL_PAGER
+A4GL_PAGER MISQL Paging program to use
+	PAGER should be set to some paging program, eg pg, more, less etc
 A4GL_PAUSE_MSG REPORT/RUNTIME/LANG Message to show when executing PAUSE statement in REPORT
 A4GL_PGKEYSMOVE UI Defines the use of the PgUp and PgDn keys as the same as NEXT KEY or for ON KEY (PGDN)
 =YES|NO
@@ -473,10 +473,8 @@ A4GL_SQLDIALECT COMPILE/RUNTIME/SQL SQL Dialect used for the source file
 	       SET SQL DIALECT TO ORACLE
 	by default the system assumes the 4GL application is using Informix SQL
 	syntax, but this can be changed by setting, for example:
-
-A4GL_SQLEXEC SQL
 A4GL_SQLPWD SQL/COMPILE/RUNTIME Database access password
-	See A4GL_SQLUID for description
+	See A4GL_SQLUID for description & Aubit4GL ACL Files
 A4GL_SQLUID SQL/COMPILE/RUNTIME Database access user name
 	FIXME: is not odbc.ini supposed to have default login name and password?
 	Defines username and password for accessing database server via ODBC:
@@ -486,8 +484,8 @@ A4GL_SQLUID SQL/COMPILE/RUNTIME Database access user name
 	Default=<no default value>
 	WARNING!! BE CAREFULL NOT TO HAVE A TAB OR OTHER SPECIAL CHARACTRS
 	IN THE VALUE OF THIS VARIABLES !!!!!!!!!!
+	See also Aubit4GL ACL Files
 
-A4GL_SQL_CURRENT_FUNCTION SQL PostgreSQL ecpg Informix compatibility
 A4GL_TRANSLATEFILE COMPILE Specifies the location of a translation file
 	This is used for transforming 4GL strings via a message file (see DUMPSTRINGS)
 A4GL_TRANSMODE RUNTIME/SQL Set transactions behaviour (PodtgreSQL EC mode only??)
@@ -503,6 +501,7 @@ A4GL_AUTOCOMMIT RUNTIME/SQL Set transaction commit behaviour (PostgreSQL EC mode
 A4GL_TRIMDUMP DEBUG/UI/TUI Trim the results of a dump screen to a specified screen size (eg 24x80)
 =24x80|25x80|24x132|25x132
 A4GL_TRIMUSINGFMT RUNTIME Trim trailing spaces from a using string variable before applying it
+=YES|NO
 A4GL_USEPAGEKEYS UI Does odd processing with PgUp PgDn keys on keyboard
 A4GL_USE_BINDING_FOR_PUT SQL
 =YES|NO
@@ -519,6 +518,7 @@ A4GL_USE_INDICATOR ESQL/COMPILE Use indicator variables in ESQL/C generated code
 =YES|NO
 VISUAL RUNTIME Name of the editor for BLOB fields (?)
 A4GL_YYDEBUG DEBUG/COMPILE Aubit parser debugging
+=YES|NO
 A4GL_EXDTYPE RUNTIME External data types support to be loaded
 $AUBITDIR/lib/libEXDTYPE_?.so
 	Currently only MPZ (large integers) are supported
@@ -632,14 +632,19 @@ SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) tra
 	This is apparently needed only with PostgreSQL (with IFX compatibility patches)
 A4GL_SYSCOL_VAL SQL the name of the 'syscolval' table 
 A4GL_SYSCOL_ATT SQL the name of the 'syscolatt' table
-A4GL_CLASSPATH UNKNOWN Path to search for import packages
+A4GL_CLASSPATH COMPILE/RUNTIME Path to search for 'import' packages
 RESTARTLOG RUNTIME Restart the error log
+=YES|NO
 	This causes the CALL startlog('...') to restart with an empty log file
 	each time the program is run. The default is to append to the end of the
 	current log
-A4GL_EC_LOGSQL  UNKNOWN UNKNOWN
-ALWAYS_CONVERT  UNKNOWN UNKNOWN
-BINDDATEASINT UNKNOWN UNKNOWN
+A4GL_EC_LOGSQL  COMPILE Add extra SQL logging information
+=YES|NO
+	This option adds extra code into the generated ESQL/C code which will call
+	a library function to log SQL calls as they are made. The actual SQL will 
+	be written to a file only if the variable 'LOGSQL' is set at runtime
+	See also LOGSQL
+	
 COMSPEC COMPILE/RUNTIME On Windows used to determine that we are on Windows
 	Not to be changed by user - this is a Windows system environment variable
 CORE_ON_ASSERT RUNTIME/DEBUG Force a core dump when encountering an assert
@@ -727,30 +732,136 @@ FREE_SQL_MEM SQL/COMPILE Free SQL memory when compiling the 4gl code
 FUDGE_STATUS COMPILE Add some extra code to clear down the status variable
 =YES|NO
 	EC/C generation only. This option forces the clearing down of the status variable.
-IFMX_ESQLC UNKNOWN UNKNOWN
-IFX_LIBS UNKNOWN UNKNOWN
+IFX_LIBS COMPILE Informix libraries to use on the link line
+	This setting should be automatically set by the configure script
+	If this isn't set correctly, it should be set manually to the result of 'esql -libs'
+INFORMIX_ROUNDING RUNTIME Specifies which rounding algorithm to use
+=YES|NO
+	This option specifies using an informix compatible rounding algorithm
+LOGALL RUNTIME/UI  Log non-printable keys
+=YES|NO
+	This specifies that all key presses should be logged, as opposed 
+	to just the printable characters
+	See KEYLOG and KEYFILE
+MONITORPORT UI Specify the TCP/IP port for monitoring
+
+NAMESPACE COMPILE Namespace to use for compiling programs
+NEED_SIGCHLD RUNTIME Add a SIGCHLD event handler
+=YES|NO
+	Some SQL backends (for example some versions of Informix) raise a 
+	SIGCHLD event which must be caught. This option adds the relevant event handler
+NEED_SIGPIPE RUNTIME Add a SIGPIPE handler
+=YES|NO
+	Some SQL backends (for example some versions of Informix) raise a 
+	SIGPIPE event which must be caught. This option adds the relevant event handler
+NO_CONV_ERR RUNTIME Don't raise an error if a conversion into a variable fails 
+=YES|NO
+A4GL_DLL_EXT COMPILE Class shared library extention
+SO_EXT COMPILE Normal Shared library extention
+KEY_RECALL UI Keycode for a recall field key
+	This option specifies a keycode for a field recall key. This is only effective
+	for the HL_... series of UI modules
+KEY_RECALL_LAST UI Keycode for a recall field key
+	This option specifies a keycode for a field recall key (last value only). This is only effective
+	for the HL_... series of UI modules
+LIST_ERRS COMPILE Try to allow multiple errors to be reported when compiling a 4GL module
+=YES|NO
+	Typically the 4gl compiler will stop at the first error. Setting this option will try to continue
+	the compilation so that multiple errors in the 4gl module will all be reported
+LOGSQL RUNTIME/SQL Filename to log SQL statements to
+	Some SQL modules will allow for SQL logging at runtime. LOGSQL should contain
+	the filename to log these SQL statements in
+RUNNING_TEST COMPILE Internal variable
+=0|1
+	This variable indicates that the compilation/run is part of the regression thests.
+	This enables code to store errors generated during regression tests
+LOG_TEXT COMPILE Internal variable
+	This variable should contain a subdirectory and is used to indicate where
+	to store errors generated during regression tests
+A4GL_TRACEDLL UNKNOWN UNKNOWN
+=YES|NO
+	Trace DLL calls. Calls will be written to a file called /tmp/trace.txt
+PREFIX_DLLFUNCTION RUNTIME Add an underscore when calling a DLL function
+=YES|NO
+	Some platforms require that functions in a DLL are prefixed with an underscore
+	This option ensure that all functions are called with the expected name
+ODDOPTIONS UI Reset options when opening a new window
+=YES|NO
+	For some bizarre reason, Informix resets the options display attribute when you
+	open a new window. This option is used for compatibility
+ONKEY_ACCEPT UI Apply different logic for ON KEY (ACCEPT)
+=YES|NO
+	Traditional key handling
+	Assume F1 is the Accept Key...
+	
+ 	The normal truth table would be  :
+	
+ 	ON KEY (f1)  ON KEY (ACCEPT) Press Key    FGL_LASTKEY  ACTION
+     	    N            N               F1        F1       Exit Display    *
+     	    Y            N               F1        F1       Do ON KEY(f1)   *
+     	    N            Y               F1        N/A      Exit Display    *
+     	    Y            Y               F1        F1       Do ON KEY(f1)   *
+	
+	ie - ON KEY(ACCEPT) is completely ignored
+	
+	Setting ONKEY_ACCEPT=Y changes this :
+	
+  	ON KEY (f1)  ON KEY (ACCEPT) Press Key    FGL_LASTKEY  ACTION
+     	    N            N               F1        F1       Exit Display
+     	    Y            N               F1        F1       Do ON KEY(f1)
+     	    N            Y               F1        ACCEPT   Do ON KEY (ACCEPT)
+     	    Y            Y               F1        F1       Do ON KEY(f1)
+SHELL UNKNOWN UNKNOWN
+SPACESCORE FCOMPILE Convert underscores to spaces when compiling a form
+=YES|NO
+	This option changes any '_' characters to spaces when compiling a form
+START_ALLOC RUNTIME Performance enhancement
+=YES|NO
+	This option allocates and then frees 10Mb of memory when the program starts. 
+	This normally means that subsequent memory allocations will run much faster.
+TRACE_AS_TEXT REPORT  Enable XML style text logging of convertable reports
+=YES|NO
+	This options makes the convertable reports write their meta data in an XML 
+	style output file
+WAIT_FOR_GDB_ATTACH RUNTIME  Wait for a debugger to connect to this process on SegFault
+=YES|NO
+	When a program segfaults it can do one of three things.
+	1) Die (possibly with a core dump)
+	2) Start the debugger
+	3) Wait for a debugger on another terminal to connect to this process
+	This options specifies that we should wait (for up to 5 minutes) for a 'gdb -p pid' to failed process
+DBL2DEC_USING RUNTIME Use a USING string to convert a double to a decimal
+=YES|NO
+	This uses a USING string as the basis for converting from a double to decimal
+DEBUGFILE RUNTIME debug filename
+	Specifies the debug filename to use (normally debug.out)
+LOCALOUTPUT COMPILE strips any leading directories while compiling
+=YES|NO
+	This option specifies that any leading directories are removed when compiling 
+	modules. This means that compiling directory/module.4gl may (for example) generate
+	module.c in the current directory rather than directory/module.c
+LOGREP UNKNOWN UNKNOWN
+LOGSQLFUNCTIONS UNKNOWN UNKNOWN
+LOG_STRINGS UNKNOWN UNKNOWN
+=YES|NO
+NEVER_CONVERT UNKNOWN UNKNOWN
+=YES|NO
+ALWAYS_CONVERT  UNKNOWN UNKNOWN
+=YES|NO
 IGNORE_DATEFMT UNKNOWN UNKNOWN
 =YES|NO
-INFORMIX_ROUNDING UNKNOWN UNKNOWN
-LOGALL UNKNOWN UNKNOWN
-MONITORPORT UNKNOWN UNKNOWN
-NAMESPACE UNKNOWN UNKNOWN
-NEED_SIGCHLD UNKNOWN UNKNOWN
-NEED_SIGPIPE UNKNOWN UNKNOWN
-NEVER_CONVERT UNKNOWN UNKNOWN
-NO_CONV_ERR UNKNOWN UNKNOWN
-NUMBER_OF_PROCESSORS UNKNOWN UNKNOWN
-ODDOPTIONS UNKNOWN UNKNOWN
-ONKEY_ACCEPT UNKNOWN UNKNOWN
-SHELL UNKNOWN UNKNOWN
-SPACESCORE UNKNOWN UNKNOWN
-START_ALLOC UNKNOWN UNKNOWN
-TRACEDLL UNKNOWN UNKNOWN
-TRACE_AS_TEXT UNKNOWN UNKNOWN
-WAIT_FOR_GDB_ATTACH UNKNOWN UNKNOWN
-DBL2DEC_USING UNKNOWN UNKNOWN
-DEBUGFILE UNKNOWN UNKNOWN
-A4GL_DLL_EXT UNKNOWN UNKNOWN
+MAPSQL UNKNOWN UNKNOWN
+MONITOR4GL UNKNOWN UNKNOWN
+NOSETODBCCURSORS UNKNOWN UNKNOWN
+NO_INIT_COL_CLR UNKNOWN UNKNOWN
+PADNULLSTRING UNKNOWN UNKNOWN
+PG_COPTS UNKNOWN UNKNOWN
+SAVE_COMMENTS UNKNOWN UNKNOWN
+SETODBCCURSORS UNKNOWN UNKNOWN
+SUPPRESSWARNINGS UNKNOWN UNKNOWN
+TARGET_OS UNKNOWN UNKNOWN
+TRIMFIELD UNKNOWN UNKNOWN
+USECURSORFORLOAD UNKNOWN UNKNOWN
 A4GL_FRM_BASE_LIST UNKNOWN UNKNOWN
 A4GL_LOGSQLERR UNKNOWN UNKNOWN
 A4GL_PARSER UNKNOWN UNKNOWN
@@ -771,27 +882,5 @@ HALFDELAY UNKNOWN UNKNOWN
 HASHNOCOMMENT UNKNOWN UNKNOWN
 HIDEEMPTYBUTTONS UNKNOWN UNKNOWN
 KEEPNLONREAD UNKNOWN UNKNOWN
-KEY_RECALL UNKNOWN UNKNOWN
-KEY_RECALL_LAST UNKNOWN UNKNOWN
-LIST_ERRS UNKNOWN UNKNOWN
-LOCALOUTPUT UNKNOWN UNKNOWN
-LOGREP UNKNOWN UNKNOWN
-LOGSQLFUNCTIONS UNKNOWN UNKNOWN
-LOG_STRINGS UNKNOWN UNKNOWN
-LOG_TEXT UNKNOWN UNKNOWN
-MAPSQL UNKNOWN UNKNOWN
-MONITOR4GL UNKNOWN UNKNOWN
-NOSETODBCCURSORS UNKNOWN UNKNOWN
-NO_INIT_COL_CLR UNKNOWN UNKNOWN
-PADNULLSTRING UNKNOWN UNKNOWN
-PG_COPTS UNKNOWN UNKNOWN
-PREFIX_DLLFUNCTION UNKNOWN UNKNOWN
-RUNNING_TEST UNKNOWN UNKNOWN
-SAVE_COMMENTS UNKNOWN UNKNOWN
-SETODBCCURSORS UNKNOWN UNKNOWN
-SO_EXT UNKNOWN UNKNOWN
-SUPPRESSWARNINGS UNKNOWN UNKNOWN
-TARGET_OS UNKNOWN UNKNOWN
-TRIMFIELD UNKNOWN UNKNOWN
-USECURSORFORLOAD UNKNOWN UNKNOWN
+BINDDATEASINT UNKNOWN UNKNOWN
 

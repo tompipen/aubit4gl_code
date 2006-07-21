@@ -105,6 +105,10 @@ get_dtype (char *s)
     return DLONG;
   if (strcasecmp (s, "VoidPointer") == 0)
     return DPTR;
+
+  if (strcasecmp (s, "DOUBLE") == 0)
+    return DDBL;
+
   if (strcasecmp (s, "Void") == 0)
     {
       return DVOID;

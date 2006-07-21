@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.73 2006-07-05 12:40:55 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.74 2006-07-21 09:55:26 mikeaubury Exp $
 #
 */
 
@@ -777,7 +777,7 @@ A4GL_func_using (void)
       }
 #endif
       A4GL_pop_param (&a, DTYPE_FLOAT, 0);
-  if (A4GL_isyes(acl_getenv("TRIMUSINGFMT"))) {
+  if (A4GL_isyes(acl_getenv("A4GL_TRIMUSINGFMT"))) {
       A4GL_trim (fmt);
   }
       s = (int)strlen (fmt);
@@ -796,7 +796,7 @@ A4GL_func_using (void)
       }
 #endif
 
-  if (A4GL_isyes(acl_getenv("TRIMUSINGFMT"))) {
+  if (A4GL_isyes(acl_getenv("A4GL_TRIMUSINGFMT"))) {
       A4GL_trim (fmt);
   }
       A4GL_push_char (A4GL_using_date (d, fmt));

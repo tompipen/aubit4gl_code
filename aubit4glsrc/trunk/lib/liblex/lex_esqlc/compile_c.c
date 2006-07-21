@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.301 2006-07-17 14:09:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.302 2006-07-21 09:55:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.301 2006-07-17 14:09:18 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.302 2006-07-21 09:55:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -382,7 +382,7 @@ open_outfile (void)
       A4GL_debug ("NO output file name");
     }
 
-  if (!A4GL_env_option_set("LOCALOUTPUT")) {
+  if (!A4GL_env_option_set("A4GL_LOCALOUTPUT")) {
   	strcpy (filename_for_c, outputfilename);
   	strcpy (filename_for_h, outputfilename);
   	strcpy (err, outputfilename);
@@ -398,7 +398,7 @@ open_outfile (void)
   }
 
   
-  if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
+  if (strcmp (acl_getenv ("A4GL_NOCLOBBER"), "N") == 0)
     {
       A4GL_debug ("Clobbering...");
       A4GL_set_clobber (outputfilename);
@@ -409,7 +409,7 @@ open_outfile (void)
 
   openmap (outputfilename);
 
-  ptr = acl_getenv ("NOCFILE");
+  ptr = acl_getenv ("A4GL_NOCFILE");
   if (strlen (ptr))
     {
       if (ptr[0] == 'Y' || ptr[0] == 'y')
@@ -1406,22 +1406,13 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
 #ifdef DEBUG
   A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
 #endif
-  printc
-    ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n",
-     when_code[A_WHEN_SUCCESS] == WHEN_CALL
-     || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
-  /*printc("A4GL_debug(\"a4gl_status=%%d a4gl_sqlca.sqlcode=%%d\",a4gl_status,a4gl_sqlca.sqlcode);\n"); */
+  printc ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n", when_code[A_WHEN_SUCCESS] == WHEN_CALL || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
   printcomment ("/* NOTFOUND */");
 
-  a =
-    pr_when_do ("   if (a4gl_sqlca.sqlcode==100)",
-		when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
+  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==100)", when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
   printcomment ("/* SQLERROR */");
 
-  a =
-    pr_when_do
-    ("   if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode)",
-     when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
+  a = pr_when_do ("   if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode)", when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
 
 #ifdef ANYERRORISCAUSINGPROBS
   printcomment ("/* ANYERROR */");
@@ -1432,27 +1423,15 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
 #endif
 
   printcomment ("/* ERROR */");
-  a =
-    pr_when_do ("   if (a4gl_status<0) ", when_code[A_WHEN_ERROR], l, f,
-		when_to[A_WHEN_ERROR]);
+  a = pr_when_do ("   if (a4gl_status<0) ", when_code[A_WHEN_ERROR], l, f, when_to[A_WHEN_ERROR]);
   printcomment ("/* SQLWARNING */");
-  a =
-    pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W')",
-		when_code[A_WHEN_SQLWARNING], l, f,
-		when_to[A_WHEN_SQLWARNING]);
+  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W')", when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
   printcomment ("/* WARNING */");
-  a =
-    pr_when_do
-    ("   if (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W'))",
-     when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
+  a = pr_when_do ("   if (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
   printcomment ("/* SQLSUCCESS */");
-  a =
-    pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)",
-		when_code[A_WHEN_SQLSUCCESS], l, f,
-		when_to[A_WHEN_SQLSUCCESS]);
+  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)", when_code[A_WHEN_SQLSUCCESS], l, f, when_to[A_WHEN_SQLSUCCESS]);
   printcomment ("/* SUCCESS */");
-  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)",
-		  when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
+  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)", when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
   printc ("}\n");
 }
 
@@ -5909,7 +5888,7 @@ LEXLIB_print_open_form_gui (char *name,char *at_gui,char *like_gui,char *disable
 
 
 //A4GL_open_gui_form(&%s,%s,%s,%s,%s,hnd_e_%s,hnd_c_%s);",name,name,at_gui,like_gui,disable,formhandler,formhandler);
-	if (A4GL_isyes(acl_getenv("NOCLOBBER")) && 0) {
+	if (A4GL_isyes(acl_getenv("A4GL_NOCLOBBER")) && 0) {
         	if (scan_variable (name) == -1) {
 	  		set_yytext(name);
 	  		a4gl_yyerror ("Form variable not defined");
