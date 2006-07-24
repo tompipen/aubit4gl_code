@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.135 2006-07-17 14:09:30 mikeaubury Exp $
+# $Id: ioform.c,v 1.136 2006-07-24 21:03:09 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.135 2006-07-17 14:09:30 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.136 2006-07-24 21:03:09 mikeaubury Exp $";
 #endif
 
 /**
@@ -115,24 +115,6 @@ long inp_current_field = 0;
 
 
 void A4GL_clr_field (FIELD * f);
-#ifdef OBSOLETE
-static int A4GL_page_for_cfield (struct s_screenio *s);
-static int A4GL_page_for_nfield (struct s_screenio *s);
-static int A4GL_page_for_pfield (struct s_screenio *s);
-static int A4GL_curr_metric_is_last (void);
-static int A4GL_curr_metric_is_first (void);
-static int A4GL_curr_metric_is_veryfirst (void);
-static int A4GL_curr_metric_is_verylast (void);
-static FIELD *A4GL_scan_for_field (char *s);
-static FIELD *A4GL_scan_for_field_n (char *s, int n);
-static int A4GL_page_for_field (struct s_screenio *s, FIELD * f);
-static void A4GL_set_init_pop_attr (FIELD * field, int attr);
-static void A4GL_bomb_out (void);
-static void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
-static void A4GL_set_init_pop (FIELD * f);
-static void A4GL_dump_fields (FIELD * fields[]);
-static void A4GL_reset_delims (struct s_form_dets *formdets, char *delims);
-#endif
 
 static void A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type);
 
@@ -313,7 +295,7 @@ A4GL_make_label (int frow, int fcol, char *label)
 	}
       if (is_graphics)
 	{
-	  set_field_opts (f, field_opts (f) & ~O_ACTIVE);
+	  local_set_field_opts (f, local_field_opts (f) & ~O_ACTIVE);
 	  return f;
 	}
       else
@@ -329,7 +311,7 @@ A4GL_make_label (int frow, int fcol, char *label)
     {
       A4GL_debug ("99 set field buffer to label = **%s**", label);
       set_field_buffer (f, 0, label);
-      set_field_opts (f, field_opts (f) & ~O_ACTIVE);
+      local_set_field_opts (f, local_field_opts (f) & ~O_ACTIVE);
     }
   else
     {
@@ -496,7 +478,7 @@ A4GL_default_attributes (FIELD * f, int dtype)
       if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
-	  set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
+	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
 	  done = 1;
 	}
     }
@@ -511,14 +493,14 @@ A4GL_default_attributes (FIELD * f, int dtype)
       if ((dtype & 255) == 0)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
-	  set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
-	  field_opts_off (f, O_BLANK);
+	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
+	  local_field_opts_off (f, O_BLANK);
 	}
       else
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_debug ("BLANK BLANK");
-	  set_field_opts (f,
+	  local_set_field_opts (f,
 			  O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_BLANK);
 	}
     }
@@ -554,20 +536,20 @@ A4GL_set_field_attr (FIELD * field)
     {
       A4GL_debug ("Autoskip");
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_on (field, O_AUTOSKIP);
+      local_field_opts_on (field, O_AUTOSKIP);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_INVISIBLE))
     {
       A4GL_debug ("Invisible ***");
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_off (field, O_PUBLIC);
+      local_field_opts_off (field, O_PUBLIC);
     }
 
   if (f->dynamic != 0)
     {
       A4GL_debug ("ZZZZ - SET OPTS - STATIC OFF");
-      field_opts_off (field, O_STATIC);
+      local_field_opts_off (field, O_STATIC);
 
 
       if (f->dynamic == -1)
@@ -598,18 +580,18 @@ A4GL_set_field_attr (FIELD * field)
   if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_off (field, O_NULLOK);
+      local_field_opts_off (field, O_NULLOK);
     }
   else
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_on (field, O_NULLOK);
+      local_field_opts_on (field, O_NULLOK);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_COMPRESS))
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_on (field, O_WRAP);
+      local_field_opts_on (field, O_WRAP);
     }
 
 
@@ -889,9 +871,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
   A4GL_debug (" current field %p  form says currfield=%p m=%d",
 	      form->currentfield, current_field (mform), m);
-  A4GL_debug
-    ("field_status(form->currentfield)=%d field_status(currfield)=%d",
-     field_status (form->currentfield), field_status (current_field (mform)));
+  A4GL_debug ("field_status(form->currentfield)=%d field_status(currfield)=%d", field_status (form->currentfield), field_status (current_field (mform)));
+
   if ((form->currentfield != current_field (mform)) || m < 0)
     {
       A4GL_debug ("Is different");
@@ -1202,29 +1183,6 @@ A4GL_get_curr_metric (struct s_form_dets *form)
 }
 
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_get_metric_no (struct s_form_dets *form, FIELD * f)
-{
-  int a;
-  A4GL_debug ("In curr metric");
-  for (a = 0; a < form->fileform->metrics.metrics_len; a++)
-    {
-      if (f == (FIELD *) form->fileform->metrics.metrics_val[a].field)
-	{
-	  A4GL_debug ("Returning %d\n", a);
-	  return a;
-	}
-    }
-  A4GL_debug ("NO current metric !");
-  return -1;
-}
-#endif
-
 
 
 /**
@@ -1274,9 +1232,9 @@ A4GL_turn_field_off (FIELD * f)
   fprop = (struct struct_scr_field *) (field_userptr (f));
   A4GL_debug ("Turn Field Off %s %s", fprop->tabname, fprop->colname);
   A4GL_debug ("ZZZZ - SET OPTS");
-  a = field_opts_off (f, O_ACTIVE);
+  a = local_field_opts_off (f, O_ACTIVE);
   A4GL_debug ("a=%d", a);
-  a += field_opts_off (f, O_EDIT);
+  a += local_field_opts_off (f, O_EDIT);
   A4GL_debug ("a=%d", a);
   if (a == 0)
     return 0;
@@ -1296,12 +1254,12 @@ A4GL_turn_field_on (FIELD * f)
   fprop = (struct struct_scr_field *) (field_userptr (f));
   A4GL_debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
   A4GL_debug ("ZZZZ - SET OPTS");
-  a = field_opts_on (f, O_ACTIVE);
+  a = local_field_opts_on (f, O_ACTIVE);
   A4GL_debug ("a=%d", a);
-  a = field_opts_on (f, O_EDIT);
+  a = local_field_opts_on (f, O_EDIT);
   if ((fprop->datatype & 255) != 0)
     {
-      field_opts_on (f, O_BLANK);
+      local_field_opts_on (f, O_BLANK);
     }
   A4GL_debug ("a=%d", a);
   A4GL_set_field_attr (f);
@@ -1325,11 +1283,11 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 
   A4GL_debug ("Turn Field On %p %p", fprop->tabname, fprop->colname);
   A4GL_debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
-  field_opts_on (f, O_ACTIVE);
-  field_opts_on (f, O_EDIT);
+  local_field_opts_on (f, O_ACTIVE);
+  local_field_opts_on (f, O_EDIT);
   if ((fprop->datatype & 255) != 0)
     {
-      field_opts_on (f, O_BLANK);
+      local_field_opts_on (f, O_BLANK);
     }
 
   A4GL_set_field_attr (f);
@@ -1370,7 +1328,7 @@ A4GL_get_field_width_w (void *f)
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
   fprop = (struct s_scr_field *) (field_userptr (f));
-  formdets = A4GL_get_curr_form (0);
+  formdets = UILIB_A4GL_get_curr_form (0);
   if (formdets == 0 || fprop == 0)
     {
       return A4GL_get_field_width (f);
@@ -1383,22 +1341,6 @@ A4GL_get_field_width_w (void *f)
   return w;
 }
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_set_init_pop (FIELD * f)
-{
-  char *ff;
-  ff = A4GL_new_string (A4GL_get_field_width (f));
-  A4GL_pop_char (ff, A4GL_get_field_width (f));
-  A4GL_debug ("set_init_pop : display %s to field", ff);
-  A4GL_mja_set_field_buffer (f, 0, ff);
-  touchwin (currwin);
-}
-#endif
 
 
 /**
@@ -2152,34 +2094,6 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 }
 
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_do_before_field (FIELD * f, struct s_screenio *sio)
-{
-  int a;
-  char *ptr;
-  A4GL_debug ("Before field....");
-  a = A4GL_find_field_no (f, sio);
-  if (a == -1)
-    {
-      A4GL_exitwith ("before field : field number not found!");
-    }
-  if (sio->mode != MODE_CONSTRUCT)
-    {
-      A4GL_push_param (sio->vars[a].ptr,
-		       sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size));
-      ptr = A4GL_char_pop ();
-      A4GL_mja_set_field_buffer (f, 0, ptr);
-      acl_free (ptr);
-    }
-
-}
-#endif
-
 
 
 /**
@@ -2238,9 +2152,9 @@ A4GL_make_field (int frow, int fcol, int rows, int cols)
       A4GL_debug ("Field created - setting attributes");
       /*A4GL_set_field_attr (f); */
       A4GL_debug ("ZZZZ - SET OPTS");
-      field_opts_off (f, O_ACTIVE);
-      field_opts_off (f, O_EDIT);
-      field_opts_off (f, O_BLANK);
+      local_field_opts_off (f, O_ACTIVE);
+      local_field_opts_off (f, O_EDIT);
+      local_field_opts_off (f, O_BLANK);
     }
   else
     {
@@ -2252,25 +2166,6 @@ A4GL_make_field (int frow, int fcol, int rows, int cols)
 }
 
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_dump_fields (FIELD * fields[])
-{
-  int a = 0;
-  A4GL_debug ("Dumping fields");
-  return;
-  while (fields[a] != 0)
-    {
-      A4GL_debug ("Field %d %p (%d,%d) (%s)\n", a, fields[a], fields[a]->frow,
-		  fields[a]->fcol, fields[a]->buf);
-      a++;
-    }
-}
-#endif
 
 
 /**
@@ -2311,7 +2206,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
-  oopt = field_opts (field);
+  oopt = local_field_opts (field);
   A4GL_set_field_attr (field);
   A4GL_debug ("Determining attribute - field_buffer=%s", field_buffer (field, 0));
   attr = A4GL_determine_attribute (cmd_type, attr, f, field_buffer (field, 0));
@@ -2330,7 +2225,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 
   f->do_reverse = a;
   A4GL_debug ("done ");
-  set_field_opts (field, oopt);
+  local_set_field_opts (field, oopt);
   A4GL_debug ("ZZZZ - SET OPTS");
   A4GL_debug ("Calling display_field_contents");
 
@@ -2449,61 +2344,6 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
 
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_set_init_pop_attr (FIELD * field, int attr)
-{
-  char *ff;
-  struct struct_scr_field *f;
-  struct s_form_dets *fff;
-  int a;
-  A4GL_debug ("Field = %p", field);
-  ff = A4GL_new_string (A4GL_get_field_width (field));
-  A4GL_pop_char (ff, A4GL_get_field_width (field));
-
-  A4GL_debug ("set_init_pop_attr : display '%s' to field %d", ff, attr);
-
-  f = (struct struct_scr_field *) (field_userptr (field));
-  A4GL_assertion (f == 0, "set_init_pop_attr - Pointer is zero...");
-  A4GL_debug ("f=%p", f);
-
-  a = f->do_reverse;
-  A4GL_debug ("f->reverse=%d attr=%d", f->do_reverse, attr);
-
-  if (attr)
-    {
-      if (f->do_reverse)
-	f->do_reverse = 0;
-      else
-	f->do_reverse = 1;
-    }
-  else
-    {
-      if (f->do_reverse)
-	f->do_reverse = 1;
-      else
-	f->do_reverse = 0;
-    }
-  A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
-  A4GL_set_field_attr (field);
-  A4GL_debug ("set field attr");
-  fff = UILIB_A4GL_get_curr_form (1);
-  A4GL_debug ("got curr form");
-  set_current_field (fff->form, field);
-  A4GL_debug ("set field");
-  A4GL_mja_set_field_buffer (field, 0, ff);
-  A4GL_debug ("set field buffer do_reverse=%d", a);
-
-  f->do_reverse = a;
-  A4GL_debug ("done ");
-  acl_free (ff);
-
-}
-#endif
 
 /**
  *
@@ -2589,8 +2429,7 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
 	    (struct struct_scr_field *) (field_userptr (form->currentfield));
 	  if (fprop != 0)
 	    {
-	      if ((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK))
-		  && (field_status (form->currentfield)))
+	      if ((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK)) && (field_status (form->currentfield)))
 		{
 		  strcpy (buff, field_buffer (form->currentfield, 0));
 		  strcpy (buff2, buff);
@@ -2843,65 +2682,6 @@ UILIB_A4GL_push_constr (void *vs)
 
 
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-FIELD *
-A4GL_scan_for_field (char *s)
-{
-  struct s_form_dets *f;
-  FIELD *fld;
-  int a;
-  f = UILIB_A4GL_get_curr_form (1);
-  if (f == 0)
-    return 0;
-
-  for (a = 0; (fld = (f->form_fields[a])); a++)
-    {
-      A4GL_debug ("Calling A4GL_field_name_match with %p", fld);
-      if (A4GL_field_name_match (fld, s))
-	{
-	  A4GL_debug ("Got a A4GL_match - returning %p", fld);
-	  return fld;
-	}
-    }
-  return 0;
-}
-#endif
-
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-FIELD *
-A4GL_scan_for_field_n (char *s, int n)
-{
-  struct s_form_dets *f;
-  char buff[256];
-  FIELD *fld;
-  int a;
-  strcpy (buff, s);
-
-  f = UILIB_A4GL_get_curr_form (1);
-  if (f == 0)
-    return 0;
-
-  for (a = 0; (fld = (f->form_fields[a])); a++)
-    {
-      A4GL_debug ("Calling A4GL_field_name_match with %p", fld);
-      if (A4GL_field_name_match (fld, buff))
-	{
-	  A4GL_debug ("Got a A4GL_match - returning %p", fld);
-	  return fld;
-	}
-    }
-  return 0;
-}
-#endif
-
 
 
 /**
@@ -2954,7 +2734,7 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
   char *colname;
   int field_no;
 
-  if (A4GL_get_curr_form (0) == 0)
+  if (UILIB_A4GL_get_curr_form (0) == 0)
     {
       return 0;
     }
@@ -3014,7 +2794,7 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
   char *colname;
   int field_no;
   s = inp;
-  if (A4GL_get_curr_form (0) == 0)
+  if (UILIB_A4GL_get_curr_form (0) == 0)
     {
       return 0;
     }
@@ -3167,32 +2947,6 @@ struct s_form_dets *formdets;
     }
 }
 
-#ifdef OBSOLETE
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_reset_delims (struct s_form_dets *formdets, char *delims)
-{
-  int a;
-  char sbuff0[2];
-  char sbuff1[2];
-  sbuff0[0] = delims[0];
-  sbuff0[1] = 0;
-  sbuff1[0] = delims[1];
-  sbuff1[1] = 0;
-
-  for (a = 0; a < formdets->fileform->metrics.metrics_len; a++)
-    {
-      A4GL_mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.
-				 metrics_val[a].dlm1, 0, sbuff0);
-      A4GL_mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.
-				 metrics_val[a].dlm2, 0, sbuff1);
-    }
-}
-#endif
 
 
 /**
@@ -3225,7 +2979,7 @@ A4GL_debug_print_field_opts (FIELD * a)
     strcat (str, " O_STATIC");
   if (z & O_PASSOK)
     strcat (str, " O_PASSOK");
-  A4GL_debug ("Field %p attribs= %s:", a, str);
+  A4GL_debug ("UUU Field %p attribs= %s: (%s)", a, str,field_buffer(a,0));
 }
 
 
@@ -3375,8 +3129,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
 	if (fprop != 0)
 	  {
 	    A4GL_debug ("check Datatype ");
-	    if (((fprop->datatype != DTYPE_CHAR) & (DTYPE_MASK))
-		&& (field_status (form->currentfield)))
+	    if (((fprop->datatype != DTYPE_CHAR) & (DTYPE_MASK)) && (field_status (form->currentfield)))
 	      {
 		A4GL_debug ("modify size dtype");
 		A4GL_debug ("modfy size for metric %d",
@@ -3665,108 +3418,6 @@ UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
   return 0;
 }
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_curr_metric_is_last (void)
-{
-  struct s_form_dets *form;
-  int a;
-  form = UILIB_A4GL_get_curr_form (1);
-  a = A4GL_get_curr_metric (form);
-
-  if (a == -1)
-    {
-      return 0;
-      A4GL_exitwith ("No valid metric....");
-    }
-
-
-
-  if (form->fileform->metrics.metrics_val[a].pos_code & POS_LAST)
-    {
-      return 1;
-    }
-
-
-
-  return 0;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_curr_metric_is_first (void)
-{
-  struct s_form_dets *form;
-  int a;
-  form = UILIB_A4GL_get_curr_form (1);
-  a = A4GL_get_curr_metric (form);
-  if (a == -1)
-    {
-      return 0;
-      A4GL_exitwith ("No valid metric....");
-    }
-  if (form->fileform->metrics.metrics_val[a].pos_code & POS_FIRST)
-    return 1;
-  return 0;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_curr_metric_is_veryfirst (void)
-{
-  struct s_form_dets *form;
-  int a;
-  form = UILIB_A4GL_get_curr_form (1);
-  a = A4GL_get_curr_metric (form);
-  if (a == -1)
-    {
-      return 0;
-      A4GL_error_box ("No valid metric....", 0);
-      exit (0);
-    }
-  if (form->fileform->metrics.metrics_val[a].pos_code & POS_VERY_FIRST)
-    return 1;
-  return 0;
-}
-
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_curr_metric_is_verylast (void)
-{
-  struct s_form_dets *form;
-  int a;
-  form = UILIB_A4GL_get_curr_form (1);
-  a = A4GL_get_curr_metric (form);
-  if (a == -1)
-    {
-      return 0;
-      A4GL_error_box ("No valid metric....", 0);
-      exit (0);
-    }
-
-  if (form->fileform->metrics.metrics_val[a].pos_code & POS_VERY_LAST)
-    return 1;
-
-  return 0;
-}
-#endif
 
 
 /**
@@ -3846,17 +3497,6 @@ UILIB_aclfgl_a4gl_get_page (int n)
 }
 
 
-#ifdef OBSOLETE
-/*
- * This function causes a SEGFAULT - useful for stopping the debugger!
-*/
-static void
-A4GL_bomb_out (void)
-{
-  char *ptr = 0;
-  *ptr = 0;
-}
-#endif
 
 
 
@@ -3965,8 +3605,7 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
       for (a = 0; a < c; a++)
 	{
 	  found = 0;
-	  A4GL_debug ("fieldtouched FIELD : %p a=%d c=%d - status=%d\n",
-		      field_list[a], a, c, field_status (field_list[a]));
+	  A4GL_debug ("fieldtouched FIELD : %p a=%d c=%d - status=%d\n", field_list[a], a, c, field_status (field_list[a]));
 
 	  // Have a look to see if we are currently inputing this one...
 	  for (b = 0; b <= s->nfields; b++)

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.51 2006-07-04 14:22:56 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.52 2006-07-24 21:03:11 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.51 2006-07-04 14:22:56 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.52 2006-07-24 21:03:11 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -54,6 +54,7 @@ static char const module_id[] =
 char *last_field_name;
 int construct_last_key;
 
+static int A4GL_local_get_curr_window_attr (void);
 static int A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt);
 //int A4GL_has_event (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
@@ -121,7 +122,7 @@ char *ops[] = {
 *
 */
 static void
-A4GL_add_to_control_stack (struct s_screenio *sio, int op, void *f,
+A4GL_add_to_control_stack (struct s_screenio *sio, enum e_formcontrol op, void *f,
 			   char *parameter, int extent)
 {
   char *field_name;
@@ -216,13 +217,9 @@ static void
 A4GL_newMovement (struct s_screenio *sio, int attrib)
 {
   struct s_movement *ptr;
-  void *last_field;
-  void *next_field;
+  void *last_field=0;
+  void *next_field=0;
   struct struct_scr_field *f;
-
-
-  A4GL_debug ("newMovement %d ", attrib);
-
 
   A4GL_debug ("newMovement %d ", attrib);
 
@@ -343,10 +340,8 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 					      sizeof (struct s_movement)), 0);
       if (last_field)
 	{
-	  //if (last_field!=next_field) {
-	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field,
-				     0, 0);
-	  //}
+	  
+	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
 	}
     }
   else
@@ -597,10 +592,17 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 
 	      if (ok == 1)
 		{
-		  A4GL_LL_int_form_driver (sio->currform->form,
-					   fcntrl.extent);
-		  A4GL_LL_int_form_driver (sio->currform->form,
-					   AUBIT_REQ_VALIDATION);
+		     struct struct_scr_field *fprop;
+		     int k;
+		     k=fcntrl.extent;
+                     fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
+		     if (fprop) {
+	             if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (k) && a4gl_isalpha (k)) { k = a4gl_tolower (k); }
+		     if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (k) && a4gl_isalpha (k)) { k = a4gl_toupper (k); }
+		     }
+
+		  A4GL_LL_int_form_driver (sio->currform->form, k);
+		  A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_VALIDATION);
 		}
 
 
@@ -716,21 +718,16 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 		    }
 		  else
 		    {
-		      fprop =
-			(struct struct_scr_field
-			 *) (A4GL_ll_get_field_userptr (sio->currentfield));
-		      if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT)
-			  && a4gl_isupper (k) && a4gl_isalpha (k))
+		      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
+		      if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (k) && a4gl_isalpha (k))
 			{
 			  k = a4gl_tolower (k);
 			}
-		      if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT)
-			  && a4gl_islower (k) && a4gl_isalpha (k))
+		      if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (k) && a4gl_isalpha (k))
 			{
 			  k = a4gl_toupper (k);
 			}
-		      A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS,
-						 0, 0, k);
+		      A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
 		      A4GL_LL_set_field_buffer (sio->currentfield, 0, rbuff);
 		    }
 		}
@@ -1216,13 +1213,23 @@ void A4GL_submit_events(void *s, struct aclfgl_event_list *evt )
 	}
 }
 
+int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
+	                int a;
+			                a=-1;
+					                while (1) {
+
+								                a=internal_A4GL_form_loop_v2(vs,init,vevt);
+										                        if (init||a!=-1) break;
+													                }
+
+}
 
 /**
  * 4GL CALL
  * @todo Describe function
  */
 int
-UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
+internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 {
   struct s_form_dets *form;
   int a;
@@ -1384,8 +1391,9 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 
 
   
-
-  A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  if (a) {
+  	A4GL_add_to_control_stack (s, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  }
   }
   return -1;
 }
@@ -1802,7 +1810,7 @@ A4GL_comments (struct struct_scr_field *fprop)
       cline = UILIB_A4GL_get_curr_height ();
     }
 
-  attr = A4GL_get_curr_window_attr ();
+  attr = A4GL_local_get_curr_window_attr ();
   A4GL_debug ("Attr1=%x\n", attr);
 
   if (!attr)
@@ -2021,3 +2029,24 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt)
     }
   return 1;
 }
+
+
+
+
+static int A4GL_local_get_curr_window_attr (void)
+{
+	  A4GL_debug ("30 XXX - get_curr_window_attr");
+	    if (A4GL_has_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE))
+		        {
+				      int a;
+				            a =
+						            (int) A4GL_find_pointer ((char *) A4GL_get_currwin_name (),
+										                                      ATTRIBUTE);
+					          A4GL_debug ("30 Current window has an attribute %d", a);
+						        return a;
+							    }
+	      A4GL_debug ("30 Current window has no attribute");
+	        return 0;
+
+}
+

@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.104 2006-07-18 16:12:37 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.105 2006-07-24 21:03:13 mikeaubury Exp $";
 #endif
 
 
@@ -1690,7 +1690,7 @@ A4GL_LL_set_field_fore (void *field, int attr)
 
 
 
-void
+int
 A4GL_LL_set_field_opts (void *field, int oopt)
 {
   char *wtype;
@@ -1716,7 +1716,7 @@ A4GL_LL_set_field_opts (void *field, int oopt)
 	  A4GL_gui_set_active (field, 0);
 	}
     }
-  return ;
+  return oopt;
 }
 
 void
@@ -2423,7 +2423,6 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 void
 A4GL_LL_clear_prompt (void *f, void *w)
 {
-  //A4GL_pause_execution ();
   gtk_widget_destroy (w);
 }
 
@@ -3105,7 +3104,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 }
 
 
-void
+long
 A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext, int invis, int reqd, int compress, int has_picture)
 {
   A4GL_debug ("Setting defs");
@@ -3166,6 +3165,8 @@ A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext, int i
       A4GL_debug ("ZZZZ - SET OPTS");
       A4GL_fld_opts_on (field, AUBIT_O_WRAP);
     }
+
+  return A4GL_LL_field_opts(field);
 }
 
 

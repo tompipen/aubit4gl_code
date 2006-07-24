@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.92 2006-07-05 12:40:55 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.93 2006-07-24 21:02:49 mikeaubury Exp $
 */
 
 /**
@@ -296,6 +296,12 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 #define CHECK_RETURN_AND_POP(x) if (_retvars!= x) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);A4GL_pop_params(ibind,x);}
 #define CHECK_NO_RETURN if (_retvars!= 0) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);}
 
+#define CHK_FOR_ERR (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0))
+#define ERR_CHK_WHEN_NOT_FOUND if ( CHK_FOR_ERR && (a4gl_sqlca.sqlcode==100))
+#define ERR_CHK_SQLERROR if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode))
+#define ERR_CHK_ERROR if (CHK_FOR_ERR && (a4gl_status<0))
+#define ERR_CHK_SQLWARNING if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W'))
+#define ERR_CHK_WARNING    if (CHK_FOR_ERR &&  (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W')))
 
 
   /* ===================== from builtin.c =================== */

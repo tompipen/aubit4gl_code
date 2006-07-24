@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.89 2006-07-18 16:12:19 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.90 2006-07-24 21:03:11 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1435,6 +1435,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   int a;
   //int field_width;
   long oopt;
+  long oopt_orig;
   int d1;
   int s1;
   void *ptr1;
@@ -1456,7 +1457,10 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   currbuff=A4GL_display_field_contents (field, d1, s1, ptr1);
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
-  oopt = A4GL_ll_field_opts (field);
+
+  oopt_orig = A4GL_ll_field_opts (field);
+  oopt = oopt_orig;
+
   A4GL_set_field_attr_for_ll (field);
   if (currbuff==0) {
   	currbuff=A4GL_LL_field_buffer (field, 0);
@@ -1478,7 +1482,10 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
 
   f->do_reverse = a;
   A4GL_debug ("done ");
-  A4GL_ll_set_field_opts (field, oopt);
+
+  if (oopt!=oopt_orig) {
+	  	A4GL_ll_set_field_opts (field, oopt);
+  }
   A4GL_debug ("ZZZZ - SET OPTS");
   A4GL_debug ("Calling display_field_contents");
 
@@ -2680,7 +2687,6 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
     {
       char buff[10024];
 	A4GL_debug("Think we're done here...");
-	//A4GL_pause_execution();
       strcpy (buff, A4GL_LL_field_buffer (promptx->field, 0));
 	A4GL_debug("prompt buff=%s",buff);
       A4GL_trim (buff);
@@ -3183,10 +3189,10 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 void
 UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 {
+ static void *last_sio = 0;
 
   if (strcmp (siotype, "s_inp_arr") == 0)
     {
-      static void *last_sio = 0;
       struct s_inp_arr *s;
       s = sio;
       if (last_sio != sio)
@@ -3206,6 +3212,7 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 
   if (strcmp (siotype, "s_screenio") == 0)
     {
+	  last_sio = sio;
     }
 
 }
@@ -3332,6 +3339,7 @@ A4GL_set_field_attr_for_ll (void *field)
   int reqd;
   int compress;
   int has_picture;
+  long a;
 
   fprop = (struct struct_scr_field *) A4GL_ll_get_field_userptr (field);
 
@@ -3340,12 +3348,14 @@ A4GL_set_field_attr_for_ll (void *field)
   reqd = A4GL_has_bool_attribute (fprop, FA_B_REQUIRED);
   compress = A4GL_has_bool_attribute (fprop, FA_B_COMPRESS);
   has_picture = A4GL_has_str_attribute (fprop, FA_S_PICTURE);
+   A4GL_default_attributes (field, fprop->datatype,has_picture);
 
 
-  A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext,
+  a=A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext,
 			  invis, reqd, compress, has_picture);
 
 
+ A4GL_ll_set_field_opts (field,a) ;
 }
 
 
@@ -3391,18 +3401,29 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
 int
 A4GL_field_opts_on (void *v, int n)
 {
+int curr;
+  curr=A4GL_ll_field_opts (v);
 
-  if (A4GL_ll_field_opts (v) & n) return 1;
-  A4GL_ll_set_field_opts (v, A4GL_ll_field_opts (v) + n);
+  if (curr & n) return 1;
+  A4GL_debug("Turning %p %x on :%x",v,curr,curr+n);
+  curr+=n;
+  A4GL_ll_set_field_opts (v, curr);
   return 1;
 }
 
 int
 A4GL_field_opts_off (void *v, int n)
 {
-  if (!(A4GL_ll_field_opts (v) & n))
+	int curr;
+	curr=A4GL_ll_field_opts (v);
+
+  if ((curr & n)==0) {
     return 1;
+  }
+
+  A4GL_debug("Turning %p %x off :%x",v,curr,curr-n);
   A4GL_ll_set_field_opts (v, A4GL_ll_field_opts (v) - n);
+
   return 1;
 }
 
@@ -3572,9 +3593,9 @@ void A4GL_ll_set_field_opts (void *f,int l) {
   char buff[30];
   int hadit=0;
   int last=-1;
+  long a;
 
   SPRINTF1(buff,"%p",f);
-
 
   // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
   if (A4GL_has_pointer (buff, FIELDOPTS))
@@ -3599,16 +3620,28 @@ void A4GL_ll_set_field_opts (void *f,int l) {
 	if (hadit) {
 		A4GL_del_pointer(buff,FIELDOPTS);
 	}
+
+
+
   	// has pointer won't work with 0 - so we'll use -9997 to mean 0... 
 	A4GL_assertion(l<0,"'l' can't be less than zero");
+
+	a=A4GL_LL_set_field_opts(f,l); 		// OK
+	if (a!=l) { // Failed...
+		A4GL_debug("Failed - Wanted %d got %d",l,a);
+		l=a;
+	}
+
 	if (l!=0) {
+		A4GL_debug("Adding pointer to %d",l);
   		A4GL_add_pointer (buff, FIELDOPTS, (void *)l);
 	} else {
+		A4GL_debug("Adding pointer to -9997 because we cant store 0");
   		A4GL_add_pointer (buff, FIELDOPTS, (void *)-9997);
 	}
+
 	// We'll mark this as OK - so if we grep for A4GL_LL_set_field_opts - we'll know this is ok...
 	// we should be using A4GL_ll_set_field_opts everywhere else so we'll hit this code...
-	A4GL_LL_set_field_opts(f,l); 		// OK
 
   }
 }
@@ -3618,9 +3651,26 @@ void A4GL_ll_set_field_opts (void *f,int l) {
 
 
 
-
-
 int A4GL_ll_field_opts (void *f) {
+	int a;
+	int curr;
+	a=A4GL_ll_field_opts_i(f);
+	curr=A4GL_LL_field_opts(f);
+
+	if (a!=curr) {
+	      	A4GL_debug("field_opt caching failed for %p - Cached =%d Actual=%d",f,a,curr);
+		A4GL_debug("Cached:");
+		A4GL_debug_print_opts(a);
+		A4GL_debug("Actual:");
+		A4GL_debug_print_opts(A4GL_LL_field_opts(f));
+		A4GL_assertion(1,"fail");
+		return A4GL_LL_field_opts(f); // Caching has failed for some reason
+	}
+	return a;
+}
+
+
+int A4GL_ll_field_opts_i (void *f) {
   char buff[30];
   
   // Lets cache our result - might save a round trip or two...
@@ -3628,9 +3678,8 @@ int A4GL_ll_field_opts (void *f) {
   static int last=0;
   static void *lastf=0;
 
-
-
-  if (f==lastf) {
+  if (f==lastf && 0) {
+	  	A4GL_debug("Last field! - %d",last);
 	  	return last;
   }
 
@@ -3645,13 +3694,46 @@ int A4GL_ll_field_opts (void *f) {
       if (last==-9997) {
 	      last=0;
       }
+	  	A4GL_debug("has pointer - %d",last);
 	return last;
+    } else {
+	    return 0;
+	    A4GL_assertion(1,"Cant find fieldopts");
     }
 
 
+	  	A4GL_debug("drop through %d",last);
 
   return last;
 
+}
+
+
+void
+A4GL_debug_print_opts (long z)
+{
+	  char str[2000]="";
+	        if (z & AUBIT_O_VISIBLE)
+			    strcat (str, " O_VISIBLE");
+		  if (z & AUBIT_O_ACTIVE)
+			      strcat (str, " O_ACTIVE");
+		    if (z & AUBIT_O_PUBLIC)
+			        strcat (str, " O_PUBLIC");
+		      if (z & AUBIT_O_EDIT)
+			          strcat (str, " O_EDIT");
+		        if (z & AUBIT_O_WRAP)
+				    strcat (str, " O_WRAP");
+			  if (z & AUBIT_O_BLANK)
+				      strcat (str, " O_BLANK");
+			    if (z & AUBIT_O_AUTOSKIP)
+				        strcat (str, " O_AUTOSKIP");
+			      if (z & AUBIT_O_NULLOK)
+				          strcat (str, " O_NULLOK");
+			        if (z & AUBIT_O_STATIC)
+					    strcat (str, " O_STATIC");
+				  if (z & AUBIT_O_PASSOK)
+					      strcat (str, " O_PASSOK");
+				  A4GL_debug("FIELD OPTS : %s (%x)",str,z);
 }
 
 

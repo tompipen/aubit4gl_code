@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.302 2006-07-21 09:55:28 mikeaubury Exp $
+# $Id: compile_c.c,v 1.303 2006-07-24 21:03:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.302 2006-07-21 09:55:28 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.303 2006-07-24 21:03:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1406,33 +1406,53 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
 #ifdef DEBUG
   A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
 #endif
-  printc ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n", when_code[A_WHEN_SUCCESS] == WHEN_CALL || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
+
+  //printc ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0)) {\n");
+
+
   printcomment ("/* NOTFOUND */");
 
-  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==100)", when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
+
+  a = pr_when_do ("   ERR_CHK_WHEN_NOT_FOUND ", when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
   printcomment ("/* SQLERROR */");
 
-  a = pr_when_do ("   if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode)", when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
+  //a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode))", when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
+  a = pr_when_do ("   ERR_CHK_SQLERROR ", when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
 
 #ifdef ANYERRORISCAUSINGPROBS
   printcomment ("/* ANYERROR */");
 
   a =
-    pr_when_do ("   if (a4gl_status<0||a4gl_sqlca.sqlcode<0)",
+    pr_when_do ("   if ( CHK_FOR_ERR && (a4gl_status<0||a4gl_sqlca.sqlcode<0))",
 		when_code[A_WHEN_ANYERROR], l, f, when_to[A_WHEN_ANYERROR]);
 #endif
 
   printcomment ("/* ERROR */");
-  a = pr_when_do ("   if (a4gl_status<0) ", when_code[A_WHEN_ERROR], l, f, when_to[A_WHEN_ERROR]);
+  //a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_status<0)) ", when_code[A_WHEN_ERROR], l, f, when_to[A_WHEN_ERROR]);
+  a = pr_when_do ("   ERR_CHK_ERROR ", when_code[A_WHEN_ERROR], l, f, when_to[A_WHEN_ERROR]);
+
   printcomment ("/* SQLWARNING */");
-  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W')", when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
+  //a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
+  a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
+
   printcomment ("/* WARNING */");
-  a = pr_when_do ("   if (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
-  printcomment ("/* SQLSUCCESS */");
-  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)", when_code[A_WHEN_SQLSUCCESS], l, f, when_to[A_WHEN_SQLSUCCESS]);
-  printcomment ("/* SUCCESS */");
-  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)", when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
-  printc ("}\n");
+
+  //a = pr_when_do ("   if (CHK_FOR_ERR &&  (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
+  a = pr_when_do ("   ERR_CHK_WARNING ", when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
+
+
+
+  if ( when_code[A_WHEN_SUCCESS] == WHEN_CALL || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL) {
+  	printcomment ("/* SQLSUCCESS */");
+  	a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)", when_code[A_WHEN_SQLSUCCESS], l, f, when_to[A_WHEN_SQLSUCCESS]);
+  	printcomment ("/* SUCCESS */");
+  	a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)", when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
+  }
+
+
+
+
+  //printc ("}\n");
 }
 
 /**
@@ -1452,15 +1472,18 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 
   if ((when_code & 15) == WHEN_CONTINUE)
     return 0;
+
   if ((when_code & 15) == WHEN_NOTSET)
     return 0;
+
+
   if (when_code == WHEN_STOP)
     {
 	    
 	  if (A4GL_doing_pcode()) {
       		printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l, f);
 	  } else {
-      		printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l, f);
+      		printc ("%s { A4GL_chk_err(%d,_module_name); }\n", when_str, l, f);
       }
       printcomment ("/* WHENSTOP */");
     }

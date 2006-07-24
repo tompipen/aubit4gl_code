@@ -87,14 +87,14 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff,
       if (pfunc == 0)
 	{
 	  c = buff[a];
-	  A4GL_debug ("Add1 : %x ", c);
+	  //A4GL_debug ("Add1 : %x ", c);
 	  A4GL_LL_wadd_char_xy_col (win, x, y, c | (attr & 0xffffff00),
 				    curr_width, curr_height, iscurrborder,
 				    currwinno);
 	}
       else
 	{
-	  A4GL_debug ("Add2");
+	  //A4GL_debug ("Add2");
 	  c = buff[a];
 	  A4GL_LL_wadd_char_xy_col_w (win, x, y, c | (attr & 0xffffff00),
 				      curr_width, curr_height, iscurrborder,
@@ -104,7 +104,6 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff,
     }
 #endif
 
-  A4GL_LL_screen_update ();
 }
 
 

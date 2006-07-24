@@ -384,6 +384,7 @@ A4GL_form_set_field_fore (FIELD * field, chtype attr)
 int
 A4GL_form_set_field_opts (FIELD * field, OPTIONS opts)
 {
+  A4GL_debug("set_field_opts : %d",opts);
   field->opts = opts;
   return E_OK;
 }
@@ -736,7 +737,6 @@ A4GL_form_form_driver (FORM * form, long c)
   if (c >= 0x100 && c < 0x6000)
     {
       A4GL_debug ("FX1 INVALID CALL TO FORM DRIVER : %x", c);
-      //A4GL_pause_execution ();
     }
   if (c == REQ_FIRST_FIELD)
     {

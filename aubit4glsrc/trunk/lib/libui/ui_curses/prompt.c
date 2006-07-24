@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.58 2006-07-21 06:43:41 mikeaubury Exp $
+# $Id: prompt.c,v 1.59 2006-07-24 21:03:09 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.58 2006-07-21 06:43:41 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.59 2006-07-24 21:03:09 mikeaubury Exp $";
 #endif
 
 /**
@@ -148,7 +148,7 @@ int
   /* A4GL_default_attributes (sarr[0], 0); */
 
   A4GL_default_attributes (prompt->field, 0);
-  field_opts_off (prompt->field, O_STATIC);
+  local_field_opts_off (prompt->field, O_STATIC);
 
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
   ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0,0);
@@ -173,12 +173,12 @@ int
       set_field_fore (prompt->field, A4GL_decode_aubit_attr (af, 'b')); // maybe need 'B' for whole field..
       if (af&AUBIT_ATTR_INVISIBLE) {
           A4GL_debug ("Invisible");
-          field_opts_off (prompt->field, O_PUBLIC);
+          local_field_opts_off (prompt->field, O_PUBLIC);
           }
 
     }
 
-  field_opts_on (prompt->field, O_NULLOK);
+  local_field_opts_on (prompt->field, O_NULLOK);
   A4GL_debug ("Set attributes");
 
   buff[0] = 0;			/* -2 */
@@ -187,7 +187,7 @@ int
   A4GL_debug ("Set buffer ");
 
   A4GL_debug ("Made fields");
-  A4GL_debug ("Field attr : %d", field_opts (prompt->field));
+  A4GL_debug ("Field attr : %d", local_field_opts (prompt->field));
 
   A4GLSQL_set_status (0, 0);
   f = new_form (sarr);

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.130 2006-07-21 06:43:41 mikeaubury Exp $
+# $Id: newpanels.c,v 1.131 2006-07-24 21:03:09 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.130 2006-07-21 06:43:41 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.131 2006-07-24 21:03:09 mikeaubury Exp $";
 #endif
 
 /**
@@ -452,7 +452,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
       A4GL_change_currwinno (a, "Marker 2");
       top_panel (pan);
 
-      if (A4GL_screen_mode (-1))
+      if (UILIB_A4GL_screen_mode (-1))
 	{
 	  update_panels ();
 	  doupdate ();
@@ -626,7 +626,7 @@ A4GL_int_current_window (char *win_name)
     }
   top_panel (p);
 
-  if (A4GL_screen_mode (-1))
+  if (UILIB_A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
@@ -670,7 +670,7 @@ int
     A4GL_debug ("Changed windows...");
   }
 #endif
-  if (A4GL_screen_mode (-1))
+  if (UILIB_A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
@@ -708,7 +708,7 @@ void
 		monitoring=A4GL_isyes(acl_getenv("MONITOR4GL"));
 	}
 
-  if (A4GL_screen_mode (-1))
+  if (UILIB_A4GL_screen_mode (-1))
     {
       A4GL_chkwin ();
 
@@ -852,7 +852,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   A4GL_debug ("scale form %p", f->form);
 
   fl = A4GL_getform_line ();
-  for (a=fl;a<=A4GL_get_curr_height();a++) {
+  for (a=fl;a<=UILIB_A4GL_get_curr_height();a++) {
 	A4GL_display_internal (1, a, " ", 0, 1);
   }
   scale_form (f->form, &rows, &cols);
@@ -1521,13 +1521,13 @@ A4GL_decode_line (int l)
 	{
 	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
 		l--;
-	  while (l>A4GL_get_curr_height()) l--;
+	  while (l>UILIB_A4GL_get_curr_height()) l--;
 	  return l;
 	}
       else
 	{
 	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
-	  while (l>A4GL_get_curr_height()) l--;
+	  while (l>UILIB_A4GL_get_curr_height()) l--;
 	  return l;
 	}
     }
@@ -1570,12 +1570,12 @@ A4GL_decode_line_ib (int l)
       if (A4GL_get_curr_border ())
 	{
 	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
-	  while (l>A4GL_get_curr_height()) l--;
+	  while (l>UILIB_A4GL_get_curr_height()) l--;
 	  return l ;
 	}
       else
 	{
-	  while (l>A4GL_get_curr_height()) l--;
+	  while (l>UILIB_A4GL_get_curr_height()) l--;
 	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
 	  return l;
 	}
@@ -1675,12 +1675,12 @@ int a;
   if (windows[currwinno].winattr.menu_line!=0xff) {
 	a=A4GL_decode_line_ib (windows[currwinno].winattr.menu_line);
 	if (a<=0) return 1;
-	while (a>=A4GL_get_curr_height()) a--;
+	while (a>=UILIB_A4GL_get_curr_height()) a--;
 	return a;
   }
   a=A4GL_decode_line_ib (A4GL_get_dbscr_menuline());
   if (a<=0) return 1;
-  while (a>=A4GL_get_curr_height()) a--;
+  while (a>=UILIB_A4GL_get_curr_height()) a--;
   return a;
 }
 
@@ -1711,8 +1711,8 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
       int b;
 	int w;
 	int h;
-	w=A4GL_get_curr_width();
-	h=A4GL_get_curr_height();
+	w=UILIB_A4GL_get_curr_width();
+	h=UILIB_A4GL_get_curr_height();
 		A4GL_debug("h=%d\n",h);
 	if (currwinno==0) {
 		w=A4GL_screen_width();
@@ -2469,7 +2469,7 @@ A4GL_debug("Assume default colors : %d %d",bkgcolor,fg);
 void
 A4GL_mja_wrefresh (WINDOW * w)
 {
-  if (A4GL_screen_mode (-1) && w)
+  if (UILIB_A4GL_screen_mode (-1) && w)
     {
       update_panels ();
       A4GL_refresh_error_window();
@@ -2485,7 +2485,7 @@ A4GL_mja_wrefresh (WINDOW * w)
 void
 A4GL_mja_refresh (void)
 {
-  if (A4GL_screen_mode (-1))
+  if (UILIB_A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
@@ -2654,7 +2654,7 @@ LIBEXPORT void
 void
 A4GL_do_update_panels (void)
 {
-  if (A4GL_screen_mode (-1))
+  if (UILIB_A4GL_screen_mode (-1))
     {
       update_panels ();
       doupdate ();
@@ -2767,29 +2767,29 @@ int b;
                 a=A4GL_screen_height()-a;
                 A4GL_debug("a=%d from screen_height",a);
         } else {
-                a=A4GL_get_curr_height()-a;
+                a=UILIB_A4GL_get_curr_height()-a;
                 A4GL_debug("a=%d from curr_height",a);
         }
         A4GL_debug("a=%d",a);
   }
 
-  A4GL_debug("Thinking message_line should be %d - window height=%d",a,A4GL_get_curr_height());
+  A4GL_debug("Thinking message_line should be %d - window height=%d",a,UILIB_A4GL_get_curr_height());
 
   if (currwinno==0) {
-        A4GL_debug("MSG SCR %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
+        A4GL_debug("MSG SCR %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
   } else {
-        A4GL_debug("MSG WIN %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
+        A4GL_debug("MSG WIN %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
   }
 
   if (currwinno==0) {
          while (a>A4GL_screen_height()) {
-                A4GL_debug("message_line line - Too far down screen - moving up %d>%d+%d", a,A4GL_get_curr_height(),A4GL_iscurrborder());
+                A4GL_debug("message_line line - Too far down screen - moving up %d>%d+%d", a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
                 a--;
         }
   } else {
-        if (a>(A4GL_get_curr_height())) {
+        if (a>(UILIB_A4GL_get_curr_height())) {
                 a=2;
-		if (a>A4GL_get_curr_height()-A4GL_iscurrborder()) a=1;
+		if (a>UILIB_A4GL_get_curr_height()-A4GL_iscurrborder()) a=1;
         }
   }
 
@@ -2832,27 +2832,27 @@ int b;
 		a=A4GL_screen_height()-a;
 		A4GL_debug("a=%d from screen_height",a);
 	} else {
-		a=A4GL_get_curr_height()-a;
+		a=UILIB_A4GL_get_curr_height()-a;
 		A4GL_debug("a=%d from curr_height",a);
 	}
 	A4GL_debug("a=%d",a);
   }
 
-  A4GL_debug("Thinking prompt should be %d - window height=%d",a,A4GL_get_curr_height());
+  A4GL_debug("Thinking prompt should be %d - window height=%d",a,UILIB_A4GL_get_curr_height());
 
   if (currwinno==0) {
-	A4GL_debug("PROMPT SCR %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
+	A4GL_debug("PROMPT SCR %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
   } else {
-	A4GL_debug("PROMPT WIN %d %d %d",a,A4GL_get_curr_height(),A4GL_iscurrborder());
+	A4GL_debug("PROMPT WIN %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
   }
 
   if (currwinno==0) {
 	 while (a>A4GL_screen_height()) {
-		A4GL_debug("prompt line - Too far down screen - moving up %d>%d+%d", a,A4GL_get_curr_height(),A4GL_iscurrborder());
+		A4GL_debug("prompt line - Too far down screen - moving up %d>%d+%d", a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
 		a--;
   	} 
   } else {
-  	if (a>(A4GL_get_curr_height())) {
+  	if (a>(UILIB_A4GL_get_curr_height())) {
 		a=1;
   	}
   }

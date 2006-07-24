@@ -235,6 +235,11 @@ void A4GL_turn_field_on (FIELD * f);
 void A4GL_turn_field_on2 (FIELD * f, int a);
 void A4GL_debug_print_field_opts (FIELD * a);
 int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
+int local_set_field_opts(FIELD *field, int opts);
+int local_field_opts_on(FIELD *field, int opts);
+int local_field_opts_off(FIELD *field, int opts);
+int local_field_opts(const FIELD *field);
+
 
 	//int aclfgl_aclfgl_dump_screen(int n);
 

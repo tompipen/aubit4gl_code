@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.52 2006-06-19 09:33:14 mikeaubury Exp $
+# $Id: helper.c,v 1.53 2006-07-24 21:03:07 mikeaubury Exp $
 #
 */
 
@@ -1147,8 +1147,10 @@ return 0;
 
 
 int a4gl_toupper(int n) {
-if (n>=0&&n<=255) n=toupper(n);
-return n;
+int nnew;
+if (n>=0&&n<=255) nnew=toupper(n);
+A4GL_debug("toupper : %d %d (%c %c)",n,nnew,n,nnew);
+return nnew;
 }
 
 int a4gl_tolower(int n) {

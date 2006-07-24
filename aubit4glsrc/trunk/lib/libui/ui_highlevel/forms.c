@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.39 2006-07-04 15:17:38 mikeaubury Exp $";
+  "$Id: forms.c,v 1.40 2006-07-24 21:03:11 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -573,14 +573,13 @@ A4GL_getform_line (void)
 int
 A4GL_chkwin (void)
 {
-
-
   if (A4GL_islinemode ())
     {
 
       A4GL_switch_to_scr_mode ();
       A4GL_set_scrmode ('S');
       A4GL_LL_screen_update ();
+      A4GL_assertion(A4GL_islinemode (),"Couldn't switch to screen mode");
     }
   return 1;
 }

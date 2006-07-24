@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.45 2006-07-17 14:09:30 mikeaubury Exp $
+# $Id: array.c,v 1.46 2006-07-24 21:03:08 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.45 2006-07-17 14:09:30 mikeaubury Exp $";
+		"$Id: array.c,v 1.46 2006-07-24 21:03:08 mikeaubury Exp $";
 #endif
 
 
@@ -872,7 +872,7 @@ int orig_set=0;
   if (first_only) {
 	int n;
 	int n2;
-		n=field_opts(field_list[0]);
+		n=local_field_opts(field_list[0]);
 		orig_set=n;
 		n2=n;
 		A4GL_debug("First only set : %x %x %x",n,O_ACTIVE,O_EDIT);
@@ -880,7 +880,7 @@ int orig_set=0;
 		if ((n&O_EDIT)==0) { was_disabled=1; n2+=O_EDIT;}
 		if ((n&O_ACTIVE)==0) { was_disabled=1; n2+=O_ACTIVE;}
 		A4GL_debug("First only set now  %x %x %x",n2,O_ACTIVE,O_EDIT);
-		set_field_opts(field_list[0],n2);
+		local_set_field_opts(field_list[0],n2);
 	}
 
   for (a=nofields;a>=0;a--) {
@@ -925,7 +925,7 @@ int orig_set=0;
 		set_current_field (formdets->form, field_list[a]);
 		pos_form_cursor(formdets->form);
 		A4GL_mja_wrefresh (currwin);
-		if (orig_set) set_field_opts(field_list[0],orig_set);
+		if (orig_set) local_set_field_opts(field_list[0],orig_set);
 	}
 
   }

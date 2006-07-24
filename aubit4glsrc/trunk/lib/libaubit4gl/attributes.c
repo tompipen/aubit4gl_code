@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.38 2006-05-13 12:34:38 mikeaubury Exp $
+# $Id: attributes.c,v 1.39 2006-07-24 21:03:07 mikeaubury Exp $
 #*/
 
 /**
@@ -244,7 +244,6 @@ A4GL_get_curr_window_attr (void)
     }
   A4GL_debug ("30 Current window has no attribute");
   return 0;
-
 }
 
 /*

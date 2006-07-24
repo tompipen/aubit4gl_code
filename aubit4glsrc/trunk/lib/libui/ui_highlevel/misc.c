@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.47 2006-07-24 09:10:51 mikeaubury Exp $";
+  "$Id: misc.c,v 1.48 2006-07-24 21:03:11 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -422,7 +422,7 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
   char *colname;
   int field_no;
 
-  if (A4GL_get_curr_form (0) == 0)
+  if (UILIB_A4GL_get_curr_form (0) == 0)
     {
       return 0;
     }
@@ -480,7 +480,7 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
   char *colname;
   int field_no;
   s = inp;
-  if (A4GL_get_curr_form (0) == 0)
+  if (UILIB_A4GL_get_curr_form (0) == 0)
     {
       return 0;
     }
@@ -969,8 +969,9 @@ A4GL_turn_field_off (void *f)
   fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
   a = A4GL_field_opts_off (f, AUBIT_O_ACTIVE);
   a += A4GL_field_opts_off (f, AUBIT_O_EDIT);
-  if (a == 0)
+  if (a == 0) {
     return 0;
+  }
   return 1;
 
 }
@@ -1214,7 +1215,7 @@ A4GL_get_field_width (void *f)
   if (f==0) return 0;
 
   fprop 	= (struct s_scr_field *) (A4GL_ll_get_field_userptr (f));
-  formdets 	= (struct s_form_dets *) A4GL_get_curr_form (0);
+  formdets 	= (struct s_form_dets *) UILIB_A4GL_get_curr_form (0);
 
   if (formdets == 0 || fprop == 0)
     {

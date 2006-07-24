@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.124 2006-07-21 06:43:41 mikeaubury Exp $
+# $Id: curslib.c,v 1.125 2006-07-24 21:03:08 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.124 2006-07-21 06:43:41 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.125 2006-07-24 21:03:08 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -94,6 +94,7 @@ WINDOW *curr_error_window = 0;
 PANEL *curr_error_panel = 0;
 int curr_error_panel_visible = 0;
 void A4GL_do_pause (void);
+static int A4GL_local_get_curr_window_attr (void);
 
 int have_default_colors = 0;
 
@@ -189,7 +190,7 @@ message (textarea * area, char *str, int x, int a)
 
   /*YELLOW ON CYAN */
   A4GL_mja_setcolor (TITLE_COL);
-  pos = (A4GL_get_curr_width () - strlen (str)) / 2;
+  pos = (UILIB_A4GL_get_curr_width () - strlen (str)) / 2;
   A4GL_newbox (area, pos + x, a, pos + x + strlen (str) + 1, a, NORMAL_BOX);
   A4GL_mja_gotoxy (pos + x + 1, a);
   /* print ("%s", str); */
@@ -397,7 +398,7 @@ A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
   st[0] = 0;
   A4GL_mja_setcolor (NORMAL_TEXT);
   a = y;
-  pos = (A4GL_get_curr_width () - strlen (str)) / 2;
+  pos = (UILIB_A4GL_get_curr_width () - strlen (str)) / 2;
   A4GL_create_blank_window ("combI", x, y, x + w, y + h, border);
   A4GL_mja_gotoxy (1, 2);
   for (a = 0; a < w - 1; a++)
@@ -889,7 +890,7 @@ A4GL_edit (string, type, length, x, y)
   if (type == 'Y')
     len = 0;
   if (x == 0)
-    x = (A4GL_get_curr_width () - length) / 2;
+    x = (UILIB_A4GL_get_curr_width () - length) / 2;
 
   /* textbackground(COLOR_BLACK); */
 
@@ -1030,10 +1031,10 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   //int x;
   //int y;
   int_flag = 0;
-  A4GL_push_long (A4GL_get_curr_height ());
+  A4GL_push_long (UILIB_A4GL_get_curr_height ());
   A4GL_push_long (1);
   A4GL_push_long (1);
-  A4GL_push_long (A4GL_get_curr_width ());
+  A4GL_push_long (UILIB_A4GL_get_curr_width ());
   UILIB_A4GL_cr_window ("aclfgl_promptwin", 1, 255, 255, 1, 255, 0, 255, 255,
 			(0x0));
   A4GL_push_char ("!");
@@ -1543,9 +1544,9 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   mnln = A4GL_getmenu_line () - 1;
   menu->menu_line = mnln;
   A4GL_debug ("Current window : %s", UILIB_A4GL_get_currwin_name ());
-  attrib = (long) A4GL_find_pointer (A4GL_get_currwin_name (), ATTRIBUTE);
+  attrib = (long) A4GL_find_pointer (UILIB_A4GL_get_currwin_name (), ATTRIBUTE);
   A4GL_debug ("Current window attrib = %d", attrib);
-  parent_window = A4GL_find_pointer (A4GL_get_currwin_name (), WINCODE);
+  parent_window = A4GL_find_pointer (UILIB_A4GL_get_currwin_name (), WINCODE);
   menu->gw_b = UILIB_A4GL_iscurrborder ();
   menu->gw_y = mnln + UILIB_A4GL_iscurrborder ();
   A4GL_debug ("setting gw_y %d %d %d %d px)", menu->gw_y, cpt, mnln,
@@ -2010,7 +2011,7 @@ A4GL_clr_menu_disp (ACL_Menu * menu)
 {
   char *buff = 0;
   int w;
-  w = A4GL_get_curr_width ();
+  w = UILIB_A4GL_get_curr_width ();
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
   A4GL_mja_gotoxy (menu->menu_offset - 1, 1 + menu->menu_line);
   buff = realloc (buff, w + 1);
@@ -2536,7 +2537,7 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
   if (strlen (p) == 0)
     {
       memset (p, ' ', sizeof (p));
-      p[A4GL_get_curr_width ()] = 0;
+      p[UILIB_A4GL_get_curr_width ()] = 0;
 
     }
   A4GL_debug ("Message : '%s'", p);
@@ -2548,7 +2549,7 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
     {
       // Blank out the line...
       memset (buff, ' ', sizeof (buff));
-      buff[A4GL_get_curr_width ()] = 0;
+      buff[UILIB_A4GL_get_curr_width ()] = 0;
       A4GL_push_char (buff);
       A4GL_push_int (ml);
       A4GL_push_int (1);
@@ -2652,7 +2653,7 @@ A4GL_menu_setcolor (ACL_Menu * menu, int typ)
 
 
 
-  currwin = A4GL_find_pointer (A4GL_get_currwin_name (), WINCODE);
+  currwin = A4GL_find_pointer (UILIB_A4GL_get_currwin_name (), WINCODE);
 
   attr = menu->attrib;
   //if (attr & 255) attr = attr - (attr & 255);
@@ -3039,13 +3040,13 @@ A4GL_comments (struct struct_scr_field *fprop)
   }
 
 
-  buff[A4GL_get_curr_width ()] = 0;
+  buff[UILIB_A4GL_get_curr_width ()] = 0;
   A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
   if (cline > UILIB_A4GL_get_curr_height ())
     {
       cline = UILIB_A4GL_get_curr_height ();
     }
-  attr = A4GL_get_curr_window_attr ();
+  attr = A4GL_local_get_curr_window_attr ();
   if (!attr)
     {
       attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
@@ -3341,5 +3342,55 @@ int UILIB_UI_initlib() {
 	return 1;
 
 }
+
+
+static int A4GL_local_get_curr_window_attr (void)
+{
+	  A4GL_debug ("30 XXX - get_curr_window_attr");
+	    if (A4GL_has_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE))
+		        {
+				      int a;
+				            a =
+						            (int) A4GL_find_pointer ((char *) A4GL_get_currwin_name (),
+										                                      ATTRIBUTE);
+					          A4GL_debug ("30 Current window has an attribute %d", a);
+						        return a;
+							    }
+	      A4GL_debug ("30 Current window has no attribute");
+	        return 0;
+
+}
+
+int local_set_field_opts(FIELD *field, int opts) {
+	int a;
+	A4GL_debug("UUU SET %p %x",field,opts);
+	a=set_field_opts(field,opts);
+	A4GL_debug_print_field_opts(field);
+	return  a;
+}
+int local_field_opts_on(FIELD *field, int opts) {
+	int a;
+	A4GL_debug("UUU ON %p %x",field,opts);
+	A4GL_debug_print_field_opts(field);
+	a=field_opts_on(field,opts);
+	A4GL_debug_print_field_opts(field);
+	return a;
+}
+
+int local_field_opts_off(FIELD *field, int opts) {
+	int a;
+	A4GL_debug("UUU OFF %p %x",field,opts);
+	A4GL_debug_print_field_opts(field);
+	a=field_opts_off(field,opts);
+	A4GL_debug_print_field_opts(field);
+	return a;
+}
+
+int local_field_opts(const FIELD *field) {
+	A4GL_debug("UUU GOT %p %x",field,field_opts(field));
+	A4GL_debug_print_field_opts(field);
+	return field_opts(field);
+}
+
 
 /* ============================== EOF ============================== */

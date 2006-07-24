@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.235 2006-07-17 11:16:07 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.236 2006-07-24 21:02:50 mikeaubury Exp $
 #
 */
 
@@ -1774,7 +1774,7 @@ FORMCONTROL_HIDE_FIELD
 
   struct s_formcontrol
   {
-    int op;
+    enum e_formcontrol op;
     char *parameter;
     char *field_name;
     int field_number;

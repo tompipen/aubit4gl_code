@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.112 2006-07-17 14:09:30 mikeaubury Exp $
+# $Id: iarray.c,v 1.113 2006-07-24 21:03:09 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.112 2006-07-17 14:09:30 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.113 2006-07-24 21:03:09 mikeaubury Exp $";
 #endif
 
 /**
@@ -617,7 +617,7 @@ static int
 iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 {
   struct s_form_dets *form;
-  int a;
+  int somekeypress=0;
   int reinpa;
   FORM *mform;
   struct struct_scr_field *fprop;
@@ -699,39 +699,39 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
   		if (blk) { 
 			return blk; 
 		}
-      		a = A4GL_getch_win ();
-      		if (abort_pressed) { a = A4GLKEY_INTERRUPT; }
+      		somekeypress = A4GL_getch_win ();
+      		if (abort_pressed) { somekeypress = A4GLKEY_INTERRUPT; }
 
-      		A4GL_debug("a=%d",a);
-      		if (a!=0 && a!=-1) { 
+      		A4GL_debug("a=%d",somekeypress);
+      		if (somekeypress!=0 && somekeypress!=-1) { 
 			A4GL_evt_not_idle(evt); 
 			break;
 		}
 	}
 
 
-      if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
-	a = A4GLKEY_ACCEPT;
-      if (A4GL_is_special_key (a, A4GLKEY_INSERT))
-	a = A4GLKEY_INSERT;
-      if (A4GL_is_special_key (a, A4GLKEY_DELETE))
-	a = A4GLKEY_DELETE;
-      if (A4GL_is_special_key (a, A4GLKEY_NEXT))
-	a = A4GLKEY_NEXT;
-      if (A4GL_is_special_key (a, A4GLKEY_PREV))
-	a = A4GLKEY_PREV;
+      if (A4GL_is_special_key (somekeypress, A4GLKEY_ACCEPT))
+	somekeypress = A4GLKEY_ACCEPT;
+      if (A4GL_is_special_key (somekeypress, A4GLKEY_INSERT))
+	somekeypress = A4GLKEY_INSERT;
+      if (A4GL_is_special_key (somekeypress, A4GLKEY_DELETE))
+	somekeypress = A4GLKEY_DELETE;
+      if (A4GL_is_special_key (somekeypress, A4GLKEY_NEXT))
+	somekeypress = A4GLKEY_NEXT;
+      if (A4GL_is_special_key (somekeypress, A4GLKEY_PREV))
+	somekeypress = A4GLKEY_PREV;
 
-      arr->processed_onkey = a;
+      arr->processed_onkey = somekeypress;
 
-      A4GL_debug ("calling set_last_key : %d", a);
-      A4GL_set_last_key (a);
+      A4GL_debug ("calling set_last_key : %d", somekeypress);
+      A4GL_set_last_key (somekeypress);
     }
 
 
 
   reinpa = 0;
 
-  if (a != 10)
+  if (somekeypress != 10)
     {
       struct struct_scr_field *fprop;
 
@@ -742,21 +742,21 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	{
 	  A4GL_debug ("Downshift?");
 	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT)
-	      && a4gl_isupper (a) && a4gl_isalpha (a))
+	      && a4gl_isupper (somekeypress) && a4gl_isalpha (somekeypress))
 	    {
-	      a = tolower (a);
+	      somekeypress = tolower (somekeypress);
 	    }
 	  A4GL_debug ("Upshift ?");
 	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT)
-	      && a4gl_islower (a) && a4gl_isalpha (a))
+	      && a4gl_islower (somekeypress) && a4gl_isalpha (somekeypress))
 	    {
-	      a = a4gl_toupper (a);
+	      somekeypress = a4gl_toupper (somekeypress);
 	    }
 	}
     }
 
-  if (a!=0) {
-  		A4GL_add_to_control_stack (arr, FORMCONTROL_KEY_PRESS, 0, 0, a);
+  if (somekeypress!=0) {
+  		A4GL_add_to_control_stack (arr, FORMCONTROL_KEY_PRESS, 0, 0, somekeypress);
   }
   return -1;
 }
@@ -808,6 +808,8 @@ process_key_press (struct s_inp_arr *arr, int a)
 
   if (A4GL_is_special_key (a, A4GLKEY_INSERT))
     {
+	                A4GL_debug("INSERT KEY!!!");
+
       if (arr->allow_insert)
 	{
 	  if (arr->no_arr < arr->arr_size)
@@ -2154,7 +2156,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	{
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
 	  new_state = 25;
-	  rval = A4GL_EVENT_BEFORE_INP;
+	  rval = A4GL_EVENT_BEFORE_INP; // ?  BEFORE_INPUT ?
 	}
 
       if (arr->fcntrl[a].state == 25)
@@ -2181,7 +2183,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
 
 	  new_state = 10;
-	  rval = A4GL_EVENT_BEFORE_INP;
+	  rval = A4GL_EVENT_BEFORE_INP; // ?  BEFORE_INPUT ?
 	}
       if (arr->fcntrl[a].state == 10)
 	{
@@ -2286,13 +2288,13 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	  FIELD *f;
 	  f = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	  new_state = 80;
-	  rval = A4GL_EVENT_BEFORE_INP;
+	  rval = A4GL_EVENT_BEFORE_INP; //? BEFORE_INPUT ?
 	}
 
       if (arr->fcntrl[a].state == 80)
 	{
 	  insert_line_in_array (arr);
-	  rval = A4GL_EVENT_BEFORE_INP;
+	  rval = A4GL_EVENT_BEFORE_INP; //? BEFORE_INPUT ? 
 	  new_state = 50;
 	}
 

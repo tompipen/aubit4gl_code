@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.93 2006-07-17 14:09:30 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.94 2006-07-24 21:03:09 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.93 2006-07-17 14:09:30 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.94 2006-07-24 21:03:09 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -52,6 +52,7 @@
 char *a_strchr(char *s,int c);
 void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 
+static int internal_A4GL_form_loop_v2 (void *vs, int init,void *vevt);
 
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
 static void A4GL_add_to_control_stack (struct s_screenio *sio, enum e_formcontrol op,
@@ -1113,13 +1114,24 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
 
 
 
+int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
+	        int a;
+		a=-1;
+		while (1) {
+
+	        a=internal_A4GL_form_loop_v2(vs,init,vevt);
+			if (init||a!=-1) break;
+		}
+	       return a;
+}
+
+
 
 /**
  * 4GL CALL
  * @todo Describe function
  */
-int
-UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
+static int internal_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 {
   struct s_form_dets *form;
   struct aclfgl_event_list *evt;
@@ -1139,8 +1151,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
     }
   form = s->currform;
   A4GL_set_abort (0);
-  A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
+  A4GL_debug ("form_loop0..  currentfield=%p ZZFIELD status = %d", form->currentfield, field_status (form->currentfield));
 
   if (form != UILIB_A4GL_get_curr_form (0))
     {
@@ -1225,8 +1236,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   	A4GL_clr_error_nobox ("A4GL_form_loop");
 
 
-  	A4GL_debug ("form_loop1..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
+  	A4GL_debug ("form_loop1..  currentfield=%p ZZFIELD status = %d", form->currentfield, field_status (form->currentfield));
 
 // Process the key..
 
@@ -1591,9 +1601,9 @@ m_d2[1]=0;
 
         buff[0]=A4GL_make_label(0,0,m_d1);
         buff[1]=A4GL_make_field(0,1,1,fwidth-2);
-        field_opts_on (buff[1], O_ACTIVE);
-        field_opts_on (buff[1], O_EDIT);
-        field_opts_on (buff[1], O_BLANK);
+        local_field_opts_on (buff[1], O_ACTIVE);
+        local_field_opts_on (buff[1], O_EDIT);
+        local_field_opts_on (buff[1], O_BLANK);
 
 
         buff[2]=A4GL_make_label(0,fwidth-1,m_d2);

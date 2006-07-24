@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.88 2006-07-18 16:12:37 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.89 2006-07-24 21:03:14 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,12 +88,12 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.88 2006-07-18 16:12:37 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.89 2006-07-24 21:03:14 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
 
-static int A4GL_LL_field_opts (void *field);
+//static int A4GL_LL_field_opts (void *field);
 
 //
 // In order to get around a limitation of C not returning more than one value
@@ -140,9 +140,8 @@ static int
 A4GL_fld_opts_on (void *v, int n)
 {
 
-  if (A4GL_LL_field_opts (v) & n)
-    return 1;
-  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) + n);
+  if (A4GL_LL_field_opts (v) & n) return 1;
+  A4GL_ll_set_field_opts (v, A4GL_LL_field_opts (v) + n);
   return 1;
 }
 
@@ -150,9 +149,8 @@ A4GL_fld_opts_on (void *v, int n)
 static int
 A4GL_fld_opts_off (void *v, int n)
 {
-  if (!(A4GL_LL_field_opts (v) & n))
-    return 1;
-  A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) - n);
+  if (!(A4GL_LL_field_opts (v) & n)) return 1;
+  A4GL_ll_set_field_opts (v, A4GL_LL_field_opts (v) - n);
   return 1;
 }
 #endif
@@ -1301,9 +1299,8 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
 	}
       if (is_graphics)
 	{
-	  A4GL_form_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
-	  A4GL_debug ("SET FIELD OPTS : STATIC %x ",
-		      A4GL_form_field_opts (f) & O_STATIC);
+	  A4GL_ll_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
+	  A4GL_debug ("SET FIELD OPTS : STATIC %x ", A4GL_form_field_opts (f) & O_STATIC);
 	  return f;
 	}
       else
@@ -1320,9 +1317,8 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
     {
       A4GL_debug ("99 set field buffer to label = **%s**", label);
       A4GL_form_set_field_buffer (f, 0, label);
-      A4GL_form_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
-      A4GL_debug ("SET FIELD OPTS : STATIC %x ",
-		  A4GL_form_field_opts (f) & O_STATIC);
+      A4GL_ll_set_field_opts (f, A4GL_form_field_opts (f) & ~O_ACTIVE);
+      A4GL_debug ("SET FIELD OPTS : STATIC %x ", A4GL_form_field_opts (f) & O_STATIC);
     }
   else
     {
@@ -1380,7 +1376,7 @@ A4GL_LL_get_field_userptr (void *field)
  * @param 
  * @return 
  */
-void
+long
 A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext,
 			int invis, int reqd, int compress, int has_picture)
 {
@@ -1454,6 +1450,7 @@ A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext,
       A4GL_form_field_opts_on (field, O_WRAP);
     }
 
+  return A4GL_form_field_opts(field);
 }
 
 
@@ -1527,11 +1524,10 @@ void
 A4GL_LL_set_field_buffer (void *field, int n, char *str)
 {
   int a;
-  A4GL_debug ("LL_set_field_buffer : '%s' ", str);
+  A4GL_debug ("LL_set_field_buffer : '%s' from ", str,A4GL_form_field_buffer (field, n));
+
   a = A4GL_form_set_field_buffer (field, n, str);
-  A4GL_debug ("set_field_buffer : %s returns %d field buffer=%s opts=%x", str,
-	      a, A4GL_form_field_buffer (field, n),
-	      A4GL_form_field_opts (field));
+  A4GL_debug ("set_field_buffer : %s returns %d field buffer=%s opts=%x", str, a, A4GL_form_field_buffer (field, n), A4GL_form_field_opts (field));
   A4GL_debug_print_field_opts (field);
 
 }
@@ -1544,7 +1540,7 @@ A4GL_LL_set_field_buffer (void *field, int n, char *str)
  * @param 
  * @return 
  */
-static int A4GL_LL_field_opts (void *field)
+int A4GL_LL_field_opts (void *field)
 {
   return A4GL_form_field_opts (field);
 }
@@ -1556,12 +1552,20 @@ static int A4GL_LL_field_opts (void *field)
  * @param 
  * @return 
  */
-void
+int
 A4GL_LL_set_field_opts (void *field, int oopt)
 {
-  A4GL_debug ("SET FIELD OPTS : STATIC %x ", oopt & O_STATIC);
-  A4GL_form_set_field_opts (field, oopt);
-  A4GL_LL_field_opts (field);
+	int a;
+  A4GL_debug ("SET FIELD OPTS : %x ", oopt);
+  a=A4GL_form_set_field_opts (field, oopt);
+  A4GL_debug_print_field_opts (field);
+  if (A4GL_form_field_opts(field)!=oopt) {
+	  a=A4GL_form_field_opts(field);
+	  A4GL_debug("Couldn't set field opts a=%d",a);
+	  return a;
+  }
+	  A4GL_debug("set field opts a=%d",oopt);
+  return oopt;
 }
 
 
@@ -1600,7 +1604,21 @@ A4GL_LL_set_field_back (void *field, int attr)
 void
 A4GL_LL_set_current_field (void *form, void *field)
 {
-  A4GL_form_set_current_field (form, field);
+	int a;
+  a=A4GL_form_set_current_field (form, field);
+  if (a!=E_OK) {
+	  A4GL_debug("UUU FAILED %p %p",form,field);
+	  A4GL_debug_print_field_opts(field);
+	  if (A4GL_form_field_opts(field)&O_ACTIVE) ;
+	  else {
+		  A4GL_assertion(1,"Want to make current an inactive field");
+		  A4GL_pause_execution();
+		  A4GL_debug("FIELD ISNT ACTIVE!");
+	  }
+  } else {
+	  A4GL_debug("UUU PASSED %p %p",form,field);
+	  A4GL_debug_print_field_opts(field);
+  }
 }
 
 
@@ -3238,9 +3256,7 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
   if (has_picture)
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_LL_set_field_opts (f,
-			      AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-			      AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+      A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
       done = 1;
     }
 
@@ -3256,9 +3272,7 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
       if ((dtype & 255) == 0)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
-	  A4GL_LL_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+	  A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
 
 
 
@@ -3269,7 +3283,7 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_debug ("BLANK BLANK");
-	  A4GL_LL_set_field_opts (f,
+	  A4GL_ll_set_field_opts (f,
 				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
 				  AUBIT_O_PUBLIC | AUBIT_O_EDIT |
 				  AUBIT_O_BLANK);
@@ -3350,9 +3364,14 @@ int A4GL_LL_get_triggered_event() {
 
 static void A4GL_local_mja_endwin (void)
 {
-	      endwin ();
-	          PRINTF ("\n");
+  if (A4GL_isscrmode ())
+	      {
+		            A4GL_set_scrmode ('L');
+			          PRINTF ("\n");
 				        fflush (stdout);
+					      endwin ();
+					          }
+
 }
 
 

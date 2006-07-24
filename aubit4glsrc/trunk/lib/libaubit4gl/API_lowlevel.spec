@@ -38,7 +38,7 @@ A4GL_LL_error_box char* str int attr  -> void
 A4GL_LL_field_buffer void* field int n -> char* 
 
 /* int A4GL_LL_field_opts void* field */
-* A4GL_LL_field_opts void* field -> int
+A4GL_LL_field_opts void* field -> int
 
 /* int A4GL_LL_field_status void* field */
 A4GL_LL_field_status void* field -> int 
@@ -131,7 +131,7 @@ A4GL_LL_set_carat void* form -> void
 /* void A4GL_LL_set_current_field void* form void* field */
 A4GL_LL_set_current_field void* form void* field -> void
 
-A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture  -> void
+A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture  -> long
 
 /* void A4GL_LL_set_field_back void* field int attr */
 A4GL_LL_set_field_back void* field int attr -> void
@@ -146,7 +146,7 @@ A4GL_LL_set_field_buffer void* field int n char* str -> void
 A4GL_LL_set_field_fore void* field int attr -> void
 
 /* int A4GL_LL_set_field_opts void* field int oopt */
-A4GL_LL_set_field_opts void* field int oopt ->  void
+A4GL_LL_set_field_opts void* field int oopt ->  int
 
 /* int A4GL_LL_set_field_status void* f int stat */
 A4GL_LL_set_field_status void* f int stat -> void
