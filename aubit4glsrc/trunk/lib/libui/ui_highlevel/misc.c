@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.46 2006-07-18 16:12:19 mikeaubury Exp $";
+  "$Id: misc.c,v 1.47 2006-07-24 09:10:51 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1248,6 +1248,7 @@ A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt)
   struct s_screenio *sio;
   //int attr;
   int *enabled=0;
+  int nenabled=0;
   int nfields;
 
   sio = vsio;
@@ -1327,6 +1328,8 @@ A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt)
   }
 
   for (a=0;a<nfields;a++) {
+      field = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
+      if (field == 0) continue;
 	  if (enabled[a]) {
    		A4GL_field_opts_on (formdets->form_fields[a], AUBIT_O_ACTIVE);
 	  } else {
