@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.90 2006-07-24 21:03:11 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.91 2006-07-25 08:39:30 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -24,6 +24,7 @@ int A4GL_gen_field_list_from_slist_internal (void ***field_list,
 //int UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv);
 
 
+void A4GL_debug_print_opts (long z);
 void *A4GL_get_currwin (void);
 static int started = -1;
 int A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
@@ -3709,8 +3710,7 @@ int A4GL_ll_field_opts_i (void *f) {
 }
 
 
-void
-A4GL_debug_print_opts (long z)
+void A4GL_debug_print_opts (long z)
 {
 	  char str[2000]="";
 	        if (z & AUBIT_O_VISIBLE)

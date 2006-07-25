@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.105 2006-07-24 21:03:13 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.106 2006-07-25 08:39:37 mikeaubury Exp $";
 #endif
 
 
@@ -56,7 +56,7 @@ void A4GL_console_toggle (void);
 void A4GL_add_to_console (char *s);
 void A4GL_clear_console (char *s);
 void A4GL_create_console (void);
-static int A4GL_LL_field_opts (void *field);
+int A4GL_LL_field_opts (void *field);
 static int use_frames(void) ;
 //void A4GL_logkey(long a);
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt,
