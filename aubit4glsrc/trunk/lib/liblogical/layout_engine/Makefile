@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2005-07-26 16:20:18 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2006-07-27 16:02:59 mikeaubury Exp $
 #
 
-LIBROOT		=../..
 ROOT		=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -98,13 +97,13 @@ endif
 #CFLAGS+=-g $(shell pkg-config --cflags gtk+-2.0) \
 #	-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl
 
-#LFLAGS:=$(shell pkg-config --libs gtk+-2.0) -L$(AUBITDIR)/lib -laubit4gl
+#LFLAGS:=$(shell pkg-config --libs gtk+-2.0) -L$(AUBITDIR)/lib -l${AUBITLIBFULL}
 
 OBJS=layout_engine.o ../common/a4gl_lle.o ../report_viewer/report_viewer.o \
 	API_layout.o file_hand.o
 
 CFLAGS		+=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -I../common -I../../common
-LINKLIBS	=-L$(ROOT)/lib -laubit4gl
+LINKLIBS	=-L$(ROOT)/lib -l${AUBITLIBFULL}
 
 ## ==================================================================
 ##                              Targets

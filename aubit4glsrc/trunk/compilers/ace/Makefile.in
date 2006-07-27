@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.26 2005-02-21 00:52:54 afalout Exp $
+# $Id: Makefile.in,v 1.27 2006-07-27 16:01:00 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -75,7 +75,7 @@ ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile ${ROOT}/bin/aace_perl \
 #endif
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL} @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 
 #generate_aace

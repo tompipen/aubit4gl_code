@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.45 2006-07-24 21:03:11 mikeaubury Exp $
+# $Id: input_array.c,v 1.46 2006-07-27 16:04:10 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.45 2006-07-24 21:03:11 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.46 2006-07-27 16:04:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3513,7 +3513,7 @@ int fo;
 
   if (fo==0) {
 	  // Looks suspicious...
-	  A4GL_pause_execution();
+	  //A4GL_pause_execution();
   }
   if (!(fo&AUBIT_O_ACTIVE)) { fo+=AUBIT_O_ACTIVE; }
   if (!(fo&AUBIT_O_EDIT))   { fo+=AUBIT_O_EDIT;   }

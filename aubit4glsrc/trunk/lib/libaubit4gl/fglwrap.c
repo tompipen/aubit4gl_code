@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.108 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.109 2006-07-27 16:02:23 mikeaubury Exp $
 #
 */
 
@@ -1231,7 +1231,7 @@ char id[132];
 int a;
 
   	if (strcmp (arg1, "-v") == 0) {
-		PRINTF ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		PRINTF ("(c) 1997-2006 Aubit project\n%s\n\n", program);
 		PRINTF ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 
@@ -1239,7 +1239,7 @@ int a;
 	}
 
 	if (strcmp (arg1, "-vfull") == 0) {
-		PRINTF ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		PRINTF ("(c) 1997-2006 Aubit project\n%s\n\n", program);
 		PRINTF ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 		for (a = 0;; a++) {
@@ -1253,7 +1253,7 @@ int a;
     }
 
   	if (strcmp (arg1, "") == 0) {
-		PRINTF ("%s (c) 1997-2005 Aubit project - ", program);
+		PRINTF ("%s (c) 1997-2006 Aubit project - ", program);
 		PRINTF ("Version %s-%d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 
@@ -1348,6 +1348,23 @@ char *expand_env_vars_in_cmdline(char *s,int showerrs) {
 }
 
 
+int A4GL_check_version(char *module, char *version, int build ) {
+	int ok=1;
+	if (A4GL_isyes(acl_getenv("IGNORE_VERSION_CHECK"))) {
+		return 1;
+	}
+	if (strcmp(version,A4GL_internal_version())!=0) ok=0;
+	if (build!=A4GL_internal_build()) {
+		ok=0;
+	}
+	if (!ok) {
+		char buff[512];
+		SPRINTF5(buff,"Module/Library versions do not match\nLibrary : %s-%d\nModule (%s):%s-%d\n",A4GL_internal_version(),A4GL_internal_build(),module,version,build);
+		A4GL_fgl_die_with_msg(44,buff);
+		return 0;
+	}
+	return 1;
+}
 
 
 

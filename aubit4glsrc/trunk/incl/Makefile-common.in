@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.194 2006-05-03 07:55:43 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.195 2006-07-27 16:01:14 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -73,7 +73,6 @@ AUBIT_BUILD			=@AUBIT_BUILD@
 COMPILE_DATE		=@COMPILE_DATE@
 AC_TARGET			=@target@
 AC_TARGET_OS		=@target_os@
-
 #############
 #While compiling source code, force priority of 'aubitrc' present in this 
 #source code tree. Also applies to aubit-config calls made from makefles 
@@ -220,6 +219,18 @@ endif
 #for compiling Aubit compiler from source code
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	AUBITDIR=${AUBIT_SRC_ROOT}
+endif
+
+ifneq "${ROOT}" ""
+	PLUGINDIR=${ROOT}/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
+	LIBROOT=${ROOT}/lib
+endif
+
+
+# If we can use AUBIT_SRC_ROOT - even better...
+ifneq "${AUBIT_SRC_ROOT}" ""
+	PLUGINDIR=${AUBIT_SRC_ROOT}/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
+	LIBROOT=${AUBIT_SRC_ROOT}/lib
 endif
 
 #optionally, override things set in environment:
@@ -578,7 +589,7 @@ LINK_COMPILERS      =-dynamic
 #LINK_COMPILERS      =-shared
 #which Aubit library we want to link Aubit executables/compiler with. This
 #flag is forwarded to C linker:
-AUBIT_LIB			=-laubit4gl
+AUBIT_LIB			=-l$(AUBITLIBFULL)
 ifeq "${TARGET_OS}" "solaris"
 	AUBIT_LIB			+=-lc
 endif
@@ -1159,7 +1170,7 @@ IMPORT_DEST=$(INSTALL_DIR)/${IMPORT_PATH}
 #AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
 AUBITVERSION=@AUBIT_VERSION@
 AUBITBUILD=@AUBIT_BUILD@
-
+AUBITLIBFULL=aubit4gl-@AUBIT_VERSION@_@AUBIT_BUILD@
 COMPILEDATE	:=$(shell date +%d-%m-%Y)
 
 
@@ -1222,8 +1233,9 @@ BIN_ALLWAYSCLEAN=$(notdir @EXTRAFILE_2@) $(notdir @EXTRAFILE_1@) \
 LIB_EXPORTLIB   =@LIB_EXPORTLIB@
 
 #WARNING: Order here is important:
-TMP_LIBFILES	=$(addsuffix ${SO_EXT_LINKABLE},${LIB_EXPORTLIB}) $(addsuffix ${SO_EXT},@COMP_LIBS@ @ALL_LIBS@)
-LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES})
+TMP_LIBFILES	=$(addsuffix ${SO_EXT_LINKABLE},${LIB_EXPORTLIB}) 
+TMP_PLUGINFILES =$(addsuffix ${SO_EXT},@COMP_LIBS@ @ALL_LIBS@ @ALL_PLUGINS@)
+LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES}) $(addprefix ${PLUGINDIR}/lib,${TMP_PLUGINFILES})
 
 #ifneq "${COMSPEC}" ""
 #	LIB_DEFAULT	+=$(addprefix lib,$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB}))
@@ -1235,7 +1247,7 @@ LIB_SO		=${LIB_DEFAULT}
 #Lib files we build depending on available 3rd party support:
 #did not work by passing this directly to notdir:
 
-TMP_RPMFILES=$(addprefix lib,@PLUGIN_YES@ @PLUGIN_YES_LINKABLE@)
+TMP_RPMFILES=$(addprefix ${PLUGINDIR}/lib,@PLUGIN_YES@ @PLUGIN_YES_LINKABLE@)
 LIB_OPTIONAL=$(addsuffix ${SO_EXT},${TMP_RPMFILES})
 
 LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
@@ -1406,7 +1418,6 @@ RH_RPM_PATH			=ftp://ftp.redhat.com/pub/redhat/linux/${RH_RPM_VER}/en/os/i386/Re
 #List of all missing options as make targets to be installed, as determined
 #by autoconf:
 INSTALL_MISSING_OPTIONAL =@INSTALL_MISSING_OPTIONAL@
-
 
 #=================================== EOF ================================
 

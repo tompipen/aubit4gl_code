@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.26 2006-05-17 15:49:21 mikeaubury Exp $
+# $Id: Makefile,v 1.27 2006-07-27 16:01:06 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -96,7 +96,7 @@ SRCS			=Makefile npcode.x npcode_defs.h calls.h \
 				fgl_calls.h std_calls.h simple.lex simple.yacc ${CMODS}
 
 #ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 #endif
 
 ifeq "${DBG}" "yes"

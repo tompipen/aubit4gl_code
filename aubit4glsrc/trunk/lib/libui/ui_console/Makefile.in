@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2004-09-28 09:49:24 afalout Exp $
+# $Id: Makefile.in,v 1.7 2006-07-27 16:04:01 mikeaubury Exp $
 #
 
-LIBROOT=../..
 ROOT=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -42,7 +41,7 @@ CFLAGS		+=-I..
 #ifdef COMSPEC
 #	ALL				+=dlllibUI_CONSOLE
 #else
-	ALL				+=${LIBROOT}/libUI_CONSOLE${SO_EXT}
+	ALL				+=${PLUGINDIR}/libUI_CONSOLE${SO_EXT}
 #endif
 
 ifeq "${NON_PEDANTIC_OK}" "1"
@@ -52,7 +51,7 @@ else
 endif
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 ## ==================================================================
@@ -68,7 +67,7 @@ ALLOBJ_CONSOLE=console.o
 all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
-${LIBROOT}/libUI_CONSOLE${SO_EXT}: ${ALLOBJ_CONSOLE}
+${PLUGINDIR}/libUI_CONSOLE${SO_EXT}: ${ALLOBJ_CONSOLE}
 	${LD} ${SO_LDFLAGS} -o $@ ${ALLOBJ_CONSOLE} ${LINKLIBS}
 ifeq "${SO_EXT}" ".dll"
 	${MV} TMP${SOEXP_EXT} $@.a
@@ -108,7 +107,7 @@ console.o: console.c
 ## ==================================================================
 
 clean:
-	${RM} *.o *${SO_EXT} *.bak  *.ao *.err *.glb *.dll *.a *.def *.glb *.ao \
+	${RM} *.o ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} *.bak  *.ao *.err *.glb *.dll *.a *.def *.glb *.ao \
 	debug.out *.err core  gmon.out
 
 #------------------------------- EOF --------------------------------

@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2004-12-13 01:55:34 afalout Exp $
+# $Id: Makefile,v 1.7 2006-07-27 16:03:03 mikeaubury Exp $
 #
 
 ROOT		=../../../..
-LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -40,10 +39,10 @@ include ${ROOT}/incl/Makefile-common
 CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  ${PDFLIB_I_FLAGS}
 
 ifeq "${PDFBUILD}" "yes"
-	ALL=${LIBROOT}/libLOGREPPROC_PDF${SO_EXT}
+	ALL=${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT}
 endif	
 
-LINKLIBS=-L$(ROOT)/lib -laubit4gl
+LINKLIBS=-L$(ROOT)/lib -l${AUBITLIBFULL}
 
 ## ==================================================================
 ##                              Targets
@@ -51,16 +50,18 @@ LINKLIBS=-L$(ROOT)/lib -laubit4gl
 
 all: ${ALL}
 
-${LIBROOT}/libLOGREPPROC_PDF${SO_EXT} : process_pdf.o pdf_handling.o ../common/common_pdf.c
-#	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
+${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT} : process_pdf.o pdf_handling.o ../common/common_pdf.c
+#	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -l${AUBITLIBFULL}  -lpdf
 #	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
 #WARNING - on Windows libraries must be at the end
 	${LD} ${CFLAGS} ${PDFLIB_L_FLAGS} $(SO_LDFLAGS) $^ -o $@ ${LINKLIBS} -lpdf
 	
-process_pdf.o: ../../layout_engine/API_layout.h
+process_pdf.o: ../../layout_engine/API_layout.h ../../processor/API_process.h
 
 ../../layout_engine/API_layout.h:
 	${MAKE} -C ../../layout_engine API_layout.h
+../../processor/API_process.h:
+	${MAKE} -C ../../processor API_process.h
 	
 show:
 	@echo "PDFBUILD=${PDFBUILD}"
@@ -70,6 +71,6 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} ${LIBROOT}/libLOGREPPROC_PDF${SO_EXT} *.o
+	${RM} ${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT} *.o
 	
 	

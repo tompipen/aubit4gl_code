@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-17 14:09:09 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-07-27 16:02:16 mikeaubury Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -49,7 +49,6 @@
 #TODO: create test in aubit4gltest
 
 ROOT    =../../..
-LIBROOT =${ROOT}/lib
 
 LFLAGS	=-L${PCRE_LIB_PATH}/bin -lpcre
 IFLAGS	=-I${PCRE_INC_PATH}
@@ -63,7 +62,7 @@ include ${ROOT}/incl/Makefile-common
 
 4GLPC_EXEC=export A4GL_LEXTYPE=C; ${FGLPCEXEC}
 4GLPC_EXEC+=--verbose
-ALL=${LIBROOT}/libA4GL_pcre${SO_EXT} 
+ALL=${PLUGINDIR}/libA4GL_pcre${SO_EXT} 
 
 4GLC	=${ROOT}/bin/4glc
 
@@ -76,9 +75,9 @@ ALL=${LIBROOT}/libA4GL_pcre${SO_EXT}
 ######### !!!!!!!!! PLEASE keep A4GL_ in UPPERCASE !!!!!!!!! ###############
 all : ${ALL}
 
-${LIBROOT}/libA4GL_pcre${SO_EXT}: match.4gl
+${PLUGINDIR}/libA4GL_pcre${SO_EXT}: match.4gl
 #	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
-#	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc
+#	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL} -lspopc
 	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
 	@echo "PCRE library sucesfully compiled."
 

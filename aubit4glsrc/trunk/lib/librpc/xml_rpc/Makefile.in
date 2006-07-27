@@ -24,12 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2004-12-13 01:55:35 afalout Exp $
+# $Id: Makefile.in,v 1.13 2006-07-27 16:03:41 mikeaubury Exp $
 #
 
 
 ROOT    =../../..
-LIBROOT =../..
 
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -76,7 +75,7 @@ endif
 
 
 ifneq "@XML_RPC@" "no"
-	ALL			+=${LIBROOT}/libRPC_XMLRPC${SO_EXT}
+	ALL			+=${PLUGINDIR}/libRPC_XMLRPC${SO_EXT}
 endif
 
 
@@ -92,7 +91,7 @@ CFLAGS				:=-I.. -I${LIBROOT}/libincl ${CLIENT_CFLAGS} ${CFLAGS}
 CFLAGS_XMLRPC_C =$(CFLAGS:%-Wstrict-prototypes=%)
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl 
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL} 
 	#-lwsock32
 endif
 
@@ -104,7 +103,7 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-${LIBROOT}/libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
+${PLUGINDIR}/libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS} ${LINKLIBS}
 
 ## ==================================================================
@@ -120,7 +119,7 @@ ${LIBROOT}/libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
 ## ==================================================================
 
 clean :
-	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core *.base \
+	${RM} *.out *.glb ${PLUGINDIR}/libRPC_XMLRPC${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core *.base \
 	*.exp *.def ${ALL}
 
 ## ==================================================================

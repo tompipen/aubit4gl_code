@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2006-05-03 08:01:12 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2006-07-27 16:03:51 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -52,7 +51,7 @@ CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 				-L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -I${ROOT}/tools/odbtest/incl -I.
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS		=-L${LIBROOT} -laubit4gl
+	LINKLIBS		=-L${LIBROOT} -l${AUBITLIBFULL}
 	#On Windows we renamed .dll/.def files in original distribution 
 	#(adding 'lib' prefix) and copied them to /cygwin/lib directory:
 	#WARNING: paths for MinGW GCC MUST use forward slash - NOT backslash!!!
@@ -85,84 +84,84 @@ allodbc: ${ALL}
 
 #we MUST always clean first, because we don't know for which libs where
 #current object compiled, if they exists.
-iodbc: 		clean ${LIBROOT}/libSQL_iodbc${SO_EXT}
+iodbc: 		clean_iodbc ${PLUGINDIR}/libSQL_iodbc${SO_EXT}
 	@echo "iODBC target compiled successfully"
-unixodbc: 	clean ${LIBROOT}/libSQL_unixodbc${SO_EXT}
+unixodbc: 	clean_unixodbc ${PLUGINDIR}/libSQL_unixodbc${SO_EXT}
 	@echo "unixODBC target compiled successfully"
-ifxodbc: 	clean ${LIBROOT}/libSQL_ifxodbc${SO_EXT}
+ifxodbc: 	clean_ifxodbc ${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}
 	@echo "Informix ODBC target compiled successfully"
-pgodbc: 	clean ${LIBROOT}/libSQL_pgodbc${SO_EXT}
+pgodbc: 	clean_pgodbc ${PLUGINDIR}/libSQL_pgodbc${SO_EXT}
 	@echo "PostgreSQL ODBC target compiled successfully"
-sapodbc: 	clean ${LIBROOT}/libSQL_sapodbc${SO_EXT}
+sapodbc: 	clean_sapodbc ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}
 	@echo "SAP DB ODBC target compiled successfully"
-sqliteodbc: clean ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}
+sqliteodbc: clean_sqliteodbc ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}
 	@echo "SQLite ODBC target compiled successfully"
-sqlite: clean ${LIBROOT}/libSQL_sqlite${SO_EXT}
+sqlite: clean_sqlite ${PLUGINDIR}/libSQL_sqlite${SO_EXT}
 	@echo "SQLite native Aubit plug-in compiled successfully"
-sqlite.static: clean ${LIBROOT}/libSQL_sqliteS${SO_EXT}
+sqlite.static: clean_sqliteS ${PLUGINDIR}/libSQL_sqliteS${SO_EXT}
 	@echo "SQLite native Aubit plug-in (static link) compiled successfully"
-sqlite3: clean ${LIBROOT}/libSQL_sqlite3${SO_EXT}
+sqlite3: clean_sqlite3 ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}
 	@echo "SQLite3 native Aubit plug-in compiled successfully"
-sqlite3.static: clean ${LIBROOT}/libSQL_sqlite3S${SO_EXT}
+sqlite3.static: clean_sqlite3S ${PLUGINDIR}/libSQL_sqlite3S${SO_EXT}
 	@echo "SQLite3 native Aubit plug-in (static link) compiled successfully"
 
 ################################
 #Aubit ODBC plug-in code linked with Microsoft Windows ODBC manager library
-odbc32: 	clean ${OBJECTS} ${LIBROOT}/libSQL_odbc32${SO_EXT}
-${LIBROOT}/libSQL_odbc32${SO_EXT} : ${OBJECTS}
+odbc32: 	clean_odbc32 ${OBJECTS} ${PLUGINDIR}/libSQL_odbc32${SO_EXT}
+${PLUGINDIR}/libSQL_odbc32${SO_EXT} : ${OBJECTS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -lodbc32
 	@echo "Windows ODBC target compiled successfully"
 
 ################################
 #Aubit ODBC plug-in code linked with iODBC ODBC manager library
-${LIBROOT}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC ${IODBC_INCLUDE} ${IODBC_LFLAGS} ${CFLAGS_NOREDUND}
-${LIBROOT}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
+${PLUGINDIR}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC ${IODBC_INCLUDE} ${IODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${PLUGINDIR}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${IODBC_LIBS} ${IODBC_LFLAGS}
 
 ################################
 #Aubit ODBC plug-in code linked with unixODBC ODBC manager library
-${LIBROOT}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${UNIXODBC_INCLUDE} ${CFLAGS}
-${LIBROOT}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
+${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${UNIXODBC_INCLUDE} ${CFLAGS}
+${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${UNIXODBC_LIBS} ${UNIXODBC_LFLAGS}
 
 ################################
 #Aubit ODBC plug-in code linked with (Informix) ODBC driver library, for use without ODBC manager
-${LIBROOT}/libSQL_ifxodbc${SO_EXT}: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
-${LIBROOT}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
+${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
+${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -lifdmr -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
 
 ################################
 #Aubit ODBC plug-in code linked with (PG) ODBC driver library, for use without ODBC manager
-${LIBROOT}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC -DINCLUDEDATASOURCES ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
-${LIBROOT}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
+${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC -DINCLUDEDATASOURCES ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -l${PGODBC_LIBNAME} ${PGODBC_LFLAGS}
 
 ################################
 #Aubit ODBC plug-in code linked with (SAPDB) ODBC driver library, for use without ODBC manager
-${LIBROOT}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC ${SAPODBC_INCLUDE} ${SAPODBC_LFLAGS} ${CFLAGS_NOREDUND}
-${LIBROOT}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
+${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC ${SAPODBC_INCLUDE} ${SAPODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlod -lsqlrte -lpcr -lpthread -lm ${SAPODBC_LFLAGS}
 
 ###############################
 #Aubit ODBC plug-in linked with SQLite ODBC driver for use without ODBC manager
 #${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbtest/incl
-${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl ${CFLAGS_SQLITE}
-${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
+${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl ${CFLAGS_SQLITE}
+${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqliteodbc
 
 ###############################
 #SQLite plug-in dynamically linked with SQLite library/engine:
 #This plug-in consists of 1) Aubit ODBC plug-in code 2) SQLiteODBC code we have
 #a private copy of in Aubit CVS, and 3) SQLite engine library 
-${LIBROOT}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
-${LIBROOT}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
+${PLUGINDIR}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
+${PLUGINDIR}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} -l${SQLITE_LIBNAME} ${LINKLIBS}
 
 ################################	
 #Same as above, but with SQLite VERSION 3
-libSQL_sqlite3${SO_EXT}: ${LIBROOT}/libSQL_sqlite3${SO_EXT}
-${LIBROOT}/libSQL_sqlite3${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
-${LIBROOT}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
+libSQL_sqlite3${SO_EXT}: ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}
+${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
+${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} -Wl,-call_shared -Wl,--dll-verbose \
 		-l${SQLITE_LIBNAME} ${LINKLIBS} > link.log 2>&1
 #ifdef COMSPEC
@@ -193,17 +192,17 @@ ${LIBROOT}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 ###############################
 #Same as libSQL_sqlite but statically linked with SQLite library/engine:
 #NOTE: no static SQLite library supplied for Windows in version 2.x
-${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
-${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
+${PLUGINDIR}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
+${PLUGINDIR}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
 	${LD} ${SO_LDFLAGS} -Wl,-static $^ -o $@ -L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} \
 		${SQLITE_LINKLIBS} -l${SQLITE_LIBNAME} ${LINKLIBS}
 
 ###############################
 #Same as above, but linked with SQLite VERSION 3
 #WARNING: order is EXTREMELY important for static linking on Windows!
-libSQL_sqlite3S${SO_EXT}: ${LIBROOT}/libSQL_sqlite3S${SO_EXT}
-${LIBROOT}/libSQL_sqlite3S${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
-${LIBROOT}/libSQL_sqlite3S${SO_EXT}: ${OBJECTS} sqlite3odbc.o
+libSQL_sqlite3S${SO_EXT}: ${PLUGINDIR}/libSQL_sqlite3S${SO_EXT}
+${PLUGINDIR}/libSQL_sqlite3S${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
+${PLUGINDIR}/libSQL_sqlite3S${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 	${LD} ${SO_LDFLAGS} $^ ${SQLITE_LINKLIBS} ${LINKLIBS} -L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -o $@  \
 		${LINKLIBS} -Wl,-static -l${SQLITE_LIBNAME} 
 #ifdef COMSPEC
@@ -215,8 +214,44 @@ ${LIBROOT}/libSQL_sqlite3S${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 ##                              Clean
 ## ==================================================================
 
-clean:
-	${RM} *.o *.bak *${SO_EXT} *.base *.dll *.def *.exp *.a
+cleanish:
+	${RM} *.o *.bak *.base *.dll *.def *.exp *.a 
+
+clean_ifxodbc: cleanish
+		${RM} ${PLUGINDIR}/libSQL_ifxodbc${SO_EXT} 
+clean_iodbc: cleanish
+		${RM} ${PLUGINDIR}/libSQL_iodbc${SO_EXT} 
+clean_odbc32: cleanish
+		${RM} ${PLUGINDIR}/libSQL_odbc32${SO_EXT} 
+clean_pgodbc: cleanish
+		${RM} ${PLUGINDIR}/libSQL_pgodbc${SO_EXT} 
+clean_sapodbc: cleanish
+		${RM} ${PLUGINDIR}/libSQL_sapodbc${SO_EXT} 
+clean_sqlite: cleanish
+		${RM} ${PLUGINDIR}/libSQL_sqlite${SO_EXT} 
+clean_sqlite3: cleanish
+		${RM} ${PLUGINDIR}/libSQL_sqlite3${SO_EXT} 
+clean_sqlite3S: cleanish
+		${RM} ${PLUGINDIR}/libSQL_sqlite3S${SO_EXT} 
+clean_sqliteS: cleanish
+		${RM} ${PLUGINDIR}/libSQL_sqliteS${SO_EXT} 
+clean_sqliteodbc: cleanish
+		${RM} ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT} 
+clean_unixodbc: cleanish
+		${RM} ${PLUGINDIR}/libSQL_unixodbc${SO_EXT} 
+clean:  cleanish
+		${RM} ${PLUGINDIR}/libSQL_ifxodbc${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_iodbc${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_odbc32${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_pgodbc${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_sapodbc${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_sqlite${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_sqlite3${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_sqlite3S${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_sqliteS${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT} 
+		${RM} ${PLUGINDIR}/libSQL_unixodbc${SO_EXT} 
+
 
 ## ----------------------------- EOF -------------------------------
 

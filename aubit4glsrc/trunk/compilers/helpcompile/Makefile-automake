@@ -274,7 +274,7 @@ bin_PROGRAMS = mkmess
 mkmess_SOURCES = mkmess.c a4gl_mkmess_int.h
 INCLUDES = -I../fcompile
 
-mkmess_LDADD = -laubit4gl
+mkmess_LDADD = -l${AUBITLIBFULL}
 mkinstalldirs = $(SHELL) $(top_srcdir)/etc/config/mkinstalldirs
 CONFIG_HEADER = ../../incl/a4gl_incl_config.h
 CONFIG_CLEAN_FILES = 

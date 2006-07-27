@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.91 2006-07-25 08:39:30 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.92 2006-07-27 16:04:09 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3656,6 +3656,12 @@ int A4GL_ll_field_opts (void *f) {
 	int a;
 	int curr;
 	a=A4GL_ll_field_opts_i(f);
+
+	if (strcmp(acl_getenv("A4GL_UI"),"pipeclient")==0) {
+		return a;
+	}
+
+
 	curr=A4GL_LL_field_opts(f);
 
 	if (a!=curr) {

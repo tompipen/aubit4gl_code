@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2005-03-27 03:00:22 afalout Exp $
+# $Id: Makefile,v 1.2 2006-07-27 16:04:26 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -78,7 +78,7 @@ ${LIBROOT}/libA4GL_HTML${SO_EXT}: libahtmllib.c
 #	${FGLPCEXEC} ${AS_DLL} $^ -o $@
 #FIXME: how are we going to link with this on Windows without .dll.a file ?
 #fix 4glpc --as-dll to create .a file, and migrate everything to 4glc...
-	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "HTML library sucesfully compiled."
 
 libahtmllib.c: libahtmllib.4gl

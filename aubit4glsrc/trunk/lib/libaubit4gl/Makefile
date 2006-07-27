@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.21 2006-07-14 16:11:54 mikeaubury Exp $
+# $Id: Makefile,v 1.22 2006-07-27 16:02:22 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -183,7 +183,10 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} : $(OBJS)
-	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS} 
+	rm -f ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
+	${LD} ${SO_LDFLAGS_NOBUNDLE} -o ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} $^ ${LINK_LIBS} 
+	ln  ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
+
 ifeq "${TARGET_OS}" "darwin"
 	${MKPATH} ${INST_PATH}
 	${CP} $@ ${INST_PATH}

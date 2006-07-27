@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-17 14:09:22 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-07-27 16:02:57 mikeaubury Exp $
 #
 
-LIBROOT		=../../..
 ROOT		=../../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -46,8 +45,8 @@ OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 ## ==================================================================
 
 
-${LIBROOT}/libLOGREPPROC_CSV${SO_EXT}: ${OBJS}
-	${CC} -fPIC -shared ${OBJS} -o $@ -L${LIBROOT} -laubit4gl
+${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}: ${OBJS}
+	${CC} -fPIC -shared ${OBJS} -o $@ -L${LIBROOT} -l${AUBITLIBFULL}
 	
 process_csv.o: ../../processor/API_process.h
 
@@ -59,5 +58,5 @@ process_csv.o: ../../processor/API_process.h
 ## ==================================================================
 
 clean:
-	${RM} *.o ${LIBROOT}/libLOGREP_PROC_CSV${SO_EXT}
+	${RM} *.o ${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}
 	

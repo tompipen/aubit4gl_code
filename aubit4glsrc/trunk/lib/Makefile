@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2006-05-03 07:57:24 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2006-07-27 16:02:12 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -47,7 +47,7 @@ include ${ROOT}/incl/Makefile-common
 
 #target names are maintained in configure.in
 ALL_LIBS=${LIB_DEFAULT} ${LIB_OPTIONAL}
-ALL 	=aubit-config ${ALL_LIBS}
+ALL 	= pluginsdir aubit-config ${ALL_LIBS}
 
 ALL_H   =$(wildcard ${ROOT}/incl/*.h)
 
@@ -200,7 +200,7 @@ note:
 	@echo "Building: ${ALL}"
 
 check:
-	@for a in $(ALL_LIBS); do if ! test -f $$a; then echo "$$a does not exist"; exit 1; fi; done
+	@for a in $(ALL_LIBS); do if ! test -f $$a ; then  if ! test -f ../plugins/$$a ; then echo "Build check failed : $$a does not exist"; exit 1; fi; fi; done
 	@echo "All library files built OK"
 
 ## ==================================================================
@@ -219,127 +219,127 @@ libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 #libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
 #	${MAKE} -C ${LIBLEXPERL_PATH}
 
-libLEX_C${SO_EXT} libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
+${PLUGINDIR}/libLEX_C${SO_EXT} ${PLUGINDIR}/libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
 	${MAKE} -C ${LIBLEXEC_PATH}
 
 ##############
 #libUI_
 
-libUI_TUI${SO_EXT}: ${LIBUICURSES_DEPS}
+${PLUGINDIR}/libUI_TUI${SO_EXT}: ${LIBUICURSES_DEPS}
 	$(MAKE) -C ${LIBUICURSES_PATH}
 
-libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
+${PLUGINDIR}/libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
 	$(MAKE) -C ${LIBUICONSOLE_PATH}
 
 #libUI_HLGENERIC${SO_EXT}: ${LIBUIHL_DEPS}
 #	$(MAKE) -C ${LIBUIHL_PATH}
 
-libUI_HL_TUI${SO_EXT}: ${LIBUIHL_DEPS}
+${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 
-libUI_HL_TUIw${SO_EXT}: ${LIBUIHL_DEPS}
+${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 
-libUI_HL_TUIws${SO_EXT}: ${LIBUIHL_DEPS}
+${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 
-libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
+${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 	
-libUI_HL_TUINs${SO_EXT}: ${LIBUIHL_DEPS}
+${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 
-libUI_HL_TUIX${SO_EXT}: ${LIBUIHL_DEPS}
+${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 	
-libUI_HL_GTK${SO_EXT}: ${LIBUIHL_DEPS}
+${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} $@
 
-libA4GL_glade${SO_EXT}: ${LIBUIGLADELIB_DEPS}
+${PLUGINDIR}/libA4GL_glade${SO_EXT}: ${LIBUIGLADELIB_DEPS}
 	$(MAKE) -C ${LIBUIGLADELIB_PATH}
 
-libUI_GLADE${SO_EXT}: ${LIBUIGLADE_DEPS}
+${PLUGINDIR}/libUI_GLADE${SO_EXT}: ${LIBUIGLADE_DEPS}
 	$(MAKE) -C ${LIBUIGLADE_PATH}
 
 ##############
 #libFORM_
 
-libFORM_NOFORM${SO_EXT} : ${LIBFORMNOFORM_DEPS}
+${PLUGINDIR}/libFORM_NOFORM${SO_EXT} : ${LIBFORMNOFORM_DEPS}
 	${MAKE} -C ${LIBFORMNOFORM_PATH}
 
-libFORM_XDR${SO_EXT} : ${LIBFORMXDR_DEPS}
+${PLUGINDIR}/libFORM_XDR${SO_EXT} : ${LIBFORMXDR_DEPS}
 	${MAKE} -C ${LIBFORMXDR_PATH}
 
-libFORM_GENERIC${SO_EXT}: ${LIBFORMGENERIC_DEPS}
+${PLUGINDIR}/libFORM_GENERIC${SO_EXT}: ${LIBFORMGENERIC_DEPS}
 	${MAKE} -C ${LIBFORMGENERIC_PATH}
 
 ##############
 #libMENU_
 
-libMENU_NOMENU${SO_EXT} : ${LIBMENUNOMENU_DEPS}
+${PLUGINDIR}/libMENU_NOMENU${SO_EXT} : ${LIBMENUNOMENU_DEPS}
 	${MAKE} -C ${LIBMENUNOMENU_PATH}
 
-libMENU_GENERIC${SO_EXT} : ${LIBMENUGENERIC_DEPS}
+${PLUGINDIR}/libMENU_GENERIC${SO_EXT} : ${LIBMENUGENERIC_DEPS}
 	${MAKE} -C ${LIBMENUGENERIC_PATH}
 
-libMENU_XDR${SO_EXT} : ${LIBMENUXDR_DEPS}
+${PLUGINDIR}/libMENU_XDR${SO_EXT} : ${LIBMENUXDR_DEPS}
 	${MAKE} -C ${LIBMENUXDR_PATH}
 
 ##############
 #libREPORT_
 
-libEXREPORT_PDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
+${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
 	${MAKE} -C ${LIBEXREPORTPDF_PATH}
 
-libEXREPORT_NOPDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
+${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
 	${MAKE} -C ${LIBEXREPORTPDF_PATH}
 
 ##############
 #libPACKER_
 
-libPACKER_PACKED${SO_EXT}: ${LIBPACKERPACKED_DEPS}
+${PLUGINDIR}/libPACKER_PACKED${SO_EXT}: ${LIBPACKERPACKED_DEPS}
 	${MAKE} -C ${LIBPACKERPACKED_PATH}
 
-libPACKER_MEMPACKED${SO_EXT}: ${LIBPACKERMEMPACKED_DEPS}
+${PLUGINDIR}/libPACKER_MEMPACKED${SO_EXT}: ${LIBPACKERMEMPACKED_DEPS}
 	${MAKE} -C ${LIBPACKERMEMPACKED_PATH}
 
-libPACKER_PERL${SO_EXT}: ${LIBPACKERPERL_DEPS}
+${PLUGINDIR}/libPACKER_PERL${SO_EXT}: ${LIBPACKERPERL_DEPS}
 	${MAKE} -C ${LIBPACKERPERL_PATH}
 
-libPACKER_XDR${SO_EXT}: ${LIBPACKERXDR_DEPS}
+${PLUGINDIR}/libPACKER_XDR${SO_EXT}: ${LIBPACKERXDR_DEPS}
 	${MAKE} -C ${LIBPACKERXDR_PATH}
 
-libPACKER_XML${SO_EXT}: ${LIBPACKERXML_DEPS}
+${PLUGINDIR}/libPACKER_XML${SO_EXT}: ${LIBPACKERXML_DEPS}
 	${MAKE} -C ${LIBPACKERXML_PATH}
 
 ##############
 #libSQL_ ESQL (native)
 
 #Informix ESQL/C code SQL plug-in compiled with Informix esql ESQL/C compiler
-libSQL_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
+${PLUGINDIR}/libSQL_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 #same thing, but different name for consistency:
-libSQL_esqlI${SO_EXT}: ${LIBSQLESQL_DEPS}
+${PLUGINDIR}/libSQL_esqlI${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
 #Informix ESQL/C code SQL plug-in compiled with Querix esqlc ESQL/C compiler
-libSQL_esqlQ${SO_EXT}: ${LIBSQLESQL_DEPS}
+${PLUGINDIR}/libSQL_esqlQ${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
 #Informix ESQL/C code SQL plug-in compiled with SAP DB cpc ESQL/C compiler
-libSQL_esqlSAP${SO_EXT}: ${LIBSQLESQL_DEPS}
+${PLUGINDIR}/libSQL_esqlSAP${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
 #Informix ESQL/C code SQL plug-in compiled with PostgreSQL ecpg ESQL/C compiler
-libSQL_esqlPG${SO_EXT}: ${LIBSQLESQL_DEPS}
+${PLUGINDIR}/libSQL_esqlPG${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
 #PostgreSQL esql plug-in based on 'simple' template (ecpg in non-Informix mode)
-libSQL_c_ecpg${SO_EXT}: ${LIBSQLESQL_DEPS}
+${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
 #Informix esql plug-in based on 'simple' template
-libSQL_c_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
+${PLUGINDIR}/libSQL_c_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
 
@@ -347,44 +347,44 @@ libSQL_c_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
 #libSQL_ C (native)
 
 #Dummy plug-in good for testing or to disable SQL
-libSQL_nosql${SO_EXT}: ${LIBSQLNOSQL_DEPS}
+${PLUGINDIR}/libSQL_nosql${SO_EXT}: ${LIBSQLNOSQL_DEPS}
 	${MAKE} -C ${LIBSQLNOSQL_PATH}
 
 #an simple PG plug-in with limited functionality (by Mike)
-libSQL_pg${SO_EXT}: ${LIBSQLPG_DEPS}
+${PLUGINDIR}/libSQL_pg${SO_EXT}: ${LIBSQLPG_DEPS}
 	${MAKE} -C ${LIBSQLPG_PATH}
 
 #Sergio never finished this one...
-libSQL_pgDEVEL${SO_EXT}: ${LIBSQLPG_DEPS}
+${PLUGINDIR}/libSQL_pgDEVEL${SO_EXT}: ${LIBSQLPG_DEPS}
 	${MAKE} -C ${LIBSQLPG_PATH}
 
 #compile only plug-in for reading schema from file
-libSQL_FILESCHEMA${SO_EXT}: ${FILESCHEMA_DEPS}
+${PLUGINDIR}/libSQL_FILESCHEMA${SO_EXT}: ${FILESCHEMA_DEPS}
 	${MAKE} -C ${FILESCHEMA_PATH}
 
 ##############
 #libSQL_ (ODBC) plug-ins directly linked with ODBC driver
 
-libSQL_ifxodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} ifxodbc
 
-libSQL_pgodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} pgodbc
 
-libSQL_sapodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sapodbc
 
 #Linked with SQLite ODBC driver, like any other directly linked ODBC plug-in
 #requires SQLite ODBC driver and SQLite library on the system
-libSQL_sqliteodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sqliteodbc
 
 #Compiled with SQLite ODBC driver source code in Aubit CVS
 #requires SQLite library on the system
-libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sqlite
 #Same, but version 3
-libSQL_sqlite3${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sqlite3
 
 
@@ -400,7 +400,7 @@ libSQL_sqlite3${SO_EXT}: ${LIBSQLODBC_DEPS}
 #	${MAKE} -C ${LIBSQLODBC_PATH} sqlite3.static
 
 
-libSQL_sqlite3S${SO_EXT}: 
+${PLUGINDIR}/libSQL_sqlite3S${SO_EXT}: 
 	@echo "Sqlite3S build temporarily suspended"
 
 ###################################
@@ -409,62 +409,62 @@ libSQL_sqlite3S${SO_EXT}:
 ##############
 #libSQL_ (ODBC) managers
 
-libSQL_iodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_iodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} iodbc
 
-libSQL_unixodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} unixodbc
 
 
-libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
+${PLUGINDIR}/libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} odbc32
 
 	
-libSQLPARSE_NONE${SO_EXT}:
+${PLUGINDIR}/libSQLPARSE_NONE${SO_EXT}:
 	${MAKE} -C libsqlparse/none
 
-libSQLPARSE_INFORMIX${SO_EXT}:
+${PLUGINDIR}/libSQLPARSE_INFORMIX${SO_EXT}:
 	${MAKE} -C ../compilers/sql
 
 ##############
 #libRPC_
 
-libRPC_XDR${SO_EXT}: ${LIBRPCSUNRPC_DEPS}
+${PLUGINDIR}/libRPC_XDR${SO_EXT}: ${LIBRPCSUNRPC_DEPS}
 	${MAKE} -C ${LIBRPCSUNRPC_PATH}
 
-libRPC_NORPC${SO_EXT}: ${LIBRPCNORPC_DEPS}
+${PLUGINDIR}/libRPC_NORPC${SO_EXT}: ${LIBRPCNORPC_DEPS}
 	${MAKE} -C ${LIBRPCNORPC_PATH}
 
-libRPC_XMLRPC${SO_EXT}: ${LIBRPCXMLRPC_DEPS}
+${PLUGINDIR}/libRPC_XMLRPC${SO_EXT}: ${LIBRPCXMLRPC_DEPS}
 	${MAKE} -C ${LIBRPCXMLRPC_PATH}
 
 #############
 # libESQL
 
-libESQL_INFORMIX${SO_EXT}: ${LIBESQL_DEPS}
+${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}: ${LIBESQL_DEPS}
 	${MAKE} -C ${LIBESQL_PATH} $@
 
-libESQL_POSTGRES${SO_EXT}: ${LIBESQL_DEPS}
+${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: ${LIBESQL_DEPS}
 	${MAKE} -C ${LIBESQL_PATH} $@
 
-libESQL_QUERIX${SO_EXT}: ${LIBESQL_DEPS}
+${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: ${LIBESQL_DEPS}
 	${MAKE} -C ${LIBESQL_PATH} $@
 
-libESQL_SAP${SO_EXT}: ${LIBESQL_DEPS}
+${PLUGINDIR}/libESQL_SAP${SO_EXT}: ${LIBESQL_DEPS}
 	${MAKE} -C ${LIBESQL_PATH} $@
 
 ##############
 #libEXDTYPE_
 
-libEXDTYPE_mpz${SO_EXT}: ${LIBEXDATA_DEPS}
+${PLUGINDIR}/libEXDTYPE_mpz${SO_EXT}: ${LIBEXDATA_DEPS}
 	${MAKE} -C ${LIBEXDATA_PATH} $@
 
 ##############
 #libDATA_ & libXDRPACKER_
 
-libDATA_menu_list${SO_EXT} libDATA_struct_form${SO_EXT} libDATA_report${SO_EXT}\
-libXDRPACKER_struct_form${SO_EXT} libXDRPACKER_menu_list${SO_EXT} \
-libXDRPACKER_report${SO_EXT}: ${LIBDATA_DEPS}
+${PLUGINDIR}/libDATA_menu_list${SO_EXT} ${PLUGINDIR}/libDATA_struct_form${SO_EXT} ${PLUGINDIR}/libDATA_report${SO_EXT}\
+${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT} ${PLUGINDIR}/libXDRPACKER_menu_list${SO_EXT} \
+${PLUGINDIR}/libXDRPACKER_report${SO_EXT}: ${LIBDATA_DEPS}
 	${MAKE} -C ${LIBDATA_PATH}
 
 
@@ -473,61 +473,61 @@ ${ROOT}/compilers/4glc/API_lex.h: ${ROOT}/compilers/4glc/API_lex.spec
 
 ###############
 #Misc libs:
-libMSG_NATIVE${SO_EXT}: ${LIBMSGNATIVE_DEPS}
+${PLUGINDIR}/libMSG_NATIVE${SO_EXT}: ${LIBMSGNATIVE_DEPS}
 	${MAKE} -C ${LIBMSGNATIVE_PATH}
 
-libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
+${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 	$(MAKE) -C ${LIBIMJABBER_PATH} $@
 
-libIM_JABBERs${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
+${PLUGINDIR}/libIM_JABBERs${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 	$(MAKE) -C ${LIBIMJABBER_PATH} $@
 	
-libA4GL_cint${SO_EXT_LINKABLE}:
+${PLUGINDIR}/libA4GL_cint${SO_EXT_LINKABLE}:
 	cd ../cint; ${SH} make_cintlib
 
 
 ##############
 #Libs that need 4glc
-libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE}
+${PLUGINDIR}/libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE} ${PLUGINDIR}/libPACKER_PACKED${SO_EXT} ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} ${PLUGINDIR}/libFORM_GENERIC${SO_EXT}
 	${MAKE} -C ${LIBHELP_STD_PATH}
 
-libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+${PLUGINDIR}/libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
 	$(MAKE) -C ${LIBFILE_PATH}
 
-libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
+${PLUGINDIR}/libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 	$(MAKE) -C ${LIBSTRING_PATH}
 
-libchannel${SO_EXT}: ${4GLC} ${LIBCHANNEL_DEPS}
+${PLUGINDIR}/libchannel${SO_EXT}: ${4GLC} ${LIBCHANNEL_DEPS}
 	$(MAKE) -C ${LIBCHANNEL_PATH}
 	
-libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
+${PLUGINDIR}/libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
 	$(MAKE) -C ${LIBPOP_PATH}
 
-libA4GL_pcre${SO_EXT}: ${4GLC} ${LIBPCRE_DEPS}
+${PLUGINDIR}/libA4GL_pcre${SO_EXT}: ${4GLC} ${LIBPCRE_DEPS}
 	$(MAKE) -C ${LIBPCRE_PATH}
 
-libA4GL_sxml${SO_EXT}: ${4GLC} ${LIBSXML_DEPS}
+${PLUGINDIR}/libA4GL_sxml${SO_EXT}: ${4GLC} ${LIBSXML_DEPS}
 	$(MAKE) -C ${LIBSXML_PATH}
 
-libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
+${PLUGINDIR}/libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
 
 
 ############################
 #LibLogical libraries:
 
-libLOGREPPROC_TXT${SO_EXT}:
+${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT}:
 	$(MAKE) -C liblogical/txt/process
-libLOGREPPROC_CSV${SO_EXT}:
+${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}:
 	$(MAKE) -C liblogical/csv/process
-libLOGREPPROC_PDF${SO_EXT}:
+${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT}:
 	$(MAKE) -C liblogical/pdf/process
 
-libLOGREP_TXT${SO_EXT}:
+${PLUGINDIR}/libLOGREP_TXT${SO_EXT}:
 	$(MAKE) -C liblogical/txt/layout
-libLOGREP_CSV${SO_EXT}:
+${PLUGINDIR}/libLOGREP_CSV${SO_EXT}:
 	$(MAKE) -C liblogical/csv/layout
-libLOGREP_PDF${SO_EXT}:
+${PLUGINDIR}/libLOGREP_PDF${SO_EXT}:
 	$(MAKE) -C liblogical/pdf/layout
 
 ##############
@@ -644,6 +644,8 @@ show:
 	@echo ${LIBAUBIT4GL_DEPS}
 
 
+pluginsdir:
+	if test ! -d ${PLUGINDIR}; then mkdir ${PLUGINDIR} 2> /dev/null; fi
 #----------------------------------- EOF -------------------------------
 
 

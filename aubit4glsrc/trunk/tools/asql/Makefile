@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.41 2006-05-02 07:24:39 mikeaubury Exp $
+# $Id: Makefile,v 1.42 2006-07-27 16:04:22 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -128,7 +128,7 @@ VERBOSE_FLAG	=--verbose
 ################
 #4gl compiler flags
 #-G stops esql/c putting #lines in the output so its easier to debug
-4GLPCFLAGS		= -g   
+4GLPCFLAGS		= -g   -versioned
 
 ifeq "${VERBOSE}" "1"
 	4GLPCFLAGS	+=${VERBOSE_FLAG}

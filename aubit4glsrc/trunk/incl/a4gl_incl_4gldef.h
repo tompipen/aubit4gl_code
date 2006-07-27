@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.93 2006-07-24 21:02:49 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.94 2006-07-27 16:01:18 mikeaubury Exp $
 */
 
 /**
@@ -400,7 +400,7 @@ void *A4GLSQL_find_prepare (char *pname);
   void acli_interval (char *s, int n);
   int A4GL_ctodt (void *a, void *b, int size);
   int A4GL_ctoint (void *a, void *b, int size);
-
+int A4GL_check_version(char *module, char *version, int build );
 
 
 

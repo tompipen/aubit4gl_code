@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2006-07-09 21:55:12 mikeaubury Exp $
+# $Id: Makefile.in,v 1.18 2006-07-27 16:02:35 mikeaubury Exp $
 #
 
 ROOT        =../../..
-LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -73,13 +72,13 @@ endif
 CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 ifneq "${COMSPEC}" ""
 	LINKDEPS    =${LIBROOT}/lib4glc${SO_EXT}
-	LINKLIBS	+=-L${LIBROOT} -laubit4gl -l4glc
+	LINKLIBS	+=-L${LIBROOT} -l${AUBITLIBFULL} -l4glc
 endif
 
-ALL         	+=${LIBROOT}/libLEX_C${SO_EXT}
-ALL         	+=${LIBROOT}/libLEX_CS${SO_EXT}
-ALL         	+=${LIBROOT}/libLEX_EC${SO_EXT}
-ALL         	+=${LIBROOT}/libLEX_PCODEC${SO_EXT}
+ALL         	+=${PLUGINDIR}/libLEX_C${SO_EXT}
+ALL         	+=${PLUGINDIR}/libLEX_CS${SO_EXT}
+ALL         	+=${PLUGINDIR}/libLEX_EC${SO_EXT}
+ALL         	+=${PLUGINDIR}/libLEX_PCODEC${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -89,20 +88,20 @@ ALL: ${ALL}
 	@echo "All targets (${ALL}) successfully compiled"
 
 #Pure C output for C compiler
-${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C} ${LINKDEPS}
+${PLUGINDIR}/libLEX_C${SO_EXT} : ${4GLCOBJ_C} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_C} ${LINKLIBS}
 
 # C# (Mono) output
-${LIBROOT}/libLEX_CS${SO_EXT} : ${4GLCOBJ_CS} ${LINKDEPS}
+${PLUGINDIR}/libLEX_CS${SO_EXT} : ${4GLCOBJ_CS} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_CS} ${LINKLIBS}
 
 # PCODE C output
-${LIBROOT}/libLEX_PCODEC${SO_EXT} : ${4GLCOBJ_PCODEC} ${LINKDEPS}
+${PLUGINDIR}/libLEX_PCODEC${SO_EXT} : ${4GLCOBJ_PCODEC} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_PCODEC} ${LINKLIBS}
 
 #Embededd SQL/C output, for Informix ESQL/C, PostgreSQL, Querix or
 #SAP DB EC compilers:
-${LIBROOT}/libLEX_EC${SO_EXT} : ${4GLCOBJ_EC} ${LINKDEPS}
+${PLUGINDIR}/libLEX_EC${SO_EXT} : ${4GLCOBJ_EC} ${LINKDEPS}
 	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_EC} ${LINKLIBS}
 
 ## ==================================================================
@@ -149,8 +148,12 @@ ${KW_H} ${Y_TAB_H}:
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak \
-	.\#* 4glp *.log *.dll *.dll.a
+	${RM}  *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak \
+	.\#* 4glp *.log *.dll *.dll.a \
+		${PLUGINDIR}/libLEX_C${SO_EXT}  \
+		${PLUGINDIR}/libLEX_CS${SO_EXT} \
+		${PLUGINDIR}/libLEX_PCODEC${SO_EXT} \
+		${PLUGINDIR}/libLEX_EC${SO_EXT} 
 
 
 #--------------------------------- EOF -----------------------------

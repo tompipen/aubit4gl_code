@@ -23,11 +23,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.21 2004-09-28 09:49:10 afalout Exp $
+# $Id: Makefile.in,v 1.22 2006-07-27 16:00:56 mikeaubury Exp $
 #
 
 ROOT        =../..
-LIBROOT     =${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -43,25 +42,25 @@ CFLAGS      +=${LOCAL_IFLAGS} -D_NO_FORM_X_H_
 #give us bunch of warnings about unused varibles, that we cannot fix:
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
 
-RPC		=${LIBROOT}/libXDRPACKER_struct_form${SO_EXT} \
-		${LIBROOT}/libXDRPACKER_menu_list${SO_EXT} \
-		${LIBROOT}/libXDRPACKER_report${SO_EXT} \
-		${LIBROOT}/libXDRPACKER_module${SO_EXT} 
+RPC		=${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT} \
+		${PLUGINDIR}/libXDRPACKER_menu_list${SO_EXT} \
+		${PLUGINDIR}/libXDRPACKER_report${SO_EXT} \
+		${PLUGINDIR}/libXDRPACKER_module${SO_EXT} 
 
-XGEN	=${LIBROOT}/libDATA_struct_form${SO_EXT} \
-		${LIBROOT}/libDATA_menu_list${SO_EXT} \
-		${LIBROOT}/libDATA_report${SO_EXT} \
-		${LIBROOT}/libDATA_module${SO_EXT}
+XGEN	=${PLUGINDIR}/libDATA_struct_form${SO_EXT} \
+		${PLUGINDIR}/libDATA_menu_list${SO_EXT} \
+		${PLUGINDIR}/libDATA_report${SO_EXT} \
+		${PLUGINDIR}/libDATA_module${SO_EXT}
 
-ANY		=${LIBROOT}/libDATA_any${SO_EXT}
+ANY		=${PLUGINDIR}/libDATA_any${SO_EXT}
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 	ALL         =${LIBROOT}/libaubit4gl.${SO_EXT}
 endif
 #How do I say "OR" here??
 ifeq "${TARGET_OS}" "solaris"
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 	ALL         =${LIBROOT}/libaubit4gl.${SO_EXT}
 endif
 
@@ -106,7 +105,7 @@ else
     endif
 endif
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 ifeq "@HAVE_RPCLIB@" "0"
@@ -119,35 +118,35 @@ XGENEXE    		=${ROOT}/bin/xgen
 ##                          Targets
 ## ==================================================================
 
-all: ${ALL}
+all: pluginsdir ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-${LIBROOT}/libDATA_struct_form${SO_EXT}: form_x.xi.o form_x.xio.o form_x.xo.o
+${PLUGINDIR}/libDATA_struct_form${SO_EXT}: form_x.xi.o form_x.xio.o form_x.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
-${LIBROOT}/libDATA_menu_list${SO_EXT}: menu_x.xi.o menu_x.xio.o menu_x.xo.o
+${PLUGINDIR}/libDATA_menu_list${SO_EXT}: menu_x.xi.o menu_x.xio.o menu_x.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
-${LIBROOT}/libDATA_report${SO_EXT}: report.xi.o report.xio.o report.xo.o
+${PLUGINDIR}/libDATA_report${SO_EXT}: report.xi.o report.xio.o report.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
-${LIBROOT}/libDATA_module${SO_EXT}: npcode.xi.o npcode.xio.o npcode.xo.o
+${PLUGINDIR}/libDATA_module${SO_EXT}: npcode.xi.o npcode.xio.o npcode.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
-${LIBROOT}/libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.o
+${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
 
-${LIBROOT}/libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.o
+${PLUGINDIR}/libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
 
-${LIBROOT}/libXDRPACKER_report${SO_EXT}:  		report_xdr.o
+${PLUGINDIR}/libXDRPACKER_report${SO_EXT}:  		report_xdr.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
 
-${LIBROOT}/libXDRPACKER_module${SO_EXT}:  		npcode_xdr.o
+${PLUGINDIR}/libXDRPACKER_module${SO_EXT}:  		npcode_xdr.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
 
 #FIXME: why not use this, or is it obsolete?
-${LIBROOT}/libDATA_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o npcode.xio.o
+${PLUGINDIR}/libDATA_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o npcode.xio.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 ## ==================================================================
@@ -214,7 +213,17 @@ ${LIBROOT}/libaubit4gl.${SO_EXT}: form_x.x.h
 ## ==================================================================
 
 clean:
-	${RM} *.c *${SO_EXT} *.h *.bak .*.bak *.o *.dll.a
+	${RM} *.c *${SO_EXT} *.h *.bak .*.bak *.o *.dll.a \
+		${PLUGINDIR}/libDATA_struct_form${SO_EXT} \
+		${PLUGINDIR}/libDATA_menu_list${SO_EXT} \
+		${PLUGINDIR}/libDATA_report${SO_EXT} \
+		${PLUGINDIR}/libDATA_module${SO_EXT} \
+		${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT} \
+		${PLUGINDIR}/libXDRPACKER_menu_list${SO_EXT} \
+		${PLUGINDIR}/libXDRPACKER_report${SO_EXT} \
+		${PLUGINDIR}/libXDRPACKER_module${SO_EXT} \
+		${PLUGINDIR}/libDATA_any${SO_EXT}
+
 
 ## ==================================================================
 ##                         Other Targets
@@ -226,5 +235,7 @@ lclint: $(CMODS)
 	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
+pluginsdir:
+	if test ! -d ${PLUGINDIR}; then mkdir ${PLUGINDIR} 2> /dev/null; fi
 #=============================== EOF ================================
 

@@ -23,11 +23,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.9 2004-09-28 09:49:21 afalout Exp $
+# $Id: Makefile.in,v 1.10 2006-07-27 16:03:31 mikeaubury Exp $
 #
 
 ROOT        =../../..
-LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -45,7 +44,7 @@ XDR_CMODS   =${DATAIODIR}/form_x_xdr.c ${DATAIODIR}/menu_x_xdr.c ${DATAIODIR}/re
 XDR_OBJS	=${XDR_CMODS:.c=.o}
 CMODS   	=pack_xdr.c ${XDR_CMODS}
 
-ALL 		=${LIBROOT}/libPACKER_XDR${SO_EXT}
+ALL 		=${PLUGINDIR}/libPACKER_XDR${SO_EXT}
 ifeq "@HAVE_RPCLIB@" "0"
 #Is there any point in doing this? Not on Windows, since unresolved dependencies are not
 #allowed at link time, and we have no RPCLIB to link with anyway:
@@ -65,7 +64,7 @@ CFLAGS      +=${LOCAL_IFLAGS}
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL} @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 
 ifeq "@HAVE_RPCLIB@" "0"
@@ -78,7 +77,7 @@ endif
 
 ALL: ${ALL}
 
-${LIBROOT}/libPACKER_XDR${SO_EXT}: ${OBJS}
+${PLUGINDIR}/libPACKER_XDR${SO_EXT}: ${OBJS}
 	${CC} ${CFLAGS_RPCGEN} ${SO_LDFLAGS} $^ -o $@ ${LINKLIBS}
 #ifeq "${SO_EXT}" ".dll"
 #	${MV} TMP${SOEXP_EXT} $@.a
@@ -105,7 +104,7 @@ norpclib:
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.bak *.o
+	${RM} ${PLUGINDIR}/libPACKER_XDR${SO_EXT} *.bak *.o
 ## ==================================================================
 ##                         Other Targets
 ## ==================================================================

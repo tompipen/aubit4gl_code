@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.108 2006-07-19 08:29:27 mikeaubury Exp $
+# $Id: compile.c,v 1.109 2006-07-27 16:00:58 mikeaubury Exp $
 #*/
 
 /**
@@ -984,7 +984,6 @@ initArguments (int argc, char *argv[])
 		    	gcc_exec, all_objects, output_object, l_path, l_libs,
 				pass_options, extra_ldflags, incl_path);
 				/*FIXME: add incl_path only if there are .c files in all_objects*/
-				/*gcc -shared  -o  -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll   -I/usr/src/aubit/aubit4glsrc/incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include*/
         }
 	#else /* MinGW */
 	      /*

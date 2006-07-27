@@ -23,11 +23,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2004-09-28 09:49:20 afalout Exp $
+# $Id: Makefile.in,v 1.3 2006-07-27 16:03:26 mikeaubury Exp $
 #
 
 ROOT        =../../..
-LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -38,14 +37,14 @@ include ${ROOT}/incl/Makefile-common
 
 CMODS   	=pack_packed.c
 OBJS		=${CMODS:.c=.o}
-ALL 		=${LIBROOT}/libPACKER_GZPACKED${SO_EXT}
+ALL 		=${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT}
 
 LOCAL_IFLAGS=-I..
 
 CFLAGS      +=${LOCAL_IFLAGS}
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 LINKLIBS+=-lz
 
@@ -74,7 +73,7 @@ ALL: ${ALL}
 
 #${LIBROOT}/libPACKER_GZPACKED${SO_EXT}: ${CMODS}
 #	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-${LIBROOT}/libPACKER_GZPACKED${SO_EXT}: ${OBJS}
+${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT}: ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 #ifeq "${SO_EXT}" ".dll"
@@ -86,7 +85,7 @@ ${LIBROOT}/libPACKER_GZPACKED${SO_EXT}: ${OBJS}
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.bak *.o
+	${RM} ${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT} *.bak *.o
 
 ## ==================================================================
 ##                         Other Targets

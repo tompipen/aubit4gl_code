@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-17 14:09:34 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-07-27 16:04:09 mikeaubury Exp $
 #
 
-LIBROOT		=../..
 ROOT		=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -106,7 +105,7 @@ ifeq "${NON_PEDANTIC_OK}" "1"
 endif
 
 ifeq "${GTKBUILD}" "yes"
-	ALL				+=${LIBROOT}/libUI_HL_GTK${SO_EXT}
+	ALL				+=${PLUGINDIR}/libUI_HL_GTK${SO_EXT}
 endif
 
 ## ==================================================================
@@ -117,18 +116,18 @@ PDCURSESX_CFLAGS	=${XCURSES_CFLAGS} -DXCURSES -I${ROOT}/incl -I.. \
 	${CWARN} -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H
 	
 ifneq "${HAVE_CURSES}" "0"
-	ALL					+=${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
+	ALL					+=${PLUGINDIR}/libUI_HL_TUI${SO_EXT} ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}
 	#CURSES_INC_PATH must be BEFORE system paths:
 	#Note: On CygWin term.h is in -I/usr/include/ncurses
 	CFLAGS				:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS}
 else
 	ifneq "${HAVE_PDCURSES}" "0"
-		ALL				+=${LIBROOT}/libUI_HL_TUIN${SO_EXT}
+		ALL				+=${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}
 		DO_PDCURSES		=1
 	endif
 	ifneq "${HAS_PDCURSES_STATIC_OBJS}" "0"
-		ALL				+=${LIBROOT}/libUI_HL_TUINs${SO_EXT}
-		ALL				+=libUI_HL_TUIw${SO_EXT}
+		ALL				+=${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}
+		ALL				+=${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
 		DO_PDCURSES		=1
 	endif
 		
@@ -169,7 +168,7 @@ CURSES_LIB_NAME_NO_FORM	=$(CURSES_LIB_NAME:%-lform=%)
 
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 CFLAGS			+=-g -I${ROOT}/incl -I.. -I${LIBROOT}/libaubit4gl
@@ -197,50 +196,50 @@ all: ${ALL}
 
 #What was this is should it be removed completely? Mike?
 #${LIBROOT}/libUI_HLGENERIC${SO_EXT}: $(OBJS) API_lowlevel.o
-#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) API_lowlevel.o -o $@ -laubit4gl
+#	gcc -L${ROOT}/lib -rdynamic -shared $(OBJS) API_lowlevel.o -o $@ -l${AUBITLIBFULL}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 #Standard Curses based plug-in
-libUI_HL_TUI${SO_EXT}: ${LIBROOT}/libUI_HL_TUI${SO_EXT}
-${LIBROOT}/libUI_HL_TUI${SO_EXT}: clean $(OBJS) ${OBJS2}
+#${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUI${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: clean_hl_tui $(OBJS) ${OBJS2}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS2} \
 		${LINKLIBS} ${CURSES_LIB_NAME} 
 
 #PDcurses with libform from CygWin added
-libUI_HL_TUIw${SO_EXT}: ${LIBROOT}/libUI_HL_TUIw${SO_EXT}
-${LIBROOT}/libUI_HL_TUIw${SO_EXT}: clean $(OBJS) lowlevel_tui_win32.o width_narrow.o
+#${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: clean_hl_tuiw $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
 		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform ${CURSES_LIB_NAME} 
 
 #PDcurses with libform from CygWin added - STATICALLY linked
-libUI_HL_TUIws${SO_EXT}: ${LIBROOT}/libUI_HL_TUIws${SO_EXT}
-${LIBROOT}/libUI_HL_TUIws${SO_EXT}: clean $(OBJS) lowlevel_tui_win32.o width_narrow.o
+#${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: clean_hl_tuiws $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
 		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform_g ${CURSES_LIB_NAME} 
 
 #TUI mode plug-in with Aubit's own implementation of Curses libform
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 
 #no libform implementation (PDcurses are only Curses implementation available for Windows)
-libUI_HL_TUIN${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
-${LIBROOT}/libUI_HL_TUIN${SO_EXT}: clean $(OBJS) ${PDCURSES_OBJ}
+#${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}: clean_hl_tuin $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 #Statically linked TUIN
-libUI_HL_TUINs${SO_EXT}: ${LIBROOT}/libUI_HL_TUINs${SO_EXT}
-${LIBROOT}/libUI_HL_TUINs${SO_EXT}: clean $(OBJS) ${PDCURSES_OBJ}
+#${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}: clean_hl_tuins $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${PD_CURSES_LIB_NAME}
 
 #Debug version of TUIN, using debug library libpanel_g
-libUI_HL_TUIN-DEBUG${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}
-${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}: clean $(OBJS) ${PDCURSES_OBJ}
+#${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}: clean_hl_tuind $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${LIBS3}
 
 #Not shure what this is? Mike?
-libUI_HL_TUINW${SO_EXT}: ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
-${LIBROOT}/libUI_HL_TUINW${SO_EXT}: clean $(OBJS) ${OBJS4}
+#${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}: clean_hl_tuinw $(OBJS) ${OBJS4}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS4} ${LINKLIBS} \
 		-L/usr/local/widec/lib -static -lpanelw_g -lncursesw_g
 
@@ -258,16 +257,16 @@ ${LIBROOT}/libUI_HL_TUINW${SO_EXT}: clean $(OBJS) ${OBJS4}
 #      This call is required to enable the child X process to shut down cleanly
 #      and free up the shared memory it used.
 #
-libUI_HL_TUIX${SO_EXT}: ${LIBROOT}/libUI_HL_TUIX${SO_EXT}
-${LIBROOT}/libUI_HL_TUIX${SO_EXT}: CFLAGS=${PDCURSESX_CFLAGS}
-${LIBROOT}/libUI_HL_TUIX${SO_EXT}: clean $(OBJS) ${PDCURSESX_OBJ} 
+#${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}
+${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: CFLAGS=${PDCURSESX_CFLAGS}
+${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: clean_hl_tuix $(OBJS) ${PDCURSESX_OBJ} 
 	${LD} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSESX_OBJ} ${LINKLIBS} \
 		${XCURSES_LIBS} -lXpanel
 	
 	
 #Standard GTK+ based plug-in
-libUI_HL_GTK${SO_EXT}: ${LIBROOT}/libUI_HL_GTK${SO_EXT}
-${LIBROOT}/libUI_HL_GTK${SO_EXT}: clean $(OBJS) ${OBJS5}
+#${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: ${PLUGINDIR}/libUI_HL_GTK${SO_EXT}
+${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: clean_hl_gtk $(OBJS) ${OBJS5}
 	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $(OBJS) ${OBJS5} \
 		${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
 
@@ -342,7 +341,7 @@ ${OBJS} :  a4gl_API_lowlevel.h
 ## ==================================================================
 
 testit:  $(OBJS) testit.o API_lowlevel.o
-	${CC} ${CURSES_LIB_PATH} -L${ROOT}/lib $^  -o testit -laubit4gl ${CURSES_LIB_NAME} 
+	${CC} ${CURSES_LIB_PATH} -L${ROOT}/lib $^  -o testit -l${AUBITLIBFULL} ${CURSES_LIB_NAME} 
 
 show:
 	@echo "LINKLIBS=${LINKLIBS}"
@@ -365,14 +364,54 @@ show:
 	@echo "DO_PDCURSES=${DO_PDCURSES}"	
 	@echo "XCURSES_CFLAGS=${XCURSES_CFLAGS}"
 	@echo "XCURSES_LIBS=${XCURSES_LIBS}"
+	@echo "PLUGINDIR=${PLUGINDIR}"
+	@echo "AUBIT_SRC_ROOT=${AUBIT_SRC_ROOT}"
 	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
-clean: clean.capi
+cleanish: clean.capi
 	${RM} *${SO_EXT} *.o *.bak testit API_lowlevel.c API_lowlevel.h \
-	lowlevel/*.bak a4gl_API_lowlevel.h remote_client/*.o
+	lowlevel/*.bak a4gl_API_lowlevel.h remote_client/*.o 
+
+clean: cleanish
+	${RM} ${PLUGINDIR}/libUI_HL_GTK${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUI${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUIN${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUINW${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUINs${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUIX${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUIw${SO_EXT} \
+		${PLUGINDIR}/libUI_HL_TUIws${SO_EXT} 
+
+clean_hl_tui : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUI${SO_EXT} 
+
+clean_hl_tuiw : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT} 
+
+clean_hl_tuiws : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT} 
+
+clean_hl_tuin : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT} 
+
+lean_hl_tuins : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUINs${SO_EXT} 
+
+clean_hl_tuind : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT} 
+
+clean_hl_tuinw : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT} 
+
+clean_hl_tuix : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_TUIX${SO_EXT} 
+
+clean_hl_gtk : cleanish
+		${RM} ${PLUGINDIR}/libUI_HL_GTK${SO_EXT} 
 
 ## ==================================================================
 ##                     CORBA/ORBit settings

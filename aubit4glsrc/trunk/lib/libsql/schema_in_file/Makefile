@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-09-28 09:49:24 afalout Exp $
+# $Id: Makefile,v 1.4 2006-07-27 16:03:56 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -42,10 +41,10 @@ include ${ROOT}/incl/Makefile-common
 CFLAGS+=-I..
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
-ALL=${LIBROOT}/libSQL_FILESCHEMA${SO_EXT}
+ALL=${PLUGINDIR}/libSQL_FILESCHEMA${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -55,7 +54,7 @@ ALL: ${ALL}
 
 #FILESCHEMA${SO_EXT}: libSQL_FILESCHEMA${SO_EXT}
 
-${LIBROOT}/libSQL_FILESCHEMA${SO_EXT}: schema_in_file.o
+${PLUGINDIR}/libSQL_FILESCHEMA${SO_EXT}: schema_in_file.o
 	${LD} ${SO_LDFLAGS} $^ -o $@  ${LINKLIBS}
 #ifeq "${SO_EXT}" ".dll"
 #	${MV} TMP${SOEXP_EXT} $@.a

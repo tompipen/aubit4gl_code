@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.1 2006-07-17 14:08:54 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-07-27 16:01:11 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -26,7 +26,7 @@ else
 	KW_YH		=../4glc/rules/generated/kw.yh
 endif
 
-ALL					=${ROOT}/bin/sql_parse $(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}
+ALL					=${ROOT}/bin/sql_parse $(PLUGINDIR)/libSQLPARSE_INFORMIX${SO_EXT}
 CFLAGS				+=-g -fPIC -I$(ROOT)/incl -I.
 LDFLAGS				=-g
 SQLPACK_IFX_PATH	=../4glc/rules/sqlpack/infx
@@ -44,13 +44,13 @@ all: ${ALL}
 #NB: why not link with/dlopen libSQLPARSE_xxx.so instead of statically linking
 #with y.tab.o ?
 ${ROOT}/bin/sql_parse: y.tab.o main.o
-	${CC} -I$(ROOT)/incl $^ -o $@ -L$(LIBROOT) -laubit4gl
+	${CC} -I$(ROOT)/incl $^ -o $@ -L$(LIBROOT) -l${AUBITLIBFULL}
 
 #Shared library that performs SQL parsing and conversion at run-time
 #NB: why is it linked with libaubt4gl, when that lib is what loads it
 #at run-time (except on Windows where it needs to be linked to resolve symbols)?
-$(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}: y.tab.o
-	${CC} -g -shared -I$(ROOT)/incl $< -o $@ -L$(LIBROOT) -laubit4gl 
+$(PLUGINDIR)/libSQLPARSE_INFORMIX${SO_EXT}: y.tab.o
+	${CC} -g -shared -I$(ROOT)/incl $< -o $@ -L$(LIBROOT) -l${AUBITLIBFULL} 
 
 	
 ## ==================================================================

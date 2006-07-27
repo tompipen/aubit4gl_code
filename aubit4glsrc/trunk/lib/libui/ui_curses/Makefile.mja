@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.mja,v 1.8 2004-09-28 09:49:24 afalout Exp $
+# $Id: Makefile.mja,v 1.9 2006-07-27 16:04:05 mikeaubury Exp $
 #
 
 LIBROOT=../..
@@ -59,7 +59,7 @@ else
 endif
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 

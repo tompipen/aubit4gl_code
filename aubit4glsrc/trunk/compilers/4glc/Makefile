@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: Makefile,v 1.17 2006-07-27 16:00:58 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -117,7 +117,7 @@ CFLAGS			+=${C_LOCAL_IFLAGS} ${RPCLIB_INCLUDE} ${CURSES_INC_PATH}
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l$(AUBITLIBFULL)
 endif
 
 ifeq "${GCC_MINGW}" "yes"

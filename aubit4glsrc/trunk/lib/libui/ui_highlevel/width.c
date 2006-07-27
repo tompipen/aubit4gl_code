@@ -14,9 +14,9 @@ static int wc_char_len (wchar_t * s);
 static wchar_t *wc_col_width (wchar_t * s);
 static wchar_t *wc_byte_width (wchar_t * s);
 static char *wc_to_str (char *s, wchar_t * src, int char_size);
-void A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr,
-				wchar_t ch, int curr_width, int curr_height);
+void A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch, int curr_width, int curr_height);
 #endif
+void A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch, int curr_width, int curr_height, int iscurrborder, int currwinno);
 
 void A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff,
 			    int pfunc, int curr_width, int curr_height,
@@ -53,7 +53,7 @@ A4GL_wprintw_internal (void *win, int attr, int x, int y, char *buff,
 	      A4GL_LL_wadd_wchar_xy_col (win, x, y, attr, buff[a],
 					 curr_width, curr_height);
 	    else
-	      A4GL_LL_wadd_wchar_xy_col_w (win, x, y, attr, buff[a]
+	      A4GL_LL_wadd_wchar_xy_col_w (win, x, y, attr, buff[a],
 					   curr_width, curr_height);
 	  }
 

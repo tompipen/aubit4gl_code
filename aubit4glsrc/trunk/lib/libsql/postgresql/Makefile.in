@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2004-12-01 07:21:09 afalout Exp $
+# $Id: Makefile.in,v 1.11 2006-07-27 16:03:53 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../../../incl/Makefile-common
@@ -40,7 +39,7 @@ include ../../../incl/Makefile-common
 ifneq "${COMSPEC}" ""
 	PGSQL_INCLUDE=$(shell echo "@PGSQL_INCLUDE@" | tr '\\' '/')
 	PGSQL_LFLAGS=$(shell echo "@PGSQL_LFLAGS@" | tr '\\' '/')
-	LINKLIBS=-laubit4gl -L${LIBROOT}
+	LINKLIBS=-l${AUBITLIBFULL} -L${LIBROOT}
 else
 	PGSQL_INCLUDE=@PGSQL_INCLUDE@
 	PGSQL_LFLAGS=@PGSQL_LFLAGS@ 
@@ -58,7 +57,7 @@ CPPOBJS	=${CPPSRC:.cpp=.o}
 CFLAGS	+=-I.. ${PGSQL_INCLUDE} 
 CXXFLAGS=$(CFLAGS)
 
-ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
+ALL		=${PLUGINDIR}/libSQL_pg${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -67,14 +66,13 @@ ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
 ALL: ${ALL}
 
 #This "simple" PG plug-in with limited functionality was written by Mike
-libSQL_pg${SO_EXT}: ${LIBROOT}/libSQL_pg${SO_EXT}
-${LIBROOT}/libSQL_pg${SO_EXT}: $(OBJS)
+libSQL_pg${SO_EXT}: ${PLUGINDIR}/libSQL_pg${SO_EXT}
+${PLUGINDIR}/libSQL_pg${SO_EXT}: $(OBJS)
 	${LD} ${SO_LDFLAGS} $^ ${PGSQL_LFLAGS} ${PGSQL_LIBS} -o $@ ${LINKLIBS}
 
 #This "real" fully functional driver written in C++ was never 
 #finished by Sergio... :-(
-libSQL_pgDEVEL${SO_EXT}:${LIBROOT}/libSQL_pgDEVEL${SO_EXT}
-${LIBROOT}/libSQL_pgDEVEL${SO_EXT}: $(CPPOBJS)
+${PLUGINDIR}/libSQL_pgDEVEL${SO_EXT}: $(CPPOBJS)
 	${LD} ${SO_LDFLAGS} $^ ${PGSQL_LFLAGS} ${PGSQL_LIBS} -o $@
 
 	
@@ -91,6 +89,6 @@ show:
 
 
 clean:
-	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${ALL}
+	${RM} *.o ${PLUGINDIR}/libSQL_pgDEVEL${SO_EXT} ${PLUGINDIR}/libSQL_pg${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${ALL}
 
 #-------------------------------- EOF -------------------------------

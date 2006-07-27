@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2005-07-26 16:20:17 mikeaubury Exp $
+# $Id: Makefile.in,v 1.11 2006-07-27 16:02:20 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -40,7 +39,7 @@ include ${ROOT}/incl/Makefile-common
 
 4GLC	=${ROOT}/bin/4glc
 
-ALL=${LIBROOT}/libA4GL_string${SO_EXT}
+ALL=${PLUGINDIR}/libA4GL_string${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -49,7 +48,7 @@ ALL=${LIBROOT}/libA4GL_string${SO_EXT}
 
 ${ALL}: libstring.o
 #	export A4GL_LEXTYPE=C; ${SH} 4glpc ${AS_DLL} $^ -o $@
-	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "String library sucesfully compiled."
 
 libstring.o: libstring.4gl

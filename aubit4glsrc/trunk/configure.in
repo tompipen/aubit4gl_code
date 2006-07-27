@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.313 2006-05-03 08:00:39 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.314 2006-07-27 16:00:33 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -633,6 +633,7 @@ AC_SUBST(COMP_LIBS)
 AC_SUBST(PLUGIN_YES)
 AC_SUBST(PLUGIN_YES_LINKABLE)
 AC_SUBST(ALL_LIBS)
+AC_SUBST(ALL_PLUGINS)
 AC_SUBST(ALL_DOC)
 AC_SUBST(ALL_EXAMP)
 AC_SUBST(ALL_EXAMP_GUI)
@@ -2077,10 +2078,12 @@ if test "$enable_minimal" != "yes"; then
 fi
 
 
-ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
+ALL_LIBS="$NEED_4GLC_ALL_libs"
+
+ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA \
-		SQLPARSE_NONE SQLPARSE_INFORMIX $NEED_4GLC_ALL_libs $LIBLOGICAL_BUILD"
+		SQLPARSE_NONE SQLPARSE_INFORMIX $LIBLOGICAL_BUILD"
 #UI_HLGENERIC
 
 #libaubit4gl should be first, to avoid dependency chase
@@ -9279,7 +9282,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.313 2006-05-03 08:00:39 mikeaubury Exp $
+| $Id: configure.in,v 1.314 2006-07-27 16:00:33 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

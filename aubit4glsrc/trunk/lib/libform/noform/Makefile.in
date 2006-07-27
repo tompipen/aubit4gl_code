@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2004-09-28 09:49:18 afalout Exp $
+# $Id: Makefile.in,v 1.8 2006-07-27 16:02:32 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -59,12 +58,12 @@ OBJS_FORM_XDR      =${CMODS_FORM_XDR:.c=.o}
 #    endif
 #else
 #	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			=${LIBROOT}/libFORM_NOFORM${SO_EXT}
+		ALL			=${PLUGINDIR}/libFORM_NOFORM${SO_EXT}
 #    endif
 #endif
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 
@@ -85,7 +84,7 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile $
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libFORM_NOFORM${SO_EXT} : ${OBJS_FORM_NOFORM}
+${PLUGINDIR}/libFORM_NOFORM${SO_EXT} : ${OBJS_FORM_NOFORM}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 ifeq "${SO_EXT}" ".dll"
 	${MV} TMP${SOEXP_EXT} $@.a

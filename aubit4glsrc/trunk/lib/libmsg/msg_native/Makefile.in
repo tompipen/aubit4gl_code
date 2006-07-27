@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2004-09-28 09:49:20 afalout Exp $
+# $Id: Makefile.in,v 1.10 2006-07-27 16:03:23 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -45,10 +44,10 @@ OBJS				=${CMODS:.c=.o}
 ## ==================================================================
 
 CFLAGS				+=-I.. -I${ROOT}/compilers/fcompile
-ALL 				=${LIBROOT}/libMSG_NATIVE${SO_EXT}
+ALL 				=${PLUGINDIR}/libMSG_NATIVE${SO_EXT}
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS		=-L${LIBROOT} -laubit4gl
+	LINKLIBS		=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 
@@ -59,7 +58,7 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-${LIBROOT}/libMSG_NATIVE${SO_EXT} : ${OBJS}
+${PLUGINDIR}/libMSG_NATIVE${SO_EXT} : ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 #ifeq "${SO_EXT}" ".dll"
 #	${MV} TMP${SOEXP_EXT} $@.a

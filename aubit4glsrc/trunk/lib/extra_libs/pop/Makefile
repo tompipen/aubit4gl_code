@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2006-07-17 14:43:51 mikeaubury Exp $
+# $Id: Makefile,v 1.17 2006-07-27 16:02:17 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -39,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 
 4GLPC_EXEC=export A4GL_LEXTYPE=C; ${FGLPCEXEC}
 
-ALL=${LIBROOT}/libA4GL_pop${SO_EXT} 
+ALL=${PLUGINDIR}/libA4GL_pop${SO_EXT} 
 #test.4ae
 
 4GLC	=${ROOT}/bin/4glc
@@ -67,9 +66,9 @@ all : ${ALL}
 
 #Note: On Windows, only static spopc library is compiled (libspopc.a) when 
 #compiling source code, so libA4GL_pop will be statically linked with it
-${LIBROOT}/libA4GL_pop${SO_EXT}: pop.o
+${PLUGINDIR}/libA4GL_pop${SO_EXT}: pop.o
 	${LD} ${POP_LIB_FLAGS} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib \
-		-laubit4gl -lspopc ${LINKLIBS}
+		-l${AUBITLIBFULL} -lspopc ${LINKLIBS}
 	@echo "POP library sucesfully compiled."
 
 pop.c: pop.4gl

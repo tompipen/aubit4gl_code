@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2006-07-17 14:43:47 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2006-07-27 16:02:13 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -42,7 +41,7 @@ include ${ROOT}/incl/Makefile-common
 #NOTE: must NOT be named libA4GL_channel, since that would force
 #renaming of all 'CALL channel::' to 'CALL A4GL_channel::'  
 #ALL     =${LIBROOT}/libA4GL_channel${SO_EXT}
-ALL     =${LIBROOT}/libchannel${SO_EXT}
+ALL     =${PLUGINDIR}/libchannel${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -50,7 +49,7 @@ ALL     =${LIBROOT}/libchannel${SO_EXT}
 
 #FIXME: use amake
 ${ALL}: channel.o
-	${LD} -g ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
+	${LD} -g ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "Channel library sucesfully compiled."
 
 channel.c: channel.4gl

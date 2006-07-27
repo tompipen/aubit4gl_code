@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2004-12-13 01:55:34 afalout Exp $
+# $Id: Makefile,v 1.11 2006-07-27 16:03:15 mikeaubury Exp $
 #
 
 ROOT		=../../../..
-LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -44,10 +43,10 @@ CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libLOGREPPROC_TXT${SO_EXT} : process_txt.o
-#	gcc  -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
-#	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
-	${LD} ${SO_LDFLAGS} -o $@ $^ -L$(LIBROOT) -laubit4gl
+${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT} : process_txt.o
+#	gcc  -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -l${AUBITLIBFULL} 
+#	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -l${AUBITLIBFULL} 
+	${LD} ${SO_LDFLAGS} -o $@ $^ -L$(LIBROOT) -l${AUBITLIBFULL}
 	
 process_txt.o: ../../layout_engine/API_layout.h ../../processor/API_process.h
 
@@ -63,6 +62,6 @@ process_txt.o: ../../layout_engine/API_layout.h ../../processor/API_process.h
 ## ==================================================================
 
 clean:
-	${RM} ${LIBROOT}/libLOGREPPROC_TXT${SO_EXT} *.o
+	${RM} ${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT} *.o
 	
 	

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.66 2006-07-21 06:43:40 mikeaubury Exp $
+# $Id: calldll.c,v 1.67 2006-07-27 16:02:23 mikeaubury Exp $
 #
 */
 
@@ -325,7 +325,9 @@ A4GL_dl_openlibrary (char *type, char *p)
       //FIXME: why is A4GL_exitwith not exiting???
 	A4GL_fgl_die_with_msg(43,"Cannot determine AUBITDIR");
     }
-A4GL_debug("AUBITDIR=%s",acl_getenv("AUBITDIR"));
+
+  A4GL_debug("AUBITDIR=%s",acl_getenv("AUBITDIR"));
+
   aplugins=acl_getenv("AUBITPLUGINDIR");
 
   if (aplugins) {
@@ -356,13 +358,13 @@ if (soext) {
 if (aplugins) {
 	SPRINTF4 (buff, "%s/lib%s_%s.%s", aplugins, type, plugin_name,soext_2);
 } else {
-	SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
+	SPRINTF6 (buff, "%s/plugins-%s_%d/lib%s_%s.%s", acl_getenv ("AUBITDIR"), A4GL_internal_version(),A4GL_internal_build(),type, plugin_name,soext_2);
 }
 #else
 if (aplugins) {
 	SPRINTF4 (buff, "%s/lib%s_%s.%s", aplugins, type, plugin_name,soext_2);
 } else {
-	SPRINTF4 (buff, "%s/lib/lib%s_%s.%s", acl_getenv ("AUBITDIR"), type, plugin_name,soext_2);
+	SPRINTF6 (buff, "%s/plugins-%s_%d/lib%s_%s.%s", acl_getenv ("AUBITDIR"), A4GL_internal_version(),A4GL_internal_build(),type, plugin_name,soext_2);
 }
 #endif
 
@@ -607,7 +609,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      SPRINTF3 (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
+      SPRINTF5 (buff, "%s/plugins-%s_%d/lib%s.%s",  acl_getenv ("AUBITDIR"), A4GL_internal_version(),A4GL_internal_build(),nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)
@@ -717,7 +719,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
   if (dllhandle == 0)
     {
-      SPRINTF3 (buff, "%s/lib/lib%s.%s", acl_getenv ("AUBITDIR"), nfile,SO_EXT);
+      SPRINTF5 (buff, "%s/plugins-%s_%d/lib%s.%s",  acl_getenv ("AUBITDIR"), A4GL_internal_version(),A4GL_internal_build(),nfile,SO_EXT);
       A4GL_debug ("Trying %s", A4GL_null_as_null(buff));
       dllhandle = dlopen (buff, RTLD_LAZY);
       if (dllhandle == 0)

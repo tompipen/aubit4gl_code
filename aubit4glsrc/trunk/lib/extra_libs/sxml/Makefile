@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-12-09 23:59:13 afalout Exp $
+# $Id: Makefile,v 1.6 2006-07-27 16:02:21 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -39,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 
 4GLPC_EXEC=export A4GL_LEXTYPE=C; ${FGLPCEXEC}
 
-ALL=${LIBROOT}/libA4GL_sxml${SO_EXT} 
+ALL=${PLUGINDIR}/libA4GL_sxml${SO_EXT} 
 #test.4ae
 
 4GLC	=${ROOT}/bin/4glc
@@ -62,9 +61,9 @@ endif
 ######### !!!!!!!!! PLEASE keep A4GL_ in UPPERCASE !!!!!!!!! ###############
 all : ${ALL}
 
-${LIBROOT}/libA4GL_sxml${SO_EXT}: sxmllib.c
+${PLUGINDIR}/libA4GL_sxml${SO_EXT}: sxmllib.c
 #	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lsxml
-	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ ${LFLAGS} ${IFLAGS} -laubit4gl -lsxml
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ ${LFLAGS} ${IFLAGS} -l${AUBITLIBFULL} -lsxml
 	@echo "SXML library sucesfully compiled."
 
 

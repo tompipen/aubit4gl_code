@@ -11,7 +11,7 @@ INFORMIXDIR=CRAP-HARD_CODED_E:/Program files/W2000/Informix/CSDK
 XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
 	"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
 
-LINKLIBS=-L../../ -laubit4gl
+LINKLIBS=-L../../ -l${AUBITLIBFULL}
 
 .ec.o:
 	$(ESQL) $(ESQL_FLAGS) -e $<

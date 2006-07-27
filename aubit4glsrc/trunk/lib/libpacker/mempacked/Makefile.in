@@ -23,11 +23,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2004-09-28 09:49:20 afalout Exp $
+# $Id: Makefile.in,v 1.6 2006-07-27 16:03:27 mikeaubury Exp $
 #
 
 ROOT        =../../..
-LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -38,14 +37,14 @@ include ${ROOT}/incl/Makefile-common
 
 CMODS   	=pack_mempacked.c
 OBJS		=${CMODS:.c=.o}
-ALL 		=${LIBROOT}/libPACKER_MEMPACKED${SO_EXT}
+ALL 		=${PLUGINDIR}/libPACKER_MEMPACKED${SO_EXT}
 
 LOCAL_IFLAGS=-I..
 
 CFLAGS      +=${LOCAL_IFLAGS}
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 
@@ -55,7 +54,7 @@ endif
 
 ALL: ${ALL}
 
-${LIBROOT}/libPACKER_MEMPACKED${SO_EXT}: ${OBJS}
+${PLUGINDIR}/libPACKER_MEMPACKED${SO_EXT}: ${OBJS}
 	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 ## ==================================================================
@@ -63,7 +62,7 @@ ${LIBROOT}/libPACKER_MEMPACKED${SO_EXT}: ${OBJS}
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.bak *.o *.a *~
+	${RM} ${PLUGINDIR}/libPACKER_MEMPACKED${SO_EXT} *.bak *.o *.a *~
 
 ## ==================================================================
 ##                         Other Targets

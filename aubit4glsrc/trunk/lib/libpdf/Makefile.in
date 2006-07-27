@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.18 2004-12-09 23:59:14 afalout Exp $
+# $Id: Makefile.in,v 1.19 2006-07-27 16:03:35 mikeaubury Exp $
 #
 
 ROOT        =../..
-LIBROOT     =..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -40,14 +39,14 @@ include ${ROOT}/incl/Makefile-common
 CFLAGS			+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile \
 				@PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
-ALL 			=${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}
+ALL 			=${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}
 
 ifneq "${PDFBUILD}" "no"
-	ALL 		+=${LIBROOT}/libEXREPORT_PDF${SO_EXT}
+	ALL 		+=${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}
 endif
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 OBJECTS_NOPDF	=nopdf.o
@@ -59,11 +58,11 @@ OBJECTS_PDF		=has_pdf.o
 
 all: ${ALL}
 
-${LIBROOT}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
+${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
 #WARNING: On Windows libs must be et the end
 	${LD} @PDFLIB_L_FLAGS@ $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS} -lpdf
 
-${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
+${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}
 
 ## ==================================================================
@@ -71,7 +70,7 @@ ${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 ## ==================================================================
 
 clean:
-	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
+	${RM} *.o ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT} ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
 
 
 # ----------------------------- EOF ---------------------------------

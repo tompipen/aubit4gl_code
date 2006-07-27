@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.10 2005-10-05 09:08:18 mikeaubury Exp $
+# $Id: Makefile,v 1.1 2006-07-27 16:04:18 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -52,7 +52,7 @@ ${ROOT}/${HELP_DESTINATION}/4glpc.hlp: helpfile.msg ${ROOT}/bin/amkmessage
 	${ROOT}/bin/amkmessage $< $@
 
 ${ROOT}/bin/4glpc: 4glpc.o times.o readsettings.o 
-	${LD} $^ -g -o $@ -L${LIBROOT} -laubit4gl
+	${LD} $^ -g -o $@ -L${LIBROOT} -l${AUBITLIBFULL} 
 
 ## ==================================================================
 ##                              Rules
@@ -66,7 +66,7 @@ CFLAGS=-g
 	export A4GL_OBJ_EXT=.o; A4GL_LEXTYPE=C; ${ROOT}/bin/4glc $<
 
 %.o: %.c
-	$(CC) -c -g -I$(ROOT)/incl $< -L$(ROOT)/lib -laubit4gl
+	$(CC) -c -g -I$(ROOT)/incl $< -L$(ROOT)/lib 
 
 ## ==================================================================
 ##                              Dependencies

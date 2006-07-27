@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-12-05 19:16:42 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2006-07-27 16:04:07 mikeaubury Exp $
 #
 
 ROOT			=../../..
-LIBROOT			=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include 		${ROOT}/incl/Makefile-common
@@ -39,7 +38,7 @@ include 		${ROOT}/incl/Makefile-common
 
 CFLAGS			+=$(shell pkg-config libglade-2.0 --cflags)
 LINKLIBS		=$(shell pkg-config libglade-2.0 --libs)
-ALL				=${LIBROOT}/libUI_GLADE${SO_EXT}
+ALL				=${PLUGINDIR}/libUI_GLADE${SO_EXT}
 
 OBJS			=glade.o dialog.o obj.o list.o
 
@@ -52,9 +51,9 @@ all: ${ALL}
 	@echo "| Default targets (${ALL}) successfuly compiled"
 	@echo "+--------------------------------------------------------------------+"	
 
-${LIBROOT}/libUI_GLADE${SO_EXT}: ${OBJS}
+${PLUGINDIR}/libUI_GLADE${SO_EXT}: ${OBJS}
 #	${CC} -g -shared $^ -o $@ ${LFLAGS}
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L$(ROOT)/lib -laubit4gl
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L$(ROOT)/lib -l${AUBITLIBFULL}
 
 ## ==================================================================
 ##                              Clean

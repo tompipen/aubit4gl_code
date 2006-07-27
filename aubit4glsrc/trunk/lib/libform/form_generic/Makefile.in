@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2004-09-28 09:49:17 afalout Exp $
+# $Id: Makefile.in,v 1.9 2006-07-27 16:02:27 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -55,10 +54,10 @@ CFLAGS				+=-I..
 #file format is outpudte in GENERIC format for portability:
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
-ALL				+=${LIBROOT}/libFORM_GENERIC${SO_EXT}
+ALL				+=${PLUGINDIR}/libFORM_GENERIC${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -70,7 +69,7 @@ all: note ${ALL}
 note:
 	@echo "Building: ${ALL}"
 
-${LIBROOT}/libFORM_GENERIC${SO_EXT} : ${OBJS_FORM_GENERIC}
+${PLUGINDIR}/libFORM_GENERIC${SO_EXT} : ${OBJS_FORM_GENERIC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 
@@ -94,7 +93,8 @@ ci: $(CMODS)
 ## ==================================================================
 
 clean :
-	${RM} core *.out *${SO_EXT} *.o *.bak *.dll *.stackdump *.base *.exp *.dll.a
+	${RM} core *.out *.o *.bak *.dll *.stackdump *.base *.exp *.dll.a \
+		${PLUGINDIR}/libFORM_GENERIC${SO_EXT} 
 
 
 ## ==================================================================

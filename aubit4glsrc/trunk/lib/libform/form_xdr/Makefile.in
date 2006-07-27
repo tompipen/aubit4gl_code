@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2004-09-28 09:49:17 afalout Exp $
+# $Id: Makefile.in,v 1.14 2006-07-27 16:02:29 mikeaubury Exp $
 #
 
 ROOT		=../../..
-LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -51,7 +50,7 @@ OBJS_FORM_XDR		=${CMODS_FORM_XDR:.c=.o}
 #    endif
 #else
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=${LIBROOT}/libFORM_XDR${SO_EXT}
+		ALL			+=${PLUGINDIR}/libFORM_XDR${SO_EXT}
     endif
 #endif
 
@@ -69,7 +68,7 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile $
 #file format is outpudte in XDR format for portability:
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL} @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 
 ## ==================================================================
@@ -82,7 +81,7 @@ all: note ${ALL}
 note:
 	@echo "Building: ${ALL}"
 
-${LIBROOT}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
+${PLUGINDIR}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
 	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^ ${LINKLIBS}
 
 ## ==================================================================
@@ -91,7 +90,7 @@ ${LIBROOT}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
 
 #.PHONY : dllFORM_XDR
 #dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
-#	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+#	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -l${AUBITLIBFULL}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
 #	${CP} libFORM_XDR.dll ${LIBROOT}
 
 
@@ -122,8 +121,9 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o:
 
 clean :
 	${RM} $(OBJS_DEBUG) menu_x.h menu_x_xdr.c form_x_xdr.c form_x.h project.c \
-	aubit-config core *.out *.glb *${SO_EXT} *.a  \
-	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp *.def
+	aubit-config core *.out *.glb *.a  \
+	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp *.def \
+		${PLUGINDIR}/libFORM_XDR${SO_EXT} 
 
 
 ## ==================================================================

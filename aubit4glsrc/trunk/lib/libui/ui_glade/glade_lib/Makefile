@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-17 14:09:32 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-07-27 16:04:08 mikeaubury Exp $
 #
 
 ROOT			=../../../..
-LIBROOT			=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include 		${ROOT}/incl/Makefile-common
@@ -41,7 +40,7 @@ include 		${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CFLAGS			+=-I${ROOT}/incl
-ALL				=${LIBROOT}/libA4GL_glade${SO_EXT}
+ALL				=${PLUGINDIR}/libA4GL_glade${SO_EXT}
 OBJS			=list.ao common.ao form.ao sbar.ao field.ao entry.ao \
 					text_view.ao mlist.ao
 LINKLIBS		=$(shell pkg-config libglade-2.0 --libs)
@@ -61,7 +60,7 @@ all: ${ALL}
 	@echo "| Default targets (${ALL}) successfuly compiled"
 	@echo "+--------------------------------------------------------------------+"	
 
-${LIBROOT}/libA4GL_glade${SO_EXT} : ${OBJS}
+${PLUGINDIR}/libA4GL_glade${SO_EXT} : ${OBJS}
 #	export A4GL_LEXTYPE=C && 
 	${FGLPCEXEC} -g ${AS_DLL} $^ -o $@ ${LINKLIBS}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}

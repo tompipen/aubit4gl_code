@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2006-03-07 15:56:02 mikeaubury Exp $
+# $Id: Makefile.in,v 1.17 2006-07-27 16:04:16 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -52,7 +52,10 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 		-D"CONFIGURED_TARGET_OS=\"${TARGET_OS}\"" \
 		-D"_AUBITETC_=\"${WINDOWS_DRIVE}${CYGWIN_PATH}@AUBITETC@\"" \
 		-D"POSTGRESDIR=\"@POSTGRESDIR@\""  \
-		-D"PG_ESQLC=\"@PG_ESQLC@\""  
+		-D"PG_ESQLC=\"@PG_ESQLC@\""   \
+		-D"AUBITLIBFULL=\"${AUBITLIBFULL}\""   \
+		-D"LINKAUBITLIBFULL=\"-l${AUBITLIBFULL}\""  \
+		-D"PLUGINDIR=\"${PLUGINDIR}\""  
 
 
 		#-D"HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=\"@HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H@\""  \
@@ -71,9 +74,12 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 ##                              Targets
 ## ==================================================================
 
-${ROOT}/bin/aubit-config: ${OBJS}
+${ROOT}/bin/aubit-config: ${OBJS} ${LIBROOT}/generated/project.c
 	${CC} ${EXE_CFLAGS} -I../libincl -o $@ $^
 #	${CP} $@ ../../bin
+
+${LIBROOT}/generated/project.c:
+	(cd ${ROOT}/tools/project; ${SH} mkproject)
 
 
 ## ==================================================================

@@ -19,7 +19,7 @@ define
 	mv_esql_to_c_first,
 	mv_make_globals smallint,
 	mv_static smallint
-
+define mv_versioned integer
 define mv_sqltype char(255)
 
 define mv_export_symbols char(256)
@@ -59,12 +59,14 @@ define
 	mv_link_debug 		char(256),
 	mv_dll_opts 		char(256),
 	mv_include 		char(512),
-	mv_libs			char(512)
+	mv_libs			char(512),
+	mv_aubit4gllib 		char(512)
 
 
 function init()
 define lv_pack char(256)
 
+	let mv_versioned=1
 	if mv_verbose>=4 then display "Reading packs" end if
 	let lv_pack=fgl_getenv("A4GL_LEXTYPE")
 	call read_pack(lv_pack)
@@ -148,8 +150,13 @@ define lv_pack char(256)
 #IF fgl_getenv("GTK_INC_PATH")!= "" THEN
 		#let mv_include=mv_include clipped, " -I\"",fgl_getenv("GTK_INC_PATH"),"\""
 	#END IF
+code
+if (A4GL_isyes(acl_getenv("VERSIONEDLIB"))) {
+	mv_versioned=1;
+}
 
-	LET mv_libs="-L",fgl_getenv("AUBITDIR") clipped,"/lib  -laubit4gl"
+endcode
+
 
 	LET mv_compile_4gl	=fgl_getenv("A4GL_4GLC_COMP")
 	LET mv_compile_4gl_opts	=fgl_getenv("A4GL_4GLC_OPTS")
@@ -276,10 +283,22 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-V3"			let mv_verbose=3 continue for
 		WHEN "-V4"			let mv_verbose=4 continue for
 		WHEN "-V5"			let mv_verbose=5 continue for
+		WHEN "-versioned"		let mv_versioned=1 continue for
+		WHEN "-notversioned"		let mv_versioned=0 continue for
 	END CASE
   END FOR
 
   CALL init()
+
+code
+if (mv_versioned) {
+	sprintf(mv_aubit4gllib,"aubit4gl-%s_%d", A4GL_internal_version (), A4GL_internal_build ());
+} else {
+	sprintf(mv_aubit4gllib,"aubit4gl");
+}
+endcode
+
+	LET mv_libs="-L",fgl_getenv("AUBITDIR") clipped,"/lib" #  -l",mv_aubit4gllib clipped
 
   LET lv_minus_c=0
   LET lv_minus_e=0
@@ -504,6 +523,8 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-V3"			let mv_verbose=3 continue for
 		WHEN "-V4"			let mv_verbose=4 continue for
 		WHEN "-V5"			let mv_verbose=5 continue for
+		WHEN "-versioned"		let mv_versioned=1 continue for
+		WHEN "-notversioned"		let mv_versioned=0 continue for
 
 		WHEN "-S"			let mv_verbose=0 continue for
 		WHEN "--silent"			let mv_verbose=0 continue for
@@ -1302,6 +1323,14 @@ end if
 
 if mv_debug then
 	let lv_runstr=lv_runstr clipped," ",mv_link_debug
+end if
+
+if mv_verbose>=5 then
+	display "mv_objects  =",mv_objects clipped
+	display "lv_output   =",lv_output clipped
+	display "mv_libs     =",mv_libs clipped
+	display "mv_link_libs=",mv_link_libs clipped
+	display "mv_link_opts=",mv_link_opts clipped
 end if
 
 let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," ",mv_link_libs clipped, " ",mv_link_opts clipped," 2>",mv_errfile clipped

@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2004-09-28 09:49:22 afalout Exp $
+# $Id: Makefile.in,v 1.15 2006-07-27 16:03:39 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -48,7 +47,7 @@ OBJS_RPC			=${CMODS_RPC:.c=.o}
 ## ==================================================================
 
 ifneq "@HAVE_RPCLIB@" "0"
-	ALL			+=${LIBROOT}/libRPC_XDR${SO_EXT}
+	ALL			+=${PLUGINDIR}/libRPC_XDR${SO_EXT}
 endif
 
 #This must NOT be += because it would place affitional parameters AFTER
@@ -58,7 +57,7 @@ endif
 CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL} @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 
 
@@ -69,7 +68,7 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-${LIBROOT}/libRPC_XDR${SO_EXT}: ${OBJS_RPC}
+${PLUGINDIR}/libRPC_XDR${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 #ifeq "${SO_EXT}" ".dll"
 #	${MV} TMP${SOEXP_EXT} $@.a
@@ -102,7 +101,7 @@ ${CMODS_RPC} : form_x.h
 ## ==================================================================
 
 clean :
-	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	${RM} *.out *.glb ${PLUGINDIR}/libRPC_XDR${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
 	core *.base *.exp *.def
 
 ## ==================================================================

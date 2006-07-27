@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2005-02-03 07:47:32 afalout Exp $
+# $Id: Makefile,v 1.7 2006-07-27 16:03:00 mikeaubury Exp $
 #
 
-LIBROOT		=../../..
 ROOT		=../../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -86,7 +85,7 @@ endif
 
 ifeq "${GTKBUILD}" "yes"
 ifeq "${PDFBUILD}" "yes"
-	ALL+=${LIBROOT}/libLOGREP_PDF${SO_EXT}
+	ALL+=${PLUGINDIR}/libLOGREP_PDF${SO_EXT}
 endif
 endif
 
@@ -95,8 +94,8 @@ endif
 ## ==================================================================
 
 CFLAGS		+=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl
-#LFLAGS		=-L$(ROOT)/lib -laubit4gl `pkg-config --libs --cflags gtk+-2.0`
-LINKLIBS	=-L$(ROOT)/lib -laubit4gl
+#LFLAGS		=-L$(ROOT)/lib -l${AUBITLIBFULL} `pkg-config --libs --cflags gtk+-2.0`
+LINKLIBS	=-L$(ROOT)/lib -l${AUBITLIBFULL}
 
 ## ==================================================================
 ##                              Targets
@@ -104,7 +103,7 @@ LINKLIBS	=-L$(ROOT)/lib -laubit4gl
 
 all: ${ALL}
 
-${LIBROOT}/libLOGREP_PDF${SO_EXT} : layout_pdf.c ../common/common_pdf.c
+${PLUGINDIR}/libLOGREP_PDF${SO_EXT} : layout_pdf.c ../common/common_pdf.c
 #	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} ${LFLAGS}
 	${LD} ${GTK_LIB_PATH} ${GTK_INC_PATH} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ ${LINKLIBS} ${GTKLIBS}
 	
@@ -113,6 +112,6 @@ ${LIBROOT}/libLOGREP_PDF${SO_EXT} : layout_pdf.c ../common/common_pdf.c
 ## ==================================================================
 
 clean:
-	${RM} ${LIBROOT}/libLOGREP_PDF${SO_EXT} *.o *.dll.a *~
+	${RM} ${PLUGINDIR}/libLOGREP_PDF${SO_EXT} *.o *.dll.a *~
 	
 	

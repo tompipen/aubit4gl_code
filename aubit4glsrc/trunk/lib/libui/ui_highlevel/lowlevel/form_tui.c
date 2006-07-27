@@ -18,7 +18,7 @@ void A4GL_LL_screen_refresh (void);
 // for now - we'll just use these defaults and hope for the 
 // best....
 //
-#define NEED_CURRWHB 24,80,0,1
+#define NEED_CURRWHB 80,24,UILIB_A4GL_iscurrborder(),A4GL_get_currwinno()
 
 /* A lot of this is copied from ncurses libform and hacked...
 
@@ -532,6 +532,7 @@ A4GL_form_scale_form (const FORM * form, int *rows, int *columns)
 	}
 
     }
+  A4GL_debug("Scale form :  %d %d\n",maxy,maxx);
   *rows = maxy;
   *columns = maxx;
   return E_OK;

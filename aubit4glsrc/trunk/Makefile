@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.24 2006-05-03 07:52:33 mikeaubury Exp $
+# $Id: Makefile,v 1.25 2006-07-27 16:00:27 mikeaubury Exp $
 #
 
 ## ==================================================================
@@ -173,11 +173,17 @@ log:
 
 #main target of default build
 corecompile:
+	@echo "Making XGEN"
 	$(MAKE) -C compilers/xgen
+	@echo "Making Dataio"
 	$(MAKE) -C common/dataio
+	@echo "Making lib"
 	$(MAKE) -C lib
+	@echo "Making compilers/4glc"
 	$(MAKE) -C compilers/4glc
+	@echo "Making compilers/sql"
 	$(MAKE) -C compilers/sql
+	@echo "Making compilers/helpcompile"
 	$(MAKE) -C compilers/helpcompile
 	$(MAKE) -C tools/4glpc
 	$(MAKE) -C compilers/fcompile

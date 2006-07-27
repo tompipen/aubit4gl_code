@@ -1,12 +1,16 @@
+ROOT    =../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
 
 
-all: ../../libfgl_smtp.so test_smtp test_rep
+all: ${PLUGINDIR}/libfgl_smtp.so test_smtp test_rep
 
 CFLAGS+= -I. -I./src
 smtpdir=./libsmtp-0.8
 
-../../libfgl_smtp.so: aubit_smtp.4gl 
-	4glpc -g -as-dll `pkg-config --cflags glib-2.0` -I$(smtpdir)/include  aubit_smtp.4gl -o ../../libfgl_smtp.so   -L$(smtpdir)/lib  -lsmtp -lsmtp_mime `pkg-config --libs glib-2.0`
+${PLUGINDIR}/libfgl_smtp.so: aubit_smtp.4gl 
+	4glpc -g -as-dll `pkg-config --cflags glib-2.0` -I$(smtpdir)/include  aubit_smtp.4gl -o $@   -L$(smtpdir)/lib  -lsmtp -lsmtp_mime `pkg-config --libs glib-2.0`
 
 
 test_smtp: test_smtp.4gl

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.120 2006-07-21 09:55:29 mikeaubury Exp $
+# $Id: resource.c,v 1.121 2006-07-27 16:04:16 mikeaubury Exp $
 #
 */
 
@@ -327,7 +327,7 @@ struct str_resource builtin_resource[] = {
 			 // Setting to N will mess up TERM=SCOANSI and doesn't seem to 
 			// matter otherwise...
   /* all platforms Compilation options */
-  {"A4GL_LINK_LIBS", "-laubit4gl"},
+  {"A4GL_LINK_LIBS", LINKAUBITLIBFULL},
   {"A4GL_C_COMP", "gcc"},
   {"A4GL_RDYNAMIC", "-rdynamic"},
   
@@ -629,11 +629,19 @@ int cumulate = 0;
 char cumulate_char=0;
 static char cumulated_string[2048]="";
 static char cumulated_string_tmp[2048]="";
+
+
+	if (strcmp(s,"A4GL_VERSION_STRING")==0) {
+		SPRINTF2(prefixed_string,"%s_%d",A4GL_internal_version(),A4GL_internal_build());
+		return prefixed_string;
+	}
+
 #ifdef DEBUG_VARIABLE_USAGE
 	if (fd1==0) {
 		fd1=fopen("/tmp/acl_getenv","w");
 	}
 #endif
+
 
 // We can only use optimization in one case 
 // so we're choosing to do it when we can look in

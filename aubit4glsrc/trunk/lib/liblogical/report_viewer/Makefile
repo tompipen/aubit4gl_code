@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2004-12-07 01:43:57 afalout Exp $
+# $Id: Makefile,v 1.13 2006-07-27 16:03:11 mikeaubury Exp $
 #
 
-LIBROOT		=../..
 ROOT		=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -93,7 +92,7 @@ endif
 
 #LFLAGS=` pkg-config --libs --cflags gtk+-2.0` 
 
-LINKLIBS	=-L$(AUBITDIR)/lib -laubit4gl 
+LINKLIBS	=-L$(AUBITDIR)/lib -l${AUBITLIBFULL} 
 
 ## ==================================================================
 ##                              Targets

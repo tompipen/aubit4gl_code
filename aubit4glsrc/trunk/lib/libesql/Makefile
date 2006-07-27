@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.33 2006-03-17 19:01:37 mikeaubury Exp $
+# $Id: Makefile,v 1.34 2006-07-27 16:02:24 mikeaubury Exp $
 #
 
 ROOT    =../..
-LIBROOT	=..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -43,17 +42,17 @@ include ${ROOT}/incl/Makefile-common
 #to work...
 #FIXME-in that case, it should be linked in conditionally:
 ifneq "${COMSPEC}" ""
-	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
+	LIBAUBIT4GL=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 ifeq "${TARGET_OS}" "solaris"
-	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
+	LIBAUBIT4GL=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
 
-ALL=${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT} \
-    ${LIBROOT}/libESQL_SAP${SO_EXT} ${LIBROOT}/libESQL_QUERIX${SO_EXT} ${LIBROOT}/libESQL_INGRES${SO_EXT}
+ALL=${PLUGINDIR}/libESQL_INFORMIX${SO_EXT} ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT} \
+    ${PLUGINDIR}/libESQL_SAP${SO_EXT} ${PLUGINDIR}/libESQL_QUERIX${SO_EXT} ${PLUGINDIR}/libESQL_INGRES${SO_EXT}
 
 ifneq "${COMSPEC}" ""
 	QUERIX_IFLAGS=-I"${QUERIXDIR}/include"
@@ -109,8 +108,8 @@ all: ${ALL}
 	@echo "Done: ${ALL}"
 
 ###################
-libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
-${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
+#${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}: ${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}
+${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 ifneq "${COMSPEC}" ""
 	$(CC) $(LDFLAGS) -g -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
@@ -122,26 +121,26 @@ else
 endif
 
 ###################
-libESQL_POSTGRES${SO_EXT}: ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
-${LIBROOT}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
+#${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
+${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 # -Bstatic
 #gcc: file path prefix "static" never used
 
 ###################
-libESQL_SAP${SO_EXT}: ${LIBROOT}/libESQL_SAP${SO_EXT}
-${LIBROOT}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
+#${PLUGINDIR}/libESQL_SAP${SO_EXT}: ${PLUGINDIR}/libESQL_SAP${SO_EXT}
+${PLUGINDIR}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 ###################
-libESQL_QUERIX${SO_EXT}: ${LIBROOT}/libESQL_QUERIX${SO_EXT}
-${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
+#${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}
+${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
 
 
 
-libESQL_INGRES${SO_EXT}: ${LIBROOT}/libESQL_INGRES${SO_EXT}
-${LIBROOT}/libESQL_INGRES${SO_EXT}: helper_funcs_ingres.o
+#${PLUGINDIR}/libESQL_INGRES${SO_EXT}: ${PLUGINDIR}/libESQL_INGRES${SO_EXT}
+${PLUGINDIR}/libESQL_INGRES${SO_EXT}: helper_funcs_ingres.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
 
 ## ==================================================================
@@ -221,7 +220,7 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} -f *.o *.c *${SO_EXT} *.cpc *.bak *.ec.w2 *.ec.w3 *.ec.pcl
+	${RM} -f *.o *.c ${ALL} *.cpc *.bak *.ec.w2 *.ec.w3 *.ec.pcl
 
 
 

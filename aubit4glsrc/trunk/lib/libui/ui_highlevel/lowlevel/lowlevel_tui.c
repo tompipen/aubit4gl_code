@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.89 2006-07-24 21:03:14 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.90 2006-07-27 16:04:11 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +88,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.89 2006-07-24 21:03:14 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.90 2006-07-27 16:04:11 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -525,7 +525,7 @@ A4GL_LL_wadd_char_xy_col_w (void *win, int x, int y, int ch, int curr_width,
     }
   if (x < 0 || y < 0 || x > curr_width || y > curr_height)
     {
-      A4GL_debug ("Out of range:%d,%d ", x, y);
+      A4GL_debug ("Out of range:%d,%d curr_width=%d curr_height=%d", x, y,curr_width,curr_height);
     }
   else
     {
@@ -1612,7 +1612,7 @@ A4GL_LL_set_current_field (void *form, void *field)
 	  if (A4GL_form_field_opts(field)&O_ACTIVE) ;
 	  else {
 		  A4GL_assertion(1,"Want to make current an inactive field");
-		  A4GL_pause_execution();
+		  //A4GL_pause_execution();
 		  A4GL_debug("FIELD ISNT ACTIVE!");
 	  }
   } else {

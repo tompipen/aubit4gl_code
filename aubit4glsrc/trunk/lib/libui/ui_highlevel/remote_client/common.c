@@ -315,5 +315,10 @@ A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
     strcat (attr_str, "ALT ");
 }
 
+A4GL_LL_field_opts(f) {
+	A4GL_assertion(1,"A4GL_LL_field_opts Invalid for pipeclient");
+}
 
-
+A4GL_ll_set_field_opts(void *f,long o) {
+	A4GL_LL_set_field_opts(f,o);
+}

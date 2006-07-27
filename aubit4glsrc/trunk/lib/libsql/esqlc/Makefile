@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2005-06-06 16:31:56 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2006-07-27 16:03:43 mikeaubury Exp $
 #
 
 ROOT		=../../..
-LIBROOT		=../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -63,7 +62,7 @@ ifneq "$(findstring esql,${PLUGIN_STATIC})" ""
 	#Must include libaubit4gl when linking statically, since statically linked
     #libs cannot have unresolved symbols at link-time. This one still has to be
     #linked in shared mode, since we don't make libaubit4gl.a (Thank God...)
-	LD_POSTFLAGS    =-L${LIBROOT} -shared -laubit4gl
+	LD_POSTFLAGS    =-L${LIBROOT} -shared -l${AUBITLIBFULL}
 
 	#Don't know why, but -static flag was not enough, I still got everything
 	#linked shared - so we had to explicitly name objects to link statically:
@@ -121,7 +120,7 @@ else
 	
 endif
 
-ALL				=${LIBROOT}/libSQL_esql${SO_EXT}
+ALL				=${PLUGINDIR}/libSQL_esql${SO_EXT}
 
 #C pre-processor flags:
 CPP_FLAGS=-I${ROOT}/incl -I.. -P
@@ -136,7 +135,7 @@ CPC_FLAGS=-H nocheck -c
 CPCLNK=${SAPDBROOT}/interfaces/precompiler/bin/cpclnk
 
 ifneq "${COMSPEC}" ""
-	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
+	LIBAUBIT4GL=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
 PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
@@ -169,7 +168,7 @@ ifdef COMSPEC
 	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}${IFX_CSDK_DIR}
 	IFX_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
 		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
-	LINKLIBS=-L../../ -laubit4gl
+	LINKLIBS=-L../../ -l${AUBITLIBFULL}
 	CFLAGS+=-D_REENTRANT -DIFX_THREAD -I"${INFORMIXDIR_CSDK}\incl\esql"	
 endif
 
@@ -193,8 +192,8 @@ ALL: ${ALL}
 
 ##################
 #ESQL/C database plug-in compiled with Informix ESQL/C compiler:
-libSQL_esql${SO_EXT}: ${LIBROOT}/libSQL_esql${SO_EXT}
-${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
+#${PLUGINDIR}/libSQL_esql${SO_EXT}: ${PLUGINDIR}/libSQL_esql${SO_EXT}
+${PLUGINDIR}/libSQL_esql${SO_EXT}: ${SRC}
 #	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 ifneq "${COMSPEC}" ""
 #	$(ESQL_SOMETHING) $(ESQL_FLAGS) -e $<
@@ -212,8 +211,8 @@ endif
 
 ##################
 #ESQL/C database plug-in compiled with Informix ESQL/C compiler:
-libSQL_esqlI${SO_EXT}: ${LIBROOT}/libSQL_esqlI${SO_EXT}
-${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
+#${PLUGINDIR}/libSQL_esqlI${SO_EXT}: ${PLUGINDIR}/libSQL_esqlI${SO_EXT}
+${PLUGINDIR}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c ifx_$^ ${ESQL_FLAGS} \
 		${ESQL_INCLPATH} ${C_DFLAGS}
@@ -224,8 +223,8 @@ ${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 #HEAD= > /tmp/scr.scr 2>&1; head /tmp/scr.scr
 HEAD_NOWARN= 2>&1 | grep -v "warning:" | grep -v "In function" > /tmp/scr.scr ; head /tmp/scr.scr
 BREAK=@exit 1
-libSQL_esqlQ${SO_EXT}: ${LIBROOT}/libSQL_esqlQ${SO_EXT}
-${LIBROOT}/libSQL_esqlQ${SO_EXT}: esql_compatible.ec
+#${PLUGINDIR}/libSQL_esqlQ${SO_EXT}: ${PLUGINDIR}/libSQL_esqlQ${SO_EXT}
+${PLUGINDIR}/libSQL_esqlQ${SO_EXT}: esql_compatible.ec
 ##must remove .c file or .ec will not get recompiled
 	rm -f q_$(basename $<).c
 	cpp ${CPP_FLAGS} $^ -D__QUERIX__ -D__QUERIX_FIX__ > q_$^
@@ -241,8 +240,8 @@ ${LIBROOT}/libSQL_esqlQ${SO_EXT}: esql_compatible.ec
 ##################
 #SAP DB ESQL/C compiler:
 PRECIOUS : sap_esql_compatible.ec.o
-libSQL_esqlSAP${SO_EXT}: ${LIBROOT}/libSQL_esqlSAP${SO_EXT}
-${LIBROOT}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
+#${PLUGINDIR}/libSQL_esqlSAP${SO_EXT}: ${PLUGINDIR}/libSQL_esqlSAP${SO_EXT}
+${PLUGINDIR}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
 #cpc will allways add .cpc extension to any source files
 	cpp ${CPP_FLAGS} $^ -D__SAP__  -I${SAPDBROOT}/interfaces/precompiler/incl > sap_$^.cpc
 	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl 2>&1
@@ -255,8 +254,8 @@ ${LIBROOT}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
 
 ##################
 #PostgreSQL ESQL/C compiler:
-libSQL_esqlPG${SO_EXT}: ${LIBROOT}/libSQL_esqlPG${SO_EXT}
-${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
+#${PLUGINDIR}/libSQL_esqlPG${SO_EXT}: ${PLUGINDIR}/libSQL_esqlPG${SO_EXT}
+${PLUGINDIR}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 
 #	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ -I/opt/ecpg-cvs/include > pg_$^
 	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ ${PGSQL_INCLUDE} > pg_$^
@@ -272,8 +271,8 @@ ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 #Simple Informix ESQL/C plug-in, based on 'simple' template
 #FIXME: does not compile
 #FIXME: Not sure what is this good for, when we already have working one?
-libSQL_c_esql${SO_EXT}: ${LIBROOT}/libSQL_c_esql${SO_EXT}
-${LIBROOT}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
+#${PLUGINDIR}/libSQL_c_esql${SO_EXT}: ${PLUGINDIR}/libSQL_c_esql${SO_EXT}
+${PLUGINDIR}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
 	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
@@ -283,8 +282,8 @@ ${LIBROOT}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
 #Used only for 4glc to resolve variables define as LIKE when compiling to 
 #EC with POSTGRES dialect - DOES NOT HAVE IMPLEMENTED FULL FUNCTIONALITY OF
 #DRIVER NEEDED TO RUN PROGRAMS.
-libSQL_c_ecpg${SO_EXT}: ${LIBROOT}/libSQL_c_ecpg${SO_EXT}
-${LIBROOT}/libSQL_c_ecpg${SO_EXT}: esql_simple_ecpg.ec
+#${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}
+${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: esql_simple_ecpg.ec
 #	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib; export LD_RUN_PATH
 	${PG_ESQLC} -ct $^
 	${CC} -c -I. -I.. -I${ROOT}/incl -I$(ECPG_INCDIR) ${LIBPQ_FE_H_IFLAGS} \
@@ -311,11 +310,13 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} *.o *${SO_EXT} *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp \
-	*.lib .\#* ifx_* pg_* sap_* q_* ${LIBROOT}/libSQL_esql${SO_EXT} \
-    ${LIBROOT}/libSQL_esqlPG${SO_EXT} ${LIBROOT}/libSQL_esqlSAP${SO_EXT} \
-	*.pcl *.lst *.so *.dll *~ ${ALL}
+	${RM} *.o  *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp \
+	*.lib .\#* ifx_* pg_* sap_* q_* ${PLUGINDIR}/libSQL_esql${SO_EXT} \
+    	${PLUGINDIR}/libSQL_esqlPG${SO_EXT} ${PLUGINDIR}/libSQL_esqlSAP${SO_EXT} \
+	${PLUGINDIR}/libSQL_esqlI${SO_EXT} \
+	${PLUGINDIR}/libSQL_esqlQ${SO_EXT} \
+	${PLUGINDIR}/libSQL_c_esql${SO_EXT}  \
+	${PLUGINDIR}/libSQL_c_ecpg${SO_EXT} \
+	*.pcl *.lst *~ ${ALL}
 
 #------------------------------- EOF -------------------------------
-
-

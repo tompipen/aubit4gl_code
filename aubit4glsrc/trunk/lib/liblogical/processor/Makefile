@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2005-08-28 16:12:58 mikeaubury Exp $
+# $Id: Makefile,v 1.10 2006-07-27 16:03:09 mikeaubury Exp $
 #
 ROOT		=../../..
-LIBROOT		=${ROOT}/lib
 
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -56,7 +55,7 @@ endif
 ## ==================================================================
 
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	${CC} -g ${OBJS} -o $@  -L$(LIBROOT) -laubit4gl ${LD_EXE_FLAGS}
+	${CC} -g ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${LD_EXE_FLAGS}
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@

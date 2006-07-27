@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-12-01 07:21:09 afalout Exp $
+# $Id: Makefile,v 1.4 2006-07-27 16:03:58 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT	=../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -37,11 +36,11 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-../../libSQLPARSE_NONE${SO_EXT}: util.c
+$(PLUGINDIR)/libSQLPARSE_NONE${SO_EXT}: util.c
 	${CC} -shared -fPIC $^ -o $@
 	
 clean:
-	${RM} *.o ../../libSQLPARSE_NONE${SO_EXT}
+	${RM} *.o $(PLUGINDIR)/libSQLPARSE_NONE${SO_EXT}
 	
 	
 	

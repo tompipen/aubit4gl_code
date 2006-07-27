@@ -28,7 +28,7 @@
 # ==================================================================
 
 #
-# $Id: Makefile.in,v 1.3 2003-01-22 10:55:40 afalout Exp $
+# $Id: Makefile.in,v 1.4 2006-07-27 16:04:28 mikeaubury Exp $
 #
 
 ROOT    =../../../..
@@ -50,7 +50,7 @@ SOURCES_C       =test_informix.c connection_suite.c ddl_suite.c dml_suite.c
 OBJECTS         =${SOURCES_C:.c=.o} ${SOURCES_ESQL:.ec=.o}
 OBJECTS_ESQL2	=${SOURCES_ESQL2:.ec=.o}
 
-LIBS=-lcheck -laubit4gl
+LIBS=-lcheck -l${AUBITLIBFULL}
 
 ifeq "@HAS_CHECK@" "1"
 	ifneq "${ESQL}" "no"

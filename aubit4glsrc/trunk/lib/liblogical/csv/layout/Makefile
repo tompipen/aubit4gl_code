@@ -24,10 +24,9 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2005-07-26 16:20:18 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2006-07-27 16:02:55 mikeaubury Exp $
 #
 
-LIBROOT		=../../..
 ROOT		=../../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -84,7 +83,7 @@ endif
 endif
 
 ifeq "${GTKBUILD}" "yes"
-	ALL+=${LIBROOT}/libLOGREP_CSV${SO_EXT}
+	ALL+=${PLUGINDIR}/libLOGREP_CSV${SO_EXT}
 endif
 
 ## ==================================================================
@@ -96,7 +95,7 @@ endif
 #	-I../common -I../../common -Wall -rdynamic -shared -g
 
 CFLAGS		+=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -I../common -I../../common
-LINKLIBS	=-L$(ROOT)/lib -laubit4gl
+LINKLIBS	=-L$(ROOT)/lib -l${AUBITLIBFULL}
 
 ## ==================================================================
 ##                              Targets
@@ -104,7 +103,7 @@ LINKLIBS	=-L$(ROOT)/lib -laubit4gl
 
 all: ${ALL}
 
-${LIBROOT}/libLOGREP_CSV${SO_EXT} : layout_csv.c ../common/csv_io.c
+${PLUGINDIR}/libLOGREP_CSV${SO_EXT} : layout_csv.c ../common/csv_io.c
 #	${CC} ${CFLAGS} $^ -o $@ -L$(ROOT)/lib -laubit4gl
 #	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
 	${LD} ${GTK_LIB_PATH} ${GTK_INC_PATH} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ ${LINKLIBS} ${GTKLIBS}
@@ -136,6 +135,6 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} *.o ${LIBROOT}/libLOGREP_CSV${SO_EXT} *.dll.a *~ ../common/csv_io.o
+	${RM} *.o ${PLUGINDIR}/libLOGREP_CSV${SO_EXT} *.dll.a *~ ../common/csv_io.o
 	
 	

@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.28 2006-07-17 11:16:09 mikeaubury Exp $
+# $Id: Makefile,v 1.29 2006-07-27 16:02:33 mikeaubury Exp $
 #
 
 ROOT    	=../..
-LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -48,8 +47,8 @@ CFLAGS+= -DPORTABLE
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libHELP_std${SO_EXT}: helplib.o a4gl_xxhelp.afr.o
-	${LD} ${SO_LDFLAGS} -g -DPORTABLE -o $@ $^ -I${ROOT}/incl -L${ROOT}/lib -laubit4gl
+${PLUGINDIR}/libHELP_std${SO_EXT}: helplib.o a4gl_xxhelp.afr.o
+	${LD} ${SO_LDFLAGS} -g -DPORTABLE -o $@ $^ -I${ROOT}/incl -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "Help library sucesfully compiled."
 
 
@@ -80,7 +79,7 @@ a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 ## ==================================================================
 
 clean:
-	${RM} a4gl_xxhelp.afr.c ${LIBROOT}/libHELP_std${SO_EXT} \
+	${RM} a4gl_xxhelp.afr.c ${PLUGINDIR}/libHELP_std${SO_EXT} \
 	a4gl_xxhelp.afr.dat helplib.${FGLC_OUTPUT_EXT} helplib.c helplib.ec \
 	helplib.glb helplib.h *.err *.bak debug.out *.o *.ao *~ *.warn
 

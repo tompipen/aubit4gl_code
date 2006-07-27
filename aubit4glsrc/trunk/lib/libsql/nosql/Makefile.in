@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2004-09-28 09:49:23 afalout Exp $
+# $Id: Makefile.in,v 1.16 2006-07-27 16:03:48 mikeaubury Exp $
 #
 
 ROOT    =../../..
-LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -41,10 +40,10 @@ include ${ROOT}/incl/Makefile-common
 CFLAGS+=-I.. -I${ROOT}/compilers/fcompile @RPCLIB_INCLUDE@
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
-ALL=${LIBROOT}/libSQL_nosql${SO_EXT}
+ALL=${PLUGINDIR}/libSQL_nosql${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -54,7 +53,7 @@ ALL: ${ALL}
 
 nosql${SO_EXT}: libSQL_nosql${SO_EXT}
 
-${LIBROOT}/libSQL_nosql${SO_EXT}: nosql.o
+${PLUGINDIR}/libSQL_nosql${SO_EXT}: nosql.o
 	${LD} ${SO_LDFLAGS} $^ -o $@  ${LINKLIBS}
 ifeq "${SO_EXT}" ".dll"
 	${MV} TMP${SOEXP_EXT} $@.a
