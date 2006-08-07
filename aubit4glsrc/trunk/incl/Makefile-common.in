@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.195 2006-07-27 16:01:14 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.196 2006-08-07 13:45:34 briantan Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1149,6 +1149,7 @@ IMPORT_DIR =$(SOURCE)/${IMPORT_PATH}
 #Paths to install to:
 BIN_DEST	=$(INSTALL_DIR)/${BIN_PATH}
 LIB_DEST	=$(INSTALL_DIR)/${LIB_PATH}
+PLUGIN_DEST	=$(INSTALL_DIR)/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
 FGLPC_SETTINGS_DEST	=$(INSTALL_DIR)/${FGLPC_SETTINGS_PATH}
 DOC_DEST   	=$(INSTALL_DIR)/${DOC_PATH}
 TEST_DEST   =$(INSTALL_DIR)/${TEST_PATH}
@@ -1242,7 +1243,9 @@ LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES}) $(addprefix ${PLUGINDIR}/lib,${TM
 #endif
 
 #LIB_DEFAULT=@ALL_LIBS@ @COMP_LIBS@
-LIB_SO		=${LIB_DEFAULT}
+#LIB_SO		=${LIB_DEFAULT}
+LIB_SO		=$(addprefix ${LIB_DIR}/lib,${TMP_LIBFILES})
+PLUGIN_SO	=$(addprefix ${PLUGINDIR}/lib,${TMP_PLUGINFILES})
 
 #Lib files we build depending on available 3rd party support:
 #did not work by passing this directly to notdir:
@@ -1250,7 +1253,8 @@ LIB_SO		=${LIB_DEFAULT}
 TMP_RPMFILES=$(addprefix ${PLUGINDIR}/lib,@PLUGIN_YES@ @PLUGIN_YES_LINKABLE@)
 LIB_OPTIONAL=$(addsuffix ${SO_EXT},${TMP_RPMFILES})
 
-LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
+LIB_FILES   		=${LIB_SO} 
+PLUGIN_FILES   		=${PLUGIN_SO} ${LIB_OPTIONAL}
 
 ifneq "${COMSPEC}" ""
 	LIB_FILES 		+=lib4glc${SO_EXT} $(addprefix lib,$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB}))
@@ -1338,7 +1342,9 @@ ROOT_ALLWAYSCLEAN=libtool
 
 #installation files with paths:
 TOBIN		=$(addprefix $(BIN_DIR)/,		$(BIN_FILES))
-TOLIB		=$(addprefix $(LIB_DIR)/,		$(LIB_FILES))
+#TOLIB		=$(addprefix $(LIB_DIR)/,		$(LIB_FILES))
+TOLIB		=$(LIB_FILES)-@AUBIT_VERSION@_@AUBIT_BUILD@
+TOPLUGIN	=$(PLUGIN_FILES)
 TODOCS		=$(addprefix $(DOC_DIR)/,		$(DOC_FILES))
 TOTEST_STD  =$(addprefix $(TEST_DIR_STD)/,	$(TEST_STD))
 TOTEST_GUI	=$(addprefix $(TEST_DIR_GUI)/,	$(TEST_GUI))
