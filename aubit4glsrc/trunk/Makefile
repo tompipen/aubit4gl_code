@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.25 2006-07-27 16:00:27 mikeaubury Exp $
+# $Id: Makefile,v 1.26 2006-08-07 13:53:06 briantan Exp $
 #
 
 ## ==================================================================
@@ -738,6 +738,7 @@ install.core: install.tree
 	$(CP) $(TOROOT) $(ROOT_DEST)
 	$(CP) $(TOINCL) $(INCL_DEST)
 	$(CP) $(TOLIB) $(LIB_DEST)
+	$(CP) $(TOPLUGIN) $(PLUGIN_DEST)
 	@echo Aubit 4gl core compiler files installed
 
 #Prepare and install Makefile-common make include
@@ -790,6 +791,7 @@ pack.ide:
 #Create installation tree
 install.tree:
 	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) $(FGLPC_SETTINGS_DEST) \
+	${PLUGIN_DEST} \
 	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST) ${CONVSQL_DEST} ${IMPORT_DEST}
 	@echo "Aubit 4gl compiler instalation tree created"
 #FIXME: we need to chown installation tree to something, since installation has 
