@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.196 2006-08-07 13:45:34 briantan Exp $
+# $Id: Makefile-common.in,v 1.197 2006-08-08 06:20:06 briantan Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1244,7 +1244,7 @@ LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES}) $(addprefix ${PLUGINDIR}/lib,${TM
 
 #LIB_DEFAULT=@ALL_LIBS@ @COMP_LIBS@
 #LIB_SO		=${LIB_DEFAULT}
-LIB_SO		=$(addprefix ${LIB_DIR}/lib,${TMP_LIBFILES})
+LIB_SO		=$(addprefix ${LIB_DIR}/lib,$(addsuffix -@AUBIT_VERSION@_@AUBIT_BUILD@${SO_EXT_LINKABLE},${LIB_EXPORTLIB}))
 PLUGIN_SO	=$(addprefix ${PLUGINDIR}/lib,${TMP_PLUGINFILES})
 
 #Lib files we build depending on available 3rd party support:
@@ -1343,7 +1343,7 @@ ROOT_ALLWAYSCLEAN=libtool
 #installation files with paths:
 TOBIN		=$(addprefix $(BIN_DIR)/,		$(BIN_FILES))
 #TOLIB		=$(addprefix $(LIB_DIR)/,		$(LIB_FILES))
-TOLIB		=$(LIB_FILES)-@AUBIT_VERSION@_@AUBIT_BUILD@
+TOLIB		=$(LIB_FILES)
 TOPLUGIN	=$(PLUGIN_FILES)
 TODOCS		=$(addprefix $(DOC_DIR)/,		$(DOC_FILES))
 TOTEST_STD  =$(addprefix $(TEST_DIR_STD)/,	$(TEST_STD))
