@@ -79,8 +79,7 @@ AUBITETC=@AUBITETC@
 #Must NOT be enclosed in quotes!
 #NOTE: 'make install' will automatically change this setting when 
 #installing 'aubitrc' outside of Aubit source code tree
-#AUBITDIR=@aubitdir@
-AUBITDIR=@prefix@
+AUBITDIR=@aubitdir@
 #Used by automated tests script (run_tests) to find source code as needed
 AUBITDIR_SRC=@aubitdir@
 
