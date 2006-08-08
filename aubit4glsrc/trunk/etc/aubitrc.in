@@ -79,7 +79,8 @@ AUBITETC=@AUBITETC@
 #Must NOT be enclosed in quotes!
 #NOTE: 'make install' will automatically change this setting when 
 #installing 'aubitrc' outside of Aubit source code tree
-AUBITDIR=@aubitdir@
+#AUBITDIR=@aubitdir@
+AUBITDIR=@prefix@
 #Used by automated tests script (run_tests) to find source code as needed
 AUBITDIR_SRC=@aubitdir@
 
@@ -105,7 +106,8 @@ A4GL_CINT="@CINT@"
 #NOTE: DBPATH to xxx/incl is for adbaccess form files
 #FIXME: currently MUST NOT be quoted - we will have to allow this
 #since paths can include spaces
-A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/@SHORTNAME@/incl
+#A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/@SHORTNAME@/incl
+A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/incl
 
 ############
 #CONFIG FILE BASED CONVERSIONS
