@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.29 2006-07-17 15:29:37 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.30 2006-08-13 08:47:31 mikeaubury Exp $
 #*/
 
 /**
@@ -288,7 +288,7 @@ int entry=0;
 
 #ifdef XDEF
 void
-A4GLPDFREP_A4GL_pdf_fputmanyc (struct rep_structure *rep, int c, int cnt)
+A4GLPDFREP_A4GL_pdf_fputmanyc (struct pdf_rep_structure *rep, int c, int cnt)
 {
   //int a;
   char *x;
@@ -440,18 +440,18 @@ A4GLPDFREP_A4GL_pdf_need_lines (void *vrep)
 void
 A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
 {
-  struct rep_structure *rep;
+  struct pdf_rep_structure *rep;
   int z;
   int a;
+  double ad;
 
   rep = vrep;
-  a =
-    rep->page_length - rep->line_no - rep->bottom_margin -
-    rep->lines_in_trailer;
 
-  a =
-    rep->page_length - rep->line_no - rep->bottom_margin -
-    rep->lines_in_trailer;
+
+  /* a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer; */
+
+  a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
+  ad = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
 
   if (n != 1 || rep->page_no)
     {
@@ -461,11 +461,17 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
 	return;
     }
 
+  A4GLPDFREP_A4GL_pdf_skip_to (vrep,  ad+0);
+  A4GL_pdf_rep_print (rep, 0, 0, 0, -5);
 
-  if (a)
+  if (a &&0)
     {
+    double b;
       for (z = 0; z < a; z++)
 	{
+		printf("%d %lf %lf \n",a, ad,b);
+  		b = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
+
 	  A4GL_pdf_rep_print (rep, 0, 0, 0, -4);
 	}
 
