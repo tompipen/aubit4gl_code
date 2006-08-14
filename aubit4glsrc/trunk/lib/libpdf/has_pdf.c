@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.31 2006-08-14 10:14:04 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.32 2006-08-14 16:55:33 briantan Exp $
 #*/
 
 /**
@@ -393,7 +393,8 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
   /* a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer; */
 
   a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
-  ad = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
+//  ad = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
+  ad = rep->page_length - rep->bottom_margin - rep->lines_in_trailer;
 
   if (n != 1 || rep->page_no)
     {
@@ -404,7 +405,7 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
     }
 
   //A4GLPDFREP_A4GL_pdf_skip_to (vrep,  ad+0);
-  rep->line_no = a;
+  rep->line_no = ad;
   
   A4GL_pdf_rep_print (rep, 0, 0, 0, -5);
 
