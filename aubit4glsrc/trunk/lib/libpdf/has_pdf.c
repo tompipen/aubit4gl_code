@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.30 2006-08-13 08:47:31 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.31 2006-08-14 10:14:04 mikeaubury Exp $
 #*/
 
 /**
@@ -43,25 +43,10 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-#include <stdio.h>
-
-#include "pdflib.h"
-
-#include "a4gl_runtime_tui.h"	/* A4GL_push_int */
-#include "a4gl_dbform.h"
-#include "a4gl_report.h"
-#include "a4gl_stack.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
-
-#else
 
 #define USE_PDFLIB_H
 #include "a4gl_lib_exreport_pdf_int.h"
 
-#endif
 
 
 #define SECTION_NORMAL 0
@@ -69,35 +54,6 @@
 #define SECTION_TRAILER 2
 static char * A4GL_report_char_pop (void);
 
-#ifdef NOT_REQUIRED
-double A4GLPDFREP_A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
-
-/* double 	pdf_size		(double f, char c,struct pdf_rep_structure *p) ; */
-
-
-
-
-void A4GLPDFREP_A4GL_pdf_skip_by (struct pdf_rep_structure *rep, double a);
-void A4GLPDFREP_A4GL_pdf_aclfgli_skip_lines (struct pdf_rep_structure *rep);
-/* void A4GL_pdf_fputmanyc (FILE * f, int c, int cnt); */
-void A4GLPDFREP_A4GL_pdf_set_column (struct pdf_rep_structure *rep);
-void A4GLPDFREP_A4GL_pdf_set_info (void *p, char *creator);
-void A4GLPDFREP_A4GL_pdf_skip_top_of_page (struct pdf_rep_structure *rep.int n);
-
-void A4GLPDFREP_A4GL_pdf_rep_print (struct pdf_rep_structure *rep, int a, int s,
-			 int right_margin);
-void A4GLPDFREP_A4GL_pdf_skip_to (struct pdf_rep_structure *rep, double a);
-void A4GLPDFREP_A4GL_pdf_need_lines (struct pdf_rep_structure *rep);
-void A4GL_pdf_add_spaces (void);
-void A4GLPDFREP_A4GL_pdf_rep_close (struct pdf_rep_structure *p);
-int A4GLPDFREP_A4GL_pdf_blob_print (struct pdf_rep_structure *p,
-			 struct fgl_int_loc *blob, char *type, int cr);
-#endif
 int aclpdf (struct pdf_rep_structure *p, char *fname, int n);
 void A4GL_pdf_add_spaces (void);
 int A4GL_pdf_new_page (struct pdf_rep_structure *p);
@@ -286,20 +242,6 @@ int entry=0;
  */
 
 
-#ifdef XDEF
-void
-A4GLPDFREP_A4GL_pdf_fputmanyc (struct pdf_rep_structure *rep, int c, int cnt)
-{
-  //int a;
-  char *x;
-  x = malloc (cnt + 1);
-  memset (x, c, cnt);
-  x[cnt] = 0;
-  report_print (rep, -1, x);
-  //for (a = 0; a < cnt; a++) fputc (c, f);
-}
-#endif
-
 
 /**
  *
@@ -461,7 +403,9 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
 	return;
     }
 
-  A4GLPDFREP_A4GL_pdf_skip_to (vrep,  ad+0);
+  //A4GLPDFREP_A4GL_pdf_skip_to (vrep,  ad+0);
+  rep->line_no = a;
+  
   A4GL_pdf_rep_print (rep, 0, 0, 0, -5);
 
   if (a &&0)
