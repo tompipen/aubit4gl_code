@@ -1,20 +1,20 @@
 main
 
 
-start report r1 to convertable
+start report r1 to convertible
 output to report r1 (1,2)
 finish report r1
 
-start report r1 to convertable
+start report r1 to convertible
 output to report r1 (1,2)
 finish report r1  converting to "myfile1.pdf" AS "PDF" using "layout1"
 
 
-start report r1 to convertable
+start report r1 to convertible
 output to report r1 (1,2)
 finish report r1  converting to "myfile2.pdf" AS "PDF"  # uses default layout
 
-start report r1 to convertable
+start report r1 to convertible
 output to report r1 (1,2)
 
 finish report r1  converting to many

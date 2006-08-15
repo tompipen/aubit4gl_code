@@ -153,7 +153,7 @@ A4GL_wprintw_window (void *win, int attr, int x, int y, int cw, int ch,
 
 #ifdef WIDEC
 
-/* Is a string convertable to a wide string ? */
+/* Is a string convertible to a wide string ? */
 int
 A4GL_WC_valid_string (char *buff)
 {

@@ -14,7 +14,7 @@ define lv_server char(80)
 		call aclfgl_setenv("EMAIL_RECIPIENT","report_test@aubit.com")
 		display "Set recipients"
 	end if
-	start report r1 as convertable
+	start report r1 as convertible
 	output to report r1 ("Hello")
 	display "Finished"
 	finish report r1 converting TO EMAIL as "PDF"

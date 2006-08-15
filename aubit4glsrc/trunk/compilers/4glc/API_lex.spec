@@ -460,7 +460,7 @@ print_dealloc_arr char* s -> void
 print_alloc_arr char* s char* dim -> void
 print_realloc_arr char* s char* dim -> void
 
-print_free_convertable char* report_name -> void
+print_free_convertible char* report_name -> void
 print_convert_report char* report_name char* fout char* type char* layoutfile char* file_or_pipe -> void
 print_Constant int type char* v -> void
 print_free_cursor char* s -> void

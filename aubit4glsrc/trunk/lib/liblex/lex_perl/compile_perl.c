@@ -2876,7 +2876,7 @@ LEXLIB_print_convert_report (char *report_name, char *fout,
 }
 
 void
-LEXLIB_print_free_convertable (char *report_name)
+LEXLIB_print_free_convertible (char *report_name)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }

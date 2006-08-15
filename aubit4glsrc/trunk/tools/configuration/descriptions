@@ -699,7 +699,7 @@ CASEIGNOPTIONS UI Never use case when matching for NEXT OPTION/SHOW OPTION/HIDE 
 	This is the default behaviour for SHOW/HIDE OPTION under informix, NEXT OPTION
 	seem to be case senitive on informix
 EMAIL_RECIPIENT REPORT Email address to use for START REPORT TO EMAIL
-	This setting is used to specify a default email address to send a convertable report to.
+	This setting is used to specify a default email address to send a convertible report to.
 	Emails are sent using 'send_report' function in the fgl_smtp module
 FGLFRMCOMPILE FORM Explicitly state if a form compile is to use 4GL rather than PERFORM syntax
 =YES|NO
@@ -819,9 +819,9 @@ START_ALLOC RUNTIME Performance enhancement
 =YES|NO
 	This option allocates and then frees 10Mb of memory when the program starts. 
 	This normally means that subsequent memory allocations will run much faster.
-TRACE_AS_TEXT REPORT  Enable XML style text logging of convertable reports
+TRACE_AS_TEXT REPORT  Enable XML style text logging of convertible reports
 =YES|NO
-	This options makes the convertable reports write their meta data in an XML 
+	This options makes the convertible reports write their meta data in an XML 
 	style output file
 WAIT_FOR_GDB_ATTACH RUNTIME  Wait for a debugger to connect to this process on SegFault
 =YES|NO

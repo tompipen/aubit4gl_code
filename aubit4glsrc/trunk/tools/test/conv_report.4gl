@@ -16,7 +16,7 @@ define n integer
 		order by 1,2,3
 
 
-    	start report r1 to convertable
+    	start report r1 to convertible
 	
 	foreach c1 into t,c,n
 			output to report r1 (t,c,n)
