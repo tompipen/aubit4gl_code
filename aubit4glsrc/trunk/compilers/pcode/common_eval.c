@@ -289,7 +289,6 @@ evaluate_param_into_integer(struct param *e, long *x)
       break;
 
     }
-
   fprintf (stderr, "Non-handled param_type... %d\n",e->param_type);
   exit (4);
 

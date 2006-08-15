@@ -172,6 +172,7 @@ REPORT_TERMINATE	{strcpy(yytext,"-9999"); count(); return CONSTANT;}
 "fgldate"			{ count(); return(FGLDATE); }
 "fgldecimal"			{ count(); return(FGLDECIMAL); }
 "fglmoney"			{ count(); return(FGLMONEY); }
+"struct_dtime"			{ count(); return(FGLSDTIME); }
 "long"			{ count(); return(LONG); }
 "register"		{ count(); return(REGISTER); }
 "return"		{ count(); return(RETURN); }

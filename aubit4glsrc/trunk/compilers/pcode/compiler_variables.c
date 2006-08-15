@@ -118,10 +118,17 @@ get_dtype (char *s)
     {
       return DDEC;
     }
+
   if (strcasecmp (s, "fglmoney") == 0)
     {
       return DMON;
     }
+
+  if (strcasecmp (s, "struct_dtime") == 0 || strcasecmp (s, "FGLSDTIME") == 0 )
+    {
+      return DDTIME;
+    }
+
 
   if (strcasecmp (s, "ShortPtr") == 0)
     {
@@ -675,7 +682,12 @@ new_variable_element_string (char *s)
     case DDEC:
       n->unit_size += 64;
       break;			// @ FIXME
+
     case DMON:
+      n->unit_size += 64;
+      break;			// @ FIXME
+
+    case DDTIME:
       n->unit_size += 64;
       break;			// @ FIXME
 

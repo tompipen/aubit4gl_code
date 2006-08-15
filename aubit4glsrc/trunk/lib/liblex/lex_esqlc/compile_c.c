@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.304 2006-08-15 11:35:14 mikeaubury Exp $
+# $Id: compile_c.c,v 1.305 2006-08-15 14:00:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.304 2006-08-15 11:35:14 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.305 2006-08-15 14:00:48 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3243,10 +3243,26 @@ static void print_returning (void)
 
   //printc ("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\nA4GL_pop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n", cnt);
   if (cnt) {
-  	printc("CHECK_RETURN_AND_POP(%d);",cnt);
+	  if (A4GL_doing_pcode()) {
+		printc("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);A4GL_pop_params(ibind,%d);}",cnt,cnt);
+	  } else {
+  		printc("CHECK_RETURN_AND_POP(%d);",cnt);
+	  }
 	printc("}");
   } else {
-  	printc("CHECK_NO_RETURN;");
+	  if (A4GL_doing_pcode()) { 
+		  printc("if (_retvars!= 0) {");
+		  printc("  if (_retvars!=-1||1) {");
+		  printc("    if (a4gl_status==0) A4GLSQL_set_status(-3001,0);");
+		  printc("    A4GL_pop_args(_retvars);");
+	          printc("  }");
+	          printc("} else {");
+		  printc("    A4GLSQL_set_status(0,0);");
+		  printc("}");
+	  } else {
+  		printc("CHECK_NO_RETURN;");
+	  }
+
   }
   //printc ("}\n");
   printc ("}\n");

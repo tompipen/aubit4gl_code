@@ -43,6 +43,7 @@ void A4GL_debug_full (char *fmt, ...);
 #define DLONGPTR   8
 #define DSHORTPTR   9
 #define DDBL    10
+#define DDTIME 11
 
 #define DBLOCK  126
 #define DSTRUCT 127

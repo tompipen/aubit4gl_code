@@ -240,6 +240,24 @@ handle_444444 (void *end_func, struct param *p)
   return rval;
 }
 
+long
+handle_444444444 (void *end_func, struct param *p)
+{
+  long params[9];
+  long rval;
+  long (*func) (long, long, long, long, long, long, long, long);
+  func = end_func;
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[0], &params[0]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[1], &params[1]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[2], &params[2]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[3], &params[3]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[4], &params[4]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[5], &params[5]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[6], &params[6]);
+  evaluate_param_i_into_integer (p->param_u.p_list->list_param_id.list_param_id_val[7], &params[7]);
+  rval = func (params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]);
+  return rval;
+}
 
 long
 handle_44444444444 (void *end_func, struct param *p)
@@ -372,6 +390,7 @@ struct func_sigs function_signiatures[] = {
   {&handle_0444, "0444"},
   {&handle_0444444, "0444444"},
   {&handle_044V, "044V"},
+  {&handle_444444444, "444444444"},
   {0, 0}
 };
 
