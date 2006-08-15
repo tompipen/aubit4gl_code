@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.136 2006-07-24 21:03:09 mikeaubury Exp $
+# $Id: ioform.c,v 1.137 2006-08-15 07:39:25 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.136 2006-07-24 21:03:09 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.137 2006-08-15 07:39:25 mikeaubury Exp $";
 #endif
 
 /**
@@ -3602,7 +3602,7 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)
     {
-      for (a = 0; a < c; a++)
+      for (a = 0; a <= c; a++)
 	{
 	  found = 0;
 	  A4GL_debug ("fieldtouched FIELD : %p a=%d c=%d - status=%d\n", field_list[a], a, c, field_status (field_list[a]));

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.16 2006-06-26 17:08:40 mikeaubury Exp $
+# $Id: expr.c,v 1.17 2006-08-15 07:39:24 mikeaubury Exp $
 #
 */
 
@@ -517,7 +517,7 @@ struct expr_str *A4GL_new_expr_not_field_touched(int sid, struct fh_field_list *
 struct expr_field_touched *p;
 struct expr_str *p2;
 	p=malloc(sizeof(struct expr_field_touched));
-        p2=A4GL_new_expr_simple (ET_EXPR_FIELD_TOUCHED);
+        p2=A4GL_new_expr_simple (ET_EXPR_NOT_FIELD_TOUCHED);
 	p->sio_id=sid;
 	p->field_list=fl;
 	p->module=mod;

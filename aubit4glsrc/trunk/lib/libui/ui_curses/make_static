@@ -1,3 +1,3 @@
-cd /home/aubit4gl/aubit4glsrc/lib/libui/ui_curses
+cd /home/aubit4gl/sourceforge/aubit4glsrc/lib/libui/ui_curses
 make -f Makefile.mja
 cp libUI_TUI_s.so ../..

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.109 2006-07-27 16:00:58 mikeaubury Exp $
+# $Id: compile.c,v 1.110 2006-08-15 07:39:23 mikeaubury Exp $
 #*/
 
 /**
@@ -1070,10 +1070,7 @@ initArguments (int argc, char *argv[])
 				 Maybe just make sure you clean only in current directory?
 			*/
 			sprintf(fbuff,"%s.err",output_object);
-			if (!  A4GL_delete_file(fbuff)) {
-			  FPRINTF (stderr,"Clean of %s intermediate objects failed\n", a);
-			  FPRINTF (stderr,"Failed command was: %s\n", buff);
-			}
+			A4GL_delete_file(fbuff);
 		}
 	}
 } else {
