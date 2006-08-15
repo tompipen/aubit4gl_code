@@ -17,6 +17,15 @@ MAIN
 		after construct 
 			let x= get_fldbuf(account_number)
 			error "x='",x,"'" sleep 1
+
+			#if get_fldbuf(account_number) = " " then
+				#error "HELLO 1 " sleep 1
+	  		#end if
+
+			#if get_fldbuf(account_number) is null then
+				#error "HELLO 2" sleep 1
+	  		#end if
+		
 			if get_fldbuf(account_number) = " "  or  get_fldbuf(account_number) is null then
 				error "Insufficient" sleep 2
 				let lv_i=lv_i-1

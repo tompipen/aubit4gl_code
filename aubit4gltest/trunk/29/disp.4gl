@@ -11,7 +11,7 @@ MAIN
 	OPEN FORM disp FROM "disp"
 
 	DISPLAY FORM disp
-
+sleep 1
 	display "AA" at 8,1
 	DISPLAY x USING "####" AT 8,8 ATTRIBUTE (GREEN)
 	let str="####"

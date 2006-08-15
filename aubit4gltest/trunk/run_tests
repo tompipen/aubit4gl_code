@@ -103,7 +103,7 @@ done
 #Create list of all available tests
 ALL_DIRS=[0-9]*
 ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
-LIBS_DIR="$AUBITDIR_UNIX/lib"
+LIBS_DIR="$AUBITDIR_UNIX/plugins-`aubit-config A4GL_VERSION_STRING`"
 BINS_DIR="$AUBITDIR_UNIX/bin"
 
 #process comand line parameters:

@@ -27,6 +27,7 @@ define confirm char
 	OPEN FORM arr4 FROM "m"
 	DISPLAY FORM arr4 ATTRIBUTE (CYAN)
 
+display "XX" to al
 	CALL fgl_drawbox(21,80,2,1,0)
 
 	LET medarr[1].description = "Line 1"
@@ -61,6 +62,7 @@ call errorlog("Going into input array")
     let x = -1
     input array medarr without defaults from  ftlbal.*
 
+
 		before field price
 			error "before field price"
 			sleep 1
@@ -69,11 +71,12 @@ call errorlog("Going into input array")
 			sleep 1
 		on key (F5)
 			exit input
-
 		BEFORE ROW
 			if x = -1 then
 				call errorlog("Before Input A")
+			sleep 1
 				call input_al()	
+			sleep 1
 				call errorlog("After Input A")
 			
 			end if
@@ -81,6 +84,7 @@ call errorlog("Going into input array")
 			LET y = SCR_LINE()
 			MESSAGE "ARR_CURR = ", x, " SCR_LINE = ", y
 			#next field description
+	
 
 		ON KEY (f12)
 			LET x = ARR_CURR()
@@ -104,5 +108,6 @@ function input_al()
 		on key (F5)
 			exit input
 	end input
+	message "OK" sleep 1
 end function
 

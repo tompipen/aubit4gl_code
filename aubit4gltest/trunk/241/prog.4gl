@@ -38,6 +38,8 @@ define xscr integer
 
 	if p_parm[2].noa =11 and p_parm[2].dta ="1/1/2002" then
 	else
+	
+		display "**** ", p_parm[2].noa, " ", p_parm[2].dta," ****"
 		exit program 3
 	end if
 	
