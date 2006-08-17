@@ -2233,8 +2233,19 @@ int   asql_load_data(struct element *e)
 	//char           *name = ctxt_loadfile();
 	int             nskip = 0; 
 	int             nput = 0;
-	int             txsize = 50; // ctxt_gettransize();
+	static int             txsize = -9999; // ctxt_gettransize();
 	char stmt[20000];
+	int processed_tx_rows=0;
+
+rec.rownum=0;
+	if (txsize==-9999) {
+			// A4GL_LOADTRANSROWS can be -1 for all or nothing...
+		if (acl_getenv_not_set_as_0("A4GL_LOADTRANSROWS")==0) {
+			txsize=1;
+		} else {
+			txsize=atoi(acl_getenv("A4GL_LOADTRANSROWS"));
+		}
+	}
 
 	set_delim('|');
 
@@ -2281,11 +2292,10 @@ int   asql_load_data(struct element *e)
 
 		/* Allocate space for SQLDA structure */
 		buffer = (char *)sql_describe(idesc);	/*=C++=*/
-		//jb_register(buffer);
 
 		/* DECLARE INSERT CURSOR */
 		stage = 2;
-		EXEC SQL DECLARE c_insert CURSOR FOR s_insert;
+		EXEC SQL DECLARE c_insert CURSOR WITH HOLD FOR s_insert;
 		if (sqlca.sqlcode < 0)
 			break;
 
@@ -2299,6 +2309,7 @@ int   asql_load_data(struct element *e)
 #endif
 
 		stage = 3;
+		EXEC SQL BEGIN WORK; /* Might fail - but we dont care.. */
 		EXEC SQL OPEN c_insert;
 		if (sqlca.sqlcode < 0)
 			break;
@@ -2312,47 +2323,60 @@ int   asql_load_data(struct element *e)
 		while (sqlca.sqlcode == 0)
 		{
 			if (scanrecord(file, idesc, &rec, e->fname, &line) == EOF ||
-				sqlca.sqlcode < 0)
+				sqlca.sqlcode < 0) {
+				int sz;
+				sz=sqlca.sqlcode;
+				if (txsize==0) {
+					EXEC SQL COMMIT WORK;
+				} else {
+					EXEC SQL ROLLBACK WORK;
+				}
+				sqlca.sqlcode=sz;
 				break;
-			if (rec.rownum > nskip)
+			}
+			if (rec.rownum >= nskip)
 			{
+				int xz;
 				nput++;
+
 				EXEC SQL PUT c_insert USING DESCRIPTOR idesc;
+
+
 #ifdef DEBUG
 				if (db_getdebug() >= 9)
 					dump_sqlda(db_getfileptr(), "LOAD: PUT", idesc);
 #endif /* DEBUG */
-				if (sqlca.sqlcode < 0)
+				if (sqlca.sqlcode < 0) {
+					if (txsize==0) {
+					EXEC SQL COMMIT WORK;
+					} else {
+					EXEC SQL ROLLBACK WORK;
+					}
 					break;
+				}
+				
+				processed_tx_rows++;
+				if (txsize==-1) ;
+				else {
+			
+				if (txsize==1||processed_tx_rows>=txsize) {
+					EXEC SQL COMMIT WORK;
+					EXEC SQL BEGIN WORK;
+					processed_tx_rows=0;
+				}
+				}
+				sqlca.sqlcode=0;
 			}
-			else
-			if (nblobs > 0)
-				free_blobs(idesc);
-#ifdef SQLRELOAD
-			if (pflag == SQLRELOAD && txsize > 0 && nput > 0 && nput % txsize == 0)
-			{
-				/* Intermediate transaction */
-				EXEC SQL CLOSE c_insert;
-				if (sqlca.sqlcode < 0)
-					break;
-				EXEC SQL COMMIT WORK;
-				/* Do not care if it worked or not */
-				sqlca.sqlcode = 0;
-				if (ctxt_getsilence() == OP_OFF)
-					fprintf(ctxt_output(), "%d rows committed\n", nput);
-				EXEC SQL BEGIN WORK;
-				/* Do not care if it worked or not */
-				sqlca.sqlcode = 0;
-				EXEC SQL OPEN c_insert;
-				if (sqlca.sqlcode < 0)
-					break;
+			else {
+				if (nblobs > 0)
+					free_blobs(idesc);
 			}
-#endif
 		}
 		mem_del(&line);
 		}
-		if (sqlca.sqlcode < 0)
+		if (sqlca.sqlcode < 0) {
 			break;
+		}
 
 	} while (0);
 
@@ -2361,28 +2385,14 @@ int   asql_load_data(struct element *e)
 	if (stage >= 4)
 	{
 		EXEC SQL CLOSE c_insert;
-		if (save.sqlcode == 0 && sqlca.sqlcode < 0)
+		if (save.sqlcode == 0 && sqlca.sqlcode < 0) {
 			save = sqlca;
+		}
+		EXEC SQL COMMIT WORK;
 	}
 
 	if (stage >= 3)
 	{
-#ifdef SQLRELOAD
-		if (pflag == SQLRELOAD)
-		{
-			EXEC SQL COMMIT WORK;
-			/* Do not care if it worked or not */
-			sqlca.sqlcode = 0;
-			if (ctxt_getsilence() == OP_OFF)
-			{
-				if (nput == 0 || (txsize == 0 || nput % txsize != 0))
-					fprintf(ctxt_output(), "%s%d rows committed%s\n",
-							(save.sqlcode == 0 || nput <= 1) ? "" : "Up to ",
-							(save.sqlcode == 0 || nput == 0) ? nput : nput - 1,
-							(save.sqlcode == 0) ? "" : " successfully");
-			}
-		}
-#endif
 		EXEC SQL FREE c_insert;
 		if (save.sqlcode == 0 && sqlca.sqlcode < 0)
 			save = sqlca;
@@ -2418,7 +2428,7 @@ int   asql_load_data(struct element *e)
 		sql_error("","");
 
 
-       return rec.rownum-1;
+       return rec.rownum;
 }
 
 int load_err(int row,char *msg) {
