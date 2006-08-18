@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.315 2006-08-07 13:47:28 briantan Exp $
+dnl # $Id: configure.in,v 1.316 2006-08-18 20:29:11 fortiz Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -4317,7 +4317,7 @@ else
 				#For 4glWorks: try to understand whether this is 4gl4 or 4gl6, as you
 				#have to free cursors & statements differently
 				AC_MSG_CHECKING(fglpc version)
-				set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+				set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^.*INFORMIX-4GL Version //' -e 's/\./ /g'`
 				if test "$1" != ""; then
 					#if test "$1" = "4" -a "$2" -lt "50"; then
 		            if test "$1" -lt "5"; then
@@ -4340,7 +4340,7 @@ else
 			#aware, or is a special case, ie c4gl 4.x or is not esql/c
 			#aware in any way, shape or form (ie an rds only shop)
 				AC_MSG_CHECKING(c4gl version)
-				set `c4gl -v 2>/dev/null | head -n 1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+				set `c4gl -v 2>/dev/null | head -n 1|sed -e 's/^.*INFORMIX-4GL Version //' -e 's/\./ /g'`
 				if test "$1" != ""; then
 					#if test "$1" = "4" -a "$2" -lt "50"; then
 		            if test "$1" -lt "5"; then
@@ -9282,7 +9282,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.315 2006-08-07 13:47:28 briantan Exp $
+| $Id: configure.in,v 1.316 2006-08-18 20:29:11 fortiz Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
