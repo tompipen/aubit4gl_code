@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2006-08-18 15:35:33 mikeaubury Exp $
+# $Id: Makefile.in,v 1.13 2006-08-18 15:52:48 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -46,14 +46,13 @@ ALL=${PLUGINDIR}/libA4GL_string${SO_EXT}
 ## ==================================================================
 
 
-${ALL}: libstring.o
+${ALL}: libstring.c
 #	export A4GL_LEXTYPE=C; ${SH} 4glpc ${AS_DLL} $^ -o $@
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "String library sucesfully compiled."
 
-libstring.o: libstring.4gl
+libstring.c: libstring.4gl
 	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
-	${CC} -c ${CFLAGS} -o $@ libstring.c
 
 clean:
 	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h ${ALL} *.stackdump *.o *.ao
