@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.34 2006-07-27 16:02:24 mikeaubury Exp $
+# $Id: Makefile,v 1.35 2006-08-18 17:10:02 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -67,7 +67,13 @@ else
 	INGRES_LIBS=
 	QUERIX_IFLAGS=-I${QUERIXDIR}/incl
 	QUERIX_LFLAGS=-L${QUERIXDIR}/lib
-    STATIC=-static
+
+
+# Why do we need this ? 
+    #STATIC=-static
+
+
+
     QUERIX_LIBS=-lesql
 endif
 ifeq "${TARGET_OS}" "solaris"
