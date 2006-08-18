@@ -1,0 +1,2 @@
+Setting a numeric variable to a non-numeric flags an error in Aubit4gl.
+This is related to the WHENEVER ANY ERROR in informix 

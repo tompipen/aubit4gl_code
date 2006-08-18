@@ -8,7 +8,7 @@ define
       vin    char(10)
    end record
 
-open window win1 at 2,3 with 33 rows, 96 columns
+open window win1 at 2,3 with 10 rows, 40 columns
    attribute (border, red)
 open form test1 from "test1"
 display form test1
@@ -22,12 +22,12 @@ after construct
       exit construct
    end if
    if not field_touched(vin, vin10) then
-	exit 0
+	exit program 0
       continue construct
    end if
 end construct
 
-exit 1
+exit program 1
 
 if int_flag != 0 then
    let int_flag = 0
