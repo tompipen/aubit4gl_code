@@ -63,6 +63,12 @@ define
 	mv_aubit4gllib 		char(512)
 
 
+code 
+int A4GL_file_length(char *fname);
+int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
+int A4GL_move_file(char *from,char *to);
+endcode
+
 function init()
 define lv_pack char(256)
 
