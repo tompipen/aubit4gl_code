@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2006-07-27 16:04:08 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2006-08-18 16:48:19 mikeaubury Exp $
 #
 
 ROOT			=../../../..
@@ -73,7 +73,7 @@ ${PLUGINDIR}/libA4GL_glade${SO_EXT} : ${OBJS}
 
 %.ao: %.4gl
 	export A4GL_LEXTYPE=C && ${ROOT}/bin/4glc $< 
-	${CC} -g -c $*.c -o $@ ${GLADE_CFLAGS} -I$(ROOT)/incl 
+	${CC} ${CFLAGS} -g -c $*.c -o $@ ${GLADE_CFLAGS} -I$(ROOT)/incl 
 
 #list.ao: list.4gl
 #	export A4GL_LEXTYPE=C && 4glc $^ 
