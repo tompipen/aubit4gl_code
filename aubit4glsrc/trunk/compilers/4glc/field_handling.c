@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: field_handling.c,v 1.8 2006-08-18 17:45:15 mikeaubury Exp $
+# $Id: field_handling.c,v 1.9 2006-08-18 17:48:19 mikeaubury Exp $
 #*/
 
 #include "field_handling.h"
@@ -34,7 +34,7 @@
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_memhandling.h"
-
+#include "API_lex.h"
 
 //char *acl_strdup(char *x);
 //char *strcat(char *x,char *y);
