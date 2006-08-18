@@ -743,7 +743,6 @@ LOGALL RUNTIME/UI  Log non-printable keys
 	This specifies that all key presses should be logged, as opposed 
 	to just the printable characters
 	See KEYLOG and KEYFILE
-MONITORPORT UI Specify the TCP/IP port for monitoring
 
 NAMESPACE COMPILE Namespace to use for compiling programs
 NEED_SIGCHLD RUNTIME Add a SIGCHLD event handler
@@ -840,10 +839,19 @@ LOCALOUTPUT COMPILE strips any leading directories while compiling
 	This option specifies that any leading directories are removed when compiling 
 	modules. This means that compiling directory/module.4gl may (for example) generate
 	module.c in the current directory rather than directory/module.c
-LOGREP UNKNOWN UNKNOWN
-LOGSQLFUNCTIONS UNKNOWN UNKNOWN
+LOGREP REPORTS Internal logical reports variable
+	This is used internally - do not set it manually
+LOGSQLFUNCTIONS COMPILE Save used stored procedure names
+=YES|NO
+	This option will create a file called "/tmp/sqlcall.log" which
+	should contain all the SQL functions (stored procedures) which
+	are called from the module being compiled. These can be collected
+	to determine what functions/procedures might need porting/copying when
+	moving to a new database/rdbms.
 LOG_STRINGS UNKNOWN UNKNOWN
 =YES|NO
+	This will log all of the literal strings encountered in the sourcecode
+	in a file called /tmp/strings.log
 NEVER_CONVERT UNKNOWN UNKNOWN
 =YES|NO
 ALWAYS_CONVERT  UNKNOWN UNKNOWN
@@ -851,18 +859,49 @@ ALWAYS_CONVERT  UNKNOWN UNKNOWN
 IGNORE_DATEFMT UNKNOWN UNKNOWN
 =YES|NO
 MAPSQL UNKNOWN UNKNOWN
-MONITOR4GL UNKNOWN UNKNOWN
-NOSETODBCCURSORS UNKNOWN UNKNOWN
-NO_INIT_COL_CLR UNKNOWN UNKNOWN
-PADNULLSTRING UNKNOWN UNKNOWN
-PG_COPTS UNKNOWN UNKNOWN
-SAVE_COMMENTS UNKNOWN UNKNOWN
+MONITORPORT UI Specify the TCP/IP port for monitoring
+	You will need to edit lib/libaubit4gl/fglwrap.c and add 
+	   #define USE_MONITOR 
+	to use this functionality
+MONITOR4GL TUI Writes to a 'monitor' TCP/IP connection the current screen
+=YES|NO
+	This option will log the current screen to. 
+	You can use 'telnet host $MONITORPORT' to view the output.
+	You will need to edit lib/libaubit4gl/fglwrap.c and add
+	   #define USE_MONITOR 
+	to use this functionality 
+	See also MONITORPORT
+NOSETODBCCURSORS ODBC Use ODBC driver manager cursors
+=YES|NO
+	If this is set to Y then the odbc sql connector will use the driver manager cursor
+	library if available. This is done using the following ODBC call : 
+    		SQLSetConnectAttr (hdbc, SQL_ATTR_ODBC_CURSORS, (SQLPOINTER) SQL_CUR_USE_ODBC, (SQLINTEGER) 0);
+
+NO_INIT_COL_CLR TUI/HL_TUI Inhibit the clear screen on a refresh from linemode
+=YES|NO
+LOGPCODE PCODE log debugging information to a file called pcode.run
+=YES|NO
+	This is read directly from the environment and so can't be 
+	set in an aubitrc file
+PADNULLSTRING RUNTIME sting concatenation behaviour
+=YES|NO
+	This option changes the way a string concatenation would work if one or other of the strings
+	is null.
+PG_COPTS COMPILE Postgres C compiler flags
+SAVE_COMMENTS COMPILE Filename to save comments to
+=YES|NO
+	This option specifies the filename to save any comments encountered in the sourcecode
+	to. These comments can then be more easily analysed.
+AUBITPLUGINDIR COMPILE/RUNTIME Specifies the directory where plugins reside
+	This is typically $AUBITDIR/plugins-version
+A4GL_FRM_BASE_LIST RUNTIME Specify a list of extensions which may be used for a formname
+	If set - this is a colon separated list of file extensions which may be used when opening 
+	form files. If not set, then the standard FRM_BASE_EXT will be used
 SETODBCCURSORS UNKNOWN UNKNOWN
 SUPPRESSWARNINGS UNKNOWN UNKNOWN
 TARGET_OS UNKNOWN UNKNOWN
 TRIMFIELD UNKNOWN UNKNOWN
 USECURSORFORLOAD UNKNOWN UNKNOWN
-A4GL_FRM_BASE_LIST UNKNOWN UNKNOWN
 A4GL_LOGSQLERR UNKNOWN UNKNOWN
 A4GL_PARSER UNKNOWN UNKNOWN
 A4GL_QUOTE_OWNER UNKNOWN UNKNOWN
@@ -870,7 +909,6 @@ A4GL_RDYNAMIC UNKNOWN UNKNOWN
 ALLOWCOMMAINDECIMAL UNKNOWN UNKNOWN
 ALWAYS_CONVERT_PREPARED UNKNOWN UNKNOWN
 ASQLERRM UNKNOWN UNKNOWN
-AUBITPLUGINDIR UNKNOWN UNKNOWN
 CONSTRUCT_MATCH_FIX UNKNOWN UNKNOWN
 DBNAME UNKNOWN UNKNOWN
 DOING_CM UNKNOWN UNKNOWN

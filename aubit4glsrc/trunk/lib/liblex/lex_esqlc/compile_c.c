@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.305 2006-08-15 14:00:48 mikeaubury Exp $
+# $Id: compile_c.c,v 1.306 2006-08-18 17:33:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.305 2006-08-15 14:00:48 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.306 2006-08-18 17:33:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2268,7 +2268,7 @@ print_form_attrib (struct form_attr *form_attrib)
 char *frm_attr;
 char buff[256];
 if (form_attrib->attrib_str==0) {
-	SPRINTF1(buff,"(0x%x)",form_attrib->attrib);
+	SPRINTF1(buff,"(0x%x)",form_attrib->attrib&0xffff);
 	frm_attr=buff;
 } else {
 	frm_attr=(char *)form_attrib->attrib_str;
@@ -6180,6 +6180,10 @@ print_menu (int mn, int n)
      n, n, n);
 }
 
+void
+LEXLIB_print_menu_0 (int n) {
+	// does nothing - but required...
+}
 
 /**
  * The parser found END MENU in apropriate context.
@@ -8438,6 +8442,9 @@ void LEXLIB_A4GL_initlex(void) {
 	calling this function will force initlib to be called - which is what we're really after.... */
 }
 
+void LEXLIB_A4GL_whenchange(int n) {
+	// does nothing but required by the API
+}
 
 int LEXLIB_LEX_initlib(void) {
   if (A4GL_doing_pcode()) {
@@ -8456,3 +8463,10 @@ int LEXLIB_LEX_initlib(void) {
 return 1;
 }
 
+
+
+char *LEXLIB_A4GL_field_name_as_char(char*fname,char *sub) {
+static char buff[256];
+SPRINTF2(buff,"%s,%s",fname,sub);
+return buff;
+}

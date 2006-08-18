@@ -65,6 +65,7 @@ print_exit_loop int type,int n -> void
 print_rep_ret int report_cnt int dolog -> void
 
 A4GL_prchkerr int l,char* f -> void
+A4GL_field_name_as_char char* fieldname char* subscript -> char*
 
 print_expr void* ptr -> void
 
@@ -337,6 +338,7 @@ print_move_window char* n void* y_expr void* x_expr int rel -> void
 print_menu_1 int n -> void
 print_menu_1b int n -> void
 
+print_menu_0 int n -> void
 print_end_menu_1 int n -> void
 
 print_end_menu_2 int n -> void
@@ -450,7 +452,7 @@ A4GL_get_into_part int d int n -> char*
 A4GL_add_put_string char* buff -> void
 
 A4GL_set_var_sql int d int n -> char*
-
+A4GL_whenchange int n -> void
 A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void

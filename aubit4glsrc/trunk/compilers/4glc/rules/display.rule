@@ -112,7 +112,7 @@ display_attr	:	opt_attributes {
 				if (strncmp($<str>1,"A4GL_",5)==0)  {
 					strcpy($<str>$,$<str>1);
 				} else {
-					sprintf($<str>$,"0x%lx",atol($<str>1));
+					sprintf($<str>$,"0x%lx",atol($<str>1)&0xffffffff);
 				}
 			}
 		;

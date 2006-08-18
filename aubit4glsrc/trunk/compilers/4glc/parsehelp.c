@@ -776,6 +776,8 @@ set_whenever (int c, char *p)
     }
   when_code[code] = oldcode;
 
+  A4GL_whenchange(c);
+
   print_clr_status ();
 }
 

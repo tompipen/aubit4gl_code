@@ -14,7 +14,10 @@ menu_cmd	:	MENU {
 	do_print_menu_1();
 	clr_menu_attribs();
 	}
-	menu_title op_menu_attribs menu_commands END_MENU {
+	menu_title op_menu_attribs  {
+		print_menu_0(menu_blk[menu_cnt]);
+		}
+		menu_commands END_MENU {
    		print_end_menu_1(menu_blk[menu_cnt]);
    		add_continue_blockcommand ("MENU");
 		print_end_menu_2(menu_blk[menu_cnt]);
