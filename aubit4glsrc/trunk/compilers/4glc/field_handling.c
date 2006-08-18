@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: field_handling.c,v 1.7 2006-08-18 17:33:38 mikeaubury Exp $
+# $Id: field_handling.c,v 1.8 2006-08-18 17:45:15 mikeaubury Exp $
 #*/
 
 #include "field_handling.h"
@@ -88,9 +88,9 @@ struct fh_field_list *append_field_name_to_list (struct fh_field_list *field_lis
 }
 
 char *field_name_as_char(struct fh_field_entry *f) {
-	static char buff[256];
-
-	return A4GL_field_name_as_char(f->field_name,f->field_sub);
+	char *s;
+	s=A4GL_field_name_as_char(f->field_name,f->field_sub);
+	return s;
 
 	//SPRINTF2(buff,"%s,%s",f->field_name,f->field_sub);
 	//return buff;
