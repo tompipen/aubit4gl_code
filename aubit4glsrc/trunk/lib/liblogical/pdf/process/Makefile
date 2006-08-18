@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2006-07-27 16:03:03 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2006-08-18 16:05:23 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  ${PDFLIB_I_FLAGS}
+CFLAGS+=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  ${PDFLIB_I_FLAGS}
 
 ifeq "${PDFBUILD}" "yes"
 	ALL=${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT}
@@ -51,18 +51,17 @@ LINKLIBS=-L$(ROOT)/lib -l${AUBITLIBFULL}
 all: ${ALL}
 
 ${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT} : process_pdf.o pdf_handling.o ../common/common_pdf.c
-#	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -l${AUBITLIBFULL}  -lpdf
-#	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
-#WARNING - on Windows libraries must be at the end
 	${LD} ${CFLAGS} ${PDFLIB_L_FLAGS} $(SO_LDFLAGS) $^ -o $@ ${LINKLIBS} -lpdf
 	
 process_pdf.o: ../../layout_engine/API_layout.h ../../processor/API_process.h
+	${CC} $(CFLAGS) -c -o process_pdf.o process_pdf.c
 
 ../../layout_engine/API_layout.h:
 	${MAKE} -C ../../layout_engine API_layout.h
 ../../processor/API_process.h:
 	${MAKE} -C ../../processor API_process.h
 	
+
 show:
 	@echo "PDFBUILD=${PDFBUILD}"
 	
