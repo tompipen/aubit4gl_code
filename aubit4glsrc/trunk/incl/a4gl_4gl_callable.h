@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.23 2006-07-17 11:16:07 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.24 2006-08-19 09:29:50 mikeaubury Exp $
 */
 
 /**
@@ -148,8 +148,11 @@ void A4GL_display_at (int n, int a);
 int A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
 void A4GLSQL_set_status (int a, int sql);
 int A4GL_key_val(char *s);
-
-
+int A4GL_internal_build (void);
+char *A4GL_internal_version (void);
+int aclfgl_aclfgl_setenv(int n);
+int A4GL_setenv(char *name, char *value, int overwrite);
+int A4GL_isyes(char *s);
 #define A4GL_FUNCTION
 #define A4GL_INTERNAL_FUNCTION
 #define A4GL_MAIN
