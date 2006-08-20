@@ -379,6 +379,12 @@ default_clause:
 
 ct_column_definiton_ss:
 	identifier data_type op_default_clause op_column_constraint_list_ss {
+
+			A4GL_debug("Str1:%s",$<str>1);
+			A4GL_debug("Str2:%s",$<str>2);
+			A4GL_debug("Str3:%s",$<str>3);
+			A4GL_debug("Str4:%s",$<sql_string>4);
+
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,$<sql_string>4,0);
 	}
 ;
@@ -400,7 +406,7 @@ column_constraint_list_ss :
 		$<sql_string>$=$<sql_string>1;
 	}
 	| column_constraint_list_ss column_constraint_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,$<sql_string>2,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,$<sql_string>2,0);
 	}
 ;
 
