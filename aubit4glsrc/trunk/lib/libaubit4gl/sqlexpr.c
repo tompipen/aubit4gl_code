@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.30 2006-08-20 12:07:54 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.31 2006-08-20 12:35:36 mikeaubury Exp $
 #
 */
 
@@ -1632,7 +1632,8 @@ preprocess_sql_statement (struct s_select *select)
 				   "WARNING: Unable to locate %s in the database - column expansion not possible\n",
 				   tname);
 			}
-			A4GLSQL_set_sqlca_sqlcode(0);
+			A4GLSQL_set_status(0,0);
+	
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
@@ -2554,5 +2555,6 @@ int A4GL_has_column (char *t, char *c)
 
   if (opened)
     A4GLSQL_end_get_columns ();
+			A4GLSQL_set_status(0,0);
   return found;
 }
