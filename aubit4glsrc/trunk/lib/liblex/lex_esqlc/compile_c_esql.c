@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.139 2006-07-17 17:28:35 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.140 2006-08-20 10:55:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.139 2006-07-17 17:28:35 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.140 2006-08-20 10:55:25 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -99,6 +99,8 @@ void make_sql_bind (char *sql, char *type);
 
 int last_ni;
 int last_no;
+extern int obindcnt;
+extern int ibindcnt;
 //struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 //void set_suppress_lines(void);
@@ -128,6 +130,7 @@ char * A4GL_mk_temp_tab (struct BINDING *b, int n);
 
 
 static void A4GL_save_sql(char *s,char *s2) ;
+extern char buff_in[];
 
 
 
@@ -491,7 +494,6 @@ LEXLIB_print_put (char *xcname,char *putvals)
   if (A4GLSQLCV_check_requirement("EMULATE_INSERT_CURSOR")) {
 	char c;
 	char *ptr;
-	extern int ibindcnt;
 	c=A4GL_cursor_type(xcname);
 
 	if (c!='I') {
@@ -1558,8 +1560,8 @@ LEXLIB_print_curr_spec (int type, char *s)
 int bt;
 int ni;
 int no;
-extern int ibindcnt;
-extern int obindcnt;
+//extern int ibindcnt;
+//extern int obindcnt;
   strcpy (buff, "");
   if (type == 1) {
                 bt=0;
@@ -2123,7 +2125,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 if (type=='R') {
 	/* print_execute needs an ibind - we have an fbind - so we need*/
 	/* to copy it across...*/
-	extern int ibindcnt;
+	//extern int ibindcnt;
 	extern long  a_ibind;
 	//extern int fbindcnt;
 	ibindcnt=fbindcnt;
@@ -2146,7 +2148,6 @@ if (type=='E') {
 }
 
 if (type=='F') {
-	extern int obindcnt;
 	extern long a_obind;
 	//extern int fbindcnt;
 	//char buff[256];
@@ -2331,7 +2332,6 @@ char *buffer;
 int n;
 static int ncnt=0;
 void *ptr;
-extern char buff_in[];
 	sprintf(cname,"aclfgl_c%d_%d",type,ncnt++);
         buffer=acl_malloc2(255+strlen(sql));
 
@@ -2401,7 +2401,6 @@ char cname[256];
 //int n;
 static int ncnt=0;
 //void *ptr;
-extern char buff_in[];
 
 	sprintf(cname,"aclfgl_cE_%d",ncnt++);
 
@@ -2447,7 +2446,6 @@ char cname[256];
 //int n;
 static int ncnt=0;
 //void *ptr;
-extern char buff_in[];
 
 	sprintf(cname,"aclfgl_cI_%d",ncnt++);
         LEXLIB_print_expr(in_expr->expr);
@@ -2493,10 +2491,11 @@ doing_esql (void)
         return 1;
 }
 
-
+/*
 int LEXLIB_compile_time_convert(void) {
 	        return 1;
 }
+*/
 
 
 

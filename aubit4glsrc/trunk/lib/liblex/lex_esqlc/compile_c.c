@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.306 2006-08-18 17:33:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.307 2006-08-20 10:55:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.306 2006-08-18 17:33:39 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.307 2006-08-20 10:55:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -92,6 +92,7 @@ char *rettype_integer (int n);
 //void A4GL_set_compile_time_convert(int a);
 
 
+extern int class_cnt;
 
 int suppress_lines=0;
 char **get_field_codes(char *fields) ;
@@ -114,6 +115,7 @@ int doing_report_print=0;
 static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
 static void print_returning (void);
 char cmodname[256]="";
+void A4GL_set_clobber(char *c);
 
 
 
@@ -199,7 +201,7 @@ dll_import struct binding_comp *fbind;
 dll_import struct binding_comp *ordbind;
 dll_import struct s_constr_buff constr_buff[256];
 dll_import char when_to[8][128];
-int doing_esql (void);
+//int doing_esql (void);
 void make_sql_bind (char *sql, char *type);
 char *make_sql_bind_expr (char *sql, char *type);
 /*long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr);*/
@@ -6308,7 +6310,7 @@ void
 LEXLIB_printDeclareFunctionStack (char *_functionName)
 {
 #ifdef FGL_PLUS_PLUS
-  extern int class_cnt;
+  //extern int class_cnt;
 #endif
 #ifdef DEBUG
   A4GL_debug ("Function %s\n", _functionName);
@@ -6381,7 +6383,6 @@ if (A4GL_doing_pcode()) { return;}
 void
 LEXLIB_print_func_start_1 (char *isstatic, char *fname, int type)
 {
-extern int class_cnt;
 
   printc (" \n");
   printc (" \n");
@@ -6411,7 +6412,7 @@ void
 LEXLIB_print_func_start_2 (char *isstatic, char *fname, int type)
 {
 	//
-extern int class_cnt;
+//extern int class_cnt;
   if (type == 0) {
 	if (class_cnt==0) {
 	} else {

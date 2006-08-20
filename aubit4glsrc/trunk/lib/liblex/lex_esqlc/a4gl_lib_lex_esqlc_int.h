@@ -12,3 +12,4 @@ struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b
 char find_variable_scope (char *s_in);
 int print_bind_dir_definition(char i,struct binding_comp *bind, int bindcnt) ;
 int print_bind_dir_set_value (char i,struct binding_comp *bind,int bindcnt);
+int doing_esql(void);
