@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.154 2006-07-17 14:09:12 mikeaubury Exp $
+# $Id: stack.c,v 1.155 2006-08-20 13:54:47 mikeaubury Exp $
 #
 */
 
@@ -2776,6 +2776,7 @@ int a;
 	{
 	  if ((unsigned char) (buff[a]) != (unsigned char) (nset[type][a]))
 	    {
+		    A4GL_debug("40 %d != %d", (unsigned char) (buff[a]) , (unsigned char) (nset[type][a]));
 	      return 0;
 	    }
 	}
