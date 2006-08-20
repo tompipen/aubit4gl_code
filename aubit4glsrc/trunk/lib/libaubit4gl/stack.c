@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.155 2006-08-20 13:54:47 mikeaubury Exp $
+# $Id: stack.c,v 1.156 2006-08-20 14:06:02 mikeaubury Exp $
 #
 */
 
@@ -2748,11 +2748,16 @@ A4GL_isnull (int type, char *buff)
 				}
 				return 0;
 			} else {
-				if (i_long==*(AInt32 *)buff) {
-					if (A4GL_null_other(buff,type)!=1) { A4GL_assertion(1,"Null test failed 31"); }
+				long i1;
+				long i2;
+				i1=i_long&0xffffffff;
+				i2=*(AInt32 *)buff&0xffffffff;
+				if (i1==i2) {
+					if (A4GL_null_other(buff,type)!=1) { A4GL_assertion(1,"Null test failed 3.11"); }
 					return 1;
 				} else  {
-					if (A4GL_null_other(buff,type)!=0) { A4GL_assertion(1,"Null test failed 32"); }
+					A4GL_debug("i_long=%d buff=%d",i_long,*(AInt32 *)buff);
+					if (A4GL_null_other(buff,type)!=0) { A4GL_assertion(1,"Null test failed 3.12"); }
 					return 0;
 				}
 			}
@@ -2781,6 +2786,7 @@ int a;
 	    }
 	}
     }
+		    A4GL_debug("40 Null other - OK!");
   return 1;
 }
 

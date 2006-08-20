@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.32 2006-08-20 13:06:21 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.33 2006-08-20 14:06:02 mikeaubury Exp $
 #
 */
 
@@ -2272,9 +2272,9 @@ make_sql_string_and_free (char *first, ...)
   va_start (ap, first);
   ptr = acl_strdup (first);
 
+A4GL_debug("First=%s",first);
 
-  if (first != kw_comma && first != kw_space && first != kw_ob
-      && first != kw_cb)
+  if (first != kw_comma && first != kw_space && first != kw_ob && first != kw_cb)
     {
       A4GL_debug ("FREE %p (%s)\n", first, first);
       if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
@@ -2289,7 +2289,7 @@ make_sql_string_and_free (char *first, ...)
     {
       n++;
       next = va_arg (ap, char *);
-      A4GL_debug("Next=%p\n",next);
+      A4GL_debug("Next=%p comma=%p space=%p ob=%p cb=%p\n",next,kw_comma,kw_space,kw_ob,kw_cb);
       if (next == 0)
 	break;
       l += strlen (next);
