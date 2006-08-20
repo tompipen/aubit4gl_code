@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.29 2006-07-17 11:16:08 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.30 2006-08-20 12:07:54 mikeaubury Exp $
 #
 */
 
@@ -1622,8 +1622,7 @@ preprocess_sql_statement (struct s_select *select)
 		  tname =
 		    find_tabname_for_alias (select, p->u_data.column.tabname);
 
-		  rval =
-		    A4GLSQL_get_columns (tname, colname, &idtype, &isize);
+		  rval = A4GLSQL_get_columns (tname, colname, &idtype, &isize);
 
 		  if (rval == 0)
 		    {		//
@@ -1633,7 +1632,7 @@ preprocess_sql_statement (struct s_select *select)
 				   "WARNING: Unable to locate %s in the database - column expansion not possible\n",
 				   tname);
 			}
-
+			A4GLSQL_set_sqlca_sqlcode(0);
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
@@ -2301,6 +2300,7 @@ make_sql_string_and_free (char *first, ...)
 	  A4GL_debug ("FREE %p (%s)\n", next, next);
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
+		    printf("Freeing : %s",next);
 	      free (next);
 	    }
 	}
