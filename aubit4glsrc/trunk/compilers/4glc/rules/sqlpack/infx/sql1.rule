@@ -15,7 +15,7 @@ insert_statement_ss:
 	table_name  { strcpy(current_ins_table,$<str>3);A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!");}
 	op_insert_column_list 
 	ins_2_ss {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>5),kw_space,$<sql_string>6,0); 
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>5),kw_space,$<sql_string>6,NULL); 
 		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
 			A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!"); 
 		add_feature("ANSI_INSERT");
@@ -25,7 +25,7 @@ insert_statement_ss:
 ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { 
 		insql=0; 
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),
-							acl_strdup(" ("),$<sql_string>4,kw_cb,0);
+							acl_strdup(" ("),$<sql_string>4,kw_cb,NULL);
 	}
 	| query_specification_ss_converted {
 			$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");
@@ -75,7 +75,7 @@ insert_value_list_ss:
 		}
 	}
 	| insert_value_list_ss KW_COMMA insert_value_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,NULL);
 		A4GL_4glc_push_gen_expand(INSVAL,$<sql_string>3);
 	}
 ;
@@ -99,7 +99,7 @@ delete_statement_search_ss:
 			add_feature("ANSI_DELETE");
 			$<sql_string>$=make_sql_string_and_free(
 					acl_strdup($<str>1),kw_space,acl_strdup($<str>2),
-					kw_space,$<sql_string>4,0);
+					kw_space,$<sql_string>4,NULL);
 
 			if (strstr($<sql_string>4," EXISTS ")) {
 				add_feature("DELETE_FROM_WHERE_EXISTS_SUBSELECT");
@@ -270,7 +270,7 @@ grantee:
 view_definition_ss:
 	CREATE_VIEW table_name op_view_column_list AS query_specification_ss_converted op_with_check_option {
 		add_feature("CREATE_VIEW_AS_SELECT");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,$<sql_string>5,kw_space,acl_strdup($<str>6),0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,$<sql_string>5,kw_space,acl_strdup($<str>6),NULL);
 	
 }
 ;
@@ -295,7 +295,7 @@ op_with_check_option: {strcpy($<str>$,"");}
 
 check_constraint_definition_ss:
 	CHECK OPEN_BRACKET search_condition_sli_as_string CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free(strdup("CHECK ("),$<sql_string>3,kw_cb,0);
+		$<sql_string>$=make_sql_string_and_free(strdup("CHECK ("),$<sql_string>3,kw_cb,NULL);
 		add_feature("DDL_CHECK");
 	}
 ;
@@ -385,7 +385,7 @@ ct_column_definiton_ss:
 			A4GL_debug("Str3:%s",$<str>3);
 			A4GL_debug("Str4:%s",$<sql_string>4);
 
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,$<sql_string>4,(void *)0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,$<sql_string>4, NULL);
 	}
 ;
 
@@ -406,13 +406,13 @@ column_constraint_list_ss :
 		$<sql_string>$=$<sql_string>1;
 	}
 	| column_constraint_list_ss column_constraint_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,$<sql_string>2,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,$<sql_string>2,NULL);
 	}
 ;
 
 column_constraint_ss : 
 	column_constraint_ss_1 opt_constraint_name {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);
 	}
 ;
 
@@ -445,12 +445,12 @@ column_constraint_ss_1:
 		$<sql_string>$=acl_strdup($<str>1);
 	}
 	| CHECK OPEN_BRACKET search_condition_sli_as_string CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("CHECK ("),$<sql_string>3,kw_cb,0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("CHECK ("),$<sql_string>3,kw_cb,NULL);
 		add_feature("DDL_CHECK");
 		
 	}
 	| PRIMARY_KEY {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup(" PRIMARY KEY "),0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup(" PRIMARY KEY "),NULL);
 		add_feature("DDL_PRIMARY_KEY");
 	}
 ;
@@ -461,7 +461,7 @@ schema_ss:
 {
 		add_feature("CREATE_SCHEMA");
 
-$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),0);
+$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),NULL);
 }
 ;
 
@@ -477,7 +477,7 @@ schema_authorization_identifier:
 schema_element_list_ss:
 	  schema_element_ss
 	| schema_element_list_ss schema_element_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,$<sql_string>2,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,$<sql_string>2,NULL);
 	}
 ;
 
@@ -520,7 +520,7 @@ from_clause_ts:
 table_reference_list:
 	  tname {$<u_table>$=$<u_table>1;}
 	| table_reference_list KW_COMMA tname {
-		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,0);
+		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,NULL);
 	}
 	| table_reference_list KW_COMMA OUTER tname {
 		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>4,1);
@@ -534,7 +534,7 @@ table_reference_list:
 
 
 tname: table_name  { 
-			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,0);
+			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,NULL);
 	}
 	| table_name correlation_name { 
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,$<str>2);
@@ -561,7 +561,7 @@ table_expression_2_select: from_clause_ts  op_where_clause_2_select {
 
 
 		sprintf(buff2,"FROM %s",buff);
-		$<sql_string>$=make_sql_string_and_free(buff2," ",$<sql_string>2,0);
+		$<sql_string>$=make_sql_string_and_free(buff2," ",$<sql_string>2,NULL);
 	*/
 }
 ;

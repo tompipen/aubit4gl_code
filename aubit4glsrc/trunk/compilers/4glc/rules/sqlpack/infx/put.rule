@@ -14,7 +14,7 @@ put_cmd :
 	}
 ;
 
-put_from: {$<sql_string>$=make_sql_string_and_free(strdup(""),0);} 
+put_from: {$<sql_string>$=make_sql_string_and_free(strdup(""),NULL);} 
 | FROM put_val_list { 
 	$<sql_string>$=$<sql_string>2;
 }
@@ -22,7 +22,7 @@ put_from: {$<sql_string>$=make_sql_string_and_free(strdup(""),0);}
 
 put_val_list  : put_val_ss {A4GL_4glc_push_gen(PUTVAL,$<sql_string>1);} | 
                 put_val_list KW_COMMA put_val_ss {A4GL_4glc_push_gen(PUTVAL,$<sql_string>3); 
-			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
 		} 
 ;
 
@@ -38,9 +38,9 @@ put_val_ss : put_val_int {
 		YYERROR;
 	}
 	A4GL_add_put_string(buff);
-	$<sql_string>$=make_sql_string_and_free(strdup(buff),0);
+	$<sql_string>$=make_sql_string_and_free(strdup(buff),NULL);
 } | KW_NULL  {
-	$<sql_string>$=make_sql_string_and_free(strdup("NULL"),0);
+	$<sql_string>$=make_sql_string_and_free(strdup("NULL"),NULL);
 }
 
 

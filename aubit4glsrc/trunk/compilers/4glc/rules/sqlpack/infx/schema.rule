@@ -30,7 +30,7 @@ create_statement_ss : create_c_1  {$<sql_string>$=acl_strdup($<str>1);}
 
 create_c_2_ss  : 
 	CREATE_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,acl_strdup($<str>6),0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,acl_strdup($<str>6),NULL);
 		add_feature("CREATE_TABLE");
 	} 
 
@@ -202,7 +202,7 @@ table_element_list_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| table_element_list_ss KW_COMMA table_element_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
 	}
 ;
 	
@@ -223,16 +223,16 @@ table_element_ss:
 
 alter_statement_ss : ALTER_TABLE identifier alter_clauses_ss {
 		add_feature("ALTER_TABLE");
-	$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,$<sql_string>3,0);
+	$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,$<sql_string>3,NULL);
 	}
 	| ALTER_INDEX idx_name TO_CLUSTER {
 		add_feature("CLUSTER_INDEX");
 		add_feature("ALTER_INDEX_CLUSTER");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("ALTER INDEX "),acl_strdup($<str>2),acl_strdup(" TO CLUSTER"),0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("ALTER INDEX "),acl_strdup($<str>2),acl_strdup(" TO CLUSTER"),NULL);
 		}
 	| ALTER_INDEX idx_name TO_NOT_CLUSTER {
 		add_feature("ALTER_INDEX_NOT_CLUSTER");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("ALTER INDEX "),acl_strdup($<str>2),acl_strdup(" TO NOT CLUSTER"),0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("ALTER INDEX "),acl_strdup($<str>2),acl_strdup(" TO NOT CLUSTER"),NULL);
 		}
 ;
 
@@ -241,7 +241,7 @@ alter_clauses_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| alter_clauses_ss KW_COMMA alter_clause_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
 	}
 
 
@@ -282,11 +282,11 @@ alter_clause_ss:
 alter_add_clause_ss:
 	ADD add_column_clause_ss  {
 		add_feature("ALTER_TABLE_ADD");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("ADD "),$<sql_string>2,0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("ADD "),$<sql_string>2,NULL);
 	}
 	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET {
 		add_feature("ALTER_TABLE_ADD");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("ADD "),kw_ob,$<sql_string>3,kw_cb,0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("ADD "),kw_ob,$<sql_string>3,kw_cb,NULL);
 	}
 ;
 
@@ -297,7 +297,7 @@ add_column_clause_ss:
 	}
 	| table_element_ss BEFORE identifier {
 		add_feature("ALTER_TABLE_ADD_BEFORE");
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup(" BEFORE "),acl_strdup($<str>3),0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup(" BEFORE "),acl_strdup($<str>3),NULL);
 	}
 ;
 
@@ -306,7 +306,7 @@ add_column_clauses_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| add_column_clauses_ss KW_COMMA add_column_clause_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
 	}
 ;
 
@@ -333,10 +333,10 @@ drop_column : identifier
 
 alter_modify_clause_ss :
 	MODIFY modify_column_clause_ss {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("MODIFY "),$<sql_string>2,0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("MODIFY "),$<sql_string>2,NULL);
 	}
 	| MODIFY OPEN_BRACKET modify_column_clauses_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("MODIFY "),kw_ob,$<sql_string>3,kw_cb,0);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("MODIFY "),kw_ob,$<sql_string>3,kw_cb,NULL);
 	}
 ;
 
@@ -345,7 +345,7 @@ modify_column_clauses_ss :
 		$<sql_string>$=$<sql_string>1;
 	}
 	| modify_column_clauses_ss KW_COMMA modify_column_clause_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
 	}
 ;
 
@@ -382,9 +382,9 @@ alter_add_constraint_clause:
 
 
 table_constraint_definition_list_ss: table_constraint_definition_ss opt_constraint_name {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);
 } | table_constraint_definition_list_ss KW_COMMA table_constraint_definition_ss opt_constraint_name {
-	$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,acl_strdup($<str>4), 0);
+	$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,acl_strdup($<str>4), NULL);
 }
 ;
 
