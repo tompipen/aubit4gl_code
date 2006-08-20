@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.92 2006-07-27 16:04:09 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.93 2006-08-20 11:30:31 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1137,7 +1137,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	  A4GL_debug ("Its just a label");
 
 	  formdets->fileform->metrics.metrics_val[metric_no].field =
-	    (int) A4GL_LL_make_label (formdets->fileform->metrics.
+	    (long) A4GL_LL_make_label (formdets->fileform->metrics.
 				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
 				      metrics_val[metric_no].x,
@@ -1200,7 +1200,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 
 
 	  formdets->fileform->metrics.metrics_val[metric_no].field =
-	    (int) A4GL_LL_make_field (formdets->fileform->metrics.
+	    (long) A4GL_LL_make_field (formdets->fileform->metrics.
 				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
 				      metrics_val[metric_no].x,

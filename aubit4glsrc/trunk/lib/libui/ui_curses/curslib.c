@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.125 2006-07-24 21:03:08 mikeaubury Exp $
+# $Id: curslib.c,v 1.126 2006-08-20 11:30:30 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.125 2006-07-24 21:03:08 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.126 2006-08-20 11:30:30 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1887,14 +1887,15 @@ void
 A4GL_clear_prompt (struct s_prompt *prmt)
 {
   WINDOW *p;
-  WINDOW *cw;
-int width;
-char *buff;
 #ifdef DEBUG
   A4GL_debug ("Clearing prompt...");
 #endif
   p = prmt->win;
 #ifdef __WIN32__
+  {
+  int width;
+  char *buff;
+  WINDOW *cw;
   width = UILIB_A4GL_get_curr_width ();
   cw = (WINDOW *) A4GL_get_currwin ();
   buff=malloc(width+1);
@@ -1902,9 +1903,9 @@ char *buff;
   buff[width]=0;
   wmove(cw,0,0);
   wprintw(cw,buff);
-
-free(buff);
-      UILIB_A4GL_zrefresh ();
+  free(buff);
+  UILIB_A4GL_zrefresh ();
+  }
 #else
 if (p)
     {

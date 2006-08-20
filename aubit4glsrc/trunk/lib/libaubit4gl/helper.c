@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.53 2006-07-24 21:03:07 mikeaubury Exp $
+# $Id: helper.c,v 1.54 2006-08-20 11:30:29 mikeaubury Exp $
 #
 */
 
@@ -384,7 +384,7 @@ int_get_info_form (char *ptr, char *info)
 	   */
 
     case 8: // CUREENTFIELD
-      A4GL_push_int ((int) p->currentfield);
+      		A4GL_push_int ((int) p->currentfield);
       break;
 
     case 9: // WIDTH
@@ -1147,7 +1147,7 @@ return 0;
 
 
 int a4gl_toupper(int n) {
-int nnew;
+int nnew=n;
 if (n>=0&&n<=255) nnew=toupper(n);
 A4GL_debug("toupper : %d %d (%c %c)",n,nnew,n,nnew);
 return nnew;

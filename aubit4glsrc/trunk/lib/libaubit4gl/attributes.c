@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.39 2006-07-24 21:03:07 mikeaubury Exp $
+# $Id: attributes.c,v 1.40 2006-08-20 11:30:29 mikeaubury Exp $
 #*/
 
 /**
@@ -217,7 +217,7 @@ A4GL_get_curr_form_attr (void)
   SNPRINTF (buff, sizeof(buff),"%p", ptr);
   if (A4GL_has_pointer (buff, ATTRIBUTE))
     {
-      attr = (int) A4GL_find_pointer (buff, ATTRIBUTE);
+      attr = (int) ((long) A4GL_find_pointer (buff, ATTRIBUTE)&0xffffffff);
 
     }
   else
@@ -236,9 +236,7 @@ A4GL_get_curr_window_attr (void)
   if (A4GL_has_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE))
     {
       int a;
-      a =
-	(int) A4GL_find_pointer ((char *) A4GL_get_currwin_name (),
-				 ATTRIBUTE);
+      a = (int) ((long)A4GL_find_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE) & 0xffffffff);
       A4GL_debug ("30 Current window has an attribute %d", a);
       return a;
     }

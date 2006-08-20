@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.11 2006-07-02 11:39:39 mikeaubury Exp $
+# $Id: form_x.x,v 1.12 2006-08-20 11:30:18 mikeaubury Exp $
 #*/
 
 /**
@@ -56,7 +56,7 @@ struct struct_metrics
 	int pos_code;
 	int dlm1;
 	int dlm2;
-	int field;
+	long field;
   };
 
 

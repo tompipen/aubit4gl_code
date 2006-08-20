@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.307 2006-08-20 10:55:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.308 2006-08-20 11:30:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.307 2006-08-20 10:55:25 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.308 2006-08-20 11:30:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -115,7 +115,7 @@ int doing_report_print=0;
 static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
 static void print_returning (void);
 char cmodname[256]="";
-void A4GL_set_clobber(char *c);
+//void A4GL_set_clobber(char *c);
 
 
 
@@ -3809,7 +3809,7 @@ LEXLIB_print_construct_fl (int byname, char *constr_str, t_field_list *f_list, c
   int ccc;
   int k;
   int sio_id;
-  char *fld_list;
+  char *fld_list=0;
   printc ("{\n");
   start_bind ('i', constr_str);
   if (f_list) {
@@ -4278,9 +4278,9 @@ LEXLIB_print_for_start (char *var,void *vfrom,void *vto, void*vstep)
 	int have_from=0;
 	int have_to=0;
 	int have_step=0;
-	int from_l;
-	int to_l;
-	int step_l;
+	int from_l=0;
+	int to_l=0;
+	int step_l=0;
 
 	from=vfrom;
 	to=vto;

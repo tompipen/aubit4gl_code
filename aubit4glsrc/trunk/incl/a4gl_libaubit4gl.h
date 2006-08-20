@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.236 2006-07-24 21:02:50 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.237 2006-08-20 11:30:25 mikeaubury Exp $
 #
 */
 
@@ -2221,6 +2221,12 @@ int aclfgl_fgl_dialog_getfieldname(int n);
 int aclfgl_fgl_dialog_getbuffer(int n);
 int aclfgl_fgl_dialog_setbuffer(int n);
 int aclfgl_fgl_buffertouched(int n);
+
+int aclfgl_fgl_settitle(int n);
+int aclfgl_fgl_getpid(int n);
+int aclfgl_fgl_winquestion(int n);
+int aclfgl_fgl_winbutton(int n);
+
 int aclfgl_aclfgl_get_user(int n);
 int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
 int aclfgl_aclfgl_read_pipe(int nargs);
@@ -2248,6 +2254,12 @@ char *A4GL_get_esql_ext(void);
 int a4gl_isupper(int n);
 void A4GL_log_sql_prepared_map(char *s);
 
+
+
+
+
+int A4GL_is_class_static(char *s);
+void A4GL_set_clobber (char *c);
 int a4gl_islower(int n);
 void A4GL_log_sql_prepared(char *s);
 char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql );

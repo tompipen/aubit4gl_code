@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.19 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: screen.c,v 1.20 2006-08-20 11:30:29 mikeaubury Exp $
 #*/
 
 /**
@@ -98,7 +98,7 @@ A4GL_chk_iskey (char *base,char *iot,char *keys)
   char s[256];
   int processed_onkey;
 
-   processed_onkey=(int)GET(iot,base,"processed_onkey");
+   processed_onkey=(int)GET(iot,base,"processed_onkey"); // 64Bit OK
 
 // Has our key already been handled somewhere ?
 //

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.66 2006-07-07 15:10:22 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.67 2006-08-20 11:30:30 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.66 2006-07-07 15:10:22 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.67 2006-08-20 11:30:30 mikeaubury Exp $";
 #endif
 
 
@@ -43,6 +43,7 @@ void liblex_add_ibind(int dtype,char *var) ;
 static char *trans_quote (char *s);
 extern char curr_func[];
 extern int lastlineno;
+extern int yylineno;
 
 
 /**
@@ -298,7 +299,7 @@ LEXLIB_print_prepare (char *stmt, char *sqlvar)
 	if (p || sqlvar[0]=='"') {
 		printf("PREPARE %s %s %s - %s\n",curr_func,stmt,sqlvar,p);
 	} else {
-		extern int yylineno;
+		//extern int yylineno;
 		printf("UNKNOWN_PREPARE %s.4gl %d %s %s %s\n",A4GL_compiling_module(),yylineno,curr_func,stmt,sqlvar);
 	}
 	if (p) {
@@ -719,7 +720,6 @@ LEXLIB_print_sql_block_cmd (char *s)
 {
 int u=0;
 static int sqlblock=0;
-extern int yylineno;
 char tmpbuff[256];
   if (get_bind_cnt('o')) u+=2;
   if (get_bind_cnt('i')) u+=1;
@@ -875,7 +875,11 @@ doing_esql (void)
 	    return 0;
 }
 
+
+
+/*
 int LEXLIB_compile_time_convert(void) {
 	        return 0;
 }
+*/
 

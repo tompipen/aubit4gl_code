@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.92 2006-07-17 11:16:08 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.93 2006-08-20 11:30:29 mikeaubury Exp $
 #
 */
 
@@ -711,7 +711,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
   fclose (fh);
 
   A4GL_add_pointer (name, SQL_CONVERSION, (void *) conversion_rules);
-  A4GL_add_pointer (name, SQL_CONVERSION_CNT, (void *) conversion_rules_cnt);
+  A4GL_add_pointer (name, SQL_CONVERSION_CNT, (void *) conversion_rules_cnt); // 64Bit OK
 
   return;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.40 2006-07-21 09:55:24 mikeaubury Exp $
+# $Id: map.c,v 1.41 2006-08-20 11:30:23 mikeaubury Exp $
 #*/
 
 /**
@@ -154,10 +154,13 @@ void
 rm_quotes (char *s)
 {
     char *d;
+
     if(*s == 0) return;
-    for(d = s; *s; *s++)
+
+    for(d = s; *s; *s++) {
 	if(*s != '"')
 	    *d++ = *s;
+    }
     *d = 0;
 }
 

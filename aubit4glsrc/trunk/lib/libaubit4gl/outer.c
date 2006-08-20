@@ -192,7 +192,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 			       struct s_table_list *tl)
 {
   char buff[2000];
-  struct s_table *last_t;
+  struct s_table *last_t=0;
   int a = 0;
   strcpy (buff, "");
   if (!can_outer (select, t, fill, tl))

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.109 2006-07-27 16:02:23 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.110 2006-08-20 11:30:29 mikeaubury Exp $
 #
 */
 
@@ -1156,7 +1156,7 @@ A4GL_logsql (int lineno, char *module, char *s)
   static char logfname[255];
   static long logfnameset = 0;
   char *fname;
-  FILE *fout;
+  FILE *fout=0;
   char buff[256];
   if (s == 0)
     return;

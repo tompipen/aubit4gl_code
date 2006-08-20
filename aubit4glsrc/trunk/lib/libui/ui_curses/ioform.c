@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.137 2006-08-15 07:39:25 mikeaubury Exp $
+# $Id: ioform.c,v 1.138 2006-08-20 11:30:31 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.137 2006-08-15 07:39:25 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.138 2006-08-20 11:30:31 mikeaubury Exp $";
 #endif
 
 /**
@@ -361,7 +361,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
       if (strlen (formdets->fileform->metrics.metrics_val[a].label) != 0)
 	{
 	  formdets->fileform->metrics.metrics_val[a].field =
-	    (int) A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
+	    (long) A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
 				   y,
 				   formdets->fileform->metrics.metrics_val[a].
 				   x,
@@ -375,7 +375,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	{
 	  A4GL_debug ("Making field");
 	  formdets->fileform->metrics.metrics_val[a].field =
-	    (int) A4GL_make_field (formdets->fileform->metrics.metrics_val[a].
+	    (long) A4GL_make_field (formdets->fileform->metrics.metrics_val[a].
 				   y,
 				   formdets->fileform->metrics.metrics_val[a].
 				   x,

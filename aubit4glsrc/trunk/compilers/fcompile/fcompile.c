@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.49 2006-02-07 07:43:30 mikeaubury Exp $
+# $Id: fcompile.c,v 1.50 2006-08-20 11:30:24 mikeaubury Exp $
 #*/
 
 /**
@@ -88,6 +88,7 @@ int opened_db=0;
 void usage (char *s);
 void a4gl_form_yyerror (char *s);
 char *rm_dup_quotes(char *s) ;
+void bye(void ) ;
 
 /*
 =====================================================================

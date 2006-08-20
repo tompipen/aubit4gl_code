@@ -9,10 +9,12 @@ short a4gl_ntohs(long x) { return ntohs(x); }
 
 long win_htonl(long x) { 
 	A4GL_assertion(1,"Not implemented");
+	return 0;
 }
 
 long win_ntohl(long x) { 
 	A4GL_assertion(1,"Not implemented");
+	return 0;
 }
 
 short win_htons(short x) { 

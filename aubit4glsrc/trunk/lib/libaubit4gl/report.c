@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.88 2006-07-07 15:10:20 mikeaubury Exp $
+# $Id: report.c,v 1.89 2006-08-20 11:30:29 mikeaubury Exp $
 #
 */
 
@@ -411,11 +411,11 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 static char *
 gen_rep_tab_name (void *p)
 {
-  int a;
+  long a;
   static char buff_0[256];
   a = (int) p;
   //a=1;
-  SPRINTF1 (buff_0, "rtab%x", ((int) a) & 0xfffffff);
+  SPRINTF1 (buff_0, "rtab%x", ((long) a) & 0xfffffff);
   return buff_0;
 }
 

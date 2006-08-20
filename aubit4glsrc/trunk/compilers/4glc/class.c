@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.15 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: class.c,v 1.16 2006-08-20 11:30:22 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,11 @@ int allbuffsize = 0;
 char **class_variable_data;
 char **class_members;
 struct variable **list_parent = 0;
+extern struct variable **list_class;	/* Our List */
+extern int is_schema;
+extern int list_class_cnt;
+  //extern int list_class_cnt;	/* Our List */
+  extern int list_class_alloc;	/* Our List */
 
 /*
 =====================================================================
@@ -215,9 +220,6 @@ dump_class (void)
 {
   int a;
   struct variable *v;
-  extern int is_schema;
-  extern int list_class_cnt;
-  extern struct variable **list_class;	/* Our List */
 
   write_class_string ("DATABASE", get_hdrdbname ());
   write_class_int ("SCHEMA_ONLY", is_schema);
@@ -509,9 +511,7 @@ int read_class (char *s, int is_parent)
   //int a;
   int pvars;
   int pid = 0;
-  extern struct variable **list_class;	/* Our List */
-  extern int list_class_cnt;	/* Our List */
-  extern int list_class_alloc;	/* Our List */
+  //extern struct variable **list_class;	/* Our List */
   struct variable np;
   struct variable *nptr;
   nline = 0;
