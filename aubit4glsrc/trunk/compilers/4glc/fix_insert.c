@@ -96,7 +96,7 @@ fix_insert_expr (int mode)
     {
       if (A4GL_db_used() == 0)
 	{
-	  SPRINTF0 (buff, "You cannot use insert into this table without specifying a database");
+	  SPRINTF0 (buff, "You appear to have 'FULL_INSERT' set.\nBecause of this - you cannot INSERT into this table without specifying a database");
 	  do_yyerror (buff);
 	  return 0;
 	}
