@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.31 2006-08-20 12:35:36 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.32 2006-08-20 13:06:21 mikeaubury Exp $
 #
 */
 
@@ -2289,6 +2289,7 @@ make_sql_string_and_free (char *first, ...)
     {
       n++;
       next = va_arg (ap, char *);
+      A4GL_debug("Next=%p\n",next);
       if (next == 0)
 	break;
       l += strlen (next);
