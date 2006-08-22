@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.27 2006-05-22 07:53:08 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.28 2006-08-22 13:56:41 mikeaubury Exp $
 #*/
 
 /**
@@ -259,7 +259,7 @@ A4GLPacker_output_char (char *name, char val, int ptr, int isarr)
 int
 A4GLPacker_output_int (char *name, int val, int ptr, int isarr)
 {
-  if (sizeof (int) == sizeof (long))
+  if (sizeof (int) != sizeof (short))
     {
       return A4GLPacker_output_long (name, val, ptr, isarr);
     }
@@ -277,7 +277,7 @@ int
 A4GLPacker_output_long (char *name, long val, int ptr, int isarr)
 {
   int a;
-  A4GL_debug ("Outputing LONG %s - 0x%x\n", name, val);
+  A4GL_debug ("Outputing LONG %s - 0x%x (%x)\n", name, val,a4gl_htonl (val));
   val = a4gl_htonl (val);
   a = fwrite (&val, 1, sizeof (val), outfile);
   A4GL_debug ("a=%d\n", a);
@@ -454,14 +454,18 @@ A4GLPacker_input_short (char *name, short *val, int ptr, int isarr)
 int
 A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
 {
-  if (sizeof (int) == sizeof (long))
+int a;
+  if (sizeof (int) != sizeof (short))
     {
-      return A4GLPacker_input_long (name, (long *) val, ptr, isarr);
+      a=A4GLPacker_input_long (name, (long *) val, ptr, isarr);
+	A4GL_debug("Read : %d",  *(long *) val);
     }
   else
     {
-      return A4GLPacker_input_short (name, (short *) val, ptr, isarr);
+      a=A4GLPacker_input_short (name, (short *) val, ptr, isarr);
+	A4GL_debug("Read : %d", * (int *) val);
     }
+return a;
 }
 
 /**
@@ -475,6 +479,7 @@ A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
   /* long n; */
   a = fread (val, 1, sizeof (long), infile);
   if (ferror(infile)) { printf("ferr too %d\n",errno); }
+  A4GL_debug("LONG Got %s %x %x",name,*val, a4gl_ntohl (*val));
   *val = a4gl_ntohl (*val);
   return a;
 }
@@ -515,19 +520,21 @@ char *xptr;
   A4GL_debug ("Inputing string '%s'", name);
 //  A4GL_debug ("xxxxxxxxxxxx calling A4GLPacker_input_long()");
 
-  if (!A4GLPacker_input_long ("", &l, 0, -1)) {
-//	  A4GL_debug ("wwwwwwwwwwwwwww ZERO!");
+  if (!A4GLPacker_input_long (name, &l, 0, -1)) {
+	  A4GL_debug ("wwwwwwwwwwwwwww ZERO!");
 	return 0;
   }
   A4GL_assertion(l<0||l>64000,"Dubious length of string") ;
-  A4GL_debug ("Got length as %d", l);
+  A4GL_debug ("Got length as 0x%d", l);
 	xptr=acl_malloc2 (l+1);	/* Extra 1 for the \0 */
  A4GL_assertion(xptr==0,"Failed to allocate memory");
   *val = xptr;
   memset(xptr,0,l+1);
   a = fread (xptr, 1, l, infile);
+  
   if (a == 0 && l == 0)
     return 1;
+A4GL_debug("Got string : %s",*val);
   return a;
 }
 
