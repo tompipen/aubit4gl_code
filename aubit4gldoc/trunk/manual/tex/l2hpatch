@@ -1,0 +1,10 @@
+--- l2horig	2006-01-14 20:56:55.000000000 +1300
++++ ./latex2html	2006-01-13 17:48:27.000000000 +1300
+@@ -5285,6 +5285,7 @@
+ 	    elsif ($this_cmd) { push(@pieces, $this_cmd) }
+ 	  }
+ 	  push(@pieces, $after);
++	  $within_preamble=0;
+ 	}
+ 	print " $replacements new-command replacements\n"
+ 	    if (($VERBOSITY>1) && $replacements);

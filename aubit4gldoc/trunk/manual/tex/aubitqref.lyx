@@ -1,0 +1,4841 @@
+#LyX 1.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 221
+\textclass literate-article
+\begin_preamble
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{framed}
+\newenvironment{a4gl}{\color{red}\begin{leftbar}}%
+{\end{leftbar}\color{black}}
+\end_preamble
+\language english
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize 10
+\spacing single 
+\papersize a4paper
+\paperpackage a4
+\use_geometry 0
+\use_amsmath 0
+\use_natbib 0
+\use_numerical_citations 0
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 2
+\papersides 2
+\paperpagestyle default
+
+\layout Section
+
+Aubit4GL Quick Reference
+\layout Standard
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+setlength{
+\backslash 
+marginparsep}{2em}
+\end_inset 
+
+
+\hfill 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+scriptsize{Version 0.6: 11 Oct 2006}
+\end_inset 
+
+
+\hfill 
+
+\layout Subsection
+
+Data Types
+\layout LyX-Code
+
+ARRAY[m,n,...] OF type
+\newline 
+BYTE
+\newline 
+CHAR(n)
+\newline 
+CHARACTER(n)
+\newline 
+DATE
+\newline 
+DATETIME(f TO l)
+\newline 
+DEC
+\newline 
+DEC(precision)
+\newline 
+DEC(precision,scale)
+\newline 
+DECIMAL
+\newline 
+DECIMAL(precision)
+\newline 
+DECIMAL(precision,scale)
+\newline 
+DOUBLE PRECISION
+\newline 
+DOUBLE PRECISION(precision)
+\newline 
+INT
+\newline 
+INTEGER
+\newline 
+INTERVAL(f TO l)
+\newline 
+LIKE table.column
+\newline 
+MONEY
+\newline 
+MONEY(precision)
+\newline 
+MONEY(precision,scale)
+\newline 
+NUMERIC
+\newline 
+NUMERIC(m)
+\newline 
+NUMERIC(m,n)
+\newline 
+REAL
+\newline 
+RECORD LIKE table.*
+\newline 
+RECORD name type ,...
+ END RECORD
+\newline 
+SERIAL
+\newline 
+SERIAL(n)
+\newline 
+SMALLFLOAT
+\newline 
+SMALLINT
+\newline 
+TEXT
+\newline 
+VARCHAR
+\newline 
+VARCHAR(max)
+\newline 
+VARCHAR(max,min)
+\layout Standard
+
+Precision = No of significant digits (default 16)
+\newline 
+Scale=No or digits after the decimal pt (default 2), can be -ve.
+\layout Standard
+
+max = number of chars (upper limit 254 for Informix IDS)
+\newline 
+min = minimum number of chars.
+\layout Standard
+
+Current Engines also support large integers: int8 and serial8.
+\layout Subsection
+
+Constants
+\layout LyX-Code
+
+TRUE=1
+\newline 
+FALSE=0 
+\newline 
+NOTFOUND=100
+\layout Subsection
+
+Global Variables
+\layout Description
+
+Flags: INT_FLAG
+\hfill 
+ QUIT_FLAG
+\hfill 
+
+\layout Description
+
+Vars: STATUS 
+\hfill 
+SQLCA.SQLCODE
+\hfill 
+
+\layout Description
+
+SQLCA\SpecialChar ~
+Record: \SpecialChar ~
+
+\newline 
+SQLCA RECORD
+\newline 
+SQLCODE INTEGER,
+\newline 
+SQLERRM CHAR(71),
+\newline 
+SQLERRP CHAR(8),
+\newline 
+SQLERRD ARRAY[6] OF INTEGER,
+\newline 
+SQLAWARN CHAR(8)
+\newline 
+END RECORD
+\layout Description
+
+SQLCA.SQLERRD\SpecialChar ~
+Array: \SpecialChar ~
+
+\newline 
+SQLERRD[1]:estimated row count
+\newline 
+SQLERRD[2]:serial value returned
+\newline 
+SQLERRD[3]:no of rows processed
+\newline 
+SQLERRD[4]:estimated CPU cost
+\newline 
+SQLERRD[5]:error offset
+\newline 
+SQLERRD[6]:last rowid processed
+\layout Standard
+
+Warning: Not all of the above work for all backends.
+ For PostgreSQL they may need a patched version of the engine.
+\layout Subsection
+
+Syntax Conventions
+\layout Standard
+
+The remainder of this chapter uses the following conventions to indicate
+ the syntax of 4GL language constructs
+\layout Itemize
+
+KEYWORDS are in UPPERCASE.
+ You enter them literally but in upper or lower case
+\layout Itemize
+
+Lower case indicates terms for which you must enter your own identifiers
+ or expressions
+\layout Itemize
+
+"string" indicates a quoted string.
+ Informix allows either single or double quotes but non-Informix engines
+ may enforce one or the other.
+\layout Itemize
+
+string (without quotes) indicates an unquoted string used for example, in
+ naming cursors, prepared statements, forms, windows, etc.
+\layout Itemize
+
+m and n are used to denote a numeric value
+\layout Itemize
+
+"c" denotes any quoted character
+\layout Itemize
+
+[] and {} delimit options.
+ {} indicates a mandatory option.
+ [] a non-mandatory toption.
+ Within the [] or {} elements are separated by the pipe symbol |.
+ e.g.
+ {a|b|c} means you must choose a or b or c.
+\layout Itemize
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+Expressions in red are Aubit 4GL extensions and will not compile on Informix,
+ 4J, or other 4GL compilers.
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\layout Itemize
+
+
+\family typewriter 
+\color green
+Expressions in green work with Informix SE only.
+\layout Itemize
+
+
+\family typewriter 
+\color blue
+Expressions in blue work with Informix IDS only.
+\layout Itemize
+
+relop means a relational operator (see below)
+\layout Itemize
+
+expr means an expression
+\layout Itemize
+
+charexpr means a character expression (e.g.
+ 
+\family typewriter 
+filename || ".4gl
+\family default 
+")
+\layout Subsection
+
+Operators
+\layout Description
+
+Numeric: \SpecialChar ~
+
+\hfill 
++
+\hfill 
+-
+\hfill 
+ *
+\hfill 
+ /
+\hfill 
+ **
+\hfill 
+ mod
+\hfill 
+
+\layout Description
+
+String: \SpecialChar ~
+
+\hfill 
+,
+\hfill 
+ [m,n]
+\hfill 
+ ||
+\hfill 
+USING "string" 
+\hfill 
+CLIPPED
+\hfill 
+
+\layout Description
+
+Relational: \SpecialChar ~
+
+\hfill 
+=
+\hfill 
+<>
+\hfill 
+ !=
+\hfill 
+ >=
+\hfill 
+ <
+\hfill 
+<=
+\hfill 
+
+\layout Description
+
+Boolean: expr relop expr
+\newline 
+charexp LIKE charexpr
+\newline 
+charexpr LIKE charexpr ESCAPE "c"
+\newline 
+charexp NOT LIKE charexp
+\newline 
+charexp NOT LIKE charexp ESCAPE "c"
+\newline 
+charexpr MATCHES charexpr 
+\newline 
+charexpr NOT MATCHES charexpr ESCAPE "c"
+\newline 
+charexpr MATCHES charexpr 
+\newline 
+charexpr NOT MATCHES charexpr ESCAPE "c"
+\newline 
+expr IS NULL
+\newline 
+expr IS NOT NULL
+\newline 
+boolexpr AND boolexpr]
+\newline 
+boolexpr OR boolexpr
+\newline 
+NOT boolexpr
+\newline 
+
+\layout Subsection
+
+Aubit4GL Operators
+\layout Standard
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+
+\layout LyX-Code
+
+[NOT] IN ( {expr [ ,...]
+\newline 
+   |selectstatement})
+\newline 
+[NOT] EXISTS ( selectstatement )
+\layout Standard
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\layout Subsection
+
+Attribute Constants
+\layout Standard
+
+An attlist is a set of the following elements:
+\layout Standard
+
+BLACK, WHITE, RED, GREEN, BLUE, 
+\newline 
+MAGENTA, CYAN, YELLOW,
+\newline 
+REVERSE,DIM, BOLD, BLINK, INVISIBLE,
+\newline 
+BORDER, UNDERLINE
+\layout Subsection
+
+Key Constants
+\layout Standard
+
+A keylist is a set of the following elements:
+\layout LyX-Code
+
+F1 to F64
+\newline 
+CONTROL-c (but c not in (A,D,H,I,
+\newline 
+  K,L,M,R,X)
+\newline 
+ACCEPT, DELETE, DOWN, ESC, ESCAPE,
+\newline 
+HELP, INSERT, INTERRUPT, LEFT,
+\newline 
+RIGHT, NEXT, NEXTPAGE, PREVIOUS,
+\newline 
+PREVPAGE, RETURN, TAB, UP
+\layout Subsection
+
+Table Privileges
+\layout LyX-Code
+
+ALTER, INDEX, DELETE, INSERT,
+\newline 
+SELECT[(colname ,...)]
+\newline 
+UPDATE[(colname ,...)
+\layout Subsection
+
+Comments
+\layout Standard
+
+Characters on a line after the following are ignored by 4GL compilers:
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="12col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="70col%">
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+--
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ANSI SQL Standard for commenting out rest of line
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+#
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Unix convention for commenting out rest of line
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Standard
+
+Curly braces are used to comment out lines of code (not nestable):
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="12col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="70col%">
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+{ ...
+ }
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Compiler ignores everything between the braces 
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+{! ...
+ !}
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Aubit 4GL compiles the enclosed code.
+ Informix 4GL ignores it.
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Subsection
+\pagebreak_top 
+4GL Statement Syntax
+\layout LyX-Code
+
+ALLOCATE ARRAY name, size
+\newline 
+ALTER INDEX 
+\emph on 
+indexname
+\emph default 
+ TO [NOT] CLUSTER
+\newline 
+ALTER TABLE 
+\emph on 
+tablename
+\emph default 
+
+\newline 
+  {ADD (newcolname newcoltype
+\newline 
+     [BEFORE old-colname][,...])
+\newline 
+   |DROP (oldcolname[,...])
+\newline 
+   |MODIFY (oldcolname newcoltype [NOT NULL]
+\newline 
+     [,...])
+\newline 
+  }[,...]
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+AT TERMINATION CALL 
+\emph on 
+function
+\emph default 
+([args])
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+BEGIN WORK
+\newline 
+  statement ...
+\newline 
+  {COMMIT WORK | ROLLBACK WORK}
+\newline 
+CALL 
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+textcolor{red}{
+\end_inset 
+
+
+\emph on 
+[packet
+\emph default 
+{
+\emph on 
+::|.}]
+\emph default 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+}
+\end_inset 
+
+function([args])
+\newline 
+  [RETURNING arglist]
+\newline 
+CASE [(
+\emph on 
+expr
+\emph default 
+)]
+\newline 
+  WHEN {
+\emph on 
+expr
+\emph default 
+ | 
+\emph on 
+booleanexpr
+\emph default 
+}
+\newline 
+    statement
+\newline 
+    ...
+\newline 
+    [EXIT CASE]
+\newline 
+  ...
+\newline 
+  [OTHERWISE]
+\newline 
+    ...
+\newline 
+    [EXIT CASE]
+\newline 
+    ...
+\newline 
+  END CASE 
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+CHECK MENUITEM name
+\newline 
+CHECK MENUITEMEM2 name 
+\newline 
+CLEAR STATUSBOX name
+\newline 
+CLASS name [EXTENDS class]
+\newline 
+  definestatements ...
+\newline 
+  {FUNCTION func([arglist])
+\newline 
+    statements
+\newline 
+    [...]
+\layout LyX-Code
+
+   END FUNCTION}
+\newline 
+   ...
+\newline 
+  END CLASS
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+CLEAR {SCREEN |WINDOW 
+\emph on 
+windowname
+\emph default 
+
+\newline 
+   |WINDOW SCREEN
+\newline 
+   |FORM 
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+[TO DEFAULTS]
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+   |
+\emph on 
+fieldlist
+\emph default 
+}
+\newline 
+CLOSE 
+\emph on 
+cursor
+\emph default 
+
+\newline 
+CLOSE DATABASE
+\newline 
+CLOSE FORM
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+CLOSE SESSION name
+\newline 
+CLOSE STATUSBOX name
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+CLOSE WINDOW 
+\emph on 
+name
+\emph default 
+
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+CODE
+\newline 
+  Cstatement;
+\newline 
+  ...
+\newline 
+  ENDCODE
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+COMMIT WORK
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+CONNECT TO name
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\layout LyX-Code
+
+\layout LyX-Code
+
+CONSTRUCT {BY NAME charvar ON collist
+\newline 
+  |charvar on collist FROM { fields 
+\newline 
+     | screenrecord[[n]].*}  [,...]}
+\newline 
+  [[ {BEFORE|AFTER} CONSTRUCT statements]
+\newline 
+   [,...] 
+\newline 
+   [ {BEFORE|AFTER} FIELD field statements]
+\newline 
+   [,...] 
+\newline 
+   {ON KEY (keylist)
+\newline 
+      statement
+\newline 
+      ...
+\newline 
+      [{EXIT|CONTINUE} CONSTRUCT]
+\newline 
+   ...]
+\newline 
+END CONSTRUCT]
+\layout LyX-Code
+
+CONTINUE CONSTRUCT
+\newline 
+CONTINUE DISPLAY
+\newline 
+CONTINUE FOR
+\newline 
+CONTINUE FOREACH
+\newline 
+CONTINUE INPUT
+\newline 
+CONTINUE MENU
+\newline 
+CONTINUE PROMPT
+\newline 
+CONTINUE WHILE
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+CONVERT REPORT TO "filename" AS 
+\newline 
+  {"SAVE"|"PDF"|"CSV"|"TXT"}
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+textcolor{green}{CREATE AUDIT FOR tabname in "pathname"}
+\end_inset 
+
+
+\newline 
+CREATE [UNIQUE|DISTINCT][CLUSTER] INDEX
+\newline 
+ indname ON tabname( colname [ASC|DESC]
+\newline 
+       [,...])
+\newline 
+CREATE DATABASE {name| charvar}
+\newline 
+   [WITH LOG [IN path]]
+\newline 
+CREATE SCHEMA AUTHORIZATION
+\newline 
+CREATE PRIVATE SYNONYM
+\newline 
+CREATE PUBLIC SYNONYM
+\newline 
+CREATE SYNONYM name FOR tabname
+\newline 
+CREATE TABLE
+\newline 
+CREATE [TEMP] TABLE name
+\newline 
+   (colname coltype [NOT NULL][,...])
+\newline 
+CREATE DISTINCT CLUSTER INDEX
+\newline 
+CREATE VIEW
+\newline 
+CURRENT WINDOW IS 
+\emph on 
+name
+\emph default 
+
+\newline 
+CURRENT WINDOW SCREEN
+\newline 
+CURRENT WINDOW IS SCREEN
+\newline 
+DATABASE 
+\emph on 
+name
+\emph default 
+ [EXCLUSIVE]
+\newline 
+DEALLOCATE ARRAY name
+\newline 
+DECLARE name [SCROLL] CURSOR FOR
+\newline 
+  {select_statement
+\newline 
+    [FOR UPDATE OF collist
+\newline 
+  |insert_statement
+\newline 
+  |statementid}
+\newline 
+DEFER INTERRUPT
+\newline 
+DEFER QUIT
+\newline 
+DEFINE varlist datatype [,...] 
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+DEFINE CONSTANT id {"string"|number} 
+\newline 
+DEFINE linkid LINKED TO tabname PRIMARY KEY (colname)
+\newline 
+DEFINE name ASSOCIATE [CHAR](n) 
+\newline 
+   with ARRAY[m] OF datatype
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+DELETE FROM tabname
+\newline 
+   [WHERE {condition|CURRENT OF cursor}]
+\newline 
+DELETE USING linkid
+\newline 
+DISABLE FORM name
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+DISABLE MENUITEM name
+\newline 
+DISABLE MENUITEMS
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+DISPLAY {BY NAME varlist
+\newline 
+  | varlist TO {fieldlist|screenrec[[n]].*}
+\newline 
+       [,...]
+\newline 
+     | AT screenrow,screencol]}
+\newline 
+   [ ON KEY (keylist)
+\newline 
+      statement
+\newline 
+      ...
+\newline 
+      [EXIT DISPLAY]
+\newline 
+   ...
+\newline 
+   END DISPLAY]
+\newline 
+DISPLAY ARRAY id TO screenarray.*
+\newline 
+   [ ATTRIBUTE( attlist )]
+\newline 
+   {ON KEY (keylist)
+\newline 
+      statement
+\newline 
+      ...
+\newline 
+      [EXIT DISPLAY]
+\newline 
+   ...
+\newline 
+   END DISPLAY| [END DISPLAY]}
+\newline 
+
+\newline 
+DISPLAY FORM name [ATTRIBUTE( attlist)]
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+textcolor{green}{DROP AUDIT FOR tabname}
+\end_inset 
+
+
+\newline 
+DROP DATABASE {name | charvar}
+\newline 
+DROP INDEX name
+\newline 
+DROP SYNONYM name
+\newline 
+DROP TABLE name
+\newline 
+DROP TRIGGER name
+\newline 
+DROP VIEW name
+\newline 
+ENABLE FORM form
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+ENABLE MENUITEM name
+\newline 
+ENABLE MENUITEMS
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+ERROR displaylist [ATTRIBUTE (attlist)]
+\newline 
+EXECUTE [IMMEDIATE] statementid
+\newline 
+EXIT CASE
+\newline 
+EXIT CONSTRUCT
+\newline 
+EXIT DISPLAY
+\newline 
+EXIT FOR
+\newline 
+EXIT FOREACH
+\newline 
+EXIT INPUT
+\newline 
+EXIT MENU
+\newline 
+EXIT PROGRAM [expr]
+\newline 
+EXIT PROMPT
+\newline 
+EXIT WHILE
+\newline 
+FETCH [NEXT
+\newline 
+      |PREVIOUS|PRIOR|FIRST|LAST
+\newline 
+        |CURRENT|RELATIVE n
+\newline 
+        |ABSOLUTE n]
+\newline 
+     cursorname [INTO varlist]
+\newline 
+FINISH REPORT name
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+FINISH REPORT name
+\newline 
+    CONVERTING TO {{"filename"|EMAIL|}
+\newline 
+      [AS {"SAVE"|"PDF"|"CSV"|"TXT"|MANY}
+\newline 
+      [USING "filename" AS LAYOUT]}
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+FLUSH cursor
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+FONT SIZE n
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+FOR var = expr TO expr [STEP expr]
+\newline 
+   {statement|CONTINUE FOR|EXIT FOR}...
+\newline 
+   END FOR
+\newline 
+FOREACH cursor [INTO varlist]
+\newline 
+   [statement|CONTINUE FOREACH|EXIT FOREACH]...
+\newline 
+   END FOREACH
+\newline 
+FREE {statementid|cursor|blobvar}
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+FREE REPORT name
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+FUNCTION function([arglist])
+\newline 
+   [ definestatement ]...
+\newline 
+   statement ...
+\newline 
+   END FUNCTION
+\newline 
+GO TO 
+\emph on 
+label
+\emph default 
+
+\newline 
+GOTO 
+\emph on 
+label
+\emph default 
+
+\newline 
+GRANT {tabpriv ON tabname
+\newline 
+   | CONNECT|RESOURCE|DBA }
+\newline 
+   TO {PUBLIC|userlist}
+\layout LyX-Code
+
+HIDE OPTION name
+\newline 
+HIDE WINDOW name
+\newline 
+IF boolexpr THEN
+\newline 
+  statement
+\newline 
+  ...
+\newline 
+  [ELSE
+\newline 
+    statement
+\newline 
+    ...]
+\newline 
+  END IF]
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+IF boolexpr THEN
+\newline 
+  statement
+\newline 
+  ...
+\newline 
+  [ELIF|ELSIF
+\newline 
+    statement
+\newline 
+    ...]
+\newline 
+   ...
+\newline 
+  [ELSE
+\newline 
+    statement
+\newline 
+    ...]
+\newline 
+  END IF]
+\newline 
+IMPORT PACKAGE name
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+INITIALIZE varlist
+\newline 
+  {LIKE collist| TO NULL}
+\newline 
+INPUT ARRAY array [WITHOUT DEFAULTS]
+\newline 
+  FROM screenarray.* [HELP n]
+\newline 
+  [{BEFORE {ROW|INSERT|DELETE|FIELD list}
+\newline 
+    [,...]
+\newline 
+    |AFTER {ROW|INSERT|DELETE|FIELD list
+\newline 
+       INPUT}[,...]
+\newline 
+     |ON KEY (keylist)}
+\newline 
+     statement
+\newline 
+     ...
+\newline 
+     [NEXT FIELD field]
+\newline 
+     ...
+\newline 
+     [EXIT INPUT]
+\newline 
+     ...
+\newline 
+   ...
+ 
+\newline 
+   END INPUT
+\newline 
+INSERT INTO tabname[(collist)]
+\newline 
+  {VALUES(vallist)| selectstatemet}
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+INSERT USING linkid
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+LABEL 
+\emph on 
+name
+\emph default 
+:
+\newline 
+MESSAGE displaylist [ATTRIBUTE (attlist)]
+\newline 
+LABEL label-name :
+\newline 
+LET id = expr
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+LET hasharray<<"code">> = "string"
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+LOAD FROM filename INSERT in tabname [(collist)]
+\newline 
+LOCATE varlist in {MEMORY|FILE [filename]}
+\newline 
+LOCK TABLE name IN {SHARE|EXCLUSIVE} MODE
+\newline 
+MENU "name"
+\newline 
+   COMMAND {KEY (keylist)
+\newline 
+       | [KEY (keylist)] "option"
+\newline 
+            [HELP n]}
+\newline 
+      statement 
+\newline 
+      ...
+\newline 
+      [CONTINUE MENU]
+\newline 
+      ...
+\newline 
+      [EXIT MENU]
+\newline 
+      ...
+\newline 
+      [NEXT OPTION "option"]
+\newline 
+      ...
+\newline 
+    ...
+\newline 
+    [ON KEY (keylist)
+\newline 
+      statement
+\newline 
+      ...
+\newline 
+      CONTINUE MENU]
+\newline 
+      ...
+\newline 
+      [EXIT MENU]
+\newline 
+      ...
+\newline 
+      [NEXT OPTION "option"]
+\newline 
+      ...]
+\newline 
+    END MENU
+\newline 
+ 
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+MENU name
+\newline 
+   {OPTION opt [IMAGE="path/name.xpm"] "Label"
+\newline 
+   |SUBMENU subname "[_]Label" 
+\newline 
+     {USE menu
+\newline 
+     |{statement,...
+\newline 
+      END SUBMENU}}
+\newline 
+   | statement
+\newline 
+    ,...}
+\newline 
+   END MENU
+\newline 
+MENUHANDLER name
+\newline 
+   [ definestatement [,...]]
+\newline 
+   [ statement
+\newline 
+     |{{DIS|EN}ABLE MENUITEM[S] item [,...]}
+\newline 
+     | ON item
+\newline 
+         statement
+\newline 
+         [...]]
+\newline 
+   END MENUHANDLER
+\newline 
+MESSAGEBOX message
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+
+\color blue
+SET BUFFERED LOG
+\color default
+
+\newline 
+SET CONSTRAINTS ALL IMMEDIATE
+\newline 
+SET LOG
+\newline 
+
+\color green
+START DATABASE identifier WITH LOG IN "..."
+\color default
+
+\newline 
+  [MODE ANSI]
+\newline 
+START REPORT name
+\newline 
+   [TO {file|PIPE program|PRINTER
+\newline 
+       |
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+CONVERTIBLE
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+}]
+\newline 
+MOVE WINDOW
+\newline 
+NEED n LINES
+\newline 
+NEXT FIELD "fieldname"
+\newline 
+NEXT FORM NEXT OPTION "optname"
+\newline 
+OPEN 
+\emph on 
+cursor
+\emph default 
+ [USING varlist]
+\newline 
+OPEN FORM name FROM "filename"
+\newline 
+OPEN SESSION id TO DATABASE db
+\newline 
+   [USING user [PASSWORD pwd]]
+\newline 
+OPEN STATUSBOX name
+\newline 
+OPEN WINDOW name AT row, col
+\newline 
+   WITH {r ROWS, c COLUMNS
+\newline 
+         | FORM "file"}
+\newline 
+   [ATTRIBUTE(attlist)]
+\newline 
+OPTIONS {MESSAGE LINE line
+\newline 
+   |PROMPT LINE line
+\newline 
+   |COMMENT LINE line
+\newline 
+   |ERROR LINE line
+\newline 
+   |FORM LINE line
+\newline 
+   |INPUT {[NO] WRAP}
+\newline 
+   |INSERT KEY key
+\newline 
+   |DELETE KEY key
+\newline 
+   |NEXT KEY key
+\newline 
+   |PREVIOUS KEY key
+\newline 
+   |ACCEPT KEY key
+\newline 
+   |HELP FILE "file"
+\newline 
+   |HELP KEY key
+\newline 
+   |INPUT ATTRIBUTE(attlist)
+\newline 
+   |DISPLAY ATTRIBUTE (attlist)}
+\newline 
+   [,...]
+\newline 
+OUTPUT TO REPORT name(exprlist)
+\newline 
+PAUSE "charexpr"
+\newline 
+PREPARE id from "charexpr"
+\newline 
+PRINT exprlist
+\newline 
+PRINT FILE "filename"
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+PRINT IMAGE "name"
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+PROMPT displaylist FOR [CHAR] var
+\newline 
+  [HELP n]
+\newline 
+  [ON KEY (keylist)
+\newline 
+    statement
+\newline 
+    ...
+\newline 
+  ...
+\newline 
+  END PROMPT]
+\newline 
+PUT cursor FROM varlist
+\newline 
+RECOVER TABLE name
+\newline 
+RENAME DATABASE name TO newname
+\newline 
+RENAME COLUMN table.oldcol TO newcol
+\newline 
+RENAME TABLE oldname TO newname
+\newline 
+RESIZE ARRAY name, size
+\newline 
+EXIT REPORT
+\newline 
+RETURN  exprlist
+\newline 
+REVOKE { tabpriv ON tabname 
+\newline 
+   | CONNECT | RESOURCE | DBA}
+\newline 
+   FROM {PUBLIC | userlist
+\newline 
+ROLLBACK WORK
+\newline 
+ROLLFORWARD DATABASE name
+\newline 
+RUN command [RETURNING n
+\newline 
+   |WITHOUT WAITING]
+\newline 
+SCROLL {fieldlist| screenrec.*}[,...]
+\newline 
+   {UP|DOWN}[BY n]
+\newline 
+SELECT sellist [INTO varlist] FROM collist
+\newline 
+   [joinclause] [fromclause] 
+\newline 
+   [groupclause [havingclause]]
+\newline 
+   [orderclause]
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+SELECT USING linkid
+\newline 
+SET PAUSE MODE OFF
+\newline 
+SET PAUSE MODE ON
+\newline 
+SET CURSOR
+\newline 
+SET SESSION TO name
+\newline 
+SHOW MENU menu USING handler
+\newline 
+   [FROM "file"]
+\newline 
+SHOW OPTION "optname"
+\newline 
+SHOW WINDOW name
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+SKIP n LINE[S]
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+SKIP BY nval
+\newline 
+SKIP TO nval
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+SKIP TO TOP OF PAGE
+\newline 
+SLEEP n
+\newline 
+SQL sqlstatement [,...] END SQL
+\newline 
+SET EXPLAIN OFF
+\newline 
+SET EXPLAIN ON
+\newline 
+SET ISOLATION TO COMMITTED READ
+\newline 
+SET ISOLATION TO CURSOR STABILITY
+\newline 
+SET ISOLATION TO DIRTY READ
+\newline 
+SET ISOLATION TO REPEATABLE READ
+\newline 
+SET LOCK MODE TO NOT WAIT
+\newline 
+SET LOCK MODE TO WAIT
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+SET SQL DIALECT TO "{INFORMIX|ORACLE|...}"
+\newline 
+START EXTERNAL FUNCTION
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+START REPORT name
+\newline 
+   [TO {"filename"|PIPE program|PRINTER}]
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+STOP ALL EXTERNAL
+\newline 
+TERMINATE REPORT
+\newline 
+UNCHECK MENUITEM name
+\newline 
+UNCHECK MENUITEMS name
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+UNLOAD TO filename selectstatement
+\newline 
+UNLOCK TABLE name
+\newline 
+UPDATE tabname SET
+\newline 
+   {colname = expr [,...]
+\newline 
+   |{(collist}|table.*|*}=
+\newline 
+      {(exprlist)| record.*}}
+\newline 
+   [WHERE {condition|CURRENT of cursor}
+\newline 
+UPDATE STATISTICS
+\newline 
+UPDATE STATISTICS FOR TABLE name
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+UPDATE USING linkid
+\newline 
+USE 
+\emph on 
+packagename
+\emph default 
+
+\newline 
+USE SESSION 
+\emph on 
+name
+\emph default 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+VALIDATE var LIKE collist
+\newline 
+WHILE boolean
+\newline 
+   [statement| EXIT WHILE | CONTINUE WHILE]...
+\newline 
+   END WHILE
+\layout Subsection
+
+Report Syntax
+\layout LyX-Code
+
+REPORT repname( arglist)
+\newline 
+  definestatement ...
+\layout LyX-Code
+
+[OUTPUT
+\newline 
+  [REPORT TO 
+\newline 
+    {file|PIPE program|PRINTER}]
+\newline 
+  [LEFT MARGIN n]
+\newline 
+  [RIGHT MARGIN n]
+\newline 
+  [TOP MARGIN n]
+\newline 
+  [BOTTOM MARGIN n]
+\newline 
+  [PAGE LENGTH n]
+\layout LyX-Code
+
+[ORDER [EXTERNAL] BY sortlist]
+\newline 
+FORMAT
+\newline 
+  { EVERY ROW 
+\newline 
+   | {[FIRST] PAGE HEADER
+\newline 
+      |PAGE TRAILER
+\newline 
+      |ON EVERY ROW
+\newline 
+      |ON LAST ROW
+\newline 
+      |{BEFORE|AFTER} GROUP OF argvar}
+\newline 
+        statement
+\newline 
+        ...
+\newline 
+        [...]}
+\newline 
+END REPORT
+\layout Subsection
+
+Report Statement Syntax
+\layout LyX-Code
+
+NEED n LINES
+\newline 
+PAUSE "string"
+\newline 
+PRINT [[exprlist][;]| FILE "filename"]
+\newline 
+SKIP {expr LINE[S]| TO TOP OF PAGE}
+\layout Subsection
+
+Report Expressions
+\layout LyX-Code
+
+\layout LyX-Code
+
+COLUMN expr
+\newline 
+[GROUP]{COUNT(*)|PERCENT(*)
+\newline 
+  |{SUM|AVG|MIN|MAX}(expr)}
+\newline 
+   [WHERE expr]}
+\newline 
+DATE
+\newline 
+LINENO
+\newline 
+PAGENO
+\newline 
+TIME
+\newline 
+WORDWRAP
+\layout LyX-Code
+
+\layout Subsection
+\pagebreak_top 
+PDF Report Syntax
+\layout Standard
+
+PDF reports are an Aubit 4GL extension.
+ 
+\layout Itemize
+
+nval means an numeric expr followed by 1 of the following units:
+\newline 
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+POINTS, INCHES, MM, or nothing (which means char spaces).
+ Example: 2.54 mm 
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\layout LyX-Code
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+PDFREPORT name(arglist)
+\newline 
+  definestatement ...
+\newline 
+[OUTPUT
+\newline 
+  [REPORT TO 
+\newline 
+    {file|PIPE program|PRINTER}]
+\newline 
+  [LEFT MARGIN nval}
+\newline 
+  [RIGHT MARGIN nval]
+\newline 
+  [TOP MARGIN nval]
+\newline 
+  [BOTTOM MARGIN nval]
+\newline 
+  [PAGE LENGTH  nval]
+\layout LyX-Code
+
+[ORDER [EXTERNAL] BY sortlist]
+\newline 
+FORMAT
+\newline 
+  { EVERY ROW 
+\newline 
+   | {[FIRST] PAGE HEADER
+\newline 
+      |PAGE TRAILER
+\newline 
+      |ON EVERY ROW
+\newline 
+      |ON LAST ROW
+\newline 
+      |{BEFORE|AFTER} GROUP OF argvar}
+\newline 
+        statement| pdfstatement
+\newline 
+        ...
+\newline 
+        [...]}
+\newline 
+END PDFREPORT
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\layout Subsection
+
+PDF Report Expressions
+\layout LyX-Code
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+COLUMN nval
+\newline 
+reportexpression
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\newline 
+
+\layout Subsection
+
+PDF Statements
+\layout LyX-Code
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+PRINT IMAGE blobvar AS 
+\newline 
+   "{GIF|PNG|TIFF|JPEG}"
+\newline 
+   [SCALED by x.n, y.n}
+\newline 
+SKIP {BY|TO} nval
+\newline 
+CALL PDF_FUNCTION(arglist)
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\layout Subsection
+
+PDF_FUNCTION arglists
+\layout Standard
+
+There are many libpdf functions.
+ For a full list look at the PDFlib documentation.
+ Here are some useful examples:
+\layout LyX-Code
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+"set_font_name", "{Times-Roman|Helvetica| ..}"
+\newline 
+"set_font_size", n
+\newline 
+"set_parameter", "{underline|...}", "{true|false|...}"
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\layout Standard
+
+Note: Font names are case sensitive.
+\layout Section
+
+Builtin Functions
+\layout Standard
+
+Informix 4GL has a set of 40 or more functions built in to the language.
+ Aubit4GL implements all of these.
+\layout Standard
+
+Aubit4gl also implements a few functions to make the compiler compatible
+ with programs written for D4GL.
+\layout Standard
+
+Finally Aubit4GL has added some builtins of its own to allow you to exploit
+ Aubit4GL's special features such as GUI interfaces, different database
+ engines, etc.
+\layout Subsection
+
+Standard 4GL Builtin Functions
+\layout Standard
+
+The following functions in 4GL work in Aubit4GL:
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="21" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="50col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="40col%">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Function
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Comment
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+arg_val(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns a string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+arr_count()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns smallint
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+arr_curr()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns smallint
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+downshift(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns string with chars downshifted to lowercase
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+err_get(n) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns a string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+err_print(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+displays a string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+err_quit(n) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+displays a string then exits
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+errorlog(s) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+logs message s to logfile
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+fgl_drawbox(h, w, y, x [,clr])
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+fgl_getenv(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+fgl_keyval(s) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns integer code
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+fgl_lastkey() 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns integer code
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+length(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns smallint
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+num_args() 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns smallint
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+scr_line()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns smallint
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+set_count(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+showhelp(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+displays help message n
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+sqlexit(n) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns 0, after closing connection to database
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+startlog(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+upshift(s) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns string with chars upshifted to uppercase
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Subsection
+
+Standard 4GL Operators
+\layout Standard
+
+The following functions are described by Informix 4GL as builtin operators.
+ They work in Aubit4GL:
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="17" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="50col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="40col%">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Operator
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Comment
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ascii(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns a char,
+\layout Standard
+
+e.g.
+ ascii(64) returns 'A'
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+date(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns a date 
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+date
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns a string 
+\newline 
+e.g.
+ Wed Aug 15 2006
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+day(d)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns 1..31
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+extend(d or dt, format)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns a date or datetime
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+field_touched(rec.field) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns TRUE or FALSE
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+get_fldbuf(rec.field) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns string contents of field
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+hex(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns string e.g.
+ 0x0000001c
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+in()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+infield(rec.field)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns TRUE or FALSE
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+mdy(m,d,y)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns date from args month, day, year
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+month(d or dt)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns 1:12
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ord(c) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns smallint
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+time
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+today
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns date
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+year(date) 
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns smallint
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Subsection
+\pagebreak_top 
+D4GL Builtin Functions
+\layout Standard
+
+The following are do-nothing functions which allow 4J's D4GL programs to
+ compile:
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="50col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="40col%">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Function
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Comment
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+ddeconnect()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+ddeexecute()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+ddefinish()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+ddefinishall()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+ddegeterror()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+ddepeek()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+ddepoke()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Subsection
+
+Aubit Builtin Functions
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="30" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="50col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="40col%">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Function
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return Values
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\color red
+_variable(name)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+pointer to object (e.g.
+ cursor, form, window, etc)
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+abs( n )
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+absolute value of n
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+a4gl_get_info("o","id","p")
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+See below
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+a4gl_get_page()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+a4gl_get_ui_mode()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+0|1 (0=TUI, 1=GTK)
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+a4gl_run_gui()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+a4gl_set_page()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+a4gl_show_help(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+dbms_dialect()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+"INFORMIX"|"POSTGRES"|...
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_buffertouched(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+TRUE|FALSE
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_dialog_get_buffer()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_dialog_getfieldname()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_dialog_setbuffer(value)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_dialog_setcurrline(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_dialog_setkeylabel("key","label")
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_getkey_wait(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_setkeylabel("key","label")
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_prtscr()
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_scr_size(srec)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_set_arr_line(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_keysetlabel("key","label")
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_set_scrline(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_strtosend(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns string
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+fgl_winmessage(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+load_datatype(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+set_window_title(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+sqrt(n)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+returns square root of n
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+winexec(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+
+\family typewriter 
+\color red
+winexecwait(s)
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Subsection
+
+a4gl_get_info()
+\layout Description
+
+Synopsis: 
+\family typewriter 
+\color red
+a4gl_get_info( "object", "id", "property")
+\family default 
+\color default
+
+\newline 
+where "object" in ("Form"|"Window"|"Connection"|"Statement")
+\newline 
+and "id" is the quoted variable name of instance of the object
+\newline 
+and property is an element of the set of properties of the object as follows:
+\layout Standard
+
+In the properties below, replace the % with a value 1 ..
+ maxelement.
+\layout Subsubsection
+
+Connection
+\layout Description
+
+Synopsis: 
+\family typewriter 
+\color red
+a4gl_get_info("Connection", "", "Database")
+\layout Standard
+
+Database in the only property available.
+ The id argument is ignored.
+\layout Subsubsection
+
+Form
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="18" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="50col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="40col%">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Form Property
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return Value
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Database
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Delimiters
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ScreenRecordCount
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ScreenRecordName%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+AttributeCount
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+CurrentField
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Width
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Height
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Field%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+long?
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ScreenName%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+TableName%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+AliasName%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+FieldType%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+FieldSize
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+FieldBytes
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+FieldDets
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+long
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Screens
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+long
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Subsubsection
+
+Statement
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="8" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="50col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="40col%">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Atatement Property
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return Value
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+NoColumns
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+NoRows
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Name%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Type%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Scale%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Nullable%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Length%
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Subsubsection
+
+Window
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="7" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="50col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="40col%">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Window Property
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Return Value
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Height
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Width
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+BeginX
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+BeginY
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+char
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Border
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+Metrics
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+int,int,int,int (x, y, h, w)
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Section
+\pagebreak_top 
+Form Syntax
+\layout LyX-Code
+
+DATABASE
+\newline 
+   {database|FORMONLY}[WITHOUT NUKK INPUT]
+\newline 
+SCREEN
+\newline 
+{
+\newline 
+   text[tag    ]
+\newline 
+   ...
+\newline 
+}
+\newline 
+[TABLES name [,...]]
+\newline 
+ATTRIBUTES
+\newline 
+  tag=tagdescr
+\newline 
+  ...
+\newline 
+[INSTRUCTIONS
+\newline 
+   [DELIMITERS "fl"
+\newline 
+   [SCREEN RECORD name[[n]]
+\layout LyX-Code
+
+     ({tablename.*
+\newline 
+       | tabname.colname THRU tabname.colname
+\newline 
+       | tabname.colname}[,...])]]
+\layout Standard
+
+In the SCREEN statement, the {} and [] are literal and do not indicate optional
+ syntax.
+\layout Subsection
+
+Tag Description
+\layout LyX-Code
+
+tag=[table.]column[, attrlist];
+\newline 
+tag=FORMONLY.field 
+\newline 
+   [TYPE [type|LIKE table.col]]
+\newline 
+     [NOT NULL][, attrlist];
+\layout Standard
+
+A tag's attrlist is a set of values:
+\layout LyX-Code
+
+AUTONEXT, COLOR=color [WHERE boolean],
+\layout LyX-Code
+
+COMMENTS="string", DEFAULT="value", 
+\layout LyX-Code
+
+DISPLAY LIKE "table.col", DOWNSHIFT,
+\layout LyX-Code
+
+FORMAT="string", INCLUDE=( list ), 
+\layout LyX-Code
+
+NOENTRY, PICTURE="string", PROGRAM="name", 
+\layout LyX-Code
+
+REQUIRED, REVERSE, UPSHIFT, VERIFY, 
+\layout LyX-Code
+
+VALIDATE LIKE table.col, WORDWRAP [COMPRESS]
+\layout Subsection
+
+Aubit 4GL GUI Attributes
+\layout Standard
+
+The following Widgets can be used in an Aubit4GL GUI form (runnable only
+ under GUI or HL_GTK)
+\layout Standard
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+begin{a4gl}
+\end_inset 
+
+
+\layout LyX-Code
+
+tag=FORMONLY.field, 
+\newline 
+   WIDGET={BUTTON|CHECK|COMBO|ENTRY
+\newline 
+            |DEFAULTS|LABEL|PIXMAP|RADIO
+\newline 
+            |TEXT} [CONFIG="guiattr='value' [;...]"]
+\layout Standard
+
+Each widget may or must be given a set of GUI attributes:
+\layout Standard
+
+
+\begin_inset  Tabular
+<lyxtabular version="3" rows="10" columns="2">
+<features>
+<column alignment="block" valignment="top" leftline="true" width="15col%">
+<column alignment="block" valignment="top" leftline="true" rightline="true" width="75col%">
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+BUTTON
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+[CONFIG="LABEL='label'"| "IMAGE='file.xpm'"]
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+CHECK
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+[CONFIG="LABEL='label'" ; "VALUE='value'"]
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+COMBO
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+{CONFIG="LIST=item1,item2[,...]}
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+ENTRY
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+[CONFIG="MAXCHARS=n"]
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+DEFAULT
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+[CONFIG="MAXCHARS=n"]
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+LABEL
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+{CONFIG="CAPTION='string'"}
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+PIXMAP
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+{CONFIG="IMAGE='file.xpm'"}
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+RADIO
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+{CONFIG="NUM=n; L1="label1";V1="value2" ; 
+\newline 
+L2="label2"; V2=value2;
+\newline 
+...
+\newline 
+Ln="labeln"; Vn=valuen}
+\end_inset 
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+TEXT
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+[CONFIG="MAXCHARS=n"]
+\end_inset 
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+any
+\end_inset 
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\layout Standard
+
+[CONFIG="WIDTH=xchars;HEIGHT=ylines"]
+\end_inset 
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset 
+
+
+\layout Standard
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+end{a4gl}
+\end_inset 
+
+
+\the_end

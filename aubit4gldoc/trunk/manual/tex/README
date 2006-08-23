@@ -1,0 +1,37 @@
+Necessary Files:
+Makefile
+aubman.lyx
+
+Prerequisite packages:
+latex (with package lmodern if you want handsome PDF)
+lyx (v 1.3.4 or later)
+latex2html to produce HTML. 
+
+There is a long-standing bug in latex2html which results in stunted tables.
+To test whether your distro has this problem, use LyX to create a small table
+in a new document within a section and subsection. 
+
+If only the 1st row of the table appears when you invoke the
+View->HTML option, then you need to fix /usr/bin/latex2html.
+
+Fortunately the fix is trivial: Just add the statement: $within_preamble=0;
+before the closing brace before
+ print " $replacements new-command replacements\n";
+
+The file latex2html is a shell script which calls a whole bunch of perl stuff
+in a lib directory to do the latex to HTML conversion.
+
+To install the Aubit4GL manual:
+
+ untar the package into a directory. e.g.
+   mkdir /opt/aubit/4gldoc
+   cd /opt/aubit/4gldoc
+   tar xvfz /path/to/tarball/aubman.tar.gz
+   make
+:
+
+
+John O'Gorman 19 July 2004
+john.ogorman@zombie.co.nz or john@og.co.nz
+
+
