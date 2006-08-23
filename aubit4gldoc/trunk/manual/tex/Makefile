@@ -27,11 +27,11 @@ a4glman.html: aubman.tex
 
 aubman.pdf:aubman.lyx
 	lyx -e pdf2 aubman.lyx
-	cp aubman.pdf manual
+	cp aubman.pdf ../pdf
 
 aubitqref.pdf:aubitqref.lyx
 	lyx -e pdf2 aubitqref.lyx
-	cp aubitqref.pdf quick_ref
+	cp aubitqref.pdf ../pdf
 
 aubitqref.ps:aubitqref.lyx
 	lyx -e ps aubitqref.lyx
