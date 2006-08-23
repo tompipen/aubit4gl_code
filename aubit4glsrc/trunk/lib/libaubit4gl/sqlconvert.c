@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.93 2006-08-20 11:30:29 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.94 2006-08-23 09:21:39 mikeaubury Exp $
 #
 */
 
@@ -143,6 +143,8 @@ static char *cvsql_names[] = {
   "CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH",
   "CVSQL_SELECT_INTO_TEMP_INTO_HASH",
   "CVSQL_CREATE_TEMP_AS_CREATE_HASH",
+  "CVSQL_CREATE_TEMP_AS_GLOBAL_TEMP_DELETE",
+  "CVSQL_CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE",
   "CVSQL_EXECUTE_PROCEDURE_AS_EXEC",
   "CVSQL_NO_FOR_UPDATE",
   "CVSQL_EMULATE_FOR_UPDATE",
@@ -250,6 +252,8 @@ enum cvsql_type
   CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH,
   CVSQL_SELECT_INTO_TEMP_INTO_HASH,
   CVSQL_CREATE_TEMP_AS_CREATE_HASH,
+  CVSQL_CREATE_TEMP_AS_GLOBAL_TEMP_DELETE,
+  CVSQL_CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE,
   CVSQL_EXECUTE_PROCEDURE_AS_EXEC,
   CVSQL_NO_FOR_UPDATE,
   CVSQL_EMULATE_FOR_UPDATE,
@@ -1663,6 +1667,10 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_SELECT_INTO_TEMP_INTO_HASH;
   if (match_strncasecmp (p, "CREATE_TEMP_AS_CREATE_HASH", len) == 0)
     return CVSQL_CREATE_TEMP_AS_CREATE_HASH;
+  if (match_strncasecmp (p, "CREATE_TEMP_AS_GLOBAL_TEMP_DELETE", len) == 0)
+    return CVSQL_CREATE_TEMP_AS_GLOBAL_TEMP_DELETE;
+  if (match_strncasecmp (p, "CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE", len) == 0)
+    return CVSQL_CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE;
   if (match_strncasecmp (p, "CLOSE_CURSOR_BEFORE_OPEN", len) == 0)
     return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
   if (match_strncasecmp (p, "EXPAND_COLUMNS", len) == 0)
@@ -2350,6 +2358,17 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
       return ptr;
     }
 
+  if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_GLOBAL_TEMP_DELETE"))
+    {
+      SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT DELETE ROWS", tabname, elements);
+      return ptr;
+    }
+
+  if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE"))
+    {
+      SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT PRESERVE ROWS", tabname, elements);
+      return ptr;
+    }
 
   if (A4GLSQLCV_check_requirement ("TEMP_AS_TEMPORARY"))
     {
