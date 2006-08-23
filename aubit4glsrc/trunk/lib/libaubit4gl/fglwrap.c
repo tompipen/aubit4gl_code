@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.110 2006-08-20 11:30:29 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.111 2006-08-23 08:24:42 mikeaubury Exp $
 #
 */
 
@@ -431,7 +431,7 @@ A4GL_chk_err (int lineno, char *fname)
   char s[2048];
 #ifdef DEBUG
   {
-    A4GL_debug ("Checking exit status");
+    A4GL_debug ("Checking exit status %d %s",lineno,fname);
   }
 #endif
 

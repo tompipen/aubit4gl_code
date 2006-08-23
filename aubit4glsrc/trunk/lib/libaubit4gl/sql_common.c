@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.26 2006-07-19 08:03:47 mikeaubury Exp $
+# $Id: sql_common.c,v 1.27 2006-08-23 08:24:42 mikeaubury Exp $
 #
 */
 
@@ -143,6 +143,10 @@ A4GLSQL_set_status (int a, int sql)
     }
 }
 
+
+void A4GL_status_ok(int sql_too) {
+	//
+}
 
 void
 A4GLSQL_set_sqlerrm (char *m, char *p)

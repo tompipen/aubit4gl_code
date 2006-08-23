@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.309 2006-08-20 12:37:43 mikeaubury Exp $
+# $Id: compile_c.c,v 1.310 2006-08-23 08:25:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.309 2006-08-20 12:37:43 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.310 2006-08-23 08:25:05 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2434,18 +2434,6 @@ LEXLIB_print_bind_pop2 (t_expr_str_list *ptr, char i)
 
 
 
-#ifdef OBSOLETE
-#ifdef DEBUG
-      /*A4GL_debug ("print_bind_pop1 i='i'\n");*/
-#endif
-
-      A4GL_print_expr_list_concat(ptr);
-
-      if (scan_variable (obind[a].varname) != -1)
-	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", ibind[a].varname, (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-      else
-	printc ("%s;\n", ibind[a].varname);
-#endif
     }
 
 
@@ -2892,247 +2880,8 @@ LEXLIB_print_bind (char i)
 }
 
 
-#ifdef NDEF
-/**
- *
- * @todo Describe function
- */
-int LEXLIB_print_bind_expr (void *ptr, char i)
-{
-  int a;
-
-  char buff[256];
-  if (i == 'i')
-    {
-      SPRINTF1 (buff, "struct BINDING ibind[%d]={", ONE_NOT_ZERO (ibindcnt));
-      A4GL_append_expr (ptr, buff);
-      if (ibindcnt == 0)
-	{
-	  A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
-	}
-      for (a = 0; a < ibindcnt; a++)
-	{
-	  if (a > 0)
-	    A4GL_append_expr (ptr, ",");
-	  SPRINTF2 (buff, "{0,%d,%d,0,0,0}", 
-		   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-	  A4GL_append_expr (ptr, buff);
-	}
-      A4GL_append_expr (ptr, "};");
-
-      if (doing_esql ())
-        {
-          A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
-        }
-
-      for (a=0;a<ibindcnt;a++) {
-      		SPRINTF2(buff,"ibind[%d].ptr=&%s;",a,ibind[a].varname);
-	  	A4GL_append_expr (ptr, buff);
-      }
-
-      start_bind (i, 0);
-      return a;
-
-    }
 
 
-  if (i == 'o')
-    {
-      SPRINTF1 (buff, "struct BINDING obind[%d]={", ONE_NOT_ZERO (obindcnt));
-      A4GL_append_expr (ptr, buff);
-      if (obindcnt == 0)
-	{
-	  A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
-	}
-      for (a = 0; a < obindcnt; a++)
-	{
-	  if (a > 0)
-	    A4GL_append_expr (ptr, ",");
-	  SPRINTF2 (buff, "{0,%d,%d,0,0,0}", 
-		   (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
-	  A4GL_append_expr (ptr, buff);
-	}
-      A4GL_append_expr (ptr, "};");
-
-      if (doing_esql ())
-        {
-          A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
-        }
-      for (a=0;a<obindcnt;a++) {
-      		SPRINTF2(buff,"obind[%d].ptr=&%s;",a,obind[a].varname);
-	  	A4GL_append_expr (ptr, buff);
-      }
-      start_bind (i, 0);
-      return a;
-    }
-
-  if (i == 'e')
-    {
-      SPRINTF1 (buff, "struct BINDING ebind[%d]={", ONE_NOT_ZERO (ebindcnt));
-      A4GL_append_expr (ptr, buff);
-      if (ebindcnt == 0)
-	{
-	  A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
-	}
-      for (a = 0; a < ebindcnt; a++)
-	{
-	  if (a > 0)
-	    A4GL_append_expr (ptr, ",");
-	  SPRINTF2 (buff, "{0,%d,%d,0,0,0}", 
-		   (int) ebind[a].dtype & 0xffff, (int) ebind[a].dtype >> 16);
-	  A4GL_append_expr (ptr, buff);
-	}
-      A4GL_append_expr (ptr, "};");
-
-      for (a=0;a<ebindcnt;a++) {
-      		SPRINTF2(buff,"ebind[%d].ptr=&%s;",a,ebind[a].varname);
-	  	A4GL_append_expr (ptr, buff);
-      }
-      start_bind (i, 0);
-      return a;
-    }
-
-
-
-  return 0;
-}
-#endif
-
-
-
-#ifdef OBSOLETE
-static int print_bind_expr_portion (void *ptr, char i, int portion)
-{
-  int a=0;
-
-  char buff[256];
-  if (i == 'i')
-    {
-
-      if (portion == 1)
-	{
-	  SPRINTF1 (buff, "struct BINDING ibind[%d]={",
-		   ONE_NOT_ZERO (ibindcnt));
-	  A4GL_append_expr (ptr, buff);
-	  if (ibindcnt == 0)
-	    {
-	      A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
-	    }
-	  for (a = 0; a < ibindcnt; a++)
-	    {
-	      if (a > 0)
-		A4GL_append_expr (ptr, ",");
-	      SPRINTF2 (buff, "{0,%d,%d,0,0,0}",
-		       (int) ibind[a].dtype & 0xffff,
-		       (int) ibind[a].dtype >> 16);
-	      A4GL_append_expr (ptr, buff);
-	    }
-	  A4GL_append_expr (ptr, "};");
-
-	  if (doing_esql ())
-	    {
-	      A4GL_append_expr (ptr, make_sql_bind_expr (0, "i"));
-	    }
-
-	}
-
-      if (portion == 2)
-	{
-	  for (a = 0; a < ibindcnt; a++)
-	    {
-	      SPRINTF2 (buff, "ibind[%d].ptr=&%s;", a, ibind[a].varname);
-	      A4GL_append_expr (ptr, buff);
-	    }
-	  start_bind (i, 0);
-	}
-      return a;
-
-    }
-
-
-  if (i == 'o')
-    {
-
-
-      if (portion == 1)
-	{
-	  SPRINTF1 (buff, "struct BINDING obind[%d]={",
-		   ONE_NOT_ZERO (obindcnt));
-	  A4GL_append_expr (ptr, buff);
-
-	  if (obindcnt == 0)
-	    {
-	      A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
-	    }
-
-	  for (a = 0; a < obindcnt; a++)
-	    {
-	      if (a > 0)
-		A4GL_append_expr (ptr, ",");
-	      SPRINTF2 (buff, "{0,%d,%d,0,0,0}",
-		       (int) obind[a].dtype & 0xffff,
-		       (int) obind[a].dtype >> 16);
-	      A4GL_append_expr (ptr, buff);
-	    }
-	  A4GL_append_expr (ptr, "};");
-
-	  if (doing_esql ())
-	    {
-	      A4GL_append_expr (ptr, make_sql_bind_expr (0, "i"));
-	    }
-	}
-      if (portion == 2)
-	{
-	  for (a = 0; a < obindcnt; a++)
-	    {
-	      SPRINTF2 (buff, "obind[%d].ptr=&%s;", a, obind[a].varname);
-	      A4GL_append_expr (ptr, buff);
-	    }
-	  start_bind (i, 0);
-	}
-      return a;
-    }
-
-  if (i == 'e')
-    {
-      if (portion == 1)
-	{
-	  SPRINTF1 (buff, "struct BINDING ebind[%d]={",
-		   ONE_NOT_ZERO (ebindcnt));
-	  A4GL_append_expr (ptr, buff);
-	  if (ebindcnt == 0)
-	    {
-	      A4GL_append_expr (ptr, "{0,0,0,0,0,0}");
-	    }
-	  for (a = 0; a < ebindcnt; a++)
-	    {
-	      if (a > 0)
-		A4GL_append_expr (ptr, ",");
-	      SPRINTF2 (buff, "{0,%d,%d,0,0,0}",
-		       (int) ebind[a].dtype & 0xffff,
-		       (int) ebind[a].dtype >> 16);
-	      A4GL_append_expr (ptr, buff);
-	    }
-	  A4GL_append_expr (ptr, "};");
-	}
-
-      if (portion == 2)
-	{
-	  for (a = 0; a < ebindcnt; a++)
-	    {
-	      SPRINTF2 (buff, "ebind[%d].ptr=&%s;", a, ebind[a].varname);
-	      A4GL_append_expr (ptr, buff);
-	    }
-	  start_bind (i, 0);
-	}
-      return a;
-    }
-
-
-
-  return 0;
-}
-#endif
 
 /* ***************************************************************************/
 /* The rest of this file is the stuff called from the parser..               */
@@ -3193,9 +2942,7 @@ LEXLIB_print_remote_func (char *identifier)
 {
   /*printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);*/
   add_function_to_header (identifier, 1,"");
-  printc
-    ("a4gl_status=0;A4GL_register_func(\"%s\",%s%s);if (a4gl_status<0) A4GL_chk_err(%d,_module_name);\n",
-     identifier, get_namespace (identifier), identifier,yylineno);
+  printc ("A4GL_register_func(\"%s\",%s%s);if (a4gl_status<0) A4GL_chk_err(%d,_module_name);\n", identifier, get_namespace (identifier), identifier,yylineno);
 }
 
 
@@ -3595,85 +3342,8 @@ LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
   print_returning();
 }
 
-#ifdef OBSOLETE
-void
-LEXLIB_print_call_shared_bound (char *libfile, char *funcname)
-{
-int ni,no;
-  printc ("{");
-  printc("int _retvars;\n");
-  ni = LEXLIB_print_bind_definition ('i');
-  no = LEXLIB_print_bind_definition ('o');
-  LEXLIB_print_bind_set_value ('i');
-  LEXLIB_print_bind_set_value ('o');
-	  if (A4GL_doing_pcode()) {
-  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
-	  } else {
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-	  }
-  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,obind);", libfile, funcname, ni,no);
-  printc("}");
-print_reset_state_after_call();
-}
-#endif
 
 
-/*
-void *
-LEXLIB_get_call_shared_bound_expr(char *lname,char *fname) { 
-	char buff_small[2000];
-	int ni;
-	int no;
-	void *ptr;
-	//ptr=A4GL_new_expr("{");
-	print_bind_expr_portion(ptr,'i',1);
-	print_bind_expr_portion(ptr,'e',1);
-	ni=print_bind_expr_portion(ptr,'i',2);
-	no=print_bind_expr_portion(ptr,'e',2);
-	SPRINTF5(buff_small,"{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}}}\n", lname, fname, ni,no,yylineno);
-  	return A4GL_append_expr(ptr,buff_small);
-}
-*/
-
-
-
-#ifdef OBSOLETE
-/**
- * Print the C implementation of a call to a remote function (RPC call).
- *
- * @param host The hostname where the RPC server is working.
- * @param func The remote function name to e called.
- * @param port The TCP portnumber where the server is receiving requests.
- * @param nargs The number of arguments to pass to the remote function.
- */
-void
-LEXLIB_print_call_external (t_expr_str_list *expr, char *host, char *func, char *port) {
-	int nargs;
-        expr=A4GL_rationalize_list(expr);
-	real_print_expr_list(expr); 
-	nargs=A4GL_new_list_get_count(expr);
-  	printc ("{int _retvars;\n");
-	  if (A4GL_doing_pcode()) {
-  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
-	  } else {
-  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-	  }
-  	printc ("_retvars=A4GL_remote_func_call(%s,%s,%s,%d);\n", host, func, port, nargs);
-
-print_reset_state_after_call();
-}
-#endif
-
-#ifdef OBSOLETE
-/**
- * Print the C implementation of te last part of a call to a remote function.
- */
-void
-LEXLIB_print_end_call_external (void)
-{
-  printc ("\n");
-}
-#endif
 
 /**
  * Print the C implementation to the CASE 4gl statement.
@@ -3966,41 +3636,6 @@ LEXLIB_print_defer (int quit)
 }
 
 
-#ifdef OBSOLETE
-/**
- * The parser found the DISPLAY <message> without AT specification.
- *
- * Generate the C code that implements it.
- */
-void
-LEXLIB_print_display_line (void)
-{
-  printc ("A4GL_push_int(-1);A4GL_push_int(-1);\n");
-}
-#endif
-
-
-
-#ifdef OBSOLETE
-/**
- * Print the generated C code for implementation of DISPLAY BY NAME statement.
- *
- * @param attr The attributes used on the display.
- */
-void
-LEXLIB_print_display_by_name (char *attr)
-{
-  int a;
-  printc ("{\n");
-  a = LEXLIB_print_bind_definition ('i');
-  LEXLIB_print_bind_set_value ('i');
-  printc ("A4GL_push_disp_bind(&ibind,%d);\n", a);
-  printc ("A4GL_disp_fields(%d,%s,", a, attr);
-  print_field_bind (a);
-  printc (",0);\n");
-  printc ("}\n");
-}
-#endif
 
 
 /**
@@ -4356,21 +3991,6 @@ LEXLIB_print_for_end (char *var,void *vfrom,void *vto, void*vstep)
   printc ("}\n");
 }
 
-
-#ifdef OBSOLETE
-/**
- * The parser did not found a explicit STEP substatement in FOR statement and
- * it generates a push of 1 as default.
- */
-void *
-LEXLIB_get_for_default_step (void)
-{
-	struct expr_str *ptr;
-	ptr=A4GL_new_literal_long_str("1");
-	return ptr;
-  //printc ("A4GL_push_int(1);\n");
-}
-#endif
 
 /**
  * Generate in the generated C output file, the implementation of the first
@@ -5435,18 +5055,6 @@ LEXLIB_print_report_print_img (char *scaling, char *blob, char *type, char *semi
 
 
 
-#ifdef OBSOLETE
-/**
- *  The parser did not found the SCALED BY statement.
- *
- *  It generates a default scale to the generated C code.
- */
-char *
-LEXLIB_A4GL_get_default_scaling (void)
-{
-  return "A4GL_push_double(1.0);A4GL_push_double(1.0);";
-}
-#endif
 
 /**
  * Defines in the generated C code, the type of the order by used.
@@ -6925,48 +6533,6 @@ void print_end_record (char *vname, char *arrsize, int level)
     }
 }
 
-#ifdef OBSOLETE
-/**
- * Print the push of a literal to the stack in generated C code.
- *
- * @param type The type of the literal found:
- *   - D : Double value
- *   - L : Integer value
- *   - S : Char/String value
- * @param value The value of the literal
- */
-char *
-/* char */
-LEXLIB_A4GL_get_push_literal (char type, char *value)
-{
-  static char buff[80];
-  strcpy (buff, "SOME ERROR");
-  if (type == 'D')		/* Double */
-    {
-        SPRINTF1 (buff, "A4GL_push_double_str(\"%s\");\n", value);
-	
-    }
-
-  if (type == 'L')		/* Integer (Long) */
-    {
-      SPRINTF1 (buff, "A4GL_push_long(%d);\n", atoi (value));
-    }
-
-  if (type == 'S')		/* Char/String */
-    {
-      SPRINTF1 (buff, "A4GL_push_char(%s);\n", value);
-    }
-
-  if (type == 'N')		/* Empty ("") Char/String */
-    {
-      SPRINTF1 (buff, "A4GL_push_empty_char();");
-    }
-
-  /* FIXME: and if it's not D, L or S? */
-
-  return buff;
-}
-#endif
 
 
 /**
@@ -7251,33 +6817,6 @@ identifier=buff;
 
 }
 
-#ifdef OBSOLETE
-char *
-LEXLIB_A4GL_expr_for_call (char *ident, long params, int line, char *file)
-{
-  static char buff[2048];
-  char lib[255];
-
-  if (A4GL_doing_pcode ())
-    {
-      SPRINTF4 (buff, "ECALL(\"%s%s\",%d,%ld);", get_namespace (ident), ident, line, params);
-    }
-  else
-    {
-
-	if (has_function(ident,lib,0)) {
-		// Call shared...
-  	SPRINTF(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%ld); if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}\n%s}",  lib, ident, params,line,get_reset_state_after_call());
-
-	} else {
-      		SPRINTF5 (buff, "{int _retvars;\n_retvars=%s%s(%ld); {\nif (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}\n}\n%s}\n",
-	       get_namespace (ident), ident, params, line, get_reset_state_after_call());
-	}
-    }
-  add_function_to_header (ident, 1,"");
-  return buff;
-}
-#endif
 
 
 void

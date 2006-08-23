@@ -16,63 +16,6 @@ struct s_table_join
 //static int ntables=0;
 //static struct s_table_join tables[200];
 
-#ifdef OBSOLETE
-static int
-xfind_table (char *s)
-{
-  int a;
-  for (a = 0; a < 200; a++)
-    {
-      if (tables[a].table)
-	{
-
-	  if (tables[a].alias)
-	    {
-	      if (strcmp (tables[a].alias, s) == 0)
-		{
-		  return a;
-		}
-	    }
-	  if (strcmp (tables[a].table, s) == 0)
-	    {
-	      return a;
-	    }
-	}
-    }
-  return -1;
-}
-
-
-static void init_tables (void)
-{
-  int a;
-  int b;
-  ntables = 0;
-  for (a = 0; a < 200; a++)
-    {
-      tables[a].table = 0;
-    }
-  for (a = 0; a < 200; a++)
-    {
-      for (b = 0; b < 200; b++)
-	{
-	  joins[a][b] = 0;
-	}
-    }
-
-
-}
-
-
-static void
-add_table (char *tabname, char *alias)
-{
-  tables[ntables].table = tabname;
-  tables[ntables].alias = alias;
-  ntables++;
-}
-#endif
-
 
 
 
@@ -84,62 +27,6 @@ for  (a=0;a<select->table_elements.ntables;a++) {
 */
 
 
-
-#ifdef OBSOLETE
-static void
-join_tables (struct s_select *select)
-{
-  int a;
-  struct s_select_list_item *p;
-  struct s_select_list_item *l;
-  struct s_select_list_item *r;
-  char *lt;
-  char *rt;
-  char *lc;
-  char *rc;
-  for (a = 0; a < select->list_of_items.nlist; a++)
-    {
-      if (select->list_of_items.list[a]->type == E_SLI_JOIN)
-	{
-	  int tnl;
-	  int tnr;
-	  p = select->list_of_items.list[a];
-	  l = p->u_data.complex_expr.left;
-	  r = p->u_data.complex_expr.right;
-	  lt = l->u_data.column.tabname;
-	  rt = r->u_data.column.tabname;
-	  lc = l->u_data.column.colname;
-	  rc = r->u_data.column.colname;
-	  tnl = xfind_table (lt);
-	  tnr = xfind_table (rt);
-	  if (tnl < 0)
-	    {
-	      A4GL_debug ("Can't find table(%s)!\n", lt);
-	      continue;
-	    }
-	  if (tnr < 0)
-	    {
-	      A4GL_debug ("Can't find table(%s)!\n", rt);
-	      continue;
-	    }
-	  A4GL_debug ("JOIN :  %s %s %s %s\n", lt, lc, rt, rc);
-	  joins[tnl][tnr] = p;
-	  joins[tnr][tnl] = p;
-	}
-    }
-}
-
-
-
-static char *
-join_string (void)
-{
-  if (ntables == 1)
-    return "";
-
-  return "JOIN";
-}
-#endif
 
 
 static int
