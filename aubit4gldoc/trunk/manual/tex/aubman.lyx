@@ -15675,6 +15675,73 @@ These allow existing reports to be output as CSV, PDF or text files.
 \layout Chapter
 
 Tricks, tips etc.
+\layout Section
+
+SQLServer ODBC
+\layout Standard
+
+The following hint was contributed by Bernard Moreton (
+\family typewriter 
+itman@ntauk.org.uk
+\family default 
+)
+\layout Subsection
+
+Database connection
+\layout Standard
+
+Making a good ODBC connection proved a major problem, especially on a Debian
+ box, but eventually all came good when we installed unixODBC 2.2.11 and freeTDS
+ 0.6.3.
+ Both of these we had to get from Debian testing; earlier versions in any
+ combination were unsatisfactory.
+\layout Subsection
+
+General results
+\layout Standard
+
+A test program showed that everything then worked, without any need for
+ special environmental variables - scroll cursor, fetch next, fetch previous,
+ foreach, select count(*)/fieldvalue into ...
+ The scroll cursor in particular was a surp rise, since the freeTDS documentatio
+n says that scroll cursors are not in the game plan.
+ 
+\layout Subsection
+
+Database object names 
+\layout Standard
+
+Further down the road, with more complicated expressions, more problems
+ arose.
+ Mixed case in the SQLServer database object names forced us to PREPARE
+ SQL statements, since the treatment of quotation marks by the SQL conversion
+ routines was not yet suffici ently reliable to declare cursors directly.
+ The database in question did not contain spaces in the object names, so
+ treatment of these remains untested.
+ If they occur, SQL conversion may not be satisfactory, and native SQLServer
+ syntax may have to be used.
+\layout Subsection
+
+Problems with JOIN
+\layout Standard
+
+In statements involving a JOIN condition, it was found necessary to fully
+ qualify every field name (tablename.fieldname), in every instance.
+ Without this, error messages were erratic; and were equally erratic, but
+ quite different, if the same statements were submitted either via unixODBC's
+ isql or via OpenOffice.org Base.
+ The use of aliases was also abandoned in order to minimise parsing problems.
+ This results in hideously verbose statements; but they work.
+ 
+\layout Subsection
+
+SQL Conversion
+\layout Standard
+
+The INFORMIX-SQLSERVER.cnv was found to be fully satisfactory, (outer joins
+ not yet tested), so standard INFORMIX syntax works as expected.
+ Native SQLServer syntax is also ok, with or without conversion being active.
+ 
 \layout Chapter
 
 Internationalisation 
