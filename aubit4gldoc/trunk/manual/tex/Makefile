@@ -18,6 +18,9 @@ aubman.tex:aubman.lyx
 
 a4glman.html: aubman.tex
 	cat aubman.tex | sed '/^\usepackage{ifpdf}/,/^\fi/d' > a4glman.tex
+	latex a4glman.tex
+	latex a4glman.tex
+	latex a4glman.tex
 	${L2H} ${L2HARGS} a4glman.tex
 
 # If you cannot get lyx working properly, you can instead call pdflatex

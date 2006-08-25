@@ -43,8 +43,29 @@
 \quotes_language english
 \quotes_times 2
 \papercolumns 1
-\papersides 1
+\papersides 2
 \paperpagestyle fancy
+
+\layout Title
+
+Aubit4GL Manual
+\layout Author
+
+Mike Aubury, Andrej Falout
+\newline 
+edited by John O'Gorman
+\layout Date
+
+
+\begin_inset ERT
+status Collapsed
+
+\layout Standard
+
+\backslash 
+today
+\end_inset 
+
 
 \layout Standard
 
@@ -1346,7 +1367,7 @@ Set an environment variable CVSROOT as follows:
 \newline 
 
 \family typewriter 
-export CVSROOT=:pserver:anonymout@cvs.sourceforge.net:/cvsroot/aubit4gl
+export CVSROOT=:pserver:anonymous@aubit4gl.cvs.sourceforge.net:/cvsroot/aubit4gl
 \layout Enumerate
 
 Login to the aubit cvs pserver
@@ -1387,6 +1408,39 @@ The above works for ksh and bash.
 
 \family typewriter 
 $CVSROOT=`cat AUBITCVSROOT` export CVSROOT
+\layout Subsubsection
+
+CVS for Developers
+\layout Standard
+
+If you have been registered with sourceforge as an Aubit4GL developer then
+ the procedure is a little different from above
+\layout Itemize
+
+You need a login ID and a password
+\layout Itemize
+
+
+\family typewriter 
+export CVS_RSH=ssh
+\layout Itemize
+
+You must use the :ext: protocol rather than the :pserver: protocol.
+ So, set an environment variable (say CVSDEV) to this rather long URL:
+\newline 
+
+\family typewriter 
+:ext:ogormanj@aubit4gl.cvs.sourceforge.net:/cvsroot/aubit4gl
+\layout Itemize
+
+
+\family typewriter 
+cvs -z3 -d$CVSDEV co -P aubit4glsrc
+\family default 
+
+\newline 
+This will prompt you for your password on the sourceforge CVS site.
+ Replace the ogormanj above with your registered id, of course.
 \layout Section
 
 Prerequisites 
