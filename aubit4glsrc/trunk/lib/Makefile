@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2006-07-27 16:02:12 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2006-08-28 16:13:31 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -93,6 +93,7 @@ LOADMAP_PATH		=${ROOT}/tools/loadmap
 AUBITCONFIG_PATH	=resource
 FILESCHEMA_PATH     =libsql/schema_in_file
 LIBPOP_PATH     	=extra_libs/pop
+LIBSMTP_PATH     	=extra_libs/smtp
 LIBPCRE_PATH     	=extra_libs/pcre
 LIBSXML_PATH     	=extra_libs/sxml
 
@@ -160,6 +161,7 @@ LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/
 LIBCHANNEL_DEPS		=$(wildcard ${LIBCHANNEL_PATH}/*.4gl) \
 					$(wildcard ${LIBCHANNEL_PATH}/Makefile) ${ALL_H}
 LIBPOP_DEPS			=$(wildcard ${LIBPOP_PATH}/*.4gl) $(wildcard ${LIBPOP_PATH}/Makefile) ${ALL_H}
+LIBSMTP_DEPS			=$(wildcard ${LIBSMTP_PATH}/*.4gl) $(wildcard ${LIBSMTP_PATH}/Makefile) ${ALL_H}
 LIBPCRE_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/makefile) ${ALL_H}
 LIBSXML_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/Makefile) ${ALL_H}
 LIBHTML_DEPS		=$(wildcard ${LIBHTML_PATH}/*.c) $(wildcard ${LIBHTML_PATH}/*.h) \
@@ -502,6 +504,8 @@ ${PLUGINDIR}/libchannel${SO_EXT}: ${4GLC} ${LIBCHANNEL_DEPS}
 	
 ${PLUGINDIR}/libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
 	$(MAKE) -C ${LIBPOP_PATH}
+${PLUGINDIR}/libfgl_smtp${SO_EXT}: ${4GLC} ${LIBSMTP_DEPS}
+	$(MAKE) -C ${LIBSMTP_PATH}
 
 ${PLUGINDIR}/libA4GL_pcre${SO_EXT}: ${4GLC} ${LIBPCRE_DEPS}
 	$(MAKE) -C ${LIBPCRE_PATH}
@@ -625,6 +629,7 @@ clean.other:
 	${MAKE} -C ${LIBESQLCHELPER_PATH} clean
 	${MAKE} -C ${LIBHTML_PATH} clean
 	${MAKE} -C ${LIBPOP_PATH} clean
+	${MAKE} -C ${LIBSMTP_PATH} clean
 	${MAKE} -C ${LIBPCRE_PATH} clean
 	${MAKE} -C ${LIBSXML_PATH} clean
 	${MAKE} -C libsqlparse/none clean

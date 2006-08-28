@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.94 2006-07-27 16:01:18 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.95 2006-08-28 16:13:30 mikeaubury Exp $
 */
 
 /**
@@ -384,6 +384,7 @@ int a_isprint(int a);
   void A4GL_push_time (void);
   int A4GL_esql_db_open(int a,char *src,char *target,char *dbname);
 void *A4GLSQL_find_prepare (char *pname);
+int A4GL_call_4gl_dll (char *filename, char *function, int args);
 
   /*double A4GL_pop_double(void); */
   /* ======================= API_ui.c ===================== */

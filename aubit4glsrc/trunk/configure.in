@@ -1,4 +1,4 @@
-dnl # +----------------------------------------------------------------------+
+#dnl # +----------------------------------------------------------------------+
 dnl # | Aubit 4gl Language Compiler Version $.0                              |
 dnl # +----------------------------------------------------------------------+
 dnl # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.316 2006-08-18 20:29:11 fortiz Exp $
+dnl # $Id: configure.in,v 1.317 2006-08-28 16:13:08 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -533,6 +533,8 @@ AC_SUBST(MPZ_IFLAGS)
 
 AC_SUBST(POP_INC_PATH)
 AC_SUBST(POP_LIB_PATH)
+AC_SUBST(SMTP_INC_PATH)
+AC_SUBST(SMTP_LIB_PATH)
 
 AC_SUBST(INSTALL_MISSING_OPTIONAL)
 AC_SUBST(PERL)
@@ -1624,6 +1626,7 @@ ODBC_LIB_NAME=noodbc
 USE_PDF=no
 PDFBUILD=no
 HAVE_POPLIB=no
+HAVE_SMTPLIB=no
 PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
@@ -1905,6 +1908,7 @@ if test "$withval" != "no"; then
 	if test "$with_cint" = ""; then          	with_cint=yes 		;fi
 	if test "$with_mpz" = ""; then				with_mpz=yes 		;fi
 	if test "$with_pop" = ""; then          	with_pop=yes 		;fi
+	if test "$with_smtp" = ""; then          	with_smtp=yes 		;fi
 	if test "$with_pcre" = ""; then          	with_pcre=yes 		;fi
 	if test "$with_sxml" = ""; then          	with_sxml=yes 		;fi	
 	if test "$with_esqlc" = ""; then            with_esqlc=yes 		;fi
@@ -3932,7 +3936,7 @@ AC_ARG_WITH(pop,
 			AC_MSG_RESULT(yes)
 		else
 			AC_MSG_RESULT(no)
-	    fi
+	    	fi
 		
 		#Restore values
 		LIBS="$old_LIBS"
@@ -3948,6 +3952,80 @@ AC_ARG_WITH(pop,
 ])
 
 if test "$enable_stop_pop" = "yes" ; then
+	exit
+fi
+
+
+## ==================================================================
+##            Check for SMTP support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for SMTP libraries:)
+AC_ARG_WITH(smtp,
+[  --with-smtp[=DIR]          Include SMTP support.  DIR is the SMTP base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" = ""; then 
+	    		withval=/usr/local
+			else
+				#NOTE: since on CygWin /usr/lib is symling to /usr,
+				#files installed there actually end up in /lib, as far as
+				#native Windows executable (GCC) is concerned
+				withval="`$CYGPATH -m /`"
+			fi
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+		
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
+
+		if test "$COMSPEC" = ""; then
+			CPPFLAGS="-I$withval/include $CPPFLAGS `$PKG_CONFIG --cflags glib-2.0`"
+			LDFLAGS="-L$withval/lib $LDFLAGS `$PKG_CONFIG --libs glib-2.0`"
+		else
+			SMTP_INC_PATH="`$CYGPATH -m `$PKG_CONFIG --cflags glib-2.0` $withval`/usr/include"
+			CPPFLAGS="-I$SMTP_INC_PATH $CPPFLAGS"
+			SMTP_LIB_PATH="`$CYGPATH -m $withval`/lib"
+			LDFLAGS="-L$SMTO_LIB_PATH $LDFLAGS"
+		fi
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+		#AC_CHECK_LIB([glib],[g_string_new])
+		AC_CHECK_LIB([smtp], [libsmtp_session_initialize])
+		AC_CHECK_HEADERS([ libsmtp.h ])
+		AC_MSG_CHECKING(if we can use SMTP)
+		if test "$ac_cv_lib_smtp_libsmtp_session_initialize" = "yes" -a "$ac_cv_header_libsmtp_h" = "yes"; then
+			HAVE_SMTPLIB=1
+			AC_MSG_RESULT(yes)
+		else
+			AC_MSG_RESULT(no)
+	    	fi
+		
+		#Restore values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
+		
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-smtp not specified)
+])
+
+if test "$enable_stop_smtp" = "yes" ; then
 	exit
 fi
 
@@ -8649,6 +8727,15 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
+
+    if test "$HAVE_SMTPLIB" = "1"; then
+		#NOTE: needs 4glc
+		PLUGIN_YES="$PLUGIN_YES fgl_smtp"
+    else
+        PLUGIN_NO="$PLUGIN_NO fgl_smtp"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libsmtp"
+    fi
+
 	if test "$HAVE_PCRELIB" = "1"; then
 		#NOTE: needs 4glc
 		PLUGIN_YES="$PLUGIN_YES A4GL_pcre"
@@ -9282,7 +9369,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.316 2006-08-18 20:29:11 fortiz Exp $
+| $Id: configure.in,v 1.317 2006-08-28 16:13:08 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.237 2006-08-20 11:30:25 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.238 2006-08-28 16:13:30 mikeaubury Exp $
 #
 */
 
@@ -2034,7 +2034,7 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) ;
 
 fgldecimal *A4GL_str_to_dec (char *str_orig, fgldecimal *dec);
 
-int A4GL_call_4gl_dll (char *filename, char *function, int args);
+//int A4GL_call_4gl_dll (char *filename, char *function, int args);
 void A4GL_process_stack_op_other (int d);
 void *A4GL_pop_binding (int *n);
 int A4GL_push_binding (void *ptr, int num);

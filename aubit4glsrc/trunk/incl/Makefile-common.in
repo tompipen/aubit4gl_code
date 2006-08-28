@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.197 2006-08-08 06:20:06 briantan Exp $
+# $Id: Makefile-common.in,v 1.198 2006-08-28 16:13:30 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -763,6 +763,8 @@ else
 	#4glpc needs bash to run - old sh will not do. We need to fix this in "aubit" script	
 	#FGLPC_SH=${SH}
 endif
+
+
 #Option we need to pass to 4gl compiler used (4glc/4glpc/4glpc_new) to
 #make shared library WARNING: 4glpc -sahred option is not same as what traditionaly
 #it is for C compilers; in 4glpc it menas "use shared libraries for linking) and
@@ -774,6 +776,8 @@ ifdef VERBOSE
 	VERBOSE_FLAG=--verbose
 endif
 
+
+FGLPCEXEC_NAME=${AUBIT_SRC_ROOT}/bin/4glpc
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
 	#MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
@@ -1056,6 +1060,9 @@ YYDEBUG				=@YYDEBUG@
 POP_INC_PATH		=@POP_INC_PATH@
 POP_LIB_PATH		=@POP_LIB_PATH@
 
+SMTP_INC_PATH		=@SMTP_INC_PATH@
+SMTP_LIB_PATH		=@SMTP_LIB_PATH@
+
 INNO_ROOTDIR		=@INNO_ROOTDIR@
 ISTOOL_ROOTDIR		=@ISTOOL_ROOTDIR@
 
@@ -1067,6 +1074,12 @@ POP_LIB_PATH		=/usr/lib
 endif
 
 
+ifeq "${SMTP_INC_PATH}" ""
+SMTP_INC_PATH		=/usr/include
+endif
+ifeq "${SMTP_LIB_PATH}" ""
+SMTP_LIB_PATH		=/usr/lib
+endif
 
 ## ==================================================================
 ##                      Moved from aubitrc:
