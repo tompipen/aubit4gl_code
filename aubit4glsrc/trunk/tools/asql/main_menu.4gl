@@ -25,12 +25,10 @@
 # | If you did not, or have any questions about Aubit licensing, please  |
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
+{
 FUNCTION main_menu()
-	MENU "ADBACCESS" 
-
-	BEFORE MENU 
-		call display_banner()
-		#hide option "Utilities"
+define lv_menuaction char(1)
+	menu "ADBACCESS" 
 
 	COMMAND "Query-language" "Use SQL query language."
 		call query_menu()
@@ -54,4 +52,4 @@ FUNCTION main_menu()
 		exit menu
 	end menu
 end function
-
+}

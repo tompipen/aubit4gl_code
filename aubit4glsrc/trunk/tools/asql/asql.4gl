@@ -377,11 +377,24 @@ define a integer
 for a=2 to length(lv_s)
 	let lv_actions_cnt=lv_actions_cnt+1
 	let lv_actions[lv_actions_cnt].type="M"
-	let lv_actions[lv_actions_cnt].details=lv_s[a]
+	let lv_actions[lv_actions_cnt].details=downshift(lv_s[a])
 end for
-
 end function
 
+
+function show_actions()
+define a integer
+for a=1 to lv_actions_cnt
+	if lv_actions[a].type="M" then
+		display a," - mENU   : ", lv_actions[a].details
+	elif lv_actions[a].type="P" then
+		display a," - PROMPT : ", lv_actions[a].details
+	else
+		display a," - OTHER : ", lv_actions[a].details
+	end if
+end for
+sleep 10
+end function
 
 
 function add_pick_actions(lv_s)
@@ -395,18 +408,90 @@ end function
 
 
 
-function arg_need_next(lv_a) 
+function arg_need_next(lv_start)
 define lv_a integer
+define lv_start integer
 
-for lv_a=1 to num_args()
+for lv_a=lv_start to num_args()
 	if arg_val(lv_a) matches "-*" then
 		call add_menu_actions(arg_val(lv_a))
 	else
 		call add_pick_actions(arg_val(lv_a))
 	end if
 end for
-let lv_actions_used=lv_actions_cnt
+
+let lv_actions_used=0
+
+return 1
+
 end function
 
 
 
+function has_menu_action()
+if lv_actions[lv_actions_used+1].type="M" then
+	return true
+else
+	return false
+end if
+end function
+
+
+
+function has_prompt_action()
+if lv_actions[lv_actions_used+1].type="P" then
+	return true
+else
+	return false
+end if
+end function
+
+
+function clr_all_actions()
+	
+	error "Invalid command line option"
+	sleep 1
+end function
+
+
+function get_menu_action()
+if has_menu_action() then
+	let lv_actions_used=lv_actions_used+1
+	return lv_actions[lv_actions_used].details
+else
+	call clr_all_actions()
+end if
+return ""
+end function
+
+
+
+function has_any_action()
+if has_prompt_action() or has_menu_action() then
+	return true
+else
+	return false
+end if
+end function
+
+
+function get_prompt_action()
+if has_prompt_action() then
+	let lv_actions_used=lv_actions_used+1
+	return lv_actions[lv_actions_used].details
+else
+	if lv_actions_used<lv_actions_cnt then
+
+		error "No prompt actions.." sleep 1
+		call show_actions()
+		sleep 2
+	end if
+	call clr_all_actions()
+end if
+return ""
+end function
+
+
+function niy()
+error "Not implemented yet"
+end function

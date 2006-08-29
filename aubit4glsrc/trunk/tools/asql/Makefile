@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.42 2006-07-27 16:04:22 mikeaubury Exp $
+# $Id: Makefile,v 1.43 2006-08-29 19:22:53 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -43,7 +43,7 @@ include 		${ROOT}/incl/a4gl.mk
 ################
 #Objects that originate in 4GL code
 OBJS_4GL		= \
-	asql${A4GL_OBJ_EXT} connection_menu${A4GL_OBJ_EXT} \
+	asql${A4GL_OBJ_EXT} connection_menu${A4GL_OBJ_EXT}  menus${A4GL_OBJ_EXT}\
 	pick${A4GL_OBJ_EXT} database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
 	query${A4GL_OBJ_EXT} session${A4GL_OBJ_EXT} table${A4GL_OBJ_EXT} \
 	execute${A4GL_OBJ_EXT} paginate${A4GL_OBJ_EXT} cedit${A4GL_OBJ_EXT} \
@@ -273,6 +273,8 @@ run.p:
 	A4GL_PACKER=PACKED;./asql_p${A4GL_EXE_EXT}
 
 	
+menus.4gl: menus.txt generate
+	sh generate  > menus.4gl
 show:
 	aubit-config POSTGRESDIR
 

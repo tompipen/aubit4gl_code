@@ -245,14 +245,11 @@ end function
 
 function need_commit_rollback()
 if beganWork then
-	menu "COMMIT ?"
-		command "Commit" "Commit work"
+	if ask_commit_rollback()="Commit" THEN
 			commit work
-			exit menu
-		command "Rollback" "Rollback work"
+	else
 			rollback work
-			exit menu
-	end menu
+	end if
 	let beganWork=0
 end if
 
@@ -320,14 +317,12 @@ endcode
 
 	if get_exec_mode()=0 then
 	let lv_cont=1
-	IF confirm(qry_type) THEN
-		MENU "Confirm "
-			command "Yes" "Really do it" 
+	IF confirm(qry_type) THEN 
+		if confirm_yn()="Yes" THEN
 				let lv_cont=1
-				exit menu
-			command "No" "Don't do it" 
+		else
 				return 0
-		END MENU
+		end if
 	END IF
 
 	

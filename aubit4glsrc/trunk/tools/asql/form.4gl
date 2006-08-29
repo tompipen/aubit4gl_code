@@ -24,8 +24,39 @@ define mv_db char(255)
 define mv_lastused char(255)
 
 
+function form_menu_run()
+call run_form("")
+end function
+
+function form_menu_modify()
+	if modify_form("") then
+		message ""
+	else
+		message ""
+	end if
+end function
+
+
+function form_menu_generate()
+       		if not has_db() then 
+			call select_db() 
+		end if 
+		
+		let mv_db=get_db()
+
+		if mv_db is null or mv_db matches " " then
+		else
+			if generate_form() then
+				message ""
+				return 1
+			end if
+		end if
+		return 0
+end function
+
 ################################################################################
 function form_menu()
+define lv_option integer
 
 	if mv_editor is null then
 		let mv_editor=fgl_getenv("DBEDIT") 
@@ -34,48 +65,43 @@ function form_menu()
   	call clear_screen_portion()
 	call init_filename()
 
-	menu "FORM"
-		command "Run" "Run a form"
-			call run_form("")
-	
-		command "Modify" "Modify a form"
-			if modify_form("") then
-				message ""
-			else
-				message ""
-			end if
+	while true
 		
-		command "Generate" "Generate a form"
-        		if not has_db() then 
-				call select_db() 
-			end if 
+		case form_menu_int(lv_option)
+			when "Run" 
+				call form_menu_run()
+				let lv_option=0
+		
+			when "Modify" 
+				call form_menu_modify()
+				let lv_option=1
 			
-			let mv_db=get_db()
-
-			if mv_db is null or mv_db matches " " then
-			else
-				if generate_form() then
-					message ""
-					next option "Run"
+			when "Generate" 
+				if form_menu_generate() then
+					let lv_option=0
+				else
+					let lv_option=2
 				end if
-			end if
-
-
-		command "New" "Create a new form"
-			call new_form()
 	
-		command "Compile" "Compile a form"
-			if compile_form("") then
-				# Good..
-			end if
-
+			when "New" 
+				call new_form()
+				let lv_option=3
+		
+			when "Compile" 
+				if compile_form("") then
+					let lv_option=0 # NEXT OPTION "Run"
+				else
+					let lv_option=4
+				end if
 	
-		command "Drop" "Drop a form"
-			call drop_form()
-	
-		command "Exit" "Exit menu"
-			exit menu
-	end menu
+			when "Drop" 
+				let lv_option=5
+				call drop_form()
+		
+			when "Exit" 
+				exit while
+		end case
+	end while
 
 end function
 
@@ -90,7 +116,7 @@ define a integer
 define lv_ext char(255)
 
 let lv_ext=work_out_ext()
-
+call display_banner()
 display "Choose a file to run","" at 2,1
 
 code
@@ -186,8 +212,9 @@ if lv_fname is not null then
 	end if
 
 	if mv_editor is null or mv_editor=" " then
-		prompt "Editor ?" for mv_editor
+		let mv_editor=prompt_get("Editor ?","Please enter the editor you wish to use")
 	end if
+
 	if mv_editor is null or mv_editor=" " then
 		return 0
 	end if
@@ -205,21 +232,21 @@ if lv_fname is not null then
 
 
 	let mv_lastused=lv_fname
-	menu "Modify Form"
 
-		command "Compile" "Compile the form"
+	case modify_compile()
+
+
+		when "Compile" 
 			return compile_form(lv_fname) 
 
-		command "Save-and-exit" "Save the form"
+		when "Save-and-exit" 
 			call remove_tmp_files("PER")
 			return 1
 
-		command "Discard-and-exit"
+		when "Discard-and-exit"
 			call copy_file(lv_backup,lv_fname,".per")
 			return 1
-	end menu
-			
-
+	end case
 	return 1
 end if
 
@@ -282,14 +309,10 @@ if lv_fname is not null then
 		display "The screen form specification was successfully compiled." at 24,1 attribute(reverse)
 		return 1
 	else
-		menu "COMPILE FORM"
-			command "Correct"
-				return modify_form(lv_fname)
-				exit menu
-			command "Exit"
-				return 0
-				exit menu
-		end menu
+		case correct_compile_form()
+			when "Correct" return modify_form(lv_fname)
+			when "Exit" return 0
+		end case
 	end if
 end if
 return 0
@@ -306,7 +329,15 @@ define lv_cnt integer
 define lv_tabname char(200)
 	let int_flag=false
 
-	prompt "Generate Form > " for lv_form
+	initialize lv_form to null
+	if has_prompt_action() then
+		let lv_form=get_prompt_action()
+	end if
+
+	if lv_form = "" or lv_form is null then
+		let lv_form=prompt_get("Generate Form >>","Enter the formname you which to generate")
+		#prompt "Generate Form > " for lv_form
+	end if
 
 	if int_flag then
 		return false
@@ -340,11 +371,12 @@ define lv_tabname char(200)
 
 		let lv_tables[lv_cnt]=lv_tabname
 
-		menu "Generate" 
-			command "Table selection complete" 	exit while
-			command "Select more" 			continue while
-			command "Exit" 				return false
-		end menu
+		case form_table_selection()
+			when "Table selection complete" exit while
+			when "Select more" exit while
+			when "Exit" return false
+		end case
+
 	end while
 code
 	{
@@ -370,7 +402,8 @@ end function
 function new_form()
 define lv_fname char(255)
 	let int_flag=false
-	prompt "Form name >>" for lv_fname
+	let lv_fname=prompt_get("Form name >>","Enter the formname")
+	#prompt "Form name >>" for lv_fname
 
 	if int_flag=true or lv_fname is null or lv_fname matches " " then
 		return
@@ -413,19 +446,14 @@ if lv_fname is not null then
         let lv_fname_per=lv_fname clipped,".per"
         let lv_fname_frm=lv_fname clipped,work_out_ext()
 
-menu "CONFIRM"
-        command "No" "No - I don't want to drop it"
-                exit menu
-        command "Yes" "Yes - I do want to drop it"
-
+	if confirm_drop_form()="Yes" then
 code
-        A4GL_trim(lv_fname_per);
-        A4GL_trim(lv_fname_frm);
-        unlink(lv_fname_per);
-        unlink(lv_fname_frm);
+        	A4GL_trim(lv_fname_per);
+        	A4GL_trim(lv_fname_frm);
+        	unlink(lv_fname_per);
+        	unlink(lv_fname_frm);
 endcode
-        exit menu
-end menu
+	end if
 end if
 
 end function
@@ -650,8 +678,7 @@ else
 	# Assume XDR or compatible
 	let lv_ext=fgl_getenv("A4GL_FRM_BASE_EXT")
 end if
-message "looking for extension : Ext='",lv_ext clipped,"'"
-sleep 2
+
 return lv_ext clipped
 
 end function

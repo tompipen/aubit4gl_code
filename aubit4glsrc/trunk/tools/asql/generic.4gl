@@ -200,6 +200,7 @@ function table_info()
 define lv_tabname char(255)
 define lv_txt char(128)
 define lv_cont integer
+define lv_option integer
         if not has_db() then
                 call select_db()
         end if
@@ -221,24 +222,38 @@ define lv_cont integer
                 let lv_cont=0
 
                 CALL set_exec_mode(0)
+
+
                 let lv_txt="INFO - ",lv_tabname
-                menu lv_txt
-                        command "Columns" "List columns for the table"
-                                CALL open_display_file()
-                                if load_info_columns(lv_tabname) then
-                                        call do_paginate()
-                                end if
+		call set_info_text(lv_txt)
+		while true
+			let lv_option=-1
 
-                        command "Table" "Change table"
-                                let lv_cont=1
-                                exit menu
+			case info_menu(lv_option)
 
+                        	when "Columns" 
+                                	CALL open_display_file()
+                                	if load_info_columns(lv_tabname) then
+                                        	call do_paginate()
+                                	end if
+					let lv_option=0
 
-                        command "Exit" "Exit menu"
-                                let lv_cont=0
-                                exit menu
+	
+                        	when "Table" 
+                                	let lv_cont=1
+                                	exit while
+	
+	
+                        	when "Exit" 
+                                	let lv_cont=0
+                                	exit while
 
-                end menu
+				otherwise
+					call niy()
+
+			end case
+                end while
+
         if lv_cont=0 then
                 exit while
         end if

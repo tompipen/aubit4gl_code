@@ -26,9 +26,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 
+{
 function connection_menu()
 menu "CONNECTION" 
-        BEFORE MENU
+        BEFORE menu
                 call display_banner()
 
 	command "Connect" 	"Connect to a database environment."
@@ -54,6 +55,7 @@ menu "DISCONNECT"
 		exit menu
 end menu
 end function
+}
 
 function do_disconnect()
 	whenever error continue

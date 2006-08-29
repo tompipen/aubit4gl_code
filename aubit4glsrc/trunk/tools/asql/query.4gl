@@ -34,6 +34,7 @@ endcode
 function query_menu()
 define lv_action integer
 define lv_runnext integer
+define lv_option char(20)
 	call init_filename()
 
 
@@ -50,90 +51,44 @@ let lv_runnext=0
 while true
 	set pause mode off
 
-	menu "SQL"
-		before menu 
-			if fgl_getenv("SQLCNVPATH") is null or fgl_getenv("SQLCNVPATH") = " " then
-				hide option "Translate"
-			end if
+	if lv_runnext then
+		let lv_action=1
+	end if
 
-			if lv_runnext then
-				next option "Run"
-			end if
-
-		command "New" "Type in new SQL commands"
-			let lv_action=1 exit menu
-
-		command "Run" "Run the SQL commands"
-			let lv_action=2 exit menu
-
-
-		command "Modify" "Modify the SQL commands"
-			let lv_action=3 exit menu
-
-
-		command "Use-editor" "Use the editor to modify SQL"
-			let lv_action=4 exit menu
-
-
-		command "Output" "Output the results of the SQL"
-			let lv_action=5 exit menu
-
-
-
-		command "Choose" "Choose an SQL file"
-			let lv_action=6 exit menu
-
-
-
-		command "Save" "Save an SQL file"
-			let lv_action=7 exit menu
-
-
-		command "Info" "Info for tables"
-			let lv_action=8 exit menu
-
-
-
-		command "Drop" "Drop an SQL file"
-			let lv_action=9  exit menu
-
-
-		command "Translate" "Translate SQL into a different dialect"
-			let lv_action=11 exit menu
+	if fgl_getenv("SQLCNVPATH") is null or fgl_getenv("SQLCNVPATH") = " " then
+		let lv_option= query_menu_int(lv_action)
+	else
+		let lv_option= query_menu_translate_int(lv_action)
+	end if
 			
 
-		command "Exit" "Return to ADBACCESS menu" 
-			let lv_action=10
-			exit menu
-	end menu
-
-
 	let lv_runnext=0
-	case lv_action
-		when 1
+	case lv_option
+
+		when "New" 		let lv_action=0 
 			if qry_new() then
 				let lv_runnext=1
 			end if
 			call display_tmp_file()
-	
-		when 2
+
+		when "Run" 		let lv_action=1 
 			Call set_exec_mode(0)
 			call open_tmpfile("SQL","r")
 			call qry_run()
 			let lv_runnext=1
 
-		when 3
+		when "Modify" 		let lv_action=2 
 			if qry_modify("MODIFY") then
 				let lv_runnext=1
 			end if
 			call display_tmp_file()
 
-		when 4
+		when "Use-editor" 	let lv_action=3
 			if qry_edit() then
 				let lv_runnext=1
 			end if
 
-		when 5
+		when "Output" 		let lv_action=4
 			Call set_exec_mode(2)
 			if not qry_output() then
 				error "Some SQL error"
@@ -141,28 +96,31 @@ while true
 			Call set_exec_mode(0)
 			call display_tmp_file()
 
-		when 6
+		when "Choose" 		let lv_action=5
 			if qry_choose() then
 				let lv_runnext=1
 			end if
 			call display_tmp_file()
 
-		when 7
+		when "Save" 		let lv_action=6
 			call qry_save()
 			call display_tmp_file()
 
-		when 8
+		when "Info" 		let lv_action=7
 			call qry_info()
-	
-		when 9
+
+		when "Drop" 		let lv_action=8
 			call qry_drop()
 			call display_tmp_file()
 
-		when 10 exit while
-		when 11
+		when "Translate" 	let lv_action=9
 			call qry_translate()
 			call display_tmp_file()
+
+		when "Exit" 		let lv_action=10
+			exit while
 	end case
+
 end while
 
 	call clear_screen_portion()
@@ -249,7 +207,7 @@ define lv_amode char(1)
 define a integer
 
 
-menu "OUTPUT" 
+MENU "OUTPUT" 
 		command "Printer" "Send query output to printer"
 			LET lv_query_out=1 exit menu
 		command "New-File" "Send query output to new file"
@@ -426,7 +384,7 @@ call prompt_pick("DROP >> ","") returning lv_fname
 
 if lv_fname is not null then
 	let lv_fname=lv_fname clipped,".sql"
-menu "CONFIRM" 
+MENU "CONFIRM" 
 	command "No" "No - I don't want to drop it"
 		exit menu
 	command "Yes" "Yes - I do want to drop it"

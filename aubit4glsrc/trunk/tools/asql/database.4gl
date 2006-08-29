@@ -27,7 +27,7 @@
 # +----------------------------------------------------------------------+
 define mv_username,mv_passwd char(255)
 
-
+{
 function database_menu()
 menu "DATABASE"
 	command "Select" "Select a database to work with."
@@ -49,6 +49,7 @@ menu "DATABASE"
 		exit menu
 end menu
 end function
+}
 
 
 function create_db()
@@ -57,35 +58,30 @@ define lv_dbspace char(255)
 define lv_log char(255)
 let int_flag=false
 
-prompt "CREATE DATABASE >>" for lv_dbname
+let lv_dbname=prompt_get("CREATE DATABASE >>","Enter the database name to create") 
 
-if int_flag=true then
+if int_flag=true or lv_dbname is null or lv_dbname matches " " then
 	return
 end if
 
 let lv_dbspace=""
 let lv_log=""
 
-menu "CREATE DATABASE"
-	command "Dbspace" "Select a dbspace for storing the databases's data."
-		let lv_dbspace=get_dbspace()
+while true
+	case cr_db_menu_options()
+		WHEN "DBSpace"
+			let lv_dbspace=get_dbspace()
+		WHEN "Log"
+			let lv_log=get_log()
+		WHEN "Exit"
+			exit while
+	end case
+end while
 
-	command "Log" "Specify the type of transaction logging."
-		let lv_log=get_log()
 
-	command "Exit" "Return to the Database Menu."
-		exit menu
-end menu
-
-
-menu "EXIT"
-	command "Create-new-database" "Create-new-database"
+IF cr_db_menu()="Create" THEN
 		call do_create_db(lv_dbname,lv_dbspace,lv_log)
-		exit menu
-	
-	command "Discard-new-database" "Discard-new-database"
-		exit menu
-end menu
+END IF
 end function
 
 
@@ -95,9 +91,9 @@ return ""
 end function
 
 
-
+{
 function get_log()
-menu "LOG"
+mENU "LOG"
 	command "None"
 		return ""
 	command "Log"
@@ -108,6 +104,7 @@ menu "LOG"
 		return "LOG MODE ANSI"
 end menu
 end function
+}
 
 
 

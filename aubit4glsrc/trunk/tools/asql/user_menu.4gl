@@ -11,7 +11,8 @@ function user_menu()
 		return
 	end if
 
-
+	call user_menu_int()
+	{
 	menu "User Menu"
 		command "Run" "Run a user menu"
 			call run_user_menu()
@@ -22,6 +23,7 @@ function user_menu()
 		command "Exit"
 			exit menu
 	end menu
+	}
 end function
 
 

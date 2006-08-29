@@ -347,11 +347,13 @@ if lv_server is null or lv_server matches " " then
         return
 end if
 
-prompt "USER NAME >> " for lv_username
+let lv_username=prompt_get("USER NAME >>","Enter the username")
+#prompt "USER NAME >> " for lv_username
 
 if lv_username is null or lv_username=" " then
 else
-        prompt "PASSWORD >> " for lv_passwd
+	let lv_passwd=prompt_get("PASSWORD >>","Enter the password")
+        #prompt "PASSWORD >> " for lv_passwd
         if lv_passwd is null or lv_passwd matches " " then
                 initialize lv_username to null
         end if
@@ -1039,9 +1041,7 @@ end if
 if lv_newname is not null and lv_newname not matches " " then
         whenever error continue
 
-        menu "CONFIRM >>"
-                command "YES" "Really Drop the database"
-
+	if confirm_drop_db()="Yes" then
                         let lv_sql="drop database ",lv_newname
                         prepare p_drop from lv_sql
                         execute p_drop
@@ -1052,13 +1052,10 @@ if lv_newname is not null and lv_newname not matches " " then
                                 message "Database dropped..."
                         else
                                 if check_and_report_error() then
-					exit menu
+					# can't drop...
 				end if
                         end if
-                        exit menu
-                command "NO" "Don't drop it"
-                        exit menu
-        end menu
+        end if
 end if
 
 end function
@@ -1137,64 +1134,77 @@ define lv_cont integer
 
 		call set_exec_mode(0)
                 let lv_txt="INFO - ",lv_tabname
-                menu lv_txt
-                        command "Columns"
+
+		call set_info_text(lv_txt)
+
+		while true
+
+                        when "Columns"
 				CALL open_display_file()
                                 if load_info_columns(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=0
 
-                        command "Indexes"
+                        when "Indexes"
 				CALL open_display_file()
                                 if load_info_indexes(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=1
 
-                        command "Privileges"
+                        when "Privileges"
 				CALL open_display_file()
                                 if load_info_priv(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=2
 
-                        command "References"
+                        when "References"
 				CALL open_display_file()
                                 if load_info_ref(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=3
 
-                        command "Status"
+                        when "Status"
 				CALL open_display_file()
                                 if load_info_status(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=4
 
-                        command "cOnstraints"
+                        when "cOnstraints"
 				CALL open_display_file()
                                 if load_info_constraints(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=5
 
-                        command "triGgers"
+                        when "triGgers"
 				CALL open_display_file()
                                 if load_info_triggers(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=6
 
-                        command "Table"
+                        when "Table"
                                 let lv_cont=1
-                                exit menu
+                                exit while
 
-                        command "Fragments"
+                        when "Fragments"
 				CALL open_display_file()
                                 if load_info_fragments(lv_tabname) then
 					CALL do_paginate()
 				end if
+				let lv_option=8
 
-                        command "Exit"
+                        when "Exit"
                                 let lv_cont=0
-                                exit menu
+                                exit while
 
-                end menu
+		end case
+                end while
         if lv_cont=0 then
                 exit while
         end if

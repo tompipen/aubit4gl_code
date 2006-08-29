@@ -607,11 +607,13 @@ if lv_server is null or lv_server matches " " then
         return
 end if
 
-prompt "USER NAME >> " for lv_username
+let lv_username=prompt_get( "USER NAME >> ","Enter the username")
+#prompt "USER NAME >> " for lv_username
 
 if lv_username is null or lv_username=" " then
 else
-        prompt "PASSWORD >> " for lv_passwd attribute(invisible)
+	let lv_passwd=prompt_get("PASSWORD >> ","Enter the password")
+        #prompt "PASSWORD >> " for lv_passwd attribute(invisible)
         if lv_passwd is null or lv_passwd matches " " then
                 initialize lv_username to null
         end if
@@ -1487,14 +1489,12 @@ end if
 
 if lv_newname is not null and lv_newname not matches " " then
 
-        menu "CONFIRM >>"
-                command "YES" "Really Drop the database"
-
-        whenever error continue
-                        let lv_sql="drop database ",lv_newname
-                        prepare p_drop from lv_sql
-                        execute p_drop
-	whenever error stop
+	if confirm_drop_db()= "Yes"  then
+        		whenever error continue
+                        	let lv_sql="drop database ",lv_newname
+                        	prepare p_drop from lv_sql
+                        	execute p_drop
+			whenever error stop
 
                         if sqlca.sqlcode=0 then
                                 call set_curr_db("")
@@ -1502,13 +1502,10 @@ if lv_newname is not null and lv_newname not matches " " then
                                 message "Database dropped..."
                         else
                                 if check_and_report_error() then
-					exit menu
+					# Couldn't drop it...
 				end if
                         end if
-                        exit menu
-                command "NO" "Don't drop it"
-                        exit menu
-        end menu
+        end if
 end if
 
 end function
@@ -1804,6 +1801,8 @@ function table_info()
 define lv_tabname char(255)
 define lv_txt char(128)
 define lv_cont integer
+define lv_last integer
+let lv_last=-1
         if not has_db() then
                 call select_db()
         end if
@@ -1826,65 +1825,87 @@ define lv_cont integer
 		let lv_cont=0
 
 		CALL set_exec_mode(0)
+
+
+
                 let lv_txt="INFO - ",lv_tabname
-                menu lv_txt
-			command "Columns" "List columns for the table"
+		call set_info_text(lv_txt)
+
+		while true
+
+			case info_menu(lv_last)
+
+			when "Columns" 
+				let lv_last=0
 				CALL open_display_file()
                 		if load_info_columns(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Indexes" "List indexes for the table"
+			when "Indexes" 
+				let lv_last=1
 				CALL open_display_file()
                 		if  load_info_indexes(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Privileges" "List privileges for the table"
+			when "Privileges" 
+				let lv_last=2
 				CALL open_display_file()
 				if  load_info_priv(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "References" "List references for the table"
+			when "References" 
+				let lv_last=3
 				CALL open_display_file()
 				if  load_info_ref(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Status" "Display status for the table"
+			when "Status" 
+				let lv_last=4
 				call open_display_file()
 				if load_info_status(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "cOnstraints" "List constraints for the table"
+			when "cOnstraints"
+				let lv_last=5
 				CALL open_display_file()
 				if  load_info_constraints(lv_tabname)  then
 					call do_paginate()
 				end if
 
-			command key "G" "triGgers" "List triggers for the table"
+			when "triGgers" 
+				let lv_last=6
 				call open_display_file()
 				if load_info_triggers(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Table" "Change table"
+			when "Table" 
+				let lv_last=7
 				let lv_cont=1
-				exit menu
+				exit while
 
-			command "Fragments" "List fragments for the table"
+			when "Fragments" 
+				let lv_last=8
 				call open_display_file()
 				if load_info_fragments(lv_tabname) then
 					call do_paginate()
 				end if
 
-			command "Exit" "Exit menu"
+			when "Exit" 
+				let lv_last=9
 				let lv_cont=0
-				exit menu
+				exit while
 
-		end menu
+			end case
+		end while
+
+
+
 	if lv_cont=0 then
 		exit while
 	end if
@@ -2060,8 +2081,10 @@ define lv_sn char(255)
 if lv_name matches "*@*" then
 	return lv_name
 else
+	whenever error continue
 	select dbservername into lv_sn from systables where tabid=1
 	let lv_name=lv_name clipped,"@",lv_sn
+	whenever error stop
 end if
 return lv_name
 end function

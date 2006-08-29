@@ -214,6 +214,9 @@ define lv_doneit integer
 
 define lv_counter integer
 call clear_screen_portion()
+if has_prompt_action() then
+	return get_prompt_action()
+end if
 
 if mv_cnt >=1 then
 	let int_flag=false
@@ -347,3 +350,33 @@ call clear_screen_portion()
 return lv_value
 end function
 
+
+
+function prompt_get(lv_prompt,lv_desc)
+define lv_prompt char(80)
+define lv_desc char(80)
+define lv_response char(30)
+display lv_desc at 2,1
+
+call display_banner()
+let int_flag=false
+
+if has_prompt_action() then
+      return get_prompt_action()
+end if
+
+
+if lv_prompt matches "*PASSWORD*" then
+	prompt lv_prompt clipped for lv_response attribute(invisible)
+else
+	prompt lv_prompt clipped for lv_response
+end if
+
+
+if int_flag=true then
+	initialize lv_response to null
+end if
+
+return lv_response
+
+end function
