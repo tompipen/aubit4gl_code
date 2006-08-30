@@ -42,16 +42,16 @@ when_unit_expr : when_command_expr | when_unit_expr when_command_expr
 end_case_command : END_CASE {setinc(-1);A4GL_incprint();}
 ;
 
-op_otherwise_command : | OTHERWISE { A4GL_incprint();print_otherwise(); } commands {A4GL_incprint(); print_after_when(0); }
+op_otherwise_command : | OTHERWISE { A4GL_incprint();print_otherwise();  lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(0); }
 ;
 
-op_otherwise_command_expr : | OTHERWISE {A4GL_incprint();print_otherwise();} commands {A4GL_incprint(); print_after_when(0); }
+op_otherwise_command_expr : | OTHERWISE {A4GL_incprint();print_otherwise(); lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(0); }
 ;
 
-when_command		: WHEN fgl_expr_c { print_when(0,$<ptr>2); A4GL_incprint(); } commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
+when_command		: WHEN fgl_expr_c { print_when(0,$<ptr>2); A4GL_incprint();  lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
 ;
 
-when_command_expr	: WHEN fgl_expr_c { A4GL_incprint(); print_when(1,$<ptr>2); } commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
+when_command_expr	: WHEN fgl_expr_c { A4GL_incprint(); print_when(1,$<ptr>2);  lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
 ;
 
 

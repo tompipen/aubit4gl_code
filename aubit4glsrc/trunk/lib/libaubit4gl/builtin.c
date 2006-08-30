@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.98 2006-07-12 16:09:17 mikeaubury Exp $
+# $Id: builtin.c,v 1.99 2006-08-30 19:47:30 mikeaubury Exp $
 #
 */
 
@@ -1000,14 +1000,18 @@ aclfgli_str_to_id (char *name)
 {
   static char buff[1024];
   char *ptr;
+
   if (A4GL_has_pointer(name,ACLFGLI_STR_TO_ID)) {
 	return A4GL_find_pointer(name,ACLFGLI_STR_TO_ID);
   }
 
   strcpy (buff, name);
   A4GL_trim (buff);
+  A4GL_make_downshift(buff);
   ptr=acl_strdup(buff);
+
   A4GL_add_pointer(name,ACLFGLI_STR_TO_ID,ptr);
+
   return ptr;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.238 2006-08-28 16:13:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.239 2006-08-30 19:47:29 mikeaubury Exp $
 #
 */
 
@@ -1321,7 +1321,7 @@ int aclfgl_fgl_round(int nargs);
 
 
 
-
+void A4GL_cleanup_undeleted_files(void);
 
 
 

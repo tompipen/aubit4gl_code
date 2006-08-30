@@ -194,10 +194,11 @@ call close_tmpfile("SQL")
 end function
 
 
-function copy_file(src,dest,type)
+function copy_file(src,dest,type,removeatexit)
 define src char(255)
 define dest char(255)
 define type char(255)
+define removeatexit integer
 define lv_str char(600)
 define buff char(255);
 define f integer
@@ -218,7 +219,9 @@ if (!f)  {
 
 if (f) {
 	fo=(long)fopen(dest,"w");
-	add_temp_file(dest);
+	if (removeatexit) {
+		add_temp_file(dest);
+	}
 }
 
 if (fo&&f) {

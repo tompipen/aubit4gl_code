@@ -74,21 +74,21 @@ define lv_pack char(256)
 
 	let mv_versioned=1
 	if mv_verbose>=4 then display "Reading packs" end if
-	let lv_pack=fgl_getenv("A4GL_LEXTYPE")
+	let lv_pack=mv_lextype
 	call read_pack(lv_pack)
 	let mv_dump_strings=0
 
-	let lv_pack=fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+	let lv_pack=mv_lextype clipped,"_",mv_lexdialect
 	call read_pack(lv_pack)
 
 
 	let lv_pack=fgl_getenv("TARGET_OS")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE")
+	let lv_pack=fgl_getenv("TARGET_OS"),"__",mv_lextype clipped
 	call read_pack(lv_pack)
-
-	let lv_pack=fgl_getenv("TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+ 
+	let lv_pack=fgl_getenv("TARGET_OS"),"__",mv_lextype clipped,"_",mv_lexdialect
 	call read_pack(lv_pack)
 
 
@@ -96,10 +96,10 @@ define lv_pack char(256)
 	let lv_pack=fgl_getenv("TARGET")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("TARGET"),"__",fgl_getenv("A4GL_LEXTYPE")
+	let lv_pack=fgl_getenv("TARGET"),"__",mv_lextype clipped
 	call read_pack(lv_pack)
-
-	let lv_pack=fgl_getenv("TARGET"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+ 
+	let lv_pack=fgl_getenv("TARGET"),"__",mv_lextype clipped,"_",mv_lexdialect clipped
 
 	call read_pack(lv_pack)
 
@@ -237,8 +237,7 @@ endcode
 	if mv_compile_c_opts is null then let mv_compile_c_opts=" " end if
 	if mv_compile_pec_opts is null then let mv_compile_pec_opts=" " end if
 
-	LET mv_lextype=fgl_getenv("A4GL_LEXTYPE")
-
+	{
 	if mv_lextype is null or mv_lextype matches " " then
 		LET mv_lextype="C"
 	else
@@ -249,6 +248,7 @@ endcode
 			END IF
 		end if
 	end if
+	}
 
 	IF mv_lexdialect="INGRES" or mv_lexdialect="POSTGRES" or fgl_getenv("A4GL_ESQL_TO_C_FIRST")="Y" THEN
 		
@@ -276,6 +276,17 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   IF lv_num_args=0 then
 	CALL usg()
   END IF
+
+
+  LET mv_lextype=fgl_getenv("A4GL_LEXTYPE")
+
+  IF mv_lextype IS NULL OR mv_lextype MATCHES " " THEN
+  	LET mv_lextype="C"
+  END IF
+
+  LET mv_lexdialect=fgl_getenv("A4GL_LEXDIALECT")
+
+
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
 
@@ -291,8 +302,18 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-V5"			let mv_verbose=5 continue for
 		WHEN "-versioned"		let mv_versioned=1 continue for
 		WHEN "-notversioned"		let mv_versioned=0 continue for
+		WHEN "-t"			let a=a+1 let mv_lextype=arg_val(a) continue for
+		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a) continue for
+
+		WHEN "-td"			let a=a+1 let mv_lexdialect=arg_val(a) continue for
+		WHEN "--lexdialect"		let a=a+1 let mv_lexdialect=arg_val(a) continue for
 	END CASE
   END FOR
+
+
+
+
+
 
   CALL init()
 
@@ -1034,6 +1055,7 @@ end if
 if mv_namespace is not null then
 	let lv_runstr=lv_runstr clipped ," -N '",mv_namespace clipped,"'"
 end if
+
 
 if mv_lextype is not null then
 	call aclfgl_setenv("A4GL_LEXTYPE",mv_lextype clipped)

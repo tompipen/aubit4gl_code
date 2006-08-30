@@ -10,6 +10,7 @@ while_cmd : WHILE {
 		push_blockcommand("WHILE");
 		} fgl_expr_c {
 			print_while_2($<ptr>3);
+				 lastlineno=yylineno;
 		} commands END_WHILE {
 			continue_blockcommand("WHILE");
 			print_while_end();

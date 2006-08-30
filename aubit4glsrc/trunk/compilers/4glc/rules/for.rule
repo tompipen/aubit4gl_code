@@ -10,6 +10,7 @@ for_cmd	:	FOR variable EQUAL fgl_expr_c TO fgl_expr_c for_step
 add_feature("FOR");
 print_for_start($<str>2,$<ptr>4,$<ptr>6,$<ptr>7);
 push_blockcommand("FOR");
+ lastlineno=yylineno;
 }
 commands 
 END_FOR { 

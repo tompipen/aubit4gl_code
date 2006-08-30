@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.279 2006-07-21 09:55:24 mikeaubury Exp $
+# $Id: mod.c,v 1.280 2006-08-30 19:47:21 mikeaubury Exp $
 #
 */
 
@@ -376,6 +376,7 @@ static void push_validate_column (char *tabname, char *colname);
 char *get_namespace (char *s);
 char *make_sql_string_and_free (char *first, ...);
 char *do_clobbering (char *f, char *s);
+char *do_clobbering_sql (char *f, char *s);
 char *pg_make_sql_string_and_free (char *first, ...);
 
 /*
@@ -4471,6 +4472,40 @@ do_clobbering (char *f, char *s)
     }
   return add_clobber (buff, s);
 }
+
+char *
+do_clobbering_sql (char *f, char *s)
+{
+  static char buff[256];
+
+  if (A4GL_isyes (acl_getenv ("A4GL_NOSQLCLOBBER")))
+    {
+      SPRINTF1 (buff, "\"%s\"", s);
+      if (!has_clobber (buff))
+	{
+	  add_clobber (buff, s);
+	}
+      return buff;
+    }
+
+  SPRINTF2 (buff, "\"%s_%s\"", f, s);
+
+  if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSSQLCLOBBER")))
+    {
+      if (!has_clobber (buff))
+	{
+	  add_clobber (buff, s);
+	}
+      return buff;
+    }
+
+  if (has_clobber (buff))
+    {
+      return get_clobber (buff);
+    }
+  return add_clobber (buff, s);
+}
+
 
 
 char *

@@ -64,18 +64,18 @@ constr_extra_commands : constr_extra_command | constr_extra_commands constr_extr
 ;
 
 constr_extra_command :  
-	  BEFFIELD bef_c_field_list_as_struct { A4GL_add_event(A4GL_EVENT_BEFORE_FIELD,field_name_list_as_or_char($<field_list>2)); print_befaft_field_1(field_name_list_as_or_char($<field_list>2)); } commands { print_befaft_field_2(); }
-	| AFTFIELD aft_c_field_list_as_struct { A4GL_add_event(A4GL_EVENT_AFTER_FIELD,field_name_list_as_or_char($<field_list>2)); print_befaft_field_1(field_name_list_as_or_char($<field_list>2)); } commands { print_befaft_field_2(); }
-	| on_key_command { A4GL_add_onkey_key($<str>1); print_onkey_1($<str>1); } commands { print_onkey_2(); }
-	| on_action { A4GL_add_onaction($<str>1); print_onaction_1($<str>1);} commands { print_onaction_2(); }
+	  BEFFIELD bef_c_field_list_as_struct { A4GL_add_event(A4GL_EVENT_BEFORE_FIELD,field_name_list_as_or_char($<field_list>2)); print_befaft_field_1(field_name_list_as_or_char($<field_list>2));  lastlineno=yylineno;} commands { print_befaft_field_2(); }
+	| AFTFIELD aft_c_field_list_as_struct { A4GL_add_event(A4GL_EVENT_AFTER_FIELD,field_name_list_as_or_char($<field_list>2)); print_befaft_field_1(field_name_list_as_or_char($<field_list>2));  lastlineno=yylineno;} commands { print_befaft_field_2(); }
+	| on_key_command { A4GL_add_onkey_key($<str>1); print_onkey_1($<str>1);  lastlineno=yylineno;} commands { print_onkey_2(); }
+	| on_action { A4GL_add_onaction($<str>1); print_onaction_1($<str>1); lastlineno=yylineno;} commands { print_onaction_2(); }
         | on_timer {
                 A4GL_add_ontimer($<str>1);
                 print_ontimer_1($<str>1);
-        } commands { print_ontimer_2(); }
+        lastlineno=yylineno; } commands { print_ontimer_2(); }
 
 
-	| AFTCONSTRUCT { A4GL_add_event(A4GL_EVENT_AFTER_INP,""); print_befaft_field_1("AFTER_INP"); } commands { print_befaft_field_2(); }
-	| BEFCONSTRUCT { A4GL_add_event(A4GL_EVENT_BEFORE_INP,""); print_befaft_field_1("BEFORE_INP"); } commands { print_befaft_field_2(); }
+	| AFTCONSTRUCT { A4GL_add_event(A4GL_EVENT_AFTER_INP,""); print_befaft_field_1("AFTER_INP");  lastlineno=yylineno;} commands { print_befaft_field_2(); }
+	| BEFCONSTRUCT { A4GL_add_event(A4GL_EVENT_BEFORE_INP,""); print_befaft_field_1("BEFORE_INP");  lastlineno=yylineno;} commands { print_befaft_field_2(); }
 ;
 
 

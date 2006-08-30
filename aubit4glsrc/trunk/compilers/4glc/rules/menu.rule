@@ -46,7 +46,7 @@ menu_block_command :
 	BEFORE_MENU 
 		{
 		print_menu_block(menu_blk[menu_cnt],-2) ;
-                  }  
+         lastlineno=yylineno;          }  
 	commands {
 		do_print_menu_block_end(-2);
 	}
@@ -60,7 +60,7 @@ menu_block_command :
 		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
 		a=menu_cmd_cnt[menu_cnt]++;
 		A4GL_assertion(a>=MAXMENUOPTS,"Ran out of menuoptions in compiler (Increase : MAXMENUOPTS)");
-		} 
+	 lastlineno=yylineno;	} 
 	commands {
 		do_print_menu_block_end(menu_cmd_cnt[menu_cnt]-1);
 }
@@ -74,7 +74,7 @@ menu_block_command :
 
 		a=menu_cmd_cnt[menu_cnt]++;
 		A4GL_assertion((a>=MAXMENUOPTS),"Ran out of menuoptions in compiler (Increase : MAXMENUOPTS)");
-		} 
+	 lastlineno=yylineno;	} 
 	commands 
 {
 		do_print_menu_block_end(menu_cmd_cnt[menu_cnt]-1);
@@ -87,14 +87,14 @@ menu_block_command :
 		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
 		a=menu_cmd_cnt[menu_cnt]++;
 		A4GL_assertion((a>=MAXMENUOPTS),"Ran out of menuoptions in compiler (Increase : MAXMENUOPTS)");
-	} commands { do_print_menu_block_end(menu_cmd_cnt[menu_cnt]-1);}
+ lastlineno=yylineno;	} commands { do_print_menu_block_end(menu_cmd_cnt[menu_cnt]-1);}
 | on_timer {   
 		int a;
 		push_menu_timeout(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>1);
 		print_menu_block(menu_blk[menu_cnt],menu_cmd_cnt[menu_cnt]-1);
 		a=menu_cmd_cnt[menu_cnt]++;
 		A4GL_assertion((a>=MAXMENUOPTS),"Ran out of menuoptions in compiler (Increase : MAXMENUOPTS)");
-	} commands { do_print_menu_block_end(menu_cmd_cnt[menu_cnt]-1); }
+	 lastlineno=yylineno;} commands { do_print_menu_block_end(menu_cmd_cnt[menu_cnt]-1); }
 ;
 
 

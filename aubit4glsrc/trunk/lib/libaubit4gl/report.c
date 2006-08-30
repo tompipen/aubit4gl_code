@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.89 2006-08-20 11:30:29 mikeaubury Exp $
+# $Id: report.c,v 1.90 2006-08-30 19:47:30 mikeaubury Exp $
 #
 */
 
@@ -169,6 +169,87 @@ static char *b=0; // Keep it hanging around....
 
 
 
+/*
+********************************************************************************
+* TEMPORARY REPORT CLEANUP CODE
+********************************************************************************
+*/
+
+char **repnames=0;
+int nrepnames=0;
+
+ 
+
+/* 
+Go through a list of uncleaned temp report files
+and remove them automatically.
+*/
+void A4GL_cleanup_undeleted_files(void) {
+	int a;
+	if (repnames==0) return;
+	for (a=0;a<nrepnames;a++) {
+		if (repnames[a]) {
+			A4GL_debug("Cleaning up : %s",repnames[a]);
+			unlink(repnames[a]);
+			repnames[a]=0;
+		}
+	}
+	nrepnames=0;
+	free(repnames);
+	repnames=0;
+}
+
+
+/* 
+Indicate that a temporary report file has
+been deleted already 
+*/
+static void deleted_rep(char *fname) {
+	int a;
+	if (repnames==0) return;
+	for (a=0;a<nrepnames;a++) {
+		if (strcmp(fname,repnames[a])==0) {
+			free(repnames[a]);
+			repnames[a]=0;
+		}
+	}
+}
+
+
+
+/* 
+indicate that a temporary report file has
+been added - so we can delete it if required.
+*/
+static void add_convertible_report(char *fname) {
+int a;
+if (repnames==0) {
+	repnames=malloc(sizeof(char *));
+	repnames[0]=0;
+	nrepnames=1;
+}
+
+for (a=0;a<nrepnames;a++) {
+	if (repnames[a]==0) {
+		// We can use this slot...
+		repnames[a]=strdup(fname);
+		return;
+	}
+}
+
+// Theres no free slot..
+nrepnames++;
+repnames=realloc(repnames,nrepnames*sizeof(char *));
+repnames[nrepnames-1]=strdup(fname);
+
+}
+
+
+
+
+/*
+********************************************************************************
+*/
 
 void
 add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
@@ -429,12 +510,14 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
       if (rep->output_mode == 'C')
 	{
 	  tmpnam (rep->output_loc);
+
 	  rep->output = fopen (rep->output_loc, "w");
 	  if (rep->output == 0)
 	    {
 	      A4GL_exitwith ("Could not open report output");
 	      return;
 	    }
+	    add_convertible_report(rep->output_loc);
 
 	}
       else
@@ -1588,13 +1671,13 @@ A4GL_free_report (struct rep_structure *rep)
   if (rep->output_mode == 'C')
     {
       rep->output_mode = ' ';
-      //unlink(rep->output_loc);
+      unlink(rep->output_loc);
+      deleted_rep(rep->output_loc);
     }
 
   if (rep->output_mode == 'M')
     {
       //email_report(rep->output_loc,0);
-      unlink (rep->output_loc);
       rep->output_mode = ' ';
     }
 

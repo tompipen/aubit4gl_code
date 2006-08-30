@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.111 2006-08-23 08:24:42 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.112 2006-08-30 19:47:30 mikeaubury Exp $
 #
 */
 
@@ -139,6 +139,7 @@ A4GL_debug("Close db");
   A4GL_close_database ();
 A4GL_debug("Close errlog");
   A4GL_close_errorlog_file ();
+  A4GL_cleanup_undeleted_files();
   A4GL_debug ("End of program - exit(0).");
 }
 
@@ -518,10 +519,12 @@ aclfgl_arg_val (int n)
     A4GL_push_char (" "); // Was N/A
     return 1;
   }
-  if (k < p_numargs)
-    A4GL_push_char (p_args[k]);
-  else
-    A4GL_push_char (" "); // Was N/A
+  if (k < p_numargs) {
+    A4GL_push_char (p_args[k]); 
+    }
+  else {
+    A4GL_push_char (" "); 
+    }
   return 1;
 }
 

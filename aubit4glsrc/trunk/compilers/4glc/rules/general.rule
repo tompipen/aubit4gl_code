@@ -88,15 +88,15 @@ field_name_or_char_as_struct: field_name_as_struct {$<field_entry>$=$<field_entr
 	}
 ;
 
-cursor_name	:	ident_or_var {
+cursor_name	:	ident_or_var_sql {
 				print_pushchar($<str>1);
 				ADDMAP("Cursor",last_var);
 			}
 ;
 
-put_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
+put_cursor_name	:	ident_or_var_sql {sprintf($<str>$,"%s",$<str>1);};
 
-fetch_cursor_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);};
+fetch_cursor_name	:	ident_or_var_sql {sprintf($<str>$,"%s",$<str>1);};
 
 win_name	:	ident_or_var {sprintf($<str>$,"%s",$<str>1);
 ADDMAP("Window",last_var);
@@ -133,6 +133,12 @@ ident_or_var	: ident_p2  {
 			}  
 ;
 
+ident_or_var_sql: ident_p2_sql  {
+			sprintf($<str>$,"%s",downshift($<str>1)) ;
+			}  
+;
+
+
 ident_p2 : NAMED {
 	strcpy($<str>$,do_clobbering(clobber,downshift($<str>1))) ;
 	strcpy(last_var,downshift($<str>1));
@@ -157,6 +163,27 @@ ident_p2 : NAMED {
 
 
 
+ident_p2_sql : NAMED {
+	strcpy($<str>$,do_clobbering_sql(clobber,downshift($<str>1))) ;
+	strcpy(last_var,downshift($<str>1));
+} | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
+	{
+		if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0) {
+			char buff[256];
+			strcpy(buff,$<str>3);
+			if (buff[0]=='"') {
+				sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
+			} else {
+
+				sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
+			}
+			sprintf(last_var,"->%s",$<str>3);
+		} else {
+			sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);
+			sprintf(last_var,"->%s",$<str>3);
+		}
+	}
+;
 
 
 var_or_string : var | CHAR_VALUE;
@@ -200,7 +227,7 @@ YYERROR;
 };
 
 
-conn_id : ident_or_var;
+conn_id : ident_or_var_sql;
 
 
 real_number : NUMBER_VALUE | DOT INT_VALUE {

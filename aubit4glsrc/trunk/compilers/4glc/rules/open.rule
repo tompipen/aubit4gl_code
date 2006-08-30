@@ -94,7 +94,7 @@ CONNECT TO var_ident op_connect_as con_user_details {
 
 op_connect_as :
         {strcpy($<str>$,"\"default_conn\"");}
-        | AS ident_or_var {strcpy($<str>$,$<str>2);}
+        | AS ident_or_var_sql {strcpy($<str>$,$<str>2);}
 
 ;
 

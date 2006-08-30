@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.121 2006-07-27 16:04:16 mikeaubury Exp $
+# $Id: resource.c,v 1.122 2006-08-30 19:47:31 mikeaubury Exp $
 #
 */
 
@@ -183,6 +183,7 @@ struct str_resource builtin_resource[] = {
   {"SCROLLBACKTO1","Y"}, // Allow Display Array to move back to srec[1] when scr_line>1
   {"LOGNAME", "UNKNOWN"},
   {"A4GL_NOCLOBBER", "Y"},
+  {"A4GL_NOSQLCLOBBER", "N"},
   {"EXTENDED_FETCH", "Y"},	/* This won't always work ! */
   {"BEEPONERROR","Y"},
   {"HELPTEXT", "Help"},

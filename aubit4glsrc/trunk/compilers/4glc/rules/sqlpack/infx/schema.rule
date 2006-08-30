@@ -118,11 +118,11 @@ create_c_1  :
 			add_feature("CREATE_INDEX");
 			sprintf($<str>$," CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 	} 
-	| CREATE_DATABASE ident_or_var {
+	| CREATE_DATABASE var_ident {
 		add_feature("CREATE_DATABASE");
 		a4gl_yyerror("You cannot create a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
-	| DROP_DATABASE ident_or_var {
+	| DROP_DATABASE var_ident {
 		add_feature("DROP_DATABASE");
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}

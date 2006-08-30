@@ -130,7 +130,7 @@ func_def	: ldeffunction {
   			c=print_param('f',$<str>3);
   			printPushFunction();
   			print_func_args(c);
-			} op_code commands end_func_command
+			 lastlineno=yylineno;} op_code commands end_func_command
 ;
 
 /*
@@ -169,7 +169,7 @@ main_def:
     print_fgllib_start(get_hdrdbname() );
     printInitFunctionStack();
     printPushFunction();
-  }
+ lastlineno=yylineno;  }
 commands END_MAIN {
 pop_blockcommand("MAIN");
     A4GL_chk_and_clr_labels();

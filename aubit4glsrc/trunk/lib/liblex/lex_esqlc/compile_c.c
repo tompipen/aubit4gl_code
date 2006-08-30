@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.310 2006-08-23 08:25:05 mikeaubury Exp $
+# $Id: compile_c.c,v 1.311 2006-08-30 19:47:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.310 2006-08-23 08:25:05 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.311 2006-08-30 19:47:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -400,11 +400,12 @@ open_outfile (void)
   }
 
   
-  if (strcmp (acl_getenv ("A4GL_NOCLOBBER"), "N") == 0)
-    {
+
+  //if ( A4GL_isno(acl_getenv ("A4GL_NOCLOBBER")) ||A4GL_isno(acl_getenv ("A4GL_NOSQLCLOBBER")) )
+    //{
       A4GL_debug ("Clobbering...");
       A4GL_set_clobber (outputfilename);
-    }
+    //}
     
 
   A4GL_debug ("Opening output map");
@@ -608,13 +609,19 @@ if (os>=sizeof(buff)) {
 
   if (A4GL_isyes (acl_getenv ("INCLINES")))
     {
+      static int last_line=-1;
+
       for (a = 0; a < strlen (buff); a++)
 	{
 	  if (buff[a] == '\n' )
 	    {
-		if (suppress_lines==0) {
-	      		if (infilename != 0) { FPRINTF (outfile, "\n#line %d \"%s.4gl\"\n", yylineno, outputfilename); }
-	      		else { FPRINTF (outfile, "\n#line %d \"null\"\n", yylineno); /* outputfilename); */ }
+		if (suppress_lines==0 ) {
+			last_line=lastlineno;
+	      		if (infilename != 0) { 
+				FPRINTF (outfile, "\n#line %d \"%s.4gl\"\n", lastlineno, outputfilename); 
+			} else { 
+				FPRINTF (outfile, "\n#line %d \"null\"\n", yylineno); /* outputfilename); */ 
+			}
 		} else {
 	      		FPRINTF (outfile, "\n");
 		}
@@ -6572,7 +6579,10 @@ LEXLIB_A4GL_decode_array_string (char *var,char *s)
 void
 LEXLIB_print_cmd_start ()
 {
-  printc ("\n\naclfgli_clr_err_flg();\n\n");
+  if(yylineno>lastlineno) {
+  	lastlineno=yylineno;
+  }
+  printc ("\n\naclfgli_clr_err_flg(); //%d %d\n\n",yylineno,lastlineno);
 }
 
 /**
@@ -6584,6 +6594,7 @@ LEXLIB_print_cmd_end ()
 {
   /*printc("\naclfgli_clr_err_flg()\n\n");*/
   printcomment ("\n/* End command */\n");
+  lastlineno=yylineno;
 }
 
 /**
@@ -6748,9 +6759,10 @@ LEXLIB_A4GL_lex_parsed_fgl ()
     {
       printc ("#include \"cs_trailer.h\"");
     }
-
-  if (outfile)
-    fclose (outfile);
+  if (outfile) {
+  	fprintf(outfile,"\n\n\n/* END OF MODULE */\n");
+    	fclose (outfile);
+    }
   if (hfile)
     fclose (hfile);
 }

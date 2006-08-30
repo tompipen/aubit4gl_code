@@ -15,7 +15,7 @@ fetch_statement:
     }
 ;
 
-declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1; A4GL_cursor_defined($<str>1,0); }
+declare_cursor_name  :       ident_or_var_sql {sprintf($<str>$,"%s",$<str>1);doing_declare=1; A4GL_cursor_defined($<str>1,0); }
 ;
 
 fetch_part_f: 

@@ -205,7 +205,7 @@ end if
 
 if lv_fname is not null then
 	let lv_backup=get_tmp_fname("PER")
-	call copy_file(lv_fname,lv_backup,".per")
+	call copy_file(lv_fname,lv_backup,".per",0)
 
 	if lv_fname not matches "*.[Pp][Ee][Rr]" then
         	let lv_fname=lv_fname clipped,".per"
@@ -244,7 +244,7 @@ if lv_fname is not null then
 			return 1
 
 		when "Discard-and-exit"
-			call copy_file(lv_backup,lv_fname,".per")
+			call copy_file(lv_backup,lv_fname,".per",0)
 			return 1
 	end case
 	return 1
@@ -294,7 +294,7 @@ end if
 if lv_fname is not null then
 	let mv_lastused=lv_fname
 	let lv_backup=get_tmp_fname("PER")
-	call copy_file(lv_fname,lv_backup,".per")
+	call copy_file(lv_fname,lv_backup,".per",0)
 
 	if lv_fname not matches "*.[Pp][Ee][Rr]" then
         	let lv_fname=lv_fname clipped,".per"

@@ -32,12 +32,12 @@ bef_ev_list :
 bef_ev :
         BEFORE_EVENT {
 		print_event('B');
-        }  commands {
+         lastlineno=yylineno;}  commands {
 		print_event_2();
         }
         | BEFORE_OPEN_FORM {
 		print_event('b');
-        } commands {
+       lastlineno=yylineno;  } commands {
 		print_event_2();
         }
 ;
@@ -53,12 +53,12 @@ aft_ev_list :
 aft_ev :
          AFTER_EVENT {
 		print_event('A');
-        }  commands {
+         lastlineno=yylineno;}  commands {
 		print_event_2();
         }
         | BEFORE_CLOSE_FORM {
 		print_event('a');
-        } commands {
+         lastlineno=yylineno;} commands {
 		print_event_2();
         }
 ;
@@ -88,27 +88,27 @@ field_ops :
 field_op :
         BEFORE_ANY { 
 			print_gtk_field('B',0);
-		} commands {
+	 lastlineno=yylineno;	} commands {
 			print_gtk_field_2();
 		}
         | AFTER_ANY { 
 			print_gtk_field('A',0);
-		} commands {
+		 lastlineno=yylineno;} commands {
 			print_gtk_field_2();
 		}
         | BEFORE in_id_list {
 			print_gtk_field('b',$<str>2);
-		} commands { 
+		 lastlineno=yylineno;} commands { 
 			print_gtk_field_2();
 		}
         | AFTER in_id_list {
 			print_gtk_field('a',$<str>2);
-		} commands { 
+		 lastlineno=yylineno;} commands { 
 			print_gtk_field_2();
 		}
         | KW_ON in_id_list { 
 			print_gtk_field('o',$<str>2);
-		} commands { 
+		 lastlineno=yylineno;} commands { 
 			print_gtk_field_2();
 		}
 ;

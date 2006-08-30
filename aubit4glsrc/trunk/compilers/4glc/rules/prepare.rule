@@ -52,7 +52,7 @@ execute_cmd : EXECUTE stmt_id {
 	}
 ;
 
-stmt_id : ident_or_var ;
+stmt_id : ident_or_var_sql ;
 
 
 /* ========================== prepare.rule ========================= */

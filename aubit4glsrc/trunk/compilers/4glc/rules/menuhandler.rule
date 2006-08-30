@@ -24,14 +24,14 @@ menu_handler_element :
         BEFORE_SHOW_MENU {
 		print_gtk_menuhandler_bsm();
                 push_blockcommand("BSM");
-        } commands {
+         lastlineno=yylineno;} commands {
                 pop_blockcommand("BSM");
 		print_gtk_menuhandler_bsm_end();
         }
         | KW_ON identifier {
 		print_gtk_menuhandler_on($<str>2);
                 push_blockcommand("ON");
-        } commands {
+         lastlineno=yylineno;} commands {
                 pop_blockcommand("ON");
 		print_gtk_menuhandler_on_end();
 }

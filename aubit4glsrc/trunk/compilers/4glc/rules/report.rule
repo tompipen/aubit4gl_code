@@ -251,7 +251,7 @@ FORMAT format_actions
 format_actions : format_action | format_actions format_action;
 
 format_action :
-	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P');} commands {
+	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P'); lastlineno=yylineno;} commands {
 	 	add_feature("REPORT_FIRST_PAGE_HEADER");
 		rep_struct.lines_in_first_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
@@ -262,18 +262,18 @@ format_action :
 		push_report_block("TRAILER",'T');
 		if_print_stack[0][0]=0;
 		if_print_stack[0][1]=0;
-	} commands {
+ lastlineno=yylineno;	} commands {
 		rep_struct.lines_in_trailer=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
 		print_rep_ret(0,1);
 	}
-	| PAGE_HEADER { push_report_block("HEADER",'p');} commands {
+	| PAGE_HEADER { push_report_block("HEADER",'p'); lastlineno=yylineno;} commands {
 	 	add_feature("REPORT_PAGE_HEADER");
 		rep_struct.lines_in_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_header=if_print_stack[0][0];
 		print_rep_ret(0,1);}
-	| ON_EVERY_ROW { push_report_block("EVERY",'E'); add_feature("ON_EVERY_ROW"); } commands {print_rep_ret(0,1);}
-	| ON_LAST_ROW { push_report_block("LAST",'L'); add_feature("ON_LAST_ROW");} commands {print_rep_ret(0,1);}
+	| ON_EVERY_ROW { push_report_block("EVERY",'E'); add_feature("ON_EVERY_ROW");  lastlineno=yylineno;} commands {print_rep_ret(0,1);}
+	| ON_LAST_ROW { push_report_block("LAST",'L'); add_feature("ON_LAST_ROW"); lastlineno=yylineno;} commands {print_rep_ret(0,1);}
 	| BEFGROUP variable  {
 		int a;
 		char buff[80];
@@ -288,7 +288,7 @@ format_action :
 		sprintf(buff,"%d",a+1);
 		push_report_block(buff,'B');
 		set_curr_block(a+1);
-		} commands {print_rep_ret(0,1);}
+		 lastlineno=yylineno;} commands {print_rep_ret(0,1);}
 	| AFTGROUP variable { 
 		int a;
 		char buff[80];
@@ -306,7 +306,7 @@ format_action :
 		push_report_block(buff,'A');
 		set_curr_block(a+1);
 		
-		} commands {print_rep_ret(0,1);}
+		 lastlineno=yylineno;} commands {print_rep_ret(0,1);}
 ;
 
 report_cmd : 
