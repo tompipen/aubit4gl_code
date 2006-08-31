@@ -1,7 +1,7 @@
 # This is an example of logical report usage....
 # Pretty neat huh ?
 #
-database stores
+database test1
 main
 
 define t,c char(20)
@@ -25,7 +25,7 @@ define n integer
 	finish report r1 converting to "myfile1.pdf" AS "PDF"
 
 
-    	start report r1 to convertable
+    	start report r1 to convertible
 	
 	foreach c1 into t,c,n
 			output to report r1 (t,c,n)
