@@ -9,6 +9,7 @@ SELECT_INTO_TEMP_AS_DECLARE_INSERT
 ADD_SESSION_TO_TEMP_TABLE
 TABLE_ALIAS_AS
 COLUMN_ALIAS_AS
+EXPAND_COLUMNS
 
 # - works, but not in all cases; DB2 does not recognize expressions
 #   in form of set substr(col,2,3)='foo' (informix style is: set col[2,4]='foo')
