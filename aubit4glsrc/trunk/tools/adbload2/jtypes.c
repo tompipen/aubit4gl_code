@@ -1764,7 +1764,7 @@ convertdata (Memory * mem, Sqlva * col, BSSP bssp)
 	case SQLDATE:
 	  date = (ixInt4 *) col->sqldata;
 	  if (datefmt==0) {
-		  	datefmt=cvt_dbdate(acl_getenv ("DBDATE"));
+		  	datefmt=(char *)cvt_dbdate(acl_getenv ("DBDATE"));
 	  }
 	  sqlca.sqlcode =
 	    rdefmtdate (date, datefmt, mem_cdata (mem));

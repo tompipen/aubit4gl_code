@@ -1,3 +1,6 @@
+#
+# only works with Informix EC atm...
+#
 CFLAGS=-g
 
 adbload2: adbload2_parse.tab.o parse.o adbload2.o process.o

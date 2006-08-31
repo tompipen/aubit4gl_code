@@ -98,6 +98,10 @@ static BlobLocn def_blob_locn = BLOB_IN_MEMORY;
 static size_t sql_descsize (Sqlda * desc);
 void *sql_describe (Sqlda * desc);
 Sqlda *idesc = 0;
+static int convertdata (Memory * mem, Sqlva * col, BSSP bssp);
+void
+ensure_colexpr (struct s_dbloadline *dbload);
+
 
 /********************************************************************************/
 int
@@ -156,8 +160,8 @@ process_entry (struct s_dbloadline *dbload)
 	      if (errcount > lv_errs)
 		{
 		  // error count exceeded
-		  printf("Error count exceeded - load failed\n");
-	 	  $ ROLLBACK WORK;
+		  printf ("Error count exceeded - load failed\n");
+		  do_rollback_work();
 		  fclose (f_in);
 		  f_in = 0;
 		  cleanup (dbload);
@@ -172,65 +176,6 @@ process_entry (struct s_dbloadline *dbload)
   return 1;
 }
 
-
-/********************************************************************************/
-/* 
-Generate the (col,col)=(val,val) portion of the insert statement  
-if not given 
-*/
-void
-ensure_colexpr (struct s_dbloadline *dbload)
-{
-  $char colname[260];
-  $char tabname[260];
-  char bigbuff_col[100000];
-  char bigbuff_val[100000];
-  char *ptr;
-  char smbuff[200];
-  $int colno;
-
-
-
-  if (strlen (dbload->i->colexpr) == 0)
-    {
-      // looks like we're going to have to generate it...
-      strcpy (tabname, dbload->i->tabname);
-      $declare c_getcols cursor for
-	select colname, colno from systables, syscolumns
-	where systables.tabname = $tabname
-	and systables.tabid = syscolumns.tabid order by colno;
-      $open c_getcols;
-
-      while (1)
-	{
-	  $fetch c_getcols into $colname, $colno;
-	  if (sqlca.sqlcode != 0)
-	    break;
-	  if (strlen (bigbuff_col))
-	    {
-	      strcat (bigbuff_col, ",");
-	    }
-	  trim (colname);
-	  strcat (bigbuff_col, colname);
-	  if (strlen (bigbuff_val))
-	    {
-	      strcat (bigbuff_val, ",");
-	    }
-	  sprintf (smbuff, "\t%d\n", colno);
-	  strcat (bigbuff_val, smbuff);
-	}
-      $close c_getcols;
-
-      ptr = malloc (strlen (bigbuff_col) + strlen (bigbuff_val) + 200);
-      sprintf (ptr, "(", tabname);
-      strcat (ptr, bigbuff_col);
-      strcat (ptr, ") VALUES (");
-      strcat (ptr, bigbuff_val);
-      strcat (ptr, ")");
-
-      dbload->i->colexpr = ptr;
-    }
-}
 
 
 /********************************************************************************/
@@ -247,7 +192,7 @@ generate_field_mappings (struct s_dbloadline *dbload)
 
   if (fld)
     {
-	A4GL_debug("free fld");
+      A4GL_debug ("free fld");
       FREE (fld);
     }
 
@@ -293,7 +238,6 @@ generate_field_mappings (struct s_dbloadline *dbload)
      and the final ? should be the second field
    */
 }
-
 
 /********************************************************************************/
 
@@ -404,45 +348,9 @@ int
 lock_table (struct s_dbloadline *dbload)
 {
   // Do we need to lock our table ? 
-
-  if (lv_lockit != -1)
-    {
-      $char lockit[256];
-      if (lv_lockit == 0)
-	{
-	  sprintf (lockit, "LOCK TABLE %s IN SHARE MODE", dbload->i->tabname);
-	}
-      else
-	{
-	  sprintf (lockit, "LOCK TABLE %s IN EXCLUSIVE MODE",
-		   dbload->i->tabname);
-	}
-
-
-      $PREPARE p_lockit FROM $lockit;
-      if (sqlca.sqlcode < 0)
-	{
-	  // Couldn't describe it
-	  sprintf (errbuff,
-		   "Unable to process (prepare lock), Error %d\n\n\n",
-		   sqlca.sqlcode);
-	  load_err (-1, errbuff);
-	  return 0;
-	}
-
-      $EXECUTE p_lockit;
-      if (sqlca.sqlcode < 0)
-	{
-	  // Couldn't describe it
-	  sprintf (errbuff,
-		   "Unable to process (execute lock), Error %d\n\n\n",
-		   sqlca.sqlcode);
-	  load_err (-1, errbuff);
-	  return 0;
-	}
-
-    }
-  return 1;
+  A4GL_push_char( dbload->i->tabname);
+  aclfgl_lock_table( 1);
+  return A4GL_pop_int();
 }
 
 
@@ -453,35 +361,12 @@ unlock_table (struct s_dbloadline *dbload)
 {
   // Do we need to lock our table ? 
 
-  if (lv_lockit != -1)
-    {
-      $char unlockit[256];
-      sprintf (unlockit, "UNLOCK TABLE %s", dbload->i->tabname);
-      $PREPARE p_unlockit FROM $unlockit;
-      if (sqlca.sqlcode < 0)
-	{
-	  // Couldn't describe it
-	  sprintf (errbuff,
-		   "Unable to process (prepare unlock), Error %d\n\n\n",
-		   sqlca.sqlcode);
-	  load_err (-1, errbuff);
-	  return 0;
-	}
-
-      $EXECUTE p_unlockit;
-      if (sqlca.sqlcode < 0)
-	{
-	  // Couldn't describe it
-	  sprintf (errbuff,
-		   "Unable to process (execute unlock), Error %d\n\n\n",
-		   sqlca.sqlcode);
-	  load_err (-1, errbuff);
-	  return 0;
-	}
-
-    }
-  return 1;
+  A4GL_push_char( dbload->i->tabname);
+  aclfgl_unlock_table( 1);
+  return 0;
 }
+
+
 
 /********************************************************************************/
 int
@@ -542,9 +427,9 @@ prepare_it (struct s_dbloadline *dbload)
 
   if (ptrs_to_data)
     {
-      A4GL_debug("free ptrs_to_data");
+      A4GL_debug ("free ptrs_to_data");
       FREE (ptrs_to_data);
-      A4GL_debug("free msz_to_data");
+      A4GL_debug ("free msz_to_data");
       FREE (msz_to_data);
       ptrs_to_data = 0;
       msz_to_data = 0;
@@ -555,10 +440,11 @@ prepare_it (struct s_dbloadline *dbload)
       FREE (isnulls);
     }
 
-      A4GL_debug("alloc ptrs_to_data : %d",sizeof (char *) * dbload->f->nfields);
-  ptrs_to_data = malloc (sizeof (char *) * (dbload->f->nfields+1));
-  msz_to_data = malloc (sizeof (long) * (dbload->f->nfields+1));
-  isnulls = malloc (sizeof (short) * (dbload->f->nfields+1));
+  A4GL_debug ("alloc ptrs_to_data : %d",
+	      sizeof (char *) * dbload->f->nfields);
+  ptrs_to_data = malloc (sizeof (char *) * (dbload->f->nfields + 1));
+  msz_to_data = malloc (sizeof (long) * (dbload->f->nfields + 1));
+  isnulls = malloc (sizeof (short) * (dbload->f->nfields + 1));
   nptrs_to_data = dbload->f->nfields;
 
   for (a = 0; a < dbload->f->nfields; a++)
@@ -607,6 +493,24 @@ prepare_it (struct s_dbloadline *dbload)
 /********************************************************************************/
 
 int
+do_commit_work ()
+{
+  EXEC SQL COMMIT WORK;
+}
+
+
+/********************************************************************************/
+
+int
+do_rollback_work ()
+{
+  EXEC SQL ROLLBACK WORK;
+}
+
+
+/********************************************************************************/
+
+int
 do_begin_work ()
 {
   EXEC SQL BEGIN WORK;
@@ -621,7 +525,7 @@ int
 cleanup (struct s_dbloadline *dbload)
 {
   int a;
-  A4GL_debug("In cleanup");
+  A4GL_debug ("In cleanup");
 
   if (ptrs_to_data)
     {
@@ -631,27 +535,26 @@ cleanup (struct s_dbloadline *dbload)
 	  // files...
 	  for (a = 0; a < nptrs_to_data; a++)
 	    {
-  		A4GL_debug("free pointers %d %s",a,ptrs_to_data[a]);
+	      A4GL_debug ("free pointers %d %s", a, ptrs_to_data[a]);
 	      FREE (ptrs_to_data[a]);
 	    }
 	}
-	A4GL_debug("free ptrs_to_data");
+      A4GL_debug ("free ptrs_to_data");
       FREE (ptrs_to_data);
-	A4GL_debug("freed");
+      A4GL_debug ("freed");
     }
 
-  A4GL_debug("Done cleanup of ptrs_to_data");
+  A4GL_debug ("Done cleanup of ptrs_to_data");
 
   if (isnulls)
     {
-	A4GL_debug("free isnulls");
+      A4GL_debug ("free isnulls");
       FREE (isnulls);
     }
 
-
   EXEC SQL CLOSE c_insert;
   unlock_table (dbload);
-  EXEC SQL COMMIT WORK;
+  do_commit_work();
 }
 
 
@@ -682,7 +585,7 @@ process_line (char *s, struct s_dbloadline *dbload)
       ptrs_to_data[0] = s;
       len = strlen (s);
       ptr = s;
-      A4GL_debug ("Processing line %d %s\n", currline,s);
+      A4GL_debug ("Processing line %d %s\n", currline, s);
       while (1)
 	{
 	  ptr = strchr (ptr, dbload->f->delim[0]);
@@ -764,7 +667,8 @@ process_line (char *s, struct s_dbloadline *dbload)
 		  (dbload->f->field_pos_list->pos[field_no]->null,
 		   ptrs_to_data[field_no]) == 0)
 		{
-		  A4GL_debug ("Field is actually null - not %s\n", ptrs_to_data[field_no]);
+		  A4GL_debug ("Field is actually null - not %s\n",
+			      ptrs_to_data[field_no]);
 		  *col->sqlind = null;
 		}
 	    }
@@ -781,7 +685,7 @@ process_line (char *s, struct s_dbloadline *dbload)
 
   if (curr_tx_count > lv_commit)
     {
-      EXEC SQL COMMIT WORK;
+	do_commit_work();
       do_begin_work ();
     }
 
@@ -799,11 +703,12 @@ process_line (char *s, struct s_dbloadline *dbload)
 int
 load_err (int n, char *s)
 {
-if (A4GL_isyes(acl_getenv("ADBLOAD_TERMTOO"))) {
-  fprintf (stderr, "Error : %s\n", s);
-  }
+  if (A4GL_isyes (acl_getenv ("ADBLOAD_TERMTOO")))
+    {
+      fprintf (stderr, "Error : %s\n", s);
+    }
   load_ok = 0;
-  logerr (currfname, currline, yylineno,s);
+  logerr (currfname, currline, yylineno, s);
 }
 
 
@@ -873,6 +778,68 @@ ec_check_and_report_error ()
     {
       load_err (0, "Some SQL Error");
       load_ok = 0;
+    }
+}
+
+
+/********************************************************************************/
+/* 
+Generate the (col,col)=(val,val) portion of the insert statement  
+if not given 
+*/
+void
+ensure_colexpr (struct s_dbloadline *dbload)
+{
+  $char colname[260];
+  $char tabname[260];
+  char bigbuff_col[100000];
+  char bigbuff_val[100000];
+  char *ptr;
+  char smbuff[200];
+  $int colno;
+
+
+
+  if (strlen (dbload->i->colexpr) == 0)
+    {
+      // looks like we're going to have to generate it...
+      strcpy (tabname, dbload->i->tabname);
+      EXEC SQL DECLARE c_getcols CURSOR FOR
+	select colname, colno from systables, syscolumns
+	where systables.tabname = $tabname
+	and systables.tabid = syscolumns.tabid order by colno;
+      EXEC SQL OPEN c_getcols;
+
+      while (1)
+	{
+	  EXEC SQL FETCH c_getcols INTO $colname, $colno;
+
+	  if (sqlca.sqlcode != 0)
+	    break;
+	  if (strlen (bigbuff_col))
+	    {
+	      strcat (bigbuff_col, ",");
+	    }
+	  trim (colname);
+	  strcat (bigbuff_col, colname);
+	  if (strlen (bigbuff_val))
+	    {
+	      strcat (bigbuff_val, ",");
+	    }
+	  sprintf (smbuff, "\t%d\n", colno);
+	  strcat (bigbuff_val, smbuff);
+	}
+
+      EXEC SQL CLOSE c_getcols;
+
+      ptr = malloc (strlen (bigbuff_col) + strlen (bigbuff_val) + 200);
+      sprintf (ptr, "(", tabname);
+      strcat (ptr, bigbuff_col);
+      strcat (ptr, ") VALUES (");
+      strcat (ptr, bigbuff_val);
+      strcat (ptr, ")");
+
+      dbload->i->colexpr = ptr;
     }
 }
 

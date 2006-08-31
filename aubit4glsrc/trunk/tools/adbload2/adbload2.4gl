@@ -185,3 +185,40 @@ code
 endcode
 return lv_open
 end function
+
+
+function unlock_table(lv_tabname) 
+define lv_tabname char(256)
+define lv_str char(156)
+
+if lv_lockit!=-1 then
+	let lv_str="UNLOCK TABLE ",lv_tabname
+	PREPARE p_unlockit FROM lv_str
+	EXECUTE p_unlockit
+end if
+
+end function
+
+function lock_table(lv_tabname)
+define lv_tabname char(256)
+define lv_str char(256)
+if lv_lockit!=-1 then
+	if lv_lockit=0 then
+		let lv_str="LOCK TABLE ",lv_tabname," IN SHARE MODE"
+	else
+		let lv_str="LOCK TABLE ",lv_tabname," IN EXCLUSIVE MODE"
+	end if
+	WHENEVER ERROR CONTINUE
+	PREPARE p_lockit FROM lv_str
+	if sqlca.sqlcode<0 then
+		return 0
+	end if
+
+	EXECUTE lv_str
+	if sqlca.sqlcode<0 then
+		return 0
+	end if
+	WHENEVER ERROR STOP
+end if
+RETURN 1
+end function
