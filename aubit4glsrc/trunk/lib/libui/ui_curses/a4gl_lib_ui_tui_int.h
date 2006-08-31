@@ -239,6 +239,7 @@ int local_set_field_opts(FIELD *field, int opts);
 int local_field_opts_on(FIELD *field, int opts);
 int local_field_opts_off(FIELD *field, int opts);
 int local_field_opts(const FIELD *field);
+void A4GL_dobeep(void);
 
 
 	//int aclfgl_aclfgl_dump_screen(int n);

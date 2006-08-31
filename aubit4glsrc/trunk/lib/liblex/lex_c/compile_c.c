@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.76 2006-07-21 09:55:27 mikeaubury Exp $
+# $Id: compile_c.c,v 1.77 2006-08-31 15:06:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2233,6 +2233,8 @@ print_foreach_next (char *cursorname, char *into)
   int no;
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
   printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);
+  A4GL_prchkerr (0, "?"); // line number, file name should be provided
+  			  // to A4GL_prchkerr, but where to get them from?
   printc ("while (1) {\n");
   no = print_bind ('o');
   printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
@@ -3695,6 +3697,8 @@ void
 print_open_cursor (char *cname, char *using)
 {
   printc ("A4GLSQL_open_cursor(%s,%s);\n", using, cname);
+  A4GL_prchkerr (0, "?"); // line number, file name should be provided
+  			  // to A4GL_prchkerr, but where to get them from?
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.126 2006-08-20 11:30:30 mikeaubury Exp $
+# $Id: curslib.c,v 1.127 2006-08-31 15:06:59 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.126 2006-08-20 11:30:30 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.127 2006-08-31 15:06:59 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -277,6 +277,16 @@ A4GL_error_nobox (char *str_orig, int attr)
   A4GL_debug ("Beeping because of error : %s", str);
 
 
+
+  A4GL_dobeep();
+
+  curr_error_panel_visible = 1;
+
+  print_panel_stack ();
+  UILIB_A4GL_zrefresh ();
+}
+
+void A4GL_dobeep() {
   if (A4GL_isyes (acl_getenv ("BEEPONERROR")))
     {
       beep ();
@@ -285,13 +295,7 @@ A4GL_error_nobox (char *str_orig, int attr)
     {
       flash ();
     }
-
-  curr_error_panel_visible = 1;
-
-  print_panel_stack ();
-  UILIB_A4GL_zrefresh ();
 }
-
 
 void
 A4GL_refresh_error_window (void)
@@ -2513,8 +2517,7 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
   long w;
   int ml;
   int width;
-  //char *s;
-  //char *ptr_pop;
+  char *beepchr;
   WINDOW *cw;
   char buff[512];
   static WINDOW *mw;
@@ -2523,6 +2526,9 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
   cw = (WINDOW *) A4GL_get_currwin ();
   ml = A4GL_getmessage_line ();
 
+
+
+
   if (ml < 0)
     {
       A4GL_exitwith ("Internal error - negative messageline");
@@ -2530,10 +2536,17 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
     }
   A4GL_debug ("MJA - Got message line as %d - %s\n", ml, s);
   width = UILIB_A4GL_get_curr_width ();
-  //A4GL_push_char(s);
 
   strcpy (p, s);
-  //A4GL_pop_char (p, width);
+
+  while (1)  {
+          beepchr=strchr(p,'\007');
+	          if (!beepchr) break;
+		          *beepchr=' ';
+			          A4GL_dobeep();
+				    }
+
+
 
   if (strlen (p) == 0)
     {

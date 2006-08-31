@@ -347,3 +347,11 @@ end function
 
 function check_and_report_error()
 end function
+
+function has_prompt_action()
+return 0
+end function
+
+function get_prompt_action()
+return ""
+end function

@@ -106,8 +106,6 @@ define lv_pack char(256)
 
 
 	initialize 	mv_db, 
-			mv_lextype,
-			mv_lexdialect,
 			mv_stage,
 			mv_namespace,
 			mv_output,
@@ -237,18 +235,6 @@ endcode
 	if mv_compile_c_opts is null then let mv_compile_c_opts=" " end if
 	if mv_compile_pec_opts is null then let mv_compile_pec_opts=" " end if
 
-	{
-	if mv_lextype is null or mv_lextype matches " " then
-		LET mv_lextype="C"
-	else
-		if fgl_getenv("A4GL_LEXTYPE")!="C" THEN
-			LET mv_lexdialect=fgl_getenv("A4GL_LEXDIALECT")
-			IF mv_lexdialect is null or mv_lexdialect matches " " then
-				LET mv_lexdialect="INFORMIX"
-			END IF
-		end if
-	end if
-	}
 
 	IF mv_lexdialect="INGRES" or mv_lexdialect="POSTGRES" or fgl_getenv("A4GL_ESQL_TO_C_FIRST")="Y" THEN
 		
@@ -280,6 +266,8 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
   LET mv_lextype=fgl_getenv("A4GL_LEXTYPE")
 
+
+
   IF mv_lextype IS NULL OR mv_lextype MATCHES " " THEN
   	LET mv_lextype="C"
   END IF
@@ -302,14 +290,16 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-V5"			let mv_verbose=5 continue for
 		WHEN "-versioned"		let mv_versioned=1 continue for
 		WHEN "-notversioned"		let mv_versioned=0 continue for
-		WHEN "-t"			let a=a+1 let mv_lextype=arg_val(a) continue for
-		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a) continue for
+
+		WHEN "-t"			let a=a+1 let mv_lextype=arg_val(a) 
+					continue for
+		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a) 
+					continue for
 
 		WHEN "-td"			let a=a+1 let mv_lexdialect=arg_val(a) continue for
 		WHEN "--lexdialect"		let a=a+1 let mv_lexdialect=arg_val(a) continue for
 	END CASE
   END FOR
-
 
 
 
@@ -522,8 +512,12 @@ endcode
 		WHEN "--compile-only"		let mv_stage="OBJ" continue for
 		WHEN "--preprocess-only"	let mv_stage="C" continue for
 
-		WHEN "-t"			let a=a+1 let mv_lextype=arg_val(a) continue for
-		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a) continue for
+		WHEN "-t"			
+							let a=a+1 
+							let mv_lextype=arg_val(a) 
+							continue for
+		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a)
+					continue for
 
 		WHEN "-td"			let a=a+1 let mv_lexdialect=arg_val(a) continue for
 		WHEN "--lexdialect"		let a=a+1 let mv_lexdialect=arg_val(a) continue for
@@ -782,6 +776,9 @@ define lv_new char(512)
 define lv_new2 char(512)
 LET lv_base=lv_fname
 
+if mv_verbose>=4 then 
+display "Make into ",lv_fname clipped ," from=",lv_from clipped, " to=",lv_to clipped
+end if
 code
 {
 char *ptr;
@@ -796,6 +793,10 @@ endcode
 LET lv_base=lv_base
 LET lv_new=lv_base
 
+if mv_lextype is null then
+	display "LEXTYPE IS NULL!"
+	exit program 1
+end if
 
 IF lv_from="4GL"  THEN
 	IF lv_to="EXE" or lv_to="DLL" THEN 
@@ -832,6 +833,7 @@ IF lv_from="4GL"  THEN
 
 		WHEN "OBJ"
 			IF mv_lextype="EC" THEN
+					
 				call make_into(lv_fname,"4GL","EC")
 				LET lv_new=get_fname(lv_base ,"EC")
 				LET lv_new2=get_fname(lv_base ,"OBJ")

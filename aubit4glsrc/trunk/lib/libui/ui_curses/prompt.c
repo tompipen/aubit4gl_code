@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.59 2006-07-24 21:03:09 mikeaubury Exp $
+# $Id: prompt.c,v 1.60 2006-08-31 15:06:59 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.59 2006-07-24 21:03:09 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.60 2006-08-31 15:06:59 mikeaubury Exp $";
 #endif
 
 /**
@@ -81,6 +81,7 @@ int
   char *promptstr;
   int promptline;
   struct s_prompt *prompt;
+  char *beepchr;
   FIELD *sarr[3];
   WINDOW *p;
   WINDOW *d;
@@ -119,6 +120,16 @@ int
   buff[width]=0;
   wprintw(p,"%s",buff);
   promptstr = A4GL_char_pop ();
+  //
+  // Some mad people put \007 in the prompt strings
+  // to force a terminal beep....
+  //
+  while (1)  {
+  	beepchr=strchr(promptstr,'\007');
+	if (!beepchr) break;
+	*beepchr=' ';
+	A4GL_dobeep();
+  }
   prompt->mode = -1;
   prompt->h = h;
   prompt->insmode=0;

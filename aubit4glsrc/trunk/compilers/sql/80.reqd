@@ -38,6 +38,9 @@ fgl_sql_statement: NOT_USED_3
 ;
 
 var_ident: identifier
+;
+
+ident_or_var: identifier
 	| QUESTION_MARK {
 			if (A4GL_isyes(acl_getenv("DOING_CM"))) {
 				strcpy($<str>$,"?@@PARAM@@?");

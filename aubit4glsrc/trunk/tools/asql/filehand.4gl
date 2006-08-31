@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 code
-int init_filename=1;
+int do_init_filename=1;
 char *get_tmp_dir();
 
 void add_temp_file (char *s);
@@ -137,9 +137,10 @@ define fin integer
 code
 {
 int a;
-do_init=init_filename;
+do_init=do_init_filename;
+if (do_init_filename) {
 for (a=0;a<10;a++) { mv_fin[a]=0;}
-init_filename=0;
+do_init_filename=0;
 sprintf(mv_tmpinfile[get_type_id("SQL")],"%s/a4gl_sql_%d",get_tmp_dir(),getpid());
 sprintf(mv_tmpinfile[get_type_id("PER")],"%s/a4gl_per_%d",get_tmp_dir(),getpid());
 sprintf(mv_tmpinfile[get_type_id("4GL")],"%s/a4gl_4gl_%d",get_tmp_dir(),getpid());
@@ -148,6 +149,8 @@ sprintf(mv_tmpinfile[get_type_id("MSG")],"%s/a4gl_msg_%d",get_tmp_dir(),getpid()
 sprintf(mv_tmpinfile[get_type_id("FRM")],"%s/a4gl_frm_%d",get_tmp_dir(),getpid());
 sprintf(mv_tmpinfile[get_type_id("C")],  "%s/a4gl_frm_%d",get_tmp_dir(),getpid());
 endcode
+
+
 
 call open_tmpfile("SQL","w")
 
@@ -159,6 +162,7 @@ end if
 call close_tmpfile("SQL")
 
 code
+}
 }
 endcode
 

@@ -48,6 +48,7 @@ let lv_runnext=0
 		#return
 	end if
 
+	call display_tmp_file()
 while true
 	set pause mode off
 

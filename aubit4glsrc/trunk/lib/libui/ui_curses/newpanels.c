@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.131 2006-07-24 21:03:09 mikeaubury Exp $
+# $Id: newpanels.c,v 1.132 2006-08-31 15:06:59 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.131 2006-07-24 21:03:09 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.132 2006-08-31 15:06:59 mikeaubury Exp $";
 #endif
 
 /**
@@ -1791,11 +1791,20 @@ void
  UILIB_A4GL_display_error (int a, int wait)
 {
   char *s;
+  char *beepchr;
   A4GL_debug ("Cr string");
   s = A4GL_char_pop ();
   A4GL_chkwin();
   A4GL_debug ("ZZ2 going to print an error : %s", s);
   A4GL_trim (s);
+
+  while (1)  {
+          beepchr=strchr(s,'\007');
+	          if (!beepchr) break;
+		          *beepchr=' ';
+			          A4GL_dobeep();
+				    }
+
   A4GL_debug ("trimmed -> %s", s);
       if (wait)
  		A4GL_error_box (s,a);

@@ -134,7 +134,12 @@ end if
 if lv_args_cnt then
 	let lv_input=get_next_arg()
 	call execute_file(lv_input)
-	exit program
+
+	if was_all_ok() then
+		exit program 0
+	else
+		exit program 1
+	end if
 end if
 
 code
@@ -142,7 +147,11 @@ if (!isatty(fileno(stdin))) {
 endcode
 	#display "ASSUME STDIN"
 	call  execute_file("-")
-	exit program
+	if was_all_ok() then
+		exit program 0
+	else
+		exit program 1
+	end if
 code
 }
 endcode

@@ -42,6 +42,9 @@ int fetchFirst=0;
 
 int display_lines=-1;
 
+
+
+
 void open_display_file_c() ;
 void set_outfname(void);
 
@@ -102,6 +105,7 @@ fclose(f);
 
 endcode
 
+define all_queries_ok integer
 
 
 define exec_mode integer
@@ -256,6 +260,10 @@ end if
 end function
 
 
+function was_all_ok()
+	return all_queries_ok
+end function
+
 function execute_queries(ofile)
 define ofile INTEGER
 define a integer
@@ -264,6 +272,7 @@ define qry_type integer
 define lv_cont integer
 define rpaginate integer
 define l_db char(80)
+let all_queries_ok=1
 let msg=""
 options message line last
 code
@@ -470,9 +479,9 @@ endcode
 
 else
 
+	let all_queries_ok=0
 	if exec_mode=0 or exec_mode=2 then
 		message msg clipped
-
 		# We'll stop after the first error...
 		return 0 
 	else
@@ -490,8 +499,10 @@ code
 endcode
 
 
+#display "All queries : ",all_queries_ok
+
 # Everything is fine...
-return 1
+return all_queries_ok
 
 
 
@@ -824,7 +835,7 @@ code
 endcode
 
 if lv_rval=0 then
-	error "ERROR!!!"
+	#error "ERROR!!!"
 	sleep 1 # After an error...
 end if
 

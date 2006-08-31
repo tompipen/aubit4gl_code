@@ -1,0 +1,50 @@
+# rules for converting Informix SQL to DB2 for VM (SQLDS/VM)-compatible syntax
+#
+# WARNING: NOT COMPLETED YET
+# COPIED FROM INFORMIX-DB2.cnv and modified
+# Not everything was tested on DB2 for VM
+#
+
+DOUBLE_TO_SINGLE_QUOTES
+MATCHES_TO_LIKE
+SELECT_INTO_TEMP_AS_DECLARE_INSERT
+ADD_SESSION_TO_TEMP_TABLE
+EXPAND_COLUMNS
+
+# - works, but not in all cases; DB2 does not recognize expressions
+#   in form of set substr(col,2,3)='foo' (informix style is: set col[2,4]='foo')
+SUBSTRING_FUNCTION = substr 
+MONEY_AS_DECIMAL
+STRIP_ORDER_BY_INTO_TEMP
+REPLACE_COMMAND SET EXPLAIN ON = SET CURRENT EXPLAIN MODE YES
+REPLACE_COMMAND SET EXPLAIN OFF = SET CURRENT EXPLAIN MODE NO
+
+# UPDATE STATISTICS does not exist in DB2 UDB, so we have to ignore it
+# first two forms should work, but not yet tested.
+# The third one cannot be easily ignored in similar way, because of
+# the table name at the end of the expression (wildcard support would
+# be useful...)
+#REPLACE UPDATE STATISTICS =
+#REPLACE UPDATE STATISTICS FOR TABLE =
+#REPLACE UPDATE STATISTICS FOR TABLE .... =
+
+REPLACE systables.tabname = system.syscatalog.tname
+REPLACE syscolumns.colname = system.syscolumns.cname
+REPLACE_EXPR CURRENT YEAR TO SECOND = current timestamp
+REPLACE TODAY = current date
+
+REPLACE_COMMAND COMMIT WORK = commit
+
+# needs real implementation
+REPLACE_COMMAND BEGIN WORK = select * from system.syscatalog where tname='no_any' 
+REPLACE_COMMAND SET ISOLATION TO DIRTY READ = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO REPEATABLE READ =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO CURSOR STABILITY =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO COMMITTED READ =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO NOT WAIT = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT %s = select * from system.syscatalog where tname='no_any'
+
+#
+# WARNING: NOT COMPLETED YET
+#

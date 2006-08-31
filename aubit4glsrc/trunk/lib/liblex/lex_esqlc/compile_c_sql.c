@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.67 2006-08-20 11:30:30 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.68 2006-08-31 15:06:58 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.67 2006-08-20 11:30:30 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.68 2006-08-31 15:06:58 mikeaubury Exp $";
 #endif
 
 
@@ -44,7 +44,7 @@ static char *trans_quote (char *s);
 extern char curr_func[];
 extern int lastlineno;
 extern int yylineno;
-
+extern char *infilename;
 
 /**
  * Print the C implementation of the execution of the SQL statement allready
@@ -411,9 +411,16 @@ LEXLIB_print_open_cursor (char *cname, int has_using)
       	LEXLIB_print_bind_set_value ('i');
   	printc ("A4GLSQL_open_cursor(%s,%d,ibind);\n", cname,ni);
   	printc("}");
+	/*
+	A4GL_prchkerr (lastlineno, infilename); // line number, file name should be provided
+				// to A4GL_prchkerr, but where to get them from?
+	*/
   } else {
   	printc ("A4GLSQL_open_cursor(%s,0,0);\n",  cname);
-
+	/*
+	A4GL_prchkerr (lastlineno, infilename); // line number, file name should be provided
+				// to A4GL_prchkerr, but where to get them from?
+	*/
   }
 }
 

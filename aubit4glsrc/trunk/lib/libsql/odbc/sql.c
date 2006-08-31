@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.164 2006-07-17 14:09:26 mikeaubury Exp $
+# $Id: sql.c,v 1.165 2006-08-31 15:06:58 mikeaubury Exp $
 #
 */
 
@@ -2638,6 +2638,11 @@ ODBC_set_dbms_info (void)
       strcpy (dbms_dialect, "DB2");
       return;
     }
+  if (strncasecmp (dbms_name, "SQLDS/VM", 8) == 0)
+    {
+      strcpy (dbms_dialect, "DB2VM");
+      return;
+    }
   if (strncasecmp (dbms_name, "Microsoft SQL Server",20) == 0)
     {
       strcpy (dbms_dialect, "SQLSERVER");
@@ -2873,7 +2878,7 @@ make[2]: *** [sql.o] Error 1
   A4GL_debug ("set sqlca caused by %s", s);
 #endif
   rc = -1;
-
+  // Due to the above line the condition below is always true. Is that correct?
   if (rc != 0 && rc != 100)
     {
       A4GL_debug ("Calling SQLError %p %p %p rc=%d", henv, hdbc, hstmt, rc);
@@ -2894,6 +2899,14 @@ make[2]: *** [sql.o] Error 1
 	}
       A4GL_debug ("After SQL Error %d %s %s\n%x", xerrno, s1, s2, xerrno2);
 #endif
+      if (rc == 100) // error occured but driver did not provide an info record
+	  	     // (this part of code is needed when using somewhat broken (?) ODBC drivers)
+      {
+	  strcpy (s1, "HY000");
+	  sprintf(s2, "Error occured, but SQLError ODBC function returned no error record xerrno=%i xerrno2=%i, assuming HY000", xerrno, xerrno2);
+	  xerrno = -1;
+	  xerrno2 = 0;
+      }
       if (strlen (s1) == 0)
 	strcpy (s1, "00000");
 
@@ -3652,7 +3665,7 @@ ODBC_exec_prepared_sql (SQLHSTMT hstmt)
   rc = A4GL_chk_need_blob (rc, hstmt);
 
   chk_rc (rc, hstmt, "SQLExecute");
-  A4GL_set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLExecute", 0);
+//  A4GL_set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLExecute", 0);
 
 #ifdef DEBUG
   A4GL_debug ("Result=%d", rc);
@@ -3672,7 +3685,7 @@ ODBC_exec_prepared_sql (SQLHSTMT hstmt)
 #endif
   rc = SQLTransact (henv, hdbc, SQL_COMMIT);
   chk_rc (rc, 0, "SQLTransact (COMMIT)");
-  A4GL_set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLTransact", 0);
+//  A4GL_set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLTransact", 0);
   return 1;
 }
 
@@ -3756,7 +3769,7 @@ conv_sqlprec (int ndtype, int sdim, int scale)
 	{
 	  return (sdim << 8) + scale;
 	}
-      if (strcmp (dbms_dialect, "DB2") == 0)
+      if (strcmp (dbms_dialect, "DB2") == 0 || strcmp(dbms_dialect, "DB2VM") == 0)
 	{
 	  A4GL_debug ("conv_sqlprec: ndtype=%i sdim=%i scale=%i ret=%i(0x%x)",
 		      ndtype, sdim, scale, (sdim << 8) + scale,
@@ -4066,7 +4079,8 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 #endif
       if (A4GL_isyes (acl_getenv ("UCASETNAME"))
 	  || strcmp (dbms_dialect, "ORACLE") == 0
-	  || strcmp (dbms_dialect, "DB2") == 0)
+	  || strcmp (dbms_dialect, "DB2") == 0
+	  || strcmp (dbms_dialect, "DB2VM") == 0)
 	{
 	  strcpy (tabname2, tabname);
 	  A4GL_convupper (tabname2);
@@ -4438,7 +4452,8 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
     }
   if (A4GL_isyes (acl_getenv ("UCASETNAME"))
       || strcmp (dbms_dialect, "ORACLE") == 0
-      || strcmp (dbms_dialect, "DB2") == 0)
+      || strcmp (dbms_dialect, "DB2") == 0
+      || strcmp (dbms_dialect, "DB2VM") == 0)
     {
       strcpy (tabname2, tabname);
       A4GL_convupper (tabname2);
@@ -5503,7 +5518,8 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 	  in_transaction = 1;
 	}
 
-      A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
+      chk_rc (rc, hstmt, "Commit/Rollback1");
+//      A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
     }
   else
     {
@@ -5529,7 +5545,8 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 	  SQLExecDirect (hstmt, "COMMIT WORK", SQL_NTS);
 	}
 
-      A4GL_set_sqlca (hstmt, "Commit/Rollback", 0);
+      chk_rc (rc, hstmt, "Commit/Rollback2");
+//      A4GL_set_sqlca (hstmt, "Commit/Rollback", 0);
 
 
       SQLFreeStmt (hstmt, SQL_DROP);

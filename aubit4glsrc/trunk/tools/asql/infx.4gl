@@ -1354,7 +1354,7 @@ get_size (int dtype, int size)
     case SQLMONEY:
       return 17;
     case SQLDTIME:
-      return 17;
+      return 21;
     case SQLBYTES:
       return 20;
     case SQLTEXT:
