@@ -1,0 +1,2 @@
+#bin_fmt registration.
+echo ':A4GL:M::\xa4\xfc\x23\x45::$AUBITDIR/compilers/pcode/runner_fgl:' > /proc/sys/fs/binfmt_misc/register
