@@ -66,7 +66,6 @@ define a integer
 
 	options message line last-1
 	let mv_field_list_for=""
-	message "Please wait..."
 
 	for a=1 to mv_cnt_taglines
 		initialize mv_taglines[a] to null
@@ -79,10 +78,13 @@ define a integer
 		let mv_max_Rows[a]=0
 	end for
 
-	message "Please wait - loading form..."
 	if num_args()=0 then
-		call runform("cust1")
+		display "Usage : runform formname"
+		exit program 0
+		
+		#call runform("cust1")
 	else
+	message "Please wait - loading form..."
 		call runform(arg_val(1))
 	end if
 end main
@@ -104,9 +106,23 @@ options form line 3,input wrap
 # We need to open out form using _variable so we don't add our module name
 # prefix to it - that way we can use get_info to get some info about it...
 
+
+whenever error continue
 open form _variable("fxx") from lv_formname
+if status!=0 then
+	display "Unable to open form :",lv_formname clipped
+	exit program 1
+end if
+
 
 display form _variable("fxx")
+
+if status!=0 then
+	display "Unable to display form :",lv_formname clipped
+	exit program 1
+end if
+
+whenever error stop
 let lv_dbname=a4gl_get_info("form","fxx","Database")
 
 if lv_dbname="formonly" then

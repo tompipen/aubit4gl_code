@@ -52,6 +52,75 @@ and not just 'foo'. This is important because if you are using gdb to debug the 
 be able to use the 'aclfgl_foo' name for debugging.
 
 
+
+
+Debugging a program which uses windows & forms etc
+--------------------------------------------------
+
+Standard gdb debugging will work for screens/windows/forms etc - but will
+be difficult to use because of switching between gdb (in line mode) and the
+4gl program in screen mode. The gdb messages will appear over the top of the
+screen and make it difficult to use any underlying menu/form etc..
+
+Eg..
+
+ADBACCESS:   Query-language  Connection  Database  Table  Session  ...
+Select, Create, Info, Drop or Close a database.
+0x00b847a2 in _dl_sysinfo_int80 () from /lib/ld-linux.so.2
+(gdb) bt---------------------------------------- Press CTRL-W for Help --------
+#0  0x00b847a2 in _dl_sysinfo_int80 () from /lib/ld-linux.so.2
+#1  0x001cf19d in poll () from /lib/tls/libc.so.6
+#2  0x0747b4eb in _nc_timed_wait (mode=3, milliseconds=500, timeleft=0x0)
+    at ../../ncurses/tty/lib_twait.c:229
+#3  0x074608ca in check_mouse_activity (delay=-4)
+    at ../../ncurses/base/lib_getch.c:70
+#4  0x07460bbe in _nc_wgetch (win=0x9ee3af0, result=0xbffa69c0, use_meta=1)
+    at ../../ncurses/base/lib_getch.c:314
+#5  0x07461573 in wgetch (win=0xfffffffc) at ../../ncurses/base/lib_getch.c:467
+#6  0x00bdd330 in A4GL_getch_swin (window_ptr=0x9ee8500) at newpanels.c:1350
+#7  0x00bdd4e3 in A4GL_getch_win () at newpanels.c:1308
+#8  0x00bda0e1 in UILIB_A4GL_menu_loop_v2 (menuv=0x9eec1c8, vevt=0x0)
+    at curslib.c:2722
+#9  0x0090c83b in A4GL_menu_loop_v2 (menu=0x9eec1c8, evt=0x0) at API_ui.c:284
+#10 0x08055d00 in aclfgl_main_menu (_nargs=0) at menus.ec:464
+#11 0x0804ea97 in main (argc=1, argv=0xbffa6e74) at asql.ec:841
+(gdb) cont
+Continuing.
+   Query-language  Connection 
+
+
+One way around this is to use gdb from another terminal window. In that way - you can start the 4gl program as normal, then attach to it via its process ID - keeping the two sessions separate..
+
+Eg.  Imagine our program is called 'm1' - we can run it in one xterm, then use 
+'ps' to find the process id, then attach using gdb -p pid on another xterm
+
+Xterm1
+
+	$ ./m1
+	+-------------+
+	|             |
+	|             |
+	|             |
+	+-------------+
+
+Xterm2
+
+	$ ps ax | grep m1
+	14079 pts/5    S+     0:00 grep m1
+	$ gdb -p 14079
+	gdb> 
+
+
+This keeps xterm1 in screen mode all the time, and xterm2 in line mode all the
+time - without any gdb messages appearing on xterm1 to 'mess it up'.
+
+NOTE: You will need to ensure 'xterm1' has the focus again when entering information or using a 4gl menu!
+
+
+
+
+
+
 Simple GDB commands
 -------------------
 
