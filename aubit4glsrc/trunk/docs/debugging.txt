@@ -1,0 +1,84 @@
+Simple guide to debugging
+-------------------------
+
+
+Debugging in Aubit4gl is more complicated that using the 
+PCODE interactive debugger - this is because we compile to C 
+and not to PCODE!
+
+We therefore need to use the 'C' debugger - gdb
+
+In order to put the 'debugging symbols' into the output file - we need to recompile
+our 4gl programs with the -g option :
+
+
+	4glpc -g m1.4gl -o m1
+
+You can then run the program within the debugger using gdb : 
+
+$ gdb ./m1
+gdb> run m1
+
+This is quite useful - but you'll see the generated C code in the debugger rather than
+the 4gl you started with.
+In order to fix this - we can set an environment variable: 
+
+	$ export A4GL_INCLINES=Y
+
+This instructs the Aubit4gl compile to insert extra lines into the C output that it generated
+which indicate which original 4GL lines the C code relates to.
+
+You then need to recompile your 4gl programs to get a debuggable program : 
+
+	$ export A4GL_INCLINES=Y
+	$ 4glpc -g m1.4gl -o m1
+	$ gdb ./m1
+
+
+
+Clobbering
+----------
+
+One 'feature' of aubit4gl is that it 'Clobbers' function names. 
+For example, take a function called 'foo' 
+
+	FUNCTION foo()
+		DISPLAY "Hello World"
+	END FUNCTION
+
+Aubit4gl will rename this function at compile time to include a 'namespace' prefix.
+By default this is 'aclfgl_'. This means that in the C code the function will be 'aclfgl_foo' 
+and not just 'foo'. This is important because if you are using gdb to debug the program, you will only
+be able to use the 'aclfgl_foo' name for debugging.
+
+
+Simple GDB commands
+-------------------
+
+run 		- Run the program
+run arg1 arg2	- Run the program with arguments
+br function 	- break when going calling 'function' (dont forget the aclfgl_ prefix)
+cont		- continue execution after a breakpoint
+step		- step through the program (will step into functions if required)
+next		- step through the program (will NOT step into functions)
+list		- list the next few lines of the program
+list -		- list the last few lines of the program
+watch variable  - break when 'variable' changes
+print variable  - prints the contents of a variable	
+bt		- 'backtrace':list all the calls up to this one
+			This will not list the actual parameters passed - as
+			4gl passes only the number of parameters at C level
+help		- help with gdb!
+
+
+Some useful internals : 
+	
+	print a4gl_sqlca.sqlcode
+	print a4gl_status
+
+	print A4GLSTK_getStackTrace() 
+		prints the 4gl stack trace (includes parameters!)
+
+
+
+

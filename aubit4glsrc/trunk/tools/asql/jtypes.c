@@ -237,8 +237,11 @@ mem_pop (Memory * m)
 
 
 /* Codes for handling backslash-space as empty, non-null VARCHAR */
-typedef enum BSSP
-{ BSSP_PRESENT = 0x4321, BSSP_MISSING, BSSP_UNKNOWN } BSSP;
+#ifndef DEFINED_BSSP
+typedef enum BSSP { BSSP_PRESENT = 0x4321, BSSP_MISSING, BSSP_UNKNOWN } BSSP;
+#define DEFINED_BSSP
+#endif
+
 static int scanbytefield (Sqlva * col, Memory * line, Memory * field,
 			  int fnum, Uchar escape, Uchar delim, Uchar quote,
 			  BSSP * bssp);
