@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.94 2006-08-31 15:07:00 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.95 2006-08-31 19:25:28 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2874,7 +2874,7 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 	          beepchr=strchr(promptstr,'\007');
 		          if (!beepchr) break;
 			          *beepchr=' ';
-				          A4GL_dobeep();
+				          A4GL_LL_beep();
 					    }
 
 

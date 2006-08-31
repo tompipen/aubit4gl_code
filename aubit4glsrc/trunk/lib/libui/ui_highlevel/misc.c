@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.48 2006-07-24 21:03:11 mikeaubury Exp $";
+  "$Id: misc.c,v 1.49 2006-08-31 19:25:28 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -834,14 +834,11 @@ void
 UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
 {
   char p[2048];
-  //long w;
   int ml;
   int width;
-  //char *s;
-  //char *ptr_pop;
   void *cw;
+  char *beepchr;
   char buff[512];
-  //static void *mw;
   A4GL_chkwin ();
   A4GL_debug ("In message...");
   cw = (void *) A4GL_get_currwin ();
@@ -857,18 +854,27 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
 
 
 
-  if (A4GL_LL_can_show_message(ml,s,wait)) {
-	  return;
-  }
-	
-
+  if (A4GL_LL_can_show_message (ml, s, wait))
+    {
+      return;
+    }
 
 
   width = UILIB_A4GL_get_curr_width ();
-  //A4GL_push_char(s);
 
   strcpy (p, s);
-  //A4GL_pop_char (p, width);
+
+
+  while (1)
+    {
+      beepchr = strchr (p, '\007');
+      if (!beepchr)
+	break;
+      *beepchr = ' ';
+      A4GL_LL_beep ();
+    }
+
+
 
   if (strlen (p) == 0)
     {
@@ -905,7 +911,6 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
 }
-
 
 void
 chk_for_picture (void *f, char *buff)

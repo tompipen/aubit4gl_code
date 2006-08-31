@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.40 2006-07-24 21:03:11 mikeaubury Exp $";
+  "$Id: forms.c,v 1.41 2006-08-31 19:25:28 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -607,12 +607,24 @@ void
 UILIB_A4GL_display_error (int a, int wait)
 {
   char *s;
+  char *beepchr;
   A4GL_debug ("Cr string");
   s = A4GL_char_pop ();
   A4GL_chkwin ();
   A4GL_debug ("ZZ2 going to print an error : %s", s);
   A4GL_trim (s);
+
+  while (1)  {
+            beepchr=strchr(s,'\007');
+                     if (!beepchr) break;
+             *beepchr=' ';
+											                                      }
+
+
   A4GL_debug ("trimmed -> %s", s);
+
+
+
   if (wait)
     {
       A4GL_chkwin ();
