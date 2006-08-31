@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.99 2006-08-30 19:47:30 mikeaubury Exp $
+# $Id: builtin.c,v 1.100 2006-08-31 21:05:38 mikeaubury Exp $
 #
 */
 
@@ -1511,4 +1511,48 @@ int aclfgl_fgl_winbutton(int nargs) {
 	title=A4GL_char_pop();
 	A4GL_push_char(A4GL_ui_fgl_winquestion(title,text,def,pos,icon,danger,1));
 	return 0;
+}
+
+
+int
+aclfgl_aclfgl_getcwd (int a)
+{
+  char buff[512];
+  char buff2[512];
+
+
+#ifdef MSVC
+	  _getcwd (buff, 512);
+#else
+	  getcwd (buff, 512);
+#endif
+
+   A4GL_push_char(buff);
+   return 1;
+}
+
+
+
+int aclfgl_aclfgl_replace_start(int nargs) {
+char buff[256];
+char *rpl_with;
+char *rpl_start;
+char *str;
+	if (nargs!=3) {
+      		A4GL_pop_args (nargs);
+      		A4GLSQL_set_status (-3001, 0);
+      		return 0;
+	}
+	rpl_with=A4GL_char_pop();
+	rpl_start=A4GL_char_pop();
+	str=A4GL_char_pop();
+
+	if (strncmp(str,rpl_start,strlen(rpl_start))==0) {
+		sprintf(buff,"%s%s",rpl_with,&str[strlen(rpl_start)]);
+		A4GL_push_char(buff);
+	} else {
+		A4GL_push_char(str);
+	}
+	free(rpl_with); free(rpl_start); free(str);
+	return 1;
 }
