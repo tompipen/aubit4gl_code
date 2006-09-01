@@ -109,6 +109,7 @@ while true
 
 		when "Info" 		let lv_action=7
 			call qry_info()
+			call display_tmp_file()
 
 		when "Drop" 		let lv_action=8
 			call qry_drop()

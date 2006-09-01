@@ -325,42 +325,48 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 endcode
 
 	if get_exec_mode()=0 then
-	let lv_cont=1
-	IF confirm(qry_type) THEN 
-		if confirm_yn()="Yes" THEN
-				let lv_cont=1
-		else
-				return 0
-		end if
-	END IF
-
+		let lv_cont=1
+		IF confirm(qry_type) THEN 
+			if confirm_yn()="Yes" THEN
+					let lv_cont=1
+			else
+					return 0
+			end if
+		END IF
 	
-	MESSAGE "Please wait.."
+	
+		MESSAGE "Please wait.."
 	end if
 code
 	
 
 		
 
-			// Is it a select statement ?
-			// @todo - this needs refining as a select .. into temp would get caught..
-			if (list[a].type!='S'&&list[a].type!='s') {
-				if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a]);
+		// Is it a select statement ?
+		// @todo - this needs refining as a select .. into temp would get caught..
+		if (list[a].type!='S'&&list[a].type!='s') {
+			if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a]);
+			else {
+				if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a]);}
 				else {
-					if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a]);}
-					else {
-						if (list[a].type>='1'&&list[a].type<='9') {
-							if (!asql_info(&list[a])) goto end_query;
+					if (list[a].type>='1'&&list[a].type<='9') {
+						if (!asql_info(&list[a])) goto end_query;
+					} else {
+						if (list[a].type=='E'||list[a].type=='e') {
+							raffected=asql_explain(&list[a]); 
 						} else {
-							if (list[a].type=='E'||list[a].type=='e') {
-								raffected=asql_explain(&list[a]); 
-							} else {
-								if (qry_type==1) {
-									A4GL_debug("display_mode=%d exec_mode=%d\n",display_mode,exec_mode);
+							if (qry_type==1) {
+								A4GL_debug("display_mode=%d exec_mode=%d\n",display_mode,exec_mode);
 									A4GL_push_char(l_db);
 									aclfgl_sql_select_db(1);
 								} else {
+									if (read_only_mode()) {
+										set_sqlcode(-13);
+										a4gl_sqlca.sqlcode=-13;
+										goto end_query;
+									} else {
 									if (!execute_query_1(&raffected)) goto end_query;
+									}
 								}
 							}
 
@@ -478,7 +484,6 @@ endcode
 	if qry_type=36 then let beganWork=0 end if
 
 else
-
 	let all_queries_ok=0
 	if exec_mode=0 or exec_mode=2 then
 		message msg clipped
@@ -844,5 +849,9 @@ return lv_rval
 
 end function
 
-		
-
+code
+int read_only_mode() {
+	if (A4GL_isyes(acl_getenv("ASQL_READONLY"))) return 1;
+	return 0;
+}
+endcode
