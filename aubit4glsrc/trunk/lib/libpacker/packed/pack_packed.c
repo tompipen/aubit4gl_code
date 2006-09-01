@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.29 2006-09-01 19:32:22 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.30 2006-09-01 19:35:12 mikeaubury Exp $
 #*/
 
 /**
@@ -484,7 +484,7 @@ A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
   int a;
   /* long n; */
   a = fread (val, 1, sizeof (long), infile);
-  if (ferror(infile)) { printf("ferr too %d\n",errno); }
+  //if (ferror(infile)) { printf("ferr too %d\n",errno); }
   A4GL_debug("LONG Got %s %x %x",name,*val, a4gl_ntohl (*val));
   *val = a4gl_ntohl (*val);
   return a;
