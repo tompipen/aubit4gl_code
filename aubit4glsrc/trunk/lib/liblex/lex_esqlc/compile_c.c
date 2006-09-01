@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.312 2006-09-01 19:32:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.313 2006-09-01 20:33:55 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.312 2006-09-01 19:32:11 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.313 2006-09-01 20:33:55 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7558,10 +7558,10 @@ LEXLIB_print_bind_set_value (char i)
 
 
 char* get_reset_state_after_call(void ) {
-   if (isin_command ("INPUT")  || isin_command ("CONSTRUCT")) {
+   if (isin_command ("INPUT")  || isin_command ("CONSTRUCT")||isin_command ("DISPLAY")) {
        int sio_id;
        static char buff[255];
-               sio_id=get_sio_ids("ALLINPUT");
+               sio_id=get_sio_ids("ALL");
                SPRINTF2(buff, "A4GL_reset_state_for(_sio_%d,_sio_kw_%d);",sio_id,sio_id);
                return buff;
    }
