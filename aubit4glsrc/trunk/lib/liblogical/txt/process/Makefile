@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2006-07-27 16:03:15 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2006-09-01 20:02:36 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC 
+CFLAGS+=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC 
 
 
 ## ==================================================================

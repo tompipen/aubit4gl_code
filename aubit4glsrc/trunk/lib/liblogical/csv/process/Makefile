@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2006-07-27 16:02:57 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2006-09-01 20:02:35 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -Wall -I$(ROOT)/incl -I../common -I../../common -fPIC
+CFLAGS+=-g -Wall -I$(ROOT)/incl -I../common -I../../common -fPIC
 
 OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 
@@ -46,9 +46,10 @@ OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 
 
 ${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}: ${OBJS}
-	${CC} -fPIC -shared ${OBJS} -o $@ -L${LIBROOT} -l${AUBITLIBFULL}
+	${CC}  -fPIC -shared ${OBJS} -o $@ -L${LIBROOT} -l${AUBITLIBFULL}
 	
 process_csv.o: ../../processor/API_process.h
+	 ${CC} $(CFLAGS) -c -o process_csv.o process_csv.c
 
 ../../processor/API_process.h:
 	${MAKE} -C ../../processor
