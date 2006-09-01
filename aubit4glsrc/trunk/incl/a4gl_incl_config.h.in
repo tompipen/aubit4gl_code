@@ -59,6 +59,9 @@
 	#define HAVE_LIBPQ_FE_H 0
 	#define HAVE_LIBSPOPC_H 0
 	#define HAVE_LIBSMTP_H 0
+	#define HAVE_SMTP_H 0
+	#define HAVE_ZLIB_H 0
+	#define HAVE_ZLIB 0
 	#define HAVE_LIMITS_H 0
 	#define HAVE_LOCALE_H 0
 	#define HAVE_MALLOC 0

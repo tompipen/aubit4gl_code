@@ -174,7 +174,7 @@ value_expression_pls_sli :
 		$<s_select_list_item>$=$<s_select_list_item>1;
 		$<s_select_list_item>$->alias=strdup($<str>2);
 	}
-	| value_expression_sli AS identifier {
+	| value_expression_sli KW_AS identifier {
 		$<s_select_list_item>$=$<s_select_list_item>1;
 		$<s_select_list_item>$->alias=strdup($<str>3);
 	}
@@ -195,30 +195,30 @@ value_expression_sli:
 	value_expression_initial_sli {
 		$<s_select_list_item>$=$<s_select_list_item>1; /* A4GLSQLCV_check_expr($<sql_string>1) */
 	}
-	| MINUS value_expression_initial_sli {
+	| KW_MINUS value_expression_initial_sli {
 		$<s_select_list_item>$=$<s_select_list_item>2;
 		$<s_select_list_item>$->sign='-';
 	}
-	| PLUS value_expression_initial_sli {
+	| KW_PLUS value_expression_initial_sli {
 		$<s_select_list_item>$=$<s_select_list_item>2;
 	}
 ;
 
 
 value_expression_complex_sli :
-	value_expression_initial_sli DIVIDE value_expression_sli {
+	value_expression_initial_sli KW_DIVIDE value_expression_sli {
 			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "/");
 	}
 	| value_expression_initial_sli units_qual_i {
 			$<s_select_list_item>$=new_select_list_item_simple_expr((enum e_sli)$<integer_val>2, $<s_select_list_item>1);
 	}
-	| value_expression_initial_sli MULTIPLY value_expression_sli {
+	| value_expression_initial_sli KW_MULTIPLY value_expression_sli {
 			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "*");
 	}
-	| value_expression_initial_sli PLUS value_expression_sli {
+	| value_expression_initial_sli KW_PLUS value_expression_sli {
 			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "+");
 	}
-	| value_expression_initial_sli MINUS value_expression_sli {
+	| value_expression_initial_sli KW_MINUS value_expression_sli {
 			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "-");
 	}
 	| literal 		{ $<s_select_list_item>$=new_select_list_item_literal($<str>1); }
@@ -227,7 +227,7 @@ value_expression_complex_sli :
 	| USER 			{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_USER); }
 	| KW_TODAY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TODAY); }
 	| TIME 			{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TIME); }
-	| MULTIPLY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_STAR); }
+	| KW_MULTIPLY 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_STAR); }
 	| COUNT_MULTIPLY 	{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_COUNT_STAR); }
 
  	| AVG OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
@@ -242,7 +242,7 @@ value_expression_complex_sli :
 		$<s_select_list_item>$=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_MIN,$<str>3,$<s_select_list_item>4);
 		add_feature("SELECT_MIN");
 	}
-	| SUM OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
+	| KW_SUM OPEN_BRACKET op_all value_expression_sli CLOSE_BRACKET {
 		$<s_select_list_item>$=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_SUM,$<str>3,$<s_select_list_item>4);
 		add_feature("SELECT_SUM");
 	}
@@ -314,7 +314,7 @@ sql_case_stmt :
 
 
 sql_case_stmt_element: 
-	WHEN search_condition_sli THEN value_expression_sli {
+	WHEN search_condition_sli KW_THEN value_expression_sli {
 		$<s_select_list_item>$=new_select_list_item_case_element(
 				$<s_select_list_item>2,
 				$<s_select_list_item>4);
@@ -378,16 +378,16 @@ ufile : CHAR_VALUE | variable;
 
 
 extend_qual_sli:
-        KW_CURRENT KW_COMMA s_curr TO e_curr {
+        KW_CURRENT KW_COMMA s_curr KW_TO e_curr {
 			$<s_select_list_item>$=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),$<str>3,$<str>5);
 	}
-        | var_ident_ibind_sli KW_COMMA s_curr TO e_curr {
+        | var_ident_ibind_sli KW_COMMA s_curr KW_TO e_curr {
 			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str>3,$<str>5);
 	}
-        | KW_CURRENT s_curr TO e_curr {
+        | KW_CURRENT s_curr KW_TO e_curr {
 			$<s_select_list_item>$=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),$<str>2,$<str>4);
 	}
-	| value_expression_sli KW_COMMA s_curr TO e_curr {
+	| value_expression_sli KW_COMMA s_curr KW_TO e_curr {
 			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str>3,$<str>5);
 	}
 ;
@@ -432,9 +432,9 @@ in_value_list_slil:
 
 in_value_specification_sli : var_ident_ibind_sli { $<s_select_list_item>$=$<s_select_list_item>1;}
          | literal { $<s_select_list_item>$=new_select_list_item_literal($<str>1); }
-	 | MINUS INT_VALUE { 
+	 | KW_MINUS INT_VALUE { 
 		char buff[256]; sprintf(buff,"-%s",$<str>2); $<s_select_list_item>$=new_select_list_item_literal(buff); }
-	 | MINUS  real_number { char buff[256]; sprintf(buff,"-%s",$<str>2); $<s_select_list_item>$=new_select_list_item_literal(buff); }
+	 | KW_MINUS  real_number { char buff[256]; sprintf(buff,"-%s",$<str>2); $<s_select_list_item>$=new_select_list_item_literal(buff); }
 ;
 
 

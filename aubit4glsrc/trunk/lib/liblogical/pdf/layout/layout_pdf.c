@@ -35,10 +35,11 @@ cp_boxes_to_data (void)
   memset (layout.img_src, 0, 255);
   strcpy (layout.img_src, gtk_entry_get_text (GTK_ENTRY (values[6])));
   layout.img_src[255] = 0;
-  layout.img_x =
-    gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (values[7]));
-  layout.img_y =
-    gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (values[8]));
+  memset (layout.bluebar, 0, 255);
+  strcpy (layout.bluebar, gtk_entry_get_text (GTK_ENTRY (values[9])));
+  layout.bluebar[255] = 0;
+  layout.img_x = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (values[7]));
+  layout.img_y = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (values[8]));
 
   for (a = 0; a < 10; a++)
     {
@@ -76,9 +77,10 @@ show_layout (void)
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (values[3]),
 			     (gfloat) layout.topmargin);
 
-  printf ("img src=%s x=%d y=%d\n", layout.img_src, layout.img_x,
-	  layout.img_y);
+  printf ("img src=%s x=%d y=%d\n", layout.img_src, layout.img_x, layout.img_y);
+
   gtk_entry_set_text (GTK_ENTRY (values[6]), layout.img_src);
+  gtk_entry_set_text (GTK_ENTRY (values[9]), layout.bluebar);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (values[7]),
 			     (gfloat) layout.img_x);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (values[8]),
@@ -155,60 +157,71 @@ LR_show_layout_rest (void *report, void *sb, void *vrbx, int rbs)
 
 
 
-  table = gtk_table_new (10, 3, 0);
+  table = gtk_table_new (12, 3, 0);
 
   gtk_container_add (sb, table);
 
-  lab = gtk_label_new ("Font");
+  lab = gtk_label_new ("  Font");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 0, 1);
   labels[0] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
 
-  lab = gtk_label_new ("Font Size");
+  lab = gtk_label_new ("  Font Size");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 1, 2);
   labels[1] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
 
-  lab = gtk_label_new ("Left Margin");
+  lab = gtk_label_new ("  Left Margin");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 2, 3);
   labels[2] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
   lab = gtk_label_new ("Inches");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 2, 3, 2, 3);
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
-  lab = gtk_label_new ("Top Margin");
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
+  lab = gtk_label_new ("  Top Margin");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 3, 4);
   labels[3] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
   lab = gtk_label_new ("Inches");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 2, 3, 3, 4);
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
-  lab = gtk_label_new ("Paper Size");
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
+  lab = gtk_label_new ("  Paper Size");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 4, 5);
   labels[4] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
-  lab = gtk_label_new ("Paper Orient");
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
+  lab = gtk_label_new ("  Paper Orient");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 5, 6);
   labels[5] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
 
-  lab = gtk_label_new ("Background Image");
+  lab = gtk_label_new ("  Background Image");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 7, 8);
   labels[6] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
 
-  lab = gtk_label_new ("Img X");
+  lab = gtk_label_new ("  Img X");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 8, 9);
   labels[7] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
-  lab = gtk_label_new ("Img Y");
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
+
+
+  lab = gtk_label_new ("  Img Y");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 9, 10);
   labels[8] = lab;
-  gtk_misc_set_alignment (GTK_MISC (lab), 0.1f, 0.5f);
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
+
+  lab = gtk_label_new ("  Bluebar (r,g,b,style or #xxxxxx,style)");
+  gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 1, 11, 12);
+  labels[9] = lab;
+  gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.5f);
+
+
 
   lab =
     gtk_label_new
-    ("\nThere is no Right margin or bottom margin. You will need to ensure that FONTSIZE\nis correctly set up in order to make sure that all data will fit on the page\n");
+    ("\n   There is no Right margin or bottom margin. You will need to\n"
+       "   ensure that FONTSIZE is correctly set up in order to make\n"
+       "   sure that all data will fit on the page\n");
   gtk_table_attach_defaults (GTK_TABLE (table), lab, 0, 3, 6, 7);
   gtk_misc_set_alignment (GTK_MISC (lab), 0.0f, 0.0f);
 
@@ -255,15 +268,16 @@ LR_show_layout_rest (void *report, void *sb, void *vrbx, int rbs)
 
   values[6] = gtk_entry_new ();
   gtk_table_attach_defaults (GTK_TABLE (table), values[6], 1, 2, 7, 8);
-  adj =
-    (GtkAdjustment *) gtk_adjustment_new (0.0, 1.0, 640.0, 1.0, 10.0, 10.0);
+  adj = (GtkAdjustment *) gtk_adjustment_new (0.0, 1.0, 640.0, 1.0, 10.0, 10.0);
   values[7] = gtk_spin_button_new (adj, 1.0, 0);
   gtk_table_attach_defaults (GTK_TABLE (table), values[7], 1, 2, 8, 9);
-  adj =
-    (GtkAdjustment *) gtk_adjustment_new (0.0, 1.0, 640.0, 1.0, 10.0, 10.0);
+
+  adj = (GtkAdjustment *) gtk_adjustment_new (0.0, 1.0, 640.0, 1.0, 10.0, 10.0);
   values[8] = gtk_spin_button_new (adj, 1.0, 0);
   gtk_table_attach_defaults (GTK_TABLE (table), values[8], 1, 2, 9, 10);
 
+  values[9] = gtk_entry_new ();
+  gtk_table_attach_defaults (GTK_TABLE (table), values[9], 1, 2, 11, 12);
 
   last = 0;
 

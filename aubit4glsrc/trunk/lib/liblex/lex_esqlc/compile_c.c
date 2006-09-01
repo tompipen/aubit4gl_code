@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.311 2006-08-30 19:47:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.312 2006-09-01 19:32:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.311 2006-08-30 19:47:30 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.312 2006-09-01 19:32:11 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -833,7 +833,7 @@ LEXLIB_print_report_ctrl (void)
       printc ("   A4GL_skip_top_of_page(&_rep,999);");
       printc ("}");
       printc ("  _started=0;");
-      printc ("  if (_rep.output) {fflush(_rep.output); fclose(_rep.output);_rep.output=0;}");
+      printc ("  if (_rep.output) {A4GL_close_report_file(&_rep);}");
       printc ("  return;");
       printc ("}\n");
 
@@ -849,7 +849,7 @@ LEXLIB_print_report_ctrl (void)
   if (rep_type == REP_TYPE_NORMAL)
     {
       printc
-	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (_rep.output) {fflush(_rep.output); fclose(_rep.output);_rep.output=0;}return;}\n",
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (_rep.output) {A4GL_close_report_file(&_rep);}return;}\n",
 	 get_curr_rep_name ());
     }
   else

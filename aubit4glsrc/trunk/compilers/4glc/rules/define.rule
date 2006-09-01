@@ -22,7 +22,7 @@ define_set :
 		}  def_part {
 		   A4GL_lex_printcomment("/*end def */\n");
 		}  opt_semi
-		| DEFINE_NEW_TYPE {push_scope(); set_current_variable_scope('T');} var_def_name  AS dtype  opt_semi {pop_scope();}
+		| DEFINE_NEW_TYPE {push_scope(); set_current_variable_scope('T');} var_def_name  KW_AS dtype  opt_semi {pop_scope();}
 		| error
 ;
 
@@ -97,7 +97,7 @@ constant_value :
 		INT_VALUE
 	|	CHAR_VALUE
 	|	real_number
-	|	MINUS INT_VALUE {
+	|	KW_MINUS INT_VALUE {
 		     sprintf($<str>$,"-%p",$<str>2);
 		   
 		} 
@@ -149,18 +149,18 @@ array_variable :
 		    A4GL_debug("defines array %s",$<str>3);
 		    push_type(0,0,$<str>3);
 		   
-		}  OF dtype_ident
+		}  KW_OF dtype_ident
 	|	DYNAMIC_ARRAY ranking {
 		    A4GL_debug("defines array %s",$<str>2);
 		    push_type(0,0,$<str>2);
 			add_feature("DEFINE_DYNAMIC_ARRAY");
 		   
-		}  OF dtype_ident
+		}  KW_OF dtype_ident
 	|	ASSOCIATE op_char assoc_open_bracket INT_VALUE assoc_close_bracket WITH_ARRAY OPEN_SQUARE number_arr_assoc CLOSE_SQUARE {
 		    push_associate($<str>4,$<str>8);
 		    push_type(0,0,$<str>8);
 			add_feature("DEFINE_ASSOCIATE_ARRAY");
-		}  OF dtype_ident   {
+		}  KW_OF dtype_ident   {
 		    pop_associate(0);
 		}
 ;
@@ -233,7 +233,7 @@ record_variable :
 		   push_record();
 		   A4GL_debug("Like\n");
 		   
-		}  define_table_name DOT MULTIPLY {
+		}  define_table_name KW_DOT KW_MULTIPLY {
 		   A4GL_debug("Link Table : %s\n",$<str>3);
 		                     push_rectab($<str>3);
 		                     pop_record();
@@ -336,7 +336,7 @@ dtype :
 		   push_type("long",0,0);
 			add_feature("DEFINE_SERIAL");
 		} 
-	|	AS define_ident {
+	|	KW_AS define_ident {
 		    A4GL_debug("Using specified type...");
 			if (find_dim($<str>2)) {
 		    		push_dim($<str>2);
@@ -532,7 +532,7 @@ op_prec :
 
 
 like_var :
-		LIKE define_table_name DOT col_name {
+		LIKE define_table_name KW_DOT col_name {
 			add_feature("DEFINE_LIKE");
 		   sprintf($<str>$,"%s.%s",$<str>2,$<str>4);
 		    A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
@@ -554,7 +554,7 @@ datetime_qual :
 		 {
 		   strcpy($<str>$,"0");
 		   
-		} 	|	dtime_start TO dtime_end {
+		} 	|	dtime_start KW_TO dtime_end {
 		   A4GL_debug("Real datetime %s to %s\n",$<str>1,$<str>3);
 		   sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
 		    
@@ -563,14 +563,14 @@ datetime_qual :
 
 
 interval_qual :
-		int_start TO int_end {
+		int_start KW_TO int_end {
 		    sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
 		    
 		} 
 ;
 
 interval_qual_i :
-		int_start TO int_end {
+		int_start KW_TO int_end {
 			$<integer_val>$=(atoi($<str>1)*16)+atoi($<str>3);
 		} 
 ;

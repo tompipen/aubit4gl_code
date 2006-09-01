@@ -126,7 +126,7 @@ create_c_1  :
 		add_feature("DROP_DATABASE");
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
-	| CREATE_SYNONYM table_name FOR table_name { 
+	| CREATE_SYNONYM table_name KW_FOR table_name { 
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_SYNONYM_QUALIFIED_PATH");
 			add_feature("CREATE_SYNONYM");
 			sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); 

@@ -9,7 +9,7 @@ int debug=0;
 
 void read_entry(struct r_report_block *block) ;
 
-FILE *fin=0;
+FILE *gzfin=0;
 int lvl;
 int ok;
 
@@ -36,29 +36,28 @@ int isblank(int n) {
 static int read_int (void)
 {
   int n;
-  //short s;
-  //unsigned char c;
-
-
+int a;
 /* Keep it simple for now */
-/*
-  fread (&c, sizeof (c), 1, fin);
-  if (c<254||c==255) return c;
-  if (c>=254) {
-  	fread (&s, sizeof (s), 1, fin);
-	return a4gl_ntohs(s);
-  }
-*/
-
-  fread (&n, sizeof (n), 1, fin);
+  a=gzfread (&n, sizeof (n), 1, gzfin);
+    if (a!=sizeof(n)) { 
+	printf("Failed to gzfread from gzfin=%p (read_int) %d\n",gzfin,a); 
+	}
+A4GL_assertion(a!=sizeof(n),"Failed to read int");
   return a4gl_ntohl(n);
 }
 
 static char read_char (void)
 {
-  char n;
+  char n=0;
   int p;
-  	fread (&n, sizeof (n), 1, fin);
+  int a;
+
+  	a=gzfread (&n, sizeof (n), 1, gzfin);
+
+	if (a<0) { printf("Failed to gzfread from gzfin=%p (read_char)",gzfin); }
+	A4GL_assertion(a<0,"Failed to read character");
+	if (a==0) return 0; // End of file
+
 	p=(int) n;
 	if (!isprint(p)) {
 		if (debug) printf("Suspect read_char (%d %x %c)\n",n,n,n);
@@ -71,9 +70,12 @@ static char * read_string (void)
 {
   int n;
   char *p;
+  int a;
   n = read_int ();
   p = (char *) acl_malloc2 (n + 1);
-  fread (p, n, 1, fin);
+  a=gzfread (p, n, 1, gzfin);
+if (a!=n) { printf("Failed to gzfread from gzfin=%p (read_string)",gzfin); }
+A4GL_assertion(a!=n,"Failed to read string");
   p[n] = 0;
   return p;
 }
@@ -113,19 +115,16 @@ check_for_max (int p, int l, int c, char *s)
 
 
 struct r_report *read_report_output(char *fname) {
-  //int npages;
-  //char buff[256];
-  //int buff_i;
   char buff_c;
   char *l;
-  fin = fopen (fname, "r");
+  gzfin = gzfopen (fname, "r");
   max_page_no = -1;
   max_line_no = -1;
   max_col_no = -1;
   lvl=0;
   ok=1;
 
-  if (fin == 0)
+  if (gzfin == 0)
     {
         printf ("Unable to open input file : %s\n", fname);
 	return 0;
@@ -175,7 +174,7 @@ struct r_report *read_report_output(char *fname) {
   while (ok)
     {
       buff_c = read_char ();
-      if (feof (fin)) break;
+      if (gzfeof (gzfin)) break;
 
       if (buff_c != ENTRY_BLOCK)
         {
@@ -213,13 +212,13 @@ static void read_block ()
   report->blocks[cblock].why=0;
   report->blocks[cblock].nentries = 0;
   report->blocks[cblock].entries = 0;
-  report->blocks[cblock].line = read_int (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0; return; }
+  report->blocks[cblock].line = read_int (); if (gzfeof (gzfin)) { printf ("Unexpected EOF\n"); ok=0; return; }
 	if (debug) printf("line=%d\n",report->blocks[cblock].line);
-  report->blocks[cblock].where = read_char (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0; return; }
+  report->blocks[cblock].where = read_char (); if (gzfeof (gzfin)) { printf ("Unexpected EOF\n"); ok=0; return; }
 	if (debug) printf("where=%c\n",report->blocks[cblock].where);
-  report->blocks[cblock].why = read_string (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0;return; }
+  report->blocks[cblock].why = read_string (); if (gzfeof (gzfin)) { printf ("Unexpected EOF\n"); ok=0;return; }
 	if (debug) printf("where=%s\n",report->blocks[cblock].why);
-  report->blocks[cblock].rb = read_int (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0; return; }
+  report->blocks[cblock].rb = read_int (); if (gzfeof (gzfin)) { printf ("Unexpected EOF\n"); ok=0; return; }
 
   if (debug) { printf("read block - line=%d where=%c why=%s rb=%d\n", report->blocks[cblock].line,report->blocks[cblock].where,report->blocks[cblock].why,report->blocks[cblock].rb); }
 
@@ -358,8 +357,8 @@ int b;
 		nval=nmax;
 		if (report->blocks[rblock_cnt].nentries>nval) nval=report->blocks[rblock_cnt].nentries;
 
-                  rbx[block_cnt].entry_nos = acl_realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nval));
-                  rbx[block_cnt].max_size_entry = acl_realloc (rbx[block_cnt].max_size_entry, sizeof (int) * (nval));
+                  rbx[block_cnt].entry_nos = acl_realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nval+1));
+                  rbx[block_cnt].max_size_entry = acl_realloc (rbx[block_cnt].max_size_entry, sizeof (int) * (nval+1));
                   for (a = rbx[block_cnt].max_entry; a < nval; a++)
                     {
                       rbx[block_cnt].entry_nos[a] = -1;
@@ -421,7 +420,7 @@ int b;
 
 
 
-int load_filter_file_header(char *fname, FILE **fin, char*msgbuff) {
+int load_filter_file_header(char *fname, FILE **fin_save, char*msgbuff) {
   //int ok;
   FILE *fin_filter;
   char buff[255];
@@ -438,7 +437,7 @@ int load_filter_file_header(char *fname, FILE **fin, char*msgbuff) {
         ptr = fname;
 
       fin_filter = fopen (fname, "r");
-	*fin=fin_filter;
+	*fin_save=fin_filter;
 
       if (!fin_filter) {
         if (strchr (ptr, '.') == 0) {

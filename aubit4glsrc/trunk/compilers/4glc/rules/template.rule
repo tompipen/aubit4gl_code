@@ -47,9 +47,9 @@ template_value :
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_columns(a,$<str>2);}
 	| identifier
 	| 	template_single_value
-	|       template_value PLUS template_value {
+	|       template_value KW_PLUS template_value {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_plus(a,$<str>1,$<str>3);}
-	|	template_value MINUS template_value {
+	|	template_value KW_MINUS template_value {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_set_minus(a,$<str>1,$<str>3);}
 	|	template_value KW_IN template_value {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); 
@@ -58,10 +58,10 @@ template_value :
 	| 	OPEN_BRACKET template_value CLOSE_BRACKET {
 			strcpy($<str>$,$<str>2);
 	}
-	|	APPEND template_single_value TO template_value  {
+	|	APPEND template_single_value KW_TO template_value  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
 
-	|	PREPEND template_single_value TO template_value  {
+	|	PREPEND template_single_value KW_TO template_value  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); list_append(a,$<str>4,$<str>2);}
 	| 	USE template_value WITH template_single_value KW_ON template_value  {
 		char *a; a=(char *)new_id(); strcpy($<str>$,a); 

@@ -103,7 +103,7 @@
 "GROUP" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return GROUP;}
 "PERCENT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PERCENT;}
 "AVERAGE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AVERAGE;}
-"OF" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OF;}
+"OF" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_OF;}
 "TOTAL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TOTAL;}
 "TEMP" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TEMP;}
 "IS NOT NULL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return IS_NOT_NULL;}
@@ -137,7 +137,7 @@
 "EVERY"  {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EVERY;}
 "ROW" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ROW;}
 "LAST" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LAST;}
-"OR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OR;}
+"OR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_OR;}
 "ORDER BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_BY;}
 "ORDER EXTERNAL BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_EXTERNAL_BY;}
 "OUTER" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OUTER;}

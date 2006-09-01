@@ -95,12 +95,12 @@ hide_cmd : KW_HIDE_WINDOW win_name {
 }
 ;
 
-move_cmd : MOVE_WINDOW win_name TO fgl_expr_c KW_COMMA fgl_expr_c
+move_cmd : MOVE_WINDOW win_name KW_TO fgl_expr_c KW_COMMA fgl_expr_c
 {
 		print_move_window($<str>2,$<ptr>4,$<ptr>6,0);
 		add_feature("MOVE_WINDOW");
 }
-          |  MOVE_WINDOW win_name BY fgl_expr_c KW_COMMA fgl_expr_c
+          |  MOVE_WINDOW win_name KW_BY fgl_expr_c KW_COMMA fgl_expr_c
 {
 		add_feature("MOVE_WINDOW");
 		print_move_window($<str>2,$<ptr>4,$<ptr>6,1);

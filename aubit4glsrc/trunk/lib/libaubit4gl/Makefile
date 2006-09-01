@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.22 2006-07-27 16:02:22 mikeaubury Exp $
+# $Id: Makefile,v 1.23 2006-09-01 19:32:10 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -113,6 +113,7 @@ ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
 endif
 
+
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
 		ifneq "${GCC_MINGW}" "yes"
@@ -171,6 +172,11 @@ ifeq "${TARGET_OS}" "darwin"
 	LD=glibtool gcc
 else
 		SO_LDFLAGS_NOBUNDLE=${SO_LDFLAGS}
+endif
+
+
+ifeq "${HAVE_ZLIB}" "1"
+	LINK_LIBS		+=-lz
 endif
 
 .PHONY: all ci splint lclint api clean clean.generated clean.api api.headers
@@ -305,6 +311,7 @@ API_%.o: API_%.c $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
+
 
 #################
 #Clean all files created in the process of making libaubit4gl:

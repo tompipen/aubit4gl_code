@@ -11,7 +11,7 @@ pause_screen_on_cmd : SETPMON  { print_screen_mode(0);}
 pause_screen_off_cmd : SETPMOFF  { print_screen_mode(1);}
 ;
 
-start_rpc_cmd : START_EXTERN valid_port CLOSE_SQUARE FOR  remote_func_list
+start_rpc_cmd : START_EXTERN valid_port CLOSE_SQUARE KW_FOR  remote_func_list
 	{
 		print_start_server($<str>2,$<str>5);
 	}

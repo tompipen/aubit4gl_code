@@ -14,11 +14,11 @@ validate_tab_list : validate_tab | validate_tab_list KW_COMMA validate_tab {spri
 }
 ;
 
-validate_tab : table_name DOT column_name {
+validate_tab : table_name KW_DOT column_name {
 		sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
 		push_validate($<str>$);
 	}
-	| table_name DOT MULTIPLY {
+	| table_name KW_DOT KW_MULTIPLY {
 		sprintf($<str>$,"%s.*",$<str>1);
 		push_validate($<str>$);
 	}

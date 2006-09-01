@@ -5,7 +5,7 @@
 */
 
 
-let_cmd : LET obind_var_let_list EQUAL op_expr_null {
+let_cmd : KW_LET obind_var_let_list EQUAL op_expr_null {
 int to_vars;
 	expand_obind();
 	to_vars=how_many_in_bind('o');

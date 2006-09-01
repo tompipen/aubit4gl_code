@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.90 2006-08-30 19:47:30 mikeaubury Exp $
+# $Id: report.c,v 1.91 2006-09-01 19:32:10 mikeaubury Exp $
 #
 */
 
@@ -49,6 +49,7 @@
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 //int A4GL_call_4gl_dll (char *filename, char *function, int args);
 static void A4GL_unload_report_table (struct BINDING *b);
+void A4GL_close_report_file(struct rep_structure *rep) ;
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2
@@ -90,7 +91,7 @@ struct s_save_header
 };
 
 static void report_write_entry (struct rep_structure *rep, char type);
-static void print_lvl (struct rep_structure *rep, int lvl);
+static void print_gzlvl (struct rep_structure *rep, int lvl);
 static void print_data (struct rep_structure *rep, char *buff, int entry);
 int A4GL_push_report_print (struct rep_structure *rep, char *mod, int lineno,
 			    char where, char *why, int rb);
@@ -186,7 +187,10 @@ and remove them automatically.
 */
 void A4GL_cleanup_undeleted_files(void) {
 	int a;
+
+
 	if (repnames==0) return;
+
 	for (a=0;a<nrepnames;a++) {
 		if (repnames[a]) {
 			A4GL_debug("Cleaning up : %s",repnames[a]);
@@ -502,6 +506,22 @@ gen_rep_tab_name (void *p)
 
 
 
+void A4GL_close_report_file(struct rep_structure *rep) {
+      if (rep->output_mode == 'C')
+	{
+		if (rep->output) {
+			gzfclose(rep->output);
+			rep->output=0;
+		}
+	} else {
+		if (rep->output) {
+			fflush(rep->output); 
+			fclose(rep->output);
+			rep->output=0;
+		}
+	}
+}
+
 void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 
   if (rep->line_no == 0 && rep->page_no == 0 && no_param < 0)
@@ -511,7 +531,7 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 	{
 	  tmpnam (rep->output_loc);
 
-	  rep->output = fopen (rep->output_loc, "w");
+	  rep->output = gzfopen (rep->output_loc, "w");
 	  if (rep->output == 0)
 	    {
 	      A4GL_exitwith ("Could not open report output");
@@ -724,7 +744,6 @@ A4GL_fputmanyc (struct rep_structure *rep, int c, int cnt)
   x[cnt] = 0;
   report_print (rep, -1, x);
   free(x);
-  //for (a = 0; a < cnt; a++) fputc (c, f);
 }
 
 /**
@@ -1388,8 +1407,8 @@ print_report_block_start (struct rep_structure *rep, char *mod, char *repname,
 {
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
-      print_lvl (rep, lvl);
-      FPRINTF (rep->output,
+      print_gzlvl (rep, lvl);
+      gzfprintf (rep->output,
 	       "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n",
 	       lineno, where, why, rb);
     }
@@ -1411,13 +1430,12 @@ print_report_block_end (struct rep_structure *rep, int rb)
 {
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
-      print_lvl (rep, lvl);
-      FPRINTF (rep->output, "</ACL_ENTRY_BLOCK block=%d>\n", rb);
+      print_gzlvl (rep, lvl);
+      gzfprintf (rep->output, "</ACL_ENTRY_BLOCK block=%d>\n", rb);
     }
   else
     {
       report_write_entry (rep, ENTRY_BLOCK_END);
-      //report_write_int(rep,rb);
     }
 
 }
@@ -1449,7 +1467,7 @@ A4GL_pop_report_section (struct rep_structure *rep, int rb)
 
 
 static void
-print_lvl (struct rep_structure *rep, int lvl)
+print_gzlvl (struct rep_structure *rep, int lvl)
 {
   int a;
   if (lvl == 0)
@@ -1457,7 +1475,7 @@ print_lvl (struct rep_structure *rep, int lvl)
 
   for (a = 0; a < lvl; a++)
     {
-      FPRINTF (rep->output, "  ");
+      gzfprintf (rep->output, "  ");
     }
 }
 
@@ -1494,8 +1512,8 @@ print_data (struct rep_structure *rep, char *buff, int entry)
 
       if (strlen (s) && strcmp (s, "\n") != 0 && istop==0)
 	{
-	  print_lvl (rep, lvl);
-	  FPRINTF (rep->output, "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
+	  print_gzlvl (rep, lvl);
+	  gzfprintf (rep->output, "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
 		   rep->page_no, rep->line_no, rep->col_no, entry, s);
 	}
     }
@@ -1518,32 +1536,16 @@ print_data (struct rep_structure *rep, char *buff, int entry)
 static void
 report_write_int (struct rep_structure *rep, int n)
 {
-//unsigned char c;
-
 // Forget optimising for now...
-/*
-	if (n<254) {
-		report_write_char(rep,n);
-		return;
-	} 
-
-	if (n<32000) {
-		s=a4gl_htons(n);
-		report_write_char(rep,254);
-		fwrite(&s,sizeof(s),1,rep->output);
-	}
-
-	report_write_char(rep,255);
-*/
 
   n = a4gl_htonl (n);
-  fwrite (&n, sizeof (n), 1, rep->output);
+  gzfwrite (&n, sizeof (n), 1, rep->output);
 }
 
 static void
 report_write_char (struct rep_structure *rep, unsigned char n)
 {
-  fwrite (&n, sizeof (n), 1, rep->output);
+  gzfwrite (&n, sizeof (n), 1, rep->output);
 }
 
 static void
@@ -1552,7 +1554,7 @@ report_write_string (struct rep_structure *rep, char *s)
   int n;
   n = strlen (s);
   report_write_int (rep, n);
-  fwrite (s, n, 1, rep->output);
+  gzfwrite (s, n, 1, rep->output);
 }
 
 
@@ -1591,7 +1593,7 @@ report_write_entry (struct rep_structure *rep, char type)
     {
       if (type == ENTRY_START)
 	{
-	  FPRINTF (rep->output,
+	  gzfprintf (rep->output,
 		   "<LAYOUT module=\"%s\" name=\"%s\" top=%d bottom=%d left=%d right=%d length=%d time=%ld />\n",
 		   rep->modName, rep->repName, rep->top_margin,
 		   rep->bottom_margin, rep->left_margin, rep->right_margin,

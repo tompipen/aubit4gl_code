@@ -100,8 +100,7 @@ main (int argc, char *argv[])
       while (!feof (fin))
 	{
 	  a = fgetc (fin);
-	  if (feof (fin))
-	    break;
+	  if (feof (fin)) break;
 	  fputc (a, fout);	// Slow - but it'll do for now..
 	}
       fclose (fin);

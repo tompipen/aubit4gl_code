@@ -25,6 +25,7 @@ struct pdf_layout {
 	char img_src[256];
 	int img_x;
 	int img_y;
+	char bluebar[256];
 };
 
 void pdf_default_file(void) ;

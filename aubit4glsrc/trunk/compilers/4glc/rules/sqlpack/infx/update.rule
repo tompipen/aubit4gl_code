@@ -165,7 +165,7 @@ upd_column_name_specific: identifier op_col_arr {
                 ADDMAP("Use Column",$<str>1);
                 strcpy($<str>$,A4GLSQLCV_make_substr(A4GL_confirm_colname(current_upd_table,$<str>1), i->i0,i->i1,i->i2));
         }
-        | table_name DOT identifier op_col_arr {
+        | table_name KW_DOT identifier op_col_arr {
                 struct ilist *i;
                 if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
@@ -177,7 +177,7 @@ upd_column_name_specific: identifier op_col_arr {
                 i=&$<int_list>4;
                 strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
         }
-        | table_name  DOT MULTIPLY {
+        | table_name  KW_DOT KW_MULTIPLY {
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
                 	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
 		} else {
@@ -245,12 +245,12 @@ upd_value_expression_ss:
                 $<sql_string>$=acl_strdup(A4GLSQLCV_check_expr($<sql_string>1));
 		free($<sql_string>1);
         }
-        | MINUS upd_value_expression_initial_ss {
+        | KW_MINUS upd_value_expression_initial_ss {
                 $<sql_string>$=make_sql_string_and_free(acl_strdup("-"),acl_strdup(A4GLSQLCV_check_expr($<sql_string>2)),NULL);
 		free($<sql_string>2);
 			
         }
-        | PLUS upd_value_expression_initial_ss {
+        | KW_PLUS upd_value_expression_initial_ss {
                 $<sql_string>$=make_sql_string_and_free(acl_strdup("+"),acl_strdup(A4GLSQLCV_check_expr($<sql_string>2)),NULL);
 		free($<sql_string>2);
         }
@@ -271,7 +271,7 @@ $<sql_string>$=make_sql_string_and_free(
 							)
 						),NULL); 
 		}
-        | ATSIGN identifier DOT identifier op_col_arr { 
+        | ATSIGN identifier KW_DOT identifier op_col_arr { 
 		char buff[256];
 			struct ilist *i;
 			i=&$<int_list>5;
@@ -290,15 +290,15 @@ $<sql_string>$=make_sql_string_and_free(
 
 
 upd_value_expression_complex_ss :
-        upd_value_expression_initial_ss DIVIDE upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("/"),$<sql_string>3,NULL);}
+        upd_value_expression_initial_ss KW_DIVIDE upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("/"),$<sql_string>3,NULL);}
         | upd_value_expression_initial_ss upd_units_qual 			{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);}
-        | upd_value_expression_initial_ss MULTIPLY upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("*"),$<sql_string>3,NULL);}
-        | upd_value_expression_initial_ss PLUS upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("+"),$<sql_string>3,NULL);}
-        | upd_value_expression_initial_ss MINUS upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("-"),$<sql_string>3,NULL);}
+        | upd_value_expression_initial_ss KW_MULTIPLY upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("*"),$<sql_string>3,NULL);}
+        | upd_value_expression_initial_ss KW_PLUS upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("+"),$<sql_string>3,NULL);}
+        | upd_value_expression_initial_ss KW_MINUS upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("-"),$<sql_string>3,NULL);}
         | AVG OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("AVERAGE("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
         | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("MAX("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
         | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("MIN("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
-        | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("SUM("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
+        | KW_SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("SUM("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
         | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("COUNT("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
         | identifier OPEN_BRACKET op_upd_value_expr_list_ss CLOSE_BRACKET 		{
 			add_sql_function($<str>1);
@@ -367,20 +367,20 @@ upd_subquery_ss:
 
 
 upd_extend_qual_ss:
-        KW_CURRENT KW_COMMA s_curr TO e_curr {
+        KW_CURRENT KW_COMMA s_curr KW_TO e_curr {
                         $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>3,$<str>5,1)),NULL);
         }
-        | var_ident_ibind_ss KW_COMMA s_curr TO e_curr {
+        | var_ident_ibind_ss KW_COMMA s_curr KW_TO e_curr {
                         $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),NULL);
                         free($<sql_string>1);
                 //$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,acl_strdup($<str>5),NULL);
         }
-        | KW_CURRENT s_curr TO e_curr {
+        | KW_CURRENT s_curr KW_TO e_curr {
                         $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>2,$<str>4,1)),NULL);
 
                 //$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),NULL);
         }
-        | upd_value_expression_ss KW_COMMA s_curr TO e_curr {
+        | upd_value_expression_ss KW_COMMA s_curr KW_TO e_curr {
                         $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),NULL);
                         free($<sql_string>1);
         }

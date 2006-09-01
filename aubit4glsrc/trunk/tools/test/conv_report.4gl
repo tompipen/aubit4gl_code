@@ -1,7 +1,7 @@
 # This is an example of logical report usage....
 # Pretty neat huh ?
 #
-database test1
+database mja1
 main
 
 define t,c char(20)
@@ -42,7 +42,8 @@ define n integer
 	convert report r1 to "myfile2.txt" AS "TXT"
 	convert report r1 to "myfile2.csv" AS "CSV"
 	convert report r1 to "editme.loe" AS "SAVE" # THIS IS SPECIAL - you can edit a layout using this
-	free report r1 # But you'll need to 'free' the temporary file it'll create...
+	
+	#free report r1 # But you'll need to 'free' the temporary file it'll create...
 
 
 
@@ -72,7 +73,7 @@ first page header
 	print "Table Dump First Page"
 
 page header
-	print column 2,"Table Dump", column 40 ,"Page : ",pageno using "<<<"
+	print column 2,"Table Dump", column 120 ,"Page : ",pageno using "<<<"
 
 
 on every row

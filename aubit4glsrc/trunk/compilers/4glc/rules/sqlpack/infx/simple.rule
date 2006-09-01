@@ -8,7 +8,7 @@ table_name: table_name_i  {
 
 
 table_name_i:
-         CHAR_VALUE DOT identifier {
+         CHAR_VALUE KW_DOT identifier {
                         if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
                                         sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Table",$<str>$);
                         } else {
@@ -25,7 +25,7 @@ table_name_i:
         }
         | identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
         | identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Table",$<str>$); }
-        | identifier COLON CHAR_VALUE DOT identifier {
+        | identifier COLON CHAR_VALUE KW_DOT identifier {
                         if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
                                         sprintf($<str>$," %s:%s",$<str>1,$<str>5); ADDMAP("Use Table",$<str>$);
                         } else {
@@ -39,7 +39,7 @@ table_name_i:
 
         | identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
         | identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Table",$<str>$); }
-        | identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier {
+        | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
                         if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
                                         sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); ADDMAP("Use Table",$<str>$);
                         } else {
@@ -58,7 +58,7 @@ table_name_i:
 
 
 idx_name:
-         CHAR_VALUE DOT identifier {
+         CHAR_VALUE KW_DOT identifier {
                         if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
                                         sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Index",$<str>$);
                         } else {
@@ -76,7 +76,7 @@ idx_name:
 
         | identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
         | identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); }
-        | identifier COLON CHAR_VALUE DOT identifier {
+        | identifier COLON CHAR_VALUE KW_DOT identifier {
                         if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
                                 sprintf($<str>$," %s:%s",$<str>1,$<str>5); ADDMAP("Use Index",$<str>$);
                         } else {
@@ -90,7 +90,7 @@ idx_name:
 
         | identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
         | identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Index",$<str>$); }
-        | identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier {
+        | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
                         if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
                                         sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); ADDMAP("Use Index",$<str>$);
                         } else {

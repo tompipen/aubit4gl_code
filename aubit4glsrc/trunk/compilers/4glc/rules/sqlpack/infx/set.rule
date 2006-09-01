@@ -17,10 +17,10 @@ set_cmd :
 	| SET_SESSION_TO conn_id { 
 		print_set_conn($<str>2);
 	}
-	| SET_SESSION op_conn_id OPTION char_or_var TO char_or_var {
+	| SET_SESSION op_conn_id OPTION char_or_var KW_TO char_or_var {
 		print_set_options("conn",$<str>2,$<str>4,$<str>6);
 	}
-	| SET_CURSOR cursor_name OPTION char_or_var TO char_or_var {
+	| SET_CURSOR cursor_name OPTION char_or_var KW_TO char_or_var {
 		print_set_options("stmt",$<str>2,$<str>4,$<str>6);
 	}
 ;

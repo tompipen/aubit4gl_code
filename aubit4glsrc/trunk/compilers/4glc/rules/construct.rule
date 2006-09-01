@@ -48,12 +48,12 @@ constr_col : identifier
              {
                 push_construct("",$<str>$);
              }
-|            identifier DOT identifier 
+|            identifier KW_DOT identifier 
              {
                 sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
                 push_construct($<str>1,$<str>3); 
              }
-| identifier DOT MULTIPLY 
+| identifier KW_DOT KW_MULTIPLY 
              {
                 push_construct($<str>1,"*");
              }

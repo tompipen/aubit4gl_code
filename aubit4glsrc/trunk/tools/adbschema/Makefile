@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-27 16:04:20 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-09-01 19:32:24 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -45,7 +45,7 @@ ALL=${ROOT}/bin/adbschema
 all: ${ALL}
 
 adbschema: ${ROOT}/bin/adbschema
-${ROOT}/bin/adbschema: adbschema.4gl table.4gl grant.4gl
+${ROOT}/bin/adbschema: adbschema.4gl table.4gl grant.4gl proc.4gl
 	4glpc  -g $^ -o $@ 
 #	export AUBITDIR=/opt/aubit4gl; aubit 4glpc --make-compile $^ -o $@
 #	cp $@ /opt/aubit4gl/bin

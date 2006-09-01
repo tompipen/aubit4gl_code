@@ -194,9 +194,9 @@ sql_commands :
 
 
 privilege_definition:
-	GRANT privileges KW_ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
+	GRANT privileges KW_ON table_name KW_TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
 	| REVOKE privileges KW_ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  add_feature("REVOKE"); }
-	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("GRANT"); }
+	| GRANT db_priv KW_TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("GRANT"); }
 	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);  add_feature("REVOKE"); }
 ;
 
@@ -209,7 +209,7 @@ db_priv:
 
 op_with_grant_option: {strcpy($<str>$,"");}
 	| WITH_GRANT_OPTION {sprintf($<str>$," %s ",$<str>1);}
-	| AS identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	| KW_AS identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 ;
 
 privileges:
@@ -268,7 +268,7 @@ grantee:
 
 
 view_definition_ss:
-	CREATE_VIEW table_name op_view_column_list AS query_specification_ss_converted op_with_check_option {
+	CREATE_VIEW table_name op_view_column_list KW_AS query_specification_ss_converted op_with_check_option {
 		add_feature("CREATE_VIEW_AS_SELECT");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,$<sql_string>5,kw_space,acl_strdup($<str>6),NULL);
 	
@@ -539,7 +539,7 @@ tname: table_name  {
 	| table_name correlation_name { 
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,$<str>2);
 	}
-	| table_name AS correlation_name { 
+	| table_name KW_AS correlation_name { 
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,$<str>3);
 	}
 ;
@@ -643,7 +643,7 @@ boolean_factor_sli:
 	boolean_primary_sli {
 		$<s_select_list_item>$=$<s_select_list_item>1;
 	}
-	| NOT boolean_primary_sli {
+	| KW_NOT boolean_primary_sli {
 		$<s_select_list_item>$=new_select_list_item_simple_expr(E_SLI_NOT,$<s_select_list_item>2);
 	}
 ;
@@ -690,7 +690,7 @@ escape_character: literal
 
 
 op_not: {strcpy($<str>$,"");}
-	| NOT {strcpy($<str>$," NOT ");}
+	| KW_NOT {strcpy($<str>$," NOT ");}
 ;
 
 
@@ -891,11 +891,11 @@ exact_numeric_type:
 				sprintf($<str>$,"NVARCHAR(%s,%s)",$<str>3,$<str>5);
 			}
 	}
-	| DATETIME s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_DATETIME");}
+	| DATETIME s_curr KW_TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_DATETIME");}
 	| DATETIME  {add_feature("DDL_DATETIME");}
-	| INTERVAL s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_INTERVAL");}
+	| INTERVAL s_curr KW_TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("DDL_INTERVAL");}
 	| INTERVAL {add_feature("DDL_INTERVAL");}
-	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7); add_feature("DDL_INTERVAL");}
+	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET KW_TO e_curr {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7); add_feature("DDL_INTERVAL");}
 	| KW_TEXT {add_feature("DDL_TEXT");}
 	| KW_BYTE {add_feature("DDL_BYTE");}
 	| VARCHAR {add_feature("DDL_VARCHAR");}
@@ -987,10 +987,10 @@ column_name_sli :
 column_name_sli_specific: identifier op_col_arr { 
 		$<s_select_list_item>$=new_select_list_item_col(0,$<str>1,&$<int_list>2);
 	}
-	| table_name DOT identifier op_col_arr {
+	| table_name KW_DOT identifier op_col_arr {
 		$<s_select_list_item>$=new_select_list_item_col($<str>1,$<str>3,&$<int_list>4);
 	}
-	| table_name  DOT MULTIPLY {
+	| table_name  KW_DOT KW_MULTIPLY {
 		$<s_select_list_item>$=new_select_list_item_col($<str>1,"*",0);
 	}
 ;
@@ -1004,7 +1004,7 @@ column_name_specific: identifier op_col_arr {
 		ADDMAP("Use Column",$<str>1);
 		strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
 	}
-	| table_name DOT identifier op_col_arr {
+	| table_name KW_DOT identifier op_col_arr {
 		struct ilist *i;
 		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
@@ -1012,7 +1012,7 @@ column_name_specific: identifier op_col_arr {
 		i=&$<int_list>4;
 		strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
 	}
-	| table_name  DOT MULTIPLY {
+	| table_name  KW_DOT KW_MULTIPLY {
 		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,"*"));
 		ADDMAP("Use Column",$<str>$);
 	}
@@ -1033,7 +1033,7 @@ literal: CHAR_VALUE { strcpy($<str>$,convstrsql($<str>1)); A4GL_debug("Set $<str
 
 cur_part: { strcpy($<str>$,A4GLSQLCV_generate_current(0,0)); 
 }
-	| s_curr TO e_curr {
+	| s_curr KW_TO e_curr {
 		strcpy($<str>$,A4GLSQLCV_generate_current($<str>1,$<str>3));
 	}
 ;
@@ -1111,8 +1111,8 @@ misc_sql :
 ;
 
 rename_stmt :
-	RENTAB rentabname TO rentabname { add_feature("RENAME_TABLE"); strcpy($<str>$,A4GLSQLCV_rentab($<str>2,$<str>4)); }
-	| RENCOL table_name DOT rencolname TO rencolname { add_feature("RENAME_COLUMN"); strcpy($<str>$,A4GLSQLCV_rencol($<str>2,$<str>4,$<str>6) ); }
+	RENTAB rentabname KW_TO rentabname { add_feature("RENAME_TABLE"); strcpy($<str>$,A4GLSQLCV_rentab($<str>2,$<str>4)); }
+	| RENCOL table_name KW_DOT rencolname KW_TO rencolname { add_feature("RENAME_COLUMN"); strcpy($<str>$,A4GLSQLCV_rencol($<str>2,$<str>4,$<str>6) ); }
 ;
 
 rentabname : identifier;
@@ -1153,7 +1153,7 @@ share_or_exclusive :
 
 datetime_value_qualified :
 	datetime_value {strcpy($<str>$,$<str>1);}
-	| datetime_value s_curr TO e_curr {strcpy($<str>$,A4GLSQLCV_make_dtime_extend($<str>1,$<str>2,$<str>4,0));}
+	| datetime_value s_curr KW_TO e_curr {strcpy($<str>$,A4GLSQLCV_make_dtime_extend($<str>1,$<str>2,$<str>4,0));}
 ;
 
 datetime_value:
@@ -1162,10 +1162,10 @@ datetime_value:
 
 interval_value_qualified :
 	interval_value {strcpy($<str>$,$<str>1);}
-	| interval_value s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {
+	| interval_value s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET KW_TO e_curr {
 			strcpy($<str>$,A4GLSQLCV_make_ival_extend($<str>1,$<str>2,$<str>4,$<str>7,0));
 		}
-	| interval_value s_curr TO e_curr {
+	| interval_value s_curr KW_TO e_curr {
 		strcpy($<str>$,A4GLSQLCV_make_ival_extend($<str>1,$<str>2,(char *)0, $<str>4,0));
 	}
 ;
@@ -1198,7 +1198,7 @@ curr_clause : KW_CURRENT  cur_part {
 
 
 order_by_clause_slil:
-	ORDER BY sort_specification_list_slil {
+	ORDER KW_BY sort_specification_list_slil {
 		$<s_select_list_item_list>$=$<s_select_list_item_list>3;
 		add_feature("ORDER_BY");
 	}

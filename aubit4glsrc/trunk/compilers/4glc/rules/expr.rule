@@ -9,7 +9,7 @@ fgl_expr_c :
 	| function_call_expr
 	| fgl_expr_c KW_AND fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_AND,0); }
 	| fgl_expr_c KW_OR fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_OR,0); }
-	| fgl_expr_c SPACES 			{ 
+	| fgl_expr_c KW_SPACES 			{ 
 			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_SPACES);
 			add_feature("ET_EXPR_SPACES"); 
 	}
@@ -21,10 +21,10 @@ fgl_expr_c :
 	| pdf_expr
 	| literal_expr 
 	| variable_entry {$<ptr>$=$<ptr>1;}
-	| MINUS fgl_expr_c %prec UMINUS	{ 
+	| KW_MINUS fgl_expr_c %prec UMINUS	{ 
 		$<ptr>$=A4GL_new_expr_neg($<ptr>2); 
 	}
-	| PLUS fgl_expr_c 			{ $<ptr>$=$<ptr>2; }
+	| KW_PLUS fgl_expr_c 			{ $<ptr>$=$<ptr>2; }
   	| fgl_expr_c MATCHES fgl_expr_c expr_escape {
 		$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MATCHES,$<ptr>4);
 		add_feature("ET_EXPR_MATCHES");
@@ -47,13 +47,13 @@ fgl_expr_c :
  	| fgl_expr_c LIKE fgl_expr_c  { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LIKE,0); }
 	| fgl_expr_c NOT_LIKE fgl_expr_c  { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_NOT_LIKE,0); }
 	| fgl_expr_c KW_USING fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_USING,0); }
- 	| fgl_expr_c PLUS fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_ADD,0); }
-	| fgl_expr_c MINUS fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_SUB,0); }
-	| fgl_expr_c MULTIPLY fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MULT,0); }
-	| fgl_expr_c DIVIDE  fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_DIV,0); }
-	| fgl_expr_c MOD fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MOD,0); }
-	| fgl_expr_c POWER fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_POWER,0); }
-	| fgl_expr_c CLIPPED { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_CLIP); }
+ 	| fgl_expr_c KW_PLUS fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_ADD,0); }
+	| fgl_expr_c KW_MINUS fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_SUB,0); }
+	| fgl_expr_c KW_MULTIPLY fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MULT,0); }
+	| fgl_expr_c KW_DIVIDE  fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_DIV,0); }
+	| fgl_expr_c KW_MOD fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MOD,0); }
+	| fgl_expr_c KW_POWER fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_POWER,0); }
+	| fgl_expr_c KW_CLIPPED { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_CLIP); }
         | fgl_expr_c IS_NULL { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_ISNULL); }
         | fgl_expr_c IS_NOT_NULL { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_ISNOTNULL); }
 	| fgl_expr_c EQUAL           fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_EQUAL,0); }
@@ -131,7 +131,7 @@ fgl_expr_x:  fgl_expr_c {
 /****************************************************************/
 
 boolean_expr:
-	NOT fgl_expr_c {
+	KW_NOT fgl_expr_c {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_NOT);
 	}
 	| KW_TRUE  
@@ -245,7 +245,7 @@ inexpr_list : fgl_expr_c  {
 
 
 
-op_extend_di: {$<integer_val>$=-1;} | dtime_val TO dtime_val
+op_extend_di: {$<integer_val>$=-1;} | dtime_val KW_TO dtime_val
 	{$<integer_val>$=atoi($<str>1)*16+atoi($<str>3);}
 ;
 
@@ -330,52 +330,52 @@ function_call_expr:
 		sprintf(buff,"\"%s %s:%s:%s\"",$<str>3,$<str>4,$<str>6,$<str>8);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>10);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s\"",$<str>3,$<str>5);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>7);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s-%s\"",$<str>3,$<str>5,$<str>7);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>9);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE  INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE  INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s %s\"",$<str>3,$<str>5,$<str>6);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>8);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s-%s %s\"",$<str>3,$<str>5,$<str>7,$<str>8);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>10);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s-%s %s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>14);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>14);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s %s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>10);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
-	| DATETIME OPEN_BRACKET INT_VALUE MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
+	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		sprintf(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
@@ -443,7 +443,7 @@ function_call_expr:
 			add_feature("ET_EXPR_DOWNSHIFT");
  			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_DOWNSHIFT);
 	}
-	| 	ASCII fgl_expr_c  { 
+	| 	KW_ASCII fgl_expr_c  { 
 			add_feature("ET_EXPR_ASCII");
  			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_ASCII);
 	}
@@ -606,7 +606,7 @@ interval_func_params :
 	;
 
 numeric_time_interval:
-		MINUS numeric_time_interval {sprintf($<str>$,"-%s",$<str>2);}
+		KW_MINUS numeric_time_interval {sprintf($<str>$,"-%s",$<str>2);}
 		| numeric_time_unit_big	{sprintf($<str>$,"\"%s\"",$<str>1);}
 		| numeric_time_unit_small	{sprintf($<str>$,"\"%s\"",$<str>1);}
 	;
@@ -621,12 +621,12 @@ numeric_time_unit_small :
 		| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
 		| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
 		| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
-		| DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
+		| KW_DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
 	;
 
 numeric_time_unit_big:
 		INT_VALUE
-		| INT_VALUE MINUS INT_VALUE {
+		| INT_VALUE KW_MINUS INT_VALUE {
 			sprintf($<str>$,"%s-%s",$<str>1,$<str>3);
 		}
 	;
@@ -653,7 +653,7 @@ field_name_list_or_char_as_struct : field_name_or_char_as_struct {
 
 
 curr_v_clause : KW_CURRENT { $<ptr>$=A4GL_new_expr_current(1, 10);}
-	| KW_CURRENT s_curr_v TO s_curr_v {$<ptr>$=A4GL_new_expr_current($<integer_val>2, $<integer_val>4);}
+	| KW_CURRENT s_curr_v KW_TO s_curr_v {$<ptr>$=A4GL_new_expr_current($<integer_val>2, $<integer_val>4);}
 ;
 
 s_curr_v: YEAR 		{$<integer_val>$=1;} 

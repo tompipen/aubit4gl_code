@@ -54,7 +54,7 @@ attribute	:BLACK     {sprintf($<str>$,"%d",attr_code("BLACK"));}
 		|CYAN      {sprintf($<str>$,"%d",attr_code("CYAN"));}
 		|GREEN     {sprintf($<str>$,"%d",attr_code("GREEN"));}
 		|MAGENTA   {sprintf($<str>$,"%d",attr_code("MAGENTA"));}
-		|RED       {sprintf($<str>$,"%d",attr_code("RED"));}
+		|KW_RED       {sprintf($<str>$,"%d",attr_code("RED"));}
 		|WHITE     {sprintf($<str>$,"%d",attr_code("WHITE"));}
 		|YELLOW    {sprintf($<str>$,"%d",attr_code("YELLOW"));}
 		|REVERSE   {sprintf($<str>$,"%d",attr_code("REVERSE"));}
@@ -105,7 +105,7 @@ wattribs_sec	: 	wattribute {strcpy($<str>$,$<str>1);}
 
 wattribute	: attribute { form_attrib.attrib      =form_attrib.attrib|atoi($<str>1); }
 		| BORDER { form_attrib.border      =1;}
-		| PAD CHAR_VALUE {int a; char *buff; a=form_attrib.attrib&255; if (strlen($<str>2) > 2) { buff=$<str>2; form_attrib.attrib=form_attrib.attrib+buff[1]; } else  { form_attrib.attrib=form_attrib.attrib+' '; } }
+		| KW_PAD CHAR_VALUE {int a; char *buff; a=form_attrib.attrib&255; if (strlen($<str>2) > 2) { buff=$<str>2; form_attrib.attrib=form_attrib.attrib+buff[1]; } else  { form_attrib.attrib=form_attrib.attrib+' '; } }
 		| COMMENT_LINE line_no { form_attrib.comment_line=atoi($<str>2); }
 		| FORM_LINE line_no { form_attrib.form_line   =atoi($<str>2); }
 		| ERROR_LINE line_no { form_attrib.error_line  =atoi($<str>2); }

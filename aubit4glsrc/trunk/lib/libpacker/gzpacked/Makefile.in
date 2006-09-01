@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.3 2006-07-27 16:03:26 mikeaubury Exp $
+# $Id: Makefile.in,v 1.4 2006-09-01 19:32:22 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -35,7 +35,7 @@ include ${ROOT}/incl/Makefile-common
 ##                    		Settings
 ## ==================================================================
 
-CMODS   	=pack_packed.c
+CMODS   	=pack_packed.c gzhelper.c
 OBJS		=${CMODS:.c=.o}
 ALL 		=${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT}
 
@@ -55,24 +55,6 @@ LINKLIBS+=-lz
 
 ALL: ${ALL}
 
-#On HP-UX:
-#gcc   -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H  -I/cassens/others/aubit/aubit4glsrc/incl -fPIC -I.. -b -o ../../libPACKER_GZPACKED.sl pack_packed.c
-#gcc: ../../libPACKER_GZPACKED.sl: No such file or directory
-#gcc: installation problem, cannot exec `cc1': No such file or directory
-#make[2]: *** [../../libPACKER_GZPACKED.sl] Error 1
-#make[2]: Leaving directory `/cassens/others/aubit/aubit4glsrc/lib/libpacker/packed'
-#make[1]: *** [libPACKER_GZPACKED.sl] Error 2
-#make[1]: Leaving directory `/cassens/others/aubit/aubit4glsrc/lib'
-#make: *** [corecompile] Error 2
-#
-#did this to fix
-#
-#gcc   -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H  -I/cassens/others/aubit/aubit4glsrc/incl -fPIC -I../../compilers/fcompile -I../libaubit4gl -I..  -c -o pack_packed.o pack_packed.c
-#ld -b -o ../../libPACKER_GZPACKED.sl  pack_packed.o
-
-
-#${LIBROOT}/libPACKER_GZPACKED${SO_EXT}: ${CMODS}
-#	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 ${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT}: ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 

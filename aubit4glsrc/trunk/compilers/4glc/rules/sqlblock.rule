@@ -1,4 +1,4 @@
-sql_block_cmd : SQL {
+sql_block_cmd : KW_SQL {
 		sql_mode=1;
 		add_feature("SQL_BLOCK");
 		start_bind('i',0);
@@ -60,7 +60,7 @@ sqlblock_kw :
 	| OPEN_BRACKET {strcpy($<str>$,"(");}
 	| CLOSE_BRACKET {strcpy($<str>$,")");}
 	| DOLLAR {strcpy($<str>$,"$");}
-	| DOT {strcpy($<str>$,".");}
+	| KW_DOT {strcpy($<str>$,".");}
 	| NAMED_GEN {strcpy($<str>$,$<str>1);}
 	| CONCAT_PIPES  {strcpy($<str>$,"||");}
 	| LESS_THAN_EQ  {strcpy($<str>$,"<=");}

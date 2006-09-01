@@ -5,9 +5,9 @@
 */
 
 line_no		:
-	KW_LAST MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
+	KW_LAST KW_MINUS INT_VALUE {sprintf($<str>$,"%d",-1-(atoi($<str>3)));}
 	| KW_LAST {strcpy($<str>$,"-1");}
-	| KW_FIRST PLUS INT_VALUE {sprintf ($<str>$,"%d",atoi($<str>3)+1);}
+	| KW_FIRST KW_PLUS INT_VALUE {sprintf ($<str>$,"%d",atoi($<str>3)+1);}
 	| KW_FIRST {strcpy($<str>$,"1");}
 	| INT_VALUE {strcpy($<str>$,$<str>1);}
 	| variable {strcpy($<str>$,$<str>1);}
@@ -40,7 +40,7 @@ field_name_as_struct	:
 				sprintf(buff,"int_to_id(%s)",$<str>3);
 				$<field_entry>$=new_field_entry(buff,"1",0); 
 		}
-		| identifier DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
+		| identifier KW_DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
 				char buff[256];
 				sprintf(buff,"int_to_id(%s.%s)",$<str>1,$<str>5); 
 				$<field_entry>$=new_field_entry(buff,"1",0); 
@@ -48,24 +48,24 @@ field_name_as_struct	:
 		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE {
 				$<field_entry>$=new_field_entry($<str>1,$<str>3,1);
 		}
-		| identifier DOT MULTIPLY {
+		| identifier KW_DOT KW_MULTIPLY {
 				char buff[256];
 				sprintf(buff,"%s.*",$<str>1);
 				$<field_entry>$=new_field_entry(buff,"1",1);
 				add_feature("SRECDOTSTAR");
 		}
-		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY {
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE KW_DOT KW_MULTIPLY {
 				char buff[256];
 				sprintf(buff,"%s.*",$<str>1);
 				$<field_entry>$=new_field_entry(buff,$<str>3,1);
 				add_feature("SRECDOTSTAR");
 		}
-		| identifier DOT identifier 	{
+		| identifier KW_DOT identifier 	{
 				char buff[256];
 				sprintf(buff,"%s.%s",$<str>1,$<str>3);
 				$<field_entry>$=new_field_entry(buff,"1",1);
 		}
-		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier {
+		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE KW_DOT identifier {
 				char buff[256];
 				sprintf(buff,"%s.%s",$<str>1,$<str>6);
 				$<field_entry>$=new_field_entry(buff,$<str>3,1);
@@ -194,22 +194,22 @@ field_name2_as_struct	:	identifier {
 				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE {
 					$<field_entry>$=new_field_entry($<str>1,$<str>3,1); 
 				}
-				| identifier DOT MULTIPLY {
+				| identifier KW_DOT KW_MULTIPLY {
 					char buff[256];
 					sprintf(buff,"%s.*",$<str>1);
 					$<field_entry>$=new_field_entry(buff,"1",1); 
 				}
-				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT MULTIPLY {
+				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE KW_DOT KW_MULTIPLY {
 					char buff[256];
 					sprintf(buff,"%s.*",$<str>1);
 					$<field_entry>$=new_field_entry(buff,$<str>3,1); 
 				}
-				| identifier DOT identifier {
+				| identifier KW_DOT identifier {
 					char buff[256];
 					sprintf(buff,"%s.%s",$<str>1,$<str>3);
 					$<field_entry>$=new_field_entry(buff,"1",1); 
 				}
-				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier {
+				| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE KW_DOT identifier {
 					char buff[256];
 					sprintf(buff,"%s.%s",$<str>1,$<str>6);
 					$<field_entry>$=new_field_entry(buff,$<str>3,1); 
@@ -230,7 +230,7 @@ YYERROR;
 conn_id : ident_or_var_sql;
 
 
-real_number : NUMBER_VALUE | DOT INT_VALUE {
+real_number : NUMBER_VALUE | KW_DOT INT_VALUE {
 		sprintf($<str>$,".%s",$<str>2);
 };
 
@@ -241,7 +241,7 @@ char_or_var : CHAR_VALUE | variable {
 }
 ;
 
-opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
+opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id KW_FOR {
 	print_use_session($<str>2);
 	strcpy($<str>$,A4GL_get_undo_use());
 }
@@ -283,7 +283,7 @@ reserved_word :
 	|YEAR
 	|MONTH
 	|DAY
-	|SPACES
+	|KW_SPACES
 	|RESOURCE
 	|COMMENT
 	|DELETE

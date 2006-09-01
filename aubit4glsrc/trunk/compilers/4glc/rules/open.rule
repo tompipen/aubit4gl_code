@@ -5,7 +5,7 @@
 */
 
 open_window_cmd :
-	OPEN_WINDOW open_win_name AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
+	OPEN_WINDOW open_win_name KW_AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
 			add_feature("UI_OPEN_WINDOW");
 			form_attrib.iswindow=1;
 			print_open_window($<str>2,$<open_window_type>8,$<ptr>4,$<ptr>6,last_text,last_style);
@@ -14,7 +14,7 @@ open_window_cmd :
 ;
 
 op_at_statusbox : 
-	| AT OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET op_size_statusbox
+	| KW_AT OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET op_size_statusbox
 ;
 
 op_size_statusbox : 
@@ -42,7 +42,7 @@ open_form_cmd :
 
 
 
-op_at_gui:{strcpy($<str>$,"0,0");} | AT op_absolute OPEN_BRACKET fgl_expr_x KW_COMMA fgl_expr_x CLOSE_BRACKET 
+op_at_gui:{strcpy($<str>$,"0,0");} | KW_AT op_absolute OPEN_BRACKET fgl_expr_x KW_COMMA fgl_expr_x CLOSE_BRACKET 
 	{sprintf($<str>$,"%s,2",$<str>2);}
 ;
 
@@ -70,11 +70,11 @@ open_cursor_cmd :
 
 
 user_details :  {sprintf($<str>$,"0,0");}
-	| AS USER char_or_var PASSWORD char_or_var
+	| KW_AS USER char_or_var PASSWORD char_or_var
               {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
-	| AS USER char_or_var KW_COMMA PASSWORD char_or_var
+	| KW_AS USER char_or_var KW_COMMA PASSWORD char_or_var
               {sprintf($<str>$,"%s, %s",$<str>3,$<str>6);}
-	| AS char_or_var KW_COMMA char_or_var
+	| KW_AS char_or_var KW_COMMA char_or_var
               {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
 ;
 
@@ -84,7 +84,7 @@ op_disable : {strcpy($<str>$,"0");} | DISABLE_PROGRAM {strcpy($<str>$,"1");}
 
 
 connect_cmd :
-CONNECT TO var_ident op_connect_as con_user_details {
+CONNECT KW_TO var_ident op_connect_as con_user_details {
 	add_feature("CONNECT");
 	print_open_session($<str>4,$<str>3,$<str>5);
 }
@@ -94,13 +94,13 @@ CONNECT TO var_ident op_connect_as con_user_details {
 
 op_connect_as :
         {strcpy($<str>$,"\"default_conn\"");}
-        | AS ident_or_var_sql {strcpy($<str>$,$<str>2);}
+        | KW_AS ident_or_var_sql {strcpy($<str>$,$<str>2);}
 
 ;
 
 con_user_details :
         {sprintf($<str>$,"0,0");}
-        | AS USER char_or_var KW_USING char_or_var
+        | KW_AS USER char_or_var KW_USING char_or_var
               {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
         | USER char_or_var KW_USING char_or_var
               {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}

@@ -131,7 +131,10 @@ define
 		display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
 	end if
 
+	if lv_procname is not null then
+		call dump_proc(lv_procname)
 
+	else
 
 	if lv_tabname is not null then
 		if lv_srpf="-" then
@@ -216,6 +219,7 @@ define
 				call outstr("END MAIN")
 			end if
 		end if
+	end if
 	end if
 code
 if (fout) {fclose(fout);}

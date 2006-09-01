@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.317 2006-08-28 16:13:08 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.318 2006-09-01 19:31:41 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -535,6 +535,10 @@ AC_SUBST(POP_INC_PATH)
 AC_SUBST(POP_LIB_PATH)
 AC_SUBST(SMTP_INC_PATH)
 AC_SUBST(SMTP_LIB_PATH)
+
+AC_SUBST(ZLIB_INC_PATH)
+AC_SUBST(ZLIB_LIB_PATH)
+AC_SUBST(HAVE_ZLIB)
 
 AC_SUBST(INSTALL_MISSING_OPTIONAL)
 AC_SUBST(PERL)
@@ -1627,6 +1631,7 @@ USE_PDF=no
 PDFBUILD=no
 HAVE_POPLIB=no
 HAVE_SMTPLIB=no
+HAVE_ZLIB=no
 PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
@@ -1909,6 +1914,7 @@ if test "$withval" != "no"; then
 	if test "$with_mpz" = ""; then				with_mpz=yes 		;fi
 	if test "$with_pop" = ""; then          	with_pop=yes 		;fi
 	if test "$with_smtp" = ""; then          	with_smtp=yes 		;fi
+	if test "$with_zlib" = ""; then          	with_zlib=yes 		;fi
 	if test "$with_pcre" = ""; then          	with_pcre=yes 		;fi
 	if test "$with_sxml" = ""; then          	with_sxml=yes 		;fi	
 	if test "$with_esqlc" = ""; then            with_esqlc=yes 		;fi
@@ -3955,7 +3961,6 @@ if test "$enable_stop_pop" = "yes" ; then
 	exit
 fi
 
-
 ## ==================================================================
 ##            Check for SMTP support
 ## ==================================================================
@@ -3994,7 +3999,7 @@ AC_ARG_WITH(smtp,
 			SMTP_INC_PATH="`$CYGPATH -m `$PKG_CONFIG --cflags glib-2.0` $withval`/usr/include"
 			CPPFLAGS="-I$SMTP_INC_PATH $CPPFLAGS"
 			SMTP_LIB_PATH="`$CYGPATH -m $withval`/lib"
-			LDFLAGS="-L$SMTO_LIB_PATH $LDFLAGS"
+			LDFLAGS="-L$SMTP_LIB_PATH $LDFLAGS"
 		fi
 		
 		if test "$enable_ac_debug" = "yes" ; then
@@ -4026,6 +4031,78 @@ AC_ARG_WITH(smtp,
 ])
 
 if test "$enable_stop_smtp" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
+##            Check for ZLIB support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for ZLIB libraries:)
+AC_ARG_WITH(zlib,
+[  --with-zlib[=DIR]      Include ZLIB support.  DIR is the ZLIB base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" = ""; then 
+	    		withval=/usr/local
+			else
+				#NOTE: since on CygWin /usr/lib is symling to /usr,
+				#files installed there actually end up in /lib, as far as
+				#native Windows executable (GCC) is concerned
+				withval="`$CYGPATH -m /`"
+			fi
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+		
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
+
+		if test "$COMSPEC" = ""; then
+			CPPFLAGS="-I$withval/include $CPPFLAGS `$PKG_CONFIG --cflags glib-2.0`"
+			LDFLAGS="-L$withval/lib $LDFLAGS `$PKG_CONFIG --libs glib-2.0`"
+		else
+			ZLIB_INC_PATH="`$CYGPATH -m $withval`/usr/include"
+			CPPFLAGS="-I$ZLIB_INC_PATH $CPPFLAGS"
+			ZLIB_LIB_PATH="`$CYGPATH -m $withval`/lib"
+			LDFLAGS="-L$SMTO_LIB_PATH $LDFLAGS"
+		fi
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+		AC_CHECK_LIB([z], [gzopen])
+		AC_CHECK_HEADERS([ zlib.h ])
+		AC_MSG_CHECKING(if we can use zlib)
+		if test "$ac_cv_lib_z_gzopen" = "yes" -a "$ac_cv_header_zlib_h" = "yes"; then
+			HAVE_ZLIB=1
+			AC_MSG_RESULT(yes)
+		else
+			AC_MSG_RESULT(no)
+	    	fi
+		
+		#Restore values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
+		
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-zlib not specified)
+])
+
+if test "$enable_stop_zlib" = "yes" ; then
 	exit
 fi
 
@@ -9369,7 +9446,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.317 2006-08-28 16:13:08 mikeaubury Exp $
+| $Id: configure.in,v 1.318 2006-09-01 19:31:41 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

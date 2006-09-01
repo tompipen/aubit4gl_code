@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.122 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: lexer.c,v 1.123 2006-09-01 19:32:00 mikeaubury Exp $
 #*/
 
 /**
@@ -1688,7 +1688,7 @@ int is_sql_kw(int a) {
 	if (a==CLOSE_SQUARE) return 1;
 	if (a==OPEN_BRACKET) return 1;
 	if (a==DOLLAR) return 1;
-	if (a==DOT) return 1;
+	if (a==KW_DOT) return 1;
 	if (a==NAMED_GEN) return 1;
 	if (a==END_SQL) return 1;
 	if (a==GREATER_THAN_EQ) return 1;

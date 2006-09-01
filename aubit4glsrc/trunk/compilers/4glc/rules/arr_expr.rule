@@ -37,17 +37,17 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
 ;
 
 arr_next_math:
-	PLUS {strcpy($<str>$,"+");}
-|       MINUS {strcpy($<str>$,"-");}
-|       MULTIPLY {strcpy($<str>$,"*");}
-|       DIVIDE {strcpy($<str>$,"/");}
-|       MOD {strcpy($<str>$,"%");}
+	KW_PLUS {strcpy($<str>$,"+");}
+|       KW_MINUS {strcpy($<str>$,"-");}
+|       KW_MULTIPLY {strcpy($<str>$,"*");}
+|       KW_DIVIDE {strcpy($<str>$,"/");}
+|       KW_MOD {strcpy($<str>$,"%");}
 ;
 
 
 
-arr_int_sign	: PLUS {strcpy($<str>$,"+");}
-		| MINUS {strcpy($<str>$,"-");}
+arr_int_sign	: KW_PLUS {strcpy($<str>$,"+");}
+		| KW_MINUS {strcpy($<str>$,"-");}
 ;
 
 

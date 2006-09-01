@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.239 2006-08-30 19:47:29 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.240 2006-09-01 19:32:09 mikeaubury Exp $
 #
 */
 
@@ -2373,6 +2373,33 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 	#endif
 	#endif
 #endif
+
+
+
+#ifdef HAVE_ZLIB
+#include <zlib.h>
+#define gzfopen gzopen
+#define gzfwrite(a,b,c,d) gzwrite(d,a,b*c)
+#define gzfprintf gzprintf
+#define gzfread(a,b,c,d) gzread(d,a,b*c)
+#define gzfeof(f) gzeof(f)
+#define gzfclose(a) gzclose(a)
+#define gzfgetc(a) gzgetc(a)
+#define gzfputc(a,b) gzputc(b,a)
+#else
+#define gzfopen fopen
+#define gzfwrite(a,b,c,d) write(d,a,b*c)
+#define gzfread(a,b,c,d) read(d,a,b*c)
+#define gzfprintf fprintf
+#define gzftell(a) tell(a)
+#define gzfseek(a,b,c) seek(a,b,c)
+#define gzrewind(a) rewind(a)
+#define gzfclose(a) fclose(a)
+#define gzfeof(f) feof(f)
+#define gzfgetc(a) fgetc(a)
+#define gzfputc(a,b) fputc(a,b)
+#endif
+
 
 FILE * A4GL_memfile_fopen_buffer (char *ptr, int len);
 char *A4GL_fullpath_classpath (char *fname) ;

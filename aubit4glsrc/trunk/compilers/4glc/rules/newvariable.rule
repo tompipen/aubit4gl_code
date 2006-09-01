@@ -67,7 +67,7 @@ var_int :
 	var | DOLLAR var {strcpy($<str>$,$<str>2);}
 ;
 
-varsetidentdot : var DOT
+varsetidentdot : var KW_DOT
 ;
 
 var: 
@@ -191,7 +191,7 @@ assoc_sub : variable | CHAR_VALUE
 
 
 dot_part_var:
- MULTIPLY | 
+ KW_MULTIPLY | 
  identifier 
 ;
 
@@ -324,8 +324,8 @@ strcpy($<str>$,buff);
 let_var: let_array_r_variable {
 	 A4GL_debug("Array..");
 }
-| let_var DOT let_var_dot { sprintf ($<str>$, "%s.%s", $<str>1, $<str>3); }
-| let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
+| let_var KW_DOT let_var_dot { sprintf ($<str>$, "%s.%s", $<str>1, $<str>3); }
+| let_var KW_DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
 {
   int a;
   int b;
@@ -366,7 +366,7 @@ let_var: let_array_r_variable {
 
 
 }
-| let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
+| let_var KW_DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
 {
   int a;
   int b;
@@ -413,7 +413,7 @@ let_var: let_array_r_variable {
 ;
 
 let_var_dot :
-MULTIPLY 
+KW_MULTIPLY 
 | identifier 
 ;
 
@@ -522,7 +522,7 @@ binding_item : variable
 ;
 */
 
-func_def_var : identifier | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
+func_def_var : identifier | identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
 ;
 
 ibind_var : variable  {A4GL_lex_printcomment("/* Variable */\n");}

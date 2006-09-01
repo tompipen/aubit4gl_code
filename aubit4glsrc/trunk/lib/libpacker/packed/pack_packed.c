@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.28 2006-08-22 13:56:41 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.29 2006-09-01 19:32:22 mikeaubury Exp $
 #*/
 
 /**
@@ -106,6 +106,12 @@ char *A4GL_find_contents (char *s);	/* Extract the tag contents from a string */
 =====================================================================
 */
 
+#ifndef PACKER_EXT
+#define PACKED_EXT acl_getenv("A4GL_PACKED_EXT")
+#endif
+
+
+
 #ifdef _TESTING_
 /**
  * Internal helper function
@@ -148,7 +154,7 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir)
   is_in_mem = 0;
 
   if (toupper (dir) == 'O')  {
-      sprintf (buff, "%s%s", basename,acl_getenv("A4GL_PACKED_EXT"));
+      sprintf (buff, "%s%s", basename,PACKED_EXT);
       outfile = fopen (buff, "wb");
 
     if (outfile) {
@@ -160,7 +166,7 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir)
 
   if (toupper (dir) == 'I')
     {
-      sprintf (buff, "%s%s", basename, acl_getenv("A4GL_PACKED_EXT"));
+      sprintf (buff, "%s%s", basename, PACKED_EXT);
       infile = A4GL_open_file_dbpath (buff);
       if (infile) {
 		A4GL_debug("Got infile : %p\n",infile);

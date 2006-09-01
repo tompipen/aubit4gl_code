@@ -4,13 +4,13 @@ on_key_command :
         ON_ANY_KEY {strcpy($<str>$,"->ANY");} 
 ;
 
-key_val : KEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;};
+key_val : KW_KEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;};
 
 accept_key :  ACCEPTKEY key_value {strcpy($<str>$,get_keyval_str($<str>2)); iskey=0;}
 ;
 
 
-single_key_val : KEY key_do {strcpy($<str>$,get_keyval_str($<str>2));iskey=0;}
+single_key_val : KW_KEY key_do {strcpy($<str>$,get_keyval_str($<str>2));iskey=0;}
 ;
 
 key_do	: key_value  {strcpy($<str>$,$<str>1);}

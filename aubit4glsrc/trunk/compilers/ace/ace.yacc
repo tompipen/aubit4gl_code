@@ -82,7 +82,7 @@ set_expr_int(struct expr *e,int a)
 
 %right USING
 %left WHERE
-%left OR
+%left KW_OR
 %left AND
 %left NOT
 %left IS_NOT_NULL IS_NULL
@@ -176,7 +176,7 @@ set_expr_int(struct expr *e,int a)
 %token NOT_IN
 %token NUMBER_VALUE
 %token NUMERIC
-%token OF 
+%token KW_OF 
 %token ON
 %token OPEN_BRACKET
 %token OPEN_SQUARE
@@ -430,11 +430,11 @@ format_action :
 	{
 		add_fmt(FORMAT_ON_LAST_ROW,"",$<commands>4);
 	}
-        | BEFORE GROUP OF variable_sub_a commands 
+        | BEFORE GROUP KW_OF variable_sub_a commands 
 	{
 		add_fmt(FORMAT_BEFORE_GROUP,$<str>4,$<commands>5);
 	}
-        | AFTER GROUP OF variable_sub_a commands 
+        | AFTER GROUP KW_OF variable_sub_a commands 
 	{
 		add_fmt(FORMAT_AFTER_GROUP,$<str>4,$<commands>5);
 	}
@@ -609,7 +609,7 @@ op_having_clause: {strcpy($<str>$,"");}
 
 search_condition:
 	boolean_term
-	| search_condition OR boolean_term
+	| search_condition KW_OR boolean_term
 {sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
@@ -1249,27 +1249,27 @@ aggregate_elem:
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=0;
 	}
- 	| AVERAGE OF expr {
+ 	| AVERAGE KW_OF expr {
 		$<agg_val>$.type=AGG_AVG;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
 	}
-	| TOTAL OF expr {
+	| TOTAL KW_OF expr {
 		$<agg_val>$.type=AGG_TOTAL;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
 	}
-	| AVG OF expr {
+	| AVG KW_OF expr {
 		$<agg_val>$.type=AGG_AVG;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
 	}
-	| XMIN OF expr {
+	| XMIN KW_OF expr {
 		$<agg_val>$.type=AGG_MIN;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
 	}
-	| XMAX OF expr {
+	| XMAX KW_OF expr {
 		$<agg_val>$.type=AGG_MAX;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
@@ -1323,7 +1323,7 @@ val_expression:
 		$<expr>$.expr_u.expr->operand=EXPR_AND; 
 	}
 
-	| val_expression OR val_expression { 
+	| val_expression KW_OR val_expression { 
 		$<expr>$.type=EXPRTYPE_COMPLEX; 
 		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
 		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 

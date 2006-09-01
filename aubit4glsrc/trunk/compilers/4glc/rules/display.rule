@@ -11,7 +11,7 @@ opt_at : {
 		add_feature("UI_DISPLAY_LINE_MODE");
 		$<display>$=d;
 	} 
-	| AT fgl_expr_c KW_COMMA fgl_expr_c 		{ 
+	| KW_AT fgl_expr_c KW_COMMA fgl_expr_c 		{ 
 		struct dt_display *d;
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_AT;
@@ -30,7 +30,7 @@ opt_at : {
 		$<display>$=d;
 
 	}
-	| TO field_name_list_as_struct { 
+	| KW_TO field_name_list_as_struct { 
 		struct dt_display *d;
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_FIELD_LIST;
@@ -38,7 +38,7 @@ opt_at : {
 		add_feature("UI_DISPLAY_TO");
 		$<display>$=d;
 			}
-	| TO KWFORM identifier KWFIELD field_name_list_as_struct { 
+	| KW_TO KWFORM identifier KWFIELD field_name_list_as_struct { 
 		struct dt_display *d;
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_FORM_FIELD;
@@ -47,7 +47,7 @@ opt_at : {
 		add_feature("UI_DISPLAY_FORM_FIELD");
 		$<display>$=d;
 	}
-	| TO KWFORM identifier CAPTION { 
+	| KW_TO KWFORM identifier CAPTION { 
 		struct dt_display *d;
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_FORM_CAPTION;
@@ -83,7 +83,7 @@ display_array_cmd : DISPLAY_ARRAY {
 		push_blockcommand("DISPLAY");
 		curr_input_array_attribs.curr_row_display=0;
 		} 
-	use_arr_var TO idm_input_array
+	use_arr_var KW_TO idm_input_array
 
 	opt_scroll display_attr
 		{

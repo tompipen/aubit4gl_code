@@ -20,7 +20,7 @@ start_cmd :
 			p=A4GL_new_expr_simple_string($<str>2,ET_EXPR_REPORT_EMAIL);
 			print_start_report("M",p,$<str>2,$<str>4);
 			}
-	    | START_REPORT rep_name TO rout op_with_dim {
+	    | START_REPORT rep_name KW_TO rout op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			print_start_report("F",$<ptr>4,$<str>2,$<str>5);
@@ -81,37 +81,37 @@ with_entry:
 	
  
 
-convert_cmd : 	CONVERT_REPORT rep_name TO var_or_char AS var_or_char KW_USING var_or_char {
+convert_cmd : 	CONVERT_REPORT rep_name KW_TO var_or_char KW_AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"FILE");
 		}
- 		| CONVERT_REPORT rep_name TO var_or_char AS var_or_char {
+ 		| CONVERT_REPORT rep_name KW_TO var_or_char KW_AS var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","FILE");
 		}
- 		| CONVERT_REPORT rep_name TO_PIPE var_or_char AS var_or_char {
+ 		| CONVERT_REPORT rep_name TO_PIPE var_or_char KW_AS var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","PIPE");
 		}
- 		| CONVERT_REPORT rep_name TO_FILE var_or_char AS var_or_char {
+ 		| CONVERT_REPORT rep_name TO_FILE var_or_char KW_AS var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","PIPE");
 		}
- 		| CONVERT_REPORT rep_name TO_PRINTER AS var_or_char {
+ 		| CONVERT_REPORT rep_name TO_PRINTER KW_AS var_or_char {
 			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
 		}
- 		| CONVERT_REPORT rep_name TO_EMAIL AS var_or_char {
+ 		| CONVERT_REPORT rep_name TO_EMAIL KW_AS var_or_char {
 			char buff[255];
 sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 			print_convert_report($<str>2,    buff ,$<str>5,"\"\"","EMAIL");
 		}
 
- 		| CONVERT_REPORT rep_name TO_PIPE var_or_char AS var_or_char KW_USING var_or_char {
+ 		| CONVERT_REPORT rep_name TO_PIPE var_or_char KW_AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
 		}
- 		| CONVERT_REPORT rep_name TO_FILE var_or_char AS var_or_char KW_USING var_or_char {
+ 		| CONVERT_REPORT rep_name TO_FILE var_or_char KW_AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
 		}
- 		| CONVERT_REPORT rep_name TO_PRINTER AS var_or_char KW_USING var_or_char {
+ 		| CONVERT_REPORT rep_name TO_PRINTER KW_AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
 		}
- 		| CONVERT_REPORT rep_name TO_EMAIL AS var_or_char KW_USING var_or_char {
+ 		| CONVERT_REPORT rep_name TO_EMAIL KW_AS var_or_char KW_USING var_or_char {
                         char buff[255];
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 			print_convert_report($<str>2, buff,$<str>5,$<str>7,"EMAIL");
@@ -160,25 +160,25 @@ finish_cmd : FINISH_REPORT rep_name {
 		print_finish_report($<str>2);
 		// Can't free convertible here - developer needs to do that using FREE REPORT
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO var_or_char KW_AS var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char KW_AS var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","PIPE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER AS var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER KW_AS var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL AS var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL KW_AS var_or_char {
                         char buff[255];
 			add_feature("USE_REPORT");
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
@@ -188,37 +188,37 @@ finish_cmd : FINISH_REPORT rep_name {
 	}
 
 
-	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char KW_AS var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char KW_USING var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO var_or_char KW_AS var_or_char KW_USING var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char KW_USING var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char KW_AS var_or_char KW_USING var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char KW_USING var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char KW_AS var_or_char KW_USING var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"PIPE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER AS var_or_char KW_USING var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER KW_AS var_or_char KW_USING var_or_char {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
 		print_free_convertible($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL AS var_or_char KW_USING var_or_char {
+	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL KW_AS var_or_char KW_USING var_or_char {
                         char buff[255];
 			add_feature("USE_REPORT");
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
@@ -374,7 +374,7 @@ xrep_expr_list: xxrep_expr_list
 xxrep_expr_list : rep_expr_list opt_print_at 
 ;
 
-opt_print_at : | AT nval {
+opt_print_at : | KW_AT nval {
 	print_niy("PRINT AT...");
 }
 ;
@@ -479,7 +479,7 @@ rep_expr_p : fgl_expr_c op_wordwrap {
 ;
 
 rep_agg : 
-	SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+	KW_SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 		{
 		long a;
 		$<ptr>$=add_report_agg('S',$<ptr>3,$<ptr>5,racnt,&a);
@@ -491,13 +491,13 @@ rep_agg :
 		$<ptr>$=add_report_agg('C',0,$<ptr>2,racnt,&a);
 		racnt+=a;
 		}
-	| COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET rep_where
+	| COUNT OPEN_BRACKET KW_MULTIPLY CLOSE_BRACKET rep_where
 		{
 		long a;
 		$<ptr>$=add_report_agg('C',0,$<ptr>5,racnt,&a);
 		racnt+=a;
 		}
-	| PERCENT   OPEN_BRACKET MULTIPLY CLOSE_BRACKET  rep_where
+	| PERCENT   OPEN_BRACKET KW_MULTIPLY CLOSE_BRACKET  rep_where
 		{
 		long a;
 		$<ptr>$=add_report_agg('P',$<ptr>3,$<ptr>5,racnt,&a);
@@ -599,7 +599,7 @@ a=print_bind_definition('O');
 print_order_by_type(2,-1);
 sprintf($<str>$,"%d",a);
 }
-| ORDER BY obind_var_list_ord
+| ORDER KW_BY obind_var_list_ord
 {
 int a;
 set_rep_no_orderby(0);
@@ -766,9 +766,9 @@ pdf_functions :
 
 op_wordwrap:
 	{strcpy($<str>$,"0");}
- 	| WORDWRAP { strcpy($<str>$,"_rep.right_margin"); }
-	| WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
-	| WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
+ 	| KW_WORDWRAP { strcpy($<str>$,"_rep.right_margin"); }
+	| KW_WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
+	| KW_WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
 ;
 
 /* ============================ report.rule ========================== */

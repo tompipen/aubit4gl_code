@@ -175,7 +175,7 @@ flush_cmd : opt_use FLUSH fetch_cursor_name  {
 
 ;
 
-declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
+declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
 
 		print_declare("",$<sql_string>6,$<str>3,0,0);
@@ -185,7 +185,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specificatio
 		doing_declare=0;
 		
 	}
-	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
+	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD KW_FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
 		add_feature("HOLD_CURSOR");
 		print_declare("",$<sql_string>7,$<str>3,2,0); 
@@ -202,7 +202,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specificatio
 		print_undo_use($<str>1);
 		doing_declare=0;
 	}
-       	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+       	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD KW_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
 		add_feature("SCROLL_CURSOR");
 		add_feature("HOLD_CURSOR");
@@ -276,7 +276,7 @@ value_expression_initial_sli :
 	| ANY subquery_sli   		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ANY,$<s_select_list_item>2); }
 	| SOME subquery_sli  		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_SOME,$<s_select_list_item>2); }
 	| ATSIGN identifier 		{ $<s_select_list_item>$=new_select_list_item_col(0,$<str>2,0); }
-	| ATSIGN identifier DOT identifier { $<s_select_list_item>$=new_select_list_item_col($<str>2,$<str>4,0); }
+	| ATSIGN identifier KW_DOT identifier { $<s_select_list_item>$=new_select_list_item_col($<str>2,$<str>4,0); }
 ;
 
 
@@ -305,7 +305,7 @@ dbase_name      :       identifier {strcpy($<str>$,$<str>1);}
                 |       CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 ;
 
-cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list KW_COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}                                                                                                                      ;                                                                                                                                                                                                                                                       colident: identifier                                                                                                                | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}                                                     | CHAR_VALUE DOT identifier DOT identifier {                                                                                                if (A4GL_escape_quote_owner()) {                                                                                                    sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                   } else {                                                                                                                            sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                       }                                                                                                           }                                                                                                                   ;
+cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list KW_COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}                                                                                                                      ;                                                                                                                                                                                                                                                       colident: identifier                                                                                                                | identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}                                                     | CHAR_VALUE KW_DOT identifier KW_DOT identifier {                                                                                                if (A4GL_escape_quote_owner()) {                                                                                                    sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                   } else {                                                                                                                            sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                       }                                                                                                           }                                                                                                                   ;
 
 in_select_statement_ss:
         KW_SELECT op_ad select_list_slil table_expression_2_select sel_p2_select  {

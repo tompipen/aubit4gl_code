@@ -5,7 +5,7 @@ fetch_cursor_name: NAMED
 ;
 
 real_number : NUMBER_VALUE 
-	| DOT INT_VALUE { sprintf($<str>$,".%s",$<str>2); }
+	| KW_DOT INT_VALUE { sprintf($<str>$,".%s",$<str>2); }
 ;
 
 
@@ -21,7 +21,7 @@ char_or_var : CHAR_VALUE
 ;
 
 opt_use : {strcpy($<str>$,"");} 
-	| USE_SESSION conn_id FOR { print_use_session($<str>3); strcpy($<str>$,A4GL_get_undo_use()); }
+	| USE_SESSION conn_id KW_FOR { print_use_session($<str>3); strcpy($<str>$,A4GL_get_undo_use()); }
 ;
 
 conn_id : var_ident
@@ -95,8 +95,8 @@ cur_update_list : colident { strcpy($<str>$,$<str>1); }
 ;
 
 colident: identifier
-| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
-| CHAR_VALUE DOT identifier DOT identifier {
+| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
+| CHAR_VALUE KW_DOT identifier KW_DOT identifier {
 	if (A4GL_escape_quote_owner()) {
 		sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
 	} else {
@@ -231,15 +231,15 @@ CONSTRAINT
 |AVG
 |DAY
 |DBA
-|FOR
+|KW_FOR
 |XMAX
 |XMIN
-|NOT
-|SUM
-|AS
-|BY
+|KW_NOT
+|KW_SUM
+|KW_AS
+|KW_BY
 |KW_IN
-|TO
+|KW_TO
 |BEFORE
 |ILIKE
 |FILLFACTOR
@@ -250,7 +250,7 @@ CONSTRAINT
 |KW_DATE
 |KW_DOW
 | CASE
-| THEN
+| KW_THEN
 | WHEN
 | ELSE
 ;

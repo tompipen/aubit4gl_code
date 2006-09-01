@@ -173,7 +173,7 @@ strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>6,$<str>3,$<str>
 ;
 
 
-idm_input_array :identifier DOT MULTIPLY {sprintf($<str>$,"\"%s\"",$<str>1);}
+idm_input_array :identifier KW_DOT KW_MULTIPLY {sprintf($<str>$,"\"%s\"",$<str>1);}
 	| VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_var_for_inp_array(%s)",$<str>3);}
 ;
 

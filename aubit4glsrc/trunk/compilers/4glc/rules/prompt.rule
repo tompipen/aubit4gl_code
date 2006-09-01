@@ -5,7 +5,7 @@
 */
 
 prompt_cmd	:
-	PROMPT prompt_title opt_attributes FOR opt_char
+	PROMPT prompt_title opt_attributes KW_FOR opt_char
         variable opt_help_no
         opt_attributes {
                 push_blockcommand("PROMPT");
