@@ -387,18 +387,25 @@ int
 pipe_expect (char *s)
 {
   char buff[256];
+  int a;
   memset (buff, 0, sizeof (buff));
 
   pipe_flush(serversocket);
-
+  printf("Expect...\n");
   pipe_sock_gets (serversocket, buff, 255);
+
   if (strcmp (buff, s) != 0)
     {
-      printf ("Expecting %s - got %s\n", s, buff);
+      printf ("Expecting %s - got '%s'\n", s, buff);
+      for (a=0;a<17;a++) {
+	      	printf("(%02x %c) ",buff[a]&0xff, isprint(buff[a])?buff[a]:'.');
+      }
+      printf("\n");
       return 0;
     }
   else
     {
+	    printf("Got expected : '%s','%s'\n",buff,s);
       return 1;
     }
 
@@ -409,8 +416,11 @@ handshake ()
 {
   char buff[256];
   A4GL_debug ("Handshaking\n");
-  if (!pipe_expect ("WELCOME"))
-    return 0;
+  if (!pipe_expect ("WELCOME")) {
+  	if (!pipe_expect ("WELCOME")) {
+    		return 0;
+	}
+  }
   pipe_sock_puts (serversocket, "PROTOCOL 1\n"); pipe_flush(serversocket);
   if (!pipe_expect ("OK"))
     return 0;

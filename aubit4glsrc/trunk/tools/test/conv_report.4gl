@@ -1,7 +1,7 @@
 # This is an example of logical report usage....
 # Pretty neat huh ?
 #
-database mja1
+database test1
 main
 
 define t,c char(20)

@@ -2,10 +2,11 @@ CFLAGS=-g -fPIC -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libui -I$(AUBITDIR)/li
 CC=gcc
 
 
-all: ../../../../plugins/libUI_client.so server_tui server_gtk
+all: ../../../../plugins-`aubit-config A4GL_VERSION_STRING`/libUI_client.so  server_tui server_gtk
 
-../../../../plugins/libUI_client.so:  ui_lowlevel_xdr.o ui_lowlevel_clnt.o clnt_main.o marshall_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o ../common_hlui.o 
-	gcc -g -fPIC -shared ui_lowlevel_xdr.o ui_lowlevel_clnt.o clnt_main.o marshall_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o  ../common_hlui.o -o ../../../../plugins/libUI_client.so
+
+../../../../plugins-`aubit-config A4GL_VERSION_STRING`/libUI_client.so:  ui_lowlevel_xdr.o ui_lowlevel_clnt.o clnt_main.o marshall_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o ../common_hlui.o 
+	gcc -g -fPIC -shared ui_lowlevel_xdr.o ui_lowlevel_clnt.o clnt_main.o marshall_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o  ../common_hlui.o -o ../../../../plugins-`aubit-config A4GL_VERSION_STRING`/libUI_client.so
 
 
 libUI_xmlclient.so:  clnt_main_xml.o marshall_xml_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o ../common_hlui.o 

@@ -32,16 +32,16 @@
      NAME = 2138,
      KW_COMMA = 1687,
      FINPUT = 1768,
-     WORDWRAP = 1470,
+     KW_WORDWRAP = 1470,
      KW_USING = 1619,
-     SPACES = 1566,
+     KW_SPACES = 1566,
      COLUMN = 1522,
-     ASCII = 1579,
-     CLIPPED = 1478,
+     KW_ASCII = 1579,
+     KW_CLIPPED = 1478,
      WHERE = 1620,
      KW_OR = 1727,
      KW_AND = 1682,
-     NOT = 1702,
+     KW_NOT = 1702,
      IS_NOT_NULL = 1333,
      IS_NULL = 1473,
      NOT_EQUAL = 1546,
@@ -54,28 +54,27 @@
      LIKE = 1651,
      NOT_MATCHES = 1336,
      MATCHES = 1498,
-     PLUS = 1713,
-     MINUS = 1700,
-     MULTIPLY = 1607,
-     DIVIDE = 1633,
-     MOD = 1701,
-     POWER = 1606,
-     UNITS = 2139,
-     UMINUS = 2140,
+     KW_PLUS = 1713,
+     KW_MINUS = 1700,
+     KW_MULTIPLY = 1607,
+     KW_DIVIDE = 1633,
+     KW_MOD = 1701,
+     KW_POWER = 1606,
+     UMINUS = 2139,
      COMMAND = 1481,
-     NUMBER_VALUE = 2141,
-     CHAR_VALUE = 2142,
-     INT_VALUE = 2143,
-     NAMED_GEN = 2144,
-     CLINE = 2145,
-     SQLLINE = 2146,
-     KW_CSTART = 2147,
-     KW_CEND = 2148,
-     USER_DTYPE_ORIG = 2149,
-     USER_DTYPE_NEW = 2150,
-     SQL_TEXT = 2151,
-     KW_WHENEVER_SET = 2152,
-     COMMENT = 2153,
+     NUMBER_VALUE = 2140,
+     CHAR_VALUE = 2141,
+     INT_VALUE = 2142,
+     NAMED_GEN = 2143,
+     CLINE = 2144,
+     SQLLINE = 2145,
+     KW_CSTART = 2146,
+     KW_CEND = 2147,
+     USER_DTYPE_ORIG = 2148,
+     USER_DTYPE_NEW = 2149,
+     SQL_TEXT = 2150,
+     KW_WHENEVER_SET = 2151,
+     COMMENT = 2152,
      ON_CLOSE_APPLICATION_STOP = 1000,
      DIALOGSETCURRLINE = 1001,
      DIALOGKEYSETLABEL = 1002,
@@ -723,7 +722,7 @@
      STOP = 1667,
      TEMP = 1668,
      KW_TEXT = 1669,
-     THEN = 1670,
+     KW_THEN = 1670,
      USER = 1671,
      WAIT = 1672,
      WHEN = 1673,
@@ -744,37 +743,37 @@
      DEC = 1690,
      DIM = 1691,
      KW_FKEY = 1692,
-     FOR = 1693,
-     KEY = 1694,
+     KW_FOR = 1693,
+     KW_KEY = 1694,
      KWNO = 1695,
-     LET = 1696,
+     KW_LET = 1696,
      LOG = 1697,
      XMAX = 1698,
      XMIN = 1699,
-     PAD = 1703,
-     PUT = 1704,
-     RED = 1705,
-     ROW = 1706,
+     KW_PAD = 1703,
+     KW_PUT = 1704,
+     KW_RED = 1705,
+     KW_ROW = 1706,
      KW_RUN = 1707,
-     SQL = 1708,
-     SUM = 1709,
-     TOP = 1710,
-     USE = 1711,
+     KW_SQL = 1708,
+     KW_SUM = 1709,
+     KW_TOP = 1710,
+     KW_USE = 1711,
      ATSIGN = 1712,
      AS_TIFF = 1714,
      AS_GIF = 1715,
      AS_PNG = 1716,
      AS_JPEG = 1717,
-     AS = 1718,
-     AT = 1719,
-     BY = 1720,
-     DOT = 1721,
-     GO = 1722,
-     IF = 1723,
+     KW_AS = 1718,
+     KW_AT = 1719,
+     KW_BY = 1720,
+     KW_DOT = 1721,
+     KW_GO = 1722,
+     KW_IF = 1723,
      KW_IN = 1724,
-     OF = 1725,
+     KW_OF = 1725,
      KW_ON = 1726,
-     TO = 1728,
+     KW_TO = 1728,
      KWUP = 1729,
      FONT_NAME = 1730,
      FONT_SIZE = 1731,
@@ -1188,16 +1187,16 @@
 #define NAME 2138
 #define KW_COMMA 1687
 #define FINPUT 1768
-#define WORDWRAP 1470
+#define KW_WORDWRAP 1470
 #define KW_USING 1619
-#define SPACES 1566
+#define KW_SPACES 1566
 #define COLUMN 1522
-#define ASCII 1579
-#define CLIPPED 1478
+#define KW_ASCII 1579
+#define KW_CLIPPED 1478
 #define WHERE 1620
 #define KW_OR 1727
 #define KW_AND 1682
-#define NOT 1702
+#define KW_NOT 1702
 #define IS_NOT_NULL 1333
 #define IS_NULL 1473
 #define NOT_EQUAL 1546
@@ -1210,28 +1209,27 @@
 #define LIKE 1651
 #define NOT_MATCHES 1336
 #define MATCHES 1498
-#define PLUS 1713
-#define MINUS 1700
-#define MULTIPLY 1607
-#define DIVIDE 1633
-#define MOD 1701
-#define POWER 1606
-#define UNITS 2139
-#define UMINUS 2140
+#define KW_PLUS 1713
+#define KW_MINUS 1700
+#define KW_MULTIPLY 1607
+#define KW_DIVIDE 1633
+#define KW_MOD 1701
+#define KW_POWER 1606
+#define UMINUS 2139
 #define COMMAND 1481
-#define NUMBER_VALUE 2141
-#define CHAR_VALUE 2142
-#define INT_VALUE 2143
-#define NAMED_GEN 2144
-#define CLINE 2145
-#define SQLLINE 2146
-#define KW_CSTART 2147
-#define KW_CEND 2148
-#define USER_DTYPE_ORIG 2149
-#define USER_DTYPE_NEW 2150
-#define SQL_TEXT 2151
-#define KW_WHENEVER_SET 2152
-#define COMMENT 2153
+#define NUMBER_VALUE 2140
+#define CHAR_VALUE 2141
+#define INT_VALUE 2142
+#define NAMED_GEN 2143
+#define CLINE 2144
+#define SQLLINE 2145
+#define KW_CSTART 2146
+#define KW_CEND 2147
+#define USER_DTYPE_ORIG 2148
+#define USER_DTYPE_NEW 2149
+#define SQL_TEXT 2150
+#define KW_WHENEVER_SET 2151
+#define COMMENT 2152
 #define ON_CLOSE_APPLICATION_STOP 1000
 #define DIALOGSETCURRLINE 1001
 #define DIALOGKEYSETLABEL 1002
@@ -1879,7 +1877,7 @@
 #define STOP 1667
 #define TEMP 1668
 #define KW_TEXT 1669
-#define THEN 1670
+#define KW_THEN 1670
 #define USER 1671
 #define WAIT 1672
 #define WHEN 1673
@@ -1900,37 +1898,37 @@
 #define DEC 1690
 #define DIM 1691
 #define KW_FKEY 1692
-#define FOR 1693
-#define KEY 1694
+#define KW_FOR 1693
+#define KW_KEY 1694
 #define KWNO 1695
-#define LET 1696
+#define KW_LET 1696
 #define LOG 1697
 #define XMAX 1698
 #define XMIN 1699
-#define PAD 1703
-#define PUT 1704
-#define RED 1705
-#define ROW 1706
+#define KW_PAD 1703
+#define KW_PUT 1704
+#define KW_RED 1705
+#define KW_ROW 1706
 #define KW_RUN 1707
-#define SQL 1708
-#define SUM 1709
-#define TOP 1710
-#define USE 1711
+#define KW_SQL 1708
+#define KW_SUM 1709
+#define KW_TOP 1710
+#define KW_USE 1711
 #define ATSIGN 1712
 #define AS_TIFF 1714
 #define AS_GIF 1715
 #define AS_PNG 1716
 #define AS_JPEG 1717
-#define AS 1718
-#define AT 1719
-#define BY 1720
-#define DOT 1721
-#define GO 1722
-#define IF 1723
+#define KW_AS 1718
+#define KW_AT 1719
+#define KW_BY 1720
+#define KW_DOT 1721
+#define KW_GO 1722
+#define KW_IF 1723
 #define KW_IN 1724
-#define OF 1725
+#define KW_OF 1725
 #define KW_ON 1726
-#define TO 1728
+#define KW_TO 1728
 #define KWUP 1729
 #define FONT_NAME 1730
 #define FONT_SIZE 1731
@@ -2381,7 +2379,7 @@ typedef union YYSTYPE {
 	struct s_fetch 	*s_fetch;
 	} YYSTYPE;
 /* Line 1447 of yacc.c.  */
-#line 2385 "y.tab.h"
+#line 2383 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

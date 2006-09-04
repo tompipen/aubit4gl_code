@@ -183,9 +183,11 @@
      NOT_NULL = 1460,
      RESOURCE = 1466,
      SMALLINT = 1467,
+     KW_WORDWRAP = 1470,
      IS_NULL = 1473,
      LESS_THAN_EQ = 1474,
      BETWEEN = 1476,
+     KW_CLIPPED = 1478,
      CLOSE_BRACKET = 1479,
      CONNECT = 1482,
      KW_CURRENT = 1483,
@@ -215,12 +217,14 @@
      SECOND = 1559,
      KW_SELECT = 1563,
      SERIAL = 1564,
+     KW_SPACES = 1566,
      UNIQUE = 1567,
      KW_UPDATE = 1569,
      VALUES = 1570,
      KW_NULL = 1574,
      KW_TRUE = 1575,
      ALTER = 1577,
+     KW_ASCII = 1579,
      CHECK = 1583,
      COUNT = 1587,
      KW_FIRST = 1592,
@@ -230,7 +234,8 @@
      LESS_THAN = 1602,
      MONEY = 1604,
      MONTH = 1605,
-     MULTIPLY = 1607,
+     KW_POWER = 1606,
+     KW_MULTIPLY = 1607,
      ORDER = 1608,
      OUTER = 1609,
      UNION = 1618,
@@ -239,7 +244,7 @@
      CASE = 1629,
      KW_DATE = 1631,
      DESC = 1632,
-     DIVIDE = 1633,
+     KW_DIVIDE = 1633,
      DROP = 1636,
      ELSE = 1637,
      FROM = 1641,
@@ -249,7 +254,7 @@
      REAL = 1660,
      SOME = 1665,
      KW_TEXT = 1669,
-     THEN = 1670,
+     KW_THEN = 1670,
      USER = 1671,
      WHEN = 1673,
      YEAR = 1676,
@@ -265,21 +270,35 @@
      KW_COMMA = 1687,
      DAY = 1688,
      DBA = 1689,
-     FOR = 1693,
+     KW_FOR = 1693,
+     KW_KEY = 1694,
+     KW_LET = 1696,
      XMAX = 1698,
      XMIN = 1699,
-     MINUS = 1700,
-     NOT = 1702,
-     SUM = 1709,
+     KW_MINUS = 1700,
+     KW_MOD = 1701,
+     KW_NOT = 1702,
+     KW_PAD = 1703,
+     KW_PUT = 1704,
+     KW_RED = 1705,
+     KW_ROW = 1706,
+     KW_SQL = 1708,
+     KW_SUM = 1709,
+     KW_TOP = 1710,
+     KW_USE = 1711,
      ATSIGN = 1712,
-     PLUS = 1713,
-     AS = 1718,
-     BY = 1720,
-     DOT = 1721,
+     KW_PLUS = 1713,
+     KW_AS = 1718,
+     KW_AT = 1719,
+     KW_BY = 1720,
+     KW_DOT = 1721,
+     KW_GO = 1722,
+     KW_IF = 1723,
      KW_IN = 1724,
+     KW_OF = 1725,
      KW_ON = 1726,
      KW_OR = 1727,
-     TO = 1728,
+     KW_TO = 1728,
      BEFORE = 1766,
      END = 1769,
      TILDE = 1776,
@@ -449,9 +468,11 @@
 #define NOT_NULL 1460
 #define RESOURCE 1466
 #define SMALLINT 1467
+#define KW_WORDWRAP 1470
 #define IS_NULL 1473
 #define LESS_THAN_EQ 1474
 #define BETWEEN 1476
+#define KW_CLIPPED 1478
 #define CLOSE_BRACKET 1479
 #define CONNECT 1482
 #define KW_CURRENT 1483
@@ -481,12 +502,14 @@
 #define SECOND 1559
 #define KW_SELECT 1563
 #define SERIAL 1564
+#define KW_SPACES 1566
 #define UNIQUE 1567
 #define KW_UPDATE 1569
 #define VALUES 1570
 #define KW_NULL 1574
 #define KW_TRUE 1575
 #define ALTER 1577
+#define KW_ASCII 1579
 #define CHECK 1583
 #define COUNT 1587
 #define KW_FIRST 1592
@@ -496,7 +519,8 @@
 #define LESS_THAN 1602
 #define MONEY 1604
 #define MONTH 1605
-#define MULTIPLY 1607
+#define KW_POWER 1606
+#define KW_MULTIPLY 1607
 #define ORDER 1608
 #define OUTER 1609
 #define UNION 1618
@@ -505,7 +529,7 @@
 #define CASE 1629
 #define KW_DATE 1631
 #define DESC 1632
-#define DIVIDE 1633
+#define KW_DIVIDE 1633
 #define DROP 1636
 #define ELSE 1637
 #define FROM 1641
@@ -515,7 +539,7 @@
 #define REAL 1660
 #define SOME 1665
 #define KW_TEXT 1669
-#define THEN 1670
+#define KW_THEN 1670
 #define USER 1671
 #define WHEN 1673
 #define YEAR 1676
@@ -531,21 +555,35 @@
 #define KW_COMMA 1687
 #define DAY 1688
 #define DBA 1689
-#define FOR 1693
+#define KW_FOR 1693
+#define KW_KEY 1694
+#define KW_LET 1696
 #define XMAX 1698
 #define XMIN 1699
-#define MINUS 1700
-#define NOT 1702
-#define SUM 1709
+#define KW_MINUS 1700
+#define KW_MOD 1701
+#define KW_NOT 1702
+#define KW_PAD 1703
+#define KW_PUT 1704
+#define KW_RED 1705
+#define KW_ROW 1706
+#define KW_SQL 1708
+#define KW_SUM 1709
+#define KW_TOP 1710
+#define KW_USE 1711
 #define ATSIGN 1712
-#define PLUS 1713
-#define AS 1718
-#define BY 1720
-#define DOT 1721
+#define KW_PLUS 1713
+#define KW_AS 1718
+#define KW_AT 1719
+#define KW_BY 1720
+#define KW_DOT 1721
+#define KW_GO 1722
+#define KW_IF 1723
 #define KW_IN 1724
+#define KW_OF 1725
 #define KW_ON 1726
 #define KW_OR 1727
-#define TO 1728
+#define KW_TO 1728
 #define BEFORE 1766
 #define END 1769
 #define TILDE 1776
@@ -579,7 +617,7 @@ typedef union YYSTYPE {
 
 } YYSTYPE;
 /* Line 1447 of yacc.c.  */
-#line 583 "y.tab.h"
+#line 621 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

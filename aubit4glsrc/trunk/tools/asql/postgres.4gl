@@ -1110,6 +1110,7 @@ function table_info()
 define lv_tabname char(255)
 define lv_txt char(128)
 define lv_cont integer
+define lv_option integer
 
         if not has_db() then
                 call select_db()
@@ -1138,6 +1139,7 @@ define lv_cont integer
 		call set_info_text(lv_txt)
 
 		while true
+			case info_menu(lv_option)
 
                         when "Columns"
 				CALL open_display_file()

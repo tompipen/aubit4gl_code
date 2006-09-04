@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.165 2006-08-31 15:06:58 mikeaubury Exp $
+# $Id: sql.c,v 1.166 2006-09-04 10:20:00 mikeaubury Exp $
 #
 */
 
@@ -2889,7 +2889,9 @@ make[2]: *** [sql.o] Error 1
 #ifdef DEBUG
       if (strcmp (s1, "S1010") == 0)
 	{			// Function sequence error
-	  A4GL_assertion (1, "Function sequence error ?");
+		if (A4GL_isyes(acl_getenv("ASSERTONFUNCSEQERR"))) {
+	  		A4GL_assertion (1, "Function sequence error ?");
+	  	}
 	}
 
       if (strcmp (s1, "01S02") == 0)

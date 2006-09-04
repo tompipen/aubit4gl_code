@@ -321,4 +321,61 @@ A4GL_LL_field_opts(f) {
 
 A4GL_ll_set_field_opts(void *f,long o) {
 	A4GL_LL_set_field_opts(f,o);
+
+}
+
+
+char *A4GL_internal_version() {
+	return "1";
+}
+
+A4GL_internal_build() {
+	return "2";
+}
+int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) {
+char buff[256];
+int x;
+char *c;
+va_list args;
+char xbuff[20000];
+
+
+// DO NOT CALL A4GL_debug from this function!!!!
+// (put that in a few times - just top make sure :-)
+/* 
+
+We can end up with problems with overlapping - eg
+      sprintf(bibble,"'%s'",bibble);
+
+   so we'll sprintf into a temporary space first, then strcpy across after
+
+*/
+        if (fmt==0) {
+                sprintf(buff,"No format for sprintf @ %s line %d",f,l);
+                A4GL_assertion(1,buff);
+        }
+
+// DO NOT CALL A4GL_debug from this function!!!!
+        if (sdest>sizeof(char *)) { // We do this one...
+              va_start (args, fmt);
+              c=acl_malloc2(sdest);
+              x=VSNPRINTF(c,sdest,fmt,args);
+              if (x>=sdest) {
+                        sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
+                        PRINTF("-->%s (%d>=%d)",fmt,x,sdest);
+                        A4GL_assertion(1,buff);
+              }
+              strcpy(dest,c);
+              free(c);
+// DO NOT CALL A4GL_debug from this function!!!!
+        } else {
+              va_start (args, fmt);
+              x=VSPRINTF(xbuff,fmt,args);
+                if (x>sizeof(xbuff)) {
+                        A4GL_assertion(1,"sprintf > 20,000 characters when using a pointer...");
+                }
+              strcpy(dest,xbuff);
+        }
+        return x;
+// DO NOT CALL A4GL_debug from this function!!!!
 }

@@ -1869,7 +1869,7 @@ YY_RULE_SETUP
 case 86:
 YY_RULE_SETUP
 #line 106 "ace.lex"
-{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OF;}
+{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_OF;}
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
@@ -2024,7 +2024,7 @@ YY_RULE_SETUP
 case 117:
 YY_RULE_SETUP
 #line 140 "ace.lex"
-{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OR;}
+{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_OR;}
 	YY_BREAK
 case 118:
 YY_RULE_SETUP

@@ -10,6 +10,8 @@ echo "Specific shorts 4"
 nice -n 20 ./report SHORT IFXODBC 
 echo "Specific shorts 5"
 nice -n 20 ./report SHORT MYODBC 
+nice -n 20 ./report SHORT MYSQL
+nice -n 20 ./report SHORT ECI
 echo "DB"
 ./report DB
 echo "LONG"

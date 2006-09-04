@@ -66,7 +66,7 @@
    enum yytokentype {
      USING = 258,
      WHERE = 259,
-     OR = 260,
+     KW_OR = 260,
      AND = 261,
      NOT = 262,
      IS_NULL = 263,
@@ -168,7 +168,7 @@
      NOT_IN = 359,
      NUMBER_VALUE = 360,
      NUMERIC = 361,
-     OF = 362,
+     KW_OF = 362,
      ON = 363,
      OPEN_BRACKET = 364,
      OPEN_SQUARE = 365,
@@ -231,7 +231,7 @@
 /* Tokens.  */
 #define USING 258
 #define WHERE 259
-#define OR 260
+#define KW_OR 260
 #define AND 261
 #define NOT 262
 #define IS_NULL 263
@@ -333,7 +333,7 @@
 #define NOT_IN 359
 #define NUMBER_VALUE 360
 #define NUMERIC 361
-#define OF 362
+#define KW_OF 362
 #define ON 363
 #define OPEN_BRACKET 364
 #define OPEN_SQUARE 365
@@ -929,7 +929,7 @@ static const unsigned short int yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "USING", "WHERE", "OR", "AND", "NOT",
+  "$end", "error", "$undefined", "USING", "WHERE", "KW_OR", "AND", "NOT",
   "IS_NULL", "IS_NOT_NULL", "NOT_EQUAL", "EQUAL", "LESS_THAN_EQ",
   "LESS_THAN", "GREATER_THAN_EQ", "GREATER_THAN", "NOT_LIKE", "LIKE",
   "NOT_MATCHES", "MATCHES", "MINUS", "PLUS", "DIVIDE", "MULTIPLY", "MOD",
@@ -944,7 +944,7 @@ static const char *const yytname[] =
   "HOUR", "IF", "IN", "INPUT", "INTEGER", "INTERVAL", "INTO", "INTVAL",
   "KW_FALSE", "KW_TRUE", "LAST", "LEFT", "LENGTH", "LET", "LINES",
   "MARGIN", "MINUTE", "MONEY", "MONTH", "NAMED", "NEED", "NOT_EXISTS",
-  "NOT_IN", "NUMBER_VALUE", "NUMERIC", "OF", "ON", "OPEN_BRACKET",
+  "NOT_IN", "NUMBER_VALUE", "NUMERIC", "KW_OF", "ON", "OPEN_BRACKET",
   "OPEN_SQUARE", "ORDER_BY", "ORDER_EXTERNAL_BY", "OUTER", "OUTPUT",
   "PAGE", "PAGE_HEADER", "PAGE_TRAILER", "PARAM", "PAUSE", "PERCENT",
   "POW", "PRINT", "PRINTER", "PRINT_FILE", "PROMPT", "READ", "REPORT",
