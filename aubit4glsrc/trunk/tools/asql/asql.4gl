@@ -100,6 +100,8 @@ if num_args() then
 
 		if arg_val(lv_a)="-e" then
 			let lv_echo=1
+			call  get_version() returning lv_dummy
+			let lv_quiet=1
 			continue for
 		end if
 
