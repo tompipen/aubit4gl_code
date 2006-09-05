@@ -538,11 +538,14 @@ like_var :
 		    A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
 		   
 		} 
+		| LIKE CHAR_VALUE KW_DOT define_table_name KW_DOT col_name {
+		   	sprintf($<str>$,"%s.%s",$<str>4,$<str>6);
+		}
 ;
 
 
 col_name :
-		define_ident {
+		identifier {
 		   A4GL_debug("--->%s\n",$<str>1);
 		   strcpy($<str>$,$<str>1);
 		   

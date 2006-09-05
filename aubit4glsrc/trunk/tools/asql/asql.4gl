@@ -158,6 +158,13 @@ code
 }
 endcode
 
+if lv_echo then
+	#Just connect and exit...
+	if mv_curr_db is not null then
+		exit program 0
+	end if
+end if
+
 options message line last
 
 
@@ -185,7 +192,6 @@ function open_db()
 		let first_init=1
 	end if
 	call check_db(mv_curr_db) returning lv_db
-	
 	database mv_curr_db
 	whenever error stop
 	if sqlca.sqlcode<0 then
