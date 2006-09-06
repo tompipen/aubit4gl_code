@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.140 2006-08-20 10:55:25 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.141 2006-09-06 18:14:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.140 2006-08-20 10:55:25 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.141 2006-09-06 18:14:33 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -533,6 +533,11 @@ LEXLIB_print_put (char *xcname,char *putvals)
   print_conversions ('i');
   printc("internal_recopy_%s_i_Dir();",cname);
 A4GL_save_sql("PUT %s",cname);
+
+
+set_suppress_lines();
+
+
   printc ("\nEXEC SQL PUT %s /* '%s' */\n", cname,putvals);
 
   if (A4GLSQLCV_check_requirement("USE_BINDING_FOR_PUT")==0) {
@@ -556,6 +561,7 @@ A4GL_save_sql("PUT %s",cname);
   printc (";");
   print_copy_status ();
   printc ("}\n");
+clr_suppress_lines();
 }
 
 

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.315 2006-09-06 12:49:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.316 2006-09-06 18:14:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.315 2006-09-06 12:49:10 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.316 2006-09-06 18:14:33 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -610,12 +610,12 @@ if (os>=sizeof(buff)) {
   if (A4GL_isyes (acl_getenv ("INCLINES")))
     {
       static int last_line=-1;
-
+     
       for (a = 0; a < strlen (buff); a++)
 	{
 	  if (buff[a] == '\n' )
 	    {
-		if (suppress_lines==0 ) {
+		if (suppress_lines==0 && strstr(buff,"EXEC SQL")==0) {
 			last_line=lastlineno;
 	      		if (infilename != 0) { 
 				FPRINTF (outfile, "\n#line %d \"%s.4gl\"\n", lastlineno, outputfilename); 
@@ -1416,7 +1416,6 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
   A4GL_debug ("MJA A4GL_prchkerr %d %s", l, f);
 #endif
 
-  //printc ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0)) {\n");
 
 
   printcomment ("/* NOTFOUND */");
@@ -1425,7 +1424,6 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
   a = pr_when_do ("   ERR_CHK_WHEN_NOT_FOUND ", when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
   printcomment ("/* SQLERROR */");
 
-  //a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode))", when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
   a = pr_when_do ("   ERR_CHK_SQLERROR ", when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
 
 #ifdef ANYERRORISCAUSINGPROBS
@@ -1437,16 +1435,13 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
 #endif
 
   printcomment ("/* ERROR */");
-  //a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_status<0)) ", when_code[A_WHEN_ERROR], l, f, when_to[A_WHEN_ERROR]);
   a = pr_when_do ("   ERR_CHK_ERROR ", when_code[A_WHEN_ERROR], l, f, when_to[A_WHEN_ERROR]);
 
   printcomment ("/* SQLWARNING */");
-  //a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
   a = pr_when_do ("   if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_SQLWARNING], l, f, when_to[A_WHEN_SQLWARNING]);
 
   printcomment ("/* WARNING */");
 
-  //a = pr_when_do ("   if (CHK_FOR_ERR &&  (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W'))", when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
   a = pr_when_do ("   ERR_CHK_WARNING ", when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
 
 
@@ -1461,7 +1456,6 @@ LEXLIB_A4GL_prchkerr (int l, char *f)
 
 
 
-  //printc ("}\n");
 }
 
 /**
@@ -1886,7 +1880,6 @@ real_print_expr (struct expr_str *ptr)
 
   	      printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", p->lib, scan_variable (p->lib), p->fname, A4GL_new_list_get_count (p->parameters));
 
-	      //printc ("      _retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d);",  p->lib, p->fname, A4GL_new_list_get_count (p->parameters));
 	      printc ("      if (_retvars!=1) {");
 	      printc ("          A4GLSQL_set_status(-3001,0);");
 	      printc ("          A4GL_chk_err(%d,\"%s\");", p->line, p->module);
@@ -2334,8 +2327,6 @@ struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) {
   struct expr_str *p;
   struct expr_str *p2;
   struct expr_str_list *l2;
-  //int b;
-  //int printed = 0;
 
   if (l == 0)
     return 0;
@@ -2393,9 +2384,6 @@ A4GL_print_expr_list_concat (struct expr_str_list *l)
 {
   int a;
   struct expr_str *p;
-  //struct expr_str *p2;
-  //struct expr_str_list *l2;
-  //int b;
   int printed = 0;
 
   if (l == 0)
@@ -2628,7 +2616,6 @@ print_field_bind_constr (void)
       if (a > 0)
 	printc (",");
       if (constr_buff[a].tab[0] != 0) {
-		//printc ("\"%s.%s\",1", constr_buff[a].tab, constr_buff[a].col);
 		printc ("\"%s\",1",  constr_buff[a].col);
 	}
       else
@@ -2659,12 +2646,6 @@ LEXLIB_print_param (char i,char*fname)
   expand_bind (&fbind[0], 'F', fbindcnt,1);
   A4GL_debug ("Expanded - now %d entries", fbindcnt);
 
-  //for (a=0;a<fbindcnt;a++) {
-	  //int c;
-	//c = find_variable_scope (fbind[a].varname);
-	//printf("Scope : %c\n",c);
-  //}
-  //
   
   if (i == 'r')
     {
@@ -2997,7 +2978,6 @@ static void print_returning (void)
   }
 
 
-  //printc ("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\nA4GL_pop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n", cnt);
   if (cnt) {
 	  if (A4GL_doing_pcode()) {
 		printc("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);A4GL_pop_params(ibind,%d);}",cnt,cnt);
@@ -3020,7 +3000,6 @@ static void print_returning (void)
 	  }
 
   }
-  //printc ("}\n");
   printc ("}\n");
   start_bind('i',0);
 }
@@ -4823,12 +4802,10 @@ LEXLIB_print_start_report (char *where, t_expr_str *out, char *repname,char *dim
   // We need to do this properly by not popping it at all and just getting the start report to pop them off in the right 
   // order - but this might break previously compiled code 
   // (So we're leaving it to work with this kludge for now)
-  //printc("{ // START REPORT");
-	  //printc("char *_rout_to=0;");
 
 
   printc ("A4GL_push_char(\"%s\");\n", where);
-  printc(" // rout...");
+  printc(" /* rout... */");
 
   if (out) { 
 	 	LEXLIB_print_expr(out); 
