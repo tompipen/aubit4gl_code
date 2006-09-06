@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2006-08-19 09:29:54 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2006-09-06 10:52:44 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -173,7 +173,8 @@ ifdef COMSPEC
 endif
 
 ifneq "${COMSPEC}" ""
-	ECPG_INCDIR			:=$(shell echo "${ECPG_INCDIR}" | tr '\\' '/')
+	ECPG_INCDIR			:=c:/progra~1/postgr~1/8.1/include 
+#$(shell echo "${ECPG_INCDIR}" | tr '\\' '/')
 	LIBPQ_FE_H_IFLAGS	:=$(shell echo "${LIBPQ_FE_H_IFLAGS}" | tr '\\' '/')
 	ECPG_IFLAGS			:=$(shell echo "${ECPG_IFLAGS}" | tr '\\' '/')
 	PGLIBS				:=$(shell echo "${PGLIBS}" | tr '\\' '/')
@@ -283,6 +284,8 @@ ${PLUGINDIR}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
 #EC with POSTGRES dialect - DOES NOT HAVE IMPLEMENTED FULL FUNCTIONALITY OF
 #DRIVER NEEDED TO RUN PROGRAMS.
 #${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}
+libSQL_c_ecpg: ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}
+
 ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: esql_simple_ecpg.ec
 #	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib; export LD_RUN_PATH
 	${PG_ESQLC} -ct $^

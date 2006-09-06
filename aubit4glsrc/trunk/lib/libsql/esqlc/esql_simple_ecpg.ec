@@ -1,8 +1,12 @@
 #include "a4gl_lib_sql_esqlc_int.h"
 #include "sql3types.h"
+#include "sqlca.h"
 
 //void global_A4GLSQL_set_sqlcode (int n);
 
+#ifndef POSTGRES_SQLCA_H
+#error Wrong SQLCA included
+#endif
 
 static int getColumnsMax = 0;
 static int getColumnsOrder = 0;

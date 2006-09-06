@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2006-07-27 16:04:09 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2006-09-06 10:52:45 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -204,6 +204,8 @@ all: ${ALL}
 ${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: clean_hl_tui $(OBJS) ${OBJS2}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS2} \
 		${LINKLIBS} ${CURSES_LIB_NAME} 
+
+TUIw: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
 
 #PDcurses with libform from CygWin added
 #${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
@@ -398,7 +400,7 @@ clean_hl_tuiws : cleanish
 clean_hl_tuin : cleanish
 		${RM} ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT} 
 
-lean_hl_tuins : cleanish
+clean_hl_tuins : cleanish
 		${RM} ${PLUGINDIR}/libUI_HL_TUINs${SO_EXT} 
 
 clean_hl_tuind : cleanish

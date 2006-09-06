@@ -11,24 +11,38 @@ then
 
 fi
 
-make
+if make
+then
 
+	echo "Making normal curses library"
+	cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_curses
+	make -f makefile.win32
+	
+	
+	echo "Making TUIw curses library"
+	cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_highlevel
+	make TUIw
+	
+	echo "Making ESQL/C connector library"
+	cd /usr/src/aubit/aubit4glsrc/lib/libsql/esqlc
+	make
+	
+	echo "Making ESQL/C helper library"
+	cd /usr/src/aubit/aubit4glsrc/lib/libesql
+	make
+	
+	echo "Making static libaubit4gl library"
+	cd /usr/src/aubit/aubit4glsrc/lib/libaubit4gl
+	make -f makefile.static
+	
+	cd /usr/src/aubit/aubit4glsrc/tools/asql
+	
 
-cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_curses
-make -f makefile.win32
+	export PATH="c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/bin:c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/lib:/usr/src/aubit/aubit4glsrc/bin:/usr/src/aubit/aubit4glsrc/lib:/usr/bin:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/gnu/MinGW/bin:C:/gnu/pdc27_vc_w32:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/gnu/pdc27_vc_w32:/cygdrive/c/Program Files/IBM/Informix/Client-SDK/bin:/cygdrive/c/WINDOWS/system32::/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/lib:/bin/custom:/usr/sbin"
 
-
-cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_highlevel
-make libUI_HL_TUIw.dll
-
-
-cd /usr/src/aubit/aubit4glsrc/lib/libaubit4gl
-make -f makefile.static
-
-cd /usr/src/aubit/aubit4glsrc/tools/asql
-
-
-export PATH="c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/bin:c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/lib:/usr/src/aubit/aubit4glsrc/bin:/usr/src/aubit/aubit4glsrc/lib:/usr/bin:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/gnu/MinGW/bin:C:/gnu/pdc27_vc_w32:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/gnu/pdc27_vc_w32:/cygdrive/c/Program Files/IBM/Informix/Client-SDK/bin:/cygdrive/c/WINDOWS/system32::/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/lib:/bin/custom:/usr/sbin"
-
-sh makestatic_win32.sh 4gl
-
+	sh makestatic_win32.sh 4gl
+	cp asql_si.exe /usr/src/aubit/aubit4glsrc/bin
+	cp lib/libaubit4gl*.dll /usr/src/aubit/aubit4glsrc/bin
+else
+	echo "Make failed"
+fi
