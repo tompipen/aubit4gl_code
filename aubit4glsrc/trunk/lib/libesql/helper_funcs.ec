@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.45 2006-07-17 14:09:15 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.46 2006-09-06 14:02:34 mikeaubury Exp $
 #
 */
 
@@ -494,10 +494,17 @@ A4GL_debug("Copy char : p_indicat=%p",p_indicat);
 			return;
 	
 		}
+
+
+		// If we get to here - we can't be null...
 		memset(infx,0,size);
 		strncpy((char *)(infx),(char *)(a4gl),size);
 		infx[size]=0;
 		A4GL_trim(infx); // @todo -  what about varchars ... ?
+		if (strlen(infx)==0) {
+			infx[0]=' ';
+			infx[1]=0;
+		}
 		A4GL_debug("copy_char - > %s",infx);
 	}
 
