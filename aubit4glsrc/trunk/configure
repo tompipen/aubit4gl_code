@@ -886,13 +886,13 @@ echo X"$0" |
   	  /^X\(\/\).*/{ s//\1/; q; }
   	  s/.*/./; q'`
   srcdir=$ac_confdir
-  if test ! -r $srcdir/$ac_unique_file; then
+  if test ! -r "$srcdir/$ac_unique_file"; then
     srcdir=..
   fi
 else
   ac_srcdir_defaulted=no
 fi
-if test ! -r $srcdir/$ac_unique_file; then
+if test ! -r "$srcdir/$ac_unique_file"; then
   if test "$ac_srcdir_defaulted" = yes; then
     { echo "$as_me: error: cannot find sources ($ac_unique_file) in $ac_confdir or .." >&2
    { (exit 1); exit 1; }; }
@@ -901,7 +901,7 @@ if test ! -r $srcdir/$ac_unique_file; then
    { (exit 1); exit 1; }; }
   fi
 fi
-(cd $srcdir && test -r ./$ac_unique_file) 2>/dev/null ||
+(cd $srcdir && test -r "./$ac_unique_file") 2>/dev/null ||
   { echo "$as_me: error: sources are in $srcdir, but \`cd $srcdir' does not work" >&2
    { (exit 1); exit 1; }; }
 srcdir=`echo "$srcdir" | sed 's%\([^\\/]\)[\\/]*$%\1%'`
@@ -37398,7 +37398,7 @@ PLUGIN_NO_LINKABLE=
 	if test "$IFMX_ESQLC" != "no" ; then
 		PLUGIN_YES="$PLUGIN_YES SQL_esql ESQL_INFORMIX"
 		if test "$enable_minimal" != "yes"; then
-			COMP_EXE="$COMP_EXE aupscol asql_i$A4GL_EXE_EXT"
+			COMP_EXE="$COMP_EXE aupscol asql_i$A4GL_EXE_EXT runforms$A4GL_EXE_EXT"
 			#aupscol/sqleditor/asql_i currently compiles only with Informix ESQL/C
 		fi
 	else
@@ -40634,7 +40634,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.344 2006-09-01 19:31:37 mikeaubury Exp $
+| $Id: configure,v 1.345 2006-09-06 20:13:33 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

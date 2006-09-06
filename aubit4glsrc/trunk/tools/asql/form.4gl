@@ -153,7 +153,7 @@ call prompt_pick("RUN >> ","") returning lv_fname
 if lv_fname is not null then
 	let lv_runstr=fgl_getenv("RUNFORMS")
 	if lv_runstr is null or lv_runstr matches " " then
-		LET lv_runstr=fgl_getenv("AUBITDIR") clipped,"/bin/runforms"
+		LET lv_runstr=fgl_getenv("AUBITDIR") clipped,"/bin/runforms", fgl_getenv("A4GL_EXE_EXT");
 	end if
 	LET lv_runstr=lv_runstr clipped," ",lv_fname
 

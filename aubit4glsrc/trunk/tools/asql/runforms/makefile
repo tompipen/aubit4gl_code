@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.6 2006-08-31 19:08:22 mikeaubury Exp $
+# $Id: makefile,v 1.7 2006-09-06 20:13:44 mikeaubury Exp $
 #
 
 ROOT    		=../../..
@@ -37,7 +37,7 @@ include 		${ROOT}/incl/Makefile-common
 include 		${ROOT}/incl/a4gl.mk
 FGLC=4glpc -V1 -g  
 
-${ROOT}/bin/runforms: globals.4gl dbi.4gl runform.4gl   list.4gl
+../runforms${A4GL_EXE_EXT}: globals.4gl dbi.4gl runform.4gl   list.4gl
 	$(FGLC) $^ -o $@
 
 irunforms: globals.4gl dbi.4gl runform.4gl  list_arr.4gl 

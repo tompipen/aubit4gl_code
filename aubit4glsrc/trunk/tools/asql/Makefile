@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.43 2006-08-29 19:22:53 mikeaubury Exp $
+# $Id: Makefile,v 1.44 2006-09-06 20:13:43 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -105,7 +105,7 @@ ifneq "${PG_ESQLC}" "no"
 endif
 
 ifneq "${IFMX_ESQLC}" "no"
-	ALL_PROGS			+=asql_i${A4GL_EXE_EXT}
+	ALL_PROGS			+=asql_i${A4GL_EXE_EXT} runforms${A4GL_EXE_EXT}
 endif
 
 ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
@@ -186,6 +186,10 @@ asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
 	@echo "|           Successfuly compiled Informix version of asql            |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
+
+runforms${A4GL_EXE_EXT}: 
+	cd runforms; make; 
+	
 
 asql_g${A4GL_EXE_EXT}: A4GL_LEXTYPE=C
 asql_g${A4GL_EXE_EXT}: ${OBJS_GEN}
