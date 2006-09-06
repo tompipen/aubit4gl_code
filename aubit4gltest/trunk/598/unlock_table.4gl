@@ -19,11 +19,11 @@ MAIN
 	)
 	begin work
 	LOCK TABLE xpto IN SHARE MODE
-	commit work
 	
 	WHENEVER ERROR CONTINUE
 		UNLOCK TABLE xpto
 	WHENEVER ERROR STOP
+	commit work
 	DROP TABLE xpto
 END MAIN
 
