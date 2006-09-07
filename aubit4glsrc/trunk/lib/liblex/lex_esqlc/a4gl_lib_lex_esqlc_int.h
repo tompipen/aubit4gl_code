@@ -13,3 +13,16 @@ char find_variable_scope (char *s_in);
 int print_bind_dir_definition(char i,struct binding_comp *bind, int bindcnt) ;
 int print_bind_dir_set_value (char i,struct binding_comp *bind,int bindcnt);
 int doing_esql(void);
+
+
+
+enum e_dialect {
+	E_DIALECT_NONE,
+	E_DIALECT_INFORMIX,
+	E_DIALECT_POSTGRES,
+	E_DIALECT_SAPDB,
+	E_DIALECT_INGRES,
+	E_DIALECT_INFOFLEX
+};
+
+enum e_dialect esql_type(void);

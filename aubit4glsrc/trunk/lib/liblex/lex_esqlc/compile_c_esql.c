@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.141 2006-09-06 18:14:33 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.142 2006-09-07 10:24:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_esql.c,v 1.141 2006-09-06 18:14:33 mikeaubury Exp $";
+		"$Id: compile_c_esql.c,v 1.142 2006-09-07 10:24:47 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -113,7 +113,7 @@ extern int ibindcnt;
 */
 
 void 		printcomment 	(char *fmt, ...);
-int 		esql_type 		(void);
+//enum e_dialect 		esql_type 		(void);
 extern void printh 			(char *fmt, ...);
 void 		printc 			(char *fmt, ...);
 static void print_copy_status (void);
@@ -793,7 +793,7 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 	A4GL_save_sql("CONNECT TO '%s'", v);
 
 	if (strcmp(v,"?")==0) {
-	if (esql_type()==2) { // Postgres...
+	if (esql_type()==E_DIALECT_POSTGRES) { // Postgres...
   		printc ("\nEXEC SQL CONNECT TO  :_d AS %s", A4GL_strip_quotes(s));
 		if (strlen(user)) {
 			printc("USER :_u USING :_p");
@@ -805,7 +805,7 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 		}
 	}
 				} else {
-	if (esql_type()==2) { // Postgres...
+	if (esql_type()==E_DIALECT_POSTGRES) { // Postgres...
   		printc ("\nEXEC SQL CONNECT TO  '%s' AS %s", v,A4GL_strip_quotes(s));
 		if (strlen(user)) {
 			printc("USER :_u USING :_p");
@@ -1130,20 +1130,30 @@ A4GL_save_sql("DATABASE $s",0);
   } else {
       switch (esql_type ())
 	{
-	case 1:
+	case E_DIALECT_NONE:
+		A4GL_assertion(1,"No ESQL/C Dialect");
+		break;
+	case E_DIALECT_INFORMIX:
 	A4GL_save_sql("DATABASE %s",db);
 	  printc ("\nEXEC SQL DATABASE %s;\n", db);
 	  break;
 
-	case 2:
+	case E_DIALECT_POSTGRES:
 	A4GL_save_sql("DATABASE %s",db);
 	  printc ("\nEXEC SQL DATABASE %s;\n", db);
 	  break;
-	case 3:
+
+	case E_DIALECT_SAPDB:
 	A4GL_save_sql("DATABASE %s",db);
 	  printc ("\nEXEC SQL DATABASE %s;\n", db);
 	  break;
-	case 4:
+
+	case E_DIALECT_INGRES:
+	A4GL_save_sql("DATABASE %s",db);
+	  printc ("\nEXEC SQL DATABASE %s;\n", db);
+	  break;
+
+	case E_DIALECT_INFOFLEX:
 	A4GL_save_sql("DATABASE %s",db);
 	  printc ("\nEXEC SQL DATABASE %s;\n", db);
 	  break;
@@ -1168,10 +1178,12 @@ A4GL_save_sql("DATABASE $s",0);
 
       switch (esql_type ())
 	{
-	case 1: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
-	case 2: printc ("\nEXEC SQL CONNECT TO :s AS 'default';\n"); break;
-	case 3: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
-	case 4: printc ("\nEXEC SQL CONNECT :s ;\n"); break;
+	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
+	case E_DIALECT_INFORMIX: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
+	case E_DIALECT_POSTGRES: printc ("\nEXEC SQL CONNECT TO :s AS 'default';\n"); break;
+	case E_DIALECT_SAPDB: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
+	case E_DIALECT_INGRES: printc ("\nEXEC SQL CONNECT :s ;\n"); break;
+	case E_DIALECT_INFOFLEX: printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n"); break;
 	}
       printc ("}");
     }
@@ -1184,19 +1196,27 @@ A4GL_save_sql("DISCONNECT default'",0);
 	printc("}");
       switch (esql_type ())
 	{
-	case 1:
-A4GL_save_sql("CONNECT TO \"%s\" AS 'default'",db);
-	  printc ("\nEXEC SQL CONNECT TO \"%s\" AS 'default';\n", db);
-	  break;
-	case 2:
-A4GL_save_sql("CONNECT TO %s AS 'default'",db);
-	  printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
-	  break;
-	case 3:
-A4GL_save_sql("CONNECT TO %s AS 'default'",db);
-	  printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
-	  break;
+	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
 
+	case E_DIALECT_INFORMIX:
+		A4GL_save_sql("CONNECT TO \"%s\" AS 'default'",db);
+	  	printc ("\nEXEC SQL CONNECT TO \"%s\" AS 'default';\n", db);
+	  	break;
+
+	case E_DIALECT_POSTGRES:
+		A4GL_save_sql("CONNECT TO %s AS 'default'",db);
+	  	printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
+	  	break;
+
+	case E_DIALECT_SAPDB:
+		A4GL_save_sql("CONNECT TO %s AS 'default'",db);
+	  	printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
+	  	break;
+
+	case E_DIALECT_INFOFLEX:
+		A4GL_save_sql("CONNECT TO \"%s\" AS 'default'",db);
+	  	printc ("\nEXEC SQL CONNECT TO \"%s\" AS 'default';\n", db);
+	  	break;
 
 	case 4:
 	  printc ("\nEXEC SQL CONNECT %s;\n", db);
@@ -1206,10 +1226,12 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
   }
 
   switch (esql_type ())  {
-  	case 1: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",\"%s\");",db);break;
-	case 2: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\",\"%s\");",db);break;
-	case 3: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\",\"%s\");",db);break;
-	case 4: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\",\"%s\");",db);break;
+	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
+  	case E_DIALECT_INFORMIX: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",\"%s\");",db);break;
+	case E_DIALECT_POSTGRES: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\",\"%s\");",db);break;
+	case E_DIALECT_SAPDB: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\",\"%s\");",db);break;
+	case E_DIALECT_INGRES: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\",\"%s\");",db);break;
+	case E_DIALECT_INFOFLEX: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",\"%s\");",db);break;
   }
 
 
@@ -1429,7 +1451,7 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
       strcat (buff, " SCROLL");
     }
   strcat (buff, " CURSOR");
-  if (h1 || esql_type () == 2)	/* All postgres cursors should be with hold */
+  if (h1 || esql_type () == E_DIALECT_POSTGRES)	/* All postgres cursors should be with hold */
     {
       strcat (buff, " WITH HOLD");
     }
@@ -1944,10 +1966,12 @@ print_copy_status ()
   printc ("A4GLSQL_SET_SQLCA_SQLWARN;");
 
   switch (esql_type()) {
-    	case 1: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);"); break;
-	case 2: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
-	case 3: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
-	case 4: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
+	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
+    	case E_DIALECT_INFORMIX: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);"); break;
+	case E_DIALECT_POSTGRES: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
+	case E_DIALECT_SAPDB: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
+	case E_DIALECT_INGRES: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);"); break;
+    	case E_DIALECT_INFOFLEX: printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);"); break;
   }
 
 }
@@ -2026,13 +2050,14 @@ if (strchr(s,'[')==0) return s;
 
       switch (esql_type ())
 	{
-	case 1:
+	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
+	case E_DIALECT_INFORMIX:
 		return s; /* Informix style*/
 	  break;
 
-	case 2:
-	case 3:
-	case 4:
+	case E_DIALECT_POSTGRES:
+	case E_DIALECT_SAPDB:
+	case E_DIALECT_INGRES:
 		strcpy(buff,s);
 		ptr1=strchr(buff,'[');
 		*ptr1=0;
@@ -2052,6 +2077,9 @@ if (strchr(s,'[')==0) return s;
 		m=atoi(ptr2);
 		sprintf(buff2,"substr(%s,%d,%d)",buff,n,(m-n)+1);
 		return buff2;
+	  break;
+	case E_DIALECT_INFOFLEX:
+		return s; /* Informix style*/
 	  break;
 	}
 	return s;
@@ -2347,10 +2375,10 @@ void *ptr;
         n=print_bind_expr(ptr,'i');
         A4GL_append_expr(ptr,buff_in);
 	
-	if (esql_type()==4) {
-	sprintf(buffer,"sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;",cname,sql);
+	if (esql_type()==E_DIALECT_INGRES) {
+		sprintf(buffer,"sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;",cname,sql);
 	} else {
-	sprintf(buffer,"sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR WITH HOLD FOR %s;",cname,sql);
+		sprintf(buffer,"sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR WITH HOLD FOR %s;",cname,sql);
 	}
 
         A4GL_append_expr(ptr,buffer);
@@ -2420,7 +2448,7 @@ static int ncnt=0;
 	print_bind_dir_definition('i',e_expr->ibind,e_expr->nibind);
 	print_bind_dir_set_value('i',e_expr->ibind,e_expr->nibind);
 	printc("%s",buff_in);
-	if (esql_type()==4) {
+	if (esql_type()==E_DIALECT_INGRES) {
 		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;",cname,e_expr->subquery);
 	} else {
 		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR WITH HOLD FOR %s;",cname,e_expr->subquery);
@@ -2466,7 +2494,7 @@ static int ncnt=0;
 	print_bind_dir_set_value('i',in_expr->ibind,in_expr->nibind);
 	printc("%s",buff_in);
 	
-	if (esql_type()==4) {
+	if (esql_type()==E_DIALECT_INGRES) {
 		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;",cname,in_expr->subquery);
 	} else {
 		printc("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR WITH HOLD FOR %s;",cname,in_expr->subquery);

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.316 2006-09-06 18:14:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.317 2006-09-07 10:24:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.316 2006-09-06 18:14:33 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.317 2006-09-07 10:24:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -116,6 +116,7 @@ static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *
 static void print_returning (void);
 char cmodname[256]="";
 //void A4GL_set_clobber(char *c);
+
 
 
 
@@ -206,7 +207,7 @@ void make_sql_bind (char *sql, char *type);
 char *make_sql_bind_expr (char *sql, char *type);
 /*long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr);*/
 int split_arrsizes (char *s, int *arrsizes);
-int esql_type (void);
+//int esql_type (void);
 void print_function_variable_init (void);
 static void order_by_report_stack (void);
 static void real_print_expr_list (struct expr_str_list *l);
@@ -431,21 +432,26 @@ open_outfile (void)
 
       switch (esql_type ())
 	{
+	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
 
-	case 1:
+	case E_DIALECT_INFORMIX:
 	  if (strcmp(A4GL_get_esql_ext(),".ec")!=0)  printf("Unexpected extension for informix\n");
   		break;
 
-	case 2:
+	case E_DIALECT_POSTGRES:
 	  if (strcmp(A4GL_get_esql_ext(),".cpc")!=0)  printf("Unexpected extension for postgres\n");
 	  break;
 
-	case 3:		/* SAPDB pre-compiler also uses .cpc extension */
+	case E_DIALECT_SAPDB:		/* SAPDB pre-compiler also uses .cpc extension */
 	  if (strcmp(A4GL_get_esql_ext(),".cpc")!=0)  printf("Unexpected extension for SAP\n");
 	  break;
 
-	case 4:
+	case E_DIALECT_INGRES:
 	  if (strcmp(A4GL_get_esql_ext(),".sc")!=0)  printf("Unexpected extension for INGRES\n");
+  		break;
+
+	case E_DIALECT_INFOFLEX:
+	  if (strcmp(A4GL_get_esql_ext(),".ec")!=0)  printf("Unexpected extension for informix\n");
   		break;
 
 	}
@@ -486,21 +492,26 @@ open_outfile (void)
     {
       switch (esql_type ())
 	{
-	case 1:
+	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
+
+	case E_DIALECT_INFORMIX:
 	  FPRINTF (outfile, "#define DIALECT_INFORMIX\n");
 	  if (!A4GL_isno(acl_getenv("ALWAYS_CONVERT_PREPARED"))) {
 		  FPRINTF(outfile,"#define ALWAYS_CONVERT_PREPARED\n");
 	  }
 	  break;
-	case 2:
+	case E_DIALECT_POSTGRES:
 	  FPRINTF (outfile, "#define DIALECT_POSTGRES\n");
 	  break;
-	case 3:
+	case E_DIALECT_SAPDB:
 	  FPRINTF (outfile, "#define DIALECT_SAPDB\n");
 	  break;
-	case 4:
+	case E_DIALECT_INGRES:
 	  FPRINTF (outfile, "#define DIALECT_INGRES\n");
 	  FPRINTF (outfile, "EXEC SQL INCLUDE SQLCA;\n");
+	  break;
+	case E_DIALECT_INFOFLEX:
+	  FPRINTF (outfile, "#define DIALECT_INFOFLEX\n");
 	  break;
 
 	}
@@ -6703,31 +6714,35 @@ doing_esql ()
  *
  * @todo Describe function
  */
-int
-esql_type ()
+enum e_dialect esql_type ()
 {
 
   if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INFORMIX") == 0)
     {
-      return 1;
+      return E_DIALECT_INFORMIX;
     }
 
   if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
     {
-      return 2;
+      return E_DIALECT_POSTGRES;
     }
 
   if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
     {
-      return 3;
+      return E_DIALECT_SAPDB;
     }
 
   if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INGRES") == 0)
     {
-      return 4;
+      return E_DIALECT_INGRES;
     }
 
-  return 1;			/* Assume informix*/
+  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INFOFLEX") == 0)
+    {
+      return E_DIALECT_INFOFLEX;
+    }
+
+  return E_DIALECT_INFORMIX;			/* Assume informix*/
 }
 
 /**

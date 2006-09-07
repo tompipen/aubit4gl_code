@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.52 2006-01-29 16:39:11 mikeaubury Exp $
+# $Id: binding.c,v 1.53 2006-09-07 10:24:46 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.52 2006-01-29 16:39:11 mikeaubury Exp $";
+		"$Id: binding.c,v 1.53 2006-09-07 10:24:46 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -66,12 +66,13 @@ make_sql_bind_expr (char *sql, char *type);
 static char *get_sql_type (int a, char ioro);
 void printc (char *fmt, ...);
 void printh (char *fmt, ...);
-int esql_type (void);
+//int esql_type (void);
 void liblex_add_ibind(int dtype,char *var) ;
 static char* get_sql_type_infx (int a, char ioro);
 static char *get_sql_type_postgres (int a, char ioro);
 static char *get_sql_type_sap (int a, char ioro);
 static char *get_sql_type_ingres (int a, char ioro);
+static char* get_sql_type_infoflex (int a, char ioro);
 char * A4GL_dtype_sz (int d, int s);
 //struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
@@ -651,21 +652,26 @@ char *
 get_sql_type (int a, char ioro)
 {
   /* Need to do some check to determine which ESQL/C to use...*/
+  switch (esql_type()) {
+	  case E_DIALECT_NONE:
+		  	A4GL_assertion(1,"No ESQL/C Dialect");
 
-  if (esql_type()==1) {
-  	return get_sql_type_infx (a, ioro);
+	  case E_DIALECT_INFORMIX:
+  			return get_sql_type_infx (a, ioro);
+
+	  case E_DIALECT_POSTGRES:
+  			return get_sql_type_postgres (a, ioro);
+
+	  case E_DIALECT_SAPDB:
+  			return get_sql_type_sap (a, ioro);
+
+	  case E_DIALECT_INGRES:
+  			return get_sql_type_ingres (a, ioro);
+
+	  case E_DIALECT_INFOFLEX:
+  			return get_sql_type_infoflex (a, ioro);
   }
 
-  if (esql_type()==2) {
-  	return get_sql_type_postgres (a, ioro);
-  }
-
-  if (esql_type()==3) {
-  	return get_sql_type_sap (a, ioro);
-  }
-  if (esql_type()==4) {
-  	return get_sql_type_ingres (a, ioro);
-  }
 return 0;
 }
 
@@ -1219,6 +1225,130 @@ static char buff_ind[255];
     }
 	return buff;
 
+}
+
+static char *get_sql_type_infoflex (int a, char ioro)
+{
+static char buff[255];
+char buff_ind[255];
+
+  if (ioro == 'i')
+    {
+
+      if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
+
+      switch (ibind[a].dtype & 0xffff)
+	{
+	case 0:
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  break;
+	case 1:
+	  SPRINTF1 (buff,"short _vi_%d;", a);
+	  break;
+	case 2:
+	  SPRINTF1 (buff,"int _vi_%d;", a);
+	  break;
+	case 3:
+	  SPRINTF1 (buff,"double _vi_%d;", a);
+	  break;
+	case 4:
+	  SPRINTF1 (buff,"float _vi_%d;", a);
+	  break;
+
+	case 5:
+	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  break;
+
+	case 6:
+	  SPRINTF1 (buff,"int _vi_%d;", a);
+	  break;
+
+	case 7:
+	  SPRINTF1 (buff,"date _vi_%d;", a);
+	  break;
+	case 8:
+	  SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  break;
+	case 9:
+	  SPRINTF1 (buff,"Blah _vi_%d;", a);
+	  break;
+	case 10:
+	  SPRINTF2 (buff,"datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(ibind[a].dtype)),a);
+	  break;
+	case 11:
+	  SPRINTF1 (buff,"byte _vi_%d;", a);
+	  break;
+	case 12:
+	  SPRINTF1 (buff,"text _vi_%d;", a);
+	  break;
+	case 13:
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  break;
+	case 14:
+	  SPRINTF1 (buff,"interval _vi_%d;", a);
+	  break;
+	}
+	strcat(buff,buff_ind);
+    }
+
+
+  if (ioro == 'o')
+    {
+
+ 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _voi_%d=-2;",a); } else { strcpy(buff_ind,""); }
+
+      switch (obind[a].dtype & 0xffff)
+	{
+	case 0:
+	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, obind[a].dtype >> 16);
+	  break;
+	case 1:
+	  SPRINTF1 (buff,"short _vo_%d=0;", a);
+	  break;
+	case 2:
+	  SPRINTF1 (buff,"int _vo_%d=0;", a);
+	  break;
+	case 3:
+	  SPRINTF1 (buff,"double _vo_%d=0.0;", a);
+	  break;
+	case 4:
+	  SPRINTF1 (buff,"float _vo_%d=0.0;", a);
+	  break;
+	case 5:
+	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	break;
+	case 6:
+	  SPRINTF1 (buff,"int _vo_%d=0;", a);
+	  break;
+	case 7:
+	  SPRINTF1 (buff,"date _vo_%d=0;", a);
+	  break;
+	case 8:
+	  	SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  break;
+	case 9:
+	  SPRINTF1 (buff,"Blah _vo_%d;", a);
+	  break;
+	case 10:
+	  SPRINTF2 (buff,"datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(obind[a].dtype)),a);
+	  break;
+	case 11:
+	  SPRINTF1 (buff,"byte _vo_%d;", a);
+	  break;
+	case 12:
+	  SPRINTF1 (buff,"text _vo_%d;", a);
+	  break;
+	case 13:
+	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , obind[a].dtype >> 16 );
+	  break;
+	case 14:
+	  SPRINTF1 (buff,"interval _vo_%d;", a);
+	  break;
+	}
+	strcat(buff,buff_ind);
+    }
+
+    return buff;
 }
 
 
