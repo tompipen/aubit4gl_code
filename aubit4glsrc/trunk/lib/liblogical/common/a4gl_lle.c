@@ -5,6 +5,10 @@
 #define FILE_VERSION 3
 #include "a4gl_lle.h"
 
+#ifndef gzfread
+#error gzfread should be a macro
+#endif
+
 int debug=0;
 
 void read_entry(struct r_report_block *block) ;
@@ -39,10 +43,11 @@ static int read_int (void)
 int a;
 /* Keep it simple for now */
   a=gzfread (&n, sizeof (n), 1, gzfin);
-    if (a!=sizeof(n)) { 
+    if (a<1 ) { 
 	printf("Failed to gzfread from gzfin=%p (read_int) %d\n",gzfin,a); 
+		A4GL_assertion(1,"Failed to read int");
 	}
-A4GL_assertion(a!=sizeof(n),"Failed to read int");
+A4GL_debug("Read : %d", a4gl_ntohl(n));
   return a4gl_ntohl(n);
 }
 
@@ -74,9 +79,11 @@ static char * read_string (void)
   n = read_int ();
   p = (char *) acl_malloc2 (n + 1);
   a=gzfread (p, n, 1, gzfin);
-if (a!=n) { printf("Failed to gzfread from gzfin=%p (read_string)",gzfin); }
-A4GL_assertion(a!=n,"Failed to read string");
+  if (a<1) { printf("Failed to gzfread from gzfin=%p (read_string)",gzfin); 
+  	A4GL_assertion(a!=n,"Failed to read string");
+  	}
   p[n] = 0;
+  A4GL_debug("Read : %s", p);
   return p;
 }
 
@@ -127,6 +134,7 @@ struct r_report *read_report_output(char *fname) {
   if (gzfin == 0)
     {
         printf ("Unable to open input file : %s\n", fname);
+		A4GL_assertion(1,"Unable to open input");
 	return 0;
     }
 
