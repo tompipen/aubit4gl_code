@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.317 2006-09-07 10:24:47 mikeaubury Exp $
+# $Id: compile_c.c,v 1.318 2006-09-08 06:33:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.317 2006-09-07 10:24:47 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.318 2006-09-08 06:33:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6616,7 +6616,12 @@ LEXLIB_A4GL_get_into_part (int doing_declare, int no)
 	    }
 	  else
 	    {
+		
+	  if (esql_type()==E_DIALECT_INFOFLEX) {
+	      SPRINTF2 (buff, "\t:_vo_%d  :_voi_%d\n", a, a);
+		 } else {
 	      SPRINTF2 (buff, "\t:_vo_%d INDICATOR :_voi_%d\n", a, a);
+		}
 	    }
 	  if (a)
 	    strcat (buffer, ",");
@@ -6656,7 +6661,12 @@ LEXLIB_A4GL_set_var_sql (int doing_declare, int n)
 	    }
 
       if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
+
+	  if (esql_type()==E_DIALECT_INFOFLEX) {
+	  SPRINTF2 (buff_small, " :_vi_%d  :_vii_%d \n", a,a);
+	  } else {
 	  SPRINTF2 (buff_small, " :_vi_%d INDICATOR :_vii_%d \n", a,a);
+          }
 	} else {
 	  SPRINTF1 (buff_small, " :_vi_%d\n", a);
 	}
