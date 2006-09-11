@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2006-09-10 14:01:32 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2006-09-11 17:26:55 mikeaubury Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -78,12 +78,14 @@ all : ${ALL}
 ${PLUGINDIR}/libA4GL_pcre${SO_EXT}: match.o
 #	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
 #	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL} -lspopc
-	#${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
+#	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
+	
 	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
 	@echo "PCRE library sucesfully compiled."
 
+
 match.c: match.4gl
-	${4GLPC_EXEC} -o $@ $^
+	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} $^
 
 #pop.c: pop.4gl
 #	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
