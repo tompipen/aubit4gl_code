@@ -57,7 +57,7 @@ void A4GL_clr_menu_disp (ACL_Menu * menu) ;
 
 void A4GL_comments(struct struct_scr_field *fprop);
 
-void A4GL_default_attributes(void *f, int dtype,int has_picture);
+void A4GL_default_attributes(void *f, int dtype,int has_picture,void *formdets);
 char *A4GL_display_field_contents(void *field, int d1, int s1, char *ptr1);
 void A4GL_display_menu(ACL_Menu *m) ;
 void A4GL_dump_winstack(void);
@@ -86,7 +86,7 @@ void A4GL_set_option (ACL_Menu * menu, int opt);
 void A4GL_start_form(void *s);
 void A4GL_stripbracket(char *str);
 void A4GL_switch_to_scr_mode(void);
-void A4GL_set_field_attr_for_ll (void *field);
+void A4GL_set_field_attr_for_ll (void *form,void *field);
 void A4GL_turn_field_on2(void *f, int a);
 void A4GL_wprintw(void *win, int attr, int x, int y,int curr_width,int curr_height,int iscurrborder, int currwinno, char *fmt, ...);
 void chk_for_picture(void *f, char *buff);

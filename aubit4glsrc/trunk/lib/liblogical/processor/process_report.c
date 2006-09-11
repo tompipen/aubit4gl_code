@@ -84,7 +84,7 @@ main (int argc, char *argv[])
       // We just want to copy from report-file-name to output...
       FILE *fin;
       FILE *fout;
-      fin = fopen (argv[2 + off], "r");
+      fin = gzfopen (argv[2 + off], "r");
       if (fin == 0)
 	{
 	  printf ("Unable to open report output\n");
@@ -96,15 +96,15 @@ main (int argc, char *argv[])
 	  exit (1);
 	}
 
-      fout = fopen (ofile, "w");
-      while (!feof (fin))
+      fout = gzfopen (ofile, "w");
+      while (!gzfeof (fin))
 	{
-	  a = fgetc (fin);
-	  if (feof (fin)) break;
-	  fputc (a, fout);	// Slow - but it'll do for now..
+	  a = gzfgetc (fin);
+	  if (gzfeof (fin)) break;
+	  gzfputc (a, fout);	// Slow - but it'll do for now..
 	}
-      fclose (fin);
-      fclose (fout);
+      gzfclose (fin);
+      gzfclose (fout);
       exit (0);
     }
 

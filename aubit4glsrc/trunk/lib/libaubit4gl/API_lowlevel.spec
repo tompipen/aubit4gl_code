@@ -157,7 +157,7 @@ A4GL_LL_set_form_page void* form int page -> void
 
 
 /* void A4GL_LL_set_max_field void* f int n */
-A4GL_LL_set_max_field void* f int n -> void
+A4GL_LL_set_max_field void* f int n void* frm -> void
 
 /* int A4GL_LL_set_new_page void* field int n */
 A4GL_LL_set_new_page void* field int n -> int

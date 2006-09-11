@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.49 2006-08-31 19:25:28 mikeaubury Exp $";
+  "$Id: misc.c,v 1.50 2006-09-11 18:18:08 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -165,8 +165,7 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 	(struct struct_scr_field
 	 *) (A4GL_ll_get_field_userptr (field_list[a]));
       if (f)
-	A4GL_default_attributes (field_list[a], f->datatype,
-				 A4GL_has_str_attribute (f, FA_S_PICTURE));
+	A4GL_default_attributes (field_list[a], f->datatype, A4GL_has_str_attribute (f, FA_S_PICTURE),0);
     }
 
   //if (field_list) free(field_list);
@@ -1208,9 +1207,13 @@ A4GL_getch_win (int allow_acc_intr,char *why)
 
 
 
+int
+A4GL_get_field_width (void *f) {
+	return A4GL_get_field_width_with_form(0,f);
+}
 
 int
-A4GL_get_field_width (void *f)
+A4GL_get_field_width_with_form (void *f,int n)
 {
   //int x, y, a;
   int w;
@@ -1220,7 +1223,12 @@ A4GL_get_field_width (void *f)
   if (f==0) return 0;
 
   fprop 	= (struct s_scr_field *) (A4GL_ll_get_field_userptr (f));
-  formdets 	= (struct s_form_dets *) UILIB_A4GL_get_curr_form (0);
+
+  if (f==0) {
+  	formdets 	= (struct s_form_dets *) UILIB_A4GL_get_curr_form (0);
+  } else {
+	  formdets=f;
+  }
 
   if (formdets == 0 || fprop == 0)
     {
@@ -1228,9 +1236,7 @@ A4GL_get_field_width (void *f)
       return A4GL_LL_get_field_width_dynamic (f);
     }
 
-  w =
-    formdets->fileform->metrics.
-    metrics_val[A4GL_get_metric_for (formdets, f)].w;
+  w = formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, f)].w;
 
   return w;
 }

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.319 2006-09-06 20:13:37 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.320 2006-09-11 18:17:52 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -536,9 +536,9 @@ AC_SUBST(POP_LIB_PATH)
 AC_SUBST(SMTP_INC_PATH)
 AC_SUBST(SMTP_LIB_PATH)
 
+AC_SUBST(HAVE_ZLIB)
 AC_SUBST(ZLIB_INC_PATH)
 AC_SUBST(ZLIB_LIB_PATH)
-AC_SUBST(HAVE_ZLIB)
 
 AC_SUBST(INSTALL_MISSING_OPTIONAL)
 AC_SUBST(PERL)
@@ -1631,7 +1631,6 @@ USE_PDF=no
 PDFBUILD=no
 HAVE_POPLIB=no
 HAVE_SMTPLIB=no
-HAVE_ZLIB=no
 PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
@@ -4083,9 +4082,13 @@ AC_ARG_WITH(zlib,
 		AC_CHECK_HEADERS([ zlib.h ])
 		AC_MSG_CHECKING(if we can use zlib)
 		if test "$ac_cv_lib_z_gzopen" = "yes" -a "$ac_cv_header_zlib_h" = "yes"; then
-			HAVE_ZLIB=1
 			AC_MSG_RESULT(yes)
+			HAVE_ZLIB=1
+		    	AC_DEFINE(HAVE_ZLIB,1,[ ])
+		    	AC_DEFINE(HAVE_ZLIB_DEF,1,[ ])
 		else
+		    	AC_DEFINE(HAVE_ZLIB,0,[ ])
+		    	AC_DEFINE(HAVE_ZLIB_DEF,0,[ ])
 			AC_MSG_RESULT(no)
 	    	fi
 		
@@ -9446,7 +9449,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.319 2006-09-06 20:13:37 mikeaubury Exp $
+| $Id: configure.in,v 1.320 2006-09-11 18:17:52 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

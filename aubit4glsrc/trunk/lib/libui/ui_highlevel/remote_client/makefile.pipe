@@ -6,7 +6,7 @@ all: libUI_pipeclient.so
 
 libUI_pipeclient.so:  clnt_main_pipe.o marshall_pipe_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o ../common_hlui.o  pipeclient.o
 	gcc -g -fPIC -shared clnt_main_pipe.o marshall_pipe_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o  ../common_hlui.o pipeclient.o -o libUI_pipeclient.so 
-	cp libUI_pipeclient.so /home/aubit4gl/aubit4glsrc/lib
+	cp libUI_pipeclient.so /home/aubit4gl/aubit4glsrc/plugins-0.59_22
 
 
 marshall_pipe_client.c: API_lowlevel.spec dlrpc_marshall_pipe

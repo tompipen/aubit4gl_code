@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.242 2006-09-06 10:52:43 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.243 2006-09-11 18:18:06 mikeaubury Exp $
 #
 */
 
@@ -2378,6 +2378,7 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 
 
 #if HAVE_ZLIB
+
 #include <zlib.h>
 #define gzfopen gzopen
 #define gzfwrite(a,b,c,d) gzwrite(d,a,b*c)

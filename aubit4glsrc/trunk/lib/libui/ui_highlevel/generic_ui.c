@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.96 2006-09-01 20:34:11 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.97 2006-09-11 18:18:08 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -1351,12 +1351,8 @@ UILIB_A4GL_read_fields (void *formdetsv)
 	      if (ptr != 0)
 		{
 		  A4GL_debug ("Has associated attribute!");
-		  A4GL_ll_set_field_userptr ((void *) formdets->fileform->
-					     metrics.metrics_val[metric_no].
-					     field, ptr);
-		  A4GL_set_field_attr_for_ll ((void *) formdets->fileform->
-					      metrics.metrics_val[metric_no].
-					      field);
+		  A4GL_ll_set_field_userptr ((void *) formdets->fileform-> metrics.metrics_val[metric_no].  field, ptr);
+		  A4GL_set_field_attr_for_ll (formdets, (void *) formdets->fileform-> metrics.metrics_val[metric_no].field);
 		  A4GL_debug ("Done\n");
 		}
 	    }
@@ -1471,7 +1467,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   oopt_orig = A4GL_ll_field_opts (field);
   oopt = oopt_orig;
 
-  A4GL_set_field_attr_for_ll (field);
+  A4GL_set_field_attr_for_ll (0,field);
   if (currbuff == 0)
     {
       currbuff = A4GL_LL_field_buffer (field, 0);
@@ -3383,8 +3379,8 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
   return a;
 }
 
-void
-A4GL_set_field_attr_for_ll (void *field)
+ void
+A4GL_set_field_attr_for_ll (void *formdets, void *field)
 {
   struct struct_scr_field *fprop;
   int autonext;
@@ -3401,12 +3397,10 @@ A4GL_set_field_attr_for_ll (void *field)
   reqd = A4GL_has_bool_attribute (fprop, FA_B_REQUIRED);
   compress = A4GL_has_bool_attribute (fprop, FA_B_COMPRESS);
   has_picture = A4GL_has_str_attribute (fprop, FA_S_PICTURE);
-  A4GL_default_attributes (field, fprop->datatype, has_picture);
+  A4GL_default_attributes (field, fprop->datatype, has_picture,formdets);
 
 
-  a =
-    A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext,
-			    invis, reqd, compress, has_picture);
+  a = A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext, invis, reqd, compress, has_picture);
 
 
   A4GL_ll_set_field_opts (field, a);
@@ -3515,7 +3509,7 @@ UILIB_A4GLUI_set_intr ()
 
 
 void
-A4GL_default_attributes (void *f, int dtype, int has_picture)
+A4GL_default_attributes (void *f, int dtype, int has_picture,void *formdets)
 {
   int done = 0;
 
@@ -3569,7 +3563,7 @@ A4GL_default_attributes (void *f, int dtype, int has_picture)
 
   A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field (f, A4GL_get_field_width (f));
+  A4GL_LL_set_max_field (f, A4GL_get_field_width (f),formdets);
 
 }
 

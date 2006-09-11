@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.106 2006-07-25 08:39:37 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.107 2006-09-11 18:18:09 mikeaubury Exp $";
 #endif
 
 
@@ -2067,7 +2067,7 @@ A4GL_LL_current_field (void *vform)
 }
 
 void
-A4GL_LL_set_max_field (void *f, int n)
+A4GL_LL_set_max_field (void *f, int n,void *frm)
 {
   gtk_object_set_data (GTK_OBJECT (f), "MAXFIELD", (void *) n);
   if (strcmp (gtk_object_get_data (GTK_OBJECT (f), "WIDGETSNAME"), "ENTRY") ==
@@ -3136,11 +3136,11 @@ A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext, int i
 
       if (dynamic == -1)
 	{
-	  A4GL_LL_set_max_field (field, 0);
+	  A4GL_LL_set_max_field (field, 0,0);
 	}
       else
 	{
-	  A4GL_LL_set_max_field (field, dynamic);
+	  A4GL_LL_set_max_field (field, dynamic,0);
 	}
 
     }
@@ -4114,7 +4114,7 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
   A4GL_LL_set_max_field (f,
 			 (int)
 			 gtk_object_get_data (GTK_OBJECT ((GtkWidget *) f),
-					      "MF_COLS"));
+					      "MF_COLS"),0);
 
 }
 

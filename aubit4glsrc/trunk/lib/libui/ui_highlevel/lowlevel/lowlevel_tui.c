@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.90 2006-07-27 16:04:11 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.91 2006-09-11 18:18:09 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +88,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.90 2006-07-27 16:04:11 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.91 2006-09-11 18:18:09 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -2664,7 +2664,7 @@ A4GL_mja_get_field_width (void *f)
 
 
 void
-A4GL_LL_set_max_field (void *f, int n)
+A4GL_LL_set_max_field (void *f, int n,void *frm)
 {
   int a;
   A4GL_debug ("set max field : %d\n", n);
@@ -3294,7 +3294,7 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
   A4GL_debug ("STATIC");
   A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field (f,A4GL_mja_get_field_width(f) );
+  A4GL_LL_set_max_field (f,A4GL_mja_get_field_width(f) ,0);
 
 }
 
