@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.167 2006-09-06 12:49:11 mikeaubury Exp $
+# $Id: sql.c,v 1.168 2006-09-11 08:58:36 mikeaubury Exp $
 #
 */
 
@@ -2818,7 +2818,6 @@ ODBC_exec_stmt (SQLHSTMT *ptr_hstmt)
     {
       int a;
       a = A4GL_sqlerrwith (rc1, ptr_hstmt,0);
-      *ptr_hstmt=0;
       return a;
 
     }
@@ -2842,9 +2841,11 @@ int
 A4GL_sqlerrwith (int rc, HSTMT *h,int freeonfail)
 {
   /* A4GL_set_sqlca (h, "From sqlerrwith", 0); */
-  SQLFreeStmt ((SQLHSTMT) *h, SQL_DROP);
-  free_extra (*h);
-  *h = 0;
+	if (freeonfail) {
+  		SQLFreeStmt ((SQLHSTMT) *h, SQL_DROP);
+  		free_extra (*h);
+  		*h = 0;
+	}
   return 0;
 }
 
