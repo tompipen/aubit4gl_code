@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.127 2006-08-31 15:06:59 mikeaubury Exp $
+# $Id: curslib.c,v 1.128 2006-09-12 14:51:39 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.127 2006-08-31 15:06:59 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.128 2006-09-12 14:51:39 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2328,6 +2328,7 @@ A4GL_getkey (void)
 #endif
       if (a == 18)
 	{
+		clearok(curscr,1);
 	  A4GL_mja_refresh ();
 	  continue;
 	}
@@ -2774,6 +2775,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
       if (a == 18)
 	{
+		clearok(curscr,1);
 	  A4GL_mja_refresh ();
 	  continue;
 	}
