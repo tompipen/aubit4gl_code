@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2006-07-27 16:03:51 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2006-09-13 08:11:37 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -48,7 +48,7 @@ OBJECTS					=sql.o sqlex.o array.o
 
 CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 				-DWITHOUT_DRIVERMGR ${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
-				-L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -I${ROOT}/tools/odbtest/incl -I.
+				-L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -I${ROOT}/tools/odbctest/incl -I.
 
 ifneq "${COMSPEC}" ""
 	LINKLIBS		=-L${LIBROOT} -l${AUBITLIBFULL}
@@ -144,7 +144,7 @@ ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
 
 ###############################
 #Aubit ODBC plug-in linked with SQLite ODBC driver for use without ODBC manager
-#${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbtest/incl
+#${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbctest/incl
 ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl ${CFLAGS_SQLITE}
 ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqliteodbc
