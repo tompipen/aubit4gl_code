@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.319 2006-09-13 15:07:47 briantan Exp $
+# $Id: compile_c.c,v 1.320 2006-09-13 20:35:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.319 2006-09-13 15:07:47 briantan Exp $";
+		"$Id: compile_c.c,v 1.320 2006-09-13 20:35:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3999,6 +3999,8 @@ void
 LEXLIB_print_foreach_start (void)
 {
   printc ("{");
+  printc("int _cursoropen=0;");
+  printc ("{");
 }
 
 
@@ -6841,7 +6843,10 @@ identifier=buff;
 void
 LEXLIB_print_foreach_close (char *cname)
 {
+  printc("if (_cursoropen) {");
   print_close ('C', cname);
+  printc("}");
+  printc("}");
 }
 
 
@@ -7932,7 +7937,15 @@ LEXLIB_rettype (char *s)
   if (strcmp (s, "8") == 0) strcpy (rs, "fglmoney");
   if (strcmp (s, "10") == 0) strcpy (rs, "struct_dtime");
   if (strcmp (s, "11") == 0) strcpy (rs, "fglbyte");
-  if (strcmp (s, "12") == 0) strcpy (rs, "fgltext");
+  //if (strcmp (s, "12") == 0) strcpy (rs, "fgltext");
+     if (strcmp (s, "12") == 0)
+	     {
+		         if (A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
+			            strcpy (rs, "char");
+		         else
+			            strcpy (rs, "fgltext");
+		     }
+
   if (strcmp (s, "13") == 0) strcpy (rs, "char");
   if (strcmp (s, "14") == 0) strcpy (rs, "struct_ival");
   return strdup(rs);

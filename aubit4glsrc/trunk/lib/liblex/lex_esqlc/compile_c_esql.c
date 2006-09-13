@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.143 2006-09-08 06:33:37 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.144 2006-09-13 20:35:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.143 2006-09-08 06:33:37 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.144 2006-09-13 20:35:46 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -308,6 +308,7 @@ LEXLIB_print_foreach_next (char *xcursorname, int has_using, char *into)
 
 
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
+  printc("_cursoropen=1;");
   printc ("while (1) {\n");
   ni = LEXLIB_print_bind_definition ('i');
   no = LEXLIB_print_bind_definition ('o');

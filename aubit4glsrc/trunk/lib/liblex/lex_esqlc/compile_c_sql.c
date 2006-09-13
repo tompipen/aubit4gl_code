@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.68 2006-08-31 15:06:58 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.69 2006-09-13 20:35:46 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.68 2006-08-31 15:06:58 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.69 2006-09-13 20:35:46 mikeaubury Exp $";
 #endif
 
 
@@ -116,11 +116,11 @@ LEXLIB_print_foreach_next (char *cursorname, int has_using, char *into)
   LEXLIB_print_open_cursor(cursorname,has_using);
   /*printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);*/
   printc ("if (a4gl_sqlca.sqlcode==0) {\n");
+  printc("_cursoropen=1;");
   printc ("while (1) {\n");
   ni = LEXLIB_print_bind_definition ('o');
   LEXLIB_print_bind_set_value('o');
-  printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
-	  FETCH_RELATIVE, ni);
+  printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname, FETCH_RELATIVE, ni);
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
 }
 
@@ -747,9 +747,6 @@ LEXLIB_print_foreach_end (char *cname)
 {
   printc ("}");
   printcomment ("/* end of foreach while loop */\n");
-
-
-/*  print_foreach_close(cname); */
 
 
   printc("}");

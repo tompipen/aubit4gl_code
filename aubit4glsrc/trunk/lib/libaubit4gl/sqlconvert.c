@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.94 2006-08-23 09:21:39 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.95 2006-09-13 20:35:45 mikeaubury Exp $
 #
 */
 
@@ -157,7 +157,8 @@ static char *cvsql_names[] = {
   "CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN",
   "CVSQL_FAKE_ROWID_NAME",
   "CVSQL_EXPAND_COLUMNS",
-  "CVSQL_DTYPE_ALIAS"
+  "CVSQL_DTYPE_ALIAS",
+  "CVSQL_ODBC_LONGVARCHAR_AS_CHAR"
 };
 
 /*
@@ -266,7 +267,8 @@ enum cvsql_type
   CVSQL_NOT_EQUAL_AS_LESS_GREATER_THAN,
   CVSQL_FAKE_ROWID_NAME,
   CVSQL_EXPAND_COLUMNS,
-  CVSQL_DTYPE_ALIAS
+  CVSQL_DTYPE_ALIAS,
+  CVSQL_ODBC_LONGVARCHAR_AS_CHAR
 };
 
 
@@ -1675,9 +1677,10 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_CLOSE_CURSOR_BEFORE_OPEN;
   if (match_strncasecmp (p, "EXPAND_COLUMNS", len) == 0)
     return CVSQL_EXPAND_COLUMNS;
+  if (match_strncasecmp (p, "ODBC_LONGVARCHAR_AS_CHAR", len) == 0)
+    return CVSQL_ODBC_LONGVARCHAR_AS_CHAR;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
-
 
   PRINTF ("Unknown : %s\n", p);
   return 0;

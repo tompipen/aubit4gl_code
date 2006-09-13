@@ -4,6 +4,14 @@
 # COPIED FROM INFORMIX-DB2.cnv and modified
 # Not everything was tested on DB2 for VM
 #
+# Process ODBC type 12 (LONGVARCHAR) as 0 (CHAR)
+# that effects in generating char C type instead of fgltext.
+# This is done because in DB2/VM max length of a VARCHAR is 255 and 
+# DB2 implicitly creates LONGVARCHAR (=clob/text) column instead.
+# Aubit does not handle substring [] operations on LONGVARCHAR
+# (probably correct behavior). This can be considered as only
+# a somewhat nasty workaround for a nasty DB, but it seems to work.
+ODBC_LONGVARCHAR_AS_CHAR
 
 DOUBLE_TO_SINGLE_QUOTES
 MATCHES_TO_LIKE
@@ -30,6 +38,7 @@ REPLACE_COMMAND SET EXPLAIN OFF = SET CURRENT EXPLAIN MODE NO
 
 REPLACE systables.tabname = system.syscatalog.tname
 REPLACE syscolumns.colname = system.syscolumns.cname
+REPLACE systables = system.syscatalog
 REPLACE_EXPR CURRENT YEAR TO SECOND = current timestamp
 REPLACE TODAY = current date
 
