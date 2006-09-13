@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.243 2006-09-11 18:18:06 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.244 2006-09-13 15:07:16 briantan Exp $
 #
 */
 
@@ -1698,7 +1698,8 @@ void A4GL_set_ccnt(int a);
 
 
   /* ============================ pointers.c ============================= */
-  int A4GL_has_pointer (char *pname, char t);
+//  int A4GL_has_pointer (char *pname, char t);
+  long A4GL_has_pointer (char *pname, char t);
   void A4GL_add_pointer (char *orig_name, char type, void *ptr);
   void A4GL_del_pointer (char *pname, char t);
   int A4GL_find_pointer_ptr (char *name, char *type, void *ptr);
@@ -2291,7 +2292,8 @@ char *A4GL_compiling_module(void);
 char *A4GL_compiling_module_basename(void);
 void A4GL_set_sql_conv(int n);
 void load_temp_table(void);
-void save_temp_table(char *tabname,int select_into);
+//void save_temp_table(char *tabname,int select_into);
+void save_temp_table(char *tabname,long select_into);
 
 
 #include "a4gl_gen_stack.h"

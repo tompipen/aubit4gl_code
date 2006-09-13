@@ -30,7 +30,8 @@ int when_case_has_expr;
 
 
 static void add_used_block (int n, char *btype);
-static int is_used_block (int n, char *btype);
+//static int is_used_block (int n, char *btype);
+static long is_used_block (int n, char *btype);
 static void free_need_globals (void);
 static char * find_record_dot (char *s);
 void need_globals (char *s);
@@ -4069,7 +4070,8 @@ add_used_block (int n, char *btype)
   A4GL_add_pointer (buff, BLOCK_USED, (void *) 1);
 }
 
-static int
+//static int
+static long
 is_used_block (int n, char *btype)
 {
   char buff[200];

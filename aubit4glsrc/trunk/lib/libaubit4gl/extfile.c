@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.26 2005-07-21 08:17:36 mikeaubury Exp $
+# $Id: extfile.c,v 1.27 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -208,7 +208,8 @@ A4GL_get_translated_id (char *no_c)
   //short num;
   //short *ptr;
   int no;
-  unsigned char *cptr;
+//  unsigned char *cptr;
+  char *cptr;
   long len;
   long offset;
   max_width = 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.32 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: data_if.c,v 1.33 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -119,7 +119,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "mode") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->mode;
+	return (void *)(long) val->mode;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->mode);
       if (mode == GETSETSET)
@@ -131,7 +131,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "processed_onkey") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->processed_onkey;
+	return (void *)(long) val->processed_onkey;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->processed_onkey);
       if (mode == GETSETSET)
@@ -197,7 +197,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "novars") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->novars;
+	return (void *)(long) val->novars;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->novars);
       if (mode == GETSETSET)
@@ -223,7 +223,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "attrib") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->attrib;
+	return (void *)(long) val->attrib;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->attrib);
       if (mode == GETSETSET)
@@ -250,7 +250,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "nfields") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->nfields;
+	return (void *)(long) val->nfields;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->nfields);
       if (mode == GETSETSET)
@@ -276,7 +276,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "field_changed") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->field_changed;
+	return (void *)(long) val->field_changed;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->field_changed);
       if (mode == GETSETSET)
@@ -289,7 +289,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "help_no") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->help_no;
+	return (void *)(long) val->help_no;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->help_no);
       if (mode == GETSETSET)
@@ -302,7 +302,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "processed_onkey") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->processed_onkey;
+	return (void *)(long) val->processed_onkey;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->processed_onkey);
       if (mode == GETSETSET)
@@ -391,7 +391,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "processed_onkey") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->processed_onkey;
+	return (void *)(long) val->processed_onkey;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->processed_onkey);
       if (mode == GETSETSET)
@@ -405,7 +405,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "mode") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->mode;
+	return (void *)(long) val->mode;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->mode);
       if (mode == GETSETSET)
@@ -457,7 +457,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "novars") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->novars;
+	return (void *)(long) val->novars;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->novars);
       if (mode == GETSETSET)
@@ -484,7 +484,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "inp_flags") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->inp_flags;
+	return (void *)(long) val->inp_flags;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->inp_flags);
       if (mode == GETSETSET)
@@ -497,7 +497,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "arr_size") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->arr_size;
+	return (void *)(long) val->arr_size;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->arr_size);
       if (mode == GETSETSET)
@@ -510,7 +510,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "count") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->count;
+	return (void *)(long) val->count;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->count);
       if (mode == GETSETSET)
@@ -524,7 +524,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "allow_insert") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->allow_insert;
+	return (void *)(long) val->allow_insert;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->allow_insert);
       if (mode == GETSETSET)
@@ -537,7 +537,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "allow_delete") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->allow_delete;
+	return (void *)(long) val->allow_delete;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->allow_delete);
       if (mode == GETSETSET)
@@ -551,7 +551,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "maxcount") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->maxcount;
+	return (void *)(long) val->maxcount;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->maxcount);
       if (mode == GETSETSET)
@@ -564,7 +564,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "scr_dim") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->scr_dim;
+	return (void *)(long) val->scr_dim;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->scr_dim);
       if (mode == GETSETSET)
@@ -578,7 +578,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "display_attrib") == 0)
     {
       if (mode == GETSETGET)
-        return (void *) val->display_attrib;
+        return (void *)(long) val->display_attrib;
       if (mode == GETSETGETPTR)
         return (void *) &(val->display_attrib);
       if (mode == GETSETSET)
@@ -590,7 +590,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "nfields") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->nfields;
+	return (void *)(long) val->nfields;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->nfields);
       if (mode == GETSETSET)
@@ -616,7 +616,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "no_fields") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->no_fields;
+	return (void *)(long) val->no_fields;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->no_fields);
       if (mode == GETSETSET)
@@ -629,7 +629,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "curr_display_i") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->curr_display_i;
+	return (void *)(long) val->curr_display_i;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->curr_display_i);
       if (mode == GETSETSET)
@@ -658,7 +658,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "no_lines") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->no_lines;
+	return (void *)(long) val->no_lines;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->no_lines);
       if (mode == GETSETSET)
@@ -671,7 +671,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "no_arr") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->no_arr;
+	return (void *)(long) val->no_arr;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->no_arr);
       if (mode == GETSETSET)
@@ -684,7 +684,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "last_arr_line") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->last_arr_line;
+	return (void *)(long) val->last_arr_line;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->last_arr_line);
       if (mode == GETSETSET)
@@ -710,7 +710,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "arr_elemsize") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->arr_elemsize;
+	return (void *)(long) val->arr_elemsize;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->arr_elemsize);
       if (mode == GETSETSET)
@@ -723,7 +723,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "scr_line") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->scr_line;
+	return (void *)(long) val->scr_line;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->scr_line);
       if (mode == GETSETSET)
@@ -736,7 +736,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "arr_line") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->arr_line;
+	return (void *)(long) val->arr_line;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->arr_line);
       if (mode == GETSETSET)
@@ -749,7 +749,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "highlight") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->highlight;
+	return (void *)(long) val->highlight;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->highlight);
       if (mode == GETSETSET)
@@ -777,7 +777,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
     {
       A4GL_debug ("Setting nbind=%d", (int) var);
       if (mode == GETSETGET)
-	return (void *) val->nbind;
+	return (void *)(long) val->nbind;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->nbind);
       if (mode == GETSETSET)
@@ -790,7 +790,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "cntrl") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->cntrl;
+	return (void *)(long) val->cntrl;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->cntrl);
       if (mode == GETSETSET)
@@ -803,7 +803,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "help_no") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->help_no;
+	return (void *)(long) val->help_no;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->help_no);
       if (mode == GETSETSET)
@@ -816,7 +816,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   if (strcmp (name, "curr_attrib") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->curr_attrib;
+	return (void *)(long) val->curr_attrib;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->curr_attrib);
       if (mode == GETSETSET)
@@ -887,7 +887,7 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "processed_onkey") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->processed_onkey;
+	return (void *)(long) val->processed_onkey;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->processed_onkey);
       if (mode == GETSETSET)
@@ -901,7 +901,7 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "mode") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->mode;
+	return (void *)(long) val->mode;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->mode);
       if (mode == GETSETSET)
@@ -914,7 +914,7 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "charmode") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->charmode;
+	return (void *)(long) val->charmode;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->charmode);
       if (mode == GETSETSET)
@@ -940,7 +940,7 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "lastkey") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->lastkey;
+	return (void *)(long) val->lastkey;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->lastkey);
       if (mode == GETSETSET)
@@ -979,7 +979,7 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "h") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->h;
+	return (void *)(long) val->h;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->h);
       if (mode == GETSETSET)
@@ -1045,7 +1045,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "top_margin") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->top_margin;
+	return (void *)(long) val->top_margin;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->top_margin);
       if (mode == GETSETSET)
@@ -1058,7 +1058,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "bottom_margin") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->bottom_margin;
+	return (void *)(long) val->bottom_margin;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->bottom_margin);
       if (mode == GETSETSET)
@@ -1071,7 +1071,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "left_margin") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->left_margin;
+	return (void *)(long) val->left_margin;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->left_margin);
       if (mode == GETSETSET)
@@ -1084,7 +1084,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "right_margin") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->right_margin;
+	return (void *)(long) val->right_margin;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->right_margin);
       if (mode == GETSETSET)
@@ -1097,7 +1097,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "page_length") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->page_length;
+	return (void *)(long) val->page_length;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->page_length);
       if (mode == GETSETSET)
@@ -1110,7 +1110,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "has_first_page") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->has_first_page;
+	return (void *)(long) val->has_first_page;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->has_first_page);
       if (mode == GETSETSET)
@@ -1201,7 +1201,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "page_no") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->page_no;
+	return (void *)(long) val->page_no;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->page_no);
       if (mode == GETSETSET)
@@ -1214,7 +1214,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "printed_page_no") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->printed_page_no;
+	return (void *)(long) val->printed_page_no;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->printed_page_no);
       if (mode == GETSETSET)
@@ -1227,7 +1227,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "line_no") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->line_no;
+	return (void *)(long) val->line_no;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->line_no);
       if (mode == GETSETSET)
@@ -1240,7 +1240,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "col_no") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->col_no;
+	return (void *)(long) val->col_no;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->col_no);
       if (mode == GETSETSET)
@@ -1313,7 +1313,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "processed_onkey") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->processed_onkey;
+	return (void *)(long) val->processed_onkey;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->processed_onkey);
       if (mode == GETSETSET)
@@ -1326,7 +1326,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "no_fields") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->no_fields;
+	return (void *)(long) val->no_fields;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->no_fields);
       if (mode == GETSETSET)
@@ -1339,7 +1339,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "no_lines") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->no_lines;
+	return (void *)(long) val->no_lines;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->no_lines);
       if (mode == GETSETSET)
@@ -1352,7 +1352,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "no_arr") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->no_arr;
+	return (void *)(long) val->no_arr;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->no_arr);
       if (mode == GETSETSET)
@@ -1365,7 +1365,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "last_arr") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->last_arr;
+	return (void *)(long) val->last_arr;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->last_arr);
       if (mode == GETSETSET)
@@ -1391,7 +1391,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "arr_elemsize") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->arr_elemsize;
+	return (void *)(long) val->arr_elemsize;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->arr_elemsize);
       if (mode == GETSETSET)
@@ -1404,7 +1404,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "scr_line") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->scr_line;
+	return (void *)(long) val->scr_line;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->scr_line);
       if (mode == GETSETSET)
@@ -1417,7 +1417,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "arr_line") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->arr_line;
+	return (void *)(long) val->arr_line;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->arr_line);
       if (mode == GETSETSET)
@@ -1430,7 +1430,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "highlight") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->highlight;
+	return (void *)(long) val->highlight;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->highlight);
       if (mode == GETSETSET)
@@ -1469,7 +1469,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "nbind") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->nbind;
+	return (void *)(long) val->nbind;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->nbind);
       if (mode == GETSETSET)
@@ -1482,7 +1482,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
   if (strcmp (name, "cntrl") == 0)
     {
       if (mode == GETSETGET)
-	return (void *) val->cntrl;
+	return (void *)(long) val->cntrl;
       if (mode == GETSETGETPTR)
 	return (void *) &(val->cntrl);
       if (mode == GETSETSET)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.33 2006-08-20 14:06:02 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.34 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -2438,7 +2438,8 @@ make_list_item_list_from_select (struct s_select *select,
 }
 
 void
-save_temp_table (char *tabname,int select_into)
+//save_temp_table (char *tabname,int select_into)
+save_temp_table (char *tabname,long select_into)
 {
   char *ptr;
   char buff[256];
@@ -2457,7 +2458,8 @@ save_temp_table (char *tabname,int select_into)
 	  while (fgets (buff, sizeof (buff), f))
 	    {
 	      	char *ptr;
-		int s_into=1;
+		//int s_into=1;
+		long s_into=1;
 		ptr=strchr(buff,' '); 
 		if (ptr) {*ptr=0; ptr++; s_into=atoi(ptr)+2; }
 	        A4GL_trim_nl (buff);
@@ -2473,7 +2475,7 @@ save_temp_table (char *tabname,int select_into)
       A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) (select_into+2));
       if (f)
 	{
-	  FPRINTF (f, "%s %d\n", tabname,select_into);
+	  FPRINTF (f, "%s %d\n", tabname,(int)select_into);
 	  fclose (f);
 	}
     }
@@ -2500,7 +2502,8 @@ load_temp_table (void)
 	  while (fgets (buff, sizeof (buff), f))
 	    {
 	      	char *ptr;
-		int select_into=0;
+		//int select_into=0;
+		long select_into=0;
 		ptr=strchr(buff,' ');
 		if (ptr) {*ptr=0; ptr++; select_into=atoi(ptr)+2; }
 	        A4GL_trim_nl (buff);

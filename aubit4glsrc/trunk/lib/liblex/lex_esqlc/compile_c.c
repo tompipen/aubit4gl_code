@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.318 2006-09-08 06:33:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.319 2006-09-13 15:07:47 briantan Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.318 2006-09-08 06:33:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.319 2006-09-13 15:07:47 briantan Exp $";
 #endif
 /**
  * @file
@@ -2284,7 +2284,7 @@ if (form_attrib->attrib_str==0) {
 	SPRINTF1(buff,"(0x%x)",form_attrib->attrib&0xffff);
 	frm_attr=buff;
 } else {
-	frm_attr=(char *)form_attrib->attrib_str;
+	frm_attr=(char *)(long)form_attrib->attrib_str;
 }
 
   printc ("%d,%d,%d,%d,%d,%d,%d,%d,%s",

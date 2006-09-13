@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.42 2006-07-13 11:10:36 mikeaubury Exp $
+# $Id: pointers.c,v 1.43 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -402,7 +402,8 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
  *   - 0 : Do not exist in the tree
  *   - 1 : Exist in the tree
  */
-int
+//int
+long
 A4GL_has_pointer (char *pname, char t)
 {
   void *a;

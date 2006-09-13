@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.168 2006-09-11 08:58:36 mikeaubury Exp $
+# $Id: sql.c,v 1.169 2006-09-13 15:07:52 briantan Exp $
 #
 */
 
@@ -458,7 +458,8 @@ static char *lower(char *s) {
 
 static int A4GL_has_cache_column (char *buff) {
 	int r;
-	 r=A4GL_has_pointer (lower(buff), CACHE_COLUMN);
+	 //r=A4GL_has_pointer (lower(buff), CACHE_COLUMN);
+	 r=(int)A4GL_has_pointer (lower(buff), CACHE_COLUMN);
 
 	 return r;
 }

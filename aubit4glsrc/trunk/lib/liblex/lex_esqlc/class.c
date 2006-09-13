@@ -162,12 +162,14 @@ free(news);
 
 char ** LEXLIB_CLASS_get_variable (char *s) {
 char **b;
-b=(char **)A4GL_call_4gl_dll (s, "aclfglclass__get_variable", 0);
+//b=(char **)A4GL_call_4gl_dll (s, "aclfglclass__get_variable", 0);
+b=(char **)(long)A4GL_call_4gl_dll (s, "aclfglclass__get_variable", 0);
 return b;
 }
 
 char ** LEXLIB_CLASS_get_members (char *s) {
 char **b;
-b=(char **)A4GL_call_4gl_dll (s, "aclfglclass__methods", 0);
+//b=(char **)A4GL_call_4gl_dll (s, "aclfglclass__methods", 0);
+b=(char **)(long)A4GL_call_4gl_dll (s, "aclfglclass__methods", 0);
 return b;
 }

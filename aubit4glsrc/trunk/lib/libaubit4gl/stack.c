@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.156 2006-08-20 14:06:02 mikeaubury Exp $
+# $Id: stack.c,v 1.157 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -3376,7 +3376,8 @@ dif_pop_bind_dec (struct bound_list *list)
 
   if (list->popped == -1)
     list->popped = list->cnt - 1;
-  return (int) list->ptr[list->popped].ptr;
+  //return (int) list->ptr[list->popped].ptr;
+  return (int)(long) list->ptr[list->popped].ptr;
 }
 
 /**
@@ -3392,7 +3393,7 @@ dif_pop_bind_money (struct bound_list *list)
 //  char *a;
   if (list->popped == -1)
     list->popped = list->cnt - 1;
-  return (int) list->ptr[list->popped].ptr;
+  return (int)(long) list->ptr[list->popped].ptr;
 }
 
 

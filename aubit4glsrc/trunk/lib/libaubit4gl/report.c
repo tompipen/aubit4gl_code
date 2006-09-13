@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.92 2006-09-11 18:18:07 mikeaubury Exp $
+# $Id: report.c,v 1.93 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -501,7 +501,8 @@ gen_rep_tab_name (void *p)
 {
   long a;
   static char buff_0[256];
-  a = (int) p;
+  //a = (int) p;
+  a = (long) p;
   //a=1;
   SPRINTF1 (buff_0, "rtab%x", ((long) a) & 0xfffffff);
   return buff_0;

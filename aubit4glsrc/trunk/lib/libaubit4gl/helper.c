@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.54 2006-08-20 11:30:29 mikeaubury Exp $
+# $Id: helper.c,v 1.55 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -384,7 +384,8 @@ int_get_info_form (char *ptr, char *info)
 	   */
 
     case 8: // CUREENTFIELD
-      		A4GL_push_int ((int) p->currentfield);
+      		//A4GL_push_int ((int) p->currentfield);
+      		A4GL_push_long ((long) p->currentfield);
       break;
 
     case 9: // WIDTH

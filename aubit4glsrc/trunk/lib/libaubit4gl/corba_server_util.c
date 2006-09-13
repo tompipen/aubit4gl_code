@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.26 2006-05-13 12:34:38 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.27 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -273,7 +273,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
 			
-			PRINTF("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
+			PRINTF("String overflow detected : %s %d (%d>=%d)",f,l,(int)strlen(src),sd);
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);
@@ -328,7 +328,7 @@ char *A4GL_strcat(char *dest,char *src,char *f,int l,int sd) {
 
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
-			PRINTF("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
+			PRINTF("String overflow detected : %s %d (%d>=%d)",f,l,(int)strlen(src),sd);
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			SPRINTF2(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);
@@ -371,7 +371,7 @@ We can end up with problems with overlapping - eg
 	      x=VSNPRINTF(c,sdest,fmt,args);
 	      if (x>=sdest) {
                 	sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
-			PRINTF("-->%s (%d>=%d)",fmt,x,sdest);
+			PRINTF("-->%s (%d>=%d)",fmt,x,(int)sdest);
 			A4GL_assertion(1,buff);
 	      }
 	      strcpy(dest,c);

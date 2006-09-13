@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.19 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.20 2006-09-13 15:07:42 briantan Exp $
 #
 */
 
@@ -41,7 +41,8 @@ A4GL_process_stack_op_other (int d)
 {
   int d1;
   int s1;
-  int ptr1;
+  //int ptr1;
+  long ptr1;
 A4GL_debug("A4GL_process_stack_op_other");
   if (d == OP_IN || d == OP_NOTIN)
     {
