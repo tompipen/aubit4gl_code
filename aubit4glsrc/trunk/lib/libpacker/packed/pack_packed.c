@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.32 2006-09-13 15:07:50 briantan Exp $
+# $Id: pack_packed.c,v 1.33 2006-09-13 20:58:17 mikeaubury Exp $
 #*/
 
 /**
@@ -465,7 +465,7 @@ int a;
   *val=0;
 
   //if (sizeof (int) != sizeof (short)) // 32 or 64 Bit ?
-  if (sizeof (long) != sizeof (int)) // 32 or 64 Bit ?
+  if (sizeof (int) != sizeof (short)) // 32 or 64 Bit ?
     {
       long z=0;
       a=A4GLPacker_input_long (name, &z, ptr, isarr);
