@@ -114,8 +114,7 @@ void A4GL_add_pointer (char *orig_name, char type, void *ptr) {
 	
 }
 
-//int A4GL_has_pointer (char *pname, char t) {
-long A4GL_has_pointer (char *pname, char t) {
+int A4GL_has_pointer (char *pname, char t) {
 	return 0;
 }
 
