@@ -129,9 +129,11 @@ for (a=0;a<layout->nblocks;a++) {
 		centry=block->matrix[y];
 		for (x=0;x<block->ncols;x++) {
 			if (centry[x].entry==entry_id && centry[x].rb==block_id) {
-				free(centry[x].special);
+				//if (centry[x].special!=NULL) {
+					//free(centry[x].special);
+					//centry[x].special=NULL;
+				//}
 				centry[x].special=s;
-				
 			}
 		}
 	}

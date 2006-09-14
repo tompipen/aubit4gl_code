@@ -148,12 +148,15 @@ struct r_report *read_report_output(char *fname) {
 
   report->repName=0;
   report->modName=0;
+
   l=read_string(); // This should be tg
 
   if (strcmp("LOGICAL REPORT OUTPUT",l)!=0) {
         printf ("Looks like a bad file...\n");
+  	if (l) free(l);
 	return 0;
   }
+  if (l) free(l);
   report->version_no = read_int ();
   report->ctime = read_int ();
   report->top_margin=read_int();
