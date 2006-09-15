@@ -1,8 +1,8 @@
 #OK
 m.4ae: m1.4gl g1.4gl
-	${FGLC} -c m1.4gl -o m1.o
-	${FGLC} -c g1.4gl  -o g1.o
-	${FGLC} m1.o g1.o -o m.4ae
+	${FGLC} -o m1.o -c m1.4gl 
+	${FGLC} -o g1.o -c g1.4gl  
+	${FGLC} -o m.4ae m1.o g1.o 
 	
 
 #Parser not reset correctly after allready processing the same GLOBALS
