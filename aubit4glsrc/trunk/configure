@@ -16010,7 +16010,10 @@ echo $ECHO_N "checking if we can use PCRE... $ECHO_C" >&6
 				#with Apache, but there is no header file
 				PCRE_INC_PATH="$aubitdir/tools/cygwin"
 				HAVE_PCRELIB=1
-				else
+			else
+					echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+					HAVE_PCRELIB=0
 				fi
 			fi
 			echo "$as_me:$LINENO: result: yes" >&5
@@ -34776,7 +34779,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 34779 "configure"' > conftest.$ac_ext
+  echo '#line 34782 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -35332,7 +35335,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 35335 "configure"
+#line 35338 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -35430,7 +35433,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 35433 "configure"
+#line 35436 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -40663,7 +40666,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.348 2006-09-15 18:56:07 mikeaubury Exp $
+| $Id: configure,v 1.349 2006-09-15 19:44:59 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

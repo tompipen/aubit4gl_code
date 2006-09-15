@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.322 2006-09-15 18:53:14 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.323 2006-09-15 19:45:10 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3863,7 +3863,9 @@ AC_ARG_WITH(pcre,
 				#with Apache, but there is no header file
 				PCRE_INC_PATH="$aubitdir/tools/cygwin"
 				HAVE_PCRELIB=1
-				else
+			else
+					AC_MSG_RESULT(no)
+					HAVE_PCRELIB=0
 				fi
 			fi
 			AC_MSG_RESULT(yes)
@@ -9459,7 +9461,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.322 2006-09-15 18:53:14 mikeaubury Exp $
+| $Id: configure.in,v 1.323 2006-09-15 19:45:10 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
