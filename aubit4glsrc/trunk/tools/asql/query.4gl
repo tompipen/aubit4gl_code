@@ -28,6 +28,9 @@
 code
 #include "simple.h"
 char **read_directory(char *dir,char *spec);
+
+FILE *get_curr_mvfin(char *s);
+
 endcode
 
 ################################################################################
@@ -155,7 +158,7 @@ extern struct element *list;
 extern int list_cnt;
 
 
-asql_yyin=(FILE *)get_curr_mvfin("SQL");
+asql_yyin=get_curr_mvfin("SQL");
 clr_stmt();
 a=my_pretend_yyparse();
 a=list_cnt;
