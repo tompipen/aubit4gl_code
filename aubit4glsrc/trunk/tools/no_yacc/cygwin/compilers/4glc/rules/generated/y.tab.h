@@ -37,10 +37,10 @@
      KW_SPACES = 1566,
      COLUMN = 1522,
      KW_ASCII = 1579,
-     KW_CLIPPED = 1478,
      WHERE = 1620,
      KW_OR = 1727,
      KW_AND = 1682,
+     KW_CLIPPED = 1478,
      KW_NOT = 1702,
      IS_NOT_NULL = 1333,
      IS_NULL = 1473,
@@ -1192,10 +1192,10 @@
 #define KW_SPACES 1566
 #define COLUMN 1522
 #define KW_ASCII 1579
-#define KW_CLIPPED 1478
 #define WHERE 1620
 #define KW_OR 1727
 #define KW_AND 1682
+#define KW_CLIPPED 1478
 #define KW_NOT 1702
 #define IS_NOT_NULL 1333
 #define IS_NULL 1473
