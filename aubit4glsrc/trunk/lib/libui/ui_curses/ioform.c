@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.141 2006-09-15 09:17:20 mikeaubury Exp $
+# $Id: ioform.c,v 1.142 2006-09-15 09:25:17 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.141 2006-09-15 09:17:20 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.142 2006-09-15 09:25:17 mikeaubury Exp $";
 #endif
 
 /**
@@ -3625,7 +3625,11 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 
 	      ptr1 = field_list[a];
 
-
+		if (b>c) {
+			A4GL_debug("Odd - more fields being input than we have fields ?");
+			continue;
+		}
+		A4GL_debug("a=%d b=%d",a,b);
 	      ptr2 = field_list[b];
 
 	      A4GL_debug ("Ptr1=%p", ptr1);
