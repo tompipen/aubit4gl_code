@@ -1,0 +1,23 @@
+database formonly 
+ screen 
+ { 
+ Printer [f000 ] 
+ [d001 ] 
+ [d002 ] 
+  
+ Delete [p] 
+  
+  
+ } 
+ end 
+ attributes 
+ f000 = formonly.REC_ID type char, upshift; 
+ d001 = formonly.REC_DESC type char, noentry; 
+ d002 = formonly.REC_STR type char, noentry; 
+ p = formonly.REC_FLAG type char; 
+ end 
+  
+ instructions 
+ delimiters " " 
+ end 
+  
