@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.32 2006-07-12 16:09:31 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.33 2006-09-15 11:43:20 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -134,25 +134,39 @@ int
 A4GL_find_char (ACL_Menu * menu, int key)
 {
   ACL_Menu_Opts *opt1, *opt2;
-  int flg;
+  int flg = 0;
   opt2 = (ACL_Menu_Opts *) menu->curr_option;
 
   A4GL_debug ("ZZ : key = %d opt2->optkey=%s\n", key, opt2->optkey);
 
-  if (strcmp (opt2->optkey, "EMPTY") != 0)
-    {
-      A4GL_debug ("defined keys only");
-      flg = A4GL_check_keys (key, opt2->optkey);
+
+  if (!opt2->attributes & ACL_MN_HIDE) // Is it hidden ? 
+    {				
+	    // No - its not hidden...
+      if (strcmp (opt2->optkey, "EMPTY") != 0)
+	{
+	  A4GL_debug ("defined keys only");
+	  flg = A4GL_check_keys (key, opt2->optkey);
+	}
+      else
+	{
+	  A4GL_debug ("default key only");
+	  flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
+	}
     }
   else
     {
-      A4GL_debug ("default key only");
-      flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
+      // It is hidden - but it might be a command key(..)
+	if (strlen (opt2->opt_title)==0)
+	{
+	  A4GL_debug ("defined keys only");
+	  flg = A4GL_check_keys (key, opt2->optkey);
+	}
     }
 
   if (flg)
     {
-       menu->curr_option = (ACL_Menu_Opts *) opt2;
+      menu->curr_option = (ACL_Menu_Opts *) opt2;
       A4GL_debug ("We're on it!");
       return 1;
     }
@@ -166,25 +180,40 @@ A4GL_find_char (ACL_Menu * menu, int key)
   while (opt2 != opt1)
     {
       A4GL_debug ("ZZ2 : key = %d opt1->optkey=%s\n", key, opt1->optkey);
-      if (strcmp (opt1->optkey, "EMPTY"))
-        {
-          A4GL_debug ("defined keys only");
-          flg = A4GL_check_keys (key, opt1->optkey);
-        }
-      else
-        {
-          A4GL_debug ("default key only");
-          flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
-        }
+
+      flg = 0;
+
+      if (!opt1->attributes & ACL_MN_HIDE)
+	{
+	  if (strcmp (opt1->optkey, "EMPTY"))
+	    {
+	      A4GL_debug ("defined keys only");
+	      flg = A4GL_check_keys (key, opt1->optkey);
+	    }
+	  else
+	    {
+	      A4GL_debug ("default key only");
+	      flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
+	    }
+	} else {
+	  if (strlen (opt1->opt_title)==0)
+	    {
+	      A4GL_debug ("defined keys only");
+	      flg = A4GL_check_keys (key, opt1->optkey);
+	    }
+
+	}
 
       if (flg)
-        {
-          menu->curr_option = (ACL_Menu_Opts *) opt1;
-          return 1;
-        }
+	{
+	  menu->curr_option = (ACL_Menu_Opts *) opt1;
+	  return 1;
+	}
+
       opt1 = (ACL_Menu_Opts *) opt1->next_option;
+
       if (opt1 == 0)
-        opt1 = (ACL_Menu_Opts *) menu->first;
+	opt1 = (ACL_Menu_Opts *) menu->first;
     }
   return 0;
 }
@@ -213,11 +242,11 @@ A4GL_move_bar (ACL_Menu * menu, int a)
       A4GL_debug ("Got z as %p", z);
 
       if (z)
-        {
-          A4GL_debug ("Setting curropt to z");
-          opt2 = z;
-          menu->curr_option = ((ACL_Menu_Opts *) opt2);
-        }
+	{
+	  A4GL_debug ("Setting curropt to z");
+	  opt2 = z;
+	  menu->curr_option = ((ACL_Menu_Opts *) opt2);
+	}
       dir = 1;
     }
   else
@@ -225,30 +254,30 @@ A4GL_move_bar (ACL_Menu * menu, int a)
 #endif
 
       if (a == A4GLKEY_UP || a == A4GLKEY_LEFT || a == 8)
-        {
-          A4GL_debug ("Left key");
-          opt2 = (ACL_Menu_Opts *) opt2->prev_option;
-          if (opt2 == 0)
-            {
-              A4GL_debug ("Move to last");
-              opt2 = (ACL_Menu_Opts *) menu->last;
-            }
-          menu->curr_option = ((ACL_Menu_Opts *) opt2);
-          dir = -1;
-        }
+	{
+	  A4GL_debug ("Left key");
+	  opt2 = (ACL_Menu_Opts *) opt2->prev_option;
+	  if (opt2 == 0)
+	    {
+	      A4GL_debug ("Move to last");
+	      opt2 = (ACL_Menu_Opts *) menu->last;
+	    }
+	  menu->curr_option = ((ACL_Menu_Opts *) opt2);
+	  dir = -1;
+	}
 
       if (a == ' ' || a == A4GLKEY_DOWN || a == A4GLKEY_RIGHT)
-        {
-          A4GL_debug ("Right Key");
-          opt2 = (ACL_Menu_Opts *) opt2->next_option;
-          if (opt2 == 0)
-            {
-              A4GL_debug ("Move to first");
-              opt2 = (ACL_Menu_Opts *) menu->first;
-            }
-          menu->curr_option = ((ACL_Menu_Opts *) opt2);
-          dir = 1;
-        }
+	{
+	  A4GL_debug ("Right Key");
+	  opt2 = (ACL_Menu_Opts *) opt2->next_option;
+	  if (opt2 == 0)
+	    {
+	      A4GL_debug ("Move to first");
+	      opt2 = (ACL_Menu_Opts *) menu->first;
+	    }
+	  menu->curr_option = ((ACL_Menu_Opts *) opt2);
+	  dir = 1;
+	}
       A4GL_debug ("Calling find_down - dir = %d", dir);
       A4GL_find_shown (menu, 0, dir);
 #ifdef OLDCODE
@@ -265,7 +294,6 @@ A4GL_move_bar (ACL_Menu * menu, int a)
     }
   return;
 }
-
 int
 A4GL_seldir (char *filespec, char *filename)
 {

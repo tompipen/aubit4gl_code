@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.97 2006-09-11 18:18:08 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.98 2006-09-15 11:43:21 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -187,11 +187,12 @@ int
 A4GL_find_char (ACL_Menu * menu, int key)
 {
   ACL_Menu_Opts *opt1, *opt2;
-  int flg;
+  int flg=0;
   opt2 = (ACL_Menu_Opts *) menu->curr_option;
 
   A4GL_debug ("ZZ : key = %d opt2->optkey=%s\n", key, opt2->optkey);
 
+  if (!opt2->attributes & ACL_MN_HIDE) {
   if (strcmp (opt2->optkey, "EMPTY") != 0)
     {
       A4GL_debug ("defined keys only");
@@ -202,6 +203,11 @@ A4GL_find_char (ACL_Menu * menu, int key)
       A4GL_debug ("default key only");
       flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
     }
+  } else {
+	    if (strlen (opt2->opt_title)==0) {
+		flg = A4GL_check_keys (key, opt2->optkey);
+	    }
+  }
 
   if (flg)
     {
@@ -219,7 +225,10 @@ A4GL_find_char (ACL_Menu * menu, int key)
   while (opt2 != opt1)
     {
       A4GL_debug ("ZZ2 : key = %d opt1->optkey=%s\n", key, opt1->optkey);
-      if (strcmp (opt1->optkey, "EMPTY"))
+      flg=0;
+
+  if (!opt1->attributes & ACL_MN_HIDE) {
+      if (strcmp (opt1->optkey, "EMPTY")!=0)
 	{
 	  A4GL_debug ("defined keys only");
 	  flg = A4GL_check_keys (key, opt1->optkey);
@@ -229,6 +238,11 @@ A4GL_find_char (ACL_Menu * menu, int key)
 	  A4GL_debug ("default key only");
 	  flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
 	}
+  } else {
+	    if (strlen (opt1->opt_title)==0) {
+		flg = A4GL_check_keys (key, opt1->optkey);
+	    }
+  }
 
       if (flg)
 	{
