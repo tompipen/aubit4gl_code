@@ -47,7 +47,7 @@ MAIN
     LET exitStatus = 1
   END IF
   IF lv_int != 1 THEN
-    DISPLAY "Diferent integer value on first fetch "
+    DISPLAY "Diferent integer value on first fetch ",lv_int
     LET exitStatus = 1
   END IF
 
