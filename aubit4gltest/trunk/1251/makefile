@@ -22,7 +22,7 @@ run: compile ; ${DEFAULT_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "date handling - mid 720"
+desc: ; @echo "date handling , mid 720"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"

@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "VISUAL TEST - checks to see if a terminal can change colours.."
+desc: ; @echo "VISUAL TEST  checks to see if a terminal can change colours.."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

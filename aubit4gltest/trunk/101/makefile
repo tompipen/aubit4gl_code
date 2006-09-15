@@ -89,8 +89,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Tests for NOTFOUND status code after select statement \
-		executed on empty temporary table."
+	@echo "Tests for NOTFOUND status code after select statement executed on empty temporary table."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 

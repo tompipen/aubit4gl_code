@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_DUMP_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Ensure menu options can only be selected when not hidden - MID 820"
+desc: ; @echo "Ensure menu options can only be selected when not hidden , MID 820"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

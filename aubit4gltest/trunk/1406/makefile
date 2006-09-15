@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Checks the usage of a blank string in an SQL statement - basically making sure it not treated as null"
+desc: ; @echo "Checks the usage of a blank string in an SQL statement , basically making sure it not treated as null"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"

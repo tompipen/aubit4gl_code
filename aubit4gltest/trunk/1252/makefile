@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Yes another report test - mid 721 (varchars)"
+desc: ; @echo "Yes another report test , mid 721 (varchars)"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"

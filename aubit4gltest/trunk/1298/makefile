@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Mantis bug 790 - comment line misplaced"
+desc: ; @echo "Mantis bug 790 , comment line misplaced"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "More testing of comment line - default is different for a window and SCREEN"
+desc: ; @echo "More testing of comment line, default is different for a window and SCREEN"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

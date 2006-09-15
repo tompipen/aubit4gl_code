@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This tests for a core dump when using a specific unload routine - known to fail on some platforms (they should remove the #define KAGEL_UNLOAD from lib/libsql/esqlc/esql.ec if set)"
+desc: ; @echo "This tests for a core dump when using a specific unload routine, known to fail on some platforms (they should remove the #define KAGEL_UNLOAD from lib/libsql/esqlc/esql.ec if set)"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"

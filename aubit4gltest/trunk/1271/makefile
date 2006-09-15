@@ -22,7 +22,7 @@ run: compile ; ${DEFAULT_DUMP_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This ensures case-insensitivity on HIDE OPTION/SHOW OPTION"
+desc: ; @echo "This ensures caseinsensitivity on HIDE OPTION/SHOW OPTION"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

@@ -24,7 +24,7 @@ run: compile ; ${DEFAULT_DUMP_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests order by using varchar - MID 764"
+desc: ; @echo "Tests order by using varchar , MID 764"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
