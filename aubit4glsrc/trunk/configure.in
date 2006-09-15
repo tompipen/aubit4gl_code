@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.321 2006-09-15 09:00:07 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.322 2006-09-15 18:53:14 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3856,13 +3856,16 @@ AC_ARG_WITH(pcre,
 		AC_CHECK_HEADERS([ pcre.h ])
 		AC_MSG_CHECKING(if we can use PCRE)
 		if test "$ac_cv_lib_pcre_main" = "yes"; then
-			if test "$ac_cv_header_pcre_h" != "yes"; then
+			if test "$ac_cv_header_pcre_h" != "yes" ; then
+				if test  "$cygwin" = 1; then
 				#On Windows binary distro of pcre, there are no header files
 				#This also takes care of cases when we find libpcre suplied
 				#with Apache, but there is no header file
 				PCRE_INC_PATH="$aubitdir/tools/cygwin"
+				HAVE_PCRELIB=1
+				else
+				fi
 			fi
-			HAVE_PCRELIB=1
 			AC_MSG_RESULT(yes)
 			if test "$COLLECT_THIRD_PARTY" = "1"; then
 				THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
@@ -9456,7 +9459,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.321 2006-09-15 09:00:07 mikeaubury Exp $
+| $Id: configure.in,v 1.322 2006-09-15 18:53:14 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
