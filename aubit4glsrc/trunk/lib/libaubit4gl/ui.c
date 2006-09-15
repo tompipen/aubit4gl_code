@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.58 2006-09-13 15:07:42 briantan Exp $
+# $Id: ui.c,v 1.59 2006-09-15 09:17:17 mikeaubury Exp $
 #
 */
 
@@ -888,15 +888,15 @@ b=0;
 }
 
 void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap) {
-        //int f;
-        long f;
+        int f; // F is field number - should be int ? 
+        //long f;
         char *s;
         list->nfields=0;
         while (1) {
                 s = va_arg (*ap, char *);
                 if (s==0)  break;
                 //f = (int) va_arg (*ap, int *);
-                f = (long) va_arg (*ap, int *);
+                f = (int) va_arg (*ap, int);
                 if (f > 0) f--;
                 list->nfields++;
                 list->field_name_list=realloc(list->field_name_list, sizeof(list->field_name_list[0])*list->nfields);

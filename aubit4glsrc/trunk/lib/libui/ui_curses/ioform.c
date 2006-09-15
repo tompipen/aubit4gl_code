@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.140 2006-09-15 08:57:44 mikeaubury Exp $
+# $Id: ioform.c,v 1.141 2006-09-15 09:17:20 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.140 2006-09-15 08:57:44 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.141 2006-09-15 09:17:20 mikeaubury Exp $";
 #endif
 
 /**
@@ -1812,7 +1812,9 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 	}
 
       fmetric = list->field_name_list[z1].fpos;
-      A4GL_debug (" got field number as %d ", fmetric);
+
+      A4GL_debug (" got field number as %d z1=%d list=^p", fmetric,z1);
+
       ff = 0;
 
       /* get screen record/table name */
@@ -1981,8 +1983,12 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 
     }
 
+  A4GL_debug("Alloc : cnt=%d ",cnt);
+
   *field_list = calloc (cnt + 1, sizeof (FIELD *));
+  A4GL_debug("Allocated : %p",*field_list);
   memcpy (*field_list, flist, sizeof (FIELD *) * (cnt + 1));
+  A4GL_debug("Copied...");
   return cnt - 1;
 }
 
