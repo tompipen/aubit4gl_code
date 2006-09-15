@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.95 2006-08-28 16:13:30 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.96 2006-09-15 13:59:36 mikeaubury Exp $
 */
 
 /**
@@ -100,11 +100,12 @@ extern "C"
     long sqlcode;
     char sqlerrm[73];
     char sqlerrp[9];
-    int sqlerrd[6];
+    long sqlerrd[6];
     char sqlawarn[9];
     char sqlstate[10];
   }
   sqlca_struct;
+
 
 	/**
 	 * Decimal 4gl data type variable definition

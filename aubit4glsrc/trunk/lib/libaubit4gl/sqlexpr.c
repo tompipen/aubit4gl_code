@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.34 2006-09-13 15:07:42 briantan Exp $
+# $Id: sqlexpr.c,v 1.35 2006-09-15 13:57:00 mikeaubury Exp $
 #
 */
 
@@ -566,7 +566,7 @@ get_select_list_item_list_ob (struct s_select *select,
       if (a)
 	{
 	  buff2 = get_select_list_item_ob (select, i->list[a]);
-	  buff = make_sql_string_and_free (buff, acl_strdup (","), buff2, 0);
+	  buff = make_sql_string_and_free (buff, acl_strdup (","), buff2, NULL);
 	}
       else
 	{
@@ -597,7 +597,7 @@ get_select_list_item_list (struct s_select *select,
       if (a)
 	{
 	  buff2 = get_select_list_item (select, i->list[a]);
-	  buff = make_sql_string_and_free (buff, acl_strdup (","), buff2, 0);
+	  buff = make_sql_string_and_free (buff, acl_strdup (","), buff2, NULL);
 	}
       else
 	{
@@ -638,18 +638,18 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 
   if (p->sign == '-')
     {
-      rval = make_sql_string_and_free ("-", rval, 0);
+      rval = make_sql_string_and_free ("-", rval, NULL);
     }
 
   if (p->alias)
     {
       if (A4GLSQLCV_check_runtime_requirement ("COLUMN_ALIAS_AS"))
 	{
-	  rval = make_sql_string_and_free (rval, " AS ", p->alias, 0);
+	  rval = make_sql_string_and_free (rval, " AS ", p->alias, NULL);
 	}
       else
 	{
-	  rval = make_sql_string_and_free (rval, " ", p->alias, 0);
+	  rval = make_sql_string_and_free (rval, " ", p->alias, NULL);
 	}
     }
   return rval;
@@ -687,7 +687,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				  get_select_list_item (select,
 							p->u_data.
 							complex_expr.right),
-				  0);
+				  NULL);
 
       /*
          case E_SLI_JOIN:                             return make_sql_string_and_free(acl_strdup("JOIN("),get_select_list_item(select,p->u_data.complex_expr.left), 
@@ -705,7 +705,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								      u_data.
 								      complex_expr.
 								      right),
-				  0);
+				  NULL);
 
 
     case E_SLI_IN_VALUES:
@@ -717,7 +717,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								  p->u_data.
 								  slil_expr.
 								  right_list),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
 
     case E_SLI_NOT_IN_VALUES:
       return make_sql_string_and_free (get_select_list_item (select,
@@ -728,7 +728,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								  p->u_data.
 								  slil_expr.
 								  right_list),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
 
 
     case E_SLI_IN_SELECT:
@@ -739,7 +739,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				  get_select_list_item (select,
 							p->u_data.
 							complex_expr.right),
-				  kw_cb, 0);
+				  kw_cb, NULL);
 
     case E_SLI_NOT_IN_SELECT:
       return
@@ -748,7 +748,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				  acl_strdup (" NOT IN ("),
 				  get_select_list_item (select,
 							p->u_data.
-							complex_expr.right), kw_cb, 0);
+							complex_expr.right), kw_cb, NULL);
 
     case E_SLI_LITERAL:
       if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DATE"))
@@ -862,7 +862,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								   p->u_data.
 								   regex.
 								   escape),
-					 0);
+					 NULL);
       }
 
     case E_SLI_REGEX_NOT_MATCHES:
@@ -877,7 +877,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								   p->u_data.
 								   regex.
 								   escape),
-					 0);
+					 NULL);
       }
     case E_SLI_REGEX_LIKE:
       {
@@ -888,11 +888,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, " LIKE ", p2,
-					     p->u_data.regex.escape, 0);
+					     p->u_data.regex.escape, NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " LIKE ", p2, 0);
+	    return make_sql_string_and_free (p1, " LIKE ", p2, NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_LIKE:
@@ -904,11 +904,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, " NOT LIKE ", p2,
-					     p->u_data.regex.escape, 0);
+					     p->u_data.regex.escape, NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " NOT LIKE ", p2, 0);
+	    return make_sql_string_and_free (p1, " NOT LIKE ", p2, NULL);
 	  }
       }
     case E_SLI_REGEX_ILIKE:
@@ -920,11 +920,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, " ILIKE ", p2,
-					     p->u_data.regex.escape, 0);
+					     p->u_data.regex.escape, NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " ILIKE ", p2, 0);
+	    return make_sql_string_and_free (p1, " ILIKE ", p2, NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_ILIKE:
@@ -936,11 +936,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, " NOT ILIKE ", p2,
-					     p->u_data.regex.escape, 0);
+					     p->u_data.regex.escape, NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " NOT ILIKE ", p2, 0);
+	    return make_sql_string_and_free (p1, " NOT ILIKE ", p2, NULL);
 	  }
       }
 
@@ -948,66 +948,66 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" IS NULL"), 0);
+				  acl_strdup (" IS NULL"), NULL);
     case E_SLI_ISNOTNULL:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" IS NOT NULL"), 0);
+				  acl_strdup (" IS NOT NULL"), NULL);
     case E_SLI_ASC:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" ASC"), 0);
+				  acl_strdup (" ASC"), NULL);
     case E_SLI_DESC:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" DESC"), 0);
+				  acl_strdup (" DESC"), NULL);
     case E_SLI_NOT:
       return make_sql_string_and_free (acl_strdup ("NOT("),
 				       get_select_list_item (select,
 							     p->u_data.
 							     simple_op_expr.
 							     expr),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
     case E_SLI_BRACKET_EXPR:
       return make_sql_string_and_free (acl_strdup ("("),
 				       get_select_list_item (select,
 							     p->u_data.
 							     simple_op_expr.
 							     expr),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
     case E_SLI_UNITS_YEAR:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" UNITS YEAR"), 0);
+				  acl_strdup (" UNITS YEAR"), NULL);
     case E_SLI_UNITS_MONTH:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" UNITS MONTH"), 0);
+				  acl_strdup (" UNITS MONTH"), NULL);
     case E_SLI_UNITS_DAY:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" UNITS DAY"), 0);
+				  acl_strdup (" UNITS DAY"), NULL);
     case E_SLI_UNITS_HOUR:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" UNITS HOUR"), 0);
+				  acl_strdup (" UNITS HOUR"), NULL);
     case E_SLI_UNITS_MINUTE:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" UNITS MINUTE"), 0);
+				  acl_strdup (" UNITS MINUTE"), NULL);
     case E_SLI_UNITS_SECOND:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->u_data.simple_op_expr.expr),
-				  acl_strdup (" UNITS SECOND"), 0);
+				  acl_strdup (" UNITS SECOND"), NULL);
     case E_SLI_BUILTIN_CONST_TRUE:
       return acl_strdup (A4GLSQLCV_get_sqlconst ("TRUE"));
     case E_SLI_BUILTIN_CONST_FALSE:
@@ -1101,35 +1101,35 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
     case E_SLI_BUILTIN_AGG_MAX:
       return make_sql_string_and_free (acl_strdup ("MAX("),
 				       p->u_data.agg_expr.aud,
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
     case E_SLI_BUILTIN_AGG_MIN:
       return make_sql_string_and_free (acl_strdup ("MIN("),
 				       p->u_data.agg_expr.aud,
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
     case E_SLI_BUILTIN_AGG_SUM:
       return make_sql_string_and_free (acl_strdup ("SUM("),
 				       p->u_data.agg_expr.aud,
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
     case E_SLI_BUILTIN_AGG_COUNT:
       return make_sql_string_and_free (acl_strdup ("COUNT("),
 				       p->u_data.agg_expr.aud,
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
-				       acl_strdup (")"), 0);
+				       acl_strdup (")"), NULL);
 
     case E_SLI_BETWEEN:
       return
@@ -1142,7 +1142,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				  acl_strdup (" AND "),
 				  get_select_list_item (select,
 							p->u_data.
-							between_expr.to), 0);
+							between_expr.to), NULL);
     case E_SLI_NOT_BETWEEN:
       return
 	make_sql_string_and_free (get_select_list_item
@@ -1154,7 +1154,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				  acl_strdup (" AND "),
 				  get_select_list_item (select,
 							p->u_data.
-							between_expr.to), 0);
+							between_expr.to), NULL);
 
 
     case E_SLI_FCALL:
@@ -1186,7 +1186,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				       acl_strdup (","), p->u_data.extend.from,
 				       acl_strdup (" TO "),
 				       acl_strdup (p->u_data.extend.to), kw_cb,
-				       0);
+				       NULL);
 
     case E_SLI_QUERY_PLACEHOLDER:
       if (A4GL_isyes (acl_getenv ("DOING_CM")))
@@ -1250,7 +1250,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	  }
 
 		rval = make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
-					 acl_strdup (buff), 0);
+					 acl_strdup (buff), NULL);
 	      A4GL_debug("returning %s\n",rval);
 		return rval;
       }
@@ -1295,7 +1295,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 			return
 			  make_sql_string_and_free (acl_strdup
 						    (p->u_data.column.
-						     colname), 0);
+						     colname), NULL);
 		      }
 		  }
 	      }
@@ -1324,13 +1324,13 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	  }
 
 	return make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
-					 0);
+					 NULL);
       }
 
     case E_SLI_CASE:
       return
 	make_sql_string_and_free (A4GLSQLCV_make_case
-				  (select, &p->u_data.sqlcase), 0);
+				  (select, &p->u_data.sqlcase), NULL);
 
     case E_SLI_CASE_ELEMENT:
       A4GL_assertion (1, "Elements shouldn't be printed in isolation...");
@@ -1349,14 +1349,14 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								 p->u_data.
 								 sq_expression.
 								 sq), kw_cb,
-					   0);
+					   NULL);
 	case E_SQE_EXISTS:
 	  return make_sql_string_and_free (acl_strdup ("EXISTS ("),
 					   get_select_list_item (select,
 								 p->u_data.
 								 sq_expression.
 								 sq), kw_cb,
-					   0);
+					   NULL);
 
 	case E_SQE_NOT_EXISTS:
 	  return make_sql_string_and_free (acl_strdup ("NOT EXISTS ("),
@@ -1364,28 +1364,28 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								 p->u_data.
 								 sq_expression.
 								 sq), kw_cb,
-					   0);
+					   NULL);
 	case E_SQE_ALL:
 	  return make_sql_string_and_free (acl_strdup ("ALL ("),
 					   get_select_list_item (select,
 								 p->u_data.
 								 sq_expression.
 								 sq), kw_cb,
-					   0);
+					   NULL);
 	case E_SQE_ANY:
 	  return make_sql_string_and_free (acl_strdup ("ANY ("),
 					   get_select_list_item (select,
 								 p->u_data.
 								 sq_expression.
 								 sq), kw_cb,
-					   0);
+					   NULL);
 	case E_SQE_SOME:
 	  return make_sql_string_and_free (acl_strdup ("SOME ("),
 					   get_select_list_item (select,
 								 p->u_data.
 								 sq_expression.
 								 sq), kw_cb,
-					   0);
+					   NULL);
 	}
 
     }

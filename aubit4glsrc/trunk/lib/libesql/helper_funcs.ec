@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.46 2006-09-06 14:02:34 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.47 2006-09-15 13:58:13 mikeaubury Exp $
 #
 */
 
@@ -616,15 +616,18 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	if (mode=='i') {
 		if (p_indicat) *p_indicat=0;
-			if (A4GL_isnull(2,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
-		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;}
-		*infx=*a4gl;
+		if (A4GL_isnull(2,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;} 
+		*infx=*a4gl; // & 0xffffffff;
 	}
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-2) return;
 		if (indicat==-1||risnull(CLONGTYPE,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
-		*a4gl=*infx;
+		if ((*infx) & 0xffffffff != (*infx) ) {
+			A4GL_debug("BIG INT ? %ld\n",(*infx));
+		}
+		*a4gl=(*infx) ;  // & 0xffffffff;
 	}
 }
 

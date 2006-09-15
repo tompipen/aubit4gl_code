@@ -24,11 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.27 2006-08-23 08:24:42 mikeaubury Exp $
+# $Id: sql_common.c,v 1.28 2006-09-15 13:55:58 mikeaubury Exp $
 #
 */
 
 #include "a4gl_libaubit4gl_int.h"
+
 extern sqlca_struct a4gl_sqlca;
 
 
@@ -182,8 +183,7 @@ void
 A4GLSQL_set_sqlerrd (int a0, int a1, int a2, int a3, int a4, int a5)
 {
 
-  A4GL_debug ("A4GLSQL_set_sqlerrd(%d,%d,%d,%d,%d,%d)", a0, a1, a2, a3, a4,
-	      a5);
+  A4GL_debug ("A4GLSQL_set_sqlerrd(%d,%d,%d,%d,%d,%d)", a0, a1, a2, a3, a4, a5);
   a4gl_sqlca.sqlerrd[0] = a0;
   a4gl_sqlca.sqlerrd[1] = a1;
   a4gl_sqlca.sqlerrd[2] = a2;

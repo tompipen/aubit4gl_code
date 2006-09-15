@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.25 2006-09-01 19:32:09 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.26 2006-09-15 13:59:36 mikeaubury Exp $
 */
 
 /**
@@ -98,6 +98,14 @@ void A4GL_set_help_file (char *fname);
 
 #define ALREADY_DONE_POP_PUSH_ETC
 
+
+// Sept 15 2006
+int A4GL_get_a4gl_status (void);
+void A4GLSQL_set_sqlerrd(int a0,int a1,int a2,int a3,int a4,int a5);
+void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7);
+void A4GLSQL_set_sqlerrm (char *m, char *p);
+
+//**********
 
 double A4GL_pop_double(void);
 double A4GL_pop_double_null_as_zero(void);
