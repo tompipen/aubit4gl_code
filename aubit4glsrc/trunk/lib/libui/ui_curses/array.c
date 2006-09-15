@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.46 2006-07-24 21:03:08 mikeaubury Exp $
+# $Id: array.c,v 1.47 2006-09-15 11:15:51 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.46 2006-07-24 21:03:08 mikeaubury Exp $";
+		"$Id: array.c,v 1.47 2006-09-15 11:15:51 mikeaubury Exp $";
 #endif
 
 
@@ -119,7 +119,7 @@ clear_srec (struct s_disp_arr *disp,struct struct_screen_record *srec)
 				0, // first_only
 				srec1, // screen record
 				b+1, // field line
-				0,0);
+				NULL,0);
     }
 
 
@@ -196,7 +196,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
 				first_only,
 				srec2, // screen record
 				scr_line, // field line
-				0,0);
+				NULL,0);
 
     }
   else
@@ -209,7 +209,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
 				first_only,
 				srec2, // screen record
 				scr_line, // field line
-				0,0);
+				NULL,0);
 
       //A4GL_disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
     }
@@ -255,7 +255,7 @@ draw_arr_all (struct s_disp_arr *disp)
                                 0, // first_only
                                 srec2, // screen record
                                 a+1, // field line
-                                0,0);
+                                NULL,0);
 	}
 
     }
@@ -893,7 +893,13 @@ int orig_set=0;
 
   	if (!blank) {
 			A4GL_debug("Displaying something..");
+			A4GL_debug("disp->binding[a].ptr =%p",disp->binding[a].ptr );
+			A4GL_debug("disp->arr_elemsize=%d",disp->arr_elemsize);
+			A4GL_debug("arr_line=%d",arr_line);
              		cptr=(char *) disp->binding[a].ptr + disp->arr_elemsize * (arr_line - 1);
+			A4GL_debug("cptr=%p",cptr);
+			A4GL_debug(" disp->binding[a].dtype=%d", disp->binding[a].dtype);
+			A4GL_debug("ENCODE_SIZE(disp->binding[a].size)=%d",ENCODE_SIZE(disp->binding[a].size));
              		A4GL_push_param (cptr, disp->binding[a].dtype+ENCODE_SIZE(disp->binding[a].size));
     	} else {
 			A4GL_debug("Displaying blank..");

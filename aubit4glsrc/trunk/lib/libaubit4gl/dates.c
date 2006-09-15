@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.19 2005-03-31 13:35:46 afalout Exp $
+# $Id: dates.c,v 1.20 2006-09-15 11:15:45 mikeaubury Exp $
 #
 */
 
@@ -211,18 +211,19 @@ gen_dateno2 (int day, int month, int year)
 long
 A4GL_gen_dateno (int day, int month, int year)
 {
-  int z;
+  long z;
 #ifdef DEBUG
   {
     A4GL_debug ("In A4GL_gen_dateno %d %d %d", day, month, year);
   }
 #endif
   z = gen_dateno2 (day, month, year);
+
   A4GL_debug("z=%d\n",z);
   if (z == DATE_INVALID)
     {
-      //A4GL_exitwith ("Invalid date");
-	A4GL_debug("Invalid date ?");
+        //A4GL_exitwith ("Invalid date");
+	A4GL_debug("Invalid date ? %ld %ld ",z,DATE_INVALID);
 	return z;
     }
   return z;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.10 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.11 2006-09-15 11:15:50 mikeaubury Exp $
 #*/
 
 /**
@@ -171,9 +171,13 @@ A4GLPacker_input_char (char *name, char *val, int ptr, int isarr)
 int
 A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
 {
-  if (sizeof (int) == sizeof (long))
+int a;
+  if (sizeof (int) != sizeof (short)) // 32 or 64 Bit ?
     {
-      return A4GLPacker_input_long (name, (long *) val, ptr, isarr);
+      long z;
+	a=A4GLPacker_input_long (name, &z, ptr, isarr);
+	*val=z;
+	return a;
     }
   else
     {

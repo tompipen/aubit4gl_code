@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.321 2006-09-15 09:00:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.322 2006-09-15 11:15:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.321 2006-09-15 09:00:13 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.322 2006-09-15 11:15:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1015,7 +1015,7 @@ LEXLIB_print_continue_loop (int n, char *cmd_type)
   if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
     {
       printc
-	("if (_fld_dr==-95) {A4GL_req_field(&_sio_%d,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n",get_sio_ids(cmd_type));
+	("if (_fld_dr==-95) {A4GL_req_field(&_sio_%d,_inp_io_type,'0',\"0\",NULL,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n",get_sio_ids(cmd_type));
       printc ("_fld_dr= -1;_exec_block= -1;\n");
     }
 
@@ -2231,7 +2231,7 @@ real_print_expr (struct expr_str *ptr)
 	  printc ("{");
 	  printc ("int _retvars;");
 
-	  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);",
+	  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,NULL,0);",
 		  ptr->u_data.expr_get_fldbuf->sio_id,
 	  	field_name_list_as_char (ptr->u_data.expr_get_fldbuf->field_list)
 		  );
@@ -2970,7 +2970,7 @@ void
 LEXLIB_print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
-  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);\n",get_sio_ids("ALL"), fields);
+  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,NULL,0);\n",get_sio_ids("ALL"), fields);
   start_bind ('i', 0);
 }
 
@@ -3225,7 +3225,7 @@ real_print_func_call (t_expr_str * fcall)
 	p=fcall->u_data.expr_get_fldbuf;
 	printc("{");
 	printc("   int _retvars;");
-	printc("   _retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,0,0);",p->sio_id,
+	printc("   _retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,NULL,0);",p->sio_id,
 					field_name_list_as_char(p->field_list));
 	printc("   if (_retvars != 1 ) {");
 	printc("      A4GLSQL_set_status(-3001,0);");
@@ -3666,9 +3666,9 @@ LEXLIB_A4GL_get_display_str (int type, char *s, char *f)
   if (type == 1)
     strcpy (buff, "A4GL_display_at(%d,%s);");
   if (type == 2)
-    SPRINTF1 (buff, "A4GL_disp_fields(%%d,%%s,%s,0);\n", s);
+    SPRINTF1 (buff, "A4GL_disp_fields(%%d,%%s,%s,NULL);\n", s);
   if (type == 3)
-    SPRINTF2 (buff, "A4GL_disp_form_fields(%%d,%%s,\"%s\",%s,0);\n", f, s);
+    SPRINTF2 (buff, "A4GL_disp_form_fields(%%d,%%s,\"%s\",%s,NULL);\n", f, s);
   if (type == 4)
     SPRINTF0 (buff, "A4GL_disp_main_caption();\n");
   if (type == 5)
@@ -3733,11 +3733,11 @@ LEXLIB_print_display_new (t_expr_str_list *expr, t_dt_display *disp,  char *attr
 					for (cnt=fh->nfields-1;cnt>=0;cnt--) {
 					char *ptr_field;
 					        ptr_field=field_name_as_char(&fh->fields[cnt]);
-  						printc ("A4GL_disp_fields(%d,%s,%s,0);\n", nexpr,attr,ptr_field);
+  						printc ("A4GL_disp_fields(%d,%s,%s,NULL);\n", nexpr,attr,ptr_field);
 					}
 	}
 					else {
-					printc ("A4GL_disp_fields(%d,%s,%s,0);\n", nexpr,attr,field_name_list_as_char(disp->u_data.field_list));
+					printc ("A4GL_disp_fields(%d,%s,%s,NULL);\n", nexpr,attr,field_name_list_as_char(disp->u_data.field_list));
 					}
 				break;
 
@@ -4458,17 +4458,17 @@ LEXLIB_print_next_field (char *s)
   
   if (strcmp (s, "\"+\"") == 0)
     {
-      printc ("A4GL_req_field(&_sio_%d,_inp_io_type,'+',%s,0,0);\n", sio_id,s);
+      printc ("A4GL_req_field(&_sio_%d,_inp_io_type,'+',%s,NULL,0);\n", sio_id,s);
     }
   else
     {
       if (strcmp (s, "\"-\"") == 0)
 	{
-	  printc ("A4GL_req_field(&_sio_%d,_inp_io_type,'-',%s,0,0);\n", sio_id,s);
+	  printc ("A4GL_req_field(&_sio_%d,_inp_io_type,'-',%s,NULL,0);\n", sio_id,s);
 	}
       else
 	{
-	  printc ("A4GL_req_field(&_sio_%d,_inp_io_type,'!',%s,0,0);\n", sio_id,s);
+	  printc ("A4GL_req_field(&_sio_%d,_inp_io_type,'!',%s,NULL,0);\n", sio_id,s);
 	}
     }
 
@@ -4729,7 +4729,7 @@ static char buff[256];
 void
 LEXLIB_print_scroll (char *flds, char *updown)
 {
-  printc ("A4GL_acli_scroll(%s,%s,0,0);\n", updown,flds);
+  printc ("A4GL_acli_scroll(%s,%s,NULL,0);\n", updown,flds);
 }
 
 
@@ -5606,7 +5606,7 @@ LEXLIB_print_clr_fields_fl (t_field_list *fl, char *defs)
 {
   char *flds;
   flds=field_name_list_as_char(fl);
-  printc ("A4GL_clr_fields(%d,%s,0,0);", atoi (defs), flds);
+  printc ("A4GL_clr_fields(%d,%s,NULL,0);", atoi (defs), flds);
 
   /*print_niy ("Clear Fields");*/
 }

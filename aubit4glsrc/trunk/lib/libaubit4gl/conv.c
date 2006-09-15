@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.121 2006-07-05 12:40:55 mikeaubury Exp $
+# $Id: conv.c,v 1.122 2006-09-15 11:15:45 mikeaubury Exp $
 #
 */
 
@@ -3194,6 +3194,7 @@ A4GL_debug("a=%d b=%d\n",a,b);
 	  long x;
 	  x=A4GL_gen_dateno(data[2],data[1],data[0]);
 	  if (x==DATE_INVALID) return 0;
+	  A4GL_debug("%ld!=%ld",x,DATE_INVALID);
   }
 
   if(data[3]<0||data[3]>23) return 0; // Hours
