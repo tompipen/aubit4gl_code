@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.320 2006-09-13 20:35:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.321 2006-09-15 09:00:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.320 2006-09-13 20:35:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.321 2006-09-15 09:00:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2164,15 +2164,15 @@ real_print_expr (struct expr_str *ptr)
 	case ET_EXPR_INFIELD:
 		if (A4GL_doing_pcode()) {
 		if (ptr->u_data.expr_infield->sio_id!=-1) {
-			printc("A4GL_pushint_fgl_infield(_sio_%d,_inp_io_type,%s,0,0);",ptr->u_data.expr_infield->sio_id,field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+			printc("A4GL_pushint_fgl_infield(_sio_%d,_inp_io_type,%s,NULL,0);",ptr->u_data.expr_infield->sio_id,field_name_list_as_char(ptr->u_data.expr_infield->field_list));
 		} else {
-			printc("A4GL_pushint_fgl_infield(0,0,%s,0,0);",field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+			printc("A4GL_pushint_fgl_infield(NULL,0,%s,NULL,0);",field_name_list_as_char(ptr->u_data.expr_infield->field_list));
 		}
 		} else {
 		if (ptr->u_data.expr_infield->sio_id!=-1) {
-			printc("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,0,0));",ptr->u_data.expr_infield->sio_id,field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+			printc("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,NULL,0));",ptr->u_data.expr_infield->sio_id,field_name_list_as_char(ptr->u_data.expr_infield->field_list));
 		} else {
-			printc("A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));",field_name_list_as_char(ptr->u_data.expr_infield->field_list));
+			printc("A4GL_push_int(A4GL_fgl_infield(NULL,0,%s,NULL,0));",field_name_list_as_char(ptr->u_data.expr_infield->field_list));
 		}
 		}
 	  	break;
@@ -2186,11 +2186,11 @@ real_print_expr (struct expr_str *ptr)
 			break;
 
 	case ET_EXPR_FIELD_TOUCHED:
-		printc("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",ptr->u_data.expr_field_touched->sio_id,field_name_list_as_char(ptr->u_data.expr_field_touched->field_list));
+		printc("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,NULL,0));",ptr->u_data.expr_field_touched->sio_id,field_name_list_as_char(ptr->u_data.expr_field_touched->field_list));
 		break;
 
 	case ET_EXPR_NOT_FIELD_TOUCHED:
-		printc("A4GL_push_int(!A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",ptr->u_data.expr_field_touched->sio_id,field_name_list_as_char(ptr->u_data.expr_field_touched->field_list));
+		printc("A4GL_push_int(!A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,NULL,0));",ptr->u_data.expr_field_touched->sio_id,field_name_list_as_char(ptr->u_data.expr_field_touched->field_list));
 		break;
 
 	case ET_EXPR_IVAL_VAL:
@@ -3053,7 +3053,7 @@ LEXLIB_print_field_func (char type, char *name, char *var)
     {
 
       if (type == 'I')
-	printc ("A4GL_push_int(A4GL_fgl_infield(0,0,%s,0,0));", name);
+	printc ("A4GL_push_int(A4GL_fgl_infield(NULL,0,%s,NULL,0));", name);
 
       if (type == 'T')
 	return;
@@ -3061,11 +3061,11 @@ LEXLIB_print_field_func (char type, char *name, char *var)
     }
 
   if (type == 'I')
-    printc ("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,0,0));",get_sio_ids("ALL"), name);
+    printc ("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,NULL,0));",get_sio_ids("ALL"), name);
 
   if (type == 'T')
     printc
-      ("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,0,0));",get_sio_ids("ALL"),
+      ("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,NULL,0));",get_sio_ids("ALL"),
        name);
 
 
@@ -3510,13 +3510,14 @@ LEXLIB_print_construct_fl (int byname, char *constr_str, t_field_list *f_list, c
       printc
 	("SET(\"s_screenio\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),",sio_id,sio_id,sio_id);
       print_field_bind_constr ();
-      printc (" ,0));\n");
+      printc (" ,NULL));\n");
+	
     }
   else
     {
       printc (" /* not byname */");
       printc
-	("SET(\"s_screenio\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),%s,0));\n",sio_id,sio_id,sio_id,
+	("SET(\"s_screenio\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),%s,NULL));\n",sio_id,sio_id,sio_id,
 	 fld_list);
     }
 
@@ -4570,7 +4571,7 @@ char *fldlist=0;
   LEXLIB_print_bind_set_value ('i');
   printc
     ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
-  printc ("if ((int)GET(\"s_screenio\",&_sio_%d,\"currform\")==0) break;\n",sio_id);
+  printc ("if (GET_AS_INT(\"s_screenio\",&_sio_%d,\"currform\")==0) break;\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"vars\",ibind);\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",%s);\n",sio_id, sattr);
   printc ("SET(\"s_screenio\",&_sio_%d,\"novars\",%d);\n",sio_id, ccc);
@@ -4588,15 +4589,15 @@ char *fldlist=0;
 	("SET(\"s_screenio\",&_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",&_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",&_sio_%d,\"currform\"),",sio_id,sio_id,sio_id);
       print_field_bind (ccc);
       printc
-	(",0)); if ((int)GET(\"s_screenio\",&_sio_%d,\"nfields\")==-1) break;\n",sio_id);
+	(",NULL));\nif (GET_AS_INT(\"s_screenio\",&_sio_%d,\"nfields\")==-1) break;\n",sio_id);
     }
   else
     {
       printc
-	("SET(\"s_screenio\",&_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",&_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",&_sio_%d,\"currform\"),%s,0));\n", sio_id,sio_id,sio_id,
+	("SET(\"s_screenio\",&_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",&_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",&_sio_%d,\"currform\"),%s,NULL));\n", sio_id,sio_id,sio_id,
 	 fldlist);
       printc
-	("if ((int)GET(\"s_screenio\",&_sio_%d,\"nfields\")==-1) break;\n",sio_id);
+	("if (GET_AS_INT(\"s_screenio\",&_sio_%d,\"nfields\")==-1) break;\n",sio_id);
     }
   printc
     ("{int _sf; _sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) {_fld_dr=0;break;}\n}\n",sio_id);
@@ -4653,7 +4654,7 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
      arrvar, arrvar);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"inp_flags\",%d);\n",sio_id, inp_flags);
-  printc ("if ((int)GET(\"s_inp_arr\",_sio_%d,\"currform\")==0) break;\n",sio_id);
+  printc ("if (GET_AS_INT(\"s_inp_arr\",_sio_%d,\"currform\")==0) break;\n",sio_id);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"currentfield\",0);\n",sio_id);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"currentmetrics\",0);\n",sio_id);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"mode\",%d+%s);\n",sio_id, MODE_INPUT, defs);
@@ -4688,7 +4689,7 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 
 
   printc
-    ("SET(\"s_inp_arr\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio_%d,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio_%d,\"currform\"),A4GL_add_dot_star(%s),0,0));\n",sio_id,sio_id,sio_id, srec);
+    ("SET(\"s_inp_arr\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio_%d,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio_%d,\"currform\"),A4GL_add_dot_star(%s),NULL,0));\n",sio_id,sio_id,sio_id, srec);
   printc ("_fld_dr= -1;_exec_block=-1;continue;\n");
   SPRINTF4 (buff2, "A4GL_inp_arr_v2(&_sio_%d,%s,%s,%s,_forminit,_sio_evt);\n", sio_id,defs, srec, attr);
   return buff2;
@@ -5470,7 +5471,7 @@ LEXLIB_print_prompt_end (char *s)
 {
   printc("{");
   print_event_list();
-  printc("if ((int)GET(\"s_prompt\",_sio_%d,\"mode\")==2) break;",get_sio_ids("PROMPT"));
+  printc("if (GET_AS_INT(\"s_prompt\",_sio_%d,\"mode\")==2) break;",get_sio_ids("PROMPT"));
   printc("_exec_block=A4GL_prompt_loop_v2(&_sio_%d,_acl_prompt_timeout,_sio_evt);\n",get_sio_ids("PROMPT"));
   printc ("}\n");
   printc("}");

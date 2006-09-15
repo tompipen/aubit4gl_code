@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.320 2006-09-11 18:17:52 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.321 2006-09-15 09:00:07 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1743,6 +1743,9 @@ case $host in
 			REDHAT_NAME=`cat /etc/redhat-release`
 			REDHAT_VER=`echo $REDHAT_NAME | awk '{print $5}'`
 			AC_MSG_RESULT($REDHAT_NAME ($REDHAT_VER))
+		fi
+		if test "$arch" = x86_64 ; then
+				PIC="-fPIC"
 		fi
 
 		;;
@@ -8999,7 +9002,11 @@ if test "$lt_cv_prog_cc_pic_works" = "yes"; then
     #if this works OK, remove manually set ones there!
 	#lt_cv_prog_cc_pic=' -fno-common'
 	PIC="$lt_cv_prog_cc_pic"
+	if test "$arch" = "x86_64" ; then
+	PIC="-fPIC_FORCED"
+	fi
 	LDFLAGS_SHARED="$PIC -shared"
+	CFLAGS="$CFLAGS $PIC"
     #echo "LDFLAGS_SHARED set to $LDFLAGS_SHARED"
 fi
 
@@ -9449,7 +9456,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.320 2006-09-11 18:17:52 mikeaubury Exp $
+| $Id: configure.in,v 1.321 2006-09-15 09:00:07 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

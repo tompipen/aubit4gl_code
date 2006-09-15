@@ -886,13 +886,13 @@ echo X"$0" |
   	  /^X\(\/\).*/{ s//\1/; q; }
   	  s/.*/./; q'`
   srcdir=$ac_confdir
-  if test ! -r "$srcdir/$ac_unique_file"; then
+  if test ! -r $srcdir/$ac_unique_file; then
     srcdir=..
   fi
 else
   ac_srcdir_defaulted=no
 fi
-if test ! -r "$srcdir/$ac_unique_file"; then
+if test ! -r $srcdir/$ac_unique_file; then
   if test "$ac_srcdir_defaulted" = yes; then
     { echo "$as_me: error: cannot find sources ($ac_unique_file) in $ac_confdir or .." >&2
    { (exit 1); exit 1; }; }
@@ -901,7 +901,7 @@ if test ! -r "$srcdir/$ac_unique_file"; then
    { (exit 1); exit 1; }; }
   fi
 fi
-(cd $srcdir && test -r "./$ac_unique_file") 2>/dev/null ||
+(cd $srcdir && test -r ./$ac_unique_file) 2>/dev/null ||
   { echo "$as_me: error: sources are in $srcdir, but \`cd $srcdir' does not work" >&2
    { (exit 1); exit 1; }; }
 srcdir=`echo "$srcdir" | sed 's%\([^\\/]\)[\\/]*$%\1%'`
@@ -9908,6 +9908,9 @@ echo $ECHO_N "checking RedHat version... $ECHO_C" >&6
 			REDHAT_VER=`echo $REDHAT_NAME | awk '{print $5}'`
 			echo "$as_me:$LINENO: result: $REDHAT_NAME ($REDHAT_VER)" >&5
 echo "${ECHO_T}$REDHAT_NAME ($REDHAT_VER)" >&6
+		fi
+		if test "$arch" = x86_64 ; then
+				PIC="-fPIC"
 		fi
 
 		;;
@@ -34770,7 +34773,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 34773 "configure"' > conftest.$ac_ext
+  echo '#line 34776 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -35326,7 +35329,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 35329 "configure"
+#line 35332 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -35424,7 +35427,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 35427 "configure"
+#line 35430 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -37815,7 +37818,11 @@ if test "$lt_cv_prog_cc_pic_works" = "yes"; then
     #if this works OK, remove manually set ones there!
 	#lt_cv_prog_cc_pic=' -fno-common'
 	PIC="$lt_cv_prog_cc_pic"
+	if test "$arch" = "x86_64" ; then
+	PIC="-fPIC_FORCED"
+	fi
 	LDFLAGS_SHARED="$PIC -shared"
+	CFLAGS="$CFLAGS $PIC"
     #echo "LDFLAGS_SHARED set to $LDFLAGS_SHARED"
 fi
 
@@ -40653,7 +40660,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.346 2006-09-11 18:17:50 mikeaubury Exp $
+| $Id: configure,v 1.347 2006-09-15 09:00:03 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

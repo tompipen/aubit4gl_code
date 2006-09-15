@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.33 2006-09-13 15:07:42 briantan Exp $
+# $Id: data_if.c,v 1.34 2006-09-15 09:00:12 mikeaubury Exp $
 #
 */
 
@@ -1510,6 +1510,11 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
 }
 
 
+int A4GL_get_set_as_int(char *str, void *ptr, int mode, char *name, long var) {
+int a;
+a=(int)((long)A4GL_get_set(str,ptr,mode,name,var)&0xffffffff);
+return a;
+}
 
 /**
  * Main entry point.

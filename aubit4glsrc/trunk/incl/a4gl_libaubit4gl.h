@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.245 2006-09-14 13:26:23 briantan Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.246 2006-09-15 09:00:11 mikeaubury Exp $
 #
 */
 
@@ -1248,6 +1248,8 @@ int aclfgl_fgl_round(int nargs);
 
 #define GETPTR(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGETPTR,element,0)
 #define GET(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGET,element,0)
+#define GET_AS_INT(struct,ptr,element) A4GL_get_set_as_int(struct,ptr,GETSETGET,element,0)
+
 #define SET(struct,ptr,element,value) A4GL_get_set(struct,ptr,GETSETSET,element,(long)value)
 #define NEW(struct) A4GL_get_set(struct,0,GETSETNEW,0,0)
 #define RM(struct,ptr) A4GL_get_set(struct,ptr,GETSETRM,0,0)
@@ -1371,6 +1373,7 @@ void A4GL_debug(char *s);
   /* ====================== from data_if.c =================== */
 
   void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
+  int A4GL_get_set_as_int (char *str, void *ptr, int mode, char *name, long var);
 
 
   /* ===================== from builtin.c =================== */

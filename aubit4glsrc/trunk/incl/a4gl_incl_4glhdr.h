@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.38 2006-09-11 11:17:18 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.39 2006-09-15 09:00:11 mikeaubury Exp $
 */
 
 /**
@@ -144,10 +144,12 @@ extern "C"
 #define GETSETGETPTR 3
 #define GETPTR(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGETPTR,element,0)
 #define GET(struct,ptr,element) A4GL_get_set(struct,ptr,GETSETGET,element,0)
+#define GET_AS_INT(struct,ptr,element) A4GL_get_set_as_int(struct,ptr,GETSETGET,element,0)
 #define SET(struct,ptr,element,value) A4GL_get_set(struct,ptr,GETSETSET,element,(long)value)
 #define NEW(struct) A4GL_get_set(struct,0,GETSETNEW,0,0)
 #define RM(struct,ptr) A4GL_get_set(struct,ptr,GETSETRM,0,0)
 void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
+int A4GL_get_set_as_int (char *str, void *ptr, int mode, char *name, long var);
 
 #define REPORT_START -1
 #define REPORT_FINISH -2
