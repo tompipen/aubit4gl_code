@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.132 2006-08-31 15:06:59 mikeaubury Exp $
+# $Id: newpanels.c,v 1.133 2006-09-15 08:57:44 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.132 2006-08-31 15:06:59 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.133 2006-09-15 08:57:44 mikeaubury Exp $";
 #endif
 
 /**
@@ -369,7 +369,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
   A4GL_set_bkg (win, attrib);
 
 
-  A4GL_add_pointer (name, ATTRIBUTE, (void *) attrib);
+  A4GL_add_pointer (name, ATTRIBUTE, (void *) ((long)attrib));
   if (border)
     {
       A4GL_debug ("Adding border %x", attrib);
@@ -843,7 +843,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   w = currwin;
 
   sprintf(buff,"%p",f);
-  A4GL_add_pointer (buff, ATTRIBUTE, (void *) attrib);
+  A4GL_add_pointer (buff, ATTRIBUTE, (void *) ((long)attrib));
 
   if (w == 0)
     {

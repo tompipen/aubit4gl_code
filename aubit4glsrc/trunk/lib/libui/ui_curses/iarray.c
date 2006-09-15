@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.113 2006-07-24 21:03:09 mikeaubury Exp $
+# $Id: iarray.c,v 1.114 2006-09-15 08:57:44 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.113 2006-07-24 21:03:09 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.114 2006-09-15 08:57:44 mikeaubury Exp $";
 #endif
 
 /**
@@ -52,7 +52,7 @@
 #include <ctype.h>
 
 void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
-void A4GL_set_curr_infield (long a);
+void A4GL_set_curr_infield (void *a);
 void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
 char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop,
@@ -94,7 +94,7 @@ int A4GL_field_name_match (FIELD * f, char *s);
 static int process_control_stack_internal (struct s_inp_arr *arr);
 static int process_control_stack (struct s_inp_arr *sio,
 				  struct aclfgl_event_list *evt);
-void A4GL_set_infield_from_parameter (int a);
+void A4GL_set_infield_from_parameter (long a);
 void A4GL_set_field_attr_with_attr_already_determined (FIELD * field,
 						       int attr,
 						       int cmd_type);
@@ -1488,7 +1488,7 @@ void
 A4GL_mja_set_current_field (FORM * form, FIELD * field)
 {
   int a;
-  A4GL_set_curr_infield ((long) field);
+  A4GL_set_curr_infield ((void *) field);
   a = set_current_field (form, field);
   if (a != E_OK)
     {

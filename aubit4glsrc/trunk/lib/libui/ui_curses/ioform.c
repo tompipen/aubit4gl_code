@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.139 2006-08-31 15:06:59 mikeaubury Exp $
+# $Id: ioform.c,v 1.140 2006-09-15 08:57:44 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.139 2006-08-31 15:06:59 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.140 2006-09-15 08:57:44 mikeaubury Exp $";
 #endif
 
 /**
@@ -97,15 +97,15 @@ int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 					    struct struct_scr_field *fprop,
 					    char *fld_data, char *data_area);
 int A4GL_get_field_width_w (void *f);
-void A4GL_set_infield_from_parameter (int a);
-void A4GL_set_curr_infield (long a);
+void A4GL_set_infield_from_parameter (long a);
+void A4GL_set_curr_infield (void *a);
 
 //int lastc = 0;
 //int nline;
 //int ioform_fline;
 //int ncol;
 //char dbname[64];
-long inp_current_field = 0;
+void *inp_current_field = 0;
 
 /*
 =====================================================================
@@ -118,7 +118,7 @@ void A4GL_clr_field (FIELD * f);
 
 static void A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type);
 
-static int A4GL_get_curr_infield (void);
+static long A4GL_get_curr_infield (void);
 static void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff,
 					      int ch);
 static void A4GL_set_field_colour_attr (FIELD * field, int do_reverse,
@@ -386,15 +386,15 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	  formdets->form_fields[cnt++] =
 	    (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
 	  formdets->form_fields[cnt] = 0;
-	  formdets->fileform->metrics.metrics_val[a].dlm1 =
-	    (int) A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
+	  formdets->fileform->metrics.metrics_val[a].dlm1 =(long)
+	    A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
 				   y,
 				   formdets->fileform->metrics.metrics_val[a].
 				   x - 1, delims[0]);
 	  formdets->form_fields[cnt++] =
 	    (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm1;
-	  formdets->fileform->metrics.metrics_val[a].dlm2 =
-	    (int) A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
+	  formdets->fileform->metrics.metrics_val[a].dlm2 =(long)
+	     A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
 				   y,
 				   formdets->fileform->metrics.metrics_val[a].
 				   x +
@@ -1786,7 +1786,7 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
   char tabname[40];
   FIELD *flist[1024];
   char *s;
-  int fmetric;
+  int fmetric=0;
   struct struct_metrics *k;
   int attr_no;
   int srec_no;
@@ -2692,29 +2692,29 @@ void
 UILIB_A4GL_set_infield_from_stack (void)
 {
   A4GL_debug ("**** CHANGED FIELD ****");
-  inp_current_field = A4GL_pop_long ();
+  inp_current_field = (void *)A4GL_pop_long ();
   A4GL_debug ("New field :---> %p", inp_current_field);
 }
 
 void
-A4GL_set_infield_from_parameter (int a)
+A4GL_set_infield_from_parameter (long a)
 {
   A4GL_debug ("**** CHANGED FIELD ****");
-  inp_current_field = a;
+  inp_current_field = (void *)a;
   A4GL_debug ("New field :---> %p", inp_current_field);
 }
 
 /**
  * @return The current field number.
  */
-int
+long
 A4GL_get_curr_infield (void)
 {
-  return inp_current_field;
+  return (long)inp_current_field;
 }
 
 void
-A4GL_set_curr_infield (long a)
+A4GL_set_curr_infield (void *a)
 {
   inp_current_field = a;
 }

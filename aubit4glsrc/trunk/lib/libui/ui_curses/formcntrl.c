@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.95 2006-09-01 20:34:09 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.96 2006-09-15 08:57:44 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.95 2006-09-01 20:34:09 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.96 2006-09-15 08:57:44 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -71,7 +71,7 @@ static int last_key_code;
 //int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 int A4GL_get_metric_for (struct s_form_dets *form, void *f);
 int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
-void A4GL_set_infield_from_parameter (int a);
+void A4GL_set_infield_from_parameter (long a);
 int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current(void *form);
@@ -1192,7 +1192,7 @@ static int internal_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   fprop = (struct struct_scr_field *) field_userptr (current_field (mform));
   metrics = &form->fileform->metrics.metrics_val[A4GL_get_curr_metric (form)];
 
-  if (metrics && (int) metrics != -1)
+  if (metrics && (long) metrics != -1)
     {
       set_form_page (mform, metrics->scr - 1);
     }
@@ -1750,7 +1750,7 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
       }
 
       if (strcmp(siotype,"s_disp_arr")==0) {
-              static void* last_sio=0;
+              /*static void* last_sio=0; */
               struct s_disp_arr *s;
               s=sio;
 

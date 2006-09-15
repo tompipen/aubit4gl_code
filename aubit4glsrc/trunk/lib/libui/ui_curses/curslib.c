@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.128 2006-09-12 14:51:39 mikeaubury Exp $
+# $Id: curslib.c,v 1.129 2006-09-15 08:57:44 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.128 2006-09-12 14:51:39 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.129 2006-09-15 08:57:44 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1047,7 +1047,7 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
     char _p[36];
     int _fld_dr;
     UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0);
-    while ((int) GET ("s_prompt", _p, "mode") != 2)
+    while (GET_AS_INT ("s_prompt", _p, "mode") != 2)
       {
 	static struct aclfgl_event_list _sio_evt[] = { {0} };
 
@@ -3365,10 +3365,8 @@ static int A4GL_local_get_curr_window_attr (void)
 	  A4GL_debug ("30 XXX - get_curr_window_attr");
 	    if (A4GL_has_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE))
 		        {
-				      int a;
-				            a =
-						            (int) A4GL_find_pointer ((char *) A4GL_get_currwin_name (),
-										                                      ATTRIBUTE);
+		      int a;
+	            	a = (int) ((long)A4GL_find_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE));
 					          A4GL_debug ("30 Current window has an attribute %d", a);
 						        return a;
 							    }
@@ -3404,7 +3402,7 @@ int local_field_opts_off(FIELD *field, int opts) {
 
 int local_field_opts(const FIELD *field) {
 	A4GL_debug("UUU GOT %p %x",field,field_opts(field));
-	A4GL_debug_print_field_opts(field);
+	A4GL_debug_print_field_opts((FIELD *)field);
 	return field_opts(field);
 }
 
