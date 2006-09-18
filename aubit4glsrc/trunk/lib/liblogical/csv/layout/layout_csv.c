@@ -34,6 +34,10 @@ GtkTargetEntry target_all[] = {
 
 GtkWidget *window;
 
+static int gtk_object_get_data_as_int(void *obj,char *name) ;
+static void gtk_object_set_data_from_int (void *obj, char *name,int data) ;
+
+
 struct r_report *rep;
 
 // PROT
@@ -167,7 +171,7 @@ void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gin
 
 
 
-  orig = (int) gtk_object_get_data (GTK_OBJECT (widget), "BLOCK");
+  orig = gtk_object_get_data_as_int (GTK_OBJECT (widget), "BLOCK");
 
   if (info == DRAG_TARGET_INFO_0)
     {
@@ -284,8 +288,8 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 
   //printf("%d cols %d rows\n",ncols,nrows);
 
-  onc = (int) gtk_object_get_data (GTK_OBJECT (table), "COLS");
-  onr = (int) gtk_object_get_data (GTK_OBJECT (table), "ROWS");
+  onc = gtk_object_get_data_as_int (GTK_OBJECT (table), "COLS");
+  onr = gtk_object_get_data_as_int (GTK_OBJECT (table), "ROWS");
 
 
   if (onr < nrows)
@@ -349,8 +353,8 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
     }
 
 
-  gtk_object_set_data (GTK_OBJECT (table), "COLS", (void *) ncols);
-  gtk_object_set_data (GTK_OBJECT (table), "ROWS", (void *) nrows);
+  gtk_object_set_data_from_int (GTK_OBJECT (table), "COLS", ncols);
+  gtk_object_set_data_from_int (GTK_OBJECT (table), "ROWS",  nrows);
 
 
   for (x = 0; x < ncols; x++)
@@ -385,9 +389,8 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 	      gtk_container_add (GTK_CONTAINER (evt), label);
 	    }
 
-	  gtk_object_set_data (GTK_OBJECT (label), "BLOCK",
-			       (void *) src_block);
-	  gtk_object_set_data (GTK_OBJECT (evt), "BLOCK", (void *) src_block);
+	  gtk_object_set_data_from_int (GTK_OBJECT (label), "BLOCK", src_block);
+	  gtk_object_set_data_from_int (GTK_OBJECT (evt), "BLOCK", src_block);
 
 	  gtk_object_set_data (GTK_OBJECT (label), "EVT", evt);
 
@@ -443,7 +446,7 @@ void resize_table (GtkWidget * table, int nlines, int ncols,int src_block)
 
 void sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data)
 {
-  resize_table (GTK_WIDGET (user_data), gtk_spin_button_get_value_as_int (spinbutton), -1,(int) gtk_object_get_data (GTK_OBJECT (spinbutton), "BLOCK"));
+  resize_table (GTK_WIDGET (user_data), gtk_spin_button_get_value_as_int (spinbutton), -1, gtk_object_get_data_as_int (GTK_OBJECT (spinbutton), "BLOCK"));
 }
 
 GtkWidget *
@@ -488,7 +491,7 @@ create_block (int n,void *vrbx,int rbs)
   gtk_entry_set_width_chars (GTK_ENTRY (sb), 5);
   gtk_container_add (GTK_CONTAINER (hbox), sb);
   gtk_box_set_child_packing (GTK_BOX (hbox), sb, 0, 0, 0, GTK_PACK_START);
-  gtk_object_set_data (GTK_OBJECT (sb), "BLOCK", (void *) n);
+  gtk_object_set_data_from_int (GTK_OBJECT (sb), "BLOCK",  n);
   gtk_container_add (GTK_CONTAINER (vbox), hbox);
 
   table = make_table (0, -1, 1, n);
@@ -516,8 +519,8 @@ void do_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * se
   char text[256];
   int rb;
   int entry;
-  rb = (int) gtk_object_get_data (GTK_OBJECT (widget), "RB");
-  entry = (int) gtk_object_get_data (GTK_OBJECT (widget), "ENTRY");
+  rb =  gtk_object_get_data_as_int (GTK_OBJECT (widget), "RB");
+  entry =  gtk_object_get_data_as_int (GTK_OBJECT (widget), "ENTRY");
   sprintf (text, "%d %d 0", rb, entry);
 
   gtk_selection_data_set (selection_data, GDK_SELECTION_TYPE_STRING, 8,	/* 8 bits per character. */
@@ -564,7 +567,7 @@ void do_data_get_block (GtkWidget * widget, GdkDragContext * dc, GtkSelectionDat
 {
   char text[256];
   int rb;
-  rb = (int) gtk_object_get_data (GTK_OBJECT (widget), "RB");
+  rb = gtk_object_get_data_as_int (GTK_OBJECT (widget), "RB");
   sprintf (text, "%d -1 1", rb);
   gtk_selection_data_set (selection_data, GDK_SELECTION_TYPE_STRING, 8,	/* 8 bits per character. */
 			  text, strlen (text));
@@ -659,8 +662,8 @@ for (a=0;a<rbs;a++) {
 			printf("Internal error - no table\n");
 			return 0;
 	}
-  	cols=(int)gtk_object_get_data (GTK_OBJECT (table), "COLS");
-  	rows=(int)gtk_object_get_data (GTK_OBJECT (table), "ROWS");
+  	cols=gtk_object_get_data_as_int (GTK_OBJECT (table), "COLS");
+  	rows=gtk_object_get_data_as_int (GTK_OBJECT (table), "ROWS");
 	out.blocks[a].nrows=rows;
 	out.blocks[a].ncols=cols;
 	out.blocks[a].matrix=malloc(sizeof(struct csv_entry *)*(out.blocks[a].nrows+1));
@@ -777,4 +780,13 @@ return 1;
 }
 
 
+int gtk_object_get_data_as_int(void *obj,char *name) {
+        return (int)((long)gtk_object_get_data(obj,name));
+}
+
+void gtk_object_set_data_from_int (void *obj, char *name,int data) {
+        long d;
+        d=data;
+        gtk_object_set_data(obj,name,(void *)d);
+}
 

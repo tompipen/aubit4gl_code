@@ -25,6 +25,8 @@ int last_rb = -1;
 int last_entry = -1;
 int last_block = -1;
 
+static void gtk_object_set_data_from_int (void *obj, char *name,int data) ;
+int gtk_object_get_data_as_int(void *obj,char *name) ;
 static void add_widget (int rb, int evt, GtkWidget * w);
 static void select_widgets (int rb, int evt);
 static void unselect_widgets (int rb, int evt);
@@ -127,8 +129,8 @@ label_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
     return TRUE;
   unselect_all ();
 
-  rb = (int) gtk_object_get_data (GTK_OBJECT (widget), "RB");
-  entry = (int) gtk_object_get_data (GTK_OBJECT (widget), "ENTRY");
+  rb = gtk_object_get_data_as_int (GTK_OBJECT (widget), "RB");
+  entry =gtk_object_get_data_as_int (GTK_OBJECT (widget), "ENTRY");
 
   sprintf (txt, "Status: Block %d Entry %d selected", rb, entry);
   status = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (window), "STATUS");
@@ -193,7 +195,7 @@ label_clicked_block (GtkWidget * widget, GdkEventButton * event,
   unselect_all ();
 
   where_why = (char *) gtk_object_get_data (GTK_OBJECT (widget), "BLOCK_TXT");
-  block = (int) gtk_object_get_data (GTK_OBJECT (widget), "BLOCK");
+  block = gtk_object_get_data_as_int (GTK_OBJECT (widget), "BLOCK");
   sprintf (txt, "Status: Block (%s) selected", where_why);
   status = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (window), "STATUS");
 
@@ -376,16 +378,16 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 
 	      sprintf (desc, "%c %s %d %d", report->blocks[block].where, report->blocks[block].why, report->blocks[block].rb, centry->entry_id);
 	      evt = gtk_event_box_new ();
-	      gtk_object_set_data (GTK_OBJECT (evt), "RB", (void *) report->blocks[block].rb);
-	      gtk_object_set_data (GTK_OBJECT (evt), "ENTRY", (void *) centry->entry_id);
+	      gtk_object_set_data_from_int (GTK_OBJECT (evt), "RB", report->blocks[block].rb);
+	      gtk_object_set_data_from_int (GTK_OBJECT (evt), "ENTRY",  centry->entry_id);
 
 	      label = gtk_label_new (centry->string);
 
 	      g_signal_connect (G_OBJECT (evt), "button_press_event", G_CALLBACK (evt_clicked), NULL);
 	      g_signal_connect (G_OBJECT (label), "button_press_event", G_CALLBACK (label_clicked), NULL);
 
-	      gtk_object_set_data (GTK_OBJECT (label), "RB", (void *) report->blocks[block].rb);
-	      gtk_object_set_data (GTK_OBJECT (label), "ENTRY", (void *) centry->entry_id);
+	      gtk_object_set_data_from_int (GTK_OBJECT (label), "RB", report->blocks[block].rb);
+	      gtk_object_set_data_from_int (GTK_OBJECT (label), "ENTRY", centry->entry_id);
 	      gtk_object_set_data (GTK_OBJECT (label), "DESCRIPTION", (void *) desc);
 
 
@@ -430,8 +432,8 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 
 		  gtk_object_set_data (GTK_OBJECT (evt), "BLOCK_TXT",
 				       (void *) strdup (where_why));
-		  gtk_object_set_data (GTK_OBJECT (evt), "BLOCK",
-				       (void *) find_block_where (report->
+		  gtk_object_set_data_from_int (GTK_OBJECT (evt), "BLOCK",
+				       find_block_where (report->
 								  blocks
 								  [block].
 								  where,
@@ -649,4 +651,15 @@ unselect_block (int rb)
       gtk_widget_set_name (bi[rb].widgets[a], "unselected");
     }
 
+}
+
+
+int gtk_object_get_data_as_int(void *obj,char *name) {
+	return (int)((long)gtk_object_get_data(obj,name));
+}
+
+void gtk_object_set_data_from_int (void *obj, char *name,int data) {
+	long d;
+	d=data;
+	gtk_object_set_data(obj,name,(void *)d);
 }

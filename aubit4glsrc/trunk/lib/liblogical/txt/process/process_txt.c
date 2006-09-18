@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <ctype.h>
 #include <stdio.h>
 #include "../../common/a4gl_lle.h"
 #include "../../processor/API_process.h"
@@ -38,10 +39,9 @@ clear_page (int w, int h)
 }
 
 
-static
+static void
 trim (char *s)
 {
-  char *p;
   int a, b;
   b = 0;
   for (a = strlen (s) - 1; a > 0; a--)
