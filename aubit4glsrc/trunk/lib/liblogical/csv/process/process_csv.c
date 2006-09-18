@@ -192,5 +192,9 @@ report=vreport;
 		}
 		end_block(report->blocks[a].rb,rbx);
         }
+
+	if (strcmp(buff,"-")!=0) {
+		fclose(rep_fout);
+	}
 	return 1;
 }
