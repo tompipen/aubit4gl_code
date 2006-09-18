@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.91 2006-09-11 18:18:09 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.92 2006-09-18 08:48:21 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +88,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.91 2006-09-11 18:18:09 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.92 2006-09-18 08:48:21 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -263,6 +263,54 @@ static int
 A4GL_curses_to_aubit_int (int a)
 {
   int b;
+  static int env_cancel = -2;
+  static int keycode_home = -1;
+  static int keycode_end = -1;
+
+
+  if (env_cancel == -2)
+    {
+      char *ptr;
+      ptr = acl_getenv ("TUICANCELKEY");
+      env_cancel = -1;
+      if (ptr)
+	{
+	  if (strlen (ptr))
+	    {
+	      env_cancel = atoi (ptr);
+	    }
+	}
+      A4GL_debug ("cancel = %d\n", env_cancel);
+    }
+
+
+
+  if (keycode_home == -1)
+    {
+      keycode_home = atoi (acl_getenv ("KEYCODE_HOME"));
+    }
+
+  if (keycode_end == -1)
+    {
+      keycode_end = atoi (acl_getenv ("KEYCODE_END"));
+    }
+
+  if (keycode_home == 0 || keycode_home == -1)
+    {
+      keycode_home = KEY_HOME;
+    }
+  if (keycode_end == 0 || keycode_end == -1)
+    {
+      keycode_end = KEY_END;
+    }
+
+
+  if (a == keycode_home)
+    return A4GLKEY_HOME;
+  if (a == keycode_end)
+    return A4GLKEY_END;
+
+
   for (b = 0; b < 64; b++)
     {
       if (a == KEY_F (b))
@@ -299,8 +347,16 @@ A4GL_curses_to_aubit_int (int a)
     return A4GLKEY_HOME;
   if (a == KEY_END)
     return A4GLKEY_END;
-  if (a == KEY_CANCEL)
-    return A4GLKEY_CANCEL;
+
+
+  if (a == KEY_CANCEL || (a==env_cancel && env_cancel!=-1) ) {
+	        A4GL_set_intr();
+	        A4GL_debug("Got Cancel...");
+	        return A4GLKEY_CANCEL;
+  }
+
+
+
 
   if (a == KEY_DC)
     return A4GLKEY_DC;
@@ -311,7 +367,6 @@ A4GL_curses_to_aubit_int (int a)
 
   return a;
 }
-
 /**
  * PLEASE DESCRIBE THE BL*** FUNCTION!
  *

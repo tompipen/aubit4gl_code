@@ -1,8 +1,14 @@
+PATH=$AUBITDIR/bin:$PATH
+
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+export LD_LIBRARY_PATH PATH
 A4GL_LEXTYPE=C
 export A4GL_LEXTYPE
 unset A4GL_LEXDIALECT
 export A4GL_DUMP_CORE=Y
 unset DEBUG
+
+rm /usr/lib/libaubit4gl.so
 
 if [ "$1" != "" ] 
 then
@@ -72,6 +78,8 @@ fi
 
 
 
+cd /home/aubit4gl/aubit4glsrc/tools/test_rep
+4glpc report.4gl -o report
 
 
 cd /home/aubit4gl/aubit4gltest
