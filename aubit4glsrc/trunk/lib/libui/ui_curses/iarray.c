@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.114 2006-09-15 08:57:44 mikeaubury Exp $
+# $Id: iarray.c,v 1.115 2006-09-18 08:42:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.114 2006-09-15 08:57:44 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.115 2006-09-18 08:42:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -966,6 +966,15 @@ process_key_press (struct s_inp_arr *arr, int a)
 	  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
 	}
       break;
+
+
+    case A4GLKEY_HOME:
+                A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+		          break;
+			      case A4GLKEY_END:
+			            A4GL_int_form_driver (mform, REQ_END_FIELD);
+				              break;
+
 
     case A4GLKEY_LEFT:
       A4GL_debug ("Left key pressed - want to move left...");

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.60 2006-08-31 15:06:59 mikeaubury Exp $
+# $Id: prompt.c,v 1.61 2006-09-18 08:42:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.60 2006-08-31 15:06:59 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.61 2006-09-18 08:42:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -301,6 +301,13 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
       A4GL_debug ("Next field in a prompt - they must mean enter");
 #endif
       return 10;
+          case A4GLKEY_HOME:
+                A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+		          break;
+			      case A4GLKEY_END:
+			            A4GL_int_form_driver (mform, REQ_END_FIELD);
+				              break;
+
 
     case A4GLKEY_LEFT:
       A4GL_int_form_driver (mform, REQ_PREV_CHAR);
@@ -527,6 +534,8 @@ A4GL_curses_to_aubit_int (int a)
 {
   int b;
   static int env_cancel=-2;
+  static int keycode_home=-1;
+  static int keycode_end=-1;
   if (env_cancel==-2) {
 		char *ptr;
 		ptr=acl_getenv("TUICANCELKEY");
@@ -538,7 +547,24 @@ A4GL_curses_to_aubit_int (int a)
 		} 
 	A4GL_debug("cancel = %d\n",env_cancel);
    }
+
+   if (keycode_home==-1) {
+	   	keycode_home=atoi(acl_getenv("KEYCODE_HOME"));
+   }
+
+   if (keycode_end==-1) {
+	   	keycode_end=atoi(acl_getenv("KEYCODE_END"));
+   }
+
+   if (keycode_home==0||keycode_home==-1) {
+	   	keycode_home=KEY_HOME;
+   }
+   if (keycode_end==0||keycode_end==-1) {
+	   	keycode_end=KEY_END;
+   }
 	
+  if (a == keycode_home) return A4GLKEY_HOME;
+  if (a == keycode_end) return A4GLKEY_END;
 
 A4GL_debug("curses -> aubit a=%d %x\n",a,a);
   for (b = 0; b < 64; b++)
@@ -565,8 +591,10 @@ A4GL_debug("curses -> aubit a=%d %x\n",a,a);
 
 
 
-  if (a == KEY_HOME) return A4GLKEY_HOME;
-  if (a == KEY_END) return A4GLKEY_END;
+  //if (a == KEY_HOME) return A4GLKEY_HOME;
+  //if (a == KEY_END) return A4GLKEY_END;
+
+
   if (a == KEY_CANCEL || (a==env_cancel && env_cancel!=-1) ) {
 		A4GL_set_intr();
 		A4GL_debug("Got Cancel...");

@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.33 2006-09-15 11:43:20 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.34 2006-09-18 08:42:29 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -72,16 +72,6 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 {
   ACL_Menu_Opts *opt1;
   int fc;
-
-/*
-  if (a==A4GL_key_val("LEFT"))  { a=A4GLKEY_LEFT; }
-  if (a==A4GL_key_val("RIGHT")) { a=A4GLKEY_RIGHT; }
-  if (a==A4GL_key_val("UP"))    { a=A4GLKEY_UP; }
-  if (a==A4GL_key_val("DOWN"))  { a=A4GLKEY_DOWN; }
-  if (a==A4GL_key_val("SPACE")) { a=' '; }
-  if (a==A4GL_key_val("ENTER")) { a=13; }
-*/
-
 
 
   if (a==13) {

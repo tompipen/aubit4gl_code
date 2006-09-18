@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.96 2006-09-15 08:57:44 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.97 2006-09-18 08:42:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.96 2006-09-15 08:57:44 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.97 2006-09-18 08:42:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1500,7 +1500,13 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       A4GL_newMovement (s, s->curr_attrib + 1);
       break;
 
-
+    case A4GLKEY_HOME:
+	  A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+	  break;
+    case A4GLKEY_END:
+	  A4GL_int_form_driver (mform, REQ_END_FIELD);
+	  break;
+      	
     case A4GLKEY_LEFT:
       do_key_move_fc ('L', s, a, has_picture, picture);
       break;
