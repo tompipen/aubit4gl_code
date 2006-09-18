@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.28 2006-09-15 13:55:58 mikeaubury Exp $
+# $Id: sql_common.c,v 1.29 2006-09-18 07:43:24 mikeaubury Exp $
 #
 */
 
@@ -344,9 +344,9 @@ struct s_sid *
 A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *mod,int line,int converted)
 {
 	char buff[256];
-  A4GL_debug ("must_convert=%d\n", must_convert);
   char uniq_id[100];
   char *ptr;
+  A4GL_debug ("must_convert=%d\n", must_convert);
 
   sprintf(buff,"%s",mod);
 

@@ -56,11 +56,12 @@ int main (int argc, char *argv[])
 {
   int a;
   int *skip;
+  int fmodule=-1;
+
   //module smod;
   //
   do_compiler_start (argc, argv);
   modules = malloc (sizeof (module) * argc);
-  int fmodule=-1;
   skip=malloc(sizeof(int)*argc);
 
   for(a=0;a<argc;a++) {
