@@ -110,7 +110,14 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
   }
 
 
-  rep_fout=fopen(buff,"w");
+  if (strcmp(buff,"-")==0) {
+	rep_fout=stdout;
+  } else {
+  	rep_fout=fopen(buff,"w");
+  }
+
+
+
   if (rep_fout==0) {
 		return 0;
   }

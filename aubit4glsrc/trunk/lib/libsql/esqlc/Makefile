@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2006-09-13 16:04:16 mikeaubury Exp $
+# $Id: Makefile,v 1.10 2006-09-18 16:42:45 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -211,6 +211,15 @@ else
 		${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) -g  esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
+
+##################
+#ESQL/C database plug-in compiled with Infoflex ESQL/C compiler:
+#${PLUGINDIR}/libSQL_esql${SO_EXT}: ${PLUGINDIR}/libSQL_esql${SO_EXT}
+infoflex:${PLUGINDIR}/libSQL_infoflex${SO_EXT}
+${PLUGINDIR}/libSQL_infoflex${SO_EXT}: ${SRC}
+	esqlpp $<
+	$(CC) $(CFLAGS) -c $(basename $<).c -o $(basename $<).o
+	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o -o $@
 
 #------------------------ esql_compatible.ec ----------------------------
 

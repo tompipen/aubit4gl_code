@@ -169,11 +169,13 @@ report=vreport;
 	if (strlen(fname)==0) {
 		tmpnam(fname);
 		strcpy(buff,fname);
-  		//rep_fout=stdout;
   		rep_fout=fopen(fname,"w");
-		//printf("Processing to %s\n",fname);
 	} else {
-  		rep_fout=fopen(fname,"w");
+		if (strcmp(fname,"-")==0) {
+  			rep_fout=stdout;
+		} else {
+  			rep_fout=fopen(fname,"w");
+		}
 	}
 
 
