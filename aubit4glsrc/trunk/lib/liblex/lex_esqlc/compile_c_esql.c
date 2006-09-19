@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.145 2006-09-19 13:20:31 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.146 2006-09-19 17:57:04 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.145 2006-09-19 13:20:31 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.146 2006-09-19 17:57:04 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -1417,7 +1417,7 @@ LEXLIB_print_init_conn (char *db)
       break;
     case E_DIALECT_INFOFLEX:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",\"%s\");",
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFOFLEX\",\"%s\");",
 	 db);
       break;
     }

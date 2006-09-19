@@ -302,8 +302,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   END FOR
 
 
-
-
+  if mv_verbose>=3 then
+  		display "mv_lextype=",mv_lextype," dialect=",mv_lexdialect
+  end if
 
   CALL init()
 
@@ -1359,6 +1360,7 @@ if mv_verbose>=5 then
 	display "mv_objects  =",mv_objects clipped
 	display "lv_output   =",lv_output clipped
 	display "mv_libs     =",mv_libs clipped
+	display "mv_link     =",mv_link clipped
 	display "mv_link_libs=",mv_link_libs clipped
 	display "mv_link_opts=",mv_link_opts clipped
 end if

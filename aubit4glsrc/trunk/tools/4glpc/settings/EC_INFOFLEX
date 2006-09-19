@@ -4,5 +4,5 @@ A4GL_C_COMP=sqlcc
 A4GL_EC_COMP=esqlpp
 A4GL_PREC_COMP=infoflex_wrap -t -E
 A4GL_C_OPTS=-I$SQLDIR/include $PG_COPTS
-A4GL_LINK=gcc 
+A4GL_LINK=sqlld
 A4GL_LINK_OPTS=-L$SQLDIR/lib -lm
