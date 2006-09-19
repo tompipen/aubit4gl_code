@@ -515,6 +515,18 @@ printField (FILE * outputFile, int idx, char *descName) {
 				break;
 				}
 
+			case DTYPE_DECIMAL:
+				{
+          				if (!A4GL_dectos (gen_obind[idx-1].ptr, buff,34)) {
+						strcpy(buff,"");
+              					A4GL_debug ("Bad decimal");
+            				} else {
+          					A4GL_trim (buff);
+					}
+					break;
+				
+				}
+
 			case DTYPE_DTIME: 
 				{
 

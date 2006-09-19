@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.44 2006-09-06 20:13:43 mikeaubury Exp $
+# $Id: Makefile,v 1.45 2006-09-19 12:22:25 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -60,10 +60,11 @@ OBJS_PG_ONLY	=postgres${A4GL_OBJ_EXT}
 OBJS_IFX_ONLY	=infx${A4GL_OBJ_EXT}
 OBJS_GEN_ONLY	=generic${A4GL_OBJ_EXT}
 OBJS_ING_ONLY	=ing${A4GL_OBJ_EXT}
+OBJS_INFOFLEX_ONLY	=infoflex${A4GL_OBJ_EXT}
 
 ################
 #All objects that will need celaning, without prefix
-CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY} ${OBJS_GEN_ONLY} ${OBJS_ING_ONLY}
+CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY} ${OBJS_GEN_ONLY} ${OBJS_ING_ONLY} ${OBJS_INFOFLEX_ONLY}
 
 ################
 #All objects for Postgres version
@@ -81,6 +82,9 @@ OBJS_GEN		=$(addprefix gen_,${OBJS_4GL}) ${OBJS_C} \
 
 OBJS_ING		=$(addprefix ing_,${OBJS_4GL}) ${OBJS_C} \
 				$(addprefix ing_,${OBJS_ING_ONLY})
+
+OBJS_INFOFLEX		=$(addprefix infoflex_,${OBJS_4GL}) ${OBJS_C} \
+				$(addprefix infoflex_,${OBJS_INFOFLEX_ONLY})
 ## ==================================================================
 ##                              Options
 ## ==================================================================
@@ -220,6 +224,20 @@ asql_p${A4GL_EXE_EXT}: ${OBJS_PG}
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+
+################
+#Target to make asql InfoflexSQL version
+
+INFOFLEX: asql_infoflex${A4GL_EXE_EXT}
+asql_infoflex${A4GL_EXE_EXT}: A4GL_LEXDIALECT=INFOFLEX
+asql_infoflex${A4GL_EXE_EXT}: ${OBJS_INFOFLEX}
+	${4GLPC} -V5 ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|          Successfuly compiled InfoFlex version of asql             |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
@@ -239,6 +257,9 @@ gen_%${A4GL_OBJ_EXT}: %.4gl
 
 ing_%${A4GL_OBJ_EXT}: %.4gl
 	${COMP4GL}
+
+infoflex_%${A4GL_OBJ_EXT}: %.4gl
+	${COMP4GL} -V4 
 
 ################
 #Rule to make objects from 4GL file - Postgres version
@@ -279,6 +300,7 @@ run.p:
 	
 menus.4gl: menus.txt generate
 	sh generate  > menus.4gl
+
 show:
 	aubit-config POSTGRESDIR
 
