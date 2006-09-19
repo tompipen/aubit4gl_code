@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.144 2006-09-13 20:35:46 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.145 2006-09-19 13:20:31 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.144 2006-09-13 20:35:46 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.145 2006-09-19 13:20:31 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -859,7 +859,7 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 {
   printc ("{");
   set_suppress_lines ();
-  printc ("\nEXEC SQL BEGIN DECLARE SECTION; /*8*/");
+  printc ("\nEXEC SQL BEGIN DECLARE SECTION;");
   printc ("char _u[256];");
   printc ("char _p[256];");
   printc ("char _d[256];");
@@ -903,16 +903,21 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 
   if (strcmp (v, "?") == 0)
     {
-      if (esql_type () == E_DIALECT_POSTGRES)
-	{			// Postgres...
+	switch (esql_type()) {
+	
+	case E_DIALECT_POSTGRES:
 	  printc ("\nEXEC SQL CONNECT TO  :_d AS %s", A4GL_strip_quotes (s));
 	  if (strlen (user))
 	    {
 	      printc ("USER :_u USING :_p");
 	    }
-	}
-      else
-	{
+ 	  break;
+
+	case E_DIALECT_INFOFLEX:
+	  printc ("\nEXEC SQL DATABASE  :_d ");
+ 	  break;
+
+	default:
 	  printc ("\nEXEC SQL CONNECT TO  :_d AS %s", s);
 	  if (strlen (user))
 	    {
@@ -1310,7 +1315,7 @@ LEXLIB_print_init_conn (char *db)
 	{
 	  printc ("{");
 	  set_suppress_lines ();
-	  printc ("\nEXEC SQL BEGIN DECLARE SECTION; /*3*/\n");
+	  printc ("\nEXEC SQL BEGIN DECLARE SECTION; \n");
 	  printc ("char *s;");
 	  printc ("\nEXEC SQL END DECLARE SECTION;\n");
 	  clr_suppress_lines ();
@@ -2022,7 +2027,7 @@ LEXLIB_print_unload (char *file, char *delim, char *sql)
       sprintf (filename, ":_unlfname");
       printc ("{ /* un2 */");
       set_suppress_lines ();
-      printc ("\nEXEC SQL BEGIN DECLARE SECTION; /*4*/");
+      printc ("\nEXEC SQL BEGIN DECLARE SECTION; ");
       printc ("char _unlfname[512];");
       printc ("char _delim[512];");
       printc ("\nEXEC SQL END DECLARE SECTION;");
@@ -2176,7 +2181,7 @@ LEXLIB_print_load (char *file, char *delim, char *tab, char *list)
     {
       printc ("{ /* load1 */");
       set_suppress_lines ();
-      printc ("\nEXEC SQL BEGIN DECLARE SECTION; /*5*/");
+      printc ("\nEXEC SQL BEGIN DECLARE SECTION; ");
       printc ("char _loadfname[512];");
       printc ("char _delim[64];");
       printc ("\nEXEC SQL END DECLARE SECTION;");
@@ -2788,7 +2793,7 @@ print_exists_subquery (int i, struct expr_exists_sq *e_expr)
   sprintf (cname, "aclfgl_cE_%d", ncnt++);
 
   printc ("{");
-  printc ("EXEC SQL BEGIN DECLARE SECTION;/*6*/");
+  printc ("EXEC SQL BEGIN DECLARE SECTION;");
   printc ("int _npc;");
   printc ("short _npi;");
   printc ("char _np[256];");
@@ -2844,7 +2849,7 @@ print_in_subquery (int i, struct expr_in_sq *in_expr)
   sprintf (cname, "aclfgl_cI_%d", ncnt++);
   LEXLIB_print_expr (in_expr->expr);
   printc ("{");
-  printc ("EXEC SQL BEGIN DECLARE SECTION;/*6*/");
+  printc ("EXEC SQL BEGIN DECLARE SECTION;");
   printc ("int _npc;");
   printc ("short _npi;");
   printc ("char _np[256];");

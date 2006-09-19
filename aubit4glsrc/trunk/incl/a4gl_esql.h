@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql.h,v 1.21 2005-07-19 11:06:27 mikeaubury Exp $
+# $Id: a4gl_esql.h,v 1.22 2006-09-19 13:22:44 mikeaubury Exp $
 #
 */
 
@@ -67,8 +67,14 @@ extern "C"
 	#include "a4gl_esql_sap.h"
 	#define VALID_DIALECT_FOUND
 #endif
+
 #ifdef DIALECT_INGRES
 	#include "a4gl_esql_ingres.h"
+	#define VALID_DIALECT_FOUND
+#endif
+
+#ifdef DIALECT_INFOFLEX
+	#include "a4gl_esql_infoflex.h"
 	#define VALID_DIALECT_FOUND
 #endif
 

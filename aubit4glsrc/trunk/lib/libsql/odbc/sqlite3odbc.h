@@ -18,7 +18,7 @@
  * @file sqlite3odbc.h
  * Header file for SQLite3 ODBC driver.
  *
- * $Id: sqlite3odbc.h,v 1.1 2004-12-19 08:24:52 afalout Exp $
+ * $Id: sqlite3odbc.h,v 1.2 2006-09-19 13:20:32 mikeaubury Exp $
  *
  * Copyright (c) 2004 Christian Werner <chw@ch-werner.de>
  *
@@ -42,8 +42,8 @@
 #endif
 #include <stdarg.h>
 #include <string.h>
-#include <sql.h>
-#include <sqlext.h>
+#include "sql.h"
+#include "sqlext.h"
 #include <time.h>
 
 #ifdef AUBIT

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.47 2006-09-15 13:58:13 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.48 2006-09-19 13:20:29 mikeaubury Exp $
 #
 */
 
@@ -81,6 +81,10 @@
 	#define DIALECTED 1
 #endif
 
+#ifdef DIALECT_INFOFLEX
+	#define DIALECTED 1
+#endif
+
 
 #ifndef DIALECTED
 	#error "No dialect specified"
@@ -91,6 +95,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 char dbName[256];
 EXEC SQL END DECLARE SECTION;
 strcpy(dbName,dbname);
+
 #ifdef DIALECT_POSTGRES
 	EXEC SQL CONNECT TO :dbName AS 'default';
 #endif
@@ -327,6 +332,11 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			infx->dt_qual=arr_dtime[size];
 		}
 	#endif
+	#ifdef DIALECT_INFOFLEX
+		if (!A4GL_isyes(acl_getenv("KEEP_QUALIFIER"))) {
+			infx->dt_qual=arr_dtime[size];
+		}
+	#endif
 			dtcvasc(ptr,infx);
 
 	// Debugging stuff only
@@ -375,7 +385,7 @@ if (p_indicat) indicat=*p_indicat;
  *
  * @todo describe function
  */
-#ifdef DIALECT_INFORMIX
+#ifdef DIALECT_INFORMIX 
 void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,char mode) 
 {
 short indicat=0;

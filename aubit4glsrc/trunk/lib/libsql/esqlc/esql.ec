@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.158 2006-07-17 11:08:43 mikeaubury Exp $
+# $Id: esql.ec,v 1.159 2006-09-19 13:20:31 mikeaubury Exp $
 #
 */
 
@@ -138,6 +138,7 @@ dll_export sqlca_struct a4gl_sqlca;
 static void A4GL_sql_copy_interval(void *infxv, void *a4glv,int isnull,int size,int mode);
 
 EXEC SQL BEGIN DECLARE SECTION;
+
 struct s_b_info {
 	loc_t ifx_blob;
 	void *f;
@@ -149,6 +150,7 @@ struct s_extra_info {
 };
 
 static void free_blobs(struct s_extra_info *e) ;
+
 EXEC SQL END DECLARE SECTION;
 
 
@@ -177,7 +179,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.158 2006-07-17 11:08:43 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.159 2006-09-19 13:20:31 mikeaubury Exp $";
 #endif
 
 

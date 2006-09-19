@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.35 2006-08-18 17:10:02 mikeaubury Exp $
+# $Id: Makefile,v 1.36 2006-09-19 13:20:29 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -149,6 +149,12 @@ ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 ${PLUGINDIR}/libESQL_INGRES${SO_EXT}: helper_funcs_ingres.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
 
+#${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
+
+INFOFLEX: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
+${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}: helper_funcs_infoflex.o
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INFOFLEX_LFLAGS} ${INFOFLEX_LIBS}
+
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
@@ -215,6 +221,9 @@ helper_funcs_ingres.o: helper_ingres.ec
 #-DNEWERA
 	rm helper_ingres.c
 
+helper_funcs_infoflex.o: helper_funcs_infoflex.ec
+	esqlpp helper_funcs_infoflex.ec
+	sqlcc ${CFLAGS} -DDIALECT_INFOFLEX -g -c -o $@ helper_funcs_infoflex.c -I${ROOT}/incl
 	
 show:
 	@echo "INFORMIXDIR=${INFORMIXDIR}"
