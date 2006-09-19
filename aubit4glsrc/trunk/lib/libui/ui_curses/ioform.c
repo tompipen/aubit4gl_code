@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.142 2006-09-15 09:25:17 mikeaubury Exp $
+# $Id: ioform.c,v 1.143 2006-09-19 16:34:53 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.142 2006-09-15 09:25:17 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.143 2006-09-19 16:34:53 mikeaubury Exp $";
 #endif
 
 /**
@@ -96,7 +96,7 @@ void A4GL_set_field_attr_with_attr_already_determined (FIELD * field,
 int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 					    struct struct_scr_field *fprop,
 					    char *fld_data, char *data_area);
-int A4GL_get_field_width_w (void *f);
+static int A4GL_get_field_width_w (void *f,int need_height);
 void A4GL_set_infield_from_parameter (long a);
 void A4GL_set_curr_infield (void *a);
 
@@ -588,7 +588,7 @@ A4GL_set_field_attr (FIELD * field)
       local_field_opts_on (field, O_NULLOK);
     }
 
-  if (A4GL_has_bool_attribute (f, FA_B_COMPRESS))
+  if (A4GL_has_bool_attribute (f, FA_B_COMPRESS) || A4GL_has_bool_attribute (f, FA_B_WORDWRAP))
     {
       A4GL_debug ("ZZZZ - SET OPTS");
       local_field_opts_on (field, O_WRAP);
@@ -1296,13 +1296,13 @@ A4GL_turn_field_on2 (FIELD * f, int a)
   if (fprop->dynamic != 0) {
       set_max_field (f, 0);
   } else {
-  	xx = set_max_field (f, A4GL_get_field_width_w (f));
+  	xx = set_max_field (f, A4GL_get_field_width_w (f,0));
 	
 	
   	if (xx < 0)
     	{
       	f->dcols = a;
-      	xx = set_max_field (f, A4GL_get_field_width_w (f));
+      	xx = set_max_field (f, A4GL_get_field_width_w (f,0));
     	}
 	
   	if (xx < 0)
@@ -1322,7 +1322,7 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 
 
 int
-A4GL_get_field_width_w (void *f)
+A4GL_get_field_width_w (void *f,int need_height)
 {
   int w;
   struct s_form_dets *formdets;
@@ -1334,9 +1334,12 @@ A4GL_get_field_width_w (void *f)
       return A4GL_get_field_width (f);
     }
 
-  w =
-    formdets->fileform->metrics.
-    metrics_val[A4GL_get_metric_for (formdets, f)].w;
+  w = formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, f)].w;
+  if (need_height) {
+  	if (formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, f)].h>1) {
+  		w*=formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, f)].h;
+  	}
+  }
 
   return w;
 }
@@ -2254,7 +2257,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
   struct struct_scr_field *f;
   char *ff;
 
-   field_width= A4GL_get_field_width_w (field);
+   field_width= A4GL_get_field_width_w (field,1);
 
   A4GL_debug ("In display_field_contents");
   f = (struct struct_scr_field *) (field_userptr (field));
@@ -2534,18 +2537,18 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   int b; 
   int xerrno;
   
-  b = A4GL_get_field_width_w (field);
+  b = A4GL_get_field_width_w (field,1);
   if (strlen(buff)>=sizeof(buff2)) {
 		  	A4GL_assertion(1,"Buffer too small");
   }
   strcpy (buff2, buff);
   a = strlen (buff2);
-  b = A4GL_get_field_width_w (field);
+  b = A4GL_get_field_width_w (field,1);
   A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff, buff2, a, b);
-  if (a < A4GL_get_field_width_w (field))
+  if (a < A4GL_get_field_width_w (field,1))
     {
       A4GL_debug ("Adding padding");
-      A4GL_pad_string (buff2, A4GL_get_field_width_w (field));
+      A4GL_pad_string (buff2, A4GL_get_field_width_w (field,1));
     }
   else
     {

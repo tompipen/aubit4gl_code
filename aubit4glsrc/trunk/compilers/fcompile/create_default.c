@@ -194,8 +194,6 @@ if (a4gl_sqlca.sqlcode!=0) {
 
 fprintf(file_out,"database %s\n",dbname);
 
-
-
 for (a=0;a<tabcnt;a++) {
 	int idtype;
 	int isize;

@@ -12,7 +12,6 @@ define n integer
 	declare c1 cursor for
 		select tabname,colname,colno from systables,syscolumns
 		where systables.tabid=syscolumns.tabid
-		and systables.tabid<10
 		order by 1,2,3
 
 

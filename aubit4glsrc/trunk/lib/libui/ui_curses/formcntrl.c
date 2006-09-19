@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.97 2006-09-18 08:42:29 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.98 2006-09-19 16:34:53 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.97 2006-09-18 08:42:29 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.98 2006-09-19 16:34:53 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1230,6 +1230,8 @@ static int internal_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   if (a!=0) {
   	s->processed_onkey = a;
   	A4GL_set_last_key(a);
+	A4GL_debug("Current fields options : ");
+	A4GL_debug_print_field_opts(form->currentfield);
   	A4GL_debug("setting last key : %d",a);
   	A4GL_set_last_key (a);
   	A4GL_debug("set : %d",a);
