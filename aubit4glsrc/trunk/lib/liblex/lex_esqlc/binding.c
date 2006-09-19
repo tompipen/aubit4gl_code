@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.55 2006-09-15 13:58:14 mikeaubury Exp $
+# $Id: binding.c,v 1.56 2006-09-19 08:26:34 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.55 2006-09-15 13:58:14 mikeaubury Exp $";
+		"$Id: binding.c,v 1.56 2006-09-19 08:26:34 mikeaubury Exp $";
 #endif
 
 extern int ibindcnt;
@@ -823,9 +823,19 @@ static char buff_ind[255];
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
 	  break;
+
+
 	case 2:
+	case 6:
+	  if (sizeof(int)==sizeof(long)) {
+	  	SPRINTF1 (buff,"int _vi_%d;", a);
+	  } else {
+	  	SPRINTF1 (buff,"long _vi_%d;", a);
+	  }
 	  SPRINTF1 (buff,"int _vi_%d;", a);
 	  break;
+
+
 	case 3:
 	  SPRINTF1 (buff,"double _vi_%d;", a);
 	  break;
@@ -837,9 +847,6 @@ static char buff_ind[255];
 	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
 	  break;
 
-	case 6:
-	  SPRINTF1 (buff,"int _vi_%d;", a);
-	  break;
 
 	case 7:
 	  SPRINTF1 (buff,"date _vi_%d;", a);
@@ -894,9 +901,16 @@ static char buff_ind[255];
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d;", a);
 	  break;
+
 	case 2:
-	  SPRINTF1 (buff,"int _vo_%d;", a);
+	case 6:
+	  if (sizeof(int)==sizeof(long)) {
+	  	SPRINTF1 (buff,"int _vo_%d=0;", a);
+	  } else {
+	  	SPRINTF1 (buff,"long _vo_%d=0;", a);
+	  }
 	  break;
+
 	case 3:
 	  SPRINTF1 (buff,"double _vo_%d;", a);
 	  break;
@@ -905,9 +919,6 @@ static char buff_ind[255];
 	  break;
 	case 5:
 	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
-	  break;
-	case 6:
-	  SPRINTF1 (buff,"int _vo_%d;", a);
 	  break;
 	case 7:
 	  SPRINTF1 (buff,"date _vo_%d;", a);
