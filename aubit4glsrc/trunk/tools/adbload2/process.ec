@@ -513,7 +513,7 @@ do_rollback_work ()
 int
 do_begin_work ()
 {
-  EXEC SQL BEGIN WORK;
+  $BEGIN WORK;
   curr_tx_count = 0;
 }
 

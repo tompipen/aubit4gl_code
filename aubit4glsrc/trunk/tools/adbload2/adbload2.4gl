@@ -214,7 +214,7 @@ if lv_lockit!=-1 then
 		return 0
 	end if
 
-	EXECUTE lv_str
+	EXECUTE p_lockit
 	if sqlca.sqlcode<0 then
 		return 0
 	end if
