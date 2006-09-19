@@ -363,7 +363,6 @@ find_variable (int sid, char *s, short *block_no)
       for (b = 0; b < this_module_ptr->module_variables.c_vars.c_vars_len; b++)
 	{
 
-	  //printf ("   -> %s %d\n", s, this_module_ptr->module_variables.c_vars.c_vars_val[b].var);
 	  if (strcmp
 	      (s,
 	       GET_ID (this_module_ptr->module_variables.c_vars.c_vars_val[b].var-> name_id)) == 0)
@@ -374,7 +373,6 @@ find_variable (int sid, char *s, short *block_no)
 	    }
 	}
 */
-      // Not found at all...
       printf ("Couldn't find variable : %s @ line %d\n", s,yylineno);
       exit (1);
       return 0;
@@ -1017,7 +1015,7 @@ move_defines ()
       // 0 will always be the functions block...
       if (func->cmds.cmds_val[0].cmd_type != CMD_BLOCK)
 	{
-	  printf ("Confused - expecting first command to be a block");
+	  fprintf (stderr,"Confused - expecting first command to be a block");
 	}
 
       for (b = 1; b < func->cmds.cmds_len; b++)
@@ -1042,7 +1040,7 @@ move_defines ()
 	    }
 	}
     }
-  printf ("Generated %d NOPs\n", nop);
+  //printf ("Generated %d NOPs\n", nop);
 }
 
 

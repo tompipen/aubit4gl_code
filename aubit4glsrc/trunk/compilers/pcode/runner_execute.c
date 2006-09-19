@@ -215,10 +215,16 @@ set_var (long pc, struct cmd_set_var *sv)
 	uset_var = nget_param (sv->value_param_id);
     }
 
+
+
+
   if (sv->value_param_id == 61)
+
     {
-      A4GL_breakpoint ();
+      //A4GL_breakpoint ();
     }
+
+
   use_var = &sv->variable;
 
 
@@ -958,6 +964,9 @@ A4GL_breakpoint (void)
 {
   printf ("Break here\n");
 }
+
+
+
 
 #ifndef FGLCALLS
 void *

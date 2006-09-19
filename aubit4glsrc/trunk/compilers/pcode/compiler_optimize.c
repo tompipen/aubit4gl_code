@@ -414,11 +414,11 @@ optimize ()
 
 #define REMOVE_NOPS
 #ifdef REMOVE_NOPS
-  printf ("Optimising NOPs in functions\n");
+  //printf ("Optimising NOPs in functions\n");
   for (a = 0; a < this_module_ptr->functions.functions_len; a++)
     {
       func = &this_module_ptr->functions.functions_val[a];
-      printf ("Looking for NOPs in function %d            \n", a);
+      //printf ("Looking for NOPs in function %d            \n", a);
       pcoff = 0;
       if (old_pc_to_new_pc) free (old_pc_to_new_pc);
       old_pc_to_new_pc = acl_malloc2 (sizeof (long) * func->cmds.cmds_len);
@@ -463,14 +463,14 @@ optimize ()
 
 	    if (new_offset < 0)
 	      {
-		printf ("Newoffset shouldn't be <0 \n");
-		printf ("b=%d old_pc_to_new_pc=%d\n", b, old_pc_to_new_pc[b]);
+		fprintf (stderr,"Newoffset shouldn't be <0 \n");
+		fprintf (stderr,"b=%d old_pc_to_new_pc=%d\n", b, old_pc_to_new_pc[b]);
 		exit (2);
 	      }
 
 	    if (b == 0 && new_offset != 0)
 	      {
-		printf ("Worry- 00\n");
+		fprintf (stderr,"Worry- 00\n");
 		exit (2);
 	      }
 
@@ -500,7 +500,7 @@ optimize ()
 
 
 
-      printf ("%d NOPs removed for function %d          \r", pcoff, a);
+      fprintf (stderr,"%d NOPs removed for function %d          \r", pcoff, a);
 
       // We now have a fixed copy and the original copy...
       if (really)
@@ -508,11 +508,11 @@ optimize ()
 	  o = func->cmds.cmds_val;
 	  func->cmds.cmds_val = cmds;
 
-	  printf ("len was %d pcoff=%d  ", func->cmds.cmds_len, pcoff);
+	  fprintf (stderr,"len was %d pcoff=%d  ", func->cmds.cmds_len, pcoff);
 
 	  func->cmds.cmds_len -= pcoff;
 
-	  printf ("->%p %d\n", cmds, func->cmds.cmds_len);
+	  fprintf (stderr,"->%p %d\n", cmds, func->cmds.cmds_len);
 
 
 	  free (o);
@@ -520,7 +520,7 @@ optimize ()
 	    {
 	      if (func->cmds.cmds_val[b].cmd_type == CMD_NULL)
 		{
-		  printf ("Something went wrong with %d\n", b);
+		  fprintf (stderr,"Something went wrong with %d\n", b);
 		  exit (54);
 		}
 	    }
@@ -529,7 +529,7 @@ optimize ()
       tpcoff += pcoff;
 
     }
-  printf ("Total of %d NOPS removed                   \n\n", tpcoff);
+  fprintf (stderr,"Total of %d NOPS removed                   \n\n", tpcoff);
 #endif
 
 

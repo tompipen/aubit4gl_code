@@ -79,7 +79,7 @@ set_externs ()
       if (find_function (call_list[a]) != -1) continue;
       this_module_ptr->external_function_table.external_function_table_val[n] = add_id (call_list[a]);
       A4GL_debug ("CALLS : %s\n", call_list[a]);
-	printf("%s %ld\n",call_list[a],called[a]);
+	//printf("%s %ld\n",call_list[a],called[a]);
       n++;
     }
 }

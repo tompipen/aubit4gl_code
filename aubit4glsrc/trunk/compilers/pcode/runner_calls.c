@@ -94,6 +94,17 @@ get_string (int a)
 
 
 
+void log_err(char *s) {
+FILE *f;
+f=fopen("/tmp/pcode.run.errs","a");
+if (f) {
+	fprintf(f,"%s\n",s);
+	fclose(f);
+}
+
+}
+
+
 int
 open_and_run (char *lv_progname)
 {
@@ -110,7 +121,7 @@ open_and_run (char *lv_progname)
     }
   else
     {
-      printf ("Failed to open\n");
+      fprintf (stderr,"Failed to open\n");
       exit (1);
     }
 
@@ -362,7 +373,7 @@ handle_0444444 (void *end_func, struct param *p)
 long
 handle_044V (void *end_func, struct param *p, struct param *r)
 {
-  printf ("handle_044V not implemented\n");
+	log_err("handle_044V not implemented");
   exit (0);
   return 0;
 }
@@ -403,7 +414,9 @@ find_sig (char *s)
   //void *ptr;
   if (s == 0)
     {
-      printf ("Find sig passed null\n");
+	
+      log_err("Find sig passed null\n");
+
       return 0;
     }
   for (a = 0; function_signiatures[a].ptr; a++)
@@ -455,7 +468,9 @@ call_c_function (char *s, struct param *p, long *r)
     {
       if (p->param_type != PARAM_TYPE_LIST)
 	{
-	  fprintf (stderr,"Was expecting a list (Got %d)\n",p->param_type);
+		char buff[256];
+	  sprintf(buff,"Was expecting a list (Got %d)\n",p->param_type);
+	log_err(buff);
 	  exit (20);
 	}
 
@@ -511,7 +526,9 @@ call_c_function (char *s, struct param *p, long *r)
 		  break;	// A guess...
 		default:
 		  ok = 0;
-		  printf ("Can't figure it out...%d %p\n",p->param_type,p);
+		
+		  sprintf (buff,"Can't figure it out...%d %p\n",p->param_type,p);
+			log_err(buff);
 		  exit (2);
 		}
 
@@ -523,13 +540,15 @@ call_c_function (char *s, struct param *p, long *r)
 	  sig = buff;
 	}
       else
-	printf ("Darn..\n");
+	fprintf (stderr,"Darn..\n");
     }
 
 
   if (sig == 0)
     {
-      printf ("C Function not found... %s\n", s);
+	char buff[256];
+      sprintf (buff,"C Function not found... %s\n", s);
+	log_err(buff);
 
       return 0;
     }
@@ -539,9 +558,9 @@ call_c_function (char *s, struct param *p, long *r)
     {
       if (strlen (sig) - 1 != list->list_param_id.list_param_id_len)
 	{
-	  printf
-	    ("Mismatch in parameters to function %s - expecting %d got %d\n",s,
-	     strlen (sig) - 1, list->list_param_id.list_param_id_len);
+	char buff[256];
+	  sprintf (buff,"Mismatch in parameters to function %s - expecting %d got %d\n",s, strlen (sig) - 1, list->list_param_id.list_param_id_len);
+	log_err(buff);
 	  exit (21);
 	}
     }
@@ -549,9 +568,11 @@ call_c_function (char *s, struct param *p, long *r)
     {
       if (strlen (sig) - 1 != 0)
 	{
-	  printf
-	    ("Mismatch in parameters to function %s - expecting %d got %d\n",s,
+	char buff[256];
+	  sprintf
+	    (buff,"Mismatch in parameters to function %s - expecting %d got %d\n",s,
 	     strlen (sig) - 1, list->list_param_id.list_param_id_len);
+		log_err(buff);
 	  exit (21);
 	}
     }
@@ -561,13 +582,17 @@ call_c_function (char *s, struct param *p, long *r)
   ptr = find_sig (sig);
   if (!ptr)
     {
-      printf ("Can't find signiature... (%s for %s)\n",sig,s);
+	char buff[256];
+      	sprintf (buff,"Can't find signiature... (%s for %s)\n",sig,s);
+	log_err(buff);
       exit (1);
 
     }
   if (ptr_function == 0)
     {
-      printf ("Function was not declared...'%s'\n", s);
+	char buff[256];
+      	sprintf (buff,"Function was not declared...'%s'\n", s);
+	log_err(buff);
       exit (1);
     }
   x = ptr (ptr_function, p);
@@ -589,24 +614,23 @@ chk_func_sigs ()
 	continue;
       if (!find_sig (system_funcs[a].signiature))
 	{
-	  //printf("Internal Error : Handler function for sig : %s not found (needed for %s)\n",system_funcs[a].signiature,system_funcs[a].name);
 	  if (system_funcs[a].signiature[0] == '0')
 	    {
-	      printf ("void ");
+	      fprintf (stderr,"void ");
 	    }
 	  if (system_funcs[a].signiature[0] == '2')
 	    {
-	      printf ("short ");
+	      fprintf (stderr,"short ");
 	    }
 	  if (system_funcs[a].signiature[0] == '4')
 	    {
-	      printf ("long ");
+	      fprintf (stderr,"long ");
 	    }
 	  if (system_funcs[a].signiature[0] == '8')
 	    {
-	      printf ("double ");
+	      fprintf (stderr,"double ");
 	    }
-	  printf ("handle_%s(struct param *p) {  }\n",
+	  fprintf (stderr,"handle_%s(struct param *p) {  }\n",
 		  system_funcs[a].signiature);
 	  ok = 0;
 	}
@@ -699,3 +723,4 @@ void *find_by_dlself(char *s) {
 	return 0;
 }
 #endif
+

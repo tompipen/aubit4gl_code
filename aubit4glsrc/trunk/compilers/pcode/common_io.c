@@ -111,7 +111,9 @@ if (dir=='O') {
 			types[objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type]++;
 		}
 	}
+#ifdef OUTPUT_DEBUG_INFO
  	for (a=0;a<255;a++) { if (types[a]) printf("%d - %d %d\n",a,types[a],sizes[a]*types[a]); }
+#endif
 
 	return 1;
 }
@@ -187,7 +189,7 @@ printf("Write more...\n");
   xdr_destroy (&xdrp);
   fclose (fxx);
 
-	printf("%d functions\n",objp->functions.functions_len);
+	//printf("%d functions\n",objp->functions.functions_len);
   fxx = fopen ("out.functions", "wb");
   xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
   xdr_array (&xdrp, (char **)&objp->functions.functions_val, (u_int *) &objp->functions.functions_len, ~0, sizeof (npfunction), (xdrproc_t) xdr_npfunction);
@@ -198,7 +200,7 @@ printf("Write more...\n");
 
 
   fxx = fopen ("out.params", "wb");
-  printf("%d params\n",objp->params.params_len);
+  //printf("%d params\n",objp->params.params_len);
   xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
   xdr_array (&xdrp, (char **)&objp->params.params_val, (u_int *) &objp->params.params_len, ~0, sizeof (param), (xdrproc_t) xdr_param);
   xdr_destroy (&xdrp);
@@ -235,7 +237,6 @@ printf("Write more...\n");
 	for (a=0;a<objp->functions.functions_len;a++) {
 		for (b=0;b<objp->functions.functions_val[a].cmds.cmds_len;b++) {
 			sprintf(fname,"cmds/%04d_%04d_%d.cmd",a,b,objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type);
-			//printf("Write : %s\n",fname); fflush(stdout);
   			fxx = fopen (fname, "wb");
 			types[objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type]++;
   			xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
@@ -244,7 +245,12 @@ printf("Write more...\n");
   			fclose (fxx);
 		}
 	}
- 	for (a=0;a<255;a++) { if (types[a]) printf("%d - %d %d\n",a,types[a],sizes[a]*types[a]); }
+
+#ifdef OUTPUT_DEBUG_INFO
+ 	for (a=0;a<255;a++) { 
+			if (types[a]) printf("%d - %d %d\n",a,types[a],sizes[a]*types[a]); 
+	}
+#endif
 
  }
 

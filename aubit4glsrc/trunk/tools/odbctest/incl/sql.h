@@ -1,7 +1,7 @@
 /*
  *  sql.h
  *
- *  $Id: sql.h,v 1.3 2004-12-04 09:22:49 mikeaubury Exp $
+ *  $Id: sql.h,v 1.4 2006-09-19 13:07:30 mikeaubury Exp $
  *
  *  ODBC defines
  *
@@ -34,7 +34,7 @@
 #endif
 
 #ifndef _SQLTYPES_H
-#include <sqltypes.h>
+#include "sqltypes.h"
 #endif
 
 #ifdef __cplusplus

@@ -93,6 +93,10 @@ void *A4GL_pcode_getptr(char *s,void *p,char *e) {
 	return GETPTR(s,p,e); 
 }
 
+int aclfgl_startlog_pcode(int n) ;
+#ifdef aclfgl_startlog
+#undef aclfgl_startlog
+#endif
 
 struct call_funcs system_funcs[]={
 	{ &A4GLSQL_set_status,			"A4GLSQL_set_status",			"044"},
@@ -130,6 +134,7 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_start_prompt,			"A4GL_start_prompt",			"444444"},
 	{ &A4GL_new_menu_create,		"A4GL_new_menu_create",			"444444"},
 	{ &A4GL_menu_loop_v2,			"A4GL_menu_loop",			"444"},
+	{ &aclfgl_startlog_pcode,		"aclfgl_startlog",			"44"},
 	{ &aclfgli_clr_err_flg,			"aclfgli_clr_err_flg",			"0"},
 	{ &aclfgli_get_err_flg,			"aclfgli_get_err_flg",			"4"},
 	{ &A4GL_pcode_ecall,			"ECALL",				"0444"},
@@ -267,4 +272,9 @@ int special_cmd(struct cmd *c) {
 
 	printf("Unknown command : %d\n",c->cmd_type);
 	return 0;
+}
+
+
+int aclfgl_startlog_pcode(int n) {
+return A4GL_startlog("UNKNOWN",0,n);
 }

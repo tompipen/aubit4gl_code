@@ -43,8 +43,7 @@ char * get_new_id (module * new_module, int x)
 {
   if (x >= new_module->id_table.id_table_len)
     {
-      printf ("Get ID %d from max %d\n", x,
-	      new_module->id_table.id_table_len);
+      fprintf (stderr,"Get ID %d from max %d\n", x, new_module->id_table.id_table_len);
       A4GL_assertion (1, "ID is out of range");
     }
   return new_module->id_table.id_table_val[x].s;
@@ -114,7 +113,7 @@ int main (int argc, char *argv[])
       if (fmodule==-1) fmodule=a;
       if (!process_xdr ('I', &modules[a - 1], lv_progname))
 	{
-	  printf ("Error loading %s\n", lv_progname);
+	  fprintf (stderr,"Error loading %s\n", lv_progname);
 	  exit(2);
 	}
     }
@@ -126,12 +125,10 @@ int main (int argc, char *argv[])
   this_module = &modules[fmodule-1];
   this_module->module_name = strdup ("PROGRAM");
   this_module_ptr = this_module;
-	      printf("first module : %s\n",argv[fmodule]);
 
   for (a = fmodule+1; a < argc; a++)
     {
       if (!skip[a]) {
-	      printf("merge_module : %s\n",argv[a]);
       		merge_module (&modules[a - 1]);
       }
     }
@@ -141,16 +138,17 @@ int main (int argc, char *argv[])
   	optimize();
   }
 
-printf("Writing to : %s\n",out_linked_name);
+
   a = process_xdr ('O', this_module, out_linked_name);
 
   if (a)
     {
-      A4GL_debug ("Written ok %d\n", a);
+         A4GL_debug ("Written ok %d\n", a);
+	chmod(A4GL_get_last_outfile(),0700);
     }
   else
     {
-      printf ("Failed to write %d\n", a);
+      fprintf (stderr,"Failed to write %d\n", a);
       exit (1);
     }
 
@@ -160,20 +158,14 @@ return 0;
 int
 is_system_var (char *s)
 {
-  //printf ("Is system : %s ", s);
-// because we mark scope on all the aubit stuff - 
-// anything not marked should be global...
   if (s[0] >= 'a' && s[0] <= 'z')
     {
-      //printf ("Yes\n");
       return 1;
     }
   if (s[0] == 'G')
     {
-      //printf ("Yes\n");
       return 1;
     }
-  //printf ("No\n");
   return 0;
 }
 
@@ -196,7 +188,7 @@ find_old_mod_var (module * new_module, char *s)
 	}
     }
 
-  printf ("Find old : %s failed\n", s);
+  fprintf (stderr,"Find old : %s failed\n", s);
   return -1;
 }
 
@@ -600,7 +592,7 @@ replace_id (module * nm, int oldid, int newid)
 	      c = nm->functions.functions_val[a].cmds.cmds_val[b].cmd_u.c_ecall;
 	  	if (c->func_id == oldid)
 	    	{
-			printf("ECALL : %d to %d\n",oldid,newid);
+			//printf("ECALL : %d to %d\n",oldid,newid);
 	      	c->func_id = newid;
 	    	}
 	    }

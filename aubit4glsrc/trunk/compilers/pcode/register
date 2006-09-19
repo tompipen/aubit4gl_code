@@ -1,2 +1,10 @@
 #bin_fmt registration.
-echo ':A4GL:M::\xa4\xfc\x23\x45::$AUBITDIR/compilers/pcode/runner_fgl:' > /proc/sys/fs/binfmt_misc/register
+
+modprobe binfmt_misc
+
+if [ "$AUBITDIR" = "" ]
+then
+	AUBITDIR=/home/aubit4gl/aubit4glsrc
+fi
+echo ":A4GL:M::\xa4\xfc\x23\x45::$AUBITDIR/compilers/pcode/runner_fgl_wrapper:" > /proc/sys/fs/binfmt_misc/register
+
