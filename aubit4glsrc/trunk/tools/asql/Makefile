@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.46 2006-09-19 13:07:27 mikeaubury Exp $
+# $Id: Makefile,v 1.47 2006-09-19 17:25:43 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -231,7 +231,7 @@ asql_p${A4GL_EXE_EXT}: ${OBJS_PG}
 INFOFLEX: asql_infoflex${A4GL_EXE_EXT}
 asql_infoflex${A4GL_EXE_EXT}: A4GL_LEXDIALECT=INFOFLEX
 asql_infoflex${A4GL_EXE_EXT}: ${OBJS_INFOFLEX}
-	${4GLPC} -t EC -t INFOFLEX -V5 ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
+	${4GLPC} -t EC -td INFOFLEX  ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|          Successfuly compiled InfoFlex version of asql             |"
@@ -259,7 +259,7 @@ ing_%${A4GL_OBJ_EXT}: %.4gl
 	${COMP4GL}
 
 infoflex_%${A4GL_OBJ_EXT}: %.4gl
-	${4GLPC} -V4 -t EC -td INFOFLEX -o $@ ${4GLPCFLAGS} -c $^ 
+	${4GLPC} -t EC -td INFOFLEX -o $@ ${4GLPCFLAGS} -c $^ 
 
 ################
 #Rule to make objects from 4GL file - Postgres version
