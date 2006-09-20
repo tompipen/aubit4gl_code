@@ -2344,14 +2344,227 @@ end function
 code
 
 
+
 int
 printField (FILE * outputFile, int idx, char *descName)
 {
-A4GL_debug("Print Field");
+  char buffer[40000];
+  char fmt[255];
+  short smint_var;
+  int int_var;
+  long date_var;
+  char *char_var;
+  double float_var;
+  float smfloat_var;
+
+
+  dec_t *decimal_var;
+  dec_t *money_var;
+  dtime_t *dtime_var;
+char buff[255];
+
+
+  struct sqlvar_struct *psqlvar = &desc_output->sqlvar[idx - 1];
+
+  if (risnull (psqlvar->sqltype, psqlvar->sqldata))
+    {
+      strcpy (buffer, "");
+    }
+  else
+    {
+      switch (psqlvar->sqltype & 0xf)
+	{
+
+	case SQLCHAR:
+	case SQLVCHAR:
+	  sprintf (buffer, "%s", psqlvar->sqldata);
+	  A4GL_trim (buffer);
+
+	  break;
+
+
+	case SQLSMINT:
+	  smint_var = *(short *) psqlvar->sqldata;
+
+	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
+	    {
+	      sprintf (buffer, "%d", smint_var);
+	    }
+	  else
+	    {
+	      sprintf (buffer, "%*d", columnWidths[idx - 1], smint_var);
+	    }
+	  break;
+
+	case 6:
+	case SQLINT:
+	  int_var = *(int *) psqlvar->sqldata;
+
+	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
+	    {
+	      sprintf (buffer, "%ld", int_var);
+	    }
+	  else
+	    {
+	      sprintf (buffer, "%*ld", columnWidths[idx - 1], int_var);
+	    }
+	  break;
+
+
+	case SQLDATE:
+	  if (sizeof (int) == 4)
+	    {
+	      date_var = *(int *) psqlvar->sqldata;
+	    }
+	  else
+	    {
+	      date_var = *(long *) psqlvar->sqldata;
+	    }
+
+	  char_var = (char *) acl_malloc2 (sizeof (char) * 20);
+	  A4GL_dtos (&date_var, char_var, 19);
+	  A4GL_trim (char_var);
+	  sprintf (buffer, "%s", char_var);
+	  free (char_var);
+	  break;
+
+	   case SQLFLOAT:
+		float_var=*(double *)psqlvar->sqldata;
+          if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
+            {
+              sprintf (buffer, "%lf", float_var);
+              if (display_mode == DISPLAY_UNLOAD)
+                trim_trailing_0 (buffer);
+            }
+          else
+            {
+              sprintf (buffer, "%*lf", columnWidths[idx - 1], float_var);
+            }
+          break;
+
+
+
+        case SQLSMFLOAT:
+		smfloat_var=*(float *)psqlvar->sqldata;
+          if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
+            {
+              sprintf (buffer, "%f", smfloat_var);
+              if (display_mode == DISPLAY_UNLOAD)
+                trim_trailing_0 (buffer);
+            }
+          else
+            {
+              sprintf (buffer, "%*f", columnWidths[idx - 1], smfloat_var);
+            }
+          break;
+
+        case SQLDECIMAL:
+		
+	  decimal_var =psqlvar->sqldata;
+          if (dectoasc (decimal_var, buff, 32, -1))
+            {
+              A4GL_debug ("BAD DECIMAL");
+              return 1;
+            }
+          buff[32] = 0;
+          A4GL_trim (buff);
+          if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
+            {
+              sprintf (buffer, "%s", buff);
+              if (display_mode == DISPLAY_UNLOAD)
+                trim_trailing_0 (buffer);
+            }
+          else
+            {
+              sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
+            }
+          break;
+
+
+        case SQLMONEY:
+	  money_var =psqlvar->sqldata;
+          if (dectoasc (money_var, buff, 32, -1))
+            {
+        /** @todo : Store the error somewhere */
+              A4GL_debug ("Bad money");
+              return 1;
+            }
+          buff[32] = 0;
+          sprintf (buffer, "%s", buff);
+          if (display_mode == DISPLAY_UNLOAD)
+            trim_trailing_0 (buffer);
+          //free (fgl_money);
+          break;
+
+        case SQLDTIME:
+		
+		dtime_var =psqlvar->sqldata;
+          if (dttoasc (dtime_var, buff))
+            {
+              A4GL_debug ("Bad dtime");
+              return 1;
+            }
+          sprintf (buffer, "%s", buff);
+          break;
+
+
+	default:
+	  sprintf (buffer, "Unhandled datatype : %d", psqlvar->sqltype);
+	}
+    }
+
+
+
+/*
+        printf("%-20s: (%d, %2d, %s) (%d, %2d, %ld) %d\n",
+                 psqlvar->sqlname,
+                 psqlvar->sqltype,
+                 psqlvar->sqllen,
+                 psqlvar->sqldata,
+                 psqlvar->sqlitype,
+                 psqlvar->sqlilen,
+                 psqlvar->sqlidata,
+                 risnull(psqlvar->sqltype, psqlvar->sqldata));
+*/
+
+  if (display_mode == DISPLAY_DOWN)
+    {
+      sprintf (fmt, "%%-%d.%ds %%s\n", colnamesize + 1, colnamesize + 1);
+      if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
+	{
+	  fprintf (outputFile, fmt, columnNames[idx - 1], buffer);
+	}
+      else
+	{
+	  fprintf (exec_out, fmt, columnNames[idx - 1], buffer);
+	}
+      outlines++;
+    }
+
+  if (display_mode == DISPLAY_ACROSS)
+    {
+      if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
+	{
+
+	  A4GL_debug ("EXECO '%s' '%20s' '%-20s'", buffer, buffer, buffer);
+	  fprintf (outputFile, "%-*s", columnWidths[idx - 1], buffer);
+	}
+      else
+	fprintf (exec_out, "%-*s", columnWidths[idx - 1], buffer);
+    }
+
+  if (display_mode == DISPLAY_UNLOAD)
+    {
+      fprintf (f_unloadFile, "%s", escape_delim (buffer));
+      fprintf (f_unloadFile, "%s", delim);
+    }
+
+
+
+  return 0;
+
 
 }
-
-
 
 static int
 field_widths ()
@@ -2363,6 +2576,7 @@ field_widths ()
   char columnName[64];
   EXEC SQL END DECLARE SECTION;
   int totsize = 0;
+struct sqlvar_struct *psqlvar ;
 
 
 if (columnNames)
@@ -2399,6 +2613,13 @@ if (columnNames)
 
 
     /* EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:size = LENGTH,: datatype = TYPE,:columnName = NAME; */
+
+
+	psqlvar= &desc_output->sqlvar[index-1];
+	strcpy(columnName,psqlvar->sqlname);
+	size=psqlvar->sqllen;
+	datatype=psqlvar->sqltype;
+
 
 
       cp_sqlca ();

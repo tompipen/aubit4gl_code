@@ -12,13 +12,13 @@
 
 
 # SQL : DYNAMIC FILESCHEMA c_ecpg esql ifxodbc nosql pg pgodbc sqlite3 unixodbc
-SQL=esql
+SQL=nosql
 
 # UI : DYNAMIC TUI HL_TUI HL_GTK CONSOLE
 UI=TUI
 
 # ESQL:DYNAMIC POSTGRES INFORMIX
-ESQL=INFORMIX
+ESQL=INFOFLEX
 
 # FORM:  DYNAMIC XDR GENERIC
 FORM=DYNAMIC
@@ -55,12 +55,17 @@ else
 		API += ../../lib/libsql/odbc/sql.o ../../lib/libsql/odbc/sqlex.o ../../lib/libsql/odbc/array.o
 	endif
 
-	ifeq "${SQL}" "FILESCHEMA" # Will be the last ODBC compiled....
+	ifeq "${SQL}" "FILESCHEMA" 
 		SETOBJ=1
 		API += ../../lib/libsql/schema_in_file/schema_in_file.o
 	endif
 
-	ifeq "${SQL}" "pg" # Will be the last ODBC compiled....
+	ifeq "${SQL}" "nosql" 
+		SETOBJ=1
+		API += ../../lib/libsql/nosql/nosql.o
+	endif
+
+	ifeq "${SQL}" "pg" 
 		SETOBJ=1
 		APPEXTRA=-lpq
 		API += ../../lib/libsql/postgresql/simple.o
@@ -152,6 +157,10 @@ else
 		API+=../libesql/helper_funcs_postgres.o
 	endif
 
+	ifeq "${ESQL}" "INFOFLEX"
+		SETOBJ=1
+		API+=../libesql/helper_funcs_infoflex.o
+	endif
 
 	ifeq "${SETOBJ}" "0"
 		echo "No ESQL modules set"
