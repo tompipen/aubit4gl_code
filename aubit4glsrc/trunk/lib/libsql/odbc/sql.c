@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.169 2006-09-13 15:07:52 briantan Exp $
+# $Id: sql.c,v 1.170 2006-09-20 15:27:57 mikeaubury Exp $
 #
 */
 
@@ -4226,7 +4226,16 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       A4GL_debug ("Bound columns\n");
 #endif
 
-      if (0)
+      if (A4GL_isyes (acl_getenv ("CACHESCHEMA"))) {
+	      	char *xbuff;
+	      	while (A4GLSQL_next_column (&xbuff, dtype, size)) ;
+	  	GetColCached = 1;
+	  	GetColNo = 0;
+	  	return 1;
+      }
+
+
+      if (0) 
 	{
 
 	  rc = SQLFetch (hstmtGetColumns);
@@ -4260,7 +4269,6 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	  sz = conv_sqlprec (dt2, prec, 2);
 	  //printf ("Add column '%s' %d %d\n", cn, dt2, sz);
 	  AddColumn (cn, dt2, sz);
-
 	}
 
 
@@ -4306,6 +4314,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 	  if (ptr)
 	    {
 	      //printf("Scanning from %s\n",ptr);
+	      A4GL_debug("Scanning from %s",ptr);
 	      sscanf (ptr, "%s %d %d", buffx, dtype, size);
 	      *colname = buffx;
 	      return 1;
@@ -4366,15 +4375,16 @@ AddColumn (char *s, int d, int sz)
 {
   char buff[256];
   char buff2[256];
-
+printf("%s %d %d in %s %d\n",s,d,sz,GetColTab,GetColNo);
   sprintf (buff, "%s_%d", GetColTab, GetColNo);
+
   if (A4GL_has_cache_column (buff))
     {
       // Got the column cached !
       return;
     }
   sprintf (buff2, "%s %d %d", s, d, sz);
-  //printf("Adding %s to %s\n",buff,buff2);
+  A4GL_debug("Adding %s to %s\n",buff,buff2);
   A4GL_add_cache_column (buff, buff2);
 }
 
