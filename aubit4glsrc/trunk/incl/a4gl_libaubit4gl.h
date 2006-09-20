@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.246 2006-09-15 09:00:11 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.247 2006-09-20 09:36:20 mikeaubury Exp $
 #
 */
 
@@ -2296,6 +2296,14 @@ void A4GL_set_sql_conv(int n);
 void load_temp_table(void);
 //void save_temp_table(char *tabname,int select_into);
 void save_temp_table(char *tabname,long select_into);
+
+
+
+void A4GL_free_directory(void);
+char **A4GL_read_directory(char *dir,char *spec);
+void A4GL_free_list(char **list);
+char ** A4GL_gen_list_dbpath (char *spec, char *path);
+
 
 
 #include "a4gl_gen_stack.h"

@@ -335,10 +335,14 @@ end function
 function get_version() 
 define lv_str char(80)
 define lv_dialect char(80)
-let lv_dialect="ODBC"
+let lv_dialect="GENERIC/ODBC"
 code
 #ifdef DIALECT_INFORMIX
 strcpy(lv_dialect,"INFX ESQL/C");
+#endif
+
+#ifdef DIALECT_INFOFLEX
+strcpy(lv_dialect,"INFOFLEX");
 #endif
 
 #ifdef DIALECT_POSTGRES

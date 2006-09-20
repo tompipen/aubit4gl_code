@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.23 2006-09-01 19:32:10 mikeaubury Exp $
+# $Id: Makefile,v 1.24 2006-09-20 09:36:25 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -60,7 +60,7 @@ COMMONSRC= \
 	attributes.c \
 	builtin.c builtin_d.c \
 	calldll.c mem.c assert.c fglextra.c net.c conv.c compat.c corba_server_util.c \
-	data_if.c common_ui.c dates.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
+	data_if.c common_ui.c dates.c dir.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
 	err.c error.c errfile.c sqlexpr.c expr.c  extfile.c eval_field.c \
 	fglwrap.c funcs_d.c function_call_stack.c \
 	gtime.c gen_stack.c gui_io.c gui.c \

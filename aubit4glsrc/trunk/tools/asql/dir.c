@@ -1,9 +1,11 @@
+#ifdef MOVED_TO_LIBAUBIT4GL
 
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
 #include "a4gl_incl_4glhdr.h" /* A4GL_debug() */
+
 
 char **read_directory(char *dir,char *spec) ;
 void free_directory(void) ;
@@ -88,3 +90,6 @@ if (m_names==0) return;
 for (a=0;m_names[a];a++) free(m_names[a]);
 free(m_names);
 }
+
+
+#endif

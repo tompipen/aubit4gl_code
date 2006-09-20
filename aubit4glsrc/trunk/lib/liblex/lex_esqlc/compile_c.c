@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.322 2006-09-15 11:15:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.323 2006-09-20 09:36:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.322 2006-09-15 11:15:50 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.323 2006-09-20 09:36:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6117,6 +6117,13 @@ LEXLIB_print_fgllib_start (char *db)
   if (strlen(get_force_ui())) {
 	    printc("A4GL_setenv (\"A4GL_UI\",\"%s\", 1);",get_force_ui());
   }
+
+  if (doing_esql()) {
+	printc("#ifdef LEXDIALECT_TYPE");
+	printc("    A4GL_setenv (\"A4GL_LEXDIALECT\",LEXDIALECT_TYPE, 1);");
+	printc("#endif");
+  }
+
   if (!A4GL_doing_pcode ())
     {
       if (doing_cs ())

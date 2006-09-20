@@ -15,7 +15,10 @@ code
 #define DTYPE_TEXT      12
 #define DTYPE_VCHAR     13
 #define DTYPE_INTERVAL  14
-char **read_directory(char *dir,char *spec) ;
+
+char ** A4GL_read_directory(char *dir,char *spec);
+
+
 endcode
 define mv_lastform char(255)
 define mv_editor char(255)
@@ -123,7 +126,7 @@ code
 {
         char **dir;
 	A4GL_trim(lv_ext);
-        dir=read_directory(".",lv_ext);
+        dir=A4GL_read_directory(".",lv_ext);
         if (dir) {
                 for (a=0;dir[a];a++) {
                         strcpy(lv_fname,dir[a]);
@@ -131,7 +134,7 @@ endcode
                         call set_pick(a+1,lv_fname);
 code
                 }
-                free_directory(dir);
+                A4GL_free_directory(dir);
         }
 }
 endcode
@@ -185,7 +188,7 @@ if lv_fname is null or lv_fname matches "" then
 code
 {
         char **dir;
-        dir=read_directory(".",".per");
+        dir=A4GL_read_directory(".",".per");
         if (dir) {
                 for (a=0;dir[a];a++) {
                         A4GL_debug("READ FILE: %s",dir[a]);
@@ -194,7 +197,7 @@ endcode
                         call set_pick(a+1,lv_fname);
 code
                 }
-                free_directory(dir);
+                A4GL_free_directory(dir);
         }
 }
 endcode
@@ -268,7 +271,7 @@ if lv_fname is null or lv_fname matches " " then
 code
 {
         char **dir;
-        dir=read_directory(".",".per");
+        dir=A4GL_read_directory(".",".per");
         if (dir) {
                 for (a=0;dir[a];a++) {
                         A4GL_debug("READ FILE: %s",dir[a]);
@@ -277,7 +280,7 @@ endcode
                         call set_pick(a+1,lv_fname);
 code
                 }
-                free_directory(dir);
+                A4GL_free_directory(dir);
         }
 }
 endcode
@@ -424,7 +427,7 @@ display "Choose a file to drop","" at 2,1
 code
 {
         char **dir;
-        dir=read_directory(".",".per");
+        dir=A4GL_read_directory(".",".per");
         if (dir) {
                 for (a=0;dir[a];a++) {
                         strcpy(lv_fname,dir[a]);
@@ -432,7 +435,7 @@ endcode
                         call set_pick(a+1,lv_fname);
 code
                 }
-                free_directory(dir);
+                A4GL_free_directory(dir);
         }
 }
 endcode

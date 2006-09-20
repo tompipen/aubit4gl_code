@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql_infoflex.h,v 1.2 2006-09-19 17:56:34 mikeaubury Exp $
+# $Id: a4gl_esql_infoflex.h,v 1.3 2006-09-20 09:36:20 mikeaubury Exp $
 #
 */
 
@@ -95,6 +95,9 @@ extern "C"
 #define CONVERTSQL(s) s
 #define CONVERTSQL_LN(s,l) s
 #endif
+
+
+#define LEXDIALECT_TYPE "INFOFLEX"
 
 
 #define COPY_SQLCA

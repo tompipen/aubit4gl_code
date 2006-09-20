@@ -27,7 +27,7 @@
 # +----------------------------------------------------------------------+
 code
 #include "simple.h"
-char **read_directory(char *dir,char *spec);
+char **A4GL_read_directory(char *dir,char *spec);
 
 FILE *get_curr_mvfin(char *s);
 
@@ -298,7 +298,7 @@ let a=0
 code
 {
 	char **dir;
-	dir=read_directory(".",".sql");
+	dir=A4GL_read_directory(".",".sql");
         if (dir) {
 		for (a=0;dir[a];a++) {
 			A4GL_debug("READ FILE: %s",dir[a]);
@@ -307,7 +307,7 @@ endcode
 			call set_pick(a+1,lv_fname);
 code
 		}
-		free_directory(dir);
+		A4GL_free_directory();
 	}
 }
 endcode
@@ -371,7 +371,7 @@ display "Choose a file to drop","" at 2,1
 code
 {
 	char **dir;
-	dir=read_directory(".",".sql");
+	dir=A4GL_read_directory(".",".sql");
         if (dir) {
 		for (a=0;dir[a];a++) {
 			strcpy(lv_fname,dir[a]);
@@ -379,7 +379,7 @@ endcode
 			call set_pick(a+1,lv_fname);
 code
 		}
-		free_directory(dir);
+		A4GL_free_directory();
 	}
 }
 endcode

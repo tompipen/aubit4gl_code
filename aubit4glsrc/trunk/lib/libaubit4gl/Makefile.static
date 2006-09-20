@@ -182,7 +182,7 @@ endif
 
 ###############################################################################
 
-CORE_OBJS=attributes.o builtin.o builtin_d.o calldll.o mem.o assert.o fglextra.o net.o conv.o compat.o corba_server_util.o data_if.o common_ui.o dates.o dmy.o datatypes.o dataio.o decimal.o dynmem.o debug.o err.o error.o errfile.o sqlexpr.o expr.o  extfile.o eval_field.o fglwrap.o funcs_d.o function_call_stack.o file.o gtime.o gen_stack.o gui_io.o gui.o helper.o io.o interval.o keys.o load.o match.o maths.o memfile.o ns.o others.o ops.o outer.o pointers.o read_dty.o readkeys.o report.o rexp2.o ../resource/resource.o screen.o sql_common.o sqlconvert.o stack_ops.o stack.o string.o sqlca.o translate.o ui.o ../generated/project.o  API_sqlparse_self.o API_help.o API_menu.o API_packer.o API_form.o API_rpc.o API_exreport.o  ../../compilers/sql/y.tab.o 
+CORE_OBJS=attributes.o builtin.o builtin_d.o dir.o calldll.o mem.o assert.o fglextra.o net.o conv.o compat.o corba_server_util.o data_if.o common_ui.o dates.o dmy.o datatypes.o dataio.o decimal.o dynmem.o debug.o err.o error.o errfile.o sqlexpr.o expr.o  extfile.o eval_field.o fglwrap.o funcs_d.o function_call_stack.o file.o gtime.o gen_stack.o gui_io.o gui.o helper.o io.o interval.o keys.o load.o match.o maths.o memfile.o ns.o others.o ops.o outer.o pointers.o read_dty.o readkeys.o report.o rexp2.o ../resource/resource.o screen.o sql_common.o sqlconvert.o stack_ops.o stack.o string.o sqlca.o translate.o ui.o ../generated/project.o  API_sqlparse_self.o API_help.o API_menu.o API_packer.o API_form.o API_rpc.o API_exreport.o  ../../compilers/sql/y.tab.o 
 
 ALL_OBJS=$(CORE_OBJS) $(API)
 

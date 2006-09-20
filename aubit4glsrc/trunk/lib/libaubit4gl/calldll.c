@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.67 2006-07-27 16:02:23 mikeaubury Exp $
+# $Id: calldll.c,v 1.68 2006-09-20 09:36:25 mikeaubury Exp $
 #
 */
 
@@ -377,6 +377,7 @@ if (aplugins) {
   if (dllhandle == 0)
     {
 
+//A4GL_pause_execution();
       /* Sometimes dlerror() returns empty string? */
       /* dllerror is nulled after first call - can't call it twice, so we
          have to store it to be able to use it twice */

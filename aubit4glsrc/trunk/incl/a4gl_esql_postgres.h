@@ -19,6 +19,12 @@ extern "C"
 #include "a4gl_incl_infx.h"
 
 
+
+
+#define LEXDIALECT_TYPE "POSTGRES"
+
+
+
 #ifdef __WIN32__
 				/* PG 8 on windows have ecpg_informix.h and no decimal.h */
 				#include "ecpg_informix.h"

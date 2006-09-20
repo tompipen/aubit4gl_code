@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql_infx.h,v 1.28 2005-09-29 15:29:47 mikeaubury Exp $
+# $Id: a4gl_esql_infx.h,v 1.29 2006-09-20 09:36:20 mikeaubury Exp $
 #
 */
 
@@ -107,6 +107,10 @@ extern "C"
 #define CONVERTSQL(s) s
 #define CONVERTSQL_LN(s,l) s
 #endif
+
+
+
+#define LEXDIALECT_TYPE "INFORMIX"
 
 
 #define COPY_SQLCA

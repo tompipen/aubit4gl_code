@@ -777,11 +777,20 @@ code
 //#define FASIZ (MAXDBS * 256)
 char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
+char **list;
 ndbs=0;
 
 sqlca.sqlcode=0;
 
-sqlca.sqlcode = -1; //sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+list=A4GL_gen_list_dbpath(".dbs",acl_getenv("DBPATH"));
+
+for (a=0;list[a];a++) {
+	ndbs++;
+}
+
+
+sqlca.sqlcode = 0; //sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+
 endcode
 
 if sqlca.sqlcode!=0 then
@@ -791,9 +800,10 @@ if sqlca.sqlcode!=0 then
         	return
 	end if
 end if
+
 for a=1 to ndbs
 code
-        strcpy(lv_name,dbsname[a-1]);
+        strcpy(lv_name,list[a-1]);
 endcode
         call set_pick(a,lv_name)
 end for
@@ -844,10 +854,17 @@ let lv_curr_db=get_db();
 
 code
 {
-char *dbsname[MAXDBS+1];
+//char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
+char **list;
+list=A4GL_gen_list_dbpath(".dbs",acl_getenv("DBPATH"));
 
- sqlca.sqlcode = -1; // sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+if (list) {
+	for (a=0;list[a];a++) {
+		ndbs++;
+	}
+} 
+ sqlca.sqlcode = 0; // sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
 
 endcode
 
@@ -858,7 +875,7 @@ if sqlca.sqlcode!=0 then
 end if
 for a=1 to ndbs
 code
-        strcpy(lv_name,dbsname[a-1]);
+        strcpy(lv_name,list[a-1]);
 endcode
         call set_pick(a,lv_name)
 end for
