@@ -60,13 +60,37 @@ static void
 output_page (FILE * fout, int w, int h)
 {
   int a;
-  for (a = 0; a < h; a++)
+  int hnew;
+  if (A4GL_isyes (acl_getenv ("USETOPOFPAGE")))
     {
-      trim (lines[a]);
-      fprintf (fout, "%s\n", lines[a]);
+      hnew=h;
+      for (a = h-1; a >=0; a--)
+	{
+	  trim (lines[a]);
+	  if (strlen(lines[a])) {hnew=a+1;break;}
+	}
+
+      for (a = 0; a < hnew; a++)
+	{
+	  if (a == hnew-1) {
+	  	fprintf (fout, "%s%c", lines[a],12);
+	  } else {
+	  	fprintf (fout, "%s\n", lines[a]);
+	  }
+	}
+
+
+    }
+  else
+    {
+
+      for (a = 0; a < h; a++)
+	{
+	  trim (lines[a]);
+	  fprintf (fout, "%s\n", lines[a]);
+	}
     }
 }
-
 
 static void
 set_text (int x, int y, char *s)

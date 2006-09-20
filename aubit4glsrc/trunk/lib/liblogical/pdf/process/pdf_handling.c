@@ -279,10 +279,12 @@ output_page (PDF * p, int w, int h, char **lines)
       char *ptr;
       ptr = lines[a];
       A4GL_trim (ptr);
-      PDF_set_text_pos (p, (layout.leftmargin * 72.0),
+      if (strlen(ptr)) {
+      	PDF_set_text_pos (p, (layout.leftmargin * 72.0),
 			this_page_height - ((float) a * eachline) -
 			(layout.topmargin * 72.0));
-      PDF_show (p, ptr);
+      	PDF_show (p, ptr);
+      }
     }
 
   PDF_end_page (p);
