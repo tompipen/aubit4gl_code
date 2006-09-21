@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.147 2006-09-21 10:14:13 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.148 2006-09-21 15:46:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.147 2006-09-21 10:14:13 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.148 2006-09-21 15:46:40 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -265,11 +265,13 @@ LEXLIB_print_close (char type, char *name)
       printc ("if (sqlca.sqlcode==0) A4GL_esql_db_open(0,0,0,\"\");");
       print_copy_status ();
       break;
+
     case 'S':
-      A4GL_save_sql ("CLOSE SESSION %s", A4GL_strip_quotes (name));
-      printc ("\nEXEC SQL CLOSE SESSION %s;\n", A4GL_strip_quotes (name));
+      A4GL_save_sql ("DISCONNECT %s", A4GL_strip_quotes (name));
+      printc ("\nEXEC SQL DISCONNECT %s;\n", A4GL_strip_quotes (name));
       print_copy_status ();
       break;
+
     case 'C':
       A4GL_save_sql ("CLOSE  %s", A4GL_strip_quotes (name));
       printc ("\nEXEC SQL CLOSE %s;\n", A4GL_strip_quotes (name));
