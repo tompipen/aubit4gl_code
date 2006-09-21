@@ -97,10 +97,11 @@ main (int argc, char *argv[])
 	}
 
       fout = gzfopen (ofile, "w");
-      while (!gzfeof (fin))
+      while (1)
 	{
 	  a = gzfgetc (fin);
-	  if (gzfeof (fin)) break;
+	  if (a==EOF) break;
+	  //if (gzfeof (fin)) break;
 	  gzfputc (a, fout);	// Slow - but it'll do for now..
 	}
       gzfclose (fin);

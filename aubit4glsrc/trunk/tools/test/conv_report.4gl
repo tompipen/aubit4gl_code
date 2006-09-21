@@ -14,7 +14,7 @@ define n integer
 		where systables.tabid=syscolumns.tabid
 		order by 1,2,3
 
-
+{
     	start report r1 to convertible
 	
 	foreach c1 into t,c,n
@@ -22,7 +22,7 @@ define n integer
 	end foreach
 	
 	finish report r1 converting to "myfile1.pdf" AS "PDF"
-
+}
 
     	start report r1 to convertible
 	
