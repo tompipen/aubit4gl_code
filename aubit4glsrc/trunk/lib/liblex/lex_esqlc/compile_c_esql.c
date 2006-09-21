@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.146 2006-09-19 17:57:04 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.147 2006-09-21 10:14:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.146 2006-09-19 17:57:04 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.147 2006-09-21 10:14:13 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -490,7 +490,13 @@ void
 LEXLIB_print_set_conn (char *conn)
 {
   A4GL_save_sql ("SET CONNECTION %s", conn);
-  printc ("\nEXEC SQL SET CONNECTION %s;\n", conn);
+        if (esql_type () == E_DIALECT_POSTGRES) {   // Postgres...
+  			printc ("\nEXEC SQL SET CONNECTION %s;\n", A4GL_strip_quotes (conn));
+		} else {
+  			printc ("\nEXEC SQL SET CONNECTION %s;\n", conn);
+		}
+
+  printc("if (sqlca.sqlcode>=0) {A4GL_set_esql_connection(%s);}",conn);
   print_copy_status ();
 }
 
@@ -929,7 +935,7 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
     {
       if (esql_type () == E_DIALECT_POSTGRES)
 	{			// Postgres...
-	  printc ("\nEXEC SQL CONNECT TO  '%s' AS %s", v,
+	  printc ("\nEXEC SQL CONNECT TO  %s AS %s", v,
 		  A4GL_strip_quotes (s));
 	  if (strlen (user))
 	    {
@@ -945,9 +951,9 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 	    }
 	}
     }
-  printc ("/* s=%s v=%s user=%s */", s, v, user);
-
   printc (";");
+
+  printc("if (sqlca.sqlcode>=0) {A4GL_set_esql_connection(%s);}",s);
   print_copy_status ();
 
   printc ("}");
@@ -2286,10 +2292,14 @@ LEXLIB_print_load_str (char *file, char *delim, char *str)
 void
 LEXLIB_print_use_session (char *sess)
 {
-  /*printc ("{char _sav_cur_conn[32];\n"); */
-  /*printc ("strcpy(_sav_cur_conn,A4GLSQL_get_curr_conn());\n"); */
-  /*printc ("A4GLSQL_set_conn(%s);\n", sess); */
-  printc ("/* USE NOT IMPLEMENTED FOR ESQL/C */");
+  printc ("{");
+  printc("EXEC SQL BEGIN DECLARE SECTION;");
+  printc("char _sav_cur_conn[32];\n"); 
+  printc("EXEC SQL END DECLARE SECTION;");
+  printc ("strcpy(_sav_cur_conn,A4GL_get_esql_connection());\n"); 
+  //printc ("EXEC SQL S"ET CONNECTION %s;\n", sess); 
+	  LEXLIB_print_set_conn(sess);
+  //printc ("/* USE NOT IMPLEMENTED FOR ESQL/C */");
 }
 
 
@@ -2305,8 +2315,8 @@ LEXLIB_print_use_session (char *sess)
 char *
 LEXLIB_A4GL_get_undo_use (void)
 {
-  /*return "A4GLSQL_set_conn(_sav_cur_conn);}"; */
-  return "";
+  return "EXEC SQL SET CONNECTION $_sav_cur_conn;}\n"; 
+  /* return ""; */
 }
 
 

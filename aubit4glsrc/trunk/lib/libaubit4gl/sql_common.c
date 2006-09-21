@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.29 2006-09-18 07:43:24 mikeaubury Exp $
+# $Id: sql_common.c,v 1.30 2006-09-21 10:14:05 mikeaubury Exp $
 #
 */
 
@@ -60,6 +60,8 @@ static char source_dialect[64] = "INFORMIX";
  * differs from the 4GL source dialect.
  * */
 static int must_convert = 0;
+
+char save_esql_session[256];
 
 //char *find_table (struct s_select *select, struct s_select_list_item *i);
 
@@ -1403,6 +1405,14 @@ A4GL_sqlid_encrypt (void)
   return 1;
 }
 
+
+char *A4GL_get_esql_connection(void) {
+	return save_esql_session;
+}
+
+void A4GL_set_esql_connection(char *s) {
+	strcpy(save_esql_session,s);
+}
 
 
 /*
