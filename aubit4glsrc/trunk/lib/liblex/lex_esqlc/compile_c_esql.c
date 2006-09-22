@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.149 2006-09-22 07:01:21 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.150 2006-09-22 07:09:33 briantan Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.149 2006-09-22 07:01:21 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.150 2006-09-22 07:09:33 briantan Exp $";
 #endif
 extern int yylineno;
 
@@ -2322,7 +2322,7 @@ LEXLIB_print_use_session (char *sess)
 char *
 LEXLIB_A4GL_get_undo_use (void)
 {
-  return "EXEC SQL SET CONNECTION $_sav_cur_conn;}\n"; 
+  return "EXEC SQL SET CONNECTION :_sav_cur_conn;}\n"; 
   /* return ""; */
 }
 
