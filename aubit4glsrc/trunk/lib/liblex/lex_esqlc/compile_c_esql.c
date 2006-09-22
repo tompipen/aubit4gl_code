@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.148 2006-09-21 15:46:40 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.149 2006-09-22 07:01:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.148 2006-09-21 15:46:40 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.149 2006-09-22 07:01:21 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -877,7 +877,12 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
     {
       printc ("strcpy(_d,A4GL_char_pop()); A4GL_trim(_d);");
     }
-
+  if (strcmp(user,"0")==0) {
+	  	user="";
+  }
+  if (strcmp(user,"0,0")==0) {
+	  	user="";
+  }
   if (strlen (user))
     {
       if (strcmp (user, "?") == 0)
@@ -895,7 +900,7 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
 	      *ptr = 0;
 	      ptr++;
 	    }
-	  printc ("strcpy(_u,%s);A4GL_trim(_u);", buff);
+	  	printc ("strcpy(_u,%s);A4GL_trim(_u);", buff);
 	  if (ptr)
 	    {
 	      printc ("strcpy(_p,%s);A4GL_trim(_p);", ptr);
