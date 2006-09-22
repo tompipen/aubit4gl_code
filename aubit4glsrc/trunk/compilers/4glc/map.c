@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.41 2006-08-20 11:30:23 mikeaubury Exp $
+# $Id: map.c,v 1.42 2006-09-22 15:23:14 mikeaubury Exp $
 #*/
 
 /**
@@ -128,6 +128,20 @@ openmap (char *s)
 void
 addmap (char *t, char *s, char *w, int l, char *m)
 {
+	static char *last_w=0;
+	static int  last_l=0;
+	static char *last_m=0;
+
+	if (m==0) m=last_m;
+	if (l==0) l=last_l;
+	if (w==0) w=last_w;
+
+	if (w==0) w="";
+	if (m==0) m="";
+	last_w=w;
+	last_l=l;
+	last_m=m;
+			
 #ifdef DEBUG
   A4GL_debug ("Adding to map: %p", mapfile);
 #endif
