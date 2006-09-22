@@ -9,6 +9,7 @@
 update_statement_ss:
 	KW_UPDATE table_name {
 		strcpy(current_upd_table,$<str>2);
+		ADDMAP("UPDATE",current_upd_table);
 		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
 		$<sql_string>$=acl_strdup("");
 	} set_clause_list_ss  {
