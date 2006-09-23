@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.36 2006-09-23 07:13:50 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.37 2006-09-23 08:41:18 mikeaubury Exp $
 #
 */
 
@@ -75,9 +75,9 @@ void preprocess_sql_statement (struct s_select *select);
 //struct s_table_list *A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a);
 
 
-#define ADDMAP(x,y) addmap(x,y,0,0,0)
+//#define ADDMAP(x,y) addmap(x,y,0,0,0)
 
-void addmap (char *t, char *s, char *w, int l, char *m);
+//void addmap (char *t, char *s, char *w, int l, char *m);
 
 
 int A4GL_has_column (char *t, char *c);
@@ -1221,7 +1221,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		       p->u_data.column.subscript.i2));
 	      		A4GL_debug("returning %s\n",rval);
 
-		ADDMAP("UseColumn",rval);
+		//ADDMAP("UseColumn",rval);
 
 	      return rval;
 	  }
@@ -1234,7 +1234,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    orig = find_tabname_for_alias (select, p->u_data.column.tabname);
 	    rval=acl_strdup (A4GLSQLCV_check_colname_alias (p->u_data.column.tabname, orig, p->u_data.column.colname));
 	      A4GL_debug("returning %s\n",rval);
-		ADDMAP("UseColumn",rval);
+		//ADDMAP("UseColumn",rval);
 	      return rval;
 	  }
 
@@ -1253,7 +1253,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 			      (select->table_elements.tables[0].tabname,
 			       p->u_data.column.colname));
 	      A4GL_debug("returning %s\n",rval);
-		ADDMAP("UseColumn",rval);
+		//ADDMAP("UseColumn",rval);
 			  return rval;
 		  }
 	      }
@@ -1262,7 +1262,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		rval = make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
 					 acl_strdup (buff), NULL);
 	      A4GL_debug("returning %s\n",rval);
-		ADDMAP("UseColumn",rval);
+		//ADDMAP("UseColumn",rval);
 		return rval;
       }
 
