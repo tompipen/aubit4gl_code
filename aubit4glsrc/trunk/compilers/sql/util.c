@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.40 2006-07-17 14:08:55 mikeaubury Exp $
+# $Id: util.c,v 1.41 2006-09-23 07:13:49 mikeaubury Exp $
 #
 */
 
@@ -1224,5 +1224,12 @@ A4GL_warn (char *s)
 {
   // Does nothing
 }
+
+
+void
+addmap (char *t, char *s, char *w, int l, char *m) {
+// Does nothing but is required...
+}
+
 
 /* ====================================== EOF ============================ */

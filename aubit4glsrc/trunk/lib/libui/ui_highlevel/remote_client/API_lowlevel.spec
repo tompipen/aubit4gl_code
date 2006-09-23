@@ -45,7 +45,7 @@ A4GL_LL_menu_type -> int
 A4GL_LL_move_window void* w int y int x -> void
 A4GL_LL_new_form list_of_fields* fields -> void*
 A4GL_LL_open_gui_form char* name_orig  int absolute  int nat  char* like  int disable  void* handler_e void* phandler_c -> int
-A4GL_LL_out_linemode char* s -> void
+A4GL_LL_out_linemode_internal char* s -> void
 A4GL_LL_remove_window void* x -> void
 * A4GL_LL_scale_form void* f int* y int* x -> void
 A4GL_LL_screen_height -> int
@@ -65,7 +65,7 @@ A4GL_LL_set_field_fore void* field int attr -> void
 A4GL_LL_set_field_opts void* field int oopt -> void
 A4GL_LL_set_field_status void* f int stat -> void
 A4GL_LL_set_form_page void* form int page -> void
-A4GL_LL_set_max_field void* f int n -> void
+A4GL_LL_set_max_field void* f int n void* ptr -> void
 A4GL_LL_set_new_page void* field int n -> int
 A4GL_LL_set_window_title void* win char* title -> int
 A4GL_LL_show_window void* w -> void

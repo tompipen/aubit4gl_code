@@ -324,6 +324,14 @@ A4GL_ll_set_field_opts(void *f,long o) {
 
 }
 
+A4GL_LL_out_linemode(char *s) {
+	if (A4GL_isyes(acl_getenv("LOCALLINEOUTPUT"))) {
+		printf("%s\n",s);
+	} else {
+		A4GL_LL_out_linemode_internal(s);
+	}
+}
+
 
 char *A4GL_internal_version() {
 	return "1";

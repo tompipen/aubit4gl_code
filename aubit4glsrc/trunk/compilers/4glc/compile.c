@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.110 2006-08-15 07:39:23 mikeaubury Exp $
+# $Id: compile.c,v 1.111 2006-09-23 07:13:45 mikeaubury Exp $
 #*/
 
 /**
@@ -78,7 +78,10 @@ extern int yylineno;
 int compiling_system_4gl = 0;
 
 char gcc_exec[128];
-char pass_options[2048] = "";
+
+
+#define BIG_STRING 49000
+char pass_options[BIG_STRING] = "";
 int clean_aftercomp = 0;	/* clean intermediate files after compilation */
 char currinfile_dirname[1024] = "";	/* path to 4gl file we are currently compiling - used when compiling global files */
 char errbuff[1024] = "";
@@ -95,7 +98,7 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 #endif
 
 
-  char extra_ccflags[1024] = "";
+char extra_ccflags[1024] = "";
 
 
 /*
@@ -191,9 +194,9 @@ initArguments (int argc, char *argv[])
   char incl_path[1028] = "";
   char l_path[1028] = "";
   char l_libs[1028] = "";
-  char buff[6000] = "";
+  char buff[BIG_STRING] = "";
   //char all_objects[4000] = "";
-  char *all_objects = acl_malloc2(6000);
+  char *all_objects = acl_malloc2(BIG_STRING);
   
   char extra_ldflags[1024] = "";
 

@@ -25,7 +25,7 @@ server_gtk: libLL_server.so ../common_hlui.o ../lowlevel_gtk.o ../menu_gtk.o ../
 	gcc -g ../common_hlui.o ../lowlevel_gtk.o ../menu_gtk.o ../widget_gtk.o ../width_narrow.o -L. -lLL_server -o server_gtk -L$(AUBITDIR)/lib -l${AUBITLIBFULL} -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangoxft-1.0 -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0    -Wl,--export-dynamic -L/opt/gnome/lib  -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangoxft-1.0 -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
 
 ui_lowlevel.x : API_lowlevel.spec dlrpc
-	dlrpc API_lowlevel.spec 
+	sh dlrpc API_lowlevel.spec 
 
 ui_lowlevel.h: ui_lowlevel.c
 	rpcgen -h ui_lowlevel.x

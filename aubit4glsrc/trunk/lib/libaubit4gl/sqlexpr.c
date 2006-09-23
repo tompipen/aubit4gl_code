@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.35 2006-09-15 13:57:00 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.36 2006-09-23 07:13:50 mikeaubury Exp $
 #
 */
 
@@ -73,6 +73,11 @@ void make_list_in_subselect_stmt (struct s_select *orig,
 				  struct s_select *next);
 void preprocess_sql_statement (struct s_select *select);
 //struct s_table_list *A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a);
+
+
+#define ADDMAP(x,y) addmap(x,y,0,0,0)
+
+void addmap (char *t, char *s, char *w, int l, char *m);
 
 
 int A4GL_has_column (char *t, char *c);
@@ -1214,7 +1219,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		       p->u_data.column.subscript.i0,
 		       p->u_data.column.subscript.i1,
 		       p->u_data.column.subscript.i2));
-	      A4GL_debug("returning %s\n",rval);
+	      		A4GL_debug("returning %s\n",rval);
+
+		ADDMAP("UseColumn",rval);
+
 	      return rval;
 	  }
 	A4GL_assertion (p->u_data.column.colname == 0,
@@ -1226,6 +1234,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    orig = find_tabname_for_alias (select, p->u_data.column.tabname);
 	    rval=acl_strdup (A4GLSQLCV_check_colname_alias (p->u_data.column.tabname, orig, p->u_data.column.colname));
 	      A4GL_debug("returning %s\n",rval);
+		ADDMAP("UseColumn",rval);
 	      return rval;
 	  }
 
@@ -1244,6 +1253,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 			      (select->table_elements.tables[0].tabname,
 			       p->u_data.column.colname));
 	      A4GL_debug("returning %s\n",rval);
+		ADDMAP("UseColumn",rval);
 			  return rval;
 		  }
 	      }
@@ -1252,6 +1262,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		rval = make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
 					 acl_strdup (buff), NULL);
 	      A4GL_debug("returning %s\n",rval);
+		ADDMAP("UseColumn",rval);
 		return rval;
       }
 
@@ -1509,13 +1520,11 @@ preprocess_sql_statement (struct s_select *select)
   struct s_select_list_item *pnew;
   struct s_select_list_item_list *n;
   int expand_many;
-
 //
 // Lets collect all our expressions in one place....
 //
-  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS"))
+  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS")|| A4GL_isyes(acl_getenv("MAP4GL"))) 
     {
-
       expand_many = 0;
       for (a = 0; a < select->select_list->nlist; a++)
 	{
