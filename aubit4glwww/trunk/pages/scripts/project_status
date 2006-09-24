@@ -179,11 +179,11 @@ EOF
 
 # Find all project files
 find $AUBITBASE -name "project.status"  | sed 's/^'$x'//g' | fgrep -vf /tmp/project_status/projects.list.1 > /tmp/project_status/projects.list.2
-cat /tmp/project_status/projects.list.1 /tmp/project_status/projects.list.2 > /tmp/project_status/projects.list
+cat /tmp/project_status/projects.list.1 /tmp/project_status/projects.list.2  | grep -v "^source_only" | grep -v "^old" > /tmp/project_status/projects.list
 cat /tmp/project_status/projects.list
 
 # Find all subproject files
-find $AUBITBASE -name "subproject.status" | sed 's/^'$x'//g' > /tmp/project_status/subprojects.list
+find $AUBITBASE -name "subproject.status" | sed 's/^'$x'//g' | grep -v "^source_only" | grep -v "^old"  > /tmp/project_status/subprojects.list
 
 
 rm /tmp/project_status/*.subprojects.*
@@ -191,7 +191,7 @@ rm /tmp/project_status/*.subprojects.*
 cat /dev/null >  /tmp/project_status/parent.projects
 
 # Now - go through all subrojects...
-while read subproject
+cat /tmp/project_status/subprojects.list | (while read subproject
 do
 # We've got out subproject file - lets take a look...
 
@@ -227,7 +227,7 @@ do
 
 		if [ "$key" = "NAME" ]; then
 			if [ "$name" != "" ]; then
-				echo "Printing"
+				echo "Printing $functionality $name $description"
 				# Must be the next subproject...
 				print_subline "$functionality" "$name" "$description" "$location" "$kstatus" "$maintainer" "$build" "$example" "$depends" "$documentation" "$regressed" "$todo" "$notes" >> /tmp/project_status/$parent.subprojects."$priority".$f2
 			fi
@@ -311,10 +311,11 @@ do
 		echo "Error - Unknown key : $key ($subproject)"
 		exit 1
 	done < $AUBITBASE/$subproject 
-	echo "printing"
+	echo "printing $functionality $name $description" 
 	print_subline "$functionality" "$name" "$description" "$location" "$kstatus" "$maintainer" "$build" "$example" "$depends" "$documentation" "$regressed" "$todo" "$notes" >> /tmp/project_status/$parent.subprojects."$priority".$f2
-done < /tmp/project_status/subprojects.list
+done )
 
+echo "DONE 1"
 
 #We should now be able to generate a list of unique parents
 cat /tmp/project_status/parent.projects | uniq > /tmp/project_status/parent.projects.uniq
