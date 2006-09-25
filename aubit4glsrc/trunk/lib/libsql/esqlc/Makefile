@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2006-09-19 13:20:31 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2006-09-25 08:33:02 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -40,9 +40,12 @@ SRC					=esql.ec
 SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
-CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
+CFLAGS_INFX			+=${CFLAGS} -I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 					-I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql \
-					-I$(AUBITDIR)/incl -g
+					-I$(AUBITDIR)/incl -g ${FPIC}
+
+CFLAGS_NOTINFX			+=${CFLAGS} -I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
+					-I$(AUBITDIR)/incl -g ${FPIC}
 
 ESQL_INCLPATH		=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 					-I$(AUBITDIR)/incl ${C_IFLAGS}
@@ -51,8 +54,9 @@ ifneq "${INFORMIXDIR}" ""
 	ESQL_INCLPATH	+=-I${INFORMIXDIR}
 endif
 
-LD_LFLAGS           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
+LD_LFLAGS_INFX           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
                     -L$(INFORMIXDIR)/lib/cli -g
+LD_LFLAGS_NOTINFX        = -g
 
 ifneq "$(findstring esql,${PLUGIN_STATIC})" ""
 	
@@ -203,13 +207,13 @@ ${PLUGINDIR}/libSQL_esql${SO_EXT}: ${SRC}
 ifneq "${COMSPEC}" ""
 #	$(ESQL_SOMETHING) $(ESQL_FLAGS) -e $<
 	${IFMX_ESQLC} $(ESQL_FLAGS) -e $<
-	$(CC) $(CFLAGS) -c $(basename $<).c -o $(basename $<).o
+	$(CC) $(CFLAGS_INFX) -c $(basename $<).c -o $(basename $<).o
 	-@rm $(basename $<).c $(basename $<).c_*
-	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
+	$(CC) $(LFLAGS_INFX) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
 else
 	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} -Wall \
 		${ESQL_INCLPATH} ${C_DFLAGS}
-	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) -g  esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
+	${LD} ${LD_LFLAGS_INFX} $(SO_LDFLAGS) -g  esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
 
 
@@ -217,7 +221,7 @@ INFOFLEX: ${PLUGINDIR}/libSQL_infoflex${SO_EXT}
 ${PLUGINDIR}/libSQL_infoflex${SO_EXT}:
 	esqlpp esql_infoflex.ec
 	sqlcc -c -o esql_infoflex.o esql_infoflex.c
-	sqlcc ${LD_LFLAGS} $(SO_LDFLAGS) -g  esql_infoflex.o -o $@ ${LD_POSTFLAGS}
+	sqlcc ${LD_LFLAGS_NOTINFX} $(SO_LDFLAGS) -g  esql_infoflex.o -o $@ ${LD_POSTFLAGS}
 
 
 #------------------------ esql_compatible.ec ----------------------------
@@ -229,7 +233,7 @@ ${PLUGINDIR}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c ifx_$^ ${ESQL_FLAGS} \
 		${ESQL_INCLPATH} ${C_DFLAGS}
-	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
+	${LD} ${LD_LFLAGS_INFX} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 ##################
 #Querix ESQL/C compiler:
@@ -287,7 +291,7 @@ ${PLUGINDIR}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 #${PLUGINDIR}/libSQL_c_esql${SO_EXT}: ${PLUGINDIR}/libSQL_c_esql${SO_EXT}
 ${PLUGINDIR}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
 	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
-	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
+	${LD} ${LD_LFLAGS_NOTINFX} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 
 ###################
@@ -301,9 +305,15 @@ libSQL_c_ecpg: ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}
 ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: esql_simple_ecpg.ec
 #	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib; export LD_RUN_PATH
 	${PG_ESQLC} -ct $^
-	${CC} -I$(ECPG_INCDIR) ${CFLAGS} -c -I. -I.. -I${ROOT}/incl  ${LIBPQ_FE_H_IFLAGS} \
+	${CC} -I$(ECPG_INCDIR) ${CFLAGS_NOTINFX} -c -I. -I.. -I${ROOT}/incl  ${LIBPQ_FE_H_IFLAGS} \
 		${ECPG_IFLAGS} $(basename $<).c -o $(basename $<).o
-	${CC} ${CFLAGS} -shared -o $@ $(basename $<).o -L${LIBROOT} ${PGLIBS} ${LIBAUBIT4GL}
+	${CC} ${CFLAGS_NOTINFX} -shared -o $@ $(basename $<).o -L${LIBROOT} ${PGLIBS} ${LIBAUBIT4GL}
+
+test_ecpg_config:
+	echo pg_esqlc=${PG_ESQLC} 
+	echo ECPG_INCDIR=${ECPG_INCDIR} 
+	echo CFLAGS=${CFLAGS} 
+	echo ECPG_IFLAGS=${ECPG_IFLAGS} 
 
 ## ==================================================================
 ##                              Sub-Targets
