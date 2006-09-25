@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.170 2006-09-20 15:27:57 mikeaubury Exp $
+# $Id: sql.c,v 1.171 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -513,7 +513,7 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
     {
       if (!strchr (sql, '?'))
 	{
-	  fprintf (f, "%s;\n", sql);
+	  FPRINTF (f, "%s;\n", sql);
 	}
       fclose (f);
       return;
@@ -528,7 +528,7 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 	  continue;
 	}
 
-      sprintf (sbuff, "'?%d'", ibind[c].dtype);
+      SPRINTF1 (sbuff, "'?%d'", ibind[c].dtype);
 
       if (ibind[c].dtype == DTYPE_CHAR)
 	{
@@ -555,34 +555,34 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 		}
 	      buff[b] = 0;
 
-	      sprintf (sbuff, "'%s'", buff);
+	      SPRINTF1 (sbuff, "'%s'", buff);
 	    }
 	  else
 	    {
-	      sprintf (sbuff, "'%s'", ptr);
+	      SPRINTF1 (sbuff, "'%s'", ptr);
 	    }
 	}
 
 
       if (ibind[c].dtype == DTYPE_SMINT)
 	{
-	  sprintf (sbuff, "%d", *(short *) ibind[c].ptr);
+	  SPRINTF1 (sbuff, "%d", *(short *) ibind[c].ptr);
 	}
 
       if (ibind[c].dtype == DTYPE_INT)
 	{
-	  sprintf (sbuff, "%ld", *(long *) ibind[c].ptr);
+	  SPRINTF1 (sbuff, "%ld", *(long *) ibind[c].ptr);
 	}
 
 
       if (ibind[c].dtype == DTYPE_FLOAT)
 	{
-	  sprintf (sbuff, "%lf", *(double *) ibind[c].ptr);
+	  SPRINTF1 (sbuff, "%lf", *(double *) ibind[c].ptr);
 	}
 
       if (ibind[c].dtype == DTYPE_SMFLOAT)
 	{
-	  sprintf (sbuff, "%f", *(float *) ibind[c].ptr);
+	  SPRINTF1 (sbuff, "%f", *(float *) ibind[c].ptr);
 	}
 
       if (ibind[c].dtype == DTYPE_DECIMAL)
@@ -592,7 +592,7 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 	  dtype = ibind[c].dtype + ENCODE_SIZE (ibind[c].size);
 	  A4GL_push_variable (ibind[c].ptr, dtype);
 	  ptr = A4GL_char_pop ();
-	  sprintf (sbuff, "%s", ptr);
+	  SPRINTF1 (sbuff, "%s", ptr);
 	  free (ptr);
 	}
 
@@ -601,7 +601,7 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 	  char *ptr;
 	  A4GL_push_date (*(long *) ibind[c].ptr);
 	  ptr = A4GL_char_pop ();
-	  sprintf (sbuff, "'%s'", ptr);
+	  SPRINTF1 (sbuff, "'%s'", ptr);
 	  free (ptr);
 	}
       buff[b] = 0;
@@ -610,7 +610,7 @@ reformat_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
       c++;
     }
   buff[b] = 0;
-  fprintf (f, "%s;\n", buff);
+  FPRINTF (f, "%s;\n", buff);
   fclose (f);
 }
 
@@ -1950,7 +1950,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
       A4GL_debug ("Normal fetch");
       if (mode != SQL_FETCH_NEXT)
 	{
-	  printf ("WARNING: Fetching next and not supposed to..\n");
+	  PRINTF ("WARNING: Fetching next and not supposed to..\n");
 	}
       rc = SQLFetch ((SQLHSTMT) cid->statement->hstmt);
       chk_rc (rc, cid->statement->hstmt, "SQLFetch");
@@ -2403,7 +2403,7 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
       return 8;
 
     default:
-      printf ("Unknown datatype, %d\n", coltype);
+      PRINTF ("Unknown datatype, %d\n", coltype);
       return (0);
     }
 }
@@ -2916,7 +2916,7 @@ make[2]: *** [sql.o] Error 1
 	  	     // (this part of code is needed when using somewhat broken (?) ODBC drivers)
       {
 	  strcpy (s1, "HY000");
-	  sprintf(s2, "Error occured, but SQLError ODBC function returned no error record xerrno=%i xerrno2=%i, assuming HY000", xerrno, xerrno2);
+	  SPRINTF2(s2, "Error occured, but SQLError ODBC function returned no error record xerrno=%i xerrno2=%i, assuming HY000", xerrno, xerrno2);
 	  xerrno = -1;
 	  xerrno2 = 0;
       }
@@ -3042,8 +3042,6 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   A4GL_assertion (conv_4gl_to_c[bind->dtype] < 0,
 		  "Invalid 4GL<->ODBC conversion of datatype..");
 
-
-  //printf (" SQLBindCol (%p,%d,%d,%p,%d,%p)\n", (SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], ptr_to_use, fgl_size (bind->dtype, bind->size), &outlen[pos]);
 
 
 
@@ -3456,7 +3454,7 @@ ODBC_exec_select (SQLHSTMT hstmt)
 	      a4gl_sqlca.sqlawarn[0] = 'W';
 	      continue;
 	    }
-	  printf ("0.%s%s%d\n", SqlState, NativeError, Msg, MsgLen);
+	  //PRINTf ("0.%s%s%d\n", SqlState, NativeError, Msg, MsgLen);
 
 	}
 #else
@@ -3478,7 +3476,7 @@ ODBC_exec_select (SQLHSTMT hstmt)
 	  }
 	else
 	  {
-	    printf ("1.%s %s\n", s1, s2);
+	    A4GL_debug ("1.%s %s\n", s1, s2);
 	  }
       }
 #endif
@@ -4102,7 +4100,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
 
       strcpy (GetColTab, tabname);
-      sprintf (buff, "%s_1", tabname);
+      SPRINTF1 (buff, "%s_1", tabname);
 
       if (A4GL_has_cache_column (buff))
 	{
@@ -4239,7 +4237,6 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	{
 
 	  rc = SQLFetch (hstmtGetColumns);
-	  //printf ("Add column '%s' %d %d\n", cn, dt, prec);
 
 	  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
 	    {
@@ -4267,7 +4264,6 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	  // We can't generate proper precision on a decimal..
 	  // because we don't have the scale - assume 2..
 	  sz = conv_sqlprec (dt2, prec, 2);
-	  //printf ("Add column '%s' %d %d\n", cn, dt2, sz);
 	  AddColumn (cn, dt2, sz);
 	}
 
@@ -4303,7 +4299,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
   if (GetColCached)
     {
-      sprintf (buff, "%s_%d", GetColTab, GetColNo);
+      SPRINTF2 (buff, "%s_%d", GetColTab, GetColNo);
       if (A4GL_has_cache_column (buff))
 	{
 	  static char buffx[2000];
@@ -4313,7 +4309,6 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
 	  if (ptr)
 	    {
-	      //printf("Scanning from %s\n",ptr);
 	      A4GL_debug("Scanning from %s",ptr);
 	      sscanf (ptr, "%s %d %d", buffx, dtype, size);
 	      *colname = buffx;
@@ -4375,15 +4370,16 @@ AddColumn (char *s, int d, int sz)
 {
   char buff[256];
   char buff2[256];
-printf("%s %d %d in %s %d\n",s,d,sz,GetColTab,GetColNo);
-  sprintf (buff, "%s_%d", GetColTab, GetColNo);
+A4GL_debug("%s %d %d in %s %d\n",s,d,sz,GetColTab,GetColNo);
+
+  SPRINTF2 (buff, "%s_%d", GetColTab, GetColNo);
 
   if (A4GL_has_cache_column (buff))
     {
       // Got the column cached !
       return;
     }
-  sprintf (buff2, "%s %d %d", s, d, sz);
+  SPRINTF3 (buff2, "%s %d %d", s, d, sz);
   A4GL_debug("Adding %s to %s\n",buff,buff2);
   A4GL_add_cache_column (buff, buff2);
 }
@@ -4451,7 +4447,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
     {
       if (strlen (tabname) && strlen (colname))
 	{
-	  sprintf (buff, ":%s %s", tabname, colname);
+	  SPRINTF2 (buff, ":%s %s", tabname, colname);
 	}
     }
 
@@ -4664,7 +4660,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
   if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
     {
       char buff2[2000];
-      sprintf (buff2, "%d %d", *dtype, *size);
+      SPRINTF2 (buff2, "%d %d", *dtype, *size);
       if (!A4GL_has_cache_column (buff))
 	{
 	  A4GL_add_cache_column (buff, buff2);
@@ -5692,7 +5688,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 #ifdef DEBUG
 	      A4GL_debug ("Null...");
 #endif
-	      fprintf (fout, "%c", delims[0]);
+	      FPRINTF (fout, "%c", delims[0]);
 	    }
 	  else
 	    {
@@ -5707,7 +5703,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 
 	      if (coltype[colcnt] == SQL_DATE)
 		{
-		  fprintf (fout, "%s%c", A4GL_conv_date (databuf), delims[0]);
+		  FPRINTF (fout, "%s%c", A4GL_conv_date (databuf), delims[0]);
 		}
 	      else
 		{
@@ -5716,21 +5712,21 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 		      if (strchr (databuf, '.') || strchr (databuf, ',')
 			  || strchr (databuf, 'e'))
 			{
-			  fprintf (fout, "%s%c", databuf, delims[0]);
+			  FPRINTF (fout, "%s%c", databuf, delims[0]);
 			}
 		      else
 			{
-			  fprintf (fout, "%s.0%c", databuf, delims[0]);
+			  FPRINTF (fout, "%s.0%c", databuf, delims[0]);
 			}
 		    }
 		  else
 		    {
-		      fprintf (fout, "%s%c", databuf, delims[0]);
+		      FPRINTF (fout, "%s%c", databuf, delims[0]);
 		    }
 		}
 	    }
 	}
-      fprintf (fout, "\n");
+      FPRINTF (fout, "\n");
     }
 
 #ifdef DEBUG
@@ -6037,20 +6033,6 @@ A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
     }
   return ptr;
 }
-
-/*
-void *
-A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
-{
-  char buff[300];
-  SPRINTF3 (buff,
-	   "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
-	   acl_getenv ("A4GL_SYSCOL_VAL"), tabname, colname);
-
-  printf ("Warning Validation feature not implemented in ODBC SQL Driver\n");
-  return 0;
-}
-*/
 
 
 

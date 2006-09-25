@@ -2,7 +2,7 @@
  * @file sqlite3odbc.c
  * SQLite3 ODBC Driver main module.
  *
- * $Id: sqlite3odbc.c,v 1.4 2005-08-17 13:43:14 mikeaubury Exp $
+ * $Id: sqlite3odbc.c,v 1.5 2006-09-25 16:56:23 mikeaubury Exp $
  *
  * Copyright (c) 2004 Christian Werner <chw@ch-werner.de>
  *
@@ -73,7 +73,7 @@ xmalloc_(int n, char *file, int line)
     p = malloc(nn);
     if (!p) {
 #if (MEMORY_DEBUG > 1)
-	fprintf(stderr, "malloc\t%d\tNULL\t%s:%d\n", n, file, line);
+	FPRINTF(stderr, "malloc\t%d\tNULL\t%s:%d\n", n, file, line);
 #endif
 	return NULL;
     }
@@ -82,7 +82,7 @@ xmalloc_(int n, char *file, int line)
     p[1] = n;
     p[nn] = 0xdead5678;
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "malloc\t%d\t%p\t%s:%d\n", n, &p[2], file, line);
+    FPRINTF(stderr, "malloc\t%d\t%p\t%s:%d\n", n, &p[2], file, line);
 #endif
     return (void *) &p[2];
 }
@@ -98,24 +98,24 @@ xrealloc_(void *old, int n, char *file, int line)
     }
     p = &((long *) old)[-2];
     if (p[0] != 0xdead1234) {
-	fprintf(stderr, "*** low end corruption @ %p\n", old);
+	FPRINTF(stderr, "*** low end corruption @ %p\n", old);
 	abort();
     }
     nnn = p[1] + 4 * sizeof (long);
     nnn = nnn / sizeof (long) - 1;
     if (p[nnn] != 0xdead5678) {
-	fprintf(stderr, "*** high end corruption @ %p\n", old);
+	FPRINTF(stderr, "*** high end corruption @ %p\n", old);
 	abort();
     }
     pp = realloc(p, nn);
     if (!pp) {
 #if (MEMORY_DEBUG > 1)
-	fprintf(stderr, "realloc\t%p,%d\tNULL\t%s:%d\n", old, n, file, line);
+	FPRINTF(stderr, "realloc\t%p,%d\tNULL\t%s:%d\n", old, n, file, line);
 #endif
 	return NULL;
     }
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "realloc\t%p,%d\t%p\t%s:%d\n", old, n, &pp[2], file, line);
+    FPRINTF(stderr, "realloc\t%p,%d\t%p\t%s:%d\n", old, n, &pp[2], file, line);
 #endif
     p = pp;
     if (n > p[1]) {
@@ -135,17 +135,17 @@ xfree_(void *x, char *file, int line)
 
     p = &((long *) x)[-2];
     if (p[0] != 0xdead1234) {
-	fprintf(stderr, "*** low end corruption @ %p\n", x);
+	FPRINTF(stderr, "*** low end corruption @ %p\n", x);
 	abort();
     }
     n = p[1] + 4 * sizeof (long);
     n = n / sizeof (long) - 1;
     if (p[n] != 0xdead5678) {
-	fprintf(stderr, "*** high end corruption @ %p\n", x);
+	FPRINTF(stderr, "*** high end corruption @ %p\n", x);
 	abort();
     }
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "free\t%p\t\t%s:%d\n", x, file, line);
+    FPRINTF(stderr, "free\t%p\t\t%s:%d\n", x, file, line);
 #endif
     free(p);
 }
@@ -163,7 +163,7 @@ xstrdup_(char *str, char *file, int line)
 
     if (!str) {
 #if (MEMORY_DEBUG > 1)
-	fprintf(stderr, "strdup\tNULL\tNULL\t%s:%d\n", file, line);
+	FPRINTF(stderr, "strdup\tNULL\tNULL\t%s:%d\n", file, line);
 #endif
 	return NULL;
     }
@@ -172,7 +172,7 @@ xstrdup_(char *str, char *file, int line)
 	strcpy(p, str);
     }
 #if (MEMORY_DEBUG > 1)
-    fprintf(stderr, "strdup\t%p\t%p\t%s:%d\n", str, p, file, line);
+    FPRINTF(stderr, "strdup\t%p\t%p\t%s:%d\n", str, p, file, line);
 #endif
     return p;
 }
@@ -1701,7 +1701,7 @@ dbtrace(void *arg, const char *msg)
 	    if (msg[len - 1] != ';') {
 		end = ";\n";
 	    }
-	    fprintf(d->trace, "%s%s", msg, end);
+	    FPRINTF(d->trace, "%s%s", msg, end);
 	    fflush(d->trace);
 	}
     }
@@ -1717,8 +1717,8 @@ static void
 dbtracerc(DBC *d, int rc, char *err)
 {
     if (rc != SQLITE_OK && d->trace) {
-	fprintf(d->trace, "-- SQLITE ERROR CODE %d", rc);
-	fprintf(d->trace, err ? ": %s\n" : "\n", err);
+	FPRINTF(d->trace, "-- SQLITE ERROR CODE %d", rc);
+	FPRINTF(d->trace, err ? ": %s\n" : "\n", err);
 	fflush(d->trace);
     }
 }
@@ -2263,23 +2263,23 @@ substparam(STMT *s, int pnum, char **out, int *size)
     case SQL_C_BINARY:
 	break;
     case SQL_C_UTINYINT:
-	sprintf(buf, "%d", *((unsigned char *) p->param));
+	SPRINTF1(buf, "%d", *((unsigned char *) p->param));
 	goto bind;
     case SQL_C_TINYINT:
     case SQL_C_STINYINT:
-	sprintf(buf, "%d", *((char *) p->param));
+	SPRINTF1(buf, "%d", *((char *) p->param));
 	goto bind;
     case SQL_C_USHORT:
-	sprintf(buf, "%d", *((unsigned short *) p->param));
+	SPRINTF1(buf, "%d", *((unsigned short *) p->param));
 	goto bind;
     case SQL_C_SHORT:
     case SQL_C_SSHORT:
-	sprintf(buf, "%d", *((short *) p->param));
+	SPRINTF1(buf, "%d", *((short *) p->param));
 	goto bind;
     case SQL_C_ULONG:
     case SQL_C_LONG:
     case SQL_C_SLONG:
-	sprintf(buf, "%ld", *((long *) p->param));
+	SPRINTF1(buf, "%ld", *((long *) p->param));
 	goto bind;
     case SQL_C_FLOAT:
 	dval = *((float *) p->param);
@@ -2301,7 +2301,7 @@ substparam(STMT *s, int pnum, char **out, int *size)
     case SQL_C_TYPE_DATE:
 #endif
     case SQL_C_DATE:
-	sprintf(buf, "%04d-%02d-%02d",
+	SPRINTF3(buf, "%04d-%02d-%02d",
 		((DATE_STRUCT *) p->param)->year,
 		((DATE_STRUCT *) p->param)->month,
 		((DATE_STRUCT *) p->param)->day);
@@ -2310,7 +2310,7 @@ substparam(STMT *s, int pnum, char **out, int *size)
     case SQL_C_TYPE_TIME:
 #endif
     case SQL_C_TIME:
-	sprintf(buf, "%02d:%02d:%02d",
+	SPRINTF3(buf, "%02d:%02d:%02d",
 		((TIME_STRUCT *) p->param)->hour,
 		((TIME_STRUCT *) p->param)->minute,
 		((TIME_STRUCT *) p->param)->second);
@@ -2319,7 +2319,7 @@ substparam(STMT *s, int pnum, char **out, int *size)
     case SQL_C_TYPE_TIMESTAMP:
 #endif
     case SQL_C_TIMESTAMP:
-	sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%d",
+	SPRINTF3(buf, "%04d-%02d-%02d %02d:%02d:%02d.%d",
 		((TIMESTAMP_STRUCT *) p->param)->year,
 		((TIMESTAMP_STRUCT *) p->param)->month,
 		((TIMESTAMP_STRUCT *) p->param)->day,
@@ -3036,7 +3036,7 @@ nodata2:
 			char buf[32];
 
 			sscanf(rowpp[m * nncols + k], "%d", &pos);
-			sprintf(buf, "%d", pos + 1);
+			SPRINTF1(buf, "%d", pos + 1);
 			s->rows[roffs + 4] = xstrdup(buf);
 		    }
 		}
@@ -3279,11 +3279,11 @@ nodata_but_rowid:
 				    if (sqltype == SQL_VARBINARY && mm > 255) {
 					sqltype = SQL_LONGVARBINARY;
 				    }
-				    sprintf(buf, "%d", sqltype);
+				    SPRINTF1(buf, "%d", sqltype);
 				    s->rows[roffs + 2] = xstrdup(buf);
-				    sprintf(buf, "%d", mm);
+				    SPRINTF1(buf, "%d", mm);
 				    s->rows[roffs + 5] = xstrdup(buf);
-				    sprintf(buf, "%d", dd);
+				    SPRINTF1(buf, "%d", dd);
 				    s->rows[roffs + 6] = xstrdup(buf);
 				    if (notnullcc >= 0) {
 					char *inp =
@@ -3291,7 +3291,7 @@ nodata_but_rowid:
 
 					isnullable = inp[0] != '0';
 				    }
-				    sprintf(buf, "%d", isnullable);
+				    SPRINTF1(buf, "%d", isnullable);
 				    s->rows[roffs + 8] = xstrdup(buf);
 				}
 			    }
@@ -3539,7 +3539,7 @@ nodata:
 	    s->rows[roffs + 6] = xstrdup(fname);
 	    s->rows[roffs + 7] = xstrdup(rowp[i * ncols + fromc]);
 	    sscanf(rowp[i * ncols + seqc], "%d", &pos);
-	    sprintf(buf, "%d", pos + 1);
+	    SPRINTF1(buf, "%d", pos + 1);
 	    s->rows[roffs + 8] = xstrdup(buf);
 	    s->rows[roffs + 9] = xstrdup(stringify(SQL_NO_ACTION));
 	    s->rows[roffs + 10] = xstrdup(stringify(SQL_NO_ACTION));
@@ -3681,7 +3681,7 @@ nodata:
 		s->rows[roffs + 6] = xstrdup(rowp[i]);
 		s->rows[roffs + 7] = xstrdup(rowpp[k * nncols + fromc]);
 		sscanf(rowpp[k * nncols + seqc], "%d", &pos);
-		sprintf(buf, "%d", pos + 1);
+		SPRINTF1(buf, "%d", pos + 1);
 		s->rows[roffs + 8] = xstrdup(buf);
 		s->rows[roffs + 9] = xstrdup(stringify(SQL_NO_ACTION));
 		s->rows[roffs + 10] = xstrdup(stringify(SQL_NO_ACTION));
@@ -6215,7 +6215,7 @@ drvallocstmt(SQLHDBC dbc, SQLHSTMT *stmt)
     s->bind_type = SQL_BIND_BY_COLUMN;
     s->bind_offs = NULL;
     s->paramset_size = 1;
-    sprintf(s->cursorname, "CUR_%08lX", (long) *stmt);
+    SPRINTF1(s->cursorname, "CUR_%08lX", (long) *stmt);
     sl = d->stmt;
     pl = NULL;
     while (sl) {
@@ -7252,7 +7252,7 @@ drvcolumns(SQLHSTMT stmt,
 		int coln = i;
 
 		sscanf(rowp[i * ncols + k], "%d", &coln);
-		sprintf(buf, "%d", coln + 1);
+		SPRINTF1(buf, "%d", coln + 1);
 		s->rows[array_size(colSpec) * i + 16] = xstrdup(buf);
 	    }
 	} else if (strcmp(rowp[k], "name") == 0) {
@@ -7296,12 +7296,12 @@ drvcolumns(SQLHSTMT stmt,
 		if (sqltype == SQL_VARBINARY && m > 255) {
 		    sqltype = SQL_LONGVARBINARY;
 		}
-		sprintf(buf, "%d", sqltype);
+		SPRINTF1(buf, "%d", sqltype);
 		s->rows[array_size(colSpec) * i + 4] = xstrdup(buf);
 		s->rows[array_size(colSpec) * i + 13] = xstrdup(buf);
-		sprintf(buf, "%d", m);
+		SPRINTF1(buf, "%d", m);
 		s->rows[array_size(colSpec) * i + 7] = xstrdup(buf);
-		sprintf(buf, "%d", d);
+		SPRINTF1(buf, "%d", d);
 		s->rows[array_size(colSpec) * i + 6] = xstrdup(buf);
 	    }
 	}
@@ -7377,7 +7377,7 @@ mktypeinfo(STMT *s, int row, char *typename, int type, int tind)
 	tind = row;
     }
     tcode = tcodes + tind * 32;
-    sprintf(tcode, "%d", type);
+    SPRINTF1(tcode, "%d", type);
     s->rows[offs + 0] = typename;
     s->rows[offs + 1] = tcode;
     switch (type) {
@@ -7872,7 +7872,7 @@ nodata2:
 			char buf[32];
 
 			sscanf(rowpp[m * nncols + k], "%d", &pos);
-			sprintf(buf, "%d", pos + 1);
+			SPRINTF1(buf, "%d", pos + 1);
 			s->rows[roffs + 7] = xstrdup(buf);
 		    }
 		}

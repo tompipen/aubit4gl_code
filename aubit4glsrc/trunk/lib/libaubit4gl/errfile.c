@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.24 2006-03-19 14:08:17 mikeaubury Exp $
+# $Id: errfile.c,v 1.25 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -129,7 +129,6 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
       if (a > s) {
 	a = s;
       }
-      //printf("s=%d a=%d\n",s,a);
 
       b=fread (buff, 1,(size_t)a,  f);
       fwrite (buff, (size_t)b, 1, fout);

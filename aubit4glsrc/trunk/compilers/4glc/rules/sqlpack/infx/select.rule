@@ -3,6 +3,7 @@
 
 select_statement_ss_str_converted : select_statement_ss_select  {
 		$<sql_string>$=make_select_stmt($<s_select>1);
+		map_select_stmt("SELECT",$<s_select>1);
 
 		//run an extra statement
 		if ($<s_select>1->extra_statement != NULL)
@@ -67,6 +68,7 @@ select_statement21_ss_converted:
 		sf->order_by=$<s_select_list_item_list>6;
 		$<s_select>$->sf=sf;
 		$<sql_string>$=make_select_stmt($<s_select>$);
+		map_select_stmt("SELECT",$<s_select>$);
 }
 ;
 

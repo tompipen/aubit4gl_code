@@ -362,7 +362,8 @@ upd_subquery_ss:
                 	$<s_select>$->modifier=strdup($<str>3);
                 	$<s_select>$->select_list=$<s_select_list_item_list>4;
 			$<sql_string>$=make_sql_string_and_free(acl_strdup("("),make_select_stmt($<s_select>$),acl_strdup(")"),NULL);
-        }
+			map_select_stmt("UPDATE",$<s_select>$);
+        }		
 ;
 
 

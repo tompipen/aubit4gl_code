@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.100 2006-08-31 21:05:38 mikeaubury Exp $
+# $Id: builtin.c,v 1.101 2006-09-25 16:56:19 mikeaubury Exp $
 #
 */
 
@@ -1425,8 +1425,8 @@ int aclfgl_fgl_round(int nargs) {
     }
 	places=A4GL_pop_int();
 	d=A4GL_pop_double();
-	sprintf(buff,"%%.%dlf",places);
-	sprintf(smbuff,buff,d);
+	SPRINTF1(buff,"%%.%dlf",places);
+	SPRINTF1(smbuff,buff,d);
 	A4GL_push_char(smbuff);
 	return 1;
 }
@@ -1548,7 +1548,7 @@ char *str;
 	str=A4GL_char_pop();
 
 	if (strncmp(str,rpl_start,strlen(rpl_start))==0) {
-		sprintf(buff,"%s%s",rpl_with,&str[strlen(rpl_start)]);
+		SPRINTF2(buff,"%s%s",rpl_with,&str[strlen(rpl_start)]);
 		A4GL_push_char(buff);
 	} else {
 		A4GL_push_char(str);

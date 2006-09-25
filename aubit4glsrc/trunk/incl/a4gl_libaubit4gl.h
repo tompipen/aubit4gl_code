@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.248 2006-09-21 11:26:03 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.249 2006-09-25 16:56:18 mikeaubury Exp $
 #
 */
 
@@ -3146,6 +3146,13 @@ struct s_select_list_item *new_select_list_item_column_from_transform(char *s);
 struct s_select_list_item *new_select_list_item_ibind (char *s);
 struct s_select_list_item *new_select_list_item_op_slil (struct s_select_list_item *left, struct s_select_list_item_list *right, enum e_sli op);
 char *make_select_stmt(struct s_select *select);
+
+void
+map_select_stmt (char *main_statement_type, struct s_select *select);
+void
+map_delete_update (char *main_statement_type, char *table, struct s_select_list_item *i);
+
+
 char *make_table_expression(struct s_select *select);
 char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
 char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;

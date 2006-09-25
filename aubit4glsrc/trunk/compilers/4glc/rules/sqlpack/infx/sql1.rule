@@ -598,7 +598,7 @@ del_op_where_clause_ss:  { $<sql_string>$=acl_strdup("");}
 		fix_delete_update_columns(current_del_table,$<s_select_list_item>1),
 		0
 		); 
-//get_select_list_item(0,$<s_select_list_item>1),0
+		map_delete_update("DELETE",current_del_table,$<s_select_list_item>1);
 	}
 
 ;
@@ -1262,6 +1262,7 @@ search_condition_sli_as_string: search_condition_sli {
 
 upd_search_condition_sli_as_string: search_condition_sli {
 	$<sql_string>$=fix_delete_update_columns(current_upd_table,$<s_select_list_item>1);
+	map_delete_update("UPDATE",current_upd_table,$<s_select_list_item>1);
 }
 ;
 
@@ -1276,6 +1277,7 @@ put_val_int : CHAR_VALUE  {$<sql_string>$=strdup(convstrsql($<str>1));}
 
 query_specification_ss_converted:  query_specification_select {
 	$<sql_string>$=make_select_stmt($<s_select>1);
+	map_select_stmt("SELECT",$<s_select>1);
 }
 ;
 

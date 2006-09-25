@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.111 2006-09-23 07:13:45 mikeaubury Exp $
+# $Id: compile.c,v 1.112 2006-09-25 16:56:08 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@ int fglc_m_verbose=0;
 /*FIXME - move in "a4gl_4glc_int.h"*/
 extern char *outputfilename;	/* Defined in libaubit4gl */
 extern int globals_only;	/* defined in map.c */
-extern char infilename[256];
+extern char infilename[132];
 extern FILE *yyin;
 extern int glob_only;
 extern long fpos;					/** current file position for direct fseek */

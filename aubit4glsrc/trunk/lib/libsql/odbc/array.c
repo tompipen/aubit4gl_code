@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.20 2006-02-09 11:20:52 mikeaubury Exp $
+# $Id: array.c,v 1.21 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -418,7 +418,7 @@ struct  {
 	     	data.len, data.scale, data.radix, data.nullable, data.remarks);
 		#endif
 		colsize = A4GL_display_size (data.dt, data.prec, "");
-		sprintf (szcolsize, "%d", colsize);
+		SPRINTF1 (szcolsize, "%d", colsize);
 
 		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
 			#ifdef DEBUG
@@ -440,7 +440,7 @@ struct  {
 					strncpy (&arr2[cnt * (szarr2 + 1)], data.dtname, szarr2);
 					break;
 				case 2:
-					sprintf (&arr2[cnt * (szarr2 + 1)], "%s(%d)",data.dtname, (int)szcolsize);
+					SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%s(%d)",data.dtname, (int)szcolsize);
 					break;
 				default:
 					strncpy (&arr2[cnt * (szarr2 + 1)], data.tn, szarr2);
@@ -483,9 +483,9 @@ UDWORD collen;
     }
 	ret = (SQLHSTMT)A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
   	if (allow_no_rows) {
-		sprintf(buff,"select * from %s where 1=0",info);
+		SPRINTF1(buff,"select * from %s where 1=0",info);
 	} else {
-		sprintf(buff,"select * from %s ",info);
+		SPRINTF1(buff,"select * from %s ",info);
 	}
 
 	SQLPrepare ((SQLHSTMT)hstmt, buff, SQL_NTS);
@@ -513,10 +513,9 @@ UDWORD collen;
 				case 0:
 					{ char buff[256];
 						#ifdef SQLITE
-							sprintf(buff,"%d",collen);
+							SPRINTF1(buff,"%d",collen);
 						#else
-							//sprintf(buff,"%ld",collen);
-							sprintf(buff,"%d",(int)collen);
+							SPRINTF1(buff,"%d",(int)collen);
 							/*warning: long int format, int arg (arg 3)
 							UDWORD collen;
 							*/

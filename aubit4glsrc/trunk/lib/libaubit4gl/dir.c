@@ -29,7 +29,7 @@ char *s2;
 main() {
 int a;
 	read_directory(".",".sql");
-	for (a=0;m_names[a];a++) printf("%s\n",m_names[a]);
+	for (a=0;m_names[a];a++) PRINTF("%s\n",m_names[a]);
 	free_directory();
 }
 #endif
@@ -221,7 +221,7 @@ A4GL_gen_list_dbpath (char *spec, char *path)
 		list=merge_list(list,A4GL_read_directory(ptr,spec));
     }
 
-printf("Returning %p\n",list);
+A4GL_debug("Returning %p\n",list);
     return list;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.42 2006-09-22 15:23:14 mikeaubury Exp $
+# $Id: map.c,v 1.43 2006-09-25 16:56:08 mikeaubury Exp $
 #*/
 
 /**
@@ -44,6 +44,10 @@
 */
 
 #include "a4gl_4glc_int.h"
+static void map_select_list_item (char *stmttype,struct s_select *select, struct s_select_list_item *p);
+static void map_select_list_item_list (char *stmttype, char*listtype,struct s_select *select, struct s_select_list_item_list *i);
+
+int A4GL_has_column (char *t, char *c);
 
 /*
 =====================================================================
@@ -52,6 +56,10 @@
 */
 
 static FILE *mapfile = 0;	/* The map file pointer opened file */
+static FILE *crudfile = 0;	/* The map file pointer opened file */
+extern char curr_func[];
+extern int yylineno;
+extern char infilename[];
 
 /*
 =====================================================================
@@ -87,11 +95,13 @@ openmap (char *s)
 #ifdef DEBUG
       A4GL_debug ("Opening map file..%s \n", acl_getenv ("A4GL_MAP4GL"));
 #endif
-      if (A4GL_isyes(acl_getenv("A4GL_LOCALOUTPUT"))) {
-		char *str;
-		str=rindex(s,'/');
-		if (str) s=str+1;
-      }
+      if (A4GL_isyes (acl_getenv ("A4GL_LOCALOUTPUT")))
+	{
+	  char *str;
+	  str = rindex (s, '/');
+	  if (str)
+	    s = str + 1;
+	}
       SPRINTF1 (buff, "%s.map", s);
       mapfile = fopen (buff, "w");
 
@@ -100,13 +110,42 @@ openmap (char *s)
 #ifdef DEBUG
 	  A4GL_debug ("Unable to open map file");
 #endif
-	  FPRINTF (stderr,"Unable to open map file\n");
+	  FPRINTF (stderr, "Unable to open map file\n");
 	  exit (1);
 	}
 #ifdef DEBUG
       A4GL_debug ("Mapfile=%p", mapfile);
 #endif
     }
+
+  if (strcmp (acl_getenv ("MAPCRUD"), "Y") == 0 && crudfile == 0)
+    {
+      if (A4GL_isyes (acl_getenv ("A4GL_LOCALOUTPUT")))
+	{
+	  char *str;
+	  str = rindex (s, '/');
+	  if (str)
+	    s = str + 1;
+	}
+      SPRINTF1 (buff, "%s.map.xml", s);
+
+      crudfile = fopen (buff, "w");
+
+      if (crudfile == 0)
+	{
+#ifdef DEBUG
+	  A4GL_debug ("Unable to open map file");
+#endif
+	  FPRINTF (stderr, "Unable to open CRUD map file\n");
+	  exit (1);
+	}
+      FPRINTF(crudfile,"<?xml version=\"1.0\"?>\n");
+      FPRINTF(crudfile,"<MODULE name=\"%s\">\n",infilename);
+
+
+    }
+
+
 }
 
 /**
@@ -128,20 +167,25 @@ openmap (char *s)
 void
 addmap (char *t, char *s, char *w, int l, char *m)
 {
-	static char *last_w=0;
-	static int  last_l=0;
-	static char *last_m=0;
+  static char *last_w = 0;
+  static int last_l = 0;
+  static char *last_m = 0;
 
-	if (m==0) m=last_m;
-	if (l==0) l=last_l;
-	if (w==0) w=last_w;
+  if (m == 0)
+    m = last_m;
+  if (l == 0)
+    l = last_l;
+  if (w == 0)
+    w = last_w;
 
-	if (w==0) w="";
-	if (m==0) m="";
-	last_w=w;
-	last_l=l;
-	last_m=m;
-			
+  if (w == 0)
+    w = "";
+  if (m == 0)
+    m = "";
+  last_w = w;
+  last_l = l;
+  last_m = m;
+
 #ifdef DEBUG
   A4GL_debug ("Adding to map: %p", mapfile);
 #endif
@@ -157,6 +201,10 @@ closemap (void)
 {
   if (mapfile)
     fclose (mapfile);
+  if (crudfile)  {
+	  FPRINTF(crudfile,"</MODULE>\n");
+	  fclose(crudfile);
+  }
 }
 
 /**
@@ -167,15 +215,17 @@ closemap (void)
 void
 rm_quotes (char *s)
 {
-    char *d;
+  char *d;
 
-    if(*s == 0) return;
+  if (*s == 0)
+    return;
 
-    for(d = s; *s; *s++) {
-	if(*s != '"')
-	    *d++ = *s;
+  for (d = s; *s; *s++)
+    {
+      if (*s != '"')
+	*d++ = *s;
     }
-    *d = 0;
+  *d = 0;
 }
 
 /**
@@ -190,11 +240,12 @@ rm_quote (char *s)
   int a;
   int b = 0;
 
-  if(*s == 0) return;
+  if (*s == 0)
+    return;
 
-  buff = calloc(strlen(s) + 1, 1);
+  buff = calloc (strlen (s) + 1, 1);
 
-  for (a = 0; a <= strlen(s); a++)
+  for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
 	{
@@ -203,7 +254,8 @@ rm_quote (char *s)
     }
   for (a = strlen (buff) - 1; a >= 0; a--)
     {
-      if (buff[a]=='/') break; // Maybe its a . or .. directory...
+      if (buff[a] == '/')
+	break;			// Maybe its a . or .. directory...
       if (buff[a] == '.')
 	{
 	  buff[a] = 0;
@@ -212,7 +264,443 @@ rm_quote (char *s)
     }
   strcpy (s, buff);
 
-  free(buff);
+  free (buff);
+}
+
+
+
+
+//
+// CRUD mapping...
+//
+//
+//
+
+
+static void map_select_list_item_list (char *stmttype, char*listtype,struct s_select *select, struct s_select_list_item_list *i)
+{
+  int a;
+  if (i == 0)
+    return;
+
+  FPRINTF(crudfile,"<LIST type=\"%s\">\n",listtype);
+  for (a = 0; a < i->nlist; a++)
+    {
+      map_select_list_item (stmttype,select, i->list[a]);
+    }
+  FPRINTF(crudfile,"</LIST>\n");
+}
+
+
+
+static void
+map_select_list_item_i (char *stmttype, struct s_select *select, struct s_select_list_item *p)
+{
+  switch (p->type)
+    {
+    case E_SLI_CHAR:
+      A4GL_assertion (1, "Not used");
+    case E_SLI_BUILTIN_CONST_COUNT_STAR:
+
+    case E_SLI_IBIND:
+    case E_SLI_VARIABLE:
+    case E_SLI_DATETIME:
+    case E_SLI_INTERVAL:
+    case E_SLI_LITERAL:
+    case E_SLI_BUILTIN_CONST_TRUE:
+    case E_SLI_BUILTIN_CONST_FALSE:
+    case E_SLI_QUERY_PLACEHOLDER:
+    case E_SLI_VAR_REPLACE:
+    case E_SLI_COLUMN_ORDERBY:	// Dont care about order bys..
+
+      return;
+
+    case E_SLI_COLUMN_NOT_TRANSFORMED:
+      FPRINTF (crudfile,"<COLUMN name=\"%s\" />\n", p->u_data.expression);
+      return;
+
+    case E_SLI_OP:
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.left);
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.right);
+      return;
+
+
+    case E_SLI_JOIN:
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.left);
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.right);
+      return;
+
+
+    case E_SLI_IN_VALUES:
+      map_select_list_item (stmttype,select, p->u_data.slil_expr.left);
+      map_select_list_item_list (stmttype,"IN",select, p->u_data.slil_expr.right_list);
+      return;
+    case E_SLI_NOT_IN_VALUES:
+      map_select_list_item (stmttype,select, p->u_data.slil_expr.left);
+      map_select_list_item_list (stmttype,"NOTIN",select, p->u_data.slil_expr.right_list);
+      return;
+
+
+    case E_SLI_IN_SELECT:
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.left);
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.right);
+      return;
+
+    case E_SLI_NOT_IN_SELECT:
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.left);
+      map_select_list_item (stmttype,select, p->u_data.complex_expr.right);
+      return;
+
+    case E_SLI_REGEX_MATCHES:
+      map_select_list_item (stmttype,select, p->u_data.regex.val);
+      map_select_list_item (stmttype,select, p->u_data.regex.regex);
+      return;
+
+    case E_SLI_REGEX_NOT_MATCHES:
+      map_select_list_item (stmttype,select, p->u_data.regex.val);
+      map_select_list_item (stmttype,select, p->u_data.regex.regex);
+      return;
+    case E_SLI_REGEX_LIKE:
+      map_select_list_item (stmttype,select, p->u_data.regex.val);
+      map_select_list_item (stmttype,select, p->u_data.regex.regex);
+      return;
+
+    case E_SLI_REGEX_NOT_LIKE:
+      map_select_list_item (stmttype,select, p->u_data.regex.val);
+      map_select_list_item (stmttype,select, p->u_data.regex.regex);
+      return;
+    case E_SLI_REGEX_ILIKE:
+      map_select_list_item (stmttype,select, p->u_data.regex.val);
+      map_select_list_item (stmttype,select, p->u_data.regex.regex);
+      return;
+    case E_SLI_REGEX_NOT_ILIKE:
+      map_select_list_item (stmttype,select, p->u_data.regex.val);
+      map_select_list_item (stmttype,select, p->u_data.regex.regex);
+      return;
+    case E_SLI_ISNULL:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_ISNOTNULL:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_ASC:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_DESC:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_NOT:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+
+    case E_SLI_BRACKET_EXPR:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_UNITS_YEAR:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_UNITS_MONTH:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_UNITS_DAY:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_UNITS_HOUR:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_UNITS_MINUTE:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+    case E_SLI_UNITS_SECOND:
+      map_select_list_item (stmttype,select, p->u_data.simple_op_expr.expr);
+      return;
+
+
+
+    case E_SLI_BUILTIN_CONST_USER:
+      FPRINTF (crudfile,"<BUILTIN type=USER/>\n" );
+      return;
+    case E_SLI_BUILTIN_CONST_TODAY:
+      FPRINTF (crudfile,"<BUILTIN type=TODAY/>\n");
+      return;
+    case E_SLI_BUILTIN_CONST_TIME:
+      FPRINTF (crudfile,"<BUILTIN type=TIME/>\n");
+      return;
+    case E_SLI_BUILTIN_CONST_STAR:
+      FPRINTF (crudfile,"<COLUMN name=\"*\"/>\n" );
+      return;
+
+    case E_SLI_BUILTIN_CONST_CURRENT:
+      FPRINTF (crudfile,"<BUILTIN type=CURRENT/>\n");
+      return;
+
+    case E_SLI_BUILTIN_FUNC_YEAR:
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.builtin_fcall.params);
+      return;
+
+    case E_SLI_BUILTIN_FUNC_MONTH:
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.builtin_fcall.params);
+      return;
+    case E_SLI_BUILTIN_FUNC_DAY:
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.builtin_fcall.params);
+      return;
+    case E_SLI_BUILTIN_FUNC_DOW:
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.builtin_fcall.params);
+      return;
+    case E_SLI_BUILTIN_FUNC_WEEKDAY:
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.builtin_fcall.params);
+      return;
+    case E_SLI_BUILTIN_FUNC_MDY:
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.builtin_fcall.params);
+      return;
+    case E_SLI_BUILTIN_FUNC_DATE:
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.builtin_fcall.params);
+      return;
+
+    case E_SLI_BUILTIN_AGG_AVG:
+      map_select_list_item (stmttype,select, p->u_data.agg_expr.expr); return;
+
+    case E_SLI_BUILTIN_AGG_MAX:
+      map_select_list_item (stmttype,select, p->u_data.agg_expr.expr); return;
+
+    case E_SLI_BUILTIN_AGG_MIN:
+      map_select_list_item (stmttype,select, p->u_data.agg_expr.expr);
+      return;
+
+    case E_SLI_BUILTIN_AGG_SUM:
+      map_select_list_item (stmttype,select, p->u_data.agg_expr.expr);
+      return;
+
+    case E_SLI_BUILTIN_AGG_COUNT:
+      map_select_list_item (stmttype,select, p->u_data.agg_expr.expr);
+      return;
+
+    case E_SLI_BETWEEN:
+      map_select_list_item (stmttype,select, p->u_data.between_expr.val);
+      map_select_list_item (stmttype,select, p->u_data.between_expr.from);
+      map_select_list_item (stmttype,select, p->u_data.between_expr.to);
+      return;
+
+    case E_SLI_NOT_BETWEEN:
+      map_select_list_item (stmttype,select, p->u_data.between_expr.val);
+      map_select_list_item (stmttype,select, p->u_data.between_expr.from);
+      map_select_list_item (stmttype,select, p->u_data.between_expr.to);
+      return;
+
+
+    case E_SLI_FCALL:
+      FPRINTF (crudfile,"<CALL %s/>", p->u_data.fcall.fname);
+      map_select_list_item_list (stmttype,"PARAMETERS",select, p->u_data.fcall.params);
+      return;
+
+
+
+    case E_SLI_EXTEND:
+      map_select_list_item (stmttype,select, p->u_data.extend.expr);
+      return;
+
+
+    case E_SLI_COLUMN:
+	if (p->u_data.column.colname==0) return;
+      if (p->u_data.column.tabname && strlen (p->u_data.column.tabname))
+	{
+	  FPRINTF (crudfile,"<COLUMN name=\"%s\" table=\"%s\"/>\n", p->u_data.column.colname, p->u_data.column.tabname);
+	  return;
+	}
+      else
+	{
+
+	  if (select)
+	    {
+	      int a;
+	      int cnt;
+	      if (select->table_elements.ntables == 1)
+		{
+
+		  if (A4GL_has_column
+		      (select->table_elements.tables[0].tabname,
+		       p->u_data.column.colname))
+		    {
+		      FPRINTF (crudfile,"<COLUMN name=\"%s\" table=\"%s\"/>\n",
+			      p->u_data.column.colname,
+			      select->table_elements.tables[0].tabname);
+		      return;
+		    }
+		}
+	  cnt = 0;
+	  for (a = 0; a < select->table_elements.ntables; a++)
+	    {
+	      if (A4GL_has_column
+		  (select->table_elements.tables[a].tabname,
+		   p->u_data.column.colname))
+		{
+		  cnt++;
+		}
+	    }
+
+	  if (cnt == 1)
+	    {			// Column only existed in one table...
+	      for (a = 0; a < select->table_elements.ntables; a++)
+		{
+		  if (A4GL_has_column
+		      (select->table_elements.tables[a].tabname,
+		       p->u_data.column.colname))
+		    {
+		      FPRINTF (crudfile,"<COLUMN name=\"%s\" table=\"%s\"/>\n",
+			      p->u_data.column.colname,
+			      select->table_elements.tables[a].tabname);
+		    }
+		}
+	    }
+	    }
+	  FPRINTF (crudfile,"<COLUMN name=\"%s\"/>\n", p->u_data.column.colname);
+
+	}
+	return;
+
+
+
+    case E_SLI_CASE:
+      PRINTF ("WARNING : Mapping case in selects not handled yet");
+      return;
+      //return make_sql_string_and_free (A4GLSQLCV_make_case (select, &p->u_data.sqlcase), NULL);
+
+    case E_SLI_CASE_ELEMENT:
+      return;
+
+    case E_SLI_SUBQUERY:
+      map_select_stmt ("SUBSELECT", p->u_data.subquery);
+      return;
+
+
+    case E_SLI_SUBQUERY_EXPRESSION:
+      map_select_list_item (stmttype,select, p->u_data.sq_expression.sq);
+      return;
+
+
+    }
+
+
+  A4GL_assertion (1, "Unhandled element");
+  return;
+}
+
+
+
+
+
+
+
+
+static void map_select_list_item (char *stmttype,struct s_select *select, struct s_select_list_item *p)
+{
+
+  map_select_list_item_i (stmttype,select, p);
+}
+
+
+
+
+
+void
+map_select_stmt (char *main_statement_type, struct s_select *select)
+{
+  int a;
+
+  if (!A4GL_isyes(acl_getenv("MAPCRUD"))) {
+	  	return ;
+  }
+
+  if (strcmp (main_statement_type, "SUBSELECT") != 0)
+    {
+  	FPRINTF (crudfile,"<CRUD STATEMENT=\"%s\" FUNCTION=\"%s\" LINENO=\"%d\" MODULE=\"%s\">\n",main_statement_type,curr_func,yylineno,infilename);
+    } else {
+  	FPRINTF (crudfile,"<%s>\n", main_statement_type);
+    }
+  for (a = 0; a < select->table_elements.ntables; a++)
+    {
+      char *tabname;
+      char *alias;
+      tabname = strdup(select->table_elements.tables[a].tabname);
+      alias = select->table_elements.tables[a].alias;
+      if (alias == 0) {alias = tabname;
+	      	}
+      else {
+	      	alias=strdup(alias);
+      		A4GL_trim(alias);
+      }
+      A4GL_trim(tabname);
+      FPRINTF (crudfile,"<TABLE name=\"%s\" alias=\"%s\" />\n", tabname, alias);
+    }
+
+
+
+  map_select_list_item_list (main_statement_type, "VALUESLIST", select, select->select_list);
+  if (select->where_clause) {
+	  FPRINTF(crudfile,"<FILTER>\n");
+  		map_select_list_item (main_statement_type, select, select->where_clause);
+	  FPRINTF(crudfile,"</FILTER>\n");
+  }
+  map_select_list_item_list (main_statement_type, "GROUPBY", select, select->group_by);
+  if (select->having) {
+	  FPRINTF(crudfile,"<HAVING>\n");
+  		map_select_list_item (main_statement_type,  select, select->having);
+	  FPRINTF(crudfile,"</HAVING>\n");
+  }
+
+  if (select->sf){ 
+  	map_select_list_item_list (main_statement_type, "ORDERBY", select, select->sf->order_by);
+  }
+
+  if (select->next)
+    {
+      map_select_stmt ("SUBSELECT", select->next);
+    }
+
+
+
+  if (strcmp (main_statement_type, "SUBSELECT") != 0)
+    {
+      FPRINTF (crudfile,"</CRUD>\n\n");
+    } else {
+  FPRINTF (crudfile,"</%s>\n", main_statement_type);
+    }
+}
+
+void
+map_delete_update (char *main_statement_type, char *table, struct s_select_list_item *i)
+{
+  struct s_select *select;
+  char *s;
+
+
+  if (!A4GL_isyes(acl_getenv("MAPCRUD"))) {
+	  	return ;
+  }
+
+  select = new_empty_select ();
+  select->select_list = new_select_list_item_list (new_select_list_item_literal ("1"));
+  select->where_clause = i;
+  select->first = A4GLSQLPARSE_new_tablename (table, 0);
+
+  FPRINTF (crudfile,"<CRUD STATEMENT=\"%s\" FUNCTION=\"%s\" LINENO=\"%d\" MODULE=\"%s\">\n",main_statement_type,curr_func,yylineno,infilename);
+  FPRINTF(crudfile,"<TABLE name=\"%s\"/>\n",table);
+  if (strcmp(main_statement_type,"UPDATE")==0) {
+	  int a;
+	   for (a = 0; a < A4GL_4glc_gen_cnt (UPDCOL); a++)
+	        {
+			   FPRINTF(crudfile,"<COLUMN name=\"%s\" table=\"%s\"/>\n",A4GL_4glc_get_gen (UPDCOL, a),table);
+		}
+
+  }
+  if (select->where_clause) {
+	  FPRINTF(crudfile,"<FILTER>\n");
+  		map_select_list_item (main_statement_type, select, select->where_clause);
+	  FPRINTF(crudfile,"</FILTER>\n");
+  }
+
+  FPRINTF (crudfile,"</CRUD>\n");
+
 }
 
 

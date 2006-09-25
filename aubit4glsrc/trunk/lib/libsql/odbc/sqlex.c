@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.25 2005-07-14 11:32:56 mikeaubury Exp $
+# $Id: sqlex.c,v 1.26 2006-09-25 16:56:23 mikeaubury Exp $
 #
 */
 
@@ -526,32 +526,32 @@ A4GL_generate_using_for_dmy (char *s, int size)
   if (size >= 8)
     {
       if (s[0] == 'D' && s[1] == 'M' && s[2] == 'Y')
-	sprintf (using_str, "dd%cmm%c%s", sep, sep, years);
+	SPRINTF3 (using_str, "dd%cmm%c%s", sep, sep, years);
       if (s[0] == 'D' && s[1] == 'Y' && s[2] == 'M')
-	sprintf (using_str, "dd%c%s%cmm", sep, years, sep);
+	SPRINTF3 (using_str, "dd%c%s%cmm", sep, years, sep);
       if (s[0] == 'M' && s[1] == 'D' && s[2] == 'Y')
-	sprintf (using_str, "mm%cdd%c%s", sep, sep, years);
+	SPRINTF3 (using_str, "mm%cdd%c%s", sep, sep, years);
       if (s[0] == 'M' && s[1] == 'Y' && s[2] == 'D')
-	sprintf (using_str, "mm%c%s%cdd", sep, years, sep);
+	SPRINTF3 (using_str, "mm%c%s%cdd", sep, years, sep);
       if (s[0] == 'Y' && s[1] == 'D' && s[2] == 'M')
-	sprintf (using_str, "%s%cdd%cmm", years, sep, sep);
+	SPRINTF3 (using_str, "%s%cdd%cmm", years, sep, sep);
       if (s[0] == 'Y' && s[1] == 'M' && s[2] == 'D')
-	sprintf (using_str, "%s%cmm%cdd", years, sep, sep);
+	SPRINTF3 (using_str, "%s%cmm%cdd", years, sep, sep);
     }
   else
     {
       if (s[0] == 'D' && s[1] == 'M' && s[2] == 'Y')
-	sprintf (using_str, "ddmm%s", years);
+	SPRINTF1 (using_str, "ddmm%s", years);
       if (s[0] == 'D' && s[1] == 'Y' && s[2] == 'M')
-	sprintf (using_str, "dd%smm", years);
+	SPRINTF1 (using_str, "dd%smm", years);
       if (s[0] == 'M' && s[1] == 'D' && s[2] == 'Y')
-	sprintf (using_str, "mmdd%s", years);
+	SPRINTF1 (using_str, "mmdd%s", years);
       if (s[0] == 'M' && s[1] == 'Y' && s[2] == 'D')
-	sprintf (using_str, "mm%sdd", years);
+	SPRINTF1 (using_str, "mm%sdd", years);
       if (s[0] == 'Y' && s[1] == 'D' && s[2] == 'M')
-	sprintf (using_str, "%sddmm", years);
+	SPRINTF1 (using_str, "%sddmm", years);
       if (s[0] == 'Y' && s[1] == 'M' && s[2] == 'D')
-	sprintf (using_str, "%smmdd", years);
+	SPRINTF1 (using_str, "%smmdd", years);
     }
 
 

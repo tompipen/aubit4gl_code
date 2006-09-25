@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.112 2006-08-30 19:47:30 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.113 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -1329,7 +1329,7 @@ char *expand_env_vars_in_cmdline(char *s,int showerrs) {
 
 			if (A4GL_isyes(acl_getenv("WARNCYGDRIVE")) ||strcpy(acl_getenv("TARGET_OS"),"mingw")==0) {
 				if (strstr(ptr,"cygdrive")) {
-					printf("ERROR: variable %s contains non-native windows path mangling\n",varname);
+					PRINTF("ERROR: variable %s contains non-native windows path mangling\n",varname);
 				}
 			}
 
@@ -1339,9 +1339,9 @@ char *expand_env_vars_in_cmdline(char *s,int showerrs) {
 			strcat(buff,varname);
 
 			if (showerrs) {
-				printf("ERROR: environment variable %s\n",varname);
-				printf("ERROR: specified in 4glpc configuration file is undefined\n");
-				printf("ERROR: in current environment.\n");
+				PRINTF("ERROR: environment variable %s\n",varname);
+				PRINTF("ERROR: specified in 4glpc configuration file is undefined\n");
+				PRINTF("ERROR: in current environment.\n");
 			}
 
 		}

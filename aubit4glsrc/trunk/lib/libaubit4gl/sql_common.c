@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.30 2006-09-21 10:14:05 mikeaubury Exp $
+# $Id: sql_common.c,v 1.31 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -350,7 +350,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
   char *ptr;
   A4GL_debug ("must_convert=%d\n", must_convert);
 
-  sprintf(buff,"%s",mod);
+  SPRINTF1(buff,"%s",mod);
 
   ptr=strchr(buff,'.');
 
@@ -364,7 +364,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
       s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s,converted);
     }
-  sprintf(uniq_id,"a4gl_st_%s_%d",buff,line);
+  SPRINTF2(uniq_id,"a4gl_st_%s_%d",buff,line);
   return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id); 
 }
 
@@ -1379,17 +1379,17 @@ A4GL_sqlid_encrypt (void)
 		{
 		  char buff[256];
 		  strcpy (buff, A4GL_tea_string_encipher (passwd));
-		  sprintf (passwd, "!%s", buff);
+		  SPRINTF1 (passwd, "!%s", buff);
 		}
 	      printed = 1;
-	      fprintf (fout,"%s:%s:%s\n", ptr_fields[0], uname, passwd);
+	      FPRINTF (fout,"%s:%s:%s\n", ptr_fields[0], uname, passwd);
 	    }
 	}
 
       if (!printed)
 	{
 	  // Don't recognise it - put back what we got  in
-	  fprintf (fout, "%s", buff_orig);
+	  FPRINTF (fout, "%s", buff_orig);
 	}
 
 

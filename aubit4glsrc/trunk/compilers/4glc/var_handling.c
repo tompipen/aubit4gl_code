@@ -218,7 +218,18 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	      else
 		{
 	          char *n;
-	          n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (0, buff), 1,var->substrings[0],0);
+		  char *lptr;
+		  lptr=strrchr(buff,'.');
+		  if (lptr) {
+			  char buffx[2000];
+			  strcpy(buffx,buff);
+			  lptr=strrchr(buffx,'.');
+			  *lptr=0;
+			  lptr++;
+	          	n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (buffx, lptr), 1,var->substrings[0],0);
+		  } else {
+	          	n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (0, buff), 1,var->substrings[0],0);
+		  }
 		strcpy(buff,n);
 		}
 	    }
@@ -237,7 +248,18 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	      else
 		{
 	          char *n;
-	          n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (0, buff), 2,var->substrings[0],var->substrings[1]);
+		  char *lptr;
+		  lptr=strrchr(buff,'.');
+		  if (lptr) {
+			  char buffx[2000];
+			  strcpy(buffx,buff);
+			  lptr=strrchr(buffx,'.');
+			  *lptr=0;
+			  lptr++;
+	          	n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (buffx, lptr), 2,var->substrings[0],var->substrings[1]);
+		  } else {
+	          	n = A4GLSQLCV_make_substr_s (A4GLSQLCV_check_colname (0, buff), 2,var->substrings[0],var->substrings[1]);
+		  }
 		strcpy(buff,n);
 
 		}

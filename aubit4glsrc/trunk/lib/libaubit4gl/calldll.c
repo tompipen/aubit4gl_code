@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.68 2006-09-20 09:36:25 mikeaubury Exp $
+# $Id: calldll.c,v 1.69 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -414,7 +414,7 @@ A4GL_find_func (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
   char buff[256];
-  sprintf(buff,"%p_%s",dllhandle,func);
+  SPRINTF2(buff,"%p_%s",dllhandle,func);
 
 
 

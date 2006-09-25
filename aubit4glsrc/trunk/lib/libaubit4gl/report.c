@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.93 2006-09-13 15:07:42 briantan Exp $
+# $Id: report.c,v 1.94 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -194,7 +194,6 @@ void A4GL_cleanup_undeleted_files(void) {
 	for (a=0;a<nrepnames;a++) {
 		if (repnames[a]) {
 			A4GL_debug("Cleaning up : %s",repnames[a]);
-			//printf("SHOULD DELETE %s\n",repnames[a]);
 			if (!A4GL_isyes(acl_getenv("LEAVETMPREPORTS"))) {
 					unlink(repnames[a]);
 			}

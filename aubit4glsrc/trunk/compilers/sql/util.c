@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.41 2006-09-23 07:13:49 mikeaubury Exp $
+# $Id: util.c,v 1.42 2006-09-25 16:56:18 mikeaubury Exp $
 #
 */
 
@@ -1230,6 +1230,16 @@ void
 addmap (char *t, char *s, char *w, int l, char *m) {
 // Does nothing but is required...
 }
+
+
+void map_select_stmt (char *main_statement_type, struct s_select *select) {
+}
+
+void
+map_delete_update (char *main_statement_type, char *table, struct s_select_list_item *i)
+{
+}
+
 
 
 /* ====================================== EOF ============================ */

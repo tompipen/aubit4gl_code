@@ -70,10 +70,9 @@ void *A4GL_alloc_associated_mem(void *orig,int nbytes) {
 	static struct mem_extra *ptr;
 
 	if (last_orig!=orig)  {
-		sprintf(buff,"%p",orig);
+		SPRINTF1(buff,"%p",orig);
 		if (A4GL_has_pointer(buff,MEMEXTRA)) {
 			ptr=A4GL_find_pointer(buff,MEMEXTRA);
-		//printf("USED %s\n",buff);
 		} else {
 			ptr=malloc(nbytes);
 			if (ptr==0) {
@@ -82,7 +81,6 @@ void *A4GL_alloc_associated_mem(void *orig,int nbytes) {
 			A4GL_add_pointer(buff,MEMEXTRA,ptr);
 			ptr->nmemalloc=0;
 			ptr->ptr=0;
-		//printf("CREATED %s\n",buff);
 		}
 		last_orig=orig;
 	} else {
@@ -104,7 +102,7 @@ void A4GL_free_associated_mem(void *orig) {
 	if (last_orig==orig) {
 		last_orig=0;
 	}
-	sprintf(buff,"%p",orig);
+	SPRINTF1(buff,"%p",orig);
 
 	if (A4GL_has_pointer(buff,MEMEXTRA)) {
 		ptr=A4GL_find_pointer(buff,MEMEXTRA);
@@ -128,5 +126,4 @@ void A4GL_free_associated_mem(void *orig) {
 
 	// Finally - get rid of the A4GL_..._pointer...
 	A4GL_del_pointer(buff,MEMEXTRA);
-	//printf("DELETED %s\n",buff);
 }

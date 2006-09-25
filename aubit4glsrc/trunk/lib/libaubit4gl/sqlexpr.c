@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.37 2006-09-23 08:41:18 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.38 2006-09-25 16:56:22 mikeaubury Exp $
 #
 */
 
@@ -538,7 +538,7 @@ decode_month (char m1, char m2)
   static char buff[20];
   int m1i = -1;
   int m2i = -1;
-  sprintf (buff, "%c%c", m1, m2);
+  SPRINTF2 (buff, "%c%c", m1, m2);
   if (m1 >= '0' && m1 <= '9')
     {
       m1i = m1 - '0';
@@ -1210,11 +1210,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	char buff[50] = "";
 	if (p->u_data.column.subscript.i0 >= 1)
 	  {
-	      rval=acl_strdup (A4GLSQLCV_make_substr
-		      (A4GLSQLCV_check_colname_alias
-		       (p->u_data.column.tabname,
-			find_tabname_for_alias (select,
-						p->u_data.column.tabname),
+	      rval=acl_strdup (A4GLSQLCV_make_substr (A4GLSQLCV_check_colname_alias
+		       (p->u_data.column.tabname, find_tabname_for_alias (select, p->u_data.column.tabname),
 			p->u_data.column.colname),
 		       p->u_data.column.subscript.i0,
 		       p->u_data.column.subscript.i1,
@@ -1225,8 +1222,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
 	      return rval;
 	  }
-	A4GL_assertion (p->u_data.column.colname == 0,
-			"Column name was null pointer");
+	A4GL_assertion (p->u_data.column.colname == 0, "Column name was null pointer");
+
 	if (p->u_data.column.tabname)
 	  {
 	    char *orig;
@@ -1248,10 +1245,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		    (select->table_elements.tables[0].tabname,
 		     p->u_data.column.colname))
 		  {
-			  rval=
-		      acl_strdup (A4GLSQLCV_check_colname
-			      (select->table_elements.tables[0].tabname,
-			       p->u_data.column.colname));
+			  rval= acl_strdup (A4GLSQLCV_check_colname (select->table_elements.tables[0].tabname, p->u_data.column.colname));
 	      A4GL_debug("returning %s\n",rval);
 		//ADDMAP("UseColumn",rval);
 			  return rval;
@@ -1259,8 +1253,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	      }
 	  }
 
-		rval = make_sql_string_and_free (acl_strdup (p->u_data.column.colname),
-					 acl_strdup (buff), NULL);
+	//A4GL_pause_execution();
+
+	rval = make_sql_string_and_free (acl_strdup (p->u_data.column.colname), acl_strdup (buff), NULL);
 	      A4GL_debug("returning %s\n",rval);
 		//ADDMAP("UseColumn",rval);
 		return rval;
@@ -2311,7 +2306,7 @@ A4GL_debug("First=%s",first);
 	  A4GL_debug ("FREE %p (%s)\n", next, next);
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
-		    printf("Freeing : %s",next);
+		    PRINTF("Freeing : %s",next);
 	      free (next);
 	    }
 	}
