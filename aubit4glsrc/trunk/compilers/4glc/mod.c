@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.280 2006-08-30 19:47:21 mikeaubury Exp $
+# $Id: mod.c,v 1.281 2006-09-26 20:09:41 mikeaubury Exp $
 #
 */
 
@@ -3745,7 +3745,7 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
 
 
       dim = 1;
-      if (A4GL_isyes (acl_getenv ("NO_ARRAY_EXPAND")))
+      if (A4GL_isyes (acl_getenv ("NO_ARRAY_EXPAND"))||btype=='N')
 	dim = 0;
       if (strncmp (buff, " a4gl_let_substr", 16) == 0)
 	dim = 0;
@@ -5291,7 +5291,7 @@ A4GL_4glc_push_gen_expand (int n, char *v)
       return 1;
     }
 
-  list = split_record_list (v, "", 0);
+  list = split_record_list (v, "", 0,' ');
   A4GL_debug ("Got list : %p", list);
 
   if (list == 0)

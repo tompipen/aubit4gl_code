@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.85 2006-07-07 15:10:08 mikeaubury Exp $
+# $Id: variables.c,v 1.86 2006-09-26 20:09:42 mikeaubury Exp $
 #
 */
 
@@ -72,17 +72,14 @@ static void initialize_v (void);
 static void set_arr_subscripts (char *s, int record_cnt);
 static int add_to_scope (int record_cnt, int unroll);
 //static void dump_variable_records (struct variable **v, int cnt, int lvl);
-static struct variable *find_variable_in (char *s, struct variable **list,
-					  int cnt);
+static struct variable *find_variable_in (char *s, struct variable **list, int cnt);
 
 static char get_current_variable_scope (void);
 
 void make_arr_str (char *s, struct variable *v);
 static void strip_bracket (char *s);
 char *rettype_integer (int n);
-static struct record_list *add_to_record_list (struct record_list **list_ptr,
-					       char *prefix_buff,
-					       struct variable *v);
+static struct record_list *add_to_record_list (struct record_list **list_ptr, char *prefix_buff, struct variable *v,char bindtype);
 
 void make_function (char *name, int record_cnt);
 //int has_fbind(char *s) ;
@@ -2163,8 +2160,7 @@ strip_bracket (char *s)
 
 /******************************************************************************/
 int
-split_record (char *s, struct variable **v_record, struct variable **v1,
-	      struct variable **v2)
+split_record (char *s, struct variable **v_record, struct variable **v1, struct variable **v2,char bindtype)
 {
   char buff[256];
   char endoflist[256];
@@ -2279,12 +2275,11 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
 
 static struct record_list *
 add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
-		    struct variable *v)
+		    struct variable *v,char bindtype)
 {
   char buff[257];
   struct record_list_entry *e;
   struct record_list *list;
-
 
   if (v->is_array)
     {
@@ -2321,11 +2316,10 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
         if (v->arr_subscripts[3]) {strcat(fmt,"[%d]");dim=4;}
         if (v->arr_subscripts[4]) {strcat(fmt,"[%d]");dim=5;}
 
-	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) { dim=0; }
+	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND")) || bindtype=='N') { dim=0; }
 
 
-
-      if (dim==0) {
+      if (dim==0 ) {
       		SPRINTF2 (buff, "%s.%s", prefix_buff, v->names.name);
       		list->list = acl_realloc (list->list, (list->records_cnt + 1) * sizeof (struct record_list_entry *)); e = acl_malloc2 (sizeof (struct record_list_entry)); e->variable = v; e->name = acl_strdup (buff); list->list[list->records_cnt] = e; list->records_cnt++; *list_ptr = list;
       }
@@ -2416,19 +2410,20 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	if (v->arr_subscripts[2]) {strcat(fmt,"[%d]");dim=3;}
 	if (v->arr_subscripts[3]) {strcat(fmt,"[%d]");dim=4;}
 	if (v->arr_subscripts[4]) {strcat(fmt,"[%d]");dim=5;}
-	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) { dim=0; }
+	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))||bindtype=='N') { dim=0; }
+
 
 
 	if (dim==0) {
       		SPRINTF2 (buff, "%s.%s.*", prefix_buff, v->names.name);
-      		return split_record_list (buff, buff, list);
+      		return split_record_list (buff, buff, list,bindtype);
 	}
 
 	if (dim==1)  {
 		for (b0 = 0; b0 < v->arr_subscripts[0]; b0++) {
 							SPRINTF1(subscript,fmt,b0);
       							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
-      							split_record_list (buff, buff, list);
+      							split_record_list (buff, buff, list,bindtype);
 		}
 	}
 
@@ -2438,7 +2433,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
     			for (b1 = 0; b1 < v->arr_subscripts[1]; b1++) {
 							SPRINTF2(subscript,fmt,b0,b1);
       							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
-      							split_record_list (buff, buff, list);
+      							split_record_list (buff, buff, list,bindtype);
   			}
 		}
 	}
@@ -2449,7 +2444,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 				for (b2 = 0; b2 < v->arr_subscripts[2]; b2++) {
 							SPRINTF3(subscript,fmt,b0,b1,b2);
       							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
-      							split_record_list (buff, buff, list);
+      							split_record_list (buff, buff, list,bindtype);
 	      			}
   			}
 		}
@@ -2462,7 +2457,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	    				for (b3 = 0; b3 < v->arr_subscripts[3]; b3++) {
 							SPRINTF4(subscript,fmt,b0,b1,b2,b3);
       							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
-      							split_record_list (buff, buff, list);
+      							split_record_list (buff, buff, list,bindtype);
 		  			}
 	      			}
   			}
@@ -2477,7 +2472,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 						for (b4 = 0; b4 < v->arr_subscripts[4]; b4++) {
 							SPRINTF5(subscript,fmt,b0,b1,b2,b3,b4);
       							SPRINTF3 (buff, "%s.%s%s.*", prefix_buff, v->names.name,subscript);
-      							split_record_list (buff, buff, list);
+      							split_record_list (buff, buff, list,bindtype);
 						}
 		  			}
 	      			}
@@ -2494,8 +2489,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 }
 
 
-struct record_list *
-split_record_list (char *s, char *prefix, struct record_list *list)
+struct record_list * split_record_list (char *s, char *prefix, struct record_list *list,char bindtype)
 {
   char *ptr;
   char record1[256];
@@ -2698,7 +2692,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
   for (a = record_start; a <= record_end; a++)
     {
       if (add_to_record_list
-	  (&list, prefix_buff, v_record->data.v_record.variables[a]) == 0)
+	  (&list, prefix_buff, v_record->data.v_record.variables[a],bindtype) == 0)
 	{
 	  PRINTF ("Bugger -  something went wrong...\n");
 	  /* Should free list here...*/
@@ -2722,7 +2716,7 @@ push_bind_rec (char *s, char bindtype)
   struct record_list *list;
   A4GL_debug ("In push_bind_rec : '%s'", s);
 
-  list = split_record_list (s, "", 0);
+  list = split_record_list (s, "", 0,bindtype);
   A4GL_debug ("Got list : %p", list);
 
   if (list == 0)
@@ -2784,7 +2778,7 @@ print_push_rec (char *s, void **b, int always_list)
   struct expr_str *vlist;
 
 
-  list = split_record_list (s, "", 0);
+  list = split_record_list (s, "", 0,' ');
 
 
   if (list == 0)

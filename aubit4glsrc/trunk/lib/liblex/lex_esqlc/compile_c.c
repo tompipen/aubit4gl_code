@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.326 2006-09-26 18:09:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.327 2006-09-26 20:09:43 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.326 2006-09-26 18:09:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.327 2006-09-26 20:09:43 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4285,8 +4285,7 @@ print_init_var (char *name, char *prefix, int alvl,int explicit)
 		{
 		  SPRINTF1 (buff_id, "_fglcnt_%d", alvl);
 		  printc ("{int %s;\n", buff_id);
-		  printc ("for (%s=0;%s<%d;%s++) { /* 1 */", buff_id, buff_id,
-			  arrsizes[acnt], buff_id);
+		  printc ("for (%s=0;%s<%d;%s++) { /* 1 */", buff_id, buff_id, arrsizes[acnt], buff_id);
 		  strcat (prefix2, "[");
 		  strcat (prefix2, buff_id);
 		  strcat (prefix2, "]");
@@ -4299,8 +4298,9 @@ print_init_var (char *name, char *prefix, int alvl,int explicit)
 	    }
 	}
 
-      if (dont_print==0)
+      if (dont_print==0) {
 	print_init_var (ptr, prefix2, alvl,explicit);
+      }
 
       if (printing_arr && dont_print==0)
 	{

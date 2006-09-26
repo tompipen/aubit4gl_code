@@ -134,13 +134,11 @@ void print_variables (void);
 int find_type (char *s);
 long isarrvariable (char *s);
 long isrecvariable (char *s);
-int split_record (char *s, struct variable **v_record, struct variable **v1,
-		  struct variable **v2);
+int split_record (char *s, struct variable **v_record, struct variable **v1, struct variable **v2, char bindtype);
 struct variable *get_next_variable (struct variable *record,
 				    struct variable *v1, struct variable *v2);
 void set_current_variable_scope (char n);
-struct record_list *split_record_list (char *s, char *prefix,
-				       struct record_list *list);
+struct record_list *split_record_list (char *s, char *prefix, struct record_list *list,char bindtype);
 void print_nullify (char type);
 
 typedef struct variable s_variable;
