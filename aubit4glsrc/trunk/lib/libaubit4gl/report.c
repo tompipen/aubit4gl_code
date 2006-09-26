@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.95 2006-09-26 16:15:05 mikeaubury Exp $
+# $Id: report.c,v 1.96 2006-09-26 18:09:31 mikeaubury Exp $
 #
 */
 
@@ -144,6 +144,9 @@ static void add_header_entry (struct rep_structure *rep,
 
 
 int lvl = 0;
+
+void *curr_pdf_report=0;
+
 
 /*
 =====================================================================
@@ -1917,5 +1920,23 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
   return -1;
 }
 
+/*  Here we return the current pdf report, which is stored so that 
+ *  we can call pdf_functions outside of our PDF report 
+ */
+
+void* A4GL_get_curr_report(void) {
+	return curr_pdf_report;
+}
+
+void A4GL_set_curr_report(void *c) {
+	curr_pdf_report=c;
+}
+
+int A4GL_pdf_pdffunc(void* p,char* fname,int n)  {
+	if (p==0) {
+		p=curr_pdf_report;
+	}
+	A4GL_pdf_pdffunc_internal(p,fname,n);
+}
 
 /* ============================= EOF ================================ */

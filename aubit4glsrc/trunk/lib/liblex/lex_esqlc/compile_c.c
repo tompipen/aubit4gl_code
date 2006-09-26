@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.325 2006-09-26 16:15:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.326 2006-09-26 18:09:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.325 2006-09-26 16:15:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.326 2006-09-26 18:09:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -117,7 +117,7 @@ static void print_returning (void);
 char cmodname[256]="";
 //void A4GL_set_clobber(char *c);
 
-
+int doing_a_report=0;
 
 
 /*
@@ -256,6 +256,18 @@ void printcomment (char *fmt, ...);
 =====================================================================
 */
 
+
+static void set_doing_a_report_call(void) {
+	if (doing_a_report==2) {
+		printc("{void *_old_rep=A4GL_get_curr_report(); A4GL_set_curr_report(&_rep);");
+	}
+}
+
+static void clr_doing_a_report_call(int n) {
+	if (doing_a_report==2) {
+		printc("A4GL_set_curr_report(&_old_rep);} /* %d */",n);
+	}
+}
 
 /**
  * Print spaces to the increment acording to scope level generated in
@@ -1764,6 +1776,7 @@ real_print_expr (struct expr_str *ptr)
 	      A4GL_new_list_get_count (ptr->u_data.expr_function_call->
 				       parameters);
 
+  		if (doing_a_report) { set_doing_a_report_call(); }
 	    if (A4GL_doing_pcode ())
 	      {
 		printc ("ECALL(\"%s%s\",%d,%ld);",
@@ -1814,6 +1827,7 @@ real_print_expr (struct expr_str *ptr)
 					1, "");
 	      }
 
+  		if (doing_a_report) { clr_doing_a_report_call(1); }
 	    break;
 
 
@@ -1834,6 +1848,7 @@ real_print_expr (struct expr_str *ptr)
 			}
 		    }
 		}
+  		if (doing_a_report) { set_doing_a_report_call(); }
 	      printc ("  {");
 	      printc ("  int _retvars;");
 	      printc ("  _retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d);",
@@ -1847,6 +1862,7 @@ real_print_expr (struct expr_str *ptr)
 	      printc ("      A4GL_push_null(2,0);");
 	      printc ("  }");
 	      printc ("}");
+  		if (doing_a_report) { clr_doing_a_report_call(2); }
 	    }
 	    break;
 
@@ -1856,6 +1872,7 @@ real_print_expr (struct expr_str *ptr)
 		struct expr_bound_fcall *f;
 		//int ni;
 		//int ne;
+  		if (doing_a_report) { set_doing_a_report_call(); }
 		f=ptr->u_data.expr_bound_fcall;
 		ibindcnt=f->nibind;
 		ebindcnt=f->nebind;
@@ -1875,6 +1892,7 @@ real_print_expr (struct expr_str *ptr)
 		printc("    A4GL_chk_err(%d,_module_name);",f->line);
 		printc("  }");
 	   	printc("}");
+  		if (doing_a_report) { clr_doing_a_report_call(3); }
 		break;
 	}
 
@@ -3162,6 +3180,7 @@ real_print_func_call (t_expr_str * fcall)
       if (has_function (p->fname, lib, 0))
 	{
 	  printc ("{int _retvars;\n");
+  		if (doing_a_report) { set_doing_a_report_call(); }
 	  if (A4GL_doing_pcode()) {
   		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, p->line);
 	  } else {
@@ -3174,6 +3193,7 @@ real_print_func_call (t_expr_str * fcall)
       else
 	{
 	  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
+  		if (doing_a_report) { set_doing_a_report_call(); }
 	  if (A4GL_doing_pcode()) {
   		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, p->line);
 	  } else {
@@ -3185,6 +3205,7 @@ real_print_func_call (t_expr_str * fcall)
 	  	printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
 	  }
 	}
+  		if (doing_a_report) { clr_doing_a_report_call(4); }
       print_reset_state_after_call ();
       return;
     }
@@ -3318,7 +3339,13 @@ real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3)
 	  } else {
   		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
 	  }
-  printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", a1, a3);
+
+  if (doing_a_report) {
+  		printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s); /* %d */\n", a1, a3,doing_a_report);
+  } else {
+  		printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%s);\n", a1, a3);
+  }
+
 }
 
 /**
@@ -3339,6 +3366,7 @@ LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
   real_print_expr_list (expr);
   nargs=A4GL_new_list_get_count(expr);
 
+  if (doing_a_report) { set_doing_a_report_call(); }
   if (A4GL_doing_pcode()) {
 	printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname,yylineno);
   } else {
@@ -3348,6 +3376,7 @@ LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
 	  libfile, funcname, nargs);
   print_reset_state_after_call();
   print_returning();
+  if (doing_a_report) { clr_doing_a_report_call(5); }
 }
 
 
@@ -5112,6 +5141,7 @@ LEXLIB_print_report_end (void)
 
 
   printc ("\n} /* end of report */\n");
+  doing_a_report=0;
 }
 
 /**
@@ -5127,10 +5157,13 @@ LEXLIB_print_report_2 (int pdf, char *repordby)
 {
   int cnt;
   int a;
-  if (pdf)
+  if (pdf) {
+  	doing_a_report=2;
     printc ("static struct pdf_rep_structure _rep;\n");
-  else
+  } else {
+  	doing_a_report=1;
     printc ("static struct rep_structure _rep;\n");
+  }
 
   printc ("static char _rout1[256];\n");
   printc ("static char _rout2[256];\n");

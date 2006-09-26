@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.32 2006-08-14 16:55:33 briantan Exp $
+# $Id: has_pdf.c,v 1.33 2006-09-26 18:09:33 mikeaubury Exp $
 #*/
 
 /**
@@ -721,7 +721,7 @@ A4GLPDFREP_A4GL_pdf_blob_print (void *vp, void *vblob, char *type, int cr)
 
 
 int
-A4GLPDFREP_A4GL_pdf_pdffunc (void *vp, char *fname, int n)
+A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
 {
   char *ptr;
   int a;

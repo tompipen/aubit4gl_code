@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.249 2006-09-25 16:56:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.250 2006-09-26 18:09:15 mikeaubury Exp $
 #
 */
 
@@ -1348,6 +1348,12 @@ void A4GL_cleanup_undeleted_files(void);
 #define REPORT_CONVERT -16
 #define REPORT_FREE    -17
 #define REPORT_TERMINATE 			-9999
+
+
+int A4GL_via_functionname(char *repname,void *vr,void *vfunction) ;
+void* A4GL_get_curr_report(void) ;
+void A4GL_set_curr_report(void *c) ;
+
 
 #define ERR_BADNOARGS 			1000
 #define ABORT 					1
