@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.150 2006-09-22 07:09:33 briantan Exp $
+# $Id: compile_c_esql.c,v 1.151 2006-09-26 09:08:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.150 2006-09-22 07:09:33 briantan Exp $";
+  "$Id: compile_c_esql.c,v 1.151 2006-09-26 09:08:21 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -309,7 +309,11 @@ LEXLIB_print_foreach_next (char *xcursorname, int has_using, char *into)
   LEXLIB_print_open_cursor (cursorname, has_using);
 
 
-  printc ("if (a4gl_sqlca.sqlcode==0) {\n");
+  /* printc ("if (a4gl_sqlca.sqlcode==0) {\n");*/
+  printc ("if (a4gl_sqlca.sqlcode!=0) {");
+exit_loop("FOREACH"); 
+  printc("}");
+
   printc("_cursoropen=1;");
   printc ("while (1) {\n");
   ni = LEXLIB_print_bind_definition ('i');
@@ -2408,9 +2412,14 @@ LEXLIB_print_foreach_end (char *cname)
 
 
 
-  printc ("}");
+  /* printc ("}"); */
   printcomment ("/* end of foreach while loop */\n");
-  printc ("}\n");
+
+
+
+  /* printc ("}\n"); */
+
+
   /* print_foreach_close(cname); */
   /*print_close('C', cname); */
 }

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.323 2006-09-20 09:36:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.324 2006-09-26 09:08:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.323 2006-09-20 09:36:25 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.324 2006-09-26 09:08:21 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -553,10 +553,21 @@ open_outfile (void)
     }
   else
     {
+	    char *buff;
+	    buff=strdup(outputfilename);
+
+	    if (strchr(buff,'/')) {
+			buff=strrchr(buff,'/')+1;
+	    }
+
+	    if (strchr(buff,'\\')) {
+			buff=strrchr(buff,'\\')+1;
+	    }
+
 	    if (A4GL_doing_pcode()) {
-      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", outputfilename);
+      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", buff);
 	    } else {
-      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", outputfilename);
+      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", buff);
       	    }
     }
   sprintf(cmodname,"%s.4gl",outputfilename);
@@ -4001,7 +4012,7 @@ LEXLIB_print_foreach_start (void)
 {
   printc ("{");
   printc("int _cursoropen=0;");
-  printc ("{");
+  /* printc ("{"); */
 }
 
 
