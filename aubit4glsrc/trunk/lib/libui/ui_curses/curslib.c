@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.129 2006-09-15 08:57:44 mikeaubury Exp $
+# $Id: curslib.c,v 1.130 2006-09-26 16:15:07 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.129 2006-09-15 08:57:44 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.130 2006-09-26 16:15:07 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1543,7 +1543,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
 #endif
 
   cl = A4GL_get_curr_left ();
-  cw = UILIB_A4GL_get_curr_width ();
+  cw = UILIB_A4GL_get_curr_width ()+1;
   cpt = A4GL_get_curr_print_top ();
   mnln = A4GL_getmenu_line () - 1;
   menu->menu_line = mnln;

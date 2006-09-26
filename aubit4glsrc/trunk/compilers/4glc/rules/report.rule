@@ -102,6 +102,9 @@ sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 			print_convert_report($<str>2,    buff ,$<str>5,"\"\"","EMAIL");
 		}
 
+ 		| CONVERT_REPORT rep_name VIA via_functionname {
+				print_convert_report_via($<str>2,$<str>4);
+		}
  		| CONVERT_REPORT rep_name TO_PIPE var_or_char KW_AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
 		}
@@ -117,6 +120,9 @@ sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 			print_convert_report($<str>2, buff,$<str>5,$<str>7,"EMAIL");
 		}
 
+;
+
+via_functionname: identifier
 ;
 
 rout : fgl_expr_c {
@@ -164,6 +170,12 @@ finish_cmd : FINISH_REPORT rep_name {
 			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
+		print_free_convertible($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_VIA via_functionname {
+		add_feature("USE_REPORT");
+		print_finish_report($<str>2);
+		print_convert_report_via($<str>2,$<str>4);
 		print_free_convertible($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char KW_AS var_or_char {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.94 2006-09-25 16:56:22 mikeaubury Exp $
+# $Id: report.c,v 1.95 2006-09-26 16:15:05 mikeaubury Exp $
 #
 */
 
@@ -513,6 +513,7 @@ void A4GL_close_report_file(struct rep_structure *rep) {
       if (rep->output_mode == 'C')
 	{
 		if (rep->output) {
+			//printf("CLose %s\n",rep->output_loc);
 			gzfclose(rep->output);
 			rep->output=0;
 		}
@@ -1806,6 +1807,44 @@ cursor_for_rep_tab (void *b)
   static char tbuff[256];
   SPRINTF1 (tbuff, "c_%lx", (unsigned long)b);
   return tbuff;
+}
+
+
+int A4GL_via_functionname(char *repname,void *vr,void *vfunction) {
+	char *layout;
+	char *type;
+	char *filename;
+	int (*repfunction) (int);
+	int (*rep) (int,int);
+	int n;
+	int iscmd;
+
+  	rep=vr;
+	repfunction=vfunction;
+
+	// Call a 4gl report to do the real work...
+	A4GL_push_char(repname);
+	n=repfunction(1); // Should return 3 values, file, type and layout...
+
+	if (n!=4) {
+	        return 0; // wrong number of parameters
+	}
+
+	iscmd=A4GL_pop_int();
+	layout=A4GL_char_pop();
+	type=A4GL_char_pop();
+	filename=A4GL_char_pop();
+	A4GL_trim(layout);
+	A4GL_trim(type);
+	A4GL_trim(filename);
+	A4GL_push_int(iscmd);
+	A4GL_push_char(filename);
+	A4GL_push_char(type);
+	A4GL_push_char(layout);
+
+	rep(4,REPORT_CONVERT);
+
+	return 1;
 }
 
 

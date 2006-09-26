@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.324 2006-09-26 09:08:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.325 2006-09-26 16:15:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.324 2006-09-26 09:08:21 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.325 2006-09-26 16:15:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3364,8 +3364,9 @@ void
 LEXLIB_print_case (t_expr_str *expr)
 {
   if (expr)  {
+    printc("{char *_s=0;");
     real_print_expr(expr);
-    printc ("while (1==1) {char *s=0;if (s==0) {s=A4GL_char_pop();}\n");
+    printc ("while (1==1) {if (_s==0) {_s=A4GL_char_pop();}\n");
   } else {
     printc ("while (1==1) {\n");
   }
@@ -3404,7 +3405,7 @@ LEXLIB_print_when (int has_expr,t_expr_str *expr)
   if (has_expr)
     {
 	
-      printc ("A4GL_push_char(s);");
+      printc ("A4GL_push_char(_s);");
       printc ("A4GL_pushop(OP_EQUAL);\n");
     }
   printc ("if (A4GL_pop_bool()) {\n");
@@ -5423,6 +5424,10 @@ void LEXLIB_print_case_end(void){
 	printc("} /* Case end */");
 }
 
+void LEXLIB_print_case_free(void){
+	printc("free(_s);");
+	printc("}");
+}
 
 
 /**
@@ -7602,6 +7607,13 @@ char* get_reset_state_after_call(void ) {
 
 void print_reset_state_after_call(void) {
        printc("%s",get_reset_state_after_call());
+}
+
+
+
+void LEXLIB_print_convert_report_via(char *repname,char *fname) {
+	add_function_to_header(fname,1,"");
+	printc("A4GL_via_functionname(\"%s\",&%s%s,&%s%s);",repname,get_namespace(repname),repname,get_namespace(fname),fname);
 }
 
 

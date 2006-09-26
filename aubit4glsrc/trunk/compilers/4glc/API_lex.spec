@@ -175,6 +175,7 @@ print_for_start char* var void* from void* to void* step -> void
 print_for_step char* var void* from void* to void* step -> void
 print_for_end char* var void* from void* to void* step -> void
 print_case_end -> void
+print_case_free -> void
 
 
 
@@ -464,6 +465,7 @@ print_realloc_arr char* s char* dim -> void
 
 print_free_convertible char* report_name -> void
 print_convert_report char* report_name char* fout char* type char* layoutfile char* file_or_pipe -> void
+print_convert_report_via char* report_name char* callback_function -> void
 print_Constant int type char* v -> void
 print_free_cursor char* s -> void
 

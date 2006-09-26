@@ -17,6 +17,7 @@ case_cmd	: CASE fgl_expr_c  {
 			continue_blockcommand("CASE");
 			print_case_end();
 			pop_blockcommand("CASE");
+			print_case_free();
 		}
 		| CASE {  
 			push_blockcommand("CASE"); 
