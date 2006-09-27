@@ -275,8 +275,8 @@ value_expression_initial_sli :
 	| ALL subquery_sli   		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ALL,$<s_select_list_item>2); }
 	| ANY subquery_sli   		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ANY,$<s_select_list_item>2); }
 	| SOME subquery_sli  		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_SOME,$<s_select_list_item>2); }
-	| ATSIGN identifier 		{ $<s_select_list_item>$=new_select_list_item_col(0,$<str>2,0); }
-	| ATSIGN identifier KW_DOT identifier { $<s_select_list_item>$=new_select_list_item_col($<str>2,$<str>4,0); }
+	| ATSIGN identifier op_col_arr 		{ $<s_select_list_item>$=new_select_list_item_col(0,$<str>2,&$<int_list>3); }
+	| ATSIGN identifier KW_DOT identifier op_col_arr { $<s_select_list_item>$=new_select_list_item_col($<str>2,$<str>4,&$<int_list>5); }
 ;
 
 

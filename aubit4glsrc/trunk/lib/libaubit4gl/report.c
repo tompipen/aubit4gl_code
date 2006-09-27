@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.96 2006-09-26 18:09:31 mikeaubury Exp $
+# $Id: report.c,v 1.97 2006-09-27 20:15:33 mikeaubury Exp $
 #
 */
 
@@ -125,8 +125,7 @@ void A4GL_add_spaces (void);
 static char *A4GL_mk_temp_tab (struct BINDING *b, int n);
 void A4GL_make_report_table (struct BINDING *b, int n);
 void A4GL_add_row_report_table (struct BINDING *b, int n);
-int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o,
-			    int no, struct BINDING **reread);
+int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread,char *asc_desc);
 int A4GL_report_table_fetch (struct BINDING *reread, int n,
 			     struct BINDING *b);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
@@ -1094,8 +1093,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
  * @todo Describe function
  */
 int
-A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
-			struct BINDING **reread)
+A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread,char *asc_desc)
 {
   int a1;
   int a2;
@@ -1133,7 +1131,11 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
 	  if (o[a1].ptr == b[a2].ptr)
 	    {
-	      SPRINTF1 (obuff, "c%d", a2);
+	      if (asc_desc[a1]=='D') {
+	      	SPRINTF1 (obuff, "c%d DESC", a2);
+	      } else {
+	      	SPRINTF1 (obuff, "c%d", a2);
+	      }
 	      strcat (buff, obuff);
 	      ok = 1;
 	      break;
@@ -1936,7 +1938,7 @@ int A4GL_pdf_pdffunc(void* p,char* fname,int n)  {
 	if (p==0) {
 		p=curr_pdf_report;
 	}
-	A4GL_pdf_pdffunc_internal(p,fname,n);
+	return A4GL_pdf_pdffunc_internal(p,fname,n);
 }
 
 /* ============================= EOF ================================ */

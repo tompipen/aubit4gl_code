@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.327 2006-09-26 20:09:43 mikeaubury Exp $
+# $Id: compile_c.c,v 1.328 2006-09-27 20:15:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.327 2006-09-26 20:09:43 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.328 2006-09-27 20:15:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -135,7 +135,7 @@ void print_Constant_1 (char *name, struct constant_data *c);
 
 int rep_print_code;
 int last_orderby_type = -1;
-void print_report_table (char *repname, char type, int c);
+void print_report_table (char *repname, char type, int c,char*asc_desc);
 extern int get_rep_no_orderby (void);
 int A4GL_doing_pcode (void);
 static int gen_ord (char *s);
@@ -5153,7 +5153,7 @@ LEXLIB_print_report_end (void)
  * @param repordby
  */
 void
-LEXLIB_print_report_2 (int pdf, char *repordby)
+LEXLIB_print_report_2 (int pdf, char *repordby,char *asc_desc)
 {
   int cnt;
   int a;
@@ -5199,7 +5199,7 @@ if (!A4GL_doing_pcode()) {
 	     a, a);
 	}
       printc ("A4GL_pop_params(_rbind,%d);", cnt);
-      print_report_table (mv_repname, 'R', cnt);
+      print_report_table (mv_repname, 'R', cnt,asc_desc);
       printc ("return;");
       printc("}");
     }
@@ -5243,10 +5243,10 @@ if (!A4GL_doing_pcode()) {
       printc ("        %s(2,REPORT_RESTART);\n", get_curr_rep_name ());
 
       /*printc ("        A4GL_init_report_table(_rbind,%d,_ordbind,acl_rep_ordcnt,&reread);\n", cnt);*/
-      print_report_table (mv_repname, 'I', cnt);
+      print_report_table (mv_repname, 'I', cnt,asc_desc);
 
       /*printc ("        while (A4GL_report_table_fetch(reread,%d,_rbind))",cnt);*/
-      print_report_table (mv_repname, 'F', cnt);
+      print_report_table (mv_repname, 'F', cnt,asc_desc);
 
       printc ("                    %s(%d,REPORT_SENDDATA);\n",
 	      get_curr_rep_name (), cnt);
@@ -5254,7 +5254,7 @@ if (!A4GL_doing_pcode()) {
       printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
 
       /*printc ("        A4GL_end_report_table(_rbind,%d,reread);",cnt);*/
-      print_report_table (mv_repname, 'E', cnt);
+      print_report_table (mv_repname, 'E', cnt,asc_desc);
 
       printc ("        return;");
       printc ("    }\n");
@@ -5281,7 +5281,7 @@ if (!A4GL_doing_pcode()) {
     {
       printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
       printc ("   if (fgl_rep_orderby==1) {");
-      print_report_table (mv_repname, 'M', cnt);
+      print_report_table (mv_repname, 'M', cnt,asc_desc);
       printc ("       return;");
       printc ("   }\n");
     }

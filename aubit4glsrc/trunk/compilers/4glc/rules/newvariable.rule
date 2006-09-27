@@ -584,7 +584,11 @@ obind_var_list_ord: obind_var_ord  {
 
 obind_var_ord : variable optional_asc_desc;
 
-optional_asc_desc: | ASC | DESC;
+optional_asc_desc: 
+	{ last_orderby_ascdesc='A'; } 
+	| ASC { last_orderby_ascdesc='A'; } 
+	| DESC { last_orderby_ascdesc='D'; }
+;
 
 
 init_bind_var_list:	init_bind_var {

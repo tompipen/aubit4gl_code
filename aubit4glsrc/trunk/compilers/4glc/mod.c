@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.281 2006-09-26 20:09:41 mikeaubury Exp $
+# $Id: mod.c,v 1.282 2006-09-27 20:15:31 mikeaubury Exp $
 #
 */
 
@@ -75,6 +75,8 @@ int             menu_blk[MAXMENU]         ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                     Constants definitions
 =====================================================================
 */
+char last_orderby_ascdesc=0;
+char *order_asc_desc=0;
 
 #define USE_PRINTCOMMENT
 #define GEN_STACKS 		10
@@ -2133,6 +2135,9 @@ add_bind (char i, char *var_i)
 	  memset (&ordbind[ordbindcnt], 0, sizeof (ordbind[ordbindcnt]));
 	  strcpy (ordbind[ordbindcnt].varname, var);
 	  ordbind[ordbindcnt].dtype = dtype;
+	  order_asc_desc=realloc(order_asc_desc,ordbindcnt+2); // 0 based, and an extra one for the null...
+	  order_asc_desc[ordbindcnt]=last_orderby_ascdesc;
+	  order_asc_desc[ordbindcnt+1]=0;
 	  ordbindcnt++;
 	}
       return ordbindcnt;

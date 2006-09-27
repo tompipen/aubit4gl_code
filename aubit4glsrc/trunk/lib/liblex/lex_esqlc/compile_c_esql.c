@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.151 2006-09-26 09:08:21 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.152 2006-09-27 20:15:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.151 2006-09-26 09:08:21 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.152 2006-09-27 20:15:34 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -118,7 +118,7 @@ extern void printh (char *fmt, ...);
 void printc (char *fmt, ...);
 static void print_copy_status (void);
 void print_conversions (char i);
-void print_report_table (char *repname, char type, int c);
+void print_report_table (char *repname, char type, int c,char *asc_desc);
 
 
 char *A4GL_mk_temp_tab (struct BINDING *b, int n);
@@ -2537,7 +2537,7 @@ nm (int n)
 
 
 void
-print_report_table (char *repname, char type, int c)
+print_report_table (char *repname, char type, int c,char *asc_desc)
 {
 
   dll_import struct binding_comp *fbind;
@@ -2673,7 +2673,11 @@ print_report_table (char *repname, char type, int c)
 	      if (strcmp (ordbind[a].varname, fbind[b].varname) == 0)
 		{
 		  char tmpbuff[256];
-		  sprintf (tmpbuff, "c%d", b);
+		  if (asc_desc[a]=='D') {
+		  	sprintf (tmpbuff, "c%d DESC", b);
+		  } else {
+		  	sprintf (tmpbuff, "c%d", b);
+		  }
 		  strcat (sql, tmpbuff);
 		  found = 1;
 		  break;

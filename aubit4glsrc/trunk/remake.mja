@@ -18,6 +18,7 @@ then
 	fi
 	make cleanall
 	export CFLAGS=-g 
+	rm /home/aubit4gl/aubit4gl/bin/aubit-config
 	./configure  --with-unixodbc --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-pgodbc=/usr/local 
 
 
@@ -44,7 +45,7 @@ cd lib/libsql/esqlc
 sh make_static
 sh make_simple
 
-
+set -x
 cd /home/aubit4gl/aubit4glsrc/lib/libesql
 sh make_static
 sh make_simple

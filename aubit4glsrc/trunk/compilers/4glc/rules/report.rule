@@ -668,7 +668,7 @@ report_def : REPORT
 		}
 	report_section 
 	{
-		print_report_2(0,$<str>11);
+		print_report_2(0,$<str>11,order_asc_desc);
 		rordcnt=atoi($<str>11);
 	 A4GL_debug("SET rordcnt=%d %s",rordcnt,$<str>11);
 		}
@@ -745,8 +745,8 @@ define_section  {
 pdf_report_section 
 {
 resize_paper(&pdf_rep_struct);
-	print_report_2(1,$<str>11);
-A4GL_debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
+	print_report_2(1,$<str>11,order_asc_desc);
+	A4GL_debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
 	rordcnt=atoi($<str>11);
 }
 format_section 

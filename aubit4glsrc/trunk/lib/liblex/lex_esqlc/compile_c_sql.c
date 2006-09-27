@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.70 2006-09-26 09:08:22 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.71 2006-09-27 20:15:34 mikeaubury Exp $
 #
 */
 
@@ -33,11 +33,11 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.70 2006-09-26 09:08:22 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.71 2006-09-27 20:15:34 mikeaubury Exp $";
 #endif
 
 
-void print_report_table(char *repname,char type, int c);
+void print_report_table(char *repname,char type, int c,char *asc_desc);
 void printh (char *fmt, ...);
 void liblex_add_ibind(int dtype,char *var) ;
 static char *trans_quote (char *s);
@@ -769,7 +769,7 @@ return s;
 
 
 
-void print_report_table(char *repname,char type, int c) {
+void print_report_table(char *repname,char type, int c,char *asc_desc) {
 /* We don't need repname here - but the ESQL/C version does.. */
 if (type=='R')
   printc ("A4GL_add_row_report_table (_rbind,%d);",c);
@@ -778,7 +778,7 @@ if (type=='F')
   printc ("        while (A4GL_report_table_fetch(reread,%d,_rbind)) {",c);
 
 if (type=='I')
-  printc ("        A4GL_init_report_table(_rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", c);
+  printc ("        A4GL_init_report_table(_rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread,\"%s\");\n", c,asc_desc);
 
 if (type=='E') 
   printc ("        A4GL_end_report_table(_rbind,%d,reread);",c);

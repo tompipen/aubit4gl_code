@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.85 2006-07-07 15:10:16 mikeaubury Exp $
+# $Id: 1.reqd,v 1.86 2006-09-27 20:15:31 mikeaubury Exp $
 #
 */
 
@@ -218,13 +218,15 @@ extern int 	if_print_stack_cnt;
 extern int 	if_print_section[100];
 extern char 	last_tmp_name[256];
 
-
+extern char last_orderby_ascdesc;
+extern char *order_asc_desc;
 
 
 char *		make_sql_string_and_free(char *first,...);
 char *		get_namespace (char *s);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char *do_clobbering(char *f,char *s);
+char *do_clobbering_sql (char *f, char *s);
 void print_expr_list_concat (struct expr_str_list *l);
 
 
