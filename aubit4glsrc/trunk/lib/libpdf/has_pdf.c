@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.36 2006-09-27 15:13:23 briantan Exp $
+# $Id: has_pdf.c,v 1.37 2006-09-27 22:11:59 briantan Exp $
 #*/
 
 /**
@@ -911,6 +911,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       fy = A4GL_pop_double ();
       fx = A4GL_pop_double ();
       PDF_rect (p->pdf_ptr, fx, fy, fw, fh);
+      PDF_stroke (p->pdf_ptr);
       return 0;
     }
 
