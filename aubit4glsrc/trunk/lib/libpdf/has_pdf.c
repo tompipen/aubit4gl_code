@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.34 2006-09-27 12:32:35 briantan Exp $
+# $Id: has_pdf.c,v 1.35 2006-09-27 12:35:31 briantan Exp $
 #*/
 
 /**
@@ -900,6 +900,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
 
 // show_boxed(text, x, y, w, h, mode);
 // mode=(left, right, center, justify, fulljustify);
+// if w=h=0, x,y is anchor point for left,right,center single line formatting
   if (strcmp (fname, "show_boxed") == 0)
     {
       float fx, fy, fw, fh;
