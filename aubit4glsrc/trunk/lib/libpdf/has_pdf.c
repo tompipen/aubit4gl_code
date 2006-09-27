@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.35 2006-09-27 12:35:31 briantan Exp $
+# $Id: has_pdf.c,v 1.36 2006-09-27 15:13:23 briantan Exp $
 #*/
 
 /**
@@ -885,6 +885,22 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       PDF_setfont (p->pdf_ptr, p->font, p->font_size);
       return 0;
     }
+
+// page_line(lineno), convert lineno to pdf metric, need -1 to align properly
+  if (strcmp(fname,"page_line")==0) {
+	  double f1;
+      	f1 = A4GL_pop_double ();
+	A4GL_push_double(p->page_length-f1 - 1);
+	return 1;
+  }
+
+// skip_to(lineno), need +1 to get to corrent line_no ???
+  if (strcmp(fname,"skip_to")==0) {
+	  double f1;
+      	f1 = A4GL_pop_double ();
+	p->line_no = f1 + 1;
+	return 0;
+  }
 
 // rect(text, x, y, w, h);
   if (strcmp (fname, "rect") == 0)
