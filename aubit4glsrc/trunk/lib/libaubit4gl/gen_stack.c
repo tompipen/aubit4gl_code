@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gen_stack.c,v 1.5 2005-11-12 19:29:13 mikeaubury Exp $
+# $Id: gen_stack.c,v 1.6 2006-09-27 06:53:57 mikeaubury Exp $
 #
 */
 
@@ -109,8 +109,12 @@ A4GL_4glc_push_gen (int a, char *s)
 	  gen_stack_ptr[a]=realloc(gen_stack_ptr[a],gen_stack_alloc[a]*sizeof(char *));
 	  for (d=gen_stack_cnt[a];d<gen_stack_alloc[a];d++) gen_stack_ptr[a][d]=0;
   }
-  
-  gen_stack_ptr[a][gen_stack_cnt[a]++]=strdup(s);
+
+  if (s==0) {
+  	gen_stack_ptr[a][gen_stack_cnt[a]++]=0;
+  } else {
+  	gen_stack_ptr[a][gen_stack_cnt[a]++]=strdup(s);
+  }
 }
 
 
