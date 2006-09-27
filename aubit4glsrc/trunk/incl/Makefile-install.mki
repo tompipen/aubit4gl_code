@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.105 2006-05-03 07:55:43 mikeaubury Exp $
+# $Id: Makefile-install.mki,v 1.106 2006-09-27 09:13:27 mikeaubury Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -116,10 +116,17 @@ endif
 install.libs.conf:
 ifneq "${LDCONFIG}" "no"
 ifeq "${GREP_LD_SO_CONF}" ""
-	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
-	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
-	ldconfig
-	@echo "Refreshed ldconfig cache."
+	@if echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF} ; \
+	then \
+		echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."; \
+		if ldconfig ; then \
+			echo "Refreshed ldconfig cache." ;\
+		else \
+			echo "Unable to refresh ldconfig cache." ;\
+		fi ;\
+	else \
+		echo "WARNING : $(INSTALL_DIR)/lib entry NOT ADDED to ${LD_SO_CONF}. (maybe you're not root ?)"; \
+	fi
 else
 	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
 endif
@@ -291,7 +298,7 @@ ldconfig:
 ifneq "${ADD_LD_LIBRARY_PATH}" ""
 ifneq "${LDCONFIG}" "no"
 	@echo "+--------------------------------------------------------------------+"
-		@echo "| Adding to ${LD_SO_CONF} :                                        |"
+		@echo "| Adding to ${LD_SO_CONF} (if possible) :                          |"
 	@echo "|                                                                    |"
 #the dollar sign at the end of apath:		X=`grep $$apath$$ ${LD_SO_CONF}`;\
 #means "at the end of the line", to catter for the cases when ently like
@@ -308,16 +315,20 @@ ifneq "${LDCONFIG}" "no"
 		X=`grep "$$apath$$" "${LD_SO_CONF}"`;\
 		if test "$$X" = ""; then \
 			ADDED=1;\
-			echo "$$apath" ; \
-			echo "$$apath" >> ${LD_SO_CONF}; \
+			echo "Paths : $$apath" ; \
+			if echo "$$apath" >> ${LD_SO_CONF} ; \
+			then \
+				echo "|                                                                    |" \
+				ldconfig \
+				echo "| Refreshed ldconfig cache.                                          |" \
+			else \
+				echo "WARNING : Unable to add $$apath to ${LD_SO_CONF} (you're probably not root)"; \
+			fi; \
 		fi; \
 	done;\
 	if test "$$ADDED" = "0"; then \
         echo "| Nothing added: All paths already present in ld.so.conf             |";\
-    fi;
-	@echo "|                                                                    |"
-	@ldconfig
-	@echo "| Refreshed ldconfig cache.                                          |"
+        fi;
 #	@echo "+--------------------------------------------------------------------+
 else
 #FIXME: and what if user is not using Bash, but some other shell?
