@@ -2,7 +2,7 @@
  * @file sqlite3odbc.c
  * SQLite3 ODBC Driver main module.
  *
- * $Id: sqlite3odbc.c,v 1.5 2006-09-25 16:56:23 mikeaubury Exp $
+ * $Id: sqlite3odbc.c,v 1.6 2006-09-27 08:06:07 mikeaubury Exp $
  *
  * Copyright (c) 2004 Christian Werner <chw@ch-werner.de>
  *
@@ -61,6 +61,20 @@
 #define ENV_MAGIC  0x53544145
 #define DBC_MAGIC  0x53544144
 #define DEAD_MAGIC 0xdeadbeef
+
+
+
+#ifndef SPRINTF1 
+#define SPRINTF1 sprintf
+#endif
+
+#ifndef SPRINTF3 
+#define SPRINTF3 sprintf
+#endif
+
+#ifndef FPRINTF
+#define FPRINTF fprintf
+#endif
 
 #ifdef MEMORY_DEBUG
 
