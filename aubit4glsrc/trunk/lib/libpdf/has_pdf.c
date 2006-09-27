@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.33 2006-09-26 18:09:33 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.34 2006-09-27 12:32:35 briantan Exp $
 #*/
 
 /**
@@ -885,6 +885,42 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       PDF_setfont (p->pdf_ptr, p->font, p->font_size);
       return 0;
     }
+
+// rect(text, x, y, w, h);
+  if (strcmp (fname, "rect") == 0)
+    {
+      float fx, fy, fw, fh;
+      fh = A4GL_pop_double ();
+      fw = A4GL_pop_double ();
+      fy = A4GL_pop_double ();
+      fx = A4GL_pop_double ();
+      PDF_rect (p->pdf_ptr, fx, fy, fw, fh);
+      return 0;
+    }
+
+// show_boxed(text, x, y, w, h, mode);
+// mode=(left, right, center, justify, fulljustify);
+  if (strcmp (fname, "show_boxed") == 0)
+    {
+      float fx, fy, fw, fh;
+      char *text, *mode;
+      int c;
+      mode = A4GL_char_pop ();
+      fh = A4GL_pop_double ();
+      fw = A4GL_pop_double ();
+      fy = A4GL_pop_double ();
+      fx = A4GL_pop_double ();
+      text = A4GL_char_pop ();
+      if (strcmp (mode, "left") != 0
+	&& strcmp (mode, "right") !=0
+	&& strcmp (mode, "center") !=0
+	&& strcmp (mode, "justify") !=0
+	&& strcmp (mode, "fulljustify") !=0)
+	*mode = "justify";
+      PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, "");
+      return 0;
+    }
+
   return 0;
 }
 
