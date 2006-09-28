@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.282 2006-09-27 20:15:31 mikeaubury Exp $
+# $Id: mod.c,v 1.283 2006-09-28 21:31:18 mikeaubury Exp $
 #
 */
 
@@ -2136,8 +2136,12 @@ add_bind (char i, char *var_i)
 	  strcpy (ordbind[ordbindcnt].varname, var);
 	  ordbind[ordbindcnt].dtype = dtype;
 	  order_asc_desc=realloc(order_asc_desc,ordbindcnt+2); // 0 based, and an extra one for the null...
-	  order_asc_desc[ordbindcnt]=last_orderby_ascdesc;
-	  order_asc_desc[ordbindcnt+1]=0;
+	  if (last_orderby_ascdesc!='-') {
+	  	//printf("%d =%c\n",ordbindcnt,last_orderby_ascdesc);
+	  	//A4GL_pause_execution();
+	  	order_asc_desc[ordbindcnt]=last_orderby_ascdesc;
+	  	order_asc_desc[ordbindcnt+1]=0;
+	  }
 	  ordbindcnt++;
 	}
       return ordbindcnt;
@@ -3719,6 +3723,7 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
   if (cnt == 0)
     return;			/* theres nothing there to expand */
 
+
   save_bind = acl_realloc (save_bind, sizeof (struct binding_comp) * cnt);
   for (xxxa = 0; xxxa < cnt; xxxa++)
     {
@@ -3842,6 +3847,9 @@ expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
 	{
 	  strcat (buff, ".*");
 	}
+  	if (btype=='O') {
+		last_orderby_ascdesc='-';
+  	}
       add_bind (btype, buff);
     }
 
