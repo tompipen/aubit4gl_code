@@ -538,6 +538,9 @@ pipe_get_result (char *func,struct client_result *r,int expectresult)
 	      r->result = 0;
 	      r->state = CALL_RESULT;
               A4GL_debug ("Function should return with no value\n");
+	      	if (A4GL_isyes(acl_getenv("ALWAYSFLUSH"))) {
+  			pipe_flush(serversocket);
+				}
               return r;
   }
 

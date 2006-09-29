@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.99 2006-09-29 14:01:59 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.100 2006-09-29 14:56:56 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3415,9 +3415,7 @@ A4GL_set_field_attr_for_ll (void *formdets, void *field)
 
 
   a = A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext, invis, reqd, compress, has_picture);
-
-
-  A4GL_ll_set_field_opts (field, a);
+  	A4GL_ll_set_field_opts (field, a);
 }
 
 
@@ -3793,7 +3791,6 @@ A4GL_ll_field_opts_i (void *f)
 
 
   A4GL_debug ("drop through %d", last);
-
   return last;
 
 }
