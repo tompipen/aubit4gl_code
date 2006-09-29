@@ -16,21 +16,22 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
-#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
+run: compile ; ${DEFAULT_DIFF} 
+#${DEFAULT_RUN}
+#	${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "Tests report order by"
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
 form_test:				; @echo "0"
-report_test:			; @echo "0"
+report_test:			; @echo "1"
 graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"
