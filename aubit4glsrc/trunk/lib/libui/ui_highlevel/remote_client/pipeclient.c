@@ -506,6 +506,7 @@ decode_hex (char c)
     case 'F':
       return 15;
     }
+  return 0;
 }
 
 char *

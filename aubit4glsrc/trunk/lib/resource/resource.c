@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.122 2006-08-30 19:47:31 mikeaubury Exp $
+# $Id: resource.c,v 1.123 2006-09-29 14:02:01 mikeaubury Exp $
 #
 */
 
@@ -329,6 +329,7 @@ struct str_resource builtin_resource[] = {
 			// matter otherwise...
   /* all platforms Compilation options */
   {"A4GL_LINK_LIBS", LINKAUBITLIBFULL},
+  {"DEFAULT_PLUGINDIR", PLUGINDIR},
   {"A4GL_C_COMP", "gcc"},
   {"A4GL_RDYNAMIC", "-rdynamic"},
   

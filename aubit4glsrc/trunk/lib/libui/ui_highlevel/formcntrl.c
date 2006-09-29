@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.52 2006-07-24 21:03:11 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.53 2006-09-29 14:01:59 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.52 2006-07-24 21:03:11 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.53 2006-09-29 14:01:59 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1215,12 +1215,13 @@ void A4GL_submit_events(void *s, struct aclfgl_event_list *evt )
 
 int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
 	                int a;
-			                a=-1;
-					                while (1) {
+                a=-1;
+		                while (1) {
 
-								                a=internal_A4GL_form_loop_v2(vs,init,vevt);
-										                        if (init||a!=-1) break;
-													                }
+				                a=internal_A4GL_form_loop_v2(vs,init,vevt);
+						                        if (init||a!=-1) break;
+						                }
+		return a;
 
 }
 
@@ -1712,6 +1713,7 @@ A4GL_set_init_value (void *f, void *ptr, int dtype)
 {
   char *ff;
   int a;
+  int fw;
 
   A4GL_debug ("A4GL_set_init_value %p %x", ptr, dtype);
   if (ptr)
@@ -1724,21 +1726,21 @@ A4GL_set_init_value (void *f, void *ptr, int dtype)
     }
 
 
-
-
-  A4GL_debug ("field width=%d", A4GL_get_field_width (f));
+fw=A4GL_get_field_width(f);
+A4GL_assertion(fw==0,"NO field width");
+  A4GL_debug ("field width=%d", fw);
   if (ptr != 0)
     {
       A4GL_push_param (ptr, dtype);
-      ff = acl_malloc2 (A4GL_get_field_width (f) + 1);
-      A4GL_pop_char (ff, A4GL_get_field_width (f));
+      ff = acl_malloc2 (fw + 1);
+      A4GL_pop_char (ff, fw);
     }
   else
     {
-      ff = acl_malloc2 (A4GL_get_field_width (f) + 1);
-      for (a = 0; a < A4GL_get_field_width (f); a++)
+      ff = acl_malloc2 (fw + 1);
+      for (a = 0; a < fw; a++)
 	ff[a] = ' ';
-      ff[A4GL_get_field_width (f) - 1] = 0;
+      ff[fw - 1] = 0;
     }
 
   A4GL_mja_set_field_buffer (f, 0, ff);

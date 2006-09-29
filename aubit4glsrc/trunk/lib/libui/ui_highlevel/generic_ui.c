@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.98 2006-09-15 11:43:21 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.99 2006-09-29 14:01:59 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3486,7 +3486,7 @@ A4GL_field_opts_off (void *v, int n)
     }
 
   A4GL_debug ("Turning %p %x off :%x", v, curr, curr - n);
-  A4GL_ll_set_field_opts (v, A4GL_ll_field_opts (v) - n);
+  A4GL_ll_set_field_opts (v,curr - n);
 
   return 1;
 }
@@ -3534,15 +3534,10 @@ A4GL_default_attributes (void *f, int dtype, int has_picture,void *formdets)
   if (has_picture)
     {
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_ll_set_field_opts (f,
-			      AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-			      AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+      //A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+      A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE |AUBIT_O_PUBLIC );
       done = 1;
     }
-
-
-
-
 
   if (done == 0)
     {
@@ -3552,9 +3547,8 @@ A4GL_default_attributes (void *f, int dtype, int has_picture,void *formdets)
       if ((dtype & 255) == DTYPE_CHAR || (dtype & 255) == DTYPE_VCHAR)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
-	  A4GL_ll_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+	  //A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+	  A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_PUBLIC );
 
 
 
@@ -3565,10 +3559,8 @@ A4GL_default_attributes (void *f, int dtype, int has_picture,void *formdets)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_debug ("BLANK BLANK");
-	  A4GL_ll_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT
-				  | AUBIT_O_BLANK);
+	  //A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_ACTIVE | AUBIT_O_PUBLIC | AUBIT_O_EDIT | AUBIT_O_BLANK);
+	  A4GL_ll_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_PUBLIC | AUBIT_O_BLANK);
 	}
 
     }
@@ -3577,7 +3569,7 @@ A4GL_default_attributes (void *f, int dtype, int has_picture,void *formdets)
 
   A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field (f, A4GL_get_field_width (f),formdets);
+  A4GL_LL_set_max_field (f, A4GL_get_field_width_with_form (formdets,f),formdets);
 
 }
 
@@ -3663,6 +3655,7 @@ A4GL_ll_set_field_opts (void *f, int l)
   int last = -1;
   long a;
 
+  A4GL_debug_print_opts(l);
   SPRINTF1 (buff, "%p", f);
 
   // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
@@ -3831,6 +3824,7 @@ A4GL_debug_print_opts (long z)
   if (z & AUBIT_O_PASSOK)
     strcat (str, " O_PASSOK");
   A4GL_debug ("FIELD OPTS : %s (%x)", str, z);
+  
 }
 
 

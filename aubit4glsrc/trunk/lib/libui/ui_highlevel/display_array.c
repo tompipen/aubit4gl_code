@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.32 2006-07-04 14:22:56 mikeaubury Exp $
+# $Id: display_array.c,v 1.33 2006-09-29 14:01:59 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.32 2006-07-04 14:22:56 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.33 2006-09-29 14:01:59 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -946,8 +946,9 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
 	  was_disabled = 1;
 	  n2 += AUBIT_O_ACTIVE;
 	}
-      A4GL_debug ("First only set now  %x %x %x", n2, AUBIT_O_ACTIVE,
-		  AUBIT_O_EDIT);
+
+
+      A4GL_debug ("First only set now  %x %x %x", n2, AUBIT_O_ACTIVE, AUBIT_O_EDIT);
       A4GL_ll_set_field_opts (field_list[0], n2);
 
 
