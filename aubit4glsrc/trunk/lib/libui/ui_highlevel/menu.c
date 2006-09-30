@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.39 2006-07-24 21:03:11 mikeaubury Exp $";
+  "$Id: menu.c,v 1.40 2006-09-30 11:31:02 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -394,12 +394,9 @@ A4GL_highlevel_menu_loop (void *menuv)
       return a;
     }
 
+  A4GL_disp_h_menu (menu);
 
-  if (menu->gw_x < 0)
-    {
-      char *ptr = 0;
-      *ptr = 0;
-    }
+    A4GL_assertion(menu->gw_x < 0,"Invalid X position for menu");
 
 /*
    owin=get_curr_win();
@@ -407,7 +404,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 
   //A4GL_gui_actmenu ((int) menu);
 
-  A4GL_display_menu (menu);
+  //A4GL_display_menu (menu);
 
   A4GL_debug ("Refreshed window - going into while loop");
   while (1 == 1)

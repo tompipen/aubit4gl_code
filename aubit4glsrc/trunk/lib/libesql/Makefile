@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.36 2006-09-19 13:20:29 mikeaubury Exp $
+# $Id: Makefile,v 1.37 2006-09-30 11:30:57 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -184,7 +184,7 @@ endif
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
-	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `aubit-config PG_COPTS`
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS`
 
 ###################
 #SAP ESQL/C compiler
