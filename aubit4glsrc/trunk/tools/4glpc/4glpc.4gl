@@ -1112,10 +1112,16 @@ if p_status > 255 then
 	let p_status=p_status/256
 end if
 
+if mv_verbose>4 then
+	display "Status : ",p_status
+end if
+
 let lv_errsize=file_size(mv_errfile)
 
-if lv_errsize<0 then
-	#display "Error - unable to find the size of the error file (",mv_errfile clipped,")"
+if lv_errsize<0 and p_status=0 then
+	if mv_verbose>4 then
+		display "Error - unable to find the size of the error file (",mv_errfile clipped,")"
+	end if
 	return
 end if
 
