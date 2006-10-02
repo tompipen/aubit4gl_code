@@ -1,4 +1,6 @@
 #!/bin/sh
+#This script first generates make file, and then makes Cint library.
+#it is invoked from lib/Makefile as 'cint' target
 
 # Clean:
 rm -f makefile G__cpp_libA4GL_cint.C G__cpp_libA4GL_cint.h *.bak *~ \
@@ -61,6 +63,10 @@ fi
 # Copy lib to Aubit lib dir:
 if test -f libA4GL_cint$SO_EXT; then 
 	mv libA4GL_cint$SO_EXT ../lib
+	#As a workaround for the fact that 'make install' ATM does not make a 
+	#distinction between plug-ins and non-plug-in libraries, we will create
+	#a link in plug-in directorry too:
+	ln -s ../lib/libA4GL_cint$SO_EXT $PLUGINDIR/libA4GL_cint$SO_EXT
 	echo "CINT support library (lib/libA4GL_cint$SO_EXT) created."
 else
 	echo "ERROR: failed to create libA4GL_cint$SO_EXT"

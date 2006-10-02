@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.47 2006-09-19 17:25:43 mikeaubury Exp $
+# $Id: Makefile,v 1.48 2006-10-02 07:52:35 afalout Exp $
 #
 
 ROOT    		=../..
@@ -96,7 +96,7 @@ A4GL_LEXTYPE	=EC
 
 ###############
 #Export to environment
-export A4GL_LEXTYPE A4GL_USE_DATABASE_STMT POSTGRESDIR PGSQL_INCDIR CFLAGS
+export A4GL_LEXTYPE A4GL_USE_DATABASE_STMT POSTGRESDIR PGSQL_INCDIR CFLAGS LD_LIBRARY_PATH
 
 ALL_FORMS		=
 

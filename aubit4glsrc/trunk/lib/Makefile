@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2006-08-28 16:13:31 mikeaubury Exp $
+# $Id: Makefile,v 1.10 2006-10-02 07:52:20 afalout Exp $
 #
 
 ROOT    =..
@@ -92,6 +92,7 @@ LIBIMJABBER_PATH	=${ROOT}/tools/jabber $@
 LOADMAP_PATH		=${ROOT}/tools/loadmap
 AUBITCONFIG_PATH	=resource
 FILESCHEMA_PATH     =libsql/schema_in_file
+MYSQL_PATH     		=libsql/mysql
 LIBPOP_PATH     	=extra_libs/pop
 LIBSMTP_PATH     	=extra_libs/smtp
 LIBPCRE_PATH     	=extra_libs/pcre
@@ -123,6 +124,8 @@ LIBSQLNOSQL_DEPS	=$(wildcard ${LIBSQLNOSQL_PATH}/*.c) $(wildcard ${LIBSQLNOSQL_P
 					$(wildcard ${LIBSQLNOSQL_PATH}/Makefile) ${ALL_H}
 FILESCHEMA_DEPS     =$(wildcard ${FILESCHEMA_PATH}/*.c) \
 					$(wildcard ${FILESCHEMA_PATH}/Makefile) ${ALL_H}
+MYSQL_DEPS     		=$(wildcard ${MYSQL_PATH}/*.c) \
+					$(wildcard ${MYSQL_PATH}/Makefile) ${ALL_H}
 LIBHELP_STD_DEPS	=$(wildcard ${LIBHELP_STD_PATH}/*.per) $(wildcard ${LIBHELP_STD_PATH}/*.4gl) \
 					$(wildcard ${LIBHELP_STD_PATH}/Makefile) ${ALL_H}
 LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*.h) \
@@ -202,7 +205,30 @@ note:
 	@echo "Building: ${ALL}"
 
 check:
-	@for a in $(ALL_LIBS); do if ! test -f $$a ; then  if ! test -f ../plugins/$$a ; then echo "Build check failed : $$a does not exist"; exit 1; fi; fi; done
+#Note: file names in ALL_LIBS allready include absolute path
+#Note: some libraries built here are NOT plug-ins, and do NOT belong to ${PLUGINDIR}
+#for examle A4GL_clint
+	@for a in $(ALL_LIBS); do \
+		if ! test -f $$a ; then  \
+			if ! test -f ${LIBROOT}/`basename $$a` ; then \
+				echo "======================================================================"; \
+				echo "Build check failed : `basename $$a` does not exist as:"; \
+				echo "$$a"; \
+				echo "or"; \
+				echo "${LIBROOT}/`basename $$a`"; \
+				echo "Build of that library/plug-in failed. If you used 'make -k' to force"; \
+				echo "make to continue despite the error, this is expected. Hovewer, absence of this"; \
+				echo "library will prevent 'make install' from working. Either fix the issue that "; \
+				echo "prevents it from compiling succesfully, or disable it in configuration (so build"; \
+				echo "of this library will not be attempted) using './configure --without-xxx' option."; \
+				echo "See './configure --help' for list of all flags and components that can be "; \
+				echo "individually enabled or disabled. If 'configure' reported that it can build it,"; \
+				echo "but build then failed, please report this to Aubit mailing list" ;\
+				echo "======================================================================"; \
+				exit 1; \
+			fi; \
+		fi; \
+	done
 	@echo "All library files built OK"
 
 ## ==================================================================
@@ -364,6 +390,10 @@ ${PLUGINDIR}/libSQL_pgDEVEL${SO_EXT}: ${LIBSQLPG_DEPS}
 ${PLUGINDIR}/libSQL_FILESCHEMA${SO_EXT}: ${FILESCHEMA_DEPS}
 	${MAKE} -C ${FILESCHEMA_PATH}
 
+#Native MySQL plug-in
+${PLUGINDIR}/libSQL_mysql${SO_EXT}: ${MYSQL_DEPS}
+	${MAKE} -C ${MYSQL_PATH}
+	
 ##############
 #libSQL_ (ODBC) plug-ins directly linked with ODBC driver
 
@@ -484,6 +514,7 @@ ${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 ${PLUGINDIR}/libIM_JABBERs${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 	$(MAKE) -C ${LIBIMJABBER_PATH} $@
 	
+cint: ${PLUGINDIR}/libA4GL_cint${SO_EXT_LINKABLE}
 ${PLUGINDIR}/libA4GL_cint${SO_EXT_LINKABLE}:
 	cd ../cint; ${SH} make_cintlib
 
@@ -579,6 +610,7 @@ clean.libsql:
 	${MAKE} -C ${LIBSQLESQL_PATH} clean
 	${MAKE} -C ${LIBSQLPG_PATH} clean
 	${MAKE} -C ${FILESCHEMA_PATH} clean
+	${MAKE} -C ${MYSQL_PATH} clean
 
 clean.libpdf:
 	${MAKE} -C ${LIBEXREPORTPDF_PATH} clean

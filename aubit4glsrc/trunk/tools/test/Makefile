@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.1 2005-03-04 08:11:29 afalout Exp $
+# $Id: Makefile,v 1.2 2006-10-02 07:53:15 afalout Exp $
 #
 
 ROOT    =../..
@@ -103,7 +103,11 @@ default: ${DEFAULT}
 	@echo "| Default simple demo targets successfully compiled                  |"
 	@echo "| Try 'make all' for more example code.                              |"
 	@echo "| You can run compiled demo program 'hello' by executing:            |"
-	@echo "| ./hello${A4GL_EXE_EXT}                                                 |"
+	@echo "|   ./hello${A4GL_EXE_EXT}                                                      |"
+	@echo "| Alternatively, if you did not yet set your run-time environment for|"
+	@echo "| execution of Aubit programs (PATH, LD_LIBRARY_PATH, AUBITDIR, etc) |"
+	@echo "| you can use 'aubit' wrapper script to run programs - for example:  |"
+	@echo "|   aubit ./hello${A4GL_EXE_EXT}                                                |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2006-09-25 08:33:02 mikeaubury Exp $
+# $Id: Makefile,v 1.13 2006-10-02 07:52:22 afalout Exp $
 #
 
 ROOT		=../../..
@@ -181,7 +181,9 @@ ifdef COMSPEC
 endif
 
 ifneq "${COMSPEC}" ""
-	ECPG_INCDIR			:=c:/progra~1/postgr~1/8.1/include 
+#PLEASE DO NOT USE HARD-CODED PATHS UNDER --ANY-- CIRCUMSTANCES! IT'S POINTLESS!
+#	ECPG_INCDIR			:=c:/progra~1/postgr~1/8.1/include
+	ECPG_INCDIR			:=$(shell echo "${ECPG_INCDIR}" | tr '\\' '/')
 #$(shell echo "${ECPG_INCDIR}" | tr '\\' '/')
 	LIBPQ_FE_H_IFLAGS	:=$(shell echo "${LIBPQ_FE_H_IFLAGS}" | tr '\\' '/')
 	ECPG_IFLAGS			:=$(shell echo "${ECPG_IFLAGS}" | tr '\\' '/')

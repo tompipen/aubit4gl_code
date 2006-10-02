@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.199 2006-09-01 19:32:08 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.200 2006-10-02 07:52:15 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -42,7 +42,7 @@ LIBS=
 SH				=@SH@
 SHELL			:=${SH}
 
-#Workarounf for Informix installers messing up libphtread:
+#Workaround for Informix installers messing up libphtread:
 LD_LIBRARY_PATH			:=/lib:${LD_LIBRARY_PATH}
 
 #Name we will use in many places, for consistency:
@@ -221,6 +221,8 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	AUBITDIR=${AUBIT_SRC_ROOT}
 endif
 
+A4GL_VERSION_STRING=@AUBIT_VERSION@_@AUBIT_BUILD@
+
 ifneq "${ROOT}" ""
 	PLUGINDIR=${ROOT}/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
 	LIBROOT=${ROOT}/lib
@@ -232,6 +234,7 @@ ifneq "${AUBIT_SRC_ROOT}" ""
 	PLUGINDIR=${AUBIT_SRC_ROOT}/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
 	LIBROOT=${AUBIT_SRC_ROOT}/lib
 endif
+export PLUGINDIR
 
 #optionally, override things set in environment:
 ifneq "${ENVOVERRIDE}" "NO"
@@ -545,6 +548,20 @@ C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H ${YYDEBUG}
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
+
+################
+#Make sure we have access to Ifx libs - in case user did not configure
+#his env correctly. We can deal with PATH, -I and -L in 4glpc config files,
+#but Aubit plug-ins (needed by compiler) will fail to load unless this is allready set
+LD_LIBRARY_PATH		:=${LD_LIBRARY_PATH}:${INFORMIXDIR}/lib;${INFORMIXDIR}/lib/esql;
+
+################
+#Make sure we can find Ifx executables - this is needed only for 4glc when
+#used directly - not for 4glpc, Since Amake still uses 4glc, we need this in 
+#cases user just dumped Informix CSDK without setting environment properly,
+#and then forced it to be configured with --with-informix=xxx
+PATH				:=${PATH}:${INFORMIXDIR}/bin
+
 
 #To let know 4glpc we are in process of making compiler, and not
 #compiling 4gl programs
@@ -940,6 +957,7 @@ IFX_LIBS            =@IFX_LIBS@
 INFORMIXC			=@INFORMIXC@
 INFORMIXDIR			=@INFORMIXDIR@
 INFORMIXDIR_UNQUOTED=@INFORMIXDIR_UNQUOTED@
+export INFORMIXDIR
 
 # Querix 
 Q_ESQLC				=@Q_ESQLC@
@@ -1021,6 +1039,9 @@ ECPG_IFLAGS			=@ECPG_IFLAGS@
 HAVE_PGSQL_LIB		=@HAVE_PGSQL_LIB@
 POSTGRESDIR			=@POSTGRESDIR@
 
+#MySQL
+MYSQL_LFLAGS		=@MYSQL_LFLAGS@
+MYSQL_IFLAGS		=@MYSQL_IFLAGS@
 
 # SAP DB / MaxDB
 SAPDB_ESQLC			=@SAPDB_ESQLC@

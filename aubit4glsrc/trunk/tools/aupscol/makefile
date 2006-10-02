@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.6 2004-10-08 02:47:21 afalout Exp $
+# $Id: makefile,v 1.7 2006-10-02 07:52:40 afalout Exp $
 #
 
 # Currently Informix only
@@ -52,7 +52,10 @@ export A4GL_LEXDIALECT
 #INFORMIXC=gcc
 #export INFORMIXC
 
-4GLC=${FGLPCEXEC} ${VERBOSE_FLAG}
+#4GLC=${FGLPCEXEC} ${VERBOSE_FLAG}
+#FGLPC_VERBOSE_FLAG=-V5
+4GLC			=4glpc ${FGLPC_VERBOSE_FLAG}
+
 
 ALL=${ROOT}/bin/aupscol
 

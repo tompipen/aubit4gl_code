@@ -1,4 +1,4 @@
-#dnl # +----------------------------------------------------------------------+
+dnl # +----------------------------------------------------------------------+
 dnl # | Aubit 4gl Language Compiler Version $.0                              |
 dnl # +----------------------------------------------------------------------+
 dnl # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.323 2006-09-15 19:45:10 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.324 2006-10-02 07:52:11 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -402,6 +402,10 @@ AC_SUBST(INFORMIXC)
 
 #Informix ODBC
 AC_SUBST(HAVE_IFXODBC)
+
+#MySQL
+AC_SUBST(MYSQL_LFLAGS)
+AC_SUBST(MYSQL_IFLAGS)
 
 #SAP DB ESQL/C
 AC_SUBST(SAPDB_ESQLC)
@@ -1880,6 +1884,7 @@ if test "$withval" != "no"; then
 
 	############ database ##########
 	if test "$with_sapdb" = ""; then			with_sapdb=yes 		;fi
+	if test "$with_mysql" = ""; then			with_mysql=yes 		;fi	
 	if test "$with_pgsql" = ""; then            with_pgsql=yes 		;fi
 	if test "$with_pgsqleng" = ""; then         with_pgsqleng=yes   ;fi	
 	if test "$with_sqlite" = ""; then           with_sqlite=yes     ;fi
@@ -1949,6 +1954,7 @@ fi
 
 	if test "$prefix" = "NONE"; then
         #Defaults:
+		CUSTOM_PREFIX=0		
 		if test "$cygwin" = "1" ; then
 			#/opt is not created by default on CygWin installations
 			prefix=/usr/local/$SHORTNAME
@@ -1957,6 +1963,7 @@ fi
 	    fi
 	else
         #User specified:
+		CUSTOM_PREFIX=1		
 		if test -d "$prefix"; then
 			#We expect user to specify a full installation path;
             #nothing will be added to it, so if he specifies "/usr" Aubit
@@ -1972,27 +1979,33 @@ fi
 		fi
 	fi
 
-    #must create it now, otherwise -w test will fail
-	if ! test -d "$prefix"; then
-		mkdir "$prefix"
-	fi
-
 	AC_MSG_CHECKING(install root 'prefix=$prefix')
+
+	#must create it now, otherwise -w test will fail
+	if ! test -d "$prefix"; then
+		mkdir "$prefix" > /dev/null 2>&1
+	fi
+	
 	if test -w "$prefix"; then
 		AC_MSG_RESULT(Yes ($prefix))
     else
-        #Some scripts (like aubitbuild) will fail if we just decide to switch
-        #install location from what they specified using --prefix flag, so
-        #we better stop here:
-
-		AC_MSG_ERROR(Cannot determine install path. Try using HOME (--prefix=$HOME) Stop.)
-		#if test -w "$HOME"; then
-		#	prefix=$HOME/$SHORTNAME
-		#	AC_MSG_RESULT(No (will use HOME ($prefix) instead))
-        #else
-		#	AC_MSG_ERROR(Cannot determine install path. HOME=$HOME Stop.)
-        #fi
+		if test "$CUSTOM_PREFIX" = "1"; then
+			#Some scripts (like aubitbuild) will fail if we just decide to switch
+			#install location from what they specified using --prefix flag, so
+			#we better stop here:
+	
+			AC_MSG_ERROR(User specified prefix ($prefix) is invalid. Try using HOME (--prefix=$HOME) Stop.)
+		else
+			if test -w "$HOME"; then
+				prefix=$HOME/$SHORTNAME
+				AC_MSG_RESULT(No (using $prefix instead))
+			else
+				AC_MSG_WARN(Cannot determine install path. HOME=$HOME)
+				AC_MSG_ERROR(Please specify it using --prefix=x flag manually)
+			fi
+		fi
     fi
+
 
 #INST_BASE=$prefix/$SHORTNAME
 INST_BASE=$prefix
@@ -2041,7 +2054,8 @@ A4GL_DBPATH=$aubitdir/tools:$INST_BASE/tools
     fi
 
     if test "$AUBITETC" != "/etc/opt/$SHORTNAME"; then
-		AC_MSG_WARN(Installing aubitrc for current user only - no global settings)
+		AC_MSG_WARN(Installing aubitrc for current user only)
+		AC_MSG_WARN(No system global settings will be created)
         #For sittuations like this we could get Autoconf values directly into
         #resource.c, but this would mess things up badly if user uses binary
         #files created this way to create installer and install them on another
@@ -2201,7 +2215,7 @@ ALL_SH="aubit ecpg_wrap $AMAKE_SH"
 AMAKE_INCL_FILES="header.mki footer.mki footer2.mki footer-c.mki a4gl.mk \
 		q4gl.mk d4gl.mk i4gl.mk"
 
-#TODO: check that all of this is reallu needed in bynary installations:
+#TODO: check that all of this is really needed in binary installations:
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
         a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
 		a4gl_API_menu.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h a4gl_expr.h \
@@ -3121,7 +3135,9 @@ AC_PATH_PROG(LCLINTEXE,lclint,no)
 		fi
     fi
 
-AC_PATH_PROG(LDCONFIG, ldconfig, no)
+#On recent SuSE ldconfig is under /sbin, which is not in path by default, so:
+AC_PATH_PROG(LDCONFIG, ldconfig, no, $PATH /sbin)
+
 AC_PATH_PROG(AUTOCONF, autoconf, no)
 AC_PATH_PROG(ACLOCAL, aclocal, no)
 
@@ -3194,6 +3210,8 @@ AC_ARG_WITH(orbit,
 				else
 					AC_MSG_RESULT(no - missing orbit-idl-2)
 				fi
+			else
+				AC_MSG_RESULT(no - missing orbit-config)
 			fi
 		fi
 	else
@@ -3342,6 +3360,98 @@ fi
 #	JABBERBUILD="no"
 #fi
 
+## ==================================================================
+##            Check for MySQL client library
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for MySQL client library support:)
+
+AC_ARG_WITH(mysql,
+[  --with-mysql[=DIR]          Include MySQL client library support.  DIR is MySQL base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+
+		if test "$withval" = "yes"; then
+    		withval=/usr/local
+		    CUSTOM_WITHVAL=0
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+
+		old_CFLAGS="$CFLAGS"
+		old_LIBS="$LIBS"
+		old_CPPFLAGS="$CPPFLAGS"
+		old_LDFLAGS="$LDFLAGS"
+
+		if test "$COMSPEC" != ""; then
+			withval="`$CYGPATH -m $withval`"
+		fi
+		
+		MYSQL_LFLAGS="-L$withval/lib"
+		MYSQL_IFLAGS="-I$withval/include -I/usr/include/mysql"
+
+		CFLAGS="$MYSQL_IFLAGS $CFLAGS"
+		LDFLAGS="$MYSQL_LFLAGS $LDFLAGS"
+		CPPFLAGS="$MYSQL_IFLAGS $CPPFLAGS"
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "withval=$withval"
+			echo "CFLAGS=$CFLAGS"
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+
+		AC_CHECK_LIB([mysqlclient], [main])
+
+		if test $ac_cv_lib_mysqlclient_main = yes; then
+			if test "$AUBIT_SOURCE" = "1" ; then
+				AC_CHECK_HEADERS([ mysql.h ])
+
+				if test "$ac_cv_header_mysql_h" = "yes"  ; then
+					SQL_MYSQL=yes
+					
+					if test "$COLLECT_THIRD_PARTY" = "1"; then
+						if test "$COMSPEC" != ""; then
+							x=`$CYGPATH -u $withval` 
+						fi
+						#Only static lib created by compiling from source on Windows
+						#THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+						#MPZ#$x/bin/libgmp.dll"
+					fi
+		        else
+					AC_MSG_RESULT(Missing header file)
+					SQL_MYSQL=no
+		        fi
+		    else
+				SQL_MYSQL=yes
+		    fi
+		else
+			AC_MSG_RESULT(Missing MySQL client library file)
+			SQL_MYSQL=no
+		fi
+
+		AC_MSG_CHECKING(MySQL client support)
+		AC_MSG_RESULT($SQL_MYSQL)
+
+		
+		CFLAGS="$old_CFLAGS"
+		LIBS="$old_LIBS"
+		CPPFLAGS="$old_CPPFLAGS"
+		LDFLAGS="$old_LDFLAGS"
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-mysql not specified)
+])
+
+if test "$enable_stop_mysql" = "yes" ; then
+	exit
+fi
+
 
 ## ==================================================================
 ##            Check for mpz library (large integers) for exdatatype
@@ -3452,7 +3562,12 @@ AC_ARG_WITH(xmlrpc,
 			if test "$COMSPEC" != "" -a "$MSYS_ROOTDIR" != ""; then
 				withval="$MSYS_ROOTDIR/local"
 			else
+				#Source code installs under /usr/local			
 	    		withval=/usr/local
+				#Suse RPM installs under /lib by default
+				#withval=/usr
+				#WARNING: Suse RPMs seem to be broken and have no xmlrpc_client_init
+				#function or xmlrpc_client.h
 			fi
 		else
 			#user specified custom withval
@@ -3856,18 +3971,13 @@ AC_ARG_WITH(pcre,
 		AC_CHECK_HEADERS([ pcre.h ])
 		AC_MSG_CHECKING(if we can use PCRE)
 		if test "$ac_cv_lib_pcre_main" = "yes"; then
-			if test "$ac_cv_header_pcre_h" != "yes" ; then
-				if test  "$cygwin" = 1; then
+			if test "$ac_cv_header_pcre_h" != "yes"; then
 				#On Windows binary distro of pcre, there are no header files
 				#This also takes care of cases when we find libpcre suplied
 				#with Apache, but there is no header file
 				PCRE_INC_PATH="$aubitdir/tools/cygwin"
-				HAVE_PCRELIB=1
-			else
-					AC_MSG_RESULT(no)
-					HAVE_PCRELIB=0
-				fi
 			fi
+			HAVE_PCRELIB=1
 			AC_MSG_RESULT(yes)
 			if test "$COLLECT_THIRD_PARTY" = "1"; then
 				THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
@@ -4022,7 +4132,7 @@ AC_ARG_WITH(smtp,
 			AC_MSG_RESULT(yes)
 		else
 			AC_MSG_RESULT(no)
-	    	fi
+	    fi
 		
 		#Restore values
 		LIBS="$old_LIBS"
@@ -4786,8 +4896,6 @@ if test "$LIBS" != ""; then
 fi	
 
 
-#<This block was compied from PHP 3.x configure.in -------------------->
-
 ## ==================================================================
 ##                 Checks for Informix ESQL/C support
 ## ==================================================================
@@ -4800,6 +4908,16 @@ AC_ARG_WITH(informix,
                           ${INFORMIXDIR:-nothing}.],
 [
 	if test "$withval" != "no"; then
+		if test "$withval" != "yes"; then
+			if test "$INFORMIXDIR" = ""; then
+				export INFORMIXDIR="$withval"
+				AC_MSG_WARN(INFORMIXDIR not set in environment - setting it form value)
+				AC_MSG_WARN(of --with-informix flag specified:$withval)
+				AC_MSG_WARN(You may want to set INFORMIXDIR in your environment)
+				AC_MSG_WARN(yourself, as some Informix tools may depend on it)
+			fi
+		fi
+	
 		if test "$INFORMIXDIR" = "" -a "$force_informix" != "yes" ; then
 			INFORMIX_WARNING=1
 			AC_MSG_RESULT(no)
@@ -4853,14 +4971,18 @@ AC_ARG_WITH(informix,
 				IFX_LIBDIR="-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql"
 			else
 				#user specified custom withval
+				if test "$withval" != "$INFORMIXDIR"; then
+					INFORMIX_WARNING=2
+				fi
+
 				INFORMIXDIR="$withval"
 				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IESQLC"
 				WARN_LD_LIBRARY_PATH=1
 				IFX_INCDIR="$withval/incl/esql"
 				IFX_LIBDIR="-L$withval/lib -L$withval/lib/esql"
-				if test "$withval" != "$INFORMIXDIR"; then
-					INFORMIX_WARNING=2
-				fi
+				#Make sure that installation we are looking for is on top of PATH:
+				export PATH="$INFORMIXDIR/bin:$PATH"
+				
     		fi
 
 			if test "$INFORMIXDIR" = ""; then
@@ -8263,7 +8385,12 @@ else
     	#A4GL_SQLTYPE=FIXME-ec
     #fi
 
-
+	if test "$SQL_MYSQL" = "yes" ; then
+		A4GL_LEXTYPE=C
+		A4GL_SQLTYPE=mysql
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+	fi
+	
 	############# native drivers ####################
 	#non existant:
 	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
@@ -8278,7 +8405,6 @@ else
 	if test "$A4GL_SQLTYPE" = "nosql"; then 
 	#as a last resort, use SQLIte (if we have it) if we still dont 
 	#have default SQL plug-in at this point 
-	
 		
 		############# SQLite via ODBC ####################
 		#This will never happen, since SQLIte native connector will allways "win"
@@ -8618,6 +8744,13 @@ PLUGIN_NO_LINKABLE=
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.esql"
 	fi
 
+	if test "$SQL_MYSQL" = "yes" ; then
+		PLUGIN_YES="$PLUGIN_YES SQL_mysql"
+	else
+        PLUGIN_NO="$PLUGIN_NO SQL_mysql"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.mysql.client"
+	fi
+	
 	if test "$HAVE_PGODBC" = "yes" ; then
         PLUGIN_YES="$PLUGIN_YES SQL_pgodbc"
 	else
@@ -9461,7 +9594,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.323 2006-09-15 19:45:10 mikeaubury Exp $
+| $Id: configure.in,v 1.324 2006-10-02 07:52:11 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
