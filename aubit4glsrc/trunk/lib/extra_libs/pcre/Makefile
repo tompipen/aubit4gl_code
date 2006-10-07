@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2006-09-11 17:26:55 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2006-10-07 14:43:38 mikeaubury Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -50,11 +50,13 @@
 
 ROOT    =../../..
 
+include ${ROOT}/incl/Makefile-common
+
 LFLAGS	=-L${PCRE_LIB_PATH}/bin -lpcre
-IFLAGS	=-I${PCRE_INC_PATH}
+IFLAGS	=-I${PCRE_INC_PATH} -I/usr/include/pcre
+CFLAGS  +=-I${PCRE_INC_PATH} -I/usr/include/pcre
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
 ##                              Options
@@ -76,11 +78,8 @@ ALL=${PLUGINDIR}/libA4GL_pcre${SO_EXT}
 all : ${ALL}
 
 ${PLUGINDIR}/libA4GL_pcre${SO_EXT}: match.o
-#	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
-#	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL} -lspopc
 #	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
-	
-	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL} -o $@ ${LFLAGS}
+	${4GLPC_EXEC} -o $@ $^ ${VERBOSE_FLAG} ${IFLAGS} ${AS_DLL}  ${LFLAGS} 
 	@echo "PCRE library sucesfully compiled."
 
 

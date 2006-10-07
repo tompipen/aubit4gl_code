@@ -478,7 +478,7 @@ ECPG_IFLAGS="@ECPG_IFLAGS@"
 POSTGRESDIR="@POSTGRESDIR@"
 LIBPQ_FE_H_IFLAGS="@LIBPQ_FE_H_IFLAGS@"
 #Path and name of PostgreSQL ESQL compiler (ecpg):
-PG_ESQLC="@PG_ESQLC@"
+#PG_ESQLC="@PG_ESQLC@"
 
 #####################
 #Workaround for PG ecpg problem (see test #24)

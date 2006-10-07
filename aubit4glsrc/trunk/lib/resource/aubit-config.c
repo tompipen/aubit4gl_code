@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.22 2006-09-14 13:26:32 briantan Exp $
+# $Id: aubit-config.c,v 1.23 2006-10-07 14:43:39 mikeaubury Exp $
 #
 */
 
@@ -87,7 +87,6 @@ void A4GL_pause_execution(void );
 int
 main (int argc, char *argv[])
 {
-
 
   if (argc != 2)
     {

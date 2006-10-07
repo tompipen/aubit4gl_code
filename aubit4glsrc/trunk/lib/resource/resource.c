@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.124 2006-10-02 07:52:31 afalout Exp $
+# $Id: resource.c,v 1.125 2006-10-07 14:43:39 mikeaubury Exp $
 #
 */
 
@@ -57,7 +57,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-//#define DEBUG_VARIABLE_USAGE
+#define DEBUG_VARIABLE_USAGE
 
 #if (defined (__MINGW32__))
 #ifndef _AUBITETC_
@@ -397,9 +397,10 @@ struct str_resource builtin_resource[] = {
 #endif
 
 #ifdef POSTGRESDIR
-
 	#ifdef PG_ESQLC
-  	{"PG_ESQLC",PG_ESQLC},
+  		{"PG_ESQLC",PG_ESQLC},
+	#else
+  		{"PG_ESQLC","ecpg"},
 	#endif
 	
 	#if HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H
@@ -417,6 +418,8 @@ struct str_resource builtin_resource[] = {
 			#endif
 		#endif
 	#endif
+#else
+  	{"PG_ESQLC","ecpg"},
 #endif
 
   /* End of definitions */
@@ -580,7 +583,7 @@ find_str_resource (char *s)
   if (ptr)
     {
 #ifdef DEBUG_VARIABLE_USAGE
-	if (fd1) fprintf(fd1,"Found resource %s in %s\n",s,f?"user":"builtin");
+	if (fd1) fprintf(fd1,"Found resource %s in %s - %s\n",s,f?"user":"builtin",ptr);
 #endif
 
 
@@ -1244,7 +1247,19 @@ add_resources_in (FILE * resourcefile)
 	  a = has_resource (buff);
 	  if (a != -1)
 	    {			/* overwrite an existing entry */
-	      strcpy (build_resource[a].value, ptr);
+		char *ptr2;
+		ptr2=ptr;
+		if (strcmp(buff,"PG_ESQLC")==0) { 
+			// By mistake - this may be in the .aubit4gl/aubitrc file
+			// with an empty value
+			// This will stop ecpg working...
+			// - so lets filter that condition out...
+			if (strlen(ptr)==0|| strcmp(ptr,"\"\"")==0) ptr2=0;
+		} 
+
+		if (ptr2) {
+	      		strcpy (build_resource[a].value, ptr);
+		}
 	    }
 	  else
 	    {
