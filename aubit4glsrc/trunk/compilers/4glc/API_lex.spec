@@ -59,8 +59,10 @@ print_continue_block int n,int brace char* why -> void
 print_end_block int n -> void
 
 print_continue_loop int n,char* s -> void
+get_array_rebase char* s -> char*
+change_arr_elem char* s -> char*
 
-print_exit_loop int type,int n -> void
+print_exit_loop int type,int n char* s -> void
 
 print_rep_ret int report_cnt int dolog -> void
 
@@ -303,7 +305,7 @@ print_execute char* stmt,int exec_using -> void
 
 print_execute_immediate char* stmt -> void
 
-print_prompt_1 t_expr_str_list* expr char* a1,char* a2,char* a3,char* a4,int timeout char* style -> void
+print_prompt_1 t_expr_str_list* expr char* a1,char* a2,char* a3,char* a4,int timeout char* style char* promptvar -> void
 
 print_prompt_forchar -> void
 

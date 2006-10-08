@@ -352,8 +352,7 @@ let_var: let_array_r_variable {
 
   if (b != 0)
     {
-      sprintf ($<str>$, "%s.%s[%s-1] ", $<str>1, $<str>3,$<str>5);
-      //A4GL_lex_printcomment ("/* array variable %s*/\n", $<str>$);
+      sprintf ($<str>$, "%s.%s[%s] ", $<str>1, $<str>3,get_array_rebase($<str>5));
     }
   else
     {
@@ -393,7 +392,7 @@ let_var: let_array_r_variable {
 
   if (b != 0)
     {
-      sprintf (buff, "%s.%s[%s-1] ", $<str>1, $<str>3,$<str>5);
+      sprintf (buff, "%s.%s[%s] ", $<str>1, $<str>3,get_array_rebase($<str>5));
       sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M1 */", fgl_add_scope(buff,0), a, $<str>8);
       A4GL_lex_printcomment ("/* subscript on array variable %s*/\n", $<str>$);
     }

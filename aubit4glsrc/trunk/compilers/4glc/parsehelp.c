@@ -592,17 +592,17 @@ exit_loop (char *cmd_type)
     }
   if (strcmp (cmd_type, "MENU") == 0)
     {
-      print_exit_loop ('M', command_stack[a].block_no);
+      print_exit_loop ('M', command_stack[a].block_no,"MENU");
       printed = 1;
     }
   if (strcmp (cmd_type, "PROMPT") == 0)
     {
-      print_exit_loop ('P', 0);
+      print_exit_loop ('P', 0,"PROMPT");
       printed = 1;
     }
   if (printed == 0)
     {
-      print_exit_loop (0, command_stack[a].block_no);
+      print_exit_loop (0, command_stack[a].block_no,cmd_type);
     }
 }
 

@@ -1,6 +1,5 @@
 %token <str> NAME
 %left KW_COMMA
-%token FINPUT
 %right KW_ASCII COLUMN KW_SPACES KW_USING KW_WORDWRAP
 %left WHERE
 %left KW_OR         

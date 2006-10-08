@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.283 2006-09-28 21:31:18 mikeaubury Exp $
+# $Id: mod.c,v 1.284 2006-10-08 11:24:08 mikeaubury Exp $
 #
 */
 
@@ -1743,6 +1743,7 @@ push_blockcommand (char *cmd_type)
 {
 int ccnt;
 ccnt=A4GL_get_ccnt();
+//printf("push block : %d %s\n",ccnt,cmd_type);
   A4GL_debug ("START BLOCK %s", cmd_type);
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
   A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);
@@ -2411,17 +2412,17 @@ exit_loop (char *cmd_type)
     }
   if (strcmp (cmd_type, "MENU") == 0)
     {
-      print_exit_loop ('M', command_stack[a].block_no);
+      print_exit_loop ('M', command_stack[a].block_no,cmd_type);
       printed = 1;
     }
   if (strcmp (cmd_type, "PROMPT") == 0)
     {
-      print_exit_loop ('P', 0);
+      print_exit_loop ('P', 0,cmd_type);
       printed = 1;
     }
   if (printed == 0)
     {
-      print_exit_loop (0, command_stack[a].block_no);
+      print_exit_loop (0, command_stack[a].block_no,cmd_type);
     }
 }
 
@@ -3456,6 +3457,7 @@ num_arr_elem (char *s)
   return c;
 }
 
+#ifdef MOVED
 /**
  *
  *
@@ -3467,26 +3469,36 @@ change_arr_elem (char *s)
   static char buff[1024];
   int a;
   char buff2[2];
+  char *lptr;
+  int slen;
   buff2[1] = 0;
   buff[0] = 0;
-  strcpy (buff, "(");
+  strcpy (buff, "");
   A4GL_debug ("change_arr_elem: %s", s);
-  for (a = 0; a < strlen (s); a++)
+  lptr=s;
+
+  slen=strlen (s);
+
+  for (a = 0; a < slen; a++)
     {
       if (s[a] == ',')
 	{
-	  strcat (buff, ")-1][(");
+	  s[a]=0;
+	  strcat(buff,get_array_rebase(lptr));
+	  strcat(buff,"][");
+	  lptr=s+a+1;
 	}
       else
 	{
-	  buff2[0] = s[a];
-	  strcat (buff, buff2);
+	  //buff2[0] = s[a];
+	  //strcat (buff, buff2);
 	}
     }
-  strcat (buff, ")-1");
+  strcat (buff, get_array_rebase(lptr));
   A4GL_debug ("Generated... %s", buff);
   return buff;
 }
+#endif
 
 /**
  * Executed at the end of the parsing process by bison.
@@ -4468,7 +4480,11 @@ do_clobbering (char *f, char *s)
       return buff;
     }
 
+  if (strlen(f)) {
   SPRINTF2 (buff, "\"%s_%s\"", f, s);
+  } else {
+  SPRINTF1 (buff, "\"%s\"",  s);
+  }
 
   if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSCLOBBER")))
     {
@@ -4501,7 +4517,11 @@ do_clobbering_sql (char *f, char *s)
       return buff;
     }
 
+  if (strlen(f)) {
   SPRINTF2 (buff, "\"%s_%s\"", f, s);
+  } else {
+  SPRINTF1 (buff, "\"%s\"",  s);
+  }
 
   if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSSQLCLOBBER")))
     {

@@ -222,7 +222,7 @@ int npush_menu (void);
 void pop_menu (void);
 int setrecord (char *s, char *t, char *c);
 int num_arr_elem (char *s);
-char *change_arr_elem (char *s);
+//char *change_arr_elem (char *s);
 int system_var (char *s);
 void inc_report_cnt (void);
 int last_var_is_linked (char *tabname, char *pklist);

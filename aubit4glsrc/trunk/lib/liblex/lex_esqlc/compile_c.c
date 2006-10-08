@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.328 2006-09-27 20:15:34 mikeaubury Exp $
+# $Id: compile_c.c,v 1.329 2006-10-08 11:24:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.328 2006-09-27 20:15:34 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.329 2006-10-08 11:24:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1067,7 +1067,7 @@ LEXLIB_print_continue_loop (int n, char *cmd_type)
  * @param n The loop number
  */
 void
-LEXLIB_print_exit_loop (int type, int n)
+LEXLIB_print_exit_loop (int type, int n,char *cmdtype)
 {
   if (type == 'M')
     {
@@ -3622,7 +3622,7 @@ LEXLIB_print_onkey_2 (void)
 void
 LEXLIB_print_onkey_2_prompt (void)
 {
-  print_exit_loop ('P', 0);
+  print_exit_loop ('P', 0,"PROMPT");
   printc ("}");
 }
 
@@ -5485,7 +5485,7 @@ LEXLIB_print_undo_use (char *s)
  * @param a4 The prompt attributes
  */
 void
-LEXLIB_print_prompt_1 (t_expr_str_list *expr, char *a1, char *a2, char *a3, char *a4, int timeout,char *Style)
+LEXLIB_print_prompt_1 (t_expr_str_list *expr, char *a1, char *a2, char *a3, char *a4, int timeout,char *Style,char *promptvar)
 {
   A4GL_print_expr_list_concat(expr);
   printc ("{char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n",get_sio_ids("PROMPT"), sizeof (struct s_prompt),get_sio_ids("PROMPT"),timeout);
@@ -8106,3 +8106,40 @@ static char buff[256];
 SPRINTF2(buff,"%s,%s",fname,sub);
 return buff;
 }
+
+
+char *LEXLIB_get_array_rebase(char *s) {
+	char *a;
+	a=malloc(strlen(s)+20);
+	sprintf(a,"%s-1",s);
+	return a;
+}
+
+
+char *
+LEXLIB_change_arr_elem (char *s)
+{
+	  static char buff[1024];
+	    int a;
+	      char buff2[2];
+	        buff2[1] = 0;
+		  buff[0] = 0;
+		    strcpy (buff, "(");
+		      A4GL_debug ("change_arr_elem: %s", s);
+		        for (a = 0; a < strlen (s); a++)
+				    {
+					          if (s[a] == ',')
+							          {
+									            strcat (buff, ")-1][(");
+										            }
+						        else
+								        {
+										          buff2[0] = s[a];
+											            strcat (buff, buff2);
+												            }
+							    }
+			  strcat (buff, ")-1");
+			    A4GL_debug ("Generated... %s", buff);
+			      return buff;
+}
+
