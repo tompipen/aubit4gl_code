@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.106 2006-09-27 09:13:27 mikeaubury Exp $
+# $Id: Makefile-install.mki,v 1.107 2006-10-10 05:45:45 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -200,7 +200,10 @@ deinstall.files:
 	-${MAKE} -C $(INSTALL_DIR)/tools/test/gui clean
 #Remove files as they are installed - Do not remove files from ${FROMHOME}
 	${RM} ${FROMBIN} ${FROMLIB} ${FROMDOCS} ${FROMTEST} ${FROMETC} \
-	${FROMROOT} ${FROMINCL} ${FROMIDE} ${FROMCONVSQL} ${FROMIMPORT}
+	${FROMROOT} ${FROMINCL} ${FROMIDE} ${FROMCONVSQL} ${FROMIMPORT} \
+	${FROMSETTINGS} ${FROMPLUGIN}
+#Remove possibly present previous version of libaubit4gl:
+	-${RM} $(INSTALL_DIR)/lib/libaubit4gl-*${SO_EXT}
 #Drop Autoconf support directory:
 	rm -rf $(INSTALL_DIR)/etc/config
 #files created after installation, and by Autoconf:
@@ -219,8 +222,18 @@ deinstall.tree:
 	-rmdir $(INSTALL_DIR)/incl
 	-rmdir $(INSTALL_DIR)/tools/test/gui
 	-rmdir $(INSTALL_DIR)/tools/test
+	-rmdir $(INSTALL_DIR)/tools/4glpc/settings
+	-rmdir $(INSTALL_DIR)/tools/4glpc
 	-rmdir $(INSTALL_DIR)/tools
 	-rmdir $(INSTALL_DIR)/docs
+	-rmdir $(INSTALL_DIR)/plugins-${A4GL_VERSION_STRING}
+#Force delete any plugin directories possibly present from previous
+#versions that where not properly de-installed, but avoid current version
+	-@x=`ls -d $(INSTALL_DIR)/plugins-* 2>/dev/null | grep -v ${A4GL_VERSION_STRING}`; \
+		for one in $$x; do \
+			echo "Forcing remove of previous version plug-in directory $$one";\
+			rm -rf "$$one";\
+		done;
 	-rmdir $(INSTALL_DIR)
 
 #######################################
@@ -973,6 +986,23 @@ CCCC_INFO		=http://cccc.sourceforge.net/
 CCCC_PATH		=http://optusnet.dl.sourceforge.net/sourceforge/cccc
 CCCC_SRC_NAME	=cccc-3.pre84
 CCCC_SRC_TAR_GZ	=${CCCC_SRC_NAME}.tar.gz
+
+
+###################
+# 37: SMTP library (send mail)
+SMTP_INFO		=http://libsmtp.berlios.de/
+SMTP_PATH		=http://download.berlios.de/libsmtp
+SMTP_SRC_NAME	=libsmtp-0.8.5
+SMTP_SRC_TAR_BZ2=${SMTP_SRC_NAME}.tar.bz2
+
+###################
+# 38: Ingres
+#INGRES_INFO	=http://opensource.ca.com/projects/ingres
+INGRES_INFO		=http://opensource.ingres.com/projects/ingres
+#INGRES_PATH	=http://opensource.ca.com/projects/ingres/files/ab.int.lnx.ga/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz/view
+INGRES_PATH		=http://downloads.ingres.com/download
+INGRES_BIN_NAME	=ingres2006-9.0.4-104-NPTL-gpl-pc-linux-i386
+INGRES_BIN_TGZ	=${INGRES_BIN_NAME}.tgz
 
 
 ## ==================================================================
@@ -1942,14 +1972,90 @@ install.cccc: ${CCCC_SRC_TAR_GZ}
 	@echo " "
 	@echo "Package info & manuals: ${CCCC_INFO}"
 	@echo " "
-	@echo "SXML installed.  Please re-run 'configure' to detect changes."
+	@echo "CCCC (C and C++ Code Counter) installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
-install.ingres: ingres-3.0.1.109-GA-pc-linux-i386.tar.gz
+###################
+# 37: SMTP lib
+install.smtp: ${SMTP_SRC_TAR_BZ2}
+	cd /tmp; cp ${AUBIT_SRC_ROOT}/$^ .; bunzip2 $^; tar -xf ${SMTP_SRC_NAME}.tar 
+	cd /tmp/${SMTP_SRC_NAME}; ./configure; make; make install	
+	@echo " "
+	@echo "Package info & manuals: ${SMTP_INFO}"
+	@echo " "
+	@echo "SMTP installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+	@echo " NOTE: libsmtp requires old-style gtk-config and libglib from GTK+ 1.2"
+	@echo " You can use gtk1-compat-devel that emulates gtk-config for GTK+ 2.0"
+	@echo " You can link libglib-2.0.so to libglib.so - it will work."
+	@echo " "
+	
+#installs:
+#/usr/local/lib/libsmtp.a
+#/usr/local/lib/libsmtp_mime.a
+#/usr/local/include/libsmtp.h
+#/usr/local/include/libsmtp_mime.h
+	
+	
+###################
+# 38: Ingres
+install.ingres: ${INGRES_BIN_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${INGRES_BIN_NAME};
+#	as root:
+#	ingres_express_install.sh [-tar] [Installation ID] [Install dir]
+	
+#II_SYSTEM: /opt/Ingres/IngresII
+#II_INSTALLATION: II
 
-ingres-3.0.1.109-GA-pc-linux-i386.tar.gz:
-#	wget http://opensource.ca.com/projects/ingres/files/ab.int.lnx.ga/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz
-	wget http://opensource.ca.com/projects/ingres/files/ab.int.lnx.ga/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz/view/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz
+#System user ingres has been created but no password has been set.
+#Please set the password to enable login for this user.
+
+#   1:ingres2006             ########################################### [ 11%]
+#II_INSTALLATION configured as II.
+#   2:ingres2006-dbms        ########################################### [ 22%]
+#Setting up Ingres 2006 Intelligent DBMS, this may take some time...
+#See /opt/Ingres/IngresII/ingres/files/install.log for more info.
+#   3:ingres2006-net         ########################################### [ 33%]
+#Building the password validation program 'ingvalidpw'.
+#Executable successfully installed.
+#   4:ingres2006-abf         ########################################### [ 44%]
+#   5:ingres2006-ice         ########################################### [ 56%]
+#Setting up Ingres 2006 Web Deployment Option, this may take some time...
+#See /opt/Ingres/IngresII/ingres/files/install.log for more info
+#Ingres/ICE stages
+#
+#    1 to 8
+
+#have been set up in this installation.
+
+#To use ICE
+#  You must enable your ICE server (cbf)
+#  You must configure your html home directory for your Web server
+#  You must configure your Web server for ICE, please see the ICE documentation
+
+#   6:ingres2006-jdbc        ########################################### [ 67%]
+#   7:ingres2006-odbc        ########################################### [ 78%]
+#   8:ingres2006-rep         ########################################### [ 89%]
+#   9:ingres2006-star        ########################################### [100%]
+#Ingres 9.0.4 has installed successfully.
+#The instance will now be started...
+#
+#Starting Ingres, instance II
+
+	
+	
+	@echo " "
+	@echo "Package info & manuals: ${INGRES_INFO}"
+	@echo " "
+	@echo "Ingres installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+	@echo " "
+
+
+
+
+
 
 ###########################################################################
 #			Targets for downloading installation files:
@@ -2089,7 +2195,11 @@ ${UNIXODBC_RPM}:
 	${WGET} ${UNIXODBC_PATH}/${UNIXODBC_RPM}
 ${UNIXODBC_GUI_RPM}:
 	${WGET} ${UNIXODBC_PATH}/${UNIXODBC_GUI_RPM}
-
+${SMTP_SRC_TAR_BZ2}:
+	${WGET} ${SMTP_PATH}/${SMTP_SRC_TAR_BZ2}
+${INGRES_BIN_TGZ}:
+	${WGET} ${INGRES_PATH}/${INGRES_BIN_TGZ} 
+	
 	
 #############################################
 #       SQLite tests

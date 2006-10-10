@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.324 2006-10-02 07:52:11 afalout Exp $
+dnl # $Id: configure.in,v 1.325 2006-10-10 05:45:36 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -419,6 +419,7 @@ AC_SUBST(SAPDB_LIBDIR)
 AC_SUBST(HAVE_SAPODBC)
 AC_SUBST(SAPODBC_INCLUDE)
 AC_SUBST(SAPODBC_LFLAGS)
+AC_SUBST(SAPDB_ODBC_ADDLIBS)
 
 #PG ODBC
 AC_SUBST(HAVE_PGODBC)
@@ -535,6 +536,9 @@ AC_SUBST(MPZ_IFLAGS)
 
 #other
 
+AC_SUBST(INGRES_INST_PATH)
+AC_SUBST(HAVE_INGRES_ESQLC)
+AC_SUBST(INGRES_ESQLC)
 AC_SUBST(POP_INC_PATH)
 AC_SUBST(POP_LIB_PATH)
 AC_SUBST(SMTP_INC_PATH)
@@ -650,6 +654,7 @@ AC_SUBST(ALL_EXAMP_GUI)
 AC_SUBST(RUNTIME_EXE)
 AC_SUBST(ALL_MAKEFILE)
 AC_SUBST(CONVSQL_FILES)
+AC_SUBST(FGLPC_SETTINGS_FILES)
 AC_SUBST(IMPORT_FILES)
 AC_SUBST(AMAKE_INCL_FILES)
 AC_SUBST(ALL_INC)
@@ -1450,6 +1455,53 @@ AC_SUBST(ISCONVFILE_19)
 AC_SUBST(ISCONVFILE_20)
 ISCONVFILE_SIZE=20
 
+#4GLPC compile settings files
+#TODO - add to RPM and ISS setup files
+AC_SUBST(FGLPCSETFILE_1)
+AC_SUBST(FGLPCSETFILE_2)
+AC_SUBST(FGLPCSETFILE_3)
+AC_SUBST(FGLPCSETFILE_4)
+AC_SUBST(FGLPCSETFILE_5)
+AC_SUBST(FGLPCSETFILE_6)
+AC_SUBST(FGLPCSETFILE_7)
+AC_SUBST(FGLPCSETFILE_8)
+AC_SUBST(FGLPCSETFILE_9)
+AC_SUBST(FGLPCSETFILE_10)
+AC_SUBST(FGLPCSETFILE_11)
+AC_SUBST(FGLPCSETFILE_12)
+AC_SUBST(FGLPCSETFILE_13)
+AC_SUBST(FGLPCSETFILE_14)
+AC_SUBST(FGLPCSETFILE_15)
+AC_SUBST(FGLPCSETFILE_16)
+AC_SUBST(FGLPCSETFILE_17)
+AC_SUBST(FGLPCSETFILE_18)
+AC_SUBST(FGLPCSETFILE_19)
+AC_SUBST(FGLPCSETFILE_20)
+FGLPCSETFILE_SIZE=20
+
+AC_SUBST(ISFGLPCSETFILE_1)
+AC_SUBST(ISFGLPCSETFILE_2)
+AC_SUBST(ISFGLPCSETFILE_3)
+AC_SUBST(ISFGLPCSETFILE_4)
+AC_SUBST(ISFGLPCSETFILE_5)
+AC_SUBST(ISFGLPCSETFILE_6)
+AC_SUBST(ISFGLPCSETFILE_7)
+AC_SUBST(ISFGLPCSETFILE_8)
+AC_SUBST(ISFGLPCSETFILE_9)
+AC_SUBST(ISFGLPCSETFILE_10)
+AC_SUBST(ISFGLPCSETFILE_11)
+AC_SUBST(ISFGLPCSETFILE_12)
+AC_SUBST(ISFGLPCSETFILE_13)
+AC_SUBST(ISFGLPCSETFILE_14)
+AC_SUBST(ISFGLPCSETFILE_15)
+AC_SUBST(ISFGLPCSETFILE_16)
+AC_SUBST(ISFGLPCSETFILE_17)
+AC_SUBST(ISFGLPCSETFILE_18)
+AC_SUBST(ISFGLPCSETFILE_19)
+AC_SUBST(ISFGLPCSETFILE_20)
+ISFGLPCSETFILE_SIZE=20
+
+
 #Import files
 AC_SUBST(IMPORTFILE_1)
 AC_SUBST(IMPORTFILE_2)
@@ -1889,9 +1941,10 @@ if test "$withval" != "no"; then
 	if test "$with_pgsqleng" = ""; then         with_pgsqleng=yes   ;fi	
 	if test "$with_sqlite" = ""; then           with_sqlite=yes     ;fi
 	if test "$with_ecpg" = ""; then             with_ecpg=yes       ;fi
-	if test "$with_pgcompat" = ""; then         with_pgcompat=yes   ;fi	
+	if test "$with_pgcompat" = ""; then         with_pgcompat=yes   ;fi
+	if test "$with_ingres" = ""; then         	with_ingres=yes   	;fi	
 	if test "$with_informix" = ""; then         with_informix=yes
-                                               force_informix=yes  ;fi
+                                               	force_informix=yes  ;fi
 	if test "$cygwin" != "1" ; then
        #No point in making directly linked ODBC plug-ins on Windows - use odbc32
        if test "$with_sqliteodbc" = ""; then   with_sqliteodbc=yes ;fi
@@ -2086,7 +2139,9 @@ fi
 
 #Libraries that need 4glc (and in some cases fcompile) to build, and are
 #buit in all cases:
-NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file"
+NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file A4GL_memcache"
+
+NEED_4GLPC_ALL_libs="A4GL_memcache"
 
 if test "$enable_minimal" != "yes"; then
 	#Disabled; libA4GL_HTML is part of 'extra' target, its in alpha state
@@ -2104,7 +2159,7 @@ if test "$enable_minimal" != "yes"; then
 fi
 
 
-ALL_LIBS="$NEED_4GLC_ALL_libs"
+ALL_LIBS="$NEED_4GLC_ALL_libs $NEED_4GLPC_ALL_libs"
 
 ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
@@ -2364,17 +2419,32 @@ ROOT_FILES_DOC="README.txt"
 ##       Define permanent list of conversion files to install
 ## ==================================================================
 
-CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
-		INFORMIX-POSTGRESQL.cnv INFORMIX-POSTGRES8.cnv POSTGRESQL-INFORMIX.cnv \
-		INFORMIX-POSTGRES.cnv INFORMIX-SQLITE.cnv INFORMIX-INGRES.cnv"
+TMP_CONVSQL_FILES="`ls etc/convertsql/*.cnv` README.txt"
+	for FILE in $TMP_CONVSQL_FILES ; do
+		CONVSQL_FILES="$CONVSQL_FILES `basename $FILE`"
+	done
 
-#It looks like INFORMIX-POSTGRESQL.cnv is obsolete - confirm and remove
-		
     COUNTER=0
 	for FILE in $CONVSQL_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "CONVFILE_$COUNTER='$INST_BASE/etc/convertsql/$FILE'"
 		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE\etc\convertsql\\$FILE; DestDir: {app}\etc\convertsql; Components: runtime'"
+	done
+
+#TODO: move 4glpc settings under etc
+	
+TMP_FGLPC_SETTINGS_FILES="`ls tools/4glpc/settings/ | grep -v CVS | grep -v '~'`"
+TMP_FGLPC_SETTINGS_FILES="`echo $TMP_FGLPC_SETTINGS_FILES`"
+
+	for FILE in $TMP_FGLPC_SETTINGS_FILES ; do
+		FGLPC_SETTINGS_FILES="$FGLPC_SETTINGS_FILES `basename $FILE`"
+	done
+
+    COUNTER=0
+	for FILE in $FGLPC_SETTINGS_FILES ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "FGLPCSETFILE_$COUNTER='$INST_BASE/tools/4glpc/settings/$FILE'"
+		eval "ISFGLPCSEFILE_$COUNTER='Source: $IS_SOURCE\tools\4glpc\settings\\$FILE; DestDir: {app}\tools\4glpc\settings; Components: compiler'"
 	done
 
 ## ==================================================================
@@ -3149,6 +3219,7 @@ if test -n "$PROG_SENDMAIL"; then
   AC_DEFINE(HAVE_SENDMAIL)
 fi
 
+
 ## ==================================================================
 ##                  Check for ORBit CORBA support
 ## ==================================================================
@@ -3222,6 +3293,103 @@ AC_ARG_WITH(orbit,
 ])
 
 if test "$enable_stop_orbit" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
+##                  Check for Ingres ESQL/C compiler support
+## ==================================================================
+
+#TODO - check for Ingres ODBC driver
+
+
+PHP_CONFIGURE_PART(Checking for Ingres ESQL/C compiler support:)
+
+AC_ARG_WITH(ingres,
+[  --with-ingres[=DIR]      Include Ingres ESQL/C compiler support.  DIR is the Ingres
+                          install directory, defaults to /opt/Ingres/IngresII.],
+[
+
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" != "" -a "$MSYS_ROOTDIR" != ""; then
+				withval="$MSYS_ROOTDIR/local"
+			else
+				if test "$II_SYSTEM" != ""; then
+					withval="$II_SYSTEM"
+				else
+	    			withval=/opt/Ingres/IngresII
+				fi
+			fi
+		else
+			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Ingres"
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+		fi
+
+		old_CFLAGS="$CFLAGS"
+		old_LIBS="$LIBS"
+		old_CPPFLAGS="$CPPFLAGS"
+		old_LDFLAGS="$LDFLAGS"
+		old_PATH="$PATH"
+		
+		#PATH=$withval/ingres/bin
+		if test -f $withval/.ingIIbash; then
+		
+			#Set PATH, LD_LIBRARY_PATH, II_SYSTEM, etc:
+			. $withval/.ingIIbash
+			AC_PATH_PROG(INGRES_ESQLC, esqlc, no)
+			
+			if test "$INGRES_ESQLC" != "no"; then
+	
+				#check version:
+				#has no verion flag - at least check if it is INGRES so 
+				#we dont pivk upo some other esql in PATH
+				INGRES_ESQLC_VERSION="`$INGRES_ESQLC -- | grep INGRES`"
+				#echo "$INGRES_ESQLC_VERSION"
+				
+				if test "$INGRES_ESQLC_VERSION" != ""; then
+					#Check for libs:
+					#-L"$II_SYSTEM"/ingres/lib  `cat "$II_SYSTEM"/ingres/files/abflnk.opt`
+	
+					#INGRES_INST_PATH="$II_SYSTEM"
+					#echo "II_SYSTEM=$II_SYSTEM"
+					INGRES_INST_PATH="$withval"
+					#echo "INGRES_INST_PATH=$INGRES_INST_PATH"
+					AC_MSG_CHECKING(if we can use Ingres ESQL/C compiler)
+					AC_MSG_RESULT(yes)
+					HAVE_INGRES_ESQLC=yes
+				else
+					AC_MSG_CHECKING(if we can use Ingres ESQL/C compiler)				
+					AC_MSG_RESULT(no - esqlc found did not return INGRES string)
+					HAVE_INGRES_ESQLC=no
+				fi
+			else
+				AC_MSG_CHECKING(if we can use Ingres ESQL/C compiler)			
+				AC_MSG_RESULT(no - missing Ingres esql executable)
+				HAVE_INGRES_ESQLC=no
+			fi
+		else
+			AC_MSG_CHECKING(if we can use Ingres ESQL/C compiler)
+			AC_MSG_RESULT(no - missing $withval/.ingIIbash script)
+			HAVE_INGRES_ESQLC=no
+		fi
+		
+		CFLAGS="$old_CFLAGS"
+		LIBS="$old_LIBS"
+		CPPFLAGS="$old_CPPFLAGS"
+		LDFLAGS="$old_LDFLAGS"
+		PATH="$old_PATH"
+
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-ingres not specified)
+])
+
+if test "$enable_stop_ingres" = "yes" ; then
 	exit
 fi
 
@@ -3553,7 +3721,7 @@ fi
 PHP_CONFIGURE_PART(Checking for XML-RPC support:)
 
 AC_ARG_WITH(xmlrpc,
-[  --with-xmlrpc[=DIR]       Include XML_RPC support.  DIR is the XML-RPC base
+[  --with-xmlrpc[=DIR]       Include XML-RPC support.  DIR is the XML-RPC base
                           install directory, defaults to /usr/local.],
 [
 
@@ -3592,7 +3760,23 @@ AC_ARG_WITH(xmlrpc,
 			#XMLRPC_LFLAGS="-L$withval/lib -L/usr/local/lib -L/usr/lib"
 			XMLRPC_LFLAGS="-L`$XMLRPC_C_CONFIG libwww-client --prefix`/lib"
 			XMLRPC_IFLAGS=`$XMLRPC_C_CONFIG libwww-client --cflags`
-			XMLRPC_LIBS=`$XMLRPC_C_CONFIG libwww-client --libs`
+			LIBWWW_LIBS="`$LIBWWW_CONFIG --libs`"
+			XMLRPC_LIBS="`$XMLRPC_C_CONFIG libwww-client --libs` $LIBWWW_LIBS"
+
+			#XMLRPC_LIBS="$XMLRPC_LIBS -lwwwhttp -lwwwapp -lwwwcore"
+
+
+			
+#gcc -o conftest -I/usr/local/include -g -O2 -I/usr/local/include  -L/usr/local/lib  
+#-L/usr/local/lib -lxmlrpc_client -lxmlrpc -lxmlrpc_util -lxmlrpc_xmlparse 
+#-lxmlrpc_xmltok  -lwwwhttp conftest.c -lxmlrpc
+
+#find / -name "*.so" -exec grep -H HTCookie_deleteCallbacks {} \;
+#Binary file /tmp/w3c-libwww-5.4.0/Library/src/.libs/libwwwhttp.so matches
+#Binary file /tmp/xmlrpc-c-1.05/src/.libs/libxmlrpc_client.so matches
+#Binary file /usr/local/lib/libwwwhttp.so matches
+#Binary file /usr/local/lib/libxmlrpc_client.so matches
+			
 			#TODO: add -lwwwxml at the end on Windows!
 		else
 		
@@ -3665,7 +3849,8 @@ AC_ARG_WITH(xmlrpc,
 				#endif
 				]])
 				
-				if test "$ac_cv_header_xmlrpc_h" = "yes" -a "$ac_cv_header_xmlrpc_client_h" = "yes" ; then
+				if test "$ac_cv_header_xmlrpc_h" = "yes" \
+					-a "$ac_cv_header_xmlrpc_client_h" = "yes" ; then
 					XML_RPC=yes
 		        else
 					XML_RPC=no
@@ -4017,7 +4202,9 @@ AC_ARG_WITH(pop,
 	if test "$withval" != "no"; then
 		if test "$withval" = "yes"; then
 			if test "$COMSPEC" = ""; then 
-	    		withval=/usr/local
+	    		#withval=/usr/local
+				#in new versions changed to:
+				withval=/usr
 			else
 				#NOTE: since on CygWin /usr/lib is symling to /usr,
 				#files installed there actually end up in /lib, as far as
@@ -4037,8 +4224,9 @@ AC_ARG_WITH(pop,
 		old_CPPFLAGS="$CPPFLAGS"
 
 		if test "$COMSPEC" = ""; then
+			AC_CHECK_LIB([ssl], [main])
 			CPPFLAGS="-I$withval/include $CPPFLAGS"
-			LDFLAGS="-L$withval/lib $LDFLAGS"
+			LDFLAGS="-L$withval/lib -lssl $LDFLAGS"
 		else
 			POP_INC_PATH="`$CYGPATH -m $withval`/usr/include"
 			CPPFLAGS="-I$POP_INC_PATH $CPPFLAGS"
@@ -4059,7 +4247,7 @@ AC_ARG_WITH(pop,
 			AC_MSG_RESULT(yes)
 		else
 			AC_MSG_RESULT(no)
-	    	fi
+    	fi
 		
 		#Restore values
 		LIBS="$old_LIBS"
@@ -4706,46 +4894,70 @@ AC_ARG_WITH(httpd,
 ##                 Checks for SAP DB ESQL/C (pre-compiler) support
 ## ==================================================================
 
-if test "$SAPDBROOT" = ""; then
-	SAPDBROOT=/opt/sapdb
-fi
-
-PHP_CONFIGURE_PART(Checking for SAP DB ESQL/C support:)
 SAPDB_ESQLC="no"
+
+PHP_CONFIGURE_PART(Checking for SAP DB/MySQL MaxDB ESQL/C support:)
+
 AC_ARG_WITH(sapdb,
-[  --with-sapdb[=DIR]        Include SAP DB ESQL/C support.  DIR is the Sap DB base
-                          install directory, defaults to ${SAPDBROOT:-nothing}.],
+[  --with-sapdb[=DIR]        Include SAP DB/MySQL MaxDB ESQL/C support.  DIR is the Sap DB base
+                          install directory, defaults to ${SAPDBROOT:/opt/sdb}.],
 [
 
+#                          install directory, defaults to ${SAPDBROOT:-nothing}
+
+#Note - last MaxDB version that includes CPC pre-compiler is 7.5. As of 7.6
+#		CPC is no longer available. MySQL recomends using ODBC or there new 
+#		interface called DBC or something. However, as CPC is not dependent on 
+#		the version of the MaxDB database compnents, CPC from version 7.5 can
+#		be used with 7.6, and all future versions.
+#
+#		Installing only CPC however requires that full 7.5 package is downloaded
+#		and then only CPC component selected for installation.
+
+	SAPDB_VER="7500"
+	
 	if test "$withval" != "no"; then
 		if test "$SAPDBROOT" = ""; then
 			SAPDB_WARNING=1
 			if test "$withval" = "yes"; then
 				#try default
-				SAPDBROOT="/opt/sapdb"
+				if test "$SAPDB_VER" = "7500"; then
+					#New - MySQL MaxDB default location:
+					SAPDBROOT="/opt/sdb"
+				else
+					#Old SAP DB default location 
+					SAPDBROOT="/opt/sapdb"
+				fi
 			else
 				SAPDBROOT="$withval"
 			fi
 		fi
-		
+
 		if test "$SAPDBROOT" = ""; then
 			SAPDB_WARNING=1
 			AC_MSG_RESULT(no-SAPDBROOT not set and --with-sapdb did not specify path)
 		else
 			if ! test -d "$SAPDBROOT"; then
-				AC_MSG_RESULT(no - directory specified with SAPDBROOT is invalid)
+				AC_MSG_RESULT(no - directory specified with SAPDBROOT(=$SAPDBROOT) is invalid)
             else
 				if test "$withval" = "yes"; then
-					#At least default SuSE 9 RPM's use /interfaces/precompiler/sdk/7403/incl
-					#probably anticipating that cpc compielr will take care of 
-					#finding includes like cpc.h This may force us to try to compile
-					# a simple hello.cpc instead of looking for headers/libraries
-					#if we see more of this version numbering in the paths in the future.
-					SAPDB_INCDIR="-I$SAPDBROOT/depend/incl \
-						-I$SAPDBROOT/interfaces/precompiler/incl \
-						-I$SAPDBROOT/interfaces/precompiler/sdk/7403/incl"
-					SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib \
-						-L$SAPDBROOT/interfaces/precompiler/lib"
+					if test "$SAPDB_VER" = "7500"; then
+						SAPDB_INCDIR="-I$SAPDBROOT/programs/sdk/$SAPDB_VER/incl"
+						SAPDB_LIBDIR="-L$SAPDBROOT/programs/lib \
+							-L$SAPDBROOT/programs/runtime/$SAPDB_VER/lib"
+						#-L$SAPDBROOT/programs/runtime/7403/lib
+					else
+						#At least default SuSE 9 RPM's use /interfaces/precompiler/sdk/7403/incl
+						#probably anticipating that cpc compiler will take care of 
+						#finding includes like cpc.h This may force us to try to compile
+						# a simple hello.cpc instead of looking for headers/libraries
+						#if we see more of this version numbering in the paths in the future.
+						SAPDB_INCDIR="-I$SAPDBROOT/depend/incl \
+							-I$SAPDBROOT/interfaces/precompiler/incl \
+							-I$SAPDBROOT/interfaces/precompiler/sdk/7403/incl"
+						SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib \
+							-L$SAPDBROOT/interfaces/precompiler/lib"
+					fi
 				else
 					#user specified custom withval
 					WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPESQLC"
@@ -4758,16 +4970,22 @@ AC_ARG_WITH(sapdb,
 	    		fi
 
 				if test "$withval" != "yes"; then
+					#Custom location (withval)
 		            ADD_LD_LIBRARY_PATH="$withval/depend/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	            else
+					#Default location (SAPDBROOT or in-built)
 		            ADD_LD_LIBRARY_PATH="$SAPDBROOT/depend/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 				fi
 
 	            old_PATH="$PATH"
-	            PATH="$SAPDBROOT/interfaces/precompiler/bin:$PATH"
+				if test "$SAPDB_VER" = "7500"; then
+					PATH="$SAPDBROOT/programs/bin:$PATH"
+				else
+	            	PATH="$SAPDBROOT/interfaces/precompiler/bin:$PATH"
+				fi
 
 				#First check if we have cpc installed at all:
-				AC_PATH_PROG(SAPDB_ESQLC, cpc, no, $PATH $SAPDBDIR/interfaces/precompiler/bin /opt/sapdb/interfaces/precompiler/bin)
+				AC_PATH_PROG(SAPDB_ESQLC, cpc, no, $PATH $SAPDBROOT/programs/bin $SAPDBDIR/interfaces/precompiler/bin /opt/sapdb/interfaces/precompiler/bin)
 
 				#any C (gcc) compiler is OK fro SAP (?)
 				SAPDBESQLCC_OK="OK"
@@ -4775,9 +4993,6 @@ AC_ARG_WITH(sapdb,
 				if test "$SAPDB_ESQLC" != "no"; then
 					if test "$SAPDB_ESQLC" != "no" && test "$SAPDBESQLCC_OK" = "OK"; then
 						SAPDB_INCLUDE="$SAPDB_INCDIR"
-						
-						
-						
 						SAPDB_LFLAGS="$SAPDB_LIBDIR"
 
 		                old_CFLAGS="$CFLAGS"
@@ -4819,13 +5034,16 @@ AC_ARG_WITH(sapdb,
 		fi
 	else
         SAPDB_ESQLC="no"
-		SAPDBDIR=
+		SAPDBDIR=""
 		AC_MSG_RESULT(disabled)
 	fi
 ],[
   AC_MSG_RESULT(--with-sapdb not specified)
 ])
 
+if test "$enable_stop_sapdb" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##                 Checks for Querix ESQL/C support
@@ -6381,9 +6599,14 @@ AC_ARG_WITH(sapodbc,
 [  --with-sapodbc[=DIR]      Include SAP DB ODBC driver support.  DIR is the base
                           install directory, defaults to /opt/sapdb.],
 [
+	SAPDB_VER="7500"
 	if test "$withval" != "no"; then
 		if test "$withval" = "yes"; then
-	    	withval=/opt/sapdb #$SAPDBROOT
+			if test "$SAPDB_VER" = "7500"; then
+	    		withval=/opt/sdb #$SAPDBROOT
+			else
+				withval=/opt/sapdb #$SAPDBROOT
+			fi
 			SAPDBROOT="$withval"
 		else
 			#user specified custom withval
@@ -6397,18 +6620,35 @@ AC_ARG_WITH(sapodbc,
 		old_LIBS="$LIBS"
 		old_LDFLAGS="$LDFLAGS"
         old_CPPFLAGS="$CPPFLAGS"
-		TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl -I$withval"
+		
+		if test "$SAPDB_VER" = "7500"; then
+			TMP_SAPODBC_INCLUDE="-I$withval/programs/incl -I$withval"
+		else
+			TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl -I$withval"
+		fi
 
-		#libpcr (needed by libsqlod) is at least in SuSE 9 default RPM's
-		#in path that includes version nubering (/7403/) 
-
-		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib \
-			-L$withval/indep_prog/runtime/7300/lib \
-			-L$withval/interfaces/precompiler/runtime/7403/lib \
-			-L$withval/indep_prog/runtime/7403/lib/libpcr.so"
-			
-        LIBS="-lsqlrte -lpcr -lpthread -lm"
-
+		if test "$SAPDB_VER" = "7500"; then
+			TMP_SAPODBC_LFLAGS="-L$withval/programs/runtime/$SAPDB_VER/lib \
+				-L$withval/programs/lib"
+		else
+			#libpcr (needed by libsqlod) is at least in SuSE 9 default RPM's
+			#in path that includes version nubering (/7403/) 
+			TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib \
+				-L$withval/indep_prog/runtime/7300/lib \
+				-L$withval/interfaces/precompiler/runtime/7403/lib \
+				-L$withval/indep_prog/runtime/7403/lib"
+		fi
+		
+		if test "$SAPDB_VER" = "7500"; then
+			#/opt/sdb/programs/web/lib/libsqlrte.so
+			#/opt/sdb/programs/runtime/7500/lib/libpcr.so
+			#-lsqlrte -lpcr 
+			SAPDB_ODBC_ADDLIBS="-lpthread -lm"
+		else
+        	SAPDB_ODBC_ADDLIBS="-lsqlrte -lpcr -lpthread -lm"
+		fi
+		LIBS="$SAPDB_ODBC_ADDLIBS"
+		
         #libpcr: WARNING: NOT part of the SAP DB ODBC RPM!!!
         #Its part of "environment" RPM:
         #/opt/sapdb/indep_prog/runtime/7300/lib/libpcr.so
@@ -6428,18 +6668,34 @@ AC_ARG_WITH(sapodbc,
 		if test $ac_cv_lib_sqlod_main = yes; then
 			#First test for WINDOWS.H - it defines stuff like DWORD which is needed by
 			#other SAP ODBC headers
-			AC_CHECK_HEADERS([interfaces/odbc/incl/WINDOWS.H])
+			if test "$SAPDB_VER" = "7500"; then
+				AC_CHECK_HEADERS([programs/incl/WINDOWS.H])
+			else
+				AC_CHECK_HEADERS([interfaces/odbc/incl/WINDOWS.H])
+			fi
 			
-			if test "$ac_cv_header_interfaces_odbc_incl_WINDOWS_H" = "yes"; then 
+			if test "$ac_cv_header_interfaces_odbc_incl_WINDOWS_H" = "yes" \
+				-o "$ac_cv_header_programs_incl_WINDOWS_H" = "yes"; then 
 				#Now test for remaining 3, and include WINDOWS.H in testing code:
-				AC_CHECK_HEADERS([interfaces/odbc/incl/sql.h \
+				if test "$SAPDB_VER" = "7500"; then
+					AC_CHECK_HEADERS([programs/incl/sql.h \
+						programs/incl/sqlext.h \
+						programs/incl/sqltypes.h \
+						], [], [],
+						[#if HAVE_PROGRAMS_INCL_WINDOWS_H
+						# include <programs/incl/WINDOWS.H>
+						# endif
+					])
+				else
+					AC_CHECK_HEADERS([interfaces/odbc/incl/sql.h \
 						interfaces/odbc/incl/sqlext.h \
 						interfaces/odbc/incl/sqltypes.h \
 						], [], [],
 						[#if HAVE_INTERFACES_ODBC_INCL_WINDOWS_H
 						# include <interfaces/odbc/incl/WINDOWS.H>
 						# endif
-				])
+					])
+				fi
 			fi
         fi
 		LIBS="$old_LIBS"
@@ -6447,18 +6703,33 @@ AC_ARG_WITH(sapodbc,
         CPPFLAGS="$old_CPPFLAGS"
 
 		if test $ac_cv_lib_sqlod_main = yes; then
-			if test "$ac_cv_header_interfaces_odbc_incl_sqltypes_h" = "yes" \
-				&& test "$ac_cv_header_interfaces_odbc_incl_sql_h" = "yes" \
-				&& test "$ac_cv_header_interfaces_odbc_incl_sqlext_h" = "yes" \
-				&& test "$ac_cv_header_interfaces_odbc_incl_WINDOWS_H" = "yes"
-			then
-				HAVE_SAPODBC_HEADERS=yes
-            else
-                HAVE_SAPODBC_HEADERS=no
-            fi
+			if test "$SAPDB_VER" = "7500"; then
+				if test "$ac_cv_header_programs_incl_sqltypes_h" = "yes" \
+					-a "$ac_cv_header_programs_incl_sql_h" = "yes" \
+					-a "$ac_cv_header_programs_incl_sqlext_h" = "yes" \
+					-a "$ac_cv_header_programs_incl_WINDOWS_H" = "yes"
+				then
+					HAVE_SAPODBC_HEADERS=yes
+					AC_DEFINE(HAVE_SAPODBC_HEADERS_7500,1,[ ])
+					AC_DEFINE(HAVE_SAPODBC_HEADERS,1,[ ])
+				else
+					HAVE_SAPODBC_HEADERS=no
+				fi
+			else
+				if test "$ac_cv_header_interfaces_odbc_incl_sqltypes_h" = "yes" \
+					-a "$ac_cv_header_interfaces_odbc_incl_sql_h" = "yes" \
+					-a "$ac_cv_header_interfaces_odbc_incl_sqlext_h" = "yes" \
+					-a "$ac_cv_header_interfaces_odbc_incl_WINDOWS_H" = "yes"
+				then
+					HAVE_SAPODBC_HEADERS=yes
+					AC_DEFINE(HAVE_SAPODBC_HEADERS,1,[ ])
+				else
+					HAVE_SAPODBC_HEADERS=no
+				fi
+			fi
 
 			AC_MSG_CHECKING(if we can use SAP ODBC)
-			if test "$HAVE_SAPODBC_HEADERS" != "yes" && test "$AUBIT_SOURCE" = "1" ; then
+			if test "$HAVE_SAPODBC_HEADERS" != "yes" -a "$AUBIT_SOURCE" = "1" ; then
 				#we need headers only to compile source code
 				AC_DEFINE(HAVE_SAPODBC,0,[ ])
 				AC_MSG_RESULT(no header files)
@@ -6479,6 +6750,9 @@ AC_ARG_WITH(sapodbc,
 	AC_MSG_RESULT(--with-sapodbc not specified)
 ])
 
+if test "$enable_stop_sapodbc" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##                 Checks for iODBC ODBC manager support
@@ -6773,7 +7047,6 @@ fi
 ## ==================================================================
 ##                 Checks for PostgreSQL ODBC driver
 ## ==================================================================
-
 PHP_CONFIGURE_PART(Checking for PostgreSQL ODBC driver support:)
 
 AC_ARG_WITH(pgodbc,
@@ -6842,7 +7115,72 @@ AC_ARG_WITH(pgodbc,
 
 			#AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
 
+			#NOTE: we apparently do not use isql.h and define FAR & SQLHANDLE ourselves
+			#see lib/libsql/odbc/a4gl_lib_sql_odbc_int.h
 			AC_CHECK_HEADERS([ pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h ])
+			
+			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" != "yes" \
+				-o "$ac_cv_header_pgsql_iodbc_isql_h" != "yes" \
+				-o "$ac_cv_header_pgsql_iodbc_isqlext_h" != "yes" ; then
+				#Use our headers
+				AC_MSG_WARN(Using headers from Aubit CVS - tools/odbctest/pgsql/iodbc)
+				unset ac_cv_header_pgsql_iodbc_iodbc_h
+				unset ac_cv_header_pgsql_iodbc_isql_h
+				unset ac_cv_header_pgsql_iodbc_isqlext_h
+				#this include files reference each other internaly WITHOUT pgsql/iodbc
+				#prefix, so we have to provide -I path for this too:
+				#TODO-edit them to use prefix path
+				TMP_PGODBC_INCLUDE="-I$aubitdir/tools/odbctest -I$aubitdir/tools/odbctest/pgsql/iodbc"
+				CPPFLAGS="$TMP_PGODBC_INCLUDE $old_CPPFLAGS"
+				#isql. does not include others
+				#isqlext & iodbc include isql.h
+				AC_CHECK_HEADERS([ pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h pgsql/iodbc/iodbc.h ])
+
+if test "$DISABLED" = "1"; then
+				#TODO - above test works, but will spit out warnings as it cannot compile 
+				#the header files. Compile of the Aubit PG ODBC plugin will work OK,
+				#and I tried to fix the autoconf warning but failed...
+				
+				
+				
+				AC_MSG_WARN(--2--)
+				unset ac_cv_header_pgsql_iodbc_iodbc_h
+				unset ac_cv_header_pgsql_iodbc_isql_h
+				unset ac_cv_header_pgsql_iodbc_isqlext_h				
+				AC_CHECK_HEADERS(pgsql/iodbc/isqlext.h pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h,,,
+				[[
+				# include <pgsql/iodbc/isqlext.h> 
+				# include <pgsql/iodbc/iodbc.h> 
+				# include <pgsql/iodbc/isql.h>
+				]])
+				
+				AC_MSG_WARN(--3--)
+				unset ac_cv_header_pgsql_iodbc_iodbc_h
+				unset ac_cv_header_pgsql_iodbc_isql_h
+				unset ac_cv_header_pgsql_iodbc_isqlext_h				
+				AC_CHECK_HEADERS(pgsql/iodbc/isqlext.h pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h,,,
+				[[
+				#ifndef __AC_CONF_TEST_PGODBC__
+					#define __AC_CONF_TEST_PGODBC__
+					#ifndef __UCHAR_DEFINED__
+						#define __UCHAR_DEFINED__
+					#endif
+					#ifndef __ODBC_DEFINED__
+						#define __ODBC_DEFINED__
+					#endif
+					#ifndef FAR
+						#define FAR
+					#endif
+					typedef void FAR *SQLHANDLE;
+					typedef SQLHANDLE SQLHSTMT;
+				#endif
+				# include <pgsql/iodbc/isqlext.h> 
+				# include <pgsql/iodbc/iodbc.h> 
+				# include <pgsql/iodbc/isql.h>
+				]])				
+			fi
+#ddddd
+			fi
 			
 			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
 			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" \
@@ -6901,6 +7239,10 @@ AC_ARG_WITH(pgodbc,
 ],[
 	AC_MSG_RESULT(--with-pgodbc not specified)
 ])
+
+if test "$enable_stop_pgodbc" = "yes" ; then
+	exit
+fi
 
 
 #FIXME:
@@ -7542,19 +7884,11 @@ fi
 ##               Checks for PDcurses library
 ## ==================================================================
 
-	#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using 
-	#MingW GCC would fail because CygWin libraries need cygwin1.dll, and 
-	#MinGW GCC would not link it in. Hovewer, we can compile Aubit TUI plug-in 
-	#with CygWin Curses using CygWin GCC, and then use that with the rest 
-	#of Aubit compielr compiled natively (using MinGW GCC) - if we make
-    #cygwin1.dll accessible at run-time.
-	#but since we are now using native pdcurses on windows, this is irrelevant
-
-	PHP_CONFIGURE_PART(Checking for PDcurses:)
+	PHP_CONFIGURE_PART(Checking for PDcurses/Xcurses:)
 	AC_ARG_WITH(pdcurses,
 	[  --with-pdcurses[=DIR]     Include PDcurses support. DIR is the PDcurses base
                           install directory, defaults to
-                          /usr.],
+                          /usr/local/pdcurses.],
 	[
 	  if test "$withval" != "no"; then
 		if test "$withval" != "yes"; then
@@ -7574,7 +7908,8 @@ fi
 			fi
 		else
 			#withval is 'yes', assign default
-			withval=/usr
+			#Source code installs to /usr/local/pdcurses/ by default
+			withval=/usr/local/pdcurses
 		fi
 
 		old_LIBS="$LIBS"
@@ -7589,7 +7924,7 @@ fi
 		fi
 		#cr** - how do this paths work anyway?
 		#AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no, "$withval/bin" $PATH )
-		export PATH="$withval/bin:$PATH"
+		export PATH="$withval/bin:/usr/bin:/usr/local/bin:$PATH"
 		
 		if test "$GCC_MINGW" != "yes"; then
 			AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no )
@@ -7597,7 +7932,7 @@ fi
 			AC_MSG_CHECKING(PDcurses Xcurses support)
 			if test "$XCURSES_CONFIG" != "no" -a "$ac_cv_header_xpanel_h" = "yes"; then
 				#found xcurses - possible only unix
-				XCURSES_CFLAGS=`$XCURSES_CONFIG --cflags`
+				XCURSES_CFLAGS="`$XCURSES_CONFIG --cflags` -I`$XCURSES_CONFIG --prefix`/include"
 				XCURSES_LIBS=`$XCURSES_CONFIG --libs`
 				HAVE_XCURSES=1
 				AC_MSG_RESULT(yes)
@@ -7739,6 +8074,7 @@ fi
 if test "$enable_stop_pdcurses" = "yes" ; then
 	exit
 fi
+
 
 ## ==================================================================
 ##         Checks for Java binding (JNI)
@@ -8290,7 +8626,17 @@ if test "$default_sql" != ""; then
     esac
 	A4GL_SQLTYPE="$default_sql"
 else
+	#User did not specify default, so we will scan trough available database conectivity
+	#options (ODBC, ESQL/C generation, native plug-ins) to pick the most stabile
+	#and functional option from what is available
+
+	#########################################
 	############# ODBC drivers ##############
+	#
+	#	In reverse order of preference - most functional / stabile drivers 
+	#	are listed last, so they overrite previous declarations
+	#
+
 	if test "$HAVE_PGODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=pgodbc
@@ -8308,7 +8654,13 @@ else
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
     fi
 
+	#########################################
 	############# ODBC managers #############
+	#
+	#	In reverse order of preference - most functional / stabile drivers 
+	#	are listed last, so they overrite previous declarations
+	#
+	
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=unixodbc
@@ -8328,6 +8680,15 @@ else
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 
+	########################################################################
+	########################## ESQL generation #############################
+	########################################################################
+	#
+	#	In reverse order of preference - most functional / stabile drivers 
+	#	are listed last, so they overrite previous declarations
+	#
+	
+	
 	########## SAP-DB ESQL/C pre-compiler output #############
 	if test "$SAPDB_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
@@ -8337,6 +8698,17 @@ else
         #FIXME:4glc still needs to get to db for DEFINE LIKE
 		A4GL_SQLTYPE=FIXME-ec
     fi
+
+	######### Ingres ESQL/C compiler ################
+	if test "$HAVE_INGRES_ESQLC" != "no"; then
+		A4GL_LEXTYPE=EC
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		A4GL_LEXDIALECT=INGRES
+        A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
+		#4glc still needs to get to db for DEFINE LIKE
+		#Note - Mike say this driver was abandoned???
+        A4GL_SQLTYPE=ingres
+	fi
 
 	########## PostgreSQL ESQL/C compiler #########
 	#If we have PostgreSQL ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
@@ -8385,29 +8757,56 @@ else
     	#A4GL_SQLTYPE=FIXME-ec
     #fi
 
+	#######################################################################
+	######################## native drivers ###############################
+	#######################################################################
+	#
+	#	In reverse order of preference - most functional / stabile drivers 
+	#	are listed last, so they overrite previous declarations
+	#
+	
+	######### Ingres native ################
+	if test "$HAVE_INGRES_ESQLC" != "no"; then
+		#Note - Mike say this driver was abandoned???
+		A4GL_LEXTYPE=C
+		A4GL_SQLTYPE=ingres
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+	fi
+
+	######### MySQL native #################
 	if test "$SQL_MYSQL" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=mysql
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 	
-	############# native drivers ####################
-	#non existant:
+	######### PgSQL native #################
+	#non existant: full driver was never finished by Sergio) and all we have is 
+	# a basic (simple) driver we use for DEFINE LIKE and such with PG ESQL output
 	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
 	#	A4GL_SQLTYPE=pgsql
     #fi
+	
+	######### Informix native ###############
 	if test "$IFMX_ESQLC" != "no" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=esql
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 
-	if test "$A4GL_SQLTYPE" = "nosql"; then 
-	#as a last resort, use SQLIte (if we have it) if we still dont 
-	#have default SQL plug-in at this point 
+	if test "$A4GL_SQLTYPE" = "nosql"; then
+	#Did not get anything so far.
+	#As a last resort, use SQLIte (as we will allways have it, as we have
+	#SQLite ODBC code in our CVS) if we still dont 
+	#have default SQL plug-in at this point
+	#Note that this is for Aubit connectivity side only - user is still 
+	#expected to make sure he has SQLite engine itself installed, but as SQLite
+	#database engine is just one library, this should be easy. Easier then any 
+	#other RDBMS anyway.
 		
 		############# SQLite via ODBC ####################
 		#This will never happen, since SQLIte native connector will allways "win"
+		#as it is allways present (since we have all code in our CVS)
 		if test "$SQLITE_LIB" = "1" -a "$SQLITE_ODBC" = "1"; then
 			A4GL_LEXTYPE=C
 			A4GL_SQLTYPE=sqliteodbc
@@ -8429,6 +8828,10 @@ else
 				A4GL_SQLTYPE=sqliteS
 				A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE sqlite"
 			fi
+		else
+			echo "Final attempt to assigne default database conectivity plug-in"
+			echo "failed as there is no SQLite engine on this system, and no "
+			echo "other database connectivity options where detected."
 		fi
 	fi
 fi
@@ -8449,23 +8852,22 @@ if test "$default_comp" != ""; then
 	if test "$default_lexdialect" != ""; then
 		A4GL_LEXDIALECT="$default_lexdialect"
     fi
-#else
+else
 
 	#C compiler is the default at this point, unless a variant of embedded
 	#C was chosen in SQL connectivity "decide" section...
 
 	#Disabled since Perl output is not working at the moment
-	#if test "$PERLBUILD" != "no"; then
-	#	A4GL_LEXTYPE="PERL"
-	#	A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
-    #fi
+	if test "$PERLBUILD" != "no"; then
+		#A4GL_LEXTYPE="PERL"
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+    fi
 
 	# C# output (Mono)
-	#if test "$CS_COMPILER" != "no"; then
-	#	A4GL_LEXTYPE="CS"
-	#	A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
-    #fi
-
+	if test "$CS_COMPILER" != "no"; then
+		#A4GL_LEXTYPE="CS"
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+    fi
 
     #NOTE: Since it primarily affects database connectivity, embedded C
     #variants are in SQL connectivity "decide" section
@@ -8646,6 +9048,13 @@ else
 		A4GL_PACKER_DETECTED="$A4GL_PACKER_DETECTED $A4GL_PACKER"
     fi
 
+	#Check if we can build libPACKER_GZPACKED
+	AC_CHECK_LIB([z], [main])
+	if test $ac_cv_lib_z_main = yes; then
+		A4GL_PACKER=GZPACKED
+		A4GL_PACKER_DETECTED="$A4GL_PACKER_DETECTED $A4GL_PACKER"
+	fi
+	
 	#A4GL_PACKER=PERL
 
 	#Why would we use anything else anyway?
@@ -8660,7 +9069,7 @@ AC_MSG_RESULT(Detected:$A4GL_PACKER_DETECTED)
 ## ==================================================================
 ##				Decide on targets that are built/istalled/packaged
 ##              optionaly based on external dependencies. This affects
-##              RPM packaging, install/seinstall and build process
+##              RPM packaging, install/deinstall and build process
 ## ==================================================================
 
 AC_MSG_CHECKING(Plug-ins to build)
@@ -8669,6 +9078,13 @@ PLUGIN_YES=
 PLUGIN_YES_LINKABLE=
 PLUGIN_NO=
 PLUGIN_NO_LINKABLE=
+
+
+	if test "$PERLBUILD" = "noDISABLED"; then
+    	PLUGIN_YES="$PLUGIN_YES LEX_PERL"
+	else
+		PLUGIN_NO="$PLUGIN_NO LEX_perl"
+    fi
 
 	if test "$HAVE_CURSES" = "1" ; then
         PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI UI_HL_TUIN"
@@ -8744,6 +9160,25 @@ PLUGIN_NO_LINKABLE=
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.esql"
 	fi
 
+	if test "$HAVE_INGRES_ESQLC" != "no"; then
+		PLUGIN_YES="$PLUGIN_YES SQL_ingres"
+		
+		#Fixme: helper_ingres.ec not in CVS:
+		PLUGIN_NO="$PLUGIN_NO ESQL_INGRES"
+		
+		#Cant compile because of the above problem:
+		#if test "$enable_minimal" != "yes"; then
+		#	COMP_EXE="$COMP_EXE asql_I$A4GL_EXE_EXT"
+		#fi
+		
+		#Also enable:
+		#lib/liblex/lex_esql compile_c_esql.c
+
+	else
+		PLUGIN_NO="$PLUGIN_NO SQL_ingres ESQL_INGRES"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ingres"
+	fi
+	
 	if test "$SQL_MYSQL" = "yes" ; then
 		PLUGIN_YES="$PLUGIN_YES SQL_mysql"
 	else
@@ -8821,6 +9256,13 @@ PLUGIN_NO_LINKABLE=
         fi
 	fi
 
+	if test $ac_cv_lib_z_main = yes; then
+		PLUGIN_YES="$PLUGIN_YES PACKER_GZPACKED"
+	else
+		PLUGIN_NO="$PLUGIN_NO PACKER_GZPACKED"
+	fi
+	
+	
 	if test "$EXDATA_MPZ" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES EXDTYPE_mpz"
 	else
@@ -9016,6 +9458,18 @@ fi
 		fi
     fi
 
+	#lib/libui/ui_highlevel/remote_client
+	#libLL_server.so - A convinience library for wrapping common server stuff up
+	#libUI_client.so - This is a UI you can use just like TUI, HL_TUI, HL_GTK etc.. A4GL_UI=client
+
+	#server_gtk	- This is the thin client program for displaying the output (GTK mode)
+	#server_tui	- This is the thin client program for displaying the output (TUI mode)
+	#server_console  - Not yet - but soon...
+	
+	#######################################################################
+	#Output created list of plugins to be created as individual variables
+	#for use in RPM and Windows setup creation:
+	
     #Can't use 'let' - standard sh don't know that...
 	#let COUNTER=0
     COUNTER=0
@@ -9216,8 +9670,6 @@ fi
 #    chmod +x pdflib-config
 #])
 
-                #lib/liblex/lex_perl/Makefile
-
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
@@ -9240,6 +9692,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libmsg/msg_native/Makefile
                 lib/liblex/lex_c/Makefile
                 lib/liblex/lex_esqlc/Makefile
+				lib/liblex/lex_perl/Makefile
 				lib/libpdf/Makefile
                 lib/libui/ui_console/Makefile
                 lib/libui/ui_curses/Makefile
@@ -9594,7 +10047,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.324 2006-10-02 07:52:11 afalout Exp $
+| $Id: configure.in,v 1.325 2006-10-10 05:45:36 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

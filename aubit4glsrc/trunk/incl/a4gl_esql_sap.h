@@ -17,8 +17,14 @@
 //SAP DB does not have decimal.h - But PG ecpg, IFX esql and Aubit (incl/compat)
 //do - if this decimal.h is really needed, which one are we using?
 //#include "decimal.h"
-#include "datetime.h"
-#include "sqltypes.h"
+//no longer in MaxDB as of 7.5 #include "datetime.h"
+
+//Linux std sqltypes.h contains typedef's of WCHAR and LPWSTR that 
+//conflict with cpc.h. As we have no controll of the place where cpc.h is
+//included (its inserted by cpc pre-compiler) we should not use it
+//#include "sqltypes.h"
+
+
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
 
@@ -65,6 +71,50 @@ extern "C"
 #define COPY_DATA_OUT_12(a4gl,infx,i,size) A4GL_copy_blob_text(infx,a4gl,i,size,'o')
 #define COPY_DATA_OUT_13(a4gl,infx,i,size) A4GL_copy_char(infx,a4gl,i,size,'o')
 #define COPY_DATA_OUT_14(a4gl,infx,i,size) A4GL_copy_interval(infx,a4gl,i,size,'o')
+
+
+/** Define the informix decimal type as the aubit4gl type */
+typedef FglDecimal dec_t;
+
+
+///opt/sdb/programs/sdk/7500/incl/cpc.h:typedef DECIMS(1) decimal1;
+//#define CDECIMALTYPE decimal1
+//#define CDECIMALTYPE DECIMS(1)
+//#define dec_t decimal1
+
+//Borrowed from /opt/IBM/informix/incl/esql/sqltypes.h
+#define CDECIMALTYPE     107
+#define CMONEYTYPE       111
+#define CDTIMETYPE       112
+#define CDATETYPE        110
+#define CSHORTTYPE       101
+#define CLONGTYPE        103
+#define CDOUBLETYPE      105
+#define CCHARTYPE        100
+#define CFLOATTYPE       104
+/*
+typedef struct dtime
+        {
+        int2 dt_qual;
+#ifdef OSF_MLS
+        ix_dec_t dt_dec;
+#else
+        dec_t dt_dec;
+#endif
+        }       dtime_t;
+*/
+typedef double timestamp;
+typedef timestamp dtime_t;
+
+/*
+helper_funcs.ec.c:291: error: ‘dtime_t’ undeclared (first use in this function)
+helper_funcs.ec.c:291: error: ‘infx’ undeclared (first use in this function)
+helper_funcs.ec.c:664: error: ‘dtime_t’ undeclared (first use in this function)
+helper_funcs.ec.c:664: error: ‘x’ undeclared (first use in this function)
+helper_funcs.ec.c:680: error: ‘dtime_t’ undeclared (first use in this function)
+helper_funcs.ec.c:680: error: ‘x’ undeclared (first use in this function)
+
+*/
 
 
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2006-10-02 07:52:20 afalout Exp $
+# $Id: Makefile,v 1.11 2006-10-10 05:45:45 afalout Exp $
 #
 
 ROOT    =..
@@ -44,6 +44,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 4GLC    =${ROOT}/bin/4glc
+4GLPC    =${ROOT}/bin/4glpc
 
 #target names are maintained in configure.in
 ALL_LIBS=${LIB_DEFAULT} ${LIB_OPTIONAL}
@@ -61,6 +62,7 @@ LIBPACKERMEMPACKED_PATH=libpacker/mempacked
 LIBPACKERPERL_PATH  =libpacker/perl
 LIBPACKERXDR_PATH   =libpacker/xdr
 LIBPACKERXML_PATH   =libpacker/xml
+LIBPACKERGZPACKED_PATH   =libpacker/gzpacked
 #LIBLEXC_PATH   		=liblex/lex_c
 LIBLEXEC_PATH  		=liblex/lex_esqlc
 LIBEXREPORTPDF_PATH =libpdf
@@ -69,6 +71,7 @@ LIBSTRING_PATH		=extra_libs/string
 LIBCHANNEL_PATH		=extra_libs/channel
 LIBESQLCHELPER_PATH	=libesql
 LIBHTML_PATH        =${ROOT}/tools/html
+LIBMEMCACHE_PATH	=extra_libs/memcached
 LIBSQLESQL_PATH     =libsql/esqlc
 LIBUIHL_PATH       	=libui/ui_highlevel
 LIBUICURSES_PATH	=libui/ui_curses
@@ -93,6 +96,7 @@ LOADMAP_PATH		=${ROOT}/tools/loadmap
 AUBITCONFIG_PATH	=resource
 FILESCHEMA_PATH     =libsql/schema_in_file
 MYSQL_PATH     		=libsql/mysql
+INGRES_PATH			=libsql/ingres
 LIBPOP_PATH     	=extra_libs/pop
 LIBSMTP_PATH     	=extra_libs/smtp
 LIBPCRE_PATH     	=extra_libs/pcre
@@ -126,6 +130,8 @@ FILESCHEMA_DEPS     =$(wildcard ${FILESCHEMA_PATH}/*.c) \
 					$(wildcard ${FILESCHEMA_PATH}/Makefile) ${ALL_H}
 MYSQL_DEPS     		=$(wildcard ${MYSQL_PATH}/*.c) \
 					$(wildcard ${MYSQL_PATH}/Makefile) ${ALL_H}
+INGRES_DEPS    		=$(wildcard ${INGRES_PATH}/*.ec) \
+					$(wildcard ${INGRES_PATH}/Makefile) $(wildcard ${INGRES_PATH}/makeit) ${ALL_H}
 LIBHELP_STD_DEPS	=$(wildcard ${LIBHELP_STD_PATH}/*.per) $(wildcard ${LIBHELP_STD_PATH}/*.4gl) \
 					$(wildcard ${LIBHELP_STD_PATH}/Makefile) ${ALL_H}
 LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*.h) \
@@ -150,6 +156,8 @@ LIBPACKERXDR_DEPS	=$(wildcard ${LIBPACKERXDR_PATH}/*.c) $(wildcard ${LIBPACKERXD
 					$(wildcard ${LIBPACKERXDR_PATH}/Makefile) ${ALL_H}
 LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXML_PATH}/*.h) \
 					$(wildcard ${LIBPACKERXML_PATH}/Makefile) ${ALL_H}
+LIBPACKERGZPACKED_DEPS	=$(wildcard ${LIBPACKERGZPACKED_PATH}/*.c) $(wildcard ${LIBPACKERGZPACKED_PATH}/*.h) \
+					$(wildcard ${LIBPACKERGZPACKED_PATH}/Makefile) ${ALL_H}
 #LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
 #					$(wildcard ${LIBLEXC_PATH}/Makefile) ${ALL_H}
 LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h) ${ROOT}/compilers/4glc/API_lex.h \
@@ -169,6 +177,8 @@ LIBPCRE_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/make
 LIBSXML_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/Makefile) ${ALL_H}
 LIBHTML_DEPS		=$(wildcard ${LIBHTML_PATH}/*.c) $(wildcard ${LIBHTML_PATH}/*.h) \
 					$(wildcard ${LIBHTML_PATH}/Makefile) ${ALL_H}
+LIBMEMCACHE_DEPS	=$(wildcard ${LIBMEMCACHE_PATH}/*.c) $(wildcard ${LIBMEMCACHE_PATH}/*.h) \
+					$(wildcard ${LIBMEMCACHE_PATH}/Makefile) $(wildcard ${LIBMEMCACHE_PATH}/*.4gl) ${ALL_H}
 LIBSQLESQL_DEPS		=$(wildcard ${LIBSQLESQL_PATH}/*.ec) $(wildcard ${LIBSQLESQL_PATH}/*.h) \
 					$(wildcard ${LIBSQLESQL_PATH}/Makefile) ${ALL_H}
 LIBUIGTK_DEPS		=$(wildcard ${LIBUIGTK_PATH}/*.c) $(wildcard ${LIBUIGTK_PATH}/*.h) \
@@ -339,7 +349,10 @@ ${PLUGINDIR}/libPACKER_XDR${SO_EXT}: ${LIBPACKERXDR_DEPS}
 
 ${PLUGINDIR}/libPACKER_XML${SO_EXT}: ${LIBPACKERXML_DEPS}
 	${MAKE} -C ${LIBPACKERXML_PATH}
-
+	
+${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT}: ${LIBPACKERGZPACKED_DEPS}
+	${MAKE} -C ${LIBPACKERGZPACKED_PATH}
+	
 ##############
 #libSQL_ ESQL (native)
 
@@ -393,7 +406,13 @@ ${PLUGINDIR}/libSQL_FILESCHEMA${SO_EXT}: ${FILESCHEMA_DEPS}
 #Native MySQL plug-in
 ${PLUGINDIR}/libSQL_mysql${SO_EXT}: ${MYSQL_DEPS}
 	${MAKE} -C ${MYSQL_PATH}
-	
+
+#Native Ingres plug-in
+ingres: ${PLUGINDIR}/libSQL_ingres${SO_EXT}
+${PLUGINDIR}/libSQL_ingres${SO_EXT}: ${INGRES_DEPS}
+#	${MAKE} -C ${INGRES_PATH}
+	cd ${INGRES_PATH}; chmod a+x ./makeit; ./makeit
+
 ##############
 #libSQL_ (ODBC) plug-ins directly linked with ODBC driver
 
@@ -485,6 +504,10 @@ ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: ${LIBESQL_DEPS}
 ${PLUGINDIR}/libESQL_SAP${SO_EXT}: ${LIBESQL_DEPS}
 	${MAKE} -C ${LIBESQL_PATH} $@
 
+${PLUGINDIR}/libESQL_INGRES${SO_EXT}: ${LIBESQL_DEPS}
+	${MAKE} -C ${LIBESQL_PATH} $@
+
+	
 ##############
 #libEXDTYPE_
 
@@ -535,6 +558,7 @@ ${PLUGINDIR}/libchannel${SO_EXT}: ${4GLC} ${LIBCHANNEL_DEPS}
 	
 ${PLUGINDIR}/libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
 	$(MAKE) -C ${LIBPOP_PATH}
+	
 ${PLUGINDIR}/libfgl_smtp${SO_EXT}: ${4GLC} ${LIBSMTP_DEPS}
 	$(MAKE) -C ${LIBSMTP_PATH}
 
@@ -546,6 +570,12 @@ ${PLUGINDIR}/libA4GL_sxml${SO_EXT}: ${4GLC} ${LIBSXML_DEPS}
 
 ${PLUGINDIR}/libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
+
+	
+##############
+#Libs that need 4glpc
+${PLUGINDIR}/libA4GL_memcache${SO_EXT_LINKABLE}: ${4GLPC} ${LIBMEMCACHE_DEPS}
+	$(MAKE) -C ${LIBMEMCACHE_PATH} $@
 
 
 ############################
@@ -576,6 +606,9 @@ loadmap: ${LOADMAP_DEPS}
 ${4GLC}:
 	${MAKE} -C ${ROOT}/compilers/4glc
 
+${4GLPC}: ${4GLC}
+	${MAKE} -C ${ROOT}/tools/4glpc
+	
 ${FCOMPILE}:
 	${MAKE} -C ${ROOT}/compilers/fcompile
 
@@ -611,6 +644,8 @@ clean.libsql:
 	${MAKE} -C ${LIBSQLPG_PATH} clean
 	${MAKE} -C ${FILESCHEMA_PATH} clean
 	${MAKE} -C ${MYSQL_PATH} clean
+#FIXME: not a makefile:
+	-${MAKE} -C ${INGRES_PATH} clean
 
 clean.libpdf:
 	${MAKE} -C ${LIBEXREPORTPDF_PATH} clean
@@ -636,6 +671,7 @@ clean.libpacker:
 	${MAKE} -C ${LIBPACKERPERL_PATH} clean
 	${MAKE} -C ${LIBPACKERXDR_PATH} clean
 	${MAKE} -C ${LIBPACKERXML_PATH} clean
+	${MAKE} -C ${LIBPACKERGZPACKED_PATH} clean
 
 clean.liblogical:
 	$(MAKE) -C liblogical/txt/process clean
@@ -660,6 +696,7 @@ clean.other:
 	${MAKE} -C ${LIBFILE_PATH} clean
 	${MAKE} -C ${LIBESQLCHELPER_PATH} clean
 	${MAKE} -C ${LIBHTML_PATH} clean
+	${MAKE} -C ${LIBMEMCACHE_PATH} clean
 	${MAKE} -C ${LIBPOP_PATH} clean
 	${MAKE} -C ${LIBSMTP_PATH} clean
 	${MAKE} -C ${LIBPCRE_PATH} clean
@@ -679,6 +716,9 @@ clean.cint:
 
 show:
 	@echo ${LIBAUBIT4GL_DEPS}
+	@echo "$$INGRES_INST_PATH"
+	@echo "$$INGRES_ESQLC"
+	@echo "$$HAVE_INGRES_ESQLC"
 
 
 pluginsdir:

@@ -1,14 +1,36 @@
-#. ~ingres/.ingIIbash
-#PATH=/opt/CA/IngresII/ingres/bin/:$PATH
-#export PATH
-PATH=$PATH:"$II_SYSTEM/ingres/bin"
+#!/bin/sh
+
+#../../../Makefile-common
+
+. $INGRES_INST_PATH/.ingIIbash 
 export A4GL_DUMP_CORE=Y
 
-esqlc ingres.ec
+if test "$HAVE_INGRES_ESQLC" != "no"; then
 
-x=`cat "$II_SYSTEM"/ingres/files/abflnk.opt`
-gcc -shared  -fPIC -I..  -I$AUBITDIR/incl ingres.c -o libSQL_ingres.so -L"$II_SYSTEM"/ingres/lib    $x
+	echo "Running $INGRES_ESQLC ingres.ec"
+	$INGRES_ESQLC ingres.ec
+	if test -f ingres.c; then
+		x=`cat "$II_SYSTEM"/ingres/files/abflnk.opt`
+		echo "Running gcc -shared -fPIC -I.. -I../../../incl ingres.c -o libSQL_ingres.so \
+			-L"$II_SYSTEM"/ingres/lib $x"
+		gcc -shared -fPIC -I.. -I../../../incl ingres.c -o libSQL_ingres.so \
+			-L"$II_SYSTEM"/ingres/lib $x
+		if test -f libSQL_ingres.so; then
+			echo "cp  libSQL_ingres.so $PLUGINDIR"
+			cp  libSQL_ingres.so $PLUGINDIR
+			echo "$PLUGINDIR/libSQL_ingres.so successfuly compiled"
+		else
+			echo "ERROR: Compilation failed"
+			exit 1
+		fi
+	else
+		echo "ERROR: Pre-compilation failed"
+		exit 2
+	fi
+else
+	echo "No ingres"
+fi
 
-cp  libSQL_ingres.so $AUBITDIR/lib 
-export A4GL_SQLTYPE=ingres
+#test it:
+#export A4GL_SQLTYPE=ingres
 #4glc test1.4gl

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.24 2006-09-20 09:36:25 mikeaubury Exp $
+# $Id: Makefile,v 1.25 2006-10-10 05:45:47 afalout Exp $
 #
 
 ROOT    	=../..
@@ -332,8 +332,10 @@ clean.generated:
 #for all API's
 clean.api:
 	${RM} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h}) ${API_SPEC:.spec=.c} \
-	${OBJS_API} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=_lib.h})
-
+	${OBJS_API} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=_lib.h}) \
+	API_esql_self.c API_exreport_self.c API_form_self.c API_help_self.c \
+	API_menu_self.c API_packer_self.c API_rpc_self.c API_sql_self.c \
+	API_sqlparse_self.c API_ui_self.c
 
 #----------------------------------- EOF -------------------------------
 

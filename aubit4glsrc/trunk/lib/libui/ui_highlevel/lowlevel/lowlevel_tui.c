@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.93 2006-09-30 11:31:04 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.94 2006-10-10 05:45:50 afalout Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +88,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.93 2006-09-30 11:31:04 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.94 2006-10-10 05:45:50 afalout Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -912,18 +912,6 @@ A4GL_LL_display_form (void *vf, int attrib, int curr_width, int curr_height,
 
 
 
-/**
- * PLEASE DESCRIBE THE BL*** FUNCTION!
- *
- * @param 
- * @return 
- */
-void
-A4GL_LL_out_linemode (char *s)
-{
-  PRINTF ("%s\n", s);
-  fflush(stdout);
-}
 
 
 /**
@@ -1589,6 +1577,24 @@ A4GL_LL_set_field_buffer (void *field, int n, char *str)
 }
 
 
+#ifndef SERVER_TUI
+
+//This 3 functions are alos defined in ui_highlevel/remote_client/common.c
+//so to prevent collision when compiling server_tui we use ifndef
+
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
+void
+A4GL_LL_out_linemode (char *s)
+{
+  PRINTF ("%s\n", s);
+  fflush(stdout);
+}
+
 
 /**
  * PLEASE DESCRIBE THE BL*** FUNCTION!
@@ -1624,6 +1630,7 @@ A4GL_LL_set_field_opts (void *field, int oopt)
   return oopt;
 }
 
+#endif // #ifndef SERVER_TUI
 
 /**
  * PLEASE DESCRIBE THE BL*** FUNCTION!

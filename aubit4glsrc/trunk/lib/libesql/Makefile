@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.37 2006-09-30 11:30:57 mikeaubury Exp $
+# $Id: Makefile,v 1.38 2006-10-10 05:45:48 afalout Exp $
 #
 
 ROOT    =../..
@@ -51,10 +51,26 @@ endif
 
 PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
 
-ALL=${PLUGINDIR}/libESQL_INFORMIX${SO_EXT} ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT} \
-    ${PLUGINDIR}/libESQL_SAP${SO_EXT} ${PLUGINDIR}/libESQL_QUERIX${SO_EXT} ${PLUGINDIR}/libESQL_INGRES${SO_EXT}
+
+#Define default components to build
+ifneq "$(ESQL)" "no"
+	ALL	+=	${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}
+endif
+ifneq "${Q_ESQLC}" "no"
+	ALL	+=	${PLUGINDIR}/libESQL_QUERIX${SO_EXT}
+endif
+ifneq "$(II_SYSTEM)" ""
+	ALL	+=	${PLUGINDIR}/libESQL_INGRES${SO_EXT}
+endif
+ifneq "${PG_ESQLC}" "no"
+ 	ALL	+=	${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
+endif
+ifneq "${SAPDB_ESQLC}" "no"
+    ALL	+=	${PLUGINDIR}/libESQL_SAP${SO_EXT}
+endif
 
 ifneq "${COMSPEC}" ""
+#Windows
 	QUERIX_IFLAGS=-I"${QUERIXDIR}/include"
 	QUERIX_LFLAGS=-L"${QUERIXDIR}/lib"
     QUERIX_LIBS="${QUERIXDIR}/lib/libesql.lib" "${QUERIXDIR}/lib/libesql.lib" \
@@ -62,7 +78,8 @@ ifneq "${COMSPEC}" ""
 	#"${QUERIXDIR}/lib/libsqlc.lib"
 	#"${QUERIXDIR}/bin/libfgl.dll"
 else
-	INGRES_IFLAGS=
+#UNIX
+	INGRES_IFLAGS=${shell cat "${INGRES_INST_PATH}/ingres/files/abflnk.opt"}
 	INGRES_LFLAGS=
 	INGRES_LIBS=
 	QUERIX_IFLAGS=-I${QUERIXDIR}/incl
@@ -114,10 +131,11 @@ all: ${ALL}
 	@echo "Done: ${ALL}"
 
 ###################
-#${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}: ${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}
+libESQL_INFORMIX${SO_EXT}: ${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}
 ${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 ifneq "${COMSPEC}" ""
-	$(CC) $(LDFLAGS) -g -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
+	$(CC) $(LDFLAGS) -g -mms-bitfields -shared -Wl,--export-all-symbols \
+		$^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 	${IFMX_ESQLC}  ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}  
 #Solaris:
@@ -127,30 +145,29 @@ else
 endif
 
 ###################
-#${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
+libESQL_POSTGRES${SO_EXT}: ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
 ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 # -Bstatic
 #gcc: file path prefix "static" never used
 
 ###################
-#${PLUGINDIR}/libESQL_SAP${SO_EXT}: ${PLUGINDIR}/libESQL_SAP${SO_EXT}
+libESQL_SAP${SO_EXT}: ${PLUGINDIR}/libESQL_SAP${SO_EXT}
 ${PLUGINDIR}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 ###################
-#${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}
+libESQL_QUERIX${SO_EXT}: ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}
 ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
 
-
-
-#${PLUGINDIR}/libESQL_INGRES${SO_EXT}: ${PLUGINDIR}/libESQL_INGRES${SO_EXT}
+###################
+libESQL_INGRES${SO_EXT}: ${PLUGINDIR}/libESQL_INGRES${SO_EXT}
 ${PLUGINDIR}/libESQL_INGRES${SO_EXT}: helper_funcs_ingres.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
 
-#${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
-
+###################
+libESQL_INFOFLEX${SO_EXT}: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
 INFOFLEX: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
 ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}: helper_funcs_infoflex.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INFOFLEX_LFLAGS} ${INFOFLEX_LIBS}
@@ -189,15 +206,21 @@ helper_funcs_postgresql.o: helper_funcs.ec
 ###################
 #SAP ESQL/C compiler
 helper_funcs_sap.o: helper_funcs.ec
-#cpc will allways add .cpc extension to any source files
-	cp $^ $^.cpc
+#cpc will allways add .cpc extension to any source files specified, so we have to 
+#make a copy and add .cpc extension
+#As -H nocheck apparently does not work in 7.5 I had to manually rename declarations
+#inside #ifdef-s so that cpc would not complain:
+	cat $^ | sed -e 's/decimal \*infx\;/char dummy\[256\]\;/g' \
+		-e 's/decimal \*x\;/char dummy\[256\]\;/g' > $^.cpc
 #Had to disable syntax check of EXEC SQL statements, because SAP EC pre-compiler
 #does not take in account #ifdef's, and then fail on syntax specific to
 #another ESQL/C
 #check nocheck   ::  -H nocheck              (default: -H check)
 #      syntax    ::  -H syntax
-	${SAPDB_ESQLC} -H nocheck $^ -I${ROOT}/incl -o $@ -DDIALECT_SAP -I/opt/sapdb/interfaces/precompiler/incl
+#		-c = precompile only (translate to C - do not invoke C compiler)
+	${SAPDB_ESQLC} -H nocheck $^ -I${ROOT}/incl -o $@ -DDIALECT_SAP ${SAPDB_INCDIR}
 	rm $^.cpc
+
 
 ###################
 #Querix ESQL/C compiler
@@ -213,14 +236,14 @@ helper_funcs_querix.o: helper_funcs.ec
 ###################
 #INGRES ESQL/C compiler
 helper_funcs_ingres.o: helper_ingres.ec
-#must remove .c file or .ec will not get recompiled
-	#rm helper_funcs.c
-#need quotes because of the path on Windows
-	$(II_SYSTEM)/ingres/bin/esqlc $^
-	${CC} ${CFLAGS} -DDIALECT_INGRES -g -c -o $@ helper_ingres.c -I${ROOT}/incl ${INGRES_IFLAGS}
-#-DNEWERA
-	rm helper_ingres.c
+#helper_funcs_ingres.o: helper_funcs.ec
+	. ${INGRES_INST_PATH}/.ingIIbash; $(INGRES_ESQLC) $^
+	. ${INGRES_INST_PATH}/.ingIIbash; \
+		${CC} ${CFLAGS} -DDIALECT_INGRES -g -c -o $@ $(basename $<).c -I${ROOT}/incl ${INGRES_IFLAGS}
+	rm $(basename $<).c
 
+####################
+#Infoflex
 helper_funcs_infoflex.o: helper_funcs_infoflex.ec
 	esqlpp helper_funcs_infoflex.ec
 	sqlcc ${CFLAGS} -DDIALECT_INFOFLEX -g -c -o $@ helper_funcs_infoflex.c -I${ROOT}/incl
@@ -235,7 +258,8 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} -f *.o *.c ${ALL} *.cpc *.bak *.ec.w2 *.ec.w3 *.ec.pcl
+	${RM} -f *.o *.c ${ALL} *.cpc *.bak *.ec.w2 *.ec.w3 *.ec.pcl \
+		helper_funcs.ec.cpc helper_ingres.c
 
 
 

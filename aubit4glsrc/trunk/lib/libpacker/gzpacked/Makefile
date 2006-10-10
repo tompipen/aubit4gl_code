@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.1 2006-09-13 09:24:23 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-10-10 05:45:48 afalout Exp $
 #
 
 ROOT        =../../..
@@ -54,20 +54,17 @@ LINKLIBS+=-lz
 ## ==================================================================
 
 ALL: ${ALL}
-
+	@echo "Done: ${ALL}"
+	
 ${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT}: ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-
-#ifeq "${SO_EXT}" ".dll"
-#	${MV} TMP${SOEXP_EXT} $@.a
-#endif
 
 ## ==================================================================
 ##                          Clean
 ## ==================================================================
 
 clean:
-	${RM} ${PLUGINDIR}/libPACKER_GZPACKED${SO_EXT} *.bak *.o
+	${RM} ${ALL} *.bak *.o *~
 
 ## ==================================================================
 ##                         Other Targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2006-09-13 08:11:37 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2006-10-10 05:45:50 afalout Exp $
 #
 
 ROOT    =../../..
@@ -140,7 +140,7 @@ ${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
 #Aubit ODBC plug-in code linked with (SAPDB) ODBC driver library, for use without ODBC manager
 ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC ${SAPODBC_INCLUDE} ${SAPODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlod -lsqlrte -lpcr -lpthread -lm ${SAPODBC_LFLAGS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ ${SAPDB_ODBC_ADDLIBS} -lsqlod ${SAPODBC_LFLAGS}
 
 ###############################
 #Aubit ODBC plug-in linked with SQLite ODBC driver for use without ODBC manager

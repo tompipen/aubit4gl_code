@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.200 2006-10-02 07:52:15 afalout Exp $
+# $Id: Makefile-common.in,v 1.201 2006-10-10 05:45:45 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -224,14 +224,14 @@ endif
 A4GL_VERSION_STRING=@AUBIT_VERSION@_@AUBIT_BUILD@
 
 ifneq "${ROOT}" ""
-	PLUGINDIR=${ROOT}/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
+PLUGINDIR=${ROOT}/plugins-${A4GL_VERSION_STRING}
 	LIBROOT=${ROOT}/lib
 endif
 
 
 # If we can use AUBIT_SRC_ROOT - even better...
 ifneq "${AUBIT_SRC_ROOT}" ""
-	PLUGINDIR=${AUBIT_SRC_ROOT}/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
+	PLUGINDIR=${AUBIT_SRC_ROOT}/plugins-${A4GL_VERSION_STRING}
 	LIBROOT=${AUBIT_SRC_ROOT}/lib
 endif
 export PLUGINDIR
@@ -1044,11 +1044,19 @@ MYSQL_LFLAGS		=@MYSQL_LFLAGS@
 MYSQL_IFLAGS		=@MYSQL_IFLAGS@
 
 # SAP DB / MaxDB
-SAPDB_ESQLC			=@SAPDB_ESQLC@
 SAPODBC_INCLUDE		=@SAPODBC_INCLUDE@ 
-SAPODBC_LFLAGS		=@SAPODBC_LFLAGS@ 
+SAPODBC_LFLAGS		=@SAPODBC_LFLAGS@
+SAPDB_ODBC_ADDLIBS	=@SAPDB_ODBC_ADDLIBS@
+
+SAPDB_ESQLC			=@SAPDB_ESQLC@
 SAPDB_INCDIR		=@SAPDB_INCDIR@ 
 SAPDB_LIBDIR		=@SAPDB_LIBDIR@
+
+#Ingres
+INGRES_INST_PATH	=@INGRES_INST_PATH@
+HAVE_INGRES_ESQLC	=@HAVE_INGRES_ESQLC@
+INGRES_ESQLC		=@INGRES_ESQLC@
+export INGRES_INST_PATH INGRES_ESQLC HAVE_INGRES_ESQLC
 
 # Doxy
 DOXYGEN				=@DOXYGEN@
@@ -1178,8 +1186,9 @@ IMPORT_PATH=etc/import
 SOURCE 		=${AUBIT_SRC_ROOT}
 BIN_DIR     =$(SOURCE)/${BIN_PATH}
 LIB_DIR     =$(SOURCE)/${LIB_PATH}
+PLUGIN_DIR	=$(SOURCE)/plugins-${A4GL_VERSION_STRING}
 DOC_DIR    	=$(SOURCE)/${DOC_PATH}
-FGLPC_SETTINGS_DIR     =$(SOURCE)/tools/4glpc/settings
+FGLPC_SETTINGS_DIR     =$(SOURCE)/$(FGLPC_SETTINGS_PATH)
 TEST_DIR    =$(SOURCE)/${TEST_PATH}
 TEST_DIR_STD=$(TEST_DIR)
 TEST_DIR_GUI=$(TEST_DIR)/gui
@@ -1194,7 +1203,7 @@ IMPORT_DIR =$(SOURCE)/${IMPORT_PATH}
 #Paths to install to:
 BIN_DEST	=$(INSTALL_DIR)/${BIN_PATH}
 LIB_DEST	=$(INSTALL_DIR)/${LIB_PATH}
-PLUGIN_DEST	=$(INSTALL_DIR)/plugins-@AUBIT_VERSION@_@AUBIT_BUILD@
+PLUGIN_DEST	=$(INSTALL_DIR)/plugins-${A4GL_VERSION_STRING}
 FGLPC_SETTINGS_DEST	=$(INSTALL_DIR)/${FGLPC_SETTINGS_PATH}
 DOC_DEST   	=$(INSTALL_DIR)/${DOC_PATH}
 TEST_DEST   =$(INSTALL_DIR)/${TEST_PATH}
@@ -1216,7 +1225,7 @@ IMPORT_DEST=$(INSTALL_DIR)/${IMPORT_PATH}
 #AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
 AUBITVERSION=@AUBIT_VERSION@
 AUBITBUILD=@AUBIT_BUILD@
-AUBITLIBFULL=aubit4gl-@AUBIT_VERSION@_@AUBIT_BUILD@
+AUBITLIBFULL=aubit4gl-${A4GL_VERSION_STRING}
 COMPILEDATE	:=$(shell date +%d-%m-%Y)
 
 
@@ -1255,10 +1264,8 @@ endif
 BIN_EXE_NOT_4AE=$(filter-out %.4ae,${BIN_EXE})
 BIN_EXE_4AE=$(filter %.4ae,${BIN_EXE})
 
-#This needs to be moved into configure.in, otherwise this files will not
-#be included in packaging (rpm, windows installer, etc...)
-#SETTINGS_FILES=C C_INFORMIX EC EC_INFORMIX EC_INGRES EC_POSTGRES EC_SAP INFORMIX
-SETTINGS_FILES=$(filter-out CVS,$(notdir $(wildcard ${AUBITDIR}/tools/4glpc/settings/*)))
+#4glpc compile settings files
+FGLPC_SETTINGS_FILES=@FGLPC_SETTINGS_FILES@
 
 BIN_FILES   =${BIN_SCRIPTS} ${RUNTIME_RESOURCE} ${BIN_EXE_4AE} \
 			$(addsuffix ${EXE_EXT},${BIN_EXE_NOT_4AE})
@@ -1289,7 +1296,7 @@ LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES}) $(addprefix ${PLUGINDIR}/lib,${TM
 
 #LIB_DEFAULT=@ALL_LIBS@ @COMP_LIBS@
 #LIB_SO		=${LIB_DEFAULT}
-LIB_SO		=$(addprefix ${LIB_DIR}/lib,$(addsuffix -@AUBIT_VERSION@_@AUBIT_BUILD@${SO_EXT_LINKABLE},${LIB_EXPORTLIB}))
+LIB_SO		=$(addprefix ${LIB_DIR}/lib,$(addsuffix -${A4GL_VERSION_STRING}${SO_EXT_LINKABLE},${LIB_EXPORTLIB}))
 PLUGIN_SO	=$(addprefix ${PLUGINDIR}/lib,${TMP_PLUGINFILES})
 
 #Lib files we build depending on available 3rd party support:
@@ -1299,7 +1306,8 @@ TMP_RPMFILES=$(addprefix ${PLUGINDIR}/lib,@PLUGIN_YES@ @PLUGIN_YES_LINKABLE@)
 LIB_OPTIONAL=$(addsuffix ${SO_EXT},${TMP_RPMFILES})
 
 LIB_FILES   		=${LIB_SO} 
-PLUGIN_FILES   		=${PLUGIN_SO} ${LIB_OPTIONAL}
+#PLUGIN_FILES   		=${PLUGIN_SO} ${LIB_OPTIONAL}
+PLUGIN_FILES   		=${notdir ${PLUGIN_SO} ${LIB_OPTIONAL}}
 
 ifneq "${COMSPEC}" ""
 	LIB_FILES 		+=lib4glc${SO_EXT} $(addprefix lib,$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB}))
@@ -1389,7 +1397,7 @@ ROOT_ALLWAYSCLEAN=libtool
 TOBIN		=$(addprefix $(BIN_DIR)/,		$(BIN_FILES))
 #TOLIB		=$(addprefix $(LIB_DIR)/,		$(LIB_FILES))
 TOLIB		=$(LIB_FILES)
-TOPLUGIN	=$(PLUGIN_FILES)
+TOPLUGIN	=$(addprefix $(PLUGIN_DIR)/,	$(PLUGIN_FILES))
 TODOCS		=$(addprefix $(DOC_DIR)/,		$(DOC_FILES))
 TOTEST_STD  =$(addprefix $(TEST_DIR_STD)/,	$(TEST_STD))
 TOTEST_GUI	=$(addprefix $(TEST_DIR_GUI)/,	$(TEST_GUI))
@@ -1399,7 +1407,7 @@ TOROOT		=$(addprefix $(ROOT_DIR)/,		$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,		$(INCL_FILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,		$(IDE_FILES))
 TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
-TOSETTINGS   =$(addprefix $(FGLPC_SETTINGS_DIR)/,	$(SETTINGS_FILES))
+TOSETTINGS   =$(addprefix $(FGLPC_SETTINGS_DIR)/,	$(FGLPC_SETTINGS_FILES))
 TOIMPORT	=$(addprefix $(IMPORT_DIR)/,	$(IMPORT_FILES))
 AMAKE_TOBIN	=$(addprefix $(BIN_DIR)/,		$(AMAKE_BIN_FILES))
 AMAKE_TOINCL=$(addprefix $(INCL_DIR)/,		$(AMAKE_INCL_FILES))
@@ -1415,6 +1423,7 @@ FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES)) \
 			 $(addprefix $(BIN_DEST)/,	$(BIN_ALLWAYSCLEAN))
 FROMLIB		=$(addprefix $(LIB_DEST)/,	$(LIB_FILES)) \
 			 $(addprefix $(LIB_DEST)/,	$(LIB_ALLWAYSCLEAN))
+FROMPLUGIN	=$(addprefix $(PLUGIN_DEST)/,$(PLUGIN_FILES))
 FROMDOCS	=$(addprefix $(DOC_DEST)/,	$(DOC_FILES))
 FROMTEST	=$(addprefix $(TEST_DEST)/,	$(TEST_FILES))
 FROMETC		=$(addprefix $(ETC_DEST)/,	$(ETC_FILES)) \
@@ -1427,6 +1436,7 @@ FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES)) \
 			 $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
 FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
 FROMCONVSQL =$(addprefix $(CONVSQL_DEST)/,$(CONVSQL_FILES))
+FROMSETTINGS=$(addprefix $(FGLPC_SETTINGS_DEST)/,	$(FGLPC_SETTINGS_FILES))
 FROMIMPORT 	=$(addprefix $(IMPORT_DEST)/,$(IMPORT_FILES))
 
 ## ==================================================================

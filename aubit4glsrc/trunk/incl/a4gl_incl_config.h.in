@@ -94,6 +94,7 @@
 	#define HAVE_RPC_H 0
 	#define HAVE_RPC_RPC_H 0
 	#define HAVE_SAPODBC_HEADERS 0
+	#define HAVE_SAPODBC_HEADERS_7500 0
 	#define HAVE_SEARCH_H 0
 	#define HAVE_SELECT 0
 	#define HAVE_SETENV 0

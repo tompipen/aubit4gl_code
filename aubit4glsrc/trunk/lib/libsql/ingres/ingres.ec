@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ingres.ec,v 1.1 2005-01-23 19:53:52 mikeaubury Exp $
+# $Id: ingres.ec,v 1.2 2006-10-10 05:45:49 afalout Exp $
 #*/
 
 
@@ -399,8 +399,12 @@ while (1) {
 }
 return ptr;
 }
-void *
-A4GLSQL_get_validation_expr(char *tabname,char *colname) 
+
+
+t_expr_str_list *
+A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
+//void *
+//A4GLSQL_get_validation_expr(char *tabname,char *colname) 
 {
 char buff[300];
 char val[65];

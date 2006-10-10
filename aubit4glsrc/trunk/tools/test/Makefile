@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.2 2006-10-02 07:53:15 afalout Exp $
+# $Id: Makefile,v 1.3 2006-10-10 05:45:52 afalout Exp $
 #
 
 ROOT    =../..
@@ -186,8 +186,9 @@ clean:
 	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm pdf_report solitaire test_select test_mpz \
 	test_build.c ${FILES.4gl:.4gl=.h} assoc file *.aso .\#* \
 	*${A4GL_FRM_EXT} *${A4GL_MNU_EXT} *.aox *.warn *.ec *.lst *.4gi *.4go \
-	*.cpc *.42f *.4qe *.qo *.pic *.pcl *.w2 *.w3
-
+	*.cpc *.42f *.4qe *.qo *.pic *.pcl *.w2 *.w3 \
+	*.afr.xml  *.mnu.xml
+	
 clean.sub:
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	${MAKE} -C regression clean

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.26 2006-08-07 13:53:06 briantan Exp $
+# $Id: Makefile,v 1.27 2006-10-10 05:45:34 afalout Exp $
 #
 
 ## ==================================================================
@@ -343,29 +343,29 @@ endif
 ##                        Perl output mode
 ## ==================================================================
 
-#perl: api perl.compiler perl.lib test.perl
-	#@echo " "
-	#@echo "+--------------------------------------------------------------------+"
-	#@echo "| Perl - done. "
-	#@echo "+--------------------------------------------------------------------+"
-	#@echo " "
+perl: api perl.compiler perl.lib test.perl
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Perl - done. "
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
 
 api:
 	$(MAKE) -C lib/libaubit4gl api
 
-#perl.compiler:
-	#${MAKE} -C lib/liblex/lex_perl
-	#@echo Aubit 4gl Perl-code generating version LEX library created
+perl.compiler:
+	${MAKE} -C lib/liblex/lex_perl
+	@echo Aubit 4gl Perl-code generating version LEX library created
 
-#perl.lib:
+perl.lib:
 #Perl created makefile will remove domake when running "clean", so we better make
 #sure we have it:
-	#config.status --file lib/swig/domake
-	#cd lib/swig; sh domake
-	#@echo Aubit 4gl Perl-code libraries installed
+	config.status --file lib/swig/domake
+	cd lib/swig; sh domake
+	@echo Aubit 4gl Perl-code libraries installed
 
-#test.perl:
-	#${MAKE} -C tools/test test.perl
+test.perl:
+	${MAKE} -C tools/test test.perl
 
 
 ## ==================================================================
@@ -461,7 +461,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C lib/extra_libs/string clean
 	$(MAKE) -C lib/libexdata clean
 	$(MAKE) -C lib/libpacker/packed clean
-	#$(MAKE) -C lib/libpacker/perl clean
+	$(MAKE) -C lib/libpacker/perl clean
 	$(MAKE) -C lib/libpacker/xdr clean
 	$(MAKE) -C lib/libpacker/xml clean
 	$(MAKE) -C compilers/4glc/rules clean
@@ -551,12 +551,11 @@ clean.makefiles:
 	lib/libform/form_xdr/Makefile lib/libform/noform/Makefile \
 	lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_xdr/Makefile \
 	lib/libmsg/msg_native/Makefile lib/libpacker/packed/Makefile \
-	lib/libpacker/perl/Makefile  \
-	lib/libpacker/xdr/Makefile \
+	lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile \
 	lib/libpacker/xml/Makefile lib/librpc/no_rpc/Makefile \
 	lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile \
 	lib/resource/Makefile tools/loadmap/Makefile \
-	lib/liblex/lex_c/Makefile \
+	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile
 	lib/liblex/lex_esqlc/Makefile \
 	lib/libexdata/Makefile lib/libsql/postgresql/Makefile \
     lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
@@ -999,7 +998,7 @@ rpm.install:
 
 #       --relocate OLDPATH=NEWPATH
 #              For relocatable binary packages, translate all file
-#              paths  that start with OLDPATH in the package relo­
+#              paths  that start with OLDPATH in the package reloï¿½
 #              cation hint(s) to NEWPATH.  This option can be used
 #              repeatedly  if several OLDPATH's in the package are
 #              to be relocated.

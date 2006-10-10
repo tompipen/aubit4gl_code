@@ -97,17 +97,23 @@
 
 
 	#ifdef SAPODBC
-		#include "interfaces/odbc/incl/WINDOWS.H"
-			/*
-			   incl/WINDOWS.H Header file for non-MS Windows platforms. On MS Windows 3.1 or
-			   Windows NT, this file can be replaced by windows.h if an SDK has been installed.
-			   Also defines thingsa like DWORD needed by followint headers.
-			 */
-
-		#include "interfaces/odbc/incl/sql.h"	/* Header file for the ODBC driver (Core). */
-		#include "interfaces/odbc/incl/sqlext.h"	/* Header file for the ODBC driver (Level1 and Level2). */
-		#include "interfaces/odbc/incl/sqltypes.h"	/* Header file for the ODBC driver (Datatypes). */
-
+		#if (HAVE_SAPODBC_HEADERS_7500)
+			#include "programs/incl/WINDOWS.H"
+			#include "programs/incl/sql.h"	/* Header file for the ODBC driver (Core). */
+			#include "programs/incl/sqlext.h"	/* Header file for the ODBC driver (Level1 and Level2). */
+			#include "programs/incl/sqltypes.h"	/* Header file for the ODBC driver (Datatypes). */
+		#else
+			#include "interfaces/odbc/incl/WINDOWS.H"
+				/*
+				   incl/WINDOWS.H Header file for non-MS Windows platforms. On MS Windows 3.1 or
+				   Windows NT, this file can be replaced by windows.h if an SDK has been installed.
+				   Also defines thingsa like DWORD needed by followint headers.
+				 */
+	
+			#include "interfaces/odbc/incl/sql.h"	/* Header file for the ODBC driver (Core). */
+			#include "interfaces/odbc/incl/sqlext.h"	/* Header file for the ODBC driver (Level1 and Level2). */
+			#include "interfaces/odbc/incl/sqltypes.h"	/* Header file for the ODBC driver (Datatypes). */
+		#endif
 		#define __UCHAR_DEFINED__
 		#define __ODBC_DEFINED__
 	#endif
