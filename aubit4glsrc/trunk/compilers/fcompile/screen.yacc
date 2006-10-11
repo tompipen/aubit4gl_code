@@ -1262,6 +1262,7 @@ any_kword :
 | AUTONEXT
 | BLACK
 | BLINK
+| KWIN
 | BOLD
 | BLUE
 | KWOR
