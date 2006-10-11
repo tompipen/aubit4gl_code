@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.97 2006-09-27 20:15:33 mikeaubury Exp $
+# $Id: report.c,v 1.98 2006-10-11 12:09:50 mikeaubury Exp $
 #
 */
 
@@ -952,6 +952,26 @@ nm (int n)
   return "CHAR";
 }
 
+
+static char *decode_dt_elem(int a) {
+
+switch(a) {
+	case 1: return "YEAR";
+	case 2: return "MONTH";
+	case 3: return "DAY";
+	case 4: return "HOUR";
+	case 5: return "MINUTE";
+	case 6: return "SECOND";
+	case 7: return "FRACTION(1)";
+	case 8: return "FRACTION(2)";
+	case 9: return "FRACTION(3)";
+	case 10: return "FRACTION(4)";
+	case 11: return "FRACTION(5)";
+}
+
+return "UNKNOWN";
+
+}
 /**
  *
  * @todo Describe function
@@ -960,6 +980,8 @@ static char *
 sz (int d, int s)
 {
   static char buff_1[256];
+  static char buff_2[256];
+  static char buff_3[256];
   switch (d & DTYPE_MASK)
     {
     case DTYPE_SMINT:
@@ -973,7 +995,9 @@ sz (int d, int s)
       return "";
 
     case DTYPE_DTIME:
-      return " YEAR TO FRACTION(5)";
+		sprintf(buff_1,"%s TO %s",decode_dt_elem(s>>4),decode_dt_elem(s&0xf));
+		return buff_1;
+      /* return " YEAR TO FRACTION(5)"; */
 
     case DTYPE_MONEY:
     case DTYPE_DECIMAL:			/* decimal */
@@ -985,6 +1009,8 @@ sz (int d, int s)
       return buff_1;
 
     case DTYPE_INTERVAL:
+		/* sprintf(buff_1,"%s TO %s",decode_in_elem(s>>4),decode_in_elem(s&0xf));
+		return buff_1; */
       SPRINTF0 (buff_1, " year to second(5)");
       return buff_1;
     }
@@ -1029,8 +1055,7 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
     {
       if (a)
 	strcat (buff_3, ",\n");
-      SPRINTF3 (tmpbuff, "c%d %s %s", a, nm (b[a].dtype),
-	       sz (b[a].dtype, b[a].size));
+      SPRINTF3 (tmpbuff, "c%d %s %s", a, nm (b[a].dtype), sz (b[a].dtype, b[a].size));
       strcat (buff_3, tmpbuff);
     }
   strcat (buff_3, ")");

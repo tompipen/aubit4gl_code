@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.160 2006-09-27 16:16:17 mikeaubury Exp $
+# $Id: esql.ec,v 1.161 2006-10-11 12:09:26 mikeaubury Exp $
 #
 */
 
@@ -179,7 +179,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.160 2006-09-27 16:16:17 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.161 2006-10-11 12:09:26 mikeaubury Exp $";
 #endif
 
 
@@ -970,12 +970,17 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
   struct s_sid *sid;
 
 
-  sid = newStatement (ibind, ni, obind, no, s,uniqId);
-
   s_internal = strdup (s);
   A4GL_trim (s_internal);
   A4GL_debug ("PrepareSQL : %s", s_internal);
+
+  if (A4GL_aubit_strcasecmp(s_internal,"CLOSE DATABASE")==0) {
+	 s="DISCONNECT \"default\"";
+  }
   free (s_internal);
+
+  sid = newStatement (ibind, ni, obind, no, s,uniqId);
+
 
   statementName = sid->statementName;
   statementText = sid->select;
@@ -986,8 +991,9 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
 //printf("Add : %s\n",sid->statementName);
   A4GLSQL_add_prepare(sid->statementName,sid);
-
+  //printf("Prepare : %s from %s",statementName,statementText);
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
+  //printf("Prepare : %s from %s",statementName,statementText);
   EXEC SQL PREPARE:statementName FROM:statementText;
 
   copy_sqlca_Stuff(1);
