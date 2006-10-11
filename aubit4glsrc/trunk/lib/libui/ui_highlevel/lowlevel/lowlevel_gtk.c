@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.107 2006-09-11 18:18:09 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.108 2006-10-11 15:23:23 mikeaubury Exp $";
 #endif
 
 
@@ -4087,9 +4087,10 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
       if ((dtype & 255) == 0)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
-	  A4GL_LL_set_field_opts (f,
-				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
-				  AUBIT_O_PUBLIC | AUBIT_O_EDIT);
+	/*
+	  A4GL_LL_set_field_opts (f, AUBIT_O_VISIBLE | AUBIT_O_ACTIVE); 
+				  | AUBIT_O_PUBLIC | AUBIT_O_EDIT); 
+	*/
 
 
 
@@ -4100,10 +4101,12 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_debug ("BLANK BLANK");
+	/*
 	  A4GL_LL_set_field_opts (f,
 				  AUBIT_O_VISIBLE | AUBIT_O_ACTIVE |
 				  AUBIT_O_PUBLIC | AUBIT_O_EDIT |
 				  AUBIT_O_BLANK);
+	*/
 	}
 
     }
