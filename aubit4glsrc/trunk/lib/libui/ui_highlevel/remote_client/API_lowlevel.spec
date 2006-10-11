@@ -62,7 +62,7 @@ A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis 
 A4GL_LL_set_field_back void* field int attr -> void
 A4GL_LL_set_field_buffer void* field int n char* str -> void
 A4GL_LL_set_field_fore void* field int attr -> void
-A4GL_LL_set_field_opts void* field int oopt -> int
+A4GL_LL_set_field_opts void* field int oopt -> void
 A4GL_LL_set_field_status void* f int stat -> void
 A4GL_LL_set_form_page void* form int page -> void
 A4GL_LL_set_max_field void* f int n void* ptr -> void

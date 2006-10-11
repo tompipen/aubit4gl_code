@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.101 2006-09-30 11:31:01 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.102 2006-10-11 15:01:41 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3276,6 +3276,9 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 
   if (strcmp (siotype, "s_screenio") == 0)
     {
+	if (last_sio!=sio) {
+	 A4GL_set_fields(sio);
+	}
       last_sio = sio;
     }
 
@@ -3694,12 +3697,15 @@ A4GL_ll_set_field_opts (void *f, int l)
       // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
       A4GL_assertion (l < 0, "'l' can't be less than zero");
 
-      a = A4GL_LL_set_field_opts (f, l);	// OK
+      A4GL_LL_set_field_opts (f, l);	// OK
+
+/*
       if (a != l)
 	{			// Failed...
 	  A4GL_debug ("Failed - Wanted %d got %d", l, a);
 	  l = a;
 	}
+*/
 
       if (l != 0)
 	{
@@ -3746,8 +3752,8 @@ A4GL_ll_field_opts (void *f)
       A4GL_debug_print_opts (a);
       A4GL_debug ("Actual:");
       A4GL_debug_print_opts (A4GL_LL_field_opts (f));
-      A4GL_assertion (1, "fail");
-      return A4GL_LL_field_opts (f);	// Caching has failed for some reason
+      //A4GL_assertion (1, "fail");
+      return curr;	// Caching has failed for some reason
     }
   return a;
 }
