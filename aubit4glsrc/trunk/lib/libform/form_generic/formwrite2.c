@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.33 2005-10-05 12:40:11 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.34 2006-10-12 06:13:15 mikeaubury Exp $
 #*/
 
 /**
@@ -234,15 +234,17 @@ static void
 A4GL_error_with (char *s, char *a, char *b)
 {
   static char z[2];
+char buff[256];
   z[0] = 0;
   if (a == 0)
     a = z;
   if (b == 0)
     b = z;
-  printf (s, a, b);
+  sprintf (buff, s, a, b);
+  A4GL_set_fcompile_err(buff);
 
   A4GL_debug ("\n");
-  exit (1);
+  A4GL_exitwith("Form compilation error");
 }
 
 /**
@@ -324,8 +326,7 @@ add_srec_direct (char *tab, int a)
       curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = a;
       return;
     }
-  A4GL_error_with ("Table %s has not been defined in the tables section\n", tab,
-	      0);
+  A4GL_error_with ("Table %s has not been defined in the tables section\n", tab, 0);
 }
 
 
@@ -372,15 +373,13 @@ real_set_field (char *s, struct struct_scr_field *f)
 	  && f->subscripts[0] ==
 	  the_form.attributes.attributes_val[a].subscripts[1])
 	{
-	  A4GL_error_with ("Column %s %s has already been defined\n",
-		      f->tabname, f->colname);
+	  A4GL_error_with ("Column %s %s has already been defined\n", f->tabname, f->colname);
 	}
     }
 
   if (f->tabname[0] == 0 || f->colname[0] == 0)
     {
-      A4GL_error_with ("Column %s.%s has not been found in the database\n",
-		  f->tabname, f->colname);
+      A4GL_error_with ("Column %s.%s has not been found in the database\n", f->tabname, f->colname);
     }
 
   f->field_no = A4GLFORM_A4GL_find_field (s);

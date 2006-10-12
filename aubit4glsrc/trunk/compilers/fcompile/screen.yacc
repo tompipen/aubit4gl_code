@@ -103,7 +103,7 @@ FORMONLY COMMENT
 %token KW_ADD KW_UPDATE KW_QUERY KW_ON_ENDING KW_ON_BEGINNING 
 %token KW_CALL
 %token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_NEXTFIELD
-%token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_END KW_TOTAL KW_RIGHT KW_ZEROFILL
+%token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_TOTAL KW_RIGHT KW_ZEROFILL
 %token KW_USES_EXTENDED SPECIAL_DBNAME
 %token KW_ACTION
 
@@ -129,13 +129,22 @@ if (A4GLF_open_db($<str>2)) {
 }
 ;
 
-named_or_kw :
+
+named_or_kw_st :
+	NAMED   
+	| st_kword 
+;
+
+named_or_kw_any :
 	NAMED   
 	| any_kword 
 ;
 
 dbname : 
-SPECIAL_DBNAME {sprintf($<str>$,acl_getenv("DBNAME"));} | named_or_kw | named_or_kw ATSIGN named_or_kw {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
+	SPECIAL_DBNAME {sprintf($<str>$,acl_getenv("DBNAME"));} 
+	| SPECIAL_DBNAME ATSIGN named_or_kw_any  {sprintf($<str>$,acl_getenv("DBNAME"));} 
+	| named_or_kw_st
+	| named_or_kw_st ATSIGN named_or_kw_any {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
 ;
 
 screen_section : screens_section | screen_section screens_section ;
@@ -212,7 +221,7 @@ screen_element
 | screen_layout screen_element
 ;
 
-some_text: named_or_kw {
+some_text: named_or_kw_any {
 	int a;
 	static char buff[256];
 	strcpy(buff,$<str>1);
@@ -260,7 +269,6 @@ some_text {
 	ltab=0;
 	}
 } 
-
 | PIPE {
 	char buff[256];
 	if (lineno) {
@@ -367,10 +375,12 @@ table_def
 | table_def_list COMMA table_def
 ;
 
-table_def : named_or_kw opequal { 
+table_def : named_or_kw_any opequal { 
 A4GL_make_downshift($<str>1);
 A4GL_make_downshift($<str>2);
+clr_status();
 A4GL_add_table($<str>2,$<str>1); 
+err_on_status();
 } 
 ;
 
@@ -378,13 +388,13 @@ opequal :  {strcpy($<str>$,"");}
 | EQUAL table_qualifier  {strcpy($<str>$,$<str>2); }
 ;
 
-table_qualifier : named_or_kw {sprintf($<str>$,"%s", $<str>1);}
-| named_or_kw COLON named_or_kw {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| named_or_kw ATSIGN named_or_kw 
+table_qualifier : named_or_kw_any {sprintf($<str>$,"%s", $<str>1);}
+| named_or_kw_any COLON named_or_kw_any {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
+| named_or_kw_any ATSIGN named_or_kw_any 
         {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| named_or_kw ATSIGN named_or_kw COLON named_or_kw {sprintf($<str>$,"%s%s%s%s%s", $<str>1, $<str>2, $<str>3,$<str>4,$<str>5);}
-| named_or_kw DOT named_or_kw {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| CHAR_VALUE DOT named_or_kw
+| named_or_kw_any ATSIGN named_or_kw_any COLON named_or_kw_any {sprintf($<str>$,"%s%s%s%s%s", $<str>1, $<str>2, $<str>3,$<str>4,$<str>5);}
+| named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
+| CHAR_VALUE DOT named_or_kw_any
 ;
 
 
@@ -473,10 +483,10 @@ field_datatype_null :
 ;
 
 field_datatype : {strcpy($<str>$,"0");}
-	| 	TYPE LIKE named_or_kw DOT named_or_kw {
+	| 	TYPE LIKE named_or_kw_any DOT named_or_kw_any {
 			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>5,$<str>3));
 		}
-	| 	TYPE LIKE named_or_kw {
+	| 	TYPE LIKE named_or_kw_any {
 			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>3,""));
 		}
 	| 	TYPE datatype {
@@ -517,7 +527,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->datatype=atoi($<str>4)&0xff;
         fld->dtype_size=dtype_size;
 }
-| named_or_kw DOT named_or_kw {
+| named_or_kw_any DOT named_or_kw_any {
 	//printf("%s %s\n",$<str>1,$<str>3);
 	fld->tabname=acl_strdup($<str>1); 
 	fld->colname=acl_strdup($<str>3);
@@ -526,7 +536,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->dtype_size=A4GL_get_dtype_size();
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
-| named_or_kw {
+| named_or_kw_any {
 	fld->colname=acl_strdup($<str>1);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
@@ -534,7 +544,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 
-| STAR named_or_kw DOT named_or_kw {
+| STAR named_or_kw_any DOT named_or_kw_any {
 	fld->tabname=acl_strdup($<str>2); 
 	fld->colname=acl_strdup($<str>4);
 	fld->not_null=0;
@@ -542,7 +552,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->dtype_size=A4GL_get_dtype_size();
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
-| STAR named_or_kw {
+| STAR named_or_kw_any {
 	fld->colname=acl_strdup($<str>2);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
@@ -563,15 +573,15 @@ lu_ft_eq_c_i:
 	lu_ft EQUAL lu_fc 
 ;
 
-lu_fc: 	named_or_kw DOT named_or_kw 
-	| named_or_kw 
+lu_fc: 	named_or_kw_any DOT named_or_kw_any
+	| named_or_kw_any
 ;
 
 lu_joincol:
- 	named_or_kw DOT named_or_kw 
-	| named_or_kw 
- 	| STAR named_or_kw DOT named_or_kw 
-	| STAR named_or_kw 
+ 	named_or_kw_any DOT named_or_kw_any
+	| named_or_kw_any
+ 	| STAR named_or_kw_any DOT named_or_kw_any
+	| STAR named_or_kw_any
 ;
 
 lu_join: JOINING 
@@ -611,17 +621,17 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | LOOKUP  lu_ft_eq_c lu_join lu_joincol 
 | COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
 | DEFAULT EQUAL def_val { A4GL_add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
-| DISPLAY LIKE named_or_kw {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
-| DISPLAY LIKE named_or_kw DOT named_or_kw {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
-| VALIDATE LIKE named_or_kw {	A4GL_debug("WARNING : VALIDATE LIKE not really implemented");}
-| VALIDATE LIKE named_or_kw DOT named_or_kw {	A4GL_debug("WARNING : VALIDATE LIKE not really implemented");}
+| DISPLAY LIKE named_or_kw_any {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
+| DISPLAY LIKE named_or_kw_any DOT named_or_kw_any {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
+| VALIDATE LIKE named_or_kw_any {	A4GL_debug("WARNING : VALIDATE LIKE not really implemented");}
+| VALIDATE LIKE named_or_kw_any DOT named_or_kw_any {	A4GL_debug("WARNING : VALIDATE LIKE not really implemented");}
 | DOWNSHIFT { A4GL_add_bool_attr(fld,FA_B_DOWNSHIFT); }
 | UPSHIFT { A4GL_add_bool_attr(fld,FA_B_UPSHIFT); }
 | FORMAT EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_FORMAT,$<str>3); }
 | INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); A4GL_add_str_attr(fld,FA_S_INCLUDE,$<str>$); }
 | WIDGET EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_WIDGET,$<str>3); }
 | CONFIG EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_CONFIG,$<str>3); }
-| KW_ACTION EQUAL named_or_kw { A4GL_add_str_attr(fld,FA_S_ACTION,$<str>3); }
+| KW_ACTION EQUAL named_or_kw_any { A4GL_add_str_attr(fld,FA_S_ACTION,$<str>3); }
 | INVISIBLE { A4GL_add_bool_attr(fld,FA_B_INVISIBLE); }
 | DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4);
 A4GL_debug("fld->dynamic=%d",fld->dynamic); }
@@ -735,11 +745,10 @@ op_star: | STAR;
 
 op_semi: | SEMICOLON;
 
-srec_dim : 
-named_or_kw  {
+srec_dim : named_or_kw_any  {
    A4GL_set_dim_srec($<str>1,1);
 }
-| named_or_kw OPEN_SQUARE NUMBER_VALUE CLOSE_SQUARE {
+| named_or_kw_any OPEN_SQUARE NUMBER_VALUE CLOSE_SQUARE {
    A4GL_set_dim_srec($<str>1,atoi($<str>3));
 };
 
@@ -767,13 +776,13 @@ op_comma :
 ;
 
 field_list_item :
-named_or_kw	
+named_or_kw_any	
 {A4GL_add_srec_attribute("",$<str>1,""); }
-| named_or_kw DOT named_or_kw	 
+| named_or_kw_any DOT named_or_kw_any
 {A4GL_add_srec_attribute($<str>1,$<str>3,""); }
-| FORMONLY DOT named_or_kw	 
+| FORMONLY DOT named_or_kw_any
 {A4GL_add_srec_attribute("formonly",$<str>3,""); }
-| named_or_kw DOT STAR 
+| named_or_kw_any DOT STAR 
 {A4GL_add_srec_attribute($<str>1,"*",""); }
 | FORMONLY DOT STAR 
 {A4GL_add_srec_attribute("formonly","*",""); }
@@ -784,7 +793,7 @@ field_list_item  | field_list_item THROUGH field_list_item {A4GL_add_srec_attrib
 ;
 
 
-field_name : named_or_kw {
+field_name : named_or_kw_any {
 	strcpy($<str>$,$<str>1);
 }
 	| KW_END { strcpy($<str>$,$<str>1); }
@@ -812,7 +821,7 @@ ws_elem:
 
 
 field_tag_name : 
-named_or_kw  {
+named_or_kw_any  {
 	strcpy($<str>$,$<str>1);
 	A4GL_make_downshift($<str>$);
 	colno+=strlen($<str>1);
@@ -820,7 +829,7 @@ named_or_kw  {
 ;
 
 field_tag_name_scr : 
-op_ws named_or_kw {
+op_ws named_or_kw_any {
 	colno+=strlen($<str>2);
 } op_ws {
 	strcpy($<str>$,$<str>2);
@@ -1080,10 +1089,10 @@ comp_list: comp_item
 comp_item : table_name DOT column_name 
 ;
 
-table_name : named_or_kw
+table_name : named_or_kw_any
 ;
 
-column_name : named_or_kw
+column_name : named_or_kw_any
 ;
 
 control_block :
@@ -1177,7 +1186,7 @@ master_of:
 	table_name KW_MASTER_OF table_name op_semi
 ;
 
-func_call: KW_CALL named_or_kw OPEN_BRACKET op_func_call_args CLOSE_BRACKET
+func_call: KW_CALL named_or_kw_any OPEN_BRACKET op_func_call_args CLOSE_BRACKET
 ;
 
 op_func_call_args: | func_call_args;
@@ -1232,7 +1241,7 @@ single_expression:
 	| expression KWIN OPEN_BRACKET evalue_list CLOSE_BRACKET { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN"); }
 ;
 
-fcall_name: named_or_kw
+fcall_name: named_or_kw_any
 ;
 
 evalue : field_tag_name  { $<expr>$=create_field_expr($<str>1); }
@@ -1256,96 +1265,277 @@ evalue_list : evalue {
 
 
 
+st_kword : 
+      KW_COMPOSITES 
+
+     | INSTRUCTIONS 
+     | ATTRIBUTES 
+     | DATABASE 
+     | BY 
+     | KW_SIZE 
+
+     | KW_END 
+     | TITLE 
+     | COMMENT 
+     | DYNAMIC 
+     | KW_NULL 
+     | INPUT 
+     | TABLES 
+     | LOOKUP 
+     | JOINING 
+     | RECORD 
+     | THROUGH 
+     | TYPE 
+     | DELIMITERS 
+     | KW_CHAR 
+     | KW_INT 
+     | KW_DATE 
+     | KW_FLOAT 
+     | SMALLFLOAT 
+     | SMALLINT 
+     | KW_DECIMAL 
+     | MONEY 
+     | DATETIME 
+     | INTERVAL 
+     | LIKE 
+     | BLACK 
+     | BLUE 
+     | GREEN 
+     | CYAN 
+     | RED 
+     | MAGENTA 
+     | WHITE 
+     | YELLOW 
+     | NORMAL 
+     | REVERSE 
+     | LEFT 
+     | BOLD 
+     | BLINK 
+     | UNDERLINE 
+     | DIM 
+     | AUTONEXT 
+     | COLOR 
+     | COMMENTS 
+     | DEFAULT 
+     | VALIDATE 
+     | DISPLAY 
+     | DOWNSHIFT 
+     | UPSHIFT 
+     | FORMAT 
+     | INCLUDE 
+     | INVISIBLE 
+     | NOUPDATE 
+     | NOENTRY 
+     | PICTURE 
+     | PROGRAM 
+     | REQUIRED 
+     | QUERYCLEAR 
+     | VERIFY 
+     | WORDWRAP 
+     | COMPRESS 
+     | NONCOMPRESS 
+     | TO 
+     | AS 
+     | SERIAL 
+     | KW_BYTE 
+     | KW_TEXT 
+     | VARCHAR 
+     | SQL_VAR 
+     | KW_NONSPACE 
+     | SQLONLY 
+     | WIDGET 
+     | CONFIG 
+     | COMPARISON 
+     | LESSTHAN 
+     | GREATERTHAN 
+     | KWOR 
+     | KWAND 
+     | KWWHERE 
+     | KWNOT 
+     | KWBETWEEN 
+     | KWIN 
+     | XVAL 
+     | KWNULLCHK 
+     | KWNOTNULLCHK 
+     | YEAR 
+     | MONTH 
+     | DAY 
+     | HOUR 
+     | MINUTE 
+     | SECOND 
+     | FRACTION 
+     | LISTBOX 
+     | BUTTON 
+     | KW_PANEL 
+     | DISPLAYONLY 
+     | ALLOWING 
+     | KW_MASTER_OF 
+     | KW_BEFORE 
+     | KW_AFTER 
+     | KW_EDITADD 
+     | KW_EDITUPDATE 
+     | KW_REMOVE 
+     | KW_OF 
+     | KW_ADD 
+     | KW_UPDATE 
+     | KW_QUERY 
+     | KW_ON_ENDING 
+     | KW_ON_BEGINNING 
+     | KW_CALL 
+     | KW_BELL 
+     | KW_ABORT 
+     | KW_LET 
+     | KW_EXITNOW 
+     | KW_NEXTFIELD 
+     | KW_IF 
+     | KW_THEN 
+     | KW_ELSE 
+     | KW_BEGIN 
+     | KW_TOTAL 
+     | KW_RIGHT 
+     | KW_ZEROFILL 
+     | KW_USES_EXTENDED 
+     | KW_ACTION 
+
+
+
+;
 
 any_kword : 
- AS
-| AUTONEXT
-| BLACK
-| BLINK
-| KWIN
-| BOLD
-| BLUE
-| KWOR
-| KWAND
-| COMPARISON
-| BUTTON
-| BY
-| COLOR
-| COMMENT
-| COMMENTS
-| COMPRESS
-| CONFIG
-| CYAN
-| DATABASE
-| DATETIME
-| DEFAULT
-| DELIMITERS
-| DOWNSHIFT
-| DYNAMIC 
-| FORMAT
-| GREEN
-| INCLUDE
-| INPUT
-| INTERVAL
-| INVISIBLE
-| KW_BYTE 
-| KW_CHAR
-| KW_DATE
-| KW_DECIMAL
-| KW_FLOAT
-| KW_INT
-| KW_PANEL
-| KW_SCREEN
-| KW_SCREEN_TITLE
-| KW_SIZE 
-| KW_TEXT 
-| LEFT
-| LISTBOX
-| MAGENTA
-| MONEY
-| NOENTRY
-| NONCOMPRESS 
-| KWNOT 
-| PICTURE
-| PROGRAM
-| RECORD 
-| RED
-| REQUIRED
-| REVERSE
-| DIM
-| NORMAL
-| SERIAL 
-| SMALLFLOAT
-| SMALLINT
-| SQLONLY  
-| SQL_VAR
-| TABLES 
-| THROUGH 
-| TITLE
-| TO  
-| UNDERLINE
-| UPSHIFT
-| VARCHAR
-| VERIFY 
-|  LOOKUP
-|  JOINING
-| WHITE
-| WIDGET 
-| WITHOUT
-| WORDWRAP 
-| QUERYCLEAR 
-| YELLOW
-| TYPE
-| LIKE
-|YEAR 
-|MONTH 
-|DAY 
-|HOUR 
-|MINUTE 
-|SECOND 
-|FRACTION
-| KW_ACTION
+      KW_COMPOSITES 
+     /* | INSTRUCTIONS  */
+     /* | ATTRIBUTES  */
+     | DATABASE 
+     | BY 
+     | KW_SCREEN_TITLE 
+     | KW_SCREEN 
+     | KW_SIZE 
+     | TITLE 
+     | FORMONLY 
+     | COMMENT 
+     | DYNAMIC 
+     | WITHOUT 
+     /* | KW_NULL  */
+     | INPUT 
+     | TABLES 
+     | LOOKUP 
+     | JOINING 
+     | RECORD 
+     | THROUGH 
+     | TYPE 
+     | DELIMITERS  
+     | KW_CHAR 
+     | KW_INT 
+     | KW_DATE 
+     | KW_FLOAT 
+     | SMALLFLOAT 
+     | SMALLINT 
+     | KW_DECIMAL 
+     | MONEY 
+     | DATETIME 
+     | INTERVAL 
+     | LIKE 
+     | BLACK 
+     | BLUE 
+     | GREEN 
+     | CYAN 
+     | RED 
+     | MAGENTA 
+     | WHITE 
+     | YELLOW 
+     | NORMAL 
+     | REVERSE 
+     | LEFT 
+     | BOLD 
+     | BLINK 
+     | UNDERLINE 
+     | DIM 
+     | AUTONEXT 
+     | COLOR  
+     | COMMENTS 
+     | DEFAULT 
+     | VALIDATE 
+     | DISPLAY 
+     | DOWNSHIFT 
+     | UPSHIFT 
+     | FORMAT 
+     | INCLUDE 
+     | INVISIBLE 
+     | NOUPDATE 
+     | NOENTRY 
+     | PICTURE 
+     | PROGRAM 
+     | REQUIRED 
+     | QUERYCLEAR 
+     | VERIFY 
+     | WORDWRAP 
+     | COMPRESS 
+     | NONCOMPRESS 
+     | TO 
+     | AS 
+     | SERIAL 
+     | KW_BYTE 
+     | KW_TEXT 
+     | VARCHAR 
+     | SQL_VAR 
+     | SQLONLY 
+     | WIDGET 
+     | CONFIG 
+     | COMPARISON 
+     | LESSTHAN 
+     | GREATERTHAN 
+     | KWOR 
+     | KWAND 
+     | KWWHERE 
+     | KWNOT 
+     | KWBETWEEN 
+     | KWIN 
+     /* | XVAL  */
+     | KWNULLCHK 
+     | KWNOTNULLCHK 
+     | YEAR 
+     | MONTH 
+     | DAY 
+     | HOUR 
+     | MINUTE 
+     | SECOND 
+     | FRACTION 
+     | LISTBOX 
+     | BUTTON 
+     | KW_PANEL 
+     /* | DISPLAYONLY  */
+     | ALLOWING 
+     | KW_MASTER_OF 
+     | KW_BEFORE 
+     | KW_AFTER 
+     | KW_EDITADD 
+     | KW_EDITUPDATE 
+     | KW_REMOVE 
+     | KW_OF 
+     | KW_ADD 
+     | KW_UPDATE 
+     | KW_QUERY 
+     | KW_ON_ENDING 
+     | KW_ON_BEGINNING 
+     | KW_CALL 
+     | KW_BELL 
+     | KW_ABORT 
+     | KW_LET 
+     /* | KW_EXITNOW  */
+     | KW_NEXTFIELD 
+     | KW_IF 
+     | KW_THEN 
+     | KW_ELSE 
+     | KW_BEGIN 
+     | KW_TOTAL 
+     | KW_RIGHT 
+     | KW_ZEROFILL 
+     | KW_USES_EXTENDED 
+     | KW_ACTION 
 ;
+
+
+
 %%
 
 

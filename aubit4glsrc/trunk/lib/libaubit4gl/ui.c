@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.59 2006-09-15 09:17:17 mikeaubury Exp $
+# $Id: ui.c,v 1.60 2006-10-12 06:13:14 mikeaubury Exp $
 #
 */
 
@@ -68,7 +68,7 @@
                     Variables definitions
 =====================================================================
 */
-
+char last_fcompile_err[1024];
 
 /*
 =====================================================================
@@ -1501,5 +1501,12 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
 }
 
 
+void A4GL_set_fcompile_err(char *s) {
+strcpy(last_fcompile_err,s);
+}
+
+char *A4GL_get_fcompile_err(void) {
+return last_fcompile_err;
+}
 
 /* ============================= EOF ================================ */

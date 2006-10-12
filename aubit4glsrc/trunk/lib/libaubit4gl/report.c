@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.98 2006-10-11 12:09:50 mikeaubury Exp $
+# $Id: report.c,v 1.99 2006-10-12 06:13:14 mikeaubury Exp $
 #
 */
 
@@ -1031,6 +1031,15 @@ A4GL_decode_datatype (int dtype, int dim)
   return buff_2;
 }
 
+static char * A4GL_drop_temp_tab (struct BINDING *b)
+{
+  static char buff_3[30000];
+
+  SPRINTF1 (buff_3, "drop table %s\n", gen_rep_tab_name (b));
+  return buff_3;
+}
+
+
 /**
  *
  * @todo Describe function
@@ -1071,6 +1080,7 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0), 1);
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99,0), 1);
 }
 
@@ -1235,6 +1245,8 @@ A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b)
 void
 A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
 {
+  A4GLSQL_close_cursor (cursor_for_rep_tab (b));
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0), 1);
   A4GL_free_duplicate_binding (reread, n);
 }
 

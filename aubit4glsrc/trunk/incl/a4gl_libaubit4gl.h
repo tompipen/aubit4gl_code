@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.250 2006-09-26 18:09:15 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.251 2006-10-12 06:13:13 mikeaubury Exp $
 #
 */
 
@@ -3206,6 +3206,8 @@ int A4GLSQLCV_check_runtime_requirement (char *s);
 int A4GL_compile_time_convert(void);
 void A4GL_set_compile_time_convert(int a);
 
+void A4GL_set_fcompile_err(char *s) ;
+char *A4GL_get_fcompile_err(void) ;
 
 
 

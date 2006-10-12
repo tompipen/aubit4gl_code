@@ -137,8 +137,9 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 
 [	 \n]	;
 
-"{" 		{if(in_screen_section!=0) {strcpy(yylval.str,yytext); return OPEN_BRACE; } else {	BEGIN comment; yymore(); } }
-"}" 		{strcpy(yylval.str,yytext); return CLOSE_BRACE;}
+"{" 		{
+		 if(in_screen_section!=0) {strcpy(yylval.str,yytext); if (colno==0||!A4GL_isno(acl_getenv("FIRSTBRACE"))) {return OPEN_BRACE;} else {return CHAR_VALUE;} } else {	BEGIN comment; yymore(); } }
+"}" 		{strcpy(yylval.str,yytext); if (colno==0||!A4GL_isno(acl_getenv("FIRSTBRACE"))) {return CLOSE_BRACE;} else {return CHAR_VALUE;}}
 "@" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 ":" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}
 "!=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.143 2006-09-19 16:34:53 mikeaubury Exp $
+# $Id: ioform.c,v 1.144 2006-10-12 06:13:17 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.143 2006-09-19 16:34:53 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.144 2006-10-12 06:13:17 mikeaubury Exp $";
 #endif
 
 /**
@@ -1344,6 +1344,65 @@ A4GL_get_field_width_w (void *f,int need_height)
   return w;
 }
 
+
+void
+A4GL_set_fields_sio (struct s_screenio *sio)
+{
+  int a;
+  int nv;
+  int flg;
+  char buff[8048];
+  struct s_form_dets *formdets;
+  struct struct_scr_field *field;
+  struct struct_scr_field *prop;
+  FIELD **field_list;
+  FIELD *firstfield = 0;
+  int nofields;
+  int attr;
+  FIELD *was_current;
+  int b;
+	void *f;
+
+
+  formdets = sio->currform;
+  if (formdets == 0)
+    {
+      A4GL_exitwith ("No form");
+      return 0;
+    }
+
+  nofields = sio->nfields;
+  field_list = (FIELD **) sio->field_list;
+  nv = sio->novars;
+
+  for (a = 0; a<formdets->fields_cnt; a++)
+    {
+    	int should_be_on=0;
+	void *f;
+	f=formdets->form_fields[a];
+
+      	field = (struct struct_scr_field *) (field_userptr (formdets->form_fields[a]));
+
+        if (field == 0) continue;
+
+  	for (b = 0; field_list[b]; b++)
+    	{
+		if (f==field_list[b]) {
+			should_be_on++;
+	 		break;
+		}
+    	} 
+
+	if (should_be_on) {
+      		A4GL_turn_field_on2 (f, sio->mode != MODE_CONSTRUCT);
+	} else {
+      		A4GL_turn_field_off (f);
+	}
+
+    }
+
+
+}
 
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.41 2006-07-12 12:58:53 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.42 2006-10-12 06:13:16 mikeaubury Exp $
 #*/
 
 /**
@@ -232,15 +232,17 @@ static void
 A4GL_error_with (char *s, char *a, char *b)
 {
   static char z[2];
+char buff[256];
   z[0] = 0;
   if (a == 0)
     a = z;
   if (b == 0)
     b = z;
-  printf (s, a, b);
-
+  sprintf (buff, s, a, b);
+  A4GL_set_fcompile_err(buff);
+  
   A4GL_debug ("\n");
-  exit (1);
+  A4GL_exitwith("Form compilation error");
 }
 
 /**
@@ -323,8 +325,7 @@ add_srec_direct (char *tab, int a)
       curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = a;
       return;
     }
-  A4GL_error_with ("Table %s has not been defined in the tables section\n", tab,
-	      0);
+  A4GL_error_with ("Table %s has not been defined in the tables section\n", tab, 0);
 }
 
 
