@@ -1064,6 +1064,10 @@ LEXLIB_print_execute_immediate (char *stmt)
 	printc("EXECUTE IMMEDIATE\n");
 }
 
+
+
+#ifdef NOW_DEFINED_IN_a4gl_API_lex_LIB_h
+
 void
 LEXLIB_print_exit_loop (int type, int n)
 {
@@ -1075,7 +1079,21 @@ LEXLIB_print_exit_loop (int type, int n)
   A4GL_assertion(1,"Can't EXIT anything else");
 }
 
+void
+LEXLIB_print_report_2 (int pdf, char *repordby)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
 
+void
+LEXLIB_print_prompt_1 (t_expr_str_list * expr, char *a1, char *a2,
+		       char *a3, char *a4, int timeout,char *Style)
+{
+  niy_assert (__PRETTY_FUNCTION__);
+}
+
+
+#endif
 
 void
 LEXLIB_print_exit_program (t_expr_str * expr)
@@ -2509,11 +2527,6 @@ LEXLIB_print_report_1 (char *name)
   niy_assert (__PRETTY_FUNCTION__);
 }
 
-void
-LEXLIB_print_report_2 (int pdf, char *repordby)
-{
-  niy_assert (__PRETTY_FUNCTION__);
-}
 
 void
 LEXLIB_print_report_2_1 (void)
@@ -2934,12 +2947,6 @@ LEXLIB_print_input_fl (int byname, char *defs, char *helpno,
   niy_assert (__PRETTY_FUNCTION__);
 }
 
-void
-LEXLIB_print_prompt_1 (t_expr_str_list * expr, char *a1, char *a2,
-		       char *a3, char *a4, int timeout,char *Style)
-{
-  niy_assert (__PRETTY_FUNCTION__);
-}
 
 void
 LEXLIB_print_prompt_end (char *s)

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.63 2004-12-07 20:26:58 whaslbeck Exp $
+# $Id: Makefile.in,v 1.64 2006-10-13 11:28:54 afalout Exp $
 #
 
 ROOT        =../..
@@ -121,7 +121,7 @@ ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 
 #fshow : clean.fshow ${ROOT}/bin/fshow
 
-${ROOT}/bin/fshow : fshow.4gl
+${ROOT}/bin/fshow : fshow.4gl ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} ${PLUGINDIR}/libLEX_C${SO_EXT}
 #clean.fshow
 #	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
 #	${FAIL_OK}../../bin/4glc -o$@ $<

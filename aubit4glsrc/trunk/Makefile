@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.27 2006-10-10 05:45:34 afalout Exp $
+# $Id: Makefile,v 1.28 2006-10-13 11:28:40 afalout Exp $
 #
 
 ## ==================================================================
@@ -320,7 +320,8 @@ odbctest:
 	$(MAKE) -C tools/odbctest
 
 jabber:
-	$(MAKE) -C tools/jabber libIM_JABBER${SO_EXT}
+#	$(MAKE) -C tools/jabber libIM_JABBER${SO_EXT}
+	$(MAKE) -C lib ${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}
 
 adbload:
 	$(MAKE) -C tools/adbload
@@ -360,12 +361,43 @@ perl.compiler:
 perl.lib:
 #Perl created makefile will remove domake when running "clean", so we better make
 #sure we have it:
-	config.status --file lib/swig/domake
+	./config.status --file lib/swig/domake
 	cd lib/swig; sh domake
 	@echo Aubit 4gl Perl-code libraries installed
 
 test.perl:
 	${MAKE} -C tools/test test.perl
+
+clean.perl:
+	${MAKE} -C lib/liblex/lex_perl clean
+#WARNING - Perl created makefile will remove domake when running "clean"
+	-mv lib/swig ?akefile /tmp/swig-makefile
+#Must allow it to fail, as we may or may not have makefile allready created there
+	-${MAKE} -C lib/swig clean
+	-mv /tmp/swig-makefile lib/swig/Makefile
+	
+
+########################################
+#Release a file to SourceForge Released Files download site
+release:
+#       sf-upload -pr projectname -p packagename -r releasename -f file
+#              [-type type] [-processor processor] [-user user] [-password password]
+#              [-d releasedate]
+#              [-n notes | -nf notesfile] [-c changes | -cf changesfile]
+#              [-[no]ftp] [-[no]rc] [-[no]v] [-version]
+#    ~/.sfuploadrc
+#        You can put configuration options to this file. The format is
+#            key = value
+#        Allowed keys are: "user", "password", and "debug".
+	sf-upload -pr aubit4gl -p "Aubit4gl-manual" -r "0.59-21" -f /tmp/HTML-Parser-3.55.tar.gz -user afalout
+#	sf-upload -pr aubit4gl -p "Aubit Reasonably Stable Source" -r "1.0" -f file
+#	sf-upload -pr aubit4gl -p "Aubit Reasonably Stable Binary" -r  1.0"  -f file
+
+#...
+#Net::FTP=GLOB(0x869a07c)>>> QUIT
+#Net::FTP=GLOB(0x869a07c)<<< 221 Goodbye.
+#Login to sourceforge
+#make: *** [release] Segmentation fault
 
 
 ## ==================================================================
@@ -451,7 +483,7 @@ clean.distclean:
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
-		clean.swig clean.project clean.liblogical
+		clean.swig clean.project clean.liblogical clean.perl
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
 	$(MAKE) -C lib/libui/ui_console clean
@@ -1092,7 +1124,18 @@ build:
 	(cd tools/project; ${SH} mkproject -increase)
 	@echo After build number increase:
 	@echo "AUBITVERSION = `cat $(SOURCE)/tools/project/version` AUBITBUILD = `cat $(SOURCE)/tools/project/build`"
-
+	@echo " "	
+	@echo "==================================================================="
+	@echo "                       WARNING!"
+	@echo " As Aubit depends on the versin numbers to locate libraries of"
+	@echo " particular version, DO NOT FORGET TO RE-RUN ./configure"
+	@echo " after changing version and/or build number!"
+	@echo " Also do not forget to clean the source code tree using"
+	@echo " 'make clean.all' - as some compiled programs (like 4glc)"
+	@echo " store version numbers at the compile time"
+	@echo "==================================================================="
+	@echo " "
+	
 commit.build: build commit.build.step2
 commit.build.step2: BUILDNO=$(shell cat $(SOURCE)/tools/project/build)
 commit.build.step2:

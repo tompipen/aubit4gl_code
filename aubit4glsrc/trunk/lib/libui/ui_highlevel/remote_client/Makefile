@@ -1,3 +1,9 @@
+
+AUBITDIR=../../../..
+export AUBITDIR
+PATH:=${AUBITDIR}/bin:${PATH}
+export PATH
+
 CFLAGS=-Wall -g -fPIC -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libui -I$(AUBITDIR)/lib/libaubit4gl -DCONFIGURED_TARGET=\"X\" -DCONFIGURED_TARGET_OS=\"X\"  
 CC=gcc
 
@@ -54,4 +60,11 @@ marshall_xml_server.c: API_lowlevel.spec dlrpc_marshall_xml
 	sh dlrpc_marshall_xml  API_lowlevel.spec  server > marshall_xml_server.c
 
 clean: 
-	rm marshall_client.c marshall_server.c *.o  libLL_server.so ui_lowlevel_clnt.c ui_lowlevel_svc.c ui_lowlevel_xdr.c ui_lowlevel.h ui_lowlevel.x server_tui  server_gtk 
+	rm -f marshall_client.c marshall_server.c *.o  libLL_server.so ui_lowlevel_clnt.c \
+	ui_lowlevel_svc.c ui_lowlevel_xdr.c ui_lowlevel.h ui_lowlevel.x server_tui  \
+	server_gtk \
+	ui_lowlevel_xdr.c ui_lowlevel_svc.c ui_lowlevel_clnt.c ui_lowlevel.x \
+	ui_lowlevel.h marshall_server.c marshall_client.c
+
+
+

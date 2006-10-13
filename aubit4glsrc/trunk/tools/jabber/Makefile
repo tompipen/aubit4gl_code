@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2005-02-03 10:31:44 afalout Exp $
+# $Id: Makefile,v 1.4 2006-10-13 11:29:03 afalout Exp $
 #
 
 ROOT        =../..
@@ -41,7 +41,8 @@ AMAKE_FLAGS	=${VERBOSE_FLAG} A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOS
 #AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
 
 ifneq "${JABBERBUILD}" "no"
-    ALL 	=${LIBROOT}/libIM_JABBER${SO_EXT} test_im.4ae
+    ALL 	=${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE} \
+			${PLUGINDIR}/libIM_JABBERs${SO_EXT} test_im.4ae
 else
     ALL 	=no_libs
 endif
@@ -69,9 +70,10 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) compiled"
 	
-test_im.4ae: ${LIBROOT}/libIM_JABBER${SO_EXT} test_im.afr.dat test_im.4gl
+test_im.4ae: ${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE} test_im.afr.dat test_im.4gl
 #	${SH} ${AMAKE} test_im ${AMAKE_FLAGS}
-	${SH} aubit 4glc test_im.4gl -o test_im.4ae -L${LIBROOT} -lIM_JABBER
+	${SH} aubit 4glc test_im.4gl -o test_im.4ae -L${PLUGINDIR} -lIM_JABBER
+	@echo "Test program compiled - run it using 'make test4gl'"
 
 test_im.afr.dat: test_im.per
 	${SH} aubit fcompile $^ 
@@ -79,21 +81,23 @@ test_im.afr.dat: test_im.per
 #lib4glim.o:
 #	${CC} lib4glim.c -c -o $@
 
+###########################
 #Dynamically linked:
 #Note that on Windows the dll will misteriously be liniked with 
 #file libiksemel-3.dll and NOT libiksemel.dll as you would expect
-libIM_JABBER${SO_EXT}: ${LIBROOT}/libIM_JABBER${SO_EXT}
-${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
+libIM_JABBER${SO_EXT_LINKABLE}: ${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}
+#${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
+${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}: lib4glim.o
 	${LD} ${SO_LDFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@ ${LINKLIBS} -liksemel
-ifeq "${SO_EXT}" ".dll"
+ifeq "${SO_EXT_LINKABLE}" ".dll"
 #We will still need the dll.a untill we dlopen() it instead of linking 
 	${MV} TMP${SOEXP_EXT} $@.a
 endif
 
-
+###########################
 #Statically linked:
-libIM_JABBERs${SO_EXT}: ${LIBROOT}/libIM_JABBERs${SO_EXT}
-${LIBROOT}/libIM_JABBERs${SO_EXT}: lib4glim.o
+libIM_JABBERs${SO_EXT}: ${PLUGINDIR}/libIM_JABBERs${SO_EXT}
+${PLUGINDIR}/libIM_JABBERs${SO_EXT}: lib4glim.o
 #WARNING: order is EXTREMELY important for static linking on Windows!
 	${LD} ${SO_LDFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@  \
 		-static -liksemel ${LINKLIBS} 
@@ -121,6 +125,7 @@ testlib: exec4glim 4glim.conf
 #Create configuration file:
 #Before use, make sure account (aubit-test) is still valid, as jabber.org
 #occasionally deletes unused accounts
+#For use by testlib target only - NOT test4gl
 4glim.conf:
 	@echo "LOG mylogfile.log" > $@
 	@echo "DEBUG" >> $@
@@ -128,9 +133,9 @@ testlib: exec4glim 4glim.conf
 	@echo "PASS aubit" >> $@
 
 #Run a 4GL program to test IM functionality
-test4gl: test_im.4ae
+test4gl: test_im.4ae 
 	rm -f debug.out
-	A4GL_UI=HL_TUIN DEBUG=ALL ./test_im.4ae
+	export LD_LIBRARY_PATH="${PLUGINDIR};${LD_LIBRARY_PATH}"; A4GL_UI=HL_TUIN DEBUG=ALL ./test_im.4ae
 	
 show:
 	@echo "CFLAGS=${CFLAGS}"
@@ -146,7 +151,7 @@ show:
 
 clean: clean.test
 	${RM} *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr \
-		*.frm *.log *${SO_EXT} *.dll
+		*.frm *.log *${SO_EXT} *.dll ${ALL} *~
 
 clean.test:
 	${SH} ${AMAKE} test_im clean

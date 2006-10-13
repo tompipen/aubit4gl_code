@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2006-10-10 05:45:45 afalout Exp $
+# $Id: Makefile,v 1.12 2006-10-13 11:28:59 afalout Exp $
 #
 
 ROOT    =..
@@ -251,13 +251,13 @@ libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 ##############
 #libLEX_
 
-#libLEX_C${SO_EXT}: ${LIBLEXC_DEPS}
-#	${MAKE} -C ${LIBLEXC_PATH}
-
-#libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
-#	${MAKE} -C ${LIBLEXPERL_PATH}
+${PLUGINDIR}/libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
+	${MAKE} -C ${LIBLEXPERL_PATH}
 
 ${PLUGINDIR}/libLEX_C${SO_EXT} ${PLUGINDIR}/libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
+	${MAKE} -C ${LIBLEXEC_PATH}
+
+${PLUGINDIR}/libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
 	${MAKE} -C ${LIBLEXEC_PATH}
 
 ##############
@@ -544,7 +544,9 @@ ${PLUGINDIR}/libA4GL_cint${SO_EXT_LINKABLE}:
 
 ##############
 #Libs that need 4glc
-${PLUGINDIR}/libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE} ${PLUGINDIR}/libPACKER_PACKED${SO_EXT} ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} ${PLUGINDIR}/libFORM_GENERIC${SO_EXT}
+${PLUGINDIR}/libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE} \
+		${PLUGINDIR}/libPACKER_PACKED${SO_EXT} ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} \
+		${PLUGINDIR}/libFORM_GENERIC${SO_EXT}
 	${MAKE} -C ${LIBHELP_STD_PATH}
 
 ${PLUGINDIR}/libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
@@ -603,7 +605,7 @@ aubit-config: ${AUBITCONFIG_DEPS}
 loadmap: ${LOADMAP_DEPS}
 	${FAIL_OK}${MAKE} -C ${LOADMAP_PATH}
 
-${4GLC}:
+${4GLC}: ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} ${PLUGINDIR}/libLEX_C${SO_EXT}
 	${MAKE} -C ${ROOT}/compilers/4glc
 
 ${4GLPC}: ${4GLC}
@@ -636,6 +638,7 @@ clean.libui:
 	${MAKE} -C ${LIBUICURSES_PATH} clean
 	${MAKE} -C ${LIBUIGLADELIB_PATH} clean
 	${MAKE} -C ${LIBUIGLADE_PATH} clean
+	${MAKE} -C ${LIBUIHL_PATH}/remote_client clean
 
 clean.libsql:
 	${MAKE} -C ${LIBSQLNOSQL_PATH} clean
@@ -719,7 +722,8 @@ show:
 	@echo "$$INGRES_INST_PATH"
 	@echo "$$INGRES_ESQLC"
 	@echo "$$HAVE_INGRES_ESQLC"
-
+	@echo "PLUGINDIR=${PLUGINDIR}"
+	@echo "A4GL_VERSION_STRING=${A4GL_VERSION_STRING}"
 
 pluginsdir:
 	if test ! -d ${PLUGINDIR}; then mkdir ${PLUGINDIR} 2> /dev/null; fi

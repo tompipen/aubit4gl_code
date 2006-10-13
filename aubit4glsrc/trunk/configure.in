@@ -1,4 +1,3 @@
-dnl # +----------------------------------------------------------------------+
 dnl # | Aubit 4gl Language Compiler Version $.0                              |
 dnl # +----------------------------------------------------------------------+
 dnl # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -23,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.325 2006-10-10 05:45:36 afalout Exp $
+dnl # $Id: configure.in,v 1.326 2006-10-13 11:28:43 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,17 +47,18 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
+AC_REVISION($Id: configure.in,v 1.326 2006-10-13 11:28:43 afalout Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!
 if test -f "tools/project/version" ; then
 
-	TMP=`grep -c '=' tools/project/version`
-	if test "$TMP" -gt 0 ; then
+	TMPaaa=`grep -c '=' tools/project/version`
+	if test "$TMPaaa" -gt 0 ; then
 		AC_MSG_ERROR( tools/project/version CVS merge conflict. Stop.)
 	fi
-	TMP=`grep -c '=' tools/project/build`
-	if test "$TMP" -gt 0 ; then
+	TMPaaa=`grep -c '=' tools/project/build`
+	if test "$TMPaaa" -gt 0 ; then
 		AC_MSG_ERROR( tools/project/build CVS merge conflict. Stop.)
 	fi
 	
@@ -95,6 +95,49 @@ AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourcef
 #will work ONLY at this point (after AC_INIT)
 ############################################################
 
+##########################################################################
+##                                                                      ##
+##  Check whether config.cache belongs to this machine                  ##
+##                                                                      ##
+##########################################################################
+AC_MSG_CHECKING(cached information)
+hostcheck="$host"
+AC_CACHE_VAL(ac_cv_hostcheck, [ ac_cv_hostcheck="$hostcheck" ])
+if test "$ac_cv_hostcheck" != "$hostcheck"; then
+  AC_MSG_RESULT(changed)
+
+  AC_MSG_WARN([Running on a different architecture.])
+  AC_MSG_WARN([Cant use cached values.])
+  AC_MSG_ERROR([Please remove the invalid config.cache file, then try again.])
+else
+  AC_MSG_RESULT(ok)
+fi
+
+
+##########################################################################
+##                                                                      ##
+##  Save configuration for later reuse                                  ##
+##                                                                      ##
+##########################################################################
+echo creating config.nice
+rm -f config.nice
+cat >config.nice<<CONFIG_NICE_EOF
+#! /bin/sh
+#
+# Created by configure for $PACKAGE_STRING
+#
+
+CONFIG_NICE_EOF
+echo ${SHELL} "\"$0\" \\" >> config.nice
+for arg in $ac_configure_args
+do
+    echo "$arg \\" >> config.nice
+done
+echo '"$@"' >> config.nice
+chmod +x config.nice
+
+
+##########################################################################
 #needed to initialize AutoMake functionallity, that will create Makefile.in
 #files from Makefile.am:
 #AM_INIT_AUTOMAKE
@@ -591,6 +634,14 @@ AC_SUBST(SQLITE_LDPATH)
 AC_SUBST(SQLITE_LDPATH2)
 AC_SUBST(SQLITE_LIBNAME)
 AC_SUBST(SQLITE_ROOT)
+
+AC_SUBST(SQLITE_ODBC)
+AC_SUBST(SQLITE_ODBC_VER)
+AC_SUBST(SQLITE_ODBC_LIBNAME_SHARED)
+AC_SUBST(SQLITE_ODBC_LIBNAME_STATIC)
+AC_SUBST(SQLITE_ODBC_LIBDIR)
+
+
 AC_SUBST(Q_ESQLC)
 AC_SUBST(AUBIT_LICENSE)
 AC_SUBST(PCRE_INC_PATH)
@@ -1629,12 +1680,12 @@ ISFORMFILE_SIZE=10
 #and will not get in substitution otherwise:
 #if test -f "tools/project/version" ; then
 if test "$AUBIT_SOURCE" = "1" ; then
-	TMP=`grep -c '=' tools/project/version`
-	if test "$TMP" -gt 0 ; then
+	TMPrrr=`grep -c '=' tools/project/version`
+	if test "$TMPrrr" -gt 0 ; then
 		AC_MSG_ERROR( tools/project/version CVS merge conflict. Stop.)
 	fi
-	TMP=`grep -c '=' tools/project/build`
-	if test "$TMP" -gt 0 ; then
+	TMPrrr=`grep -c '=' tools/project/build`
+	if test "$TMPrrr" -gt 0 ; then
 		AC_MSG_ERROR( tools/project/build CVS merge conflict. Stop.)
 	fi
 	
@@ -1666,6 +1717,11 @@ if test "$AUBIT_SOURCE" = "1" ; then
 else
 	echo "Configuring binary installation"
 fi
+
+#When set to 1, all options that test for it will be disabled 
+#regardless of wheater there prerequisistites are found or not. This is usually
+#done because option is broken and cant compile at the moment
+DO_DISABLE=1
 
 FULLNAME="Aubit 4GL compiler"
 SHORTNAME="aubit4gl"
@@ -2144,11 +2200,17 @@ NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file A4GL_memcache"
 NEED_4GLPC_ALL_libs="A4GL_memcache"
 
 if test "$enable_minimal" != "yes"; then
+
 	#Disabled; libA4GL_HTML is part of 'extra' target, its in alpha state
 	#so there is no need to make it unless user wants to work on it
 	#FIXME: A4GL_HTML should be linkable (LIB_EXPORTLIB), but we are using 4glc 
 	#to create dll, and we don't get .a file...
-	#NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_HTML"
+	if test "$DO_DISABLE" = "1"; then
+		ALL_DISABLED="$ALL_DISABLED A4GL_HTML"
+		DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make libhtml'"
+	else
+		NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_HTML"
+	fi
 	
 	#Define targets for liblogical
 	LIBLOGICAL_EXE_GTK2_DEPEND="layout_engine report_viewer"
@@ -3452,6 +3514,7 @@ AC_ARG_WITH(iksemel,
 				AC_CHECK_HEADERS([ iksemel.h ])
 				if test "$ac_cv_header_iksemel_h" = "yes"  ; then
 					if test "$PKG_CONFIG" != "no"; then
+						#/usr/local/lib/pkgconfig/iksemel.pc
 						export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH"
 						if $PKG_CONFIG --exists iksemel ; then
 							HAVE_IKSEMEL_TYPE=1
@@ -3512,6 +3575,9 @@ AC_ARG_WITH(iksemel,
 		CPPFLAGS="$old_CPPFLAGS"
 		LDFLAGS="$old_LDFLAGS"
 
+		AC_MSG_CHECKING(if we can use IksEmEl)
+		AC_MSG_RESULT($JABBERBUILD)
+		
 	else
 		AC_MSG_RESULT(disabled)
 	fi
@@ -3522,11 +3588,6 @@ AC_ARG_WITH(iksemel,
 if test "$enable_stop_iksemel" = "yes" ; then
 	exit
 fi
-
-#if test "$COMSPEC" != "" -a "$JABBERBUILD" = "yes"; then
-#	echo "Jabber disabled on Windows - Aubit code incompatible with current version"
-#	JABBERBUILD="no"
-#fi
 
 ## ==================================================================
 ##            Check for MySQL client library
@@ -5372,17 +5433,6 @@ if test "$COMSPEC" != ""; then
 	INFORMIXDIR="'$INFORMIXDIR'"
 fi
 
-#if test "$cygwin" = "1"; then
-#	AC_MSG_WARN(ESQL/C support on Windows temporaraly disabled.)
-#	IFMX_ESQLC=no
-#	IFX_ESQL_FLAGS=
-#	IFX_LIBS=
-#	IFX_LFLAGS=
-#	IFX_INCLUDE=
-#	IFX_C_MAKE=
-#	INFORMIXDIR=
-#fi
-
 if test "$enable_stop_informix" = "yes" ; then
 	exit
 fi
@@ -5463,9 +5513,9 @@ AC_ARG_WITH(pgsqleng,
 	        esac
 
 			AC_MSG_CHECKING(PG engine IFX compatibility-informix_serial function)
-			TMP=`nm -A --defined-only $POSTMASTER 2>&1`
-			if test "$TMP" != ""; then 
-				case "$TMP" in
+			TMPooo=`nm -A --defined-only $POSTMASTER 2>&1`
+			if test "$TMPooo" != ""; then 
+				case "$TMPooo" in
 				*no*symbols)
 					AC_MSG_RESULT(unknown)					
 					AC_MSG_WARN(** No symbols in PG executable)
@@ -6223,9 +6273,9 @@ fi
 	        if test "$SQLITE" != "no" -a "$COMSPEC" = ""; then
 				#we found executable, set withval to the place
 				#you found sqlite executable in
-				TMP=`dirname $SQLITE`
+				TMPhhh=`dirname $SQLITE`
                 #to remove bin/
-				withval=`dirname $TMP`
+				withval=`dirname $TMPhhh`
 			fi
 			
 			if test "$GCC_MINGW" = "yes"; then
@@ -6354,6 +6404,15 @@ fi
 			if test "$withval" = "yes"; then
 				withval=/usr/local/lib
             fi
+			
+#/usr/local/lib/libsqlite3odbc-0.70.so
+#libsqlite3odbc.so
+#/usr/local/lib/libsqlite3odbc.la
+#/usr/local/lib/libsqlite3odbc.a
+
+#PATH="$PATH:/sbin" ldconfig -n /usr/local/lib
+
+			
 
             LDFLAGS="-L$withval $LDFLAGS"
             #LIBS="-liodbc -liodbcadm $LIBS"
@@ -6363,6 +6422,7 @@ fi
 			if test "$ac_cv_lib_sqliteodbc_main" = "yes" ; then
 				#AC_MSG_RESULT(Yes)
 	            SQLITE_ODBC=1
+				SQLITE_ODBC_VER=2
 	        else
                 #maybe it was linked with unixODBC?
 	            #FIXME: do I need to add any libs here?
@@ -6371,26 +6431,55 @@ fi
 				if test "$ac_cv_lib_sqliteodbc_main" = "yes" ; then
 					#AC_MSG_RESULT(Yes)
 		            SQLITE_ODBC=1
+					SQLITE_ODBC_VER=2
                 fi
 			fi
 
-			if test "$SQLITE_ODBC" = "1"; then
+			AC_CHECK_LIB([sqlite3odbc], [main])
+			if test "$ac_cv_lib_sqlite3odbc_main" = "yes" ; then
+				#AC_MSG_RESULT(Yes)
+	            SQLITE_ODBC=1
+				SQLITE_ODBC_VER=3
+				SQLITE_ODBC_LIBNAME_SHARED=sqlite3odbc
+				SQLITE_ODBC_LIBNAME_STATIC=sqlite3odbc
+	        else
+                #maybe it was linked with unixODBC?
+	            #FIXME: do I need to add any libs here?
+				LIBS="$old_LIBS"
+				AC_CHECK_LIB([sqlite3odbc], [main])
+				if test "$ac_cv_lib_sqlite3odbc_main" = "yes" ; then
+					#AC_MSG_RESULT(Yes)
+		            SQLITE_ODBC=1
+					SQLITE_ODBC_VER=3
+					SQLITE_ODBC_LIBNAME_SHARED=sqlite3odbc
+					SQLITE_ODBC_LIBNAME_STATIC=sqlite3odbc
+                fi
+			fi
+			
 
+			if test "$SQLITE_ODBC" = "1"; then
+				SQLITE_ODBC_LIBDIR=$withval
 				AC_MSG_CHECKING(for default SQLite odbc.ini entry)
 
+#/etc/unixODBC/odbc.ini
+#/opt/IBM/informix/etc/odbc.ini
+#/usr/share/doc/packages/MyODBC-unixODBC/ini/odbc.ini.sample
+#/usr/src/aubit/aubit4glsrc/etc/odbc.ini.example
+
+				
 				ODBC_INI="/etc/odbc.ini"
                 if test -f $ODBC_INI; then
-					TMP=`grep mysqlitedb $ODBC_INI`
+					TMP123=`grep mysqlitedb $ODBC_INI`
                 else
 					ODBC_INI="~/.odbc.ini"
 	                if test -f $ODBC_INI; then
-						TMP=`grep mysqlitedb $ODBC_INI`
+						TMP123=`grep mysqlitedb $ODBC_INI`
 	                else
 						ODBC_INI=no
-                        TMP=no
+                        TMP123=no
                     fi
 				fi
-				if test "$TMP" = ""; then
+				if test "$TMP123" = ""; then
 					#To setup a SQLite data source using unixODBC (www.unixodbc.org):
 					#  1. Add the driver to /etc/odbcinst.ini:
 					#[SQLite]
@@ -6411,7 +6500,11 @@ fi
 					#unixODBC only:
 					#echo "Driver=SQLite" >> $ODBC_INI
 					#iODBC, but works for unixODBC too:
-					echo "Driver=/usr/local/lib/libsqliteodbc.so" >> $ODBC_INI
+					if test "$SQLITE_ODBC_VER" = "2"; then 
+						echo "Driver=$withval/libsqliteodbc.so" >> $ODBC_INI
+					else
+						echo "Driver=$withval/libsqlite3odbc.so" >> $ODBC_INI
+					fi
 					echo "Database=$aubitdir/$SQLITE_DB" >> $ODBC_INI
 					echo "# optional lock timeout in milliseconds" >> $ODBC_INI
 					echo "Timeout=2000" >> $ODBC_INI
@@ -6426,7 +6519,7 @@ fi
 					AC_MSG_RESULT(Added)
 				else
 					if test "$ODBC_INI" = "no" ; then
-						AC_MSG_RESULT($ODBC_INI not found)
+						AC_MSG_RESULT(/etc/odbc.ini or ~/.odbc.ini not found)
                     else
 						AC_MSG_RESULT(allready present)
                     fi
@@ -6447,6 +6540,10 @@ fi
 	LDFLAGS="$old_LDFLAGS"
 	CFLAGS="$old_CFLAGS"
 
+if test "$enable_stop_sqliteodbc" = "yes" ; then
+	exit
+fi
+	
 ## ==================================================================
 ##                 Checks for Informix ODBC driver
 ## ==================================================================
@@ -6525,8 +6622,8 @@ fi
 						*$INFORMIXDIR/lib/cli*)
 			    	        ;;
 						*)
-							TMP=`cat /etc/ld.so.conf | grep $INFORMIXDIR/lib/cli`
-			                if test "$TMP" = ""; then
+							TMP1234=`cat /etc/ld.so.conf | grep $INFORMIXDIR/lib/cli`
+			                if test "$TMP1234" = ""; then
 								WARN_LD_LIBRARY_PATH=1
 								WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
 								ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
@@ -6763,11 +6860,19 @@ PHP_CONFIGURE_PART(Checking for iODBC support:)
 
 AC_ARG_WITH(iodbc,
 [  --with-iodbc[=DIR]        Include iODBC/Openlink support.  DIR is the iODBC base
-                          install directory, defaults to /usr/local.],
+                          install directory, defaults to /usr/local or /opt/iodbc.],
 [
+	old_LIBS="$LIBS"
+	old_LDFLAGS="$LDFLAGS"
+	old_PATH="$PATH"
+
 	if test "$withval" != "no"; then
 		if test "$withval" = "yes"; then
-	    	withval=/usr/local
+			if test -d /opt/iodbc; then
+				withval=/opt/iodbc
+			else 
+	    		withval=/usr/local
+			fi
 		else
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON iODBC"
@@ -6775,12 +6880,15 @@ AC_ARG_WITH(iodbc,
             ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
-		old_LIBS=$LIBS
-		old_LDFLAGS=$LDFLAGS
-
 	    IODBC_INCLUDE="-I$withval/include"
 	    IODBC_LFLAGS="-L$withval/lib -L/usr/lib"
-
+		PATH="$withval/bin:$PATH"
+		
+		AC_PATH_PROG(IODBC_CONFIG, iodbc-config, no)
+		
+		#We can use pkg-config too:
+		#/opt/iodbc/lib/pkgconfig/libiodbc.pc
+		
 		LDFLAGS="$LDFLAGS $IODBC_LFLAGS"
 		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-liodbc':
@@ -6791,9 +6899,6 @@ AC_ARG_WITH(iodbc,
 		#DOES NOT WORK
 		#AC_CHECK_LIB([iodbc.so.2], [main])
 		
-		LIBS=$old_LIBS
-		LDFLAGS=$old_LDFLAGS
-
 		if test $ac_cv_lib_iodbc_main = yes; then
 
 			#do we need to check for headers ?
@@ -6812,18 +6917,29 @@ AC_ARG_WITH(iodbc,
 		    ODBC_TYPE=iodbc
 		    IODBC_LIBS=-liodbc
 		    AC_DEFINE(HAVE_IODBC,1,[ ])
-		    #AC_MSG_RESULT(yes)
+			AC_MSG_CHECKING(if we can use iODBC)
+			AC_MSG_RESULT($HAVE_IODBC)
 		else
 		    AC_DEFINE(HAVE_IODBC,0,[ ])
-		    #AC_MSG_RESULT(no)
+			AC_MSG_CHECKING(if we can use iODBC)
+			AC_MSG_RESULT($HAVE_IODBC - missing iodbc library)
 		fi
 	else
 		AC_MSG_RESULT(disabled)
 	fi
+	
+	LIBS="$old_LIBS"
+	LDFLAGS="$old_LDFLAGS"
+	PATH="$old_PATH"
+	
+	
 ],[
     AC_MSG_RESULT(--with-iodbc not specified)
 ])
 
+if test "$enable_stop_iodbc" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##            Checks for unixODBC ODBC manager support
@@ -6863,14 +6979,14 @@ if test "$withval" != "no"; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				#CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
 				AC_CHECK_HEADERS([sql.h])
-				TMP=`eval echo '${'$as_ac_Header'}'`
-		        if test "$TMP" = "yes"; then
+				TMPxyz=`eval echo '${'$as_ac_Header'}'`
+		        if test "$TMPxyz" = "yes"; then
 					AC_CHECK_HEADERS([sqlext.h])
-					TMP=`eval echo '${'$as_ac_Header'}'`
-			        if test "$TMP" = "yes"; then
+					TMPxyz=`eval echo '${'$as_ac_Header'}'`
+			        if test "$TMPxyz" = "yes"; then
 						AC_CHECK_HEADERS([odbcinst.h])
-						TMP=`eval echo '${'$as_ac_Header'}'`
-				        if test "$TMP" = "yes"; then
+						TMPxyz=`eval echo '${'$as_ac_Header'}'`
+				        if test "$TMPxyz" = "yes"; then
 						    HAVE_UNIXODBC_HEADERS=1
                         		fi
                     		fi
@@ -7141,8 +7257,6 @@ if test "$DISABLED" = "1"; then
 				#the header files. Compile of the Aubit PG ODBC plugin will work OK,
 				#and I tried to fix the autoconf warning but failed...
 				
-				
-				
 				AC_MSG_WARN(--2--)
 				unset ac_cv_header_pgsql_iodbc_iodbc_h
 				unset ac_cv_header_pgsql_iodbc_isql_h
@@ -7178,7 +7292,7 @@ if test "$DISABLED" = "1"; then
 				# include <pgsql/iodbc/iodbc.h> 
 				# include <pgsql/iodbc/isql.h>
 				]])				
-			fi
+fi
 #ddddd
 			fi
 			
@@ -7344,8 +7458,8 @@ AC_ARG_WITH(gtk,
 			#this include version names, so we need to extract this names first:
 
 			#First check if --list-all works
-			TMP=`$PKG_CONFIG --list-all 2>&1 | grep "was not found in the pkg-config search path"`
-			if test "$TMP" != ""; then 
+			TMP987=`$PKG_CONFIG --list-all 2>&1 | grep "was not found in the pkg-config search path"`
+			if test "$TMP987" != ""; then 
 				AC_MSG_WARN(** cannot use pkg-config --list-all option)
 				AC_MSG_WARN(** your pkg-config is missconfigured)
 				AC_MSG_WARN(** Will try guessing GTK2 names)
@@ -8322,9 +8436,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
 			AC_CHECK_HEADERS([dlfcn.h])
         fi
 
-		TMP=`eval echo '${'$as_ac_Header'}'`
+		TMP456=`eval echo '${'$as_ac_Header'}'`
 		#if test `eval echo '${'$as_ac_Header'}'` != "yes"; then
-        if test "$TMP" != "yes"; then
+        if test "$TMP456" != "yes"; then
 			if test "$GCC_MINGW" != "yes"; then
 				AC_MSG_ERROR(No dlfcn.h found - please install dl library. Stop.)
             fi
@@ -8857,7 +8971,7 @@ else
 	#C compiler is the default at this point, unless a variant of embedded
 	#C was chosen in SQL connectivity "decide" section...
 
-	#Disabled since Perl output is not working at the moment
+	#Disabled as default since Perl output is not working at the moment
 	if test "$PERLBUILD" != "no"; then
 		#A4GL_LEXTYPE="PERL"
 		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
@@ -9080,10 +9194,15 @@ PLUGIN_NO=
 PLUGIN_NO_LINKABLE=
 
 
-	if test "$PERLBUILD" = "noDISABLED"; then
-    	PLUGIN_YES="$PLUGIN_YES LEX_PERL"
+	if test "$PERLBUILD" != "no"; then
+		#if test "$DO_DISABLE" = "1"; then
+		#	ALL_DISABLED="$ALL_DISABLED LEX_PERL"
+		#	DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make perl'"
+		#else
+	    	PLUGIN_YES="$PLUGIN_YES LEX_PERL"
+		#fi
 	else
-		PLUGIN_NO="$PLUGIN_NO LEX_perl"
+		PLUGIN_NO="$PLUGIN_NO LEX_PERL"
     fi
 
 	if test "$HAVE_CURSES" = "1" ; then
@@ -9153,7 +9272,7 @@ PLUGIN_NO_LINKABLE=
 		PLUGIN_YES="$PLUGIN_YES SQL_esql ESQL_INFORMIX"
 		if test "$enable_minimal" != "yes"; then
 			COMP_EXE="$COMP_EXE aupscol asql_i$A4GL_EXE_EXT runforms$A4GL_EXE_EXT"
-			#aupscol/sqleditor/asql_i currently compiles only with Informix ESQL/C
+			#aupscol and sqleditor currently compiles only with Informix ESQL/C
 		fi
 	else
         PLUGIN_NO="$PLUGIN_NO SQL_esql ESQL_INFORMIX sqleditor$A4GL_EXE_EXT aupscol asql_i$A4GL_EXE_EXT"
@@ -9162,18 +9281,17 @@ PLUGIN_NO_LINKABLE=
 
 	if test "$HAVE_INGRES_ESQLC" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES SQL_ingres"
-		
-		#Fixme: helper_ingres.ec not in CVS:
-		PLUGIN_NO="$PLUGIN_NO ESQL_INGRES"
-		
-		#Cant compile because of the above problem:
-		#if test "$enable_minimal" != "yes"; then
-		#	COMP_EXE="$COMP_EXE asql_I$A4GL_EXE_EXT"
-		#fi
-		
-		#Also enable:
-		#lib/liblex/lex_esql compile_c_esql.c
-
+		if test "$DO_DISABLE" = "1"; then
+			#Fixme: helper_ingres.ec not in CVS:
+			#Cant a4gl_I compile because of the above problem:			
+			ALL_DISABLED="$ALL_DISABLED ESQL_INGRES asql_I$A4GL_EXE_EXT"
+			DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make ???'"
+		else
+			PLUGIN_YES="$PLUGIN_YES ESQL_INGRES"
+			if test "$enable_minimal" != "yes"; then
+				COMP_EXE="$COMP_EXE asql_I$A4GL_EXE_EXT"
+			fi
+		fi
 	else
 		PLUGIN_NO="$PLUGIN_NO SQL_ingres ESQL_INGRES"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ingres"
@@ -9282,7 +9400,12 @@ PLUGIN_NO_LINKABLE=
 
 	#this is made by 'make extra' -- check this stmt, I dont think so
 	if test "$JABBERBUILD" != "no"; then
-        PLUGIN_YES_LINKABLE="$PLUGIN_YES_LINKABLE IM_JABBER IM_JABBERs"
+		#if test "$DO_DISABLE" = "1"; then
+		#	ALL_DISABLED="$ALL_DISABLED IM_JABBER IM_JABBERs"
+		#	DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make jabber'"
+		#else
+	        PLUGIN_YES_LINKABLE="$PLUGIN_YES_LINKABLE IM_JABBER IM_JABBERs"
+		#fi
 	else
         PLUGIN_NO_LINKABLE="$PLUGIN_NO_LINKABLE IM_JABBER IM_JABBERs"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.iksemel"
@@ -9305,10 +9428,14 @@ PLUGIN_NO_LINKABLE=
 			PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg asql_p$A4GL_EXE_EXT"
 		fi
 
-if test "disabled" = ""; then
-		#"real" one written in CPP - Sergio never finised it... :-(
-		PLUGIN_YES="$PLUGIN_YES SQL_pgDEVEL"
-fi
+		if test "$DO_DISABLE" = "1"; then
+			ALL_DISABLED="$ALL_DISABLED SQL_pgDEVEL"
+			DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make ???'"
+		else
+			#"real" one written in CPP - Sergio never finised it... :-(
+			PLUGIN_YES="$PLUGIN_YES SQL_pgDEVEL"
+		fi
+
 	else
 		PLUGIN_NO="$PLUGIN_NO SQL_pg SQL_c_ecpg"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
@@ -9416,39 +9543,47 @@ fi
 	
 	if test "$PG_ESQLC" != "no" && test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_POSTGRES"
-if test "disabled" = ""; then
+		if test "$DO_DISABLE" = "1"; then
+			ALL_DISABLED="$ALL_DISABLED SQL_esqlPG"
+			DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make ???'"
+		else
 			#Compile Aubit ESQL/C SQL connectivity plug-in using PG ESQL/C compiler
-#Mike say: Main problem is ecpg doesn't support get diagnostics
-#(think I wrote another one for postgres anyway - I'll
-#check to see whats around when I get back)
+			#Mike say: Main problem is ecpg doesn't support get diagnostics
+			#(think I wrote another one for postgres anyway - I'll
+			#check to see whats around when I get back)
 			PLUGIN_YES="$PLUGIN_YES SQL_esqlPG"
-fi
+		fi
     else
         PLUGIN_NO="$PLUGIN_NO ESQL_POSTGRES SQL_esqlPG"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
-if test "disabled" = ""; then
-if test "$cygwin" != "1"; then
-#Don't know how to link this on Windows...GCC not supported?
+
 	if test "$Q_ESQLC" != "no" ; then
-		#since introduction of "decimal" can't compile - must pre-process with cpp first
-		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX"
-		#Compile Aubit ESQL/C SQL connectivity plug-in using Querix ESQL/C compiler
-		PLUGIN_YES="$PLUGIN_YES SQL_esqlQ"
+		if test "$DO_DISABLE" = "1" -o "$cygwin" != "1"; then
+			ALL_DISABLED="$ALL_DISABLED ESQL_QUERIX SQL_esqlQ"
+			DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make ???'"
+		else
+			#Don't know how to link this on Windows...GCC not supported?
+			#since introduction of "decimal" can't compile - must pre-process with cpp first
+			PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX"
+			#Compile Aubit ESQL/C SQL connectivity plug-in using Querix ESQL/C compiler
+			PLUGIN_YES="$PLUGIN_YES SQL_esqlQ"
+		fi
 	else
-        PLUGIN_NO="$PLUGIN_NO ESQL_QUERIX SQL_esqlQ"
-		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.querix"
+			PLUGIN_NO="$PLUGIN_NO ESQL_QUERIX SQL_esqlQ"
+			#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.querix"
 	fi
-fi
-fi
 
 	if test "$SAPDB_ESQLC" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_SAP"
-if test "disabled" = ""; then
-		#Compile Aubit ESQL/C SQL connectivity plug-in using SAP DB ESQL/C compiler
-		PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP"
-fi
+		if test "$DO_DISABLE" = "1" ; then
+			ALL_DISABLED="$ALL_DISABLED SQL_esqlSAP"
+			DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make ???'"
+		else
+			#Compile Aubit ESQL/C SQL connectivity plug-in using SAP DB ESQL/C compiler
+			PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP"
+		fi
 	else
 		if test "$COMSPEC" != ""; then 
 			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS SQL_esqlSAP ESQL_SAP"
@@ -9458,13 +9593,18 @@ fi
 		fi
     fi
 
-	#lib/libui/ui_highlevel/remote_client
-	#libLL_server.so - A convinience library for wrapping common server stuff up
-	#libUI_client.so - This is a UI you can use just like TUI, HL_TUI, HL_GTK etc.. A4GL_UI=client
+	if test "$DO_DISABLE" = "1" ; then
+		ALL_DISABLED="$ALL_DISABLED LL_server UI_client server_gtk server_tui server_console"
+		DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make -C lib/libui/ui_highlevel/remote_client'"
+		
+		#lib/libui/ui_highlevel/remote_client
+		#libLL_server.so - A convinience library for wrapping common server stuff up
+		#libUI_client.so - This is a UI you can use just like TUI, HL_TUI, HL_GTK etc.. A4GL_UI=client
 
-	#server_gtk	- This is the thin client program for displaying the output (GTK mode)
-	#server_tui	- This is the thin client program for displaying the output (TUI mode)
-	#server_console  - Not yet - but soon...
+		#server_gtk	- This is the thin client program for displaying the output (GTK mode)
+		#server_tui	- This is the thin client program for displaying the output (TUI mode)
+		#server_console  - Not yet - but soon...
+	fi
 	
 	#######################################################################
 	#Output created list of plugins to be created as individual variables
@@ -9774,8 +9914,8 @@ fi
 
 
 #This is now obsolete, as GTK installers take care of GTK paths - remove:
-#TMP=`echo $PATH | grep :/lib:`
-#if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" && test "$TMP" = ""; then
+#TMP987=`echo $PATH | grep :/lib:`
+#if test "$GTKBUILD" = "yes" && test "$cygwin" = "1" && test "$TMP987" = ""; then
 #cat<<X
 #+--------------------------------------------------------------------+
 #|                        *** WARNING ***                             |
@@ -10040,14 +10180,21 @@ cat<<X
 | Aubit plug-ins to build:                                           |
 | $PLUGIN_YES
 |                                                                    |
-| Aubit plug-ins that will NOT be built:                             |
+| Aubit plug-ins that will NOT be built because of missing 3rd party |
+| dependencies:                                                      |
 | $PLUGIN_NO
+|                                                                    |
+| Aubit plug-ins and options disabled at the moment by developers:   |
+| $ALL_DISABLED
+|                                                                    |
+| You can still try to build disabled options using this commands:   |
+| $DISABLED_MANUAL_CMD
 |                                                                    |
 | (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.325 2006-10-10 05:45:36 afalout Exp $
+| $Id: configure.in,v 1.326 2006-10-13 11:28:43 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

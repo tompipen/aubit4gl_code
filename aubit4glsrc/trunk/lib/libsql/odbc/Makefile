@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2006-10-10 05:45:50 afalout Exp $
+# $Id: Makefile,v 1.10 2006-10-13 11:29:01 afalout Exp $
 #
 
 ROOT    =../../..
@@ -49,8 +49,13 @@ OBJECTS					=sql.o sqlex.o array.o
 CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 				-DWITHOUT_DRIVERMGR ${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
 				-L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -I${ROOT}/tools/odbctest/incl -I.
-
+#SQLITE_ODBC_VER
+#SQLITE_ODBC_LIBNAME_SHARED
+#SQLITE_ODBC_LIBNAME_STATIC
+				
+				
 ifneq "${COMSPEC}" ""
+#Windows only
 	LINKLIBS		=-L${LIBROOT} -l${AUBITLIBFULL}
 	#On Windows we renamed .dll/.def files in original distribution 
 	#(adding 'lib' prefix) and copied them to /cygwin/lib directory:
@@ -67,7 +72,11 @@ else
 	#-L/usr/local/lib -L/usr/lib
 endif
 
-ALL		=iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc sqlite
+ALL		=iodbc unixodbc ifxodbc pgodbc sapodbc sqlite
+
+ifeq "${SQLITE_ODBC}" "1"
+	ALL		+=sqliteodbc
+endif
 
 .PHONY : ${ALL} clean all allodbc odbc32 #sqlite.static
 
@@ -147,7 +156,7 @@ ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
 #${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbctest/incl
 ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl ${CFLAGS_SQLITE}
 ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqliteodbc
+	${LD} ${SO_LDFLAGS} $^ -o $@ -L${SQLITE_ODBC_LIBDIR} -l${SQLITE_ODBC_LIBNAME_SHARED}
 
 ###############################
 #SQLite plug-in dynamically linked with SQLite library/engine:

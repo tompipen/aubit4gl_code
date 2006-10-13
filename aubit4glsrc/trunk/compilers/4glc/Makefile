@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.17 2006-07-27 16:00:58 mikeaubury Exp $
+# $Id: Makefile,v 1.18 2006-10-13 11:28:54 afalout Exp $
 #
 
 ROOT		=../..
@@ -276,7 +276,9 @@ show:
 clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err *.a *.exe *.bak .*.bak .\#* \
 	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h \
-	mk_states.c API_lex.c ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_lex_lib.h
+	mk_states.c API_lex.c ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_lex_lib.h \
+	API_parse_self.c API_lex_self.c
+
 #WARNING! do NOT clean mk_states_c - this is an autoconf generated file
 #and will get cleaned only in make.distclean target of root makefile
 	

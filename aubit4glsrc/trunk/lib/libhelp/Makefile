@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.29 2006-07-27 16:02:33 mikeaubury Exp $
+# $Id: Makefile,v 1.30 2006-10-13 11:29:00 afalout Exp $
 #
 
 ROOT    	=../..
@@ -74,6 +74,11 @@ a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 	export A4GL_SQLTYPE=nosql; export DEBUG=ALL;\
 	${FCOMPILE} -c $^)
 
+show:
+	@echo "PLUGINDIR=${PLUGINDIR}"
+	@echo "A4GL_VERSION_STRING=${A4GL_VERSION_STRING}"
+
+	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================

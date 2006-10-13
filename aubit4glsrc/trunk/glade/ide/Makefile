@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-17 14:09:05 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2006-10-13 11:28:55 afalout Exp $
 #
 
 ROOT			=../..
@@ -99,6 +99,6 @@ ${ROOT}/bin/sqleditor.4ae:
 clean:
 	${RM} *.ao *.ec *.glb *.o *.c *.h *.err *.warn debug.out *~ *.bak ${ALL}
 	${MAKE} -C sqleditor clean
-	cd common; ${RM} *.ao *.c *.glb *.h *.err *.warn debug.out *~ *.bak
+	cd common; ${RM} *.ao *.c *.glb *.h *.err *.warn debug.out *~ *.bak *.ec
 	
 
