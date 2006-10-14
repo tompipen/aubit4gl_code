@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.37 2006-09-27 22:11:59 briantan Exp $
+# $Id: has_pdf.c,v 1.38 2006-10-14 11:58:40 briantan Exp $
 #*/
 
 /**
@@ -935,8 +935,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
 	&& strcmp (mode, "justify") !=0
 	&& strcmp (mode, "fulljustify") !=0)
 	*mode = "justify";
-      PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, "");
-      return 0;
+      return PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, "");
     }
 
   return 0;
