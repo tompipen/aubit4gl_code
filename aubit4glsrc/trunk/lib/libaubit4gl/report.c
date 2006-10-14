@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.99 2006-10-12 06:13:14 mikeaubury Exp $
+# $Id: report.c,v 1.100 2006-10-14 16:18:31 mikeaubury Exp $
 #
 */
 
@@ -1276,7 +1276,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 	case 6:
 	case 7:
 	case 4:
-	  sz = 4;
+	  sz = sizeof(long);
 	  break;
 
 	case 8:
@@ -1916,13 +1916,7 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 #endif
           if (b[cb].ptr == o[ca].ptr)
             {
-#ifdef DEBUG
-              /* {DEBUG} */ A4GL_debug ("11   pointers %d %d are equal", cb, ca);
-#endif
               /* check value in o.ptr against that on the stack */
-#ifdef DEBUG
-              /* {DEBUG} */ A4GL_debug ("11 nb=%d cb=%d ca=%d\n", nb, cb, ca);
-#endif
               A4GL_read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
               A4GL_push_param (b[cb].ptr, b[cb].dtype);
 #ifdef DEBUG

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.330 2006-10-14 10:09:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.331 2006-10-14 16:18:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.330 2006-10-14 10:09:40 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.331 2006-10-14 16:18:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1747,7 +1747,7 @@ real_print_expr (struct expr_str *ptr)
 	  break;
 	case ET_EXPR_LINENO:
 	  printc
-	    ("{static int _ln; _ln=_rep.line_no-1;A4GL_push_variable(&_ln,2);}");
+	    ("{static long _ln; _ln=_rep.line_no-1;A4GL_push_variable(&_ln,2);}");
 	  break;
 
 	case ET_EXPR_FCALL:

@@ -52,7 +52,8 @@ extern "C"
 
 
   void A4GLSQL_xset_status (int a);
-  int A4GLSQL_init_connection (char *dbName);
+
+  //int A4GLSQL_init_connection (char *dbName);
   int A4GLSQL_get_status (void);
   int A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd);
   int A4GLSQL_set_conn (char *sessname);

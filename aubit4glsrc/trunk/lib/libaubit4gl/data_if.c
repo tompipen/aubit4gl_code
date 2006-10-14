@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.34 2006-09-15 09:00:12 mikeaubury Exp $
+# $Id: data_if.c,v 1.35 2006-10-14 16:18:31 mikeaubury Exp $
 #
 */
 
@@ -59,8 +59,7 @@
 static void *get_set_s_screenio (void *ptr, int mode, char *name, long var);
 static void *get_set_s_inp_arr (void *ptr, int mode, char *name, long var);
 static void *get_set_s_prompt (void *ptr, int mode, char *name, long var);
-static void *get_set_rep_structure (void *ptr, int mode, char *name,
-				    long var);
+//static void *get_set_rep_structure (void *ptr, int mode, char *name, long var);
 static void *get_set_s_disp_arr (void *ptr, int mode, char *name, long var);
 
 
@@ -992,6 +991,8 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
   return (void *) 0;		/* unknown value */
 }
 
+
+#ifdef NDEF
 /**
  * Handler for rep_structure.
  *
@@ -1265,6 +1266,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
 
   return (void *) 0;		/* unknown value */
 }
+#endif
 
 
 /**
@@ -1545,9 +1547,11 @@ A4GL_get_set (char *str, void *ptr, int mode, char *name, long var)
 	{			/* s_prompt */
 	  return get_set_s_prompt (ptr, mode, name, var);
 	}
+
       if (a == 3)
 	{			/* rep_structure */
-	  return get_set_rep_structure (ptr, mode, name, var);
+		A4GL_assertion(1,"NOT USED...");
+	  //return get_set_rep_structure (ptr, mode, name, var);
 	}
       if (a == 4)
 	{			/* s_disp_arr */
@@ -1569,7 +1573,8 @@ A4GL_get_set (char *str, void *ptr, int mode, char *name, long var)
     }
   if (strcmp (str, "rep_structure") == 0)
     {
-      return get_set_rep_structure (ptr, mode, name, var);
+A4GL_assertion(1,"NOT USED");
+      //return get_set_rep_structure (ptr, mode, name, var);
     }
   if (strcmp (str, "s_disp_arr") == 0)
     {

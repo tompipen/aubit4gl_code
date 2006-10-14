@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.97 2006-10-14 10:09:35 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.98 2006-10-14 16:18:31 mikeaubury Exp $
 */
 
 /**
@@ -335,6 +335,14 @@ int a_isprint(int a);
 #define aclfgl_errorlog(n)  A4GL_errorlog(__FILE__,__LINE__,n);
 #define aclfgl_startlog(n)  A4GL_startlog(__FILE__,__LINE__,n);
 
+int A4GL_fgl_error (int a, char *s, int err, int stat);
+
+
+int
+A4GLSQL_init_connection (char *dbName);
+
+
+
   /* int     aclfgl_errorlog       (int n); */
   int A4GL_errorlog (char *s, int l, int n);
   int A4GL_startlog (char *s, int l, int n);
@@ -457,72 +465,14 @@ struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
 #endif
 
-#ifndef REP_STRUCTURE
-#define REP_STRUCTURE
-  /* report stuff */
-  struct rep_structure
-  {
-    int top_margin, bottom_margin, left_margin, right_margin;
-    int page_length;
-    int has_first_page;
-    char *next_page;
-    char *rep_table;		/* database table for aggregate values */
-    struct BINDING *group_data;
-    char output_mode;
-    char output_loc[256];
-    char top_of_page[256];
-    FILE *output;
-    int page_no;
-    int printed_page_no;
-    int line_no;
-    int col_no;
-    int (*report) (int a, int b);
-    int lines_in_header;
-    int lines_in_first_header;
-    int lines_in_trailer;
-    int print_section;
-	char *header;
-	int finishing;
-	char *repName;
-	char *modName;
-	int convertable;
-  };
 
+#include "a4gl_rep_structure.h"
 
+void A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *layout, int to_pipe);
 
-  struct pdf_rep_structure
-  {
-    double top_margin, bottom_margin, left_margin, right_margin;
-    double page_length;
-    double page_width;
-    int has_first_page;
-    char *next_page;
-    char *rep_table;		/* database table for aggregate values */
-    struct BINDING *group_data;
-    char output_mode;
-    char output_loc[256];
-    FILE *output;
-    int page_no;
-    int printed_page_no;
-    double line_no;
-    double col_no;
-    int (*report) (int a, int b);
-    char font_name[256];
-    double font_size;
-    int paper_size;
-    void *pdf_ptr;
-    int font;
-    int lines_in_header;
-    int lines_in_first_header;
-    int lines_in_trailer;
-    int print_section;
-	char *header;
-	int finishing;
-	char *repName;
-	char *modName;
-	int convertable;
-  };
-#endif
+void A4GL_free_report (struct rep_structure *rep);
+int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb);
+void A4GL_pop_report_section (struct rep_structure *rep, int rb);
 
 /*
 to fix the _nm_status error (if status is an int) change

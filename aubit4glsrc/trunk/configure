@@ -10533,7 +10533,7 @@ AMAKE_INCL_FILES="header.mki footer.mki footer2.mki footer-c.mki a4gl.mk \
 		q4gl.mk d4gl.mk i4gl.mk"
 
 #TODO: check that all of this is really needed in binary installations:
-ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
+ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h a4gl_rep_structure.h \
         a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
 		a4gl_API_menu.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h a4gl_expr.h \
 		a4gl_API_sqlparse.h a4gl_API_esql.h a4gl_incl_infx.h \
@@ -42598,7 +42598,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.353 2006-10-14 08:25:29 afalout Exp $
+| $Id: configure,v 1.354 2006-10-14 16:20:00 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.252 2006-10-14 10:09:36 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.253 2006-10-14 16:18:31 mikeaubury Exp $
 #
 */
 
@@ -1254,72 +1254,7 @@ int aclfgl_fgl_round(int nargs);
 #define NEW(struct) A4GL_get_set(struct,0,GETSETNEW,0,0)
 #define RM(struct,ptr) A4GL_get_set(struct,ptr,GETSETRM,0,0)
 
-  /* report stuff */
-#ifndef REP_STRUCTURE
-#define REP_STRUCTURE
-  struct rep_structure
-  {
-    int top_margin, bottom_margin, left_margin, right_margin;
-    int page_length;
-    int has_first_page;
-    char *next_page;
-    char *rep_table;		/* database table for aggregate values */
-    struct BINDING *group_data;
-    char output_mode;
-    char output_loc[256];
-    char top_of_page[256];
-    FILE *output;
-    int page_no;
-    int printed_page_no;
-    int line_no;
-    int col_no;
-    /* was      int (*report)(); */
-    int (*report) (int a, int b);
-    int lines_in_header;
-    int lines_in_first_header;
-    int lines_in_trailer;
-    int print_section;
-    char *header;
-	int finishing;
-	char *repName;
-	char *modName;
-    int convertable;
-  };
-  struct pdf_rep_structure
-  {
-    double top_margin, bottom_margin, left_margin, right_margin;
-    double page_length;
-    double page_width;
-    int has_first_page;
-    char *next_page;
-    char *rep_table;		/* database table for aggregate values */
-    struct BINDING *group_data;
-    char output_mode;
-    char output_loc[256];
-    FILE *output;
-    int page_no;
-    int printed_page_no;
-    double line_no;
-    double col_no;
-    /* was      int (*report)(); */
-    int (*report) (int a, int b);
-    char font_name[256];
-    double font_size;
-    int paper_size;
-    void *pdf_ptr;
-    int font;
-    int lines_in_header;
-    int lines_in_first_header;
-    int lines_in_trailer;
-    int print_section;
-    char *header;
-    int finishing;
-	char *repName;
-	char *modName;
-    int convertable;
-  };
-
-#endif
+#include "a4gl_rep_structure.h"
 
 
 
@@ -1556,7 +1491,7 @@ int A4GL_stol (void *aa, void *zi, int sz_ignore);
 int A4GL_valid_int (char *s, int *data, int size);
 
   /* ============================ fglwrap.c ============================== */
-  int A4GL_fgl_error (int a, char *s, int err, int stat);
+  //int A4GL_fgl_error (int a, char *s, int err, int stat);
   int A4GL_isyes (char *s);
   int A4GL_isno (char *s);
   char *get_serno (void);
@@ -2281,11 +2216,11 @@ char *A4GL_tea_string_encipher(char *s);
 int A4GLSQL_read_columns (char *tabname, char *xcolname, int *dtype, int *size);
 
 int A4GL_monitor_puts_int (char *str);
-void
-A4GL_convert_report (struct rep_structure *rep, char *ofile,
-                     char *otype, char *layout, int to_pipe);
+//A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *layout, int to_pipe);
+
 char *A4GL_find_report_dim_string(char *type,int value);
-void A4GL_free_report(struct rep_structure *rep);
+
+//void A4GL_free_report(struct rep_structure *rep);
 char *A4GL_get_tmp_rep(char *mod,char *f);
 void a4gl_upshift(char *s);
 void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7);
@@ -3182,6 +3117,7 @@ int A4GL_copy_file(char *from,char *to);
 int A4GL_move_file(char *from,char *to);
 int A4GL_file_length(char *fname);
 int A4GL_delete_file(char *fname);
+void A4GL_status_ok(int sql_too);
 
 struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a);
 

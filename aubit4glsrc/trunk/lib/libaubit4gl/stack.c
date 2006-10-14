@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.157 2006-09-13 15:07:42 briantan Exp $
+# $Id: stack.c,v 1.158 2006-10-14 16:18:31 mikeaubury Exp $
 #
 */
 
@@ -2774,9 +2774,9 @@ static int A4GL_null_other(char *buff,int type) {
 int a;
   A4GL_debug("25 Checking byte %d",type);
 
-
   for (a = 0; a < 9; a++)
     {
+	if (type==1 && a>sizeof(short)) break;
       if ((unsigned char) (nset[type][a]) != (unsigned char) IGN)
 	{
 	  if ((unsigned char) (buff[a]) != (unsigned char) (nset[type][a]))
