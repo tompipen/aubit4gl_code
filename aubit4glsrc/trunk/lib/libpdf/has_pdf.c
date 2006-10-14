@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.38 2006-10-14 11:58:40 briantan Exp $
+# $Id: has_pdf.c,v 1.39 2006-10-14 22:35:33 briantan Exp $
 #*/
 
 /**
@@ -902,7 +902,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
 	return 0;
   }
 
-// rect(text, x, y, w, h);
+// rect(x, y, w, h);
   if (strcmp (fname, "rect") == 0)
     {
       float fx, fy, fw, fh;
@@ -915,14 +915,16 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       return 0;
     }
 
-// show_boxed(text, x, y, w, h, mode);
+// show_boxed(text, x, y, w, h, mode, feature) returning rc;
 // mode=(left, right, center, justify, fulljustify);
 // if w=h=0, x,y is anchor point for left,right,center single line formatting
+// feature=blind used for testing if text fit. rc is no of chars not fit.
   if (strcmp (fname, "show_boxed") == 0)
     {
       float fx, fy, fw, fh;
-      char *text, *mode;
+      char *text, *mode, *feature;
       int c;
+      feature = A4GL_char_pop ();
       mode = A4GL_char_pop ();
       fh = A4GL_pop_double ();
       fw = A4GL_pop_double ();
@@ -933,9 +935,11 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
 	&& strcmp (mode, "right") !=0
 	&& strcmp (mode, "center") !=0
 	&& strcmp (mode, "justify") !=0
-	&& strcmp (mode, "fulljustify") !=0)
-	*mode = "justify";
-      return PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, "");
+	&& strcmp (mode, "fulljustify") !=0) mode = "justify";
+      if (strcmp (feature, "blind") != 0) feature = "";
+      c = PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, feature);
+      A4GL_push_double ((double) c);
+      return 1;
     }
 
   return 0;
