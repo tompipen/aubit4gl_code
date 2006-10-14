@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.326 2006-10-13 11:28:43 afalout Exp $
+dnl # $Id: configure.in,v 1.327 2006-10-14 08:25:32 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -47,7 +47,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.326 2006-10-13 11:28:43 afalout Exp $)
+AC_REVISION($Id: configure.in,v 1.327 2006-10-14 08:25:32 afalout Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!
@@ -1982,11 +1982,12 @@ if test "$withval" != "no"; then
 
 	############ various ###########
 	if test "$with_pdf" = ""; then              with_pdf=yes        ;fi
+	if test "$with_perl" = ""; then          	with_perl=yes      	;fi
 	if test "$with_iksemel" = ""; then          with_iksemel=yes    ;fi
 	if test "$with_xmlrpc" = ""; then           with_xmlrpc=yes     ;fi
-	if test "$with_orbit" = ""; then           	with_orbit=yes     ;fi
+	if test "$with_orbit" = ""; then           	with_orbit=yes     	;fi
 	if test "$GCC_MINGW" != "yes"; then 
-		if test "$with_rpc" = ""; then              FORCE_RPC=1         ;fi
+		if test "$with_rpc" = ""; then        	FORCE_RPC=1         ;fi
 	fi
 
 
@@ -2262,6 +2263,7 @@ LIB_EXPORTLIB=aubit4gl
 #List of executables that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
 
+#Executables needed by Amake
 AMAKE_BIN_EXE="aubit-config"
 
 #Resource files needed by some of the executables
@@ -2272,6 +2274,7 @@ RUNTIME_RESOURCE=""
 #Executables that are needed even in run-time distibutions:
 RUNTIME_EXE="afinderr configurator $AMAKE_BIN_EXE"
 
+#Standard compiler executables:
 COMP_EXE="4glc fcompile amkmessage convertsql 4glpc sql_parse adbschema \
 	asql_g$A4GL_EXE_EXT"
 
@@ -2284,8 +2287,6 @@ if test "$enable_minimal" != "yes"; then
 else
 	echo "*** NOTE: --enable-minimal specified; some targets disabled"
 fi
-
-COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 
 #xgen - not needed for binary installs
 #needs missing source code
@@ -2304,6 +2305,7 @@ COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 
 AMAKE_SH="amake genmake prepmake"
 ALL_SH="aubit ecpg_wrap $AMAKE_SH"
+#runner_fgl_wrapper"
 #obsolete: ecpg_wrap esql_wrap
 #ALL_SH="4glpc $AMAKE_SH"
 #abug.sh
@@ -7872,12 +7874,21 @@ CUSTOM_WITHVAL=0
 ##            Check for Perl generating compiler support
 ## ==================================================================
 
-if test "$PERL" != no; then
-	if test "$SWIG" != no; then
-		#Fixme: How to test for MakeMaker Perl module ?
-		PERLBUILD=yes
-    fi
-fi
+AC_ARG_WITH(perl,
+	[  --with-perl=yes/no     Enable (default) or disable Perl langauge support],
+	[
+		if test "$withval" != "no"; then	
+			if test "$PERL" != no; then
+				if test "$SWIG" != no; then
+					#Fixme: How to test for MakeMaker Perl module ?
+					PERLBUILD=yes
+				fi
+			fi
+		else
+			PERLBUILD=no
+		fi
+	])
+
 
 ## ==================================================================
 ##               Checks for curses/ncurses library
@@ -8969,16 +8980,19 @@ if test "$default_comp" != ""; then
 else
 
 	#C compiler is the default at this point, unless a variant of embedded
-	#C was chosen in SQL connectivity "decide" section...
-
-	#Disabled as default since Perl output is not working at the moment
+	#C was chosen in SQL connectivity "decide" section.
+	#Not much point in assigning anything else as default.
+	#Maybe p-code?
+	
 	if test "$PERLBUILD" != "no"; then
+		#No point:
 		#A4GL_LEXTYPE="PERL"
 		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
     fi
 
 	# C# output (Mono)
 	if test "$CS_COMPILER" != "no"; then
+		#No point:
 		#A4GL_LEXTYPE="CS"
 		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
     fi
@@ -9195,14 +9209,13 @@ PLUGIN_NO_LINKABLE=
 
 
 	if test "$PERLBUILD" != "no"; then
-		#if test "$DO_DISABLE" = "1"; then
-		#	ALL_DISABLED="$ALL_DISABLED LEX_PERL"
-		#	DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make perl'"
-		#else
-	    	PLUGIN_YES="$PLUGIN_YES LEX_PERL"
-		#fi
+		PLUGIN_YES="$PLUGIN_YES LEX_PERL"
+		if test "$DO_DISABLE" = "1"; then
+			ALL_DISABLED="$ALL_DISABLED aubit4gl_pl.pm"
+			DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make perl'"
+		fi
 	else
-		PLUGIN_NO="$PLUGIN_NO LEX_PERL"
+		PLUGIN_NO="$PLUGIN_NO LEX_PERL aubit4gl_pl.pm"
     fi
 
 	if test "$HAVE_CURSES" = "1" ; then
@@ -9649,8 +9662,7 @@ fi
 		COMP_EXE="$COMP_EXE $PCODE_EXE_RPC"
 	else
 		if test "$GCC_MINGW" != "yes"; then
-			#FIXME: this should be EXE_NO, not PLUGIN_NO
-			PLUGIN_NO="$PLUGIN_NO $PCODE_EXE_RPC"
+			EXE_NO="$EXE_NO $PCODE_EXE_RPC"
 		else
 			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS $PCODE_EXE_RPC"
 		fi
@@ -9659,8 +9671,7 @@ fi
 	if test "$GTK_VERSION" = "2.0"; then
 		RUNTIME_EXE="$RUNTIME_EXE $LIBLOGICAL_EXE_GTK2_DEPEND"
 	else
-		#FIXME: this should be EXE_NO, not PLUGIN_NO
-		PLUGIN_NO="$PLUGIN_NO $LIBLOGICAL_EXE_GTK2_DEPEND"
+		EXE_NO="$EXE_NO $LIBLOGICAL_EXE_GTK2_DEPEND"
 	fi
 
     COUNTER=0
@@ -10092,7 +10103,7 @@ fi
     fi
 
 fi
-if test "$PLUGIN_NO" != "" && test "$PLUGIN_NO" != " "; then
+if test "$PLUGIN_NO" != "" -a "$PLUGIN_NO" != " "; then
 
 if test "$AUBIT_SOURCE" = "1" ; then
 cat<<X
@@ -10184,6 +10195,11 @@ cat<<X
 | dependencies:                                                      |
 | $PLUGIN_NO
 |                                                                    |
+| Aubit executables that will NOT be built because of missing 3rd    |
+| party dependencies:                                                |
+|                                                                    |
+| $EXE_NO
+|                                                                    |
 | Aubit plug-ins and options disabled at the moment by developers:   |
 | $ALL_DISABLED
 |                                                                    |
@@ -10194,7 +10210,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.326 2006-10-13 11:28:43 afalout Exp $
+| $Id: configure.in,v 1.327 2006-10-14 08:25:32 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

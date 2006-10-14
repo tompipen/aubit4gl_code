@@ -1,4 +1,3 @@
-# +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0   binary install make include|
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-5 Aubit Development Team (See Credits file)       |
@@ -23,7 +22,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.108 2006-10-13 11:28:58 afalout Exp $
+# $Id: Makefile-install.mki,v 1.109 2006-10-14 08:25:35 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -957,8 +956,10 @@ VALGRING_INFO			=http://valgrind.kde.org
 ##################
 # 33: PostgreSQL with Informix compatibility patches
 PGIFX_INFO				=http://gborg.postgresql.org/project/pginformix/projdisplay.php
-PGIFX_SRC_PATH			=http://informix.fastcrypt.com
-PGIFX_SRC				=postgresql081704
+#PGIFX_SRC_PATH			=http://informix.fastcrypt.com
+PGIFX_SRC_PATH			=http://aubit.com/aubit4gl/postgres
+#PGIFX_SRC				=postgresql081704
+PGIFX_SRC				=postgresql020705
 PGIFX_SRC_GZ			=${PGIFX_SRC}.tar.gz
 PGIFX_INSTPATH			=/opt/pg-ifx/${PGIFX_SRC}
 PGIFX_CTL				=${PGIFX_INSTPATH}/pg-ifx-ctl-${PGIFX_SRC}
@@ -1790,7 +1791,7 @@ endif
 	
 ##################
 # 33: PostgreSQL with Informix compatibility patches
-install.pgifx: install.pgifx.install install.pgifx.ctl install.pgifx.activate
+install.pgifx: install.pgifx.install ${PGIFX_CTL} install.pgifx.activate install.pgifx.start
 	@echo " "
 	@echo "Package info & manuals: ${PGIFX_INFO}"
 	@echo " "
@@ -1805,49 +1806,89 @@ install.pgifx: install.pgifx.install install.pgifx.ctl install.pgifx.activate
 	@echo "Add PGIFX_ACFLAGS='<configure flags>' to above command if you need to."
 	@echo ""	
 
-#Download, compile and install
-install.pgifx.install: ${PGIFX_SRC_GZ}
+THIS_USER=${USER}
+THIS_GROUPS=${GROUPS}
+
+#-------------------------------
+#Download, compile and install 
+install.pgifx.install: ${PGIFX_SRC_GZ} 
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 #	cd /tmp/${PGIFX_SRC}/pghead; ./configure --prefix=${PGIFX_INSTPATH} ${PGIFX_ACFLAGS}	
 	cd /tmp/pghead; ./configure --prefix=${PGIFX_INSTPATH} ${PGIFX_ACFLAGS}
 	cd /tmp/pghead; make
-	su; cd /tmp/pghead; make install
+#We dont need to be root as we are installing in our own dir, and actually we
+#dont WANT to be root so we dont accidentaly overwrite any files on the system
+#possibly allready installed by systems unpatched PostgreSQL
+#	su -c "cd /tmp/pghead; make install"
+	su -c "mkdir -p ${PGIFX_INSTPATH}; chown ${THIS_USER} ${PGIFX_INSTPATH}; chgrp ${THIS_GROUPS} ${PGIFX_INSTPATH}"
+	cd /tmp/pghead; make install
 
+#-------------------------------
 #Intialise database
 install.pgifx.activate:
-	-adduser postgres
-	mkdir -p ${PGIFX_INSTPATH}/data
-	chown postgres ${PGIFX_INSTPATH}/data
+	-su -c "/usr/sbin/useradd postgres"
+	-su -c "mkdir -p ${PGIFX_INSTPATH}/data"
+	su -c "chown postgres ${PGIFX_INSTPATH}/data"
 	su -l postgres -s ${SH} -c "${PGIFX_INSTPATH}/bin/initdb -D ${PGIFX_INSTPATH}/data"
 #add stuff to config file
-	@echo "datestyle = 'informix, mdy'" >> ${PGIFX_INSTPATH}/data/postgresql.conf
-	@echo "default_delim = '|'" >> ${PGIFX_INSTPATH}/data/postgresql.conf 
+	su -l postgres -s ${SH} -c "echo \"datestyle = 'informix, mdy'\" >> ${PGIFX_INSTPATH}/data/postgresql.conf"
+	su -l postgres -s ${SH} -c "echo \"default_delim = '|'\" >> ${PGIFX_INSTPATH}/data/postgresql.conf"
+#Default TCP/IP port for PG = (port = 5432) Usually this is commented out in default
+#config file. WE NEED TO CHANGE THIS IF MORE THEN ONE INSTANCE OF PG WILL BE RUNNING
+#ON THIS HOST!!! Any option can also be given as a command line switch to the
+# postmaster, e.g. 'postmaster -c log_connections=on'.
+	
+	su -c "touch ${PGIFX_INSTPATH}/pg-ifx-${PGIFX_SRC}.log; chown postgres ${PGIFX_INSTPATH}/pg-ifx-${PGIFX_SRC}.log; chgrp postgres ${PGIFX_INSTPATH}/pg-ifx-${PGIFX_SRC}.log"
+	
+#-------------------------------
+install.pgifx.start: ${PGIFX_CTL}
 #	-${PGIFX_CTL} start
 	-${PGIFX_CTL} status
 #  	${PGIFX_INSTPATH}/bin/createdb test
 #	${PGIFX_INSTPATH}/bin/psql test
 
+#-------------------------------
 #Create controll script
-install.pgifx.ctl:
+install.pgifx.ctl.force: install.pgifx.ctl.delete install.pgifx.ctl
+
+install.pgifx.ctl.delete:
+	-su -c "chmod a+rwx ${PGIFX_CTL}; ${RM} ${PGIFX_CTL}"
+	
+install.pgifx.ctl: ${PGIFX_CTL}
+${PGIFX_CTL}: 
 	@echo "PG_BIN='${PGIFX_INSTPATH}/bin'" > ${PGIFX_CTL}
 	@echo "PG_DATA='${PGIFX_INSTPATH}/data'" >> ${PGIFX_CTL}
 	@echo "PG_LOG='${PGIFX_INSTPATH}/pg-ifx-${PGIFX_SRC}.log'" >> ${PGIFX_CTL}
+#Default TCP/IP port for PG = (port = 5432)
+#Any option can also be given as a command line switch to the
+# postmaster, e.g. 'postmaster -c log_connections=on'.
+#pg_ctl -o OPTIONS              command line options to pass to the postmaster
+	@echo "PG_PORT=15432" >> ${PGIFX_CTL}
 	@echo 'case $$1 in' >> ${PGIFX_CTL}
-	@echo "start)  su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA -o ' -i' start  > \$$PG_LOG 2>&1 & \" " >> ${PGIFX_CTL}
-	@echo ";;" >> ${PGIFX_CTL}
+	@echo "start)  su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA -o ' -i -c port=\$$PG_PORT' start  > \$$PG_LOG 2>&1 & \" " >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
+	@echo "start-defaultport)  su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA -o ' -i' start  > \$$PG_LOG 2>&1 & \" " >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
 	@echo "stop)   su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA stop\"" >> ${PGIFX_CTL}
 	@echo "        ;;" >> ${PGIFX_CTL}
 	@echo "status) su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA status\"" >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}	
+	@echo "netstatus) su -c \"netstat -a | grep postgres; netstat -a | grep \$$PG_PORT; netstat -a | grep 5432\"" >> ${PGIFX_CTL}
 	@echo "        ;;" >> ${PGIFX_CTL}
-	@echo "*)      echo "Usage: start/stop/status"" >> ${PGIFX_CTL}
+	@echo "*)      echo "Usage: start/start-defaultport/stop/status/netstatus"" >> ${PGIFX_CTL}
 	@echo "        ;;" >> ${PGIFX_CTL}
 	@echo "esac" >> ${PGIFX_CTL}
-	chmod a+x ${PGIFX_CTL}
-	@echo "Use script ${PGIFX_CTL}"
-	@echo "to start/stop/status PG engine"
-
+	chmod u+rwx ${PGIFX_CTL}
+	chmod g+rwx ${PGIFX_CTL}
+	chmod o+rx ${PGIFX_CTL}
+	su -c "ln -s ${PGIFX_CTL} /usr/local/bin/pgifx_ctl; if test -f /etc/rc.d/postgresql ; then if ! test -f /usr/local/bin/pg_ctl; then ln -s /etc/rc.d/postgresql /usr/local/bin/pg_ctl; fi; fi"
+	@echo "---------------------------------------------------------"
+	@echo "Use script 'pgifx_ctl' to start/stop/status PG engine"
+	@echo "---------------------------------------------------------"
+	@echo " "
+	
 ##############################
-# 34 :
+# 34: LibVNCserver:
 	
 ##############################
 # 35 : ORBit Corba:

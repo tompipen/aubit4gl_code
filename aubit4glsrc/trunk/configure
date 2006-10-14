@@ -1151,6 +1151,7 @@ Optional Packages:
                           install directory, defaults to /usr/local.
   --with-rpc=DIR          Include RPC support.  DIR is the RPC base
                           install directory, defaults to /usr/local.
+  --with-perl=yes/no     Enable (default) or disable Perl langauge support
   --with-curses=DIR       Include curses support. DIR is the curses base
                           install directory, defaults to /lib.
                           This will probe for Ncurses, then for curses.
@@ -4165,7 +4166,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4168 "configure"' > conftest.$ac_ext
+  echo '#line 4169 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7547,7 +7548,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7550 "configure"
+#line 7551 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -7645,7 +7646,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7648 "configure"
+#line 7649 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10156,11 +10157,12 @@ echo "${ECHO_T}everything..." >&6
 
 	############ various ###########
 	if test "$with_pdf" = ""; then              with_pdf=yes        ;fi
+	if test "$with_perl" = ""; then          	with_perl=yes      	;fi
 	if test "$with_iksemel" = ""; then          with_iksemel=yes    ;fi
 	if test "$with_xmlrpc" = ""; then           with_xmlrpc=yes     ;fi
-	if test "$with_orbit" = ""; then           	with_orbit=yes     ;fi
+	if test "$with_orbit" = ""; then           	with_orbit=yes     	;fi
 	if test "$GCC_MINGW" != "yes"; then
-		if test "$with_rpc" = ""; then              FORCE_RPC=1         ;fi
+		if test "$with_rpc" = ""; then        	FORCE_RPC=1         ;fi
 	fi
 
 
@@ -10459,6 +10461,7 @@ LIB_EXPORTLIB=aubit4gl
 #List of executables that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
 
+#Executables needed by Amake
 AMAKE_BIN_EXE="aubit-config"
 
 #Resource files needed by some of the executables
@@ -10469,6 +10472,7 @@ RUNTIME_RESOURCE=""
 #Executables that are needed even in run-time distibutions:
 RUNTIME_EXE="afinderr configurator $AMAKE_BIN_EXE"
 
+#Standard compiler executables:
 COMP_EXE="4glc fcompile amkmessage convertsql 4glpc sql_parse adbschema \
 	asql_g$A4GL_EXE_EXT"
 
@@ -10481,8 +10485,6 @@ if test "$enable_minimal" != "yes"; then
 else
 	echo "*** NOTE: --enable-minimal specified; some targets disabled"
 fi
-
-COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 
 #xgen - not needed for binary installs
 #needs missing source code
@@ -10501,6 +10503,7 @@ COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 
 AMAKE_SH="amake genmake prepmake"
 ALL_SH="aubit ecpg_wrap $AMAKE_SH"
+#runner_fgl_wrapper"
 #obsolete: ecpg_wrap esql_wrap
 #ALL_SH="4glpc $AMAKE_SH"
 #abug.sh
@@ -30277,12 +30280,24 @@ CUSTOM_WITHVAL=0
 ##            Check for Perl generating compiler support
 ## ==================================================================
 
-if test "$PERL" != no; then
-	if test "$SWIG" != no; then
-		#Fixme: How to test for MakeMaker Perl module ?
-		PERLBUILD=yes
-    fi
-fi
+
+# Check whether --with-perl or --without-perl was given.
+if test "${with_perl+set}" = set; then
+  withval="$with_perl"
+
+		if test "$withval" != "no"; then
+			if test "$PERL" != no; then
+				if test "$SWIG" != no; then
+					#Fixme: How to test for MakeMaker Perl module ?
+					PERLBUILD=yes
+				fi
+			fi
+		else
+			PERLBUILD=no
+		fi
+
+fi;
+
 
 ## ==================================================================
 ##               Checks for curses/ncurses library
@@ -36410,7 +36425,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 36413 "configure"' > conftest.$ac_ext
+  echo '#line 36428 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -36966,7 +36981,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 36969 "configure"
+#line 36984 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -37064,7 +37079,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 37067 "configure"
+#line 37082 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -38818,16 +38833,19 @@ if test "$default_comp" != ""; then
 else
 
 	#C compiler is the default at this point, unless a variant of embedded
-	#C was chosen in SQL connectivity "decide" section...
+	#C was chosen in SQL connectivity "decide" section.
+	#Not much point in assigning anything else as default.
+	#Maybe p-code?
 
-	#Disabled as default since Perl output is not working at the moment
 	if test "$PERLBUILD" != "no"; then
+		#No point:
 		#A4GL_LEXTYPE="PERL"
 		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
     fi
 
 	# C# output (Mono)
 	if test "$CS_COMPILER" != "no"; then
+		#No point:
 		#A4GL_LEXTYPE="CS"
 		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
     fi
@@ -39137,14 +39155,13 @@ PLUGIN_NO_LINKABLE=
 
 
 	if test "$PERLBUILD" != "no"; then
-		#if test "$DO_DISABLE" = "1"; then
-		#	ALL_DISABLED="$ALL_DISABLED LEX_PERL"
-		#	DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make perl'"
-		#else
-	    	PLUGIN_YES="$PLUGIN_YES LEX_PERL"
-		#fi
+		PLUGIN_YES="$PLUGIN_YES LEX_PERL"
+		if test "$DO_DISABLE" = "1"; then
+			ALL_DISABLED="$ALL_DISABLED aubit4gl_pl.pm"
+			DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make perl'"
+		fi
 	else
-		PLUGIN_NO="$PLUGIN_NO LEX_PERL"
+		PLUGIN_NO="$PLUGIN_NO LEX_PERL aubit4gl_pl.pm"
     fi
 
 	if test "$HAVE_CURSES" = "1" ; then
@@ -39535,13 +39552,18 @@ PLUGIN_NO_LINKABLE=
 		fi
     fi
 
-	#lib/libui/ui_highlevel/remote_client
-	#libLL_server.so - A convinience library for wrapping common server stuff up
-	#libUI_client.so - This is a UI you can use just like TUI, HL_TUI, HL_GTK etc.. A4GL_UI=client
+	if test "$DO_DISABLE" = "1" ; then
+		ALL_DISABLED="$ALL_DISABLED LL_server UI_client server_gtk server_tui server_console"
+		DISABLED_MANUAL_CMD="$DISABLED_MANUAL_CMD 'make -C lib/libui/ui_highlevel/remote_client'"
 
-	#server_gtk	- This is the thin client program for displaying the output (GTK mode)
-	#server_tui	- This is the thin client program for displaying the output (TUI mode)
-	#server_console  - Not yet - but soon...
+		#lib/libui/ui_highlevel/remote_client
+		#libLL_server.so - A convinience library for wrapping common server stuff up
+		#libUI_client.so - This is a UI you can use just like TUI, HL_TUI, HL_GTK etc.. A4GL_UI=client
+
+		#server_gtk	- This is the thin client program for displaying the output (GTK mode)
+		#server_tui	- This is the thin client program for displaying the output (TUI mode)
+		#server_console  - Not yet - but soon...
+	fi
 
 	#######################################################################
 	#Output created list of plugins to be created as individual variables
@@ -39586,8 +39608,7 @@ fi
 		COMP_EXE="$COMP_EXE $PCODE_EXE_RPC"
 	else
 		if test "$GCC_MINGW" != "yes"; then
-			#FIXME: this should be EXE_NO, not PLUGIN_NO
-			PLUGIN_NO="$PLUGIN_NO $PCODE_EXE_RPC"
+			EXE_NO="$EXE_NO $PCODE_EXE_RPC"
 		else
 			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS $PCODE_EXE_RPC"
 		fi
@@ -39596,8 +39617,7 @@ fi
 	if test "$GTK_VERSION" = "2.0"; then
 		RUNTIME_EXE="$RUNTIME_EXE $LIBLOGICAL_EXE_GTK2_DEPEND"
 	else
-		#FIXME: this should be EXE_NO, not PLUGIN_NO
-		PLUGIN_NO="$PLUGIN_NO $LIBLOGICAL_EXE_GTK2_DEPEND"
+		EXE_NO="$EXE_NO $LIBLOGICAL_EXE_GTK2_DEPEND"
 	fi
 
     COUNTER=0
@@ -42471,7 +42491,7 @@ fi
     fi
 
 fi
-if test "$PLUGIN_NO" != "" && test "$PLUGIN_NO" != " "; then
+if test "$PLUGIN_NO" != "" -a "$PLUGIN_NO" != " "; then
 
 if test "$AUBIT_SOURCE" = "1" ; then
 cat<<X
@@ -42563,6 +42583,11 @@ cat<<X
 | dependencies:                                                      |
 | $PLUGIN_NO
 |                                                                    |
+| Aubit executables that will NOT be built because of missing 3rd    |
+| party dependencies:                                                |
+|                                                                    |
+| $EXE_NO
+|                                                                    |
 | Aubit plug-ins and options disabled at the moment by developers:   |
 | $ALL_DISABLED
 |                                                                    |
@@ -42573,7 +42598,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.352 2006-10-13 11:28:40 afalout Exp $
+| $Id: configure,v 1.353 2006-10-14 08:25:29 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

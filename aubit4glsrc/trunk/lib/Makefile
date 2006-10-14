@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2006-10-13 11:28:59 afalout Exp $
+# $Id: Makefile,v 1.13 2006-10-14 08:25:37 afalout Exp $
 #
 
 ROOT    =..
@@ -57,14 +57,18 @@ LIBSQLODBC_PATH     =libsql/odbc
 LIBMENUXDR_PATH		=libmenu/menu_xdr
 LIBMENUNOMENU_PATH	=libmenu/menu_nomenu
 LIBMENUGENERIC_PATH	=libmenu/menu_generic
+
 LIBPACKERPACKED_PATH=libpacker/packed
 LIBPACKERMEMPACKED_PATH=libpacker/mempacked
 LIBPACKERPERL_PATH  =libpacker/perl
 LIBPACKERXDR_PATH   =libpacker/xdr
 LIBPACKERXML_PATH   =libpacker/xml
 LIBPACKERGZPACKED_PATH   =libpacker/gzpacked
-#LIBLEXC_PATH   		=liblex/lex_c
+
+LIBLEXPERL_PATH		=liblex/lex_perl
+#OBSOLETE - LIBLEXC_PATH   		=liblex/lex_c
 LIBLEXEC_PATH  		=liblex/lex_esqlc
+
 LIBEXREPORTPDF_PATH =libpdf
 LIBFILE_PATH		=extra_libs/file
 LIBSTRING_PATH		=extra_libs/string
@@ -158,10 +162,15 @@ LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXM
 					$(wildcard ${LIBPACKERXML_PATH}/Makefile) ${ALL_H}
 LIBPACKERGZPACKED_DEPS	=$(wildcard ${LIBPACKERGZPACKED_PATH}/*.c) $(wildcard ${LIBPACKERGZPACKED_PATH}/*.h) \
 					$(wildcard ${LIBPACKERGZPACKED_PATH}/Makefile) ${ALL_H}
-#LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
+					
+#OBSOLETE-LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
 #					$(wildcard ${LIBLEXC_PATH}/Makefile) ${ALL_H}
 LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h) ${ROOT}/compilers/4glc/API_lex.h \
 					$(wildcard ${LIBLEXEC_PATH}/Makefile) ${ALL_H}
+LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PATH}/*.h) ${ROOT}/compilers/4glc/API_lex.h \
+					$(wildcard ${LIBLEXPERL_PATH}/Makefile) ${ALL_H}
+					
+					
 LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXREPORTPDF_PATH}/*.h) \
 					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile) ${ALL_H}
 LIBFILE_DEPS		=$(wildcard ${LIBFILE_PATH}/*.c) $(wildcard ${LIBFILE_PATH}/*.h) \
@@ -251,14 +260,15 @@ libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 ##############
 #libLEX_
 
+LEX_PERL: ${PLUGINDIR}/libLEX_PERL${SO_EXT}
 ${PLUGINDIR}/libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
 	${MAKE} -C ${LIBLEXPERL_PATH}
 
+#Note: Both C and EC are now build from same dir; liblex/lex_c dir is obsolete
 ${PLUGINDIR}/libLEX_C${SO_EXT} ${PLUGINDIR}/libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
 	${MAKE} -C ${LIBLEXEC_PATH}
 
-${PLUGINDIR}/libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
-	${MAKE} -C ${LIBLEXEC_PATH}
+#TODO: libLEX_CS libLEX_PCODEC are built - but where????
 
 ##############
 #libUI_
@@ -622,7 +632,14 @@ clean.all: clean
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.librpc clean.libroot \
 	clean.other clean.libui clean.libmenu clean.libform clean.libpacker \
-	clean.cint clean.liblogical
+	clean.cint clean.liblogical clean.plugindir
+
+#FIXME; this targets are not cleaned from plugindir:
+#libA4GL_cint.so    libIM_JABBERs.so  libSQL_FILESCHEMA.so  libUI_client.so
+#libFORM_NOFORM.so  libLEX_PERL.so    libSQL_ingres.so
+#libIM_JABBER.so    libMSG_NATIVE.so  libSQL_nosql.so
+clean.plugindir:
+	${RM} ${PLUGINDIR}/*
 
 clean.libroot:
 	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err \
@@ -692,6 +709,7 @@ clean.other:
 	${MAKE} -C ${AUBITCONFIG_PATH} clean
 	${MAKE} -C ${LOADMAP_PATH} clean
 	${MAKE} -C ${LIBLEXEC_PATH} clean
+	${MAKE} -C ${LIBLEXPERL_PATH} clean
 	${MAKE} -C ${LIBEXDATA_PATH} clean
 	${MAKE} -C ${LIBESQL_PATH} clean
 	${MAKE} -C ${LIBSTRING_PATH} clean

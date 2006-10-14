@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.28 2006-10-13 11:28:40 afalout Exp $
+# $Id: Makefile,v 1.29 2006-10-14 08:25:29 afalout Exp $
 #
 
 ## ==================================================================
@@ -71,18 +71,22 @@ endif
 #endif
 
 ################################
-#Define targetss for liblogical
+#Define targets for liblogical
 #Libraries are made with lib makefile
-#LIBLOGICAL_BUILD=bin/process_report lib/libLOGREPPROC_TXT${SO_EXT} lib/libLOGREP_PROC_CSV${SO_EXT}
-LIBLOGICAL_BUILD=bin/process_report
-#LIBLOGICAL_GTK2_DEPEND=lib/libLOGREP_CSV${SO_EXT} bin/layout_engine bin/report_viewer \
-#	lib/libLOGREP_TXT${SO_EXT}
-LIBLOGICAL_GTK2_DEPEND=bin/layout_engine bin/report_viewer
-#LIBLOGICAL_PDF_DEPEND=lib/libLOGREPPROC_PDF${SO_EXT} lib/libLOGREP_PDF${SO_EXT}
+LIBLOGICAL_BUILD=bin/process_report ${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT} \
+	${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}
+LIBLOGICAL_GTK2_DEPEND=${PLUGINDIR}/libLOGREP_CSV${SO_EXT} bin/layout_engine bin/report_viewer \
+	${PLUGINDIR}/libLOGREP_TXT${SO_EXT}
+LIBLOGICAL_PDF_DEPEND=${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT} ${PLUGINDIR}/libLOGREP_PDF${SO_EXT}
 
 ifeq "${GTK_VERSION}" "2.0"
 	LIBLOGICAL_BUILD+=${LIBLOGICAL_GTK2_DEPEND}
 endif
+
+ifneq "${PDFBUILD}" "no"
+	LIBLOGICAL_BUILD+=${LIBLOGICAL_PDF_DEPEND}
+endif
+
 
 ## ==================================================================
 ##                              Targets
@@ -255,19 +259,19 @@ bin/report_viewer:
 	$(MAKE) -C lib/liblogical/report_viewer
 
 #Now in lib makefile:
-#lib/libLOGREPPROC_TXT${SO_EXT}:
-#	$(MAKE) -C lib/liblogical/txt/process
-#lib/libLOGREPPROC_CSV${SO_EXT}:
-#	$(MAKE) -C lib/liblogical/csv/process
-#lib/libLOGREPPROC_PDF${SO_EXT}:
-#	$(MAKE) -C lib/liblogical/pdf/process
+${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT}:
+	$(MAKE) -C lib/liblogical/txt/process
+${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}:
+	$(MAKE) -C lib/liblogical/csv/process
+${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT}:
+	$(MAKE) -C lib/liblogical/pdf/process
 
-#lib/libLOGREP_TXT${SO_EXT}:
-#	$(MAKE) -C lib/liblogical/txt/layout
-#lib/libLOGREP_CSV${SO_EXT}:
-#	$(MAKE) -C lib/liblogical/csv/layout
-#lib/libLOGREP_PDF${SO_EXT}:
-#	$(MAKE) -C lib/liblogical/pdf/layout
+${PLUGINDIR}/libLOGREP_TXT${SO_EXT}:
+	$(MAKE) -C lib/liblogical/txt/layout
+${PLUGINDIR}/libLOGREP_CSV${SO_EXT}:
+	$(MAKE) -C lib/liblogical/csv/layout
+${PLUGINDIR}/libLOGREP_PDF${SO_EXT}:
+	$(MAKE) -C lib/liblogical/pdf/layout
 	
 clean.liblogical:
 	$(MAKE) -C lib/liblogical/processor clean
@@ -354,16 +358,19 @@ perl: api perl.compiler perl.lib test.perl
 api:
 	$(MAKE) -C lib/libaubit4gl api
 
+#Build Lex plug-in for generating Perl output
 perl.compiler:
 	${MAKE} -C lib/liblex/lex_perl
 	@echo Aubit 4gl Perl-code generating version LEX library created
 
+#Make and install aubit4gl_pl.pm SWIG wrapper for libaubit4gl.so so generated
+#Perl code can utilise Aubit library and its plug-ins
 perl.lib:
 #Perl created makefile will remove domake when running "clean", so we better make
 #sure we have it:
 	./config.status --file lib/swig/domake
 	cd lib/swig; sh domake
-	@echo Aubit 4gl Perl-code libraries installed
+	@echo Aubit 4gl Perl module/wrapper for libaubit4gl installed
 
 test.perl:
 	${MAKE} -C tools/test test.perl
@@ -398,7 +405,6 @@ release:
 #Net::FTP=GLOB(0x869a07c)<<< 221 Goodbye.
 #Login to sourceforge
 #make: *** [release] Segmentation fault
-
 
 ## ==================================================================
 ##            DoxyGen doccumentation creation
@@ -729,6 +735,34 @@ install.check:
 
 	export MAKINGAUBIT=0; export SOURCEDIR="${SOURCEDIR}";export INSTALLDIR="${INSTALLDIR}"; \
 		${SH} bin/4glpc.obsolete -chk-install
+
+		
+########################
+#Register p-code runner with kernel (Linux with binfmt_misc suppoert in kernel ONLY)
+pcode.register: /proc/sys/fs/binfmt_misc/register $(INSTALL_DIR)/compilers/pcode/runner_fgl_wrapper
+#TODO: remove compilers/pcode/register
+#On linux - if you have binfmt_misc in the kernel (or loaded as a module )
+#you can get the kernel to run a program to run a program. This is normally
+#used for running java or C# code, but we can use it for running aubit pcode
+#bin_fmt registration.
+ifndef COMSPEC
+#Load binfmt_misc module in runningn kernel:
+#	su -c "modprobe binfmt_misc" 
+#Set (NOTE: this is NOT a file on ordinary filesystem, but on the vistual kernel fs (/proc):
+	su -c "echo \":A4GL:M::\xa4\xfc\x23\x45::$(INSTALL_DIR)/compilers/pcode/runner_fgl_wrapper:\" > $^"
+#Check:
+	cat /proc/sys/fs/binfmt_misc/status
+	echo " "
+	cat /proc/sys/fs/binfmt_misc/A4GL
+#TODO - how do we make registration permanent between reboots, and how I load binfmt_misc module 
+#automatically on boot?
+	
+endif
+
+$(INSTALL_DIR)/compilers/pcode/runner_fgl_wrapper:
+	@echo "YOU NEED TO INSTALL AUBIT COMPILER FIRST! (make install)"
+	@exit 1
+
 
 ########################
 #Check that Winsows setup  installed everything we expect, and not things (FULL LOOP)
