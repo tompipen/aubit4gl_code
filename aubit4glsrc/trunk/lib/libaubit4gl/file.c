@@ -24,12 +24,18 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.1 2006-07-14 16:11:54 mikeaubury Exp $
+# $Id: file.c,v 1.2 2006-10-14 10:09:39 mikeaubury Exp $
 #
 */
 
 
 #include "a4gl_libaubit4gl_int.h"
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 #define USE_RENAME  1
 
@@ -93,4 +99,22 @@ int A4GL_move_file(char *from,char *to) {
 int A4GL_delete_file(char *fname) {
 	if (unlink(fname)==0) return 1;
 	return 0;
+}
+
+
+int A4GL_file_exists(char *fname) {
+FILE *f=0;
+#ifdef HAVE_SYS_STAT_H
+struct stat buf;
+
+ if (stat(fname, &buf)==0) return 1;
+ return 0;
+#else
+f=fopen(fname,"r");
+if (f) {
+	fclose(f); return 1;
+} else {
+	return 0;
+
+#endif
 }

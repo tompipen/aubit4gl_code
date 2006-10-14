@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.60 2006-10-12 06:13:14 mikeaubury Exp $
+# $Id: ui.c,v 1.61 2006-10-14 10:09:39 mikeaubury Exp $
 #
 */
 
@@ -1507,6 +1507,13 @@ strcpy(last_fcompile_err,s);
 
 char *A4GL_get_fcompile_err(void) {
 return last_fcompile_err;
+}
+
+
+void A4GL_ensure_current_window_is(char *s) {
+A4GL_debug("ENSURE %s (got %s)",s,A4GL_get_currwin_name());
+if (strcmp(A4GL_get_currwin_name(),s)==0) return ;
+ A4GL_current_window(s);
 }
 
 /* ============================= EOF ================================ */

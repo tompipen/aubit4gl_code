@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.161 2006-10-11 12:09:26 mikeaubury Exp $
+# $Id: esql.ec,v 1.162 2006-10-14 10:09:43 mikeaubury Exp $
 #
 */
 
@@ -179,7 +179,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.161 2006-10-11 12:09:26 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.162 2006-10-14 10:09:43 mikeaubury Exp $";
 #endif
 
 
@@ -1533,7 +1533,11 @@ int dstype;
 	DATA;
       if (isSqlError ())
 	return 1;
-      *(long *) bind[idx].ptr = int_var;
+	if (sizeof(int)==sizeof(long)) {
+      		*(long *) bind[idx].ptr = int_var;
+	} else {
+      		*(int *) bind[idx].ptr = int_var;
+	}
       break;
     case DTYPE_FLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:float_var =

@@ -16,7 +16,7 @@ let lv_in="fin"
 let lv_out="fout"
 
 call channel::open_file("fin","/etc/passwd","r")
-call channel::open_file("fout","passwd.new","w")
+call channel::open_file("fout","./passwd.new","w")
 
 call channel::set_delimiter("fin",":")
 call channel::set_delimiter("fout",":")

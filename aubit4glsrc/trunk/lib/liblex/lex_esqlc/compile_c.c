@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.329 2006-10-08 11:24:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.330 2006-10-14 10:09:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.329 2006-10-08 11:24:10 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.330 2006-10-14 10:09:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -113,7 +113,7 @@ static void pr_nongroup_report_agg_clr (void);
 char *pdtype(int n) ;
 int doing_report_print=0;
 static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
-static void print_returning (void);
+static void print_returning (int from_where);
 char cmodname[256]="";
 //void A4GL_set_clobber(char *c);
 
@@ -3006,9 +3006,10 @@ LEXLIB_print_getfldbuf (char *fields)
 /**
  * Print the C implementation of the returning substatement of CALL statement.
  */
-static void print_returning (void)
+static void print_returning (int from_where)
 {
   int cnt;
+printc("/* pr %d */",from_where);
   if (ibindcnt) {
   	printc ("{ /* print_returning */\n");
   	cnt = LEXLIB_print_bind_definition ('i');
@@ -3116,9 +3117,8 @@ LEXLIB_print_func_call (t_expr_str *fcall)
   A4GL_debug ("via print_func_call in lib");
   t=fcall->expr_type;
   real_print_func_call (fcall);
-
   if (t!=ET_EXPR_BOUND_FCALL) {
-  	print_returning();
+  	print_returning(1);
   }
 }
 
@@ -3325,7 +3325,7 @@ LEXLIB_print_pdf_call (char *a1, struct expr_str_list *args, char *a3)
 {
   A4GL_debug ("via print_pdf_call in lib");
   real_print_pdf_call (a1, args, a3);
-  print_returning();
+  print_returning(2);
 }
 
 
@@ -3375,7 +3375,7 @@ LEXLIB_print_call_shared (t_expr_str_list *expr, char *libfile, char *funcname)
   printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
   print_reset_state_after_call();
-  print_returning();
+  print_returning(3);
   if (doing_a_report) { clr_doing_a_report_call(5); }
 }
 
@@ -3475,6 +3475,7 @@ int sio_id;
   printc("if (_exec_block== %d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
+  printc("A4GL_ensure_current_window_is(_curr_win);");
   printc ("_exec_block = %s;_forminit=0;\n", driver);
   printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
   printc("}");
@@ -3526,12 +3527,13 @@ LEXLIB_print_construct_fl (int byname, char *constr_str, t_field_list *f_list, c
   k = LEXLIB_print_bind_definition ('i');
   ccc = print_constr ();
   sio_id=get_sio_ids("CONSTRUCT");
-  printc ("int _fld_dr= -100;int _exec_block= 0;char *fldname;");
-  printc("char _sio_%d[%d]; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", get_sio_ids("CONSTRUCT"),sizeof (struct s_screenio) + 10,sio_id);
+  printc ("int _fld_dr= -100;int _exec_block= 0;char *_fldname;");
+  printc("char _sio_%d[%d]; char *_curr_win=0; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", get_sio_ids("CONSTRUCT"),sizeof (struct s_screenio) + 10,sio_id);
   printc ("int _forminit=1;\n");
    LEXLIB_print_bind_set_value ('i');
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_exec_block == 0) {\n");
+  printc ("_curr_win=A4GL_get_currwin_name();\n");
   printc ("SET(\"s_screenio\",_sio_%d,\"vars\",ibind);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"novars\",%d);\n", sio_id,ccc);
   printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",%s);\n", sio_id,attr);
@@ -3842,9 +3844,10 @@ LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *att
   ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printcomment ("/* Display array */\n");
   sio_id=get_sio_ids("DISPLAY");
-  printc ("{int _fld_dr;int _exec_block= 0;\nchar _sio_%d[%d];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id,
+  printc ("{int _fld_dr;int _exec_block= 0;\nchar *_curr_win=0;char _sio_%d[%d];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id,
 	  sizeof (struct s_disp_arr) + 10,sio_id);
   cnt = print_arr_bind ('o');
+  printc ("_curr_win=A4GL_get_currwin_name();\n");
   printc ("SET(\"s_disp_arr\",_sio_%d,\"no_arr\",A4GL_get_count());\n",sio_id);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"binding\",obind);\n",sio_id);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"nbind\",%d);\n",sio_id, cnt);
@@ -3880,6 +3883,7 @@ LEXLIB_print_display_array_p2 (void)
   printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
+  printc("A4GL_ensure_current_window_is(_curr_win);");
   printc ("_exec_block=A4GL_disp_arr_v2(&_sio_%d,%s,%s,%s /* attr */ ,%s /*scroll */,_sio_evt);\n", sio_id,l_arrvar, l_srec, l_attr, l_scroll);
 	free(l_arrvar);
 	free(l_srec);
@@ -4553,7 +4557,9 @@ LEXLIB_print_input_2 (char *s)
   printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
+  printc("A4GL_ensure_current_window_is(_curr_win);");
   printc ("_exec_block=%s;_forminit=0;\n", s);
+  
   printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
   printc("}");
 
@@ -4600,7 +4606,7 @@ char *fldlist=0;
   printc ("*/");
   sio_id=get_sio_ids("INPUT");
   printc
-    ("{\nint _fld_dr= -100;\nint _exec_block= 0;\nchar *fldname;\n");
+    ("{\nint _fld_dr= -100;\nint _exec_block= 0;\nchar *_fldname;char *_curr_win;\n");
   ccc = LEXLIB_print_bind_definition ('i');
   printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
   printc("char _inp_io_type='I';");
@@ -4610,8 +4616,8 @@ char *fldlist=0;
   printc ("if (_fld_dr== -100) {\n");
   printc ("/* input by name */");
   LEXLIB_print_bind_set_value ('i');
-  printc
-    ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
+  printc ("_curr_win=A4GL_get_currwin_name();\n");
+  printc ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("if (GET_AS_INT(\"s_screenio\",&_sio_%d,\"currform\")==0) break;\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"vars\",ibind);\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",%s);\n",sio_id, sattr);
@@ -4671,12 +4677,13 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("*/");
   i_defs=atoi(defs);
   printcomment ("/* input */\n");
-  printc ("{int _fld_dr= -100;int _exec_block= 0;\nchar *fldname;\nint _forminit=1;");
+  printc ("{int _fld_dr= -100;int _exec_block= 0;\nchar *_fldname;char *_curr_win; \nint _forminit=1;");
   printc ("char _sio_%d[%d];char _inp_io_type='A';char *_sio_kw_%d=\"s_inp_arr\";\n",sio_id,
 	  sizeof (struct s_inp_arr) + 10,sio_id);
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_exec_block==0) {\n");
+  printc ("_curr_win=A4GL_get_currwin_name();\n");
   if (i_defs) {
   	printc ("SET(\"s_inp_arr\",_sio_%d,\"no_arr\",A4GL_get_count());\n",sio_id);
   } else {
@@ -5322,7 +5329,7 @@ void
 LEXLIB_print_sleep (t_expr_str* expr)
 {
   real_print_expr(expr);
-  printc ("A4GL_sleep_i();\n");
+  printc ("A4GLSQL_set_status(0,0); A4GL_sleep_i();\n");
 }
 
 

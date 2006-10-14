@@ -395,6 +395,10 @@ print_command : PRINT opt_rep_expr_list opt_semi {
 	char wt;
 	doing_a_print=0;
 	print_report_print(0,$<str>3,0);
+	if (!isin_command("REPORT")) {
+                        a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
+                        YYERROR;
+	}
 	wt=get_curr_report_stack_whytype_1();
 	if (strcmp($<str>3,"0")==0) {
 		if (wt=='P'||wt=='p'||wt=='T') { /* Page header or trailer */
@@ -425,12 +429,20 @@ pf_char_or_var:
 
 print_file_command : PRINT_FILE pf_char_or_var opt_semi { 
 	add_feature("PRINT_FILE");
+	if (!isin_command("REPORT")) {
+                        a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
+                        YYERROR;
+	}
 	print_report_print_file($<str>2,$<str>3);
 } ;
 
 
 print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi { 
 	print_expr($<ptr>4);
+	if (!isin_command("REPORT")) {
+                        a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
+                        YYERROR;
+	}
 	print_report_print_img("",$<str>2,$<str>3,$<str>5);
 } 
 ;

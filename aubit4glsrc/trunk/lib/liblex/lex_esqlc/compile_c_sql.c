@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.71 2006-09-27 20:15:34 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.72 2006-10-14 10:09:41 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.71 2006-09-27 20:15:34 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.72 2006-10-14 10:09:41 mikeaubury Exp $";
 #endif
 
 
@@ -547,6 +547,9 @@ void
 LEXLIB_print_declare (char *sa1, char *a2, char *a3, int h1, int h2)
 {
   int a1;
+
+  //A4GL_add_pointer(A4GL_strip_quotes(a3),CURCODE,(void *)1);
+
   if (strlen(sa1)) a1=1; 
   else a1=0;
   printc ("A4GLSQL_declare_cursor(%d+%d,%s,%d,%s);\n}\n", a1, h1, a2, h2, a3);

@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.15 2006-09-13 15:07:41 briantan Exp $
+	 $Id: channel.4gl,v 1.16 2006-10-14 10:09:38 mikeaubury Exp $
 }
 
 {**
@@ -67,6 +67,10 @@ define filename char(512)
 define flag char(1)
 define lv_file_o integer
 define lv_file_i integer
+define lv_err INTEGER
+
+LET lv_err=0
+
 code
 	A4GL_trim(filename);
 	A4GL_trim(handle);
@@ -88,6 +92,7 @@ code
 		} else {
 			lv_file_i=(long)stdin;
 		}
+		if (lv_file_i==0) lv_err++;
 endcode
 	when "w"
 code
@@ -97,6 +102,7 @@ code
 		} else {
 			lv_file_o=(long)stdin;
 		}
+		if (lv_file_o==0) lv_err++;
 endcode
 	when "a"
 code
@@ -106,11 +112,22 @@ code
 		} else {
 			lv_file_o=(long)stdin;
 		}
+		if (lv_file_o==0) lv_err++;
 endcode
 	end case
-	if lv_file_o=0 and lv_file_i=0 then
-		return
-	end if
+code
+
+	if (lv_file_o==0 && lv_file_i==0 ) {
+		A4GL_exitwith("Unable to open file");
+
+		return(0);
+	}
+	if (lv_err) {
+		A4GL_exitwith("Unable to open file");
+		return(0);
+	}
+endcode
+
 
 code
 	{
@@ -183,6 +200,9 @@ endcode
 	end case
 
 	if lv_file_o=0 and lv_file_i=0 then
+code
+A4GLSQL_set_status(-101,0);
+endcode
 		return
 	end if
 
@@ -311,7 +331,9 @@ obind=o;
 
 
 	f=(FILE *)A4GL_find_pointer(handle,CHANNEL_IN);
-	if (f==0) { A4GL_push_int(0); return 1;}
+	if (f==0) { A4GL_push_int(0); 
+			A4GL_exitwith("File is not open");
+		return 1;}
 	if (!fgets(buff,19998,f)) {
 		int a;
 		for (a=0;a<no;a++) {
@@ -398,7 +420,9 @@ obind=o;
 
 
 	f=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
-	if (f==0) { A4GL_push_int(0); return 1;}
+	if (f==0) { A4GL_push_int(0); 
+			A4GL_exitwith("File is not open");
+		return 1;}
 	
 	for (a=0;a<no;a++) {
 		A4GL_push_param(obind[a].ptr,obind[a].dtype+ENCODE_SIZE(obind[a].size));
@@ -451,16 +475,18 @@ ds[1]=0;
 ds[0]=delim_c;
 
 strcpy(ptr,"");
-for (a=1;a<n;a++) {
-	if (a>=2) strcat(ptr,ds);
-	strcat(ptr,px[a]);
-}
+
+	for (a=1;a<n;a++) {
+		if (a>=2) strcat(ptr,ds);
+		strcat(ptr,px[a]);
+	}
 
 	f=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
 	if (f==0) { 
 			for (a=0;a<n;a++) free(px[a]);
 			free(px);
 			free(ptr);
+			A4GL_exitwith("File is not open");
 			return 0;
 	}
 	fprintf(f,"%s\n",ptr);

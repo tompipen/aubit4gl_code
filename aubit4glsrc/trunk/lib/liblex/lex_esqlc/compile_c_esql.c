@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.152 2006-09-27 20:15:34 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.153 2006-10-14 10:09:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.152 2006-09-27 20:15:34 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.153 2006-10-14 10:09:41 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -520,6 +520,11 @@ LEXLIB_print_put (char *xcname, char *putvals)
     free (cname);
   cname = strdup (A4GL_strip_quotes (xcname));
 
+  if (!A4GL_find_pointer(cname,CURCODE)) {
+		set_yytext(cname);
+		a4gl_yyerror("Cursor has not been previously defined");
+		return ;
+  }
 
   if (A4GLSQLCV_check_requirement ("NO_PUT"))
     {
@@ -988,6 +993,13 @@ LEXLIB_print_open_cursor (char *xcname, int has_using)
     free (cname);
   cname = strdup (A4GL_strip_quotes (xcname));
 
+  if (!A4GL_find_pointer(cname,CURCODE)) {
+		set_yytext(cname);
+		a4gl_yyerror("Cursor has not been previously defined");
+		return ;
+  }
+
+
   if (A4GLSQLCV_check_requirement ("EMULATE_INSERT_CURSOR"))
     {
       char c;
@@ -1173,6 +1185,12 @@ LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
 
   strcpy (sqcname, A4GL_strip_quotes (fp->cname));
   set_suppress_lines ();
+
+  if (!A4GL_find_pointer(sqcname,CURCODE)) {
+		set_yytext(sqcname);
+		a4gl_yyerror("Cursor has not been previously defined");
+		return ;
+  }
 
   ll = -2;
   if (e)
@@ -1532,6 +1550,8 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
     free (cname);
   set_suppress_lines ();
   cname = strdup (A4GL_strip_quotes (a3));
+
+  A4GL_add_pointer(cname,CURCODE,(void *) 1);
 
 
   // Are we trying to emulate an insert cursor ?

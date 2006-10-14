@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.144 2006-10-12 06:13:17 mikeaubury Exp $
+# $Id: ioform.c,v 1.145 2006-10-14 10:09:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.144 2006-10-12 06:13:17 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.145 2006-10-14 10:09:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -1368,7 +1368,7 @@ A4GL_set_fields_sio (struct s_screenio *sio)
   if (formdets == 0)
     {
       A4GL_exitwith ("No form");
-      return 0;
+      return ;
     }
 
   nofields = sio->nfields;
@@ -3373,6 +3373,7 @@ A4GL_int_form_driver (FORM * form, int a)
   if (f)
     {
       strcpy (buff2, field_buffer (f, 0));
+	A4GL_debug("field buffer returns %s\n",buff2);
     }
   else
     {
@@ -3394,12 +3395,15 @@ A4GL_int_form_driver (FORM * form, int a)
   A4GL_debug ("Buff2 now = %s", buff2);
 
   if (a != REQ_VALIDATION) {
+		A4GL_debug("REQ_VALIDATION");
 	  	A4GL_int_form_driver (form, REQ_VALIDATION);
+		A4GL_debug("DONE REQ_VALIDATION");
   }
 
   if (f)
     {
       strcpy (buff2, field_buffer (f, 0));
+	A4GL_debug("field buffer now returns %s\n",buff2);
     }
   else
     {

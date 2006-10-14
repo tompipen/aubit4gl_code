@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.96 2006-09-15 13:59:36 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.97 2006-10-14 10:09:35 mikeaubury Exp $
 */
 
 /**
@@ -294,8 +294,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 
 
 
-#define CHECK_RETURN_AND_POP(x) if (_retvars!= x) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);A4GL_pop_params(ibind,x);}
-#define CHECK_NO_RETURN if (_retvars!= 0) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {A4GLSQL_set_status(0,0);}
+#define CHECK_RETURN_AND_POP(x) if (_retvars!= x) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {/* A4GLSQL_set_status(0,0); */ aclfgli_clr_err_flg(); A4GL_pop_params(ibind,x);}
+#define CHECK_NO_RETURN if (_retvars!= 0) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else { aclfgli_clr_err_flg(); /* A4GLSQL_set_status(0,0); */ }
 
 #define CHK_FOR_ERR (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0))
 #define ERR_CHK_WHEN_NOT_FOUND if ( CHK_FOR_ERR && (a4gl_sqlca.sqlcode==100))
@@ -354,11 +354,13 @@ int a_isprint(int a);
   int aclfgl_year (int nargs);
   int aclfgl_weekday (int nargs);
 
+  int A4GL_get_count (void);
 
   int aclfgl_hex (int nargs);
   int aclfgl_abs (int nargs);
   int aclfgl_root (int nargs);
   int aclfgl_sqrt (int nargs);
+void A4GL_ensure_current_window_is(char *s) ;
 
   int A4GL_gen_field_chars (void ***field_list, void *formdets, ...);
   /* int A4GL_set_fields (void *sio); */

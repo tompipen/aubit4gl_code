@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.133 2006-09-15 08:57:44 mikeaubury Exp $
+# $Id: newpanels.c,v 1.134 2006-10-14 10:09:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.133 2006-09-15 08:57:44 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.134 2006-10-14 10:09:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -646,7 +646,7 @@ int
   WINDOW *w;
   A4GL_debug ("Current window....");
   A4GL_debug ("currwinno=%d currwin=%p", currwinno, currwin);
-
+  A4GLSQL_set_status(0,0);
   A4GL_chkwin ();
 #ifdef DEBUG
   {
@@ -1024,6 +1024,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
   int rows, cols;
   char buff[80];
   A4GL_chkwin ();
+  A4GLSQL_set_status(0,0);
   A4GL_debug ("display_form_new_win - name=%s got errorline as %d\n", name,f->form_details.error_line);
   A4GL_chkwin();
   scale_form (f->form, &rows, &cols);
@@ -1896,6 +1897,7 @@ void *
 {
   WINDOW *win;
   int x, y, w, h;
+  A4GLSQL_set_status(0,0);
   w = A4GL_pop_int ();
   h = A4GL_pop_int ();
   x = A4GL_pop_int ();
@@ -1941,6 +1943,7 @@ int
   char name[256];
   struct s_form_dets *form;
   WINDOW *win;
+  A4GLSQL_set_status(0,0);
   strcpy(name,namet);
   A4GL_trim(name);
   A4GL_debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
@@ -2021,6 +2024,7 @@ int
   char buff[256];
   struct s_form_dets *form;
 
+  A4GLSQL_set_status(0,0);
 
   A4GL_chkwin();
   s = A4GL_char_pop ();

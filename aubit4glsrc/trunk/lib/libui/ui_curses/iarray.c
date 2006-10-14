@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.115 2006-09-18 08:42:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.116 2006-10-14 10:09:47 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.115 2006-09-18 08:42:29 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.116 2006-10-14 10:09:47 mikeaubury Exp $";
 #endif
 
 /**
@@ -622,7 +622,6 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
   FORM *mform;
   struct struct_scr_field *fprop;
 
-
   arr->scr_dim = arr->srec->dim;
   if (curr_arr_inp != arr || curr_arr_inp)
     {
@@ -638,9 +637,9 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
     A4GL_debug ("Currform=%p (s_form_dets)", form);
   }
 #endif
+
   if (form != UILIB_A4GL_get_curr_form (0))
     {
-
       A4GL_make_window_with_this_form_current (form);
     }
 
@@ -3028,6 +3027,11 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 
   struct struct_scr_field *fprop;
   A4GL_debug ("In disp_fields");
+
+  if (  arr->currform != UILIB_A4GL_get_curr_form (0))
+    {
+      A4GL_make_window_with_this_form_current (arr->currform);
+    }
   formdets = UILIB_A4GL_get_curr_form (1);
 
   flg = 0;

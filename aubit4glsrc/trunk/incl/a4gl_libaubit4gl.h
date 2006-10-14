@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.251 2006-10-12 06:13:13 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.252 2006-10-14 10:09:36 mikeaubury Exp $
 #
 */
 
@@ -1394,7 +1394,7 @@ void A4GL_debug(char *s);
   void A4GL_include_builtin_in_exe (void);
   void A4GL_set_scr_line (int a);
   void A4GL_set_arr_curr (int a);
-  int A4GL_get_count (void);
+  //int A4GL_get_count (void);
   void A4GL_set_arr_count (int a);
   int aclfgl_dbms_dialect (int n);
   void aclfgli_extend (void);

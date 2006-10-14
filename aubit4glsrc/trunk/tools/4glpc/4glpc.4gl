@@ -1116,7 +1116,11 @@ if mv_verbose>4 then
 	display "Status : ",p_status
 end if
 
-let lv_errsize=file_size(mv_errfile)
+IF file_exists(mv_errfile) THEN
+	let lv_errsize=file_size(mv_errfile)
+ELSE
+	LET lv_errsize=0
+END IF
 
 if lv_errsize<0 and p_status=0 then
 	if mv_verbose>4 then
@@ -1184,16 +1188,13 @@ if mv_makecompile then
 end if
 
 if 0 then
-
 let mv_errfile=lv_base clipped,get_ext("ERR")
-
 let mv_warnfile=lv_base clipped,get_ext("WARN")
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped ," 2> ",mv_errfile
+let lv_runstr=mv_preprocess clipped," ",mv_preprocess_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " ",lv_fname clipped ," 2> ",mv_errfile
 else
-
 let mv_warnfile=lv_base clipped,get_ext("WARN")
 let mv_errfile=lv_base clipped,get_ext("ERR")
-let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",lv_fname clipped ," 2> ",mv_errfile
+let lv_runstr=mv_preprocess clipped," ",mv_preprocess_opts clipped," ",lv_fname clipped ," 2> ",mv_errfile
 end if
 
 if mv_verbose>=2 then
@@ -1518,6 +1519,15 @@ if (f!=0) {
 endcode
 end function
 
+function file_exists(s)
+define s char(512)
+define a integer
+{
+A4GL_trim(s);
+a=A4GL_file_exists(s);
+}
+return a
+end function
 
 function file_size(s)
 define s char(512)

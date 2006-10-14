@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.122 2006-09-15 11:15:45 mikeaubury Exp $
+# $Id: conv.c,v 1.123 2006-10-14 10:09:39 mikeaubury Exp $
 #
 */
 
@@ -1994,7 +1994,7 @@ A4GL_itoc (void *aa, void *zz, int size)
   short local_a;
   int local_a_int;
   char *z;
-  char buff[356];
+  char *buff;
   local_a=*(short *)aa;
   local_a_int=local_a;
   z = (char *) zz;
@@ -2005,7 +2005,7 @@ A4GL_itoc (void *aa, void *zz, int size)
 	return 1;
   }
 
-
+  buff=malloc(size+20);
   if (A4GL_digittoc (&local_a_int, z, fmt, DTYPE_SMINT, size))
     {
 #ifdef DEBUG
@@ -2024,6 +2024,7 @@ A4GL_itoc (void *aa, void *zz, int size)
     {
       strcpy (z, buff);
     }
+  free(buff);
 
   return 1;
 }
@@ -2127,9 +2128,12 @@ A4GL_ltoc (void *aa, void *zz, int size)
   long *a;
   char *z;
   char fmt[10] = "ld";
-  char buff[256];
+  char *buff;
   z = (char *) zz;
   a = (long *) aa;
+
+  buff=malloc(size+10);
+
 #ifdef DEBUG
   {
     A4GL_debug ("Size=%d", size);
@@ -2151,6 +2155,7 @@ A4GL_ltoc (void *aa, void *zz, int size)
       strcpy (z, buff);
       A4GL_pad_string (z, size);
     }
+  free(buff);
   return 1;
 }
 
@@ -2262,10 +2267,11 @@ A4GL_ftoc (void *aa, void *zz, int c)
   double *a;
   char *z;
   char fmt[10] = ".2lf";
-  char buff[256];
+  char *buff;
   a = (double *) aa;
   z = (char *) zz;
 
+   buff=malloc(c+20);
   strcpy (buff, "******************************************");
   if (A4GL_digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
     {
@@ -2300,7 +2306,7 @@ A4GL_ftoc (void *aa, void *zz, int c)
       strcpy (z, buff);
     }
 
-
+  free(buff);
   return 1;
 }
 
@@ -2404,9 +2410,10 @@ A4GL_sftoc (void *aa, void *zz, int c)
   float *a;
   char *z;
   char fmt[10] = ".2f";
-  char buff[256];
+  char *buff;
   a = (float *) aa;
   z = (char *) zz;
+  buff=malloc(c+20);
   strcpy (buff, "******************************************");
   if (A4GL_digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
     {
