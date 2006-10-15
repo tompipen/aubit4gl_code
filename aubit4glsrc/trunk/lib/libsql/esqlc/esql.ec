@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.162 2006-10-14 10:09:43 mikeaubury Exp $
+# $Id: esql.ec,v 1.163 2006-10-15 11:31:54 mikeaubury Exp $
 #
 */
 
@@ -179,7 +179,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.162 2006-10-14 10:09:43 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.163 2006-10-15 11:31:54 mikeaubury Exp $";
 #endif
 
 
@@ -380,7 +380,7 @@ getGlobalStatementName (void)
   static char statementName[10];
 
   statementCount++;
-  sprintf (statementName, "a4gl_st_%d", statementCount);
+  SPRINTF1 (statementName, "a4gl_st_%d", statementCount);
   return statementName;
 }
 
@@ -775,15 +775,12 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
                         ndig_s=size>>8;
                         s=(size>>4)&0xf;
                         e=(size&0xf);
-                        //printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
                         infx->in_qual=TU_IENCODE(ndig_s,tr[s],tr[e]);
                 }
         incvasc(ptr,infx);
 
         // Debugging stuff only
                 A4GL_debug("Copy interval in - aubit=%s\n",ptr);
-                //printf("Copy interval in - aubit=%s\n",ptr); intoasc(infx,buff);
-                //printf("                Informix=%s\n",buff);
                 A4GL_debug("                Informix=%s\n",buff);
         // End of Debugging stuff only
 
@@ -989,11 +986,8 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 	EXEC SQL FREE :statementName;
   }
 
-//printf("Add : %s\n",sid->statementName);
   A4GLSQL_add_prepare(sid->statementName,sid);
-  //printf("Prepare : %s from %s",statementName,statementText);
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
-  //printf("Prepare : %s from %s",statementName,statementText);
   EXEC SQL PREPARE:statementName FROM:statementText;
 
   copy_sqlca_Stuff(1);
@@ -1055,23 +1049,62 @@ getIfmxDataType (int dataType)
 
 
 
-void A4GL_sql_copy_blob(loc_t *infx,  void *a4gl,short * p_indicat,int size,char mode) {
+void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode) {
 //
 short indicat=0;
 
-printf("copy blob\n"); fflush(stdout);
-return;
+
         if (mode=='i') {
                 if (p_indicat) *p_indicat=0;
                 if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
                 if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl)) {rsetnull(CLOCATORTYPE,(void *)infx);return;}
-                //*infx=*a4gl;
+
+                infx->loc_loctype = -1;
+                if (a4gl->where=='M') {
+                        infx->loc_loctype = LOCMEMORY;
+                        infx->loc_bufsize = a4gl->memsize;
+                        infx->loc_oflags = 0;
+                        infx->loc_indicator = 0;   /* not a null blob */
+                        infx->loc_buffer = (char *) a4gl->ptr;
+                }
+
+                if (a4gl->where=='F') {
+                        infx->loc_loctype = LOCFNAME;   /* blob is named file */
+                        infx->loc_fname = a4gl->filename;  /* here is its name */
+                        infx->loc_oflags = LOC_WONLY;   /* contents are to be read by engine */
+                        infx->loc_size = -1;            /* read to end of file */
+                        infx->loc_indicator = 0;   	/* not a null blob */
+                        infx->loc_buffer = (char *) NULL;
+                }
+		return;
         }
+
+
         if (mode=='o') {
                 if (p_indicat) indicat=*p_indicat;
-                if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;}
-                //*a4gl=*infx;
+                if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { 
+		A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
+		}
+		if (infx->loc_indicator==-1) {
+			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
+		}
+                if (infx->loc_loctype==LOCMEMORY) {
+                        a4gl->where = 'M';
+                        a4gl->memsize=  infx->loc_bufsize ;
+                        a4gl->ptr= infx->loc_buffer;
+                }
+
+                if (a4gl->where=='F') {
+                        a4gl->where = 'F';
+                        a4gl->memsize=0;
+                        a4gl->ptr= 0;
+                        strcpy(a4gl->filename, infx->loc_fname);
+                }
+		return;
+
         }
+
+	A4GL_assertion(1,"copy_blob not implemented");
 
 }
 
@@ -1155,7 +1188,7 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
 
 
 
-  if (dataType == 2)
+  if (dataType == DTYPE_INT)
     {
       A4GL_debug ("Value = %d\n", *(long *) bind[idx].ptr);
     }
@@ -1298,12 +1331,12 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
 
     case DTYPE_TEXT:
       A4GL_sql_copy_blob (&byte_var, bind[idx].ptr, 0, bind[idx].size, 'i');
-    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:interval_var;
+    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:byte_var;
       break;
 
     case DTYPE_BYTE:
       A4GL_sql_copy_blob (&byte_var, bind[idx].ptr, 0, bind[idx].size, 'i');
-    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:interval_var;
+    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:byte_var;
       break;
     default:
       A4GL_exitwith ("Invalid data type\n");
@@ -1436,7 +1469,6 @@ int dstype;
 
 
 
-  //printf("Bind output.... %d %d\n",bind[idx].dtype, dataType);
 
 
 
@@ -1452,7 +1484,6 @@ int dstype;
 
   EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:indicator = INDICATOR,:dslength = LENGTH,:dstype=TYPE;
   
-//printf("Bindoutput value %d %d\n",index,type);
 
 
 	sqlca.sqlwarn.sqlwarn0=buff[0];
@@ -1480,7 +1511,6 @@ int dstype;
 
 
 
-//printf("not null\n");
 
 
   A4GL_debug ("MJAMJA datatype : %d", dataType);
@@ -1684,6 +1714,23 @@ int dstype;
 
     case DTYPE_TEXT:
        EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:byte_var = DATA;
+	ei=sid->extra_info;
+	if (ei) {
+		//struct fgl_int_loc *bv;
+		for (cnt=0;cnt<ei->nblobs;cnt++) {
+			if (ei->raw_blobs[cnt].f==bind[idx].ptr) {
+				// We've got out 4gl variable...
+				if (byte_var.loc_loctype==LOCMEMORY) {
+					char *x;
+					((fglbyte *) ei->raw_blobs[cnt].f)->memsize=byte_var.loc_bufsize;
+					x=acl_malloc2(byte_var.loc_bufsize+1);
+					memcpy(x,byte_var.loc_buffer,byte_var.loc_bufsize);
+					x[byte_var.loc_bufsize]=0;
+					((fglbyte *)ei->raw_blobs[cnt].f)->ptr=x;
+				}
+			}
+		}
+	}
 
        if (isSqlError ())
 	  return 1;
@@ -1803,7 +1850,7 @@ getDescriptorName (char *statementName, char bindType)
 {
   char *descriptorName;
   descriptorName = acl_malloc2 (strlen (statementName) + 20);
-  sprintf (descriptorName, "%s_%cbind", statementName, bindType);
+  SPRINTF2 (descriptorName, "%s_%cbind", statementName, bindType);
   return descriptorName;
 }
 
@@ -1937,7 +1984,6 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 
 	// Copy into a Blob from a piece of SQL...
 	n=nv+1;
-
 	if (dir=='o') {
 	       	i->loc_loctype = -1;
 		if (p->where=='M') {
@@ -1970,7 +2016,6 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 
 	if (dir=='i') {
 		// 
-		printf("Not implemented yet....\n");
 	
 	}
 
@@ -1982,7 +2027,6 @@ return 0;
 static void free_blobs(struct s_extra_info *e) {
 	e->nblobs=0;
 	if (e->raw_blobs)	free(e->raw_blobs);
-	//printf("...\n");
 }
 
 /**
@@ -2295,7 +2339,7 @@ sid=vsid;
 
   A4GLSQL_set_status (sqlca.sqlcode, 1);
 
-  sprintf(buff,"%p",sid);
+  SPRINTF1(buff,"%p",sid);
   if (singleton) {
 	A4GLSQL_free_cursor(statementName);
   	//EXEC SQL FREE :statementName;
@@ -2437,7 +2481,7 @@ A4GL_debug("ALl ok - copy 1");
     }
 
   statementName = sid->statementName;
-  sprintf(buff,"%p",sid);
+  SPRINTF1(buff,"%p",sid);
 
   if (singleton) {
 	A4GL_debug("Free : %s",statementName);
@@ -2555,7 +2599,6 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
    cursorIdentification = acl_malloc2 (sizeof (struct s_cid));
    cursorIdentification->statement = sid;
   
-  //printf("declare\n");
   statementName = sid->statementName;
 
   A4GL_debug ("declare obind count=%d", sid->no);
@@ -2588,7 +2631,6 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   A4GL_add_pointer (cursname, CURCODE, cursorIdentification);
   if (processPreStatementBinds (sid) == 1)
 	 return (struct s_cid *) 0;
-  //printf("'%s' '%s'\n",cursname,cursorName);
   return cursorIdentification;
 }
 
@@ -2666,11 +2708,9 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s,int ni,void *vibind)
   EXEC SQL END DECLARE SECTION;
 
 
-//printf("Open\n");
   cursorIdentification = A4GL_find_pointer (s, CURCODE);
 
   if (cursorIdentification==0) {
-//printf("Open - nope\n");
 		A4GL_sql_exitwith("Cursor not found");
 		return 1;
 	}
@@ -2742,7 +2782,6 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s,int ni,void *vibind)
 		sid->ibind=save_ibind;
 	}
 
-//printf("Opened\n");
   if (isSqlError ())
     return 1;
   return 0;
@@ -3071,9 +3110,9 @@ dataType=p_datatype;
       if (strlen(char_var)) {
       	A4GL_trim (char_var);
 	if (strlen(char_var)) {
-      		fprintf (unloadFile, "%s", char_var);
+      		FPRINTF (unloadFile, "%s", char_var);
 	} else {
-      		fprintf (unloadFile, " ");
+      		FPRINTF (unloadFile, " ");
 	}
       }
 	A4GL_debug("Added a string");
@@ -3086,7 +3125,7 @@ dataType=p_datatype;
 	  rc = 1;
 	  break;
 	}
-      fprintf (unloadFile, "%d", smint_var);
+      FPRINTF (unloadFile, "%d", smint_var);
       break;
     case DTYPE_SERIAL:
     case DTYPE_INT:
@@ -3098,7 +3137,7 @@ dataType=p_datatype;
 	  rc = 1;
 	  break;
 	}
-      fprintf (unloadFile, "%ld", int_var);
+      FPRINTF (unloadFile, "%ld", int_var);
       break;
     case DTYPE_FLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:float_var =
@@ -3108,7 +3147,7 @@ dataType=p_datatype;
 	  rc = 1;
 	  break;
 	}
-      fprintf (unloadFile, "%f", float_var);
+      FPRINTF (unloadFile, "%f", float_var);
       break;
     case DTYPE_SMFLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smfloat_var =
@@ -3118,7 +3157,7 @@ dataType=p_datatype;
 	  rc = 1;
 	  break;
 	}
-      fprintf (unloadFile, "%f", smfloat_var);
+      FPRINTF (unloadFile, "%f", smfloat_var);
       break;
     case DTYPE_DECIMAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:decimal_var =
@@ -3139,7 +3178,7 @@ dataType=p_datatype;
 	  return 1;
 	}
 	A4GL_trim(char_var);
-      fprintf (unloadFile, "%s", char_var);
+      FPRINTF (unloadFile, "%s", char_var);
       //free (fgl_decimal);
       break;
 
@@ -3156,7 +3195,7 @@ dataType=p_datatype;
       char_var = tmpDate; //malloc (sizeof (char) * 10);
       A4GL_dtos (&date_var, char_var, 10);
 	A4GL_trim(char_var);
-      fprintf (unloadFile, "%s", char_var);
+      FPRINTF (unloadFile, "%s", char_var);
 
       //free (char_var);
       break;
@@ -3175,7 +3214,7 @@ dataType=p_datatype;
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
-      fprintf (unloadFile, "%s", char_var);
+      FPRINTF (unloadFile, "%s", char_var);
 	A4GL_trim(char_var);
       //free (fgl_money);
       break;
@@ -3193,7 +3232,7 @@ dataType=p_datatype;
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
-      fprintf (unloadFile, "%s", fgl_dtime->data);
+      FPRINTF (unloadFile, "%s", fgl_dtime->data);
       //free (fgl_dtime);
       break;
     case DTYPE_INTERVAL:
@@ -3211,7 +3250,7 @@ dataType=p_datatype;
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
-      fprintf (unloadFile, "%s", fgl_interval->data);
+      FPRINTF (unloadFile, "%s", fgl_interval->data);
       //free (fgl_interval);
       break;
     case DTYPE_BYTE:
@@ -3318,7 +3357,7 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      fprintf (unloadFile, "%d", smint_var);
+      FPRINTF (unloadFile, "%d", smint_var);
       break;
 
     case DTYPE_SERIAL:
@@ -3330,7 +3369,7 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      fprintf (unloadFile, "%ld", int_var);
+      FPRINTF (unloadFile, "%ld", int_var);
       break;
     case DTYPE_FLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: float_var =
@@ -3341,7 +3380,7 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      fprintf (unloadFile, "%f", float_var);
+      FPRINTF (unloadFile, "%f", float_var);
       break;
     case DTYPE_SMFLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: smfloat_var =
@@ -3352,7 +3391,7 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      fprintf (unloadFile, "%f", smfloat_var);
+      FPRINTF (unloadFile, "%f", smfloat_var);
       break;
     case DTYPE_DECIMAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: decimal_var =
@@ -3515,7 +3554,6 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
       return;			/* return 1; */
     }
 
-  //printf("Buffer : %d\n",BUFSIZ);
   setbuf(unloadFile, unloadBuffer);
 
   A4GL_debug("prepare : %s",strSql);
@@ -3830,7 +3868,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
   //int MaxColumns = 1024;		//we will be able to process tables with maximum 1024 columns
   EXEC SQL END DECLARE SECTION;
 
-  sprintf (strSelect, "select * from %s\n", tabname);
+  SPRINTF1 (strSelect, "select * from %s\n", tabname);
   A4GL_debug ("strSelect : %s\n", strSelect);
   EXEC SQL PREPARE stReadAllColumns FROM:strSelect;
   A4GL_debug("sqlca.sqlcode=%d\n",sqlca.sqlcode);
@@ -4044,7 +4082,7 @@ getSQLDataType (char *connName, char *tabname, char *colname,
   int length;
   EXEC SQL END DECLARE SECTION;
 
-  sprintf (strSelect, "select %s from %s", colname, tabname);
+  SPRINTF2 (strSelect, "select %s from %s", colname, tabname);
   A4GL_debug ("SQL = %s", strSelect);
   EXEC SQL PREPARE stReadColumns FROM:strSelect;
   if (isSqlError ())
@@ -4109,7 +4147,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *
   int length;
   EXEC SQL END DECLARE SECTION;
 
-  sprintf (strSelect, "select %s.%s from %s", tabname, colname, tabname);
+  SPRINTF3 (strSelect, "select %s.%s from %s", tabname, colname, tabname);
   EXEC SQL PREPARE stXReadColumns FROM:strSelect;
   if (isSqlError ())
     {
@@ -4257,15 +4295,15 @@ fillColumnsArray (char *tableName, int max, char *colArray,
 	    {
 
 	    case COLUMN_SIZE:
-	      sprintf (&array2[i * (sizeArray2 + 1)], "%d", size);
+	      SPRINTF1 (&array2[i * (sizeArray2 + 1)], "%d", size);
 	      break;
 
 	    case DATA_TYPE:
-	      sprintf (&array2[i * (sizeArray2 + 1)], "%d", dtype);
+	      SPRINTF1 (&array2[i * (sizeArray2 + 1)], "%d", dtype);
 	      break;
 
 	    case COLUMN_DESCRIPTION:
-	      sprintf (&array2[i * (sizeArray2 + 1)], "%d(%d)", dtype,size);
+	      SPRINTF2 (&array2[i * (sizeArray2 + 1)], "%d(%d)", dtype,size);
 	      break;
 
 
@@ -4524,7 +4562,7 @@ cptr=acl_getenv("A4GL_SYSCOL_VAL");
 if (cptr==0) return 0;
 if (strlen(cptr)==0) return 0;
 if (strcmp(cptr,"NONE")==0) return 0;
-sprintf(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
+SPRINTF3(buff,"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
 cptr ,tabname,colname);
 
 A4GL_debug("buff=%s",buff);
@@ -4560,7 +4598,7 @@ cptr=acl_getenv("A4GL_SYSCOL_VAL");
 if (cptr==0) return 0;
 if (strlen(cptr)==0) return 0;
 if (strcmp(cptr,"NONE")==0) return 0;
-sprintf(buff,"select attrval from %s where attrname='%s' and tabname='%s' and colname='%s'",
+SPRINTF4(buff,"select attrval from %s where attrname='%s' and tabname='%s' and colname='%s'",
 cptr ,typ,tabname,colname);
 A4GL_debug("buff=%s",buff);
 EXEC SQL PREPARE p_get_val2 FROM :buff;
@@ -4619,7 +4657,7 @@ char* A4GLSQLLIB_A4GLSQL_get_errmsg(int a) {
 static char lv_err1[512];
 static char lv_err2[512];
 rgetmsg(a,lv_err1,sizeof(lv_err1));
-sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
+SPRINTF1(lv_err2,lv_err1,sqlca.sqlerrm);
 A4GL_trim(lv_err2);
 return lv_err2;
 }
@@ -4777,7 +4815,6 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   struct BINDING *ibind;
   ibind = vibind;
 A4GL_debug("unload...");
-  //printf("UNLOAD KAGEL STYLE\n");
   //if (nd) {
 	//for (i=0;i<nd;i++) {
 		//if (bufary) free(bufary[i]);
@@ -5188,26 +5225,26 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	  switch (col->sqltype)
 	    {
 	    case CFLOATTYPE:
-	      flen = sprintf (string, "%f", (double) *(float *) ptr);
+	      flen = SPRINTF1 (string, "%f", (double) *(float *) ptr);
 	      break;
 
 	    case CDOUBLETYPE:
-	      flen = sprintf (string, "%f", *(double *) ptr);
+	      flen = SPRINTF1 (string, "%f", *(double *) ptr);
 	      break;
 
 	    case CDECIMALTYPE:
 	      dectoasc ((dec_t *) ptr, tstring, 1025, -1);
 	      strip (tstring, 1024);
-	      flen = sprintf (string, "%s", tstring);
+	      flen = SPRINTF1 (string, "%s", tstring);
 	      break;
 
 	    case CLONGTYPE:
 	    case CINTTYPE:
-	      flen = sprintf (string, "%ld", *(long *) ptr);
+	      flen = SPRINTF1 (string, "%ld", *(long *) ptr);
 	      break;
 
 	    case CSHORTTYPE:
-	      flen = sprintf (string, "%hd", *(short *) ptr);
+	      flen = SPRINTF1 (string, "%hd", *(short *) ptr);
 	      break;
 
 	    case CFIXCHARTYPE:
@@ -5224,17 +5261,17 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 
 	    case CDATETYPE:
 	      rdatestr (*(long *)ptr, tstring);
-	      flen = sprintf (string, "%s", tstring);
+	      flen = SPRINTF1 (string, "%s", tstring);
 	      break;
 
 	    case CDTIMETYPE:
 	      dttoasc ((dtime_t *) ptr, tstring);
-	      flen = sprintf (string, "%s", tstring);
+	      flen = SPRINTF1 (string, "%s", tstring);
 	      break;
 
 	    case CINVTYPE:
 	      intoasc ((intrvl_t *) ptr, tstring);
-	      flen = sprintf (string, "%s", tstring);
+	      flen = SPRINTF1 (string, "%s", tstring);
 	      break;
 
 	    case CLOCATORTYPE:
@@ -5267,14 +5304,14 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	}
 
 
-      if (fprintf (outputfile, "%s%s", string, delim) <= 0)
+      if (FPRINTF (outputfile, "%s%s", string, delim) <= 0)
 	{
 	A4GL_exitwith("Internal error"); return 0;
 	}
 
       slen += flen + 1;
     }
-  slen += fprintf (outputfile, "\n");
+  slen += FPRINTF (outputfile, "\n");
   return 1;
 }
 

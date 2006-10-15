@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.48 2006-09-19 13:20:29 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.49 2006-10-15 11:31:51 mikeaubury Exp $
 #
 */
 
@@ -88,6 +88,10 @@
 
 #ifndef DIALECTED
 	#error "No dialect specified"
+#endif
+
+#ifndef DIALECT_INFORMIX
+#define int4 long
 #endif
 
 void ESQLAPI_A4GL_connect_db(char *dbname) {
@@ -549,9 +553,9 @@ short  mdy[3];
 int mdy_i[3];
 long orig_date;
 
-
 	A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	if (mode=='i') {
+		int4 infx_i;
 		if (p_indicat) *p_indicat=0;
 			if (A4GL_isnull(DTYPE_DATE,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);A4GL_debug("COPY IN NULL DATE");return;}
@@ -560,7 +564,8 @@ long orig_date;
 		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
 		mdy[2]=mdy_i[2]; // That informix is expecting
 		A4GL_debug("copy_date : mode=i - %d %d %d",mdy[0],mdy[1],mdy[2]);
-		rmdyjul(mdy,infx); // Set the informix one
+		rmdyjul(mdy,&infx_i); // Set the informix one
+		*infx=infx_i;
 	}
 
 	if (mode=='o') {
@@ -634,7 +639,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-2) return;
 		if (indicat==-1||risnull(CLONGTYPE,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
-		if ((*infx) & 0xffffffff != (*infx) ) {
+		if (((*infx) & 0xffffffff) != (*infx) ) {
 			A4GL_debug("BIG INT ? %ld\n",(*infx));
 		}
 		*a4gl=(*infx) ;  // & 0xffffffff;
@@ -666,15 +671,99 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	}
 }
 
-void 
-ESQLAPI_A4GL_copy_blob_byte(double *infx,double *a4gl,short *p_indicat,int size,char mode)  {
-A4GL_assertion(1,"copy_blob_byte not implemented");
+
+#ifndef DIALECT_INFORMIX
+void ESQLAPI_A4GL_copy_blob_byte(void *infx,struct fgl_int_loc  *a4gl,short *p_indicat,int size,char mode)  {
+	A4GL_assertion(1,"copy_blob_byte not implemented");
+}
+void ESQLAPI_A4GL_copy_blob_text(void *infx,struct fgl_int_loc  *a4gl,short *p_indicat,int size,char mode)  {
+	A4GL_assertion(1,"copy_blob_text not implemented");
 }
 
-void 
-ESQLAPI_A4GL_copy_blob_text(double *infx,double *a4gl,short *p_indicat,int size,char mode)  {
-A4GL_assertion(1,"copy_blob_text not implemented");
+#else
+
+#include "locator.h"
+
+// There are the same for now - so only write one...
+#define ESQLAPI_A4GL_copy_blob_byte ESQLAPI_A4GL_copy_blob
+#define ESQLAPI_A4GL_copy_blob_text ESQLAPI_A4GL_copy_blob
+
+void ESQLAPI_A4GL_init_out_text (void *v_a4gl,void * v_infx) {
+struct fgl_int_loc *a4gl;
+loc_t *infx;
+infx=v_infx;
+a4gl=v_a4gl;
+
+	
+                if (a4gl->where=='M') {
+                        infx->loc_loctype = LOCMEMORY;
+                        infx->loc_bufsize = a4gl->memsize;
+                        infx->loc_oflags = 0;
+                        infx->loc_indicator = 0;   /* not a null blob */
+                        infx->loc_buffer = (char *) a4gl->ptr;
+                }
+
+                if (a4gl->where=='F') {
+                        infx->loc_loctype = LOCFNAME;   /* blob is named file */
+                        infx->loc_fname = a4gl->filename;  /* here is its name */
+                        infx->loc_oflags = LOC_WONLY;   /* contents are to be read by engine */
+                        infx->loc_size = -1;            /* read to end of file */
+                        infx->loc_indicator = 0;        /* not a null blob */
+                        infx->loc_buffer = (char *) NULL;
+                }
 }
+
+
+void 
+ESQLAPI_A4GL_copy_blob(loc_t *infx,struct fgl_int_loc *a4gl,short *p_indicat,int size,char mode)  {
+short indicat=0;
+
+
+	if (mode=='i') {
+		if (p_indicat) *p_indicat=0;
+		if (A4GL_isnull(DTYPE_TEXT,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+		if (A4GL_isnull(DTYPE_TEXT,(void *)a4gl)) {rsetnull(CLOCATORTYPE,(void *)infx);return;}
+
+                if (a4gl->where=='M') {
+                        infx->loc_loctype = LOCMEMORY;
+                        infx->loc_bufsize = a4gl->memsize;
+                        infx->loc_oflags = 0;
+                        infx->loc_indicator = 0;   /* not a null blob */
+                        infx->loc_buffer = (char *) a4gl->ptr;
+                }
+
+                if (a4gl->where=='F') {
+                        infx->loc_loctype = LOCFNAME;   /* blob is named file */
+                        infx->loc_fname = a4gl->filename;  /* here is its name */
+                        infx->loc_oflags = LOC_WONLY;   /* contents are to be read by engine */
+                        infx->loc_size = -1;            /* read to end of file */
+                        infx->loc_indicator = 0;        /* not a null blob */
+                        infx->loc_buffer = (char *) NULL;
+                }
+
+	}
+
+	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
+		if (indicat==-2) return;
+		if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { A4GL_setnull(DTYPE_TEXT,(void *)a4gl,size); return;}
+	        if (infx->loc_loctype==LOCMEMORY) {
+                        a4gl->where = 'M';
+                        a4gl->memsize=  infx->loc_bufsize ;
+                        a4gl->ptr= infx->loc_buffer;
+                }
+
+                if (a4gl->where=='F') {
+                        a4gl->where = 'F';
+                        a4gl->memsize=0;
+                        a4gl->ptr= 0;
+                        strcpy(a4gl->filename, infx->loc_fname);
+		}
+              
+	}
+
+}
+#endif
 
 /**
  *
@@ -684,20 +773,26 @@ A4GL_assertion(1,"copy_blob_text not implemented");
 void 
 ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,short *p_indicat,int size,char mode) 
 {
+
 short indicat=0;
-A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
+
+	A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
+
+
 	if (mode=='i') {
 		if (p_indicat) *p_indicat=0;
 			if (A4GL_isnull(3,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(CDOUBLETYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
+
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-2) return;
 		if (indicat==-1||risnull(CDOUBLETYPE,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
+
 }
 
 

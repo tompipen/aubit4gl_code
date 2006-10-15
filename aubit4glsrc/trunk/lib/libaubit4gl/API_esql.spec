@@ -44,6 +44,7 @@ A4GL_copy_smint short* infx,short* a4gl,short*  indicat,int size,char mode -> vo
 A4GL_connect_db char* dbname -> void
 A4GL_db_connected char* dbname -> void*
 A4GL_copy_native_bind char dir structBINDING* a4glbind structBINDING* nativebind structBINDING* indbind int n -> void
+A4GL_init_out_text void* a4gl void* infx -> void
 
 popdec_native void* vx -> void
 retdec_native void* vx -> void

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.75 2006-08-20 11:30:29 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.76 2006-10-15 11:31:49 mikeaubury Exp $
 #
 */
 
@@ -127,6 +127,7 @@ int aclfgl_ord(int n) ;
 int aclfgl_time(int n);
 
 static void push_byte (void *ptr);
+static void push_text (void *ptr);
 
 void A4GL_push_double_str(char *p);
 //void A4GL_push_empty_char(void);
@@ -199,6 +200,22 @@ push_byte (void *ptr)
   A4GL_push_param (ptr, (int)(DTYPE_BYTE + ENCODE_SIZE (sizeof (struct fgl_int_loc))));
 }
 
+/**
+ * Called at run-time by the generated C code.
+ * Its used to push a byte (identified by a void ptr) to the parameters stack.
+ *
+ * @param ptr A pointer to the byte stream to be pushed
+ */
+void
+push_text (void *ptr)
+{
+  /*
+     void *p2;
+     p2=acl_malloc(sizeof(struct fgl_int_loc),"push_byte");
+     memcpy(p2,ptr,sizeof(struct fgl_int_loc));
+   */
+  A4GL_push_param (ptr, (int)(DTYPE_TEXT + ENCODE_SIZE (sizeof (struct fgl_int_loc))));
+}
 /**
  * Called at run-time by the generated C code.
  * Its used to push a float to the parameters stack.
@@ -1000,6 +1017,9 @@ A4GL_push_variable (void *ptr, int dtype)
       A4GL_push_float (*(float *) ptr);
       return;
     case DTYPE_TEXT:
+      push_text (ptr);
+      return;
+
     case DTYPE_BYTE:
       push_byte (ptr);
       return;

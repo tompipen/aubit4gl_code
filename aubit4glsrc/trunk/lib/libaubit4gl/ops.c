@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.90 2006-04-09 10:10:24 mikeaubury Exp $
+# $Id: ops.c,v 1.91 2006-10-15 11:31:49 mikeaubury Exp $
 #
 */
 
@@ -3024,6 +3024,7 @@ char *
 A4GL_display_byte (void *ptr, int size, int size_c,
 		   struct struct_scr_field *field_details, int display_type)
 {
+printf("display byte");
   return 0;
 }
 
@@ -3031,6 +3032,61 @@ char *
 A4GL_display_text (void *ptr, int size, int size_c,
 		   struct struct_scr_field *field_details, int display_type)
 {
+fglbyte *p;
+  p=ptr;
+
+  if (A4GL_isnull (DTYPE_TEXT, ptr)) {
+		return "";
+  }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_AT) {
+	if (p->where=='F') {
+		long l;
+		FILE *f;
+		static char *b=0;
+		f=fopen(p->filename,"r");
+		if (f==0) {
+			A4GL_exitwith("Unable to load blob file");
+			return "";
+		}
+		fseek(f,0,SEEK_END);
+		l=ftell(f);
+		b=realloc(b,l+1);
+		memset(b,0,l+1);
+		rewind(f);
+		fread(b,1,l,f);
+		return b;
+ 	} else {
+		if (p->ptr) return p->ptr;
+		A4GL_exitwith("Unread blob");
+		return 0;
+	}
+  }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY || display_type == DISPLAY_TYPE_PRINT) {
+	if (p->where=='F') {
+		long l;
+		FILE *f;
+		static char *b=0;
+		f=fopen(p->filename,"r");
+		if (f==0) {
+			A4GL_exitwith("Unable to load blob file");
+			return "";
+		}
+		fseek(f,0,SEEK_END);
+		l=ftell(f);
+		b=realloc(b,l+1);
+		memset(b,0,l+1);
+		rewind(f);
+		fread(b,1,l,f);
+		return b;
+ 	} else {
+		if (p->ptr) return p->ptr;
+		A4GL_exitwith("Unread blob");
+		return 0;
+	}
+  }
+
   return 0;
 }
 

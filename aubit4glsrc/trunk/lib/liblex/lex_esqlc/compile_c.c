@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.331 2006-10-14 16:18:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.332 2006-10-15 11:31:53 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.331 2006-10-14 16:18:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.332 2006-10-15 11:31:53 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7603,7 +7603,15 @@ LEXLIB_print_bind_set_value (char i)
     {
       for (a = 0; a < obindcnt; a++)
 	{
-	  printc ("obind[%d].ptr= &%s;", a,obind[a].varname);
+	  printc ("obind[%d].ptr= &%s; ", a,obind[a].varname);
+	  if (doing_esql()) {
+	  	if ((obind[a].dtype&DTYPE_MASK)==DTYPE_BYTE) {
+			printc("A4GL_init_out_byte(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
+	  	}
+	  	if ((obind[a].dtype&DTYPE_MASK)==DTYPE_TEXT) {
+			printc("A4GL_init_out_text(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
+	  	}
+	  } 
 	}
       start_bind (i, 0);
       return a;
