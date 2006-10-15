@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.158 2006-10-14 16:18:31 mikeaubury Exp $
+# $Id: stack.c,v 1.159 2006-10-15 10:24:35 mikeaubury Exp $
 #
 */
 
@@ -2837,10 +2837,28 @@ A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename)
 
 int aclfgl_aclfgl_byte_as_str(int n) {
 	fglbyte b;
+        static char *buff=0;
 	A4GL_pop_param(&b,0xb,0);
 	if (b.where=='F') {
-		A4GL_exitwith("Can't use aclfgl_byte_as_str with a blob in a file");
-		return 0;
+		long l;
+		FILE *f;
+                f=fopen(b.filename,"r");
+                if (f==0) {
+                        A4GL_exitwith("Unable to load blob file");
+			A4GL_push_char("");
+                        return 1;
+                }
+                fseek(f,0,SEEK_END);
+                l=ftell(f);
+                buff=malloc(l+1);
+                memset(buff,0,l+1);
+                rewind(f);
+                fread(buff,1,l,f);
+		fclose(f);
+		if (b.ptr) A4GL_push_char(buff);
+		free(buff);
+		buff=0;
+                return 1;
 	}
 	
 	if (b.ptr) A4GL_push_char(b.ptr);
