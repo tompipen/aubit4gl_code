@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.332 2006-10-15 11:31:53 mikeaubury Exp $
+# $Id: compile_c.c,v 1.333 2006-10-16 16:34:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.332 2006-10-15 11:31:53 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.333 2006-10-16 16:34:24 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1639,9 +1639,15 @@ real_print_expr (struct expr_str *ptr)
 	  free (ptr->u_data.expr_char);
 	  break;
 	case ET_EXPR_PUSH_VARIABLE:
-	  printc ("A4GL_push_variable(&%s,0x%x);",
-		  ptr->u_data.expr_push_variable->variable,
-		  ptr->u_data.expr_push_variable->var_dtype);
+		switch (ptr->u_data.expr_push_variable->var_dtype) {
+	  		case DTYPE_INT: printc ("A4GL_push_long(%s);", ptr->u_data.expr_push_variable->variable); break;
+	  		case DTYPE_SMINT: printc ("A4GL_push_int(%s);", ptr->u_data.expr_push_variable->variable); break;
+	  		case DTYPE_FLOAT: printc ("A4GL_push_double(%s);", ptr->u_data.expr_push_variable->variable); break;
+	  		case DTYPE_SMFLOAT: printc ("A4GL_push_float(%s);", ptr->u_data.expr_push_variable->variable); break;
+	  		default: printc ("A4GL_push_variable(&%s,0x%x);", ptr->u_data.expr_push_variable->variable, ptr->u_data.expr_push_variable->var_dtype);
+		}
+
+
 	  break;
 	case ET_EXPR_TIME:
 	  printc ("A4GL_push_time();");
@@ -1743,11 +1749,11 @@ real_print_expr (struct expr_str *ptr)
 	  break;
 
 	case ET_EXPR_PAGENO:
-	  printc ("A4GL_push_variable(&_rep.page_no,2);");
+	  printc ("A4GL_push_long(_rep.page_no);");
 	  break;
 	case ET_EXPR_LINENO:
 	  printc
-	    ("{static long _ln; _ln=_rep.line_no-1;A4GL_push_variable(&_ln,2);}");
+	    ("{static long _ln; _ln=_rep.line_no-1;A4GL_push_long(_ln);}");
 	  break;
 
 	case ET_EXPR_FCALL:
@@ -5366,7 +5372,17 @@ LEXLIB_print_niy (char *type)
 void
 LEXLIB_print_push_variable (char *s)
 {
-  printc ("A4GL_push_param(&%s,0x%x);\n", s, scan_variable (s));
+int dtype;
+dtype=scan_variable (s);
+switch (dtype&DTYPE_MASK) {
+
+	case DTYPE_SMINT: printc ("A4GL_push_int(%s);\n", s); break;
+	case DTYPE_INT: printc ("A4GL_push_long(%s);\n", s); break;
+	case DTYPE_FLOAT: printc ("A4GL_push_double(%s);\n", s); break;
+	case DTYPE_SMFLOAT: printc ("A4GL_push_float(%s);\n", s); break;
+
+  	default: printc ("A4GL_push_param(&%s,0x%x);\n", s, scan_variable (s));
+}
 }
 
 /**

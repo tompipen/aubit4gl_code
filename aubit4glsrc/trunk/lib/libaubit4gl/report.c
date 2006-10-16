@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.100 2006-10-14 16:18:31 mikeaubury Exp $
+# $Id: report.c,v 1.101 2006-10-16 16:34:11 mikeaubury Exp $
 #
 */
 
@@ -1262,6 +1262,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
   int sz;
   A4GL_debug ("Duplicating bindings....");
   rbind = acl_malloc2 (sizeof (struct BINDING) * n);
+
   for (a = 0; a < n; a++)
     {
       sz = 0;
