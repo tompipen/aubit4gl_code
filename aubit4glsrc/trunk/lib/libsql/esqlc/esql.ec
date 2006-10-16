@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.164 2006-10-16 11:46:04 mikeaubury Exp $
+# $Id: esql.ec,v 1.165 2006-10-16 13:38:58 mikeaubury Exp $
 #
 */
 
@@ -179,7 +179,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.164 2006-10-16 11:46:04 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.165 2006-10-16 13:38:58 mikeaubury Exp $";
 #endif
 
 
@@ -4815,18 +4815,12 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   //int sstatus=0;
   struct BINDING *ibind;
   ibind = vibind;
-A4GL_debug("unload...");
-  //if (nd) {
-	//for (i=0;i<nd;i++) {
-		//if (bufary) free(bufary[i]);
-		//if (ipary)  free(ipary[i]);
-	//}
-  //}
-  //if (bufary) free(bufary);
-  if (ipary)  free(ipary);
-  if (fname)  free(fname);
-  if (colszs) free(colszs);
-  if (loc)    free(loc);
+
+
+  if (ipary)  {free(ipary);ipary=0;}
+  if (fname)  {free(fname);fname=0;}
+  if (colszs) {free(colszs);colszs=0;}
+  if (loc)    {free(loc);loc=0;}
 
   strSql = sqlStr;
   fname = strdup (fname_o);
@@ -4973,7 +4967,10 @@ A4GL_debug("unload...");
       pos = (int) rtypalign (pos, col->sqltype) +rtypmsize(col->sqltype, col->sqllen);
     }
 
-  if (xbuff) free(xbuff);
+  if (xbuff) {
+	free(xbuff);
+	xbuff=0;
+  }
   xbuff=acl_malloc2(pos);
   
   /*
