@@ -23,6 +23,7 @@ int isconnected = 0;
 static char curr_dbname[256] = "";
 char last_err[512] = "";
 char curr_conn[512] = "default";
+static int has_connect=0;
 
 struct expr_str_list *
 A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val);
@@ -299,6 +300,7 @@ int
 A4GLSQLLIB_SQL_initlib (void)
 {
   conn = mysql_init (NULL);
+	has_connect=0;
   isconnected = 0;
   return 1;
 }
@@ -316,8 +318,8 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char empty[10] = "None";
 
   isconnected = 0;
-  strcpy (dbname, dbName);
 
+  strcpy (dbname, dbName);
   A4GL_trim (dbname);
 
   if (A4GL_sqlid_from_aclfile (dbname, uname_acl, passwd_acl))
@@ -366,20 +368,38 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
       if (p == 0)
 	p = empty;
     }
-
+  
   A4GL_debug ("Connecting : u=%s p=%s dbname=%s", u, p, dbname);
-  if (!mysql_real_connect
-      (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, 0, NULL, 0))
-    {
-      strcpy (last_err, (char *) mysql_error (conn));
-      A4GL_set_errm (dbname);
-      strcpy(sqlerrm,dbname);
-      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
-      A4GL_exitwith ("Could not connect to database");
-    }
+
+  if (strcmp(dbname,"DEFAULT")==0) {
+    	if (!mysql_real_connect (conn, acl_getenv ("MYSQL_SERVER"), u, p,NULL,0,NULL,0)) {
+      		strcpy (last_err, (char *) mysql_error (conn));
+      		A4GL_set_errm (dbname);
+      		strcpy(sqlerrm,dbname);
+      		A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
+      		A4GL_exitwith ("Could not connect to database");
+  		isconnected = 0;
+		return 0;
+    	}
+	has_connect=1;
+	isconnected=0;
+
+  } else {
+  	if (!mysql_real_connect (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, 0, NULL, 0))
+    	{
+      	strcpy (last_err, (char *) mysql_error (conn));
+      	A4GL_set_errm (dbname);
+      	strcpy(sqlerrm,dbname);
+      	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
+      	A4GL_exitwith ("Could not connect to database");
+	has_connect=0;
+  	isconnected = 0;
+	return 0;
+    	}
+  }
 
 
-
+  has_connect=1;
   isconnected = 1;
   strcpy (curr_dbname, dbname);
   return 0;
@@ -428,7 +448,7 @@ int
 A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   A4GL_assertion (1, "Close session not implemented");
-  printf ("Close Session : %s\n", sessname);
+  return 0;
 }
 
 
@@ -483,9 +503,8 @@ int
 A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type)
 {
   MYSQL_RES *prepare_meta_result;
-  MYSQL_ROW row;
+  /* MYSQL_ROW row; */
   int column_count;
-  int i;
   int dtype;
   int prc;
   MYSQL_FIELD *field;
@@ -652,7 +671,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
     }
 
   strcpy (GetColTab, tabname);
-  sprintf (buff, "%s_1", tabname);
+  SPRINTF1 (buff, "%s_1", tabname);
 
   if (A4GL_has_pointer (buff, CACHE_COLUMN))
     {
@@ -665,7 +684,6 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
   if (!result)
     {
-      //printf ("No result for %s on %p\n", buff, conn);
       return 0;
     }
 
@@ -683,7 +701,6 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 		     &prc);
       A4GL_AddColumn (GetColTab, cnt, cn, dtype, prc);
 
-      //printf ("\n");
     }
 
   GetColNo = 0;
@@ -702,7 +719,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   char buff[200];
   GetColNo++;
 
-  sprintf (buff, "%s_%d", GetColTab, GetColNo);
+  SPRINTF2 (buff, "%s_%d", GetColTab, GetColNo);
   if (A4GL_has_pointer (buff, CACHE_COLUMN))
     {
       static char buffx[2000];
@@ -730,6 +747,7 @@ int
 A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 {
   // Nothing to do..
+  return 0;
 }
 
 
@@ -751,28 +769,30 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
   MYSQL_ROW row;
   int column_count;
   int n;
-  int cnt;
+  int cnt=0;
 
-  if (isconnected == 0)
-    return 0;
+  if (conn==0 || ! has_connect) {
+	A4GLSQLLIB_A4GLSQL_init_connection_internal("DEFAULT");
+  }
+
+
+  if (conn==0) return ;
 
   res = mysql_list_dbs (conn, NULL);
 
-  printf ("Fill..");
-  if (res == 0)
-    return 0;
+  if (res == 0) {
+    	return 0;
+  }
 
 
-
-  printf ("Nrows..\n");
   n = mysql_num_rows (res);
-  printf ("Nrows %d\n", n);
+
   if (n > mx)
     n = mx;
 
 
   column_count = mysql_num_fields (res);
-  printf ("column_count : %d\n", column_count);
+
   while ((row = mysql_fetch_row (res)) != NULL)
     {
       int a;
@@ -784,6 +804,7 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
       if (cnt >= n)
 	break;
     }
+
   return cnt;
 
 }
@@ -793,8 +814,44 @@ int
 A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
 			int szarr2, int mode)
 {
+  MYSQL_RES *res;
+  MYSQL_ROW row;
+  int column_count;
+  int n;
+  int cnt=0;
 
-  A4GL_assertion (1, "Not implemented yet (fill_array_tables)");
+  if (isconnected == 0)
+    return 0;
+
+  res = mysql_list_tables (conn,NULL);
+
+  if (res == 0)
+    return 0;
+
+
+  n = mysql_num_rows (res);
+
+  if (n > mx)
+    n = mx;
+
+
+  column_count = mysql_num_fields (res);
+
+  while ((row = mysql_fetch_row (res)) != NULL)
+    {
+      int a;
+      if (arr1 != 0)
+	{
+	  strncpy (&arr1[cnt * (szarr1 + 1)], row[0], szarr1);
+	}
+      cnt++;
+      if (cnt >= n)
+	break;
+    }
+
+  return cnt;
+
+
 }
 
 /*****************************************************************************/
@@ -1579,7 +1636,6 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
   int nibind = 0;
   struct BINDING *ibind = 0;
 
-  int rc = 0;
 
   sid = vsid;
   if (sid == 0)
@@ -1632,7 +1688,7 @@ void *
 A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 				   char *cursname)
 {
-  struct s_sid *nsid;
+  /* struct s_sid *nsid; */
   struct s_cid *cid;
   struct s_sid *sid;
   sid = vsid;
@@ -1742,6 +1798,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
 
   cid->sql_no = nresultcols;
 
+return 0;
 }
 
 /*****************************************************************************/
