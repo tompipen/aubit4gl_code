@@ -18,6 +18,7 @@ int truncated = 0;
 #define PHASE_PRE_FETCH 0
 #define PHASE_POST_FETCH 1
 #define STMT_CANT_PREPARE -1
+#define STMT_DATABASE -2
 static MYSQL *conn = 0;
 int isconnected = 0;
 static char curr_dbname[256] = "";
@@ -647,17 +648,27 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 
   stmt = mysql_stmt_init (conn);
 
+  if (strncmp(s,"DATABASE ",9)==0 || strncmp(s,"database ",9)==0)  {
+      		sid->hstmt = (void *) STMT_DATABASE;
+		return sid;
+  } 
+  else {
+  
+
   if (strlen (curr_dbname) == 0)
     {
       A4GL_exitwith ("No database connection");
       return 0;
     }
+  }
+
 
   if (strlen (s) == 0)
     {
       sid->hstmt = (void *) STMT_CANT_PREPARE;
       return sid;
     }
+
   if (mysql_stmt_prepare (stmt, s, strlen (s)) != 0)
     {
       // Some error...
@@ -1470,6 +1481,13 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);	// Nothing to do...
       return 1;
     }
+  if ((void *) stmt == (void *) STMT_DATABASE) {
+		char *dbname;
+			dbname=&sql[9];
+			A4GLSQLLIB_A4GLSQL_init_connection_internal (dbname);
+			return (isconnected);
+			
+  }
 
   if ((void *) stmt == (void *) STMT_CANT_PREPARE)
     {
@@ -1978,7 +1996,14 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
 
   if (ptr == 0)
     {
-      A4GL_exitwith ("Can't free cursor that hasn't been defined");
+
+  	ptr = A4GL_find_pointer_val (currname, PRECODE);
+
+  	if (ptr == 0)
+    	{
+      	A4GL_exitwith ("Can't free cursor that hasn't been defined");
+	}
+
       return;
     }
 
