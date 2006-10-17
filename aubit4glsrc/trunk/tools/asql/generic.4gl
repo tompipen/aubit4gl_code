@@ -110,9 +110,42 @@ function drop_db()
 	error "Not implemented drop_db"
 end function
 
+
+
 function qry_translate()
-	error "Not Implemented qry_translate"
+define a integer
+define b integer
+define n integer
+define lv_fname char(512)
+
+let lv_fname=get_tmp_fname("SQL")
+
+code
+{
+extern FILE *asql_yyin;
+extern struct element *list;
+extern int list_cnt;
+char *snew;
+char *dialect;
+A4GL_trim(lv_fname);
+dialect=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
+if (dialect==0) dialect="POSTGRES";
+snew=A4GLSQLCV_convert_file(dialect, lv_fname);
+n=fopen(lv_fname,"w");
+if (n) fprintf((FILE *)n,"%s\n",snew);
+//free(snew);
+fclose(n);
+//printf("\n\r%s : %s \n\r",snew,lv_fname); fflush(stdout); sleep(5);
+}
+endcode
+
+call display_tmp_file()
+
+
 end function
+
+
+
 
 function get_db_err_msg(lv_code)
 define lv_code integer

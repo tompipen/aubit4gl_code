@@ -1257,7 +1257,7 @@ code
 extern FILE *asql_yyin;
 extern struct element *list;
 extern int list_cnt;
-asql_yyin=(FILE *)get_curr_mvfin();
+asql_yyin=(FILE *)get_curr_mvfin("SQL");
 clr_stmt();
 
 a=my_pretend_yyparse();
@@ -1267,7 +1267,7 @@ call close_tmpfile("SQL")
 
 call open_tmpfile("SQL","w")
 code
-n=(FILE *)get_curr_mvfin();
+n=(FILE *)get_curr_mvfin("SQL");
 endcode
 
 for b=0 to a-1

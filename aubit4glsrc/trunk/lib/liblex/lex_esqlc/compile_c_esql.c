@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.153 2006-10-14 10:09:41 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.154 2006-10-17 13:28:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.153 2006-10-14 10:09:41 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.154 2006-10-17 13:28:01 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -734,7 +734,12 @@ LEXLIB_print_execute (char *stmt, int using)
 		}
 	      else
 		{
+	      if (esql_type () == E_DIALECT_POSTGRES)
+		{
+		  printc (":_vi_%d \n", a, a);
+		} else {
 		  printc (":_vi_%d INDICATOR :_vii_%d\n", a, a);
+		}
 		}
 	    }
 	}
@@ -824,7 +829,9 @@ LEXLIB_print_execute (char *stmt, int using)
 	    }
 
 	}
+
       printc (" USING ");
+
       for (a = 0; a < ni; a++)
 	{
 	  if (a)
@@ -842,7 +849,11 @@ LEXLIB_print_execute (char *stmt, int using)
 		}
 	      else
 		{
+	      if (esql_type () == E_DIALECT_POSTGRES) {
+		  printc (":_vi_%d \n", a, a);
+		} else {
 		  printc (":_vi_%d INDICATOR :_vii_%d\n", a, a);
+		}
 		}
 	    }
 	}

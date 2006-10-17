@@ -38,6 +38,7 @@ function query_menu()
 define lv_action integer
 define lv_runnext integer
 define lv_option char(20)
+define lv_show_translate integer
 	call init_filename()
 
 
@@ -59,10 +60,19 @@ while true
 		let lv_action=1
 	end if
 
-	if fgl_getenv("SQLCNVPATH") is null or fgl_getenv("SQLCNVPATH") = " " then
-		let lv_option= query_menu_int(lv_action)
-	else
+	IF fgl_getenv("SQLCNVPATH") is not null and fgl_getenv("SQLCNVPATH") != " " then
+		LET lv_show_translate=TRUE
+	END IF
+
+	IF fgl_getenv("A4GL_TARGETDIALECT") is not null and fgl_getenv("A4GL_TARGETDIALECT") NOT MATCHES " " THEN
+		LET lv_show_translate=TRUE
+	END IF
+	
+
+	if lv_show_translate then
 		let lv_option= query_menu_translate_int(lv_action)
+	else
+		let lv_option= query_menu_int(lv_action)
 	end if
 			
 

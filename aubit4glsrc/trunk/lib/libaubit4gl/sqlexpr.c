@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.38 2006-09-25 16:56:22 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.39 2006-10-17 13:27:50 mikeaubury Exp $
 #
 */
 
@@ -565,7 +565,7 @@ get_select_list_item_list_ob (struct s_select *select,
   char *buff2;
   int a;
   if (i == 0)
-    return "";
+    return strdup("");
   for (a = 0; a < i->nlist; a++)
     {
       if (a)
@@ -596,7 +596,7 @@ get_select_list_item_list (struct s_select *select,
   char *buff2;
   int a;
   if (i == 0)
-    return "";
+    return strdup("");
   for (a = 0; a < i->nlist; a++)
     {
       if (a)
@@ -1169,6 +1169,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	     params = get_select_list_item_list (select, p->u_data.fcall.params);
 
 	     rval = acl_strdup (A4GLSQLCV_sql_func (p->u_data.fcall.fname, params));
+	
              free (params);
 	     return rval;
 	     	}

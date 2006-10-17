@@ -12,8 +12,8 @@
 int GetColNo = 0;
 char GetColTab[2000];
 char warnings[9];
-char sqlerrm[80]="";
-int truncated=0;
+char sqlerrm[80] = "";
+int truncated = 0;
 
 #define PHASE_PRE_FETCH 0
 #define PHASE_POST_FETCH 1
@@ -23,12 +23,24 @@ int isconnected = 0;
 static char curr_dbname[256] = "";
 char last_err[512] = "";
 char curr_conn[512] = "default";
-static int has_connect=0;
+static int has_connect = 0;
 
-struct expr_str_list *
-A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val);
+struct expr_str_list *A4GL_add_validation_elements_to_expr (struct
+							    expr_str_list
+							    *ptr, char *val);
+static int A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
+				   int szarr2, int mode);
+static int A4GL_fill_array_columns (int mx, char *arr1, int szarr1,
+				    char *arr2, int szarr2, int mode,
+				    char *info);
+static void A4GL_AddColumn (char *local_GetColTab, int local_GetColNo,
+			    char *s, int d, int sz);
+static int A4GL_fill_array_databases (int mx, char *arr1, int szarr1,
+				      char *arr2, int szarr2);
+static int A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type);
 
-
+void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+int A4GL_inttoc (void *a1, void *b, int size);
 
 /*****************************************************************************/
 // ***********   TRIVIAL IMPLEMENTATIONS   ************************************
@@ -61,49 +73,53 @@ A4GLSQLLIB_A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
 t_expr_str_list *
 A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
 {
-	  char buff[300];
-	    char val[65];
-	      struct expr_str_list *ptr = 0;
-	        char *cptr = 0;
-		  struct BINDING obind[1] = { {0, 0, 64, 0, 0} };       /* end of binding */
-		    obind[0].ptr = &val;
-	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-
-		
-		      cptr = acl_getenv ("A4GL_SYSCOL_VAL");
-		        if (cptr == 0)
-				    return 0;
-			  if (strlen (cptr) == 0)
-				      return 0;
-			    if (strcmp (cptr, "NONE") == 0)
-				        return 0;
-			      SPRINTF3 (buff,
-					                  "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
-							              cptr, tabname, colname);
-			        A4GLSQL_add_prepare ("p_get_val", (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0, buff,"__internal_sql_1"));
-				  if (A4GL_get_a4gl_sqlca_sqlcode() != 0)
-					      return (void *) -1;
-				    A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0,
-						                                         A4GLSQL_find_prepare ("p_get_val"), 0,
-											                                      "c_get_val");
-				      if (A4GL_get_a4gl_sqlca_sqlcode() != 0)
-					          return (void *) -1;
-				        A4GLSQLLIB_A4GLSQL_open_cursor ("c_get_val", 0, 0);
-					  if (A4GL_get_a4gl_sqlca_sqlcode() != 0)
-						      return (void *) -1;
+  char buff[300];
+  char val[65];
+  struct expr_str_list *ptr = 0;
+  char *cptr = 0;
+  struct BINDING obind[1] = { {0, 0, 64, 0, 0} };	/* end of binding */
+  obind[0].ptr = &val;
+  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
 
-					    while (1)
-						        {
-								      A4GLSQL_fetch_cursor ("c_get_val", 2, 1, 1, obind);
-								            if (A4GL_get_a4gl_sqlca_sqlcode() != 0)
-										            break;
-									          ptr = A4GL_add_validation_elements_to_expr (ptr, val);
-										        /* Process it... */
-										      }
-					      return ptr;
+  cptr = acl_getenv ("A4GL_SYSCOL_VAL");
+  if (cptr == 0)
+    return 0;
+  if (strlen (cptr) == 0)
+    return 0;
+  if (strcmp (cptr, "NONE") == 0)
+    return 0;
+  SPRINTF3 (buff,
+	    "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
+	    cptr, tabname, colname);
+  A4GLSQL_add_prepare ("p_get_val",
+		       (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0,
+								 buff,
+								 "__internal_sql_1"));
+  if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
+    return (void *) -1;
+  A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0,
+				     A4GLSQL_find_prepare ("p_get_val"), 0,
+				     "c_get_val");
+  if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
+    return (void *) -1;
+  A4GLSQLLIB_A4GLSQL_open_cursor ("c_get_val", 0, 0);
+  if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
+    return (void *) -1;
+
+
+  while (1)
+    {
+      A4GLSQL_fetch_cursor ("c_get_val", 2, 1, 1, obind);
+      if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
+	break;
+      ptr = A4GL_add_validation_elements_to_expr (ptr, val);
+      /* Process it... */
+    }
+  return ptr;
 
 }
+
 /*****************************************************************************/
 
 int
@@ -159,26 +175,26 @@ A4GL_AddColumn (char *local_GetColTab, int local_GetColNo, char *s, int d,
   char buff[256];
   char buff2[256];
 
-  sprintf (buff, "%s_%d", local_GetColTab, local_GetColNo);
+  SPRINTF2 (buff, "%s_%d", local_GetColTab, local_GetColNo);
 
   if (A4GL_has_pointer (buff, CACHE_COLUMN))
     {
       /* Got the column cached ! */
       return;
     }
-  sprintf (buff2, "%s %d %d", s, d, sz);
+  SPRINTF3 (buff2, "%s %d %d", s, d, sz);
   A4GL_add_pointer (buff, CACHE_COLUMN, strdup (buff2));
 }
 
 /*****************************************************************************/
-void
+static void
 niy_dtype (int dtype)
 {
-  printf ("LIKE Datatype (%d) has not been implemented yet...\n", dtype);
+  PRINTF ("LIKE Datatype (%d) has not been implemented yet...\n", dtype);
 }
 
 /*****************************************************************************/
-void
+static void
 conv_sqldtype (int dt, int len, int prec, int *fgldtype, int *fglprc)
 {
 
@@ -300,7 +316,7 @@ int
 A4GLSQLLIB_SQL_initlib (void)
 {
   conn = mysql_init (NULL);
-	has_connect=0;
+  has_connect = 0;
   isconnected = 0;
   return 1;
 }
@@ -368,38 +384,44 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
       if (p == 0)
 	p = empty;
     }
-  
+
   A4GL_debug ("Connecting : u=%s p=%s dbname=%s", u, p, dbname);
 
-  if (strcmp(dbname,"DEFAULT")==0) {
-    	if (!mysql_real_connect (conn, acl_getenv ("MYSQL_SERVER"), u, p,NULL,0,NULL,0)) {
-      		strcpy (last_err, (char *) mysql_error (conn));
-      		A4GL_set_errm (dbname);
-      		strcpy(sqlerrm,dbname);
-      		A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
-      		A4GL_exitwith ("Could not connect to database");
-  		isconnected = 0;
-		return 0;
-    	}
-	has_connect=1;
-	isconnected=0;
+  if (strcmp (dbname, "DEFAULT") == 0)
+    {
+      if (!mysql_real_connect
+	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, NULL, 0, NULL, 0))
+	{
+	  strcpy (last_err, (char *) mysql_error (conn));
+	  A4GL_set_errm (dbname);
+	  strcpy (sqlerrm, dbname);
+	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
+	  A4GL_exitwith ("Could not connect to database");
+	  isconnected = 0;
+	  return 0;
+	}
+      has_connect = 1;
+      isconnected = 0;
 
-  } else {
-  	if (!mysql_real_connect (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, 0, NULL, 0))
-    	{
-      	strcpy (last_err, (char *) mysql_error (conn));
-      	A4GL_set_errm (dbname);
-      	strcpy(sqlerrm,dbname);
-      	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
-      	A4GL_exitwith ("Could not connect to database");
-	has_connect=0;
-  	isconnected = 0;
-	return 0;
-    	}
-  }
+    }
+  else
+    {
+      if (!mysql_real_connect
+	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, 0, NULL, 0))
+	{
+	  strcpy (last_err, (char *) mysql_error (conn));
+	  A4GL_set_errm (dbname);
+	  strcpy (sqlerrm, dbname);
+	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
+	  A4GL_exitwith ("Could not connect to database");
+	  has_connect = 0;
+	  isconnected = 0;
+	  return 0;
+	}
+    }
 
 
-  has_connect=1;
+  has_connect = 1;
   isconnected = 1;
   strcpy (curr_dbname, dbname);
   return 0;
@@ -407,11 +429,11 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 }
 
 /*****************************************************************************/
-void
-report_sql_error ()
+static void
+report_sql_error (void)
 {
 
-  printf ("%d - %s\n", mysql_errno (conn), mysql_error (conn));
+  PRINTF ("%d - %s\n", mysql_errno (conn), mysql_error (conn));
   A4GL_exitwith ("SQL Transaction Error");
 }
 
@@ -458,8 +480,8 @@ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 {
   if (a > 0 && a != 100)
     a = 0 - a;
-  A4GL_set_a4gl_status(a); // a4gl_status = a;
-  A4GL_set_a4gl_sqlca_sqlcode(a);
+  A4GL_set_a4gl_status (a);	// a4gl_status = a;
+  A4GL_set_a4gl_sqlca_sqlcode (a);
   A4GLSQL_set_status (a, 1);
 }
 
@@ -527,7 +549,6 @@ A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type)
   //mysql_store_result(prepare_meta_result);
 
   column_count = mysql_num_fields (prepare_meta_result);
-  //printf ("Column count : %d\n", column_count);
 
   if (colno > column_count)
     {
@@ -537,7 +558,7 @@ A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type)
     }
 
 
-  field = mysql_fetch_field_direct (prepare_meta_result, colno-1);
+  field = mysql_fetch_field_direct (prepare_meta_result, colno - 1);
   // Now - which part of 'field' do we want...
   //
   //
@@ -607,7 +628,7 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 
 void *
 A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
-					    int no, char *s,char *uniqid)
+					    int no, char *s, char *uniqid)
 {
   MYSQL_STMT *stmt;
   struct s_sid *sid;
@@ -651,6 +672,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
       return sid;
     }
   sid->hstmt = stmt;
+  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
   return sid;
 }
 
@@ -690,7 +712,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
   cnt = 0;
   while ((field = mysql_fetch_field (result)))
     {
-      int r;
+      //int r;
       int dtype;
       int prc;
       char cn[256];
@@ -769,20 +791,23 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
   MYSQL_ROW row;
   int column_count;
   int n;
-  int cnt=0;
+  int cnt = 0;
 
-  if (conn==0 || ! has_connect) {
-	A4GLSQLLIB_A4GLSQL_init_connection_internal("DEFAULT");
-  }
+  if (conn == 0 || !has_connect)
+    {
+      A4GLSQLLIB_A4GLSQL_init_connection_internal ("DEFAULT");
+    }
 
 
-  if (conn==0) return ;
+  if (conn == 0)
+    return 0;
 
   res = mysql_list_dbs (conn, NULL);
 
-  if (res == 0) {
-    	return 0;
-  }
+  if (res == 0)
+    {
+      return 0;
+    }
 
 
   n = mysql_num_rows (res);
@@ -795,7 +820,7 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
 
   while ((row = mysql_fetch_row (res)) != NULL)
     {
-      int a;
+      //int a;
       if (arr1 != 0)
 	{
 	  strncpy (&arr1[cnt * (szarr1 + 1)], row[0], szarr1);
@@ -818,12 +843,12 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
   MYSQL_ROW row;
   int column_count;
   int n;
-  int cnt=0;
+  int cnt = 0;
 
   if (isconnected == 0)
     return 0;
 
-  res = mysql_list_tables (conn,NULL);
+  res = mysql_list_tables (conn, NULL);
 
   if (res == 0)
     return 0;
@@ -839,7 +864,6 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
 
   while ((row = mysql_fetch_row (res)) != NULL)
     {
-      int a;
       if (arr1 != 0)
 	{
 	  strncpy (&arr1[cnt * (szarr1 + 1)], row[0], szarr1);
@@ -866,14 +890,11 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 
   while ((field = mysql_fetch_field (result)))
     {
-      int r;
+
+      //int r;
       int dtype;
       int prc;
       char cn[256];
-      //printf ("field name %s\n", field->name);
-      //printf ("field type %d\n", field->type);
-      //printf ("field length %d\n", field->length);
-      //printf ("field decimals %d\n", field->decimals);
       strcpy (cn, field->name);
       A4GL_convlower (cn);
       conv_sqldtype (field->type, field->length, field->decimals, &dtype,
@@ -887,14 +908,14 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 	  switch (mode)
 	    {
 	    case 0:
-	      sprintf (&arr2[cnt * (szarr2 + 1)], "%d", field->length);
+	      SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%d", field->length);
 	      break;
 	    case 1:
-	      sprintf (&arr2[cnt * (szarr2 + 1)], "%d", dtype);
+	      SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%d", dtype);
 	      break;
 
 	    case 2:
-	      sprintf (&arr2[cnt * (szarr2 + 1)], "%d(%d)", dtype, prc);
+	      SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%d(%d)", dtype, prc);
 	      break;
 
 	    default:
@@ -942,6 +963,7 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2,
 #endif
       rval =
 	A4GL_fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
+/*
       if (rval <= 0)
 	{
 	  // Try again a different way...
@@ -949,6 +971,7 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2,
 	    A4GL_fill_array_columns_mk2 (mx, arr1, szarr1, arr2, szarr2, mode,
 					 info);
 	}
+*/
       A4GL_debug ("Got %d\n", rval);
       return rval;
     }
@@ -968,7 +991,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 			   my_bool * ind)
 {
   MYSQL_TIME *mytime;
-  char *mystr;
+  //char *mystr;
   double d;
   double *dptr;
   long *len;
@@ -1036,7 +1059,8 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DATE:
       {
 	int d, m, y;
-	mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	mytime =
+	  A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
 	A4GL_get_date (*(long *) ibind->ptr, &d, &m, &y);
 
 	mytime->year = y;
@@ -1060,7 +1084,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DECIMAL:
       // We'll just treat it as a double for now...
       dtype = ibind->dtype + ENCODE_SIZE (ibind->size);
-     
+
       A4GL_push_variable (ibind->ptr, dtype);
       d = A4GL_pop_double ();
       dptr = A4GL_alloc_associated_mem (associated_to, sizeof (double));
@@ -1091,11 +1115,12 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 
     case DTYPE_DTIME:
       {
-	char *ptr;
+	//char *ptr;
 	int data[10];
 	MYSQL_TIME *mytime;
-	mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
-	A4GL_decode_datetime (ibind->ptr, &data);
+	mytime =
+	  A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	A4GL_decode_datetime ((struct A4GLSQL_dtime *) ibind->ptr, data);
 	mibind->buffer_type = MYSQL_TYPE_DATETIME;
 	mytime->year = data[0];
 	mytime->month = data[1];
@@ -1178,7 +1203,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 			    my_bool * ind, int phase)
 {
   MYSQL_TIME *mytime;
-  char *mystr;
+  //char *mystr;
   double d;
   double *dptr;
   long *len;
@@ -1207,14 +1232,17 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->length = len;
 	}
 
-      if (phase==PHASE_POST_FETCH) {
-		 if (*(long *)mobind->length>obind->size) {
-			 truncated++;
-		 }
-		if ((obind->dtype & DTYPE_MASK)==DTYPE_CHAR) {
-			A4GL_pad_string(obind->ptr,obind->size);
-		}
-      }
+      if (phase == PHASE_POST_FETCH)
+	{
+	  if (*(long *) mobind->length > obind->size)
+	    {
+	      truncated++;
+	    }
+	  if ((obind->dtype & DTYPE_MASK) == DTYPE_CHAR)
+	    {
+	      A4GL_pad_string (obind->ptr, obind->size);
+	    }
+	}
       break;
 
     case DTYPE_SMINT:
@@ -1273,7 +1301,8 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DATE:
       if (phase == PHASE_PRE_FETCH)
 	{
-	  mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	  mytime =
+	    A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
 	  mobind->buffer_type = MYSQL_TYPE_DATE;
 	  mobind->buffer = mytime;
 	  mobind->is_null = ind;
@@ -1306,7 +1335,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  dtype = obind->dtype + ENCODE_SIZE (obind->size);
 	  d = *(double *) mobind->buffer;
 	  A4GL_push_double (d);
-	  A4GL_pop_var2 (obind->ptr, dtype,obind->size);
+	  A4GL_pop_var2 (obind->ptr, dtype, obind->size);
 	}
       break;
 
@@ -1326,7 +1355,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  dtype = obind->dtype + ENCODE_SIZE (obind->size);
 	  d = *(double *) mobind->buffer;
 	  A4GL_push_double (d);
-	  A4GL_pop_var2 (obind->ptr, dtype,obind->size);
+	  A4GL_pop_var2 (obind->ptr, dtype, obind->size);
 	}
       break;
 
@@ -1345,12 +1374,12 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 
       if (phase == PHASE_POST_FETCH)
 	{
-	  int i_date;
+	  //int i_date;
 	  char buff[256];
 	  mytime = mobind->buffer;
-	  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d", mytime->year,
-		   mytime->month, mytime->day, mytime->hour, mytime->minute,
-		   mytime->second);
+	  SPRINTF6 (buff, "%04d-%02d-%02d %02d:%02d:%02d", mytime->year,
+		    mytime->month, mytime->day, mytime->hour, mytime->minute,
+		    mytime->second);
 	  A4GL_ctodt (buff, obind->ptr, obind->size);
 	}
       break;
@@ -1452,8 +1481,8 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
       else
 	{
 	  A4GL_debug ("Error : %s\n", mysql_error (conn));
-	  A4GL_set_errm ((char *)mysql_error (conn));
-      		strcpy(sqlerrm,(char *)mysql_error (conn));
+	  A4GL_set_errm ((char *) mysql_error (conn));
+	  strcpy (sqlerrm, (char *) mysql_error (conn));
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
 	  return 0;		// Failed
 	}
@@ -1488,41 +1517,43 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
     {
       // Some error ? 
       A4GL_debug ("Error : %s (%p)\n", mysql_stmt_error (stmt), stmt);
-      A4GL_set_errm ((char *)mysql_stmt_error (stmt));
-      		strcpy(sqlerrm,(char *)mysql_stmt_error (stmt));
-	if (mysql_warning_count(conn)) {
-		warnings[0]='W';
-		A4GL_copy_sqlca_sqlawarn_string8(warnings);
+      A4GL_set_errm ((char *) mysql_stmt_error (stmt));
+      strcpy (sqlerrm, (char *) mysql_stmt_error (stmt));
+      if (mysql_warning_count (conn))
+	{
+	  warnings[0] = 'W';
+	  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 	}
 
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
       return 0;
     }
- 
-  no_warnings=mysql_warning_count(conn);
+
+  no_warnings = mysql_warning_count (conn);
 
 
-  A4GL_set_a4gl_sqlca_errd(2,mysql_stmt_affected_rows (stmt));
+  A4GL_set_a4gl_sqlca_errd (2, mysql_stmt_affected_rows (stmt));
 
-	    A4GL_set_a4gl_sqlca_errd(1,0);
+  A4GL_set_a4gl_sqlca_errd (1, 0);
   id = mysql_stmt_insert_id (stmt);
   if (id == 0)
     {
-	    A4GL_set_a4gl_sqlca_errd(1,mysql_stmt_affected_rows (stmt));
-      			//a4gl_sqlca.sqlerrd[1] = mysql_stmt_affected_rows (stmt);
+      A4GL_set_a4gl_sqlca_errd (1, mysql_stmt_affected_rows (stmt));
+      //a4gl_sqlca.sqlerrd[1] = mysql_stmt_affected_rows (stmt);
     }
   else
     {
-	    A4GL_set_a4gl_sqlca_errd(1,id);
+      A4GL_set_a4gl_sqlca_errd (1, id);
       //a4gl_sqlca.sqlerrd[1] = id;
     }
 
-	if (no_warnings) {
-		warnings[0]='W';
-		A4GL_copy_sqlca_sqlawarn_string8(warnings);
-	}
-	
-  A4GL_set_a4gl_sqlca_sqlstate((char *)mysql_stmt_sqlstate (stmt));
+  if (no_warnings)
+    {
+      warnings[0] = 'W';
+      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+    }
+
+  A4GL_set_a4gl_sqlca_sqlstate ((char *) mysql_stmt_sqlstate (stmt));
   return 1;
 }
 
@@ -1535,7 +1566,6 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   int nibind = 0;
   struct BINDING *ibind = 0;
 
-  int rc = 0;
   sid = vsid;
 
   if (sid == 0)
@@ -1560,10 +1590,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   A4GL_debug ("Execute : %s\n", sid->select);
 
   strcpy (warnings, "       ");
-  A4GL_copy_sqlca_sqlawarn_string8(warnings);
+  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 
 
-  truncated=0;
+  truncated = 0;
   if (execute_sql (sid->hstmt, sid->select, ibind, nibind, 0, 0))
     {
       int nresultcols;
@@ -1574,7 +1604,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
       mysql_stmt_store_result (sid->hstmt);
       nrows = mysql_stmt_num_rows (sid->hstmt);
       nresultcols = mysql_stmt_field_count (sid->hstmt);
-	    A4GL_set_a4gl_sqlca_errd(0,1);
+      A4GL_set_a4gl_sqlca_errd (0, 1);
 
       //mysql_store_result (sid->hstmt);
 
@@ -1587,7 +1617,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	{
 	  if (nrows > 1)
 	    {
-	    A4GL_set_a4gl_sqlca_errd(0,nrows);
+	      A4GL_set_a4gl_sqlca_errd (0, nrows);
 	      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-284);
 	      return 0;
 	    }
@@ -1595,22 +1625,22 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
       if (nresultcols && nresultcols != sid->no)
 	{
-	  	warnings[0] = 'W';
-	  	warnings[3] = 'W';
-		A4GL_copy_sqlca_sqlawarn_string8(warnings);
+	  warnings[0] = 'W';
+	  warnings[3] = 'W';
+	  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 	}
 
 
       if (nrows == 1)
 	{
-	  int a;
 	  // we don't want to be copying out more than we got in...
 	  copy_out_n = nresultcols;
 	  if (copy_out_n > sid->no)
 	    {
 	      copy_out_n = sid->no;
 	    }
-	  fetch_from_mysql_to_aubit (sid->hstmt, sid->hstmt, sid->obind, copy_out_n);
+	  fetch_from_mysql_to_aubit (sid->hstmt, sid->hstmt, sid->obind,
+				     copy_out_n);
 	}
 
       A4GL_free_associated_mem (sid->hstmt);
@@ -1622,9 +1652,15 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	}
 
 
-     if (truncated) { warnings[0]='W'; A4GL_copy_sqlca_sqlawarn_string8(warnings); }
+      if (truncated)
+	{
+	  warnings[0] = 'W';
+	  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+	}
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
     }
+
+  return 0;
 }
 
 /*****************************************************************************/
@@ -1663,10 +1699,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
     }
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-	  strcpy (warnings, "       ");
-  A4GL_copy_sqlca_sqlawarn_string8(warnings);
+  strcpy (warnings, "       ");
+  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 
-  truncated=0;
+  truncated = 0;
   if (execute_sql (sid->hstmt, sid->select, ibind, nibind, 0, 0))
     {
 
@@ -1678,7 +1714,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
 	      mysql_stmt_close (sid->hstmt);
 	    }
 	}
-     if (truncated) { warnings[0]='W'; A4GL_copy_sqlca_sqlawarn_string8(warnings); }
+      if (truncated)
+	{
+	  warnings[0] = 'W';
+	  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+	}
     }
   return 1;
 }
@@ -1721,8 +1761,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   struct s_cid *cid;
   struct BINDING *ibind;
   int nresultcols;
-  int copy_out_n;
-  int nrows;
+  //int copy_out_n;
+  //int nrows;
   char *ptr;
   char *ptr2;
 
@@ -1757,30 +1797,36 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
     }
 
   strcpy (warnings, "       ");
-  A4GL_copy_sqlca_sqlawarn_string8(warnings);
-  ptr=strdup(cid->statement->select);
-  ptr2=ptr;
-  while (*ptr==' '|| *ptr=='\t') {
-	  ptr++;
-  }
+  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+  ptr = strdup (cid->statement->select);
+  ptr2 = ptr;
+  while (*ptr == ' ' || *ptr == '\t')
+    {
+      ptr++;
+    }
 
-  A4GL_convupper(ptr);
+  A4GL_convupper (ptr);
 
-  if (strncmp(cid->statement->select,"INSERT ",7)==0) { 
-	  // Looks like an insert cursor...
-	  free(ptr2);
-	  return 1;
-  }
-  free(ptr2);
+  if (strncmp (cid->statement->select, "INSERT ", 7) == 0)
+    {
+      // Looks like an insert cursor...
+      free (ptr2);
+      return 1;
+    }
+  free (ptr2);
 
-  truncated=0;
+  truncated = 0;
   if (!execute_sql
       (cid->statement->hstmt, cid->statement->select, ibind, ni, 0, 0))
     {
 
       return 0;
     }
-     if (truncated) { warnings[0]='W'; A4GL_copy_sqlca_sqlawarn_string8(warnings); }
+  if (truncated)
+    {
+      warnings[0] = 'W';
+      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+    }
   if (cid->mode & 256)
     {				// Scroll cursor...
       mysql_stmt_store_result (cid->statement->hstmt);
@@ -1798,7 +1844,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
 
   cid->sql_no = nresultcols;
 
-return 0;
+  return 0;
 }
 
 /*****************************************************************************/
@@ -1857,7 +1903,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
     case FETCH_ABSOLUTE:
       if (fetch_when == -1)
 	{
-	  int last;
+	  //int last;
 	  cid->currpos = cid->nrows;
 	  mysql_stmt_data_seek (cid->statement->hstmt, cid->currpos - 1);
 	}
@@ -1875,7 +1921,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
 	  mysql_stmt_data_seek (cid->statement->hstmt, cid->currpos - 1);
 	  if (cid->currpos > cid->nrows || cid->currpos < 0)
 	    {
-  		A4GL_set_a4gl_sqlca_errd(2,0);
+	      A4GL_set_a4gl_sqlca_errd (2, 0);
 	      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
 	      return 0;
 	    }
@@ -1887,8 +1933,9 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
       break;
     }
 
-  fetch_from_mysql_to_aubit (cid->statement->hstmt, &v_for_ptr, obind, copy_out_n);
-  A4GL_set_a4gl_sqlca_errd(2,1);
+  fetch_from_mysql_to_aubit (cid->statement->hstmt, &v_for_ptr, obind,
+			     copy_out_n);
+  A4GL_set_a4gl_sqlca_errd (2, 1);
   A4GL_free_associated_mem (&v_for_ptr);
 
 
@@ -1982,9 +2029,13 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
       ibind = cid->statement->ibind;
     }
   sid = cid->statement;
-  truncated=0;
+  truncated = 0;
   execute_sql (sid->hstmt, sid->select, ibind, ni, 0, 0);
-     if (truncated) { warnings[0]='W'; A4GL_copy_sqlca_sqlawarn_string8(warnings); }
+  if (truncated)
+    {
+      warnings[0] = 'W';
+      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+    }
 }
 
 
@@ -2018,11 +2069,11 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
       return;
     }
 
-  truncated=0;
+  truncated = 0;
   if (execute_sql (stmt, sql1, ibind, nbind, 0, 0))
     {
       int nresultcols;
-      int copy_out_n;
+      //int copy_out_n;
       int nrows;
       MYSQL_BIND *b;
       void **buffs;
@@ -2044,7 +2095,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 	{
 	  int a;
 	  MYSQL_RES *prepare_meta_result;
-	  MYSQL_ROW row;
+	  //MYSQL_ROW row;
 	  int dtype;
 	  int prc;
 	  int sz;
@@ -2161,7 +2212,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 
 	  while (1)
 	    {
-	      int x;
+
 	      if (mysql_stmt_fetch (stmt))
 		break;
 
@@ -2171,17 +2222,21 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 		    {
 		      if (!ind[a])
 			{
-			  fprintf (f, "%s", buffs[a]);
+			  FPRINTF (f, "%s", (char *) buffs[a]);
 			}
 		    }
-		  fprintf (f, "%s", delims);
+		  FPRINTF (f, "%s", delims);
 		}
-	      fprintf (f, "\n");
+	      FPRINTF (f, "\n");
 	    }
 
 	}
     }
-     if (truncated) { warnings[0]='W'; A4GL_copy_sqlca_sqlawarn_string8(warnings); }
+  if (truncated)
+    {
+      warnings[0] = 'W';
+      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+    }
   fclose (f);
 }
 
@@ -2189,31 +2244,30 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 struct expr_str_list *
 A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
 {
-	  char *ptr2;
-	    char *ptrn;
-	      A4GL_trim (val);
-	        ptr2 = val;
-		  while (1)
-			      {
-				            ptrn = strtok (ptr2, ",");
-					          if (ptrn == 0)
-							          break;
-						        if (ptr2)
-								        {
-										          ptr2 = 0;
-											          }
+  char *ptr2;
+  char *ptrn;
+  A4GL_trim (val);
+  ptr2 = val;
+  while (1)
+    {
+      ptrn = strtok (ptr2, ",");
+      if (ptrn == 0)
+	break;
+      if (ptr2)
+	{
+	  ptr2 = 0;
+	}
 
-							      if (ptr == 0)
-								              {
-										                ptr = A4GL_new_ptr_list (A4GL_new_literal_string (ptrn));
-												        }
-							            else
-									            {
-											              ptr =
-													                  A4GL_new_append_ptr_list (ptr, A4GL_new_literal_string (ptrn));
-												              }
+      if (ptr == 0)
+	{
+	  ptr = A4GL_new_ptr_list (A4GL_new_literal_string (ptrn));
+	}
+      else
+	{
+	  ptr =
+	    A4GL_new_append_ptr_list (ptr, A4GL_new_literal_string (ptrn));
+	}
 
-								        }
-		    return ptr;
+    }
+  return ptr;
 }
-
