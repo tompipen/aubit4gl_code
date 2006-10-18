@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.333 2006-10-16 16:34:24 mikeaubury Exp $
+# $Id: compile_c.c,v 1.334 2006-10-18 09:47:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.333 2006-10-16 16:34:24 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.334 2006-10-18 09:47:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3436,6 +3436,46 @@ LEXLIB_print_after_when (int endofblock)
 void
 LEXLIB_print_when (int has_expr,t_expr_str *expr)
 {
+
+  if (!has_expr) { // We'd expect some form of test then...
+	switch (expr->expr_type) {
+		// Does it look like a string ? 
+		case ET_EXPR_LITERAL_STRING:
+		case ET_EXPR_LITERAL_EMPTY_STRING:
+		case ET_EXPR_OP_CLIP:
+		case ET_EXPR_OP_USING: 
+		case ET_EXPR_UPSHIFT:
+		case ET_EXPR_DOWNSHIFT:
+		case ET_EXPR_STRING:
+		case ET_EXPR_OP_CONCAT:
+		case ET_EXPR_OP_SPACES:
+		case ET_EXPR_LITERAL_DOUBLE_STR:
+		case ET_EXPR_GET_FLDBUF:
+		case ET_EXPR_WORDWRAP:
+		case ET_EXPR_SUBSTRING:
+		case ET_EXPR_CONCAT_LIST:
+			A4GL_warn("Use of string for WHEN in a CASE with no expression"); break;
+
+		case ET_EXPR_PUSH_VARIABLE:
+			if (expr->u_data.expr_push_variable->var_dtype!=DTYPE_INT && expr->u_data.expr_push_variable->var_dtype!=DTYPE_SMINT)  {
+				A4GL_warn("Unexpected variable - would expect an INTEGER or SMALLINT for WHEN in a CASE with no expression");
+			}
+			break;
+
+
+
+		case ET_EXPR_TRUE:
+			A4GL_warn("WHEN is always TRUE"); break;
+		case ET_EXPR_FALSE:
+			A4GL_warn("WHEN is always FALSE"); break;
+
+		default: break;
+
+
+
+	}
+  }
+
   real_print_expr(expr);
   if (has_expr)
     {
