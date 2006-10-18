@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.92 2006-10-16 16:34:11 mikeaubury Exp $
+# $Id: ops.c,v 1.93 2006-10-18 08:19:42 mikeaubury Exp $
 #
 */
 
@@ -611,7 +611,183 @@ A4GL_debug("%f %f\n",a,b);
 /* ========================== EOF ========================== */
 
 
+/**
+ * Add all the default operations to the system
+ *
+ * @return
+ */
+void
+A4GL_int_in_ops (int op)
+{
+  int a;
+  struct ival in2;
+  struct ival *pi2;
+  int ival_data[10];
+int dtype2;
+int sz2;
+int d1;
+int se2;
+int s1;
+int d2;
+int s2;
+int ok=0;
+	  		char buff_6[256];
 
+#ifdef DEBUG
+  A4GL_debug ("In dt_in_ops");
+#endif
+
+  A4GL_pop_param (&a, DTYPE_INT, -1);
+
+
+
+
+  A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi2);
+
+  if ((d2 & DTYPE_MASK) != DTYPE_INTERVAL)
+    {
+      PRINTF ("Confused... %d != %d\n", d2 & DTYPE_MASK, DTYPE_INTERVAL);
+      A4GL_assertion(1,"Invalid datatype");
+    }
+
+  se2 = pi2->stime & 0xf;
+
+
+  if (se2 == 1 || se2 == 2)
+    {
+      se2 = 2;
+    }
+
+
+ if (se2!=2) {
+	se2=6;
+  }
+
+
+  if (se2 == 2)
+    {
+      in2.stime = 0x82;
+      in2.ltime = 2;
+
+    }
+  else
+    {
+      in2.stime = 0x86;
+      in2.ltime = 11;
+    }
+
+  A4GL_debug("in_in.....");
+  A4GL_debug_print_stack();
+
+  A4GL_pop_param (&in2, DTYPE_INTERVAL, in2.stime * 16 + in2.ltime);
+
+  if (in2.stime==0 || in2.ltime==0) { A4GL_assertion(1,"Interval looks empty"); }
+
+  A4GL_decode_interval (&in2, ival_data);
+
+
+
+  switch(op) {
+  	case OP_ADD:
+		if (se2==6) {
+			double f;
+  			f=ival_data[6]+a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+	  		acli_interval (buff_6, 0x867);	
+			return ;
+		} else {
+
+			double f;
+  			f=ival_data[1]+a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);	
+			return ;
+		}
+		
+	case OP_SUB:
+		if (se2==6) {
+			double f;
+  			f=ival_data[6]-a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+	  		acli_interval (buff_6, 0x867);
+			return ;
+		} else {
+			double f;
+  			f=ival_data[1]-a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);	
+			return ;
+		}
+	case OP_DIV:
+		if (se2==6) {
+			double f;
+  			f=ival_data[6]/a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+	  		acli_interval (buff_6, 0x867);	
+			return ;
+		} else {
+			double f;
+  			f=ival_data[1]/a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);	
+			return ;
+		}
+
+	case OP_MULT:
+		if (se2==6) {
+			double f;
+  			f=ival_data[6]*a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+			
+	  		acli_interval (buff_6, 0x867);	
+			return ;
+		} else {
+			double f;
+  			f=ival_data[1]*a;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);	
+			return ;
+		}
+	
+  }
+
+  A4GL_assertion(1,"Unimplemented int_in operation");
+  fflush (stdout);
+  A4GL_push_int (0);
+}
+
+/**
+ * Add all the default operations to the system
+ *
+ * @return
+ */
+void
+A4GL_in_int_ops (int op)
+{
+  int a;
+  struct ival in;
+  int ival_data[10];
+
+#ifdef DEBUG
+  A4GL_debug ("In dt_in_ops");
+#endif
+  A4GL_pop_param (&a, DTYPE_INT, -1);
+  A4GL_pop_param (&in, DTYPE_INTERVAL, -1);
+
+  A4GL_decode_interval (&in, &ival_data[0]);
+
+  A4GL_assertion(1,"Here");
+  fflush (stdout);
+  A4GL_push_int (0);
+}
 /**
  * Add all the default operations to the system
  *
@@ -1690,8 +1866,10 @@ A4GL_in_in_ops (int op)
 
   A4GL_debug ("in_in_ops - op=%d", op);
 // d2 op d1
+
   A4GL_get_top_of_stack (2, &d2, &s2, (void *) &pi2);
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &pi1);
+  
 
   A4GL_debug_print_stack();
 
@@ -1727,16 +1905,18 @@ A4GL_in_in_ops (int op)
       se2 = 2;
     }
 
+  if (se1!=2) {
+	se1=6;
+	se2=6;
+  }
+
+
   if (se1 != se2)
     {
       A4GL_exitwith ("Can't use interval YEAR-MONTH and DAY-FRACTION together");
       return;
     }
 
- if (se1!=2) {
-	se1=6;
-	se2=6;
-  }
 
 
   A4GL_debug ("se1=%d\n", se1);
@@ -3154,6 +3334,10 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INTERVAL, OP_MATH, A4GL_in_in_ops);
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_DTIME, OP_MATH, A4GL_dt_in_ops);
 
+
+  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INT, OP_MATH, A4GL_int_in_ops);
+  A4GL_add_op_function (DTYPE_INT, DTYPE_INTERVAL, OP_MATH, A4GL_in_int_ops);
+
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_INTERVAL, OP_MATH, A4GL_in_dt_ops);
   A4GL_add_op_function (DTYPE_DATE, DTYPE_INTERVAL, OP_MATH, A4GL_in_date_ops);
 
@@ -3162,6 +3346,7 @@ DTYPE_SERIAL
 
   A4GL_add_op_function (DTYPE_DATE, DTYPE_DTIME, OP_MATH, A4GL_date_dt_ops);
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_DATE, OP_MATH, A4GL_dt_date_ops);
+
 
   A4GL_debug ("Finished adding default operations");
 

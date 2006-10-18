@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.159 2006-10-15 10:24:35 mikeaubury Exp $
+# $Id: stack.c,v 1.160 2006-10-18 08:19:42 mikeaubury Exp $
 #
 */
 
@@ -994,7 +994,10 @@ A4GL_debug("51 Have data");
 	case OP_GREATER_THAN_EQ:
 	case OP_EQUAL:
 	case OP_NOT_EQUAL:
-	  function = A4GL_find_op_function (dtype_2, dtype_1, OP_MATH);
+
+       function = A4GL_find_op_function (dtype_2, dtype_1, OP_MATH);
+
+
        if (function==0 && ((dtype_1 & DTYPE_MASK) == DTYPE_CHAR || (dtype_1 & DTYPE_MASK) == DTYPE_VCHAR )) {
 		int dx;
 		int sx;
@@ -1021,7 +1024,6 @@ A4GL_debug("51 Have data");
       if (function)
 	{
 	  /* We've got something to play with */
-
 #ifdef DEBUG
 	  A4GL_debug ("7 Calling specified function for %d %d, %d", dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
 #endif

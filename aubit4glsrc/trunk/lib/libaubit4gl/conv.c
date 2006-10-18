@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.123 2006-10-14 10:09:39 mikeaubury Exp $
+# $Id: conv.c,v 1.124 2006-10-18 08:19:42 mikeaubury Exp $
 #
 */
 
@@ -338,12 +338,24 @@ A4GL_inttoint (void *a, void *b, int size)
   struct ival *d;
   struct ival *e;
   char buff[256];
+  int ival_data[10];
+
   A4GL_debug ("inttoint size=%d\n",size);
   d = b;
   e = a;
   A4GL_debug ("e->stime=0x%x e->ltime=0x%x", e->stime, e->ltime);
   memset(buff,0,256);
+
   A4GL_inttoc (a, buff, 60);
+  if ((e->stime&0xf)==e->ltime) {
+
+	// We've got a single timespan..
+	if (e->ltime==2|| e->ltime==1) { // MONTH TO MONTH or YEAR TO YEAR
+ 		A4GL_decode_interval (e, &ival_data[0]);
+			/* while (ival_data[1]>12 && 0) { ival_data[0]++; ival_data[1]-=12; } */
+		sprintf(buff,"%d-%d",ival_data[0],ival_data[1]);
+	}
+  }
   A4GL_trim (buff);
   //memset(d->data,0,sizeof(d->data));
   A4GL_debug ("Got Interval as : '%s'\n", A4GL_null_as_null(buff));
