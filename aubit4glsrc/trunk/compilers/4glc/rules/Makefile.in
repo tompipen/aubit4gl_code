@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2006-07-05 12:40:53 mikeaubury Exp $
+# $Id: Makefile.in,v 1.20 2006-10-21 13:02:41 afalout Exp $
 #
 
 ROOT		=../../..
@@ -68,7 +68,7 @@ generated/single_words.rule: generated/single_words
 	${SH} bin/make_enable
 
 generated/fgl.infx.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule sqlpack/infx/*.rule
-	${SH} bin/mkyacc generated/fgl.infx.yacc
+	${SH} bin/mkyacc $@
 
 generated/fgl.postgres.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule sqlpack/infx/*.rule
 	${SH} bin/mkyacc generated/fgl.postgres.yacc postgres
@@ -91,7 +91,8 @@ clean: clean.generated clean.data
 	${RM} y.tab.c *.bak bin/*.bak .\#*
 
 clean.generated:
-	(cd generated; ${RM} *.yacc *.c *.h *.yh *.rule *.output single_words)
+	(cd generated; ${RM} *.yacc *.c *.h *.yh *.rule *.output single_words \
+	generated/fgl.infx.yacc)
 
 clean.data:
 	(cd data; ${RM} .\#* *.bak .*.bak)

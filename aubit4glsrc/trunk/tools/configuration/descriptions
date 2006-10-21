@@ -145,6 +145,7 @@ A4GL_RESERVEWORDS COMPILE --obsolete?-- Reserved word handling
 A4GL_SAPDB_ESQLC ESQL/COMPILE Full path to SAP DB ESQL/C compiler
 	full path to SAP-DB ESQL/C pre-compiler executable used when compiling EC output for
 	SAP DB(does not have to be in the path)
+	
 A4GL_SQLTYPE SQL/RUNTIME/COMPILE Determine which library to use to connect to the database
 $AUBITDIR/libSQL_?.so
 	Name of default SQL library plug-in to use.
@@ -161,6 +162,9 @@ $AUBITDIR/libSQL_?.so
 	Warning: this setting is ignored at run-rime when A4GL_LEXTYPE is set to 'EC'.
 	At compile time, it is used by compilers segardless of A4GL_LEXTYPE setting
 
+MYSQL_SERVER SQL/RUNTIME/COMPILE If you want to specify a different MySQL server
+	Default is localhost
+	
 A4GL_UI UI/RUNTIME Determine which plug-in to use for the user interface
 $AUBITDIR/lib/libUI_?.so
 	Defines default UI (user intertface) driver plug-in to load
@@ -486,6 +490,15 @@ A4GL_SQLUID SQL/COMPILE/RUNTIME Database access user name
 	IN THE VALUE OF THIS VARIABLES !!!!!!!!!!
 	See also Aubit4GL ACL Files
 
+A4GL_ACLFILE SQL/COMPILE/RUNTIME ACL file to use
+	Access Control List (MySQL and ODBC database ONLY)
+	For the database access username and password, either set the SQLUID/SQLPWD
+	or add an entry(s) to the ACL file (default: $HOME/.aubit4gl.acl) in the 
+	following format:
+		dbname:username:password
+		dbname2:username2:password2
+		...etc...
+	
 A4GL_TRANSLATEFILE COMPILE Specifies the location of a translation file
 	This is used for transforming 4GL strings via a message file (see DUMPSTRINGS)
 A4GL_TRANSMODE RUNTIME/SQL Set transactions behaviour (PodtgreSQL EC mode only??)

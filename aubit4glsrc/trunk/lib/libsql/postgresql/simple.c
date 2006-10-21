@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.31 2005-12-05 20:31:07 mikeaubury Exp $
+# $Id: simple.c,v 1.32 2006-10-21 13:02:53 afalout Exp $
 #*/
 
 
@@ -107,16 +107,52 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   char buff2[256];
   char *envname;
+  char *envport;
+  
   envname = acl_getenv ("PG_DBPATH");
   if (envname)
     {
+		/*
+		Note: for same purpose ecpg uses this too:
+
+		export PG_DBPATH=dbname[@server][:port]
+
+		This will override any DATABASE statements in the .cpc (This is part of ecpg
+		- not aubit4gl)
+
+		see the sourcecode - I found some :
+		http://jonathangardner.net/PostgreSQL/doxygen/7.4/connect_8c-source.html
+		*/
+		
       A4GL_debug
-	("Using a different database %s specified from the environment",
+	(">>>>NOT<<<< Using a different database %s specified from the environment - SEE SOURCE CODE!",
 	 envname);
-      if (strlen (envname))
-	dbName = envname;
+	 
+	 //WARNING: if dbName contatins anything more then a database name
+	 //for example [@server][:port] - connct will fail!
+	 
+	 //we would in such case have to sepatate components ourselves, into
+	 //pgport, dbName and pghost!!!
+	 
+	 //Because this conflicts with the need to be able to specify FULL
+	 // PG_DBPATH=dbname[@server][:port] in Aubit run_test script (as ecpg 
+	 // needs this) I am commenting this out for the moment:
+	 
+//      if (strlen (envname))
+//	dbName = envname;
     }
 
+  envport = acl_getenv ("PG_PORT");
+  if (envport)
+    {
+      A4GL_debug
+	("Using a different database port %s specified from the environment",
+	 envport);
+      if (strlen (envport))
+	pgport = envport;
+    }
+
+	
   con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, login, pwd);
   if (con == NULL)
     {

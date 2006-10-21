@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.13 2005-03-23 08:24:08 afalout Exp $
+# $Id: Makefile-install,v 1.14 2006-10-21 13:02:45 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -55,7 +55,7 @@ install: etc/aubitrc-bin install.libs.conf
 
 #we have to restart make because we are reading some things in
 #Makefile-common that will be changed by "configure"
-install.step2: install.links install.aubitrc install.libs.links test
+install.step2: install.bin.links install.aubitrc install.libs.links test
 
 etc/aubitrc-bin:
 	./configure ${CPARAM}

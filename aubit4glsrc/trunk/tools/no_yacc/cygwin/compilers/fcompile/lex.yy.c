@@ -8,7 +8,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 33
+#define YY_FLEX_SUBMINOR_VERSION 31
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -30,15 +30,7 @@
 
 /* C99 systems have <inttypes.h>. Non-C99 systems may or may not. */
 
-#if __STDC_VERSION__ >= 199901L
-
-/* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
- * if you want the limit (max/min) macros for int types. 
- */
-#ifndef __STDC_LIMIT_MACROS
-#define __STDC_LIMIT_MACROS 1
-#endif
-
+#if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
 #include <inttypes.h>
 typedef int8_t flex_int8_t;
 typedef uint8_t flex_uint8_t;
@@ -292,7 +284,7 @@ int yyleng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
-static int yy_init = 0;		/* whether we need to initialize */
+static int yy_init = 1;		/* whether we need to initialize */
 static int yy_start = 0;	/* start state number */
 
 /* Flag which is used to allow yywrap()'s to do buffer switches
@@ -1202,26 +1194,22 @@ char *yytext;
 
 
 /*%option interactive*/
-#line 1206 "lex.yy.c"
+#line 1198 "lex.yy.c"
 
 #define INITIAL 0
 #define comment 1
 #define instructions 2
 #define escaped 3
 
-#ifndef YY_NO_UNISTD_H
 /* Special case for "unistd.h", since it is non-ANSI. We include it way
  * down here because we want the user's section 1 to have been scanned first.
  * The user has a chance to override it with an option.
  */
 #include <unistd.h>
-#endif
 
 #ifndef YY_EXTRA_TYPE
 #define YY_EXTRA_TYPE void *
 #endif
-
-static int yy_init_globals (void );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1360,11 +1348,11 @@ YY_DECL
     
 #line 21 "screen.lex"
 
-#line 1364 "lex.yy.c"
+#line 1352 "lex.yy.c"
 
-	if ( !(yy_init) )
+	if ( (yy_init) )
 		{
-		(yy_init) = 1;
+		(yy_init) = 0;
 
 #ifdef YY_USER_INIT
 		YY_USER_INIT;
@@ -1797,111 +1785,112 @@ YY_RULE_SETUP
 case 55:
 YY_RULE_SETUP
 #line 140 "screen.lex"
-{if(in_screen_section!=0) {strcpy(yylval.str,yytext); return OPEN_BRACE; } else {	BEGIN comment; yymore(); } }
+{
+		 if(in_screen_section!=0) {strcpy(yylval.str,yytext); if (colno==0||!A4GL_isno(acl_getenv("FIRSTBRACE"))) {return OPEN_BRACE;} else {return CHAR_VALUE;} } else {	BEGIN comment; yymore(); } }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 141 "screen.lex"
-{strcpy(yylval.str,yytext); return CLOSE_BRACE;}
+#line 142 "screen.lex"
+{strcpy(yylval.str,yytext); if (colno==0||!A4GL_isno(acl_getenv("FIRSTBRACE"))) {return CLOSE_BRACE;} else {return CHAR_VALUE;}}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 142 "screen.lex"
+#line 143 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 143 "screen.lex"
+#line 144 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 144 "screen.lex"
+#line 145 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 145 "screen.lex"
+#line 146 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,"!="); return COMPARISON;}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 146 "screen.lex"
+#line 147 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 147 "screen.lex"
+#line 148 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 148 "screen.lex"
+#line 149 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return LESSTHAN;}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 149 "screen.lex"
+#line 150 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return GREATERTHAN;}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 150 "screen.lex"
+#line 151 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 151 "screen.lex"
+#line 152 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWWHERE;}
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 152 "screen.lex"
+#line 153 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWAND;}
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 153 "screen.lex"
+#line 154 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWOR;}
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 155 "screen.lex"
+#line 156 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,"TRUE"); return XVAL;}
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 156 "screen.lex"
+#line 157 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,"FALSE"); return XVAL;}
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 157 "screen.lex"
+#line 158 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWIN;}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 158 "screen.lex"
+#line 159 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWBETWEEN;}
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 159 "screen.lex"
+#line 160 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOT;}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 160 "screen.lex"
+#line 161 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SPECIAL_DBNAME;}
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 162 "screen.lex"
+#line 163 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 164 "screen.lex"
+#line 165 "screen.lex"
 { strcpy(yylval.str,yytext); 
 			if (graphics_mode==0) {
 				return PIPE; 
@@ -1913,57 +1902,57 @@ YY_RULE_SETUP
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 173 "screen.lex"
+#line 174 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EQUAL;}
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 174 "screen.lex"
+#line 175 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TABLES;}
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 175 "screen.lex"
+#line 176 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WITHOUT;}
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 176 "screen.lex"
+#line 177 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_NULL;}
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 177 "screen.lex"
+#line 178 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INPUT;}
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 178 "screen.lex"
+#line 179 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SEMICOLON;}
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 179 "screen.lex"
+#line 180 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OPEN_BRACKET;}
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 180 "screen.lex"
+#line 181 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CLOSE_BRACKET;}
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 181 "screen.lex"
+#line 182 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return STAR;}
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 182 "screen.lex"
+#line 183 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DIVIDE;}
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 183 "screen.lex"
+#line 184 "screen.lex"
 {if (ignorekw) REJECT;
 			strcpy(yylval.str,yytext); 
 			if (graphics_mode) {
@@ -1976,7 +1965,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 193 "screen.lex"
+#line 194 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); 
 			if (graphics_mode) {
 				strcpy(yylval.str,"\n-");
@@ -1987,492 +1976,492 @@ YY_RULE_SETUP
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 201 "screen.lex"
+#line 202 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMA;}
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 202 "screen.lex"
+#line 203 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 203 "screen.lex"
+#line 204 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 204 "screen.lex"
+#line 205 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DELIMITERS;}
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 205 "screen.lex"
+#line 206 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DELIMITERS;}
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 206 "screen.lex"
+#line 207 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_CHAR;}
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 207 "screen.lex"
+#line 208 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_CHAR;}
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 208 "screen.lex"
+#line 209 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_CHAR;}
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 209 "screen.lex"
+#line 210 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_INT;}
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 210 "screen.lex"
+#line 211 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_INT;}
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 211 "screen.lex"
+#line 212 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SERIAL;}
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 212 "screen.lex"
+#line 213 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_BYTE;}
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 213 "screen.lex"
+#line 214 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_TEXT;}
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 214 "screen.lex"
+#line 215 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return VARCHAR;}
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 215 "screen.lex"
+#line 216 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DATE;}
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 216 "screen.lex"
+#line 217 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DATETIME;}
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 217 "screen.lex"
+#line 218 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FLOAT;}
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 218 "screen.lex"
+#line 219 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLFLOAT;}
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 219 "screen.lex"
+#line 220 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLINT;}
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 220 "screen.lex"
+#line 221 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 221 "screen.lex"
+#line 222 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 222 "screen.lex"
+#line 223 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONEY;}
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 223 "screen.lex"
+#line 224 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WIDGET;}
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 224 "screen.lex"
+#line 225 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CONFIG;}
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 225 "screen.lex"
+#line 226 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BLACK;}
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 226 "screen.lex"
+#line 227 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BLUE;}
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 227 "screen.lex"
+#line 228 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WHITE;}
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 228 "screen.lex"
+#line 229 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return YELLOW;}
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 229 "screen.lex"
+#line 230 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return RED;}
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 230 "screen.lex"
+#line 231 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return GREEN;}
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 231 "screen.lex"
+#line 232 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CYAN;}
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 232 "screen.lex"
+#line 233 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BLINK;}
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 233 "screen.lex"
+#line 234 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return UNDERLINE;}
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 235 "screen.lex"
+#line 236 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MAGENTA;}
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 237 "screen.lex"
+#line 238 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AUTONEXT;}
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 238 "screen.lex"
+#line 239 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLOR;}
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 239 "screen.lex"
+#line 240 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_COMPOSITES;}
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 240 "screen.lex"
+#line 241 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMENTS;}
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 241 "screen.lex"
+#line 242 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DEFAULT;}
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 242 "screen.lex"
+#line 243 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DISPLAY;}
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 243 "screen.lex"
+#line 244 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOWNSHIFT;}
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 244 "screen.lex"
+#line 245 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return UPSHIFT;}
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 245 "screen.lex"
+#line 246 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return FORMAT;}
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 246 "screen.lex"
+#line 247 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INCLUDE;}
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 247 "screen.lex"
+#line 248 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INVISIBLE;}
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 248 "screen.lex"
+#line 249 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOENTRY;}
 	YY_BREAK
 case 135:
 YY_RULE_SETUP
-#line 249 "screen.lex"
+#line 250 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PICTURE;}
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 250 "screen.lex"
+#line 251 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PROGRAM;}
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 251 "screen.lex"
+#line 252 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return REQUIRED;}
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 252 "screen.lex"
+#line 253 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DYNAMIC;}
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
-#line 253 "screen.lex"
+#line 254 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DIM;}
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
-#line 254 "screen.lex"
+#line 255 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BOLD;}
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 255 "screen.lex"
+#line 256 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NORMAL;}
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 256 "screen.lex"
+#line 257 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return REVERSE;}
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 257 "screen.lex"
+#line 258 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return VERIFY;}
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 258 "screen.lex"
+#line 259 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return QUERYCLEAR;}
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 259 "screen.lex"
+#line 260 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DISPLAYONLY;}
 	YY_BREAK
 case 146:
 YY_RULE_SETUP
-#line 260 "screen.lex"
+#line 261 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ALLOWING;}
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 261 "screen.lex"
+#line 262 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER_OF;}
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 262 "screen.lex"
+#line 263 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LOOKUP;}
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 263 "screen.lex"
+#line 264 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return JOINING;}
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 264 "screen.lex"
+#line 265 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WORDWRAP;}
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 265 "screen.lex"
+#line 266 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPRESS;}
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 266 "screen.lex"
+#line 267 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NONCOMPRESS;}
 	YY_BREAK
 case 153:
 YY_RULE_SETUP
-#line 267 "screen.lex"
+#line 268 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,"TODAY"); return SQL_VAR;}
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 268 "screen.lex"
+#line 269 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,"USER"); return SQL_VAR;}
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
-#line 269 "screen.lex"
+#line 270 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TO;}
 	YY_BREAK
 case 156:
 YY_RULE_SETUP
-#line 270 "screen.lex"
+#line 271 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AS;}
 	YY_BREAK
 case 157:
 YY_RULE_SETUP
-#line 271 "screen.lex"
+#line 272 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOUPDATE;}
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 272 "screen.lex"
+#line 273 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT;}
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 274 "screen.lex"
+#line 275 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_ZEROFILL;}
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 275 "screen.lex"
+#line 276 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_RIGHT;}
 	YY_BREAK
 case 161:
 YY_RULE_SETUP
-#line 277 "screen.lex"
+#line 278 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LISTBOX;}
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 278 "screen.lex"
+#line 279 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
 	YY_BREAK
 case 163:
 YY_RULE_SETUP
-#line 280 "screen.lex"
+#line 281 "screen.lex"
 {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
-#line 282 "screen.lex"
+#line 283 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_BEFORE ;}
 	YY_BREAK
 case 165:
 YY_RULE_SETUP
-#line 283 "screen.lex"
+#line 284 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_AFTER ;}
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
-#line 284 "screen.lex"
+#line 285 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_EDITADD ;}
 	YY_BREAK
 case 167:
 YY_RULE_SETUP
-#line 285 "screen.lex"
+#line 286 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_EDITUPDATE ;}
 	YY_BREAK
 case 168:
 YY_RULE_SETUP
-#line 286 "screen.lex"
+#line 287 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_IF ;}
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 287 "screen.lex"
+#line 288 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_REMOVE ;}
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 288 "screen.lex"
+#line 289 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_OF;}
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 289 "screen.lex"
+#line 290 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ADD ;}
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 290 "screen.lex"
+#line 291 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_UPDATE ;}
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 291 "screen.lex"
+#line 292 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_QUERY ;}
 	YY_BREAK
 case 174:
 YY_RULE_SETUP
-#line 292 "screen.lex"
+#line 293 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_ENDING ;}
 	YY_BREAK
 case 175:
 YY_RULE_SETUP
-#line 293 "screen.lex"
+#line 294 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ON_BEGINNING;}
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
-#line 294 "screen.lex"
+#line 295 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_CALL;}
 	YY_BREAK
 case 177:
 YY_RULE_SETUP
-#line 295 "screen.lex"
+#line 296 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_BELL ;}
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 296 "screen.lex"
+#line 297 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ABORT ;}
 	YY_BREAK
 case 179:
 YY_RULE_SETUP
-#line 297 "screen.lex"
+#line 298 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_LET ;}
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 298 "screen.lex"
+#line 299 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_EXITNOW ;}
 	YY_BREAK
 case 181:
 YY_RULE_SETUP
-#line 299 "screen.lex"
+#line 300 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_NEXTFIELD;}
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 300 "screen.lex"
+#line 301 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_THEN ;}
 	YY_BREAK
 case 183:
 YY_RULE_SETUP
-#line 301 "screen.lex"
+#line 302 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_ELSE;}
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
-#line 302 "screen.lex"
+#line 303 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_BEGIN;}
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 303 "screen.lex"
+#line 304 "screen.lex"
 {if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); return KW_TOTAL;}
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
-#line 313 "screen.lex"
+#line 314 "screen.lex"
 {
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
@@ -2483,7 +2472,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
-#line 320 "screen.lex"
+#line 321 "screen.lex"
 {
 if (ignorekw!=1) REJECT;
 
@@ -2517,7 +2506,7 @@ return(NAMED);}
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
-#line 351 "screen.lex"
+#line 352 "screen.lex"
 {
         if (ignorekw==0) REJECT;
 	strcpy(yylval.str,yytext);
@@ -2553,10 +2542,10 @@ return CH;
 	YY_BREAK
 case 189:
 YY_RULE_SETUP
-#line 384 "screen.lex"
+#line 385 "screen.lex"
 ECHO;
 	YY_BREAK
-#line 2560 "lex.yy.c"
+#line 2549 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 			case YY_STATE_EOF(comment):
 			case YY_STATE_EOF(instructions):
@@ -2745,7 +2734,7 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			int num_to_read =
+			size_t num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -3076,19 +3065,9 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
-#ifndef _UNISTD_H /* assume unistd.h has isatty() for us */
-#ifdef __cplusplus
-extern "C" {
-#endif
-#ifdef __THROW /* this is a gnuism */
-extern int isatty (int ) __THROW;
-#else
+#ifndef __cplusplus
 extern int isatty (int );
-#endif
-#ifdef __cplusplus
-}
-#endif
-#endif
+#endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
@@ -3282,10 +3261,10 @@ YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size )
  * @note If you want to scan bytes that may contain NUL values, then use
  *       yy_scan_bytes() instead.
  */
-YY_BUFFER_STATE yy_scan_string (yyconst char * yystr )
+YY_BUFFER_STATE yy_scan_string (yyconst char * str )
 {
     
-	return yy_scan_bytes(yystr,strlen(yystr) );
+	return yy_scan_bytes(str,strlen(str) );
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to yylex() will
@@ -3295,7 +3274,7 @@ YY_BUFFER_STATE yy_scan_string (yyconst char * yystr )
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
+YY_BUFFER_STATE yy_scan_bytes  (yyconst char * bytes, int  len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
@@ -3303,15 +3282,15 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = _yybytes_len + 2;
+	n = len + 2;
 	buf = (char *) yyalloc(n  );
 	if ( ! buf )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_bytes()" );
 
-	for ( i = 0; i < _yybytes_len; ++i )
-		buf[i] = yybytes[i];
+	for ( i = 0; i < len; ++i )
+		buf[i] = bytes[i];
 
-	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
+	buf[len] = buf[len+1] = YY_END_OF_BUFFER_CHAR;
 
 	b = yy_scan_buffer(buf,n );
 	if ( ! b )
@@ -3432,42 +3411,6 @@ void yyset_debug (int  bdebug )
         yy_flex_debug = bdebug ;
 }
 
-static int yy_init_globals (void)
-{
-        /* Initialization is the same as for the non-reentrant scanner.
-     * This function is called from yylex_destroy(), so don't allocate here.
-     */
-
-    /* We do not touch yylineno unless the option is enabled. */
-    yylineno =  1;
-    
-    (yy_buffer_stack) = 0;
-    (yy_buffer_stack_top) = 0;
-    (yy_buffer_stack_max) = 0;
-    (yy_c_buf_p) = (char *) 0;
-    (yy_init) = 0;
-    (yy_start) = 0;
-
-    (yy_state_buf) = 0;
-    (yy_state_ptr) = 0;
-    (yy_full_match) = 0;
-    (yy_lp) = 0;
-
-/* Defined in main.c */
-#ifdef YY_STDINIT
-    yyin = stdin;
-    yyout = stdout;
-#else
-    yyin = (FILE *) 0;
-    yyout = (FILE *) 0;
-#endif
-
-    /* For future reference: Set errno on error, since we are called by
-     * yylex_init()
-     */
-    return 0;
-}
-
 /* yylex_destroy is for both reentrant and non-reentrant scanners. */
 int yylex_destroy  (void)
 {
@@ -3484,11 +3427,6 @@ int yylex_destroy  (void)
 	(yy_buffer_stack) = NULL;
 
     yyfree ( (yy_state_buf) );
-    (yy_state_buf)  = NULL;
-
-    /* Reset the globals. This is important in a non-reentrant scanner so the next time
-     * yylex() is called, initialization will occur. */
-    yy_init_globals( );
 
     return 0;
 }
@@ -3501,7 +3439,7 @@ int yylex_destroy  (void)
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
 	register int i;
-	for ( i = 0; i < n; ++i )
+    	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
@@ -3510,7 +3448,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 static int yy_flex_strlen (yyconst char * s )
 {
 	register int n;
-	for ( n = 0; s[n]; ++n )
+    	for ( n = 0; s[n]; ++n )
 		;
 
 	return n;
@@ -3541,7 +3479,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 384 "screen.lex"
+#line 385 "screen.lex"
 
 
 

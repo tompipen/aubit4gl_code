@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.59 2006-04-09 09:33:25 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.60 2006-10-21 13:02:49 afalout Exp $
 
 ##########################################################################
 #
@@ -63,7 +63,7 @@ else
 endif
 
 
-#Despite of the use of 2>/dev/null, this will print rubbish (À&@À&@) to stdout when
+#Despite of the use of 2>/dev/null, this will print rubbish (ï¿½&@ï¿½&@) to stdout when
 #aubit-config is not installed yet. That's why we have to use the 'trick' with 
 #x=`...`; echo $x
 A4GL_CURR_PACKER:=$(shell x=`${AUBIT_CONFIG} A4GL_PACKER 2> /dev/null`; echo $$x )
@@ -147,7 +147,7 @@ ifeq "${USE_4GLPC}" "1"
 	else
 		A4GL_FGLC	=4glpc
 	endif
-	A4GL_CC_CMD     =${AUBIT_CMD} ${SH} ${A4GL_FGLC} ${EXTRA_4GLC}
+	A4GL_CC_CMD     =${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
 else
 	#default
 	USE_4GLPC		=0

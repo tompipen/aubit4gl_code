@@ -735,7 +735,7 @@ function myshowhelp()
     display "Options:"
     display " "
 	display "PG 		- target database is PostgreSQL"
-	display "IFX		- targer database is Informix"
+	display "IFX		- target database is Informix"
 	display "LOADONLY 	- load SQL schemma only, no actions performed"
 	display "SCHEMMAONLY- just create schemma"
 	display "VERBOSE 	- dipslay all operations as performed"

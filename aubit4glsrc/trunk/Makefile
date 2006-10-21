@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.29 2006-10-14 08:25:29 afalout Exp $
+# $Id: Makefile,v 1.30 2006-10-21 13:02:33 afalout Exp $
 #
 
 ## ==================================================================
@@ -201,6 +201,7 @@ corecompile:
 ifneq "${IFMX_ESQLC}" "no"
 	#curently compiles only with ESQL/C
 	$(MAKE) -C tools/aupscol
+	$(MAKE) -C tools/adbload2
 endif
 	$(MAKE) -C help
 	@echo Aubit 4gl compiler core is now compiled
@@ -523,6 +524,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/asql clean
 	$(MAKE) -C tools/adbaccess clean
 	$(MAKE) -C tools/aupscol clean
+	$(MAKE) -C tools/adbload2 clean
 	$(MAKE) -C help clean
 	$(MAKE) -C glade/ide clean
 	@echo " "	
@@ -699,7 +701,7 @@ include incl/Makefile-install.mki
 
 install: install.core install.Makefile-common install.setmod install.example \
 		install.manual install.config \
-		install.links install.aubitrc install.libs.links \
+		install.bin.links install.aubitrc install.libs.links \
 		install.makefile-install install.libs.conf install.registry
 ifneq "${AUBITRCFILEEXISTS}" ""
 	@echo " "
@@ -736,36 +738,8 @@ install.check:
 	export MAKINGAUBIT=0; export SOURCEDIR="${SOURCEDIR}";export INSTALLDIR="${INSTALLDIR}"; \
 		${SH} bin/4glpc.obsolete -chk-install
 
-		
 ########################
-#Register p-code runner with kernel (Linux with binfmt_misc suppoert in kernel ONLY)
-pcode.register: /proc/sys/fs/binfmt_misc/register $(INSTALL_DIR)/compilers/pcode/runner_fgl_wrapper
-#TODO: remove compilers/pcode/register
-#On linux - if you have binfmt_misc in the kernel (or loaded as a module )
-#you can get the kernel to run a program to run a program. This is normally
-#used for running java or C# code, but we can use it for running aubit pcode
-#bin_fmt registration.
-ifndef COMSPEC
-#Load binfmt_misc module in runningn kernel:
-#	su -c "modprobe binfmt_misc" 
-#Set (NOTE: this is NOT a file on ordinary filesystem, but on the vistual kernel fs (/proc):
-	su -c "echo \":A4GL:M::\xa4\xfc\x23\x45::$(INSTALL_DIR)/compilers/pcode/runner_fgl_wrapper:\" > $^"
-#Check:
-	cat /proc/sys/fs/binfmt_misc/status
-	echo " "
-	cat /proc/sys/fs/binfmt_misc/A4GL
-#TODO - how do we make registration permanent between reboots, and how I load binfmt_misc module 
-#automatically on boot?
-	
-endif
-
-$(INSTALL_DIR)/compilers/pcode/runner_fgl_wrapper:
-	@echo "YOU NEED TO INSTALL AUBIT COMPILER FIRST! (make install)"
-	@exit 1
-
-
-########################
-#Check that Winsows setup  installed everything we expect, and not things (FULL LOOP)
+#Check that Windows setup  installed everything we expect, and not things (FULL LOOP)
 install.check.winsetup: winsetup winsetup.check
 
 #########################
@@ -871,6 +845,128 @@ install.makefile-install:
 	${CP} configure $(ROOT_DEST)
 
 deinstall: deinstall.all
+
+
+## ==================================================================
+##                     P-code runner registration
+## ==================================================================
+#See #http://www.tat.physik.uni-tuebingen.de/~rguenth/linux/binfmt_misc.html
+#On linux - if you have binfmt_misc in the kernel (or loaded as a module )
+#you can get the kernel to run a program to run a program. This is normally
+#used for running java or C# code, but we can use it for running aubit pcode
+#bin_fmt registration.
+
+#-----------------------
+#Register p-code runner with kernel (Linux with binfmt_misc support in kernel ONLY)
+pcode.register: binfmt.boot binfmt.activate binfmt.status
+	@echo "Binfmt activation complete"
+
+#-----------------------
+#Full circle - needed when setings change (you cant just register new value,
+#updates are not possible - you have to delete everything first)
+pcode.re-register: binfmt.disable binfmt.clear binfmt.sh.delete binfmt.boot \
+	binfmt.activate binfmt.status binfmt.enable
+	@echo "Binfmt activation complete"
+
+#-----------------------
+#Try to activate binfmt support by runing a script
+binfmt.activate: /proc/sys/fs/binfmt_misc/register $(INSTALL_DIR)/bin/runner_fgl_wrapper /usr/bin/register_binfmt.sh
+#TODO: remove compilers/pcode/register
+ifndef COMSPEC
+#Load binfmt_misc module in runningn kernel:
+	su -c "${SH} /usr/bin/register_binfmt.sh"
+endif
+
+#-----------------------
+#De-registers all previously registeres formats:
+binfmt.clear: /proc/sys/fs/binfmt_misc/status
+	su -c "echo -1 > $<"
+	${MAKE} binfmt.status
+
+#-----------------------
+#Disable binfmt support
+binfmt.disable: /proc/sys/fs/binfmt_misc/status
+	su -c "echo 0 > $<"
+	${MAKE} binfmt.status
+
+#-----------------------
+#Enable binfmt support
+binfmt.enable: /proc/sys/fs/binfmt_misc/status
+	su -c "echo 1 > $<"
+	${MAKE} binfmt.status
+
+#-----------------------
+#Show binfmt support status
+binfmt.status: /proc/sys/fs/binfmt_misc/status
+	@echo "----------------------------------------------"
+	@echo "binfmt_misc status is:"
+	-@cat /proc/sys/fs/binfmt_misc/status
+	@echo " "
+	@echo "----------------------------------------------"
+	@echo "A4GL interpreter configuration:"	
+	-@cat /proc/sys/fs/binfmt_misc/A4GL
+	@echo "----------------------------------------------"	
+
+#-----------------------
+#Check for presense of Aubit P-code wrapper script in installation location:
+$(INSTALL_DIR)/bin/runner_fgl_wrapper:
+	@echo "YOU NEED TO INSTALL AUBIT COMPILER FIRST! (make install)"
+	@exit 1
+
+#-----------------------
+#Remove existing script
+binfmt.sh.delete: /usr/bin/register_binfmt.sh
+	su -c "${RM} $^"
+	
+#-----------------------
+#Create binfmt registration script:
+binfmt.sh: /usr/bin/register_binfmt.sh
+/usr/bin/register_binfmt.sh:
+	su -c "touch $@; chmod a+rwx $@;"
+	@echo "#!/bin/sh/" > $@
+	@echo "# this is to add the supported binary formats via binfmt_misc" >> $@
+	@echo "" >> $@
+	@echo "if test ! -e /proc/sys/fs/binfmt_misc ; then" >> $@
+	@echo "	modprobe binfmt_misc" >> $@
+	@echo "fi" >> $@
+	@echo "" >> $@
+	@echo "if test -e /proc/sys/fs/binfmt_misc ; then" >> $@
+#	@echo "	echo ':Wine:M::MZ::/usr/local/bin/wine:' \> /proc/sys/fs/binfmt_misc/register" >> $@
+#	@echo "	echo ':Java:M::\xca\xfe\xba\xbe::/usr/local/java/bin/javawrapper:' \> /proc/sys/fs/binfmt_misc/register" >> $@
+#	@echo "	echo ':HTML:E::html::/usr/local/java/bin/appletviewer:' \> /proc/sys/fs/binfmt_misc/register" >> $@
+#	@echo "	echo ':Applet:M::<!--applet::/usr/local/java/bin/appletviewer:' \> /proc/sys/fs/binfmt_misc/register" >> $@
+	@echo "	echo ':A4GL:M::\xa4\xfc\x23\x45::$(INSTALL_DIR)/bin/runner_fgl_wrapper:' > /proc/sys/fs/binfmt_misc/register" >> $@	
+	@echo "else" >> $@
+	@echo "	echo 'No binfmt_misc support'" >> $@
+	@echo "fi" >> $@
+	@echo "exit 0" >> $@
+	@echo "" >> $@
+#	chmod a+x $@
+#	chown root $@
+	@echo "CREATED $@"
+	
+#-----------------------
+#Enable invoking binfmt registration script on system boot:
+binfmt.boot: /usr/bin/register_binfmt.sh
+#On SuSE it's /etc/init.d/boot.local
+	@BOOT_LOCAL=""; \
+	if test -f /etc/rc/boot.local; then \
+		BOOT_LOCAL="/etc/rc/boot.local"; \
+	elif test -f /etc/init.d/boot.local; then \
+		BOOT_LOCAL="/etc/init.d/boot.local"; \
+	else \
+		echo "/etc/rc/boot.local or /etc/init.d/boot.local does not exist"; \
+	fi; \
+	if test "$$BOOT_LOCAL" != ""; then \
+		if test "`grep 'register_binfmt.sh' $$BOOT_LOCAL`" = ""; then \
+			su -c "echo '$^' >> $$BOOT_LOCAL"; \
+			echo "ADDED $^ invocation to $$BOOT_LOCAL"; \
+		else \
+			echo "$^ invocation in $$BOOT_LOCAL allready present"; \
+		fi; \
+	fi
+	
+
 
 ## ==================================================================
 ##                           Packaging

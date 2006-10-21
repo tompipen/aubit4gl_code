@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.27 2006-07-27 16:01:06 mikeaubury Exp $
+# $Id: Makefile,v 1.28 2006-10-21 13:02:43 afalout Exp $
 #
 
 ROOT    =../..
@@ -104,7 +104,9 @@ ifeq "${DBG}" "yes"
 endif
 
 #Targets we can compile in any case
-ALL             =${BINROOT}/c2pcode_fgl ${BINROOT}/checker_fgl ${BINROOT}/runner_fgl ${BINROOT}/link_fgl
+ALL             =${BINROOT}/c2pcode_fgl ${BINROOT}/checker_fgl ${BINROOT}/runner_fgl \
+				${BINROOT}/link_fgl ${BINROOT}/runner_fgl_wrapper
+				
 #Targets we can compile only if we have RPC
 ALL_RPC			=${BINROOT}/c2pcode ${BINROOT}/checker ${BINROOT}/runner
 
@@ -195,6 +197,8 @@ ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)  npcode.xs.h
 	$(CC) --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS}
 #${RPCLINKLIBS}
 
+${BINROOT}/runner_fgl_wrapper:
+	${CP} ./runner_fgl_wrapper $@
 
 #------------------- probably obsolete targets -------------------------
 

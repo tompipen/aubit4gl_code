@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.154 2006-10-17 13:28:01 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.155 2006-10-21 13:02:51 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.154 2006-10-17 13:28:01 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.155 2006-10-21 13:02:51 afalout Exp $";
 #endif
 extern int yylineno;
 
@@ -893,6 +893,20 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
   printc ("char _d[256];");
   printc ("\nEXEC SQL END DECLARE SECTION;");
   clr_suppress_lines ();
+  
+		/*
+		Note: ecpg checks for PG_DBPATH:
+
+		export PG_DBPATH=dbname[@server][:port]
+
+		This will override any DATABASE statements in the .cpc (This is part of ecpg
+		- not aubit4gl)
+
+		see the sourcecode - I found some :
+		http://jonathangardner.net/PostgreSQL/doxygen/7.4/connect_8c-source.html
+		*/
+  
+  
   if (strcmp (v, "?") == 0)
     {
       printc ("strcpy(_d,A4GL_char_pop()); A4GL_trim(_d);");

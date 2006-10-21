@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.202 2006-10-13 11:28:58 afalout Exp $
+# $Id: Makefile-common.in,v 1.203 2006-10-21 13:02:47 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -370,6 +370,7 @@ AR 					=ar rc
 #BISON will contatin full path to bison executable. It will already include
 #-y flag set from autoconf, or "no" if not found or disabled:
 BISON               =@BISON@
+BISON_EXE			=@BISON_EXE@
 #YACC is variable name we use all over the make files, for Bison command
 YACC                =$(strip ${BISON} @DEBUG_BISON@)
 

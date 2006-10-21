@@ -1,3 +1,4 @@
+# +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0   binary install make include|
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-5 Aubit Development Team (See Credits file)       |
@@ -22,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.109 2006-10-14 08:25:35 afalout Exp $
+# $Id: Makefile-install.mki,v 1.110 2006-10-21 13:02:49 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -36,6 +37,10 @@
 #	${INSTALL} -m 644    ${FILE1.42f} ${D4GL_D4GL}
 
 #<block for binary install Makefile ======================================>
+
+#Cant declare PHONY here???
+#.PHONY: install.links install.bin.links install.lib.links \
+#	deinstall.links: deinstall.bin.links deinstall.libs.links
 
 ## ==================================================================
 ##                    install targets
@@ -51,16 +56,16 @@ else
 	${CP} ${INFILE} /tmp/aubitrc.tmp
 endif
 ifeq "${AUBITRCFILEEXISTS}" ""
-	${MKPATH} ${AUBITETC}
-#FIXME: following test will fail if performed on the same run when directory is created,
-#since make will evaluate it BEFORE mkdir is executed:
-ifeq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
-	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
-	chmod a+r ${AUBITETC}/aubitrc
-	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
-else 
-	@echo "======== WARNING: ${AUBITETC} is not writable. ==========="
-endif
+	@if ! test -d ${AUBITETC} ; then ${MKPATH} ${AUBITETC}; fi
+#THIS MUST BE A PURE SHELL - not a $(shell ...) as make variables are evaluated
+#BEFORE any make target commands are executed!
+	@if test -w ${AUBITETC} ; then \
+		mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc; \
+		chmod a+r ${AUBITETC}/aubitrc; \
+		echo "Configuration files installed to ${AUBITETC}/aubitrc"; \
+	else \
+		echo "======== NOTE: ${AUBITETC} is not writable. ==========="; \
+	fi
 else
 	@echo " "
 	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
@@ -84,28 +89,89 @@ install.amake.files:
 	${CP} ${AMAKE_TOINCL} $(INCL_DEST)
 
 install.aubit-config.link: install.bin.install.link.dir
-#   -w file True if file exists and is writable.
-ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
-	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
-	${LN_S} $(INSTALL_DIR)/bin/amake ${BIN_INSTALL_LINK}/amake
-else
-	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
-endif
+	@if ! test -d ${BIN_INSTALL_LINK}; then ${MKPATH} ${BIN_INSTALL_LINK}; fi
+	@if test -w ${BIN_INSTALL_LINK} ; then \
+		${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config; \
+		${LN_S} $(INSTALL_DIR)/bin/amake ${BIN_INSTALL_LINK}/amake; \
+		echo "Links from $(INSTALL_DIR)/bin to ${BIN_INSTALL_LINK} for aubit-config and amake installed"; \
+	else \
+		echo " "; \
+		echo "+---------------------------------------------------------------------------"; \
+		echo "| NOTE: ${BIN_INSTALL_LINK} is not writable-cant install aubit-config link"; \
+		echo "+---------------------------------------------------------------------------"; \
+		${MKPATH} ${HOME}/bin; \
+		if test -w ${HOME}/bin ; then \
+			${LN_S} $(INSTALL_DIR)/bin/aubit-config ${HOME}/bin/aubit-config; \
+			${LN_S} $(INSTALL_DIR)/bin/amake ${HOME}/bin/amake; \
+			echo "Links from $(INSTALL_DIR)/bin to ${HOME}/bin/ for aubit-config and amake installed"; \
+		else \
+			echo " "; \
+			echo "+---------------------------------------------------------------------------"; \
+			echo "| WARNING: ${HOME}/bin is not writable-cant install aubit-config link"; \
+			echo "+---------------------------------------------------------------------------"; \
+		fi \
+	fi
 
 install.bin.install.link.dir:
-	${MKPATH} ${BIN_INSTALL_LINK}
+	@if ! test -d ${BIN_INSTALL_LINK}; then ${MKPATH} ${BIN_INSTALL_LINK}; fi
+	@if ! test -d ${HOME}/bin; then ${MKPATH} ${HOME}/bin; fi
 
+
+#Install all links
+install.links: install.bin.links install.libs.links
+	@echo "All links installed"
+	
+#De-install all links
+deinstall.links: deinstall.bin.links deinstall.libs.links
+	@echo "All links de-installed"
+	
 #######################################
 #Create links for bin programs to location of Aubit bynary installation:
-install.links: deinstall.bin.links install.aubit-config.link install.bin.install.link.dir
-#   -w file True if file exists and is writable.
-ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
-	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
-	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
-else
-	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable - won't install 'aubit' there"
-endif
+install.bin.links: deinstall.bin.links install.aubit-config.link install.bin.install.link.dir
+	@if ! test -d ${BIN_INSTALL_LINK}; then ${MKPATH} ${BIN_INSTALL_LINK}; fi
+	@if test -w ${BIN_INSTALL_LINK} ; then \
+		${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit; \
+		echo "Links from $(INSTALL_DIR)/bin to ${BIN_INSTALL_LINK}/ for 'aubit' installed"; \
+	else \
+		echo " "; \
+		echo "+---------------------------------------------------------------------------"; \
+		echo "| NOTE: ${BIN_INSTALL_LINK} is not writable - won't install 'aubit' link there"; \
+		echo "+---------------------------------------------------------------------------"; \
+		if ! test -d ${HOME}/bin ; then ${MKPATH} ${HOME}/bin; fi; \
+		if test -w ${HOME}/bin ; then \
+			${LN_S} $(INSTALL_DIR)/bin/aubit ${HOME}/bin/aubit; \
+			echo "Links from $(INSTALL_DIR)/bin to ${HOME}/bin/ for 'aubit' installed"; \
+		else \
+			echo " "; \
+			echo "+---------------------------------------------------------------------------"; \
+			echo "| WARNING: ${HOME}/bin is not writable - won't install 'aubit' link there"; \
+			echo "+---------------------------------------------------------------------------"; \
+		fi; \
+	fi
 
+#######################################
+install.libs.links: deinstall.libs.links
+#Link libaubit4gl with version string to plain libaubit4gl:
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT}
+	@if ! test -d ${LIB_INSTALL_LINK}; then ${MKPATH} ${LIB_INSTALL_LINK}; fi
+	@if test -w ${LIB_INSTALL_LINK} ; then \
+		${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}; \
+		echo "Links from $(INSTALL_DIR)/lib to ${LIB_INSTALL_LINK}/ for libaubit4gl installed"; \
+	else \
+		echo " "; \
+		echo "+---------------------------------------------------------------------------"; \
+		echo "| NOTE: ${LIB_INSTALL_LINK} is not writable - won't create Aubit libraries links there"; \
+		echo "+---------------------------------------------------------------------------"; \
+	fi
+
+
+
+#Note: there are not alternatives here - there is no location that is by default writable to 
+#to a regular user, that is by default included in LD_LIBRARY_PATH or ldconfig paths.
+#Therefore, user will need to add $(INSTALL_DIR)/lib to his LD_LIBRARY_PATH himself
+#manually (hopefully to ${HOME}/.profile) as no other options are avilable to regular user 
+#appart from asking a sys admin. Or using 'abit' wrapper script.
+	
 
 #This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
 #But NOT libs that are linked and not dlopen()-ed (like libESQL_ and file...)
@@ -113,6 +179,24 @@ endif
 #Can't put targets in MAkefile-common - I should create one include makefile 
 #for targets needed by both binary and source distros 
 install.libs.conf:
+	@if test -w /etc/ld.so.conf.d ; then \
+		echo "$(INSTALL_DIR)/lib" > /etc/ld.so.conf.d/aubit4gl.conf; \
+	fi
+ifneq "${LDCONFIG}" "no"	
+	@if test -w /etc/ ; then \
+		if "${LDCONFIG}" ; then \
+			echo "Refreshed ldconfig cache." ;\
+		else \
+			echo "Unable to refresh ldconfig cache." ;\
+		fi; \
+	fi
+else
+	@echo "ldconfig not found on your system"
+endif
+
+
+ifeq "1" "2"
+#OBSOLETE - The above should have same effect and is simpler
 ifneq "${LDCONFIG}" "no"
 ifeq "${GREP_LD_SO_CONF}" ""
 	@if echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF} ; \
@@ -132,7 +216,11 @@ endif
 else
 	@echo "ldconfig not found on your system"
 endif
+endif
 
+## ==================================================================
+##                    Windows registry
+## ==================================================================
 
 #Add basic registry keys, so native windows executable can find aubitrc
 install.registry:
@@ -164,16 +252,6 @@ ifdef COMSPEC
 	@echo "AUBITDIR=`regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`"
 	@echo "A4GL_INIFILE=`regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"`"	
 	@echo "----------------------------------------------------------------"	
-endif
-
-#######################################
-install.libs.links: deinstall.libs.links
-	${MKPATH} ${LIB_INSTALL_LINK}
-ifeq "$(shell  if test -w ${LIB_INSTALL_LINK} ; then echo 1; fi)" "1"
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
-	@echo "Links to Aubit libraries installed to ${LIB_INSTALL_LINK}/ "
-else
-	@echo "WARNING: ${LIB_INSTALL_LINK} is not writable - won't install Aubit libraries there"
 endif
 
 ## ==================================================================
@@ -241,6 +319,9 @@ deinstall.tree:
 #Remove entries added to system configuration for libraries paths
 deinstall.ldconfig:
 ifneq "${LDCONFIG}" "no"
+	@if test -w /etc/ld.so.conf.d ; then \
+		${RM} /etc/ld.so.conf.d/aubit4gl.conf; \
+	fi
 #remove entry from library path config file:
 ifeq "${GREP_LD_SO_CONF}" ""
 	@echo "$(INSTALL_DIR)/lib entry in ${LD_SO_CONF} does not exist."
@@ -258,25 +339,54 @@ endif
 #######################################
 #remove links to libraries:
 deinstall.libs.links:
-ifeq "$(shell  if test -w ${LIB_INSTALL_LINK} ; then echo 1; fi)" "1"
-	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
-else
-ifeq "$(shell  if test -f ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT} ; then echo 1; fi)" "1"
-	@echo "WARNING : Unable to remove ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}"
-endif
-endif
+#Remove the link from plain name to the one with version string:
+	${RM} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT}
+#	@echo "checking ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}"
+	@if test -L ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}; then \
+		if test -w ${LIB_INSTALL_LINK} ; then \
+			${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}; \
+			echo "Removed libaubit4gl link in ${LIB_INSTALL_LINK}"; \
+		else \
+			echo " "; \
+			echo "+---------------------------------------------------------------------------"; \
+			echo "| WARNING : Unable to remove link ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}"; \
+			echo "| - insufficienet user permisions"; \
+			echo "+---------------------------------------------------------------------------"; \
+		fi; \
+	fi
+
 
 #######################################
 #remove links to binaries:
 deinstall.bin.links:
-ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
-	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
-else
-ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
-	@echo "WARNING  :Unable to remove the aubit-config and aubit files in the ${BIN_INSTALL_LINK} directory"
-endif
-	
-endif
+	@if test -L ${BIN_INSTALL_LINK}/aubit-config -o -L ${BIN_INSTALL_LINK}/aubit \
+			-o -L ${BIN_INSTALL_LINK}/amake; then \
+		if test -w ${BIN_INSTALL_LINK} ; then \
+			${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit \
+				${BIN_INSTALL_LINK}/amake; \
+			echo "Removed aubit-config, amake and aubit links in ${BIN_INSTALL_LINK}"; \
+		else \
+			echo " "; \
+			echo "+---------------------------------------------------------------------------"; \
+			echo "| WARNING:Unable to remove the aubit-config and aubit links in the"; \
+			echo "| ${BIN_INSTALL_LINK} directory - insufficienet user permisions"; \
+			echo "+---------------------------------------------------------------------------"; \
+		fi \
+	fi
+	@if test -L ${HOME}/bin/aubit-config -o -L ${HOME}/bin/aubit \
+			-o -L ${HOME}/bin/amake; then \
+		if test -w ${HOME}/bin ; then \
+			${RM} ${HOME}/bin/aubit-config ${HOME}/bin/aubit \
+				${HOME}/bin/amake; \
+			echo "Removed aubit-config, amake and aubit links in ${HOME}/bin/aubit-config"; \
+		else \
+			echo " "; \
+			echo "+---------------------------------------------------------------------------"; \
+			echo "| WARNING:Unable to remove the aubit-config and aubit links in the"; \
+			echo "| ${BIN_INSTALL_LINK} directory - insufficienet user permisions"; \
+			echo "+---------------------------------------------------------------------------"; \
+		fi \
+	fi
 
 #######################################
 #stuff left over from automatic nightly builds (aubitbuild.sh):
