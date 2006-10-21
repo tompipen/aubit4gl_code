@@ -197,7 +197,7 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "VALIDATE_LIKE IFX_SYSTABLES"
+	@echo "VALIDATE_LIKE IFX_SYSTABLES  DEFINE_SMALLINT"
 
 
 expect_code:			; @echo ""

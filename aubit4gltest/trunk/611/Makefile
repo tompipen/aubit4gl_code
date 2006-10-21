@@ -192,7 +192,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE CREATE_VIEW_SELECT_WITH_CHECK"
+	@echo "DROP_TABLE CREATE_TABLE CREATE_VIEW_SELECT_WITH_CHECK  CREATE_VIEW_AS_SELECT"
 
 
 runtime_err_check:

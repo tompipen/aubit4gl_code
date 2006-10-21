@@ -202,7 +202,7 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "DATABASE_QUALIFIED_PATH"
+	@echo "DATABASE_QUALIFIED_PATH  DEFINE_CHAR"
 	
 
 runtime_err_check:

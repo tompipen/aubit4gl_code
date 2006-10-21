@@ -193,7 +193,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE DDL_CHECK"
+	@echo "DROP_TABLE CREATE_TABLE DDL_CHECK  DEFINE_CHAR DDL_NOT_NULL WHERE_IN"
 
 
 runtime_err_check:

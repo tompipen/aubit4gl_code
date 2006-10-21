@@ -1,3 +1,4 @@
+#!/bin/bash
 ###########################################################################
 # 		Use this script to run unit tests (see -help)
 #
@@ -260,7 +261,7 @@ for a in $FLAGS; do
 		
 	-show )
 		#don't run any tests - just show configuration under which they would be executed
-		#at the point of COMPILATIOn in the test makefile
+		#at the point of COMPILATION in the test makefile
 		SHOW_CONFIG_IN_MAKE=1
 		export SHOW_CONFIG_IN_MAKE
 		#break
@@ -337,6 +338,30 @@ for a in $FLAGS; do
         NO_ECHO=1; ALL_DB=1
         ;;
 
+	-4glpc) #Use 4glpc to compile
+		export FGLC=$A4GL_FGLPC
+		#Let Amake rules know:
+		if test "$FGLC" = "$A4GL_FGLPC"; then
+			export USE_4GLPC="1"
+		elif test "$FGLC" = "$A4GL_FGLC"; then
+			export USE_4GLPC=""
+		else
+			echo "Eh?"
+			exit 5
+		fi
+		;;
+	-4glc) #Use 4glc to compile
+		export FGLC=$A4GL_FGLC
+		#Let Amake rules know:
+		if test "$FGLC" = "$A4GL_FGLPC"; then
+			export USE_4GLPC="1"
+		elif test "$FGLC" = "$A4GL_FGLC"; then
+			export USE_4GLPC=""
+		else
+			echo "Eh?"
+			exit 5
+		fi
+		;;
     -debug)         #set DEBUG=ALL
         export DEBUG=ALL
         ;;
@@ -395,6 +420,15 @@ for a in $FLAGS; do
 
 	-itemised) 		#Show result for each executed test
 		SHOW_ITEM_RESULT=1
+		;;
+		
+	-clear-cache)
+		rm -f $CURR_DIR/docs/catalogue.unl
+		#Should probably cler $CURR_DIR/docs/catalogue.txt, but as it will get 
+		#regenerated nex time, and it does not affect anything, I'll leave it
+		rm -f $CURR_DIR/etc/cache_IS_DB_TEST.txt
+		echo "Cached information about tests removed"
+		exit 0
 		;;
 		
     -onlydb)        #run only db based tests
@@ -623,6 +657,19 @@ for a in $FLAGS; do
 
         ;;
 
+    -mysql)         #Use MySQL native plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_mysql$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find MySQL plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; export SKIP_EC_RUN=1; USE_ECI=0
+		export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=mysql; USE_MYSQL=1
+
+        ;;
+		
+		
     -eci)   		#Use Informix ESQL/C EC output in for db tests
 		USE_SQLITE=0; USE_ESQLI=1; USE_ECI=1; export SKIP_EC_RUN=0
 		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=INFORMIX
@@ -732,7 +779,7 @@ for a in $FLAGS; do
 		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=INGRES
         		#this will be used only by 4glc/fcompile compilers:
 		export A4GL_SQLTYPE=ingres
-		export FGLC=4glpc
+		export FGLC=$A4GL_FGLPC
 
 		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
 			if ! test "$NO_ECHO"; then
@@ -748,6 +795,11 @@ for a in $FLAGS; do
 		USE_ESQLI=1; NEW_IFMX=1
         ;;
 
+    -mysql-new) 	#Create new MySQL database from scripts
+		USE_MYSQL=1; NEW_MYSQL=1
+        ;;
+
+		
     -pg)   			#Use PostgreSQL plug-in for db tests
 		if ! test -f $LIBS_DIR/libSQL_pg$SO_EXT; then
 			if ! test "$NO_ECHO"; then
@@ -766,6 +818,12 @@ for a in $FLAGS; do
 		;;
 
 
+	-pg-inst=*) #Use Postgres installed at particular location, and not
+				#the one potentially available at system locations lile
+				#/ust/bin /usr/lib etc
+			#Got it on init
+		;;
+		
     -pg-new)         	#Create new PostgreSQL database from scripts
 		USE_PG=1; NEW_PG=1
         ;;
@@ -1247,10 +1305,12 @@ for a in $FLAGS; do
 		echo " -tui        use UI_TUI UI for tests (DEFAULT on *NIX))"
 		echo " -tuiw       use HL_TUIw UI for tests (DEFAULT on Windows)"
 		echo " -hl_tui     use HL_TUI UI for tests"
+		echo " -4gl[p]c    Use 4glc or 4glpc to compile and link 4GL code"
 		echo " -ignore-compat Skip testing for test compatibility with non-aubit compilers"
 		echo " -ignore-conf-error Ignore configuration errors and continue"
 		echo " -skip-expectfail Skip tests expected to fail"
 		echo " -use-cache  Use cached test descriptions to loop faster"
+		echo " -clear-cache Remove cached information about tests, used to speed up execution"
 		echo " -loop-[10|100] Loop same test 10 or 100 times"
 		echo ""
 		if test "$HELP_ALL" != "1"; then
@@ -1272,9 +1332,11 @@ for a in $FLAGS; do
 		echo "             current db, but NOT the ones that are possible but not working"
 		echo " -sqlite     Use SQLite as database for db tests"
 		echo " -esqli      Use Informix ESQL/C plug-in for db tests"
-		echo " -ec[i|s|p|q] Use Informix/SAP/PG/Querix ESQL/C EC output in for db tests"
+		echo " -mysql      Use MySQL native plug-in for db tests"		
+		echo " -ec[i|s|p|q|g] Use Informix/SAP/PG/Querix/Ingres ESQL/C EC output in for db tests"
 		echo " -pg         Use PostgreSQL plug-in for db tests"
-
+		echo " -pg-inst=x  Use PostgreSQL installed at x, not the one potentially available in system"
+		echo "             locations (/usr/bin /usr/lib etc)"
 		echo " -<x>odbc    Use <x> plug-in for db tests. <x> = "
 		echo "             unix | i | ifx | sqlite | pg | sap | win"
 
@@ -1317,9 +1379,9 @@ for a in $FLAGS; do
 		
 	-help-utility)
 		echo "UTILITY OPTIONS:"	
-		echo " -info [x]   Show test x description, or list descriptions for all tests"
+		echo " -info [x]   Show test x description, or list descriptions for all tests"
 		echo " -catalogue  Create catalogue.txt file using -info flag"
-		echo " -new x      Create new test x from files in template/, add to CVS"
+		echo " -new x      Create new test x from files in template/, add to CVS"
 		echo " -add-makefile Add makefile from template to tests that don't have one" 
 		echo " -add-cvsignore Add .cvsignore from template to tests that don't have one"
 		echo " -record     record keystrokes to file while running program"
@@ -1328,6 +1390,13 @@ for a in $FLAGS; do
 		echo " -commit     commit changes to tests source code to CVS"
 		echo " -certify	x  flage the test as certified in the makefile"
 		echo " -showerr x  Show compile errors in 4gl code for given test"
+		echo " -show-config Don't run any tests - just show configuration under which "
+		echo "              they would be executed at the point of makefile incovation in this script"
+		echo " -show        Don't run any tests - just show configuration under which they would be "
+		echo "              executed at the point of COMPILATION in the test makefile"
+		echo " -show-make   Dont run 'run' target in makefile - run 'show' target instead"
+		
+		
 		echo ""
 		if test "$HELP_ALL" != "1"; then
 			exit 0
@@ -1445,12 +1514,17 @@ if test -f "docs/catalogue.unl"; then
 else
 	LINES_IN_CATALOGUE_UNL=0
 fi
-if test "$LINES_IN_CATALOGUE_UNL" -lt "600" -o "$CATALOGUE_UNL" = "1"; then
+TEST_DIRS_CNT=`ls -d [0-9]* | wc -l`
+#deduct 30 as probable number of directories with invalid tests, missing files etc:
+let TEST_DIRS_CNT=TEST_DIRS_CNT-30
+
+if test "$LINES_IN_CATALOGUE_UNL" -lt "$TEST_DIRS_CNT" -o "$CATALOGUE_UNL" = "1"; then
 	#too few lines in the file, file obvieosly not complete, or user specified
 	#-catalogue on command line explicitly.
 	#Have to load test info from makefiles and/or strings:
 	DISABLE_CAT_INFO=1
-	verbose "Loading of test info from cataloguie.unl disabled"
+	verbose "Loading of test info from cache file catalogue.unl disabled"
+	verbose "Lines in catalogue:$LINES_IN_CATALOGUE_UNL tests:$TEST_DIRS_CNT CATALOGUE_UNL:$CATALOGUE_UNL"
 fi
 
 if test "$A4GL_FORMTYPE" = "GENERIC" -a "$A4GL_PACKER" = "PACKED" -a "$PLATFORM" = "MINGW"; then
@@ -1497,7 +1571,7 @@ fi
 
 #####################
 #Determine which datbase back-end we will use for ODBC managers, if user did not
-#specify it using -odbcdb-xxx flag
+#specify it using -odbcdb-yyy flag
 if test "$IS_ODBC_MANAGER" = "1" && test "$ODBC_USE_DB" = ""; then
 	if test "`dbaccess -V 2>/dev/null`" != ""; then
 		ODBC_USE_DB=IFX
@@ -1717,7 +1791,6 @@ if test "$CATALOGUE_UNL" != "1" ; then
 	fi
 fi
 
-
 if test "$SILENT" = "1" -a "$NO_ECHO" != "1"; then
 	echo "Running test(s)..."
 fi
@@ -1860,7 +1933,8 @@ do
 		show_test_info
 	fi
 	
-	if test "$CATALOGUE_UNL" = "1"; then 
+	if test "$CATALOGUE_UNL" = "1"; then
+		#Create catalogue entry for this test
 		catalogue_unl
 		if test "$INFO_TEST" = "1"; then
 			continue
@@ -2365,6 +2439,13 @@ do
 			#SQL_FEATURES_COMPATIBLE=""
 			IN_4G_NOT_IN_MK=""
 			IN_MK_NOT_IN_4GLC=""
+
+#echo "In dumpfile: $SQL_FEATURES_USED_4GLC"
+#echo "in makefilke: $SQL_FEATURES_USED"
+#xxxxxx
+#exit
+
+
 			
 			#Create list of features that do not match in both
 			for FEATURE_MK in $SQL_FEATURES_USED ; do
@@ -2408,11 +2489,20 @@ do
 					verbose "$IN_4G_NOT_IN_MK"
 				fi
 				if test "$IN_MK_NOT_IN_4GLC" != ""; then
-					verbose "WARNING: features listed in Makefile but not by 4glc:"
+					#This is actuially expected, as there are number of "meta"
+					#features that will be very hard for compiler to setect,
+					#and we are expected to add them manually:
+					verbose "NOTE: features listed in Makefile but not by 4glc:"
 					verbose "$IN_MK_NOT_IN_4GLC"
 				fi
-				verbose "DB features (makefile) :$SQL_FEATURES_USED" 
-				verbose "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
+				
+				if test "$IN_4G_NOT_IN_MK" != "" -o "$IN_MK_NOT_IN_4GLC" != ""; then
+					if test "$SH_DBG" = "1"; then 
+						verbose "DB features (makefile) :$SQL_FEATURES_USED" 
+						verbose "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
+					fi
+				fi
+				
 			else
 				if test "$IN_4G_NOT_IN_MK" != ""; then
 					LIST_IN_4G_NOT_IN_MK="$LIST_IN_4G_NOT_IN_MK ($TEST_NO:$IN_4G_NOT_IN_MK)"
@@ -2427,7 +2517,53 @@ do
 			fi
 		fi
 	fi
-	
+#echo ">>>>$SQL_FEATURES_USED"	
+	if test "$DISABLE_CAT_INFO" = "1"; then 
+		#We are NOT reading from cache; it's OK if we are creating new one
+		#as we allready enteres this test into catalogue, change wont be reflected
+		#there tho! - see catalogue_unl call above
+		
+		#Should not automatically make change based on potentially allready 
+		#out of date (or worse - corrupt!) data in cache
+		DO_UPDATE_FEATURES_USED=0
+		if test "$SQL_FEATURES_USED" = "" -a "$SQL_FEATURES_USED_4GLC" != ""; then
+			#Features used are empy in makefile - set them to what 4glc returned
+			verbose "Adding features listed by 4glc to makefile automatically..."
+			SQL_FEATURES_USED_MAKEFILE="$SQL_FEATURES_USED"
+			SQL_FEATURES_USED="$SQL_FEATURES_USED_4GLC"
+			DO_UPDATE_FEATURES_USED=1
+		else
+			if test "$IN_4G_NOT_IN_MK" != "" -a "$SQL_FEATURES_USED" != ""; then
+				#there are some features used in meakefile, but not all that 
+				#4glc returned; add 4glc returned features to allready present ones
+				#in makefile
+				verbose	"Adding features listed by 4glc but not in Makefile:"
+				SQL_FEATURES_USED_MAKEFILE="$SQL_FEATURES_USED"
+				SQL_FEATURES_USED="$SQL_FEATURES_USED $IN_4G_NOT_IN_MK"
+				DO_UPDATE_FEATURES_USED=1
+			fi
+		fi
+		if test "$DO_UPDATE_FEATURES_USED" = "1"; then
+			change_setting "sql_features_used" "$SQL_FEATURES_USED" "$TEST_NO"	
+			DISABLE_CATALOGUE_UNL=1
+			
+			debug "DB features (makefile) :$SQL_FEATURES_USED_MAKEFILE" 
+			debug "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
+			debug "In 4glc, Not in MK: $TEST_NO:$IN_4G_NOT_IN_MK"
+			debug "In MK, not in 4glc: $TEST_NO:$IN_MK_NOT_IN_4GLC"
+		fi
+
+		
+		if test "$DISABLE_CATALOGUE_UNL" = "1" -a "$CATALOGUE_UNL" = "1"; then
+			#We where in the process of creating new catalogue, and this is the 
+			#first time we had to change one of makefiles, so
+			#disable further creation of catalogue, and remove cache file we created so far
+			CATALOGUE_UNL=0
+			rm -f $CURR_DIR/docs/catalogue.unl
+			verbose "Disabled catalogue creation, as we just changed one of makefiles"
+		fi
+		
+	fi
 	if test "$UNL_LOG" = "1"; then
 		#test_no=$1 result=$2 skip_reason=$3 expect_fail=$4 test_version=$5 db_has_trans=$6
 		result_unl $TEST_NO $RESULT "" $IS_EXPECT_TO_FAIL_TEST "" $DB_HAS_TRANSACTION

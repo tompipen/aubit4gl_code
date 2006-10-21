@@ -228,7 +228,7 @@ se_required:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "DROP_AUDIT"
+	@echo "DROP_AUDIT  DROP_TABLE CREATE_TABLE CREATE_AUDIT SQLCA_SQLCODE IF EXIT_PROGRAM_EXPR"
 
 # ============================= EOF ================================
 

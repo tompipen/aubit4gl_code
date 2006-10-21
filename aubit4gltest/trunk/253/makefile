@@ -231,5 +231,5 @@ need_plugin:
 
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR DEFINE_INTEGER USES_FORM UI_DISPLAY_FORM UI_CONSTRUCT IF UI_DISPLAY_LINE_MODE DISPLAY SLEEP EXIT_PROGRAM_EXPR "
 

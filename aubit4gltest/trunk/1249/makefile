@@ -24,8 +24,7 @@ run: compile ; ${DEFAULT_RUN}
 ## ======================================================================
 
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "Date tests of some sort"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
@@ -37,16 +36,16 @@ graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"
 long_test:				; @echo "0"
-cert_test:				; @echo "0"
+cert_test:				; @echo "1"
 obsolete_test:			; @echo "0"
-compat_test:			; @echo "0"
+compat_test:			; @echo "1"
 expect_code:			; @echo "0"
 compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo ""
-ansi_sql_compat:		; @echo ""
+sql_features_used:		; @echo "DEFINE_SMALLINT DEFINE_DATE DEFINE_CHAR DROP_TABLE DDL_DATE CREATE_TEMP_TABLE ANSI_DELETE UI_DISPLAY_AT DISPLAY ANSI_INSERT IF EXIT_PROGRAM_EXPR"
+ansi_sql_compat:		; @echo "1"
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
 need_plugin:			; @echo ""

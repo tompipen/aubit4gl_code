@@ -191,7 +191,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "FREE_LOB"
+	@echo "DATABASE_USED DEFINE_INTEGER DEFINE_CHAR DROP_TABLE CREATE_TABLE PREPARE EXECUTE_USING EXECUTE CURSOR_SELECT FREE_CURSOR "
 
 
 runtime_err_check:

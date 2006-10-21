@@ -191,7 +191,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE GRANT"
+	@echo "DROP_TABLE CREATE_TABLE GRANT  DEFINE_CHAR IF PREPARE STATUS UI_DISPLAY_LINE_MODE DISPLAY EXECUTE"
 
 
 runtime_err_check:

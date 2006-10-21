@@ -25,3 +25,6 @@ desc:
 # and library extension (eg. for libRPC_XDR.so use only "RPC_XDR".
 need_plugin:
 	@echo "RPC_XDR"
+
+sql_features_used:		; @echo "DATABASE_USED DROP_TABLE CREATE_TABLE ANSI_DELETE ANSI_INSERT DEFINE_LIKE VALIDATE_LIKE STATUS IF EXIT_PROGRAM_EXPR "
+

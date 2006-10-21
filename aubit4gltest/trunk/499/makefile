@@ -226,7 +226,7 @@ transaction:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "DATABASE_USED DEFINE_LIKE "
 
 	
 #################

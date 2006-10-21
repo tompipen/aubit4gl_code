@@ -191,7 +191,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE CREATE_INDEX_ASC"
+	@echo "DROP_TABLE CREATE_TABLE CREATE_INDEX_ASC  CREATE_INDEX CREATE_INDEX_COMPOSITE"
 
 
 runtime_err_check:

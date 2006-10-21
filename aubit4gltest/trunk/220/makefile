@@ -201,5 +201,5 @@ need_ifx_version:			; @echo ""
 transaction:			; @echo ""
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DROP_TABLE CREATE_TABLE ANSI_DELETE ANSI_INSERT DEFINE_LIKE VALIDATE_LIKE STATUS IF EXIT_PROGRAM_EXPR "
 

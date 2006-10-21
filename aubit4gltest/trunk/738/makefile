@@ -225,7 +225,7 @@ transaction:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "SELECT_INTO_TEMP"
+	@echo "SELECT_INTO_TEMP  DEFINE_SMALLINT DEFINE_CHAR DEFINE_DATE DROP_TABLE DDL_DATE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST ANSI_INSERT ORDER_BY_ASC ORDER_BY_DESC ORDER_BY CURSOR_SELECT OPEN_CURSOR IF UI_DISPLAY_LINE_MODE DISPLAY CLOSE_CURSOR EXIT_PROGRAM_EXPR"
 		
 # ============================= EOF ================================
 

@@ -189,7 +189,7 @@ ansi_sql_compat:
 
 
 sql_features_used:
-	@echo "SELECT_COUNT IFX_SYSTABLES"
+	@echo "SELECT_COUNT IFX_SYSTABLES  UI_DISPLAY_LINE_MODE DISPLAY DEFINE_SMALLINT LABEL"
 
 
 runtime_err_check:

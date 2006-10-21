@@ -199,7 +199,7 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "SELECT_COUNT"
+	@echo "SELECT_COUNT  DEFINE_SMALLINT"
 
 
 runtime_err_check:

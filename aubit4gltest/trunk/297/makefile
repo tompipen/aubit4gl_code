@@ -219,5 +219,5 @@ ansi_sql_compat:
 	@echo "1"
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_DATETIME DDL_DATETIME CREATE_TEMP_TABLE ANSI_INSERT UPDATE_COLUMN_EQ_VALUE_LIST UI_DISPLAY_LINE_MODE DISPLAY "
 

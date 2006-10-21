@@ -192,7 +192,7 @@ ansi_sql_compat:
 
 	
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD"
+	@echo "DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD  ALTER_TABLE"
 
 
 

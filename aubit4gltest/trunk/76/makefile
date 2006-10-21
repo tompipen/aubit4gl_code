@@ -18,5 +18,5 @@ desc:
 	@echo "Basic DB exercising of Datetimes"
 	
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE DDL_DATETIME"
+	@echo "CREATE_TEMP_TABLE DDL_DATETIME  DEFINE_DATETIME UI_DISPLAY_LINE_MODE DISPLAY ANSI_INSERT INITIALIZE_NULL"
 	

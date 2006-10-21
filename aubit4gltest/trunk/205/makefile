@@ -14,3 +14,6 @@ ansi_sql_compat:
 
 desc:
 	@echo "Simple test of 'showhelp' function"
+
+sql_features_used:		; @echo "DATABASE_USED DEFINE_SMALLINT CREATE_TEMP_TABLE DEFINE_CHAR PREPARE CURSOR_SELECT SCROLL_CURSOR OPEN_CURSOR "
+

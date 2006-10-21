@@ -220,5 +220,5 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "DEFINE_LIKE_QUALIFIED_PATH"
+	@echo "DEFINE_LIKE_QUALIFIED_PATH  DEFINE_LIKE UI_DISPLAY_LINE_MODE DISPLAY"
 

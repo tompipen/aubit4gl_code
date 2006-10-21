@@ -224,7 +224,7 @@ transaction:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "DATABASE_USED DEFINE_SMALLINT DEFINE_CHAR RUN DROP_TABLE CREATE_TEMP_TABLE IF UI_DISPLAY_LINE_MODE DISPLAY LOAD_FROM_INSERT_INTO EXIT_PROGRAM_EXPR SELECT_COUNT INITIALIZE_NULL CASE_EXPR ERROR "
 
 	
 #################

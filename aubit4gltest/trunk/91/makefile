@@ -33,7 +33,7 @@ db_test:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "PUT_CURSOR"
+	@echo "PUT_CURSOR  DEFINE_INTEGER DEFINE_CHAR CREATE_TEMP_TABLE PREPARE CURSOR_SELECT OPEN_CURSOR CLOSE_CURSOR INITIALIZE_NULL FOREACH UI_DISPLAY_LINE_MODE DISPLAY"
 
 
 

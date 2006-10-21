@@ -204,5 +204,5 @@ need_ifx_version:			; @echo ""
 transaction:			; @echo ""
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_SMALLINT DEFINE_CHAR PREPARE CURSOR_SELECT FOREACH IF EXIT_FOREACH UI_DISPLAY_LINE_MODE DISPLAY "
 

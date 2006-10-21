@@ -20,10 +20,36 @@ fi
 
 CURR_DIR=`pwd`
 export A4GL_PRG=".4ae"
-if [ "$FGLC" = "" ]
-then
-	export FGLC=4glc
+
+#Note that for some utillity functions, like getting the list of features used 
+#In 4GL code, we need to ALLWAYS use 4glc directly
+A4GL_FGLC=4glc
+A4GL_FGLPC=4glpc
+
+if test "$FGLC" = ""; then 
+	export FGLC=$A4GL_FGLC
+	#We can't make 4glpc default ATM as it messes up debug.out file by 
+	#writing to the same file 4glc is writing - which makes it very hard 
+	#to debug things
+	#export FGLC=$A4GL_FGLPC
 fi
+#Let Amake rules know:
+if test "$FGLC" = "$A4GL_FGLPC"; then
+	export USE_4GLPC="1"
+elif test "$FGLC" = "$A4GL_FGLC"; then
+	export USE_4GLPC=""
+else
+	echo "Eh?"
+	exit 5
+fi
+
+
+#This tests failed when using 4glpc, but worked with 4glc:
+#95 107 108 110 207 598 626 627 628 630 631 632 633 634 635 636 695 1060 1208 1223 1228 1245
+
+#This tests failed with 4glc, but worked with 4glpc
+#14 72 585 586 588 1210 1227 1250 1416 1417
+
 USE_COMP=aubit
 MAKE_TARGET=run
 MAKE=gmake
@@ -114,6 +140,41 @@ USERNAME=`whoami`
 #Determine POSTGRESDIR and PSQL for PostgreSQL database engine
 #Must be here because PSQL is used before we reach dedicated PG section,
 #in running scripts function and to set default database when not specified
+
+FLAGS="$@"
+for a in $FLAGS; do
+   case $a in
+	-pg-inst=*) #Use Postgres installed at particular location, and not
+				#the one potentially available at system locations lile
+				#/ust/bin /usr/lib etc
+		PG_LOCATION=`echo $a | sed 's/=/ /' | awk '{print $2}'`
+		if ! test -d $PG_LOCATION/bin; then
+			echo "ERROR: $PG_LOCATION/bin does not exist. STOP"
+			exit 1
+		fi
+		#if ! test "$NO_ECHO"; then
+		if test "$VERBOSE" = "1"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** Using PG tools installed at $PG_LOCATION."
+			echo "** PLEASE MAKE SURE YOUR RUNNING postmaster is the"
+			echo "** one installed there - othewise I'll be mixing "
+			echo "** one database engine with another set ot tools and libraries!"
+			echo "** "
+        fi
+		#Make sure this location takes priority when looking for programs
+		#and libraries. NOTE THAT IF WE ARE INVOKING ANY PROGRAMS POR LIBRARIES
+		#THAT DO NOT EXIST AT -pg-ins, WE WILL STILL BE SERVED WHATEVER IS INSTALLED
+		#IN SYSTEM TRUSTED PATHS!
+		PATH="$PG_LOCATION/bin:$PATH" 
+		LD_LIBRARY_PATH="$PG_LOCATION/lib:$LD_:IBRARY_PATH"
+		POSTGRESDIR="$PG_LOCATION"
+		export PATH
+		export LD_LIBRARY_PATH
+		export POSTGRESDIR
+	esac
+done
+
 PSQL=psql
 if test "$POSTGRESDIR" = ""; then
 	POSTGRESDIR=`aubit-config POSTGRESDIR`
@@ -255,7 +316,6 @@ CERT_DEFAULT_FLAGS="$CERT_DEFAULT_FLAGS $DEFAULTS_COMMON"
 #exit
 #######################
 #Apply platform defaults, see if we are to run multiple tests
-FLAGS="$@"
 for a in $FLAGS; do
 #echo "FLAGS=$FLAGS"
 #echo "a=$a"

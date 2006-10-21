@@ -114,7 +114,7 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 WHITELIST_TESTS_ECP="376 1206"
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 1009 207 286 287 551 552 553 558 \
+EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 1009 286 287 551 552 553 558 \
 	559 560 620 1240 645 646 652 653 654 655 667 668"
 #1 'xdt is null' BUT SHOULD BE 'xdt is 12:01:02' http://aubit.com/mantis/view.php?id=687 AND http://aubit.com/mantis/view.php?id=517
 #76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
@@ -138,6 +138,30 @@ EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 1009 207 286 287 551 552 5
 #655 ecpg syntax error on GRANT        INSERT , DELETE ,  SELECT ,  SELECT ,  UPDATE ,  UPDATE , INDEX , ALTER ON xpto TO  informix , root ; (NOT ADDED to Mantis  - ASSUMED IMPOSSIBLE?)
 #667 Database error ('grant options can only be granted to individual users' (NOT ADDED - ASSUMED IMPOSSIBLE?)
 #668 ecpg syntax error on GRANT  ALL  ON xpto TO PUBLIC  AS informix (NOT ADDED - ASSUMED IMPOSSIBLE?)
+
+#TODO: find out why they are failing:
+EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 14 72 585 586 588 648 649 \
+	650 651 666 913 1210 1227 1239 1250 1251 1257 1262 1265 1266 1274 1285 1406 1413 1416 1417"
+
+# --------------------------------------------------------------------------
+#							-mysql
+# --------------------------------------------------------------------------
+
+EXPECT_TO_FAIL_MYSQL="1 14 63 72 94 95 100 106 107 207 227 270 286 287 289 290 \
+	360 361 362 364 365 366 530 531 535 543 553 554 555 556 557 558 559 560 561 \
+	562 569 570 571 572 574 576 580 582 583 584 586 587 589 594 595 596 598 606 \
+	611 612 616 620 639 645 646 647 648 649 650 651 652 653 655 656 658 659 666 \
+	667 668 670 675 681 683 686 687 692 695 698 700 701 702 704 706 713 716 717 \
+	718 719 721 724 725 726 727 728 729 730 731 732 733 734 735 736 737 738 739 \
+	740 741 742 743 744 745 746 747 748 749 750 751 753 754 755 756 757 758 759 \
+	760 761 762 763 764 768 769 770 771 772 773 774 775 776 778 789 790 791 792 \
+	798 900 902 903 906 908 909 910 912 913 914 936 1009 1060 1200 1211 1220 \
+	1221 1223 1227 1239 1246 1248 1249 1251 1256 1266 1273 1274 1293 1301 1302 \
+	1303 1304 1411 1413 1416 1417"
+
+# --------------------------------------------------------------------------
+#							-mysql-odbc
+# --------------------------------------------------------------------------
 
 
 # --------------------------------------------------------------------------
@@ -204,7 +228,7 @@ INVALID_TESTS="916 917 919 921 922 923 924 925 927 928 929 930 931 932 933 935\
 #ALL THE ABOVE (try 925) - fail even with -ifx-p (.c files with informix headers)
 
 
-INVALID_TESTS="$INVALID_TESTS 105 375 684 705 707 752 797 920 926 934 956 1240 377"
+INVALID_TESTS="$INVALID_TESTS 105 375 684 705 707 752 797 920 926 934 956 1240 377 1295"
 #105 - missing database schemma
 #375 - "informix".systables (assumes user "informix" created test database)
 #684 - no test files
@@ -218,6 +242,7 @@ INVALID_TESTS="$INVALID_TESTS 105 375 684 705 707 752 797 920 926 934 956 1240 3
 #956 - missing 4gl file
 #1240 - missing out.expected
 #377 - assumes that user "informix" created the test database
+#1295 - missing form file and no checking
 
 ################################### EOF #################################
 

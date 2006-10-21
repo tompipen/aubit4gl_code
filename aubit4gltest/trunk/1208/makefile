@@ -223,7 +223,7 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "UNLOAD_TO_SELECT_FROM"
+	@echo "UNLOAD_TO_SELECT_FROM  DEFINE_INTEGER IFX_SYSTABLES UNLOAD_TO"
 
 	
 #################

@@ -191,7 +191,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DATABASE_PREPARED"
+	@echo "DATABASE_PREPARED  PREPARE EXECUTE"
 	
 
 runtime_err_check:

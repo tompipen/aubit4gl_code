@@ -24,3 +24,6 @@ ansi_sql_compat:
 
 desc:
 	@echo "Test of compiling a form into an executable (using fcompile -c)"
+
+sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR DEFINE_INTEGER DEFINE_SMALLINT DDL_DATETIME CREATE_TEMP_TABLE ANSI_INSERT LET_MANY FOR UI_DISPLAY_LINE_MODE DISPLAY IF EXIT_PROGRAM_EXPR "
+

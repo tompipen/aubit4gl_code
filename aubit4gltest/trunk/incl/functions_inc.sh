@@ -899,7 +899,10 @@ LOAD_ONLY_CURR_DB=1
 	#Determine which feature status applies to this db
 	if test "$DB_TYPE" != "PG-IFX-74" -a "$DB_TYPE" != "PG-74" \
 		-a "$DB_TYPE" != "IFX-OL" -a "$DB_TYPE" != "IFX-SE" \
-		-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG-80" ; then 
+		-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG-80" \
+		-a "$DB_TYPE" != "MYSQL" -a "$DB_TYPE" != "INGRES" \
+		-a "$DB_TYPE" != "PG-UNKNOWN" \
+		; then 
 		#DB we have no info stored for, treat it as ANSI
 		#TODO: determine if we have .cnv file for that db
 		if test "1" = "1"; then 
@@ -910,11 +913,25 @@ LOAD_ONLY_CURR_DB=1
 			FEATURE_DB_TYPE="ANSI-CNV"
 		fi
 	else
-		if test "$DB_TYPE" = "PG-80"; then 
+		#One of known types
+		FEATURE_DB_TYPE="$DB_TYPE"
+		
+		if test "$DB_TYPE" = "PG-80"; then
+			#We will treat PG-80 as non-patched PG-74, as we did not evaluate
+			#column 17 in feature list .cnv file as of yet.
+			#As many patches that where developed for
+			#PG-IFX-74 where accepted in PG source code (especially the ones
+			#for ecpg compier) we actually should - as things that would not work
+			#with inpatched PG-74 may work with PG-80
 			FEATURE_DB_TYPE="PG-74"
-		else
-			FEATURE_DB_TYPE="$DB_TYPE"
+			warning "Forcing PG-80 to be treated as PG-74"
 		fi
+
+		if test "$DB_TYPE" = "PG-UNKNOWN"; then 
+			FEATURE_DB_TYPE="PG-74"
+			warning "Treating PG-UNKNOWN as PG-74"
+		fi
+		
 	fi
 	
 	#Determine which field of features array contains status for this db
@@ -926,19 +943,19 @@ LOAD_ONLY_CURR_DB=1
 			PG-IFX-74) 	STAT_FIELD=5 ;;
 			PG-74) 		STAT_FIELD=6 ;;
 			SQLITE) 	STAT_FIELD=7 ;;
-			MySQL) 		STAT_FIELD=8 ;;
+			MYSQL) 		STAT_FIELD=8 ;;
 			MaxDB) 		STAT_FIELD=9 ;;
 			Oracle) 	STAT_FIELD=10 ;;
 			DB2) 		STAT_FIELD=11 ;;
 			MSSQL) 		STAT_FIELD=12 ;;
 			Sybase) 	STAT_FIELD=13 ;;
 			Progress) 	STAT_FIELD=14 ;;
-			Ingres) 	STAT_FIELD=15 ;;
+			INGRES) 	STAT_FIELD=15 ;;
 			FireFox) 	STAT_FIELD=16 ;;
-			xx1) 		STAT_FIELD=17 ;;
+			PG-80) 		STAT_FIELD=17 ;;
 			xx2) 		STAT_FIELD=18 ;;
 			xx3) 		STAT_FIELD=19 ;;
-			*)	echo "ERROR: FEATURE_DB_TYPE=$FEATURE_DB_TYPE"; exit 5 ;;
+			*)	error "FEATURE_DB_TYPE=$FEATURE_DB_TYPE" "5" ;;
 	esac
 
 	if test "$RUN_ONE" != "" -a "$LOAD_ONLY_USED_FEATURES" = "1"; then
@@ -973,6 +990,8 @@ LOAD_ONLY_CURR_DB=1
 		#Initialise counters:
 		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0; DOTS_CNT=0
 		D_CNT=0; S_CNT=0; C_CNT=0; P_CNT=0; F_CNT=0; X_CNT=0
+		L_CNT=0 ; U_CNT=0 ; R_CNT=0
+		
 		POSIBLE_CNT=0; SUPPORTED_CNT=0; IMPOSSIBLE_CNT=0; DEPEND_CNT=0; 
 		IGNORED_CNT=0; PARTIAL_CNT=0
 		D_P_CNT=0; D_S_CNT=0; D_I_CNT=0; D_D_CNT=0
@@ -981,6 +1000,10 @@ LOAD_ONLY_CURR_DB=1
 		P_P_CNT=0; P_S_CNT=0; P_I_CNT=0; P_D_CNT=0
 		F_P_CNT=0; F_S_CNT=0; F_I_CNT=0; F_D_CNT=0
 		X_P_CNT=0; X_S_CNT=0; X_I_CNT=0; X_D_CNT=0
+		
+		L_P_CNT=0; L_S_CNT=0; L_I_CNT=0; L_D_CNT=0
+		U_P_CNT=0; U_S_CNT=0; U_I_CNT=0; U_D_CNT=0
+		R_P_CNT=0; R_S_CNT=0; R_I_CNT=0; R_D_CNT=0		
 
 		#determine significant fields
 		if test "$LOAD_ONLY_CURR_DB" = "1"; then
@@ -1055,8 +1078,31 @@ LOAD_ONLY_CURR_DB=1
 						I) let X_I_CNT=X_I_CNT+1;;
 						D) let X_D_CNT=X_D_CNT+1;;
 					esac;;
-				*) echo "ERROR: FEATURE_TYPE=$FEATURE_TYPE"
-					exit 5
+				L) # L=Programing language statemet (non-db ot UI related, such as SLEEP, INITIALIZE_NULL or DEFINE_DECIMAL)
+					let L_CNT=L_CNT+1
+					case $FEATURE_STATUS in 
+						P) let L_P_CNT=X_P_CNT+1;;
+						S) let L_S_CNT=X_S_CNT+1;;
+						I) let L_I_CNT=X_I_CNT+1;;
+						D) let L_D_CNT=X_D_CNT+1;;
+					esac;;
+				U) # U=UI statements (CONTINUE_CONSTRUCT, CLOSE_FORM, etc)
+					let U_CNT=U_CNT+1
+					case $FEATURE_STATUS in 
+						P) let U_P_CNT=X_P_CNT+1;;
+						S) let U_S_CNT=X_S_CNT+1;;
+						I) let U_I_CNT=X_I_CNT+1;;
+						D) let U_D_CNT=X_D_CNT+1;;
+					esac;;
+				R) # R=Report statemnts (REPORT_AFTER_GROUP, USE_REPORT, etc)
+					let R_CNT=R_CNT+1
+					case $FEATURE_STATUS in 
+						P) let R_P_CNT=X_P_CNT+1;;
+						S) let R_S_CNT=X_S_CNT+1;;
+						I) let R_I_CNT=X_I_CNT+1;;
+						D) let R_D_CNT=X_D_CNT+1;;
+					esac;;
+				*) error "ERROR: Unknown FEATURE_TYPE=$FEATURE_TYPE" "5"
 					;;
 				esac
 			######################################
@@ -1143,7 +1189,6 @@ LOAD_ONLY_CURR_DB=1
 			rm -f all_sql_features.txt
 			CNT=0
 			for b in $SQL_FEATURES_NON_ANSI; do
-			
 				echo "			$b \\" >> all_sql_features.txt
 			done
 			echo "Total $CNT features described unloaded to all_sql_features.txt"
@@ -1192,7 +1237,7 @@ function chech_sql_features () {
 	if test "$SQL_FEATURES_USED" = ""; then
 		#If test has no SQL/db features description, skip it - should never 
 		#happen if this is a db test
-		debug "SQL_FEATURES_USED ie empty"
+		debug "SQL_FEATURES_USED is empty"
 		return
 	fi
 
@@ -1210,9 +1255,8 @@ function chech_sql_features () {
 				fi
 			done
 			if test "$TMP_OK" = "0"; then 
-				#echo "ERROR: test #$TEST_NO - feature $a not expected. Stop"
+				#error "test #$TEST_NO - feature $a not expected" "6" 
 				FEATURE_NOT_EXPECTED="$FEATURE_NOT_EXPECTED $TEST_NO=$a"
-				#exit 6
 			fi
 		done
 	fi
@@ -1268,6 +1312,7 @@ function chech_sql_features () {
 						INCOMPAT_SQL_LIST="$INCOMPAT_SQL_LIST $a"
 					fi
 					#Found that one - check next feature used
+					#Do we care? one is enough to skip it...
 					break
 				fi
 			done
@@ -1296,6 +1341,19 @@ function chech_sql_features () {
 				SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES="$SKIP_INCOMPAT_SQL_LIST_WITH_FEATURES ($TEST_NO:$INCOMPAT_SQL_LIST)"
 				SKIP_REASON="incompatible SQL feature: $INCOMPAT_SQL_LIST"
 				SKIP_REASON_CODES="$SKIP_REASON_CODES 28"
+				
+				#Create full list of all unique features we skipped under current settings:
+				GOT_THIS_ONE=0
+				for a_feature in $ALL_INCOMP_FEATURES_SKIPPED; do
+					if test "$a_feature" = "$INCOMPAT_SQL_LIST"; then
+						GOT_THIS_ONE=1
+						break
+					fi
+				done
+				if test "$GOT_THIS_ONE" = "0"; then
+					ALL_INCOMP_FEATURES_SKIPPED="$ALL_INCOMP_FEATURES_SKIPPED $INCOMPAT_SQL_LIST"
+				fi
+				
 			else
 				#db/SQL based skip is disabled - do not skip
 				SKIP_REASON_NOTSKIP="$INCOMPAT_SQL_LIST"
@@ -1317,1409 +1375,6 @@ function chech_sql_features () {
 		debug "SQL_FEATURES_USED=$SQL_FEATURES_USED"
 
 }
-
-###############################################################
-#Check if we need to switch transaction logging mode in RDBMS
-###############################################################
-check_trans_mode () {
-
-		if test "$DB_HAS_TRANSACTION" != "NULL" ; then 
-			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then
-				#need to switch logging mode
-				if test "$IFX_ENG_REMOTE" != "1"; then
-					if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
-						if test "$VERBOSE" = "1"; then
-							ontape -s -B $TEST_DB
-							RET=$?
-							echo "NOTE: turned ON buffered logging"
-						else
-							ontape -s -B $TEST_DB > /dev/null
-							RET=$?
-						fi
-						if test "$RET" != "0"; then 
-							echo "ERROR: swithching logging mode ON failed"
-							exit $RET
-						fi
-						DB_HAS_TRANSACTION="1"
-					else
-						#Don't know how to turn on transactions for this RDBMS			
-						SKIP_REASON="needs transaction support, but current database don't have it and I don't know how to turn them on"
-						SKIP_REASON_CODES="$SKIP_REASON_CODES 23"
-					fi
-				else
-					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
-						if test "$VERBOSE" = "1"; then
-							echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
-							echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE		
-						fi
-					else
-						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"
-						SKIP_REASON="explicit preference for transactions, but DB engine is remote"
-						SKIP_REASON_CODES="$SKIP_REASON_CODES 24"
-					fi
-				fi
-			fi
-			if test "$NEED_TRANSACTION" = "2" -a "$DB_HAS_TRANSACTION" = "1"; then
-				#need to switch logging mode
-				if test "$IFX_ENG_REMOTE" != "1"; then				
-					if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
-						if test "$VERBOSE" = "1"; then
-							ontape -s -N $TEST_DB
-							RET=$?
-							echo "NOTE: turned OFF logging"
-						else
-							ontape -s -N $TEST_DB > /dev/null
-							RET=$?
-						fi
-						if test "$RET" != "0"; then 
-							echo "ERROR: swithching logging mode OFF failed"
-							exit $RET
-						fi
-						DB_HAS_TRANSACTION="0"				
-					else
-						#Don't know how to turn off transactions for this RDBMS
-						SKIP_REASON="MUST NOT have transaction support, but current database have it and I don't know how to turn them off"
-						SKIP_REASON_CODES="$SKIP_REASON_CODES 25"
-					fi
-				else
-					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
-						if test "$VERBOSE" = "1"; then
-							echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
-							echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE
-						fi
-					else
-						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
-						SKIP_REASON="explicit preference for transactions, but DB engine is remote"
-						SKIP_REASON_CODES="$SKIP_REASON_CODES 26"
-					fi
-				fi
-			fi
-		else
-			if test "$NEED_TRANSACTION" = "1" -o "$NEED_TRANSACTION" = "2" ; then
-				if test "$SKIP_UNKNOWN_TRANS" != "1" ; then
-					if test "$VERBOSE" = "1"; then
-						echo "WARNING: $TEST_NO explicit preference for transactions, but unable to determine state" >> $LOGFILE
-					fi
-				else
-					SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"
-					SKIP_REASON="explicit preference for transactions, but unable to determine state"
-					SKIP_REASON_CODES="$SKIP_REASON_CODES 27"
-				fi
-			fi
-		fi
-}
-
-count_rows () {
-tablename=$1
-dbname=$2
-
-	SQL="select count(*) from $tablename"
-	CNT=`echo "$SQL" | $DBACCESS $dbname 2>/dev/null | grep -v count`
-	#Trim it:
-	CNT=`echo $CNT`
-}
-
-drop_db () {
-db_name=$1
-
-        echo "Droping Informix database $db_name"
-        $DBACCESS - - > /tmp/dropdbtmp.log 2>&1 <<!
-        drop database '$db_name'
-!
-        RET=$?
-        if test "$RET" != "0"; then
-			echo "Failed (code $RET). See /tmp/dropdbtmp.log"
-            exit 2
-        else
-    	    echo "Droped Informix database $db_name"
-        fi
-}
-
-create_db () {
-new_db=$1	
-	
-		echo "Creating Informix database $new_db"
-        $DBACCESS - - > /tmp/credbtmp.log 2>&1 <<!
-        create database '$new_db' with log
-!
-        RET=$?
-        if test "$RET" != "0"; then
-            echo "Failed (code $RET). See /tmp/credbtmp.log"
-            exit 19
-        else
-            TMPrr=`cat /tmp/credbtmp.log | grep "Database created"`
-            if test "$TMPrr" != ""; then
-                echo "Database $new_db Created"
-            else
-                echo "Database creation failed. See /tmp/credbtmp.log"
-                exit 8
-            fi
-        fi
-}
-
-test_db_exist () {
-test_db=$1
-
-	if test "$DBACCESS" = ""; then 
-		echo "ERROR: DBACCESS not defined. Stop."
-		exit 5
-	fi
-
-	$DBACCESS $test_db -e > /tmp/tmp.dbaccess 2>&1
-	RET=$?
-   	TEST=`cat /tmp/tmp.dbaccess | sed -e 's/OOPS//g' | grep Databasenotfoundornosystempermission`
-	
-	#echo $RET
-	#echo $TEST
-
-}	
-
-check_informix () {
-	if test "`dbaccess -V 2>/dev/null`" = ""; then
-		if test "$VERBOSE" = "1" ; then	
-	    	echo "WARNING: dbaccess not found - Informix engine missing or remote?"
-		fi
-		#CSDK on Windows does not include ANY command line tools :-(
-		if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
-			make -C $AUBITDIR_UNIX/tools/asql asql_i.4ae
-			make -C $AUBITDIR_UNIX/tools/asql install
-			if test "`$SH aubit asql_i.4ae -V 2>/dev/null`" = ""; then
-				echo "Attempt to make asql_i failed. Stop"
-				exit 56
-			else
-				IFX_ENG_REMOTE=1
-				DBACCESS="$SH aubit asql_i.4ae"
-			fi
-		else
-			IFX_ENG_REMOTE=1
-			DBACCESS="$SH aubit asql_i.4ae"
-		fi
-	else
-		IFX_ENG_REMOTE="unknown"
-		DBACCESS=dbaccess	
-    fi
-
-	if test "$DBACCESS" = "$SH aubit asql_i.4ae"; then
-		if test "$A4GL_UI" = "HL_TUIN"; then 
-			echo "WARNING: Cant use asql with HL_TUIN: Function Not found : UILIB_A4GL_current_window"
-			#we are uisng it in command line mode anyway...
-			#exit 3
-		fi
-	fi
-	
-	test_db_exist $TEST_DB
-
-	if test "$NEW_IFMX" = "1" -a "$TEST" = ""; then
-		drop_db $TEST_DB
-    fi
-
-    if test "$TEST" != "" || test "$NEW_IFMX" = "1"; then
-		create_db $TEST_DB
-		new_testdb informix
-    else
-		#if test "$NO_ECHO" != "1"; then
-		if test "$VERBOSE" = "1"; then
-			echo "Found Informix database $TEST_DB"
-        fi
-		SQL="select is_logging from sysdatabases where name = '$TEST_DB'"
-        DB_HAS_TRANSACTION=`echo "$SQL" | $DBACCESS sysmaster 2>/dev/null | grep -v is_logging`
-		#Trim it:
-		DB_HAS_TRANSACTION=`echo $DB_HAS_TRANSACTION`
-		if test "$VERBOSE" = "1" ; then
-			echo "DB_HAS_TRANSACTION=$DB_HAS_TRANSACTION"		
-			if test "$DB_HAS_TRANSACTION" != "1" -a "$DB_HAS_TRANSACTION" != "0"; then 
-				echo "WARNING: failed to determine Informix database transaction support state"
-			fi
-		fi
-    fi
-	if test "$USEERNAME" != "informix" -a "$VERBOSE" = "1"; then
-		echo "WARNING: you are not logged in as Informix super user (informix) but"
-		echo "WARNING: as $USERNAME - make sure you have sufficient permisions"
-		echo "WARNING: to execute 'ontape' utility program (for switching logging mode)"
-	fi
-	if test "$INFORMIXDIR" != "" -a "$ONCONFIG" != ""; then 
-		if test -f "$INFORMIXDIR/etc/$ONCONFIG"; then 
-			LTAPEDEV_LINE=`grep LTAPEDEV "$INFORMIXDIR/etc/$ONCONFIG"`
-			if test "$LTAPEDEV_LINE" != ""; then 
-				LTAPEDEV_VALUE=`echo $LTAPEDEV_LINE | grep null`
-				if test "$LTAPEDEV_VALUE" = ""; then
-					echo "WARNING: in Informix config file $INFORMIXDIR/etc/$ONCONFIG"			
-					echo "WARNING: $LTAPEDEV_LINE"
-					echo "WARNING: should be 'LTAPEDEV=/dev/null')"
-					echo "WARNING: switching transaction logging mode will probably fail"
-				fi
-			else
-				echo "WARNING: Informix config file $INFORMIXDIR/etc/$ONCONFIG"
-				echo "WARNING: does not contain LTAPEDEV setting"
-				echo "WARNING: should be 'LTAPEDEV=/dev/null')"
-				echo "WARNING: switching transaction logging mode will probably fail"
-			fi
-		else
-			echo "WARNING: cannot find file $INFORMIXDIR/etc/$ONCONFIG"
-			echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"			
-		fi
-	else
-		echo "WARNING: INFORMIXDIR and/or ONCONFIG are empty"
-		echo "WARNING: cannot check value of LTAPEDEV (should be '/dev/null')"
-	fi
-	
-	#TODO: determine actual DB_TYPE
-	#DB_TYPE="IFX-SE"
-	DB_TYPE="IFX-OL"
-	
-	
-    if test "$NEW_IFMX" = "1"; then
-        exit
-    fi
-}
-
-
-#####################################################################
-check_postgresql () {
-	if test "$VERBOSE" = "1"; then 
-		echo "PostgreSQL specified (2=$PSQL)"
-	fi
-	if test "`$PSQL -V 2>/dev/null`" = ""; then
-        echo "ERROR: $PSQL not found - no PostgreSQL engine?"
-        exit 67
-    fi
-
-	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
-	if test "$PGDATA" = ""; then
-		if test "$COMSPEC" = ""; then #On UNIX 
-			#su -l postgres -s /bin/sh -c "$POSTGRES_BIN/pg_ctl -D $PGDATA status"
-			#We need wide output to get full command line:
-			PGDATA=`ps -auxw | grep postmaster | head -n 1 | awk '{print $14}'`
-			#Sometimes retrns clipped path, so test it:
-			if test ! -d "$PGDATA"; then
-				unset PGDATA
-			fi
-			if test "$PGDATA" = ""; then
-				#This is a backup - but it will probably fail to give us 
-				#full command we need to determine PGDATA:
-				if test "$VERBOSE" = "1"; then
-					echo "WARNING: trying 'ps -efw' because 'ps -auxw' did not work"
-				fi
-				PGDATA=`ps -efw | grep postmaster | head -n 1 | awk '{print $11}'`
-			fi
-			if test "$PGDATA" = ""; then
-				#This apparently works in PG8, but not in 7.4				
-				PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -n 3 | grep -v row`
-			fi
-			
-			if test "$PGDATA" = ""; then 
-				echo "WARNING: PostgreSQL not running or started without -D flag"
-				echo "(using PGDATA, but no PGDATA present in environment)"
-				echo "ps -ef | grep postmaster"
-				ps -ef | grep postmaster
-				echo "ps -auxw | grep postmaster"
-				ps -auxw | grep postmaster
-			else
-				if test ! -d "$PGDATA"; then
-					echo "WARNING: PGDATA obtained from postmaster flags is not a directory ($PGDATA)"
-					unset PGDATA
-					#try guessing
-					if test -d "/var/lib/pgsql/data"; then
-						#RedHat RPM's
-						PGDATA="/var/lib/pgsql/data"
-					fi
-					if test -d "/usr/local/pgsql/data"; then
-						#PG default
-						PGDATA="/usr/local/pgsql/data"
-					fi
-					if test -d "/usr/local/pgsql/data-7.4"; then
-						#Andrej
-						PGDATA="/usr/local/pgsql/data-7.4"
-					fi
-					if test ! -d "$PGDATA"; then
-						echo "WARNING: unable to set PGDATA"
-						echo "Please set PGDATA manually."				
-					else
-						if test "$VERBOSE" = "1"; then 
-							echo "PGDATA set to $PGDATA"
-						fi
-					fi
-					
-				else
-					if test "$VERBOSE" = "1"; then 
-						echo "PGDATA set to $PGDATA"
-					fi
-				fi
-			fi
-		else #On Windows
-			POSTGRESDIR_LIB="`cygpath -u "$POSTGRESDIR"`/lib"
-			#echo $POSTGRESDIR_LIB
-			export PATH="$POSTGRESDIR_LIB:$PATH"
-
-			#On Windows, CygWin 'ps' has -W flag that is supposed to show 
-			#Windows proceses including services, but it does not show
-			#posmaster even when visible in Windows Services tool
-			if test "$PGUSER_POSTGRES_PWD" = ""; then
-				PGUSER_POSTGRES_PWD=`aubit-config PGUSER_POSTGRES_PWD`
-			fi
-			if test "$PGPASSWORD" = ""; then
-				PGPASSWORD="`aubit-config PGPASSWORD`"
-			fi
-			if test "$PGPASSWORD" != ""; then
-				PGUSER_POSTGRES_PWD="$PGPASSWORD"
-			fi
-			if test "$PGUSER_POSTGRES_PWD" != ""; then
-				PGPASSWORD="$PGUSER_POSTGRES_PWD"
-			fi
-			if test "$PGUSER_POSTGRES_PWD" = ""; then
-				echo "On Windows environment variable PGUSER_POSTGRES_PWD must be"
-				echo "set to password for user 'postgres'. STOP."
-				exit 4
-			else
-				#See http://www.redhat.com/docs/manuals/database/RHDB-2.1-Manual/prog/libpq-envars.html
-				#For more info on variables accpted by libpq
-				#
-				#PGHOST sets the default server name. If this begins with a 
-				#slash, it specifies Unix-domain communication rather than 
-				#TCP/IP communication; the value is the name of the directory 
-				#in which the socket file is stored (default "/tmp").
-				#
-				#PGPORT sets the default TCP port number or Unix-domain socket 
-				#file extension for communicating with the Red Hat Database backend.
-				#
-				#PGDATABASE sets the default Red Hat Database database name.
-				#
-				#PGUSER sets the username used to connect to the database and for 
-				#authentication.
-				#
-				#PGPASSWORD sets the password used if the backend demands password 
-				#authentication.
-				#
-				#PGREALM sets the Kerberos realm to use with Red Hat Database, if it is 
-				#different from the local realm. If PGREALM is set, Red Hat Database 
-				#applications will attempt authentication with servers for this realm and use 
-				#separate ticket files to avoid conflicts with local ticket files. This 
-				#environment variable is used only if Kerberos authentication is selected by 
-				#the backend.
-				#
-				#PGOPTIONS sets additional runtime options for the Red Hat Database backend.
-				#
-				#PGTTY sets the file or tty on which debugging messages from the backend server 
-				export PGPASSWORD="$PGUSER_POSTGRES_PWD"
-			
-				#TODO: maybe we can use PGPASSWORD instead of 'echo $PGUSER_POSTGRES_PWD' ???
-				
-				#This apparently works in PG8, but not in 7.4				
-				#WIN_PG_CONF=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -n 3 | grep -v row`	
-				#WIN_PGDATA=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -n 3 | grep -v row`
-				WIN_PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -n 3 | grep -v row`	
-				WIN_PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -n 3 | grep -v row`
-				
-				WIN_PGDATA=`echo $WIN_PGDATA`
-				WIN_PG_CONF=`echo $WIN_PG_CONF`
-				PG_CONF=`cygpath -u "$WIN_PG_CONF"`
-				PGDATA=`cygpath -u "$WIN_PGDATA"`
-				if test ! -d "$PGDATA"; then
-					echo "ERROR: specified PGDATA ($PGDATA) is not a directory"
-					exit 4
-				fi
-				if test ! -f "$PG_CONF"; then
-					echo "ERROR: specified PG_CONF ($PG_CONF) is not a file"
-					exit 4
-				fi
-				verbose "PGDATA set to '$PGDATA'"
-				verbose "PG_CONF set to '$PG_CONF'"
-			fi
-		fi
-	fi
-	if test ! -d "$PGDATA"; then
-		echo "WARNING: specified PGDATA ($PGDATA) is not a directory"
-		unset PGDATA
-	fi
-	
-	#Find current PostgreSQL configuration file in use by currently running
-	#instance of PG engine (PG_CONF)
-	if test "$PG_CONF" = ""; then
-		if test -f "$PGDATA/postgresql.conf"; then 
-			PG_CONF="$PGDATA/postgresql.conf"
-		else
-			#This apparently works in PG8, but not in 7.4				
-			PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -n 3 | grep -v row`
-			if ! test -f "$PG_CONF"; then		
-				#seems like engine does not keep config file name (tried psql 'SHOW ALL;')
-				#So only source of config file location is environment where postmaster
-				#command was executed
-				warning "failed to determine PG config file location (PG_CONF=$PG_CONF)"
-				if test "$PGDATA" != ""; then
-					ls -al $PGDATA/*.conf
-				fi
-				PG_CONF="unknown"
-			fi
-		fi
-	fi
-	
-	#if test "$COMSPEC" != ""; then 
-	#	echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1
-	#else
-		$PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1	
-	#fi
-	RET=$?
-	if test "$RET" != "0"; then 
-		echo "(37) $PSQL returned code $RET trying to connect to db $TEST_DB ."
-		cat /tmp/tmp.dbaccess
-		TEST=`cat /tmp/tmp.dbaccess | grep "could not connect to server"`
-		if test "$TEST" != ""; then
-			if test "$COMSPEC" = ""; then		
-				#Try starting local PG engine
-				#FIXME - only on SuSE
-				rcpostgresql start
-			fi
-		else
-			TMP4=`cat /tmp/tmp.dbaccess | grep "FATAL:  user"`
-			if test "$TMP4" != ""; then
-				check_pg_user_create
-			fi
-			TMP4=`cat /tmp/tmp.dbaccess | grep "FATAL:  password authentication failed for user"`
-			if test "$TMP4" != ""; then
-				check_pg_user_create
-			fi
-		#	echo "ERROR: unknown fault (1)"		
-		#	exit $RET
-		fi
-		#Try connecting again
-		#if test "$COMSPEC" != ""; then 
-		#	echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1
-		#else
-			$PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1	
-		#fi
-		RET=$?
-		if test "$RET" != "0"; then 
-			echo "(38) $PSQL returned code $RET trying to connect to db $TEST_DB ."
-			cat /tmp/tmp.dbaccess
-			TEST=`cat /tmp/tmp.dbaccess | grep "does not exist"`
-			if test "$TEST" != ""; then
-				echo "Will create database"
-				NEW_PG=1
-			else
-				echo "ERROR: unknown fault (2)"
-				exit $RET
-			fi
-		fi
-	fi
-   	TEST=`cat /tmp/tmp.dbaccess | grep "psql: FATAL"`
-	if test "$NEW_PG" = "1" -a "$TEST" = ""; then
-	    echo "Droping PostgreSQL database $TEST_DB"
-		#if test "$COMSPEC" != ""; then 
-		#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/dropdb $TEST_DB > /tmp/dropdbtmp.log
-		#else
-			$POSTGRES_BIN/dropdb $TEST_DB > /tmp/dropdbtmp.log
-		#fi
-        #returns "DROP DATABASE" string on success
-		RET=$?
-        if test "$RET" != "0"; then
-			echo "Failed (code $RET). See /tmp/dropdbtmp.log"
-            exit 2
-        else
-    	    echo "Droped PostgreSQL database $TEST_DB"
-        fi
-    fi
-
-    if test "$TEST" != "" -o "$NEW_PG" = "1"; then
-        echo "Creating PostgreSQL database $TEST_DB"
-		#createdb is a shell script wrapper around the SQL command
-		#CREATE DATABASE via the PostgreSQL interactive terminal psql.
-		#if test "$COMSPEC" != ""; then 
-		#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-		#else
-			$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-		#fi
-        RET=$?
-        if test "$RET" != "0"; then
-			TMP4=`cat /tmp/credbtmp.log | grep "FATAL:  user"`
-			if test "$TMP4" != ""; then
-				check_pg_user_create
-			else
-	            echo "Failed (code $RET)."
-				cat /tmp/credbtmp.log
-				exit 29
-			fi
-        else
-            TMPzz=`cat /tmp/credbtmp.log | grep "CREATE DATABASE"`
-            if test "$TMPzz" != ""; then
-                echo "Database Created"
-            else
-                echo "Database creation failed. See /tmp/credbtmp.log"
-                exit 8
-            fi
-        fi
-
-		echo "Creating tables and loading data..."
-		new_testdb postgres
-    else
-		if test "$VERBOSE" = "1"; then
-			echo "Found PostgreSQL database $TEST_DB"
-        fi
-    fi
-
-    if test "$NEW_PG" = "1"; then
-        exit
-    fi
-
-	#Get PG server version
-	#if test "$COMSPEC" != ""; then
-	#	PG_VERSION=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show server_version;" 2>/dev/null | grep "\."`
-	#else
-		PG_VERSION=`$PSQL -d $TEST_DB -c "show server_version;" | grep "\."`
-	#fi
-	if test "$VERBOSE" = "1"; then 
-		echo "INFO: PG server reported version $PG_VERSION"
-	fi
-	#Clip it:
-	PG_VERSION=`echo $PG_VERSION`
-	case $PG_VERSION in 
-		7.4informix*) 	DB_TYPE="PG-IFX-74";;
-		7.4*)			DB_TYPE="PG-74";;
-		8*)				DB_TYPE="PG-80";;
-		*)				DB_TYPE="PG-UNKNOWN";;
-	esac
-	if test "$VERBOSE" = "1"; then 
-		echo "INFO: DB_TYPE set to $DB_TYPE"
-	fi
-	
-	#################
-	#Tests to verify PG is configured as we need it for Informix
-	#compatibility
-	
-	#if test "$COMSPEC" != ""; then 
-	#	TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show datestyle;" 2>/dev/null | grep -i "informix"`
-	#else
-		TMPff=`$PSQL -d $TEST_DB -c "show datestyle;" | grep -i "informix"`
-	#fi
-	if test "$COMSPEC" != ""; then
-		echo "WARNING: Windows versions of PG engine are currently not"
-		echo "WARNING: fully compatible with Aubit in ecpg mode, since they"
-		echo "WARNING: do not contain Informix compatibility patch"
-	fi
-	if test "$TMPff" = "" -a "$COMSPEC" = ""; then 
-		echo "WARNING: PostgreSQL config file ($PG_CONF)"
-		echo "does not contain needed setting:"
-		echo "datestyle = 'informix, mdy'"
-		#should we do that automatically??
-		#echo "datestyle = 'informix, mdy'" >> $PG_CONF
-		#...and restart pg...?
-		if test "$IGNORE_CONF_ERR" != "1" -a "$DB_TYPE" = "PG-IFX-74"; then 
-			error "(correct or use -ignore-conf-error to ignore)" "8"
-		fi
-	fi
-	#if test "$COMSPEC" != ""; then
-	#	TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show default_delim;" 2>/dev/null | grep "\|"`
-	#else
-		if test "$COMSPEC" = ""; then
-			TMPhh=`$PSQL -d $TEST_DB -c "show default_delim;"| grep "\|"`
-			#On Windows, we would get:
-			#ERROR:  unrecognized configuration parameter "default_delim"
-		fi
-	#fi
-	if test "$TMPhh" = "" -a "$COMSPEC" = ""; then 
-		echo "WARNING: PostgreSQL config file ($PG_CONF)"
-		echo "does not contain needed setting:"
-		echo "default_delim = '|'"
-		echo "This must be set *after* you do the initdb"
-		#should we do that automatically??
-		#echo "datestyle = 'informix, mdy'" >> $PG_CONF
-		#...and restart pg...?
-		if test "$IGNORE_CONF_ERR" != "1" -a "$DB_TYPE" = "PG-IFX-74"; then 
-			error "(correct or use -ignore-conf-error to ignore)" "8"
-		fi
-	fi
-	
-	#> You should also initdb with --locale='C' if you want index's to be used
-	#> when comparing an indexed column with a string.
-	#eg. "initdb --locale='C' -D /usr/local/pgsql/data" ?
-	#Is there a way to verify that this was done on currently running PG instance?
-
-
-	#> One more little gotcha, postgres has a "problem" with using indexes with
-	#> bigint's. This has been fixed in 8.0, but in previous versions you
-	#> should use where bigintcol='1' , or where bigintcol=int8::1
-	
-	####################
-	#Set Aubit configuration options to perform correctly
-	#in PostgreSQL Informix compatibility mode
-	
-	# All updates will be transformed to Ansi syntax
-	#Rewrites the Update (col1,col2,col3)=(val1,val2,val3) -> update 
-	#col1=val1,col2=val2,col3=val3
-	export A4GL_FIXUPDATE=Y
-
-	# The keyword 'AS' is included when using an alias on a select column
-	#eg. select tabid tid from systables -> select tabid AS 'tid' from systables
-	export A4GL_USE_ALIAS_AS=Y
-
-	# Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently removed
-	#This does not include the ' WITH NO LOG' at the end of a create temp table 
-	#when the original SQL does.
-	#create temp table a(a integer) WITH NO LOG ->
-	#create temp table a(a integer)
-	export A4GL_OMIT_NO_LOG=Y
-
-	# No indicator variables (=YES Adds indicators to SQL statements to check for nulls)
-	#export A4GL_USE_INDICATOR=N
-
-	# When needed use the ecpg UNLOAD statement rather than the aubit code
-	export A4GL_ESQL_UNLOAD=Y
-	
-	#When SQL encounters CURRENT  - it calls this function instead with two string 
-	#parameters ('START' to 'END')
-	#select current year to minute from systables where tabid=1 ->
-	#select somename('year','minute') from systables where tabid=1
-	#export A4GL_SQL_CURRENT_FUNCTION=somename
-
-	#Treat MONEY type as DECIMAL when compiling to POSTGRES EC LEXTYPE
-	#Because PG EC compiler (ecpg) does not know about MONEY type. Without it,
-	#you will get (ERROR: Only numeric/decimal have precision/scale argument)
-	export A4GL_MONEY_AS_DECIMAL=YES
-	
-	#Treat MONEY type as MONEY when compiling to POSTGRES EC LEXTYPE
-	#This will probably fail, since PG EC compiler curently does not know about 
-	#MONEY datatype (ERROR: invalid datatype 'money').
-	export A4GL_MONEY_AS_MONEY=NO
-
-	#Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) translation 
-	#This is apparently needed only with PostgreSQL (with IFX compatibility patches)
-	export SWAP_SQLCA62=Y 
-
-#A4GL_SQLDIALECT COMPILE/RUNTIME/SQL SQL Dialect used for the source file
-	#Declares the SQL dialect of SQL code in 4GL source code.
-	#an 4GL directive to change the default SQL dialect at runtime is:
-	#       SET SQL DIALECT TO ORACLE
-	#by default the system assumes the 4GL application is using Informix SQL
-	#syntax, but this can be changed by setting, for example:
-	export A4GL_SQLDIALECT="INFORMIX"
-
-#A4GL_SQLCNVPATH RUNTIME/SQL Specifies the location of the conversion details for SQL grammers
-	#CONFIG FILE BASED CONVERSIONS
-	#convert_sql() now uses configuration files.  These are by default
-	#located in /opt/aubit4gl/etc/convertsql/, but that can be changed
-	#with A4GL_SQLCNVPATH.
-
-#A4GL_TARGETDIALECT COMPILE Specify target part of .cnv file
-	#at runtime - it would be A4GL_SQLDIALECT
-	#you need to be careful with that that you dont process statements twice 
-	#(dont use TARGETDIALECT and SQLDIALECT unless you are using ESQL/C generation)
-	#By default, value of this setting is decided based on type of database
-	#plug-in (A4GL_SQLTYPE) or based on connected database in case of ODBC
-	#connection.
-	
-# INFORMIX-POSTGRES8.cnv   - for PostgreSQL V8 using ecpg 
-# INFORMIX-POSTGRES.cnv    - for PostgreSQL V7.4 (with IFX patch) using ecpg
-# INFORMIX-POSTGRESSQL.cnv - for PostgreSQL V7.4 or 8 over ODBC
-	
-	if test "$DB_TYPE" = "PG-IFX-74"; then
-		if test "$A4GL_LEXTYPE" = "EC"; then
-			PG_TYPE="7_ECPG_IFX"
-		else
-			PG_TYPE="7_ODBC_IFX"
-		fi
-	elif test "$DB_TYPE" = "PG-74"; then
-		if test "$A4GL_LEXTYPE" = "EC"; then
-			PG_TYPE="7_ECPG"
-		else
-			PG_TYPE="7_ODBC"
-		fi
-	elif test "$DB_TYPE" = "PG-80" ; then 
-		if test "$A4GL_LEXTYPE" = "EC"; then
-			PG_TYPE="8_ECPG"
-		else
-			PG_TYPE="8_ODBC"
-		fi
-	else
-		echo "Unknown PG DB_TYPE=$DB_TYPE"
-		exit 5
-	fi
-	
-	if test "$PG_TYPE" = "8_ECPG"; then
-		#Success % (May 2006)
-		#--- Postgres engine:				WinPG8+ECPG
-		#A4GL_TARGETDIALECT="POSTGRES8"			74 %
-		#A4GL_TARGETDIALECT="POSTGRESSQL"		37 %
-		#A4GL_TARGETDIALECT="POSTGRES"	 		76 %	
-		export A4GL_TARGETDIALECT="POSTGRES"
-		export A4GL_ESQL_UNLOAD=NO
-	elif test "$PG_TYPE" = "8_ODBC"; then
-		export A4GL_TARGETDIALECT="POSTGRESSQL"
-		export A4GL_ESQL_UNLOAD=NO
-	elif test "$PG_TYPE" = "7_ODBC"; then
-		export A4GL_TARGETDIALECT="POSTGRESSQL"
-		export A4GL_ESQL_UNLOAD=NO
-	elif test "$PG_TYPE" = "7_ECPG_IFX"; then
-		export A4GL_TARGETDIALECT="POSTGRES"
-		export A4GL_ESQL_UNLOAD=YES
-	elif test "$PG_TYPE" = "7_ECPG"; then
-		echo "WARNING: PG V7 >WITHOUT< IFX patch is not supported"
-		export A4GL_TARGETDIALECT="POSTGRES"
-		export A4GL_ESQL_UNLOAD=NO		
-	else
-		echo "WARNING: PG_TYPE not set or unknown ($PG_TYPE)"
-		echo "Using default target SQL dialect for PostgreSQL 8 using ecpg"
-		export A4GL_TARGETDIALECT="POSTGRES8"
-	fi
-	#echo "DB_TYPE=$DB_TYPE FEATURE_DB_TYPE=$FEATURE_DB_TYPE PG_TYPE=$PG_TYPE A4GL_LEXTYPE=$A4GL_LEXTYPE"
-	#exit
-	
-	#Note: using POSTGRES8 is more or less pointless because of:
-	#Warning: Can't fix insert statement - Table testunlo is not in the database(1)
-	
-	#Manual overrides:
-		#A4GL_TARGETDIALECT="POSTGRES8"
-		#A4GL_TARGETDIALECT="POSTGRESSQL"
-		#A4GL_TARGETDIALECT="POSTGRES"
-
-	note "Using conversion: ${A4GL_SQLDIALECT}-$A4GL_TARGETDIALECT.cnv"
-	export A4GL_SQLDIALECT
-	export A4GL_TARGETDIALECT
-	#exit
-#A4GL_SQLCONVERT COMPILE/RUNTIME/SQL Autoconvert SQL from sources files dialect to runtime dialect
-	#Conversion of SQL statements in 4GL code, to the SQL dialect of target RDBMS
-	#Conversion is only done if you set A4GL_SQLCONVERT=YES and only if
-	#the dialect used by the program differs from that used by the DBMS
-	#interface.
-	export A4GL_SQLCONVERT=YES
-	
-	#See also settigs under -ecp flag in run_tests - AND MERGE THEM ALL IN ONE PLACE! 
-	
-}
-
-
-
-
-#Loop trough all tests and check them for ANSI SQL 92 compatibility
-check_ansi_all () {
-ALL_DIRS=[0-9]*
-ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | $SORT -n |  tr "\n" " "`
-FAIL_NOERRFILE_CNT=0
-FAIL_ANSI_CNT=0
-FAIL_NOT_SIX=0
-DIFF_RESULTS=0
-TEST_CNT=0
-ALLREADY_SET_CNT=0
-TOTAL_FGL_CNT=0
-ANSI_OK_CNT=0
-FAIL_ANSI_COMMENT_ONLY_CNT=0
-
-		for TEST_NO in $ALL_TESTS
-		do
-			check_ansi_single $TEST_NO
-
-			#Show results for each test:
-			case $RESULT in
-				unknown-failed-but-no-ANSI-in-err | yes-only-comment-warnings |	no | unknown-failed-to-compile)
-					if test "$VERBOSE" = "1"; then
-						echo $MSG1
-						if test "$MSG2" != ""; then 
-							echo "MSG2"
-						fi
-						MSG1=""; MSG2=""
-						echo ""
-						echo "--------------------------------------------------------------------------"
-						echo ""
-					fi
-				;;
-			esac
-			if test "2" = "1"; then 
-				#if test "$TEST_CNT" = "100"; then
-				if test "$TEST_CNT" = "20"; then
-					echo "Exiting after reaching the set limit"
-					break
-				fi
-			fi
-		done
-		
-		
-		#Show summary results
-		echo ""
-		echo "Procesed $TEST_CNT tests, $TOTAL_FGL_CNT 4gl source files"
-		echo ""
-		echo "Failed on ANSI, but no ANSI in err file ($FAIL_NOERRFILE_CNT) $FAIL_NOERRFILE_LST"
-		echo "Failed on ANSI, but only comment warnings ($FAIL_ANSI_COMMENT_ONLY_CNT) $FAIL_ANSI_COMMENT_ONLY_LST"		
-		echo "Failed, not on ANSI ($FAIL_NOT_SIX) $FAIL_NOT_SIX_LST"
-		echo "Conflicting results from compilers ($DIFF_RESULTS) $DIFF_RESULTS_LST"
-		echo "Allready set in makefile ($ALLREADY_SET_CNT) $ALLREADY_SET_LST"
-		echo "--------------------------------------------------------------------------"
-		echo "ANSI compatible: ($ANSI_OK_CNT + $FAIL_ANSI_COMMENT_ONLY_CNT) $ANSI_OK_LST $FAIL_ANSI_COMMENT_ONLY_LST"
-		echo ""		
-		echo "Not ANSI compatible: ($FAIL_ANSI_CNT) $FAIL_ANSI_LST"
-		echo ""
-		echo "Unknown: ($FAIL_NOERRFILE_CNT + $FAIL_NOT_SIX + $DIFF_RESULTS) $FAIL_NOERRFILE_LST $FAIL_NOT_SIX_LST $DIFF_RESULTS_LST"
-		echo ""
-		
-}
-
-
-#Check one test for ANSI SQL compliance and interpret results
-check_ansi_single () {
-CHECK_TEST=$1
-COMPARE_REAL_WITH_STORED=1
-
-	IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $CHECK_TEST ansi_sql_compat 2>/dev/null`
-	if test "$IS_MAKE_ANSI_SQL_COMPAT" != ""; then
-		#we allready have this set in makefile. Since testing using compilers
-		#tests only static SQL, we must honor what is set in makefile, since
-		#it may be set because of dynamic SQL
-		IS_ANSI_COMPATIBLE=$IS_MAKE_ANSI_SQL_COMPAT
-		let ALLREADY_SET_CNT=ALLREADY_SET_CNT+1
-		ALLREADY_SET_LST="$ALLREADY_SET_LST $CHECK_TEST"
-		if test "$IS_ANSI_COMPATIBLE" = "0"; then 
-			MSG1="$CHECK_TEST: Result 0 from makefile"
-			let FAIL_ANSI_CNT=FAIL_ANSI_CNT+1
-			FAIL_ANSI_LST="$FAIL_ANSI_LST $CHECK_TEST"
-		else
-			MSG1="$CHECK_TEST: Result 1 from makefile"
-			let ANSI_OK_CNT=ANSI_OK_CNT+1
-			ANSI_OK_LST="$ANSI_OK_LST $CHECK_TEST"
-		fi
-	fi
-	
-	if test "$IS_MAKE_ANSI_SQL_COMPAT" = "" -o "$COMPARE_REAL_WITH_STORED" = "1"; then 
-		#do the ANSI check
-		RESULT=""
-		IS_ANSI_COMPATIBLE=""
-		let TEST_CNT=TEST_CNT+1
-		check_ansi $CHECK_TEST
-		let TOTAL_FGL_CNT=TOTAL_FGL_CNT+FGL_CNT
-
-		#Interpret and count results
-		
-			case $RESULT in
-				unknown-failed-but-no-ANSI-in-err)
-					MSG1="$CHECK_TEST: $FGL failed with code $RET, but no ANSI in err file"
-					let FAIL_NOERRFILE_CNT=FAIL_NOERRFILE_CNT+1
-					FAIL_NOERRFILE_LST="$FAIL_NOERRFILE_LST $CHECK_TEST"
-					IS_ANSI_COMPATIBLE="unknown"
-					;;
-				yes-only-comment-warnings)	
-					MSG1="$CHECK_TEST: $FGL generated ANSI warnings, but all about comments"
-					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
-						let FAIL_ANSI_COMMENT_ONLY_CNT=FAIL_ANSI_COMMENT_ONLY_CNT+1
-						FAIL_ANSI_COMMENT_ONLY_LST="$FAIL_ANSI_COMMENT_ONLY_LST $CHECK_TEST"
-					fi
-					IS_ANSI_COMPATIBLE="1"
-					;;
-				no)
-					MSG1="$CHECK_TEST: $FGL generated ANSI warnings:"
-					MSG2="$WARN_TXT_NO_COMMENT"
-					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
-						let FAIL_ANSI_CNT=FAIL_ANSI_CNT+1
-						FAIL_ANSI_LST="$FAIL_ANSI_LST $CHECK_TEST"
-					fi
-					IS_ANSI_COMPATIBLE="0"
-					;;
-				unknown-failed-to-compile)
-					MSG1="$CHECK_TEST: $FGL faied with exit code $RET (not 6)"
-					let FAIL_NOT_SIX=FAIL_NOT_SIX+1
-					FAIL_NOT_SIX_LST="$FAIL_NOT_SIX_LST $CHECK_TEST"
-					IS_ANSI_COMPATIBLE="unknown"
-					;;
-				unknown-different-results)
-					MSG1="$CHECK_TEST: $FGL conflicting results from compilers"
-					let DIFF_RESULTS=DIFF_RESULTS+1
-					DIFF_RESULTS_LST="$DIFF_RESULTS_LST $CHECK_TEST"
-					IS_ANSI_COMPATIBLE="unknown"
-					;;
-				yes)
-					MSG1="$CHECK_TEST: $FGL is ANSI compatible"
-					if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then					
-						let ANSI_OK_CNT=ANSI_OK_CNT+1
-						ANSI_OK_LST="$ANSI_OK_LST $CHECK_TEST"
-					fi
-					IS_ANSI_COMPATIBLE="1"
-					;;
-				no-fgl)
-					MSG1="$CHECK_TEST: No 4gl files"
-					let FAIL_NOT_SIX=FAIL_NOT_SIX+1
-					FAIL_NOT_SIX_LST="$FAIL_NOT_SIX_LST $CHECK_TEST"
-					IS_ANSI_COMPATIBLE="unknown"
-					;;
-				*)
-					echo "WARNING: unhandled result: $RESULT"
-					IS_ANSI_COMPATIBLE="unknown"
-					;;
-			esac
-			if test "$IS_MAKE_ANSI_SQL_COMPAT" = ""; then
-				#makefile does NOT contain the value
-				if test "$IS_ANSI_COMPATIBLE" = "1" -o "$IS_ANSI_COMPATIBLE" = "0"; then
-					#We determined state, so record it to makefile
-					if test "1" = "1"; then
-						makefile=`ls $CURR_DIR/$CHECK_TEST/?akefile 2> /dev/null`
-						if test "$makefile" != ""; then
-							change_setting ansi_sql_compat $IS_ANSI_COMPATIBLE $CHECK_TEST
-							#echo "changed test $CHECK_TEST"
-							#exit
-						fi
-					fi
-				fi
-			fi
-	fi
-	
-	if test "$IS_MAKE_ANSI_SQL_COMPAT" != "" -a "$COMPARE_REAL_WITH_STORED" = "1"; then
-		#Compare value stored in makefile with result of the actual test 
-		if test "$IS_ANSI_COMPATIBLE" != "$IS_MAKE_ANSI_SQL_COMPAT"; then
-			if test "$VERBOSE" = "1"; then
-				echo "WARNING: test $CHECK_TEST - different results from the actuall test and makefile" 
-				echo "Test: $IS_ANSI_COMPATIBLE but in Makefile: $IS_MAKE_ANSI_SQL_COMPAT"
-			fi
-			#exit 5
-			#setting in makefile has priority, because of dynamic SQL
-			IS_ANSI_COMPATIBLE="$IS_MAKE_ANSI_SQL_COMPAT"
-		else
-			if test "$VERBOSE" = "1"; then
-				echo "Result of actual test and value stored in makefile are same"
-			fi
-		fi
-	fi
-			
-			
-	if test "$VERBOSE" = "1"; then
-		echo $MSG1
-		if test "$MSG2" != ""; then 
-			echo "$MSG2"
-		fi
-	fi
-	
-}
-
-#check all 4gl files in test directory for ANSI SQL compliance
-check_ansi() {
-this_test_no=$1
-FGL_CNT=0
-if test "$ANSI_USE_COMP" = ""; then 
-	#ANSI_USE_COMP=ifx
-	#ANSI_USE_COMP=querix
-	#ANSI_USE_COMP=aubit
-	ANSI_USE_COMP=all
-fi
-#4Js apparently does not have option for ANSI schecking
-#what is DBANSIWARN env. var doing?
-#ANSI SQL info: http://www.tdan.com/i016hy01.htm
-#http://www.knosof.co.uk/sqlport.html
-#http://thor.informatik.uni-halle.de/~brass/sqllint/
-
-
-	OLD_DIR=`pwd`
-	cd $CURR_DIR/$this_test_no
-	ALL_4GL=*.4gl
-	RESULT=""
-
-	for FGL in $ALL_4GL
-	do
-		if ! test -f $FGL; then
-			RESULT="no-fgl"
-			continue
-		fi
-		#If we allready got no or unknown on one 4gl file, we can't be
-		#sure if test is compatible even if another 4gl file is OK, so abort
-		case $a in
-		no*)
-	   		break
-			;;
-		unknown*)
-			break
-			;;
-		esac
-		let FGL_CNT=FGL_CNT+1
-		case $ANSI_USE_COMP in
-			ifx)
-				check_ansi_ifx $FGL
-				;;
-			querix)
-				check_ansi_querix $FGL
-				;;
-			aubit)
-				check_ansi_aubit $FGL
-				;;
-			all)
-				check_ansi_querix $FGL
-				RESULT_QUERIX=$RESULT
-				check_ansi_aubit $FGL
-				RESULT_AUBIT=$RESULT
-				check_ansi_ifx $FGL
-				RESULT_IFX=$RESULT
-				
-				if test "$RESULT_QUERIX" != "$RESULT_IFX"; then
-					if test "$RESULT_QUERIX" = "yes" -a "$RESULT_IFX" = "yes-only-comment-warnings"; then
-						#Only Informix can return yes-only-comment-warnings so it is yes
-						RESULT="yes"
-					else
-						RESULT="unknown-different-results"
-					fi
-				else
-					#Make sure we ignore Aubit result - not reliable
-					#since Querix and Informix returned same result, it is
-					#irelevant which one we will assign
-					RESULT=$RESULT_QUERIX
-				fi
-			
-		esac
-	done
-	cd $OLD_DIR
-}
-
-
-#Check one 4gl file for ANSI SQL compliance using Informix 4GL compiler
-check_ansi_ifx() {
-FGL=$1
-FGLCOMP_CMD="fglpc -ansi"
-
-		TMP_TMP=`$FGLCOMP_CMD $FGL 2>&1` 
-		RET=$?
-		if test "$RET" != "0"; then
-			FGL_BASENAME=`basename $FGL .4gl`
-		 	if test "$RET" = "6"; then
-				WARN_TXT=`cat $FGL_BASENAME.err | grep "^|" | grep ANSI`
-				if test "$WARN_TXT" = ""; then
-					RESULT="unknown-failed-but-no-ANSI-in-err"
-				else
-					WARN_TXT_NO_COMMENT=`echo "$WARN_TXT" | grep -v "non-ANSI comment indicator"`
-					if test "$WARN_TXT_NO_COMMENT" = ""; then 
-						RESULT="yes-only-comment-warnings"
-					else
-						RESULT="no"
-					fi
-				fi
-			else
-				RESULT="unknown-failed-to-compile"
-			fi
-		else
-			RESULT="yes"
-		fi
-		
-		
-	if test "$VERBOSE" = "1"; then
-		echo "----------- Testing ANSI SQL compatibility using Informix 4GL compiler --------"
-		echo "$FGL : $RESULT"
-		if test "$WARN_TXT_NO_COMMENT" != ""; then
-			#echo $WARN_TXT_NO_COMMENT
-			grep -B 5 "$WARN_TXT_NO_COMMENT" $FGL_BASENAME.err
-		fi
-		if test "$RESULT" = "unknown-failed-to-compile"; then 
-			grep -B 1 "^|" $FGL_BASENAME.err
-		
-		fi
-		echo ""
-	fi
-}
-
-#Check one 4gl file for ANSI SQL compliance using Querix 4GL compiler
-check_ansi_querix() {
-FGL=$1
-
-#Querix will exit with 0, but print "Warnings found" to stderr
-#.err file will contain "Warning: Non ANSI standard SQL statement"
-#It does not warn about comments
-FGLCOMP_CMD="fglc -ansi"
-
-		TMP_TMP=`$FGLCOMP_CMD $FGL 2>&1`
-		RET=$?
-		TMP_TMP=`echo $TMP_TMP | grep "Warnings found"`
-		FGL_BASENAME=`basename $FGL .4gl`
-		if test "$RET" = "0"; then
-		 	if test "$TMP_TMP" != ""; then
-				#Warnings found
-				WARN_TXT=`cat $FGL_BASENAME.err | grep "^|" | grep "Warning: Non ANSI standard SQL statement"`
-				if test "$WARN_TXT" = ""; then
-					RESULT="unknown-failed-but-no-ANSI-in-err"
-				else
-					RESULT="no"
-				fi
-			else
-				RESULT="yes"
-			fi
-		else
-			RESULT="unknown-failed-to-compile"
-		fi
-		
-	if test "$VERBOSE" = "1"; then
-		echo "------------Testing ANSI SQL compatibility using Querix 4GL compiler ----------"
-		echo "$FGL : $RESULT"
-		if test "$RESULT" = "unknown-failed-to-compile"; then 
-			grep -B 1 "^|" $FGL_BASENAME.err
-		
-		fi
-		echo ""
-	fi
-		
-}
-
-#Check one 4gl file for ANSI SQL compliance using Aubit 4GL compiler
-check_ansi_aubit() {
-FGL=$1
-
-# Try test 538 
-#TODO: use '-ansi' flag on the ESQL/C compiler.
-
-if test "$A4GL_LEXTYPE" = "" -o "$A4GL_SQLTYPE" = ""; then 
-	#We are called before run_test script set this 
-	AUBIT_DB="export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=esql;"
-fi
-FGLCOMP_CMD="export A4GL_ANSI_WARN=Yes; $AUBIT_DB aubit $FGLC --verbose"
-
-		TMP_TMP=`eval $FGLCOMP_CMD $FGL 2>&1`
-		RET=$?
-		#echo $TMP_TMP
-		TMP_TMP=`echo $TMP_TMP | grep "ANSI violation"`
-		if test "$RET" = "0"; then
-			#compiled OK
-		 	if test "$TMP_TMP" != ""; then
-				#Warnings found - Aubit does not create .err file in that case
-				RESULT="no"
-			else
-				RESULT="yes"
-			fi
-		else
-			RESULT="unknown-failed-to-compile"
-		fi
-		
-	if test "$VERBOSE" = "1"; then
-		echo "------------Testing ANSI SQL compatibility using Aubit 4GL compiler ----------"
-		echo "$FGL : $RESULT"
-		echo ""
-	fi
-		
-}
-
-
-create_unl_db_tables () {
-db="aubit_tests"
-tablename="catalogue"
-script="$tablename.sql"
-logfile="$tablename.log"
-if test "$RDBMS" = ""; then 
-	RDBMS="informix"
-	check_informix
-fi
-	test_db_exist $db
-	if test "$TEST" != ""; then 
-		#echo "CR2"
-		create_db $db
-	else
-		echo "Database $db exists"
-		drop_db $db	
-		#echo "CR3"
-		create_db $db
-	fi
-
-cat > $script <<X
-	create table catalogue (
-		timestamp char (19),   -- 22-10-2004_01-34-24
-		test_no smallint,
-		invalid smallint,
-		is_db smallint,
-		is_ec smallint,
-		is_nosilent smallint,
-		is_tui smallint,
-		is_form smallint,
-		is_report smallint,
-		is_graphics smallint,
-		is_prompt smallint,
-		is_dump_screen smallint,
-		is_long smallint,
-		is_unknown smallint,
-		is_cert smallint,
-		is_obsolete smallint,
-		is_described smallint,
-		test_desc_txt varchar(255),
-		test_compat_test smallint,
-		expect_code char(3),
-		se_required smallint,
-		compile_only smallint,
-		need_ifx_ver char(10),
-		need_trans smallint,
-		no_prefix smallint,
-		need_compat smallint,
-		old_makefile smallint,
-		is_pcode_enabled smallint,
-		is_no_cron smallint,
-		scripted smallint,
-		is_window smallint,
-		test_ver decimal,
-		run_tests_ver decimal,
-		last_update date,
-		expect_fail_cert  smallint,
-		expect_fail_esqli smallint,
-		expect_fail_ecp smallint,
-		expect_fail_ifx_p smallint,
-		expect_fail_4js smallint,
-		expect_fail_querix smallint,
-		sql_features_used varchar(255),
-		ansi_sql smallint
-	);
-X
-
-	#echo "Converting script..."
-	#convert_sql ddl $RDBMS $script
-	echo "Creating table $tablename..."
-	run_sql_script $RDBMS $db $script $logfile
-	TMP_TMP=`cat $logfile | grep "TableOOPScreated"`
-	if test "$TMP_TMP" = ""; then 
-		echo "Failed - see $logfile"
-		exit 5
-	fi
-	
-
-tablename="results"
-script="$tablename.sql"
-logfile="$tablename.log"
-#15-10-2004_18-23-02|34|1||0||NULL|1.49|0.30|0:01.85|96%|0|0|0|0|3773|0|
-cat > $script <<X
-	create table results (
-		timestamp char (19),   -- 22-10-2004_01-34-24
-		test_no smallint,
-		result smallint,
-		skip_reason char (20),
-		expect_fail smallint,
-		test_version decimal,
-		db_has_trans char(4),
-		t_user decimal,
-		t_system decimal,
-		t_elapsed char(8),
-		t_CPU char(4),
-		t_text decimal,
-		t_data decimal,
-		t_inputs decimal,
-		t_outputs decimal,
-		t_major integer,
-		t_swaps integer
-		);
-X
-
-
-	#echo "Converting script..."
-	#convert_sql ddl $RDBMS $script
-	echo "Creating table $tablename..."
-	run_sql_script $RDBMS $db $script $logfile
-	TMP_TMP=`cat $logfile | grep "TableOOPScreated"`
-	if test "$TMP_TMP" = ""; then 
-		echo "Failed - see $logfile"
-		exit 5
-	fi
-
-tablename="test_run"
-script="$tablename.sql"
-logfile="$tablename.log"
-
-cat > $script <<X
-	create table test_run (
-		timestamp char (19),   -- 22-10-2004_01-34-24
-		host char(30),
-		user char (14),
-		platform char (10),
-		os_name char (20),
-		os_version char(80),
-		flags char (200),
-		aubit_version decimal,
-		aubit_build smallint,
-		comp_version char(40),
-		total_time integer,
-		c_ver char(40),
-		esql_ver char(40),
-		db_ver char(40),
-		make_ver char(40),
-		sh_ver char(40),
-		log_text varchar(255)
-		);
-X
-
-	#echo "Converting script..."
-	#convert_sql ddl $RDBMS $script
-	echo "Creating table $tablename..."
-	run_sql_script $RDBMS $db $script $logfile
-	TMP_TMP=`cat $logfile | grep "TableOOPScreated"`
-	if test "$TMP_TMP" = ""; then 
-		echo "Failed - see $logfile"
-		exit 5
-	fi
-
-	echo "Done creating tables"
-}
-
-
-#Load all .unl data
-function load_unl_tables () {
-dl="|"
-#ALL_RESULTS="aptiva_16-10-2004_12-49-24"
-ALL_RESULTS=results_*.unl
-
-
-	echo "Loading catalogue..."
-	load_table "aubit_tests" "catalogue" "$CATALOGUE_UNL_FILE" "42" "$dl"
-
-	for FILE in $ALL_RESULTS; do 
-		STAMP=`echo $FILE | sed -e 's/results_//' -e 's/.unl//'`
-		results_unl_file="results_$STAMP.unl"
-		test_run_unl_file="test_run_$STAMP.unl"
-		
-		if ! test -f $results_unl_file || ! test -f $test_run_unl_file; then
-			#This happens when run_tests is interupted before reaching the 
-			#end, and creating test_run_ unl file
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping $STAMP - missing pair"
-			fi
-		else
-			echo "Loading results from $results_unl_file..."
-			load_table "aubit_tests" "results" "$CURR_DIR/$results_unl_file" "17" "$dl"
-			
-			echo "Loading test_run from $test_run_unl_file..."	
-			load_table "aubit_tests" "test_run" "$CURR_DIR/$test_run_unl_file" "17" "$dl"
-		fi
-	done
-
-	count_rows catalogue aubit_tests
-	echo "Total $CNT rows loaded into catalogue"
-	count_rows test_run aubit_tests
-	echo "Total $CNT rows loaded into test_run"
-	count_rows results aubit_tests
-	echo "Total $CNT rows loaded into results"
-
-	
-}
-
-#Load single .unl file
-load_table () {
-db=$1
-loadname=$2
-logfile=$3
-col_no=$4
-dl=$5
-
-	echo "file \"$logfile\" delimiter \"$dl\" $col_no;" > $loadname.dbl
-	echo "insert into $loadname;" >> $loadname.dbl
-	
-	if test "$VERBOSE" = "1"; then
-		count_rows $loadname $db
-		BEFORE_LOAD=$CNT
-	fi
-	
-	dbload -d $db -c $loadname.dbl -l $loadname.err > /tmp/dbload.log 2>&1
-	RET=$?
-
-	if test "$VERBOSE" = "1"; then 
-		count_rows $loadname $db
-		let THIS_LOAD=CNT-BEFORE_LOAD
-		echo "$THIS_LOAD rows loaded into $loadname"
-	fi
-	
-	if test "$RET" != "0"; then 
-		echo "dbload failed."
-		if test -f /tmp/dbload.log; then 
-			cat /tmp/dbload.log
-		fi
-		exit $RET
-	fi
-	
-	if test -f $loadname.err; then
-		error "Load rejected some rows. See $loadname.err" "1"
-		if test "$VERBOSE" = "1"; then
-			cat $loadname.err
-		fi
-	fi
-
-}
-
 
 ##
 # Log test descriptiont into Informix-style .unl file
@@ -2907,6 +1562,11 @@ if test "$A4GL_LEXTYPE" = "EC"; then
 	if test "$USE_ECI" = "1" -a "$A4GL_LEXDIALECT" = "INFORMIX"; then
 		esql_ver=`esql -V | grep Version | awk '{print $3}'`
 	fi
+	if test "$USE_ECG" = "1" -a "$A4GL_LEXDIALECT" = "INGRES"; then
+		error "TODO: fix in functions_inc.sh" "1"
+		esql_ver=`esql -V | grep Version | awk '{print $3}'`
+	fi
+	
 fi
 
 #echo "A4GL_LEXTYPE=$A4GL_LEXTYPE"
@@ -3343,7 +2003,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 # @param RDBMS Type of RDBMS to convert SQL dialect to
 # @param RESULT Filename of resulting converted SQL script
 ##
-convert_sql() {
+function convert_sql() {
 TYPE=$1
 RDBMS=$2
 RESULT=$3
@@ -3352,7 +2012,19 @@ SQL_DATA=etc/testdb-data.sql
 TMP1=tmp1
 TMP2=tmp2
 
-	echo "Translating $TYPE script for $RDBMS ..."
+	case $TYPE in
+		ddl)
+			INPUT=$SQL_DDL
+			;;
+		data)
+			INPUT=$SQL_DATA
+			;;
+		*)
+			echo "ERROR: unknown translation type: $TYPE"
+			exit 3
+			;;
+	esac
+	echo "Translating $TYPE script for $RDBMS ... (INPUT=$INPUT,OUTPUT=$RESULT)"
 	case $RDBMS in
 	informix)
 		case $TYPE in
@@ -3388,6 +2060,23 @@ TMP2=tmp2
 			;;
 		esac
 		;;
+	mysql)
+		case $TYPE in
+		ddl)
+cat $SQL_DDL | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | sed -e 's/condition char(64)/conditionX char(64)/g' | tr "\"" "'" > $TMP1			
+			mv $TMP1 $RESULT
+			;;
+		data)
+			cat $SQL_DATA | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > $TMP1			
+			mv $TMP1 $RESULT
+			;;
+		*)
+			echo "ERROR: unknown translation type: $TYPE"
+			exit 3
+			;;
+		esac
+		;;
+		
 	sqlite)
 		case $TYPE in
 		ddl)
@@ -3448,10 +2137,18 @@ AS_USER=$5
 
    case $RDBMS in
 	informix)
-		EXEC="dbaccess $DB -qcr $SCRIPT $LOGFILE_CMD"
+		EXEC="dbaccess $DB -qcr "
 		eval $EXEC
 		RET=$?
 		;;
+		
+	mysql)
+		#EXEC="mysql --user=root --password=aubit --database=$DB --execute='\q'"
+		EXEC="mysql --user=root --password=aubit --database=$DB < $SCRIPT $LOGFILE_CMD"
+		eval $EXEC
+		RET=$?
+		;;
+	
 	postgres)
 	
 		#if test "$COMSPEC" != ""; then 
@@ -3539,17 +2236,17 @@ AS_USER=$5
 
 ##
 # Create a new test database.
-# Populte test data
+# Populate test data
 #
 # @param RDBMS Type of RDBMS to create test database in
 ##
-new_testdb() {
+function new_testdb() {
 RDBMS=$1
 SCRIPT=converted.sql
 LOGFILE=/tmp/testdb.log
 	
    case $RDBMS in
-	informix | postgres)
+	informix | postgres | mysql)
 		echo "Converting DDL SQL..."	
 		convert_sql ddl $RDBMS $SCRIPT
 		echo "Creating tables..."
@@ -3560,9 +2257,11 @@ LOGFILE=/tmp/testdb.log
 		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
 		;;
 	sqlite)
+		echo "Converting DDL SQL..."	
 		convert_sql ddl $RDBMS $SCRIPT
 		echo "Creating tables..."
 		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
+		echo "Converting data SQL..."		
 		convert_sql data $RDBMS $SCRIPT
 		echo "Loading data..."
 		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
@@ -4491,8 +3190,18 @@ function log_results () {
 		echo "" >> $LOGFILE
 		echo "ERROR: SQL features used not expected by compatiblity check:" >> $LOGFILE
 		echo "$FEATURE_NOT_EXPECTED" >> $LOGFILE
+		echo "Please add to db_features.conf, or make sure correct tag is used in test description" >> $LOGFILE
 		echo "" >> $LOGFILE
 	fi
+	
+	if test "$ALL_INCOMP_FEATURES_SKIPPED" != ""; then
+		echo "" >> $LOGFILE
+		echo "Unique SQL features that caused tests to be skipped under current settings:" >> $LOGFILE
+		echo "$ALL_INCOMP_FEATURES_SKIPPED" >> $LOGFILE
+		echo "Please review if this is appropriate"  >> $LOGFILE
+		echo "" >> $LOGFILE
+	fi
+
 	if test "$VERBOSE" = "1"; then
 		echo "" >> $LOGFILE
 		echo "Finished at:" >> $LOGFILE
@@ -4735,12 +3444,15 @@ function load_info_from_strings () {
 #Load info that is allways in makefile, and only in makefile
 function load_info_makefile_only () {
 
+	#This targets can be present in both old and new makefiles:
+	NEED_PLUGIN=`$MAKE -s -C $TEST_NO need_plugin 2>/dev/null`
+	SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`	
+	
 	#Both old and new makefiles may contain this targets, but they are 
 	#relevant only for db tests
 	if test "$IS_DB_TEST" = "1"; then 
 		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
 		NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
-		SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
 
 		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0" -a "$SQL_FEATURES_USED" = ""; then 
 			#echo "WARNING: #$TEST_NO is not compatible with ANSI SQL, but has no SQL features used description"
@@ -4754,11 +3466,8 @@ function load_info_makefile_only () {
 	else
 		IS_MAKE_ANSI_SQL_COMPAT=""
 		NEED_TRANSACTION=""
-		SQL_FEATURES_USED=""
 	fi
 	
-	#This targets can be present in both old and new makefiles:
-	NEED_PLUGIN=`$MAKE -s -C $TEST_NO need_plugin 2>/dev/null`
 	
 }
 
@@ -5113,11 +3822,11 @@ NEED_COLS=43
 	fi
 	
 	#Check number of fields: (Note: LF is a char)
-	delim_cnt=`echo $ALL_DESC | sed -e "s/[a-zA-Z0-9 _!~@#$%^&(()+*-=<,>.?{}\']//g" -e 's/\[//g' -e 's/\]//g' -e 's/\"//g' | wc -m`
+	delim_cnt=`echo $ALL_DESC | sed -e "s/[a-zA-Z0-9 _!~@#$%^&(()+*=<,>.?;{}/\':-]//g" -e 's/\[//g' -e 's/\]//g' -e 's/\"//g' | wc -m`
 	delim_cnt=`echo $delim_cnt`
 
 	if test "$DBG_load_info_in_one_go" = "1" -o "$delim_cnt" != "$NEED_COLS"; then
-		stripped=`echo $ALL_DESC | sed -e "s/[a-zA-Z0-9 _!~@#$%^&(()+*-=<,>.?{}\']//g" -e 's/\[//g' -e 's/\]//g' -e 's/\"//g'`
+		stripped=`echo $ALL_DESC | sed -e "s/[a-zA-Z0-9 _!~@#$%^&(()+*=<,>.?;{}/\':-]//g" -e 's/\[//g' -e 's/\]//g' -e 's/\"//g'`
 		echo ">$ALL_DESC<"
 		echo ">$stripped<"
 		echo "Expecting $NEED_COLS, got $delim_cnt"
@@ -5127,7 +3836,8 @@ NEED_COLS=43
 	fi
 	if test "$delim_cnt" != "$NEED_COLS" ; then
 		error "Loading descriptions from makefile in one go returned $delim_cnt"
-		error "fields instead of expected $NEED_COLS for test $TEST_NO" "1"
+		error "fields instead of expected $NEED_COLS for test $TEST_NO"
+		error "Probably some characters not filtered by sed?" "1"
 	fi
 	info_line_to_var "$ALL_DESC"
 	
@@ -5389,9 +4099,9 @@ function check_pg_user_create () {
 			 	run_sql_script postgres template1 $SCRIPT /tmp/pg-create-user.log postgres
 				#we need this for future tests
 				#if test "$COMSPEC" != ""; then 
-				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
+				#	echo "$PGUSER_POSTGRES_PWD" | $PG_CREATEDB $USERNAME > /tmp/credb$USERNAME.log 2>&1
 				#else
-					$POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
+					$PG_CREATEDB $USERNAME > /tmp/credb$USERNAME.log 2>&1
 				#fi
 				#
 				#su postgres
@@ -5400,9 +4110,9 @@ function check_pg_user_create () {
 
 				echo "Again: Creating PostgreSQL database $TEST_DB"
 				#if test "$COMSPEC" != ""; then 
-				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+				#	echo "$PGUSER_POSTGRES_PWD" | $PG_CREATEDB $TEST_DB > /tmp/credbtmp.log 2>&1
 				#else
-					$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+					$PG_CREATEDB $TEST_DB > /tmp/credbtmp.log 2>&1
 				#fi
 				RET=$?
 				if test "$RET" != "0"; then

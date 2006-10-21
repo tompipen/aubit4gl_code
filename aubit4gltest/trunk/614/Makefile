@@ -191,7 +191,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE"
+	@echo "DROP_TABLE CREATE_TABLE  DEFINE_SMALLINT DEFINE_CHAR ANSI_INSERT UI_DISPLAY_LINE_MODE DISPLAY"
 
 
 runtime_err_check:

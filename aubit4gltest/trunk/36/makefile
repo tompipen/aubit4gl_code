@@ -22,5 +22,5 @@ desc:
 	@echo "Test a foreach when an open has already been done"
 	
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE CLOSE_CURSOR DROP_TABLE"
+	@echo "CREATE_TEMP_TABLE CLOSE_CURSOR DROP_TABLE  CURSOR_SELECT FOREACH UI_DISPLAY_LINE_MODE DISPLAY EXIT_PROGRAM_EXPR"
 	

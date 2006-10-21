@@ -201,7 +201,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE_QUALIFIED_PATH CREATE_TABLE_QUALIFIED_PATH"
+	@echo "DROP_TABLE_QUALIFIED_PATH CREATE_TABLE_QUALIFIED_PATH  DROP_TABLE CREATE_TABLE"
 
 
 need_ifx_version:			; @echo ""

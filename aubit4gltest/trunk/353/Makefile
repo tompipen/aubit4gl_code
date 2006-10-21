@@ -188,7 +188,7 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "DATABASE"
+	@echo "DATABASE  DEFINE_CHAR"
 
 
 runtime_err_check:

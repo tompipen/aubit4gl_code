@@ -17,3 +17,6 @@ ansi_sql_compat:
 
 desc:
 	@echo "_variable(...) handling test  - also tests shared library creation"
+
+sql_features_used:		; @echo "DATABASE_USED DROP_TABLE CREATE_TABLE ANSI_DELETE ANSI_INSERT DEFINE_LIKE VALIDATE_LIKE STATUS IF EXIT_PROGRAM_EXPR "
+

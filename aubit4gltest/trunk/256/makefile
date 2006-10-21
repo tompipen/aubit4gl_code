@@ -224,7 +224,7 @@ transaction:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "SELECT_INTO_TEMP"
+	@echo "SELECT_INTO_TEMP  CREATE_TEMP_TABLE ANSI_INSERT ORDER_BY SELECT_INTO_TEMP_ORDER_BY"
 	
 # ============================= EOF ================================
 

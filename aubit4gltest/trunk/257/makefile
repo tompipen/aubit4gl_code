@@ -218,5 +218,5 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "DEFINE_LIKE"
+	@echo "DEFINE_LIKE  DEFINE_SMALLINT UI_DISPLAY_LINE_MODE DISPLAY"
 

@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "PROMPT - no checking and missing form file"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -32,13 +32,13 @@ tui_test:				; @echo "0"
 form_test:				; @echo "0"
 report_test:			; @echo "0"
 graphic_test:			; @echo "0"
-console_prompt_test:	; @echo "0"
+console_prompt_test:	; @echo "1"
 dump_screen_test:		; @echo "0"
 long_test:				; @echo "0"
 cert_test:				; @echo "0"
 obsolete_test:			; @echo "0"
-compat_test:			; @echo "0"
-expect_code:			; @echo "1"
+compat_test:			; @echo "1"
+expect_code:			; @echo "0"
 compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"

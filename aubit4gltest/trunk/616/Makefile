@@ -192,7 +192,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_PROCEDURE CREATE_TABLE"
+	@echo "DROP_TABLE CREATE_PROCEDURE CREATE_TABLE  DEFINE_SMALLINT DEFINE_CHAR PREPARE"
 
 
 runtime_err_check:

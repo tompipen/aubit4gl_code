@@ -191,7 +191,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD"
+	@echo "DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD  DDL_DECIMAL DDL_NOT_NULL ALTER_TABLE"
 
 
 

@@ -191,7 +191,7 @@ ansi_sql_compat:
 	@echo "0"
 	
 sql_features_used:
-	@echo "FREE_CURSOR DATABASE_PREPARED"
+	@echo "FREE_CURSOR DATABASE_PREPARED  PREPARE EXECUTE"
 
 
 

@@ -215,7 +215,7 @@ transaction:
 	
 # ============================= EOF ================================
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR CREATE_TEMP_TABLE STATUS UI_DISPLAY_LINE_MODE DISPLAY "
 
 
 ansi_sql_compat:			; @echo ""

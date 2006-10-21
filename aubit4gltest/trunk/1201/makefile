@@ -221,7 +221,7 @@ ansi_sql_compat:
 	@echo ""
 
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE ANSI_SELECT STATUS" 
+	@echo "CREATE_TEMP_TABLE ANSI_SELECT STATUS  DEFINE_CHAR UI_DISPLAY_LINE_MODE DISPLAY"
 	
 	
 # ============================= EOF ================================

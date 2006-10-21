@@ -219,7 +219,7 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "DATABASE_USED DEFINE_CHAR DEFINE_DECIMAL DEFINE_SMALLINT DDL_DECIMAL CREATE_TEMP_TABLE FOR ANSI_INSERT USE_REPORT CURSOR_SELECT FOREACH ON_EVERY_ROW ON_LAST_ROW "
 
 	
 #################

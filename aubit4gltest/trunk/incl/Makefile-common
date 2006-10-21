@@ -1,3 +1,4 @@
+#!/bin/make
 
 #This make file used as include from ALL make files in build_tests tree
 
@@ -382,6 +383,11 @@ show:
 	@echo 'NAMED_DIFF=${NAMED_DIFF}'	
 	@echo "OUT_EXPECTED_LIST=$(OUT_EXPECTED_LIST)"
 	@echo "OUT_LIST=$(OUT_LIST)"
+	@echo "A4GL_SQLTYPE=$(A4GL_SQLTYPE)"
+	@echo "A4GL_LEXTYPE=$(A4GL_LEXTYPE)"
+	@echo "A4GL_LEXDIALECT=$(A4GL_LEXDIALECT)"
+	
+	
 	
 #######################################
 #create dummy setting output to preserve the order

@@ -200,7 +200,7 @@ transaction:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "PUT_CURSOR"
+	@echo "PUT_CURSOR  DEFINE_CHAR DEFINE_INTEGER CREATE_TEMP_TABLE PREPARE CURSOR_SELECT OPEN_CURSOR CLOSE_CURSOR UI_DISPLAY_LINE_MODE DISPLAY ANSI_INSERT ORDER_BY FOREACH"
 	
 # ============================= EOF ================================
 

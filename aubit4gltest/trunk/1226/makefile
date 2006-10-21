@@ -219,7 +219,7 @@ transaction:
 #ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE etc... 
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo ""
+	@echo "DATABASE_USED DEFINE_LIKE UI_DISPLAY_LINE_MODE DISPLAY IFX_SYSTABLES CURSOR_SELECT FOREACH EXIT_FOREACH "
 
 	
 #################

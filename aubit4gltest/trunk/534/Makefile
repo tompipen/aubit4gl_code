@@ -201,7 +201,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE_NO_LOG"
+	@echo "CREATE_TEMP_TABLE_NO_LOG  SELECT_INTO_TEMP_WITH_NO_LOG CREATE_TEMP_TABLE"
 	
 	
 

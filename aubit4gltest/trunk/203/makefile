@@ -13,3 +13,6 @@ ansi_sql_compat:
 
 desc:
 	@echo "4J$ style dynamic array handling"
+
+sql_features_used:		; @echo "DATABASE_USED DEFINE_SMALLINT CREATE_TEMP_TABLE DEFINE_CHAR PREPARE CURSOR_SELECT SCROLL_CURSOR OPEN_CURSOR "
+

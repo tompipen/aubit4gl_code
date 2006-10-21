@@ -176,7 +176,7 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE ANSI_SELECT STATUS"
+	@echo "CREATE_TEMP_TABLE ANSI_SELECT STATUS  DEFINE_SMALLINT IF EXIT_PROGRAM_EXPR UI_DISPLAY_LINE_MODE DISPLAY"
 
 expect_code:			; @echo ""
 compile_only:			; @echo ""

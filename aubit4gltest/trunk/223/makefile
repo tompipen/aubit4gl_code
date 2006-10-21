@@ -14,3 +14,6 @@ run: prog.4ae
 ansi_sql_compat:
 	@echo "1"
 
+
+sql_features_used:		; @echo "DATABASE_USED DROP_TABLE CREATE_TABLE ANSI_DELETE ANSI_INSERT DEFINE_LIKE VALIDATE_LIKE STATUS IF EXIT_PROGRAM_EXPR "
+

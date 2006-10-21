@@ -12,3 +12,6 @@ run: moneytype.4ae
 ansi_sql_compat:
 	@echo "1"
 
+
+sql_features_used:		; @echo "DATABASE_USED DEFINE_DATETIME DDL_DATETIME CREATE_TEMP_TABLE UI_DISPLAY_LINE_MODE DISPLAY ANSI_INSERT INITIALIZE_NULL "
+

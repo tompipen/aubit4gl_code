@@ -207,5 +207,5 @@ need_ifx_version:			; @echo ""
 transaction:			; @echo ""
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DROP_TABLE CREATE_TABLE CREATE_INDEX DROP_INDEX   CREATE_INDEX DROP_INDEX"
 

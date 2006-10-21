@@ -219,6 +219,6 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "CREATE_TEMP_TABLE"
+	@echo "CREATE_TEMP_TABLE  DEFINE_CHAR ANSI_INSERT UI_DISPLAY_LINE_MODE DISPLAY"
 	
 	

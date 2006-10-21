@@ -219,5 +219,5 @@ ansi_sql_compat:
 	@echo "1"
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR CREATE_TEMP_TABLE INSERT_COLUMNLIST_EQ_VALUELIST ANSI_INSERT CURSOR_SELECT OPEN_CURSOR CLOSE_CURSOR DROP_TABLE "
 

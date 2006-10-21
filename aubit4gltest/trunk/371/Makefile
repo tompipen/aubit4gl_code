@@ -187,7 +187,7 @@ ansi_sql_compat:
 	@echo "1"
 
 sql_features_used:
-	@echo "INITIALIZE_LIKE IFX_SYSTABLES"
+	@echo "INITIALIZE_LIKE IFX_SYSTABLES  DEFINE_SMALLINT"
 
 
 runtime_err_check:

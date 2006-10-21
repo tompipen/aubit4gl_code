@@ -12,13 +12,21 @@
 // );
 // 'left' is reserved word in Postgres (and probably some other databases) 
 // so it was renamed to xx_left - seems unused, since tests still work
+//
+// PLEASE NOTE THAT THIS IS NOT A NORMAL SQL FILE - IT IS USED TO CREATE SEVERAL
+// TARGET DATABASESE (INFORMIX, PG, SQLITE, ETC) AND SINCE THE USED PROCESS
+// TO CONVERT IT IS A PROMITIVE GREP/SED, IT IS HIGHLY DEPENDENT ON THE 
+// FORMAT - PLEASE TEST RESULTS ON ALL DATABASES BEFORE COMMITING THE 
+// CHANGES - SEE FUNCTION convert_sql() in functions_inc.sh
+// SO - IF YOU NEED TO CHANGE IT - CHANGE IT IN TRANSLATION THERE!
+//
 */
 
-/*
- create table dummy (tabname char (128),tabid integer);
+
+ create table dummy (tabname varchar (128,0),tabid integer);
  
  create table systables (
- 	tabname char (128),
+ 	tabname varchar (128,0),
 	owner char(32),
 	partnum integer,
 	tabid integer,
@@ -34,8 +42,8 @@
 	fextsize integer,
 	nextsize integer,
 	flags smallint,
-	site char(128),
-	dbname char(128),
+	site varchar(128,0),
+	dbname varchar(128,0),
 	type_xid integer,
 	am_id integer   
  );
@@ -53,9 +61,9 @@ CREATE TABLE update_table_perm (
   thirdColumn INTEGER
 );
 
-}
---CREATE VIEW v_upd_tbl_perm AS SELECT * FROM update_table_perm;
-*/
+
+CREATE VIEW v_upd_tbl_perm AS SELECT * FROM update_table_perm;
+
 
 create table tab1
 (   x      integer,
@@ -86,8 +94,6 @@ create table a4gl_syscolatt
     condition char(64)
   );
     
-
-
 
 
 /* ======================== EOF ===========================*/

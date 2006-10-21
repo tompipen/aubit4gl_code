@@ -203,5 +203,5 @@ need_ifx_version:			; @echo ""
 transaction:			; @echo ""
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DEFINE_CHAR DATABASE_USED "
 

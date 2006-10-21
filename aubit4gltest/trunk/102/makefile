@@ -212,5 +212,5 @@ ansi_sql_compat:
 transaction:			; @echo ""
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_SMALLINT CREATE_TEMP_TABLE STATUS IF EXIT_PROGRAM_EXPR UI_DISPLAY_LINE_MODE DISPLAY "
 

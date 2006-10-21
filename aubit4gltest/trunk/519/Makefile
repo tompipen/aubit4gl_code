@@ -211,5 +211,5 @@ need_ifx_version:			; @echo ""
 transaction:			; @echo ""
 
 
-sql_features_used:			; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR USES_FORM UI_OPEN_WINDOW UI_CONSTRUCT ERROR CLOSE_WINDOW UI_DISPLAY_LINE_MODE DISPLAY "
 

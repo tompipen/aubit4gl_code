@@ -199,7 +199,7 @@ ansi_sql_compat:
 	@echo "0"
 
 sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE BEGIN_WORK LOCK_TABLE_SHARED ROLLBACK_WORK"
+	@echo "DROP_TABLE CREATE_TABLE BEGIN_WORK LOCK_TABLE_SHARED ROLLBACK_WORK  LOCK_TABLE"
 
 
 runtime_err_check:
