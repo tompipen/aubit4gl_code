@@ -9,7 +9,8 @@ EXTRA_4GLC=--sqltype=FILESCHEMA
 ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
-ADD_CLEAN=
+#ADD_CLEAN=
+
 
 ## ======================================================================
 ##                 	Local Targets

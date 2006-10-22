@@ -28,7 +28,7 @@ include ${MAKEFILE_COMMON}
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=
+ADD_CLEAN=sql_features
 
 ################
 #You can specify files NOT to be cleaned, even if they have extension that is 
