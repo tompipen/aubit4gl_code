@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.93 2006-10-18 08:19:42 mikeaubury Exp $
+# $Id: ops.c,v 1.94 2006-10-22 17:57:03 briantan Exp $
 #
 */
 
@@ -2546,11 +2546,13 @@ A4GL_display_int (void *ptr, int size, int size_c,
   static char buff_8[256];
   A4GL_debug ("A4GL_display_int..");
 
-  if (sizeof(long)>4)  {
-  	value_in_ptr=*(int *)ptr;
-  } else {
-  	value_in_ptr=*(long *)ptr;
-  }
+// following is causing core-dump under certain circumstances.
+//  if (sizeof(long)>4)  {
+//  	value_in_ptr=*(int *)ptr;
+//  } else {
+//  	value_in_ptr=*(long *)ptr;
+//  }
+//printf("** value_in_ptr=%lid\n", value_in_ptr);
 
   if (display_type == DISPLAY_TYPE_DISPLAY
       || display_type == DISPLAY_TYPE_PRINT)
@@ -2561,7 +2563,8 @@ A4GL_display_int (void *ptr, int size, int size_c,
 	}
       else
 	{
-	  a = value_in_ptr;
+//	  a = value_in_ptr;
+          a = *(long *) ptr;
 	  SPRINTF1 (buff_8, "%11ld", a);
 	}
     }
@@ -2574,7 +2577,8 @@ A4GL_display_int (void *ptr, int size, int size_c,
 	}
       else
 	{
-	  a =value_in_ptr;
+//	  a =value_in_ptr;
+	  a = *(long *) ptr;
 	  SPRINTF1 (buff_8, "%ld", a);
 	}
     }
@@ -2594,7 +2598,8 @@ A4GL_display_int (void *ptr, int size, int size_c,
 	  return buff_8;
 	}
 
-      a = value_in_ptr;
+//      a = value_in_ptr;
+      a = *(long *) ptr;
 
       if (A4GL_isnull (DTYPE_INT, (void *) &a))
 	{
