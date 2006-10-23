@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.53 2006-05-13 12:34:38 mikeaubury Exp $
+# $Id: debug.c,v 1.54 2006-10-23 10:07:58 mikeaubury Exp $
 #
 */
 
@@ -99,7 +99,7 @@ static char debugfilename[256]="";
 if (strlen(debugfilename)==0) {
 	char *ptr;
 	strcpy(debugfilename,"debug.out");
-	ptr=acl_getenv("DEBUGFILE");
+	ptr=acl_getenv("A4GL_DEBUGFILE");
 	if (ptr) {
 		if (strlen(ptr)) strcpy(debugfilename,ptr);
 	}

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2006-10-02 07:52:25 afalout Exp $
+# $Id: Makefile,v 1.8 2006-10-23 10:08:41 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -53,7 +53,7 @@ ALL: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 	
 ${PLUGINDIR}/libSQL_mysql${SO_EXT} : ${OBJS}
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${L_FLAGS} ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ -L/usr/lib64/mysql ${L_FLAGS} ${LINKLIBS} 
 
 ## ==================================================================
 ##                              Sub-Targets

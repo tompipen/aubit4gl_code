@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.56 2006-09-14 13:02:04 mikeaubury Exp $
+# $Id: helper.c,v 1.57 2006-10-23 10:07:58 mikeaubury Exp $
 #
 */
 
@@ -1098,7 +1098,7 @@ A4GL_setenv(char *name, char *value, int overwrite)
 {
 int ret;
 char prefixed_name[256];
-A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
+/* DO NOT USE A4GL_DEBUG IN THIS FUNCTION !!! */
 	SPRINTF1 (prefixed_name, "A4GL_%s", name);
 	/* Clear the current cache if there is one.. */
 
@@ -1107,29 +1107,27 @@ A4GL_debug("A4GL_setenv %s %s %d",name,value,overwrite);
 		A4GL_del_pointer(name,STR_RESOURCE_VAL);
 	}
 
+/* DO NOT USE A4GL_DEBUG IN THIS FUNCTION !!! */
 	if (A4GL_has_pointer (prefixed_name,STR_RESOURCE_VAL)) {
 		A4GL_del_pointer(prefixed_name,STR_RESOURCE_VAL);
 	}
 
+/* DO NOT USE A4GL_DEBUG IN THIS FUNCTION !!! */
 #if HAVE_SETENV
-	A4GL_debug("have setenv - %s %s %d",name,value,overwrite);
 	ret = setenv (name,value,overwrite);
 #else
 	#if HAVE_PUTENV
 		{
 		char buff[1024]; 
-	A4GL_debug("have putenv");
 		SPRINTF2 (buff,"%s=%s",name,value);
 		ret = putenv(acl_strdup(buff));
 		}
 	#else
-		#ifdef DEBUG
-			A4GL_debug ("No setenv() or putenv() - cannot set environment variable %s", name);
-		#endif
 		return 1;
 	#endif
 #endif
 
+/* DO NOT USE A4GL_DEBUG IN THIS FUNCTION !!! */
 	A4GL_log_changed_envvar(name,value);
 	return ret;
 }

@@ -162,6 +162,7 @@ if (A4GL_isyes(acl_getenv("VERSIONEDLIB"))) {
 
 endcode
 
+	call aclfgl_setenv("A4GL_DEBUGFILE","debug.4glc.out")
 
 	LET mv_compile_4gl	=fgl_getenv("A4GL_4GLC_COMP")
 	LET mv_compile_4gl_opts	=fgl_getenv("A4GL_4GLC_OPTS")

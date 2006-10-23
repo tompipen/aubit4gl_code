@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.335 2006-10-23 08:49:17 mikeaubury Exp $
+# $Id: compile_c.c,v 1.336 2006-10-23 10:08:38 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.335 2006-10-23 08:49:17 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.336 2006-10-23 10:08:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4329,6 +4329,7 @@ LEXLIB_print_validate_g (t_binding_comp_list *bind,char *tablist)
   cnt=get_validate_list_cnt();
   if (z!=cnt) {
 	  set_yytext("");
+	
 	  A4GL_debug(" validate mismatch : %d %d\n",z,cnt);
 	  a4gl_yyerror ("Mismatch in number of variables and number of columns");
 	  return;
