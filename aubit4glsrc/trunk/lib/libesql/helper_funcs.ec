@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.50 2006-10-23 08:49:16 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.51 2006-10-23 09:53:19 mikeaubury Exp $
 #
 */
 
@@ -921,7 +921,7 @@ for (a=0;a<n;a++) {
 		case DTYPE_DATE:  ESQLAPI_A4GL_copy_date(native,a4gl,i,size,dir); break;
 		case DTYPE_MONEY:  ESQLAPI_A4GL_copy_money(native,a4gl,i,size,dir); break;
 		case DTYPE_NULL:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
-		case DTYPE_DATETIME: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
+		case DTYPE_DTIME: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
 		case DTYPE_BYTE: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
 		case DTYPE_TEXT: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
 		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
