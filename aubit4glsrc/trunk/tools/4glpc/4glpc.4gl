@@ -1,5 +1,6 @@
 
 pragma force ui "CONSOLE"
+pragma debug file "debug.4glpc.out"
 
 define
 	mv_debug,
@@ -28,7 +29,7 @@ define mv_objects char(20480)
 define mv_errfile char(256)
 define mv_warnfile char(256)
 define mv_newest_obj char(256)
-DEFINE mv_output_type CHAR(20)
+define mv_output_type CHAR(20)
 define mv_dump_strings integer
 
 define
@@ -292,12 +293,18 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-notversioned"		let mv_versioned=0 continue for
 
 		WHEN "-t"			let a=a+1 let mv_lextype=arg_val(a) 
+  							call aclfgl_setenv("A4GL_LEXTYPE",mv_lextype clipped)
 					continue for
 		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a) 
+  							call aclfgl_setenv("A4GL_LEXTYPE",mv_lextype clipped)
 					continue for
 
-		WHEN "-td"			let a=a+1 let mv_lexdialect=arg_val(a) continue for
-		WHEN "--lexdialect"		let a=a+1 let mv_lexdialect=arg_val(a) continue for
+		WHEN "-td"			let a=a+1 let mv_lexdialect=arg_val(a) 
+  							call aclfgl_setenv("A4GL_LEXDIALECT",mv_lexdialect clipped)
+							continue for
+		WHEN "--lexdialect"		let a=a+1 let mv_lexdialect=arg_val(a) 
+  							call aclfgl_setenv("A4GL_LEXDIALECT",mv_lexdialect clipped)
+							continue for
 	END CASE
   END FOR
 

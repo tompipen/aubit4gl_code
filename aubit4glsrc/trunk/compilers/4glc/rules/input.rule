@@ -151,24 +151,24 @@ inp_rest:
 BY_NAME ibind_var_list opt_defs opt_help_no input_attributes 
 {
 	add_feature("UI_INPUT_BY_NAME");
-print_input_fl(1,$<str>3,$<str>4,0,$<str>5,last_style);
-strcpy($<str>$,A4GL_get_formloop_str(0));
+	print_input_fl_g(1,$<str>3,$<str>4,0,$<str>5,last_style,copy_togenbind('i'));
+	strcpy($<str>$,A4GL_get_formloop_str(0));
 }
 | ibind_var_list opt_defs FROM field_name_list_as_struct  opt_help_no input_attributes 
 {
 	add_feature("UI_INPUT");
-	print_input_fl(0,$<str>2,$<str>5,$<field_list>4,$<str>6,last_style);
+	print_input_fl_g(0,$<str>2,$<str>5,$<field_list>4,$<str>6,last_style,copy_togenbind('i'));
 	strcpy($<str>$,A4GL_get_formloop_str(0));
 }
 | ARRAY use_arr_var opt_defs FROM idm_input_array opt_help_no {
 	add_feature("UI_INPUT_ARRAY");
-curr_input_array_attribs.maxcount=0;
-curr_input_array_attribs.count=0;
-curr_input_array_attribs.allow_insert=1;
-curr_input_array_attribs.allow_delete=1;
-curr_input_array_attribs.curr_row_display=0;
-inp_flags=0;} input_attributes {
-strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>6,$<str>3,$<str>5,$<str>8,&curr_input_array_attribs,last_style));
+	curr_input_array_attribs.maxcount=0;
+	curr_input_array_attribs.count=0;
+	curr_input_array_attribs.allow_insert=1;
+	curr_input_array_attribs.allow_delete=1;
+	curr_input_array_attribs.curr_row_display=0;
+	inp_flags=0;} input_attributes {
+	strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>6,$<str>3,$<str>5,$<str>8,&curr_input_array_attribs,last_style,copy_togenbind('o')));
 }
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.86 2006-09-26 20:09:42 mikeaubury Exp $
+# $Id: variables.c,v 1.87 2006-10-23 08:49:08 mikeaubury Exp $
 #
 */
 
@@ -2736,6 +2736,36 @@ push_bind_rec (char *s, char bindtype)
 
 
 
+#ifdef NEWCODENOTUSED
+int gen_push_bind_rec (struct binding_comp_list *l, char *s,char bindtype)
+{
+  int a;
+/*int dtype;*/
+/*int size;*/
+/*char buff[256];*/
+  struct record_list *list;
+  A4GL_debug ("In push_bind_rec : '%s'", s);
+
+  list = split_record_list (s, "", 0,bindtype);
+  A4GL_debug ("Got list : %p", list);
+
+  if (list == 0)
+    {
+      a4gl_yyerror ("OOps\n");
+      return -1;
+    }
+
+
+  for (a = 0; a < list->records_cnt; a++)
+    {
+      add_genbind (l, list->list[a]->name);
+    }
+
+  return 1;
+}
+#endif
+
+
 /******************************************************************************/
 /* 
 * This function does a look through from a starting variable to a finishing variable
@@ -2910,82 +2940,6 @@ last_var_is_linked (char *tabname, char *pklist)
     return 1;
 }
 
-
-#ifdef MOVED
-
-void
-print_nullify (char type)
-{
-  int a;
-  struct variable **list = 0;
-  int list_cnt = 0;
-
-
-  A4GL_debug ("print_nullify called :%c\n", type);
-
-  A4GL_debug ("AUTONULL ?");
-
-
-  a = A4GL_isyes (acl_getenv ("AUTONULL"));
-  A4GL_debug ("isyes returns %d ", a);
-
-  if (a)
-    {
-      A4GL_debug ("AUTONULL must be YES");
-      if (type == 'M')
-	{
-	  list = list_module;
-	  list_cnt = list_module_cnt;
-	}
-      if (type == 'F')
-	{
-	  list = list_local;
-	  list_cnt = list_local_cnt;
-	}
-      if (list == 0)
-	{
-	  return;
-	}
-      start_bind ('N', 0);
-
-      for (a = 0; a < list_cnt; a++)
-	{
-	int print=0;
-	if (list[a]->variable_type != VARIABLE_TYPE_CONSTANT) print=1;
-	#ifdef PRINT_CONSTANTS
-		print=1;
-	#endif
-		
-	  if (print)
-	    {
-		if (A4GL_isyes(acl_getenv("DOING_CM")) || strcmp(acl_getenv("A4GL_LEXTYPE"),"php")==0) {
-			if (!has_fbind(list[a]->names.name)) {
-	      			add_bind ('N', list[a]->names.name);
-			}
-		} else {
-	      		add_bind ('N', list[a]->names.name);
-		}
-	    }
-
-	}
-
-      print_init (0);
-    }
-  else
-    {
-      A4GL_debug ("AUTONULL must be NO");
-    }
-
-
-}
-
-
-
-void print_init_explicit(void) {
-	print_init(1);
-}
-
-#endif
 
 
 

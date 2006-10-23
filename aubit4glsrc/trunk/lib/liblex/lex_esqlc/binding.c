@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.57 2006-10-15 11:31:53 mikeaubury Exp $
+# $Id: binding.c,v 1.58 2006-10-23 08:49:17 mikeaubury Exp $
 */
 
 /**
@@ -37,13 +37,13 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.57 2006-10-15 11:31:53 mikeaubury Exp $";
+		"$Id: binding.c,v 1.58 2006-10-23 08:49:17 mikeaubury Exp $";
 #endif
 
-extern int ibindcnt;
-extern int obindcnt;
-dll_import struct binding_comp *ibind; //[NUMBINDINGS];
-dll_import struct binding_comp *obind; //[NUMBINDINGS];
+//extern int ibindcnt;
+//extern int obindcnt;
+//dll_import struct binding_comp *ibind; //[NUMBINDINGS];
+//dll_import struct binding_comp *obind; //[NUMBINDINGS];
 
 /* these two store the string for converting the data
  * back and forth from our temporary DECLARE SECTION variables
@@ -54,25 +54,24 @@ dll_import struct binding_comp *obind; //[NUMBINDINGS];
  * ESQL/C types...
  *
 */
-char buff_in[100000];
-char buff_out[100000];
 
 #define ONE_NOT_ZERO(x) (x?x:1)
 
-void print_conversions (char i);
-void make_sql_bind (char *sql, char *type);
-char *
-make_sql_bind_expr (char *sql, char *type);
-static char *get_sql_type (int a, char ioro);
+void print_conversions_g (t_binding_comp_list *bind);
+
+void make_sql_bind_g (t_binding_comp_list *bind);
+//char * make_sql_bind_expr (char *sql, char *type);
+
+static char *get_sql_type (int a, t_binding_comp_list *bind);
 void printc (char *fmt, ...);
 void printh (char *fmt, ...);
 //int esql_type (void);
-void liblex_add_ibind(int dtype,char *var) ;
-static char* get_sql_type_infx (int a, char ioro);
-static char *get_sql_type_postgres (int a, char ioro);
-static char *get_sql_type_sap (int a, char ioro);
-static char *get_sql_type_ingres (int a, char ioro);
-static char* get_sql_type_infoflex (int a, char ioro);
+//void liblex_add_ibind(int dtype,char *var) ;
+static char* get_sql_type_infx (int a, t_binding_comp_list *bind);
+static char *get_sql_type_postgres (int a, t_binding_comp_list *bind);
+static char *get_sql_type_sap (int a, t_binding_comp_list *bind);
+static char *get_sql_type_ingres (int a, t_binding_comp_list *bind);
+static char* get_sql_type_infoflex (int a, t_binding_comp_list *bind);
 char * A4GL_dtype_sz (int d, int s);
 //struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
@@ -100,28 +99,43 @@ return buff;
 
 
 void
-print_conversions (char i)
+print_conversions_g (t_binding_comp_list *bind)
 {
-  if (i == 'i')
+
+if (bind->str==0) {
+	if (bind->nbind==0) return;
+	if (bind->type=='i'||bind->type=='o') {
+		A4GL_assertion(1,"SHOULD THIS HAPPEND ? ");
+	} 
+	return;
+}
+  if (bind->type == 'i')
     {
-      printc ("%s /* buff_in */\n", buff_in);
+      printc ("%s /* buff_in */\n", bind->str);
     }
-  if (i == 'o')
+
+  if (bind->type == 'o')
     {
-      printc ("{if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", buff_out);
+      printc ("{if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", bind->str);
     }
-  if (i == 'I')
+
+  if (bind->type == 'I')
     {
-      printh ("%s /* buff_in */\n", buff_in);
+      printh ("%s /* buff_in */\n", bind->str);
     }
-  if (i == 'O')
+
+  if (bind->type == 'O')
     {
-      printh ("{ if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", buff_out);
+      printh ("{ if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", bind->str);
     }
-  if (i=='0') {
+
+
+  /*
+ if (i=='0') {
 	strcpy(buff_in,"");
 	strcpy(buff_out,"");
   }
+*/
 
 }
 
@@ -130,95 +144,87 @@ print_conversions (char i)
 /* SQL INTO etc and converts the place holders back to variables...*/
 /**/
 /**/
-/*          printc ("{&%s,%d,%d}", ibind[a].varname,*/
-/*                            (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);*/
 /**/
 void
-make_sql_bind (char *sql, char *type)
+make_sql_bind_g (t_binding_comp_list *bind)
 {
   char buff_small[256];
   int a;
-  if (sql == 0)
-    {
+
+
+
       set_suppress_lines ();
       printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
-      if (strchr (type, 'i'))
+      if (bind->type== 'i')
 	{
+	char buff_in[100000];
 	  strcpy (buff_in, "");
-	  if (ibindcnt)
+	  if (bind->nbind)
 	    {
 
 	      if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 		{
-		  SPRINTF1 (buff_in,
-			   "A4GL_copy_native_bind('i',ibind,native_binding_i,0,%d);",
-			   ibindcnt);
+		  SPRINTF1 (buff_in, "A4GL_copy_native_bind('i',ibind,native_binding_i,0,%d);", bind->nbind);
 		}
 	      else
 		{
-		  SPRINTF1 (buff_in,
-			   "A4GL_copy_native_bind('i',ibind,native_binding_i,native_binding_i_ind,%d);",
-			   ibindcnt);
+		  SPRINTF1 (buff_in, "A4GL_copy_native_bind('i',ibind,native_binding_i,native_binding_i_ind,%d);", bind->nbind);
 		}
 
-	      for (a = 0; a < ibindcnt; a++)
+	      for (a = 0; a < bind->nbind; a++)
 		{
-		  //char indicat[40];
-
-		  printc ("%s", get_sql_type (a, 'i'));
+		  printc ("%s", get_sql_type (a, bind));
 		}
 	    }
+		bind->str=strdup(buff_in);
 	}
 
-      if (strchr (type, 'o'))
+      if (bind->type=='o') 
 	{
+	char buff_out[100000];
 	  strcpy (buff_out, "");
-	  if (obindcnt)
+	  if (bind->nbind)
 	    {
 
-	      //SPRINTF1 (buff_small, "A4GL_set_init(obind,%d);\n", obindcnt);
 	      strcpy (buff_out, "");
 	      if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 		{
-		  SPRINTF1 (buff_small,
-			   "A4GL_copy_native_bind('o',obind,native_binding_o,0,%d);",
-			   obindcnt);
+		  SPRINTF1 (buff_small, "A4GL_copy_native_bind('o',obind,native_binding_o,0,%d);", bind->nbind);
 		}
 	      else
 		{
 		  SPRINTF1 (buff_small,
 			   "A4GL_copy_native_bind('o',obind,native_binding_o,native_binding_o_ind,%d);",
-			   obindcnt);
+			   bind->nbind);
 		}
 	      strcat (buff_out, buff_small);
 
-	      for (a = 0; a < obindcnt; a++)
+	      for (a = 0; a < bind->nbind; a++)
 		{
 		  //char indicat[40];
-		  printc ("%s", get_sql_type (a, 'o'));
+		  printc ("%s", get_sql_type (a, bind));
 
 		}
 	    }
+		bind->str=strdup(buff_out);
 
 	}
       printc ("\nEXEC SQL END DECLARE SECTION;\n");
       clr_suppress_lines ();
 
 
-      if (strchr (type, 'i'))
+      if (bind->type=='i')
 	{
 
 	  char comma = ' ';
-	  printc ("struct BINDING native_binding_i[%d]={\n",
-		  ONE_NOT_ZERO (ibindcnt));
-	  if (ibindcnt == 0)
+	  printc ("struct BINDING native_binding_i[%d]={\n", ONE_NOT_ZERO (bind->nbind));
+	  if (bind->nbind == 0)
 	    {
 	      printc ("{0,0,0,0,0,0}");
 	    }
-	  for (a = 0; a < ibindcnt; a++)
+	  for (a = 0; a < bind->nbind; a++)
 	    {
-	      printc ("   %c{&_vi_%d,%d,%d,0,0,0}", comma, a,
-		      ibind[a].dtype & 0xffff, ibind[a].dtype >> 16);
+	      printc ("   %c{&_vi_%d,%d,%d,0,0,0}", comma, a, bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
 	      comma = ',';
 	    }
 	  printc ("};\n");
@@ -226,36 +232,31 @@ make_sql_bind (char *sql, char *type)
 	    {
 	      char comma = ' ';
 	      printc ("struct BINDING native_binding_i_ind[]={\n");
-	      if (ibindcnt == 0)
+	      if (bind->nbind == 0)
 		{
 		  printc ("{0,0,0,0,0,0}");
 		}
-	      for (a = 0; a < ibindcnt; a++)
+	      for (a = 0; a < bind->nbind; a++)
 		{
 		  printc (" %c{&_vii_%d,%d,%d,0,0,0}", comma, a, 2, 4);
 		  comma = ',';
 		}
 	      printc ("};\n");
 	    }
-
-
-
-
 	}
 
-      if (strchr (type, 'o'))
+      if (bind->type== 'o')
 	{
 	  char comma = ' ';
 	  printc ("struct BINDING native_binding_o[%d]={\n",
-		  ONE_NOT_ZERO (obindcnt));
-	  if (obindcnt == 0)
+		  ONE_NOT_ZERO (bind->nbind));
+	  if (bind->nbind == 0)
 	    {
 	      printc ("{0,0,0,0,0,0}");
 	    }
-	  for (a = 0; a < obindcnt; a++)
+	  for (a = 0; a < bind->nbind; a++)
 	    {
-	      printc (" %c{&_vo_%d,%d,%d,0,0,0}", comma, a,
-		      obind[a].dtype & 0xffff, obind[a].dtype >> 16);
+	      printc (" %c{&_vo_%d,%d,%d,0,0,0}", comma, a, bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
 	      comma = ',';
 	    }
 	  printc ("};\n");
@@ -264,28 +265,23 @@ make_sql_bind (char *sql, char *type)
 	    {
 	      char comma = ' ';
 	      printc ("struct BINDING native_binding_o_ind[]={\n");
-	      if (obindcnt == 0)
+	      if (bind->nbind == 0)
 		{
 		  printc ("{0,0,0,0,0,0}");
 		}
-	      for (a = 0; a < obindcnt; a++)
+	      for (a = 0; a < bind->nbind; a++)
 		{
 		  printc (" %c{&_voi_%d,%d,%d,0,0,0}", comma, a, 2, 4);
 		  comma = ',';
 		}
 	      printc ("};\n");
 	    }
-
-
-
 	}
-
-
-    }
 }
 
 
 
+/*
 static char *addstr(char *p,int *n,char *new) {
 int sz;
 int isnew;
@@ -305,7 +301,10 @@ int isnew;
 	else strcat(p,new);
 return p;
 }
+*/
 
+
+#ifdef ISTHISUSED
 char *
 make_sql_bind_expr (char *sql, char *type)
 {
@@ -476,11 +475,12 @@ make_sql_bind_expr (char *sql, char *type)
     }
   return ptr;
 }
+#endif
 
 
 
 char *
-get_sql_type (int a, char ioro)
+get_sql_type (int a, t_binding_comp_list *bind)
 {
   /* Need to do some check to determine which ESQL/C to use...*/
   switch (esql_type()) {
@@ -488,39 +488,39 @@ get_sql_type (int a, char ioro)
 		  	A4GL_assertion(1,"No ESQL/C Dialect");
 
 	  case E_DIALECT_INFORMIX:
-  			return get_sql_type_infx (a, ioro);
+  			return get_sql_type_infx (a, bind);
 
 	  case E_DIALECT_POSTGRES:
-  			return get_sql_type_postgres (a, ioro);
+  			return get_sql_type_postgres (a, bind);
 
 	  case E_DIALECT_SAPDB:
-  			return get_sql_type_sap (a, ioro);
+  			return get_sql_type_sap (a, bind);
 
 	  case E_DIALECT_INGRES:
-  			return get_sql_type_ingres (a, ioro);
+  			return get_sql_type_ingres (a, bind);
 
 	  case E_DIALECT_INFOFLEX:
-  			return get_sql_type_infoflex (a, ioro);
+  			return get_sql_type_infoflex (a, bind);
   }
 
 return 0;
 }
 
 
-static char *get_sql_type_infx (int a, char ioro)
+static char *get_sql_type_infx (int a, t_binding_comp_list *bind)
 {
 static char buff[255];
 char buff_ind[255];
 
-  if (ioro == 'i')
+  if (bind->type == 'i')
     {
 
       if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind," short _vii_%d;",a); } else { strcpy(buff_ind,""); }
 
-      switch (ibind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
@@ -541,7 +541,7 @@ char buff_ind[255];
 	  break;
 
 	case 5:
-	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 
 
@@ -549,13 +549,13 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"date _vi_%d;", a);
 	  break;
 	case 8:
-	  SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 	case 9:
 	  SPRINTF1 (buff,"Blah _vi_%d;", a);
 	  break;
 	case 10:
-	  SPRINTF2 (buff,"datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(ibind[a].dtype)),a);
+	  SPRINTF2 (buff,"datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(bind->bind[a].dtype)),a);
 	  break;
 	case 11:
 	  SPRINTF1 (buff,"byte _vi_%d;", a);
@@ -564,7 +564,7 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
@@ -574,15 +574,15 @@ char buff_ind[255];
     }
 
 
-  if (ioro == 'o')
+  if (bind->type == 'o')
     {
 
  	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _voi_%d=-2;",a); } else { strcpy(buff_ind,""); }
 
-      switch (obind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, obind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d=0;", a);
@@ -604,19 +604,19 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"float _vo_%d=0.0;", a);
 	  break;
 	case 5:
-	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  	break;
 	case 7:
 	  SPRINTF1 (buff,"date _vo_%d=0;", a);
 	  break;
 	case 8:
-	  	SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 	case 9:
 	  SPRINTF1 (buff,"Blah _vo_%d;", a);
 	  break;
 	case 10:
-	  SPRINTF2 (buff,"datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(obind[a].dtype)),a);
+	  SPRINTF2 (buff,"datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(bind->bind[a].dtype)),a);
 	  break;
 	case 11:
 	  SPRINTF1 (buff,"byte _vo_%d;", a);
@@ -625,7 +625,7 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , obind[a].dtype >> 16 );
+	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , bind->bind[a].dtype >> 16 );
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
@@ -639,17 +639,17 @@ char buff_ind[255];
 
 
 
-static char *get_sql_type_postgres (int a, char ioro)
+static char *get_sql_type_postgres (int a, t_binding_comp_list *bind)
 {
 static char buff[255];
 static char buff_ind[255];
-  if (ioro == 'i')
+  if (bind->type == 'i')
     {
       if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
-      switch (ibind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
@@ -675,7 +675,7 @@ static char buff_ind[255];
 	  break;
 
 	case 5:
-	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 
 
@@ -687,9 +687,9 @@ static char buff_ind[255];
 	  	SPRINTF1 (buff,"money _vi_%d;", a);
 	  } else {
 	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
-	  		SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype), a);
+	  		SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype), a);
 		} else {
-	  		SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  		SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 		}
 	  }
 	  break;
@@ -706,7 +706,7 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
@@ -716,7 +716,7 @@ static char buff_ind[255];
     }
 
 
-  if (ioro == 'o')
+  if (bind->type == 'o')
     {
  	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 		SPRINTF1(buff_ind,"  short _voi_%d=0;",a);
@@ -724,10 +724,10 @@ static char buff_ind[255];
 		strcpy(buff_ind,"");
 	}
 
-      switch (obind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, obind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d;", a);
@@ -749,7 +749,7 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"float _vo_%d;", a);
 	  break;
 	case 5:
-	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 	case 7:
 	  SPRINTF1 (buff,"date _vo_%d;", a);
@@ -759,9 +759,9 @@ static char buff_ind[255];
 	  	SPRINTF1 (buff,"money _vo_%d;", a);
 	  } else {
 	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
-	  		SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+	  		SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype), a);
 		} else {
-	  		SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  		SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 		}
 	   }
 	  	break;
@@ -778,7 +778,7 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , obind[a].dtype >> 16);
+	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
@@ -791,6 +791,7 @@ static char buff_ind[255];
 }
 
 
+/*
 void liblex_add_ibind(int dtype,char *var) {
 	extern long a_ibind;
 	ibind=ensure_bind(&a_ibind,ibindcnt+1,ibind);
@@ -800,18 +801,19 @@ void liblex_add_ibind(int dtype,char *var) {
 	ibind[ibindcnt].dtype=dtype;
 	ibindcnt++;
 }
+*/
 
-static char *get_sql_type_sap (int a, char ioro)
+static char *get_sql_type_sap (int a, t_binding_comp_list *bind)
 {
 static char buff[255];
 static char buff_ind[255];
-  if (ioro == 'i')
+  if (bind->type == 'i')
     {
       if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
-      switch (ibind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
@@ -827,7 +829,7 @@ static char buff_ind[255];
 	  break;
 
 	case 5:
-	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 
 	case 6:
@@ -842,9 +844,9 @@ static char buff_ind[255];
 	  	SPRINTF1 (buff,"money _vi_%d;", a);
 	  } else {
 	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
-	  		SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+	  		SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype), a);
 		} else {
-	  		SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  		SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 		}
 	  }
 	  break;
@@ -861,7 +863,7 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
@@ -871,7 +873,7 @@ static char buff_ind[255];
     }
 
 
-  if (ioro == 'o')
+  if (bind->type == 'o')
     {
  	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 		SPRINTF1(buff_ind,"  short _voi_%d=0;",a);
@@ -879,10 +881,10 @@ static char buff_ind[255];
 		strcpy(buff_ind,"");
 	}
 
-      switch (obind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, obind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d;", a);
@@ -897,7 +899,7 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"float _vo_%d;", a);
 	  break;
 	case 5:
-	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 	case 6:
 	  SPRINTF1 (buff,"int _vo_%d;", a);
@@ -910,9 +912,9 @@ static char buff_ind[255];
 	  	SPRINTF1 (buff,"money _vo_%d;", a);
 	  } else {
 	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
-	  		SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
+	  		SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype), a);
 		} else {
-	  		SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  		SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 		}
 	   }
 	  	break;
@@ -951,17 +953,17 @@ static char buff_ind[255];
 
 
 
-static char *get_sql_type_ingres (int a, char ioro)
+static char *get_sql_type_ingres (int a, t_binding_comp_list *bind)
 {
 static char buff[255];
 static char buff_ind[255];
-  if (ioro == 'i')
+  if (bind->type == 'i')
     {
       if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
-      switch (ibind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
@@ -1003,7 +1005,7 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"char _vi_%d[30];", a);
@@ -1013,7 +1015,7 @@ static char buff_ind[255];
     }
 
 
-  if (ioro == 'o')
+  if (bind->type == 'o')
     {
  	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
 		SPRINTF1(buff_ind,"  short _voi_%d=0;",a);
@@ -1021,10 +1023,10 @@ static char buff_ind[255];
 		strcpy(buff_ind,"");
 	}
 
-      switch (obind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, obind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d;", a);
@@ -1075,20 +1077,20 @@ static char buff_ind[255];
 
 }
 
-static char *get_sql_type_infoflex (int a, char ioro)
+static char *get_sql_type_infoflex (int a, t_binding_comp_list *bind)
 {
 static char buff[255];
 char buff_ind[255];
 
-  if (ioro == 'i')
+  if (bind->type == 'i')
     {
 
       if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"\n  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
 
-      switch (ibind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
@@ -1104,7 +1106,7 @@ char buff_ind[255];
 	  break;
 
 	case 5:
-	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  SPRINTF2 (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 
 	case 6:
@@ -1115,13 +1117,13 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"date _vi_%d;", a);
 	  break;
 	case 8:
-	  SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
+	  SPRINTF2 (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 	case 9:
 	  SPRINTF1 (buff,"Blah _vi_%d;", a);
 	  break;
 	case 10:
-	  SPRINTF2 (buff,"datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(ibind[a].dtype)),a);
+	  SPRINTF2 (buff,"datetime %s _vi_%d;", A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(bind->bind[a].dtype)),a);
 	  break;
 	case 11:
 	  SPRINTF1 (buff,"byte _vi_%d;", a);
@@ -1130,7 +1132,7 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
@@ -1140,15 +1142,15 @@ char buff_ind[255];
     }
 
 
-  if (ioro == 'o')
+  if (bind->type == 'o')
     {
 
  	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"\n short _voi_%d=-2;",a); } else { strcpy(buff_ind,""); }
 
-      switch (obind[a].dtype & 0xffff)
+      switch (bind->bind[a].dtype & 0xffff)
 	{
 	case 0:
-	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, obind[a].dtype >> 16);
+	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d=0;", a);
@@ -1163,7 +1165,7 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"float _vo_%d=0.0;", a);
 	  break;
 	case 5:
-	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	SPRINTF2 (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  	break;
 	case 6:
 	  SPRINTF1 (buff,"int _vo_%d=0;", a);
@@ -1172,13 +1174,13 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"date _vo_%d=0;", a);
 	  break;
 	case 8:
-	  	SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);
+	  	SPRINTF2 (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(bind->bind[a].dtype),a);
 	  break;
 	case 9:
 	  SPRINTF1 (buff,"Blah _vo_%d;", a);
 	  break;
 	case 10:
-	  SPRINTF2 (buff,"datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(obind[a].dtype)),a);
+	  SPRINTF2 (buff,"datetime %s _vo_%d;",  A4GL_dtype_sz(DTYPE_DTIME,DECODE_SIZE(bind->bind[a].dtype)),a);
 	  break;
 	case 11:
 	  SPRINTF1 (buff,"byte _vo_%d;", a);
@@ -1187,7 +1189,7 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , obind[a].dtype >> 16 );
+	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , bind->bind[a].dtype >> 16 );
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);

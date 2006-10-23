@@ -470,7 +470,6 @@ identifier arr_subscripts
 
 op_param_var_list: {
 		start_bind('f',0);
-		/*start_bind('O',0);*/
 		strcpy($<str>$,"0");
 		}
 		| fparam_var_list
@@ -485,7 +484,6 @@ fparam_var_list:	func_def_var {
 			| fparam_var_list KW_COMMA func_def_var {
 				int c;
 				c=add_bind('f',$<str>3);
-				/*c=add_bind('O',$<str>3); */
 				sprintf($<str>$,"%d",c); 
 			}
 ;
@@ -494,32 +492,15 @@ fparam_var_list:	func_def_var {
 
 
 ibind_var_list:	ibind_var {
-A4GL_lex_printcomment("/*STarted bind %s*/\n",$<str>1);
-start_bind('i',$<str>1);
-A4GL_lex_printcomment("/*STarted bind 2*/\n");
-strcpy($<str>$,"");
-}
-	|	
-ibind_var_list KW_COMMA ibind_var {
-A4GL_lex_printcomment("/* Added */\n");
-add_bind('i',$<str>3);
-strcpy($<str>$,"");
+		start_bind('i',$<str>1);
+		strcpy($<str>$,"");
+		}
+	|	ibind_var_list KW_COMMA ibind_var {
+		add_bind('i',$<str>3);
+		strcpy($<str>$,"");
 }
 ;
 
-/*
-binding_list : binding_item {$<bind_list>$=new_bind_list($<str>1);}
-	| binding_list KW_COMMA binding_item {$<bind_list>=append_bind_list($<bind_list>1,$<str>3);}
-;
-
-
-binding_item : variable 
-		| variable THRU variable { sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
-		| CHAR_VALUE 
-		| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
-		| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
-;
-*/
 
 func_def_var : identifier | identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
 ;
@@ -591,17 +572,14 @@ optional_asc_desc:
 
 
 init_bind_var_list:	init_bind_var {
-A4GL_lex_printcomment("/*STarted bind %s*/\n",$<str>1);
-start_bind('N',$<str>1);
-A4GL_lex_printcomment("/*STarted bind 2*/\n");
-strcpy($<str>$,"");
-}
+		start_bind('N',$<str>1);
+		strcpy($<str>$,"");
+		}
 	|	
-init_bind_var_list KW_COMMA init_bind_var {
-A4GL_lex_printcomment("/* Added */\n");
-add_bind('N',$<str>3);
-strcpy($<str>$,"");
-}
+		init_bind_var_list KW_COMMA init_bind_var {
+		add_bind('N',$<str>3);
+		strcpy($<str>$,"");
+		}
 ;
 
 init_bind_var : variable  {

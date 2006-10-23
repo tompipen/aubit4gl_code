@@ -77,15 +77,15 @@ print_arr_expr_fcall void* ptr -> char*
 
 print_bind_pop1 char i -> void
 
-print_bind_pop2 t_expr_str_list* exprlist char i -> void
+print_bind_pop2_g t_expr_str_list* exprlist t_binding_comp_list* bind  -> void
 
-print_param char i char* funcname -> int
+print_param_g char i char* funcname t_binding_comp_list* bind -> int
 
-print_bind char i -> int
+* print_bind char i -> int
 
-print_bind_definition char i -> int
+print_bind_definition_g t_binding_comp_list* bind -> int
 
-print_bind_set_value char i -> int
+print_bind_set_value_g t_binding_comp_list* bind -> int
 
 
 print_screen_mode int n -> void
@@ -98,26 +98,24 @@ print_remote_func char* identifier -> void
 
 print_exec_sql char* s int converted -> void
 
-print_exec_sql_bound char* s int converted -> void
+print_exec_sql_bound_g char* s int converted t_binding_comp_list* bind -> void
 
-print_pop_variable char* s -> void
-
-print_getfldbuf char* fields -> void
-
+* print_pop_variable char* s -> void
+* print_getfldbuf char* fields -> void
 
 
 print_form_is_compiled char* s char* packer char* formtype -> void
 
 print_field_func char type,char* name,char* var -> void
 
-print_func_call t_expr_str* call -> void
+print_func_call_g t_expr_str* call t_binding_comp_list* return_values -> void
 
 print_class_func_call char* var,char* identifier,void* args,int args_cnt -> void
 
-print_pdf_call char* a1,t_expr_str_list* args,char* a3 -> void
+print_pdf_call_g char* a1,t_expr_str_list* args,char* a3 t_binding_comp_list* return_values -> void
 
 
-print_call_shared t_expr_str_list* expr char* libfile,char* funcname -> void
+print_call_shared_g t_expr_str_list* expr char* libfile,char* funcname t_binding_comp_list* return_values -> void
 
 
 
@@ -134,7 +132,7 @@ print_construct_1 -> void
 
 print_construct_2 char* driver -> void
 
-print_construct_fl int byname,char* constr_str,t_field_list* field_list,char* attr,int cattr char* style -> void
+print_construct_fl_g int byname t_binding_comp_list* bind,t_field_list* field_list,char* attr,int cattr char* style -> void
 
 print_befaft_field_1 char* fieldexpr -> void
 
@@ -165,7 +163,7 @@ print_display_new t_expr_str_list* exprs t_dt_display* disp char* attr char* sty
 
 print_display_form char* s,char* a char* style -> void
 
-print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr,void* iattr char* style  -> void
+print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr,void* iattr char* style  t_binding_comp_list* outbind -> void
 
 print_display_array_p2 -> void
 
@@ -183,7 +181,7 @@ print_case_free -> void
 
 print_foreach_start -> void
 
-print_foreach_next char* cursorname,int has_using, char* into -> void
+print_foreach_next_g char* cursorname t_binding_comp_list* using_binding  t_binding_comp_list* into_binding -> void
 
 print_foreach_end char* cname -> void
 
@@ -207,11 +205,11 @@ print_if_end -> void
 
 print_import char* funcname,int nargs -> void
 
-print_init int explicit -> void
+print_init_g t_binding_comp_list* bind int explicit -> void
 
-print_init_table char* s -> void
+print_init_table_g t_binding_comp_list* bind char* s -> void
 
-print_validate  -> void
+print_validate_g t_binding_comp_list* bind char* tablist -> void
 
 A4GL_generate_or char* out,char* in1,char* in2 -> void
 
@@ -221,9 +219,9 @@ print_input_1 -> void
 
 print_input_2 char* s -> void
 
-print_input_fl int byname,char* defs,char* helpno,t_field_list* fldlist,char* attr char* style -> void
+print_input_fl_g int byname,char* defs,char* helpno,t_field_list* fldlist,char* attr char* style t_binding_comp_list* bind -> void
 
-print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr char* style -> char*
+print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr char* style t_binding_comp_list* bind -> char*
 
 A4GL_get_formloop_str int type -> char*
 
@@ -231,11 +229,11 @@ print_scroll char* flds,char* updown -> void
 
 print_label char* s -> void
 
-print_let_manyvars t_expr_str_list* expr_list  -> int
+print_let_manyvars_g t_expr_str_list* expr_list  t_binding_comp_list* varlist -> int
 
 print_push_null -> void
 
-print_linked_cmd int type,char* var -> int
+* print_linked_cmd int type,char* var -> int
 
 print_locate char where,char* var,char* fname -> void
 
@@ -247,7 +245,7 @@ print_finish_report char* repname -> void
 
 print_terminate_report char* repname -> void
 
-print_format_every_row -> void
+print_format_every_row t_binding_comp_list* bind  -> void
 
 print_need_lines t_expr_str* expr -> void
 
@@ -272,7 +270,7 @@ print_report_1 char* name -> void
 
 print_report_end -> void
 
-print_report_2 int pdf,char* repordby char* asc_desc -> void
+print_report_2_g int pdf,char* repordby char* asc_desc t_binding_comp_list* bind  t_binding_comp_list* orderbinding -> void
 print_report_2_1 -> void
 
 print_pause char* msg -> void
@@ -295,13 +293,13 @@ print_while_2 t_expr_str* expr -> void
 
 print_while_end -> void
 
-print_put char* cname char* putvals -> void
+print_put_g char* cname char* putvals t_binding_comp_list* bind -> void
 
 print_prepare char* stmt,char* sqlvar -> void
 
 print_undo_use char* s -> void
 
-print_execute char* stmt,int exec_using -> void
+print_execute_g char* stmt,int exec_using t_binding_comp_list* using_bind t_binding_comp_list* into_bind -> void
 
 print_execute_immediate char* stmt -> void
 
@@ -318,7 +316,7 @@ print_open_form_gui 	char* fname char* at_gui,char* like_gui char* disable char*
 
 print_open_session char* s,char* v,char* user -> void
 
-print_open_cursor char* cname,int has_using -> void
+print_open_cursor_g char* cname t_binding_comp_list* using_bind -> void
 
 print_clr_window char* s -> void
 
@@ -380,25 +378,24 @@ print_set_langfile char* s -> void
 
 print_sql_commit int t -> void
 
-print_fetch_1 -> void
 
-print_fetch_2 -> void
+print_fetch_2_g t_binding_comp_list* binding  -> void
 
-print_fetch_3 t_fetch* ftp char* into -> void
+print_fetch_3_g t_fetch* ftp  t_binding_comp_list* binding -> void
 
 print_init_conn char* db -> void
 
-print_do_select char* s int converted -> void
+print_do_select char* s int converted  t_binding_comp_list* binding -> void
 
 print_flush_cursor char* s -> void
 
-print_declare char* a1,char* a2,char* a3,int h1,int h2 -> void
+print_declare_g char* a1,char* a2,char* a3,int h1,int h2  t_binding_comp_list* inbinding  t_binding_comp_list* outbinding -> void
 
-print_curr_spec int type,char* s -> char*
+print_curr_spec_g int type,char* s t_binding_comp_list* inbind t_binding_comp_list* outbind -> char*
 
-print_select_all char* buff int converted -> char*
+print_select_all_g char* buff int converted t_binding_comp_list* inbind t_binding_comp_list* outbind -> char*
 
-print_unload char* file,char* delim,char* sql -> void
+print_unload_g char* file,char* delim,char* sql t_binding_comp_list* inbind -> void
 
 print_load char* file,char* delim,char* tab,char* list -> void
 print_load_str char* file,char* delim,char* sql -> void
@@ -458,7 +455,7 @@ A4GL_set_var_sql int d int n -> char*
 A4GL_whenchange int n -> void
 A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int
-print_sql_block_cmd char* sql -> void
+print_sql_block_cmd_g char* sql t_binding_comp_list* inbind t_binding_comp_list* outbind -> void
 print_empty_bind char* name -> void
 
 print_dealloc_arr char* s -> void

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2006-07-27 16:02:53 mikeaubury Exp $
+# $Id: Makefile.in,v 1.14 2006-10-23 08:49:17 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 #FIXME: are we really using compile_c_gtk.c for Perl?
-4GLPERL_OBJ     =compile_perl.o ../lex_c/compile_c_gtk.o
+4GLPERL_OBJ     =compile_perl.o expr.o
 
 ## ==================================================================
 ##                    Options

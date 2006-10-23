@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.43 2006-09-25 16:56:08 mikeaubury Exp $
+# $Id: map.c,v 1.44 2006-10-23 08:49:08 mikeaubury Exp $
 #*/
 
 /**
@@ -671,7 +671,7 @@ void
 map_delete_update (char *main_statement_type, char *table, struct s_select_list_item *i)
 {
   struct s_select *select;
-  char *s;
+  //char *s;
 
 
   if (!A4GL_isyes(acl_getenv("MAPCRUD"))) {

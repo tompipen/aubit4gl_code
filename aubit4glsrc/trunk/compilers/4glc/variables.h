@@ -118,6 +118,31 @@ struct binding_list {
 	        char **bindings;
 };
 
+#ifndef BINDING_COMP_LIST
+
+struct binding_comp_list {
+        struct binding_comp *bind ;
+        int nbind;
+        int abind;
+        char type;
+	char *str;
+};
+typedef struct binding_comp_list t_binding_comp_list;
+
+struct binding_comp
+{
+  char varname[132];
+  int dtype;
+  int start_char_subscript;
+  int end_char_subscript;
+};
+
+struct  binding_comp_list *empty_genbind(char i);
+struct  binding_comp_list *copy_togenbind(char i);
+
+#define BINDING_COMP_LIST
+#endif
+
 
 /* Interface functions */
 

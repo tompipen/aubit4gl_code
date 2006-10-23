@@ -28,7 +28,7 @@ int setting_module_to_null = 0;
 
 int when_case_has_expr;
 
-
+void real_print_expr (struct expr_str *ptr);
 static void add_used_block (int n, char *btype);
 //static int is_used_block (int n, char *btype);
 static long is_used_block (int n, char *btype);
@@ -36,7 +36,9 @@ static void free_need_globals (void);
 static char * find_record_dot (char *s);
 void need_globals (char *s);
 char *encode_records (char *s);
-int print_bind_set_value_param_3 (char *cname, char i);
+int LEXLIB_print_bind_set_value_param_3 (char *cname, char i);
+int LEXLIB_print_bind_set_value_param_2 (char *cname, char i);
+char find_variable_scope (char *s_in);
 
 
 static char *
@@ -76,6 +78,14 @@ struct s_save_binding
   struct binding_comp *bind;
 };
 
+
+
+
+int
+LEXLIB_print_bind_set_value (char i)
+{
+  return 0;
+}
 
 int
 print_bind_set_value_param (char *cname, char i)
@@ -149,16 +159,18 @@ niy (char *f)
 */
 
 static void
-niy_assert (char *s)
+niy_assert (const char *s)
 {
   printf ("%s\n", s);
   A4GL_assertion (1, "Not implemented.\n");
 }
 
 
-open_outfile ()
+void open_outfile ()
 {
   char buff[1024];
+if (outputfilename==0) return;
+  A4GL_assertion(outputfilename==0,"No output filename");
   sprintf (buff, "%s.pl", outputfilename);
   outfile = fopen (buff, "w");
 
@@ -190,6 +202,11 @@ LEXLIB_LEX_initlib (void)
 }
 
 
+int
+LEXLIB_print_bind_definition (char i)
+{
+  return 0;
+}
 static void
 print_space (void)
 {
@@ -239,7 +256,6 @@ LEXLIB_A4GL_internal_lex_printc (char *fmt, va_list * ap)
 {
   static char buff[40960] = "ERROR-empty init";
   char *ptr;
-  int a;
   int os;
 
   if (outfile == 0)
@@ -371,7 +387,7 @@ LEXLIB_print_arr_expr_fcall (void *ptr)
 }
 
 char *
-LEXLIB_print_curr_spec (int type, char *s)
+LEXLIB_print_curr_spec_g (int type,char* s,t_binding_comp_list* inbind,t_binding_comp_list* outbind)
 {
   static char buff[3000];
   int ni;
@@ -388,20 +404,20 @@ LEXLIB_print_curr_spec (int type, char *s)
       if (obindcnt)
 	{
 	  bt++;
-	  print_bind_definition ('o');
+	  LEXLIB_print_bind_definition ('o');
 	}
       if (ibindcnt)
 	{
 	  bt += 2;
-	  print_bind_definition ('i');
+	  LEXLIB_print_bind_definition ('i');
 	}
       if (obindcnt)
 	{
-	  print_bind_set_value ('o');
+	  LEXLIB_print_bind_set_value ('o');
 	}
       if (ibindcnt)
 	{
-	  print_bind_set_value ('i');
+	  LEXLIB_print_bind_set_value ('i');
 	}
 
       switch (bt)
@@ -429,15 +445,15 @@ LEXLIB_print_curr_spec (int type, char *s)
 }
 
 char *
-LEXLIB_print_select_all (char *buff,int converted)
+LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind,t_binding_comp_list* outbind)
 {
   //int ni, no;
   //static char b2[20000];
   //int os;
   char *p;
   //printc ("{\n");
-  //ni = print_bind_definition ('i');
-  //no = print_bind_definition ('o');
+  //ni = LEXLIB_print_bind_definition ('i');
+  //no = LEXLIB_print_bind_definition ('o');
   p = anon_prepare (buff);
   //strcpy(b2,p);
   //os=snprintf (b2, sizeof(b2),"%s", p);
@@ -469,30 +485,21 @@ LEXLIB_print_bind (char i)
   return 0;
 }
 
-int
-LEXLIB_print_bind_definition (char i)
-{
-  return 0;
-}
+
 
 int
-LEXLIB_print_bind_set_value (char i)
-{
-  return 0;
-}
-
-int
-LEXLIB_print_let_manyvars (t_expr_str_list * expr_list)
+LEXLIB_print_let_manyvars_g (t_expr_str_list* expr_list,t_binding_comp_list* varlist)
 {
 printf("let_manyvars\n");
+return 0;
 }
 
 int
-LEXLIB_print_param (char i, char *funcname)
+LEXLIB_print_param_g (char i, char *funcname,t_binding_comp_list *bind)
 {
   int a;
-  int b;
-  char *ptr;
+  //int b;
+  //char *ptr;
   int dtype;
 
   if (fbindcnt)
@@ -611,7 +618,7 @@ LEXLIB_print_bind_pop1 (char i)
 
 
 void
-LEXLIB_print_bind_pop2 (t_expr_str_list * ptr, char i)
+LEXLIB_print_bind_pop2_g (t_expr_str_list* ptr,t_binding_comp_list* bind)
 {
   int a;
   //int dtype;
@@ -619,7 +626,7 @@ LEXLIB_print_bind_pop2 (t_expr_str_list * ptr, char i)
   char *ptr_str = 0;
   a = 0;
 
-  if (i != 'o')
+  if (bind->type != 'o')
     {
       A4GL_assertion (1, "Not Used");
     }
@@ -888,7 +895,7 @@ LEXLIB_print_continue_block (int n, int brace, char *why)
 
 }
 void
-LEXLIB_print_declare (char *sa1, char *a2, char *a3, int h1, int h2)
+LEXLIB_print_declare_g (char *sa1, char *a2, char *a3, int h1, int h2,t_binding_comp_list* inbinding,t_binding_comp_list* outbinding)
 {
   int a1;
   char *xx;
@@ -920,8 +927,8 @@ LEXLIB_print_declare (char *sa1, char *a2, char *a3, int h1, int h2)
 	}
       printc ("$%s=new FGLCursor();", Cname (xx));
     }
-  print_bind_set_value_param (a3, 'i');
-  print_bind_set_value_param (a3, 'o');
+  LEXLIB_print_bind_set_value_param_2 (a3, 'i');
+  LEXLIB_print_bind_set_value_param_2 (a3, 'o');
   print_prepare_in_header (yy);
 
   printc ("$%s->CursorDeclare(%d,$%s);", Cname (xx), a1 + h1, Pname (yy));
@@ -940,13 +947,13 @@ LEXLIB_print_defer (int quit)
 }
 
 void
-LEXLIB_print_do_select (char *s,int converted)
+LEXLIB_print_do_select (char *s,int converted,t_binding_comp_list* binding)
 {
 int l = 0;
 
 if (ibindcnt) l++;
 if (obindcnt) l += 2;
-LEXLIB_print_execute (s, l);
+LEXLIB_print_execute_g (s, l,empty_genbind('i'), binding);
 return;
 
 }
@@ -974,22 +981,22 @@ LEXLIB_print_exec_sql (char *s,int converted)
   char *p;
 
   p = anon_prepare (s);
-  LEXLIB_print_execute (p, 0);
+  LEXLIB_print_execute_g (p, 0,0,0);
   printc ("$%s->Free();", Pname (p));
 }
 
 void
-LEXLIB_print_exec_sql_bound (char *s,int converted)
+LEXLIB_print_exec_sql_bound_g (char *s,int converted,t_binding_comp_list* bind)
 {
   char *p;
 
   p = anon_prepare (s);
-  LEXLIB_print_execute (p, 1);
+  LEXLIB_print_execute_g (p, 1,bind,0);
 
 }
 
 void
-LEXLIB_print_execute (char *stmt, int using)
+LEXLIB_print_execute_g (char *stmt, int using, t_binding_comp_list* using_bind, t_binding_comp_list* into_bind)
 {
   int ni;
   int no;
@@ -1012,7 +1019,7 @@ LEXLIB_print_execute (char *stmt, int using)
     {
       if (ibindcnt)
         {
-          print_bind_set_value_param_3 (buff, 'i');
+          LEXLIB_print_bind_set_value_param_3 (buff, 'i');
         }
           print_prepare_in_header(xx);
       printc ("$%s->Update($%s);\n", Pname (xx),
@@ -1030,7 +1037,7 @@ LEXLIB_print_execute (char *stmt, int using)
       if (using == 1)
         {
           ni = ibindcnt;
-          print_bind_set_value_param_3 (buff, 'i');
+          LEXLIB_print_bind_set_value_param_3 (buff, 'i');
           print_prepare_in_header(xx);
           printc ("$%s->ExecuteSql(%d);\n", Pname (xx), ni);
         }
@@ -1043,17 +1050,17 @@ LEXLIB_print_execute (char *stmt, int using)
 
           printc ("@%s=$%s->ExecuteSqlWithResults(0); \n",
              Rname (xx), Pname (xx));
-          print_bind_set_value_param_3 (stmt, 'o');
+          LEXLIB_print_bind_set_value_param_3 (stmt, 'o');
         }
       if (using == 3)
         {
           ni = ibindcnt;
-          print_bind_set_value_param_3 (buff, 'i');
+          LEXLIB_print_bind_set_value_param_3 (buff, 'i');
           print_prepare_in_header(xx);
           printc
             ("@%s=$%s->ExecuteSqlWithResults(%d); \n",
              Rname (xx), Pname (xx), ni);
-          print_bind_set_value_param_3 (stmt, 'o');
+          LEXLIB_print_bind_set_value_param_3 (stmt, 'o');
         }
     }
 }
@@ -1114,15 +1121,17 @@ LEXLIB_print_exit_program (t_expr_str * expr)
 }
 
 
+#ifdef OLD
 void
 LEXLIB_print_fetch_1 (void)
 {
-	printc("print fetch_1");
+	//printc("print fetch_1");
 }
+#endif
 
 
 void
-LEXLIB_print_fetch_2 (void)
+LEXLIB_print_fetch_2_g (t_binding_comp_list *bind)
 {
 	printc("print fetch_2");
 }
@@ -1220,10 +1229,10 @@ LEXLIB_print_foreach_end (char *cname)
 }
 
 void
-LEXLIB_print_foreach_next (char *cursorname, int has_using, char *into)
+LEXLIB_print_foreach_next_g (char *cursorname, t_binding_comp_list  *using_bind, t_binding_comp_list *into_bind)
 {
   char *xx;
-  print_open_cursor (cursorname, has_using);
+  print_open_cursor_g (cursorname, using_bind);
   xx = strdup (A4GL_strip_quotes (cursorname));
 
   printc ("$%s->ResetCursor();", Cname (xx));
@@ -1237,7 +1246,7 @@ LEXLIB_print_foreach_next (char *cursorname, int has_using, char *into)
 
 
   printc ("@%s=$%s->GetCurrent();", Rname (xx), Cname (xx));
-  print_bind_set_value_param_2 (cursorname, 'o');
+  LEXLIB_print_bind_set_value_param_2 (cursorname, 'o');
 
 }
 
@@ -1711,7 +1720,7 @@ LEXLIB_print_init_conn (char *db)
  * INITIALIZE <variable_list> TO NULL 4gl statement.
  */
 void
-LEXLIB_print_init (int explicit)
+LEXLIB_print_init_g (t_binding_comp_list *bind,int explicit)
 {
   int cnt;
 
@@ -1731,7 +1740,7 @@ LEXLIB_print_init (int explicit)
 }
 
 void
-LEXLIB_print_init_table (char *s)
+LEXLIB_print_init_table_g (t_binding_comp_list* bind,char *s)
 {
 }
 
@@ -1788,7 +1797,7 @@ LEXLIB_print_op (char *type)
 }
 
 void
-LEXLIB_print_open_cursor (char *cname, int has_using)
+LEXLIB_print_open_cursor_g (char *cname, t_binding_comp_list *using_binding)
 {
   char *xx;
   int ign;
@@ -1807,11 +1816,10 @@ LEXLIB_print_open_cursor (char *cname, int has_using)
       A4GL_add_pointer (xx, CURSOR_USED, (void *) 1);
     }
 
-  if (has_using)
+  if (using_binding->nbind)
     {
-      int ni;
-      ni = ibindcnt;		// print_bind_definition ('i');
-      print_bind_set_value_param_2 (cname, 'i');
+      //ni = using_binding.nbind;		// print_bind_definition ('i');
+      LEXLIB_print_bind_set_value_param_2 (cname, 'i');
       printc ("$%s->OpenCursor();\n", Cname (xx));
     }
   else
@@ -1845,11 +1853,13 @@ LEXLIB_print_otherwise (void)
   temp_indent++;
 }
 
+#ifdef NOTUSED
 void
 LEXLIB_print_pop_variable (char *s)
 {
 	printc("print_pop_variable\n");
 }
+#endif
 
 
 void
@@ -1899,7 +1909,7 @@ LEXLIB_print_pushchar (char *s)
 
 
 void
-LEXLIB_print_put (char *cname, char *putvals)
+LEXLIB_print_put_g (char *cname, char *putvals,t_binding_comp_list *bind)
 {
 	printc("print_put\n");
 }
@@ -1977,7 +1987,7 @@ LEXLIB_print_sleep (t_expr_str * expr)
 
 
 void
-LEXLIB_print_sql_block_cmd (char *sql)
+LEXLIB_print_sql_block_cmd_g (char *s,t_binding_comp_list *inbind,t_binding_comp_list *outbind)
 {
 
   niy_assert (__PRETTY_FUNCTION__);
@@ -2002,7 +2012,7 @@ LEXLIB_print_sql_commit (int t)
 void
 LEXLIB_print_start_block (int n)
 {
-  printc(" # START BLOCK : %d %d\n",n,get_ccnt());
+  printc(" # START BLOCK : %d\n",n);
   /* do nothing */
 }
 
@@ -2023,7 +2033,7 @@ LEXLIB_print_system_run (void *expr, int type, char *rvar)
 }
 
 void
-LEXLIB_print_unload (char *file, char *delim, char *sql)
+LEXLIB_print_unload_g (char *file, char *delim, char *sql,t_binding_comp_list *bind)
 {
 	if (file[0]!='"') {
 	printc("Unload($%s,%s,\"%s\");",use_scope(file),delim,sql);
@@ -2034,7 +2044,7 @@ LEXLIB_print_unload (char *file, char *delim, char *sql)
 
 
 void
-LEXLIB_print_validate (void)
+LEXLIB_print_validate_g (t_binding_comp_list* bind,char* tablist)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -2491,7 +2501,7 @@ LEXLIB_print_while_end (void)
 /* Reports */
 
 void
-LEXLIB_print_format_every_row (void)
+LEXLIB_print_format_every_row (t_binding_comp_list *t)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -2610,8 +2620,7 @@ LEXLIB_print_order_by_type (int type, int size)
 /* Enhancements/GUI */
 
 void
-LEXLIB_print_call_shared (t_expr_str_list * expr, char *libfile,
-			  char *funcname)
+LEXLIB_print_call_shared_g (t_expr_str_list * expr, char *libfile, char *funcname,t_binding_comp_list *bind)
 {
 }
 
@@ -2639,16 +2648,18 @@ LEXLIB_print_alloc_arr (char *s, char *dim)
   niy_assert (__PRETTY_FUNCTION__);
 }
 
+#ifdef REMOVED
 int
 LEXLIB_print_linked_cmd (int type, char *var)
 {
   niy_assert (__PRETTY_FUNCTION__);
   return 0;
 }
+#endif
 
 void
 LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll,
-			       char *attr, void *iattr,char *Style)
+			       char *attr, void *iattr,char *Style,t_binding_comp_list *t)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -2922,7 +2933,7 @@ LEXLIB_print_use_session (char *sess)
 
 
 void
-LEXLIB_print_pdf_call (char *a1, t_expr_str_list * args, char *a3)
+LEXLIB_print_pdf_call (char* a1,t_expr_str_list* args,char* a3,t_binding_comp_list* return_values)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -2993,7 +3004,7 @@ LEXLIB_A4GL_get_formloop_str (int type)
 
 char *
 LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs,
-			  char *srec, char *attr, void *inp_attr,char *Style)
+			  char *srec, char *attr, void *inp_attr,char *Style,t_binding_comp_list *t)
 {
   niy_assert (__PRETTY_FUNCTION__);
   return 0;
@@ -3148,11 +3159,13 @@ LEXLIB_print_message (t_expr_str_list * expr, int type, char *attr, int wait,cha
   niy_assert (__PRETTY_FUNCTION__);
 }
 
+#ifdef OLD
 void
 LEXLIB_print_getfldbuf (char *fields)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
+#endif
 
 void
 LEXLIB_print_getwin (void)
@@ -3237,7 +3250,7 @@ LEXLIB_print_construct_2 (char *driver)
 }
 
 void
-LEXLIB_print_construct_fl (int byname, char *constr_str,
+LEXLIB_print_construct_fl_g (int byname, t_binding_comp_list *bind,
 			   t_field_list * field_list, char *attr, int cattr,char *Style)
 {
   niy_assert (__PRETTY_FUNCTION__);
@@ -4090,7 +4103,7 @@ is_used_block (int n, char *btype)
 
 
 int
-print_bind_set_value_param_2 (char *cname, char i)
+LEXLIB_print_bind_set_value_param_2 (char *cname, char i)
 {
   int a;
   char *xx;
@@ -4163,7 +4176,7 @@ char * find_record_dot (char *s)
 
 
 
-int print_bind_set_value_param_3 (char *cname, char i)
+int LEXLIB_print_bind_set_value_param_3 (char *cname, char i)
 {
   int a;
   char *xx;
@@ -4211,7 +4224,7 @@ int print_bind_set_value_param_3 (char *cname, char i)
 
 
 void
-LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
+LEXLIB_print_fetch_3_g (struct s_fetch *fp, t_binding_comp_list *bind)
 {
   int x;
   struct expr_str *p;
@@ -4280,7 +4293,7 @@ LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
   printc ("if  (a4gl_sqlca.sqlcode==0) {");
   temp_indent++;
   printc ("@DR_%s=$DC_%s->Current();", Rname (xx), Cname (xx));
-  print_bind_set_value_param_2 (fp->cname, 'o');
+  LEXLIB_print_bind_set_value_param_2 (fp->cname, 'o');
   temp_indent--;
   printc ("}");
   obindcnt = 0;

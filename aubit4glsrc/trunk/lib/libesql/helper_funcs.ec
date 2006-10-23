@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.49 2006-10-15 11:31:51 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.50 2006-10-23 08:49:16 mikeaubury Exp $
 #
 */
 
@@ -911,21 +911,21 @@ for (a=0;a<n;a++) {
 			//printf("%p %p %p %d %c %d %d\n",native,a4gl,i,size,dir,x,y);
 		//}
 	switch (a4gl_bind[a].dtype&DTYPE_MASK) {
-		case 0:  ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
-		case 1:  ESQLAPI_A4GL_copy_smint(native,a4gl,i,size,dir); break;
-		case 2:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
-		case 3:  ESQLAPI_A4GL_copy_double(native,a4gl,i,size,dir); break;
-		case 4:  ESQLAPI_A4GL_copy_float(native,a4gl,i,size,dir); break;
-		case 5:  ESQLAPI_A4GL_copy_decimal(native,a4gl,i,size,dir); break;
-		case 6:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
-		case 7:  ESQLAPI_A4GL_copy_date(native,a4gl,i,size,dir); break;
-		case 8:  ESQLAPI_A4GL_copy_money(native,a4gl,i,size,dir); break;
-		case 9:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
-		case 10: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
-		case 11: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
-		case 12: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
-		case 13: ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
-		case 14: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
+		case DTYPE_CHAR:  ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
+		case DTYPE_SMINT:  ESQLAPI_A4GL_copy_smint(native,a4gl,i,size,dir); break;
+		case DTYPE_INT:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
+		case DTYPE_FLOAT:  ESQLAPI_A4GL_copy_double(native,a4gl,i,size,dir); break;
+		case DTYPE_SMFLOAT:  ESQLAPI_A4GL_copy_float(native,a4gl,i,size,dir); break;
+		case DTYPE_DECIMAL:  ESQLAPI_A4GL_copy_decimal(native,a4gl,i,size,dir); break;
+		case DTYPE_SERIAL:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
+		case DTYPE_DATE:  ESQLAPI_A4GL_copy_date(native,a4gl,i,size,dir); break;
+		case DTYPE_MONEY:  ESQLAPI_A4GL_copy_money(native,a4gl,i,size,dir); break;
+		case DTYPE_NULL:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
+		case DTYPE_DATETIME: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
+		case DTYPE_BYTE: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
+		case DTYPE_TEXT: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
+		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
+		case DTYPE_INTERVAL: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
 	}
 }
 

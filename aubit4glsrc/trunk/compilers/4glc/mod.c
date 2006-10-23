@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.284 2006-10-08 11:24:08 mikeaubury Exp $
+# $Id: mod.c,v 1.285 2006-10-23 08:49:08 mikeaubury Exp $
 #
 */
 
@@ -59,6 +59,8 @@
 char                 hdr_dbname[64]="";
 
 char force_ui[FORCE_UI_SIZE];
+char debug_filename[DEBUG_FILENAME_SIZE]="";
+
 extern int a4gl_yydebug;
 int             chk4var=0;
 char            curr_func[256]="Module";
@@ -1954,7 +1956,6 @@ add_bind (char i, char *var_i)
   long dtype;
 /*char c;*/
   char var[2048] = "";
-  A4GL_debug ("add_bind: %c %s\n", i, A4GL_null_as_null (var_i));
   strcpy (var, var_i);
 
   if (var_i[0] == '"')
@@ -3702,6 +3703,20 @@ ispdf (void)
     return "pdf_";
 }
 
+void expand_bind_g (t_binding_comp_list *l) {
+t_binding_comp_list *l2;
+// This will add it back to the original binding list...
+// so we need to copy that back our our list
+	expand_bind(l->bind,l->type,l->nbind,0);
+
+	l2=copy_togenbind(l->type);
+
+	free(l->bind);
+	l->bind=l2->bind;
+	l->nbind=l2->nbind;
+	l->abind=l2->abind;
+	l->str=l2->str;
+}
 
 /**
  *
@@ -3720,8 +3735,7 @@ ispdf (void)
  *   - f or F :
  * @param cnt The number of elements in the bind array.
  */
-void
-expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
+void expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
 {
   char buff[256];
   /*int b1; */
@@ -4913,60 +4927,6 @@ A4GL_add_feature (char *feature)
 }
 
 
-#ifdef MOVED
-
-void
-A4GL_CV_print_exec_sql (char *s)
-{
-  char *ptr;
-  int converted=0;
-  if (A4GL_compile_time_convert()) {
-  	ptr = A4GLSQLCV_check_sql (s,&converted);
-  } else {
-	  ptr=s;
-  }
-  print_exec_sql (ptr,converted);
-}
-
-
-void
-A4GL_CV_print_exec_sql_bound (char *s)
-{
-  char *ptr;
-  int converted=0;
-  if (A4GL_compile_time_convert()) {
-  	ptr = A4GLSQLCV_check_sql (s,&converted);
-  } else {
-	  ptr=s;
-  }
-  print_exec_sql_bound (ptr,converted);
-}
-
-void
-A4GL_CV_print_do_select (char *s)
-{
-  print_do_select (s,0);
-
-}
-#endif
-
-
-#ifdef MOVED
-char *
-A4GL_CV_print_select_all (char *s)
-{
-  char *ptr;
-  int converted=0;
-  if (A4GL_compile_time_convert()) {
-  		ptr = A4GLSQLCV_check_sql (s,&converted);
-  } else {
-	  	ptr=s;
-  }
-  return print_select_all (ptr,converted);
-}
-#endif
-
-
 int
 A4GL_escape_quote_owner (void)
 {
@@ -5228,6 +5188,28 @@ ensure_bind (long *a_bindp, long need, struct binding_comp *b)
 }
 
 
+void ensure_bind_g (t_binding_comp_list *binding,int need) 
+{
+  long a_bind;
+  
+  a_bind = binding->abind;
+
+  if (a_bind > need)
+    return ;
+
+  while (a_bind <= need)
+    {
+      if (a_bind == 0)
+	a_bind = 10;		// Start off small :-)
+      else
+	{
+	  a_bind = a_bind * 2;	// just double it ?
+	}
+    }
+  binding->bind = realloc (binding->bind, sizeof (struct binding_comp) * a_bind);
+  A4GL_assertion (binding->bind == 0, "Unable to allocation memory for binding");
+  binding->abind = a_bind;
+}
 
 struct binding_list *
 new_bind_list (char *s)
@@ -5407,6 +5389,9 @@ get_for_default_step (void)
 
 
 
+char *get_debug_filename(void) {
+	return debug_filename;
+}
 
 
 char *get_force_ui(void) {
@@ -5446,6 +5431,15 @@ int A4GL_is_internal_class_function(char *class,char *name) {
 }
 
 
+
+void expand_fbind(void ) {
+ expand_bind (&fbind[0], 'F', fbindcnt,1);
+}
+
+void expand_ordbind(void ) {
+ expand_bind (&ordbind[0], 'O', ordbindcnt,1);
+}
+
 char *
 get_hdrdbname(void)
 {
@@ -5459,6 +5453,153 @@ set_hdrdbname(char *s)
 }
 
 
+
+struct  binding_comp_list *ensure_binding_comp_list (struct  binding_comp_list *l) {
+	struct binding_comp_list *local;
+	if (l==0) {
+		local=malloc(sizeof(struct binding_comp_list));
+		local->nbind=0;
+		local->bind=0;
+		local->abind=0;
+		local->str=0;
+		return local;
+	}
+	return l;
+}
+
+struct  binding_comp_list *ensure_binding_comp_list_type (struct  binding_comp_list *l,char type) {
+	struct binding_comp_list *local;
+	if (l==0) {
+		local=ensure_binding_comp_list(l);
+		local->type=type;
+		return local;
+	}
+	return l;
+}
+
+
+
+struct  binding_comp_list *empty_genbind(char i) {
+struct binding_comp_list *l=0;
+	l=malloc(sizeof(struct binding_comp_list));
+	l->bind=0;
+	l->nbind=0;
+	l->abind=0;
+	l->str=0;
+	l->type=i;
+	return l;
+}
+
+struct  binding_comp_list *copy_togenbind(char i) {
+struct binding_comp_list *l=0;
+struct binding_comp *from=0;
+
+int nlist=0;
+
+switch (i) {
+	case 'i': nlist=ibindcnt; from=ibind; break;
+	case 'o': nlist=obindcnt; from=obind; break;
+	case 'f': expand_bind(&fbind[0], 'f', fbindcnt,1);nlist=fbindcnt; from=fbind; break;
+	case 'F': expand_bind(&fbind[0], 'F', fbindcnt,1);nlist=fbindcnt; from=fbind; break;
+	case 'O': expand_bind(&ordbind[0], 'O', ordbindcnt,0); nlist=ordbindcnt; from=ordbind;  break;	
+	case 'N': expand_bind(&nullbind[0], 'N', nullbindcnt,0); nlist=nullbindcnt; from=nullbind;  break;	
+
+default:
+	printf("BINDING : %c\n",i);
+	A4GL_assertion(1,"Unknown binding");
+}
+
+
+l=malloc(sizeof(struct binding_comp_list));
+l->bind=malloc(sizeof(struct binding_comp)*nlist);
+memcpy(l->bind,from,sizeof(struct binding_comp)*nlist);
+l->nbind=nlist;
+l->abind=nlist;
+l->type=i;
+l->str=0;
+return l;
+}
+
+
+void llex_add_ibind(int dtype,char *var) {
+        ibind=ensure_bind(&a_ibind,ibindcnt+1,ibind);
+        strcpy(ibind[ibindcnt].varname,var);
+        ibind[ibindcnt].start_char_subscript=0;
+        ibind[ibindcnt].end_char_subscript=0;
+        ibind[ibindcnt].dtype=dtype;
+        ibindcnt++;
+}
+
+
+
+#ifdef NEWNOTUSED
+struct binding_comp_list * add_genbind (struct binding_comp_list *l, char *var_i,char *type)
+{
+char var[2048] = "";
+int dtype;
+strcpy (var, var_i);
+
+if (l==0) {
+           l=malloc(sizeof(struct binding_comp_list));
+           l->bind=0;
+           l->nbind=0;
+           l->abind=0;
+           l->str=0;
+	   l->type=' ';
+
+	   if (strcmp(type,"null")) {
+		l->type='N';
+	   }
+}
+
+
+
+  if (var_i[0] == '"')
+    {
+      dtype = (strlen (var) - 2) << 16;
+      strcpy (var, var_i);
+    }
+  else
+    {
+      A4GL_debug ("Scanning...");
+      dtype = scan_variable (var_i);
+      switch (l->type)
+	{
+	case 'f':
+	  strcpy (var, fgl_add_scope (var_i, 'L'));
+	  break;		/* Function parameters */
+	case 'O':
+	  strcpy (var, fgl_add_scope (var_i, 'L'));
+	  break;		/* Report order by */
+	default:
+	  strcpy (var, fgl_add_scope (var_i, 0));
+	}
+
+    }
+
+
+
+  if (dtype == -2 || strstr (var, ".*"))
+    {
+	if (l->type=='N') {
+      		gen_push_bind_rec (l, var, 'N');
+	} else {
+      		gen_push_bind_rec (l, var, ' ');
+	}
+    }
+  else
+    {
+      l->bind = ensure_bind (&l->abind, l->nbind, l->bind);
+      l->bind[l->nbind].start_char_subscript = 0;
+      l->bind[l->nbind].end_char_subscript = 0;
+      strcpy (l->bind[l->nbind].varname, var);
+      l->bind[l->nbind].dtype = dtype;
+      l->nbind++;
+    }
+
+  return l;
+}
+#endif
 
 
 /* ================================= EOF ============================= */

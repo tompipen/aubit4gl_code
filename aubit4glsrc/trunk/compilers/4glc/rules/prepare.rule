@@ -17,32 +17,32 @@ prepare_cmd : opt_use PREPARE stmt_id FROM var_or_char
 var_or_char: variable | CHAR_VALUE;
 
 execute_cmd : EXECUTE stmt_id {
-		print_execute($<str>2,0);
+		print_execute_g($<str>2,0,empty_genbind('i'),empty_genbind('o'));
 		ADDMAP("Execute",$<str>2);
 		add_feature("EXECUTE");
 		}
         | EXECUTE stmt_id KW_USING ibind_var_list {
 		add_feature("EXECUTE_USING");
 		ADDMAP("Execute",$<str>2);
-		print_execute($<str>2,1);
+		print_execute_g($<str>2,1,copy_togenbind('i'),empty_genbind('o'));
 		add_feature("EXECUTE");
 	}
         | EXECUTE stmt_id INTO obind_var_list {
 		add_feature("EXECUTE_INTO");
 		ADDMAP("Execute",$<str>2);
-		print_execute($<str>2,2);
+		print_execute_g($<str>2,2,empty_genbind('i'),copy_togenbind('o'));
 		add_feature("EXECUTE");
 	}
         | EXECUTE stmt_id INTO obind_var_list KW_USING ibind_var_list {
 		add_feature("EXECUTE_INTO_USING");
 		ADDMAP("Execute",$<str>2);
-		print_execute($<str>2,3);
+		print_execute_g($<str>2,3,copy_togenbind('i'),copy_togenbind('o'));
 		add_feature("EXECUTE");
 	}
         | EXECUTE stmt_id KW_USING ibind_var_list INTO obind_var_list {
 		add_feature("EXECUTE_INTO_USING");
 		ADDMAP("Execute",$<str>2);
-		print_execute($<str>2,3);
+		print_execute_g($<str>2,3,copy_togenbind('i'),copy_togenbind('o'));
 		add_feature("EXECUTE");
 	}
 	| EXECUTE_IMMEDIATE var_or_char {

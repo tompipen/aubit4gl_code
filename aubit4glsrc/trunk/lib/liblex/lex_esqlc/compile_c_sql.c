@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.72 2006-10-14 10:09:41 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.73 2006-10-23 08:49:17 mikeaubury Exp $
 #
 */
 
@@ -33,11 +33,11 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.72 2006-10-14 10:09:41 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.73 2006-10-23 08:49:17 mikeaubury Exp $";
 #endif
 
 
-void print_report_table(char *repname,char type, int c,char *asc_desc);
+void print_report_table(char *repname,char type, int c,char *asc_desc,t_binding_comp_list *funcbind);
 void printh (char *fmt, ...);
 void liblex_add_ibind(int dtype,char *var) ;
 static char *trans_quote (char *s);
@@ -66,12 +66,12 @@ LEXLIB_print_exec_sql (char *s,int converted)
  * @param
  */
 void
-LEXLIB_print_exec_sql_bound (char *s,int converted)
+LEXLIB_print_exec_sql_bound_g (char *s,int converted,t_binding_comp_list* bind)
 {
   int c;
   printc ("{\n");
-  c = LEXLIB_print_bind_definition ('i');
-  LEXLIB_print_bind_set_value ('i');
+  c = LEXLIB_print_bind_definition_g (bind);
+  LEXLIB_print_bind_set_value_g (bind);
   printc
     ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d),1);\n", c,s,lastlineno,converted);
   printc ("}\n");
@@ -109,23 +109,21 @@ LEXLIB_print_close (char type, char *name)
  * @param into The variable list where the cursor is fetched in.
  */
 void
-LEXLIB_print_foreach_next (char *cursorname, int has_using, char *into)
+LEXLIB_print_foreach_next_g (char *cursorname, t_binding_comp_list  *using_bind, t_binding_comp_list *into_bind)
 {
   int ni;
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
-  LEXLIB_print_open_cursor(cursorname,has_using);
-  /*printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);*/
+  LEXLIB_print_open_cursor_g(cursorname,using_bind);
 
   printc ("if (a4gl_sqlca.sqlcode!=0) {");
   exit_loop("FOREACH");
     printc("}");
 
-  /* printc ("if (a4gl_sqlca.sqlcode==0) {\n");*/
   printc("_cursoropen=1;");
   printc ("while (1) {\n");
-  ni = LEXLIB_print_bind_definition ('o');
-  LEXLIB_print_bind_set_value('o');
-  printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname, FETCH_RELATIVE, ni);
+  ni = LEXLIB_print_bind_definition_g (into_bind);
+  LEXLIB_print_bind_set_value_g(into_bind);
+  printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind); /* Foreach next */\n", cursorname, FETCH_RELATIVE, ni);
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
 }
 
@@ -146,95 +144,6 @@ LEXLIB_print_free_cursor (char *s)
 
 }
 
-/**
- * Print the C code implementation for sql USING 4gl statements.
- *
- * This statement are not informix 4gl original statements.
- *
- * @param type : The sql statement type.
- *   - S : Select
- *   - D : Delete
- *   - U : Update
- * @param var The 4gl variable name to be used.
- */
-int
-LEXLIB_print_linked_cmd (int type, char *var)
-{
-  char tabname[64];
-  char pklist[256];
-  int ni;
-  if (last_var_is_linked (tabname, pklist))
-    {
-      char buff[80];
-      char buff2[80];
-      int no = 0;
-      int no_keys;
-      int azcnt;
-      printc ("{\n");
-      if (type == 'S')
-	{
-	  start_bind ('o', 0);
-	  sprintf (buff, "%s.*", var);
-	  add_bind ('o', buff);
-	}
-
-      A4GL_debug ("Finding number of keys...\n");
-      no_keys = linked_split (pklist, 0, 0);
-      A4GL_debug ("No of keys=%d", no_keys);
-      start_bind ('i', 0);
-      if (type == 'U')
-	{
-	  char buffer[256];
-	  set_pklist (pklist);
-	  sprintf (buffer, "%s.*", var);
-	  push_bind_rec (buffer, 'u');
-	}
-      for (azcnt = 1; azcnt <= no_keys; azcnt++)
-	{
-	  A4GL_debug ("Getting key no %d", azcnt);
-	  linked_split (pklist, azcnt, buff2);
-	  sprintf (buff, "%s.%s", var, buff2);
-	  A4GL_debug ("Adding linked %s", buff);
-	  add_bind ('i', buff);
-	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
-	}
-      if (type == 'S') no = LEXLIB_print_bind_definition ('o');
-      ni = LEXLIB_print_bind_definition ('i');
-
-      if (type == 'S') LEXLIB_print_bind_set_value ('o');
-      LEXLIB_print_bind_set_value ('i');
-	
-      if (type == 'S')
-	sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
-      if (type == 'D')
-	sprintf (buff, "DELETE FROM %s WHERE ", tabname);
-      if (type == 'U')
-	sprintf (buff, "UPDATE %s SET (%s)=(%s) WHERE ", tabname,
-		 get_upd_using_notpk (), get_upd_using_queries ());
-      for (azcnt = 1; azcnt <= no_keys; azcnt++)
-	{
-	  if (azcnt > 1)
-	    strcat (buff, "AND");
-	  linked_split (pklist, azcnt, buff2);
-	  strcat (buff, " ");
-	  strcat (buff, buff2);
-	  strcat (buff, "=? ");
-	}
-      if (type == 'S')
-	printc
-	  ("A4GLSQL_execute_implicit_select((void *)A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,1),1); /* 1 */",
-	   ni, no, buff,lastlineno);
-      if (type == 'D' || type == 'U')
-	printc
-	  ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,1),1);",  ni,buff,lastlineno);
-      printc ("}\n");
-    }
-  else
-    {
-      return 0;
-    }
-  return 1;
-}
 
 
 /**
@@ -268,13 +177,13 @@ LEXLIB_print_set_conn (char *conn)
  * insert cursors.
  */
 void
-LEXLIB_print_put (char *cname,char *putvals)
+LEXLIB_print_put_g (char *cname,char *putvals,t_binding_comp_list* bind)
 {
   int n;
   printc ("{\n");
   LEXLIB_print_pushchar(cname);
-  n = LEXLIB_print_bind_definition ('i');
-  LEXLIB_print_bind_set_value ('i');
+  n = LEXLIB_print_bind_definition_g (bind);
+  LEXLIB_print_bind_set_value_g (bind);
   printc ("A4GLSQL_put_insert(ibind,%d);\n", n);
   printc ("}\n");
 }
@@ -326,7 +235,7 @@ LEXLIB_print_prepare (char *stmt, char *sqlvar)
  *   - 1 : EXECUTE have USING
  */
 void
-LEXLIB_print_execute (char *stmt, int using)
+LEXLIB_print_execute_g (char *stmt, int using, t_binding_comp_list* using_bind, t_binding_comp_list* into_bind)
 {
   int ni;
   int no;
@@ -334,8 +243,8 @@ LEXLIB_print_execute (char *stmt, int using)
 
   if (using==1) {
       printc ("{\n");
-      ni = LEXLIB_print_bind_definition ('i');
-      LEXLIB_print_bind_set_value ('i');
+      ni = LEXLIB_print_bind_definition_g (using_bind);
+      LEXLIB_print_bind_set_value_g (using_bind);
       printc ("A4GLSQL_execute_sql(%s,%d,ibind);\n", stmt, ni);
       printc ("}\n");
     }
@@ -344,8 +253,8 @@ LEXLIB_print_execute (char *stmt, int using)
       printc ("{\n");
       printc("void *_save_bind_ptr;");
       printc("int   _save_bind_cnt;");
-      no = LEXLIB_print_bind_definition ('o');
-      LEXLIB_print_bind_set_value ('o');
+      no = LEXLIB_print_bind_definition_g (into_bind);
+      LEXLIB_print_bind_set_value_g (into_bind);
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_save_bind_ptr,&_save_bind_cnt,obind,%d);",stmt,no);
       printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s),0); /* 2 */\n", stmt);
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',0,0,_save_bind_ptr,_save_bind_cnt);",stmt);
@@ -358,10 +267,10 @@ LEXLIB_print_execute (char *stmt, int using)
       printc("int   _osave_bind_cnt;");
       printc("void *_isave_bind_ptr;");
       printc("int   _isave_bind_cnt;");
-      no = LEXLIB_print_bind_definition ('o');
-      ni = LEXLIB_print_bind_definition ('i');
-      LEXLIB_print_bind_set_value ('o');
-      LEXLIB_print_bind_set_value ('i');
+      no = LEXLIB_print_bind_definition_g (into_bind);
+      ni = LEXLIB_print_bind_definition_g (using_bind);
+      LEXLIB_print_bind_set_value_g (into_bind);
+      LEXLIB_print_bind_set_value_g (using_bind);
       printc ("A4GLSQL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);",stmt,no);
       printc ("A4GLSQL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);",stmt,ni);
       printc ("A4GLSQL_execute_implicit_select(A4GLSQL_find_prepare(%s),0); /* 3 */\n", stmt);
@@ -407,25 +316,17 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
  * @param using The using expression list.
  */
 void
-LEXLIB_print_open_cursor (char *cname, int has_using)
+LEXLIB_print_open_cursor_g (char *cname, t_binding_comp_list *using_bind)
 {
-   if (has_using) {
+   if (using_bind->nbind) {
 	int ni;
       	printc ("{\n");
-      	ni = LEXLIB_print_bind_definition ('i');
-      	LEXLIB_print_bind_set_value ('i');
+      	ni = LEXLIB_print_bind_definition_g (using_bind);
+      	LEXLIB_print_bind_set_value_g (using_bind);
   	printc ("A4GLSQL_open_cursor(%s,%d,ibind);\n", cname,ni);
   	printc("}");
-	/*
-	A4GL_prchkerr (lastlineno, infilename); // line number, file name should be provided
-				// to A4GL_prchkerr, but where to get them from?
-	*/
   } else {
   	printc ("A4GLSQL_open_cursor(%s,0,0);\n",  cname);
-	/*
-	A4GL_prchkerr (lastlineno, infilename); // line number, file name should be provided
-				// to A4GL_prchkerr, but where to get them from?
-	*/
   }
 }
 
@@ -452,11 +353,12 @@ LEXLIB_print_sql_commit (int t)
  * @param into The into variable list, taht includes:
  */
 void
-LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
+LEXLIB_print_fetch_3_g (struct s_fetch *fp, t_binding_comp_list *bind)
 {
   struct expr_str *e;
 char buff[200];
-e=fp->fp->fetch_expr;
+  e=fp->fp->fetch_expr;
+
   if (e) {
 	if (e->expr_type==ET_EXPR_LITERAL_LONG) {
 		sprintf(buff,"%ld",e->u_data.expr_long);
@@ -465,7 +367,14 @@ e=fp->fp->fetch_expr;
 		sprintf(buff,"A4GL_pop_long()");
 	}
   }
-  printc ("A4GLSQL_fetch_cursor(%s,%d,%s,%s);}\n}\n", fp->cname,fp->fp->ab_rel, buff,into);
+
+  if (bind->nbind==0) {
+  		printc ("A4GLSQL_fetch_cursor(%s,%d,%s,0,0); /* No bind */", fp->cname,fp->fp->ab_rel, buff);
+  } else {
+  		printc ("A4GLSQL_fetch_cursor(%s,%d,%s,%d,obind);", fp->cname,fp->fp->ab_rel, buff,bind->nbind);
+  }
+
+  printc("}\n}\n");
 }
 
 /**
@@ -499,7 +408,7 @@ LEXLIB_print_init_conn (char *db)
  * @param s A string with the complete SQL select statement text.
  */
 void
-LEXLIB_print_do_select (char *s,int converted)
+LEXLIB_print_do_select (char *s,int converted,t_binding_comp_list *outbind)
 {
 if (strstr(s," INTO TEMP ")==0) {
   printc ("A4GLSQL_execute_implicit_select(%s,1); /* 0 */\n}\n", s);
@@ -544,7 +453,7 @@ LEXLIB_print_flush_cursor (char *s)
  *   - 1 : The cursor is with scroll
  */
 void
-LEXLIB_print_declare (char *sa1, char *a2, char *a3, int h1, int h2)
+LEXLIB_print_declare_g (char *sa1, char *a2, char *a3, int h1, int h2,t_binding_comp_list *inbind, t_binding_comp_list *outbind)
 {
   int a1;
 
@@ -567,23 +476,25 @@ LEXLIB_print_declare (char *sa1, char *a2, char *a3, int h1, int h2)
  * @return A string with the C implementation.
  */
 char *
-LEXLIB_print_curr_spec (int type, char *s)
+LEXLIB_print_curr_spec_g (int type, char *s, t_binding_comp_list *inbind, t_binding_comp_list *outbind)
 {
   static char buff[3000];
   int ni;
   int no;
   int bt;
 
-	extern int obindcnt,ibindcnt;
+	//extern int obindcnt,ibindcnt;
   printc ("{\n");
   if (type == 1) {
 		bt=0;
-		ni=ibindcnt;
-		no=obindcnt;
-		if (obindcnt) {bt++;LEXLIB_print_bind_definition('o');}
-		if (ibindcnt) {bt+=2;LEXLIB_print_bind_definition('i');}
-		if (obindcnt) {LEXLIB_print_bind_set_value('o');}
-		if (ibindcnt) {LEXLIB_print_bind_set_value('i');}
+		ni=inbind->nbind;
+		no=outbind->nbind;
+		if (no) {bt++;LEXLIB_print_bind_definition_g(outbind);}
+		if (ni) {bt+=2;LEXLIB_print_bind_definition_g(inbind);}
+		if (no) {LEXLIB_print_bind_set_value_g(outbind);}
+		if (ni) {LEXLIB_print_bind_set_value_g(inbind);}
+
+		A4GL_assertion(no,"DIDNT THINK THIS HAPPEND");
 		
 		switch(bt) {
     		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0)", s,lastlineno);break;
@@ -592,8 +503,9 @@ LEXLIB_print_curr_spec (int type, char *s)
     		case 3: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,0)", no,ni,s,lastlineno); break;
 		}
   }
-  if (type == 2)
-    sprintf (buff, "A4GLSQL_find_prepare(%s)", s);
+
+  if (type == 2) sprintf (buff, "A4GLSQL_find_prepare(%s)", s);
+
   return buff;
 }
 
@@ -613,16 +525,16 @@ LEXLIB_print_curr_spec (int type, char *s)
  * @return A string with the C implementation
  */
 char *
-LEXLIB_print_select_all (char *buff,int converted)
+LEXLIB_print_select_all_g (char *buff,int converted,t_binding_comp_list *inbind, t_binding_comp_list *outbind)
 {
   int ni, no;
   static char b2[20000];
   int os;
   printc ("{\n");
-  ni = LEXLIB_print_bind_definition ('i');
-  no = LEXLIB_print_bind_definition ('o');
-  LEXLIB_print_bind_set_value ('i');
-  LEXLIB_print_bind_set_value ('o');
+  ni = LEXLIB_print_bind_definition_g (inbind);
+  no = LEXLIB_print_bind_definition_g (outbind);
+  LEXLIB_print_bind_set_value_g (inbind);
+  LEXLIB_print_bind_set_value_g(outbind);
   os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,%d)", ni, no, buff,lastlineno,converted);
   if (os>=sizeof(b2)) {
 		A4GL_debug("print_select_all failed");
@@ -647,15 +559,15 @@ LEXLIB_print_select_all (char *buff,int converted)
  * @param sql The SQL that originate the unload data.
  */
 void
-LEXLIB_print_unload (char *file, char *delim, char *sql)
+LEXLIB_print_unload_g (char *file, char *delim, char *sql, t_binding_comp_list* inbind)
 {
   int ni;
   //static char b2[20000];
   //int os;
   int isvar=-1;
   printc ("{\n");
-  ni = LEXLIB_print_bind_definition ('i');
-  LEXLIB_print_bind_set_value ('i');
+  ni = LEXLIB_print_bind_definition_g (inbind);
+  LEXLIB_print_bind_set_value_g (inbind);
 
 if (strncmp(sql,"SELECT ",7)==0) isvar=0;
 
@@ -731,16 +643,16 @@ LEXLIB_A4GL_get_undo_use (void)
 }
 
 void
-LEXLIB_print_sql_block_cmd (char *s)
+LEXLIB_print_sql_block_cmd_g (char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind)
 {
 int u=0;
 static int sqlblock=0;
 char tmpbuff[256];
-  if (get_bind_cnt('o')) u+=2;
-  if (get_bind_cnt('i')) u+=1;
+  if (outbind->nbind) u+=2;
+  if (inbind->nbind)  u+=1;
   sprintf(tmpbuff,"\"A4GLsb_%d%d\"",sqlblock++,yylineno);
   printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d));",tmpbuff,trans_quote(s),lastlineno,0 /* never converted */);
-  LEXLIB_print_execute(tmpbuff,u);
+  LEXLIB_print_execute_g(tmpbuff,u,inbind,outbind);
 }
 
 
@@ -772,7 +684,7 @@ return s;
 
 
 
-void print_report_table(char *repname,char type, int c,char *asc_desc) {
+void print_report_table(char *repname,char type, int c,char *asc_desc,t_binding_comp_list *funcbind) {
 /* We don't need repname here - but the ESQL/C version does.. */
 if (type=='R')
   printc ("A4GL_add_row_report_table (_rbind,%d);",c);
@@ -800,7 +712,7 @@ if (s[0]=='\'') {
 	ptr[strlen(ptr)-1]=0;
 	sprintf(buff,"a4gl_putstr_%d",put_string_no);
 	printh("static char %s[]=\"%s\";\n",buff,ptr);
-	liblex_add_ibind(0+(strlen(ptr)<<16),buff);
+	llex_add_ibind(0+(strlen(ptr)<<16),buff);
 	free(ptr);
 	strcpy(s,"?");
 }
@@ -834,12 +746,20 @@ char *x;
 
 #endif
 
+
 void print_exists_subquery(int i, struct expr_exists_sq *e) {
 	int n;
+	t_binding_comp_list l;
 	printc("A4GL_push_char(\"%s\");",e->subquery);
 	printc("{");
 	n=e->nibind;
-	LEXLIB_print_bind('i');
+
+	l.bind=e->ibind;
+	l.nbind=e->nibind;
+	l.type='i';
+	LEXLIB_print_bind_definition_g (&l);
+	LEXLIB_print_bind_set_value_g(&l);
+
         printc("A4GL_push_binding(ibind,%d);",n);
 	if (i) printc("A4GL_pushop(OP_EXISTS);");
 	else   printc("A4GL_pushop(OP_NOTEXISTS);");
@@ -848,12 +768,22 @@ void print_exists_subquery(int i, struct expr_exists_sq *e) {
 
 void print_in_subquery(int i, struct expr_in_sq *e) {
 	int n;
+	t_binding_comp_list l;
 	LEXLIB_print_expr(e->expr);
 	printc("A4GL_push_char(\"%s\");",e->subquery);
 	printc("{");
 	n=e->nibind;
-	LEXLIB_print_bind('i');
+
+	//LEXLIB_print_bind('i');
+
+	l.bind=e->ibind;
+	l.nbind=e->nibind;
+	l.type='i';
+	LEXLIB_print_bind_definition_g (&l);
+	LEXLIB_print_bind_set_value_g(&l);
+
         printc("A4GL_push_binding(ibind,%d);",n);
+
  	if (i) printc("A4GL_pushop(OP_IN_SELECT);");
 	else   printc("A4GL_pushop(OP_NOTIN_SELECT);");
 	printc("}");

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.48 2006-10-02 07:52:35 afalout Exp $
+# $Id: Makefile,v 1.49 2006-10-23 08:49:19 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -182,9 +182,8 @@ all : ${ALL} install
 
 ################
 #Target to make asql Informix version
-asql_i${A4GL_EXE_EXT}: A4GL_LEXDIALECT=INFORMIX
 asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
-	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
+	${4GLPC} -t EC -td INFORMIX ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|           Successfuly compiled Informix version of asql            |"
@@ -195,18 +194,16 @@ runforms${A4GL_EXE_EXT}:
 	cd runforms; make; 
 	
 
-asql_g${A4GL_EXE_EXT}: A4GL_LEXTYPE=C
 asql_g${A4GL_EXE_EXT}: ${OBJS_GEN}
-	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
+	${4GLPC} -t C ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|           Successfuly compiled Generic version of asql             |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
-asql_I${A4GL_EXE_EXT}:  A4GL_LEXDIALECT=INGRES
 asql_I${A4GL_EXE_EXT}: ${OBJS_ING}
-	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
+	${4GLPC} -t EC -td INGRES ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|           Successfuly compiled Ingres  version of asql             |"
@@ -215,9 +212,8 @@ asql_I${A4GL_EXE_EXT}: ${OBJS_ING}
 
 ################
 #Target to make asql PostgreSQL version
-asql_p${A4GL_EXE_EXT}: A4GL_LEXDIALECT=POSTGRES
 asql_p${A4GL_EXE_EXT}: ${OBJS_PG}
-	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
+	${4GLPC} -t EC -td POSTGRES ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|          Successfuly compiled PostgreSQL version of asql           |"
@@ -229,7 +225,6 @@ asql_p${A4GL_EXE_EXT}: ${OBJS_PG}
 #Target to make asql InfoflexSQL version
 
 INFOFLEX: asql_infoflex${A4GL_EXE_EXT}
-asql_infoflex${A4GL_EXE_EXT}: A4GL_LEXDIALECT=INFOFLEX
 asql_infoflex${A4GL_EXE_EXT}: ${OBJS_INFOFLEX}
 	${4GLPC} -t EC -td INFOFLEX  ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
 	@echo ""
@@ -250,13 +245,13 @@ lex.asql_yy.c: parse.l
 ################
 #Rule to make objects from 4GL file - Informix version
 ifx_%${A4GL_OBJ_EXT}: %.4gl
-	${COMP4GL} -DSTATIC_LIBAUBIT4GL
+	${COMP4GL} -t EC -td INFORMIX -DSTATIC_LIBAUBIT4GL
 
 gen_%${A4GL_OBJ_EXT}: %.4gl
-	A4GL_LEXTYPE=C ${COMP4GL}
+	${4GLPC} -t C -o $@ ${4GLPCFLAGS} -c $^ 
 
 ing_%${A4GL_OBJ_EXT}: %.4gl
-	${COMP4GL}
+	${4GLPC} -t EC -td INGRES -o $@ ${4GLPCFLAGS} -c $^ 
 
 infoflex_%${A4GL_OBJ_EXT}: %.4gl
 	${4GLPC} -t EC -td INFOFLEX -o $@ ${4GLPCFLAGS} -c $^ 
@@ -264,7 +259,7 @@ infoflex_%${A4GL_OBJ_EXT}: %.4gl
 ################
 #Rule to make objects from 4GL file - Postgres version
 pg_%.ao: %.4gl
-	${COMP4GL}
+	${4GLPC} -t EC -td POSTGRES -o $@ ${4GLPCFLAGS} -c $^ 
 
 ## ==================================================================
 ##                    Install/de-install

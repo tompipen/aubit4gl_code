@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.86 2006-09-27 20:15:31 mikeaubury Exp $
+# $Id: 1.reqd,v 1.87 2006-10-23 08:49:10 mikeaubury Exp $
 #
 */
 
@@ -142,6 +142,7 @@ extern int nreturn_values;
 extern int isin_formhandler;
 extern int sql_mode;
 extern char 		force_ui[FORCE_UI_SIZE];
+extern char 		debug_filename[DEBUG_FILENAME_SIZE];
 extern char 		curr_func[256];
 extern char 		infilename[];
 extern char 		current_upd_table[64];
@@ -230,6 +231,7 @@ char *do_clobbering_sql (char *f, char *s);
 void print_expr_list_concat (struct expr_str_list *l);
 
 
+	
 
 #define ADDMAP(x,y) addmap(x,y,curr_func,yylineno,infilename)
 #define ADDMAP_MODULE(x,y) addmap(x,y,"MODULE",yylineno,infilename) 
@@ -298,6 +300,8 @@ void print_expr_list_concat (struct expr_str_list *l);
 	struct s_select_finish *s_select_finish;
 	struct s_fetch_place 	*s_fetch_place;
 	struct s_fetch 	*s_fetch;
+	t_binding_comp_list *binding_comp_list;
+	struct s_cur_Def curDef;
 	}
 
 /* ============================== 1.reqd ============================ */

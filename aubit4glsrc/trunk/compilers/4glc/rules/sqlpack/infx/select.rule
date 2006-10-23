@@ -353,7 +353,7 @@ unload_cmd :  opt_use UNLOAD_TO ufile opt_delim uselect_statement2_ss_converted 
 		add_feature("UNLOAD_TO_SELECT_WHERE");
 	}
 	add_feature("UNLOAD_TO");
-	print_unload($<str>3,$<str>4,$<sql_string>5);
+	print_unload_g($<str>3,$<str>4,$<sql_string>5,copy_togenbind('i'));
 	print_undo_use($<str>1);
 }
 ;

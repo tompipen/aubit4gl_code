@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.155 2006-10-21 13:02:51 afalout Exp $
+# $Id: compile_c_esql.c,v 1.156 2006-10-23 08:49:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.155 2006-10-21 13:02:51 afalout Exp $";
+  "$Id: compile_c_esql.c,v 1.156 2006-10-23 08:49:17 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -97,10 +97,12 @@ extern int fbindcnt;
 =====================================================================
 */
 
-int last_ni;
-int last_no;
-extern int obindcnt;
-extern int ibindcnt;
+
+//extern int obindcnt;
+//extern int ibindcnt;
+
+
+
 //struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 //void set_suppress_lines(void);
@@ -117,8 +119,8 @@ void printcomment (char *fmt, ...);
 extern void printh (char *fmt, ...);
 void printc (char *fmt, ...);
 static void print_copy_status (void);
-void print_conversions (char i);
-void print_report_table (char *repname, char type, int c,char *asc_desc);
+void print_conversions_g (t_binding_comp_list *bind);
+void print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_comp_list *funclist, t_binding_comp_list *orderbind);
 
 
 char *A4GL_mk_temp_tab (struct BINDING *b, int n);
@@ -216,15 +218,15 @@ LEXLIB_print_exec_sql (char *s, int converted)
  * @param
  */
 void
-LEXLIB_print_exec_sql_bound (char *s, int converted)
+LEXLIB_print_exec_sql_bound_g (char *s, int converted,t_binding_comp_list *bind)
 {
   int c;
   printc ("{/* Start exec_sql_bound */\n");
   set_suppress_lines ();
-  c = LEXLIB_print_bind_definition ('i');
+  c = LEXLIB_print_bind_definition_g (bind);
   printc ("/* printed bind - print conversions */");
-  LEXLIB_print_bind_set_value ('i');
-  print_conversions ('i');
+  LEXLIB_print_bind_set_value_g (bind);
+  print_conversions_g (bind);
   A4GL_save_sql (s, 0);
   printc ("\nEXEC SQL %s; /* exec_sql_bound */\n", s);
   print_copy_status ();
@@ -294,7 +296,7 @@ LEXLIB_print_close (char type, char *name)
  * @param into The variable list where the cursor is fetched in.
  */
 void
-LEXLIB_print_foreach_next (char *xcursorname, int has_using, char *into)
+LEXLIB_print_foreach_next_g (char *xcursorname, t_binding_comp_list *using_bind, t_binding_comp_list *into_bind)
 {
   int ni;
   int no;
@@ -306,7 +308,7 @@ LEXLIB_print_foreach_next (char *xcursorname, int has_using, char *into)
   printc ("a4gl_sqlca.sqlcode=0;\n");
 
 
-  LEXLIB_print_open_cursor (cursorname, has_using);
+  LEXLIB_print_open_cursor_g (cursorname, using_bind);
 
 
   /* printc ("if (a4gl_sqlca.sqlcode==0) {\n");*/
@@ -316,26 +318,22 @@ exit_loop("FOREACH");
 
   printc("_cursoropen=1;");
   printc ("while (1) {\n");
-  ni = LEXLIB_print_bind_definition ('i');
-  no = LEXLIB_print_bind_definition ('o');
-  LEXLIB_print_bind_set_value ('i');
-  LEXLIB_print_bind_set_value ('o');
-  print_conversions ('i');
+  ni = LEXLIB_print_bind_definition_g (using_bind);
+  no = LEXLIB_print_bind_definition_g (into_bind);
+  LEXLIB_print_bind_set_value_g (using_bind);
+  LEXLIB_print_bind_set_value_g (into_bind);
+  print_conversions_g (using_bind);
   set_suppress_lines ();
   A4GL_save_sql ("FETCH %s", A4GL_strip_quotes (cursorname));
 
 
   if (no == 0 && A4GLSQLCV_check_requirement ("NO_FETCH_WITHOUT_INTO"))
-    {
-      a4gl_yyerror
-	("You cannot use a FETCH without an INTO with the target database");
-      return;
+    { a4gl_yyerror ("You cannot use a FETCH without an INTO with the target database"); return;
     }
-  printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n", cursorname,
-	  A4GL_get_into_part (0, no), ni, no);
+  printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n", cursorname, A4GL_get_into_part (0, no), ni, no);
   print_copy_status ();
   printc ("internal_recopy_%s_o_Dir();", cursorname);
-  print_conversions ('o');
+  print_conversions_g (into_bind);
   clr_suppress_lines ();
 
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
@@ -357,112 +355,6 @@ LEXLIB_print_free_cursor (char *s)
   A4GL_save_sql ("FREE %s", s);
   printc ("\nEXEC SQL FREE %s;\n", cname);
   print_copy_status ();
-}
-
-/**
- * Print the C code implementation for sql USING 4gl statements.
- *
- * This statement are not informix 4gl original statements.
- *
- * @param type : The sql statement type.
- *   - S : Select
- *   - D : Delete
- *   - U : Update
- * @param var The 4gl variable name to be used.
- */
-int
-LEXLIB_print_linked_cmd (int type, char *var)
-{
-  char tabname[64];
-  char pklist[256];
-  int ni;
-  if (last_var_is_linked (tabname, pklist))
-    {
-      char buff[80];
-      char buff2[80];
-      int no = 0;
-      int no_keys;
-      int azcnt;
-      printc ("{\n");
-      if (type == 'S')
-	{
-	  start_bind ('o', 0);
-	  sprintf (buff, "%s.*", var);
-	  add_bind ('o', buff);
-	}
-
-      A4GL_debug ("Finding number of keys...\n");
-      no_keys = linked_split (pklist, 0, 0);
-      A4GL_debug ("No of keys=%d", no_keys);
-      start_bind ('i', 0);
-      if (type == 'U')
-	{
-	  char buffer[256];
-	  set_pklist (pklist);
-	  sprintf (buffer, "%s.*", var);
-	  push_bind_rec (buffer, 'u');
-	}
-      for (azcnt = 1; azcnt <= no_keys; azcnt++)
-	{
-	  A4GL_debug ("Getting key no %d", azcnt);
-	  linked_split (pklist, azcnt, buff2);
-	  sprintf (buff, "%s.%s", var, buff2);
-	  A4GL_debug ("Adding linked %s", buff);
-	  add_bind ('i', buff);
-	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
-	}
-      if (type == 'S')
-	{
-	  no = LEXLIB_print_bind_definition ('o');
-	}
-
-      ni = LEXLIB_print_bind_definition ('i');
-      if (type == 'S')
-	{
-	  LEXLIB_print_bind_set_value ('o');
-	}
-      LEXLIB_print_bind_set_value ('i');
-      print_conversions ('i');
-
-
-      if (type == 'S')
-	sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
-      if (type == 'D')
-	sprintf (buff, "DELETE FROM %s WHERE ", tabname);
-      if (type == 'U')
-	sprintf (buff, "UPDATE %s SET (%s)=(%s) WHERE ", tabname,
-		 get_upd_using_notpk (), get_upd_using_queries ());
-      for (azcnt = 1; azcnt <= no_keys; azcnt++)
-	{
-	  if (azcnt > 1)
-	    strcat (buff, "AND");
-	  linked_split (pklist, azcnt, buff2);
-	  strcat (buff, " ");
-	  strcat (buff, buff2);
-	  strcat (buff, "=? ");
-	}
-
-      if (type == 'S')
-	{
-	  A4GL_save_sql (buff, 0);
-	  printc ("\nEXEC SQL %s; /* linked - S */", buff);
-	  print_copy_status ();
-	}
-
-      if (type == 'D' || type == 'U')
-	{
-	  A4GL_save_sql (buff, 0);
-	  printc ("\nEXEC SQL %s; /* linked - D/U */", buff);
-	  print_copy_status ();
-	}
-
-      printc ("}\n");
-    }
-  else
-    {
-      return 0;
-    }
-  return 1;
 }
 
 
@@ -511,7 +403,7 @@ LEXLIB_print_set_conn (char *conn)
  * insert cursors.
  */
 void
-LEXLIB_print_put (char *xcname, char *putvals)
+LEXLIB_print_put_g (char *xcname, char *putvals,t_binding_comp_list *bind)
 {
   int n;
   int a;
@@ -560,7 +452,7 @@ LEXLIB_print_put (char *xcname, char *putvals)
 
       printc ("/* FAKE PUT - USING EXECUTE */");
 
-      if (ibindcnt == 0)
+      if (bind->nbind == 0)
 	{
 	  // PUT statment without FROM clause
 	  if (A4GL_isyes (acl_getenv ("A4GL_INCOMPAT_AT_RUNTIME")))
@@ -570,31 +462,27 @@ LEXLIB_print_put (char *xcname, char *putvals)
 		("printf (\"You cannot use a PUT without FROM with the target database\\n\"); ");
 	      printc ("A4GL_push_long(3);");
 	      print_exit_program (A4GL_new_literal_long_long (1));
-	      //LEXLIB_print_execute(ptr,0);
-	      //return;
 	    }
 	  else
 	    {
 	      a4gl_yyerror
 		("Doing this isn't implemented yet (PUT without FROM)");
 	      return;
-	      // We need to copy these from the declare...
-	      // LEXLIB_print_execute(ptr,1);
 	    }
 	}
       else
 	{
 	  // We should be ok...
-	  LEXLIB_print_execute (ptr, 1);
+	  LEXLIB_print_execute_g (ptr, 1,bind,empty_genbind('o'));
 	}
       printc ("/* END OF FAKE PUT - USING EXECUTE */");
       return;
     }
 
   printc ("{ /*ins1 */\n");
-  n = LEXLIB_print_bind_definition ('i');
-  LEXLIB_print_bind_set_value ('i');
-  print_conversions ('i');
+  n = LEXLIB_print_bind_definition_g (bind);
+  LEXLIB_print_bind_set_value_g (bind);
+  print_conversions_g (bind);
   printc ("internal_recopy_%s_i_Dir();", cname);
   A4GL_save_sql ("PUT %s", cname);
 
@@ -691,10 +579,8 @@ LEXLIB_print_prepare (char *xstmt, char *sqlvar)
  *   - 3 :         has INTO & USING
  */
 void
-LEXLIB_print_execute (char *stmt, int using)
+LEXLIB_print_execute_g (char *stmt, int using, t_binding_comp_list* using_bind, t_binding_comp_list* into_bind)
 {
-  int ni;
-  int no;
 
   if (using == 0)
     {
@@ -707,20 +593,19 @@ LEXLIB_print_execute (char *stmt, int using)
   if (using == 1)
     {
       int a;
-      printc ("{ /* EXECUTE */\n");
+      printc ("{ /* EXECUTE 1 */\n");
 
-      ni = LEXLIB_print_bind_definition ('i');
-      LEXLIB_print_bind_set_value ('i');
-      print_conversions ('i');
+      LEXLIB_print_bind_definition_g (using_bind);
+      LEXLIB_print_bind_set_value_g (using_bind);
+      print_conversions_g (using_bind);
 
       A4GL_save_sql ("EXECUTE %s USING ...", A4GL_strip_quotes (stmt));
       set_suppress_lines ();
       printc ("\nEXEC SQL EXECUTE %s USING \n", A4GL_strip_quotes (stmt));
-      for (a = 0; a < ni; a++)
+      for (a = 0; a < using_bind->nbind; a++)
 	{
-	  if (a)
-	    printc (",");
 
+	  if (a) printc (",");
 
 	  if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 	    {
@@ -753,16 +638,15 @@ LEXLIB_print_execute (char *stmt, int using)
   if (using == 2)
     {
       int a;
-      printc ("{ /* EXECUTE */\n");
-      no = LEXLIB_print_bind_definition ('o');
-      LEXLIB_print_bind_set_value ('o');
+      printc ("{ /* EXECUTE 2 */\n");
+      LEXLIB_print_bind_definition_g (into_bind);
+      LEXLIB_print_bind_set_value_g (into_bind);
       set_suppress_lines ();
       A4GL_save_sql ("EXECUTE %s INTO ...", A4GL_strip_quotes (stmt));
       printc ("\nEXEC SQL EXECUTE %s INTO \n", A4GL_strip_quotes (stmt));
-      for (a = 0; a < no; a++)
+      for (a = 0; a < into_bind->nbind; a++)
 	{
-	  if (a)
-	    printc (",");
+	  if (a) printc (",");
 	  if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 	    {
 	      printc (":_vo_%d\n", a);
@@ -783,7 +667,7 @@ LEXLIB_print_execute (char *stmt, int using)
 
       printc (";");
       print_copy_status ();
-      print_conversions ('o');
+      print_conversions_g (into_bind);
       printc ("}\n");
       clr_suppress_lines ();
     }
@@ -793,14 +677,14 @@ LEXLIB_print_execute (char *stmt, int using)
     {
       int a;
       set_suppress_lines ();
-      printc ("{ /* EXECUTE */\n");
-      ni = LEXLIB_print_bind_definition ('i');
-      no = LEXLIB_print_bind_definition ('o');
+      printc ("{ /* EXECUTE 3 */\n");
+      LEXLIB_print_bind_definition_g (using_bind);
+      LEXLIB_print_bind_definition_g (into_bind);
 
-      LEXLIB_print_bind_set_value ('o');
-      LEXLIB_print_bind_set_value ('i');
+      LEXLIB_print_bind_set_value_g (into_bind);
+      LEXLIB_print_bind_set_value_g (using_bind);
 
-      print_conversions ('i');
+      print_conversions_g (using_bind);
       set_suppress_lines ();
 
       A4GL_save_sql ("EXECUTE %s INTO ... USING ...",
@@ -808,7 +692,7 @@ LEXLIB_print_execute (char *stmt, int using)
       printc ("\nEXEC SQL EXECUTE %s ", A4GL_strip_quotes (stmt));
 
       printc (" INTO ");
-      for (a = 0; a < no; a++)
+      for (a = 0; a < into_bind->nbind ; a++)
 	{
 	  if (a)
 	    printc (",");
@@ -832,7 +716,7 @@ LEXLIB_print_execute (char *stmt, int using)
 
       printc (" USING ");
 
-      for (a = 0; a < ni; a++)
+      for (a = 0; a < using_bind->nbind; a++)
 	{
 	  if (a)
 	    printc (",");
@@ -861,7 +745,7 @@ LEXLIB_print_execute (char *stmt, int using)
       printc (";");
       clr_suppress_lines ();
       print_copy_status ();
-      print_conversions ('o');
+      print_conversions_g (into_bind);
       printc ("}\n");
     }
 
@@ -1009,7 +893,7 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
  * @param using The using expression list.
  */
 void
-LEXLIB_print_open_cursor (char *xcname, int has_using)
+LEXLIB_print_open_cursor_g (char *xcname, t_binding_comp_list *using_bind)
 {
   //int n;
   //int a;
@@ -1043,16 +927,15 @@ LEXLIB_print_open_cursor (char *xcname, int has_using)
       printc ("\nEXEC SQL CLOSE  %s; /* AUTOCLOSE */\n", cname);
     }
 
-  if (has_using)
+  if (using_bind && using_bind->bind)
     {
       int a;
       int ni;
       printc ("internal_recopy_%s_i_Dir();", cname);
       printc ("{ /* OPEN */\n");
-
-      ni = LEXLIB_print_bind_definition ('i');
-      LEXLIB_print_bind_set_value ('i');
-      print_conversions ('i');
+      ni = LEXLIB_print_bind_definition_g (using_bind);
+      LEXLIB_print_bind_set_value_g (using_bind);
+      print_conversions_g (using_bind);
 
       A4GL_save_sql ("OPEN %s USING ...", cname);
       printc ("\nEXEC SQL OPEN %s USING \n", cname);
@@ -1070,7 +953,7 @@ LEXLIB_print_open_cursor (char *xcname, int has_using)
     {
       printc ("internal_recopy_%s_i_Dir();", cname);
       A4GL_save_sql ("OPEN '%s'", cname);
-      printc ("\nEXEC SQL OPEN  %s; /* No using */\n", cname);
+      printc ("\nEXEC SQL OPEN  %s;\n", cname);
     }
 
 
@@ -1123,7 +1006,7 @@ LEXLIB_print_sql_commit (int t)
  * @param into The into variable list, taht includes:
  */
 void
-LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
+LEXLIB_print_fetch_3_g (struct s_fetch *fp, t_binding_comp_list *bind)
 {
   //int fp1 = 0;
   //int fp2 = 0;
@@ -1136,76 +1019,15 @@ LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
   struct expr_str *e;
   char bufffp[200];
   e = fp->fp->fetch_expr;
-  sscanf (into, "%d,", &no);
+
+  no=bind->nbind;
+
   printc ("{");
   set_suppress_lines ();
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;");
   printc ("int _fp;");
   printc ("\nEXEC SQL END DECLARE SECTION;");
   clr_suppress_lines ();
-
-
-
-#ifdef OBSOLETE
-  if (strstr (ftp, "pop_long") == 0)
-    {
-      char *ptr;
-      char *ptr2;
-      char sbuff[256];
-      strcpy (sbuff, ftp);
-      ptr = strchr (sbuff, ',');
-      if (ptr == 0)
-	{
-	  a4gl_yyerror ("Internal Error FETCH1");
-	  return;
-	}
-      *ptr = 0;
-      strcpy (cname, sbuff);
-      ptr++;
-
-      ptr2 = strchr (ptr, ',');
-      if (ptr == 0)
-	{
-	  a4gl_yyerror ("Internal Error FETCH2");
-	  return;
-	}
-      *ptr2 = 0;
-      fp1 = atoi (ptr);
-      ptr2++;
-      fp2 = atoi (ptr2);
-      printc ("_fp= %d;\n", fp2);
-    }
-  else
-    {
-      char *ptr;
-      char *ptr2;
-      char sbuff[256];
-      strcpy (sbuff, ftp);
-      ptr = strchr (sbuff, ',');
-      if (ptr == 0)
-	{
-	  a4gl_yyerror ("Internal Error FETCH3");
-	  return;
-	}
-      *ptr = 0;
-      strcpy (cname, sbuff);
-      ptr++;
-      ptr2 = strchr (ptr, ',');
-      if (ptr == 0)
-	{
-	  a4gl_yyerror ("Internal Error FETCH4");
-	  return;
-	}
-      *ptr2 = 0;
-      fp1 = atoi (ptr);
-      poped = 1;
-      printc ("_fp=A4GL_pop_long();");
-    }
-
-
-  strcpy (buff, "EMPTY");
-#endif
-
 
 
   strcpy (sqcname, A4GL_strip_quotes (fp->cname));
@@ -1285,9 +1107,9 @@ LEXLIB_print_fetch_3 (struct s_fetch *fp, char *into)
   A4GL_save_sql (buff, 0);
 
   print_copy_status ();
-  if (strcmp (into, "0,0") != 0)
+  if (bind->nbind) 
     {
-      print_conversions ('o');
+      print_conversions_g (bind);
     }
   printc ("internal_recopy_%s_o_Dir();", sqcname);
   printc ("}");
@@ -1496,12 +1318,12 @@ LEXLIB_print_init_conn (char *db)
  * @param s A string with the complete SQL select statement text.
  */
 void
-LEXLIB_print_do_select (char *s, int converted)
+LEXLIB_print_do_select (char *s, int converted,t_binding_comp_list *bind)
 {
 //int no;
   A4GL_save_sql (s, 0);
   set_suppress_lines ();
-  if (last_no == 0 && A4GLSQLCV_check_requirement ("NO_SELECT_WITHOUT_INTO"))
+  if (bind->nbind == 0 && A4GLSQLCV_check_requirement ("NO_SELECT_WITHOUT_INTO"))
     {
       a4gl_yyerror
 	("You cannot use a SELECT without an INTO with the target database");
@@ -1510,7 +1332,7 @@ LEXLIB_print_do_select (char *s, int converted)
   printc ("\nEXEC SQL %s;\n/* do_select */", s);
   clr_suppress_lines ();
   print_copy_status ();
-  print_conversions ('o');
+  print_conversions_g (bind);
   printc ("}\n");
 }
 
@@ -1562,7 +1384,7 @@ LEXLIB_print_flush_cursor (char *s)
  *   - 1 : The cursor is with scroll
  */
 void
-LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
+LEXLIB_print_declare_g (char *a1, char *a2, char *a3, int h1, int h2,t_binding_comp_list *inbind, t_binding_comp_list *outbind)
 {
   char buff[256];
   int intprflg = 0;
@@ -1720,12 +1542,10 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   if (a2[0] == '"')
     {
       printc ("/* ... */");
-      start_bind ('i', 0);
-      start_bind ('o', 0);
-      last_ni = 0;
-      last_no = 0;
+      //start_bind ('i', 0);
+      //start_bind ('o', 0);
       printc ("/* .2. */");
-      print_conversions ('0');
+      print_conversions_g (outbind);
     }
 
 
@@ -1782,7 +1602,7 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   print_copy_status ();
 
 
-  if (last_no && A4GLSQLCV_check_requirement ("NO_DECLARE_INTO"))
+  if (outbind->nbind && A4GLSQLCV_check_requirement ("NO_DECLARE_INTO"))
     {
       a4gl_yyerror
 	("You cannot use an INTO with a declare with the target database");
@@ -1794,8 +1614,8 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 
 
 
-  printh ("static int acli_ni_%s=%d;\n", cname3, last_ni);
-  printh ("static int acli_no_%s=%d;\n", cname3, last_no);
+  printh ("static int acli_ni_%s=%d;\n", cname3, inbind->nbind); // USE
+  printh ("static int acli_no_%s=%d;\n", cname3, outbind->nbind); // USE
   printh ("static struct BINDING *acli_bi_%s=0;\n", cname3);
   printh ("static struct BINDING *acli_bo_%s=0;\n", cname3);
   printh ("static struct BINDING *acli_nbi_%s=0;\n", cname3);
@@ -1810,7 +1630,9 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   printh ("ibind=acli_bi_%s;\n", cname3);
   printh ("native_binding_i_ind=acli_nbii_%s;\n", cname3);
   printh ("native_binding_i=acli_nbi_%s;\n", cname3);
-  print_conversions ('I');
+  inbind->type='I';
+  print_conversions_g (inbind);
+  inbind->type='i';
 
   printh ("}\n");
 
@@ -1821,33 +1643,31 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   printh ("obind=acli_bo_%s;\n", cname3);
   printh ("native_binding_o=acli_nbo_%s;\n", cname3);
   printh ("native_binding_o_ind=acli_nboi_%s;\n", cname3);
-  print_conversions ('O');
+
+
+
+  outbind->type='O';
+  print_conversions_g (outbind);
+  outbind->type='o';
+  
+  
+  
   printh ("}\n");
   printh
     ("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *nii,struct BINDING *noi) {\n",
      cname3);
-  printh ("acli_bi_%s  =bind_recopy(acli_bi_%s,  %d,i);\n", cname3,
-	  cname3, last_ni);
-  printh ("acli_bo_%s  =bind_recopy(acli_bo_%s,  %d,o);\n", cname3,
-	  cname3, last_no);
-  printh ("acli_nbi_%s =bind_recopy(acli_nbi_%s, %d,ni);\n", cname3,
-	  cname3, last_ni);
-  printh ("acli_nbo_%s =bind_recopy(acli_nbo_%s, %d,no);\n", cname3,
-	  cname3, last_no);
-  printh ("acli_nbii_%s=bind_recopy(acli_nbii_%s,%d,nii);\n", cname3,
-	  cname3, last_ni);
-  printh ("acli_nboi_%s=bind_recopy(acli_nboi_%s,%d,noi);\n", cname3,
-	  cname3, last_no);
+  printh ("acli_bi_%s  =bind_recopy(acli_bi_%s,  %d,i);\n", cname3, cname3, inbind->nbind); // USE
+  printh ("acli_bo_%s  =bind_recopy(acli_bo_%s,  %d,o);\n", cname3, cname3, outbind->nbind); // USE
+  printh ("acli_nbi_%s =bind_recopy(acli_nbi_%s, %d,ni);\n", cname3, cname3, inbind->nbind); // USE
+  printh ("acli_nbo_%s =bind_recopy(acli_nbo_%s, %d,no);\n", cname3, cname3, outbind->nbind); // USE
+  printh ("acli_nbii_%s=bind_recopy(acli_nbii_%s,%d,nii);\n", cname3, cname3, inbind->nbind); // USE
+  printh ("acli_nboi_%s=bind_recopy(acli_nboi_%s,%d,noi);\n", cname3, cname3, outbind->nbind); // USE
   printh ("}\n");
 
   intprflg = 0;
-  if (last_ni)
-    intprflg++;
-  if (last_no)
-    intprflg += 2;
-  printc ("/* intprflg=%d last_ni=%d last_no=%d */\n", intprflg, last_ni,
-	  last_no);
 
+  if (inbind->nbind) intprflg++; // USE
+  if (outbind->nbind) intprflg += 2; // USE
 
   switch (intprflg)
     {
@@ -1911,42 +1731,41 @@ LEXLIB_print_declare (char *a1, char *a2, char *a3, int h1, int h2)
  * @return A string with the C implementation.
  */
 char *
-LEXLIB_print_curr_spec (int type, char *s)
+LEXLIB_print_curr_spec_g (int type, char *s,t_binding_comp_list* inbind,t_binding_comp_list* outbind)
 {
   static char buff[3000];
   int bt;
   int ni;
   int no;
-//extern int ibindcnt;
-//extern int obindcnt;
   strcpy (buff, "");
   if (type == 1)
     {
       bt = 0;
-      ni = ibindcnt;
-      no = obindcnt;
-      last_ni = ni;
-      last_no = no;
-      if (obindcnt)
+      ni = inbind->nbind;
+      no = outbind->nbind;
+
+
+      if (outbind->nbind)
 	{
 	  bt++;
 	}
-      if (ibindcnt)
+      if (inbind->nbind)
 	{
 	  bt += 2;
 	}
+
       if (bt || 1)
 	printc ("{ /* cs1 */");
       if (bt & 1)
-	LEXLIB_print_bind_definition ('o');
+	LEXLIB_print_bind_definition_g (outbind);
       if (bt & 2)
-	LEXLIB_print_bind_definition ('i');
+	LEXLIB_print_bind_definition_g (inbind);
       if (bt & 1)
-	LEXLIB_print_bind_set_value ('o');
+	LEXLIB_print_bind_set_value_g (outbind);
       if (bt & 2)
-	LEXLIB_print_bind_set_value ('i');
+	LEXLIB_print_bind_set_value_g (inbind);
       if (bt)
-	print_conversions ('i');
+	print_conversions_g (inbind);
       sprintf (buff, "%s", s);
     }
 
@@ -1974,19 +1793,18 @@ LEXLIB_print_curr_spec (int type, char *s)
  * @return A string with the C implementation
  */
 char *
-LEXLIB_print_select_all (char *buff, int converted)
+LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind,t_binding_comp_list* outbind)
 {
   int ni, no;
   static char *b2;
   printc ("{ /* print_select_all */\n");
-  ni = LEXLIB_print_bind_definition ('i');
-  last_ni = ni;
-  no = LEXLIB_print_bind_definition ('o');
-  last_no = no;
-  printc ("/* SETTING last_no=%d */", last_no);
-  LEXLIB_print_bind_set_value ('i');
-  LEXLIB_print_bind_set_value ('o');
-  print_conversions ('i');
+  ni = LEXLIB_print_bind_definition_g (inbind);
+
+  no = LEXLIB_print_bind_definition_g (outbind);
+
+  LEXLIB_print_bind_set_value_g (inbind);
+  LEXLIB_print_bind_set_value_g (outbind);
+  print_conversions_g (inbind);
   b2 = strdup (buff);
   printc (" /* end of print_select_all */");
   return b2;
@@ -2027,7 +1845,7 @@ conv_owner (char *s)
  * @param sql The SQL that originate the unload data.
  */
 void
-LEXLIB_print_unload (char *file, char *delim, char *sql)
+LEXLIB_print_unload_g (char *file, char *delim, char *sql, t_binding_comp_list* inbind)
 {
   char filename[256];
   char delim_s[256];
@@ -2083,9 +1901,9 @@ LEXLIB_print_unload (char *file, char *delim, char *sql)
     {
       int ni;
       printc ("{ /* un1 */");
-      ni = LEXLIB_print_bind_definition ('i');
-      LEXLIB_print_bind_set_value ('i');
-      print_conversions ('i');
+      ni = LEXLIB_print_bind_definition_g (inbind);
+      LEXLIB_print_bind_set_value_g (inbind);
+      print_conversions_g (inbind);
       sprintf (filename, ":_unlfname");
       printc ("{ /* un2 */");
       set_suppress_lines ();
@@ -2120,8 +1938,8 @@ LEXLIB_print_unload (char *file, char *delim, char *sql)
       char *ptr;
       int isvar = -1;
       printc ("{ /* un3 */");
-      ni = LEXLIB_print_bind_definition ('i');
-      LEXLIB_print_bind_set_value ('i');
+      ni = LEXLIB_print_bind_definition_g (inbind);
+      LEXLIB_print_bind_set_value_g (inbind);
       ptr = strdup (sql);
       for (a = 0; a < strlen (ptr); a++)
 	{
@@ -2191,7 +2009,7 @@ LEXLIB_print_unload (char *file, char *delim, char *sql)
 	  if (ptr[a] == '\n')
 	    ptr[a] = ' ';
 	}
-      print_conversions ('i');
+      print_conversions_g (inbind);
 
 
       if (strncmp (sql, "SELECT ", 7) == 0)
@@ -2424,22 +2242,20 @@ print_copy_status ()
  * @param
  */
 void
-LEXLIB_print_sql_block_cmd (char *s)
+LEXLIB_print_sql_block_cmd_g (char *s,t_binding_comp_list *inbind,t_binding_comp_list *outbind)
 {
   int ni;
   int no;
   printc ("{ /* sql_block_cmd */");
-  ni = LEXLIB_print_bind_definition ('i');
-  last_ni = ni;
-  no = LEXLIB_print_bind_definition ('o');
-  last_no = no;
-  LEXLIB_print_bind_set_value ('i');
-  LEXLIB_print_bind_set_value ('o');
-  print_conversions ('i');
+  ni = LEXLIB_print_bind_definition_g (inbind);
+  no = LEXLIB_print_bind_definition_g (outbind);
+  LEXLIB_print_bind_set_value_g (inbind);
+  LEXLIB_print_bind_set_value_g (outbind);
+  print_conversions_g (inbind);
   A4GL_save_sql (s, 0);
   printc ("\nEXEC SQL %s;", s);
   print_copy_status ();
-  print_conversions ('o');
+  print_conversions_g (outbind);
   printc ("}");
 }
 
@@ -2582,12 +2398,9 @@ nm (int n)
 
 
 void
-print_report_table (char *repname, char type, int c,char *asc_desc)
+print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_comp_list *funcbind,t_binding_comp_list *orderbind)
 {
 
-  dll_import struct binding_comp *fbind;
-  dll_import struct binding_comp *ibind;
-  dll_import struct binding_comp *obind;
 
 
   static char iname[256];
@@ -2601,6 +2414,10 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
   int converted = 0;
   int l_dt;
   int l_sz;
+
+  t_binding_comp_list *inbind;
+  t_binding_comp_list *outbind;
+
   if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
     {
       char b[64];
@@ -2617,15 +2434,15 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 
   if (type == 'R')
     {
-      /* print_execute needs an ibind - we have an fbind - so we need */
+	t_binding_comp_list l;
       /* to copy it across... */
       //extern int ibindcnt;
-      extern long a_ibind;
+      //extern long a_ibind;
       //extern int fbindcnt;
-      ibindcnt = fbindcnt;
-      ibind = ensure_bind (&a_ibind, ibindcnt, ibind);
-      memcpy (ibind, fbind, sizeof (struct binding_comp) * c + 1);
-
+      //ibindcnt = fbindcnt;
+      //ibind = ensure_bind (&a_ibind, ibindcnt, ibind);
+      //memcpy (ibind, fbind, sizeof (struct binding_comp) * c + 1);
+      
       if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
 	{
 	  sprintf (iname, "acl_p%s", &reptab[8]);
@@ -2636,8 +2453,14 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 	  sprintf (iname, "acl_p%s", reptab);
 	  iname[18] = 0;
 	}
-      LEXLIB_print_execute (iname, 1);
+
+      /* print_execute needs an ibind - we have an fbind - so we need */
+	memcpy(&l,funcbind,sizeof(l));
+	l.type='i';
+        LEXLIB_print_execute_g (iname, 1,&l,empty_genbind('o'));
     }
+
+
   if (type == 'E')
     {
       printc ("A4GL_free_duplicate_binding(obind,%d);", fbindcnt);
@@ -2647,35 +2470,32 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 
   if (type == 'F')
     {
-      extern long a_obind;
+     t_binding_comp_list l;
       //extern int fbindcnt;
       //char buff[256];
-      char buff2[256];
+      //char buff2[256];
       struct s_fetch f;
-      obindcnt = fbindcnt;
-      obind = ensure_bind (&a_obind, obindcnt, obind);
-      memcpy (obind, fbind, sizeof (struct binding_comp) * c + 1);
+	memcpy(&l,funcbind,sizeof(l));
+	l.type='o';
+
       printc ("{ /* Type F */");
       printc ("struct BINDING *obind;");
-      printc ("obind=A4GL_duplicate_binding(_rbind,%d);", fbindcnt);
+      printc ("obind=A4GL_duplicate_binding(_rbind,%d);", funcbind->nbind);
       printc ("        while (1) {");
       printc ("{ /* Type F 2 */");
-      print_fetch_1 ();
+      printc ("{");
 
-      //print_fetch_2();
-      make_sql_bind (0, "o");
-
+	make_sql_bind_g (&l);
 
       printc ("/* MJAMJA - printing obind */");
+
 
       strcpy (f.cname, cname);
       f.fp = malloc (sizeof (struct s_fetch_place));
       f.fp->ab_rel = FETCH_RELATIVE;
       f.fp->fetch_expr = A4GL_new_literal_long_long (1);
-
-      //sprintf(buff,"\"%s\",FETCH_RELATIVE,1",cname);
-      sprintf (buff2, "%d,_rbind", c);
-      print_fetch_3 (&f, buff2);
+      //sprintf (buff2, "%d,_rbind", c);
+      print_fetch_3_g (&f,&l);
       printc ("if (sqlca.sqlcode!=0) break;");
       printc ("A4GL_push_params (obind, %d);", c);
 
@@ -2683,10 +2503,8 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 
   if (type == 'I')
     {
-      extern int current_ordbindcnt;
-      //extern int ordbindcnt;
-      //extern int fbindcnt;
-      extern struct binding_comp *ordbind;
+      //extern int current_ordbindcnt;
+      //extern struct binding_comp *ordbind;
       char sql[1024];
       int a;
       int b;
@@ -2707,15 +2525,15 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 	}
 
       sprintf (sql, "SELECT * FROM %s ORDER BY ", reptab);
-      for (a = 0; a < current_ordbindcnt; a++)
+      for (a = 0; a < orderbind->nbind ; a++)
 	{
 	  int found = 0;
 	  if (a)
 	    strcat (sql, ",");
 
-	  for (b = 0; b < fbindcnt; b++)
+	  for (b = 0; b < funcbind->nbind; b++)
 	    {
-	      if (strcmp (ordbind[a].varname, fbind[b].varname) == 0)
+	      if (strcmp (orderbind->bind[a].varname, funcbind->bind[b].varname) == 0)
 		{
 		  char tmpbuff[256];
 		  if (asc_desc[a]=='D') {
@@ -2737,11 +2555,13 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 	}
 
 
-      start_bind ('i', 0);
-      start_bind ('o', 0);
-      p = print_select_all (sql, 0);
-      print_declare ("0", p, cname, 0, 0);
-      LEXLIB_print_open_cursor (cname, 0);
+      //start_bind ('i', 0);
+      //start_bind ('o', 0);
+      inbind=empty_genbind('i');
+      outbind=empty_genbind('o');
+      p = print_select_all_g (sql, 0,inbind,outbind);
+      print_declare_g ("0", p, cname, 0, 0,inbind,outbind);
+      LEXLIB_print_open_cursor_g (cname, inbind);
 
 
     }
@@ -2762,9 +2582,9 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 	}
 
       print_close ('C', cname);
-      start_bind ('i', 0);
       sprintf (buff, "DROP TABLE %s", reptab);
-      print_exec_sql_bound (buff, 0);
+      inbind=empty_genbind('i');
+      print_exec_sql_bound_g (buff, 0,inbind);
     }
 
   if (type == 'M')
@@ -2793,8 +2613,8 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 	    }
 	  sprintf (tmpbuff, "c%d ", a);
 	  strcat (buff, tmpbuff);
-	  l_dt = fbind[a].dtype & 0xffff;
-	  l_sz = DECODE_SIZE (fbind[a].dtype);
+	  l_dt = funcbind->bind[a].dtype & 0xffff;
+	  l_sz = DECODE_SIZE (funcbind->bind[a].dtype);
 
 	  strcpy (dtype_char, nm (l_dt));
 
@@ -2819,17 +2639,18 @@ print_report_table (char *repname, char type, int c,char *asc_desc)
 	}
       strcat (ins_str, ")\"");
 
-      start_bind ('i', 0);
+      //start_bind ('i', 0);
       set_suppress_lines ();
 
       xptr = A4GLSQLCV_check_sql (buff, &converted);
-      print_exec_sql_bound (xptr, converted);
+	inbind=empty_genbind('i');
+      print_exec_sql_bound_g (xptr, converted,inbind);
 
       clr_suppress_lines ();
 
       sprintf (buff, "DELETE FROM %s", reptab);
       xptr = A4GLSQLCV_check_sql (buff, &converted);
-      print_exec_sql_bound (xptr, converted);
+      print_exec_sql_bound_g (xptr, converted,inbind );
 
 
       if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
@@ -2857,13 +2678,13 @@ LEXLIB_A4GL_add_put_string (char *s)
 }
 
 
-
 void
 print_exists_subquery (int i, struct expr_exists_sq *e_expr)
 {
   char buff[256];
   char cname[256];
   static int ncnt = 0;
+  t_binding_comp_list l;
 
   sprintf (cname, "aclfgl_cE_%d", ncnt++);
 
@@ -2873,10 +2694,16 @@ print_exists_subquery (int i, struct expr_exists_sq *e_expr)
   printc ("short _npi;");
   printc ("char _np[256];");
   printc ("EXEC SQL END DECLARE SECTION;");
+	l.type='i';
+	l.bind=e_expr->ibind;
+	l.nbind=e_expr->nibind;
+	l.abind=e_expr->nibind;
+	l.str=0;
 
-  print_bind_dir_definition ('i', e_expr->ibind, e_expr->nibind);
-  print_bind_dir_set_value ('i', e_expr->ibind, e_expr->nibind);
-  printc ("%s", buff_in);
+  print_bind_dir_definition_g (&l);
+  LEXLIB_print_bind_set_value_g (&l);
+
+  printc ("%s", l.str);
   if (esql_type () == E_DIALECT_INGRES)
     {
       printc ("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;", cname,
@@ -2914,12 +2741,9 @@ print_exists_subquery (int i, struct expr_exists_sq *e_expr)
 void
 print_in_subquery (int i, struct expr_in_sq *in_expr)
 {
-//char buff[256];
   char cname[256];
-//char *buffer;
-//int n;
   static int ncnt = 0;
-//void *ptr;
+  t_binding_comp_list l;
 
   sprintf (cname, "aclfgl_cI_%d", ncnt++);
   LEXLIB_print_expr (in_expr->expr);
@@ -2930,9 +2754,18 @@ print_in_subquery (int i, struct expr_in_sq *in_expr)
   printc ("char _np[256];");
   printc ("EXEC SQL END DECLARE SECTION;");
 
-  print_bind_dir_definition ('i', in_expr->ibind, in_expr->nibind);
-  print_bind_dir_set_value ('i', in_expr->ibind, in_expr->nibind);
-  printc ("%s", buff_in);
+	l.type='i';
+	l.bind=in_expr->ibind;
+	l.nbind=in_expr->nibind;
+	l.abind=in_expr->nibind;
+	l.str=0;
+
+  print_bind_dir_definition_g (&l);
+  LEXLIB_print_bind_set_value_g (&l);
+
+
+
+  printc ("%s", l.str);
 
   if (esql_type () == E_DIALECT_INGRES)
     {

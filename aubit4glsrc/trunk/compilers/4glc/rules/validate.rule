@@ -5,7 +5,7 @@ VALIDATE init_bind_var_list LIKE {
 	add_feature("VALIDATE_LIKE");
 	clr_validate_list();
 } validate_tab_list  {
-	print_validate();
+	print_validate_g(copy_togenbind('N'),$<str>5);
 }
 ;
 
@@ -20,7 +20,7 @@ validate_tab : table_name KW_DOT column_name {
 	}
 	| table_name KW_DOT KW_MULTIPLY {
 		sprintf($<str>$,"%s.*",$<str>1);
-		push_validate($<str>$);
+	push_validate($<str>$);
 	}
 ;
 

@@ -64,8 +64,8 @@ print_open_session($<str>2,$<str>4,$<str>5);
 
 ;
 open_cursor_cmd :
-	OPEN fetch_cursor_name 					{ print_open_cursor($<str>2,0); add_feature("OPEN_CURSOR");}
-	| OPEN fetch_cursor_name KW_USING ibind_var_list 	{ print_open_cursor($<str>2,1); add_feature("OPEN_CURSOR");}
+	OPEN fetch_cursor_name 					{ print_open_cursor_g($<str>2,empty_genbind('i')); add_feature("OPEN_CURSOR");}
+	| OPEN fetch_cursor_name KW_USING ibind_var_list 	{ print_open_cursor_g($<str>2,copy_togenbind('i')); add_feature("OPEN_CURSOR");}
 ;
 
 

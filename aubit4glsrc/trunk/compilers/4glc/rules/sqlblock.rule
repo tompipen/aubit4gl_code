@@ -5,7 +5,9 @@ sql_block_cmd : KW_SQL {
 		start_bind('o',0);
 	} sql_block END_SQL {
 			sql_mode=0;
-			print_sql_block_cmd($<sql_string>3);
+			print_sql_block_cmd_g($<sql_string>3,copy_togenbind('i'), copy_togenbind('o') );
+			start_bind('i',0);
+			start_bind('o',0);
 	}
 ;
 

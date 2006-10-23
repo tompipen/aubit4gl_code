@@ -88,8 +88,7 @@ module_code : code_cmd   ;
 
 op_code : | code_cmd   ;
 
-module_define_section : define_multiple 
-;
+module_define_section : define_set ;
 
 
 ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL_FUNCTION
@@ -127,7 +126,7 @@ func_def	: ldeffunction {
   			printDeclareFunctionStack($<str>3);
   			A4GL_lex_printcomment("/*end of define section */\n");
   			print_variables();
-  			c=print_param('f',$<str>3);
+  			c=print_param_g('f',$<str>3, copy_togenbind('F'));
   			printPushFunction();
   			print_func_args(c);
 			 lastlineno=yylineno;} op_code commands end_func_command

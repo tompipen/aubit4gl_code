@@ -285,6 +285,18 @@ struct s_report
 	   uppercase-lowercase! So i renamed it to "binding_comp"
 	   used in compile_c.c compile_perl.c mod.c */
 
+
+#ifndef BINDING_COMP_LIST
+
+struct binding_comp_list {
+	struct binding_comp *bind ;
+	int nbind;
+	int abind;
+	char type;
+	char *str;
+};
+typedef struct binding_comp_list t_binding_comp_list;
+
 struct binding_comp
 {
   char varname[132];
@@ -292,6 +304,18 @@ struct binding_comp
   int start_char_subscript;
   int end_char_subscript;
 };
+
+struct  binding_comp_list *copy_togenbind(char i);
+#define BINDING_COMP_LIST
+#endif
+
+
+struct s_cur_Def {
+        t_binding_comp_list *inbind;
+        t_binding_comp_list *outbind;
+        char *str;
+} ;
+
 
 
 struct s_constr_buff
@@ -302,6 +326,16 @@ struct s_constr_buff
 
     /* ------------------------ end from a4gl_4glc_compiledefs.h ------------------- */
 
+
+void expand_ordbind(void );
+void expand_fbind(void );
+void expand_bind_g (t_binding_comp_list *l);
+struct  binding_comp_list *ensure_binding_comp_list (struct  binding_comp_list *l) ;
+struct  binding_comp_list *ensure_binding_comp_list_type (struct  binding_comp_list *l,char type) ;
+void llex_add_ibind(int dtype,char *var);
+char *get_debug_filename(void);
+void ensure_bind_g (t_binding_comp_list *binding,int need);
+int print_linked_cmd (int type, char *var);
 
 //void expand_bind (struct binding_comp *bind, int btype, int cnt);
 char *get_var_name (int z);
@@ -502,10 +536,10 @@ void A4GL_CV_print_exec_sql(char *s) ;
 
 void A4GL_CV_print_exec_sql_bound(char *s) ;
 
-void A4GL_CV_print_do_select(char *s) ;
+void A4GL_CV_print_do_select(char *s,t_binding_comp_list *outbind) ;
 
 
-char *A4GL_CV_print_select_all(char *s) ;
+char *A4GL_CV_print_select_all(char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind) ;
 //char *A4GL_compiled_sqlpack(void);
 char *A4GL_decode_packtype(char *s);
 void A4GL_cursor_defined(char *s,char type) ;
@@ -548,6 +582,7 @@ int read_package_contents(FILE *f);
 int has_fbind(char *s) ;
 
 #define FORCE_UI_SIZE 256
+#define DEBUG_FILENAME_SIZE 256
 int A4GL_is_internal_class_function(char *classn,char *name);
 long
 get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, char *arr);

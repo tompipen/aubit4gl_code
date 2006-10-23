@@ -6,13 +6,10 @@
 
 
 fetch_statement:
-	FETCH { print_fetch_1(); } 
-  	fetch_part_f
-	opt_into_fetch_part
-    {
-      print_fetch_2();
-      print_fetch_3($<s_fetch>3,$<str>4);
-    }
+	FETCH fetch_part_f opt_into_fetch_part {
+      			print_fetch_2_g($<binding_comp_list>3);
+      			print_fetch_3_g($<s_fetch>2,$<binding_comp_list>3);
+    	}
 ;
 
 declare_cursor_name  :       ident_or_var_sql {sprintf($<str>$,"%s",$<str>1);doing_declare=1; A4GL_cursor_defined($<str>1,0); }
@@ -20,7 +17,6 @@ declare_cursor_name  :       ident_or_var_sql {sprintf($<str>$,"%s",$<str>1);doi
 
 fetch_part_f: 
 	fetch_place_fp  fetch_cursor_name {
-		/* sprintf($<str>$,"%s, %s",$<str>2,$<str>1); */
 		A4GL_cursor_fetch($<str>2,$<s_fetch_place>1);
 		ADDMAP("Fetch Cursor",$<str>2);
 		$<s_fetch>$=malloc(sizeof(struct s_fetch));
@@ -32,7 +28,6 @@ fetch_part_f:
 		fp=malloc(sizeof(struct s_fetch_place));
 		fp->ab_rel=FETCH_RELATIVE;
 		fp->fetch_expr=A4GL_new_literal_long_long(1);
-		/* sprintf($<str>$,"%s, %d, 1",$<str>1,FETCH_RELATIVE); */
 		A4GL_cursor_fetch($<str>1,fp);
 		ADDMAP("Fetch Cursor",$<str>1);
 		$<s_fetch>$=malloc(sizeof(struct s_fetch));
@@ -41,26 +36,28 @@ fetch_part_f:
 	}
 ;
 
-opt_into_fetch_part: { strcpy($<str>$,"0,0"); } | INTO { start_bind('o',0); }
-    obind_var_list 
-{
-	int no;
-	no=get_bind_cnt('o');
-	sprintf($<str>$,"%d,obind",no);
-}
+opt_into_fetch_part: { $<binding_comp_list>$=empty_genbind('o'); } | INTO { start_bind('o',0); } obind_var_list {
+						int no;
+						no=get_bind_cnt('o');
+						//sprintf($<str>$,"%d,obind",no);
+						$<binding_comp_list>$=copy_togenbind('o');
+						start_bind('o',0);
+			}
 ;
 
 opt_foreach_into_fetch_part: {
-A4GL_debug("no into\n");
-strcpy($<str>$,"0,0");
-} | 
+		A4GL_debug("no into\n");
+		$<binding_comp_list>$=empty_genbind('o');
+		} | 
 	INTO {
- A4GL_debug("FETCH INTO  ...");
-	/* start_bind('i',0,-1); */
-    start_bind('o',0);
-}
-        obind_var_list {
-}
+ 		A4GL_debug("FETCH INTO  ...");
+			/* start_bind('i',0,-1); */
+    		start_bind('o',0);
+		}
+        		obind_var_list {
+			$<binding_comp_list>$=copy_togenbind('o');
+						start_bind('o',0);
+		}
 ;
 
 fetch_place_fp : 
@@ -68,15 +65,12 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(1);
-
-		//sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);  
 		add_feature("FETCH_FIRST");
 		}
 	| KW_LAST {
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
-		//sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE); 
 		add_feature("FETCH_LAST");
 		}
 	| KW_NEXT
@@ -84,7 +78,6 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(1);
-		//sprintf($<str>$,"%d,1",FETCH_RELATIVE); 
 		add_feature("FETCH_NEXT");
 		}
 
@@ -93,7 +86,6 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
-		//sprintf($<str>$,"%d,-1",FETCH_RELATIVE); 
 		add_feature("FETCH_PREVIOUS");
 		}
 	| KW_PRIOR
@@ -101,7 +93,6 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
-		//sprintf($<str>$,"%d,-1",FETCH_RELATIVE); 
 		add_feature("FETCH_PREVIOUS");
 		}
 	| KW_CURRENT
@@ -109,7 +100,6 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(0);
-			//sprintf($<str>$,"%d,0",FETCH_RELATIVE); 
 		add_feature("FETCH_CURRENT");
 		}
 	| KW_RELATIVE fgl_expr_c
@@ -117,7 +107,6 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=$<ptr>2;
-		//sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE); 
 		add_feature("FETCH_RELATIVE");
 		}
 	| KW_ABSOLUTE fgl_expr_c
@@ -125,7 +114,6 @@ fetch_place_fp :
 		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
 		$<s_fetch_place>$->fetch_expr=$<ptr>2;
-			//sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE); 
 		add_feature("FETCH_ABSOLUTE");
 		}
 ;
@@ -178,7 +166,7 @@ flush_cmd : opt_use FLUSH fetch_cursor_name  {
 declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
 
-		print_declare("",$<sql_string>6,$<str>3,0,0);
+		print_declare_g("",$<curDef>6.str,$<str>3,0,0,$<curDef>6.inbind,$<curDef>6.outbind);
 
 		ADDMAP("Declare Cursor",$<str>3);
 		print_undo_use($<str>1);
@@ -188,7 +176,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specifica
 	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD KW_FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
 		add_feature("HOLD_CURSOR");
-		print_declare("",$<sql_string>7,$<str>3,2,0); 
+		print_declare_g("",$<curDef>7.str,$<str>3,2,0,$<curDef>7.inbind,$<curDef>7.outbind); 
 		ADDMAP("Declare Cursor",$<str>3);
 		print_undo_use($<str>1);
 		doing_declare=0;
@@ -197,7 +185,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specifica
         | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
 		add_feature("SCROLL_CURSOR");
-		print_declare("",$<sql_string>5,$<str>3,0,1); 
+		print_declare_g("",$<curDef>5.str,$<str>3,0,1,$<curDef>5.inbind,$<curDef>5.outbind); 
 		ADDMAP("Declare Cursor",$<str>3);
 		print_undo_use($<str>1);
 		doing_declare=0;
@@ -206,7 +194,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specifica
 		add_feature("CURSOR_SELECT");
 		add_feature("SCROLL_CURSOR");
 		add_feature("HOLD_CURSOR");
-		print_declare("",$<sql_string>7,$<str>3,2,1); 
+		print_declare_g("",$<curDef>7.str,$<str>3,2,1,$<curDef>7.inbind,$<curDef>7.outbind); 
 		ADDMAP("Declare Cursor",$<str>3);
 		print_undo_use($<str>1);
 		doing_declare=0;
@@ -215,10 +203,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specifica
  
 curs_forupdate : {strcpy($<str>$,"");} 
 		| FOR_UPDATE {
-			if (
-A4GLSQLCV_check_requirement("NO_FOR_UPDATE")
-|| A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")
-) {
+			if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) {
 				strcpy($<str>$,"");
 			} else {
 				strcpy($<str>$," FOR UPDATE"); 
@@ -226,10 +211,7 @@ A4GLSQLCV_check_requirement("NO_FOR_UPDATE")
 			add_feature("CURSOR_SELECT_FOR_UPDATE");
 		} 
 		| FOR_UPDATE_OF cur_update_list {
-			if (
-A4GLSQLCV_check_requirement("NO_FOR_UPDATE")
-||A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")
-) {
+			if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") ||A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) {
 				strcpy($<str>$,"");
 			} else {
 				sprintf($<str>$," FOR UPDATE OF %s",$<str>2); 
@@ -240,29 +222,40 @@ A4GLSQLCV_check_requirement("NO_FOR_UPDATE")
 
 cursor_specification_all_ss:
 	cursor_specification_sel_ss {
-		$<sql_string>$=$<sql_string>1;
+		memcpy(&$<curDef>$, &$<curDef>1,sizeof($<curDef>1));
 	}
 	| insert_statement_ss { 
 		A4GL_cursor_is_insert();
 		if (A4GLSQLCV_check_requirement("NO_INSERT_CURSOR")) {
 			a4gl_yyerror("Insert cursors are not supported for this rdbms");
 		}
-		$<sql_string>$=make_sql_string_and_free(acl_strdup(print_curr_spec(1,$<sql_string>1)),NULL);
+		$<curDef>$.inbind=copy_togenbind('i');
+		$<curDef>$.outbind=empty_genbind('o');
+		$<curDef>$.str=make_sql_string_and_free(acl_strdup(print_curr_spec_g(1,$<sql_string>1,$<curDef>$.inbind,$<curDef>$.outbind)),NULL);
+		start_bind('i',0);
+		start_bind('o',0);
 	}
 ;
 
 cursor_specification_sel_ss:
 	 stmt_id {
-		
 		start_bind('i',0);
 		start_bind('o',0);
-		$<sql_string>$=make_sql_string_and_free(acl_strdup(print_curr_spec(2,$<str>1)) ,NULL);
+                $<curDef>$.outbind=copy_togenbind('o');
+                $<curDef>$.inbind=copy_togenbind('i');
+		$<curDef>$.str=make_sql_string_and_free(acl_strdup(print_curr_spec_g(2,$<str>1,$<curDef>$.inbind,$<curDef>$.outbind)) ,NULL);
+		start_bind('i',0);
+		start_bind('o',0);
 	}
 	| select_statement_ss_str_converted  curs_forupdate { /* SQL HAS ALREADY BEEN CONVERTED */
 		 char *ptr;
 		A4GL_cursor_is_select();
 		ptr=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);
-	 	$<sql_string>$=acl_strdup(A4GL_CV_print_select_all(ptr)); free(ptr); 
+		$<curDef>$.outbind=copy_togenbind('o');
+		$<curDef>$.inbind=copy_togenbind('i');
+	 	$<curDef>$.str=acl_strdup(A4GL_CV_print_select_all(ptr,$<curDef>$.inbind, $<curDef>$.outbind)); free(ptr); 
+		start_bind('i',0);
+		start_bind('o',0);
 	}
 ;
 
@@ -288,14 +281,20 @@ fgl_sql_statement: delete_statement_position {
 	| fetch_statement { strcpy($<str>$,"Fetch"); A4GL_lex_printcomment("/*  fetch */\n"); }
 	| select_statement_ss_str_converted curs_forupdate { /* SQL HAS ALREADY BEEN CONVERTED */
 		char *ptr;
+		t_binding_comp_list *lo;
+		t_binding_comp_list *li;
+		lo=copy_togenbind('o');
+		li=copy_togenbind('i');
         	ptr=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);
- 		$<sql_string>$=acl_strdup(A4GL_CV_print_select_all(ptr)); free(ptr); 
+ 		$<sql_string>$=acl_strdup(A4GL_CV_print_select_all(ptr,li,lo)); free(ptr); 
 
         	if (strstr($<str>2,"FOR UPDATE")) {
                    PRINTF("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
         	}
-                A4GL_CV_print_do_select($<sql_string>$);
+                A4GL_CV_print_do_select($<sql_string>$,lo);
                 strcpy($<str>$,"select");
+		start_bind('i',0);
+		start_bind('o',0);
         }
 ;
 

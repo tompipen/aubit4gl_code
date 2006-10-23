@@ -10,7 +10,8 @@ put_cmd :
 		}
 		put_from
 		{
-		print_put($<str>2,$<sql_string>4);
+		print_put_g($<str>2,$<sql_string>4,copy_togenbind('i'));
+		start_bind('i',0);
 	}
 ;
 

@@ -24,6 +24,8 @@ extern int whenever_store_c;
 extern char *whenever_store_p;
 extern int ibindcnt;
 extern struct binding_comp *ibind;
+extern int nullbindcnt;
+extern struct binding_comp *nullbind;
 
 extern struct variable **list_local;
 extern int list_local_cnt;
@@ -136,14 +138,15 @@ A4GL_CV_print_exec_sql_bound (char *s)
     {
       ptr = s;
     }
-  print_exec_sql_bound (ptr, converted);
+  print_exec_sql_bound_g (ptr, converted,copy_togenbind('i'));
 }
 
 
 void
-A4GL_CV_print_do_select (char *s)
+A4GL_CV_print_do_select (char *s,t_binding_comp_list *l)
 {
-  print_do_select (s, 0);
+  print_do_select (s, 0,l);
+//copy_togenbind('o'));
 }
 
 
@@ -848,7 +851,7 @@ do_print_menu_block_end (int mn)
 
 
 char *
-A4GL_CV_print_select_all (char *s)
+A4GL_CV_print_select_all (char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind)
 {
   char *ptr;
   int converted = 0;
@@ -860,7 +863,7 @@ A4GL_CV_print_select_all (char *s)
     {
       ptr = s;
     }
-  return print_select_all (ptr, converted);
+  return print_select_all_g (ptr, converted,inbind,outbind);
 }
 
 
@@ -1257,8 +1260,8 @@ print_nullify (char type)
             }
 
         }
-
-      print_init (0);
+      expand_bind (&nullbind[0], 'N', nullbindcnt,0);
+      print_init_g (copy_togenbind('N'),0);
     }
   else
     {
@@ -1298,7 +1301,8 @@ int A4GL_is_class_static(char *s) {
 
 
 void print_init_explicit(void) {
-        print_init(1);
+	expand_bind (&nullbind[0], 'N', nullbindcnt,0);
+        print_init_g(copy_togenbind('N'), 1);
 }
 
 
@@ -1307,3 +1311,89 @@ void FGLPARSE_A4GL_lexer_parsed_fgl(void) {
 	A4GL_lex_parsed_fgl ();
 }
 
+
+
+/**
+ * Print the C code implementation for sql USING 4gl statements.
+ *
+ * This statement are not informix 4gl original statements.
+ *
+ * @param type : The sql statement type.
+ *   - S : Select
+ *   - D : Delete
+ *   - U : Update
+ * @param var The 4gl variable name to be used.
+ */
+int
+print_linked_cmd (int type, char *var)
+{
+  char tabname[64];
+  char pklist[256];
+  //int ni;
+
+  if (last_var_is_linked (tabname, pklist))
+    {
+      char buff[80];
+      char buff2[80];
+      //int no = 0;
+      int no_keys;
+      int azcnt;
+
+      if (type == 'S')
+	{
+	  start_bind ('o', 0);
+	  sprintf (buff, "%s.*", var);
+	  add_bind ('o', buff);
+	}
+
+      no_keys = linked_split (pklist, 0, 0);
+      start_bind ('i', 0);
+
+      if (type == 'U')
+	{
+	  char buffer[256];
+	  set_pklist (pklist);
+	  sprintf (buffer, "%s.*", var);
+	  push_bind_rec (buffer, 'u');
+	}
+
+      for (azcnt = 1; azcnt <= no_keys; azcnt++)
+	{
+	  A4GL_debug ("Getting key no %d", azcnt);
+	  linked_split (pklist, azcnt, buff2);
+	  sprintf (buff, "%s.%s", var, buff2);
+	  A4GL_debug ("Adding linked %s", buff);
+	  add_bind ('i', buff);
+	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
+	}
+	
+      if (type == 'S') sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
+      if (type == 'D') sprintf (buff, "DELETE FROM %s WHERE ", tabname);
+      if (type == 'U') sprintf (buff, "UPDATE %s SET (%s)=(%s) WHERE ", tabname, get_upd_using_notpk (), get_upd_using_queries ());
+
+      for (azcnt = 1; azcnt <= no_keys; azcnt++)
+	{
+	  if (azcnt > 1)
+	    strcat (buff, "AND");
+	  linked_split (pklist, azcnt, buff2);
+	  strcat (buff, " ");
+	  strcat (buff, buff2);
+	  strcat (buff, "=? ");
+	}
+
+
+        if (type == 'S')  {
+		print_execute_g(buff,3,copy_togenbind('i'),copy_togenbind('o'));
+      	} else {
+		print_execute_g(buff,3,copy_togenbind('i'),empty_genbind('o'));
+	}
+	start_bind('o',0);
+	start_bind('i',0);
+
+    }
+  else
+    {
+      return 0;
+    }
+  return 1;
+}

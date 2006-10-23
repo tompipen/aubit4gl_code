@@ -9,6 +9,7 @@ pragma_entry: SYSTEM_4GL { compiling_system_4gl=1; }
 	| STOP_REPLACE_STRING CHAR_VALUE  { drop_replace($<str>2); }
 	| IGNORE_FUNCTION  NAMED { A4GL_add_pointer ($<str>2, FUNCTION_IGNORE, (void *)1); }
 	| FORCE_UI CHAR_VALUE { strcpy(force_ui,A4GL_strip_quotes($<str>2)); }
+	| DEBUG_FILE CHAR_VALUE { strcpy(debug_filename,A4GL_strip_quotes($<str>2)); }
 ;
 
 

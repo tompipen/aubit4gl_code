@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.42 2006-09-25 16:56:18 mikeaubury Exp $
+# $Id: util.c,v 1.43 2006-10-23 08:49:15 mikeaubury Exp $
 #
 */
 
@@ -594,7 +594,7 @@ static int meminput(char *buf,int maxsize) {
 
 
 void
-set_write_std_err_on_error ()
+set_write_std_err_on_error (void)
 {
   write_std_err_on_error = 1;
 }
@@ -871,7 +871,7 @@ print_undo_use (char *s)
  * @todo Describe function
  */
 static void
-print_unload (char *f, char *d, char *sql)
+print_unload_g (char *f, char *d, char *sql,void *binding)
 {
 }
 
@@ -1240,6 +1240,10 @@ map_delete_update (char *main_statement_type, char *table, struct s_select_list_
 {
 }
 
+
+void *copy_togenbind(char c) {
+	return 0;
+}
 
 
 /* ====================================== EOF ============================ */

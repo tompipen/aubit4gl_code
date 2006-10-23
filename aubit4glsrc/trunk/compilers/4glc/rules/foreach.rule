@@ -5,34 +5,27 @@
 */
 
 
-foreach_cmd	:	FOREACH
-{
-add_feature("FOREACH");
-push_blockcommand("FOREACH");
-}
-fetch_cursor_name
-{
-print_foreach_start();
-A4GL_lex_printcomment(" /* foreach */\n");
-}
-opt_foreach_using_part
-opt_foreach_into_fetch_part 
-{
-print_foreach_next($<str>3,atoi($<str>5),$<str>6);
- lastlineno=yylineno;}
-commands
-END_FOREACH {
-add_continue_blockcommand ("FOREACH");
-print_foreach_end($<str>3);
-pop_blockcommand("FOREACH"); 
-print_foreach_close($<str>3);
-} 
+foreach_cmd	:	FOREACH 
+			fetch_cursor_name 
+			opt_foreach_using_part
+			opt_foreach_into_fetch_part {
+ 								add_feature("FOREACH"); push_blockcommand("FOREACH"); 
+ 								print_foreach_start(); 
+								print_foreach_next_g($<str>2,$<binding_comp_list>3,$<binding_comp_list>4);
+ 								lastlineno=yylineno;
+				} 
+				commands END_FOREACH {
+								add_continue_blockcommand ("FOREACH");
+								print_foreach_end($<str>2);
+								pop_blockcommand("FOREACH"); 
+								print_foreach_close($<str>2);
+			} 
 ;
 
 
 
-opt_foreach_using_part: {strcpy($<str>$,"0");}
-	| KW_USING ibind_var_list { sprintf($<str>$,"1"); add_feature("FORACH_USING");}
+opt_foreach_using_part: { $<binding_comp_list>$=empty_genbind('i');}
+	| KW_USING ibind_var_list { $<binding_comp_list>$=copy_togenbind('i'); add_feature("FORACH_USING");}
 
 ;
 

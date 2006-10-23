@@ -254,7 +254,7 @@ term_rep_cmd : TERMINATE_REPORT rep_name {
 report_section: op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
 
 format_section: FORMAT EVERY_ROW {
-	print_format_every_row();
+	print_format_every_row(copy_togenbind('f'));
 }
 | 
 FORMAT format_actions
@@ -619,7 +619,7 @@ op_rep_order_by : {
 int a;
 set_rep_no_orderby(1);
 if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
-a=print_bind_definition('O');
+a=print_bind_definition_g(copy_togenbind('O'));
 print_order_by_type(2,-1);
 sprintf($<str>$,"%d",a);
 }
@@ -629,7 +629,8 @@ int a;
 set_rep_no_orderby(0);
 add_feature("REPORT_ORDER_BY");
 if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
-a=print_bind_definition('O');
+expand_ordbind();
+a=print_bind_definition_g(copy_togenbind('O'));
 print_order_by_type(1,a);
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
@@ -638,7 +639,8 @@ A4GL_debug("Order by Gives :%d\n",a);
 int a;
 set_rep_no_orderby(0);
 if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
-a=print_bind_definition('O');
+expand_ordbind();
+a=print_bind_definition_g(copy_togenbind('O'));
 print_order_by_type(2,a);
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
@@ -680,7 +682,10 @@ report_def : REPORT
 		}
 	report_section 
 	{
-		print_report_2(0,$<str>11,order_asc_desc);
+		
+		print_report_2_g(0,$<str>11,order_asc_desc,copy_togenbind('F'), copy_togenbind('O'));
+	start_bind('o',0);
+	start_bind('i',0);
 		rordcnt=atoi($<str>11);
 	 A4GL_debug("SET rordcnt=%d %s",rordcnt,$<str>11);
 		}
@@ -757,7 +762,9 @@ define_section  {
 pdf_report_section 
 {
 resize_paper(&pdf_rep_struct);
-	print_report_2(1,$<str>11,order_asc_desc);
+	print_report_2_g(1,$<str>11,order_asc_desc,copy_togenbind('F'),copy_togenbind('O'));
+	start_bind('o',0);
+	start_bind('i',0);
 	A4GL_debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
 	rordcnt=atoi($<str>11);
 }
@@ -784,7 +791,8 @@ pdf_functions :
 		}
    		CLOSE_BRACKET opt_return
    		{
-		print_pdf_call($<str>3,$<ptr_list>6,$<str>7);
+			print_pdf_call_g($<str>3,$<ptr_list>6,$<str>7,$<binding_comp_list>9);
+			 start_bind('i',0);
    		}
 ;
 
