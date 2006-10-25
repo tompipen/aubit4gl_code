@@ -8,7 +8,7 @@ HELP=	${MSG:.msg=${HLP_EXT}}
 ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
-ADD_CLEAN=
+ADD_CLEAN=unl
 
 ## ======================================================================
 ##                 	Local Targets
