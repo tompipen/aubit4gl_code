@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.51 2006-10-23 09:53:19 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.52 2006-10-26 12:25:01 mikeaubury Exp $
 #
 */
 
@@ -323,7 +323,13 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			char *ptr;
 			char buff[255];
 		if (p_indicat) *p_indicat=0;
-			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+
+			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl) && p_indicat) {
+				*p_indicat=-1; 
+				memset(infx,0,sizeof(*infx));
+				rsetnull(CDTIMETYPE,(void *)infx);
+				return;
+			}
 			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CDTIMETYPE,(void *)infx);return;}
 			A4GL_push_dtime(a4gl);
 			ptr=A4GL_char_pop();
@@ -361,6 +367,7 @@ if (p_indicat) indicat=*p_indicat;
 	#ifdef HAVE_INT64_TIMESTAMP
 		#error INT64 timestamp not implemented
 	#endif
+
 	if (*infx==0) indicat=-1;
 #endif
 		if (indicat==-2) return;
@@ -490,10 +497,6 @@ ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,short *p_indicat,int size,char mode
 short indicat=0;
 
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
-A4GL_debug("Copy char : mode=%c",mode);
-A4GL_debug("Copy char : x=%d",x);
-A4GL_debug("Copy char : y=%d",y);
-A4GL_debug("Copy char : p_indicat=%p",p_indicat);
 
 
 //if (p_indicat && dir='o') { A4GL_debug("Copy char : *p_indicat=%p",*p_indicat); }
