@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.156 2006-10-23 08:49:17 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.157 2006-10-26 12:23:26 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.156 2006-10-23 08:49:17 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.157 2006-10-26 12:23:26 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2398,7 +2398,9 @@ nm (int n)
 
 
 void
-print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_comp_list *funcbind,t_binding_comp_list *orderbind)
+print_report_table (char *repname, char type, int c, char *asc_desc,
+		    t_binding_comp_list * funcbind,
+		    t_binding_comp_list * orderbind)
 {
 
 
@@ -2434,7 +2436,7 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
 
   if (type == 'R')
     {
-	t_binding_comp_list l;
+      t_binding_comp_list l;
       /* to copy it across... */
       //extern int ibindcnt;
       //extern long a_ibind;
@@ -2442,22 +2444,68 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
       //ibindcnt = fbindcnt;
       //ibind = ensure_bind (&a_ibind, ibindcnt, ibind);
       //memcpy (ibind, fbind, sizeof (struct binding_comp) * c + 1);
-      
-      if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
+
+      if (esql_type () != E_DIALECT_POSTGRES)
 	{
-	  sprintf (iname, "acl_p%s", &reptab[8]);
-	  iname[18] = 0;
+	  if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
+	    {
+	      sprintf (iname, "acl_p%s", &reptab[8]);
+	      iname[18] = 0;
+	    }
+	  else
+	    {
+	      sprintf (iname, "acl_p%s", reptab);
+	      iname[18] = 0;
+	    }
+
+	  /* print_execute needs an ibind - we have an fbind - so we need */
+	  memcpy (&l, funcbind, sizeof (l));
+	  l.type = 'i';
+	  LEXLIB_print_execute_g (iname, 1, &l, empty_genbind ('o'));
 	}
       else
 	{
-	  sprintf (iname, "acl_p%s", reptab);
-	  iname[18] = 0;
-	}
+	  sprintf (ins_str, "INSERT INTO %s VALUES (", reptab);
+	  for (a = 0; a < c; a++)
+	    {
+	char smbuff[256];
+	      if (a)
+		{
+		  strcat (ins_str, ",");
+		}
+	      if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
+		{
 
-      /* print_execute needs an ibind - we have an fbind - so we need */
-	memcpy(&l,funcbind,sizeof(l));
-	l.type='i';
-        LEXLIB_print_execute_g (iname, 1,&l,empty_genbind('o'));
+		  sprintf (smbuff, ":_vi_%d\n", a);
+		}
+	      else
+		{
+		  if (esql_type () == E_DIALECT_INFOFLEX)
+		    {
+		      sprintf (smbuff, ":_vi_%d  :_vii_%d\n", a, a);
+		    }
+		  else
+		    {
+		      if (esql_type () == E_DIALECT_POSTGRES)
+			{
+			  sprintf (smbuff, ":_vi_%d INDICATOR :_vii_%d\n", a, a);
+			}
+		      else
+			{
+			  sprintf (smbuff, ":_vi_%d INDICATOR :_vii_%d\n", a,
+				   a);
+			}
+		    }
+		}
+	      strcat (ins_str, smbuff);
+	    }
+
+	  strcat (ins_str, ")");
+	  //printc ("%s\n", ins_str);
+	  memcpy (&l, funcbind, sizeof (l));
+	  l.type = 'i';
+	  print_exec_sql_bound_g (ins_str, 1, &l);
+	}
     }
 
 
@@ -2470,13 +2518,13 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
 
   if (type == 'F')
     {
-     t_binding_comp_list l;
+      t_binding_comp_list l;
       //extern int fbindcnt;
       //char buff[256];
       //char buff2[256];
       struct s_fetch f;
-	memcpy(&l,funcbind,sizeof(l));
-	l.type='o';
+      memcpy (&l, funcbind, sizeof (l));
+      l.type = 'o';
 
       printc ("{ /* Type F */");
       printc ("struct BINDING *obind;");
@@ -2485,7 +2533,7 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
       printc ("{ /* Type F 2 */");
       printc ("{");
 
-	make_sql_bind_g (&l);
+      make_sql_bind_g (&l);
 
       printc ("/* MJAMJA - printing obind */");
 
@@ -2495,7 +2543,7 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
       f.fp->ab_rel = FETCH_RELATIVE;
       f.fp->fetch_expr = A4GL_new_literal_long_long (1);
       //sprintf (buff2, "%d,_rbind", c);
-      print_fetch_3_g (&f,&l);
+      print_fetch_3_g (&f, &l);
       printc ("if (sqlca.sqlcode!=0) break;");
       printc ("A4GL_push_params (obind, %d);", c);
 
@@ -2525,7 +2573,7 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
 	}
 
       sprintf (sql, "SELECT * FROM %s ORDER BY ", reptab);
-      for (a = 0; a < orderbind->nbind ; a++)
+      for (a = 0; a < orderbind->nbind; a++)
 	{
 	  int found = 0;
 	  if (a)
@@ -2533,14 +2581,19 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
 
 	  for (b = 0; b < funcbind->nbind; b++)
 	    {
-	      if (strcmp (orderbind->bind[a].varname, funcbind->bind[b].varname) == 0)
+	      if (strcmp
+		  (orderbind->bind[a].varname,
+		   funcbind->bind[b].varname) == 0)
 		{
 		  char tmpbuff[256];
-		  if (asc_desc[a]=='D') {
-		  	sprintf (tmpbuff, "c%d DESC", b);
-		  } else {
-		  	sprintf (tmpbuff, "c%d", b);
-		  }
+		  if (asc_desc[a] == 'D')
+		    {
+		      sprintf (tmpbuff, "c%d DESC", b);
+		    }
+		  else
+		    {
+		      sprintf (tmpbuff, "c%d", b);
+		    }
 		  strcat (sql, tmpbuff);
 		  found = 1;
 		  break;
@@ -2557,10 +2610,10 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
 
       //start_bind ('i', 0);
       //start_bind ('o', 0);
-      inbind=empty_genbind('i');
-      outbind=empty_genbind('o');
-      p = print_select_all_g (sql, 0,inbind,outbind);
-      print_declare_g ("0", p, cname, 0, 0,inbind,outbind);
+      inbind = empty_genbind ('i');
+      outbind = empty_genbind ('o');
+      p = print_select_all_g (sql, 0, inbind, outbind);
+      print_declare_g ("0", p, cname, 0, 0, inbind, outbind);
       LEXLIB_print_open_cursor_g (cname, inbind);
 
 
@@ -2583,8 +2636,8 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
 
       print_close ('C', cname);
       sprintf (buff, "DROP TABLE %s", reptab);
-      inbind=empty_genbind('i');
-      print_exec_sql_bound_g (buff, 0,inbind);
+      inbind = empty_genbind ('i');
+      print_exec_sql_bound_g (buff, 0, inbind);
     }
 
   if (type == 'M')
@@ -2643,14 +2696,14 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
       set_suppress_lines ();
 
       xptr = A4GLSQLCV_check_sql (buff, &converted);
-	inbind=empty_genbind('i');
-      print_exec_sql_bound_g (xptr, converted,inbind);
+      inbind = empty_genbind ('i');
+      print_exec_sql_bound_g (xptr, converted, inbind);
 
       clr_suppress_lines ();
 
       sprintf (buff, "DELETE FROM %s", reptab);
       xptr = A4GLSQLCV_check_sql (buff, &converted);
-      print_exec_sql_bound_g (xptr, converted,inbind );
+      print_exec_sql_bound_g (xptr, converted, inbind);
 
 
       if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
@@ -2665,8 +2718,10 @@ print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_com
 	}
 
 
-
-      print_prepare (iname, ins_str);
+      if (esql_type () != E_DIALECT_POSTGRES)
+	{
+	  print_prepare (iname, ins_str);
+	}
     }
 
 }
