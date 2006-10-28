@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.15 2005-05-21 16:18:35 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.16 2006-10-28 15:53:06 briantan Exp $
 #
 */
 
@@ -363,7 +363,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.15 2005-05-21 16:18:35 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.16 2006-10-28 15:53:06 briantan Exp $";
 #endif
 
 
@@ -644,12 +644,12 @@ int A4GLSQL_init_connection (char *dbName)
 
 // Have we got an active db session ?
   if (have_connected) {
-	EXEC SQL DISCONNECT 'default';
+	EXEC SQL DISCONNECT default;	// ecpg 8.1.5
 	removeESQLConnection("default");
 		// Not any more we haven't...
   }
 
-  EXEC SQL connect to :db as "default";
+  EXEC SQL connect to :db; 		// as "default"; ecpg 8.1.5
   A4GL_debug("Sqlca=%d",sqlca.sqlcode);
 
   if ( isSqlError() )
@@ -731,7 +731,8 @@ int A4GLSQL_make_connection
   passwd   = strdup(pwd_p);
 #ifndef __QUERIX__
   //Querix esql/c compiler chokes here:
-  EXEC SQL connect to :dbName as 'default' user :userName using :passwd;
+//  EXEC SQL connect to :dbName as 'default' user :userName using :passwd;
+  EXEC SQL connect to :dbName user :userName using :passwd;	// ecpg 8.1.5
 #else
 	A4GL_assertion(1,"QUERIX missing functionality");
 #endif

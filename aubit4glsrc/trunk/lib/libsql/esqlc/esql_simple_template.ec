@@ -29,11 +29,11 @@ int A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 
 // Have we got an active db session ?
   if (have_connected) {
-    EXEC SQL DISCONNECT 'default';
+    EXEC SQL DISCONNECT default;	// ecpg 8.1.5
 		// Not any more we haven't...
   }
 
-  EXEC SQL connect to :db as 'default';
+  EXEC SQL connect to :db;		// as 'default'; ecpg 8.1.5
   if ( isSqlError() )
     return 1;
 
@@ -52,7 +52,7 @@ int A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
  */
 int A4GLSQL_close_connection(void)
 {
-    EXEC SQL DISCONNECT 'default';
+    EXEC SQL DISCONNECT default;	// ecpg 8.1.5
 }
 
 

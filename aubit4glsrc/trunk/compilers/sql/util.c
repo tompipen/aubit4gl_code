@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.43 2006-10-23 08:49:15 mikeaubury Exp $
+# $Id: util.c,v 1.44 2006-10-28 15:53:04 briantan Exp $
 #
 */
 
@@ -900,6 +900,7 @@ print_init_conn (char *s)
     }
   else
     {
+// Fixme? ecpg 8.1.5
       sprintf (buff, "CONNECT TO  %s AS 'default'", s);
       add_sql (10, acl_strdup (buff));
     }

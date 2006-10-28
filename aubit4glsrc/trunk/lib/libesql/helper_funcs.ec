@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.52 2006-10-26 12:25:01 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.53 2006-10-28 15:53:05 briantan Exp $
 #
 */
 
@@ -101,7 +101,7 @@ EXEC SQL END DECLARE SECTION;
 strcpy(dbName,dbname);
 
 #ifdef DIALECT_POSTGRES
-	EXEC SQL CONNECT TO :dbName AS 'default';
+	EXEC SQL CONNECT TO :dbName; // AS 'default';  ecpg 8.1.5
 #endif
 
 }

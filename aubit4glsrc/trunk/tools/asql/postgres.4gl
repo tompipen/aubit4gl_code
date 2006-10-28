@@ -932,7 +932,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 char dbsname[80];
 EXEC SQL END DECLARE SECTION;
 
-EXEC SQL CONNECT TO template1 AS 'default';
+EXEC SQL CONNECT TO template1;		// AS 'default';  ecpg 8.1.5
 if (sqlca.sqlcode!=0) goto here;
 EXEC SQL DECLARE c_getdbs CURSOR WITH HOLD FOR select datname from pg_catalog.pg_database order by datname;
 if (sqlca.sqlcode!=0) goto here;

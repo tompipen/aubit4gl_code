@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.157 2006-10-26 12:23:26 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.158 2006-10-28 15:53:06 briantan Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.157 2006-10-26 12:23:26 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.158 2006-10-28 15:53:06 briantan Exp $";
 #endif
 extern int yylineno;
 
@@ -261,8 +261,8 @@ LEXLIB_print_close (char type, char *name)
 	}
       else
 	{
-	  A4GL_save_sql ("DISCONNECT 'default'", 0);
-	  printc ("\nEXEC SQL DISCONNECT 'default';\n");
+	  A4GL_save_sql ("DISCONNECT default", 0);
+	  printc ("\nEXEC SQL DISCONNECT default;\n");
 	}
       printc ("if (sqlca.sqlcode==0) A4GL_esql_db_open(0,0,0,\"\");");
       print_copy_status ();
@@ -1207,7 +1207,7 @@ LEXLIB_print_init_conn (char *db)
 	  printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
 
 
-	  A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);
+//	  A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
 
 	  switch (esql_type ())
 	    {
@@ -1215,18 +1215,23 @@ LEXLIB_print_init_conn (char *db)
 	      A4GL_assertion (1, "No ESQL/C Dialect");
 	      break;
 	    case E_DIALECT_INFORMIX:
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
 	      printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n");
 	      break;
 	    case E_DIALECT_POSTGRES:
-	      printc ("\nEXEC SQL CONNECT TO :s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $s", 0);		// ecpg 8.1.5
+	      printc ("\nEXEC SQL CONNECT TO :s;\n");		// ecpg 8.1.5
 	      break;
 	    case E_DIALECT_SAPDB:
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
 	      printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n");
 	      break;
 	    case E_DIALECT_INGRES:
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
 	      printc ("\nEXEC SQL CONNECT :s ;\n");
 	      break;
 	    case E_DIALECT_INFOFLEX:
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
 	      printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n");
 	      break;
 	    }
@@ -1236,7 +1241,7 @@ LEXLIB_print_init_conn (char *db)
 	{
 	  printc ("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
 	  print_close ('D', "");
-	  A4GL_save_sql ("DISCONNECT default'", 0);
+	  A4GL_save_sql ("DISCONNECT default", 0);
 	  /*printc ("\nEXEC SQL DISCONNECT 'default';\n"); */
 	  printc ("}");
 	  switch (esql_type ())
@@ -1251,8 +1256,8 @@ LEXLIB_print_init_conn (char *db)
 	      break;
 
 	    case E_DIALECT_POSTGRES:
-	      A4GL_save_sql ("CONNECT TO %s AS 'default'", db);
-	      printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
+	      A4GL_save_sql ("CONNECT TO %s", db);		// ecpg 8.1.5
+	      printc ("\nEXEC SQL CONNECT TO %s;\n", db);	// ecpg 8.1.5
 	      break;
 
 	    case E_DIALECT_SAPDB:
