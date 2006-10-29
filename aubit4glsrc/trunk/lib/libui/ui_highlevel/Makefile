@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2006-09-06 10:52:45 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2006-10-29 06:42:57 afalout Exp $
 #
 
 ROOT		=../../..
@@ -208,13 +208,13 @@ ${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: clean_hl_tui $(OBJS) ${OBJS2}
 TUIw: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
 
 #PDcurses with libform from CygWin added
-#${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
+libUI_HL_TUIw${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: clean_hl_tuiw $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
 		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform ${CURSES_LIB_NAME} 
 
 #PDcurses with libform from CygWin added - STATICALLY linked
-#${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}
+libUI_HL_TUIws${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: clean_hl_tuiws $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
 		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform_g ${CURSES_LIB_NAME} 
@@ -222,25 +222,25 @@ ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: clean_hl_tuiws $(OBJS) lowlevel_tui_win32.
 #TUI mode plug-in with Aubit's own implementation of Curses libform
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 
 #no libform implementation (PDcurses are only Curses implementation available for Windows)
-#${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}
+libUI_HL_TUIN${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}: clean_hl_tuin $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 #Statically linked TUIN
-#${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}
+libUI_HL_TUINs${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}: clean_hl_tuins $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${PD_CURSES_LIB_NAME}
 
 #Debug version of TUIN, using debug library libpanel_g
-#${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}
+libUI_HL_TUIN-DEBUG${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}: clean_hl_tuind $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${LIBS3}
 
 #Not shure what this is? Mike?
-#${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}
+libUI_HL_TUINW${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}: clean_hl_tuinw $(OBJS) ${OBJS4}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS4} ${LINKLIBS} \
 		-L/usr/local/widec/lib -static -lpanelw_g -lncursesw_g

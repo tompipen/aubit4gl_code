@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.329 2006-10-21 13:02:36 afalout Exp $
+dnl # $Id: configure.in,v 1.330 2006-10-29 06:42:33 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -47,7 +47,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.329 2006-10-21 13:02:36 afalout Exp $)
+AC_REVISION($Id: configure.in,v 1.330 2006-10-29 06:42:33 afalout Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!
@@ -1970,7 +1970,9 @@ AC_ARG_WITH(all,
                           toolkit from AT&T and Lucent Bell Labs. One of DoxyGen
                           visualisation options.
   --with-www-name=name    Name of the web server URL to use
-  --with_glib=DIR         Specify explicit path to GLIB library.
+  --with-glib=DIR         Specify explicit path to GLIB library.
+  --with-pg-all           Shorthand to point all PostgreSQL components to same location
+                          (--with-ecpg= --with-pgsqleng= --with-pgsql= --with-pgodbc=)
   --enable-yy-debug       for debbuging in function yyparse()
   --enable-yacc-debug     Yacc Debugging
   --enable-printc-debug   If INCLINES variable is set then the source target C
@@ -1991,6 +1993,15 @@ if test "$withval" != "no"; then
 		if test "$with_rpc" = ""; then        	FORCE_RPC=1         ;fi
 	fi
 
+	#--with-pg-all is a shorthand to point all PostgreSQL components to same location
+	if test "$with_pg_all" != ""; then
+		with_ecpg="$with_pg_all"
+		with_pgsqleng="$with_pg_all"
+		with_pgsql="$with_pg_all"
+		with_pgodbc="$with_pg_all"
+		#--with-pgcompat=yes
+	fi
+	
 
 	############ database ##########
 	if test "$with_sapdb" = ""; then			with_sapdb=yes 		;fi
@@ -3376,6 +3387,7 @@ fi
 ## ==================================================================
 
 #TODO - check for Ingres ODBC driver
+#/opt/Ingres/IngresII/ingres/lib/libiiodbcdriver.1.so
 
 
 PHP_CONFIGURE_PART(Checking for Ingres ESQL/C compiler support:)
@@ -7217,20 +7229,40 @@ AC_ARG_WITH(pgodbc,
 		LDFLAGS="$TMP_PGODBC_LFLAGS $LDFLAGS"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
 
+		echo "LDFLAGS=$LDFLAGS"
+		echo "CPPFLAGS=$CPPFLAGS"
+		
 		#unixODBC distributed ODBC driver for PG
 		AC_CHECK_LIB([odbcpsql], [main])
-		if test $ac_cv_lib_odbcpsql_main = yes; then
+		if test "$ac_cv_lib_odbcpsql_main" = "yes"; then
             PGODBC_LIBNAME=odbcpsql
         fi
 
 		#PostgreSQL distributed ODBC driver for PG
+		#WARNING - library file does not have lib prefix:/usr/lib/psqlodbc.so
 		AC_CHECK_LIB([psqlodbc], [main])
-		if test $ac_cv_lib_psqlodbc_main = yes; then
+		if test "$ac_cv_lib_psqlodbc_main" = "yes"; then
             PGODBC_LIBNAME=psqlodbc
+		else
+			if test -f "$withval/lib/psqlodbc.so"; then
+				echo "Found $withval/lib/psqlodbc.so"
+				echo "WARNING - library file does not have lib prefix and cannot be"
+				echo "Detected by CHECK LIB macro or linked with -l flag !"
+				echo "WILL IGNORE"
+			else
+				TMP_LOCATE="`locate psqlodbc.so 2>/dev/null`"
+				if test "$TMP_LOCATE" != ""; then
+					echo "Found outside of $withval/lib:"
+					echo "$TMP_LOCATE"
+					echo "WARNING - library file does not have lib prefix and cannot be"
+					echo "Detected by CHECK LIB macro or linked with -l flag !"
+					echo "WILL IGNORE"
+				fi
+			fi
         fi
 
 
-		if test $ac_cv_lib_psqlodbc_main = yes -o $ac_cv_lib_odbcpsql_main = yes; then
+		if test "$ac_cv_lib_psqlodbc_main" = "yes" -o "$ac_cv_lib_odbcpsql_main" = "yes"; then
 			#also check for headers, since they are not in PG ODBC RPM, they are
 			#in postgresql-devel, <<< THIS IS NOT TRUE ANY MORE, at least for RH 8 RPM's!
 			#7.1.3 seems to be last version to include this files!!
@@ -7311,8 +7343,8 @@ fi
 			
 			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
 			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" \
-				&& test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" \
-				&& test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
+				-a "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" \
+				-a "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
                 HAVE_PG_HEADERS=yes
             else
 				#TODO - we can often find PG ODBC driver, but no headers. Maybe we should
@@ -7331,7 +7363,7 @@ fi
 		LIBS="$old_LIBS"; LDFLAGS="$old_LDFLAGS"; CPPFLAGS="$old_CPPFLAGS"
 
 		AC_MSG_CHECKING(PG ODBC connector support)
-		if test $ac_cv_lib_psqlodbc_main = yes -o $ac_cv_lib_odbcpsql_main = yes; then
+		if test "$ac_cv_lib_psqlodbc_main" = "yes" -o "$ac_cv_lib_odbcpsql_main" = "yes"; then
 			if test "$AUBIT_SOURCE" = "1" ; then
             	#we need headers only to compile source code
 				if test "$HAVE_PG_HEADERS" = "yes"; then			
@@ -7353,12 +7385,12 @@ fi
 				
 				if test "$HAVE_PGODBC" != "yes" ; then
 				    AC_DEFINE(HAVE_PGODBC,0,[ ])
-					AC_MSG_RESULT(NO (missing header files))
+					AC_MSG_RESULT(NO - missing header files)
 				fi
             fi
 		else
 		    AC_DEFINE(HAVE_PGODBC,0,[ ])
-		    AC_MSG_RESULT(No (missing library))
+		    AC_MSG_RESULT(No -missing library)
 		fi
 	else
 		AC_MSG_RESULT(disabled)
@@ -9445,12 +9477,14 @@ PLUGIN_NO_LINKABLE=
 			#does NOT need IFX compatibility in ecpg or PG engine - it is used
 			#only to resolve variables defined as LIKE when compiling 4gl 
 			#code using EC dialect POSTGRES
-			PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
+			#REPLACED BY postgresql/simple.c driver
+			#PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
 			COMP_EXE="$COMP_EXE asql_p$A4GL_EXE_EXT"
 			#asql_p compile only if PG ESQLC compiler is installed
 			
         else
-			PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg asql_p$A4GL_EXE_EXT"
+			PLUGIN_NO="$PLUGIN_NO asql_p$A4GL_EXE_EXT"
+			#PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
 		fi
 
 		if test "$DO_DISABLE" = "1"; then
@@ -9462,7 +9496,8 @@ PLUGIN_NO_LINKABLE=
 		fi
 
 	else
-		PLUGIN_NO="$PLUGIN_NO SQL_pg SQL_c_ecpg"
+		PLUGIN_NO="$PLUGIN_NO SQL_pg"
+		#PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
 
@@ -10222,7 +10257,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.329 2006-10-21 13:02:36 afalout Exp $
+| $Id: configure.in,v 1.330 2006-10-29 06:42:33 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

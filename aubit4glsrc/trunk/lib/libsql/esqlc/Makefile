@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2006-10-02 07:52:22 afalout Exp $
+# $Id: Makefile,v 1.14 2006-10-29 06:42:53 afalout Exp $
 #
 
 ROOT		=../../..
@@ -298,12 +298,12 @@ ${PLUGINDIR}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
 
 ###################
 #Simple PG - ecpg NOT in Informix compatible mode!!! Based on 'simple' template
-#Used only for 4glc to resolve variables define as LIKE when compiling to 
+#INTENDED TO be used for 4glc to resolve variables define as LIKE when compiling to 
 #EC with POSTGRES dialect - DOES NOT HAVE IMPLEMENTED FULL FUNCTIONALITY OF
 #DRIVER NEEDED TO RUN PROGRAMS.
+#Seems abandoned - see postgresql/simple.c
 #${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}
 libSQL_c_ecpg: ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}
-
 ${PLUGINDIR}/libSQL_c_ecpg${SO_EXT}: esql_simple_ecpg.ec
 #	LD_RUN_PATH=${LD_RUN_PATH}:${POSTGRESDIR}/lib; export LD_RUN_PATH
 	${PG_ESQLC} -ct $^

@@ -1048,7 +1048,9 @@ Optional Packages:
                           toolkit from AT&T and Lucent Bell Labs. One of DoxyGen
                           visualisation options.
   --with-www-name=name    Name of the web server URL to use
-  --with_glib=DIR         Specify explicit path to GLIB library.
+  --with-glib=DIR         Specify explicit path to GLIB library.
+  --with-pg-all           Shorthand to point all PostgreSQL components to same location
+                          (--with-ecpg= --with-pgsqleng= --with-pgsql= --with-pgodbc=)
   --enable-yy-debug       for debbuging in function yyparse()
   --enable-yacc-debug     Yacc Debugging
   --enable-printc-debug   If INCLINES variable is set then the source target C
@@ -4166,7 +4168,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4169 "configure"' > conftest.$ac_ext
+  echo '#line 4171 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7548,7 +7550,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7551 "configure"
+#line 7553 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -7646,7 +7648,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7649 "configure"
+#line 7651 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10164,6 +10166,15 @@ echo "${ECHO_T}everything..." >&6
 	if test "$with_orbit" = ""; then           	with_orbit=yes     	;fi
 	if test "$GCC_MINGW" != "yes"; then
 		if test "$with_rpc" = ""; then        	FORCE_RPC=1         ;fi
+	fi
+
+	#--with-pg-all is a shorthand to point all PostgreSQL components to same location
+	if test "$with_pg_all" != ""; then
+		with_ecpg="$with_pg_all"
+		with_pgsqleng="$with_pg_all"
+		with_pgsql="$with_pg_all"
+		with_pgodbc="$with_pg_all"
+		#--with-pgcompat=yes
 	fi
 
 
@@ -14067,6 +14078,7 @@ fi
 ## ==================================================================
 
 #TODO - check for Ingres ODBC driver
+#/opt/Ingres/IngresII/ingres/lib/libiiodbcdriver.1.so
 
 
 
@@ -27496,6 +27508,9 @@ echo "$as_me: WARNING: /usr/lib/unixODBC added to LFLAGS" >&2;}
 		LDFLAGS="$TMP_PGODBC_LFLAGS $LDFLAGS"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
 
+		echo "LDFLAGS=$LDFLAGS"
+		echo "CPPFLAGS=$CPPFLAGS"
+
 		#unixODBC distributed ODBC driver for PG
 
 echo "$as_me:$LINENO: checking for main in -lodbcpsql" >&5
@@ -27565,11 +27580,12 @@ _ACEOF
 
 fi
 
-		if test $ac_cv_lib_odbcpsql_main = yes; then
+		if test "$ac_cv_lib_odbcpsql_main" = "yes"; then
             PGODBC_LIBNAME=odbcpsql
         fi
 
 		#PostgreSQL distributed ODBC driver for PG
+		#WARNING - library file does not have lib prefix:/usr/lib/psqlodbc.so
 
 echo "$as_me:$LINENO: checking for main in -lpsqlodbc" >&5
 echo $ECHO_N "checking for main in -lpsqlodbc... $ECHO_C" >&6
@@ -27638,12 +27654,28 @@ _ACEOF
 
 fi
 
-		if test $ac_cv_lib_psqlodbc_main = yes; then
+		if test "$ac_cv_lib_psqlodbc_main" = "yes"; then
             PGODBC_LIBNAME=psqlodbc
+		else
+			if test -f "$withval/lib/psqlodbc.so"; then
+				echo "Found $withval/lib/psqlodbc.so"
+				echo "WARNING - library file does not have lib prefix and cannot be"
+				echo "Detected by CHECK LIB macro or linked with -l flag !"
+				echo "WILL IGNORE"
+			else
+				TMP_LOCATE="`locate psqlodbc.so 2>/dev/null`"
+				if test "$TMP_LOCATE" != ""; then
+					echo "Found outside of $withval/lib:"
+					echo "$TMP_LOCATE"
+					echo "WARNING - library file does not have lib prefix and cannot be"
+					echo "Detected by CHECK LIB macro or linked with -l flag !"
+					echo "WILL IGNORE"
+				fi
+			fi
         fi
 
 
-		if test $ac_cv_lib_psqlodbc_main = yes -o $ac_cv_lib_odbcpsql_main = yes; then
+		if test "$ac_cv_lib_psqlodbc_main" = "yes" -o "$ac_cv_lib_odbcpsql_main" = "yes"; then
 			#also check for headers, since they are not in PG ODBC RPM, they are
 			#in postgresql-devel, <<< THIS IS NOT TRUE ANY MORE, at least for RH 8 RPM's!
 			#7.1.3 seems to be last version to include this files!!
@@ -28151,8 +28183,8 @@ fi
 
 			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
 			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" \
-				&& test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" \
-				&& test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
+				-a "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" \
+				-a "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
                 HAVE_PG_HEADERS=yes
             else
 				#TODO - we can often find PG ODBC driver, but no headers. Maybe we should
@@ -28474,7 +28506,7 @@ done
 
 		echo "$as_me:$LINENO: checking PG ODBC connector support" >&5
 echo $ECHO_N "checking PG ODBC connector support... $ECHO_C" >&6
-		if test $ac_cv_lib_psqlodbc_main = yes -o $ac_cv_lib_odbcpsql_main = yes; then
+		if test "$ac_cv_lib_psqlodbc_main" = "yes" -o "$ac_cv_lib_odbcpsql_main" = "yes"; then
 			if test "$AUBIT_SOURCE" = "1" ; then
             	#we need headers only to compile source code
 				if test "$HAVE_PG_HEADERS" = "yes"; then
@@ -28514,8 +28546,8 @@ cat >>confdefs.h <<\_ACEOF
 #define HAVE_PGODBC 0
 _ACEOF
 
-					echo "$as_me:$LINENO: result: NO (missing header files)" >&5
-echo "${ECHO_T}NO (missing header files)" >&6
+					echo "$as_me:$LINENO: result: NO - missing header files" >&5
+echo "${ECHO_T}NO - missing header files" >&6
 				fi
             fi
 		else
@@ -28524,8 +28556,8 @@ cat >>confdefs.h <<\_ACEOF
 #define HAVE_PGODBC 0
 _ACEOF
 
-		    echo "$as_me:$LINENO: result: No (missing library)" >&5
-echo "${ECHO_T}No (missing library)" >&6
+		    echo "$as_me:$LINENO: result: No -missing library" >&5
+echo "${ECHO_T}No -missing library" >&6
 		fi
 	else
 		echo "$as_me:$LINENO: result: disabled" >&5
@@ -36436,7 +36468,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 36439 "configure"' > conftest.$ac_ext
+  echo '#line 36471 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -36992,7 +37024,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 36995 "configure"
+#line 37027 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -37090,7 +37122,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 37093 "configure"
+#line 37125 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -42611,7 +42643,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.355 2006-10-21 13:02:33 afalout Exp $
+| $Id: configure,v 1.356 2006-10-29 06:42:25 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

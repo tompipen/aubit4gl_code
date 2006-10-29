@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.111 2006-10-23 20:32:39 fortiz Exp $
+# $Id: Makefile-install.mki,v 1.112 2006-10-29 06:42:53 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -51,8 +51,14 @@
 install.aubitrc:
 ifneq "${INFILE}" ""
 ifneq "${AUBIT_BIN_INSTALL}" "1"
+#Installing from source code tree
+	@echo "Changing AUBITDIR in ${INFILE}"
+	@echo "FROM: ${STARTWITH}"
+	@echo "TO: ${REPLACEWITH}"
 	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
+#	sed -e "/AUBITDIR\=/s/${AUBITDIR}/${INSTALLDIR}/" ${INFILE} > /tmp/aubitrc.tmp
 else
+#Installing from pre-compiled binary distribution package
 	${CP} ${INFILE} /tmp/aubitrc.tmp
 endif
 ifeq "${AUBITRCFILEEXISTS}" ""

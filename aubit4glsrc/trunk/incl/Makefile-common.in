@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.203 2006-10-21 13:02:47 afalout Exp $
+# $Id: Makefile-common.in,v 1.204 2006-10-29 06:42:53 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -848,7 +848,7 @@ INSTALL_DIR=${PREFIX}
 	INFILE:=$(shell ls ${LOOKFOR_INFILE} ${NOERR})
 
 	ifneq "${INFILE}" ""
-		OLDVALUE:=$(shell grep "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
+		OLDVALUE:=$(shell grep -w "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
 		ifeq "${GCC_MINGW}" "yes"
 			NEWVALUE:=$(shell echo "AUBITDIR=${WIN_CYGPATH}$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
         else
