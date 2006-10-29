@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.166 2006-10-28 15:53:06 briantan Exp $
+# $Id: esql.ec,v 1.167 2006-10-29 14:23:38 briantan Exp $
 #
 */
 
@@ -179,7 +179,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.166 2006-10-28 15:53:06 briantan Exp $";
+  "@(#)$Id: esql.ec,v 1.167 2006-10-29 14:23:38 briantan Exp $";
 #endif
 
 
@@ -524,12 +524,12 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 // Have we got an active db session ?
   if (have_connected)
     {
-      EXEC SQL DISCONNECT default;	// ecpg 8.1.5
+      EXEC SQL DISCONNECT 'default';
       removeESQLConnection ("default");
       // Not any more we haven't...
     }
 
-  EXEC SQL connect to:db; 		// as "default"; ecpg 8.1.5
+  EXEC SQL connect to:db as 'default';
 
   A4GL_debug ("Sqlca=%d", sqlca.sqlcode);
 
@@ -615,7 +615,7 @@ int A4GLSQL_make_connection
   dbName = strdup (server);
   userName = strdup (uid_p);
   passwd = strdup (pwd_p);	//Querix esql/c compiler chokes here....
-  EXEC SQL connect to:dbName user:userName using:passwd;	// ecpg 8.1.5
+  EXEC SQL connect to:dbName as 'default' user:userName using:passwd;
   if (isSqlError ())
     retval = 1;
   else
