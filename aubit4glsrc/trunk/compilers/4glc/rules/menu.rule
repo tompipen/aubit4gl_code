@@ -6,6 +6,7 @@
 
 menu_cmd	:	MENU {
 	add_feature("UI_MENU");
+	map_ui("MENU");
    	menu_cnt=npush_menu();
 	A4GL_assertion(menu_cnt>=MAXMENU, "Ran out of menus in compiler (Increase : MAXMENU)");
    	menu_cmd_cnt[menu_cnt]=1;
@@ -113,16 +114,19 @@ menu_optional_desc	:      {strcpy($<str>$,"\"\"");}
                         | CHAR_VALUE {strcpy($<str>$,$<str>1);};
 
 next_option_cmd : NEXT_OPTION opt_name {
+	map_ui("NEXTOPTION");
 	print_option_op('N',$<str>2,menu_blk[menu_cnt]);
 }
 ;
 
 show_option_cmd : SHOW_OPTION opt_name_list {
+	map_ui("SHOWOPTION");
 	print_option_op('S',$<str>2,menu_blk[menu_cnt]);
 }
 ;
 
 hide_option_cmd : HIDE_OPTION opt_name_list {
+	map_ui("HIDEOPTION");
 	print_option_op('H',$<str>2,menu_blk[menu_cnt]);
 }
 ;

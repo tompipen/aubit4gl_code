@@ -15,10 +15,13 @@ insert_statement_ss:
 	table_name  { strcpy(current_ins_table,$<str>3);A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!");ADDMAP("InsertInto",current_ins_table);}
 	op_insert_column_list 
 	ins_2_ss {
+		//A4GL_add_crud("INSERT",$<str>3);
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>5),kw_space,$<sql_string>6,NULL); 
+
 		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
 			A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!"); 
 		add_feature("ANSI_INSERT");
+		map_delete_update("INSERT",current_ins_table,0);
 	}
 ;
 
@@ -95,6 +98,7 @@ insert_value_ss:
 delete_statement_search_ss:
 	DELETE_FROM table_name { strcpy(current_del_table,$<str>2); ADDMAP("DeleteFrom",current_del_table);} 
 		del_op_where_clause_ss {
+			//A4GL_add_crud("DELETE",$<str>2);
 			if (strlen($<sql_string>4)==0) { A4GL_warn("DELETE with no WHERE clause"); }
 			add_feature("ANSI_DELETE");
 			$<sql_string>$=make_sql_string_and_free(
@@ -534,12 +538,15 @@ table_reference_list:
 
 
 tname: table_name  { 
+			//A4GL_add_crud("SELECT",$<str>1);
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,NULL);
 	}
 	| table_name correlation_name { 
+			//A4GL_add_crud("SELECT",$<str>1);
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,$<str>2);
 	}
 	| table_name KW_AS correlation_name { 
+			//A4GL_add_crud("SELECT",$<str>1);
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,$<str>3);
 	}
 ;
@@ -592,7 +599,9 @@ op_having_clause_2_sli :  {$<s_select_list_item>$=0;}
 
 
 
-del_op_where_clause_ss:  { $<sql_string>$=acl_strdup("");}
+del_op_where_clause_ss:  { $<sql_string>$=acl_strdup("");
+		map_delete_update("DELETE",current_del_table,0);
+		}
 	| where_clause_sli {
 		$<sql_string>$=make_sql_string_and_free(" WHERE ",
 		fix_delete_update_columns(current_del_table,$<s_select_list_item>1),
@@ -1035,6 +1044,7 @@ e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION | FRACTION OPEN_B
 
 load_cmd :  
 opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
+	//A4GL_add_crud("INSERT",$<str>6);
 	add_feature("LOAD_FROM_INSERT_INTO");
 	print_load($<str>3,$<str>4,$<str>6,$<str>7);
 	print_undo_use($<str>1);
@@ -1276,6 +1286,7 @@ put_val_int : CHAR_VALUE  {$<sql_string>$=strdup(convstrsql($<str>1));}
 
 
 query_specification_ss_converted:  query_specification_select {
+		A4GL_set_sql_lineno(yylineno);
 	$<sql_string>$=make_select_stmt($<s_select>1);
 	map_select_stmt("SELECT",$<s_select>1);
 }

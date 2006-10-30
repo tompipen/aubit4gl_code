@@ -2,6 +2,7 @@
 
 
 select_statement_ss_str_converted : select_statement_ss_select  {
+		A4GL_set_sql_lineno(yylineno);
 		$<sql_string>$=make_select_stmt($<s_select>1);
 		map_select_stmt("SELECT",$<s_select>1);
 
@@ -67,6 +68,7 @@ select_statement21_ss_converted:
 		sf->nolog=0;
 		sf->order_by=$<s_select_list_item_list>6;
 		$<s_select>$->sf=sf;
+		A4GL_set_sql_lineno(yylineno);
 		$<sql_string>$=make_select_stmt($<s_select>$);
 		map_select_stmt("SELECT",$<s_select>$);
 }

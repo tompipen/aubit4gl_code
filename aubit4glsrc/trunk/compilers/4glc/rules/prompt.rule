@@ -8,6 +8,7 @@ prompt_cmd	:
 	PROMPT prompt_title opt_attributes KW_FOR opt_char
         variable opt_help_no
         opt_attributes {
+		map_ui_block("PROMPT");
                 push_blockcommand("PROMPT");
 		A4GL_new_events();
 		print_prompt_1($<ptr_list>2, $<str>3,$<str>5,$<str>7,$<str>8,0,last_style,$<str>6) ;
@@ -19,6 +20,7 @@ prompt_cmd	:
 		add_continue_blockcommand ("PROMPT");
 		print_prompt_end($<str>6);
                 pop_blockcommand("PROMPT");
+		map_ui_endblock("PROMPT");
 		A4GL_drop_events();
                 A4GL_lex_printcomment("/* END OF PROMPT */");
                 }
@@ -48,13 +50,19 @@ on_key_command_prompt : on_key_command {
 	print_onkey_1($<str>1);
  lastlineno=yylineno;} commands {
 	print_onkey_2_prompt();
+     map_ui_endevent(A4GL_EVENT_KEY_PRESS);
+
 }
 	| on_action { 
-		A4GL_add_onaction($<str>1);  print_onaction_1($<str>1); lastlineno=yylineno;} commands { print_onaction_2(); }
+		A4GL_add_onaction($<str>1);  print_onaction_1($<str>1); lastlineno=yylineno;} commands { print_onaction_2(); 
+     map_ui_endevent(A4GL_EVENT_ON_ACTION);
+}
 	| on_timer {
 		A4GL_add_ontimer($<str>1);  
 		print_ontimer_1($<str>1);
-	 lastlineno=yylineno;} commands { print_ontimer_2(); }
+	 lastlineno=yylineno;} commands { print_ontimer_2(); 
+     map_ui_endevent(A4GL_EVENT_ON_TIME);
+}
 	
 ;
 

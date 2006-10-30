@@ -10,8 +10,10 @@ opt_at : {
 		d->type=DT_DISPLAY_TYPE_LINE;
 		add_feature("UI_DISPLAY_LINE_MODE");
 		$<display>$=d;
+		map_ui("DISPLAY_LINE_MODE");
 	} 
 	| KW_AT fgl_expr_c KW_COMMA fgl_expr_c 		{ 
+		map_display_at($<ptr>4,$<ptr>2);
 		struct dt_display *d;
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_AT;
@@ -37,6 +39,7 @@ opt_at : {
 		d->u_data.field_list=$<field_list>2;
 		add_feature("UI_DISPLAY_TO");
 		$<display>$=d;
+		map_ui("DISPLAYTO");
 			}
 	| KW_TO KWFORM identifier KWFIELD field_name_list_as_struct { 
 		struct dt_display *d;
@@ -62,6 +65,7 @@ opt_at : {
 display_b_n_cmd : DISPLAY_BY_NAME ibind_var_list display_attr {
 		add_feature("DISPLAY_BY_NAME");
 		print_display_by_name($<str>3,last_style);
+		map_ui("DISPLAYBYNAME");
                 } 
 ;
 
@@ -75,11 +79,13 @@ display_cmd : KW_DISPLAY fgl_expr_list_ptr opt_at display_attr {
 display_form_cmd : DISPLAY_FORM form_name display_attr {
 		add_feature("UI_DISPLAY_FORM");
 		print_display_form($<str>2,$<str>3,last_style);
+		map_ui("DISPLAYFORM");
 	}
 ;
 
 display_array_cmd : DISPLAY_ARRAY {
 		add_feature("UI_DISPLAY_ARRAY");
+		map_ui_block("DISPLAYARRAY");
 		push_blockcommand("DISPLAY");
 		curr_input_array_attribs.curr_row_display=0;
 		} 
@@ -95,6 +101,7 @@ display_array_cmd : DISPLAY_ARRAY {
 		print_display_array_p2();
 		pop_blockcommand("DISPLAY");
 	  	A4GL_drop_events();
+		map_ui_endblock("DISPLAYARRAY");
 }
 ;
 
@@ -130,6 +137,7 @@ disp_field_command :
 	 lastlineno=yylineno;	} 
 	commands {
 		print_befaft_field_2();
+		map_ui_endevent(A4GL_EVENT_AFT_ROW);
 	}
 	| BEFROW {
 		A4GL_add_event(A4GL_EVENT_BEF_ROW,"");
@@ -137,6 +145,7 @@ disp_field_command :
 	 lastlineno=yylineno;	} 
 	commands {
 		print_befaft_field_2();
+		map_ui_endevent(A4GL_EVENT_BEF_ROW);
 	}
 	| on_key_command {
 		A4GL_add_onkey_key($<str>1);
@@ -144,19 +153,26 @@ disp_field_command :
 	 lastlineno=yylineno;	} 
 	commands {
 		print_onkey_2();
+		map_ui_endevent(A4GL_EVENT_KEY_PRESS);
 	}
-	| on_action { A4GL_add_onaction($<str>1);  print_onaction_1($<str>1); lastlineno=yylineno;} commands { print_onaction_2(); }
-	| on_timer { A4GL_add_ontimer($<str>1);  print_ontimer_1($<str>1); lastlineno=yylineno;} commands { print_ontimer_2(); }
+	| on_action { A4GL_add_onaction($<str>1);  print_onaction_1($<str>1); lastlineno=yylineno;} commands { print_onaction_2(); 
+		map_ui_endevent(A4GL_EVENT_ON_ACTION);
+}
+	| on_timer { A4GL_add_ontimer($<str>1);  print_ontimer_1($<str>1); lastlineno=yylineno;} commands { print_ontimer_2();
+		map_ui_endevent(A4GL_EVENT_ON_TIME);
+ }
 	| AFTER_DISPLAY {
 		      A4GL_add_event(A4GL_EVENT_AFTER_INP,"");
 		      print_befaft_field_1("AFTER_INP");
 		 lastlineno=yylineno;} commands {
 	             print_befaft_field_2();
+		map_ui_endevent(A4GL_EVENT_AFTER_INP);
 		}
         | BEFORE_DISPLAY { A4GL_add_event(A4GL_EVENT_BEFORE_INP,"");
 	          print_befaft_field_1("BEFORE_INP");
 	 lastlineno=yylineno;} commands {
 	        print_befaft_field_2();
+		map_ui_endevent(A4GL_EVENT_BEFORE_INP);
 	}
 
 ;

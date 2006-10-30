@@ -11,43 +11,51 @@ start_cmd :
 			p=A4GL_new_expr_simple(ET_EXPR_REPORT_PRINTER);
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			print_start_report("P",p,$<str>2,$<str>4);
 			}
 	| START_REPORT rep_name TO_EMAIL  op_with_dim {
 			struct expr_str *p;
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			p=A4GL_new_expr_simple_string($<str>2,ET_EXPR_REPORT_EMAIL);
 			print_start_report("M",p,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name KW_TO rout op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			print_start_report("F",$<ptr>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_FILE rout op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			print_start_report("F",$<ptr>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_PIPE rout op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			print_start_report("P",$<ptr>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_SCREEN op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			print_start_report("S",0,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name AS_CONVERTIBLE  op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			print_start_report("C",0,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name  op_with_dim {
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
 			print_start_report("",0,$<str>2,$<str>3);
 			}
 ;
@@ -665,6 +673,7 @@ report_def : REPORT
 		inc_report_cnt();
 		sprintf(curr_func,"%s",$<str>3);
 		ADDMAP_MODULE("Define Report",curr_func);
+	map_report_start(curr_func);
 		variable_action(-1,$<str>3,"","","add_function");
 		set_curr_rep_name($<str>3);
 		print_report_1($<str>3);
@@ -699,6 +708,7 @@ report_def : REPORT
 		pop_blockcommand("REPORT");
  	A4GL_chk_and_clr_labels();
 		print_report_end() ;
+	map_report_end();
 		}
 ;
 

@@ -116,6 +116,7 @@ func_def	: ldeffunction {
 				variable_action(-1,$<str>3,"","","add_function");
 			}
   			sprintf(curr_func,"%s",$<str>3);
+			map_function_start(curr_func);
   			ADDMAP_MODULE("Declare Function",curr_func);
   			cnt=0;
   			print_func_start_1($<str>1,$<str>3,0);
@@ -145,6 +146,7 @@ end_func_command :
     clr_function_constants ();
     A4GL_lex_printcomment("/*end function*/\n");
     A4GL_chk_and_clr_labels();
+	map_function_end();
   }
 ;
 
@@ -160,6 +162,7 @@ main_def:
     print_main_1();
     push_blockcommand("MAIN"); 
     ADDMAP_MODULE("MAIN","MAIN");
+	map_function_start("MAIN");
   } 
   define_section
   {
@@ -172,6 +175,7 @@ main_def:
 commands END_MAIN {
 pop_blockcommand("MAIN");
     A4GL_chk_and_clr_labels();
+	map_function_end();
 print_main_end();
 A4GL_lex_printcomment("/*end main */\n");} ;
 

@@ -1,11 +1,11 @@
-run_cmd : KW_RUN fgl_expr_c  				{ print_system_run($<ptr>2,0,0); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c run_mode 			{ print_system_run($<ptr>2,$<integer_val>3,0); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c RETURNING variable 		{ print_system_run($<ptr>2,1,$<str>4); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c WITHOUT_WAITING 		{ print_system_run($<ptr>2,2,0); add_feature("RUN");}
-	| KW_RUN fgl_expr_c run_mode RETURNING variable { print_system_run($<ptr>2,1+$<integer_val>3,$<str>5); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c run_mode WITHOUT_WAITING 	{ print_system_run($<ptr>2,2+$<integer_val>3,0); add_feature("RUN");}
-	| KW_RUN fgl_expr_c WAIT 			{ print_system_run($<ptr>2,0,0); add_feature("RUN");}
-	| KW_RUN fgl_expr_c EXIT 			{ print_system_run($<ptr>2,0,0); add_feature("RUN");}
+run_cmd : KW_RUN fgl_expr_c  				{ map_run($<ptr>2); print_system_run($<ptr>2,0,0); add_feature("RUN");} 
+	| KW_RUN fgl_expr_c run_mode 			{ map_run($<ptr>2); print_system_run($<ptr>2,$<integer_val>3,0); add_feature("RUN");} 
+	| KW_RUN fgl_expr_c RETURNING variable 		{ map_run($<ptr>2); print_system_run($<ptr>2,1,$<str>4); add_feature("RUN");} 
+	| KW_RUN fgl_expr_c WITHOUT_WAITING 		{ map_run($<ptr>2); print_system_run($<ptr>2,2,0); add_feature("RUN");}
+	| KW_RUN fgl_expr_c run_mode RETURNING variable { map_run($<ptr>2); print_system_run($<ptr>2,1+$<integer_val>3,$<str>5); add_feature("RUN");} 
+	| KW_RUN fgl_expr_c run_mode WITHOUT_WAITING 	{ map_run($<ptr>2); print_system_run($<ptr>2,2+$<integer_val>3,0); add_feature("RUN");}
+	| KW_RUN fgl_expr_c WAIT 			{ map_run($<ptr>2); print_system_run($<ptr>2,0,0); add_feature("RUN");}
+	| KW_RUN fgl_expr_c EXIT 			{ map_run($<ptr>2); print_system_run($<ptr>2,0,0); add_feature("RUN");}
 ;
 
 run_mode : 

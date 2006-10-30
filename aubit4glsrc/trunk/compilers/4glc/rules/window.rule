@@ -15,15 +15,15 @@ op_to_defs :
 | TO_DEFAULTS { strcpy($<str>$,"1"); }
 ;
 
-clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"screen\""); add_feature("UI_CLEAR_SCREEN");}
-		|	CLEARWIN win_name { print_clr_window($<str>2); add_feature("UI_CLEAR_WINDOW");}
+clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"screen\""); add_feature("UI_CLEAR_SCREEN"); map_ui("CLEARSCREEN");}
+		|	CLEARWIN win_name { print_clr_window($<str>2); add_feature("UI_CLEAR_WINDOW"); map_ui("CLEARWINDOW");}
 		|	CLEARSTAT win_name { print_clr_window($<str>2); }
-		|	CLEARFORM { print_clr_form(0,0,"0"); add_feature("UI_CLEAR_FORM");}
-		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1"); }
+		|	CLEARFORM { print_clr_form(0,0,"0"); add_feature("UI_CLEAR_FORM"); map_ui("CLEARFORM");}
+		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1");  map_ui("CLEARFORM");}
 		|	CLEAR_X_FORM form_name op_clr_fields  op_to_defs { print_clr_form($<str>2,$<str>3,$<str>4); }
 		|	CLEAR field_name_list_as_struct op_to_defs {
 			print_clr_fields_fl($<field_list>2,$<str>3);
-				add_feature("UI_CLEAR_FIELD");
+				add_feature("UI_CLEAR_FIELD"); map_ui("CLEARFIELDS");
 		}
 ;
 
@@ -35,11 +35,11 @@ clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"s
 
 current_win_cmd	:	CWIS {
 	print_current_window("\"screen\"");
-		add_feature("CURRENT_WINDOW_IS_SCREEN");
+		add_feature("CURRENT_WINDOW_IS_SCREEN"); map_ui("CURRENTWINDOWIS");
 }
 		|	CURRENT_WINDOW_IS win_name 
 {
-		add_feature("CURRENT_WINDOW_IS");
+		add_feature("CURRENT_WINDOW_IS"); map_ui("CURRENTWINDOWIS");
 	print_current_window($<str>2);
 };
 
@@ -53,6 +53,7 @@ window_type	:	fgl_expr_c ROWS KW_COMMA fgl_expr_c COLUMNS {
 
 				$<open_window_type>$=p;
 
+
 		}
 		|	KWFORM fgl_expr_c { 
 				struct ow_open_window *p;
@@ -62,6 +63,7 @@ window_type	:	fgl_expr_c ROWS KW_COMMA fgl_expr_c COLUMNS {
 				add_feature("USES_FORM"); 
 				reset_attrib(&form_attrib); 
 				$<open_window_type>$=p;
+			map_open_form($<ptr>2);
 
 		}
 ;

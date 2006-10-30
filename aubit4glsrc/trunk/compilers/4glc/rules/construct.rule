@@ -8,6 +8,7 @@ construct_cmd	:	CONSTRUCT
 {
 add_feature("UI_CONSTRUCT");
 push_blockcommand("CONSTRUCT");
+map_ui_block("CONSTRUCT");
 A4GL_new_events();
 } 
 constr_rest 
@@ -16,6 +17,7 @@ constr_rest
 } 
 end_constr {
 	print_construct_2($<str>3);
+map_ui_endblock("CONSTRUCT");
 A4GL_drop_events();
 start_bind('i',0);
 }
