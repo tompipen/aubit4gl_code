@@ -497,11 +497,10 @@ print_agg_defines char t int a -> int
 * print_define char* varstring,int isstatic_extern -> void
 * print_returning -> void
 *A4GL_get_default_scaling -> char*
+A4GL_add_crud char* t char* v -> void
 
 *   print_call_shared_bound char* libfile char* funcname -> void
-
 *   print_end_call_shared -> void
-
 *   print_call_external t_expr_str_list* expr char* host,char* funcname,char* port -> void
 
 * print_end_call_external -> void

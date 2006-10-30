@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.44 2006-10-23 08:49:08 mikeaubury Exp $
+# $Id: map.c,v 1.45 2006-10-30 09:31:25 mikeaubury Exp $
 #*/
 
 /**
@@ -56,10 +56,11 @@ int A4GL_has_column (char *t, char *c);
 */
 
 static FILE *mapfile = 0;	/* The map file pointer opened file */
-static FILE *crudfile = 0;	/* The map file pointer opened file */
+FILE *crudfile = 0;	/* The map file pointer opened file */
 extern char curr_func[];
 extern int yylineno;
 extern char infilename[];
+static char *module_name_without_dirstart(char *s) ;
 
 /*
 =====================================================================
@@ -139,8 +140,8 @@ openmap (char *s)
 	  FPRINTF (stderr, "Unable to open CRUD map file\n");
 	  exit (1);
 	}
-      FPRINTF(crudfile,"<?xml version=\"1.0\"?>\n");
-      FPRINTF(crudfile,"<MODULE name=\"%s\">\n",infilename);
+      FPRINTF(crudfile,"<MODULE name=\"%s\">\n",module_name_without_dirstart(infilename));
+      FPRINTF(crudfile,"   <FUNCTIONS>\n",module_name_without_dirstart(infilename));
 
 
     }
@@ -202,6 +203,7 @@ closemap (void)
   if (mapfile)
     fclose (mapfile);
   if (crudfile)  {
+         FPRINTF(crudfile,"   </FUNCTIONS>\n");
 	  FPRINTF(crudfile,"</MODULE>\n");
 	  fclose(crudfile);
   }
@@ -270,6 +272,7 @@ rm_quote (char *s)
 
 
 
+#ifdef MOVED
 //
 // CRUD mapping...
 //
@@ -504,7 +507,7 @@ map_select_list_item_i (char *stmttype, struct s_select *select, struct s_select
 	if (p->u_data.column.colname==0) return;
       if (p->u_data.column.tabname && strlen (p->u_data.column.tabname))
 	{
-	  FPRINTF (crudfile,"<COLUMN name=\"%s\" table=\"%s\"/>\n", p->u_data.column.colname, p->u_data.column.tabname);
+	  FPRINTF (crudfile,"<COLUMN NAME=\"%s\" TABLE=\"%s\" REALTABLE=\"%s\" />\n", p->u_data.column.colname, p->u_data.column.tabname,find_tabname_for_alias(select,p->u_data.column.tabname));
 	  return;
 	}
       else
@@ -599,8 +602,99 @@ static void map_select_list_item (char *stmttype,struct s_select *select, struct
 }
 
 
+void map_open_form(struct expr_str *s) {
+	if (crudfile==0) return;
+	if (s->expr_type==ET_EXPR_EXPR_LIST) {
+		printf("LIST : %d\n",s->u_data.expr_list->nlist);
+		//s=s->u_data.expr_list->list[0];
+	}
+
+	if (s->expr_type==ET_EXPR_LITERAL_STRING) {
+  		FPRINTF (crudfile,"<FORM FILENAME=\"%s\" MODULE=\"%s\" LINENO=\"%d\"/>\n",s->u_data.expr_string,module_name_without_dirstart(infilename),yylineno);
+	} else {
+		printf(" OPEN FORM : %s (%d)\n",expr_name(s->expr_type),yylineno);
+		
+  		FPRINTF (crudfile,"<FORM FILENAME=VARIABLE MODULE=\"%s\" LINENO=\"%d\"/>\n",s->u_data.expr_string,module_name_without_dirstart(infilename),yylineno);
+	}
+}
 
 
+void map_function_start(char *s) {
+if (crudfile ) { 
+  	FPRINTF (crudfile,"<FUNCTION NAME=\"%s\" MODULE=\"%s\" LINENO=\"%d\">\n",s,module_name_without_dirstart(infilename),yylineno);
+}
+}
+
+void map_function_end() {
+if (crudfile ) { 
+  	FPRINTF (crudfile,"</FUNCTION>\n");
+}
+}
+
+
+void map_call(char *s) {
+extern char *builtin_aclfgl_functions[];
+int a;
+if (crudfile ) { 
+	for (a=0;builtin_aclfgl_functions[a];a++) {
+		if (strcmp(builtin_aclfgl_functions[a],s)==0) return; // Ignore...
+	}
+  		FPRINTF (crudfile,"<CALL NAME=\"%s\" MODULE=\"%s\" LINENO=\"%d\"/>\n",s,module_name_without_dirstart(infilename),yylineno);
+	}
+}
+
+void map_start_report(char *s) {
+	if (crudfile ) { 
+  		FPRINTF (crudfile,"<CALL NAME=\"%s\" MODULE=\"%s\" LINENO=\"%d\"/>\n",s,module_name_without_dirstart(infilename),yylineno);
+	}
+}
+
+void map_report_start(char *s) {
+if (crudfile ) { 
+  	FPRINTF (crudfile,"<REPORT NAME=\"%s\" MODULE=\"%s\" LINENO=\"%d\">\n",s,module_name_without_dirstart(infilename),yylineno);
+}
+}
+
+
+void map_report_end() {
+if (crudfile ) { 
+  	FPRINTF (crudfile,"</REPORT>\n");
+}
+}
+
+
+
+
+void map_run(struct expr_str *s) {
+if (crudfile ) { 
+	printf("%d - %s \n",s->expr_type,expr_name(s->expr_type));
+	if (s->expr_type==ET_EXPR_LITERAL_STRING) {
+  		FPRINTF (crudfile,"<RUN MODULE=\"%s\" LINENO=\"%d\">",module_name_without_dirstart(infilename),yylineno);
+		FPRINTF (crudfile,"%s",s->u_data.expr_string);
+  		FPRINTF (crudfile,"</RUN>");
+	}
+
+	if (s->expr_type==ET_EXPR_PUSH_VARIABLE) {
+		if (A4GL_has_pointer(s->u_data.expr_push_variable->variable,LAST_STRING)) {
+  			FPRINTF (crudfile,"<RUN MODULE=\"%s\" LINENO=\"%d\">",module_name_without_dirstart(infilename),yylineno);
+			FPRINTF (crudfile,"%s",A4GL_find_pointer(s->u_data.expr_push_variable->variable,LAST_STRING));
+  			FPRINTF (crudfile,"</RUN>");
+		} else {
+			if (A4GL_has_pointer(s->u_data.expr_push_variable->variable,LAST_STRING_START)) {
+  			FPRINTF (crudfile,"<RUN MODULE=\"%s\" LINENO=\"%d\">",module_name_without_dirstart(infilename),yylineno);
+			FPRINTF (crudfile,"%s",A4GL_find_pointer(s->u_data.expr_push_variable->variable,LAST_STRING_START));
+  			FPRINTF (crudfile,"</RUN>");
+			} else {
+  			FPRINTF (crudfile,"<RUN MODULE=\"%s\" LINENO=\"%d\">",module_name_without_dirstart(infilename),yylineno);
+			FPRINTF (crudfile,"%s",s->u_data.expr_push_variable->variable);
+  			FPRINTF (crudfile,"</RUN>");
+			}
+
+		}
+	}
+
+}
+}
 
 void
 map_select_stmt (char *main_statement_type, struct s_select *select)
@@ -613,7 +707,7 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
 
   if (strcmp (main_statement_type, "SUBSELECT") != 0)
     {
-  	FPRINTF (crudfile,"<CRUD STATEMENT=\"%s\" FUNCTION=\"%s\" LINENO=\"%d\" MODULE=\"%s\">\n",main_statement_type,curr_func,yylineno,infilename);
+  	FPRINTF (crudfile,"<CRUD STATEMENT=\"%s\" FUNCTION=\"%s\" LINENO=\"%d\" MODULE=\"%s\">\n",main_statement_type,curr_func,yylineno,module_name_without_dirstart(infilename));
     } else {
   	FPRINTF (crudfile,"<%s>\n", main_statement_type);
     }
@@ -630,7 +724,7 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
       		A4GL_trim(alias);
       }
       A4GL_trim(tabname);
-      FPRINTF (crudfile,"<TABLE name=\"%s\" alias=\"%s\" />\n", tabname, alias);
+      FPRINTF (crudfile,"<TABLE NAME=\"%s\" ALIAS=\"%s\" />\n", tabname, alias);
     }
 
 
@@ -683,13 +777,13 @@ map_delete_update (char *main_statement_type, char *table, struct s_select_list_
   select->where_clause = i;
   select->first = A4GLSQLPARSE_new_tablename (table, 0);
 
-  FPRINTF (crudfile,"<CRUD STATEMENT=\"%s\" FUNCTION=\"%s\" LINENO=\"%d\" MODULE=\"%s\">\n",main_statement_type,curr_func,yylineno,infilename);
+  FPRINTF (crudfile,"<CRUD STATEMENT=\"%s\" FUNCTION=\"%s\" LINENO=\"%d\" MODULE=\"%s\">\n",main_statement_type,curr_func,yylineno,module_name_without_dirstart(infilename));
   FPRINTF(crudfile,"<TABLE name=\"%s\"/>\n",table);
   if (strcmp(main_statement_type,"UPDATE")==0) {
 	  int a;
 	   for (a = 0; a < A4GL_4glc_gen_cnt (UPDCOL); a++)
 	        {
-			   FPRINTF(crudfile,"<COLUMN name=\"%s\" table=\"%s\"/>\n",A4GL_4glc_get_gen (UPDCOL, a),table);
+			   FPRINTF(crudfile,"<COLUMN NAME=\"%s\" TABLE=\"%s\"/>\n",A4GL_4glc_get_gen (UPDCOL, a),table);
 		}
 
   }
@@ -703,5 +797,17 @@ map_delete_update (char *main_statement_type, char *table, struct s_select_list_
 
 }
 
+static char *module_name_without_dirstart(char *s) {
+char *ptr;
+ptr=acl_getenv_not_set_as_0("DIRSTART");
+if (ptr==0) return s;
 
+if (strncmp(s,ptr,strlen(ptr))!=0) {
+	return s;
+}
+s+=strlen(ptr);
+return s;
+}
+
+#endif
 /* ================================ EOF ============================== */

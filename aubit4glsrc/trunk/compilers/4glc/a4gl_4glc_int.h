@@ -591,6 +591,25 @@ get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, 
 #define add_feature A4GL_add_feature
 
 
+
+void map_open_form(struct expr_str *s) ;
+void map_function_start(char *s) ;
+void map_function_end(void) ;
+void map_call(char *s) ;
+void map_start_report(char *s) ;
+void map_ui(char *s) ;
+void map_ui_event(int n,char *s);
+void map_report_start(char *s) ;
+void map_report_end(void) ;
+void map_display_at(struct expr_str *x,struct expr_str *y) ;
+void map_run(struct expr_str *s) ;
+void map_ui_block(char *s) ;
+void map_ui_endblock(char *s) ;
+
+
+
+
+
 // printf is often used for debug messages during
 // development
 // to make it quicker to find these - we'll remove 

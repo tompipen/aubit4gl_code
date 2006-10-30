@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.87 2006-10-23 08:49:08 mikeaubury Exp $
+# $Id: variables.c,v 1.88 2006-10-30 09:31:26 mikeaubury Exp $
 #
 */
 
@@ -55,6 +55,7 @@ extern char *outputfilename;
 //#define PRINT_CONSTANTS
 char scopes[200];
 int scopes_cnt=0;
+int has_fbind(char *s) ;
 
 
 int class_cnt=0;
@@ -99,7 +100,7 @@ void set_last_class_var(char *s);
 int A4GL_findex (char *str, char c);
 /*void dump_gvars (void);*/
 //void set_yytext (char *s);
-//int isin_command (char *s);
+int isin_command (char *s);
 //char *rettype (char *s);
 int last_record_cnt=0;
 static char last_class_var[1024];
@@ -123,6 +124,12 @@ int list_global_alloc = 0;	/* Space allocated for our list*/
 struct variable **list_imported_global = 0;	/* Our List*/
 int list_imported_global_cnt = 0;	/* Number used in our list*/
 int list_imported_global_alloc = 0;	/* Space allocated for our list*/
+
+
+
+struct variable **list_external_global = 0;	/* Our List*/
+int list_external_global_cnt = 0;	/* Number used in our list*/
+int list_external_global_alloc = 0;	/* Space allocated for our list*/
 
 struct variable **list_module = 0;
 int list_module_cnt = 0;
@@ -1680,6 +1687,14 @@ print_module_variables (void)
 }
 
 
+int is_external_global(char *s) {
+int a;
+for (a=0;a<list_external_global_cnt;a++) {
+	if (strcmp(list_external_global[a]->names.name,s)==0) return 1;
+}
+return 0;
+}
+
 
 /******************************************************************************/
 void
@@ -1694,7 +1709,9 @@ print_global_variables (void)
 
   for (a = 0; a < list_global_cnt; a++)
     {
-      print_variable_new (list_global[a], 'g', 0);
+	if (!is_external_global(list_global[a]->names.name)) {
+      		print_variable_new (list_global[a], 'g', 0);
+	}
     }
 }
 

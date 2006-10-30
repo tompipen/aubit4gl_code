@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.285 2006-10-23 08:49:08 mikeaubury Exp $
+# $Id: mod.c,v 1.286 2006-10-30 09:31:25 mikeaubury Exp $
 #
 */
 
@@ -4192,7 +4192,7 @@ fix_update_expr (int mode)
 	strcat (big_buff, ",");
       if (A4GL_isyes (acl_getenv ("DOING_CM")))
 	{
-	  if (strcmp (A4GL_4glc_get_gen (UPDVAL, a), "?") == 0)
+	  if (strcmp (A4GL_4glc_get_gen (UPDVAL, a), "?") == 0 && 0)
 	    {
 	      A4GL_assertion (1, "How ?");
 	    }
@@ -4798,6 +4798,7 @@ A4GL_add_ontimer (char *s)
 void
 A4GL_add_event (int n, char *s)
 {
+  map_ui_event(n,s);
   event_queue[nevent_queue].nevents++;
   event_queue[nevent_queue].events =
     acl_realloc (event_queue[nevent_queue].events,
