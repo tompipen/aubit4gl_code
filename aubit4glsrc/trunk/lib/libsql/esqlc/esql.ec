@@ -24,9 +24,18 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.167 2006-10-29 14:23:38 briantan Exp $
+# $Id: esql.ec,v 1.168 2006-10-30 10:56:42 afalout Exp $
 #
 */
+
+/*
+
+WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commnets
+				( "//" ) in EXEC SQL - please do not use them in this file 
+
+*/
+
+
 
 /*
  * @file
@@ -179,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.167 2006-10-29 14:23:38 briantan Exp $";
+  "@(#)$Id: esql.ec,v 1.168 2006-10-30 10:56:42 afalout Exp $";
 #endif
 
 
@@ -524,13 +533,13 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 // Have we got an active db session ?
   if (have_connected)
     {
+
       EXEC SQL DISCONNECT 'default';
       removeESQLConnection ("default");
-      // Not any more we haven't...
+      // Not any more we havent...
     }
 
   EXEC SQL connect to:db as 'default';
-
   A4GL_debug ("Sqlca=%d", sqlca.sqlcode);
 
   if (isSqlError ()) {
@@ -616,6 +625,7 @@ int A4GLSQL_make_connection
   userName = strdup (uid_p);
   passwd = strdup (pwd_p);	//Querix esql/c compiler chokes here....
   EXEC SQL connect to:dbName as 'default' user:userName using:passwd;
+
   if (isSqlError ())
     retval = 1;
   else

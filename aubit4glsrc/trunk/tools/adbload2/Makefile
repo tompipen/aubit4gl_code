@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.3 2006-10-21 13:02:56 afalout Exp $
+# $Id: Makefile,v 1.4 2006-10-30 10:56:42 afalout Exp $
 #
 
 ROOT    =../..
@@ -41,10 +41,11 @@ include ${ROOT}/incl/Makefile-common
 ##                    Settings
 ## ==================================================================
 
-CFLAGS=-g
+CFLAGS			=-g
 
-ALL=${BINROOT}/adbload2
-FGLPC=${BINROOT}/4glpc
+ALL				=${BINROOT}/adbload2
+#FGLPC_VERBOSE	=-V5
+FGLPC			=${BINROOT}/4glpc ${FGLPC_VERBOSE}
 
 ## ==================================================================
 ##                    Targets
@@ -55,7 +56,8 @@ all: ${ALL}
 
 adbload2: ${BINROOT}/adbload2
 ${BINROOT}/adbload2: adbload2_parse.tab.o parse.o adbload2.o process.o
-	${FGLPC} -t EC -g -o $@ $^ -L${LIBROOT} -laubit4gl
+	${FGLPC} -t EC -g -o $@ $^ -L${LIBROOT} 
+#	-laubit4gl
 
 ## ==================================================================
 ##                    Sub-targets
@@ -94,7 +96,7 @@ show:
 ## ==================================================================
 
 clean: 
-	${RM} *.o lex.yy.c adbload2_parse.tab.c ${ALL} \
+	${RM} *.o lex.yy.c adbload2_parse.tab.c ${ALL} *.c_ \
 	*.glb *~ *.bak y.tab.c adbload2.h adbload2.c process.c adbload2.ec
 
 # ------------------------------ EOF ---------------------------------

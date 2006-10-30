@@ -24,9 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.54 2006-10-30 08:55:24 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.55 2006-10-30 10:56:41 afalout Exp $
 #
 */
+
+/*
+
+WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commnets
+				( "//" ) in EXEC SQL - please do not use them in this file 
+
+*/
+
 
 /**
  * @file

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2006-10-10 05:45:46 afalout Exp $
+# $Id: Makefile,v 1.3 2006-10-30 10:56:35 afalout Exp $
 #
 
 ROOT    =../../..
@@ -62,5 +62,5 @@ test1.4ae: test1.4gl
 ## =================================crc32_table.h  mem.4gl      memcache.c   mem.h              test1.err
 
 clean:
-	${RM} mem.h *.err *.ao test1.h mem.c *.so *~ *.glb test1.c ${ALL}
+	${RM} mem.h *.err *.ao test1.h mem.c *.so *~ *.glb test1.c ${ALL} *.err
 

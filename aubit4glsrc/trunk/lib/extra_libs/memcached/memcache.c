@@ -31,11 +31,13 @@
  * domain.  Attribution still noted. */
 
 #include <ctype.h>
+//memcache.c:34:17: err.h: No such file or directory
 #include <err.h>
 #include <string.h>
 #include <strings.h>
 #include <stdio.h>
 #include <stdlib.h>
+//memcache.c:39:22: sysexits.h: No such file or directory
 #include <sysexits.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -45,10 +47,15 @@
 # define __USE_POSIX
 #endif
 #include <sys/time.h>
+//memcache.c:48:24: sys/socket.h: No such file or directory
 #include <sys/socket.h>
+//memcache.c:49:21: sys/uio.h: No such file or directory
 #include <sys/uio.h>
+//memcache.c:50:19: netdb.h: No such file or directory
 #include <netdb.h>
+//memcache.c:51:24: netinet/in.h: No such file or directory
 #include <netinet/in.h>
+//memcache.c:52:25: netinet/tcp.h: No such file or directory
 #include <netinet/tcp.h>
 #include <unistd.h>
 #include <fcntl.h>

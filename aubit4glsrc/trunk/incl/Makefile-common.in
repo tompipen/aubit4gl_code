@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.204 2006-10-29 06:42:53 afalout Exp $
+# $Id: Makefile-common.in,v 1.205 2006-10-30 10:56:34 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -958,6 +958,13 @@ IFX_LIBS            =@IFX_LIBS@
 INFORMIXC			=@INFORMIXC@
 INFORMIXDIR			=@INFORMIXDIR@
 INFORMIXDIR_UNQUOTED=@INFORMIXDIR_UNQUOTED@
+ifdef COMSPEC
+#WARNING: CygWin shell does funny things to variables that are quoted; string
+#'abc' becomes ''\''abc''\'' - try comparing output of 'set' and 'echo $VARNAME'
+#So - we cannot use qupted pats - MAKE SURE ALL PATHS WITH POTENTIAL SPACES IN THEM
+#ARE CONVERTED IN DOS 8.3 FORMAT!!!
+	INFORMIXDIR=${INFORMIXDIR_UNQUOTED}
+endif
 export INFORMIXDIR
 
 # Querix 

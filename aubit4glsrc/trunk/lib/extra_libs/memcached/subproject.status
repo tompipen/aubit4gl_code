@@ -10,4 +10,4 @@ Regressed: ?
 Maintainer: MA
 Status: 3
 Todo: Makefile is non-standard
-Notes: memcached is a high-performance, distributed memory object caching system, generic in nature, but intended for use in speeding up dynamic web applications by alleviating database load.
+Notes: memcached is a high-performance, distributed memory object caching system, generic in nature, but intended for use in speeding up dynamic web applications by alleviating database load. For Windows port, see http://jehiah.com/projects/memcached-win32/

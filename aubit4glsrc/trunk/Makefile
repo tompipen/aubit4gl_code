@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.30 2006-10-21 13:02:33 afalout Exp $
+# $Id: Makefile,v 1.31 2006-10-30 10:56:16 afalout Exp $
 #
 
 ## ==================================================================
@@ -230,7 +230,7 @@ api.headers:
 ##                              LibLogical targets
 ## ==================================================================
 
-liblogical: ${LIBLOGICAL_BUILD} 
+liblogical: ${LIBLOGICAL_BUILD}
 ifneq "${GTK_VERSION}" "2.0"
 	@echo " "
 	@echo " ** WARNING:"	
@@ -1651,6 +1651,7 @@ show:
 	@echo "A4GL_LEXDIALECT in aubit-config=`aubit-config A4GL_LEXDIALECT`"
 	@echo "FGLPC_SETTINGS_DEST=${FGLPC_SETTINGS_DEST}"
 	@echo "FGLPC_SETTINGS_PATH=${FGLPC_SETTINGS_PATH}"
+	@echo "LIBLOGICAL_BUILD=${LIBLOGICAL_BUILD}"
 
 show.windows:
 	@echo "MSYS_SH=${MSYS_SH}"

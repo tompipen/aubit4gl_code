@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2006-10-29 06:42:53 afalout Exp $
+# $Id: Makefile,v 1.15 2006-10-30 10:56:42 afalout Exp $
 #
 
 ROOT		=../../..
@@ -203,18 +203,21 @@ ALL: ${ALL}
 
 ##################
 #ESQL/C database plug-in compiled with Informix ESQL/C compiler:
-#${PLUGINDIR}/libSQL_esql${SO_EXT}: ${PLUGINDIR}/libSQL_esql${SO_EXT}
+libSQL_esql${SO_EXT}: ${PLUGINDIR}/libSQL_esql${SO_EXT}
 ${PLUGINDIR}/libSQL_esql${SO_EXT}: ${SRC}
 #	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 ifneq "${COMSPEC}" ""
+#Windows
 #	$(ESQL_SOMETHING) $(ESQL_FLAGS) -e $<
-	${IFMX_ESQLC} $(ESQL_FLAGS) -e $<
+	export INFORMIXDIR=${INFORMIXDIR_UNQUOTED} ; \
+		${IFMX_ESQLC} $(ESQL_FLAGS) -e $<
 	$(CC) $(CFLAGS_INFX) -c $(basename $<).c -o $(basename $<).o
 	-@rm $(basename $<).c $(basename $<).c_*
 	$(CC) $(LFLAGS_INFX) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
 else
-	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} -Wall \
-		${ESQL_INCLPATH} ${C_DFLAGS}
+#UNIX
+	export INFORMIXC=${INFORMIXC}; \
+		${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} -Wall ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS_INFX} $(SO_LDFLAGS) -g  esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
 
@@ -323,14 +326,23 @@ test_ecpg_config:
 
 #Debugging: show current settings od make variables
 show:
+ifdef COMSPEC
+	@echo "---------------------- Output of 'set' ----------------------------"
+	set
+	@echo "---------------------- Above: output of 'set' ----------------------------"
+endif
 	@echo "ONLY_IFX_LIBS=${ONLY_IFX_LIBS}"
 	@echo "IFXLIBS_LIB=${IFXLIBS_LIB}"
 	@echo "IFXLIBS_LIB_ESQL=${IFXLIBS_LIB_ESQL}"
 	@echo "NON_IFX_LIBS=${NON_IFX_LIBS}"
 	@echo "INFORMIXDIR=${INFORMIXDIR}"
+ifdef COMSPEC
+	@echo "INFORMIXDIR from set=`set | grep INFORMIXDIR`"
+endif
+	@echo "INFORMIXDIR_CSDK=${INFORMIXDIR_CSDK}"
+	@echo "INFORMIXDIR_UNQUOTED=${INFORMIXDIR_UNQUOTED}"
+	@echo "IFX_CSDK_DIR=${IFX_CSDK_DIR}"
 	@echo "IFX_LIBS=${IFX_LIBS}"
-	@echo "Output of 'set':"
-	set
 
 ## ==================================================================
 ##                              Clean

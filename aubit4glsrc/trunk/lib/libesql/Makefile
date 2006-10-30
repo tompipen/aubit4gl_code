@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.38 2006-10-10 05:45:48 afalout Exp $
+# $Id: Makefile,v 1.39 2006-10-30 10:56:41 afalout Exp $
 #
 
 ROOT    =../..
@@ -134,9 +134,11 @@ all: ${ALL}
 libESQL_INFORMIX${SO_EXT}: ${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}
 ${PLUGINDIR}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 ifneq "${COMSPEC}" ""
+#Windows
 	$(CC) $(LDFLAGS) -g -mms-bitfields -shared -Wl,--export-all-symbols \
 		$^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
+#Unix:
 	${IFMX_ESQLC}  ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}  
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
@@ -180,15 +182,18 @@ ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}: helper_funcs_infoflex.o
 #Infromix ESQL/C compiler
 helper_funcs_informix.o: helper_funcs.ec
 ifneq "${COMSPEC}" ""
+#Windows:
 #WARNING: Querix also has esqlc, and Informix esql invokes esqlc to compile .ec
 #WARNING: esql will strip all quotes, and invoke esqlc with un-quoted paths
 #that may contain spaces. If you get message "Input file name has invalid suffix ''"
 #that is probably what happened. You must double-quote it ('"..."')
-	$(ESQL) -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR_CSDK}/incl"' -e $<
+	export INFORMIXDIR=${INFORMIXDIR_UNQUOTED} ; \
+		$(ESQL) -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR_CSDK}/incl"' -e $<
 	$(CC) $(CFLAGS) -DDIALECT_INFORMIX -I"${INFORMIXDIR_CSDK}/incl/esql" \
 		-I"${INFORMIXDIR_CSDK}/incl" -c $(basename $<).c -o $@
 	-@rm $(basename $<).c $(basename $<).c_*
 else
+#UNIX:
 	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
 		-I"${INFORMIXDIR}/incl" 
 #solaris:
