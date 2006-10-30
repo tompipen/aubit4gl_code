@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.95 2006-09-13 20:35:45 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.96 2006-10-30 15:42:37 mikeaubury Exp $
 #
 */
 
@@ -2581,7 +2581,7 @@ A4GLSQLCV_check_tablename (char *t)
   A4GL_debug ("TABLE : %s\n", t);
 
 
-  if (strstr (t, "amarta"))
+  if (strstr (t, "amarta")&& A4GL_isyes(acl_getenv("AMARTA_TO_SOAL")))
     {
       int a;
       int b;
