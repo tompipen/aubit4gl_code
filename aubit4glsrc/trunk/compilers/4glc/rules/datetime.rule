@@ -4,15 +4,6 @@
 =====================================================================
 */
 
-/*
-extend_parameters: OPEN_BRACKET
-			fgl_expr_c
-			op_datetime_qual_i
-		CLOSE_BRACKET {
-			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>3);
-		}
-;
-*/
 
 
 

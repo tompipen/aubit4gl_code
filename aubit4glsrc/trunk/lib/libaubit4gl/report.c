@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.101 2006-10-16 16:34:11 mikeaubury Exp $
+# $Id: report.c,v 1.102 2006-10-30 08:55:22 mikeaubury Exp $
 #
 */
 
@@ -1068,7 +1068,6 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
       strcat (buff_3, tmpbuff);
     }
   strcat (buff_3, ")");
-
 
   return buff_3;
 }
