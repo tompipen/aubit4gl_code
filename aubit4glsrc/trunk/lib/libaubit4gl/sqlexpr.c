@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.39 2006-10-17 13:27:50 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.40 2006-10-30 09:43:33 mikeaubury Exp $
 #
 */
 
@@ -56,6 +56,7 @@ char *kw_ob = "(";
 char *kw_cb = ")";
 int place_holder_cnt = 0;
 int dont_set_for_single_table = 0;
+int set_sql_lineno=0;
 
 //char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
 //char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;
@@ -66,7 +67,7 @@ static void make_list_item_list_from_select_list (struct s_select *select,
 						  s_select_list_item_list *p);
 static void make_list_item_list_from_select (struct s_select *select,
 					     struct s_select_list_item *p);
-static char *find_tabname_for_alias (struct s_select *select, char *alias);
+char *find_tabname_for_alias (struct s_select *select, char *alias);
 //void save_temp_table (char *tabname,int select_into);
 //void load_temp_table (void);
 void make_list_in_subselect_stmt (struct s_select *orig,
@@ -78,6 +79,10 @@ void preprocess_sql_statement (struct s_select *select);
 //#define ADDMAP(x,y) addmap(x,y,0,0,0)
 
 //void addmap (char *t, char *s, char *w, int l, char *m);
+
+void A4GL_set_sql_lineno(int n) {
+	set_sql_lineno=n;
+}
 
 
 int A4GL_has_column (char *t, char *c);
@@ -1169,8 +1174,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	     params = get_select_list_item_list (select, p->u_data.fcall.params);
 
 	     rval = acl_strdup (A4GLSQLCV_sql_func (p->u_data.fcall.fname, params));
-	
-             free (params);
+             /* free (params); */
 	     return rval;
 	     	}
 /*
@@ -1500,8 +1504,11 @@ char * find_table (struct s_select *select, struct s_select_list_item *i)
 	      return select->table_elements.tables[a].tabname;
 	    }
 	}
-      FPRINTF (stderr, "Can't find table %s in FROM clause\n",
-	       i->u_data.column.tabname);
+	if (set_sql_lineno>0) {
+      		FPRINTF (stderr, "Can't find table %s in FROM clause @ line %d\n", i->u_data.column.tabname,set_sql_lineno);
+        } else {
+      		FPRINTF (stderr, "Can't find table %s in FROM clause\n", i->u_data.column.tabname);
+	}
       return i->u_data.column.tabname;
     }
   return "";
