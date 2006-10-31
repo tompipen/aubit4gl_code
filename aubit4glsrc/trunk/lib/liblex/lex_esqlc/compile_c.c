@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.336 2006-10-23 10:08:38 mikeaubury Exp $
+# $Id: compile_c.c,v 1.337 2006-10-31 15:14:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.336 2006-10-23 10:08:38 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.337 2006-10-31 15:14:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -313,6 +313,68 @@ static int is_just_expr_clipped(char *v,struct expr_str_list *ptr) {
 	}
 	return 0;
 
+}
+static char *starts_with_single_string(struct expr_str_list *ptr) {
+        struct expr_str *p;
+        int a;
+        char *buff=0;
+        // LAST_STRING <- USE TO SEARCH...!
+
+        if (ptr->nlist==1) {
+                p=ptr->list[0];
+                if (p->expr_type==ET_EXPR_PUSH_VARIABLE)        { return "Yes"; }
+                if (p->expr_type==ET_EXPR_LITERAL_STRING)       { return p->u_data.expr_string; }
+                if (p->expr_type==ET_EXPR_LITERAL_EMPTY_STRING) { return ""; }
+        }
+
+        for (a=0;a<1;a++) {
+                p=ptr->list[a];
+
+                if (p->expr_type==ET_EXPR_OP_CLIP) {
+                        p=p->u_data.expr_expr; // We'll ignore any clipping for the sake of determining if its a single string...
+                }
+
+                if (p->expr_type==ET_EXPR_OP_USING) {
+                        p=p->u_data.expr_op->left; // We'll ignore any USING string and just use it as is..
+                }
+
+                if (p->expr_type==ET_EXPR_LITERAL_STRING) {
+                        if (buff) {
+                                        buff=realloc(buff,(strlen(buff)+strlen(p->u_data.expr_string)+1));
+                                        strcat(buff,p->u_data.expr_string);
+                        } else {
+                                buff=strdup(p->u_data.expr_string);
+                        }
+                        continue;
+                }
+
+                if (p->expr_type==ET_EXPR_PUSH_VARIABLE) {
+                        // If we're using variables here - we really ought to store them somewhere
+                        // as we're replacing them with a '?'
+                        return 0;
+                        if ((p->u_data.expr_push_variable->var_dtype&DTYPE_MASK)==DTYPE_CHAR) { // Its a character strings
+                                int sz;
+                                sz=p->u_data.expr_push_variable->var_dtype>>16;
+                                if (sz>10) {
+
+                                        //printf("DTYPE : %x\n",p->u_data.expr_push_variable->var_dtype);
+                                        return 0;
+                                }
+                        }
+                        if (buff) {
+                                        buff=realloc(buff,(strlen(buff)+1+1));
+                                        strcat(buff,"`");
+                        } else {
+                                        buff=strdup("`");
+                        }
+                        continue;
+                }
+
+                //printf("Nope - %d. %d %s\n",a,p->expr_type,expr_name(p->expr_type));
+                return 0;
+        }
+
+        return buff;
 }
 
 static char *is_single_string(struct expr_str_list *ptr) {
@@ -2492,11 +2554,14 @@ LEXLIB_print_bind_pop2_g (t_expr_str_list *ptr, t_binding_comp_list *b)
 
       if (!is_just_expr_clipped(b->bind[a].varname,ptr)) {
 		char *ptr_str=0;
+		char *ptr_str_start=0;
 		
   		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
 			ptr=A4GL_rationalize_list_concat(ptr);
 			if ((b->bind[a].dtype&DTYPE_MASK)==DTYPE_CHAR) { 	// If its a character string - 
 				ptr_str=is_single_string(ptr);
+				ptr_str_start=starts_with_single_string(ptr);
+
 			}
   		}
 
@@ -2519,6 +2584,8 @@ LEXLIB_print_bind_pop2_g (t_expr_str_list *ptr, t_binding_comp_list *b)
 						} else {
 							A4GL_add_pointer(b->bind[a].varname,LAST_STRING,ptr_str);
 						}
+					 A4GL_add_pointer(b->bind[a].varname,LAST_STRING_START,ptr_str_start);
+
 			}
 
 		}
@@ -8128,5 +8195,27 @@ LEXLIB_change_arr_elem (char *s)
 			  strcat (buff, ")-1");
 			    A4GL_debug ("Generated... %s", buff);
 			      return buff;
+}
+
+
+
+void LEXLIB_print_loaded_globals_file(char *s) {
+	// Does nothing - required by the API
+}
+
+
+
+void LEXLIB_print_start_globals(void) {
+	// Does nothing - required by the API
+}
+
+void LEXLIB_print_end_globals(void) {
+	// Does nothing - required by the API
+}
+
+
+int LEXLIB_get_whenever_style(int code, char*whento) {
+	// We want the callbacks - so return 1
+	return 1;
 }
 

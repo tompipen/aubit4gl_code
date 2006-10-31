@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.45 2006-10-30 09:31:25 mikeaubury Exp $
+# $Id: map.c,v 1.46 2006-10-31 15:13:06 mikeaubury Exp $
 #*/
 
 /**
@@ -140,7 +140,7 @@ openmap (char *s)
 	  FPRINTF (stderr, "Unable to open CRUD map file\n");
 	  exit (1);
 	}
-      FPRINTF(crudfile,"<MODULE name=\"%s\">\n",module_name_without_dirstart(infilename));
+      //FPRINTF(crudfile,"<MODULE NAME=\"%s\">\n",module_name_without_dirstart(infilename));
       FPRINTF(crudfile,"   <FUNCTIONS>\n",module_name_without_dirstart(infilename));
 
 
@@ -204,7 +204,7 @@ closemap (void)
     fclose (mapfile);
   if (crudfile)  {
          FPRINTF(crudfile,"   </FUNCTIONS>\n");
-	  FPRINTF(crudfile,"</MODULE>\n");
+	  //FPRINTF(crudfile,"</MODULE>\n");
 	  fclose(crudfile);
   }
 }
@@ -632,9 +632,12 @@ if (crudfile ) {
 }
 
 
-void map_call(char *s) {
+void map_call(struct expr_str *p) {
 extern char *builtin_aclfgl_functions[];
 int a;
+char *s;
+s=p->u_data.fcall.fname;
+
 if (crudfile ) { 
 	for (a=0;builtin_aclfgl_functions[a];a++) {
 		if (strcmp(builtin_aclfgl_functions[a],s)==0) return; // Ignore...

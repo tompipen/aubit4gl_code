@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.123 2006-09-01 19:32:00 mikeaubury Exp $
+# $Id: lexer.c,v 1.124 2006-10-31 15:13:06 mikeaubury Exp $
 #*/
 
 /**
@@ -116,7 +116,7 @@ char *lastword;
 
 #define MAX_XWORDS 1024
 
-char xwords[MAX_XWORDS][256];
+char xwords[MAX_XWORDS][1024];
 char idents[256][256];
 long fpos;
 
@@ -323,7 +323,7 @@ isnum (char *s)
   int a;
   int dp = 0;
   int is_e = 0;
-  char orig[256];
+  char orig[1024];
   //int exp_n;
   if (strcmp(s,".")==0) return 0;
 
@@ -1009,7 +1009,7 @@ chk_word (FILE * f, char *str)
 {
   char *p;
   int t;
-  char buff[256];
+  char buff[1024];
 
   /* read the next word from the 4GL source file */
   p = read_word (f, &t);

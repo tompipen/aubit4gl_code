@@ -256,7 +256,7 @@ glob_section : define_section END_GLOBALS {
 	set_current_variable_scope('m');
 }
 | file_name {
-char b[256];
+	char b[256];
 	lastlineno=yylineno;
 	strcpy(b,$<str>1);
 	set_current_variable_scope('G');
@@ -264,6 +264,7 @@ char b[256];
 	A4GL_debug("Reading globals file %s\n",b);
 	rm_quote(b);
 	read_glob(b);
+	print_loaded_globals_file(b);
 	set_current_variable_scope('m');
 }
 | module_code  

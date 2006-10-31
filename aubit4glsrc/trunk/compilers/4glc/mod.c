@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.286 2006-10-30 09:31:25 mikeaubury Exp $
+# $Id: mod.c,v 1.287 2006-10-31 15:13:06 mikeaubury Exp $
 #
 */
 
@@ -3228,6 +3228,7 @@ char *whenever_store_p = 0;
 void
 set_whento_store (char *p)
 {
+//printf("p=%s\n",p);
   if (p)
     whentostore_p = acl_strdup (p);
   else
@@ -3249,6 +3250,7 @@ set_whento (char *p)
 void
 set_whenever_store (int c, char *p)
 {
+//printf("WHEN %d %s\n",c,p);
   whenever_store_c = c;
   if (p)
     whenever_store_p = acl_strdup (p);
@@ -3257,96 +3259,6 @@ set_whenever_store (int c, char *p)
 }
 
 
-#ifdef MOVED
-/**
- * Define the error handling after a certain point of the program.
- *
- * @param c The event to be catched:
- *  - WHEN_ERROR:
- *  - WHEN_ANYERROR:
- *  - WHEN_SQLERROR:
- *  - WHEN_WARNING:
- *  - WHEN_SQLWARNING:
- *  - WHEN_NOTFOUND:
- *  - WHEN_SUCCESS:
- *  - WHEN_SQLSUCCESS:
- * @param p The A4GL_action to execute.
- */
-void
-set_whenever (int c, char *p)
-{
-  int code;
-  int oldcode;
-  oldcode = c & 15;
-  c = c >> 4;
-  c = c << 4;
-  code = -1;
-  switch (c)
-    {
-    case WHEN_ERROR:
-      set_whenever (WHEN_SQLERROR, p);
-      code = A_WHEN_ERROR;
-      break;
-
-    case WHEN_ANYERROR:
-      set_whenever (WHEN_ERROR, p);
-      set_whenever (WHEN_SQLERROR, p);
-      code = A_WHEN_ERROR;
-      break;
-
-    case WHEN_SQLERROR:
-      code = A_WHEN_SQLERROR;
-      break;
-
-    case WHEN_WARNING:
-      code = A_WHEN_WARNING;
-      break;
-
-    case WHEN_SQLWARNING:
-      code = A_WHEN_SQLWARNING;
-      break;
-
-    case WHEN_NOTFOUND:
-      code = A_WHEN_NOTFOUND;
-      break;
-
-    case WHEN_SUCCESS:
-      code = A_WHEN_SUCCESS;
-      break;
-
-    case WHEN_SQLSUCCESS:
-      code = A_WHEN_SQLSUCCESS;
-      break;
-    }
-
-  if (code == -1)
-    {
-      PRINTF ("Code=%d (%x) to %p\n", c, c, p);
-      a4gl_yyerror ("Internal error setting whenever error...");
-      exit (0);
-    }
-
-  if (p)
-    {
-      strcpy (when_to[code], p);
-    }
-  else
-    {
-      strcpy (when_to[code], when_to_tmp);
-    }
-  when_code[code] = oldcode;
-
-  print_clr_status ();
-}
-
-
-void
-set_whenever_from_store (void)
-{
-  set_whento (whentostore_p);
-  set_whenever (whenever_store_c, whenever_store_p);
-}
-#endif
 
 
 /**

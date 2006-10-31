@@ -100,6 +100,9 @@ int get_curr_block (void);
 //void set_whenever (int c, char *p);
 
 
+void
+map_ui_endevent (int n);
+
 
 
 	/* ========================== Implemented in lexer.c ================= */
@@ -539,7 +542,7 @@ void A4GL_CV_print_exec_sql_bound(char *s) ;
 void A4GL_CV_print_do_select(char *s,t_binding_comp_list *outbind) ;
 
 
-char *A4GL_CV_print_select_all(char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind) ;
+char *A4GL_CV_print_select_all(char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind,int used_with_declare) ;
 //char *A4GL_compiled_sqlpack(void);
 char *A4GL_decode_packtype(char *s);
 void A4GL_cursor_defined(char *s,char type) ;
@@ -595,7 +598,7 @@ get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, 
 void map_open_form(struct expr_str *s) ;
 void map_function_start(char *s) ;
 void map_function_end(void) ;
-void map_call(char *s) ;
+void map_call(struct expr_str *s) ;
 void map_start_report(char *s) ;
 void map_ui(char *s) ;
 void map_ui_event(int n,char *s);

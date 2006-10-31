@@ -492,8 +492,8 @@ function_call_expr:
 	}
  	| identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		ADDMAP("Call",$<str>1);
-		map_call($<str>1);
 		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,infilename,lastlineno);
+		map_call($<ptr>$);
 		}
    	| KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
 		start_bind('i',$<str>3);

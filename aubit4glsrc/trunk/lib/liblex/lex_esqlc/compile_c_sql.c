@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.73 2006-10-23 08:49:17 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.74 2006-10-31 15:14:51 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.73 2006-10-23 08:49:17 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.74 2006-10-31 15:14:51 mikeaubury Exp $";
 #endif
 
 
@@ -201,25 +201,31 @@ LEXLIB_print_put_g (char *cname,char *putvals,t_binding_comp_list* bind)
 void
 LEXLIB_print_prepare (char *stmt, char *sqlvar)
 {
-	 if (A4GL_isyes(acl_getenv("DOING_CM"))) {
-	char *p=0;
-	//printf("?P : %s\n",stmt);
-	//
-	if (A4GL_has_pointer(sqlvar,LAST_STRING)) {
-		p=A4GL_find_pointer(sqlvar,LAST_STRING);
-		//printf("?p=%p",p);
-	}
+  if (A4GL_isyes (acl_getenv ("DOING_CM")))
+    {
+      char *p = 0;
+      if (A4GL_has_pointer (sqlvar, LAST_STRING))
+        {
+          p = A4GL_find_pointer (sqlvar, LAST_STRING);
+        }
 
-	if (p || sqlvar[0]=='"') {
-		printf("PREPARE %s %s %s - %s\n",curr_func,stmt,sqlvar,p);
-	} else {
-		//extern int yylineno;
-		printf("UNKNOWN_PREPARE %s.4gl %d %s %s %s\n",A4GL_compiling_module(),yylineno,curr_func,stmt,sqlvar);
-	}
-	if (p) {
-			A4GL_del_pointer(sqlvar,LAST_STRING);
-	}
-	}
+      if (p || sqlvar[0] == '"')
+        {
+          printf ("PREPARE %s %s %s - %s\n", curr_func, stmt, sqlvar, p);
+          A4GLSQLCV_convert_sql_ml ("INFORMIX", A4GL_strip_quotes(sqlvar), A4GL_compiling_module (), yylineno);
+        }
+      else
+        {
+          printf ("UNKNOWN_PREPARE %s.4gl %d %s %s %s\n",
+                  A4GL_compiling_module (), yylineno, curr_func, stmt,
+                  sqlvar);
+        }
+      if (p)
+        {
+          A4GL_del_pointer (sqlvar, LAST_STRING);
+        }
+    }
+
 
   	printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s,_module_name,%d,0));\n", stmt, sqlvar,lastlineno);
 }
@@ -525,7 +531,7 @@ LEXLIB_print_curr_spec_g (int type, char *s, t_binding_comp_list *inbind, t_bind
  * @return A string with the C implementation
  */
 char *
-LEXLIB_print_select_all_g (char *buff,int converted,t_binding_comp_list *inbind, t_binding_comp_list *outbind)
+LEXLIB_print_select_all_g (char *buff,int converted,t_binding_comp_list *inbind, t_binding_comp_list *outbind,int used_with_declare)
 {
   int ni, no;
   static char b2[20000];

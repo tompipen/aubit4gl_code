@@ -253,7 +253,7 @@ cursor_specification_sel_ss:
 		ptr=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);
 		$<curDef>$.outbind=copy_togenbind('o');
 		$<curDef>$.inbind=copy_togenbind('i');
-	 	$<curDef>$.str=acl_strdup(A4GL_CV_print_select_all(ptr,$<curDef>$.inbind, $<curDef>$.outbind)); free(ptr); 
+	 	$<curDef>$.str=acl_strdup(A4GL_CV_print_select_all(ptr,$<curDef>$.inbind, $<curDef>$.outbind,1)); free(ptr); 
 		start_bind('i',0);
 		start_bind('o',0);
 	}
@@ -286,7 +286,7 @@ fgl_sql_statement: delete_statement_position {
 		lo=copy_togenbind('o');
 		li=copy_togenbind('i');
         	ptr=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);
- 		$<sql_string>$=acl_strdup(A4GL_CV_print_select_all(ptr,li,lo)); free(ptr); 
+ 		$<sql_string>$=acl_strdup(A4GL_CV_print_select_all(ptr,li,lo,0)); free(ptr); 
 
         	if (strstr($<str>2,"FOR UPDATE")) {
                    PRINTF("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");

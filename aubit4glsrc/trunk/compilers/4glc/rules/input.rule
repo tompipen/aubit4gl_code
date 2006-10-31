@@ -192,6 +192,7 @@ BY_NAME ibind_var_list opt_defs opt_help_no input_attributes
 }
 | ARRAY use_arr_var opt_defs FROM idm_input_array opt_help_no {
 	add_feature("UI_INPUT_ARRAY");
+	map_ui_block("INPUT_ARRAY");
 	curr_input_array_attribs.maxcount=0;
 	curr_input_array_attribs.count=0;
 	curr_input_array_attribs.allow_insert=1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.158 2006-10-28 15:53:06 briantan Exp $
+# $Id: compile_c_esql.c,v 1.159 2006-10-31 15:14:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.158 2006-10-28 15:53:06 briantan Exp $";
+  "$Id: compile_c_esql.c,v 1.159 2006-10-31 15:14:50 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -1798,7 +1798,7 @@ LEXLIB_print_curr_spec_g (int type, char *s,t_binding_comp_list* inbind,t_bindin
  * @return A string with the C implementation
  */
 char *
-LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind,t_binding_comp_list* outbind)
+LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind,t_binding_comp_list* outbind,int used_with_declare)
 {
   int ni, no;
   static char *b2;
@@ -2617,7 +2617,7 @@ print_report_table (char *repname, char type, int c, char *asc_desc,
       //start_bind ('o', 0);
       inbind = empty_genbind ('i');
       outbind = empty_genbind ('o');
-      p = print_select_all_g (sql, 0, inbind, outbind);
+      p = print_select_all_g (sql, 0, inbind, outbind,1);
       print_declare_g ("0", p, cname, 0, 0, inbind, outbind);
       LEXLIB_print_open_cursor_g (cname, inbind);
 

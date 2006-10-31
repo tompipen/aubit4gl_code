@@ -1,5 +1,5 @@
 cancel_cmd : 
-		CANCEL_INSERT
-		| CANCEL_DELETE
+		CANCEL_INSERT { print_cancel("INSERT");}
+		| CANCEL_DELETE{ print_cancel("DELETE");}
 ;
 		

@@ -791,8 +791,13 @@ set_whenever (int c, char *p)
 void
 set_whenever_from_store (void)
 {
-  set_whento (whentostore_p);
-  set_whenever (whenever_store_c, whenever_store_p);
+char *s;
+s=whentostore_p;
+if (s==0) {s=when_to_tmp;}
+  if (get_whenever_style(whenever_store_c, s)) {
+  	set_whento (whentostore_p);
+  	set_whenever (whenever_store_c, whenever_store_p);
+  }
 }
 
 
@@ -851,7 +856,7 @@ do_print_menu_block_end (int mn)
 
 
 char *
-A4GL_CV_print_select_all (char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind)
+A4GL_CV_print_select_all (char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind,int used_with_declare)
 {
   char *ptr;
   int converted = 0;
@@ -863,7 +868,7 @@ A4GL_CV_print_select_all (char *s,t_binding_comp_list *inbind, t_binding_comp_li
     {
       ptr = s;
     }
-  return print_select_all_g (ptr, converted,inbind,outbind);
+  return print_select_all_g (ptr, converted,inbind,outbind,used_with_declare);
 }
 
 
@@ -950,16 +955,21 @@ void
 print_global_variables (void)
 {
 	  int a;
+
 	    for (a = 0; a < list_imported_global_cnt; a++)
 		        {
 				      print_variable_new (list_imported_global[a], 'G', 0);
 
-				          }
+		          }
 
-	      for (a = 0; a < list_global_cnt; a++)
+	if (list_global_cnt) {
+		print_start_globals();
+	      		for (a = 0; a < list_global_cnt; a++)
 		          {
 				        print_variable_new (list_global[a], 'g', 0);
-					    }
+		    		}
+		print_end_globals();
+	}
 }
 
 

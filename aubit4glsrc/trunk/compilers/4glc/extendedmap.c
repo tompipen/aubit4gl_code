@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.1 2006-10-30 09:34:33 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.2 2006-10-31 15:13:06 mikeaubury Exp $
 #*/
 
 
@@ -91,6 +91,7 @@ enum e_mapset {
 	MAPSET_CRUD_OTHER,
 	MAPSET_UI,
 	MAPSET_EVENTS,
+	MAPSET_ENV,
 	//MAPSET_DISPLAY_AT,
 
 
@@ -101,6 +102,10 @@ struct {
 	char **lines;
 	int nlines;
 } map_crud[100];
+
+struct stmts *subq_stmts[2000];
+struct selects *subq_selects[2000];
+int stmts_cnt=0;
 
 enum e_mapset curr_mapset[100];
 int curr_mapset_cnt=0;
@@ -131,6 +136,23 @@ int a;
 	map_crud[e].nlines=0;
 }
 
+/*
+void dump_mapset_to_crud_to_mapset(char *tag, enum e_mapset e,enum e_mapset e_dest) {
+int a;
+if (map_crud[e].nlines) {
+	A4GL_add_xmlmap(e_dest,"CP<%s>\n",tag);
+
+	for (a=0;a<map_crud[e].nlines;a++) {
+		A4GL_add_xmlmap(e_dest,"CP%s", map_crud[e].lines[a]);
+		free(map_crud[e].lines[a]);
+	}
+	A4GL_add_xmlmap(e_dest,"CP</%s>\n",tag);
+	free(map_crud[e].lines);
+	map_crud[e].lines=0;
+	map_crud[e].nlines=0;
+}
+}
+*/
 
 void dump_mapset(enum e_mapset e) {
 
@@ -152,6 +174,7 @@ void dump_mapset(enum e_mapset e) {
 		case MAPSET_LIBCALL_CORR: 	dump_mapset_to_crud("CORRESPONDANCECALLS",e); break;
 		case MAPSET_LIBCALL_AWB: 	dump_mapset_to_crud("AWBCALLS",e); break;
 		case MAPSET_LIBCALL: 		dump_mapset_to_crud("OTHERLIBCALLS",e); break;
+		case MAPSET_ENV: 		dump_mapset_to_crud("ENVIRONMENTVARS",e); break;
 	}
 }
 
@@ -207,12 +230,12 @@ map_select_list_item_list (char *stmttype, char *listtype,
   if (i == 0)
     return;
 
-  A4GL_add_xmlmap (get_currmapset(), "<LIST_%s>\n", listtype);
+  A4GL_add_xmlmap (get_currmapset(), "   <LIST_%s>\n", listtype);
   for (a = 0; a < i->nlist; a++)
     {
       map_select_list_item (stmttype, select, i->list[a]);
     }
-  A4GL_add_xmlmap (get_currmapset(), "</LIST_%s>\n", listtype);
+  A4GL_add_xmlmap (get_currmapset(), "   </LIST_%s>\n", listtype);
 }
 
 
@@ -241,7 +264,7 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
       return;
 
     case E_SLI_COLUMN_NOT_TRANSFORMED:
-      A4GL_add_xmlmap (get_currmapset(), "<COLUMN name=\"%s\" />\n", p->u_data.expression);
+      		A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"%s\" />\n", p->u_data.expression);
       return;
 
     case E_SLI_OP:
@@ -261,6 +284,7 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
       map_select_list_item_list (stmttype, "IN", select,
 				 p->u_data.slil_expr.right_list);
       return;
+
     case E_SLI_NOT_IN_VALUES:
       map_select_list_item (stmttype, select, p->u_data.slil_expr.left);
       map_select_list_item_list (stmttype, "NOTIN", select,
@@ -345,16 +369,16 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 
 
     case E_SLI_BUILTIN_CONST_USER:
-      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN type=USER/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN TYPE=USER/>\n");
       return;
     case E_SLI_BUILTIN_CONST_TODAY:
-      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN type=TODAY/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN TYPE=TODAY/>\n");
       return;
     case E_SLI_BUILTIN_CONST_TIME:
-      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN type=TIME/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN TYPE=TIME/>\n");
       return;
     case E_SLI_BUILTIN_CONST_STAR:
-      A4GL_add_xmlmap (get_currmapset(), "<COLUMN name=\"*\"/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"*\"/>\n");
       return;
 
     case E_SLI_BUILTIN_CONST_CURRENT:
@@ -460,7 +484,7 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 		       p->u_data.column.colname))
 		    {
 		      A4GL_add_xmlmap (get_currmapset(),
-			       "<COLUMN name=\"%s\" table=\"%s\"/>\n",
+			       "<COLUMN NAME=\"%s\" TABLE=\"%s\"/>\n",
 			       p->u_data.column.colname,
 			       select->table_elements.tables[0].tabname);
 		      return;
@@ -486,14 +510,14 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 			   p->u_data.column.colname))
 			{
 			  A4GL_add_xmlmap (get_currmapset(),
-				   "<COLUMN name=\"%s\" table=\"%s\"/>\n",
+				   "<COLUMN NAME=\"%s\" TABLE=\"%s\"/>\n",
 				   p->u_data.column.colname,
 				   select->table_elements.tables[a].tabname);
 			}
 		    }
 		}
 	    }
-	  A4GL_add_xmlmap (get_currmapset(), "<COLUMN name=\"%s\"/>\n",
+	  A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"%s\"/>\n",
 		   p->u_data.column.colname);
 
 	}
@@ -510,12 +534,12 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
       return;
 
     case E_SLI_SUBQUERY:
-      map_select_stmt ("SUBSELECT", p->u_data.subquery);
+     	/* map_select_stmt ("SUBSELECT", p->u_data.subquery); */
       return;
 
 
     case E_SLI_SUBQUERY_EXPRESSION:
-      map_select_list_item (stmttype, select, p->u_data.sq_expression.sq);
+      	/* map_select_list_item (stmttype, select, p->u_data.sq_expression.sq); */
       return;
 
 
@@ -529,6 +553,10 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 
 
 
+static void map_select_list_item_where (char *stmttype, struct s_select *select, struct s_select_list_item *p)
+{
+  map_select_list_item_i (stmttype, select, p);
+}
 
 
 
@@ -537,7 +565,6 @@ static void
 map_select_list_item (char *stmttype, struct s_select *select,
 		      struct s_select_list_item *p)
 {
-
   map_select_list_item_i (stmttype, select, p);
 }
 
@@ -549,7 +576,6 @@ map_open_form (struct expr_str *s)
     return;
   if (s->expr_type == ET_EXPR_EXPR_LIST)
     {
-      printf ("LIST : %d\n", s->u_data.expr_list->nlist);
       //s=s->u_data.expr_list->list[0];
     }
 
@@ -587,16 +613,41 @@ map_function_end ()
 
 
 void
-map_call (char *s)
+map_call (struct expr_str *p)
 {
   extern char *builtin_aclfgl_functions[];
   char libname[256];
   char libcat[256];
   int a;
+char *s;
+
+s=p->u_data.expr_function_call->fname;
+
+
   if (crudfile)
     {
+	if (strcmp(s,"fgl_getenv")==0) {
+			int printed=0;
+			if (p->u_data.expr_function_call->parameters->nlist==1) {
+				struct expr_str *pl;
+				pl=p->u_data.expr_function_call->parameters->list[0];
+				if (pl->expr_type==ET_EXPR_LITERAL_STRING) {
+	  				A4GL_add_xmlmap (MAPSET_ENV, "<ENV VAR=\"%s\" LINENO=\"%d\"/>\n", pl->u_data.expr_string, yylineno);
+					printed++;
+				}
+			} 
+
+			if (!printed) {
+	  			A4GL_add_xmlmap (MAPSET_ENV, "<ENV VAR=\"UNKNOWN\" LINENO=\"%d\"/>\n", s, yylineno);
+			}
+			return ;
+	}
+
+
       for (a = 0; builtin_aclfgl_functions[a]; a++)
 	{
+
+	
 	  if (strcmp (builtin_aclfgl_functions[a], s) == 0)
 	    return;		// Ignore...
 	}
@@ -799,7 +850,7 @@ map_display_at (struct expr_str *x, struct expr_str *y)
       sprintf (y_str, "%ld", y->u_data.expr_long);
     }
 
-  A4GL_add_xmlmap (MAPSET_UI, "<UI TYPE=\"DISPLAY_AT\" X=\"%s\" y=\"%s\" LINENO=\"%d\" />\n", x_str, y_str, yylineno);
+  A4GL_add_xmlmap (MAPSET_UI, "<UI TYPE=\"DISPLAY_AT\" X=\"%s\" Y=\"%s\" LINENO=\"%d\" />\n", x_str, y_str, yylineno);
 }
 
 
@@ -813,7 +864,7 @@ map_run (struct expr_str *s)
 
       if (s->expr_type == ET_EXPR_LITERAL_STRING)
 	{
-	  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>", yylineno,s->u_data.expr_string);
+	  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno,s->u_data.expr_string);
 	}
 
       if (s->expr_type == ET_EXPR_PUSH_VARIABLE)
@@ -821,26 +872,18 @@ map_run (struct expr_str *s)
 	  if (A4GL_has_pointer
 	      (s->u_data.expr_push_variable->variable, LAST_STRING))
 	    {
-	      A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >", yylineno);
-	      A4GL_add_xmlmap (MAPSET_RUN, "%s", (char *) A4GL_find_pointer (s->u_data.
-						   expr_push_variable->
-						   variable, LAST_STRING));
-	      A4GL_add_xmlmap (MAPSET_RUN, "</RUN>");
+	      A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno, (char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING));
 	    }
 	  else
 	    {
 	      if (A4GL_has_pointer
 		  (s->u_data.expr_push_variable->variable, LAST_STRING_START))
 		{
-		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >", yylineno);
-		  A4GL_add_xmlmap (MAPSET_RUN, "%s", (char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING_START));
-		  A4GL_add_xmlmap (MAPSET_RUN, "</RUN>");
+		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno,(char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING_START));
 		}
 	      else
 		{
-		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"UNKNOWN\" >", yylineno);
-		  A4GL_add_xmlmap (MAPSET_RUN, "%s", s->u_data.expr_push_variable->variable);
-		  A4GL_add_xmlmap(MAPSET_RUN, "</RUN>");
+		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"UNKNOWN\" >%s</RUN>\n", yylineno, s->u_data.expr_push_variable->variable);
 		}
 
 	    }
@@ -867,22 +910,23 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
   if (strcmp (main_statement_type, "SUBSELECT") != 0)
     {
 	int printed=0;
-	if (strcmp (main_statement_type, "SELECT")==0) { A4GL_add_xmlmap (MAPSET_CRUD_SELECT, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); printed++;  
-	add_currmapset(MAPSET_CRUD_SELECT);}
-	if (strcmp (main_statement_type, "DELETE")==0) { A4GL_add_xmlmap (MAPSET_CRUD_DELETE, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); printed++;  add_currmapset(MAPSET_CRUD_DELETE);}
-	if (strcmp (main_statement_type, "INSERT")==0) { A4GL_add_xmlmap (MAPSET_CRUD_INSERT, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); printed++;  add_currmapset(MAPSET_CRUD_INSERT);}
-	if (strcmp (main_statement_type, "UPDATE")==0) { A4GL_add_xmlmap (MAPSET_CRUD_UPDATE, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); printed++;  add_currmapset(MAPSET_CRUD_UPDATE);}
+	if (strcmp (main_statement_type, "SELECT")==0) { A4GL_add_xmlmap (MAPSET_CRUD_SELECT, "<SELECT_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  
+	add_currmapset(MAPSET_CRUD_SELECT);
+		}
+	if (strcmp (main_statement_type, "DELETE")==0) { A4GL_add_xmlmap (MAPSET_CRUD_DELETE, "<DELETE_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  add_currmapset(MAPSET_CRUD_DELETE);}
+	if (strcmp (main_statement_type, "INSERT")==0) { A4GL_add_xmlmap (MAPSET_CRUD_INSERT, "<INSERT_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  add_currmapset(MAPSET_CRUD_INSERT);}
+	if (strcmp (main_statement_type, "UPDATE")==0) { A4GL_add_xmlmap (MAPSET_CRUD_UPDATE, "<UPDATE_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  add_currmapset(MAPSET_CRUD_UPDATE);}
 	if (!printed) {
-		A4GL_add_xmlmap (MAPSET_CRUD_OTHER, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); printed++; 
+		A4GL_add_xmlmap (MAPSET_CRUD_OTHER, "<SQL STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); printed++; 
 		add_currmapset(MAPSET_CRUD_OTHER);
 	}
     }
   else
     {
-      A4GL_add_xmlmap (get_currmapset(), "<%s>\n", main_statement_type);
+      A4GL_add_xmlmap (get_currmapset(), "<SUBSELECT>\n", main_statement_type);
     }
 
-      A4GL_add_xmlmap (get_currmapset(), "<TABLES>\n");
+      A4GL_add_xmlmap (get_currmapset(), "   <TABLES>\n");
 
   for (a = 0; a < select->table_elements.ntables; a++)
     {
@@ -900,55 +944,66 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
 	  A4GL_trim (alias);
 	}
       A4GL_trim (tabname);
-      A4GL_add_xmlmap (get_currmapset(), "   <TABLE NAME=\"%s\" ALIAS=\"%s\" />\n", tabname, alias);
+      A4GL_add_xmlmap (get_currmapset(), "      <TABLE NAME=\"%s\" ALIAS=\"%s\" />\n", tabname, alias);
     }
 
-      A4GL_add_xmlmap (get_currmapset(), "</TABLES>\n");
+      A4GL_add_xmlmap (get_currmapset(), "   </TABLES>\n");
 
 
   map_select_list_item_list (main_statement_type, "VALUESLIST", select,
 			     select->select_list);
   if (select->where_clause)
     {
+	int sc;
       A4GL_add_xmlmap (get_currmapset(), "<FILTER>\n");
-      map_select_list_item (main_statement_type, select, select->where_clause);
-      A4GL_add_xmlmap (get_currmapset(), "</FILTER>\n");
+	sc=stmts_cnt;
+	find_subqueries( main_statement_type,select, select->where_clause);
+        map_select_list_item_where (main_statement_type, select, select->where_clause);
+        A4GL_add_xmlmap (get_currmapset(), "</FILTER>\n",sc,stmts_cnt);
+	if (stmts_cnt-sc) {
+		print_subqueries(sc);
+	}
+	
     }
 
 
-  /*
-	map_select_list_item_list (main_statement_type, "GROUPBY", select, select->group_by);
 
-  if (select->having)
-    {
-      A4GL_add_xmlmap (get_currmapset(), "<HAVING>\n");
-      map_select_list_item (main_statement_type, select, select->having);
-      A4GL_add_xmlmap (get_currmapset(), "</HAVING>\n");
-    }
-
-  if (select->sf)
-    {
-      map_select_list_item_list (main_statement_type, "ORDERBY", select,
-				 select->sf->order_by);
-    }
-  */
-
-  if (select->next)
-    {
-      map_select_stmt ("SUBSELECT", select->next);
-    }
 
 
 
   if (strcmp (main_statement_type, "SUBSELECT") != 0)
     {
-      A4GL_add_xmlmap (get_currmapset(), "</CRUD>\n\n");
+	int printed=0;
+	if (strcmp (main_statement_type, "SELECT")==0) { 
+      			A4GL_add_xmlmap (get_currmapset(), "</SELECT_STMT>\n\n");	printed++;
+	}
+	if (strcmp (main_statement_type, "DELETE")==0) { 
+      			A4GL_add_xmlmap (get_currmapset(), "</DELETE_STMT>\n\n");	printed++;
+	}
+	if (strcmp (main_statement_type, "INSERT")==0) { 
+      			A4GL_add_xmlmap (get_currmapset(), "</INSERT_STMT>\n\n");	
+			printed++;
+	}
+	if (strcmp (main_statement_type, "UPDATE")==0) { 
+      			A4GL_add_xmlmap (get_currmapset(), "</UPDATE_STMT>\n\n");	
+			printed++;
+	}
+	if (!printed) {
+      			A4GL_add_xmlmap (get_currmapset(), "</SQL>\n\n");
+		}
 	rm_currmapset();
+	
     }
+
   else
     {
-      A4GL_add_xmlmap (get_currmapset(), "</%s>\n", main_statement_type);
+      A4GL_add_xmlmap (get_currmapset(), "</SUBSELECT>\n", main_statement_type);
     }
+  if (select->next)
+    {
+      map_select_stmt ("SELECT", select->next);
+}
+
 }
 
 void
@@ -972,28 +1027,28 @@ int printed=0;
   select->first = A4GLSQLPARSE_new_tablename (table, 0);
 
   if (strcmp (main_statement_type, "DELETE")==0) { 
-		A4GL_add_xmlmap (MAPSET_CRUD_DELETE, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); 
+		A4GL_add_xmlmap (MAPSET_CRUD_DELETE, "<DELETE_STMT LINENO=\"%d\" >\n",   yylineno); 
 		printed++;  
 		add_currmapset(MAPSET_CRUD_DELETE);
   }
 
   if (strcmp (main_statement_type, "INSERT")==0) { 
-		A4GL_add_xmlmap (MAPSET_CRUD_INSERT, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); 
+		A4GL_add_xmlmap (MAPSET_CRUD_INSERT, "<INSERT_STMT LINENO=\"%d\" >\n",   yylineno); 
 		printed++;  
 		add_currmapset(MAPSET_CRUD_INSERT);
   }
 
   if (strcmp (main_statement_type, "UPDATE")==0) { 
-		A4GL_add_xmlmap (MAPSET_CRUD_UPDATE, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); 
+		A4GL_add_xmlmap (MAPSET_CRUD_UPDATE, "<UPDATE_STMT LINENO=\"%d\" >\n",   yylineno); 
 		printed++;  
 		add_currmapset(MAPSET_CRUD_UPDATE);
   }
   if (!printed) {
-		A4GL_add_xmlmap (MAPSET_CRUD_OTHER, "<CRUD STATEMENT=\"%s\" LINENO=\"%d\" >\n", main_statement_type,  yylineno); 
+		A4GL_add_xmlmap (MAPSET_CRUD_OTHER, "<SQL STATEMENT=\"%s\" LINENO=\"%d\" >\n",  main_statement_type, yylineno); 
 		add_currmapset(MAPSET_CRUD_OTHER);
   }
 
-  A4GL_add_xmlmap (get_currmapset(), "<TABLE name=\"%s\"/>\n", table);
+  A4GL_add_xmlmap (get_currmapset(), "<TABLE NAME=\"%s\"/>\n", table);
 
   if (strcmp (main_statement_type, "UPDATE") == 0)
     {
@@ -1011,13 +1066,35 @@ int printed=0;
     }
   if (select->where_clause)
     {
+	int sc;
+	sc=stmts_cnt;
+	find_subqueries( main_statement_type,select, select->where_clause);
       A4GL_add_xmlmap (get_currmapset(), "<FILTER>\n");
-      map_select_list_item (main_statement_type, select,
-			    select->where_clause);
+      map_select_list_item (main_statement_type, select, select->where_clause);
       A4GL_add_xmlmap (get_currmapset(), "</FILTER>\n");
+	if (stmts_cnt-sc) {
+		print_subqueries(sc);
+	}
     }
 
-  A4GL_add_xmlmap (get_currmapset(), "</CRUD>\n");
+  printed=0;
+  if (strcmp (main_statement_type, "DELETE")==0) { 
+  		A4GL_add_xmlmap (get_currmapset(), "</DELETE_STMT>\n");
+		printed++;  
+  }
+
+  if (strcmp (main_statement_type, "INSERT")==0) { 
+  		A4GL_add_xmlmap (get_currmapset(), "</INSERT_STMT>\n");
+		printed++;  
+  }
+
+  if (strcmp (main_statement_type, "UPDATE")==0) { 
+  		A4GL_add_xmlmap (get_currmapset(), "</UPDATE_STMT>\n");
+		printed++;  
+  }
+  if (!printed) {
+  		A4GL_add_xmlmap (get_currmapset(), "</SQL>\n");
+  }
   rm_currmapset();
 
 }
@@ -1110,4 +1187,175 @@ isSpecial (char *fname, char *lib,char *cat)
   return 0;
 }
 
+static int find_subqueries (char *stmttype, struct s_select *select, struct s_select_list_item *p) {
+  switch (p->type)
+    {
+    case E_SLI_CHAR:
+      A4GL_assertion (1, "Not used");
+    case E_SLI_BUILTIN_CONST_COUNT_STAR:
+
+    case E_SLI_IBIND:
+    case E_SLI_VARIABLE:
+    case E_SLI_DATETIME:
+    case E_SLI_INTERVAL:
+    case E_SLI_LITERAL:
+    case E_SLI_BUILTIN_CONST_TRUE:
+    case E_SLI_BUILTIN_CONST_FALSE:
+    case E_SLI_QUERY_PLACEHOLDER:
+    case E_SLI_VAR_REPLACE:
+    case E_SLI_COLUMN_ORDERBY:	// Dont care about order bys..
+    case E_SLI_IN_VALUES:
+    case E_SLI_JOIN:
+    case E_SLI_BUILTIN_CONST_USER:
+    case E_SLI_BUILTIN_CONST_TODAY:
+    case E_SLI_BUILTIN_CONST_STAR:
+    case E_SLI_BUILTIN_CONST_CURRENT:
+    case E_SLI_BUILTIN_FUNC_YEAR:
+    case E_SLI_BUILTIN_FUNC_MONTH:
+    case E_SLI_BUILTIN_FUNC_DAY:
+    case E_SLI_BUILTIN_FUNC_DOW:
+    case E_SLI_BUILTIN_FUNC_WEEKDAY:
+    case E_SLI_BUILTIN_FUNC_MDY:
+    case E_SLI_BUILTIN_FUNC_DATE:
+    case E_SLI_BUILTIN_AGG_AVG:
+    case E_SLI_BUILTIN_AGG_MAX:
+    case E_SLI_BUILTIN_AGG_MIN:
+    case E_SLI_FCALL:
+    case E_SLI_EXTEND:
+    case E_SLI_COLUMN:
+    case E_SLI_BUILTIN_AGG_SUM:
+    case E_SLI_BUILTIN_AGG_COUNT:
+
+      return 0;
+    case E_SLI_UNITS_YEAR: return 0 ;
+    case E_SLI_UNITS_MONTH: return 0 ;
+    case E_SLI_UNITS_DAY: return 0 ;
+    case E_SLI_UNITS_HOUR: return 0 ;
+    case E_SLI_UNITS_MINUTE: return 0 ;
+    case E_SLI_UNITS_SECOND: return 0 ;
+
+    case E_SLI_COLUMN_NOT_TRANSFORMED:
+      return 0;
+
+    case E_SLI_OP:
+      find_subqueries (stmttype, select, p->u_data.complex_expr.left);
+      find_subqueries (stmttype, select, p->u_data.complex_expr.right);
+      return 0;
+
+    case E_SLI_NOT_IN_VALUES:
+      return 0;
+
+
+    case E_SLI_IN_SELECT:
+      find_subqueries (stmttype, select, p->u_data.complex_expr.left);
+      find_subqueries (stmttype, select, p->u_data.complex_expr.right);
+      return 0;
+
+    case E_SLI_NOT_IN_SELECT:
+      find_subqueries (stmttype, select, p->u_data.complex_expr.left);
+      find_subqueries (stmttype, select, p->u_data.complex_expr.right);
+      return 0;
+
+    case E_SLI_REGEX_MATCHES:
+      find_subqueries (stmttype, select, p->u_data.regex.val);
+      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      return 0;
+
+    case E_SLI_REGEX_NOT_MATCHES:
+      find_subqueries (stmttype, select, p->u_data.regex.val);
+      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      return 0;
+    case E_SLI_REGEX_LIKE:
+      find_subqueries (stmttype, select, p->u_data.regex.val);
+      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      return 0;
+
+    case E_SLI_REGEX_NOT_LIKE:
+      find_subqueries (stmttype, select, p->u_data.regex.val);
+      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      return 0;
+    case E_SLI_REGEX_ILIKE:
+      find_subqueries (stmttype, select, p->u_data.regex.val);
+      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      return 0;
+    case E_SLI_REGEX_NOT_ILIKE:
+      find_subqueries (stmttype, select, p->u_data.regex.val);
+      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      return 0;
+    case E_SLI_ISNULL:
+      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      return 0;
+    case E_SLI_ISNOTNULL:
+      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      return 0;
+    case E_SLI_ASC:
+      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      return 0;
+    case E_SLI_DESC:
+      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      return 0;
+    case E_SLI_NOT:
+      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      return 0;
+
+    case E_SLI_BRACKET_EXPR:
+      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      return 0;
+
+
+
+
+
+    case E_SLI_BETWEEN:
+      find_subqueries (stmttype, select, p->u_data.between_expr.val);
+      find_subqueries (stmttype, select, p->u_data.between_expr.from);
+      find_subqueries (stmttype, select, p->u_data.between_expr.to);
+      return 0;
+
+    case E_SLI_NOT_BETWEEN:
+      find_subqueries (stmttype, select, p->u_data.between_expr.val);
+      find_subqueries (stmttype, select, p->u_data.between_expr.from);
+      find_subqueries (stmttype, select, p->u_data.between_expr.to);
+      return 0;
+
+
+
+
+    case E_SLI_CASE:
+    case E_SLI_CASE_ELEMENT:
+      return 0;
+
+    case E_SLI_SUBQUERY:
+	subq_stmts[stmts_cnt]=p->u_data.subquery;
+	subq_selects[stmts_cnt++]=select;
+
+     	 //map_select_stmt ("SUBSELECT", p->u_data.subquery); */
+      return 0;
+
+
+    case E_SLI_SUBQUERY_EXPRESSION:
+	//subq_stmts[stmts_cnt]= p->u_data.sq_expression.sq;
+	//subq_selects[stmts_cnt++]=select;
+
+      	find_subqueries (stmttype, select, p->u_data.sq_expression.sq); 
+      return 0;
+
+
+    }
+
+
+  A4GL_assertion (1, "Unhandled element");
+  return 0;
+}
+
+print_subqueries(int sc) {
+int a;
+	
+	A4GL_add_xmlmap(get_currmapset(),"<SUBQUERIES>\n");
+	for (a=sc;a<stmts_cnt;a++) {
+     	 	map_select_stmt ("SUBSELECT", subq_stmts[a]);
+	}
+	A4GL_add_xmlmap(get_currmapset(),"</SUBQUERIES>\n");
+	stmts_cnt=sc;
+}
 /* ================================ EOF ============================== */

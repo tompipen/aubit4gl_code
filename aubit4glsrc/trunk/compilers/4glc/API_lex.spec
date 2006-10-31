@@ -54,6 +54,8 @@ print_range_check char* var,char* size -> void
 
 print_start_block int n -> void
 
+print_start_globals -> void
+print_end_globals -> void
 print_continue_block int n,int brace char* why -> void
 
 print_end_block int n -> void
@@ -393,7 +395,7 @@ print_declare_g char* a1,char* a2,char* a3,int h1,int h2  t_binding_comp_list* i
 
 print_curr_spec_g int type,char* s t_binding_comp_list* inbind t_binding_comp_list* outbind -> char*
 
-print_select_all_g char* buff int converted t_binding_comp_list* inbind t_binding_comp_list* outbind -> char*
+print_select_all_g char* buff int converted t_binding_comp_list* inbind t_binding_comp_list* outbind int used_with_declare -> char*
 
 print_unload_g char* file,char* delim,char* sql t_binding_comp_list* inbind -> void
 
@@ -409,7 +411,8 @@ print_next_form_field char* form,char* field -> void
 print_declare_associate_1 char* variable,char* size,char* n -> void
 
 print_declare_associate_2 char* variable,char* size,char* n -> void
-
+print_cancel char* s -> void
+print_loaded_globals_file char* fname -> void
 
 
 A4GL_decode_array_string char* var char* s -> char*
@@ -484,6 +487,7 @@ print_gtk_menuhandler_on char* s -> void
 print_gtk_menuhandler_on_end -> void
 print_gtk_menuhandler_end -> void
 get_keyval_str char* s -> char*
+get_whenever_style int code char* whento -> int
 print_agg_defines char t int a -> int
 
 * get_in_exists_sql char* s char t -> void*
