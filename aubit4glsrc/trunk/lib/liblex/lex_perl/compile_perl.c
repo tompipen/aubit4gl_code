@@ -445,7 +445,7 @@ LEXLIB_print_curr_spec_g (int type,char* s,t_binding_comp_list* inbind,t_binding
 }
 
 char *
-LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind,t_binding_comp_list* outbind)
+LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind,t_binding_comp_list* outbind,int from_declare,int from_declare)
 {
   //int ni, no;
   //static char b2[20000];
