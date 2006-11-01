@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.2 2006-10-31 15:13:06 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.3 2006-11-01 12:02:59 mikeaubury Exp $
 #*/
 
 
@@ -369,20 +369,20 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 
 
     case E_SLI_BUILTIN_CONST_USER:
-      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN TYPE=USER/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"USER\" TYPE=\"BUILTIN\" />\n");
       return;
     case E_SLI_BUILTIN_CONST_TODAY:
-      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN TYPE=TODAY/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"TODAY\" TYPE=\"BUILTIN\" />\n");
       return;
     case E_SLI_BUILTIN_CONST_TIME:
-      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN TYPE=TIME/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"TIME\" TYPE=\"BUILTIN\" />\n");
       return;
     case E_SLI_BUILTIN_CONST_STAR:
       A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"*\"/>\n");
       return;
 
     case E_SLI_BUILTIN_CONST_CURRENT:
-      A4GL_add_xmlmap (get_currmapset(), "<BUILTIN type=CURRENT/>\n");
+      A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"CURRENT\" TYPE=\"BUILTIN\" />\n");
       return;
 
     case E_SLI_BUILTIN_FUNC_YEAR:

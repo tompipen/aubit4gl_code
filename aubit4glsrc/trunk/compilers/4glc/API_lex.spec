@@ -385,7 +385,7 @@ print_fetch_2_g t_binding_comp_list* binding  -> void
 
 print_fetch_3_g t_fetch* ftp  t_binding_comp_list* binding -> void
 
-print_init_conn char* db -> void
+print_init_conn t_expr_str* dbname char* exclusive -> void
 
 print_do_select char* s int converted  t_binding_comp_list* binding -> void
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.88 2006-10-30 09:31:26 mikeaubury Exp $
+# $Id: variables.c,v 1.89 2006-11-01 12:02:59 mikeaubury Exp $
 #
 */
 
@@ -1033,7 +1033,7 @@ has_name (struct name_list *namelist, char *name)
 
   while (ptr_name)
     {
-	A4GL_debug("Check %s against %s\n",ptr_name->name,name);
+	//A4GL_debug("Check %s against %s\n",ptr_name->name,name);
       if (strcasecmp (ptr_name->name, name) == 0)
 	return 1;
       /*debug ("Check %s against %s nope", namelist->name, name);*/

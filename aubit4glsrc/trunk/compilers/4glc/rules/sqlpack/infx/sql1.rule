@@ -131,14 +131,9 @@ op_db_exclusive :
 
 
 set_database_cmd : 
-       DATABASE var_ident_qchar op_db_exclusive
-{
+       DATABASE var_ident_qchar_e op_db_exclusive {
 	add_feature("DATABASE_USED");
-if (strcmp($<str>2,"?")==0) {
-	print_init_conn(0);
-} else {
-	print_init_conn($<str>2);
-}
+	print_init_conn($<ptr>2,$<str>3);
 }
 
 ;

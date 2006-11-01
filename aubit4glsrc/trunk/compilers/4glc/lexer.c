@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.124 2006-10-31 15:13:06 mikeaubury Exp $
+# $Id: lexer.c,v 1.125 2006-11-01 12:02:59 mikeaubury Exp $
 #*/
 
 /**
@@ -806,7 +806,7 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
   int states = -1;
   int proc = 0;
 
-  A4GL_debug("In words...");
+  //A4GL_debug("In words...");
 
   if (cnt > 10000 || cnt < 0)
     {
