@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.159 2006-10-31 15:14:50 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.160 2006-11-02 17:53:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.159 2006-10-31 15:14:50 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.160 2006-11-02 17:53:35 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -121,6 +121,7 @@ void printc (char *fmt, ...);
 static void print_copy_status (void);
 void print_conversions_g (t_binding_comp_list *bind);
 void print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_comp_list *funclist, t_binding_comp_list *orderbind);
+void print_expr_db(t_expr_str *ptr) ;
 
 
 char *A4GL_mk_temp_tab (struct BINDING *b, int n);
@@ -1118,6 +1119,7 @@ LEXLIB_print_fetch_3_g (struct s_fetch *fp, t_binding_comp_list *bind)
   clr_suppress_lines ();
 }
 
+
 /**
  * Print in the ouput C generated file the implementation of DATABASE 
  * instruction.
@@ -1131,83 +1133,34 @@ LEXLIB_print_fetch_3_g (struct s_fetch *fp, t_binding_comp_list *bind)
  *   - Otherwise : Use it as database name.
  */
 void
-LEXLIB_print_init_conn (char *db)
+LEXLIB_print_init_conn (t_expr_str *db,char *exclusive)
 {
 
-  if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT")
-      || esql_type () == E_DIALECT_INFOFLEX)
+  if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT") || esql_type () == E_DIALECT_INFOFLEX)
     {
-      if (db == 0)
-	{
 	  printc ("{");
 	  set_suppress_lines ();
 	  printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
-	  printc ("char *s;");
-	  printc ("char setdb[256];");
+	  printc ("char *_s;");
 	  printc ("\nEXEC SQL END DECLARE SECTION;\n");
 	  clr_suppress_lines ();
-	  printc ("s=A4GL_char_pop();A4GL_trim(s);");
-	  /*printc("sprintf(setbuf,\"DATABASE %%s\");\n"); */
-
-
-	  /*printc ("\nEXEC SQL PREPARE acl_p_set_db FROM $setdb;"); */
-	  /*printc ("\nEXEC SQL EXECUTE acl_p_set_db;\n");  */
-	  A4GL_save_sql ("DATABASE $s", 0);
-	  printc ("\nEXEC SQL DATABASE $s;\n");
-
-	  printc ("}");
-	}
-      else
-	{
-	  switch (esql_type ())
-	    {
-	    case E_DIALECT_NONE:
-	      A4GL_assertion (1, "No ESQL/C Dialect");
-	      break;
-	    case E_DIALECT_INFORMIX:
-	      A4GL_save_sql ("DATABASE %s", db);
-	      printc ("\nEXEC SQL DATABASE %s;\n", db);
-	      break;
-
-	    case E_DIALECT_POSTGRES:
-	      A4GL_save_sql ("DATABASE %s", db);
-	      printc ("\nEXEC SQL DATABASE %s;\n", db);
-	      break;
-
-	    case E_DIALECT_SAPDB:
-	      A4GL_save_sql ("DATABASE %s", db);
-	      printc ("\nEXEC SQL DATABASE %s;\n", db);
-	      break;
-
-	    case E_DIALECT_INGRES:
-	      A4GL_save_sql ("DATABASE %s", db);
-	      printc ("\nEXEC SQL DATABASE %s;\n", db);
-	      break;
-
-	    case E_DIALECT_INFOFLEX:
-	      A4GL_save_sql ("DATABASE %s", db);
-	      printc ("\nEXEC SQL DATABASE %s;\n", db);
-	      break;
-	    }
-	}
+          print_expr(db);
+	  printc ("_s=A4GL_char_pop();A4GL_trim(_s);");
+	  printc ("\nEXEC SQL DATABASE $_s;\n");
     }
   else
     {
-      if (db == 0)
-	{
 	  printc ("{");
 	  set_suppress_lines ();
 	  printc ("\nEXEC SQL BEGIN DECLARE SECTION; \n");
-	  printc ("char *s;");
+	  printc ("char *_s;");
 	  printc ("\nEXEC SQL END DECLARE SECTION;\n");
 	  clr_suppress_lines ();
 	  printc ("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
 	  print_close ('D', "");
 	  printc ("}");
-	  printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
-
-
-//	  A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
+	  print_expr(db);
+	  printc ("_s=A4GL_char_pop();A4GL_trim(_s);\n");
 
 	  switch (esql_type ())
 	    {
@@ -1215,66 +1168,26 @@ LEXLIB_print_init_conn (char *db)
 	      A4GL_assertion (1, "No ESQL/C Dialect");
 	      break;
 	    case E_DIALECT_INFORMIX:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
-	      printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	
+	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
 	      break;
 	    case E_DIALECT_POSTGRES:
 	      A4GL_save_sql ("CONNECT TO $s", 0);		// ecpg 8.1.5
-	      printc ("\nEXEC SQL CONNECT TO :s;\n");		// ecpg 8.1.5
+	      printc ("\nEXEC SQL CONNECT TO :_s;\n");		// ecpg 8.1.5
 	      break;
 	    case E_DIALECT_SAPDB:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
-	      printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);
+	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
 	      break;
 	    case E_DIALECT_INGRES:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
 	      printc ("\nEXEC SQL CONNECT :s ;\n");
 	      break;
 	    case E_DIALECT_INFOFLEX:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	// ecpg 8.1.5
-	      printc ("\nEXEC SQL CONNECT TO $s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
+	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
 	      break;
 	    }
-	  printc ("}");
-	}
-      else
-	{
-	  printc ("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
-	  print_close ('D', "");
-	  A4GL_save_sql ("DISCONNECT default", 0);
-	  /*printc ("\nEXEC SQL DISCONNECT 'default';\n"); */
-	  printc ("}");
-	  switch (esql_type ())
-	    {
-	    case E_DIALECT_NONE:
-	      A4GL_assertion (1, "No ESQL/C Dialect");
-	      break;
-
-	    case E_DIALECT_INFORMIX:
-	      A4GL_save_sql ("CONNECT TO \"%s\" AS 'default'", db);
-	      printc ("\nEXEC SQL CONNECT TO \"%s\" AS 'default';\n", db);
-	      break;
-
-	    case E_DIALECT_POSTGRES:
-	      A4GL_save_sql ("CONNECT TO %s", db);		// ecpg 8.1.5
-	      printc ("\nEXEC SQL CONNECT TO %s;\n", db);	// ecpg 8.1.5
-	      break;
-
-	    case E_DIALECT_SAPDB:
-	      A4GL_save_sql ("CONNECT TO %s AS 'default'", db);
-	      printc ("\nEXEC SQL CONNECT TO %s AS 'default';\n", db);
-	      break;
-
-	    case E_DIALECT_INFOFLEX:
-	      A4GL_save_sql ("CONNECT TO \"%s\" AS 'default'", db);
-	      printc ("\nEXEC SQL CONNECT TO \"%s\" AS 'default';\n", db);
-	      break;
-
-	    case 4:
-	      printc ("\nEXEC SQL CONNECT %s;\n", db);
-	      break;
-	    }
-	}
     }
 
   switch (esql_type ())
@@ -1284,34 +1197,37 @@ LEXLIB_print_init_conn (char *db)
       break;
     case E_DIALECT_INFORMIX:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",\"%s\");",
-	 db);
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",_s);", db);
       break;
     case E_DIALECT_POSTGRES:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\",\"%s\");",
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\",_s);",
 	 db);
       break;
     case E_DIALECT_SAPDB:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\",\"%s\");",
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\",_s);",
 	 db);
       break;
     case E_DIALECT_INGRES:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\",\"%s\");",
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\",_s);",
 	 db);
       break;
     case E_DIALECT_INFOFLEX:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFOFLEX\",\"%s\");",
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFOFLEX\",_s);",
 	 db);
       break;
     }
 
 
+          printc("free(_s);");
+	  printc ("}");
   print_copy_status ();
 }
+
+
 
 
 /**
@@ -2875,6 +2791,21 @@ print_in_subquery (int i, struct expr_in_sq *in_expr)
   printc ("} else {A4GL_push_int(0);}\n}");
 }
 
+void print_expr_db(t_expr_str *ptr) {
+        if (ptr->expr_type==ET_EXPR_LITERAL_STRING) {
+                printc("\"%s\"",ptr->u_data.expr_string);
+                return;
+        }
+        if (ptr->expr_type==ET_EXPR_QUOTED_STRING) {
+                printc("%s",ptr->u_data.expr_string);
+                return;
+        }
+        if (ptr->expr_type==ET_EXPR_PUSH_VARIABLE) {
+                printc(":%s",ptr->u_data.expr_push_variable->variable);
+                return;
+        }
+}
+
 
 /**
  *  *
@@ -2885,6 +2816,10 @@ doing_esql (void)
 {
   return 1;
 }
+
+
+
+
 
 /*
 int LEXLIB_compile_time_convert(void) {

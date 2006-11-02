@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.74 2006-10-31 15:14:51 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.75 2006-11-02 17:53:35 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.74 2006-10-31 15:14:51 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.75 2006-11-02 17:53:35 mikeaubury Exp $";
 #endif
 
 
@@ -396,12 +396,14 @@ char buff[200];
  *   - Otherwise : Use it as database name.
  */
 void
-LEXLIB_print_init_conn (char *db)
+LEXLIB_print_init_conn (struct expr_str *db,char *exclusive)
 {
-  if (db == 0)
-    printc ("A4GLSQL_init_connection(A4GL_char_pop());\n");
-  else
-    printc ("A4GLSQL_init_connection(\"%s\");\n", db);
+
+printc("{char *_s; ");
+        LEXLIB_print_expr(db);
+	printc("_s=A4GL_char_pop();A4GL_trim(_s);");
+    printc ("A4GLSQL_init_connection(_s);");
+    printc("free(_s);}\n");
 }
 
 

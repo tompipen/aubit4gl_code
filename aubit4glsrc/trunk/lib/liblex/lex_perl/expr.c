@@ -26,13 +26,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.1 2006-10-10 06:52:37 mikeaubury Exp $
+# $Id: expr.c,v 1.2 2006-11-02 17:53:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 static char const module_id[] =
-  "$Id: expr.c,v 1.1 2006-10-10 06:52:37 mikeaubury Exp $";
+  "$Id: expr.c,v 1.2 2006-11-02 17:53:39 mikeaubury Exp $";
 #endif
 
 #define CM
@@ -90,7 +90,7 @@ extern int doing_report_print;
 
 #include "compile_perl.h"
 
-
+/*
 void ensure_dtype (struct expr_str *e, int dtype, int nonull);
 void ensure_bool (struct expr_str *s, int notnull);
 void ensure_smint (struct expr_str *s, int notnull);
@@ -102,22 +102,24 @@ void ensure_decimal (struct expr_str *s, int notnull);
 void ensure_smfloat (struct expr_str *s, int notnull);
 void ensure_interval (struct expr_str *s, int notnull);
 void ensure_byte (struct expr_str *s, int notnull);
-
+*/
 
 
 //extern FILE *meta_file;
 
+/*
 void set_suppress_newlines (void);
 void clr_suppress_newlines (void);
+*/
 //char *expr_name (enum e_expr_type e);
 void fix_compare (char *op, struct expr_str *s);
 void log_compare (int a, int b);
 //int expr_datatype (struct expr_str *p);
-char *valid_func_name (char *s);
+//char *valid_func_name (char *s);
 int is_null_params (char *s);
-char *rettype_integer_internal_nn (int n, int nn);
+//char *rettype_integer_internal_nn (int n, int nn);
 
-char *rettype_integer_internal (int n);
+//char *rettype_integer_internal (int n);
 
 
 #define ONE_NOT_ZERO(x) (x?x:1)
@@ -125,10 +127,10 @@ char *rettype_integer_internal (int n);
 
 void print_expr_list_comma (struct expr_str_list *l);
 void real_print_expr (struct expr_str *ptr);
-void printc (char *fmt, ...);
-void printh (char *fmt, ...);
+//void printc (char *fmt, ...);
+//void printh (char *fmt, ...);
 int find_function (char *f);
-char *use_scope (char *s);
+//char *use_scope (char *s);
 int write_meta (void);
 //void ensure_dtype (struct expr_str *e, int dtype, int notnull);
 int param_type (char *f, int p);
@@ -159,7 +161,7 @@ LEXLIB_print_expr (void *ptr)
 
 
 
-char *
+static char *
 cast_name (int n)
 {
   static char buff[256];

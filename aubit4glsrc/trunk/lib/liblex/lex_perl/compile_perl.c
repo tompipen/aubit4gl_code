@@ -1145,8 +1145,7 @@ LEXLIB_print_fgllib_start (char *db)
   if (db[0] != 0)
     {
       if (!is_schema)
-	{
-	  print_init_conn (db);
+	{	         print_init_conn (A4GL_new_literal_string(db),"");
 	}
       else
 	{
@@ -1702,16 +1701,20 @@ print_init_var (char *name, char *prefix, int alvl, int mlvl)
 
 
 void
-LEXLIB_print_init_conn (char *db)
+LEXLIB_print_init_conn (t_expr_str *db, char*exclusive)
 {
-  if (db == 0)
-    {
-      printc ("DBConnect();\n");
-    }
-  else
-    {
-      printc ("DBConnect(\"%s\");\n", db);
-    }
+  //if (db == 0)
+    //{
+      //printc ("DBConnect();\n");
+    //}
+  //else
+    //{
+    //
+      printc ("DBConnect(");
+	print_expr(db);
+	printc(");\n");
+
+    //}
 
 }
 

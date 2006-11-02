@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.337 2006-10-31 15:14:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.338 2006-11-02 17:53:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.337 2006-10-31 15:14:50 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.338 2006-11-02 17:53:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6155,7 +6155,8 @@ LEXLIB_print_fgllib_start (char *db)
     {
       if (!is_schema)
 	{
-	  print_init_conn (db);
+          print_init_conn (A4GL_new_literal_string(db),"");
+
 
 	  if (A4GL_doing_pcode()) {
 	  	printc ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,\"%s\");\n", lastlineno,cmodname);
@@ -8217,5 +8218,27 @@ void LEXLIB_print_end_globals(void) {
 int LEXLIB_get_whenever_style(int code, char*whento) {
 	// We want the callbacks - so return 1
 	return 1;
+}
+
+
+
+int check_binding(t_binding_comp_list *l, char *fromwhere) {
+char c;
+int a;
+if (l==0) return 0;
+for (a=0;a<l->nbind;a++) {
+        c=find_variable_scope(l->bind[a].varname);
+        if (c=='M'||c=='G') {
+                if (A4GL_isyes(acl_getenv("WARNGLOBMODBINDING"))) {
+                        if (c=='M') {
+                                fprintf(stderr, "Use of module variable (%s) @%d (%s, dir=%c)\n",l->bind[a].varname,yylineno,fromwhere,l->type);
+                        }
+                        if (c=='G') {
+                                fprintf(stderr, "Use of global variable (%s) @%d (%s, dir=%c)\n",l->bind[a].varname,yylineno,fromwhere,l->type);
+                        }
+                }
+        }
+}
+return 0;
 }
 

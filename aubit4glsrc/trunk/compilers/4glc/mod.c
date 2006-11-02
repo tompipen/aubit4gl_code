@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.287 2006-10-31 15:13:06 mikeaubury Exp $
+# $Id: mod.c,v 1.288 2006-11-02 17:53:07 mikeaubury Exp $
 #
 */
 
@@ -5443,6 +5443,13 @@ void llex_add_ibind(int dtype,char *var) {
         ibindcnt++;
 }
 
+
+void fail_on_select_ibind() {
+if (ibindcnt) {
+	a4gl_yyerror("You can't SELECT a variable (perhaps you could rename the variable, or prefix the column in the SELECT list ?)");
+	return 0;
+}
+}
 
 
 #ifdef NEWNOTUSED

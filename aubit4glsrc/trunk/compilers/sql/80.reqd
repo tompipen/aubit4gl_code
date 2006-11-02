@@ -15,6 +15,12 @@ var_ident_qchar : NAMED
 ;
 
 
+var_ident_qchar : NAMED
+        | CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
+
+;
+
+
 
 char_or_var : CHAR_VALUE 
 	| variable { if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;} }
@@ -39,6 +45,8 @@ fgl_sql_statement: NOT_USED_3
 
 var_ident: identifier
 ;
+
+
 
 ident_or_var: identifier
 	| QUESTION_MARK {
@@ -142,6 +150,13 @@ var_ident_ibind_ss :  column_name_x { $<sql_string>$=strdup($<str>1);}
 	}
 ;
 
+set_database_cmd :
+       DATABASE var_ident_qchar op_db_exclusive {
+        add_feature("DATABASE_USED");
+       conn_db($<str>2);
+}
+
+;
 
 
 replace_with_variable : MARK_VAR CHAR_VALUE END_MARK_VAR {

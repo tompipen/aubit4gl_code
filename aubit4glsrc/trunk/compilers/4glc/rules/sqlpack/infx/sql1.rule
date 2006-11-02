@@ -130,13 +130,6 @@ op_db_exclusive :
 ;
 
 
-set_database_cmd : 
-       DATABASE var_ident_qchar_e op_db_exclusive {
-	add_feature("DATABASE_USED");
-	print_init_conn($<ptr>2,$<str>3);
-}
-
-;
 
 other_misc_infx_stmt  :
         UPDATESTATS_T   identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2); add_feature("UPDATE_STATISTICS_TABLE");}

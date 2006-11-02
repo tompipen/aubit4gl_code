@@ -322,6 +322,14 @@ in_select_statement_ss:
 ;
 
 
+set_database_cmd :
+       DATABASE var_ident_qchar_e op_db_exclusive {
+        add_feature("DATABASE_USED");
+        print_init_conn($<ptr>2,$<str>3);
+}
+
+;
+
 
 
 /* ========================= sql_4gl.rule ================================ */

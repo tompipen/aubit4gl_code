@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.17 2006-08-15 07:39:24 mikeaubury Exp $
+# $Id: expr.c,v 1.18 2006-11-02 17:53:33 mikeaubury Exp $
 #
 */
 
@@ -308,6 +308,14 @@ struct expr_str *A4GL_new_literal_double_str (char *value)
 {
   struct expr_str *ptr;
   ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_DOUBLE_STR);
+  ptr->u_data.expr_string=acl_strdup(value);
+  return ptr;
+}
+
+struct expr_str *A4GL_new_quoted_string (char *value)
+{
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_QUOTED_STRING);
   ptr->u_data.expr_string=acl_strdup(value);
   return ptr;
 }

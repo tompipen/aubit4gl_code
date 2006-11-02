@@ -103,7 +103,7 @@ static void print_undo_use (char *use_stuff) ;
 static void print_unload_g (char *fname,char *delim,char *sql,void*binding) ;
 static void *copy_togenbind(char c);
 static void print_use_session (char *conn_id) ;
-static void print_init_conn (char *s) ;
+static void conn_db (char *s) ;
 static void print_unable_to_parse(void) ;
 //andrej static int yywrap(void) ;
 static int start_bind (char c,int n);

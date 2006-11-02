@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.44 2006-10-28 15:53:04 briantan Exp $
+# $Id: util.c,v 1.45 2006-11-02 17:53:32 mikeaubury Exp $
 #
 */
 
@@ -890,7 +890,7 @@ print_use_session (char *s)
  * @todo Describe function
  */
 static void
-print_init_conn (char *s)
+conn_db (char *s)
 {
   char buff[256];
   if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT"))
@@ -1246,5 +1246,8 @@ void *copy_togenbind(char c) {
 	return 0;
 }
 
+int fail_on_select_ibind() {
+return 0;
+}
 
 /* ====================================== EOF ============================ */
