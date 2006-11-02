@@ -16,7 +16,7 @@ insert_statement_ss:
 	op_insert_column_list 
 	ins_2_ss {
 		//A4GL_add_crud("INSERT",$<str>3);
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>5),kw_space,$<sql_string>6,NULL); 
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<sql_string>5),kw_space,$<sql_string>6,NULL);  
 
 		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
 			A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!"); 
@@ -27,8 +27,7 @@ insert_statement_ss:
 
 ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { 
 		insql=0; 
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),
-							acl_strdup(" ("),$<sql_string>4,kw_cb,NULL);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), acl_strdup(" ("),$<sql_string>4,kw_cb,NULL);
 	}
 	| query_specification_ss_converted {
 			$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");
@@ -36,9 +35,14 @@ ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET {
 ;
 
 op_insert_column_list: {
-			strcpy($<str>$,""); A4GL_4glc_push_gen(INSCOL,"*"); 
+
+			$<sql_string>$=make_sql_string_and_free("",NULL);
+			A4GL_4glc_push_gen(INSCOL,"*"); 
 	}
-	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {
+			
+			$<sql_string>$=make_sql_string_and_free(kw_ob, $<sql_string>2, kw_cb,NULL);
+			//sprintf($<str>$," (%s)",$<str>1,$<str>2,$<str>3);
 			 add_feature("INSERT_COLUMNLIST_EQ_VALUELIST");
 		}
 ;
@@ -47,9 +51,11 @@ op_insert_column_list: {
 insert_column_list:
 	column_name {
 		A4GL_4glc_push_gen(INSCOL,$<str>1);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);
 	}
 	| insert_column_list KW_COMMA column_name {
 			A4GL_4glc_push_gen(INSCOL,$<str>3);
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,acl_strdup($<str>3), NULL);
 	}
 ;
 
