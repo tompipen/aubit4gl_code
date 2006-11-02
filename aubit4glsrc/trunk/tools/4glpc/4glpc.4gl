@@ -602,12 +602,14 @@ endcode
 						if mv_output="" or mv_output is null then
 							let mv_output="a.out",get_ext("DLL")
 						end if
+						let mv_compile_c_opts=mv_compile_c_opts clipped," -fPIC"
 						continue for
 
 		WHEN "-as-dll"			let mv_make_dll=1 let mv_stage="DLL" 
 						if mv_output="" or mv_output is null then
 							let mv_output="a.out",get_ext("DLL")
 						end if
+						let mv_compile_c_opts=mv_compile_c_opts clipped," -fPIC"
 						continue for
 
 
