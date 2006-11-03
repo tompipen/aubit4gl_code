@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.75 2006-11-02 17:53:35 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.76 2006-11-03 19:25:28 pascal_v Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.75 2006-11-02 17:53:35 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.76 2006-11-03 19:25:28 pascal_v Exp $";
 #endif
 
 
@@ -173,15 +173,17 @@ LEXLIB_print_set_conn (char *conn)
 }
 
 /**
- * Generate the C implementation for the PUT statement for using with 
+ * Generate the C implementation for the PUT statement for using with
  * insert cursors.
  */
 void
 LEXLIB_print_put_g (char *cname,char *putvals,t_binding_comp_list* bind)
 {
   int n;
-  printc ("{\n");
+  /* pascal_v: switch order of LEXLIB_print_pushchar(cname) and printc ("{\n")
+    because the resulting code does not compile */
   LEXLIB_print_pushchar(cname);
+  printc ("{\n");
   n = LEXLIB_print_bind_definition_g (bind);
   LEXLIB_print_bind_set_value_g (bind);
   printc ("A4GLSQL_put_insert(ibind,%d);\n", n);
@@ -352,10 +354,10 @@ LEXLIB_print_sql_commit (int t)
  * It seems to call fetch_cursor with diferent number of parameters, but
  * its not true since into is a string with values separated with comma.
  *
- * @param ftp The fetch part that includes: 
+ * @param ftp The fetch part that includes:
  *   - The cursor name.
  *   - The fetch scope ( ABSOLUTE or RELATIVE ).
- *   - The fetch place 
+ *   - The fetch place
  * @param into The into variable list, taht includes:
  */
 void
@@ -384,7 +386,7 @@ char buff[200];
 }
 
 /**
- * Print in the ouput C generated file the implementation of DATABASE 
+ * Print in the ouput C generated file the implementation of DATABASE
  * instruction.
  *
  * Called by the parser when found the DATABASE statement.
@@ -408,7 +410,7 @@ printc("{char *_s; ");
 
 
 /**
- * Print the implementation of the execution of a select statement to the 
+ * Print the implementation of the execution of a select statement to the
  * output C file.
  *
  * Called by the parser when it found the end of a select statement.
@@ -445,7 +447,7 @@ LEXLIB_print_flush_cursor (char *s)
  *
  * The generated code calls the library funcation A4GLSQL_declare_cursor().
  *
- * @todo When the cursor is for update the string of the select need for 
+ * @todo When the cursor is for update the string of the select need for
  * update keyword at the end.
  *
  * @param a1 Indicate if the cursor is for update.
@@ -467,7 +469,7 @@ LEXLIB_print_declare_g (char *sa1, char *a2, char *a3, int h1, int h2,t_binding_
 
   //A4GL_add_pointer(A4GL_strip_quotes(a3),CURCODE,(void *)1);
 
-  if (strlen(sa1)) a1=1; 
+  if (strlen(sa1)) a1=1;
   else a1=0;
   printc ("A4GLSQL_declare_cursor(%d+%d,%s,%d,%s);\n}\n", a1, h1, a2, h2, a3);
 }
@@ -503,7 +505,7 @@ LEXLIB_print_curr_spec_g (int type, char *s, t_binding_comp_list *inbind, t_bind
 		if (ni) {LEXLIB_print_bind_set_value_g(inbind);}
 
 		A4GL_assertion(no,"DIDNT THINK THIS HAPPEND");
-		
+
 		switch(bt) {
     		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0)", s,lastlineno);break;
    		case 1: sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",_module_name,%d,0)", no,s,lastlineno); break;
@@ -520,7 +522,7 @@ LEXLIB_print_curr_spec_g (int type, char *s, t_binding_comp_list *inbind, t_bind
 /**
  * Create the C implementation of a select statement.
  *
- * This implementation calls the library function that prepares the statement 
+ * This implementation calls the library function that prepares the statement
  * A4GLSQL_prepare_select().
  *
  * This is called directly by the parser.
@@ -619,7 +621,7 @@ LEXLIB_print_load_str (char *file, char *delim, char *sql)
 }
 
 /**
- * Print in the generated file the C implementation for use a specific 
+ * Print in the generated file the C implementation for use a specific
  * connection in a SQL statement.
  *
  * Called when the parser found USE SESSION statement before an sql statement.
@@ -697,13 +699,13 @@ void print_report_table(char *repname,char type, int c,char *asc_desc,t_binding_
 if (type=='R')
   printc ("A4GL_add_row_report_table (_rbind,%d);",c);
 
-if (type=='F') 
+if (type=='F')
   printc ("        while (A4GL_report_table_fetch(reread,%d,_rbind)) {",c);
 
 if (type=='I')
   printc ("        A4GL_init_report_table(_rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread,\"%s\");\n", c,asc_desc);
 
-if (type=='E') 
+if (type=='E')
   printc ("        A4GL_end_report_table(_rbind,%d,reread);",c);
 if (type=='M')
   printc ("       A4GL_make_report_table(_rbind,%d);",c);
@@ -739,7 +741,7 @@ char *x;
 	x=acl_malloc2(strlen(sql)+255);
 	sprintf(x,"A4GL_push_char(\"%s\");",sql);
         ptr=A4GL_new_expr(x);
-	
+
         A4GL_append_expr(ptr,"{");
         n=print_bind_expr(ptr,'i');
         sprintf(buff,"A4GL_push_binding(ibind,%d);}",n);
