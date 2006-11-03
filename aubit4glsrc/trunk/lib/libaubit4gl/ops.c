@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.95 2006-10-22 18:41:42 briantan Exp $
+# $Id: ops.c,v 1.96 2006-11-03 19:16:04 pascal_v Exp $
 #
 */
 
@@ -309,40 +309,43 @@ char *ptr2;
   A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
 
 #ifdef DEBUG
-  A4GL_debug(" About to pop '%s'(%s) '%s'(%s)",ptr1,A4GL_isnull(d1,ptr1)?"null":"not null",ptr2,A4GL_isnull(d2,ptr2)?"null":"not null");
+  A4GL_debug(" About to pop '%s'(%s) '%s'(%s)",A4GL_null_as_null(ptr1),
+             A4GL_isnull(d1,ptr1)?"null":"not null",
+             A4GL_null_as_null(ptr2),
+             A4GL_isnull(d2,ptr2)?"null":"not null");
 #endif
 
   b = A4GL_char_pop ();
   a = A4GL_char_pop ();
 
 #ifdef DEBUG
-  A4GL_debug("a='%s' b='%s' op=%d\n",a,b,op);
+  A4GL_debug("a='%s' b='%s' op=%d\n",A4GL_null_as_null(a),A4GL_null_as_null(b),op);
 #endif
 
-  if (A4GL_isnull (DTYPE_CHAR, (void *) a) || A4GL_isnull (DTYPE_CHAR, (void *) b)) { 
+  if (A4GL_isnull (DTYPE_CHAR, (void *) a) || A4GL_isnull (DTYPE_CHAR, (void *) b)) {
 		A4GL_debug("One of them is null...");
-		A4GL_push_null (DTYPE_CHAR, 0); 
-		free(a); free(b); 
-		return; 
+		A4GL_push_null (DTYPE_CHAR, 0);
+		free(a); free(b);
+		return;
 	}
 
-  else { 
+  else {
 #ifdef DEBUG
-	  	A4GL_debug ("OK - neither is null"); 
+	  	A4GL_debug ("OK - neither is null");
 #endif
-  } 
+  }
 
   A4GL_trim(b);
   A4GL_trim(a);
 
 
 #ifdef DEBUG
-  A4GL_debug("a='%s' b='%s' op=%d and they're trimmed\n",a,b,op);
+  A4GL_debug("a='%s' b='%s' op=%d and they're trimmed\n",A4GL_null_as_null(a),A4GL_null_as_null(b),op);
 #endif
 
   switch (op)
     {
-    case OP_ADD: 
+    case OP_ADD:
     case OP_SUB:
     case OP_MULT:
     case OP_DIV:
@@ -366,7 +369,7 @@ char *ptr2;
 	if (dt2==DTYPE_DECIMAL) { fgldecimal c 	; A4GL_push_char(b); A4GL_pop_var2(&c,5,0x2010); 	A4GL_push_variable(&c,0x20100005);done2=1; 	}
 	if (dt2==DTYPE_INT) 	{ long c 	; A4GL_push_char(b); A4GL_pop_var2(&c,2,0); 		A4GL_push_variable(&c,0x2);done2=1; 		}
 	if (dt2==DTYPE_DATE) 	{ long c 	; A4GL_push_char(b); A4GL_pop_var2(&c,7,0); 		A4GL_push_variable(&c,0x7);done2=1; 		}
-	if (!done2) 		{ A4GL_assertion(1,"Unhandled character operation"); } 
+	if (!done2) 		{ A4GL_assertion(1,"Unhandled character operation"); }
 	A4GL_pushop(op);
 	return;
 
@@ -395,7 +398,7 @@ char *ptr2;
 
     case OP_EQUAL:
 	//if (strcmp(a,"journal")==0 && strcmp(b,"all")==0) { A4GL_assertion(1,"Testing"); }
-	A4GL_debug("Comparing %s %s - gives %d\n",a,b,(strcmp(a,b)==0));
+	A4GL_debug("Comparing %s %s - gives %d\n",A4GL_null_as_null(a),A4GL_null_as_null(b),(strcmp(a,b)==0));
       A4GL_push_int (strcmp(a,b)==0);
 	A4GL_debug("Freeing my two popped strings %p and %p",a,b);
 	free(a); free(b);
@@ -694,7 +697,7 @@ int ok=0;
   			f=ival_data[6]+a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
-	  		acli_interval (buff_6, 0x867);	
+	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
 
@@ -702,10 +705,10 @@ int ok=0;
   			f=ival_data[1]+a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%d", (int)f);
-	  		acli_interval (buff_6, 0x822);	
+	  		acli_interval (buff_6, 0x822);
 			return ;
 		}
-		
+
 	case OP_SUB:
 		if (se2==6) {
 			double f;
@@ -719,7 +722,7 @@ int ok=0;
   			f=ival_data[1]-a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%d", (int)f);
-	  		acli_interval (buff_6, 0x822);	
+	  		acli_interval (buff_6, 0x822);
 			return ;
 		}
 	case OP_DIV:
@@ -728,14 +731,14 @@ int ok=0;
   			f=ival_data[6]/a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
-	  		acli_interval (buff_6, 0x867);	
+	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
 			double f;
   			f=ival_data[1]/a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%d", (int)f);
-	  		acli_interval (buff_6, 0x822);	
+	  		acli_interval (buff_6, 0x822);
 			return ;
 		}
 
@@ -745,18 +748,18 @@ int ok=0;
   			f=ival_data[6]*a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
-			
-	  		acli_interval (buff_6, 0x867);	
+
+	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
 			double f;
   			f=ival_data[1]*a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%d", (int)f);
-	  		acli_interval (buff_6, 0x822);	
+	  		acli_interval (buff_6, 0x822);
 			return ;
 		}
-	
+
   }
 
   A4GL_assertion(1,"Unimplemented int_in operation");
@@ -826,7 +829,7 @@ A4GL_dt_date_ops (int op)
   	A4GL_get_top_of_stack (2, &dtype2, &sz2, (void *) &ptr2);
 	dtype1=dtype1&DTYPE_MASK; dtype2=dtype2&DTYPE_MASK;
 
-	A4GL_pop_param(&dt2,DTYPE_DTIME,0x13); 
+	A4GL_pop_param(&dt2,DTYPE_DTIME,0x13);
 	A4GL_push_variable(&dt2,0x13000a);
 	A4GL_dt_dt_ops(op);
 }
@@ -850,7 +853,7 @@ A4GL_date_dt_ops (int op)
 	dt1.stime=pdt1->stime;
 	dt1.ltime=pdt1->ltime;
         A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
-	A4GL_pop_param(&dt2,DTYPE_DTIME,0x13); 
+	A4GL_pop_param(&dt2,DTYPE_DTIME,0x13);
 	A4GL_push_variable(&dt2,0x13000a);
 	A4GL_push_dtime (&dt1);
 	A4GL_dt_dt_ops(op);
@@ -1065,7 +1068,7 @@ A4GL_debug(":::1 %d %lf %d -  %s",dt_days,dt_seconds,in_months,(op==OP_ADD)?"Add
   		A4GL_push_null (DTYPE_CHAR,0);
 		return;
 	}
-  } 
+  }
 
   if (in_months==0) {
   	in_seconds=(double)ival_data[2]*24.0*60.0*60.0; // Days
@@ -1110,9 +1113,9 @@ A4GL_debug(":::1 %d %lf %d -  %s",dt_days,dt_seconds,in_months,(op==OP_ADD)?"Add
 		dtime_data[2]=mdy_d;
 		dtime_data[1]=mdy_m;
 		dtime_data[0]=mdy_y;
-	
 
-	}	
+
+	}
 
 
 if (op==OP_SUB) {
@@ -1145,7 +1148,7 @@ if (op==OP_SUB) {
       while (dtime_data[5] < 0)
 	{
 	  dtime_data[4]--;
-	  dtime_data[5] += 60;	
+	  dtime_data[5] += 60;
 	}
 
 
@@ -1153,7 +1156,7 @@ if (op==OP_SUB) {
       while (dtime_data[4] < 0)
 	{
 	  dtime_data[3]--;
-	  dtime_data[4] += 60;	
+	  dtime_data[4] += 60;
 	}
 
 
@@ -1161,7 +1164,7 @@ if (op==OP_SUB) {
       while (dtime_data[3] < 0)
 	{
 	  dtime_data[2]--;
-	  dtime_data[3] += 24;	
+	  dtime_data[3] += 24;
 	}
 
       		while (dtime_data[6] > 99999) { dtime_data[5]++; dtime_data[6] -= 100000; }
@@ -1437,7 +1440,7 @@ A4GL_date_date_ops (int op)
 	a+=b;
 	if (a<=2958464) A4GL_push_date (a);
 	else A4GL_push_date(0);
-	
+
       return;
     case OP_SUB:
       A4GL_push_long (a - b);
@@ -1545,7 +1548,7 @@ char buff[256];
   		} else {
 			b=c;
 		}
-		
+
   		A4GL_conversion_ok(was_ok);
     } else {
 		A4GL_push_char(buff);
@@ -1869,7 +1872,7 @@ A4GL_in_in_ops (int op)
 
   A4GL_get_top_of_stack (2, &d2, &s2, (void *) &pi2);
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &pi1);
-  
+
 
   A4GL_debug_print_stack();
 
@@ -2107,7 +2110,7 @@ int done1;
   if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL) 					{ A4GL_assertion (1,"Confused... Expecting an interval"); }
   if ((d2 & DTYPE_MASK) != DTYPE_CHAR  && (d2 & DTYPE_MASK) != DTYPE_VCHAR) 	{ A4GL_assertion (1,"Confused... Expecting a string"); }
 
-  
+
 if (A4GL_isnull(d1,(void *)pi1)) {
       	A4GL_drop_param();
       	A4GL_drop_param();
@@ -2136,9 +2139,9 @@ if (A4GL_isnull(d1,(void *)pi1)) {
 	A4GL_debug("Got stuff off stack...");
 
 	// Not normal to add two strings...
-	A4GL_whats_in_a_string(ptr,&d2,&s2); 
+	A4GL_whats_in_a_string(ptr,&d2,&s2);
 
-	
+
 
 	A4GL_push_interval(&in1);
 
@@ -2334,8 +2337,8 @@ A4GL_dt_dt_ops (int op)
       A4GL_debug ("Op LT : %d (-%d <%d >%d", op, OP_SUB, OP_LESS_THAN,
 		  OP_GREATER_THAN);
 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data1[0], dtime_data1[1], dtime_data1[2], dtime_data1[3], dtime_data1[4], dtime_data1[5], dtime_data1[6]); 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data1[0], dtime_data1[1], dtime_data1[2], dtime_data1[3], dtime_data1[4], dtime_data1[5], dtime_data1[6]);
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 
       dtime_data2[0] -= dtime_data1[0];	// Y
       dtime_data2[1] -= dtime_data1[1];	//
@@ -2345,7 +2348,7 @@ A4GL_dt_dt_ops (int op)
       dtime_data2[5] -= dtime_data1[5];
       dtime_data2[6] -= dtime_data1[6];
 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 // Borrow some seconds for fractions
       while (dtime_data2[6] < 0)
 	{
@@ -2353,7 +2356,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[5]--;
 	}
 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 // Borrow some minutes for seconds
       while (dtime_data2[5] < 0)
 	{
@@ -2361,7 +2364,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[4]--;
 	}
 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 // Borrow some hours for minutes
       while (dtime_data2[4] < 0)
 	{
@@ -2369,7 +2372,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[3]--;
 	}
 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 // Borrow some days for some hours..
       while (dtime_data2[3] < 0)
 	{
@@ -2377,7 +2380,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[2]--;
 	}
 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 // Borrow some months for some days. @ FIXME @todo fix days in months
       while (dtime_data2[2] < 0)
 	{
@@ -2391,14 +2394,14 @@ A4GL_dt_dt_ops (int op)
 	}
 
 
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 // Borrow some years for some months.
       while (dtime_data2[1] < 0)
 	{
 	  dtime_data2[1] += 12;
 	  dtime_data2[0]--;
 	}
-  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]); 
+  A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 
       A4GL_debug ("Y %d M %d D %d H %d M %d S %d", dtime_data2[0],
 		  dtime_data2[1], dtime_data2[2], dtime_data2[3],
@@ -2520,7 +2523,7 @@ A4GL_dt_dt_ops (int op)
 
 /*
 	display_...
-	
+
 	these accept 4 parameters
 
 	ptr  		= pointer to original data
@@ -2964,6 +2967,13 @@ A4GL_display_date (void *ptr, int size, int size_c,
 	}
 
       A4GL_debug ("display_date Got '%s'", buff_12);
+      /* pascal_v. Display stars when date does not fit in field as Informix */
+      if (strlen(buff_12) > size_c) {
+        A4GL_debug ("This does not fit in field (length = %d)", size_c);
+        memset(buff_12, '*', size_c);
+        buff_12[size_c] = 0;
+      }
+      A4GL_debug ("Returning '%s'", buff_12);
       return buff_12;
     }
 
@@ -3289,7 +3299,7 @@ A4GL_add_default_operations (void)
 {
 
 
-/* Integer functions 
+/* Integer functions
 this covers all possibilities of
 DTYPE_INT
 DTYPE_SMINT
@@ -3462,7 +3472,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
       if (strlen (buff_sz) > sz)
 	{
 	  char *ptr;
-	  // It doesn't fit - 
+	  // It doesn't fit -
 	  // what happens if we remove all the decimal places ?
 	  ptr = a_strchr (buff_sz, '.');
 
@@ -3509,7 +3519,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 }
 
 
-/* 
+/*
 returns *d=
 
 	DTYPE_DECIMAL
@@ -3557,7 +3567,7 @@ if (s==0) return;
 		if (!A4GL_conversion_ok(-1)) val=0;
 		if (val==1)  {
 		 	*d=DTYPE_INT;
-			*sz=4; 
+			*sz=4;
 			A4GL_debug("Its an integer");
 			A4GL_conversion_ok(orig_conv_ok);
 			a4gl_status=orig_stat;
@@ -3568,14 +3578,14 @@ if (s==0) return;
 
 a4gl_status=orig_stat;
 A4GL_conversion_ok(orig_conv_ok);
-	
+
 	// Check for date
 	A4GL_conversion_ok(1);
 	val=A4GL_stod(s,buff,4);
 	if (!A4GL_conversion_ok(-1)) val=0;
 	if (val==1)  {
 	 	*d=DTYPE_DATE;
-		*sz=4; 
+		*sz=4;
 			A4GL_debug("Its a date");
 			A4GL_conversion_ok(orig_conv_ok);
 			a4gl_status=orig_stat;
@@ -3602,7 +3612,7 @@ A4GL_conversion_ok(orig_conv_ok);
 					return;
 				}
 			}
-			
+
 		}
 	}
 
@@ -3617,7 +3627,7 @@ A4GL_conversion_ok(orig_conv_ok);
 			char str[256];
 			int ibuff[30];
 			strcpy(str,s);
-			
+
 			if (a==b) continue; // Year year, month month etc = integer
 			size_b=0x600+((a+1)<<4)+(b+1);
 			if ((a==0 || a==1) && b>1) continue;
@@ -3628,7 +3638,7 @@ A4GL_conversion_ok(orig_conv_ok);
 				*sz=size_b;
 				return;
 			}
-			
+
 		}
 	}
 
