@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.130 2006-09-26 16:15:07 mikeaubury Exp $
+# $Id: curslib.c,v 1.131 2006-11-03 19:28:01 pascal_v Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.130 2006-09-26 16:15:07 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.131 2006-11-03 19:28:01 pascal_v Exp $";
 #endif
 /*
 =====================================================================
@@ -2732,7 +2732,11 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
 
       A4GL_mja_gotoxy (1, 1 + menu->menu_line);
-      A4GL_tui_printr (1, "%s:", menu->menu_title);
+      /* pascal_v Do not print ":" if menu has no title */
+      if (strlen(menu->menu_title) > 0)
+        A4GL_tui_printr (1, "%s:", menu->menu_title);
+      else
+        A4GL_tui_printr (1, "%s", menu->menu_title);
       a = A4GL_getch_win ();
       if (a == -1)
 	return 0;
@@ -3015,14 +3019,14 @@ A4GL_refresh_after_system (void)
 
 	lib/libui/ui_curses/curslib.c (this file)	as (struct struct_scr_field *fprop)
 	lib/libui/ui_highlevel/formcntrl.c 			as (struct struct_scr_field *fprop)
-	
-	lib/libform/form_xdr/readforms.c			as (void *fprop) 
-	
+
+	lib/libform/form_xdr/readforms.c			as (void *fprop)
+
 	proto is defined in API_form.spec :
-		//void A4GL_comments (struct struct_scr_field *fprop); 
-		A4GL_comments void* fprop -> void 
-	
-	
+		//void A4GL_comments (struct struct_scr_field *fprop);
+		A4GL_comments void* fprop -> void
+
+
 */
 // This is called internally in ui_curses plug-in
 void
@@ -3304,7 +3308,7 @@ A4GL_has_timeout (int a)
 
 //
 // Called when SET PAUSE MODE ON/OFF is set
-// and to check which is in effect (a==-1) 
+// and to check which is in effect (a==-1)
 //
 int
 UILIB_A4GL_screen_mode (int a)
