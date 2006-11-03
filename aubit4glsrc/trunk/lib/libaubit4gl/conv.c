@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.124 2006-10-18 08:19:42 mikeaubury Exp $
+# $Id: conv.c,v 1.125 2006-11-03 09:03:48 mikeaubury Exp $
 #
 */
 
@@ -1900,6 +1900,11 @@ A4GL_stod (void *str_v, void *date_v, int sz_ignore)
     }
 
   *date = A4GL_gen_dateno (atoi (num[d_pos]), atoi (num[m_pos]), n);
+
+  if (*date==DATE_INVALID) {
+	return 0;
+  }
+
   return 1;
   //return ((*date = A4GL_gen_dateno (atoi (num[d_pos]), atoi (num[m_pos]), n)) != DATE_INVALID);
 }
@@ -2890,44 +2895,6 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   return rval;
 }
 
-#ifdef MOVED
-void A4GL_assertion_failed(char *s)  {
-      fflush (stdout);
-      A4GL_set_errm (s);
-      A4GL_debug ("%s", A4GL_null_as_null(s));
-	if (A4GL_isyes(acl_getenv("DOING_CM"))) {
-      		FPRINTF (stderr,"%s\n", A4GL_null_as_null(s));
-	}
-      if (A4GL_isyes(acl_getenv("CORE_ON_ASSERT"))) {
-		char *ptr=0;
-      		A4GL_exitwith ("Assertion failed %s");
-		*ptr=0;
-      		A4GL_chk_err (0, "Unknown");
-	}
-
-      A4GL_exitwith ("Assertion failed %s");
-      A4GL_chk_err (0, "Unknown");
-
-      A4GL_fgl_die(2);
-}
-
-/**
- * Assert if an expression is true.
- *
- * @param a The result of the expression:
- *   - 0 : The expression was true.
- *   - Otherwise : The expression was not true.
- * @param s The message if the expression is not true.
- */
-void
-A4GL_assertion (int a, char *s)
-{
-/* A4GL_debug("Assertion ? a=%d s=%s",a,s); */
-if (a) {
-	A4GL_assertion_failed(s);
-}
-}
-#endif
 
 
 /**

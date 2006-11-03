@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.288 2006-11-02 17:53:07 mikeaubury Exp $
+# $Id: mod.c,v 1.289 2006-11-03 09:03:16 mikeaubury Exp $
 #
 */
 
@@ -1235,7 +1235,7 @@ set_4gl_vars (void)
   variable_action (-1, "true", "1", "i", "add_constant");
   variable_action (-1, "today", "", "", "a4gl_add_variable");
   variable_action (-1, "fgldate", "", "", "push_type");
-  variable_action (-1, "user", "", "", "a4gl_add_variable");	/* Did someone change this  to 'usr' */
+  variable_action (-1, "fgl_user", "", "", "a4gl_add_variable");	/* Did someone change this  to 'usr' */
   variable_action (-1, "char", "8", "", "push_type");
   variable_action (-1, "pageno", "", "", "a4gl_add_variable");
   variable_action (-1, "long", "", "", "push_type");
@@ -5447,7 +5447,7 @@ void llex_add_ibind(int dtype,char *var) {
 void fail_on_select_ibind() {
 if (ibindcnt) {
 	a4gl_yyerror("You can't SELECT a variable (perhaps you could rename the variable, or prefix the column in the SELECT list ?)");
-	return 0;
+	return;
 }
 }
 

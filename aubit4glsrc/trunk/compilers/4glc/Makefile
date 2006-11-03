@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.20 2006-10-30 09:31:25 mikeaubury Exp $
+# $Id: Makefile,v 1.21 2006-11-03 09:03:16 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                   Source files
 ## ==================================================================
 
-WANTKW_C		= mk_states.c
+WANTKW_C		= rules/generated/mk_states.c
 Y_OUTPUT		= rules/generated/y.output
 
 ifeq "${YACC}" "no"
@@ -146,7 +146,7 @@ endif
 all: a4gl_4glc_int.h ${ALL} 
 	@echo "Default targets (${ALL}) successfully compiled."
 
-a4gl_4glc_int.h: API_lex.c
+a4gl_4glc_int.h: API_lex.c API_parse.c
 
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
 	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
@@ -177,8 +177,8 @@ endif
 rules/generated/y.tab.o: ${Y_TAB_C} ${Y_TAB_H}
 	${CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
 
-mk_states.o:  mk_states.c
-	${CC} ${CFLAGS} -O2 -c $< -I.
+rules/generated/mk_states.o:  rules/generated/mk_states.c
+	${CC} ${CFLAGS} -O2 -c -o $@ $< -I. -Irules/generated
 
 ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 	${MAKE} -C rules
@@ -218,7 +218,7 @@ API_parse_self.c: API_parse.spec ../../incl/a4gl_API_parse.h    ../../incl/a4gl_
 ../../incl/a4gl_API_parse_lib.h: API_parse.spec	
 	${SH} ../../lib/bin/dlmagic $< -H > $@
 
-mk_states.c: mk_states_c ${Y_OUTPUT}
+rules/generated/mk_states.c: mk_states_c ${Y_OUTPUT}
 ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"
 	cp ${Y_OUTPUT} rules/generated/y.output
 endif
@@ -228,7 +228,7 @@ ifneq "${YACC}" "no"
 #the "t" file is some kind of temporary file created by wantkw_gen.pl
 	${RM} t
 else
-	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/mk_states* .
+	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/mk_states* rules/generated
 endif
 
 mk_states_c:
@@ -275,8 +275,8 @@ show:
 
 clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err *.a *.exe *.bak .*.bak .\#* \
-	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h \
-	mk_states.c API_lex.c ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_lex_lib.h \
+	*.log *.dll *.dll.a *.def wantkw.c wantkw.h rules/generated/mk_states_1.h rules/generated/mk_states.h \
+	rules/generated/mk_states.c API_lex.c ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_lex_lib.h \
 	API_parse_self.c API_lex_self.c ../../incl/a4gl_API_parse_lib.h \
 	../../incl/a4gl_API_parse.h
 

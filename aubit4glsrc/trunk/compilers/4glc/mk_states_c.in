@@ -7,7 +7,7 @@ BEGIN  {
 	print "#else"
 	print "#include \"y.tab.h\""
 	print "#endif"
-	print "const int *token_groups[]={" > "mk_states_1.h";
+	print "const int *token_groups[]={" > "rules/generated/mk_states_1.h";
 }
 
 /^state/ {
@@ -26,7 +26,7 @@ BEGIN  {
 			this_val=cnt;
 			arr_vals[val]=cnt++;
 		}
-		print "    token_group_" this_val "," > "mk_states_1.h"
+		print "    token_group_" this_val "," > "rules/generated/mk_states_1.h"
 	}
 	state=$2
 	delete arr
@@ -70,12 +70,12 @@ BEGIN  {
 }
 
 END {
-   print "   0};" > "mk_states_1.h"
+   print "   0};" > "rules/generated/mk_states_1.h"
    print " "
 
    for (a in arr_vals) {
       if (printed[arr_vals[a]]!="") continue; printed[arr_vals[a]]="YES"
-      #print "const int *token_group_" arr_vals[a] ";" > "mk_states.h"
+      #print "const int *token_group_" arr_vals[a] ";" > "rules/generated/mk_states.h"
       if (a=="") a="-1"
       print "const int token_group_" arr_vals[a] "[]={" a ",-1};"
       print " "
@@ -105,5 +105,5 @@ END {
 
    
 
-}' < rules/generated/y.output > mk_states.c
-touch mk_states.h
+}' < rules/generated/y.output > rules/generated/mk_states.c
+touch rules/generated/mk_states.h
