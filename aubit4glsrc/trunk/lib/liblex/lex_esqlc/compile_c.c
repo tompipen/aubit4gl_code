@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.338 2006-11-02 17:53:34 mikeaubury Exp $
+# $Id: compile_c.c,v 1.339 2006-11-03 19:36:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.338 2006-11-02 17:53:34 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.339 2006-11-03 19:36:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1658,8 +1658,9 @@ real_print_expr (struct expr_str *ptr)
 	  A4GL_assertion (1, "ET_EXPR_LAST should never be printed");
 	  break;
 	case ET_EXPR_EXPR_LIST:
-	  A4GL_assertion (1,
-			  "ET_EXPR_EXPR_LIST can't be printed - print using A4GL_print_expr_list or A4GL_print_expr_list_concat");
+		a4gl_yyerror("Unexpected LIST");
+		return;
+	  A4GL_assertion (1, "ET_EXPR_EXPR_LIST can't be printed - print using A4GL_print_expr_list or A4GL_print_expr_list_concat");
 	  break;
 	case ET_EXPR_WORDWRAP:
 	  // Wordwraps shouldn't be printed - in the report_print - the wrapped expression should be printed...
@@ -2048,7 +2049,7 @@ real_print_expr (struct expr_str *ptr)
 	  real_print_expr (ptr->u_data.expr_op->right);
 	  if (ptr->u_data.expr_op->escape)
 	    {
-	      real_print_expr (ptr->u_data.expr_op->right);
+	      real_print_expr (ptr->u_data.expr_op->escape);
 	    }
 	  else
 	    {
@@ -2061,7 +2062,7 @@ real_print_expr (struct expr_str *ptr)
 	  real_print_expr (ptr->u_data.expr_op->right);
 	  if (ptr->u_data.expr_op->escape)
 	    {
-	      real_print_expr (ptr->u_data.expr_op->right);
+	      real_print_expr (ptr->u_data.expr_op->escape);
 	    }
 	  else
 	    {

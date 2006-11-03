@@ -60,6 +60,10 @@ int aclfgl_aclfgl_get_user(int n) {
 }
 
 
+int aclfgl_fgl_username(int n) {
+        A4GL_push_user ();
+        return 1;
+}
 
 
 
