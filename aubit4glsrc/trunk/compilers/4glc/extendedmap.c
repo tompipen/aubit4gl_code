@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.3 2006-11-01 12:02:59 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.4 2006-11-04 09:26:02 mikeaubury Exp $
 #*/
 
 
@@ -44,32 +44,8 @@ static void map_select_list_item_list (char *stmttype, char *listtype,
 char *find_tabname_for_alias (struct s_select *select, char *alias);
 int A4GL_has_column (char *t, char *c);
 int indent=1;
+static enum e_mapset get_currmapset(void) ;
 
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-extern FILE *crudfile;		/* The map file pointer opened file */
-extern char curr_func[];
-extern int yylineno;
-extern char infilename[];
-char *module_name_without_dirstart (char *s);
-
-
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
-
-
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
 
 
 enum e_mapset {
@@ -98,20 +74,55 @@ enum e_mapset {
 	MAPSET_LAST
 };
 
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+extern FILE *crudfile;		/* The map file pointer opened file */
+extern char curr_func[];
+extern int yylineno;
+extern char infilename[];
+char *module_name_without_dirstart (char *s);
+static int find_subqueries (char *stmttype, struct s_select *select, struct s_select_list_item *p) ;
+static int print_subqueries(int sc) ;
+static void dump_mapsets(void) ;
+static void add_currmapset(enum e_mapset e) ;
+static void rm_currmapset(void) ;
+static void init_mapsets(void) ;
+static void dump_mapset_to_crud(char *tag, enum e_mapset e) ;
+static void dump_mapset(enum e_mapset e) ;
+
+static int isSpecial (char *fname, char *lib,char *cat);
+static void A4GL_add_xmlmap (enum e_mapset mapset, char *fmt, ...) ;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 struct {
 	char **lines;
 	int nlines;
 } map_crud[100];
 
-struct stmts *subq_stmts[2000];
-struct selects *subq_selects[2000];
+struct s_select *subq_stmts[2000];
+//struct selects *subq_selects[2000];
 int stmts_cnt=0;
 
 enum e_mapset curr_mapset[100];
 int curr_mapset_cnt=0;
 
 
-void init_mapsets(void) {
+static void init_mapsets(void) {
 int a;
 	for (a=0;a<100;a++) {
 		map_crud[a].lines=0;
@@ -120,7 +131,7 @@ int a;
 }
 
 
-void dump_mapset_to_crud(char *tag, enum e_mapset e) {
+static void dump_mapset_to_crud(char *tag, enum e_mapset e) {
 int a;
 	FPRINTF(crudfile,"      <%s>\n",tag);
 
@@ -154,7 +165,7 @@ if (map_crud[e].nlines) {
 }
 */
 
-void dump_mapset(enum e_mapset e) {
+static void dump_mapset(enum e_mapset e) {
 
 
 	switch (e) {
@@ -175,10 +186,11 @@ void dump_mapset(enum e_mapset e) {
 		case MAPSET_LIBCALL_AWB: 	dump_mapset_to_crud("AWBCALLS",e); break;
 		case MAPSET_LIBCALL: 		dump_mapset_to_crud("OTHERLIBCALLS",e); break;
 		case MAPSET_ENV: 		dump_mapset_to_crud("ENVIRONMENTVARS",e); break;
+		default : 	A4GL_assertion(1,"Unexpected");
 	}
 }
 
-void dump_mapsets(void) {
+static void dump_mapsets(void) {
 int a;
 	for (a=0;a<100;a++) {
 		if (map_crud[a].nlines) {
@@ -188,19 +200,19 @@ int a;
 
 }
 
-void add_currmapset(enum e_mapset e) {
+static void add_currmapset(enum e_mapset e) {
 	curr_mapset[curr_mapset_cnt++]=e;
 }
 
-void rm_currmapset(void) {
+static void rm_currmapset(void) {
 	curr_mapset_cnt--;
 }
 
-enum e_mapset get_currmapset(void) {
+static enum e_mapset get_currmapset(void) {
 	return curr_mapset[curr_mapset_cnt-1];
 }
 
-void A4GL_add_xmlmap (enum e_mapset mapset, char *fmt, ...) {
+static void A4GL_add_xmlmap (enum e_mapset mapset, char *fmt, ...) {
 va_list args;
 char buff[1025];
 va_start (args, fmt);
@@ -653,7 +665,7 @@ s=p->u_data.expr_function_call->fname;
 	}
 
 
-      if (!isSpecial (s, &libname,&libcat))
+      if (!isSpecial (s, libname,libcat))
 	{
 	  A4GL_add_xmlmap (MAPSET_CALL, "<CALL NAME=\"%s\" LINENO=\"%d\"/>\n", s, yylineno);
 	}
@@ -1169,8 +1181,7 @@ struct special_Calls Specials[] = {
 };
 
 
-int
-isSpecial (char *fname, char *lib,char *cat)
+int isSpecial (char *fname, char *lib,char *cat)
 {
   int a;
   for (a = 0; Specials[a].fcall; a++)
@@ -1223,6 +1234,7 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
     case E_SLI_FCALL:
     case E_SLI_EXTEND:
     case E_SLI_COLUMN:
+    case E_SLI_BUILTIN_CONST_TIME:
     case E_SLI_BUILTIN_AGG_SUM:
     case E_SLI_BUILTIN_AGG_COUNT:
 
@@ -1327,7 +1339,7 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
 
     case E_SLI_SUBQUERY:
 	subq_stmts[stmts_cnt]=p->u_data.subquery;
-	subq_selects[stmts_cnt++]=select;
+	//subq_selects[stmts_cnt++]=select;
 
      	 //map_select_stmt ("SUBSELECT", p->u_data.subquery); */
       return 0;
@@ -1348,7 +1360,7 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
   return 0;
 }
 
-print_subqueries(int sc) {
+static int print_subqueries(int sc) {
 int a;
 	
 	A4GL_add_xmlmap(get_currmapset(),"<SUBQUERIES>\n");
@@ -1357,5 +1369,6 @@ int a;
 	}
 	A4GL_add_xmlmap(get_currmapset(),"</SUBQUERIES>\n");
 	stmts_cnt=sc;
+	return 1;
 }
 /* ================================ EOF ============================== */
