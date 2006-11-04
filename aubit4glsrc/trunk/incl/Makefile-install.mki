@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.112 2006-10-29 06:42:53 afalout Exp $
+# $Id: Makefile-install.mki,v 1.113 2006-11-04 11:10:00 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -1133,6 +1133,57 @@ SFDL_INFO=http://sf-upload.sourceforge.net/
 SFDL_PATH=http://optusnet.dl.sourceforge.net/sourceforge/sf-upload
 SFDL_NAME=sf-upload-2.02
 SFDL_TAR_GZ=${SFDL_NAME}.tar.gz
+
+###################
+# 40: MySQL embedded server
+#No separate source code and ONLY RPM binary packages
+#The embedded MySQL server library is NOT part of MySQL 5.0. It is part of 
+#previous editions and will be included in future versions, starting with MySQL 5.1.
+#Suse 10.1 has prokyon3-mysql-embedded - MySQL-embedded server static
+#This packages contains libmysqld.a Version 4.0.26 and the language files for the mysql error messages
+MSQL_EMB_INFO=http://www.mysql.com/products/embedded/ \
+	http://dev.mysql.com/doc/refman/5.1/en/libmysqld.html
+	
+ifdef MYSQL_5
+	MSQL_EMB_PATH=ftp://ftp.planetmirror.com/pub/mysql/Downloads/MySQL-5.1
+	#Shared (3750kb) contains only one file (/usr/lib/mysql/libmysqld.a):
+	MSQL_EMB_NAME=MySQL-embedded-5.1.11-0.glibc23.i386
+	#Static (29636KB):
+	#MSQL_EMB_NAME=MySQL-embedded-5.1.9-0.i386
+else
+	#Only RPMs available there
+	MSQL_EMB_PATH=ftp://ftp.planetmirror.com/pub/mysql/Downloads/MySQL-4.1
+	MSQL_EMB_NAME=MySQL-embedded-4.1.21-0.glibc23.i386
+	#MSQL_EMB_NAME=MySQL-embedded-4.1.21-0.i386
+endif
+
+MSQL_EMB_RPM=${MSQL_EMB_NAME}.rpm
+
+#We need headers for 4.1, message files (29 MB!!!)
+#MSQL_EMB_STD_NAME=mysql-standard-4.1.21-pc-linux-gnu-i686-glibc23
+#mysql-standard-4.1.21-pc-linux-gnu-i686.tar.gz
+
+#Same, but with debug symbols: (31mb)
+#no libmysqld MSQL_EMB_STD_NAME=mysql-debug-4.1.21-pc-linux-gnu-i686-glibc23
+#no libmysqld MSQL_EMB_STD_NAME=mysql-debug-4.1.21-pc-linux-gnu-i686-icc-glibc23
+#no libmysqld MSQL_EMB_STD_NAME=mysql-debug-4.1.21-pc-linux-gnu-i686
+#no libmysqld MSQL_EMB_STD_NAME=mysql-debug-4.1.20-pc-linux-gnu-i686-glibc23
+#no libmysqld MSQL_EMB_STD_NAME=mysql-debug-4.1.20-pc-linux-gnu-i686-icc-glibc23
+#no libmysqld MSQL_EMB_STD_NAME=mysql-debug-4.1.20-pc-linux-gnu-i686
+
+MSQL_EMB_STD_TARBALL=${MSQL_EMB_STD_NAME}.tar.gz
+
+MYSQL_SRC_NAME=mysql-4.1.21
+MYSQL_SRC_TARBALL=${MYSQL_SRC_NAME}.tar.gz
+
+
+###################
+# 41: AutoPackage tools
+AP_INFO=http://autopackage.org
+AP_PATH=http://ftp.sunsite.dk/projects/autopackage/1.2
+AP_PACKAGE_NAME=Autopackage%20Development%20Environment%201.2
+AP_PACKAGE=${AP_PACKAGE_NAME}.package
+
 
 ## ==================================================================
 ##                    Third-party products installation
@@ -2280,8 +2331,50 @@ endif
 	@echo "SF-DL installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
+###################
+# 40: MySQL embedded
+install.mysql.embedded: ${MSQL_EMB_RPM}
+	#su -c "rpm -i ${MSQL_EMB_RPM}"
+#MSQL_EMB_NAME
+	@echo " "
+	@echo "Package info & manuals: ${MSQL_EMB_INFO}"
+	@echo " "
+	@echo "MySQL embedded installed.  Please re-run 'configure' to detect changes."
+	@echo " "
 
+#Unpack RPM so we dont have to install it in defualt locations
+#can do that with ROM relocate option?
+install.mysql.embedded.4.lib: ${MSQL_EMB_RPM}
+	mkdir -p /tmp/rpmtmp
+	rpm2cpio $^ > /tmp/rpmtmp/$^.cpio
+	cd /tmp/rpmtmp; cpio -i --make-directories < $^.cpio
+	find /tmp/rpmtmp
+#Should see only one file: 	/tmp/rpmtmp/usr/lib/mysql/libmysqld.a
+	
+install.mysql.embedded.4.other: ${MSQL_EMB_STD_TARBALL}
+	mkdir -p /tmp/mysql-unpack-tmp
+	cd /tmp/mysql-unpack-tmp; tar -xvf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/mysql-unpack-tmp/${MSQL_EMB_STD_NAME}; ls
+#Files we need:
+#/mysql-standard-4.1.21-pc-linux-gnu-i686-glibc23/lib/libmysqld.a
+#Headers to compile with
+#mysql-config
+#Under mysql-standard-4.1.21-pc-linux-gnu-i686-glibc23/share/mysql/ :
+#charsets/ (total 249 Kb)
+#Maybe take only cp1257.xml latin2.xml ascii.xml cp850.xml cp1250.xml cp852.xml
+#cp1251.xml    cp866.xml     languages.html cp1256.xml    Index.xml    latin1.xml
+#english/ (errmsg.sys  errmsg.txt) total 40 Kb
 
+install.mysql.src: ${MYSQL_SRC_TARBALL}
+	mkdir -p /tmp/mysql-unpack-tmp
+#	cd /tmp/mysql-unpack-tmp; tar -xvf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/mysql-unpack-tmp/${MYSQL_SRC_NAME}; ./configure --prefix=/tmp/${MYSQL_SRC_NAME} \
+		--with-embedded-server --with-debug --without-docs --without-man --without-bench \
+		--without-innodb 
+#--with-pstack
+#--with-embedded-privilege-control
+	cd /tmp/mysql-unpack-tmp/${MYSQL_SRC_NAME}; make
+	cd /tmp/mysql-unpack-tmp/${MYSQL_SRC_NAME}; make install
 
 ###########################################################################
 #			Targets for downloading installation files:
@@ -2429,7 +2522,13 @@ ${INGRES_BIN_TGZ}:
 	${WGET} ${INGRES_PATH}/${INGRES_BIN_TGZ}
 ${SFDL_TAR_GZ}:
 	${WGET} ${SFDL_PATH}/${SFDL_TAR_GZ}
-
+${MSQL_EMB_RPM}:
+	${WGET} ${MSQL_EMB_PATH}/${MSQL_EMB_RPM}
+${MSQL_EMB_STD_TARBALL}:
+	${WGET} ${MSQL_EMB_PATH}/${MSQL_EMB_STD_TARBALL}
+${MYSQL_SRC_TARBALL}:
+	${WGET} ${MSQL_EMB_PATH}/${MYSQL_SRC_TARBALL}
+	
 	
 #############################################
 #       SQLite tests

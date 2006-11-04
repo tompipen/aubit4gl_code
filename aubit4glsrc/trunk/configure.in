@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.331 2006-10-30 10:56:20 afalout Exp $
+dnl # $Id: configure.in,v 1.332 2006-11-04 11:09:55 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -47,7 +47,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.331 2006-10-30 10:56:20 afalout Exp $)
+AC_REVISION($Id: configure.in,v 1.332 2006-11-04 11:09:55 afalout Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!
@@ -236,6 +236,10 @@ cat<<X
 | provides this functionality. Please verify your 'aubitconf' script |
 +--------------------------------------------------------------------+
 X
+
+			echo "CONFIGURE_COMMAND=$CONFIGURE_COMMAND"
+
+
 			fi
 #| ingored, and ones provided in 'aubitconf' used instead. Use        |
 #| --with-aubitconf=no to disable this behaviour.                     |
@@ -245,7 +249,9 @@ X
 			export AUBITCONF_FLAG=running
 
             #Got to strip single quote arroung it added apprently by autoconf itself...
-			TMP_PARAMS=`echo $CONFIGURE_COMMAND |  tr -d "[']"`
+			#TMP_PARAMS=`echo $CONFIGURE_COMMAND |  tr -d "[']"`
+			TMP_PARAMS="$CONFIGURE_COMMAND"
+			
 			aubitconf $TMP_PARAMS
 			err_code=$?
 			#prevent errors when exiting first instance, that did not get the chance
@@ -449,6 +455,8 @@ AC_SUBST(HAVE_IFXODBC)
 #MySQL
 AC_SUBST(MYSQL_LFLAGS)
 AC_SUBST(MYSQL_IFLAGS)
+AC_SUBST(SQL_MYSQL_EMB)
+AC_SUBST(SQL_MYSQL)
 
 #SAP DB ESQL/C
 AC_SUBST(SAPDB_ESQLC)
@@ -660,6 +668,13 @@ AC_SUBST(IS_SOURCE)
 AC_SUBST(INNO_ROOTDIR)
 AC_SUBST(INNO_VERSION)
 AC_SUBST(ISTOOL_ROOTDIR)
+
+#Autopackage:
+AC_SUBST(BINRELOC)
+AC_SUBST(APGCC) 
+AC_SUBST(APGPP)
+AC_SUBST(MAKEINSTALLER)
+AC_SUBST(OBJDUMP)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
@@ -2111,19 +2126,31 @@ fi
 	if test -w "$prefix"; then
 		AC_MSG_RESULT(Yes ($prefix))
     else
-		if test "$CUSTOM_PREFIX" = "1"; then
-			#Some scripts (like aubitbuild) will fail if we just decide to switch
-			#install location from what they specified using --prefix flag, so
-			#we better stop here:
 	
-			AC_MSG_ERROR(User specified prefix ($prefix) is invalid. Try using HOME (--prefix=$HOME) Stop.)
+		AC_ARG_ENABLE(prefix-check, 
+			[  --disable-prefix-check  Disable checking of user specified --prefix=x],
+			echo "1there"; disable_prefix_check=yes ,
+			echo "2here"; disable_prefix_check=no
+		)	
+	
+		if test "$disable_prefix_check" = "yes"; then
+			AC_MSG_RESULT(Not writable, but --disable-prefix-check used ($prefix))
+			AC_MSG_WARN(You will have to run install as user that can write there!)
 		else
-			if test -w "$HOME"; then
-				prefix=$HOME/$SHORTNAME
-				AC_MSG_RESULT(No (using $prefix instead))
+			if test "$CUSTOM_PREFIX" = "1"; then
+				#Some scripts (like aubitbuild) will fail if we just decide to switch
+				#install location from what they specified using --prefix flag, so
+				#we better stop here:
+				AC_MSG_WARN(User specified prefix ($prefix) is invalid. Try using HOME (--prefix=$HOME))
+				AC_MSG_ERROR(or --disable-prefix-check if you intend to run install as different user. Stop.)
 			else
-				AC_MSG_WARN(Cannot determine install path. HOME=$HOME)
-				AC_MSG_ERROR(Please specify it using --prefix=x flag manually)
+				if test -w "$HOME"; then
+					prefix=$HOME/$SHORTNAME
+					AC_MSG_RESULT(No (using $prefix instead))
+				else
+					AC_MSG_WARN(Cannot determine install path. HOME=$HOME)
+					AC_MSG_ERROR(Please specify it using --prefix=x flag manually)
+				fi
 			fi
 		fi
     fi
@@ -3209,7 +3236,8 @@ fi
 #AC_ISC_POSIX
 AC_PROG_CC
 
-if test "$CC" = "gcc"; then
+#apgcc is AutoPackage wrapper script for GCC
+if test "$CC" = "gcc" -o "$CC" = "apgcc"; then
 	AC_MSG_CHECKING(GCC version)
 	#WARNING: THIS TEST OCURS ONE MORE TIME, EARLIER IN THIS FILE
 	TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/)//' -e 's/\.exe//' -e 's/\./ /g'`
@@ -3329,6 +3357,21 @@ if test -n "$PROG_SENDMAIL"; then
   AC_DEFINE(HAVE_SENDMAIL)
 fi
 
+
+## ==================================================================
+##                  Check for AutoPackage
+## ==================================================================
+
+	#BinReloc - utility for easy relocation of binary packages
+	AC_PATH_PROG(BINRELOC, binreloc, no)
+
+	#aPBUILD SCRIPTS - filter out not needed dependencies (CC=apgcc; CXX=apg++)
+	AC_PATH_PROG(APGCC, apgcc, no) 
+	AC_PATH_PROG(APGPP, apg++, no)
+	
+	AC_PATH_PROG(MAKEINSTALLER, makeinstaller, no)
+
+	AC_PATH_PROG(OBJDUMP, objdump, no)
 
 ## ==================================================================
 ##                  Check for ORBit CORBA support
@@ -3668,7 +3711,7 @@ AC_ARG_WITH(mysql,
 			withval="`$CYGPATH -m $withval`"
 		fi
 		
-		MYSQL_LFLAGS="-L$withval/lib"
+		MYSQL_LFLAGS="-L$withval/lib -L$withval/mysql -L/usr/lib/mysql"
 		MYSQL_IFLAGS="-I$withval/include -I/usr/include/mysql"
 
 		CFLAGS="$MYSQL_IFLAGS $CFLAGS"
@@ -3683,13 +3726,29 @@ AC_ARG_WITH(mysql,
 		fi
 
 		AC_CHECK_LIB([mysqlclient], [main])
-
-		if test $ac_cv_lib_mysqlclient_main = yes; then
+		
+		#AC CUMULATES ALL LIBS IT FINDS IN A WAY, SO WE NEED TO RESET THIS
+		#as it may coinflict with msqld
+		LIBS="$old_LIBS"
+		
+		#Installed as MySQL RPM to /usr/lib/mysql/libmysqld.a
+		AC_CHECK_LIB([mysqld], [main])
+		
+		if test "$ac_cv_lib_mysqlclient_main" = "yes" -o "$ac_cv_lib_mysqld_main" = "yes"; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				AC_CHECK_HEADERS([ mysql.h ])
 
 				if test "$ac_cv_header_mysql_h" = "yes"  ; then
-					SQL_MYSQL=yes
+					if test "$ac_cv_lib_mysqlclient_main" = "yes"; then	
+						SQL_MYSQL=yes
+					else
+						SQL_MYSQL=no
+					fi
+					if test "$ac_cv_lib_mysqld_main" = "yes"; then
+						SQL_MYSQL_EMB=yes
+					else
+						SQL_MYSQL_EMB=no
+					fi
 					
 					if test "$COLLECT_THIRD_PARTY" = "1"; then
 						if test "$COMSPEC" != ""; then
@@ -3702,18 +3761,31 @@ AC_ARG_WITH(mysql,
 		        else
 					AC_MSG_RESULT(Missing header file)
 					SQL_MYSQL=no
+					SQL_MYSQL_EMB=no
 		        fi
 		    else
-				SQL_MYSQL=yes
+				if test "$ac_cv_lib_mysqlclient_main" = "yes"; then	
+					SQL_MYSQL=yes
+				else
+					SQL_MYSQL=no
+				fi
+				if test "$ac_cv_lib_mysqld_main" = "yes"; then
+					SQL_MYSQL_EMB=yes
+				else
+					SQL_MYSQL_EMB=no
+				fi
 		    fi
 		else
 			AC_MSG_RESULT(Missing MySQL client library file)
 			SQL_MYSQL=no
+			SQL_MYSQL_EMB=no
 		fi
 
 		AC_MSG_CHECKING(MySQL client support)
 		AC_MSG_RESULT($SQL_MYSQL)
 
+		AC_MSG_CHECKING(MySQL embedded support)
+		AC_MSG_RESULT($SQL_MYSQL_EMB)
 		
 		CFLAGS="$old_CFLAGS"
 		LIBS="$old_LIBS"
@@ -6517,11 +6589,11 @@ fi
 
 				
 				ODBC_INI="/etc/odbc.ini"
-                if test -f $ODBC_INI; then
+                if test -w $ODBC_INI; then
 					TMP123=`grep mysqlitedb $ODBC_INI`
                 else
 					ODBC_INI="~/.odbc.ini"
-	                if test -f $ODBC_INI; then
+	                if test -w $ODBC_INI; then
 						TMP123=`grep mysqlitedb $ODBC_INI`
 	                else
 						ODBC_INI=no
@@ -6568,7 +6640,7 @@ fi
 					AC_MSG_RESULT(Added)
 				else
 					if test "$ODBC_INI" = "no" ; then
-						AC_MSG_RESULT(/etc/odbc.ini or ~/.odbc.ini not found)
+						AC_MSG_RESULT(/etc/odbc.ini or ~/.odbc.ini not found or not writable)
                     else
 						AC_MSG_RESULT(allready present)
                     fi
@@ -9897,6 +9969,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 	AC_CONFIG_FILES([etc/aubitrc
                 etc/aubit-rpm.spec
+				etc/default.apspec
                 etc/aubit-InnoSetup.iss
                 incl/Makefile-common
 				common/dataio/Makefile
@@ -10281,7 +10354,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.331 2006-10-30 10:56:20 afalout Exp $
+| $Id: configure.in,v 1.332 2006-11-04 11:09:55 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

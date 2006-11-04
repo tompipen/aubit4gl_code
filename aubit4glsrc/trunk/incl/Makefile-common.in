@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.205 2006-10-30 10:56:34 afalout Exp $
+# $Id: Makefile-common.in,v 1.206 2006-11-04 11:10:00 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1056,6 +1056,8 @@ POSTGRESDIR			=@POSTGRESDIR@
 #MySQL
 MYSQL_LFLAGS		=@MYSQL_LFLAGS@
 MYSQL_IFLAGS		=@MYSQL_IFLAGS@
+SQL_MYSQL_EMB		=@SQL_MYSQL_EMB@
+SQL_MYSQL			=@SQL_MYSQL@
 
 # SAP DB / MaxDB
 SAPODBC_INCLUDE		=@SAPODBC_INCLUDE@ 

@@ -1,9 +1,7 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 2.1.  */
 
-/* Skeleton implementation for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+/* Skeleton parser for Yacc-like parsing with Bison,
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,21 +18,13 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.  */
 
-/* As a special exception, you may create a larger work that contains
-   part or all of the Bison parser skeleton and distribute that work
-   under terms of your choice, so long as that work isn't itself a
-   parser generator using the skeleton or a modified version thereof
-   as a parser skeleton.  Alternatively, if you modify or redistribute
-   the parser skeleton itself, you may (at your option) remove this
-   special exception, which will cause the skeleton and the resulting
-   Bison output files to be licensed under the GNU General Public
-   License without this special exception.
+/* As a special exception, when this file is copied by Bison into a
+   Bison output file, you may use that output file without restriction.
+   This special exception was added by the Free Software Foundation
+   in version 1.24 of Bison.  */
 
-   This special exception was added by the Free Software Foundation in
-   version 2.2 of Bison.  */
-
-/* C LALR(1) parser skeleton written by Richard Stallman, by
-   simplifying the original so-called "semantic" parser.  */
+/* Written by Richard Stallman by simplifying the original so called
+   ``semantic'' parser.  */
 
 /* All symbols defined below should begin with yy or YY, to avoid
    infringing on user name space.  This should be done even for local
@@ -47,7 +37,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.3"
+#define YYBISON_VERSION "2.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -494,19 +484,17 @@ set_expr_int(struct expr *e,int a)
 # define YYTOKEN_TABLE 0
 #endif
 
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
+#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
 #line 74 "ace.yacc"
-{
+typedef union YYSTYPE {
 	char	str[30000];
 	struct command cmd;
 	struct expr expr;
 	struct commands commands;
 	struct agg_val agg_val;
-}
-/* Line 193 of yacc.c.  */
-#line 509 "y.tab.c"
-	YYSTYPE;
+} YYSTYPE;
+/* Line 196 of yacc.c.  */
+#line 498 "y.tab.c"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -517,55 +505,22 @@ typedef union YYSTYPE
 /* Copy the second part of user declarations.  */
 
 
-/* Line 216 of yacc.c.  */
-#line 522 "y.tab.c"
+/* Line 219 of yacc.c.  */
+#line 510 "y.tab.c"
 
-#ifdef short
-# undef short
+#if ! defined (YYSIZE_T) && defined (__SIZE_TYPE__)
+# define YYSIZE_T __SIZE_TYPE__
 #endif
-
-#ifdef YYTYPE_UINT8
-typedef YYTYPE_UINT8 yytype_uint8;
-#else
-typedef unsigned char yytype_uint8;
+#if ! defined (YYSIZE_T) && defined (size_t)
+# define YYSIZE_T size_t
 #endif
-
-#ifdef YYTYPE_INT8
-typedef YYTYPE_INT8 yytype_int8;
-#elif (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-typedef signed char yytype_int8;
-#else
-typedef short int yytype_int8;
+#if ! defined (YYSIZE_T) && (defined (__STDC__) || defined (__cplusplus))
+# include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+# define YYSIZE_T size_t
 #endif
-
-#ifdef YYTYPE_UINT16
-typedef YYTYPE_UINT16 yytype_uint16;
-#else
-typedef unsigned short int yytype_uint16;
+#if ! defined (YYSIZE_T)
+# define YYSIZE_T unsigned int
 #endif
-
-#ifdef YYTYPE_INT16
-typedef YYTYPE_INT16 yytype_int16;
-#else
-typedef short int yytype_int16;
-#endif
-
-#ifndef YYSIZE_T
-# ifdef __SIZE_TYPE__
-#  define YYSIZE_T __SIZE_TYPE__
-# elif defined size_t
-#  define YYSIZE_T size_t
-# elif ! defined YYSIZE_T && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-#  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
-#  define YYSIZE_T size_t
-# else
-#  define YYSIZE_T unsigned int
-# endif
-#endif
-
-#define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
 # if YYENABLE_NLS
@@ -579,32 +534,7 @@ typedef short int yytype_int16;
 # endif
 #endif
 
-/* Suppress unused-variable warnings by "using" E.  */
-#if ! defined lint || defined __GNUC__
-# define YYUSE(e) ((void) (e))
-#else
-# define YYUSE(e) /* empty */
-#endif
-
-/* Identity function, used to suppress warnings about constant conditions.  */
-#ifndef lint
-# define YYID(n) (n)
-#else
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-static int
-YYID (int i)
-#else
-static int
-YYID (i)
-    int i;
-#endif
-{
-  return i;
-}
-#endif
-
-#if ! defined yyoverflow || YYERROR_VERBOSE
+#if ! defined (yyoverflow) || YYERROR_VERBOSE
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -612,76 +542,64 @@ YYID (i)
 #  if YYSTACK_USE_ALLOCA
 #   ifdef __GNUC__
 #    define YYSTACK_ALLOC __builtin_alloca
-#   elif defined __BUILTIN_VA_ARG_INCR
-#    include <alloca.h> /* INFRINGES ON USER NAME SPACE */
-#   elif defined _AIX
-#    define YYSTACK_ALLOC __alloca
-#   elif defined _MSC_VER
-#    include <malloc.h> /* INFRINGES ON USER NAME SPACE */
-#    define alloca _alloca
 #   else
 #    define YYSTACK_ALLOC alloca
-#    if ! defined _ALLOCA_H && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#    if defined (__STDC__) || defined (__cplusplus)
 #     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#     ifndef _STDLIB_H
-#      define _STDLIB_H 1
-#     endif
+#     define YYINCLUDED_STDLIB_H
 #    endif
 #   endif
 #  endif
 # endif
 
 # ifdef YYSTACK_ALLOC
-   /* Pacify GCC's `empty if-body' warning.  */
-#  define YYSTACK_FREE(Ptr) do { /* empty */; } while (YYID (0))
+   /* Pacify GCC's `empty if-body' warning. */
+#  define YYSTACK_FREE(Ptr) do { /* empty */; } while (0)
 #  ifndef YYSTACK_ALLOC_MAXIMUM
     /* The OS might guarantee only one guard page at the bottom of the stack,
        and a page size can be as small as 4096 bytes.  So we cannot safely
        invoke alloca (N) if N exceeds 4096.  Use a slightly smaller number
        to allow for a few compiler-allocated temporary stack slots.  */
-#   define YYSTACK_ALLOC_MAXIMUM 4032 /* reasonable circa 2006 */
+#   define YYSTACK_ALLOC_MAXIMUM 4032 /* reasonable circa 2005 */
 #  endif
 # else
 #  define YYSTACK_ALLOC YYMALLOC
 #  define YYSTACK_FREE YYFREE
 #  ifndef YYSTACK_ALLOC_MAXIMUM
-#   define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
+#   define YYSTACK_ALLOC_MAXIMUM ((YYSIZE_T) -1)
 #  endif
-#  if (defined __cplusplus && ! defined _STDLIB_H \
-       && ! ((defined YYMALLOC || defined malloc) \
-	     && (defined YYFREE || defined free)))
-#   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#   ifndef _STDLIB_H
-#    define _STDLIB_H 1
-#   endif
+#  ifdef __cplusplus
+extern "C" {
 #  endif
 #  ifndef YYMALLOC
 #   define YYMALLOC malloc
-#   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#   if (! defined (malloc) && ! defined (YYINCLUDED_STDLIB_H) \
+	&& (defined (__STDC__) || defined (__cplusplus)))
 void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 #  ifndef YYFREE
 #   define YYFREE free
-#   if ! defined free && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#   if (! defined (free) && ! defined (YYINCLUDED_STDLIB_H) \
+	&& (defined (__STDC__) || defined (__cplusplus)))
 void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
+#  ifdef __cplusplus
+}
+#  endif
 # endif
-#endif /* ! defined yyoverflow || YYERROR_VERBOSE */
+#endif /* ! defined (yyoverflow) || YYERROR_VERBOSE */
 
 
-#if (! defined yyoverflow \
-     && (! defined __cplusplus \
-	 || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
+#if (! defined (yyoverflow) \
+     && (! defined (__cplusplus) \
+	 || (defined (YYSTYPE_IS_TRIVIAL) && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss;
+  short int yyss;
   YYSTYPE yyvs;
   };
 
@@ -691,13 +609,13 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE)) \
+     ((N) * (sizeof (short int) + sizeof (YYSTYPE))			\
       + YYSTACK_GAP_MAXIMUM)
 
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if defined __GNUC__ && 1 < __GNUC__
+#  if defined (__GNUC__) && 1 < __GNUC__
 #   define YYCOPY(To, From, Count) \
       __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
 #  else
@@ -708,7 +626,7 @@ union yyalloc
 	  for (yyi = 0; yyi < (Count); yyi++)	\
 	    (To)[yyi] = (From)[yyi];		\
 	}					\
-      while (YYID (0))
+      while (0)
 #  endif
 # endif
 
@@ -726,22 +644,28 @@ union yyalloc
 	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
 	yyptr += yynewbytes / sizeof (*yyptr);				\
       }									\
-    while (YYID (0))
+    while (0)
 
 #endif
 
-/* YYFINAL -- State number of the termination state.  */
+#if defined (__STDC__) || defined (__cplusplus)
+   typedef signed char yysigned_char;
+#else
+   typedef short int yysigned_char;
+#endif
+
+/* YYFINAL -- State number of the termination state. */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
 #define YYLAST   1470
 
-/* YYNTOKENS -- Number of terminals.  */
+/* YYNTOKENS -- Number of terminals. */
 #define YYNTOKENS  165
-/* YYNNTS -- Number of nonterminals.  */
+/* YYNNTS -- Number of nonterminals. */
 #define YYNNTS  122
-/* YYNRULES -- Number of rules.  */
+/* YYNRULES -- Number of rules. */
 #define YYNRULES  354
-/* YYNRULES -- Number of states.  */
+/* YYNRULES -- Number of states. */
 #define YYNSTATES  646
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
@@ -752,7 +676,7 @@ union yyalloc
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
 /* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
-static const yytype_uint8 yytranslate[] =
+static const unsigned char yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -801,7 +725,7 @@ static const yytype_uint8 yytranslate[] =
 #if YYDEBUG
 /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
    YYRHS.  */
-static const yytype_uint16 yyprhs[] =
+static const unsigned short int yyprhs[] =
 {
        0,     0,     3,    10,    14,    18,    19,    21,    25,    27,
       30,    33,    37,    44,    47,    49,    52,    57,    59,    61,
@@ -841,8 +765,8 @@ static const yytype_uint16 yyprhs[] =
     1106,  1108,  1111,  1114,  1117
 };
 
-/* YYRHS -- A `-1'-separated list of the rules' RHS.  */
-static const yytype_int16 yyrhs[] =
+/* YYRHS -- A `-1'-separated list of the rules' RHS. */
+static const short int yyrhs[] =
 {
      166,     0,    -1,   167,   168,   176,   180,   184,   188,    -1,
       52,    31,    65,    -1,    52,   101,    65,    -1,    -1,   169,
@@ -959,7 +883,7 @@ static const yytype_int16 yyrhs[] =
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const yytype_uint16 yyrline[] =
+static const unsigned short int yyrline[] =
 {
        0,   239,   239,   247,   250,   259,   261,   266,   270,   270,
      274,   278,   281,   284,   289,   292,   292,   295,   307,   308,
@@ -1002,7 +926,7 @@ static const yytype_uint16 yyrline[] =
 
 #if YYDEBUG || YYERROR_VERBOSE || YYTOKEN_TABLE
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
-   First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
+   First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "USING", "WHERE", "KW_OR", "AND", "NOT",
@@ -1067,7 +991,7 @@ static const char *const yytname[] =
 # ifdef YYPRINT
 /* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
    token YYLEX-NUM.  */
-static const yytype_uint16 yytoknum[] =
+static const unsigned short int yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
@@ -1090,7 +1014,7 @@ static const yytype_uint16 yytoknum[] =
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
-static const yytype_uint16 yyr1[] =
+static const unsigned short int yyr1[] =
 {
        0,   165,   166,   167,   167,   168,   168,   169,   170,   170,
      171,   171,   171,   171,   172,   173,   173,   174,   175,   175,
@@ -1131,7 +1055,7 @@ static const yytype_uint16 yyr1[] =
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
-static const yytype_uint8 yyr2[] =
+static const unsigned char yyr2[] =
 {
        0,     2,     6,     3,     3,     0,     1,     3,     1,     2,
        2,     3,     6,     2,     1,     2,     4,     1,     1,     1,
@@ -1174,7 +1098,7 @@ static const yytype_uint8 yyr2[] =
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
    STATE-NUM when YYTABLE doesn't specify something else to do.  Zero
    means the default is an error.  */
-static const yytype_uint16 yydefact[] =
+static const unsigned short int yydefact[] =
 {
        0,     0,     0,     5,     0,     0,     1,     0,    36,     6,
        3,     4,     0,     0,     0,     0,     0,     8,     0,    42,
@@ -1243,8 +1167,8 @@ static const yytype_uint16 yydefact[] =
      198,   279,     0,     0,   277,   285
 };
 
-/* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int16 yydefgoto[] =
+/* YYDEFGOTO[NTERM-NUM]. */
+static const short int yydefgoto[] =
 {
       -1,     2,     3,     8,     9,    16,    17,    25,    22,    23,
       49,    19,    20,    31,    32,    34,    35,    63,    64,    67,
@@ -1264,7 +1188,7 @@ static const yytype_int16 yydefgoto[] =
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
 #define YYPACT_NINF -504
-static const yytype_int16 yypact[] =
+static const short int yypact[] =
 {
      -17,     8,    49,    14,    30,    88,  -504,     9,    90,  -504,
     -504,  -504,    80,    96,   121,    80,   -21,  -504,   114,    94,
@@ -1334,7 +1258,7 @@ static const yytype_int16 yypact[] =
 };
 
 /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int16 yypgoto[] =
+static const short int yypgoto[] =
 {
     -504,  -504,  -504,  -504,  -504,  -504,   709,  -504,  -504,   -12,
        7,  -504,  -504,  -504,   695,  -504,  -504,  -504,   664,  -504,
@@ -1356,7 +1280,7 @@ static const yytype_int16 yypgoto[] =
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -186
-static const yytype_int16 yytable[] =
+static const short int yytable[] =
 {
      164,   262,   188,    27,   487,   549,   489,   468,   471,   308,
       12,   368,   499,   504,    88,   175,   167,    50,   330,   331,
@@ -1508,7 +1432,7 @@ static const yytype_int16 yytable[] =
      246
 };
 
-static const yytype_int16 yycheck[] =
+static const short int yycheck[] =
 {
      115,   182,   137,    15,   387,   468,   389,    11,    48,    23,
       31,   247,   405,   406,    65,    81,   115,    89,    33,    34,
@@ -1662,7 +1586,7 @@ static const yytype_int16 yycheck[] =
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
-static const yytype_uint16 yystos[] =
+static const unsigned short int yystos[] =
 {
        0,    52,   166,   167,    31,   101,     0,    57,   168,   169,
       65,    65,    31,    77,   118,   158,   170,   171,    85,   176,
@@ -1756,7 +1680,7 @@ do								\
       yychar = (Token);						\
       yylval = (Value);						\
       yytoken = YYTRANSLATE (yychar);				\
-      YYPOPSTACK (1);						\
+      YYPOPSTACK;						\
       goto yybackup;						\
     }								\
   else								\
@@ -1764,7 +1688,7 @@ do								\
       yyerror (YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
-while (YYID (0))
+while (0)
 
 
 #define YYTERROR	1
@@ -1779,7 +1703,7 @@ while (YYID (0))
 #ifndef YYLLOC_DEFAULT
 # define YYLLOC_DEFAULT(Current, Rhs, N)				\
     do									\
-      if (YYID (N))                                                    \
+      if (N)								\
 	{								\
 	  (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;	\
 	  (Current).first_column = YYRHSLOC (Rhs, 1).first_column;	\
@@ -1793,7 +1717,7 @@ while (YYID (0))
 	  (Current).first_column = (Current).last_column =		\
 	    YYRHSLOC (Rhs, 0).last_column;				\
 	}								\
-    while (YYID (0))
+    while (0)
 #endif
 
 
@@ -1805,8 +1729,8 @@ while (YYID (0))
 # if YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
-	      (Loc).first_line, (Loc).first_column,	\
-	      (Loc).last_line,  (Loc).last_column)
+              (Loc).first_line, (Loc).first_column,	\
+              (Loc).last_line,  (Loc).last_column)
 # else
 #  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
 # endif
@@ -1833,96 +1757,36 @@ while (YYID (0))
 do {						\
   if (yydebug)					\
     YYFPRINTF Args;				\
-} while (YYID (0))
+} while (0)
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)			  \
-do {									  \
-  if (yydebug)								  \
-    {									  \
-      YYFPRINTF (stderr, "%s ", Title);					  \
-      yy_symbol_print (stderr,						  \
-		  Type, Value); \
-      YYFPRINTF (stderr, "\n");						  \
-    }									  \
-} while (YYID (0))
-
-
-/*--------------------------------.
-| Print this symbol on YYOUTPUT.  |
-`--------------------------------*/
-
-/*ARGSUSED*/
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
-#else
-static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep)
-    FILE *yyoutput;
-    int yytype;
-    YYSTYPE const * const yyvaluep;
-#endif
-{
-  if (!yyvaluep)
-    return;
-# ifdef YYPRINT
-  if (yytype < YYNTOKENS)
-    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# else
-  YYUSE (yyoutput);
-# endif
-  switch (yytype)
-    {
-      default:
-	break;
-    }
-}
-
-
-/*--------------------------------.
-| Print this symbol on YYOUTPUT.  |
-`--------------------------------*/
-
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
-#else
-static void
-yy_symbol_print (yyoutput, yytype, yyvaluep)
-    FILE *yyoutput;
-    int yytype;
-    YYSTYPE const * const yyvaluep;
-#endif
-{
-  if (yytype < YYNTOKENS)
-    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
-  else
-    YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
-
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep);
-  YYFPRINTF (yyoutput, ")");
-}
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)		\
+do {								\
+  if (yydebug)							\
+    {								\
+      YYFPRINTF (stderr, "%s ", Title);				\
+      yysymprint (stderr,					\
+                  Type, Value);	\
+      YYFPRINTF (stderr, "\n");					\
+    }								\
+} while (0)
 
 /*------------------------------------------------------------------.
 | yy_stack_print -- Print the state stack from its BOTTOM up to its |
 | TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#if defined (__STDC__) || defined (__cplusplus)
 static void
-yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
+yy_stack_print (short int *bottom, short int *top)
 #else
 static void
 yy_stack_print (bottom, top)
-    yytype_int16 *bottom;
-    yytype_int16 *top;
+    short int *bottom;
+    short int *top;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (; bottom <= top; ++bottom)
+  for (/* Nothing. */; bottom <= top; ++bottom)
     YYFPRINTF (stderr, " %d", *bottom);
   YYFPRINTF (stderr, "\n");
 }
@@ -1931,45 +1795,37 @@ yy_stack_print (bottom, top)
 do {								\
   if (yydebug)							\
     yy_stack_print ((Bottom), (Top));				\
-} while (YYID (0))
+} while (0)
 
 
 /*------------------------------------------------.
 | Report that the YYRULE is going to be reduced.  |
 `------------------------------------------------*/
 
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#if defined (__STDC__) || defined (__cplusplus)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, int yyrule)
+yy_reduce_print (int yyrule)
 #else
 static void
-yy_reduce_print (yyvsp, yyrule)
-    YYSTYPE *yyvsp;
+yy_reduce_print (yyrule)
     int yyrule;
 #endif
 {
-  int yynrhs = yyr2[yyrule];
   int yyi;
   unsigned long int yylno = yyrline[yyrule];
-  YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu):\n",
-	     yyrule - 1, yylno);
-  /* The symbols being reduced.  */
-  for (yyi = 0; yyi < yynrhs; yyi++)
-    {
-      fprintf (stderr, "   $%d = ", yyi + 1);
-      yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
-		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       		       );
-      fprintf (stderr, "\n");
-    }
+  YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu), ",
+             yyrule - 1, yylno);
+  /* Print the symbols being reduced, and their result.  */
+  for (yyi = yyprhs[yyrule]; 0 <= yyrhs[yyi]; yyi++)
+    YYFPRINTF (stderr, "%s ", yytname[yyrhs[yyi]]);
+  YYFPRINTF (stderr, "-> %s\n", yytname[yyr1[yyrule]]);
 }
 
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (yyvsp, Rule); \
-} while (YYID (0))
+    yy_reduce_print (Rule);		\
+} while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
@@ -2003,44 +1859,42 @@ int yydebug;
 #if YYERROR_VERBOSE
 
 # ifndef yystrlen
-#  if defined __GLIBC__ && defined _STRING_H
+#  if defined (__GLIBC__) && defined (_STRING_H)
 #   define yystrlen strlen
 #  else
 /* Return the length of YYSTR.  */
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
 static YYSIZE_T
+#   if defined (__STDC__) || defined (__cplusplus)
 yystrlen (const char *yystr)
-#else
-static YYSIZE_T
+#   else
 yystrlen (yystr)
-    const char *yystr;
-#endif
+     const char *yystr;
+#   endif
 {
-  YYSIZE_T yylen;
-  for (yylen = 0; yystr[yylen]; yylen++)
+  const char *yys = yystr;
+
+  while (*yys++ != '\0')
     continue;
-  return yylen;
+
+  return yys - yystr - 1;
 }
 #  endif
 # endif
 
 # ifndef yystpcpy
-#  if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
+#  if defined (__GLIBC__) && defined (_STRING_H) && defined (_GNU_SOURCE)
 #   define yystpcpy stpcpy
 #  else
 /* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
    YYDEST.  */
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
 static char *
+#   if defined (__STDC__) || defined (__cplusplus)
 yystpcpy (char *yydest, const char *yysrc)
-#else
-static char *
+#   else
 yystpcpy (yydest, yysrc)
-    char *yydest;
-    const char *yysrc;
-#endif
+     char *yydest;
+     const char *yysrc;
+#   endif
 {
   char *yyd = yydest;
   const char *yys = yysrc;
@@ -2066,7 +1920,7 @@ yytnamerr (char *yyres, const char *yystr)
 {
   if (*yystr == '"')
     {
-      YYSIZE_T yyn = 0;
+      size_t yyn = 0;
       char const *yyp = yystr;
 
       for (;;)
@@ -2101,123 +1955,53 @@ yytnamerr (char *yyres, const char *yystr)
 }
 # endif
 
-/* Copy into YYRESULT an error message about the unexpected token
-   YYCHAR while in state YYSTATE.  Return the number of bytes copied,
-   including the terminating null byte.  If YYRESULT is null, do not
-   copy anything; just return the number of bytes that would be
-   copied.  As a special case, return 0 if an ordinary "syntax error"
-   message will do.  Return YYSIZE_MAXIMUM if overflow occurs during
-   size calculation.  */
-static YYSIZE_T
-yysyntax_error (char *yyresult, int yystate, int yychar)
-{
-  int yyn = yypact[yystate];
-
-  if (! (YYPACT_NINF < yyn && yyn <= YYLAST))
-    return 0;
-  else
-    {
-      int yytype = YYTRANSLATE (yychar);
-      YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
-      YYSIZE_T yysize = yysize0;
-      YYSIZE_T yysize1;
-      int yysize_overflow = 0;
-      enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-      char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-      int yyx;
-
-# if 0
-      /* This is so xgettext sees the translatable formats that are
-	 constructed on the fly.  */
-      YY_("syntax error, unexpected %s");
-      YY_("syntax error, unexpected %s, expecting %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
-# endif
-      char *yyfmt;
-      char const *yyf;
-      static char const yyunexpected[] = "syntax error, unexpected %s";
-      static char const yyexpecting[] = ", expecting %s";
-      static char const yyor[] = " or %s";
-      char yyformat[sizeof yyunexpected
-		    + sizeof yyexpecting - 1
-		    + ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
-		       * (sizeof yyor - 1))];
-      char const *yyprefix = yyexpecting;
-
-      /* Start YYX at -YYN if negative to avoid negative indexes in
-	 YYCHECK.  */
-      int yyxbegin = yyn < 0 ? -yyn : 0;
-
-      /* Stay within bounds of both yycheck and yytname.  */
-      int yychecklim = YYLAST - yyn + 1;
-      int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-      int yycount = 1;
-
-      yyarg[0] = yytname[yytype];
-      yyfmt = yystpcpy (yyformat, yyunexpected);
-
-      for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-	if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	  {
-	    if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-	      {
-		yycount = 1;
-		yysize = yysize0;
-		yyformat[sizeof yyunexpected - 1] = '\0';
-		break;
-	      }
-	    yyarg[yycount++] = yytname[yyx];
-	    yysize1 = yysize + yytnamerr (0, yytname[yyx]);
-	    yysize_overflow |= (yysize1 < yysize);
-	    yysize = yysize1;
-	    yyfmt = yystpcpy (yyfmt, yyprefix);
-	    yyprefix = yyor;
-	  }
-
-      yyf = YY_(yyformat);
-      yysize1 = yysize + yystrlen (yyf);
-      yysize_overflow |= (yysize1 < yysize);
-      yysize = yysize1;
-
-      if (yysize_overflow)
-	return YYSIZE_MAXIMUM;
-
-      if (yyresult)
-	{
-	  /* Avoid sprintf, as that infringes on the user's name space.
-	     Don't have undefined behavior even if the translation
-	     produced a string with the wrong number of "%s"s.  */
-	  char *yyp = yyresult;
-	  int yyi = 0;
-	  while ((*yyp = *yyf) != '\0')
-	    {
-	      if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
-		{
-		  yyp += yytnamerr (yyp, yyarg[yyi++]);
-		  yyf += 2;
-		}
-	      else
-		{
-		  yyp++;
-		  yyf++;
-		}
-	    }
-	}
-      return yysize;
-    }
-}
 #endif /* YYERROR_VERBOSE */
+
 
 
+#if YYDEBUG
+/*--------------------------------.
+| Print this symbol on YYOUTPUT.  |
+`--------------------------------*/
+
+#if defined (__STDC__) || defined (__cplusplus)
+static void
+yysymprint (FILE *yyoutput, int yytype, YYSTYPE *yyvaluep)
+#else
+static void
+yysymprint (yyoutput, yytype, yyvaluep)
+    FILE *yyoutput;
+    int yytype;
+    YYSTYPE *yyvaluep;
+#endif
+{
+  /* Pacify ``unused variable'' warnings.  */
+  (void) yyvaluep;
+
+  if (yytype < YYNTOKENS)
+    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
+  else
+    YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
+
+
+# ifdef YYPRINT
+  if (yytype < YYNTOKENS)
+    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
+# endif
+  switch (yytype)
+    {
+      default:
+        break;
+    }
+  YYFPRINTF (yyoutput, ")");
+}
+
+#endif /* ! YYDEBUG */
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
 
-/*ARGSUSED*/
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#if defined (__STDC__) || defined (__cplusplus)
 static void
 yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
 #else
@@ -2228,7 +2012,8 @@ yydestruct (yymsg, yytype, yyvaluep)
     YYSTYPE *yyvaluep;
 #endif
 {
-  YYUSE (yyvaluep);
+  /* Pacify ``unused variable'' warnings.  */
+  (void) yyvaluep;
 
   if (!yymsg)
     yymsg = "Deleting";
@@ -2238,7 +2023,7 @@ yydestruct (yymsg, yytype, yyvaluep)
     {
 
       default:
-	break;
+        break;
     }
 }
 
@@ -2246,13 +2031,13 @@ yydestruct (yymsg, yytype, yyvaluep)
 /* Prevent warnings from -Wmissing-prototypes.  */
 
 #ifdef YYPARSE_PARAM
-#if defined __STDC__ || defined __cplusplus
+# if defined (__STDC__) || defined (__cplusplus)
 int yyparse (void *YYPARSE_PARAM);
-#else
+# else
 int yyparse ();
-#endif
+# endif
 #else /* ! YYPARSE_PARAM */
-#if defined __STDC__ || defined __cplusplus
+#if defined (__STDC__) || defined (__cplusplus)
 int yyparse (void);
 #else
 int yyparse ();
@@ -2277,24 +2062,20 @@ int yynerrs;
 `----------*/
 
 #ifdef YYPARSE_PARAM
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-int
-yyparse (void *YYPARSE_PARAM)
-#else
-int
-yyparse (YYPARSE_PARAM)
-    void *YYPARSE_PARAM;
-#endif
+# if defined (__STDC__) || defined (__cplusplus)
+int yyparse (void *YYPARSE_PARAM)
+# else
+int yyparse (YYPARSE_PARAM)
+  void *YYPARSE_PARAM;
+# endif
 #else /* ! YYPARSE_PARAM */
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#if defined (__STDC__) || defined (__cplusplus)
 int
 yyparse (void)
 #else
 int
 yyparse ()
-
+    ;
 #endif
 #endif
 {
@@ -2306,12 +2087,6 @@ yyparse ()
   int yyerrstatus;
   /* Look-ahead token as an internal (translated) token number.  */
   int yytoken = 0;
-#if YYERROR_VERBOSE
-  /* Buffer for error messages, and its allocated size.  */
-  char yymsgbuf[128];
-  char *yymsg = yymsgbuf;
-  YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
-#endif
 
   /* Three stacks and their tools:
      `yyss': related to states,
@@ -2322,9 +2097,9 @@ yyparse ()
      to reallocate them elsewhere.  */
 
   /* The state stack.  */
-  yytype_int16 yyssa[YYINITDEPTH];
-  yytype_int16 *yyss = yyssa;
-  yytype_int16 *yyssp;
+  short int yyssa[YYINITDEPTH];
+  short int *yyss = yyssa;
+  short int *yyssp;
 
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
@@ -2333,7 +2108,7 @@ yyparse ()
 
 
 
-#define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
+#define YYPOPSTACK   (yyvsp--, yyssp--)
 
   YYSIZE_T yystacksize = YYINITDEPTH;
 
@@ -2342,9 +2117,9 @@ yyparse ()
   YYSTYPE yyval;
 
 
-  /* The number of symbols on the RHS of the reduced rule.
-     Keep to zero when no symbol should be popped.  */
-  int yylen = 0;
+  /* When reducing, the number of symbols on the RHS of the reduced
+     rule.  */
+  int yylen;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
@@ -2368,7 +2143,8 @@ yyparse ()
 `------------------------------------------------------------*/
  yynewstate:
   /* In all cases, when you get here, the value and location stacks
-     have just been pushed.  So pushing a state here evens the stacks.  */
+     have just been pushed. so pushing a state here evens the stacks.
+     */
   yyssp++;
 
  yysetstate:
@@ -2381,11 +2157,11 @@ yyparse ()
 
 #ifdef yyoverflow
       {
-	/* Give user a chance to reallocate the stack.  Use copies of
+	/* Give user a chance to reallocate the stack. Use copies of
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	yytype_int16 *yyss1 = yyss;
+	short int *yyss1 = yyss;
 
 
 	/* Each stack pointer address is followed by the size of the
@@ -2413,7 +2189,7 @@ yyparse ()
 	yystacksize = YYMAXDEPTH;
 
       {
-	yytype_int16 *yyss1 = yyss;
+	short int *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
@@ -2448,10 +2224,12 @@ yyparse ()
 `-----------*/
 yybackup:
 
-  /* Do appropriate processing given the current state.  Read a
-     look-ahead token if we need one and don't already have one.  */
+/* Do appropriate processing given the current state.  */
+/* Read a look-ahead token if we need one and don't already have one.  */
+/* yyresume: */
 
   /* First try to decide what to do without reference to look-ahead token.  */
+
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
@@ -2493,21 +2271,22 @@ yybackup:
   if (yyn == YYFINAL)
     YYACCEPT;
 
+  /* Shift the look-ahead token.  */
+  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
+
+  /* Discard the token being shifted unless it is eof.  */
+  if (yychar != YYEOF)
+    yychar = YYEMPTY;
+
+  *++yyvsp = yylval;
+
+
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
     yyerrstatus--;
 
-  /* Shift the look-ahead token.  */
-  YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
-
-  /* Discard the shifted token unless it is eof.  */
-  if (yychar != YYEOF)
-    yychar = YYEMPTY;
-
   yystate = yyn;
-  *++yyvsp = yylval;
-
   goto yynewstate;
 
 
@@ -2552,8 +2331,8 @@ yyreduce:
   case 4:
 #line 250 "ace.yacc"
     {
-		this_report.dbname=acl_strdup((yyvsp[(2) - (3)].str));
-		A4GLSQL_init_connection ((yyvsp[(2) - (3)].str));
+		this_report.dbname=acl_strdup((yyvsp[-1].str));
+		A4GLSQL_init_connection ((yyvsp[-1].str));
 		if (a4gl_status!=0) {
 			a4gl_ace_yyerror("Unable to connect to database");
 		}
@@ -2571,21 +2350,21 @@ yyreduce:
   case 11:
 #line 278 "ace.yacc"
     {
-		ace_add_variable((yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str),CAT_VARIABLE,0,-1,0);
+		ace_add_variable((yyvsp[-1].str),(yyvsp[0].str),CAT_VARIABLE,0,-1,0);
 	}
     break;
 
   case 12:
 #line 281 "ace.yacc"
     {
-		ace_add_variable((yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str),CAT_PARAM,atoi((yyvsp[(3) - (6)].str)),-1,0);
+		ace_add_variable((yyvsp[-1].str),(yyvsp[0].str),CAT_PARAM,atoi((yyvsp[-3].str)),-1,0);
 	}
     break;
 
   case 13:
 #line 284 "ace.yacc"
     {
-		add_function((yyvsp[(2) - (2)].str));
+		add_function((yyvsp[0].str));
 	}
     break;
 
@@ -2594,7 +2373,7 @@ yyreduce:
     {
 	char buff[256];
 	int a;
-	strcpy(buff,(yyvsp[(1) - (1)].str));
+	strcpy(buff,(yyvsp[0].str));
 	for (a=0;a<strlen(buff);a++) {
 		buff[a]=toupper(buff[a]);
 	}
@@ -2614,7 +2393,7 @@ yyreduce:
 
   case 21:
 #line 310 "ace.yacc"
-    {sprintf((yyval.str),"CHAR (%s)",(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str),"CHAR (%s)",(yyvsp[-1].str));}
     break;
 
   case 22:
@@ -2624,7 +2403,7 @@ yyreduce:
 
   case 23:
 #line 312 "ace.yacc"
-    {sprintf((yyval.str),"VARCHAR (%s)",(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str),"VARCHAR (%s)",(yyvsp[-1].str));}
     break;
 
   case 24:
@@ -2664,12 +2443,12 @@ yyreduce:
 
   case 31:
 #line 320 "ace.yacc"
-    {sprintf((yyval.str),"MONEY (%s,0)",(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str),"MONEY (%s,0)",(yyvsp[-1].str));}
     break;
 
   case 32:
 #line 321 "ace.yacc"
-    {sprintf((yyval.str),"MONEY (%s,%s)",(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
+    {sprintf((yyval.str),"MONEY (%s,%s)",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 33:
@@ -2679,24 +2458,24 @@ yyreduce:
 
   case 34:
 #line 323 "ace.yacc"
-    {sprintf((yyval.str),"DECIMAL (%s,0)",(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str),"DECIMAL (%s,0)",(yyvsp[-1].str));}
     break;
 
   case 35:
 #line 324 "ace.yacc"
-    {sprintf((yyval.str),"DECIMAL (%s,%s)",(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
+    {sprintf((yyval.str),"DECIMAL (%s,%s)",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 41:
 #line 338 "ace.yacc"
     {
-	add_inputs((char *)A4GL_strip_quotes((yyvsp[(5) - (5)].str)),(yyvsp[(3) - (5)].str));
+	add_inputs((char *)A4GL_strip_quotes((yyvsp[0].str)),(yyvsp[-2].str));
 }
     break;
 
   case 47:
 #line 353 "ace.yacc"
-    { this_report.output.report_to_where=2; this_report.output.report_to_filename=acl_strdup((yyvsp[(4) - (4)].str));}
+    { this_report.output.report_to_where=2; this_report.output.report_to_filename=acl_strdup((yyvsp[0].str));}
     break;
 
   case 48:
@@ -2706,53 +2485,53 @@ yyreduce:
 
   case 49:
 #line 355 "ace.yacc"
-    { this_report.output.report_to_where=3; this_report.output.report_to_filename=acl_strdup((yyvsp[(3) - (3)].str)); }
+    { this_report.output.report_to_where=3; this_report.output.report_to_filename=acl_strdup((yyvsp[0].str)); }
     break;
 
   case 50:
 #line 356 "ace.yacc"
-    { this_report.output.report_to_where=4; this_report.output.report_to_filename=acl_strdup((yyvsp[(4) - (4)].str)); }
+    { this_report.output.report_to_where=4; this_report.output.report_to_filename=acl_strdup((yyvsp[0].str)); }
     break;
 
   case 51:
 #line 357 "ace.yacc"
     {
-		this_report.output.left_margin=atoi((yyvsp[(3) - (3)].str));
+		this_report.output.left_margin=atoi((yyvsp[0].str));
 	}
     break;
 
   case 52:
 #line 360 "ace.yacc"
     {
-		this_report.output.bottom_margin=atoi((yyvsp[(3) - (3)].str));
+		this_report.output.bottom_margin=atoi((yyvsp[0].str));
 	}
     break;
 
   case 53:
 #line 363 "ace.yacc"
     {
-		this_report.output.top_margin=atoi((yyvsp[(3) - (3)].str));
+		this_report.output.top_margin=atoi((yyvsp[0].str));
 	}
     break;
 
   case 54:
 #line 366 "ace.yacc"
     {
-		this_report.output.page_length=atoi((yyvsp[(3) - (3)].str));
+		this_report.output.page_length=atoi((yyvsp[0].str));
 	}
     break;
 
   case 55:
 #line 369 "ace.yacc"
     {
-		this_report.output.right_margin=atoi((yyvsp[(3) - (3)].str));
+		this_report.output.right_margin=atoi((yyvsp[0].str));
 	}
     break;
 
   case 56:
 #line 372 "ace.yacc"
     {
-		this_report.output.top_of_page=acl_strdup((yyvsp[(2) - (2)].str));
+		this_report.output.top_of_page=acl_strdup((yyvsp[0].str));
 	}
     break;
 
@@ -2763,12 +2542,12 @@ yyreduce:
 
   case 59:
 #line 383 "ace.yacc"
-    { add_select((yyvsp[(1) - (1)].str),temp_tab_name); }
+    { add_select((yyvsp[0].str),temp_tab_name); }
     break;
 
   case 60:
 #line 384 "ace.yacc"
-    { add_select((yyvsp[(3) - (3)].str),temp_tab_name); }
+    { add_select((yyvsp[0].str),temp_tab_name); }
     break;
 
   case 64:
@@ -2784,49 +2563,49 @@ yyreduce:
   case 70:
 #line 414 "ace.yacc"
     {
-		add_fmt(FORMAT_FIRST_PAGE_HEADER,"",(yyvsp[(4) - (4)].commands));
+		add_fmt(FORMAT_FIRST_PAGE_HEADER,"",(yyvsp[0].commands));
 	}
     break;
 
   case 71:
 #line 418 "ace.yacc"
     {
-		add_fmt(FORMAT_PAGE_TRAILER,"",(yyvsp[(3) - (3)].commands));
+		add_fmt(FORMAT_PAGE_TRAILER,"",(yyvsp[0].commands));
 	}
     break;
 
   case 72:
 #line 422 "ace.yacc"
     {
-		add_fmt(FORMAT_PAGE_HEADER,"",(yyvsp[(3) - (3)].commands));
+		add_fmt(FORMAT_PAGE_HEADER,"",(yyvsp[0].commands));
 	}
     break;
 
   case 73:
 #line 426 "ace.yacc"
     {
-		add_fmt(FORMAT_ON_EVERY_ROW,"",(yyvsp[(4) - (4)].commands));
+		add_fmt(FORMAT_ON_EVERY_ROW,"",(yyvsp[0].commands));
 	}
     break;
 
   case 74:
 #line 430 "ace.yacc"
     {
-		add_fmt(FORMAT_ON_LAST_ROW,"",(yyvsp[(4) - (4)].commands));
+		add_fmt(FORMAT_ON_LAST_ROW,"",(yyvsp[0].commands));
 	}
     break;
 
   case 75:
 #line 434 "ace.yacc"
     {
-		add_fmt(FORMAT_BEFORE_GROUP,(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].commands));
+		add_fmt(FORMAT_BEFORE_GROUP,(yyvsp[-1].str),(yyvsp[0].commands));
 	}
     break;
 
   case 76:
 #line 438 "ace.yacc"
     {
-		add_fmt(FORMAT_AFTER_GROUP,(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].commands));
+		add_fmt(FORMAT_AFTER_GROUP,(yyvsp[-1].str),(yyvsp[0].commands));
 	}
     break;
 
@@ -2835,7 +2614,7 @@ yyreduce:
     {
 int vid;
 int a;
-a=atoi((yyvsp[(1) - (1)].str));
+a=atoi((yyvsp[0].str));
 vid = find_sql_var (a);
 sprintf((yyval.str),this_report.variables.variables_val[vid].name);
 }
@@ -2854,40 +2633,40 @@ sprintf((yyval.str),this_report.variables.variables_val[vid].name);
   case 85:
 #line 465 "ace.yacc"
     {
-	printf("speclist : %s ",(yyvsp[(3) - (3)].str));
-	sprintf((yyval.str),"ORDER BY %s",(yyvsp[(3) - (3)].str));}
+	printf("speclist : %s ",(yyvsp[0].str));
+	sprintf((yyval.str),"ORDER BY %s",(yyvsp[0].str));}
     break;
 
   case 86:
 #line 469 "ace.yacc"
-    {sprintf((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str),"%s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 87:
 #line 478 "ace.yacc"
     {
-		sprintf((yyval.str),"\"%s\"",(yyvsp[(1) - (1)].str));
+		sprintf((yyval.str),"\"%s\"",(yyvsp[0].str));
 	}
     break;
 
   case 91:
 #line 485 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 92:
 #line 487 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 93:
 #line 489 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 94:
 #line 491 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 95:
@@ -2900,7 +2679,7 @@ sprintf((yyval.str),this_report.variables.variables_val[vid].name);
   case 96:
 #line 502 "ace.yacc"
     {
-		sprintf((yyval.str),"ORDER BY %s",(yyvsp[(3) - (3)].str));
+		sprintf((yyval.str),"ORDER BY %s",(yyvsp[0].str));
 		
 	}
     break;
@@ -2908,7 +2687,7 @@ sprintf((yyval.str),this_report.variables.variables_val[vid].name);
   case 98:
 #line 510 "ace.yacc"
     {
-sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
+sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));
 }
     break;
 
@@ -2916,7 +2695,7 @@ sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(y
 #line 517 "ace.yacc"
     {
 		char buff[256];
-		sprintf(buff,"I%d",atoi((yyvsp[(1) - (1)].str)));
+		sprintf(buff,"I%d",atoi((yyvsp[0].str)));
 		ordby[ordbycnt++]=acl_strdup(buff);
 	}
     break;
@@ -2925,7 +2704,7 @@ sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(y
 #line 522 "ace.yacc"
     {
 		char buff[256];
-		sprintf(buff,"C%s",(yyvsp[(1) - (1)].str));
+		sprintf(buff,"C%s",(yyvsp[0].str));
 		ordby[ordbycnt++]=acl_strdup(buff);
 	}
     break;
@@ -2937,63 +2716,63 @@ sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(y
 
   case 105:
 #line 537 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 106:
 #line 543 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 109:
 #line 553 "ace.yacc"
-    {sprintf((yyval.str),"WHERE \n0 (%s)\n0",(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str),"WHERE \n0 (%s)\n0",(yyvsp[0].str));}
     break;
 
   case 110:
 #line 558 "ace.yacc"
-    {sprintf((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str),"%s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 112:
 #line 564 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 113:
 #line 568 "ace.yacc"
-    {sprintf((yyval.str)," %s ", (yyvsp[(1) - (1)].str));}
+    {sprintf((yyval.str)," %s ", (yyvsp[0].str));}
     break;
 
   case 114:
 #line 569 "ace.yacc"
-    {sprintf((yyval.str)," %s %s ",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s ",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 115:
 #line 570 "ace.yacc"
-    {sprintf((yyval.str)," %s (%s) ",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str)," %s (%s) ",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 117:
 #line 574 "ace.yacc"
     {
-		sprintf((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
-		ace_add_table((yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
+		sprintf((yyval.str),"%s %s",(yyvsp[-1].str),(yyvsp[0].str));
+		ace_add_table((yyvsp[-1].str),(yyvsp[0].str));
 		}
     break;
 
   case 119:
 #line 582 "ace.yacc"
-    { sprintf((yyval.str)," %s,%s ",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));  }
+    { sprintf((yyval.str)," %s,%s ",(yyvsp[-2].str),(yyvsp[0].str));  }
     break;
 
   case 120:
 #line 590 "ace.yacc"
     {
 sprintf((yyval.str),"%s %s %s %s",
-(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),
-(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));
+(yyvsp[-3].str),(yyvsp[-2].str),
+(yyvsp[-1].str),(yyvsp[0].str));
 }
     break;
 
@@ -3014,72 +2793,72 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 128:
 #line 613 "ace.yacc"
-    {sprintf((yyval.str),"%s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str),"%s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 130:
 #line 619 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 132:
 #line 625 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 134:
 #line 631 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 135:
 #line 636 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 136:
 #line 637 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 137:
 #line 643 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));}
+    {sprintf((yyval.str)," %s %s %s %s",(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 138:
 #line 645 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 144:
 #line 669 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 147:
 #line 683 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 148:
 #line 685 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 149:
 #line 687 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 150:
 #line 689 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 152:
 #line 696 "ace.yacc"
-    {sprintf((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s%s%s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 153:
@@ -3089,32 +2868,32 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 155:
 #line 706 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 156:
 #line 708 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 157:
 #line 710 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 158:
 #line 712 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 159:
 #line 714 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s %s",(yyvsp[(1) - (6)].str),(yyvsp[(2) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s %s",(yyvsp[-5].str),(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 160:
 #line 716 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 170:
@@ -3134,27 +2913,27 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 180:
 #line 775 "ace.yacc"
-    { sprintf((yyval.str)," %s",(char *)A4GL_strip_quotes((yyvsp[(1) - (1)].str))); }
+    { sprintf((yyval.str)," %s",(char *)A4GL_strip_quotes((yyvsp[0].str))); }
     break;
 
   case 181:
 #line 776 "ace.yacc"
-    {sprintf((yyval.str),(yyvsp[(1) - (1)].str)); }
+    {sprintf((yyval.str),(yyvsp[0].str)); }
     break;
 
   case 182:
 #line 777 "ace.yacc"
-    { sprintf((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));  }
+    { sprintf((yyval.str)," %s%s%s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));  }
     break;
 
   case 183:
 #line 778 "ace.yacc"
-    { sprintf((yyval.str),"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes((yyvsp[(1) - (3)].str)),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));  }
+    { sprintf((yyval.str),"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes((yyvsp[-2].str)),(yyvsp[-1].str),(yyvsp[0].str));  }
     break;
 
   case 185:
 #line 787 "ace.yacc"
-    {sprintf((yyval.str),(yyvsp[(1) - (1)].str));}
+    {sprintf((yyval.str),(yyvsp[0].str));}
     break;
 
   case 186:
@@ -3164,32 +2943,32 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 187:
 #line 792 "ace.yacc"
-    {sprintf((yyval.str),"[%s]",(yyvsp[(2) - (3)].str));}
+    {sprintf((yyval.str),"[%s]",(yyvsp[-1].str));}
     break;
 
   case 188:
 #line 793 "ace.yacc"
-    {sprintf((yyval.str),"[%s,%s]",(yyvsp[(2) - (5)].str),(yyvsp[(4) - (5)].str));}
+    {sprintf((yyval.str),"[%s,%s]",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 189:
 #line 796 "ace.yacc"
-    { sprintf((yyval.str),"%s%s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); }
+    { sprintf((yyval.str),"%s%s",(yyvsp[-1].str),(yyvsp[0].str)); }
     break;
 
   case 190:
 #line 797 "ace.yacc"
-    { sprintf((yyval.str),"%s.%s%s",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str)); }
+    { sprintf((yyval.str),"%s.%s%s",(yyvsp[-3].str),(yyvsp[-1].str),(yyvsp[0].str)); }
     break;
 
   case 191:
 #line 798 "ace.yacc"
-    { sprintf((yyval.str),"%s.%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str)); }
+    { sprintf((yyval.str),"%s.%s",(yyvsp[-2].str),(yyvsp[0].str)); }
     break;
 
   case 194:
 #line 809 "ace.yacc"
-    {sprintf((yyval.str),"0.%s",(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str),"0.%s",(yyvsp[0].str));}
     break;
 
   case 195:
@@ -3199,13 +2978,13 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 196:
 #line 827 "ace.yacc"
-    {sprintf((yyval.str),"%s %s %s %s %s",(yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str));
+    {sprintf((yyval.str),"%s %s %s %s %s",(yyvsp[-5].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));
 }
     break;
 
   case 198:
 #line 848 "ace.yacc"
-    {sprintf((yyval.str),"%s %s %s %s %s", (yyvsp[(1) - (5)].str), (yyvsp[(2) - (5)].str), (yyvsp[(3) - (5)].str), (yyvsp[(4) - (5)].str), (yyvsp[(5) - (5)].str) );}
+    {sprintf((yyval.str),"%s %s %s %s %s", (yyvsp[-4].str), (yyvsp[-3].str), (yyvsp[-2].str), (yyvsp[-1].str), (yyvsp[0].str) );}
     break;
 
   case 199:
@@ -3216,15 +2995,15 @@ sprintf((yyval.str),"%s %s %s %s",
   case 200:
 #line 853 "ace.yacc"
     {
-       sprintf((yyval.str),"%s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
+       sprintf((yyval.str),"%s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));
        }
     break;
 
   case 202:
 #line 857 "ace.yacc"
     {
-       sprintf((yyval.str),"INTO TEMP %s%s ",(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));
-	strcpy(temp_tab_name,(yyvsp[(3) - (4)].str));
+       sprintf((yyval.str),"INTO TEMP %s%s ",(yyvsp[-1].str),(yyvsp[0].str));
+	strcpy(temp_tab_name,(yyvsp[-1].str));
 }
     break;
 
@@ -3240,7 +3019,7 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 206:
 #line 885 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (6)].str),(yyvsp[(2) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-5].str),(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str));}
     break;
 
   case 207:
@@ -3265,21 +3044,21 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 212:
 #line 896 "ace.yacc"
-    { sprintf((yyval.str)," %s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));}
+    { sprintf((yyval.str)," %s,%s",(yyvsp[-2].str),(yyvsp[0].str));}
     break;
 
   case 213:
 #line 900 "ace.yacc"
     {
-			add_select_column((yyvsp[(1) - (1)].str),(yyvsp[(1) - (1)].str));
+			add_select_column((yyvsp[0].str),(yyvsp[0].str));
 		}
     break;
 
   case 214:
 #line 903 "ace.yacc"
     {
-			sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
-			add_select_column((yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
+			sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));
+			add_select_column((yyvsp[-1].str),(yyvsp[0].str));
 		}
     break;
 
@@ -3315,146 +3094,146 @@ sprintf((yyval.str),"%s %s %s %s",
 
   case 222:
 #line 923 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 223:
 #line 925 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 224:
 #line 927 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 225:
 #line 929 "ace.yacc"
-    {sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
+    {sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 226:
 #line 931 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 227:
 #line 933 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 228:
 #line 935 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 231:
 #line 938 "ace.yacc"
-    {sprintf((yyval.str)," %s[%s]",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str)," %s[%s]",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 232:
 #line 939 "ace.yacc"
-    {sprintf((yyval.str)," %s[%s,%s]",(yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
+    {sprintf((yyval.str)," %s[%s,%s]",(yyvsp[-5].str),(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 233:
 #line 940 "ace.yacc"
-    {sprintf((yyval.str)," %s.%s[%s]",(yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
+    {sprintf((yyval.str)," %s.%s[%s]",(yyvsp[-5].str),(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 234:
 #line 941 "ace.yacc"
-    {sprintf((yyval.str)," %s.%s[%s,%s]",(yyvsp[(1) - (8)].str),(yyvsp[(3) - (8)].str),(yyvsp[(5) - (8)].str),(yyvsp[(7) - (8)].str));}
+    {sprintf((yyval.str)," %s.%s[%s,%s]",(yyvsp[-7].str),(yyvsp[-5].str),(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 235:
 #line 943 "ace.yacc"
     {
-if (find_variable((yyvsp[(2) - (2)].str))==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
-sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
+if (find_variable((yyvsp[0].str))==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
+sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[0].str)));
 }
     break;
 
   case 236:
 #line 948 "ace.yacc"
-    {sprintf((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s%s%s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 237:
 #line 950 "ace.yacc"
-    {sprintf((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s%s%s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 241:
 #line 954 "ace.yacc"
-    {sprintf((yyval.str)," %s ",(yyvsp[(1) - (1)].str));}
+    {sprintf((yyval.str)," %s ",(yyvsp[0].str));}
     break;
 
   case 242:
 #line 955 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    {sprintf((yyval.str)," %s %s %s",(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 243:
 #line 956 "ace.yacc"
-    {sprintf((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str)," %s(%s)",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 244:
 #line 957 "ace.yacc"
-    {sprintf((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str)," %s(%s)",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 245:
 #line 958 "ace.yacc"
-    {sprintf((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str)," %s(%s)",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 246:
 #line 959 "ace.yacc"
-    {sprintf((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str)," %s(%s)",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 247:
 #line 960 "ace.yacc"
-    {sprintf((yyval.str),"%s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
+    {sprintf((yyval.str),"%s(%s)",(yyvsp[-3].str),(yyvsp[-1].str));}
     break;
 
   case 248:
 #line 962 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));}
+    {sprintf((yyval.str)," %s %s %s %s",(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 249:
 #line 964 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 250:
 #line 966 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 251:
 #line 968 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 252:
 #line 970 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 253:
 #line 972 "ace.yacc"
-    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
+    {sprintf((yyval.str)," %s %s %s %s %s",(yyvsp[-4].str),(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[-1].str),(yyvsp[0].str));}
     break;
 
   case 255:
 #line 978 "ace.yacc"
     {
-	sprintf((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
+	sprintf((yyval.str),"%s,%s",(yyvsp[-2].str),(yyvsp[0].str));
 }
     break;
 
@@ -3463,19 +3242,19 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.commands).commands.commands_len=1;
 		(yyval.commands).commands.commands_val=acl_malloc2(sizeof(struct command));
-		COPY((yyval.commands).commands.commands_val[0],(yyvsp[(1) - (1)].cmd));
+		COPY((yyval.commands).commands.commands_val[0],(yyvsp[0].cmd));
 		}
     break;
 
   case 259:
 #line 1001 "ace.yacc"
     {
-		COPY((yyval.commands),(yyvsp[(1) - (2)].commands));
+		COPY((yyval.commands),(yyvsp[-1].commands));
 		(yyval.commands).commands.commands_len++;
 		(yyval.commands).commands.commands_val=realloc(
 		(yyval.commands).commands.commands_val,
 		(yyval.commands).commands.commands_len*sizeof(struct command));
-		COPY((yyval.commands).commands.commands_val[ (yyval.commands).commands.commands_len-1 ],(yyvsp[(2) - (2)].cmd));
+		COPY((yyval.commands).commands.commands_val[ (yyval.commands).commands.commands_len-1 ],(yyvsp[0].cmd));
 	}
     break;
 
@@ -3483,8 +3262,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1023 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_BLOCK;
-		(yyval.cmd).command_u.commands.commands.commands_val=(yyvsp[(2) - (3)].commands).commands.commands_val;
-		(yyval.cmd).command_u.commands.commands.commands_len=(yyvsp[(2) - (3)].commands).commands.commands_len;
+		(yyval.cmd).command_u.commands.commands.commands_val=(yyvsp[-1].commands).commands.commands_val;
+		(yyval.cmd).command_u.commands.commands.commands_len=(yyvsp[-1].commands).commands.commands_len;
 	}
     break;
 
@@ -3493,9 +3272,9 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.cmd).cmd_type=CMD_CALL;
 		(yyval.cmd).command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
-                (yyval.cmd).command_u.cmd_call.fcall->fname=acl_strdup((yyvsp[(2) - (5)].str));
+                (yyval.cmd).command_u.cmd_call.fcall->fname=acl_strdup((yyvsp[-3].str));
 	
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(4) - (5)].expr).expr_u.lexpr;
+                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[-1].expr).expr_u.lexpr;
 		print_lexpr( (yyval.cmd).command_u.cmd_call.fcall->lexpr);
 }
     break;
@@ -3504,10 +3283,10 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1078 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_FOR;
-		(yyval.cmd).command_u.cmd_for.varid=find_variable((yyvsp[(2) - (9)].str));
-		(yyval.cmd).command_u.cmd_for.start=(yyvsp[(4) - (9)].expr);
-		(yyval.cmd).command_u.cmd_for.finish=(yyvsp[(6) - (9)].expr);
-		(yyval.cmd).command_u.cmd_for.step=(yyvsp[(7) - (9)].expr);
+		(yyval.cmd).command_u.cmd_for.varid=find_variable((yyvsp[-7].str));
+		(yyval.cmd).command_u.cmd_for.start=(yyvsp[-5].expr);
+		(yyval.cmd).command_u.cmd_for.finish=(yyvsp[-3].expr);
+		(yyval.cmd).command_u.cmd_for.step=(yyvsp[-2].expr);
 	}
     break;
 
@@ -3518,16 +3297,16 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 
   case 279:
 #line 1088 "ace.yacc"
-    { (yyval.expr)=(yyvsp[(1) - (2)].expr);}
+    { (yyval.expr)=(yyvsp[-1].expr);}
     break;
 
   case 280:
 #line 1092 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_IF;
-	(yyval.cmd).command_u.cmd_if.condition=(yyvsp[(2) - (5)].expr);
-	(yyval.cmd).command_u.cmd_if.command=(struct command *)DUP((yyvsp[(4) - (5)].cmd));
-	(yyval.cmd).command_u.cmd_if.elsecommand=(struct command *)DUP((yyvsp[(5) - (5)].cmd));
+	(yyval.cmd).command_u.cmd_if.condition=(yyvsp[-3].expr);
+	(yyval.cmd).command_u.cmd_if.command=(struct command *)DUP((yyvsp[-1].cmd));
+	(yyval.cmd).command_u.cmd_if.elsecommand=(struct command *)DUP((yyvsp[0].cmd));
 }
     break;
 
@@ -3541,7 +3320,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 
   case 282:
 #line 1103 "ace.yacc"
-    { COPY((yyval.cmd),(yyvsp[(2) - (2)].cmd)); }
+    { COPY((yyval.cmd),(yyvsp[0].cmd)); }
     break;
 
   case 283:
@@ -3549,9 +3328,9 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		int v;
 		(yyval.cmd).cmd_type=CMD_LET;
-		v=find_variable((yyvsp[(2) - (4)].str));
+		v=find_variable((yyvsp[-2].str));
 		(yyval.cmd).command_u.cmd_let.varid=v;
-		(yyval.cmd).command_u.cmd_let.value=(yyvsp[(4) - (4)].expr);
+		(yyval.cmd).command_u.cmd_let.value=(yyvsp[0].expr);
 		set_expr_int(&(yyval.cmd).command_u.cmd_let.sub1,-1);
 		set_expr_int(&(yyval.cmd).command_u.cmd_let.sub2,-1); 
 	}
@@ -3562,11 +3341,11 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		int v;
 		(yyval.cmd).cmd_type=CMD_LET;
-		v=find_variable((yyvsp[(2) - (7)].str));
+		v=find_variable((yyvsp[-5].str));
 		(yyval.cmd).command_u.cmd_let.varid=v;
-		(yyval.cmd).command_u.cmd_let.value=(yyvsp[(7) - (7)].expr);
-		(yyval.cmd).command_u.cmd_let.sub1=(yyvsp[(4) - (7)].expr); 
-		(yyval.cmd).command_u.cmd_let.sub2=(yyvsp[(4) - (7)].expr); 
+		(yyval.cmd).command_u.cmd_let.value=(yyvsp[0].expr);
+		(yyval.cmd).command_u.cmd_let.sub1=(yyvsp[-3].expr); 
+		(yyval.cmd).command_u.cmd_let.sub2=(yyvsp[-3].expr); 
 	}
     break;
 
@@ -3575,11 +3354,11 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		int v;
 		(yyval.cmd).cmd_type=CMD_LET;
-		v=find_variable((yyvsp[(2) - (9)].str));
+		v=find_variable((yyvsp[-7].str));
 		(yyval.cmd).command_u.cmd_let.varid=v;
-		(yyval.cmd).command_u.cmd_let.value=(yyvsp[(9) - (9)].expr);
-		(yyval.cmd).command_u.cmd_let.sub1=(yyvsp[(4) - (9)].expr); 
-		(yyval.cmd).command_u.cmd_let.sub2=(yyvsp[(6) - (9)].expr); 
+		(yyval.cmd).command_u.cmd_let.value=(yyvsp[0].expr);
+		(yyval.cmd).command_u.cmd_let.sub1=(yyvsp[-5].expr); 
+		(yyval.cmd).command_u.cmd_let.sub2=(yyvsp[-3].expr); 
 	}
     break;
 
@@ -3589,8 +3368,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 
 	(yyval.expr).type=EXPRTYPE_COMPLEX;
 	(yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr));
-	COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr));
-	COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr));
+	COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr));
+	COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr));
 	(yyval.expr).expr_u.expr->operand=EXPR_CONCAT;
 
 	}
@@ -3600,7 +3379,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1155 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_NEED;
-	(yyval.cmd).command_u.cmd_need.nlines=atoi((yyvsp[(2) - (3)].str));
+	(yyval.cmd).command_u.cmd_need.nlines=atoi((yyvsp[-1].str));
 }
     break;
 
@@ -3608,7 +3387,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1161 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PAUSE;
-	(yyval.cmd).command_u.cmd_pause.message=acl_strdup((yyvsp[(2) - (2)].str));
+	(yyval.cmd).command_u.cmd_pause.message=acl_strdup((yyvsp[0].str));
 }
     break;
 
@@ -3616,8 +3395,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1168 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PRINT;
-	(yyval.cmd).command_u.cmd_print.printnl=atoi((yyvsp[(3) - (3)].str));
-	(yyval.cmd).command_u.cmd_print.print=(yyvsp[(2) - (3)].expr);
+	(yyval.cmd).command_u.cmd_print.printnl=atoi((yyvsp[0].str));
+	(yyval.cmd).command_u.cmd_print.print=(yyvsp[-1].expr);
 }
     break;
 
@@ -3635,7 +3414,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1179 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PRINTFILE;
-	(yyval.cmd).command_u.cmd_printfile.filename=acl_strdup((yyvsp[(2) - (2)].str));
+	(yyval.cmd).command_u.cmd_printfile.filename=acl_strdup((yyvsp[0].str));
 }
     break;
 
@@ -3643,7 +3422,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1185 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_SKIP;
-		(yyval.cmd).command_u.cmd_skip.nlines=atoi((yyvsp[(2) - (3)].str));
+		(yyval.cmd).command_u.cmd_skip.nlines=atoi((yyvsp[-1].str));
 
 	}
     break;
@@ -3660,15 +3439,15 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1197 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_WHILE;
-		(yyval.cmd).command_u.cmd_while.condition=(yyvsp[(2) - (4)].expr);
-		(yyval.cmd).command_u.cmd_while.command=(struct command *)DUP((yyvsp[(4) - (4)].cmd));
+		(yyval.cmd).command_u.cmd_while.condition=(yyvsp[-2].expr);
+		(yyval.cmd).command_u.cmd_while.command=(struct command *)DUP((yyvsp[0].cmd));
 }
     break;
 
   case 301:
 #line 1221 "ace.yacc"
     {
-		COPY((yyval.agg_val),(yyvsp[(1) - (1)].agg_val));
+		COPY((yyval.agg_val),(yyvsp[0].agg_val));
 		(yyval.agg_val).isgroup=0;
 	}
     break;
@@ -3676,8 +3455,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
   case 302:
 #line 1225 "ace.yacc"
     {
-		COPY((yyval.agg_val),(yyvsp[(1) - (3)].agg_val));
-		(yyval.agg_val).wexpr=(struct expr *)DUP((yyvsp[(3) - (3)].expr));
+		COPY((yyval.agg_val),(yyvsp[-2].agg_val));
+		(yyval.agg_val).wexpr=(struct expr *)DUP((yyvsp[0].expr));
 		(yyval.agg_val).isgroup=0;
 	}
     break;
@@ -3685,7 +3464,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
   case 303:
 #line 1230 "ace.yacc"
     {
-		COPY((yyval.agg_val),(yyvsp[(2) - (2)].agg_val));
+		COPY((yyval.agg_val),(yyvsp[0].agg_val));
 		(yyval.agg_val).isgroup=1;
 	}
     break;
@@ -3693,8 +3472,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
   case 304:
 #line 1234 "ace.yacc"
     {
-		COPY((yyval.agg_val),(yyvsp[(2) - (4)].agg_val));
-		(yyval.agg_val).wexpr=(struct expr *)DUP((yyvsp[(4) - (4)].expr));
+		COPY((yyval.agg_val),(yyvsp[-2].agg_val));
+		(yyval.agg_val).wexpr=(struct expr *)DUP((yyvsp[0].expr));
 		(yyval.agg_val).isgroup=1;
 	}
     break;
@@ -3722,7 +3501,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.agg_val).type=AGG_AVG;
 		(yyval.agg_val).wexpr=0;
-		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[(3) - (3)].expr));
+		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[0].expr));
 	}
     break;
 
@@ -3731,7 +3510,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.agg_val).type=AGG_TOTAL;
 		(yyval.agg_val).wexpr=0;
-		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[(3) - (3)].expr));
+		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[0].expr));
 	}
     break;
 
@@ -3740,7 +3519,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.agg_val).type=AGG_AVG;
 		(yyval.agg_val).wexpr=0;
-		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[(3) - (3)].expr));
+		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[0].expr));
 	}
     break;
 
@@ -3749,7 +3528,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.agg_val).type=AGG_MIN;
 		(yyval.agg_val).wexpr=0;
-		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[(3) - (3)].expr));
+		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[0].expr));
 	}
     break;
 
@@ -3758,7 +3537,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.agg_val).type=AGG_MAX;
 		(yyval.agg_val).wexpr=0;
-		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[(3) - (3)].expr));
+		(yyval.agg_val).expr=(struct expr *)DUP((yyvsp[0].expr));
 	}
     break;
 
@@ -3766,8 +3545,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1281 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_DIV; 
 		}
     break;
@@ -3776,8 +3555,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1289 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_POW; 
 		}
     break;
@@ -3786,8 +3565,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1296 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_MOD; 
 		}
     break;
@@ -3796,8 +3575,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1305 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_MUL; 
 		}
     break;
@@ -3807,8 +3586,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
 		(yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_ADD; 
 	}
     break;
@@ -3818,8 +3597,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
 		(yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_AND; 
 	}
     break;
@@ -3829,8 +3608,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
 		(yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_OR; 
 	}
     break;
@@ -3840,8 +3619,8 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX;
 		(yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_SUB; 
 	}
     break;
@@ -3851,15 +3630,15 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX;
 		(yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[(3) - (3)].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.expr->expr2,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.expr->operand=EXPR_USING; 
 	}
     break;
 
   case 321:
 #line 1349 "ace.yacc"
-    { COPY((yyval.expr),(yyvsp[(1) - (1)].expr)); }
+    { COPY((yyval.expr),(yyvsp[0].expr)); }
     break;
 
   case 322:
@@ -3867,9 +3646,9 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
 		(yyval.expr).expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY((yyval.expr).expr_u.cexpr->expr1,(yyvsp[(1) - (3)].expr)); 
-		COPY((yyval.expr).expr_u.cexpr->expr2,(yyvsp[(3) - (3)].expr)); 
-		(yyval.expr).expr_u.cexpr->method=acl_strdup((yyvsp[(2) - (3)].str)); 
+		COPY((yyval.expr).expr_u.cexpr->expr1,(yyvsp[-2].expr)); 
+		COPY((yyval.expr).expr_u.cexpr->expr2,(yyvsp[0].expr)); 
+		(yyval.expr).expr_u.cexpr->method=acl_strdup((yyvsp[-1].str)); 
 	}
     break;
 
@@ -3893,7 +3672,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1366 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_BUILTIN;
-		(yyval.expr).expr_u.name=acl_strdup((yyvsp[(1) - (1)].str));
+		(yyval.expr).expr_u.name=acl_strdup((yyvsp[0].str));
 	}
     break;
 
@@ -3904,7 +3683,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 		v=find_variable("today");
 		(yyval.expr).type=EXPRTYPE_VARIABLE;
 		if (v==-1) {
-			printf("Warning : %s is not a defined variable\n",(yyvsp[(1) - (1)].str));
+			printf("Warning : %s is not a defined variable\n",(yyvsp[0].str));
 		} 
 		(yyval.expr).expr_u.varid=v;
 	}
@@ -3916,7 +3695,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("DATE");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[-1].expr).expr_u.lexpr;
 	}
     break;
 
@@ -3926,7 +3705,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("MONTH");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[-1].expr).expr_u.lexpr;
 	}
     break;
 
@@ -3936,7 +3715,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("YEAR");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[-1].expr).expr_u.lexpr;
 	}
     break;
 
@@ -3946,7 +3725,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("DAY");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[-1].expr).expr_u.lexpr;
 	}
     break;
 
@@ -3955,14 +3734,14 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
-		(yyval.expr).expr_u.fcall->fname=acl_strdup((yyvsp[(1) - (4)].str));
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+		(yyval.expr).expr_u.fcall->fname=acl_strdup((yyvsp[-3].str));
+                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[-1].expr).expr_u.lexpr;
 	}
     break;
 
   case 332:
 #line 1412 "ace.yacc"
-    { COPY((yyval.expr),(yyvsp[(2) - (3)].expr)); }
+    { COPY((yyval.expr),(yyvsp[-1].expr)); }
     break;
 
   case 333:
@@ -3970,7 +3749,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
 		(yyval.expr).expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[(2) - (2)].expr)); 
+		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
     break;
@@ -3980,7 +3759,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
 		(yyval.expr).expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[(2) - (2)].expr)); 
+		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[0].expr)); 
 		(yyval.expr).expr_u.sexpr->operand=EXPR_ASCII; 
 	}
     break;
@@ -3990,7 +3769,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
 		(yyval.expr).expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[(1) - (2)].expr)); 
+		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[-1].expr)); 
 		(yyval.expr).expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
     break;
@@ -4000,7 +3779,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
 		(yyval.expr).expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[(1) - (2)].expr)); 
+		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[-1].expr)); 
 		(yyval.expr).expr_u.sexpr->operand=EXPR_ISNULL; 
 	}
     break;
@@ -4010,7 +3789,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
 		(yyval.expr).expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[(1) - (2)].expr)); 
+		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[-1].expr)); 
 		(yyval.expr).expr_u.sexpr->operand=EXPR_ISNOTNULL; 
 	}
     break;
@@ -4020,7 +3799,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
 		(yyval.expr).expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[(1) - (2)].expr)); 
+		COPY((yyval.expr).expr_u.sexpr->expr,(yyvsp[-1].expr)); 
 		(yyval.expr).expr_u.sexpr->operand=EXPR_CLIP; 
 	}
     break;
@@ -4029,7 +3808,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1453 "ace.yacc"
     {
 		printf("NIY\n");
-		sprintf((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
+		sprintf((yyval.str)," %s %s",(yyvsp[-1].str),(yyvsp[0].str));
 		}
     break;
 
@@ -4037,10 +3816,10 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1457 "ace.yacc"
     {
 		int v;
-		v=find_variable((yyvsp[(1) - (1)].str));
+		v=find_variable((yyvsp[0].str));
 		(yyval.expr).type=EXPRTYPE_VARIABLE;
 		if (v==-1) {
-			printf("Warning : %s is not a defined variable\n",(yyvsp[(1) - (1)].str));
+			printf("Warning : %s is not a defined variable\n",(yyvsp[0].str));
 		} 
 		(yyval.expr).expr_u.varid=v;
 	}
@@ -4050,7 +3829,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1467 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_AGG; 
-		(yyval.expr).expr_u.aggid=add_agg((yyvsp[(1) - (1)].agg_val));
+		(yyval.expr).expr_u.aggid=add_agg((yyvsp[0].agg_val));
 	}
     break;
 
@@ -4064,7 +3843,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 		(yyval.expr).expr_u.lexpr->elem.elem_val=realloc(
 			(yyval.expr).expr_u.lexpr->elem.elem_val,
 			sizeof(struct expr)*(yyval.expr).expr_u.lexpr->elem.elem_len);
-		COPY((yyval.expr).expr_u.lexpr->elem.elem_val[0],(yyvsp[(1) - (1)].expr));
+		COPY((yyval.expr).expr_u.lexpr->elem.elem_val[0],(yyvsp[0].expr));
 		print_lexpr((yyval.expr).expr_u.lexpr);
 	}
     break;
@@ -4072,7 +3851,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
   case 343:
 #line 1484 "ace.yacc"
     {
-		COPY((yyval.expr),(yyvsp[(1) - (1)].expr));
+		COPY((yyval.expr),(yyvsp[0].expr));
 	}
     break;
 
@@ -4084,17 +3863,17 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 		(yyval.expr).expr_u.lexpr->elem.elem_len=1;
 		(yyval.expr).expr_u.lexpr->elem.elem_val=0;
 		(yyval.expr).expr_u.lexpr->elem.elem_val=realloc( (yyval.expr).expr_u.lexpr->elem.elem_val,sizeof(struct expr)* (yyval.expr).expr_u.lexpr->elem.elem_len);
-		COPY((yyval.expr).expr_u.lexpr->elem.elem_val[0],(yyvsp[(1) - (1)].expr));
+		COPY((yyval.expr).expr_u.lexpr->elem.elem_val[0],(yyvsp[0].expr));
 	}
     break;
 
   case 345:
 #line 1498 "ace.yacc"
     {
-		COPY((yyval.expr),(yyvsp[(1) - (3)].expr));
+		COPY((yyval.expr),(yyvsp[-2].expr));
 		(yyval.expr).expr_u.lexpr->elem.elem_len++;
 		(yyval.expr).expr_u.lexpr->elem.elem_val=realloc( (yyval.expr).expr_u.lexpr->elem.elem_val,sizeof(struct expr)* (yyval.expr).expr_u.lexpr->elem.elem_len);
-		COPY((yyval.expr).expr_u.lexpr->elem.elem_val[ (yyval.expr).expr_u.lexpr->elem.elem_len-1 ],(yyvsp[(3) - (3)].expr));
+		COPY((yyval.expr).expr_u.lexpr->elem.elem_val[ (yyval.expr).expr_u.lexpr->elem.elem_len-1 ],(yyvsp[0].expr));
 
 	}
     break;
@@ -4110,7 +3889,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1513 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_STRING;
-		(yyval.expr).expr_u.s=acl_strdup((yyvsp[(1) - (1)].str));
+		(yyval.expr).expr_u.s=acl_strdup((yyvsp[0].str));
 	}
     break;
 
@@ -4118,7 +3897,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1517 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_DOUBLE;
-		(yyval.expr).expr_u.d=atof((yyvsp[(1) - (1)].str));
+		(yyval.expr).expr_u.d=atof((yyvsp[0].str));
 	}
     break;
 
@@ -4126,7 +3905,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1521 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_DOUBLE;
-		(yyval.expr).expr_u.d=atof((yyvsp[(1) - (1)].str));
+		(yyval.expr).expr_u.d=atof((yyvsp[0].str));
 	}
     break;
 
@@ -4134,7 +3913,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1525 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
-		(yyval.expr).expr_u.i=atoi((yyvsp[(1) - (1)].str));
+		(yyval.expr).expr_u.i=atoi((yyvsp[0].str));
 	}
     break;
 
@@ -4142,7 +3921,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1529 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
-		(yyval.expr).expr_u.i=atoi((yyvsp[(2) - (2)].str));
+		(yyval.expr).expr_u.i=atoi((yyvsp[0].str));
 	}
     break;
 
@@ -4150,7 +3929,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1533 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
-		(yyval.expr).expr_u.i=atoi((yyvsp[(2) - (2)].str));
+		(yyval.expr).expr_u.i=atoi((yyvsp[0].str));
 	}
     break;
 
@@ -4158,7 +3937,7 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1537 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
-		(yyval.expr).expr_u.i=0-atoi((yyvsp[(2) - (2)].str));
+		(yyval.expr).expr_u.i=0-atoi((yyvsp[0].str));
 	}
     break;
 
@@ -4166,19 +3945,21 @@ sprintf((yyval.str),"\n2(%d)",find_variable((yyvsp[(2) - (2)].str)));
 #line 1541 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
-		(yyval.expr).expr_u.i=0-atoi((yyvsp[(2) - (2)].str));
+		(yyval.expr).expr_u.i=0-atoi((yyvsp[0].str));
 	}
     break;
 
 
-/* Line 1267 of yacc.c.  */
-#line 4176 "y.tab.c"
       default: break;
     }
-  YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
 
-  YYPOPSTACK (yylen);
-  yylen = 0;
+/* Line 1126 of yacc.c.  */
+#line 3958 "y.tab.c"
+
+  yyvsp -= yylen;
+  yyssp -= yylen;
+
+
   YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
@@ -4207,41 +3988,110 @@ yyerrlab:
   if (!yyerrstatus)
     {
       ++yynerrs;
-#if ! YYERROR_VERBOSE
-      yyerror (YY_("syntax error"));
-#else
-      {
-	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
-	if (yymsg_alloc < yysize && yymsg_alloc < YYSTACK_ALLOC_MAXIMUM)
-	  {
-	    YYSIZE_T yyalloc = 2 * yysize;
-	    if (! (yysize <= yyalloc && yyalloc <= YYSTACK_ALLOC_MAXIMUM))
-	      yyalloc = YYSTACK_ALLOC_MAXIMUM;
-	    if (yymsg != yymsgbuf)
-	      YYSTACK_FREE (yymsg);
-	    yymsg = (char *) YYSTACK_ALLOC (yyalloc);
-	    if (yymsg)
-	      yymsg_alloc = yyalloc;
-	    else
-	      {
-		yymsg = yymsgbuf;
-		yymsg_alloc = sizeof yymsgbuf;
-	      }
-	  }
+#if YYERROR_VERBOSE
+      yyn = yypact[yystate];
 
-	if (0 < yysize && yysize <= yymsg_alloc)
-	  {
-	    (void) yysyntax_error (yymsg, yystate, yychar);
-	    yyerror (yymsg);
-	  }
-	else
-	  {
-	    yyerror (YY_("syntax error"));
-	    if (yysize != 0)
-	      goto yyexhaustedlab;
-	  }
-      }
+      if (YYPACT_NINF < yyn && yyn < YYLAST)
+	{
+	  int yytype = YYTRANSLATE (yychar);
+	  YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
+	  YYSIZE_T yysize = yysize0;
+	  YYSIZE_T yysize1;
+	  int yysize_overflow = 0;
+	  char *yymsg = 0;
+#	  define YYERROR_VERBOSE_ARGS_MAXIMUM 5
+	  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+	  int yyx;
+
+#if 0
+	  /* This is so xgettext sees the translatable formats that are
+	     constructed on the fly.  */
+	  YY_("syntax error, unexpected %s");
+	  YY_("syntax error, unexpected %s, expecting %s");
+	  YY_("syntax error, unexpected %s, expecting %s or %s");
+	  YY_("syntax error, unexpected %s, expecting %s or %s or %s");
+	  YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
 #endif
+	  char *yyfmt;
+	  char const *yyf;
+	  static char const yyunexpected[] = "syntax error, unexpected %s";
+	  static char const yyexpecting[] = ", expecting %s";
+	  static char const yyor[] = " or %s";
+	  char yyformat[sizeof yyunexpected
+			+ sizeof yyexpecting - 1
+			+ ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
+			   * (sizeof yyor - 1))];
+	  char const *yyprefix = yyexpecting;
+
+	  /* Start YYX at -YYN if negative to avoid negative indexes in
+	     YYCHECK.  */
+	  int yyxbegin = yyn < 0 ? -yyn : 0;
+
+	  /* Stay within bounds of both yycheck and yytname.  */
+	  int yychecklim = YYLAST - yyn;
+	  int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+	  int yycount = 1;
+
+	  yyarg[0] = yytname[yytype];
+	  yyfmt = yystpcpy (yyformat, yyunexpected);
+
+	  for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+	    if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
+	      {
+		if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+		  {
+		    yycount = 1;
+		    yysize = yysize0;
+		    yyformat[sizeof yyunexpected - 1] = '\0';
+		    break;
+		  }
+		yyarg[yycount++] = yytname[yyx];
+		yysize1 = yysize + yytnamerr (0, yytname[yyx]);
+		yysize_overflow |= yysize1 < yysize;
+		yysize = yysize1;
+		yyfmt = yystpcpy (yyfmt, yyprefix);
+		yyprefix = yyor;
+	      }
+
+	  yyf = YY_(yyformat);
+	  yysize1 = yysize + yystrlen (yyf);
+	  yysize_overflow |= yysize1 < yysize;
+	  yysize = yysize1;
+
+	  if (!yysize_overflow && yysize <= YYSTACK_ALLOC_MAXIMUM)
+	    yymsg = (char *) YYSTACK_ALLOC (yysize);
+	  if (yymsg)
+	    {
+	      /* Avoid sprintf, as that infringes on the user's name space.
+		 Don't have undefined behavior even if the translation
+		 produced a string with the wrong number of "%s"s.  */
+	      char *yyp = yymsg;
+	      int yyi = 0;
+	      while ((*yyp = *yyf))
+		{
+		  if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
+		    {
+		      yyp += yytnamerr (yyp, yyarg[yyi++]);
+		      yyf += 2;
+		    }
+		  else
+		    {
+		      yyp++;
+		      yyf++;
+		    }
+		}
+	      yyerror (yymsg);
+	      YYSTACK_FREE (yymsg);
+	    }
+	  else
+	    {
+	      yyerror (YY_("syntax error"));
+	      goto yyexhaustedlab;
+	    }
+	}
+      else
+#endif /* YYERROR_VERBOSE */
+	yyerror (YY_("syntax error"));
     }
 
 
@@ -4252,15 +4102,14 @@ yyerrlab:
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
-	{
+        {
 	  /* Return failure if at end of input.  */
 	  if (yychar == YYEOF)
 	    YYABORT;
-	}
+        }
       else
 	{
-	  yydestruct ("Error: discarding",
-		      yytoken, &yylval);
+	  yydestruct ("Error: discarding", yytoken, &yylval);
 	  yychar = YYEMPTY;
 	}
     }
@@ -4278,14 +4127,11 @@ yyerrorlab:
   /* Pacify compilers like GCC when the user code never invokes
      YYERROR and the label yyerrorlab therefore never appears in user
      code.  */
-  if (/*CONSTCOND*/ 0)
+  if (0)
      goto yyerrorlab;
 
-  /* Do not reclaim the symbols of the rule which action triggered
-     this YYERROR.  */
-  YYPOPSTACK (yylen);
-  yylen = 0;
-  YY_STACK_PRINT (yyss, yyssp);
+yyvsp -= yylen;
+  yyssp -= yylen;
   yystate = *yyssp;
   goto yyerrlab1;
 
@@ -4315,9 +4161,8 @@ yyerrlab1:
 	YYABORT;
 
 
-      yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp);
-      YYPOPSTACK (1);
+      yydestruct ("Error: popping", yystos[yystate], yyvsp);
+      YYPOPSTACK;
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
     }
@@ -4328,7 +4173,7 @@ yyerrlab1:
   *++yyvsp = yylval;
 
 
-  /* Shift the error token.  */
+  /* Shift the error token. */
   YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
 
   yystate = yyn;
@@ -4363,26 +4208,17 @@ yyreturn:
   if (yychar != YYEOF && yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
 		 yytoken, &yylval);
-  /* Do not reclaim the symbols of the rule which action triggered
-     this YYABORT or YYACCEPT.  */
-  YYPOPSTACK (yylen);
-  YY_STACK_PRINT (yyss, yyssp);
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
 		  yystos[*yyssp], yyvsp);
-      YYPOPSTACK (1);
+      YYPOPSTACK;
     }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-#if YYERROR_VERBOSE
-  if (yymsg != yymsgbuf)
-    YYSTACK_FREE (yymsg);
-#endif
-  /* Make sure YYID is used.  */
-  return YYID (yyresult);
+  return yyresult;
 }
 
 
@@ -4391,4 +4227,5 @@ yyreturn:
 
 
 #include "lex.yy.c"
+
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2006-10-14 08:25:37 afalout Exp $
+# $Id: Makefile,v 1.14 2006-11-04 11:10:01 afalout Exp $
 #
 
 ROOT    =..
@@ -639,11 +639,12 @@ clean : \
 #libFORM_NOFORM.so  libLEX_PERL.so    libSQL_ingres.so
 #libIM_JABBER.so    libMSG_NATIVE.so  libSQL_nosql.so
 clean.plugindir:
-	${RM} ${PLUGINDIR}/*
+	rm -rf ${PLUGINDIR}
 
 clean.libroot:
 	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err \
-    bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak *.base *.exp *.warn
+    bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak *.base *.exp *.warn \
+	libaubit4gl*.* *~
 
 clean.generated:
 	${RM} generated/errdefs generated/tmperrs.h generated/*.o \

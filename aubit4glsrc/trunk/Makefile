@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.31 2006-10-30 10:56:16 afalout Exp $
+# $Id: Makefile,v 1.32 2006-11-04 11:09:42 afalout Exp $
 #
 
 ## ==================================================================
@@ -40,7 +40,7 @@ include incl/Makefile-common
 ###############################
 #All targets in this make file are "phony" targets - they do not create
 #anything, they just invoke other make files:
-.PHONY: all clean default log corecompile extra ide api.headers glade
+.PHONY: all clean default log corecompile extra ide api.headers glade help
 
 ###############################
 #Things we compile by default
@@ -613,7 +613,7 @@ clean.root:
 #we must not clean *.tmp because of unixbuildnames.tmp:
 	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg debug.out \
 	*.err ${PLATFORMINFO} make.log commit.log rpmbuild.log \
-	aubit4gl.lsm rpmbuild.log .\#*
+	aubit4gl.lsm rpmbuild.log .\#* aubit4glsrc-*-*.txt
 	rm -rf autom4te.cache
 
 #stuff created by aubitbuild.sh:
@@ -1240,6 +1240,121 @@ aubit4gl.lsm:
 	@echo Note: >> ${OUTFILE}
 	@echo send this file to 'lsm@execpc.com' with the subject 'add'. >> ${OUTFILE}
 
+
+## ------------------------------------------------------------------
+##                      AutoPackage packaging
+## ------------------------------------------------------------------
+
+#BinReloc - utility for easy relocation of binary packages
+#objdum -p progname : required libs appear near the top in 'Dynamic sections'
+#objdump -u: ??
+#ldd -u : needed, but never used dependencies
+#aPBUILD SCRIPTS - filter out not needed dependencies (CC=apgcc; CXX=apg++)
+#skeletons - /usr/share/autopackage/skeletons
+
+################################################
+# clean, create package, test
+autopackage: autopackage.clean autopackage.package autopackage.test
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make autopackage: all done"
+	@echo "+--------------------------------------------------------------------+"
+
+
+################################################
+#Create the installer .package file
+autopackage.package: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package
+./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package:
+	./config.status --file etc/default.apspec
+#DONT_PASS_AC_FLGS: Tell aubitconf not to pass silly flags set by makeinstaller
+#INJECT_AC_FLAGS: tell aubitconf to inject flags that AutoPackage would want
+#Note that we dont pass CFLAGS from configure to makefiles anyway
+#	export INJECT_AC_FLAGS="--prefix=/usr/local CC=apgcc CFLAGS= -O2 -march=i586 -pipe";
+#	export INJECT_AC_FLAGS="--disable-prefix-check --prefix=/usr/local CC=apgcc CFLAGS=-pipe"; 
+#	export INJECT_AC_FLAGS="--prefix=/usr/local CC=apgcc CFLAGS=-pipe"; export DONT_PASS_AC_FLGS=1; 
+	makeinstaller etc/default.apspec
+	@echo "+--------------------------------------------------------------------+"	
+	@echo "| make $@ completed; all files created in current directory"
+	@echo "+--------------------------------------------------------------------+"	
+
+################################################	
+#Create a default spec file
+autopackage.default:
+	makeinstaller --mkspec > aubit4gl.apspec.in
+
+
+################################################
+#Test created package
+autopackage.test: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package
+#.package files support:
+# -x : this extracts the contents and places them in a directory named after 
+#	the package. Use this when you don't want to install software, but instead 
+#	just want the contents.
+# -p/--prefix : you can select where you want packages to install to with this switch
+# -t : forces the use of the TTYFE mode. If you have a graphical environment 
+#	running but would prefer a purely command line based install, use this switch
+# -d : puts the package into debug mode. In this mode, the metadata and payload 
+#	are extracted to a temporary working directory. Then instead of starting the 
+#	install scripts, you are dumped into a shell. You can now investigate or 
+#	change the control scripts or payload. Type "exit" to quit the shell and clean up.
+#
+#  -d, --debug       Extracts but does not automatically run the installer
+#  -x, --extract     Extracts the package and returns
+#  -f, --force       Overrides fatal warnings to force the install to proceed
+#  -g, --gtkfe       Forces the usage of the graphical GTK based frontend
+#  -h, --help        Display this help screen
+#  -p, --prefix      Sets the prefix that the package will install to
+#  -t, --ttyfe       Forces the usage of the text based terminal frontend
+#
+#The meta package is 'aubit4gl-1.00.3.x86.package.meta'.
+#	@echo "${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package.meta"
+#The complete package is 'aubit4gl-1.00.3.x86.package'.
+#	@echo "${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package"
+#The Luau repository XML entry file is 'aubit4gl.xml'.
+#	@echo "${AUBITNAME}.xml"
+#	./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package -x -t
+	export DEBUGLEVEL=3 ; ./$^ -t -p /tmp/autopackage.test
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Files installed to /tmp/autopackage.test:"
+	@echo "+--------------------------------------------------------------------+"	
+	@find /tmp/autopackage.test
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make autopackage.test: Done"
+	@echo "+--------------------------------------------------------------------+"	
+	
+	
+################################################
+#Debug created package
+autopackage.debug: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package
+#The following environment variables control how much debugging information is outputted:
+#Installation of packages
+#    * DEBUGLEVEL - Controls debugging output from the core program. Can be any number between 0 and 3 where 3 is the most verbose level.
+#    * GTKFE_DEBUGLEVEL - Controls the debugging output from the GTK Frontend. Can be any number where a higher number means higher verbosity.
+#
+#Other autopackage programs
+#    * AUTOPACKAGE_MANAGER_GTK_DEBUG - Makes the GTK version of the manager print debugging info. Value is boolean.
+#    * AUTOPACKAGE_MANAGER_BACKEND_DEBUG - Makes the backend for the manager print debugging info. Value is boolean.
+#    * AUTOPACKAGE_MKAPSPEC_DEBUG - Makes mkapspec print debugging information. Value is boolean.
+#    * APBUILD_DEBUG - Makes apbuild print debugging information. Value is boolean.
+	./$^ -d -t -p /tmp/autopackage.test
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make autopackage.debug: Done"
+	@echo "+--------------------------------------------------------------------+"	
+	
+	
+################################################
+# Clean all AutoPackage created files
+autopackage.clean:
+	${RM} ${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package.meta \
+		${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package \
+		${AUBITNAME}.xml
+	rm -rf /tmp/autopackage.test
+#CRAP - cant make it stay in TUI - allways pops up GUI:
+	-package remove -t aubit4gl
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make autopackage.clean: Done"
+	@echo "+--------------------------------------------------------------------+"	
+	
+	
 ## ------------------------------------------------------------------
 ##                       Other Targets (Misc.)
 ## ------------------------------------------------------------------
@@ -1313,7 +1428,7 @@ help.options:
 #	@echo "  PDFBUILD=(no/yes) NOTE: Must have PDF lib installed"
 #	@echo "  GTKBUILD=(yes/no) NOTE: Must have GTK lib installed"
 #	@echo "  JABBERBUILD=(yes/no) NOTE: Must have ikemel lib installed"
-	@echo "  PREFIX= where to install binaries, default is $PREFIX"
+	@echo "  PREFIX=<path> Where to install compiler, default is ${PREFIX}"
 	@echo
 	@echo
 
