@@ -83,3 +83,16 @@ int A4GL_LL_getch_swin( void* window_ptr,char *why) {
 	return 0;
 }
 
+
+
+void A4GL_LL_out_linemode (char *s)
+{
+  if (A4GL_isyes (acl_getenv ("LOCALLINEOUTPUT")))
+    {
+      printf ("%s\n", s);
+    }
+  else
+    {
+      A4GL_LL_out_linemode_internal (s);
+    }
+}

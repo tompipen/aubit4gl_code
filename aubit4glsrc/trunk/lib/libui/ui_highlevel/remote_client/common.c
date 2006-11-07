@@ -315,15 +315,20 @@ A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
     strcat (attr_str, "ALT ");
 }
 
+
+/*
 A4GL_LL_field_opts(f) {
 	A4GL_assertion(1,"A4GL_LL_field_opts Invalid for pipeclient");
 }
+*/
 
 A4GL_ll_set_field_opts(void *f,long o) {
 	A4GL_LL_set_field_opts(f,o);
 
 }
 
+
+/*
 A4GL_LL_out_linemode(char *s) {
 	if (A4GL_isyes(acl_getenv("LOCALLINEOUTPUT"))) {
 		printf("%s\n",s);
@@ -331,11 +336,23 @@ A4GL_LL_out_linemode(char *s) {
 		A4GL_LL_out_linemode_internal(s);
 	}
 }
+*/
 
+
+A4GL_set_intr() {
+}
+
+
+int A4GL_isscrmode() {
+return 0;
+}
 
 char *A4GL_internal_version() {
 	return "1";
 }
+void A4GL_set_scrmode (char a) {
+}
+
 
 A4GL_internal_build() {
 	return "2";
@@ -387,3 +404,7 @@ We can end up with problems with overlapping - eg
         return x;
 // DO NOT CALL A4GL_debug from this function!!!!
 }
+
+
+//A4GL_LL_out_linemode_internal() {
+//}
