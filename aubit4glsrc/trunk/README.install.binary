@@ -1,0 +1,13 @@
+Aubit 4gl compiler readme
+-------------------------
+
+For a binary installation we recommend extracting this tarball where you want the final files
+to reside, and then set 
+
+	$ export AUBITDIR=/path/to/aubit4gldir
+	$ export PATH=$PATH:$AUBITDIR/bin
+	$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+
+	
+
+
