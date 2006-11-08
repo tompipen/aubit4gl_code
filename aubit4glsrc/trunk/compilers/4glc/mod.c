@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.289 2006-11-03 09:03:16 mikeaubury Exp $
+# $Id: mod.c,v 1.290 2006-11-08 16:05:40 mikeaubury Exp $
 #
 */
 
@@ -5446,7 +5446,11 @@ void llex_add_ibind(int dtype,char *var) {
 
 void fail_on_select_ibind() {
 if (ibindcnt) {
-	a4gl_yyerror("You can't SELECT a variable (perhaps you could rename the variable, or prefix the column in the SELECT list ?)");
+	if (!A4GL_isno(acl_getenv("NOSELECTVARWARNING"))) {
+		a4gl_yyerror("You can't SELECT a variable (perhaps you could rename the variable, or prefix the column in the SELECT list ?)");
+	} else {
+		A4GL_warn("Selecting a variable in a select list is not portable");
+	}
 	return;
 }
 }

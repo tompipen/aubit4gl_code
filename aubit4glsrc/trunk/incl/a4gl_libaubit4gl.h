@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.254 2006-10-30 09:37:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.255 2006-11-08 16:05:44 mikeaubury Exp $
 #
 */
 
@@ -1004,7 +1004,7 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
 
   /* not strictly voids - but saves getting into the details */
   void *prepare_glob_sql (char *s, int ni, void *b);
-
+void A4GL_set_sql_lineno(int n);
 
 
 enum cmd_types {
