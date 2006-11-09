@@ -96,3 +96,28 @@ void A4GL_LL_out_linemode (char *s)
       A4GL_LL_out_linemode_internal (s);
     }
 }
+
+
+void A4GL_LL_opening_form(char *formfile, char *formname) {
+	FILE *f;
+	char *fbuff;
+	char buff[2000];
+	strcpy(buff,formfile);
+	A4GL_trim(buff);
+	strcat(buff,".xml");
+	f=A4GL_open_file_dbpath(buff);
+	if (f) {
+		long l;
+		fseek(f,0,SEEK_END);
+		l=ftell(f);
+		rewind(f);
+		fbuff=malloc(l+1);
+		fread(fbuff,l,1,f);
+		fbuff[l]=0;
+		fclose(f);
+		printf("\n\n\n******************************fbuff='%s'\n",fbuff);
+		A4GL_LL_opening_form_xml(formname, fbuff);
+		free(fbuff);
+	
+	}
+}

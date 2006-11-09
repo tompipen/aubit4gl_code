@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.41 2006-08-31 19:25:28 mikeaubury Exp $";
+  "$Id: forms.c,v 1.42 2006-11-09 20:09:20 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -119,6 +119,7 @@ UILIB_A4GL_cr_window_form (char *namet,
 
   A4GL_debug ("reading file %s - name=%s", buff, name);
   a4gl_status = 0;
+  A4GL_LL_opening_form(buff,name);
   form = A4GL_read_form (buff, name);
   if (a4gl_status != 0)
     return 0;
@@ -182,6 +183,7 @@ UILIB_A4GL_open_form (char *name)
   A4GL_debug ("reading file %s ?", buff);
   A4GLSQL_set_status (0, 0);
 
+  A4GL_LL_opening_form(buff,name);
   form = A4GL_read_form (buff, name);
   A4GL_debug ("Read form returns %d status = %d\n", form, a4gl_status);
   if (a4gl_status != 0)
@@ -266,7 +268,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
 				   A4GL_get_currwinno (),
 				   A4GL_getform_line (), A4GL_get_currwin (),
 				   f->form, f->fileform->maxline,
-				   f->fileform->maxcol);
+				   f->fileform->maxcol,name);
   A4GL_clr_form (0);
   A4GL_LL_screen_update ();
 
@@ -1014,7 +1016,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
       (f, attr, UILIB_A4GL_get_curr_width (), UILIB_A4GL_get_curr_height (),
        UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
        A4GL_getform_line (), A4GL_get_currwin (), f->form,
-       f->fileform->maxline, f->fileform->maxcol))
+       f->fileform->maxline, f->fileform->maxcol,name))
     {
       f->form_details.border = UILIB_A4GL_iscurrborder ();
       f->form_details.insmode = 0;

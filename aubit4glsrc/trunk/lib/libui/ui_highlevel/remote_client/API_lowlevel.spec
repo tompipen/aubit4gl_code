@@ -21,7 +21,8 @@ A4GL_LL_decode_aubit_attr int a char s -> int
 A4GL_LL_delete_errorwindow void* curr_error_window -> void
 A4GL_LL_disp_h_menu int num_opts -> void
 A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title char* shorthelp int attrib -> void
-A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol -> void* 
+A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol char* name -> void* 
+A4GL_LL_opening_form_xml char* a char* b -> void
 A4GL_LL_dump_screen int n char* fname int mode -> int
 A4GL_LL_endis_fields_ap int n void* ap -> int
 A4GL_LL_error_box char* str int attr  -> void 

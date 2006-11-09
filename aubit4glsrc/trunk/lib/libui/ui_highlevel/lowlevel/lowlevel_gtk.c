@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.108 2006-10-11 15:23:23 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.109 2006-11-09 20:09:43 mikeaubury Exp $";
 #endif
 
 
@@ -2476,7 +2476,7 @@ A4GL_gui_prompt_style (int a)
 void *
 A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 		      int iscurrborder, int currwinno, int form_line,
-		      void *currwin, void *frm, int maxline, int maxcol)
+		      void *currwin, void *frm, int maxline, int maxcol, char *name)
 {
 
   int rows, cols;
@@ -4174,3 +4174,10 @@ void A4GL_LL_enable_menu() {
 void A4GL_LL_disable_menu() {
 	// Does nothing - required by api..
 }
+
+void A4GL_LL_opening_form(char *a,char *b) {
+  // Does nothing - required by api..
+}
+  
+ 
+
