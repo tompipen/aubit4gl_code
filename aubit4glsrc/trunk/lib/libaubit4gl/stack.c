@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.160 2006-10-18 08:19:42 mikeaubury Exp $
+# $Id: stack.c,v 1.161 2006-11-09 19:05:14 mikeaubury Exp $
 #
 */
 
@@ -723,7 +723,24 @@ A4GL_pop_params (struct BINDING *b, int n)
   int a;
   for (a = n - 1; a >= 0; a--)
     {
-      A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
+	int dtype;
+	dtype=b[a].dtype & DTYPE_MASK;
+	if (dtype==DTYPE_CHAR || dtype==DTYPE_VCHAR) {
+		if ( b[a].start_char_subscript==0 && b[a].end_char_subscript==0)  {
+      			A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
+		} else {
+			if (b[a].start_char_subscript==b[a].end_char_subscript) {
+				//printf("b[a].start_char_subscript=%d\n",b[a].start_char_subscript);
+				a4gl_let_substr(b[a].ptr,b[a].dtype+ENCODE_SIZE(b[a].size),b[a].start_char_subscript,0);
+			} else {
+				//printf("ptr=%s b[a].start_char_subscript=%d b[a].end_char_subscript=%d\n",b[a].ptr, b[a].start_char_subscript,b[a].end_char_subscript);
+				a4gl_let_substr(b[a].ptr,b[a].dtype+ENCODE_SIZE(b[a].size),b[a].start_char_subscript,b[a].end_char_subscript,0);
+				//printf("ptr=%s\n",b[a].ptr);
+			}
+		}
+	} else {
+      		A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
+	}
     }
 }
 

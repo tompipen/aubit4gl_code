@@ -280,8 +280,10 @@ A4GL_debug("List element");
 A4GL_debug("List element continues");
   sprintf ($<str>$, "%s,%s", $<str>1, $<str>3); 
 }
-
 ;
+
+
+
 
 num_list_element: arr_expr
 {

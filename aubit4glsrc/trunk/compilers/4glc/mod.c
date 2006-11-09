@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.290 2006-11-08 16:05:40 mikeaubury Exp $
+# $Id: mod.c,v 1.291 2006-11-09 19:04:55 mikeaubury Exp $
 #
 */
 
@@ -2024,37 +2024,40 @@ add_bind (char i, char *var_i)
 	      ptrs[1] = strstr (ptrs[0] + 3, " , ");
 	      if (ptrs[1])
 		{
+			ptrs[1]++;
 		  *ptrs[1] = 0; ptrs[1]++;
 		  strcpy (buff, ptrs[0]);
 		  ptrs[2] = strstr (ptrs[1] + 3, " , ");
 		  if (ptrs[2])
 		    {
+			ptrs[2]++;
 		      *ptrs[2] = 0; ptrs[2]++;
 		      s_dtype = atol (ptrs[1]);
-		      ptrs[3] = strstr (ptrs[2] + 3, " , ");
+		      ptrs[3] = strstr (ptrs[2] + 2, ",");
 		      if (ptrs[3])
 			{
 			  *ptrs[3] = 0; ptrs[3]++;
 			  s_sstart = atol (ptrs[2]);
 			  s_send = atol (ptrs[3]);
+		//printf("%s :: %s\n",ptrs[2],ptrs[3]);
 			}
 		    }
 		}
 
 
 
-
 	      //a = sscanf (buff2, "%s , %d , %d , %d) /*1*/", buff, &s_dtype, &s_sstart, &s_send);
 	      if (ptrs[3] == 0 || s_sstart<0 || s_send<0 || s_dtype<0)
 		{
-		  A4GL_debug ("Error processing : %s\n",
-			      A4GL_null_as_null (buff2));
+		  A4GL_debug ("Error processing : %s\n", A4GL_null_as_null (buff2));
 		  set_yytext (buff2);
 		  a4gl_yyerror ("Internal error - (split substr)");
 		}
 	      if (s_send == 0)
 		s_send = s_sstart;
 	      strcpy (ibind[ibindcnt].varname, buff);
+
+	      //printf("s_sstart=%d s_send=%d\n", s_sstart,s_send);
 	      ibind[ibindcnt].dtype = s_dtype;
 	      ibind[ibindcnt].start_char_subscript = s_sstart;
 	      ibind[ibindcnt].end_char_subscript = s_send;
