@@ -13,8 +13,8 @@ opt_at : {
 		map_ui("DISPLAY_LINE_MODE");
 	} 
 	| KW_AT fgl_expr_c KW_COMMA fgl_expr_c 		{ 
-		map_display_at($<ptr>4,$<ptr>2);
 		struct dt_display *d;
+		map_display_at($<ptr>4,$<ptr>2);
 		d=malloc(sizeof(struct dt_display));
 		d->type=DT_DISPLAY_TYPE_AT;
 		d->u_data.x_y.x=$<ptr>4;
