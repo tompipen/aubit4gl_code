@@ -2631,6 +2631,7 @@ if (e->delim) {
 
 	case SQLVCHAR:
 	case SQLCHAR:
+	case SQLNVCHAR:
 	  col->sqltype = CFIXCHARTYPE;	/* get all bytes */
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
