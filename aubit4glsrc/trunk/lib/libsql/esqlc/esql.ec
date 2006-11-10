@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.169 2006-10-31 12:18:44 mikeaubury Exp $
+# $Id: esql.ec,v 1.170 2006-11-10 14:16:57 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.169 2006-10-31 12:18:44 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.170 2006-11-10 14:16:57 mikeaubury Exp $";
 #endif
 
 
@@ -4825,7 +4825,7 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   struct sqlda *udesc;
   struct sqlvar_struct *col;
   long  reccount = 0;
-  static loc_t *loc=0;
+  static loc_t *locat=0;
   static char **bufary=0;
   static short *ipary=0;
   static int nd=0;
@@ -4839,7 +4839,9 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   if (ipary)  {free(ipary);ipary=0;}
   if (fname)  {free(fname);fname=0;}
   if (colszs) {free(colszs);colszs=0;}
-  if (loc)    {free(loc);loc=0;}
+
+
+  // if (locat)    {free(locat);locat=0;}
 
   strSql = sqlStr;
   fname = strdup (fname_o);
@@ -4855,7 +4857,10 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
     {
     /** @todo : Generate some error code compatible with informix 4gl */
 
-      free (fname);fname=0;
+      if (fname) {
+		free (fname);
+		fname=0;
+	}
       A4GL_exitwith ("Unable to open file for unload");
       return;
     }
@@ -5018,7 +5023,14 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
    * Step 3: Set pointers in the allocated memory to receive each *
    *    item in the select list. 
    */
-  loc = (loc_t *) acl_malloc2 (sizeof (loc_t));
+
+
+
+  // loc = (loc_t *) acl_malloc2 (sizeof (loc_t));
+
+
+
+
   nd=udesc->sqld;
   pos=0;
   for (col = udesc->sqlvar,  i = 0; i < udesc->sqld;  col++, i++)
@@ -5056,14 +5068,14 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
 	   * Set up locator for fetch sqlda, copy sqlda will be set up
 	   * later from the current row. 
 	   */
-	  loc = (loc_t *) col->sqldata;
-	  for (j = 0; j < 1; j++, loc++)
+	  locat = (loc_t *) col->sqldata;
+	  for (j = 0; j < 1; j++, locat++)
 	    {
-	      loc->loc_loctype = LOCMEMORY;
-	      loc->loc_bufsize = -1;
-	      loc->loc_oflags = 0;
-	      loc->loc_mflags = 0;
-	      loc->loc_buffer = (char *) NULL;
+	      locat->loc_loctype = LOCMEMORY;
+	      locat->loc_bufsize = -1;
+	      locat->loc_oflags = 0;
+	      locat->loc_mflags = 0;
+	      locat->loc_buffer = (char *) NULL;
 	    }
 	  break;
 	}
