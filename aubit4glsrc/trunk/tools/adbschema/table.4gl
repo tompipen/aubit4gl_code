@@ -303,6 +303,7 @@ define lv_c integer
 	if get_mode()=1 then
 		return
 	end if
+
 	
 	###########################################
 	# Indexes....
@@ -494,6 +495,8 @@ define lv_c integer
 		end if
 		call outstr(");")
 	end foreach
+
+	CALL print_triggers(lv_st.tabid)
 
 end function
 
@@ -843,3 +846,48 @@ return a
 
 end function
 
+
+
+function print_triggers(lv_tabid)
+DEFINE lv_tabid INTEGER
+DEFINE lv_trigname CHAR(128)
+DEFINE lv_t record
+   trigid INTEGER,
+   trigname CHAR(18),
+   owner CHAR(8),
+   tabid INTEGER,
+   event CHAR(1),
+   old CHAR(18),
+   new CHAR(18),
+   mode CHAR(1)
+END RECORD
+DEFINE lv_s RECORD
+   trigid INTEGER,
+   datakey CHAR(1),
+   seqno INTEGER,
+   data CHAR(256)
+END RECORD
+DEFINE lv_x CHAR(20000)
+DEFINE lv_lastname CHAR(128)
+LET lv_lastname="-"
+DECLARE trigs CURSOR FOR
+	SELECT * from systriggers WHERE tabid=lv_tabid
+
+FOREACH trigs into lv_t.*
+	CALL outstr("")
+	DECLARE trigdata CURSOR FOR
+        	SELECT stb.*
+        	FROM  systrigbody stb
+        	WHERE lv_t.trigid = stb.trigid
+        	AND datakey in ( 'D', 'A' )
+        	ORDER BY datakey desc, seqno
+
+	FOREACH trigdata INTO lv_s.*
+		if length(lv_s.data)=256 THEN
+			CALL outstr_n256(lv_s.data)
+		ELSE
+			CALL outstr(lv_s.data)
+		END IF
+	END FOREACH
+END FOREACH
+END FUNCTION

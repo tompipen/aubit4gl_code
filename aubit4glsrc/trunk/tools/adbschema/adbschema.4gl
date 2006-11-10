@@ -253,6 +253,33 @@ end if
 end function
 
 
+
+function outstr_n256(lv_s)
+define lv_s char(256)
+define lv_f char(256)
+
+if lv_output is null then
+code
+	printf("%s",lv_s);
+endcode
+else
+	let lv_f=lv_output
+code
+
+if (fout==0) {
+	A4GL_trim(lv_f);
+	fout=fopen(lv_f,"w");
+	if (fout==0) {
+		printf("Unable to open output file : %s\n",lv_f);
+		exit(2);
+	}
+}
+fprintf(fout,"%s",lv_s);
+endcode
+end if
+
+end function
+
 function get_filter_out_table_prefix()
 	return gv_filter_out_table_prefix
 end function
