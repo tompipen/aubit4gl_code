@@ -16,7 +16,7 @@ int init_client(void) {
 		ptr=acl_getenv_not_set_as_0("AFGLSERVER");
 		if (ptr) {
 			strcpy(url,ptr);
-		ok=client_connect(ptr,"1300");
+			ok=client_connect(ptr,"1300");
 		}   else {
 			printf("No server specified - please set AFGLSERVER\n");
 			ok=0;
@@ -59,8 +59,8 @@ void A4GL_LL_switch_to_line_mode(void) {
 
 int A4GL_LL_getch_swin( void* window_ptr,char *why) {
 	ret_19 ret;
-	init_client();
 	struct client_result *resultP;
+	init_client();
 	resultP = (struct client_result *)client_call("A4GL_LL_getch_swin", 1,"is",(long)window_ptr,why);
 	if (client_result_ok(resultP)) {
 
