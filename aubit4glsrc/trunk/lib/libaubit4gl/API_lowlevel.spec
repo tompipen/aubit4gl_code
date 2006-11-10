@@ -26,10 +26,12 @@ A4GL_LL_decode_aubit_attr int a char s -> int
 A4GL_LL_delete_errorwindow void* curr_error_window -> void
 
 /* void* A4GL_LL_display_form struct s_form_dets *f int attrib */
-A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol -> void* 
+A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol char* name -> void* 
 
 /* int A4GL_LL_dump_screen int n */
 A4GL_LL_dump_screen int n char* fname int mode -> int
+
+A4GL_LL_opening_form char* s char* f -> void
 
 /* void A4GL_LL_error_box char* str int attr */
 A4GL_LL_error_box char* str int attr  -> void 
