@@ -12,6 +12,12 @@
 #include "a4gl_dbload_int.h"
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
+int is_column_name(char *s);
+int process_entry (struct s_dbloadline *dbload);
+char *conv_dbl(char *s);
+void a4gl_dbload_yyerror(char *s);
+int a4gl_dbload_yylex (void);
 
 /*
 =====================================================================
