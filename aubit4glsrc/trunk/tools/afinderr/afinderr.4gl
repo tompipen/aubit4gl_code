@@ -52,7 +52,12 @@ char buff[256];
 char buff2[256];
 struct dirent *de;
 strcpy(buff,(char *)acl_getenv("AUBITDIR"));
+#ifdef SIMPLIFIED
+strcat(buff,"/share");
+#else
 strcat(buff,"/etc");
+#endif
+
 d=(DIR *)opendir(buff);
 
 	if (d!=0) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.126 2006-11-11 09:07:03 afalout Exp $
+# $Id: resource.c,v 1.127 2006-11-11 10:49:55 mikeaubury Exp $
 #
 */
 
@@ -328,8 +328,13 @@ struct str_resource builtin_resource[] = {
 			 // Setting to N will mess up TERM=SCOANSI and doesn't seem to 
 			// matter otherwise...
   /* all platforms Compilation options */
+#ifndef  SIMPLIFIED
   {"A4GL_LINK_LIBS", LINKAUBITLIBFULL},
   {"DEFAULT_PLUGINDIR", PLUGINDIR},
+#else
+  {"FGLPCSETTINGSDIR",DATADIR},
+  {"DEFAULT_PLUGINDIR", AUBITPLUGINDIR},
+#endif
   {"A4GL_C_COMP", "gcc"},
   {"A4GL_RDYNAMIC", "-rdynamic"},
   

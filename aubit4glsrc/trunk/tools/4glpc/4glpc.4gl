@@ -308,7 +308,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 							continue for
 	END CASE
   END FOR
-
+  if mv_lextype="EC" and (mv_lexdialect is null  or mv_lexdialect matches " " ) THEN
+		LET mv_lexdialect="INFORMIX"
+  end if
 
   if mv_verbose>=3 then
   		display "mv_lextype=",mv_lextype," dialect=",mv_lexdialect

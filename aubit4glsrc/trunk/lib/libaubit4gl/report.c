@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.102 2006-10-30 08:55:22 mikeaubury Exp $
+# $Id: report.c,v 1.103 2006-11-11 10:49:53 mikeaubury Exp $
 #
 */
 
@@ -96,7 +96,7 @@ static void print_data (struct rep_structure *rep, char *buff, int entry);
 int A4GL_push_report_print (struct rep_structure *rep, char *mod, int lineno,
 			    char where, char *why, int rb);
 void A4GL_pop_report_print (struct rep_structure *rep, int pb, int rb);
-void A4GL_pop_report_section (struct rep_structure *rep, int rb);
+//void A4GL_pop_report_section (struct rep_structure *rep, int rb);
 static void report_write_string (struct rep_structure *rep, char *s);
 static void report_write_int (struct rep_structure *rep, int n);
 static void report_write_char (struct rep_structure *rep, unsigned char n);
@@ -115,11 +115,9 @@ void A4GL_set_column (struct rep_structure *rep);
 void A4GL_free_duplicate_binding (struct BINDING *b, int n);
 //struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 void A4GL_skip_top_of_page (struct rep_structure *rep, int n);
-int A4GL_push_report_section (struct rep_structure *rep, char *mod,
-			      char *repname, int lineno, char where,
-			      char *why, int rb);
+//int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb);
 
-void A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_margin, int entry);
+void A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int right_margin, int entry);
 void A4GL_need_lines (struct rep_structure *rep);
 void A4GL_add_spaces (void);
 static char *A4GL_mk_temp_tab (struct BINDING *b, int n);
@@ -605,20 +603,118 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
  *  entry - unique identifier for this print within this block
  */
 void
-A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_margin,
+A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int right_margin,
 		int entry)
 {
   int b;
   int cnt;
   char *str;
-  A4GL_debug
-    ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
+  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
 
-  if (right_margin != 0)
+
+  
+  if (right_margin >0)
     {
-      A4GL_debug ("***** WARNING ***** wordwrap margin not implemented..");
-    }
+	char *s;
+	int a;
+	char *ptr;
+	int init_col;
+	init_col=rep->col_no;
+	if (no_param!=1) {
+		A4GL_assertion(1,"Expecting single variable for wordwrap margin");
+	}
+	s=A4GL_report_char_pop();
+	ptr=s;
+	if (init_col>right_margin) {
+		A4GL_exitwith("Cant print at this column with that right margin :-(");
+		return ;
+	}
 
+	right_margin-=init_col;
+
+	while (1) {
+		if (rep->col_no<init_col) {
+			A4GL_push_int(init_col);
+			A4GL_set_column(rep);
+		}
+		//printf("s='%s'\n",s);
+		printf("init_col=%d\n",init_col);
+
+		if (strlen(ptr)<=right_margin && strchr(ptr,'\n')) {
+			char *p2;
+			p2=strchr(ptr,'\n');
+			*p2=0;
+			A4GL_push_char(ptr);
+		        A4GL_rep_print(rep,1,1,0,entry);
+                        A4GL_rep_print(rep,0,0,0,-1);
+			ptr=p2+1;
+		}
+
+		if (strlen(ptr)>right_margin )  {
+			int found=0;
+			//printf("starting : ptr=%s\n",ptr);
+			// First - look forward - see if there are any '\n' in the next 'rightmargin' characters...
+			for (a=0;a<=right_margin;a++) {
+				int c;
+				//printf("ptr[a]='%c' (%d)",ptr[a],ptr[a]);
+				if (ptr[a]=='\n') { // This will do nicely...
+					ptr[a]=0;
+					printf("PUSH:%s SPLIT AT newline\n",ptr);
+					A4GL_push_char(ptr);
+					A4GL_rep_print(rep,1,1,0,entry);
+   					A4GL_rep_print(rep,0,0,0,-1);
+
+					found=1;
+					ptr+=a+1;
+					if (*ptr=='\r') ptr++;
+					break;
+				}
+			}
+			
+
+			if (!found) {
+			// We need to split it into smaller groups...
+				//printf("Not found : ptr=%s\n",ptr);
+				for (a=right_margin+1;a>=0;a--) {
+					int c;
+					printf("ptr[a]='%c' (%d)\n",ptr[a],ptr[a]);
+					if (ptr[a]==' '||ptr[a]=='\t') { // This will do nicely...
+					c=ptr[a+1];
+					ptr[a+1]=0;
+					A4GL_push_char(ptr);
+					ptr[a+1]=c;
+					A4GL_rep_print(rep,1,1,0,entry);
+					A4GL_rep_print(rep,0,0,0,-1);
+					found=1;
+					ptr+=a+1;
+					break;
+					}
+				}
+			}
+
+			if (!found) {
+				char *buff;
+				buff=malloc(right_margin+1);
+				memset(buff,0,right_margin+1);
+				strncmp(buff,ptr,right_margin);
+				buff[right_margin]=0;
+				printf("PUSH:%s (cantsplit) \n",buff);
+				A4GL_push_char(buff);
+				A4GL_rep_print(rep,1,1,0,entry);
+				A4GL_rep_print(rep,0,0,0,-1);
+				free(buff);
+				ptr+=right_margin;
+			}
+		} else {
+				// it'll fit...
+				printf("PUSH:%s (final)\n",ptr);
+				A4GL_push_char(ptr);
+				A4GL_rep_print(rep,1,dontwant_nl,0,entry);
+				return;
+		}
+	}
+	
+    }
 
   if (rep->line_no == 0 && rep->page_no == 0 && no_param < 0) {
   	A4GL_internal_open_report_file(rep,no_param) ;
@@ -636,7 +732,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_
     }
 
 
-  if (no_param || want_nl == 0 || rep->finishing || entry == -5)
+  if (no_param || dontwant_nl == 0 || rep->finishing || entry == -5)
     {
       if (rep->print_section == SECTION_NORMAL)
 	{
@@ -711,22 +807,39 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int want_nl, int right_
 	  rep->col_no = 1;
 	  A4GL_fputmanyc (rep, ' ', rep->left_margin);
 	}
+
+
       for (b = 0; b < no_param; b++)
 	{
 	  str = A4GL_report_char_pop ();
 	  A4GL_debug ("Popped '%s'...", str);
-	  report_print (rep, entry, "%s", str);
+	  if (strchr(str,'\n')) {
+		char *left;
+		char *right;
+		left=str;
+		right=strchr(str,'\n');
+		*right=0; right++;
+		A4GL_push_char(left);
+		A4GL_rep_print(rep,1,1,0,entry);
+   		A4GL_rep_print(rep,0,0,0,-1);
+		A4GL_push_char(right);
+		A4GL_rep_print(rep,1,1,0,entry);
+		continue;
+	  } else {
+	  	report_print (rep, entry, "%s", str);
+	  }
 	  rep->col_no += strlen (str);
 	  A4GL_debug ("Popped %s\n", str);
 	  acl_free (str);
 	}
     }
-  A4GL_debug ("Newline : %d", want_nl);
+
+  A4GL_debug ("Newline : %d", dontwant_nl);
 
 
 
 
-  if (want_nl == 0)
+  if (dontwant_nl == 0)
     {
       rep->col_no = 0;
       report_print (rep, -1, "\n");

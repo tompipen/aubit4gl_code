@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.96 2006-10-30 15:42:37 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.97 2006-11-11 10:49:53 mikeaubury Exp $
 #
 */
 
@@ -622,11 +622,15 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
   struct cvsql_data *conversion_rules = 0;
   int conversion_rules_cnt = 0;
 
-
   strcpy (buff, acl_getenv ("SQLCNVPATH"));
 
-  if (buff[0] == '\0')
+  if (buff[0] == '\0') {
+#ifdef SIMPLIFIED
+    SPRINTF1 (buff, "%s", DATADIR);
+#else
     SPRINTF1 (buff, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+#endif
+  }
   len = strlen (buff);
   SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
   strcat (buff, buff_sm);

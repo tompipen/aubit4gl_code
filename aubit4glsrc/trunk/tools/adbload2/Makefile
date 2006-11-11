@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.4 2006-10-30 10:56:42 afalout Exp $
+# $Id: Makefile,v 1.5 2006-11-11 10:49:56 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -67,7 +67,7 @@ process.o: process.ec
 	${FGLPC} -t EC -g -o $@ $^ 
 
 adbload2.o: adbload2.4gl
-	${FGLPC} -t EC -g -o $@ $^
+	${FGLPC}  -t EC -g -o $@ $^
 	
 lex.yy.c: adbload2_parse.l
 	${LEX} $^

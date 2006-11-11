@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.339 2006-11-03 19:36:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.340 2006-11-11 10:49:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.339 2006-11-03 19:36:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.340 2006-11-11 10:49:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3533,7 +3533,7 @@ LEXLIB_print_befaft_field_1 (char *fieldexpr)
 int n;
   n=A4GL_get_nevents();
   /*printc ("if (%s) {", fieldexpr);*/
-  printc ("if (_exec_block==%d) { /* %s */\n", n,fieldexpr);
+  printc ("if (_exec_block==%d) { /* %s.0 */\n", n,fieldexpr);
 }
 
 /**
@@ -3557,7 +3557,7 @@ LEXLIB_print_onkey_1 (char *key_list_str)
 {
   int n;
   n=A4GL_get_nevents();
-  printc ("if (_exec_block==%d) { /* %s */\n", n,key_list_str);
+  printc ("if (_exec_block==%d) { /* %s.1 */\n", n,key_list_str);
 }
 
 /**
@@ -3584,7 +3584,7 @@ LEXLIB_print_onaction_1 (char *key_list_str)
 {
 	  int n;
 	    n=A4GL_get_nevents();
-	      printc ("if (_exec_block==%d) { /* %s */\n", n,key_list_str);
+	      printc ("if (_exec_block==%d) { /* %s.2 */\n", n,key_list_str);
 }
 
 void
@@ -3599,7 +3599,7 @@ LEXLIB_print_ontimer_1 (char *key_list_str)
 {
 	  int n;
 	    n=A4GL_get_nevents();
-	      printc ("if (_exec_block==%d) { /* %s */\n", n,key_list_str);
+	      printc ("if (_exec_block==%d) { /* %s.3 */\n", n,key_list_str);
 }
 
 void
@@ -8215,6 +8215,9 @@ void LEXLIB_print_end_globals(void) {
 	// Does nothing - required by the API
 }
 
+void LEXLIB_print_cancel(char *s) {
+	A4GL_assertion(1,"CANCEL not implemented yet");
+}
 
 int LEXLIB_get_whenever_style(int code, char*whento) {
 	// We want the callbacks - so return 1

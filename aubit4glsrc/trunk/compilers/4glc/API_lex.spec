@@ -77,7 +77,6 @@ print_arr_expr_fcall void* ptr -> char*
 
 
 
-print_bind_pop1 char i -> void
 
 print_bind_pop2_g t_expr_str_list* exprlist t_binding_comp_list* bind  -> void
 
@@ -501,7 +500,7 @@ print_agg_defines char t int a -> int
 * print_define char* varstring,int isstatic_extern -> void
 * print_returning -> void
 *A4GL_get_default_scaling -> char*
-A4GL_add_crud char* t char* v -> void
+*A4GL_add_crud char* t char* v -> void
 
 *   print_call_shared_bound char* libfile char* funcname -> void
 *   print_end_call_shared -> void
@@ -513,6 +512,7 @@ A4GL_add_crud char* t char* v -> void
 * get_call_shared_bound_expr  char* lib char* name -> void*
 
 * print_bind_expr void* ptr,char i -> int
+* print_bind_pop1 char i -> void
 /*  ============================== EOF ================================= */
 
 
