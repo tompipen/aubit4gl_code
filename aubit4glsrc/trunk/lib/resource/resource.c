@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.125 2006-10-07 14:43:39 mikeaubury Exp $
+# $Id: resource.c,v 1.126 2006-11-11 09:07:03 afalout Exp $
 #
 */
 
@@ -1073,11 +1073,35 @@ FILE *resourcefile = 0;
 	if (build_resource)
 		free (build_resource);
 
+	
+  /* 
+  	----------------- from GLOBAL fixed location (/etc/opt/aubit4gl/aubitrc)
+	On Windows, this will work only if there is CygWin installed
+  */
+
+	sprintf(buff, "/etc/opt/aubit4gl/%s", "aubitrc");
+	resourcefile = fopen (buff, "r");
+	if (resourcefile != 0) {
+		#ifdef DEBUG
+			A4GL_debug ("0:From %s", buff);
+		#endif
+		add_resources_in (resourcefile);
+		fclose (resourcefile);
+    } else {
+		#ifdef DEBUG
+			A4GL_debug ("0:cannot read %s", buff);
+		#endif
+    }
+
+	
   /* 
   	----------------- from under AUBITETC (tipically /etc/opt/aubit4gl/aubitrc
 	unless Autoconf determined that user does not have sufficient privileges
 	to install it there) (SYSTEM GLOBAL)
-	On Windows, this will work only if there is CygWin installed
+	On Windows, this will work only with CygWin build - NOT with native compiled Aubit
+	(Native Windows executables know nothing about CygWin path mangling, and what
+	CYgWin1.dll presents to CygWin compiled programs as /etc is really a
+	C:\cygwin\etc
   */
 
 	sprintf(buff, "%s/%s", acl_getenv ("AUBITETC"), "aubitrc");
@@ -1140,13 +1164,13 @@ FILE *resourcefile = 0;
   resourcefile = fopen (buff, "r");
   	if (resourcefile != 0) {
 		#ifdef DEBUG
-			A4GL_debug ("From %s", buff);
+			A4GL_debug ("3:From %s", buff);
 		#endif
 		add_resources_in (resourcefile);
 		fclose (resourcefile);
     } else {
 		#ifdef DEBUG
-			A4GL_debug ("cannot read %s", buff);
+			A4GL_debug ("3:cannot read %s", buff);
 		#endif
     }
 
@@ -1156,13 +1180,13 @@ FILE *resourcefile = 0;
   resourcefile = fopen (buff, "r");
   	if (resourcefile != 0) {
 		#ifdef DEBUG
-     	 A4GL_debug ("From %s", buff);
+     	 A4GL_debug ("4:From %s", buff);
 		#endif
       add_resources_in (resourcefile);
       fclose (resourcefile);
     } else {
 		#ifdef DEBUG
-			A4GL_debug ("cannot read %s", buff);
+			A4GL_debug ("4:cannot read %s", buff);
 		#endif
     }
 
@@ -1173,13 +1197,13 @@ FILE *resourcefile = 0;
       resourcefile = fopen (buff, "r");
       if (resourcefile != 0) {
 		  #ifdef DEBUG
-			A4GL_debug ("From A4GL_INIFILE:%s", buff);
+			A4GL_debug ("5:From A4GL_INIFILE:%s", buff);
 		  #endif
 		  add_resources_in (resourcefile);
 		  fclose (resourcefile);
 	  } else {
 		  #ifdef DEBUG
-			A4GL_debug ("Cannot read A4GL_INIFILE:%s", buff);
+			A4GL_debug ("5:Cannot read A4GL_INIFILE:%s", buff);
 		  #endif
 	  }
   } else {

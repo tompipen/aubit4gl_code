@@ -23,49 +23,211 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.14 2006-10-21 13:02:45 afalout Exp $
+# $Id: Makefile-install,v 1.15 2006-11-11 09:07:01 afalout Exp $
 #
 
-#This file gets installed to root of binary installation, under name "Makefile"
-#in all scenarios of binary installation (tgz package, RPM package, executing
-#"make install" from source code tree...).
-#It's purpose is to create aubitrc for binary installation, install
-#it to appropriate place, and create links to binary files and libraries.
+#gcc -E conftest.c
+#bold?
 
+
+
+#This file gets installed to root of binary installation, under name "Makefile"
+#in all scenarios of binary installation (tgz tarball, .package installer, RPM package, 
+#or by executing "make install" from source code tree...) on Linux/UNIX.
+#It's purpose is to 
+#	* create aubitrc for binary installation by running ./configure
+#     as etc/aubitrc-bin
+#	* install aubitrc it to appropriate place (copy etc/aubitrc-bin)
+#   * and create links to binary files and libraries.
+#	* set environment variables needed by Aubit tools
+# See help target below (or run 'make help') for details
+
+## ------------------------------------------------------------------
+##                           Settings
+## ------------------------------------------------------------------
+
+#Let all include files/scripts know we are configuring binary install, not source code
 AUBIT_BIN_INSTALL=1
 export AUBIT_BIN_INSTALL
+
+##########################
+# Define default actions (user can override by passing different values for this variables)
+#
+#enable (default) or disable running ./configure
+DO_CONFIG=1
+#enable (default) or disable installing aubitrc
+DO_RC=1
+#enable (default) or disable creating bin and lib links"
+DO_LINK=1
+#enable (default) or disable changign environment variables
+DO_ENV=1
+#enable (default) or disable changign ldconfig configuration
+DO_LD=1	
+#enable (default) or disable runung a basic compiler test
+DO_TEST=1
+
+ifeq "${AP_PACKAGE}" "1"
+	#Invoked form AutoPackage installer
+	error "call configure directy - not make!"
+endif
+
+
+#-----------------------------Step 1
+#Define actions in step 1 - as all other steps need us to re-read 
+#AutoConf created files, this means to just run ./configure
+ifneq "${DO_CONFIG}" "0"
+	#Note - this and included makefiles DEPEND on ./configure to set various
+	#varibles in Makefile-common using Makefile-common.in.
+	#If you skip running ./configure now, and it was not run previously,
+	#Makefile-common WILL NOT EXIST and include statement below WILL FAIL
+	STEP_1	+=etc/aubitrc-bin
+endif
+
+#-----------------------------Step 2
+#Define actions for step 2, after we 1) created needed AutoConf files and 2)
+#included created 'real' Makefile-common in this makefile
+ifneq "${DO_ENV}" "0"
+	#FIXME - which target has steps to set ENV vars?
+	STEP_2xx	+=xxx
+endif
+ifneq "${DO_LD}" "0"
+	STEP_2	+=install.libs.conf
+endif	
+ifneq "${DO_LINK}" "0"
+	STEP_2	+=install.bin.links install.libs.links
+endif
+ifneq "${DO_RC}" "0"
+	ifneq "${DO_CONFIG}" "0"
+		STEP_2	+=install.aubitrc
+	endif
+endif
+ifneq "${DO_TEST}" "0"
+	STEP_2	+=test
+endif
+
+###############################
+#Most targets in this make file are "phony" targets - they do not create
+#anything, they just invoke other make files; we dont want make to think
+#a resulting file should be expected
+.PHONY: install clean default log help
+
 
 ## ------------------------------------------------------------------
 ##                           Includes
 ## ------------------------------------------------------------------
 
 #All stuff common to more then one Aubit compiler make file is there:
+#Note that immediately after unpacking this file will be empty - untill
+#we run ./configure when it's expanded form Makefil-common.in (this is 
+#done to allow us to use include here without make complaining about 
+#missing file
 include incl/Makefile-common
 
-#All targets common to binary and source code distros as here:
-include incl/Makefile-install.mki
 
 ## ------------------------------------------------------------------
 ##                           Targets
 ## ------------------------------------------------------------------
 
-install: etc/aubitrc-bin install.libs.conf
+###########################################
+# Default target, gets invoked even if make is called without arguments
+# We have to restart make (and not call targets directly) by invoking ${MAKE}
+# because we are reading variables  in Makefile-common that will be set by "./configure"
+install: 
+ifneq "${STEP_1}" ""
+	@echo "Running Step 1 - targets: ${STEP_1}"
+	${MAKE} install.step1
+	@echo "Step 1 (${STEP_1}) completed"	
+endif
+ifneq "${STEP_2}" ""
+	@echo "Running Step 2 - targets: ${STEP_2}"
 	${MAKE} install.step2
-	@echo Aubit compiler binary disrtibution installed.
+	@echo "Step 2 (${STEP_2})completed"
+endif
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Aubit compiler binary distribution installed/configured.           |"
+	
+	It is recomended that you follow this steps to activate the changes made to your environment
+	
+	1 clost your terminal session
+	opne another one; this will re-read your gloal and user .profile 
+	AUBITDIR
+	PATH
+	LD_LIBRARY_PATH
+	
+	You can also ./profile
+	
+	or use 'aubit' wrapper scrip
+	
+	Verify that :
+		PATH contains
+		there is an AUBITDIR
+		L_LIBRARY_P{ATH or ldconfig -x
+	
+	
+	@echo "| Then, you can test it by executing:                                |"
+	@echo "| 'cd tools/test; make'                                              |"
+	@echo "| ...and following the instructions shown.                           |"	
+	@echo "+--------------------------------------------------------------------+"	
 
-#we have to restart make because we are reading some things in
-#Makefile-common that will be changed by "configure"
-install.step2: install.bin.links install.aubitrc install.libs.links test
+###########################################
+# All targets common to binary and source code distros as here:
+# THIS INCLUDE MUST BE HERE SINCE IT STARTS WITH A TARGET!!!!
+include incl/Makefile-install.mki
 
+###########################################
+# Step 1
+install.step1: ${STEP_1}
+	@echo "Step 1 completed"
+
+###########################################
+# Step 2
+install.step2: check.step2 ${STEP_2}
+	@echo "Step 2 completed"
+
+###########################################
+# Check that we created Makefile-common in step 1 and included it in step 2
+# before continuing with tasks of step 2
+check.step2:
+ifneq "${MAKEFILE_COMMON_INCLUDED}" "1"
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| ERROR: failed to include incl/Makefile-common                      |"
+	@echo "| Did you run ./configure after 'make install' in source tree?       |"
+	@echo "+--------------------------------------------------------------------+"
+	@if test "`grep MAKEFILE_COMMON_INCLUDED incl/Makefile-common`" = ""; then \
+		echo "Current incl/Makefile-common is a empty dummy one:"; \
+		echo "+--------------------------------------------------------------------+"; \
+		head incl/Makefile-common; \
+		echo "+--------------------------------------------------------------------+"; \
+	fi
+	exit 1
+endif
+
+
+###########################################
+# Create aubit config file by running ./configure
+config: etc/aubitrc-bin
 etc/aubitrc-bin:
 	./configure ${CPARAM}
 
-#just an alias, remove it?
-#config: etc/aubitrc-bin
 
-tar.bin: clean
+###########################################
+# Target to check dependency
+incl/Makefile-common:
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| $@ is missing - please run ./configure or do not disable running it|"
+	@echo "+--------------------------------------------------------------------+"	
+	exit 1
+
+## ------------------------------------------------------------------
+##                           Packaging
+## ------------------------------------------------------------------
+
+###########################################
+# Create a tarball from files in this directory and below
+tar.bin: clean.all
 	${RM} ${BINTARBASENAME}
 ifndef COMSPEC
+#UNIX
 	tar -cvzf ${BINTARBASENAME} *
 	@echo "Aubit binary installation tarball created"
 else
@@ -74,16 +236,48 @@ else
 	@echo "Aubit binary installation zipball created"
 endif
 
+## ------------------------------------------------------------------
+##                           Clean
+## ------------------------------------------------------------------
+
+###########################################
+#Clean files in bin tree not needed for functioning of compiler
 clean:
-	${RM} debug.out config.status config.log etc/aubitrc.original etc/config/bootstrap etc/config/ltmain.sh
+	${RM} debug.out etc/aubitrc.original etc/config/bootstrap \
+		etc/config/ltmain.sh  
+#Dont remove incl/Makefile-common and etc/aubitrc-bin - we would need to re-run configure if we do
 	make -C tools/test clean
 	make -C tools/test/gui clean
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| Aubit binary installation now clean                                |"
+	@echo "| Aubit binary installation tree now clean                           |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+###########################################
+# Clean AutoConf created files
+clean.config:
+	rm -f etc/aubitrc-bin config.status config.log config.nice
+#DO NOT delete incl/Makefile-common - if you do this makefile will fail as
+#it needs it as include
+	echo " " > incl/Makefile-common
+	@echo "" 
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| AutoConf created files in Aubit binary installation tree removed   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+###########################################
+# Clean everything not part of compiler distribution
+clean.all: clean.config clean
+	@echo "$@ : Done"
+
+## ------------------------------------------------------------------
+##                           Deinstall
+## ------------------------------------------------------------------
+	
+###########################################
+# Deinstall files/links we placed outside of this tree
 deinstall: deinstall.libs.links deinstall.bin.links
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
@@ -95,24 +289,97 @@ deinstall: deinstall.libs.links deinstall.bin.links
 	@echo "| preserve all files created after installation.                     |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
+	
+## ------------------------------------------------------------------
+##                           Help
+## ------------------------------------------------------------------
+	
+###########################################
+# Show help for using this makefile
 help:
 	@echo ""
 	@echo "This is Aubit 4gl compiler binary installation make file"
 	@echo "execute 'make' to install Aubit compiler on your system."
+	@echo ""	
+	@echo " Synopsis: make [<target>] [<VAR>=<VALUE> ...]'"
 	@echo ""
-	@echo "Options:"
+	@echo "Help Options:"
+	@echo "   help.install - Help for 'install' target"
+	@echo "   help.var     - Help for optional variables"
+	@echo "   help.misc    - Heklp for other options"
+	@echo "   help.all     - All help topics at onece (long)"
 	@echo ""
-	@echo "install   install binary distribuiton on your system (same as just 'make')"
+	@echo "    Thank you for using Aubit 4gl compiler."
+	@echo ""
+
+help.all: help help.install help.misc help.var
+
+help.install:
+	@echo ""
+	@echo "'install' target:"
+	@echo ""	
+	@echo "   Install/configure binary distribution on your system (same as just 'make')"
+	@echo "   Performs the following actions:"
+	@echo "   * creates Aubit configuration file (aubitrc) for binary installation by"
+	@echo "     running ./configure (as etc/aubitrc-bin)"
+	@echo "     This attempts to detects presense of various dependencies"
+	@echo "     and third-party libraries/utilities, and:" 
+	@echo "      a) create list of all Aubit plug-ins/features for which support"
+	@echo "         is detected and possible"
+	@echo "      b) sets sensible defaults for various Aubit plug-in classes" 
+	@echo "         (database,UI,etc.)"
+	@echo "   * installs aubitrc it to appropriate place (copy etc/aubitrc-bin) to:"
+	@echo "	     - (if user has sufficietne permission) /etc/opt/aubit4gl/aubitrc"
+	@echo "      - otherwise to ~/.aubit4gl/aubitrc"	
+	@echo "   * creates links to binary files and libraries:"
+	@echo "      - Executables 'aubit', 'amake' and  'aubit-config' to :"
+	@echo "         - (if user has sufficietne permission) /usr/bin"
+	@echo "         - otherwise to ~/bin"
+	@echo "      - Library libaubit4gl.so to:"
+	@echo "         - (if user has sufficietne permission) /usr/lib "
+	@echo "         - othervise do not create link (depens on LD_LIBRARY_PATH"
+	@echo "           and/or ldconfig)"
+	@echo "   * Adds AUBITDIR, appends AUBITDIR/bin to PATH and AUBITDIR/lib"
+	@echo "     to LD_LIBRARY_PATH:"
+	@echo "      - (if user has sufficietne permission) to /etc/profile"
+	@echo "      - othewise to ~/.profile)"
+	@echo "   * Updates ldconfig (if present and if user has sufficient priovileges)"
+	@echo "      - adds AUBITDIR/lib to/etc/ldconfig"
+	@echo "      - refreshes it by running 'ldconfig'"
+	@echo "   You can perform this tasks manually if you prefer or if this fails"
+	@echo ""	
+	@echo "NOTE: on Linux/UNIX, when environment variables (PATH,LD_LIBRARY_PATH,...)"
+	@echo "   are changed, change is NOT immediately proagated to active shells/sessions"
+	@echo "   User needs to re-start the session in order for the changes to be propagated"
+	@echo "   Simplest way to do this is to close your current terminal session, and"
+	@echo "   start the new one (ldconfig changes are immedaiately propagated)"
+	@echo ""
+	
+help.misc:
+	@echo ""
+	@echo "Other targets:"
+	@echo ""	
 	@echo "clean     clean Aubit binary distribution installation tree"
-	@echo "tar       create tar archive of Aubit binary distribution installation tree"
-	@echo "zip       create zip archive of Aubit binary distribution installation tree"
+	@echo "tar.bin   create tar (on UNIX) or zip (on Windows) archive of Aubit binary"
+	@echo "          distribution installation tree"
 	@echo "config    scan the system for installed options, create aubitrc configuration"
 	@echo "          file (same as typing 'configure --with-bin')"
 	@echo "          You can specify flags to 'configure' using, for example: "
 	@echo "          make CPARAM=--with-iodbc[=<path>]"
 	@echo "deinstall remove all links/files outside Aubit installation tree"
+	@echo "          created by 'install' target"
 	@echo ""
-	@echo "    Thank you for using Aubit 4gl compiler."
+	
+help.var:
+	@echo ""
+	@echo "Optional 'make' variables: ('make [<target>] [<VAR>=<VALUE>]'"
+	@echo ""	
+	@echo "    DO_CONFIG=[1|0] enable (default) or disable running ./configure"
+	@echo "    DO_RC=[1|0]     enable (default) or disable installing aubitrc"
+	@echo "    DO_LINK=[1|0]   enable (default) or disable creating bin and lib links"
+	@echo "    DO_ENV=[1|0]    enable (default) or disable changign environment variables"
+	@echo "    DO_LD=[1|0]     enable (default) or disable changign ldconfig configuration"
+	@echo "    DO_TEST=[1|0]   enable (default) or disable runung a basic compiler test"
 	@echo ""
 
 #--------------------------- EOF ------------------------------

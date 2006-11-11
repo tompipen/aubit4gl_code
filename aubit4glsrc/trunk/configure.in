@@ -1,3 +1,4 @@
+dnl # +----------------------------------------------------------------------+
 dnl # | Aubit 4gl Language Compiler Version $.0                              |
 dnl # +----------------------------------------------------------------------+
 dnl # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -22,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.332 2006-11-04 11:09:55 afalout Exp $
+dnl # $Id: configure.in,v 1.333 2006-11-11 09:06:52 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -47,10 +48,10 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.332 2006-11-04 11:09:55 afalout Exp $)
+AC_REVISION($Id: configure.in,v 1.333 2006-11-11 09:06:52 afalout Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
-#FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!
+#>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
 
 	TMPaaa=`grep -c '=' tools/project/version`
@@ -144,13 +145,18 @@ chmod +x config.nice
 AM_INIT_AUTOMAKE(Aubit4gl, $AUBIT_VERSION.$AUBIT_BUILD)
 
 aubitdir=`pwd`
-#define emphasis characters for terminal display
-a4gl_shtool=$aubitdir/tools/project/shtool
-if test -f $a4gl_shtool; then
+#define emphasis (bold) characters for terminal display
+if test -f "$aubitdir/bin/shtool"; then
+	a4gl_shtool="$aubitdir/bin/shtool"
+else
+	if test -f "$aubitdir/tools/project/shtool"; then
+		a4gl_shtool="$aubitdir/tools/project/shtool"
+	fi
+fi
+if test "$a4gl_shtool" != ""; then
 	T_MD=`$a4gl_shtool echo -n -e %B`
 	T_ME=`$a4gl_shtool echo -n -e %b`
 fi
-
 
 #An example of using --enable-xxx :
 #AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging],
@@ -249,8 +255,17 @@ X
 			export AUBITCONF_FLAG=running
 
             #Got to strip single quote arroung it added apprently by autoconf itself...
-			#TMP_PARAMS=`echo $CONFIGURE_COMMAND |  tr -d "[']"`
-			TMP_PARAMS="$CONFIGURE_COMMAND"
+			if test "$STRIP_PARAM_Q" != "0"; then
+				#Defaut behaviour - when unspecified, 1 or other number
+				TMP_PARAMS=`echo $CONFIGURE_COMMAND |  tr -d "[']"`
+				export DID_STRIP_PARAM_Q=1
+			else
+				#Only when explicitly 0
+				#We dont want this when invoking configure with parameters that 
+				#need spaces in them , like CFLAGS='-O2 -g'
+				TMP_PARAMS="$CONFIGURE_COMMAND"
+				export DID_STRIP_PARAM_Q=0
+			fi
 			
 			aubitconf $TMP_PARAMS
 			err_code=$?
@@ -309,6 +324,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
     #from automake if path is specified as ([path/file.ext]). Autoconf
     #seems to work fine with this.
 	AM_CONFIG_HEADER(incl/a4gl_incl_config.h)
+	aubitdir_src="$aubitdir"
+else	
+	aubitdir_src=""
 fi
 
 #AC_TRY_RUN (program, [action-if-true [, action-if-false [, action-if-cross-compiling]]])
@@ -353,8 +371,6 @@ AC_LIBTOOL_WIN32_DLL
 
 AC_LIBTOOL_DLOPEN
 
-#yes
-
 case $host in
 	#hppa2.0w-hp-hpux11.00
 	*-hp-hpux*)
@@ -366,20 +382,45 @@ case $host in
 esac
 
 
-if test "$AUBIT_SOURCE" = "1" ; then
-	#this would try to make etc/config/ltmain.sh
-	AC_PROG_LIBTOOL
-	#no
-	#		echo "****************************************"
-	#		echo "is this before command line lenght?   2"
-	#		echo "****************************************"
+#if test "$AUBIT_SOURCE" = "1" ; then
 
+#Skipping this block causes :
+#configure: WARNING: pdflib.h: accepted by the compiler, rejected by the preprocessor!
+#
+#configure:18595: checking pdflib.h usability
+#configure:18607: gcc -c -g -O2     conftest.c >&5
+#configure:18613: $? = 0
+#configure:18617: test -z
+#                         || test ! -s conftest.err
+#configure:18620: $? = 0
+#configure:18623: test -s conftest.o
+#configure:18626: $? = 0
+#configure:18636: result: yes
+#configure:18640: checking pdflib.h presence
+#configure:18650:    conftest.c
+#./configure: line 18651: conftest.c: command not found
+
+#Should be like this:
+
+#configure:16507: checking sxml.h usability
+#configure:16519: gcc -c -g -O2 -I/usr/local/include  conftest.c >&5
+#configure:16525: $? = 0
+#configure:16529: test -z
+#                         || test ! -s conftest.err
+#configure:16532: $? = 0
+#configure:16535: test -s conftest.o
+#configure:16538: $? = 0
+#configure:16548: result: yes
+#configure:16552: checking sxml.h presence
+#configure:16562: gcc -E -I/usr/local/include  conftest.c
+#configure:16568: $? = 0
+#configure:16588: result: yes
+
+	#this would try to make etc/config/ltmain.sh (do we care?)
+	AC_PROG_LIBTOOL
 	AM_PROG_LIBTOOL
 	AC_SUBST(LIBTOOL_DEPS)
-fi
-
-
-#not
+#fi
 
 ## ==================================================================
 ##                Define what will get substituted
@@ -387,6 +428,7 @@ fi
 
 #Identification
 AC_SUBST(aubitdir)
+AC_SUBST(aubitdir_src)
 AC_SUBST(COMPILE_DATE)
 AC_SUBST(AUBIT_VERSION)
 AC_SUBST(AUBIT_BUILD)
@@ -394,8 +436,6 @@ AC_SUBST(AUBIT_WEBSITE)
 AC_SUBST(AUBIT_PUBLISHER)
 AC_SUBST(FULLNAME)
 AC_SUBST(SHORTNAME)
-
-
 
 #aubitrc:
 AC_SUBST(AUBITETC)
@@ -606,6 +646,7 @@ AC_SUBST(LDCONFIG)
 AC_SUBST(target)
 AC_SUBST(target_cpu)
 AC_SUBST(ADD_LD_LIBRARY_PATH)
+AC_SUBST(WARN_LD_LIBRARY_REASON)
 AC_SUBST(PIC)
 AC_SUBST(LDFLAGS)
 AC_SUBST(LDFLAGS_SHARED)
@@ -1694,7 +1735,7 @@ ISFORMFILE_SIZE=10
 
 #need to do this again, since the earlyer one was before initialisation,
 #and will not get in substitution otherwise:
-#if test -f "tools/project/version" ; then
+
 if test "$AUBIT_SOURCE" = "1" ; then
 	TMPrrr=`grep -c '=' tools/project/version`
 	if test "$TMPrrr" -gt 0 ; then
@@ -1730,8 +1771,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	else
 		COLLECT_THIRD_PARTY=1
 	fi
-else
-	echo "Configuring binary installation"
 fi
 
 #When set to 1, all options that test for it will be disabled 
@@ -1848,9 +1887,10 @@ A4GL_RPCTYPE=NORPC
 A4GL_RPCTYPE_DETECTED=NORPC
 A4GL_UI=CONSOLE
 A4GL_UI_DETECTED=CONSOLE
-A4GL_LEXTYPE=C
-A4GL_LEXTYPE_DETECTED=C
-A4GL_LEXDIALECT=INFORMIX
+#We can have P-code without C compiler when installing binary packages
+A4GL_LEXTYPE=
+A4GL_LEXTYPE_DETECTED=
+A4GL_LEXDIALECT=""
 A4GL_LEXDIALECT_DETECTED=""
 A4GL_FORMTYPE=NOFORM
 A4GL_FORMTYPE_DETECTED=NOFORM
@@ -2007,7 +2047,8 @@ if test "$withval" != "no"; then
 	if test "$GCC_MINGW" != "yes"; then 
 		if test "$with_rpc" = ""; then        	FORCE_RPC=1         ;fi
 	fi
-
+	if test "$with_pcode" = ""; then           	with_pcode=yes     	;fi
+	
 	#--with-pg-all is a shorthand to point all PostgreSQL components to same location
 	if test "$with_pg_all" != ""; then
 		with_ecpg="$with_pg_all"
@@ -2156,8 +2197,10 @@ fi
     fi
 
 	if test "$prefix" = "$aubitdir"; then
-		echo "ERROR: cannot install Aubit to the same location where you are running 'configure' from"
-		exit 3
+		if test "$AUBIT_SOURCE" = "1" ; then
+			echo "ERROR: cannot install Aubit to the same location where you are running 'configure' from"
+			exit 3
+		fi
 	fi
 	
 	
@@ -2243,6 +2286,7 @@ fi
 #buit in all cases:
 NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file"
 
+if test "$AUBIT_SOURCE" = "1" ; then
 	#A4GL_memcache needs (plus many others) which do not exists in MinGW
 	#See http://jehiah.com/projects/memcached-win32/ is interested in Windows port
 	AC_CHECK_HEADERS([ err.h sysexits.h sys/socket.h sys/uio.h netdb.h netinet/in.h netinet/tcp.h ])
@@ -2260,7 +2304,7 @@ NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file"
 		echo "A4GL_memcache disabled - missing headers"
 		PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS A4GL_memcache"
 	fi
-
+fi
 
 if test "$enable_minimal" != "yes"; then
 
@@ -2658,33 +2702,35 @@ else
     AC_MSG_RESULT(yes. Set DEBUG=ALL to get debug.out trace.)
 fi
 
-AC_MSG_CHECKING(Executables stripping)
-if test "$enable_strip" != "no" ; then
-    AC_MSG_RESULT(enabled)
-	AC_PATH_PROG(STRIP, strip, no)
-    if test "$STRIP" != "no"; then
-		STRIP_EXECUTABLES=yes
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_MSG_CHECKING(Executables stripping)
+	if test "$enable_strip" != "no" ; then
+		AC_MSG_RESULT(enabled)
+		AC_PATH_PROG(STRIP, strip, no)
+		if test "$STRIP" != "no"; then
+			STRIP_EXECUTABLES=yes
+		fi
+	else
+		AC_MSG_RESULT(disabled)
 	fi
-else
-    AC_MSG_RESULT(disabled)
-fi
 
-AC_MSG_CHECKING(YY Debugging)
-if test "$enable_yy_debug" = "yes" ; then
-	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
-	YYDEBUG="-DYYDEBUG=1 -DYYERROR_VERBOSE -DYYPRINT=aubit_yyprint"
-    AC_MSG_RESULT(enabled, export YYDEBUG=1 to environment to turn it on.)
-else
-    AC_MSG_RESULT(disabled, specify --enable-yy-debug to turn it on.)
-fi
-
-AC_MSG_CHECKING(Yacc Debugging)
-if test "$enable_yacc_debug" = "yes" ; then
-	DEBUG_BISON="--debug"
-    AC_MSG_RESULT(enabled.)
-else
-    AC_MSG_RESULT(disabled, specify --enable-yacc-debug to turn it on.)
-fi
+	AC_MSG_CHECKING(YY Debugging)
+	if test "$enable_yy_debug" = "yes" ; then
+		#for debbuging in function yyparse() export YYDEBUG=1 to environment:
+		YYDEBUG="-DYYDEBUG=1 -DYYERROR_VERBOSE -DYYPRINT=aubit_yyprint"
+		AC_MSG_RESULT(enabled, export YYDEBUG=1 to environment to turn it on.)
+	else
+		AC_MSG_RESULT(disabled, specify --enable-yy-debug to turn it on.)
+	fi
+	
+	AC_MSG_CHECKING(Yacc Debugging)
+	if test "$enable_yacc_debug" = "yes" ; then
+		DEBUG_BISON="--debug"
+		AC_MSG_RESULT(enabled.)
+	else
+		AC_MSG_RESULT(disabled, specify --enable-yacc-debug to turn it on.)
+	fi
+fi 
 
 #in libLEX_xxx printc():
 # * If the INCLINES variable is set then the source target C
@@ -2805,7 +2851,6 @@ if test "$MAKE" = "no" ; then
 		AC_MSG_WARN(It will be much easier if you would install 'make')
     fi
 else
-	
 	AC_MSG_CHECKING(make version)
 	#this creates full set dump on Solaris
 	set `$MAKE --version | head -n 1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
@@ -2814,21 +2859,27 @@ else
 	        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
         else
 			if test "$1" = "2" ; then
-		        AC_MSG_ERROR(You will need GNU make version 3.50 or later (found $1.$2.$3).)
+				if test "$AUBIT_SOURCE" = "1"; then
+		        	AC_MSG_ERROR(You will need GNU make version 3.50 or later (found $1.$2.$3).)
+				fi
             else
 				#GNU Make 3.81 broken completely - expands variables wrong, evaluate dependencies in wrong order
 				#and on Windows (CygWin make) dont support C: drive notation any more (patch removed)
 				if test "$1" = "3" -a "$2" -gt "80"; then
-					AC_MSG_WARN(GNU Make 3.81 and possibly up broken completely. Google for more info)
-					AC_MSG_ERROR(Please revert back to 3.80 or earlier)
+					if test "$AUBIT_SOURCE" = "1"; then
+						AC_MSG_WARN(GNU Make 3.81 and possibly up broken completely. Google for more info)
+						AC_MSG_ERROR(Please revert back to 3.80 or earlier)
+					fi
 				else
 					AC_MSG_RESULT($1.$2.$3 (ok))
 				fi
             fi
         fi
 	else
-        #Could not read versionj number
-		AC_MSG_ERROR(Aubit needs GNU 'make' - please install it. Stop.)
+        #Could not read version number
+		if test "$AUBIT_SOURCE" = "1"; then 
+			AC_MSG_ERROR(Aubit needs GNU 'make' - please install it. Stop.)
+		fi
 	fi
 fi
 
@@ -2994,7 +3045,7 @@ if test "$COMSPEC" != ""; then
 		fi
 
 fi	
-#exit
+
 if test "$AUBIT_SOURCE" = "1" ; then
 
 ## ==================================================================
@@ -3091,38 +3142,47 @@ if test "$AUBIT_SOURCE" = "1" ; then
 ##  				   Checks for Lex/flex
 ## ==================================================================
 
-#This is probably a bug in autoconf, but if we don't test for Lex BEFORE
-#we test for C, all sort of wireds things will happen, so we have to test
-#it even in binary distro, where we don't need it:
-dnl #AC_PROG_LEX
-AM_PROG_LEX
-if test "$LEX" = ":" -o "$LEX" = "" ; then
-    dnl #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
-	LEX="no"
-	if test "$AUBIT_SOURCE" = "1" ; then
-        WARN_LEX=1
-    fi
-else
-	if test "$LEX" = "flex"; then 
-		#flex 2.5.31 has a new incompatible API.  I had to downgrade back to 2.5.4a.
-		AC_MSG_CHECKING(Flex version)
-		TMP_TMP=`$LEX --version | head -n 1 | sed -e 's/^flex version //' -e 's/\./ /g' -e 's/[a-z]//g'`
-		TMP_TMP=`echo "$TMP_TMP" | tr -d '[[A-Z]]' | tr -d '[[a-z]]'`
-		set `echo $TMP_TMP`
-		AC_MSG_RESULT($1.$2.$3)
-		
-		#if test "$1" = "2" -a "$2" -gt "4"; then 
-			#Version is >= 2.5
-			#if test "$3" -gt "4"; then 
-				#AC_MSG_WARN(Flex introduced incompatible API in post 2.5.4a versions)			
-				#AC_MSG_ERROR(Please downgrade to Flex 2.5.4a or earlier. Stop.)
-			#fi
-		#fi
+	#This is probably a bug in autoconf, but if we don't test for Lex BEFORE
+	#we test for C, all sort of wireds things will happen, so we have to test
+	#it even in binary distro, where we don't need it:
+	dnl #AC_PROG_LEX
+	AM_PROG_LEX
+	if test "$LEX" = ":" -o "$LEX" = "" ; then
+		dnl #AC_PROG_LEX macro sets $LEX to ":" when it can't find lex of flex executables!
+		LEX="no"
+		if test "$AUBIT_SOURCE" = "1" ; then
+			WARN_LEX=1
+		fi
+	else
+		if test "$LEX" = "flex"; then 
+			#flex 2.5.31 has a new incompatible API.  I had to downgrade back to 2.5.4a.
+			AC_MSG_CHECKING(Flex version)
+			TMP_TMP=`$LEX --version | head -n 1 | sed -e 's/^flex version //' -e 's/\./ /g' -e 's/[a-z]//g'`
+			TMP_TMP=`echo "$TMP_TMP" | tr -d '[[A-Z]]' | tr -d '[[a-z]]'`
+			set `echo $TMP_TMP`
+			AC_MSG_RESULT($1.$2.$3)
+			
+			if test "$1" = "2" -a "$2" -gt "4"; then 
+				#Version is >= 2.5
+				if test "$3" -gt "31"; then
+					#pcode wouldn't compile with a lex v. 2.5.31 (complained about yytext_ptr not existing)			
+					AC_MSG_WARN(Flex 2.5.31 and up incompatible with Aubit P-code)
+					AC_MSG_WARN(P-code compilation disabled)
+					with_pcode="no"
+					#AC_MSG_ERROR(Please downgrade to Flex 2.5.4a or earlier. Stop.)
+				fi
+				#if test "$3" -gt "4"; then 
+					#AC_MSG_WARN(Flex introduced incompatible API in post 2.5.4a versions)			
+					#AC_MSG_ERROR(Please downgrade to Flex 2.5.4a or earlier. Stop.)
+				#fi
+			fi
+			
+			
+		fi
 	fi
-fi
-if test "$enable_stop_lex" = "yes" ; then
-	exit
-fi
+	if test "$enable_stop_lex" = "yes" ; then
+		exit
+	fi
 
 ## ==================================================================
 ##                  Checks Efence
@@ -3227,7 +3287,7 @@ fi
 		HAVE_DOT=NO
 	fi
 
-fi
+fi ####<<<<<<<<<<<<<<<<< END OF if test "$AUBIT_SOURCE" = "1" ; then
 
 ## ==================================================================
 ##  				   Checks for GCC
@@ -3238,6 +3298,7 @@ AC_PROG_CC
 
 #apgcc is AutoPackage wrapper script for GCC
 if test "$CC" = "gcc" -o "$CC" = "apgcc"; then
+	HAVE_C_COMP=1
 	AC_MSG_CHECKING(GCC version)
 	#WARNING: THIS TEST OCURS ONE MORE TIME, EARLIER IN THIS FILE
 	TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/)//' -e 's/\.exe//' -e 's/\./ /g'`
@@ -3296,7 +3357,13 @@ if test "$CC" = "gcc" -o "$CC" = "apgcc"; then
 		AC_MSG_WARN(Cannot read GCC version.)
     fi
 else
-	AC_MSG_ERROR(Aubit needs GNU 'C' compiler - please install it. Stop.)
+	if test "$AUBIT_SOURCE" = "0"; then
+		#We can use just pcode with binary packages
+		HAVE_C_COMP=0
+	else
+		#To compile Aubit from source code, we ceed C
+		AC_MSG_ERROR(Aubit needs GNU 'C' compiler - please install it. Stop.)
+	fi
 fi
 
 ## ==================================================================
@@ -3306,12 +3373,14 @@ fi
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_AWK
-#FIXME: stop if no gawk (if configuring source code tree) - awk will fail
-if test "$AWK" = "awk"; then
-		AC_MSG_WARN(Aubit compiler need gawk, awk will probably fail.)
-fi
 
+if test "$AUBIT_SOURCE" = "1" ; then
+	AC_PROG_AWK
+	#FIXME: stop if no gawk (if configuring source code tree) - awk will fail
+	if test "$AWK" = "awk"; then
+			AC_MSG_WARN(Aubit compiler need gawk, awk will probably fail.)
+	fi
+fi
 
 #expect is needed by aubitbuild autoxxx scripts
 AC_PATH_PROG(EXPECT, expect, no)
@@ -3362,6 +3431,7 @@ fi
 ##                  Check for AutoPackage
 ## ==================================================================
 
+if test "$AUBIT_SOURCE" = "1" ; then
 	#BinReloc - utility for easy relocation of binary packages
 	AC_PATH_PROG(BINRELOC, binreloc, no)
 
@@ -3372,10 +3442,12 @@ fi
 	AC_PATH_PROG(MAKEINSTALLER, makeinstaller, no)
 
 	AC_PATH_PROG(OBJDUMP, objdump, no)
+fi
 
 ## ==================================================================
 ##                  Check for ORBit CORBA support
 ## ==================================================================
+
 
 PHP_CONFIGURE_PART(Checking for ORBit CORBA support:)
 
@@ -3699,6 +3771,8 @@ AC_ARG_WITH(mysql,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON MySQL"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 
@@ -3824,6 +3898,8 @@ AC_ARG_WITH(mpz,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON MPZ"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 
@@ -3922,6 +3998,8 @@ AC_ARG_WITH(xmlrpc,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON XML-RPC"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 
@@ -4160,6 +4238,8 @@ AC_ARG_WITH(sxml,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SXML"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 		#Store current values
@@ -4183,15 +4263,24 @@ AC_ARG_WITH(sxml,
 		AC_CHECK_LIB([sxml], [main])
 		AC_CHECK_HEADERS([ sxml.h ])		
 		AC_MSG_CHECKING(if we can use SXML)
-		#De we really need gmp.h here, or was thsi a C&P typo?
-		#if test "$ac_cv_header_gmp_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
-		if test "$ac_cv_header_sxml_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
-			HAVE_SXMLLIB=1
-			AC_MSG_RESULT(yes)
+		
+		if test "$AUBIT_SOURCE" = "1" ; then
+			#Do we really need gmp.h here, or was thsi a C&P typo?
+			#if test "$ac_cv_header_gmp_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
+			if test "$ac_cv_header_sxml_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
+				HAVE_SXMLLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
 		else
-			AC_MSG_RESULT(no)
-	    fi
-
+			if test "$ac_cv_lib_sxml_main" = "yes"; then
+				HAVE_SXMLLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
+		fi
 		
 		#Restore values
 		LIBS="$old_LIBS"
@@ -4232,6 +4321,8 @@ AC_ARG_WITH(mq,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON MQ"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 		#Store current values
@@ -4251,15 +4342,25 @@ AC_ARG_WITH(mq,
 		AC_CHECK_LIB([mqm], [main])
 		AC_CHECK_HEADERS([ cmqc.h mqcmh.h ])
 		AC_MSG_CHECKING(if we can use MQ)
-		if test "$ac_cv_header_cmqc_h" = "yes" \
-			-a "$ac_cv_header_mqcmh_h" = "yes" \
-			-a "$ac_cv_lib_mqm_main" = "yes"; then
-			HAVE_MQLIB=1
-			AC_MSG_RESULT(yes)
-		else
-			AC_MSG_RESULT(no)
-	    fi
 		
+		if test "$AUBIT_SOURCE" = "1" ; then
+			if test "$ac_cv_header_cmqc_h" = "yes" \
+				-a "$ac_cv_header_mqcmh_h" = "yes" \
+				-a "$ac_cv_lib_mqm_main" = "yes"; then
+				HAVE_MQLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
+		else
+			if test "$ac_cv_lib_mqm_main" = "yes"; then
+				HAVE_MQLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
+		fi
+			
 		#Restore values
 		LIBS="$old_LIBS"
 		LDFLAGS="$old_LDFLAGS"
@@ -4309,6 +4410,8 @@ AC_ARG_WITH(pcre,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PCRE"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 		
@@ -4338,17 +4441,22 @@ AC_ARG_WITH(pcre,
 		AC_CHECK_HEADERS([ pcre.h ])
 		AC_MSG_CHECKING(if we can use PCRE)
 		if test "$ac_cv_lib_pcre_main" = "yes"; then
-			if test "$ac_cv_header_pcre_h" != "yes"; then
-				#On Windows binary distro of pcre, there are no header files
-				#This also takes care of cases when we find libpcre suplied
-				#with Apache, but there is no header file
-				PCRE_INC_PATH="$aubitdir/tools/cygwin"
-			fi
-			HAVE_PCRELIB=1
-			AC_MSG_RESULT(yes)
-			if test "$COLLECT_THIRD_PARTY" = "1"; then
-				THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
-					PCRE#$withval/bin/pcre.dll"
+			if test "$AUBIT_SOURCE" = "1" ; then		
+				if test "$ac_cv_header_pcre_h" != "yes"; then
+					#On Windows binary distro of pcre, there are no header files
+					#This also takes care of cases when we find libpcre suplied
+					#with Apache, but there is no header file
+					PCRE_INC_PATH="$aubitdir/tools/cygwin"
+				fi
+				HAVE_PCRELIB=1
+				AC_MSG_RESULT(yes)
+				if test "$COLLECT_THIRD_PARTY" = "1"; then
+					THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+						PCRE#$withval/bin/pcre.dll"
+				fi
+			else
+				HAVE_PCRELIB=1
+				AC_MSG_RESULT(yes)
 			fi
 		else
 			AC_MSG_RESULT(no)
@@ -4396,6 +4504,8 @@ AC_ARG_WITH(pop,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON POP"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 		
@@ -4424,12 +4534,22 @@ AC_ARG_WITH(pop,
 		AC_CHECK_LIB([spopc], [main])
 		AC_CHECK_HEADERS([ libspopc.h ])
 		AC_MSG_CHECKING(if we can use POP)
-		if test "$ac_cv_lib_spopc_main" = "yes" -a "$ac_cv_header_libspopc_h" = "yes"; then
-			HAVE_POPLIB=1
-			AC_MSG_RESULT(yes)
+		
+		if test "$AUBIT_SOURCE" = "1" ; then		
+			if test "$ac_cv_lib_spopc_main" = "yes" -a "$ac_cv_header_libspopc_h" = "yes"; then
+				HAVE_POPLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
 		else
-			AC_MSG_RESULT(no)
-    	fi
+			if test "$ac_cv_lib_spopc_main" = "yes"; then
+				HAVE_POPLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
+		fi
 		
 		#Restore values
 		LIBS="$old_LIBS"
@@ -4470,6 +4590,8 @@ AC_ARG_WITH(smtp,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SMTP"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 		
@@ -4497,13 +4619,23 @@ AC_ARG_WITH(smtp,
 		AC_CHECK_LIB([smtp], [libsmtp_session_initialize])
 		AC_CHECK_HEADERS([ libsmtp.h ])
 		AC_MSG_CHECKING(if we can use SMTP)
-		if test "$ac_cv_lib_smtp_libsmtp_session_initialize" = "yes" -a "$ac_cv_header_libsmtp_h" = "yes"; then
-			HAVE_SMTPLIB=1
-			AC_MSG_RESULT(yes)
-		else
-			AC_MSG_RESULT(no)
-	    fi
 		
+		if test "$AUBIT_SOURCE" = "1" ; then
+			if test "$ac_cv_lib_smtp_libsmtp_session_initialize" = "yes" \
+				-a "$ac_cv_header_libsmtp_h" = "yes"; then
+				HAVE_SMTPLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
+		else
+			if test "$ac_cv_lib_smtp_libsmtp_session_initialize" = "yes"; then
+				HAVE_SMTPLIB=1
+				AC_MSG_RESULT(yes)
+			else
+				AC_MSG_RESULT(no)
+			fi
+		fi
 		#Restore values
 		LIBS="$old_LIBS"
 		LDFLAGS="$old_LDFLAGS"
@@ -4543,6 +4675,8 @@ AC_ARG_WITH(zlib,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON ZLIB"
+			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 		
@@ -4569,17 +4703,30 @@ AC_ARG_WITH(zlib,
 		AC_CHECK_LIB([z], [gzopen])
 		AC_CHECK_HEADERS([ zlib.h ])
 		AC_MSG_CHECKING(if we can use zlib)
-		if test "$ac_cv_lib_z_gzopen" = "yes" -a "$ac_cv_header_zlib_h" = "yes"; then
-			AC_MSG_RESULT(yes)
-			HAVE_ZLIB=1
-		    	AC_DEFINE(HAVE_ZLIB,1,[ ])
-		    	AC_DEFINE(HAVE_ZLIB_DEF,1,[ ])
-		else
-		    	AC_DEFINE(HAVE_ZLIB,0,[ ])
-		    	AC_DEFINE(HAVE_ZLIB_DEF,0,[ ])
-			AC_MSG_RESULT(no)
-	    	fi
 		
+		if test "$AUBIT_SOURCE" = "1" ; then
+			if test "$ac_cv_lib_z_gzopen" = "yes" -a "$ac_cv_header_zlib_h" = "yes"; then
+				AC_MSG_RESULT(yes)
+				HAVE_ZLIB=1
+				AC_DEFINE(HAVE_ZLIB,1,[ ])
+				AC_DEFINE(HAVE_ZLIB_DEF,1,[ ])
+			else
+				AC_DEFINE(HAVE_ZLIB,0,[ ])
+				AC_DEFINE(HAVE_ZLIB_DEF,0,[ ])
+				AC_MSG_RESULT(no)
+			fi
+		else
+			if test "$ac_cv_lib_z_gzopen" = "yes"; then
+				AC_MSG_RESULT(yes)
+				HAVE_ZLIB=1
+				AC_DEFINE(HAVE_ZLIB,1,[ ])
+				AC_DEFINE(HAVE_ZLIB_DEF,1,[ ])
+			else
+				AC_DEFINE(HAVE_ZLIB,0,[ ])
+				AC_DEFINE(HAVE_ZLIB_DEF,0,[ ])
+				AC_MSG_RESULT(no)
+			fi
+		fi
 		#Restore values
 		LIBS="$old_LIBS"
 		LDFLAGS="$old_LDFLAGS"
@@ -4686,30 +4833,44 @@ AC_ARG_WITH(pdf,
 		PATH="$old_PATH"
 		
 		AC_MSG_CHECKING(if we can use PDF)
-		if test $ac_cv_lib_pdf_main = yes -a "$ac_cv_header_pdflib_h" = "yes"; then
-			USE_PDF=yes
-    	    PDFBUILD=yes
-			PDFLIB_I_FLAGS="$TEST_PDFLIB_I_FLAGS"
-			PDFLIB_L_FLAGS="$TEST_PDFLIB_L_FLAGS"
-		    AC_DEFINE(HAVE_PDF,1,[ ])
-		    AC_MSG_RESULT(yes)
-			
-			
-			#;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
-			#;looks like it needs to be called "pdflib.dll" not "libpdf.dll" - which we renamed to be able to use -l when linking
-			#;apparently it stores the name of the original dll somewhere?
-			#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\pdflib.dll; Components: PDFLIB
-
-			#if test "$COLLECT_THIRD_PARTY" = "1"; then 
-				#When compiling from source on Windows, I got only static object
-				#Which we don't need anyway
-				#THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
-				#	PDF#$withval/lib/libpdf.a"
-			#fi
-
+		if test "$AUBIT_SOURCE" = "1" ; then
+			if test $ac_cv_lib_pdf_main = yes -a "$ac_cv_header_pdflib_h" = "yes"; then
+				USE_PDF=yes
+				PDFBUILD=yes
+				PDFLIB_I_FLAGS="$TEST_PDFLIB_I_FLAGS"
+				PDFLIB_L_FLAGS="$TEST_PDFLIB_L_FLAGS"
+				AC_DEFINE(HAVE_PDF,1,[ ])
+				AC_MSG_RESULT(yes)
+				
+				
+				#;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
+				#;looks like it needs to be called "pdflib.dll" not "libpdf.dll" - which we renamed to be able to use -l when linking
+				#;apparently it stores the name of the original dll somewhere?
+				#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\pdflib.dll; Components: PDFLIB
+	
+				#if test "$COLLECT_THIRD_PARTY" = "1"; then 
+					#When compiling from source on Windows, I got only static object
+					#Which we don't need anyway
+					#THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+					#	PDF#$withval/lib/libpdf.a"
+				#fi
+	
+			else
+				AC_DEFINE(HAVE_PDF,0,[ ])
+				AC_MSG_RESULT(no)
+			fi
 		else
-		    AC_DEFINE(HAVE_PDF,0,[ ])
-		    AC_MSG_RESULT(no)
+			if test $ac_cv_lib_pdf_main = yes; then
+				USE_PDF=yes
+				PDFBUILD=yes
+				PDFLIB_I_FLAGS="$TEST_PDFLIB_I_FLAGS"
+				PDFLIB_L_FLAGS="$TEST_PDFLIB_L_FLAGS"
+				AC_DEFINE(HAVE_PDF,1,[ ])
+				AC_MSG_RESULT(yes)
+			else
+				AC_DEFINE(HAVE_PDF,0,[ ])
+				AC_MSG_RESULT(no)
+			fi
 		fi
 	else
 		AC_MSG_RESULT(disabled)
@@ -4860,40 +5021,41 @@ fi
 ##                 Determine RPM build location
 ## ==================================================================
 
-
-PHP_CONFIGURE_PART(RPM package settings:)
-AC_MSG_CHECKING(RPM build root)	
-
-#MACHTYPE is a environment variable - not a Autoconf one
-case "$MACHTYPE" in
-	*-mandrake-linux-gnu)
-		RPMBUILDROOT=/usr/src/RPM
-		;;
-
-    *-redhat-linux-gnu)
-
-		#REDHAT_VER
-		#configure:7266: checking RedHat version
-		#configure:7270: result: Red Hat Linux release 7.2 (Enigma) (7.2)
-
-        case $REDHAT_VER in
-	        6.*)
-				RPMBUILDROOT=/root/redhat
-	            ;;
-
-			*) 	#redhat 7.2 and up
-				RPMBUILDROOT=/usr/src/redhat
-			    ;;
-        esac
-        ;;
-
-    *) #Probably not a RPM based distro
-		RPMBUILDROOT=no
-        ;;
-
-esac
-
-AC_MSG_RESULT($RPMBUILDROOT)
+if test "$AUBIT_SOURCE" = "1" ; then
+	PHP_CONFIGURE_PART(RPM package settings:)
+	AC_MSG_CHECKING(RPM build root)	
+	
+	#MACHTYPE is a environment variable - not a Autoconf one
+	case "$MACHTYPE" in
+		*-mandrake-linux-gnu)
+			RPMBUILDROOT=/usr/src/RPM
+			;;
+	
+		*-redhat-linux-gnu)
+	
+			#REDHAT_VER
+			#configure:7266: checking RedHat version
+			#configure:7270: result: Red Hat Linux release 7.2 (Enigma) (7.2)
+	
+			case $REDHAT_VER in
+				6.*)
+					RPMBUILDROOT=/root/redhat
+					;;
+	
+				*) 	#redhat 7.2 and up
+					RPMBUILDROOT=/usr/src/redhat
+					;;
+			esac
+			;;
+	
+		*) #Probably not a RPM based distro
+			RPMBUILDROOT=no
+			;;
+	
+	esac
+	
+	AC_MSG_RESULT($RPMBUILDROOT)
+fi
 
 ## ==================================================================
 ##                 Checks for other 4gl compiles
@@ -5158,6 +5320,10 @@ AC_ARG_WITH(sapdb,
 					#Default location (SAPDBROOT or in-built)
 		            ADD_LD_LIBRARY_PATH="$SAPDBROOT/depend/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 				fi
+				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAP"
+				WARN_LD_LIBRARY_PATH=1
+				
+				
 
 	            old_PATH="$PATH"
 				if test "$SAPDB_VER" = "7500"; then
@@ -5394,6 +5560,8 @@ AC_ARG_WITH(informix,
             else
 	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib$A4GL_PATH_SEP$INFORMIXDIR/lib/esql$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 			fi
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Informix-ESQL"
+			WARN_LD_LIBRARY_PATH=1
 
 			#First check if we have esql installed at all:
 			AC_PATH_PROG(IFMX_ESQLC, esql, no)
@@ -5817,14 +5985,21 @@ AC_ARG_WITH(pgsql,
 
 	AC_MSG_CHECKING(PG ESQL connector support)
 	if test "$HAS_LIB_PQ" = "1" ; then
-		if test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes"; then
+		if test "$AUBIT_SOURCE" = "1" ; then
+			if test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes"; then
+				AC_DEFINE(HAVE_PGSQL)
+				HAVE_PGSQL_LIB=yes
+				AC_MSG_RESULT(Yes)
+				AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+			else
+				AC_MSG_RESULT(NO (missing headers))
+			fi
+		else
 			AC_DEFINE(HAVE_PGSQL)
-    	    HAVE_PGSQL_LIB=yes
-	    	AC_MSG_RESULT(Yes)
-		    AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
-        else
-			AC_MSG_RESULT(NO (missing headers))
-        fi
+			HAVE_PGSQL_LIB=yes
+			AC_MSG_RESULT(Yes)
+			AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
+		fi
     else
         HAVE_PGSQL_LIB=no
 		AC_MSG_RESULT(NO (missing library))
@@ -6581,13 +6756,6 @@ fi
 			if test "$SQLITE_ODBC" = "1"; then
 				SQLITE_ODBC_LIBDIR=$withval
 				AC_MSG_CHECKING(for default SQLite odbc.ini entry)
-
-#/etc/unixODBC/odbc.ini
-#/opt/IBM/informix/etc/odbc.ini
-#/usr/share/doc/packages/MyODBC-unixODBC/ini/odbc.ini.sample
-#/usr/src/aubit/aubit4glsrc/etc/odbc.ini.example
-
-				
 				ODBC_INI="/etc/odbc.ini"
                 if test -w $ODBC_INI; then
 					TMP123=`grep mysqlitedb $ODBC_INI`
@@ -6730,8 +6898,10 @@ fi
 					AC_CHECK_HEADERS([ incl/cli/infxcli.h incl/cli/infxsql.h ])
 					if test "$ac_cv_header_incl_cli_infxcli_h" != "yes" \
 						-o "$ac_cv_header_incl_cli_infxsql_h" != "yes" ; then
-						AC_MSG_WARN(Missing incl/cli/infxcli.h or incl/cli/infxsql.h - disabling Informix ODBC support)
-						ac_cv_lib_ifcli_main="no"
+						if test "$AUBIT_SOURCE" = "1" ; then
+							AC_MSG_WARN(Missing incl/cli/infxcli.h or incl/cli/infxsql.h - disabling Informix ODBC support)
+							ac_cv_lib_ifcli_main="no"
+						fi
 					fi
 					CFLAGS="$old_CFLAGS"; LDFLAGS="$old_LDFLAGS"; LIBS="$old_LIBS"; CPPFLAGS="$old_CPPFLAGS"
 				fi
@@ -7109,14 +7279,14 @@ if test "$withval" != "no"; then
 						TMPxyz=`eval echo '${'$as_ac_Header'}'`
 				        if test "$TMPxyz" = "yes"; then
 						    HAVE_UNIXODBC_HEADERS=1
-                        		fi
-                    		fi
-                	fi
-		else
+                        fi
+                   	fi
+                fi
+			else
 			    HAVE_UNIXODBC_HEADERS=1
-		fi
+			fi
 
-		if test "$HAVE_UNIXODBC_HEADERS" = "1" ; then
+			if test "$HAVE_UNIXODBC_HEADERS" = "1" ; then
 				ODBC_LIB_NAME=odbc
 				HAVE_UNIXODBC=yes
 			    UNIXODBC_INCLUDE=-I$withval/include
@@ -7125,16 +7295,26 @@ if test "$withval" != "no"; then
 
 			    ODBC_TYPE=unixODBC
 			    AC_DEFINE(HAVE_UNIXODBC,1,[ ])
-            	else
-				AC_MSG_WARN(unixODBC libraries present but headers are missing.)
-				AC_DEFINE(HAVE_UNIXODBC,0,[ ])
-				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbcdev"
-            	fi
-                CFLAGS=$old_CFLAGS
-	else
+            else
+				if test "$AUBIT_SOURCE" = "1" ; then			
+					AC_MSG_WARN(unixODBC libraries present but headers are missing.)
+					AC_DEFINE(HAVE_UNIXODBC,0,[ ])
+					INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbcdev"
+				else
+					ODBC_LIB_NAME=odbc
+					HAVE_UNIXODBC=yes
+					UNIXODBC_INCLUDE=-I$withval/include
+					UNIXODBC_LFLAGS=-L$withval/lib
+					UNIXODBC_LIBS=-lodbc
+					ODBC_TYPE=unixODBC
+					AC_DEFINE(HAVE_UNIXODBC,1,[ ])
+				fi
+            fi
+			CFLAGS=$old_CFLAGS
+		else
 		    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.unixodbc"
-	fi
+		fi
 else
 		AC_MSG_RESULT(disbled)
 	    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
@@ -7161,7 +7341,7 @@ AC_ARG_WITH(esoob,
   #PHP_WITH_SHARED
   if test "$withval" = "yes"; then
     withval=/usr/local/easysoft/oob/client
-	ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	#ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
   else
 	#user specified custom withval
 	WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON ODBCbridge"
@@ -7483,7 +7663,13 @@ fi
 				    AC_DEFINE(HAVE_PGODBC,0,[ ])
 					AC_MSG_RESULT(NO - missing header files)
 				fi
+			else
+				HAVE_PGODBC=yes
+				AC_DEFINE(HAVE_PGODBC_HEADERS,1,[ ])
+				AC_DEFINE(HAVE_PGODBC,1,[ ])
+				AC_MSG_RESULT(yes)
             fi
+			
 		else
 		    AC_DEFINE(HAVE_PGODBC,0,[ ])
 		    AC_MSG_RESULT(No -missing library)
@@ -7573,7 +7759,8 @@ AC_ARG_WITH(gtk,
 		LDFLAGS="$LDFLAGS -L$withval/lib -L/usr/lib"
 		
 		AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
-
+		AC_PATH_PROG(GTK_QUERY, gtk-query-immodules-2.0, no)
+		
 		if test "$GTK_CONFIG" != "no" -a "$PKG_CONFIG" != "no"; then
 			#If both gtk-config and phg-config are found, use pkg-config
 			#Because gtk-config is GTK 1.2 only, and has no GTK 2.0 information
@@ -7716,19 +7903,33 @@ AC_ARG_WITH(gtk,
 
 		#########################################################
 		if test "$GTK_USE_CONFIG" = "no"; then
-			AC_MSG_WARN(cannot find pkg-config or gtk-config)
-			AC_DEFINE(HAVE_GTK,0,[ ])
-			GTKBUILD=no
+			if test "$AUBIT_SOURCE" = "1" ; then		
+				AC_MSG_WARN(cannot find pkg-config or gtk-config)
+				AC_DEFINE(HAVE_GTK,0,[ ])
+				GTKBUILD=no
+			#else
+			#	...
+			fi
 		fi
 
 		AC_MSG_CHECKING(GTK usability )
-		if test "$GTKBUILD" = "yes"; then
-			#Fix silly GTK paths returned by pkg-config on Windows:
-			GTK_INC_PATH=`echo $GTK_INC_PATH | sed -e 's/\/target\/build/\/usr/g' -e 's/\/target/\/usr/g'`
-			AC_MSG_RESULT(yes ($GTK_VERSION using $GTK_USE_CONFIG V:$GTK_REAL_VERSION))
-			#AC_MSG_RESULT(Package names: $GTK_NAME $GDK_NAME $GLIB_NAME)
+		if test "$AUBIT_SOURCE" = "0"; then
+			#We just need libs
+			if test "$GTK_QUERY" != "no"; then 
+				GTKBUILD="yes"
+				AC_MSG_RESULT(yes - libraries only)
+			else
+				AC_MSG_RESULT(no)
+			fi
 		else
-			AC_MSG_RESULT(no)		
+			if test "$GTKBUILD" = "yes"; then
+				#Fix silly GTK paths returned by pkg-config on Windows:
+				GTK_INC_PATH=`echo $GTK_INC_PATH | sed -e 's/\/target\/build/\/usr/g' -e 's/\/target/\/usr/g'`
+				AC_MSG_RESULT(yes ($GTK_VERSION using $GTK_USE_CONFIG V:$GTK_REAL_VERSION))
+				#AC_MSG_RESULT(Package names: $GTK_NAME $GDK_NAME $GLIB_NAME)
+			else
+				AC_MSG_RESULT(no)		
+			fi
 		fi
 	else
 		AC_MSG_RESULT(disabled)
@@ -7782,8 +7983,12 @@ AC_ARG_WITH(glade,
 				AC_MSG_RESULT($GLADE_NAME MISSING)
 			fi
 		else
-			HAS_GLADE_2=0
-			AC_MSG_RESULT(no pkg-config detected)
+			if test "$AUBIT_SOURCE" = "1" ; then
+				HAS_GLADE_2=0
+				AC_MSG_RESULT(no pkg-config detected)
+			#else
+			#	...
+			fi
 		fi
 		
 		PATH="$old_PATH"; LIBS="$old_LIBS"; LDFLAGS="$old_LDFLAGS"
@@ -7862,6 +8067,9 @@ AC_ARG_WITH(rpc,
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON RPC"
+			WARN_LD_LIBRARY_PATH=1
+			
 	    fi
 
 		old_LIBS=$LIBS
@@ -8033,11 +8241,6 @@ AC_ARG_WITH(perl,
 ##               Checks for curses/ncurses library
 ## ==================================================================
 
-	#Store current values
-	old_LIBS="$LIBS"
-	old_LDFLAGS="$LDFLAGS"
-	old_CFLAGS="$CFLAGS"
-
 	PHP_CONFIGURE_PART(Checking for curses libraries:)
 	AC_ARG_WITH(curses,
 	[  --with-curses[=DIR]       Include curses support. DIR is the curses base
@@ -8045,14 +8248,16 @@ AC_ARG_WITH(perl,
                           This will probe for Ncurses, then for curses.],
 	[
 
-	  if test "$withval" = "no"; then
+	if test "$withval" = "no"; then
 		AC_MSG_RESULT(Disabled)
-      else
+	else
 		#User specified location of curses library with --with-curses=path
 		if test "$withval" != "yes"; then
 			CURSES_LIB_PATH="-L$withval"
             CURSES_INC_PATH="-I$withval -I$withval/ncurses"
             ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Curses"
+			WARN_LD_LIBRARY_PATH=1
 		else
 			#Note" Aubit source code uses #include <curses.h> and NOT
 			#include <ncurses.h> or include <ncurses/ncurses.h> Therefore,
@@ -8066,6 +8271,12 @@ AC_ARG_WITH(perl,
 			fi
 		fi
 
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		
+		
 		LDFLAGS="$CURSES_LIB_PATH $LDFLAGS"
 		CFLAGS="$CURSES_INC_PATH $CFLAGS"
 
@@ -8080,6 +8291,42 @@ AC_ARG_WITH(perl,
 			#fixme: check version of curses - how?
 	        HAVE_CURSES=1
 		else
+			AC_MSG_CHECKING(For any libncurses library on the system)
+			#Some distros like SuSE stopped linking libncuses.so.x.x back
+			#to libncurses.so, so we need to search for it
+			#AC SEARCH LIBS(function,search-libs,[echo "found it"],[echo "Did not found it"],[other-libs])
+			#Hopefully no other library exports function mvadd_wchnstr
+			SEARCH_LIBS="`locate libncurses.so`"
+			if test "$SEARCH_LIBS" != "" ; then
+				LIBS=""
+				THIS_LIB=""
+				AC_SEARCH_LIBS(mvadd_wchnstr,$SEARCH_LIBS,[echo "found it"],[echo "Did not find it"],[other-libs] )
+				if test "$LIB" != ""; then 
+					THIS_LIB="`echo $LIBS | sed -e 's/-l//'`"
+					ac_cv_lib_ncurses_main="yes"
+					AC_MSG_RESULT(yes - found $THIS_LIB)
+					
+					#Make a link for us:
+					LINK_MATCH="lib$THIS_LIB.so"
+					for file in $SEARCH_LIBS ; do 
+						case $file in 
+							$LINK_MATCH*)
+								echo "Linking $file to $aubitdir/lib/lib$THIS_LIB.so"
+								ls -s $file $aubitdir/lib/lib$THIS_LIB.so
+								break
+							;;
+						esac
+					done
+				else
+					AC_MSG_RESULT(Found nothing with AC SEARCH LIBS in $SEARCH_LIBS)
+				fi
+				LIBS=""
+			else
+				AC_MSG_RESULT(locate found no libncurses.so on this system)
+			fi
+		fi
+		
+		if test "$ac_cv_lib_ncurses_main" = "yes"; then
 			#"ncurses" library was NOT found, try curses
 			# FIXME: Replace `main' with a function in `-lcurses':
 			AC_CHECK_LIB([curses], [main])
@@ -8110,22 +8357,24 @@ AC_ARG_WITH(perl,
 
 		AC_CHECK_HEADERS([ curses.h ncurses.h ncurses/ncurses.h curses/curses.h ])
 
-		if test "$ac_cv_header_curses_h" = "yes" ; then
-			AC_DEFINE(HAVE_CURSES_H)
-		else
-			if test "$ac_cv_header_ncurses_h" = "yes" ; then 
-				#This is OK since all Ncurses instalationa will include 
-				#curses.h (as link to ncurses.h)
-				AC_DEFINE(HAVE_NCURSES_H)
+		if test "$AUBIT_SOURCE" = "1" ; then
+			if test "$ac_cv_header_curses_h" = "yes" ; then
+				AC_DEFINE(HAVE_CURSES_H)
 			else
-				#HAVE_CURSES=0
-				if test "$ac_cv_header_ncurses_ncurses_h" = "yes" ; then 
-					AC_MSG_WARN(No curses.h but have ncurses/ncurses.h - check -I flag if fails)
-					AC_DEFINE(HAVE_NCURSES_NCURSES_H)
-				fi
-				if test "$ac_cv_header_curses_curses_h" = "yes" ; then 
-					AC_MSG_WARN(No curses.h but have curses/curses.h - check -I flag if fails)
-					AC_DEFINE(HAVE_CURSES_CURSES_H)
+				if test "$ac_cv_header_ncurses_h" = "yes" ; then 
+					#This is OK since all Ncurses instalationa will include 
+					#curses.h (as link to ncurses.h)
+					AC_DEFINE(HAVE_NCURSES_H)
+				else
+					#HAVE_CURSES=0
+					if test "$ac_cv_header_ncurses_ncurses_h" = "yes" ; then 
+						AC_MSG_WARN(No curses.h but have ncurses/ncurses.h - check -I flag if fails)
+						AC_DEFINE(HAVE_NCURSES_NCURSES_H)
+					fi
+					if test "$ac_cv_header_curses_curses_h" = "yes" ; then 
+						AC_MSG_WARN(No curses.h but have curses/curses.h - check -I flag if fails)
+						AC_DEFINE(HAVE_CURSES_CURSES_H)
+					fi
 				fi
 			fi
 		fi
@@ -8138,11 +8387,18 @@ AC_ARG_WITH(perl,
 		AC_CHECK_LIB([form], [main])
 		# FIXME: Replace `main' with a function in `-lpanel':
 		AC_CHECK_LIB([panel], [main])
+		
+		#retore current values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		
       fi
 
 	],[
 		AC_MSG_RESULT(--with-curses not specified)
 	])
+
 
 ## ==================================================================
 ##               Checks for PDcurses library
@@ -8170,6 +8426,8 @@ AC_ARG_WITH(perl,
 			else
 				ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 			fi
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PDcurses"
+			WARN_LD_LIBRARY_PATH=1
 		else
 			#withval is 'yes', assign default
 			#Source code installs to /usr/local/pdcurses/ by default
@@ -8194,14 +8452,24 @@ AC_ARG_WITH(perl,
 			AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no )
 			AC_CHECK_HEADERS([ xpanel.h ])
 			AC_MSG_CHECKING(PDcurses Xcurses support)
-			if test "$XCURSES_CONFIG" != "no" -a "$ac_cv_header_xpanel_h" = "yes"; then
-				#found xcurses - possible only unix
-				XCURSES_CFLAGS="`$XCURSES_CONFIG --cflags` -I`$XCURSES_CONFIG --prefix`/include"
-				XCURSES_LIBS=`$XCURSES_CONFIG --libs`
-				HAVE_XCURSES=1
-				AC_MSG_RESULT(yes)
+			if test "$AUBIT_SOURCE" = "1" ; then
+				if test "$XCURSES_CONFIG" != "no" -a "$ac_cv_header_xpanel_h" = "yes"; then
+					#found xcurses - possible only unix
+					XCURSES_CFLAGS="`$XCURSES_CONFIG --cflags` -I`$XCURSES_CONFIG --prefix`/include"
+					XCURSES_LIBS=`$XCURSES_CONFIG --libs`
+					HAVE_XCURSES=1
+					AC_MSG_RESULT(yes)
+				else
+					AC_MSG_RESULT(no)
+				fi
 			else
-				AC_MSG_RESULT(no)
+				if test "$XCURSES_CONFIG" != "no" ; then
+					#found xcurses - possible only unix
+					HAVE_XCURSES=1
+					AC_MSG_RESULT(yes)
+				else
+					AC_MSG_RESULT(no)
+				fi
 			fi
 		else
 			#on windows
@@ -8329,11 +8597,6 @@ AC_ARG_WITH(perl,
 	],[
 		AC_MSG_RESULT(--with-pdcurses not specified)
 	])
-
-	#Restore stored values:
-	LDFLAGS="$old_LDFLAGS"
-	CFLAGS="$old_CFLAGS"
-	LIBS="$old_LIBS"
 
 if test "$enable_stop_pdcurses" = "yes" ; then
 	exit
@@ -8615,44 +8878,51 @@ AC_STRUCT_TM
 AC_CHECK_SIZEOF(long, 8)
 AC_CHECK_SIZEOF(int, 4)
 
-PHP_CONFIGURE_PART(Checking for cross compilation options:)
-###############################################################################
-# If we're cross-compiling, allow the user to override the tools and their
-# options.  The configure script is oriented toward identifying the host
-# compiler, etc., but we need a build compiler to generate parts of the source.
-: ${BUILD_CC:='$(CC)'}
-: ${BUILD_CFLAGS:='$(CFLAGS)'}
-: ${BUILD_CPPFLAGS:='$(CPPFLAGS)'}
-: ${BUILD_LDFLAGS:='$(LDFLAGS)'}
-: ${BUILD_LIBS:='$(LIBS)'}
-: ${BUILD_EXEEXT:='$x'}
-if test "$cross_compiling" = yes ; then
-        AC_ARG_WITH(build-cc,
-                [  --with-build-cc=XXX     the build C compiler ($BUILD_CC)],
-                [BUILD_CC="$withval"],
-                [AC_CHECK_PROGS(BUILD_CC, $CC gcc cc)])
-        AC_ARG_WITH(build-cflags,
-                [  --with-build-cflags=XXX the build C compiler-flags],
-                [BUILD_CFLAGS="$withval"])
-        AC_ARG_WITH(build-cppflags,
-                [  --with-build-cppflags=XXX the build C preprocessor-flags],
-                [BUILD_CPPFLAGS="$withval"])
-        AC_ARG_WITH(build-ldflags,
-                [  --with-build-ldflags=XXX the build linker-flags],
-                [BUILD_LDFLAGS="$withval"])
-        AC_ARG_WITH(build-libs,
-                [  --with-build-libs=XXX   the build libraries],
-                [BUILD_LIBS="$withval"])
-        BUILD_EXEEXT=
-fi
-AC_SUBST(BUILD_CC)
-AC_SUBST(BUILD_CFLAGS)
-AC_SUBST(BUILD_CPPFLAGS)
-AC_SUBST(BUILD_LDFLAGS)
-AC_SUBST(BUILD_LIBS)
-AC_SUBST(BUILD_EXEEXT)
-AC_SUBST(HAVE_WINSLEEP)
 
+## ==================================================================
+##      Checks for cross compilation
+## ==================================================================
+
+if test "$AUBIT_SOURCE" = "1" ; then
+
+	PHP_CONFIGURE_PART(Checking for cross compilation options:)
+	###############################################################################
+	# If we're cross-compiling, allow the user to override the tools and their
+	# options.  The configure script is oriented toward identifying the host
+	# compiler, etc., but we need a build compiler to generate parts of the source.
+	: ${BUILD_CC:='$(CC)'}
+	: ${BUILD_CFLAGS:='$(CFLAGS)'}
+	: ${BUILD_CPPFLAGS:='$(CPPFLAGS)'}
+	: ${BUILD_LDFLAGS:='$(LDFLAGS)'}
+	: ${BUILD_LIBS:='$(LIBS)'}
+	: ${BUILD_EXEEXT:='$x'}
+	if test "$cross_compiling" = yes ; then
+			AC_ARG_WITH(build-cc,
+					[  --with-build-cc=XXX     the build C compiler ($BUILD_CC)],
+					[BUILD_CC="$withval"],
+					[AC_CHECK_PROGS(BUILD_CC, $CC gcc cc)])
+			AC_ARG_WITH(build-cflags,
+					[  --with-build-cflags=XXX the build C compiler-flags],
+					[BUILD_CFLAGS="$withval"])
+			AC_ARG_WITH(build-cppflags,
+					[  --with-build-cppflags=XXX the build C preprocessor-flags],
+					[BUILD_CPPFLAGS="$withval"])
+			AC_ARG_WITH(build-ldflags,
+					[  --with-build-ldflags=XXX the build linker-flags],
+					[BUILD_LDFLAGS="$withval"])
+			AC_ARG_WITH(build-libs,
+					[  --with-build-libs=XXX   the build libraries],
+					[BUILD_LIBS="$withval"])
+			BUILD_EXEEXT=
+	fi
+	AC_SUBST(BUILD_CC)
+	AC_SUBST(BUILD_CFLAGS)
+	AC_SUBST(BUILD_CPPFLAGS)
+	AC_SUBST(BUILD_LDFLAGS)
+	AC_SUBST(BUILD_LIBS)
+	AC_SUBST(BUILD_EXEEXT)
+	AC_SUBST(HAVE_WINSLEEP)
+fi
 
 ## ==================================================================
 ##                   Checks for library functions
@@ -8735,6 +9005,10 @@ sigaction(SIGCHLD, &sa, NULL);
         fi
     fi
 fi
+	old_LIBS="$LIBS"
+	AC_CHECK_LIB([z], [main])
+	LIBS="$old_LIBS"
+
 ## ==================================================================
 ##                   Checks for Cygwin specifics
 ## ==================================================================
@@ -8956,7 +9230,9 @@ else
 	########## SAP-DB ESQL/C pre-compiler output #############
 	if test "$SAPDB_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
-		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
+			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		fi
 		A4GL_LEXDIALECT=SAPDB
         A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
         #FIXME:4glc still needs to get to db for DEFINE LIKE
@@ -8966,7 +9242,9 @@ else
 	######### Ingres ESQL/C compiler ################
 	if test "$HAVE_INGRES_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
-		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then		
+			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		fi
 		A4GL_LEXDIALECT=INGRES
         A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
 		#4glc still needs to get to db for DEFINE LIKE
@@ -8987,7 +9265,9 @@ else
 	if test "$PG_ESQLC" != "no" ; then
 		if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
 			A4GL_LEXTYPE=EC
-			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+			if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then			
+				A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+			fi
 			A4GL_LEXDIALECT=POSTGRES
 	        A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
 			#4glc still needs to get to db for DEFINE LIKE
@@ -9000,7 +9280,9 @@ else
     #setting - this will limit Aubit DB connectivity to Informix ONLY.
 	if test "$IFMX_ESQLC" != "no" ; then
 		A4GL_LEXTYPE=EC
-		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then		
+			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		fi
 		A4GL_LEXDIALECT=INFORMIX
         A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
 		#4glc still needs to get to db for DEFINE LIKE
@@ -9014,7 +9296,9 @@ else
 		#If we have Querix ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
     	#setting - this will limit Aubit DB connectivity to Querix supported RDBMS ONLY.
 		#A4GL_LEXTYPE=EC
-		#A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		#if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
+		#	A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		#fi
 		#A4GL_LEXDIALECT=QUERIX
         #A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
 		#FIXME:4glc still needs to get to db for DEFINE LIKE
@@ -9100,7 +9384,7 @@ else
 	fi
 fi
 
-AC_MSG_RESULT($A4GL_SQLTYPE)
+AC_MSG_RESULT(${T_MD}$A4GL_SQLTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_SQLTYPE_DETECTED)
 
 
@@ -9110,6 +9394,13 @@ AC_MSG_RESULT(Detected:$A4GL_SQLTYPE_DETECTED)
 
 AC_MSG_CHECKING(Default compiler output language)
 
+PCODE_ENABLED="no"
+if test "$with_pcode" = "yes"; then
+	if test "$enable_minimal" != "yes"; then
+		PCODE_ENABLED="yes"
+	fi
+fi
+
 if test "$default_comp" != ""; then
 	#User can force COMPILER driver default with --default-comp=xxxx switch
 	A4GL_LEXTYPE="$default_comp"
@@ -9118,34 +9409,49 @@ if test "$default_comp" != ""; then
     fi
 else
 
-	#C compiler is the default at this point, unless a variant of embedded
+	#LEXTYPE is at this point empty, unless a variant of embedded
 	#C was chosen in SQL connectivity "decide" section.
-	#Not much point in assigning anything else as default.
-	#Maybe p-code?
 	
 	if test "$PERLBUILD" != "no"; then
 		#No point:
 		#A4GL_LEXTYPE="PERL"
-		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		#A4GL_LEXDIALECT=""
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED PERL"
     fi
 
 	# C# output (Mono)
 	if test "$CS_COMPILER" != "no"; then
 		#No point:
 		#A4GL_LEXTYPE="CS"
-		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+		#A4GL_LEXDIALECT=""
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED CS"
     fi
 
+	if test "$PCODE_ENABLED" = "yes"; then 
+		A4GL_LEXTYPE="PCODE"
+		A4GL_LEXDIALECT=""
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+	fi
+
+	
+	if test "$HAVE_C_COMP" = "1"; then
+		A4GL_LEXTYPE="C"
+		A4GL_LEXDIALECT=""
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
+	fi
+	
+	
     #NOTE: Since it primarily affects database connectivity, embedded C
     #variants are in SQL connectivity "decide" section
 
 fi
 
 if test "$A4GL_LEXTYPE" = "EC"; then
-	AC_MSG_RESULT($A4GL_LEXTYPE $A4GL_LEXDIALECT)
+	AC_MSG_RESULT(${T_MD}$A4GL_LEXTYPE $A4GL_LEXDIALECT${T_ME})
 else
-	AC_MSG_RESULT($A4GL_LEXTYPE)
+	AC_MSG_RESULT(${T_MD}$A4GL_LEXTYPE${T_ME})
 fi
+
 AC_MSG_RESULT(Detected:$A4GL_LEXTYPE_DETECTED)
 AC_MSG_RESULT(Detected-EC dialects:$A4GL_LEXDIALECT_DETECTED)
 
@@ -9170,8 +9476,7 @@ else
         A4GL_RPCTYPE_DETECTED="$A4GL_RPCTYPE_DETECTED $A4GL_RPCTYPE"
     fi
 fi
-
-AC_MSG_RESULT($A4GL_RPCTYPE)
+AC_MSG_RESULT(${T_MD}$A4GL_RPCTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_RPCTYPE_DETECTED)
 
 ## ==================================================================
@@ -9194,7 +9499,7 @@ else
 	A4GL_FORMTYPE_DETECTED="$A4GL_FORMTYPE_DETECTED $A4GL_FORMTYPE"
 fi
 
-AC_MSG_RESULT($A4GL_FORMTYPE)
+AC_MSG_RESULT(${T_MD}$A4GL_FORMTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_FORMTYPE_DETECTED)
 
 ## ==================================================================
@@ -9221,7 +9526,8 @@ else
     fi
 fi
 
-AC_MSG_RESULT($A4GL_MENUTYPE)
+
+AC_MSG_RESULT(${T_MD}$A4GL_MENUTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_MENUTYPE_DETECTED)
 
 ## ==================================================================
@@ -9238,7 +9544,8 @@ else
 		A4GL_PDFTYPE_DETECTED="$A4GL_PDFTYPE_DETECTED $A4GL_PDFTYPE"
     fi
 fi
-AC_MSG_RESULT($A4GL_PDFTYPE)
+
+AC_MSG_RESULT(${T_MD}$A4GL_PDFTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_PDFTYPE_DETECTED)
 
 ## ==================================================================
@@ -9259,7 +9566,7 @@ else
 	if test "$GTKBUILD" != "no"; then
 		A4GL_UI="HL_GTK"
 		A4GL_UI_DETECTED="$A4GL_UI_DETECTED $A4GL_UI"
-        fi
+	fi
 
 	if test "$HAVE_CURSES" = "1" ; then
 		A4GL_UI="TUI"
@@ -9282,7 +9589,8 @@ else
 		WARN_UI=1
     fi
 fi
-AC_MSG_RESULT($A4GL_UI)
+
+AC_MSG_RESULT(${T_MD}$A4GL_UI${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_UI_DETECTED)
 
 
@@ -9294,7 +9602,8 @@ if test "$default_msg" != ""; then
 	#User can force HELP MESSAGE driver default with --default-msg=xxxx switch
 	A4GL_MSGTYPE="$default_msg"
 fi
-AC_MSG_RESULT($A4GL_MSGTYPE)
+
+AC_MSG_RESULT(${T_MD}$A4GL_MSGTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_MSGTYPE_DETECTED)
 
 ## ==================================================================
@@ -9316,11 +9625,11 @@ else
     fi
 
 	#Check if we can build libPACKER_GZPACKED
-	AC_CHECK_LIB([z], [main])
 	if test $ac_cv_lib_z_main = yes; then
 		A4GL_PACKER=GZPACKED
 		A4GL_PACKER_DETECTED="$A4GL_PACKER_DETECTED $A4GL_PACKER"
 	fi
+
 	
 	#A4GL_PACKER=PERL
 
@@ -9330,7 +9639,9 @@ else
 	A4GL_PACKER_DETECTED="$A4GL_PACKER_DETECTED $A4GL_PACKER"
 
 fi
-AC_MSG_RESULT($A4GL_PACKER)
+
+
+AC_MSG_RESULT(${T_MD}$A4GL_PACKER${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_PACKER_DETECTED)
 
 ## ==================================================================
@@ -9356,7 +9667,7 @@ PLUGIN_NO_LINKABLE=
 	else
 		PLUGIN_NO="$PLUGIN_NO LEX_PERL aubit4gl_pl.pm"
     fi
-
+	
 	if test "$HAVE_CURSES" = "1" ; then
         PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI UI_HL_TUIN"
         	#add UI_HL_TUINs
@@ -9791,11 +10102,14 @@ PLUGIN_NO_LINKABLE=
 ## ==================================================================
 ##    Populate files lists for executables, resource files, etc:
 ## ==================================================================
-
-if test "$enable_minimal" != "yes"; then
-	#Need RPClib:
-	PCODE_EXE_RPC="c2pcode checker runner"
-	PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl link_fgl"
+if test "$PCODE_ENABLED" = "yes"; then
+	if test "$enable_minimal" != "yes"; then
+		#Need RPClib:
+		PCODE_EXE_RPC="c2pcode checker runner"
+		PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl link_fgl"
+	fi
+else
+	ALL_DISABLED="$ALL_DISABLED c2pcode checker runner c2pcode_fgl checker_fgl runner_fgl link_fgl"
 fi
 
 #FIXME: can't make pcode without Bison - IS THIS STILL TRUE?
@@ -9958,80 +10272,86 @@ fi
 ## ==================================================================
 
 
-#GENERATED_FILES="$GENERATED_FILES Makefile pdflib-config pdflib/Makefile test/Makefile clients/Makefile util/Makefile bind/c/Makefile"
-
-#AC_OUTPUT([$GENERATED_FILES],[
-#    chmod +x pdflib-config
-#])
-
-
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	AC_CONFIG_FILES([etc/aubitrc
-                etc/aubit-rpm.spec
-				etc/default.apspec
-                etc/aubit-InnoSetup.iss
-                incl/Makefile-common
-				common/dataio/Makefile
-				compilers/4glc/mk_states_c
-                compilers/4glc/rules/Makefile
-                compilers/fcompile/Makefile
-                compilers/helpcompile/Makefile
-                compilers/ace/Makefile
-                lib/libform/form_xdr/Makefile
-                lib/libform/noform/Makefile
-                lib/libform/form_generic/Makefile
-                lib/libmenu/menu_xdr/Makefile
-                lib/libmenu/menu_nomenu/Makefile
-                lib/libmenu/menu_generic/Makefile
-                lib/libmsg/msg_native/Makefile
-                lib/liblex/lex_c/Makefile
-                lib/liblex/lex_esqlc/Makefile
-				lib/liblex/lex_perl/Makefile
-				lib/libpdf/Makefile
-                lib/libui/ui_console/Makefile
-                lib/libui/ui_curses/Makefile
-                lib/resource/Makefile
-                lib/libsql/nosql/Makefile
-                lib/libsql/postgresql/Makefile
-                lib/libsql/sapdb/Makefile
-                lib/librpc/no_rpc/Makefile
-				lib/librpc/sun_rpc/Makefile
-                lib/librpc/xml_rpc/Makefile
-				lib/extra_libs/file/Makefile
-				lib/extra_libs/string/Makefile
-				lib/libpacker/packed/Makefile
-				lib/libpacker/mempacked/Makefile
-				lib/libpacker/perl/Makefile
-				lib/libpacker/xdr/Makefile
-				lib/libpacker/xml/Makefile
-   				lib/libexdata/Makefile
-				lib/swig/domake
-                tools/adbaccess/Makefile
-                tools/loadmap/Makefile
-                tools/adbload/Makefile
-                tools/ide/Makefile
-                tools/4glunit/Makefile
-                tools/odbctest/Makefile
-                tools/test/gui/Makefile
-                tools/test/regression/Makefile
-                tools/test/lang/Makefile
-                tools/test/db/Makefile
-                tools/test/db/informix/Makefile
-                tools/test/db/postgresql/Makefile
-                tools/test/ace/Makefile
-                bin/aubitbuild.sh
-				docs/doxy/Doxyfile])
+#	AC _CONFIG_ FILES([etc/aubitrc
+GENERATED_FILES="$GENERATED_FILES \
+				etc/aubitrc \
+                etc/aubit-rpm.spec \
+				etc/default.apspec \
+                etc/aubit-InnoSetup.iss \
+                incl/Makefile-common \
+				common/dataio/Makefile \
+				compilers/4glc/mk_states_c \
+                compilers/4glc/rules/Makefile \
+                compilers/fcompile/Makefile \
+                compilers/helpcompile/Makefile \
+                compilers/ace/Makefile \
+                lib/libform/form_xdr/Makefile \
+                lib/libform/noform/Makefile \
+                lib/libform/form_generic/Makefile \
+                lib/libmenu/menu_xdr/Makefile \
+                lib/libmenu/menu_nomenu/Makefile \
+                lib/libmenu/menu_generic/Makefile \
+                lib/libmsg/msg_native/Makefile \
+                lib/liblex/lex_c/Makefile \
+                lib/liblex/lex_esqlc/Makefile \
+				lib/liblex/lex_perl/Makefile \
+				lib/libpdf/Makefile \
+                lib/libui/ui_console/Makefile \
+                lib/libui/ui_curses/Makefile \
+                lib/resource/Makefile \
+                lib/libsql/nosql/Makefile \
+                lib/libsql/postgresql/Makefile \
+                lib/libsql/sapdb/Makefile \
+                lib/librpc/no_rpc/Makefile \
+				lib/librpc/sun_rpc/Makefile \
+                lib/librpc/xml_rpc/Makefile \
+				lib/extra_libs/file/Makefile \
+				lib/extra_libs/string/Makefile \
+				lib/libpacker/packed/Makefile \
+				lib/libpacker/mempacked/Makefile \
+				lib/libpacker/perl/Makefile \
+				lib/libpacker/xdr/Makefile \
+				lib/libpacker/xml/Makefile \
+   				lib/libexdata/Makefile \
+				lib/swig/domake \
+                tools/adbaccess/Makefile \
+                tools/loadmap/Makefile \
+                tools/adbload/Makefile \
+                tools/ide/Makefile \
+                tools/4glunit/Makefile \
+                tools/odbctest/Makefile \
+                tools/test/gui/Makefile \
+                tools/test/regression/Makefile \
+                tools/test/lang/Makefile \
+                tools/test/db/Makefile \
+                tools/test/db/informix/Makefile \
+                tools/test/db/postgresql/Makefile \
+                tools/test/ace/Makefile \
+                bin/aubitbuild.sh \
+				docs/doxy/Doxyfile"	
+#				docs/doxy/Doxyfile])
 
 else
 
-	AC_CONFIG_FILES([
-                etc/aubitrc-bin
-                ])
+	#etc/aubitrc-bin.in is a copy of etc/aubitrc.in created by 'make install'
+	#It is renamed to prevent if from beeing seen by aubit programs
+	#It will get installed as aubitrc under /etc/opt/aubit4gl/ or ~/.aubit4gl/
+	#by 'make install' when executed in binary distribution tree
+	#AC _CONFIG_ FILES([
+	GENERATED_FILES="$GENERATED_FILES \	
+                etc/aubitrc-bin \
+				incl/Makefile-common"
+    #            ])
 fi
 
+
 PHP_CONFIGURE_PART(Creating files:)
-AC_OUTPUT
+#AC _OUTPUT
+AC_OUTPUT([$GENERATED_FILES],[
+    #chmod +x pdflib-config
+])
 
 if test "$LIBS" != ""; then 
 	echo "WARNING: (5) LIBS contains $LIBS"
@@ -10057,13 +10377,13 @@ fi
 ##                Warnings and exit messages
 ## ==================================================================
 
-if test "$WARN_LEX" = "1"; then
+if test "$WARN_LEX" = "1" -a "$AUBIT_SOURCE" = "1" ; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** WARNING ***                             |
 | Will use pre-compiled parser files from tools/no_yacc              |
 | Use 'make refresh.noyacc' on source tree with yacc installed.      |
-| You will need lex if you'd want to regenerate the Aubit parsers.   |
+| You will need lex to regenerate the Aubit parsers.                 |
 X
 fi
 
@@ -10081,7 +10401,7 @@ fi
 #fi
 
 
-if test "$WARN_YACC" = "1"; then
+if test "$WARN_YACC" = "1"  -a "$AUBIT_SOURCE" = "1"; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** WARNING ***                             |
@@ -10235,6 +10555,7 @@ cat<<X
 X
 fi
 
+if test "$AP_INSTALLER_RUNNING" != "1"; then
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then
 		if test "$MAKE" != "no" ; then
 			#--silent
@@ -10245,6 +10566,12 @@ fi
     else
 		echo "ERROR: ADD_LD_LIBRATY_PATH is empty."
     fi
+else
+	#Makefile:32: ../../incl/Makefile-common: No such file or directory
+	#Makefile:35: ../../incl/?4gl.mk: No such file or directory
+	#gmake[1]: *** No rule to make target `../../incl/?4gl.mk'.  Stop.
+	echo "Skip 'make ldconfig' - invoked from AutoPackage installer that will take care of it"
+fi
 
 fi
 if test "$PLUGIN_NO" != "" -a "$PLUGIN_NO" != " "; then
@@ -10328,6 +10655,13 @@ X
 fi
 
 if test "$enable_ac_debug" = "yes" ; then
+
+if test "$AUBIT_SOURCE" = "1"; then
+	ACTION_STR="built"
+else
+	ACTION_STR="enabled"
+fi
+
 cat<<X
 +--------------------------------------------------------------------+
 |                     ***  DEBUG NOTE   ***                          |
@@ -10335,11 +10669,11 @@ cat<<X
 | Aubit plug-ins to build:                                           |
 | $PLUGIN_YES
 |                                                                    |
-| Aubit plug-ins that will NOT be built because of missing 3rd party |
+| Aubit plug-ins that will NOT be $ACTION_STR because of missing 3rd party |
 | dependencies:                                                      |
 | $PLUGIN_NO
 |                                                                    |
-| Aubit executables that will NOT be built because of missing 3rd    |
+| Aubit executables that will NOT be $ACTION_STR because of missing 3rd    |
 | party dependencies:                                                |
 |                                                                    |
 | $EXE_NO
@@ -10347,14 +10681,14 @@ cat<<X
 | Aubit plug-ins and options disabled at the moment by developers:   |
 | $ALL_DISABLED
 |                                                                    |
-| You can still try to build disabled options using this commands:   |
+| You can still try to $ACTION_STR disabled options using this commands:   |
 | $DISABLED_MANUAL_CMD
 |                                                                    |
 | (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.332 2006-11-04 11:09:55 afalout Exp $
+| $Id: configure.in,v 1.333 2006-11-11 09:06:52 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

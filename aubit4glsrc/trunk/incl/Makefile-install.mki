@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.113 2006-11-04 11:10:00 afalout Exp $
+# $Id: Makefile-install.mki,v 1.114 2006-11-11 09:07:02 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -127,10 +127,6 @@ install.bin.install.link.dir:
 install.links: install.bin.links install.libs.links
 	@echo "All links installed"
 	
-#De-install all links
-deinstall.links: deinstall.bin.links deinstall.libs.links
-	@echo "All links de-installed"
-	
 #######################################
 #Create links for bin programs to location of Aubit bynary installation:
 install.bin.links: deinstall.bin.links install.aubit-config.link install.bin.install.link.dir
@@ -179,10 +175,10 @@ install.libs.links: deinstall.libs.links
 #appart from asking a sys admin. Or using 'abit' wrapper script.
 	
 
-#This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
-#But NOT libs that are linked and not dlopen()-ed (like libESQL_ and file...)
-#Same target is in Makefile-install makefile (for binary distros)
-#Can't put targets in MAkefile-common - I should create one include makefile 
+#This will work only on Linux, and Aubit loads plufins from $AUBITDIR/plugins-xx/
+#But NOT libs that are linked and not dlopen()-ed (like libaubit4gl and some others)
+
+#Can't put targets in Makefile-common - I should create one include makefile 
 #for targets needed by both binary and source distros 
 install.libs.conf:
 	@if test -w /etc/ld.so.conf.d ; then \
@@ -268,7 +264,7 @@ endif
 #we could just drop the whole $(INSTALL_DIR) tree, but this is not very safe;
 #in the case user placed some files there (stupido!) he will hate us
 #nevertheless, so we will remove file-by-file:
-deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build \
+deinstall.all: deinstall.links deinstall.build \
 				deinstall.files deinstall.tree deinstall.ldconfig
 	@echo ""
 	@echo "Aubit compiler de-installed."
@@ -279,6 +275,7 @@ deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build \
 #Deinstall all installed files:
 deinstall.files:
 #Run clean from makefiles first:
+	-${MAKE} -C $(INSTALL_DIR) clean
 	-${MAKE} -C $(INSTALL_DIR)/tools/test clean
 	-${MAKE} -C $(INSTALL_DIR)/tools/test/gui clean
 #Remove files as they are installed - Do not remove files from ${FROMHOME}
@@ -291,7 +288,10 @@ deinstall.files:
 	rm -rf $(INSTALL_DIR)/etc/config
 #files created after installation, and by Autoconf:
 	${RM} $(INSTALL_DIR)/*.${ARCHEXT} $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
-	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
+	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin \
+	$(INSTALL_DIR)/incl/Makefile-common $(INSTALL_DIR)/incl/Makefile-common.in \
+	$(INSTALL_DIR)/etc/*.applications  $(INSTALL_DIR)/etc/*.desktop $(INSTALL_DIR)/docs/aubit4gl.png \
+	$(INSTALL_DIR)/bin/shtool
 	${RM} $(addprefix $(INSTALL_DIR)/,${ALL_MAKEFILE})
 
 #######################################
@@ -342,6 +342,11 @@ else
 	@echo FIXME: remove stuff from .bashrc
 endif
 
+######################################
+#De-install all links
+deinstall.links: deinstall.bin.links deinstall.libs.links
+	@echo "All links de-installed"
+
 #######################################
 #remove links to libraries:
 deinstall.libs.links:
@@ -359,6 +364,10 @@ deinstall.libs.links:
 			echo "| - insufficienet user permisions"; \
 			echo "+---------------------------------------------------------------------------"; \
 		fi; \
+	else \
+		echo "+---------------------------------------------------------------------------"; \
+		echo "| NOTE  : link ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT} not found"; \
+		echo "+---------------------------------------------------------------------------"; \
 	fi
 
 
@@ -377,7 +386,15 @@ deinstall.bin.links:
 			echo "| WARNING:Unable to remove the aubit-config and aubit links in the"; \
 			echo "| ${BIN_INSTALL_LINK} directory - insufficienet user permisions"; \
 			echo "+---------------------------------------------------------------------------"; \
-		fi \
+		fi; \
+	else \
+		echo " "; \
+		echo "+---------------------------------------------------------------------------"; \
+		echo "| NOTE: links not found : "; \
+		echo "| ${BIN_INSTALL_LINK}/aubit-config "; \
+		echo "| ${BIN_INSTALL_LINK}/aubit "; \
+		echo "| ${BIN_INSTALL_LINK}/amake "; \
+		echo "+---------------------------------------------------------------------------"; \
 	fi
 	@if test -L ${HOME}/bin/aubit-config -o -L ${HOME}/bin/aubit \
 			-o -L ${HOME}/bin/amake; then \
@@ -391,7 +408,15 @@ deinstall.bin.links:
 			echo "| WARNING:Unable to remove the aubit-config and aubit links in the"; \
 			echo "| ${BIN_INSTALL_LINK} directory - insufficienet user permisions"; \
 			echo "+---------------------------------------------------------------------------"; \
-		fi \
+		fi; \
+	else \
+		echo " "; \
+		echo "+---------------------------------------------------------------------------"; \
+		echo "| NOTE : links not found: "; \
+		echo "| ${HOME}/bin/aubit-config"; \
+		echo "| ${HOME}/bin/aubit "; \
+		echo "| ${HOME}/bin/amake"; \
+		echo "+---------------------------------------------------------------------------"; \
 	fi
 
 #######################################

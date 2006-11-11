@@ -23,8 +23,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.32 2006-11-04 11:09:42 afalout Exp $
+# $Id: Makefile,v 1.33 2006-11-11 09:06:45 afalout Exp $
 #
+
+#Save initial state of system varables, so we can undo changes 
+#made by makefiles when we have to
+INIT_PATH				:=${PATH}
+INIT_LD_LIBRARY_PATH	:=${LD_LIBRARY_PATH}
+
 
 ## ==================================================================
 ##                    Includes
@@ -40,7 +46,7 @@ include incl/Makefile-common
 ###############################
 #All targets in this make file are "phony" targets - they do not create
 #anything, they just invoke other make files:
-.PHONY: all clean default log corecompile extra ide api.headers glade help
+.PHONY: all clean default log corecompile extra ide api.headers glade help deinstall
 
 ###############################
 #Things we compile by default
@@ -102,9 +108,10 @@ default.msg.tmp:
 	@echo "|      Successfully compiled Aubit compiler default targets          |"
 	@echo "| You MUST install it before you can use it - execute 'make install' |"
 	@echo "| Current default install settings :                                 |"
-	@echo "| PREFIX           =${PREFIX} (under ${AUBITNAME}) "
+	@echo "| PREFIX           =${PREFIX} "
 	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
 	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
+	@echo "| Override any variable above using 'make install <var>=<value>'     |"
 	@echo "| Execute 'make extra' to compile additional components:             |"
 	@echo "| ${ALL_EXTRA}"
 	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
@@ -781,12 +788,32 @@ install.core: install.tree
 	@echo Aubit 4gl core compiler files installed
 
 #Prepare and install Makefile-common make include
-install.Makefile-common:
-	@echo "#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common
-	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common
-	@cat $(INCL_DIR)/Makefile-common >> /tmp/Makefile-common
-	@mv /tmp/Makefile-common $(INCL_DEST)
+install.Makefile-common: install.Makefile-common.in
+#This is just a fake to have a file as include
+#	@echo "#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common
+#	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common
+#	@cat $(INCL_DIR)/Makefile-common >> /tmp/Makefile-common
+#	@mv /tmp/Makefile-common $(INCL_DEST)
+#	${RM} /tmp/Makefile-common
+	echo " " > $(INCL_DEST)/Makefile-common
 
+install.Makefile-common.in:
+	@echo "#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common.in
+	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common.in
+	@cat $(INCL_DIR)/Makefile-common.in >> /tmp/Makefile-common.in
+#Make this variables permanent, so we can use then when installing binary
+#packages - they wont be changing anyway:
+	cat /tmp/Makefile-common.in | sed -e 's/@AUBIT_VERSION@/${AUBIT_VERSION}/g' \
+		-e 's/@AUBIT_BUILD@/${AUBIT_BUILD}/g' \
+		-e 's/@COMPILE_DATE@/${COMPILE_DATE}/g' \
+		-e 's/@target@/${target}/g' \
+		-e 's/@target_os@/${target_os}/g' > $(INCL_DEST)/Makefile-common.in
+	#@mv /tmp/Makefile-common.in $(INCL_DEST)
+	${RM} /tmp/Makefile-common.in
+#script to enable configure emphasis display:
+	${CP} tools/project/shtool $(INSTALL_DIR)/bin/shtool 
+	
+	
 #set file level permisions and attributes
 install.setmod:
 	chmod a+x $(BIN_DEST)/*
@@ -1245,46 +1272,286 @@ aubit4gl.lsm:
 ##                      AutoPackage packaging
 ## ------------------------------------------------------------------
 
+####################################################################
+#
+# WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!!
+# Remeber that this makefile allready sets PATH LD_LIBRARY_PATH AUBITDIR etc
+# so we need to REMOVE it before we run created installer/deinstaller/etc
+# and also need to DEINSTALL 'make install' installed files !
+#
+#####################################################################
+
+#Issues - user never propted for location
+#.proxy files not deinstalled
+#TUI install root prompt - cant automate install 
+
+#AutoPackage utillities to potentially use in the future: 
 #BinReloc - utility for easy relocation of binary packages
 #objdum -p progname : required libs appear near the top in 'Dynamic sections'
 #objdump -u: ??
 #ldd -u : needed, but never used dependencies
-#aPBUILD SCRIPTS - filter out not needed dependencies (CC=apgcc; CXX=apg++)
-#skeletons - /usr/share/autopackage/skeletons
+#APBUILD SCRIPTS - filter out not needed dependencies (CC=apgcc; CXX=apg++)
+
+autopackage.skeletons:
+	ls /usr/share/autopackage/skeletons/@*
+
+#WARNING: 'makeinstaller' apparently re-runs config-status if it finds .in file -
+#and because we are altering it from here, we need to cheat by moving it away.
+#TODO - do all changes in configure so we dont have to do this
+AP_SPEC=./etc/default.apspec
+AP_SPEC_USE=/tmp/default.apspec
+
+#List of all .desktop and .applications files we need to make
+ALL_DESKTOP=${PREFIX}/etc/aubit4gl-configurator.desktop
+ALL_APPLICATIONS=${PREFIX}/etc/aubit4gl-configurator.applications
+
+ifeq "${AP_UI}" "GUI"
+#GUI seems to ingore -p :
+	AP_INST_TMP=${HOME}/.local/aubit4gl-ap
+	AP_UI_FLAG=""
+	#AUTOPACKAGE_FRONTEND=autopackage-frontend-qt
+	AUTOPACKAGE_FRONTEND=autopackage-frontend-gtk
+	export AUTOPACKAGE_FRONTEND
+else
+	AP_INST_TMP=/tmp/autopackage2.test
+	AP_UI_FLAG="-t"
+	#AUTOPACKAGE_FRONTEND=apkg-ttyfe
+endif
 
 ################################################
 # clean, create package, test
-autopackage: autopackage.clean autopackage.package autopackage.test
+autopackage: autopackage.clean autopackage.prepare autopackage.package \
+	autopackage.test 
+#autopackage.stat
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| make autopackage: all done"
+	@echo "| make $@: all done"
 	@echo "+--------------------------------------------------------------------+"
 
+################################################
+#Create and deploy package to download web site
+autopackage.deploy: autopackage.clean autopackage.prepare autopackage.package autopackage.scp
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: all done"
+	@echo "+--------------------------------------------------------------------+"
 
+################################################
+#SCP the package to WWW root for download
+autopackage.scp:
+	scp ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package root@192.168.1.200:/srv/www/htdocs
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. URL:"
+	@echo "| http://192.168.1.200/${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package"
+	@echo "+--------------------------------------------------------------------+"
+
+################################################
+#SCP the package to user 'aubit' Desktop for testing
+autopackage.put:
+	scp ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package aubit@192.168.1.200:/home/aubit/Desktop
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. File placed on Desktop of user 'aubit'"
+	@echo "+--------------------------------------------------------------------+"
+	
 ################################################
 #Create the installer .package file
 autopackage.package: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package
-./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package:
-	./config.status --file etc/default.apspec
-#DONT_PASS_AC_FLGS: Tell aubitconf not to pass silly flags set by makeinstaller
-#INJECT_AC_FLAGS: tell aubitconf to inject flags that AutoPackage would want
-#Note that we dont pass CFLAGS from configure to makefiles anyway
-#	export INJECT_AC_FLAGS="--prefix=/usr/local CC=apgcc CFLAGS= -O2 -march=i586 -pipe";
-#	export INJECT_AC_FLAGS="--disable-prefix-check --prefix=/usr/local CC=apgcc CFLAGS=-pipe"; 
-#	export INJECT_AC_FLAGS="--prefix=/usr/local CC=apgcc CFLAGS=-pipe"; export DONT_PASS_AC_FLGS=1; 
-	makeinstaller etc/default.apspec
+./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package: ${PREFIX}/bin/4glc ${ALL_DESKTOP} ${ALL_APPLICATIONS}
+	export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+		makeinstaller ${AP_SPEC_USE}
+#The meta package is 'aubit4gl-1.00.3.x86.package.meta'.
+#	@echo "${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package.meta"
+#The complete package is 'aubit4gl-1.00.3.x86.package'.
+#	@echo "${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package"
+#The Luau repository XML entry file is 'aubit4gl.xml'.
+#	@echo "${AUBITNAME}.xml"
 	@echo "+--------------------------------------------------------------------+"	
 	@echo "| make $@ completed; all files created in current directory"
 	@echo "+--------------------------------------------------------------------+"	
 
-################################################	
+################################################
+# Tried to compile from spoec file - what a nightmare
+# UNUSED:
+#autopackage.build:
+#DONT_PASS_AC_FLGS: Tell aubitconf not to pass silly flags set by makeinstaller
+#INJECT_AC_FLAGS: tell aubitconf to inject flags that AutoPackage would want
+#Note that we dont pass CFLAGS from configure to makefiles anyway
+#	export STRIP_PARAM_Q=0; export INJECT_AC_FLAGS="--prefix=/usr/local CC=apgcc CFLAGS= -O2 -march=i586 -pipe";
+#	export STRIP_PARAM_Q=0; export INJECT_AC_FLAGS="--disable-prefix-check --prefix=/usr/local CC=apgcc CFLAGS=-pipe"; 
+#	export STRIP_PARAM_Q=0; export INJECT_AC_FLAGS="--prefix=/usr/local CC=apgcc CFLAGS=-pipe"; export DONT_PASS_AC_FLGS=1; 
+	
+
+############################
+# Dependecy checking
+${PREFIX}/bin/4glc: install
+#${PREFIX}/bin/4glc:
+	@echo "+--------------------------------------------------------------------+"	
+	@echo "| Target $@ invoked as missing dependency! "
+	@echo "+--------------------------------------------------------------------+"
+#	exit 1
+
+##############################################
+# Few quick checks
+autopackage.stat:
+#${HOME}/.local/share/applications/ contains ALL system .desktop files
+#/home/aubit/.local/share/icons
+#/home/aubit/.local/share/Trash
+	@export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+	if test -d ${AP_INST_TMP}; then \
+		echo "TMP package inst dir exists, `ls ${AP_INST_TMP}/bin | wc -l` files under bin/"; \
+		file ${AP_INST_TMP}/bin/aubit-config ;\
+		echo "aubit-config reports AUBITDIR=`${AP_INST_TMP}/bin/aubit-config AUBITDIR`"; \
+	else \
+		echo "TMP package inst dir DOES NOT exists"; \
+	fi
+	@export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+	if test -d ${HOME}/.local/bin ; then \
+		echo "HOME/.local/bin dir exists, `ls ${HOME}/.local/bin | wc -l` files under bin/"; \
+		if test "`echo ${PATH} | grep ${HOME}/.local/bin`" != ""; then \
+			echo "...and it's in the PATH"; \
+		fi \
+	else \
+		echo "HOME/.local/bin dir DOES NOT exists"; \
+	fi
+	@export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+	if test -d ${HOME}/.local/lib ; then \
+		echo "HOME/.local/lib dir exists"; \
+		if test "`echo ${LD_LIBRARY_PATH} | grep ${HOME}/.local/lib`" != ""; then \
+			echo "...and it's in the LD_LIBRARY_PATH"; \
+		fi \
+	else \
+		echo "HOME/.local/lib dir DOES NOT exists"; \
+	fi
+	@echo "+--------------------------------------------------------------------+"
+#-w	
+	@export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+	AD_LIST=`find ${HOME} -exec grep --exclude=aubit4gl/ --count --binary-files=without-match --with-filename --no-messages AUBITDIR {} \; | grep -v "\:0"` ; \
+	for file in $$AD_LIST; do \
+		echo "$$file" ; \
+	done
+	@echo "+--------------------------------------------------------------------+"
+	@echo "AUBITDIR in ${HOME}/.aubit4gl/aubitrc :"
+	@grep -w AUBITDIR ${HOME}/.aubit4gl/aubitrc
+	@echo "+--------------------------------------------------------------------+"	
+	@echo "AUBITDIR in ${HOME}/.packages/@aubit4gl.sf.net/aubit4gl:${AUBIT_VERSION}.${AUBIT_BUILD}/environment.en :"	
+	@grep -w AUBITDIR ${HOME}/.packages/@aubit4gl.sf.net/aubit4gl:${AUBIT_VERSION}.${AUBIT_BUILD}/environment.en
+	@echo "+--------------------------------------------------------------------+"
+	
+ss:
+	@echo "+--------------------------------------------------------------------+"
+#bin dev .gnupg lib mnt proc sbin subdomain var boot home media root srv sys
+#	@AP_DIRS="/usr/libexec/autopackage /usr/share/autopackage /etc/autopackage ${HOME}"; 
+	@AP_DIRS="/usr /opt /etc /tmp"; \
+	for onedir in $$AP_DIRS; do \
+		find $$onedir -exec grep --with-filename --count "autopackage\.test" {} 2> /dev/null \;  | grep -v "\:0" ; \
+	done
+	@echo "+--------------------------------------------------------------------+"
+
+	
+#		grep -w AUBITDIR $$file; 	
+#--count
+#--files-with-matches stops on the first match
+#/home/aubit/.bashrc:[[ -f "/home/aubit/.config/autopackage/paths-bash" ]] && . "/home/aubit/.config/autopackage/paths-bash"
+#/home/aubit/.config/: autopackage  gtk-2.0  menus
+	
+	
+#find /var/packages -exec grep --with-filename "autopackage.test" {} 2> /dev/null \;
+
+         
+
+
+
+
+################################################
+#Create the installer .apspec file
+#TODO - move all relaces into ./configure
+autopackage.prepare: ${PREFIX}/bin/4glc
+	./config.status --file ${AP_SPEC}
+	@unset AP_ROOT_FILES; for file in `find ${PREFIX} -maxdepth 1 -type f`; do export AP_ROOT_FILES="$$AP_ROOT_FILES `basename $$file`"; done; \
+		echo "In makefile AP_ROOT_FILES=$$AP_ROOT_FILES"; \
+		sed -e "/^export AP_ROOT_FILES/s/@AP_ROOT_FILES@/$$AP_ROOT_FILES/" ${AP_SPEC} > /tmp/out1.out
+	@grep "^export AP_ROOT_FILES" /tmp/out1.out
+	@unset AP_BIN_FILES; for file in `find ${PREFIX}/bin -maxdepth 1 -type f`; do export AP_BIN_FILES="$$AP_BIN_FILES `basename $$file`"; done; \
+		echo "In makefile AP_BIN_FILES=$$AP_BIN_FILES"; \
+		sed -e "/^export AP_BIN_FILES/s/@AP_BIN_FILES@/$$AP_BIN_FILES/" /tmp/out1.out > /tmp/out2.out
+	@grep "^export AP_BIN_FILES" /tmp/out2.out
+	@unset AP_ETC_FILES; for file in `find ${PREFIX}/etc -maxdepth 1 -type f`; do export AP_ETC_FILES="$$AP_ETC_FILES `basename $$file`"; done; \
+		echo "In makefile AP_ETC_FILES=$$AP_ETC_FILES"; \
+		sed -e "/^export AP_ETC_FILES/s/@AP_ETC_FILES@/$$AP_ETC_FILES/" /tmp/out2.out > /tmp/out1.out
+	@grep "^export AP_ETC_FILES" /tmp/out1.out
+	@unset AP_ETC_CONFIG_FILES; for file in `find ${PREFIX}/etc/config -maxdepth 1 -type f`; do export AP_ETC_CONFIG_FILES="$$AP_ETC_CONFIG_FILES `basename $$file`"; done; \
+		echo "In makefile AP_ETC_CONFIG_FILES=$$AP_ETC_CONFIG_FILES"; \
+		sed -e "/^export AP_ETC_CONFIG_FILES/s/@AP_ETC_CONFIG_FILES@/$$AP_ETC_CONFIG_FILES/" /tmp/out1.out > /tmp/out2.out
+	@grep "^export AP_ETC_CONFIG_FILES" /tmp/out2.out
+	@unset AP_ETC_IMPORT_FILES; for file in `find ${PREFIX}/etc/import -maxdepth 1 -type f`; do export AP_ETC_IMPORT_FILES="$$AP_ETC_IMPORT_FILES `basename $$file`"; done; \
+		echo "In makefile AP_ETC_IMPORT_FILES=$$AP_ETC_IMPORT_FILES"; \
+		sed -e "/^export AP_ETC_IMPORT_FILES/s/@AP_ETC_IMPORT_FILES@/$$AP_ETC_IMPORT_FILES/" /tmp/out2.out > /tmp/out1.out
+	@grep "^export AP_ETC_IMPORT_FILES" /tmp/out1.out
+	@unset AP_ETC_CONVERTSQL_FILES; for file in `find ${PREFIX}/etc/convertsql -maxdepth 1 -type f`; do export AP_ETC_CONVERTSQL_FILES="$$AP_ETC_CONVERTSQL_FILES `basename $$file`"; done; \
+		echo "In makefile AP_ETC_CONVERTSQL_FILES=$$AP_ETC_CONVERTSQL_FILES"; \
+		sed -e "/^export AP_ETC_CONVERTSQL_FILES/s/@AP_ETC_CONVERTSQL_FILES@/$$AP_ETC_CONVERTSQL_FILES/" /tmp/out1.out > /tmp/out2.out
+	@grep "^export AP_ETC_CONVERTSQL_FILES" /tmp/out2.out
+	@unset AP_DOCS_FILES; for file in `find ${PREFIX}/docs -maxdepth 1 -type f`; do export AP_DOCS_FILES="$$AP_DOCS_FILES `basename $$file`"; done; \
+		echo "In makefile AP_DOCS_FILES=$$AP_DOCS_FILES"; \
+		sed -e "/^export AP_DOCS_FILES/s/@AP_DOCS_FILES@/$$AP_DOCS_FILES/" /tmp/out2.out > /tmp/out1.out
+	@grep "^export AP_DOCS_FILES" /tmp/out1.out
+	@unset AP_INCL_FILES; for file in `find ${PREFIX}/incl -maxdepth 1 -type f`; do export AP_INCL_FILES="$$AP_INCL_FILES `basename $$file`"; done; \
+		echo "In makefile AP_INCL_FILES=$$AP_INCL_FILES"; \
+		sed -e "/^export AP_INCL_FILES/s/@AP_INCL_FILES@/$$AP_INCL_FILES/" /tmp/out1.out > /tmp/out2.out
+	@grep "^export AP_INCL_FILES" /tmp/out2.out
+	@unset AP_TOOLS_FILES; for file in `find ${PREFIX}/tools -maxdepth 1 -type f`; do export AP_TOOLS_FILES="$$AP_TOOLS_FILES `basename $$file`"; done; \
+		echo "In makefile AP_TOOLS_FILES=$$AP_TOOLS_FILES"; \
+		sed -e "/^export AP_TOOLS_FILES/s/@AP_TOOLS_FILES@/$$AP_TOOLS_FILES/" /tmp/out2.out > /tmp/out1.out
+	@grep "^export AP_TOOLS_FILES" /tmp/out1.out
+	@unset AP_TOOLS_TEST_FILES; for file in `find ${PREFIX}/tools/test -maxdepth 1 -type f`; do export AP_TOOLS_TEST_FILES="$$AP_TOOLS_TEST_FILES `basename $$file`"; done; \
+		echo "In makefile AP_TOOLS_TEST_FILES=$$AP_TOOLS_TEST_FILES"; \
+		sed -e "/^export AP_TOOLS_TEST_FILES/s/@AP_TOOLS_TEST_FILES@/$$AP_TOOLS_TEST_FILES/" /tmp/out1.out > /tmp/out2.out
+	@grep "^export AP_TOOLS_TEST_FILES" /tmp/out2.out
+	@unset AP_TOOLS_TEST_GUI_FILES; for file in `find ${PREFIX}/tools/test/gui -maxdepth 1 -type f`; do export AP_TOOLS_TEST_GUI_FILES="$$AP_TOOLS_TEST_GUI_FILES `basename $$file`"; done; \
+		echo "In makefile AP_TOOLS_TEST_GUI_FILES=$$AP_TOOLS_TEST_GUI_FILES"; \
+		sed -e "/^export AP_TOOLS_TEST_GUI_FILES/s/@AP_TOOLS_TEST_GUI_FILES@/$$AP_TOOLS_TEST_GUI_FILES/" /tmp/out2.out > /tmp/out1.out
+	@grep "^export AP_TOOLS_TEST_GUI_FILES" /tmp/out1.out
+	@unset AP_TOOLS_4GLPC_FILES; for file in `find ${PREFIX}/tools/4glpc -maxdepth 1 -type f`; do export AP_TOOLS_4GLPC_FILES="$$AP_TOOLS_4GLPC_FILES `basename $$file`"; done; \
+		echo "In makefile AP_TOOLS_4GLPC_FILES=$$AP_TOOLS_4GLPC_FILES"; \
+		sed -e "/^export AP_TOOLS_4GLPC_FILES/s/@AP_TOOLS_4GLPC_FILES@/$$AP_TOOLS_4GLPC_FILES/" /tmp/out1.out > /tmp/out2.out
+	@grep "^export AP_TOOLS_4GLPC_FILES" /tmp/out2.out
+	@unset AP_TOOLS_4GLPC_SETTINGS_FILES; for file in `find ${PREFIX}/tools/4glpc/settings -maxdepth 1 -type f`; do export AP_TOOLS_4GLPC_SETTINGS_FILES="$$AP_TOOLS_4GLPC_SETTINGS_FILES `basename $$file`"; done; \
+		echo "In makefile AP_TOOLS_4GLPC_SETTINGS_FILES=$$AP_TOOLS_4GLPC_SETTINGS_FILES"; \
+		sed -e "/^export AP_TOOLS_4GLPC_SETTINGS_FILES/s/@AP_TOOLS_4GLPC_SETTINGS_FILES@/$$AP_TOOLS_4GLPC_SETTINGS_FILES/" /tmp/out2.out > /tmp/out1.out
+	@grep "^export AP_TOOLS_4GLPC_SETTINGS_FILES" /tmp/out1.out
+#Note - directory name depends on the version number
+	@unset AP_PLUGINS_FILES; for file in `find ${PREFIX}/plugins-${AUBIT_VERSION}_${AUBIT_BUILD} -maxdepth 1 -type f`; do export AP_PLUGINS_FILES="$$AP_PLUGINS_FILES `basename $$file`"; done; \
+		echo "In makefile AP_PLUGINS_FILES=$$AP_PLUGINS_FILES"; \
+		sed -e "/^export AP_PLUGINS_FILES/s/@AP_PLUGINS_FILES@/$$AP_PLUGINS_FILES/" /tmp/out1.out > /tmp/out2.out
+	@grep "^export AP_PLUGINS_FILES" /tmp/out2.out
+#Warning - avoid libaubit4gl.so - we will create link for it
+	@unset AP_LIB_FILES; for file in `find ${PREFIX}/lib/*_*.* -maxdepth 1 -type f`; do export AP_LIB_FILES="$$AP_LIB_FILES `basename $$file`"; done; \
+		echo "In makefile AP_LIB_FILES=$$AP_LIB_FILES"; \
+		sed -e "/^export AP_LIB_FILES/s/@AP_LIB_FILES@/$$AP_LIB_FILES/" /tmp/out2.out > /tmp/out1.out
+	@grep "^export AP_LIB_FILES" /tmp/out1.out
+#Final bounce:
+	cp /tmp/out1.out ${AP_SPEC_USE}
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@ completed; ${AP_SPEC_USE} created "
+	@echo "+--------------------------------------------------------------------+"
+
+
+################################################
 #Create a default spec file
 autopackage.default:
-	makeinstaller --mkspec > aubit4gl.apspec.in
+	export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+		makeinstaller --mkspec > /tmp/aubit4gl.default.apspec
 
 
 ################################################
 #Test created package
-autopackage.test: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package
+autopackage.test: autopackage.install autopackage.compare
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@ completed"
+	@echo "+--------------------------------------------------------------------+"
+
+################################################
+# Execute .package to run installed in TUI mode to tmp location
+autopackage.install: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package deinstall 
+#check.exe.in.path
 #.package files support:
 # -x : this extracts the contents and places them in a directory named after 
 #	the package. Use this when you don't want to install software, but instead 
@@ -1296,50 +1563,105 @@ autopackage.test: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package
 #	are extracted to a temporary working directory. Then instead of starting the 
 #	install scripts, you are dumped into a shell. You can now investigate or 
 #	change the control scripts or payload. Type "exit" to quit the shell and clean up.
+# -f, --force       Overrides fatal warnings to force the install to proceed
+# -g, --gtkfe       Forces the usage of the graphical GTK based frontend
+# -h, --help        Display this help screen
 #
-#  -d, --debug       Extracts but does not automatically run the installer
-#  -x, --extract     Extracts the package and returns
-#  -f, --force       Overrides fatal warnings to force the install to proceed
-#  -g, --gtkfe       Forces the usage of the graphical GTK based frontend
-#  -h, --help        Display this help screen
-#  -p, --prefix      Sets the prefix that the package will install to
-#  -t, --ttyfe       Forces the usage of the text based terminal frontend
-#
-#The meta package is 'aubit4gl-1.00.3.x86.package.meta'.
-#	@echo "${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package.meta"
-#The complete package is 'aubit4gl-1.00.3.x86.package'.
-#	@echo "${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package"
-#The Luau repository XML entry file is 'aubit4gl.xml'.
-#	@echo "${AUBITNAME}.xml"
-#	./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package -x -t
-	export DEBUGLEVEL=3 ; ./$^ -t -p /tmp/autopackage.test
+#WARNING - -p flag (install location/PREFIX) seems to be ignored in GUI installed and only valid for TUI
+	export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+	export DEBUGLEVEL=3 ; ./$< ${AP_UI_FLAG} -p ${AP_INST_TMP}
+ifeq "${LIST}" "1"
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| Files installed to /tmp/autopackage.test:"
+	@echo "| Files installed to ${AP_INST_TMP}:"
 	@echo "+--------------------------------------------------------------------+"	
-	@find /tmp/autopackage.test
+	@find ${AP_INST_TMP}
+endif
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| make autopackage.test: Done"
+	@echo "| make $@: Done (see ./autopackage.log) "
 	@echo "+--------------------------------------------------------------------+"	
+
+
+#As we cant run AutoPackage deinstaller without user input, we depend on installer
+#to first de-install; therefore we will at this point still potentially have AutoPackage
+#installed executables in path. So we cant really use this test...
+check.exe.in.path:
+	@export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+	if test "`which aubit 2>/dev/null`" != "" -o "`which aubit-config 2>/dev/null`" != ""  \
+		-o "`which 4glc 2>/dev/null`" != ""; then \
+		echo "ERROR: we still have Aubit executables in the path!"; \
+			which aubit; \
+			which aubit-config; \
+			which 4glc; \
+		exit 1; \
+	fi
 	
+################################################
+# Extract files from package, so we can inspect them
+autopackage.extract:
+	export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+		./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package -x ${AP_UI_FLAG}
+	
+################################################
+# Compare AutoPackage installed files agains files installed by 'make install'
+autopackage.compare: ${PREFIX}/bin/4glc
+#Cant do diff as AutoPackage wraps executables into scripts
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Comparing AutoPackage installed files against files installed by 'make install'"
+	@echo "+--------------------------------------------------------------------+"	
+	@if test -d ${AP_INST_TMP}; then \
+	if test -f ${PREFIX}/bin/4glc ; then \
+		for file in `cd ${PREFIX}; find -type f | sed -e 's/\.\///g'`; do \
+			true "Checking ${AP_INST_TMP}/$$file ..."; \
+			if ! test -f ${AP_INST_TMP}/$$file; then \
+				if test \
+				"`echo $$file | grep 'CVS'`" = "" -a \
+				"`echo $$file | grep '\.desktop'`" = "" -a \
+				"`echo $$file | grep '\.applications'`" = "" -a \
+				"`echo $$file | grep '\.db'`" = "" -a \
+				"`echo $$file | grep 'config.nice'`" = "" -a \
+				"`echo $$file | grep '\.png'`" = "" \
+				; then \
+					echo "ERROR: missing  ${AP_INST_TMP}/$$file"; \
+				fi; \
+			fi; \
+		done ; \
+	else \
+		echo "ERROR: ${PREFIX} seems empty - Aubit was not installed there?"; \
+	fi ; \
+	else \
+		echo "ERROR: ${AP_INST_TMP} does not exist !"; \
+	fi
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: Done"
+	@echo "+--------------------------------------------------------------------+"	
 	
 ################################################
 #Debug created package
-autopackage.debug: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package
+autopackage.debug: ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package deinstall
 #The following environment variables control how much debugging information is outputted:
+#
 #Installation of packages
-#    * DEBUGLEVEL - Controls debugging output from the core program. Can be any number between 0 and 3 where 3 is the most verbose level.
-#    * GTKFE_DEBUGLEVEL - Controls the debugging output from the GTK Frontend. Can be any number where a higher number means higher verbosity.
+#    * DEBUGLEVEL - Controls debugging output from the core program. Can be any 
+#      number between 0 and 3 where 3 is the most verbose level.
+#    * GTKFE_DEBUGLEVEL - Controls the debugging output from the GTK Frontend. Can 
+#      be any number where a higher number means higher verbosity.
 #
 #Other autopackage programs
-#    * AUTOPACKAGE_MANAGER_GTK_DEBUG - Makes the GTK version of the manager print debugging info. Value is boolean.
-#    * AUTOPACKAGE_MANAGER_BACKEND_DEBUG - Makes the backend for the manager print debugging info. Value is boolean.
+#    * AUTOPACKAGE_MANAGER_GTK_DEBUG - Makes the GTK version of the manager print 
+#      debugging info. Value is boolean.
+#    * AUTOPACKAGE_MANAGER_BACKEND_DEBUG - Makes the backend for the manager print 
+#      debugging info. Value is boolean.
 #    * AUTOPACKAGE_MKAPSPEC_DEBUG - Makes mkapspec print debugging information. Value is boolean.
 #    * APBUILD_DEBUG - Makes apbuild print debugging information. Value is boolean.
-	./$^ -d -t -p /tmp/autopackage.test
+#
+#WARNING - -p flag (install location/PREFIX) seems to be ignored in GUI installed and only valid for TUI
+	export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+		export DEBUGLEVEL=3 ; ./$^ -d ${AP_UI_FLAG} -p ${AP_INST_TMP}
+#	find . -exec grep AP_LIB_FILES {} \;
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| make autopackage.debug: Done"
+	@echo "| make $@: Done"
 	@echo "+--------------------------------------------------------------------+"	
-	
+
 	
 ################################################
 # Clean all AutoPackage created files
@@ -1347,14 +1669,127 @@ autopackage.clean:
 	${RM} ${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package.meta \
 		${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package \
 		${AUBITNAME}.xml
-	rm -rf /tmp/autopackage.test
-#CRAP - cant make it stay in TUI - allways pops up GUI:
-	-package remove -t aubit4gl
+#Dont delete directory where AP installed - it confuses the deinstaller:
+#	rm -rf ${AP_INST_TMP}
+	${RM} ${ALL_DESKTOP} ${ALL_APPLICATIONS} \
+	${PREFIX}/docs/aubit4gl.png ${AP_SPEC_USE} /tmp/out1.out /tmp/out2.out ./autopackage.log
+	rm -rf /tmp/apkg-fifo*
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| make autopackage.clean: Done"
+	@echo "| make $@: Done"
+	@echo "+--------------------------------------------------------------------+"	
+
+################################################
+#Deinstall and then clean all traces of any AutoPackagge related activity
+autopackage.remove: autopackage.deinstall autopackage.clean
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: Done"
 	@echo "+--------------------------------------------------------------------+"	
 	
 	
+###############################################
+# Deinstall the package
+autopackage.deinstall:
+#CRAP - cant make it stay in TUI - allways pops up GUI:
+#Installing automatically de-installs previous, so we can ignore it here
+	-export PATH=${INIT_PATH}; export LD_LIBRARY_PATH=${INIT_LD_LIBRARY_PATH}; unset AUBITDIR; \
+		export DEBUGLEVEL=3; export AUTOPACKAGE_MANAGER_BACKEND_DEBUG=3; package remove aubit4gl
+#	package remove aubit4gl
+#/home/aubit/.local/share/applications/ contains ALL system .desktop files
+#/home/aubit/.local/share/icons
+#/home/aubit/.local/share/Trash
+#/home/aubit/.local/bin <<<<<<<<<<<<<<<<
+#Spemthing also added /home/aubit/.local/lib to LD_LIBRARY_PATH
+	@unset AP_BIN_FILES; for file in `find ${PREFIX}/bin -maxdepth 1 -type f`; do export AP_BIN_FILES="$$AP_BIN_FILES `basename $$file`"; done; \
+		for afile in $$AP_BIN_FILES; do \
+			REMOVE="${HOME}/.local/bin/$$afile"; \
+			REMOVE2="${HOME}/.local/bin/.proxy.$$afile"; \
+			echo "removing $$REMOVE and $$REMOVE2"; \
+			${RM} $$REMOVE $$REMOVE2 ; \
+		done
+#/home/aubit/.bashrc:[[ -f "/home/aubit/.config/autopackage/paths-bash" ]] && . "/home/aubit/.config/autopackage/paths-bash"
+#/home/aubit/.config/: autopackage  gtk-2.0  menus
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Files still in ~/.local/bin :"
+	@echo "+--------------------------------------------------------------------+"	
+	-ls -al ~/.local/bin/
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: Done"
+	@echo "+--------------------------------------------------------------------+"	
+
+################################################
+#
+AP_VER=1.2.1
+AP_GTK_VER=${AP_VER}
+AP_QT_VER=1.2
+autopackage.install.tools: autopackage.install.dev autopackage.install.gui
+	package list
+	
+################################################
+#
+autopackage.install.dev:
+	wget http://ftp.sunsite.dk/projects/autopackage/${AP_VER}/Autopackage%20Development%20Environment%20${AP_VER}.package
+#mkapspec: APSpec File Generator
+	chmod a+x *.package
+	./Autopackage%20Development%20Environment%20${AP_VER}.package
+	
+################################################
+#Download and install AutoPackage GUI interface packages
+autopackage.install.gui:
+	wget http://ftp.sunsite.dk/projects/autopackage/${AP_VER}/autopackage-gtk-${AP_VER}.package
+	wget http://ftp.sunsite.dk/projects/autopackage/${AP_QT_VER}/autopackage-qt-${AP_QT_VER}.package
+	chmod a+x *.package
+	package install ./autopackage-gtk-${AP_VER}.package
+	package install ./autopackage-qt-${AP_QT_VER}.package
+	
+################################################
+#
+autopackage.deinstall.tools: autopackage.deinstall.dev autopackage.deinstall.gui
+	package list
+
+################################################
+#
+autopackage.deinstall.dev:
+	package remove autopackage-devel
+
+################################################
+#
+autopackage.deinstall.gui:
+	package remove autopackage-gtk
+	package remove autopackage-qt
+
+	
+################################################
+#Create .desktop file for GUI desktop envirionments (KDE, GNOME,...)
+configurator.desktop: ${ALL_DESKTOP} 
+
+${PREFIX}/etc/aubit4gl-configurator.desktop:
+	@echo "[Desktop Entry]" > $@
+	@echo "Name=Aubit 4GL compiler configuration" >> $@
+	@echo "Comment=Configure Aubit compiler options" >> $@
+	@echo "Exec=aubit4gl-configurator.sh" >> $@
+	@echo "Icon=aubit4gl.png" >> $@
+	@echo "Terminal=0" >> $@
+	@echo "Type=Application" >> $@
+#	@echo "MimeType=text/html" >> $@
+	@echo "Categories=Application;Development;" >> $@
+	echo "Created $@"
+	convert docs/aubit4gl.ico ${PREFIX}/docs/aubit4gl.png
+
+################################################
+#Gnome 2 App Entry
+configurator.applications: ${ALL_APPLICATIONS}
+
+${PREFIX}/etc/aubit4gl-configurator.applications:
+	@echo "configurator" > $@
+	@echo "command=aubit4gl-configurator.sh" >> $@
+	@echo "name=Aubit 4GL compiler configuration" >> $@
+	@echo "can_open_multiple_files=false" >> $@
+	@echo "expects_uris=false" >> $@
+	@echo "requires_terminal=false" >> $@
+	@echo "startup_notify=true" >> $@
+#	@echo "mime_types=text/html" >> $@
+	echo "Created $@"
+
 ## ------------------------------------------------------------------
 ##                       Other Targets (Misc.)
 ## ------------------------------------------------------------------

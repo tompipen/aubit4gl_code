@@ -81,7 +81,7 @@ AUBITETC=@AUBITETC@
 #installing 'aubitrc' outside of Aubit source code tree
 AUBITDIR=@aubitdir@
 #Used by automated tests script (run_tests) to find source code as needed
-AUBITDIR_SRC=@aubitdir@
+AUBITDIR_SRC=@aubitdir_src@
 
 ############
 #Full path to CINT C-code interpreter, if installed, othewise "no"
@@ -460,6 +460,7 @@ A4GL_SAPDB_ESQLC="@SAPDB_ESQLC@"
 #this is set in your LD_LIBRARY_PATH or equivalent manually.
 #Default=<no default value>
 ADD_LD_LIBRARY_PATH="@ADD_LD_LIBRARY_PATH@"
+WARN_LD_LIBRARY_REASON="@WARN_LD_LIBRARY_REASON@"
 
 #####################
 #Path to CINT installation. Used by cint/make_cintlib

@@ -1,3 +1,4 @@
+# -*- shell-script -*-
 #On CygWin, using /bin/sh will result in error since sh is NOT bash and 
 #does NOT understand functions!
 #Variables, like #!${SHELL:-/bin/bash} cant be used here
@@ -21,6 +22,1060 @@ function dummy {
 	RET=$?
 	exit $RET
 }
+
+
+######################################
+# Check compiler environment 
+function check_env () {
+CHK_WARN=0
+CHK_ERR=0
+
+	#--------------------------
+	#Locate programs we need
+	LOCATE="`which locate 2>/dev/null`"
+	LD_CONFIG="`which ldconfig 2>/dev/null`"
+	A4GL_C="`which 4glc 2>/dev/null`"
+	A4GL_AUBIT="`which aubit 2>/dev/null`"
+	A4GL_CONFIG="`which aubit-config 2>/dev/null`"
+	A4GL_AMAKE="`which amake 2>/dev/null`"
+	
+	
+	#--------------------------
+	#Load variables we need
+	USER_ID=`id --user`	
+	CURR_AUBITDIR=`aubit-config AUBITDIR`
+	#	A4GL_LINK_LIBS=-laubit4gl-1.00_4
+	#  DEFAULT_PLUGINDIR=/usr/src/aubit/aubit4glsrc/plugins-1.00_4
+
+
+	message "Checking Aubit compiler environment..."
+	
+	check_exe 
+	check_libs
+	check_plugins
+	check_rc
+	check_vars
+	check_tools
+	check_compile
+	
+	if test "$WARN_PLUGINS" != "0"; then
+		show_plugins_warning
+	fi
+
+	echo "+--------------------------------------------------------------------+"
+	echo "| Done with $CHK_WARN warnings and $CHK_ERR errors"
+	echo "+--------------------------------------------------------------------+"
+	
+	
+	if test "$CHK_ERR" = "0"; then 
+		if test "$ALL_LIBPATHS_FOUND" != ""; then
+			exit 99
+		else
+			exit 0
+		fi
+	else 
+		exit $CHK_ERR
+	fi
+
+}
+
+function inst_summary () {
+DIALOG=1
+PREFIX=`aubit-config AUBITDIR`
+	CNF="$PREFIX/bin/aubit-config" 
+	
+	A4GL_LEXTYPE=`$CNF A4GL_LEXTYPE`
+	A4GL_LEXTYPE_DETECTED=`$CNF A4GL_LEXTYPE_DETECTED`
+	A4GL_LEXDIALECT=`$CNF A4GL_LEXDIALECT`
+	A4GL_LEXDIALECT_DETECTED=`$CNF A4GL_LEXDIALECT_DETECTED`
+	A4GL_UI=`$CNF A4GL_UI`
+	A4GL_UI_DETECTED=`$CNF A4GL_UI_DETECTED`
+	A4GL_SQLTYPE=`$CNF A4GL_SQLTYPE`
+	A4GL_SQLTYPE_DETECTED=`$CNF A4GL_SQLTYPE_DETECTED`
+	A4GL_MENUTYPE=`$CNF A4GL_MENUTYPE`
+	A4GL_MENUTYPE_DETECTED=`$CNF A4GL_MENUTYPE_DETECTED`
+	A4GL_MSGTYPE=`$CNF A4GL_MSGTYPE`
+	A4GL_MSGTYPE_DETECTED=`$CNF A4GL_MSGTYPE_DETECTED`
+	A4GL_PACKER=`$CNF A4GL_PACKER`
+	A4GL_PACKER_DETECTED=`$CNF A4GL_PACKER_DETECTED`
+	EXDTYPE=`$CNF EXDTYPE`
+	EXDTYPE_DETECTED=`$CNF EXDTYPE_DETECTED`
+	A4GL_FORMTYPE=`$CNF A4GL_FORMTYPE`
+	A4GL_FORMTYPE_DETECTED=`$CNF A4GL_FORMTYPE_DETECTED`
+	A4GL_RPCTYPE=`$CNF A4GL_RPCTYPE`
+	A4GL_RPCTYPE_DETECTED=`$CNF A4GL_RPCTYPE_DETECTED`
+	A4GL_PDFTYPE=`$CNF A4GL_PDFTYPE`
+	A4GL_PDFTYPE_DETECTED=`$CNF A4GL_PDFTYPE_DETECTED`
+
+	MSG="Aubit compiler is now installed to $PREFIX. Here is the summary of automaticaly"
+	MSG="${MSG} set configuration: [listed as: default (available)]\n\n"
+	
+	MSG="${MSG}LEXTYPE=$A4GL_LEXTYPE ($A4GL_LEXTYPE_DETECTED)\n"
+	MSG="${MSG}LEXDIALECT=$A4GL_LEXDIALECT ($A4GL_LEXDIALECT_DETECTED)\n"
+	MSG="${MSG}UI=$A4GL_UI ($A4GL_UI_DETECTED)\n"
+	MSG="${MSG}SQLTYPE=$A4GL_SQLTYPE ($A4GL_SQLTYPE_DETECTED)\n"
+	MSG="${MSG}MENUTYPE=$A4GL_MENUTYPE ($A4GL_MENUTYPE_DETECTED)\n"
+	MSG="${MSG}MSGTYPE=$A4GL_MSGTYPE ($A4GL_MSGTYPE_DETECTED)\n"
+	MSG="${MSG}PACKER=$A4GL_PACKER ($A4GL_PACKER_DETECTED)\n"
+	MSG="${MSG}EXDTYPE=$EXDTYPE ($EXDTYPE_DETECTED)\n"
+	MSG="${MSG}FORMTYPE=$A4GL_FORMTYPE ($A4GL_FORMTYPE_DETECTED)\n"
+	MSG="${MSG}RPCTYPE=$A4GL_RPCTYPE ($A4GL_RPCTYPE_DETECTED)\n"
+	MSG="${MSG}PDFTYPE=$A4GL_PDFTYPE ($A4GL_PDFTYPE_DETECTED)\n\n"
+
+	#TODO - show unavailable options
+	
+	MSG="${MSG}You can inspect and change defaut configuration set by AutoConf "
+	MSG="${MSG}using 'configurator' utility; "
+	MSG="${MSG}GUI version can be found in 'Start' menu -> Development -> "
+	MSG="${MSG}More Programs -> 'Aubit 4GL compiler configuration', or type 'aubit configurator' on command line.\n"
+	
+	MSG="${MSG}To start using Aubit compiler, open a >>NEW<< terminal window, 'cd' to $PREFIX/tools/test, "
+	MSG="${MSG}type 'make' and follow instructions.\n\n" 
+	MSG="${MSG}Note that currently open terminal windows WILL NOT have environment "
+	MSG="${MSG}changes introduced by installer applied, and therefore Aubit compiler WILL NOT work in them.\n"
+	MSG="${MSG}You can verify your Aubit environment using command 'aubit --chk-env'\n\n"
+	MSG="${MSG}          Thank you for installing Aubit 4GL compiler."
+	
+	if test "$DIALOG" = "1"; then
+		dialog --msgbox "$MSG" 0 0	# height width
+	else
+		echo "============================================================================="
+		echo "$MSG"
+		echo "============================================================================="
+	fi
+
+exit
+}
+
+
+######################################
+#compile tools/test/test_build.4gl and run it - examine message 
+function check_compile () {
+
+	#CURR_AUBITDIR="/tmp/autopackage2.test"
+
+	MK_OUT=`cd $CURR_AUBITDIR/tools/test; rm -f test_build.c test_build.h test_build.o test_build`
+	MK_OUT=`cd $CURR_AUBITDIR/tools/test; DEBUG=ALL;export DEBUG;4glpc test_build.4gl -o test_build`
+	if test -f $CURR_AUBITDIR/tools/test/test_build; then 
+		RUN_OUT="`A4GL_UI=CONSOLE; export A4GL_UI; DEBUG=ALL; export DEBUG; $CURR_AUBITDIR/tools/test/test_build`"
+		IS_OK="`echo $RUN_OUT | grep 'Aubit 4gl compiler is working - compiler build was successfull'`"
+		if test "$IS_OK" != ""; then
+			echo $IS_OK
+			note "4GL compiles is working"
+		else
+			error "Compiling of tools/test/test_buils.4gl failed."
+			let CHK_ERR=CHK_ERR+1
+			echo $MK_OUT
+			echo $RUN_OUT
+		fi
+	else 
+		error "Compiling of tools/test/test_buils.4gl failed."
+		let CHK_ERR=CHK_ERR+1
+		echo $MK_OUT
+	fi
+
+}
+
+######################################
+# Check tools we need to use Aubit compiler
+function check_tools () {
+
+	GCC=`which gcc 2>/dev/null`
+	MAKE=`which make 2>/dev/null` 
+
+	if test "$GCC" = ""; then
+		let CHK_ERR=CHK_ERR+1
+		error "Missing GCC compiler!"
+		error "Please fix first, then re-run"
+		exit 1
+	else
+		verbose "gcc OK"
+	fi
+
+	if test "$GCC" = ""; then 
+		warning "Missing 'make'!"
+		let CHK_WARN=CHK_WARN+1
+	else
+		verbose "make OK"
+	fi
+	
+	
+}
+
+######################################
+# Check access to executables and scripts
+function check_exe () {
+
+	message "Checking access to executables..."
+	
+	if test "$A4GL_C" = ""; then
+		if test "$A4GL_AUBIT" = ""; then 
+			let CHK_ERR=CHK_ERR+1
+			error "4glc nor aubit are not in the PATH - no access to executables"
+			error "Please fix first, then re-run"
+			exit 1
+		else
+			let CHK_WARN=CHK_WARN+1
+			warning "4glc is not in the PATH, but have access to 'aubit' wrapper"
+			A4GL_C="$A4GL_AUBIT 4glc"
+		fi
+	fi
+	if test "$A4GL_CONFIG" = ""; then
+		let CHK_ERR=CHK_ERR+1
+		if test "$A4GL_AUBIT" = ""; then
+			error "aubit-config not in the PATH"
+			error "Please fix first, then re-run"
+			exit 1
+		else
+			let CHK_WARN=CHK_WARN+1
+			warning "aubit-config is not in the PATH, but have access to 'aubit' wrapper"
+			A4GL_CONFIG="$A4GL_AUBIT aubit-config"
+		fi
+	fi
+	if test "$A4GL_AMAKE" = ""; then
+		let CHK_WARN=CHK_WARN+1
+		warning "amake not in the PATH"
+	fi
+
+
+}
+
+######################################
+# Check access to libraries like libaubit4gl.so (not plugins)
+function check_libs () {
+
+	message "Checking access to libraries..."
+	
+	if test "$A4GL_C" != ""; then
+		A4GL_VER="`$A4GL_C --version 2>&1`"
+		RET=$?
+	else
+		if test "$A4GL_AUBIT" != ""; then
+			A4GL_C="$A4GL_AUBIT $A4GL_C"
+			A4GL_VER="`$A4GL_AUBIT $A4GL_C --version 2>&1`"
+			RET=$?
+		else
+			warning "Dont have access to '4glc' and 'aubit' - skip lib test"
+		fi
+	fi
+	
+	if test "$RET" != "0"; then
+		warning "A4GL_C ($A4GL_C) returned code $RET"  
+	fi
+	
+	
+	if test "$A4GL_VER" != ""; then
+	
+		III=`echo "$A4GL_VER" | grep "4GL Compiler"`
+		if test "$III" = ""; then
+			let CHK_ERR=CHK_ERR+1
+			error "Returned --version is invalid ($A4GL_VER)"
+			exit 1
+		fi
+	
+		verbose "$A4GL_C can be invoked - it has access to libaubit4gl"
+		verbose "A4GL_VER=$A4GL_VER"
+		#Dont quote - want it all on one line:
+		echo $A4GL_VER
+		TTT=`ldd $A4GL_C | grep "not a dynamic executable"`
+		if test "$TTT" != ""; then
+			verbose "$A4GL_C is not the executable"
+			DDD=`file $A4GL_C | grep "shell script"`
+			if test "$DDD" != ""; then
+				verbose "$A4GL_C is a shell script (probably created by AutoPackage)"
+			else
+				if test -l "$A4GL_C"; then
+					verbose "$A4GL_C is a link to xyz"
+				else
+					error "$A4GL_C is not an executable, script, or a link"
+					let CHK_ERR=CHK_ERR+1
+				fi
+			fi
+		fi
+		
+		if test "$EXEC_IS" != ""; then
+			LIBAUBIT=`ldd $EXEC_IS | grep libaubit4gl`
+			message "$LIBAUBIT"
+		else
+			verbose "Skipping ldd 4glc as I did not determine executale location"
+		fi
+		
+		
+	else
+		let CHK_ERR=CHK_ERR+1
+		error "$A4GL_C cannot be loaded"
+		exit 1
+	fi
+	
+
+}
+
+######################################
+# Check Aubit plug-ins
+function check_plugins () {
+	
+	message "Checking access to plug-ins..."
+	
+	old_LD_PATH="$LD_LIBRARY_PATH"
+	
+	WARN_PLUGINS=0
+	DEFAULT_PLUGINDIR="`$A4GL_CONFIG DEFAULT_PLUGINDIR`"
+	if test "$DEFAULT_PLUGINDIR" != ""; then
+		if test -d "$DEFAULT_PLUGINDIR" ; then
+			for file in $DEFAULT_PLUGINDIR/lib*.so; do
+				OUT=""
+				plugin="`basename $file`"
+				#verbose "Checking plugin $file ..."
+				OUT="`ldd $file | grep "not found"`"
+				if test "$OUT" != ""; then
+					let CHK_WARN=CHK_WARN+1
+					plugin_id="`echo $plugin | sed -e 's/^lib//' -e 's/\.so//'`"
+					MISSING_LIB="`echo $OUT | awk '{print $1}'`"
+					warning "Plugin $plugin_id cannot locate shared library $MISSING_LIB"
+					
+					#Check if this plug-in is currently a default plug-in, and as 
+					#such would prevent Aubit from working in 
+					#current configuration
+					check_default_plugins "$plugin_id"
+					
+					WARN_PLUGINS=1
+					PLUGINS_WARN_LIST="$PLUGINS_WARN_LIST $plugin_id"
+					if test "$LOCATE" != ""; then
+ 						FOUND_DIRS="`$LOCATE $MISSING_LIB`"
+						FOUND="`echo $FOUND_DIRS | awk '{print $1}'`"
+						if test "$FOUND" != ""; then
+							#note "$MISSING_LIB found as $FOUND"
+							NEW_LIB_PATH="`dirname $FOUND`"
+							if test -d $NEW_LIB_PATH; then
+								try_ldpath "$NEW_LIB_PATH" "$MISSING_LIB" "$file" 
+							fi
+						fi
+					fi
+				fi
+			done
+		else
+			#This is not an error - it seems that we hard-code this when 
+			#we compile source, but at run-time even if this location is
+			#invalid, plugins will be loaded form $AUBITDOR/plugins-<version>
+			let CHK_WARN=CHK_WARN+1
+			warning "$A4GL_CONFIG returned DEFAULT_PLUGINDIR=$DEFAULT_PLUGINDIR"
+			warning "which is NOT a directory"
+		fi
+	
+	else
+		let CHK_ERR=CHK_ERR+1
+		error "$A4GL_CONFIG did not return anything for DEFAULT_PLUGINDIR"
+	fi
+
+	export LD_LIBRARY_PATH="$old_LD_PATH"
+	
+}
+
+######################################
+# Try loading plug-in again after adding that path to LD_LIUBRARY_PATH
+function try_ldpath () {
+NEW_LIB_PATH="$1"
+MISSING_LIB="$2"
+file="$3"
+plugin_id="$4"
+
+	curr_LD_PATH="$LD_LIBRARY_PATH"
+	export LD_LIBRARY_PATH="$NEW_LIB_PATH:$LD_LIBRARY_PATH"
+	
+	OUT="`ldd $file | grep "not found"`"
+	if test "$OUT" = ""; then
+		note "$MISSING_LIB found in $NEW_LIB_PATH"
+		ALL_LIBPATHS_FOUND="$ALL_LIBPATHS_FOUND:$NEW_LIB_PATH"
+		if test "$FIX_LD" = "1"; then
+			if test "$USER_ID" = "0"; then
+				if test "$LD_CONFIG" != ""; then
+					add_ldconfig "$NEW_LIB_PATH"
+				else
+					add_ld_lib_path "$NEW_LIB_PATH"
+				fi
+			else
+				add_ld_lib_path "$NEW_LIB_PATH"
+			fi
+		fi
+	else
+		export LD_LIBRARY_PATH="$curr_LD_PATH"
+		note "Tried adding $NEW_LIB_PATH to LD_LIBRARY_PATH"
+		note "to load $MISSING_LIB for $plugin_id"
+		note "but it did not help..."
+	fi
+
+}
+	
+###################################
+# Show message in case of non-functiona plug-ins
+function show_plugins_warning () {
+	
+		echo "+--------------------------------------------------------------------+"
+		echo "| The following Aubit plug-ins where found not functional:           |"
+		echo "|                                                                    |"
+		echo "| $PLUGINS_WARN_LIST"
+		echo "|                                                                    |"
+if test "$FIX_LD" = "1"; then
+		echo "| You specified --fix-ld, and some or all discovered libraries where |"
+	if test "$LD_CONFIG" != ""; then
+		echo "| added to ldconfig. Try                                             |"
+	else
+		echo "| added to $PROFILE file."
+		echo "| Execute '. $PROFILE' (note the DOT) and then try"
+	fi
+		echo "| running this script again (without --fix-ld) to see the effect     |"
+fi
+		echo "| - you did not install supporting libraries of this plug-ins, and/or|"
+		echo "| - the access to them is not available because system shared library|"
+		echo "|   loader (ld) cannot find them in ldconfig and/or LD_LIBRARY_PATH  |"
+		echo "| If you want to use this plug-ins, you will need to make sure that  |"
+		echo "| BOTH actions above are completed. Then check again.                |"
+		echo "+--------------------------------------------------------------------+"
+if test "$ALL_LIBPATHS_FOUND" != ""; then	
+		echo "| One or more of 3rd-party libraries where found in this paths:      |"
+		echo "|                                                                    |"
+		echo " $ALL_LIBPATHS_FOUND"
+		echo "|                                                                    |"
+	if test "$LD_CONFIG" != ""; then
+		echo "| Your system has ldconfig; if you run this script as user 'root'    |"
+		echo "| and add --fix-ld flag, I can add all found libraries to system     |"
+		echo "| ldconfig for you.                                                  |"
+		echo "| If you dont have 'root' password, I can add all found              |"
+		echo "| libraries paths to LD_LIBRARY_PATH in profile file for you, if     |"
+		echo "| you add --fix-ld to this script (/etc/profile if 'root',           |"
+		echo "| ~/.profile otherwise)"
+		
+	else
+		echo "| Your system does not have ldconfig, but I can add all found        |"
+		echo "| libraries paths to LD_LIBRARY_PATH in profile file for you, if     |"
+		echo "| you add --fix-ld to this script (/etc/profile if 'root',           |"
+		echo "| ~/.profile otherwise)"
+	fi
+fi	
+		ADD_LD_LIBRARY_PATH=`aubit-config ADD_LD_LIBRARY_PATH`
+if test "$ADD_LD_LIBRARY_PATH" != ""; then
+		echo "+--------------------------------------------------------------------+"
+		echo "| When you last time executed ./configuire, it determined the        |"
+		echo "| folowing paths that need to be added to ld configuration:          |"
+		echo "|                                                                    |"
+		echo "$ADD_LD_LIBRARY_PATH"
+		echo "|                                                                    |"
+		echo "| If you prefer, you can add them (or the ones above detemined now)  |"
+		echo "| to the ldconfig or LD_LIBRARY_PATH manually.                       |"
+		echo "+--------------------------------------------------------------------+"
+fi
+
+}
+
+######################################
+# Check if unaccesible plugin is currently configured as plugin that would be
+#used for running Aubit compiler and/or Aubit compiled programs
+function check_default_plugins () {
+plugin_id="$1"
+
+	CLASS="`echo $plugin_id | sed -e 's/^lib//' -e 's/_/ /' | awk '{print $1}'`"
+	#echo "checking class $CLASS ..."
+	
+	case $CLASS in
+		A4GL)
+			#Plug-ins without class in name, but basically behave like A4GL class:
+			#libfgl_smtp.so 
+			#libchannel.so
+			verbose "$plugin_id is class $CLASS - loads on demand and has no default"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			;;
+		LEX)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_LEXTYPE=C
+			#A4GL_LEXTYPE_DETECTED="C EC EC EC EC C C"
+			verbose "Class $CLASS loads on demand"
+			GET_CURRENT_FOR="A4GL_LEXTYPE"
+			GET_DETECTED_FOR="A4GL_LEXTYPE_DETECTED"
+			;;
+		SQL)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_SQLTYPE=esql
+			#A4GL_SQLTYPE_DETECTED="nosql pgodbc ifxodbc sapodbc unixodbc iodbc ingres mysql esql"
+			GET_CURRENT_FOR="A4GL_SQLTYPE"
+			GET_DETECTED_FOR="A4GL_SQLTYPE_DETECTED"
+			;;
+		LOGREP)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			;;
+		SQLPARSE)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			;;
+		LOGREPPROC)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			;;
+		DATA)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			;;
+		MENU)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_MENUTYPE=GENERIC
+			#A4GL_MENUTYPE_DETECTED="NOMENU XDR GENERIC"
+			GET_CURRENT_FOR="A4GL_MENUTYPE"
+			GET_DETECTED_FOR="A4GL_MENUTYPE_DETECTED"
+			;;
+		ESQL)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_LEXDIALECT=INFORMIX
+			#A4GL_LEXDIALECT_DETECTED=" SAPDB INGRES POSTGRES INFORMIX"
+			GET_CURRENT_FOR="A4GL_LEXDIALECT"
+			GET_DETECTED_FOR="A4GL_LEXDIALECT_DETECTED"
+			;;
+		UI)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_UI=TUI
+			#A4GL_UI_DETECTED="CONSOLE HL_TUIX HL_GTK TUI HL_TUI HL_TUIN"
+			GET_CURRENT_FOR="A4GL_UI"
+			GET_DETECTED_FOR="A4GL_UI_DETECTED"
+			;;
+		MSG)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_MSGTYPE=NATIVE
+			#A4GL_MSGTYPE_DETECTED="NATIVE"
+			GET_CURRENT_FOR="A4GL_MSGTYPE"
+			GET_DETECTED_FOR="A4GL_MSGTYPE_DETECTED"
+			;;
+		PACKER)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_PACKER=PACKED
+			#A4GL_PACKER_DETECTED=" XML XDR GZPACKED PACKED"
+			GET_CURRENT_FOR="A4GL_PACKER"
+			GET_DETECTED_FOR="A4GL_PACKER_DETECTED"
+			;;
+		EXDTYPE)
+			verbose "$plugin_id is class $CLASS"
+			#EXDTYPE=MPZ
+			#EXDTYPE_DETECTED=" MPZ"
+			GET_CURRENT_FOR="EXDTYPE"
+			GET_DETECTED_FOR="EXDTYPE_DETECTED"
+			;;
+		EXREPORT)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			;;
+		FORM)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_FORMTYPE=GENERIC
+			#A4GL_FORMTYPE_DETECTED="NOFORM XDR GENERIC"
+			GET_CURRENT_FOR="A4GL_FORMTYPE"
+			GET_DETECTED_FOR="GET_DETECTED_FOR"
+			;;
+		RPC)
+			verbose "$plugin_id is class $CLASS"
+			#A4GL_RPCTYPE=XDR
+			#A4GL_RPCTYPE_DETECTED="NORPC XMLRPC XDR"
+			GET_CURRENT_FOR="A4GL_RPCTYPE"
+			GET_DETECTED_FOR="A4GL_RPCTYPE_DETECTED"
+			;;
+		XDRPACKER)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			
+			;;
+		HELP)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			
+			;;
+		IM)
+			verbose "$plugin_id is class $CLASS"
+			GET_CURRENT_FOR=""
+			GET_DETECTED_FOR=""
+			;;
+
+#TODO:
+#  A4GL_SQLDIALECT=INFORMIX
+#  A4GL_HELPTYPE=std
+
+#Obsolete: (?)
+#  A4GL_PDFTYPE=PDF
+#  A4GL_PDFTYPE_DETECTED="NOPDF PDF"
+
+
+		*)
+			error "Unknown plugin class $CLASS"
+			exit 2
+			;;
+
+	esac
+
+	if test "$GET_CURRENT_FOR" != ""; then
+		CURRENT_VALUE=`aubit-config $GET_CURRENT_FOR`
+		if test "$CURRENT_VALUE" != ""; then
+			TESTING_PLUGIN_TYPE="`echo $plugin_id | sed -e 's/_/ /' | awk '{print $2}'`"
+			verbose "comparing $TESTING_PLUGIN_TYPE and $CURRENT_VALUE"
+			if test "$TESTING_PLUGIN_TYPE" = "$CURRENT_VALUE"; then
+				#This would prevent Aubit from working
+				error "Your currently configured default Aubit plug-in for $CLASS"
+				error "($plugin_id) cannot be loaded!"
+				let CHK_ERR=CHK_ERR+1
+				if test "$GET_DETECTED_FOR" != ""; then
+					CURRENT_DETECTED=`aubit-config $GET_DETECTED_FOR`
+					if test "$CURRENT_DETECTED" != ""; then 
+						note "./configure detected: $CURRENT_DETECTED"
+					else
+						warning "aubit-config did not return a setting for $GET_DETECTED_FOR"
+					fi
+				fi
+			fi
+		else
+			warning "aubit-config did not return setting for $GET_CURRENT_FOR"
+		fi
+	fi
+	
+	
+}
+
+######################################
+# Add path to LD_LIBRARY_PATH in profile file
+function add_ld_lib_path () {
+
+	if test "$USER_ID" = "0"; then
+		PROFILE=/etc/profile
+	else
+		PROFILE="$HOME/.profile"
+	fi
+	if test -w "$PROFILE"; then
+		note "Adding $NEW_LIB_PATH to LD_LIBRARY_PATH in $PROFILE ..."
+		#warning "FIXME - add code for it"
+
+		#The only safe way is to add a var at the end - this bypasses
+		#any conditional that may be in the file (if ... then)
+		#and issues of multiple vars with same name, commented out vars, etc...
+		
+		#Only way to fails would be if there is an early exit in file
+		#TODO: look for 'exit' keywoard and warn
+		
+		#We dont have to test if it's there allready, as if it was (and it's correct
+		#and working ) we would not be here
+		echo " " >> $PROFILE
+		echo "#Added by 'aubit --chk-env --fix-ld': " >> $PROFILE
+		echo "export LD_LIBRARY_PATH=\"$NEW_LIB_PATH:\$LD_LIBRARY_PATH\"" >> $PROFILE
+		echo " " >> $PROFILE		
+	else
+		warning "$PROFILE is not a file or not writable"
+	fi
+
+
+########## Some ideas - remove :
+	
+if test 1 = 2 ; then
+	CNT=`grep -w "LD_LIBRARY_PATH" $PROFILE | wc -l`
+	#echo "have $CNT"
+
+	if test "$CNT" = "1"; then
+		echo "changign"
+		OLDVALUE="`grep -w "LD_LIBRARY_PATH" $PROFILE | awk '{print $1}' | sed -e 's/\//\\\\\//g'`"
+			NEWVALUE="`echo "LD_LIBRARY_PATH=" | sed -e 's/\//\\\\\//g'`"
+
+	elif test "$CNT" = "0"; then
+		echo "adding ..."
+	else
+		echo "Have $CNT - cant do it"
+	fi
+	
+fi
+
+		
+		
+		
+if test 1 = 2 ; then		
+		HAS_LD_VAR="`grep LD_LIBRARY_PATH $PROFILE`"
+		if test "$HAS_LD_VAR" = ""; then
+			echo "LD_LIBRARY_PATH=$NEW_LIB_PATH:\$LD_LIBRARY_PATH" >> $PROFILE
+			verbose "Added; now LD_LIBRARY_PATH in $PROFILE is:"
+			grep LD_LIBRARY_PATH $PROFILE
+		else
+			OLDVALUE="`grep -w "LD_LIBRARY_PATH" $PROFILE | awk '{print $1}' | sed -e 's/\//\\\\\//g'`"
+			NEWVALUE="`echo "LD_LIBRARY_PATH=" | sed -e 's/\//\\\\\//g'`"
+		fi
+fi
+
+
+if test 1 = 2 ; then
+	#The basic technique for hacking /etc/profile would be:
+	
+	case "$cmd" in
+		-prepend) x="PATH=\"$addvalue:\$PATH\"";;
+		-append) x="PATH=\"\$PATH:$addvalue\"";;
+		-replace) x="PATH=\"$addvalue\"";;
+		-remove) x="unset PATH";;
+		*) echo "What?" 1>&2; exit 1;;
+	esac
+	echo "$x" >> $filename
+	
+	#Even that isn't reliable - if there's an early exit of some sort inside 
+	#/etc/profile, this won't take effect.
+	
+	#I have a command for editing a PATH-like variable:
+	#
+	#export PATH=$(clnpath $addvalue:$PATH:$othervalue $removelist)
+	#
+	#This creates a 'clean' value for PATH with the material from $addvalue and
+	#
+	#$othervalue wrapping the original value.
+	#It removes duplicate entries from the list, and also removes any items 
+	#from $removelist - itself a colon-separated list of values.
+	#
+	#For example, I use this to dink with PATH and LD_LIBRARY_PATH when setting
+	#an Informix environment.	
+fi	
+	
+	
+	
+}
+
+######################################
+# Add path to ldconfig 
+function add_ldconfig () {
+	
+	#DOES NOT SEEM TO WORK!!!!
+	LD_METHOD=1
+	LD_SO_CONF="/etc/ld.so.conf"
+	
+	
+	note "Adding $NEW_LIB_PATH to ldconfig..."
+	if test "$LD_METHOD" = "1"; then
+		if ! test -w $LD_SO_CONF ; then
+			error "You dont have permission to write to $$LD_SO_CONF !"
+			return
+		fi
+	
+		echo "$NEW_LIB_PATH" >> $LD_SO_CONF
+		RET=$?
+	else
+		$LD_CONFIG $NEW_LIB_PATH
+		RET=$?
+	fi
+
+	if test "$RET" != "0"; then
+		if test "$LD_METHOD" = "1"; then
+			error "Command \"echo $NEW_LIB_PATH >> $LD_SO_CONF\" failed"
+		else
+			error "Command $LD_CONFIG $NEW_LIB_PATH failed"
+		fi
+	else
+		verbose "command returned code $RET"
+	
+		#Refresh ld cache:
+		$LD_CONFIG
+		note "Refreshed LD cache."
+		
+		if test "$LD_METHOD" = "1"; then
+			echo "-------------------- PATHS ADDED: --------------------------------"
+			grep $NEW_LIB_PATH $LD_SO_CONF
+			echo "------------------------------------------------------------------"
+		fi
+
+		echo "------------------ LIBRARIES ADDED: ------------------------------"
+		$LD_CONFIG -p | grep $NEW_LIB_PATH
+		echo "------------------------------------------------------------------"
+	fi
+}
+
+######################################
+# Check Aubit configuration file (aubitrc) 
+function check_rc () {
+
+#source file lib/resource/resource.c looks for it in this order:
+# 1: AUBITETC/aubitrc (by default /etc/opt/aubit4gl/aubitrc unless explicity changed by user)
+# 2: AUBITDIR/etc/aubitrc (AUBIT INSTALATION DIRECTORY)
+# 3: HOME/.aubit4gl/aubitrc (USER'S HOME DIRECTORY)
+# 4: .aubitrc (CURENT DIRECTORY)
+# 5: $A4GL_INIFILE variable, if set
+#
+# NOTE - 5 = highest priority, 1 = lowest (eg. if same parameter is defined in 
+# 1: and 5:, setting will be set to value defined in 5:
+	
+	
+HAVE_ONE_RC=0
+
+	message "Checking configuration files..."
+	
+	AUBITETC=`aubit-config AUBITETC`
+	CURR_A4GL_INIFILE=`aubit-config A4GL_INIFILE`
+	
+	#================================== 1:
+	if test -d $AUBITETC; then
+		verbose "OK - found directory currently specified as AUBITETC"
+		if test -f $AUBITETC/aubitrc; then
+			verbose "OK - found $AUBITETC/aubitrc file"
+		else
+			error "$AUBITETC/aubitrc file does not exist"
+			let CHK_ERR=CHK_ERR+1
+		fi
+	else
+		#Not an error - its just a user specified optional location:
+		warning "AUBITETC=$AUBITETC is not a directory"
+		let CHK_WARN=CHK_WARN+1
+	fi
+	if test "$AUBITETC" != "/etc/opt/aubit4gl"; then
+		note "AUBITETC was modified from default value (/etc/opt/aubit4gl)" 
+		note "and is currently set to $AUBITETC"
+	fi
+	
+	#================================= 1: check default if it at least exists 
+	if ! test -f /etc/opt/aubit4gl/aubitrc; then
+		#let CHK_WARN=CHK_WARN+1
+		#In most cases ordinary users wont have one there, which is OK 
+		#as long as they have there own in HOME
+		note "Default global aubitrc (/etc/opt/aubit4gl/aubitrc) does not exist"
+	else
+		HAVE_ONE_RC=1
+	fi
+
+	#================================= 2:
+	if ! test -f $CURR_AUBITDIR/etc/aubitrc; then
+		#let CHK_WARN=CHK_WARN+1
+		#That is tipical for binary installs - we dont put it there by default
+		note "Default installation aubitrc ($CURR_AUBITDIR/etc/aubitrc) does not exist"
+	else
+		HAVE_ONE_RC=1
+	fi
+
+	
+	#================================= 3: 
+	if ! test -f $HOME/.aubit4gl/aubitrc; then
+		let CHK_WARN=CHK_WARN+1
+		warning "Default user aubitrc (~/.aubit4gl/aubitrc) does not exist"
+	else
+		HAVE_ONE_RC=1
+	fi
+
+	#================================= 4:
+	if ! test -f .aubitrc; then
+		note "aubitrc does not exist in the current directory (.aubit4gl)"
+	else
+		HAVE_ONE_RC=1
+	fi
+	
+	#================================= 5:
+	if test "$CURR_A4GL_INIFILE" != ""; then 
+		if ! test -f $A4GL_INIFILE; then
+			note "A4GL_INIFILE is defined, but does not exist ($A4GL_INIFILE)"
+		else
+			HAVE_ONE_RC=1
+		fi
+	else 
+		note "A4GL_INIFILE is not set"	
+	fi
+	
+		
+	if test "$HAVE_ONE_RC" != "1"; then
+		let CHK_ERR=CHK_ERR+1
+		error "Failed to find aubitrc anywhere; looked for, in this orders:"
+		error "AUBITETC/aubitrc AUBITDIR/etc/aubitrc HOME/.aubit4gl/aubitrc .aubitrc A4GL_INIFILE"
+	fi
+	
+	if ! test -f ~/.aubit4gl.acl; then
+		#let CHK_WARN=CHK_WARN+1
+		note "Default user aubit4gl.acl (~/.aubit4gl.acl) does not exist"
+	fi
+
+
+}
+
+######################################
+# Check  
+function check_vars () {
+
+	message "Checking environment variables..."
+	
+	if test "$AUBITDIR" = ""; then
+		note "Environment variable AUBITDIR is not set"
+	fi
+
+
+}
+
+
+#First, I would tend to agree with Mike and the others that you might 
+#want to leave this up to the installer.
+#
+#Second, the following are some path related bash functions that I found 
+#in the bash doc examples and extended a bit to help me maintain local 
+#environments across several different platforms.
+#
+#(I can attach or send this file separately if you need).
+#
+#R.Parr, RHCE, Temporal Arts
+#
+#-----------------------------------------------------------------
+# env/pathfunctions
+#
+# NAME:
+#     local_set_path
+#     local_not_in_path dir [ path_variable | (defaults to PATH) ]
+#     local_append_to_path dir [ path_variable | (defaults to PATH) ]
+#     local_prepend_to_path dir [ path_variable | (defaults to PATH) ]
+#     local_delete_from_path dir [ path_variable | (defaults to PATH) ]
+#
+# DESCRIPTION:
+#    This adaptation of these functions is primarily intended
+#     to support building a users environment
+#    as a composite of group and package configuration file
+#     modifications of various "path" environment variables/components.
+#
+#    PATH [or CLASSPATH or CDPATH] is built by modifying one or more PATH components:
+#
+#    PATHHEADER
+#    PATHDEV
+# PATHLOCAL
+#    PATHDEF
+#    PATHAPPS
+#    PATHTAIL
+#
+#    and then build the full PATH with local_set_path (...classpath, ...cdpath)
+#
+# EXAMPLE:
+#     # local_delete_from_path /root/bin
+#
+#     # local_delete_from_path /root/bin PATH
+#
+#     # local_append_to_path /java/java-1.1 CLASSPATH
+#
+#    Notice the optional second argument is NOT preceeded by a "$".
+#
+#    Note that the dir to be [pre|ap]pended MUST exist.
+#
+# TODO:
+#    Need to fix so as to eliminate "::" and "=:..."
+#
+# SEE ALSO:
+#    /etc/profile, bash
+#
+# AUTHOR:
+#    Adopted by Randall J. Parr, Temporal Arts, 1999/08/10
+#    from originals by Simon J. Gerraty <sjg@zen.void.oz.au>, 1995/09/30
+#    @(#)Copyright (c) 1991 Simon J. Gerraty
+#
+#    (Gerraty) These functions originated in /etc/profile and ksh.kshrc,
+#    but are more useful in a separate file.
+#
+
+####################
+#(CHANGES)
+#(1999.12.05, R.Parr) Changed local_set... somewhat
+#(2005.08.27, R.Parr) Added LD_LIBRARY_PATH stuff
+#
+
+####################
+# build PATH from our standard pieces and export it.
+local_set_PATH()
+{
+	PATH=\
+	${PATHHEADER:-".:.."}\
+	${PATHDEV:+:$PATHDEV}\
+	${PATHLOCAL:+:$PATHLOCAL}\
+	${PATHDEF:+:$PATHDEF}\
+	${PATHAPPS:+:$PATHAPPS}\
+	${PATHTAIL:+:$PATHTAIL}
+	local_clean_path PATH
+	export PATH PATHHEADER PATHDEV PATHLOCAL PATHAPPS PATHDEF PATHTAIL
+	return
+}
+####################
+# build LD_LIBRARY_PATH from our standard pieces and export it.
+local_set_LD_LIBRARY_PATH()
+{
+	local_clean_path LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH
+	return
+}
+# echo "DEBUG 1 local_set_LD_LIBRARY_PATH LD_LIBRARY_PATH is $LD_LIBRARY_PATH" >>~/.lastlogin
+# echo "DEBUG 2 local_set_LD_LIBRARY_PATH LD_LIBRARY_PATH is $LD_LIBRARY_PATH" >>~/.lastlogin
+####################
+# build CLASSPATH from our standard pieces and export it.
+local_set_CLASSPATH()
+{
+	CLASSPATH=\
+	${CLASSPATHHEADER:-".:.."}\
+	${CLASSPATHDEV:+:$CLASSPATHDEV}\
+	${CLASSPATHLOCAL:+:$CLASSPATHLOCAL}\
+	${CLASSPATHDEF:+:$CLASSPATHDEF}\
+	${CLASSPATHAPPS:+:$CLASSPATHAPPS}\
+	${CLASSPATHTAIL:+:$CLASSPATHTAIL}
+	local_clean_path CLASSPATH
+	export CLASSPATH CLASSPATHHEADER CLASSPATHDEV CLASSPATHLOCAL \
+	CLASSPATHAPPS CLASSPATHDEF CLASSPATHTAIL
+	return
+}
+####################
+# build CDPATH from our standard pieces and export it.
+local_set_CDPATH()
+{
+	CDPATH=\
+	${CDPATHHEADER:-".:.."}\
+	${CDPATHDEV:+:$CDPATHDEV}\
+	${CDPATHLOCAL:+:$CDPATHLOCAL}\
+	${CDPATHDEF:+:$CDPATHDEF}\
+	${CDPATHAPPS:+:$CDPATHAPPS}\
+	${CDPATHTAIL:+:$CDPATHTAIL}
+	local_clean_path CDPATH
+	export CDPATH CDPATHHEADER CDPATHDEV CDPATHLOCAL CDPATHAPPS CDPATHDEF 
+	CDPATHTAIL
+	return
+}
+####################
+# is $1 missing from $2 (or PATH) ?
+local_not_in_path() {
+    eval "case :\$${2-PATH}: in *:$1:*) return 1;; *) return 0;; esac"
+}
+####################
+# if $1 exists and is not in path, append it
+local_append_to_path () {
+  # echo "DEBUG local_append_to_path $1 $2" >>~/.lastlogin
+  [ -d ${1:-.} ] && local_not_in_path $* && eval 
+  ${2:-PATH}="\$${2:-PATH}:$1"
+}
+####################
+# if $1 exists and is not in path, prepend it
+local_prepend_to_path () {
+  [ -d ${1:-.} ] \
+    && local_not_in_path $* \
+    && eval ${2:-PATH}="$1:\$${2:-PATH}"
+}
+#
+# Couldn't figure out way to nest condition substitutions
+# and thus avoid : in prepend to empty string.
+# workaround was to add local_clean_path call and remove them.
+#
+# original && eval ${2:-PATH}="$1:\$${2:-PATH}"
+# failed    && eval ${2:-PATH}="$1\$${\$${2:-PATH}:+:\$${2:-PATH}}"
+#
+####################
+# if $1 is in path, remove it
+local_delete_from_path () {
+  local_not_in_path $* || eval ${2:-PATH}=`eval echo :'$'${2:-PATH}: |
+    sed -e "s;:$1:;:;g" -e "s;^:;;" -e "s;:\$;;"`
+}
+####################
+# clean ^: :$ and :: from $1
+local_clean_path () {
+  # echo "DEBUG 1 local_clean_path $1" >>~/.lastlogin
+  eval ${1:-PATH}=`eval echo :'$'${1:-PATH}: |
+    sed  -e "s;::;:;g" -e "s;::;:;g" -e "s;^:;;" -e "s;:\$;;"`
+}
+
+
+
+
 
 ######################################
 # Message functions 
@@ -76,6 +1131,8 @@ function show_help {
     echo '[FLAGS] are options intercepted and processed by "aubit" script,'
     echo ' and will not reach the program invoked:'
     echo ' --averbose'
+    echo ' --asilent'
+    echo ' --check-env'	
     echo ' --valgrind'
     echo ' --ahelp'
     echo ' --show-path'
@@ -165,6 +1222,9 @@ function process_flags () {
 		--averbose) #make THIS script verbose
 			VERBOSE=1
 			;;
+		--asilent) #make THIS script silent (error only)
+			SILENT=1
+			;;
 		--valgrind) #invoke all programs using valgrind (for memory debugging)
 			VALGRIND=1
 			;;
@@ -183,6 +1243,19 @@ function process_flags () {
 			;;
 		--show-path) #Show deguding info on paths 
 			SHOW_PATH=1
+			;;
+		--check-env) #Check compiler environment
+			CHECK_ENV=1
+			#echo $1 $2 $3 $4
+			#exit
+			#if test "$2" = "--verbose" -o "$3" = "--verbose"; then
+			#	VERBOSE=1
+			#fi
+			;;
+		--fix-ld)
+			#if test "$2" = "--fix-ld" -o "$3" = "--fix-ld"; then
+			FIX_LD=1
+			#fi
 			;;
 		--ahelp) #Show help for this script and exit
 			show_help
@@ -220,6 +1293,12 @@ function process_flags () {
 	  esac
 	  ####
 	done
+	
+	if test "$CHECK_ENV" = "1"; then
+		check_env
+		exit
+	fi
+	
 }
 
 
@@ -413,7 +1492,7 @@ function debug_env () {
 		fi
 	fi
 	
-	if [ "$SHOW_PATH" = "1" ]; then
+	if test "$SHOW_PATH" = "1" ; then
 		echo
 		export PATH=";=====;d:/pdc25_vc_w32;====;$PATH"
 		export PATH=";xxxxxx;d:\\pdc25_vc_w32;xxxx;$PATH"
@@ -488,7 +1567,9 @@ function run_cmd () {
 FLAGS=$@
 NUM_ARGS=$#
 
-	set_defaults
+	if test "$1" != "--check-env"; then
+		set_defaults
+	fi
 	process_flags
 	determine_target_os
 	set_aubitdir
