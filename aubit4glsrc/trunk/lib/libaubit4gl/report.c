@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.103 2006-11-11 10:49:53 mikeaubury Exp $
+# $Id: report.c,v 1.104 2006-11-12 19:59:25 mikeaubury Exp $
 #
 */
 
@@ -637,8 +637,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 			A4GL_push_int(init_col);
 			A4GL_set_column(rep);
 		}
-		//printf("s='%s'\n",s);
-		printf("init_col=%d\n",init_col);
 
 		if (strlen(ptr)<=right_margin && strchr(ptr,'\n')) {
 			char *p2;
@@ -652,14 +650,11 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 
 		if (strlen(ptr)>right_margin )  {
 			int found=0;
-			//printf("starting : ptr=%s\n",ptr);
 			// First - look forward - see if there are any '\n' in the next 'rightmargin' characters...
 			for (a=0;a<=right_margin;a++) {
 				int c;
-				//printf("ptr[a]='%c' (%d)",ptr[a],ptr[a]);
 				if (ptr[a]=='\n') { // This will do nicely...
 					ptr[a]=0;
-					printf("PUSH:%s SPLIT AT newline\n",ptr);
 					A4GL_push_char(ptr);
 					A4GL_rep_print(rep,1,1,0,entry);
    					A4GL_rep_print(rep,0,0,0,-1);
@@ -674,10 +669,8 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 
 			if (!found) {
 			// We need to split it into smaller groups...
-				//printf("Not found : ptr=%s\n",ptr);
 				for (a=right_margin+1;a>=0;a--) {
 					int c;
-					printf("ptr[a]='%c' (%d)\n",ptr[a],ptr[a]);
 					if (ptr[a]==' '||ptr[a]=='\t') { // This will do nicely...
 					c=ptr[a+1];
 					ptr[a+1]=0;
@@ -698,7 +691,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 				memset(buff,0,right_margin+1);
 				strncmp(buff,ptr,right_margin);
 				buff[right_margin]=0;
-				printf("PUSH:%s (cantsplit) \n",buff);
 				A4GL_push_char(buff);
 				A4GL_rep_print(rep,1,1,0,entry);
 				A4GL_rep_print(rep,0,0,0,-1);
@@ -707,7 +699,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 			}
 		} else {
 				// it'll fit...
-				printf("PUSH:%s (final)\n",ptr);
 				A4GL_push_char(ptr);
 				A4GL_rep_print(rep,1,dontwant_nl,0,entry);
 				return;
