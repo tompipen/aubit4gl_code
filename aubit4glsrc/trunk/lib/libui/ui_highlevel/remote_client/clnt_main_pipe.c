@@ -116,7 +116,7 @@ void A4GL_LL_opening_form(char *formfile, char *formname) {
 		fbuff[l]=0;
 		fclose(f);
 		printf("\n\n\n******************************fbuff='%s'\n",fbuff);
-		A4GL_LL_opening_form_xml(formname, fbuff);
+		A4GL_LL_opening_form_xml(formname,formfile,  fbuff);
 		free(fbuff);
 	
 	}
