@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.160 2006-11-02 17:53:35 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.161 2006-11-14 21:25:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.160 2006-11-02 17:53:35 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.161 2006-11-14 21:25:25 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -91,6 +91,7 @@ extern int yylineno;
 char *A4GL_dtype_sz (int d, int s);
 void make_sql_bind (char *sql, char *type);
 extern int fbindcnt;
+
 /*
 =====================================================================
                     Variables definitions
@@ -136,7 +137,8 @@ static void A4GL_save_sql (char *s, char *s2);
 extern char buff_in[];
 
 
-
+int print_bind_dir_definition_g (struct binding_comp_list *lbind);
+void make_sql_bind_g ( t_binding_comp_list *bind);
 
 static void
 A4GL_save_sql (char *s, char *s2)

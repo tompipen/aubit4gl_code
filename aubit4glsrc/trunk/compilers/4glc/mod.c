@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.291 2006-11-09 19:04:55 mikeaubury Exp $
+# $Id: mod.c,v 1.292 2006-11-14 21:24:33 mikeaubury Exp $
 #
 */
 
@@ -3939,6 +3939,11 @@ get_curr_report_stack_why (void)
   return report_stack[report_stack_cnt].why;
 }
 
+char *
+get_curr_report_stack_var (void)
+{
+  return report_stack[report_stack_cnt].var;
+}
 
 
 /* folowing functions are to work around problem with exporting struct in Windows dll */
@@ -3965,6 +3970,11 @@ get_report_stack_why (int a)
   return report_stack[a].why;
 }
 
+char *
+get_report_stack_var (int a)
+{
+  return report_stack[a].var;
+}
 /**
  *
  *
@@ -5456,6 +5466,11 @@ if (ibindcnt) {
 	}
 	return;
 }
+}
+
+
+char *A4GL_lextype(void) {
+	return acl_getenv("A4GL_LEXTYPE");
 }
 
 

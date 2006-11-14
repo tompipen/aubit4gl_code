@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.127 2006-11-11 10:49:55 mikeaubury Exp $
+# $Id: resource.c,v 1.128 2006-11-14 21:25:41 mikeaubury Exp $
 #
 */
 
@@ -57,7 +57,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#define DEBUG_VARIABLE_USAGE
+
+//#define DEBUG_VARIABLE_USAGE
 
 #if (defined (__MINGW32__))
 #ifndef _AUBITETC_
@@ -197,7 +198,7 @@ struct str_resource builtin_resource[] = {
   {"FIELD_PICTURE_MSG", " You cannot use this editing feature because a picture exists "},
   {"ARR_DIR_MSG",	" There are no more rows in the direction you are going "},
   {"INPARRAY_FULL_MSG"," Cannot insert another row - the input array is full "},
-
+  {"NOSELECTVARWARNING","N"},
   {"MENUCSELECT", "0"},
   {"MENUCTITLE", "0"},
   {"MENUCNORMAL", "0"},

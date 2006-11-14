@@ -67,7 +67,7 @@ call_ext: function_call_expr opt_return {
 
 
 opt_return 	: {start_bind('i',0);$<binding_comp_list>$=copy_togenbind('i');} 
-		| RETURNING ibind_var_list {$<binding_comp_list>$=copy_togenbind('i'); }
+		| RETURNING {start_bind('i',0);} ibind_var_list {$<binding_comp_list>$=copy_togenbind('i'); }
 ;
 
 

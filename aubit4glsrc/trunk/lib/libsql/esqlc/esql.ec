@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.170 2006-11-10 14:16:57 mikeaubury Exp $
+# $Id: esql.ec,v 1.171 2006-11-14 21:25:31 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.170 2006-11-10 14:16:57 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.171 2006-11-14 21:25:31 mikeaubury Exp $";
 #endif
 
 
@@ -4997,6 +4997,7 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   }
   xbuff=acl_malloc2(pos);
   
+  memset(xbuff,0, pos);
   /*
    * Step 2: Allocate memory to receive rows of the table returned *
    *     by the SELECT statement.  The variable pos has an integer *
@@ -5278,14 +5279,12 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 
 	    case CFIXCHARTYPE:
 	    case CVCHARTYPE:
-		alen = strip((char *) ptr, col->sqllen);
-	      flen = charcpy ((unsigned char *) string,
-			      (unsigned char *) ptr, alen);
+	        alen = strip((char *) ptr, col->sqllen);
+	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
 	      break;
 	    case CCHARTYPE:
 	      alen = strip ((char *) ptr, col->sqllen);
-	      flen = charcpy ((unsigned char *) string,
-			      (unsigned char *) ptr, alen);
+	      flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
 	      break;
 
 	    case CDATETYPE:

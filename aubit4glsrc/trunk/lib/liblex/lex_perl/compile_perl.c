@@ -2614,10 +2614,11 @@ LEXLIB_print_need_lines (t_expr_str * expr)
   niy_assert (__PRETTY_FUNCTION__);
 }
 
-void
-LEXLIB_print_order_by_type (int type, int size)
+int
+LEXLIB_print_order_by_type (int type, int size,t_binding_comp_list *bind)
 {
   niy_assert (__PRETTY_FUNCTION__);
+return 0;
 }
 
 /* Enhancements/GUI */

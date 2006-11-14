@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.125 2006-11-03 09:03:48 mikeaubury Exp $
+# $Id: conv.c,v 1.126 2006-11-14 21:25:20 mikeaubury Exp $
 #
 */
 
@@ -2284,15 +2284,20 @@ A4GL_ftoc (void *aa, void *zz, int c)
   double *a;
   char *z;
   char fmt[10] = ".2lf";
-  char *buff;
+  char *buff=0;
   a = (double *) aa;
   z = (char *) zz;
 
-   buff=malloc(c+20);
+  buff=malloc(c+20);
+  memset(buff,0,c+20); // allow plenty of extra space...
+
   strcpy (buff, "******************************************");
   if (A4GL_digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
     {
-      SPRINTF1 (buff, fmt, *a);
+      	SPRINTF1 (buff, fmt, *a);
+	if (strlen(buff)> c+20) {
+		A4GL_assertion(1,"Buffer overrun...");
+	}
     }
 
   if (strlen (buff) > c)

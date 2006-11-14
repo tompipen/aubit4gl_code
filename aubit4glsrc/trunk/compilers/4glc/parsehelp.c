@@ -633,11 +633,12 @@ push_rectab (char *t)
  * @param whytype
  */
 void
-push_report_block (char *why, char whytype)
+push_report_block (char *why, char whytype,char *var)
 {
   set_curr_block (0);
   strcpy (report_stack[report_stack_cnt].why, why);
   report_stack[report_stack_cnt].whytype = whytype;
+  strcpy(report_stack[report_stack_cnt].var , var);
   print_repctrl_block ();
   report_stack_cnt++;
   lines_printed = 0;

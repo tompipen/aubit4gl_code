@@ -265,7 +265,7 @@ print_report_print_file char* fname,char* semi -> void
 print_report_print_img char* scaling,char* blob,char* type,char* semi -> void
 
 
-print_order_by_type int type int size -> void
+print_order_by_type int type int size t_binding_comp_list* bind  -> int
 
 print_report_1 char* name -> void
 

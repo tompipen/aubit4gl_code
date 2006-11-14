@@ -19,7 +19,7 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
     YYERROR;
     /* error processing */;
   }
-  if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+  if (A4GL_isyes(acl_getenv("DOING_CM")) && (A4GL_lextype(),"CM")==0) {
 	char buff[20000];
 	sprintf(buff,"%s",fgl_add_scope($<str>1,0));
 	if (buff[0]=='M' || buff[0]=='G' || buff[0]=='R') {

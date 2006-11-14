@@ -271,7 +271,7 @@ FORMAT format_actions
 format_actions : format_action | format_actions format_action;
 
 format_action :
-	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P'); lastlineno=yylineno;} commands {
+	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P',""); lastlineno=yylineno;} commands {
 	 	add_feature("REPORT_FIRST_PAGE_HEADER");
 		rep_struct.lines_in_first_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
@@ -279,7 +279,7 @@ format_action :
 		}
 	| PAGE_TRAILER { 
 	 	add_feature("REPORT_PAGE_TRAILER");
-		push_report_block("TRAILER",'T');
+		push_report_block("TRAILER",'T',"");
 		if_print_stack[0][0]=0;
 		if_print_stack[0][1]=0;
  lastlineno=yylineno;	} commands {
@@ -287,13 +287,13 @@ format_action :
 		pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
 		print_rep_ret(0,1);
 	}
-	| PAGE_HEADER { push_report_block("HEADER",'p'); lastlineno=yylineno;} commands {
+	| PAGE_HEADER { push_report_block("HEADER",'p',""); lastlineno=yylineno;} commands {
 	 	add_feature("REPORT_PAGE_HEADER");
 		rep_struct.lines_in_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_header=if_print_stack[0][0];
 		print_rep_ret(0,1);}
-	| ON_EVERY_ROW { push_report_block("EVERY",'E'); add_feature("ON_EVERY_ROW");  lastlineno=yylineno;} commands {print_rep_ret(0,1);}
-	| ON_LAST_ROW { push_report_block("LAST",'L'); add_feature("ON_LAST_ROW"); lastlineno=yylineno;} commands {print_rep_ret(0,1);}
+	| ON_EVERY_ROW { push_report_block("EVERY",'E',""); add_feature("ON_EVERY_ROW");  lastlineno=yylineno;} commands {print_rep_ret(0,1);}
+	| ON_LAST_ROW { push_report_block("LAST",'L',""); add_feature("ON_LAST_ROW"); lastlineno=yylineno;} commands {print_rep_ret(0,1);}
 	| BEFGROUP variable  {
 		int a;
 		char buff[80];
@@ -306,7 +306,7 @@ format_action :
 		}
 		add_feature("REPORT_BEFORE_GROUP");
 		sprintf(buff,"%d",a+1);
-		push_report_block(buff,'B');
+		push_report_block(buff,'B',$<str>2);
 		set_curr_block(a+1);
 		 lastlineno=yylineno;} commands {print_rep_ret(0,1);}
 	| AFTGROUP variable { 
@@ -323,7 +323,7 @@ format_action :
 		}
 		
 		sprintf(buff,"%d",a+1);
-		push_report_block(buff,'A');
+		push_report_block(buff,'A',$<str>2);
 		set_curr_block(a+1);
 		
 		 lastlineno=yylineno;} commands {print_rep_ret(0,1);}
@@ -627,8 +627,7 @@ op_rep_order_by : {
 int a;
 set_rep_no_orderby(1);
 if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
-a=print_bind_definition_g(copy_togenbind('O'));
-print_order_by_type(2,-1);
+a=print_order_by_type(2,-1, copy_togenbind('O'));
 sprintf($<str>$,"%d",a);
 }
 | ORDER KW_BY obind_var_list_ord
@@ -638,8 +637,7 @@ set_rep_no_orderby(0);
 add_feature("REPORT_ORDER_BY");
 if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
 expand_ordbind();
-a=print_bind_definition_g(copy_togenbind('O'));
-print_order_by_type(1,a);
+a=print_order_by_type(1,0, copy_togenbind('O'));
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
 }
@@ -648,8 +646,7 @@ int a;
 set_rep_no_orderby(0);
 if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
 expand_ordbind();
-a=print_bind_definition_g(copy_togenbind('O'));
-print_order_by_type(2,a);
+a=print_order_by_type(2,0, copy_togenbind('O'));
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
 }

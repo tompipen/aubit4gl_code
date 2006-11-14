@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.340 2006-11-11 10:49:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.341 2006-11-14 21:25:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.340 2006-11-11 10:49:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.341 2006-11-14 21:25:24 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -131,7 +131,7 @@ int doing_a_report=0;
 #include "field_handling.h"
 
 void print_Constant_1 (char *name, struct constant_data *c);
-static void print_returning_g (int from_where, t_binding_comp_list *bind);
+static void print_returning_g (int from_where, t_binding_comp_list *bind,int allow_one_or_zero);
 int print_bind_dir_definition_g (struct binding_comp_list *lbind);
 
 int rep_print_code;
@@ -1876,7 +1876,7 @@ real_print_expr (struct expr_str *ptr)
 		  }
 		else
 		  {
-		    printc ("{");
+		    printc ("{ // FCALL 1");
 		    printc ("int _retvars;");
 		    printc ("_retvars=%s%s(%ld); ",
 			    get_namespace (ptr->u_data.expr_function_call->
@@ -1890,7 +1890,7 @@ real_print_expr (struct expr_str *ptr)
 		    printc ("}");
 		    printc ("}");
 		    printc ("%s", get_reset_state_after_call ());
-		    printc ("}");
+		    printc ("} // FCALL 2");
 		  }
 		add_function_to_header (ptr->u_data.expr_function_call->fname,
 					1, "");
@@ -1950,7 +1950,6 @@ real_print_expr (struct expr_str *ptr)
 		f=ptr->u_data.expr_bound_fcall;
 
 	        printc("{ /*X1*/");
-	        printc("  int _retvars;");
 
 			i.nbind=f->nibind;
 			i.bind=f->ibind;
@@ -1965,9 +1964,7 @@ real_print_expr (struct expr_str *ptr)
 
   			LEXLIB_print_bind_set_value_g (&e);
 	        printc("  A4GLSQL_set_status(0,0);");
-		printc("  _retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);",f->lib, f->fname,f->nibind,f->nebind);
-
-		printc("  if (_retvars!= 1 && a4gl_status==0 ) {");
+		printc("  if (A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind)!=1 && a4gl_status==0) { ",f->lib, f->fname,f->nibind,f->nebind);
 		printc("    A4GLSQL_set_status(-3001,0);");
 		printc("    A4GL_chk_err(%d,_module_name);",f->line);
 		printc("  }");
@@ -2917,7 +2914,7 @@ static void print_pop_variable (char *s)
 /**
  * Print the C implementation of the returning substatement of CALL statement.
  */
-static void print_returning_g (int from_where,t_binding_comp_list *bind)
+static void print_returning_g (int from_where,t_binding_comp_list *bind,int allow_one_or_zero)
 {
   int cnt;
    printc("/* pr %d */",from_where);
@@ -2949,7 +2946,15 @@ static void print_returning_g (int from_where,t_binding_comp_list *bind)
 		  printc("    A4GLSQL_set_status(0,0);");
 		  printc("}");
 	  } else {
-  		printc("CHECK_NO_RETURN;");
+		if (allow_one_or_zero) {
+			if (cnt) {
+  				printc("CHECK_ONE_OR_NO_RETURN_POP;");
+			} else {
+  				printc("CHECK_ONE_OR_NO_RETURN;");
+			}
+		} else {
+  			printc("CHECK_NO_RETURN;");
+		}
 	  }
 
   }
@@ -3024,12 +3029,15 @@ LEXLIB_print_field_func (char type, char *name, char *var)
 void
 LEXLIB_print_func_call_g (t_expr_str *fcall, t_binding_comp_list *return_values)
 {
-	int t;
+  int t;
   A4GL_debug ("via print_func_call in lib");
   t=fcall->expr_type;
+
   real_print_func_call (fcall);
-  if (t!=ET_EXPR_BOUND_FCALL) {
-  	print_returning_g(1,return_values);
+  if (t==ET_EXPR_BOUND_FCALL) {
+  	print_returning_g(1,return_values,1);
+  } else {
+  	print_returning_g(1,return_values,0);
   }
 }
 
@@ -3122,6 +3130,8 @@ real_print_func_call (t_expr_str * fcall)
     }
 
   if (fcall->expr_type==ET_EXPR_BOUND_FCALL)  {
+
+	  printc ("{int _retvars=1; \n");
 	  printc("/* EXPR_BOUND_FCALL */");
 	  real_print_expr (fcall);
 	  printc("/* END EXPR_BOUND_FCALL */");
@@ -3236,7 +3246,7 @@ LEXLIB_print_pdf_call_g (char *a1, struct expr_str_list *args, char *a3, t_bindi
 {
   A4GL_debug ("via print_pdf_call in lib");
   real_print_pdf_call (a1, args, a3);
-  print_returning_g(2,returning_values);
+  print_returning_g(2,returning_values,0);
 }
 
 
@@ -3286,7 +3296,7 @@ LEXLIB_print_call_shared_g (t_expr_str_list *expr, char *libfile, char *funcname
   printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
   print_reset_state_after_call();
-  print_returning_g(3,returning_values);
+  print_returning_g(3,returning_values,0);
   if (doing_a_report) { clr_doing_a_report_call(5); }
 }
 
@@ -4884,7 +4894,7 @@ LEXLIB_print_terminate_report (char *repname)
 void
 LEXLIB_print_format_every_row (t_binding_comp_list* bind)
 {
-  push_report_block ("EVERY", 'E');
+  push_report_block ("EVERY", 'E',"");
 
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", bind->nbind);
   printc ("A4GL_push_char(_rbindvarname[_rr]);\n");
@@ -5052,12 +5062,24 @@ LEXLIB_print_report_print_img (char *scaling, char *blob, char *type, char *semi
  *   - 1 : Normal order by or not defined.
  *   - 2 : The order is external to the report (made in the select statement).
  */
-void
-LEXLIB_print_order_by_type (int type, int size)
+int
+LEXLIB_print_order_by_type (int type, int size,t_binding_comp_list *ordbind)
 {
-  last_orderby_type = type;
+int a;
+
+  a=LEXLIB_print_bind_definition_g(ordbind);
+  if (size==0) size=a;
   printc ("static int acl_rep_ordcnt=%d;\n", size);
-  printc ("static int fgl_rep_orderby=%d;\n", type);
+	if (type==1) {
+  		last_orderby_type = 1;
+  		printc ("static int fgl_rep_orderby=1;\n", type);
+	} else {
+  		last_orderby_type = 2;
+  		printc ("static int fgl_rep_orderby=2;\n", type); // external - no further ordering required
+	}
+
+  return a;
+
 }
 
 /**
@@ -6937,6 +6959,7 @@ order_by_report_stack ()
 /* This only applies if we're doing an order external (implicit for no order by at all */
   if (last_orderby_type != 2)
     return;
+
   if (!get_rep_no_orderby ())
     return;
 
@@ -6968,7 +6991,7 @@ order_by_report_stack ()
        */
 
       /* C File */
-      printc ("acl_rep_ordcnt=%d;", ordbyfieldscnt);
+      printc ("acl_rep_ordcnt=%d; /* 1 */", ordbyfieldscnt);
       /* And assign the values*/
       fiddle++;
       printc ("acl_exchange_rep_ordby%d(_ordbind,%d);", fiddle,
@@ -7422,9 +7445,7 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
       switch (lbind->type)
 	{
 	case 'i':
-	  printc ("struct BINDING ibind[%d]={\n ",
-		  ONE_NOT_ZERO (lbind->nbind));
-	  break;
+	  printc ("struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'o': printc ("struct BINDING obind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'e': printc ("struct BINDING ebind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'O':

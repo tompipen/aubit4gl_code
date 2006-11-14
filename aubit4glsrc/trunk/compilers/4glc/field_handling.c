@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: field_handling.c,v 1.9 2006-08-18 17:48:19 mikeaubury Exp $
+# $Id: field_handling.c,v 1.10 2006-11-14 21:24:33 mikeaubury Exp $
 #*/
 
 #include "field_handling.h"
@@ -111,8 +111,26 @@ for (a=0;a<fl->nfields;a++) {
 }
 
 return ptr;
-
 }
+
+char *field_name_list_as_quoted_char_list(struct fh_field_list *fl) {
+int a;
+char *ptr=0;
+char *ptr_field;
+ptr=acl_malloc2(10); /* Set it up initially...*/
+strcpy(ptr,"\"");
+for (a=0;a<fl->nfields;a++) {
+	ptr_field=field_name_as_char(&fl->fields[a]);
+	ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+10);
+	if (a) strcat(ptr,"\",\"");
+	strcat(ptr,ptr_field);
+}
+strcat(ptr,"\"");
+return ptr;
+}
+
+
+
 
 char *field_name_list_as_or_char(struct fh_field_list *fl) {
 int a;

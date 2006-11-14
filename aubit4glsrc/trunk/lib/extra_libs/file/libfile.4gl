@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: libfile.4gl,v 1.15 2005-03-10 10:04:36 mikeaubury Exp $
+	 $Id: libfile.4gl,v 1.16 2006-11-14 21:25:17 mikeaubury Exp $
 }
 
 {**
@@ -508,5 +508,24 @@ endcode
 
 END FUNCTION
 
+
+####################################
+ FUNCTION fflush(handle)
+ ####################################
+ DEFINE handle INTEGER
+ DEFINE r INTEGER
+ 
+         IF handle=0 THEN
+                 LET status=-101
+                 RETURN ""
+         END IF
+ 
+code
+         r=fflush((FILE *)handle);
+endcode
+ 
+         RETURN r
+ 
+ END FUNCTION
 
 ############################### EOF ##################################

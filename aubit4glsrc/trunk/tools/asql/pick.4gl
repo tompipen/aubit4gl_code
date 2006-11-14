@@ -25,7 +25,7 @@
 # | If you did not, or have any questions about Aubit licensing, please  |
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
-define mv_arr array[1000] of char(128)
+define mv_arr array[2000] of char(128)
 define mv_cnt integer
 define mv_curr_option integer
 define mv_rows integer
@@ -39,7 +39,7 @@ define mv_nexty integer
 define mv_nextx_last integer
 define mv_nexty_last integer
 
-define mv_printat array[1003] of record
+define mv_printat array[2003] of record
 		page_no integer,
 		x integer,
 		y integer
@@ -58,14 +58,14 @@ mv_maxy=A4GL_get_curr_height();
 mv_maxx=A4GL_get_curr_width()+1;
 endcode
 let mv_max_option_width=0
-if mv_cnt>1000 then
+if mv_cnt>2000 then
 code
 	A4GL_assertion(1,"Internal error - out of bounds");
 endcode
 end if
 
 for a=1 to mv_cnt
-if a>1000 then
+if a>2000 then
 code
 	A4GL_assertion(1,"Internal error - out of bounds");
 endcode

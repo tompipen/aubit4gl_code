@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.16 2006-10-14 10:09:38 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.17 2006-11-14 21:25:13 mikeaubury Exp $
 }
 
 {**
@@ -108,7 +108,7 @@ endcode
 code
 		lv_file_i=0;
 		if (strlen(filename)) {
-			lv_file_o=(long)fopen(filename,"r");
+			lv_file_o=(long)fopen(filename,"a");
 		} else {
 			lv_file_o=(long)stdin;
 		}

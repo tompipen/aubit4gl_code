@@ -186,7 +186,7 @@ int add_bind (char i, char *var);
 int how_many_in_bind (char i);
 void continue_loop (char *cmd_type);
 void exit_loop (char *cmd_type);
-void push_report_block (char *why, char whytype);
+void push_report_block (char *why, char whytype,char *variable);
 void init_report_structure (struct rep_structure *rep);
 int attr_code (char *s);
 void set_mod_level (int a);
@@ -269,6 +269,7 @@ struct s_report_stack
 {
   char why[20];
   char whytype;
+  char var[200];
 };
 struct s_report
 {
