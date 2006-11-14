@@ -1,5 +1,5 @@
 #all: prog.4ae libprog2.so
-
+CFLAGS=-fPIC
 prog.4ae: prog.4gl libprog2.so
 	export A4GL_NOCLOBBER=Y && ${FGLC} --verbose $< -L. -lprog2 -o $@
 
