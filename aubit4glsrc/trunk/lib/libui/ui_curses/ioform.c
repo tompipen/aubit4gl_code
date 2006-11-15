@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.145 2006-10-14 10:09:48 mikeaubury Exp $
+# $Id: ioform.c,v 1.146 2006-11-15 13:00:15 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.145 2006-10-14 10:09:48 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.146 2006-11-15 13:00:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -4215,3 +4215,8 @@ static int get_inc_quotes(int a) {
 	if ((a & 0xff) == DTYPE_DATE) return 2;
 	return 0;
 }
+
+void UILIB_A4GL_direct_to_ui(char *s) {
+// Does nothing - require by the API...
+}
+

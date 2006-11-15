@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.48 2006-09-28 09:51:33 mikeaubury Exp $
+# $Id: array.c,v 1.49 2006-11-15 13:00:15 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.48 2006-09-28 09:51:33 mikeaubury Exp $";
+		"$Id: array.c,v 1.49 2006-11-15 13:00:15 mikeaubury Exp $";
 #endif
 
 
@@ -1072,7 +1072,6 @@ if (dir==1) {
 
 
 }
-
 
 
 

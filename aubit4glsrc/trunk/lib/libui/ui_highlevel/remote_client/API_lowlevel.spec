@@ -88,6 +88,8 @@ A4GL_LL_get_triggered_event -> int
 A4GL_LL_ui_exit -> void
 A4GL_LL_enable_menu -> void
 A4GL_LL_disable_menu -> void
+A4GL_LL_use_direct_to_ui char* s -> void
+
 
 
 * A4GL_LL_get_field_userptr void* field -> void*  

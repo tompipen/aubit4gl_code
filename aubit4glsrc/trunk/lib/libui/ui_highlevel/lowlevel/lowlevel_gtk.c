@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.109 2006-11-09 20:09:43 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.110 2006-11-15 13:00:27 mikeaubury Exp $";
 #endif
 
 
@@ -4180,4 +4180,7 @@ void A4GL_LL_opening_form(char *a,char *b) {
 }
   
  
+void A4GL_LL_use_direct_to_ui(char *s) {
+  /* Does nothing - required by api.. */
+}
 

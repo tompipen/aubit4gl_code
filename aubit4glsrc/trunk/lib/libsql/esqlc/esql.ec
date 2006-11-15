@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.171 2006-11-14 21:25:31 mikeaubury Exp $
+# $Id: esql.ec,v 1.172 2006-11-15 13:00:09 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.171 2006-11-14 21:25:31 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.172 2006-11-15 13:00:09 mikeaubury Exp $";
 #endif
 
 
@@ -5278,10 +5278,17 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	      break;
 
 	    case CFIXCHARTYPE:
+	        alen = strip((char *) ptr, col->sqllen);
+	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
+	      break;
+
+
 	    case CVCHARTYPE:
 	        alen = strip((char *) ptr, col->sqllen);
 	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
 	      break;
+
+
 	    case CCHARTYPE:
 	      alen = strip ((char *) ptr, col->sqllen);
 	      flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);

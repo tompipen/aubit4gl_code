@@ -121,3 +121,7 @@ void A4GL_LL_opening_form(char *formfile, char *formname) {
 	
 	}
 }
+
+
+
+

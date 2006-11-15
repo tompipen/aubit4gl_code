@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.102 2006-10-11 15:01:41 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.103 2006-11-15 13:00:23 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3838,3 +3838,10 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos,
 {
   return "nope";
 }
+
+
+
+void UILIB_A4GL_direct_to_ui(char *s) {
+	A4GL_LL_use_direct_to_ui(s);
+}
+
