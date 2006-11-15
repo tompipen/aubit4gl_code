@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.126 2006-11-14 21:25:20 mikeaubury Exp $
+# $Id: conv.c,v 1.127 2006-11-15 17:39:58 mikeaubury Exp $
 #
 */
 
@@ -2291,7 +2291,8 @@ A4GL_ftoc (void *aa, void *zz, int c)
   buff=malloc(c+20);
   memset(buff,0,c+20); // allow plenty of extra space...
 
-  strcpy (buff, "******************************************");
+
+  memset (buff, '*',c+19); 
   if (A4GL_digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
     {
       	SPRINTF1 (buff, fmt, *a);
