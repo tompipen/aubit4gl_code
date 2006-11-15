@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.172 2006-11-15 13:00:09 mikeaubury Exp $
+# $Id: esql.ec,v 1.173 2006-11-15 16:18:46 fortiz Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.172 2006-11-15 13:00:09 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.173 2006-11-15 16:18:46 fortiz Exp $";
 #endif
 
 
@@ -4780,6 +4780,7 @@ EXEC SQL include locator;
  */
 //void dumprec (struct sqlda *);
 //int strip (char *str, int len);
+//int stripl (char *str, int len);
 //int charcpy (unsigned char *target, unsigned char *source, long len);
 void dumpSQLDA (struct sqlda *desc);
 
@@ -4806,6 +4807,7 @@ static char *xbuff=0;
 
 
 static int strip (char *str, int len);
+static int stripl (char *str, int len);
 static int charcpy (unsigned char *target, unsigned char *source, long len);
 static int dumprec (FILE *output, struct sqlda *ldesc,int n);
 
@@ -5170,6 +5172,21 @@ static int strip (char *str, int len)
 }
 
 
+static int stripl (char *str, int len)
+{
+  char *p;
+  int alen = len;
+
+  for (p = (str + len - 1); p > str; p--, alen--)
+    {
+      if (*p == (char) 0)
+	*p = (char) 0;
+      else
+	break;
+    }
+  return alen;
+}
+
 
 static int charcpy (unsigned char *target, unsigned char *source, long len)
 {
@@ -5284,7 +5301,7 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 
 
 	    case CVCHARTYPE:
-	        alen = strip((char *) ptr, col->sqllen);
+	        alen = stripl((char *) ptr, col->sqllen);
 	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
 	      break;
 
