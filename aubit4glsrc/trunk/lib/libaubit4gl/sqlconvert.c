@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.97 2006-11-11 10:49:53 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.98 2006-11-16 13:03:36 mikeaubury Exp $
 #
 */
 
@@ -657,8 +657,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 	realloc (conversion_rules,
 		 sizeof (*conversion_rules) * conversion_rules_cnt);
 
-      conversion_rules[conversion_rules_cnt - 1].type =
-	A4GL_cv_str_to_func (t, len);
+      conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len);
       conversion_rules[conversion_rules_cnt - 1].data.from = 0;
       conversion_rules[conversion_rules_cnt - 1].data.to = 0;
       if (t)
@@ -1097,11 +1096,13 @@ A4GL_cvsql_replace_str (char *buff, char *from, char *to)
   int cnt = 0;
   int sq = 0;
   int dq = 0;
+  int ln;
   l = strlen (buff) * 2 + 1000;
   buff2 = realloc (buff2, l);
   A4GL_debug ("replace_str from :%s to %s", from, to);
   strcpy (buff2, "");
-  for (a = 0; a <= strlen (buff); a++)
+  ln=strlen (buff);
+  for (a = 0; a <= ln; a++)
     {
       int ok_to_replace;	// We only want to replace whole words...
       ok_to_replace = 0;
@@ -1235,7 +1236,8 @@ int A4GLSQLCV_check_runtime_requirement (char *s) {
 
 
 
-int A4GLSQLCV_check_requirement (char *s)
+
+static int check_requirement_i (char *s)
 {
   int a;
   int b;
@@ -1278,6 +1280,28 @@ int A4GLSQLCV_check_requirement (char *s)
   return 0;
 }
 
+int A4GLSQLCV_check_requirement (char *s) {
+enum cr {
+	CR_UNKNOWN=0,
+	CR_HAS_REQUIREMENT=1,
+	CR_NO_REQUIREMENT=2
+};
+
+enum cr n=CR_UNKNOWN;
+
+n=(int)A4GL_find_pointer(s,HASREQUIREMENT);
+if (n==CR_UNKNOWN) {
+	if (check_requirement_i(s)) {
+		n=CR_HAS_REQUIREMENT;
+	} else {
+		n=CR_NO_REQUIREMENT;
+	}
+	A4GL_add_pointer(s,HASREQUIREMENT,(void *)n);
+}
+
+if (n==CR_HAS_REQUIREMENT) return 1;
+return 0;
+}
 
 char *
 A4GLSQLCV_check_colname (char *tabname, char *colname)
@@ -1479,7 +1503,7 @@ static int match_strncasecmp(char *s1,char *s2,int len) {
 	}
 
 	// If p2 is greater than p1 - it can't match...
-	if (strlen(p1)<strlen(p2)) {
+	if (l1<l2) {
 		return 1;
 	}
 
@@ -2318,7 +2342,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
   ptr = acl_malloc2 (strlen (sel) + 2000);
   SPRINTF2 (ptr, "%s %s", sel, lp);
   return ptr;
-  return 0;
+ return 0;
 }
 
 
@@ -3536,12 +3560,16 @@ int  A4GL_aubit_strcasestr (char *h, char *n) {
 	char *s1;
 	char *s2;
 	int rval;
+	int l1;
+	 int l2;
 	int a;
 
 	s1=strdup(h);
 	s2=strdup(n);
-	for (a=0;a<strlen(s1);a++) { s1[a]=toupper(h[a]); }
-	for (a=0;a<strlen(s2);a++) { s2[a]=toupper(n[a]); }
+	l1=strlen(s1);
+	l2=strlen(s2);
+	for (a=0;a<l1;a++) { s1[a]=toupper(h[a]); }
+	for (a=0;a<l2;a++) { s2[a]=toupper(n[a]); }
 
 	if (strstr(s1,s2)) rval=1;
 	else rval=0;

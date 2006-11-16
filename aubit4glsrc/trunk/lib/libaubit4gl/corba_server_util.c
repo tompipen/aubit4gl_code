@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.27 2006-09-13 15:07:42 briantan Exp $
+# $Id: corba_server_util.c,v 1.28 2006-11-16 13:03:35 mikeaubury Exp $
 #
 */
 
@@ -452,7 +452,9 @@ void
 A4GL_trim_nl (char *p)
 {
   int a;
-  for (a = strlen (p) - 1; a >= 0; a--)
+int l;
+l=strlen (p);
+  for (a =l - 1; a >= 0; a--)
     {
       if (p[a] != ' ' && p[a] != '\n' && p[a] != '\r' && p[a] != '\t')
 	break;
@@ -469,7 +471,9 @@ void
 A4GL_trim (char *p)
 {
   int a;
-  for (a = strlen (p) - 1; a >= 0; a--)
+int l;
+l=strlen (p);
+  for (a = l - 1; a >= 0; a--)
     {
       if (p[a] != ' ' && p[a] != '\t' && p[a] != '\n' && p[a] != '\r')
 	break;
@@ -486,7 +490,9 @@ void
 A4GL_trim_not_nl (char *p)
 {
   int a;
-  for (a = strlen (p) - 1; a >= 0; a--)
+int l;
+l=strlen (p);
+  for (a = l - 1; a >= 0; a--)
     {
       if (p[a] != ' ')
 	break;

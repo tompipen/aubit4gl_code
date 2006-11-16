@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.40 2006-07-05 12:40:55 mikeaubury Exp $
+# $Id: load.c,v 1.41 2006-11-16 13:03:35 mikeaubury Exp $
 #
 */
 
@@ -612,6 +612,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
   struct BINDING *ibind = 0;
   char buff[255];
   int a;
+int l;
   int prepared=0;
   static char *sqlstmt=0;
   delim = delims[0];
@@ -629,8 +630,8 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
       return 0;
     }
   cnt=0;
-
-  for (a=0;a<strlen(sqlstmt);a++) { if (sqlstmt[a]=='?') cnt++; }
+  l=strlen(sqlstmt);
+  for (a=0;a<l;a++) { if (sqlstmt[a]=='?') cnt++; }
 
 
   while (1)

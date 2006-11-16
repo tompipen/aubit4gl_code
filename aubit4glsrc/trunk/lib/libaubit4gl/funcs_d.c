@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.77 2006-06-23 14:08:44 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.78 2006-11-16 13:03:35 mikeaubury Exp $
 #
 */
 
@@ -263,7 +263,7 @@ A4GL_pad_string (char *ptr, int size)
   int p;
   int s;
   s=(int)strlen(ptr);
-  p=size-(int)strlen(ptr);
+  p=size-s;
   
   if (p>0) {memset(&ptr[s],' ',p);}
 /*
@@ -675,9 +675,10 @@ A4GL_debug("str=%s",str);
    }
  if (A4GL_get_decimal_char(0)==',') {
 	 char *p;
+	int l;
 	 p=strdup(str);
-
-	 for (a=0;a<strlen(p);a++) {
+	l=strlen(p);
+	 for (a=0;a<l;a++) {
 		 if (str[a]==',') p[a]='.';
 		 if (str[a]=='.') p[a]=',';
 	 }
@@ -727,9 +728,10 @@ a_isprint(int a) {
 char *
 a_strchr(char *s,int c) {
 int a;
+int l;
 	if (s==0) return 0;
-	
-	for (a=0;a<(int)strlen(s);a++) {
+	l=strlen(s);
+	for (a=0;a<l;a++) {
 			if (s[a]==c) return &s[a];
 	}
 	return 0;
@@ -768,7 +770,9 @@ void
 A4GL_make_downshift (char *s)
 {
   int a;
-  for (a = 0; a < strlen (s); a++)
+int l;
+l=strlen (s);
+  for (a = 0; a < l; a++)
     {
       s[a] = tolower (s[a]);
     }

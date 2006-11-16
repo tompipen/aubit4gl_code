@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.161 2006-11-09 19:05:14 mikeaubury Exp $
+# $Id: stack.c,v 1.162 2006-11-16 13:03:36 mikeaubury Exp $
 #
 */
 
@@ -1577,10 +1577,12 @@ A4GL_debug("51 Have data");
 	if (n2) {
 		char *ptr;
 		int a;
+		int l;
 		ptr=A4GL_char_pop();
 		A4GL_drop_param();
 		A4GL_trim(ptr);
-		for (a=0;a<strlen(ptr);a++) {
+		l=strlen(ptr);
+		for (a=0;a<l;a++) {
 			ptr[a]=' ';
 		}
 		A4GL_push_char(ptr);
@@ -3502,7 +3504,9 @@ void A4GL_pause_execution_msg(char *s) {
 
 void a4gl_upshift(char *s) {
 	int a;
-	for (a=0;a<strlen(s);a++) {
+	int l;
+	l=strlen(s);
+	for (a=0;a<l;a++) {
 		s[a]=toupper(s[a]);
 	}
 }

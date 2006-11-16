@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.40 2006-04-28 12:27:26 mikeaubury Exp $
+# $Id: keys.c,v 1.41 2006-11-16 13:03:35 mikeaubury Exp $
 #
 */
 
@@ -79,12 +79,14 @@ A4GL_check_keys (int val, char *str2)
 {
   char *ptr;
   int a;
+  int l;
 
   A4GL_debug("check_keys : %d %s",val,str2);
   ptr = str2;
-  for (a = 0; a < strlen (str2); a++)
+	l=strlen (str2);
+  for (a = 0; a < l; a++)
     {
-      if (a < strlen (str2) - 1)
+      if (a < l - 1)
 	{
 	  if (str2[a] == '|' && str2[a + 1] == '|')
 	    {

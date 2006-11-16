@@ -52,6 +52,8 @@ char str[1024];
   int round_cnt;
   int carry;
   int local_decimal_char=0;
+int l1;
+int l2;
 
 
   local_decimal_char=A4GL_get_decimal_char(str_orig);
@@ -83,7 +85,8 @@ strcpy(str,str_orig);
 
 if (local_decimal_char!=',') {
        int b=0;
-       for (a=0;a<strlen(str_orig);a++) {
+l1=strlen(str_orig);
+       for (a=0;a<l1;a++) {
                if (str_orig[a]==',') continue;
                str[b++]=str_orig[a];
        }
@@ -103,8 +106,9 @@ A4GL_trim(str);
 	memset(head,0,256);
 	memset(tail,0,256);
 
+	l2=strlen(str);
   /* Parse our string. */
-  for (a=0;a<strlen(str);a++) 
+  for (a=0;a<l2;a++) 
 	{
 	  if (str[a]==' '&&(sec=='t'||sec=='h')) {sec='e';continue;}
 	  if (str[a]==' '&&(sec=='f'||sec=='e')) continue;
@@ -245,6 +249,7 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
   int a;
   char *ptr;
   int has_neg=0;
+int l;
   strcpy(buff," ");
   if (dec->dec_data[0]&128) { has_neg=1; }
   
@@ -253,7 +258,8 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
 #endif
   ptr=&dec->dec_data[2];
   strcat(buff,ptr);
-	for (a=has_neg;a<strlen(buff);a++) {
+	l=strlen(buff);
+	for (a=has_neg;a<l;a++) {
 		if (buff[a]=='.') break;
 		if (buff[a]==' ') continue;
 		if (buff[a]=='0' && a==strlen(buff)-2&&buff[a+1]=='.') break;
@@ -269,7 +275,8 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
 #endif
 
   if (has_neg) {
-    for (a=0;a<strlen(buff);a++) {
+	l=strlen(buff);
+    for (a=0;a<l;a++) {
 	    if (buff[a]!=' ') {buff[a-1]='-'; break;}
     }
   }

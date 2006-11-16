@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.101 2006-09-25 16:56:19 mikeaubury Exp $
+# $Id: builtin.c,v 1.102 2006-11-16 13:03:35 mikeaubury Exp $
 #
 */
 
@@ -546,8 +546,9 @@ index (char *s, int a)
 {
 
   int b;
-
-  for (b = 0; b < strlen (s); b++)
+int l;
+l=strlen (s);
+  for (b = 0; b < l; b++)
     {
 
       if (s[b] == a)
@@ -570,8 +571,10 @@ rindex (char *s, int a)
 {
 
   int b;
+int l;
+  l=strlen (s);
 
-  for (b = strlen (s) - 1; b >= 0; b--)
+  for (b = l - 1; b >= 0; b--)
     {
 
       if (s[b] == a)

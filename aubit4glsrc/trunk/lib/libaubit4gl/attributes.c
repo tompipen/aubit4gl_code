@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.40 2006-08-20 11:30:29 mikeaubury Exp $
+# $Id: attributes.c,v 1.41 2006-11-16 13:03:35 mikeaubury Exp $
 #*/
 
 /**
@@ -260,7 +260,7 @@ A4GL_get_curr_window_attr (void)
 void
 A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
 {
-  int col_int;
+  int col_int=0;
 
   A4GL_debug ("30 Attr=%x\n", attr);
   strcpy (col_str, "WHITE");
@@ -377,10 +377,12 @@ int a;
 int nattr;
 int attr=0;
 char *b2;
+int l;
 buff=acl_strdup(s);
 ptr=buff;
 A4GL_debug("Got str attr as : %s",s);
-for (a=0;a<=(int)strlen(s);a++) {
+l=(int)strlen(s);
+for (a=0;a<=l;a++) {
 	if (buff[a]==' '||buff[a]==','||buff[a]==0) {
 			// We've come to the end of a token..
 			buff[a]=0;

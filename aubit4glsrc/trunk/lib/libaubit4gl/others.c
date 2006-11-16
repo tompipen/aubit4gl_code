@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.62 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: others.c,v 1.63 2006-11-16 13:03:36 mikeaubury Exp $
 #
 */
 
@@ -528,9 +528,11 @@ A4GL_char_val (char *s)
 {
   static char str[800];
   int a;
+  int l;
   strcpy (str, &s[1]);
   str[strlen (str) - 1] = 0;
-  for (a = 0; a < strlen (str); a++)
+	l=strlen (str);
+  for (a = 0; a < l; a++)
     {
       if (str[a] == '\t')
 	str[a] = ' ';

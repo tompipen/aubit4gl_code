@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.96 2006-11-03 19:16:04 pascal_v Exp $
+# $Id: ops.c,v 1.97 2006-11-16 13:03:35 mikeaubury Exp $
 #
 */
 
@@ -3395,8 +3395,10 @@ int a;
 char *buff;
 char *ptr=0;
 char *ptr2=0;
+int l;
 buff=acl_strdup(s);
-for (a=0;a<strlen(buff);a++) {
+l=strlen(buff);
+for (a=0;a<l;a++) {
         if (buff[a]==' ') continue;
         ptr=&buff[a];
         break;

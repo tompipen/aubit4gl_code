@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.113 2006-09-25 16:56:22 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.114 2006-11-16 13:03:35 mikeaubury Exp $
 #
 */
 
@@ -1056,7 +1056,9 @@ void
 A4GL_stripnl (char *str)
 {
 int a;
-  	for (a = 0; a < strlen (str); a++) {
+int l;
+l=strlen (str);
+  	for (a = 0; a < l; a++) {
 		if (str[a] == '\n' || str[a] == '\r') {
 			str[a] = 0;
 			break;
@@ -1290,8 +1292,9 @@ char *expand_env_vars_in_cmdline(char *s,int showerrs) {
 	int start_var;
 	int len;
 	int b=0;
-
-	for (a=0;a<strlen(s);a++) {
+	int l;
+	l=strlen(s);
+	for (a=0;a<l;a++) {
 		if (s[a]!='$') {
 			buff[b++]=s[a];
 			buff[b]=0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.39 2006-09-15 09:00:11 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.40 2006-11-16 13:03:34 mikeaubury Exp $
 */
 
 /**
@@ -183,6 +183,7 @@ struct s_constr_list {
 	char *colname;
 	};
 #endif
+#include "a4gl_screenio.h"
 
 #ifndef NODEBUG
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full

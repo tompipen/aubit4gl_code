@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.32 2006-10-21 13:02:53 afalout Exp $
+# $Id: simple.c,v 1.33 2006-11-16 13:03:38 mikeaubury Exp $
 #*/
 
 
@@ -354,9 +354,10 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
     }
   fixtype (colptr, dtype, size);
 
-//printf("dtype=%d size=%d\n",*dtype,*size);
+ //printf("colptr=%s dtype=%d size=%d\n",colptr, *dtype,*size);
 
   curr_colno++;
+  if (*dtype==-1) return 0;
   return 1;
 }
 
@@ -402,6 +403,7 @@ fixtype (char *type, int *d, int *s)
   char *l1 = "";
   char *l2 = "";
   *s = 0;
+  *d=-1;
   strcpy (buff, type);
 
   if (strchr (buff, '('))
@@ -418,6 +420,17 @@ fixtype (char *type, int *d, int *s)
       l2++;
     }
 
+  if (A4GL_strstartswith(buff,"character varying")) {
+		buff[9]='_';
+	      	*d = DTYPE_VCHAR;
+		if (strlen(l1)!=0) {
+      			*s = atoi (l1);
+		} else {
+			*s=255;
+		}
+
+  }
+	
   if (strchr (buff, ' '))
     {
       char *ptr;
@@ -432,7 +445,7 @@ fixtype (char *type, int *d, int *s)
       *s = atoi (l1);
     }
 
-  if (strcmp (buff, "integer") == 0)
+  if (strcmp (buff, "integer") == 0 || strcmp (buff, "bigint") == 0 )
     {
       *d = DTYPE_INT;
       *s = sizeof (long);
@@ -486,7 +499,7 @@ fixtype (char *type, int *d, int *s)
 
   if (*d == -1)
     {
-      printf ("BAD DATATYPE");
+      printf ("ERROR : BAD DATATYPE : %s\n\n",type);
       A4GL_debug ("Ooops - Unknown datatype : %s", type);
       A4GL_exitwith ("Invalid datatype for Aubit4GL");
     }
@@ -955,6 +968,55 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 
 
   return;			/* return 0; */
+}
+
+
+struct s_prepare {
+	int ni;
+	struct BINDING *ibind;
+	int no;
+	struct BINDING *obind;
+	char *name;
+	char *sql;
+};
+
+void *A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,int no,char* s,char* uniqid) {
+	struct s_prepare *n;
+	n=malloc(sizeof(struct s_prepare));
+	n->ni=ni;
+	n->no=no;
+	n->ibind=ibind;
+	n->ni=ni;
+	n->obind=no;
+	n->sql=strdup(s);
+	n->name=strdup(uniqid);
+	A4GL_add_pointer(uniqid,PREPAREPG,n);
+	return n;
+}
+
+
+int A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid,int singleton) {
+	struct s_prepare *n;
+	int ok;
+ 	
+	n=vsid;
+
+  	res = PQexec (con, n->sql);
+
+	switch (PQresultStatus (res)) {
+    		case PGRES_COMMAND_OK: ok=1; break;
+    		case PGRES_TUPLES_OK: ok=1; break;
+		default: ok=0;
+	}
+
+	if (singleton) {
+		free(n->name);
+		free(n->sql);
+		free(n);
+	}
+
+	if (ok) return 0;
+	return 1;
 }
 
 

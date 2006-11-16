@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.255 2006-11-08 16:05:44 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.256 2006-11-16 13:03:34 mikeaubury Exp $
 #
 */
 
@@ -344,6 +344,8 @@
 #define FIELDOPTS            	'{'
 #define USERPTR            	':'
 #define MEMEXTRA            	'y'
+#define HASREQUIREMENT        	'%'
+#define PREPAREPG        	'|'
 
 #define BLOCK_USED		'R'
 
@@ -1743,26 +1745,7 @@ FORMCONTROL_HIDE_FIELD
   };
   typedef struct s_fetch t_fetch;
 
-  struct s_screenio
-  {
-    int mode;
-    struct s_form_dets *currform;
-    void *currentfield;
-    int curr_attrib;
-    struct s_metrics *currentmetrics;
-    int novars;
-    struct BINDING *vars;
-    struct s_constr_list *constr;
-    int nfields;
-    void **field_list;
-    int field_changed;
-    int help_no;
-    struct s_formcontrol *fcntrl;
-    int fcntrl_cnt;
-    int attrib;
-    int processed_onkey;
-  };
-
+#include "a4gl_screenio.h"
   typedef struct s_screenio  Tscreenio;
 
   struct s_disp_arr

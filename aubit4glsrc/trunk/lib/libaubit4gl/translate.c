@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.24 2006-02-12 09:56:31 mikeaubury Exp $
+# $Id: translate.c,v 1.25 2006-11-16 13:03:36 mikeaubury Exp $
 #
 */
 
@@ -134,6 +134,7 @@ A4GL_make_trans_list (void)
   char *filename;
   FILE *file;
   char buff[TRANSLINESIZE];
+int l;
 
   if (translate_list != (void *) -1)
     return;
@@ -164,8 +165,8 @@ A4GL_make_trans_list (void)
       A4GL_stripnl (buff);
       if (buff[0] == '#')
 	continue;
-
-      for (a = 1; a < strlen (buff) - 1; a++)
+l= strlen (buff);
+      for (a = 1; a < l - 1; a++)
 	{
 	  if (buff[a] == ':' && buff[a + 1] == '=' && buff[a - 1] != '/')
 	    {

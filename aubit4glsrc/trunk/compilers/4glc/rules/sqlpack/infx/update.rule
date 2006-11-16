@@ -127,7 +127,7 @@ set_clause_list_ss:
 			$<sql_string>$=make_sql_string_and_free(acl_strdup("SET *=("),$<sql_string>2,kw_cb,NULL);
 		}
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||0) { 
 			$<sql_string>$=acl_strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
