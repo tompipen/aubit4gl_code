@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.146 2006-11-15 13:00:15 mikeaubury Exp $
+# $Id: ioform.c,v 1.147 2006-11-16 14:30:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.146 2006-11-15 13:00:15 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.147 2006-11-16 14:30:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -1385,7 +1385,7 @@ A4GL_set_fields_sio (struct s_screenio *sio)
 
         if (field == 0) continue;
 
-  	for (b = 0; field_list[b]; b++)
+  	for (b = 0; b<nofields && field_list[b]; b++)
     	{
 		if (f==field_list[b]) {
 			should_be_on++;
