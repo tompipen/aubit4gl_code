@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.98 2006-11-16 13:03:36 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.99 2006-11-17 09:42:01 mikeaubury Exp $
 #
 */
 
@@ -1281,26 +1281,15 @@ static int check_requirement_i (char *s)
 }
 
 int A4GLSQLCV_check_requirement (char *s) {
-enum cr {
-	CR_UNKNOWN=0,
-	CR_HAS_REQUIREMENT=1,
-	CR_NO_REQUIREMENT=2
-};
-
-enum cr n=CR_UNKNOWN;
-
+int n;
 n=(int)A4GL_find_pointer(s,HASREQUIREMENT);
-if (n==CR_UNKNOWN) {
-	if (check_requirement_i(s)) {
-		n=CR_HAS_REQUIREMENT;
-	} else {
-		n=CR_NO_REQUIREMENT;
-	}
+if (n==0) {
+	n=check_requirement_i(s);
+	if (n==0) n=99999;
 	A4GL_add_pointer(s,HASREQUIREMENT,(void *)n);
 }
-
-if (n==CR_HAS_REQUIREMENT) return 1;
-return 0;
+if (n==99999) n=0;
+return n;
 }
 
 char *
@@ -1442,6 +1431,7 @@ A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r)
     {
       char *func;
       func = current_conversion_rules[rule - 1].data.from;
+	A4GL_assertion(func==0,"Expecting a substring function") ;
       if (n == 1)
 	{
 	  SPRINTF3 (buff, "%s(%s,%s,1)", func, colname, l);
