@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: libfile.4gl,v 1.16 2006-11-14 21:25:17 mikeaubury Exp $
+	 $Id: libfile.4gl,v 1.17 2006-11-17 19:38:38 mikeaubury Exp $
 }
 
 {**
@@ -45,6 +45,7 @@
 code
 #include <stdio.h>
 #include <dirent.h>
+#include <unistd.h>
 endcode
 
 	WHENEVER ERROR CONTINUE
@@ -522,6 +523,9 @@ END FUNCTION
  
 code
          r=fflush((FILE *)handle);
+	if (r==0) { /* OK  */
+	  	r=fsync(fileno((FILE *)handle));
+	}
 endcode
  
          RETURN r
