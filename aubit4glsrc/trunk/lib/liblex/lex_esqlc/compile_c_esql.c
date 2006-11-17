@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.161 2006-11-14 21:25:25 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.162 2006-11-17 12:32:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.161 2006-11-14 21:25:25 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.162 2006-11-17 12:32:28 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -1468,7 +1468,9 @@ LEXLIB_print_declare_g (char *a1, char *a2, char *a3, int h1, int h2,t_binding_c
       //start_bind ('i', 0);
       //start_bind ('o', 0);
       printc ("/* .2. */");
+set_suppress_lines();
       print_conversions_g (outbind);
+clr_suppress_lines();
     }
 
 
@@ -1721,6 +1723,7 @@ LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind
   int ni, no;
   static char *b2;
   printc ("{ /* print_select_all */\n");
+      set_suppress_lines ();
   ni = LEXLIB_print_bind_definition_g (inbind);
 
   no = LEXLIB_print_bind_definition_g (outbind);
@@ -1730,6 +1733,7 @@ LEXLIB_print_select_all_g (char *buff, int converted,t_binding_comp_list* inbind
   print_conversions_g (inbind);
   b2 = strdup (buff);
   printc (" /* end of print_select_all */");
+      clr_suppress_lines ();
   return b2;
 }
 

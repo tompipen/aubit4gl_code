@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.343 2006-11-17 10:17:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.344 2006-11-17 12:32:27 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.343 2006-11-17 10:17:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.344 2006-11-17 12:32:27 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2660,6 +2660,7 @@ print_arr_bind_g (t_binding_comp_list *bind)
   /* dump_vars (); */
   if (bind->type == 'i')
     {
+	set_suppress_lines();
       printc ("\n");
       printc ("struct BINDING ibind[%d]={\n", bind->nbind);
       for (a = 0; a < bind->nbind; a++)
@@ -2675,11 +2676,13 @@ print_arr_bind_g (t_binding_comp_list *bind)
 	{
 	printc("ibind[%d].ptr= &%s;", a,bind->bind[a].varname);
 	}
+	clr_suppress_lines();
       return a;
     }
 
   if (bind->type == 'o')
     {
+	set_suppress_lines();
       printc ("\n");
       printc ("struct BINDING obind[%d]={\n", bind->nbind );
       for (a = 0; a < bind->nbind; a++)
@@ -2693,6 +2696,7 @@ print_arr_bind_g (t_binding_comp_list *bind)
 	{
 	printc("obind[%d].ptr= &%s;", a,bind->bind[a].varname);
 	}
+	clr_suppress_lines();
       return a;
     }
   return 0;
@@ -2759,6 +2763,7 @@ LEXLIB_print_param_g (char i,char*fname, t_binding_comp_list *bind)
   char *ptr;
 
   
+	set_suppress_lines();
 
   if (i=='r') {
     	printc ("static struct BINDING _rbind[%d]={ \n", ONE_NOT_ZERO(bind->nbind));
@@ -2825,6 +2830,7 @@ if (!A4GL_doing_pcode()) {
 	}
   }
 
+	clr_suppress_lines();
 
   return a;
 }
@@ -7434,6 +7440,7 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
 {
   int a;
   
+	set_suppress_lines();
 #ifdef DEBUG
     A4GL_debug ("/* %c */\n", i);
 #endif
@@ -7485,12 +7492,15 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
 	  current_ordbindcnt = lbind->nbind;
 	}
 
+	clr_suppress_lines();
      if (lbind->type != 'N')
 	{
 	  if (doing_esql ())
 	    
 	    {
+	set_suppress_lines();
 	      make_sql_bind_g (lbind);
+	clr_suppress_lines();
 	    }
 	}
       return a;
@@ -7868,6 +7878,10 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
 	      // Ignore all system variables
 	      return ;
       }
+
+set_suppress_lines();
+
+
   strcpy (arrbuff, "-1");
   /* are we dealing with the sqlca variable ?*/
 	A4GL_debug("v->names.name=%s",v->names.name);
@@ -7878,6 +7892,7 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
 #endif
       if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
 	{
+clr_suppress_lines();
 	  return;
 	}
     }
@@ -7887,6 +7902,7 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
 #ifdef DEBUG
       A4GL_debug ("Ignore time....\n");
 #endif
+clr_suppress_lines();
       return;
     }
 
@@ -7991,6 +8007,7 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
 	  print_define (tmpbuff, static_extern_flg);
 	}
 
+clr_suppress_lines();
       return;
     }
 
@@ -8005,6 +8022,7 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
 	  LEXLIB_print_variable_new (next_v, scope, level + 1);
 	}
       print_end_record (name, arrbuff, level);
+clr_suppress_lines();
       return;
     }
 
@@ -8025,6 +8043,7 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
       v2.names.name = v->names.name;
 
       LEXLIB_print_variable_new (&v2, scope, level + 1);
+clr_suppress_lines();
       return;
     }
 
@@ -8035,6 +8054,7 @@ LEXLIB_print_variable_new (struct variable *v, char scope, int level)
 		print_Constant_1(v->names.name,&v->data.v_const);
     }
 
+clr_suppress_lines();
 
 }
 

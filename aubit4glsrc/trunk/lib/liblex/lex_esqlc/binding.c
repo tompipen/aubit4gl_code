@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.58 2006-10-23 08:49:17 mikeaubury Exp $
+# $Id: binding.c,v 1.59 2006-11-17 12:32:27 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.58 2006-10-23 08:49:17 mikeaubury Exp $";
+		"$Id: binding.c,v 1.59 2006-11-17 12:32:27 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -213,6 +213,7 @@ make_sql_bind_g (t_binding_comp_list *bind)
       clr_suppress_lines ();
 
 
+      set_suppress_lines ();
       if (bind->type=='i')
 	{
 
@@ -277,6 +278,7 @@ make_sql_bind_g (t_binding_comp_list *bind)
 	      printc ("};\n");
 	    }
 	}
+      set_suppress_lines ();
 }
 
 
