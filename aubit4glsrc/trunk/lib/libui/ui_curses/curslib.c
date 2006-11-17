@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.132 2006-11-16 13:03:40 mikeaubury Exp $
+# $Id: curslib.c,v 1.133 2006-11-17 08:11:42 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.132 2006-11-16 13:03:40 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.133 2006-11-17 08:11:42 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1958,28 +1958,34 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 	  A4GL_tui_printr (0, "%s", A4GL_string_width (opt1->shorthelp));
 	}
 
-if (A4GL_isyes(acl_getenv("BRACKETMENU"))) {
-	if (type == INVERT) {
-		char buff[256];
-      		A4GL_mja_gotoxy (opt1->optpos + offset, 1 + menu->menu_line);
-		strcpy(buff,opt1->opt_title);
-		buff[0]='<';
-		buff[strlen(buff)-1]='>';
-      		A4GL_tui_printr (0, "%s", buff);
-	} else {
-      		A4GL_mja_gotoxy (opt1->optpos + offset, 1 + menu->menu_line);
-      		A4GL_tui_printr (0, "%s", opt1->opt_title);
+      if (A4GL_isyes (acl_getenv ("BRACKETMENU")))
+	{
+	  if (type == INVERT)
+	    {
+	      char buff[256];
+	      A4GL_mja_gotoxy (opt1->optpos + offset, 1 + menu->menu_line);
+	      strcpy (buff, opt1->opt_title);
+	      buff[0] = '<';
+	      buff[strlen (buff) - 1] = '>';
+	      A4GL_tui_printr (0, "%s", buff);
+	    }
+	  else
+	    {
+	      A4GL_mja_gotoxy (opt1->optpos + offset, 1 + menu->menu_line);
+	      A4GL_tui_printr (0, "%s", opt1->opt_title);
+	    }
 	}
-} else {
-      A4GL_mja_gotoxy (opt1->optpos + offset, 1 + menu->menu_line);
-
-      if (type == INVERT)
-	A4GL_menu_setcolor (menu, INVERT_MENU);
       else
-	A4GL_menu_setcolor (menu, NORMAL_MENU);
+	{
+	  A4GL_mja_gotoxy (opt1->optpos + offset, 1 + menu->menu_line);
 
-      A4GL_tui_printr (0, "%s", opt1->opt_title);
-}
+	  if (type == INVERT)
+	    A4GL_menu_setcolor (menu, INVERT_MENU);
+	  else
+	    A4GL_menu_setcolor (menu, NORMAL_MENU);
+
+	  A4GL_tui_printr (0, "%s", opt1->opt_title);
+	}
       A4GL_menu_setcolor (menu, NORMAL_MENU);
     }
 }
