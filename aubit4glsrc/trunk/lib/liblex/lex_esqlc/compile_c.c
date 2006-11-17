@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.342 2006-11-16 13:03:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.343 2006-11-17 10:17:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.342 2006-11-16 13:03:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.343 2006-11-17 10:17:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8168,6 +8168,9 @@ int LEXLIB_LEX_initlib(void) {
   if (doing_esql()) {
 	  // Can we have compile time conversions please....
 	A4GL_set_compile_time_convert(1);
+	if (esql_type()!=E_DIALECT_INFORMIX) {
+    		A4GL_setenv ("FIXUPDATE", "Y", 1);
+	}
   } else {
 	A4GL_set_compile_time_convert(0);
   }
