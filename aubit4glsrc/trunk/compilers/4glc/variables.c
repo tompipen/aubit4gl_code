@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.89 2006-11-01 12:02:59 mikeaubury Exp $
+# $Id: variables.c,v 1.90 2006-11-22 07:48:07 mikeaubury Exp $
 #
 */
 
@@ -55,7 +55,7 @@ extern char *outputfilename;
 //#define PRINT_CONSTANTS
 char scopes[200];
 int scopes_cnt=0;
-int has_fbind(char *s) ;
+//int has_fbind(char *s) ;
 
 
 int class_cnt=0;
@@ -100,7 +100,7 @@ void set_last_class_var(char *s);
 int A4GL_findex (char *str, char c);
 /*void dump_gvars (void);*/
 //void set_yytext (char *s);
-int isin_command (char *s);
+//int isin_command (char *s);
 //char *rettype (char *s);
 int last_record_cnt=0;
 static char last_class_var[1024];

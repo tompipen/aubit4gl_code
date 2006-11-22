@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.4 2006-11-04 09:26:02 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.5 2006-11-22 07:48:07 mikeaubury Exp $
 #*/
 
 
@@ -45,6 +45,7 @@ char *find_tabname_for_alias (struct s_select *select, char *alias);
 int A4GL_has_column (char *t, char *c);
 int indent=1;
 static enum e_mapset get_currmapset(void) ;
+static char *xml_escape(char *s) ;
 
 
 
@@ -65,6 +66,7 @@ enum e_mapset {
 	MAPSET_CRUD_DELETE,
 	MAPSET_CRUD_INSERT,
 	MAPSET_CRUD_OTHER,
+	MAPSET_CRUD_CREATE_TEMP, 
 	MAPSET_UI,
 	MAPSET_EVENTS,
 	MAPSET_ENV,
@@ -176,6 +178,7 @@ static void dump_mapset(enum e_mapset e) {
 		case MAPSET_CRUD_UPDATE: 	dump_mapset_to_crud("UPDATES",e); break;
 		case MAPSET_CRUD_DELETE: 	dump_mapset_to_crud("DELETES",e); break;
 		case MAPSET_CRUD_INSERT: 	dump_mapset_to_crud("INSERTS",e); break;
+		case MAPSET_CRUD_CREATE_TEMP: 	dump_mapset_to_crud("TEMPTABLES",e); break;
 		case MAPSET_CRUD_OTHER: 	dump_mapset_to_crud("OTHERSQLS",e); break;
 		case MAPSET_UI_OPENFORM: 	dump_mapset_to_crud("FORMS",e); break;
 		case MAPSET_CALL: 		dump_mapset_to_crud("CALLS",e); break;
@@ -242,12 +245,17 @@ map_select_list_item_list (char *stmttype, char *listtype,
   if (i == 0)
     return;
 
-  A4GL_add_xmlmap (get_currmapset(), "   <LIST_%s>\n", listtype);
+  if (strcmp(listtype,"VALUESLIST")==0) {
+  		A4GL_add_xmlmap (get_currmapset(), "   <LIST_%s>\n", listtype);
+	}
   for (a = 0; a < i->nlist; a++)
     {
       map_select_list_item (stmttype, select, i->list[a]);
     }
-  A4GL_add_xmlmap (get_currmapset(), "   </LIST_%s>\n", listtype);
+
+  if (strcmp(listtype,"VALUESLIST")==0) {
+  		A4GL_add_xmlmap (get_currmapset(), "   </LIST_%s>\n", listtype);
+	}
 }
 
 
@@ -849,34 +857,47 @@ map_display_at (struct expr_str *x, struct expr_str *y)
   if (!crudfile)
     return;
 
-  sprintf (x_str, "VARIABLE(%s)", expr_name (x->expr_type));
-  sprintf (y_str, "VARIABLE(%s)", expr_name (y->expr_type));
+  SPRINTF1 (x_str, "VARIABLE(%s)", expr_name (x->expr_type));
+  SPRINTF1 (y_str, "VARIABLE(%s)", expr_name (y->expr_type));
 
-  printf ("%s, %s\n", x_str, y_str);
   if (x->expr_type == ET_EXPR_LITERAL_LONG)
     {
-      sprintf (x_str, "%ld", x->u_data.expr_long);
+      SPRINTF1 (x_str, "%ld", x->u_data.expr_long);
     }
   if (y->expr_type == ET_EXPR_LITERAL_LONG)
     {
-      sprintf (y_str, "%ld", y->u_data.expr_long);
+      SPRINTF1 (y_str, "%ld", y->u_data.expr_long);
     }
 
   A4GL_add_xmlmap (MAPSET_UI, "<UI TYPE=\"DISPLAY_AT\" X=\"%s\" Y=\"%s\" LINENO=\"%d\" />\n", x_str, y_str, yylineno);
 }
 
 
+static char *xml_escape(char *s) {
+static char buff[20000];
+int a;
+int b;
+b=0;
+for (a=0;a<strlen(s);a++) {
+	
+	if (s[a]=='&') { strcat(buff,"&amp;"); b+=5;continue; }
+	if (s[a]=='>') { strcat(buff,"&gt;"); b+=4;continue; }
+	if (s[a]=='<') { strcat(buff,"&lt;"); b+=4;continue; }
+	buff[b++]=s[a];
+	buff[b]=0;
+}
+return buff;
+}
 
 void
 map_run (struct expr_str *s)
 {
   if (crudfile)
     {
-      printf ("%d - %s \n", s->expr_type, expr_name (s->expr_type));
 
       if (s->expr_type == ET_EXPR_LITERAL_STRING)
 	{
-	  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno,s->u_data.expr_string);
+	  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno,xml_escape(s->u_data.expr_string));
 	}
 
       if (s->expr_type == ET_EXPR_PUSH_VARIABLE)
@@ -884,14 +905,14 @@ map_run (struct expr_str *s)
 	  if (A4GL_has_pointer
 	      (s->u_data.expr_push_variable->variable, LAST_STRING))
 	    {
-	      A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno, (char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING));
+	      A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno, xml_escape((char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING)));
 	    }
 	  else
 	    {
 	      if (A4GL_has_pointer
 		  (s->u_data.expr_push_variable->variable, LAST_STRING_START))
 		{
-		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno,(char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING_START));
+		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"START_KNOWN\" >%s</RUN>\n", yylineno,xml_escape((char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING_START)));
 		}
 	      else
 		{
@@ -908,6 +929,7 @@ void
 map_select_stmt (char *main_statement_type, struct s_select *select)
 {
   int a;
+char *into_temp=0;
 
   if (!A4GL_isyes (acl_getenv ("MAPCRUD")))
     {
@@ -917,14 +939,23 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
 
   if (crudfile == 0)
     return;
-
+if (select->sf) {
+	into_temp=select->sf->into_temp;
+}
 
   if (strcmp (main_statement_type, "SUBSELECT") != 0)
     {
 	int printed=0;
-	if (strcmp (main_statement_type, "SELECT")==0) { A4GL_add_xmlmap (MAPSET_CRUD_SELECT, "<SELECT_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  
-	add_currmapset(MAPSET_CRUD_SELECT);
+	if (strcmp (main_statement_type, "SELECT")==0) { 
+		if (into_temp==0) {
+				A4GL_add_xmlmap (MAPSET_CRUD_SELECT, "<SELECT_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  
+				add_currmapset(MAPSET_CRUD_SELECT);
+		} else {
+				A4GL_add_xmlmap (MAPSET_CRUD_CREATE_TEMP, "<TEMPTABLE NAME=\"%s\" LINENO=\"%d\">\n",  into_temp, yylineno); 
+				printed++;  
+				add_currmapset(MAPSET_CRUD_CREATE_TEMP);
 		}
+	}
 	if (strcmp (main_statement_type, "DELETE")==0) { A4GL_add_xmlmap (MAPSET_CRUD_DELETE, "<DELETE_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  add_currmapset(MAPSET_CRUD_DELETE);}
 	if (strcmp (main_statement_type, "INSERT")==0) { A4GL_add_xmlmap (MAPSET_CRUD_INSERT, "<INSERT_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  add_currmapset(MAPSET_CRUD_INSERT);}
 	if (strcmp (main_statement_type, "UPDATE")==0) { A4GL_add_xmlmap (MAPSET_CRUD_UPDATE, "<UPDATE_STMT LINENO=\"%d\" >\n",  yylineno); printed++;  add_currmapset(MAPSET_CRUD_UPDATE);}
@@ -940,6 +971,9 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
 
       A4GL_add_xmlmap (get_currmapset(), "   <TABLES>\n");
 
+	if (select->table_elements.ntables>10000) {
+		A4GL_assertion(1,"Dubious number of tables!");
+	}
   for (a = 0; a < select->table_elements.ntables; a++)
     {
       char *tabname;
@@ -987,8 +1021,14 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
     {
 	int printed=0;
 	if (strcmp (main_statement_type, "SELECT")==0) { 
+		if (into_temp==0) {
       			A4GL_add_xmlmap (get_currmapset(), "</SELECT_STMT>\n\n");	printed++;
+		} else {
+      			A4GL_add_xmlmap (get_currmapset(), "</TEMPTABLE>\n\n");	printed++;
+		}
 	}
+
+
 	if (strcmp (main_statement_type, "DELETE")==0) { 
       			A4GL_add_xmlmap (get_currmapset(), "</DELETE_STMT>\n\n");	printed++;
 	}
@@ -1017,6 +1057,17 @@ map_select_stmt (char *main_statement_type, struct s_select *select)
 }
 
 }
+
+
+
+void map_create_temp(char *tab, char *src) {
+  if (!A4GL_isyes (acl_getenv ("MAPCRUD")))
+    {
+      return;
+    }
+  A4GL_add_xmlmap (MAPSET_CRUD_CREATE_TEMP, "<TEMPTABLE NAME=\"%s\" SRC=\"%s\"/>\n", tab,src);
+}
+
 
 void
 map_delete_update (char *main_statement_type, char *table,
