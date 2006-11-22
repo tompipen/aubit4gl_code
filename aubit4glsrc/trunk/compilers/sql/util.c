@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.46 2006-11-22 07:56:18 mikeaubury Exp $
+# $Id: util.c,v 1.47 2006-11-22 08:31:43 mikeaubury Exp $
 #
 */
 
@@ -1246,11 +1246,10 @@ void *copy_togenbind(char c) {
 	return 0;
 }
 
-int fail_on_select_ibind() {
-return 0;
+void fail_on_select_ibind(void) {
 }
 
-
-map_create_temp() {
+void map_create_temp(char *tab, char *src) {
 }
+
 /* ====================================== EOF ============================ */
