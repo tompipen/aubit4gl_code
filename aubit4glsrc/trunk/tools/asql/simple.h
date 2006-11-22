@@ -25,7 +25,8 @@
 #define KW_INFO_TABLES 281
 #define KW_INFO_PRIV 282
 #define KW_EXPLAIN 283
-
+#define KW_CREATE_PROCEDURE 284
+#define KW_END_PROCEDURE 285
 
 struct element {
 	int lineno;

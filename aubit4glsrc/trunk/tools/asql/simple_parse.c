@@ -71,12 +71,13 @@ int line=1;
 //int in_stmt=0;
 char *ptr=0;
 char *ptr_new=0;
-struct element *e=0;
+struct element *elem=0;
 int a;
 int into_temp=0;
 int need_fname=0;
 int need_delim=0;
 int need_tabname=0;
+int in_create_procedure;
 
 	while (1) {
 		a=asql_yylex();
@@ -92,7 +93,7 @@ int need_tabname=0;
 				char buff[512];
 				strcpy(buff,yylval.str);
 				strcpy(buff,A4GL_strip_quotes(buff));
-				e->fname=strdup(buff);
+				elem->fname=strdup(buff);
 				// We also need to remove the UNLOAD ... bit...
 				//printf("Scrapping %s\n",ptr);
 				free(ptr); ptr=0;
@@ -102,13 +103,36 @@ int need_tabname=0;
 			printf("Unknown a when looking for filename %d\n",a);
 		}
 
+
+		if (a==KW_CREATE_PROCEDURE) {
+			static char buff[20000];
+			struct element *elem_crp=0;
+			strcpy(buff,yylval.str);
+			while (1) {
+				a=asql_yylex();
+				if (a==0) break;
+				strcat(buff,yylval.str);
+				if (a==KW_END_PROCEDURE) {
+					break;
+				}
+			}
+			elem_crp=acl_malloc2(sizeof(struct element));
+			elem_crp->type='?';
+			elem_crp->delim=0;
+			elem_crp->fname=0;
+			elem_crp->stmt=strdup(buff);
+			add_stmt(elem_crp);
+			free(elem_crp);
+			continue;
+		}
+
                 if (need_delim&&(a==KW_IDENTIFIER||a==KW_STRING_LITERAL||a==KW_CONSTANT)) {
 			//printf("Have delimiter : %s",yylval.str);
 			if ((a==KW_STRING_LITERAL||a==KW_CONSTANT) &&(yylval.str[0]=='"'||yylval.str[0]=='\'')) {
-                        	e->delim=strdup(&yylval.str[1]);
-                        	e->delim[strlen(e->delim)-1]=0;
+                        	elem->delim=strdup(&yylval.str[1]);
+                        	elem->delim[strlen(elem->delim)-1]=0;
 			} else {
-                        	e->delim=strdup(yylval.str);
+                        	elem->delim=strdup(yylval.str);
 			}
 			//printf("Have delimiter : %s (%d) %d %d %d",e->delim,a,KW_IDENTIFIER,KW_STRING_LITERAL,KW_CONSTANT);
                         free(ptr); ptr=0;
@@ -118,7 +142,7 @@ int need_tabname=0;
 
 		if (need_tabname) {
 			if (a==KW_IDENTIFIER) {
-				e->fname=strdup(yylval.str);
+				elem->fname=strdup(yylval.str);
                         	free(ptr);ptr=0;
 				need_tabname=0;
 				continue;
@@ -132,7 +156,7 @@ int need_tabname=0;
 		}
 
 		if (a==KW_WHERE) {
-			e->type=tolower(e->type);
+			elem->type=tolower(elem->type);
 		}
 
 		if (a==KW_DELIMITER) {
@@ -150,9 +174,9 @@ int need_tabname=0;
 		if (a==KW_INTO&&into_temp==0) into_temp++;
 
 		if (a==KW_TEMP&&into_temp==1) {
-				A4GL_debug("TEMP TABLE ? e->type was %c",e->type);
-				if (e->type=='S'||e->type=='s') e->type='T';
-				A4GL_debug("TEMP TABLE ? e->type now %c",e->type);
+				A4GL_debug("TEMP TABLE ? e->type was %c",elem->type);
+				if (elem->type=='S'||elem->type=='s') elem->type='T';
+				A4GL_debug("TEMP TABLE ? e->type now %c",elem->type);
 
 		}
 
@@ -164,54 +188,54 @@ int need_tabname=0;
 			line++;
 		}
 
-		if ((a==KW_NL||a==KW_SPACE)&&e==0) {
+		if ((a==KW_NL||a==KW_SPACE)&&elem==0) {
 			continue;
 		}
 
 
 		if (a==KW_SEMI) { 
 			if (ptr) {
-				e->stmt=ptr; 
-				add_stmt(e); 
-				free(e); 
+				elem->stmt=ptr; 
+				add_stmt(elem); 
+				free(elem); 
 			}
-			e=0; ptr=0;continue;
+			elem=0; ptr=0;continue;
 		}
 
-		if (e==0) {
-			e=acl_malloc2(sizeof(struct element));
-			e->type='?';
-			e->delim=0;
-			e->fname=0;
+		if (elem==0) {
+			elem=acl_malloc2(sizeof(struct element));
+			elem->type='?';
+			elem->delim=0;
+			elem->fname=0;
 		}
 
 
-		A4GL_assertion(e==0,"No element");
+		A4GL_assertion(elem==0,"No element");
 
-		if (e->type=='?') {
-			if (a==KW_LOAD)   {e->type='L';need_fname=1;}
-			if (a==KW_UNLOAD) {e->type='C';need_fname=1;}
-			if (a==KW_UPDATE) e->type='U';
-			if (a==KW_INSERT) e->type='I';
-			if (a==KW_DELETE) e->type='D';
-			if (a==KW_SELECT) e->type='S';
-			if (a==KW_EXPLAIN) e->type='E';
+		if (elem->type=='?') {
+			if (a==KW_LOAD)   {elem->type='L';need_fname=1;}
+			if (a==KW_UNLOAD) {elem->type='C';need_fname=1;}
+			if (a==KW_UPDATE) elem->type='U';
+			if (a==KW_INSERT) elem->type='I';
+			if (a==KW_DELETE) elem->type='D';
+			if (a==KW_SELECT) elem->type='S';
+			if (a==KW_EXPLAIN) elem->type='E';
 
-			if (a==KW_INFO_COL) {e->type='1';need_tabname=1;}
-			if (a==KW_INFO_STAT) {e->type='2';need_tabname=1;}
-			if (a==KW_INFO_TABLES) e->type='3';
-			if (a==KW_INFO_PRIV) {e->type='4';need_tabname=1;}
-			if (a==KW_INFO_IDX) {e->type='5';need_tabname=1;}
+			if (a==KW_INFO_COL) {elem->type='1';need_tabname=1;}
+			if (a==KW_INFO_STAT) {elem->type='2';need_tabname=1;}
+			if (a==KW_INFO_TABLES) elem->type='3';
+			if (a==KW_INFO_PRIV) {elem->type='4';need_tabname=1;}
+			if (a==KW_INFO_IDX) {elem->type='5';need_tabname=1;}
 
-			if (e->type=='?') {
+			if (elem->type=='?') {
 				if (A4GL_aubit_strcasecmp(yylval.str,"SHOW")==0) {
-					e->type='S';
+					elem->type='S';
 				} else {
-					e->type='O';
+					elem->type='O';
 				}
 			}
 
-			e->lineno=line;
+			elem->lineno=line;
 			into_temp=0;
 		}
 
@@ -227,11 +251,11 @@ int need_tabname=0;
 		
 	}
 
-if (e) {
-	e->stmt=ptr;
-	add_stmt(e);
-	free(e);
-	e=0;
+if (elem) {
+	elem->stmt=ptr;
+	add_stmt(elem);
+	free(elem);
+	elem=0;
 }
 return 1;
 

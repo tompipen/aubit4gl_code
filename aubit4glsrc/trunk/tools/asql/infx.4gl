@@ -2841,7 +2841,7 @@ if (e->delim) {
 
 	  if (*col->sqlind == -1) 
 	    {
-		fprintf(unlfile,"|");
+		fprintf(unlfile,"%c",delim);
 		continue;
 	    }
 
@@ -2871,7 +2871,7 @@ if (e->delim) {
 			if (strlen(string)==0) {
 		  		fprintf (unlfile," ");
 			} else {
-		  		fprintf (unlfile,"%s", string);
+		  		fprintf (unlfile,"%s", escape_delim(string));
 			}
 			}
 		  break;
@@ -2944,7 +2944,7 @@ if (e->delim) {
 			}
 		} // End of switch
 
-		fprintf(unlfile,"|");
+		fprintf(unlfile,"%c",delim);
 
 	} // End for (columns)
 	fprintf(unlfile,"\n");
