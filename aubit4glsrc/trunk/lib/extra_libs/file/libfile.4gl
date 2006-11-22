@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: libfile.4gl,v 1.17 2006-11-17 19:38:38 mikeaubury Exp $
+	 $Id: libfile.4gl,v 1.18 2006-11-22 14:11:42 mikeaubury Exp $
 }
 
 {**
@@ -523,9 +523,11 @@ END FUNCTION
  
 code
          r=fflush((FILE *)handle);
+#ifndef WIN32
 	if (r==0) { /* OK  */
 	  	r=fsync(fileno((FILE *)handle));
 	}
+#endif
 endcode
  
          RETURN r
