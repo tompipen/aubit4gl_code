@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.33 2006-04-10 10:19:04 mikeaubury Exp $
+# $Id: memfile.c,v 1.34 2006-11-22 07:55:27 mikeaubury Exp $
 #
 */
 
@@ -56,6 +56,7 @@ static char *buff;
 static long buff_len;
 static FILE *in;
 static long pos = 0;
+static void reload_comments(void) ;
 //FILE *A4GL_mja_fopen (char *name, char *mode);
 
 void A4GL_dump_buffer (char *s, int l);
@@ -411,7 +412,7 @@ if (save) {
 		if (buff[a+2]!=no_comment_char) {
 			if (save_comment) FPRINTF(save_comment,"%d|",lineno);
                 	for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
-				if (save_comment&&b>a+2) FPRINTF(save_comment,"%c",buff[b]);
+				if (save_comment&&b>a+1) FPRINTF(save_comment,"%c",buff[b]);
 				
 				buff[b]=' ';
 			}
@@ -479,7 +480,73 @@ if (save) {
 	fclose(last);
     }
 
-if (save_comment) {fclose(save_comment);}
+if (save_comment) {fclose(save_comment); reload_comments(); }
 
 }
 
+
+
+
+struct s_comments {
+	int lineno;
+	char *comment;
+};
+
+
+struct s_comments *load_comments=0;
+int ncomments=0;
+
+
+char *A4GL_has_comment(int n) {
+	int a;
+	for (a=0;a<ncomments;a++) {
+		if ( load_comments[a].lineno==-1) continue;
+
+		if (load_comments[a].lineno<=n) {
+			load_comments[a].lineno=-1;
+			return load_comments[a].comment;
+		}
+	}
+	return 0;
+}
+
+static void add_comment(int n,char *s) {
+	ncomments++;
+	load_comments=realloc(load_comments,sizeof(struct s_comments)*ncomments);
+	load_comments[ncomments-1].lineno=n;
+	load_comments[ncomments-1].comment=strdup(s);
+}
+
+static void reload_comments(void) {
+char buff[2048];
+int lineno;
+char *load;
+char str[2048];
+FILE *load_comment=0;
+load=acl_getenv("SAVE_COMMENTS");
+
+if (load) {
+	if (strlen(load)) {
+		load_comment=fopen(load,"r");
+	}
+}
+
+
+if (load_comment==0) return;
+
+while(1) {
+	char *ptr;
+	if (feof(load_comment)) break;
+	fgets(buff,sizeof(buff)-1,load_comment);
+	A4GL_trim(buff);
+	ptr=strchr(buff,'|');
+	if (!ptr) continue;
+	*ptr=0;
+	ptr++;
+	strcpy(str,ptr);
+	lineno=atoi(buff);
+	add_comment(lineno,str);
+}
+fclose(load_comment);
+
+}

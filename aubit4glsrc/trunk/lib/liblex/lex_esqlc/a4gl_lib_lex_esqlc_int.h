@@ -14,6 +14,7 @@ int print_bind_dir_definition(char i,struct binding_comp *bind, int bindcnt) ;
 int print_bind_dir_set_value (char i,struct binding_comp *bind,int bindcnt);
 int doing_esql(void);
 
+int check_binding(t_binding_comp_list *l, char *fromwhere) ;
 
 
 enum e_dialect {

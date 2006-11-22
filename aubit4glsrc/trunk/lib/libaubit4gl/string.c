@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.25 2005-03-31 13:35:48 afalout Exp $
+# $Id: string.c,v 1.26 2006-11-22 07:55:27 mikeaubury Exp $
 #
 */
 
@@ -83,7 +83,12 @@ int A4GL_strnullcmp (char *s1, char *s2);
 void
 A4GL_string_set (char *ptr, char *b, int size)
 {
-  strncpy (ptr, b, size);
+  char buff[50000];
+  if (size>50000) {
+		A4GL_assertion(1,"Buff not big enough in string_set");
+	}
+  strncpy (buff, b, size);
+  strncpy (ptr, buff, size);
   ptr[size] = 0;		/* MJA 16.08.2001 */
   A4GL_pad_string (ptr, size);
   ////A4GL_debug ("..");

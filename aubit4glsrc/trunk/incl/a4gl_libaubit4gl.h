@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.256 2006-11-16 13:03:34 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.257 2006-11-22 07:56:19 mikeaubury Exp $
 #
 */
 
@@ -3077,7 +3077,8 @@ void
 map_select_stmt (char *main_statement_type, struct s_select *select);
 void
 map_delete_update (char *main_statement_type, char *table, struct s_select_list_item *i);
-
+void map_create_temp(char *tab, char *src);
+void fail_on_select_ibind(void);
 
 char *make_table_expression(struct s_select *select);
 char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
@@ -3103,6 +3104,7 @@ int A4GL_move_file(char *from,char *to);
 int A4GL_file_length(char *fname);
 int A4GL_delete_file(char *fname);
 void A4GL_status_ok(int sql_too);
+//void A4GL_set_sql_lineno(int n);
 
 struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a);
 
