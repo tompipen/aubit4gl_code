@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.134 2006-10-14 10:09:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.135 2006-11-23 12:42:32 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.134 2006-10-14 10:09:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.135 2006-11-23 12:42:32 mikeaubury Exp $";
 #endif
 
 /**
@@ -3339,6 +3339,9 @@ return 0;
 
 
 
+int A4GL_get_currwinno() {
+        return currwinno;
+}
 
 
 

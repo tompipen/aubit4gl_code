@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.100 2006-10-12 06:13:17 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.101 2006-11-23 12:42:32 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.100 2006-10-12 06:13:17 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.101 2006-11-23 12:42:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -702,9 +702,14 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
       if (sio->fcntrl[a].state == 50)
 	{
+         int rval;
 	  sio->currentfield = sio->field_list[sio->curr_attrib];
 	A4GL_debug_print_field_opts (sio->currentfield);
-	  set_current_field (sio->currform->form, sio->currentfield);
+	  rval=set_current_field (sio->currform->form, sio->currentfield);
+		if (rval!=E_OK) {
+			printf("RVAL=%d\n",rval);
+			A4GL_assertion(1,"Unable to set current tield...");
+			}
 	  sio->currform->currentfield = sio->currentfield;
 	  pos_form_cursor (sio->currform->form);
 	  A4GL_debug ("Processed after users 'BEFORE FIELD'");

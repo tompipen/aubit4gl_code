@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.147 2006-11-16 14:30:54 mikeaubury Exp $
+# $Id: ioform.c,v 1.148 2006-11-23 12:42:32 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.147 2006-11-16 14:30:54 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.148 2006-11-23 12:42:32 mikeaubury Exp $";
 #endif
 
 /**
@@ -106,6 +106,7 @@ void A4GL_set_curr_infield (void *a);
 //int ncol;
 //char dbname[64];
 void *inp_current_field = 0;
+char * get_print_field_opts_as_string (FIELD * a);
 
 /*
 =====================================================================
@@ -1344,6 +1345,20 @@ A4GL_get_field_width_w (void *f,int need_height)
   return w;
 }
 
+void debug_print_field_opts(struct s_form_dets *formdets) {
+int a;
+if (formdets==0) return;
+
+  for (a = 0; formdets->form_fields[a]; a++)
+    {
+	void *f;
+  	struct struct_scr_field *field;
+	f=formdets->form_fields[a];
+
+      	field = (struct struct_scr_field *) (field_userptr (f));
+	A4GL_debug("DPFO_FIELD %d BUFFER='%s' - OPTS=%x (%s) field_fore=%x field_back=%x",a,field_buffer(f,0), field_opts(f),get_print_field_opts_as_string(f), field_fore(f),field_back(f));
+    }
+}
 
 void
 A4GL_set_fields_sio (struct s_screenio *sio)
@@ -1375,19 +1390,21 @@ A4GL_set_fields_sio (struct s_screenio *sio)
   field_list = (FIELD **) sio->field_list;
   nv = sio->novars;
 
-  for (a = 0; a<formdets->fields_cnt; a++)
+  debug_print_field_opts(formdets);
+
+  for (a = 0; formdets->form_fields[a]; a++)
     {
     	int should_be_on=0;
 	void *f;
 	f=formdets->form_fields[a];
-
       	field = (struct struct_scr_field *) (field_userptr (formdets->form_fields[a]));
 
         if (field == 0) continue;
 
-  	for (b = 0; b<nofields && field_list[b]; b++)
+  	for (b = 0; b<=nofields ; b++)
     	{
 		if (f==field_list[b]) {
+			A4GL_debug("Should be on... %p",f);
 			should_be_on++;
 	 		break;
 		}
@@ -1401,6 +1418,7 @@ A4GL_set_fields_sio (struct s_screenio *sio)
 
     }
 
+  debug_print_field_opts(formdets);
 
 }
 
@@ -2923,15 +2941,18 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
   nr = 0;
   for (a = 0; a <= c; a++)
     {
-      char *buff;
-      char *orig;
+      char *buff=0;
+      char *orig=0;
       int freeme=0;
 
       orig=field_buffer (field_list[a], 0);
       A4GL_debug("Orig=%s\n",orig);
       if (strlen(orig)==0) {
 	      	freeme++;
-	      	buff=strdup("");
+		buff=malloc(2);
+		buff[0]=0;
+		buff[1]=0;
+	      	//buff=strdup("");
       } else {
 	      	freeme++;
       		buff = strdup (orig);
@@ -3018,6 +3039,39 @@ struct s_form_dets *formdets;
     }
 }
 
+
+/**
+ *
+ * @todo Describe function
+ */
+char * get_print_field_opts_as_string (FIELD * a)
+{
+  long z;
+  static char str[8048] = "";
+  strcpy(str,"");
+  z = field_opts (a);
+  if (z & O_VISIBLE)
+    strcat (str, " O_VISIBLE");
+  if (z & O_ACTIVE)
+    strcat (str, " O_ACTIVE");
+  if (z & O_PUBLIC)
+    strcat (str, " O_PUBLIC");
+  if (z & O_EDIT)
+    strcat (str, " O_EDIT");
+  if (z & O_WRAP)
+    strcat (str, " O_WRAP");
+  if (z & O_BLANK)
+    strcat (str, " O_BLANK");
+  if (z & O_AUTOSKIP)
+    strcat (str, " O_AUTOSKIP");
+  if (z & O_NULLOK)
+    strcat (str, " O_NULLOK");
+  if (z & O_STATIC)
+    strcat (str, " O_STATIC");
+  if (z & O_PASSOK)
+    strcat (str, " O_PASSOK");
+return str;
+}
 
 
 /**
@@ -4219,4 +4273,5 @@ static int get_inc_quotes(int a) {
 void UILIB_A4GL_direct_to_ui(char *s) {
 // Does nothing - require by the API...
 }
+
 

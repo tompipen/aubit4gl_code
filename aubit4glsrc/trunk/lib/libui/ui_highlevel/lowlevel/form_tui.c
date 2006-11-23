@@ -286,7 +286,11 @@ A4GL_form_field_opts_on (FIELD * field, OPTIONS opts)
 bool
 A4GL_form_field_status (const FIELD * field)
 {
+ if (field) {
   return field->status;
+ } else {
+	return 0;
+ }
 }
 
 

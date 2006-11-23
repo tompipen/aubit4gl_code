@@ -18,10 +18,14 @@
 		#include <panel.h>
 	#endif
 
+#ifndef NOLIBFORM
 	#include <D:/cygwin/usr/include/ncurses/form.h>
+#endif
 #else
 	#ifndef _NO_FORM_H_
+#ifndef NOLIBFORM
 		#include <form.h>
+#endif
 	#endif
 	#if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
 		#ifndef PAN32
@@ -39,6 +43,11 @@
 	#endif
 #endif
 
+#ifdef NOLIBFORM
+#include "nolibform.h"
+#include "aubit_noform.h"
+
+#endif
 
 typedef struct
 {

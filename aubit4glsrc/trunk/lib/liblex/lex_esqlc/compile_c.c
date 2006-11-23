@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.344 2006-11-17 12:32:27 mikeaubury Exp $
+# $Id: compile_c.c,v 1.345 2006-11-23 12:42:31 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.344 2006-11-17 12:32:27 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.345 2006-11-23 12:42:31 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3462,6 +3462,7 @@ int sio_id;
   printc (" A4GL_push_constr(&_sio_%d);\n ",sio_id);
   printc (" A4GL_pop_params(ibind,1);");
   printc ("}\n");
+  print_reset_state_after_call();
 }
 
 
@@ -4536,6 +4537,7 @@ LEXLIB_print_input_2 (char *s)
   printc("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",sio_id,sio_id);
 
   printc ("}\n");
+  print_reset_state_after_call();
 
 
   /*}*/
