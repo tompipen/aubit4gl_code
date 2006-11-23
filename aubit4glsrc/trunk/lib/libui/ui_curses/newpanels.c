@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.135 2006-11-23 12:42:32 mikeaubury Exp $
+# $Id: newpanels.c,v 1.136 2006-11-23 13:31:31 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.135 2006-11-23 12:42:32 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.136 2006-11-23 13:31:31 mikeaubury Exp $";
 #endif
 
 /**
@@ -1693,6 +1693,7 @@ void
  UILIB_A4GL_display_internal (int x, int y, char *s, int attr, int clr_line)
 {
 int nattr;
+int lastpos;
 WINDOW *wot;
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,attr,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",attr);
@@ -1773,6 +1774,10 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	A4GL_debug("Buff='%s'",buff);
   	waddstr (currwin, buff);
 	  A4GL_debug ("Clearing line...");
+		lastpos=x+strlen(s)-1;
+		if (x>=0) {
+			A4GL_mja_gotoxy(lastpos,y);
+		}
 	}
 
       A4GL_debug (">> printed %s", s);
