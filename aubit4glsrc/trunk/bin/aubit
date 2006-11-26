@@ -416,7 +416,7 @@ function install_libs_conf () {
 function install_bin_links () {
 
 	deinstall_bin_links 
-	install_aubit-config_link 
+	install_aubit_config_link 
 	install_bin_install_link_dir
 	
 	if ! test -d $BIN_INSTALL_LINK; then 
@@ -484,7 +484,7 @@ function deinstall_bin_links () {
 
 #######################################
 #
-function install_aubit-config_link () {
+function install_aubit_config_link () {
 	
 	install_bin_install_link_dir
 	
