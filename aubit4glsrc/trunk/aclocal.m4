@@ -39,6 +39,14 @@ dnl Idea borrowed from mm
 AC_DEFUN(PHP_CONFIGURE_PART,[
   AC_MSG_RESULT()
   AC_MSG_RESULT([${T_MD}$1${T_ME}])
+  
+	if test "$A4GL_dcopRef" != ""; then
+		#See functions progress_x in script bin/aubit
+		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
+		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
+    	dcop $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
+		dcop $A4GL_dcopRef setLabel "$1"
+	fi
 ])
 
 # serial 47 AC_PROG_LIBTOOL

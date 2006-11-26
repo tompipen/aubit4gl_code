@@ -1,34 +1,111 @@
 ###########################################################################
-#			RPM Package manager config file for Aubit 4gl
+#			RPM Package config file for Aubit 4gl
 #
-# Initial spec file created by autospec ver. 0.6 with rpm 2.5 compatibility
-# for Aubit 4gl version 0.20
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.25 2004-12-22 11:22:18 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.26 2006-11-26 01:13:58 afalout Exp $
 #
 
-###########
-#Variables
-%define RPM_A4GL_INSTALL_DIR		/opt/aubit4gl
+#--------------------------------------------------------------------------
+# TODO:
+# - create signature
+# - use RedHat plugin for Eclipes for edidting this file
+# - separate al plug-ins to separate rpm's so we cah enable dependencies
+# - mark license and readme files as --percent--license and --percent--readme
+#
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# NOTES:
+# - See /usr/lib/rpm for available macros
+# - WARNING - RPM is a system intentionally designed to NOT have user intractions
+# - According to some RedHat developers, "rpm is an evil hack. <shrug>" And I 
+#   cant help but agree.
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# (replace --percent-- with real percent sign - must hide it as commnts dont 
+# work here)
+#
+# Interesting macros maybe for future use:
+#
+# macro: --percent--suse_update_desktop_file
+#     Used to add easily a category to .desktop files according to XDG
+#     standard. see /usr/lib/rpm/suse_update_desktop_file.sh
+#
+#Prints to stderr
+#	--percent--{echo:Performing post-install tasks...}
+#
+#Prints message to stderr and returns BADSPEC
+#	--percent--{error:nessage}
+#
+#Print warning to stderr
+#	--percent--{warn:this and that}
+#
+#--percent--if --percent--build_qsa
+#--percent--exclude --percent--_libdir/libqsa.so.*
+#--percent--endif
+
+#--------------------------------------------------------------------------
+
+
+###################
+#Variables section
+#--------------------------------------------------------------------------
+#
+# WARNING! WARNING! WARNING! commenting out lines in this section WILL BE 
+# IGNORED AND THERE CONTENT PROCESSED REGARDLESS!!!!! So when you want to 
+# comment out any line containing percentage sign, use '--percent--' instead.
+#
+# User can override this variables when running rpm by using ...TODO...
+#
+#--------------------------------------------------------------------------
+# RPM_A4GL_INSTALL_DIR	- /opt/aubit4gl or @prefix@ ?
+# As RPM demands root privilege to install anything, it is pointless to 
+# install anything not available system-wide. User can specify a flag to 
+# rpm to relocate it to some other place
+# Added -rpm to avoid clashing with other types of installation (tarball, autopackage...)
+%define RPM_A4GL_INSTALL_DIR		/opt/aubit4gl-rpm
 %define RPM_A4GL_RPMINSTALL_LOG		/tmp/aubit4gl-rpminstall.log
 %define RPM_A4GL_RPMDEINSTALL_LOG	/tmp/aubit4gl-rpmdeinstall.log
+%define RPM_A4GL_RPMVERIFY_LOG		/tmp/aubit4gl-rpmverify.log
 %define RPM_MAKE					gmake
+%define A4GL_USER_INTERACTION		1
 
+#-------------------------------
+#	The sub-directory (relative to --percent--{_builddir}  
+#    which is defined as --percent--_builddir		--percent--{_topdir}/BUILD) 
+#	where sources are compiled.
+#	This macro is set after processing --percent--setup, either explicitly from the
+#	value given to -n or the default name-version.
+#
 
-###########
+%define buildsubdir %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+# If using buildsubdir, dont CD ourselves; if not using it, then CD ourselves
+# and add --percent--{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@ in fron of all --percent--doc files 
+# in configure.in
+%define A4GL_CD_MANUAL 0
+
+#Just testing - defining a macro :
+#	--percent--define myPatch() patch --percent--{-p:-p--percent--{-p*}}
+#	--percent--define testfunc() echo "param to testfunc was --percent--1 --percent--2 --percent--3"
+#
+# Calling a custom defined macro:
+#	--percent--testfunc A 1 B
+
+#--------------------------------------------------------------------------
 #There may be times when RPM's automatic dependency processing is not
 #desired. In these cases, the autoreqprov tag may be used to disable it.
 #This tag takes a yes/no or 0/1 value. For example, to disable automatic
 #dependency processing, the following line may be used:
 #This is needed in case of Aubit, because otherwise all dependencies for
-#all modules like GTK+ unixODBC, iODBC, ESQL/C, PDFlib, wtc, will be defined
+#all plug-ins like GTK+ unixODBC, iODBC, ESQL/C, PDFlib, wtc, will be defined
 #as prerequisites for installing Aubit, which is not true, since Aubit can
 #be configured to use this extensions only if they are installed on target 
 #system
 AutoReqProv: no
-
+#--------------------------------------------------------------------------
 
 ##############
 #Description
@@ -37,7 +114,7 @@ Summary: @FULLNAME@
 Name: @SHORTNAME@
 Version: @AUBIT_VERSION@.@AUBIT_BUILD@
 Release: 1
-Copyright: @AUBIT_LICENSE@
+License: @AUBIT_LICENSE@
 Vendor: @AUBIT_PUBLISHER@
 Packager: Andrej Falout <andrej@falout.org>
 Group: Development/Languages
@@ -45,87 +122,161 @@ URL: http://@AUBIT_WEBSITE@
 Distribution: Red Hat Contrib-Net
 BuildArchitectures: @target_cpu@
 
-#FIXME: Icon tag accepts only GIF or XPM formats
-#Icon: docs/aubit4gl.ico
+#-------------------------------
+#FIXME: Icon tag accepts only GIF or XPM formats ?
+#Unable to open icon /usr/src/packages/SOURCES/docs/aubit4gl.png:
+#Icon: docs/aubit4gl.png
+#Unable to open icon /usr/src/packages/SOURCES/home/aubit/aubit4gl/docs/aubit4gl.png:
+#Icon: @prefix@/docs/aubit4gl.png
 
+#-------------------------------
 #Provides is supposed to specify a capability needed by other packages,
 #that can be provided by more then one package. For instance, both 4Js BDL,
 #Querix Hydra, and Informix RDS provide Informix-4gl compatible compiler.
 Provides: x4gl_compiler
 
+#-------------------------------
 #Finding  Requires: (using /usr/lib/rpm/find-requires)...
 Requires: glibc >= 2.2, glibc-devel >= 2.2, /bin/bash, /bin/sh, make
+BuildRequires: bison
 
-#Obsoletes:
-#BuildRoot: /tmp/aubit4glsrc-%{version}-root
-Prefix: /opt
+#-------------------------------
+#Define place where RPM build will be done; defines env var RPB_BUILD_ROOT
+#override with 'rpmbuild --buildroot'
+#Note: when running 'rpmbuild -bl' it checks for existance of files specified in
+#this file under RPB_BUILD_ROOT. 
+#If not defined, defualts to nothing - so it expects listed files under file
+#system root. Therefore, for convinience, we specify same location where
+#'make install' would install compiled binaries. In configure.in, this is controled
+#with RPM_ABSOLUTE variable
+BuildRoot: @prefix@
+#BuildRoot: --percent--{_tmppath}/--percent--{name}---percent--{version}-rpmbuildroot
 
+#-------------------------------
+# Location where RPM gets installed by default on the targets system 
+Prefix: %{RPM_A4GL_INSTALL_DIR}
+
+#-------------------------------
 #WARNNING: file name used here will need to be present on local system
 #at time of building RPM:
 Source: http://@AUBIT_WEBSITE@/files/%{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
 
-#Patch: aubit4glsrc-%{version}.patch
+#-------------------------------
+#Patch: aubit4glsrc---percent--{version}.patch
 
 ##############
 %description
 ##############
+#--------------------------------------------------------------------------
 Aubit 4gl (Fourth Generation programing Language) compiler compiles source
 files to several low-level programming languages (C, Perl, Java...). It has
-ODBC and native database conectivity, GUI interface and many features.
+conectivity to many databases, several UI interfaces and many features.
 
-Install Aubit compiler if you want to write business related database
-oriented (BRDO) applications.
+Install Aubit compiler if you want to write new or compile existing Business 
+Related Database Oriented (BRDO) applications.
+
+See http://@AUBIT_WEBSITE@ for documentation
+#--------------------------------------------------------------------------
 
 ##############
 %prep
 ##############
-%setup -c aubit4glsrc
-#%setup -n /usr/aubit/aubit4glsrc
+echo "Processing 'prep' section..."
 
-#%patch
-#%patch -p1
-#%patch1 -p1
+#Aparrently, if trying to define any macros/variables that are defined by
+#setup macro, we cant use setup at all, as the last macro (i.e. the one from
+#setup) "wins".
+#Seems that setup macro is useless anyway, and can be ommited, but we need
+#it if we bant to override buildsubdir to avoid manual cd-in and having to 
+#add buildsubdir in front of all --percent--doc macros
+%setup -q -n %buildsubdir
+#--percent--setup -c aubit4glsrc
+#--percent--setup -n /usr/aubit/aubit4glsrc
+
+#--percent--patch
+#--percent--patch -p1
+#--percent--patch1 -p1
+
+echo "Finished processing 'prep' section."
 
 ##############
 %build
 ##############
-cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+echo "Processing 'build' section..."
+if test "$A4GL_CD_MANUAL" = "1"; then
+	echo "Manual cd to %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@"
+	cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+else
+	echo "NOT cd to %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@"
+	echo "buildsubdir=%{buildsubdir}"
+	echo "_buildsubdir=%{_buildsubdir}"
+fi
 ./configure
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 #CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+echo "Finished processing 'build' section."
 
 ##############
 %install
 ##############
+echo "Processing 'install' section..."
 #install -s -m 755 -o 0 -g 0 loadmap /usr/bin/loadmap
 #install -m 644 -o 0 -g 0 eject.1 /usr/man/man1
-cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+if test "$A4GL_CD_MANUAL" = "1"; then
+	cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+fi
 make install
 
+# If rpmbuild finds any installed, but unpackaged files, it will stop, so
+# delete the files and/or dirs from RPM_BUILD_ROOT that you do not want to 
+# package up:
+# We just deleted crucial link and lef Aubit unusable...(unless user installing it was root
+# so another one is in /usr/lib)
+
+   rm -f ${RPM_BUILD_ROOT}/lib/libaubit4gl.so ${RPM_BUILD_ROOT}/etc/config/.cvsignore
+   rm -rf ${RPM_BUILD_ROOT}/etc/config/CVS
+
+echo "Finished processing 'install' section."
+
 ##############
-#%clean
+#--percent--clean
 ##############
+#echo "Processing 'clean' section..."
 #[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf "$RPM_BUILD_ROOT"
+#echo "Finished processing 'clean' section."
 
 ##############
 %files
 ##############
-%defattr(-,root,root)
+#NOTE: cannot have any shell commands in this section
+
+#Default file atributes to be applied to installed files:
+#TODO - we should vreate user aubit, so we dont use root here
+%defattr(-,root,users)
 
 #Directories to be created:
-%dir %{RPM_A4GL_INSTALL_DIR}/bin
-%dir %{RPM_A4GL_INSTALL_DIR}/lib
-%dir %{RPM_A4GL_INSTALL_DIR}/etc
-%dir %{RPM_A4GL_INSTALL_DIR}/etc/convertsql
-%dir %{RPM_A4GL_INSTALL_DIR}/etc/config
-%dir %{RPM_A4GL_INSTALL_DIR}/incl
-%dir %{RPM_A4GL_INSTALL_DIR}/tools/test/gui
-%dir %{RPM_A4GL_INSTALL_DIR}/tools/test
-%dir %{RPM_A4GL_INSTALL_DIR}/tools
-%dir %{RPM_A4GL_INSTALL_DIR}/docs
+#--------------------------------------------------------------------------
+# Apparently it is even dangerous to specify directories, as RPM assigns
+# there ownership tp whichever program 'claimed' them in this way. If user
+# for instance force RPM_A4GL_INSTALL_DIR to just '/' this would make 
+# /bin directory of this system owned by aubit4gl package. And as user MUST 
+# be root to install an rpm... see?
+# Plugins folder is created automatically, making me wonder why do we have to 
+# list these at all...
+#--------------------------------------------------------------------------
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/bin
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/lib
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/etc
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/etc/convertsql
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/etc/config
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/incl
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/tools/test/gui
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/tools/test
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/tools
+#--percent--dir --percent--{RPM_A4GL_INSTALL_DIR}/docs
 
-#Files that will be created depending on system confuguration, defined
-#from configure:
+#Various files that will be created depending on system configuration, defined
+#from configure: (RPMFILE_x)
 @RPMFILE_1@
 @RPMFILE_2@
 @RPMFILE_3@
@@ -176,15 +327,9 @@ make install
 @RPMFILE_48@
 @RPMFILE_49@
 @RPMFILE_50@
+#--end--
 
-
-#Below are only files that should be created by make in any case:
-
-## ==================================================================
-##               Files that are allways created
-## ==================================================================
-
-#Shared libraries:
+#Shared libraries: (LIBFILE_x)
 @LIBFILE_1@
 @LIBFILE_2@
 @LIBFILE_3@
@@ -225,8 +370,9 @@ make install
 @LIBFILE_38@
 @LIBFILE_39@
 @LIBFILE_40@
+#--end--
 
-#executables:
+#executables: (EXEFILE_x)
 @EXEFILE_1@
 @EXEFILE_2@
 @EXEFILE_3@
@@ -277,9 +423,9 @@ make install
 @EXEFILE_48@
 @EXEFILE_49@
 @EXEFILE_50@
+#--end--
 
-
-#Shell scripts:
+#Shell scripts: (SHFILE_x)
 @SHFILE_1@
 @SHFILE_2@
 @SHFILE_3@
@@ -300,10 +446,9 @@ make install
 @SHFILE_18@
 @SHFILE_19@
 @SHFILE_20@
+#--end--
 
-
-#Include files:
-
+#Include files: (INCFILE_x)
 @INCFILE_1@
 @INCFILE_2@
 @INCFILE_3@
@@ -334,9 +479,29 @@ make install
 @INCFILE_28@
 @INCFILE_29@
 @INCFILE_30@
+@INCFILE_31@
+@INCFILE_32@
+@INCFILE_33@
+@INCFILE_34@
+@INCFILE_35@
+@INCFILE_36@
+@INCFILE_37@
+@INCFILE_38@
+@INCFILE_39@
+@INCFILE_40@
+@INCFILE_41@
+@INCFILE_42@
+@INCFILE_43@
+@INCFILE_44@
+@INCFILE_45@
+@INCFILE_46@
+@INCFILE_47@
+@INCFILE_48@
+@INCFILE_49@
+@INCFILE_50@
+#--end--
 
-
-#Examples:
+#Examples: (EXAMPFILE_x)
 @EXAMPFILE_1@
 @EXAMPFILE_2@
 @EXAMPFILE_3@
@@ -397,9 +562,9 @@ make install
 @EXAMPFILE_58@
 @EXAMPFILE_59@
 @EXAMPFILE_60@
+#--end--
 
-
-#Makefiles:
+#Makefiles: (MAKEFILE_x)
 @MAKEFILE_1@
 @MAKEFILE_2@
 @MAKEFILE_3@
@@ -420,8 +585,9 @@ make install
 @MAKEFILE_18@
 @MAKEFILE_19@
 @MAKEFILE_20@
+#--end--
 
-#Documentation files:
+#Documentation files: (DOCFILE_x)
 @DOCFILE_1@
 @DOCFILE_2@
 @DOCFILE_3@
@@ -442,9 +608,9 @@ make install
 @DOCFILE_18@
 @DOCFILE_19@
 @DOCFILE_20@
+#--end--
 
-
-#Configuration files:
+#Configuration files: (CONFFILE_x)
 @CONFFILE_1@
 @CONFFILE_2@
 @CONFFILE_3@
@@ -465,8 +631,9 @@ make install
 @CONFFILE_18@
 @CONFFILE_19@
 @CONFFILE_20@
+#--end--
 
-#SQL conversion files:
+#SQL conversion files: (CONVFILE_x)
 @CONVFILE_1@
 @CONVFILE_2@
 @CONVFILE_3@
@@ -487,8 +654,9 @@ make install
 @CONVFILE_18@
 @CONVFILE_19@
 @CONVFILE_20@
+#--end--
 
-#Import files:
+#Import files: (IMPORTFILE_x)
 @IMPORTFILE_1@
 @IMPORTFILE_2@
 @IMPORTFILE_3@
@@ -509,8 +677,9 @@ make install
 @IMPORTFILE_18@
 @IMPORTFILE_19@
 @IMPORTFILE_20@
+#--end--
 
-
+#HELPFILE: (HELPFILE_x)
 @HELPFILE_1@
 @HELPFILE_2@
 @HELPFILE_3@
@@ -521,7 +690,9 @@ make install
 @HELPFILE_8@
 @HELPFILE_9@
 @HELPFILE_10@
+#--end--
 
+#FORMFILE: (FORMFILE_x)
 @FORMFILE_1@
 @FORMFILE_2@
 @FORMFILE_3@
@@ -532,12 +703,53 @@ make install
 @FORMFILE_8@
 @FORMFILE_9@
 @FORMFILE_10@
+#--end--
+
+#4GLPC compile settings files
+@FGLPCSETFILE_1@
+@FGLPCSETFILE_2@
+@FGLPCSETFILE_3@
+@FGLPCSETFILE_4@
+@FGLPCSETFILE_5@
+@FGLPCSETFILE_6@
+@FGLPCSETFILE_7@
+@FGLPCSETFILE_8@
+@FGLPCSETFILE_9@
+@FGLPCSETFILE_10@
+@FGLPCSETFILE_11@
+@FGLPCSETFILE_12@
+@FGLPCSETFILE_13@
+@FGLPCSETFILE_14@
+@FGLPCSETFILE_15@
+@FGLPCSETFILE_16@
+@FGLPCSETFILE_17@
+@FGLPCSETFILE_18@
+@FGLPCSETFILE_19@
+@FGLPCSETFILE_20@
+#--end--
+
+
+#%_iconsdir/hicolor/*/apps/%rname.png
+#%_datadir/applications/qt3-qtconfig.desktop
+
+#echo "Finished processing 'files' section."
 
 ##############
 %changelog
 ##############
 #WARNING!!! RPM actually checks date format here !!
 
+* Fri Nov 17 2006 afalout <andrej@falout.org>
+- Abstract all pre/post tasks to 'aubit' wrapper scrip; this allows us to:
+- Share same tasks ammong tarball, AutoPackage, deb and RPM installations
+- Test and debug this functionality without having to circle trough package build cicles
+- Have consistenf functionality and user interaction between installers
+- Fix or change in one place and have it applied to all installers
+- enable user interaction to be enabled or disabled without blocking installation
+- satisfy RPm requirement for not requiring user interaction
+- and many other nice things...
+* Fri Nov 17 2006 afalout <andrej@falout.org>
+- Make it build on SuSE 10.1
 * Mon Jan 19 2004 afalout <andrej@falout.org>
 - Make it all work again
 * Wed Sep 17 2003 root <root@aptiva.falout.com>
@@ -551,80 +763,192 @@ make install
 
 
 ##############
-#%pre
+%pre
 #is the macro to do pre-install scripts.
+# NOTE: pre-x tasks cant be interactive without having to block RPM
 ##############
+
+A4GL_TASK_MSG="Pre-Install"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--pre-install-rpm --rpm-install-dir=%{RPM_A4GL_INSTALL_DIR}"
+A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+A4GL_INTERACT_MSG="non-interactive program"
+
+	#---------------------------------
+	# Make sure we know where we are
+	cd %{RPM_A4GL_INSTALL_DIR}
+
+	#---------------------------------
+	# Start task log file
+	echo "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	echo "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	%{RPM_A4GL_INSTALL_DIR}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	echo "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Show to user task summary
+	echo "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+
 
 ##############
 %post
 #is the macro to do post-install scripts.
 ##############
 
-#reset log file
-date > %{RPM_A4GL_RPMINSTALL_LOG}
+A4GL_TASK_MSG="Post-install"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--post-install-rpm --rpm-install-dir=%{RPM_A4GL_INSTALL_DIR}"
+#TODO - how do I allow user to override?
+if test "%{A4GL_USER_INTERACTION}" = "1"; then
+	A4GL_INTERACT_OPTION="&"
+	A4GL_INTERACT_MSG="interactive program in separate process"
+else
+	A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+	A4GL_INTERACT_MSG="non-interactive program"
 
-#[ ! -d $RPM_INSTALL_PREFIX/bin ] && mkdir $RPM_INSTALL_PREFIX/bin > /dev/null 2>&1
-#ln -fs $RPM_INSTALL_PREFIX/aubit4gl/bin/4glpc $RPM_INSTALL_PREFIX/bin/4glpc
-#
-#[ ! -d /etc%{RPM_A4GL_INSTALL_DIR} ] && mkdir /etc%{RPM_A4GL_INSTALL_DIR} > /dev/null 2>&1
-#[ ! -f /etc%{RPM_A4GL_INSTALL_DIR}/aubitenv	 ] && cp $RPM_INSTALL_PREFIX/aubit4gl/bin/aubitenv.example /etc%{RPM_A4GL_INSTALL_DIR}/aubitenv
+fi
 
-cd %{RPM_A4GL_INSTALL_DIR}
+	#---------------------------------
+	# Make sure we know where we are
+	cd %{RPM_A4GL_INSTALL_DIR}
 
-echo "PATH=$PATH"  >> %{RPM_A4GL_RPMINSTALL_LOG}
-#It appears that RPM runs under some strange environent where PATH is not what you would
-#expect to find in your currnt environment, but the ABSOLUTE SYSTEM MINIMUM, like:
-#/sbin:/bin:/usr/bin:usr/X11R6/bin  - that's it.
-#Since we are trying to autodetect a lot of stuff, we will try to source syste and user's
-#profile files, to set "normal" user's environment
-source /etc/profile >> %{RPM_A4GL_RPMINSTALL_LOG}
-source ~/.bash_profile >> %{RPM_A4GL_RPMINSTALL_LOG}
+	#---------------------------------
+	# Run task
+	echo "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	%{RPM_A4GL_INSTALL_DIR}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	echo "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
 
-echo "PATH=$PATH" >> %{RPM_A4GL_RPMINSTALL_LOG}
+	#---------------------------------
+	# Close log file 
+	date >> $A4GL_TASK_LOG
+	echo "$A4GL_TASK_MSG tasks finished" >> $A4GL_TASK_LOG	
+	
+	#---------------------------------
+	# Show to user task summary
+	echo "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
 
-echo "Running 'make' in %{RPM_A4GL_INSTALL_DIR}..." >> %{RPM_A4GL_RPMINSTALL_LOG}
-#run 'configure', create and install /etc%{RPM_A4GL_INSTALL_DIR}/aubitrc, install
-#links to /usr/bin and /usr/lib, run test_build:
-make install >> %{RPM_A4GL_RPMINSTALL_LOG} 2>&1
+%post_ldconfig
+%update_menus
 
-echo "Running 'aubit configurator -firstrun' in %{RPM_A4GL_INSTALL_DIR}..."  >> %{RPM_A4GL_RPMINSTALL_LOG}
-aubit configurator -firstrun >> %{RPM_A4GL_RPMINSTALL_LOG} 2>&1
-
-#TODO: install icons in GNOME and K desktop menu for:
-#configurator
-#asql (ifx/pg)
-#SQLite tool (native Linux? or Java/Wine?)
-#Web browser shortcut to web site
-#readme file
-#install Kate editor's sintax highliting xml files for .4gl and .per
-
-echo "post tasks finshed" >> %{RPM_A4GL_RPMINSTALL_LOG}
-echo "Install finished,see %{RPM_A4GL_RPMINSTALL_LOG} for more info."
-echo "Run 'aubit configurator' if you wish to customise default configuration."
-
+	
 ##############
 %preun
 # is the macro to do pre-uninstall scripts.
+# NOTE: pre-x tasks cant be interactive without having to block RPM
 ##############
 
-echo "NOTE: Logging pre-Uninstall tasks to %{RPM_A4GL_RPMDEINSTALL_LOG}"
-#reset log file
-date > %{RPM_A4GL_RPMDEINSTALL_LOG}
-cd %{RPM_A4GL_INSTALL_DIR}
-#remove links created by 'make', and debris in tools/test
-echo "Running 'make clean' in %{RPM_A4GL_INSTALL_DIR}..."  >> %{RPM_A4GL_RPMDEINSTALL_LOG}
-make clean >> %{RPM_A4GL_RPMDEINSTALL_LOG}
-echo "Running 'make deinstall' in %{RPM_A4GL_INSTALL_DIR}..." >> %{RPM_A4GL_RPMDEINSTALL_LOG}
-make deinstall >> %{RPM_A4GL_RPMDEINSTALL_LOG}
-echo "preun tasks finshed" >> %{RPM_A4GL_RPMDEINSTALL_LOG}
-echo "pre-Uninstall tasks finished,see %{RPM_A4GL_RPMDEINSTALL_LOG} for more info."
+A4GL_TASK_MSG="Pre-Uninstall"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMDEINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--pre-uninstall-rpm --rpm-install-dir=%{RPM_A4GL_INSTALL_DIR}"
+A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+A4GL_INTERACT_MSG="non-interactive program"
+
+	#---------------------------------
+	# Make sure we know where we are
+	cd %{RPM_A4GL_INSTALL_DIR}
+
+	#---------------------------------
+	# Start task log file
+	echo "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	echo "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	%{RPM_A4GL_INSTALL_DIR}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	echo "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Show to user task summary
+	echo "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+
 
 ##############
-#%postun
-# is the macro to do post-uninstall scripts.
+%postun
+# macro to do post-uninstall scripts.
 ##############
 
+A4GL_TASK_MSG="Post-Uninstall"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMDEINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--post-uninstall-rpm --rpm-install-dir=%{RPM_A4GL_INSTALL_DIR}"
+if test "%{A4GL_USER_INTERACTION}" = "1"; then
+	A4GL_INTERACT_OPTION="&"
+	A4GL_INTERACT_MSG="interactive program in separate process"
+else
+	A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+	A4GL_INTERACT_MSG="non-interactive program"
+fi
 
+	#---------------------------------
+	# Make sure we know where we are
+	cd %{RPM_A4GL_INSTALL_DIR}
 
+	#---------------------------------
+	# Run task
+	echo "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	%{RPM_A4GL_INSTALL_DIR}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	echo "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Close log file 
+	date >> $A4GL_TASK_LOG
+	echo "$A4GL_TASK_MSG tasks finished" >> $A4GL_TASK_LOG	
+	
+	#---------------------------------
+	# Show to user task summary
+	echo "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+ 
+	
+%postun_ldconfig
+%clean_menus
+
+##############
+%verifyscript
+# Tasks to perform as part of RPM verify command, after all files installed by
+# RPM are verified
+##############
+
+A4GL_TASK_MSG="Post-Verify"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMVERIFY_LOG}"
+A4GL_AUBIT_FLAG="--post-verify-rpm --rpm-install-dir=%{RPM_A4GL_INSTALL_DIR}"
+if test "%{A4GL_USER_INTERACTION}" = "1"; then
+	A4GL_INTERACT_OPTION="&"
+	A4GL_INTERACT_MSG="interactive program in separate process"
+else
+	A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+	A4GL_INTERACT_MSG="non-interactive program"
+fi
+
+	#---------------------------------
+	# Make sure we know where we are
+	cd %{RPM_A4GL_INSTALL_DIR}
+
+	#---------------------------------
+	# Start task log file
+	echo "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	echo "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	%{RPM_A4GL_INSTALL_DIR}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	echo "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Close log file 
+	date >> $A4GL_TASK_LOG
+	echo "$A4GL_TASK_MSG tasks finished" >> $A4GL_TASK_LOG
+	
+	#---------------------------------
+	# Show to user task summary
+	echo "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+	
 #-------------------------------- EOF ----------------------------------
 

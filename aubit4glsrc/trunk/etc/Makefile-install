@@ -23,17 +23,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.15 2006-11-11 09:07:01 afalout Exp $
+# $Id: Makefile-install,v 1.16 2006-11-26 01:13:58 afalout Exp $
 #
-
-#gcc -E conftest.c
-#bold?
-
-
 
 #This file gets installed to root of binary installation, under name "Makefile"
 #in all scenarios of binary installation (tgz tarball, .package installer, RPM package, 
 #or by executing "make install" from source code tree...) on Linux/UNIX.
+#
 #It's purpose is to 
 #	* create aubitrc for binary installation by running ./configure
 #     as etc/aubitrc-bin
@@ -57,7 +53,7 @@ export AUBIT_BIN_INSTALL
 DO_CONFIG=1
 #enable (default) or disable installing aubitrc
 DO_RC=1
-#enable (default) or disable creating bin and lib links"
+#enable (default) or disable creating bin and lib links
 DO_LINK=1
 #enable (default) or disable changign environment variables
 DO_ENV=1
@@ -145,29 +141,26 @@ ifneq "${STEP_2}" ""
 endif
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Aubit compiler binary distribution installed/configured.           |"
-	
-	It is recomended that you follow this steps to activate the changes made to your environment
-	
-	1 clost your terminal session
-	opne another one; this will re-read your gloal and user .profile 
-	AUBITDIR
-	PATH
-	LD_LIBRARY_PATH
-	
-	You can also ./profile
-	
-	or use 'aubit' wrapper scrip
-	
-	Verify that :
-		PATH contains
-		there is an AUBITDIR
-		L_LIBRARY_P{ATH or ldconfig -x
-	
-	
-	@echo "| Then, you can test it by executing:                                |"
+	@echo "|                                                                    |"
+	@echo "| It is recomended that you follow this steps to activate the changes|"
+	@echo "| made to your environment:                                          |"
+	@echo "|                                                                    |"
+	@echo "| 1: close your current terminal session                             |"
+	@echo "| 2: open another one; this will re-read your global and user profile|"
+	@echo "|    files, and read newely set varialbes including AUBITDIR,        |"
+	@echo "|    PATH and LD_LIBRARY_PATH                                        |"
+	@echo "|                                                                    |"
+	@echo "| You can also source profile files manually like this:              |"
+	@echo "|            '. /etc/profile; . ~/.profile'                          |"
+	@echo "|                                                                    |"
+	@echo "| Or, use 'aubit' wrapper script to invoke Aubit programs.           |"
+	@echo "|                                                                    |"
+	@echo "| You can run 'aubit --check-env' to validate your environment       |"
+	@echo "|                                                                    |"
+	@echo "| Then, you can test compiler by executing:                          |"
 	@echo "| 'cd tools/test; make'                                              |"
-	@echo "| ...and following the instructions shown.                           |"	
-	@echo "+--------------------------------------------------------------------+"	
+	@echo "| ...and following the instructions shown.                           |"
+	@echo "+--------------------------------------------------------------------+"
 
 ###########################################
 # All targets common to binary and source code distros as here:

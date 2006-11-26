@@ -135,6 +135,7 @@ A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/incl
 #At compile time, it is used by compilers segardless of A4GL_LEXTYPE setting
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
 A4GL_SQLTYPE_DETECTED="@A4GL_SQLTYPE_DETECTED@"
+A4GL_SQLTYPE_COMPILE_ONLY_DETECTED="@A4GL_SQLTYPE_COMPILE_ONLY_DETECTED@"
 
 ############
 #Default output language driver for 4gl compiler:
@@ -158,6 +159,13 @@ A4GL_LEXDIALECT_DETECTED="@A4GL_LEXDIALECT_DETECTED@"
 # for postgresql 8.x.x, uncomment A4GL_TARGETDIALECT line below
 # to use @prefix@/etc/convertsql/INFORMIX-POSTGRES8.cnv
 #A4GL_TARGETDIALECT=@A4GL_LEXDIALECT@8
+
+############
+#List of db plugins valid for use at compile-time with particular EC dialect output:
+A4GL_SQLTYPE_EC_VALID_INFORMIX="@A4GL_SQLTYPE_EC_VALID_INFORMIX@"
+A4GL_SQLTYPE_EC_VALID_SAPDB="@A4GL_SQLTYPE_EC_VALID_SAPDB@"
+A4GL_SQLTYPE_EC_VALID_INGRES="@A4GL_SQLTYPE_EC_VALID_INGRES@"
+A4GL_SQLTYPE_EC_VALID_POSTGRES="@A4GL_SQLTYPE_EC_VALID_POSTGRES@"
 
 ############
 #Determine default driver for Extended Reporting

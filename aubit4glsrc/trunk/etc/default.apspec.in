@@ -14,7 +14,7 @@
 ###########################################################################
 
 #
-# $Id: default.apspec.in,v 1.2 2006-11-11 09:07:01 afalout Exp $
+# $Id: default.apspec.in,v 1.3 2006-11-26 01:13:58 afalout Exp $
 #
 
 ###############################################################################
@@ -197,59 +197,61 @@ find @prefix@ -type f | grep -v libaubit4gl.so | import
 #------------------------------------------------------------------------------
 
 #-----------------
-#Should the installer show its progress bar or show plain messages instead
-#Progress bar was causing core dumps in qt GUI in version 1.2 (package info autopackage-gtk)
-#Still core dumps in 1.2.1
-USE_PROGRESSBAR=0
+# Should the installer show its progress bar or show plain messages instead
+# Progress bar was causing core dumps in qt GUI in version 1.2 (package info autopackage-gtk)
+# Still core dumps in 1.2.1
+if test "$USE_PROGRESSBAR" = ""; then
+	USE_PROGRESSBAR=0
+else
+	echo "User specified USE_PROGRESSBAR=$USE_PROGRESSBAR"
+fi
+
+#TODO - enable user specified variables like above
 
 #-----------------
-#Should the installer show status messages or use 'echo' to stdout instead
+# Disable use of GUI mode dialogs
+FORCE_CONSOLE=0
+
+#-----------------
+# Should the installer show status messages or use 'echo' to stdout instead
 USE_OUTPUTSTATUS=1
 
 #-----------------
-#Should the installer use "checking for..." and pass/fail icons or show plain messages instead
-#also core dumps:
-#Still core dumps in 1.2.1
+# Should the installer use "checking for..." and pass/fail icons or show plain messages instead
+# also core dumps:
+# Still core dumps in 1.2.1
 USE_OUTPUTTEST=0
 
 #-----------------
-#Should we ask user for installation location (needs GUI variant of dialog)
+# Should we ask user for installation location (needs GUI variant of dialog)
 ASK_LOCATION=0
 
 #-----------------
-#Should we run test compilation of 4gl code
-TEST_COMPILER=1
-
-#-----------------
-#Do we about installation on fatalk errors, or show message and continue
+# Do we abort installation on fatal errors, or show message and continue
 ABORT_ON_FATAL=0
 
-#-----------------
-#Do we collect info on default values set by AutoConf from aubitrc
-COLLECT_INFO=1
-
 #----------------
-#Do we show the user summary message on the end of the installation
+# Do we show the user summary message on the end of the installation
 SHOW_SUMMARY=1
 
 #-----------------
-#Should we run AutoConf as a part of the installation 
+# Should we run AutoConf as a part of the installation
 RUN_CONGIFURE=1
 
 #----------------
-#Should a ./configure AutoConf command run in a separate terminal window
+# Should a ./configure AutoConf command run in a separate terminal window
 CONFIGURE_TERM=1
 
 #----------------
-#If then ./configure AutoConf command IS NOT running in separate terminal, do
-#we hide its output from user
+# When ./configure AutoConf command IS NOT running in separate terminal, do
+# we hide its output from user
 CONFIGURE_HIDE=1
 
 #----------------
-#Wait for user to press ENTER before closing AutoConf separate terminal or 
-#continuing when running AutoConf in main terminal. Ignored when running
-#AutoConf hidden
-#FIXME: Konsole did not like this at all - find out why
+# Wait for user to press ENTER before closing AutoConf separate terminal or 
+# continuing when running AutoConf in main terminal. Ignored when running
+# AutoConf hidden
+# FIXME: Konsole did not like this at all - find out why
 AC_PAUSE=0
 
 #------------------------------------ SETTINGS --------------------------------
@@ -304,13 +306,16 @@ SHOW_CNT=1
 #-----------------
 #Compose the log command and initialise log file
 LOGCMD=">> $MY_LOGFILE 2>&1"
-rm -f "$MY_LOGFILE"
+date > "$MY_LOGFILE"
 
-
+if test "$FORCE_CONSOLE" != "1"; then
 	#--------------------------
 	#Determine if we have GUI dialog tool
 	#NOTE: no point in using TUI only 'dialog' as it would block if user  
 	#did not start installer from command line, waiting for >OK< to be pressed
+	#NOTE: it is safe to assume that user will be running this insatller from GUI 
+	#environment - this is AutoPAckage after all...
+	#What if insatlling remotely over SSH for example?
 	if locateCommand Xdialog; then
 		DIALOG_EXE="Xdialog"
 	fi
@@ -336,7 +341,9 @@ rm -f "$MY_LOGFILE"
 	else
 		DIALOG=0
 	fi
-	
+else 
+	DIALOG=0
+fi
 	
 	#------------------------------------
 	#Configure notifications
@@ -497,7 +504,6 @@ linkFile $PREFIX/lib/libaubit4gl-@AUBIT_VERSION@_@AUBIT_BUILD@.so $PREFIX/lib/li
 #Add files/links created during installation to log file, so they get un-installed
 #logFile <FILENAME>
 #logDir <DIRECTORY>
-
 
 #--------------------- Desktop integration
 
@@ -855,117 +861,16 @@ $OUTPUTSTATUS_CHECKING "$OT_CHK $MSG"
 		$ECHO "still here?"
 	fi
 
-if test "$TEST_COMPILER" = "1"; then 
-
-	#--------------------------------------
-	#Test if compiler actually works
-	#compile tools/test/test_build.4gl and run it - examine message
-	#TODO - remove? aubit --check-env allready did that
-	$ECHO "about to test compiler"
-	let OTCNT=OTCNT+1; if test "$SHOW_CNT"="1"; then $ECHO "OTCNT=$OTCNT"; fi
-	MSG="compiler test output"
-	$OUTPUTTEST "$MSG"
-	$OUTPUTSTATUS_CHECKING "$OT_CHK $MSG"
-	CLN_OUT=`cd $PREFIX/tools/test; rm -f test_build.c test_build.h test_build.o test_build`
-	MK_OUT=`cd $PREFIX/tools/test; DEBUG=ALL;export DEBUG;4glpc test_build.4gl -o test_build`
-	if test -f $PREFIX/tools/test/test_build; then 
-		RUN_OUT="`A4GL_UI=CONSOLE; export A4GL_UI; DEBUG=ALL; export DEBUG; $PREFIX/tools/test/test_build`"
-		IS_OK="`echo $RUN_OUT | grep 'Aubit 4gl compiler is working - compiler build was successfull'`"
-		if test "$IS_OK" != ""; then
-			$ECHO $IS_OK
-			let OTCNT=OTCNT-1; if test "$SHOW_CNT"="1"; then $ECHO "OTCNT=$OTCNT"; fi
-			$OUTPUTTESTPASS
-		else
-			let OTCNT=OTCNT-1; if test "$SHOW_CNT"="1"; then $ECHO "OTCNT=$OTCNT"; fi
-			$OUTPUTTESTFAIL
-			MSG="Compiling of tools/test/test_build.4gl failed. Check debug.out"
-			$OUTPUTFAIL "$MSG"
-			$OUTPUTFAIL_CHECKING "$OF_CHK $MSG"
-			$ECHO $MK_OUT
-			$ECHO $RUN_OUT
-		fi
-	else 
-		let OTCNT=OTCNT-1; if test "$SHOW_CNT"="1"; then $ECHO "OTCNT=$OTCNT"; fi
-		$OUTPUTTESTFAIL
-		MSG="Compiling of tools/test/test_buils.4gl failed."
-		$OUTPUTFAIL "$MSG"
-		$OUTPUTFAIL_CHECKING "$OF_CHK $MSG"
-		$ECHO $MK_OUT
-	fi
-fi
-	
-	
 if test "$SHOW_CNT"="1"; then $ECHO "CHECKPOINT 4: OTCNT=$OTCNT"; fi
 
 $PROGRESSBAR 10 10 "We're done"       # 100%[=========] We're done
 
 	CNF="$PREFIX/bin/aubit-config" 
 
-if test "$COLLECT_INFO" = "1"; then
-
-	#----------------------------------
-	#Collect key defaults set by AutoConf so we can show then to the user
-	$ECHO "collecting info"
-	A4GL_LEXTYPE=`$CNF A4GL_LEXTYPE`
-	A4GL_LEXTYPE_DETECTED=`$CNF A4GL_LEXTYPE_DETECTED`
-	A4GL_LEXDIALECT=`$CNF A4GL_LEXDIALECT`
-	A4GL_LEXDIALECT_DETECTED=`$CNF A4GL_LEXDIALECT_DETECTED`
-	A4GL_UI=`$CNF A4GL_UI`
-	A4GL_UI_DETECTED=`$CNF A4GL_UI_DETECTED`
-	A4GL_SQLTYPE=`$CNF A4GL_SQLTYPE`
-	A4GL_SQLTYPE_DETECTED=`$CNF A4GL_SQLTYPE_DETECTED`
-	A4GL_MENUTYPE=`$CNF A4GL_MENUTYPE`
-	A4GL_MENUTYPE_DETECTED=`$CNF A4GL_MENUTYPE_DETECTED`
-	A4GL_MSGTYPE=`$CNF A4GL_MSGTYPE`
-	A4GL_MSGTYPE_DETECTED=`$CNF A4GL_MSGTYPE_DETECTED`
-	A4GL_PACKER=`$CNF A4GL_PACKER`
-	A4GL_PACKER_DETECTED=`$CNF A4GL_PACKER_DETECTED`
-	EXDTYPE=`$CNF EXDTYPE`
-	EXDTYPE_DETECTED=`$CNF EXDTYPE_DETECTED`
-	A4GL_FORMTYPE=`$CNF A4GL_FORMTYPE`
-	A4GL_FORMTYPE_DETECTED=`$CNF A4GL_FORMTYPE_DETECTED`
-	A4GL_RPCTYPE=`$CNF A4GL_RPCTYPE`
-	A4GL_RPCTYPE_DETECTED=`$CNF A4GL_RPCTYPE_DETECTED`
-	A4GL_PDFTYPE=`$CNF A4GL_PDFTYPE`
-	A4GL_PDFTYPE_DETECTED=`$CNF A4GL_PDFTYPE_DETECTED`
-fi
-	#-----------------------------------------
-	#Compose the summary message to be shown to the user
-	MSG="Aubit compiler is now installed in $PREFIX. Here is the summary of automaticaly"
-	MSG="${MSG} set configuration: [listed as: default (available)]\n\n"
-	MSG="${MSG}LEXTYPE=$A4GL_LEXTYPE ($A4GL_LEXTYPE_DETECTED)\n"
-	MSG="${MSG}LEXDIALECT=$A4GL_LEXDIALECT ($A4GL_LEXDIALECT_DETECTED)\n"
-	MSG="${MSG}UI=$A4GL_UI ($A4GL_UI_DETECTED)\n"
-	MSG="${MSG}SQLTYPE=$A4GL_SQLTYPE ($A4GL_SQLTYPE_DETECTED)\n"
-	MSG="${MSG}MENUTYPE=$A4GL_MENUTYPE ($A4GL_MENUTYPE_DETECTED)\n"
-	MSG="${MSG}MSGTYPE=$A4GL_MSGTYPE ($A4GL_MSGTYPE_DETECTED)\n"
-	MSG="${MSG}PACKER=$A4GL_PACKER ($A4GL_PACKER_DETECTED)\n"
-	MSG="${MSG}EXDTYPE=$EXDTYPE ($EXDTYPE_DETECTED)\n"
-	MSG="${MSG}FORMTYPE=$A4GL_FORMTYPE ($A4GL_FORMTYPE_DETECTED)\n"
-	MSG="${MSG}RPCTYPE=$A4GL_RPCTYPE ($A4GL_RPCTYPE_DETECTED)\n"
-	MSG="${MSG}PDFTYPE=$A4GL_PDFTYPE ($A4GL_PDFTYPE_DETECTED)\n\n"
-	#TODO - show unavailable options
-	MSG="${MSG}You can inspect and change defaut configuration set by AutoConf "
-	MSG="${MSG}using 'configurator' utility; "
-	MSG="${MSG}GUI version can be found in 'Start' menu -> Development -> "
-	MSG="${MSG}More Programs -> 'Aubit 4GL compiler configuration', or type 'aubit configurator' on command line.\n"
-	MSG="${MSG}To start using Aubit compiler, open a >>NEW<< terminal window, 'cd' to $PREFIX/tools/test, "
-	MSG="${MSG}type 'make' and follow instructions.\n\n" 
-	MSG="${MSG}Note that currently open terminal windows WILL NOT have environment "
-	MSG="${MSG}changes introduced by installer applied, and therefore Aubit compiler WILL NOT work in them.\n"
-	MSG="${MSG}You can verify your Aubit environment using command 'aubit --chk-env'\n\n"
-	MSG="${MSG}          Thank you for installing Aubit 4GL compiler."
-
 	#-----------------------------------------
 	#Show the summary message to be shown to the user
-	if test "$SHOW_SUMMARY" = "1"; then 
-		if test "$DIALOG" = "1"; then
-			$DIALOG_EXE --title "$DIALOG_TITLE" --msgbox "$MSG" 0 0	# height width
-		else
-			$ECHO "============================================================================="
-			$ECHO "$MSG"
-			$ECHO "============================================================================="
-		fi
+	if test "$SHOW_SUMMARY" = "1"; then
+		aubit --summary
 	fi
 
 ###############################################################################

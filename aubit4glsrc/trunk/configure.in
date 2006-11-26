@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.334 2006-11-17 08:11:37 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.335 2006-11-26 01:13:53 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.334 2006-11-17 08:11:37 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.335 2006-11-26 01:13:53 afalout Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
@@ -436,11 +436,13 @@ AC_SUBST(AUBIT_WEBSITE)
 AC_SUBST(AUBIT_PUBLISHER)
 AC_SUBST(FULLNAME)
 AC_SUBST(SHORTNAME)
+AC_SUBST(MACHTYPE)
 
 #aubitrc:
 AC_SUBST(AUBITETC)
 AC_SUBST(A4GL_SQLTYPE)
 AC_SUBST(A4GL_SQLTYPE_DETECTED)
+AC_SUBST(A4GL_SQLTYPE_COMPILE_ONLY_DETECTED)
 
 AC_SUBST(A4GL_PDFTYPE)
 AC_SUBST(A4GL_PDFTYPE_DETECTED)
@@ -487,7 +489,7 @@ AC_SUBST(IFX_C_MAKE)
 AC_SUBST(INFORMIXDIR)
 AC_SUBST(INFORMIXDIR_UNQUOTED)
 AC_SUBST(INFORMIXC)
-
+AC_SUBST(A4GL_SQLTYPE_EC_VALID_INFORMIX)
 
 #Informix ODBC
 AC_SUBST(HAVE_IFXODBC)
@@ -505,6 +507,7 @@ AC_SUBST(SAPDB_LFLAGS)
 AC_SUBST(SAPDB_INCLUDE)
 AC_SUBST(SAPDB_INCDIR)
 AC_SUBST(SAPDB_LIBDIR)
+AC_SUBST(A4GL_SQLTYPE_EC_VALID_SAPDB)
 
 #SAP DB ODBC
 AC_SUBST(HAVE_SAPODBC)
@@ -536,6 +539,8 @@ AC_SUBST(PG_ESQLC_HASV3)
 #AC_SUBST(HAVE_PG_INFORMIX_ESQL_DECIMAL_H)
 #AC_SUBST(HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H)
 #AC_SUBST(HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H)
+AC_SUBST(A4GL_SQLTYPE_EC_VALID_POSTGRES)
+
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -630,6 +635,8 @@ AC_SUBST(MPZ_IFLAGS)
 AC_SUBST(INGRES_INST_PATH)
 AC_SUBST(HAVE_INGRES_ESQLC)
 AC_SUBST(INGRES_ESQLC)
+AC_SUBST(A4GL_SQLTYPE_EC_VALID_INGRES)
+
 AC_SUBST(POP_INC_PATH)
 AC_SUBST(POP_LIB_PATH)
 AC_SUBST(SMTP_INC_PATH)
@@ -1233,7 +1240,27 @@ AC_SUBST(INCFILE_27)
 AC_SUBST(INCFILE_28)
 AC_SUBST(INCFILE_29)
 AC_SUBST(INCFILE_30)
-INCFILE_SIZE=30
+AC_SUBST(INCFILE_31)
+AC_SUBST(INCFILE_32)
+AC_SUBST(INCFILE_33)
+AC_SUBST(INCFILE_34)
+AC_SUBST(INCFILE_35)
+AC_SUBST(INCFILE_36)
+AC_SUBST(INCFILE_37)
+AC_SUBST(INCFILE_38)
+AC_SUBST(INCFILE_39)
+AC_SUBST(INCFILE_40)
+AC_SUBST(INCFILE_41)
+AC_SUBST(INCFILE_42)
+AC_SUBST(INCFILE_43)
+AC_SUBST(INCFILE_44)
+AC_SUBST(INCFILE_45)
+AC_SUBST(INCFILE_46)
+AC_SUBST(INCFILE_47)
+AC_SUBST(INCFILE_48)
+AC_SUBST(INCFILE_49)
+AC_SUBST(INCFILE_50)
+INCFILE_SIZE=50
 
 
 AC_SUBST(ISINCFILE_1)
@@ -1656,6 +1683,7 @@ AC_SUBST(ISIMPORTFILE_20)
 ISIMPORTFILE_SIZE=20
 
 #Amake files:
+#(RPM FILES GO WITH INC FILES)
 AC_SUBST(ISAMAKEFILE_1)
 AC_SUBST(ISAMAKEFILE_2)
 AC_SUBST(ISAMAKEFILE_3)
@@ -1881,6 +1909,9 @@ XMLRPC_C_CONFIG=no
 #defaults for aubitrc:
 A4GL_SQLTYPE=nosql
 A4GL_SQLTYPE_DETECTED=nosql
+A4GL_SQLTYPE_COMPILE_ONLY_DETECTED=nosql
+A4GL_SQLTYPE_EC_VALID_ALL="nosql"
+
 A4GL_PDFTYPE=NOPDF
 A4GL_PDFTYPE_DETECTED=NOPDF
 A4GL_RPCTYPE=NORPC
@@ -1963,9 +1994,9 @@ case $host in
 
 	#powerpc-apple-darwin5.5 (Andrej on SF CF)
 	*-apple-darwin*)
-		#for dlopen() libs:
+		#for dlopen() libs (plug-ins):
 		SO_EXT=.bundle
-        #for libaubit4gl:
+        #for libaubit4gl and other linkable libs:
 		SO_EXT_LINKABLE=.dylib
 		;;
 
@@ -2203,13 +2234,51 @@ fi
 		fi
 	fi
 	
-	
-	
 #INST_BASE=$prefix/$SHORTNAME
 INST_BASE=$prefix
 #AC_MSG_RESULT(INST_BASE set to $INST_BASE)
 
+#Should we specify absolute or relative paths in RPM spec file
+RPM_ABSOLUTE=0
+FORMS_DESTINATION=etc
+HELP_DESTINATION=etc
+
+
+if test "$RPM_ABSOLUTE" = "1"; then
+	RPM_LIB_PREFIX="$INST_BASE/lib"
+	RPM_PLUGIN_PREFIX="$INST_BASE/plugins-${AUBIT_VERSION}_${AUBIT_BUILD}"
+	RPM_EXE_PREFIX="$INST_BASE/bin"
+	RPM_SH_PREFIX="$INST_BASE/bin"
+	RPM_INC_PREFIX="$INST_BASE/incl"
+	RPM_EXAMP_PREFIX="$INST_BASE/tools/test"
+	RPM_DOC_PREFIX="$INST_BASE/docs"
+	RPM_CONF_PREFIX="$INST_BASE/etc"
+	RPM_FGLPCSET_PREFIX="$INST_BASE/tools/4glpc/settings"
+	RPM_IMPORT_PREFIX="$INST_BASE/etc/import"
+	RPM_HELP_PREFIX="$INST_BASE/$HELP_DESTINATION"
+	RPM_FORMS_PREFIX="$INST_BASE/$FORMS_DESTINATION"
+	RPM_CONV_PREFIX="$INST_BASE/etc/convertsql"
+else
+	#Note that RPM demands that files listed in spec file begin with /, otherwise:
+	# File must begin with "/": etc/help_sqlite.hlp
+	RPM_LIB_PREFIX="/lib"
+	RPM_PLUGIN_PREFIX="/plugins-${AUBIT_VERSION}_${AUBIT_BUILD}"
+	RPM_EXE_PREFIX="/bin"
+	RPM_SH_PREFIX="/bin"	
+	RPM_INC_PREFIX="/incl"
+	RPM_EXAMP_PREFIX="/tools/test"
+	RPM_DOC_PREFIX="/docs"
+	RPM_CONF_PREFIX="/etc"
+	RPM_FGLPCSET_PREFIX="/tools/4glpc/settings"
+	RPM_IMPORT_PREFIX="/etc/import"
+	RPM_HELP_PREFIX="/$HELP_DESTINATION"
+	RPM_FORMS_PREFIX="/$FORMS_DESTINATION"
+	RPM_CONV_PREFIX="/etc/convertsql"
+fi
+
 LIB_PREFIX=$INST_BASE/lib
+PLUGIN_PREFIX=$INST_BASE/plugins-${AUBIT_VERSION}_${AUBIT_BUILD}
+
 A4GL_DBPATH=$aubitdir/tools:$INST_BASE/tools
 
 ## ==================================================================
@@ -2276,11 +2345,11 @@ fi
 #separately for RPM config file, install/deinstall and lib Makefile:
 
 #List of libraries needed by compiler(s):
-COMP_LIBS="LEX_EC LEX_C"
+COMP_LIBS="LEX_EC LEX_C LEX_CS"
 
-if test "$enable_minimal" != "yes"; then
-	COMP_LIBS="$COMP_LIBS"
-fi
+#if test "$enable_minimal" != "yes"; then
+#	COMP_LIBS="$COMP_LIBS"
+#fi
 
 #Libraries that need 4glc (and in some cases fcompile) to build, and are
 #buit in all cases:
@@ -2298,7 +2367,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		-a "$ac_cv_header_netinet_in_h" = "yes" \
 		-a "$ac_cv_header_netinet_tcp_h" = "yes" ; \
 	then
-		NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_memcache"
 		NEED_4GLPC_ALL_libs="$NEED_4GLPC_ALL_libs A4GL_memcache"
 	else
 		echo "A4GL_memcache disabled - missing headers"
@@ -2337,31 +2405,44 @@ ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATI
 #UI_HLGENERIC
 
 #libaubit4gl should be first, to avoid dependency chase
-LIB_EXPORTLIB=aubit4gl
+#DO NOT PACKAGE libaubit4gl - package versiond lib and create link whn installing 
+#LIB_EXPORTLIB=aubit4gl
+LIB_EXPORTLIB=aubit4gl-${AUBIT_VERSION}_${AUBIT_BUILD}
+
 
     COUNTER=0
 	for FILE in $LIB_EXPORTLIB ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT_LINKABLE'"
+		eval "LIBFILE_$COUNTER='$RPM_LIB_PREFIX/lib$FILE$SO_EXT_LINKABLE'"
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT_LINKABLE; DestDir: {app}\bin; Components: runtime'"
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		#Windows exports library:
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$LIB_EXPORTLIB$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
     done
 
+	#List of libraries needed by compiler(s), like LEX_EC LEX_C etc.
 	for FILE in $COMP_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
+		eval "LIBFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: compiler'"
 	done
 
 	for FILE in $ALL_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
+		eval "LIBFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
 	done
 
+	for FILE in $ALL_PLUGINS ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "LIBFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
+	done
 
+	if test "$COUNTER" -gt "$LIBFILE_SIZE"; then
+		AC_MSG_ERROR(Capacity of LIBFILE_ variables exceeded - max=$LIBFILE_SIZE count=$COUNTER) 
+	fi
+	
 ## ==================================================================
 ##       Define permanent list of executables to build/install
 ## ==================================================================
@@ -2417,9 +2498,6 @@ ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper"
 #ALL_SH="4glpc $AMAKE_SH"
 #abug.sh
 
-#Source: @IS_SOURCE@\install.sh; DestDir: {app}; Components: Shell
-#Source: @IS_SOURCE@\configure; DestDir: {app}; Components: Shell
-
 #;FIXME: create executables of this two, so we can use Amake without Bash:
 #Source: @IS_SOURCE@\bin\amake; DestDir: {app}\bin; Components: Shell
 #Source: @IS_SOURCE@\bin\aubit; DestDir: {app}\bin; Components: Shell
@@ -2427,12 +2505,19 @@ ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper"
     COUNTER=0
 	for FILE in $ALL_SH ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "SHFILE_$COUNTER='$INST_BASE/bin/$FILE'"
+		eval "SHFILE_$COUNTER='$RPM_SH_PREFIX/$FILE'"
 		eval "ISSHFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; Components: Shell'"
 	done
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "SHFILE_$COUNTER='$INST_BASE/configure'"
-
+	if test "$RPM_ABSOLUTE" = "1"; then
+		eval "SHFILE_$COUNTER='$INST_BASE/configure'"
+	else
+		eval "SHFILE_$COUNTER='/configure'"
+	fi
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "SHFILE_$COUNTER='$RPM_SH_PREFIX/4GL_metrics.cgi'"
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "SHFILE_$COUNTER='$RPM_SH_PREFIX/shtool'"
 
 ## ==================================================================
 ##       Define permanent list of Includes to build/install
@@ -2449,13 +2534,14 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h a4gl_rep_stru
 		a4gl_incl_config.h \
 		a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h \
 		a4gl_esql_ingres.h \
-		a4gl_memhandling.h"
+		a4gl_memhandling.h \
+		a4gl_esql_infoflex.h"
 		
 		
     COUNTER=0
 	for FILE in $ALL_INC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
+		eval "INCFILE_$COUNTER='$RPM_INC_PREFIX/$FILE'"
 		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\incl\\$FILE; DestDir: {app}\incl; Components: compiler'"
 	done
 
@@ -2463,7 +2549,7 @@ ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h a4gl_rep_stru
 	for FILE in $AMAKE_INCL_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		COUNTER2=`(expr $COUNTER2 + 1) 2>/dev/null`
-		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
+		eval "INCFILE_$COUNTER='$RPM_INC_PREFIX/$FILE'"
 		eval "ISAMAKEFILE_$COUNTER2='Source: $IS_SOURCE\incl\\$FILE; DestDir: {app}\incl; Components: Make'"
 	done
 
@@ -2485,13 +2571,13 @@ ALL_EXAMP_GUI="gui.per calc.per form-gui.per gui.4gl calc.4gl hello-gui.4gl \
     COUNTER=0
 	for FILE in $ALL_EXAMP ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/$FILE'"
+		eval "EXAMPFILE_$COUNTER='$RPM_EXAMP_PREFIX/$FILE'"
 		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\\$FILE; DestDir: {app}\tools\test; Components: FGLexamples'"
 	done
 
 	for FILE in $ALL_EXAMP_GUI ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/gui/$FILE'"
+		eval "EXAMPFILE_$COUNTER='$RPM_EXAMP_PREFIX/gui/$FILE'"
 		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\gui\\$FILE; DestDir: {app}\tools\test\gui; Components: FGLexamples'"
 	done
 
@@ -2503,7 +2589,7 @@ ALL_EXAMP_GUI="$ALL_EXAMP_GUI Makefile"
 ##       Define permanent list of Make files to build/install
 ## ==================================================================
 
-INCL_MAKE="Makefile-common Makefile-install.mki"
+INCL_MAKE="Makefile-common Makefile-install.mki Makefile-common.in"
 
 ALL_MAKEFILE="tools/test/Makefile tools/test/gui/Makefile Makefile"
 IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
@@ -2517,7 +2603,11 @@ IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
     COUNTER=0
 	for FILE in $ALL_MAKEFILE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "MAKEFILE_$COUNTER='$INST_BASE/$FILE'"
+		if test "$RPM_ABSOLUTE" = "1"; then
+			eval "MAKEFILE_$COUNTER='$INST_BASE/$FILE'"
+		else
+			eval "MAKEFILE_$COUNTER='/$FILE'"
+		fi
 	done
 
     COUNTER=0
@@ -2529,7 +2619,11 @@ IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
 
 	for FILE in $INCL_MAKE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "MAKEFILE_$COUNTER='$INST_BASE/incl/$FILE'"
+		if test "$RPM_ABSOLUTE" = "1"; then
+			eval "MAKEFILE_$COUNTER='$INST_BASE/incl/$FILE'"
+		else
+			eval "MAKEFILE_$COUNTER='/incl/$FILE'"
+		fi
 		eval "ISMAKEFILE_$COUNTER='Source: $IS_SOURCE\incl\\$FILE; DestDir: {app}\incl; Components: Make'"
 	done
 
@@ -2544,19 +2638,17 @@ FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT "
 #we make installers (relative to Aubit root)
 #DBPATH should allways be set to that place (as it is in 'aubit' script)
 #TODO: set it in aubitrc too
-FORMS_DESTINATION=etc
-HELP_DESTINATION=etc
 
-    COUNTER=0
+	COUNTER=0
 	for FILE in $ALL_HELP ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "HELPFILE_$COUNTER='$INST_BASE/$HELP_DESTINATION/$FILE'"
+		eval "HELPFILE_$COUNTER='$RPM_HELP_PREFIX/$FILE'"
 		eval "ISHELPFILE_$COUNTER='Source: $IS_SOURCE\\$HELP_DESTINATION\\$FILE; DestDir: {app}\\$HELP_DESTINATION; Components: runtime'"
 	done
 	COUNTER=0
 	for FILE in $FORM_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "FORMFILE_$COUNTER='$INST_BASE/$FORMS_DESTINATION/$FILE'"
+		eval "FORMFILE_$COUNTER='$RPM_FORMS_PREFIX/$FILE'"
 		eval "ISFORMFILE_$COUNTER='Source: $IS_SOURCE\\$FORMS_DESTINATION\\$FILE; DestDir: {app}\\$FORMS_DESTINATION; Components: runtime'"
 	done
 
@@ -2566,7 +2658,7 @@ HELP_DESTINATION=etc
 ##       Define permanent list of documentation files to build/install
 ## ==================================================================
 
-ALL_DOC="changelog.txt COPYING CREDITS LICENSE aubit4gl.ico"
+ALL_DOC="changelog.txt COPYING CREDITS LICENSE aubit4gl.ico aubit4gl.png"
 
 if test "$COMSPEC" != ""; then
 	ALL_DOC="$ALL_DOC README-Windows.txt"
@@ -2577,11 +2669,15 @@ ROOT_FILES_DOC="README.txt"
     COUNTER=0
 	for FILE in $ALL_DOC ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "DOCFILE_$COUNTER='%doc $INST_BASE/docs/$FILE'"
+		eval "DOCFILE_$COUNTER='%doc $RPM_DOC_PREFIX/$FILE'"
 		eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\docs\\$FILE; DestDir: {app}\docs; Components: runtime'"
 	done
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "DOCFILE_$COUNTER='%doc $INST_BASE/$ROOT_FILES_DOC'"
+	if test "$RPM_ABSOLUTE" = "1"; then
+		eval "DOCFILE_$COUNTER='%doc $INST_BASE/$ROOT_FILES_DOC'"
+	else
+		eval "DOCFILE_$COUNTER='%doc /$ROOT_FILES_DOC'"
+	fi
 	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\\$ROOT_FILES_DOC; DestDir: {app}; Components: help'"
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help'"
@@ -2598,7 +2694,7 @@ TMP_CONVSQL_FILES="`ls etc/convertsql/*.cnv` README.txt"
     COUNTER=0
 	for FILE in $CONVSQL_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "CONVFILE_$COUNTER='$INST_BASE/etc/convertsql/$FILE'"
+		eval "CONVFILE_$COUNTER='$RPM_CONV_PREFIX/$FILE'"
 		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE\etc\convertsql\\$FILE; DestDir: {app}\etc\convertsql; Components: runtime'"
 	done
 
@@ -2614,7 +2710,7 @@ TMP_FGLPC_SETTINGS_FILES="`echo $TMP_FGLPC_SETTINGS_FILES`"
     COUNTER=0
 	for FILE in $FGLPC_SETTINGS_FILES ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "FGLPCSETFILE_$COUNTER='$INST_BASE/tools/4glpc/settings/$FILE'"
+		eval "FGLPCSETFILE_$COUNTER='$RPM_FGLPCSET_PREFIX/$FILE'"
 		eval "ISFGLPCSEFILE_$COUNTER='Source: $IS_SOURCE\tools\4glpc\settings\\$FILE; DestDir: {app}\tools\4glpc\settings; Components: compiler'"
 	done
 
@@ -2630,43 +2726,49 @@ TMP_FGLPC_SETTINGS_FILES="`echo $TMP_FGLPC_SETTINGS_FILES`"
 
 #Note that in import files 'a4gl_' is in lower case. There is no extension
 IMPORT_FILES="a4gl_file  a4gl_glade  a4gl_html  a4gl_pcre  a4gl_string  \
-	default  README"
-
+	default channel README"
+	
 #Fixme: what is 'default' file for - it is empty?
 #README is file that describes how to use this import files
 
     COUNTER=0
 	for FILE in $IMPORT_FILES ; do
-		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "IMPORTFILE_$COUNTER='$INST_BASE/etc/import/$FILE'"
-		eval "ISIMPORTFILE_$COUNTER='Source: $IS_SOURCE\etc\import\\$FILE; DestDir: {app}\etc\import; Components: runtime'"
+		if test "$FILE" != ""; then
+			COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+			eval "IMPORTFILE_$COUNTER='$RPM_IMPORT_PREFIX/$FILE'"
+			eval "ISIMPORTFILE_$COUNTER='Source: $IS_SOURCE\etc\import\\$FILE; DestDir: {app}\etc\import; Components: runtime'"
+		fi
 	done
 
 ## ==================================================================
 ##       Define permanent list of configuration files to build/install
 ## ==================================================================
 
-ROOT_FILES_CONF="install.sh"
+	ROOT_FILES_CONF="install.sh"
+	#allready listed as shell script: $INST_BASE/configure
+	#Warning: ROOT_FILES variable is used by make install target
+	ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
+	ETC_FILES="gtkrc_2 odbc.ini.example"
+	ETC_FILES_CONF="etc/aubitrc-bin.in"
+	ETC_CONFIG_FILES_CONF="etc/config/config.guess etc/config/config.sub \
+		etc/config/install-sh etc/config/missing etc/config/mkinstalldirs \
+		etc/config/bootstrap etc/config/ltmain.sh"
 
-#Warning: ROOT_FILES variable is used by make install target
-ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
-
-ETC_FILES="gtkrc_2 odbc.ini.example"
-
-ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
-		$INST_BASE/etc/config/config.sub $INST_BASE/etc/config/install-sh \
-		$INST_BASE/etc/config/missing $INST_BASE/etc/config/mkinstalldirs \
-		$INST_BASE/etc/aubitrc-bin.in $INST_BASE/$ROOT_FILES_CONF"
+	ALL_CONF="$ETC_CONFIG_FILES_CONF $ETC_FILES_CONF $ROOT_FILES_CONF"
 
     COUNTER=0
 	for FILE in $ETC_FILES ; do	
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "CONFFILE_$COUNTER='%config $INST_BASE/etc/$FILE'"
+		eval "CONFFILE_$COUNTER='%config $RPM_CONF_PREFIX/$FILE'"
 		eval "ISCONFFILE_$COUNTER='Source: $IS_SOURCE\etc\\$FILE; DestDir: {app}\etc; Components: runtime'"
 	done
 	for FILE in $ALL_CONF ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "CONFFILE_$COUNTER='$FILE'"
+		if test "$RPM_ABSOLUTE" = "1"; then
+			eval "CONFFILE_$COUNTER='$INST_BASE/$FILE'"
+		else
+			eval "CONFFILE_$COUNTER='/$FILE'"
+		fi
 		#This files are meaningless on Windows
 	done
 
@@ -3934,7 +4036,8 @@ AC_ARG_WITH(mpz,
 
 				if test "$ac_cv_header_gmp_h" = "yes"  ; then
 					EXDATA_MPZ=yes
-		            EXDTYPE=MPZ
+					#Note - plugin name is libEXDTYPE_mpz.so
+		            EXDTYPE=mpz
                     EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
 					
 					if test "$COLLECT_THIRD_PARTY" = "1"; then
@@ -3950,7 +4053,8 @@ AC_ARG_WITH(mpz,
 		        fi
 		    else
 				EXDATA_MPZ=yes
-				EXDTYPE=MPZ
+				#Note - plugin name is libEXDTYPE_mpz.so
+				EXDTYPE=mpz
                 EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
 		    fi
 		else
@@ -5028,7 +5132,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	#MACHTYPE is a environment variable - not a Autoconf one
 	case "$MACHTYPE" in
 		*-mandrake-linux-gnu)
-			RPMBUILDROOT=/usr/src/RPM
+			RPMBUILDROOT="/usr/src/RPM"
 			;;
 	
 		*-redhat-linux-gnu)
@@ -5047,9 +5151,22 @@ if test "$AUBIT_SOURCE" = "1" ; then
 					;;
 			esac
 			;;
-	
-		*) #Probably not a RPM based distro
-			RPMBUILDROOT=no
+		*-suse-linux)
+			RPMBUILDROOT="/usr/src/packages"
+			;;
+			
+		*) 
+			#TODO - use :
+			A=`rpm --eval "%_topdir"`
+
+			if test "$RPM" != "no"; then
+				#Have rpm executables
+				RPMBUILDROOT="fixme-autoconf-rpm-build-root"
+				echo $A
+			else
+				#Probably not a RPM based distro
+				RPMBUILDROOT=no-rpm-build-root
+			fi
 			;;
 	
 	esac
@@ -9174,22 +9291,25 @@ else
 	#	In reverse order of preference - most functional / stabile drivers 
 	#	are listed last, so they overrite previous declarations
 	#
-
+	
 	if test "$HAVE_PGODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=pgodbc
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+		A4GL_SQLTYPE_EC_VALID_POSTGRES="pgodbc $A4GL_SQLTYPE_EC_VALID_POSTGRES"
 	fi
 	if test "$HAVE_IFXODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=ifxodbc
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+		A4GL_SQLTYPE_EC_VALID_INFORMIX="ifxodbc $A4GL_SQLTYPE_EC_VALID_INFORMIX"
 	fi
 
 	if test "$HAVE_SAPODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=sapodbc
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+		A4GL_SQLTYPE_EC_VALID_SAPDB="sapodbc $A4GL_SQLTYPE_EC_VALID_SAPDB"
     fi
 
 	#########################################
@@ -9198,11 +9318,11 @@ else
 	#	In reverse order of preference - most functional / stabile drivers 
 	#	are listed last, so they overrite previous declarations
 	#
-	
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=unixodbc
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+		A4GL_SQLTYPE_EC_VALID_ALL="unixodbc $A4GL_SQLTYPE_EC_VALID_ALL"	
 	fi
 	if test "$HAVE_IODBC" = "yes" ; then
 		#we want iodbc to have highest priority, when we have a choice,
@@ -9210,12 +9330,14 @@ else
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=iodbc
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+		A4GL_SQLTYPE_EC_VALID_ALL="iodbc $A4GL_SQLTYPE_EC_VALID_ALL"
 	fi
 	if test "$cygwin" = "1"; then
 		#if we are on windows, we will ALLWAYS use native odbc32 manager
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=odbc32
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+		A4GL_SQLTYPE_EC_VALID_ALL="odbc32 $A4GL_SQLTYPE_EC_VALID_ALL"
 	fi
 
 	########################################################################
@@ -9233,7 +9355,8 @@ else
 		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
 			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		fi
-		A4GL_LEXDIALECT=SAPDB
+		#NOTE - plugin name is  libESQL_SAP.so NOT SAPDB
+		A4GL_LEXDIALECT=SAP
         A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
         #FIXME:4glc still needs to get to db for DEFINE LIKE
 		A4GL_SQLTYPE=FIXME-ec
@@ -9250,6 +9373,7 @@ else
 		#4glc still needs to get to db for DEFINE LIKE
 		#Note - Mike say this driver was abandoned???
         A4GL_SQLTYPE=ingres
+		A4GL_SQLTYPE_EC_VALID_INGRES="ingres $A4GL_SQLTYPE_EC_VALID_INGRES"
 	fi
 
 	########## PostgreSQL ESQL/C compiler #########
@@ -9271,7 +9395,9 @@ else
 			A4GL_LEXDIALECT=POSTGRES
 	        A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
 			#4glc still needs to get to db for DEFINE LIKE
-	        A4GL_SQLTYPE=pg
+	        A4GL_SQLTYPE="pg"
+			A4GL_SQLTYPE_COMPILE_ONLY_DETECTED="$A4GL_SQLTYPE_COMPILE_ONLY_DETECTED pg"
+			A4GL_SQLTYPE_EC_VALID_POSTGRES="pg $A4GL_SQLTYPE_EC_VALID_POSTGRES"
         fi
     fi
 
@@ -9285,6 +9411,7 @@ else
 		fi
 		A4GL_LEXDIALECT=INFORMIX
         A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
+		A4GL_SQLTYPE_EC_VALID_INFORMIX="esql $A4GL_SQLTYPE_EC_VALID_INFORMIX"
 		#4glc still needs to get to db for DEFINE LIKE
         A4GL_SQLTYPE=esql
     fi
@@ -9383,6 +9510,12 @@ else
 		fi
 	fi
 fi
+
+#Add detected valid to the ones taht are allways valid for all
+A4GL_SQLTYPE_EC_VALID_INFORMIX="$A4GL_SQLTYPE_EC_VALID_INFORMIX $A4GL_SQLTYPE_EC_VALID_ALL"
+A4GL_SQLTYPE_EC_VALID_SAPDB="$A4GL_SQLTYPE_EC_VALID_SAPDB $A4GL_SQLTYPE_EC_VALID_ALL"
+A4GL_SQLTYPE_EC_VALID_INGRES="$A4GL_SQLTYPE_EC_VALID_INGRES $A4GL_SQLTYPE_EC_VALID_ALL"
+A4GL_SQLTYPE_EC_VALID_POSTGRES="$A4GL_SQLTYPE_EC_VALID_POSTGRES $A4GL_SQLTYPE_EC_VALID_ALL"
 
 AC_MSG_RESULT(${T_MD}$A4GL_SQLTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_SQLTYPE_DETECTED)
@@ -9656,6 +9789,18 @@ PLUGIN_YES=
 PLUGIN_YES_LINKABLE=
 PLUGIN_NO=
 PLUGIN_NO_LINKABLE=
+
+	if test "$PCODE_ENABLED" = "yes"; then
+		if test "$enable_minimal" != "yes"; then
+			#Need RPClib:
+			PCODE_EXE_RPC="c2pcode checker runner"
+			PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl link_fgl"
+			PLUGIN_YES="$PLUGIN_YES LEX_PCODEC"
+		fi
+	else
+		ALL_DISABLED="$ALL_DISABLED c2pcode checker runner c2pcode_fgl checker_fgl runner_fgl link_fgl LEX_PCODEC"
+		PLUGIN_NO="$PLUGIN_NO LEX_PCODEC"
+	fi
 
 
 	if test "$PERLBUILD" != "no"; then
@@ -10080,19 +10225,23 @@ PLUGIN_NO_LINKABLE=
     #Can't use 'let' - standard sh don't know that...
 	#let COUNTER=0
     COUNTER=0
+	COUNTER_IS=0
 	for FILE in $PLUGIN_YES ; do
 		#let COUNTER=COUNTER+1
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "RPMFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
+		eval "RPMFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
 		eval "ISFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
 	done
-
+	COUNTER_IS="$COUNTER"
 	for FILE in $PLUGIN_YES_LINKABLE ; do
+		#Note; even tho this libs are NOT plug-ns, we stuff them in plugin 
+		#folder so we dont have to change all makefiles and install scripts - FOR NOW
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "RPMFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT_LINKABLE'"
-		eval "ISFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT_LINKABLE; DestDir: {app}\lib; Components: runtime'"
-		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "ISFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
+		eval "RPMFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT_LINKABLE'"
+		COUNTER_IS=`(expr $COUNTER_IS + 1) 2>/dev/null`
+		eval "ISFILE_$COUNTER_IS='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT_LINKABLE; DestDir: {app}\lib; Components: runtime'"
+		COUNTER_IS=`(expr $COUNTER_IS + 1) 2>/dev/null`
+		eval "ISFILE_$COUNTER_IS='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
 	done
 
     PLUGIN_YES="$PLUGIN_YES $PLUGIN_YES_LINKABLE"
@@ -10102,15 +10251,6 @@ PLUGIN_NO_LINKABLE=
 ## ==================================================================
 ##    Populate files lists for executables, resource files, etc:
 ## ==================================================================
-if test "$PCODE_ENABLED" = "yes"; then
-	if test "$enable_minimal" != "yes"; then
-		#Need RPClib:
-		PCODE_EXE_RPC="c2pcode checker runner"
-		PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl link_fgl"
-	fi
-else
-	ALL_DISABLED="$ALL_DISABLED c2pcode checker runner c2pcode_fgl checker_fgl runner_fgl link_fgl"
-fi
 
 #FIXME: can't make pcode without Bison - IS THIS STILL TRUE?
 #if test "$BISON" != "no"; then
@@ -10143,7 +10283,7 @@ fi
 				FILE_EXE="$FILE$EXEEXT"
 			fi
 		fi
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE_EXE'"
+		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE_EXE'"
 		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
 		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
 	done
@@ -10157,13 +10297,13 @@ fi
 				FILE_EXE="$FILE$EXEEXT"
 			fi
 		fi
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE_EXE'"
+		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE_EXE'"
 		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
 	done
 
 	for FILE in $RUNTIME_RESOURCE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE'"
+		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE'"
 		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
 	done
 
@@ -10688,7 +10828,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.334 2006-11-17 08:11:37 mikeaubury Exp $
+| $Id: configure.in,v 1.335 2006-11-26 01:13:53 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

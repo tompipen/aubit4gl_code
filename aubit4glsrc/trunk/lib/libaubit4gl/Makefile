@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.25 2006-10-10 05:45:47 afalout Exp $
+# $Id: Makefile,v 1.26 2006-11-26 01:14:00 afalout Exp $
 #
 
 ROOT    	=../..
@@ -190,8 +190,9 @@ all: ${ALL}
 
 ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} : $(OBJS)
 	rm -f ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
-	${LD} ${SO_LDFLAGS_NOBUNDLE} -o ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} $^ ${LINK_LIBS} 
-	ln  ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
+	${LD} ${SO_LDFLAGS_NOBUNDLE} -o ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} $^ ${LINK_LIBS}
+#Please dont use hard links!
+	ln -s ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
 
 ifeq "${TARGET_OS}" "darwin"
 	${MKPATH} ${INST_PATH}

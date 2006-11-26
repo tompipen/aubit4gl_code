@@ -1,21 +1,36 @@
 # -*- shell-script -*-
-#On CygWin, using /bin/sh will result in error since sh is NOT bash and 
-#does NOT understand functions!
-#Variables, like #!${SHELL:-/bin/bash} cant be used here
-#Specifying /bin/bash will fail on systems without /bin/bash
-#Not specifying anything will on CygWin invoke /bin/sh and fail
-
-#WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
-#esql compiler will use it without checking to put it's temp files there
-#and fail!
-
-#!/bin/sh
-#This is Aubit 4gl compiler warper script
+##############################################################################
+#
+# This is Aubit 4gl compiler warper and utility tools script. See --ahelp
+# for instructions.
+#
+# Used for:
+# - as a wrapper script for invoking Aubit compiler tools and Aubit compiled 
+#   programs, when some or all of the enviroment (PATH, AUBITDIR, LD_LIBRARY_PATH
+#   or ldconfig) is not set, weather intentionally or otherwise. In this case
+#   function of this script is to set environment needed, and then invoke 
+#   specified program, to make sure it can be executed and that it will find
+#   needed libraries, configuration files, plug-ins, etc
+# - as utillity script to help user test and set Aubit environemnt
+# - as Aubit compiler [de]installation tool
+# - as a helper tool for various Aubit installers (AutoConf, RPM, deb, tarball...)
+#
+# Note on missing "#!/bin/sh" as a first line of this script:
+# On CygWin, using /bin/sh will result in error since sh is NOT bash and 
+# does NOT understand functions! Variables, like #!${SHELL:-/bin/bash} cant be 
+# used here. Specifying /bin/bash will fail on systems without /bin/bash
+# Not specifying anything will on CygWin invoke /bin/sh and fail
+#
+# WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
+# esql compiler will use it without checking to put it's temp files there
+# and fail!
+#
+##############################################################################
 
 ######################################
 # Dummy function to catch shell interpreters that do not understand functions
-function dummy {
-	echo "Your default shell does not understand functions - please use"
+function dummy () {
+	echo "Your current shell does not understand functions - please use"
 	echo "'bash aubit ...' instead of just 'aubit ...'"
 	echo "Will try to do this myself:"
 	bash aubit $@
@@ -23,66 +38,1894 @@ function dummy {
 	exit $RET
 }
 
+##############################################################################
+# Reason for following 5 function is that RPM system is specifically designed
+# to be non-blocking and requires no user interaction. So we invoke our own
+# tool as a new process (with '&') before/after RPM installation/deinstallation
+# so even if we get stuck for any reason, RPM process will complete regardless
+##############################################################################
 
 ######################################
-# Check compiler environment 
-function check_env () {
-CHK_WARN=0
-CHK_ERR=0
+# Things to do AFTER installation of an RPM. Note that this section may be running 
+# interactively or non-interactively depending on --no-interaction flag
+function post_install_rpm () {
 
-	#--------------------------
-	#Locate programs we need
-	LOCATE="`which locate 2>/dev/null`"
-	LD_CONFIG="`which ldconfig 2>/dev/null`"
-	A4GL_C="`which 4glc 2>/dev/null`"
-	A4GL_AUBIT="`which aubit 2>/dev/null`"
-	A4GL_CONFIG="`which aubit-config 2>/dev/null`"
-	A4GL_AMAKE="`which amake 2>/dev/null`"
+	message "RPM post install"
+	USE_MAKEFILES=0	
+	cd_to $RPM_A4GL_INSTALL_DIR
 	
+	#---------------------------------
+	# Prepare environment
+	#
+	# It appears that RPM runs under some strange environent where PATH is not what you would
+	# expect to find in your currnt environment, but the ABSOLUTE SYSTEM MINIMUM, like:
+	# /sbin:/bin:/usr/bin:usr/X11R6/bin  - that's it.
+	# Since we are trying to autodetect a lot of stuff, we will try to source system and user's
+	# profile files, to set "normal" user's environment
+	source_profiles
 	
-	#--------------------------
-	#Load variables we need
-	USER_ID=`id --user`	
-	CURR_AUBITDIR=`aubit-config AUBITDIR`
-	#	A4GL_LINK_LIBS=-laubit4gl-1.00_4
-	#  DEFAULT_PLUGINDIR=/usr/src/aubit/aubit4glsrc/plugins-1.00_4
-
-
-	message "Checking Aubit compiler environment..."
-	
-	check_exe 
-	check_libs
-	check_plugins
-	check_rc
-	check_vars
-	check_tools
-	check_compile
-	
-	if test "$WARN_PLUGINS" != "0"; then
-		show_plugins_warning
+	install_bin
+	install_desktop
+	if test "$INTERACTIVE" != "0"; then
+		#Note that check_env() runs also as a part of setup() function
+		setup
+		show_summary
+	else
+		verbose "Mon-interactive mode - running check_env only"
+		check_env
 	fi
+	
+	message "RPM post install - done"
+	
+}
 
-	echo "+--------------------------------------------------------------------+"
-	echo "| Done with $CHK_WARN warnings and $CHK_ERR errors"
-	echo "+--------------------------------------------------------------------+"
+
+
+######################################
+# Integrate Aubit with GUI desktop environment (KDE, GNOME, etc.)
+# FIXME - I cant beleive that RPM has no macro for this tasks?
+# NOTE - AutoPackage installer performs all or most of this tasks natively
+function install_desktop () {
+
+	message "TODO - install_desktop"
+
+
+#desktop-file-install   desktop-file-validate  desktop-launch
+
+#desktop-file-install --vendor mozilla \
+#  --dir $RPM_BUILD_ROOT%{_datadir}/applications \
+#  --add-category X-Fedora \
+#  --add-category Application \
+#  --add-category Network \
+#  %{SOURCE20} 
+
+
+#%post
+#update-desktop-database %{_datadir}/applications
+
+
+
+
+	
+	#----------------------------------------
+	# Install Aubit icon to appropriate place so that desktop managers can find it
+	# AutoPackage uses command: installIcon aubit4gl.png
 	
 	
-	if test "$CHK_ERR" = "0"; then 
-		if test "$ALL_LIBPATHS_FOUND" != ""; then
-			exit 99
-		else
-			exit 0
-		fi
-	else 
-		exit $CHK_ERR
+	#----------------------------------------
+	# Install menu items to desktop menu for:
+	# configurator
+	# asql (ifx/pg/generic) + GLADE mode SQL editor & IDE
+	# SQLite tool (native Linux? or Java/Wine?)
+	# Web browser shortcut to web site
+	# readme file
+	# AutoPackage uses command: installMenuItem Development aubit4gl-configurator.desktop
+	
+	#----------------------------------------
+	# Install Kate editor's syntax highligting xml files for .4gl and .per
+	
+	#----------------------------------------
+	# installGnome2AppEntry aubit4gl-configurator.applications
+	
+	#----------------------------------------
+	# Register .4gl .per .menu and msg files as MIME types, and associate with icons
+	
+
+}
+
+#####################################
+# Remove desktop integration set up with install_desktop()
+function deinstall_desktop () {
+
+	message "TODO - deinstall_desktop"
+	
+	
+	#----------------------------------------
+	# Remove menu items from desktop menu
+	
+	#----------------------------------------
+	# Remove GNOME app entry
+	# installGnome2AppEntry aubit4gl-configurator.applications
+	
+}
+
+######################################
+# Re-read profile files
+function source_profiles () {
+	
+	if test -f /etc/profile; then 
+		source /etc/profile
+	fi
+	if test -f $HOME/.profile; then
+		source $HOME/.profile
+	fi
+	if test -f $HOME/.bash_profile ; then
+		source $HOME/.bash_profile
 	fi
 
 }
 
-function inst_summary () {
-DIALOG=1
-PREFIX=`aubit-config AUBITDIR`
-	CNF="$PREFIX/bin/aubit-config" 
+######################################
+# CD to specified directory
+function cd_to () {
+CD_TO_DIR="$1"
+	
+
+	if test "$CD_TO_DIR" != ""; then
+		if test -d 	$CD_TO_DIR; then
+			cd $CD_TO_DIR
+			debug "cd to $CD_TO_DIR"
+		else
+			error "$CD_TO_DIR does not exist - cannot cd"
+		fi
+		debug "cd_to: CD_TO_DIR is empty"
+	fi
+}
+
+######################################
+#Things to do AFTER UN-installation of an RPM
+function post_uninstall_rpm () {
+
+	message "RPM post un-install"
+	
+	USE_MAKEFILES=0	
+	cd_to $RPM_A4GL_INSTALL_DIR 
+	deinstall_desktop
+
+}
+
+######################################
+# Things to do BEFORE installation of an RPM
+# WARNING - NOTE THAT PRE_ sestions of RPM installation CANNOT be allowed blocking
+# user interaction (As RPM does not aprove of it) and non-blocking interactio is
+# pointless as installation/deinstallation would have to wait for it for them to 
+# be acknowledged... So we can here do only stuff that us completely non-interactive
+function pre_install_rpm () {
+
+	message "RPM pre install"
+	USE_MAKEFILES=0
+	cd_to $RPM_A4GL_INSTALL_DIR
+	
+	#---------------------------------
+	# Prepare environment
+	# It appears that RPM runs under some strange environent where PATH is not what you would
+	# expect to find in your currnt environment, but the ABSOLUTE SYSTEM MINIMUM, like:
+	# /sbin:/bin:/usr/bin:usr/X11R6/bin  - that's it.
+	# Since we are trying to autodetect a lot of stuff, we will try to source system and user's
+	# profile files, to set "normal" user's environment
+	source_profiles
+
+	#TODO : anything to do here?
+	message "RPM pre install - done"
+}
+
+######################################
+# Things to do BEFORE UN-installation of an RPM
+# WARNING - NOTE THAT PRE_ sestions of RPM installation CANNOT be allowed blocking
+# user interaction (As RPM does not aprove of it) and non-blocking interactio is
+# pointless as installation/deinstallation would have to wait for it for them to 
+# be acknowledged... So we can here do only stuff that us completely non-interactive
+function pre_uninstall_rpm () {
+
+	message "RPM pre un-install"
+	USE_MAKEFILES=0	
+	cd_to $RPM_A4GL_INSTALL_DIR 
+	
+	clean_bin_tree
+	deinstall_bin
+	message "RPM pre un-install - done"
+}
+
+#######################################
+# Remove debris in tools/test, temp files vreated by AutoConf, etc
+# TODO - replace make with pure shell script
+function clean_bin_tree () {
+
+	debug "running clean_bin_tree"
+	
+if test "$USE_MAKEFILES" = "0" ; then
+
+	rm -f debug.out etc/aubitrc.original etc/config/bootstrap etc/config/ltmain.sh  
+	#If we remove incl/Makefile-common and etc/aubitrc-bin - we would need to re-run configure if we do
+	#as we are uninstalling here, we dont care
+	rm -f etc/aubitrc-bin
+	
+	rm -f *.htm *.tmp *.html debug.out etc/aubitrc.original etc/config/bootstrap etc/config/ltmain.sh
+
+	#make[2]: Entering directory `/home/aubit/aubit4gl/tools/test'
+	rm -f tools/test/*.BAK tools/test/*.bak tools/test/core tools/test/*~ tools/test/*.ln tools/test/*.output tools/test/*.out 
+	rm -f tools/test/*.frm tools/test/*.h tools/test/*.o tools/test/*.4ae tools/test/test_build tools/test/*.hlp tools/test/*.exe 
+	rm -f tools/test/*.stackdump tools/test/*.err tools/test/*.c tools/test/*.tmp tools/test/*.42m tools/test/*.glb 
+	rm -f tools/test/*.42r tools/test/rr1.pdf tools/test/*.ao tools/test/*.log tools/test/*.4ge tools/test/*.pl tools/test/*.pm 
+	rm -f tools/test/pdf_report tools/test/solitaire tools/test/test_select tools/test/test_mpz tools/test/test_build.c  
+	rm -f tools/test/assoc tools/test/file tools/test/*.aso tools/test/.\#* tools/test/*.afr.dat tools/test/*.mnu.dat tools/test/*.aox 
+	rm -f tools/test/*.warn tools/test/*.ec tools/test/*.lst tools/test/*.4gi tools/test/*.4go tools/test/*.cpc tools/test/*.42f tools/test/*.4qe 
+	rm -f tools/test/*.qo tools/test/*.pic tools/test/*.pcl tools/test/*.w2 tools/test/*.w3 tools/test/*.afr.xml  tools/test/*.mnu.xml
+	#make[2]: Entering directory `/home/aubit/aubit4gl/tools/test/gui'
+	rm -f tools/test/gui/*.BAK tools/test/gui/*.bak tools/test/gui/core tools/test/gui/*~ tools/test/gui/*.ln tools/test/gui/*.output tools/test/gui/*.out 
+	rm -f tools/test/gui/*.h tools/test/gui/*.c tools/test/gui/*.o tools/test/gui/*.4ae tools/test/gui/*.hlp tools/test/gui/*.exe tools/test/gui/*.stackdump 
+	rm -f tools/test/gui/*.err tools/test/gui/*.glb tools/test/gui/*.afr.dat tools/test/gui/hello-gui.h tools/test/gui/gui.h tools/test/gui/calc.h 
+    rm -f tools/test/gui/calc tools/test/gui/game tools/test/gui/*.frm.xml tools/test/gui/*.afr.xml tools/test/gui/*.afr.dat
+	
+	echo ""
+	echo "+--------------------------------------------------------------------+"
+	echo "| Aubit binary installation tree now clean                           |"
+	echo "+--------------------------------------------------------------------+"
+	echo ""
+
+	rm -f etc/aubitrc-bin config.status config.log config.nice
+	#DO NOT delete incl/Makefile-common - if you do this makefile will fail as
+	#it needs it as include - make it empty instead:
+	#echo " " > incl/Makefile-common
+	#BUT - we are UNINSTALLING here, so just delete it 
+	rm -f incl/Makefile-common
+	echo "" 
+	echo "+--------------------------------------------------------------------+"
+	echo "| AutoConf created files in Aubit binary installation tree removed   |"
+	echo "+--------------------------------------------------------------------+"
+	echo ""
+
+else	
+	if test "$MAKE_EXE" != ""; then
+		verbose "Running 'make clean'"
+		make clean
+	fi
+fi
+}
+	
+######################################
+# Things to do AFTER RPM verify
+function post_verify_rpm () {
+	USE_MAKEFILES=0
+	message "RPM post verify"
+	
+	if test "$PROMPT_INTERACTIVE_RESPONSE" = ""; then
+		prompt_for_interactive "checking Aubit environment" "'aubit --check-env'"
+	fi
+	
+	if test "$PROMPT_INTERACTIVE_RESPONSE" = "yes"; then
+		RUN_AS="int"	
+	elif test "$PROMPT_INTERACTIVE_RESPONSE" = "no"; then
+		RUN_AS="nonint"
+	elif test "$PROMPT_INTERACTIVE_RESPONSE" = "cancel"; then
+		echo "Aborting..."
+		exit
+	else #noanswer
+		RUN_AS="nonint"	
+	fi
+	
+	
+	if test "$RUN_AS" = "nonint"; then
+		#FORCE_TUI=1	
+		FORCE_CMDLINE=1
+		INTERACTIVE=0
+		DIALOG=0
+		check_env
+	else
+		check_env
+	fi
+	
+
+	message "RPM post verify - done"
+
+}
+	
+######################################
+# Same as 'make install' executed in binary tree; but removes dependency on 'make'
+function install_bin () {
+
+	verbose "Running install_bin()..."
+
+if test "$USE_MAKEFILES" = "0" ; then
+
+	verbose "PWD=`pwd`"
+	
+	if test "$CURR_AUBITDIR" = ""; then
+		if test "$RPM_A4GL_INSTALL_DIR" != ""; then
+			CURR_AUBITDIR="$RPM_A4GL_INSTALL_DIR"
+		else
+			error "Both CURR_AUBITDIR and RPM_A4GL_INSTALL_DIR are empty." 2
+		fi
+	fi
+	run_autoconf
+	#AUTOCONF_RET=0
+	
+	if test "$AUTOCONF_RET" = "0"; then
+		if test -w /usr/bin; then
+			BIN_INSTALL_LINK="/usr/bin"
+		else
+			BIN_INSTALL_LINK="$HOME/bin"
+		fi
+		LIB_INSTALL_LINK="/usr/lib"
+	
+		install_libs_conf
+		install_bin_links 
+		install_libs_links
+		install_aubitrc
+		check_compile
+	else
+		error "AutoConf (./configure) failed"
+	fi
+else
+	if test "$MAKE_EXE" != ""; then
+		verbose "Running 'make install'"
+		make install
+	else
+		error "cant find 'make'"
+	fi
+fi
+
+	verbose "install_bin() - done"
+
+}
+
+######################################
+#Note: there are not alternatives here - there is no location that is by default writable to 
+#to a regular user, that is by default included in LD_LIBRARY_PATH or ldconfig paths.
+#Therefore, user will need to add $(INSTALL_DIR)/lib to his LD_LIBRARY_PATH himself
+#manually (hopefully to ${HOME}/.profile) as no other options are avilable to regular user 
+#appart from asking a sys admin. Or using 'abit' wrapper script.
+#
+#This will work only on Linux, and Aubit loads plugins from $AUBITDIR/plugins-xx/
+#But NOT libs that are linked and not dlopen()-ed (like libaubit4gl and some others)
+function install_libs_conf () {
+
+	if test -w /etc/ld.so.conf.d ; then 
+		echo "$RPM_A4GL_INSTALL_DIR/lib" > /etc/ld.so.conf.d/aubit4gl.conf
+	else
+		#add line to $HOME/.profile
+		NEW_LIB_PATH="$RPM_A4GL_INSTALL_DIR/lib"
+		add_ld_lib_path
+	fi
+	
+	if test "$LD_CONFIG" != ""; then
+		if test -w /etc/ ; then
+			$LD_CONFIG
+			message "Refreshed ldconfig cache."
+		else
+			verbose "/etc not writable - cannot run ldconfig"
+		fi
+	else
+		note "ldconfig not found on your system"
+	fi
+	
+}
+
+#######################################
+# Create links for bin programs to location of Aubit binary installation
+function install_bin_links () {
+
+	deinstall_bin_links 
+	install_aubit-config_link 
+	install_bin_install_link_dir
+	
+	if ! test -d $BIN_INSTALL_LINK; then 
+		mkdir -p $BIN_INSTALL_LINK 
+	fi
+	
+	if test -w $BIN_INSTALL_LINK ; then 
+		ln -s $RPM_A4GL_INSTALL_DIR/bin/aubit $BIN_INSTALL_LINK/aubit
+		message "Links from $RPM_A4GL_INSTALL_DIR/bin to $BIN_INSTALL_LINK/ for 'aubit' installed"
+	else
+		echo " "
+		echo "+---------------------------------------------------------------------------"
+		echo "| NOTE: $BIN_INSTALL_LINK is not writable - won't install 'aubit' link there"
+		echo "+---------------------------------------------------------------------------"
+	fi
+	
+} 
+
+#######################################
+#remove links to binaries:
+function deinstall_bin_links () {
+
+	if test -L $BIN_INSTALL_LINK/aubit-config -o -L $BIN_INSTALL_LINK/aubit	-o -L $BIN_INSTALL_LINK/amake; then 
+		if test -w $BIN_INSTALL_LINK ; then
+			rm -f $BIN_INSTALL_LINK/aubit-config $BIN_INSTALL_LINK/aubit $BIN_INSTALL_LINK/amake
+			echo "Removed aubit-config, amake and aubit links in $BIN_INSTALL_LINK"
+		else
+			echo " "
+			echo "+---------------------------------------------------------------------------"
+			echo "| WARNING:Unable to remove the aubit-config and aubit links in the"
+			echo "| $BIN_INSTALL_LINK directory - insufficienet user permisions"
+			echo "+---------------------------------------------------------------------------"
+		fi
+	else
+		verbose " "
+		verbose "+---------------------------------------------------------------------------"
+		verbose "| NOTE: links not found : "
+		verbose "| $BIN_INSTALL_LINK/aubit-config "
+		verbose "| $BIN_INSTALL_LINK/aubit "
+		verbose "| $BIN_INSTALL_LINK/amake "
+		verbose "+---------------------------------------------------------------------------"
+	fi
+	if test -L $HOME/bin/aubit-config -o -L $HOME/bin/aubit -o -L $HOME/bin/amake; then
+		if test -w $HOME/bin ; then
+			rm -f $HOME/bin/aubit-config $HOME/bin/aubit $HOME/bin/amake
+			echo "Removed aubit-config, amake and aubit links in $HOME/bin/aubit-config"
+		else
+			echo " "
+			echo "+---------------------------------------------------------------------------"
+			echo "| WARNING:Unable to remove the aubit-config and aubit links in the"
+			echo "| $BIN_INSTALL_LINK directory - insufficienet user permisions"
+			echo "+---------------------------------------------------------------------------"
+		fi
+	else
+		verbose " "
+		verbose "+---------------------------------------------------------------------------"
+		verbose "| NOTE : links not found: "
+		verbose "| $HOME/bin/aubit-config"
+		verbose "| $HOME/bin/aubit "
+		verbose "| $HOME/bin/amake"
+		verbose "+---------------------------------------------------------------------------"
+	fi
+	
+}
+
+#######################################
+#
+function install_aubit-config_link () {
+	
+	install_bin_install_link_dir
+	
+	if test -w $BIN_INSTALL_LINK ; then
+		ln -s $RPM_A4GL_INSTALL_DIR/bin/aubit-config $BIN_INSTALL_LINK/aubit-config
+		ln -s $RPM_A4GL_INSTALL_DIR/bin/amake $BIN_INSTALL_LINK/amake
+		message "Links from $RPM_A4GL_INSTALL_DIR/bin to $BIN_INSTALL_LINK for"
+		message "aubit-config and amake installed"
+	else
+		echo " "
+		echo "+---------------------------------------------------------------------------"
+		echo "| NOTE: $BIN_INSTALL_LINK is not writable-cant install aubit-config link"
+		echo "+---------------------------------------------------------------------------"
+		mkdir -p $HOME/bin
+		if test -w $HOME/bin ; then
+			ln -s $RPM_A4GL_INSTALL_DIR/bin/aubit-config $HOME/bin/aubit-config
+			ln -s $RPM_A4GL_INSTALL_DIR/bin/amake $HOME/bin/amake
+			echo "Links from $RPM_A4GL_INSTALL_DIR/bin to $HOME/bin/ for aubit-config and amake installed"
+		else
+			echo " "
+			echo "+---------------------------------------------------------------------------"
+			echo "| WARNING: $HOME/bin is not writable-cant install aubit-config link"
+			echo "+---------------------------------------------------------------------------"
+		fi
+	fi
+	
+}
+
+########################################
+#
+function install_bin_install_link_dir () {
+	
+	if ! test -d $BIN_INSTALL_LINK; then 
+		mkdir -p $BIN_INSTALL_LINK; 
+	fi
+	if ! test -d $HOME/bin; then 
+		mkdir -p $HOME/bin; 
+	fi
+
+}
+
+
+#######################################
+#Link libaubit4gl with version string to plain libaubit4gl:
+function install_libs_links () {
+
+	deinstall_libs_links
+	
+	A4GL_LINK_LIBS="`$A4GL_CONFIG A4GL_LINK_LIBS`" 
+	A4GL_VERSION_STRING="`echo $A4GL_LINK_LIBS | sed -e 's/-laubit4gl-//'`"
+	
+	ln -s $RPM_A4GL_INSTALL_DIR/lib/libaubit4gl-$A4GL_VERSION_STRING$SO_EXT $RPM_A4GL_INSTALL_DIR/lib/libaubit4gl$SO_EXT
+	
+	if ! test -d $LIB_INSTALL_LINK; then 
+		mkdir -p $LIB_INSTALL_LINK
+	fi
+	if test -w $LIB_INSTALL_LINK ; then 
+		ln -s $RPM_A4GL_INSTALL_DIR/lib/libaubit4gl$SO_EXT $LIB_INSTALL_LINK/libaubit4gl$SO_EXT
+		echo "Links from $RPM_A4GL_INSTALL_DIR/lib to $LIB_INSTALL_LINK/ for libaubit4gl installed"
+	else
+		verbose " "
+		verbose "+---------------------------------------------------------------------------"
+		verbose "| NOTE: $LIB_INSTALL_LINK is not writable - won't create Aubit libraries links there"
+		verbose "+---------------------------------------------------------------------------"
+	fi
+
+}
+
+#######################################
+#remove links to libraries:
+function deinstall_libs_links () {
+
+	#Remove the link from plain name to the one with version string:
+	rm -rf $RPM_A4GL_INSTALL_DIR/lib/libaubit4gl$SO_EXT
+	#echo "checking ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}"
+	if test -L $LIB_INSTALL_LINK/libaubit4gl$SO_EXT; then
+		if test -w $LIB_INSTALL_LINK ; then
+			rm -f $LIB_INSTALL_LINK/libaubit4gl$SO_EXT
+			message "Removed libaubit4gl link in $LIB_INSTALL_LINK"
+		else
+			echo " "
+			echo "+---------------------------------------------------------------------------"
+			echo "| WARNING : Unable to remove link $LIB_INSTALL_LINK/libaubit4gl$SO_EXT"
+			echo "| - insufficienet user permisions"
+			echo "+---------------------------------------------------------------------------"
+		fi
+	else
+		verbose "+---------------------------------------------------------------------------"
+		verbose "| NOTE  : link $LIB_INSTALL_LINK/libaubit4gl$SO_EXT not found"
+		verbose "+---------------------------------------------------------------------------"
+	fi
+
+}
+
+
+#######################################
+#Prepare and install global aubitrc
+function install_aubitrc () {
+
+	INFILE=$RPM_A4GL_INSTALL_DIR/etc/aubitrc-bin
+	
+	if test -w /etc ; then
+		AUBITETC=/etc/opt/aubit4gl
+	else
+		AUBITETC=$HOME/.aubit4gl
+	fi
+	
+	if test -f $INFILE; then 
+		#ifneq "${AUBIT_BIN_INSTALL}" "1"
+		#	#Installing from source code tree
+		#	@echo "Changing AUBITDIR in ${INFILE}"
+		#	@echo "FROM: ${STARTWITH}"
+		#	@echo "TO: ${REPLACEWITH}"
+		#	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
+		#	#sed -e "/AUBITDIR\=/s/${AUBITDIR}/${INSTALLDIR}/" ${INFILE} > /tmp/aubitrc.tmp
+		#else
+			#Installing from pre-compiled binary distribution package
+			cp $INFILE /tmp/aubitrc.tmp
+		#fi
+		
+		if ! test -f $AUBITETC/aubitrc ; then
+			if ! test -d $AUBITETC ; then 
+				mkdir -p $AUBITETC
+			fi
+			if test -w $AUBITETC ; then
+				mv /tmp/aubitrc.tmp $AUBITETC/aubitrc
+				chmod a+r $AUBITETC/aubitrc
+				echo "Configuration files installed to $AUBITETC/aubitrc"
+			else
+				echo "======== NOTE: $AUBITETC is not writable. ==========="
+			fi
+		else
+			echo " "
+			echo "WARNING: Configuration file aubitrc exists in $AUBITETC/aubitrc"
+			echo "====================== WILL NOT OVERWRITE ======================"
+			echo "add '--force-rc' if you want to overwrite it with new version"
+			echo "Automatically created aubitrc placed in /tmp/aubitrc.tmp"
+			echo " "
+		fi
+	else
+		error "cannot find $INFILE - please run 'configure'" "1"
+	fi
+	
+}
+
+######################################
+# Same as 'make deinstall' executed in binary tree; but removes dependency on 'make'
+function deinstall_bin () {
+
+	message "Running deinstall_bin()..."
+	
+if test "$USE_MAKEFILES" = "0" ; then
+	
+	deinstall_libs_links 
+	deinstall_bin_links
+	echo ""
+	echo "+--------------------------------------------------------------------+"
+	echo "| All Aubit related links/files outside this tree removed.           |"
+	echo "| If you wish to deinstall completely, just remove this directory:   |"
+	echo "`pwd`"
+	echo "| Note that aubitrc configuration file(s) where NOT removed"
+	
+	#echo "| You can also use 'deinstall.all' to remove all files from |"
+	#echo "| Aubit installation tree selectively, as they where installed, but  |"
+	#echo "| preserve all files created after installation.                     |"
+	echo "+--------------------------------------------------------------------+"
+	echo ""
+	
+	
+else
+	if test "$MAKE_EXE" != ""; then
+		verbose "Running 'make deinstall'"
+		make deinstall
+	fi
+fi
+	message "deinstall_bin() - done"
+	
+}
+
+######################################
+# Prompt user if he wants to run the reminder of the installation process (setup part)
+# interactively, non-interactively, or not at all; this is also a way for us to 
+# make sure user can interact with us (eg. he see the dialogs) so we dont lock 
+# ourselves out by waiting for resonses that will never come...
+function prompt_for_interactive () {
+TASK_NAME="$1"
+TASK_COMMAND="$2"
+TIMEOUT="$3"
+
+	if test "$INTERACTIVE" = "0"; then
+		#PROMPT_INTERACTIVE_RESPONSE="noanswer"
+		PROMPT_INTERACTIVE_RESPONSE="no"
+		return
+	fi
+
+
+	if test "$TIMEOUT" = ""; then
+		TIMEOUT=20
+	fi
+	
+	QUESTION="Would you like to proceed interactively with $TASK_NAME?\n"
+	QUESTION="$QUESTION If you do not respond in $TIMEOUT seconds, I will assume"
+	QUESTION="$QUESTION that you cannot see this promt, and will proceed to run only"
+	QUESTION="$QUESTION tasks that do not require your input\n"
+	QUESTION="$QUESTION You can re-run this tasks at any time, using"
+	QUESTION="$QUESTION command $TASK_COMMAND\n"
+	waitfor $TIMEOUT "$TASK_NAME" "$QUESTION" 1 
+	PROMPT_INTERACTIVE_RESPONSE="$response"
+}
+
+######################################
+# Display a yes/no promt and wait set number of seconds for answer
+# return  response=[yes|no|noanswer]
+function waitfor () {
+TIMEOUT="$1"
+TITLE="$2"
+QUESTION="$3"
+yesNoCancel="$4"
+#QUESTION="dfsdfsdf"
+OUTFILE="/tmp/dialog.tmp"
+
+
+	if test "$INTERACTIVE" = "0"; then
+		response="noanswer"
+		return
+	fi
+
+	rm -f $OUTFILE
+
+	if test "$yesNoCancel" = "1"; then
+		YESNO_TYPE="--yesnocancel"
+	else
+		YESNO_TYPE="--yesno"
+	fi
+	#-------------- compose prompt
+	DIALOG_CMD="$DIALOG_EXE --title \"$TITLE\" $YESNO_TYPE \"$QUESTION\""
+	CMD="$DIALOG_CMD; echo \$? > $OUTFILE"
+
+	#-------------- run prompt
+	debug $CMD
+	PID_BEFORE=`pidof $DIALOG_EXE`
+	
+	#See this for silencing kill:
+	#http://www.experts-exchange.com/Programming/Programming_Platforms/Linux_Programming/Q_21078930.html
+	(
+		eval $CMD & > /dev/null 2>&1
+	) 2>/dev/null 
+	PID_AFTER=`pidof $DIALOG_EXE`
+	
+	for an_pid_after in $PID_AFTER; do
+		GOTIT=0
+		for an_pid_before in $PID_BEFORE; do
+			if test "$and_pid" = "$an_pid_before"; then
+				GOTIT=1
+				break
+			fi
+		done
+		if test "$GOTIT" = "0"; then
+			PID=$an_pid_after
+			break
+		fi
+	done
+	
+	CNT=0
+	ans=""
+	while true; do
+		debug "sleeping 1..."
+		sleep 1
+		if test -f $OUTFILE ; then
+			ans=`cat $OUTFILE`
+		fi
+		if test "$ans" != ""; then
+			break
+		fi
+		let CNT=CNT+1
+		#echo "CNT=$CNT TIMEOUT=$TIMEOUT"
+		if test "$CNT" = "$TIMEOUT"; then
+			break
+		fi
+	done
+	kill $PID >/dev/null 2>&1
+	#echo "ans=$ans"
+	if test "$ans" != ""; then
+		if test "$ans" = "1"; then
+			#no/cancel
+			response="no"
+		elif test "$ans" = "2"; then
+			response="cancel"
+		else
+			response="yes"
+		fi
+	else
+		response="noanswer"
+	fi
+	echo "Response was $response"
+}
+
+######################################
+# Allow user to simply configure basic preferences of Aubit compiler, without
+# overwhelming him with full-blown Configurator tool options. Also performs
+# initial sanity checks and validates users choices
+function setup () {
+	
+	message "Setting up Aubit compiler options"
+	if test "$PROMPT_INTERACTIVE_RESPONSE" = ""; then
+		prompt_for_interactive "setting up Aubit compiler" "'aubit --setup'"
+	fi
+	
+	if test "$PROMPT_INTERACTIVE_RESPONSE" = "yes"; then
+		RUN_AS="int"	
+	elif test "$PROMPT_INTERACTIVE_RESPONSE" = "no"; then
+		RUN_AS="nonint"
+	elif test "$PROMPT_INTERACTIVE_RESPONSE" = "cancel"; then
+		echo "Aborting..."
+		exit
+	else #noanswer
+		RUN_AS="nonint"	
+	fi
+
+	if test "$RUN_AS" = "nonint"; then
+		#FORCE_TUI=1	
+		FORCE_CMDLINE=1
+		INTERACTIVE=0
+		DIALOG=0
+		#run_autoconf
+		#if test "$AUTOCONF_RET" = "0"; then
+		check_env 0 0
+	else
+		#run_autoconf
+		#if test "$AUTOCONF_RET" = "0"; then
+		#zero means "dont exit if there are errors"
+		#one is "Dont show output if in dialog mode, just collect"
+		check_env 0 1
+		main_setup_menu
+	fi
+}
+
+
+###########################################
+# testing function for dialog menus - not used
+function DELETEask_choices () {
+
+
+	#----------- Determine destination of the output (choice)
+	CHOICE_TO=""
+	CHOICE_FILE=0
+	EVAL=1
+	if test "$CHOICE_TO" = "err"; then
+		CHOICE_OUT="--stderr"
+	elif test "$CHOICE_TO" = "out"; then
+		CHOICE_OUT="--stdout"
+	else
+		if test "$CHOICE_FILE" = "1"; then
+			CHOICE_FILE="/tmp/choice.log"
+			CHOICE_OUT="--output-fd $CHOICE_FILE"
+		else
+			CHOICE_OUT=""
+		fi
+	fi
+	
+	
+	#----------- Prepare options
+	items="'1' 'item 1' '2' 'item 2'"
+	menu_text="Choose a configuration option to change"
+	window_title="Aubit window"
+	height=0
+	width=0
+	menu_height=0
+	choice=""
+	
+	
+	#------------ Compose command
+	
+	if test "$DIALOG_EXE" = "kdialog"; then 
+		#kdialog --menu "Select a language:" a "American English" b French d "Oz' English"	
+		MENU_OPTIONS="--menu '$menu_text' $items"
+		CMD="$DIALOG_EXE --title '$window_title' $CHOICE_OUT $MENU_OPTIONS"
+	else
+		MENU_OPTIONS="--menu '$menu_text' $height $width $menu_height $items"
+		CMD="$DIALOG_EXE --title '$window_title' $CHOICE_OUT $MENU_OPTIONS"
+	fi
+	
+	
+	#----------- Run menu
+	echo "Running : $CMD"
+	if test "$EVAL" = "1"; then
+		#eval $CMD
+		
+		#Works good:
+		choice=`eval $CMD`
+		
+		#Messes up the items - bad qupting?
+		#eval choice=`$CMD`
+		
+		#Wont run
+		#eval `choice=$CMD`
+		RET=$?
+	else
+		choice=`$CMD`
+		RET=$?
+	fi
+		
+	
+	#----------- Check result
+	if test "$CHOICE_TO" != ""; then
+		debug "eh?"
+	elif test "$CHOICE_FILE" != "0"; then
+		if test "$CHOICE_OUT" != ""; then 
+			cat $CHOICE_FILE
+		fi
+	else
+		if test "$RET" != "0"; then
+			echo "RET=$RET"
+		fi
+		if test "$choice" != ""; then
+			#echo "bb"	
+			echo "choice=$choice"
+		fi
+	fi
+	
+	exit
+}
+
+
+###########################################
+#Determine if we have dialog tool
+function which_dialog () {
+	
+	DIALOG=0
+	DIALOG_TITLE="Aubit 4GL setup"
+
+	if test "$INTERACTIVE" != "0"; then
+		if test "$FORCE_CMDLINE" != "1"; then
+		
+			if test "$HAVE_GUI" = "1" -o "$FORCE_GUI" = "1"; then
+				ALL_DIALOG="Xdialog gdialog zenity kdialog"
+			else
+				ALL_DIALOG="dialog"
+			fi
+			if test "$FORCE_TUI" = "1"; then
+				ALL_DIALOG="dialog"
+			fi
+			for DIALOG_EXE in $ALL_DIALOG; do
+				if test "`which $DIALOG_EXE 2>/dev/null`" != ""; then
+					DIALOG=1
+					break
+				fi
+			done
+		fi
+	fi
+	
+	debug DIALOG=$DIALOG
+	debug DIALOG_EXE=$DIALOG_EXE
+	debug INTERACTIVE=$INTERACTIVE
+	debug FORCE_CMDLINE=$FORCE_CMDLINE
+	debug HAVE_GUI=$HAVE_GUI
+	debug FORCE_GUI=$FORCE_GUI
+	#exit
+	
+	if test "$DIALOG" = "1"; then
+		L=""
+		S=""
+		C=""
+		PARA="\n"
+		P="$PARA"
+		NL=""
+		Q1=""
+		Q2=":"
+		Q=""
+	else
+		L="|"
+		S="-"
+		C="+"
+		PARA=""
+		P="$PARA"
+		NL="\n"
+		Q1="'"
+		Q2="'"
+		Q="'"
+	fi
+	
+}
+
+######################################
+# Prepare display options for main_setup_menu()
+function main_setup_menu_set () {
+
+	if test "$ALL_RC_LIST" = ""; then
+		check_rc
+	fi
+	
+	if test "$DIALOG" != "1"; then
+		THIS_MENU="This menu"
+		MENU_DESC="+-----------------------------------------------------------------------+$P"
+		EOL="${NL}"
+		Q1=""
+		Q2=":"
+		Q=""
+		NL2="\n"
+	else
+		THIS_MENU="The following menu"
+		Q1="'"
+		Q2="'"
+		Q="'"
+		EOL="${Q}"
+		NL2=""
+	fi
+	NL3="\n"
+	
+
+#      \0NNN  the character whose ASCII code is NNN (octal)
+#      \\     backslash
+#       \a     alert (BEL)
+#       \b     backspace
+#       \c     suppress trailing newline
+#       \f     form feed
+#       \n     new line
+#       \r     carriage return
+#       \t     horizontal tab
+#       \v     vertical tab
+
+	#WARNING - ALLWAYS PASS /n IN VARIABLE!!!
+	
+}
+
+
+###############################
+# Demonstration
+function abc () {
+	#show_progress "Please wait..." "Checking Aubit environment" 10
+	progress_init "Please wait..." "Checking Aubit environment" 4
+	sleep 2
+	progress_update "One" 1
+	sleep 2
+	progress_update "TWO" 2
+	sleep 2
+	progress_update "Three" 3
+	sleep 2
+	progress_update "Four" 4
+	sleep 2
+	progress_exit	
+}
+
+################################
+#
+function progress_init () {
+TITLE="$1"
+MESSAGE="$2"
+STEPS="$3"
+export TITLE MESSAGE STEPS
+
+	A4GL_PROGRESS_CNT=1
+	export A4GL_PROGRESS_CNT
+	
+	if test "$DIALOG" = "1"; then
+		if test "$DIALOG_EXE" = "kdialog"; then
+			if test "$A4GL_dcopRef" = ""; then
+				A4GL_dcopRef=`kdialog --title "$TITLE" --progressbar "$MESSAGE" $STEPS`
+				export A4GL_dcopRef
+			else
+				error "A4GL_dcopRef not null?"
+			fi
+		fi
+	fi
+	if test "$A4GL_dcopRef" = ""; then
+		message "$MESSAGE (1 of $STEPS)"
+	fi
+	
+	
+}
+
+################################
+#
+function progress_update () {
+MESSAGE="$1"
+STEP="$2"
+
+	if test "$A4GL_dcopRef" != ""; then
+		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
+		if test "$STEP" = ""; then
+			STEP="$A4GL_PROGRESS_CNT"
+		fi
+    	dcop $A4GL_dcopRef setProgress $STEP
+		dcop $A4GL_dcopRef setLabel "$MESSAGE"
+	else
+		message "$MESSAGE ($STEP)"
+	fi
+
+}
+
+################################
+#
+function progress_exit () {
+	if test "$A4GL_dcopRef" != ""; then
+		dcop $A4GL_dcopRef close
+		A4GL_dcopRef=""
+		export A4GL_dcopRef
+	else
+		message "All done."
+	fi
+}
+
+
+#######################################
+# Main menu for setup() function; let user select between tasks to perform
+function main_setup_menu () {
+
+	main_setup_menu_set
+	
+	MENU_DESC=""
+	MENU_DESC="$MENU_DESC $L $CHECK_RESULT_MSG $NL3"
+	MENU_DESC="$MENU_DESC $L $THIS_MENU allows you to change basic configuration options of Aubit   $L$NL2"
+	MENU_DESC="$MENU_DESC $L compiler. Each option shows current default option configured and in  $L$NL2"
+	MENU_DESC="$MENU_DESC $L brackets all options available (detected by AutoConf on last run)     $L$NL2"
+	MENU_DESC="$MENU_DESC $L For detailed configuration and full descriptions of all options, run  $L$NL2"
+	MENU_DESC="$MENU_DESC $L Aubit Configurator. All Aubit configuration files found:              $L$NL3"
+	for one in $ALL_RC_LIST; do
+		MENU_DESC="$MENU_DESC $L $one$NL3"
+	done
+	
+	#As Kdialog does not seem to process newline in menu message, we will instead
+	#have to show intos message in separate window:
+	
+	if test "$DIALOG" = "1"; then
+		#--dontagain will add to ~/.kde/share/config/myscript
+		#[Notification Messages]
+		#AubitSetupMenuIntro=false
+		$DIALOG_EXE --title 'Aubit configuration: About setup menu' --dontagain myscript:AubitSetupMenuIntro --msgbox "$MENU_DESC"
+		MENU_DESC=""
+	fi
+	
+	MENU_DESC="$MENU_DESC $C$S$S$S$S$S$S$S$S$S$S$S$S$S$S$S$S$S$S$S SELECT OPTION TO CHANGE OR EXECUTE: $S$S$S$S$S$S$S$S$S$S$S$S$S$S$S$S$C$NL2"	
+	MENU_DESC="$MENU_DESC $L Changes will be saved to: $USER_RC $NL2"
+	MENU_DESC="$MENU_DESC $L Last $CHECK_RESULT_MSG $NL2"
+	
+	while true ; do
+		collect_current
+		main_setup_menu_set
+		MENU_LINES=""
+		MENU_LINES="$MENU_LINES ${Q1}1${Q2} ${Q}Compiler output: LEXTYPE=$A4GL_LEXTYPE ($A4GL_LEXTYPE_DETECTED)${EOL}"
+		if test "$A4GL_LEXTYPE" = "EC"; then
+			MENU_LINES="$MENU_LINES ${Q1}2${Q2} ${Q}EC output dialect: LEXDIALECT=$A4GL_LEXDIALECT ($A4GL_LEXDIALECT_DETECTED)${EOL}"
+		else
+			MENU_LINES="$MENU_LINES ${Q1}2${Q2} ${Q}EC output dialect: ignored (LEXTYPE is not EC)${EOL}"
+		fi
+		MENU_LINES="$MENU_LINES ${Q1}3${Q2} ${Q}User interface: UI=$A4GL_UI ($A4GL_UI_DETECTED)${EOL}"
+		if test "$A4GL_LEXTYPE" = "EC"; then
+			MENU_LINES="$MENU_LINES ${Q1}4${Q2} ${Q}Database (compile-time only; EC used at run-time): SQLTYPE=$A4GL_SQLTYPE ($A4GL_SQLTYPE_DETECTED)${EOL}"
+		else
+			MENU_LINES="$MENU_LINES ${Q1}4${Q2} ${Q}Database (compile and run-time):${NL}"
+			MENU_LINES="$MENU_LINES   SQLTYPE=$A4GL_SQLTYPE ($A4GL_SQLTYPE_DETECTED)${EOL}"
+		fi
+		
+		#Should be OK, or are advanced options we dont want to confuse user with:
+		#echo "5: GUI menu: MENUTYPE=$A4GL_MENUTYPE ($A4GL_MENUTYPE_DETECTED)"
+		#echo "6: Form type: FORMTYPE=$A4GL_FORMTYPE ($A4GL_FORMTYPE_DETECTED)"
+		#echo "7: Resources format: PACKER=$A4GL_PACKER ($A4GL_PACKER_DETECTED)"
+		#echo "6: Help messages: MSGTYPE=$A4GL_MSGTYPE ($A4GL_MSGTYPE_DETECTED)"
+		#echo "8: EXDTYPE=$EXDTYPE ($EXDTYPE_DETECTED)"
+		#echo "A: RPCTYPE=$A4GL_RPCTYPE ($A4GL_RPCTYPE_DETECTED)"
+		#echo "B: PDFTYPE=$A4GL_PDFTYPE ($A4GL_PDFTYPE_DETECTED)"
+		if test "$DIALOG" != "1"; then
+			MENU_LINES="$MENU_LINES -------------------------${EOL}"
+		fi
+		#echo "Note: unless LEXTYPE=EC, LEXDIALEXT is ignored"
+		MENU_LINES="$MENU_LINES ${Q1}A${Q2} ${Q}Run Aubit Configurator${EOL}"
+		MENU_LINES="$MENU_LINES ${Q1}B${Q2} ${Q}Re-run AutoConf (cd $CURR_AUBITDIR; ./configure)${EOL}"
+		MENU_LINES="$MENU_LINES ${Q1}C${Q2} ${Q}Test non-db compile using current settings${EOL}"
+		MENU_LINES="$MENU_LINES ${Q1}D${Q2} ${Q}Test non-db compile using safe settings${EOL}"
+		if test "$DIALOG" = "1"; then
+		MENU_LINES="$MENU_LINES ${Q1}T${Q2} ${Q}Show results of last environment check${EOL}"
+		MENU_LINES="$MENU_LINES ${Q1}P${Q2} ${Q}Show results of last plug-ins check${EOL}"
+		fi
+		MENU_LINES="$MENU_LINES ${Q1}R${Q2} ${Q}Re-run environment check check${EOL}"
+		MENU_LINES="$MENU_LINES ${Q1}X${Q2} ${Q}Exit this utility${EOL}"
+
+		if test "$DIALOG" = "1"; then
+		
+			#----------- Prepare options
+			window_title="Aubit configuration: Setup menu"
+			height=0
+			width=0
+			menu_height=0
+			choice=""
+
+			#------------ Compose command
+			if test "$DIALOG_EXE" = "kdialog"; then 
+				#kdialog --menu "Select a language:" a "American English" b French d "Oz' English"	
+				MENU_OPTIONS="--menu '$MENU_DESC' $MENU_LINES"
+				CMD="$DIALOG_EXE --title '$window_title' $CHOICE_OUT $MENU_OPTIONS"
+			else
+				MENU_OPTIONS="--menu '$MENU_DESC' $height $width $menu_height $items"
+				CMD="$DIALOG_EXE --title '$window_title' $CHOICE_OUT $MENU_OPTIONS"
+			fi
+			
+			#------------ Run menu
+			debug "Running : $CMD"
+			choice=`eval $CMD`
+			echo "Choice=$choice"
+			#exit
+			
+		else
+			clear
+			echo -e $MENU_DESC
+			echo -e $MENU_LINES
+			echo "+-----------------------------------------------------------------------+"
+			read choice
+		fi
+	
+		case $choice in 
+			1)
+				CONF_TEXT="Compiler output"
+				CURRENT="$A4GL_LEXTYPE"
+				OPTIONS="$A4GL_LEXTYPE_DETECTED"
+				VAR_LABEL="A4GL_LEXTYPE"
+				change_option "$CONF_TEXT" "$CURRENT" "$OPTIONS" "$USER_RC" "$VAR_LABEL"
+				collect_current
+				check_ec_db_valid $A4GL_LEXTYPE $A4GL_LEXDIALECT $A4GL_SQLTYPE
+				if test "$ec_db_is_ok" != "1"; then
+					show_ec_db_warning 1
+				fi
+				
+				;;
+			2)
+				CONF_TEXT="EC output dialect"
+				CURRENT="$A4GL_LEXDIALECT"
+				OPTIONS="$A4GL_LEXDIALECT_DETECTED"
+				VAR_LABEL="A4GL_LEXDIALECT"
+				if test "$A4GL_LEXTYPE" = "EC"; then
+					BEFORE_CHANGE="$CURRENT"
+					change_option "$CONF_TEXT" "$CURRENT" "$OPTIONS" "$USER_RC" "$VAR_LABEL"
+					collect_current
+					check_ec_db_valid $A4GL_LEXTYPE $A4GL_LEXDIALECT $A4GL_SQLTYPE
+					if test "$ec_db_is_ok" != "1"; then
+						show_ec_db_warning 1
+					fi
+				else
+					warning "If you wish to change $CONF_TEXT"
+					warning "first change Compiler Output option to EC"
+					sleep 3
+				fi
+				;;
+			3)
+				CONF_TEXT="User Interface"
+				CURRENT="$A4GL_UI"
+				OPTIONS="$A4GL_UI_DETECTED"
+				VAR_LABEL="A4GL_UI"
+				change_option "$CONF_TEXT" "$CURRENT" "$OPTIONS" "$USER_RC" "$VAR_LABEL"				
+				collect_current
+				;;
+			4)
+				OPTIONS="$A4GL_SQLTYPE_DETECTED"
+				VAR_LABEL="A4GL_SQLTYPE"
+				if test "$A4GL_LEXTYPE" = "EC"; then
+					CONF_TEXT="Database FOR COMPILE-TIME ONLY"
+					#show_ec_db_warning
+					OPTIONS="$OPTIONS $A4GL_SQLTYPE_COMPILE_ONLY_DETECTED"
+				else
+					CONF_TEXT="Database for both run and compile-time"
+				fi
+				CURRENT="$A4GL_SQLTYPE"
+				
+				change_option "$CONF_TEXT" "$CURRENT" "$OPTIONS" "$USER_RC" "$VAR_LABEL"				
+				collect_current
+				check_ec_db_valid $A4GL_LEXTYPE $A4GL_LEXDIALECT $A4GL_SQLTYPE
+				if test "$ec_db_is_ok" != "1"; then
+					show_ec_db_warning 1
+				fi
+				;;
+			
+			a|A)
+				if test "$DIALOG" = "1"; then
+					if test "$DIALOG_EXE" = "kdialog" -o "$DIALOG_EXE" = "gdialog"; then
+						DIALOG_A4GL_UI="HL_GTK"
+						DIALOG_A4GL_POST="> /dev/null 2>&1"
+					else
+						DIALOG_A4GL_UI="TUI"
+					fi
+				else
+					DIALOG_A4GL_UI="CONSOLE"
+				fi
+				export A4GL_UI="$DIALOG_A4GL_UI"; aubit configurator $DIALOG_A4GL_POST
+				if test "$DIALOG" != "1"; then
+					sleep 2
+				fi
+				collect_current
+				;;
+			b|B)
+				MSG="Running AutoConf will re-run detection for all options"
+				MSG="$MSG and reset all currently configured options to defaults in"
+				MSG="$MSG configuration file $CURR_AUBITDIR/etc/aubitrc. Is this OK?"
+
+				yes_no 1 N "$MSG"
+				if test "$choice_yes" = "1"; then 
+					run_autoconf
+					if test "$DIALOG" != "1"; then
+						sleep 3
+					fi
+					collect_current
+				else
+					echo "Aborted running AutoConf..."
+					sleep 1
+				fi
+				;;
+			c|C) #current
+				if test "$DIALOG" != "1"; then
+					check_compile 0 0
+					any_key
+				else
+					check_compile 0 1
+				fi
+				;;			
+			d|D) #safe
+				if test "$DIALOG" != "1"; then
+					check_compile 1 0
+					any_key
+				else
+					check_compile 0 1
+				fi
+				;;
+				
+			t|T) 
+				if test "$DIALOG" = "1"; then
+					DIALOG_SHOW="$CHECK_ENV_MSG"
+					show_collected "Aubit compiler environment and configuration check summary"
+					DIALOG_SHOW=""
+				fi
+				;;
+			p|P) 
+				if test "$DIALOG" = "1"; then
+					DIALOG_SHOW="$CHECK_PLUGIN_MSG"
+					show_collected "Aubit compiler plug-in check summary"
+					DIALOG_SHOW=""
+				fi
+				;;
+			r|R)
+				#first means "dont exit if there are errors"
+				#second one is "Dont show output if in dialog mode, just collect"
+				check_env 0 0
+				;;
+				
+			x|X)
+				echo "exit"
+				do_exit=1
+				break
+				;;
+			*)	
+				if test "$choice" = ""; then
+					yes_no 0 N "Exit Aubit setup menu?"
+					if test "$choice_yes" = "1"; then
+						do_exit=1
+						break
+					fi
+				else
+					echo "No such option: [$choice]"
+					sleep 2
+				fi
+				;;
+			esac
+		if test "$do_exit" = "1"; then
+			break
+		fi
+	done
+	
+	message "Exited setup menu..."
+}
+
+#######################################
+#
+function run_autoconf () {
+	
+	progress_init "Please wait..." "Checking Aubit environment" 55
+	
+	progress_update "Initialising (cd $CURR_AUBITDIR; ./configure)" 1
+	
+	cd_to $CURR_AUBITDIR
+	./configure
+	AUTOCONF_RET=$?
+
+	progress_update "All done" 55
+	sleep 1
+	progress_exit
+	
+	if test "$AUTOCONF_RET" != "0"; then
+		error_int "Autoconf (cd $CURR_AUBITDIR; ./configure) failed"
+	else
+		cp $CURR_AUBITDIR/etc/aubitrc-bin $CURR_AUBITDIR/etc/aubitrc
+	fi
+}
+
+########################################
+# Wrapper function to prompt user for a yes/no answer
+function yes_no () {
+#0=normal 1=warning
+WARNING="$1"
+#y/n
+DEFAULT="$2"
+MSG="$3"
+TITLE=$4
+choice_yes=""
+
+	if test "$DIALOG" = "1"; then
+		if test "$TITLE" != ""; then
+			TITLE_FLAG="--title \"$TITLE\""
+		fi
+		CMD="$DIALOG_EXE $TITLE_FLAG --yesno \"$MSG\""
+		choice=`eval $CMD`
+		RET="$?"
+		#echo "response was $choice ($RET)"
+		if test "$RET" = "0"; then
+			#yes
+			choice_yes=1
+		else
+			choice_yes=0
+		fi
+
+	else
+		if test "$WARNING" = "1"; then
+			message "$3"
+		else
+			warning "$3"
+		fi
+		read response
+		if test "$DEFAULT" = "Y"; then
+			if test "$response" != "n" -o "$response" != "N"; then
+				choice_yes=1
+			else
+				choice_yes=0
+			fi
+		else
+			#default is N
+			if test "$response" != "y" -o "$response" != "Y"; then
+				choice_yes=1
+			else
+				choice_yes=0
+			fi
+		fi
+	fi
+}
+
+
+#########################################
+# Warning to display when setings for LEXTYPE/LEXDIALECT/SQLTYPE are inconsistent
+function show_ec_db_warning () {
+IS_WRONG="$1"
+#IS_WRONG="1"
+	if test "$DIALOG" = "1"; then
+		echo "Collecting output for GUI..."
+		DIALOG_SHOW=""
+		DIALOG_COLLECT=1
+	fi
+	
+	if test "$DIALOG" = "0"; then
+		if test "$IS_WRONG" = "1"; then
+			echo "+-----------------------------------------------------------------------+"
+			echo "| CURRENT LEXDIALECT AND SQLTYPE DO NOT MATCH !"
+			echo "+-----------------------------------------------------------------------+"
+		fi
+		echo "+-----------------------------------------------------------------------+"
+	else
+		if test "$IS_WRONG" = "1"; then
+			error "CURRENT LEXDIALECT AND SQLTYPE DO NOT MATCH ! \n"
+		fi
+	fi
+	NO_NEWLINE=1
+	warning "Compiler Output is set to EC (Embedded C) of type \"$A4GL_LEXDIALECT\""
+	warning "and database plugin selected is \"$A4GL_SQLTYPE\"."
+	warning "Database used at compile-time MUST be of same type used"
+	warning "at run time type. Eg. if you selected Compiler Output"
+	warning "(LEXDIALECT)=POSTGRES, then SQLTYPE should be one of the"
+	warning "plug-ins that can connect to same type of the database,"
+	warning "like one of (pg pgodbc unixodbc iodbc)"
+	warning "AND NOT one of (ifxodbc sapodbc ingres mysql esql) that would cause"
+	warning "compiler (4glc) to connect at compile-time (for DEFINE ... LIKE etc.) to a"
+	NO_NEWLINE=0
+	warning "different type of database back-end!"
+	if test "$DIALOG" = "0"; then
+		echo "+-----------------------------------------------------------------------+"
+		any_key
+	else
+		if test "$DIALOG" = "1"; then
+			echo "Display collected..."
+			if test "$IS_WRONG" = "1"; then
+				show_collected "ERROR - Compiler output and database plugin selected DO NOT match"
+			else
+				show_collected "Note - Compiler output and database plugin selected must match"
+			fi
+		fi
+	fi
+}
+
+#########################################
+# Check that default SQLTYPE is valid for LEXDIALECT if EC is selected as LEXTYPE
+function check_ec_db_valid () {
+LEXTYPE=$1
+LEXDIALECT=$2
+SQLTYPE=$3
+ec_db_is_ok=0
+
+	verbose "Check that default SQLTYPE is valid for LEXDIALECT if EC is selected as LEXTYPE"
+
+	if test "$LEXTYPE" = "EC"; then
+		if test "$LEXDIALECT" != ""; then
+		
+			VALID_LIST=`$A4GL_CONFIG A4GL_SQLTYPE_EC_VALID_$LEXDIALECT` 
+		
+			#A4GL_SQLTYPE_EC_VALID_INFORMIX="esql ifxodbc  iodbc unixodbc nosql"
+			#A4GL_SQLTYPE_EC_VALID_SAPDB="sapodbc  iodbc unixodbc nosql"
+			#A4GL_SQLTYPE_EC_VALID_INGRES="ingres  iodbc unixodbc nosql"
+			#A4GL_SQLTYPE_EC_VALID_POSTGRES="pg pgodbc  iodbc unixodbc nosql"
+	
+			if test "$VALID_LIST" = ""; then
+				error_int "aubit-config returned nothing for A4GL_SQLTYPE_EC_VALID_$LEXDIALECT"
+				error_int "but your current EC LEXTYPE is $LEXTYPE"
+				let CHK_ERR=CHK_ERR+1
+			else
+				for one in $VALID_LIST; do
+					if test "$one" = "$SQLTYPE"; then
+						ec_db_is_ok=1
+						break
+					fi
+				done
+			fi
+			if test "$ec_db_is_ok" = "1"; then
+				verbose "$SQLTYPE is a valid compile-time database for EC dialect $LEXDIALECT"
+			else
+				error_int "$SQLTYPE IS NOT a valid compile-time database for EC dialect $LEXDIALECT"
+				let CHK_ERR=CHK_ERR+1
+			fi
+		else
+			error "LEXDIALEXT is empty, but LEXTYPE is EC"
+			let CHK_ERR=CHK_ERR+1
+			ec_db_is_ok=0
+		fi
+	else
+		ec_db_is_ok=1
+	fi
+
+}
+
+
+##########################################
+# Manu to allow user to pick one of offered settings to change
+function change_option () {
+CONF_TEXT="$1"
+CURRENT="$2"
+OPTIONS="$3"
+USER_RC="$4"
+VAR_LABEL="$5"
+
+	while true ; do
+		do_change=0
+		do_exit=0
+		
+		main_setup_menu_set
+		MENU_DESC="Changing $CONF_TEXT, currently set to $CURRENT.$NL2"
+		MENU_DESC="$MENU_DESC Changes will be saved in $USER_RC$NL2"
+		MENU_DESC="$MENU_DESC Pick one:$NL2"
+		CNT=0
+		MENU_LINES=""
+		for an_option in $OPTIONS; do
+			let CNT=CNT+1
+			MENU_LINES="$MENU_LINES ${Q1}$CNT${Q2} ${Q}$an_option${EOL}"
+		done
+		MENU_LINES="$MENU_LINES ${Q1}X${Q2} ${Q}eXit to previous menu${EOL}"
+		
+		if test "$DIALOG" = "1"; then 
+			#----------- Prepare options
+			window_title="Aubit configuration: Change setting"
+			height=0
+			width=0
+			menu_height=0
+			choice=""
+
+			#------------ Compose command
+			if test "$DIALOG_EXE" = "kdialog"; then 
+				#kdialog --menu "Select a language:" a "American English" b French d "Oz' English"	
+				MENU_OPTIONS="--menu '$MENU_DESC' $MENU_LINES"
+				CMD="$DIALOG_EXE --title '$window_title' $CHOICE_OUT $MENU_OPTIONS"
+			else
+				MENU_OPTIONS="--menu '$MENU_DESC' $height $width $menu_height $items"
+				CMD="$DIALOG_EXE --title '$window_title' $CHOICE_OUT $MENU_OPTIONS"
+			fi
+			
+			#------------ Run menu
+			debug "Running : $CMD"
+			choice=`eval $CMD`
+			echo "Choice=$choice"
+			#exit
+		
+		else
+			#clear
+			echo "+-----------------------------------------------------------------------+"
+			echo -e "$MENU_DESC"
+			echo "+-----------------------------------------------------------------------+"
+			echo -e "$MENU_LINES"
+			read choice
+		fi
+	
+		case $choice in
+			x|X)
+				echo "Returnign to main menu..."
+				if test "$DIALOG" != "1"; then
+					sleep 1
+				fi
+				do_exit=1
+				;;
+			*)
+				do_change=0
+				CNT=0
+				for an_option in $OPTIONS; do
+					let CNT=CNT+1
+					if test "$CNT" = "$choice"; then
+						do_change=1
+						change_to="$an_option"
+					fi
+				done
+				if test "$do_change" = "1"; then
+					changed_ok=0
+					apply_single_change "$VAR_LABEL" "$USER_RC" "$change_to" "$CURRENT"
+					if test "$changed_ok" = "1"; then 
+						CURRENT="$change_to"
+						if test "$VAR_LABEL" = "A4GL_LEXTYPE" -a "$change_to" != "EC"; then
+							#We just changed LEXTYPE do something not EC, so
+							#Unset LEXDIALECT so it dont confuse people
+							change_to=""
+							apply_single_change "A4GL_LEXDIALECT" "$USER_RC" "$change_to" "$A4GL_LEXDIALECT"
+							if test "$changed_ok" = "1"; then 
+								A4GL_LEXDIALECT=""
+							fi
+						fi
+					fi
+					if test "$DIALOG" != "1"; then
+						sleep 2
+					fi
+				else
+					if test "$DIALOG" != "1"; then
+						echo "Invalid choice: $choice"
+						sleep 2
+					else
+						if test "$choice" = ""; then
+							echo "Returnign to main menu..."
+							do_exit=1
+							break
+						else
+							#$DIALOG_EXE --sorry "Invalid choice: $choice"
+							$DIALOG_EXE --msgbox "Invalid choice: $choice"
+						fi
+					fi
+				fi
+				
+				;;
+		esac
+		if test "$do_exit" = "1"; then
+			break
+		fi
+	done
+
+	do_exit=0
+}
+
+#########################################
+# Error messages that can be interactive
+function error_int () {
+
+	if test "$DIALOG" != "1"; then
+		error "$1"
+	else
+		$DIALOG_EXE --error "$1"
+	fi
+	
+	
+}
+
+function timed_msg () {
+	kdialog --passivepopup 'afdgasdfa asdfasdf asdfasdfasdf blah' 3 
+	RET=$?
+	echo RET=$RET
+	exit
+}
+
+###########################################
+# Make the chage of a single setting in the configuration file
+function apply_single_change () {
+VAR_LABEL="$1"
+USER_RC="$2"
+change_to="$3"
+CURRENT="$4"
+changed_ok=0
+
+	echo "changing $VAR_LABEL in $USER_RC to $change_to"
+	if test -f "$USER_RC"; then
+		if test -w "$USER_RC"; then
+			CURR_IN_USER_RC="`grep -v "#" $USER_RC | grep -w ^$VAR_LABEL`"
+			CURR_IN_USER_RC="`echo $CURR_IN_USER_RC | sed -e 's/=/ /' | awk '{print $2}'`"
+			if test "$CURR_IN_USER_RC" = ""; then
+				if test "$VAR_LABEL" != "A4GL_LEXDIALECT"; then
+					error_int "Setting $VAR_LABEL does not exist in file $USER_RC (7)"
+					return
+				fi
+			else
+				if test "$CURR_IN_USER_RC" != "$CURRENT"; then
+					NO_NEWLINE=1
+					warning "Current value of $VAR_LABEL in $USER_RC is $CURR_IN_USER_RC"
+					warning "Current value of $VAR_LABEL determined by aubit-config is $CURRENT"
+					NO_NEWLINE=0
+					warning "Make sure you understand priority of Aubit configuration files and environment settings!"
+					sleep 5
+				fi
+				#sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp				
+				cat $USER_RC | sed -e "/^$VAR_LABEL=$CURR_IN_USER_RC/s/$VAR_LABEL=$CURR_IN_USER_RC/$VAR_LABEL=$change_to/" > /tmp/aubit-change.tmp
+				verbose "Change made: "
+				if test -f /tmp/aubit-change.tmp; then 
+					diff /tmp/aubit-change.tmp $USER_RC
+					#Outputs:
+					#Change made:
+					#148c148
+					#< A4GL_LEXTYPE=EC
+					#---
+					#> A4GL_LEXTYPE=C
+					#TODO-set changed_ok based on diff output
+					changed_ok=1
+					if test "$changed_ok" = "1"; then
+						cp /tmp/aubit-change.tmp $USER_RC
+					fi
+				else
+					error_int "/tmp/aubit-change.tmp was not created"
+				fi
+				if test "$DIALOG" != "1"; then
+					sleep 3
+				fi
+			fi
+		else
+			error_int "$USER_RC is not writable"
+		fi
+		
+	else
+		error_int "$USER_RC does not exist"
+	fi
+
+}
+
+
+######################################
+# Select a directory
+function dialog_getexistingdirectory () {
+	
+	TITLE="Select installation directory for Aubit compiler"
+	x=`$DIALOG_EXE --title "$TITLE" --getexistingdirectory $PREFIX`
+}
+
+######################################
+# Locate programs we need
+function which_programs () {
+
+	#system executables
+	GCC="`which gcc 2>/dev/null`"
+	MAKE="`which make 2>/dev/null`" 
+	MAKE_EXE="$MAKE"
+	LOCATE="`which locate 2>/dev/null`"
+	LD_CONFIG="`which ldconfig 2>/dev/null`"
+	
+	#Aubit executables
+	A4GL_C="`which 4glc 2>/dev/null`"
+	A4GL_AUBIT="`which aubit 2>/dev/null`"
+	A4GL_CONFIG="`which aubit-config 2>/dev/null`"
+	A4GL_AMAKE="`which amake 2>/dev/null`"
+	A4GL_4GLPC="`which 4glpc 2>/dev/null`"
+
+
+	HAVE_GUI=0
+	HAS_X_RUNNING=`ps -ef | grep X11 | grep -v "grep X11"`
+	if test "$HAS_X_RUNNING" != ""; then
+		#Note that if user is not on console (eg. has a ssh session to machine
+		#that is running X) this is wrong; usier will have to use --force-tui
+		HAVE_GUI=1
+	fi
+}
+
+######################################
+# Check compiler environment 
+function check_env () {
+DO_EXIT=$1
+JUST_COLLECT="$2"
+
+CHK_WARN=0
+CHK_ERR=0
+	
+	progress_init "Please wait..." "Checking Aubit environment" 10
+	
+	if test "$A4GL_4GLPC" = ""; then
+		A4GL_4GLPC="$A4GL_AUBIT 4glpc"
+	fi
+	
+	#--------------------------
+	#Load variables we need
+	USER_ID=`id --user`
+	CURR_AUBITDIR=`$A4GL_CONFIG AUBITDIR`
+	#	A4GL_LINK_LIBS=-laubit4gl-1.00_4
+	DEFAULT_PLUGINDIR=`$A4GL_CONFIG DEFAULT_PLUGINDIR` #  DEFAULT_PLUGINDIR=/usr/src/aubit/aubit4glsrc/plugins-1.00_4
+	AAA=`echo $DEFAULT_PLUGINDIR | sed -e 's/\// /g'`
+	for one in $AAA ; do
+		LAST="$one"
+	done
+	VER_PART=`echo $LAST | sed -e 's/plugins-//'`
+	ACTUAL_PLUGINDIR="$CURR_AUBITDIR/plugins-$VER_PART"
+	
+	#echo "DEFAULT_PLUGINDIR=$DEFAULT_PLUGINDIR"
+	#echo "ACTUAL_PLUGINDIR=$ACTUAL_PLUGINDIR"
+	#exit
+
+	if test "$DIALOG" = "1"; then
+		echo "Collecting output for GUI..."
+		DIALOG_SHOW=""
+		DIALOG_COLLECT=1
+	fi
+
+
+	progress_update "Checking Local" 1
+	check_local
+	progress_update "Checking executables" 2
+	check_exe 
+	progress_update "Checking libraries" 3
+	check_libs
+	progress_update "Checking plug-ins" 4
+	check_plugins
+	progress_update "Checking presense of plug-ins" 5
+	check_plugins_exist
+	progress_update "Checking configuration files" 6
+	check_rc
+	progress_update "Checking environment variables" 7
+	check_vars
+	progress_update "Checking tools" 8
+	check_tools
+	A4GL_LEXTYPE=`$A4GL_CONFIG A4GL_LEXTYPE`
+	A4GL_LEXDIALECT=`$A4GL_CONFIG A4GL_LEXDIALECT`
+	A4GL_SQLTYPE=`$A4GL_CONFIG A4GL_SQLTYPE`
+	progress_update "Validating LEX/LEXDIALECT settings" 9
+	check_ec_db_valid $A4GL_LEXTYPE $A4GL_LEXDIALECT $A4GL_SQLTYPE
+	progress_update "Compiling a test 4gl file" 10
+	check_compile
+
+	progress_exit
+	
+	if test "$DIALOG" = "1"; then
+		#Store for later display:
+		CHECK_ENV_MSG="$DIALOG_SHOW"	
+		if test "$JUST_COLLECT" = "1"; then
+			DIALOG_SHOW=""
+		else
+			echo "Display collected..."
+			show_collected "Aubit compiler environment and configuration check summary"
+		fi
+	fi
+	
+	if test "$WARN_PLUGINS" != "0"; then
+		show_plugins_warning "$JUST_COLLECT"
+	fi
+
+	if test "$DIALOG" = "0"; then
+	message "+--------------------------------------------------------------------+"
+	fi
+	NO_NEWLINE=1
+	message "${L} Aubit 4GL compiler environment and configuration check was         ${L}"
+	NO_NEWLINE=0
+	message "${L} completed with $CHK_WARN warnings and $CHK_ERR errors"
+	if test "$DIALOG" = "0"; then
+	message "+--------------------------------------------------------------------+"
+	fi
+	
+	if test "$DIALOG" = "1"; then
+		#Store for later display:
+		CHECK_RESULT_MSG="$DIALOG_SHOW"	
+		if test "$JUST_COLLECT" = "1" -a "$CHK_ERR" = "0"; then
+			DIALOG_SHOW=""
+		else
+			#Show message regardless, it there where errors
+			echo "Display collected..."
+			show_collected "Aubit compiler environment and configuration check result"
+		fi
+	fi
+	
+	if test "$CHK_ERR" = "0"; then
+		if test "$DO_EXIT" !=  "0";  then
+			#Dont exit if no errors
+			if test "$ALL_LIBPATHS_FOUND" != ""; then
+				exit 99
+			else
+				exit 0
+			fi
+		fi
+	else 
+		if test "$DO_EXIT" =  "0";  then
+			MSG="IT IS RECOMMENDED THAT YOU FIX THE ERRORS LISTED ABOVE FIRST, THEN RE-RUN"
+			MSG="$MSG Or would you like to continue with configuration? (y/N)"
+			yes_no 1 N "$MSG"
+			if test "$choice_yes" = "1"; then
+				verbose "... continuing with configuration ..."	
+			else
+				verbose "...exit..."
+				exit $CHK_ERR
+			fi
+		else
+			exit $CHK_ERR
+		fi
+	fi
+
+
+}
+
+#################################
+# Check that current directory is NOT directory containing Aubit executables or libraries
+# that would circumvent checking for PATH and LD coinfiguration
+function check_local () {
+
+	if test -f ./4glc ; then
+		error "Dont run this command form Aubit's bin/ directory"
+		error "We want to test access at any location"
+		exit 1
+	fi
+
+	if test -f ./libaubit4gl.so ; then
+		error "Dont run this command form Aubit's lib/ directory"
+		error "We want to test access at any location"
+		exit 1
+	fi
+
+	if test -h ./libaubit4gl*.so ; then
+		error "Current directory contains link to libaubit4gl"
+		error "We want to test access at any location"
+		exit 1
+	fi
+
+}
+
+###############################
+# Collect needed settings from Aubit configuration file(s)
+function collect_current () {
+
+	#PREFIX=`$A4GL_CONFIG AUBITDIR`
+	CNF="$A4GL_CONFIG" 
 	
 	A4GL_LEXTYPE=`$CNF A4GL_LEXTYPE`
 	A4GL_LEXTYPE_DETECTED=`$CNF A4GL_LEXTYPE_DETECTED`
@@ -92,6 +1935,7 @@ PREFIX=`aubit-config AUBITDIR`
 	A4GL_UI_DETECTED=`$CNF A4GL_UI_DETECTED`
 	A4GL_SQLTYPE=`$CNF A4GL_SQLTYPE`
 	A4GL_SQLTYPE_DETECTED=`$CNF A4GL_SQLTYPE_DETECTED`
+	A4GL_SQLTYPE_COMPILE_ONLY_DETECTED=`$CNF A4GL_SQLTYPE_COMPILE_ONLY_DETECTED`
 	A4GL_MENUTYPE=`$CNF A4GL_MENUTYPE`
 	A4GL_MENUTYPE_DETECTED=`$CNF A4GL_MENUTYPE_DETECTED`
 	A4GL_MSGTYPE=`$CNF A4GL_MSGTYPE`
@@ -107,8 +1951,15 @@ PREFIX=`aubit-config AUBITDIR`
 	A4GL_PDFTYPE=`$CNF A4GL_PDFTYPE`
 	A4GL_PDFTYPE_DETECTED=`$CNF A4GL_PDFTYPE_DETECTED`
 
-	MSG="Aubit compiler is now installed to $PREFIX. Here is the summary of automaticaly"
-	MSG="${MSG} set configuration: [listed as: default (available)]\n\n"
+}
+
+#################################
+# Installation summary message
+function show_summary () {
+
+	collect_current
+
+	MSG="Here is the summary of current configuration: [listed as: default (available)]\n\n"
 	
 	MSG="${MSG}LEXTYPE=$A4GL_LEXTYPE ($A4GL_LEXTYPE_DETECTED)\n"
 	MSG="${MSG}LEXDIALECT=$A4GL_LEXDIALECT ($A4GL_LEXDIALECT_DETECTED)\n"
@@ -133,56 +1984,124 @@ PREFIX=`aubit-config AUBITDIR`
 	MSG="${MSG}type 'make' and follow instructions.\n\n" 
 	MSG="${MSG}Note that currently open terminal windows WILL NOT have environment "
 	MSG="${MSG}changes introduced by installer applied, and therefore Aubit compiler WILL NOT work in them.\n"
-	MSG="${MSG}You can verify your Aubit environment using command 'aubit --chk-env'\n\n"
+	MSG="${MSG}You can verify your Aubit environment using command 'aubit --chk-env'\n"
+	MSG="${MSG}You can change basic configuration options with command 'aubit --setup'\n\n"	
 	MSG="${MSG}          Thank you for installing Aubit 4GL compiler."
 	
 	if test "$DIALOG" = "1"; then
-		dialog --msgbox "$MSG" 0 0	# height width
+		$DIALOG_EXE --title "Summary of Aubit configuration" --msgbox "$MSG" 0 0	# height width
 	else
 		echo "============================================================================="
 		echo "$MSG"
 		echo "============================================================================="
 	fi
 
-exit
 }
 
 
+#######################################
+# Wrapper function to wait for user to read text, and then press ENTER to continue
+# Used only in console mode, as messages are displayed with OK button otherwise
+function any_key () {
+	
+	echo "Press ENTER to continue"
+	read dummy
+	
+}
+
 ######################################
-#compile tools/test/test_build.4gl and run it - examine message 
+# Compile tools/test/test_build.4gl and run it to check if compiler is working,
+# and examine message from program executed
 function check_compile () {
+APPLY_SAFE_DEFAULTS="$1"
+SHOW_INTERACTIVE="$2"
 
-	#CURR_AUBITDIR="/tmp/autopackage2.test"
+	verbose "Compiling test 4gl program" 
 
-	MK_OUT=`cd $CURR_AUBITDIR/tools/test; rm -f test_build.c test_build.h test_build.o test_build`
-	MK_OUT=`cd $CURR_AUBITDIR/tools/test; DEBUG=ALL;export DEBUG;4glpc test_build.4gl -o test_build`
-	if test -f $CURR_AUBITDIR/tools/test/test_build; then 
-		RUN_OUT="`A4GL_UI=CONSOLE; export A4GL_UI; DEBUG=ALL; export DEBUG; $CURR_AUBITDIR/tools/test/test_build`"
-		IS_OK="`echo $RUN_OUT | grep 'Aubit 4gl compiler is working - compiler build was successfull'`"
-		if test "$IS_OK" != ""; then
-			echo $IS_OK
-			note "4GL compiles is working"
-		else
-			error "Compiling of tools/test/test_buils.4gl failed."
-			let CHK_ERR=CHK_ERR+1
-			echo $MK_OUT
-			echo $RUN_OUT
-		fi
-	else 
-		error "Compiling of tools/test/test_buils.4gl failed."
-		let CHK_ERR=CHK_ERR+1
-		echo $MK_OUT
+	if test "$CURR_AUBITDIR" = ""; then
+		error_int "CURR_AUBITDIR is NULL"
+		return
 	fi
 
+	if test "$SHOW_INTERACTIVE" = "1"; then
+		echo "Collecting output for GUI..."
+		DIALOG_SHOW=""
+		DIALOG_COLLECT=1
+	fi
+	
+	if test "$APPLY_SAFE_DEFAULTS" != "0"; then 
+		SAFE_DEFAULTS="A4GL_UI=CONSOLE; export A4GL_UI;"
+		SAFE_DEFAULTS="$SAFE_DEFAULTS A4GL_SQLTYPE=nosql; export A4GL_SQLTYPE;"
+		SAFE_DEFAULTS="$SAFE_DEFAULTS A4GL_LEXTYPE=C; export A4GL_LEXTYPE;"
+		verbose "Using safe defaults: $SAFE_DEFAULTS"
+	fi
+	
+	if test "$A4GL_4GLPC" = ""; then
+		A4GL_4GLPC="$A4GL_AUBIT 4glpc"
+	fi
+	
+	#TODO - use cd_to
+	MK_OUT=`cd $CURR_AUBITDIR/tools/test; rm -f test_build.c test_build.h test_build.o test_build 2>&1`
+	#Dont get it; this wont work, but running same line as eval will:
+	#MK_OUT=`cd $CURR_AUBITDIR/tools/test; DEBUG=ALL;export DEBUG; $SAFE_DEFAULTS $A4GL_4GLPC test_build.4gl -o test_build 2>&1`
+	CMD="cd $CURR_AUBITDIR/tools/test; DEBUG=ALL;export DEBUG; $SAFE_DEFAULTS $A4GL_4GLPC test_build.4gl -o test_build 2>&1"
+	#echo "CMD=$CMD"
+	MK_OUT=`eval $CMD`
+	if test -f $CURR_AUBITDIR/tools/test/test_build; then 
+		#RUN_OUT="`$SAFE_DEFAULTS DEBUG=ALL; export DEBUG; $CURR_AUBITDIR/tools/test/test_build 2>&1`"
+		CMD="$SAFE_DEFAULTS DEBUG=ALL; export DEBUG; $CURR_AUBITDIR/tools/test/test_build 2>&1"
+		RUN_OUT="`eval $CMD`"
+		IS_OK="`echo $RUN_OUT | grep 'Aubit 4gl compiler is working - compiler build was successfull'`"
+		if test "$IS_OK" != ""; then
+			NO_NEWLINE=1
+			note "$IS_OK"
+			NO_NEWLINE=0
+			#note "4GL compiler is working"
+		else
+			#Try running it again, but with aubit wrapper to set environment
+			RUN_OUT="`A4GL_UI=CONSOLE; export A4GL_UI; DEBUG=ALL; export DEBUG; aubit $CURR_AUBITDIR/tools/test/test_build 2>&1`"
+			IS_OK="`echo $RUN_OUT | grep 'Aubit 4gl compiler is working - compiler build was successfull'`"
+			if test "$IS_OK" != ""; then
+				NO_NEWLINE=1
+				note $IS_OK
+				warning "4GL compiler is working, but to run executables you need to use"
+				warning "'aubit' wrapper script. For convenience, considder adding "
+				NO_NEWLINE=0
+				warning "$CURR_AUBITDIR/lib to your LD configuration paths"
+				let CHK_WARN=CHK_WARN+1
+			else
+				NO_NEWLINE=1
+				error "Running $CURR_AUBITDIR/tools/test/test_buils failed even with 'aubit' wrapper"
+				let CHK_ERR=CHK_ERR+1
+				note "Compile output: $MK_OUT"
+				note "Run output: $RUN_OUT"
+				NO_NEWLINE=0
+				note "See also: $CURR_AUBITDIR/tools/test/debug.out and TODO:4glpc debug output file"
+			fi
+		fi
+	else 
+		NO_NEWLINE=1
+		error "Compiling of $CURR_AUBITDIR/tools/test/test_buils.4gl failed."
+		let CHK_ERR=CHK_ERR+1
+		note "Compile output: $MK_OUT"
+		NO_NEWLINE=0
+		note "See also: $CURR_AUBITDIR/tools/test/debug.out and TODO:4glpc debug output file"
+	fi
+
+	if test "$SHOW_INTERACTIVE" = "1"; then
+		echo "Display collected..."
+		show_collected "Aubit compiler environment and configuration check result"
+	fi
+	
+	
 }
 
 ######################################
 # Check tools we need to use Aubit compiler
 function check_tools () {
 
-	GCC=`which gcc 2>/dev/null`
-	MAKE=`which make 2>/dev/null` 
-
+	verbose "Checking tools we need to use Aubit compiler"
+	
 	if test "$GCC" = ""; then
 		let CHK_ERR=CHK_ERR+1
 		error "Missing GCC compiler!"
@@ -192,21 +2111,20 @@ function check_tools () {
 		verbose "gcc OK"
 	fi
 
-	if test "$GCC" = ""; then 
+	if test "$MAKE" = ""; then 
 		warning "Missing 'make'!"
 		let CHK_WARN=CHK_WARN+1
 	else
 		verbose "make OK"
 	fi
-	
-	
+
 }
 
 ######################################
 # Check access to executables and scripts
 function check_exe () {
 
-	message "Checking access to executables..."
+	verbose "Checking access to executables..."
 	
 	if test "$A4GL_C" = ""; then
 		if test "$A4GL_AUBIT" = ""; then 
@@ -218,6 +2136,7 @@ function check_exe () {
 			let CHK_WARN=CHK_WARN+1
 			warning "4glc is not in the PATH, but have access to 'aubit' wrapper"
 			A4GL_C="$A4GL_AUBIT 4glc"
+			A4GL_C_IS_SH=1
 		fi
 	fi
 	if test "$A4GL_CONFIG" = ""; then
@@ -230,6 +2149,7 @@ function check_exe () {
 			let CHK_WARN=CHK_WARN+1
 			warning "aubit-config is not in the PATH, but have access to 'aubit' wrapper"
 			A4GL_CONFIG="$A4GL_AUBIT aubit-config"
+			A4GL_CONFIG_IS_SH=1
 		fi
 	fi
 	if test "$A4GL_AMAKE" = ""; then
@@ -244,7 +2164,7 @@ function check_exe () {
 # Check access to libraries like libaubit4gl.so (not plugins)
 function check_libs () {
 
-	message "Checking access to libraries..."
+	verbose "Checking access to libraries..."
 	
 	if test "$A4GL_C" != ""; then
 		A4GL_VER="`$A4GL_C --version 2>&1`"
@@ -252,7 +2172,8 @@ function check_libs () {
 	else
 		if test "$A4GL_AUBIT" != ""; then
 			A4GL_C="$A4GL_AUBIT $A4GL_C"
-			A4GL_VER="`$A4GL_AUBIT $A4GL_C --version 2>&1`"
+			A4GL_C_IS_SH=1
+			A4GL_VER="`$A4GL_C --version 2>&1`"
 			RET=$?
 		else
 			warning "Dont have access to '4glc' and 'aubit' - skip lib test"
@@ -262,7 +2183,6 @@ function check_libs () {
 	if test "$RET" != "0"; then
 		warning "A4GL_C ($A4GL_C) returned code $RET"  
 	fi
-	
 	
 	if test "$A4GL_VER" != ""; then
 	
@@ -275,20 +2195,45 @@ function check_libs () {
 	
 		verbose "$A4GL_C can be invoked - it has access to libaubit4gl"
 		verbose "A4GL_VER=$A4GL_VER"
-		#Dont quote - want it all on one line:
-		echo $A4GL_VER
-		TTT=`ldd $A4GL_C | grep "not a dynamic executable"`
-		if test "$TTT" != ""; then
-			verbose "$A4GL_C is not the executable"
-			DDD=`file $A4GL_C | grep "shell script"`
-			if test "$DDD" != ""; then
-				verbose "$A4GL_C is a shell script (probably created by AutoPackage)"
+		
+		if test "$DIALOG" = "0"; then
+			#Dont quote - want it all on one line:
+			echo $A4GL_VER
+		else
+			aa="`echo $A4GL_VER`"
+			message "$aa"
+		fi
+		
+		#################################
+		#Check what kind of file is 4glc
+		if test "$A4GL_C_IS_SH" = "1"; then
+			verbose "Not testing 4glc type as we are using a wrapper"
+		else
+			EEE=`file $A4GL_C`
+			ZZZ=`echo $EEE | grep ELF`
+			if test "$ZZZ" != ""; then
+				verbose "$A4GL_C is an ELF binary"
 			else
-				if test -l "$A4GL_C"; then
-					verbose "$A4GL_C is a link to xyz"
+				ZZZ=`echo $EEE | grep ASCII`
+				if test "$DDD" != ""; then
+					A4GL_C_FILE_IS_SH=1
+					verbose "$A4GL_C is a shell script (1)"
+				fi
+				ZZZ=`echo $EEE | grep "shell script"`
+				if test "$DDD" != ""; then
+					A4GL_C_FILE_IS_SH=1
+					verbose "$A4GL_C is a shell script (2)"
+				fi				
+				if test $A4GL_C_FILE_IS_SH != "1"; then 
+					verbose "$A4GL_C IS NOT a shell script"
+					if test -L "$A4GL_C"; then
+						verbose "$A4GL_C is a link to xyz"
+					else
+						error "$A4GL_C is not an executable, script, or a link"
+						let CHK_ERR=CHK_ERR+1
+					fi
 				else
-					error "$A4GL_C is not an executable, script, or a link"
-					let CHK_ERR=CHK_ERR+1
+					verbose "$A4GL_C is a shell script (probably created by AutoPackage or we are using aubit wrapper)"
 				fi
 			fi
 		fi
@@ -307,31 +2252,59 @@ function check_libs () {
 		exit 1
 	fi
 	
-
 }
 
 ######################################
 # Check Aubit plug-ins
 function check_plugins () {
 	
-	message "Checking access to plug-ins..."
+	verbose "Checking access to plug-ins..."
 	
 	old_LD_PATH="$LD_LIBRARY_PATH"
 	
 	WARN_PLUGINS=0
 	DEFAULT_PLUGINDIR="`$A4GL_CONFIG DEFAULT_PLUGINDIR`"
 	if test "$DEFAULT_PLUGINDIR" != ""; then
-		if test -d "$DEFAULT_PLUGINDIR" ; then
-			for file in $DEFAULT_PLUGINDIR/lib*.so; do
+		if ! test -d "$DEFAULT_PLUGINDIR" ; then
+			NO_NEWLINE=1
+			warning "DEFAULT_PLUGINDIR=$DEFAULT_PLUGINDIR does not exist"
+			#This is not an error - it seems that we hard-code this when 
+			#we compile source, but at run-time even if this location is
+			#invalid, plugins will be loaded form $AUBITDOR/plugins-<version>
+			let CHK_WARN=CHK_WARN+1
+			warning "$A4GL_CONFIG returned DEFAULT_PLUGINDIR=$DEFAULT_PLUGINDIR"
+			warning "which is NOT a directory"
+			NO_NEWLINE=0
+			if test -d "$ACTUAL_PLUGINDIR" ; then
+				warning "Checking plugins using ACTUAL_PLUGINDIR=$ACTUAL_PLUGINDIR"
+				DEFAULT_PLUGINDIR="$ACTUAL_PLUGINDIR"
+			else
+				error "ACTUAL_PLUGINDIR=$ACTUAL_PLUGINDIR also does not exist. STOP"
+				exit 1
+			fi
+		fi
+		for file in $DEFAULT_PLUGINDIR/lib*.so; do
 				OUT=""
 				plugin="`basename $file`"
 				#verbose "Checking plugin $file ..."
 				OUT="`ldd $file | grep "not found"`"
 				if test "$OUT" != ""; then
+					#Cant locate linked libraries for this plug-in
+					NO_NEWLINE=1
 					let CHK_WARN=CHK_WARN+1
 					plugin_id="`echo $plugin | sed -e 's/^lib//' -e 's/\.so//'`"
 					MISSING_LIB="`echo $OUT | awk '{print $1}'`"
-					warning "Plugin $plugin_id cannot locate shared library $MISSING_LIB"
+					warning "Plugin $plugin_id cannot locate shared library $MISSING_LIB."
+					
+					case $MISSING_LIB in 
+						libaubit4gl*)
+							warning "This as an Aubit provided library - you wont be able to run"
+							warning "Aubit compiled programs without the use of the 'aubit' wrapper"
+							warning "RECOMENDATION: Add $AUBITDIR/lib to LD_LIBRARY_PATH or ldconfig"
+							warning "or create a link to it in /usr/lib"
+							;;
+					esac
+					
 					
 					#Check if this plug-in is currently a default plug-in, and as 
 					#such would prevent Aubit from working in 
@@ -351,24 +2324,160 @@ function check_plugins () {
 							fi
 						fi
 					fi
+					NO_NEWLINE=0
+					if test "$DIALOG" = "1"; then
+						#Force newline
+						warning " "
+					fi
 				fi
-			done
-		else
+		done
+	
+	else
+		let CHK_ERR=CHK_ERR+1
+		error "$A4GL_CONFIG did not return anything for DEFAULT_PLUGINDIR"
+		error "(which is essentially impossible)"
+	fi
+
+	export LD_LIBRARY_PATH="$old_LD_PATH"
+	
+}
+
+############################
+#Check that plugins configured actually exist.
+check_plugins_exist () {
+
+	verbose "Checking presense of configured default plug-ins..."
+	
+TYPE_LIST="A4GL_LEXTYPE A4GL_SQLTYPE A4GL_LEXDIALECT A4GL_UI A4GL_MSGTYPE \
+			A4GL_PACKER EXDTYPE A4GL_FORMTYPE A4GL_RPCTYPE"
+
+#TODO - what about :
+#		LOGREP)
+#		SQLPARSE)
+#		LOGREPPROC)
+#		DATA)
+#		MENU)
+#		ESQL)
+#		EXREPORT)
+#		XDRPACKER)
+#		HELP)
+#		IM)
+
+#libSQLPARSE_INFORMIX.so
+#libSQLPARSE_NONE.so
+
+#libLOGREP_CSV.so        
+#libLOGREP_PDF.so
+#libLOGREP_TXT.so
+
+#libLOGREPPROC_CSV.so   
+#libLOGREPPROC_PDF.so
+#libLOGREPPROC_TXT.so
+
+#libEXREPORT_NOPDF.so     
+#libEXREPORT_PDF.so       
+
+#libDATA_menu_list.so
+#libDATA_module.so              
+#libDATA_report.so            
+#libDATA_struct_form.so
+
+#libMENU_GENERIC.so
+#libMENU_NOMENU.so
+#libMENU_XDR.so
+           
+#libXDRPACKER_menu_list.so
+#libXDRPACKER_module.so
+#libXDRPACKER_struct_form.so
+#libXDRPACKER_report.so
+
+#libHELP_std.so
+
+#libIM_JABBER.so
+#libIM_JABBERs.so
+
+	if test "$DEFAULT_PLUGINDIR" != ""; then
+		if ! test -d "$DEFAULT_PLUGINDIR" ; then
+			NO_NEWLINE=1
+			warning "DEFAULT_PLUGINDIR=$DEFAULT_PLUGINDIR does not exist"
 			#This is not an error - it seems that we hard-code this when 
 			#we compile source, but at run-time even if this location is
 			#invalid, plugins will be loaded form $AUBITDOR/plugins-<version>
 			let CHK_WARN=CHK_WARN+1
 			warning "$A4GL_CONFIG returned DEFAULT_PLUGINDIR=$DEFAULT_PLUGINDIR"
 			warning "which is NOT a directory"
+			NO_NEWLINE=0
+			if test -d "$ACTUAL_PLUGINDIR" ; then
+				warning "Checking plugins using ACTUAL_PLUGINDIR=$ACTUAL_PLUGINDIR"
+				DEFAULT_PLUGINDIR="$ACTUAL_PLUGINDIR"
+			else
+				error "ACTUAL_PLUGINDIR=$ACTUAL_PLUGINDIR also does not exist. STOP"
+				exit 1
+			fi
 		fi
-	
 	else
 		let CHK_ERR=CHK_ERR+1
 		error "$A4GL_CONFIG did not return anything for DEFAULT_PLUGINDIR"
+		error "(which is essentially impossible)"
 	fi
-
-	export LD_LIBRARY_PATH="$old_LD_PATH"
 	
+	for an_type in $TYPE_LIST; do
+		CURRENT_VAL=`$A4GL_CONFIG $an_type`
+		if test "$CURRENT_VAL" = ""; then
+			CURRENT_LEX=`$A4GL_CONFIG A4GL_LEXTYPE`
+			if test "$CURRENT_LEX" != "EC" -a "$an_type" = "A4GL_LEXDIALECT"; then
+				verbose "LEXTYPE is not EC, then it's OK for A4GL_LEXDIALECT to be empty"
+			else
+				let CHK_ERR=CHK_ERR+1
+				error "aubit-config returned nothing for $an_type, but LEX=$CURRENT_LEX (5)"
+				error "When selecting LEX=EC, A4GL_LEXDIALECT must be defined!"
+				#exit 1
+			fi
+		else
+			case $an_type in
+				A4GL_LEXTYPE)
+					PLUGIN="libLEX_$CURRENT_VAL$SO_EXT"
+					;;
+				A4GL_SQLTYPE)
+					PLUGIN="libSQL_$CURRENT_VAL$SO_EXT"
+					;; 
+				A4GL_LEXDIALECT)
+					PLUGIN="libESQL_$CURRENT_VAL$SO_EXT"
+					;; 
+				A4GL_UI)
+					PLUGIN="libUI_$CURRENT_VAL$SO_EXT"
+					;; 
+				A4GL_MSGTYPE)
+					PLUGIN="libMSG_$CURRENT_VAL$SO_EXT"
+					;;
+				A4GL_PACKER)
+					PLUGIN="libPACKER_$CURRENT_VAL$SO_EXT"
+					;; 
+				EXDTYPE)
+					PLUGIN="libEXDTYPE_$CURRENT_VAL$SO_EXT"
+					;; 
+				A4GL_FORMTYPE)
+					PLUGIN="libFORM_$CURRENT_VAL$SO_EXT"
+					;; 
+				A4GL_RPCTYPE)
+					PLUGIN="libRPC_$CURRENT_VAL$SO_EXT"
+					;;
+				*)
+					error "Unknown type $an_type"
+					exit 1
+					;;
+			esac
+			
+			PLUGIN_FILE="$DEFAULT_PLUGINDIR/$PLUGIN"
+			if ! test -f $PLUGIN_FILE ; then
+				let CHK_ERR=CHK_ERR+1
+				error "Plug-in file $PLUGIN_FILE"
+				error "configured as default for $an_type as $CURRENT_VAL"
+				error "does not exist in plugins folder"
+			fi
+		fi
+	done
+
 }
 
 ######################################
@@ -399,8 +2508,10 @@ plugin_id="$4"
 		fi
 	else
 		export LD_LIBRARY_PATH="$curr_LD_PATH"
+		NO_NEWLINE=1
 		note "Tried adding $NEW_LIB_PATH to LD_LIBRARY_PATH"
 		note "to load $MISSING_LIB for $plugin_id"
+		NO_NEWLINE=0
 		note "but it did not help..."
 	fi
 
@@ -409,61 +2520,109 @@ plugin_id="$4"
 ###################################
 # Show message in case of non-functiona plug-ins
 function show_plugins_warning () {
-	
-		echo "+--------------------------------------------------------------------+"
-		echo "| The following Aubit plug-ins where found not functional:           |"
-		echo "|                                                                    |"
-		echo "| $PLUGINS_WARN_LIST"
-		echo "|                                                                    |"
-if test "$FIX_LD" = "1"; then
-		echo "| You specified --fix-ld, and some or all discovered libraries where |"
-	if test "$LD_CONFIG" != ""; then
-		echo "| added to ldconfig. Try                                             |"
+JUST_COLLECT="$1"
+
+	if test "$DIALOG" = "1"; then
+		NO_NEWLINE=1
 	else
-		echo "| added to $PROFILE file."
-		echo "| Execute '. $PROFILE' (note the DOT) and then try"
+		NO_NEWLINE=0
 	fi
-		echo "| running this script again (without --fix-ld) to see the effect     |"
-fi
-		echo "| - you did not install supporting libraries of this plug-ins, and/or|"
-		echo "| - the access to them is not available because system shared library|"
-		echo "|   loader (ld) cannot find them in ldconfig and/or LD_LIBRARY_PATH  |"
-		echo "| If you want to use this plug-ins, you will need to make sure that  |"
-		echo "| BOTH actions above are completed. Then check again.                |"
-		echo "+--------------------------------------------------------------------+"
-if test "$ALL_LIBPATHS_FOUND" != ""; then	
-		echo "| One or more of 3rd-party libraries where found in this paths:      |"
-		echo "|                                                                    |"
-		echo " $ALL_LIBPATHS_FOUND"
-		echo "|                                                                    |"
+
+		if test "$DIALOG" = "0"; then
+		message "${C}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}----------------------------------------------------------${C}"
+		fi
+		message "${L} The following Aubit plug-ins where found not functional:${P}          ${L}"
+		message "${L}                                                                    ${L}"
+		message "${L} $PLUGINS_WARN_LIST${P}"
+		message "${L}                                                                    ${L}"
+		message "${L} Which may mean that you dont have supporting software installed.   ${L}"
+		message "${L} If you do not wish to use any of them, you can ignore this warning${P} ${L}"
+		message "${L}                                                                    ${L}"
+	if test "$ALL_DETECTED_NOW_BROKEN" != ""; then 
+		message "${L} Of them, this plug-in(s) where detected as working by AutoConf,    ${L}"
+		message "${L} but are now no longer working:${P}                                     ${L}"
+		message "${L}                                                                    ${L}"
+		message "${L} $ALL_DETECTED_NOW_BROKEN${P}"
+		message "${L}                                                                    ${L}"
+		message "${L} Which may indicate a configuration problem, as it seems that you   ${L}"
+		message "${L} had the intention of using them${P}                                    ${L}"
+		message "${L}                                                                    ${L}"
+	fi
+		message "${L}                                                                    ${L}"
+if test "$FIX_LD" = "1"; then
+		message "${L} You specified --fix-ld, and some or all discovered libraries where ${L}"
 	if test "$LD_CONFIG" != ""; then
-		echo "| Your system has ldconfig; if you run this script as user 'root'    |"
-		echo "| and add --fix-ld flag, I can add all found libraries to system     |"
-		echo "| ldconfig for you.                                                  |"
-		echo "| If you dont have 'root' password, I can add all found              |"
-		echo "| libraries paths to LD_LIBRARY_PATH in profile file for you, if     |"
-		echo "| you add --fix-ld to this script (/etc/profile if 'root',           |"
-		echo "| ~/.profile otherwise)"
+		message "${L} added to ldconfig. Try                                             ${L}"
+	else
+		message "${L} added to $PROFILE file."
+		message "${L} Execute '. $PROFILE' (note the DOT) and then try"
+	fi
+		message "${L} running this script again (without --fix-ld) to see the effect${P}     ${L}"
+else
+		message "${L} One or more of the following statements are true:                  ${L}"
+		message "${L} - you did not install supporting libraries of this plug-ins        ${L}"
+		message "${L} - the access to them is not available because system shared library${L}"
+		message "${L}   loader (ld) cannot find them in ldconfig and/or LD_LIBRARY_PATH  ${L}"
+		message "${L} - Installed supporting libraries dont have access to there own     ${L}"
+		message "${L}   dependencies, or are not correctly configures/installed          ${L}"
+		message "${L} If you want to use this plug-ins, you will need to make sure that  ${L}"
+		message "${L} ALL actions above are completed. Then check again by re-running me.${P}${L}"
+fi		
+		if test "$DIALOG" = "0"; then
+		message "+--------------------------------------------------------------------+"
+		fi
+if test "$ALL_LIBPATHS_FOUND" != ""; then	
+		message "${L} One or more of 3rd-party libraries where found in this paths:${P}      ${L}"
+		message "${L}                                                                    ${L}"
+		message "${L} $ALL_LIBPATHS_FOUND${P}"
+		message "${L}                                                                    ${L}"
+  if test "$FIX_LD" != "1"; then
+	if test "$LD_CONFIG" != ""; then
+		message "${L} Your system has ldconfig; if you run this scrip and add '--fix-ld':${L}"
+		message "${L} * if you run this script as user 'root', I can add all found       ${L}"
+		message "${L}   libraries to system ldconfig                                     ${L}"
+		message "${L} * If you dont have 'root' password, I can add all found            ${L}"
+		message "${L}   libraries paths to LD_LIBRARY_PATH in your profile file          ${L}" 
+		message "${L}   (~/.profile otherwise)                                           ${L}"
 		
 	else
-		echo "| Your system does not have ldconfig, but I can add all found        |"
-		echo "| libraries paths to LD_LIBRARY_PATH in profile file for you, if     |"
-		echo "| you add --fix-ld to this script (/etc/profile if 'root',           |"
-		echo "| ~/.profile otherwise)"
+		message "${L} Your system does not have ldconfig, but I can add all found        ${L}"
+		message "${L} libraries paths to LD_LIBRARY_PATH in profile file for you, if     ${L}"
+		message "${L} you add --fix-ld to this script (/etc/profile if 'root',           ${L}"
+		message "${L} ~/.profile otherwise)${P}"
 	fi
+  fi
 fi	
-		ADD_LD_LIBRARY_PATH=`aubit-config ADD_LD_LIBRARY_PATH`
-if test "$ADD_LD_LIBRARY_PATH" != ""; then
-		echo "+--------------------------------------------------------------------+"
-		echo "| When you last time executed ./configuire, it determined the        |"
-		echo "| folowing paths that need to be added to ld configuration:          |"
-		echo "|                                                                    |"
-		echo "$ADD_LD_LIBRARY_PATH"
-		echo "|                                                                    |"
-		echo "| If you prefer, you can add them (or the ones above detemined now)  |"
-		echo "| to the ldconfig or LD_LIBRARY_PATH manually.                       |"
-		echo "+--------------------------------------------------------------------+"
+		ADD_LD_LIBRARY_PATH=`$A4GL_CONFIG ADD_LD_LIBRARY_PATH`
+if test "$FIX_LD" != "1"; then
+	if test "$ADD_LD_LIBRARY_PATH" != ""; then
+		if test "$DIALOG" = "0"; then
+		message "+--------------------------------------------------------------------+"
+		fi
+		message "${L} When you last time executed ./configure, it determined the         ${L}"
+		message "${L} folowing paths that need to be added to ld configuration:${P}          ${L}"
+		message "${L}                                                                    ${L}"
+		message "${L} $ADD_LD_LIBRARY_PATH${P}"
+		message "${L}                                                                    ${L}"
+		message "${L} If you prefer, you can add them (or the ones above determined now) ${L}"
+		message "${L} to the ldconfig or LD_LIBRARY_PATH manually.                       ${L}"
+		if test "$DIALOG" = "0"; then
+		message "+--------------------------------------------------------------------+"
+		fi
+	fi
 fi
+
+	if test "$DIALOG" = "1"; then
+		#Store for later display:
+		CHECK_PLUGIN_MSG="$DIALOG_SHOW"
+		if test "$JUST_COLLECT" = "1"; then
+			DIALOG_SHOW=""
+		else
+			echo "Display collected..."
+			show_collected "Aubit compiler plug-in check results"
+		fi
+		NO_NEWLINE=0
+	fi
 
 }
 
@@ -472,9 +2631,14 @@ fi
 #used for running Aubit compiler and/or Aubit compiled programs
 function check_default_plugins () {
 plugin_id="$1"
+CURRENT_DETECTED=""
+CURRENT_VALUE==""
+GET_CURRENT_FOR=""
+GET_DETECTED_FOR=""
+
 
 	CLASS="`echo $plugin_id | sed -e 's/^lib//' -e 's/_/ /' | awk '{print $1}'`"
-	#echo "checking class $CLASS ..."
+	debug "checking class $CLASS ..."
 	
 	case $CLASS in
 		A4GL)
@@ -616,7 +2780,7 @@ plugin_id="$1"
 	esac
 
 	if test "$GET_CURRENT_FOR" != ""; then
-		CURRENT_VALUE=`aubit-config $GET_CURRENT_FOR`
+		CURRENT_VALUE=`$A4GL_CONFIG $GET_CURRENT_FOR`
 		if test "$CURRENT_VALUE" != ""; then
 			TESTING_PLUGIN_TYPE="`echo $plugin_id | sed -e 's/_/ /' | awk '{print $2}'`"
 			verbose "comparing $TESTING_PLUGIN_TYPE and $CURRENT_VALUE"
@@ -626,20 +2790,56 @@ plugin_id="$1"
 				error "($plugin_id) cannot be loaded!"
 				let CHK_ERR=CHK_ERR+1
 				if test "$GET_DETECTED_FOR" != ""; then
-					CURRENT_DETECTED=`aubit-config $GET_DETECTED_FOR`
+					CURRENT_DETECTED=`$A4GL_CONFIG $GET_DETECTED_FOR`
 					if test "$CURRENT_DETECTED" != ""; then 
 						note "./configure detected: $CURRENT_DETECTED"
 					else
-						warning "aubit-config did not return a setting for $GET_DETECTED_FOR"
+						if test "$GET_DETECTED_FOR" != "A4GL_LEXDIALECT"; then
+							warning "aubit-config did not return a setting for $GET_DETECTED_FOR (1)"
+						fi
 					fi
 				fi
 			fi
 		else
-			warning "aubit-config did not return setting for $GET_CURRENT_FOR"
+			if test "$GET_DETECTED_FOR" != "A4GL_LEXDIALECT"; then
+				warning "aubit-config did not return a setting for $GET_CURRENT_FOR (2)"
+			fi
 		fi
 	fi
-	
-	
+
+	#Check if this plug-in was detected last time AutoCOnf was
+	#run - it would mean that user probably passed --with-xxx=<path>
+	#but did not add that path to LD_LIBRARY_PATH
+	if test "$CURRENT_DETECTED" = ""; then 
+		CURRENT_DETECTED=`$A4GL_CONFIG $GET_DETECTED_FOR`
+	fi
+	if test "$CURRENT_DETECTED" = ""; then
+		if test "$GET_DETECTED_FOR" != "A4GL_LEXDIALECT"; then
+			warning "aubit-config did not return a setting for $GET_DETECTED_FOR (3)"
+		fi
+	else
+		check_detected_plugin "$plugin_id" "$CURRENT_DETECTED"
+	fi
+
+}
+
+######################################
+#Check if this plug-in was detected last time AutoCOnf was
+#run - it would mean that user probably passed --with-xxx=<path>
+#but did not add that path to LD_LIBRARY_PATH
+function check_detected_plugin () {
+plugin_id="$1"
+CURRENT_DETECTED="$2"
+TESTING_PLUGIN_NAME="`echo $plugin_id | sed -e 's/_/ /' | awk '{print $2}'`"
+
+	for one in $CURRENT_DETECTED ; do
+		if test "$one" = "$TESTING_PLUGIN_NAME"; then
+			warning "Plug-in $plugin_id was detected as functional last time you run ./configure"
+			ALL_DETECTED_NOW_BROKEN="$ALL_DETECTED_NOW_BROKEN $plugin_id"
+			let CHK_WARN=CHK_WARN+1
+		fi
+	done
+
 }
 
 ######################################
@@ -652,22 +2852,29 @@ function add_ld_lib_path () {
 		PROFILE="$HOME/.profile"
 	fi
 	if test -w "$PROFILE"; then
-		note "Adding $NEW_LIB_PATH to LD_LIBRARY_PATH in $PROFILE ..."
-		#warning "FIXME - add code for it"
-
-		#The only safe way is to add a var at the end - this bypasses
-		#any conditional that may be in the file (if ... then)
-		#and issues of multiple vars with same name, commented out vars, etc...
-		
-		#Only way to fails would be if there is an early exit in file
-		#TODO: look for 'exit' keywoard and warn
-		
-		#We dont have to test if it's there allready, as if it was (and it's correct
-		#and working ) we would not be here
-		echo " " >> $PROFILE
-		echo "#Added by 'aubit --chk-env --fix-ld': " >> $PROFILE
-		echo "export LD_LIBRARY_PATH=\"$NEW_LIB_PATH:\$LD_LIBRARY_PATH\"" >> $PROFILE
-		echo " " >> $PROFILE		
+		xxyy=`grep "aubit-auto-ld:$NEW_LIB_PATH" $PROFILE`
+		if test "$xxyy" = ""; then
+			note "Adding $NEW_LIB_PATH to LD_LIBRARY_PATH in $PROFILE ..."
+			#warning "FIXME - add code for it"
+	
+			#The only safe way is to add a var at the end - this bypasses
+			#any conditional that may be in the file (if ... then)
+			#and issues of multiple vars with same name, commented out vars, etc...
+			
+			#Only way to fails would be if there is an early exit in file
+			#TODO: look for 'exit' keywoard and warn
+			
+			#We dont have to test if it's there allready, as if it was (and it's correct
+			#and working ) we would not be here
+			echo " " >> $PROFILE
+			echo "#Added by 'aubit --chk-env --fix-ld': " >> $PROFILE
+			echo "#DO NOT REMOVE THIS LINE: aubit-auto-ld:$NEW_LIB_PATH " >> $PROFILE
+			echo "export LD_LIBRARY_PATH=\"$NEW_LIB_PATH:\$LD_LIBRARY_PATH\"" >> $PROFILE
+			echo " " >> $PROFILE
+		else
+			debug 'Line "aubit-auto-ld:$NEW_LIB_PATH" found in $PROFILE'
+			debug 'Will not add another one'
+		fi
 	else
 		warning "$PROFILE is not a file or not writable"
 	fi
@@ -677,8 +2884,6 @@ function add_ld_lib_path () {
 	
 if test 1 = 2 ; then
 	CNT=`grep -w "LD_LIBRARY_PATH" $PROFILE | wc -l`
-	#echo "have $CNT"
-
 	if test "$CNT" = "1"; then
 		echo "changign"
 		OLDVALUE="`grep -w "LD_LIBRARY_PATH" $PROFILE | awk '{print $1}' | sed -e 's/\//\\\\\//g'`"
@@ -691,9 +2896,6 @@ if test 1 = 2 ; then
 	fi
 	
 fi
-
-		
-		
 		
 if test 1 = 2 ; then		
 		HAS_LD_VAR="`grep LD_LIBRARY_PATH $PROFILE`"
@@ -706,7 +2908,6 @@ if test 1 = 2 ; then
 			NEWVALUE="`echo "LD_LIBRARY_PATH=" | sed -e 's/\//\\\\\//g'`"
 		fi
 fi
-
 
 if test 1 = 2 ; then
 	#The basic technique for hacking /etc/profile would be:
@@ -745,7 +2946,10 @@ fi
 # Add path to ldconfig 
 function add_ldconfig () {
 	
-	#DOES NOT SEEM TO WORK!!!!
+	echo "DOES NOT SEEM TO WORK!!!!"
+	exit 
+	
+	
 	LD_METHOD=1
 	LD_SO_CONF="/etc/ld.so.conf"
 	
@@ -805,17 +3009,37 @@ function check_rc () {
 	
 	
 HAVE_ONE_RC=0
+ALL_RC_LIST=""
+USER_RC=""
 
-	message "Checking configuration files..."
+	verbose "Checking configuration files..."
 	
-	AUBITETC=`aubit-config AUBITETC`
-	CURR_A4GL_INIFILE=`aubit-config A4GL_INIFILE`
-	
-	#================================== 1:
+	AUBITETC=`$A4GL_CONFIG AUBITETC`
+	CURR_A4GL_INIFILE=`$A4GL_CONFIG A4GL_INIFILE`
+
+	#================================= 0: hard-coded global
+	if ! test -f /etc/opt/aubit4gl/aubitrc; then
+		#let CHK_WARN=CHK_WARN+1
+		#In most cases ordinary users wont have one there, which is OK 
+		#as long as they have there own in HOME
+		note "Default global aubitrc (/etc/opt/aubit4gl/aubitrc) does not exist"
+	else
+		HAVE_ONE_RC=1
+		ALL_RC_LIST="$ALL_RC_LIST 0:/etc/opt/aubit4gl/aubitrc"
+		if test -w /etc/opt/aubit4gl/aubitrc; then
+			USER_RC="/etc/opt/aubit4gl/aubitrc"
+		fi
+	fi
+
+	#================================== 1: configuired global
 	if test -d $AUBITETC; then
 		verbose "OK - found directory currently specified as AUBITETC"
 		if test -f $AUBITETC/aubitrc; then
 			verbose "OK - found $AUBITETC/aubitrc file"
+			ALL_RC_LIST="$ALL_RC_LIST 1:$AUBITETC/aubitrc"
+			if test -w $AUBITETC/aubitrc; then
+				USER_RC="$AUBITETC/aubitrc"
+			fi
 		else
 			error "$AUBITETC/aubitrc file does not exist"
 			let CHK_ERR=CHK_ERR+1
@@ -826,54 +3050,63 @@ HAVE_ONE_RC=0
 		let CHK_WARN=CHK_WARN+1
 	fi
 	if test "$AUBITETC" != "/etc/opt/aubit4gl"; then
-		note "AUBITETC was modified from default value (/etc/opt/aubit4gl)" 
+		NO_NEWLINE=1
+		note "AUBITETC was modified from default value (/etc/opt/aubit4gl)"
+		NO_NEWLINE=0
 		note "and is currently set to $AUBITETC"
 	fi
 	
-	#================================= 1: check default if it at least exists 
-	if ! test -f /etc/opt/aubit4gl/aubitrc; then
-		#let CHK_WARN=CHK_WARN+1
-		#In most cases ordinary users wont have one there, which is OK 
-		#as long as they have there own in HOME
-		note "Default global aubitrc (/etc/opt/aubit4gl/aubitrc) does not exist"
-	else
-		HAVE_ONE_RC=1
-	fi
 
-	#================================= 2:
+	#================================= 2: in current AUBITDIR installation
 	if ! test -f $CURR_AUBITDIR/etc/aubitrc; then
 		#let CHK_WARN=CHK_WARN+1
 		#That is tipical for binary installs - we dont put it there by default
 		note "Default installation aubitrc ($CURR_AUBITDIR/etc/aubitrc) does not exist"
 	else
 		HAVE_ONE_RC=1
+		ALL_RC_LIST="$ALL_RC_LIST 2:$CURR_AUBITDIR/etc/aubitrc"
+		if test -w $CURR_AUBITDIR/etc/aubitrc; then
+			USER_RC="$CURR_AUBITDIR/etc/aubitrc"
+		fi
 	fi
-
 	
-	#================================= 3: 
+	#================================= 3: in users HOME
 	if ! test -f $HOME/.aubit4gl/aubitrc; then
 		let CHK_WARN=CHK_WARN+1
 		warning "Default user aubitrc (~/.aubit4gl/aubitrc) does not exist"
 	else
 		HAVE_ONE_RC=1
+		ALL_RC_LIST="$ALL_RC_LIST 3:$HOME/.aubit4gl/aubitrc"
+		if test -w $HOME/.aubit4gl/aubitrc; then
+			USER_RC="$HOME/.aubit4gl/aubitrc"
+		fi
 	fi
 
-	#================================= 4:
+	#================================= 4: in current directory
 	if ! test -f .aubitrc; then
-		note "aubitrc does not exist in the current directory (.aubit4gl)"
+		verbose "aubitrc does not exist in the current directory (.aubit4gl)"
 	else
 		HAVE_ONE_RC=1
+		ALL_RC_LIST="$ALL_RC_LIST 4:.aubitrc"
+		#if test -w .aubitrc; then
+		#	USER_RC=".aubitrc"
+		#fi
+		
 	fi
 	
-	#================================= 5:
+	#================================= 5: in configured INIFILE
 	if test "$CURR_A4GL_INIFILE" != ""; then 
 		if ! test -f $A4GL_INIFILE; then
-			note "A4GL_INIFILE is defined, but does not exist ($A4GL_INIFILE)"
+			WARNING "A4GL_INIFILE is defined, but does not exist ($A4GL_INIFILE)"
 		else
 			HAVE_ONE_RC=1
+			ALL_RC_LIST="$ALL_RC_LIST 5:$A4GL_INIFILE"
+			if test -w $A4GL_INIFILE; then
+				USER_RC="$A4GL_INIFILE"
+			fi
 		fi
 	else 
-		note "A4GL_INIFILE is not set"	
+		verbose "A4GL_INIFILE is not set"
 	fi
 	
 		
@@ -895,7 +3128,7 @@ HAVE_ONE_RC=0
 # Check  
 function check_vars () {
 
-	message "Checking environment variables..."
+	verbose "Checking environment variables..."
 	
 	if test "$AUBITDIR" = ""; then
 		note "Environment variable AUBITDIR is not set"
@@ -1099,58 +3332,175 @@ MSG_TEXT=$1
 MSG_TYPE=$2
 EXIT_CODE=$3
 msg=""
-	case $MSG_TYPE in 
-	V) if test "$VERBOSE" = "1"; then msg="VERBOSE: $MSG_TEXT"; fi ;;
-	D) if test "$SHDBG" = "1"; then msg="DEBUG: $MSG_TEXT"; fi ;;	
-	E) 	msg="ERROR: $MSG_TEXT"; 
-		if test "$EXIT_CODE" != ""; then msg="$msg STOP." ; fi
-		;;
-	W) msg="WARNING: $MSG_TEXT" ;;
-	N) if test "$SILENT" != "1"; then msg="NOTE: $MSG_TEXT"; fi ;;
-	*) if test "$SILENT" != "1"; then msg="$MSG_TEXT"; fi ;;
-	esac
-	
-	if test "$msg" != ""; then
-		echo "Aubit: $msg"
-		if test "$EXIT_CODE" != "" ; then
-			exit $EXIT_CODE
+
+
+	#----------------------------------
+	# Determine single/multi line state
+	FIRST_MULTILINE=""
+	LAST_MULTILINE=""
+	MIDDLE_MULTILINE=""
+	SINGLE_LINE=""
+	if test "$NO_NEWLINE_PREV_STATE" != "$NO_NEWLINE" ; then
+		#State changed
+		if test "$NO_NEWLINE" = "1"; then
+			#It was 0, and now its 1
+			#we are just about to display FIRST line of multi-line message
+			FIRST_MULTILINE=1
+			INSIDE_MULTILINE=1
+		else
+			#it was 1 and now is 0
+			if test "$INSIDE_MULTILINE" = "1"; then
+				#we are just about to display last line of the MULTILINE message
+				LAST_MULTILINE=1
+			else
+				#about to display single line message
+				SINGLE_LINE=1
+			fi
+		fi
+	else
+		#State did not change
+		if test "$NO_NEWLINE" = "1"; then
+			MIDDLE_MULTILINE=1
+		else
+			SINGLE_LINE=1
 		fi
 	fi
-}
 
-###############################
-# Show help
-function show_help {
+	#------------------------------------
+	# Set options based on message context
+	if test "$SINGLE_LINE" = "1"; then
+		ADD_LABEL=1
+		MSGEOL="\n"
+	elif test "$FIRST_MULTILINE" = "1"; then
+		ADD_LABEL=1
+		MSGEOL=""
+	elif test "$MIDDLE_MULTILINE" = "1"; then
+		ADD_LABEL=0
+		MSGEOL=""
+	elif test "$LAST_MULTILINE" = "1"; then
+		ADD_LABEL=0
+		MSGEOL="\n"
+	else
+		echo "ERROR: no message state match?" 
+		exit 1
+	fi
 	
-    echo
-	echo Aubit 4gl compiler warper script: $0
-    echo
-    echo Usage:
-    echo '  aubit [FLAGS] <command> <command parameters...>'
-	echo
-    echo '[FLAGS] are options intercepted and processed by "aubit" script,'
-    echo ' and will not reach the program invoked:'
-    echo ' --averbose'
-    echo ' --asilent'
-    echo ' --check-env'	
-    echo ' --valgrind'
-    echo ' --ahelp'
-    echo ' --show-path'
-    echo ' --ahelp'	
-    echo
-	echo ' 4glpc - main compiler script (scheduled to be obsoleted)'
-    echo ' 4glc - 4gl to [C|Perl|EC|...]-code compiler'
-	echo ' fcompile - form file (.per) compiler'
-    echo ' mcompile - menu file (.menu) compiler'
-    echo ' amkmessage - help file (.hlp) compiler'
-    echo ' ...or any other executable program you wish to run under controled'
-    echo ' Aubit environment (PATH,LD_LIBRARY_PATH,AUBITDIR,etc)'
-    echo
-    echo ' Use "aubit-config" to inspect Aubit compiler configuration '
-    echo
-	exit 0
+
+#qqqqqqqqqqqqqqqqqqq	
+	if test "$ADD_LABEL" = "1"; then
+		VERBOSE_TXT_="VERBOSE:"
+		DEBUG_TXT="DEBUG:"
+		ERROR_TXT="ERROR:"
+		WARNING_TXT="WARNING:"
+		NOTE_TXT="NOTE:"
+	else
+		VERBOSE_TXT_=""
+		DEBUG_TXT=""
+		ERROR_TXT=""
+		WARNING_TXT=""
+		NOTE_TXT=""
+	fi
+
+	case $MSG_TYPE in 
+	V) 	if test "$VERBOSE" = "1"; then
+			if test "$DIALOG_COLLECT" = "1"; then
+				DIALOG_SHOW="$DIALOG_SHOW $VERBOSE_TXT $MSG_TEXT$MSGEOL"
+			else
+				msg="$VERBOSE_TXT $MSG_TEXT";
+			fi
+		fi 
+		;;
+	D) 	if test "$SHDBG" = "1"; then
+			if test "$DIALOG_COLLECT" = "1"; then
+				DIALOG_SHOW="$DIALOG_SHOW $DEBUG_TXT $MSG_TEXT$MSGEOL"
+			else
+				msg="$DEBUG_TXT $MSG_TEXT";
+			fi
+		fi 
+		;;	
+	E) 	if test "$DIALOG_COLLECT" = "1"; then
+			DIALOG_SHOW="$DIALOG_SHOW $ERROR_TXT $MSG_TEXT$MSGEOL"
+			if test "$EXIT_CODE" != ""; then 
+				DIALOG_SHOW="$DIALOG_SHOW STOP\n" 
+			fi
+		else
+			msg="$ERROR_TXT $MSG_TEXT"; 
+			if test "$EXIT_CODE" != ""; then msg="$msg STOP." ; fi
+		fi
+		;;
+	W) 	if test "$DIALOG_COLLECT" = "1"; then
+			DIALOG_SHOW="$DIALOG_SHOW $WARNING_TXT $MSG_TEXT$MSGEOL"
+		else
+			msg="$WARNING_TXT $MSG_TEXT" 
+		fi
+		;;
+	N) 	if test "$SILENT" != "1"; then
+			if test "$DIALOG_COLLECT" = "1"; then
+				DIALOG_SHOW="$DIALOG_SHOW $NOTE_TXT $MSG_TEXT$MSGEOL"
+			else
+				msg="$NOTE_TXT $MSG_TEXT";
+			fi
+		fi 
+		;;
+	*) 	if test "$SILENT" != "1"; then
+			if test "$DIALOG_COLLECT" = "1"; then
+				DIALOG_SHOW="$DIALOG_SHOW $MSG_TEXT$MSGEOL"
+			else
+				msg="$MSG_TEXT";
+			fi
+		fi 
+		;;
+	esac
+	
+	if test "$DIALOG_COLLECT" = "1"; then
+		if test "$EXIT_CODE" != "" ; then
+			show_collected "Aubit: aborting..."
+			exit $EXIT_CODE
+		fi
+	else
+		if test "$msg" != ""; then
+			if test "$MSG_PREFIX" = "1"; then
+				echo "Aubit: $msg"
+			else
+				echo "$msg"
+			fi
+			if test "$EXIT_CODE" != "" ; then
+				exit $EXIT_CODE
+			fi
+		fi
+	fi
+	
+	NO_NEWLINE_PREV_STATE="$NO_NEWLINE"
+
+
+	if test "$LAST_MULTILINE" = "1"; then
+		#just displayed last line of multi-line message
+		INSIDE_MULTILINE=0
+	fi
+	
 }
 
+#####################################
+#
+function show_collected () {
+TITLE="$1"
+
+	if test "$DIALOG" = "1"; then
+		if test "$DIALOG_EXE" = "dialog"; then
+			#strip multiple spaces in Curses mode - GUI mode does this automatically
+			DIALOG_SHOW="`echo $DIALOG_SHOW`"
+		fi
+	
+		$DIALOG_EXE --title "$TITLE" --msgbox "$DIALOG_SHOW" 0 0	# height width
+	else
+		echo "============================================================================="
+		echo "$MSG"
+		echo "============================================================================="
+	fi
+	DIALOG_SHOW=""
+
+}
+	
 #####################################
 # Set default options and settings 
 function set_defaults () {
@@ -1160,19 +3510,52 @@ function set_defaults () {
 
 	
 	if test "$AUBITDIR" = "" ; then
-		AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
+		AUBITDIR=`$A4GL_CONFIG AUBITDIR 2>/dev/null`
 		if test "$AUBITDIR" = "" ; then
-			error "AUBITDIR is empty."
-			aubit-config AUBITDIR
-			exit 3
+			
+			INVOKED_AS="$0"
+			debug "INVOKED_AS=$INVOKED_AS" 
+			CURR_DIR=`pwd`
+			cd / >/dev/null
+			if test -f "$INVOKED_AS"; then
+				AUBIT_BIN=`dirname $INVOKED_AS`
+			else
+				debug "Not invoked with absolute path..."
+				FULL_ME="$CURR_DIR/$INVOKED_AS"
+				debug "FULL_ME=$FULL_ME"
+				if test -f "$FULL_ME"; then
+					AUBIT_BIN=`dirname $FULL_ME`
+					debug "AUBIT_BIN=$AUBIT_BIN"
+				else
+					#Cant find myself ... bugger
+					error "AUBITDIR is empty."
+					$A4GL_CONFIG AUBITDIR
+					exit 3
+				fi
+			fi
+			cd - >/dev/null
+			AUBITDIR=`dirname $AUBIT_BIN`
+			export AUBITDIR
+			echo "Set AUBITDIR to $AUBITDIR, adjusted PATH & LD_LIBRARY_PATH"
+			PATH="$AUBITDIR/bin:$PATH"
+			LD_LIBRARY_PATH="$AUBITDIR/lib:$LD_LIBRARY_PATH"
+			export PATH
+			export LD_LIBRARY_PATH
+			warning "How about you at least install aubitrc in your HOME folder?" 
 		fi
+	fi
+	
+	#Leave this which here - we may changed the PATH
+	A4GL_CONFIG="`which aubit-config 2>/dev/null`"
+	if test "$A4GL_CONFIG" = ""; then
+		error "Cannot locate aubit-config" "1"
 	fi
 	
 	################################
 	#Determine for which OS was this aubit-config compiled
 	#TARGET=i686-pc-cygwin
 	#TARGET_OS=cygwin
-	TARGET_OS=`aubit-config TARGET_OS  2>/dev/null`
+	TARGET_OS=`$A4GL_CONFIG TARGET_OS  2>/dev/null`
 	if test "$TARGET_OS" = ""; then 
 		error "no TARGET_OS" "3"
 	fi
@@ -1204,6 +3587,103 @@ function set_defaults () {
 	
 }
 
+###############################
+# Show help
+function show_help () {
+	
+    echo
+	echo "Aubit 4gl compiler warper script: `basename $0`"
+    echo
+    echo "Usage:"
+    echo '  aubit [FLAGS] <COMMAND> [command parameters...]'
+	echo '   or'
+    echo '  aubit <FLAGS>'	
+	echo
+    echo 'FLAGS are options intercepted and processed by "aubit" script itself,'
+    echo ' and will not reach the program invoked using <command> (if specified):'
+    
+	echo 'Output:'	
+	echo ' --averbose   : make this wrapper script verbose'
+    echo ' --asilent    : make this wrapper script silent'
+   
+	echo 'Help:'
+	echo ' --ahelp      : show (this) help text'
+    echo ' --ahelp-install : show help for options related to installation and setup'
+    echo ' --ahelp-examples : show usage examples for this script'
+    
+	echo 'Debug:'
+	echo ' --show-path  : debugging - show paths processed by this script'
+	echo ' --show       : show various internal info in this script'
+	echo ' --shdbg      : turn on debugging of this script'
+	echo ' --debug      : turn on debugging of Aubit programs' 
+    echo ' --valgrind   : invoke <command> with Valrind memory debugger'
+	
+    echo
+	echo ' COMMAND is tipically one of Aubit compiler programs, but it can also'
+	echo ' be any other executable that would benefir from setting correct Aubit'
+	echo ' environment, like for example your programs compiled using Aubit compiler'
+	
+	echo 'Some of Aubit compiler programs are:'	
+	echo ' 4glpc - main 4GL compiler'
+    echo ' 4glc - 4gl to [C|Perl|EC|...]-code compiler'
+	echo ' fcompile - form file (.per) compiler'
+    echo ' mcompile - menu file (.menu) compiler'
+    echo ' amkmessage - help file (.hlp) compiler'
+    echo ' ...or any other executable program you wish to run under controled'
+    echo ' Aubit environment (PATH,LD_LIBRARY_PATH,AUBITDIR,etc)'
+    echo
+    echo ' Use "aubit-config" to inspect Aubit compiler configuration'
+    echo ' Use "configurator" to browse and set Aubit compiler configuration'
+    echo
+	exit 0
+}
+
+
+###############################
+# Show install options help
+function show_help_install () {
+	
+    echo
+	echo Aubit 4gl compiler warper script: $0
+    echo
+    echo '  Help for install/setup related options:'
+	echo
+    echo ' --check-env  : chek Aubit configuration and exit'
+	echo ' --fix-ld     : automatically fix LD paths (need --check-env)'
+	echo ' --summary    : show Aubit installation summary'
+	echo ' --install    : install/configure BINARY distribution (same as "make install")'
+	echo ' --install-desktop : install Aubit to desktop (KDE,GNOME) menu'
+	echo ' --deinstall    : deinstall binary distribution (same as "make deinstall")'
+	echo ' --deinstall-desktop : remove desktop integration created with --install-desktop'
+
+	echo ' --no-interaction : Disable any user interaction/input'
+	echo ' --force-tui  : force Curses mode when this script interacts with user'
+	echo ' --force-gui  : force GUI mode when this script interacts with user'
+	echo ' --force-cmdline : force console mode when this script interacts with user'
+	
+	echo ' --run-func=<name>'
+	
+    echo
+    echo
+	exit 0
+}
+
+###############################
+# Show options examples help
+function show_help_examples () {
+	
+    echo
+	echo Aubit 4gl compiler warper script: $0
+    echo
+    echo '  Usage examples:'
+	echo
+		
+    echo
+    echo
+	exit 0
+}
+
+	
 ############################################
 # scan command line flags and set options and input files 
 function process_flags () {
@@ -1244,6 +3724,16 @@ function process_flags () {
 		--show-path) #Show deguding info on paths 
 			SHOW_PATH=1
 			;;
+			
+		--no-interaction)
+			#Explicitly disable all promting, menus and any other actio that 
+			#would require users input/interaction
+			INTERACTIVE=0
+			;;
+		--interactive)
+			INTERACTIVE=1
+			PROMPT_INTERACTIVE_RESPONSE="yes"
+			;;
 		--check-env) #Check compiler environment
 			CHECK_ENV=1
 			#echo $1 $2 $3 $4
@@ -1251,6 +3741,53 @@ function process_flags () {
 			#if test "$2" = "--verbose" -o "$3" = "--verbose"; then
 			#	VERBOSE=1
 			#fi
+			;;
+		--setup) #Set compiler environment
+			SETUP_ENV=1
+			;;
+		--summary)
+			SHOW_SUMMARY=1
+			;;
+		--run-func=*)
+			RUN_AND_EXIT="`echo $FLAG | sed -e 's/--run-func=//'`"
+			debug "RUN_AND_EXIT=$RPM_A4GL_INSTALL_DIR"
+			;;
+		--force-tui)
+			FORCE_TUI=1
+			;;
+		--force-gui)
+			FORCE_GUI=1
+			;;
+		--force-cmdline)
+			FORCE_CMDLINE=1
+			;;
+		--install)
+			DO_INSTALL=1
+			;;
+		--install-desktop)
+			DO_INSTALL_DESKTOP=1
+			;;
+			
+		#This 5 are called only form RPM pre/post install/de-install sections
+		--post-install-rpm)
+			DO_POST_INSTALL_RPM=1
+			;;
+		--pre-install-rpm)
+			DO_PRE_INSTALL_RPM=1
+			;;
+		--post-uninstall-rpm)
+			DO_POST_UN_INSTALL_RPM=1
+			;;
+		--pre-uninstall-rpm)
+			DO_PRE_UN_INSTALL_RPM=1
+			;;
+		--post-verify-rpm)
+			DO_POST_VERIFY_RPM=1
+			;;
+		--rpm-install-dir=*)
+			#Directory where RPM is currently installing/deinstalling/verifying  Aubit
+			RPM_A4GL_INSTALL_DIR="`echo $FLAG | sed -e 's/--rpm-install-dir=//'`"
+			debug "RPM_A4GL_INSTALL_DIR=$RPM_A4GL_INSTALL_DIR"
 			;;
 		--fix-ld)
 			#if test "$2" = "--fix-ld" -o "$3" = "--fix-ld"; then
@@ -1261,6 +3798,15 @@ function process_flags () {
 			show_help
 			exit 0
 			;;
+		--ahelp-install)
+			show_help_install
+			exit 0
+			;;
+		--ahelp-examples)
+			show_help_examples
+			exit 0
+			;;
+			
 	   *)
 			#Everything else is program/script to be executed, or
 			#a flag for it
@@ -1294,8 +3840,52 @@ function process_flags () {
 	  ####
 	done
 	
+	which_dialog
+	
+	if test "$RUN_AND_EXIT" != ""; then
+		echo "Running function $RUN_AND_EXIT"
+		$RUN_AND_EXIT
+		echo "Function $RUN_AND_EXIT ended"
+		exit
+	fi
 	if test "$CHECK_ENV" = "1"; then
 		check_env
+		exit
+	fi
+	if test "$SETUP_ENV" = "1"; then
+		setup
+		exit
+	fi
+	if test "$SHOW_SUMMARY" = "1";then
+		show_summary
+		exit
+	fi
+	if test "$DO_INSTALL" = "1";then
+		install_bin
+		exit
+	fi
+	if test "$DO_INSTALL_DESKTOP" = "1";then
+		install_desktop
+		exit
+	fi
+	if test "$DO_POST_INSTALL_RPM" = "1";then
+		post_install_rpm
+		exit
+	fi
+	if test "$DO_POST_UN_INSTALL_RPM" = "1";then
+		post_uninstall_rpm
+		exit
+	fi
+	if test "$DO_PRE_INSTALL_RPM" = "1";then
+		pre_install_rpm
+		exit
+	fi
+	if test "$DO_PRE_UN_INSTALL_RPM" = "1";then
+		pre_uninstall_rpm
+		exit
+	fi
+	if test "$DO_POST_VERIFY_RPM" = "1";then
+		post_verify_rpm
 		exit
 	fi
 	
@@ -1308,7 +3898,7 @@ function determine_target_os () {
 	
 	#TARGET=i686-pc-cygwin
 	#TARGET_OS=cygwin
-	TARGET_OS=`aubit-config TARGET_OS  2>/dev/null`
+	TARGET_OS=`$A4GL_CONFIG TARGET_OS  2>/dev/null`
 	if test "$TARGET_OS" = "mingw"; then 
 		case "$PATH" in
 			*cygdrive*)
@@ -1364,7 +3954,7 @@ function set_aubitdir () {
 #Add paths determined by Autoconf to PATH or LD_LIBRARY_PATH
 #so we can find libraries
 function set_lib_path () {
-	ADD_LD_LIBRARY_PATH="`aubit-config ADD_LD_LIBRARY_PATH 2>/dev/null`"
+	ADD_LD_LIBRARY_PATH="`$A4GL_CONFIG ADD_LD_LIBRARY_PATH 2>/dev/null`"
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then 
 		if test "$TARGET_OS" = "mingw"; then
 			if test "$CYGWIN_SHELL" = "1"; then
@@ -1399,7 +3989,7 @@ function set_lib_path () {
 	export LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
 
 	if test "$POSTGRESDIR" = ""; then 
-		POSTGRESDIR=`aubit-config POSTGRESDIR`
+		POSTGRESDIR=`$A4GL_CONFIG POSTGRESDIR`
 		if test "$POSTGRESDIR" != ""; then 
 			export LD_LIBRARY_PATH="$POSTGRESDIR/lib:$LD_LIBRARY_PATH"
 		fi
@@ -1549,6 +4139,16 @@ function export_env_vars () {
 # run the command
 function run_cmd () {
 
+	#echo /$EXEC/
+	case $EXEC in 
+		-*|?-*)
+			#Exec line begins with a "-" or " -"
+			echo "ERROR: option not recognized: ($EXEC) try --ahelp"
+			exit 1
+		;;
+	esac
+	
+	
 	if test "$VALGRIND" = "1" ; then 
 		EXEC="valgrind $EXEC "
 	fi
@@ -1566,14 +4166,19 @@ function run_cmd () {
 ########################################################################
 FLAGS=$@
 NUM_ARGS=$#
+NO_NEWLINE=0
+
+	which_programs
+	SO_EXT=".so"
 
 	if test "$1" != "--check-env"; then
 		set_defaults
+		which_programs
 	fi
 	process_flags
 	determine_target_os
 	set_aubitdir
-	set_lib_path
+	set_lib_path	
 	set_path
 	set_dbpath
 	check_mingw_path

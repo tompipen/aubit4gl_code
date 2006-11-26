@@ -29,13 +29,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.12 2006-05-03 07:53:25 mikeaubury Exp $
+# $Id: 4glpc.obsolete,v 1.13 2006-11-26 01:13:56 afalout Exp $
 #
 
 ########################################################################
-#this is main Aubit 4gl compiler .4gl files compiler script
-#It is recomended in most situations to use 4glc directly - this scrip
-#will be obsoleted in the near future.
+# Do not use this script to compile 4gl code - it is obsolete - use 4glpc executable instead
+# This script is still used as utility tool for buldint RPM and other
+# packagfes and to perform some maintainance tasks
 ########################################################################
 
 if test "$MAKINGAUBIT" = "1"; then 
@@ -131,6 +131,7 @@ fi
 aubit-config -ae > /tmp/$$.env 2>&1
 
 NO_COMPILE=0
+
 
 #############
 #this internal variable points to default location of Aubit config files
@@ -352,7 +353,6 @@ function showerror {
 
 }
 
-
 ALLPARAMS=$@
 
 # This needs checking
@@ -373,15 +373,17 @@ then
 		AUBITDIR=$AUBIT_SRC_ROOT
     fi
 fi
+
 #echo 2AUBITDIR=$AUBITDIR
     #find path to this script:
 	PATHTO4GLPC1=`dirname $0`
 	PATHTO4GLPC=`dirname $PATHTO4GLPC1` #remove bin/
+	
     #OLD_DIR=`pwd`
 	cd $PATHTO4GLPC
     CURRDIR=`pwd`
-	cd -
-
+	
+	cd - >/dev/null
 
 if [ "$AUBITDIR" = "" ]
 then
@@ -1081,10 +1083,17 @@ do
 		echo "Comparing binary install at $INSTALLDIR"
 		echo "with compiled source tree at $SOURCEDIR" 
 		
-
+		xx=`ls -d $SOURCEDIR/plugins-*`
+		PLUGINS_DIR=`basename $xx`
 		ALLDIRS="bin docs etc etc/import etc/config etc/convertsql \
-			incl tools/test tools/test/gui lib ."
-		
+			incl tools/test tools/test/gui lib . $PLUGINS_DIR \
+			tools/4glpc tools/4glpc/settings"
+
+
+#bin/shtool is installed, but is not in 'to install' list
+#File tools/aubit.db is installed, but is not in 'to install' list
+#File tools/test1.db is insta
+			
 		#Files to ignore - not needed in binary installations
 		IGNORE_LIST="xgen$EXE_EXT .cvsignore abug.sh .obsolete _wrap aubitbuild.s* \
 			-strip$EXE_EXT .err .warn asql .#* adbload.4ae \
@@ -1095,13 +1104,15 @@ do
 			aubit4glsrc-*.txt configure.in .tmp .status \
 			BUGS.txt .m4 .mja todo todo.done autom4te.cache configure.lineno confdefs.h \
 			etc/config/bootstrap etc/config/ltmain.sh ChangeLog \
-			sqleditor.4ae"
+			sqleditor.4ae \
+			docs/debugging.txt etc/default.apspec* tools/test/logo.jpg aubit4gl.xml \
+			aubit4gl-*.package* *.xml.old config.nice uninstalldirs test_fail remake.win32 \
+			README.install.binary a4gl_gen_stack.h \
+			incl/a4gl_API_lex.h incl/a4gl_API_parse_lib.h incl/a4gl_API_lex_lib.h incl/a4gl_API_parse.h \
+			lib/libA4GL_cint.so tools/4glpc/Makefile *.msg \
+			tools/4glpc/times.4gl tools/4glpc/4glpc.4gl tools/4glpc/readsettings.4gl"
 
-#Comparing binary install at d:/tmp/aubit4gl-silent
-#with compiled source tree at F:/cygwin/usr/src/aubit/aubit4glsrc
-#/bin/find: bin/aubitbuild.sh: No such file or directory
-#Missing conf4404.file
-#Missing conf4404
+			#Ignore lib/libA4GL_cint.so as we are installing it under plugons not lib
 
 		#Directories to ignore:
 		IGNORE_LIST="$IGNORE_LIST \
@@ -1136,7 +1147,8 @@ do
 			incl/a4gl_API_sqlparse_lib.h incl/API_lex.h \
 			incl/a4gl_API_sql_lib.h incl/a4gl_API_rpc_lib.h \
 			incl/a4gl_API_exreport_lib.h incl/stamp-h \
-			incl/a4gl_libaubit4gl.h incl/a4gl_API_packer.h"
+			incl/a4gl_libaubit4gl.h incl/a4gl_API_packer.h \
+			tools/4glpc/4glpc.h tools/4glpc/times.h tools/4glpc/readsettings.h"
 			
 			#seems a4gl_libaubit4gl.h and a4gl_API_packer.h are not needed any more?
 			
@@ -1225,8 +1237,10 @@ do
 			#List of files we know that will appear in installed bindir,
 			#that are not in places we check for, or are renamed, or
 			#can appear in binary tree for other reasons
-			IGNORE_INSTALLED="4GL_metrics.cgi aubitrc-bin.in .tgz /CVS/*" 
-
+			IGNORE_INSTALLED="4GL_metrics.cgi aubitrc-bin.in .tgz /CVS/* \ 
+				bin/shtool tools/aubit.db tools/test1.db"
+			
+			
 			if test "$COMSPEC" != ""; then 
 				#Files created by Windows installer itself:
 				IGNORE_INSTALLED="$IGNORE_INSTALLED \

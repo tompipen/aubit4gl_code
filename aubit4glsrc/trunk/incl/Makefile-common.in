@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.206 2006-11-04 11:10:00 afalout Exp $
+# $Id: Makefile-common.in,v 1.207 2006-11-26 01:13:58 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1312,7 +1312,10 @@ LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES}) $(addprefix ${PLUGINDIR}/lib,${TM
 
 #LIB_DEFAULT=@ALL_LIBS@ @COMP_LIBS@
 #LIB_SO		=${LIB_DEFAULT}
-LIB_SO		=$(addprefix ${LIB_DIR}/lib,$(addsuffix -${A4GL_VERSION_STRING}${SO_EXT_LINKABLE},${LIB_EXPORTLIB}))
+
+#not needed any more, as we version stap this file in configure.in
+#LIB_SO		=$(addprefix ${LIB_DIR}/lib,$(addsuffix -${A4GL_VERSION_STRING}${SO_EXT_LINKABLE},${LIB_EXPORTLIB}))
+LIB_SO		=$(addprefix ${LIB_DIR}/lib,$(addsuffix ${SO_EXT_LINKABLE},${LIB_EXPORTLIB}))
 PLUGIN_SO	=$(addprefix ${PLUGINDIR}/lib,${TMP_PLUGINFILES})
 
 #Lib files we build depending on available 3rd party support:

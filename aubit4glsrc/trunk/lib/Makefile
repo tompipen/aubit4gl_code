@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2006-11-04 11:10:01 afalout Exp $
+# $Id: Makefile,v 1.15 2006-11-26 01:13:59 afalout Exp $
 #
 
 ROOT    =..
@@ -254,7 +254,10 @@ check:
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
-libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
+libaubit4gl${SO_EXT_LINKABLE}: libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE}
+	ln -s libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE} libaubit4gl${SO_EXT_LINKABLE}
+
+libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 	${MAKE} -C ${LIBAUBIT4GL_PATH}
 
 ##############
@@ -666,7 +669,7 @@ clean.libsql:
 	${MAKE} -C ${FILESCHEMA_PATH} clean
 	${MAKE} -C ${MYSQL_PATH} clean
 #FIXME: not a makefile:
-	-${MAKE} -C ${INGRES_PATH} clean
+	-if test -f ${INGRES_PATH}/?akefile; then ${MAKE} -C ${INGRES_PATH} clean; fi
 
 clean.libpdf:
 	${MAKE} -C ${LIBEXREPORTPDF_PATH} clean

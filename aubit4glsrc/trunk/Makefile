@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.33 2006-11-11 09:06:45 afalout Exp $
+# $Id: Makefile,v 1.34 2006-11-26 01:13:51 afalout Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -386,10 +386,10 @@ test.perl:
 clean.perl:
 	${MAKE} -C lib/liblex/lex_perl clean
 #WARNING - Perl created makefile will remove domake when running "clean"
-	-mv lib/swig ?akefile /tmp/swig-makefile
+	if test -f lib/swig/?akefile ; then mv lib/swig /tmp/swig-makefile; fi
 #Must allow it to fail, as we may or may not have makefile allready created there
-	-${MAKE} -C lib/swig clean
-	-mv /tmp/swig-makefile lib/swig/Makefile
+	-if test -f lib/swig ; then ${MAKE} -C lib/swig clean ; fi
+	if test -f /tmp/swig-makefile ; then mv /tmp/swig-makefile lib/swig/Makefile; fi
 	
 
 ########################################
@@ -1081,17 +1081,52 @@ cleantar:
 #	SRPMS is where all source RPMs will be put.
 
 
-#this will make rpm form autoconf-ed etc/aubit-rpm.conf
-rpm:
+#installing cp from /usr/src/packages/BUILD/aubit4gl-1.00.6/aubit4glsrc-1.00-6
+#to /home/aubit/aubit4gl
+
+#Executing(%doc): /bin/sh -e /var/tmp/rpm-tmp.89960
+#+ umask 022
+#+ cd /usr/src/packages/BUILD
+#+ cd aubit4gl-1.00.6
+#+ DOCDIR=/home/aubit/aubit4gl/usr/share/doc/packages/aubit4gl
+#+ export DOCDIR
+#+ rm -rf /home/aubit/aubit4gl/usr/share/doc/packages/aubit4gl
+#+ /bin/mkdir -p /home/aubit/aubit4gl/usr/share/doc/packages/aubit4gl
+#+ cp -pr README.txt /home/aubit/aubit4gl/usr/share/doc/packages/aubit4gl
+#cp: cannot stat `README.txt': No such file or directory
+#error: Bad exit status from /var/tmp/rpm-tmp.89960 (%doc)
+
+
+
+#Used to be all in rpm executable
+RPMBUILD	=rpmbuild
+SRCTMP		:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
+RPMCONFFILE	:=${AUBITDIR}/etc/aubit-rpm.spec
+RPM_SRC_FILE:=${shell find ${RPMBUILDROOT}/SRPMS/ -name ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.src.rpm}
+RPM_FILE	:=${shell find ${RPMBUILDROOT}/RPMS/ -name ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.*.rpm}
+TMP_RPM_INSTDIR	=/tmp/aubit4gl-rpminstall
+
+PART1_ESC	=${shell echo ${RPMBUILDROOT}/RPMS | sed -e "s/\//\\\\\//g"}
+PART2_ESC	=${shell echo ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}  | sed -e "s/\//\\\\\//g"}
+RPM_FILE_CPU:=${shell echo ${RPM_FILE} | sed -e "s/${PART1_ESC}//" -e "s/${PART2_ESC}//" -e 's/rpm//' -e 's/\.//g	' -e 's/\-1//' -e 's/\// /g' | awk '{print $$1}' }
+
+RPM_TARGET_CPU:=${shell rpm --eval "%_target_cpu"}
+RPM_VENDOR:=${shell rpm --eval "%_vendor"}
+RPM_TARGET_OS:=${shell rpm --eval "%_target_os"}
+RPM_TARGET_PLATFORM:=${shell rpm --eval "%_target_platform"}
+
+
+##############################
+# make rpm form autoconf-ed etc/aubit-rpm.conf
+rpm: rpm.refresh.specfile
 ifneq "${RPM}" ""
-	./config.status --file etc/aubit-rpm.spec
 	${MAKE} rpm.build
 else
 	@echo "RPM tools where not detected on your system."
 endif
 
-rpm.build: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
-rpm.build: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
+##############################
+# Do the actual build
 rpm.build: rpm.check.all
 #RPM insists to have source code in ${RPMBUILDROOT}/SOURCES/ before it will
 #build it, and only then make src and bin RPM
@@ -1099,24 +1134,16 @@ rpm.build: rpm.check.all
 	@echo "| Building RPM packages...                                           |"
 	@echo "+--------------------------------------------------------------------+"
 ifeq "${RPM}" "new"
-	${RM} ${SRCTMP}
-	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
-	rm -rf /usr/src/redhat/BUILD/aubit4gl*
-#	rm -rf /usr/src/redhat/SOURCES/${SOURCETARBASENAME}
-	rm -rf /usr/src/redhat/SOURCES/aubit4gl*
-	@echo "NOTE: if version numbers changed, run ./configure first!"
-	./config.status --file etc/aubit-rpm.spec
-	./config.status --file Makefile
-	./config.status --file incl/Makefile-common
+	${MAKE} rpm.clean
 endif
 #Since aubitbuild.sh ups the build number before building nightly builds,
 #make rpm will need to make a new ${SRCTMP} tarball, and to do this, it 
-#willneed to clean.all - leaving a machine without compiled Aubit :-(
+#will need to clean.all - leaving a machine without compiled Aubit :-(
 #and RPM will deinstall installed Aubit as part of build process leaving 
 #machine without installed Aubit :-((((
-	@if [ ! -f ${SRCTMP} ]; then \
+	@if test ! -f ${SRCTMP} ; then \
 		echo "(1) No ${SRCTMP}, making it..."; \
-		if [ ! -f /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ]; then \
+		if test ! -f /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ; then \
 			echo "(2) No /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}, making it..."; \
 			${MAKE} clean.all > /dev/null; \
 			${RMDIR} /tmp/${NAMEVERBLD}; \
@@ -1132,17 +1159,79 @@ endif
         echo "Have ${SRCTMP}"; \
 		echo "use RPM=new on make line to force refresh"; \
 	fi
-	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
+#	   -ba    Build binary and source packages (after doing the %prep, %build,
+#              and %install stages).
+	${RPMBUILD} -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
+	@echo " "
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| Created files:                                                     |"
-	@echo "| ${RPMBUILDROOT}/SRPMS/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.src.rpm"
-	@echo "| ${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm"
 	@echo "| 'make rpm' successfull, see rpmbuild.log for details               |"
 	@echo "+--------------------------------------------------------------------+"
+	${MAKE} rpm.show.created
 
-rpm.check.all: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
-rpm.check.all: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
-rpm.check.all: rpm.check.deps
+################################################
+#Create and deploy rpm to download web site
+rpm.deploy: rpm rpm.scp
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: all done"
+	@echo "+--------------------------------------------------------------------+"
+
+################################################
+#SCP the rpm to WWW root for download
+rpm.scp:
+	scp ${RPM_SRC_FILE} ${RPM_FILE} root@192.168.1.200:/srv/www/htdocs
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. URL:"
+	@echo "| http://192.168.1.200/${RPM_SRC_FILE}"
+	@echo "| http://192.168.1.200/${RPM_FILE}"	
+	@echo "+--------------------------------------------------------------------+"
+
+################################################
+#SCP the rpm to user 'aubit' Desktop for testing
+rpm.put:
+	scp ${RPM_SRC_FILE} ${RPM_FILE} aubit@192.168.1.200:/home/aubit/Desktop
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. File placed on Desktop of user 'aubit'"
+	@echo "+--------------------------------------------------------------------+"
+
+	
+##############################
+#
+rpm.show.created:
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Created files:                                                     |"
+	@echo "| ${RPM_SRC_FILE}"
+	@echo "| ${RPM_FILE}"
+	@echo "| CPU: ${RPM_FILE_CPU}"
+	@echo "+--------------------------------------------------------------------+"
+	
+
+###############################
+# Remove all created and intermediate files to force complete refresh/rpbm buid restart
+rpm.clean: rpm.refresh.specfile
+	${RM} ${SRCTMP}
+	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
+	rm -rf ${RPMBUILDROOT}/BUILD/aubit4gl*
+#	rm -rf ${RPMBUILDROOT}/SOURCES/${SOURCETARBASENAME}
+	rm -rf ${RPMBUILDROOT}/SOURCES/aubit4gl*
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| NOTE: if version numbers changed, run ./configure first!           |"
+	@echo "+--------------------------------------------------------------------+"
+	
+##############################
+# Verify that each file listed in spec file exist 
+rpm.check.all: rpm.check.deps rpm.refresh.specfile ${PREFIX}/bin/4glc 
+#rpm.check.specfile.pre
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Traget $@ finished"
+	@echo "+--------------------------------------------------------------------+"
+
+
+##############################
+# Seems like this is really not a task to do before RPM is built and install -
+# it seems that it was intended to compare result of RPM build with specfile, 
+# and not to test validity of spec file itself, as it checks for various files 
+# and places that only instlling created RPM would create?
+rpm.check.specfile.pre:
 #      -bl    Do  a  "list check".  The "%files" section from the
 #              spec file is macro expanded, and checks are made to
 #              verify that each file exists.
@@ -1153,15 +1242,34 @@ rpm.check.all: rpm.check.deps
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Testing RPM config file (${RPMCONFFILE})"
 	@echo "+--------------------------------------------------------------------+"
-	@if [ ! -f ${SRCTMP} ]; then touch ${SRCTMP}; touch /tmp/fakesrctmp; fi
-	rpm -bl ${RPMCONFFILE}
-	@if [ -f /tmp/fakesrctmp ]; then rm -f ${SRCTMP}; rm -f /tmp/fakesrctmp; fi
+#RPM demands ${SRCTMP} to exist, so we have to fake it; to know we are
+#faking it (so we can remove the fake) we use the /tmp/fakesrctmp as a flag
+#Now the fu*** morons even check the file size!!! MOOOOROOOOOONSSSSS!!!!!
+	@if test ! -f ${SRCTMP} ; then cp ./Makefile ${SRCTMP}; touch /tmp/fakesrctmp; fi
+	${RPMBUILD} -bl ${RPMCONFFILE}
+	@if test -f /tmp/fakesrctmp; then rm -f ${SRCTMP}; rm -f /tmp/fakesrctmp; fi
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| RPM config file (${RPMCONFFILE}) tested OK"
 	@echo "+--------------------------------------------------------------------+"
 	
-###################
-rpm.check.deps:
+#############################
+#	
+rpm.check.all.post:
+	${RPMBUILD} -bl ${RPMCONFFILE}
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| RPM config file (${RPMCONFFILE}) tested OK"
+	@echo "+--------------------------------------------------------------------+"
+	
+	
+###############################
+# Refresh vital files
+rpm.refresh.specfile:
+	./config.status --file etc/aubit-rpm.spec
+	./config.status --file incl/Makefile-common
+	
+##############################
+#
+rpm.check.deps: ./bin/4glc
 #Not sure this makes any senese on Linux - since I did not find a way to disable
 #ldconfing cache or DT_RPATH/DT_RUNPATH, it will esentially just tell us which
 #libraries we used to link Aubit stuff are not in ld.so.conf, since only thing I can 
@@ -1169,11 +1277,18 @@ rpm.check.deps:
 #intentionally renamed...
 	export MAKINGAUBIT=0; export IGNORE_MISSING_DEPS=1; ${SH} bin/4glpc.obsolete -deps
 
-###################	
+	
+###############################
+#
+./bin/4glc:
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| NOTE: target $@ invoked as depedency - starting build..."
+	@echo "+--------------------------------------------------------------------+"
+	${MAKE}
+	
+##############################	
 #Install created binary RPM and check it against binary installation 
 #created with 'make install' for consistency:
-rpm.install: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
-#rpm.install: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.9-1.i586.rpm
 rpm.install:
 #       --badreloc
 #              Used  with  --relocate,  permit  relocations on all
@@ -1191,39 +1306,40 @@ rpm.install:
 #              cation hint(s) to NEWPATH.  This option can be used
 #              repeatedly  if several OLDPATH's in the package are
 #              to be relocated.
-	rpm --install --noscripts --prefix /tmp/aubit4gl-rpminstall ${RPM_FILE}
+	su -c "rpm --install --noscripts --prefix ${TMP_RPM_INSTDIR} ${RPM_FILE}"
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| RPM installed to /tmp/aubit4gl-rpminstall"
+	@echo "| RPM installed to ${TMP_RPM_INSTDIR}"
 	@echo "+--------------------------------------------------------------------+"
 
-#######################
+##############################
+#
 rpm.deinstall:
-	-rpm --erase --noscripts aubit4gl
-#Should be gone, but just in case:	
-	rm -rf /tmp/aubit4gl-rpminstall	
+	su -c "rpm --erase --noscripts aubit4gl; rm -rf ${TMP_RPM_INSTDIR}"
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| aubit4gl RPM deinstalled"
 	@echo "+--------------------------------------------------------------------+"
 
-#######################
+##############################
+#
 rpm.test.files:
-	export MAKINGAUBIT=0; export INSTALLDIR="/tmp/aubit4gl-rpminstall/aubit4gl" ;${SH} bin/4glpc.obsolete -chk-install
+	export MAKINGAUBIT=0; export INSTALLDIR="${TMP_RPM_INSTDIR}" ;${SH} bin/4glpc.obsolete -chk-install
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| RPM files compare test finished"
 	@echo "+--------------------------------------------------------------------+"
 
-#######################
-#The main target for testing of RPM package consitency; also invoked from
-#aubitbuild.sh as part of automatic nightly builds
-rpm.check: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
+##############################
+# The main target for testing of RPM package consitency; also invoked from
+# aubitbuild.sh as part of automatic nightly builds
+rpm.check:
+	su -c "${MAKE} rpm.check.internal"
+rpm.check.internal: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| RPM test finished"
 	@echo "+--------------------------------------------------------------------+"
 	
-########################	
-#Show info about the RPM package
+##############################	
+# Show info about the RPM package
 #rpm.info: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
-rpm.info: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.9-1.i586.rpm
 rpm.info:
 #This command will show details about RPM and list all files in it
 	rpm -qpil ${RPM_FILE}
@@ -1236,16 +1352,14 @@ rpm.info:
 #Unless specified otherwise, every file in the package will be installed 
 #somewhere below the path specified by the default prefix. 
 
-######################
-#automatically create .spec file for RPM build:
-etc/aubit-auto.spec: aubit4gl.lsm
-	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
-
+##############################
+# Make a patch by diffing two directories
 build.diff.patch:
 	diff -uNr ${dirname}.orig ${dirname} > ${dirname}.patch
 #Please, use cvs diff -u3p.
 
-#Create Linux Software Map (.lsm) used by autospec, see http://www.execpc.com/lsm/
+##############################
+# Create Linux Software Map (.lsm) used by autospec, see http://www.execpc.com/lsm/
 aubit4gl.lsm: OUTFILE=aubit4gl.lsm
 aubit4gl.lsm:
 	@echo Begin4 > ${OUTFILE}
@@ -1454,10 +1568,6 @@ ss:
 	
 	
 #find /var/packages -exec grep --with-filename "autopackage.test" {} 2> /dev/null \;
-
-         
-
-
 
 
 ################################################
