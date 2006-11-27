@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.21 2006-07-07 15:10:17 mikeaubury Exp $
+# $Id: mkyacc,v 1.22 2006-11-27 08:46:41 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -85,8 +85,8 @@ commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
 commands_all1 	:" >> $ofile
 
 grep -h "^[^ ]*_cmd.*:" $ofile | $AWK '
-(NR==1) {print " 		" $1 }
-(NR!=1) {print "	|	" $1 }' > /tmp/aaa$$
+(NR==1) {print " 		" $1 " {add_used_cmd(\"" $1 "\");}" }
+(NR!=1) {print "	|	" $1 " {add_used_cmd(\"" $1 "\");}" }' > /tmp/aaa$$
 cat /tmp/aaa$$ >> $ofile
 rm /tmp/aaa$$
 echo " | error;" >> $ofile

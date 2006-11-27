@@ -136,15 +136,17 @@ op_db_exclusive :
 
 
 
-other_misc_infx_stmt  :
-        UPDATESTATS_T   identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2); add_feature("UPDATE_STATISTICS_TABLE");}
-        | UPDATESTATS {add_feature("UPDATE_STATISTICS");}
+
+misc_infx_stmt: misc_infx_stmt_str {
+	$<sql_string>$=make_sql_string_and_free(acl_strdup(convstrsql($<str>1)),NULL);
+	char buff[256];
+	sprintf(buff,"Warning: Informix specific SQL @ line %d\n",yylineno);
+	ansi_violation(buff,1);
+	}
 ;
 
-
-misc_infx_stmt: 
+misc_infx_stmt_str: 
 	MISC_INFX_SQL  {
-		printf("(%s)\n",$<str>1);
 		if (strcmp($<str>1,"SET LOG")==0) add_feature("SET_LOG");
 		if (strncmp($<str>1,"START DATABASE",14)==0) {
 			if (strstr($<str>1,"ANSI")) {
@@ -153,39 +155,47 @@ misc_infx_stmt:
 				add_feature("START_DATABASE_WITH_LOG");
 			}
 		}
+		sprintf($<str>$,"%s",$<str>1); 
 	}
 	| SET_BUFFERED_LOG {
 		add_feature("SET_BUFFERED_LOG");
+			sprintf($<str>$,"%s",$<str>1); 
 	}
 	| SET_LOG {
 		add_feature("SET_LOG");
+			sprintf($<str>$,"%s",$<str>1); 
 	}
-	| other_misc_infx_stmt
+        | UPDATESTATS_T  identifier {
+			sprintf($<str>$,"%s %s",$<str>1,$<str>2); add_feature("UPDATE_STATISTICS_TABLE");
+	}
+        | UPDATESTATS 		{
+		add_feature("UPDATE_STATISTICS");
+			sprintf($<str>$,"%s",$<str>1); 
+	}
 ;
 
 
+sql_transact_commands:
+	 commit_statement  	{ print_sql_commit(1); }
+	| begin_statement   	{ print_sql_commit(-1); }
+	| rollback_statement 	{ print_sql_commit(0); }
+;
 
 sql_commands :  
-	schema_ss { A4GL_CV_print_exec_sql($<sql_string>1); strcpy($<str>$,"Schema"); } 
-	| misc_infx_stmt {
-			char buff[256];
-			A4GL_CV_print_exec_sql(convstrsql($<str>1));
-			sprintf(buff,"Warning: Informix specific SQL @ line %d\n",yylineno);
-			ansi_violation(buff,1);
-			strcpy($<str>$,"InfxSpecificSql");
-	}
-	| schema_element_ss { A4GL_CV_print_exec_sql($<sql_string>1); strcpy($<str>$,"Schema Element"); } 
-	| commit_statement  { print_sql_commit(1); }
-	| misc_sql { A4GL_CV_print_exec_sql($<str>1); }
-	| begin_statement   { print_sql_commit(-1); }
-	| fgl_sql_statement
-	| delete_statement_search_ss { A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"Delete where ..."); } 
-	| insert_statement_ss { A4GL_lex_printcomment("/*  insert */\n"); A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"insert"); } 
-	| rollback_statement  { print_sql_commit(0); }
-	| update_statement_ss { A4GL_CV_print_exec_sql_bound($<sql_string>1); strcpy($<str>$,"update"); } 
-	| drops_statement { A4GL_CV_print_exec_sql($<str>1); }
-	| create_statement_ss { A4GL_CV_print_exec_sql($<sql_string>1); }
-	| alter_statement_ss {A4GL_CV_print_exec_sql($<sql_string>1); }
+	misc_infx_stmt 		{ A4GL_CV_print_exec_sql($<sql_string>1); }
+	| schema_ss 		{ A4GL_CV_print_exec_sql($<sql_string>1); } 
+	| schema_element_ss 	{ A4GL_CV_print_exec_sql($<sql_string>1); } 
+	| misc_sql 		{ A4GL_CV_print_exec_sql($<sql_string>1); }
+	| drops_statement 	{ A4GL_CV_print_exec_sql($<sql_string>1); }
+	| create_statement_ss 	{ A4GL_CV_print_exec_sql($<sql_string>1); }
+	| alter_statement_ss 	{ A4GL_CV_print_exec_sql($<sql_string>1); }
+;
+
+sql_bound_commands : 
+	 delete_statement_search_ss 	{ A4GL_CV_print_exec_sql_bound($<sql_string>1); } 
+	| insert_statement_ss 		{ A4GL_CV_print_exec_sql_bound($<sql_string>1); } 
+	| update_statement_ss 		{ A4GL_CV_print_exec_sql_bound($<sql_string>1); } 
+
 ;
 
 
@@ -592,17 +602,10 @@ op_having_clause_2_sli :  {$<s_select_list_item>$=0;}
 
 
 
-del_op_where_clause_ss:  { $<sql_string>$=acl_strdup("");
-		map_delete_update("DELETE",current_del_table,0);
-		}
-	| where_clause_sli {
-		$<sql_string>$=make_sql_string_and_free(" WHERE ",
-		fix_delete_update_columns(current_del_table,$<s_select_list_item>1),
-		0
-		); 
-		map_delete_update("DELETE",current_del_table,$<s_select_list_item>1);
+del_op_where_clause_ss:  
+	 where_del_ss {
+		$<sql_string>$=$<sql_string>1;
 	}
-
 ;
 
 
@@ -1091,10 +1094,11 @@ execute_procedure:
 
 
 misc_sql :
-	lock_stmt
-	| unlock_stmt
-	| rename_stmt
-	| execute_procedure
+	lock_stmt 		{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
+	| unlock_stmt  		{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
+	| rename_stmt  		{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
+	| execute_procedure  	{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
+
 ;
 
 rename_stmt :
@@ -1266,6 +1270,13 @@ search_condition_sli_as_string: search_condition_sli {
 upd_search_condition_sli_as_string: search_condition_sli {
 	$<sql_string>$=fix_delete_update_columns(current_upd_table,$<s_select_list_item>1);
 	map_delete_update("UPDATE",current_upd_table,$<s_select_list_item>1);
+}
+;
+
+
+del_search_condition_sli_as_string: search_condition_sli {
+	$<sql_string>$=fix_delete_update_columns(current_del_table,$<s_select_list_item>1);
+	map_delete_update("DELETE",current_del_table,$<s_select_list_item>1);
 }
 ;
 

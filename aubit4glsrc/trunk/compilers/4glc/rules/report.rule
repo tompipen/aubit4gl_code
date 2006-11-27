@@ -329,16 +329,9 @@ format_action :
 		 lastlineno=yylineno;} commands {print_rep_ret(0,1);}
 ;
 
-report_cmd : 
-	print_command 
-	| print_img_command
-	| print_file_command
-	| need_command
-	| pause_command
-	| skip_command
-;
 
-need_command : NEED fgl_expr_c  KWLINE {
+need_cmd :
+	 NEED fgl_expr_c  KWLINE {
 	print_need_lines($<ptr>2);
 }
 ;
@@ -346,7 +339,8 @@ need_command : NEED fgl_expr_c  KWLINE {
 op_lines : {strcpy($<str>$,"0");} | KWLINE {strcpy($<str>$,"1");}
 ;
 
-skip_command : SKIP INT_VALUE op_lines {
+skip_cmd : 
+	SKIP INT_VALUE op_lines {
 			double n;
 			char buff[256];
 			strcpy(buff,$<str>3);
@@ -360,9 +354,19 @@ skip_command : SKIP INT_VALUE op_lines {
 			} else {
 				if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by(n); }
 			}
-	| SKIP_TO_TOP { print_skip_top(); }
+	;
+
+
+skip_to_top_cmd : 
+	SKIP_TO_TOP { print_skip_top(); }
+;
+
+/*
 	| FONT_SIZE nval { print_niy("FONT SIZE"); }
-	| SKIP_BY nval {
+*/
+
+
+skip_by_cmd :  SKIP_BY nval {
 		double n;
 			n=atof($<str>2);
 			if (rep_type!=REP_TYPE_PDF) {
@@ -371,7 +375,9 @@ skip_command : SKIP INT_VALUE op_lines {
 			}
 			print_skip_by(n);
 		}
-	| SKIP_TO nval {
+;
+
+skip_to_cmd : SKIP_TO nval {
 			if (rep_type!=REP_TYPE_PDF) {
 				a4gl_yyerror("SKIP TO is only in PDF reports");
 				YYERROR;
@@ -399,7 +405,7 @@ opt_print_at : | KW_AT nval {
 }
 ;
 
-print_command : PRINT opt_rep_expr_list opt_semi {
+print_cmd : PRINT opt_rep_expr_list opt_semi {
 	char wt;
 	doing_a_print=0;
 	print_report_print(0,$<str>3,0);
@@ -435,7 +441,8 @@ pf_char_or_var:
 ;
 
 
-print_file_command : PRINT_FILE pf_char_or_var opt_semi { 
+print_file_cmd : 
+	PRINT_FILE pf_char_or_var opt_semi { 
 	add_feature("PRINT_FILE");
 	if (!isin_command("REPORT")) {
                         a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
@@ -445,7 +452,8 @@ print_file_command : PRINT_FILE pf_char_or_var opt_semi {
 } ;
 
 
-print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi { 
+print_img_cmd : 
+	PRINT_IMAGE blob_var img_types opt_scaling opt_semi { 
 	print_expr($<ptr>4);
 	if (!isin_command("REPORT")) {
                         a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
@@ -721,7 +729,8 @@ rep_where :  { strcpy($<str>$,"");
 
 
 
-pause_command: PAUSE pause_msg
+pause_cmd : 
+	PAUSE pause_msg
 {
 if (!in_command("REPORT")) {
 	a4gl_yyerror("PAUSE can only be used in reportes");

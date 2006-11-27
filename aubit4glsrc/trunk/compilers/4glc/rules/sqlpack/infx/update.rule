@@ -53,6 +53,32 @@ where_upd_ss : {
 	}
 	;
 
+where_del_ss : {
+		$<sql_string>$=acl_strdup("");
+		  map_delete_update("DELETE",current_upd_table,0);
+	}
+	| WHERE_CURRENT_OF fetch_cursor_name { 
+		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
+			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
+		} else {
+
+		rm_quotes($<str>2);
+		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
+		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
+		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
+                                strcpy($<str>$,"");
+		} else {
+			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+			A4GL_cursor_current($<str>2);
+		}
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>$),NULL);
+		add_feature("DELETE_WHERE_CURRENT_OF");
+		}
+	}
+	| WHERE del_search_condition_sli_as_string {
+		$<sql_string>$=make_sql_string_and_free(acl_strdup("WHERE "),$<sql_string>2,NULL);
+	}
+;
 
 set_clause_list_ss: 
     XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {

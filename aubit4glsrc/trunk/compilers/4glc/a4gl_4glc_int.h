@@ -595,7 +595,7 @@ get_variable_dets_obj (char *s, int *type, int *arrsize, int *size, int *level, 
 #define add_feature A4GL_add_feature
 
 
-
+void add_used_cmd(char *s);
 void map_open_form(struct expr_str *s) ;
 void map_function_start(char *s) ;
 void map_function_end(void) ;

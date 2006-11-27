@@ -5,8 +5,8 @@
 */
 
 end_input :
-| field_commands END_INPUT 
-| END_INPUT
+	| field_commands END_INPUT 
+	| END_INPUT
 ;
 
 opt_defs : {
@@ -154,17 +154,38 @@ next_field	:	KW_NEXT {sprintf($<str>$,"\"+\"");}
 		| 	field_name_as_struct {sprintf($<str>$,field_name_as_char($<field_entry>1));}
 ;
 
-input_cmd	:	KW_INPUT inp_rest
-{
-print_input_1();
-  A4GL_new_events();
-} end_input { 
-	print_input_2($<str>2);
-		map_ui_endblock("INPUT");
-		A4GL_drop_events();
+
+
+
+input_cmd	:	KW_INPUT inp_rest {
+					print_input_1();
+  					A4GL_new_events();
+			} end_input { 
+					print_input_2($<str>2);
+					map_ui_endblock("INPUT");
+					A4GL_drop_events();
+			}
+		;
+
+input_array_cmd	:	KW_INPUT_ARRAY use_arr_var opt_defs FROM idm_input_array opt_help_no {
+					add_feature("UI_INPUT_ARRAY");
+					map_ui_block("INPUT_ARRAY");
+					curr_input_array_attribs.maxcount=0;
+					curr_input_array_attribs.count=0;
+					curr_input_array_attribs.allow_insert=1;
+					curr_input_array_attribs.allow_delete=1;
+					curr_input_array_attribs.curr_row_display=0;
+					inp_flags=0;
+		} input_attributes {
+  					A4GL_new_events();
+				strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>6,$<str>3,$<str>5,$<str>8,&curr_input_array_attribs,last_style,copy_togenbind('o')));
+					print_input_1();
+		} end_input { 
+				print_input_2($<str>9);
+				map_ui_endblock("INPUT");
+				A4GL_drop_events();
 		}
 ;
-
 
 input_attributes: opt_attributes {
                      if (strncmp($<str>1,"A4GL_",5)==0)  {
@@ -190,19 +211,7 @@ BY_NAME ibind_var_list opt_defs opt_help_no input_attributes
 	print_input_fl_g(0,$<str>2,$<str>5,$<field_list>4,$<str>6,last_style,copy_togenbind('i'));
 	strcpy($<str>$,A4GL_get_formloop_str(0));
 }
-| ARRAY use_arr_var opt_defs FROM idm_input_array opt_help_no {
-	add_feature("UI_INPUT_ARRAY");
-	map_ui_block("INPUT_ARRAY");
-	curr_input_array_attribs.maxcount=0;
-	curr_input_array_attribs.count=0;
-	curr_input_array_attribs.allow_insert=1;
-	curr_input_array_attribs.allow_delete=1;
-	curr_input_array_attribs.curr_row_display=0;
-	inp_flags=0;} input_attributes {
-	strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>6,$<str>3,$<str>5,$<str>8,&curr_input_array_attribs,last_style,copy_togenbind('o')));
-}
 ;
-
 
 idm_input_array :identifier KW_DOT KW_MULTIPLY {sprintf($<str>$,"\"%s\"",$<str>1);}
 	| VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_var_for_inp_array(%s)",$<str>3);}

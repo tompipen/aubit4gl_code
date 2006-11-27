@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.46 2006-10-31 15:13:06 mikeaubury Exp $
+# $Id: map.c,v 1.47 2006-11-27 08:46:28 mikeaubury Exp $
 #*/
 
 /**
@@ -141,7 +141,7 @@ openmap (char *s)
 	  exit (1);
 	}
       //FPRINTF(crudfile,"<MODULE NAME=\"%s\">\n",module_name_without_dirstart(infilename));
-      FPRINTF(crudfile,"   <FUNCTIONS>\n",module_name_without_dirstart(infilename));
+      FPRINTF(crudfile,"   <FUNCTIONS>\n");
 
 
     }
@@ -269,6 +269,16 @@ rm_quote (char *s)
   free (buff);
 }
 
+
+
+void add_used_cmd(char *s) {
+FILE *f;
+if (A4GL_isyes(acl_getenv("LOGCMDS"))) {
+	f=fopen("/tmp/used_cmds.log","w");
+	fprintf(f,"%s\n",s);
+	fclose(f);
+}
+}
 
 
 

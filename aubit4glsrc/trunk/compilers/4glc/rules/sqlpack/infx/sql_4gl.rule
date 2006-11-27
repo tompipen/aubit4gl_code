@@ -118,7 +118,7 @@ fetch_place_fp :
 		}
 ;
 
-
+/*
 delete_statement_position:
 	DELETE_FROM table_name WHERE_CURRENT_OF fetch_cursor_name {
  add_feature("DELETE_WHERE_CURRENT_OF");
@@ -138,7 +138,7 @@ delete_statement_position:
 		}
 }
 	;
-
+*/
 
 
 var_ident_qchar: var_ident {strcpy($<str>$,$<str>1);}
@@ -146,11 +146,25 @@ var_ident_qchar: var_ident {strcpy($<str>$,$<str>1);}
 	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 ;
 
-sql_cmd : opt_use {insql=1;} sql_commands {
-print_undo_use($<str>1);
-insql=0;strcpy($<str>$,$<str>3);}
+sql_cmd : opt_use {insql=1;} sql_commands { 
+		print_undo_use($<str>1); insql=0;strcpy($<str>$,$<str>3);
+	}
 ;
 
+sql_bound_cmd : opt_use {insql=1;} sql_bound_commands { 
+		print_undo_use($<str>1); insql=0;strcpy($<str>$,$<str>3);
+	}
+;
+
+sql_transact_cmd : opt_use {insql=1;} sql_transact_commands { 
+		print_undo_use($<str>1); insql=0;strcpy($<str>$,$<str>3);
+	}
+;
+
+sql_4gl_cmd : opt_use {insql=1;} fgl_sql_statement { 
+		print_undo_use($<str>1); insql=0;strcpy($<str>$,$<str>3);
+	}
+;
 
 
 flush_cmd : opt_use FLUSH fetch_cursor_name  {
@@ -273,12 +287,8 @@ value_expression_initial_sli :
 ;
 
 
-fgl_sql_statement: delete_statement_position {
-         A4GL_lex_printcomment("/*  delete 1 */\n");
-                A4GL_CV_print_exec_sql_bound($<str>1);
-                strcpy($<str>$,"Delete where current...");
-        }
-	| fetch_statement { strcpy($<str>$,"Fetch"); A4GL_lex_printcomment("/*  fetch */\n"); }
+fgl_sql_statement: 
+	fetch_statement { strcpy($<str>$,"Fetch"); A4GL_lex_printcomment("/*  fetch */\n"); }
 	| select_statement_ss_str_converted curs_forupdate { /* SQL HAS ALREADY BEEN CONVERTED */
 		char *ptr;
 		t_binding_comp_list *lo;
