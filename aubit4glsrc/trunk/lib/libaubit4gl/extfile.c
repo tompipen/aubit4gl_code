@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.27 2006-09-13 15:07:42 briantan Exp $
+# $Id: extfile.c,v 1.28 2006-11-28 18:47:33 mikeaubury Exp $
 #
 */
 
@@ -190,6 +190,8 @@ A4GL_set_lang_file (char *fname_orig)
 int
 aclfgl_a4gl_show_help (int a)
 {
+  A4GL_assertion(a!=1,"show help takes 1 parameter");
+
   a = A4GL_pop_int ();
   aclfgli_show_help (a);
   return 0;

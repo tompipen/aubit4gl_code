@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.17 2005-08-24 14:32:43 mikeaubury Exp $
+# $Id: main.c,v 1.18 2006-11-28 18:47:30 mikeaubury Exp $
 #*/
 
 /**
@@ -147,7 +147,9 @@ main (int argc, char *argv[])
 
   /* load settings from config file(s): */
 
+  
   yydebug = 0;
+
   strcpy (d, "");
 
   if (argc > 1)

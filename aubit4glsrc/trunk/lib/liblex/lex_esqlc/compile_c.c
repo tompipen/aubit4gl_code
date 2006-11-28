@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.345 2006-11-23 12:42:31 mikeaubury Exp $
+# $Id: compile_c.c,v 1.346 2006-11-28 18:47:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.345 2006-11-23 12:42:31 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.346 2006-11-28 18:47:33 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4569,7 +4569,7 @@ char *fldlist=0;
 	fldlist=field_name_list_as_char(fldlist_fh);
   }
   printc ("/*");
-  push_blockcommand ("INPUT");
+  push_blockcommand ("INPUT"); 
   printc ("*/");
   sio_id=get_sio_ids("INPUT");
   printc ("{\nint _fld_dr= -100;\nint _exec_block= 0;\nchar *_fldname;char *_curr_win;\n");
@@ -4637,7 +4637,7 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec, ch
   struct input_array_attribs *ptr_input_attr;
   ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printc ("/*");
-  push_blockcommand ("INPUT");
+   push_blockcommand ("INPUT"); 
   sio_id=get_sio_ids("INPUT");
   printc ("*/");
   i_defs=atoi(defs);

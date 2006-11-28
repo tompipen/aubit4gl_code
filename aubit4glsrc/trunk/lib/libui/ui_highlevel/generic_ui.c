@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.103 2006-11-15 13:00:23 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.104 2006-11-28 18:47:35 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3391,7 +3391,8 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
     }
   if (A4GL_is_special_key (a, A4GLKEY_HELP))
     {
-      aclfgl_a4gl_show_help (prompt->h);
+	A4GL_push_int(prompt->h);
+      aclfgl_a4gl_show_help (1);
       a = 0;
     }
   return a;

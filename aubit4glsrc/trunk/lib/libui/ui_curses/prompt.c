@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.62 2006-09-18 17:31:11 mikeaubury Exp $
+# $Id: prompt.c,v 1.63 2006-11-28 18:47:34 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.62 2006-09-18 17:31:11 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.63 2006-11-28 18:47:34 mikeaubury Exp $";
 #endif
 
 /**
@@ -334,7 +334,8 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
   /* A4GL_mja_refresh (); */
   if (A4GL_is_special_key(a,A4GLKEY_HELP))
     {
-      aclfgl_a4gl_show_help (prompt->h);
+	A4GL_push_int(prompt->h);
+      	aclfgl_a4gl_show_help (1);
       a = 0;
     }
 
