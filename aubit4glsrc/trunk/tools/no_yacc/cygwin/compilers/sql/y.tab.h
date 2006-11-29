@@ -1,7 +1,9 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
+/* A Bison parser, made by GNU Bison 2.2.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* Skeleton interface for Bison's Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,10 +20,18 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -29,25 +39,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2141,
-     NAMED = 2142,
-     NAMED_GEN = 2143,
-     CHAR_VALUE = 2144,
-     NOT_USED_1 = 2145,
-     NOT_USED_2 = 2146,
-     NOT_USED_3 = 2147,
-     NOT_USED_4 = 2148,
-     NOT_USED_5 = 2149,
-     NOT_USED_6 = 2150,
-     NOT_USED_7 = 2151,
-     NOT_USED_8 = 2152,
-     NUMBER_VALUE = 2153,
-     SEMICOLON = 2154,
-     QUESTION_MARK = 2155,
-     CLINE = 2156,
-     CH = 2157,
-     MARK_VAR = 2158,
-     END_MARK_VAR = 2159,
+     INT_VALUE = 2142,
+     NAMED = 2143,
+     NAMED_GEN = 2144,
+     CHAR_VALUE = 2145,
+     NOT_USED_1 = 2146,
+     NOT_USED_2 = 2147,
+     NOT_USED_3 = 2148,
+     NOT_USED_4 = 2149,
+     NOT_USED_5 = 2150,
+     NOT_USED_6 = 2151,
+     NOT_USED_7 = 2152,
+     NOT_USED_8 = 2153,
+     NUMBER_VALUE = 2154,
+     SEMICOLON = 2155,
+     QUESTION_MARK = 2156,
+     CLINE = 2157,
+     CH = 2158,
+     MARK_VAR = 2159,
+     END_MARK_VAR = 2160,
      ON_CLOSE_APPLICATION_STOP = 1000,
      DIALOGSETCURRLINE = 1001,
      DIALOGKEYSETLABEL = 1002,
@@ -302,40 +312,41 @@
      KW_OR = 1729,
      KW_TO = 1730,
      BEFORE = 1768,
-     END = 1771,
-     TILDE = 1778,
-     ILIKE = 1779,
-     FILLFACTOR = 1782,
-     TIME = 1787,
-     KW_TODAY = 1794,
-     KW_IDLE = 2134,
-     CANCEL_INSERT = 2135,
-     CANCEL_DELETE = 2136,
-     FORCE_UI = 2137,
-     FGL_MODULE = 2138,
-     VIA = 2139
+     KW_INPUT_ARRAY = 1769,
+     END = 1772,
+     TILDE = 1779,
+     ILIKE = 1780,
+     FILLFACTOR = 1783,
+     TIME = 1788,
+     KW_TODAY = 1795,
+     KW_IDLE = 2135,
+     CANCEL_INSERT = 2136,
+     CANCEL_DELETE = 2137,
+     FORCE_UI = 2138,
+     FGL_MODULE = 2139,
+     VIA = 2140
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2141
-#define NAMED 2142
-#define NAMED_GEN 2143
-#define CHAR_VALUE 2144
-#define NOT_USED_1 2145
-#define NOT_USED_2 2146
-#define NOT_USED_3 2147
-#define NOT_USED_4 2148
-#define NOT_USED_5 2149
-#define NOT_USED_6 2150
-#define NOT_USED_7 2151
-#define NOT_USED_8 2152
-#define NUMBER_VALUE 2153
-#define SEMICOLON 2154
-#define QUESTION_MARK 2155
-#define CLINE 2156
-#define CH 2157
-#define MARK_VAR 2158
-#define END_MARK_VAR 2159
+#define INT_VALUE 2142
+#define NAMED 2143
+#define NAMED_GEN 2144
+#define CHAR_VALUE 2145
+#define NOT_USED_1 2146
+#define NOT_USED_2 2147
+#define NOT_USED_3 2148
+#define NOT_USED_4 2149
+#define NOT_USED_5 2150
+#define NOT_USED_6 2151
+#define NOT_USED_7 2152
+#define NOT_USED_8 2153
+#define NUMBER_VALUE 2154
+#define SEMICOLON 2155
+#define QUESTION_MARK 2156
+#define CLINE 2157
+#define CH 2158
+#define MARK_VAR 2159
+#define END_MARK_VAR 2160
 #define ON_CLOSE_APPLICATION_STOP 1000
 #define DIALOGSETCURRLINE 1001
 #define DIALOGKEYSETLABEL 1002
@@ -590,25 +601,27 @@
 #define KW_OR 1729
 #define KW_TO 1730
 #define BEFORE 1768
-#define END 1771
-#define TILDE 1778
-#define ILIKE 1779
-#define FILLFACTOR 1782
-#define TIME 1787
-#define KW_TODAY 1794
-#define KW_IDLE 2134
-#define CANCEL_INSERT 2135
-#define CANCEL_DELETE 2136
-#define FORCE_UI 2137
-#define FGL_MODULE 2138
-#define VIA 2139
+#define KW_INPUT_ARRAY 1769
+#define END 1772
+#define TILDE 1779
+#define ILIKE 1780
+#define FILLFACTOR 1783
+#define TIME 1788
+#define KW_TODAY 1795
+#define KW_IDLE 2135
+#define CANCEL_INSERT 2136
+#define CANCEL_DELETE 2137
+#define FORCE_UI 2138
+#define FGL_MODULE 2139
+#define VIA 2140
 
 
 
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
 #line 175 "sql.yacc"
-typedef union YYSTYPE {
+{
         char    str[1024];
    char *sql_string;
 	struct  ilist int_list;
@@ -621,15 +634,14 @@ typedef union YYSTYPE {
         float   float_val;
 
 
-} YYSTYPE;
-/* Line 1447 of yacc.c.  */
-#line 627 "y.tab.h"
+}
+/* Line 1528 of yacc.c.  */
+#line 640 "y.tab.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE sqlparse_yylval;
-
-
 
