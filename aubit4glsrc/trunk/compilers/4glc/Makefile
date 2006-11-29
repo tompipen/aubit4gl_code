@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.22 2006-11-11 09:06:58 afalout Exp $
+# $Id: Makefile,v 1.23 2006-11-29 10:22:03 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -229,6 +229,7 @@ ifneq "${YACC}" "no"
 	${RM} t
 else
 	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/mk_states* rules/generated
+	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/mk_states* rules/generated
 endif
 
 mk_states_c:

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.34 2006-11-26 01:13:51 afalout Exp $
+# $Id: Makefile,v 1.35 2006-11-29 10:22:02 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2098,7 +2098,7 @@ ifneq "${YACC}" "no"
 	@update=0; \
 	ALLF="4glc/rules/generated/y.tab.c 4glc/rules/generated/y.tab.h \
 		4glc/rules/generated/kw.h 4glc/rules/generated/kw.yh \
-		4glc/mk_states_1.h 4glc/mk_states.h 4glc/mk_states.c \
+		4glc/mk_states_1.h 4glc/mk_states.h 4glc/rules/generated/mk_states.c \
 		sql/lex.sqlparse_yy.c sql/y.tab.c sql/y.tab.h \
 		fcompile/lex.yy.c fcompile/y.tab.c \
 		menus/lex.yy.c menus/y.tab.c \
