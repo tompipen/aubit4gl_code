@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.23 2006-11-29 10:22:03 mikeaubury Exp $
+# $Id: Makefile,v 1.24 2006-11-29 11:14:17 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -228,7 +228,6 @@ ifneq "${YACC}" "no"
 #the "t" file is some kind of temporary file created by wantkw_gen.pl
 	${RM} t
 else
-	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/mk_states* rules/generated
 	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/mk_states* rules/generated
 endif
 
