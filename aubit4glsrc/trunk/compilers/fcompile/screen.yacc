@@ -910,7 +910,13 @@ number_value : NUMBER_VALUE | PLUS NUMBER_VALUE | MINUS NUMBER_VALUE {sprintf($<
 
 
 incl_entry : 
-CHAR_VALUE   { strcpy($<str>$,A4GL_char_val($<str>1)); }
+CHAR_VALUE   { 
+	if (strlen($<str>1)==2) {/* "" */
+		sprintf($<str>$,"NULL");
+	} else {
+		strcpy($<str>$,A4GL_char_val($<str>1)); 
+	}
+}
 | NAMED   {strcpy($<str>$,$<str>1); }
 | NAMED TO NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
 | NAMED COLON NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
