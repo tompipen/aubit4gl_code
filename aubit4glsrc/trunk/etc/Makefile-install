@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.16 2006-11-26 01:13:58 afalout Exp $
+# $Id: Makefile-install,v 1.17 2006-12-01 06:52:59 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -218,15 +218,20 @@ incl/Makefile-common:
 ###########################################
 # Create a tarball from files in this directory and below
 tar.bin: clean.all
+ifneq "${BINTARBASENAME}" ""
 	${RM} ${BINTARBASENAME}
 ifndef COMSPEC
 #UNIX
 	tar -cvzf ${BINTARBASENAME} *
-	@echo "Aubit binary installation tarball created"
+	@echo "Aubit binary installation tarball created: "
+	@echo "`ls ${BINTARBASENAME}`"
 else
 #when on CygWin, maybe we should still use tar or bzip2, to preserve permissions, links...?
 	zip -r ${BINTARBASENAME} *
 	@echo "Aubit binary installation zipball created"
+endif
+else
+	@echo "Please run ./configure before 'make tar.bin'"
 endif
 
 ## ------------------------------------------------------------------

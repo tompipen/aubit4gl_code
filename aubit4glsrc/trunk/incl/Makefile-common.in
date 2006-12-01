@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.207 2006-11-26 01:13:58 afalout Exp $
+# $Id: Makefile-common.in,v 1.208 2006-12-01 06:53:00 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -943,6 +943,7 @@ HELP_DESTINATION	=@HELP_DESTINATION@
 COMP_FORM_EXT		=@COMP_FORM_EXT@
 LIBPQ_FE_H_IFLAGS	=@LIBPQ_FE_H_IFLAGS@
 RPM					=@RPM@
+RPM_A4GL_DEFAULT_PREFIX=@RPM_A4GL_DEFAULT_PREFIX@
 LIBTOOL_DEPS		=@LIBTOOL_DEPS@
 enable_minimal		=@enable_minimal@
 

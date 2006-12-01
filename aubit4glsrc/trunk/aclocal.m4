@@ -42,10 +42,13 @@ AC_DEFUN(PHP_CONFIGURE_PART,[
   
 	if test "$A4GL_dcopRef" != ""; then
 		#See functions progress_x in script bin/aubit
+		if test "$A4GL_DCOP_USER" != ""; then
+			DCOP_FLAGS="--user $A4GL_DCOP_USER"
+		fi
 		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
 		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $A4GL_dcopRef setLabel "$1"
+    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
+		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "$1"
 	fi
 ])
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.36 2006-11-29 10:43:31 mikeaubury Exp $
+# $Id: Makefile,v 1.37 2006-12-01 06:52:40 afalout Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -145,6 +145,7 @@ ifeq "${DIALOG_TYPE}" "no"
 	@echo "| PREFIX           =${PREFIX} (under ${AUBITNAME}) "
 	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
 	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
+	@echo "| You can override PREFIX with 'make install PREFIX=/some/path'      |"
 	@echo "| Execute 'make extra' to compile additional components:             |"
 	@echo "| ${ALL_EXTRA}"
 	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
@@ -706,18 +707,7 @@ include incl/Makefile-install.mki
 #remaining install related targets defined here are used only when installing
 #from compiled source code tree.
 
-install: install.core install.Makefile-common install.setmod install.example \
-		install.manual install.config \
-		install.bin.links install.aubitrc install.libs.links \
-		install.makefile-install install.libs.conf install.registry
-ifneq "${AUBITRCFILEEXISTS}" ""
-	@echo " "
-	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
-	@echo "====================== WILL NOT OVERWRITE ======================"
-	@echo "use 'make install.aubitrc aubitrc=new' if you want to do that "
-	@echo "Automatically created aubitrc placed in /tmp/aubitrc.tmp"
-	@echo " "
-endif
+install: ./bin/4glc install.all
 	@echo " "
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Aubit compiler installed to $(INSTALL_DIR)"
@@ -729,6 +719,19 @@ endif
 	@echo "Thank you for using Aubit 4gl compiler"
 	@echo " "
 
+install.all: install.core install.Makefile-common install.setmod install.example \
+		install.manual install.config \
+		install.bin.links install.aubitrc install.libs.links \
+		install.makefile-install install.libs.conf install.registry
+ifneq "${AUBITRCFILEEXISTS}" ""
+	@echo " "
+	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
+	@echo "====================== WILL NOT OVERWRITE ======================"
+	@echo "use 'make install.aubitrc aubitrc=new' if you want to do that "
+	@echo "Automatically created aubitrc placed in /tmp/aubitrc.tmp"
+	@echo " "
+endif
+	
 #WARNING: for some reason (sic!) assigning variables here MUST happen 
 #on the beggining of the line:
 ifeq "${INSTALLDIR}" ""
@@ -737,11 +740,11 @@ endif
 ifeq "${SOURCEDIR}" ""
 SOURCEDIR=${AUBIT_SRC_ROOT}
 endif
+
 ########################
 #Check that 'make install' installed everything we expect, and not things
 #we dont expect/want:
 install.check:
-
 	export MAKINGAUBIT=0; export SOURCEDIR="${SOURCEDIR}";export INSTALLDIR="${INSTALLDIR}"; \
 		${SH} bin/4glpc.obsolete -chk-install
 
@@ -1011,13 +1014,14 @@ createcleantar: installdrop installall tarinstall
 #installdrop:
 #	${RMDIR} $(INSTALL_DIR)
 
-tar: clean.all
+tar: clean.all clean.tools
 #COMPILE_DATE=20-01-2002
 #TARGET=i586-pc-linux-gnu
 	${RM} ${SOURCETARBASENAME}
 ifndef COMSPEC
 	tar -cvzf ${SOURCETARBASENAME} *
-	@echo "Aubit tarball created"
+	@echo "Aubit tarball created:"
+	@echo "(`ls ${SOURCETARBASENAME}`)"
 else
 #when on CygWin, maybe we should still use tar or bzip2, to preserve permissions, links...?
 #zip [-options] [-b path] [-t mmddyyyy] [-n suffixes] [zipfile list] [-xi list]
@@ -1032,10 +1036,15 @@ else
 endif
 
 
-tar.bin:
+tar.bin: $(INSTALL_DIR)/bin/4glc
 	${RM} ${BINTARBASENAME}
-	tar -cvzf ${BINTARBASENAME} *
-	@echo "Aubit binary tarball created (${BINTARBASENAME})"
+#	tar -cvzf ${BINTARBASENAME} *
+	if ! test -f $(INSTALL_DIR)/etc/aubitrc-bin; then cd $(INSTALL_DIR); ./configure; fi
+	#${MAKE} -C $(INSTALL_DIR) tar.bin
+	${MAKE} -C $(INSTALL_DIR) clean.all
+	cd $(INSTALL_DIR); tar -cvzf ${BINTARBASENAME} *
+	@echo "Aubit binary tarball created:"
+	@echo "(`ls $(INSTALL_DIR)/${BINTARBASENAME}`)"
 
 source.zip:
 	${RMDIR} $(INSTALL_DIR)
@@ -1096,38 +1105,59 @@ cleantar:
 #cp: cannot stat `README.txt': No such file or directory
 #error: Bad exit status from /var/tmp/rpm-tmp.89960 (%doc)
 
-
-
+ifneq "${RPM}" ""
+#What the ???? Fist line inside ifneq must start on first char????
 #Used to be all in rpm executable
 RPMBUILD	=rpmbuild
-SRCTMP		:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
-RPMCONFFILE	:=${AUBITDIR}/etc/aubit-rpm.spec
-RPM_SRC_FILE:=${shell find ${RPMBUILDROOT}/SRPMS/ -name ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.src.rpm}
-RPM_FILE	:=${shell find ${RPMBUILDROOT}/RPMS/ -name ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.*.rpm}
-TMP_RPM_INSTDIR	=/tmp/aubit4gl-rpminstall
 
-PART1_ESC	=${shell echo ${RPMBUILDROOT}/RPMS | sed -e "s/\//\\\\\//g"}
-PART2_ESC	=${shell echo ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}  | sed -e "s/\//\\\\\//g"}
-RPM_FILE_CPU:=${shell echo ${RPM_FILE} | sed -e "s/${PART1_ESC}//" -e "s/${PART2_ESC}//" -e 's/rpm//' -e 's/\.//g	' -e 's/\-1//' -e 's/\// /g' | awk '{print $$1}' }
+	RPM_VENDOR:=${shell rpm --eval "%_vendor"}
+	RPM_TARGET_OS:=${shell rpm --eval "%_target_os"}
+	RPM_TARGET_PLATFORM:=${shell rpm --eval "%_target_platform"}
+	#Something wrong here - even when it returns i586, it will build i686
+	#I suppose its save to assume all machines will build (at least) i686 this days:
+	RPM_TARGET_CPU_AUTO:=${shell rpm --eval "%_target_cpu"}
+	RPM_TARGET_CPU=i686
+	
+	RPM_FILE_TO_MAKE=${RPMBUILDROOT}/RPMS/${RPM_TARGET_CPU}/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.${RPM_TARGET_CPU}.rpm
 
-RPM_TARGET_CPU:=${shell rpm --eval "%_target_cpu"}
-RPM_VENDOR:=${shell rpm --eval "%_vendor"}
-RPM_TARGET_OS:=${shell rpm --eval "%_target_os"}
-RPM_TARGET_PLATFORM:=${shell rpm --eval "%_target_platform"}
+	SRCTMP		:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.${ARCHEXT}
+	RPMCONFFILE	:=${AUBITDIR}/etc/aubit-rpm.spec
+	TMP_RPM_INSTDIR	=/tmp/aubit4gl-rpminstall
+	
+	RPM_SRC_FILE:=${shell find ${RPMBUILDROOT}/SRPMS/ -name ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.src.rpm}
+	RPM_FILE	:=${shell find ${RPMBUILDROOT}/RPMS/ -name ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.*.rpm}
+
+	ifneq "${RPM_FILE}" ""
+		PART1_ESC	=${shell echo ${RPMBUILDROOT}/RPMS | sed -e "s/\//\\\\\//g"}
+		PART2_ESC	=${shell echo ${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}  | sed -e "s/\//\\\\\//g"}
+		RPM_FILE_CPU:=${shell echo ${RPM_FILE} | sed -e "s/${PART1_ESC}//" -e "s/${PART2_ESC}//" -e 's/rpm//' -e 's/\.//g	' -e 's/\-1//' -e 's/\// /g' | awk '{print $$1}' }
+	endif
+	
+endif
+
 
 
 ##############################
 # make rpm form autoconf-ed etc/aubit-rpm.conf
 rpm: rpm.refresh.specfile
+ifneq "${shell id --name --user}" "root"
 ifneq "${RPM}" ""
+ifeq "${RPM}" "new"
+	${MAKE} rpm.clean
+endif
 	${MAKE} rpm.build
 else
 	@echo "RPM tools where not detected on your system."
 endif
+else
+	@echo "NEVER try to buid RPM packages as user 'root'!"
+	exit 1
+endif
 
 ##############################
 # Do the actual build
-rpm.build: rpm.check.all
+rpm.build: rpm.check.all.pre ${RPM_FILE_TO_MAKE}
+${RPM_FILE_TO_MAKE}: 
 #RPM insists to have source code in ${RPMBUILDROOT}/SOURCES/ before it will
 #build it, and only then make src and bin RPM
 	@echo "+--------------------------------------------------------------------+"
@@ -1168,6 +1198,29 @@ endif
 	@echo "+--------------------------------------------------------------------+"
 	${MAKE} rpm.show.created
 
+	
+# See 'rpm --querytags' for list of all tags you can query
+#POSTIN OLDFILENAMES FILEUSERNAME FILEGROUPNAME ICON  PREFIXES INSTPREFIXES
+#DIRINDEXES BASENAMES DIRNAMES OPTFLAGS DISTURL FILENAMES INSTALLPREFIX 
+rpm.show:
+#	no longer valid tag: rpm -qp --queryformat '%{DEFAULTPREFIX}\n' ${RPM_FILE}
+#	rpm -qp --queryformat '%{RPM_A4GL_INSTALL_DIR}\n' ${RPM_FILE}
+	rpm -qp --queryformat '%{PREFIXES}\n' ${RPM_FILE}
+	rpm -qp --queryformat '%{INSTPREFIXES}\n' ${RPM_FILE}
+#Prefix under which package WAS installed:
+	rpm -qp --queryformat '%{INSTALLPREFIX}\n' ${RPM_FILE}
+	rpm -q --queryformat '%{INSTALLPREFIX}\n' aubit4gl
+#	rpm -qp --queryformat '%{FILENAMES}\n' ${RPM_FILE}
+#	rpm -qp --queryformat '[%{NAME} %{FILENAMES}\n]' ${RPM_FILE}
+	
+#If you need to determine the actual string when it contains macros, you can 
+#use rpm. For example, to determine the actual Source: value, you can run:
+#
+#rpm -q --specfile foo.spec --qf "$(grep -i ^Source foo.spec)\n"
+
+
+
+
 ################################################
 #Create and deploy rpm to download web site
 rpm.deploy: rpm rpm.scp
@@ -1178,11 +1231,11 @@ rpm.deploy: rpm rpm.scp
 ################################################
 #SCP the rpm to WWW root for download
 rpm.scp:
-	scp ${RPM_SRC_FILE} ${RPM_FILE} root@192.168.1.200:/srv/www/htdocs
+	scp ${RPM_SRC_FILE} ${RPM_FILE} root@192.168.1.200:/srv/www/htdocs/files
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| make $@: done. URL:"
-	@echo "| http://192.168.1.200/${RPM_SRC_FILE}"
-	@echo "| http://192.168.1.200/${RPM_FILE}"	
+	@echo "| http://192.168.1.200/files/${RPM_SRC_FILE}"
+	@echo "| http://192.168.1.200/files/${RPM_FILE}"	
 	@echo "+--------------------------------------------------------------------+"
 
 ################################################
@@ -1199,33 +1252,52 @@ rpm.put:
 rpm.show.created:
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Created files:                                                     |"
-	@echo "| ${RPM_SRC_FILE}"
-	@echo "| ${RPM_FILE}"
+	@echo "| `ls ${RPM_SRC_FILE}`"
+	@echo "| `ls ${RPM_FILE}`"
 	@echo "| CPU: ${RPM_FILE_CPU}"
 	@echo "+--------------------------------------------------------------------+"
 	
 
 ###############################
-# Remove all created and intermediate files to force complete refresh/rpbm buid restart
-rpm.clean: rpm.refresh.specfile
+# 
+rpm.clean: rpm.clean.files rpm.refresh.specfile
+
+###############################
+# Remove all created and intermediate files to force complete refresh/rpm buid restart
+rpm.clean.files:
 	${RM} ${SRCTMP}
-	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
-	rm -rf ${RPMBUILDROOT}/BUILD/aubit4gl*
+	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ${RPM_SRC_FILE} ${RPM_FILE}
+	rm -rf ${RPMBUILDROOT}/BUILD/aubit4glsrc*
 #	rm -rf ${RPMBUILDROOT}/SOURCES/${SOURCETARBASENAME}
-	rm -rf ${RPMBUILDROOT}/SOURCES/aubit4gl*
+	rm -f ${RPMBUILDROOT}/SOURCES/aubit4gl*
+	rm -f /usr/src/packages/SRPMS/aubit4gl-*
+	rm -f /usr/src/packages/RPMS/i686/aubit4gl-*
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| NOTE: if version numbers changed, run ./configure first!           |"
 	@echo "+--------------------------------------------------------------------+"
 	
 ##############################
 # Verify that each file listed in spec file exist 
-rpm.check.all: rpm.check.deps rpm.refresh.specfile ${PREFIX}/bin/4glc 
+rpm.check.all.pre: rpm.refresh.specfile rpm.check.instdir
+#rpm.check.deps -- if we list it here, we have to have source code compiled - so do this manually?
+#${PREFIX}/bin/4glc 
 #rpm.check.specfile.pre
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Traget $@ finished"
 	@echo "+--------------------------------------------------------------------+"
 
-
+#As RPM default prefic has to be used in parhs specified in %files section,
+#and as rpm will package files that are installed in that location, it has to exist
+#and be writable by us NOW 
+rpm.check.instdir: ${RPM_A4GL_DEFAULT_PREFIX}
+	@if ! test -w "${RPM_A4GL_DEFAULT_PREFIX}"; then \
+		echo "ERROR: ${RPM_A4GL_DEFAULT_PREFIX} is not writable by current user" ; \
+		exit 1; \
+	fi
+	
+${RPM_A4GL_DEFAULT_PREFIX}:
+	su -c "mkdir -p $@; chmod a+rw $@"
+	
 ##############################
 # Seems like this is really not a task to do before RPM is built and install -
 # it seems that it was intended to compare result of RPM build with specfile, 
@@ -1264,12 +1336,18 @@ rpm.check.all.post:
 ###############################
 # Refresh vital files
 rpm.refresh.specfile:
+ifneq "${shell id --name --user}" "root"
 	./config.status --file etc/aubit-rpm.spec
 	./config.status --file incl/Makefile-common
+else
+	@echo "NEVER try to buid RPM packages as user 'root'!"
+	exit 1
+endif
 	
 ##############################
 #
-rpm.check.deps: ./bin/4glc
+rpm.check.deps: 
+#./bin/4glc
 #Not sure this makes any senese on Linux - since I did not find a way to disable
 #ldconfing cache or DT_RPATH/DT_RUNPATH, it will esentially just tell us which
 #libraries we used to link Aubit stuff are not in ld.so.conf, since only thing I can 
@@ -1284,6 +1362,7 @@ rpm.check.deps: ./bin/4glc
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| NOTE: target $@ invoked as depedency - starting build..."
 	@echo "+--------------------------------------------------------------------+"
+#	exit 1
 	${MAKE}
 	
 ##############################	
@@ -1383,6 +1462,84 @@ aubit4gl.lsm:
 
 
 ## ------------------------------------------------------------------
+##                      Deb packaging
+## ------------------------------------------------------------------
+
+#Notes:
+#See http://kitenet.net/~joey/code/alien.html
+#If alien is not run as root, the files in the generated package will have incorrect owners and permissions.  
+#For converting to (but not from) deb format, the gcc, make, debmake, dpkg-dev, and dpkg packages must be installed.
+
+##############################
+# Convert RPM to Deb (aubit4gl-1.00.8-1.i686.rpm will be converted to aubit4gl_1.00.8-1_i386.deb)
+#deb: ${RPM_FILE}
+deb: ${RPM_FILE_TO_MAKE}
+#-k = keep original version number 	 --scripts = include pre/post RPM scriptlets
+	alien --to-deb --scripts -k $^
+#Stampede .slp:
+#	alien --to-slp --scripts -k $^
+#Slackware tgz:
+#	alien --to-tgz --scripts -k $^
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Alien converted RPM to ${shell find . -name ${AUBITNAME}_${AUBITVERSION}.${AUBITBUILD}-1_*.deb}"
+	@echo "| To install it, use command 'dpkg -i <filename>.deb'"
+	@echo "+--------------------------------------------------------------------+"
+
+#--generate
+#    Generate a temporary directory suitable for building a package from, but do not 
+#    actually create the package. This is useful if you want to move files around in 
+#    the package before building it. The package can be built from this temporary 
+#	directory by running ``debian/rules binary'', if you were creating a Debian 
+#	package, or by running ``rpm -bb <packagename>.spec'' if you were creating a Red Hat package.
+	
+#--scripts
+#    Try to convert the scripts that are meant to be run when the package is 
+#	installed and removed. Use this with caution, becuase these scripts might be 
+#	designed to work on a system unlike your own, and could cause problems. It is 
+#	recommended that you examine the scripts by hand and check to see what they do 
+#	before using this option.
+#    This is enabled by default when converting from lsb packages.
+
+##############################
+#
+deb.scp:
+	scp ${shell find . -name ${AUBITNAME}_${AUBITVERSION}.${AUBITBUILD}-1_*.deb} root@192.168.1.200:/srv/www/htdocs/files
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. URL:"
+	@echo "| http://192.168.1.200/files/${shell find . -name ${AUBITNAME}_${AUBITVERSION}.${AUBITBUILD}-1_*.deb}"
+	@echo "+--------------------------------------------------------------------+"
+
+##############################
+#
+#all.scp: deb.scp rpm.scp autopackage.scp tar tar.bin
+ALLPKGS=${shell find . -name ${AUBITNAME}_${AUBITVERSION}.${AUBITBUILD}-1_*.deb} \
+	${RPM_SRC_FILE} ${RPM_FILE} ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package \
+	${SOURCETARBASENAME} $(INSTALL_DIR)/${BINTARBASENAME}
+
+all.packages.scp:
+	@for x in ${ALLPKGS}; do \
+		if ! test -f $$x; then \
+			echo "ERROR: $$x is missing"; \
+			exit 1; \
+		else \
+			echo "OK: $$x"; \
+		fi ; \
+	done
+	scp ${ALLPKGS} root@192.168.1.200:/srv/www/htdocs/files
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. URL:"
+	@echo "| http://192.168.1.200/files/"
+	@echo "+--------------------------------------------------------------------+"
+
+##############################
+#
+all.packages: rpm deb autopackage tar tar.bin
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done."
+	@echo "+--------------------------------------------------------------------+"
+	
+	
+## ------------------------------------------------------------------
 ##                      AutoPackage packaging
 ## ------------------------------------------------------------------
 
@@ -1451,10 +1608,10 @@ autopackage.deploy: autopackage.clean autopackage.prepare autopackage.package au
 ################################################
 #SCP the package to WWW root for download
 autopackage.scp:
-	scp ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package root@192.168.1.200:/srv/www/htdocs
+	scp ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package root@192.168.1.200:/srv/www/htdocs/files
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| make $@: done. URL:"
-	@echo "| http://192.168.1.200/${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package"
+	@echo "| http://192.168.1.200/files/${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.package"
 	@echo "+--------------------------------------------------------------------+"
 
 ################################################
