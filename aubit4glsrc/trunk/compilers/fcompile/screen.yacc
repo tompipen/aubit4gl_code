@@ -239,8 +239,18 @@ screen_element :
 some_text {
         //printf("%s %d %d %d %d %d %s\n","_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	if (lineno) {
+	wchar_t wstr[256];			/* utf8 */
+	size_t retc, mlen, wlen, width;		/* utf8 */
+	mlen = strlen($<str>1);			/* utf8 */
+	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
+	wlen = wcslen(wstr);			/* utf8 */
+	width = wcswidth(wstr, wlen);		/* utf8 */
+/* utf8 
         A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
+*/
+        A4GL_add_field("_label",colno+1,lineno,wlen,scr,0,$<str>1); /* utf8 */
+	colno+=width;						/* utf8 */
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
@@ -284,8 +294,18 @@ some_text {
 
 | CHAR_VALUE {
 	if (lineno) {
-	     A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	wchar_t wstr[256];			/* utf8 */
+	size_t retc, mlen, wlen, width;		/* utf8 */
+	mlen = strlen($<str>1);			/* utf8 */
+	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
+	wlen = wcslen(wstr);			/* utf8 */
+	width = wcswidth(wstr, wlen);		/* utf8 */
+/* utf8
+	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
+*/
+	A4GL_add_field("_label",colno+1,lineno,width,scr,0,$<str>1); /* utf8 */
+	colno+=width; 				/* utf8 */
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
@@ -294,8 +314,18 @@ some_text {
 
 | ch_list {
 	if (lineno) {
+	wchar_t wstr[256];			/* utf8 */
+	size_t retc, mlen, wlen, width;		/* utf8 */
+	mlen = strlen($<str>1);			/* utf8 */
+	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
+	wlen = wcslen(wstr);			/* utf8 */
+	width = wcswidth(wstr, wlen);		/* utf8 */
+/* utf8
 	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
+*/
+	A4GL_add_field("_label",colno+1,lineno,width,scr,0,$<str>1); /* utf8 */
+	colno+=width; /* utf8 */
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
