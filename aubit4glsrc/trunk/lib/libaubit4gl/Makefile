@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.26 2006-11-26 01:14:00 afalout Exp $
+# $Id: Makefile,v 1.27 2006-12-03 08:58:33 afalout Exp $
 #
 
 ROOT    	=../..
@@ -45,15 +45,9 @@ API_SPEC    =API_esql.spec API_help.spec API_menu.spec API_packer.spec \
 			API_form.spec  API_ui.spec  API_sqlparse.spec \
 			API_sql.spec API_rpc.spec API_exreport.spec
 
-#List of API .c files that do not have coresponding .spec file (should no 
-#longer be the case)
-API_C       =
-
-#../../incl/a4gl_API_exdata.h     ??????
-
-#List of all Aubit API interfaces source files, part of libaubit4gl, both 
-#generated from .spec files and written in C:
-CMODS_API   =${API_C} ${API_SPEC:.spec=.c}
+#List of all Aubit API interfaces source files, part of libaubit4gl,
+#generated from .spec files:
+CMODS_API   =${API_SPEC:.spec=.c}
 
 #List of all non-API source files of libaubit4gl, -- IN ALPHABETIC ORDER -- :
 COMMONSRC= \
@@ -62,11 +56,11 @@ COMMONSRC= \
 	calldll.c mem.c assert.c fglextra.c net.c conv.c compat.c corba_server_util.c \
 	data_if.c common_ui.c dates.c dir.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
 	err.c error.c errfile.c sqlexpr.c expr.c  extfile.c eval_field.c \
-	fglwrap.c funcs_d.c function_call_stack.c \
+	fglwrap.c funcs_d.c function_call_stack.c file.c \
 	gtime.c gen_stack.c gui_io.c gui.c \
 	helper.c \
 	io.c interval.c \
-	keys.c  file.c \
+	keys.c \
 	load.c \
 	match.c maths.c memfile.c \
 	ns.c \
@@ -77,8 +71,7 @@ COMMONSRC= \
 	translate.c \
 	ui.c
 
-CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} \
-						${CMODS_API}
+CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API}
 OBJS_API			=${CMODS_API:.c=.o}
 OBJS				=${CMODS:.c=.o}
 
@@ -87,10 +80,11 @@ OBJS				=${CMODS:.c=.o}
 ## ==================================================================
 
 LIBINCL_PATH	=${LIBROOT}/libincl
-INCL_PATH	=${ROOT}/incl
-DLMAGIC		=${LIBROOT}/bin/dlmagic
-ALL		=api ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} API_form_self.c API_help_self.c
-CFLAGS              +=-I.
+INCL_PATH		=${ROOT}/incl
+DLMAGIC			=${LIBROOT}/bin/dlmagic
+ALL				=api ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} \
+					API_form_self.c API_help_self.c
+CFLAGS			+=-I.
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
 #give us bunch of warnings about unised varibles, that we cannot fix
@@ -109,10 +103,13 @@ endif
 
 LCLINT_CFLAGS   	=${C_IFLAGS} -I.
 
+## ==================================================================
+##                        Platform specific options
+## ==================================================================
+
 ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
 endif
-
 
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
@@ -128,11 +125,9 @@ endif
 
 
 ifeq "${GCC_MINGW}" "yes"
-	#LINK_LIBS		+=-lc
-	#LINK_LIBS		+=-lgcc
-	#strcasecmp():
+	#Needed for strcasecmp():
 	LINK_LIBS		+=-lmoldname
-	#getservbyname():
+	#Needed for getservbyname():
 	LINK_LIBS		+=-lwsock32
 endif
 
@@ -174,33 +169,49 @@ else
 		SO_LDFLAGS_NOBUNDLE=${SO_LDFLAGS}
 endif
 
-
 ifeq "${HAVE_ZLIB}" "1"
 	LINK_LIBS		+=-lz
 endif
 
-.PHONY: all ci splint lclint api clean clean.generated clean.api api.headers
+.PHONY: all ci splint lclint api clean clean.generated clean.api api.headers lib
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
+#################################
+# Build all default targets
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} : $(OBJS)
-	rm -f ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
-	${LD} ${SO_LDFLAGS_NOBUNDLE} -o ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} $^ ${LINK_LIBS}
-#Please dont use hard links!
-	ln -s ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
-
+#################################
+# Build Aubit library file
+# NOTE: we are building versioned library; un-versioned one is a link to versioned library
+${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE}: $(OBJS)
+	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS}
 ifeq "${TARGET_OS}" "darwin"
 	${MKPATH} ${INST_PATH}
 	${CP} $@ ${INST_PATH}
 endif
 ifeq "${SO_EXT_LINKABLE}" ".dll"
+#Note - no linking on Windows
 	${MV} TMP${SOEXP_EXT} $@.a
 endif
+
+
+##################################
+# Create (link or copy) libaubit4gl without version string
+lib: ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
+${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}: ${LIBROOT}/libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE}
+ifeq "${COMSPEC}" ""
+#Please dont use hard links!
+	ln -s $^ $@
+else
+#Note - no linking on Windows
+	cp $^ $@
+	cp $^.a $@.a
+endif
+
 
 ## ==================================================================
 ##                             Sub Targets
@@ -224,7 +235,6 @@ ${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
 ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 	${CC} ${CFLAGS_FORM_X_XDR_C} -c -o $@ $^
 
-#initializer element is not computable at load time:
 builtin.o: builtin.c
 	${CC} ${CFLAGS_NO_PEDANTIC} -c -o $@ $*.c
 stack.o: stack.c
@@ -291,7 +301,7 @@ ${INCL_PATH}/a4gl_API_%.h: API_%.spec
 	${SH} ${DLMAGIC} $^ -h > $@
 	${SH} ${DLMAGIC} $^ -H > ${@:.h=_lib.h}
 
-
+################
 # Eventually - we are going to allow compilation of libaubit4gl
 # with certain plugins pre-compiled in.
 # In order to do this - we are going to replace the API code generated by dlmagic
@@ -301,7 +311,7 @@ API_%_self.c: API_%.spec
 	${SH} ${DLMAGIC}  $^ -S > $@
 
 #The former is needed for the API_ui.c in lib/libaubit4gl the latter for the libui/* stuff
-
+#Andrej: former and latter ?what? 
 
 ################
 #Rule to make API objects
@@ -313,14 +323,15 @@ API_%.o: API_%.c $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
 ##                        Clean Targets
 ## ==================================================================
 
-
 #################
 #Clean all files created in the process of making libaubit4gl:
 clean : clean.generated clean.api
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 		form_x_xdr.c form_x.h project.c core lclint.log \
 		*.out *.glb *${SO_EXT_LINKABLE} *.a  *.o  *.bak *.dll *.stackdump *.err \
-		*.base *.exp *.def .\#* API_lex.c
+		*.base *.exp *.def .\#* API_lex.c \
+		${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE} \
+		${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}.a ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE}.a
 
 #################
 #Clean all generated files (except API files)

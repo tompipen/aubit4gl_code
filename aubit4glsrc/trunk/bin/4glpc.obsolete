@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.13 2006-11-26 01:13:56 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.14 2006-12-03 08:58:25 afalout Exp $
 #
 
 ########################################################################
@@ -836,7 +836,7 @@ do
 			TMP=`ldd $onelib`
 			RET=$?
 			if test "$RET" != "0"; then 
-				echo "RET=$RET"
+				echo "ldd RET=$RET"
 				exit $RET
 			fi
 			
@@ -904,9 +904,18 @@ do
 		fi	
 	else ######################## Windows #############################
 		#Check libs built on Windows for dependencies we should include in installer
+		A4GL_VERSION_STRING=`aubit-config A4GL_LINK_LIBS | sed -e 's/-laubit4gl-//'`
+		PLUGINDIR="plugins-$A4GL_VERSION_STRING"
+		#echo "PATH=$PATH"
+		echo "AUBITDIR=$AUBITDIR"
+
+		#/usr/bin/cygcheck $AUBITDIR/$PLUGINDIR/libMENU_GENERIC.dll
+		#/usr/bin/cygcheck $AUBITDIR/$PLUGINDIR/libA4GL_file.dll
+		#MAKINGAUBIT=0 /usr/bin/bash C:/gnu/cygwin/usr/src/aubit/aubit4glsrc/bin/4glpc.obsolete -deps
+#exit 1
 		#ALL_LIBS="libMENU_GENERIC.dll"
 		#ALL_LIBS="libLOGREP_PDF.so"
-		ALL_LIBS="$AUBITDIR/lib/lib*.dll"
+		ALL_LIBS="$AUBITDIR/$PLUGINDIR/lib*.dll"
 
 		#Places we can search:
 		#SEARCH_PATHS="/  /cygdrive/f/MinGW/ /cygdrive/d/msys/ \
@@ -950,16 +959,41 @@ do
 			MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
 		fi
 		MINGW_ROOTDIR_CYG=`cygpath -u $MINGW_ROOTDIR`
+		AUBITDIR_CYG=`cygpath -u $AUBITDIR`
 		unset PATH
 		#User needs to have Windows and MinGW, but __NOT__ MSYS:
 		#export PATH="$SYSTEM32_PATH:$MINGW_ROOTDIR:$MSYS_ROOTDIR"
-		export PATH="$SYSTEM32_PATH:$MINGW_ROOTDIR_CYG"
+		export PATH="$SYSTEM32_PATH:$MINGW_ROOTDIR_CYG:$AUBITDIR_CYG/lib"
+		
+		echo "New (clean) PATH=$PATH"
+		CYGPATHS="`echo $PATH | /usr/bin/tr ':' ' '`"
+		WINPATHS="`echo $PATH | /usr/bin/tr ';' ' '`"
+		#cygcheck is a CygWin executable, so it will look in $CYGPATHS 
+		for x in $CYGPATHS; do
+			#echo $x
+			#if /usr/bin/test "$x" = "/usr/src/aubit/aubit4glsrc/bin"; then
+			#	HAVE_BIN=1
+			#fi
+			if /usr/bin/test "$x" = "/usr/src/aubit/aubit4glsrc/lib"; then
+				HAVE_LIB=1
+			fi
+		done
+		
+		#if test "$HAVE_BIN" != "1"; then
+		#	echo "ERRRRORRRR BIN"
+		#	exit 1
+		#fi
+		if test "$HAVE_LIB" != "1"; then
+			echo "ERRRRORRRR LIB"
+			exit 1
+		fi
+		
 		
 		for onelib in $ALL_LIBS; do
 			TMP=`/usr/bin/cygcheck $onelib`
 			RET=$?
 			if test "$RET" != "0"; then 
-				echo "RET=$RET"
+				echo "cygcheck RET=$RET"
 				exit $RET
 			fi
 			XXX=`echo "$TMP" | /usr/bin/grep "Error: could not find"`

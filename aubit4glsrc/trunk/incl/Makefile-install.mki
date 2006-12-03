@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.114 2006-11-11 09:07:02 afalout Exp $
+# $Id: Makefile-install.mki,v 1.115 2006-12-03 08:58:29 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -225,6 +225,20 @@ endif
 ## ==================================================================
 
 #Add basic registry keys, so native windows executable can find aubitrc
+
+#Invoked as part of compiling binary code:
+#Does seting registry as part of compiling make sense at all???  
+install.registry.src: POINT_TO_DIR=${AUBITDIR}
+install.registry.src: GLOB_RC=${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/aubitrc
+install.registry.src: USER_RC=${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/aubitrc
+install.registry.src: install.registry
+
+#Invoked as part of 'make install':
+install.registry.bin: POINT_TO_DIR=${shell cygpath -m ${INSTALL_DIR}}
+install.registry.bin: GLOB_RC=${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/aubitrc
+install.registry.bin: USER_RC=${shell cygpath -m ${AUBITETC}/aubitrc}
+install.registry.bin: install.registry
+
 install.registry:
 ifdef COMSPEC
 #A4GL_UI; ValueData: GTK
@@ -236,23 +250,27 @@ ifdef COMSPEC
 	regtool add  "/HKLM/Software/Aubit project/Aubit 4GL compiler"
 #AUBITDIR	
 	regtool add  "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"
-	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR" "${AUBITDIR}"
+	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR" "${POINT_TO_DIR}"
 	regtool add  "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"
-	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR" "${AUBITDIR}"
+	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR" "${POINT_TO_DIR}"
 #A4GL_INIFILE
 	regtool add  "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"
 #WARNING - do not hard-code - use @AUBITETC@ instead!!
-	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abitrc"
+	regtool -s set "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${USER_RC}"
 	regtool add  "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"
 #WARNING - do not hard-code - use @AUBITETC@ instead!!	
-	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${CYGWIN_PATH_WIN}/etc/opt/aubit4gl/abitrc"
+	regtool -s set "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE" "${GLOB_RC}"
 #Show current settings
 	@echo "-------------------------HKCU-----------------------------------"
 	@echo "AUBITDIR=`regtool get "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`"
+	@if ! test -d `regtool get "/HKCU/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`; then echo "ERROR: Above direcroty does not exist!"; exit 1; fi
 	@echo "A4GL_INIFILE=`regtool get "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"`"	
+	@if ! test -f `regtool get "/HKCU/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"`; then echo "ERROR: Above file does not exist!"; exit 1; fi	
 	@echo "-------------------------HKLM-----------------------------------"
 	@echo "AUBITDIR=`regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`"
+	@if ! test -d `regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/AUBITDIR"`; then echo "ERROR: Above direcroty does not exist!"; exit 1; fi	
 	@echo "A4GL_INIFILE=`regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"`"	
+	@if ! test -f `regtool get "/HKLM/Software/Aubit project/Aubit 4GL compiler/A4GL_INIFILE"`; then echo "ERROR: Above file does not exist!"; exit 1; fi	
 	@echo "----------------------------------------------------------------"	
 endif
 
@@ -639,9 +657,6 @@ ifdef COMSPEC
 else
 	ps -ef | grep crond
 endif
-	
-
-
 
 show.gcc.define:
 	${CC} -E -dM - </dev/null
@@ -650,6 +665,7 @@ libltdl:
 	(cd libltdl; configure  --enable-ltdl-install --with-auxdir=../etc/config)
 	${MAKE} -C libltdl
 
+##############################
 #Create Windows setup wizzard executable:
 winsetup:
 ifndef NOREFRESH

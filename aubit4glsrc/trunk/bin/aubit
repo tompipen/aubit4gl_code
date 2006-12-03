@@ -4767,6 +4767,7 @@ function set_defaults () {
 	INVOKED_AS="$0"
 	debug "INVOKED_AS=$INVOKED_AS" 
 	CURR_DIR=`pwd`
+	debug "CURR_DIR=$CURR_DIR"
 	cd / >/dev/null
 	if test -f "$INVOKED_AS"; then
 		FULL_ME="$INVOKED_AS"
@@ -4776,12 +4777,14 @@ function set_defaults () {
 		debug "FULL_ME=$FULL_ME"
 	fi
 	if ! test -f "$FULL_ME"; then
-		error "FULL_ME=$FULL_ME is not a file"
-		exit 4
+		debug "FULL_ME=$FULL_ME is not a file. Trying 'which'..."
+		FULL_ME="`which $INVOKED_AS 2>/dev/null`"
+		if ! test -f "$FULL_ME"; then
+			error "FULL_ME=$FULL_ME is not a file" 4
+		fi
 	fi
 	cd - >/dev/null
-	
-	
+
 	#Leave this which here - we may changed the PATH
 	A4GL_CONFIG="`which aubit-config 2>/dev/null`"
 	if test "$A4GL_CONFIG" = ""; then
@@ -4793,7 +4796,10 @@ function set_defaults () {
 	#TARGET=i686-pc-cygwin
 	#TARGET_OS=cygwin
 	TARGET_OS=`$A4GL_CONFIG TARGET_OS  2>/dev/null`
-	if test "$TARGET_OS" = ""; then 
+	if test "$TARGET_OS" = ""; then
+	
+		#Under CygWin shell there is OSTYPE=cygwin in environment
+	
 		error "no TARGET_OS" "3"
 	fi
 	
@@ -4940,6 +4946,7 @@ function process_flags () {
 	   #4glpc 4glc etc take -verbose, so we need to use something else
 		--averbose) #make THIS script verbose
 			VERBOSE=1
+			verbose "VERBOSE is ON"
 			;;
 		--asilent) #make THIS script silent (error only)
 			SILENT=1
@@ -5085,6 +5092,8 @@ function process_flags () {
 	  ####
 	done
 	
+	debug "after processing flags EXEC=$EXEC"
+	
 	which_dialog
 	
 	if test "$RUN_AND_EXIT" != ""; then
@@ -5168,9 +5177,53 @@ function determine_target_os () {
 	fi
 }
 
+################################
+#
+#Problem:
+#
+#Bash 3.2.5-7
+#andrej@istation-vm-xp /usr/src/aubit/aubit4glsrc
+#$ echo "aaa`bin/aubit-config TARGET_OS`xxx"
+#xxxmingw
+#
+#$ sh --version
+#GNU bash, version 3.2.5(7)-release (i686-pc-cygwin)
+#Copyright (C) 2005 Free Software Foundation, Inc.
+#
+#andrej@istation-vm-xp /usr/local/aubit4gl/tools/test
+#$ bash --version
+#GNU bash, version 3.1.17(6)-release (i686-pc-cygwin)
+#Copyright (C) 2005 Free Software Foundation, Inc.
+#
+#$ bash --version
+#GNU bash, version 3.1.17(6)-release (i686-pc-cygwin)
+#$ echo "aaa`bin/aubit-config TARGET_OS`xxx"
+#aaamingwxxx
+function check_bash () {
+
+
+	BASH_VER=`bash --version | head -1 | awk '{print $4}'`
+	SH_VER=`sh --version | head -1 | awk '{print $4}'`
+	
+	if test "$BASH_VER" != "$SH_VER"; then
+		warning "Your 'sh' executable is NOT the same as 'bash'. This may cause problems"
+	fi
+
+	if test "$BASH_VER" = "3.2.5(7)-release"; then
+		error "Bash version known to be broken ($BASH_VER)." 1
+	fi
+	if test "$SH_VER" = "3.2.5(7)-release"; then
+		error "Bash ('sh') version known to be broken ($BASH_VER)." 2
+	fi
+	
+}
+
 ###############################################
 # set AUBITDIR appropriate for platform
 function set_aubitdir () {
+	
+	check_bash
+	
 	case "$AUBITDIR" in
 		*cygdrive*)
 			if test "$TARGET_OS" = "mingw"; then
@@ -5181,9 +5234,10 @@ function set_aubitdir () {
 			fi
 			;;
 		*:*)
-			if test "$TARGET_OS" != "mingw"; then		
-				warning "AUBITDIR contans ':' but not using MinGW"
-				warning "$AUBITDIR"
+			if test "$TARGET_OS" != "mingw"; then
+				warning "AUBITDIR contans ':' but not using MinGW (TARGET_OS=${TARGET_OS}--):"
+				warning "AUBITDIR=$AUBITDIR"
+				echo "xxx`aubit-config TARGET_OS`xxx"
 			fi
 			;;
 		*)
@@ -5194,7 +5248,7 @@ function set_aubitdir () {
 			fi
 			;;
 	esac
-	
+
 	#Store waht we have now for debugging
 	INIT_AUBITDIR="$AUBITDIR"
 }
@@ -5243,8 +5297,6 @@ function set_lib_path () {
 			export LD_LIBRARY_PATH="$POSTGRESDIR/lib:$LD_LIBRARY_PATH"
 		fi
 	fi
-	
-	
 }
 
 #######################################
@@ -5267,8 +5319,13 @@ function set_path () {
 	
 	if [ "$COMSPEC" != "" ]; then
 		#dll files are searched for by Windows loader only in PATH
-		#Only Windows loader loads .dll's, so it must be native Windows paths (?)
-		PATH=$AUBITDIR/lib$A4GL_PATH_SEP$PATH
+		#Only Windows loader loads .dll's, so it must be native Windows paths (NOT!)
+		
+#echo "AUBITDIR=$AUBITDIR"
+#echo "AUBITDIR_CYG=$AUBITDIR_CYG"
+#exit
+		#NOT! PATH=$AUBITDIR/lib$A4GL_PATH_SEP$PATH
+		PATH=$AUBITDIR_CYG/lib$A4GL_PATH_SEP$PATH
 	fi
 }
 
@@ -5389,23 +5446,79 @@ function export_env_vars () {
 function run_cmd () {
 
 	#echo /$EXEC/
+	FIRST_ON_LINE=""
 	case $EXEC in 
-		-*|?-*)
-			#Exec line begins with a "-" or " -"
-			echo "ERROR: option not recognized: ($EXEC) try --ahelp"
-			exit 1
+		-*)
+			#Exec line begins with a "-" or "--"
+			error "ERROR: option not recognized: ($EXEC) try --ahelp" 1
 		;;
 	esac
 	
+	for x in $EXEC; do
+		FIRST_ON_LINE="$x"
+		break
+	done
 	
+	
+	#We have to do all this checking because CygWin Bash maintainers had 
+	#a blonde day, and whn executables cannot locate libraries, exit with 
+	#code 53 and ABSOLUTELY NO MESSAGE!!!!!!
+	
+	#Which examines only executables in PATH, even if we use ./name.exe
+	#so we MUST add . to PATH
+	export PATH=".:$PATH"
+	FIRST_IS="`which $FIRST_ON_LINE 2>/dev/null`"
+	if test "$FIRST_IS" = ""; then
+		error "$FIRST_ON_LINE not found; Check your PATH." 1
+	else
+		verbose "$FIRST_ON_LINE found as $FIRST_IS" 
+	fi
+	if test "$COMSPEC" != ""; then
+	EXT=`basename $FIRST_ON_LINE | tr "." " " | awk '{print $2}'`
+		if test "`basename $FIRST_ON_LINE`" = "4glc" -o "`basename $FIRST_ON_LINE`" = "4glpc" \
+			-o EXT="4ae" ; then
+			verbose "Checking $FIRST_ON_LINE ..."
+			TMP_STR=`cygcheck $FIRST_ON_LINE 2>&1 | grep 'could not find'`
+			if test "$TMP_STR" = "Error: could not find $FIRST_ON_LINE"; then
+				#CygCheck will ignore . in $PATH, so if we are attempting to 
+				#run the executable in curr dir, it will say it cant find it
+				TMP_STR=`cygcheck ./$FIRST_ON_LINE 2>&1 | grep 'could not find'`
+			fi
+			if test "$TMP_STR" != ""; then
+				error "Executable $FIRST_IS cannot load following libraries:"
+				echo "$TMP_STR"
+				error "Check your PATH:"
+				echo "-------------------------------------------------------------------"
+				#Native Windows executables 'see' PATH differently (CygWin mangling) 
+				#so we cant just use $PATH here:
+				PATH_SLICED_WIN=`aubit-config PATH | tr " " "!" | tr ";" " "`
+				#PATH_SLICED_CYG=`echo $PATH | tr ":" " "`
+				#4glc and other Aubit executables are native Windows, so ; is a separator
+				CHNT=0
+				for x in $PATH_SLICED_WIN; do
+					let CNT=CNT+1
+					z=`echo $x | tr "!" " "`
+					echo "$CNT: $z"
+				done
+				echo "-------------------------------------------------------------------"
+				error "Fatal:" 1
+			fi
+		fi
+	fi
 	if test "$VALGRIND" = "1" ; then 
 		EXEC="valgrind $EXEC "
 	fi
 	
+	verbose "Running: $EXEC"
 	##########
 	eval $EXEC
 	##########
 	RET=$?
+	if test "$RET" != "0"; then
+		warning "'aubit':Command ($EXEC) exited with code $RET"
+	else
+		verbose "'aubit':Command ($EXEC) exited with code $RET"
+	fi
 	exit $RET
 }
 
@@ -5427,7 +5540,7 @@ NO_NEWLINE=0
 	process_flags
 	determine_target_os
 	set_aubitdir
-	set_lib_path	
+	set_lib_path
 	set_path
 	set_dbpath
 	check_mingw_path

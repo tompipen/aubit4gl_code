@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.336 2006-12-01 06:52:46 afalout Exp $
+dnl # $Id: configure.in,v 1.337 2006-12-03 08:57:43 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.336 2006-12-01 06:52:46 afalout Exp $)
+AC_REVISION($Id: configure.in,v 1.337 2006-12-03 08:57:43 afalout Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
@@ -701,6 +701,7 @@ AC_SUBST(SQLITE_ODBC_LIBDIR)
 
 AC_SUBST(Q_ESQLC)
 AC_SUBST(AUBIT_LICENSE)
+AC_SUBST(AUBIT_COPYRIGHT_MSG)
 AC_SUBST(PCRE_INC_PATH)
 AC_SUBST(PCRE_LIB_PATH)
 AC_SUBST(MSYS_ROOTDIR)
@@ -1811,6 +1812,7 @@ SHORTNAME="aubit4gl"
 AUBIT_WEBSITE=aubit4gl.sf.net
 AUBIT_PUBLISHER="Aubit project development team"
 AUBIT_LICENSE="GNU GPL/LGPL"
+AUBIT_COPYRIGHT_MSG="Copyright (C) 1998 - 2006 Aubit development team"
 COMPILE_DATE=`date +%d-%m-%Y`
 test_rpclib="1"
 GTKBUILD=no
@@ -1897,7 +1899,7 @@ AC_MINGW32
 
 AC_CYGWIN
 
-AC_MSG_CHECKING(Autoconf MinGW/CygWin state)
+AC_MSG_CHECKING(Autoconf MinGW/CygWin state based on AC macros)
 AC_MSG_RESULT(MINGW32=$MINGW32 CYGWIN=$CYGWIN)
 
 SO_EXT=.so
@@ -2246,14 +2248,19 @@ INST_BASE=$prefix
 RPM_ABSOLUTE=1
 FORMS_DESTINATION=etc
 HELP_DESTINATION=etc
+PLUGIN_DIR="plugins-${AUBIT_VERSION}_${AUBIT_BUILD}"
 
+#Warning: "CopyMode: normal" has been superseded by "Flags: promptifolder" in this 
+#version of Inno Setup. Behaving as if "Flags: promptifolder" were specified.
+#COPYMODE_NORMAL="CopyMode: normal"
+COPYMODE_NORMAL="Flags: promptifolder"
 
 if test "$RPM_ABSOLUTE" = "1"; then
 	#RPM_A4GL_DEFAULT_PREFIX="$INST_BASE"
 	RPM_A4GL_DEFAULT_PREFIX="/opt/aubit4gl-rpm"
 	
 	RPM_LIB_PREFIX="$RPM_A4GL_DEFAULT_PREFIX/lib"
-	RPM_PLUGIN_PREFIX="$RPM_A4GL_DEFAULT_PREFIX/plugins-${AUBIT_VERSION}_${AUBIT_BUILD}"
+	RPM_PLUGIN_PREFIX="$RPM_A4GL_DEFAULT_PREFIX/$PLUGIN_DIR"
 	RPM_EXE_PREFIX="$RPM_A4GL_DEFAULT_PREFIX/bin"
 	RPM_SH_PREFIX="$RPM_A4GL_DEFAULT_PREFIX/bin"
 	RPM_INC_PREFIX="$RPM_A4GL_DEFAULT_PREFIX/incl"
@@ -2272,7 +2279,7 @@ else
 	RPM_A4GL_DEFAULT_PREFIX="$INST_BASE"
 	
 	RPM_LIB_PREFIX="/lib"
-	RPM_PLUGIN_PREFIX="/plugins-${AUBIT_VERSION}_${AUBIT_BUILD}"
+	RPM_PLUGIN_PREFIX="/$PLUGIN_DIR"
 	RPM_EXE_PREFIX="/bin"
 	RPM_SH_PREFIX="/bin"	
 	RPM_INC_PREFIX="/incl"
@@ -2288,7 +2295,7 @@ fi
 
 	#Not used for RPM files:
 	LIB_PREFIX=$INST_BASE/lib
-	PLUGIN_PREFIX=$INST_BASE/plugins-${AUBIT_VERSION}_${AUBIT_BUILD}
+	PLUGIN_PREFIX=$INST_BASE/$PLUGIN_DIR
 	A4GL_DBPATH=$aubitdir/tools:$INST_BASE/tools
 
 ## ==================================================================
@@ -2437,23 +2444,23 @@ LIB_EXPORTLIB=aubit4gl-${AUBIT_VERSION}_${AUBIT_BUILD}
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$LIB_EXPORTLIB$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
     done
 
-	#List of libraries needed by compiler(s), like LEX_EC LEX_C etc.
+	#List of libraries/plug-ins needed by compiler(s), like LEX_EC LEX_C etc.
 	for FILE in $COMP_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: compiler'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\\$PLUGIN_DIR\lib$FILE$SO_EXT; DestDir: {app}\\$PLUGIN_DIR; Components: compiler'"
 	done
 
 	for FILE in $ALL_LIBS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\\$PLUGIN_DIR\lib$FILE$SO_EXT; DestDir: {app}\\$PLUGIN_DIR; Components: runtime'"
 	done
 
 	for FILE in $ALL_PLUGINS ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\\$PLUGIN_DIR\lib$FILE$SO_EXT; DestDir: {app}\\$PLUGIN_DIR; Components: runtime'"
 	done
 
 	if test "$COUNTER" -gt "$LIBFILE_SIZE"; then
@@ -3018,7 +3025,7 @@ PHP_CONFIGURE_PART(Checking standard programs:)
 		AC_MSG_CHECKING(pkg-config version)
 		PKG_CONFIG_VERSION=`$PKG_CONFIG --version`
 		if $PKG_CONFIG --atleast-pkgconfig-version 0.14 ; then
-			AC_MSG_RESULT(OK ($PKG_CONFIG_VERSION))
+			AC_MSG_RESULT(OK:$PKG_CONFIG_VERSION)
 		else
 			AC_MSG_WARN([*** pkg-config ($PKG_CONFIG_VERSION) too old; version 0.14 or later required.])
 		fi
@@ -3523,6 +3530,38 @@ if test "$SH" = "no"; then
 	if test "$SH" = "no"; then
 		AC_MSG_ERROR(Failed to set SH. Stop.)
     fi
+else
+
+#Here is the issue:
+#$ sh --version
+#GNU bash, version 3.2.5(7)-release (i686-pc-cygwin)
+#Copyright (C) 2005 Free Software Foundation, Inc.
+#
+#$ echo "aaa`bin/aubit-config TARGET_OS`xxx"
+#xxxmingw
+
+#andrej@istation-vm-xp /usr/local/aubit4gl/tools/test
+#$ bash --version
+#GNU bash, version 3.1.17(6)-release (i686-pc-cygwin)
+#Copyright (C) 2005 Free Software Foundation, Inc.
+#
+#$ echo "aaa`bin/aubit-config TARGET_OS`xxx"
+#aaamingwxxx
+
+	BASH_VER=`bash --version | head -1 | awk '{print $4}'`
+	SH_VER=`sh --version | head -1 | awk '{print $4}'`
+	
+	if test "$BASH_VER" != "$SH_VER"; then
+		AC_MSG_WARN(Your 'sh' executable is NOT the same as 'bash'. This may cause problems)
+	fi
+
+	if test "$BASH_VER" = "3.2.5(7)-release"; then
+		AC_MSG_ERROR(Bash version known to be broken ($BASH_VER). Stop.)
+	fi
+	if test "$SH_VER" = "3.2.5(7)-release"; then
+		AC_MSG_ERROR(Bash ('sh') version known to be broken ($BASH_VER). Stop.)
+	fi
+
 fi
 
 AC_PATH_PROG(LDD, ldd, no)
@@ -4731,13 +4770,16 @@ AC_ARG_WITH(smtp,
 			CPPFLAGS="-I$withval/include $CPPFLAGS `$PKG_CONFIG --cflags glib-2.0`"
 			LDFLAGS="-L$withval/lib $LDFLAGS `$PKG_CONFIG --libs glib-2.0`"
 		else
-			SMTP_INC_PATH="`$CYGPATH -m `$PKG_CONFIG --cflags glib-2.0` $withval`/usr/include"
+			#-IC:/gnu/GTK/include/glib-2.0 -IC:/gnu/GTK/lib/glib-2.0/include
+			TMP_GLIB_CFLAGS="`$PKG_CONFIG --cflags glib-2.0`"
+			SMTP_INC_PATH="$TMP_GLIB_CFLAGS -I`$CYGPATH -m $withval`/usr/include"
 			CPPFLAGS="-I$SMTP_INC_PATH $CPPFLAGS"
 			SMTP_LIB_PATH="`$CYGPATH -m $withval`/lib"
 			LDFLAGS="-L$SMTP_LIB_PATH $LDFLAGS"
 		fi
 		
 		if test "$enable_ac_debug" = "yes" ; then
+			echo "TMP_GLIB_CFLAGS=$TMP_GLIB_CFLAGS"
 			echo "LDFLAGS=$LDFLAGS"
 			echo "CPPFLAGS=$CPPFLAGS"
 		fi
@@ -5178,13 +5220,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
 			;;
 			
 		*) 
-			#TODO - use :
-			A=`rpm --eval "%_topdir"`
-
 			if test "$RPM" != "no"; then
 				#Have rpm executables
-				RPMBUILDROOT="fixme-autoconf-rpm-build-root"
-				echo $A
+				RPMBUILDROOT=`$RPM --eval "%_topdir"`
 			else
 				#Probably not a RPM based distro
 				RPMBUILDROOT=no-rpm-build-root
@@ -5400,28 +5438,34 @@ AC_ARG_WITH(sapdb,
 	SAPDB_VER="7500"
 	
 	if test "$withval" != "no"; then
-		if test "$SAPDBROOT" = ""; then
-			SAPDB_WARNING=1
-			if test "$withval" = "yes"; then
+		if test "$withval" = "yes"; then
+			if test "$SAPDBROOT" = ""; then
+				withval="$SAPDBROOT"
+				SAPDB_CUSTOM_WITHVAL=1
+			else
+				#SAPDB_WARNING=1
 				#try default
 				if test "$SAPDB_VER" = "7500"; then
 					#New - MySQL MaxDB default location:
-					SAPDBROOT="/opt/sdb"
+					withval="/opt/sdb"
 				else
 					#Old SAP DB default location 
-					SAPDBROOT="/opt/sapdb"
+					withval="/opt/sapdb"
 				fi
-			else
-				SAPDBROOT="$withval"
 			fi
+		else
+			#User specified withval using --with-sapdb=xxx
+			SAPDB_CUSTOM_WITHVAL=1
 		fi
 
-		if test "$SAPDBROOT" = ""; then
-			SAPDB_WARNING=1
-			AC_MSG_RESULT(no-SAPDBROOT not set and --with-sapdb did not specify path)
-		else
+		SAPDBROOT="$withval"
+		
 			if ! test -d "$SAPDBROOT"; then
-				AC_MSG_RESULT(no - directory specified with SAPDBROOT(=$SAPDBROOT) is invalid)
+				if test "$SAPDB_CUSTOM_WITHVAL" = "1"; then
+					AC_MSG_RESULT(no - directory specified ($SAPDBROOT) does not exist)
+				else
+					AC_MSG_RESULT(no)
+				fi
             else
 				if test "$withval" = "yes"; then
 					if test "$SAPDB_VER" = "7500"; then
@@ -5461,8 +5505,6 @@ AC_ARG_WITH(sapdb,
 				fi
 				WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAP"
 				WARN_LD_LIBRARY_PATH=1
-				
-				
 
 	            old_PATH="$PATH"
 				if test "$SAPDB_VER" = "7500"; then
@@ -5518,7 +5560,7 @@ AC_ARG_WITH(sapdb,
 
 	            PATH="$old_PATH"
             fi
-		fi
+		
 	else
         SAPDB_ESQLC="no"
 		SAPDBDIR=""
@@ -10252,9 +10294,12 @@ PLUGIN_NO_LINKABLE=
 		#let COUNTER=COUNTER+1
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "RPMFILE_$COUNTER='$RPM_PLUGIN_PREFIX/lib$FILE$SO_EXT'"
-		eval "ISFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
+		eval "ISFILE_$COUNTER='Source: $IS_SOURCE\\$PLUGIN_DIR\lib$FILE$SO_EXT; DestDir: {app}\\$PLUGIN_DIR; Components: runtime'"
 	done
 	COUNTER_IS="$COUNTER"
+	
+	#Linkable (not dlopen-able) optional libraries (not plug-ins)
+	#For example, IM_JABBER
 	for FILE in $PLUGIN_YES_LINKABLE ; do
 		#Note; even tho this libs are NOT plug-ns, we stuff them in plugin 
 		#folder so we dont have to change all makefiles and install scripts - FOR NOW
@@ -10307,7 +10352,7 @@ PLUGIN_NO_LINKABLE=
 		fi
 		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE_EXE'"
 		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: compiler'"
 	done
 
 	for FILE in $RUNTIME_EXE ; do
@@ -10320,17 +10365,17 @@ PLUGIN_NO_LINKABLE=
 			fi
 		fi
 		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE_EXE'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: runtime'"
 	done
 
 	for FILE in $RUNTIME_RESOURCE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: runtime'"
 	done
 
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"	
+	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: compiler'"	
 	
 AC_MSG_RESULT(done.)
 
@@ -10850,7 +10895,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.336 2006-12-01 06:52:46 afalout Exp $
+| $Id: configure.in,v 1.337 2006-12-03 08:57:43 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2006-11-26 01:13:59 afalout Exp $
+# $Id: Makefile,v 1.16 2006-12-03 08:58:32 afalout Exp $
 #
 
 ROOT    =..
@@ -254,11 +254,22 @@ check:
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
-libaubit4gl${SO_EXT_LINKABLE}: libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE}
-	ln -s libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE} libaubit4gl${SO_EXT_LINKABLE}
-
+# Main Aubit library (versioned)
 libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 	${MAKE} -C ${LIBAUBIT4GL_PATH}
+
+# Main Aubit library (NOT versioned - link or copy of versioned library file)
+# This target should not be needed, as this will be done when making versioned library,
+# It is here in case someone (or some makefile) refers to unversioned file, so we can
+# trigger making of the versioned one as dependency
+libaubit4gl${SO_EXT_LINKABLE}: libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE}
+ifeq "${COMSPEC}" ""
+	ln -s $^ $@
+else
+#Note - no linking on Windows
+	cp $^ $@
+	cp $^.a $@.a
+endif
 
 ##############
 #libLEX_

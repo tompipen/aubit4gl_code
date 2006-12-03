@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.37 2006-12-01 06:52:40 afalout Exp $
+# $Id: Makefile,v 1.38 2006-12-03 08:57:32 afalout Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -722,7 +722,7 @@ install: ./bin/4glc install.all
 install.all: install.core install.Makefile-common install.setmod install.example \
 		install.manual install.config \
 		install.bin.links install.aubitrc install.libs.links \
-		install.makefile-install install.libs.conf install.registry
+		install.makefile-install install.libs.conf install.registry.bin
 ifneq "${AUBITRCFILEEXISTS}" ""
 	@echo " "
 	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
@@ -1105,7 +1105,7 @@ cleantar:
 #cp: cannot stat `README.txt': No such file or directory
 #error: Bad exit status from /var/tmp/rpm-tmp.89960 (%doc)
 
-ifneq "${RPM}" ""
+ifneq "${RPM}" "no"
 #What the ???? Fist line inside ifneq must start on first char????
 #Used to be all in rpm executable
 RPMBUILD	=rpmbuild

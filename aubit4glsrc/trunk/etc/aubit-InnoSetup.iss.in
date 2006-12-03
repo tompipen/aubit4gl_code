@@ -1,3 +1,4 @@
+;--iss-script--
 ; +----------------------------------------------------------------------+
 ; | Aubit 4gl Language Compiler Version $.0                              |
 ; +----------------------------------------------------------------------+
@@ -23,22 +24,19 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.23 2006-05-03 07:54:06 mikeaubury Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.24 2006-12-03 08:58:27 afalout Exp $
 ;
-
 
 ;/**
 ; * @file
 ; *
-; * Script for creating "Inno Setup" Windows Wizzard install program for Aubit 4gl.
-; * To compile it, you will need "My Inno Setup Extensions" with support for 
-; * Pascal scripting.
-; * See http://www.wintax.nl/isx/ and http://www.jrsoftware.org/isinfo.php
+; * Definitions for creating "Inno Setup" Windows install Wizzard iprogram for Aubit compiler.
+; * To compile it, you need "My Inno Setup" installed
 ; *
 ; * @todo Resolve environment update on W2K
 ; * @todo Verify if user has admin privilege before writing to HKLM (added 
 ; *       noerror - enough?)
-; * @todo Add Manual
+; * @todo Pack PDF manual in installer
 ; * @todo Verify that there is no non-MinGW gcc in path before MinGW one, hiding it 
 ; *       (or use mingw-gcc.exe in 4glc.exe instead of gcc.exe).
 ; * @todo Update readme, convert it to DOS format or HTML
@@ -51,7 +49,7 @@
 ; *
 ; * @todo Create shortcut to make.bat
 ; * @todo Download & Install MinGW/GTK+/GWD automatically using isxdl.dll?
-; * @todo Offer to run deinstaller first, if find Aubit already installed ?
+; * @todo Offer to run deinstaller first, if Aubit already installed ?
 ; * @todo Add GTK+ themes files
 ; */
 
@@ -60,9 +58,9 @@
 ;procedure StringChange(var S: String; const FromStr, ToStr: String);
 ;Description: Change all occurances in S of FromStr to ToStr.
 
-;============================================================================================
-;                                   GENERAL SETUP SETTINGS
-;============================================================================================
+;============================================================================
+;                          GENERAL SETUP SETTINGS
+;============================================================================
 
 [Setup]
 AppName=@FULLNAME@
@@ -72,7 +70,7 @@ AppPublisherURL=http://@AUBIT_WEBSITE@
 AppSupportURL=http://@AUBIT_WEBSITE@
 AppUpdatesURL=http://@AUBIT_WEBSITE@
 AppVersion=@AUBIT_VERSION@.@AUBIT_BUILD@
-AppCopyright=Copyright (C) 2003 Aubit development team
+AppCopyright=@AUBIT_COPYRIGHT_MSG@
 DefaultDirName={pf}\@SHORTNAME@
 DefaultGroupName=@FULLNAME@
 AllowNoIcons=true
@@ -83,7 +81,8 @@ LicenseFile=@IS_SOURCE@\docs\COPYING
 InfoBeforeFile=@IS_SOURCE@\docs\README-Windows.txt
 ;InfoAfterFile=@IS_SOURCE@\docs\changelog.txt
 ;OutputBaseFilename=@FULLNAME@ @AUBIT_VERSION@.@AUBIT_BUILD@
-;where to put resulting setup exe:
+;where to put resulting setup exe; is not specified, new directory called 
+; "Output" is created under the place of this file, and filename is "setup.exe":
 ;OutputDir=c:\tmp
 ;WizardImageFile=myimage.bmp
 
@@ -102,9 +101,9 @@ Compression=bzip/9
 [_ISTool]
 EnableISX=true
 
-;============================================================================================
-;                            Installation components, types and tasks
-;============================================================================================
+;=============================================================================
+;                  Installation components, types and tasks
+;=============================================================================
 
 [Components]
 Name: runtime; Description: Aubit 4GL runtime libraries; Types: full standard compact custom runtime; Flags: fixed

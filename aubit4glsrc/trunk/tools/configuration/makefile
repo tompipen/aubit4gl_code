@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.11 2004-12-22 11:22:20 afalout Exp $
+# $Id: makefile,v 1.12 2006-12-03 08:58:36 afalout Exp $
 #
 
 ROOT    =../..
@@ -38,8 +38,11 @@ A4GL_LEXTYPE=C
 #DEBUG=ALL
 A4GL_SQLTYPE=nosql
 A4GL_UI=CONSOLE
-
 export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
+
+#'aubit' script debugging (invoked via amake rules):
+#SHDBG=1
+#export SHDBG
 
 
 ## ==================================================================
