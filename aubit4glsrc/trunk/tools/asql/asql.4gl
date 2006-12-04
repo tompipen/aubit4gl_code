@@ -104,7 +104,11 @@ if num_args() then
 			let lv_quiet=1
 			continue for
 		end if
-
+	
+		if arg_val(lv_a)="-?" then
+			display "asql [-d dbname ] [-q] [-e] [dbname] [scriptname]"
+			exit program
+		end if
 
 		if arg_val(lv_a)="-v" or arg_val(lv_a)="-V" then
 			display "(c) 2003-5 Aubit Computing Ltd"
