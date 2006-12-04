@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.18 2006-11-28 18:47:30 mikeaubury Exp $
+# $Id: main.c,v 1.19 2006-12-04 11:34:51 mikeaubury Exp $
 #*/
 
 /**
@@ -62,12 +62,14 @@ char *outputfilename;
 char ofile[134];
 char hfile[134];
 char hsfile[134];
+char ccrfile[134];
 
 extern FILE *cfo;
 extern FILE *cfio;
 extern FILE *cfi;
 extern FILE *hf;
 extern FILE *hsf;
+extern FILE *ccrf;
 char export_name[128];
 
 
@@ -225,6 +227,17 @@ main (int argc, char *argv[])
 	  printf ("Unable to open output file\n");
 	  exit (1);
 	}
+
+
+      strcpy (ccrfile, outputfilename);
+      strcat (ccrfile, ".xs.h");
+      /* ccrf = (FILE *) fopen (ccrfile, "w"); 
+      if (ccrf == 0)
+	{
+	  printf ("Unable to open output file\n");
+	  exit (1);
+	}
+	*/
     }
 
   else
