@@ -582,8 +582,8 @@ switch_element:
 		strcpy($<str>$,$<str>2);
 	}
 	| ENUM NAMED NAMED {
-		fprintf(cfo,"if (!output_%s(\"%s\",&r.%s,isptr,arr)) return 0;\n",$<str>1,$<str>2,$<str>3);
-		fprintf(cfi,"if (!input_%s(\"%s\",&r->%s,isptr,arr)) return 0;\n",$<str>1,$<str>2,$<str>3);
+		fprintf(cfo,"if (!output_%s(\"%s\",r.%s,isptr,arr)) return 0;\n",$<str>2,$<str>2,$<str>3);
+		fprintf(cfi,"if (!input_%s(\"%s\",&r->%s,isptr,arr)) return 0;\n",$<str>2,$<str>2,$<str>3);
 		strcpy($<str>$,$<str>3);
 		sprintf(sw_elem,"%s %s %s",$<str>1,$<str>2,$<str>3);
 	}
