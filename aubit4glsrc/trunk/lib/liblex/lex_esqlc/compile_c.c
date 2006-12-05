@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.346 2006-11-28 18:47:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.347 2006-12-05 17:20:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.346 2006-11-28 18:47:33 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.347 2006-12-05 17:20:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8072,10 +8072,17 @@ char *
 LEXLIB_rettype (char *s)
 {
   static char rs[20] = "long";
+  static char *vals[15]={ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} ;
   int a;
+
   A4GL_debug ("In rettype : %s", A4GL_null_as_null(s));
 
   a = atoi (s);
+  if (a<15) {
+        if (vals[a]) {
+                return vals[a];
+        }
+  }
 
   A4GL_debug ("In rettype");
   if (A4GL_has_datatype_function_i (a, "OUTPUT"))
@@ -8102,16 +8109,23 @@ LEXLIB_rettype (char *s)
   if (strcmp (s, "11") == 0) strcpy (rs, "fglbyte");
   //if (strcmp (s, "12") == 0) strcpy (rs, "fgltext");
      if (strcmp (s, "12") == 0)
-	     {
-		         if (A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
-			            strcpy (rs, "char");
-		         else
-			            strcpy (rs, "fgltext");
-		     }
+             {
+                         if (A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
+                                    strcpy (rs, "char");
+                         else
+                                    strcpy (rs, "fgltext");
+                     }
 
   if (strcmp (s, "13") == 0) strcpy (rs, "char");
   if (strcmp (s, "14") == 0) strcpy (rs, "struct_ival");
+
+  if (a<15) {
+        vals[a]=strdup(rs);
+        return vals[a];
+  }
+
   return strdup(rs);
+
 }
 
 

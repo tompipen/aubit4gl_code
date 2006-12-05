@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.5 2006-11-22 07:48:07 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.6 2006-12-05 17:20:09 mikeaubury Exp $
 #*/
 
 
@@ -658,7 +658,7 @@ s=p->u_data.expr_function_call->fname;
 			} 
 
 			if (!printed) {
-	  			A4GL_add_xmlmap (MAPSET_ENV, "<ENV VAR=\"UNKNOWN\" LINENO=\"%d\"/>\n", s, yylineno);
+	  			A4GL_add_xmlmap (MAPSET_ENV, "<ENV VAR=\"UNKNOWN\" LINENO=\"%d\"/>\n",  yylineno);
 			}
 			return ;
 	}
