@@ -217,7 +217,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "datetime" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DATETIME;}
 "float" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FLOAT;}
 "double precision" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FLOAT;}
-"real" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FLOAT;}
+"real" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLFLOAT;}
 "numeric" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
 "smallfloat" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLFLOAT;}
 "smallint" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLINT;}
