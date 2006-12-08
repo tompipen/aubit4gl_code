@@ -2775,6 +2775,7 @@ Optional Packages:
   --with-curses=DIR       Include curses support. DIR is the curses base
                           install directory, defaults to /lib.
                           This will probe for Ncurses, then for curses.
+  --with-widechar=yes/no  Enable or disable (default) wide libraries.
   --with-pdcurses=DIR     Include PDcurses support. DIR is the PDcurses base
                           install directory, defaults to
                           /usr/local/pdcurses.
@@ -12552,6 +12553,8 @@ echo "${ECHO_T}everything..." >&6; }
 	if test "$with_i4gl" = ""; then         	with_i4gl=yes 		;fi
 	if test "$with_httpd" = ""; then            with_httpd=yes 		;fi
 	if test "$with_java" = ""; then     		with_java=yes   	;fi
+	if test "$with_widechar" = ""; then     	with_widechar=no   	;fi
+	#Do not link in efence by default - At least on SuSE it generated
 	#Do not link in efence by default - At least on SuSE it generated
 	#anoying copyright message every time an executable liked with it
 	#is envoked
@@ -35816,6 +35819,18 @@ echo "${ECHO_T}${T_MD}Checking for curses libraries:${T_ME}" >&6; }
 	fi
 
 
+# Check --with-widechar option is given
+if test "${with_widechar+set}" = set; then
+  withval=$with_widechar;
+	if test "$withval" != "yes"; then
+		ENABLE_WIDECHAR=no
+	else
+		ENABLE_WIDECHAR=yes
+		{ echo "$as_me:$LINENO: widechar: enabled" >&5
+echo "${ECHO_T}widechar: enabled" >&6; }
+	fi
+fi
+
 # Check whether --with-curses was given.
 if test "${with_curses+set}" = set; then
   withval=$with_curses;
@@ -35865,7 +35880,11 @@ if test "${ac_cv_lib_ncurses_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lncurses  $LIBS"
+if test "${ENABLE_WIDECHAR}" != "yes"; then
+  LIBS="-lncurses  $LIBS"
+else
+  LIBS="-lncursesw  $LIBS"
+fi
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -35935,7 +35954,11 @@ if test $ac_cv_lib_ncurses_main = yes; then
 #define HAVE_LIBNCURSES 1
 _ACEOF
 
+if test "${ENABLE_WIDECHAR}" != "yes"; then
   LIBS="-lncurses $LIBS"
+else
+  LIBS="-lncursesw $LIBS"
+fi
 
 fi
 
@@ -36093,7 +36116,11 @@ if test "${ac_cv_lib_curses_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lcurses  $LIBS"
+  if test "${ENABLE_WIDECHAR}" != "yes"; then
+     LIBS="-lcurses  $LIBS"
+  else
+     LIBS="-lcursesw  $LIBS"
+  fi
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -36163,7 +36190,11 @@ if test $ac_cv_lib_curses_main = yes; then
 #define HAVE_LIBCURSES 1
 _ACEOF
 
-  LIBS="-lcurses $LIBS"
+  if test "${ENABLE_WIDECHAR}" != "yes"; then
+    LIBS="-lcurses $LIBS"
+  else
+    LIBS="-lcursesw $LIBS"
+  fi
 
 fi
 
@@ -36182,11 +36213,19 @@ _ACEOF
 					CURSES_LIB_NAME="-lSystem"
 					;;
 				*)
-					CURSES_LIB_NAME="-lform -lpanel"
+					if test "${ENABLE_WIDECHAR}" != "yes"; then
+					  CURSES_LIB_NAME="-lform -lpanel"
+					else
+					  CURSES_LIB_NAME="-lformw -lpanelw"
+					fi
 					if test "$ac_cv_lib_curses_main" = "yes"; then
-						CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
+						CURSES_LIB_NAME="-lcursesw $CURSES_LIB_NAME"
                     else
-						CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
+						if test "${ENABLE_WIDECHAR}" != "yes"; then
+						  CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
+						else
+						  CURSES_LIB_NAME="-lncursesw $CURSES_LIB_NAME"
+						fi
                     fi
 					;;
 			esac
@@ -36416,7 +36455,11 @@ if test "${ac_cv_lib_form_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lform  $LIBS"
+  if test "${ENABLE_WIDECHAR}" != "yes"; then
+    LIBS="-lform  $LIBS"
+  else
+    LIBS="-lformw  $LIBS"
+  fi
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -36486,7 +36529,11 @@ if test $ac_cv_lib_form_main = yes; then
 #define HAVE_LIBFORM 1
 _ACEOF
 
-  LIBS="-lform $LIBS"
+  if test "${ENABLE_WIDECHAR}" != "yes"; then
+    LIBS="-lform $LIBS"
+  else
+    LIBS="-lformw $LIBS"
+  fi
 
 fi
 
@@ -36498,7 +36545,11 @@ if test "${ac_cv_lib_panel_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpanel  $LIBS"
+  if test "${ENABLE_WIDECHAR}" != "yes"; then
+    LIBS="-lpanel  $LIBS"
+  else
+    LIBS="-lpanelw  $LIBS"
+  fi
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -36568,7 +36619,11 @@ if test $ac_cv_lib_panel_main = yes; then
 #define HAVE_LIBPANEL 1
 _ACEOF
 
-  LIBS="-lpanel $LIBS"
+  if test "${ENABLE_WIDECHAR}" != "yes"; then
+    LIBS="-lpanel $LIBS"
+  else
+    LIBS="-lpanelw $LIBS"
+  fi
 
 fi
 
@@ -49755,7 +49810,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.362 2006-12-03 08:57:32 afalout Exp $
+| $Id: configure,v 1.363 2006-12-08 17:26:54 briantan Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
