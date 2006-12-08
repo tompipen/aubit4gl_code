@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.173 2006-11-15 16:18:46 fortiz Exp $
+# $Id: esql.ec,v 1.174 2006-12-08 18:04:09 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.173 2006-11-15 16:18:46 fortiz Exp $";
+  "@(#)$Id: esql.ec,v 1.174 2006-12-08 18:04:09 mikeaubury Exp $";
 #endif
 
 
@@ -1569,14 +1569,13 @@ int dstype;
       break;
     case DTYPE_SERIAL:
     case DTYPE_INT:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
-	DATA;
+    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var = DATA;
       if (isSqlError ())
 	return 1;
 	if (sizeof(int)==sizeof(long)) {
       		*(long *) bind[idx].ptr = int_var;
 	} else {
-      		*(int *) bind[idx].ptr = int_var;
+      		*(long *) bind[idx].ptr = int_var;
 	}
       break;
     case DTYPE_FLOAT:
