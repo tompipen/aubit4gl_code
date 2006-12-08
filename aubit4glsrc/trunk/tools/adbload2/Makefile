@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.5 2006-11-11 10:49:56 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2006-12-08 20:11:20 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -56,7 +56,7 @@ all: ${ALL}
 
 adbload2: ${BINROOT}/adbload2
 ${BINROOT}/adbload2: adbload2_parse.tab.o parse.o adbload2.o process.o
-	${FGLPC} -t EC -g -o $@ $^ -L${LIBROOT} 
+	${FGLPC} -V5  -t EC -g -o $@ $^ -L${LIBROOT} 
 #	-laubit4gl
 
 ## ==================================================================
@@ -64,10 +64,10 @@ ${BINROOT}/adbload2: adbload2_parse.tab.o parse.o adbload2.o process.o
 ## ==================================================================
 
 process.o: process.ec
-	${FGLPC} -t EC -g -o $@ $^ 
+	${FGLPC}  -t EC -g -o $@ $^ 
 
 adbload2.o: adbload2.4gl
-	${FGLPC}  -t EC -g -o $@ $^
+	${FGLPC}  -V5  -t EC -g -o $@ $^
 	
 lex.yy.c: adbload2_parse.l
 	${LEX} $^

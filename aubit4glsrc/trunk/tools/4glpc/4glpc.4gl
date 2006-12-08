@@ -309,6 +309,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	END CASE
   END FOR
   if mv_lextype="EC" and (mv_lexdialect is null  or mv_lexdialect matches " " ) THEN
+		CALL aclfgl_setenv("A4GL_LEXDIALECT","INFORMIX")
 		LET mv_lexdialect="INFORMIX"
   end if
 
