@@ -36219,7 +36219,11 @@ _ACEOF
 					  CURSES_LIB_NAME="-lformw -lpanelw"
 					fi
 					if test "$ac_cv_lib_curses_main" = "yes"; then
-						CURSES_LIB_NAME="-lcursesw $CURSES_LIB_NAME"
+						if test "${ENABLE_WIDECHAR}" != "yes"; then
+						  CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
+						else
+						  CURSES_LIB_NAME="-lcursesw $CURSES_LIB_NAME"
+						fi
                     else
 						if test "${ENABLE_WIDECHAR}" != "yes"; then
 						  CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
@@ -49810,7 +49814,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.363 2006-12-08 17:26:54 briantan Exp $
+| $Id: configure,v 1.364 2006-12-08 18:24:47 briantan Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
