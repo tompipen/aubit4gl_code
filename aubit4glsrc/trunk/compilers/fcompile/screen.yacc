@@ -15,6 +15,7 @@
 #define _BISON_SIMPLE_INCL_
 #define _NO_WINDOWS_H_
 #include "a4gl_fcompile_int.h"
+#include <wchar.h>
 
 
 
@@ -238,12 +239,14 @@ screen_element :
 some_text {
         //printf("%s %d %d %d %d %d %s\n","_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	if (lineno) {
-	wchar_t wstr[256];			/* utf8 */
+	wchar_t *wstr;				/* utf8 */
 	size_t retc, mlen, wlen, width;		/* utf8 */
 	mlen = strlen($<str>1);			/* utf8 */
+	wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));		/* utf8 */
 	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
 	wlen = wcslen(wstr);			/* utf8 */
 	width = wcswidth(wstr, wlen);		/* utf8 */
+	free(wstr);				/* utf8 */
 /* utf8 
         A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
@@ -293,12 +296,14 @@ some_text {
 
 | CHAR_VALUE {
 	if (lineno) {
-	wchar_t wstr[256];			/* utf8 */
+	wchar_t *wstr;				/* utf8 */
 	size_t retc, mlen, wlen, width;		/* utf8 */
 	mlen = strlen($<str>1);			/* utf8 */
+	wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));		/* utf8 */
 	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
 	wlen = wcslen(wstr);			/* utf8 */
 	width = wcswidth(wstr, wlen);		/* utf8 */
+	free(wstr);				/* utf8 */
 /* utf8
 	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
@@ -313,12 +318,14 @@ some_text {
 
 | ch_list {
 	if (lineno) {
-	wchar_t wstr[256];			/* utf8 */
+	wchar_t *wstr;				/* utf8 */
 	size_t retc, mlen, wlen, width;		/* utf8 */
 	mlen = strlen($<str>1);			/* utf8 */
+	wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));		/* utf8 */
 	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
 	wlen = wcslen(wstr);			/* utf8 */
 	width = wcswidth(wstr, wlen);		/* utf8 */
+	free(wstr);				/* utf8 */
 /* utf8
 	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
