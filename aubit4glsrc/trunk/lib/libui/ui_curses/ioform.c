@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.148 2006-11-23 12:42:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.149 2006-12-08 17:29:35 briantan Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.148 2006-11-23 12:42:32 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.149 2006-12-08 17:29:35 briantan Exp $";
 #endif
 
 /**
@@ -3409,15 +3409,15 @@ A4GL_int_form_driver (FORM * form, int a)
 
   if (fd_ok != E_OK)
     {
-      A4GL_debug ("Problem in calling form_driver %p %d - returns %d", form,
-		  a, fd_ok);
+      A4GL_debug ("Problem in calling form_driver %p c=%d %x - rets %d", form,
+		  a, a, fd_ok);
       switch (fd_ok)
 	{
 	case E_SYSTEM_ERROR:
 	case E_BAD_STATE:
 	case E_BAD_ARGUMENT:
 	case E_NOT_POSTED:
-	case E_UNKNOWN_COMMAND:
+	/* case E_UNKNOWN_COMMAND: */	/* allow this for mbs utf8*/
 	case E_INVALID_FIELD:
 	  A4GL_exitwith ("Form driver complaint");
 	  return;

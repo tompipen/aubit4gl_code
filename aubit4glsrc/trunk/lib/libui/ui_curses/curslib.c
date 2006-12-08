@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.133 2006-11-17 08:11:42 mikeaubury Exp $
+# $Id: curslib.c,v 1.134 2006-12-08 17:29:35 briantan Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.133 2006-11-17 08:11:42 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.134 2006-12-08 17:29:35 briantan Exp $";
 #endif
 /*
 =====================================================================
@@ -52,6 +52,7 @@ static char const module_id[] =
 #include <stdio.h>
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
+#include <locale.h>		/* utf8 */
 
 char *a_strchr (char *s, char c);
 /*
@@ -1279,6 +1280,7 @@ A4GL_init_curses_stuff ()
 #ifdef DEBUG
   A4GL_debug ("Initializing curses environment");
 #endif
+  setlocale(LC_ALL,"");		/* utf8 */
   initscr ();
   //traceon();
 
