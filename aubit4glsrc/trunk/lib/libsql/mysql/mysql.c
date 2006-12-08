@@ -287,13 +287,22 @@ conv_sqldtype (int dt, int len, int prec, int *fgldtype, int *fglprc)
     case MYSQL_TYPE_LONG_BLOB:
       niy_dtype (dt);
       break;
+/*
     case MYSQL_TYPE_BLOB:
       niy_dtype (dt);
       break;
+*/
+
     case MYSQL_TYPE_VAR_STRING:
       *fgldtype = DTYPE_VCHAR;
+      *fglprc = len;
+      break;
+
+    case MYSQL_TYPE_BLOB:
+      *fgldtype = DTYPE_BYTE;
       *fglprc = 0;
       break;
+
     case MYSQL_TYPE_STRING:
       *fgldtype = DTYPE_CHAR;
       *fglprc = len;
@@ -1440,15 +1449,16 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 
       if (phase == PHASE_POST_FETCH)
 	{
-	  if (*(long *) mobind->length > obind->size)
-	    {
-	      truncated++;
-	    }
-	  if ((obind->dtype & DTYPE_MASK) == DTYPE_CHAR)
-	    {
-	      A4GL_pad_string (obind->ptr, obind->size);
-	    }
-	}
+
+	  	if (*(long *) mobind->length > obind->size)
+	    	{
+	      	truncated++;
+	    	}
+	  	if ((obind->dtype & DTYPE_MASK) == DTYPE_CHAR)
+	    	{
+	      	A4GL_pad_string (obind->ptr, obind->size);
+	    	}
+		}
       break;
 
     case DTYPE_SMINT:
@@ -1570,8 +1580,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DTIME:
       if (phase == PHASE_PRE_FETCH)
 	{
-	  mytime =
-	    A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	  mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
 	  mobind->buffer_type = MYSQL_TYPE_DATETIME;
 	  mobind->buffer = mytime;
 	  mobind->is_null = ind;
@@ -1583,16 +1592,39 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  //int i_date;
 	  char buff[256];
 	  mytime = mobind->buffer;
-	  SPRINTF6 (buff, "%04d-%02d-%02d %02d:%02d:%02d", mytime->year,
-		    mytime->month, mytime->day, mytime->hour, mytime->minute,
-		    mytime->second);
+	  SPRINTF6 (buff, "%04d-%02d-%02d %02d:%02d:%02d", mytime->year, mytime->month, mytime->day, mytime->hour, mytime->minute, mytime->second);
 	  A4GL_ctodt (buff, obind->ptr, obind->size);
 	}
       break;
 
     case DTYPE_BYTE:
-      A4GL_assertion (1, "Not implemented yet (byte2)");
+
+      if (phase == PHASE_PRE_FETCH)
+	{
+	  mobind->buffer_type = MYSQL_TYPE_BLOB;
+	  mobind->buffer = A4GL_alloc_associated_mem (associated_to, 10*1024);  
+	  mobind->is_null = ind;
+	  mobind->buffer_length = 10*1024; //obind->size;
+	  len = A4GL_alloc_associated_mem (associated_to, sizeof (long));
+	  mobind->length = len;
+	}
+
+      if (phase == PHASE_POST_FETCH)
+	{
+		/*
+		fglbyte *x;
+		x=obind->ptr;
+
+		if (x->where=='M') {
+			A4GL_pause_execution();
+                	x->memsize=mobind->buffer_length ;
+                        x->ptr=mobind->buffer;
+		}
+		*/
+		
+	}
       break;
+
 
     case DTYPE_TEXT:
       A4GL_assertion (1, "Not implemented yet (text2)");
@@ -1616,20 +1648,42 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
   int x;
   my_bool *indicators;
 
-  mysql_obind =
-    A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * no);
-  indicators =
-    A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * no);
-
+  mysql_obind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * no);
+  indicators = A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * no);
   for (a = 0; a < no; a++)
     {
       /* Bind... */
-      copy_out_single_mysql_bind (stmt, associated_to, &obind[a],
-				  &mysql_obind[a], &indicators[a],
-				  PHASE_PRE_FETCH);
+  	/* memset(&mysql_obind[a],0, sizeof(MYSQL_BIND)); */
+
+	mysql_obind[a].length=0;
+	mysql_obind[a].is_null=0;
+	mysql_obind[a].buffer=NULL;
+	mysql_obind[a].buffer_length=0;
+	mysql_obind[a].buffer_type=0;
+ 	mysql_obind[a].error = 0;
+
+/*
+ mysql_obind[a].buffer_type = 0;;
+ mysql_obind[a].buffer_length = 0;
+ mysql_obind[a].row_ptr = 0x0;
+ mysql_obind[a].offset = 0;
+ mysql_obind[a].length_value = 0;
+ mysql_obind[a].param_number = 0;
+ mysql_obind[a].pack_length = 0;
+*/
+/*
+ mysql_obind[a].error_value = 0;
+ mysql_obind[a].is_unsigned = 0;
+ mysql_obind[a].long_data_used =0;
+ mysql_obind[a].is_null_value = 0;
+ mysql_obind[a].store_param_func = 0;
+ mysql_obind[a].fetch_result = 0;
+ mysql_obind[a].skip_result =0;
+*/
+
+      copy_out_single_mysql_bind (stmt, associated_to, &obind[a], &mysql_obind[a], &indicators[a], PHASE_PRE_FETCH);
       indicators[a] = 0;
     }
-
   mysql_stmt_bind_result (stmt, mysql_obind);
   x = mysql_stmt_fetch (stmt);
 
@@ -1652,7 +1706,6 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
 				  &mysql_obind[a], &indicators[a],
 				  PHASE_POST_FETCH);
     }
-
   return 1;
 
 }
