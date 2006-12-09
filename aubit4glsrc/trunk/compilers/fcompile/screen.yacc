@@ -15,10 +15,8 @@
 #define _BISON_SIMPLE_INCL_
 #define _NO_WINDOWS_H_
 #include "a4gl_fcompile_int.h"
-#include <wchar.h>
 
-
-
+#include <wchar.h>	/* utf8 */
 
 /*
 =====================================================================
@@ -61,6 +59,7 @@ char *rm_dup_quotes(char *s) ;
 
 char *chk_alias(char *s);
 /* extern char *char_val(char*s); */
+int A4GL_form_wcswidth(char *mbs);	/* utf8 */
 
 /*
 =====================================================================
@@ -68,6 +67,17 @@ char *chk_alias(char *s);
 =====================================================================
 */
 
+int A4GL_form_wcswidth(char *mbs) {	/* utf8 */
+    wchar_t *wstr;
+    size_t retc, mlen, wlen, width;
+    mlen = strlen(mbs);
+    wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
+    retc = mbstowcs(wstr, mbs, mlen+1);
+    wlen = wcslen(wstr);
+    width = wcswidth(wstr, wlen);
+    free(wstr);
+    return width;
+}
 
 %}
 %start form_def
@@ -239,20 +249,10 @@ screen_element :
 some_text {
         //printf("%s %d %d %d %d %d %s\n","_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	if (lineno) {
-	wchar_t *wstr;				/* utf8 */
-	size_t retc, mlen, wlen, width;		/* utf8 */
-	mlen = strlen($<str>1);			/* utf8 */
-	wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));		/* utf8 */
-	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
-	wlen = wcslen(wstr);			/* utf8 */
-	width = wcswidth(wstr, wlen);		/* utf8 */
-	free(wstr);				/* utf8 */
-/* utf8 
-        A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
-	colno+=strlen($<str>1);
-*/
-        A4GL_add_field("_label",colno+1,lineno,wlen,scr,0,$<str>1); /* utf8 */
-	colno+=width;						/* utf8 */
+        //A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	//colno+=strlen($<str>1);
+        A4GL_add_field("_label",colno+1,lineno,A4GL_form_wcswidth($<str>1),scr,0,$<str>1); /* utf8 */
+	colno+=A4GL_form_wcswidth($<str>1);		/* utf8 */
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
@@ -296,20 +296,10 @@ some_text {
 
 | CHAR_VALUE {
 	if (lineno) {
-	wchar_t *wstr;				/* utf8 */
-	size_t retc, mlen, wlen, width;		/* utf8 */
-	mlen = strlen($<str>1);			/* utf8 */
-	wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));		/* utf8 */
-	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
-	wlen = wcslen(wstr);			/* utf8 */
-	width = wcswidth(wstr, wlen);		/* utf8 */
-	free(wstr);				/* utf8 */
-/* utf8
-	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
-	colno+=strlen($<str>1);
-*/
-	A4GL_add_field("_label",colno+1,lineno,width,scr,0,$<str>1); /* utf8 */
-	colno+=width; 				/* utf8 */
+	//A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	//colno+=strlen($<str>1);
+	A4GL_add_field("_label",colno+1,lineno,A4GL_form_wcswidth($<str>1),scr,0,$<str>1);	/* utf8 */
+	colno+=A4GL_form_wcswidth($<str>1);	/* utf8 */
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
@@ -318,20 +308,10 @@ some_text {
 
 | ch_list {
 	if (lineno) {
-	wchar_t *wstr;				/* utf8 */
-	size_t retc, mlen, wlen, width;		/* utf8 */
-	mlen = strlen($<str>1);			/* utf8 */
-	wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));		/* utf8 */
-	retc = mbstowcs(wstr, $<str>1, mlen+1);	/* utf8 */
-	wlen = wcslen(wstr);			/* utf8 */
-	width = wcswidth(wstr, wlen);		/* utf8 */
-	free(wstr);				/* utf8 */
-/* utf8
-	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
-	colno+=strlen($<str>1);
-*/
-	A4GL_add_field("_label",colno+1,lineno,width,scr,0,$<str>1); /* utf8 */
-	colno+=width; /* utf8 */
+	//A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+	//colno+=strlen($<str>1);
+	A4GL_add_field("_label",colno+1,lineno,A4GL_form_wcswidth($<str>1),scr,0,$<str>1);	/* utf8 */
+	colno+=A4GL_form_wcswidth($<str>1);	/* utf8 */
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 	ltab=0;
