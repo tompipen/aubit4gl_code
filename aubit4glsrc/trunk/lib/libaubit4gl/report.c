@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.104 2006-11-12 19:59:25 mikeaubury Exp $
+# $Id: report.c,v 1.105 2006-12-09 00:53:52 briantan Exp $
 #
 */
 
@@ -46,10 +46,12 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include "a4gl_API_sql.h"
+#include <wchar.h>		/* utf8 */
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 //int A4GL_call_4gl_dll (char *filename, char *function, int args);
 static void A4GL_unload_report_table (struct BINDING *b);
 void A4GL_close_report_file(struct rep_structure *rep) ;
+int A4GL_report_wcswidth(char *mbs);	/* utf8 */
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2
@@ -819,7 +821,8 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	  } else {
 	  	report_print (rep, entry, "%s", str);
 	  }
-	  rep->col_no += strlen (str);
+	  /* rep->col_no += strlen (str); */	/* utf8 */
+	  rep->col_no += A4GL_report_wcswidth (str);
 	  A4GL_debug ("Popped %s\n", str);
 	  acl_free (str);
 	}
@@ -2074,6 +2077,19 @@ int A4GL_pdf_pdffunc(void* p,char* fname,int n)  {
 		p=curr_pdf_report;
 	}
 	return A4GL_pdf_pdffunc_internal(p,fname,n);
+}
+
+int A4GL_report_wcswidth(char *mbs) {
+  wchar_t *wstr;
+  size_t retc, mlen, wlen, width;
+  mlen = strlen(mbs);
+  wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
+  retc = mbstowcs(wstr, mbs, mlen+1);
+  if (!retc) return 0;
+  wlen = wcslen(wstr);
+  width = wcswidth(wstr, wlen);
+  free(wstr);
+  return width;
 }
 
 /* ============================= EOF ================================ */
