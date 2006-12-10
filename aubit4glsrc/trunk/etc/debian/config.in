@@ -1,0 +1,34 @@
+#!/bin/sh -e
+
+#This shell script is erxecuted by dpkg BEFORE any other action is taken
+#and answers are storred in the database, so that answers are 'remebered'
+#for the time when pre/post un/install scripts are run, then this answers can 
+#be supplied. 
+#Questions/prompts are defined in file 'templates'
+#Note taht this is run BEFORE package is unpacked; no Aubit files or directorues
+#exist at this point.
+
+#Source debconf library
+if test -f /usr/share/debconf/confmodule; then
+	. /usr/share/debconf/confmodule
+else
+	echo "WARNING: /usr/share/debconf/confmodule is missing"
+	echo "WARNING: Unable to provide native Debian dialogs"
+	exit 0
+fi
+
+#Clear record of preciouis naswers from the db; do this at the end of postrm too
+#db_purge
+
+db_input medium aubit4gl/interactive || true
+db_go
+
+#When we need to know how user responded, we will Check the response:
+#db_get aubit4gl/interactive
+#if test "$RET" = "false"; then
+#	echo "false"
+#fi
+
+
+
+# ------------------------------- EOF ---------------------------------------

@@ -1,0 +1,43 @@
+Template:aubit4gl/interactive
+Type: boolean
+Default: false
+Description: Configure Aubit compile in interactive mode?
+ After the installation, Aubit compiler needs to be configured to be fully 
+ functional. This configuration can be performed with your interaction, and
+ in that case you will be given the choice of selecting your prefered options.
+ .
+ Or, it can be done completely automatically, without your interaction
+
+Template:aubit4gl/yes_or_no
+Type: boolean
+Default: true
+Description: xyz
+
+Template:aubit4gl/select
+Type: select
+Choices: yes, no, maybe
+Default: yes
+Description: xyz
+
+Template:aubit4gl/multiselect
+Type: multiselect
+Choices: a, b, c
+Default: a
+Description: xyz
+
+Template:aubit4gl/string
+Type: string
+Default: abc
+Description: xyz
+
+Template:aubit4gl/note
+Type: note
+Description: xyz
+
+Template:aubit4gl/text
+Type: text
+Description: xyz
+
+Template:aubit4gl/password
+Type: password
+Description: xyz

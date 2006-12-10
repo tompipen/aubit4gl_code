@@ -1,0 +1,100 @@
+#!/bin/sh
+###########################################################################
+#common to all Debian controll scripts; invoked from all at the begginig
+###########################################################################
+
+
+#----------------------- global (common) settings
+#Need: 
+#This is install location used by Deb - HOW DO I GET THIS?
+RPM_INSTALL_PREFIX0=""
+if test "$RPM_INSTALL_PREFIX0" = ""; then
+	CURR_A4GL_PREFIX="$prefix"
+else
+	CURR_A4GL_PREFIX=$RPM_INSTALL_PREFIX0
+fi
+A4GL_USER_INTERACTION=1
+RPM_A4GL_RPMDEINSTALL_LOG="/tmp/aubit4gl-deb-deinstall.log"
+RPM_A4GL_RPMINSTALL_LOG="/tmp/aubit4gl-deb-install.log"
+#Default install location
+prefix="/opt/aubit4gl-deb"
+RPM_A4GL_ERROR_EXIT=exit
+RPM_A4GL_ERROR_EXIT_CODE=1
+#Use 'test' to make messages silent - use 'echo' to see them
+RPM_A4GL_ERROR=echo
+RPM_A4GL_VERBOSE=test
+
+#----------------------- process flags passed to INVOKING script
+ACTION=""
+OTHER_VERSION=""
+FLG_CNT=0
+
+	 for flag in $FLAGS; do
+	 	let FLG_CNT=FLG_CNT+1
+	 	case $flag in 
+		install)
+			#passed to new-preinst ONLY
+			ACTION=$flag
+			;;
+		upgrade)
+			#passed to new-preinst, old-prerm, old-postrm
+			ACTION=$flag
+			;;
+		abort-upgrade)
+			#passed to old-preinst, old-postinst, new-postrm
+			ACTION=$flag
+			;;
+		configure)
+			#passed to postinst ONLY
+			ACTION=$flag
+			;;
+		abort-remove)
+			#passed to conflictor's-postinst, so wont happen for us
+			#also passed to postinst
+			ACTION=$flag
+			;;
+		abort-deconfigure)
+			#passed to deconfigured's-postinst ONLY, so wont happen for us
+			echo "what the...?"
+			exit 1
+			;;
+		remove)
+			#passed to prerem, conflictor's-prerm, postrm
+			ACTION=$flag
+			;;
+		failed-upgrade)
+			#passed to prerem, new-postrm
+			ACTION=$flag
+			;;
+		deconfigure)
+			#passed ONLY to deconfigured's-prerm
+			ACTION=$flag
+			;;
+		purge)
+			#passed ONLY to postrm
+			ACTION=$flag
+			;;
+		abort-install)
+			#passed ONLY to new-postrm
+			ACTION=$flag
+			;;
+		disappear)
+			#passed ONLY to disappear's-postrm
+			ACTION=$flag
+			;;
+		*)
+			if test "$ACTION" != ""; then
+				#passed after 'install' (optional) or 'upgrade' (allways) as old-version
+				#passed after 'abort-upgrade' (allways) as new-version
+				#passed after 'configure' (allways) as most-recently-configured-version
+				#...etc...
+				#TODO - check that this is a version string and not something else
+				OTHER_VERSION=$flag
+			else
+				echo "ERROR: first flag to $0 was $flag"
+				exit 1
+			fi
+		esac
+	 done
+
+#------------------------------------ EOF ------------------------------------
