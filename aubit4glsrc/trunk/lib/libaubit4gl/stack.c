@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.162 2006-11-16 13:03:36 mikeaubury Exp $
+# $Id: stack.c,v 1.163 2006-12-11 11:03:31 mikeaubury Exp $
 #
 */
 
@@ -265,10 +265,12 @@ A4GL_pop_bool (void)
 #ifdef DEBUG
   A4GL_debug("pop bool : ptr=%x\n",ptr);
 #endif
+
   if (A4GL_isnull(DTYPE_INT,(void *)&ptr)) {
 		A4GL_debug("8 Null can't be true..");
 		return 0;
   }
+
 #ifdef DEBUG
   A4GL_debug ("8 Popping boolean gets %d %x", ptr, ptr);
 #endif
@@ -642,6 +644,7 @@ A4GL_pop_param (void *p, int d, int size)
 A4GL_conversion_ok(1);
   A4GL_assertion(p==0,"No pointer to pop into");
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+	
   params_cnt--;
 
   if (params_cnt < 0)
@@ -730,12 +733,9 @@ A4GL_pop_params (struct BINDING *b, int n)
       			A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
 		} else {
 			if (b[a].start_char_subscript==b[a].end_char_subscript) {
-				//printf("b[a].start_char_subscript=%d\n",b[a].start_char_subscript);
 				a4gl_let_substr(b[a].ptr,b[a].dtype+ENCODE_SIZE(b[a].size),b[a].start_char_subscript,0);
 			} else {
-				//printf("ptr=%s b[a].start_char_subscript=%d b[a].end_char_subscript=%d\n",b[a].ptr, b[a].start_char_subscript,b[a].end_char_subscript);
 				a4gl_let_substr(b[a].ptr,b[a].dtype+ENCODE_SIZE(b[a].size),b[a].start_char_subscript,b[a].end_char_subscript,0);
-				//printf("ptr=%s\n",b[a].ptr);
 			}
 		}
 	} else {
@@ -817,6 +817,7 @@ A4GL_push_param (void *p, int d)
   size = DECODE_SIZE (d);
   d = d & 0xffff;
   A4GL_debug("50 push_param %p %d size=%d",p,d,size);
+
   if (params == 0)
     {
 	int nbytes=0;
@@ -2407,7 +2408,7 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 {
   int i;
   int ca, cb;
-  char *mptr[2048];
+  char mptr[2048];
 
 
   for (ca = 0; ca < no; ca++)
@@ -2486,8 +2487,7 @@ A4GL_read_param (void *p, int d, int size, int c)
   /* {DEBUG} */ A4GL_debug ("10 read param pointer =%p datatype=%x size=%d count=%d",
 		       p, d, size, c);
 #endif
-  b = A4GL_conv (params[params_cnt - c].dtype & DTYPE_MASK,
-	    params[params_cnt - c].ptr, d & DTYPE_MASK, p, size);
+  b = A4GL_conv (params[params_cnt - c].dtype & DTYPE_MASK,params[params_cnt - c].ptr, d & DTYPE_MASK, p, size);
   return b;
 }
 
@@ -2772,12 +2772,14 @@ A4GL_isnull (int type, char *buff)
 				long i1;
 				long i2;
 				i1=i_long&0xffffffff;
+				A4GL_debug("i1=%d\n",i1);
 				i2=*(AInt32 *)buff&0xffffffff;
+				A4GL_debug("i2=%d\n",i2);
 				if (i1==i2) {
 					if (A4GL_null_other(buff,type)!=1) { A4GL_assertion(1,"Null test failed 3.11"); }
 					return 1;
 				} else  {
-					A4GL_debug("i_long=%d buff=%d",i_long,*(AInt32 *)buff);
+					A4GL_debug("i_long=%d buff=%d type=%d",i_long,*(AInt32 *)buff,type);
 					if (A4GL_null_other(buff,type)!=0) { A4GL_assertion(1,"Null test failed 3.12"); }
 					return 0;
 				}
@@ -2797,7 +2799,12 @@ int a;
 
   for (a = 0; a < 9; a++)
     {
-	if (type==1 && a>sizeof(short)) break;
+
+	if (type==DTYPE_SMINT && a>sizeof(short)) break;
+	if (type==DTYPE_INT&& a>sizeof(long)) break;
+	if (type==DTYPE_SERIAL&& a>sizeof(long)) break;
+	if (type==DTYPE_DATE&& a>sizeof(long)) break;
+
       if ((unsigned char) (nset[type][a]) != (unsigned char) IGN)
 	{
 	  if ((unsigned char) (buff[a]) != (unsigned char) (nset[type][a]))

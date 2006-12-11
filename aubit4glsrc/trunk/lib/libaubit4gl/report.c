@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.105 2006-12-09 00:53:52 briantan Exp $
+# $Id: report.c,v 1.106 2006-12-11 11:03:31 mikeaubury Exp $
 #
 */
 
@@ -806,6 +806,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	{
 	  str = A4GL_report_char_pop ();
 	  A4GL_debug ("Popped '%s'...", str);
+
 	  if (strchr(str,'\n')) {
 		char *left;
 		char *right;
@@ -1379,6 +1380,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 	  break;
 
 	case 1:
+
 	case 2:
 	case 6:
 	case 7:
@@ -1409,6 +1411,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 
       A4GL_debug ("allocing %d bytes\n", sz);
       rbind[a].ptr = acl_malloc2 (sz);
+	memset(rbind[a].ptr,0, sz);
       A4GL_debug ("allocated as %p", rbind[a].ptr);
 
       rbind[a].dtype = b[a].dtype;
@@ -2008,7 +2011,7 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 {
   int i;
   int ca, cb;
-  char *mptr[2048];
+  char mptr[2048];
 
 
   for (ca = 0; ca < no; ca++)
@@ -2024,8 +2027,10 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
           if (b[cb].ptr == o[ca].ptr)
             {
               /* check value in o.ptr against that on the stack */
+ 
               A4GL_read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
               A4GL_push_param (b[cb].ptr, b[cb].dtype);
+
 #ifdef DEBUG
               /* {DEBUG} */ A4GL_debug ("   pushing this data");
 #endif

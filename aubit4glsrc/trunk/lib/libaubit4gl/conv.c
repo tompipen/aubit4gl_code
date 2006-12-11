@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.127 2006-11-15 17:39:58 mikeaubury Exp $
+# $Id: conv.c,v 1.128 2006-12-11 11:03:31 mikeaubury Exp $
 #
 */
 
@@ -2709,13 +2709,15 @@ A4GL_ltol (void *aa, void *bb, int sz_ignore)
 {
   long *a;
   long *b;
+	
   a = (long *) aa;
   b = (long *) bb;
 
   *b = *a;
 #ifdef DEBUG
   {
-    A4GL_debug ("ltol %ld %ld", *a, *b);
+    A4GL_debug ("ltol %ld", *a);
+    A4GL_debug ("ltol %ld", *b);
   }
 #endif
   return 1;

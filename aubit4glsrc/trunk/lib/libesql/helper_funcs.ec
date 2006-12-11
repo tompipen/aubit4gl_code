@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.55 2006-10-30 10:56:41 afalout Exp $
+# $Id: helper_funcs.ec,v 1.56 2006-12-11 11:04:00 mikeaubury Exp $
 #
 */
 
@@ -575,6 +575,7 @@ long orig_date;
 		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
 		mdy[2]=mdy_i[2]; // That informix is expecting
 		A4GL_debug("copy_date : mode=i - %d %d %d",mdy[0],mdy[1],mdy[2]);
+
 		rmdyjul(mdy,&infx_i); // Set the informix one
 		*infx=infx_i;
 	}
@@ -882,7 +883,7 @@ int x;
 int y;
 short *i;
 void *native;
-void *a4gl;
+void *a4gl=0;
 int size;
 
 for (a=0;a<n;a++) {

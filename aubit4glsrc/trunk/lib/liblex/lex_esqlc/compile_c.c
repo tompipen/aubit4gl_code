@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.347 2006-12-05 17:20:23 mikeaubury Exp $
+# $Id: compile_c.c,v 1.348 2006-12-11 11:04:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.347 2006-12-05 17:20:23 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.348 2006-12-11 11:04:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2667,7 +2667,7 @@ print_arr_bind_g (t_binding_comp_list *bind)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{0,%d,%d,0,0,0}", 
+	  printc ("{NULL,%d,%d,0,0,0}", 
 		  (int) bind->bind[a].dtype & 0xffff, (int) bind->bind[a].dtype >> 16);
 	}
       printc ("\n}; \n");
@@ -2688,7 +2688,7 @@ print_arr_bind_g (t_binding_comp_list *bind)
       for (a = 0; a < bind->nbind; a++)
 	{
 	  if (a > 0) printc (",\n");
-	  printc ("{0,%d,%d,0,0,0}", (int) bind->bind[a].dtype & 0xffff, (int) bind->bind[a].dtype >> 16);
+	  printc ("{NULL,%d,%d,0,0,0}", (int) bind->bind[a].dtype & 0xffff, (int) bind->bind[a].dtype >> 16);
 	}
       printc ("\n}; ");
 	printcomment("/* end of binding.5 */\n");
@@ -2772,7 +2772,7 @@ LEXLIB_print_param_g (char i,char*fname, t_binding_comp_list *bind)
   }
       if (bind->nbind == 0)
 	{
-	  printc ("{0,0,0,0,0,0}");
+	  printc ("{NULL,0,0,0,0,0}");
 	} else {
   		for (a = 0; a < bind->nbind; a++)
     		{
@@ -2780,7 +2780,7 @@ LEXLIB_print_param_g (char i,char*fname, t_binding_comp_list *bind)
       		bind->bind[a].dtype = scan_variable (bind->bind[a].varname);
       		if (a > 0)
 			printc (",\n");
-      		printc ("{0,%d,%d,0,0,0}", (int) bind->bind[a].dtype & 0xffff, (int) bind->bind[a].dtype >> 16);
+      		printc ("{NULL,%d,%d,0,0,0}", (int) bind->bind[a].dtype & 0xffff, (int) bind->bind[a].dtype >> 16);
 				
     		}
 	}
@@ -7469,7 +7469,7 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
       if (lbind->nbind == 0)
 	
 	{
-	  printc ("{0,0,0,0,0,0}");
+	  printc ("{NULL,0,0,0,0,0}");
 	}
       for (a = 0; a < lbind->nbind; a++)
 	
@@ -7477,12 +7477,12 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
 	  if (lbind->type == 'N')
 	    {
 	      chk_init_var (lbind->bind[a].varname);
-	      printc ("{0,%d,%d,0,0,0}%c", (int) lbind->bind[a].dtype & 0xffff,
+	      printc ("{NULL,%d,%d,0,0,0}%c", (int) lbind->bind[a].dtype & 0xffff,
 		       (int) lbind->bind[a].dtype >> 16,(a < lbind->nbind - 1) ? ',' : ' ');
 	    }
 	  else
 	    {
-	      printc ("{0,%d,%d,%d,%d,0}%c",
+	      printc ("{NULL,%d,%d,%d,%d,0}%c",
 		       (int) lbind->bind[a].dtype & 0xffff,
 		       (int) lbind->bind[a].dtype >> 16,
 		       lbind->bind[a].start_char_subscript,

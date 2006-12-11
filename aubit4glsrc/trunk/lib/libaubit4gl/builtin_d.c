@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.76 2006-10-15 11:31:49 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.77 2006-12-11 11:03:31 mikeaubury Exp $
 #
 */
 
@@ -164,6 +164,7 @@ A4GL_push_long (long p)
 {
   long *ptr;
   ptr = (long *) acl_malloc (sizeof (long), "push long");
+  /* memset(ptr,0,sizeof(long)); */
   *ptr = p;
   A4GL_push_param (ptr, DTYPE_INT + DTYPE_MALLOCED);
 }
@@ -799,7 +800,7 @@ A4GL_func_using (void)
   }
       s = (int)strlen (fmt);
       z = A4GL_new_string (s+1);
-	A4GL_debug("Calling a4gl_using");
+	A4GL_debug("Calling a4gl_using a=%lf fmt=%s ",a,fmt);
       a4gl_using (z, s, fmt, a);
 	A4GL_debug("z=%s\n",A4GL_null_as_null(z));
       A4GL_push_char (z);
