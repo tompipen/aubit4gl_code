@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.33 2006-11-16 13:03:38 mikeaubury Exp $
+# $Id: simple.c,v 1.34 2006-12-12 16:58:58 mikeaubury Exp $
 #*/
 
 
@@ -108,6 +108,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char buff2[256];
   char *envname;
   char *envport;
+  char tmpDb[256];
   
   envname = acl_getenv ("PG_DBPATH");
   if (envname)
@@ -124,10 +125,6 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 		http://jonathangardner.net/PostgreSQL/doxygen/7.4/connect_8c-source.html
 		*/
 		
-      A4GL_debug
-	(">>>>NOT<<<< Using a different database %s specified from the environment - SEE SOURCE CODE!",
-	 envname);
-	 
 	 //WARNING: if dbName contatins anything more then a database name
 	 //for example [@server][:port] - connct will fail!
 	 
@@ -138,8 +135,24 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	 // PG_DBPATH=dbname[@server][:port] in Aubit run_test script (as ecpg 
 	 // needs this) I am commenting this out for the moment:
 	 
-//      if (strlen (envname))
-//	dbName = envname;
+      if (strlen (envname)) {
+	strcpy(tmpDb, envname);
+	dbName = tmpDb;
+
+ 	if (strchr(dbName,':')) {
+		char *ptr;
+			ptr=strchr(dbName,':');
+			*ptr=0;
+			ptr++;
+			pgport=ptr;
+	}
+
+ 	if (strchr(dbName,'@')) {
+		char *ptr;
+			ptr=strchr(dbName,'@');
+			*ptr=0;
+	}
+	}
     }
 
   envport = acl_getenv ("PG_PORT");
@@ -152,7 +165,11 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	pgport = envport;
     }
 
-	
+	if (pghost) A4GL_debug("Host=%s", pghost);
+	if (pgport) A4GL_debug("Port=%s", pgport);
+	if (dbName) A4GL_debug("dbName=%s",dbName);
+	if (login) A4GL_debug("login=%s",login);
+	if (pwd) A4GL_debug("passwd=%s",pwd);
   con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, login, pwd);
   if (con == NULL)
     {
