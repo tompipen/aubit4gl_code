@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.114 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.115 2006-12-12 12:29:48 mikeaubury Exp $
 #
 */
 
@@ -197,9 +197,11 @@ char *p;
 	p_numargs = nargs;
   /* setlocale(LC_ALL, "") could break DECIMAL handling, if LC_NUMERIC != C */
   /* setlocale (LC_ALL, ""); */
-#ifndef DOING_CM
-  setlocale (LC_CTYPE, "");
-#endif
+
+// Can we not : 
+  	setlocale(LC_ALL, "");
+	setlocale(LC_NUMERIC,"C");
+
 	#ifdef DEBUG
 	    A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);
 	#endif
