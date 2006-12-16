@@ -73,6 +73,10 @@ int A4GL_form_wcswidth(char *mbs) {	/* utf8 */
     mlen = strlen(mbs);
     wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
     retc = mbstowcs(wstr, mbs, mlen+1);
+    if (!retc) {
+	free (wstr);
+	return 0;
+    }
     wlen = wcslen(wstr);
     width = wcswidth(wstr, wlen);
     free(wstr);

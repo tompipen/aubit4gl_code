@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.151 2006-12-16 15:08:15 briantan Exp $
+# $Id: ioform.c,v 1.152 2006-12-16 21:15:50 briantan Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.151 2006-12-16 15:08:15 briantan Exp $";
+		"$Id: ioform.c,v 1.152 2006-12-16 21:15:50 briantan Exp $";
 #endif
 
 /**
@@ -49,6 +49,7 @@
 
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
+#include <wchar.h>		/* utf8 */
 static void chk_for_picture (FIELD * f, char *buff);
 int A4GL_field_is_noentry (int doing_construct, struct struct_scr_field *f);
 int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
@@ -132,6 +133,7 @@ int A4GL_field_name_match (FIELD * f, char *s);
 static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
 int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
+int A4GL_wcswidth(char *mbs);		/* utf8 */
 
 
 /*
@@ -162,10 +164,11 @@ A4GL_make_label (int frow, int fcol, char *label)
   FIELD *f;
   int l;
   int is_graphics = 0;
-  l = strlen (label);
+  //l = strlen (label);
+  l = A4GL_wcswidth (label);
   A4GL_debug ("A4GL_make_label : '%s' l=%d", label, l);
 
-  if (l == 2 && label[0] == '\n')
+  if (strlen(label) == 2 && label[0] == '\n')
     {
       A4GL_debug ("Making graphic character %c @ frow=%d fcol=%d\n", label[1],
 		  frow, fcol);
@@ -4273,5 +4276,19 @@ void UILIB_A4GL_direct_to_ui(char *s) {
 // Does nothing - require by the API...
 }
 
-
+int A4GL_wcswidth(char *mbs) {
+  wchar_t *wstr;
+  size_t retc, mlen, wlen, width;
+  mlen = strlen(mbs);
+  wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
+  retc = mbstowcs(wstr, mbs, mlen+1);
+  if (!retc) {
+		free(wstr);
+		return 0;
+	}
+  wlen = wcslen(wstr);
+  width = wcswidth(wstr, wlen);
+  free(wstr);
+  return width;
+}
 
