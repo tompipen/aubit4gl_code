@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.106 2006-12-11 11:03:31 mikeaubury Exp $
+# $Id: report.c,v 1.107 2006-12-16 23:58:35 briantan Exp $
 #
 */
 
@@ -2090,7 +2090,10 @@ int A4GL_report_wcswidth(char *mbs) {
   mlen = strlen(mbs);
   wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
   retc = mbstowcs(wstr, mbs, mlen+1);
-  if (!retc) return 0;
+  if (!retc) {
+	free(wstr);
+	return 0;
+  }
   wlen = wcslen(wstr);
   width = wcswidth(wstr, wlen);
   free(wstr);

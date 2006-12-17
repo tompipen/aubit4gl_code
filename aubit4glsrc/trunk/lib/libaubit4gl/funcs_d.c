@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.78 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.79 2006-12-17 00:01:46 briantan Exp $
 #
 */
 
@@ -44,6 +44,8 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+#include <wchar.h>		/* utf8 */
+
 #if HAVE_STRINGS_H
 #include <strings.h>
 #endif
@@ -832,6 +834,25 @@ free(n1);
 return r;
 }
 #endif
+
+/* compute screen width (columns occupied) of utf-8 character string
+ * (multi-byte sequence). For ascii string, it should be the same as strlen()
+ */
+int A4GL_wcswidth(char *mbs) {
+  wchar_t *wstr;
+  size_t retc, mlen, wlen, width;
+  mlen = strlen(mbs);
+  wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
+  retc = mbstowcs(wstr, mbs, mlen+1);
+  if (!retc) {
+    free(wstr);
+    return 0;
+  }
+  wlen = wcslen(wstr);
+  width = wcswidth(wstr, wlen);
+  free(wstr);
+  return width;
+}
 
 /* ============================== EOF ========================== */
 
