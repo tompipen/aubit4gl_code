@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.152 2006-12-16 21:15:50 briantan Exp $
+# $Id: ioform.c,v 1.153 2006-12-17 00:01:47 briantan Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.152 2006-12-16 21:15:50 briantan Exp $";
+		"$Id: ioform.c,v 1.153 2006-12-17 00:01:47 briantan Exp $";
 #endif
 
 /**
@@ -49,7 +49,6 @@
 
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
-#include <wchar.h>		/* utf8 */
 static void chk_for_picture (FIELD * f, char *buff);
 int A4GL_field_is_noentry (int doing_construct, struct struct_scr_field *f);
 int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
@@ -4274,21 +4273,5 @@ static int get_inc_quotes(int a) {
 
 void UILIB_A4GL_direct_to_ui(char *s) {
 // Does nothing - require by the API...
-}
-
-int A4GL_wcswidth(char *mbs) {
-  wchar_t *wstr;
-  size_t retc, mlen, wlen, width;
-  mlen = strlen(mbs);
-  wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
-  retc = mbstowcs(wstr, mbs, mlen+1);
-  if (!retc) {
-		free(wstr);
-		return 0;
-	}
-  wlen = wcslen(wstr);
-  width = wcswidth(wstr, wlen);
-  free(wstr);
-  return width;
 }
 
