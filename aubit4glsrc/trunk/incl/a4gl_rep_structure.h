@@ -14,6 +14,7 @@
     FILE *output;
     long page_no;
     int printed_page_no;
+	int printed_left_margin;
     long line_no;
     int col_no;
     /* was      int (*report)(); */

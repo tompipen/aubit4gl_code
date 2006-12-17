@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.108 2006-12-17 00:01:46 briantan Exp $
+# $Id: report.c,v 1.109 2006-12-17 17:04:01 mikeaubury Exp $
 #
 */
 
@@ -794,9 +794,11 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 
   if (no_param > 0)
     {
-      if (rep->col_no == 0)
+      if (rep->printed_left_margin == 0)
 	{
-	  rep->col_no = 1;
+		rep->printed_left_margin=1;
+	  	rep->col_no = 1;
+		
 	  A4GL_fputmanyc (rep, ' ', rep->left_margin);
 	}
 
@@ -836,6 +838,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
   if (dontwant_nl == 0)
     {
       rep->col_no = 0;
+      rep->printed_left_margin = 0;
       report_print (rep, -1, "\n");
       rep->line_no++;
     }

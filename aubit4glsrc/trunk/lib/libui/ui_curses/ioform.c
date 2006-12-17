@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.153 2006-12-17 00:01:47 briantan Exp $
+# $Id: ioform.c,v 1.154 2006-12-17 17:04:03 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.153 2006-12-17 00:01:47 briantan Exp $";
+		"$Id: ioform.c,v 1.154 2006-12-17 17:04:03 mikeaubury Exp $";
 #endif
 
 /**
@@ -186,7 +186,7 @@ A4GL_make_label (int frow, int fcol, char *label)
       return 0;
     }
 
-  if (l == 2 && label[0] == '\n')
+  if (strlen(label) == 2 && label[0] == '\n')
     {
       is_graphics = 1;
 
