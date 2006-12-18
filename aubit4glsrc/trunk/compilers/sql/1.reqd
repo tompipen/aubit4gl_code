@@ -126,7 +126,7 @@ static char *A4GL_get_undo_use(void);
 //static char *A4GL_strip_quotes (char *s);
 //static int gen_cnt (int a);
 static void ansi_violation(char *s,int n);
-static int A4GL_escape_quote_owner(void);
+static int A4GL_new_escape_quote_owner(void);
 static void A4GL_lex_printcomment (char *fmt,...);
 static void addmap_runtime (char *s,char *f);
 static int scan_variable (char *s);

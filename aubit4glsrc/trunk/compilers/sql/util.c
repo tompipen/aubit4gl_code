@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.47 2006-11-22 08:31:43 mikeaubury Exp $
+# $Id: util.c,v 1.48 2006-12-18 18:23:42 mikeaubury Exp $
 #
 */
 
@@ -361,6 +361,7 @@ fix_update_expr (int mode)
 
 
 
+#ifdef MOVED
 /**
  *
  * @todo Describe function
@@ -376,6 +377,7 @@ A4GL_escape_quote_owner (void)
     return 0;
   return 1;
 }
+#endif
 
 /**
  *

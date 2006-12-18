@@ -7,7 +7,7 @@
 
 
 update_statement_ss:
-	KW_UPDATE table_name {
+	KW_UPDATE table_name_not_for_column_prefix {
 		/* A4GL_add_crud("UPDATE",$<str>2); */
 		strcpy(current_upd_table,$<str>2);
 		ADDMAP("UPDATE",current_upd_table);
@@ -204,6 +204,18 @@ upd_column_name_specific: identifier op_col_arr {
 		}
                 ADDMAP("Use Column",$<str>$);
                 i=&$<int_list>4;
+                strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
+        }
+        | identifier KW_DOT identifier  KW_DOT identifier op_col_arr {
+                struct ilist *i;
+                if (strcmp($<str>5,"rowid")==0) { add_feature("ROWID"); }
+		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
+                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>5));
+		} else {
+                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>3,$<str>5));
+		}
+                ADDMAP("Use Column",$<str>$);
+                i=&$<int_list>6;
                 strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
         }
         | table_name  KW_DOT KW_MULTIPLY {

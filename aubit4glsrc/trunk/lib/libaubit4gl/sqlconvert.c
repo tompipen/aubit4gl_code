@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.99 2006-11-17 09:42:01 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.100 2006-12-18 18:23:42 mikeaubury Exp $
 #
 */
 
@@ -3576,3 +3576,23 @@ void A4GL_set_compile_time_convert(int a) {
 int A4GL_compile_time_convert(void) {
 	return is_compile_time_convert;
 }
+
+
+int
+A4GL_new_escape_quote_owner (void)
+{
+  if (A4GLSQLCV_check_requirement ("QUOTE_OWNER"))
+    {
+      return 1;
+    }
+  if (A4GLSQLCV_check_requirement ("NO_OWNER_QUOTE"))
+    {
+      return 0;
+    }
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+    {
+      return 0;
+    }
+  return 1;
+}
+

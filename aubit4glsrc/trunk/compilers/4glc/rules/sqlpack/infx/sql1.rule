@@ -12,7 +12,7 @@ rollback_statement:
 
 insert_statement_ss:
 	INSERT_INTO { insql=1;start_bind('i',0);} 
-	table_name  { strcpy(current_ins_table,$<str>3);A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!");ADDMAP("InsertInto",current_ins_table);}
+	table_name_not_for_column_prefix  { strcpy(current_ins_table,$<str>3);A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!");ADDMAP("InsertInto",current_ins_table);}
 	op_insert_column_list 
 	ins_2_ss {
 		//A4GL_add_crud("INSERT",$<str>3);
@@ -101,7 +101,7 @@ insert_value_ss:
 
 
 delete_statement_search_ss:
-	DELETE_FROM table_name { strcpy(current_del_table,$<str>2); ADDMAP("DeleteFrom",current_del_table);} 
+	DELETE_FROM table_name_not_for_column_prefix { strcpy(current_del_table,$<str>2); ADDMAP("DeleteFrom",current_del_table);} 
 		del_op_where_clause_ss {
 			//A4GL_add_crud("DELETE",$<str>2);
 			if (strlen($<sql_string>4)==0) { A4GL_warn("DELETE with no WHERE clause"); }
@@ -201,8 +201,8 @@ sql_bound_commands :
 
 
 privilege_definition:
-	GRANT privileges KW_ON table_name KW_TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
-	| REVOKE privileges KW_ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  add_feature("REVOKE"); }
+	GRANT privileges KW_ON table_name_not_for_column_prefix KW_TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);  add_feature("GRANT"); }
+	| REVOKE privileges KW_ON table_name_not_for_column_prefix FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);  add_feature("REVOKE"); }
 	| GRANT db_priv KW_TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4); add_feature("GRANT"); }
 	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);  add_feature("REVOKE"); }
 ;
@@ -275,7 +275,7 @@ grantee:
 
 
 view_definition_ss:
-	CREATE_VIEW table_name op_view_column_list KW_AS query_specification_ss_converted op_with_check_option {
+	CREATE_VIEW table_name_not_for_column_prefix op_view_column_list KW_AS query_specification_ss_converted op_with_check_option {
 		add_feature("CREATE_VIEW_AS_SELECT");
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,$<sql_string>5,kw_space,acl_strdup($<str>6),NULL);
 	
@@ -327,8 +327,8 @@ references_columns:
 ;
 
 referenced_table_and_columns:
-	  table_name
-	| table_name OPEN_BRACKET references_column_list CLOSE_BRACKET
+	  table_name_not_for_column_prefix
+	| table_name_not_for_column_prefix OPEN_BRACKET references_column_list CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 ;
 
@@ -540,15 +540,15 @@ table_reference_list:
 ;
 
 
-tname: table_name  { 
+tname: table_name_not_for_column_prefix  { 
 			//A4GL_add_crud("SELECT",$<str>1);
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,NULL);
 	}
-	| table_name correlation_name { 
+	| table_name_not_for_column_prefix correlation_name { 
 			//A4GL_add_crud("SELECT",$<str>1);
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,$<str>2);
 	}
-	| table_name KW_AS correlation_name { 
+	| table_name_not_for_column_prefix KW_AS correlation_name { 
 			//A4GL_add_crud("SELECT",$<str>1);
 			$<u_table>$=A4GLSQLPARSE_new_tablename($<str>1,$<str>3);
 	}
@@ -979,6 +979,11 @@ column_name_sli_specific: identifier op_col_arr {
 	| table_name KW_DOT identifier op_col_arr {
 		$<s_select_list_item>$=new_select_list_item_col($<str>1,$<str>3,&$<int_list>4);
 	}
+/*
+	| identifier KW_DOT identifier KW_DOT identifier op_col_arr {
+		$<s_select_list_item>$=new_select_list_item_col($<str>3,$<str>5,&$<int_list>6);
+	}
+*/
 	| table_name  KW_DOT KW_MULTIPLY {
 		$<s_select_list_item>$=new_select_list_item_col($<str>1,"*",0);
 	}
@@ -997,6 +1002,15 @@ column_name_specific: identifier op_col_arr {
 		struct ilist *i;
 		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
+		ADDMAP("Use Column",$<str>$);
+		i=&$<int_list>4;
+		strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
+	}
+	| identifier KW_DOT identifier KW_DOT identifier op_col_arr {
+		struct ilist *i;
+		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
+		// First identifier is the owner...
+		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>3,$<str>5));
 		ADDMAP("Use Column",$<str>$);
 		i=&$<int_list>4;
 		strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
@@ -1039,7 +1053,7 @@ e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION | FRACTION OPEN_B
 
 
 load_cmd :  
-opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
+opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name_not_for_column_prefix opt_col_list {
 	//A4GL_add_crud("INSERT",$<str>6);
 	add_feature("LOAD_FROM_INSERT_INTO");
 	print_load($<str>3,$<str>4,$<str>6,$<str>7);
@@ -1111,14 +1125,14 @@ rencolname : identifier;
 
 unlock_stmt:
 
-	UNLOCK_TABLE table_name {
+	UNLOCK_TABLE table_name_not_for_column_prefix {
 		add_feature("UNLOCK_TABLE");
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 	}
 ;
 
 lock_stmt :
-	LOCK_TABLE table_name share_or_exclusive  {
+	LOCK_TABLE table_name_not_for_column_prefix share_or_exclusive  {
 		add_feature("LOCK_TABLE");
 		sprintf($<str>$,"%s %s %s",
 					$<str>1,

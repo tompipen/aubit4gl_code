@@ -4,7 +4,7 @@
 drops_statement : drops_c  { $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
 	;
 
-drops_c : DROP_TABLE table_name {
+drops_c : DROP_TABLE table_name_not_for_column_prefix {
 			if (A4GLSQLCV_check_requirement("ADD_CASCADE")) {
 				sprintf($<str>$, "DROP TABLE %s CASCADE",$<str>2);
 			} else {
@@ -12,7 +12,7 @@ drops_c : DROP_TABLE table_name {
 			}
 			add_feature("DROP_TABLE");
 		}
-	| DROP_VIEW table_name 		{sprintf($<str>$,"%s %s ",$<str>1,$<str>2);
+	| DROP_VIEW table_name_not_for_column_prefix 		{sprintf($<str>$,"%s %s ",$<str>1,$<str>2);
 			add_feature("DROP_VIEW");
 }
 	| DROP_INDEX idx_name 		{sprintf($<str>$,"%s %s",$<str>1,$<str>2);
@@ -30,12 +30,12 @@ create_statement_ss : create_c_1  {$<sql_string>$=acl_strdup($<str>1);}
 ;
 
 create_c_2_ss  : 
-	CREATE_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
+	CREATE_TABLE table_name_not_for_column_prefix OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
 		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,acl_strdup($<str>6),NULL);
 		add_feature("CREATE_TABLE");
 	} 
 
-	| CREATE_TEMP_TABLE table_name OPEN_BRACKET table_element_list_ss CLOSE_BRACKET op_no_log opt_cr_table_extra op_no_log {
+	| CREATE_TEMP_TABLE table_name_not_for_column_prefix OPEN_BRACKET table_element_list_ss CLOSE_BRACKET op_no_log opt_cr_table_extra op_no_log {
 		char *tstr;
 		tstr="";
 		if (strlen($<str>6)) tstr=$<str>6;
@@ -80,7 +80,7 @@ cr_index_extra_entry :
 	| FILLFACTOR INT_VALUE {sprintf($<str>$,"FILLFACTOR %s",$<str>2); add_feature("INDEX_FILLFACTOR");}
 ;
 
-cr_table_name: table_name { strcpy(last_tmp_name,$<str>1); } ;
+cr_table_name: table_name_not_for_column_prefix { strcpy(last_tmp_name,$<str>1); } ;
 
 
 create_c_1  : 
@@ -128,23 +128,23 @@ create_c_1  :
 		add_feature("DROP_DATABASE");
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
-	| CREATE_SYNONYM table_name KW_FOR table_name { 
+	| CREATE_SYNONYM table_name_not_for_column_prefix KW_FOR table_name_not_for_column_prefix { 
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_SYNONYM_QUALIFIED_PATH");
 			add_feature("CREATE_SYNONYM");
 			sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); 
 	}
-	| CREATE_AUDIT_FOR table_name KW_IN CHAR_VALUE { 
+	| CREATE_AUDIT_FOR table_name_not_for_column_prefix KW_IN CHAR_VALUE { 
 		add_feature("CREATE_AUDIT");
 		sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4)); 
 	}
-	| DROP_AUDIT_FOR table_name  { 
+	| DROP_AUDIT_FOR table_name_not_for_column_prefix  { 
 		add_feature("DROP_AUDIT");
 		sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2); }
-	| DROP_SYNONYM table_name { 
+	| DROP_SYNONYM table_name_not_for_column_prefix { 
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("DROP_SYNONYM_QUALIFIED_PATH");
 		add_feature("DROP_SYNONYM");
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2); }
-	| RECOVER_TABLE table_name { 
+	| RECOVER_TABLE table_name_not_for_column_prefix { 
 		add_feature("RECOVER_TABLE");
 		sprintf($<str>$,"RECOVER TABLE %s",$<str>2); }
 	| ROLLFORWARD_DATABASE var_ident_qchar { 

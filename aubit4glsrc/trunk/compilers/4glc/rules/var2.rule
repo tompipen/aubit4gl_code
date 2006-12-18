@@ -81,7 +81,7 @@ var2_vu :
 var3_vu:
 	var4_vu
 	| CHAR_VALUE KW_DOT var4_vu {
-		if (A4GL_escape_quote_owner()) {
+		if (A4GL_new_escape_quote_owner()) {
 			$<var_usg>$=new_variable_usage(0,$<str>1,0); 
 			$<var_usg>$=append_variable_usage($<var_usg>$,$<var_usg>3);
 		} else {
