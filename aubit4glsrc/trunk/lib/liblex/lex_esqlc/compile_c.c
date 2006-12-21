@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.348 2006-12-11 11:04:03 mikeaubury Exp $
+# $Id: compile_c.c,v 1.349 2006-12-21 10:41:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.348 2006-12-11 11:04:03 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.349 2006-12-21 10:41:33 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -146,12 +146,12 @@ static int gen_ord (char *s);
 =====================================================================
 */
 
+static FILE *outfile = 0;
 char mv_repname[256];
 int cs_ticker = 0;
 int current_ordbindcnt = 0;
 static int idle_cnt=0;
 /** Pointer to the output C file */
-static FILE *outfile = 0;
 
 /** Pointer to the output header (.h) file */
 static FILE *hfile = 0;
@@ -277,10 +277,11 @@ static void clr_doing_a_report_call(int n) {
 static void
 print_space (void)
 {
-  static char buff[256];
+  static char buff[2560];
   int ccnt;
   ccnt=A4GL_get_ccnt();
-  memset (buff, ' ', 255);
+  A4GL_assertion (ccnt*3>=sizeof (buff), "Not enough space for spaces") ;
+  memset (buff, ' ', sizeof(buff));
   buff[ccnt * 3] = 0;
   FPRINTF (outfile, "%s", buff);
 }
@@ -644,7 +645,7 @@ open_outfile (void)
       		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", buff);
       	    }
     }
-  sprintf(cmodname,"%s.4gl",outputfilename);
+  SPRINTF1(cmodname,"%s.4gl",outputfilename);
 
   hfile = A4GL_mja_fopen (filename_for_h, "w");
   if (hfile == 0)
@@ -7856,7 +7857,7 @@ make_arr_str (char *s, struct variable *v)
             {
               strcat (s, "][");
             }
-          sprintf (buff, "%d", v->arr_subscripts[a]);
+          SPRINTF1 (buff, "%d", v->arr_subscripts[a]);
           strcat (s, buff);
         }
       else
@@ -8131,7 +8132,7 @@ LEXLIB_rettype (char *s)
 
 char *LEXLIB_get_keyval_str(char *s) {
 	static char buff[256];
- 	sprintf(buff,"A4GL_key_val(\"%s\")",s);
+ 	SPRINTF1(buff,"A4GL_key_val(\"%s\")",s);
 	return buff;
 }
 
@@ -8146,7 +8147,7 @@ int LEXLIB_print_agg_defines(char t,int a) {
     {
           A4GL_lex_printh ("static long _g%d=0;\n", a);
 
-	  //sprintf(usage,"A4GL_push_int(_g%d);\n",a);
+	  //SPRINTF(usage,"A4GL_push_int(_g%d);\n",a);
 
       return 1;
     }
@@ -8227,7 +8228,7 @@ return buff;
 char *LEXLIB_get_array_rebase(char *s) {
 	char *a;
 	a=malloc(strlen(s)+20);
-	sprintf(a,"%s-1",s);
+	SPRINTF1(a,"%s-1",s);
 	return a;
 }
 

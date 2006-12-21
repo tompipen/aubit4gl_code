@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.76 2006-11-03 19:25:28 pascal_v Exp $
+# $Id: compile_c_sql.c,v 1.77 2006-12-21 10:41:33 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.76 2006-11-03 19:25:28 pascal_v Exp $";
+		"$Id: compile_c_sql.c,v 1.77 2006-12-21 10:41:33 mikeaubury Exp $";
 #endif
 
 
@@ -369,10 +369,10 @@ char buff[200];
 
   if (e) {
 	if (e->expr_type==ET_EXPR_LITERAL_LONG) {
-		sprintf(buff,"%ld",e->u_data.expr_long);
+		SPRINTF1(buff,"%ld",e->u_data.expr_long);
 	} else {
 		LEXLIB_print_expr(e);
-		sprintf(buff,"A4GL_pop_long()");
+		SPRINTF0(buff,"A4GL_pop_long()");
 	}
   }
 
@@ -507,14 +507,14 @@ LEXLIB_print_curr_spec_g (int type, char *s, t_binding_comp_list *inbind, t_bind
 		A4GL_assertion(no,"DIDNT THINK THIS HAPPEND");
 
 		switch(bt) {
-    		case 0: sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0)", s,lastlineno);break;
-   		case 1: sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",_module_name,%d,0)", no,s,lastlineno); break;
-    		case 2: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,0)", ni,s,lastlineno); break;
-    		case 3: sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,0)", no,ni,s,lastlineno); break;
+    		case 0: SPRINTF2 (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0)", s,lastlineno);break;
+   		case 1: SPRINTF3 (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",_module_name,%d,0)", no,s,lastlineno); break;
+    		case 2: SPRINTF3 (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,0)", ni,s,lastlineno); break;
+    		case 3: SPRINTF4 (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,0)", no,ni,s,lastlineno); break;
 		}
   }
 
-  if (type == 2) sprintf (buff, "A4GLSQL_find_prepare(%s)", s);
+  if (type == 2) SPRINTF1 (buff, "A4GLSQL_find_prepare(%s)", s);
 
   return buff;
 }
@@ -660,7 +660,7 @@ static int sqlblock=0;
 char tmpbuff[256];
   if (outbind->nbind) u+=2;
   if (inbind->nbind)  u+=1;
-  sprintf(tmpbuff,"\"A4GLsb_%d%d\"",sqlblock++,yylineno);
+  SPRINTF2(tmpbuff,"\"A4GLsb_%d%d\"",sqlblock++,yylineno);
   printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d));",tmpbuff,trans_quote(s),lastlineno,0 /* never converted */);
   LEXLIB_print_execute_g(tmpbuff,u,inbind,outbind);
 }
@@ -720,7 +720,7 @@ if (s[0]=='\'') {
 	char *ptr;
 	ptr=strdup(&s[1]);
 	ptr[strlen(ptr)-1]=0;
-	sprintf(buff,"a4gl_putstr_%d",put_string_no);
+	SPRINTF1(buff,"a4gl_putstr_%d",put_string_no);
 	printh("static char %s[]=\"%s\";\n",buff,ptr);
 	llex_add_ibind(0+(strlen(ptr)<<16),buff);
 	free(ptr);
@@ -739,12 +739,12 @@ int n;
 void *ptr;
 char *x;
 	x=acl_malloc2(strlen(sql)+255);
-	sprintf(x,"A4GL_push_char(\"%s\");",sql);
+	SPRINTF1(x,"A4GL_push_char(\"%s\");",sql);
         ptr=A4GL_new_expr(x);
 
         A4GL_append_expr(ptr,"{");
         n=print_bind_expr(ptr,'i');
-        sprintf(buff,"A4GL_push_binding(ibind,%d);}",n);
+        SPRINTF1(buff,"A4GL_push_binding(ibind,%d);}",n);
         A4GL_append_expr(ptr,buff);
 	if (type=='E') A4GL_append_expr(ptr,"A4GL_pushop(OP_EXISTS);");
 	if (type=='e') A4GL_append_expr(ptr,"A4GL_pushop(OP_NOTEXISTS);");
