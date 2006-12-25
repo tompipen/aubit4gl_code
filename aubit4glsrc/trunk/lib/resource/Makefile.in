@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2006-07-27 16:04:16 mikeaubury Exp $
+# $Id: Makefile.in,v 1.18 2006-12-25 11:42:28 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -55,7 +55,8 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 		-D"PG_ESQLC=\"@PG_ESQLC@\""   \
 		-D"AUBITLIBFULL=\"${AUBITLIBFULL}\""   \
 		-D"LINKAUBITLIBFULL=\"-l${AUBITLIBFULL}\""  \
-		-D"PLUGINDIR=\"${PLUGINDIR}\""  
+		-D"PLUGINDIR=\"${PLUGINDIR}\""   \
+		-D"HAVE_IFX_IUS=\"${HAVE_IFX_IUS}\""  
 
 
 		#-D"HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H=\"@HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H@\""  \

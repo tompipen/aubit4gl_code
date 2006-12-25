@@ -1048,6 +1048,7 @@ SQLITE_ODBC_LIBNAME_STATIC
 SQLITE_ODBC_LIBDIR
 Q_ESQLC
 AUBIT_LICENSE
+AUBIT_COPYRIGHT_MSG
 PCRE_INC_PATH
 PCRE_LIB_PATH
 MSYS_ROOTDIR
@@ -2775,7 +2776,6 @@ Optional Packages:
   --with-curses=DIR       Include curses support. DIR is the curses base
                           install directory, defaults to /lib.
                           This will probe for Ncurses, then for curses.
-  --with-widechar=yes/no  Enable or disable (default) wide libraries.
   --with-pdcurses=DIR     Include PDcurses support. DIR is the PDcurses base
                           install directory, defaults to
                           /usr/local/pdcurses.
@@ -6761,7 +6761,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6763 "configure"' > conftest.$ac_ext
+  echo '#line 6764 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9771,7 +9771,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9773 "configure"
+#line 9774 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9869,7 +9869,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9871 "configure"
+#line 9872 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10944,6 +10944,7 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 #AC_SUBST(YACC)
+
 
 
 
@@ -12109,6 +12110,7 @@ SHORTNAME="aubit4gl"
 AUBIT_WEBSITE=aubit4gl.sf.net
 AUBIT_PUBLISHER="Aubit project development team"
 AUBIT_LICENSE="GNU GPL/LGPL"
+AUBIT_COPYRIGHT_MSG="Copyright (C) 1998 - 2006 Aubit development team"
 COMPILE_DATE=`date +%d-%m-%Y`
 test_rpclib="1"
 GTKBUILD=no
@@ -12553,8 +12555,6 @@ echo "${ECHO_T}everything..." >&6; }
 	if test "$with_i4gl" = ""; then         	with_i4gl=yes 		;fi
 	if test "$with_httpd" = ""; then            with_httpd=yes 		;fi
 	if test "$with_java" = ""; then     		with_java=yes   	;fi
-	if test "$with_widechar" = ""; then     	with_widechar=no   	;fi
-	#Do not link in efence by default - At least on SuSE it generated
 	#Do not link in efence by default - At least on SuSE it generated
 	#anoying copyright message every time an executable liked with it
 	#is envoked
@@ -12685,6 +12685,11 @@ RPM_ABSOLUTE=1
 FORMS_DESTINATION=etc
 HELP_DESTINATION=etc
 PLUGIN_DIR="plugins-${AUBIT_VERSION}_${AUBIT_BUILD}"
+
+#Warning: "CopyMode: normal" has been superseded by "Flags: promptifolder" in this
+#version of Inno Setup. Behaving as if "Flags: promptifolder" were specified.
+#COPYMODE_NORMAL="CopyMode: normal"
+COPYMODE_NORMAL="Flags: promptifolder"
 
 if test "$RPM_ABSOLUTE" = "1"; then
 	#RPM_A4GL_DEFAULT_PREFIX="$INST_BASE"
@@ -16289,6 +16294,43 @@ fi
 echo "$as_me: error: Failed to set SH. Stop." >&2;}
    { (exit 1); exit 1; }; }
     fi
+else
+
+#Here is the issue:
+#$ sh --version
+#GNU bash, version 3.2.5(7)-release (i686-pc-cygwin)
+#Copyright (C) 2005 Free Software Foundation, Inc.
+#
+#$ echo "aaa`bin/aubit-config TARGET_OS`xxx"
+#xxxmingw
+
+#andrej@istation-vm-xp /usr/local/aubit4gl/tools/test
+#$ bash --version
+#GNU bash, version 3.1.17(6)-release (i686-pc-cygwin)
+#Copyright (C) 2005 Free Software Foundation, Inc.
+#
+#$ echo "aaa`bin/aubit-config TARGET_OS`xxx"
+#aaamingwxxx
+
+	BASH_VER=`bash --version | head -1 | awk '{print $4}'`
+	SH_VER=`sh --version | head -1 | awk '{print $4}'`
+
+	if test "$BASH_VER" != "$SH_VER"; then
+		{ echo "$as_me:$LINENO: WARNING: Your 'sh' executable is NOT the same as 'bash'. This may cause problems" >&5
+echo "$as_me: WARNING: Your 'sh' executable is NOT the same as 'bash'. This may cause problems" >&2;}
+	fi
+
+	if test "$BASH_VER" = "3.2.5(7)-release"; then
+		{ { echo "$as_me:$LINENO: error: Bash version known to be broken ($BASH_VER). Stop." >&5
+echo "$as_me: error: Bash version known to be broken ($BASH_VER). Stop." >&2;}
+   { (exit 1); exit 1; }; }
+	fi
+	if test "$SH_VER" = "3.2.5(7)-release"; then
+		{ { echo "$as_me:$LINENO: error: Bash ('sh') version known to be broken ($BASH_VER). Stop." >&5
+echo "$as_me: error: Bash ('sh') version known to be broken ($BASH_VER). Stop." >&2;}
+   { (exit 1); exit 1; }; }
+	fi
+
 fi
 
 # Extract the first word of "ldd", so it can be a program name with args.
@@ -24591,8 +24633,35 @@ _ACEOF
 
 				{ echo "$as_me:$LINENO: checking Informix version" >&5
 echo $ECHO_N "checking Informix version... $ECHO_C" >&6; }
-				IFX_VERSION=`esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`
-				if test $IFX_VERSION -ge "900"; then
+				ESQLC_COMMAND=""
+				for esqlc in esql $INFORMIXDIR/bin/esql
+				do
+
+        				if esql_output=`$esqlc -V 2>/dev/null | sed -n 1p` && test -n "$esql_output"
+        				then
+                				esqlv=`echo "$esql_output" |
+                           				sed -e 's/.*-ESQL Version *//' \
+                                   				-e 's/\\.//' -e 's/\\..*//' `
+                				if test "x$esqlv" = "x"
+                				then { { echo "$as_me:$LINENO: error: Version information from $esqlc -V not parsable -- $esql_output" >&5
+								echo "$as_me: error: Version information from $esqlc -V not parsable -- $esql_output" >&2;}
+   				{ (exit 1); exit 1; }; }
+                				else
+                        				echo "$as_me:$LINENO: result: $esqlc (version $esqlv)" >&5
+				echo "${ECHO_T}$esqlc (version $esqlv)" >&6
+                        				IFX_ESQLC_COMMAND=$esqlc
+                        				IFX_ESQLC_VERSION=$esqlv
+                        				IFX_ESQLC_VERTEXT="$esql_output"
+					#AC_DEFINE(IFX_ESQLC_COMMAND, $IFX_ESQLC_COMMAND)
+					#AC_DEFINE(IFX_ESQLC_VERSION, $IFX_ESQLC_VERSION)
+					#AC_DEFINE(IFX_ESQLC_VERTEXT, $IFX_ESQLC_VERTEXT)
+                        				break
+		                fi
+        fi
+done
+
+
+				if test $IFX_ESQLC_VERSION -ge "900"; then
 					cat >>confdefs.h <<\_ACEOF
 #define HAVE_IFX_IUS 1
 _ACEOF
@@ -35819,18 +35888,6 @@ echo "${ECHO_T}${T_MD}Checking for curses libraries:${T_ME}" >&6; }
 	fi
 
 
-# Check --with-widechar option is given
-if test "${with_widechar+set}" = set; then
-  withval=$with_widechar;
-	if test "$withval" != "yes"; then
-		ENABLE_WIDECHAR=no
-	else
-		ENABLE_WIDECHAR=yes
-		{ echo "$as_me:$LINENO: widechar: enabled" >&5
-echo "${ECHO_T}widechar: enabled" >&6; }
-	fi
-fi
-
 # Check whether --with-curses was given.
 if test "${with_curses+set}" = set; then
   withval=$with_curses;
@@ -35880,11 +35937,7 @@ if test "${ac_cv_lib_ncurses_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-if test "${ENABLE_WIDECHAR}" != "yes"; then
-  LIBS="-lncurses  $LIBS"
-else
-  LIBS="-lncursesw  $LIBS"
-fi
+LIBS="-lncurses  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -35954,11 +36007,7 @@ if test $ac_cv_lib_ncurses_main = yes; then
 #define HAVE_LIBNCURSES 1
 _ACEOF
 
-if test "${ENABLE_WIDECHAR}" != "yes"; then
   LIBS="-lncurses $LIBS"
-else
-  LIBS="-lncursesw $LIBS"
-fi
 
 fi
 
@@ -36116,11 +36165,7 @@ if test "${ac_cv_lib_curses_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-  if test "${ENABLE_WIDECHAR}" != "yes"; then
-     LIBS="-lcurses  $LIBS"
-  else
-     LIBS="-lcursesw  $LIBS"
-  fi
+LIBS="-lcurses  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -36190,11 +36235,7 @@ if test $ac_cv_lib_curses_main = yes; then
 #define HAVE_LIBCURSES 1
 _ACEOF
 
-  if test "${ENABLE_WIDECHAR}" != "yes"; then
-    LIBS="-lcurses $LIBS"
-  else
-    LIBS="-lcursesw $LIBS"
-  fi
+  LIBS="-lcurses $LIBS"
 
 fi
 
@@ -36213,23 +36254,11 @@ _ACEOF
 					CURSES_LIB_NAME="-lSystem"
 					;;
 				*)
-					if test "${ENABLE_WIDECHAR}" != "yes"; then
-					  CURSES_LIB_NAME="-lform -lpanel"
-					else
-					  CURSES_LIB_NAME="-lformw -lpanelw"
-					fi
+					CURSES_LIB_NAME="-lform -lpanel"
 					if test "$ac_cv_lib_curses_main" = "yes"; then
-						if test "${ENABLE_WIDECHAR}" != "yes"; then
-						  CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
-						else
-						  CURSES_LIB_NAME="-lcursesw $CURSES_LIB_NAME"
-						fi
+						CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
                     else
-						if test "${ENABLE_WIDECHAR}" != "yes"; then
-						  CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
-						else
-						  CURSES_LIB_NAME="-lncursesw $CURSES_LIB_NAME"
-						fi
+						CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
                     fi
 					;;
 			esac
@@ -36459,11 +36488,7 @@ if test "${ac_cv_lib_form_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-  if test "${ENABLE_WIDECHAR}" != "yes"; then
-    LIBS="-lform  $LIBS"
-  else
-    LIBS="-lformw  $LIBS"
-  fi
+LIBS="-lform  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -36533,11 +36558,7 @@ if test $ac_cv_lib_form_main = yes; then
 #define HAVE_LIBFORM 1
 _ACEOF
 
-  if test "${ENABLE_WIDECHAR}" != "yes"; then
-    LIBS="-lform $LIBS"
-  else
-    LIBS="-lformw $LIBS"
-  fi
+  LIBS="-lform $LIBS"
 
 fi
 
@@ -36549,11 +36570,7 @@ if test "${ac_cv_lib_panel_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-  if test "${ENABLE_WIDECHAR}" != "yes"; then
-    LIBS="-lpanel  $LIBS"
-  else
-    LIBS="-lpanelw  $LIBS"
-  fi
+LIBS="-lpanel  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -36623,11 +36640,7 @@ if test $ac_cv_lib_panel_main = yes; then
 #define HAVE_LIBPANEL 1
 _ACEOF
 
-  if test "${ENABLE_WIDECHAR}" != "yes"; then
-    LIBS="-lpanel $LIBS"
-  else
-    LIBS="-lpanelw $LIBS"
-  fi
+  LIBS="-lpanel $LIBS"
 
 fi
 
@@ -43059,7 +43072,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 43003 "configure"' > conftest.$ac_ext
+  echo '#line 43075 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -43680,7 +43693,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43624 "configure"
+#line 43696 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -43778,7 +43791,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43722 "configure"
+#line 43794 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -46386,7 +46399,7 @@ PLUGIN_NO_LINKABLE=
 		fi
 		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE_EXE'"
 		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: compiler'"
 	done
 
 	for FILE in $RUNTIME_EXE ; do
@@ -46399,17 +46412,17 @@ PLUGIN_NO_LINKABLE=
 			fi
 		fi
 		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE_EXE'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE_EXE; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: runtime'"
 	done
 
 	for FILE in $RUNTIME_RESOURCE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "EXEFILE_$COUNTER='$RPM_EXE_PREFIX/$FILE'"
-		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: runtime'"
 	done
 
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; $COPYMODE_NORMAL; Components: compiler'"
 
 { echo "$as_me:$LINENO: result: done." >&5
 echo "${ECHO_T}done." >&6; }
@@ -47586,6 +47599,7 @@ SQLITE_ODBC_LIBNAME_STATIC!$SQLITE_ODBC_LIBNAME_STATIC$ac_delim
 SQLITE_ODBC_LIBDIR!$SQLITE_ODBC_LIBDIR$ac_delim
 Q_ESQLC!$Q_ESQLC$ac_delim
 AUBIT_LICENSE!$AUBIT_LICENSE$ac_delim
+AUBIT_COPYRIGHT_MSG!$AUBIT_COPYRIGHT_MSG$ac_delim
 PCRE_INC_PATH!$PCRE_INC_PATH$ac_delim
 PCRE_LIB_PATH!$PCRE_LIB_PATH$ac_delim
 MSYS_ROOTDIR!$MSYS_ROOTDIR$ac_delim
@@ -47598,7 +47612,6 @@ IS_SOURCE!$IS_SOURCE$ac_delim
 INNO_ROOTDIR!$INNO_ROOTDIR$ac_delim
 INNO_VERSION!$INNO_VERSION$ac_delim
 ISTOOL_ROOTDIR!$ISTOOL_ROOTDIR$ac_delim
-BINRELOC!$BINRELOC$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -47640,6 +47653,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+BINRELOC!$BINRELOC$ac_delim
 APGCC!$APGCC$ac_delim
 APGPP!$APGPP$ac_delim
 MAKEINSTALLER!$MAKEINSTALLER$ac_delim
@@ -47736,7 +47750,6 @@ RPMFILE_35!$RPMFILE_35$ac_delim
 RPMFILE_36!$RPMFILE_36$ac_delim
 RPMFILE_37!$RPMFILE_37$ac_delim
 RPMFILE_38!$RPMFILE_38$ac_delim
-RPMFILE_39!$RPMFILE_39$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -47778,6 +47791,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+RPMFILE_39!$RPMFILE_39$ac_delim
 RPMFILE_40!$RPMFILE_40$ac_delim
 RPMFILE_41!$RPMFILE_41$ac_delim
 RPMFILE_42!$RPMFILE_42$ac_delim
@@ -47874,7 +47888,6 @@ IS_THIRDPARTY_32!$IS_THIRDPARTY_32$ac_delim
 IS_THIRDPARTY_33!$IS_THIRDPARTY_33$ac_delim
 IS_THIRDPARTY_34!$IS_THIRDPARTY_34$ac_delim
 IS_THIRDPARTY_35!$IS_THIRDPARTY_35$ac_delim
-IS_THIRDPARTY_36!$IS_THIRDPARTY_36$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -47916,6 +47929,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+IS_THIRDPARTY_36!$IS_THIRDPARTY_36$ac_delim
 IS_THIRDPARTY_37!$IS_THIRDPARTY_37$ac_delim
 IS_THIRDPARTY_38!$IS_THIRDPARTY_38$ac_delim
 IS_THIRDPARTY_39!$IS_THIRDPARTY_39$ac_delim
@@ -48012,7 +48026,6 @@ ISLIBFILE_29!$ISLIBFILE_29$ac_delim
 ISLIBFILE_30!$ISLIBFILE_30$ac_delim
 ISLIBFILE_31!$ISLIBFILE_31$ac_delim
 ISLIBFILE_32!$ISLIBFILE_32$ac_delim
-ISLIBFILE_33!$ISLIBFILE_33$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48054,6 +48067,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISLIBFILE_33!$ISLIBFILE_33$ac_delim
 ISLIBFILE_34!$ISLIBFILE_34$ac_delim
 ISLIBFILE_35!$ISLIBFILE_35$ac_delim
 ISLIBFILE_36!$ISLIBFILE_36$ac_delim
@@ -48150,7 +48164,6 @@ ISEXEFILE_26!$ISEXEFILE_26$ac_delim
 ISEXEFILE_27!$ISEXEFILE_27$ac_delim
 ISEXEFILE_28!$ISEXEFILE_28$ac_delim
 ISEXEFILE_29!$ISEXEFILE_29$ac_delim
-ISEXEFILE_30!$ISEXEFILE_30$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48192,6 +48205,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISEXEFILE_30!$ISEXEFILE_30$ac_delim
 ISEXEFILE_31!$ISEXEFILE_31$ac_delim
 ISEXEFILE_32!$ISEXEFILE_32$ac_delim
 ISEXEFILE_33!$ISEXEFILE_33$ac_delim
@@ -48288,7 +48302,6 @@ INCFILE_33!$INCFILE_33$ac_delim
 INCFILE_34!$INCFILE_34$ac_delim
 INCFILE_35!$INCFILE_35$ac_delim
 INCFILE_36!$INCFILE_36$ac_delim
-INCFILE_37!$INCFILE_37$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48330,6 +48343,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+INCFILE_37!$INCFILE_37$ac_delim
 INCFILE_38!$INCFILE_38$ac_delim
 INCFILE_39!$INCFILE_39$ac_delim
 INCFILE_40!$INCFILE_40$ac_delim
@@ -48426,7 +48440,6 @@ EXAMPFILE_60!$EXAMPFILE_60$ac_delim
 ISEXAMPFILE_1!$ISEXAMPFILE_1$ac_delim
 ISEXAMPFILE_2!$ISEXAMPFILE_2$ac_delim
 ISEXAMPFILE_3!$ISEXAMPFILE_3$ac_delim
-ISEXAMPFILE_4!$ISEXAMPFILE_4$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48468,6 +48481,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISEXAMPFILE_4!$ISEXAMPFILE_4$ac_delim
 ISEXAMPFILE_5!$ISEXAMPFILE_5$ac_delim
 ISEXAMPFILE_6!$ISEXAMPFILE_6$ac_delim
 ISEXAMPFILE_7!$ISEXAMPFILE_7$ac_delim
@@ -48564,7 +48578,6 @@ ISMAKEFILE_17!$ISMAKEFILE_17$ac_delim
 ISMAKEFILE_18!$ISMAKEFILE_18$ac_delim
 ISMAKEFILE_19!$ISMAKEFILE_19$ac_delim
 ISMAKEFILE_20!$ISMAKEFILE_20$ac_delim
-DOCFILE_1!$DOCFILE_1$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48606,6 +48619,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+DOCFILE_1!$DOCFILE_1$ac_delim
 DOCFILE_2!$DOCFILE_2$ac_delim
 DOCFILE_3!$DOCFILE_3$ac_delim
 DOCFILE_4!$DOCFILE_4$ac_delim
@@ -48702,7 +48716,6 @@ CONVFILE_14!$CONVFILE_14$ac_delim
 CONVFILE_15!$CONVFILE_15$ac_delim
 CONVFILE_16!$CONVFILE_16$ac_delim
 CONVFILE_17!$CONVFILE_17$ac_delim
-CONVFILE_18!$CONVFILE_18$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48744,6 +48757,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+CONVFILE_18!$CONVFILE_18$ac_delim
 CONVFILE_19!$CONVFILE_19$ac_delim
 CONVFILE_20!$CONVFILE_20$ac_delim
 ISCONVFILE_1!$ISCONVFILE_1$ac_delim
@@ -48840,7 +48854,6 @@ ISIMPORTFILE_11!$ISIMPORTFILE_11$ac_delim
 ISIMPORTFILE_12!$ISIMPORTFILE_12$ac_delim
 ISIMPORTFILE_13!$ISIMPORTFILE_13$ac_delim
 ISIMPORTFILE_14!$ISIMPORTFILE_14$ac_delim
-ISIMPORTFILE_15!$ISIMPORTFILE_15$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48882,6 +48895,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISIMPORTFILE_15!$ISIMPORTFILE_15$ac_delim
 ISIMPORTFILE_16!$ISIMPORTFILE_16$ac_delim
 ISIMPORTFILE_17!$ISIMPORTFILE_17$ac_delim
 ISIMPORTFILE_18!$ISIMPORTFILE_18$ac_delim
@@ -48978,7 +48992,6 @@ TMPIFMX_ESQLC!$TMPIFMX_ESQLC$ac_delim
 POSTMASTER!$POSTMASTER$ac_delim
 SQLITE!$SQLITE$ac_delim
 OLD_SQLITE!$OLD_SQLITE$ac_delim
-SQLITE_LIBVERSION!$SQLITE_LIBVERSION$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -49020,6 +49033,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+SQLITE_LIBVERSION!$SQLITE_LIBVERSION$ac_delim
 IODBC_CONFIG!$IODBC_CONFIG$ac_delim
 GTK_CONFIG!$GTK_CONFIG$ac_delim
 GTK_QUERY!$GTK_QUERY$ac_delim
@@ -49039,7 +49053,7 @@ CYGCHECK!$CYGCHECK$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 17; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 18; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -49814,7 +49828,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.364 2006-12-08 18:24:47 briantan Exp $
+| $Id: configure,v 1.365 2006-12-25 11:41:49 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

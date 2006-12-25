@@ -54,12 +54,17 @@ static void     outbyte(FILE *unlfile, char *buffer, long len);
 #define loc_mode        lc_union.lc_file.lc_mode
 #define sqlva           sqlvar_struct
 #define NIL(x)         ((x)0)
+#include "a4gl_incl_config.h"
 typedef loc_t               Blob;
 typedef struct decimal  Decimal;
 typedef struct dtime    Datetime;
 typedef struct intrvl   Interval;
 int strip( char *str, int len );
 int charcpy( unsigned char *target, unsigned char *source, long len );
+
+#if HAVE_IFX_IUS
+#define ESQLC_IUSTYPES          1
+#endif
 
 
 off_t bpos = 0;
@@ -2636,6 +2641,23 @@ if (e->delim) {
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+
+#ifdef ESQLC_IUSTYPES  /* Do unload */
+	
+        case SQLSET:
+        case SQLMULTISET:
+        case SQLLIST:
+        case SQLLVARCHAR:
+
+                col->sqltype = CLVCHARPTRTYPE;
+		col->sqllen  = jtypcsize(col->sqltype, col->sqllen);
+		col->sqltype = jtypctype(col->sqltype);
+	A4GL_pause_execution();
+	  	fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+                break;
+#endif /* ESQLC_IUSTYPES */
+
+
 	case SQLDATE:
 	  col->sqltype = CFIXCHARTYPE;
 	  col->sqllen=11; //dd-mm-yyyy
@@ -2721,6 +2743,19 @@ if (e->delim) {
 
 	  nblobs++;
 	  break;
+#ifdef ESQLC_IUSTYPES /* do unload still */
+           case CLVCHARPTRTYPE:
+                        {
+                                void *data = 0;
+				printf("Allocate...\n");
+                                ifx_var_flag(&data, 1);
+	  			align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  			cp = buffer + align;
+	  			cp += (flen = rtypmsize (col->sqltype, col->sqllen));
+	  			rlen += flen;
+                                col->sqldata = (char *)data;    /*=C++=*/
+                        }
+#endif /* ESQLC_IUSTYPES */
 
 	case CDOUBLETYPE:
 	  break;
@@ -2937,8 +2972,24 @@ if (e->delim) {
                 	}
 			}
 			break;
+                case CLVCHARPTRTYPE:
+			{
+			int alen;
+			char *data;
+			int flen;
+			void *lvc;
+			lvc=col->sqldata;
+			data=ifx_var_getdata(&lvc);
+			if (data==0) {
+		  		fprintf (unlfile," ");
+			} else {
+		  		fprintf (unlfile,"%s", data);
+			}
+			}
+		  break;
 
 		default :
+			A4GL_assertion(1,"Unhandled datatype");
 			{
 			fprintf(unlfile,"<<%d>>",col->sqltype);
 			}

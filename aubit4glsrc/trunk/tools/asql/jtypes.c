@@ -1661,7 +1661,7 @@ convertdata (Memory * mem, Sqlva * col, BSSP bssp)
 	  {
 	    char data = *mem_data (mem);
 	    if (mem_len (mem) > 2)
-	      error_746 ("string is too long to convert to BOOLEAN");
+	      A4GL_exitwith ("string is too long to convert to BOOLEAN");
 	    else
 	      {
 		switch (data)
@@ -1675,7 +1675,7 @@ convertdata (Memory * mem, Sqlva * col, BSSP bssp)
 		    *col->sqldata = 0;
 		    break;
 		  default:
-		    error_746 ("string value cannot be converted to BOOLEAN");
+		    A4GL_exitwith ("string value cannot be converted to BOOLEAN");
 		    break;
 		  }
 	      }

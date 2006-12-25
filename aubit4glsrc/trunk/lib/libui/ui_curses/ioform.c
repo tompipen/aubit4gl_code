@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.154 2006-12-17 17:04:03 mikeaubury Exp $
+# $Id: ioform.c,v 1.155 2006-12-25 11:42:27 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.154 2006-12-17 17:04:03 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.155 2006-12-25 11:42:27 mikeaubury Exp $";
 #endif
 
 /**
@@ -1439,7 +1439,7 @@ UILIB_A4GL_set_fields (void *vsio)
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
   struct struct_scr_field *prop;
-
+int changed=0;
   FIELD **field_list;
   FIELD *firstfield = 0;
   int nofields;
@@ -1559,6 +1559,7 @@ UILIB_A4GL_set_fields (void *vsio)
 			       sio->vars[a].dtype +
 			       ENCODE_SIZE (sio->vars[a].size));
 
+	changed=0;
 
 	}
       else
@@ -1571,17 +1572,16 @@ UILIB_A4GL_set_fields (void *vsio)
 	      A4GL_debug ("default from form to '%s'",
 			  A4GL_get_str_attribute (prop, FA_S_DEFAULT));
 
-	      A4GL_set_init_value (field_list[a],
-				   A4GL_replace_sql_var (A4GL_strip_quotes
-							 (A4GL_get_str_attribute
-							  (prop,
-							   FA_S_DEFAULT))),
-				   0);
+	      A4GL_set_init_value (field_list[a], A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT))), 0);
+		changed++;
+      		//set_field_status (field_list[a], 1);
+		
 
 	    }
 	  else
 	    {
 	      A4GL_debug ("99  set_init_value as nothing...");
+		changed=1;
 	      A4GL_set_init_value (field_list[a], 0, 0);
 	    }
 	}
@@ -1590,20 +1590,23 @@ UILIB_A4GL_set_fields (void *vsio)
 	{
 	  prop = (struct struct_scr_field *) field_userptr (field_list[a]);
 
-	  strcpy (buff,
-		  A4GL_fld_data_ignore_format (prop,
-					       field_buffer (field_list[a],
-							     0)));
+	
+      		if (changed) { // default value used
+	  		strcpy (buff, A4GL_fld_data_ignore_format (prop, field_buffer (field_list[a], 0)));
 
-	  A4GL_trim (buff);
+	  		A4GL_trim (buff);
+		
+	  		if (strlen (buff))
+	    		A4GL_push_char (buff);
+	  		else
+	    		A4GL_push_null (sio->vars[a].dtype, sio->vars[a].size);	// @todo - check if its set to not null and return CHARs instead..
+	  		A4GL_debug ("Calling pop_var2..");
+		
+	   		A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
+		}
+	
 
-	  if (strlen (buff))
-	    A4GL_push_char (buff);
-	  else
-	    A4GL_push_null (sio->vars[a].dtype, sio->vars[a].size);	// @todo - check if its set to not null and return CHARs instead..
-	  A4GL_debug ("Calling pop_var2..");
-	  A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype,
-			 sio->vars[a].size);
+
 	}
 
       if (flg == 0)

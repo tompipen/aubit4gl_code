@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.337 2006-12-03 08:57:43 afalout Exp $
+dnl # $Id: configure.in,v 1.338 2006-12-25 11:42:00 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.337 2006-12-03 08:57:43 afalout Exp $)
+AC_REVISION($Id: configure.in,v 1.338 2006-12-25 11:42:00 mikeaubury Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
@@ -5860,8 +5860,35 @@ AC_ARG_WITH(informix,
 
 				AC_DEFINE(HAVE_IFX)
 				AC_MSG_CHECKING([Informix version])
-				IFX_VERSION=[`esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`]
-				if test $IFX_VERSION -ge "900"; then
+				ESQLC_COMMAND=""
+				for esqlc in esql $INFORMIXDIR/bin/esql
+				do
+
+        				if esql_output=`$esqlc -V 2>/dev/null | sed -n 1p` && test -n "$esql_output"
+        				then
+                				esqlv=`echo "$esql_output" |
+                           				sed -e 's/.*-ESQL Version *//' \
+                                   				-e 's/\\.//' -e 's/\\..*//' `
+                				if test "x$esqlv" = "x"
+                				then { { echo "$as_me:$LINENO: error: Version information from $esqlc -V not parsable -- $esql_output" >&5
+								echo "$as_me: error: Version information from $esqlc -V not parsable -- $esql_output" >&2;}
+   				{ (exit 1); exit 1; }; }
+                				else
+                        				echo "$as_me:$LINENO: result: $esqlc (version $esqlv)" >&5
+				echo "${ECHO_T}$esqlc (version $esqlv)" >&6
+                        				IFX_ESQLC_COMMAND=$esqlc
+                        				IFX_ESQLC_VERSION=$esqlv
+                        				IFX_ESQLC_VERTEXT="$esql_output"
+					#AC_DEFINE(IFX_ESQLC_COMMAND, $IFX_ESQLC_COMMAND)
+					#AC_DEFINE(IFX_ESQLC_VERSION, $IFX_ESQLC_VERSION)
+					#AC_DEFINE(IFX_ESQLC_VERTEXT, $IFX_ESQLC_VERTEXT)
+                        				break
+		                fi
+        fi
+done
+
+
+				if test $IFX_ESQLC_VERSION -ge "900"; then
 					AC_DEFINE(HAVE_IFX_IUS)
 					IFX_ESQL_FLAGS="-EDHAVE_IFX_IUS"
 				else
@@ -10895,7 +10922,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.337 2006-12-03 08:57:43 afalout Exp $
+| $Id: configure.in,v 1.338 2006-12-25 11:42:00 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.101 2006-11-23 12:42:32 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.102 2006-12-25 11:42:27 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.101 2006-11-23 12:42:32 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.102 2006-12-25 11:42:27 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -900,7 +900,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		    strcpy (buff, "");
 		}
 
-
+	if (fprop->flags) {
 
 	      A4GL_trim (buff);
 
@@ -923,7 +923,9 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			  sio->vars[field_no].ptr, sio->vars[field_no].dtype,
 			  sio->vars[field_no].size);
 
+		
 	        A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+
 		if (sio->vars[field_no].dtype==0) {
 			A4GL_debug("sio->vars[field_no].ptr=%s",sio->vars[field_no].ptr);
 		}
@@ -982,7 +984,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	      if (attr != 0)
 		A4GL_set_field_attr_with_attr (sio->currentfield, attr,
 					       FGL_CMD_INPUT);
-
+		}
 	    }
 
  	  A4GL_set_infield_from_parameter ((long)sio->currentfield);

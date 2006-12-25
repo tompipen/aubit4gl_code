@@ -143,6 +143,8 @@
         #define HAVE_TRUNC 0
         #define HAVE_VSNPRINTF 0	
 	#define HAVE_FEATURES_H 0
+	#define HAVE_IFX_IUS 0
+
 
 	//See a4gl_esql_posthres.h and resource.c for usage of USING_PG_COPTS
 	//needed because of inconsistand locations of this header files, and

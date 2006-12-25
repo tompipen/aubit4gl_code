@@ -82,7 +82,7 @@ atexit(bye);
 endcode
 
 let lv_cnt=1
-if num_args() then
+if num_args()>0 then
 	for lv_a=1 to num_args()
 		
 		if arg_val(lv_a)="-d" then

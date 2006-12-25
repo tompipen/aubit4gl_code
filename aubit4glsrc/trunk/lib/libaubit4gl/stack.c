@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.163 2006-12-11 11:03:31 mikeaubury Exp $
+# $Id: stack.c,v 1.164 2006-12-25 11:42:26 mikeaubury Exp $
 #
 */
 
@@ -277,7 +277,7 @@ A4GL_pop_bool (void)
 
   if (ptr != 0 && ptr != 1)
     {
-      A4GL_debug ("1 SERIOUS PROBLEM ?????");
+      A4GL_debug ("1 SERIOUS PROBLEM ????? ptr=%d",ptr);
       A4GL_debug_print_stack ();
     }
   if (ptr)

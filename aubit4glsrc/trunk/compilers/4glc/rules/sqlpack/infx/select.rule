@@ -66,7 +66,7 @@ select_statement21_ss_converted:
 		sf=malloc(sizeof(struct s_select_finish));
 		sf->into_temp=0;
 		sf->nolog=0;
-		sf->order_by=$<s_select_list_item_list>7;
+		sf->order_by=$<s_select_list_item_list>8;
 		$<s_select>$->sf=sf;
 		A4GL_set_sql_lineno(yylineno);
 		map_select_stmt("SELECT",$<s_select>$);
