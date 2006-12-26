@@ -64,6 +64,9 @@ define lv_stid integer,
 define lv_txt CHAR(64)
 define lv_c1,lv_c2 integer
 define lv_nn char(10)
+define lv_servname char(18)
+define lv_fulldb char(256)
+define lv_dbname char(18)
 DEFINE lv_systables integer	#true or false, process Informix sys* tables (default=0)
 DEFINE lv_prefix_idx smallint  #true or false, add prefic to index names (default=false)
 DEFINE lv_no_owner smallint
@@ -111,19 +114,40 @@ define lv_c integer
 	
 	
 	IF lv_st.tabtype="S" THEN
-		select btabid into lv_stid from syssyntable where tabid=lv_st.tabid
-		select tabname,owner into lv_stname,lv_so from systables where tabid=lv_stid
-	
+		# create synonym "aubit4gl".stab2 for test1@mike_2:"informix".systables;
+		initialize lv_so to null
+		select servername, dbname, btabid,tabname,owner into lv_servname, lv_dbname, lv_stid, lv_stname,lv_so  from syssyntable where tabid=lv_st.tabid
+
+		
+		if lv_stid is not null  then
+			select tabname into lv_stname from systables where tabid=lv_stid
+			select owner into lv_so from systables where tabid=lv_stid
+		else 
+			#
+		end if
+		if lv_dbname is null then let lv_dbname=" " end if
+		if lv_servname is null then let lv_servname=" " end if
+		let lv_fulldb=lv_dbname
+
+		if length(lv_servname) then
+			let lv_fulldb=lv_dbname clipped, "@",lv_servname
+		end if
+
+		if length(lv_fulldb) then
+			let lv_fulldb=lv_fulldb clipped,":"
+		end if
+
 		if get_mode()=0 then
 
 			call outstr(" ")
 			let lv_str="CREATE SYNONYM"
-			if lv_no_owner then
-				let lv_str=lv_str clipped, " ",lv_t clipped
+			if lv_no_owner is not null then
+				let lv_str=lv_str clipped, " ", lv_stname clipped
 			else
-				let lv_str=lv_str clipped, " \"",lv_st.owner CLIPPED,"\".",lv_t clipped
+				let lv_str=lv_str clipped, " \"",lv_st.owner CLIPPED,"\".",lv_stname clipped
 			end if
-			let lv_str=lv_str clipped, " FOR \"",lv_so clipped,
+
+			let lv_str=lv_str clipped, " FOR ", lv_fulldb clipped, "\"",lv_so clipped,
 				"\".",lv_stname clipped,";"
 			call outstr(lv_str)
 			call outstr(" ")
