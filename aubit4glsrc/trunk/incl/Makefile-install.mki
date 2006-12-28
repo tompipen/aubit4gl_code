@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.115 2006-12-03 08:58:29 afalout Exp $
+# $Id: Makefile-install.mki,v 1.116 2006-12-28 12:49:36 gyver309 Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -154,7 +154,7 @@ install.bin.links: deinstall.bin.links install.aubit-config.link install.bin.ins
 #######################################
 install.libs.links: deinstall.libs.links
 #Link libaubit4gl with version string to plain libaubit4gl:
-	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT}
+	${LN_S_LIB} libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT}
 	@if ! test -d ${LIB_INSTALL_LINK}; then ${MKPATH} ${LIB_INSTALL_LINK}; fi
 	@if test -w ${LIB_INSTALL_LINK} ; then \
 		${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}; \
