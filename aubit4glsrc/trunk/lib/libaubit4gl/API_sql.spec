@@ -75,6 +75,9 @@ A4GLSQL_describe_stmt char* stmt int colno int type -> long
 A4GLSQL_fill_array int mx char* arr1 int szarr1 char* arr2 int szarr2 char* service int mode char* info -> int
 
 
+A4GLSQL_map_tname char* code char* db -> void
+A4GLSQL_unmap_tname char* code -> void
+A4GLSQL_is_tname_mapped char* code -> int
 
 
 * These duplicate functionality already available via the above calls - so
