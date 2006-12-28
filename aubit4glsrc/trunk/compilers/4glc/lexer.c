@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.125 2006-11-01 12:02:59 mikeaubury Exp $
+# $Id: lexer.c,v 1.126 2006-12-28 12:09:10 gyver309 Exp $
 #*/
 
 /**
@@ -116,7 +116,7 @@ char *lastword;
 
 #define MAX_XWORDS 1024
 
-char xwords[MAX_XWORDS][1024];
+char xwords[MAX_XWORDS][4096];
 char idents[256][256];
 long fpos;
 
