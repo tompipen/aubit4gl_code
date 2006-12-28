@@ -213,7 +213,7 @@ pushLikeAllTableColumns (char *tableName)
   char *ccol = 0;
   int ncol = 0;
   char *cname;
-
+  char *type = 0;
 
   A4GL_debug ("pushLikeAllTableColumns()");
   A4GL_debug ("Calling get_columns : '%s'\n", A4GL_null_as_null (tableName));
@@ -265,7 +265,16 @@ pushLikeAllTableColumns (char *tableName)
 
       trim_spaces (cname);
       push_name (cname, 0);
-      push_type (rettype (cdtype), csize, 0);
+      type = rettype (cdtype);
+      if((strlen(type) == 0))
+      {
+	  SPRINTF2 (buff, "unknown type table:%s column:%s", tableName, cname);
+	  a4gl_yyerror (buff);
+	  return 1;
+      }
+      else
+	  push_type (type, csize, 0);
+
     }
   A4GL_debug ("ncol=%d\n", ncol);
   if (ncol == 0)
