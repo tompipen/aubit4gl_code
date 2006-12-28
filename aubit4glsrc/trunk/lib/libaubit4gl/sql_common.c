@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.31 2006-09-25 16:56:22 mikeaubury Exp $
+# $Id: sql_common.c,v 1.32 2006-12-28 13:52:30 gyver309 Exp $
 #
 */
 
@@ -867,7 +867,24 @@ struct s_table *
 A4GLSQLPARSE_new_tablename (char *tname, char *alias)
 {
   struct s_table *ptr;
+  char *defaultOwner;
   ptr = malloc (sizeof (struct s_table));
+
+  // make owner name, when no any given but DEFAULT_OWNER env var is set
+  defaultOwner = acl_getenv("DEFAULT_OWNER");
+  if (defaultOwner && defaultOwner[0] != 0 && strchr(tname, '.') == NULL) // default owner given and no owner specified in statement
+  {
+      static char tbuf[128];
+      if (strlen(tname) + strlen(defaultOwner)+3 > sizeof(tbuf))
+	  A4GL_exitwith("A4GLSQLCV_check_tablename: buffer overrun\n");
+
+      strcpy(tbuf, defaultOwner);
+      strcat(tbuf, ".");
+      strcat(tbuf, tname);
+      A4GL_debug("default owner name appended \"%s\" -> \"%s\"\n", tname, tbuf);
+      tname = tbuf;
+  }
+
   ptr->tabname = acl_strdup (tname);
   if (alias)
     {
