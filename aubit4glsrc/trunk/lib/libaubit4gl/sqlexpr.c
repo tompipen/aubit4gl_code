@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.40 2006-10-30 09:43:33 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.41 2006-12-28 13:00:30 gyver309 Exp $
 #
 */
 
@@ -1679,6 +1679,7 @@ preprocess_sql_statement (struct s_select *select)
 
 	  add_select_list_item_list (n, p);
 	}
+      A4GLSQL_end_get_columns ();
       select->select_list = n;
     }
 
