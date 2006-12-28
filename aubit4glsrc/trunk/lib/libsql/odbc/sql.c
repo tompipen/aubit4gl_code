@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.171 2006-09-25 16:56:22 mikeaubury Exp $
+# $Id: sql.c,v 1.172 2006-12-28 13:58:05 gyver309 Exp $
 #
 */
 
@@ -52,13 +52,8 @@
 */
 
 void AddColumn (char *s, int d, int sz);
-int GetColNo = 0;
-char GetColTab[2000];
-int GetColCached = 0;
 int first_open = 1;
 static int conv_sqlprec (int ndtype, int sdim, int scale);
-
-#define CACHE_COLUMN '&'
 
 #if (ODBCVER >= 0x0300)
 #define USE_TIMESTAMP
@@ -97,6 +92,7 @@ int dtime_as_char = 0;
 
 static int do_fake_transactions (void);
 
+static int odbc_autocommit = 0;
 
 #define SE_NULLPTR 1
 
@@ -199,7 +195,6 @@ void A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt);
 void A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 				HSTMT hstmt);
 void A4GL_add_cursor (struct s_cid *cid, char *cname);
-int ODBC_exec_prepared_sql (SQLHSTMT hstmt);
 int ODBC_exec_stmt (SQLHSTMT *hstmt);
 int ODBC_exec_select (SQLHSTMT hstmt);
 int ODBC_exec_sql (UCHAR * sqlstr);
@@ -232,8 +227,6 @@ extern int A4GL_set_blob_data (SQLHSTMT hstmt);
 extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt,
 			       int colno);
 
-
-
 /*
 =====================================================================
                     Variables definitions
@@ -250,12 +243,6 @@ static char sess_name[32] = "default";
 static char OldDBname[2048] = "";
 static char dbms_name[1065] = "";
 static char dbms_dialect[64] = "";
-static HSTMT hstmtGetColumns = 0;	/** Statement used to iterate getting column information */
-static char cn[256];					/** Column name */
-static int dt;
-static long prec;					/** Precision */
-static int colsize;							/** Coulmn size */
-static char szcolsize[20];
 
 /* unknown: */
 int rc;
@@ -318,6 +305,59 @@ typedef struct tagACLIVAL
 }
 ACLIVAL;
 
+// catalog query structures
+/**
+* structure holding bind buffers for SQLColumns
+*/
+struct sql_col_bind_data
+{
+    // SQLBindCol variables
+    char tq[256];	// 1
+    char to[256];	// 2
+    char tn[256];	// 3 tabname
+    char cn[256];	// 4 column name
+    char dtname[256]; 	// 5 data type name
+    int dt;		// 6 data type
+    long prec;		// 7 precision
+    long len;		// 8 length
+    long scale;		// 9
+    long radix;		// 10
+    long nullable;	// 11
+    char remarks[256];  // 12
+
+    SQLLEN len_tq;
+    SQLLEN len_to;
+    SQLLEN len_tn;
+    SQLLEN len_cn;
+    SQLLEN len_dtname;
+    SQLLEN len_dt;
+    SQLLEN len_prec;
+    SQLLEN len_len;
+    SQLLEN len_scale;
+    SQLLEN len_radix;
+    SQLLEN len_nullable;
+    SQLLEN len_remarks;
+};
+
+/**
+* structure holding an entire context of the SQLColumns logic
+*/
+struct sql_col_info_data
+{
+    // misc variables
+    int size;
+    int colsize;
+    int colidx;
+    int dtype;
+    int prec;
+    char colname[256];
+    char tabname[256];
+    SQLHSTMT hstmt;
+    int foundInCache;
+    short nColumns;
+    struct sql_col_bind_data bd;
+};
+
 
 /**
  * Conversion table between 4gl and C data types.
@@ -358,6 +398,8 @@ struct s_stmtextra
 
 struct s_stmtextra *extras = 0;
 int nextras = 0;
+
+static struct sql_col_info_data cidata;
 
 
 
@@ -442,11 +484,71 @@ libSQL_odbc32_is_dll (void)
 
 dll_import sqlca_struct a4gl_sqlca;
 
+// catalog query functions
+static char *strncpyz(char *dest, const char *src, size_t n);
+static int sql_use_describe(void);
+static int sql_cacheschema(void);
+static int cache_make_key(char *tabname, char *colname, int colidx, struct sql_col_info_data *ci, char *dstbuf);
+static void cache_try_add_coldata(char *colname, int colidx, struct sql_col_info_data *ci);
+static int cache_try_get_coldata(char *tabname, char *colname, int colNo, struct sql_col_info_data *ci);
+static int sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_col_info_data *ci);
+void sql_clear_column_info(struct sql_col_info_data *ci, int clearTableData);
+
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
+
+
+void A4GLSQLLIB_A4GLSQL_map_tname(char *code, char *db)
+{
+    void *ptr = NULL;
+    char *codeu;
+    codeu = strdup(code);
+    A4GL_convupper(codeu);
+    ptr = A4GL_find_pointer(codeu, RUNTIME_MAPPED_TNAME);
+    if (ptr != NULL)
+    {
+	A4GL_del_pointer(codeu, RUNTIME_MAPPED_TNAME);
+	free(ptr);
+    }
+    A4GL_add_pointer(codeu, RUNTIME_MAPPED_TNAME, strdup(db));
+    A4GL_debug("table name mapping added: \"%s\"(code) \"%s\"(db)\n", codeu, db);
+    free(codeu);
+}
+
+void A4GLSQLLIB_A4GLSQL_unmap_tname(char *code)
+{
+    void *ptr = NULL;
+    char *codeu;
+    codeu = strdup(code);
+    A4GL_convupper(codeu);
+    ptr = A4GL_find_pointer(codeu, RUNTIME_MAPPED_TNAME);
+    if (ptr != NULL)
+    {
+	A4GL_del_pointer(codeu, RUNTIME_MAPPED_TNAME);
+	free(ptr);
+	A4GL_debug("table name mapping removed: \"%s\"\n", codeu);
+    }
+    else
+    {
+	A4GL_debug("WARNING: trying to remove table name mapping \"%s\", while not mapped (ignored)\n", codeu);
+    }
+    free(codeu);
+}
+
+int A4GLSQLLIB_A4GLSQL_is_tname_mapped(char *code)
+{
+    void *ptr = NULL;
+    char *codeu;
+    int retval;
+    codeu = strdup(code);
+    A4GL_convupper(codeu);
+    retval = A4GL_has_pointer(codeu, RUNTIME_MAPPED_TNAME);
+    free(codeu);
+    return retval;
+}
 
 static char *lower(char *s) {
 	static char *last=0;
@@ -458,7 +560,6 @@ static char *lower(char *s) {
 
 static int A4GL_has_cache_column (char *buff) {
 	int r;
-	 //r=A4GL_has_pointer (lower(buff), CACHE_COLUMN);
 	 r=(int)A4GL_has_pointer (lower(buff), CACHE_COLUMN);
 
 	 return r;
@@ -1103,7 +1204,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 #ifdef DEBUG
   A4GL_debug ("Bound any data... ni=%d", ni);
 #endif
-  return ODBC_exec_prepared_sql ((SQLHSTMT) sid->hstmt);
+  return ODBC_exec_stmt ((SQLHSTMT*)&(sid->hstmt));
 }
 #endif
 
@@ -1473,6 +1574,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 #ifdef DEBUG
       A4GL_debug
 	("A4GLSQL_execute_implicit_select got sid == 0, returning -1");
+      A4GL_exitwith ("Prepared statement not found");
+
 #endif
       return -1;
     }
@@ -1638,7 +1741,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 #endif
 
   curs = cid->statement->select;
-  a4gl_status = 0;
+  if (!aclfgli_get_err_flg())
+      a4gl_status = 0;
 
 
 
@@ -1646,48 +1750,51 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
   A4GL_debug ("XXX s=%s ni=%d ibind=%p", s, ni, ibind);
 
 
-  if (ni == 0)
-    {				/* No USING on the open.. */
-      reformat_sql (cid->statement->select, cid->statement->ibind,
-		    cid->statement->ni, "4");
-      A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i',
-		      (SQLHSTMT) cid->statement->hstmt);
-
-    }
-  else
+  if (!aclfgli_get_err_flg())
     {
+      if (ni == 0)
+	{				/* No USING on the open.. */
+	  reformat_sql (cid->statement->select, cid->statement->ibind,
+			cid->statement->ni, "4");
+	  A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i',
+			  (SQLHSTMT) cid->statement->hstmt);
+
+	}
+      else
+	{
 #ifdef ndef
-      struct BINDING *b;
-      int a;
+	  struct BINDING *b;
+	  int a;
 #ifdef DEBUG
-      A4GL_debug ("We dont have a binding - but I'll make one");
+	  A4GL_debug ("We dont have a binding - but I'll make one");
 #endif
-      b = acl_malloc2 (sizeof (struct BINDING) * ni);
+	  b = acl_malloc2 (sizeof (struct BINDING) * ni);
 
-      for (a = ni - 1; a >= 0; a--)
-	{
-	  b[a].ptr = A4GL_char_pop ();
+	  for (a = ni - 1; a >= 0; a--)
+	    {
+	      b[a].ptr = A4GL_char_pop ();
 #ifdef DEBUG
-	  A4GL_debug ("Got string as '%s' a=%d\n", b[a].ptr, a);
+	      A4GL_debug ("Got string as '%s' a=%d\n", b[a].ptr, a);
 #endif
-	  b[a].dtype = 0;
-	  b[a].size = strlen (b[a].ptr);
+	      b[a].dtype = 0;
+	      b[a].size = strlen (b[a].ptr);
 #ifdef DEBUG
-	  A4GL_debug ("Got size as '%d' a=%d\n", b[a].size, a);
+	      A4GL_debug ("Got size as '%d' a=%d\n", b[a].size, a);
 #endif
-	}
+	    }
 
-      for (a = 0; a < ni; a++)
-	{
+	  for (a = 0; a < ni; a++)
+	    {
 #ifdef DEBUG
-	  A4GL_debug ("%d %d %s", b[a].dtype, b[a].size, b[a].ptr);
+	      A4GL_debug ("%d %d %s", b[a].dtype, b[a].size, b[a].ptr);
 #endif
-	}
+	    }
 #endif
 
-      A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) cid->statement->hstmt);
-      reformat_sql (cid->statement->select, ibind, ni, "5");
+	  A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) cid->statement->hstmt);
+	  reformat_sql (cid->statement->select, ibind, ni, "5");
 
+      }
     }
 
 
@@ -2230,12 +2337,30 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
   ptr = A4GL_find_pointer_val (cname, CURCODE);
   if (ptr == 0)
     {
-      A4GL_exitwith ("Can't free cursor thats not been defined");
+       struct s_sid *sid;
+       sid = A4GLSQL_find_prepare (cname);
+       if (sid != 0)
+       {
+	   if (sid->hstmt)
+	   {
+	       SQLFreeHandle (SQL_HANDLE_STMT, (SQLHSTMT) sid->hstmt);
+	       free_extra (sid->hstmt);
+	       sid->hstmt = 0;
+	       chk_rc (rc, 0, "SQLFreeHandle");
+	   }
+	   free (sid->select);
+	   free (sid);
+	   A4GL_del_pointer (cname, PRECODE);
+	   A4GLSQL_set_status (0, 1);
+	   return;
+       }
+      A4GL_exitwith ("Can't free cursor/statement thats not been defined");
       return;
     }
   if (ptr->hstmt)
     {
-      SQLFreeStmt ((SQLHSTMT) ptr->hstmt, SQL_DROP);
+      SQLFreeHandle (SQL_HANDLE_STMT, (SQLHSTMT) ptr->hstmt);
+//      SQLFreeStmt ((SQLHSTMT) ptr->hstmt, SQL_DROP);
       free_extra (ptr->hstmt);
       ptr->hstmt = 0;
       chk_rc (rc, 0, "SQLFreeStmt");
@@ -2469,13 +2594,16 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
 
 
   // Do we actually need this ?
+  // YES, WE ACTUALLY DO!!!
   if (A4GL_isyes (acl_getenv ("AUTOCOMMIT")))
     {
       rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 1);
+      odbc_autocommit = 1;
     }
   if (A4GL_isno (acl_getenv ("AUTOCOMMIT")))
     {
       rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
+      odbc_autocommit = 0;
     }
   chk_rc (rc, 0, "SQLSetConnectOption");
 
@@ -2778,7 +2906,7 @@ ODBC_exec_stmt (SQLHSTMT *ptr_hstmt)
       if (!in_transaction)
 	{
 	  fake_tr = 1;
-	  A4GLSQL_commit_rollback (-1);
+	  A4GLSQLLIB_A4GLSQL_commit_rollback (-1);
 	}
     }
 
@@ -2794,21 +2922,19 @@ ODBC_exec_stmt (SQLHSTMT *ptr_hstmt)
   if (fake_tr)
     {
       if (rc1 == SQL_SUCCESS || rc1 == SQL_SUCCESS_WITH_INFO)
-	A4GLSQL_commit_rollback (1);
+	A4GLSQLLIB_A4GLSQL_commit_rollback (1);
       else
-	A4GLSQL_commit_rollback (0);
+	A4GLSQLLIB_A4GLSQL_commit_rollback (0);
     }
 
-
-
   if (rc1==SQL_SUCCESS) {
-  rc2 = A4GL_chk_need_blob (rc1, *ptr_hstmt);
+      rc2 = A4GL_chk_need_blob (rc1, *ptr_hstmt);
 
 #ifdef DEBUG
-  A4GL_debug ("chk_need_blob returns %d\n", rc);
+      A4GL_debug ("chk_need_blob returns %d\n", rc);
 #endif
 
-  chk_rc (rc2, *ptr_hstmt, "SQLExecute2");
+      chk_rc (rc2, *ptr_hstmt, "SQLExecute2");
   }
 
 #ifdef DEBUG
@@ -3650,57 +3776,6 @@ A4GL_new_hstmt (SQLHSTMT * hstmt)
   return (HSTMT *) * hstmt;
 }
 
-/**
- * Ask odbc to execute a prepared SQL statement.
- *
- * @param hstmt A statement handle.
- * @return
- *   - 1 : Statement executed.
- *   - 0 : An error ocurred.
- */
-int
-ODBC_exec_prepared_sql (SQLHSTMT hstmt)
-{
-  int rc;
-  //int nresultcols;
-
-#ifdef DEBUG
-  A4GL_debug ("In exec_prepared_sql");
-#endif
-
-  rc = SQLExecute (hstmt);	// reformatted in callers
-
-  chk_rc (rc, hstmt, "SQLExecute");
-  //rc = SQLNumResultCols (hstmt, &nresultcols);
-  //chk_rc (rc, hstmt, "SQLNumResultCols");
-  //A4GL_debug("SQLNumResultCols=%d",nresultcols);
-  rc = A4GL_chk_need_blob (rc, hstmt);
-
-  chk_rc (rc, hstmt, "SQLExecute");
-//  A4GL_set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLExecute", 0);
-
-#ifdef DEBUG
-  A4GL_debug ("Result=%d", rc);
-#endif
-
-  /* Execute the SQL statement. */
-  if (rc != SQL_SUCCESS)
-    {
-      //int a;
-#ifdef DEBUG
-      A4GL_debug ("Oh dear.... %d", rc);
-#endif
-      return A4GL_sqlerrwith (rc, hstmt,1);
-    }
-#ifdef DEBUG
-  A4GL_debug ("Yipee!");
-#endif
-  rc = SQLTransact (henv, hdbc, SQL_COMMIT);
-  chk_rc (rc, 0, "SQLTransact (COMMIT)");
-//  A4GL_set_sqlca (hstmt, "ODBC_exec_prepared_sql : After SQLTransact", 0);
-  return 1;
-}
-
 
 /* FIXME: what is this doing? */
 #define IGNOREEXITWITH
@@ -4021,6 +4096,377 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
   return z;
 }
 
+
+// clearTableData - clear also table-specific data (not only column-specific)
+void sql_clear_column_info(struct sql_col_info_data *ci, int clearTableData)
+{
+    // misc variables
+    memset(&ci->bd, 0, sizeof(ci->bd));
+    memset(ci->colname, 0, sizeof(ci->colname));
+    ci->dtype = 0;
+    ci->size = 0;
+    ci->colsize = 0;
+    ci->foundInCache = 0;
+
+    if (clearTableData)
+    {
+	memset(ci->tabname, 0, sizeof(ci->tabname));
+	ci->colidx = 0;
+	ci->nColumns = 0;
+	ci->hstmt = NULL;
+
+/*	if (ci->hstmt != NULL)
+	    SQLFreeHandle(SQL_HANDLE_STMT, c->hstmt);
+	ci->hstmt = NULL;*/
+    }
+}
+
+int sql_use_describe(void)
+{
+    static int useDescribe = -1;
+    if (useDescribe == -1)
+	useDescribe = A4GL_isyes(acl_getenv("USE_DESCRIBE_NOT_SQLCOLUMNS")) ? 1 : 0;
+    return useDescribe; //fixme uncomment
+}
+
+int sql_cacheschema(void)
+{
+    static int cacheSchema = -1;
+    if (cacheSchema == -1)
+	cacheSchema = A4GL_isyes(acl_getenv("CACHESCHEMA"));
+    return cacheSchema;
+}
+
+char *strncpyz(char *dest, const char *src, size_t n)
+{
+    if (n == 0)
+	return dest;
+    if (src == NULL)
+	dest[0] = 0;
+    else
+    {
+	strncpy(dest, src, n-1);
+	dest[n-1] = 0;
+    }
+    return dest;
+}
+
+// returns false also if CACHESCHEMA disabled
+static int cache_make_key(char *tabname, char *colname, int colidx, struct sql_col_info_data *ci, char *dstbuf)
+{
+    if (tabname == NULL)
+	return 0;
+    if (colname == NULL && colidx <= 0)
+	return 0;
+    if (!sql_cacheschema())
+	return 0;
+
+    if (colname == NULL) //search by colidx
+	SPRINTF2 (dstbuf, "%s_%d", tabname, colidx);
+    else
+	SPRINTF2 (dstbuf, ":%s %s", tabname, colname);
+
+    return 1;
+}
+
+// internal function, so no extra tabname/colname preprocessing is done
+// colname == NULL -> get column by colNo
+static void cache_try_add_coldata(char *colname, int colidx, struct sql_col_info_data *ci)
+{
+    char keybuf[sizeof(ci->colname)+sizeof(ci->tabname)+16];
+    char valbuf[sizeof(ci->colname)+64];
+
+    if (!cache_make_key(ci->tabname, colname, colidx, ci, keybuf))
+	return;
+
+    A4GL_debug("Catalog cache: Before adding column to cache\n");
+    if (A4GL_has_cache_column(keybuf))
+    {
+	A4GL_debug("Catalog cache: Not adding - column already cached\n");
+	return;
+    }
+
+    SPRINTF4(valbuf, "%s %d %d %d", ci->colname, ci->dtype, ci->size, ci->prec);
+    A4GL_debug("Catalog cache: Adding to cache key=<%s> val=<%s>\n", keybuf, valbuf);
+    A4GL_add_cache_column (keybuf, valbuf);
+}
+
+static int cache_try_get_coldata(char *tabname, char *colname, int colidx, struct sql_col_info_data *ci)
+{
+    char keybuf[sizeof(ci->colname)+sizeof(ci->tabname)+16];
+    char *ptr;
+
+    if (!cache_make_key(tabname, colname, colidx, ci, keybuf))
+	return 0;
+
+    sql_clear_column_info(ci, 0);
+    A4GL_debug("Catalog cache: Looking in cache for key <%s>", keybuf);
+    ptr = A4GL_find_cache_column(keybuf);
+    if (ptr == NULL)
+    {
+	A4GL_debug("Catalog cache: Not found in cache");
+	return 0;
+    }
+
+    if (sscanf(ptr, "%s %d %d %d", ci->colname, &ci->dtype, &ci->size, &ci->prec) == 4)
+    {
+	A4GL_debug("Catalog cache: found cached column (\"%s\",%d,%d,%d)", ci->colname, ci->dtype, ci->size, ci->prec);
+	ci->foundInCache = 1;
+	return 1;
+    }
+    else
+	A4GL_exitwith("Catalog cache: Cache data error. This is a BUG!");
+    return 0;
+}
+
+static int sql_get_next_column_info(struct sql_col_info_data *ci)
+{
+    sql_clear_column_info(ci, 0);
+
+
+
+    if (! sql_use_describe())
+    {
+	rc = SQLFetch(ci->hstmt);
+	A4GL_debug ("sql_get_next_column_info rc=%d, cn=%s\n", rc, ci->bd.cn);
+
+	if (rc == SQL_NO_DATA_FOUND)
+	    return 0;
+
+	if (rc == SQL_SUCCESS_WITH_INFO)
+	{
+	    A4GL_debug("Some problem with SQLFetch for SQLColumns? - SQL_SUCCESS_WITH_INFO returned\n");
+	    return 0;
+	}
+
+	if (rc != SQL_SUCCESS)
+	{
+	    A4GL_exitwith ("SQLFetch for SQLColumns failed\n");
+	    return 0;
+	}
+    }
+    else //use describe
+    {
+	SQLSMALLINT cnamelen;
+	if (ci->colidx > ci->nColumns)
+	    return 0;
+	rc = SQLDescribeCol(ci->hstmt, ci->colidx, ci->bd.cn, sizeof(ci->bd.cn), &cnamelen,
+		&ci->bd.dt, &ci->bd.prec, &ci->bd.scale, &ci->bd.nullable);
+
+	if (rc == SQL_SUCCESS_WITH_INFO)
+	{
+	    A4GL_debug("Some problem with SQLDescribeCol - SQL_SUCCESS_WITH_INFO returned\n");
+	    return 0;
+	}
+
+	if (rc != SQL_SUCCESS)
+	{
+	    A4GL_exitwith ("SQLDescribeCol failed\n");
+	    return 0;
+	}
+    }
+
+    // convert bind data to more useful format
+    //  SPRINTF1 (szcolsize, "%d", curcol.colsize);
+    ci->colsize = A4GL_display_size(ci->bd.dt, ci->bd.prec, "");
+    ci->prec = ci->bd.prec;
+    strncpyz(ci->colname, ci->bd.cn, sizeof(ci->colname));
+    A4GL_convlower(ci->colname);
+
+    ci->dtype = conv_sqldtype(ci->bd.dt, ci->prec);
+    if (ci->bd.dt == SQL_TIME)
+    {
+	ci->dtype = DTYPE_DTIME;
+	ci->prec = 0x46;
+    }
+    ci->size = conv_sqlprec(ci->dtype, ci->prec, ci->bd.scale);
+    return 1;
+}
+
+static int sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_col_info_data *ci)
+{
+    char *dotptr = NULL;
+    char *owner = NULL;
+    char *tname = NULL;
+    int rc = 0;
+
+    sql_clear_column_info(ci, 1);
+    // some sanity checks and general logic
+    if (hdbc == 0)
+    {
+	A4GL_exitwith ("Not connected to database");
+	return SQL_ERROR;
+    }
+    
+    if (tabname == NULL)
+    {
+	A4GL_exitwith ("NULL tabname (shouldn't happen)");
+	return SQL_ERROR;
+    }
+
+    if (strlen(tabname) == 0)
+    {
+	A4GL_exitwith ("Empty tabname (shouldn't happen)");
+	return SQL_ERROR;
+    }
+
+    // ok, let's do table name mangling
+    strncpyz(ci->tabname, tabname, sizeof(ci->tabname));
+    A4GL_trim(ci->tabname);
+    if (strlen(ci->tabname) == 0)
+    {
+	A4GL_exitwith ("read_columns: empty tabname (shouldn't happen)");
+	return SQL_ERROR;
+    }
+
+    if (A4GL_isyes (acl_getenv ("UCASETNAME"))
+	    || strcmp (dbms_dialect, "ORACLE") == 0
+	    || strcmp (dbms_dialect, "DB2") == 0
+	    || strcmp (dbms_dialect, "DB2VM") == 0)
+	A4GL_convupper(ci->tabname);
+
+    // trim column name if needed
+    strncpyz(ci->colname, colname, sizeof(ci->colname));
+    A4GL_trim(ci->colname);
+
+    // try to get column's info from cache
+    if (cache_try_get_coldata(ci->tabname, ci->colname, 0, ci))
+    {
+	ci->foundInCache = 1;
+	return SQL_SUCCESS;
+    }
+
+    if (! sql_use_describe())
+    {
+	A4GL_debug ("Creating new statement");
+	A4GL_new_hstmt(&ci->hstmt);
+	A4GL_debug ("Got Statement");
+
+	char *buf = NULL;
+	// split table name to owner and table, if applicable
+	buf = strdup(ci->tabname);
+	dotptr = strchr(buf, '.');
+	if (dotptr)
+	{
+	    *dotptr = 0;
+	    tname = dotptr+1;
+	    owner = buf;
+	}
+	else
+	{
+	    tname = buf;
+	    owner = NULL;
+	}
+
+
+	rc = SQLColumns(ci->hstmt,
+		NULL, 0,
+		owner, owner ? SQL_NTS : 0,
+		tname, SQL_NTS,
+		ci->colname[0] == 0 ? NULL : ci->colname, ci->colname[0] == 0 ? 0 : SQL_NTS);
+	free (buf);
+	A4GL_debug ("SQLColumns <--- rc=%d\n", rc);
+
+	if (rc == SQL_SUCCESS_WITH_INFO)
+	{
+	    A4GL_debug ("Some problem (SQL_CUCCESS_WITH_INFO) with "
+		    "SQLColumns for table <%s>, column <%s>", ci->tabname, ci->colname);
+	    //A4GL_set_sqlca (hstmtGetColumns, "SQLColumns",0)
+	}
+	else if (rc != SQL_SUCCESS) // all other errors, including 100 (SQL_NO_DATA)
+	{
+	    A4GL_debug ("SQLColumns FAILED for table <%s>, column <%s>", ci->tabname, ci->colname);
+	    A4GL_set_sqlca (ci->hstmt, "get_columns", 0);
+	    //	A4GL_exitwith ("SQLColumns failed (does table exist?)\n");
+	    chk_rc (rc, ci->hstmt, "SQLColumns failed (does table exist?)");
+	    return SQL_ERROR;
+	}
+
+	{
+	    int rc1 = 0;
+	    rc1 = SQLNumResultCols(ci->hstmt, &ci->nColumns);
+	    if (rc1 != SQL_SUCCESS)
+	    {
+		A4GL_debug ("SQLNumResultCols %s",
+			rc1 == SQL_SUCCESS_WITH_INFO ?"returned SUCCESS_WITH_INFO" : "FALIED");
+		ci->nColumns = -1;
+	    }
+	}
+
+	A4GL_debug ("nColumns=%d; Binding columns", ci->nColumns);
+	if (ci->nColumns == 0)
+	    A4GL_debug ("Colunmn count for SQLColumns/GetColumnCount is 0. Weird thing.");
+
+	{
+	    rc = SQLBindCol(ci->hstmt, 3, SQL_C_CHAR, ci->bd.tn, sizeof(ci->bd.tn)-1, &ci->bd.len_tn); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 4, SQL_C_CHAR, ci->bd.cn, sizeof(ci->bd.cn)-1, &ci->bd.len_cn); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 5, SQL_C_LONG, &ci->bd.dt, sizeof(ci->bd.dt), &ci->bd.len_dt); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 7, SQL_C_LONG, &ci->bd.prec, sizeof(ci->bd.prec), &ci->bd.len_prec); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 8, SQL_C_LONG, &ci->bd.len, sizeof(ci->bd.len), &ci->bd.len_len); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 9, SQL_C_LONG, &ci->bd.scale, sizeof(ci->bd.scale), &ci->bd.len_scale); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 10, SQL_C_LONG, &ci->bd.radix, sizeof(ci->bd.radix), &ci->bd.len_radix); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 11, SQL_C_LONG, &ci->bd.nullable, sizeof(ci->bd.nullable), &ci->bd.len_nullable); A4GL_debug ("Rc=%d", rc);
+	    rc = SQLBindCol(ci->hstmt, 12, SQL_C_CHAR, ci->bd.remarks, sizeof(ci->bd.remarks)-1, &ci->bd.len_remarks); A4GL_debug ("Rc=%d", rc);
+	}
+	A4GL_debug ("Bound columns\n");
+    }
+    else
+    {
+	char s[512+20];
+
+	rc = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &ci->hstmt);
+	chk_rc (rc, ci->hstmt, "SQLAllocHandle()");
+	if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO))
+	    return SQL_ERROR;
+
+	sprintf(s, "select * from %s", ci->tabname);
+	rc = SQLPrepare(ci->hstmt, (SQLCHAR*)s, SQL_NTS);
+	chk_rc (rc, ci->hstmt, "SQLPrepare()");
+	if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO))
+	    return SQL_ERROR;
+
+	rc = SQLNumResultCols(ci->hstmt, &ci->nColumns);
+	chk_rc (rc, ci->hstmt, "SQLNumResultCols()");
+	if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO))
+	    return SQL_ERROR;
+	if (ci->nColumns == 0)
+	{
+	    A4GL_debug ("Table with 0 columns? Weird thing.");
+	    return SQL_ERROR;
+	}
+	if (ci->colname[0] != 0 && !sql_cacheschema())
+	{
+	    char *origCname;
+	    origCname = strdup(ci->colname);
+	    ci->colidx = 1;
+	    while (sql_get_next_column_info(ci))
+	    {
+		if (!strcasecmp(origCname, ci->colname))
+		{
+		    cache_try_add_coldata(NULL, ci->colidx, ci);
+		    break;
+		}
+		ci->colidx++;
+	    }
+	    free(origCname);
+	}
+    }
+
+    if (sql_cacheschema())
+    {
+	ci->colidx = 1;
+	while (sql_get_next_column_info(ci))
+	{
+	    cache_try_add_coldata(NULL, ci->colidx, ci);
+	    ci->colidx++;
+	}
+	ci->colidx = 0;
+    }
+    //fixme return valid column when colname nonempty
+
+    return rc;
+}
+
 /**
  * Gets information about columns from a table in the database engine.
  *
@@ -4033,244 +4479,22 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-int
-A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
+
+int A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 				int *size)
 {
-  static char tq[256];
-  static char to[256];
-  static char tn[256];
-  static char dtname[256];
-  char tabname2[256];
-  static long len;
-  static long scale;
-  static long radix;
-  static long nullable;
-  static char remarks[256];
-  static int a, b;
-  static int rc;
-  short nColumns;
-  char buff[200];
-
-  int dt2;
-  int sz;
-
-
-
-  GetColNo = 0;
-  GetColCached = 0;
-
-
-
-  A4GL_debug ("Get columns...");
-  hstmtGetColumns = 0;
-  if (hdbc == 0)
+    //SQLColumns
+//    rc = sql_columns(hdbc, &hstmtGetColumns, tabname, colname, &cidata);
+    rc = sql_columns(hdbc, tabname, NULL, &cidata);
+    if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO || rc == SQL_NO_DATA))
+	return 0;
+/*    if (cidata->bd->foundInCache)
     {
-      A4GL_exitwith ("Not connected to database");
-      return 0;
-    }
-  A4GL_debug ("Here1");
-
-  if (hstmtGetColumns == 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Creating new statement");
-#endif
-      A4GL_new_hstmt (&hstmtGetColumns);
-    }
-
-  if (tabname != 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("New search");
-#endif
-      //new_hstmt (&hstmtGetColumns);
-#ifdef DEBUG
-      A4GL_debug ("Got Statement");
-#endif
-      if (A4GL_isyes (acl_getenv ("UCASETNAME"))
-	  || strcmp (dbms_dialect, "ORACLE") == 0
-	  || strcmp (dbms_dialect, "DB2") == 0
-	  || strcmp (dbms_dialect, "DB2VM") == 0)
-	{
-	  strcpy (tabname2, tabname);
-	  A4GL_convupper (tabname2);
-	  tabname = tabname2;
-	}
-
-
-      strcpy (GetColTab, tabname);
-      SPRINTF1 (buff, "%s_1", tabname);
-
-      if (A4GL_has_cache_column (buff))
-	{
-	  GetColCached = 1;
-	  GetColNo = 0;
-	  return 1;
-	}
-
-	
-      rc = SQLColumns (hstmtGetColumns, NULL, 0, NULL, 0, tabname, SQL_NTS, NULL, 0);
-
-      if (rc != SQL_SUCCESS)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("Some problem with SQLColumns for table %s rc=%d",tabname,rc);
-	  //A4GL_set_sqlca (hstmtGetColumns, "SQLColumns",0)
-#endif
-	}
-
-
-      if (rc == 100)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("SQLColumns failed for table '%s'\n", tabname);
-#endif
-	  A4GL_set_sqlca (hstmtGetColumns, "get_columns", 0);
-	  A4GL_exitwith ("Table does not exist\n");
-	  return 0;
-	}
-
-
-
-      if (rc == SQL_ERROR)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("SQLColumns failed for table '%s'\n", tabname);
-#endif
-	  A4GL_set_sqlca (hstmtGetColumns, "getting column info", 0);
-	  A4GL_exitwith ("Error getting column info\n");
-	  return 0;
-	}
-
-
-#ifdef DEBUG
-      A4GL_debug ("rc=%d\n", rc);
-#endif
-
-      if (SQLNumResultCols (hstmtGetColumns, &nColumns) != SQL_SUCCESS)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("No NumResultCols");
-#endif
-	  nColumns = -1;
-	}
-
-#ifdef DEBUG
-      A4GL_debug ("nColumns=%d", nColumns);
-#endif
-
-      a = 79;
-      b = 254;
-      rc = SQLBindCol (hstmtGetColumns, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmtGetColumns, 2, SQL_C_CHAR, to, 255, &outlen[2]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmtGetColumns, 3, SQL_C_CHAR, tn, 255, &outlen[3]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmtGetColumns, 4, SQL_C_CHAR, cn, 255, &outlen[4]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc =
-	SQLBindCol (hstmtGetColumns, 6, SQL_C_CHAR, dtname, 255, &outlen[6]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmtGetColumns, 5, SQL_C_LONG, &dt, 4, &outlen[5]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmtGetColumns, 7, SQL_C_LONG, &prec, 4, &outlen[7]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmtGetColumns, 8, SQL_C_LONG, &len, 4, &outlen[8]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmtGetColumns, 9, SQL_C_LONG, &scale, 4, &outlen[9]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc =
-	SQLBindCol (hstmtGetColumns, 10, SQL_C_LONG, &radix, 4, &outlen[10]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc =
-	SQLBindCol (hstmtGetColumns, 11, SQL_C_LONG, &nullable, 4,
-		    &outlen[11]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc =
-	SQLBindCol (hstmtGetColumns, 12, SQL_C_CHAR, remarks, 255,
-		    &outlen[12]);
-
-
-
-
-
-
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-      A4GL_debug ("Bound columns\n");
-#endif
-
-      if (A4GL_isyes (acl_getenv ("CACHESCHEMA"))) {
-	      	char *xbuff;
-	      	while (A4GLSQL_next_column (&xbuff, dtype, size)) ;
-	  	GetColCached = 1;
-	  	GetColNo = 0;
-	  	return 1;
-      }
-
-
-      if (0) 
-	{
-
-	  rc = SQLFetch (hstmtGetColumns);
-
-	  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
-	    {
-	      return 1;
-	    }
-
-	  colsize = A4GL_display_size (dt, prec, "");
-	  SPRINTF1 (szcolsize, "%d", colsize);
-
-	  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
-	    {
-	      SQLFreeStmt (hstmtGetColumns, SQL_DROP);
-	      free_extra (hstmtGetColumns);
-	      hstmtGetColumns = 0;
-	      return 0;
-	    }
-	  A4GL_convlower (cn);
-	  dt2 = conv_sqldtype (dt, prec);
-	  if (dt == SQL_TIME)
-	    {
-	      dt2 = DTYPE_DTIME;
-	      prec = 0x46;
-	    }
-
-	  // We can't generate proper precision on a decimal..
-	  // because we don't have the scale - assume 2..
-	  sz = conv_sqlprec (dt2, prec, 2);
-	  AddColumn (cn, dt2, sz);
-	}
-
-
-
-    }
-  return 1;
+	*dtype = bd->dtype;
+	*size = ci->size;
+	return 1;
+    }*/
+    return 1;
 }
 
 
@@ -4293,98 +4517,23 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 int
 A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
+    static char colname_buf[sizeof(cidata.colname)];
+    sql_clear_column_info(&cidata, 0);
+    cidata.colidx++;
 
-  char buff[200];
-  GetColNo++;
-
-  if (GetColCached)
+    if (!cache_try_get_coldata(cidata.tabname, NULL, cidata.colidx, &cidata))
     {
-      SPRINTF2 (buff, "%s_%d", GetColTab, GetColNo);
-      if (A4GL_has_cache_column (buff))
-	{
-	  static char buffx[2000];
-	  char *ptr;
+	if (!sql_get_next_column_info(&cidata))
+	    return 0; 
 
-	  ptr = A4GL_find_cache_column (buff);
-
-	  if (ptr)
-	    {
-	      A4GL_debug("Scanning from %s",ptr);
-	      sscanf (ptr, "%s %d %d", buffx, dtype, size);
-	      *colname = buffx;
-	      return 1;
-	    }
-	  else
-	    {
-	      A4GL_assertion (1, "Shouldn't happen");
-	    }
-	}
-      return 0;
+	cache_try_add_coldata(NULL, cidata.colidx, &cidata);
     }
-
-
-
-  rc = SQLFetch (hstmtGetColumns);
-#ifdef DEBUG
-  A4GL_debug ("A4GLSQL_next_column fetch rc = %d, cn = %s\n", rc, cn);
-#endif
-
-  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
-    {
-      return 0;
-    }
-
-  colsize = A4GL_display_size (dt, prec, "");
-  SPRINTF1 (szcolsize, "%d", colsize);
-
-  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
-    {
-      SQLFreeStmt (hstmtGetColumns, SQL_DROP);
-      free_extra (hstmtGetColumns);
-      hstmtGetColumns = 0;
-      return 0;
-    }
-  A4GL_convlower (cn);
-  *colname = cn;
-  *dtype = conv_sqldtype (dt, prec);
-  if (dt == SQL_TIME)
-    {
-      *dtype = DTYPE_DTIME;
-      prec = 0x46;
-    }
-
-  // We can't generate proper precision on a decimal..
-  // because we don't have the scale - assume 2..
-  *size = conv_sqlprec (*dtype, prec, 2);
-
-  if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
-    {
-      AddColumn (*colname, *dtype, *size);
-    }
-  return 1;
+    strncpyz(colname_buf, cidata.colname, sizeof(colname_buf));
+    *colname = colname_buf;
+    *dtype = cidata.dtype;
+    *size = cidata.size;
+    return 1;
 }
-
-
-void
-AddColumn (char *s, int d, int sz)
-{
-  char buff[256];
-  char buff2[256];
-A4GL_debug("%s %d %d in %s %d\n",s,d,sz,GetColTab,GetColNo);
-
-  SPRINTF2 (buff, "%s_%d", GetColTab, GetColNo);
-
-  if (A4GL_has_cache_column (buff))
-    {
-      // Got the column cached !
-      return;
-    }
-  SPRINTF3 (buff2, "%s %d %d", s, d, sz);
-  A4GL_debug("Adding %s to %s\n",buff,buff2);
-  A4GL_add_cache_column (buff, buff2);
-}
-
-
 
 
 /**
@@ -4395,9 +4544,16 @@ A4GL_debug("%s %d %d in %s %d\n",s,d,sz,GetColTab,GetColNo);
  *   - 1 : Error ocurred.
  */
 int
-A4GLSQLLIB_A4GLSQL_end_get_columns (void)
+A4GLSQLLIB_A4GLSQL_end_get_columns()
 {
-  return 0;
+    if (cidata.hstmt != NULL)
+    {
+	int rc;
+	rc = SQLFreeHandle(SQL_HANDLE_STMT, cidata.hstmt);
+	chk_rc(rc, cidata.hstmt, "Commit/Rollback1");
+	sql_clear_column_info(&cidata, 1);
+    }
+    return 0;
 }
 
 
@@ -4418,260 +4574,38 @@ int
 A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
 				 int *size)
 {
-  static HSTMT hstmt = 0;
-  static char tq[256];
-  static char to[256];
-  static char tn[256];
-  static char cn[256];
-  static int dt;
-  static char dtname[256];
-  static long prec;
-  static long len;
-  static long scale;
-  static long radix;
-  static long nullable;
-  static char remarks[256];
-  static int colsize;
-  static char szcolsize[20];
-  char tabname2[256];
-  static int a, b;
-  static int rc;
-  short nColumns;
-  char buff[200] = "";
+    struct sql_col_info_data *ci;
+    int rc;
 
+    A4GL_debug ("In read column tabname='%s' colname='%s'; new search", tabname, colname);
 
-
-
-
-  if (tabname && colname)
+    rc = sql_columns(hdbc, tabname, colname, &ci, &foundInCache);
+    if (ci->foundInCache)
     {
-      if (strlen (tabname) && strlen (colname))
-	{
-	  SPRINTF2 (buff, ":%s %s", tabname, colname);
-	}
+	*dtype = ci->dtype;
+	*size = ci.size;
+	return 1;
     }
 
+    if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO || rc == SQL_NO_DATA))
+	return 0;
 
-  if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
-    {
-      if (A4GL_has_cache_column (buff))
-	{
-	  char *ptr;
-	  ptr = A4GL_find_cache_column (buff);
-	  sscanf (ptr, "%d %d", dtype, size);
-	  return 1;
-	}
-    }
+    if (!sql_get_next_column_info(&cidata))
+	return 0; 
 
+    cache_try_add_coldata(cidata->tabname, cidata->colname, 0, &cidata);
+    *dtype = cidata->dtype;
+    *size = cidata->size;
+    return 0;
 
-  if (hdbc == 0)
-    {
-      A4GL_exitwith ("Not connected to database");
-      return 0;
-    }
-  if (A4GL_isyes (acl_getenv ("UCASETNAME"))
-      || strcmp (dbms_dialect, "ORACLE") == 0
-      || strcmp (dbms_dialect, "DB2") == 0
-      || strcmp (dbms_dialect, "DB2VM") == 0)
-    {
-      strcpy (tabname2, tabname);
-      A4GL_convupper (tabname2);
-      tabname = tabname2;
-    }
-#ifdef DEBUG
-  A4GL_debug ("In read column tabname='%s' colname='%s'", tabname, colname);
-#endif
+//      while (strcasecmp (cn, colname) != 0)
+//	{
+//	  rc = SQLFetch (hstmt);
+//	  A4GL_trim (cn);
+//	  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
+//	      break;
+//	}
 
-  if (hstmt == 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Creating new statement");
-#endif
-      A4GL_new_hstmt ((SQLHSTMT *) & hstmt);
-    }
-
-  if (tabname != 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("New search");
-#endif
-      A4GL_new_hstmt ((SQLHSTMT *) & hstmt);
-#ifdef DEBUG
-      A4GL_debug ("Got Statement");
-#endif
-
-      rc = SQLColumns (hstmt, NULL, 0, NULL, 0, tabname, SQL_NTS, NULL, 0);
-
-      if (rc != SQL_SUCCESS)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("Some problem with SQLColumns for table %s",tabname);
-#endif
-	}
-
-      if (rc == SQL_ERROR)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("SQLColumns failed for table '%s'\n", tabname);
-#endif
-	  A4GL_set_sqlca (hstmt, "getting column info", 0);
-	  A4GL_exitwith ("Error getting column info\n");
-	  //exitwith will not exit when running 4glc - must use a4gl_yyerror()
-	  //a4gl_yyerror("Error getting column info\n");
-	  //but can't do that unless I link libSQL_xxx.dll with lib4glc.dll - On Windows
-	  //there can't be any unresolved sybols at linking!
-
-	  return 0;
-	}
-
-#ifdef DEBUG
-      A4GL_debug ("rc=%d\n", rc);
-#endif
-
-      if (SQLNumResultCols (hstmt, &nColumns) != SQL_SUCCESS)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("No NumResultCols");
-#endif
-	  nColumns = -1;
-	}
-
-#ifdef DEBUG
-      A4GL_debug ("nColumns=%d", nColumns);
-#endif
-
-      a = 79;
-      b = 254;
-      rc = SQLBindCol (hstmt, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 2, SQL_C_CHAR, to, 255, &outlen[2]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 3, SQL_C_CHAR, tn, 255, &outlen[3]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 4, SQL_C_CHAR, cn, 255, &outlen[4]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 6, SQL_C_CHAR, dtname, 255, &outlen[6]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 5, SQL_C_LONG, &dt, 4, &outlen[5]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 7, SQL_C_LONG, &prec, 4, &outlen[7]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 8, SQL_C_LONG, &len, 4, &outlen[8]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 9, SQL_C_LONG, &scale, 4, &outlen[9]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 10, SQL_C_LONG, &radix, 4, &outlen[10]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 11, SQL_C_LONG, &nullable, 4, &outlen[11]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-#endif
-      rc = SQLBindCol (hstmt, 12, SQL_C_CHAR, remarks, 255, &outlen[12]);
-#ifdef DEBUG
-      A4GL_debug ("Rc=%d", rc);
-      A4GL_debug ("Bound columns\n");
-#endif
-
-    }
-
-  rc = SQLFetch (hstmt);
-
-#ifdef DEBUG
-  A4GL_debug ("Rc = %d", rc);
-#endif
-  if (colname[0] != 0)
-    {
-      /* if were looking for a specific column ... */
-      A4GL_trim (cn);
-      while (strcasecmp (cn, colname) != 0)
-	{
-
-#ifdef DEBUG
-	  A4GL_debug ("Calling Fetch... %s %s\n", cn, colname);
-#endif
-
-	  rc = SQLFetch (hstmt);
-	  A4GL_trim (cn);
-#ifdef DEBUG
-	  A4GL_debug ("Fetch called - %d\n", rc);
-#endif
-	  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
-	    {
-	      return 0;
-	    }
-	}
-    }
-
-  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
-    {
-      return 0;
-    }
-
-#ifdef DEBUG
-  A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", cn, dt, len, rc);
-  A4GL_debug ("column tq=%s to=%s tn=%s cn=%s", tq, to, tn, cn);
-  A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", dt, dtname, prec,
-	      len, scale, radix, nullable, remarks);
-#endif
-  colsize = A4GL_display_size (dt, prec, "");
-  SPRINTF1 (szcolsize, "%d", colsize);
-
-  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Some error getting data....");
-#endif
-      SQLFreeStmt (hstmt, SQL_DROP);
-      free_extra (hstmt);
-      hstmt = 0;
-      return 0;
-    }
-  strcpy (colname, cn);
-  A4GL_convlower (colname);
-
-  *dtype = conv_sqldtype (dt, prec);
-  if (dt == SQL_TIME)
-    {
-      *dtype = DTYPE_DTIME;
-      prec = 0x46;
-    }
-  *size = conv_sqlprec (*dtype, prec, scale);
-
-  if (A4GL_isyes (acl_getenv ("CACHESCHEMA")))
-    {
-      char buff2[2000];
-      SPRINTF2 (buff2, "%d %d", *dtype, *size);
-      if (!A4GL_has_cache_column (buff))
-	{
-	  A4GL_add_cache_column (buff, buff2);
-	}
-    }
-
-
-#ifdef DEBUG
-  A4GL_debug ("Set dtype to %d\n", *dtype);
-#endif
-  return 1;
 }
 
 #endif
@@ -5500,6 +5434,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
   A4GL_debug ("In commit_rollback");
 #endif
   ptr = acl_getenv ("TRANSMODE");
+
   if (strlen (ptr))
     {
       tmode = atoi (ptr);
@@ -5521,12 +5456,16 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 #endif
       if (mode == 1)
 	{
+	  if (in_transaction)
+	      rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, odbc_autocommit);
 	  in_transaction = 0;
 	  SQLTransact (henv, hdbc, SQL_COMMIT);
 	}
 
       if (mode == 0)
 	{
+	  if (in_transaction)
+	      rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, odbc_autocommit);
 	  in_transaction = 0;
 	  SQLTransact (henv, hdbc, SQL_ROLLBACK);
 	}
@@ -5570,7 +5509,6 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 
       SQLFreeStmt (hstmt, SQL_DROP);
       free_extra (hstmt);
-      hstmt = 0;
     }
 
 }
@@ -5735,7 +5673,6 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
   free (sql2);
   rc = SQLFreeStmt (hstmt, SQL_DROP);
   free_extra (hstmt);
-  hstmt = 0;
   fclose (fout);
   chk_rc (rc, hstmt, "SQLFreeStmt");
   a4gl_sqlca.sqlerrd[1] = cnt;
@@ -5959,7 +5896,7 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
   sid = cid->statement;
   A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
   reformat_sql (sid->select, ibind, ni, "8");
-  ODBC_exec_prepared_sql ((SQLHSTMT) sid->hstmt);
+  ODBC_exec_stmt ((SQLHSTMT*)&(sid->hstmt));
 
 }
 
