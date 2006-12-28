@@ -18,6 +18,8 @@ MATCHES_TO_LIKE
 SELECT_INTO_TEMP_AS_DECLARE_INSERT
 ADD_SESSION_TO_TEMP_TABLE
 EXPAND_COLUMNS
+NOT_EQUAL_AS_LESS_GREATER_THAN
+CREATE_TEMP_AS_CREATE_HASH
 
 # - works, but not in all cases; DB2 does not recognize expressions
 #   in form of set substr(col,2,3)='foo' (informix style is: set col[2,4]='foo')
@@ -39,8 +41,8 @@ REPLACE_COMMAND SET EXPLAIN OFF = SET CURRENT EXPLAIN MODE NO
 REPLACE systables.tabname = system.syscatalog.tname
 REPLACE syscolumns.colname = system.syscolumns.cname
 REPLACE systables = system.syscatalog
-REPLACE_EXPR CURRENT YEAR TO SECOND = current timestamp
 REPLACE TODAY = current date
+REPLACE_EXPR CURRENT YEAR TO SECOND = current timestamp
 
 REPLACE_COMMAND COMMIT WORK = commit
 
@@ -53,6 +55,10 @@ REPLACE_COMMAND SET ISOLATION TO COMMITTED READ =  select * from system.syscatal
 REPLACE_COMMAND SET LOCK MODE TO NOT WAIT = select * from system.syscatalog where tname='no_any'
 REPLACE_COMMAND SET LOCK MODE TO WAIT = select * from system.syscatalog where tname='no_any'
 REPLACE_COMMAND SET LOCK MODE TO WAIT %s = select * from system.syscatalog where tname='no_any'
+
+REPLACE_SQLFUNC UPSHIFT = TRANSLATE(%s)
+REPLACE_SQLFUNC MDY = date(substr(digits(%3),7,4)||'-'||substr(digits(%1),9,2)||'-'||substr(digits(%2),9,2))
+#REPLACE_SQLFUNC MDY = date(substr(digits(year(%3)),7,4)||'-'||substr(digits(month(%1)),9,2)||'-'||substr(digits(day(%2)),9,2))
 
 #
 # WARNING: NOT COMPLETED YET
