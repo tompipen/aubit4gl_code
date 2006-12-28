@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.77 2006-12-21 10:41:33 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.78 2006-12-28 13:10:20 gyver309 Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.77 2006-12-21 10:41:33 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.78 2006-12-28 13:10:20 gyver309 Exp $";
 #endif
 
 
@@ -333,8 +333,10 @@ LEXLIB_print_open_cursor_g (char *cname, t_binding_comp_list *using_bind)
       	LEXLIB_print_bind_set_value_g (using_bind);
   	printc ("A4GLSQL_open_cursor(%s,%d,ibind);\n", cname,ni);
   	printc("}");
+//	A4GL_prchkerr (lastlineno, infilename); // where should it be placed?
   } else {
   	printc ("A4GLSQL_open_cursor(%s,0,0);\n",  cname);
+//	A4GL_prchkerr (lastlineno, infilename); // where should it be placed?
   }
 }
 
