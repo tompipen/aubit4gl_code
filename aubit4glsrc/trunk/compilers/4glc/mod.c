@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.293 2006-12-18 18:23:28 mikeaubury Exp $
+# $Id: mod.c,v 1.294 2006-12-28 11:56:37 gyver309 Exp $
 #
 */
 
@@ -1461,6 +1461,7 @@ pushValidateAllTableColumns (char *tableName)
     {
       SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
+      A4GLSQL_end_get_columns ();
       return 1;
     }
 
@@ -1526,6 +1527,7 @@ pushLikeAllTableColumns (char *tableName)
     {
       SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
+      A4GLSQL_end_get_columns ();
       return 1;
     }
 
@@ -1584,6 +1586,7 @@ pushLikeAllTableColumns (char *tableName)
 
       SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
+      A4GLSQL_end_get_columns ();
       return 1;
     }
   A4GLSQL_end_get_columns ();
@@ -3000,6 +3003,7 @@ push_construct_table (char *tableName)
     {
       SPRINTF1 (buff, "%s does not exist in the database", tableName);
       a4gl_yyerror (buff);
+      A4GLSQL_end_get_columns ();
       return 1;
     }
 
@@ -4087,6 +4091,7 @@ fix_update_expr (int mode)
       if (rval == 0)
 	{
 	  a4gl_yyerror ("Table is not in the database");
+	  A4GLSQL_end_get_columns ();
 	  return 0;
 	}
 

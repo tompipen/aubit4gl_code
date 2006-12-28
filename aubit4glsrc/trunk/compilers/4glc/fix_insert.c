@@ -109,6 +109,7 @@ fix_insert_expr (int mode)
       		strcpy (colname, "");
       		if (rval == 0) {
 	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database(1)\n",current_ins_table);
+			A4GLSQL_end_get_columns ();
 	  		return 0;
 	  		//do_yyerror ("Table is not in the database");
 	  		//return 0;
@@ -136,6 +137,7 @@ fix_insert_expr (int mode)
 
       		if (rval == 0) {
 	  		FPRINTF (stderr,"Warning: Can't fix insert statement - Table %s is not in the database (2)\n",current_ins_table);
+			A4GLSQL_end_get_columns ();
 	  		return 0;
 		}
 
