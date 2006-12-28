@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.48 2006-12-18 18:23:42 mikeaubury Exp $
+# $Id: util.c,v 1.49 2006-12-28 12:44:19 gyver309 Exp $
 #
 */
 
@@ -317,6 +317,7 @@ fix_update_expr (int mode)
       if (rval == 0)
 	{
 	  sqlparse_yyerror ("Table is not in the database");
+	  A4GLSQL_end_get_columns ();
 	  return 0;
 	}
 
@@ -1033,7 +1034,20 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
       if (from_file)
 	return "<err>";
       else
+      {
+	  if (A4GL_isyes(acl_getenv("EXIT_ON_BAD_SQL")))
+	  {
+	      char *buf;
+	      char *msg = "Bad SQL: ";
+	      buf = malloc(strlen(sql) + strlen(msg) + 1);
+	      strcpy(buf, msg);
+	      strcat(buf, sql);
+	      A4GL_debug("%s", buf);
+	      A4GL_exitwith(buf);
+	      free(buf);
+	  }
 	return sql;
+      }
 
     }
 
