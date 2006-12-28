@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.257 2006-11-22 07:56:19 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.258 2006-12-28 13:41:07 gyver309 Exp $
 #
 */
 
@@ -302,7 +302,11 @@
 #define MAXSCREENRECS 	32
 #define MAXCONSTANTS 	1024
 
-  /* ========================== from a4gl_pointers.h =============== */
+  /* ==== pointer "types" (to distinguish between dictionaries) ==== */
+  /* Lines commented as //unused? contains defs that seems to
+     be unused anywhere in "aubit4glsrc" */
+#define RUNTIME_MAPPED_TNAME	'n'
+  /* pointer type defs from a4gl_pointers.h */
 #define PANCODE 		'1'
 #define WINCODE 		'2'
 #define CURCODE 		'3'
@@ -317,29 +321,29 @@
 #define DROPSHADOW 		'D'
 #define COMPILED_FORM 		'E'
 #define MESSAGEWIN 		'F'
-#define PTR_ATTRIBUTE 		'G'
+//unused? #define PTR_ATTRIBUTE 		'G'
 #define COMPILED_FORM_PACKER 	'H'
 #define COMPILED_FORM_FORMTYPE 	'I'
 #define DYNMEMALLOC 		'J'
 #define STR_RESOURCE_VAL 	'K'
 #define LOG_TEMP_TABLE		'O'
 #define RECALL_LOG_ENTRIES	'W'
-#define GOTO_USED		'Z'
+//unused? #define GOTO_USED		'Z'
 #define FEATURE_USED		'X'
-#define HP_IS_SERIAL		'V'
+//unused? #define HP_IS_SERIAL		'V'
 #define LAST_STRING		'T'
 #define LAST_STRING_START	'U'
 
 #define CURSOR_USED             'c'
-#define CURSOR_BIND_I           'i'
+//unused? #define CURSOR_BIND_I           'i'
 #define CURSOR_BIND_O           'o'
 #define PREPARE_USED            'p'
 #define PREPARE_PRINTED         'r'
-#define TMP_USED                't'
+//unused? #define TMP_USED                't'
 #define FUNCTION_IGNORE         'f'
 #define EMULATE_CURRENT_OF      'u'
-#define ARRAYS_OF_RECORD        'a'
-#define SCHEMA_FILE_INDEX       'x'
+//unused? #define ARRAYS_OF_RECORD        'a'
+//unused? #define SCHEMA_FILE_INDEX       'x'
 #define FUNC_POINTER            ';'
 #define FIELDOPTS            	'{'
 #define USERPTR            	':'
@@ -358,11 +362,23 @@
 #define CHANNEL_OUT		'M'
 #define CHANNEL_DELIM		'N'
 #define CHANNEL_PIPE		'P'
-/* */
+
 
 
 
 #define ACLFGLI_STR_TO_ID		'S'
+  /* pointer type defs from sql.c and mysql.c */
+#define CACHE_COLUMN '&'
+  /* pointer type defs from sqlconvert.c */
+#define SQL_CONVERSION '@'
+//#define SQL_CONVERSION_CNT '&' // conflicts with CACHE_COLUMN,
+	  			 // so I changed this one to #
+#define SQL_CONVERSION_CNT '#'
+  /* pointer type defs from a4gl_ui.h.*/
+#define RES_PANEL 	1
+#define RES_ACLWINDOW 	2
+#define RES_CURSWINDOW 	3
+#define RES_ACLFORM 	4
 
 
   /* ========================= from a4gl_ui.h ====================== */
@@ -415,11 +431,6 @@
 #define STRNEQ(a,b) 	(strcmp(a,b)!=0)
 #define STRIEQ(a,b) 	(A4GL_aubit_strcasecmp(a,b)==0)
 #define STRINEQ(a,b) 	(A4GL_aubit_strcasecmp(a,b)!=0)
-
-#define RES_PANEL 		1
-#define RES_ACLWINDOW 	2
-#define RES_CURSWINDOW 	3
-#define RES_ACLFORM 	4
 
 #define getptr_PANEL(b) 		(PANEL *)A4GL_find_pointer(b,RES_PANEL)
 #define getptr_s_windows(b) 	(struct s_windows *)A4GL_find_pointer(b,RES_ACLWINDOW)

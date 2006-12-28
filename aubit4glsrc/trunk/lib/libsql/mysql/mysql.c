@@ -8,7 +8,6 @@
 
 //dll_export sqlca_struct a4gl_sqlca;
 //dll_export int status;
-#define CACHE_COLUMN '&'
 int GetColNo = 0;
 char GetColTab[2000];
 char warnings[9];

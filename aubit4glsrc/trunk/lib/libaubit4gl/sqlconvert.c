@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.100 2006-12-18 18:23:42 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.101 2006-12-28 13:41:09 gyver309 Exp $
 #
 */
 
@@ -337,9 +337,6 @@ void A4GL_cv_inschstr (char *p, char c);
 void A4GL_cv_delchstr (char *p, int n);
 char *A4GL_cv_unqstrstr (char *str, char *word);
 char *A4GL_cv_lastnonblank (char *str);
-
-#define SQL_CONVERSION '@'
-#define SQL_CONVERSION_CNT '&'
 
 long last_cnt=0;
 
@@ -2498,14 +2495,91 @@ A4GLSQLCV_get_sqlconst (char *s)
 }
 
 
+static int sql_convert_func(char *srcfmt, char *srcparam, char *dstbuf, int dstbuf_size)
+{
+    int i, len;
+    char *fmt;
+    char *param;
+    char *tparam[10];
+    int dstidx;
+    int param_count;
+    int param_start;
+    int j;
 
+    memset(dstbuf, 0, dstbuf_size);
+
+    if (srcfmt == NULL)
+    {
+	dstbuf[0] = 0;
+	return 0;
+    }
+
+    if (strstr(srcfmt, "%s")) // simple conversion
+    {
+        sprintf(dstbuf, srcfmt, srcparam ? srcparam : "");
+	return 0;
+    }
+
+    memset(tparam, 0, sizeof(tparam));
+    param = strdup(srcparam ? srcparam : "") ;
+    len = strlen(param);
+    param_start = 0; 
+    param_count = 0; 
+    for (i = 0; i < len; ++i)
+    {
+	if (param_count > 9)
+	    break;
+	if (param[i] == ',' || i == len-1)
+	{
+	    if (param[i] == ',')
+		param[i] = 0;
+	    tparam[param_count++] = param + param_start;
+	    param_start = i+1;
+	}
+    }
+
+    fmt = strdup(srcfmt);
+    len = strlen(fmt);
+    dstbuf[0] = fmt[0];
+    dstidx = 0;
+    for (i = 0; i < len; ++i)
+    {
+	if (dstidx >= dstbuf_size-1)
+	{
+	    free(param);
+	    free(fmt);
+	    return 0;
+	}
+	if (fmt[i] == '%' && fmt[i+1] >= '1' && fmt[i+1] <= '9' )
+	{
+	    if (tparam[fmt[i+1] - '1'] != NULL)
+	    {
+		for (j = 0; tparam[fmt[i+1] - '1'][j] != 0; ++j)
+		{
+		    if (dstidx >= dstbuf_size-1)
+		    {
+			free(param);
+			free(fmt);
+			return 0;
+		    }
+		    dstbuf[dstidx++] = tparam[fmt[i+1] - '1'][j];
+		}
+	    }
+	    ++i;
+	}
+	else
+	    dstbuf[dstidx++] = fmt[i];
+    }
+    free(param);
+    free(fmt);
+    return 1;
+}
 
 char *
 A4GLSQLCV_sql_func (char *f, char *param)
 {
   static char buff[256];
   int b;
-
 
   if (param == 0)
     param = "";
@@ -2520,7 +2594,14 @@ A4GLSQLCV_sql_func (char *f, char *param)
 	  if (A4GL_aubit_strcasecmp (f, current_conversion_rules[b].data.from)
 	      == 0)
 	    {
-	      SPRINTF1 (buff, current_conversion_rules[b].data.to, param);
+		if (sql_convert_func(
+			current_conversion_rules[b].data.to, param, 
+			buff, sizeof(buff)) == 0)
+		{
+		    A4GL_debug ("Conversion error (CVSQL_REPLACE_SQLFUNC) %s->%s(%s)",
+			    current_conversion_rules[b].data.from,
+			    current_conversion_rules[b].data.to, param);
+		}
 	      break;
 	    }
 	}
@@ -2596,8 +2677,20 @@ A4GLSQLCV_check_tablename (char *t)
 {
   static char b2[200];
   static char buff1[2000];
+  char *ptr;
+  char *codeu;
   A4GL_debug ("TABLE : %s\n", t);
 
+  // runtime mapping of table names
+  codeu = strdup(t);
+  A4GL_convupper(codeu);
+  ptr = A4GL_find_pointer(codeu, RUNTIME_MAPPED_TNAME);
+  if (ptr)
+  {
+      A4GL_debug("table name mapped: \"%s\"(code) \"%s\"(db)\n", codeu, ptr);
+      t = ptr;
+  }
+  free(codeu);
 
   if (strstr (t, "amarta")&& A4GL_isyes(acl_getenv("AMARTA_TO_SOAL")))
     {

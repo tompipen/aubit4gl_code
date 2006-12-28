@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.104 2006-11-28 18:47:35 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.105 2006-12-28 13:41:15 gyver309 Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -3602,9 +3602,9 @@ A4GL_ll_get_field_userptr (void *f)
 {
   char buff[256];
   SPRINTF1 (buff, "PFLD_%p", f);
-  if (A4GL_has_pointer (buff, ':'))
+  if (A4GL_has_pointer (buff, USERPTR))
     {
-      return A4GL_find_pointer (buff, ':');
+      return A4GL_find_pointer (buff, USERPTR);
     }
   return 0;
 }
@@ -3614,11 +3614,11 @@ A4GL_ll_set_field_userptr (void *f, void *r)
 {
   char buff[256];
   SPRINTF1 (buff, "PFLD_%p", f);
-  if (A4GL_has_pointer (buff, ':'))
+  if (A4GL_has_pointer (buff, USERPTR))
     {
-      A4GL_del_pointer (buff, ':');
+      A4GL_del_pointer (buff, USERPTR);
     }
-  A4GL_add_pointer (buff, ':', r);
+  A4GL_add_pointer (buff, USERPTR, r);
   //return 0;
 }
 
@@ -3628,9 +3628,9 @@ A4GL_ll_get_form_userptr (void *f)
 {
   char buff[256];
   SPRINTF1 (buff, "PFRM_%p", f);
-  if (A4GL_has_pointer (buff, ':'))
+  if (A4GL_has_pointer (buff, USERPTR))
     {
-      return A4GL_find_pointer (buff, ':');
+      return A4GL_find_pointer (buff, USERPTR);
     }
   return 0;
 }
@@ -3641,11 +3641,11 @@ A4GL_ll_set_form_userptr (void *f, void *r)
   char buff[256];
 
   SPRINTF1 (buff, "PFRM_%p", f);
-  if (A4GL_has_pointer (buff, ':'))
+  if (A4GL_has_pointer (buff, USERPTR))
     {
-      A4GL_del_pointer (buff, ':');
+      A4GL_del_pointer (buff, USERPTR);
     }
-  A4GL_add_pointer (buff, ':', r);
+  A4GL_add_pointer (buff, USERPTR, r);
   //return 0;
 }
 
