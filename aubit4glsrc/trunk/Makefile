@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.38 2006-12-03 08:57:32 afalout Exp $
+# $Id: Makefile,v 1.39 2006-12-28 12:46:15 gyver309 Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -603,7 +603,7 @@ clean.makefiles:
 	lib/libpacker/xml/Makefile lib/librpc/no_rpc/Makefile \
 	lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile \
 	lib/resource/Makefile tools/loadmap/Makefile \
-	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile
+	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
 	lib/liblex/lex_esqlc/Makefile \
 	lib/libexdata/Makefile lib/libsql/postgresql/Makefile \
     lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
