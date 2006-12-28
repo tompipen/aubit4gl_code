@@ -173,7 +173,7 @@ int db_used=0;
 %name-prefix="sqlparse_yy"
 %start sql_statement
 %union    {
-        char    str[1024];
+        char    str[8192];
    char *sql_string;
 	struct  ilist int_list;
 	struct s_table *u_table;
