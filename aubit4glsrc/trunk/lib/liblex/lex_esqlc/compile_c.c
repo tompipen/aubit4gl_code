@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.349 2006-12-21 10:41:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.350 2006-12-28 15:31:55 gyver309 Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.349 2006-12-21 10:41:33 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.350 2006-12-28 15:31:55 gyver309 Exp $";
 #endif
 /**
  * @file
@@ -6842,9 +6842,9 @@ add_function_to_header (char *identifier, int params,char* is_static)
     return;
 
 
-  if (!A4GL_has_pointer (identifier, 'X'))
+  if (!A4GL_has_pointer (identifier, FEATURE_USED))
     {
-      A4GL_add_pointer (identifier, 'X', (void *) 1);
+      A4GL_add_pointer (identifier, FEATURE_USED, (void *) 1);
 
       if (params == 1)		/* Normal Function*/ {
 		printh ("A4GL_FUNCTION %s int %s%s (int n);\n",is_static, get_namespace (identifier), identifier);
@@ -6870,9 +6870,9 @@ identifier=buff;
     return;
 
 
-  if (!A4GL_has_pointer (identifier, 'X'))
+  if (!A4GL_has_pointer (identifier, FEATURE_USED))
     {
-      A4GL_add_pointer (identifier, 'X', (void *) 1);
+      A4GL_add_pointer (identifier, FEATURE_USED, (void *) 1);
       if (params == 1)		/* Normal Function*/
 	printh ("A4GL_FUNCTION %s int %s%s (int n);\n",is_static,
 		get_namespace (identifier), identifier);
