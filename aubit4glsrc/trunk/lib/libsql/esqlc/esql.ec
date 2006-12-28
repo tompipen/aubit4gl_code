@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.175 2006-12-12 17:16:05 mikeaubury Exp $
+# $Id: esql.ec,v 1.176 2006-12-28 13:34:43 gyver309 Exp $
 #
 */
 
@@ -131,6 +131,7 @@ dll_export sqlca_struct a4gl_sqlca;
 #define FOR_UPDATE            	2
 #define FOR_UPDATE_WITH_HOLD  	3
 #define WITH_HOLD             	4
+#define SCROLL_WITH_HOLD       	5
 
 #define FETCH_FIRST    			0
 #define FETCH_LAST      		1
@@ -188,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.175 2006-12-12 17:16:05 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.176 2006-12-28 13:34:43 gyver309 Exp $";
 #endif
 
 
@@ -2555,7 +2556,12 @@ getCursorType (int upd_hold, int scroll)
 	}
     }
   else if (scroll == 1)
-    return SIMPLE_SCROLL;
+    switch(upd_hold) {
+      case 0: 
+        return SIMPLE_SCROLL;
+      case 2: 
+        return SCROLL_WITH_HOLD;
+    }
   else
     return -1;
 
@@ -2620,6 +2626,9 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	  break;
 	case SIMPLE_SCROLL:
 	EXEC SQL DECLARE: cursorName SCROLL CURSOR FOR:statementName;
+	  break;
+	case SCROLL_WITH_HOLD:
+	EXEC SQL DECLARE: cursorName SCROLL CURSOR WITH HOLD FOR:statementName;
 	  break;
 
 
