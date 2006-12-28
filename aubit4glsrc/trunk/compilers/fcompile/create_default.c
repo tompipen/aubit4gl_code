@@ -225,6 +225,7 @@ for (a=0;a<tabcnt;a++) {
 		attribs=realloc(attribs,sizeof(char *)*attribs_cnt);
 		attribs[attribs_cnt-1]=acl_strdup(buff);
 	}
+	A4GLSQL_end_get_columns ();
 
 	fprintf(file_out,"}\n");
 
