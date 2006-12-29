@@ -14,7 +14,7 @@ if [ "$1" != "" ]
 then
 	if [ $1 = "1" ] 
 	then
-		cvs  update -d
+		cvs  update -d > cvs.update.log1 2> cvs.update.log2
 	fi
 	make cleanall
 	export CFLAGS=-g 

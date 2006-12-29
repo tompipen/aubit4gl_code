@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.37 2006-12-28 12:56:05 gyver309 Exp $
+# $Id: error.c,v 1.38 2006-12-29 11:17:09 mikeaubury Exp $
 #
 */
 
@@ -128,16 +128,16 @@ int a;
 		A4GL_debug ("Setting statusno");
 		cache_statusno = a;
 
-		PRINTF ("STOP: Error: %s\n ", s);
+		/* PRINTF ("STOP: Error: %s\n ", s); */
 		A4GL_debug ("Exiting program.");
 		//shoud never exit here with 0 - we got an error!
-		A4GL_fgl_die (errors[a].a4gl_errno == 0 ? 1 : errors[a].a4gl_errno);
+		/* A4GL_fgl_die (errors[a].a4gl_errno == 0 ? 1 : errors[a].a4gl_errno); */
 	  }
   }
 
-  PRINTF ("STOP: Error: %s\n ", s);
+   /* PRINTF ("STOP1: Error: %s\n ", s);  */
   A4GL_debug ("Exiting program.");
-  A4GL_fgl_die (1);
+  /* A4GL_fgl_die (1); */
 //  A4GL_exitwith ("Unknown error");
 #endif
 }

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.172 2006-12-28 13:58:05 gyver309 Exp $
+# $Id: sql.c,v 1.173 2006-12-29 11:17:10 mikeaubury Exp $
 #
 */
 
@@ -324,7 +324,6 @@ struct sql_col_bind_data
     long radix;		// 10
     long nullable;	// 11
     char remarks[256];  // 12
-
     SQLLEN len_tq;
     SQLLEN len_to;
     SQLLEN len_tn;
@@ -491,6 +490,7 @@ static int sql_cacheschema(void);
 static int cache_make_key(char *tabname, char *colname, int colidx, struct sql_col_info_data *ci, char *dstbuf);
 static void cache_try_add_coldata(char *colname, int colidx, struct sql_col_info_data *ci);
 static int cache_try_get_coldata(char *tabname, char *colname, int colNo, struct sql_col_info_data *ci);
+
 static int sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_col_info_data *ci);
 void sql_clear_column_info(struct sql_col_info_data *ci, int clearTableData);
 
@@ -2343,7 +2343,11 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
        {
 	   if (sid->hstmt)
 	   {
+	#ifdef SQL_HANDLE_STMT
 	       SQLFreeHandle (SQL_HANDLE_STMT, (SQLHSTMT) sid->hstmt);
+	#else
+		 SQLFreeStmt ((SQLHSTMT) sid->hstmt, SQL_DROP);
+	#endif
 	       free_extra (sid->hstmt);
 	       sid->hstmt = 0;
 	       chk_rc (rc, 0, "SQLFreeHandle");
@@ -2359,8 +2363,11 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
     }
   if (ptr->hstmt)
     {
+#ifdef SQL_HANDLE_STMT
       SQLFreeHandle (SQL_HANDLE_STMT, (SQLHSTMT) ptr->hstmt);
-//      SQLFreeStmt ((SQLHSTMT) ptr->hstmt, SQL_DROP);
+#else
+      SQLFreeStmt ((SQLHSTMT) ptr->hstmt, SQL_DROP);
+#endif
       free_extra (ptr->hstmt);
       ptr->hstmt = 0;
       chk_rc (rc, 0, "SQLFreeStmt");
@@ -4413,8 +4420,11 @@ static int sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_co
     else
     {
 	char s[512+20];
-
+#ifdef SQL_HANDLE_STMT
 	rc = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &ci->hstmt);
+#else
+	 A4GL_new_hstmt (& ci->hstmt);
+#endif
 	chk_rc (rc, ci->hstmt, "SQLAllocHandle()");
 	if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO))
 	    return SQL_ERROR;
@@ -4486,7 +4496,11 @@ int A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
     //SQLColumns
 //    rc = sql_columns(hdbc, &hstmtGetColumns, tabname, colname, &cidata);
     rc = sql_columns(hdbc, tabname, NULL, &cidata);
-    if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO || rc == SQL_NO_DATA))
+    if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO 
+#ifdef SQL_NO_DATA
+			|| rc == SQL_NO_DATA
+#endif
+		))
 	return 0;
 /*    if (cidata->bd->foundInCache)
     {
@@ -4549,7 +4563,11 @@ A4GLSQLLIB_A4GLSQL_end_get_columns()
     if (cidata.hstmt != NULL)
     {
 	int rc;
+#ifdef SQL_HANDLE_STMT
 	rc = SQLFreeHandle(SQL_HANDLE_STMT, cidata.hstmt);
+#else
+	 SQLFreeStmt (cidata.hstmt, SQL_DROP);
+#endif
 	chk_rc(rc, cidata.hstmt, "Commit/Rollback1");
 	sql_clear_column_info(&cidata, 1);
     }
