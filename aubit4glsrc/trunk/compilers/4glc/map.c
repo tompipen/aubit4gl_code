@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.47 2006-11-27 08:46:28 mikeaubury Exp $
+# $Id: map.c,v 1.48 2007-01-02 17:03:03 mikeaubury Exp $
 #*/
 
 /**
@@ -44,8 +44,8 @@
 */
 
 #include "a4gl_4glc_int.h"
-static void map_select_list_item (char *stmttype,struct s_select *select, struct s_select_list_item *p);
-static void map_select_list_item_list (char *stmttype, char*listtype,struct s_select *select, struct s_select_list_item_list *i);
+//static void map_select_list_item (char *stmttype,struct s_select *select, struct s_select_list_item *p);
+//static void map_select_list_item_list (char *stmttype, char*listtype,struct s_select *select, struct s_select_list_item_list *i);
 
 int A4GL_has_column (char *t, char *c);
 
@@ -60,7 +60,7 @@ FILE *crudfile = 0;	/* The map file pointer opened file */
 extern char curr_func[];
 extern int yylineno;
 extern char infilename[];
-static char *module_name_without_dirstart(char *s) ;
+//static char *module_name_without_dirstart(char *s) ;
 
 /*
 =====================================================================

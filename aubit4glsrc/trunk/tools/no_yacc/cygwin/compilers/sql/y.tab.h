@@ -622,7 +622,7 @@
 typedef union YYSTYPE
 #line 175 "sql.yacc"
 {
-        char    str[1024];
+        char    str[8192];
    char *sql_string;
 	struct  ilist int_list;
 	struct s_table *u_table;

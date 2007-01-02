@@ -138,8 +138,8 @@ op_db_exclusive :
 
 
 misc_infx_stmt: misc_infx_stmt_str {
-	$<sql_string>$=make_sql_string_and_free(acl_strdup(convstrsql($<str>1)),NULL);
 	char buff[256];
+	$<sql_string>$=make_sql_string_and_free(acl_strdup(convstrsql($<str>1)),NULL);
 	sprintf(buff,"Warning: Informix specific SQL @ line %d\n",yylineno);
 	ansi_violation(buff,1);
 	}

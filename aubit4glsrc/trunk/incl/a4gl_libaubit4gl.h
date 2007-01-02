@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.258 2006-12-28 13:41:07 gyver309 Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.259 2007-01-02 17:03:06 mikeaubury Exp $
 #
 */
 
@@ -3056,6 +3056,8 @@ struct s_select {
 		char *extra_statement;
 };
 
+
+int A4GL_new_escape_quote_owner (void);
 struct s_select_list_item_list *new_select_list_item_list(struct s_select_list_item *i) ;
 struct s_select_list_item *new_select_list_item_char (char *s) ;
 struct s_select_list_item *new_select_list_item_literal (char *s) ;
