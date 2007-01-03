@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2006-12-29 11:17:10 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2007-01-03 17:12:47 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -123,7 +123,7 @@ ${PLUGINDIR}/libSQL_odbc32${SO_EXT} : ${OBJECTS}
 
 ################################
 #Aubit ODBC plug-in code linked with iODBC ODBC manager library
-${PLUGINDIR}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC ${IODBC_INCLUDE} ${IODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${PLUGINDIR}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC -DSQLLEN=int ${IODBC_INCLUDE} ${IODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${PLUGINDIR}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${IODBC_LIBS} ${IODBC_LFLAGS}
 
