@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.6 2006-12-08 20:11:20 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2007-01-03 19:30:41 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -47,6 +47,19 @@ ALL				=${BINROOT}/adbload2
 #FGLPC_VERBOSE	=-V5
 FGLPC			=${BINROOT}/4glpc ${FGLPC_VERBOSE}
 
+
+YACC=yes
+ifeq "${YACC}" "no"
+        Y_TAB_C_DEP     =adbload2_parse_pregen.tab.o
+	LEX_YY_C	=lex_pregen.yy.c
+	CFLAGS+=-DUSE_PREGEN
+else
+        Y_TAB_C_DEP     =adbload2_parse.tab.o
+	LEX_YY_C	=lex.yy.c
+	ALL+=adbload2_parse_pregen.tab.c lex_pregen.yy.c
+endif
+
+
 ## ==================================================================
 ##                    Targets
 ## ==================================================================
@@ -55,13 +68,19 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) succesfuly compiled"
 
 adbload2: ${BINROOT}/adbload2
-${BINROOT}/adbload2: adbload2_parse.tab.o parse.o adbload2.o process.o
+${BINROOT}/adbload2: ${Y_TAB_C_DEP} parse.o adbload2.o process.o
 	${FGLPC} -V5  -t EC -g -o $@ $^ -L${LIBROOT} 
 #	-laubit4gl
 
 ## ==================================================================
 ##                    Sub-targets
 ## ==================================================================
+
+adbload2_parse_pregen.tab.c: adbload2_parse.tab.c
+	cp adbload2_parse.tab.c adbload2_parse_pregen.tab.c
+
+lex_pregen.yy.c: lex.yy.c
+	cp lex.yy.c lex_pregen.yy.c
 
 process.o: process.ec
 	${FGLPC}  -t EC -g -o $@ $^ 
@@ -73,7 +92,7 @@ lex.yy.c: adbload2_parse.l
 	${LEX} $^
 
 adbload2_parse.tab.c: adbload2_parse.y
-	${BISON_EXE} $^
+	${BISON_EXE}  $^
 
 adbload2_parse.tab.o: adbload2_parse.tab.c lex.yy.c
 

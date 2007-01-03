@@ -259,5 +259,8 @@ value_value:
 %%
 
 
+#ifdef USE_PREGEN
+#include "lex_pregen.yy.c"
+#else
 #include "lex.yy.c"
-
+#endif
