@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.173 2006-12-29 11:17:10 mikeaubury Exp $
+# $Id: sql.c,v 1.174 2007-01-03 16:48:50 mikeaubury Exp $
 #
 */
 
@@ -4345,11 +4345,11 @@ static int sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_co
 
     if (! sql_use_describe())
     {
+	char *buf = NULL;
 	A4GL_debug ("Creating new statement");
 	A4GL_new_hstmt(&ci->hstmt);
 	A4GL_debug ("Got Statement");
 
-	char *buf = NULL;
 	// split table name to owner and table, if applicable
 	buf = strdup(ci->tabname);
 	dotptr = strchr(buf, '.');
