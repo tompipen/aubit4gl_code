@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.7 2007-01-03 19:30:41 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2007-01-04 09:09:37 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -48,15 +48,16 @@ ALL				=${BINROOT}/adbload2
 FGLPC			=${BINROOT}/4glpc ${FGLPC_VERBOSE}
 
 
-YACC=yes
+
 ifeq "${YACC}" "no"
-        Y_TAB_C_DEP     =adbload2_parse_pregen.tab.o
-	LEX_YY_C	=lex_pregen.yy.c
-	CFLAGS+=-DUSE_PREGEN
+  PARSE_OBJ   	=adbload2_parse_pregen.tab.o
+  LEX_YY_C	=lex_pregen.yy.c
+  CFLAGS	+=-DUSE_PREGEN
+  EXTRA_ALL=
 else
-        Y_TAB_C_DEP     =adbload2_parse.tab.o
-	LEX_YY_C	=lex.yy.c
-	ALL+=adbload2_parse_pregen.tab.c lex_pregen.yy.c
+  PARSE_OBJ     =adbload2_parse.tab.o
+  LEX_YY_C	=lex.yy.c
+  EXTRA_ALL	+=refresh.noyacc
 endif
 
 
@@ -64,29 +65,27 @@ endif
 ##                    Targets
 ## ==================================================================
 
-all: ${ALL}
+all: ${ALL} ${EXTRA_ALL}
 	@echo "Default targets (${ALL}) succesfuly compiled"
 
 adbload2: ${BINROOT}/adbload2
-${BINROOT}/adbload2: ${Y_TAB_C_DEP} parse.o adbload2.o process.o
-	${FGLPC} -V5  -t EC -g -o $@ $^ -L${LIBROOT} 
+${BINROOT}/adbload2: ${PARSE_OBJ} parse.o adbload2.o process.o
+	${FGLPC} -t EC -td INFORMIX -g -o $@ $^ -L${LIBROOT} 
 #	-laubit4gl
 
 ## ==================================================================
 ##                    Sub-targets
 ## ==================================================================
 
-adbload2_parse_pregen.tab.c: adbload2_parse.tab.c
+refresh.noyacc: adbload2_parse.tab.c lex.yy.c
 	cp adbload2_parse.tab.c adbload2_parse_pregen.tab.c
-
-lex_pregen.yy.c: lex.yy.c
 	cp lex.yy.c lex_pregen.yy.c
 
 process.o: process.ec
-	${FGLPC}  -t EC -g -o $@ $^ 
+	${FGLPC}  -t EC -td INFORMIX -g -o $@ $^ 
 
 adbload2.o: adbload2.4gl
-	${FGLPC}  -V5  -t EC -g -o $@ $^
+	${FGLPC}  -t EC -td INFORMIX -g -o $@ $^
 	
 lex.yy.c: adbload2_parse.l
 	${LEX} $^
@@ -94,7 +93,8 @@ lex.yy.c: adbload2_parse.l
 adbload2_parse.tab.c: adbload2_parse.y
 	${BISON_EXE}  $^
 
-adbload2_parse.tab.o: adbload2_parse.tab.c lex.yy.c
+adbload2_parse.tab.o: 		adbload2_parse.tab.c lex.yy.c
+adbload2_parse_pregen.tab.o: 	adbload2_parse_pregen.tab.c lex_pregen.yy.c
 
 ## ==================================================================
 ##                    Test
@@ -106,7 +106,12 @@ test: adbload2
 	${BINROOT}/asql_i.4ae mja1 q2.sql
 
 show:
+	@echo "PARSE_OBJ =${PARSE_OBJ}"
+	@echo "LEX_YY_C=${LEX_YY_C}"
+	@echo "CFLAGS=${CFLAGS}"
+	@echo "EXTRA_ALL=${EXTRA_ALL}"
 	@echo "LEX=${LEX} (flex -i ...)"
+	@echo "YACC='${YACC}'"
 	@echo "BISON=${BISON} (bison ...)"
 	@echo "BISON_EXE=${BISON_EXE}"
 	
