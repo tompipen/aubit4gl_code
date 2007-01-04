@@ -5,7 +5,7 @@
 #include <sqltypes.h>
 #include <varchar.h>
 #include <fcntl.h>
-
+#include "ifxtypes.h"
 #include "a4gl_dbload_int.h"
 extern int lv_testmode;
 extern int lv_errs;
@@ -564,10 +564,10 @@ cleanup (struct s_dbloadline *dbload)
 int
 process_line (char *s, struct s_dbloadline *dbload)
 {
-  load_ok = 1;
   Memory field;
   int a;
   int len;
+  load_ok = 1;
   currline++;
 
 

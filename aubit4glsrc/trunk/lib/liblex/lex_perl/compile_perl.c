@@ -1472,9 +1472,10 @@ print_init_var (char *name, char *prefix, int alvl, int mlvl)
   int printing_arr;
   int dont_print = 0;
   static int ccc = 0;
-  printing_arr = 0;
   int c;
   int count_squares = 0;
+  printing_arr = 0;
+
   memset (tmpbuff, 0, sizeof (tmpbuff));
 
   strcpy (tmpbuff, name);

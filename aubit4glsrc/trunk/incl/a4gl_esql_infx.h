@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql_infx.h,v 1.29 2006-09-20 09:36:20 mikeaubury Exp $
+# $Id: a4gl_esql_infx.h,v 1.30 2007-01-04 18:43:20 mikeaubury Exp $
 #
 */
 
@@ -43,6 +43,7 @@
 #include "sqltypes.h"
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
+#include "ifxtypes.h"
 
 #ifdef __cplusplus
 extern "C"
