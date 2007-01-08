@@ -888,8 +888,8 @@ void
 print_display_by_name (char *attr, char *Style)
 {
   int a;
-  char tabname[40];
-  char colname[40];
+  char tabname[400];
+  char colname[400];
 
   t_dt_display dt;
   struct expr_str *e;
@@ -1347,7 +1347,7 @@ void FGLPARSE_A4GL_lexer_parsed_fgl(void) {
 int
 print_linked_cmd (int type, char *var)
 {
-  char tabname[64];
+  char tabname[640];
   char pklist[256];
   //int ni;
 
