@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.174 2007-01-03 16:48:50 mikeaubury Exp $
+# $Id: sql.c,v 1.175 2007-01-08 15:22:28 mikeaubury Exp $
 #
 */
 
@@ -4422,12 +4422,12 @@ static int sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_co
 	char s[512+20];
 #ifdef SQL_HANDLE_STMT
 	rc = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &ci->hstmt);
-#else
-	 A4GL_new_hstmt (& ci->hstmt);
-#endif
 	chk_rc (rc, ci->hstmt, "SQLAllocHandle()");
 	if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO))
 	    return SQL_ERROR;
+#else
+	A4GL_new_hstmt (& ci->hstmt);
+#endif
 
 	sprintf(s, "select * from %s", ci->tabname);
 	rc = SQLPrepare(ci->hstmt, (SQLCHAR*)s, SQL_NTS);
@@ -4566,7 +4566,7 @@ A4GLSQLLIB_A4GLSQL_end_get_columns()
 #ifdef SQL_HANDLE_STMT
 	rc = SQLFreeHandle(SQL_HANDLE_STMT, cidata.hstmt);
 #else
-	 SQLFreeStmt (cidata.hstmt, SQL_DROP);
+	 rc=SQLFreeStmt (cidata.hstmt, SQL_DROP);
 #endif
 	chk_rc(rc, cidata.hstmt, "Commit/Rollback1");
 	sql_clear_column_info(&cidata, 1);
