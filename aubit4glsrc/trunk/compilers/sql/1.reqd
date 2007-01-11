@@ -117,6 +117,7 @@ int A4GL_4glc_push_gen_expand(int n,char *v);
 static void A4GL_CV_print_exec_sql_bound(char *s);
 
 
+int A4GL_new_escape_quote_owner(void);
 
 //#include "ilist.h"
 
@@ -126,7 +127,6 @@ static char *A4GL_get_undo_use(void);
 //static char *A4GL_strip_quotes (char *s);
 //static int gen_cnt (int a);
 static void ansi_violation(char *s,int n);
-static int A4GL_new_escape_quote_owner(void);
 static void A4GL_lex_printcomment (char *fmt,...);
 static void addmap_runtime (char *s,char *f);
 static int scan_variable (char *s);

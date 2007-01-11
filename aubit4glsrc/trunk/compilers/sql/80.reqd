@@ -74,6 +74,8 @@ individual_sql_statement :
 	| sql_commands 
 	| select_statement_ss_str_cfu 	{ print_exec_select($<sql_string>1); }
 	| set_cmd  			
+	| sql_bound_commands
+	| sql_transact_commands
 	| error				{print_unable_to_parse();}
 ;
 
