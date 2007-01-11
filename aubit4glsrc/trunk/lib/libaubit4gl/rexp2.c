@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.36 2006-05-13 12:34:38 mikeaubury Exp $
+# $Id: rexp2.c,v 1.37 2007-01-11 10:23:58 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@
 #define  LST 	8
 #define  OR 	8
 #define  RANGE 	10
+#define  RANGE_DOT_DOT 	11
 /*
 #define CONSTR_SEP '\t'
 #define like(s1,s2) mja_match(s1,s2,'L');
@@ -287,11 +288,23 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
       lastchar = z;
       z = A4GL_is_construct_op (ptr2, a);
       A4GL_debug ("z=%d", z);
+
+
+
       if (z > 0 && lastchar == 0)
 	{			/* last character was not a control */
-	  appendchr (buffer, '\n');
-	  constr_bits[constr_size++] = &buffer[strlen (buffer)];
-	  appendchr (buffer, ptr2[a]);
+		if (z==RANGE_DOT_DOT) {
+	  		appendchr (buffer, '\n');
+	  		constr_bits[constr_size++] = &buffer[strlen (buffer)];
+	  		appendchr (buffer, ptr2[a]);
+	  		appendchr (buffer, ptr2[a]);
+			lastchar=0;
+			a++;
+		} else {
+	  		appendchr (buffer, '\n');
+	  		constr_bits[constr_size++] = &buffer[strlen (buffer)];
+	  		appendchr (buffer, ptr2[a]);
+		}
 	  A4GL_debug ("constr_size++ now %d", constr_size);
 	  /*constr_bits[constr_size++]=&ptr2[a]; */
 	  /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1]; */
@@ -305,25 +318,37 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	  A4GL_debug ("constr_size++ now %d", constr_size);
 	  /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1]; */
 	}
-      else if (z > 0 && lastchar > 0)
+      else
 	{
-	  if (lastchar < OR && z == EQ)
+	  if (z > 0 && lastchar > 0)
 	    {
-	      appendchr (buffer, ptr2[a]);
+	      if (lastchar < OR && z == EQ )
+		{
+		  appendchr (buffer, ptr2[a]);
+		}
+	      else
+		{
+		  appendchr (buffer, '\n');
+		  constr_bits[constr_size++] = &buffer[strlen (buffer)];
+		  appendchr (buffer, ptr2[a]);
+
+		  A4GL_debug ("constr_size++ now %d", constr_size);
+		}
 	    }
 	  else
 	    {
-	      appendchr (buffer, '\n');
-	      constr_bits[constr_size++] = &buffer[strlen (buffer)];
 	      appendchr (buffer, ptr2[a]);
-
-	      A4GL_debug ("constr_size++ now %d", constr_size);
 	    }
 	}
-      else
-	appendchr (buffer, ptr2[a]);
+
       lastchar = z;
     }
+
+
+
+
+
+
   convert_constr_buffer (buffer);
 
 
@@ -415,13 +440,14 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	  if (ismatch == 1)
 	    {
 	      strcat (buff2, " matches ");
-	      if (A4GL_isyes(acl_getenv("CONSTRUCT_MATCH_FIX"))) {
-		      	char *ptr;
-			static char ptr2[2000];
-			ptr=A4GL_escape_single (constr_bits[0]);
-			SPRINTF3(ptr2,"%s%s%s",quote,ptr,quote);
-	      		return A4GLSQLCV_matches_string("", ptr2,"\"\\\"");
-	      }
+	      if (A4GL_isyes (acl_getenv ("CONSTRUCT_MATCH_FIX")))
+		{
+		  char *ptr;
+		  static char ptr2[2000];
+		  ptr = A4GL_escape_single (constr_bits[0]);
+		  SPRINTF3 (ptr2, "%s%s%s", quote, ptr, quote);
+		  return A4GLSQLCV_matches_string ("", ptr2, "\"\\\"");
+		}
 	    }
 
 	  if (ismatch == 2)
@@ -527,6 +553,8 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	  strcat (buff3, ")");
 	}
     }
+
+
   if (z == RANGE || z2 == RANGE)
     {
       if (z == RANGE)
@@ -563,6 +591,40 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
     }
 
 
+  if (z == RANGE_DOT_DOT || z2 == RANGE_DOT_DOT)
+    {
+      if (z == RANGE)
+	{
+	  SPRINTF2 (buff3, "(%s  between '' and %s", colname, quote);
+	  for (z = 1; z < constr_size; z++)
+	    {
+	      ptr = A4GL_escape_single (constr_bits[z]);
+	      strcat (buff3, ptr);
+	      free (ptr);
+	    }
+	  strcat (buff3, quote);
+	}
+      else
+	{
+	  SPRINTF4 (buff3, "%s  between %s%s%s and ", colname, quote,
+		    constr_bits[0], quote);
+	  if (constr_size >= 2)
+	    {
+	      strcat (buff3, quote);
+	      for (z = 2; z < constr_size; z++)
+		{
+		  ptr = A4GL_escape_single (constr_bits[z]);
+		  A4GL_assertion (ptr == 0, "No returned pointer");
+		  strcat (buff3, ptr);
+		  free (ptr);
+		}
+	      strcat (buff3, quote);
+	    }
+	  else
+	    strcat (buff3, "''");
+	}
+      strcat (buff3, "");
+    }
 #ifdef DEBUG
   {
     A4GL_debug ("buff3= [ %s ]\n", buff3);
@@ -608,6 +670,8 @@ A4GL_is_construct_op (char *str, int i)
     return OR;
   if (str[i] == ':')
     return RANGE;
+  if (str[i] == '.' && str[i + 1] == '.')
+    return RANGE_DOT_DOT;
   return 0;
 }
 

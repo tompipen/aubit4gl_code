@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.128 2006-12-11 11:03:31 mikeaubury Exp $
+# $Id: conv.c,v 1.129 2007-01-11 10:23:57 mikeaubury Exp $
 #
 */
 
@@ -3152,8 +3152,9 @@ A4GL_debug("a=%d b=%d\n",a,b);
 
       if (i != 1 && strlen (ptr[i - a]) != 2 && i != 7)
 	{
-	  A4GL_debug ("expecting 2 digits -> '%s'\n", A4GL_null_as_null(ptr[i - a]));
-	  return 0;
+	  	A4GL_debug ("expecting 2 digits -> '%s' i=%d\n", A4GL_null_as_null(ptr[i - a]),i);		
+		if (i!=4 && i!=5 && i!=3) { return 0; }
+		return 0;
 	}
 
       if (i == 7)
@@ -3209,6 +3210,7 @@ A4GL_debug("a=%d b=%d\n",a,b);
 	
 		A4GL_debug("Are they really compatible ? %d %d %d %d\n",l1_t,l1_s,l2_t,l2_s);
 		A4GL_debug("Informix(tm)4GL might complain about this and set it to null instead...");
+		//return 0;
   }
 
   }
