@@ -369,6 +369,15 @@ sub process_expr_simple {
 die "Unknown SIMPLE expression operator $op\n";
 }
 
+sub trim {
+    my $string = shift;
+    for ($string) {
+        s/\s+$//;
+    }
+    return $string;
+}
+
+
 #------------------------------------------------------------
 #-- Plain integer
 #--

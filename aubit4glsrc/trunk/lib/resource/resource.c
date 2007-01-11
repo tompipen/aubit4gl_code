@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.129 2006-12-01 22:52:59 mikeaubury Exp $
+# $Id: resource.c,v 1.130 2007-01-11 14:12:56 mikeaubury Exp $
 #
 */
 
@@ -1076,8 +1076,13 @@ FILE *resourcefile = 0;
 
 	if (loaded_resources)
 		return build_resource;
-	if (build_resource)
+
+
+	if (build_resource) {
 		free (build_resource);
+		build_resource=0;
+		build_resource_cnt=0;
+	}
 
 	
   /* 
