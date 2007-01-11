@@ -10,6 +10,8 @@ main
     if status = 0
     then
         let stat_flag = TRUE
+
+	call channel::read("myfile", string) # No return values
         while stat_flag
             #call channel::read("myfile", string) 
             #call channel::read("myfile", string) returning stat_flag

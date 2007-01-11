@@ -61,8 +61,7 @@ MAIN
 	        weekday(mdy(12,31,1999)),
 	        year(mdy(12,31,1999)),
 	        date(mdy(12,31,1999)),
-	        extend(dt, YEAR TO DAY),
-					--dt,
+	        extend(dt, YEAR TO DAY), --dt,
                 extend(datetime(1999-12-31) YEAR TO DAY, YEAR TO MINUTE) 
                    - INTERVAL(720) MINUTE(3) TO MINUTE,
 					mdy(12,31,1999),

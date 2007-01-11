@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Channel test"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
