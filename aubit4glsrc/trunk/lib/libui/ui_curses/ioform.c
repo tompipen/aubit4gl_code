@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.155 2006-12-25 11:42:27 mikeaubury Exp $
+# $Id: ioform.c,v 1.156 2007-01-11 18:11:32 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.155 2006-12-25 11:42:27 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.156 2007-01-11 18:11:32 mikeaubury Exp $";
 #endif
 
 /**
@@ -4269,8 +4269,8 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 }
 
 static int get_inc_quotes(int a) {
-     if ((a & 0xff) == DTYPE_CHAR || (a &0xff) == DTYPE_VCHAR) return 1;
-	if ((a & 0xff) == DTYPE_DATE) return 2;
+     if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR) return 1;
+	if ((a & DTYPE_MASK) == DTYPE_DATE) return 2;
 	return 0;
 }
 

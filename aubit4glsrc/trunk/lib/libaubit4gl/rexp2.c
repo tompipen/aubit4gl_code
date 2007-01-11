@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.37 2007-01-11 10:23:58 mikeaubury Exp $
+# $Id: rexp2.c,v 1.38 2007-01-11 18:11:28 mikeaubury Exp $
 #
 */
 
@@ -217,6 +217,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
   static char buffer[512];
   static char buff2[512];
   static char buff3[512];
+  char using_dates[100][20];
   int z;
   int z2;
   int cnt;
@@ -225,6 +226,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
   int ismatch;
   char colname[256];
   char *ptr;
+  for (a=0;a<100;a++) {strcpy(using_dates[a],"");}
 
   if (tabname == 0)
     {
@@ -400,8 +402,19 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	      if (A4GL_stod (constr_bits[z], &n, 0)
 		  && !A4GL_isnull (DTYPE_DATE, (void *) &n))
 		{
-		  A4GL_debug ("CDATE Returns true for %s n=%d",
-			      constr_bits[z], n);
+		char *p;
+			int b;
+		  A4GL_debug ("CDATE Returns true for %s n=%d", constr_bits[z], n);
+			for (b=0;b<100;b++) {
+				if (strlen(using_dates[b])==0)  break;
+			}
+			A4GL_push_date(n);
+			p=A4GL_char_pop();
+			A4GL_debug("Date really looks like : %s",p);
+			strcpy(using_dates[b], p);
+			free(p);
+			constr_bits[z]=using_dates[b];
+			
 		}
 	      else
 		{
