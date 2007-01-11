@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.103 2006-12-25 11:42:26 mikeaubury Exp $
+# $Id: builtin.c,v 1.104 2007-01-11 11:00:46 mikeaubury Exp $
 #
 */
 
@@ -940,8 +940,205 @@ aclfgli_extend (void)
 {
   struct A4GLSQL_dtime c;
   int n;
+  char *ptr;
+	char buff[256]="";
+  int  d2;
+  int  s2;
+  struct A4GLSQL_dtime dt2;
+  struct A4GLSQL_dtime *pi;
+  int dtime_data2[10];
+
   n = A4GL_pop_int ();
+
+  A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
+	if (A4GL_isnull((d2&DTYPE_MASK),(void *)pi)) {
+		pi=0;
+
+	}
+
+
+  if ((d2&DTYPE_MASK)!=DTYPE_DTIME) {
+		if ((d2&DTYPE_MASK)==DTYPE_DATE) {
+			// Can't extend a non-datetime!
+			pi=0;
+			A4GL_pop_var2 (&c, DTYPE_DTIME, n);
+			A4GL_push_dtime (&c);
+			return;
+		}
+  }
+
+  if (pi==0) {  
+		A4GL_drop_param();
+		A4GL_push_null(DTYPE_DTIME, s2);
+		return;
+		
+  }
+
+  dt2.stime = pi->stime;
+  dt2.ltime = pi->ltime;
+
+  A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime);
+  A4GL_decode_datetime (&dt2, &dtime_data2[0]);
+
+  if (dtime_data2[1]==0) dtime_data2[1]=1; // cant have a 0 month...
+  if (dtime_data2[2]==0) dtime_data2[1]=1; // cant have a 0 day...
+  
+  switch (n) {
+	case 0x11: // Year to year
+  		SPRINTF1 (buff, "%04d", dtime_data2[0]);
+		break;
+
+	case 0x12: // Year to month
+  		SPRINTF2 (buff, "%04d-%02d", dtime_data2[0], dtime_data2[1]);
+		break;
+
+	case 0x13: // Year to day
+  		SPRINTF3 (buff, "%04d-%02d-%02d", dtime_data2[0], dtime_data2[1], dtime_data2[2]);
+		break;
+
+	case 0x14: // Year to hour
+  		SPRINTF4 (buff, "%04d-%02d-%02d %02d",
+               		dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3]);
+		break;
+
+	case 0x15: // Year to minute
+  		SPRINTF5 (buff, "%04d-%02d-%02d %02d:%02d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4]);
+		break;
+
+	case 0x16: // Year to second
+  		SPRINTF6 (buff, "%04d-%02d-%02d %02d:%02d:%02d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5]);
+		break;
+
+	case 0x17: // Year to fraction(1)
+	case 0x18: // Year to fraction(2)
+	case 0x19: // Year to fraction(3)
+	case 0x1a: // Year to fraction(4)
+	case 0x1b: // Year to fraction(5)
+  		SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%05d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+		break;
+
+
+// **************************
+	case 0x22: // Month to month
+  		SPRINTF1 (buff, "0000-%02d-00",  dtime_data2[1]);
+		break;
+
+	case 0x23: // Month to day
+  		SPRINTF2 (buff, "0000-%02d-%02d", dtime_data2[1], dtime_data2[2]);
+		break;
+
+	case 0x24: // Month to hour
+  		SPRINTF3 (buff, "0000-%02d-%02d %02d",
+               		dtime_data2[1], dtime_data2[2], dtime_data2[3]);
+		break;
+
+	case 0x25: // Month to minute
+  		SPRINTF4 (buff, "0000-%02d-%02d %02d:%02d",  dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4]);
+		break;
+
+	case 0x26: // Month to second
+  		SPRINTF5 (buff, "0000-%02d-%02d %02d:%02d:%02d", dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5]);
+		break;
+
+	case 0x27: // Month to fraction(1)
+	case 0x28: // Month to fraction(2)
+	case 0x29: // Month to fraction(3)
+	case 0x2a: // Month to fraction(4)
+	case 0x2b: // Month to fraction(5)
+  		SPRINTF6 (buff, "0000-%02d-%02d %02d:%02d:%02d.%05d",  dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+		break;
+
+
+
+// **************************
+	case 0x33: // day to day
+  		SPRINTF1 (buff, "0000-00-%02d",  dtime_data2[2]);
+		break;
+
+	case 0x34: // day to hour
+  		SPRINTF2 (buff, "0000-00-%02d %02d", dtime_data2[2], dtime_data2[3]);
+		break;
+
+	case 0x35: // day to minute
+  		SPRINTF3 (buff, "0000-00-%02d %02d:%02d",   dtime_data2[2], dtime_data2[3], dtime_data2[4]);
+		break;
+
+	case 0x36: // day to second
+  		SPRINTF4 (buff, "0000-00-%02d %02d:%02d:%02d",  dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5]);
+		break;
+
+	case 0x37: // day to fraction(1)
+	case 0x38: // day to fraction(2)
+	case 0x39: // day to fraction(3)
+	case 0x3a: // day to fraction(4)
+	case 0x3b: // day to fraction(5)
+  		SPRINTF5 (buff, "0000-00-%02d %02d:%02d:%02d.%05d",   dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+		break;
+
+
+// **************************
+
+	case 0x44: // hour to hour
+  		SPRINTF1 (buff, "0000-00-00 %02d",  dtime_data2[3]);
+		break;
+
+	case 0x45: // hour to minute
+  		SPRINTF2 (buff, "0000-00-00 %02d:%02d",   dtime_data2[3], dtime_data2[4]);
+		break;
+
+	case 0x46: // hour to second
+  		SPRINTF3 (buff, "0000-00-00 %02d:%02d:%02d",  dtime_data2[3], dtime_data2[4], dtime_data2[5]);
+		break;
+
+	case 0x47: // hour to fraction(1)
+	case 0x48: // hour to fraction(2)
+	case 0x49: // hour to fraction(3)
+	case 0x4a: // hour to fraction(4)
+	case 0x4b: // hour to fraction(5)
+  		SPRINTF4 (buff, "0000-00-00 %02d:%02d:%02d.%05d",    dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+		break;
+
+// **************************
+
+
+	case 0x55: // minute to minute
+  		SPRINTF1 (buff, "0000-00-00 00:%02d",    dtime_data2[4]);
+		break;
+
+	case 0x56: // hour to second
+  		SPRINTF2 (buff, "0000-00-00 00:%02d:%02d",   dtime_data2[4], dtime_data2[5]);
+		break;
+
+	case 0x57: // hour to fraction(1)
+	case 0x58: // hour to fraction(2)
+	case 0x59: // hour to fraction(3)
+	case 0x5a: // hour to fraction(4)
+	case 0x5b: // hour to fraction(5)
+  		SPRINTF3 (buff, "0000-00-00 00:%02d:%02d.%05d",     dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+		break;
+
+// **************************
+
+
+	case 0x66: // second to second
+  		SPRINTF1 (buff, "0000-00-00 00:00:%02d",    dtime_data2[5]);
+		break;
+
+	case 0x67: // hour to fraction(1)
+	case 0x68: // hour to fraction(2)
+	case 0x69: // hour to fraction(3)
+	case 0x6a: // hour to fraction(4)
+	case 0x6b: // hour to fraction(5)
+  		SPRINTF2 (buff, "0000-00-00 00:00:%02d.%05d",      dtime_data2[5], dtime_data2[6]);
+		break;
+
+
+	default: A4GL_assertion(1,"Unhandled EXTEND"); break;
+	}
+
+  A4GL_push_char(buff);
   A4GL_pop_var2 (&c, DTYPE_DTIME, n);
+
   A4GL_push_dtime (&c);
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.97 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: ops.c,v 1.98 2007-01-11 11:00:46 mikeaubury Exp $
 #
 */
 
@@ -1888,8 +1888,27 @@ A4GL_in_in_ops (int op)
       A4GL_assertion(1,"Invalid datatype");
     }
 
-  A4GL_assertion(pi1==0,"First interval is 0 (2)");
-  A4GL_assertion(pi2==0,"Second interval is 0");
+  //A4GL_assertion(pi1==0,"First interval is 0 (2)");
+  //A4GL_assertion(pi2==0,"Second interval is 0");
+
+  if (pi1==0 || pi2==0) {
+		A4GL_drop_param();
+		A4GL_drop_param();
+		if (pi1!=0) {
+			A4GL_push_null(DTYPE_INTERVAL,s1);
+			return ;
+		}
+		if (pi2!=0) {
+			A4GL_push_null(DTYPE_INTERVAL,s2);
+			return ;
+		}
+			A4GL_push_null(DTYPE_INTERVAL,0);
+		return;
+		
+  	//A4GL_pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in1.ltime);
+  	//A4GL_pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
+
+  }
 
   se1 = pi1->stime & 0xf;
   se2 = pi2->stime & 0xf;
@@ -2217,7 +2236,7 @@ A4GL_dt_dt_ops (int op)
       // First is null...
       A4GL_drop_param ();
       A4GL_drop_param ();
-      A4GL_push_null (DTYPE_INT, 0);
+      A4GL_push_null (DTYPE_DTIME, s1);
       return;
     }
 
@@ -2410,14 +2429,12 @@ A4GL_dt_dt_ops (int op)
 
 
 
-
       if (op == (OP_SUB))
 	{
 	  if (dtime_data2[0] || dtime_data2[1] )
 	    {
 	      // YEAR TO MONTH interval
 	      SPRINTF2 (buff_7, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
-
 	      A4GL_ctoint (buff_7, &in, 1298);
 	      A4GL_push_interval (&in);
 	    }
