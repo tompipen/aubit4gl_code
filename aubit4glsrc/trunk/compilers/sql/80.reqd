@@ -15,11 +15,6 @@ var_ident_qchar : NAMED
 ;
 
 
-var_ident_qchar : NAMED
-        | CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
-
-;
-
 
 
 char_or_var : CHAR_VALUE 
@@ -168,7 +163,15 @@ replace_with_variable : MARK_VAR CHAR_VALUE END_MARK_VAR {
 
 
 column_name_x:
+	identifier {sprintf($<str>$,"%s", $<str>1);}
+	| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", $<str>1,$<str>3);}
+	| identifier KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s.%s", $<str>1,$<str>3,$<str>5);}
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s.%s", $<str>1,$<str>3,$<str>5);}
+	
+	/*
         column_name_specific { strcpy($<str>$,$<str>1); }
+	*/
+	
 ;
 
 
