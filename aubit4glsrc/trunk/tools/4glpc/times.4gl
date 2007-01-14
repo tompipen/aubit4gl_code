@@ -23,10 +23,6 @@ if (stat(lv_f2,&buf)>=0) { lv_t2=buf.st_mtime; }
 endcode
 
 
-#display lv_t1," ",lv_f1 clipped
-#display lv_t2," ",lv_f2 clipped
-
-
 if lv_t1<lv_t2 then
 	return 1
 end if
