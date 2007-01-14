@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.28 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.29 2007-01-14 14:50:29 mikeaubury Exp $
 #
 */
 
@@ -403,40 +403,6 @@ return s;
 
 
 
-
-
-
-
-#ifdef MOVED
-// --- from fglwrap.c
-void
-A4GL_fgl_die_with_msg (int n, char *s)
-{
-  if (dying)
-    {
-      // We're already trying to die...
-      return;
-    }
-  dying++;
-
-  if (dying > 1)
-    {
-      exit (n);
-    }
-  if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
-#endif
-      A4GL_gotolinemode ();
-    }
-  A4GL_close_database ();
-  A4GL_close_errorlog_file ();
-  A4GL_debug ("End of program - exit(%d).", n);
-  PRINTF ("%s\n", s);
-  exit (n);
-}
-#endif
 
 
 
