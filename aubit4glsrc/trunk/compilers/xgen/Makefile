@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.1 2005-03-22 23:24:16 afalout Exp $
+# $Id: Makefile,v 1.2 2007-01-15 19:52:58 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -36,12 +36,15 @@ include ${ROOT}/incl/Makefile-common
 ##                    		Settings
 ## ==================================================================
 
-ifeq "${YACC}" "no"
+ifeq "${LEX}" "no"
 	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/xgen/lex.yy.c
-	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/xgen/y.tab.c
 else
 	LEX_YY_C	=lex.yy.c
-#	Y_TAB_C_DEP	=$(SOURCES.yacc) ${LEX_YY_C}
+endif
+
+ifeq "${YACC}" "no"
+	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/xgen/y.tab.c
+else
 	Y_TAB_C_DEP	=${LEX_YY_C}
 endif
 

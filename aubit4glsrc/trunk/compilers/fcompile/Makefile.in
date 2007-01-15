@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.64 2006-10-13 11:28:54 afalout Exp $
+# $Id: Makefile.in,v 1.65 2007-01-15 19:52:57 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -84,12 +84,16 @@ OBJS_DECOMPILE	=$(DECOMPILE:%.c=%.o)
 CMODS           =$(SOURCES.c) $(TARGETS.c)
 OBJECTS 		=$(CMODS:%.c=%.o)
 
-ifeq "${YACC}" "no"
+ifeq "${LEX}" "no"
 	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
+else
+	LEX_YY_C	=lex.yy.c
+endif
+
+ifeq "${YACC}" "no"
 	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/y.tab.c
 
 else
-	LEX_YY_C	=lex.yy.c
 	Y_TAB_C_DEP	=$(SOURCES.yacc) ${LEX_YY_C}
 endif
 

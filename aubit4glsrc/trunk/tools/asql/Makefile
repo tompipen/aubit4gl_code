@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.49 2006-10-23 08:49:19 mikeaubury Exp $
+# $Id: Makefile,v 1.50 2007-01-15 19:52:58 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -50,9 +50,28 @@ OBJS_4GL		= \
 	filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} \
 	tools${A4GL_OBJ_EXT} user_menu${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT}
 
+
+ifeq "${LEX}" "no"
+  LEX_YY_C      =lex_pregen.o
+else
+  LEX_YY_C      =lex.asql_yy.o
+endif
+
+
+ifeq "${YACC}" "no"
+  CFLAGS        +=-DUSE_PREGEN
+  EXTRA_ALL=
+else
+  EXTRA_ALL     +=refresh.noyacc
+endif
+
+
+
 ################
 #Objects that do not originate in 4GL code - version independent
-OBJS_C			=lex.asql_yy.o simple_parse.o dir.o
+OBJS_C			=${LEX_YY_C} simple_parse.o dir.o
+
+
 
 ################
 #Version specific objects
@@ -300,6 +319,8 @@ show:
 	aubit-config POSTGRESDIR
 
 
+refresh.noyacc: lex.yy.c
+	cp lex.asql_yy.c lex_pregen.c
 
 ## ==================================================================
 ##                              clean

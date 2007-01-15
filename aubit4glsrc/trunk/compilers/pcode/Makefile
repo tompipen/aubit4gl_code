@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.28 2006-10-21 13:02:43 afalout Exp $
+# $Id: Makefile,v 1.29 2007-01-15 19:52:58 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -39,6 +39,17 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CFLAGS			=-Wall  -g -I../../incl
+
+ifeq "${LEX}" "no"
+	LEX_YY_C=lex.pregen.c
+	LEX_OBJ=lex.pregen.o
+	REFRESHLEX=
+else
+	LEX_YY_C=lex.yy.c
+	LEX_OBJ=lex.yy.o
+	REFRESHLEX=refresh.lex
+endif
+
 
 ifneq "${COMSPEC}" ""
 #We are non Windows
@@ -68,7 +79,7 @@ OBJ_COMMON      	=common_print.o common_eval.o
 OBJ_COMMON_C		=npcode_xdr.o common_io_c.o
 OBJ_COMMON_A4GL		=common_io_fgl.o
 OBJ_RUNNER_COMMON	=runner_main.o runner_vars.o
-OBJ_C2PCODE_COMMON	=y.tab.o lex.yy.o compiler_main.o \
+OBJ_C2PCODE_COMMON	=y.tab.o ${LEX_OBJ} compiler_main.o \
 					compiler_optimize.o set_var.o compiler_pcode.o \
 					compiler_variables.o compiler_list.o compiler_param.o
 OBJ_CHECKER_COMMON	=checker_read.o
@@ -105,7 +116,7 @@ endif
 
 #Targets we can compile in any case
 ALL             =${BINROOT}/c2pcode_fgl ${BINROOT}/checker_fgl ${BINROOT}/runner_fgl \
-				${BINROOT}/link_fgl ${BINROOT}/runner_fgl_wrapper
+				${BINROOT}/link_fgl ${BINROOT}/runner_fgl_wrapper ${REFRESHLEX}
 				
 #Targets we can compile only if we have RPC
 ALL_RPC			=${BINROOT}/c2pcode ${BINROOT}/checker ${BINROOT}/runner
@@ -327,6 +338,11 @@ lclint: $(CMODS)
 show:
 	@echo "HAVE_RPCLIB=${HAVE_RPCLIB}"
 	@echo "USE_RPCGEN=${USE_RPCGEN}"
+
+
+refresh.lex: lex.yy.c
+	cp lex.yy.c lex.pregen.c
+	
 
 ## ==================================================================
 ##                              Clean

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-17 14:09:07 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2007-01-15 19:52:58 mikeaubury Exp $
 #
 
 ROOT					=../../..
@@ -62,13 +62,25 @@ A4GL_LEXDIALECT			=INFORMIX
 #OBJ					= editor.ao infx.ao ../common/pick.ao ../common/about.ao \
 						#execute.ao simple_parse.o lex.yy.o main.ao
 BASE_4GL				= editor.4gl infx.4gl ../common/pick.4gl ../common/about.4gl \
-						execute.4gl simple_parse.c lex.yy.c main.4gl
+						execute.4gl simple_parse.c ${LEX_YY_C} main.4gl
 
 ifneq "${IFMX_ESQLC}" "no"
 	ALL						=${ROOT}/bin/sqleditor.4ae
 else
 	ALL						=no_esql
 endif
+
+ifeq "${LEX}" "no"
+  LEX_YY_C      =lex_pregen.o
+  CFLAGS        +=-DUSE_PREGEN
+  EXTRA_ALL=
+else
+  LEX_YY_C      =lex.yy.o
+  EXTRA_ALL     +=refresh.nolex
+endif
+
+
+
 
 ## ==================================================================
 ##                              Targets
@@ -119,6 +131,11 @@ ${ROOT}/bin/sqleditor.4ae: ${BASE_4GL}
 
 lex.yy.c: parse.l
 	${LEX} -i $^
+
+
+refresh.nolex: lex.yy.c
+	cp lex.yy.c lex_pregen.c
+
 
 ## ==================================================================
 ##                              Clean

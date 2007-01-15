@@ -1,5 +1,9 @@
 %%
 
+#if LEX_YY_PREGEN
+#include "../../tools/no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c"
+#else
 #include "lex.sqlparse_yy.c"
+#endif
 #include "util.c"
 

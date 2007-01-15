@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.8 2007-01-04 09:09:37 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2007-01-15 19:52:58 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -49,14 +49,19 @@ FGLPC			=${BINROOT}/4glpc ${FGLPC_VERBOSE}
 
 
 
-ifeq "${YACC}" "no"
-  PARSE_OBJ   	=adbload2_parse_pregen.tab.o
+ifeq "${LEX}" "no"
   LEX_YY_C	=lex_pregen.yy.c
   CFLAGS	+=-DUSE_PREGEN
+else
+  LEX_YY_C	=lex.yy.c
+  EXTRA_ALL	+=refresh.nolex
+endif
+
+ifeq "${YACC}" "no"
+  PARSE_OBJ   	=adbload2_parse_pregen.tab.o
   EXTRA_ALL=
 else
   PARSE_OBJ     =adbload2_parse.tab.o
-  LEX_YY_C	=lex.yy.c
   EXTRA_ALL	+=refresh.noyacc
 endif
 
@@ -77,8 +82,10 @@ ${BINROOT}/adbload2: ${PARSE_OBJ} parse.o adbload2.o process.o
 ##                    Sub-targets
 ## ==================================================================
 
-refresh.noyacc: adbload2_parse.tab.c lex.yy.c
+refresh.noyacc: adbload2_parse.tab.c 
 	cp adbload2_parse.tab.c adbload2_parse_pregen.tab.c
+
+refresh.nolex: lex.yy.c
 	cp lex.yy.c lex_pregen.yy.c
 
 process.o: process.ec
@@ -93,8 +100,8 @@ lex.yy.c: adbload2_parse.l
 adbload2_parse.tab.c: adbload2_parse.y
 	${BISON_EXE}  $^
 
-adbload2_parse.tab.o: 		adbload2_parse.tab.c lex.yy.c
-adbload2_parse_pregen.tab.o: 	adbload2_parse_pregen.tab.c lex_pregen.yy.c
+adbload2_parse.tab.o: 		adbload2_parse.tab.c ${LEX_YY_C}
+adbload2_parse_pregen.tab.o: 	adbload2_parse_pregen.tab.c ${LEX_YY_C}
 
 ## ==================================================================
 ##                    Test

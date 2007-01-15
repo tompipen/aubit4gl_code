@@ -1547,5 +1547,8 @@ literal_expr: CHAR_VALUE {
 
 %%
 
-
+#ifdef PREGEN
+#include "ace/lex.yy.c"
+#else
 #include "lex.yy.c"
+#endif
