@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.41 2006-12-28 13:00:30 gyver309 Exp $
+# $Id: sqlexpr.c,v 1.42 2007-01-15 10:19:22 mikeaubury Exp $
 #
 */
 
@@ -1979,9 +1979,9 @@ make_select_stmt (struct s_select *select)
       A4GL_debug ("buff=%s", buff);
       strcat (buff, " UNION ");
       A4GL_debug ("buff=%s", buff);
-      if (select->union_op)
+      if (select->next->union_op && strlen(select->next->union_op))
 	{
-	  strcat (buff, select->union_op);
+	  strcat (buff, select->next->union_op);
 	  A4GL_debug ("buff=%s", buff);
 	  strcat (buff, " ");
 	  A4GL_debug ("buff=%s", buff);
