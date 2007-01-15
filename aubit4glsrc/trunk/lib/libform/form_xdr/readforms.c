@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.46 2005-11-18 15:22:47 mikeaubury Exp $
+# $Id: readforms.c,v 1.47 2007-01-15 13:36:03 mikeaubury Exp $
 #*/
 
 /**
@@ -112,7 +112,7 @@ char dbname[64];
 static void do_translate_form (struct_form * the_form);
 static void read_attributes (struct s_form_dets *f);
 //static int include_range_check (char *ss, char *ptr, int dtype);
-static int real_has_bool_attribute (struct struct_scr_field *f, int bool);
+static int real_has_bool_attribute (struct struct_scr_field *f, int boolval);
 
 char *read_string_dup (FILE * ofile);
 char *A4GL_string_width (char *a);
@@ -609,22 +609,22 @@ include_range_check (char *ss, char *ptr, int dtype)
  *
  */
 int
-A4GLFORM_A4GL_has_bool_attribute (void *f, int bool)
+A4GLFORM_A4GL_has_bool_attribute (void *f, int boolval)
 {
   A4GL_debug ("via A4GL_has_bool_attribute in lib");
-  return real_has_bool_attribute (f, bool);
+  return real_has_bool_attribute (f, boolval);
 }
 
 
 static int
-real_has_bool_attribute (struct struct_scr_field *f, int bool)
+real_has_bool_attribute (struct struct_scr_field *f, int boolval)
 {
   int a;
-  A4GL_debug ("Checking %p for %d\n", f, bool);
+  A4GL_debug ("Checking %p for %d\n", f, boolval);
   for (a = 0; a < f->bool_attribs.bool_attribs_len; a++)
     {
-      A4GL_debug ("%d %d %d\n", bool, a, f->bool_attribs.bool_attribs_len);
-      if (f->bool_attribs.bool_attribs_val[a] == bool)
+      A4GL_debug ("%d %d %d\n", boolval, a, f->bool_attribs.bool_attribs_len);
+      if (f->bool_attribs.bool_attribs_val[a] == boolval)
 	return 1;
     }
   A4GL_debug ("Nope");
