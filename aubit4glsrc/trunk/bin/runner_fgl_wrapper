@@ -1,0 +1,5 @@
+#!/bin/sh
+
+b=`basename $1 .dat`
+
+runner_fgl $b
