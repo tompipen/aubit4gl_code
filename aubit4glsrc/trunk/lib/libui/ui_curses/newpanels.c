@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.136 2006-11-23 13:31:31 mikeaubury Exp $
+# $Id: newpanels.c,v 1.137 2007-01-17 09:55:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.136 2006-11-23 13:31:31 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.137 2007-01-17 09:55:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -853,7 +853,10 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   fl = A4GL_getform_line ();
   for (a=fl;a<=UILIB_A4GL_get_curr_height();a++) {
-	A4GL_display_internal (1, a, " ", 0, 1);
+	A4GL_mja_gotoxy(1,a);
+	wclrtoeol(currwin);
+	//attrib=1;
+	//UILIB_A4GL_display_internal (1, a, " ", attrib, 1);
   }
   scale_form (f->form, &rows, &cols);
   rows = f->fileform->maxline - 1;
