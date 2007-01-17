@@ -4391,6 +4391,9 @@ yyreturn:
 #line 1548 "ace.yacc"
 
 
-
+#ifdef PREGEN
+#include "ace/lex.yy.c"
+#else
 #include "lex.yy.c"
+#endif
 
