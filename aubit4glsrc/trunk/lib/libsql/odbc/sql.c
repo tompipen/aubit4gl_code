@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.175 2007-01-08 15:22:28 mikeaubury Exp $
+# $Id: sql.c,v 1.176 2007-01-17 09:09:44 mikeaubury Exp $
 #
 */
 
@@ -4575,58 +4575,6 @@ A4GLSQLLIB_A4GLSQL_end_get_columns()
 }
 
 
-#ifdef REMOVED
-/**
- * Gets information about columns from a table in the database engine.
- *
- * @param tabname The table that we wish to get information about it.
- * @param colname The column name to get information about it.
- * @param dtype A pointer to the variable where to put the data type.
- * @param size A pointer to the variable where to put the size of the column
- *  returned by the database.
- * @return
- *   - 1 : Information readed.
- *   - 0 : Error ocurred.
- */
-int
-A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
-				 int *size)
-{
-    struct sql_col_info_data *ci;
-    int rc;
-
-    A4GL_debug ("In read column tabname='%s' colname='%s'; new search", tabname, colname);
-
-    rc = sql_columns(hdbc, tabname, colname, &ci, &foundInCache);
-    if (ci->foundInCache)
-    {
-	*dtype = ci->dtype;
-	*size = ci.size;
-	return 1;
-    }
-
-    if (!(rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO || rc == SQL_NO_DATA))
-	return 0;
-
-    if (!sql_get_next_column_info(&cidata))
-	return 0; 
-
-    cache_try_add_coldata(cidata->tabname, cidata->colname, 0, &cidata);
-    *dtype = cidata->dtype;
-    *size = cidata->size;
-    return 0;
-
-//      while (strcasecmp (cn, colname) != 0)
-//	{
-//	  rc = SQLFetch (hstmt);
-//	  A4GL_trim (cn);
-//	  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
-//	      break;
-//	}
-
-}
-
-#endif
 
 /**
  *
