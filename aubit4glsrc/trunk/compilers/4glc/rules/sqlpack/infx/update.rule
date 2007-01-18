@@ -194,7 +194,7 @@ upd_column_name_specific: identifier op_col_arr {
                 ADDMAP("Use Column",$<str>1);
                 strcpy($<str>$,A4GLSQLCV_make_substr(A4GL_confirm_colname(current_upd_table,$<str>1), i->i0,i->i1,i->i2));
         }
-        | table_name KW_DOT identifier op_col_arr {
+        | identifier KW_DOT identifier op_col_arr {
                 struct ilist *i;
                 if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
@@ -218,7 +218,7 @@ upd_column_name_specific: identifier op_col_arr {
                 i=&$<int_list>6;
                 strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
         }
-        | table_name  KW_DOT KW_MULTIPLY {
+        | identifier  KW_DOT KW_MULTIPLY {
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
                 	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
 		} else {
