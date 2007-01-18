@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.29 2007-01-15 19:52:58 mikeaubury Exp $
+# $Id: Makefile,v 1.30 2007-01-18 21:12:32 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -116,7 +116,7 @@ endif
 
 #Targets we can compile in any case
 ALL             =${BINROOT}/c2pcode_fgl ${BINROOT}/checker_fgl ${BINROOT}/runner_fgl \
-				${BINROOT}/link_fgl ${BINROOT}/runner_fgl_wrapper ${REFRESHLEX}
+				${BINROOT}/link_fgl ${REFRESHLEX}
 				
 #Targets we can compile only if we have RPC
 ALL_RPC			=${BINROOT}/c2pcode ${BINROOT}/checker ${BINROOT}/runner
@@ -177,7 +177,7 @@ endif
 ##                              Targets
 ## ==================================================================
 
-all: ${ALL}
+all: ${ALL} ${BINROOT}/runner_fgl_wrapper
 	@echo "Default targets (${ALL}) compiled."
 
 ${BINROOT}/checker: $(OBJ_CHECKER_C) npcode.h

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.39 2006-12-28 12:46:15 gyver309 Exp $
+# $Id: Makefile,v 1.40 2007-01-18 21:12:16 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -53,7 +53,7 @@ include incl/Makefile-common
 ALL					=settings api.headers corecompile libfile libstring
 
 ifneq "${enable_minimal}" "yes" 
-	ALL 			+=	liblogical glade aace pcode
+	ALL 			+=	liblogical glade aace
 endif
 
 ###############################
@@ -218,9 +218,10 @@ aace:
 	$(MAKE) -C compilers/ace
 	
 pcode:
-#FIXME: can't make pcode without Bison
-ifneq "${BISON}" "no"
+ifeq "${PCODE_ENABLED}" "yes"
 	$(MAKE) -C compilers/pcode
+else
+	@echo "PCODE compilation disabled   (PCODE_ENABLED='${PCODE_ENABLED}')"
 endif
 	
 	

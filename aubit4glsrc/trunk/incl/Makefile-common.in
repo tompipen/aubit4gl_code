@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.209 2006-12-03 08:58:29 afalout Exp $
+# $Id: Makefile-common.in,v 1.210 2007-01-18 21:12:32 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1257,6 +1257,7 @@ RUNTIME_EXE=@RUNTIME_EXE@
 BIN_SCRIPTS=@ALL_SH@
 RUNTIME_RESOURCE=@RUNTIME_RESOURCE@
 COMP_EXE=@COMP_EXE@
+PCODE_ENABLED=@PCODE_ENABLED@
 BIN_EXE=${COMP_EXE} ${AMAKE_BIN_EXE} ${RUNTIME_EXE}
 
 #Building this is optional:

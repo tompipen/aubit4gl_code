@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.338 2006-12-25 11:42:00 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.339 2007-01-18 21:12:32 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.338 2006-12-25 11:42:00 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.339 2007-01-18 21:12:32 mikeaubury Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
@@ -660,6 +660,7 @@ AC_SUBST(LDFLAGS_SHARED)
 #AC_SUBST(YACC)
 AC_SUBST(BISON)
 AC_SUBST(BISON_EXE)
+AC_SUBST(PCODE_ENABLED)
 AC_SUBST(LEX)
 AC_SUBST(LCLINTEXE)
 AC_SUBST(EXPECT)
@@ -3286,7 +3287,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		fi
 	else
 		if test "$LEX" = "flex"; then 
-			#flex 2.5.31 has a new incompatible API.  I had to downgrade back to 2.5.4a.
+			#flex 2.5.31 has a new incompatible API.  I had to downgrade back to 2.5.4a. - but 2.5.33 is ok...
 			AC_MSG_CHECKING(Flex version)
 			TMP_TMP=`$LEX --version | head -n 1 | sed -e 's/^flex version //' -e 's/\./ /g' -e 's/[a-z]//g'`
 			TMP_TMP=`echo "$TMP_TMP" | tr -d '[[A-Z]]' | tr -d '[[a-z]]'`
@@ -3295,7 +3296,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 			
 			if test "$1" = "2" -a "$2" -gt "4"; then 
 				#Version is >= 2.5
-				if test "$3" -gt "31"; then
+				if test "$3" -eq "31"; then
 					#pcode wouldn't compile with a lex v. 2.5.31 (complained about yytext_ptr not existing)			
 					AC_MSG_WARN(Flex 2.5.31 and up incompatible with Aubit P-code)
 					AC_MSG_WARN(P-code compilation disabled)
@@ -10922,7 +10923,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.338 2006-12-25 11:42:00 mikeaubury Exp $
+| $Id: configure.in,v 1.339 2007-01-18 21:12:32 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
