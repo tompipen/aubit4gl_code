@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.40 2007-01-18 21:12:16 mikeaubury Exp $
+# $Id: Makefile,v 1.41 2007-01-19 16:50:30 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -53,7 +53,7 @@ include incl/Makefile-common
 ALL					=settings api.headers corecompile libfile libstring
 
 ifneq "${enable_minimal}" "yes" 
-	ALL 			+=	liblogical glade aace
+	ALL 			+=	liblogical glade aace pcode
 endif
 
 ###############################
