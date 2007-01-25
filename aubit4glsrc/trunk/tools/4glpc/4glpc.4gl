@@ -1325,6 +1325,10 @@ if mv_debug then
 	let lv_runstr=lv_runstr clipped," -g "
 end if
 
+IF fgl_getenv("A4GL_LOCALOUTPUT")="Y" THEN
+	let lv_fname=get_basename(lv_fname)
+END IF
+
 let lv_runstr=lv_runstr clipped ," ",mv_include clipped," -o ",lv_new clipped, " -c ",lv_fname clipped," 2> ",mv_errfile
 if mv_verbose>=2 then
         display lv_runstr clipped
@@ -1585,6 +1589,17 @@ if mv_verbose>=n then
 else
 	return 0
 end if
+end function
+
+function get_basename(lv_fname)
+define lv_fname char(256)
+define a integer
+for a=length(lv_fname) to 1 step -1
+	if lv_fname[a]="/" or lv_fname[a]="\\" then
+		return lv_fname[a+1,256]
+	end if
+end for
+return lv_fname
 end function
 
 
