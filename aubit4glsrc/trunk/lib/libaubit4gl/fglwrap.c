@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.115 2006-12-12 12:29:48 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.116 2007-01-26 14:07:45 mikeaubury Exp $
 #
 */
 
@@ -77,6 +77,7 @@ static int initsig_child(void );
 
 static char *p_args[MAX_ARGS];
 
+int fgl_initialised=0;
 
 /*
 =====================================================================
@@ -144,6 +145,10 @@ A4GL_debug("Close errlog");
 }
 
 
+int A4GL_has_initialized() {
+	return fgl_initialised;
+}
+	
 
 /**
  * function called on initialization of every Aubit compiled 4gl program:
@@ -163,6 +168,12 @@ int a, result;
 int b = 0;
 void *ptr;
 char *p;
+
+	if (fgl_initialised==0) {
+		fgl_initialised++;
+	} else {
+		A4GL_assertion(1,"Already initialized");
+	}
 
 	if (argv) {
 		strcpy(running_program,argv[0]);

@@ -253,7 +253,7 @@ END FUNCTION
 MAIN 
 DEFINE a INTEGER
 DEFINE lv_num_args INTEGER
-DEFINE lv_arg CHAR(100)
+DEFINE lv_arg CHAR(200)
 DEFINE lv_type CHAR(40)
 DEFINE lv_output char(255)
 DEFINE lv_cnt integer
@@ -990,7 +990,7 @@ end function
 
 ################################################################################
 function generate_ext(lv_otype)
-define lv_otype,lv_type char(100)
+define lv_otype,lv_type char(200)
 let lv_type=lv_otype
 let lv_type="A4GL_",lv_type clipped,"_EXT"
 let lv_type=fgl_getenv(lv_type)
@@ -1009,7 +1009,7 @@ end function
 
 
 function get_ext(lv_otype)
-define lv_otype,lv_type char(100)
+define lv_otype,lv_type char(200)
 let lv_type=lv_otype
 let lv_type="A4GL_",lv_type clipped,"_EXT"
 let lv_type=fgl_getenv(lv_type)

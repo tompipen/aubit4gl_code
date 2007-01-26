@@ -53,7 +53,10 @@ int A4GL_LL_colour_code(int a) {
 
 
 void A4GL_LL_switch_to_line_mode(void) {
+  if (A4GL_isyes (acl_getenv ("LOCALLINEOUTPUT"))) {
+	} else {
 	 client_call("A4GL_LL_switch_to_line_mode", 1,"");
+	}
 }
 
 
