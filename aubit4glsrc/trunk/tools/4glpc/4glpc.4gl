@@ -72,6 +72,7 @@ endcode
 
 function init()
 define lv_pack char(256)
+define use_indicators integer
 
 	let mv_versioned=1
 	if mv_verbose>=4 then display "Reading packs" end if
@@ -186,6 +187,18 @@ endcode
 
 	LET mv_import_symbols	=fgl_getenv("A4GL_IMPORT_DYNAMIC")
 	LET mv_export_symbols	=fgl_getenv("A4GL_EXPORT_DYNAMIC")
+
+code
+	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
+		use_indicators=1;
+	} else {
+		use_indicators=0;
+	}
+endcode
+	IF use_indicators=0 then
+		LET mv_preprocess_opts=mv_preprocess_opts clipped, fgl_getenv("A4GL_NOINDICATORS")	
+		LET mv_compile_pec_opts=mv_compile_pec_opts clipped, fgl_getenv("A4GL_NOINDICATORS")	
+	END IF
 
 	if fgl_getenv("A4GL_SHOW_ERRTAIL")="Y" then
 		LET mv_show_errtail=1
