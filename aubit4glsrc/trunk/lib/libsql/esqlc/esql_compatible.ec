@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.17 2006-10-29 14:23:38 briantan Exp $
+# $Id: esql_compatible.ec,v 1.18 2007-01-31 18:29:27 mikeaubury Exp $
 #
 */
 
@@ -363,7 +363,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.17 2006-10-29 14:23:38 briantan Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.18 2007-01-31 18:29:27 mikeaubury Exp $";
 #endif
 
 
@@ -2136,7 +2136,7 @@ if (sqlca.sqlcode==0) {
  *  - 0 : Statement executed.
  *  - 1 : An error as ocurred.
  */
-int A4GLSQLLIB_A4GLSQL_execute_implicit_sql (struct s_sid *sid)
+int A4GLSQLLIB_A4GLSQL_execute_implicit_sql (struct s_sid *sid,int singleton, int ni ,void *binding)
 {
   EXEC SQL begin declare section;
     char *statementName;

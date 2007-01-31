@@ -98,7 +98,6 @@ DTYPE_ALIAS NVARCHAR=VARCHAR
 
 
 
-
 OMIT_NO_LOG
 USE_INDICATOR
 REPLACE_SQLCONST rowid = oid
@@ -116,10 +115,11 @@ REPLACE_SQLFUNC dow = date_part('DOW',%s::timestamp with time zone)
 REPLACE_SQLFUNC ascii = chr(%s)
 REPLACE_SQLFUNC ord = ascii(%s)
 
+REPLACE_EXPR current year to second = current_timestamp(0)
+
 REPLACE_EXPR current year to fraction(3) = now()
 REPLACE_EXPR current year to fraction(5) = now()
-#REPLACE_EXPR current year to second = now()
-REPLACE_EXPR current year to second = current_timestamp(0)
+
 
 # No obvious replacement for these - so effectively remove them
 REPLACE_COMMAND SET EXPLAIN ON = 
@@ -146,7 +146,7 @@ REPLACE_COMMAND SET ISOLATION TO COMMITTED READ = SET SESSION CHARACTERISTICS AS
 REPLACE_COMMAND SET LOCK MODE TO NOT WAIT =
 REPLACE_COMMAND SET LOCK MODE TO WAIT =
 REPLACE_COMMAND SET LOCK MODE TO WAIT %s =
-FULL_INSERT
+#FULL_INSERT
 OMIT_SERIAL_COL_FROM_INSERT
 # Ignore any errors when closing a cursor
 # it may already have been closed...
@@ -182,3 +182,4 @@ OMIT_UPDATE_TABLE
 ESQL_UNLOAD_LIB_FALLBACK
 EMULATE_INSERT_CURSOR
 CLOSE_CURSOR_BEFORE_OPEN
+FIX_OUTER_JOINS

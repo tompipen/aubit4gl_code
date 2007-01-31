@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.41 2006-09-20 10:40:52 mikeaubury Exp $
+# $Id: nosql.c,v 1.42 2007-01-31 18:29:27 mikeaubury Exp $
 #*/
 
 /**
@@ -93,7 +93,7 @@ int A4GLSQLLIB_A4GLSQL_close_cursor(char* currname) NOPE0
 int A4GLSQLLIB_A4GLSQL_close_session_internal(char* sessname) NOPE0
 int A4GLSQLLIB_A4GLSQL_end_get_columns(void ) NOPE0
 int A4GLSQLLIB_A4GLSQL_execute_implicit_select(void* sid,int singleton) NOPE0
-int A4GLSQLLIB_A4GLSQL_execute_implicit_sql(void* sid,int singleton) NOPE0
+int A4GLSQLLIB_A4GLSQL_execute_implicit_sql(void* sid,int singleton, int ni, void *binding) NOPE0
 int A4GLSQLLIB_A4GLSQL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) NOPE0
 int A4GLSQLLIB_A4GLSQL_fill_array(int mx,char* arr1,int szarr1,char* arr2,int szarr2,char* service,int mode,char* info) NOPE0
 int A4GLSQLLIB_A4GLSQL_get_columns(char* tabname,char* colname,int* dtype,int* size) NOPE0

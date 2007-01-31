@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2006-07-27 16:03:53 mikeaubury Exp $
+# $Id: Makefile.in,v 1.12 2007-01-31 18:29:28 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -69,6 +69,12 @@ ALL: ${ALL}
 libSQL_pg${SO_EXT}: ${PLUGINDIR}/libSQL_pg${SO_EXT}
 ${PLUGINDIR}/libSQL_pg${SO_EXT}: $(OBJS)
 	${LD} ${SO_LDFLAGS} $^ ${PGSQL_LFLAGS} ${PGSQL_LIBS} -o $@ ${LINKLIBS}
+
+
+libSQL_pg8${SO_EXT}: ${PLUGINDIR}/libSQL_pg8${SO_EXT}
+${PLUGINDIR}/libSQL_pg8${SO_EXT}: pg8.o
+	${LD} ${SO_LDFLAGS} $^ ${PGSQL_LFLAGS} ${PGSQL_LIBS} -o $@ ${LINKLIBS}
+
 
 #This "real" fully functional driver written in C++ was never 
 #finished by Sergio... :-(

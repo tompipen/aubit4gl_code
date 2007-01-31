@@ -126,7 +126,7 @@ set_cmd : SQLSEOFF 		 { print_exec_sql(acl_strdup($<str>1)); }
 ;
 
 
-var_ident_ibind_sli :  column_name_x { $<s_select_list_item>$=new_select_list_item_column_from_transform($<str>1);}
+var_ident_ibind_sli :  column_name_x { $<s_select_list_item>$=new_select_list_item_column_from_transform(strdup($<str>1));}
 	 | QUESTION_MARK {  
 		$<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_QUERY_PLACEHOLDER);}
 	| replace_with_variable {
@@ -162,16 +162,55 @@ replace_with_variable : MARK_VAR CHAR_VALUE END_MARK_VAR {
 ;
 
 
+arr_expr :
+	OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
+	| arr_expr arr_next_math arr_expr { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
+	| INT_VALUE {sprintf($<str>$,"%d",atoi($<str>1));}
+	| arr_int_sign INT_VALUE {sprintf($<str>$,"(%s%s)",$<str>1,$<str>2);}
+	;
+
+
+arr_next_math:
+        KW_PLUS {strcpy($<str>$,"+");}
+|       KW_MINUS {strcpy($<str>$,"-");}
+|       KW_MULTIPLY {strcpy($<str>$,"*");}
+|       KW_DIVIDE {strcpy($<str>$,"/");}
+|       KW_MOD {strcpy($<str>$,"%");}
+;
+
+
+
+arr_int_sign    : KW_PLUS {strcpy($<str>$,"+");}
+                | KW_MINUS {strcpy($<str>$,"-");}
+;
+
+
+
+
+op_substr : {strcpy($<str>$,"");}
+	| OPEN_SQUARE arr_expr CLOSE_SQUARE {
+		sprintf($<str>$,"[%s]", $<str>2);
+	}
+	| OPEN_SQUARE arr_expr KW_COMMA arr_expr CLOSE_SQUARE {
+		sprintf($<str>$,"[%s,%s]", $<str>2,$<str>4);
+	}
+;
+
 column_name_x:
 	identifier {sprintf($<str>$,"%s", $<str>1);}
-	| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", $<str>1,$<str>3);}
+	| identifier KW_DOT identifier  {sprintf($<str>$,"%s.%s", $<str>1,$<str>3);}
 	| identifier KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s.%s", $<str>1,$<str>3,$<str>5);}
-	| CHAR_VALUE KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s.%s", $<str>1,$<str>3,$<str>5);}
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier  {sprintf($<str>$,"%s.%s.%s", $<str>1,$<str>3,$<str>5);}
+	 
+	| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE 						{sprintf($<str>$,"%s", $<str>1); strcpy($<str>$, A4GLSQLCV_make_substr_s($<str>1, 1,$<str>3,0));}
+	| identifier KW_DOT identifier  OPEN_SQUARE arr_expr CLOSE_SQUARE 			{char buff[256]; sprintf(buff,"%s.%s", $<str>1,$<str>3); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>5,0));}
+	| identifier KW_DOT identifier KW_DOT identifier OPEN_SQUARE arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s.%s", $<str>1,$<str>3, $<str>5); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>7,0));  }
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier  OPEN_SQUARE arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s.%s", $<str>1,$<str>3, $<str>5);  strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>7,0)); }
 	
-	/*
-        column_name_specific { strcpy($<str>$,$<str>1); }
-	*/
-	
+	| identifier OPEN_SQUARE arr_expr KW_COMMA arr_expr CLOSE_SQUARE 			{sprintf($<str>$,"%s", $<str>1); strcpy($<str>$, A4GLSQLCV_make_substr_s($<str>1, 2,$<str>3,$<str>5));}
+	| identifier KW_DOT identifier  OPEN_SQUARE arr_expr  KW_COMMA arr_expr CLOSE_SQUARE 			{char buff[256]; sprintf(buff,"%s.%s", $<str>1,$<str>3); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,2,$<str>5,$<str>7));}
+	| identifier KW_DOT identifier KW_DOT identifier OPEN_SQUARE arr_expr  KW_COMMA arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s.%s", $<str>1,$<str>3, $<str>5); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,2,$<str>7,$<str>9));  }
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier  OPEN_SQUARE arr_expr  KW_COMMA arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s.%s", $<str>1,$<str>3, $<str>5);  strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,2,$<str>7,$<str>9)); }
 ;
 
 

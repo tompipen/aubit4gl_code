@@ -377,8 +377,8 @@ table_constraint_definition_ss:
 
 default_clause:
 	  DEFAULT literal {sprintf($<str>$," %s %s",$<str>1,$<str>2); add_feature("DDL_DEFAULT_VALUE"); }
-	  | DEFAULT_USER {sprintf($<str>$," DEFAULT USER"); add_feature("DDL_DEFAULT_VALUE"); }
-	  | DEFAULT_TODAY {sprintf($<str>$," DEFAULT TODAY"); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_USER {sprintf($<str>$," DEFAULT %s", A4GLSQLCV_get_sqlconst("USER")); add_feature("DDL_DEFAULT_VALUE"); }
+	  | DEFAULT_TODAY {sprintf($<str>$," DEFAULT %s", A4GLSQLCV_get_sqlconst("TODAY")); add_feature("DDL_DEFAULT_VALUE"); }
 	  | DEFAULT_NULL { sprintf($<str>$," %s",$<str>1); add_feature("DDL_DEFAULT_VALUE"); }
 ;
 

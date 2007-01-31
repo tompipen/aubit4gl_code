@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.176 2006-12-28 13:34:43 gyver309 Exp $
+# $Id: esql.ec,v 1.177 2007-01-31 18:29:27 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.176 2006-12-28 13:34:43 gyver309 Exp $";
+  "@(#)$Id: esql.ec,v 1.177 2007-01-31 18:29:27 mikeaubury Exp $";
 #endif
 
 
@@ -2390,7 +2390,7 @@ return 0;
  *  - 1 : An error as ocurred.
  */
 int
-A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid,int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid,int singleton,int ni, void *ibind )
 {
 struct s_sid *sid;
 char buff[255];
@@ -2410,6 +2410,12 @@ char buff[255];
     /** @todo : I should store the error message and number somwehere */
       return 1;
     }
+
+
+  if (ni) {
+  	sid->ibind=ibind;
+  	sid->ni=ni;
+  }
 
   if (processPreStatementBinds (sid) == 1)
     {

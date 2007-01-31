@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.101 2006-12-28 13:41:09 gyver309 Exp $
+# $Id: sqlconvert.c,v 1.102 2007-01-31 18:29:26 mikeaubury Exp $
 #
 */
 
@@ -1475,8 +1475,12 @@ static int match_strncasecmp(char *s1,char *s2,int len) {
 	strncpy(p2,s2,len+1);
 	p1[len+1]=0;
 	p2[len+1]=0;
-	A4GL_trim(p1);
-	A4GL_trim(p2);
+	if (strchr(p1,' ') || strchr(p1,'\n')) {
+		A4GL_trim(p1);
+	}
+	if (strchr(p2,' ') || strchr(p2,'\n')) {
+		A4GL_trim(p2);
+	}
 	l1=strlen(p1);
 	l2=strlen(p2);
 

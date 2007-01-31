@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.42 2007-01-15 10:19:22 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.43 2007-01-31 18:29:26 mikeaubury Exp $
 #
 */
 
@@ -319,6 +319,7 @@ new_select_list_item_col (char *t, char *c, struct ilist *subscripts)
       p->u_data.column.colname = acl_strdup (c);
       A4GL_trim (c);
     }
+ 
   p->u_data.column.subscript.i0 = -1;
   p->u_data.column.subscript.i1 = -1;
   p->u_data.column.subscript.i2 = -1;
@@ -1809,8 +1810,11 @@ char *
 find_tabname_for_alias (struct s_select *select, char *alias)
 {
   int a;
+
+
   if (!select)
     return alias;
+
   if (select->table_elements.ntables == 1)
     {
       if (select->table_elements.tables[0].alias)

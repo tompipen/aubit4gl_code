@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.78 2006-12-28 13:10:20 gyver309 Exp $
+# $Id: compile_c_sql.c,v 1.79 2007-01-31 18:29:27 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.78 2006-12-28 13:10:20 gyver309 Exp $";
+		"$Id: compile_c_sql.c,v 1.79 2007-01-31 18:29:27 mikeaubury Exp $";
 #endif
 
 
@@ -55,7 +55,7 @@ extern char *infilename;
 void
 LEXLIB_print_exec_sql (char *s,int converted)
 {
-  printc ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d),1);\n", s,lastlineno,converted);
+  printc ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d),1,0,0);\n", s,lastlineno,converted);
 }
 
 
@@ -73,7 +73,7 @@ LEXLIB_print_exec_sql_bound_g (char *s,int converted,t_binding_comp_list* bind)
   c = LEXLIB_print_bind_definition_g (bind);
   LEXLIB_print_bind_set_value_g (bind);
   printc
-    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d),1);\n", c,s,lastlineno,converted);
+    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d),1,0,0);\n", c,s,lastlineno,converted);
   printc ("}\n");
 }
 
@@ -425,7 +425,7 @@ LEXLIB_print_do_select (char *s,int converted,t_binding_comp_list *outbind)
 if (strstr(s," INTO TEMP ")==0) {
   printc ("A4GLSQL_execute_implicit_select(%s,1); /* 0 */\n}\n", s);
 } else {
-  printc ("A4GLSQL_execute_implicit_sql(%s,1); /* 0 */\n}\n", s);
+  printc ("A4GLSQL_execute_implicit_sql(%s,1,0,0); /* 0 */\n}\n", s);
 }
 }
 

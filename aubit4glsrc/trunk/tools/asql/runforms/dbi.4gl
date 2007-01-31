@@ -232,7 +232,7 @@ static void do_actual_fetch(char *lv_c, int x,int y,int nf,struct BINDING *ibind
 }
 
 static void do_execute_sql(struct BINDING *ibind, int nbind,char *sql) { 
-	A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,nbind,0,0,sql,"dbi",0,1),1); 
+	A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,nbind,0,0,sql,"dbi",0,1),1,0,0); 
 }
 
 

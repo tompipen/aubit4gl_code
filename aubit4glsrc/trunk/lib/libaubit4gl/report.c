@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.109 2006-12-17 17:04:01 mikeaubury Exp $
+# $Id: report.c,v 1.110 2007-01-31 18:29:26 mikeaubury Exp $
 #
 */
 
@@ -1189,8 +1189,8 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0), 1);
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99,0), 1);
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0), 1,0,0);
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99,0), 1,0,0);
 }
 
 
@@ -1228,7 +1228,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   A4GL_debug ("Attempting to execute %s\n", buff);
   x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff,"__internal_report",1,0);
   A4GL_debug ("x=%p\n", x);
-  A4GLSQL_execute_implicit_sql (x, 1);
+  A4GLSQL_execute_implicit_sql (x, 1,0,0);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
 }
 
@@ -1355,7 +1355,7 @@ void
 A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
 {
   A4GLSQL_close_cursor (cursor_for_rep_tab (b));
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0), 1);
+  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0), 1,0,0);
   A4GL_free_duplicate_binding (reread, n);
 }
 

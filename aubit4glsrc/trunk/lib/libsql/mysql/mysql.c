@@ -1849,6 +1849,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
+
   nibind = sid->ni;
   ibind = sid->ibind;
 
@@ -1931,7 +1932,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 /*****************************************************************************/
 
 int
-A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni,void *binding)
 {
   struct s_sid *sid;
   int nibind = 0;
@@ -1952,9 +1953,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
   A4GL_debug ("Calling proc_bind()");
 #endif
 
-
-  nibind = sid->ni;
-  ibind = sid->ibind;
+  nibind = ni;
+  ibind = binding;
 
   A4GL_debug ("Execute : %s\n", sid->select);
 

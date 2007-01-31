@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.32 2006-12-28 13:52:30 gyver309 Exp $
+# $Id: sql_common.c,v 1.33 2007-01-31 18:29:26 mikeaubury Exp $
 #
 */
 
@@ -705,16 +705,17 @@ void * A4GLSQL_prepare_sql (char *s)
 int
 A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 {
-  struct s_sid *sid;
+  void *sid;
   struct BINDING *ibind;
   ibind = vibind;
   A4GL_debug ("ESQL : A4GLSQL_execute_sql");
   sid = A4GLSQL_find_prepare (pname);	// ,0
+  
   if (sid != 0)
     {
-      sid->ibind = ibind;
-      sid->ni = ni;
-      return A4GLSQL_execute_implicit_sql (sid, 0);
+      //sid->ibind = ibind;
+      //sid->ni = ni;
+      return A4GLSQL_execute_implicit_sql (sid, 0, ni, ibind);
     }
   else
     {

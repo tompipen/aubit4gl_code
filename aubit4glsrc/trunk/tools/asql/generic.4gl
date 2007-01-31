@@ -662,6 +662,12 @@ char *columnName;
 int totsize=0;
 
 numberOfColumns=A4GLSQL_describe_stmt ("generic_stexecp",0,5);
+
+if (numberOfColumns==0) {
+	// try the cursor instead...
+	numberOfColumns=A4GLSQL_describe_stmt ("generic_crexec",0,5);
+}
+
 A4GL_assertion(numberOfColumns==0,"No number of columns found...");
 if (columnNames) {
         int a;

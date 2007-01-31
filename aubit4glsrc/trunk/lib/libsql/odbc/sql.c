@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.176 2007-01-17 09:09:44 mikeaubury Exp $
+# $Id: sql.c,v 1.177 2007-01-31 18:29:27 mikeaubury Exp $
 #
 */
 
@@ -1495,12 +1495,13 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
  * @param sid The statement informnation handle.
  */
 int
-A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
+A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni, void *binding)
 {
   struct s_sid *sid;
-
   int rc = 0;
   sid = vsid;
+
+
   if (sid == 0)
     {
 #ifdef DEBUG
@@ -1508,6 +1509,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton)
 #endif
       return 0;
     }
+
+  if (ni) {
+  sid->ibind=binding;
+  sid->ni=ni;
+  }
 #ifdef DEBUG
   A4GL_debug ("A4GLSQL_execute_implicit_sql: no=%d ni=%d sql=%s", sid->no,
 	      sid->ni, sid->select);
