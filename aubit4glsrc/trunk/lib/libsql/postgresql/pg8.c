@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.1 2007-01-31 18:29:28 mikeaubury Exp $
+# $Id: pg8.c,v 1.2 2007-01-31 20:04:17 mikeaubury Exp $
 #*/
 
 
@@ -34,6 +34,7 @@
 =====================================================================
 */
 #include "libpq-fe.h"
+#include "pg_config.h"
 //#include "postgresql/server/catalog/pg_type.h"
 #include "a4gl_lib_sql_int.h"
 #define DTYPE_CHAR      0
@@ -56,7 +57,7 @@ int sqlcode;
 static void fixtype (char *ptr, int *d, int *s);
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 static void defaultNoticeProcessor (void *arg, const char *message);
-static void SetErrno(PGresult *res) ;
+static void SetErrno (PGresult * res);
 
 
 #define BPCHAROID             1042
@@ -79,13 +80,13 @@ static void SetErrno(PGresult *res) ;
 #define PHASE_POST_FETCH 1
 #define STMT_CANT_PREPARE -1
 #define STMT_DATABASE -2
-char *last_msg=0;
-int last_msg_no=0;
-int currServerVersion;
+char *last_msg = 0;
+int last_msg_no = 0;
+int currServerVersion = 0;
 char warnings[9];
 
 int truncated = 0;
-int CanUseSavepoints=0;
+int CanUseSavepoints = 0;
 
 /*
 =====================================================================
@@ -129,13 +130,14 @@ static struct expr_str_list *A4GL_add_validation_elements_to_expr (struct
 								   char *val);
 
 
-static Oid * Oids (int nbind, struct BINDING *b); // reserved for future enhancement :-)
-PGresult *Execute(char *s,int freeit) ;
-static char *replace_ibind(char *stmt,int ni, struct BINDING *ibind) ;
-static int inTransaction(void) ;
-static int copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row);
+static Oid *Oids (int nbind, struct BINDING *b);	// reserved for future enhancement :-)
+PGresult *Execute (char *s, int freeit);
+static char *replace_ibind (char *stmt, int ni, struct BINDING *ibind);
+static int inTransaction (void);
+static int copy_to_obind (PGresult * res, int no, struct BINDING *obind,
+			  int row);
 //typedef void (*PQnoticeProcessor) (void *arg, const char *message);
-static int chk_res(PGresult *res) ;
+static int chk_res (PGresult * res);
 
 struct s_prepare
 {
@@ -168,7 +170,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char tmpDb[256];
 
 
-int i;
+  int i;
 
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
@@ -246,7 +248,7 @@ int i;
     {
 
       A4GL_set_errm (dbName);
-      A4GL_exitwith ("Could not connect to database");
+      A4GL_exitwith_sql ("Could not connect to database");
       return -1;
     }
 
@@ -258,34 +260,42 @@ int i;
 	SPRINTF1 (buff2, "%s - No explanation from the backend", dbName);
 
       A4GL_set_errm (buff2);
-      A4GL_exitwith ("Could not connect to database ");
+      A4GL_exitwith_sql ("Could not connect to database ");
       return -1;
 
     }
   PQsetNoticeProcessor (con, defaultNoticeProcessor, 0);
-  CanUseSavepoints=0;
-  if (con) {
-  	PGresult *res=0;
-  	PGresult *res2=0;
-#ifdef PG8
-	currServerVersion=PQserverVersion(con);
-	if (currServerVersion>= 80100)  {
-		if (!A4GL_isyes(acl_getenv("DISABLESAVEPOINTS")))  {
-			CanUseSavepoints=1;
-		}
+  CanUseSavepoints = 0;
+  if (con)
+    {
+      PGresult *res = 0;
+      PGresult *res2 = 0;
+
+#if  ( PG_VERSION_NUM > 80100 )
+      currServerVersion = PQserverVersion (con);
+      if (currServerVersion >= 80100)
+	{
+	  if (!A4GL_isyes (acl_getenv ("DISABLESAVEPOINTS")))
+	    {
+	      CanUseSavepoints = 1;
+	    }
 	}
 #else
-	// work it out by trying it..
-  	res2=PQexec(con,"BEGIN WORK"); PQclear(res2);
-  	res=PQexec(con,"SAVEPOINT pr1");
-  	res2=PQexec(con,"COMMIT WORK"); PQclear(res2);
-	if (PQresultStatus(res)==PGRES_COMMAND_OK) {
-		if (!A4GL_isyes(acl_getenv("DISABLESAVEPOINTS")))   {
-			CanUseSavepoints=1;
-		}
+      // work it out by trying it..
+      res2 = PQexec (con, "BEGIN WORK");
+      PQclear (res2);
+      res = PQexec (con, "SAVEPOINT pr1");
+      res2 = PQexec (con, "COMMIT WORK");
+      PQclear (res2);
+      if (PQresultStatus (res) == PGRES_COMMAND_OK)
+	{
+	  if (!A4GL_isyes (acl_getenv ("DISABLESAVEPOINTS")))
+	    {
+	      CanUseSavepoints = 1;
+	    }
 	}
 #endif
-  }
+    }
 
 
   A4GL_add_pointer ("default", SESSCODE, con);
@@ -340,12 +350,14 @@ A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
  *
  * @todo Describe function
  */
-int A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+int
+A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
+				 int *size)
 {
   char *buff;
   if (con == 0)
     {
-      A4GL_exitwith ("Not connected to database");
+      A4GL_exitwith_sql ("Not connected to database");
       return 0;
     }
   A4GLSQLLIB_A4GLSQL_get_columns (tabname, colname, dtype, size);
@@ -389,7 +401,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
   if (con == 0)
     {
-      A4GL_exitwith ("Not connected to database");
+      A4GL_exitwith_sql ("Not connected to database");
       return 0;
     }
 
@@ -418,11 +430,11 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
     case PGRES_NONFATAL_ERROR:
     case PGRES_FATAL_ERROR:
       A4GL_set_errm (tabname);
-      A4GL_exitwith ("Unexpected postgres return code1\n");
+      A4GL_exitwith_sql ("Unexpected postgres return code1\n");
       return 0;
     }
   A4GL_set_errm (tabname);
-  A4GL_exitwith ("Table not found\n");
+  A4GL_exitwith_sql ("Table not found\n");
   return 0;
 }
 
@@ -449,7 +461,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
   if (con == 0)
     {
-      A4GL_exitwith ("Not connected to database");
+      A4GL_exitwith_sql ("Not connected to database");
       return 0;
     }
   if (curr_colno >= nfieldsForGetColumns)
@@ -623,12 +635,12 @@ fixtype (char *type, int *d, int *s)
 
   if (*d == -1)
     {
-	*d=DTYPE_VCHAR;
-      	*s = 0xff;
-	
+      *d = DTYPE_VCHAR;
+      *s = 0xff;
+
 
       A4GL_debug ("Ooops - Unknown datatype : %s", type);
-      //A4GL_exitwith ("Invalid datatype for Aubit4GL");
+      //A4GL_exitwith_sql ("Invalid datatype for Aubit4GL");
     }
   return;
 
@@ -703,7 +715,7 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
     case PGRES_FATAL_ERROR:
       A4GL_debug ("Got : %d", PQresultStatus (res2));
       A4GL_set_errm (tabname);
-      A4GL_exitwith ("Unexpected postgres return code2\n");
+      A4GL_exitwith_sql ("Unexpected postgres return code2\n");
       //return -1;
       return (void *) -1;
       // warning: return makes pointer from integer without a cast
@@ -724,8 +736,10 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
 char *
 A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
 {
-if (a==last_msg_no) return last_msg;
-else return "Unknown Error";
+  if (a == last_msg_no)
+    return last_msg;
+  else
+    return "Unknown Error";
 }
 
 
@@ -972,7 +986,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 
   if (con == 0)
     {
-      A4GL_exitwith ("Database not open");
+      A4GL_exitwith_sql ("Database not open");
       return;
     }
 
@@ -1000,7 +1014,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
     /** @todo : Generate some error code compatible with informix 4gl */
       free (fname);
       free (sqlStr);
-      A4GL_exitwith ("Unable to open file for unload");
+      A4GL_exitwith_sql ("Unable to open file for unload");
       return;			/* return 1; */
     }
 
@@ -1027,8 +1041,8 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
     case PGRES_FATAL_ERROR:
       A4GL_debug ("Got : %d (%s)", PQresultStatus (res2),
 		  PQerrorMessage (con));
-		SetErrno(res2);
-      //A4GL_exitwith ("Unexpected postgres return code3\n");
+      SetErrno (res2);
+      //A4GL_exitwith_sql ("Unexpected postgres return code3\n");
       free (fname);
       free (sqlStr);
       return;
@@ -1099,7 +1113,8 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
   return;			/* return 0; */
 }
 
-static Oid * Oids (int nbind, struct BINDING *b)
+static Oid *
+Oids (int nbind, struct BINDING *b)
 {
   Oid *ptr;
   int a;
@@ -1172,14 +1187,16 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 
 
 
-   if (!con) {
-	// no connection..
-	if(last_msg) free(last_msg);
-	last_msg=strdup("No connection");
-	last_msg_no=-349;
-  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
-	return 0;
-   }
+  if (!con)
+    {
+      // no connection..
+      if (last_msg)
+	free (last_msg);
+      last_msg = strdup ("No connection");
+      last_msg_no = -349;
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
+      return 0;
+    }
 
 
   l = strlen (s);
@@ -1219,10 +1236,11 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
       n->data_area_out = A4GL_alloc_associated_mem (n, sizeof (void *) * no);
     }
 
-  if (A4GL_has_pointer(uniqid , PREPAREPG)) {
-  	//SPRINTF1 (buff, "DEALLOCATE %s", n->name);
-  	//PQexec (con, buff);
-  }
+  if (A4GL_has_pointer (uniqid, PREPAREPG))
+    {
+      //SPRINTF1 (buff, "DEALLOCATE %s", n->name);
+      //PQexec (con, buff);
+    }
 
   A4GL_add_pointer (uniqid, PREPAREPG, n);
 
@@ -1237,15 +1255,15 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
     {
     case PGRES_BAD_RESPONSE:
       A4GL_debug ("Bad response %s\n", PQerrorMessage (con));
-      //A4GL_exitwith ("Unexpected postgres return code4\n");
+      //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
       return 0;
     case PGRES_NONFATAL_ERROR:
       A4GL_debug ("nonfatal error %s \n", PQerrorMessage (con));
-      //A4GL_exitwith ("Unexpected postgres return code4\n");
+      //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
       return 0;
     case PGRES_FATAL_ERROR:
       A4GL_debug ("fatal error %s\n", PQerrorMessage (con));
-      //A4GL_exitwith ("Unexpected postgres return code4\n");
+      //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
       return 0;
     }
 #endif
@@ -1255,7 +1273,8 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 
 
 #ifdef OBSOLETE
-static int setParams (struct s_prepare *p)
+static int
+setParams (struct s_prepare *p)
 {
   int a;
   int d, m, y;
@@ -1362,12 +1381,14 @@ int
 A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 					 void *binding)
 {
-Oid oid;
+  Oid oid;
   struct s_prepare *n;
   //int resultFormat = 0;
   int ok = 0;
-	char*sql;
-int setSavepoint=0;
+  char *sql;
+  int setSavepoint = 0;
+  char *isInsert;
+  int use_insert_return = 0;
   PGresult *res;
 
   A4GL_debug ("Execute\n");
@@ -1378,24 +1399,28 @@ int setSavepoint=0;
     }
 
 
-   if (!con) {
-	// no connection..
-	if(last_msg) free(last_msg);
-	last_msg=strdup("No connection");
-	last_msg_no=-349;
-  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
-	return 0;
-   }
+  if (!con)
+    {
+      // no connection..
+      if (last_msg)
+	free (last_msg);
+      last_msg = strdup ("No connection");
+      last_msg_no = -349;
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
+      return 0;
+    }
 
   n = vsid;
 
-  if (ni) {
-  	n->ni = ni;
-  	n->ibind = binding;
-  }
+  if (ni)
+    {
+      n->ni = ni;
+      n->ibind = binding;
+    }
 
 
- if (strlen(n->sql)==0) return 0;
+  if (strlen (n->sql) == 0)
+    return 0;
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
@@ -1403,14 +1428,40 @@ int setSavepoint=0;
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 
 
-  sql=replace_ibind(n->sql,  n->ni,  n->ibind);
+  if (currServerVersion >= 80200)
+    {
+      use_insert_return = 1;
+      isInsert = strdup (n->sql);
+      A4GL_convlower (isInsert);
+      if (A4GL_strstartswith (isInsert, "insert ") && use_insert_return == 1)
+	{
+	  sql = replace_ibind (n->sql, n->ni, n->ibind);
+	  strcat (sql, " returning *");
+	}
+      else
+	{
+	  sql = replace_ibind (n->sql, n->ni, n->ibind);
+	}
 
-	if (inTransaction()) {
-		setSavepoint++;
-   		if (CanUseSavepoints) {Execute("SAVEPOINT preExec",1);}
-		}
-	A4GL_debug("%s ni=%d\n",sql, n->ni);
-	res=PQexec(con,sql);
+
+    }
+  else
+    {
+      use_insert_return = 0;
+      sql = replace_ibind (n->sql, n->ni, n->ibind);
+    }
+
+  if (inTransaction ())
+    {
+      setSavepoint++;
+      if (CanUseSavepoints)
+	{
+	  Execute ("SAVEPOINT preExec", 1);
+	}
+    }
+  A4GL_debug ("%s ni=%d\n", sql, n->ni);
+
+  res = PQexec (con, sql);
 
 
   A4GL_debug ("::: %s - %d\n", n->sql, PQresultStatus (res));
@@ -1431,108 +1482,154 @@ int setSavepoint=0;
 
     default:
       A4GL_debug ("Bad : %s ", PQerrorMessage (con));
-		SetErrno(res);
+      SetErrno (res);
       ok = 0;
     }
 
-  A4GL_set_a4gl_sqlca_errd (0, atoi(PQcmdTuples(res)));
-  A4GL_set_a4gl_sqlca_errd (2, atoi(PQcmdTuples(res)));
+  A4GL_set_a4gl_sqlca_errd (0, atoi (PQcmdTuples (res)));
+  A4GL_set_a4gl_sqlca_errd (2, atoi (PQcmdTuples (res)));
   A4GL_set_a4gl_sqlca_errd (1, 0);
 
   A4GL_set_a4gl_sqlca_errd (5, 0);
-  if ( PQresultStatus (res)==PGRES_COMMAND_OK) {
-  	oid=PQoidValue(res);
-  	if (oid != InvalidOid) {
-		PGresult *res2;
-		char *s;
-		char *p;
-		int l;
-		int a;
-		s=strdup(n->sql);
-		A4GL_convupper(s);
-		l=strlen(s);
-		p=strstr(s," VALUES");
-		if (p) *p=0;
-		p=strstr(s," SELECT");
-		if (p) *p=0;
-		
 
-		for (a=0;a<l;a++) {
-			if (A4GL_strstartswith(&s[a],"INSERT ")) {
-				s[a]=' ';
-				s[a+1]=' ';
-				s[a+2]=' ';
-				s[a+3]=' ';
-				s[a+4]=' ';
-				s[a+5]=' ';
-				s[a+6]=' ';
-			}
-			if (A4GL_strstartswith(&s[a]," INTO ")) {
-				s[a]=' ';
-				s[a+1]=' ';
-				s[a+2]=' ';
-				s[a+3]=' ';
-				s[a+4]=' ';
-				s[a+5]=' ';
-			}
+
+  if (PQresultStatus (res) == PGRES_COMMAND_OK
+      || PQresultStatus (res) == PGRES_TUPLES_OK)
+    {
+      int a;
+      if (use_insert_return)
+	{
+	  if (PQresultStatus (res) == PGRES_TUPLES_OK)
+	    {
+	      int nfields;
+	      nfields = PQnfields (res);
+	      // Found out row !
+	      for (a = 0; a < nfields; a++)
+		{
+		  if (PQftype (res, a) == 23)
+		    {
+		      // any serial column must be the first integer...
+		      A4GL_set_a4gl_sqlca_errd (1, atoi (PQgetvalue (res, 0, a)));
+		      break;
+		    }
 		}
-		A4GL_lrtrim(s);
-		if (strchr(s,' ')==0) {
-			char sql[2000];
-			A4GL_convlower(s);
-			SPRINTF2(sql, "SELECT * FROM %s WHERE OID=%ld", s, oid);
-			res2=PQexec(con,sql);
-			
+	    }
+	  else
+	    {
+	      // not found...
+	      A4GL_set_a4gl_sqlca_errd (1, 0);
+	    }
 
-  			if (PQresultStatus (res2)==PGRES_TUPLES_OK) {
-				int nfields;
-				nfields=PQnfields(res2);
-				// Found out row !
-				for (a=0;a<nfields;a++) {
-					if ( PQftype(res2,a)==23) {
-						// any serial column must be the first integer...
-						A4GL_set_a4gl_sqlca_errd(1, atoi(PQgetvalue(res2,0,a)));
-						break;
-					}
-				}
-			} else {
-				// not found...
-  				A4GL_set_a4gl_sqlca_errd (1, 0);
+	}
+      else
+	{
+	  oid = PQoidValue (res);
+	  if (oid != InvalidOid)
+	    {
+	      PGresult *res2;
+	      char *s;
+	      char *p;
+	      int l;
+	      s = strdup (n->sql);
+	      A4GL_convupper (s);
+	      l = strlen (s);
+	      p = strstr (s, " VALUES");
+	      if (p)
+		*p = 0;
+	      p = strstr (s, " SELECT");
+	      if (p)
+		*p = 0;
+
+
+	      for (a = 0; a < l; a++)
+		{
+		  if (A4GL_strstartswith (&s[a], "INSERT "))
+		    {
+		      s[a] = ' ';
+		      s[a + 1] = ' ';
+		      s[a + 2] = ' ';
+		      s[a + 3] = ' ';
+		      s[a + 4] = ' ';
+		      s[a + 5] = ' ';
+		      s[a + 6] = ' ';
+		    }
+		  if (A4GL_strstartswith (&s[a], " INTO "))
+		    {
+		      s[a] = ' ';
+		      s[a + 1] = ' ';
+		      s[a + 2] = ' ';
+		      s[a + 3] = ' ';
+		      s[a + 4] = ' ';
+		      s[a + 5] = ' ';
+		    }
+		}
+	      A4GL_lrtrim (s);
+	      if (strchr (s, ' ') == 0)
+		{
+		  char sql[2000];
+		  A4GL_convlower (s);
+		  SPRINTF2 (sql, "SELECT * FROM %s WHERE OID=%ld", s, oid);
+		  res2 = PQexec (con, sql);
+
+
+		  if (PQresultStatus (res2) == PGRES_TUPLES_OK)
+		    {
+		      int nfields;
+		      nfields = PQnfields (res2);
+		      // Found out row !
+		      for (a = 0; a < nfields; a++)
+			{
+			  if (PQftype (res2, a) == 23)
+			    {
+			      // any serial column must be the first integer...
+			      A4GL_set_a4gl_sqlca_errd (1,
+							atoi (PQgetvalue
+							      (res2, 0, a)));
+			      break;
+			    }
 			}
-			
-
-
-			free(s);
+		    }
+		  else
+		    {
+		      // not found...
+		      A4GL_set_a4gl_sqlca_errd (1, 0);
+		    }
+		  free (s);
 		}
+	      A4GL_set_a4gl_sqlca_errd (5, oid);
+	    }
+	}
+    }
 
-  		A4GL_set_a4gl_sqlca_errd (5, oid);
-	
-  	}
-   }
- 
 
-  if (ok) {
-	if (setSavepoint) {
-		if (CanUseSavepoints) {
-			Execute("RELEASE SAVEPOINT preExec",1);
-		}
+  if (ok)
+    {
+      if (setSavepoint)
+	{
+	  if (CanUseSavepoints)
+	    {
+	      Execute ("RELEASE SAVEPOINT preExec", 1);
+	    }
 	}
 
-   	return 0;
-  }
+      return 0;
+    }
 
-	if (setSavepoint) {
-		if (CanUseSavepoints) {
-  		Execute("ROLLBACK TO SAVEPOINT preExec",1);
-		}
+  if (setSavepoint)
+    {
+      if (CanUseSavepoints)
+	{
+	  Execute ("ROLLBACK TO SAVEPOINT preExec", 1);
 	}
+    }
   return 1;
 }
 
 
 
 
-static int copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
+static int
+copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 {
   int b;
   int nrows;
@@ -1543,13 +1640,15 @@ static int copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row
     return 0;
 
   nfields = PQnfields (res);
-  if (nfields > no) {
-    	  nfields = no;
-  }
-  if (nfields!=no) {
-	  warnings[0] = 'W';
-          warnings[3] = 'W';
-  }
+  if (nfields > no)
+    {
+      nfields = no;
+    }
+  if (nfields != no)
+    {
+      warnings[0] = 'W';
+      warnings[3] = 'W';
+    }
 
   for (b = 0; b < nfields; b++)
     {
@@ -1595,23 +1694,25 @@ static int copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row
 	    }
 	  else
 	    {
-		char *s;
-		if (obind[b].dtype == DTYPE_CHAR) {
-			s=strdup(ptr);
-			A4GL_trim(s);
-			if (strlen(s) > obind[b].size) {
-				// Too large -it'll get truncated...
-				        warnings[0] = 'W';
-          				warnings[1] = 'W';
-  					A4GL_copy_sqlca_sqlawarn_string8 (warnings);
-			}
+	      char *s;
+	      if (obind[b].dtype == DTYPE_CHAR)
+		{
+		  s = strdup (ptr);
+		  A4GL_trim (s);
+		  if (strlen (s) > obind[b].size)
+		    {
+		      // Too large -it'll get truncated...
+		      warnings[0] = 'W';
+		      warnings[1] = 'W';
+		      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+		    }
 		}
 	      A4GL_push_char (ptr);
 	      A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
 	    }
 	}
     }
-return 0;
+  return 0;
 }
 
 
@@ -1625,7 +1726,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   int nrows;
   int nfields;
   int setSavepoint = 0;
-char *sql;
+  char *sql;
   PGresult *res;
 
   n = vsid;
@@ -1635,14 +1736,16 @@ char *sql;
       return 1;
     }
 
-   if (!con) {
-	// no connection..
-	if(last_msg) free(last_msg);
-	last_msg=strdup("No connection");
-	last_msg_no=-349;
-  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
-	return 1;
-   }
+  if (!con)
+    {
+      // no connection..
+      if (last_msg)
+	free (last_msg);
+      last_msg = strdup ("No connection");
+      last_msg_no = -349;
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
+      return 1;
+    }
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
@@ -1654,19 +1757,21 @@ char *sql;
     {
       setSavepoint++;
       A4GL_debug ("Set savepoint");
-	if (CanUseSavepoints) {
-      		Execute ("SAVEPOINT preExecSelect", 1);
+      if (CanUseSavepoints)
+	{
+	  Execute ("SAVEPOINT preExecSelect", 1);
 	}
     }
 
-  sql=n->sql;
-  if (n->ni) {
-	sql=replace_ibind(sql, n->ni,n->ibind);
-  }
+  sql = n->sql;
+  if (n->ni)
+    {
+      sql = replace_ibind (sql, n->ni, n->ibind);
+    }
 
   res = PQexec (con, sql);
 
-  A4GL_debug("res=%p\n",res);
+  A4GL_debug ("res=%p\n", res);
   A4GL_set_a4gl_sqlca_errd (0, PQntuples (res));
   A4GL_set_a4gl_sqlca_errd (2, atoi (PQcmdTuples (res)));
   A4GL_set_a4gl_sqlca_errd (1, 0);
@@ -1681,7 +1786,7 @@ char *sql;
       break;
 
     default:
-      A4GL_debug("BAD\n");
+      A4GL_debug ("BAD\n");
       SetErrno (res);
       ok = 0;
     }
@@ -1721,9 +1826,10 @@ char *sql;
 
       if (setSavepoint)
 	{
-		if (CanUseSavepoints) {
-	  		Execute ("RELEASE SAVEPOINT preExecSelect", 1);
-		}
+	  if (CanUseSavepoints)
+	    {
+	      Execute ("RELEASE SAVEPOINT preExecSelect", 1);
+	    }
 	}
 
       return 0;
@@ -1731,9 +1837,10 @@ char *sql;
 
   if (setSavepoint)
     {
-		if (CanUseSavepoints) {
-      			Execute ("ROLLBACK TO SAVEPOINT preExecSelect", 1);
-		}
+      if (CanUseSavepoints)
+	{
+	  Execute ("ROLLBACK TO SAVEPOINT preExecSelect", 1);
+	}
     }
   return 1;
 }
@@ -1772,45 +1879,52 @@ int A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
  * @return Number of rows filled
  */
 int
-A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
+A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
+			   int szarr2)
 {
-int cnt=0;
-int a;
-int fake_db=0;
-int nrows;
-PGresult *res;
-char *sql = "SELECT d.datname , u.usename FROM pg_catalog.pg_database d LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid ORDER BY 1;";
-if (!con) {
-	A4GLSQLLIB_A4GLSQL_init_connection_internal("template1");
+  int cnt = 0;
+  int a;
+  int fake_db = 0;
+  int nrows;
+  PGresult *res;
+  char *sql =
+    "SELECT d.datname , u.usename FROM pg_catalog.pg_database d LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid ORDER BY 1;";
+  if (!con)
+    {
+      A4GLSQLLIB_A4GLSQL_init_connection_internal ("template1");
 
-	if (!con) {
-		return 0; // no connection
+      if (!con)
+	{
+	  return 0;		// no connection
 	}
-	fake_db++;
-}
+      fake_db++;
+    }
 
-  res = Execute (sql,0);
+  res = Execute (sql, 0);
   nrows = PQntuples (res);
   if (nrows > mx)
     nrows = mx;
 
-  for (a=0;a<nrows;a++) {
+  for (a = 0; a < nrows; a++)
+    {
       if (arr1 != 0)
-        {
-          strncpy (&arr1[cnt * (szarr1 + 1)], PQgetvalue (res, a, 0), szarr1);
-	  arr1[cnt * (szarr1 + 1)+szarr1]=0;
+	{
+	  strncpy (&arr1[cnt * (szarr1 + 1)], PQgetvalue (res, a, 0), szarr1);
+	  arr1[cnt * (szarr1 + 1) + szarr1] = 0;
 	  A4GL_convlower (&arr1[cnt * (szarr1 + 1)]);
 	  //A4GL_trim(&arr1[cnt * (szarr1 + 1)]);
-        }
+	}
       cnt++;
 
-      if (cnt >= nrows) break;
-  }
+      if (cnt >= nrows)
+	break;
+    }
 
-  if (fake_db) {
-	PQfinish(con);
-	con=0;
-  }
+  if (fake_db)
+    {
+      PQfinish (con);
+      con = 0;
+    }
 
   return cnt;
 
@@ -1840,51 +1954,84 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
   //char tr[256];
   int a;
   //int rc;
-  int cnt=0;
-int nrows;
-PGresult *res;
-  char *sql = " SELECT c.relname, n.nspname FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','v') AND n.nspname NOT IN ('pg_catalog', 'pg_toast')";
+  int cnt = 0;
+  int nrows;
+  PGresult *res;
+  char *sql =
+    " SELECT c.relname, n.nspname FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','v') AND n.nspname NOT IN ('pg_catalog', 'pg_toast')";
 
   if (con == 0)
     {
-      A4GL_exitwith ("Not connected to database");
+      A4GL_exitwith_sql ("Not connected to database");
       return 0;
     }
 
-  res = Execute (sql,0);
+  res = Execute (sql, 0);
   nrows = PQntuples (res);
   if (nrows > mx)
     nrows = mx;
 
-  for (a=0;a<nrows;a++) {
+  for (a = 0; a < nrows; a++)
+    {
       if (arr1 != 0)
-        {
-          strncpy (&arr1[a * (szarr1 + 1)], PQgetvalue (res, a, 0), szarr1);
-	  arr1[a * (szarr1 + 1)+szarr1]=0;
+	{
+	  strncpy (&arr1[a * (szarr1 + 1)], PQgetvalue (res, a, 0), szarr1);
+	  arr1[a * (szarr1 + 1) + szarr1] = 0;
 	  A4GL_convlower (&arr1[a * (szarr1 + 1)]);
-        }
+	}
       cnt++;
 
-      if (cnt >= nrows) break;
-  }
+      if (cnt >= nrows)
+	break;
+    }
 
   return nrows;
 }
 
 
-int conv_sqldtype (int pgtype, int pglen,int *a4gl_dtype, int *a4gl_len) {
-	switch (pgtype) {
-		case BPCHAROID : 	*a4gl_dtype=DTYPE_CHAR;  *a4gl_len=pglen; break;
-		case VARCHAROID : 	*a4gl_dtype=DTYPE_VCHAR;  *a4gl_len=pglen; break;
-		case INT4OID  : 	*a4gl_dtype=DTYPE_INT;  *a4gl_len=pglen; break;
-		case INT2OID   : 	*a4gl_dtype=DTYPE_SMINT;  *a4gl_len=pglen; break;
-		case FLOAT8OID : 	*a4gl_dtype=DTYPE_FLOAT;  *a4gl_len=pglen; break;
-		case FLOAT4OID : 	*a4gl_dtype=DTYPE_SMFLOAT;  *a4gl_len=pglen; break;
-		case TIMESTAMPOID  : 	*a4gl_dtype=DTYPE_DTIME;  *a4gl_len=pglen; break;
-		case  DATEOID : 	*a4gl_dtype=DTYPE_DATE;  *a4gl_len=pglen; break;
-		default : 		*a4gl_dtype=DTYPE_VCHAR;  *a4gl_len=pglen;break;
-	}
-	return 1;
+int
+conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
+{
+  switch (pgtype)
+    {
+    case BPCHAROID:
+      *a4gl_dtype = DTYPE_CHAR;
+      *a4gl_len = pglen;
+      break;
+    case VARCHAROID:
+      *a4gl_dtype = DTYPE_VCHAR;
+      *a4gl_len = pglen;
+      break;
+    case INT4OID:
+      *a4gl_dtype = DTYPE_INT;
+      *a4gl_len = pglen;
+      break;
+    case INT2OID:
+      *a4gl_dtype = DTYPE_SMINT;
+      *a4gl_len = pglen;
+      break;
+    case FLOAT8OID:
+      *a4gl_dtype = DTYPE_FLOAT;
+      *a4gl_len = pglen;
+      break;
+    case FLOAT4OID:
+      *a4gl_dtype = DTYPE_SMFLOAT;
+      *a4gl_len = pglen;
+      break;
+    case TIMESTAMPOID:
+      *a4gl_dtype = DTYPE_DTIME;
+      *a4gl_len = pglen;
+      break;
+    case DATEOID:
+      *a4gl_dtype = DTYPE_DATE;
+      *a4gl_len = pglen;
+      break;
+    default:
+      *a4gl_dtype = DTYPE_VCHAR;
+      *a4gl_len = pglen;
+      break;
+    }
+  return 1;
 }
 
 
@@ -1905,17 +2052,17 @@ int
 A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 			 int szarr2, int mode, char *info)
 {
-  int cnt=0;
+  int cnt = 0;
   char buff[2048];
   char tname[256];
   char *tabname;
   int nrows;
-int a;
-PGresult *res;
+  int a;
+  PGresult *res;
   curr_colno = 0;
 
 
-  tabname=info;
+  tabname = info;
   if (strchr (tabname, ':'))
     {
       strcpy (tname, strchr (tabname, ':') + 1);
@@ -1924,55 +2071,61 @@ PGresult *res;
 
   if (con == 0)
     {
-      A4GL_exitwith ("Not connected to database");
+      A4GL_exitwith_sql ("Not connected to database");
       return 0;
     }
-	A4GL_trim(tabname);
+  A4GL_trim (tabname);
 
-  SPRINTF1 (buff, "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum , a.atttypid, a.atttypmod FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum", tabname);
+  SPRINTF1 (buff,
+	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum , a.atttypid, a.atttypmod FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum",
+	    tabname);
 
-  res = Execute (buff,0);
+  res = Execute (buff, 0);
   nrows = PQntuples (res);
 
-  for (a=0;a<nrows;a++) {
-	int dtype;
-	int prc;
-	cnt=a;
-	fixtype(PQgetvalue (res, a, 1), &dtype, &prc);
+  for (a = 0; a < nrows; a++)
+    {
+      int dtype;
+      int prc;
+      cnt = a;
+      fixtype (PQgetvalue (res, a, 1), &dtype, &prc);
 
-	if (arr1 != 0)
-        {
-          strncpy (&arr1[cnt * (szarr1 + 1)], PQgetvalue (res, a, 0), szarr1);
-	  arr1[cnt * (szarr1 + 1)+szarr1]=0;
+      if (arr1 != 0)
+	{
+	  strncpy (&arr1[cnt * (szarr1 + 1)], PQgetvalue (res, a, 0), szarr1);
+	  arr1[cnt * (szarr1 + 1) + szarr1] = 0;
 	  A4GL_convlower (&arr1[cnt * (szarr1 + 1)]);
-        }
+	}
 
       if (arr2 != 0)
-        {
-          switch (mode)
-            {
-            case 0:
-              SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%d", atoi(PQgetvalue (res, a, 7)));
-              break;
+	{
+	  switch (mode)
+	    {
+	    case 0:
+	      SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%d",
+			atoi (PQgetvalue (res, a, 7)));
+	      break;
 
-            case 1:
-              SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%d", dtype);
-              break;
+	    case 1:
+	      SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%d", dtype);
+	      break;
 
-            case 2:
-                strncpy (&arr2[cnt * (szarr2 + 1)], PQgetvalue (res, a, 1), szarr2);
-	  	arr2[cnt * (szarr2 + 1)+szarr2]=0;
-              break;
+	    case 2:
+	      strncpy (&arr2[cnt * (szarr2 + 1)], PQgetvalue (res, a, 1),
+		       szarr2);
+	      arr2[cnt * (szarr2 + 1) + szarr2] = 0;
+	      break;
 
-            default:
-              strncpy (&arr2[cnt * (szarr2 + 1)], PQgetvalue (res, a, 0), szarr2);
-	  	arr2[cnt * (szarr2 + 1)+szarr2]=0;
-	  	A4GL_convlower (&arr2[cnt * (szarr2 + 1)]);
-              break;
-            }
-        }
+	    default:
+	      strncpy (&arr2[cnt * (szarr2 + 1)], PQgetvalue (res, a, 0),
+		       szarr2);
+	      arr2[cnt * (szarr2 + 1) + szarr2] = 0;
+	      A4GL_convlower (&arr2[cnt * (szarr2 + 1)]);
+	      break;
+	    }
+	}
 
-  }
+    }
 
   return nrows;
 }
@@ -2057,23 +2210,25 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   struct s_cid *cid;
   struct s_prepare *sid;
   char buff[20560];
-	char *ptr;
+  char *ptr;
   sid = vsid;
 
   if (sid == 0)
     {
-      A4GL_exitwith ("Can't declare cursor for non-prepared statement");
+      A4GL_exitwith_sql ("Can't declare cursor for non-prepared statement");
       return 0;
     }
 
-   if (!con) {
-	// no connection..
-	if(last_msg) free(last_msg);
-	last_msg=strdup("No connection");
-	last_msg_no=-349;
-  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
-	return 0;
-   }
+  if (!con)
+    {
+      // no connection..
+      if (last_msg)
+	free (last_msg);
+      last_msg = strdup ("No connection");
+      last_msg_no = -349;
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
+      return 0;
+    }
 
   cid = acl_malloc2 (sizeof (struct s_cid));
 
@@ -2091,10 +2246,10 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   if (cid->mode & 0x1000)
     {
       char buff[256];
- 	A4GL_debug("DEALLOCATE %s", cursname);
+      A4GL_debug ("DEALLOCATE %s", cursname);
       SPRINTF1 (buff, "DEALLOCATE %s", cursname);
       PQexec (con, buff);
-	cid->mode-=0x1000;
+      cid->mode -= 0x1000;
     }
 
   if (scroll)
@@ -2110,10 +2265,14 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	  ttype = PQtransactionStatus (con);
 	  if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS)
 	    {
-	  		SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR FOR %s", cursname, sid->sql);
-		} else {
-	  		SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR WITH HOLD FOR %s", cursname, sid->sql);
-		}
+	      SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR FOR %s", cursname,
+			sid->sql);
+	    }
+	  else
+	    {
+	      SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR WITH HOLD FOR %s",
+			cursname, sid->sql);
+	    }
 	}
     }
   else
@@ -2134,24 +2293,29 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	    }
 	  else
 	    {
-	      SPRINTF2 (buff, " DECLARE %s CURSOR WITH HOLD FOR %s", cursname, sid->sql);
+	      SPRINTF2 (buff, " DECLARE %s CURSOR WITH HOLD FOR %s", cursname,
+			sid->sql);
 	    }
 	}
     }
 
-  ptr=strdup(sid->sql);
-  A4GL_convlower(ptr);
+  ptr = strdup (sid->sql);
+  A4GL_convlower (ptr);
 
-  if (strstr(ptr,"insert into")) {
-	cid->DeclareSql=strdup(sid->sql);
-	cid->mode|=0x100;
-  } else {
-  	cid->DeclareSql = strdup (buff);
-	if ((cid->mode&0x100)) {
-		cid->mode=cid->mode-0x100;
+  if (strstr (ptr, "insert into"))
+    {
+      cid->DeclareSql = strdup (sid->sql);
+      cid->mode |= 0x100;
+    }
+  else
+    {
+      cid->DeclareSql = strdup (buff);
+      if ((cid->mode & 0x100))
+	{
+	  cid->mode = cid->mode - 0x100;
 	}
-  }
-  free(ptr);
+    }
+  free (ptr);
   //PQexec(con, buff);
   return cid;
 
@@ -2207,44 +2371,48 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   strcpy (warnings, "       ");
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 
-   if (!con) {
-	// no connection..
-	if(last_msg) free(last_msg);
-	last_msg=strdup("No connection");
-	last_msg_no=-349;
-  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
-	return 0;
-   }
+  if (!con)
+    {
+      // no connection..
+      if (last_msg)
+	free (last_msg);
+      last_msg = strdup ("No connection");
+      last_msg_no = -349;
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
+      return 0;
+    }
 
 
   if (cid == 0)
     {
-      A4GL_exitwith ("Can't open cursor that hasn't been defined");
+      A4GL_exitwith_sql ("Can't open cursor that hasn't been defined");
       return -1;
     }
 
-  if (cid->mode&0x100) {
-		// Its an insert cursor - we'll just do inserts later 
-		// so we can ignore this for now...
-		return 1;
-  }
+  if (cid->mode & 0x100)
+    {
+      // Its an insert cursor - we'll just do inserts later 
+      // so we can ignore this for now...
+      return 1;
+    }
 
   if (cid->mode & 0x7000)
     {
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", s);
       PQexec (con, buff);
-	cid->mode -=0x7000;
+      cid->mode -= 0x7000;
     }
 
 
-  if (cid->mode & 0x1000) {
+  if (cid->mode & 0x1000)
+    {
       char buff[256];
-	
-      	SPRINTF1 (buff, "DEALLOCATE %s", s);
-      	PQexec (con, buff);
-	cid->mode -=0x1000;
-  }
+
+      SPRINTF1 (buff, "DEALLOCATE %s", s);
+      PQexec (con, buff);
+      cid->mode -= 0x1000;
+    }
 
   n = (struct s_prepare *) cid->statement;
 
@@ -2261,8 +2429,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   //nnew->paramvals=malloc(sizeof(char *)*n->ni);
   //nnew->paramlen=malloc(sizeof(int)*n->ni);
   //nnew->paramform=malloc(sizeof(int)*n->ni);
-  
-  buff2=replace_ibind(cid->DeclareSql, ni, ibind);
+
+  buff2 = replace_ibind (cid->DeclareSql, ni, ibind);
   A4GL_debug ("cid->DeclareSql=%s buff2=%s\n", cid->DeclareSql, buff2);
   cid->hstmt = PQexec (con, buff2);
 
@@ -2275,7 +2443,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
 
     default:
       A4GL_debug ("Bad prepare %s", PQerrorMessage (con));
-	SetErrno(cid->hstmt);
+      SetErrno (cid->hstmt);
       //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
       return 0;
     }
@@ -2369,9 +2537,9 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
 
     default:
       A4GL_debug ("Bad %s", PQerrorMessage (con));
-		SetErrno(res);
+      SetErrno (res);
       //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
-      A4GL_exitwith ("Unexpected postgres return code1\n");
+      A4GL_exitwith_sql ("Unexpected postgres return code1\n");
       return 0;
     }
 
@@ -2396,7 +2564,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
       else
 	{
 	  struct s_prepare *p;
-	  p = (struct s_prepare *)cid->statement;
+	  p = (struct s_prepare *) cid->statement;
 	  copy_to_obind (res, p->no, p->obind, 0);
 	}
     }
@@ -2418,7 +2586,7 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 
   if (ptr == 0)
     {
-      A4GL_exitwith ("Can't close cursor that hasn't been defined");
+      A4GL_exitwith_sql ("Can't close cursor that hasn't been defined");
       return -1;
     }
 
@@ -2427,7 +2595,7 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", currname);
       PQexec (con, buff);
-	ptr->mode-=0x7000;
+      ptr->mode -= 0x7000;
       //A4GL_free_associated_mem (ptr->DeclareSql);
     }
 
@@ -2437,28 +2605,32 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 }
 
 
-char *pgescape_str(char *s) {
-int err;
-static int l=0;
-int sl;
-static char *buff=0;
-sl=strlen(s);
-if (l<sl || l==0 || buff==0) {
-	l=sl;
-	buff=realloc(buff, sl*2+1);
-}
+char *
+pgescape_str (char *s)
+{
+  int err;
+  static int l = 0;
+  int sl;
+  static char *buff = 0;
+  sl = strlen (s);
+  if (l < sl || l == 0 || buff == 0)
+    {
+      l = sl;
+      buff = realloc (buff, sl * 2 + 1);
+    }
 #ifdef USE_ESCAPE_STRING_CONN
-	// this is documented - but doesn't seem to exist!
-	PQescapeStringConn (con, buff, s, sl, &err);
+  // this is documented - but doesn't seem to exist!
+  PQescapeStringConn (con, buff, s, sl, &err);
 #else
-	err=0;
-	PQescapeString ( buff, s, sl);
+  err = 0;
+  PQescapeString (buff, s, sl);
 #endif
 
-if (err==0) return buff; // Everything is ok...
+  if (err == 0)
+    return buff;		// Everything is ok...
 
 // Some error...
-return s;
+  return s;
 }
 
 
@@ -2466,7 +2638,7 @@ char *
 replace_ibind (char *stmt, int ni, struct BINDING *ibind)
 {
   static char buff2[64000];
-char buff3[200];
+  char buff3[200];
   if (ni)
     {
       int a;
@@ -2493,7 +2665,8 @@ char buff3[200];
 	      a += c;
 	      buff2[buff2cnt] = 0;
 
-	      if (A4GL_isnull (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr))
+	      if (A4GL_isnull
+		  (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr))
 		{
 		  strcat (buff2, "NULL");
 		}
@@ -2505,41 +2678,44 @@ char buff3[200];
 		    case DTYPE_CHAR:
 		    case DTYPE_DTIME:
 		    case DTYPE_INTERVAL:
-		  		A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
-		  		str = A4GL_char_pop ();
-		      		strcat (buff2, "'");
-				A4GL_trim(str);
-		      		strcat (buff2, pgescape_str(str));
-		      		strcat (buff2, "'");
-				free(str);
+		      A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
+		      str = A4GL_char_pop ();
+		      strcat (buff2, "'");
+		      A4GL_trim (str);
+		      strcat (buff2, pgescape_str (str));
+		      strcat (buff2, "'");
+		      free (str);
 		      break;
 
 		    case DTYPE_VCHAR:
-		  		A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
-		  		str = A4GL_char_pop ();
-		      		strcat (buff2, "'");
-		      		strcat (buff2, pgescape_str(str));
-		      		strcat (buff2, "'");
-				free(str);
+		      A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
+		      str = A4GL_char_pop ();
+		      strcat (buff2, "'");
+		      strcat (buff2, pgescape_str (str));
+		      strcat (buff2, "'");
+		      free (str);
 		      break;
 
-		    case DTYPE_DECIMAL: 
-		  	A4GL_push_param (ibind[param].ptr, ibind[param].dtype+ENCODE_SIZE(ibind[param].size));
-		  	str = A4GL_char_pop ();
-			A4GL_lrtrim(str);
-		      	strcat (buff2,pgescape_str(str));
-			free(str);
-			break;
-			
-		    case DTYPE_SMFLOAT: 
-			sprintf(buff3,"%16.8f",*(float *)ibind[param].ptr);
-			strcat(buff2,buff3);
-			break;
+		    case DTYPE_DECIMAL:
+		      A4GL_push_param (ibind[param].ptr,
+				       ibind[param].dtype +
+				       ENCODE_SIZE (ibind[param].size));
+		      str = A4GL_char_pop ();
+		      A4GL_lrtrim (str);
+		      strcat (buff2, pgescape_str (str));
+		      free (str);
+		      break;
 
-		    case DTYPE_FLOAT: 
-			sprintf(buff3,"%16.8lf",*(double *)ibind[param].ptr);
-			strcat(buff2,buff3);
-			break;
+		    case DTYPE_SMFLOAT:
+		      sprintf (buff3, "%16.8f", *(float *) ibind[param].ptr);
+		      strcat (buff2, buff3);
+		      break;
+
+		    case DTYPE_FLOAT:
+		      sprintf (buff3, "%16.8lf",
+			       *(double *) ibind[param].ptr);
+		      strcat (buff2, buff3);
+		      break;
 
 		    case DTYPE_DATE:
 		      strcat (buff2, "'");
@@ -2550,11 +2726,13 @@ char buff3[200];
 		      break;
 
 		    default:
-		  		A4GL_push_param (ibind[param].ptr, ibind[param].dtype+ENCODE_SIZE(ibind[param].size));
-		  		str = A4GL_char_pop ();
-			A4GL_trim(str);
-		      strcat (buff2, pgescape_str(str));
-			free(str);
+		      A4GL_push_param (ibind[param].ptr,
+				       ibind[param].dtype +
+				       ENCODE_SIZE (ibind[param].size));
+		      str = A4GL_char_pop ();
+		      A4GL_trim (str);
+		      strcat (buff2, pgescape_str (str));
+		      free (str);
 		      break;
 
 		    }
@@ -2586,60 +2764,73 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 //PGresult *res;
   if (mode == -1)
     {
-      Execute("BEGIN WORK",1);
+      Execute ("BEGIN WORK", 1);
     }
   if (mode == 0)
     {
-     Execute( "ROLLBACK WORK",1);
+      Execute ("ROLLBACK WORK", 1);
     }
   if (mode == 1)
     {
-      Execute ( "COMMIT WORK",1);
+      Execute ("COMMIT WORK", 1);
     }
 }
 
 
-PGresult *Execute(char *s,int freeit) {
-	PGresult *res;
-	A4GL_debug("EXECUTE %s",s);
-	res=PQexec(con, s);
-	chk_res(res);
+PGresult *
+Execute (char *s, int freeit)
+{
+  PGresult *res;
+  A4GL_debug ("EXECUTE %s", s);
+  res = PQexec (con, s);
+  chk_res (res);
 
-	if (freeit) {
-		PQclear(res);
-		return 0;
-	} else {
-		return res;
-	}
+  if (freeit)
+    {
+      PQclear (res);
+      return 0;
+    }
+  else
+    {
+      return res;
+    }
 }
 
 
-static int chk_res(PGresult *res) {
+static int
+chk_res (PGresult * res)
+{
   switch (PQresultStatus (res))
     {
     case PGRES_COMMAND_OK:
     case PGRES_TUPLES_OK:
-      	A4GL_debug ("Good");
-	return 1;
+      A4GL_debug ("Good");
+      return 1;
       break;
 
     default:
       A4GL_debug ("Bad %s", PQerrorMessage (con));
-		if (res) {
-			SetErrno(res);
-		} else {
-      			A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
-		}
+      if (res)
+	{
+	  SetErrno (res);
+	}
+      else
+	{
+	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
+	}
       return 0;
     }
 }
 
-int inTransaction() {
-	  int ttype;
-	  ttype = PQtransactionStatus (con);
-	  if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS) return 1;
+int
+inTransaction ()
+{
+  int ttype;
+  ttype = PQtransactionStatus (con);
+  if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS)
+    return 1;
 
-	return 0;
+  return 0;
 }
 
 void
@@ -2656,19 +2847,19 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
   if (ptr == 0)
     {
 
-        ptr = A4GL_find_pointer_val (currname, PRECODE);
+      ptr = A4GL_find_pointer_val (currname, PRECODE);
 
-        if (ptr == 0)
-        {
-        A4GL_exitwith ("Can't free cursor that hasn't been defined");
-        }
+      if (ptr == 0)
+	{
+	  A4GL_exitwith_sql ("Can't free cursor that hasn't been defined");
+	}
 
       return;
     }
 
   if (ptr->hstmt)
     {
-	//
+      //
     }
 
 
@@ -2677,297 +2868,492 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
 }
 
 
-static void SetErrno(PGresult *res) {
-char *thisstate;
-int a;
-char *s;
-struct known_states {
-	char *code;
-	char *meaning;
-	int compat_err;
-} states[]= {
-	{"00000","SUCCESSFUL COMPLETION",0},
-	{"01000","WARNING",0},
-	{"0100C","WARNING DYNAMIC RESULT SETS RETURNED",0},
-	{"01008","WARNING IMPLICIT ZERO BIT PADDING",0},
-	{"01003","WARNING NULL VALUE ELIMINATED IN SET FUNCTION",0},
-	{"01004","WARNING STRING DATA RIGHT TRUNCATION",0},
-	{"02000","NO DATA",-1},
-	{"02001","NO ADDITIONAL DYNAMIC RESULT SETS RETURNED",-1},
-	{"03000","SQL STATEMENT NOT YET COMPLETE",-1},
-	{"08000","CONNECTION EXCEPTION",-1},
-	{"08003","CONNECTION DOES NOT EXIST",-1},
-	{"08006","CONNECTION FAILURE",-1},
-	{"08001","SQLCLIENT UNABLE TO ESTABLISH SQLCONNECTION",-1},
-	{"08004","SQLSERVER REJECTED ESTABLISHMENT OF SQLCONNECTION",-1},
-	{"08007","TRANSACTION RESOLUTION UNKNOWN",-1},
-	{"08P01","PROTOCOL VIOLATION",-1},
-	{"09000","TRIGGERED ACTION EXCEPTION",-1},
-	{"0A000","FEATURE NOT SUPPORTED",-1},
-	{"0B000","INVALID TRANSACTION INITIATION",-1},
-	{"0F000","LOCATOR EXCEPTION",-1},
-	{"0F001","INVALID SPECIFICATION",-1},
-	{"0L000","INVALID GRANTOR",-1},
-	{"0LP01","INVALID GRANT OPERATION",-1},
-	{"0P000","INVALID ROLE SPECIFICATION",-1},
-	{"21000","CARDINALITY VIOLATION",-284},
-	{"22000","DATA EXCEPTION",-1},
-	{"2202E","ARRAY ELEMENT ERROR",-1},
-	{"22021","CHARACTER NOT IN REPERTOIRE",-1},
-	{"22008","DATETIME FIELD OVERFLOW",-1},
-	{"22012","DIVISION BY ZERO",-1},
-	{"22005","ERROR IN ASSIGNMENT",-1},
-	{"2200B","ESCAPE CHARACTER CONFLICT",-1},
-	{"22022","INDICATOR OVERFLOW",-1},
-	{"22015","INTERVAL FIELD OVERFLOW",-1},
-	{"22018","INVALID CHARACTER VALUE FOR CAST",-1},
-	{"22007","INVALID DATETIME FORMAT",-1},
-	{"22019","INVALID ESCAPE CHARACTER",-1},
-	{"2200D","INVALID ESCAPE OCTET",-1},
-	{"22025","INVALID ESCAPE SEQUENCE",-1},
-	{"22010","INVALID INDICATOR PARAMETER VALUE",-1},
-	{"22020","INVALID LIMIT VALUE",-1},
-	{"22023","INVALID PARAMETER VALUE",-1},
-	{"2201B","INVALID REGULAR EXPRESSION",-1},
-	{"22009","INVALID TIME ZONE DISPLACEMENT VALUE",-1},
-	{"2200C","INVALID USE OF ESCAPE CHARACTER",-1},
-	{"2200G","MOST SPECIFIC TYPE MISMATCH",-1},
-	{"22004","NULL VALUE NOT ALLOWED",-1},
-	{"22002","NULL VALUE NO INDICATOR PARAMETER",-1},
-	{"22003","NUMERIC VALUE OUT OF RANGE",-1},
-	{"22026","STRING DATA LENGTH MISMATCH",-1},
-	{"22001","STRING DATA RIGHT TRUNCATION",-1},
-	{"22011","SUBSTRING ERROR",-1},
-	{"22027","TRIM ERROR",-1},
-	{"22024","UNTERMINATED C STRING",-1},
-	{"2200F","ZERO LENGTH CHARACTER STRING",-1},
-	{"22P01","FLOATING POINT EXCEPTION",-1},
-	{"22P02","INVALID TEXT REPRESENTATION",-1},
-	{"22P03","INVALID BINARY REPRESENTATION",-1},
-	{"22P04","BAD COPY FILE FORMAT",-1},
-	{"22P05","UNTRANSLATABLE CHARACTER",-1},
-	{"23000","INTEGRITY CONSTRAINT VIOLATION",-1},
-	{"23001","RESTRICT VIOLATION",-1},
-	{"23502","NOT NULL VIOLATION",-1},
-	{"23503","FOREIGN KEY VIOLATION",-1},
-	{"23505","UNIQUE VIOLATION",-239},
-	{"23514","CHECK VIOLATION",-1},
-	{"24000","INVALID CURSOR STATE",-1},
-	{"25000","INVALID TRANSACTION STATE",-1},
-	{"25001","ACTIVE SQL TRANSACTION",-1},
-	{"25002","BRANCH TRANSACTION ALREADY ACTIVE",-1},
-	{"25008","HELD CURSOR REQUIRES SAME ISOLATION LEVEL",-1},
-	{"25003","INAPPROPRIATE ACCESS MODE FOR BRANCH TRANSACTION",-1},
-	{"25004","INAPPROPRIATE ISOLATION LEVEL FOR BRANCH TRANSACTION",-1},
-	{"25005","NO ACTIVE SQL TRANSACTION FOR BRANCH TRANSACTION",-1},
-	{"25006","READ ONLY SQL TRANSACTION",-1},
-	{"25007","SCHEMA AND DATA STATEMENT MIXING NOT SUPPORTED",-1},
-	{"25P01","NO ACTIVE SQL TRANSACTION",-1},
-	{"25P02","IN FAILED SQL TRANSACTION",-1},
-	{"26000","INVALID SQL STATEMENT NAME",-1},
-	{"27000","TRIGGERED DATA CHANGE VIOLATION",-1},
-	{"28000","INVALID AUTHORIZATION SPECIFICATION",-1},
-	{"2B000","DEPENDENT PRIVILEGE DESCRIPTORS STILL EXIST",-1},
-	{"2BP01","DEPENDENT OBJECTS STILL EXIST",-1},
-	{"2D000","INVALID TRANSACTION TERMINATION",-1},
-	{"2F000","SQL ROUTINE EXCEPTION",-1},
-	{"2F005","FUNCTION EXECUTED NO RETURN STATEMENT",-1},
-	{"2F002","MODIFYING SQL DATA NOT PERMITTED",-1},
-	{"2F003","PROHIBITED SQL STATEMENT ATTEMPTED",-1},
-	{"2F004","READING SQL DATA NOT PERMITTED",-1},
-	{"34000","INVALID CURSOR NAME",-1},
-	{"38000","EXTERNAL ROUTINE EXCEPTION",-1},
-	{"38001","CONTAINING SQL NOT PERMITTED",-1},
-	{"38002","MODIFYING SQL DATA NOT PERMITTED",-1},
-	{"38003","PROHIBITED SQL STATEMENT ATTEMPTED",-1},
-	{"38004","READING SQL DATA NOT PERMITTED",-1},
-	{"39000","EXTERNAL ROUTINE INVOCATION EXCEPTION",-1},
-	{"39001","INVALID SQLSTATE RETURNED",-1},
-	{"39004","NULL VALUE NOT ALLOWED",-1},
-	{"39P01","TRIGGER PROTOCOL VIOLATED",-1},
-	{"39P02","SRF PROTOCOL VIOLATED",-1},
-	{"3D000","INVALID CATALOG NAME",-1},
-	{"3F000","INVALID SCHEMA NAME",-1},
-	{"40000","TRANSACTION ROLLBACK",-1},
-	{"40002","INTEGRITY CONSTRAINT VIOLATION",-1},
-	{"40001","SERIALIZATION FAILURE",-1},
-	{"40003","STATEMENT COMPLETION UNKNOWN",-1},
-	{"40P01","DEADLOCK DETECTED",-1},
-	{"42000","SYNTAX ERROR OR ACCESS RULE VIOLATION",-201},
-	{"42601","SYNTAX ERROR",-201},
-	{"42501","INSUFFICIENT PRIVILEGE",-1},
-	{"42846","CANNOT COERCE",-1},
-	{"42803","GROUPING ERROR",-1},
-	{"42830","INVALID FOREIGN KEY",-1},
-	{"42602","INVALID NAME",-1},
-	{"42622","NAME TOO LONG",-1},
-	{"42939","RESERVED NAME",-1},
-	{"42804","DATATYPE MISMATCH",-1},
-	{"42P18","INDETERMINATE DATATYPE",-1},
-	{"42809","WRONG OBJECT TYPE",-1},
-	{"42703","UNDEFINED COLUMN",-1},
-	{"42883","UNDEFINED FUNCTION",-1},
-	{"42P01","UNDEFINED TABLE",-1},
-	{"42P02","UNDEFINED PARAMETER",-1},
-	{"42704","UNDEFINED OBJECT",-1},
-	{"42701","DUPLICATE COLUMN",-1},
-	{"42P03","DUPLICATE CURSOR",-1},
-	{"42P04","DUPLICATE DATABASE",-1},
-	{"42723","DUPLICATE FUNCTION",-1},
-	{"42P05","DUPLICATE PSTATEMENT",-1},
-	{"42P06","DUPLICATE SCHEMA",-1},
-	{"42P07","DUPLICATE TABLE",-1},
-	{"42712","DUPLICATE ALIAS",-1},
-	{"42710","DUPLICATE OBJECT",-1},
-	{"42702","AMBIGUOUS COLUMN",-1},
-	{"42725","AMBIGUOUS FUNCTION",-1},
-	{"42P08","AMBIGUOUS PARAMETER",-1},
-	{"42P09","AMBIGUOUS ALIAS",-1},
-	{"42P10","INVALID COLUMN REFERENCE",-1},
-	{"42611","INVALID COLUMN DEFINITION",-1},
-	{"42P11","INVALID CURSOR DEFINITION",-1},
-	{"42P12","INVALID DATABASE DEFINITION",-1},
-	{"42P13","INVALID FUNCTION DEFINITION",-1},
-	{"42P14","INVALID PSTATEMENT DEFINITION",-1},
-	{"42P15","INVALID SCHEMA DEFINITION",-1},
-	{"42P16","INVALID TABLE DEFINITION",-1},
-	{"42P17","INVALID OBJECT DEFINITION",-1},
-	{"44000","WITH CHECK OPTION VIOLATION",-1},
-	{"53000","INSUFFICIENT RESOURCES",-1},
-	{"53100","DISK FULL",-1},
-	{"53200","OUT OF MEMORY",-1},
-	{"53300","TOO MANY CONNECTIONS",-1},
-	{"54000","PROGRAM LIMIT EXCEEDED",-1},
-	{"54001","STATEMENT TOO COMPLEX",-1},
-	{"54011","TOO MANY COLUMNS",-1},
-	{"54023","TOO MANY ARGUMENTS",-1},
-	{"55000","OBJECT NOT IN PREREQUISITE STATE",-1},
-	{"55006","OBJECT IN USE",-1},
-	{"55P02","CANT CHANGE RUNTIME PARAM",-1},
-	{"57000","OPERATOR INTERVENTION",-1},
-	{"57014","QUERY CANCELED",-1},
-	{"57P01","ADMIN SHUTDOWN",-1},
-	{"57P02","CRASH SHUTDOWN",-1},
-	{"57P03","CANNOT CONNECT NOW",-1},
-	{"58030","IO ERROR",-1},
-	{"58P01","UNDEFINED FILE",-1},
-	{"58P02","DUPLICATE FILE",-1},
-	{"F0000","CONFIG FILE ERROR",-1},
-	{"F0001","LOCK FILE EXISTS",-1},
-	{"XX000","INTERNAL ERROR",-1},
-	{"XX001","DATA CORRUPTED",-1},
-	{"XX002","INDEX CORRUPTED",-1},
-	{0,0,0}
-};
+static void
+SetErrno (PGresult * res)
+{
+  char *thisstate;
+  int a;
+  char *s;
+  struct known_states
+  {
+    char *code;
+    char *meaning;
+    int compat_err;
+  } states[] =
+  {
+    {
+    "00000", "SUCCESSFUL COMPLETION", 0},
+    {
+    "01000", "WARNING", 0},
+    {
+    "0100C", "WARNING DYNAMIC RESULT SETS RETURNED", 0},
+    {
+    "01008", "WARNING IMPLICIT ZERO BIT PADDING", 0},
+    {
+    "01003", "WARNING NULL VALUE ELIMINATED IN SET FUNCTION", 0},
+    {
+    "01004", "WARNING STRING DATA RIGHT TRUNCATION", 0},
+    {
+    "02000", "NO DATA", -1},
+    {
+    "02001", "NO ADDITIONAL DYNAMIC RESULT SETS RETURNED", -1},
+    {
+    "03000", "SQL STATEMENT NOT YET COMPLETE", -1},
+    {
+    "08000", "CONNECTION EXCEPTION", -1},
+    {
+    "08003", "CONNECTION DOES NOT EXIST", -1},
+    {
+    "08006", "CONNECTION FAILURE", -1},
+    {
+    "08001", "SQLCLIENT UNABLE TO ESTABLISH SQLCONNECTION", -1},
+    {
+    "08004", "SQLSERVER REJECTED ESTABLISHMENT OF SQLCONNECTION", -1},
+    {
+    "08007", "TRANSACTION RESOLUTION UNKNOWN", -1},
+    {
+    "08P01", "PROTOCOL VIOLATION", -1},
+    {
+    "09000", "TRIGGERED ACTION EXCEPTION", -1},
+    {
+    "0A000", "FEATURE NOT SUPPORTED", -1},
+    {
+    "0B000", "INVALID TRANSACTION INITIATION", -1},
+    {
+    "0F000", "LOCATOR EXCEPTION", -1},
+    {
+    "0F001", "INVALID SPECIFICATION", -1},
+    {
+    "0L000", "INVALID GRANTOR", -1},
+    {
+    "0LP01", "INVALID GRANT OPERATION", -1},
+    {
+    "0P000", "INVALID ROLE SPECIFICATION", -1},
+    {
+    "21000", "CARDINALITY VIOLATION", -284},
+    {
+    "22000", "DATA EXCEPTION", -1},
+    {
+    "2202E", "ARRAY ELEMENT ERROR", -1},
+    {
+    "22021", "CHARACTER NOT IN REPERTOIRE", -1},
+    {
+    "22008", "DATETIME FIELD OVERFLOW", -1},
+    {
+    "22012", "DIVISION BY ZERO", -1},
+    {
+    "22005", "ERROR IN ASSIGNMENT", -1},
+    {
+    "2200B", "ESCAPE CHARACTER CONFLICT", -1},
+    {
+    "22022", "INDICATOR OVERFLOW", -1},
+    {
+    "22015", "INTERVAL FIELD OVERFLOW", -1},
+    {
+    "22018", "INVALID CHARACTER VALUE FOR CAST", -1},
+    {
+    "22007", "INVALID DATETIME FORMAT", -1},
+    {
+    "22019", "INVALID ESCAPE CHARACTER", -1},
+    {
+    "2200D", "INVALID ESCAPE OCTET", -1},
+    {
+    "22025", "INVALID ESCAPE SEQUENCE", -1},
+    {
+    "22010", "INVALID INDICATOR PARAMETER VALUE", -1},
+    {
+    "22020", "INVALID LIMIT VALUE", -1},
+    {
+    "22023", "INVALID PARAMETER VALUE", -1},
+    {
+    "2201B", "INVALID REGULAR EXPRESSION", -1},
+    {
+    "22009", "INVALID TIME ZONE DISPLACEMENT VALUE", -1},
+    {
+    "2200C", "INVALID USE OF ESCAPE CHARACTER", -1},
+    {
+    "2200G", "MOST SPECIFIC TYPE MISMATCH", -1},
+    {
+    "22004", "NULL VALUE NOT ALLOWED", -1},
+    {
+    "22002", "NULL VALUE NO INDICATOR PARAMETER", -1},
+    {
+    "22003", "NUMERIC VALUE OUT OF RANGE", -1},
+    {
+    "22026", "STRING DATA LENGTH MISMATCH", -1},
+    {
+    "22001", "STRING DATA RIGHT TRUNCATION", -1},
+    {
+    "22011", "SUBSTRING ERROR", -1},
+    {
+    "22027", "TRIM ERROR", -1},
+    {
+    "22024", "UNTERMINATED C STRING", -1},
+    {
+    "2200F", "ZERO LENGTH CHARACTER STRING", -1},
+    {
+    "22P01", "FLOATING POINT EXCEPTION", -1},
+    {
+    "22P02", "INVALID TEXT REPRESENTATION", -1},
+    {
+    "22P03", "INVALID BINARY REPRESENTATION", -1},
+    {
+    "22P04", "BAD COPY FILE FORMAT", -1},
+    {
+    "22P05", "UNTRANSLATABLE CHARACTER", -1},
+    {
+    "23000", "INTEGRITY CONSTRAINT VIOLATION", -1},
+    {
+    "23001", "RESTRICT VIOLATION", -1},
+    {
+    "23502", "NOT NULL VIOLATION", -1},
+    {
+    "23503", "FOREIGN KEY VIOLATION", -1},
+    {
+    "23505", "UNIQUE VIOLATION", -239},
+    {
+    "23514", "CHECK VIOLATION", -1},
+    {
+    "24000", "INVALID CURSOR STATE", -1},
+    {
+    "25000", "INVALID TRANSACTION STATE", -1},
+    {
+    "25001", "ACTIVE SQL TRANSACTION", -1},
+    {
+    "25002", "BRANCH TRANSACTION ALREADY ACTIVE", -1},
+    {
+    "25008", "HELD CURSOR REQUIRES SAME ISOLATION LEVEL", -1},
+    {
+    "25003", "INAPPROPRIATE ACCESS MODE FOR BRANCH TRANSACTION", -1},
+    {
+    "25004", "INAPPROPRIATE ISOLATION LEVEL FOR BRANCH TRANSACTION", -1},
+    {
+    "25005", "NO ACTIVE SQL TRANSACTION FOR BRANCH TRANSACTION", -1},
+    {
+    "25006", "READ ONLY SQL TRANSACTION", -1},
+    {
+    "25007", "SCHEMA AND DATA STATEMENT MIXING NOT SUPPORTED", -1},
+    {
+    "25P01", "NO ACTIVE SQL TRANSACTION", -1},
+    {
+    "25P02", "IN FAILED SQL TRANSACTION", -1},
+    {
+    "26000", "INVALID SQL STATEMENT NAME", -1},
+    {
+    "27000", "TRIGGERED DATA CHANGE VIOLATION", -1},
+    {
+    "28000", "INVALID AUTHORIZATION SPECIFICATION", -1},
+    {
+    "2B000", "DEPENDENT PRIVILEGE DESCRIPTORS STILL EXIST", -1},
+    {
+    "2BP01", "DEPENDENT OBJECTS STILL EXIST", -1},
+    {
+    "2D000", "INVALID TRANSACTION TERMINATION", -1},
+    {
+    "2F000", "SQL ROUTINE EXCEPTION", -1},
+    {
+    "2F005", "FUNCTION EXECUTED NO RETURN STATEMENT", -1},
+    {
+    "2F002", "MODIFYING SQL DATA NOT PERMITTED", -1},
+    {
+    "2F003", "PROHIBITED SQL STATEMENT ATTEMPTED", -1},
+    {
+    "2F004", "READING SQL DATA NOT PERMITTED", -1},
+    {
+    "34000", "INVALID CURSOR NAME", -1},
+    {
+    "38000", "EXTERNAL ROUTINE EXCEPTION", -1},
+    {
+    "38001", "CONTAINING SQL NOT PERMITTED", -1},
+    {
+    "38002", "MODIFYING SQL DATA NOT PERMITTED", -1},
+    {
+    "38003", "PROHIBITED SQL STATEMENT ATTEMPTED", -1},
+    {
+    "38004", "READING SQL DATA NOT PERMITTED", -1},
+    {
+    "39000", "EXTERNAL ROUTINE INVOCATION EXCEPTION", -1},
+    {
+    "39001", "INVALID SQLSTATE RETURNED", -1},
+    {
+    "39004", "NULL VALUE NOT ALLOWED", -1},
+    {
+    "39P01", "TRIGGER PROTOCOL VIOLATED", -1},
+    {
+    "39P02", "SRF PROTOCOL VIOLATED", -1},
+    {
+    "3D000", "INVALID CATALOG NAME", -1},
+    {
+    "3F000", "INVALID SCHEMA NAME", -1},
+    {
+    "40000", "TRANSACTION ROLLBACK", -1},
+    {
+    "40002", "INTEGRITY CONSTRAINT VIOLATION", -1},
+    {
+    "40001", "SERIALIZATION FAILURE", -1},
+    {
+    "40003", "STATEMENT COMPLETION UNKNOWN", -1},
+    {
+    "40P01", "DEADLOCK DETECTED", -1},
+    {
+    "42000", "SYNTAX ERROR OR ACCESS RULE VIOLATION", -201},
+    {
+    "42601", "SYNTAX ERROR", -201},
+    {
+    "42501", "INSUFFICIENT PRIVILEGE", -1},
+    {
+    "42846", "CANNOT COERCE", -1},
+    {
+    "42803", "GROUPING ERROR", -1},
+    {
+    "42830", "INVALID FOREIGN KEY", -1},
+    {
+    "42602", "INVALID NAME", -1},
+    {
+    "42622", "NAME TOO LONG", -1},
+    {
+    "42939", "RESERVED NAME", -1},
+    {
+    "42804", "DATATYPE MISMATCH", -1},
+    {
+    "42P18", "INDETERMINATE DATATYPE", -1},
+    {
+    "42809", "WRONG OBJECT TYPE", -1},
+    {
+    "42703", "UNDEFINED COLUMN", -1},
+    {
+    "42883", "UNDEFINED FUNCTION", -1},
+    {
+    "42P01", "UNDEFINED TABLE", -1},
+    {
+    "42P02", "UNDEFINED PARAMETER", -1},
+    {
+    "42704", "UNDEFINED OBJECT", -1},
+    {
+    "42701", "DUPLICATE COLUMN", -1},
+    {
+    "42P03", "DUPLICATE CURSOR", -1},
+    {
+    "42P04", "DUPLICATE DATABASE", -1},
+    {
+    "42723", "DUPLICATE FUNCTION", -1},
+    {
+    "42P05", "DUPLICATE PSTATEMENT", -1},
+    {
+    "42P06", "DUPLICATE SCHEMA", -1},
+    {
+    "42P07", "DUPLICATE TABLE", -1},
+    {
+    "42712", "DUPLICATE ALIAS", -1},
+    {
+    "42710", "DUPLICATE OBJECT", -1},
+    {
+    "42702", "AMBIGUOUS COLUMN", -1},
+    {
+    "42725", "AMBIGUOUS FUNCTION", -1},
+    {
+    "42P08", "AMBIGUOUS PARAMETER", -1},
+    {
+    "42P09", "AMBIGUOUS ALIAS", -1},
+    {
+    "42P10", "INVALID COLUMN REFERENCE", -1},
+    {
+    "42611", "INVALID COLUMN DEFINITION", -1},
+    {
+    "42P11", "INVALID CURSOR DEFINITION", -1},
+    {
+    "42P12", "INVALID DATABASE DEFINITION", -1},
+    {
+    "42P13", "INVALID FUNCTION DEFINITION", -1},
+    {
+    "42P14", "INVALID PSTATEMENT DEFINITION", -1},
+    {
+    "42P15", "INVALID SCHEMA DEFINITION", -1},
+    {
+    "42P16", "INVALID TABLE DEFINITION", -1},
+    {
+    "42P17", "INVALID OBJECT DEFINITION", -1},
+    {
+    "44000", "WITH CHECK OPTION VIOLATION", -1},
+    {
+    "53000", "INSUFFICIENT RESOURCES", -1},
+    {
+    "53100", "DISK FULL", -1},
+    {
+    "53200", "OUT OF MEMORY", -1},
+    {
+    "53300", "TOO MANY CONNECTIONS", -1},
+    {
+    "54000", "PROGRAM LIMIT EXCEEDED", -1},
+    {
+    "54001", "STATEMENT TOO COMPLEX", -1},
+    {
+    "54011", "TOO MANY COLUMNS", -1},
+    {
+    "54023", "TOO MANY ARGUMENTS", -1},
+    {
+    "55000", "OBJECT NOT IN PREREQUISITE STATE", -1},
+    {
+    "55006", "OBJECT IN USE", -1},
+    {
+    "55P02", "CANT CHANGE RUNTIME PARAM", -1},
+    {
+    "57000", "OPERATOR INTERVENTION", -1},
+    {
+    "57014", "QUERY CANCELED", -1},
+    {
+    "57P01", "ADMIN SHUTDOWN", -1},
+    {
+    "57P02", "CRASH SHUTDOWN", -1},
+    {
+    "57P03", "CANNOT CONNECT NOW", -1},
+    {
+    "58030", "IO ERROR", -1},
+    {
+    "58P01", "UNDEFINED FILE", -1},
+    {
+    "58P02", "DUPLICATE FILE", -1},
+    {
+    "F0000", "CONFIG FILE ERROR", -1},
+    {
+    "F0001", "LOCK FILE EXISTS", -1},
+    {
+    "XX000", "INTERNAL ERROR", -1},
+    {
+    "XX001", "DATA CORRUPTED", -1},
+    {
+    "XX002", "INDEX CORRUPTED", -1},
+    {
+    0, 0, 0}
+  };
 
-A4GL_debug("In SetErrno - res=%p",res);
+  A4GL_debug ("In SetErrno - res=%p", res);
 
-if (res==0) {
-	if (last_msg) free(last_msg);
-	last_msg=strdup("");
-	last_msg_no=0;
-	return;
-}
+  if (res == 0)
+    {
+      if (last_msg)
+	free (last_msg);
+      last_msg = strdup ("");
+      last_msg_no = 0;
+      return;
+    }
 
-thisstate=PQresultErrorField(res,PG_DIAG_SQLSTATE);
-A4GL_debug("This state=%s\n",thisstate);
+  thisstate = PQresultErrorField (res, PG_DIAG_SQLSTATE);
+  A4GL_debug ("This state=%s\n", thisstate);
 
-if (thisstate==0)  {
-	if (last_msg) free(last_msg);
-	last_msg=strdup("");
-	last_msg_no=0;
-	return;
-}
-
-
-A4GL_debug("Postgres says : %s %s", thisstate, PQresultErrorField(res, PG_DIAG_MESSAGE_PRIMARY));
-A4GL_debug("And Postgres says : %s", PQresultErrorField(res, PG_DIAG_MESSAGE_DETAIL));
-A4GL_debug("And Postgres also says : %s", PQresultErrorField(res, PG_DIAG_MESSAGE_HINT));
-
-if (A4GL_strstartswith(thisstate,"01")) {
-          warnings[0] = 'W';
-          A4GL_copy_sqlca_sqlawarn_string8 (warnings);
-}
+  if (thisstate == 0)
+    {
+      if (last_msg)
+	free (last_msg);
+      last_msg = strdup ("");
+      last_msg_no = 0;
+      return;
+    }
 
 
-if (last_msg) free(last_msg);
-s=PQresultErrorField(res, PG_DIAG_MESSAGE_PRIMARY);
+  A4GL_debug ("Postgres says : %s %s", thisstate,
+	      PQresultErrorField (res, PG_DIAG_MESSAGE_PRIMARY));
+  A4GL_debug ("And Postgres says : %s",
+	      PQresultErrorField (res, PG_DIAG_MESSAGE_DETAIL));
+  A4GL_debug ("And Postgres also says : %s",
+	      PQresultErrorField (res, PG_DIAG_MESSAGE_HINT));
 
-A4GL_set_a4gl_sqlca_errd (4, 0);
-if (res) {
-	char *r;
-	r=PQresultErrorField(res,PG_DIAG_STATEMENT_POSITION);
-	if (r) {
-		A4GL_set_a4gl_sqlca_errd (4, atoi(r));
+  if (A4GL_strstartswith (thisstate, "01"))
+    {
+      warnings[0] = 'W';
+      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+    }
+
+
+  if (last_msg)
+    free (last_msg);
+  s = PQresultErrorField (res, PG_DIAG_MESSAGE_PRIMARY);
+
+  A4GL_set_a4gl_sqlca_errd (4, 0);
+  if (res)
+    {
+      char *r;
+      r = PQresultErrorField (res, PG_DIAG_STATEMENT_POSITION);
+      if (r)
+	{
+	  A4GL_set_a4gl_sqlca_errd (4, atoi (r));
 	}
-}
+    }
 
-if (s) {
-	last_msg=strdup(PQresultErrorField(res, PG_DIAG_MESSAGE_PRIMARY));
-} else {
-	last_msg=strdup("");
-}
+  if (s)
+    {
+      last_msg = strdup (PQresultErrorField (res, PG_DIAG_MESSAGE_PRIMARY));
+    }
+  else
+    {
+      last_msg = strdup ("");
+    }
 
 
-for (a=0;states[a].code;a++) {
-	if (strcmp(thisstate,states[a].code)==0) {
-      		A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (states[a].compat_err);
-		last_msg_no=states[a].compat_err;
-		break;
+  for (a = 0; states[a].code; a++)
+    {
+      if (strcmp (thisstate, states[a].code) == 0)
+	{
+	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (states[a].compat_err);
+	  last_msg_no = states[a].compat_err;
+	  break;
 	}
+    }
 }
-}
 
 
 
-long A4GL_describecolumn(PGresult *res, int colno, int type) {
-int dtype;
-int prc;
-int column_count;
-int rval;
+long
+A4GL_describecolumn (PGresult * res, int colno, int type)
+{
+  int dtype;
+  int prc;
+  int column_count;
+  int rval;
 
 
   if (type == 6)
-    return atoi(PQcmdTuples(res));
+    return atoi (PQcmdTuples (res));
 
   if (type == 5)
     return PQnfields (res);
 
 
-  column_count =  PQnfields(res);
+  column_count = PQnfields (res);
 
   if (colno > column_count)
     {
-      A4GL_exitwith ("Column out of range");
+      A4GL_exitwith_sql ("Column out of range");
       return 0;
     }
 
 
-   switch (type)
+  switch (type)
     {
     case 0:
-	conv_sqldtype (PQftype(res,colno), PQfsize(res,colno), &dtype, &prc);
-	rval=dtype;
+      conv_sqldtype (PQftype (res, colno), PQfsize (res, colno), &dtype,
+		     &prc);
+      rval = dtype;
       break;
 
     case 1:
-      rval = (long)PQfname(res,colno);
+      rval = (long) PQfname (res, colno);
       break;
 
     case 2:
-      rval = PQfmod(res,colno);
+      rval = PQfmod (res, colno);
       break;
 
     case 3:
-      rval = PQfsize(res,colno);
+      rval = PQfsize (res, colno);
       break;
 
     case 4:
       rval = 1;
-      break;                    // Nullable ?
+      break;			// Nullable ?
     }
 
-return rval;
+  return rval;
 }
 
 /*****************************************************************************/
@@ -2984,11 +3370,11 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
     {
       cid = A4GLSQL_find_cursor (stmt);
       if (cid == 0)
-        {
-          A4GL_exitwith ("Could not find statement or cursor specified");
-          return 0;
+	{
+	  A4GL_exitwith_sql ("Could not find statement or cursor specified");
+	  return 0;
 
-        }
+	}
       res = cid->hstmt;
 
     }
@@ -2999,22 +3385,25 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 
   if (sid == 0 && cid == 0)
     {
-      A4GL_exitwith ("Statement could not be found");
+      A4GL_exitwith_sql ("Statement could not be found");
     }
 
-  if (res==0) return 0;
+  if (res == 0)
+    return 0;
 
   z = A4GL_describecolumn (res, colno, type);
 
   return z;
 }
 
-void A4GLSQLLIB_A4GLSQL_put_insert(void *vibind, int n) {
-  struct BINDING *ibind=0;
+void
+A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
+{
+  struct BINDING *ibind = 0;
   char *cursorName;
   struct s_cid *cid;
   struct s_prepare *sid;
-  int ni=0;
+  int ni = 0;
   char *newstr;
   ibind = vibind;
 
@@ -3039,16 +3428,19 @@ void A4GLSQLLIB_A4GLSQL_put_insert(void *vibind, int n) {
       ni = cid->statement->ni;
       ibind = cid->statement->ibind;
     }
- 
 
-  sid=(struct s_prepare *)cid->statement;
-  if (ni==0) {
-	ni=sid->ni;
-	ibind=sid->ibind;
-  }
 
-  newstr=replace_ibind(sid->sql, ni,ibind);
-  Execute(newstr,1);
+  sid = (struct s_prepare *) cid->statement;
+  if (ni == 0)
+    {
+      ni = sid->ni;
+      ibind = sid->ibind;
+    }
+
+  newstr = replace_ibind (sid->sql, ni, ibind);
+
+  Execute (newstr, 1);		// we may need to add our errd[2] serial number checking here too...
+
 }
 
 
