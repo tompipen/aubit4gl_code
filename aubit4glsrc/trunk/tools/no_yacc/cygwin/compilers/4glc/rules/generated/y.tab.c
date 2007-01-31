@@ -21794,12 +21794,12 @@ add_feature("DDL_PRIMARY_KEY");
 
   case 1740:
 #line 9443 "fgl.infx.yacc"
-    {sprintf((yyval.str)," DEFAULT USER"); add_feature("DDL_DEFAULT_VALUE"); }
+    {sprintf((yyval.str)," DEFAULT %s", A4GLSQLCV_get_sqlconst("USER")); add_feature("DDL_DEFAULT_VALUE"); }
     break;
 
   case 1741:
 #line 9444 "fgl.infx.yacc"
-    {sprintf((yyval.str)," DEFAULT TODAY"); add_feature("DDL_DEFAULT_VALUE"); }
+    {sprintf((yyval.str)," DEFAULT %s", A4GLSQLCV_get_sqlconst("TODAY")); add_feature("DDL_DEFAULT_VALUE"); }
     break;
 
   case 1742:
