@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.2 2007-01-31 20:04:17 mikeaubury Exp $
+# $Id: pg8.c,v 1.3 2007-02-01 20:24:12 mikeaubury Exp $
 #*/
 
 
@@ -138,6 +138,7 @@ static int copy_to_obind (PGresult * res, int no, struct BINDING *obind,
 			  int row);
 //typedef void (*PQnoticeProcessor) (void *arg, const char *message);
 static int chk_res (PGresult * res);
+static struct s_cid * A4GLSQL_find_cursor (char *cname);
 
 struct s_prepare
 {
@@ -2230,6 +2231,26 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       return 0;
     }
 
+  cid = (struct s_cid *) A4GL_find_pointer_val (cursname, CURCODE);
+  if (cid) {
+	// already exists...
+  	if (cid->mode & 0x1000) {
+      		char buff[256];
+      		A4GL_debug ("DEALLOCATE %s", cursname);
+      		SPRINTF1 (buff, "DEALLOCATE %s", cursname);
+      		PQexec (con, buff);
+      		cid->mode -= 0x1000;
+    		}
+  	if (cid->mode & 0x7000)
+    {
+      char buff[256];
+      SPRINTF1 (buff, "CLOSE %s", cursname);
+      PQexec (con, buff);
+      cid->mode -= 0x7000;
+	}
+	free(cid);
+  }
+
   cid = acl_malloc2 (sizeof (struct s_cid));
 
   cid->statement = (void *) sid;
@@ -2243,14 +2264,6 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
   A4GL_add_pointer (cursname, CURCODE, cid);
 
-  if (cid->mode & 0x1000)
-    {
-      char buff[256];
-      A4GL_debug ("DEALLOCATE %s", cursname);
-      SPRINTF1 (buff, "DEALLOCATE %s", cursname);
-      PQexec (con, buff);
-      cid->mode -= 0x1000;
-    }
 
   if (scroll)
     {
@@ -2322,8 +2335,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
 }
 
-static struct s_cid *
-A4GLSQL_find_cursor (char *cname)
+static struct s_cid * A4GLSQL_find_cursor (char *cname)
 {
   struct s_cid *ptr;
 
@@ -2381,7 +2393,6 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
       return 0;
     }
-
 
   if (cid == 0)
     {
