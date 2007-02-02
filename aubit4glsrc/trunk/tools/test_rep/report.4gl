@@ -23,7 +23,7 @@ let lv_codes[4]="ECP"
 let lv_codes[5]="IFXODBC"
 let lv_codes[6]="SQLITE"
 let lv_codes[7]="PGODBC"
-let lv_codes[8]="MYODBC"
+let lv_codes[8]="PG8"
 let lv_codes[9]="MYSQL"
 let mv_short_only=" "
 --set isolation to dirty read

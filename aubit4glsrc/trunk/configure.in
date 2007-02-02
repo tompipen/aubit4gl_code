@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.340 2007-01-31 18:29:21 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.341 2007-02-02 08:30:53 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.340 2007-01-31 18:29:21 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.341 2007-02-02 08:30:53 mikeaubury Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
@@ -10114,7 +10114,7 @@ PLUGIN_NO_LINKABLE=
 
 	if test "$HAVE_PGSQL_LIB" = "yes"; then
         #an simple PG plug-in with limited functionality (by Mike)
-		PLUGIN_YES="$PLUGIN_YES SQL_pg"
+		PLUGIN_YES="$PLUGIN_YES SQL_pg SQL_pg8"
 
 		if test "$PG_ESQLC" != "no" -a "$HAVE_PG_ESQL_HEADERS" = "yes" ; then
 			#ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
@@ -10140,7 +10140,7 @@ PLUGIN_NO_LINKABLE=
 		fi
 
 	else
-		PLUGIN_NO="$PLUGIN_NO SQL_pg"
+		PLUGIN_NO="$PLUGIN_NO SQL_pg SQL_pg8"
 		#PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
@@ -10923,7 +10923,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.340 2007-01-31 18:29:21 mikeaubury Exp $
+| $Id: configure.in,v 1.341 2007-02-02 08:30:53 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

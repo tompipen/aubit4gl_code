@@ -42661,7 +42661,7 @@ PLUGIN_NO_LINKABLE=
 
 	if test "$HAVE_PGSQL_LIB" = "yes"; then
         #an simple PG plug-in with limited functionality (by Mike)
-		PLUGIN_YES="$PLUGIN_YES SQL_pg"
+		PLUGIN_YES="$PLUGIN_YES SQL_pg SQL_pg8"
 
 		if test "$PG_ESQLC" != "no" -a "$HAVE_PG_ESQL_HEADERS" = "yes" ; then
 			#ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
@@ -42687,7 +42687,7 @@ PLUGIN_NO_LINKABLE=
 		fi
 
 	else
-		PLUGIN_NO="$PLUGIN_NO SQL_pg"
+		PLUGIN_NO="$PLUGIN_NO SQL_pg SQL_pg8"
 		#PLUGIN_NO="$PLUGIN_NO SQL_c_ecpg"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
@@ -46370,7 +46370,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.367 2007-01-31 18:29:19 mikeaubury Exp $
+| $Id: configure,v 1.368 2007-02-02 08:30:48 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

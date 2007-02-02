@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2007-01-31 20:04:17 mikeaubury Exp $
+# $Id: Makefile.in,v 1.14 2007-02-02 08:30:55 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -57,7 +57,7 @@ CPPOBJS	=${CPPSRC:.cpp=.o}
 CFLAGS	+=-I.. ${PGSQL_INCLUDE} 
 CXXFLAGS=$(CFLAGS)
 
-ALL		=${PLUGINDIR}/libSQL_pg${SO_EXT}
+ALL		=${PLUGINDIR}/libSQL_pg${SO_EXT} ${PLUGINDIR}/libSQL_pg8${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
