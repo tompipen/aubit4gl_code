@@ -318,6 +318,7 @@ define a integer
 define str char(80)
 define lv_name char(80)
 define lv_x char(30)
+define lv_row integer
 	for a=1 to 24
 		let lv_txt[a]= " "
 	end for
@@ -352,7 +353,8 @@ define lv_x char(30)
 			end if
 			call do_display_txt(mv_option_offscr[a].id)
 			display "CURRENT VALUE =",str clipped at 8,1
-			let str=lv_newvals[get_id(mv_option[a].name)]
+			let lv_row=get_id(mv_option[a].name)
+			let str=lv_newvals[lv_row]
 			display "NEW     VALUE =",str clipped at 9,1
 
 		on key(left)
@@ -370,8 +372,9 @@ define lv_x char(30)
 			let a=arr_curr()
 			call change(mv_option[a].name,a) returning str
 			let lv_name=mv_option[a].name
-			let lv_newvals[get_id(lv_name)]=str
-			let str=lv_newvals[get_id(lv_name)]
+			let lv_row=get_id(lv_name)
+			let lv_newvals[lv_row]=str
+			let str=lv_newvals[lv_row]
 			display "NEW     VALUE =",str clipped at 9,1
 			let int_flag=false
 
