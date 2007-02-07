@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.34 2006-10-12 06:13:15 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.35 2007-02-07 14:47:24 mikeaubury Exp $
 #*/
 
 /**
@@ -344,10 +344,13 @@ A4GLFORM_A4GL_set_field (char *s, void *f)
 {
   real_set_field (s, f);
 }
+
+
 static void
 real_set_field (char *s, struct struct_scr_field *f)
 {
   int a;
+  int mno;
   char *ptr;
 
   A4GL_debug ("set_field\n");
@@ -383,13 +386,30 @@ real_set_field (char *s, struct struct_scr_field *f)
     }
 
   f->field_no = A4GLFORM_A4GL_find_field (s);
+	
+
   A4GL_debug ("****************** set field number to %d\n", f->field_no);
 
   if (f->field_no == -1)
     {
-      A4GL_error_with ("Tag %s has not been defined in the screen section\n", s,
-		  0);
+      A4GL_error_with ("Tag %s has not been defined in the screen section\n", s, 0);
     }
+
+
+  if (A4GL_has_str_attribute (f, FA_S_FORMAT)) {
+		char *fmt;
+		fmt=A4GL_get_str_attribute(f, FA_S_FORMAT);
+  	for(a=0;a<the_form.fields.fields_val[f->field_no].metric.metric_len;a++) {
+		int w;
+		int mno;
+  		mno=the_form.fields.fields_val[f->field_no].metric.metric_val[0];
+		w=the_form.metrics.metrics_val[mno].w;
+		if (strlen(fmt)!=w) {
+      			A4GL_error_with ("FORMAT string is not the same size as the field\n", 0, 0);
+		}
+  }
+  }
+
   add_srec_direct (f->tabname, the_form.attributes.attributes_len - 1);
 }
 
@@ -729,9 +749,7 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 	  metric.metric_len != curr_rec->dim)
 	{
 	  A4GL_debug ("cnt=%d dim=%d",
-		 the_form.fields.fields_val[the_form.attributes.
-					    attributes_val[ptr[z]].field_no].
-		 metric.metric_len, curr_rec->dim);
+		 the_form.fields.fields_val[the_form.attributes.  attributes_val[ptr[z]].field_no].metric.metric_len, curr_rec->dim);
 
 	//printf("ABC : %p %s %s\n", &the_form.attributes.attributes_val[ptr[z]], the_form.attributes.attributes_val[ptr[z]].tabname, the_form.attributes.attributes_val[ptr[z]].colname);
     	if (!A4GLFORM_A4GL_has_bool_attribute( &the_form.attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){

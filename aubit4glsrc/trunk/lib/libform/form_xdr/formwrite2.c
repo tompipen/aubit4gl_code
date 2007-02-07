@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.42 2006-10-12 06:13:16 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.43 2007-02-07 14:47:24 mikeaubury Exp $
 #*/
 
 /**
@@ -391,6 +391,22 @@ real_set_field (char *s, struct struct_scr_field *f)
       A4GL_error_with ("Tag %s has not been defined in the screen section\n", s,
 		  0);
     }
+
+  if (A4GL_has_str_attribute (f, FA_S_FORMAT)) {
+                char *fmt;
+                fmt=A4GL_get_str_attribute(f, FA_S_FORMAT);
+        for(a=0;a<the_form.fields.fields_val[f->field_no].metric.metric_len;a++) {
+                int w;
+                int mno;
+                mno=the_form.fields.fields_val[f->field_no].metric.metric_val[0];
+                w=the_form.metrics.metrics_val[mno].w;
+                if (strlen(fmt)!=w) {
+                        A4GL_error_with ("FORMAT string is not the same size as the field\n", 0, 0);
+                }
+  }
+  }
+
+
   add_srec_direct (f->tabname, the_form.attributes.attributes_len - 1);
 }
 
