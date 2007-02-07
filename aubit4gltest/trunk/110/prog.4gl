@@ -106,6 +106,8 @@ define DIALECT char (20)
 			
 			when "POSTGRESQL"
 				return 4
+			when "POSTGRES8"
+				return 4
 			
 			when "SQLITE"
 				return 5

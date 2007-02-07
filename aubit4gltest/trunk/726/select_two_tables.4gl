@@ -14,23 +14,23 @@ MAIN
 
   LET exitStatus = 0
   WHENEVER ERROR CONTINUE
-  DROP TABLE xpto
-  DROP TABLE xpta
+  DROP TABLE xpto726
+  DROP TABLE xpta726
   WHENEVER ERROR STOP
-  CREATE TABLE xpto (
+  CREATE TABLE xpto726 (
     keyColumn SMALLINT
   )
-	CREATE TABLE xpta (
+	CREATE TABLE xpta726 (
     keyColumn SMALLINT,
 		a_string CHAR(20),
 		a_float FLOAT
 	)
-  INSERT INTO xpto (keyColumn) VALUES (1)
-  INSERT INTO xpta (keyColumn,a_string,a_float) VALUES (1,"a string",45.56)
-  SELECT xpto.keyColumn, a_string, @a_float
+  INSERT INTO xpto726 (keyColumn) VALUES (1)
+  INSERT INTO xpta726 (keyColumn,a_string,a_float) VALUES (1,"a string",45.56)
+  SELECT xpto726.keyColumn, a_string, @a_float
     INTO lv_keycolumn, lv_string, a_float
-    FROM xpto, xpta
-    WHERE xpto.keyColumn = xpta.keyColumn
+    FROM xpto726, xpta726
+    WHERE xpto726.keyColumn = xpta726.keyColumn
 
   IF lv_keyColumn != 1 THEN
     DISPLAY "Diferent key value"
@@ -45,7 +45,7 @@ MAIN
     LET exitStatus = 1
   END IF
 
-  DROP TABLE xpto
-  DROP TABLE xpta
+  DROP TABLE xpto726
+  DROP TABLE xpta726
   EXIT PROGRAM exitStatus
 END MAIN

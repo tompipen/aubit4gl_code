@@ -41,6 +41,9 @@ MAIN
   INSERT INTO xpto (keyColumn,intColumn,dateColumn) 
     VALUES (3,4,dt)
 
+unload to "mja1" select * from xpto
+
+
 	DECLARE cr_ CURSOR FOR
     SELECT MAX(ALL intColumn), dateColumn
       FROM xpto

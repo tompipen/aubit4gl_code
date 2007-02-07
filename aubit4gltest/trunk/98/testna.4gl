@@ -58,7 +58,7 @@ define a,exit_code,tmp integer
 	let a=sqlca.sqlerrd[2]
 
 	if a!=5 then
-		display "BAD 4"
+		display "BAD 4: ",a
 		let exit_code = 4
 	end if
 
