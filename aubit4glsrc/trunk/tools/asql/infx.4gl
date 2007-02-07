@@ -681,14 +681,16 @@ printField (FILE * outputFile, int idx, char *descName)
   char buff[255];
   char fmt[255];
   int rc = 0;
+A4GL_debug("printField");
 
+EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType = TYPE;
 
-EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
-    TYPE;
   cp_sqlca ();
+
   if (indicator != -1)
     {
-      switch (dataType & 0xf)
+	A4GL_debug("Dtype=%x\n",dataType);
+      switch (dataType & 0xff)
 	{
 	case SQLCHAR:
 	case SQLVCHAR:
@@ -707,6 +709,7 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	  sprintf (buffer, "%s", char_var);
 	  free (char_var);
 	  break;
+
 	case SQLSMINT:
 	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smint_var =
 	    DATA;
@@ -896,10 +899,24 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	  sprintf (buffer, "%s", buff);
 	  //free (fgl_interval);
 	  break;
+
 	case SQLBYTES:
 	  break;
+
 	case SQLTEXT:
 	  break;
+
+        case SQLMULTISET:
+	  	char_var = (char *) acl_malloc2 (length + 1);
+	  	EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
+	  	cp_sqlca ();
+	  	A4GL_trim (char_var);
+	  	sprintf (buffer, "%s", char_var);
+	  	free (char_var);
+	  	break;
+
+		break;
+
 	default:
 	  A4GL_debug ("INVALID DATATYPE %d %x @ %d+++", dataType, dataType,
 		      idx);
@@ -961,6 +978,7 @@ prepare_query_1 (char *s, char type)
   EXEC SQL END DECLARE SECTION;
   int qry_type;
 
+ A4GL_debug("prepare_query_1");
   if (type >= '1' && type <= '9')
     return 255;
 
@@ -1147,15 +1165,17 @@ execute_select_prepare ()
   A4GL_debug ("numberOfColumns : %d\n", numberOfColumns);
 
   EXEC SQL declare crExec CURSOR FOR stExec;
+
   cp_sqlca ();
   if (sqlca.sqlcode < 0)
     return 0;
-
+  A4GL_debug("Declared - opening");
   EXEC SQL open crExec;
   cp_sqlca ();
   if (sqlca.sqlcode < 0)
     return 0;
 
+  A4GL_debug("opened");
 
   if (display_mode != DISPLAY_UNLOAD)
     {
@@ -1194,7 +1214,7 @@ execute_sql_fetch (int *raffected)
 {
   int a;
 
-
+A4GL_debug("Fetching");
 
   EXEC SQL FETCH crExec USING SQL DESCRIPTOR 'descExec';
   cp_sqlca ();
