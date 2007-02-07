@@ -460,8 +460,11 @@ op_field_desc
 			//printf("Setting field picture from syscolval (%s)\n",p);
 		}
 	}
-
+	a4gl_status=0;
 	A4GL_set_field(currftag,fld);
+	if (a4gl_status!=0) {
+		yyerror(A4GL_get_fcompile_err());
+	}
 }
 ;
 
