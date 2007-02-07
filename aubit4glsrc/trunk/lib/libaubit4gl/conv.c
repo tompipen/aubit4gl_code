@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.129 2007-01-11 10:23:57 mikeaubury Exp $
+# $Id: conv.c,v 1.130 2007-02-07 14:46:24 mikeaubury Exp $
 #
 */
 
@@ -1363,6 +1363,11 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 	if (decimal_char==0) {
 		decimal_char='.';
 	}
+        if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL"))) {
+		decimal_char=',';
+	}
+		
+
   }
 
   a = (char *) aa;

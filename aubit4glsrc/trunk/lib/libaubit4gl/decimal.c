@@ -293,10 +293,14 @@ A4GL_get_decimal_char (char *str_orig)
   if (master_decimal_char == 0)
     {
       SPRINTF1 (buff, "%f", 1.2);
-      if (strchr (buff, '.'))
-	master_decimal_char = '.';
-      if (strchr (buff, ','))
-	master_decimal_char = ',';
+
+      if (strchr (buff, '.')) master_decimal_char = '.';
+      if (strchr (buff, ',')) master_decimal_char = ',';
+
+  	if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL"))) {
+		master_decimal_char = ',';
+	}
+
 
     }
 
