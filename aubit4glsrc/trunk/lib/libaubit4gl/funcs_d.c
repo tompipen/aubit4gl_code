@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.79 2006-12-17 00:01:46 briantan Exp $
+# $Id: funcs_d.c,v 1.80 2007-02-07 19:17:36 mikeaubury Exp $
 #
 */
 
@@ -842,6 +842,9 @@ int A4GL_wcswidth(char *mbs) {
   wchar_t *wstr;
   size_t retc, mlen, wlen, width;
   mlen = strlen(mbs);
+#ifdef WIN32
+	return mlen;
+#else
   wstr = acl_malloc2((mlen+1)*sizeof(wchar_t));
   retc = mbstowcs(wstr, mbs, mlen+1);
   if (!retc) {
@@ -849,9 +852,11 @@ int A4GL_wcswidth(char *mbs) {
     return 0;
   }
   wlen = wcslen(wstr);
+
   width = wcswidth(wstr, wlen);
   free(wstr);
   return width;
+#endif
 }
 
 /* ============================== EOF ========================== */
