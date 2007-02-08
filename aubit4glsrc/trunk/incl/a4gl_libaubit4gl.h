@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.259 2007-01-02 17:03:06 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.260 2007-02-08 12:32:23 mikeaubury Exp $
 #
 */
 
@@ -2240,7 +2240,7 @@ void A4GL_free_directory(void);
 char **A4GL_read_directory(char *dir,char *spec);
 void A4GL_free_list(char **list);
 char ** A4GL_gen_list_dbpath (char *spec, char *path);
-
+int A4GL_has_initialized(void);
 
 
 #include "a4gl_gen_stack.h"

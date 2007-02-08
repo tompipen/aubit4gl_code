@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.98 2007-01-11 11:00:46 mikeaubury Exp $
+# $Id: ops.c,v 1.99 2007-02-08 12:32:24 mikeaubury Exp $
 #
 */
 
@@ -2726,6 +2726,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
 {
   double a;
   static char buff_10[256];
+  
 
   if (display_type == DISPLAY_TYPE_DISPLAY
       || display_type == DISPLAY_TYPE_PRINT)
@@ -2753,7 +2754,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
 	{
 	  if (cnt <= 1)
 	    break;
-	  if (buff_10[cnt - 1] == '.')
+	  if (buff_10[cnt - 1] == '.' || buff_10[cnt - 1] == ',')
 	    break;
 	  if (buff_10[cnt] != '0')
 	    break;
@@ -2830,7 +2831,7 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
 	{
 	  if (cnt <= 1)
 	    break;
-	  if (buff_11[cnt - 1] == '.')
+	  if (buff_11[cnt - 1] == '.' || buff_11[cnt - 1] == ',' )
 	    break;
 	  if (buff_11[cnt] != '0')
 	    break;
@@ -3240,7 +3241,7 @@ char *
 A4GL_display_byte (void *ptr, int size, int size_c,
 		   struct struct_scr_field *field_details, int display_type)
 {
-printf("display byte");
+A4GL_debug("display byte");
   return 0;
 }
 
@@ -3493,7 +3494,11 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 	  char *ptr;
 	  // It doesn't fit -
 	  // what happens if we remove all the decimal places ?
-	  ptr = a_strchr (buff_sz, '.');
+	  if (A4GL_get_decimal_char(0)=='.') {
+	  	ptr = a_strchr (buff_sz, '.');
+	  } else {
+	  	ptr = a_strchr (buff_sz, ',');
+	  }
 
 	  if (ptr)
 	    {

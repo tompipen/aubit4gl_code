@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.20 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: dmy.c,v 1.21 2007-02-08 12:32:24 mikeaubury Exp $
 #
 */
 
@@ -340,7 +340,7 @@ A4GL_dbdate_to_using (char *dbdate)
 	  break;
 	case '/':
 	case '-':
-	case '.':
+	case '.': //C
 	case ',':
 	  sep = *p;
 	  break;

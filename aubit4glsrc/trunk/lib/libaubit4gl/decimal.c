@@ -58,36 +58,22 @@ int l2;
 
   local_decimal_char=A4GL_get_decimal_char(str_orig);
 
-#ifdef OLD
-  if (master_decimal_char==0) {
-	  SPRINTF1(buff,"%f",1.2);
-	  if (strchr(buff,'.')) master_decimal_char='.';
-	  if (strchr(buff,',')) master_decimal_char=',';
-
-  }
-
-  if (master_decimal_char==0) {
-	  master_decimal_char='.';
-  }
-
-  local_decimal_char=master_decimal_char;
-
-
-  if (A4GL_isyes(acl_getenv("ALLOWCOMMAINDECIMAL"))) {
-	  if (local_decimal_char=='.' && !strchr(str_orig,'.') && strchr(str_orig,',')) {
-		  local_decimal_char=',';
-	  }
-  }
-#endif
-
 strcpy(str,str_orig);
 
 
-if (local_decimal_char!=',') {
+if (local_decimal_char=='.') {
        int b=0;
-l1=strlen(str_orig);
+	l1=strlen(str_orig);
        for (a=0;a<l1;a++) {
                if (str_orig[a]==',') continue;
+               str[b++]=str_orig[a];
+       }
+       str[b]=0;
+} else {
+       int b=0;
+	l1=strlen(str_orig);
+       for (a=0;a<l1;a++) {
+               if (str_orig[a]=='.') continue;
                str[b++]=str_orig[a];
        }
        str[b]=0;
@@ -222,7 +208,13 @@ A4GL_trim(str);
   
   
   strcpy(&dec->dec_data[2],buff);
-  strcat(&dec->dec_data[2],".");
+
+	if (local_decimal_char=='.') {
+  		strcat(&dec->dec_data[2],".");
+	} else {
+  		strcat(&dec->dec_data[2],",");
+	}
+
   strcat(&dec->dec_data[2],tail);
   
   //while  (strlen(&dec->dec_data[2])!=digits+1) { strcat(&dec->dec_data[2],"0"); }
@@ -250,6 +242,8 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
   char *ptr;
   int has_neg=0;
 int l;
+char dec_char;
+  dec_char=A4GL_get_decimal_char(0);
   strcpy(buff," ");
   if (dec->dec_data[0]&128) { has_neg=1; }
   
@@ -260,15 +254,15 @@ int l;
   strcat(buff,ptr);
 	l=strlen(buff);
 	for (a=has_neg;a<l;a++) {
-		if (buff[a]=='.') break;
+		if (buff[a]==dec_char) break;
 		if (buff[a]==' ') continue;
-		if (buff[a]=='0' && a==strlen(buff)-2&&buff[a+1]=='.') break;
+		if (buff[a]=='0' && a==strlen(buff)-2&&buff[a+1]==dec_char) break;
 		if (buff[a]=='0') {buff[a]=' ';continue;}
 		//if (buff[a]=='-') continue;
 		break;
 	}
   A4GL_trim(buff);
-  if (buff[strlen(buff)-1]=='.') buff[strlen(buff)-1]=0;
+  if (buff[strlen(buff)-1]==dec_char) buff[strlen(buff)-1]=0;
 
 #ifdef DEBUG
   A4GL_debug("--->XYXY '%s'",buff);
@@ -294,11 +288,14 @@ A4GL_get_decimal_char (char *str_orig)
     {
       SPRINTF1 (buff, "%f", 1.2);
 
-      if (strchr (buff, '.')) master_decimal_char = '.';
-      if (strchr (buff, ',')) master_decimal_char = ',';
+      if (strchr (buff, '.'))
+	master_decimal_char = '.';
+      if (strchr (buff, ','))
+	master_decimal_char = ',';
 
-  	if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL"))) {
-		master_decimal_char = ',';
+      if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL")))
+	{
+	  master_decimal_char = ',';
 	}
 
 
@@ -322,12 +319,13 @@ A4GL_get_decimal_char (char *str_orig)
 	      local_decimal_char = ',';
 	    }
 	}
-      else {
-      if (local_decimal_char == '.')
+      else
 	{
-		local_decimal_char=',';
+	  if (local_decimal_char == '.')
+	    {
+	      local_decimal_char = ',';
+	    }
 	}
-      }
     }
   return local_decimal_char;
 

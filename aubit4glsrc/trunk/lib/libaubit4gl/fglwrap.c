@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.116 2007-01-26 14:07:45 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.117 2007-02-08 12:32:24 mikeaubury Exp $
 #
 */
 
@@ -43,6 +43,8 @@
 =====================================================================
 */
 
+#include <locale.h>
+#include <ctype.h>
 #define _DEFINE_STATUSVARS_	/* one place we have to DEFINE them, for the
 				   rest of source files, they get only DECLARED
 				   as extern */
@@ -145,7 +147,7 @@ A4GL_debug("Close errlog");
 }
 
 
-int A4GL_has_initialized() {
+int A4GL_has_initialized(void) {
 	return fgl_initialised;
 }
 	
@@ -210,8 +212,15 @@ char *p;
   /* setlocale (LC_ALL, ""); */
 
 // Can we not : 
-  	setlocale(LC_ALL, "");
-	setlocale(LC_NUMERIC,"C");
+
+	if (!A4GL_isyes(acl_getenv("IGNORELOCALE"))) {
+  		setlocale(LC_ALL, "");
+		setlocale(LC_NUMERIC,"C");
+	}
+
+	A4GL_debug("isprint(pound)=%d\n",isprint(0xa3));
+	A4GL_debug("isprint(umlaut)=%d\n",isprint(220));
+
 
 	#ifdef DEBUG
 	    A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);

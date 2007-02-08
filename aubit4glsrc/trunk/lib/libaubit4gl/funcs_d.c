@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.80 2007-02-07 19:17:36 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.81 2007-02-08 12:32:24 mikeaubury Exp $
 #
 */
 
@@ -349,6 +349,8 @@ a4gl_using (char *str, int s, char *fmt, double num)
   double ad;
   double num_dec;
   char new_str[256];
+
+
 
   A4GL_debug ("In using... fmt=%s, num=%lf", fmt, num);
   for (a = 0; a < MAXPNT; a++)
