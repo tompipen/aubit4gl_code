@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.156 2007-01-11 18:11:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.157 2007-02-09 10:52:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.156 2007-01-11 18:11:32 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.157 2007-02-09 10:52:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -4195,11 +4195,21 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	  int a;
 	  int c = 0;
 	  memset (buff_new, 0, 255);
+
 	  for (a = 0; a < strlen (fld_data); a++)
 	    {
-	      if (fld_data[a] == '$' || fld_data[a] == ','
-		  || fld_data[a] == '£')
-		continue;
+	      if (fld_data[a] == '$' ||  fld_data[a] == '£') {
+			continue;
+		}
+
+	         if (A4GL_get_decimal_char(0)=='.') {
+			A4GL_debug("Standard decimal");
+			if (fld_data[a] == ',') continue; // skip thousands separator 
+		 } else {
+			A4GL_debug("decimal character is ','");
+			if (fld_data[a] == '.') continue; // skip thousands separator
+		 }
+
 	      buff_new[c++] = fld_data[a];
 	    }
 	  fld_data = buff_new;
@@ -4256,11 +4266,13 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 	  pprval = 0;
 	}
 
-      if ((fprop->datatype == DTYPE_INT || fprop->datatype == DTYPE_SMINT
-	   || fprop->datatype == DTYPE_SERIAL) && a_strchr (fld_data, '.'))
+      if ((fprop->datatype == DTYPE_INT || fprop->datatype == DTYPE_SMINT || fprop->datatype == DTYPE_SERIAL)) {
 	{
-	  A4GL_debug ("Looks like a decimal in a numeric field");
-	  pprval = 0;
+		 if (a_strchr (fld_data, A4GL_get_decimal_char(0))) {
+	  		A4GL_debug ("Looks like a decimal in a numeric field");
+	  		pprval = 0;
+		}
+	}
 	}
     }
 
@@ -4269,8 +4281,10 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 }
 
 static int get_inc_quotes(int a) {
-     if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR) return 1;
+     if ((a & DTYPE_MASK ) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR) return 1;
 	if ((a & DTYPE_MASK) == DTYPE_DATE) return 2;
+	if ((a & DTYPE_MASK) == DTYPE_DTIME) return 2;
+	if ((a & DTYPE_MASK) == DTYPE_INTERVAL) return 2;
 	return 0;
 }
 

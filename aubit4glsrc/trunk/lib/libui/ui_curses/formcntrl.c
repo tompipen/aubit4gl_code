@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.102 2006-12-25 11:42:27 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.103 2007-02-09 10:52:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.102 2006-12-25 11:42:27 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.103 2007-02-09 10:52:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -942,9 +942,11 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			really_ok=0;
 		}
 
-                if ( (sio->vars[field_no].dtype==DTYPE_INT|| sio->vars[field_no].dtype==DTYPE_SMINT|| sio->vars[field_no].dtype==DTYPE_SERIAL) && a_strchr(buff,'.') ) {
+                if ( (sio->vars[field_no].dtype==DTYPE_INT|| sio->vars[field_no].dtype==DTYPE_SMINT|| sio->vars[field_no].dtype==DTYPE_SERIAL)){
+			 if (a_strchr(buff,A4GL_get_decimal_char(0)) ) {
 				A4GL_debug(". in an integer");
 				really_ok=0;
+			}
 		}
 
 

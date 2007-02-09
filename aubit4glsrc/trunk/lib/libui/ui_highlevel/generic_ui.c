@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.105 2006-12-28 13:41:15 gyver309 Exp $";
+  "$Id: generic_ui.c,v 1.106 2007-02-09 10:52:54 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -2447,9 +2447,13 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	  memset (buff_new, 0, 255);
 	  for (a = 0; a < strlen (fld_data); a++)
 	    {
-	      if (fld_data[a] == '$' || fld_data[a] == ','
-		  || fld_data[a] == '£')
+	      if (fld_data[a] == '$' || fld_data[a] == '£')
 		continue;
+		if (A4GL_get_decimal_char(0)=='.') { 
+			if (fld_data[a] == ',' ) continue; // Skip thousand separator
+	        } else {
+			if (fld_data[a] == '.' ) continue; // Skip thousand separator
+		}
 	      buff_new[c++] = fld_data[a];
 	    }
 	  fld_data = buff_new;
@@ -2498,7 +2502,7 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 	}
 
       if ((fprop->datatype == DTYPE_INT || fprop->datatype == DTYPE_SMINT
-	   || fprop->datatype == DTYPE_SERIAL) && strchr (fld_data, '.'))
+	   || fprop->datatype == DTYPE_SERIAL) && strchr (fld_data, A4GL_get_decimal_char(0)))
 	{
 	  A4GL_debug ("Looks like a decimal in a numeric field");
 	  pprval = 0;
