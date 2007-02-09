@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.294 2006-12-28 11:56:37 gyver309 Exp $
+# $Id: mod.c,v 1.295 2007-02-09 10:53:24 mikeaubury Exp $
 #
 */
 
@@ -4072,6 +4072,15 @@ fix_update_expr (int mode)
   char *notab;
   strcpy (big_buff, "SET ");
 
+
+  if (mode==0) {
+	if (A4GL_4glc_gen_cnt(UPDCOL)==1) {
+		if (strcmp(A4GL_4glc_get_gen(UPDCOL,0),"*")==0) {
+			// Its just a '*' too...
+			mode=1;
+		}
+	}
+  }
   if (mode == 1)
     {
       /* It will only be a '*' anyway.... */
