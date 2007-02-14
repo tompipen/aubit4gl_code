@@ -609,7 +609,8 @@ void map_display_at(struct expr_str *x,struct expr_str *y) ;
 void map_run(struct expr_str *s) ;
 void map_ui_block(char *s) ;
 void map_ui_endblock(char *s) ;
-
+int set_ignore_indicators(void);
+int clr_ignore_indicators(void);
 
 
 

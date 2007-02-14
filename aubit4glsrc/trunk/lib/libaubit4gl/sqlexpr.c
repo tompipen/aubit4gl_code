@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.43 2007-01-31 18:29:26 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.44 2007-02-14 17:47:26 mikeaubury Exp $
 #
 */
 
@@ -679,8 +679,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_IBIND:
       return acl_strdup (p->u_data.expression);
-    case E_SLI_VARIABLE:
+
+    case E_SLI_VARIABLE: 
       return acl_strdup (p->u_data.expression);
+
     case E_SLI_DATETIME:
       return acl_strdup (p->u_data.expression);
     case E_SLI_INTERVAL:
@@ -1847,9 +1849,7 @@ make_select_stmt (struct s_select *select)
   char buff_from[20000];
   char into_temp[25600];
   int a;
-
-  A4GLSQLPARSE_from_clause_collect_tables (select, select->first,
-					   &select->table_elements);
+  A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
   preprocess_sql_statement (select);
   A4GLSQLPARSE_from_clause (select, select->first, buff_from,
 			    &select->table_elements);
@@ -1889,6 +1889,8 @@ make_select_stmt (struct s_select *select)
   //select_cols=malloc(sizeof(char *)*select->select_list->nlist);
 
   A4GL_debug ("buff=%s", buff);
+
+
   for (a = 0; a < select->select_list->nlist; a++)
     {
       char *ptr;
@@ -1898,7 +1900,9 @@ make_select_stmt (struct s_select *select)
       strcat (buff, ptr);
       A4GL_debug ("buff=%s", buff);
       free (ptr);
-    }
+  
+
+  }
 
   strcat (buff, " ");
 

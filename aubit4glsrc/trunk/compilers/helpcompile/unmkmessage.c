@@ -127,7 +127,7 @@ main (int argc, char *argv[])
 	  mychkerr (infile2, argv[1]);
 	  if (s == 0) A4GL_assertion(1,"Unexpected read error..");
 	  charcount += strlen (line);
-	  fprintf (outfile, line);
+	  fprintf (outfile, "%s", line);
 	}
     }
   fclose (outfile);

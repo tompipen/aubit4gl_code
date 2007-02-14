@@ -1417,3 +1417,34 @@ print_linked_cmd (int type, char *var)
     }
   return 1;
 }
+
+
+
+int ignore_indicators=0;
+int using_indicators=-1;
+
+int set_ignore_indicators() {
+        //printf("set_ignore\n");
+        if (using_indicators==-1) { using_indicators=A4GLSQLCV_check_requirement ("USE_INDICATOR"); }
+        if (using_indicators) {
+                if (ignore_indicators==0) {
+                        A4GL_setenv("USE_INDICATOR","N",1);
+                }
+                ignore_indicators++;
+        }
+	return ignore_indicators;
+}
+
+
+int clr_ignore_indicators() {
+        //printf("clr_ignore\n");
+        if (using_indicators==-1) { using_indicators=A4GLSQLCV_check_requirement ("USE_INDICATOR"); }
+
+        if (using_indicators) {
+                ignore_indicators--;
+                if (ignore_indicators==0) {
+                        A4GL_setenv("USE_INDICATOR","Y",1);
+                }
+        }
+	return ignore_indicators;
+}

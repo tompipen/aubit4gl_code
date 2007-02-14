@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.350 2006-12-28 15:31:55 gyver309 Exp $
+# $Id: compile_c.c,v 1.351 2007-02-14 17:47:26 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.350 2006-12-28 15:31:55 gyver309 Exp $";
+		"$Id: compile_c.c,v 1.351 2007-02-14 17:47:26 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6708,8 +6708,7 @@ LEXLIB_A4GL_set_var_sql (int doing_declare, int n)
 	      strcat (buff, ",");
 	    }
 
-      if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
-
+      if (A4GLSQLCV_check_requirement ("USE_INDICATOR") && !A4GL_isno(acl_getenv("USE_INDICATOR"))) {
 	  if (esql_type()==E_DIALECT_INFOFLEX) {
 	  SPRINTF2 (buff_small, " :_vi_%d  :_vii_%d \n", a,a);
 	  } else {

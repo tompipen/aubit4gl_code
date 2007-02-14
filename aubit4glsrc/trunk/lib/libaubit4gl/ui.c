@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.61 2006-10-14 10:09:39 mikeaubury Exp $
+# $Id: ui.c,v 1.62 2007-02-14 17:47:26 mikeaubury Exp $
 #
 */
 
@@ -664,6 +664,7 @@ else f1p=f1;
 f2p=a_strchr(f2,'.');
 if(f2p) f2p++;
 else f2p=f2;
+if (f2==0) return 0;
 
 a=strcmp(f1p,f2p);
 if (a==0) a=1;

@@ -216,4 +216,4 @@ A4GL_LL_finished_with_events void* s -> void
 A4GL_LL_get_triggered_event -> int
 A4GL_LL_can_show_comments char* str -> int
 A4GL_LL_can_show_message int msgline char* str int wait -> int
-A4GL_LL_use_direct_to_ui char* s -> void
+A4GL_LL_direct_to_ui char* t char* s -> void

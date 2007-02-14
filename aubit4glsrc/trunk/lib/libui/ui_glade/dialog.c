@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.6 2006-11-15 13:00:19 mikeaubury Exp $
+# $Id: dialog.c,v 1.7 2007-02-14 17:47:27 mikeaubury Exp $
 #*/
 
 /**
@@ -332,7 +332,7 @@ UILIB_A4GL_ui_exit(void) {
 }
 
 
-void UILIB_A4GL_direct_to_ui(char *s) {
+void UILIB_A4GL_direct_to_ui(char *t, char *s) {
 // Does nothing - require by the API...
 }
 

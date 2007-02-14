@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.49 2006-12-28 12:44:19 gyver309 Exp $
+# $Id: util.c,v 1.50 2007-02-14 17:47:26 mikeaubury Exp $
 #
 */
 
@@ -1268,4 +1268,11 @@ void fail_on_select_ibind(void) {
 void map_create_temp(char *tab, char *src) {
 }
 
+int set_ignore_indicators(void) {
+	// required ...
+}
+
+int clr_ignore_indicators(void) {
+	// required ...
+}
 /* ====================================== EOF ============================ */

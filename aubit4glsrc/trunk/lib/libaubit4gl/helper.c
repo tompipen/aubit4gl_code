@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.59 2006-11-15 12:59:36 mikeaubury Exp $
+# $Id: helper.c,v 1.60 2007-02-14 17:47:26 mikeaubury Exp $
 #
 */
 
@@ -1135,9 +1135,18 @@ char prefixed_name[256];
 int aclfgl_aclfgl_send_to_ui(int n) {
 char *s;
 	s=A4GL_char_pop();
-	A4GL_direct_to_ui(s);
+	A4GL_direct_to_ui("SEND",s);
 	return 0;
 }
+
+
+int aclfgl_aclfgl_sendfile_to_ui(int n) {
+char *s;
+	s=A4GL_char_pop();
+	A4GL_direct_to_ui("FILE",s);
+	return 0;
+}
+
 
 int aclfgl_aclfgl_setenv(int n)  {
 char *a;

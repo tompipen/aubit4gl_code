@@ -126,5 +126,12 @@ void A4GL_LL_opening_form(char *formfile, char *formname) {
 }
 
 
-
+void A4GL_LL_direct_to_ui(char* t,char* s) {
+	if (strcmp(t,"SEND")==0) {
+		A4GL_LL_use_direct_to_ui(s);
+	}
+	if (strcmp(t,"FILE")==0) {
+		SendFile(s);
+	}
+}
 

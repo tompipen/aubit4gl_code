@@ -102,4 +102,4 @@ A4GLUI_set_intr -> void
 A4GL_screen_mode int sm -> int
 A4GL_ui_exit  -> void
 A4GL_ui_fgl_winquestion char* title char* text char* def char* pos char* icon int danger int winbutton -> char*
-A4GL_direct_to_ui char* string -> void 
+A4GL_direct_to_ui char* what char* string -> void 

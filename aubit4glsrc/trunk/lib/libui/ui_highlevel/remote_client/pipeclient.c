@@ -596,6 +596,29 @@ pipe_get_result (char *func,struct client_result *r,int expectresult)
 
 }
 
+int SendFile(char *s) {
+	FILE *f;
+	int a;
+	char *m;
+	int fl;
+	int ok;
+	char fdets[2000];
+        f=A4GL_open_file_dbpath(s);
+	if (f==0) return 0;
+	fseek(f,0,SEEK_END);
+	fl=ftell(f);
+	sprintf(fdets,"%s;%ld", s, fl);
+  	if (!pipe_sock_puts (serversocket,fdets)) return 0;
+	rewind(f);
+	m=malloc(fl);
+	fread(m,fl,1,f);
+  	ok=pipe_sock_write (serversocket,  m,fl);
+	fclose(f);
+	free(m);
+	return 1;
+}
+
+
 struct client_result *
 client_call (char *func, int expectresult, char *fmt, ...)
 {

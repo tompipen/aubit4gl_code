@@ -14,7 +14,7 @@ select_statement_ss_str_converted : select_statement_ss_select  {
 
 
 select_statement_ss_select : 
-	KW_SELECT op_ad { start_bind('i',0); } select_list_slil  {fail_on_select_ibind();}
+	KW_SELECT op_ad { start_bind('i',0); set_ignore_indicators();} select_list_slil  {fail_on_select_ibind(); clr_ignore_indicators();}
         opt_into_sel_ss 
 	table_expression_2_select
         sel_p2_select sel_finish_sf {
@@ -52,21 +52,21 @@ uselect_statement2_ss_converted:
 ;
 
 select_statement21_ss_converted:
-	KW_SELECT  op_ad select_list_slil  {fail_on_select_ibind();}
+	KW_SELECT  {set_ignore_indicators();}  op_ad select_list_slil  {fail_on_select_ibind(); clr_ignore_indicators();}
         opt_into_sel_ss
 	table_expression_2_select
         sel_p2_select sel_ordby_unload_slil {
 		struct s_select_finish *sf;
 
-		$<s_select>$=$<s_select>6;
-		$<s_select>$->modifier=strdup($<str>2);
-		$<s_select>$->into=$<sql_string>5;
-		$<s_select>$->select_list=$<s_select_list_item_list>3;
-		$<s_select>$->next=$<s_select>7;
+		$<s_select>$=$<s_select>7;
+		$<s_select>$->modifier=strdup($<str>3);
+		$<s_select>$->into=$<sql_string>6;
+		$<s_select>$->select_list=$<s_select_list_item_list>4;
+		$<s_select>$->next=$<s_select>8;
 		sf=malloc(sizeof(struct s_select_finish));
 		sf->into_temp=0;
 		sf->nolog=0;
-		sf->order_by=$<s_select_list_item_list>8;
+		sf->order_by=$<s_select_list_item_list>9;
 		$<s_select>$->sf=sf;
 		A4GL_set_sql_lineno(yylineno);
 		map_select_stmt("SELECT",$<s_select>$);

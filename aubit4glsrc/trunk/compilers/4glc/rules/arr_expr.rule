@@ -6,10 +6,10 @@
 
 
 arr_expr :
-OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
-| arr_expr arr_next_math arr_expr { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
-| INT_VALUE {sprintf($<str>$,"%d",atoi($<str>1));}
-| arr_int_sign INT_VALUE {sprintf($<str>$,"(%s%s)",$<str>1,$<str>2);}
+OPEN_BRACKET arr_expr CLOSE_BRACKET  {SPRINTF1($<str>$,"(%s)",$<str>2);}
+| arr_expr arr_next_math arr_expr { SPRINTF3($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
+| INT_VALUE {SPRINTF1($<str>$,"%d",atoi($<str>1));}
+| arr_int_sign INT_VALUE {SPRINTF2($<str>$,"(%s%s)",$<str>1,$<str>2);}
 | variable {
   int a;
   a=scan_variable($<str>1)&15;
@@ -21,18 +21,18 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
   }
   if (A4GL_isyes(acl_getenv("DOING_CM")) && (A4GL_lextype(),"CM")==0) {
 	char buff[20000];
-	sprintf(buff,"%s",fgl_add_scope($<str>1,0));
+	SPRINTF1(buff,"%s",fgl_add_scope($<str>1,0));
 	if (buff[0]=='M' || buff[0]=='G' || buff[0]=='R') {
-		sprintf($<str>$,"(this.%s) As Int32",fgl_add_scope($<str>1,0));
+		SPRINTF1($<str>$,"(this.%s) As Int32",fgl_add_scope($<str>1,0));
 	} else {
-		sprintf($<str>$,"(%s) As Int32",fgl_add_scope($<str>1,0));
+		SPRINTF1($<str>$,"(%s) As Int32",fgl_add_scope($<str>1,0));
 	}
   } else {
-  	sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
+  	SPRINTF1($<str>$,"%s",fgl_add_scope($<str>1,0));
   }
 }
 | function_call_expr {
-	sprintf($<str>$,print_arr_expr_fcall($<ptr>1));
+	SPRINTF1($<str>$,"%s",print_arr_expr_fcall($<ptr>1));
 }
 ;
 

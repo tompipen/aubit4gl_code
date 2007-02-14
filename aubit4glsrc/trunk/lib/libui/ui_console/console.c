@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.31 2006-11-15 13:00:12 mikeaubury Exp $
+# $Id: console.c,v 1.32 2007-02-14 17:47:26 mikeaubury Exp $
 #*/
 
 /**
@@ -697,7 +697,7 @@ int UILIB_UI_initlib(void) {
 }
 
 
-void UILIB_A4GL_direct_to_ui(char *s) {
+void UILIB_A4GL_direct_to_ui(char *t, char *s) {
 // Does nothing - require by the API...
 }
 
