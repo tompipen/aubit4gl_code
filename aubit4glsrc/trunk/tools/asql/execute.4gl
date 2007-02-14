@@ -668,25 +668,21 @@ return a;
 
 
 
-#define MAX_QRY  50
+#define MAX_QRY  80
 
 
 char *qry_strings[255]={
-
-"%d Rows found", // 0
-"Database selected",
-"%d Rows found",
-"%d rows selected into temp table",
-"%d rows updated",
-"%d rows deleted",
-"row inserted",
-0,
-0,
-0,
-"Table Locked", // 10
-
-
-
+	"%d Rows found", // 0
+	"Database selected",
+	"%d Rows found",
+	"%d rows selected into temp table",
+	"%d rows updated",
+	"%d rows deleted",
+	"%d row(s) inserted",
+	0,
+	0,
+	"%d row(s) inserted",
+	"Table Locked", // 10
 "Table Unlocked",
 "Database Created",
 "Database Dropped",
@@ -730,9 +726,38 @@ char *qry_strings[255]={
 "Lock mode set",
 "Index Altered",
 "Isolation set",
-"Log set"
+"Log set",
 "Explain mode set", // 50
-
+0,
+0,
+0,
+0,
+0,
+"Procedure executed", // 56
+0,
+0,
+0,
+0, //60
+0,
+0,
+0,
+0,
+0,
+0,
+0,
+0,
+0,
+0, //70
+0,
+0,
+0,
+"PDQ Priority set",
+0,
+0,
+0,
+0,
+0,
+0, //80
 
 
 
@@ -757,10 +782,10 @@ return w;
 char *get_qry_msg(int qry_type,int n) {
 static char buff[256];
 if (get_sqlcode()>=0) {
-	if (qry_type<=MAX_QRY) {
+	if (qry_type<=MAX_QRY && qry_strings[qry_type]!=0) {
 		sprintf(buff,qry_strings[qry_type],n);
 	} else {
-		sprintf(buff,"Operation successed (%d) rows affected",n);
+		sprintf(buff,"Operation Succeeded (%d) rows affected",n);
 	}
 } else {
 	char *ptr;
