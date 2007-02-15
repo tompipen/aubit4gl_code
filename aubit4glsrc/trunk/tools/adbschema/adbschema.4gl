@@ -136,6 +136,8 @@ define
 
 	else
 
+
+
 	if lv_tabname is not null then
 		if lv_srpf="-" then
 			call dump_table(lv_tabname,lv_systables,lv_prefix_idx,lv_no_owner)
@@ -144,6 +146,11 @@ define
 		end if
 	else
 		if lv_srpf="-" then # Looks like the whole database
+
+
+
+
+
 			if mv_mode=0 then
 				call dump_dbperms()
 			end if
@@ -151,7 +158,7 @@ define
 			call dump_table("all",lv_systables,lv_prefix_idx,lv_no_owner)
 
 			if mv_mode=0 then
-				call dump_procedures()
+				call dump_proc("all")
 				call dump_perm("all")
 			end if
 		else

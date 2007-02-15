@@ -30,6 +30,3 @@ if get_perms()=0 then return end if
 end function
 
 
-function dump_procedures() 
-end function
-
