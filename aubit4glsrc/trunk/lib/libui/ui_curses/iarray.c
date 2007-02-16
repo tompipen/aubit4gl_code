@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.116 2006-10-14 10:09:47 mikeaubury Exp $
+# $Id: iarray.c,v 1.117 2007-02-16 22:30:16 fortiz Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.116 2006-10-14 10:09:47 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.117 2007-02-16 22:30:16 fortiz Exp $";
 #endif
 
 /**
@@ -247,8 +247,8 @@ insert_line_in_array (struct s_inp_arr *inpa)
 
   init_arr_line (inpa, inpa->arr_line);
 
-
   A4GL_idraw_arr_all (inpa);
+
 }
 
 static void
@@ -941,11 +941,17 @@ process_key_press (struct s_inp_arr *arr, int a)
 
 
     case A4GLKEY_DOWN:
-	A4GL_debug("Calling newmovement");
-
-      A4GL_newMovement (arr,
-			arr->scr_line + 1, arr->arr_line + 1,
-			arr->curr_attrib, 'D');
+      if (arr->arr_line >= arr->no_arr) {
+	  A4GL_debug("Calling down newmovement -> insert at end");
+          A4GL_newMovement (arr,
+			    arr->scr_line + 1, arr->arr_line + 1,
+			    0, 'D');
+      } else {
+	  A4GL_debug("Calling down newmovement -> existing data");
+          A4GL_newMovement (arr,
+			    arr->scr_line + 1, arr->arr_line + 1,
+			    arr->curr_attrib, 'D');
+      } 
 	
 	
       break;
