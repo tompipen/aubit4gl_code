@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.32 2007-02-14 17:47:26 mikeaubury Exp $
+# $Id: console.c,v 1.33 2007-02-17 10:00:43 mikeaubury Exp $
 #*/
 
 /**
@@ -181,7 +181,7 @@ void
  * @todo Describe function
  */
 void *
- UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no)
+ UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type, int help_no,char *mn_comment, char*mn_style, char *mn_image)
 {
   char buff[256];
   ACL_Menu *menu;

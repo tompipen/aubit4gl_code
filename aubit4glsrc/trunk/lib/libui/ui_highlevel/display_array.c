@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.33 2006-09-29 14:01:59 mikeaubury Exp $
+# $Id: display_array.c,v 1.34 2007-02-17 10:00:43 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.33 2006-09-29 14:01:59 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.34 2007-02-17 10:00:43 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -740,11 +740,13 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,
 
       if (disp->srec->attribs.attribs_len != disp->nbind)
 	{
+	  A4GL_exitwith("Too many or too few variables for fields");
+
 	  A4GL_debug ("Too many or too few variables for fields %d %d %d",
 		      disp->srec->dim, disp->nbind,
 		      disp->srec->attribs.attribs_len);
 
-	  return 0;
+	  return -999;
 
 	}
 

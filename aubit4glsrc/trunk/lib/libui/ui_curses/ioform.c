@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.158 2007-02-14 17:47:26 mikeaubury Exp $
+# $Id: ioform.c,v 1.159 2007-02-17 10:00:43 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.158 2007-02-14 17:47:26 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.159 2007-02-17 10:00:43 mikeaubury Exp $";
 #endif
 
 /**
@@ -2997,8 +2997,12 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
   for (a = 0; a <= c; a++)
     {
       FIELD *f;
+      int nv;
       f = field_list[a];	// f will always be in the first rows of screen fields..
-      for (b = 0; b < s->nbind; b++)
+      nv=s->nbind;
+	if (s->start_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+
+      for (b = 0; b < nv; b++)
 	{
 	  if (f == s->field_list[0][b])
 	    {
@@ -3683,8 +3687,11 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
       for (a = 0; a <= c; a++)
 	{
 	  FIELD *f;
+		int nv;
 	  f = field_list[a];
-	  for (b = 0; b < s->nbind; b++)
+      nv=s->nbind;
+	if (s->start_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+	  for (b = 0; b <nv; b++)
 	    {
 	      if (f == s->field_list[0][b])
 		{
