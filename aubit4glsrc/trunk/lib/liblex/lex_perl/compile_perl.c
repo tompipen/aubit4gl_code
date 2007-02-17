@@ -2664,7 +2664,7 @@ LEXLIB_print_linked_cmd (int type, char *var)
 
 void
 LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll,
-			       char *attr, void *iattr,char *Style,t_binding_comp_list *t)
+			       char *attr, void *iattr,char *Style,t_binding_comp_list *t,char *slice)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }
@@ -3009,7 +3009,7 @@ LEXLIB_A4GL_get_formloop_str (int type)
 
 char *
 LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs,
-			  char *srec, char *attr, void *inp_attr,char *Style,t_binding_comp_list *t)
+			  char *srec, char *attr, void *inp_attr,char *Style,t_binding_comp_list *t,char *slice)
 {
   niy_assert (__PRETTY_FUNCTION__);
   return 0;
@@ -3225,7 +3225,7 @@ LEXLIB_print_error (t_expr_str_list * exprs, char *s, int wait,char *Style)
 }
 
 void
-LEXLIB_print_end_menu_1 (int n)
+LEXLIB_print_end_menu_1 (int n,  t_expr_str *mn_comment, t_expr_str *mn_style, t_expr_str *mn_image)
 {
   niy_assert (__PRETTY_FUNCTION__);
 }

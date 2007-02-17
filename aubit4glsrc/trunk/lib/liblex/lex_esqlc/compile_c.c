@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.351 2007-02-14 17:47:26 mikeaubury Exp $
+# $Id: compile_c.c,v 1.352 2007-02-17 10:10:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.351 2007-02-14 17:47:26 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.352 2007-02-17 10:10:48 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -117,6 +117,7 @@ char cmodname[256]="";
 //void A4GL_set_clobber(char *c);
 
 int doing_a_report=0;
+static int find_slice(char *av, char *s, int w) ;
 
 
 /*
@@ -229,7 +230,7 @@ static int pr_when_do (char *when_str, int when_code, int l, char *f,
 		       char *when_to);
 static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
-static void print_menu (int mn, int n);
+static void print_menu (int mn, int n, t_expr_str *mn_comment, t_expr_str *mn_style, t_expr_str *mn_image);
 void make_sql_bind_g ( t_binding_comp_list *bind);
 /* char *make_sql_bind_expr_g (char *sql, t_binding_comp_list *bind); */
 
@@ -3799,7 +3800,7 @@ char *l_arrvar; char *l_srec; char *l_scroll; char *l_attr;
  * @param attr The attributes
  */
 void
-LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void *v_input_attr,char *Style,t_binding_comp_list *bind)
+LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void *v_input_attr,char *Style,t_binding_comp_list *bind,char *slice)
 {
   int cnt;
   struct input_array_attribs *ptr_input_attr;
@@ -3820,16 +3821,28 @@ LEXLIB_print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *att
   printc ("SET(\"s_disp_arr\",_sio_%d,\"binding\",obind);\n",sio_id);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"nbind\",%d);\n",sio_id, cnt);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"srec\",0);\n",sio_id);
+  if (strlen(slice)) {
+	int s,e;
+	s=find_slice(arrvar, slice,0);
+	e=find_slice(arrvar, slice,1);
+	if (s==-1||e==-1) {
+		a4gl_yyerror("Invalid slice");
+		return ;
+	}
+  	printc ("SET(\"s_disp_arr\",_sio_%d,\"start_slice\",%d);\n",sio_id,s);
+  	printc ("SET(\"s_disp_arr\",_sio_%d,\"end_slice\",%d);\n",sio_id,e);
+  } else {
+  	printc ("SET(\"s_disp_arr\",_sio_%d,\"start_slice\",-1);\n",sio_id);
+  	printc ("SET(\"s_disp_arr\",_sio_%d,\"end_slice\",-1);\n",sio_id);
+  }
 
   if (ptr_input_attr->curr_row_display)
     printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",%s);\n",sio_id,
 	    ptr_input_attr->curr_row_display);
   else
-    printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id,
-	    ptr_input_attr->curr_row_display);
+    printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id, ptr_input_attr->curr_row_display);
 
-  printc
-    ("SET(\"s_disp_arr\",_sio_%d,\"arr_elemsize\",sizeof(%s[0]));\n",sio_id, arrvar);
+  printc ("SET(\"s_disp_arr\",_sio_%d,\"arr_elemsize\",sizeof(%s[0]));\n",sio_id, arrvar);
   printc ("_fld_dr= -1;_exec_block=0;\n");
   printc ("while (1) {\n");
 }
@@ -3857,6 +3870,7 @@ LEXLIB_print_display_array_p2 (void)
 	free(l_srec);
 	free(l_attr);
 	free(l_scroll);
+  printc("if (_exec_block==-999)  {break;}");
   printc("}");
   printc ("}\n}\n");
   printcomment ("/* end display */\n");
@@ -4619,6 +4633,44 @@ char *fldlist=0;
 }
 
 
+static int find_slice(char *av, char *s, int w) { 
+struct variable *v;
+int dtype=0;
+int size=0;
+int is_array=0;
+char buff[256];
+char *ptr;
+int a;
+if (strlen(s)==0) return -1;
+strcpy(buff,s);
+ptr=strchr(buff,':');
+A4GL_assertion(ptr==0, "No thru separator");
+*ptr=0;
+ptr++;
+
+if (w==0) ptr=buff; // start
+// otherwise - we want the end portion...
+
+
+find_variable(av, &dtype,&size,&is_array, &v );
+if (!v->is_array) {
+	a4gl_yyerror("Not an array");
+	return -1;
+}
+
+if (v->variable_type!=VARIABLE_TYPE_RECORD) {
+	a4gl_yyerror("Not an array of record");
+	return -1;
+}
+
+for (a=0;a<v->data.v_record.record_cnt;a++) {
+	if (A4GL_aubit_strcasecmp(v->data.v_record.variables[a]->names.name, ptr)==0) return a;
+}
+
+// Not found.
+return -1;
+}
+
 /**
  * Print the generated C code that implements the INPUT ARRAY 4gl statement.
  *
@@ -4629,7 +4681,7 @@ char *fldlist=0;
  * @param attr
  */
 char *
-LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec, char *attr, void *v_input_attr,char *Style,t_binding_comp_list* bind)
+LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec, char *attr, void *v_input_attr,char *Style,t_binding_comp_list* bind,char *slice)
 {
   static char buff2[256];
   int cnt;
@@ -4638,6 +4690,7 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec, ch
   struct input_array_attribs *ptr_input_attr;
   ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printc ("/*");
+   
    push_blockcommand ("INPUT"); 
   sio_id=get_sio_ids("INPUT");
   printc ("*/");
@@ -4670,7 +4723,22 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec, ch
   printc ("SET(\"s_inp_arr\",_sio_%d,\"inp_flags\",%d);\n",sio_id, inp_flags);
   printc ("if (GET_AS_INT(\"s_inp_arr\",_sio_%d,\"currform\")==0) break;\n",sio_id);
   printc ("SET(\"s_inp_arr\",_sio_%d,\"currentfield\",0);\n",sio_id);
-  printc ("SET(\"s_inp_arr\",_sio_%d,\"currentmetrics\",0);\n",sio_id);
+
+  if (strlen(slice)) {
+	int s,e;
+	s=find_slice(arrvar, slice,0);
+	e=find_slice(arrvar, slice,1);
+	if (s==-1||e==-1) {
+		a4gl_yyerror("Invalid slice");
+		return " " ;
+	}
+  	printc ("SET(\"s_inp_arr\",_sio_%d,\"start_slice\",%d);\n",sio_id,s);
+  	printc ("SET(\"s_inp_arr\",_sio_%d,\"end_slice\",%d);\n",sio_id,e);
+  } else {
+  	printc ("SET(\"s_inp_arr\",_sio_%d,\"start_slice\",-1);\n",sio_id);
+  	printc ("SET(\"s_inp_arr\",_sio_%d,\"end_slice\",-1);\n",sio_id);
+  }
+
   printc ("SET(\"s_inp_arr\",_sio_%d,\"mode\",%d+%s);\n",sio_id, MODE_INPUT, defs);
 
   if (ptr_input_attr->curr_row_display)
@@ -4701,10 +4769,13 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec, ch
   printc ("SET(\"s_inp_arr\",_sio_%d,\"allow_delete\",%d);\n",sio_id,
 	  ptr_input_attr->allow_delete);
 
+  printc ("SET(\"s_inp_arr\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio_%d,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio_%d,\"currform\"),A4GL_add_dot_star(%s),NULL,0));\n",sio_id,sio_id,sio_id, srec);
 
-  printc
-    ("SET(\"s_inp_arr\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio_%d,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio_%d,\"currform\"),A4GL_add_dot_star(%s),NULL,0));\n",sio_id,sio_id,sio_id, srec);
-  printc ("_fld_dr= -1;_exec_block=-1;continue;\n");
+ 
+  printc ("_fld_dr= -1;");
+  printc("_exec_block=-1;");
+  printc("ERR_CHK_ERROR { break;} ");
+  printc("continue;\n");
   SPRINTF4 (buff2, "A4GL_inp_arr_v2(&_sio_%d,%s,%s,%s,_forminit,_sio_evt);\n", sio_id,defs, srec, attr);
   return buff2;
 }
@@ -5777,7 +5848,7 @@ LEXLIB_print_menu_1b (int n)
  * by the parser.
  */
 static void
-print_menu (int mn, int n)
+print_menu (int mn, int n, t_expr_str *mn_comment, t_expr_str *mn_style, t_expr_str *mn_image)
 {
   int a;
   int c;
@@ -5791,8 +5862,39 @@ print_menu (int mn, int n)
        menu_stack[mn][a].menu_key[0] != 0 ||
        menu_stack[mn][a].menu_help[0] != 0; a++)
     c = a;
-  printc ("m_%d=(void *)A4GL_new_menu_create(%s,1,1,%d,0);\n", n, mmtitle[mn],
-	  2);
+  if (mn_comment||mn_style||mn_image) {
+		printc("{");
+		printc("char *_comment;");
+		printc("char *_style;");
+		printc("char *_image;");
+		if (mn_comment) {
+			real_print_expr(mn_comment);
+		} else {
+			printc("A4GL_push_char(\"\");");
+		}
+		printc("_comment=A4GL_char_pop();");
+
+		if (mn_style) {
+			real_print_expr(mn_style);
+		}  else {
+			printc("A4GL_push_char(\"\");");
+		}
+		printc("_style=A4GL_char_pop();");
+
+		if (mn_image) {
+			real_print_expr(mn_image);
+		} else {
+			printc("A4GL_push_char(\"\");");
+		}
+		printc("_image=A4GL_char_pop();");
+  		printc ("m_%d=(void *)A4GL_new_menu_create_with_attr(%s,1,1,%d,0,_comment, _style,_image);", n, mmtitle[mn], 2);
+		printc("free(_comment);");
+		printc("free(_style);");
+		printc("free(_image);");
+		printc("}");
+	} else {
+  		printc ("m_%d=(void *)A4GL_new_menu_create_with_attr(%s,1,1,%d,0,\"\",\"\",\"\");\n", n, mmtitle[mn], 2);
+	}
 
 
 // First - lets rattle off any *real* menu options....
@@ -5844,12 +5946,12 @@ LEXLIB_print_menu_0 (int n) {
  * This function implements the C code to terminate the menu scope
  */
 void
-LEXLIB_print_end_menu_1 (int n)
+LEXLIB_print_end_menu_1 (int n, t_expr_str *mn_comment, t_expr_str *mn_style, t_expr_str *mn_image)
 {
   /*printc ("\n}");*/
   printcomment (" /*end switch */\n");
   printc ("if (cmd_no_%d== -1) {\n", n);
-  print_menu (menu_cnt, n);
+  print_menu (menu_cnt, n, mn_comment,mn_style,mn_image);
   printc ("}\n");
 }
 
