@@ -1,4 +1,4 @@
-CFLAGS=-Wall -g -fPIC -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libaubit4gl -DCONFIGURED_TARGET=\"X\" -DCONFIGURED_TARGET_OS=\"X\"   
+CFLAGS=-Wall  -g -fPIC -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libaubit4gl -DCONFIGURED_TARGET=\"X\" -DCONFIGURED_TARGET_OS=\"X\"   
 CC=gcc
 
 

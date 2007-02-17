@@ -3,6 +3,7 @@ char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest) {
 }
 
 void *acl_malloc_full(long a,char *r,char *f,long l) {
+	printf("MALLOC : %s %d\n",f,l);
 	return malloc(a);
 }
 

@@ -1,3 +1,4 @@
+
 #include "a4gl_libaubit4gl_int.h"
 #include "ui_lowlevel.h"
 #ifdef htons
@@ -273,16 +274,14 @@ pipe_sock_puts (int sockfd, char *str)
 	int ok=1;
 
 	sz_buff=strlen(sock_buff);
-	if (str) {
-		sz_str=strlen(str);
-	}
+	if (str) { sz_str=strlen(str); }
 
 	// Do we need to send what we've got ? 
 	if (sz_buff>STREAM_BUFF_SIZE || sz_str+sz_buff>STREAM_BUFF_SIZE || sz_str>STREAM_BUFF_SIZE || str==0) { // Yes - i know if sz_str>STREAM_BUFF_SIZE then sz_str+sz_buff>STREAM_BUFF_SIZE anyway...
 		if (str!=0) {
-			printf("BUFFER FULL ;-) %d %d\n",sz_buff,sz_str);
+			//printf("BUFFER FULL ;-) %d %d\n",sz_buff,sz_str);
 		}
-		printf("SENDING CACHE :\n----'%s'\n\n----\n",sock_buff);
+		//printf("SENDING CACHE :\n----'%s'\n\n----\n",sock_buff);
 	  	ok=pipe_sock_write (sockfd, sock_buff, strlen (sock_buff));
 		sz_buff=0;
 		strcpy(sock_buff,"");
@@ -296,7 +295,7 @@ pipe_sock_puts (int sockfd, char *str)
 	if (sz_str>STREAM_BUFF_SIZE) {
 		// Its too large to cache...
 		if (ok) {
-			printf("SENDING NEW :\n----'%s'\n\n----\n",str);
+			//printf("SENDING NEW :\n----'%s'\n\n----\n",str);
 	  		ok=pipe_sock_write (sockfd, str, strlen (str));
 		}
 		return ok;
@@ -362,6 +361,7 @@ client_encode_string (char *ptr)
   int l;
   int a;
   static int maxlen = 0;
+  int sl;
   l = strlen (ptr);
   A4GL_debug ("Encoding : %s\n", ptr);
   if (l > maxlen)
@@ -373,7 +373,8 @@ client_encode_string (char *ptr)
   // We could use some fancy base64 encoding here..
   // but for now - we'll just send it as hex...
   strcpy (buff, "");
-  for (a = 0; a < strlen (ptr); a++)
+  sl=strlen (ptr);
+  for (a = 0; a < sl; a++)
     {
       sprintf (smbuff, "%02X", ptr[a] &0xff);
       strcat (buff, smbuff);
@@ -512,13 +513,17 @@ decode_hex (char c)
 char *
 client_decode_str (char *ptr)
 {
-  char *p;
+  static char *p=0;
   int a;
   int b = 0;
   int l;
-  p = malloc ((strlen (ptr) / 2) + 1);
+  int sl;
 
-  for (a = 0; a < strlen (ptr); a += 2)
+  if (p) free(p);
+
+  sl=strlen (ptr);
+  p = malloc ((sl / 2) + 1);
+  for (a = 0; a < sl; a += 2)
     {
       l = decode_hex (ptr[a]) * 16;
       l += decode_hex (ptr[a + 1]);
@@ -596,29 +601,6 @@ pipe_get_result (char *func,struct client_result *r,int expectresult)
 
 }
 
-int SendFile(char *s) {
-	FILE *f;
-	int a;
-	char *m;
-	int fl;
-	int ok;
-	char fdets[2000];
-        f=A4GL_open_file_dbpath(s);
-	if (f==0) return 0;
-	fseek(f,0,SEEK_END);
-	fl=ftell(f);
-	sprintf(fdets,"%s;%ld", s, fl);
-  	if (!pipe_sock_puts (serversocket,fdets)) return 0;
-	rewind(f);
-	m=malloc(fl);
-	fread(m,fl,1,f);
-  	ok=pipe_sock_write (serversocket,  m,fl);
-	fclose(f);
-	free(m);
-	return 1;
-}
-
-
 struct client_result *
 client_call (char *func, int expectresult, char *fmt, ...)
 {
@@ -630,6 +612,7 @@ client_call (char *func, int expectresult, char *fmt, ...)
   struct list_of_fields *lo;
   char *ptr;
   long l;
+	int sl;
 
   init_client ();
 
@@ -646,11 +629,11 @@ client_call (char *func, int expectresult, char *fmt, ...)
   r->result = 0;
   A4GL_debug("CALL %s - expectresult=%d\n",func,expectresult);
   sprintf (buff, "CALL %s %s", func, fmt);
-
-  if (strlen (fmt))
+	sl=strlen (fmt);
+  if (sl)
     {
       va_start (ap, fmt);
-      for (a = 0; a < strlen (fmt); a++)
+      for (a = 0; a < sl; a++)
 	{
 	  strcpy (smbuff, "?");
 
@@ -738,3 +721,72 @@ client_free_result (struct client_result *result)
     }
   free (result);
 }
+
+
+
+
+int SendFile(char *s) {
+	FILE *f;
+	int a;
+	unsigned char *m;
+	int fl;
+	int ok;
+	int cnt=0;
+	static char *hexstrings[255];
+	static int inited=0;
+	char fdets[2000];
+	char buff[STREAM_BUFF_SIZE+1];
+	char smbuff[20];
+	if (!inited) {
+		inited++;
+		for (a=0;a<=255;a++) {
+			sprintf(smbuff,"%02x",a&0xff);
+			hexstrings[a]=strdup(smbuff);
+		}
+	}
+
+        f=A4GL_open_file_dbpath(s);
+	if (f==0) return 0;
+	fseek(f,0,SEEK_END);
+	fl=ftell(f);
+
+	sprintf(fdets,"RECIEVEFILE %s ", s, fl);
+  	if (!pipe_sock_puts (serversocket,fdets)) return 0;
+	rewind(f);
+	m=malloc(fl);
+	fread(m,fl,1,f);
+
+	fclose(f);
+	strcpy(buff,"");
+	ok=1;
+
+	for (a=0;a<fl;a++) {
+		buff[cnt++]=hexstrings[m[a]][0];
+		buff[cnt++]=hexstrings[m[a]][1];
+		buff[cnt]=0;
+
+		if (cnt>STREAM_BUFF_SIZE-100) { // Allow some overhead...
+  			if (!pipe_sock_puts (serversocket,  buff)) {
+				ok=0;
+				break;
+			}
+			strcpy(buff,"");
+			cnt=0;
+		}
+	}
+
+	if (strlen(buff)) {
+ 		if (!pipe_sock_puts (serversocket,  buff)) {
+				ok=0;
+		}
+	}
+
+	pipe_sock_puts(serversocket,"\n");
+
+	free(m);
+
+	if (ok==0) return 0;
+	if (!pipe_expect ("OK")) return 0;
+	return ok;
+}
+
