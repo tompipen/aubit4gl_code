@@ -48,6 +48,11 @@ print "static struct s_err {"
 /exitwith2/ {next}
 /local_exitwith/ {next}
 /exitwith/ {
+if ($NF==1) {
+	old=$0
+	getline
+	$0=old $0
+}
 gsub("\\\\\"","\"")
 b=substr($0,index($0,":")-1)
 a=substr($0,index($0,"exitwith")+9)
