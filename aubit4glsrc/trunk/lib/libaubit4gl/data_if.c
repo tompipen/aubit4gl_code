@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.35 2006-10-14 16:18:31 mikeaubury Exp $
+# $Id: data_if.c,v 1.36 2007-02-17 10:13:06 mikeaubury Exp $
 #
 */
 
@@ -367,6 +367,10 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     int scr_dim;
 	int curr_line_is_new;
 	int processed_onkey;
+        /* Slice handling */
+    int start_slice;
+    int end_slice;
+
   };
 
   struct s_s_inp_arr_1 *val;
@@ -822,6 +826,33 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
 	{
 	  val->curr_attrib = (int) var;
 	  return (void *) 1;
+	}
+    }
+
+
+  if (strcmp (name, "start_slice") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *)val->start_slice;
+      if (mode == GETSETGETPTR)
+	return  &(val->start_slice);
+      if (mode == GETSETSET)
+	{
+	  val->start_slice = var;
+	  return (void *)1;
+	}
+    }
+
+  if (strcmp (name, "end_slice") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *)val->end_slice;
+      if (mode == GETSETGETPTR)
+	return  &(val->end_slice);
+      if (mode == GETSETSET)
+	{
+	  val->end_slice = var;
+	  return (void *)1;
 	}
     }
 
@@ -1295,6 +1326,9 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
     int attribute;
     int processed_onkey;
     char *curr_display;
+        /* Slice handling */
+    int start_slice;
+    int end_slice;
   };
 
   struct s_s_disp_arr_1 *val;
@@ -1389,6 +1423,35 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
+
+
+  if (strcmp (name, "start_slice") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *)val->start_slice;
+      if (mode == GETSETGETPTR)
+	return  &(val->start_slice);
+      if (mode == GETSETSET)
+	{
+	  val->start_slice = var;
+	  return (void *)1;
+	}
+    }
+
+  if (strcmp (name, "end_slice") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *)val->end_slice;
+      if (mode == GETSETGETPTR)
+	return  &(val->end_slice);
+      if (mode == GETSETSET)
+	{
+	  val->end_slice = var;
+	  return (void *)1;
+	}
+    }
+
+
 
   if (strcmp (name, "arr_elemsize") == 0)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.38 2006-12-29 11:17:09 mikeaubury Exp $
+# $Id: error.c,v 1.39 2007-02-17 10:13:06 mikeaubury Exp $
 #
 */
 
@@ -134,6 +134,11 @@ int a;
 		/* A4GL_fgl_die (errors[a].a4gl_errno == 0 ? 1 : errors[a].a4gl_errno); */
 	  }
   }
+
+  if (strcmp(s, "Unknown Error")!=0) {
+  	A4GL_exitwith("Unknown Error");
+  } 
+
 
    /* PRINTF ("STOP1: Error: %s\n ", s);  */
   A4GL_debug ("Exiting program.");

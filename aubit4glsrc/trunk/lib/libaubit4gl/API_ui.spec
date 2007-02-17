@@ -25,7 +25,7 @@ A4GL_close_form char* name -> void
 A4GL_disp_form char* name int attr -> int
 A4GL_current_window char* win_name -> int
 aclfgl_fgl_drawbox int n -> int
-A4GL_new_menu_create char* title int x int y int mn_type int help_no -> void*
+A4GL_new_menu_create_with_attr char* title int x int y int mn_type int help_no char* comment char* style char* image -> void*
 A4GL_add_menu_option void* menu char* txt char* keys char* desc int helpno int attr -> void
 A4GL_add_menu_timeout void* menu char timeout_type int timeoutlen int cmd_no_on_timeout long* timeoutvar -> void
 A4GL_add_menu_action void* menu char* action int cmd_no_on_timeout -> void
