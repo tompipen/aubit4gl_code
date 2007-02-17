@@ -750,7 +750,7 @@ int SendFile(char *s) {
 	fseek(f,0,SEEK_END);
 	fl=ftell(f);
 
-	sprintf(fdets,"RECIEVEFILE %s ", s, fl);
+	sprintf(fdets,"RECEIVEFILE %s ", s, fl);
   	if (!pipe_sock_puts (serversocket,fdets)) return 0;
 	rewind(f);
 	m=malloc(fl);
