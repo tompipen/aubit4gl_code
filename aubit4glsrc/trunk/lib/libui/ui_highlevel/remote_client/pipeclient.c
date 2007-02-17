@@ -375,7 +375,7 @@ client_encode_string (char *ptr)
   strcpy (buff, "");
   for (a = 0; a < strlen (ptr); a++)
     {
-      sprintf (smbuff, "%02X", ptr[a]);
+      sprintf (smbuff, "%02X", ptr[a] &0xff);
       strcat (buff, smbuff);
     }
   A4GL_debug ("Encoding : %s -> %s\n", ptr, buff);
