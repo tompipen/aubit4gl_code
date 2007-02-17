@@ -167,7 +167,7 @@ input_cmd	:	KW_INPUT inp_rest {
 			}
 		;
 
-input_array_cmd	:	KW_INPUT_ARRAY use_arr_var opt_defs FROM idm_input_array opt_help_no {
+input_array_cmd	:	KW_INPUT_ARRAY use_arr_var opt_slice opt_defs FROM idm_input_array opt_help_no {
 					add_feature("UI_INPUT_ARRAY");
 					map_ui_block("INPUT_ARRAY");
 					curr_input_array_attribs.maxcount=0;
@@ -178,10 +178,10 @@ input_array_cmd	:	KW_INPUT_ARRAY use_arr_var opt_defs FROM idm_input_array opt_h
 					inp_flags=0;
 		} input_attributes {
   					A4GL_new_events();
-				strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>6,$<str>3,$<str>5,$<str>8,&curr_input_array_attribs,last_style,copy_togenbind('o')));
+					strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>7,$<str>4,$<str>6,$<str>9,&curr_input_array_attribs,last_style,copy_togenbind('o'), $<str>3));
 					print_input_1();
 		} end_input { 
-				print_input_2($<str>9);
+				print_input_2($<str>10);
 				map_ui_endblock("INPUT");
 				A4GL_drop_events();
 		}
@@ -275,5 +275,13 @@ input_array_attributes_int :
 	| DELETE_ROW_EQUAL_TRUE 		{ curr_input_array_attribs.allow_delete=1; }
 	| DELETE_ROW_EQUAL_FALSE 		{ curr_input_array_attribs.allow_delete=0; }
 ;
+
+opt_slice : {strcpy($<str>$,"");}
+        | SLICE OPEN_BRACKET identifier THRU identifier CLOSE_BRACKET {	
+			sprintf($<str>$,"%s:%s",$<str>3,$<str>5);
+	}
+;
+
+
 
 /* ========================= input.rule ============================= */

@@ -132,7 +132,7 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_set_option_value,		"A4GL_set_option_value",		"014"},
 	{ &A4GL_sleep_i,			"A4GL_sleep_i",				"0"},
 	{ &A4GL_start_prompt,			"A4GL_start_prompt",			"444444"},
-	{ &A4GL_new_menu_create,		"A4GL_new_menu_create",			"444444"},
+	{ &A4GL_new_menu_create_with_attr,		"A4GL_new_menu_create_with_attr",			"444444444"},
 	{ &A4GL_menu_loop_v2,			"A4GL_menu_loop",			"444"},
 	{ &aclfgl_startlog_pcode,		"aclfgl_startlog",			"44"},
 	{ &aclfgli_clr_err_flg,			"aclfgli_clr_err_flg",			"0"},

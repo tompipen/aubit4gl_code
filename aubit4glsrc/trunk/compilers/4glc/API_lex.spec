@@ -164,7 +164,7 @@ print_display_new t_expr_str_list* exprs t_dt_display* disp char* attr char* sty
 
 print_display_form char* s,char* a char* style -> void
 
-print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr,void* iattr char* style  t_binding_comp_list* outbind -> void
+print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr,void* iattr char* style  t_binding_comp_list* outbind char* slice -> void
 
 print_display_array_p2 -> void
 
@@ -222,7 +222,7 @@ print_input_2 char* s -> void
 
 print_input_fl_g int byname,char* defs,char* helpno,t_field_list* fldlist,char* attr char* style t_binding_comp_list* bind -> void
 
-print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr char* style t_binding_comp_list* bind -> char*
+print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr char* style t_binding_comp_list* bind char* slice -> char*
 
 A4GL_get_formloop_str int type -> char*
 
@@ -341,7 +341,7 @@ print_menu_1 int n -> void
 print_menu_1b int n -> void
 
 print_menu_0 int n -> void
-print_end_menu_1 int n -> void
+print_end_menu_1 int n t_expr_str* mn_comment t_expr_str* mn_style t_expr_str* mn_image -> void
 
 print_end_menu_2 int n -> void
 

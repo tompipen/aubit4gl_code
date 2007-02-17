@@ -19,7 +19,7 @@ menu_cmd	:	MENU {
 		print_menu_0(menu_blk[menu_cnt]);
 		}
 		menu_commands END_MENU {
-   		print_end_menu_1(menu_blk[menu_cnt]);
+   		print_end_menu_1(menu_blk[menu_cnt], menu_attrib_comment,menu_attrib_style, menu_attrib_image);
    		add_continue_blockcommand ("MENU");
 		print_end_menu_2(menu_blk[menu_cnt]);
    		pop_blockcommand("MENU");

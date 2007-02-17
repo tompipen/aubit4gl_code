@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.260 2007-02-08 12:32:23 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.261 2007-02-17 10:15:22 mikeaubury Exp $
 #
 */
 
@@ -1777,6 +1777,8 @@ FORMCONTROL_HIDE_FIELD
     int attribute;
     int processed_onkey;
     char *curr_display;
+    int start_slice;
+    int end_slice;
   };
 
   struct s_inp_arr
@@ -1822,6 +1824,10 @@ FORMCONTROL_HIDE_FIELD
     int scr_dim;
     int curr_line_is_new;
     int processed_onkey;
+
+	/* Slice handling */
+    int start_slice;
+    int end_slice;
   };
 
 
@@ -2813,6 +2819,12 @@ struct sql_statement {
         int nibind;
         int nobind;
 };
+
+struct list_of_integers {
+        int *list;
+        int nlist;
+};
+
 
 struct ilist {
 	        int i0;
