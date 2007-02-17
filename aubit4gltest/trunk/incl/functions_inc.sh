@@ -3807,6 +3807,7 @@ NEED_COLS=43
 #exit
 	ALL_DESC=`$MAKE -k -s -C $TEST_NO all_desc 2>/tmp/make.tmp | tr "\n" "|"`
 	MISSING_TARGETS=`cat /tmp/make.tmp | grep "No rule to make target" | cut --field=8 --delimiter=" " | sed -e 's/\`//' | cut --field=1 --delimiter="'" | tr "\n" " "`
+	rm /tmp/make.tmp
 	
 	if test "$MISSING_TARGETS" != ""; then
 		for missing_target in $MISSING_TARGETS; do
@@ -3816,6 +3817,7 @@ NEED_COLS=43
 		#re-check
 		ALL_DESC=`$MAKE -k -s -C $TEST_NO all_desc 2>/tmp/make.tmp | tr "\n" "|"`
 		MISSING_TARGETS=`cat /tmp/make.tmp | grep "No rule to make target" | cut --field=8 --delimiter=" " | sed -e 's/\`//' | cut --field=1 --delimiter="'" | tr "\n" " "`
+		rm /tmp/make.tmp
 		if test "$MISSING_TARGETS" != ""; then
 			error "Still missing targets:$MISSING_TARGETS" "3"
 		fi
