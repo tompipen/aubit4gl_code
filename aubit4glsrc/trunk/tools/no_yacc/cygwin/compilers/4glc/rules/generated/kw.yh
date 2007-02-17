@@ -1139,3 +1139,4 @@
 %token FORCE_UI 2138
 %token FGL_MODULE 2139
 %token VIA 2140
+%token SLICE 2141

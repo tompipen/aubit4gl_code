@@ -1145,3 +1145,4 @@ struct s_kw {
 #define FORCE_UI 2138
 #define FGL_MODULE 2139
 #define VIA 2140
+#define SLICE 2141
