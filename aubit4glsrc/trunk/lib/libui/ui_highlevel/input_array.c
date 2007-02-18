@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.48 2007-02-09 10:52:54 mikeaubury Exp $
+# $Id: input_array.c,v 1.49 2007-02-18 10:47:07 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.48 2007-02-09 10:52:54 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.49 2007-02-18 10:47:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -256,8 +256,7 @@ delete_line_in_array (struct s_inp_arr *inpa)
       for (a = inpa->arr_line; a <= inpa->no_arr; a++)
 	{
 	  src_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a);
-	  dest_ptr =
-	    (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
+	  dest_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
 	  memcpy (dest_ptr, src_ptr, inpa->arr_elemsize);
 	}
       init_arr_line (inpa, inpa->no_arr);
@@ -330,8 +329,11 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
 
   if (type == 2)
     {
+	int nv;
       A4GL_debug ("calling set_arr_Fields");
-      A4GL_set_arr_fields (inpa->nbind, 1, srec2, scr_line, 0, 0);
+	nv=inpa->nbind;
+      if (inpa->start_slice!=-1 && inpa->end_slice!=-1) { nv=inpa->end_slice-inpa->start_slice+1; }
+      A4GL_set_arr_fields (nv, 1, srec2, scr_line, 0, 0);
 #ifdef DEBUG
       {
 	A4GL_debug ("Done");
@@ -1108,6 +1110,7 @@ UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
   void ***fld_list;
   int rval;
   struct aclfgl_event_list *evt;
+int nv;
   //int blk;
   struct s_inp_arr *inpa;
   evt = vevt;
@@ -1183,14 +1186,18 @@ UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
 
 	}
       A4GL_debug ("inpaarr3");
+	nv=inpa->nbind;
 
-      if (inpa->srec->attribs.attribs_len != inpa->nbind)
+	if (inpa->start_slice!=-1 ) {
+		nv=inpa->end_slice-inpa->start_slice+1;
+	}
+
+      if (inpa->srec->attribs.attribs_len != nv)
 
 	{
 
-	  A4GL_debug ("Too many or too few variables for fields %d %d",
-		      inpa->srec->dim, inpa->nbind);
-
+	  A4GL_debug ("Too many or too few variables for fields %d %d", inpa->srec->dim, nv);
+		A4GL_exitwith("Too many or too few variables for fields");
 	  return 0;
 
 	}
@@ -1367,6 +1374,9 @@ A4GL_set_fields_inp_arr (void *vsio, int n)
   A4GL_debug ("Field list=%p number of fields = %d", field_list, nofields);
 
   nv = sio->nbind;
+  if (sio->start_slice!=-1) {
+		nv=sio->end_slice-sio->start_slice+1;
+  }
 
   if (nofields != nv - 1)
     {
@@ -1429,14 +1439,26 @@ init_arr_line (struct s_inp_arr *sio, int n)
   struct BINDING *b;
 
   b = sio->binding;
+  if (n<=0) {
+          A4GL_assertion(1,"array element must be 1 or more");
+  }
+
+  if (sio->start_slice!=-1 && sio->end_slice!=-1) {
+  for (a = sio->end_slice; a >= sio->start_slice; a--)
+    {
+      A4GL_debug ("b[a].dtype=%d", b[a].dtype);
+      A4GL_setnull (b[a].dtype, (char *) b[a].ptr + sio->arr_elemsize * (n - 1), b[a].size);
+    }
+  } else {
 
   for (a = sio->nbind - 1; a >= 0; a--)
     {
       A4GL_debug ("b[a].dtype=%d", b[a].dtype);
       A4GL_setnull (b[a].dtype,
-		    (char *) b[a].ptr + sio->arr_elemsize * (n - 1),
-		    b[a].size);
+                    (char *) b[a].ptr + sio->arr_elemsize * (n - 1),
+                    b[a].size);
     }
+  }
 }
 
 /* 
@@ -1823,6 +1845,7 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
   int new_state;
   struct s_movement *ptr_movement;
   int cnt;
+int nv;
 
   rval = -1;
   new_state = 99;
@@ -2048,7 +2071,10 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	      ireinpalay_arr (arr, 2);
 	    }
 
-	  for (cnt = 0; cnt < arr->nbind; cnt++)
+
+        nv=arr->nbind;
+        if (arr->start_slice!=-1 && arr->end_slice!=-1) { nv=arr->end_slice-arr->start_slice+1; }
+	  for (cnt = 0; cnt < nv; cnt++)
 	    {
 	      struct struct_scr_field *fprop;
 	      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (arr->field_list[0][cnt]));	// props are shared - so we don't need the current line...
@@ -2228,7 +2254,11 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 		  //debug_print_flags(arr,"testing flags for currentfield");
 		  if ((fprop->flags & 1) == 0)
 		    {
-		      switch (arr->binding[arr->curr_attrib].dtype & 255)
+			int cattrib;
+			cattrib=arr->curr_attrib;
+	                if (arr->start_slice!=-1) { cattrib+=arr->start_slice; }
+
+		      switch (arr->binding[cattrib].dtype & 255)
 			{
 			case DTYPE_SMINT:
 			case DTYPE_INT:
@@ -2404,6 +2434,7 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  char *cptr;
 	  char *picture = 0;
 	  int has_picture = 0;
+	//int attrib;
 	  arr->currentfield =
 	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	  A4GL_LL_set_current_field (arr->currform->form, arr->currentfield);
@@ -2442,9 +2473,12 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  A4GL_debug ("has_str_attrib - 2");
 	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
 	    {
-	      if ((arr->binding[arr->curr_attrib].dtype & DTYPE_MASK) !=
+		int cattrib=arr->curr_attrib;
+		 if (arr->start_slice!=-1) { cattrib+=arr->start_slice; }
+
+	      if ((arr->binding[cattrib].dtype & DTYPE_MASK) !=
 		  DTYPE_CHAR
-		  && (arr->binding[arr->curr_attrib].dtype & DTYPE_MASK) !=
+		  && (arr->binding[cattrib].dtype & DTYPE_MASK) !=
 		  DTYPE_VCHAR)
 		{
 		  A4GL_exitwith
@@ -2456,7 +2490,7 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 		  int w;
 		  char *ptr;
 		  cptr =
-		    (char *) arr->binding[arr->curr_attrib].ptr +
+		    (char *) arr->binding[cattrib].ptr +
 		    arr->arr_elemsize * (arr->arr_line - 1);
 		  w = A4GL_get_field_width (arr->currentfield);
 		  has_picture = 1;
@@ -2467,7 +2501,7 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 
 		  for (a = 0; a < strlen (picture); a++)
 		    {
-		      if (a > arr->binding[arr->curr_attrib].size)
+		      if (a > arr->binding[cattrib].size)
 			break;
 
 		      if (picture[a] == 'A')
@@ -2493,31 +2527,33 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 		      ptr[a] = picture[a];
 		    }
 		  A4GL_push_param (ptr,
-				   arr->binding[arr->curr_attrib].dtype +
+				   arr->binding[cattrib].dtype +
 				   ENCODE_SIZE (arr->
-						binding[arr->curr_attrib].
+						binding[cattrib].
 						size));
 		  A4GL_display_field_contents (arr->currentfield,
-					       arr->binding[arr->curr_attrib].
+					       arr->binding[cattrib].
 					       dtype,
-					       arr->binding[arr->curr_attrib].
+					       arr->binding[cattrib].
 					       size, ptr);
 		  A4GL_debug ("MJAMJA - PTR=%s", ptr);
 		}
 	    }
 	  else
 	    {
+		int cattrib=arr->curr_attrib;
+		 if (arr->start_slice!=-1) { cattrib+=arr->start_slice; }
 	      cptr =
-		(char *) arr->binding[arr->curr_attrib].ptr +
+		(char *) arr->binding[cattrib].ptr +
 		arr->arr_elemsize * (arr->arr_line - 1);
 	      A4GL_push_param (cptr,
-			       arr->binding[arr->curr_attrib].dtype +
-			       ENCODE_SIZE (arr->binding[arr->curr_attrib].
+			       arr->binding[cattrib].dtype +
+			       ENCODE_SIZE (arr->binding[cattrib].
 					    size));
 	      A4GL_display_field_contents (arr->currentfield,
-					   arr->binding[arr->curr_attrib].
+					   arr->binding[cattrib].
 					   dtype,
-					   arr->binding[arr->curr_attrib].
+					   arr->binding[cattrib].
 					   size, cptr);
 	    }
 
@@ -2576,6 +2612,9 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	  char *picture;
 
 	  char *cptr;
+			int cattrib;
+			cattrib=arr->curr_attrib;
+	                if (arr->start_slice!=-1) { cattrib+=arr->start_slice; }
 	  //field_no=arr->curr_attrib;
 	  new_state = 0;
 
@@ -2645,8 +2684,10 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	    }
 
 	  A4GL_debug ("Calling pop_iarr_var");
-	  if (!pop_iarr_var (arr->currform, arr->curr_attrib, arr->arr_line,
-			     arr->arr_elemsize, arr->binding))
+          cattrib=arr->curr_attrib;
+          if (arr->start_slice!=-1) cattrib+=arr->start_slice;
+
+	  if (!pop_iarr_var (arr->currform, cattrib, arr->arr_line, arr->arr_elemsize, arr->binding))
 	    {
 	      A4GL_debug ("Called pop_iarr_var - not ok");
 	      new_state = 0;
@@ -2657,7 +2698,7 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	    }
 
 	  cptr =
-	    (char *) arr->binding[arr->curr_attrib].ptr +
+	    (char *) arr->binding[cattrib].ptr +
 	    arr->arr_elemsize * (arr->arr_line - 1);
 
 	  fprop =
@@ -2691,11 +2732,11 @@ process_control_stack (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 
 
 	  A4GL_push_param (cptr,
-			   arr->binding[arr->curr_attrib].dtype +
-			   ENCODE_SIZE (arr->binding[arr->curr_attrib].size));
+			   arr->binding[cattrib].dtype +
+			   ENCODE_SIZE (arr->binding[cattrib].size));
 	  A4GL_display_field_contents (arr->currentfield,
-				       arr->binding[arr->curr_attrib].dtype,
-				       arr->binding[arr->curr_attrib].size,
+				       arr->binding[cattrib].dtype,
+				       arr->binding[cattrib].size,
 				       cptr);
 	  new_state = 0;
 	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
@@ -2775,6 +2816,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
   char buff[256];
   int da;
   int attr;
+	int nv;
 
   struct struct_scr_field *fprop;
   A4GL_debug ("In disp_fields");
@@ -2785,8 +2827,19 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
   //if (fonly && nofields >= 0) nofields = 0;
 
 
-  for (a = 0; a < arr->nbind; a++)
+  nv=arr->nbind;
+  if (arr->start_slice!=-1 && arr->end_slice!=-1) { nv=arr->end_slice-arr->start_slice+1; }
+
+
+  for (a = 0; a < nv; a++)
     {
+	int bno;
+
+        if (arr->start_slice==-1) {
+                bno=a;
+        } else {
+                bno=a+arr->start_slice;
+        }
 
       fprop =
 	(struct struct_scr_field
@@ -2829,22 +2882,22 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
       if (!blank)
 	{
 	  cptr =
-	    (char *) arr->binding[a].ptr + arr->arr_elemsize * (arr_line - 1);
+	    (char *) arr->binding[bno].ptr + arr->arr_elemsize * (arr_line - 1);
 	  A4GL_push_param (cptr,
-			   arr->binding[a].dtype +
-			   ENCODE_SIZE (arr->binding[a].size));
+			   arr->binding[bno].dtype +
+			   ENCODE_SIZE (arr->binding[bno].size));
 	}
       else
 	{
 	  strcpy (buff, "");
 	  cptr = buff;
 	  A4GL_push_null (DTYPE_CHAR, 1);
-	  A4GL_setnull (arr->binding[a].dtype, cptr, arr->binding[a].size);
+	  A4GL_setnull (arr->binding[bno].dtype, cptr, arr->binding[bno].size);
 	}
 
       A4GL_display_field_contents (arr->field_list[scr_line - 1][a],
-				   arr->binding[a].dtype,
-				   arr->binding[a].size, cptr);
+				   arr->binding[bno].dtype,
+				   arr->binding[bno].size, cptr);
 
     }
 
@@ -2862,6 +2915,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
   int a;
   //void **ptr;
   char *colname;
+int nv;
 
 
   A4GL_debug ("req_field_input_array - %c", type);
@@ -2913,11 +2967,14 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 
   a = 1;
   colname = va_arg (*ap, char *);
+        nv=arr->nbind;
+        if (arr->start_slice!=-1 && arr->end_slice!=-1) { nv=arr->end_slice-arr->start_slice+1; }
+
 
   A4GL_debug ("A=%d MJAMJA123", a);
   if (a >= 0)
     {
-      for (a = 0; a < arr->nbind; a++)
+      for (a = 0; a < nv; a++)
 	{
 
 	  if (A4GL_field_name_match (arr->field_list[0][a], colname))
@@ -2968,11 +3025,15 @@ debug_print_flags (void *sv, char *txt)
   struct struct_scr_field *fprop;
   int a;
   int b;
+int nv;
   s = sv;
   A4GL_debug ("fgl_fieldtouched - input array");
+    nv=s->nbind;
+    if (s->start_slice!=-1 && s->end_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+
   for (a = 0; a < s->scr_dim; a++)
     {
-      for (b = 0; b < s->nbind; b++)
+      for (b = 0; b < nv; b++)
 	{
 	  void *f;
 	  f = s->field_list[a][b];

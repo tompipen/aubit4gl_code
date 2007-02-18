@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.51 2006-09-29 14:01:59 mikeaubury Exp $";
+  "$Id: misc.c,v 1.52 2007-02-18 10:47:08 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -266,6 +266,7 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
   //int found;
   struct s_inp_arr *s;
   struct struct_scr_field *fprop;
+int nv;
   s = sv;
   A4GL_debug ("fgl_fieldtouched - input array");
 
@@ -300,12 +301,14 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 
 
       A4GL_debug ("fieldtouched_input - checking field_status");
+	    nv=s->nbind;
+    if (s->start_slice!=-1 && s->end_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
 
       for (a = 0; a <= c; a++)
 	{
 	  void *f;
 	  f = field_list[a];
-	  for (b = 0; b < s->nbind; b++)
+	  for (b = 0; b < nv; b++)
 	    {
 	      if (f == s->field_list[0][b])
 		{
@@ -377,16 +380,20 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
   int a;
   int nr;
   int b;
+int nv;
 
   s = inp;
 
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   nr = 0;
+    nv=s->nbind;
+    if (s->start_slice!=-1 && s->end_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+
   for (a = 0; a <= c; a++)
     {
       void *f;
       f = field_list[a];	// f will always be in the first rows of screen fields..
-      for (b = 0; b < s->nbind; b++)
+      for (b = 0; b < nv; b++)
 	{
 	  if (f == s->field_list[0][b])
 	    {

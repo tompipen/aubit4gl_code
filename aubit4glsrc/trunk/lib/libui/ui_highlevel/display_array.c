@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.34 2007-02-17 10:00:43 mikeaubury Exp $
+# $Id: display_array.c,v 1.35 2007-02-18 10:47:07 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.34 2007-02-17 10:00:43 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.35 2007-02-18 10:47:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -697,6 +697,7 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,
   int a;
   struct s_disp_arr *disp;
   struct aclfgl_event_list *evt;
+int nv;
   //int blk;
   evt = vevt;
   disp = dispv;
@@ -738,7 +739,10 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,
 	}
       A4GL_debug ("disparr3");
 
-      if (disp->srec->attribs.attribs_len != disp->nbind)
+     nv=disp->nbind;
+     if (disp->start_slice!=-1) {nv=disp->end_slice - disp->start_slice +1;}
+
+      if (disp->srec->attribs.attribs_len != nv)
 	{
 	  A4GL_exitwith("Too many or too few variables for fields");
 
@@ -960,36 +964,41 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
   for (a = nofields; a >= 0; a--)
     {
       int nattr;
+	int bno;
       f =
 	(struct struct_scr_field
 	 *) (A4GL_ll_get_field_userptr (field_list[a]));
       A4GL_debug ("f=%p", f);
 
 
+        bno=a;
+        if (disp->start_slice!=-1) {
+                bno+=disp->start_slice;
+        }
 
 
       if (!blank)
 	{
 	  A4GL_debug ("Displaying something..");
 	  cptr =
-	    (char *) disp->binding[a].ptr + disp->arr_elemsize * (arr_line -
+	    (char *) disp->binding[bno].ptr + disp->arr_elemsize * (arr_line -
 								  1);
 	  A4GL_push_param (cptr,
-			   disp->binding[a].dtype +
-			   ENCODE_SIZE (disp->binding[a].size));
+			   disp->binding[bno].dtype +
+			   ENCODE_SIZE (disp->binding[bno].size));
 	}
       else
 	{
 	  A4GL_debug ("Displaying blank..");
 	  strcpy (buff, "");
 	  cptr = &buff[0];
-	  A4GL_setnull (disp->binding[a].dtype, cptr, disp->binding[a].size);
-	  A4GL_push_null (disp->binding[a].dtype, disp->binding[a].size);
+	  A4GL_setnull (disp->binding[bno].dtype, cptr, disp->binding[bno].size);
+	  A4GL_push_null (disp->binding[bno].dtype, disp->binding[bno].size);
 	}
 
 
-      A4GL_display_field_contents (field_list[a], disp->binding[a].dtype,
-				   disp->binding[a].size, cptr);
+      A4GL_display_field_contents (field_list[a], disp->binding[bno].dtype,
+				   disp->binding[bno].size, cptr);
 
       nattr =
 	A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, disp->attribute, f,

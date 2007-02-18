@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.118 2007-02-17 10:00:43 mikeaubury Exp $
+# $Id: iarray.c,v 1.119 2007-02-18 10:47:05 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.118 2007-02-17 10:00:43 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.119 2007-02-18 10:47:05 mikeaubury Exp $";
 #endif
 
 /**
@@ -469,7 +469,7 @@ proc_zero(char *s)
  * @param
  */
 static int
-pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
+pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem,
 	      struct BINDING *b)
 {
   char buff[8000];
@@ -478,19 +478,17 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
   char *ptr;
   struct struct_scr_field *fprop;
 
-  A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x, y,
-	      form->currentfield);
+  A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x_col, y_row, form->currentfield);
   if (form->currentfield == 0)
     return 1;
 
-  y--;
+  y_row--;
 
 
   if (!A4GL_copy_field_data (form))
     return 0;
 
-  strcpy (fbuff, field_buffer (form->currentfield, 0));
-	A4GL_debug("fbuff=%s\n",fbuff);
+  strcpy (fbuff, field_buffer (form->currentfield, 0)); A4GL_debug("fbuff=%s\n",fbuff);
   fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
   if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
     {
@@ -550,7 +548,7 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
     }
   else
     {
-      A4GL_push_null (b[x].dtype, b[x].size);
+      A4GL_push_null (b[x_col].dtype, b[x_col].size);
     }
   A4GL_debug ("Pushed field buffer :'%s'", ptr);
 
@@ -560,9 +558,9 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 
   really_ok = 1;
   A4GL_debug ("Calling pop_var2..");
-  A4GL_pop_var2 ((char *) b[x].ptr + (y * elem), b[x].dtype, b[x].size);
+  A4GL_pop_var2 ((char *) b[x_col].ptr + (y_row * elem), b[x_col].dtype, b[x_col].size);
 
-  if (strlen (buff) && A4GL_isnull (b[x].dtype, b[x].ptr + (y * elem)))
+  if (strlen (buff) && A4GL_isnull (b[x_col].dtype, b[x_col].ptr + (y_row * elem)))
     {
       A4GL_debug ("Looks null");
       really_ok = 0;
@@ -574,8 +572,8 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
       really_ok = 0;
     }
 
-  if ((b[x].dtype == DTYPE_INT || b[x].dtype == DTYPE_SMINT
-       || b[x].dtype == DTYPE_SERIAL) && strchr (buff, '.'))
+  if ((b[x_col].dtype == DTYPE_INT || b[x_col].dtype == DTYPE_SMINT
+       || b[x_col].dtype == DTYPE_SERIAL) && strchr (buff, '.'))
     {
       A4GL_debug ("Looks like its got a '.' in it");
       really_ok = 0;
@@ -3130,7 +3128,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 	  strcpy (buff, "");
 	  cptr = buff;
 	  A4GL_push_null (DTYPE_CHAR, 1);
-	  A4GL_debug ("ZZZZZ : %d %p %x", arr->binding[a].dtype, cptr, arr->binding[bno].size);
+	  A4GL_debug ("ZZZZZ : %d %p %x", arr->binding[bno].dtype, cptr, arr->binding[bno].size);
 	  A4GL_setnull (arr->binding[bno].dtype, cptr, arr->binding[bno].size);
 	}
 
