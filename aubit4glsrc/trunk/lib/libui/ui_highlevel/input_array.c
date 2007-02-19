@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.49 2007-02-18 10:47:07 mikeaubury Exp $
+# $Id: input_array.c,v 1.50 2007-02-19 19:41:11 fortiz Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.49 2007-02-18 10:47:07 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.50 2007-02-19 19:41:11 fortiz Exp $";
 #endif
 /**
  * @file
@@ -894,9 +894,20 @@ process_key_press (struct s_inp_arr *arr, int a)
 
 
     case A4GLKEY_DOWN:
-      A4GL_newMovement (arr,
+	  if (arr->arr_line >= arr->no_arr) 
+	{
+        A4GL_debug ("Key_down -> insert new line");
+      	A4GL_newMovement (arr,
+			arr->scr_line + 1, arr->arr_line + 1,
+			0, 'D');
+	}
+      else
+	{
+        A4GL_debug ("Key_down -> existing data");
+      	A4GL_newMovement (arr,
 			arr->scr_line + 1, arr->arr_line + 1,
 			arr->curr_attrib, 'D');
+	}
 
       break;
 
@@ -947,6 +958,9 @@ process_key_press (struct s_inp_arr *arr, int a)
 	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
       }
 
+	A4GL_newMovement (arr,
+			arr->scr_line, arr->arr_line,
+			0, 'D');
 
       break;
 
@@ -972,6 +986,13 @@ process_key_press (struct s_inp_arr *arr, int a)
       //break;
 
     case A4GLKEY_UP:
+      if (arr->curr_line_is_new==1)
+	  {
+          A4GL_debug ("KEY_UP in a new blank line, like key_del ??");
+          // init_arr_line (arr, arr->no_arr);
+          // arr->no_arr--;
+          // A4GL_set_arr_count (arr->no_arr);
+	  }
       A4GL_newMovement (arr,
 			arr->scr_line - 1, arr->arr_line - 1,
 			arr->curr_attrib, 'U');
