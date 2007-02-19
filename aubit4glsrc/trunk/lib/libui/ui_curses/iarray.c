@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.119 2007-02-18 10:47:05 mikeaubury Exp $
+# $Id: iarray.c,v 1.120 2007-02-19 18:25:29 fortiz Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.119 2007-02-18 10:47:05 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.120 2007-02-19 18:25:29 fortiz Exp $";
 #endif
 
 /**
@@ -1020,6 +1020,9 @@ process_key_press (struct s_inp_arr *arr, int a)
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
 	}
+	  A4GL_newMovement (arr,
+	      arr->scr_line, arr->arr_line,
+	      0, 'D');
       break;
 
     case A4GLKEY_DEL:
