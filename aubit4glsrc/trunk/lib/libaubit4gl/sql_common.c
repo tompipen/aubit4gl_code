@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.33 2007-01-31 18:29:26 mikeaubury Exp $
+# $Id: sql_common.c,v 1.34 2007-02-20 19:19:55 gyver309 Exp $
 #
 */
 
@@ -96,7 +96,7 @@ void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 
 
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
-//struct BINDING *obind, int no, char *s);
+//struct BINDING *obind, int no, char *s, int singleton);
 /*
 =====================================================================
                     Functions definitions
@@ -110,10 +110,19 @@ void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
  * @param sql A flag that indicate if the sqlca.sqlcode should be assigned.
  *   - 0 : Not SQL
  *   - Otherwise : SQL
+ * @return
+ *   - 1 : status was altered
+ *   - 0 : status was not altered
  */
-void
+int
 A4GLSQL_set_status (int a, int sql)
 {
+  if (aclfgli_get_err_flg())
+  {
+      A4GL_debug("set_status: errflg is set - not setting new status %d", a);
+      return 0;
+  }
+
   A4GL_debug ("A4GLSQL_set_status(%d,%d)", a, sql);
 
   if ((!aclfgli_get_err_flg ()) || a >= 0)
@@ -128,20 +137,23 @@ A4GLSQL_set_status (int a, int sql)
 	  aclfgli_set_err_flg ();
 	}
       A4GL_debug ("Status set to %d", a);
+      return 1;
     }
   else
     {
-      if (a4gl_status > 0 && a < 0)
+      if (a4gl_status > 0)
 	{
 	  a4gl_status = a;
 	  if (sql)
 	    a4gl_sqlca.sqlcode = a;
+	  return 1;
 	}
       else
 	{
 	  A4GL_debug
 	    ("Status set to %d and errflg is set - not setting it to %d/%d",
 	     a4gl_status, a, sql);
+	  return 0;
 	}
     }
 }
@@ -325,7 +337,7 @@ struct s_sid *
 XxxA4GLSQL_prepare_sql (char *s)
 {
 	A4GL_assertion(1,"FIXME");
-  return (struct s_sid *) A4GLSQL_prepare_select (0, 0, 0, 0, s,"__prepare",0);
+  return (struct s_sid *) A4GLSQL_prepare_select (0, 0, 0, 0, s,"__prepare",0,0);
 }
 #endif
 
@@ -343,7 +355,7 @@ XxxA4GLSQL_prepare_sql (char *s)
  */
 /* int -- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *mod,int line,int converted)
+A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *mod,int line,int converted, int singleton)
 {
 	char buff[256];
   char uniq_id[100];
@@ -365,7 +377,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
       s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s,converted);
     }
   SPRINTF2(uniq_id,"a4gl_st_%s_%d",buff,line);
-  return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id); 
+  return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id, singleton); 
 }
 
 
@@ -691,14 +703,14 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
 void*
 A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void  *ibind)
 {
-  return A4GLSQL_prepare_select (ibind, ni, (struct BINDING *) 0, 0, s);
+  return A4GLSQL_prepare_select (ibind, ni, (struct BINDING *) 0, 0, s,0);
 }
 */
 
 /*
 void * A4GLSQL_prepare_sql (char *s)
 {
-  return A4GLSQL_prepare_select ((void *) 0, 0, (void *) 0, 0, s);
+  return A4GLSQL_prepare_select ((void *) 0, 0, (void *) 0, 0, s,0);
 }
 */
 
@@ -868,24 +880,8 @@ struct s_table *
 A4GLSQLPARSE_new_tablename (char *tname, char *alias)
 {
   struct s_table *ptr;
-  char *defaultOwner;
+
   ptr = malloc (sizeof (struct s_table));
-
-  // make owner name, when no any given but DEFAULT_OWNER env var is set
-  defaultOwner = acl_getenv("DEFAULT_OWNER");
-  if (defaultOwner && defaultOwner[0] != 0 && strchr(tname, '.') == NULL) // default owner given and no owner specified in statement
-  {
-      static char tbuf[128];
-      if (strlen(tname) + strlen(defaultOwner)+3 > sizeof(tbuf))
-	  A4GL_exitwith("A4GLSQLCV_check_tablename: buffer overrun\n");
-
-      strcpy(tbuf, defaultOwner);
-      strcat(tbuf, ".");
-      strcat(tbuf, tname);
-      A4GL_debug("default owner name appended \"%s\" -> \"%s\"\n", tname, tbuf);
-      tname = tbuf;
-  }
-
   ptr->tabname = acl_strdup (tname);
   if (alias)
     {
