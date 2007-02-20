@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.117 2007-02-08 12:32:24 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.118 2007-02-20 18:52:22 gyver309 Exp $
 #
 */
 
@@ -477,7 +477,7 @@ A4GL_chk_err (int lineno, char *fname)
 	  A4GL_errorlog (fname, lineno, 1);
 	}
       A4GL_debug ("%s",s);
-      PRINTF ("Err:%s", s);
+      FPRINTF (stderr, "Err:%s", s);
 
       if (atoi(acl_getenv("RUNNING_TEST"))) {
 	char buff[256];
