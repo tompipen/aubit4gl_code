@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.177 2007-01-31 18:29:27 mikeaubury Exp $
+# $Id: esql.ec,v 1.178 2007-02-20 15:22:53 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.177 2007-01-31 18:29:27 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.178 2007-02-20 15:22:53 mikeaubury Exp $";
 #endif
 
 
@@ -5159,7 +5159,7 @@ if (nbind)
 
   EXEC SQL FREE fetcher;
   ISSQLERROR
-
+  A4GL_set_a4gl_sqlca_errd(2,reccount);
   fflush(unloadFile);
   fclose(unloadFile);
 
