@@ -34,6 +34,7 @@ errors[errmsg]=a4gl_errno
 FS="|"
 close("data/errs")
 
+print "#define A4GL_ERR_BASE 30000"
 print "static struct s_err {"
 	print "char *errmsg;"
 	print "int a4gl_errno;"
@@ -43,6 +44,8 @@ print "static struct s_err {"
 /IGNOREEXITWITH/ {next}
 /exitwith\(char/ {next}
 /exitwith_sql\(char/  {next}
+/exitwith_sql_odbc\(char/  {next}
+/exitwith_sql_odbc_errm\(char/  {next}
 /define exitwith exitwith_sql/  {next}
 /define IGNOREEXITWITH/   {next}
 /exitwith2/ {next}
