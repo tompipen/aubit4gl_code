@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.50 2007-02-14 17:47:26 mikeaubury Exp $
+# $Id: util.c,v 1.51 2007-02-20 18:20:45 gyver309 Exp $
 #
 */
 
@@ -361,24 +361,6 @@ fix_update_expr (int mode)
 }
 
 
-
-#ifdef MOVED
-/**
- *
- * @todo Describe function
- */
-static int
-A4GL_escape_quote_owner (void)
-{
-  if (strcmp (acl_getenv ("A4GL_QUOTE_OWNER"), "Y") == 0)
-    return 1;
-  if (strcmp (acl_getenv ("A4GL_QUOTE_OWNER"), "N") == 0)
-    return 1;
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
-    return 0;
-  return 1;
-}
-#endif
 
 /**
  *
