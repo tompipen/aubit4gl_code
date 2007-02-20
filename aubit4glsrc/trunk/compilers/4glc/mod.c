@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.295 2007-02-09 10:53:24 mikeaubury Exp $
+# $Id: mod.c,v 1.296 2007-02-20 18:15:55 gyver309 Exp $
 #
 */
 
@@ -204,14 +204,15 @@ int rep_type = 0;	      /** The report type */
 /**
  * Array where all the WHENEVER conditions are stored.
  */
-int when_code[8] = { WHEN_STOP,
-  WHEN_NOTSET,
-  WHEN_STOP,
-  WHEN_CONTINUE,
-  WHEN_CONTINUE,
-  WHEN_CONTINUE,
-  WHEN_NOTSET,
-  WHEN_NOTSET
+int when_code[8] = {
+  WHEN_STOP,      // A_WHEN_ERROR 	     
+  WHEN_NOTSET,    // A_WHEN_ANYERROR   
+  WHEN_STOP,      // A_WHEN_SQLERROR   
+  WHEN_CONTINUE,  // A_WHEN_WARNING 	  
+  WHEN_CONTINUE,  // A_WHEN_SQLWARNING 
+  WHEN_CONTINUE,  // A_WHEN_NOTFOUND   
+  WHEN_NOTSET,    // A_WHEN_SUCCESS	  
+  WHEN_NOTSET     // A_WHEN_SQLSUCCESS 
 };
 
 int lines_printed = 0;
@@ -4865,27 +4866,6 @@ A4GL_add_feature (char *feature)
       fclose (f);
     }
 }
-
-
-#ifdef MOVED
-int
-A4GL_escape_quote_owner (void)
-{
-  if (A4GLSQLCV_check_requirement ("QUOTE_OWNER"))
-    {
-      return 1;
-    }
-  if (A4GLSQLCV_check_requirement ("NO_OWNER_QUOTE"))
-    {
-      return 0;
-    }
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
-    {
-      return 0;
-    }
-  return 1;
-}
-#endif
 
 
 char *
