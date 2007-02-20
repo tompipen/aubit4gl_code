@@ -117,7 +117,7 @@ int A4GL_4glc_push_gen_expand(int n,char *v);
 static void A4GL_CV_print_exec_sql_bound(char *s);
 
 
-int A4GL_new_escape_quote_owner(void);
+char * A4GLSQLCV_ownerize_tablename (char *owner, char *table);
 
 //#include "ilist.h"
 
