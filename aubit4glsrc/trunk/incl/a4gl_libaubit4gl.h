@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.261 2007-02-17 10:15:22 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.262 2007-02-20 19:19:41 gyver309 Exp $
 #
 */
 
@@ -973,10 +973,6 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
 
   /* ======================== from debug.h ======================== */
 
-
-  void A4GL_exitwith_sql (char *s);
-  void A4GL_set_errm (char *s);
-
   /* in debug.c */
   void A4GL_setarg0 (const char *argv0);
   const char *A4GL_getarg0 (void);
@@ -1182,6 +1178,7 @@ enum cmd_types {
 
 #ifndef ALREADY_DONE_POP_PUSH_ETC
   void A4GL_debug_full (char *fmt, ...);
+  void A4GL_debug_full_extended (char *fmt, ...);
   int A4GLSTK_isStackInfo (void);
   char *acl_getenv (char *);
   char * acl_getenv_not_set_as_0 (char *s);
@@ -1197,6 +1194,7 @@ enum cmd_types {
   void A4GL_push_null (int dtype,int size);
   char *a4gl_substr (char *s, int dtype, int a, int b, ...);
   int A4GL_set_line (char *s, long l);
+  int A4GL_set_line_extended (char *s, long l, const char *level, const char * func);
   char *get_bind_varname(char i,int n);
   int A4GL_pop_bool (void);
   short A4GL_pop_int (void);
@@ -1320,11 +1318,46 @@ void A4GL_set_curr_report(void *c) ;
 // we should *never* really be calling a function called 'A4GL_debug'....
 void A4GL_debug(char *s); 
 
+/*
 #ifndef NODEBUG
-#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
+#define A4GL_debug A4GL_set_line(__FILE__,__LINE__),A4GL_debug_full
 #else
 #define A4GL_debug null_func
 #endif
+*/
+
+#ifndef NODEBUG
+
+#if __STDC_VERSION__ < 199901L
+# if __GNUC__ >= 2
+#  define __func__ __FUNCTION__
+# else
+#  define __func__ "<unknown>"
+# endif
+#endif
+
+#define A4GL_ftl A4GL_set_line_extended(__FILE__,__LINE__,"FTL",__func__),A4GL_debug_full_extended
+#define A4GL_err A4GL_set_line_extended(__FILE__,__LINE__,"ERR",__func__),A4GL_debug_full_extended
+#define A4GL_wrn A4GL_set_line_extended(__FILE__,__LINE__,"WRN",__func__),A4GL_debug_full_extended
+#define A4GL_inf A4GL_set_line_extended(__FILE__,__LINE__,"inf",__func__),A4GL_debug_full_extended
+#define A4GL_dbg A4GL_set_line_extended(__FILE__,__LINE__,"dbg",__func__),A4GL_debug_full_extended
+#define A4GL_debug A4GL_dbg
+
+#ifdef DEBUG
+#define A4GL_trc A4GL_set_line_extended(__FILE__,__LINE__,"trc",__func__),A4GL_debug_full_extended
+#else //!DEBUG
+#define A4GL_trc null_func
+#endif //DEBUG
+
+#else //!NODEBUG
+#define A4GL_ftl null_func
+#define A4GL_err null_func
+#define A4GL_wrn null_func
+#define A4GL_inf null_func
+#define A4GL_dbg null_func
+#define A4GL_trc null_func
+
+#endif //NODEBUG
 
   /* ====================== from data_if.c =================== */
 
@@ -1450,7 +1483,10 @@ void A4GL_debug(char *s);
 
 
   /* ============================ error.c ================================ */
+  int A4GL_get_errcode_for_errstr (char *s);
   void A4GL_exitwith (char *s);
+  void A4GL_exitwith_sql (char *s);
+  void A4GL_set_errm (char *s);
   void A4GL_set_error (char *fmt, ...);
 
   /* ============================ from a4gl_stack.h ================= */
@@ -1998,6 +2034,7 @@ char *A4GLSQLCV_select_into_temp(char *sel,char *lp,char *tabname);
 char *A4GLSQLCV_create_temp_table(char *tabname,char *elements,char *extra,char *oplog);
 char *A4GLSQLCV_check_tablename(char *t) ;
 char *A4GLSQLCV_make_tablename(char *t,char *c) ;
+char *A4GLSQLCV_ownerize_tablename(char *owner, char *table);
 
 
 void A4GL_add_feature(char *s);
