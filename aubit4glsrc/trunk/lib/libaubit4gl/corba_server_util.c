@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.29 2007-01-14 14:50:29 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.30 2007-02-20 18:40:26 gyver309 Exp $
 #
 */
 
@@ -371,7 +371,7 @@ We can end up with problems with overlapping - eg
 	      x=VSNPRINTF(c,sdest,fmt,args);
 	      if (x>=sdest) {
                 	sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
-			PRINTF("-->%s (%d>=%d)",fmt,x,(int)sdest);
+			FPRINTF(stderr, "-->%s (%d>=%d)",fmt,x,(int)sdest);
 			A4GL_assertion(1,buff);
 	      }
 	      strcpy(dest,c);
