@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.21 2006-09-25 16:56:22 mikeaubury Exp $
+# $Id: array.c,v 1.22 2007-02-20 19:11:07 gyver309 Exp $
 #
 */
 
@@ -162,7 +162,9 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr
   while (cnt < mx)
     {
 
-      rc=SQLDataSources (henv, fetch_mode, buff1, sizeof(buff1), &a, buff2, sizeof(buff2), &b);
+      rc=SQLDataSources (henv, fetch_mode,
+	      (SQLCHAR*)buff1, sizeof(buff1), &a,
+	      (SQLCHAR*)buff2, sizeof(buff2), &b);
       chk_rc (rc, 0, "SQLDataSources");
 
 #ifdef DEBUG
@@ -176,7 +178,7 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr
 	break;
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
 	{
-	  A4GL_set_sqlca (0, "fill_array_database", 0);
+	  A4GL_set_sqlca ("fill_array_database", "");
 	  break;
 	}
 
@@ -374,7 +376,7 @@ struct  {
   A4GL_debug ("Getting columns for '%s'", info);
 #endif
 
-  rc = SQLColumns (hstmt, NULL, 0, NULL, 0, info, SQL_NTS, NULL, 0);
+  rc = SQLColumns (hstmt, NULL, 0, NULL, 0, (SQLCHAR*)info, SQL_NTS, NULL, 0);
 
   chk_rc (rc, hstmt, "SQLColumns");
 
@@ -417,7 +419,7 @@ struct  {
 		A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", data.dt, data.dtname, data.prec,
 	     	data.len, data.scale, data.radix, data.nullable, data.remarks);
 		#endif
-		colsize = A4GL_display_size (data.dt, data.prec, "");
+		colsize = A4GL_display_size (data.dt, data.prec, (SQLCHAR*)"");
 		SPRINTF1 (szcolsize, "%d", colsize);
 
 		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
@@ -488,7 +490,7 @@ UDWORD collen;
 		SPRINTF1(buff,"select * from %s ",info);
 	}
 
-	SQLPrepare ((SQLHSTMT)hstmt, buff, SQL_NTS);
+	SQLPrepare ((SQLHSTMT)hstmt, (SQLCHAR*)buff, SQL_NTS);
 	rc = SQLExecute(hstmt);
 	chk_rc (rc, hstmt, "unload_data");
 	if (rc<0) {
@@ -502,7 +504,7 @@ UDWORD collen;
 
 
   	for (colcnt = 1; colcnt <= ncols; colcnt++) {
-		rc = SQLDescribeCol (hstmt, colcnt, colname, (SWORD) sizeof (colname), 
+		rc = SQLDescribeCol (hstmt, colcnt, (SQLCHAR*)colname, (SQLSMALLINT)sizeof (colname), 
 			&colnamelen, &coltype, &collen, &scale, &nullable);
 		chk_rc (rc, hstmt, "SQLDescribeCol");
 		if (arr1 != 0) {
