@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.30 2006-12-28 13:49:13 gyver309 Exp $
+# $Id: a4gl_4gl_callable.h,v 1.31 2007-02-20 19:17:32 gyver309 Exp $
 */
 
 /**
@@ -85,7 +85,7 @@ void A4GL_def_quit (void);
 void A4GL_make_report_table (struct BINDING *b, int n);
 int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread,char *asc_desc);
 void *A4GLSQL_prepare_glob_sql (char *s, int ni, void  *ibind);
-struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *modname, int lineno,int converted);
+struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *modname, int lineno,int converted, int singleton);
 
 
 void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
@@ -117,6 +117,7 @@ long A4GL_pop_long (void);
 long A4GL_pop_date (void);
 float A4GL_pop_float (void);
 void A4GL_debug_full (char *fmt, ...);
+void A4GL_debug_full_extended (char *fmt, ...);
 int A4GL_pop_var (void *p, int d);
 int A4GL_pop_var2 (void *p, int d, int s);
 int A4GL_pop_char (char *z, int size);
@@ -128,6 +129,7 @@ void A4GL_push_today (void);
 void A4GL_push_params (struct BINDING *b, int n);
 void A4GL_pop_args (int a);
 int A4GL_set_line (char *s, long l);
+int A4GL_set_line_extended (char *s, long l, const char *level, const char * func);
 char *a4gl_substr (char *s, int dtype, int a, int b, ...);
 void A4GL_push_dtime (struct A4GLSQL_dtime *p);
 void A4GL_push_int (short p);
@@ -155,7 +157,7 @@ void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
 void A4GL_display_at (int n, int a);
 int A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
-void A4GLSQL_set_status (int a, int sql);
+int A4GLSQL_set_status (int a, int sql);
 int A4GL_key_val(char *s);
 int A4GL_internal_build (void);
 char *A4GL_internal_version (void);
