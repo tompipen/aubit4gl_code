@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_cint_4gldef.h,v 1.7 2005-03-09 15:14:10 mikeaubury Exp $
+# $Id: a4gl_cint_4gldef.h,v 1.8 2007-02-20 19:12:31 gyver309 Exp $
 */
 
 /**
@@ -317,7 +317,7 @@ make: Leaving directory `/usr/src/aubit/aubit4glsrc/lib'
   void *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
 			      int help_no);
   char *aclfgli_str_to_id (char *name);
-  void A4GLSQL_set_status (int a, int sql);
+  int A4GLSQL_set_status (int a, int sql);
   void A4GLSTK_initFunctionCallStack (void);
   void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
   void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
