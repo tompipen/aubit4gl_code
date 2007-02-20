@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.102 2007-01-31 18:29:26 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.103 2007-02-20 18:33:51 gyver309 Exp $
 #
 */
 
@@ -90,6 +90,8 @@ static char *cvsql_names[] = {
   "CVSQL_CHAR_TO_INTERVAL",
   "CVSQL_NO_OWNER_QUOTE",
   "CVSQL_IGNORE_OWNER",
+  "CVSQL_STRIP_QUOTES_FROM_OWNER",
+  "CVSQL_USE_DESCRIBE_NOT_SQLCOLUMNS",
   "CVSQL_CONSTRAINT_NAME_BEFORE",
   "CVSQL_CONSTRAINT_NAME_AFTER",
   "CVSQL_USE_INDICATOR",
@@ -201,6 +203,8 @@ enum cvsql_type
   CVSQL_CHAR_TO_INTERVAL,
   CVSQL_NO_OWNER_QUOTE,
   CVSQL_IGNORE_OWNER,
+  CVSQL_STRIP_QUOTES_FROM_OWNER,
+  CVSQL_USE_DESCRIBE_NOT_SQLCOLUMNS,
   CVSQL_CONSTRAINT_NAME_BEFORE,
   CVSQL_CONSTRAINT_NAME_AFTER,
   CVSQL_USE_INDICATOR,
@@ -435,7 +439,8 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int
   sql = sqlx;
   A4GL_debug ("A4GL_convert_sql_new : %s", sql);
 
-  if (has_query(sqlx,&sql_new)) {
+  int cache = A4GL_isyes(acl_getenv("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
+  if (cache && has_query(sqlx,&sql_new)) {
 	return sql_new;
   }
 
@@ -486,7 +491,8 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int
   //for (a=0;a<strlen(sql_new);a++) { if (sql_new[a]=='\n') sql_new[a]=' '; }
   A4GL_debug ("check_sql.. %s", sql_new);
 
-  add_query(sqlx,sql_new);
+  if (cache)
+      add_query(sqlx,sql_new);
   return sql_new;
 }
 
@@ -1556,6 +1562,10 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_NO_OWNER_QUOTE;
   if (match_strncasecmp (p, "IGNORE_OWNER", len) == 0)
     return CVSQL_IGNORE_OWNER;
+  if (match_strncasecmp (p, "STRIP_QUOTES_FROM_OWNER", len) == 0)
+    return CVSQL_STRIP_QUOTES_FROM_OWNER;
+  if (match_strncasecmp (p, "USE_DESCRIBE_NOT_SQLCOLUMNS", len) == 0)
+    return CVSQL_USE_DESCRIBE_NOT_SQLCOLUMNS;
   if (match_strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0)
     return CVSQL_CONSTRAINT_NAME_BEFORE;
   if (match_strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0)
@@ -3691,5 +3701,79 @@ A4GL_new_escape_quote_owner (void)
       return 0;
     }
   return 1;
+}
+
+char *
+A4GLSQLCV_ownerize_tablename (char *owner, char *table)
+{
+    static char *buf = NULL;
+    static int allocSize = 0;
+    static int forceNoQuoteOwner = 0;
+    static int ignoreOwner = 0;
+    static int escapeQuoteOwner = 0;
+    static char *defaultOwner = NULL;
+    int newSize;
+
+    newSize = (defaultOwner ? strlen(defaultOwner) : 0)
+            + (owner        ? strlen(owner)        : 0)
+            + strlen(table)
+            + 10;
+    if (newSize > allocSize)
+    {
+        buf = realloc(buf, newSize);
+        if (allocSize == 0) // first pass - initialize statics
+        {
+            if (A4GLSQLCV_check_requirement("STRIP_QUOTES_FROM_OWNER"))
+                forceNoQuoteOwner = 1;
+            if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))
+                ignoreOwner = 1;
+            if (A4GL_new_escape_quote_owner())
+                escapeQuoteOwner = 1;
+        }
+        allocSize = newSize;
+    }
+    defaultOwner = acl_getenv("A4GL_DEFAULT_OWNER");
+    if (defaultOwner)
+    {
+	A4GL_trim(defaultOwner);
+	if (strlen(defaultOwner) == 0)
+	    defaultOwner = NULL;
+    }
+
+    if (ignoreOwner)
+    {
+        SPRINTF1(buf, "%s", table);
+        return buf;
+    }
+    else
+    {
+        if (defaultOwner && !owner) // default owner given and no owner specified in parameter
+            owner = defaultOwner;
+
+        if (forceNoQuoteOwner)
+        {
+            if (owner)
+                SPRINTF2(buf, "%s.%s", A4GL_strip_quotes(owner), table);
+            else
+                SPRINTF1(buf, "%s", table);
+            return buf;
+        }
+        if (escapeQuoteOwner)
+        {
+            if (owner)
+                SPRINTF2(buf, "\\\"%s\\\".%s", A4GL_strip_quotes(owner), table);
+            else
+                SPRINTF1(buf, "%s", table);
+            return buf;
+        }
+        else
+        {
+            if (owner)
+                SPRINTF2(buf, "\"%s\".%s", A4GL_strip_quotes(owner), table);
+            else
+                SPRINTF1(buf, "%s", table);
+            return buf;
+        }
+    }
 }
 
