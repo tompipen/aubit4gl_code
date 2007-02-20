@@ -736,14 +736,14 @@ set_whenever (int c, char *p)
   switch (c)
     {
     case WHEN_ERROR:
-      set_whenever (WHEN_SQLERROR, p);
+      set_whenever (WHEN_SQLERROR|oldcode, p);
       code = A_WHEN_ERROR;
       break;
 
     case WHEN_ANYERROR:
-      set_whenever (WHEN_ERROR, p);
-      set_whenever (WHEN_SQLERROR, p);
-      code = A_WHEN_ERROR;
+      set_whenever (WHEN_ERROR|oldcode, p);
+      set_whenever (WHEN_SQLERROR|oldcode, p);
+      code = A_WHEN_ANYERROR;
       break;
 
     case WHEN_SQLERROR:
