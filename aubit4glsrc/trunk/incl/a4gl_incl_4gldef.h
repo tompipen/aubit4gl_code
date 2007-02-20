@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.99 2006-11-14 21:25:07 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.100 2007-02-20 18:29:17 gyver309 Exp $
 */
 
 /**
@@ -302,7 +302,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 #define CHK_FOR_ERR (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0))
 #define ERR_CHK_WHEN_NOT_FOUND if ( CHK_FOR_ERR && (a4gl_sqlca.sqlcode==100))
 #define ERR_CHK_SQLERROR if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode))
-#define ERR_CHK_ERROR if (CHK_FOR_ERR && (a4gl_status<0))
+#define ERR_CHK_ERROR if (CHK_FOR_ERR && (a4gl_status<0 && a4gl_sqlca.sqlcode>=0))
 #define ERR_CHK_SQLWARNING if (CHK_FOR_ERR && (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W'))
 #define ERR_CHK_WARNING    if (CHK_FOR_ERR &&  (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W')))
 
@@ -416,11 +416,6 @@ int A4GL_call_4gl_dll (char *filename, char *function, int args);
   int A4GL_ctoint (void *a, void *b, int size);
 int A4GL_check_version(char *module, char *version, int build );
 
-
-
-  /* =================== sql.c ============================ */
-
-  int aclfgl_hstmt_get (int np);
 
   /* ====================== extfile.c ===================== */
 
