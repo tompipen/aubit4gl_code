@@ -20,6 +20,8 @@ ADD_SESSION_TO_TEMP_TABLE
 EXPAND_COLUMNS
 NOT_EQUAL_AS_LESS_GREATER_THAN
 CREATE_TEMP_AS_CREATE_HASH
+STRIP_QUOTES_FROM_OWNER
+USE_DESCRIBE_NOT_SQLCOLUMNS
 
 # - works, but not in all cases; DB2 does not recognize expressions
 #   in form of set substr(col,2,3)='foo' (informix style is: set col[2,4]='foo')
