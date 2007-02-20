@@ -423,18 +423,18 @@ LEXLIB_print_curr_spec_g (int type,char* s,t_binding_comp_list* inbind,t_binding
       switch (bt)
 	{
 	case 0:
-	  sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\")", s);
+	  sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",0)", s);
 	  break;
 	case 1:
-	  sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\")", no,
+	  sprintf (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",0)", no,
 		   s);
 	  break;
 	case 2:
-	  sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\")", ni,
+	  sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",0)", ni,
 		   s);
 	  break;
 	case 3:
-	  sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")",
+	  sprintf (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",0)",
 		   no, ni, s);
 	  break;
 	}

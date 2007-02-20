@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.18 2007-01-31 18:29:27 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.19 2007-02-20 19:24:03 gyver309 Exp $
 #
 */
 
@@ -363,7 +363,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.18 2007-01-31 18:29:27 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.19 2007-02-20 19:24:03 gyver309 Exp $";
 #endif
 
 
@@ -2183,7 +2183,7 @@ A4GL_debug("OK");
  * @return A pointer to the statement identification structure.
  */
 struct s_sid *A4GLSQL_prepare_select (
-  struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s)
+  struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s, int singleton)
 {
   return(prepareSqlStatement(ibind,ni,obind,no,s));
 }

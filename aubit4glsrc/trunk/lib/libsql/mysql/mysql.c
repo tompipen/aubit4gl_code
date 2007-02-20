@@ -103,7 +103,7 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
   A4GLSQL_add_prepare ("p_get_val",
 		       (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0,
 								 buff,
-								 "__internal_sql_1"));
+								 "__internal_sql_1",0));
   if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
     return (void *) -1;
   A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0,
@@ -832,7 +832,7 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 
 void *
 A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
-					    int no, char *s, char *uniqid)
+					    int no, char *s, char *uniqid, int singleton)
 {
   MYSQL_STMT *stmt;
   struct s_sid *sid;

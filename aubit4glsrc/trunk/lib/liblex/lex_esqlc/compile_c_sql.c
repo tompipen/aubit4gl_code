@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.79 2007-01-31 18:29:27 mikeaubury Exp $
+# $Id: compile_c_sql.c,v 1.80 2007-02-20 19:24:02 gyver309 Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.79 2007-01-31 18:29:27 mikeaubury Exp $";
+		"$Id: compile_c_sql.c,v 1.80 2007-02-20 19:24:02 gyver309 Exp $";
 #endif
 
 
@@ -55,7 +55,7 @@ extern char *infilename;
 void
 LEXLIB_print_exec_sql (char *s,int converted)
 {
-  printc ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d),1,0,0);\n", s,lastlineno,converted);
+  printc ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", s,lastlineno,converted);
 }
 
 
@@ -73,7 +73,7 @@ LEXLIB_print_exec_sql_bound_g (char *s,int converted,t_binding_comp_list* bind)
   c = LEXLIB_print_bind_definition_g (bind);
   LEXLIB_print_bind_set_value_g (bind);
   printc
-    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d),1,0,0);\n", c,s,lastlineno,converted);
+    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c,s,lastlineno,converted);
   printc ("}\n");
 }
 
@@ -229,7 +229,7 @@ LEXLIB_print_prepare (char *stmt, char *sqlvar)
     }
 
 
-  	printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s,_module_name,%d,0));\n", stmt, sqlvar,lastlineno);
+  	printc ("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,%s,_module_name,%d,0,0));\n", stmt, sqlvar,lastlineno);
 }
 
 
@@ -509,10 +509,10 @@ LEXLIB_print_curr_spec_g (int type, char *s, t_binding_comp_list *inbind, t_bind
 		A4GL_assertion(no,"DIDNT THINK THIS HAPPEND");
 
 		switch(bt) {
-    		case 0: SPRINTF2 (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0)", s,lastlineno);break;
-   		case 1: SPRINTF3 (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",_module_name,%d,0)", no,s,lastlineno); break;
-    		case 2: SPRINTF3 (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,0)", ni,s,lastlineno); break;
-    		case 3: SPRINTF4 (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,0)", no,ni,s,lastlineno); break;
+    		case 0: SPRINTF2 (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,0,1)", s,lastlineno);break;
+   		case 1: SPRINTF3 (buff, "A4GLSQL_prepare_select(0,0,obind,%d,\"%s\",_module_name,%d,0,1)", no,s,lastlineno); break;
+    		case 2: SPRINTF3 (buff, "A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,0,1)", ni,s,lastlineno); break;
+    		case 3: SPRINTF4 (buff, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,0,1)", no,ni,s,lastlineno); break;
 		}
   }
 
@@ -547,7 +547,8 @@ LEXLIB_print_select_all_g (char *buff,int converted,t_binding_comp_list *inbind,
   no = LEXLIB_print_bind_definition_g (outbind);
   LEXLIB_print_bind_set_value_g (inbind);
   LEXLIB_print_bind_set_value_g(outbind);
-  os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,%d)", ni, no, buff,lastlineno,converted);
+  os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",_module_name,%d,%d,%d)",
+	       ni, no, buff,lastlineno,converted, used_with_declare ? 1 : 0);
   if (os>=sizeof(b2)) {
 		A4GL_debug("print_select_all failed");
 		a4gl_yyerror("Internal error - string too long\n");
@@ -663,7 +664,7 @@ char tmpbuff[256];
   if (outbind->nbind) u+=2;
   if (inbind->nbind)  u+=1;
   SPRINTF2(tmpbuff,"\"A4GLsb_%d%d\"",sqlblock++,yylineno);
-  printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d));",tmpbuff,trans_quote(s),lastlineno,0 /* never converted */);
+  printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d,0));",tmpbuff,trans_quote(s),lastlineno,0 /* never converted */);
   LEXLIB_print_execute_g(tmpbuff,u,inbind,outbind);
 }
 

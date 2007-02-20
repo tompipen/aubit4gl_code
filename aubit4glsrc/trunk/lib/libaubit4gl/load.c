@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.41 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: load.c,v 1.42 2007-02-20 19:24:02 gyver309 Exp $
 #
 */
 
@@ -291,7 +291,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   A4GL_debug ("Adding prepare.. for %s",insertstr);
 
 
-  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",23,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",23,0,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
 
 
   while (1)
@@ -474,7 +474,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	         }
 		 A4GL_debug("Declare..\n");
 
-		 A4GLSQL_add_prepare("a4gl_pload",(void *)A4GLSQL_prepare_select(0,0,0,0,insertstr,"__internal_load",1));
+		 A4GLSQL_add_prepare("a4gl_pload",(void *)A4GLSQL_prepare_select(0,0,0,0,insertstr,"__internal_load",1,0));
 
 		 A4GLSQL_declare_cursor(0+0,A4GLSQL_find_prepare("a4gl_pload"),0,"a4gl_load");
 
@@ -483,7 +483,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 		 A4GLSQL_open_cursor("a4gl_load",0,0);
 
   } else {
-  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",22)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",22,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
   }
 
 
@@ -673,7 +673,7 @@ int l;
 			strcat(sqlstmt,")");
 		}
 
-  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,sqlstmt,"_internal_load",24,0)) != 1) { 
+  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,sqlstmt,"_internal_load",24,0,0)) != 1) { 
 			A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
 			return 0; 
 		}

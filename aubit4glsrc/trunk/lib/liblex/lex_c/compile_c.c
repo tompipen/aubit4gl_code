@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.77 2006-08-31 15:06:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.78 2007-02-20 19:24:02 gyver309 Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3008,7 +3008,7 @@ print_linked_cmd (int type, char *var)
 	}
       if (type == 'S')
 	printc
-	  ("A4GLSQL_execute_implicit_select(A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\"));",
+	  ("A4GLSQL_execute_implicit_select(A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",0));",
 	   ni, no, buff);
       if (type == 'D' || type == 'U')
 	printc
@@ -3545,7 +3545,7 @@ print_put (char *cname)
 void
 print_prepare (char *stmt, char *sqlvar)
 {
-  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s));\n",
+  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s,0));\n",
 	  stmt, sqlvar);
 }
 
@@ -4364,7 +4364,7 @@ print_curr_spec (int type, char *s)
   static char buff[3000];
   printc ("{\n");
   if (type == 1)
-    sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\")", s);
+    sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\",0)", s);
   if (type == 2)
     sprintf (buff, "A4GLSQL_find_prepare(%s)", s);
   return buff;
@@ -4393,7 +4393,7 @@ print_select_all (char *buff)
   printc ("{\n");
   ni = print_bind ('i');
   no = print_bind ('o');
-  sprintf (b2, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\")", ni, no,
+  sprintf (b2, "A4GLSQL_prepare_select(ibind,%d,obind,%d,\"%s\",0)", ni, no,
 	   buff);
   return b2;
 }

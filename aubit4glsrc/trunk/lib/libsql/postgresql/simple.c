@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.34 2006-12-12 16:58:58 mikeaubury Exp $
+# $Id: simple.c,v 1.35 2007-02-20 19:24:04 gyver309 Exp $
 #*/
 
 
@@ -997,7 +997,7 @@ struct s_prepare {
 	char *sql;
 };
 
-void *A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,int no,char* s,char* uniqid) {
+void *A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,int no,char* s,char* uniqid, int singleton) {
 	struct s_prepare *n;
 	n=malloc(sizeof(struct s_prepare));
 	n->ni=ni;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.11 2003-02-09 17:38:26 saferreira Exp $
+# $Id: postgresql.cpp,v 1.12 2007-02-20 19:24:04 gyver309 Exp $
 #
 */
 
@@ -90,7 +90,7 @@ extern "C" void debug (char *str);
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.11 2003-02-09 17:38:26 saferreira Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.12 2007-02-20 19:24:04 gyver309 Exp $";
 #endif
 
 
@@ -588,7 +588,7 @@ extern "C" int A4GLSQL_execute_implicit_sql (A4glStatement  *sid)
  * @return A pointer to the statement identification structure.
  */
 extern "C" A4glStatement *A4GLSQL_prepare_select (
-  struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s)
+  struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s, int singleton)
 {
   return(prepareSqlStatement(ibind,ni,obind,no,s));
 }

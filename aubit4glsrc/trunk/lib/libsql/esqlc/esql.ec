@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.178 2007-02-20 15:22:53 mikeaubury Exp $
+# $Id: esql.ec,v 1.179 2007-02-20 19:24:03 gyver309 Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.178 2007-02-20 15:22:53 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.179 2007-02-20 19:24:03 gyver309 Exp $";
 #endif
 
 
@@ -2525,7 +2525,7 @@ A4GL_debug("ALl ok - copy 1");
  * @return A pointer to the statement identification structure.
  */
 void *
-A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind, int no, char *s,char *uniqid)
+A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind, int no, char *s,char *uniqid, int singleton)
 {
   return (prepareSqlStatement (ibind, ni, obind, no, s,uniqid));
 }
