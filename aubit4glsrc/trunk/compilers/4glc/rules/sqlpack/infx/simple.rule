@@ -8,50 +8,38 @@ table_name: table_name_i  {
 
 
 table_name_i:
-         CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Table",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$);
-                                } else {
-                                        sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$);
-                                }
-                        }
+        CHAR_VALUE KW_DOT identifier {
+	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
         }
         | CHAR_VALUE {
-                sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
-                ADDMAP("Use Table",$<str>$);
+	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
+             ADDMAP("Use Table",$<str>$);
         }
-        | identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
-        | identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Table",$<str>$); }
+        | identifier {
+	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
+	     ADDMAP("Use Table",$<str>$);
+	}
+        | identifier COLON identifier {
+	     sprintf($<str>$,"%s:%s", $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
+	}
         | identifier COLON CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$," %s:%s",$<str>1,$<str>5); ADDMAP("Use Table",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); ADDMAP("Use Table",$<str>$);
-                                } else {
-                                        sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); ADDMAP("Use Table",$<str>$);
-                                }
-                        }
+	     sprintf($<str>$,"%s:%s", $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
         }
-
-        | identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
-        | identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Table",$<str>$); }
-        | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); ADDMAP("Use Table",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); 
-					ADDMAP("Use Table",$<str>$);
-                                } else {
-                                        sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); ADDMAP("Use Table",$<str>$);
-                                }
-                        }
+        | identifier ATSIGN identifier {
+	     sprintf($<str>$,"%s@%s", $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
+	}
+        | identifier ATSIGN identifier COLON identifier {
+	     sprintf($<str>$,"%s@%s:%s", $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename(NULL, $<str>5));
+	     ADDMAP("Use Table",$<str>$);
+	}
+        | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier{
+	     sprintf($<str>$,"%s@%s:%s", $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7));
+	     ADDMAP("Use Table",$<str>$);
         }
-
 ;
 
 
@@ -67,105 +55,68 @@ table_name_not_for_column_prefix: table_name_not_for_column_prefix_i  {
 
 table_name_not_for_column_prefix_i:
          CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Table",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$);
-                                } else {
-                                        sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$);
-                                }
-                        }
+	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
         }
         | identifier KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Table",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$);
-                                } else {
-                                        sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Table",$<str>$);
-                                }
-                        }
+	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
         }
         | CHAR_VALUE {
-                sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
-                ADDMAP("Use Table",$<str>$);
+	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
+	     ADDMAP("Use Table",$<str>$);
         }
-        | identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
-        | identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Table",$<str>$); }
+        | identifier {
+             sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
+	     ADDMAP("Use Table",$<str>$);
+	}
+        | identifier COLON identifier {
+             sprintf($<str>$,"%s:%s", $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
+	}
         | identifier COLON CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$," %s:%s",$<str>1,$<str>5); ADDMAP("Use Table",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); ADDMAP("Use Table",$<str>$);
-                                } else {
-                                        sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); ADDMAP("Use Table",$<str>$);
-                                }
-                        }
+	     sprintf($<str>$,"%s:%s", $<str>1, A4GLSQLCV_ownerize_tablename($<str>3, $<str>5));
+	     ADDMAP("Use Table",$<str>$);
         }
 
-        | identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Table",$<str>1); }
-        | identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Table",$<str>$); }
-        | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); ADDMAP("Use Table",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); 
-					ADDMAP("Use Table",$<str>$);
-                                } else {
-                                        sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); ADDMAP("Use Table",$<str>$);
-                                }
-                        }
+	| identifier ATSIGN identifier {
+             sprintf($<str>$,"%s@%s", $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
+//	     strcpy($<str>$,$<str>1);     // incorrect? copy-paste abuse? But maybe OK
+//	     ADDMAP("Use Table",$<str>1); // 
+	}
+	| identifier ATSIGN identifier COLON identifier {
+            sprintf($<str>$,"%s@%s:%s", $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename(NULL, $<str>5));
+	    ADDMAP("Use Table",$<str>$);
+	}
+	| identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
+	     sprintf($<str>$,"%s@%s:%s", $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7));
+	     ADDMAP("Use Table",$<str>$);
         }
 
 ;
 
 idx_name:
          CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$,"%s", $<str>3); ADDMAP("Use Index",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Index",$<str>$);
-                                } else {
-                                        sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); ADDMAP("Use Index",$<str>$);
-                                }
-                        }
+	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
         }
         | CHAR_VALUE {
-                sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
+	        sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
                 ADDMAP("Use Index",$<str>$);
         }
 
         | identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
-        | identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); }
+        | identifier COLON identifier { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); }
         | identifier COLON CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                sprintf($<str>$," %s:%s",$<str>1,$<str>5); ADDMAP("Use Index",$<str>$);
-                        } else {
-                        if (A4GL_new_escape_quote_owner()) {
-                                sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); ADDMAP("Use Index",$<str>$);
-                        } else {
-                                sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); ADDMAP("Use Index",$<str>$);
-                        }
-                }
+	     sprintf($<str>$,"%s:%s", $<str>1, A4GLSQLCV_ownerize_tablename($<str>3, $<str>5));
+             ADDMAP("Use Index",$<str>$);
         }
 
         | identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
-        | identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Index",$<str>$); }
+        | identifier ATSIGN identifier COLON identifier { sprintf($<str>$,"%s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Index",$<str>$); }
         | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
-                        if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
-                                        sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); ADDMAP("Use Index",$<str>$);
-                        } else {
-                                if (A4GL_new_escape_quote_owner()) {
-                                        sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); ADDMAP("Use Index",$<str>$);
-                                } else {
-                                        sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); ADDMAP("Use Index",$<str>$);
-                                }
-                        }
+	     sprintf($<str>$,"%s@%s:%s", $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7));
+             ADDMAP("Use Index",$<str>$);
         }
 
 

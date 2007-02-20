@@ -314,7 +314,16 @@ dbase_name      :       identifier {strcpy($<str>$,$<str>1);}
                 |       CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 ;
 
-cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list KW_COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}                                                                                                                      ;                                                                                                                                                                                                                                                       colident: identifier                                                                                                                | identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}                                                     | CHAR_VALUE KW_DOT identifier KW_DOT identifier {                                                                                                if (A4GL_new_escape_quote_owner()) {                                                                                                    sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                   } else {                                                                                                                            sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                       }                                                                                                           }                                                                                                                   ;
+cur_update_list : colident {strcpy($<str>$,$<str>1);}
+        | cur_update_list KW_COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
+
+colident: identifier
+        | identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier {
+	    sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3), $<str>5);
+	}
+;
 
 in_select_statement_ss:
         KW_SELECT op_ad select_list_slil table_expression_2_select sel_p2_select  {
