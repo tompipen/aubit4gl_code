@@ -151,10 +151,11 @@
 #endif
 
     /*  -------------- in sql.c ------------------ */
-HSTMT *A4GL_new_hstmt (HSTMT * hstmt);
-void A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file);
-void A4GL_set_sqlca (HSTMT hstmt, char *s, int reset);
-UDWORD A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname);
+
+int A4GL_new_hstmt (HSTMT * hstmt);
+int A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file);
+int A4GL_set_sqlca (SQLHSTMT hstmt, char *s);
+SQLUINTEGER A4GL_display_size (SQLSMALLINT coltype, SQLUINTEGER collen, SQLCHAR* colname);
 
 
 
