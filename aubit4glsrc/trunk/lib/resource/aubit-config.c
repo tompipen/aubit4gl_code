@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.23 2006-10-07 14:43:39 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.24 2007-02-20 18:54:46 gyver309 Exp $
 #
 */
 
@@ -68,7 +68,9 @@ extern char *acl_getenv (char *s);
 
 void A4GL_trim_nl (char *p);
 void A4GL_debug_full (char *fmt, ...);
+void A4GL_debug_full_extended (char *fmt, ...);
 void A4GL_set_line (void);
+void A4GL_set_extended (void);
 char *A4GL_strip_quotes (char *s);
 void *A4GL_find_pointer(char *s,char c);
 int A4GL_has_pointer(char *s,char c);
@@ -165,6 +167,30 @@ A4GL_debug_full (char *fmt, ...)
     }
 }
 
+void
+A4GL_debug_full_extended (char *fmt, ...)
+{
+  va_list args;
+  static char buff[4096];
+
+  /* Problem here is that when DEBUG is set, this will A4GL_dump ALL settings
+     to stdout. But when we are debugging, for instance, 4glc, and set DEBUG,
+     we need aubit-config to return us things like AUBITDIR.
+
+     As temporary sollution, I renamed DEBUG here to DEBUG_CFG.
+
+   */
+
+
+  if (strcmp ("ALL", acl_getenv ("DEBUG_CFG")) == 0)
+//      if (strcmp ("ALL", DEBUG_CFG) == 0 )
+    {
+      va_start (args, fmt);
+      vsprintf (buff, fmt, args);
+      PRINTF ("%s\n", buff);
+    }
+}
+
 /**
  * Dummy function
  */
@@ -178,6 +204,14 @@ A4GL_exitwith (void)
  */
 void
 A4GL_set_line (void)
+{
+}
+
+/**
+ * Dummy function
+ */
+void
+A4GL_set_line_extended (void)
 {
 }
 
