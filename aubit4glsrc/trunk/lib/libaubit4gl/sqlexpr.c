@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.44 2007-02-14 17:47:26 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.45 2007-02-20 18:36:19 gyver309 Exp $
 #
 */
 
@@ -1493,18 +1493,29 @@ char * find_table (struct s_select *select, struct s_select_list_item *i)
 	      A4GL_assertion (i->u_data.column.tabname == 0,
 			      "tabname shouldn't be null");
 
-	      if (strcmp
-		  (select->table_elements.tables[a].alias,
+	      if (A4GL_aubit_strcasecmp
+	 	  (select->table_elements.tables[a].alias,
 		   i->u_data.column.tabname) == 0)
 		{
 		  return select->table_elements.tables[a].tabname;
 		}
 	    }
-	  if (strcmp
+	  if (A4GL_aubit_strcasecmp
 	      (select->table_elements.tables[a].tabname,
 	       i->u_data.column.tabname) == 0)
 	    {
 	      return select->table_elements.tables[a].tabname;
+	    }
+	  else
+	    {
+		char *tabptr;
+		tabptr = index(select->table_elements.tables[a].tabname, '.');
+		if (tabptr &&
+			A4GL_aubit_strcasecmp(tabptr+1, i->u_data.column.tabname) == 0)
+		  {
+		    return select->table_elements.tables[a].tabname;
+// ?		    return tabptr+1;
+		  }
 	    }
 	}
 	if (set_sql_lineno>0) {
@@ -1647,7 +1658,7 @@ preprocess_sql_statement (struct s_select *select)
 				   "WARNING: Unable to locate %s in the database - column expansion not possible\n",
 				   tname);
 			}
-			A4GLSQL_set_status(0,0);
+//			A4GLSQL_set_status(0,0);
 	
 		      add_select_list_item_list (n, p);
 		      continue;
@@ -2580,6 +2591,6 @@ int A4GL_has_column (char *t, char *c)
 
   if (opened)
     A4GLSQL_end_get_columns ();
-			A4GLSQL_set_status(0,0);
+//			A4GLSQL_set_status(0,0);
   return found;
 }
