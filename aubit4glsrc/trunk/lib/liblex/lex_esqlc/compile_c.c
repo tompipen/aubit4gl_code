@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.352 2007-02-17 10:10:48 mikeaubury Exp $
+# $Id: compile_c.c,v 1.353 2007-02-20 18:49:46 gyver309 Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.352 2007-02-17 10:10:48 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.353 2007-02-20 18:49:46 gyver309 Exp $";
 #endif
 /**
  * @file
@@ -6992,6 +6992,7 @@ LEXLIB_print_foreach_close (char *cname)
 {
   printc("if (_cursoropen) {");
   print_close ('C', cname);
+  printc("if (a4gl_status == 100) { a4gl_sqlca.sqlcode = a4gl_status = 0; }");
   printc("}");
   printc("}");
 }
@@ -8173,61 +8174,53 @@ clr_suppress_lines();
 char *
 LEXLIB_rettype (char *s)
 {
-  static char rs[20] = "long";
-  static char *vals[15]={ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0} ;
-  int a;
+    static int initialized = 0;
+    static char *vals[15]={
+	"char",        // 0 
+	"short",       // 1 
+	"long",        // 2 
+	"double",      // 3 
+	"float",       // 4 
+	"fgldecimal",  // 5 
+	"long",        // 6 
+	"fgldate",     // 7 
+	"fglmoney",    // 8 
+	"",            // 9
+	"struct_dtime",// 10 
+	"fglbyte",     // 11 
+	"fgltext",     // 12 
+	"char",        // 13 
+	"struct_ival"  // 14 
+    };
+    int i;
 
-  A4GL_debug ("In rettype : %s", A4GL_null_as_null(s));
+    A4GL_debug("In rettype : %s", A4GL_null_as_null(s));
 
-  a = atoi (s);
-  if (a<15) {
-        if (vals[a]) {
-                return vals[a];
-        }
-  }
-
-  A4GL_debug ("In rettype");
-  if (A4GL_has_datatype_function_i (a, "OUTPUT"))
+    if (! initialized)
     {
-      /* char *(*function) (); */
-      char *(*function) (void);
-      A4GL_debug ("In datatype");
-      function = A4GL_get_datatype_function_i (a, "OUTPUT");
-      A4GL_debug ("Copy");
-      strcpy (rs, function ());
-      A4GL_debug ("Returning %s\n", A4GL_null_as_null(rs));
-      return rs;
+	A4GL_debug ("In rettype - initializing type names");
+	for (i = 0; i < 15; ++i)
+	{
+	    if (A4GL_has_datatype_function_i (i, "OUTPUT"))
+	    {
+		char *(*function) (void);
+		function = A4GL_get_datatype_function_i (i, "OUTPUT");
+		vals[i] = strdup(function());
+	    }
+	}
+	initialized = 1;
+	if (A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
+	    vals[12] = vals[0];
     }
-  if (strcmp (s, "0") == 0) strcpy (rs, "char");
-  if (strcmp (s, "1") == 0) strcpy (rs, "short");
-  if (strcmp (s, "2") == 0) strcpy (rs, "long");
-  if (strcmp (s, "3") == 0) strcpy (rs, "double");
-  if (strcmp (s, "4") == 0) strcpy (rs, "float");
-  if (strcmp (s, "5") == 0) strcpy (rs, "fgldecimal");
-  if (strcmp (s, "6") == 0) strcpy (rs, "long");
-  if (strcmp (s, "7") == 0) strcpy (rs, "fgldate");
-  if (strcmp (s, "8") == 0) strcpy (rs, "fglmoney");
-  if (strcmp (s, "10") == 0) strcpy (rs, "struct_dtime");
-  if (strcmp (s, "11") == 0) strcpy (rs, "fglbyte");
-  //if (strcmp (s, "12") == 0) strcpy (rs, "fgltext");
-     if (strcmp (s, "12") == 0)
-             {
-                         if (A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
-                                    strcpy (rs, "char");
-                         else
-                                    strcpy (rs, "fgltext");
-                     }
 
-  if (strcmp (s, "13") == 0) strcpy (rs, "char");
-  if (strcmp (s, "14") == 0) strcpy (rs, "struct_ival");
+    if (sscanf(s, "%d", &i) != 1)
+	a4gl_yyerror("Internal error - type conversion error\n");
 
-  if (a<15) {
-        vals[a]=strdup(rs);
-        return vals[a];
-  }
+    if (i < 15)
+	return vals[i];
 
-  return strdup(rs);
-
+    a4gl_yyerror("Unsupported type id\n");
+    return NULL;
 }
 
 
