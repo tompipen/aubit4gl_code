@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.41 2006-11-16 13:51:28 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.42 2007-02-20 19:19:06 gyver309 Exp $
 */
 
 /**
@@ -184,12 +184,46 @@ struct s_constr_list {
 	};
 #endif
 //#include "a4gl_screenio.h"
-
+/*
 #ifndef NODEBUG
-#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
+#define A4GL_debug A4GL_set_line(__FILE__,__LINE__),A4GL_debug_full
 #else
 #define A4GL_debug null_func
 #endif
+*/
+
+#ifndef NODEBUG
+
+#if __STDC_VERSION__ < 199901L
+# if __GNUC__ >= 2
+#  define __func__ __FUNCTION__
+# else
+#  define __func__ "<unknown>"
+# endif
+#endif
+
+#define A4GL_ftl A4GL_set_line_extended(__FILE__,__LINE__,"FTL",__func__),A4GL_debug_full_extended
+#define A4GL_err A4GL_set_line_extended(__FILE__,__LINE__,"ERR",__func__),A4GL_debug_full_extended
+#define A4GL_wrn A4GL_set_line_extended(__FILE__,__LINE__,"WRN",__func__),A4GL_debug_full_extended
+#define A4GL_inf A4GL_set_line_extended(__FILE__,__LINE__,"inf",__func__),A4GL_debug_full_extended
+#define A4GL_dbg A4GL_set_line_extended(__FILE__,__LINE__,"dbg",__func__),A4GL_debug_full_extended
+#define A4GL_debug A4GL_dbg
+
+#ifdef DEBUG
+#define A4GL_trc A4GL_set_line_extended(__FILE__,__LINE__,"trc",__func__),A4GL_debug_full_extended
+#else //!DEBUG
+#define A4GL_trc null_func
+#endif //DEBUG
+
+#else //!NODEBUG
+#define A4GL_ftl null_func
+#define A4GL_err null_func
+#define A4GL_wrn null_func
+#define A4GL_inf null_func
+#define A4GL_dbg null_func
+#define A4GL_trc null_func
+
+#endif //NODEBUG
 
 #define MENU_ALL "_AlL_"
 
