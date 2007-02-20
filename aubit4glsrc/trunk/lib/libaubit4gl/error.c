@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.39 2007-02-17 10:13:06 mikeaubury Exp $
+# $Id: error.c,v 1.40 2007-02-20 18:46:37 gyver309 Exp $
 #
 */
 
@@ -77,11 +77,12 @@ please use -DIGNOREEXITWITH on compile line, do not hard-code it! */
 
 char errorbuff[256] = "";
 char lasterrorstr[1024] = "";
-int cache_status = 0;
-int cache_statusno = 0;
+static int cache_status = 0;
+static char * cache_errmsg = "";
 static int int_err_flg;
 //void aclfgli_clr_err_flg (void);
 void aclfgli_set_err_flg (void);
+struct s_err * A4GL_get_errdesc_for_errstr (char *s);
 //int aclfgli_get_err_flg (void);
 
 /*
@@ -90,7 +91,7 @@ void aclfgli_set_err_flg (void);
 =====================================================================
 */
 
-char *A4GL_get_errm (int z);
+char *A4GL_get_errmsg (int z);
 
 /*
 =====================================================================
@@ -99,51 +100,64 @@ char *A4GL_get_errm (int z);
 */
 
 
+/**
+ *
+ * @todo Describe function
+ */
+struct s_err * A4GL_get_err_for_errstr (char *s)
+{
+    static struct s_err err_default = {"Unknown error", -1};
+    int a;
+    A4GL_debug ("Looking for error desc for errmsg=\"%s\"", s);
+    for (a = 0; errors[a].a4gl_errno; a++)
+    {
+	if (strcmp (s, errors[a].errmsg) == 0)
+	{
+	    A4GL_debug ("Found error desc, a4gl_errno=%i", errors[a].a4gl_errno);
+	    return &errors[a];
+	}
+    }
+    A4GL_debug ("Error desc not found, returning default");
+    return &err_default;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+int A4GL_get_errcode_for_errstr (char *s)
+{
+    int retval = -1;
+    retval = A4GL_get_err_for_errstr(s)->a4gl_errno;
+    if (retval == -1)
+	return -1;
+    return A4GL_ERR_BASE + retval;
+}
 
 /**
  *
  * @todo Describe function
  */
 void
-// IGNOREEXITWITH exit-with(char *s)
 A4GL_exitwith (char *s)
 {
-int a;
-
-	#ifdef DEBUG
-		A4GL_debug ("Error: %s", s);
-	#endif
-
 #ifndef IGNOREEXITWITH
+    struct s_err *errdesc;
+    errdesc = A4GL_get_err_for_errstr(s);
 
-  for (a = 0; errors[a].a4gl_errno; a++) {
-      if (strcmp (s, errors[a].errmsg) == 0) {
-		#ifdef DEBUG
-			A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
-		#endif
-		A4GL_debug ("Setting status");
-		A4GLSQL_set_status (-1 * (errors[a].a4gl_errno + 30000), 0);
-		A4GL_debug ("Setting cache_status");
-		cache_status = (errors[a].a4gl_errno + 30000);
-		A4GL_debug ("Setting statusno");
-		cache_statusno = a;
-
-		/* PRINTF ("STOP: Error: %s\n ", s); */
-		A4GL_debug ("Exiting program.");
-		//shoud never exit here with 0 - we got an error!
-		/* A4GL_fgl_die (errors[a].a4gl_errno == 0 ? 1 : errors[a].a4gl_errno); */
-	  }
-  }
-
-  if (strcmp(s, "Unknown Error")!=0) {
-  	A4GL_exitwith("Unknown Error");
-  } 
-
-
-   /* PRINTF ("STOP1: Error: %s\n ", s);  */
-  A4GL_debug ("Exiting program.");
-  /* A4GL_fgl_die (1); */
-//  A4GL_exitwith ("Unknown error");
+    A4GL_debug ("Setting status, cache_status, cache_errmsg");
+    cache_errmsg =      errdesc->errmsg; // static, read-only - safe
+    if (errdesc->a4gl_errno == -1) //not found
+    {
+	A4GLSQL_set_status (-1, 0);
+	cache_status       = -1;
+    }
+    else
+    {
+	A4GLSQL_set_status (-1 * (A4GL_ERR_BASE + errdesc->a4gl_errno), 0);
+	cache_status =            A4GL_ERR_BASE + errdesc->a4gl_errno;
+    }
+//    A4GL_fgl_die (1);
 #endif
 }
 
@@ -152,43 +166,25 @@ int a;
  * @todo Describe function
  */
 void
-//IGNOREEXITWITH exitwith_sql(char *s)
 A4GL_exitwith_sql (char *s)
 {
-  int a;
-
-#ifdef DEBUG
-  {
-    A4GL_debug ("Error... %s", s);
-  }
-#endif
-
 #ifndef IGNOREEXITWITH
+    struct s_err *errdesc;
+    errdesc = A4GL_get_err_for_errstr(s);
 
-  for (a = 0; errors[a].a4gl_errno; a++)
+    A4GL_debug ("Setting status, cache_status, cache_errmsg");
+    cache_errmsg = errdesc->errmsg; // static, read-only - safe
+    if (errdesc->a4gl_errno == -1) //not found
     {
-      if (strcmp (s, errors[a].errmsg) == 0)
-	{
-		#ifdef DEBUG
-	    	A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
-		#endif
-	  A4GLSQL_set_status (-1 * (errors[a].a4gl_errno + 30000), 1);
-	  cache_status = (errors[a].a4gl_errno + 30000);
-	  cache_statusno = a;
-	}
+	A4GLSQL_set_status (-1, 0);
+	cache_status       = -1;
     }
-  /* for now, until error handling and logging routines are completed,
-   * display the error message to standard output
-   */
-
-  return;
-
-  #ifdef DEBUG
-  	A4GL_debug ("About to exit with code %d %d", errors[a].a4gl_errno,errors[cache_statusno].a4gl_errno);
-  #endif
-
-  A4GL_fgl_die (errors[cache_statusno].a4gl_errno);
-
+    else
+    {
+	A4GLSQL_set_status (-1 * (A4GL_ERR_BASE + errdesc->a4gl_errno), 1);
+	cache_status =            A4GL_ERR_BASE + errdesc->a4gl_errno;
+    }
+//    A4GL_fgl_die (errdesc->a4gl_errno);
 #endif
 }
 
@@ -220,31 +216,34 @@ void A4GL_set_lasterrorstr(char *s) {
  * @todo Describe function
  */
 char *
-A4GL_get_errm (int z)
+A4GL_get_errmsg (int z)
 {
   int a = 0;
-char *ptr;
+  char *ptr;
   A4GL_debug ("In get errm");
   if (z == cache_status)
     {
       A4GL_debug ("Cached...");
-      return errors[cache_statusno].errmsg;
+      return cache_errmsg;
     }
 
   A4GL_debug ("Looking up error... %d", a);
   for (a = 0; errors[a].a4gl_errno; a++)
     {
-      if (errors[a].a4gl_errno + 30000 == z)
+      if (errors[a].a4gl_errno + A4GL_ERR_BASE == z)
 	{
 	  return errors[a].errmsg;
 	}
     }
   A4GL_debug ("Not found...");
-  A4GL_debug ("Returning %p", lasterrorstr);
-  A4GL_debug ("Returning %s", lasterrorstr);
-  ptr=A4GLSQL_get_errmsg(0-z);
-  if (ptr) return ptr;
+  ptr = A4GLSQL_get_errmsg(0-z);
+  if (ptr)
+  {
+      A4GL_debug ("Returning A4GLSQL_get_errmsg \"%s\"", lasterrorstr);
+      return ptr;
+  }
 
+  A4GL_debug ("Returning lasterror %p \"%s\"", lasterrorstr, lasterrorstr);
   return lasterrorstr;
 }
 

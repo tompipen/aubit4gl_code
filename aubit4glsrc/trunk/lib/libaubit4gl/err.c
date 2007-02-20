@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.18 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: err.c,v 1.19 2007-02-20 18:46:37 gyver309 Exp $
 #
 */
 
@@ -54,7 +54,7 @@
 =====================================================================
 */
 
-extern char *A4GL_get_errm (int a);
+extern char *A4GL_get_errmsg (int a);
 
 
 
@@ -76,7 +76,7 @@ char *
 A4GL_err_print (int a, char *s)
 {
   char *k;
-  static char static_err[256];
+  static char static_err[1024];
   A4GL_debug ("In err print %d %s",a,s);
   SPRINTF2 (static_err, "Unknown error %d (%s)", a, s);
   k = static_err;
@@ -104,8 +104,8 @@ A4GL_err_print (int a, char *s)
     }
 
 
-  A4GL_debug ("Calling get_errm");
-  k = A4GL_get_errm (a * -1);
+  A4GL_debug ("Calling get_errmsg");
+  k = A4GL_get_errmsg (a * -1);
   A4GL_debug ("Got %s", k);
   SPRINTF1 (static_err, k, s);
   return static_err;
