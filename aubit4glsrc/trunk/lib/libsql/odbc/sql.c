@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.179 2007-02-21 11:46:35 gyver309 Exp $
+# $Id: sql.c,v 1.180 2007-02-21 15:19:51 gyver309 Exp $
 #
 */
 
@@ -1456,6 +1456,7 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
     SQLRETURN rc;
     struct BINDING *save_ibind = 0;
     SQLRETURN rc2;
+    int insertCursor;
 
     A4GL_clear_sqlca();
 
@@ -1477,20 +1478,10 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
     A4GL_trc ("cid=%p cid->statement=%p cid->statement->select='%s'",
 	      cid, cid->statement, cid->statement->select);
 
-    /* what is it for?
-       if (strncasecmp (cid->statement->select, "INSERT", 6) == 0
-       || strncasecmp (cid->statement->select, " INSERT", 7) == 0)
-       {
-       A4GL_assertion (cid->statement->hstmt == 0, "No statement");
-       rc =
-       SQLPrepare ((SQLHSTMT) cid->statement->hstmt, cid->statement->select,
-       SQL_NTS);
-       chk_rc (rc, cid->statement->hstmt, "SQLPrepare");
-       return 0;
-       }
-     */
+    insertCursor = strncasecmp (cid->statement->select, "INSERT", 6) == 0
+	        || strncasecmp (cid->statement->select, " INSERT", 7) == 0;
 
-    if (ni)
+    if (ni && ! insertCursor)
     {
         // They've used a value on the OPEN
         save_ni = cid->statement->ni;
@@ -1510,7 +1501,7 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 
 	if (!chk_rc(rc, cid->statement->hstmt, "SQLPrepare"))
 	{
-	    if (save_ni != -1)
+	    if (save_ni != -1 && ! insertCursor)
 	    {
 		cid->statement->ni = save_ni;
 		cid->statement->ibind = save_ibind;
@@ -1527,6 +1518,9 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 	A4GL_dbg ("Using already prepared cursor s='%s' cid=%p cid->statement=%p cid->statement->select='%s'",
 		s, cid, cid->statement, cid->statement->select);
     }
+
+    if (insertCursor)
+	return 1;
 
     if (((cid->statement->ni) != ni) && ni > 0)
     {
@@ -1625,7 +1619,7 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 
     A4GL_trc ("OBind...");
     if (!A4GL_proc_bind (cid->statement->obind, cid->statement->no, 'o',
-            (SQLHSTMT) cid->statement->hstmt))
+		(SQLHSTMT) cid->statement->hstmt))
     {
 	if (save_ni != -1)
 	{
