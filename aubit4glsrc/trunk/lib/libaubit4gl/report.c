@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.111 2007-02-20 19:24:02 gyver309 Exp $
+# $Id: report.c,v 1.112 2007-02-21 15:24:05 mikeaubury Exp $
 #
 */
 
@@ -1189,8 +1189,16 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
 void
 A4GL_make_report_table (struct BINDING *b, int n)
 {
+int a;
+  a=aclfgli_get_err_flg();
+
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0,0), 1,0,0);
+  if (a==0 ) {
+	aclfgli_clr_err_flg(); // we don't care if the drop fails...
+  }
+
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99,0,0), 1,0,0);
+	
 }
 
 
@@ -1513,9 +1521,9 @@ A4GL_report_char_pop (void)
   function = A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
   A4GL_assertion (function == 0,
 		  "No report display function for this datatype");
-  ptr =
-    function (tos_ptr, tos_size, -1, (struct struct_scr_field *) 0,
-	      DISPLAY_TYPE_PRINT);
+
+  ptr = function (tos_ptr, tos_size, -1, (struct struct_scr_field *) 0, DISPLAY_TYPE_PRINT);
+
   if (ptr != 0)
     {
       ptr = acl_strdup (ptr);
@@ -1523,7 +1531,16 @@ A4GL_report_char_pop (void)
     }
   else
     {
-      ptr = A4GL_char_pop ();
+        ptr = A4GL_char_pop ();
+	if ((tos_dtype&DTYPE_MASK)==DTYPE_CHAR && strlen(ptr)<tos_size) { 
+		// probably null - we still need it padding..
+		char *b;
+		b=malloc(tos_size+1);
+		strcpy(b,ptr);
+		A4GL_pad_string(b,tos_size);
+		free(ptr);
+		ptr=b;
+	}
     }
 
 
