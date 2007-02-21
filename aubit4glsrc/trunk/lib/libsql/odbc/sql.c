@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.178 2007-02-20 19:21:22 gyver309 Exp $
+# $Id: sql.c,v 1.179 2007-02-21 11:46:35 gyver309 Exp $
 #
 */
 
@@ -3868,6 +3868,7 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 
     if (ptr == 0)
     {
+	strcpy (OldDBname, "");
         exitwith_sql_odbc_errm ("Session Id (%s) does not exist", sessname);
         return 0;
     }
@@ -3876,6 +3877,7 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 
     if (rc == 0)
     {
+	strcpy (OldDBname, "");
         A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode(0);
         acl_free (ptr);
         if (strcmp (sessname, "default") != 0)
