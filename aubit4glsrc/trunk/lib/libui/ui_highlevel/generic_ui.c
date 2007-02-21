@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.108 2007-02-17 10:00:43 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.109 2007-02-21 10:37:10 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -815,6 +815,9 @@ UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type,
   menu->num_opts = 0;
   menu->evt = 0;
   menu->nevt = 0;
+  menu->mnstyle=mn_style;
+  menu->mncomment=mn_comment;
+  menu->mnimage=mn_image;
   //A4GL_gui_startmenu (title, (long) menu);
   return (void *) menu;
 }

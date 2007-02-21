@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.3 2007-02-01 20:24:12 mikeaubury Exp $
+# $Id: pg8.c,v 1.4 2007-02-21 10:37:10 mikeaubury Exp $
 #*/
 
 
@@ -1169,9 +1169,7 @@ Oids (int nbind, struct BINDING *b)
 
 
 
-void *
-A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
-					    int no, char *s, char *uniqid)
+void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind, int no, char *s, char *uniqid,int singleton)
 {
   struct s_prepare *n;
   int l;

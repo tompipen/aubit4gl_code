@@ -195,7 +195,7 @@ A4GL_LL_set_window_title void* currwin char* s -> int
 A4GL_LL_widget_name_match void* w char* name -> int
 A4GL_LL_clr_form_fields int to_defaults char* defs  -> void
 A4GL_LL_clr_menu_disp void* menu int curr_width int curr_height int iscurrborder int currwinno void* cw int menu_offset int gw_y -> void 
-A4GL_LL_h_disp_title void* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw int gw_y -> void
+A4GL_LL_h_disp_title_with_attr void* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw int gw_y char* mnstyle char* mncomment char* mnimage -> void
 A4GL_LL_set_acc_intr_keys int n -> void
 A4GL_LL_menu_loop void* menu -> int
 

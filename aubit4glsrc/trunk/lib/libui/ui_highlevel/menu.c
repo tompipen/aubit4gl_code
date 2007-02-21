@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.40 2006-09-30 11:31:02 mikeaubury Exp $";
+  "$Id: menu.c,v 1.41 2007-02-21 10:37:10 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -275,10 +275,17 @@ A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 void
 A4GL_h_disp_title (ACL_Menu * menu, char *str)
 {
-  A4GL_LL_h_disp_title (menu, str, UILIB_A4GL_get_curr_width (),
+char *mnstyle;
+char *mncomment;
+char *mnimage;
+if (menu->mnstyle) mnstyle=menu->mnstyle; else mnstyle="";
+if (menu->mncomment) mncomment=menu->mncomment; else mncomment="";
+if (menu->mnimage) mnimage=menu->mnimage; else mnimage="";
+
+  A4GL_LL_h_disp_title_with_attr (menu, str, UILIB_A4GL_get_curr_width (),
 			UILIB_A4GL_get_curr_height (),
 			UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
-			A4GL_get_currwin (), menu->gw_y);
+			A4GL_get_currwin (), menu->gw_y,mnstyle, mncomment,mnimage);
 }
 
 

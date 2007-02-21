@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.100 2007-02-20 18:29:17 gyver309 Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.101 2007-02-21 10:37:09 mikeaubury Exp $
 */
 
 /**
@@ -248,6 +248,9 @@ struct s_constr_list {char *tabname;char *colname;};
     int gw_b;
     struct aclfgl_event_list *evt;
     int nevt;
+    char *mnstyle;
+    char *mncomment;
+    char *mnimage;
   }
   ACL_Menu;
 

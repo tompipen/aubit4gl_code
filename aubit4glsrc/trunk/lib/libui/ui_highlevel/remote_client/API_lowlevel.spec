@@ -34,7 +34,7 @@ A4GL_LL_get_carat void* form -> int
 A4GL_LL_get_value char* s -> void*
 A4GL_LL_getch_swin void* window_ptr char* why -> int 
 A4GL_LL_gui_run_til_no_more -> void 
-A4GL_LL_h_disp_title void* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw int gw_y -> void
+A4GL_LL_h_disp_title_with_attr void* menu char* str int curr_width int curr_height int iscurrborder int currwinno void* cw int gw_y char* mnstyle char* mncomment char* mnimage -> void
 A4GL_LL_hide_h_menu -> void
 A4GL_LL_hide_window void* w -> void
 A4GL_LL_initialize_display -> void

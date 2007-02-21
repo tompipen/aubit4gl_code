@@ -93,6 +93,7 @@
 			#define __INCLUDED_HEADERS__
 			//use headers from SAP ODBC driver
 		#endif
+		#define SQLRETURN int
 	#endif
 
 
@@ -153,6 +154,8 @@
     /*  -------------- in sql.c ------------------ */
 
 int A4GL_new_hstmt (HSTMT * hstmt);
+
+
 int A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file);
 int A4GL_set_sqlca (SQLHSTMT hstmt, char *s);
 SQLUINTEGER A4GL_display_size (SQLSMALLINT coltype, SQLUINTEGER collen, SQLCHAR* colname);

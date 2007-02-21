@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.111 2007-02-14 17:47:27 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.112 2007-02-21 10:37:10 mikeaubury Exp $";
 #endif
 
 
@@ -3639,8 +3639,8 @@ A4GL_LL_clr_menu_disp (void *menu, int curr_width, int curr_height,
 
 
 void
-A4GL_LL_h_disp_title (void *menu, char *str, int curr_width, int curr_height,
-		      int iscurrborder, int currwinno, void *cw, int gw_y)
+A4GL_LL_h_disp_title_with_attr (void *menu, char *str, int curr_width, int curr_height,
+		      int iscurrborder, int currwinno, void *cw, int gw_y,char *style, char*comment, char*image)
 {
 
   if (A4GL_isyes (acl_getenv ("TRADMENU")))
