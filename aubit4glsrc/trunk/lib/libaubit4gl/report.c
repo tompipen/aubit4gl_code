@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.113 2007-02-21 16:26:48 mikeaubury Exp $
+# $Id: report.c,v 1.114 2007-02-21 16:27:44 mikeaubury Exp $
 #
 */
 
@@ -1544,7 +1544,7 @@ A4GL_report_char_pop (void)
 	}
 	if ( (tos_dtype&DTYPE_MASK)==DTYPE_VCHAR  && strlen(ptr)==0) {
 		free(ptr);
-		ptr=strdup(" ");
+		ptr=strdup(" ");  
 	}
 
     }
