@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.180 2007-02-21 15:19:51 gyver309 Exp $
+# $Id: sql.c,v 1.181 2007-02-21 19:16:44 gyver309 Exp $
 #
 */
 
@@ -1344,8 +1344,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void
     //  if (retval && singleton) // why not to free sid if failed?
     if (singleton)
         sql_free_sid(&sid);
-    else
-        sql_free_stmt(&sid->hstmt);
+//    else
+//        sql_free_stmt(&sid->hstmt);
 
     return retval;
 }
@@ -5350,6 +5350,8 @@ A4GL_set_sqlca (SQLHSTMT hstmt, char *s)
         A4GL_wrn("Got ODBC odbc_sqlstate=%s", odbc_sqlstate);
         strcpy (a4gl_sqlca.sqlawarn, "       ");
         a4gl_sqlca.sqlawarn[0] = 'W';
+	if (nativeerr < 0) // ODBC thinks this is a warning, so let's make code positive
+            nativeerr = 0 - nativeerr;
     }
 
     if (ignore_next_sql_error)
