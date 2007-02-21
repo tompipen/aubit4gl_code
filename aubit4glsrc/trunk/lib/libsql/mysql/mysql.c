@@ -1615,7 +1615,6 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 		x=obind->ptr;
 
 		if (x->where=='M') {
-			A4GL_pause_execution();
                 	x->memsize=mobind->buffer_length ;
                         x->ptr=mobind->buffer;
 		}
@@ -1953,8 +1952,14 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni,void *
   A4GL_debug ("Calling proc_bind()");
 #endif
 
+  if (ni) { 
   nibind = ni;
   ibind = binding;
+  } else {
+	nibind=sid->ni;
+	ibind=sid->ibind;
+  }
+
 
   A4GL_debug ("Execute : %s\n", sid->select);
 
