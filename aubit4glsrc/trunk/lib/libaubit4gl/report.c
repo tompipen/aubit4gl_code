@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.112 2007-02-21 15:24:05 mikeaubury Exp $
+# $Id: report.c,v 1.113 2007-02-21 16:26:48 mikeaubury Exp $
 #
 */
 
@@ -1532,6 +1532,7 @@ A4GL_report_char_pop (void)
   else
     {
         ptr = A4GL_char_pop ();
+
 	if ((tos_dtype&DTYPE_MASK)==DTYPE_CHAR && strlen(ptr)<tos_size) { 
 		// probably null - we still need it padding..
 		char *b;
@@ -1541,6 +1542,11 @@ A4GL_report_char_pop (void)
 		free(ptr);
 		ptr=b;
 	}
+	if ( (tos_dtype&DTYPE_MASK)==DTYPE_VCHAR  && strlen(ptr)==0) {
+		free(ptr);
+		ptr=strdup(" ");
+	}
+
     }
 
 
