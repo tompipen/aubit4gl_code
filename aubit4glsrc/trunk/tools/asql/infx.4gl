@@ -61,6 +61,9 @@ typedef struct dtime    Datetime;
 typedef struct intrvl   Interval;
 int strip( char *str, int len );
 int charcpy( unsigned char *target, unsigned char *source, long len );
+static char *allocate_descriptor_memory(struct sqlda *udesc, short **qualifiers, short **indicators) ;
+static void deallocate_descriptor_memory(struct sqlda *udesc) ;
+static void prepare_for_fetch_into_descriptor(struct sqlda *udesc,short *qualifiers) ;
 
 #if HAVE_IFX_IUS
 #define ESQLC_IUSTYPES          1
@@ -71,6 +74,10 @@ off_t bpos = 0;
 
 
 #define min(a, b ) ((a < b) ? a : b)
+
+struct sqlda *master_desc=0;
+short *master_qualifiers=0;
+short *master_indicators=0;
 
 
 int global_length;
@@ -663,10 +670,6 @@ printField (FILE * outputFile, int idx, char *descName)
 
   char *descriptorName = descName;
   int length;
-
-  //loc_t blob;
-
-
   char *char_var;
   short smint_var;
   long int_var;
@@ -680,242 +683,169 @@ printField (FILE * outputFile, int idx, char *descName)
   EXEC SQL END DECLARE SECTION;
   char buff[255];
   char fmt[255];
-  int rc = 0;
+struct sqlvar_struct *col;
+int rc = 0;
+
+
+
 A4GL_debug("printField");
 
-EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType = TYPE;
+
+
+
+
+  //EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType = TYPE;
+
+
+col=&master_desc->sqlvar[idx-1];
+
+indicator=*col->sqlind ;
 
   cp_sqlca ();
-
-  if (indicator != -1)
+  if (indicator == -1) {
+      strcpy (buffer, "");
+    }
+  else 
     {
-	A4GL_debug("Dtype=%x\n",dataType);
-      switch (dataType & 0xff)
+      A4GL_debug("Dtype=%x\n",dataType);
+	
+      switch (col->sqltype)
 	{
-	case SQLCHAR:
-	case SQLVCHAR:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length =
-	    LENGTH;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-	  char_var = (char *) acl_malloc2 (length + 1);
-	  EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
-	  cp_sqlca ();
-	  A4GL_trim (char_var);
-	  sprintf (buffer, "%s", char_var);
-	  free (char_var);
+	case CSHORTTYPE:
+	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD) { sprintf (buffer, "%d", *(short *) (col->sqldata)); }
+	  else { sprintf (buffer, "%*d", columnWidths[idx - 1], *(short *) (col->sqldata)); }
 	  break;
 
-	case SQLSMINT:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smint_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
+        case CINTTYPE:
+        case CLONGTYPE:
+	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD) { sprintf (buffer, "%ld", *(long *) (col->sqldata)); }
+	  else { sprintf (buffer, "%*ld", columnWidths[idx - 1], *(long*) (col->sqldata)); }
+	  break;
+
+
+	case CFLOATTYPE:
 	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
 	    {
-	      sprintf (buffer, "%d", smint_var);
+	      sprintf (buffer, "%f",*(float *) (col->sqldata) );
+	      if (display_mode == DISPLAY_UNLOAD) trim_trailing_0 (buffer);
 	    }
-	  else
-	    {
-	      sprintf (buffer, "%*d", columnWidths[idx - 1], smint_var);
-	    }
+	  else { sprintf (buffer, "%*f", columnWidths[idx - 1], *(float *) (col->sqldata)); }
 	  break;
 
-	case 6:
-	case SQLINT:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-
+	case CDOUBLETYPE:
 	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
 	    {
-	      sprintf (buffer, "%ld", int_var);
+	      sprintf (buffer, "%lf",*(double *) (col->sqldata) );
+	      if (display_mode == DISPLAY_UNLOAD) trim_trailing_0 (buffer);
 	    }
-	  else
-	    {
-	      sprintf (buffer, "%*ld", columnWidths[idx - 1], int_var);
-	    }
-	  break;
-	case SQLFLOAT:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:float_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
-	    {
-	      sprintf (buffer, "%lf", float_var);
-	      if (display_mode == DISPLAY_UNLOAD)
-		trim_trailing_0 (buffer);
-	    }
-	  else
-	    {
-	      sprintf (buffer, "%*lf", columnWidths[idx - 1], float_var);
-	    }
-	  //sprintf (buffer, "%lf", float_var);
-	  break;
-	case SQLSMFLOAT:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smfloat_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-	  //sprintf (buffer, "%f", smfloat_var);
-	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
-	    {
-	      sprintf (buffer, "%f", smfloat_var);
-	      if (display_mode == DISPLAY_UNLOAD)
-		trim_trailing_0 (buffer);
-	    }
-	  else
-	    {
-	      sprintf (buffer, "%*f", columnWidths[idx - 1], smfloat_var);
-	    }
-	  break;
-	case SQLDECIMAL:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:decimal_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-
-	  //fgl_decimal = acl_malloc2 (sizeof (fgldecimal));
-	  if (dectoasc (&decimal_var, buff, 32, -1))
-	    {
-	      A4GL_debug ("BAD DECIMAL");
-	/** @todo : Store the error somewhere */
-	      return 1;
-	    }
-	  buff[32] = 0;
-	  A4GL_trim (buff);
-	  if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
-	    {
-	      sprintf (buffer, "%s", buff);
-	      if (display_mode == DISPLAY_UNLOAD)
-		trim_trailing_0 (buffer);
-	    }
-	  else
-	    {
-	      sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
-	    }
-	  //sprintf (buffer, "%s", buff);
-	  //free (fgl_decimal);
-	  break;
-	case SQLDATE:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:date_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-	  char_var = (char *) acl_malloc2 (sizeof (char) * 20);
-	  A4GL_dtos (&date_var, char_var, 19);
-	  A4GL_trim (char_var);
-	  sprintf (buffer, "%s", char_var);
-	  free (char_var);
-	  break;
-	case SQLMONEY:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:money_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-	  //fgl_money = acl_malloc2 (sizeof (fglmoney));
-	  if (dectoasc (&money_var, buff, 32, -1))
-	    {
-	/** @todo : Store the error somewhere */
-	      A4GL_debug ("Bad money");
-	      return 1;
-	    }
-	  buff[32] = 0;
-	  sprintf (buffer, "%s", buff);
-	  if (display_mode == DISPLAY_UNLOAD)
-	    trim_trailing_0 (buffer);
-	  //free (fgl_money);
+	  else { sprintf (buffer, "%*lf", columnWidths[idx - 1], *(double *) (col->sqldata)); }
 	  break;
 
-	case SQLDTIME:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:dtime_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-	  //fgl_dtime = acl_malloc2 (sizeof (FglDatetime));
-	  if (dttoasc (&dtime_var, buff))
-	    {
-	/** @todo : Store the error somewhere */
-	      A4GL_debug ("Bad dtime");
-	      return 1;
-	    }
-	  sprintf (buffer, "%s", buff);
-	  //free (fgl_dtime);
-	  break;
-	case SQLINTERVAL:
-	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:interval_var =
-	    DATA;
-	  cp_sqlca ();
-	  if (isSqlError ())
-	    {
-	      rc = 1;
-	      break;
-	    }
-	  //fgl_interval = acl_malloc2 (sizeof (FglInterval));
-	  if (intoasc (&interval_var, buff))
-	    {
-	/** @todo : Store the error somewhere */
-	      A4GL_debug ("Bad itime");
-	      return 1;
-	    }
-	  sprintf (buffer, "%s", buff);
-	  //free (fgl_interval);
-	  break;
 
-	case SQLBYTES:
-	  break;
 
-	case SQLTEXT:
-	  break;
 
-        case SQLMULTISET:
-	  	char_var = (char *) acl_malloc2 (length + 1);
-	  	EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
-	  	cp_sqlca ();
-	  	A4GL_trim (char_var);
-	  	sprintf (buffer, "%s", char_var);
-	  	free (char_var);
-	  	break;
 
-		break;
+                case CFIXCHARTYPE:
+                        {
+                        int alen;
+			static char*string=0;
+			static int string_len=0;
+                        int flen;
+                        if (string_len<col->sqllen*3+1) {
+                                string=realloc(string, col->sqllen*3+1);
+                                string_len=col->sqllen*3+1;
+                        }
+                        alen = strip( (char *)col->sqldata, col->sqllen );
+                        flen = charcpy( (unsigned char *)string, (unsigned char *)col->sqldata, alen );
+                        if (strlen(string)==0) {
+                                strcpy(buffer," ");
+                        } else {
+                                strcpy (buffer, string);
+	  			A4GL_trim (buffer);
+                        }
+                        }
+                  break;
+
+                case CINVTYPE:
+                  {
+                    char buff[33];
+                    intrvl_t *itvl = (intrvl_t *) (col->sqldata);
+                    if (intoasc (itvl, buff))
+                      {
+                        buff[32]=0;
+                        A4GL_trim (buff);
+                        strcpy (buffer, buff);
+                      }
+                        break;
+                  }
+
+
+                case CDECIMALTYPE:
+                case CMONEYTYPE:
+                  {
+                    dec_t *dec = (dec_t *) (col->sqldata);
+                     char buff[33];
+                    dectoasc (dec, buff, 32, -1);
+                    buff[32]=0;
+                    A4GL_trim (buff);
+	  		if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
+	    		{
+	      		sprintf (buffer, "%s", buff);
+	      		if (display_mode == DISPLAY_UNLOAD)
+				trim_trailing_0 (buffer);
+	    		}
+	  		else
+	    		{
+	      		sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
+	    		}
+                    break;
+                  }
+
+
+                case CDTIMETYPE:
+                  {
+                    char buff[33];
+                    dtime_t *dtp = (dtime_t *) (col->sqldata);
+                    if (dttoasc (dtp, buff))
+                      {
+                    buff[32]=0;
+                        A4GL_trim (buff);
+                        strcpy (buffer, buff);
+                      }
+                    break;
+                  }
+	
+              
+
+                case CLOCATORTYPE:
+			strcpy(buffer,"<blob>");
+			break;
+
+
+                case CLVCHARPTRTYPE:
+                        {
+                        int alen;
+                        char *data;
+                        int flen;
+                        void *lvc;
+                        lvc=col->sqldata;
+                        data=ifx_var_getdata(&lvc);
+                        if (data==0) {
+                                strcpy (buffer,"");
+                        } else {
+				if (strlen(data)<sizeof(buffer)) {
+                                	sprintf (buffer,"%s", data);
+				} else {
+					strncpy(buffer, buffer, sizeof(buffer)-100);
+					buffer[sizeof(buffer)-100]=0;
+					strcat(buff," ** TRUNCATED **");
+				}
+
+                        }
+                        }
+                  break;
+
+
 
 	default:
 	  A4GL_debug ("INVALID DATATYPE %d %x @ %d+++", dataType, dataType,
@@ -924,10 +854,6 @@ EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator = INDICATOR,:dataType =
 	}
       if (strlen (buffer) == 0)
 	strcpy (buffer, " ");
-    }
-  else
-    {
-      strcpy (buffer, "");
     }
 
 
@@ -1143,7 +1069,9 @@ execute_select_prepare ()
 {
 
   open_display_file_c ();
-
+  if (master_desc) {
+		deallocate_descriptor_memory(master_desc);
+  }
   EXEC SQL whenever error continue;
   EXEC SQL deallocate descriptor 'descExec';
   cp_sqlca ();
@@ -1159,10 +1087,18 @@ execute_select_prepare ()
     return 0;
 
   EXEC SQL get descriptor 'descExec':numberOfColumns = COUNT;
+
   cp_sqlca ();
   if (sqlca.sqlcode < 0)
     return 0;
   A4GL_debug ("numberOfColumns : %d\n", numberOfColumns);
+
+
+
+  EXEC SQL DESCRIBE stExec INTO master_desc;
+  allocate_descriptor_memory(master_desc, &master_qualifiers, &master_indicators);
+
+
 
   EXEC SQL declare crExec CURSOR FOR stExec;
 
@@ -1216,7 +1152,11 @@ execute_sql_fetch (int *raffected)
 
 A4GL_debug("Fetching");
 
-  EXEC SQL FETCH crExec USING SQL DESCRIPTOR 'descExec';
+/* FETCH1.... */
+      prepare_for_fetch_into_descriptor(master_desc,master_qualifiers);
+      EXEC SQL FETCH crExec USING DESCRIPTOR master_desc;
+
+
   cp_sqlca ();
 
   if (sqlca.sqlcode < 0)
@@ -2534,37 +2474,30 @@ int
 do_unload (struct element *e,long *raffected)
 {
   int b;
-
-  //int lineno;
-  //char type;
-  //char *stmt;
-  //char *delim;
-  //char *fname;
-  register int pos;
-  register char *cp;
   register int len;
-  register int i;
   struct sqlda *udesc;
-  struct sqlvar_struct *col;
   FILE *unlfile;
   char *fname;
   char delim = '|';
-  char *buffer = NULL;
-  int counter = 0, filerecs = 0, ret = 0, align;
+  int counter = 0, filerecs = 0, ret = 0;
   char fname2[1025];
   static int fnum = 0;
-  int nblobs = 0, flen, rlen, outbsize = 0, blobn;
+	int  outbsize = 0, blobn;
   int *bbufs[1024];
   char *outbuff, *iptr, *optr, str[100];
   long long filebytes = (long long) 0;
-  short *indicators, *qualifiers;
   intrvl_t *ivp;
+  short *qualifiers;
+  short *indicators;
   EXEC SQL BEGIN DECLARE SECTION;
+
   char *slctstmt;
-  loc_t *locator=0;
   EXEC SQL END DECLARE SECTION;
 static char *string=0;
 static int string_len=0;
+  struct sqlvar_struct *col;
+char *buffer;
+int i;
 
 
   *raffected=0;
@@ -2613,224 +2546,9 @@ if (e->delim) {
   else if (bufsz)
     setvbuf (unlfile, (char *) NULL, _IOFBF, bufsz);
 
-
-  /* Step 1: analyze udesc to determine type and memory requirements
-   *         of each item in the select list.  rtypalign() returns a
-   *         pointer to the next appropriate boundary (starting at
-   *         pos) for the indicated data type.
-   */
-  pos = 0;
-
-  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
-    {
-      long fld_len = col->sqllen;
-
-      switch (col->sqltype)
-	{
-	case SQLSMFLOAT:
-	  col->sqltype = CFLOATTYPE;
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-	  break;
-
-	case SQLFLOAT:
-	  col->sqltype = CDOUBLETYPE;
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-	  break;
-
-	case SQLMONEY:
-	case SQLDECIMAL:
-	  col->sqltype = CDECIMALTYPE;
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-	  break;
-
-	case SQLSERIAL:
-	case SQLINT:
-	  col->sqltype = CLONGTYPE;
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-	  break;
-
-	case SQLSMINT:
-	  col->sqltype = CSHORTTYPE;
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-	  break;
-
-	case SQLVCHAR:
-	case SQLCHAR:
-	case SQLNVCHAR:
-	  col->sqltype = CFIXCHARTYPE;	/* get all bytes */
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-	  break;
-
-
-#ifdef ESQLC_IUSTYPES  /* Do unload */
-	
-        case SQLSET:
-        case SQLMULTISET:
-        case SQLLIST:
-        case SQLLVARCHAR:
-
-                col->sqltype = CLVCHARPTRTYPE;
-		col->sqllen  = jtypcsize(col->sqltype, col->sqllen);
-		col->sqltype = jtypctype(col->sqltype);
-	A4GL_pause_execution();
-	  	fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-                break;
-#endif /* ESQLC_IUSTYPES */
-
-
-	case SQLDATE:
-	  col->sqltype = CFIXCHARTYPE;
-	  col->sqllen=11; //dd-mm-yyyy
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
-	  break;
-
-	case SQLINTERVAL:
-	  col->sqltype = CFIXCHARTYPE;
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
-	  break;
-
-	case SQLDTIME:
-	  col->sqltype = CFIXCHARTYPE;
-	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
-	  break;
-
-	case SQLBYTES:
-	case SQLTEXT:
-	  col->sqltype = CLOCATORTYPE;
-	  fld_len = col->sqllen = sizeof (loc_t);
-	  break;
-
-	default:
-	  A4GL_assertion (1, "Unsupported data type\n");
-	  return 0;
-	}
-      pos = (int) rtypalign (pos, col->sqltype) + fld_len;
-    }
-
-  buffer = (char *) malloc (pos);
-  if (buffer == (char *) NULL)
-    {
-      // Out of memory...
-      return 0;
-    }
-
-  indicators = (short *) malloc (udesc->sqld * sizeof (short));
-  memset (indicators, 0, udesc->sqld * sizeof (short));
-  qualifiers = (short *) malloc (udesc->sqld * sizeof (short));
-  memset (qualifiers, 0, udesc->sqld * sizeof (short));
-
-  /* Initialize buffer to Nulls */
-  memset (buffer, 0, pos);
-
-  /* Step 3: Set pointers in the allocated memory to receive each
-   *         item in the select list.
-   */
-  pos = 0;
-  cp = buffer;
-  rlen = 0;
-  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
-    {
-      switch (col->sqltype)
-	{
-
-
-	case CLOCATORTYPE:
-	  locator = (loc_t *) malloc (sizeof (loc_t));
-	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
-	  cp = buffer + align;
-	  col->sqldata = (char *) locator;
-	  cp += col->sqllen;
-	  rlen += 4;		/* Only need room in output row for BLOB length. */
-
-
-          locator->loc_status = 0;
-          locator->loc_type = SQLTEXT;
-          locator->loc_xfercount = 0;
-
-	  locator->loc_loctype = LOCMEMORY;
-	  locator->loc_bufsize = -1;
-	  locator->loc_buffer = (char *)0;
-	  locator->loc_size=0;
-	  locator->loc_indicator=0;
-	  locator->loc_oflags=0;
-
-
-	  if (nblobs > 1023)
-	    {
-	      fprintf (stderr, ">1023 blob columns in record\n");
-	      exit (9);
-	    }
-
-	  nblobs++;
-	  break;
-#ifdef ESQLC_IUSTYPES /* do unload still */
-           case CLVCHARPTRTYPE:
-                        {
-                                void *data = 0;
-				printf("Allocate...\n");
-                                ifx_var_flag(&data, 1);
-	  			align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
-	  			cp = buffer + align;
-	  			cp += (flen = rtypmsize (col->sqltype, col->sqllen));
-	  			rlen += flen;
-                                col->sqldata = (char *)data;    /*=C++=*/
-                        }
-#endif /* ESQLC_IUSTYPES */
-
-	case CDOUBLETYPE:
-	  break;
-	case CSHORTTYPE:
-	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
-	  cp = buffer + align;
-	  col->sqldata = cp;
-	  cp += col->sqllen;
-	  rlen += col->sqllen;
-	  break;
-	case CDTIMETYPE:
-	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
-	  cp = buffer + align;
-	  col->sqldata = cp;
-	  ((dtime_t *) (col->sqldata))->dt_qual =
-	    TU_ENCODE (TU_LEN (col->sqllen),
-		       TU_START (col->sqllen), TU_END (col->sqllen));
-	  /* Save the qualifier for later */
-	  qualifiers[i] =  (((dtime_t *) (col->sqldata))->dt_qual);
-	  col->sqllen = ((dtime_t *) (col->sqldata))->dt_qual;
-	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
-	  rlen += flen;
-	  break;
-
-	
-	case CINVTYPE:
-	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
-	  cp = buffer + align;
-	  col->sqldata = cp;
-	  ((intrvl_t *) (col->sqldata))->in_qual =
-	    TU_IENCODE (TU_LEN (col->sqllen),
-			TU_START (col->sqllen), TU_END (col->sqllen));
-	  /* Save the qualifier for later */
-	  qualifiers[i] =  (((intrvl_t *) (col->sqldata))->in_qual);
-	  col->sqllen = ((intrvl_t *) (col->sqldata))->in_qual;
-	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
-	  rlen += flen;
-	  break;
-	default:
-	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
-	  cp = buffer + align;
-	  col->sqldata = cp;
-	  cp += col->sqllen;
-	  rlen += col->sqllen;
-	  break;
-	}
-      col->sqlitype = CSHORTTYPE;
-      col->sqlilen = sizeof (short);
-      col->sqlidata = (char *) indicators;
-      col->sqlind = indicators++;
-    }
-  pos = (long) cp - (long) buffer;
-
-
   EXEC SQL WHENEVER ERROR CONTINUE;
+
+  buffer=allocate_descriptor_memory(udesc, &qualifiers, &indicators);
 
   EXEC SQL DECLARE usqlcurs CURSOR FOR usqlobj;
 
@@ -2857,6 +2575,7 @@ if (e->delim) {
       /* Initialize buffer to Nulls */
       /* memset( buffer, 0, pos ); */
 
+#ifdef MOVED
       for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
 	{
 	  switch (col->sqltype)
@@ -2873,7 +2592,13 @@ if (e->delim) {
 	      break;
 	    }
 	}
+#endif
+
+
+      prepare_for_fetch_into_descriptor(udesc,qualifiers);
       EXEC SQL FETCH usqlcurs USING DESCRIPTOR udesc;
+
+
 
       if (sqlca.sqlcode < 0)
 	{
@@ -3029,8 +2754,12 @@ if (e->delim) {
 return 0;
     }
 
+
+/*
   free (buffer);
-      for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+*/
+
+  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
 	{
 	  if (col->sqltype==CLOCATORTYPE) {
 			loc_t *blob;
@@ -3039,10 +2768,15 @@ return 0;
 			free(col->sqldata);
 		}
 	}
+
+  deallocate_descriptor_memory(udesc);
+
   if (sqlca.sqlcode && sqlca.sqlcode != SQLNOTFOUND)
     {
 	return 0;
     }
+
+
   EXEC SQL CLOSE usqlcurs;
   return 1;
 }
@@ -3233,3 +2967,274 @@ if lv_hasacl then
 end if
 
 end function
+
+
+code
+
+
+
+
+char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short **pindicators) {
+  register int pos;
+  register int i;
+  struct sqlvar_struct *col;
+  char *buffer = NULL;
+  short *indicators;
+  short *qualifiers;
+  register char *cp;
+  int  flen, rlen;
+  loc_t *locator=0;
+  int align;
+  int nblobs = 0;
+
+  /* Step 1: analyze udesc to determine type and memory requirements
+   *         of each item in the select list.  rtypalign() returns a
+   *         pointer to the next appropriate boundary (starting at
+   *         pos) for the indicated data type.
+   */
+  pos = 0;
+  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+    {
+      long fld_len = col->sqllen;
+
+      switch (col->sqltype)
+	{
+	case SQLSMFLOAT:
+	  col->sqltype = CFLOATTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLFLOAT:
+	  col->sqltype = CDOUBLETYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLMONEY:
+	case SQLDECIMAL:
+	  col->sqltype = CDECIMALTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLSERIAL:
+	case SQLINT:
+	  col->sqltype = CLONGTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLSMINT:
+	  col->sqltype = CSHORTTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLVCHAR:
+	case SQLCHAR:
+	case SQLNVCHAR:
+	  col->sqltype = CFIXCHARTYPE;	/* get all bytes */
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+
+#ifdef ESQLC_IUSTYPES  /* Do unload */
+	
+        case SQLSET:
+        case SQLMULTISET:
+        case SQLLIST:
+        case SQLLVARCHAR:
+                col->sqltype = CLVCHARPTRTYPE;
+                col->sqllen  = jtypcsize(col->sqltype, col->sqllen);
+                col->sqltype = jtypctype(col->sqltype);
+                fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+                break;
+
+                break;
+#endif /* ESQLC_IUSTYPES */
+
+
+	case SQLDATE:
+	  col->sqltype = CFIXCHARTYPE;
+	  col->sqllen=11; //dd-mm-yyyy
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
+	case SQLINTERVAL:
+	  col->sqltype = CFIXCHARTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
+	  break;
+
+	case SQLDTIME:
+	  col->sqltype = CFIXCHARTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
+	  break;
+
+	case SQLBYTES:
+	case SQLTEXT:
+	  col->sqltype = CLOCATORTYPE;
+	  fld_len = col->sqllen = sizeof (loc_t);
+	  break;
+
+	default:
+	  A4GL_assertion (1, "Unsupported data type\n");
+	  return 0;
+	}
+      pos = (int) rtypalign (pos, col->sqltype) + fld_len;
+    }
+
+  buffer = (char *) A4GL_alloc_associated_mem (udesc, pos);
+
+
+  //if (buffer == (char *) NULL)
+    //{
+      // Out of memory...
+      //return 0;
+    //}
+
+  indicators = (short *) A4GL_alloc_associated_mem (udesc, udesc->sqld * sizeof (short));
+  memset (indicators, 0, udesc->sqld * sizeof (short));
+  qualifiers = (short *) A4GL_alloc_associated_mem (udesc, udesc->sqld * sizeof (short));
+  memset (qualifiers, 0, udesc->sqld * sizeof (short));
+
+  *pqualifiers=qualifiers;
+  *pindicators=indicators;
+
+  /* Initialize buffer to Nulls */
+  memset (buffer, 0, pos);
+
+  /* Step 3: Set pointers in the allocated memory to receive each
+   *         item in the select list.
+   */
+  pos = 0;
+  cp = buffer;
+  rlen = 0;
+
+
+  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+    {
+      switch (col->sqltype)
+	{
+
+
+	case CLOCATORTYPE:
+	  locator = (loc_t *) A4GL_alloc_associated_mem (udesc, sizeof (loc_t));
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = (char *) locator;
+	  cp += col->sqllen;
+	  rlen += 4;		/* Only need room in output row for BLOB length. */
+
+
+          locator->loc_status = 0;
+          locator->loc_type = SQLTEXT;
+          locator->loc_xfercount = 0;
+
+	  locator->loc_loctype = LOCMEMORY;
+	  locator->loc_bufsize = -1;
+	  locator->loc_buffer = (char *)0;
+	  locator->loc_size=0;
+	  locator->loc_indicator=0;
+	  locator->loc_oflags=0;
+
+
+	  if (nblobs > 1023)
+	    {
+	      fprintf (stderr, ">1023 blob columns in record\n");
+	      exit (9);
+	    }
+
+	  nblobs++;
+	  break;
+#ifdef ESQLC_IUSTYPES /* do unload still */
+           case CLVCHARPTRTYPE:
+                        {
+                                void *data = 0;
+                                ifx_var_flag(&data, 1);
+	  			align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  			cp = buffer + align;
+	  			cp += (flen = rtypmsize (col->sqltype, col->sqllen));
+	  			rlen += flen;
+                                col->sqldata = (char *)data;    /*=C++=*/
+                        }
+#endif /* ESQLC_IUSTYPES */
+
+	case CDOUBLETYPE:
+	  break;
+	case CSHORTTYPE:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  cp += col->sqllen;
+	  rlen += col->sqllen;
+	  break;
+	case CDTIMETYPE:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  ((dtime_t *) (col->sqldata))->dt_qual =
+	    TU_ENCODE (TU_LEN (col->sqllen),
+		       TU_START (col->sqllen), TU_END (col->sqllen));
+	  /* Save the qualifier for later */
+	  qualifiers[i] =  (((dtime_t *) (col->sqldata))->dt_qual);
+	  col->sqllen = ((dtime_t *) (col->sqldata))->dt_qual;
+	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
+	  rlen += flen;
+	  break;
+
+	
+	case CINVTYPE:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  ((intrvl_t *) (col->sqldata))->in_qual =
+	    TU_IENCODE (TU_LEN (col->sqllen),
+			TU_START (col->sqllen), TU_END (col->sqllen));
+	  /* Save the qualifier for later */
+	  qualifiers[i] =  (((intrvl_t *) (col->sqldata))->in_qual);
+	  col->sqllen = ((intrvl_t *) (col->sqldata))->in_qual;
+	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
+	  rlen += flen;
+	  break;
+	default:
+	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
+	  cp = buffer + align;
+	  col->sqldata = cp;
+	  cp += col->sqllen;
+	  rlen += col->sqllen;
+	  break;
+	}
+      col->sqlitype = CSHORTTYPE;
+      col->sqlilen = sizeof (short);
+      col->sqlidata = (char *) indicators;
+      col->sqlind = indicators++;
+    }
+  pos = (long) cp - (long) buffer;
+  return buffer;
+}
+
+void deallocate_descriptor_memory(struct sqlda *udesc) {
+	A4GL_free_associated_mem(udesc);
+}
+
+
+
+void prepare_for_fetch_into_descriptor(struct sqlda *udesc,short *qualifiers) {
+  struct sqlvar_struct *col;
+int i;
+      for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
+        {
+          switch (col->sqltype)
+            {
+            case CDTIMETYPE:
+              /* Get the saved qualifier. */
+              ((dtime_t *) (col->sqldata))->dt_qual = qualifiers[i];
+              break;
+            case CINVTYPE:
+              /* Get the saved qualifier. */
+              ((intrvl_t *) (col->sqldata))->in_qual = qualifiers[i];
+              break;
+            default:
+              break;
+            }
+        }
+      EXEC SQL FETCH usqlcurs USING DESCRIPTOR udesc;
+}
+endcode
+
