@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.159 2007-02-17 10:00:43 mikeaubury Exp $
+# $Id: ioform.c,v 1.160 2007-02-22 12:30:07 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.159 2007-02-17 10:00:43 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.160 2007-02-22 12:30:07 mikeaubury Exp $";
 #endif
 
 /**
@@ -3896,8 +3896,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 	    if (fprop != 0)
 	      {
 
-
-		A4GL_debug ("15 fprop!=0");
+		A4GL_debug ("15 fprop!=0 flags=%d",fprop->flags);
 		if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR)
 		  {
 
@@ -3917,8 +3916,28 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 		    if (strlen (buff2) == 0)
 		      {
+			int chged=0;
+			// Has the field changed ? 
+			// Are we on a new line ? 
+			if ((fprop->flags&2) || sio->curr_line_is_new) {
+					chged++;
+			}
 
-			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+			// are we returning to a previous field ? 
+			if (sio->processed_onkey!=A4GLKEY_UP && sio->processed_onkey!=A4GLKEY_LEFT) {
+				A4GL_debug("last key was not up or left");
+				chged++;
+			}
+
+			if (chged==0) {
+				if (!A4GL_entire_row_is_blank(sio,sio->scr_line-1)) {
+					chged++;
+				}
+			}
+				A4GL_debug("changed=%d\n", chged);
+				//printf("changed=%d\n", chged);fflush(stdout);
+			
+			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged)
 			  {
 			    int allow_it_anyway = 0;
 
