@@ -46,6 +46,7 @@ extern "C"
     int currpos; 			/** Current position in the resultset */
     int nrows;				/** number of rows in the dataset */
     char *DeclareSql;
+    void *extra_info;			/**< A space for sql driver specific info */
   };
 
         /** A better name to the cursor descriptor */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.181 2007-02-21 19:16:44 gyver309 Exp $
+# $Id: sql.c,v 1.182 2007-02-22 16:33:02 gyver309 Exp $
 #
 */
 
@@ -151,7 +151,8 @@ typedef struct
 enum {
     FLAG_SINGLETON = 1,
     FLAG_PREPARED = 2,
-    FLAG_OWNS_BINDINGS = 3
+    FLAG_OWNS_BINDINGS = 3,
+    FLAG_OPEN = 4
 };
 
 // catalog query structures
@@ -835,12 +836,14 @@ static Bool sid_get_owns_bindings(struct s_sid *sid)
 
 static void cid_set_open(struct s_cid *cid, Bool flg)
 {
-    cid->hstmt = (void*)flg;
+    cid->extra_info = (void*)set_flag((unsigned int)(cid->extra_info), FLAG_OPEN, flg);
+//    cid->hstmt = (void*)flg;
 }
 
 static Bool cid_get_open(struct s_cid *cid)
 {
-    return cid->hstmt == 0 ? False : True;
+    return get_flag((unsigned int)(cid->extra_info), FLAG_OPEN);
+//    return cid->hstmt == 0 ? False : True;
 }
     
 /**
@@ -1148,6 +1151,26 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 
     sid = vsid;
 
+    cid = (struct s_cid *) A4GL_find_pointer_val (cursname, CURCODE);
+    if (cid)
+    {
+	if (cid_get_open(cid))
+	{
+	    rc = SQLFreeStmt ((SQLHSTMT) cid->statement->hstmt, SQL_CLOSE);
+	    if (!chk_rc (rc, cid->statement->hstmt, "SQLFreeStmt(SQL_CLOSE)"))
+	    {
+		exitwith_sql_odbc_errm ("Closing cursor (%s) failed", cursname);
+		return -1;
+	    }
+	    cid_set_open(cid, False);
+	}
+	if (sid_get_singleton(cid->statement))
+	    sql_free_sid(&cid->statement);
+	else
+	    sql_free_stmt(&cid->statement->hstmt);
+	A4GL_del_pointer (cursname, CURCODE);
+    }
+
     A4GL_clear_sqlca();
 
     A4GL_dbg("Declaring cursor cursname='%s' sid=%p upd_hold=%d scroll=%d",
@@ -1180,7 +1203,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	    // prepare new sid
 	    nsid = acl_malloc2 (sizeof (struct s_sid));
 	    A4GL_trc("Malloced nsid=%p", nsid);
-	    sid->extra_info = 0;
+	    nsid->extra_info = 0;
 	    sid_set_owns_bindings(nsid, False);
 	    sid_set_singleton(nsid, True);
 
@@ -1262,11 +1285,12 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 
     // prepare new cid
     cid = acl_malloc2 (sizeof (struct s_cid));
+    nsid->extra_info = 0;
     A4GL_trc("Malloced cid=%p", cid);
     cid->statement = nsid;
     A4GL_trc ("cid->statement=%p (same as nsid)", cid->statement);
-    cid->hstmt = 0;
     cid->mode = upd_hold + scroll * 256;
+    cid_set_open(cid, False);
 
     A4GL_trc ("Adding cursor %s", cursname);
     A4GL_add_cursor (cid, cursname);
@@ -1276,7 +1300,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
     {
 	exitwith_sql_odbc_errm ("declare_cursor: Cannot set cursor name (%s)", cursname);
 	cid = 0;
-	if (sid_get_singleton(sid))
+	if (sid_get_singleton(nsid))
 	    sql_free_sid(&nsid);
 	else
 	    sql_free_stmt(&nsid->hstmt);
@@ -1471,8 +1495,12 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 
     if (cid_get_open(cid))
     {
-        exitwith_sql_odbc_errm("Cursor (%s) already open", s);
-	return 0;
+	rc = SQLFreeStmt ((SQLHSTMT) cid->statement->hstmt, SQL_CLOSE);
+	if (!chk_rc (rc, cid->statement->hstmt, "SQLFreeStmt(SQL_CLOSE)"))
+	{
+	    exitwith_sql_odbc_errm ("Closing cursor (%s) failed", s);
+	    return 0;
+	}
     }
 
     A4GL_trc ("cid=%p cid->statement=%p cid->statement->select='%s'",
@@ -1599,7 +1627,6 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
         }
     }
 
-//    cid->hstmt = cid->statement->hstmt;
     A4GL_dbg ("Executing statement (opening cursor) \"%s\" cid=%p cid->statement->hstmt=%p\n",
 	      curs, cid, cid->statement->hstmt);
     /* Execute the SQL statement. */
@@ -1689,7 +1716,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
         return 0;
     }
     A4GL_trc ("cid=%p", cid);
-    if (cid->hstmt == 0)
+    if (!cid_get_open(cid))
     {
         exitwith_sql_odbc_errm ("Fetch attempted on unopened cursor (%s)", cursor_name);
         return 0;
@@ -2095,9 +2122,9 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *cname)
 	return -1;
     }
 
-    A4GL_trc ("Freeing cursor cname='%s' ptr=%p, ptr->hstmt=%p", cname, ptr, ptr->hstmt);
+    A4GL_trc ("Freeing cursor cname='%s' ptr=%p", cname, ptr);
 
-    if (ptr->hstmt)
+    if (cid_get_open(ptr))
     {
 	rc = SQLFreeStmt ((SQLHSTMT) ptr->statement->hstmt, SQL_CLOSE);
 	if (!chk_rc (rc, ptr->statement->hstmt, "SQLFreeStmt(SQL_CLOSE)"))
@@ -2105,7 +2132,7 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *cname)
 	    exitwith_sql_odbc_errm ("Closing cursor (%s) failed", cname);
 	    return -1;
 	}
-	ptr->hstmt = 0;
+	cid_set_open(ptr, False);
     }
     return 1;
 }
@@ -3212,7 +3239,7 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 	    exitwith_sql_odbc_errm ("Statement (%s) could not be found", stmt);
 	    return 0;
 	}
-        hstmt = cid->hstmt;
+        hstmt = cid->statement->hstmt;
     }
     else
     {
