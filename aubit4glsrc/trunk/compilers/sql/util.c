@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.51 2007-02-20 18:20:45 gyver309 Exp $
+# $Id: util.c,v 1.52 2007-02-22 08:41:54 mikeaubury Exp $
 #
 */
 
@@ -593,8 +593,9 @@ sqlparse_yyerror (char *s)
 {
   if (write_std_err_on_error)
     {
-      fprintf (stderr, "%s", s);
+      fprintf (stderr, "%s @ %d\n", s, sqlparse_yylineno);
     }
+
   A4GL_debug ("%s Sql=%p\n", s, Sql);
   if (Sql)
     {

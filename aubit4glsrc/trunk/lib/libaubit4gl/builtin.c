@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.105 2007-01-31 18:29:26 mikeaubury Exp $
+# $Id: builtin.c,v 1.106 2007-02-22 08:41:54 mikeaubury Exp $
 #
 */
 
@@ -298,6 +298,12 @@ aclfgl_length (int nargs)
   return 1;
 }
 
+int A4GL_push_substr (char *ca, int dtype, int a, int b, ...) {
+char *p;  
+	p=a4gl_substr(ca,dtype,a,b);
+	A4GL_push_param(p,DTYPE_CHAR+ENCODE_SIZE(b-a+1));
+	return 1;
+}
 
 /**
  * Make a substring acording to the data type.
