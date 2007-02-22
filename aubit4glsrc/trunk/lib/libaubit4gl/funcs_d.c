@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.81 2007-02-08 12:32:24 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.82 2007-02-22 16:46:32 mikeaubury Exp $
 #
 */
 
@@ -856,6 +856,8 @@ int A4GL_wcswidth(char *mbs) {
   wlen = wcslen(wstr);
 
   width = wcswidth(wstr, wlen);
+
+  if (width==-1) width=mlen; // not a wide character ? 
   free(wstr);
   return width;
 #endif
