@@ -264,6 +264,7 @@ ifneq "${COMPILE_ONLY}" "1"
 			
 		#Snippet for use in NAMED_DIFF and therefore in DEFAULT_DIFF 
 		REDIRECT_RUN=${RUN_EXT} > ${OUT_CREATED}${OUT_EXT}; ${TEST_RUN}
+		REDIRECT_RUN_STDERR_TOO=${RUN_EXT} > ${OUT_CREATED}${OUT_EXT} 2>&1; ${TEST_RUN}
 	
 		#Snipped for use in NAMED_DIFF and therefore in DEFAULT_DIFF
 		DIFF_COMMON=\
@@ -296,8 +297,10 @@ ifneq "${COMPILE_ONLY}" "1"
 		#file created by running progams output redirection to file, with 
 		#.expected file (single file only)
 		NAMED_DIFF=${REDIRECT_RUN}; ${DIFF_COMMON}
+		NAMED_DIFF_STDERR_TOO=${REDIRECT_RUN_STDERR_TOO}; ${DIFF_COMMON}
 		#Same, but uses fixed default program name (./progname)	
 		DEFAULT_DIFF=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_DIFF}
+		DEFAULT_DIFF_STDERR_TOO=${SILENT}${RUNNER} ${DBG} ./progname${NAMED_DIFF_STDERR_TOO}
 		
 		#This runs named test program, checks exit code, and then compares 
 		#one or more out files created by dump_screen() function with one or more 
@@ -312,6 +315,7 @@ else
 	DEFAULT_RUN=${NAMED_RUN}
 	NAMED_DIFF=${NAMED_RUN}
 	DEFAULT_DIFF=${NAMED_RUN}
+	DEFAULT_DIFF_STDERR_TOO=${NAMED_RUN}
 	NAMED_DUMP_DIFF=${NAMED_RUN}
 	DEFAULT_DUMP_DIFF=${NAMED_RUN}	
 endif
@@ -379,6 +383,7 @@ show:
 	@echo 'DEFAULT_RUN=${DEFAULT_RUN}'
 	@echo 'NAMED_RUN=${NAMED_RUN}'
 	@echo 'DEFAULT_DIFF=${DEFAULT_DIFF}'
+	@echo 'DEFAULT_DIFF_STDERR_TOO=${DEFAULT_DIFF_STDERR_TOO}'
 	@echo 'MODULES=${MODULES}'
 	@echo 'NAMED_DIFF=${NAMED_DIFF}'	
 	@echo "OUT_EXPECTED_LIST=$(OUT_EXPECTED_LIST)"

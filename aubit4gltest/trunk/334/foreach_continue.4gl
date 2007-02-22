@@ -1,7 +1,7 @@
 database test1
 
 MAIN
-	DEFINE tab_id SMALLINT
+	DEFINE tab_id INTEGER
 	DEFINE tab_name CHAR(18)
 	DEFINE str char(128)
 

@@ -44,6 +44,7 @@ function check_trans_mode () {
 					fi
 				fi
 			fi
+
 			if test "$NEED_TRANSACTION" = "2" -a "$DB_HAS_TRANSACTION" = "1"; then
 				#need to switch logging mode
 				if test "$IFX_ENG_REMOTE" != "1"; then				

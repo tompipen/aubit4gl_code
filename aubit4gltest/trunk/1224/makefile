@@ -84,7 +84,7 @@ run: compile
 #To run program and test for exit code:
 #	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
-	${DEFAULT_DIFF}
+	${DEFAULT_DIFF_STDERR_TOO}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
