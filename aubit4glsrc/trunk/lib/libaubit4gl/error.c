@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.40 2007-02-20 18:46:37 gyver309 Exp $
+# $Id: error.c,v 1.41 2007-02-22 18:24:51 mikeaubury Exp $
 #
 */
 
@@ -79,7 +79,7 @@ char errorbuff[256] = "";
 char lasterrorstr[1024] = "";
 static int cache_status = 0;
 static char * cache_errmsg = "";
-static int int_err_flg;
+static int int_err_flg=0;
 //void aclfgli_clr_err_flg (void);
 void aclfgli_set_err_flg (void);
 struct s_err * A4GL_get_errdesc_for_errstr (char *s);

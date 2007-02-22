@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.114 2007-02-21 16:27:44 mikeaubury Exp $
+# $Id: report.c,v 1.115 2007-02-22 18:24:51 mikeaubury Exp $
 #
 */
 
@@ -873,7 +873,7 @@ A4GL_set_column (struct rep_structure *rep)
   long needn;
   a = A4GL_pop_long ();
   A4GL_push_char ("");
-  A4GL_debug ("Calling rep_print");
+  A4GL_debug ("in set_column a=%d Calling rep_print",a);
   A4GL_rep_print (rep, 1, 1, 0, -2);
 #ifdef DEBUG
   /* {DEBUG} */
