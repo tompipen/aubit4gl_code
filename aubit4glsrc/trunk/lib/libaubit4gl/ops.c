@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.99 2007-02-08 12:32:24 mikeaubury Exp $
+# $Id: ops.c,v 1.100 2007-02-23 15:38:52 fortiz Exp $
 #
 */
 
@@ -127,6 +127,9 @@ void A4GL_in_date_ops (int op);
 void A4GL_dt_date_ops (int op);
 void A4GL_date_dt_ops (int op);
 int A4GL_days_in_month (int m, int y);
+
+void A4GL_in_int_ops (int op);
+void A4GL_int_in_ops (int op);
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
 
@@ -205,7 +208,7 @@ A4GL_debug("%f %f\n",a,b);
   if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a)
       || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
-      A4GL_debug ("int_int - one is null");
+      A4GL_debug ("smflot_smfloat- one is null");
       A4GL_push_null (DTYPE_SMFLOAT, 0);
       return;
     }
@@ -232,8 +235,13 @@ A4GL_debug("%f %f\n",a,b);
 
 
     case OP_DIV:
-	  A4GL_push_double ((double) a / (double) b);
-      return;
+	if (b == 0)
+	  {
+	    A4GL_push_null (DTYPE_SMFLOAT, 0);
+	    return;
+	  }
+	A4GL_push_double ((double) a / (double) b);
+	return;
 
     case OP_MOD:
       A4GL_push_long ((int)a % (int)b);
@@ -436,7 +444,7 @@ A4GL_debug("%f %f\n",a,b);
   if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a)
       || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
-      A4GL_debug ("int_int - one is null");
+      A4GL_debug ("float_smallflt - one is null");
       A4GL_push_null (DTYPE_SMFLOAT, 0);
       return;
     }
@@ -463,6 +471,11 @@ A4GL_debug("%f %f\n",a,b);
 
 
     case OP_DIV:
+	if (b == 0)
+	  {
+	    A4GL_push_null (DTYPE_SMFLOAT, 0);
+	    return;
+	  }
 	  A4GL_push_double ((double) a / (double) b);
       return;
 
@@ -533,7 +546,7 @@ A4GL_debug("%f %f\n",a,b);
   if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a)
       || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
-      A4GL_debug ("int_int - one is null");
+      A4GL_debug ("smfloat_float - one is null");
       A4GL_push_null (DTYPE_SMFLOAT, 0);
       return;
     }
@@ -560,6 +573,11 @@ A4GL_debug("%f %f\n",a,b);
 
 
     case OP_DIV:
+	if (b == 0)
+	  {
+	    A4GL_push_null (DTYPE_SMFLOAT, 0);
+	    return;
+	  }
 	  A4GL_push_double ((double) a / (double) b);
       return;
 
@@ -626,11 +644,7 @@ A4GL_int_in_ops (int op)
   struct ival in2;
   struct ival *pi2;
   int ival_data[10];
-int dtype2;
-int sz2;
-int d1;
 int se2;
-int s1;
 int d2;
 int s2;
 int ok=0;
@@ -1345,6 +1359,11 @@ A4GL_int_int_ops (int op)
 
 
     case OP_DIV:
+      if (b == 0)
+	{
+          A4GL_push_null (DTYPE_INT, 0);
+          return;
+        }
       if (a % b == 0)
 	{
 	  A4GL_push_long (a / b);
@@ -1421,7 +1440,7 @@ A4GL_date_date_ops (int op)
   if (A4GL_isnull (DTYPE_INT, (void *) &a)
       || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
-      A4GL_debug ("int_int - one is null");
+      A4GL_debug ("date_date - one is null");
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
@@ -1451,6 +1470,11 @@ A4GL_date_date_ops (int op)
 
 
     case OP_DIV:
+      if (b == 0)
+	{
+          A4GL_push_null (DTYPE_INT, 0);
+          return;
+        }
       if (a % b == 0)
 	{
 	  A4GL_push_long (a / b);
@@ -1573,6 +1597,11 @@ char buff[256];
 
 
     case OP_DIV:
+      if (b == 0)
+	{
+          A4GL_push_null (DTYPE_INT, 0);
+          return;
+        }
       if (a % b == 0)
 	{
 	  A4GL_push_long (a / b);
@@ -1679,6 +1708,11 @@ A4GL_date_int_ops (int op)
 
 
     case OP_DIV:
+      if (b == 0)
+	{
+          A4GL_push_null (DTYPE_INT, 0);
+          return;
+        }
       if (a % b == 0)
 	{
 	  A4GL_push_long (a / b);
@@ -1779,6 +1813,11 @@ A4GL_int_date_ops (int op)
 
 
     case OP_DIV:
+      if (b == 0)
+	{
+          A4GL_push_null (DTYPE_INT, 0);
+          return;
+        }
       if (a % b == 0)
 	{
 	  A4GL_push_long (a / b);
@@ -2046,6 +2085,11 @@ A4GL_in_in_ops (int op)
 
 
     case OP_DIV:
+      if (d_i1 == 0)
+	{
+          A4GL_push_null (DTYPE_INT, 0);
+          return;
+        }
       d_i1 = d_i2 / d_i1;
       A4GL_push_double (d_i1);	// This should be a number - not an interval
       return;
@@ -2562,7 +2606,7 @@ A4GL_display_int (void *ptr, int size, int size_c,
 		  struct struct_scr_field *field_details, int display_type)
 {
   long a;
-  long value_in_ptr;
+  long value_in_ptr=0;
   static char buff_8[256];
   A4GL_debug ("A4GL_display_int..");
 
