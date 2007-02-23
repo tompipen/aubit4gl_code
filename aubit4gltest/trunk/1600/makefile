@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Do some ordering, before/after group with null values."
+desc: ; @echo "Do some ordering, before/after group with null values. Mantis bug 902."
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
