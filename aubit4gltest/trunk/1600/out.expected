@@ -1,0 +1,18 @@
+before a=           
+          before b=          1
+                    before c=          1
+                              a=           ,b=          1,c=          1
+                    after c=          1
+                    before c=          2
+                              a=           ,b=          1,c=          2
+                    after c=          2
+          after b=          1
+          before b=          2
+                    before c=          1
+                              a=           ,b=          2,c=          1
+                    after c=          1
+                    before c=          2
+                              a=           ,b=          2,c=          2
+                    after c=          2
+          after b=          2
+after a=           
