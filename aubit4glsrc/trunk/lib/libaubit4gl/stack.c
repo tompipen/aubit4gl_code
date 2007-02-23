@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.165 2007-02-20 19:24:02 gyver309 Exp $
+# $Id: stack.c,v 1.166 2007-02-23 17:06:32 mikeaubury Exp $
 #
 */
 
@@ -2581,11 +2581,12 @@ if (type>255) {
     {
       struct fgl_int_loc *ptr;
       ptr = (struct fgl_int_loc *) buff;
-      if (ptr->where == 'M')
-	{
-	  free (ptr->ptr);
-	  ptr->ptr = 0;
-	}
+      //if (ptr->where == 'M')
+	//{
+	A4GL_free_associated_mem(ptr);
+	  //free (ptr->ptr);
+      ptr->ptr = 0;
+	//}
       ptr->where = 'N';
       return;
     }

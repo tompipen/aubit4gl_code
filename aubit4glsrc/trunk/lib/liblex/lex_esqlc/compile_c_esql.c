@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.164 2006-12-21 10:41:33 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.165 2007-02-23 17:06:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.164 2006-12-21 10:41:33 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.165 2007-02-23 17:06:34 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -256,8 +256,7 @@ LEXLIB_print_close (char type, char *name)
       printc ("A4GL_remove_window(%s);\n", name);
       break;
     case 'D':
-      if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT")
-	  || esql_type () == E_DIALECT_INFOFLEX)
+      if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT") || esql_type () == E_DIALECT_INFOFLEX || esql_type () == E_DIALECT_INFORMIX)
 	{
 	  A4GL_save_sql ("CLOSE DATABASE", 0);
 	  printc ("\nEXEC SQL CLOSE DATABASE;\n");
@@ -1139,7 +1138,7 @@ void
 LEXLIB_print_init_conn (t_expr_str *db,char *exclusive)
 {
 
-  if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT") || esql_type () == E_DIALECT_INFOFLEX)
+  if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT") || esql_type () == E_DIALECT_INFOFLEX ||  esql_type () == E_DIALECT_INFORMIX)
     {
 	  printc ("{");
 	  set_suppress_lines ();

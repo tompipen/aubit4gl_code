@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.179 2007-02-20 19:24:03 gyver309 Exp $
+# $Id: esql.ec,v 1.180 2007-02-23 17:06:34 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.179 2007-02-20 19:24:03 gyver309 Exp $";
+  "@(#)$Id: esql.ec,v 1.180 2007-02-23 17:06:34 mikeaubury Exp $";
 #endif
 
 
@@ -1016,32 +1016,6 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 }
 
 
-#ifdef NO_LONGER_REQUIRED_OBSOLETE
-
-/**
- * Prepare a global SQL statement (not named).
- *
- * @todo : Make all the assertions that i can.
- *
- * @param s A string with the SQL statement.
- * @param ni The number of input bind elements.
- * @param ibind A pointer to the input bind array.
- * @return A statement identification structure pointer.
- */
-void *
-A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind) 
-{
-  struct s_sid *ptr;
-  struct BINDING *ibind;
-  ibind=vibind;
-  A4GL_debug ("S=%s\n", s);
-
-  ptr = prepareSqlStatement (ibind, ni, (struct BINDING *) 0, 0, s,"");
-  //A4GL_debug ("Got ptr as %p -> %d %d", ptr,ptr->no,ptr->ni);
-  return ptr;
-}
-#endif
-
 /** 
  * Convert the aubit data type of aubit 4gl to the informix specific.
  *
@@ -1070,6 +1044,7 @@ short indicat=0;
                 if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
                 if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl)) {rsetnull(CLOCATORTYPE,(void *)infx);return;}
 
+		memset(infx,0,sizeof(*infx));
                 infx->loc_loctype = -1;
                 if (a4gl->where=='M') {
                         infx->loc_loctype = LOCMEMORY;
@@ -1099,10 +1074,13 @@ short indicat=0;
 		if (infx->loc_indicator==-1) {
 			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
 		}
+
                 if (infx->loc_loctype==LOCMEMORY) {
                         a4gl->where = 'M';
+			A4GL_free_associated_mem(a4gl);
                         a4gl->memsize=  infx->loc_bufsize ;
-                        a4gl->ptr= infx->loc_buffer;
+                        a4gl->ptr= A4GL_alloc_associated_mem(a4gl, infx->loc_bufsize);
+			memcpy(a4gl->ptr, infx->loc_buffer, infx->loc_bufsize);
                 }
 
                 if (a4gl->where=='F') {
@@ -1936,26 +1914,6 @@ executeStatement (struct s_sid *sid)
 }
 
 
-#ifdef OBSOLETE
-
-/**
- * Prepare an sql statement.
- *
- * @todo : Finish and test this function.
- *
- * @param s A string with the sql statement to be prepared.
- * @return A pointer to the statement information structure.
- */
-void *
-A4GLSQL_prepare_sql_internal (char *s)
-{
-  struct s_sid *sid;
-  sid = prepareSqlStatement ((struct BINDING *) 0, 0, (struct BINDING *) 0, 0, s,uniqId);
-  A4GLSQL_set_status (sqlca.sqlcode, 1);
-  return sid;
-}
-
-#endif
 
 
 /**
@@ -1981,16 +1939,22 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 	int n;
 	struct s_extra_info *e2;
 	int nb;
+	int a;
 	EXEC SQL END DECLARE SECTION;
 
 	e->nblobs++;
 	nb= e->nblobs-1;
+	if (e->nblobs==1) {
 	e->raw_blobs=acl_malloc2(sizeof(struct s_b_info)*e->nblobs);
+	} else {
+	e->raw_blobs=realloc( e->raw_blobs, sizeof(struct s_b_info)*e->nblobs);
+	}
 	e2=e;
 
 	i=&e->raw_blobs[e->nblobs-1].ifx_blob;
-
+	memset(i,0, sizeof(*i));
 	rsetnull(CLOCATORTYPE,(void *)i);
+	A4GL_assertion(p==0,"No blob passed in") ;
 	e->raw_blobs[e->nblobs-1].f=p; /* Store the original fgl pointer for this blob */
 
 	// Copy into a Blob from a piece of SQL...
@@ -2006,6 +1970,7 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 		}
 
 		if (p->where=='F') {
+
     			i->loc_loctype = LOCFNAME;      /* blob is named file */
     			i->loc_fname = p->filename;        /* here is its name */
     			i->loc_oflags = LOC_WONLY;      /* contents are to be read by engine */
@@ -2016,13 +1981,13 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 
 		descriptorName = sid->outputDescriptorName;
 
-
-		EXEC SQL SET DESCRIPTOR:descriptorName VALUE:n DATA=:e2->raw_blobs[nb].ifx_blob;
+		EXEC SQL SET DESCRIPTOR:descriptorName VALUE:n DATA=:e2->raw_blobs[e->nblobs-1].ifx_blob;
 
 
   		if (isSqlError ()) {
 			return 0;
 		}
+	
 	}
 
 	if (dir=='i') {
