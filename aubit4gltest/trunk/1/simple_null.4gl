@@ -20,7 +20,7 @@ define a record like systables.*
 	INSERT INTO xtemp VALUES ("1", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL) 
 	CALL show_values()
 	DELETE FROM xtemp
-	INSERT INTO xtemp VALUES ("1", "1", 1, 1, 1,1, "1/1/2001", 1,"12:01:02") 
+	INSERT INTO xtemp VALUES ("1", "1", 1, 1, 1,1, "01/01/2001", 1,"12:01:02") 
 	CALL show_values()
 	DROP TABLE xtemp 
 end main

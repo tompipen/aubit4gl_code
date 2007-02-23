@@ -15,21 +15,24 @@ MAIN
 
 	WHENEVER ERROR CONTINUE
 	#DROP PROCEDURE x
-	DROP TABLE xpta
+	#DROP TABLE xpta
+
 	WHENEVER ERROR STOP
 	LET str = "CREATE PROCEDURE x () RETURNING SMALLINT,CHAR(10) ;",
 		"  RETURN 1,'Xpto';",
 	  " END PROCEDURE"
-	PREPARE st FROM str
-	CREATE TABLE xpta (
-	  firstColumn SMALLINT,
-	  secondColumn CHAR(10)
-	)
+	#PREPARE st FROM str
+
+
+	#CREATE TABLE xpta (
+	  #firstColumn SMALLINT,
+	  #secondColumn CHAR(10)
+	#)
   #INSERT INTO xpta VALUES (1,"XPTO")
 	#SELECT * INTO r.* FROM xpta
 	#DISPLAY r.*
 	#DROP PROCEDURE x 
-	DROP TABLE xpta
+	#DROP TABLE xpta
 END MAIN
 
 

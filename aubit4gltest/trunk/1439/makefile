@@ -17,13 +17,14 @@ ADD_CLEAN=
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 run: compile ; ${DEFAULT_DUMP_DIFF}
-# ${DEFAULT_RUN}	${DEFAULT_DIFF} 
+# ${DEFAULT_RUN}
+#	${DEFAULT_DIFF} 
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "printing null substrings in report"
+desc: ; @echo "    0000898: no-printable ascii corrupt column position"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
