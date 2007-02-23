@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.100 2007-02-23 15:38:52 fortiz Exp $
+# $Id: ops.c,v 1.101 2007-02-23 18:08:06 mikeaubury Exp $
 #
 */
 
@@ -3318,9 +3318,17 @@ fglbyte *p;
 		fread(b,1,l,f);
 		return b;
  	} else {
-		if (p->ptr) return p->ptr;
-		A4GL_exitwith("Unread blob");
-		return 0;
+		static char *lptr=0;
+		if (lptr) free(lptr);
+		lptr=malloc(p->memsize+1);
+		if (ptr) {
+			memcpy(lptr,p->ptr, p->memsize);
+			lptr[p->memsize]=0;
+			return lptr;
+		} else {
+			A4GL_exitwith("Unread blob");
+			return 0;
+		}
 	}
   }
 
@@ -3342,9 +3350,18 @@ fglbyte *p;
 		fread(b,1,l,f);
 		return b;
  	} else {
-		if (p->ptr) return p->ptr;
-		A4GL_exitwith("Unread blob");
-		return 0;
+		static char *lptr=0;
+		if (lptr) free(lptr);
+		lptr=malloc(p->memsize+1);
+		if (ptr) {
+			memcpy(lptr,p->ptr, p->memsize);
+			lptr[p->memsize]=0;
+			return lptr;
+		} else {
+			A4GL_exitwith("Unread blob");
+			return 0;
+		}
+
 	}
   }
 
