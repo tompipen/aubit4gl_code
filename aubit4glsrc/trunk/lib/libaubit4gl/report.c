@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.115 2007-02-22 18:24:51 mikeaubury Exp $
+# $Id: report.c,v 1.116 2007-02-24 17:49:31 mikeaubury Exp $
 #
 */
 
@@ -2065,8 +2065,11 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
               A4GL_debug
                 ("11   checking for equallity--------------------------------------------");
 #endif
-              A4GL_pushop (OP_EQUAL);
-              i = A4GL_pop_bool ();
+
+		// reverse logic so it takes into account NULL=NULL
+              A4GL_pushop (OP_NOT_EQUAL);
+              i = !A4GL_pop_bool ();
+		
 #ifdef DEBUG
               if ((b[cb].dtype & DTYPE_MASK)==DTYPE_VCHAR ) {
                         A4GL_debug(" VARCHAR: '%s' '%s' i=%d",b[cb].ptr,mptr,i);
