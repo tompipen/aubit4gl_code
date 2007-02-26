@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.52 2007-02-22 08:41:54 mikeaubury Exp $
+# $Id: util.c,v 1.53 2007-02-26 12:54:10 gyver309 Exp $
 #
 */
 
@@ -1020,14 +1020,9 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
       {
 	  if (A4GL_isyes(acl_getenv("EXIT_ON_BAD_SQL")))
 	  {
-	      char *buf;
-	      char *msg = "Bad SQL: ";
-	      buf = malloc(strlen(sql) + strlen(msg) + 1);
-	      strcpy(buf, msg);
-	      strcat(buf, sql);
-	      A4GL_debug("%s", buf);
-	      A4GL_exitwith(buf);
-	      free(buf);
+	      A4GL_debug("Bad SQL: %s", sql);
+	      A4GL_set_errm(sql);
+	      A4GL_exitwith("Bad SQL: %s");
 	  }
 	return sql;
       }
