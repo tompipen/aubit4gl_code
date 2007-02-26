@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.101 2007-02-23 18:08:06 mikeaubury Exp $
+# $Id: ops.c,v 1.102 2007-02-26 12:43:48 mikeaubury Exp $
 #
 */
 
@@ -3139,11 +3139,14 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 	}
       else
 	{
-	  char *ptr2;
-	  ptr2 = ptr;
-	  strcpy (using_buff,
-		  make_using_sz (ptr2, size_c, NUM_DIG (ptr2) * 2,
-				 NUM_DEC (ptr2)));
+	  	fgldecimal *fgldec;
+		char *ptr2;
+		int ndig;
+		int ndec;
+	  	fgldec = (fgldecimal *)ptr;	
+		ndig=NUM_DIG (fgldec->dec_data);
+		ndec=NUM_DEC(fgldec->dec_data);
+	  	strcpy (using_buff, make_using_sz (ptr, size_c, ndig* 2,ndec));
 	}
       A4GL_push_dec (ptr, 0, size);
       A4GL_push_char (using_buff);
@@ -3536,6 +3539,8 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
   int l;
   A4GL_debug ("make_using_sz - size=%d num dec = %d dig=%d", sz, dec, dig);
 
+  //if (dec<0) dec=5;
+
   l = 1;			// '-'
   l += dec;
   if (dec)
@@ -3577,11 +3582,13 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 
 	  dig = strlen (buff_sz);
 	  // Trim the decimals..
-	  if (dec > sz - 2 - dig)
+	  if (dec > sz - 1 - dig)
 	    {
-	      dec = sz - 2 - dig;
+	      dec = sz - 1 - dig;
 	    }
-	  dig = sz - 2 - dec;
+
+	  dig = sz - 1 - dec;
+	  if (dec<0) dec=0;
 	  return make_using_sz (ptr, sz, dig, dec);
 	}
     }
