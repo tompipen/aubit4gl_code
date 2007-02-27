@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.116 2007-02-24 17:49:31 mikeaubury Exp $
+# $Id: report.c,v 1.117 2007-02-27 16:34:19 mikeaubury Exp $
 #
 */
 
@@ -824,7 +824,15 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	  	report_print (rep, entry, "%s", str);
 	  }
 	  /* rep->col_no += strlen (str); */	/* utf8 */
+	if (A4GL_isno(acl_getenv("NO_UTF8"))) {
 	  rep->col_no += A4GL_wcswidth (str);
+	} else {
+	  rep->col_no += strlen (str);
+	}
+	if (strlen (str)!=A4GL_wcswidth (str)) {
+		printf("DIFFERENT SIZES %d %d!\n", strlen (str),A4GL_wcswidth (str));
+	}
+
 	  A4GL_debug ("Popped %s\n", str);
 	  acl_free (str);
 	}
