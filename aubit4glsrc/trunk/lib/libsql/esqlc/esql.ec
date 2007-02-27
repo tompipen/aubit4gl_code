@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.182 2007-02-27 14:44:24 mikeaubury Exp $
+# $Id: esql.ec,v 1.183 2007-02-27 16:33:14 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.182 2007-02-27 14:44:24 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.183 2007-02-27 16:33:14 mikeaubury Exp $";
 #endif
 
 
@@ -1281,6 +1281,9 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
       date_var = (long) *fgl_date;
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:date_var;
       break;
+
+
+
     case DTYPE_DTIME:
       fgl_dtime = (FglDatetime *) bind[idx].ptr;
       A4GL_dttoc (fgl_dtime, &genData, 30);
@@ -1299,9 +1302,10 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
 	    }
 	}
       char_var = genData;
-      dataType = 0;
+      //dataType = 0;
       length = 255;
-    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =: char_var, LENGTH =:length;
+    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =: dtime_var; 
+		//, LENGTH =:length;
       if (sqlca.sqlcode != 0)
 	{
 	  A4GL_debug ("Bugger - bombed");
