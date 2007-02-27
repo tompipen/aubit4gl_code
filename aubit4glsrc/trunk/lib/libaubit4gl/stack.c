@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.167 2007-02-27 08:27:57 mikeaubury Exp $
+# $Id: stack.c,v 1.168 2007-02-27 16:37:13 mikeaubury Exp $
 #
 */
 
@@ -484,9 +484,9 @@ A4GL_pop_var2 (void *p, int d, int s)
       A4GL_exitwith ("Error in conversion");
       if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { 
 		A4GL_debug("Ignoreing"); 
-		if (d!=DTYPE_SMINT) {
+		//if (d!=DTYPE_SMINT) {
 			a4gl_status=0; 
-		}
+		//}
 		z=1; 
 		A4GL_setnull(d&DTYPE_MASK,p,s); 
 	}
