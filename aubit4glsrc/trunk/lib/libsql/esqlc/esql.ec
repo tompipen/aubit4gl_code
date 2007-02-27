@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.181 2007-02-27 08:27:58 mikeaubury Exp $
+# $Id: esql.ec,v 1.182 2007-02-27 14:44:24 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.181 2007-02-27 08:27:58 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.182 2007-02-27 14:44:24 mikeaubury Exp $";
 #endif
 
 
@@ -5050,7 +5050,11 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	      break;
 
 	    case CDATETYPE:
-	      rdatestr (*(long *)ptr, tstring);
+		if (sizeof(int)==sizeof(long)) {
+	      		rdatestr (*(long *)ptr, tstring);
+		} else {
+	      		rdatestr (*(int *)ptr, tstring);
+		}
 	      flen = SPRINTF1 (string, "%s", tstring);
 	      break;
 
