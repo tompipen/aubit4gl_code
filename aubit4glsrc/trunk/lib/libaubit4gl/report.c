@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.117 2007-02-27 16:34:19 mikeaubury Exp $
+# $Id: report.c,v 1.118 2007-02-27 16:35:17 mikeaubury Exp $
 #
 */
 
@@ -828,9 +828,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	  rep->col_no += A4GL_wcswidth (str);
 	} else {
 	  rep->col_no += strlen (str);
-	}
-	if (strlen (str)!=A4GL_wcswidth (str)) {
-		printf("DIFFERENT SIZES %d %d!\n", strlen (str),A4GL_wcswidth (str));
 	}
 
 	  A4GL_debug ("Popped %s\n", str);
