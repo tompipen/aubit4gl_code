@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.121 2007-02-22 12:30:07 mikeaubury Exp $
+# $Id: iarray.c,v 1.122 2007-02-27 09:30:27 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.121 2007-02-22 12:30:07 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.122 2007-02-27 09:30:27 mikeaubury Exp $";
 #endif
 
 /**
@@ -3376,18 +3376,18 @@ if (ln<0) return 1;
 	  int chged = 0;
 	  // Has the field changed ? 
 	  // Are we on a new line ? 
-	  if ((fprop->flags & 2) || s->curr_line_is_new)
+	  if ((fprop->flags & 2)) //|| s->curr_line_is_new)
 	    {
 	      chged++;
 	    }
 
 	  // are we returning to a previous field ? 
-	  if (s->processed_onkey != A4GLKEY_UP
-	      && s->processed_onkey != A4GLKEY_LEFT)
+	  if (s->processed_onkey != A4GLKEY_UP && s->processed_onkey != A4GLKEY_LEFT)
 	    {
 	      A4GL_debug ("last key was not up or left");
 	      chged++;
-	    }
+	    } 
+	    
 
 	  if (chged == 0)
 	    {
