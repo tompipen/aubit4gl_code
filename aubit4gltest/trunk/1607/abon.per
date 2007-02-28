@@ -1,0 +1,33 @@
+DATABASE formonly
+SCREEN 
+{
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+[nucl  |d_nucl         |docu      |sald      |x|abon      |ppag     |ban|nuch|a]
+}
+end
+
+attributes
+nucl    = formonly.edlinucl type int,NOENTRY;
+d_nucl  = FORMONLY.w_dnucl,NOENTRY;
+docu    = formonly.edlidocu,NOENTRY;
+sald    = formonly.edocsald type money,NOENTRY,FORMAT="-------.&&";
+x       = formonly.w_x,AUTONEXT;
+abon    = formonly.w_fabon,AUTONEXT;
+ppag    = FORMONLY.w_fppag,AUTONEXT;
+ban     = formonly.edlibaem,AUTONEXT;
+nuch    = formonly.edlinuch,NOENTRY;
+a       = FORMONLY.w_fa,AUTONEXT;
+
+instructions
+
+delimiters " "
+screen record w_array[10] (edlinucl, w_dnucl, edlidocu, edocsald, w_x,
+			    w_fabon, w_fppag, edlibaem, edlinuch, w_fa)
