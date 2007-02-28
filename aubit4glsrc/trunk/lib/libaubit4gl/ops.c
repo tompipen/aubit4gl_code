@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.102 2007-02-26 12:43:48 mikeaubury Exp $
+# $Id: ops.c,v 1.103 2007-02-28 15:12:14 mikeaubury Exp $
 #
 */
 
@@ -1929,7 +1929,10 @@ A4GL_in_in_ops (int op)
 
   //A4GL_assertion(pi1==0,"First interval is 0 (2)");
   //A4GL_assertion(pi2==0,"Second interval is 0");
-
+  //
+   A4GL_pause_execution();
+  if (pi1) { if (pi1->stime==0 && pi1->ltime==0) pi1=0; } // A null by any other name - would still be as null
+  if (pi2) { if (pi2->stime==0 && pi2->ltime==0) pi2=0; } // A null by any other name - would still be as null
   if (pi1==0 || pi2==0) {
 		A4GL_drop_param();
 		A4GL_drop_param();

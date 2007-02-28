@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.61 2006-12-17 17:04:02 mikeaubury Exp $
+# $Id: binding.c,v 1.62 2007-02-28 15:12:15 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.61 2006-12-17 17:04:02 mikeaubury Exp $";
+		"$Id: binding.c,v 1.62 2007-02-28 15:12:15 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -1207,7 +1207,21 @@ char buff_ind[255];
     return buff;
 }
 
-
+char *inparts[]={
+	"",
+		"YEAR",
+		"MONTH",
+		"DAY",
+		"HOUR",
+		"MINUTE",
+		"SECOND",
+		"FRACTION(1)",
+		"FRACTION(2)",
+		"FRACTION(3)",
+		"FRACTION(4)",
+		"FRACTION(5)"
+	
+};
 
 char *dtparts[]={
 		"YEAR",
@@ -1219,6 +1233,18 @@ char *dtparts[]={
 		"FRACTION"
 };
 
+static char *decode_interval(int a) {
+	static char buff[200];
+	int s[3];
+	s[2]=a&0xf;
+	a=a>>4;
+	s[1]=a&0xf;
+	a=a>>4;
+	s[0]=a&0xf;
+	a=a>>4;
+	SPRINTF3(buff, "%s(%d) TO %s\n",inparts[s[1]],s[0],inparts[s[2]]);
+	return buff;
+}
 
 static char *decode_datetime(int a) {
 	int pt1;
@@ -1315,7 +1341,9 @@ A4GL_dtype_sz (int d, int s)
       return buff;
 
     case 14:
-      SPRINTF0 (buff, " year to second(5)");
+	strcpy(buff, decode_interval(s));
+	return buff;
+
       return buff;
     }
   return "";

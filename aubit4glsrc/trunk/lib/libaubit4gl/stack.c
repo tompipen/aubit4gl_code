@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.169 2007-02-28 09:23:04 mikeaubury Exp $
+# $Id: stack.c,v 1.170 2007-02-28 15:12:15 mikeaubury Exp $
 #
 */
 
@@ -2615,6 +2615,7 @@ if (type>255) {
       i = (struct ival *) buff;
       i->stime = 0;
       i->ltime = 0;
+	
       //i->data[0] = 0;
       return;
     }
