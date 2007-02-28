@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.122 2007-02-27 09:30:27 mikeaubury Exp $
+# $Id: iarray.c,v 1.123 2007-02-28 10:43:25 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.122 2007-02-27 09:30:27 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.123 2007-02-28 10:43:25 mikeaubury Exp $";
 #endif
 
 /**
@@ -691,7 +691,6 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	(struct struct_scr_field *) (field_userptr (form->currentfield));
       if (fprop)
 	A4GL_comments (fprop);
-
       A4GL_mja_set_current_field (mform, form->currentfield);
 
       A4GL_mja_pos_form_cursor (mform);
@@ -713,17 +712,16 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 		}
 	}
 
-
-      if (A4GL_is_special_key (somekeypress, A4GLKEY_ACCEPT))
-	somekeypress = A4GLKEY_ACCEPT;
-      if (A4GL_is_special_key (somekeypress, A4GLKEY_INSERT))
-	somekeypress = A4GLKEY_INSERT;
-      if (A4GL_is_special_key (somekeypress, A4GLKEY_DELETE))
-	somekeypress = A4GLKEY_DELETE;
-      if (A4GL_is_special_key (somekeypress, A4GLKEY_NEXT))
-	somekeypress = A4GLKEY_NEXT;
-      if (A4GL_is_special_key (somekeypress, A4GLKEY_PREV))
-	somekeypress = A4GLKEY_PREV;
+      	if (A4GL_is_special_key (somekeypress, A4GLKEY_ACCEPT))
+		somekeypress = A4GLKEY_ACCEPT;
+      	if (A4GL_is_special_key (somekeypress, A4GLKEY_INSERT))
+		somekeypress = A4GLKEY_INSERT;
+      	if (A4GL_is_special_key (somekeypress, A4GLKEY_DELETE))
+		somekeypress = A4GLKEY_DELETE;
+      	if (A4GL_is_special_key (somekeypress, A4GLKEY_NEXT))
+		somekeypress = A4GLKEY_NEXT;
+    	if (A4GL_is_special_key (somekeypress, A4GLKEY_PREV))
+		somekeypress = A4GLKEY_PREV;
 
       arr->processed_onkey = somekeypress;
 
@@ -2313,6 +2311,18 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	}
 
       if (arr->fcntrl[a].state == 25) {
+			int a;
+		for (a=0;a<arr->fcntrl_cnt;a++) {
+			if (arr->fcntrl[a].op==FORMCONTROL_BEFORE_FIELD) {
+				struct s_movement *m;
+				m=arr->fcntrl[a].parameter;
+				if (m->scr_line!=arr->scr_line) {
+					m->scr_line=arr->scr_line;
+					//m->attrib_no=arr->curr_attrib;
+				}
+				arr->fcntrl[a].field=arr->field_list[arr->scr_line - 1][m->attrib_no];
+			}
+		}
 	      	new_state=0;
 	      }
 
@@ -3220,14 +3230,25 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
     {
       for (a = 0; a < nv; a++)
 	{
-
 	  if (A4GL_field_name_match (arr->field_list[0][a], colname))
 
 	    {
 	      A4GL_debug ("Init control stack");
-	      if (arr->currentfield)
-		{
+	      if (arr->currentfield) {
 		  A4GL_init_control_stack (arr, 0);
+		} else {
+			if (arr->fcntrl_cnt>=2) {
+				if (arr->fcntrl[0].op==FORMCONTROL_BEFORE_FIELD && arr->fcntrl[1].op==FORMCONTROL_BEFORE_ROW) {
+					if (arr->fcntrl[2].op==FORMCONTROL_BEFORE_FIELD && arr->fcntrl[3].op==FORMCONTROL_BEFORE_ROW) {
+						free(arr->fcntrl[0].parameter);
+						free(arr->fcntrl[1].parameter);
+						memcpy(&arr->fcntrl[0],&arr->fcntrl[2],sizeof(arr->fcntrl[0]));
+						memcpy(&arr->fcntrl[1],&arr->fcntrl[3],sizeof(arr->fcntrl[0]));
+						arr->fcntrl_cnt=2;
+					}
+				}
+			}
+			
 		}
 
 
