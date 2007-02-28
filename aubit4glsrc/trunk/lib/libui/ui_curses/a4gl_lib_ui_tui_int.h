@@ -19,8 +19,9 @@
 	#endif
 
 #ifndef NOLIBFORM
-	#include <D:/cygwin/usr/include/ncurses/form.h>
+	#include "form.h"
 #endif
+
 #else
 	#ifndef _NO_FORM_H_
 #ifndef NOLIBFORM
