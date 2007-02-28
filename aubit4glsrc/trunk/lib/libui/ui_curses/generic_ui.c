@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.38 2007-02-17 10:00:43 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.39 2007-02-28 18:58:53 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -120,6 +120,180 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
   return fc;
 }
 
+
+
+#ifdef MOVED
+static int
+A4GL_is_unique_menu_key (ACL_Menu * menu, int key)
+{
+  int cnt;
+  int a;
+  ACL_Menu_Opts *opt1;
+  int flg;
+
+  opt1 = menu->first;
+  cnt = 0;
+
+  while (opt1)
+    {
+      flg = 0;
+      if (!opt1->attributes & ACL_MN_HIDE)
+	{
+	  if (strcmp (opt1->optkey, "EMPTY") != 0)
+	    {
+	      flg = A4GL_check_keys (key, opt1->optkey);
+	    }
+	  else
+	    {
+	      flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
+	    }
+	  if (flg)
+	    cnt++;
+	}
+      opt1 = opt1->next_option;
+    }
+   return cnt;
+}
+
+
+static char *A4GL_show_menu_large_get_matches(ACL_Menu *menu, char *typed_portion, int width, int *pcnt /* return number of matches */, ACL_Menu_Opts **uniq) {
+static char disp[1025];
+char ldisp[1025];
+ACL_Menu_Opts *opt1;
+int elipses=0;
+int cnt;
+int cnt2;
+int max;
+// This routine counts how many matching menu options there are
+// and generates the display string
+	strcpy(disp,"");
+                cnt=0;
+		// Go through all the options starting with the first...
+             	opt1=menu->first;
+                while (opt1) {
+                        char buff_opt[1024];
+                        if (!opt1->attributes & ACL_MN_HIDE) {
+                                // Lets copy our option in...
+                                strcpy(buff_opt,&opt1->opt_title[1]);
+                                buff_opt[strlen(typed_portion)]=0;
+				A4GL_debug("[ %s, %s ]", typed_portion, buff_opt);
+
+
+                                if (A4GL_aubit_strcasecmp(typed_portion, buff_opt)==0) { // We match!
+
+					if (!elipses) { // Have we already reached our limit ? 
+					if (opt1->opt_title[0]==' ') {
+						strcpy(ldisp,disp);
+                                        	strcat(disp, &opt1->opt_title[1]);
+						if (strlen(disp)> width-3) {
+							strcpy(disp,ldisp);
+							strcat(disp,"...");
+							elipses++;
+					
+						}
+					} else {
+					
+						strcpy(ldisp,disp);
+                                        	strcat(disp, opt1->opt_title);
+						if (strlen(disp)> width-3) {
+							strcpy(disp,ldisp);
+							strcat(disp,"...");
+							elipses++;
+						}
+					}
+					}
+                                        cnt++;
+					if (uniq) {
+						*uniq=opt1;
+					}
+                                }
+                        }
+                        opt1=opt1->next_option;
+                }
+		*pcnt=cnt;
+		if (cnt!=1 && uniq) {
+			*uniq=0;
+		}
+		return disp;
+}
+#endif
+
+
+
+static ACL_Menu_Opts *show_menu_large(ACL_Menu *menu, int key) {
+char buff[256];
+char disp[1024];
+int a;
+int cnt;
+int cw;
+ACL_Menu_Opts *uniq;
+buff[0]=key;
+buff[1]=0;
+
+	while (1) {
+		int l;
+		memset(disp,' ',sizeof(disp));
+		cw=UILIB_A4GL_get_curr_width();
+
+		// Clear the line first...
+		disp[cw]=0;
+		A4GL_mja_gotoxy (1, 2 + menu->menu_line);
+		A4GL_tui_printr (0,"%s", disp);
+		
+		sprintf(disp,"Select: %s",buff);
+		l=strlen(disp);
+		cw-=l;
+		A4GL_mja_gotoxy (3+l, 2 + menu->menu_line);
+		A4GL_tui_printr (0,"%s", A4GL_show_menu_large_get_matches(menu, buff, cw, &cnt,0));
+		A4GL_assertion(cnt==0,"cnt should not be zero at this point");
+
+		A4GL_mja_gotoxy (1, 2 + menu->menu_line);
+		A4GL_tui_printr (1,"%s", disp);
+
+		a=0;
+
+		while (a==0)  {
+			a=A4GL_getch_win();
+		}
+
+		if (a_isprint(a)) {
+			char b[2];
+			b[0]=a;
+			b[1]=0;
+			strcat(buff,b);
+			A4GL_show_menu_large_get_matches(menu, buff,cw, &cnt,&uniq);
+			
+			A4GL_debug("got %d matches", cnt);
+			if (cnt==0) { // bad character...
+				A4GL_dobeep();
+				l=strlen(buff);
+				buff[l-1]=0;
+			}
+			if (cnt==1) { // Now its unique!
+				return uniq;
+			}
+			continue;
+		}
+
+		if (a==A4GLKEY_LEFT) {
+			int l;
+			l=strlen(buff);
+			if (l>1) {
+				buff[l-1]=0;
+			}
+			
+			A4GL_debug("menu_large - LEFT (%s)", buff);
+			continue;
+		}
+
+		if (a==A4GLKEY_ENTER) {
+			return menu->curr_option;
+		}
+		
+	}
+}
+
+
 int
 A4GL_find_char (ACL_Menu * menu, int key)
 {
@@ -130,9 +304,9 @@ A4GL_find_char (ACL_Menu * menu, int key)
   A4GL_debug ("ZZ : key = %d opt2->optkey=%s\n", key, opt2->optkey);
 
 
-  if (!opt2->attributes & ACL_MN_HIDE) // Is it hidden ? 
-    {				
-	    // No - its not hidden...
+  if (!opt2->attributes & ACL_MN_HIDE)	// Is it hidden ? 
+    {
+      // No - its not hidden...
       if (strcmp (opt2->optkey, "EMPTY") != 0)
 	{
 	  A4GL_debug ("defined keys only");
@@ -141,13 +315,16 @@ A4GL_find_char (ACL_Menu * menu, int key)
       else
 	{
 	  A4GL_debug ("default key only");
-	  flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
+	  if (A4GL_is_unique_menu_key (menu, key)==1)
+	    {
+	      flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
+	    }
 	}
     }
   else
     {
       // It is hidden - but it might be a command key(..)
-	if (strlen (opt2->opt_title)==0)
+      if (strlen (opt2->opt_title) == 0)
 	{
 	  A4GL_debug ("defined keys only");
 	  flg = A4GL_check_keys (key, opt2->optkey);
@@ -161,53 +338,59 @@ A4GL_find_char (ACL_Menu * menu, int key)
       return 1;
     }
 
-  A4GL_debug ("Checking next option...");
-  opt1 = (ACL_Menu_Opts *) opt2->next_option;
 
-  if (opt1 == 0)
-    opt1 = (ACL_Menu_Opts *) menu->first;
-
-  while (opt2 != opt1)
-    {
-      A4GL_debug ("ZZ2 : key = %d opt1->optkey=%s\n", key, opt1->optkey);
-
-      flg = 0;
-
-      if (!opt1->attributes & ACL_MN_HIDE)
-	{
-	  if (strcmp (opt1->optkey, "EMPTY"))
-	    {
-	      A4GL_debug ("defined keys only");
-	      flg = A4GL_check_keys (key, opt1->optkey);
-	    }
-	  else
-	    {
-	      A4GL_debug ("default key only");
-	      flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
-	    }
-	} else {
-	  if (strlen (opt1->opt_title)==0)
-	    {
-	      A4GL_debug ("defined keys only");
-	      flg = A4GL_check_keys (key, opt1->optkey);
-	    }
-
-	}
-
-      if (flg)
-	{
-	  menu->curr_option = (ACL_Menu_Opts *) opt1;
-	  return 1;
-	}
-
-      opt1 = (ACL_Menu_Opts *) opt1->next_option;
+  if (A4GL_is_unique_menu_key (menu, key)>1) {
+		menu->curr_option=show_menu_large(menu, key);
+  } else {
+      A4GL_debug ("Checking next option...");
+      opt1 = (ACL_Menu_Opts *) opt2->next_option;
 
       if (opt1 == 0)
 	opt1 = (ACL_Menu_Opts *) menu->first;
+
+      while (opt2 != opt1)
+	{
+	  A4GL_debug ("ZZ2 : key = %d opt1->optkey=%s\n", key, opt1->optkey);
+
+	  flg = 0;
+
+	  if (!opt1->attributes & ACL_MN_HIDE)
+	    {
+	      if (strcmp (opt1->optkey, "EMPTY"))
+		{
+		  A4GL_debug ("defined keys only");
+		  flg = A4GL_check_keys (key, opt1->optkey);
+		}
+	      else
+		{
+		  A4GL_debug ("default key only");
+		  flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
+		}
+	    }
+	  else
+	    {
+	      if (strlen (opt1->opt_title) == 0)
+		{
+		  A4GL_debug ("defined keys only");
+		  flg = A4GL_check_keys (key, opt1->optkey);
+		}
+
+	    }
+
+	  if (flg)
+	    {
+	      menu->curr_option = (ACL_Menu_Opts *) opt1;
+	      return 1;
+	    }
+
+	  opt1 = (ACL_Menu_Opts *) opt1->next_option;
+
+	  if (opt1 == 0)
+	    opt1 = (ACL_Menu_Opts *) menu->first;
+	}
     }
   return 0;
 }
-
 
 
 void

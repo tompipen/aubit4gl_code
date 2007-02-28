@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.62 2007-02-14 17:47:26 mikeaubury Exp $
+# $Id: ui.c,v 1.63 2007-02-28 18:58:52 mikeaubury Exp $
 #
 */
 
@@ -1516,5 +1516,101 @@ A4GL_debug("ENSURE %s (got %s)",s,A4GL_get_currwin_name());
 if (strcmp(A4GL_get_currwin_name(),s)==0) return ;
  A4GL_current_window(s);
 }
+
+
+int
+A4GL_is_unique_menu_key (ACL_Menu * menu, int key)
+{
+  int cnt;
+  int a;
+  ACL_Menu_Opts *opt1;
+  int flg;
+
+  opt1 = menu->first;
+  cnt = 0;
+
+  while (opt1)
+    {
+      flg = 0;
+      if (!opt1->attributes & ACL_MN_HIDE)
+        {
+          if (strcmp (opt1->optkey, "EMPTY") != 0)
+            {
+              flg = A4GL_check_keys (key, opt1->optkey);
+            }
+          else
+            {
+              flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
+            }
+          if (flg)
+            cnt++;
+        }
+      opt1 = opt1->next_option;
+    }
+   return cnt;
+}
+
+
+char *A4GL_show_menu_large_get_matches(ACL_Menu *menu, char *typed_portion, int width, int *pcnt /* return number of matches */, ACL_Menu_Opts **uniq) {
+static char disp[1025];
+char ldisp[1025];
+ACL_Menu_Opts *opt1;
+int elipses=0;
+int cnt;
+int cnt2;
+int max;
+// This routine counts how many matching menu options there are
+// and generates the display string
+        strcpy(disp,"");
+                cnt=0;
+                // Go through all the options starting with the first...
+                opt1=menu->first;
+                while (opt1) {
+                        char buff_opt[1024];
+                        if (!opt1->attributes & ACL_MN_HIDE) {
+                                // Lets copy our option in...
+                                strcpy(buff_opt,&opt1->opt_title[1]);
+                                buff_opt[strlen(typed_portion)]=0;
+                                A4GL_debug("[ %s, %s ]", typed_portion, buff_opt);
+
+
+                                if (A4GL_aubit_strcasecmp(typed_portion, buff_opt)==0) { // We match!
+
+                                        if (!elipses) { // Have we already reached our limit ?
+                                        if (opt1->opt_title[0]==' ') {
+                                                strcpy(ldisp,disp);
+                                                strcat(disp, &opt1->opt_title[1]);
+                                                if (strlen(disp)> width-3) {
+                                                        strcpy(disp,ldisp);
+                                                        strcat(disp,"...");
+                                                        elipses++;
+
+                                                }
+                                        } else {
+
+                                                strcpy(ldisp,disp);
+                                                strcat(disp, opt1->opt_title);
+                                                if (strlen(disp)> width-3) {
+                                                        strcpy(disp,ldisp);
+                                                        strcat(disp,"...");
+                                                        elipses++;
+                                                }
+                                        }
+                                        }
+                                        cnt++;
+                                        if (uniq) {
+                                                *uniq=opt1;
+                                        }
+                                }
+                        }
+                        opt1=opt1->next_option;
+                }
+                *pcnt=cnt;
+                if (cnt!=1 && uniq) {
+                        *uniq=0;
+                }
+                return disp;
+}
+
 
 /* ============================= EOF ================================ */

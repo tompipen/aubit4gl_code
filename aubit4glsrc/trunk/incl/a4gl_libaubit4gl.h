@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.262 2007-02-20 19:19:41 gyver309 Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.263 2007-02-28 18:58:52 mikeaubury Exp $
 #
 */
 
@@ -2122,6 +2122,8 @@ void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
 int A4GL_menu_opts_compare(char *a,char *b,int why);
 int A4GL_menu_hide (ACL_Menu * menu, ...);
 int A4GL_menu_show (ACL_Menu * menu, ...);
+int A4GL_is_unique_menu_key (ACL_Menu * menu, int key);
+char *A4GL_show_menu_large_get_matches(ACL_Menu *menu, char *typed_portion, int width, int *pcnt, ACL_Menu_Opts **uniq) ;
 void A4GL_set_scrmode (char a);
 int A4GL_isscrmode (void);
 int A4GL_islinemode (void);
