@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.83 2007-02-27 16:34:19 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.84 2007-02-28 09:23:04 mikeaubury Exp $
 #
 */
 
@@ -347,8 +347,9 @@ a4gl_using (char *str, int s, char *fmt, double num)
   int a, variable_called_b;
   int isprnt = 0;
   double ad;
-  double num_dec;
+  long num_dec;
   char new_str[256];
+  double o;
 
 
 
@@ -357,6 +358,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
     {
       pnt[a] = 0;
     }
+
   for (a = 0; a < MAXDIG; a++)
     {
       dig[a] = 0;
@@ -398,12 +400,11 @@ a4gl_using (char *str, int s, char *fmt, double num)
     }
   ad = 0.5;
   A4GL_trim (fm2);
-
   for (a = 1; a <= (int)strlen (fm2); a++)
     {
       ad = ad / 10;
     }
-
+  o=num;
   num += ad;
 
   	SPRINTF1 (number, "%64.32f", num);
@@ -412,8 +413,12 @@ a4gl_using (char *str, int s, char *fmt, double num)
 	    memset (str, '*', a);
 		return;
   }
-  num_dec=num-floor(num);
-  A4GL_debug("Decimal portion = lf",num_dec);
+  
+  num_dec=(num-floor(num))*1000000000.0;
+  num_dec++;
+ A4GL_assertion (num_dec>1000000000,"Bad numeric");
+
+  A4GL_debug("Decimal portion = %ld",num_dec);
 
   number[31] = 0;
   strcpy (str, fmt);
@@ -596,9 +601,9 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
     }
   variable_called_b = 0;
 
-
-  SPRINTF2(new_str,"%1.*lf",(int)strlen(fm2)+1,num_dec); 
-  ptr2=&new_str[2];
+  SPRINTF1(new_str,"%09ld",num_dec); 
+	
+  ptr2=&new_str[0];
   A4GL_debug("str=%s fm1=%s fm2=%s ptr2=%s",str,fm1,fm2,ptr2);
 
   for (a = 0; a < (int)strlen (fm2); a++)

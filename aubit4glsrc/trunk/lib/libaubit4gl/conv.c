@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.131 2007-02-08 12:32:24 mikeaubury Exp $
+# $Id: conv.c,v 1.132 2007-02-28 09:23:04 mikeaubury Exp $
 #
 */
 
@@ -1013,7 +1013,7 @@ A4GL_ftodec (void *a, void *z, int size)
   char buff[650];
   char fmt[200];
   char *ptr;
-  h=size;
+  h=size &0xffff;
   t = h;
   h = h / 256;
   t = t - h * 256;

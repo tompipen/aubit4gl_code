@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.168 2007-02-27 16:37:13 mikeaubury Exp $
+# $Id: stack.c,v 1.169 2007-02-28 09:23:04 mikeaubury Exp $
 #
 */
 
@@ -1645,7 +1645,8 @@ A4GL_debug("51 Have data");
     case OP_DIV:
       if (A4GL_chknull (2, n1, n2,dn1,dn2))
 	return;
-      A4GL_push_double (doubleb / doublea);
+	doubleb=doubleb/doublea;
+      A4GL_push_double (doubleb);
       break;
 
     case OP_YEAR:
