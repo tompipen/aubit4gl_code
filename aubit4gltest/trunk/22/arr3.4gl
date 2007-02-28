@@ -68,6 +68,7 @@ MAIN
 			if infield(loan) then exit program 0  end if
 
 		BEFORE FIELD price
+			error "Next field"
 			NEXT FIELD loan
 
 	END INPUT

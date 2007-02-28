@@ -75,7 +75,7 @@ call startlog("arr.out")
 		after field price
 			error "after field price"
 			sleep 1
-		on key (F6)
+		on key (control-b)
 			continue input
 		on key (F7)
 			exit input
