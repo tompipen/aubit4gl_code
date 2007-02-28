@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.35 2007-02-22 18:24:51 mikeaubury Exp $
+# $Id: sql_common.c,v 1.36 2007-02-28 16:16:25 mikeaubury Exp $
 #
 */
 
@@ -1179,7 +1179,7 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
 		if (aubitdir) {
 			if (strlen(aubitdir)) {
 				strcpy(fname,aubitdir);
-				strcat(fname,"\\etc\\aubit4gl.acl");
+				strcat(fname,"/etc/aubit4gl.acl");
 			}
 		}
 	  	if (strlen(fname)==0) {
