@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.118 2007-02-27 16:35:17 mikeaubury Exp $
+# $Id: report.c,v 1.119 2007-02-28 16:32:52 mikeaubury Exp $
 #
 */
 
@@ -1068,6 +1068,39 @@ nm (int n)
 }
 
 
+char *inparts[]={
+        "",
+                "YEAR",
+                "MONTH",
+                "DAY",
+                "HOUR",
+                "MINUTE",
+                "SECOND",
+                "FRACTION(1)",
+                "FRACTION(2)",
+                "FRACTION(3)",
+                "FRACTION(4)",
+                "FRACTION(5)"
+
+};
+
+
+
+static char *decode_interval(int a) {
+        static char buff[200];
+        int s[3];
+        s[2]=a&0xf;
+        a=a>>4;
+        s[1]=a&0xf;
+        a=a>>4;
+        s[0]=a&0xf;
+        a=a>>4;
+        SPRINTF3(buff, "%s(%d) TO %s\n",inparts[s[1]],s[0],inparts[s[2]]);
+        return buff;
+}
+
+
+
 static char *decode_dt_elem(int a) {
 
 switch(a) {
@@ -1126,7 +1159,7 @@ sz (int d, int s)
     case DTYPE_INTERVAL:
 		/* sprintf(buff_1,"%s TO %s",decode_in_elem(s>>4),decode_in_elem(s&0xf));
 		return buff_1; */
-      SPRINTF0 (buff_1, " year to second(5)");
+      SPRINTF0 (buff_1, decode_interval(s));
       return buff_1;
     }
   return "";
