@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.84 2007-02-28 09:23:04 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.85 2007-03-01 20:05:11 mikeaubury Exp $
 #
 */
 
@@ -351,6 +351,139 @@ a4gl_using (char *str, int s, char *fmt, double num)
   char new_str[256];
   double o;
 
+
+  double never_neg;
+  int lb=0;
+  int cb=0;
+
+  for (a=0;a<strlen(fmt);a++) {
+	if (fmt[a]=='(') lb++;
+	if (fmt[a]==')') cb++;
+  }
+
+
+never_neg=num;
+if (num<0) never_neg=0.0-num;
+
+	if (lb>1 && cb>1) {
+		return ;
+	}
+  if (lb && cb) {
+
+	if (lb==1 && cb==1) {
+		char *buff2;
+		char *ptr;
+		char fmt2[20000];
+
+		buff2=malloc(strlen(fmt)+1);
+		strcpy(buff2,strchr(fmt, '(')+1);
+		ptr=strchr(buff2,')');
+		if (ptr==0) { // its all gone pete tong...
+			strcpy(str,"");
+			free(buff2);
+			return;
+		}
+		*ptr=0;
+		for (a=0;a<strlen(buff2);a++) {
+			if (buff2[a]=='(') buff2[a]='#';
+			if (buff2[a]==')') buff2[a]='#';
+		}
+		a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		strncpy(strchr(fmt, '(')+1,fmt2,strlen(buff2));
+		if (num>0) {
+			ptr=strchr(fmt2,'(');	 *ptr=' ';
+			ptr=strchr(fmt2,')');	 *ptr=' ';
+		}
+		
+		strcpy(str,fmt2);
+		free(buff2);
+
+	}
+
+	if (lb>1 && cb==1) {
+		char *buff2;
+		char *ptr;
+		char fmt2[20000];
+
+		buff2=malloc(strlen(fmt)+1);
+		strcpy(buff2,strchr(fmt, '(')+1);
+		ptr=strchr(buff2,')');
+		if (ptr==0) { // its all gone pete tong...
+			strcpy(str,"");
+			free(buff2);
+			return;
+		}
+		*ptr=0;
+		for (a=0;a<strlen(buff2);a++) {
+			if (buff2[a]=='(') buff2[a]='#';
+		}
+		//A4GL_pause_execution();
+
+		//printf("%s %s\n",fmt,fmt2);
+		a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		strncpy(strchr(fmt, '(')+1,fmt2,strlen(buff2));
+
+		if (num>=0) {
+			ptr=strchr(fmt,'(');	if (ptr) { *ptr=' ';}
+			ptr=strchr(fmt,')');	if (ptr) { *ptr=' ';}
+		} else {
+			// need to move the '('...
+			for (a=0;a<strlen(fmt);a++) {
+				if (fmt[a]=='(' && fmt[a+1]==' ') {
+					fmt[a]=' ';
+					fmt[a+1]='(';
+				} 
+			}
+		}
+		
+		strcpy(str,fmt);
+		free(buff2);
+	}
+
+
+	if (lb==1 && cb>1) {
+		char *buff2;
+		char *ptr;
+		char fmt2[20000];
+
+		buff2=malloc(strlen(fmt)+1);
+		strcpy(buff2,strchr(fmt, '(')+1);
+		ptr=strrchr(buff2,')');
+		if (ptr==0) { // its all gone pete tong...
+			strcpy(str,"");
+			free(buff2);
+			return;
+		}
+		*ptr=0;
+		for (a=0;a<strlen(buff2);a++) {
+			if (buff2[a]==')') buff2[a]='#';
+		}
+		//A4GL_pause_execution();
+
+		//printf("%s %s\n",fmt,fmt2);
+		a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		strncpy(strchr(fmt, '(')+1,fmt2,strlen(buff2));
+
+		if (num>=0) {
+			ptr=strchr(fmt,'(');	if (ptr) { *ptr=' ';}
+			ptr=strchr(fmt,')');	if (ptr) { *ptr=' ';}
+		} else {
+			// need to move the ')'...
+			for (a=0;a<strlen(fmt);a++) {
+				if (fmt[a]==' ' && fmt[a+1]==')') {
+					fmt[a]=')';
+					fmt[a+1]=' ';
+				} 
+			}
+		}
+		
+		strcpy(str,fmt);
+		free(buff2);
+	}
+
+
+	return;
+  }
 
 
   A4GL_debug ("In using... fmt=%s, num=%lf", fmt, num);
