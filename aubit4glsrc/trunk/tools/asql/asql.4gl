@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-5 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
 # +----------------------------------------------------------------------+
 # | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 
-define mc_version constant "0.35"
+define mc_version constant "0.50"
 
 define mv_curr_db char(256)
 define lv_args array[100] of char(100)
@@ -111,7 +111,7 @@ if num_args()>0 then
 		end if
 
 		if arg_val(lv_a)="-v" or arg_val(lv_a)="-V" then
-			display "(c) 2003-5 Aubit Computing Ltd"
+			display "(c) 2003-7 Aubit Computing Ltd"
 			display get_version()
 			exit program
 		end if
@@ -364,7 +364,7 @@ function copyright_banner()
 clear screen
 display middle(get_version()) at 7,1
 
-display middle("(c) 2003-5 Aubit Computing Ltd") at 9,1
+display middle("(c) 2003-7 Aubit Computing Ltd") at 9,1
 display middle("http://www.aubit.com") at 10,1
 display middle("Latest version available at:") at 13,1
 display middle("http://aubit4gl.sourceforge.net") at 14,1

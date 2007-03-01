@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-5 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
 # +----------------------------------------------------------------------+
 # | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
@@ -31,10 +31,12 @@ char *get_tmp_dir();
 
 void add_temp_file (char *s);
 
+long get_curr_mvfin (char *lv_type);
 endcode
 
-define mv_tmpinfile array[10] of char(255) # Filename
-define mv_fin array[10] of integer         # fopen file handle
+
+define mv_tmpinfile array[11] of char(255) # Filename
+define mv_fin array[11] of integer         # fopen file handle
 
 
 
@@ -104,6 +106,9 @@ int get_type_id(char *s) {
 	if (strcmp(s,"EC")==0) return 7;
 	if (strcmp(s,"IEM")==0) return 8;
 	if (strcmp(s,"ARC")==0) return 9;
+
+	if (strcmp(s,"ERR")==0) return 10;
+
 	return 9;
 }
 endcode
@@ -114,7 +119,7 @@ function remove_tmp_files(lv_type)
 define lv_type char(3)
 define lv_fname char(256)
 define a integer
-for a=1 to 10 
+for a=1 to 11 
 if lv_type="ALL" or get_type_id(lv_type)==a then
 	let lv_fname=mv_tmpinfile[a]
 code
@@ -123,10 +128,159 @@ code
 endcode
 end if
 end for
+end function
+
+
+
+function remove_err_file()
+call remove_tmp_files("ERR")
+end function
+
+function has_err_file() 
+define lv_fname char(256)
+define fl integer
+
+let fl=0
+let lv_fname=mv_tmpinfile[get_type_id("ERR")]
+code
+{
+	FILE *f;
+        A4GL_trim(lv_fname);
+	f=fopen(lv_fname,"r");
+	if (f) {
+		fseek(f,0,SEEK_END);
+		fl=ftell(f);
+		fclose(f);
+	}
+}
+endcode
+
+if fl>0 then
+	return TRUE
+else
+	return FALSE
+end if
 
 
 end function
 
+function copy_err_file_back() 
+define lv_in,lv_out integer
+define buff char(256)
+let lv_out=fget_curr_mvfin("SQL");
+code
+	if (lv_out==stdin) lv_in=0;
+endcode
+let lv_in=fget_curr_mvfin("ERR");
+if lv_in=0 or lv_out=0 then
+	return
+end if
+
+code
+{
+	FILE *r_f;
+	FILE *r_fo;
+	int iscontinue=0;
+	r_f=(FILE *)lv_in;
+	r_fo=(FILE *)lv_out;
+	rewind(r_f);
+	while (1) {
+		strcpy(buff,"");
+		fgets(buff,255,r_f);
+
+		if (strchr(buff,'\n')) {
+			iscontinue=0;
+		}  else {
+			iscontinue=1;
+		}
+
+
+		if (feof(r_f)) { break; }
+		buff[255]=0;
+
+		if (buff[0]=='#' && !iscontinue) ; //  do nothing - its our error...
+		else {
+			fprintf(r_fo,"%s",buff);
+		}
+	}
+}
+endcode
+
+
+end function
+
+function create_err_file(lv_ln, lv_col, msg) 
+define lv_ln,lv_col integer
+define msg char(512)
+define cline integer
+define lv_in,lv_out integer
+define buff char(256)
+
+let lv_in=fget_curr_mvfin("SQL");
+let cline=0
+
+code
+	if (lv_in==stdin) lv_in=0;
+endcode
+
+if lv_in=0 then
+	return FALSE
+end if
+	
+call open_tmpfile("ERR","w")
+let lv_out=fget_curr_mvfin("ERR");
+if lv_out=0 then
+	return FALSE
+end if
+
+code
+A4GL_trim(msg);
+{
+	FILE *r_f;
+	FILE *r_fo;
+	r_f=(FILE *)lv_in;
+	r_fo=(FILE *)lv_out;
+	rewind(r_f);
+	while (1) {
+		strcpy(buff,"");
+		fgets(buff,255,r_f);
+
+		if (strchr(buff,'\n')) {
+			cline++;
+		}
+
+		if (cline>lv_ln && lv_ln>=0) {
+			//fprintf(r_fo,"# Line %d col %d\n", lv_ln, lv_col);
+			lv_ln=-1;
+			fprintf(r_fo,"#");
+			lv_col--;
+			while(lv_col>0) {fprintf(r_fo," "); lv_col--;}
+			fprintf(r_fo,"^\n");
+			fprintf(r_fo,"# %s",msg);
+		}
+
+		if (feof(r_f)) { break; }
+		buff[255]=0;
+		fprintf(r_fo,"%s",buff);
+	}
+	if (lv_ln>=0) { // Not printed - just just it at the end...
+			//fprintf(r_fo,"# Line %d col %d\n", lv_ln, lv_col);
+			lv_ln=-1;
+			lv_col--;
+			fprintf(r_fo,"#");
+			lv_col--;
+			while(lv_col>0) {fprintf(r_fo," "); lv_col--;}
+			fprintf(r_fo,"^\n");
+			fprintf(r_fo,"# %s\n",msg);
+
+	}
+}
+endcode
+call close_tmpfile("ERR")
+call close_tmpfile("SQL")
+
+RETURN TRUE
+end function
 
 
 ################################################################################
@@ -139,7 +293,7 @@ code
 int a;
 do_init=do_init_filename;
 if (do_init_filename) {
-for (a=0;a<10;a++) { mv_fin[a]=0;}
+for (a=0;a<11;a++) { mv_fin[a]=0;}
 do_init_filename=0;
 sprintf(mv_tmpinfile[get_type_id("SQL")],"%s/a4gl_sql_%d",get_tmp_dir(),getpid());
 sprintf(mv_tmpinfile[get_type_id("PER")],"%s/a4gl_per_%d",get_tmp_dir(),getpid());
@@ -147,7 +301,8 @@ sprintf(mv_tmpinfile[get_type_id("4GL")],"%s/a4gl_4gl_%d",get_tmp_dir(),getpid()
 sprintf(mv_tmpinfile[get_type_id("ACE")],"%s/a4gl_ace_%d",get_tmp_dir(),getpid());
 sprintf(mv_tmpinfile[get_type_id("MSG")],"%s/a4gl_msg_%d",get_tmp_dir(),getpid());
 sprintf(mv_tmpinfile[get_type_id("FRM")],"%s/a4gl_frm_%d",get_tmp_dir(),getpid());
-sprintf(mv_tmpinfile[get_type_id("C")],  "%s/a4gl_frm_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("C")],  "%s/a4gl_c_%d",get_tmp_dir(),getpid());
+sprintf(mv_tmpinfile[get_type_id("ERR")],  "%s/a4gl_err_%d",get_tmp_dir(),getpid());
 endcode
 
 
@@ -197,6 +352,18 @@ endcode
 call close_tmpfile("SQL")
 end function
 
+function fget_curr_mvfin(lv_s)
+define lv_s char(3)
+define lv_a integer
+
+code
+A4GL_trim(lv_s);
+lv_a=get_curr_mvfin(lv_s);
+
+endcode
+
+return lv_a
+end function
 
 function copy_file(src,dest,type,removeatexit)
 define src char(255)
@@ -258,8 +425,7 @@ code
 
 
 
-long
-get_curr_mvfin (char *lv_type)
+long get_curr_mvfin (char *lv_type)
 {
   return mv_fin[get_type_id (lv_type)];
 }

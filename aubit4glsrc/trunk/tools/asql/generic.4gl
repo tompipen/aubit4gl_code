@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-5 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
 # +----------------------------------------------------------------------+
 # | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
@@ -401,18 +401,18 @@ asql_explain(struct element *e) {
 }
 
 
-int asql_load_data(struct element *e) {
+int asql_load_data(struct element *e,int *err_at_col) {
 	A4GL_assertion("Load data not implemented");
 }
 
 
 
-int prepare_query_1(char *s,char type) {
+int prepare_query_1(char *s,char type,int *err_at_col) {
 static int prepared;
 char *p;
 int qry_type;
 p=s;
-
+*err_at_col=1;
    if (strncasecmp(s,"database",8)==0) { return 1; }
    if (type>='1'&&type<='9') return 255;
    qry_type=0;
@@ -442,16 +442,19 @@ p=s;
 
    if (type=='T') qry_type=3;
    if (type=='t') qry_type=3;
-
+  err_at_col=1;
    if (prepared) return qry_type;
    return -1;
 }
 
 
-int execute_query_1(int *raffected) {
+int execute_query_1(int *raffected,int *errat) {
                 *raffected=0;
 		A4GLSQL_execute_sql("generic_stexecp",0,0);
-		if (a4gl_sqlca.sqlcode!=0)  return 0;
+		if (a4gl_sqlca.sqlcode!=0)  {	
+			*errat=1;
+			return 0;
+		}
                 *raffected=a4gl_sqlca.sqlerrd[0];
         	return 1;
 }
@@ -475,24 +478,23 @@ set_sqlcode(int a) {
 
 
 
-int execute_select_prepare() {
+int execute_select_prepare(int *err_at_col) {
 void *ptr;
 static int done_alloc=0;
 
 
 open_display_file_c();
 
-
       ptr=A4GLSQL_find_prepare("generic_stexecp");
       A4GL_assertion(ptr==0,"Unable to find statement to execute...");
 
       A4GLSQL_declare_cursor(0+0,ptr,0,"generic_crexec");
       cp_sqlca();
-      if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
+      if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); *err_at_col=1; return 0;}
 
         need_cursor_free=1;
    	A4GLSQL_open_cursor("generic_crexec",0,0);
-        if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); return 0;}
+        if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); *err_at_col=1; return 0;}
         need_cursor_free=3;
 
         firstFetchInit=1;
@@ -750,7 +752,7 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
 
 }
 
-int execute_sql_fetch(int *raffected) {
+int execute_sql_fetch(int *raffected, int *err_at_col) {
 	int coltype;
 	int colsize;
 	int colname;
@@ -809,6 +811,7 @@ int execute_sql_fetch(int *raffected) {
               fprintf (file_out_result, "\n");
             }
         }
+		*err_at_col=1;
       return 100;
     }
   (*raffected)++;
@@ -920,6 +923,7 @@ int execute_sql_fetch(int *raffected) {
     }
 
 
+		*err_at_col=1;
 	return a4gl_sqlca.sqlcode;
 	
 }

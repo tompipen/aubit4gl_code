@@ -46,7 +46,7 @@ extern FILE *f_unloadFile;
 
 
 
-int asql_unload_data(struct element *e) {
+int asql_unload_data(struct element *e, int *errat) {
 int raffected;
 int b;
 	delim=&delims[0];
@@ -76,7 +76,7 @@ int b;
 
 	raffected=0;
 	display_mode_unload(1);
-	if (execute_select_prepare()) {
+	if (execute_select_prepare(errat)) {
 		while (get_sqlcode()==0) {
 			b=execute_sql_fetch(&raffected);
 			if (b!=0) break;

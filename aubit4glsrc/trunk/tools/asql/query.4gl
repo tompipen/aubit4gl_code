@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-5 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
 # +----------------------------------------------------------------------+
 # | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
@@ -201,13 +201,23 @@ define lv_systemstr char(255)
 define lv_stat integer
 
 let lv_systemstr=fgl_getenv("DBEDIT")
-if lv_systemstr is null or lv_systemstr is null matches " " then
-	let lv_systemstr="vi"
+
+
+if lv_systemstr is null or lv_systemstr is null matches " " or lv_systemstr="vi" then
+	let lv_systemstr="vi '+/^#/'"
 end if
 
-let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname("SQL")
+if has_err_file() THEN
+	let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname("ERR")
+else
+	let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname("SQL")
+end if
 
 run lv_systemstr returning lv_stat
+
+if has_err_file() THEN
+	call copy_err_file_back()
+end if
 
 call display_tmp_file()
 

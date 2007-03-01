@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-5 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -67,8 +67,9 @@ char mv_errmsg[256]="No Message";
 
 #define cp_sqlca() cp_sqlca_full(__FILE__,__LINE__)
 
-int execute_select_prepare() {
+int execute_select_prepare(int *errat) {
 static int done_alloc=0;
+*errat=1;
 	open_display_file_c();
 
 	EXEC SQL WHENEVER SQLERROR CONTINUE;
@@ -578,13 +579,14 @@ if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
 }
 
 
-int prepare_query_1(char *s,char type) {
+int prepare_query_1(char *s,char type,int *err_at_col) {
 static int prepared;
 EXEC SQL BEGIN DECLARE SECTION;
 char *p;
 EXEC SQL END DECLARE SECTION;
 int qry_type;
 p=s;
+*err_at_col=1;
 
 if (strncasecmp(s,"database",8)==0) {
 	return 1;
@@ -633,14 +635,14 @@ cp_sqlca();
 
 
 
-int execute_query_1(int *raffected) {
+int execute_query_1(int *raffected,int *errat) {
 		*raffected=0;
                          EXEC SQL EXECUTE stExec;cp_sqlca();
                          if (ec_check_and_report_error()) { return 0; }
                          *raffected=sqlca.sqlerrd[2];
 	A4GL_debug("SQLERRD : %d %d %d %d %d %d\n", sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);
                          EXEC SQL FREE stExec;cp_sqlca();
-                         if (ec_check_and_report_error()) { return 0; }
+                         if (ec_check_and_report_error()) { *errat=1; return 0; }
 	return 1;
 }
 
@@ -749,8 +751,9 @@ return totsize;
 }
 
 /******************************************************************************/
-int execute_sql_fetch(int *raffected) {
+int execute_sql_fetch(int *raffected, int *errat) {
 int a;
+*errat=1;
 
         EXEC SQL FETCH crExec INTO SQL DESCRIPTOR descExec; cp_sqlca();
 	A4GL_debug("Fetched");
@@ -1393,7 +1396,7 @@ find_delims (char delim)
 }
 
 
-int asql_load_data(struct element *e) {
+int asql_load_data(struct element *e,int *err_at_col) {
 EXEC SQL BEGIN DECLARE SECTION;
 char ins_str[32000];
 EXEC SQL END DECLARE SECTION;
@@ -1406,7 +1409,7 @@ int nfields;
 int lineno=0;
         delim=&delims[0];
         strcpy(delim,"|");
-
+*err_at_col=1;
         if (loadFile) fclose(loadFile);
         if (e->delim) { if (strlen(e->delim)) { strcpy(delim,e->delim); } }
         loadFile=fopen(e->fname,"r");

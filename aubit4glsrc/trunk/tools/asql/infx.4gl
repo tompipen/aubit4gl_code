@@ -897,13 +897,13 @@ indicator=*col->sqlind ;
 
 
 int
-prepare_query_1 (char *s, char type)
+prepare_query_1 (char *s, char type,int *err_at_col)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *p;
   EXEC SQL END DECLARE SECTION;
   int qry_type;
-
+*err_at_col=1;
  A4GL_debug("prepare_query_1");
   if (type >= '1' && type <= '9')
     return 255;
@@ -916,6 +916,7 @@ prepare_query_1 (char *s, char type)
   cp_sqlca ();
   if (ec_check_and_report_error ())
     {
+	*err_at_col=sqlca.sqlerrd[4];
       return -1;
     }
 
@@ -926,6 +927,7 @@ prepare_query_1 (char *s, char type)
   cp_sqlca ();
   if (ec_check_and_report_error ())
     {
+	*err_at_col=sqlca.sqlerrd[4];
       return -1;
     }
   EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
@@ -937,13 +939,14 @@ prepare_query_1 (char *s, char type)
 
 
 int
-execute_query_1 (int *raffected)
+execute_query_1 (int *raffected,int *errat)
 {
   *raffected = 0;
   EXEC SQL EXECUTE stExec;
   cp_sqlca ();
   if (ec_check_and_report_error ())
     {
+	*errat=sqlca.sqlerrd[4];
       return 0;
     }
   *raffected = sqlca.sqlerrd[2];
@@ -951,6 +954,7 @@ execute_query_1 (int *raffected)
   cp_sqlca ();
   if (ec_check_and_report_error ())
     {
+	*errat=sqlca.sqlerrd[4];
       return 0;
     }
   return 1;
@@ -1065,7 +1069,7 @@ if (columnNames)
 
 
 int
-execute_select_prepare ()
+execute_select_prepare (int *err_at_col)
 {
 
   open_display_file_c ();
@@ -1078,19 +1082,25 @@ execute_select_prepare ()
 
   EXEC SQL allocate descriptor 'descExec';
   cp_sqlca ();
-  if (sqlca.sqlcode < 0)
+  if (sqlca.sqlcode < 0) {
+	*err_at_col=sqlca.sqlerrd[4];
     return 0;
+  }
 
   EXEC SQL describe stExec USING SQL DESCRIPTOR 'descExec';
   cp_sqlca ();
-  if (sqlca.sqlcode < 0)
+  if (sqlca.sqlcode < 0) {
+	*err_at_col=sqlca.sqlerrd[4];
     return 0;
+  }
 
   EXEC SQL get descriptor 'descExec':numberOfColumns = COUNT;
 
   cp_sqlca ();
-  if (sqlca.sqlcode < 0)
+  if (sqlca.sqlcode < 0) {
+	*err_at_col=sqlca.sqlerrd[4];
     return 0;
+  }
   A4GL_debug ("numberOfColumns : %d\n", numberOfColumns);
 
 
@@ -1103,13 +1113,17 @@ execute_select_prepare ()
   EXEC SQL declare crExec CURSOR FOR stExec;
 
   cp_sqlca ();
-  if (sqlca.sqlcode < 0)
+  if (sqlca.sqlcode < 0) {
+	*err_at_col=sqlca.sqlerrd[4];
     return 0;
+   }
   A4GL_debug("Declared - opening");
   EXEC SQL open crExec;
   cp_sqlca ();
-  if (sqlca.sqlcode < 0)
+  if (sqlca.sqlcode < 0) {
+	*err_at_col=sqlca.sqlerrd[4];
     return 0;
+  }
 
   A4GL_debug("opened");
 
@@ -1146,7 +1160,7 @@ execute_select_prepare ()
 
 /******************************************************************************/
 int
-execute_sql_fetch (int *raffected)
+execute_sql_fetch (int *raffected,int *err_at_col)
 {
   int a;
 
@@ -1161,9 +1175,11 @@ A4GL_debug("Fetching");
 
   if (sqlca.sqlcode < 0)
     {
-      A4GL_push_char ("Fetch error...");
-      A4GL_display_error (0, 0);
-      sleep (1);		// Fetch error
+      //A4GL_push_char ("Fetch error...");
+      //A4GL_display_error (0, 0);
+      //sleep (1);		// Fetch error
+
+	*err_at_col=sqlca.sqlerrd[4];
       return sqlca.sqlcode;
     }
 
@@ -1291,6 +1307,7 @@ A4GL_debug("Fetching");
       outlines++;
     }
 
+  *err_at_col=sqlca.sqlerrd[4];
   return sqlca.sqlcode;
 }
 
@@ -2207,7 +2224,7 @@ static int      cols_in_table(char *tabname)
 /*
 ** Process the INSERT part of a LOAD statement
 */
-int   asql_load_data(struct element *e)
+int   asql_load_data(struct element *e,int *err_at_col)
 {
 	Sqlda          *idesc = NIL(Sqlda *);
 	char           *buffer = NIL(char *);
@@ -2264,6 +2281,7 @@ int   asql_load_data(struct element *e)
         file=fopen(e->fname,"r");
 
         if (file==0) { 
+		*err_at_col=1;
 		set_sqlcode(-805); 
 		return 0; 
 	}
@@ -2279,13 +2297,17 @@ int   asql_load_data(struct element *e)
 		/* Compile INSERT statement */
 		stage = 0;
 		EXEC SQL PREPARE s_insert FROM :new_stmt;
-		if (sqlca.sqlcode < 0)
+		if (sqlca.sqlcode < 0) {
+			*err_at_col=1;
 			break;
+		}
 
 		stage = 1;
 		EXEC SQL DESCRIBE s_insert INTO idesc;
-		if (sqlca.sqlcode < 0)
+		if (sqlca.sqlcode < 0) {
+			*err_at_col=1;
 			break;
+		}
 
 		if (sqlca.sqlcode != SQ_INSERT)
 		{
@@ -2310,8 +2332,10 @@ int   asql_load_data(struct element *e)
 			EXEC SQL BEGIN WORK; /* Might fail - but we dont care.. */
 		}
 		EXEC SQL OPEN c_insert;
-		if (sqlca.sqlcode < 0)
+		if (sqlca.sqlcode < 0) {
+			*err_at_col=1;
 			break;
+		}
 
 		/* Fetch and print data */
 		stage = 4;

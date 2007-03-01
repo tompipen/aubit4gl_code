@@ -1,3 +1,4 @@
+#include <stdio.h>
 
 #define KW_IDENTIFIER 258
 #define KW_CONSTANT 259
@@ -53,5 +54,7 @@ union  {
 
 
 
-int asql_unload_data(struct element *e);
-int asql_load_data(struct element *e);
+int asql_unload_data(struct element *e,int *errat);
+int asql_load_data(struct element *e,int *errat);
+
+FILE *get_curr_mvfin (char *lv_type);

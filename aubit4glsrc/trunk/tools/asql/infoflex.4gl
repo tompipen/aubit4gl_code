@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-5 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
 # +----------------------------------------------------------------------+
 # | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
@@ -639,13 +639,14 @@ cp_sqlca ()
 
 
 int
-prepare_query_1 (char *s, char type)
+prepare_query_1 (char *s, char type,int *err_at_col)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *p;
   EXEC SQL END DECLARE SECTION;
   int qry_type;
 
+*err_at_col=1;
   if (type >= '1' && type <= '9')
     return 255;
 
@@ -692,7 +693,7 @@ return '|';
 /******************************************************************************/
 
 int
-execute_query_1 (int *raffected)
+execute_query_1 (int *raffected,int *errat)
 {
   *raffected = 0;
   EXEC SQL EXECUTE stExec;
@@ -706,6 +707,7 @@ execute_query_1 (int *raffected)
   cp_sqlca ();
   if (ec_check_and_report_error ())
     {
+		*errat=1;
       return 0;
     }
   return 1;
@@ -1640,7 +1642,7 @@ static int      cols_in_table(char *tabname)
 /*
 ** Process the INSERT part of a LOAD statement
 */
-int   asql_load_data(struct element *e)
+int   asql_load_data(struct element *e,int *err_at_col)
 {
 A4GL_assertion(1,"load data not implemented yet");
 }
@@ -2664,11 +2666,11 @@ if (columnNames)
 }
 
 int
-execute_select_prepare ()
+execute_select_prepare (int *err_at_col)
 {
 
   open_display_file_c ();
-
+*err_at_col=1;
 
 
 
@@ -2765,10 +2767,10 @@ execute_select_free ()
 
 /******************************************************************************/
 int
-execute_sql_fetch (int *raffected)
+execute_sql_fetch (int *raffected,int *err_at_col)
 {
   int a;
-
+*err_at_col=1;
 
 
   EXEC SQL FETCH crExec using descriptor desc_output;

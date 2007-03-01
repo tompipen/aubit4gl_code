@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-5 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
 # +----------------------------------------------------------------------+
 # | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
@@ -33,6 +33,7 @@ code
 extern int numberOfColumns;
 
 
+int rewrite_query_input(int errline, int errcol, char*msg) ;
 int width;
 int display_mode;
 int fetchFirst=0;
@@ -272,9 +273,14 @@ define qry_type integer
 define lv_cont integer
 define rpaginate integer
 define l_db char(80)
+define err_at_col integer
 let all_queries_ok=1
 let msg=""
 options message line last
+let err_at_col=1
+
+
+Call remove_err_file()
 code
 first_open=1;
 set_display_lines();
@@ -287,7 +293,8 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 	}
 	exec_out=(FILE *)ofile;
 
-}
+} 
+
 
 
 	for (a=0;a<list_cnt;a++) {
@@ -295,6 +302,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 		qry_type=0;
 
 		raffected=0;
+		err_at_col=1;
 
 		if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 			if (is_echo_c()) {
@@ -308,7 +316,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 		display_mode_unload(0);
 		if (list[a].type!='L'&&list[a].type!='l') {
-			qry_type=prepare_query_1(p,list[a].type);
+			qry_type=prepare_query_1(p,list[a].type, &err_at_col);
 			if (list[a].type=='C'||list[a].type=='c') qry_type=255;
 		} else {
 			qry_type=255;
@@ -345,9 +353,9 @@ code
 		// Is it a select statement ?
 		// @todo - this needs refining as a select .. into temp would get caught..
 		if (list[a].type!='S'&&list[a].type!='s') {
-			if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a]);
+			if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a],&err_at_col);
 			else {
-				if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a]);}
+				if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a],&err_at_col);}
 				else {
 					if (list[a].type>='1'&&list[a].type<='9') {
 						if (!asql_info(&list[a])) goto end_query;
@@ -365,7 +373,7 @@ code
 										a4gl_sqlca.sqlcode=-13;
 										goto end_query;
 									} else {
-									if (!execute_query_1(&raffected)) goto end_query;
+										if (!execute_query_1(&raffected,&err_at_col)) goto end_query;
 									}
 								}
 							}
@@ -380,7 +388,7 @@ code
 				}
 repeat_query: ;
 	A4GL_debug("EXEC Repeat query out=%p\n",file_out_result);
-				if (execute_select_prepare()) {
+				if (execute_select_prepare(&err_at_col)) {
 
 					if (get_sqlcode()<0) goto end_query;
 
@@ -389,7 +397,7 @@ repeat_query: ;
 					int done_once=0;
 					char buff[244];
 						A4GL_debug("Fetching..");
-						b=execute_sql_fetch(&raffected);
+						b=execute_sql_fetch(&raffected, &err_at_col);
 
 				
 						if (exec_mode==EXEC_MODE_INTERACTIVE) {
@@ -451,8 +459,10 @@ A4GL_assertion(file_out_result==0,"No output file (2)");
 A4GL_debug("EXEC COMPLETE %d %d",a,list_cnt);
 		A4GL_debug("Qry type : %d",qry_type);
 end_query: ;
+	if (a4gl_sqlca.sqlcode<0) {
+		rewrite_query_input(list[a].lineno,err_at_col, get_qry_msg(qry_type,raffected));
+	}
 	sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected, get_qry_msg(qry_type,raffected));
-
 endcode
 
 if sqlca.sqlcode>=0 then
@@ -879,4 +889,16 @@ int read_only_mode() {
 	if (A4GL_isyes(acl_getenv("ASQL_READONLY"))) return 1;
 	return 0;
 }
+
+
+int rewrite_query_input(int errline, int errcol, char*msg) {
+int a;
+	A4GL_push_int(errline);
+	A4GL_push_int(errcol);
+	A4GL_push_char(msg);
+	aclfgl_create_err_file(3);
+	a=A4GL_pop_int();
+	return a;
+}
+
 endcode
