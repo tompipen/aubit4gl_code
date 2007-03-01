@@ -519,7 +519,7 @@ client_decode_str (char *ptr)
   int l;
   int sl;
 
-  if (p) free(p);
+  if (p) {free(p); p=0;}
 
   sl=strlen (ptr);
   p = malloc ((sl / 2) + 1);
