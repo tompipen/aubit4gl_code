@@ -587,7 +587,7 @@ pipe_get_result (char *func,struct client_result *r,int expectresult)
 	{
 	  char *b;
 	  b = &buff[11];
-	  r->result = (long) client_decode_str (b);
+	  r->result = (long) strdup(client_decode_str (b));
 	  r->state = CALL_RESULT_MALLOC;
 	  A4GL_debug ("Got string : %s\n", r->result);
 	  return r;
