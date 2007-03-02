@@ -1010,7 +1010,7 @@ column_name_specific: identifier op_col_arr {
 		struct ilist *i;
 		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		// First identifier is the owner...
-		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>3,$<str>5));
+		sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5));
 		ADDMAP("Use Column",$<str>$);
 		i=&$<int_list>4;
 		strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
