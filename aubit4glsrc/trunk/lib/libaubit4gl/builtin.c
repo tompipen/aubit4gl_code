@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.106 2007-02-22 08:41:54 mikeaubury Exp $
+# $Id: builtin.c,v 1.107 2007-03-02 16:32:23 mikeaubury Exp $
 #
 */
 
@@ -301,7 +301,7 @@ aclfgl_length (int nargs)
 int A4GL_push_substr (char *ca, int dtype, int a, int b, ...) {
 char *p;  
 	p=a4gl_substr(ca,dtype,a,b);
-	A4GL_push_param(p,DTYPE_CHAR+ENCODE_SIZE(b-a+1));
+	A4GL_push_param(strdup(p),DTYPE_CHAR+ENCODE_SIZE(b-a+1)+DTYPE_MALLOCED);
 	return 1;
 }
 
