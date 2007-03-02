@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.45 2007-02-20 18:36:19 gyver309 Exp $
+# $Id: sqlexpr.c,v 1.46 2007-03-02 16:27:17 gyver309 Exp $
 #
 */
 
@@ -220,13 +220,13 @@ new_select_list_item_column_from_transform (char *s)
       return p;
     }
 
-  if (strchr (s, '.'))
+  if (strrchr (s, '.'))
     {
       char *b;
       char *ptr;
       struct ilist subscripts;
       b = acl_strdup (s);
-      ptr = strchr (b, '.');
+      ptr = strrchr (b, '.');
       *ptr = 0;
       ptr++;
       subscripts.i0 = 0;
@@ -1623,6 +1623,7 @@ preprocess_sql_statement (struct s_select *select)
 		  int rval;
 		  char *ccol = 0;
 		  char *tname;
+		  int need_end_columns = 0;
 
 		  if (strcmp (p->u_data.column.tabname, "") == 0)
 		    {
@@ -1663,6 +1664,7 @@ preprocess_sql_statement (struct s_select *select)
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
+		  need_end_columns = 1;
 
 		  while (1)
 		    {
@@ -1681,6 +1683,8 @@ preprocess_sql_statement (struct s_select *select)
 						  ccol, 0);
 		      add_select_list_item_list (n, pnew);
 		    }
+		  if (need_end_columns)
+		      A4GLSQL_end_get_columns ();
 		  continue;
 		}
 	    }
@@ -1693,7 +1697,6 @@ preprocess_sql_statement (struct s_select *select)
 
 	  add_select_list_item_list (n, p);
 	}
-      A4GLSQL_end_get_columns ();
       select->select_list = n;
     }
 
