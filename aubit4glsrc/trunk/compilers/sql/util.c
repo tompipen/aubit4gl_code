@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.53 2007-02-26 12:54:10 gyver309 Exp $
+# $Id: util.c,v 1.54 2007-03-02 16:29:59 gyver309 Exp $
 #
 */
 
@@ -599,7 +599,7 @@ sqlparse_yyerror (char *s)
   A4GL_debug ("%s Sql=%p\n", s, Sql);
   if (Sql)
     {
-      char buff[200];
+      char buff[8192];
       int c;
       A4GL_debug ("Here\n");
       c = sql_string_cnt;
@@ -608,8 +608,8 @@ sqlparse_yyerror (char *s)
 	{
 	  c = 0;
 	}
-      strncpy (buff, &Sql[sql_string_cnt], 199);
-      buff[199] = 0;
+      strncpy (buff, &Sql[sql_string_cnt], sizeof(buff)-1);
+      buff[sizeof(buff)-1] = 0;
       A4GL_debug ("MEMREAD syntax error: %s\n", buff);
     }
   was_ok = 0;
