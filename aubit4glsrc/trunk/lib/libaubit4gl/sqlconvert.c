@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.103 2007-02-20 18:33:51 gyver309 Exp $
+# $Id: sqlconvert.c,v 1.104 2007-03-02 16:22:38 gyver309 Exp $
 #
 */
 
@@ -631,7 +631,13 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 #ifdef SIMPLIFIED
     SPRINTF1 (buff, "%s", DATADIR);
 #else
-    SPRINTF1 (buff, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+    {
+	char *ae = acl_getenv("AUBITETC");
+	if (ae == NULL || strlen(ae) == 0)
+            SPRINTF1 (buff, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	else
+	    SPRINTF1 (buff, "%s/convertsql", acl_getenv ("AUBITETC"));
+    }
 #endif
   }
   len = strlen (buff);
