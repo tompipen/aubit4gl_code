@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.42 2007-02-20 19:24:02 gyver309 Exp $
+# $Id: load.c,v 1.43 2007-03-04 12:44:34 mikeaubury Exp $
 #
 */
 
@@ -296,20 +296,21 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
   while (1)
     {
+     strcpy(loadbuff,"");
       fgets (loadbuff, LOADBUFFSIZE - 1, p);
-
-
-
-      if (feof (p))
-	{
-	  A4GL_debug ("Got to end of the file");
-	  break;
+      A4GL_debug ("Read line '%s'\n", loadbuff); fflush(stdout);
+	if (feof(p) && strlen(loadbuff)) {
+		if (loadbuff[strlen(loadbuff)-1]!='\n') {
+			strcat(loadbuff,"\n");
+		}
 	}
+
+ 	if (strlen(loadbuff)==0) break;
+      
       lineno++;
       stripnlload (loadbuff, delim);
-      A4GL_debug ("Read line '%s'", loadbuff);
       nfields = find_delims (delim);
-      A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
+      A4GL_debug("nfields=%d number of columns=%d", nfields, cnt);
 	if (nfields==0 && delim==0) nfields=1; // No delimiter - whole line...
 
       if (nfields != cnt)
@@ -354,6 +355,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   		fclose (p);
 	  return 0;
 	}
+      if (feof (p)) { A4GL_debug ("Got to end of the file"); break; }
     }
   a4gl_sqlca.sqlerrd[2]=lineno; // sqlerrd[3] in 4gl
   fclose (p);
@@ -490,6 +492,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
   while (1)
     {
+	strcpy(loadbuff,"");
       fgets (loadbuff, LOADBUFFSIZE - 1, p);
 
 
@@ -500,7 +503,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	}
       lineno++;
       stripnlload (loadbuff, delim);
-      A4GL_debug ("Read line '%s'", loadbuff);
+      printf ("Read line '%s'", loadbuff);
       nfields = find_delims (delim);
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
 	if (nfields==0 && delim==0) nfields=1; // No delimiter - whole line...
