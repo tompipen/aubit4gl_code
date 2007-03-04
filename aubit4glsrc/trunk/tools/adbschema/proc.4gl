@@ -60,8 +60,10 @@ FUNCTION dump_buff()
 code
 	if (buff) {
 		A4GL_trim(buff);
-		printf("%s\n",buff);
-		printf("\n\n\n\n");
+		A4GL_push_char(buff);
+		aclfgl_outstr(1);
+		A4GL_push_char("\n\n\n\n");
+		aclfgl_outstr(1);
 		free(buff);
 		buff=0;
 	}
