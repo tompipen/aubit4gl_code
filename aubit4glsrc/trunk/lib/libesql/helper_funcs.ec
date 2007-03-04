@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.56 2006-12-11 11:04:00 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.57 2007-03-04 12:38:47 mikeaubury Exp $
 #
 */
 
@@ -540,9 +540,13 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		if (indicat==-1) { A4GL_setnull(0,(void *)a4gl,size); return;}
 		A4GL_debug("Copy : '%s' from rdbms to a4gl",infx);
 		if (risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
-		infx[size]=0;
+		if (size>=0) {
+			infx[size]=0;
+		} 
 		strcpy((char *)(a4gl),(char *)(infx));
-		A4GL_pad_string(a4gl,size);
+		if (size!=-1) {
+			A4GL_pad_string(a4gl,size);
+		}
 	}
 
 
@@ -936,7 +940,7 @@ for (a=0;a<n;a++) {
 		case DTYPE_DTIME: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
 		case DTYPE_BYTE: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
 		case DTYPE_TEXT: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
-		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
+		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_char(native,a4gl,i,-1,dir,x,y); break;
 		case DTYPE_INTERVAL: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
 	}
 }
