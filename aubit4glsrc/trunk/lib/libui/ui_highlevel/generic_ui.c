@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.109 2007-02-21 10:37:10 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.110 2007-03-04 12:50:42 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -480,7 +480,14 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
       for (a = 0; a < menu->num_opts; a++)
 	{
 	  A4GL_debug ("before copy");
-	  strcpy (s, &option->opt_title[1]);
+	  if (option->opt_title && strlen(option->opt_title)) {
+	  	strcpy (s, &option->opt_title[1]);
+	  }  else {
+	  		option = (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
+			continue;
+		}
+
+
 	  A4GL_debug ("after copy '%s' '%s'", s, option->opt_title);
 	  A4GL_trim (s);
 	  A4GL_debug ("trim %s", s);
@@ -530,8 +537,7 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
 		}
 	    }
 	  A4GL_debug ("chk next");
-	  option =
-	    (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
+	  option = (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
 	  A4GL_debug ("set next");
 	}
 

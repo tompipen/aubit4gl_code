@@ -224,6 +224,9 @@ A4GL_trim (char *p)
 
 
 int A4GL_set_line(char *fname, long lineno) {  return 0; }
+int A4GL_set_line_extended (char *fname, long lineno, const char *level, const char *func) {
+	return 0;
+}
 
 
 void A4GL_assertion(int a, char *s) {
@@ -233,7 +236,7 @@ void A4GL_assertion(int a, char *s) {
 	}
 }
 
-void A4GL_debug_full(char *fmt,...) {
+void A4GL_debug_full_extended(char *fmt,...) {
 }
 
 
@@ -245,9 +248,10 @@ void A4GL_exitwith(char *s) {
 }
 
 
-void A4GLSQL_set_status(int a,int b) {
+int A4GLSQL_set_status(int a,int b) {
 	status1=a;
 	status2=b;
+	return a;
 }
 
 
