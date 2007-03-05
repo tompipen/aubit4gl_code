@@ -22738,7 +22738,7 @@ add_feature("DDL_PRIMARY_KEY");
 		struct ilist *i;
 		if (strcmp((yyvsp[(3) - (6)].str),"rowid")==0) { add_feature("ROWID"); }
 		// First identifier is the owner...
-		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname((yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str)));
+		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str)),(yyvsp[(5) - (6)].str)));
 		ADDMAP("Use Column",(yyval.str));
 		i=&(yyvsp[(4) - (6)].int_list);
 		strcpy((yyval.str),A4GLSQLCV_make_substr((yyval.str),i->i0,i->i1,i->i2));
@@ -23874,7 +23874,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
                 		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname(current_upd_table,(yyvsp[(3) - (4)].str)));
 			} else {
-                		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname((yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str)));
+                		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,(yyvsp[(1) - (4)].str)),(yyvsp[(3) - (4)].str)));
 			}
 		}
                 ADDMAP("Use Column",(yyval.str));
@@ -23895,7 +23895,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
                 		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname(current_upd_table,(yyvsp[(5) - (6)].str)));
 			} else {
-                		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname((yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str)));
+                		sprintf((yyval.str),"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str)),(yyvsp[(5) - (6)].str)));
 			}
 		}
                 ADDMAP("Use Column",(yyval.str));
@@ -23913,7 +23913,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
                 	sprintf((yyval.str),"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
 		} else {
-                	sprintf((yyval.str),"%s",A4GLSQLCV_check_colname((yyvsp[(1) - (3)].str),"*"));
+                	sprintf((yyval.str),"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,(yyvsp[(1) - (3)].str)),"*"));
 		}
 		}
                 ADDMAP("Use Column",(yyval.str));
@@ -24036,7 +24036,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			struct ilist *i;
 			i=&(yyvsp[(5) - (5)].int_list);
 		sprintf(buff,"%s.%s",(yyvsp[(2) - (5)].str),(yyvsp[(4) - (5)].str));
-		(yyval.sql_string)=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_substr(A4GLSQLCV_check_colname((yyvsp[(2) - (5)].str),(yyvsp[(4) - (5)].str)),i->i0,i->i1,i->i2)),NULL); 
+		(yyval.sql_string)=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,(yyvsp[(2) - (5)].str)),(yyvsp[(4) - (5)].str)),i->i0,i->i1,i->i2)),NULL); 
 		}
     break;
 

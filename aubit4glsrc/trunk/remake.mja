@@ -62,6 +62,10 @@ make asql_i.4ae
 make asql_p.4ae
 cp asql_i.4ae asql_p.4ae  /home/aubit4gl/aubit4gl/bin
 sleep 5
+cd /home/aubit4gl/aubit4glsrc/lib/libsql/postgresql
+make libSQL_pg8l.so
+make libSQL_pg8ls.so
+
 
 cd /home/aubit4gl/aubit4glsrc/tools/afinderr
 cp /home/aubit4gl/aubit4glsrc/bin/afinderr /home/aubit4gl/aubit4gl/bin
