@@ -2563,7 +2563,7 @@ if (e->delim) {
       set_sqlcode (-806);
       return 0;
     }
-
+A4GL_debug("Unload..");
 
   if (no_buf)
     setvbuf (unlfile, (char *) NULL, _IONBF, 0);
@@ -2584,7 +2584,9 @@ if (e->delim) {
   if (has_trans && !is_ansi)
     EXEC SQL BEGIN WORK;
 
+A4GL_debug("opening");
   EXEC SQL OPEN usqlcurs;
+A4GL_debug("opened %d",sqlca.sqlcode);
   if (sqlca.sqlcode < 0)
     {
 	return 0;
@@ -2598,6 +2600,7 @@ if (e->delim) {
       global_length = 0;
       /* Initialize buffer to Nulls */
       /* memset( buffer, 0, pos ); */
+A4GL_debug("in while",sqlca.sqlcode);
 
 #ifdef MOVED
       for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
@@ -2623,6 +2626,7 @@ if (e->delim) {
       EXEC SQL FETCH usqlcurs USING DESCRIPTOR udesc;
 
 
+A4GL_debug("fetched %d",sqlca.sqlcode);
 
       if (sqlca.sqlcode < 0)
 	{
@@ -2642,6 +2646,7 @@ if (e->delim) {
 	      double tempd;
 
 
+A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
 
 	  if (*col->sqlind == -1) 
 	    {
@@ -2770,7 +2775,7 @@ if (e->delim) {
 	fprintf(unlfile,"\n");
 	  (*raffected)++;
     }				/* end fetch loop */
-
+A4GL_debug("All done");
   fclose (unlfile);
 
   if (sqlca.sqlcode && sqlca.sqlcode != SQLNOTFOUND)
@@ -3258,7 +3263,6 @@ int i;
               break;
             }
         }
-      EXEC SQL FETCH usqlcurs USING DESCRIPTOR udesc;
 }
 endcode
 
