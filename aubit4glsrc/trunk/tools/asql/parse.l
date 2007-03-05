@@ -49,6 +49,8 @@ info[ \t\v\f]*indexes[ \t\v\f]*for { count(); return(KW_INFO_IDX); }
 info[ \t\v\f]*access[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
 info[ \t\v\f]*privileges[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
 info[ \t\v\f]*tables 		   { count(); return(KW_INFO_TABLES); }
+"SET{"		{ count(); return(KW_IDENTIFIER); }
+"SET[ 	]+{"		{ count(); return(KW_IDENTIFIER); }
 {L}({L}|{D})*		{ count(); return(KW_IDENTIFIER); }
 0[xX]{H}+{IS}?		{ count(); return(KW_CONSTANT); }
 0{D}+{IS}?		{ count(); return(KW_CONSTANT); }

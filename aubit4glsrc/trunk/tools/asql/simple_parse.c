@@ -151,7 +151,9 @@ int in_create_procedure;
 
 
 		if (a==KW_OBRACE) {
-			while (a&&a!=KW_CBRACE) a=asql_yylex();
+			while (a&&a!=KW_CBRACE) {
+				a=asql_yylex();
+			}
 			continue;
 		}
 
