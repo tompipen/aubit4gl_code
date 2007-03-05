@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.119 2007-02-28 16:32:52 mikeaubury Exp $
+# $Id: report.c,v 1.120 2007-03-05 18:30:22 gyver309 Exp $
 #
 */
 
@@ -46,6 +46,12 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include "a4gl_API_sql.h"
+
+// FIXME test and uncomment, if OK
+//#ifdef _WIN32
+//#include <windows.h>
+//#endif
+
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 //int A4GL_call_4gl_dll (char *filename, char *function, int args);
 static void A4GL_unload_report_table (struct BINDING *b);
@@ -499,15 +505,38 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 static char *
 gen_rep_tab_name (void *p)
 {
-  long a;
-  static char buff_0[256];
-  //a = (int) p;
-  a = (long) p;
-  //a=1;
-  SPRINTF1 (buff_0, "rtab%x", ((long) a) & 0xfffffff);
-  return buff_0;
-}
+    static char buf[256];
+    char *owner;
+    char *sep;
 
+    // A bind pointer seems to be unique in a single process, but it is not
+    // across processes. It matters when a temp tables are emulated by a
+    // persistent ones. So we use also a PID (currenly POSIX systems only).
+    // However, it is still NOT SAFE across operating system instances!
+    static long pid = -1;
+#ifdef _POSIX_SOURCE
+    if (pid == -1)
+	pid = getpid() & 0xffffffff;
+#else
+// FIXME test and uncomment, if OK
+// this piece of Win32 code should work, but I can't presently test it, so
+// I've commented it, as well as #include line at the top of this file
+//#ifdef _WIN32
+//    if (pid == -1)
+//	pid = (long)GetCurrentProcessId() & 0xffffffff;
+//#endif
+#endif
+    sep = ".";
+    owner = acl_getenv("A4GL_REP_DEFAULT_OWNER");
+    if (strlen(owner) == 0 || owner == NULL)
+    {
+	owner = "";
+	sep = "";
+    }
+
+    sprintf(buf, "%s%sRT%08X%08X", owner, sep, pid, (long)p & 0xffffffff);
+    return buf;
+}
 
 
 void A4GL_close_report_file(struct rep_structure *rep) {
