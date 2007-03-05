@@ -23532,7 +23532,7 @@ echo $ECHO_N "checking Informix version... $ECHO_C" >&6; }
 done
 
 
-				if test $IFX_ESQLC_VERSION -ge "900"; then
+				if test $IFX_ESQLC_VERSION -ge "290"; then
 					cat >>confdefs.h <<\_ACEOF
 #define HAVE_IFX_IUS 1
 _ACEOF
@@ -46370,7 +46370,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.368 2007-02-02 08:30:48 mikeaubury Exp $
+| $Id: configure,v 1.369 2007-03-05 11:29:20 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

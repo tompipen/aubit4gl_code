@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.341 2007-02-02 08:30:53 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.342 2007-03-05 11:29:34 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.341 2007-02-02 08:30:53 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.342 2007-03-05 11:29:34 mikeaubury Exp $)
 
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
@@ -5889,7 +5889,7 @@ AC_ARG_WITH(informix,
 done
 
 
-				if test $IFX_ESQLC_VERSION -ge "900"; then
+				if test $IFX_ESQLC_VERSION -ge "290"; then
 					AC_DEFINE(HAVE_IFX_IUS)
 					IFX_ESQL_FLAGS="-EDHAVE_IFX_IUS"
 				else
@@ -10923,7 +10923,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.341 2007-02-02 08:30:53 mikeaubury Exp $
+| $Id: configure.in,v 1.342 2007-03-05 11:29:34 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

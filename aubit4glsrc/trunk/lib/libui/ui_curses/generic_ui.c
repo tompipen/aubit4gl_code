@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.39 2007-02-28 18:58:53 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.40 2007-03-05 11:29:34 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -607,7 +607,16 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
       for (a = 0; a < menu->num_opts; a++)
         {
           A4GL_debug ("before copy");
-          strcpy (s, &option->opt_title[1]);
+          //strcpy (s, &option->opt_title[1]);
+
+          if (option->opt_title && strlen(option->opt_title)) {
+                strcpy (s, &option->opt_title[1]);
+          }  else {
+                        option = (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
+                        continue;
+          }
+
+
           A4GL_debug ("after copy '%s' '%s'", s, option->opt_title);
           A4GL_trim (s);
           A4GL_debug ("trim %s", s);
