@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.54 2007-03-02 16:29:59 gyver309 Exp $
+# $Id: util.c,v 1.55 2007-03-06 07:34:58 mikeaubury Exp $
 #
 */
 
@@ -1071,6 +1071,12 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
 				    char *module, int ln)
 {
   char *ptr;
+  int cd;
+  int st;
+  int errflg;
+  cd=A4GLSQL_get_status();
+  st=a4gl_status;
+  errflg=aclfgli_get_err_flg();
   sql = acl_strdup (sql);
   strcpy (m_module, module);
   m_ln = ln;
@@ -1080,6 +1086,11 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
     free (sql);
   strcpy (m_module, "unknown");
   m_ln = 0;
+  A4GLSQL_set_status(cd,1);
+  if (!errflg) aclfgli_clr_err_flg();
+  //a4gl_sqlca.sqlcode=cd;
+  //a4gl_status=st;
+
   return ptr;
 }
 
