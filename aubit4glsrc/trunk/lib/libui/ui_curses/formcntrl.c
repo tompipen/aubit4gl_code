@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.103 2007-02-09 10:52:54 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.104 2007-03-06 21:36:49 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.103 2007-02-09 10:52:54 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.104 2007-03-06 21:36:49 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -490,10 +490,9 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	      ((a_isprint (sio->fcntrl[a].extent) || sio->fcntrl[a].extent == 1
 		|| sio->fcntrl[a].extent == 4)))
 	    {
-
 	      if ((fprop->flags & 1) == 0 && !has_picture)
 		{
-		  switch (sio->vars[sio->curr_attrib].dtype)
+		  switch (sio->vars[sio->curr_attrib].dtype & DTYPE_MASK)
 		    {
 		    case DTYPE_SMINT:
 		    case DTYPE_INT:
@@ -573,7 +572,10 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 
 	    }
-	  fprop->flags |= 1;	// Clear the before field flag
+	  A4GL_debug("Clr because of %d", sio->fcntrl[a].extent);
+		if (fprop->flags&2) { // has it changed ? 
+	  		fprop->flags |= 1;	// Clear the before field flag
+		}
 	  rval = -1;
 	}
 
