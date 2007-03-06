@@ -132,7 +132,9 @@ while true
 			call qry_translate()
 			call display_tmp_file()
 
-		when "Exit" 		let lv_action=10
+		when "Exit" 		
+				Call need_commit_rollback()
+				let lv_action=10
 			exit while
 		otherwise
 			error "Unexpected menu code:",lv_option
@@ -203,11 +205,14 @@ define lv_stat integer
 let lv_systemstr=fgl_getenv("DBEDIT")
 
 
-if lv_systemstr is null or lv_systemstr is null matches " " or lv_systemstr="vi" then
-	let lv_systemstr="vi '+/^#/'"
+if lv_systemstr is null or lv_systemstr is null matches " " then
+	let lv_systemstr="vi"
 end if
 
 if has_err_file() THEN
+	if lv_systemstr="vi" then
+		let lv_systemstr="vi '+/^#/'"
+	end if
 	let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname("ERR")
 else
 	let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname("SQL")

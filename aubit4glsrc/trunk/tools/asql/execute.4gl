@@ -252,8 +252,10 @@ function need_commit_rollback()
 if beganWork then
 	if ask_commit_rollback()="Commit" THEN
 			commit work
+			message "Committed work"
 	else
 			rollback work
+			message "Rolled back work"
 	end if
 	let beganWork=0
 end if

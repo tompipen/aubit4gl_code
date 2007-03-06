@@ -910,6 +910,7 @@ prepare_query_1 (char *s, char type,int *err_at_col)
 
   p = s;
 
+
 //printf("%c %s\n",type,s);
 
   EXEC SQL PREPARE stExec from:p;
