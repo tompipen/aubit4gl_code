@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.4 2007-02-21 10:37:10 mikeaubury Exp $
+# $Id: pg8.c,v 1.5 2007-03-06 07:44:33 mikeaubury Exp $
 #*/
 
 
@@ -356,6 +356,10 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
 				 int *size)
 {
   char *buff;
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
   if (con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
@@ -400,6 +404,10 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
     }
 
 
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
   if (con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
@@ -460,6 +468,10 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   *dtype = 0;
   *size = 0;
 
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
   if (con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
@@ -1184,6 +1196,10 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
   n->obind = obind;
   //n->hstmt=0;
 
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
 
 
   if (!con)
@@ -1397,6 +1413,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       return 0;
     }
 
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
 
   if (!con)
     {
@@ -1735,6 +1755,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
       return 1;
     }
 
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
   if (!con)
     {
       // no connection..
@@ -1888,6 +1912,10 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
   PGresult *res;
   char *sql =
     "SELECT d.datname , u.usename FROM pg_catalog.pg_database d LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid ORDER BY 1;";
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
   if (!con)
     {
       A4GLSQLLIB_A4GLSQL_init_connection_internal ("template1");
@@ -1959,6 +1987,10 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
   char *sql =
     " SELECT c.relname, n.nspname FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind IN ('r','v') AND n.nspname NOT IN ('pg_catalog', 'pg_toast')";
 
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
   if (con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
@@ -2068,6 +2100,10 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
       tabname = tname;
     }
 
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
   if (con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
@@ -2216,6 +2252,10 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
     {
       A4GL_exitwith_sql ("Can't declare cursor for non-prepared statement");
       return 0;
+    }
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
     }
 
   if (!con)
@@ -2380,6 +2420,10 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
 
   strcpy (warnings, "       ");
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+  if (A4GL_esql_db_open (-1, 0, 0, ""))
+    {
+      con = A4GL_esql_dbopen_connection ();
+    }
 
   if (!con)
     {
