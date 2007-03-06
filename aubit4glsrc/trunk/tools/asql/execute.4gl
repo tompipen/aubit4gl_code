@@ -247,6 +247,9 @@ function set_began_work()
 let beganWork=0
 end function
 
+function get_began_work()
+return  beganWork
+end function
 
 function need_commit_rollback()
 if beganWork then

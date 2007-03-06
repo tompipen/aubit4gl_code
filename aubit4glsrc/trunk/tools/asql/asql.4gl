@@ -273,7 +273,22 @@ end function
 
 ################################################################################
 function display_banner()
-display "------------------------------------------------ Press CTRL-W for Help --------" at 4,1
+define lv_disp_in_trans integer
+
+let lv_disp_in_trans= get_began_work() 
+
+if NOT fgl_getenv("SHOWINWORK")="Y" THEN
+	let lv_disp_in_trans=false
+end if
+
+
+if lv_disp_in_trans then
+	
+	display "************************************************ Press CTRL-W for Help ********" at 4,1
+else
+	display "------------------------------------------------ Press CTRL-W for Help --------" at 4,1
+end if
+
 if mv_curr_db is not null then
 	display " ",mv_curr_db clipped," " at 4,25
 end if
