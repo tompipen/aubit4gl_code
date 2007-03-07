@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.121 2007-03-07 21:04:44 mikeaubury Exp $
+# $Id: report.c,v 1.122 2007-03-07 22:37:23 mikeaubury Exp $
 #
 */
 
@@ -650,11 +650,16 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	int a;
 	char *ptr;
 	int init_col;
+
+
+
 	init_col=rep->col_no;
 	if (no_param!=1) {
 		A4GL_assertion(1,"Expecting single variable for wordwrap margin");
 	}
 	s=A4GL_report_char_pop();
+
+
 	ptr=s;
 	if (init_col>right_margin) {
 		A4GL_exitwith("Cant print at this column with that right margin :-(");
@@ -664,9 +669,12 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	right_margin-=init_col;
 
 	while (1) {
+		A4GL_debug_print_stack();
 		if (rep->col_no<init_col) {
 			A4GL_push_int(init_col);
 			A4GL_set_column(rep);
+		        A4GL_rep_print(rep,1,1,0,-2);
+		
 		}
 
 		if (strlen(ptr)<=right_margin && strchr(ptr,'\n')) {
@@ -730,12 +738,13 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 			}
 		} else {
 				// it'll fit...
+
 				A4GL_push_char(ptr);
 				A4GL_rep_print(rep,1,dontwant_nl,0,entry);
 				return;
 		}
 	}
-	
+	return;
     }
 
   if (rep->line_no == 0 && rep->page_no == 0 && no_param < 0) {
