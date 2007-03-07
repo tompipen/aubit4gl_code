@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.355 2007-03-07 21:02:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.356 2007-03-07 22:38:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.355 2007-03-07 21:02:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.356 2007-03-07 22:38:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8191,7 +8191,7 @@ LEXLIB_rettype (char *s)
 	"struct_dtime",// 10 
 	"fglbyte",     // 11 
 	"fgltext",     // 12 
-	"char",        // 13 
+	"fglvarchar",        // 13 
 	"struct_ival"  // 14 
     };
     int i;
