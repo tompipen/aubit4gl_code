@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.104 2007-03-06 21:36:49 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.105 2007-03-07 11:12:55 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.104 2007-03-06 21:36:49 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.105 2007-03-07 11:12:55 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -402,9 +402,25 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		A4GL_debug("ADD AFTER FIELD <------------------------------------");
 	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD,
 				     sio->currentfield, 0, 0,__LINE__);
-	  new_state = 50;
+	  new_state = 60;
 	  rval = -1;
 	}
+
+      if (sio->fcntrl[a].state == 60)
+	{	
+		int a;
+
+		a=chk_all_fields(sio);
+		if (a>=0) {
+	  		new_state = 0;
+      			A4GL_init_control_stack (sio, 0);
+      			A4GL_newMovement (sio, a);
+		} else {
+			new_state=50;
+	  	}
+	  	rval = -1;
+	}
+
 
       if (sio->fcntrl[a].state == 50)
 	{

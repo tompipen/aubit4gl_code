@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.161 2007-02-28 10:43:26 mikeaubury Exp $
+# $Id: ioform.c,v 1.162 2007-03-07 11:12:55 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.161 2007-02-28 10:43:26 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.162 2007-03-07 11:12:55 mikeaubury Exp $";
 #endif
 
 /**
@@ -134,6 +134,7 @@ int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
 int A4GL_wcswidth(char *mbs);		/* utf8 */
 
+static int local_chk_field(struct s_form_dets *form,FIELD *f) ;
 
 /*
 =====================================================================
@@ -845,14 +846,9 @@ A4GL_start_form (struct s_form_dets *s)
 int
 A4GL_form_field_chk (struct s_screenio *sio, int m)
 {
-  char buff[8000] = "";
-  char buff2[8000] = "";
-  char buff3[8000] = "";
+
   FORM *mform;
-  int pprval;
-  int x, y;
   struct s_form_dets *form;
-  struct struct_scr_field *fprop;
 
   mform = sio->currform->form;
   A4GL_debug ("CHeck fields 1 m=%d", m);
@@ -860,7 +856,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
   A4GL_debug ("CHeck fields 2 currentfield=%p status = %d",
 	      form->currentfield, field_status (form->currentfield));
 
-  fprop = 0;
   if (m > 0)
     {
       A4GL_debug ("CHeck fields 3");
@@ -873,21 +868,58 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
   A4GL_debug (" current field %p  form says currfield=%p m=%d",
 	      form->currentfield, current_field (mform), m);
-  A4GL_debug ("field_status(form->currentfield)=%d field_status(currfield)=%d", field_status (form->currentfield), field_status (current_field (mform)));
+  A4GL_debug
+    ("field_status(form->currentfield)=%d field_status(currfield)=%d",
+     field_status (form->currentfield), field_status (current_field (mform)));
 
   if ((form->currentfield != current_field (mform)) || m < 0)
     {
       A4GL_debug ("Is different");
-      fprop = 0;
 
       if (form->currentfield != 0)
 	{
-	  if (field_userptr (form->currentfield) != 0)
+		int rval;
+		rval=local_chk_field(form, form->currentfield);
+		if (rval==-4) {
+				  set_current_field (mform, form->currentfield);
+		}
+		return rval;
+	}
+    }
+
+
+  return 0;
+}
+
+
+int chk_all_fields(struct s_screenio *sio) {
+int a;
+	//void *p;
+	//p=sio->currentfield;
+          for (a=0;a<=sio->nfields;a++)  {
+                if (local_chk_field(sio->currform, sio->field_list[a])==-4) {
+			        //A4GL_init_control_stack (sio, 0);
+                                //A4GL_newMovement (sio, a);
+				return a;
+                }
+          }
+	return -1;
+
+}
+
+
+int local_chk_field(struct s_form_dets *form, FIELD *f) {
+  char buff[8000] = "";
+  char buff2[8000] = "";
+  char buff3[8000] = "";
+  int pprval;
+  int x, y;
+  struct struct_scr_field *fprop=0;
+
+	  if (field_userptr (f) != 0)
 	    {
 	      A4GL_debug ("Is a proper field");
-	      fprop =
-		(struct struct_scr_field
-		 *) (field_userptr (form->currentfield));
+	      fprop = (struct struct_scr_field *) (field_userptr (f));
 	      A4GL_debug ("fprop=%p", fprop);
 
 
@@ -901,13 +933,9 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 
 
-		      A4GL_modify_size (&buff[4],
-					form->fileform->metrics.
-					metrics_val[A4GL_get_metric_for
-						    (form,
-						     form->currentfield)].w);
+		      A4GL_modify_size (&buff[4], form->fileform->metrics.  metrics_val[A4GL_get_metric_for (form, f)].w);
 
-		      strcpy (&buff[4], field_buffer (form->currentfield, 0));
+		      strcpy (&buff[4], field_buffer (f, 0));
 
 		      strcpy (buff2, &buff[4]);
 
@@ -970,10 +998,10 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			      if (!allow_it_anyway)
 				{
 				  // Well there wasn't - so it is required....
-				  A4GL_error_nobox (acl_getenv
-						    ("FIELD_REQD_MSG"), 0);
-				  set_current_field (mform,
-						     form->currentfield);
+				  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+
+				  //set_current_field (mform, form->currentfield);
+
 				  return -4;
 				}
 
@@ -1015,9 +1043,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 
 
-		      pprval =
-			A4GL_check_and_copy_field_to_data_area (form, fprop,
-								buff2, buff);
+		      pprval = A4GL_check_and_copy_field_to_data_area (form, fprop, buff2, buff);
 
 
 		      A4GL_debug ("pprval = %d\n", pprval);
@@ -1031,19 +1057,19 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			  if (A4GL_isyes
 			      (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
 			    {
-			      A4GL_clr_field (form->currentfield);
+			      A4GL_clr_field (f);
 			    }
 			  else
 			    {
 			      if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
 				{
-				  A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+				  A4GL_int_form_driver (form->form, REQ_BEG_FIELD);
 				}
 
 			    }
 
 
-			  set_current_field (mform, form->currentfield);
+			  //set_current_field (mform, form->currentfield);
 			  return -4;
 			}
 		      else
@@ -1053,8 +1079,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    }
 
 
-		  strcpy (buff3,
-			  field_buffer (sio->currform->currentfield, 0));
+		  strcpy (buff3, field_buffer (f, 0));
 
 		  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
 		    {
@@ -1091,7 +1116,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    {
 		      A4GL_debug ("Not in include list");
 		      A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
-		      set_current_field (mform, form->currentfield);
+		      //set_current_field (mform, form->currentfield);
 		      return -4;
 		    }
 
@@ -1099,8 +1124,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
 		    {
 		      char buff[8024];
-		      strcpy (buff,
-			      field_buffer (sio->currform->currentfield, 0));
+		      strcpy (buff, field_buffer (f, 0));
 		      A4GL_trim (buff);
 
 		      if (strlen (buff) == 0)
@@ -1121,9 +1145,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			    }
 			  if (!allow_it_anyway)
 			    {
-			      A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"),
-						0);
-			      set_current_field (mform, form->currentfield);
+			      A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+			      //set_current_field (mform, form->currentfield);
 			      return -4;
 			    }
 
@@ -1155,12 +1178,12 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		}
 
 	    }
-	}
-    }
 
-
-  return 0;
+return 0;
 }
+
+
+
 
 /**
  *
