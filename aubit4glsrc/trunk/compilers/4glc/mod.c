@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.296 2007-02-20 18:15:55 gyver309 Exp $
+# $Id: mod.c,v 1.297 2007-03-07 22:41:21 mikeaubury Exp $
 #
 */
 
@@ -1404,7 +1404,7 @@ pushLikeTableColumn (char *tableName, char *columnName)
       a4gl_yyerror (buff);
       return 0;
     }
-  SPRINTF1 (cdtype, "%d", idtype & 15);
+  SPRINTF1 (cdtype, "%d", idtype & DTYPE_MASK);
   SPRINTF1 (csize, "%d", isize);
 
   trim_spaces (cname);
