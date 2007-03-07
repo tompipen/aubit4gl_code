@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.40 2007-03-05 11:29:34 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.41 2007-03-07 21:01:32 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -340,7 +340,13 @@ A4GL_find_char (ACL_Menu * menu, int key)
 
 
   if (A4GL_is_unique_menu_key (menu, key)>1) {
-		menu->curr_option=show_menu_large(menu, key);
+		void *p;
+		p=show_menu_large(menu, key);
+		if (p) {
+			menu->curr_option=p;
+			return 1;
+		}
+		return 0;
   } else {
       A4GL_debug ("Checking next option...");
       opt1 = (ACL_Menu_Opts *) opt2->next_option;

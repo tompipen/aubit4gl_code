@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.105 2007-03-07 11:12:55 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.106 2007-03-07 21:01:32 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.105 2007-03-07 11:12:55 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.106 2007-03-07 21:01:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -488,8 +488,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  int ok = 0;
 	  new_state = 10;
 
-	  fprop =
-	    (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 
 	A4GL_debug_print_field_opts (sio->currentfield);
 
@@ -501,6 +500,10 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	    }
 	  if (sio->mode == MODE_CONSTRUCT)
 	    has_picture = 0;
+
+	
+	//if (sio->fcntrl[a].extent=='1') {A4GL_pause_execution();}
+
 	  if (sio->fcntrl[a].extent >= 0 && sio->fcntrl[a].extent <= 255
 	      &&
 	      ((a_isprint (sio->fcntrl[a].extent) || sio->fcntrl[a].extent == 1
@@ -514,6 +517,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		    case DTYPE_INT:
 		    case DTYPE_SERIAL:
 		    case DTYPE_FLOAT:
+		    case DTYPE_DATE:
 		    case DTYPE_SMFLOAT:
 		    case DTYPE_DECIMAL:
 		    case DTYPE_MONEY:
@@ -589,7 +593,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	    }
 	  A4GL_debug("Clr because of %d", sio->fcntrl[a].extent);
-		if (fprop->flags&2) { // has it changed ? 
+		if (fprop->flags&2 ||  sio->fcntrl[a].extent==A4GLKEY_RIGHT) { // has it changed ? 
 	  		fprop->flags |= 1;	// Clear the before field flag
 		}
 	  rval = -1;
@@ -831,8 +835,10 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	    }
 
 	  A4GL_comments (fprop);
-	  if ((fprop->flags & 1))
-	    fprop->flags -= 1;	// Clear a flag to indicate that we're just starting on this field
+
+	  //if ((fprop->flags & 1)) {
+	    	fprop->flags = 0;	// Clear a flag to indicate that we're just starting on this field
+	  //}
 	  new_state = 0;
 	  A4GL_debug ("Setting rval to -1");
 	}

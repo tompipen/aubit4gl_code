@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.162 2007-03-07 11:12:55 mikeaubury Exp $
+# $Id: ioform.c,v 1.163 2007-03-07 21:01:32 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.162 2007-03-07 11:12:55 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.163 2007-03-07 21:01:32 mikeaubury Exp $";
 #endif
 
 /**
@@ -1562,17 +1562,11 @@ int changed=0;
 			FORM *frm;
 			f=field_list[a];
 			frm=f->form;
-      			set_field_buffer(field_list[a],0,"");
-#ifdef NCURSES_VERSION
-			// For some reason the window associated with 
-			// a field isn't being cleared properly...
-			// lets make sure it is....
-			// build test 1253 demonstrates this...
-			if (a==0) werase(frm->w);
-#endif
-				
+
 
       }
+
+
       A4GL_turn_field_on2 (field_list[a], sio->mode != MODE_CONSTRUCT);
 
       if (wid)
@@ -1659,6 +1653,21 @@ int changed=0;
     {
       A4GL_error_box ("NO active field\n", 0);
     }
+           if (sio->mode==MODE_CONSTRUCT) {
+		FORM *frm;
+                        frm=sio->currform->form;
+
+
+
+#ifdef NCURSES_VERSION
+			// For some reason the window associated with 
+			// a field isn't being cleared properly...
+			// lets make sure it is....
+			// build test 1253 demonstrates this...
+			werase(frm->w);
+#endif
+      }
+				
 
   UILIB_A4GL_zrefresh ();
   return 1;
