@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.101 2007-02-21 10:37:09 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.102 2007-03-07 22:41:42 mikeaubury Exp $
 */
 
 /**
@@ -106,6 +106,7 @@ extern "C"
   }
   sqlca_struct;
 
+#define fglvarchar char
 
 	/**
 	 * Decimal 4gl data type variable definition
