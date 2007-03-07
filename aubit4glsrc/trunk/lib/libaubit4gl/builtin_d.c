@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.78 2007-03-07 21:04:44 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.79 2007-03-07 22:47:11 mikeaubury Exp $
 #
 */
 
@@ -381,7 +381,7 @@ A4GL_push_char (char *p)
   last_was_empty=0;
   A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
 #ifdef DEBUG
-  A4GL_debug("Push char...'%s'",p);
+  A4GL_debug("Push char...'%s' (%p)",p,p);
 #endif
   if (p[0] == 0 && p[1] != 0)
     {
@@ -399,6 +399,7 @@ A4GL_push_char (char *p)
 #endif
       ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
     }
+A4GL_debug("Created ptr=%p",ptr);
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int)strlen (p))));
 }
 

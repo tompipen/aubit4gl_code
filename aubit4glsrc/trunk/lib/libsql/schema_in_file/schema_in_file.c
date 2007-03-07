@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.23 2006-07-17 14:09:27 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.24 2007-03-07 22:47:11 mikeaubury Exp $
 #*/
 
 /**
@@ -270,7 +270,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   if (a != 3)
     return 0;
   *colname = cname;
-  A4GL_debug ("Got cname as %s\n", cname);
+  A4GL_debug ("Got cname as %s dtype=%d\n", cname,*dtype);
   return 1;
 
 }

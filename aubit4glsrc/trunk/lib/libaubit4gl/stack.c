@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.170 2007-02-28 15:12:15 mikeaubury Exp $
+# $Id: stack.c,v 1.171 2007-03-07 22:47:11 mikeaubury Exp $
 #
 */
 
@@ -2145,7 +2145,9 @@ A4GL_debug_print_stack (void)
 {
   int a;
   char *buff;
+
 return;
+
   buff = A4GL_new_string (2000);
 
 
