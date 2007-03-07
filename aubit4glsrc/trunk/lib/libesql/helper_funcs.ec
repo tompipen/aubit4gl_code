@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.57 2007-03-04 12:38:47 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.58 2007-03-07 11:13:45 mikeaubury Exp $
 #
 */
 
@@ -511,7 +511,9 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	if (mode=='i') {
 		A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
-			memset(infx,0,size+1);
+			if (size!=-1) {
+				memset(infx,0,size+1);
+			}
 			if (p_indicat) *p_indicat=0;
 			if (A4GL_isnull(0,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 			if (A4GL_isnull(0,(void *)a4gl)) {
@@ -520,12 +522,16 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	
 		}
 
-
+		
 		// If we get to here - we can't be null...
-		memset(infx,0,size);
-		strncpy((char *)(infx),(char *)(a4gl),size);
-		infx[size]=0;
-		A4GL_trim(infx); // @todo -  what about varchars ... ?
+		if (size!=-1) {
+			memset(infx,0,size);
+			strncpy((char *)(infx),(char *)(a4gl),size);
+			infx[size]=0;
+			A4GL_trim(infx); // @todo -  what about varchars ... ?
+		} else {
+			strcpy((char *)(infx),(char *)(a4gl));
+		}
 		if (strlen(infx)==0) {
 			infx[0]=' ';
 			infx[1]=0;
