@@ -167,12 +167,20 @@ end function
 function copy_err_file_back() 
 define lv_in,lv_out integer
 define buff char(256)
+
+call open_tmpfile("SQL","w")
 let lv_out=fget_curr_mvfin("SQL");
 code
 	if (lv_out==stdin) lv_in=0;
 endcode
+
+call open_tmpfile("ERR","r")
 let lv_in=fget_curr_mvfin("ERR");
-if lv_in=0 or lv_out=0 then
+if lv_out=0 then
+	return
+end if
+
+if lv_in=0 then
 	return
 end if
 
@@ -206,6 +214,8 @@ code
 }
 endcode
 
+call close_tmpfile("ERR")
+call close_tmpfile("SQL")
 
 end function
 
