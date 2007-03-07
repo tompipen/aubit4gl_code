@@ -1,11 +1,11 @@
                                                                                 
                                                                                 
-integer  [       1]                                                             
+date     [01/02/2001]                                                           
+integer  [       2]                                                             
+smallint [ 2]                                                                   
+date     [01/01/2001]                                                           
+integer  [       2]                                                             
 smallint [ 1]                                                                   
-integer  [       1]                                                             
-smallint [ 1]                                                                   
-                                                                                
-                                                                                
                                                                                 
                                                                                 
                                                                                 
