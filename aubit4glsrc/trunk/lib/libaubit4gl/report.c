@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.120 2007-03-05 18:30:22 gyver309 Exp $
+# $Id: report.c,v 1.121 2007-03-07 21:04:44 mikeaubury Exp $
 #
 */
 
@@ -390,6 +390,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
   if (entry <= 0)
     entry = 0;
   VSPRINTF (buff, fmt, ap);
+
   A4GL_debug ("'%s' - %d\n", buff, entry);
   if (rep->print_section == SECTION_NORMAL)
     {

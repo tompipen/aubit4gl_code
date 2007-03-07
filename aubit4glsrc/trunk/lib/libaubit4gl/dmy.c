@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.21 2007-02-08 12:32:24 mikeaubury Exp $
+# $Id: dmy.c,v 1.22 2007-03-07 21:04:44 mikeaubury Exp $
 #
 */
 
@@ -192,6 +192,7 @@ A4GL_using_date (int dn, char *us)
   }
   A4GL_debug("Got date : %d %d %d",d,m,y);
   dno = A4GL_day_in_week (d, m, y);
+  A4GL_assertion (dno<0 || dno>6,"Invalid day of week");
 
   /*
      g_dnamesfull[dno]);

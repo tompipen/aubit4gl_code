@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.20 2006-09-15 11:15:45 mikeaubury Exp $
+# $Id: dates.c,v 1.21 2007-03-07 21:04:44 mikeaubury Exp $
 #
 */
 
@@ -159,8 +159,10 @@ A4GL_day_in_week (day, month, year)
 {
   long temp;
 
-  temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
-    + A4GL_day_in_year (day, month, year);
+  temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1) + A4GL_day_in_year (day, month, year);
+  if (temp<0) { // Before year 1
+	return 0;
+  }
   if (temp < FIRST_MISSING_DAY)
     return ((temp - 1 + SATURDAY) % 7);
   if (temp >= (FIRST_MISSING_DAY + NUMBER_MISSING_DAYS))

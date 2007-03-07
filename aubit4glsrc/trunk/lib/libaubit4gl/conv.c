@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.132 2007-02-28 09:23:04 mikeaubury Exp $
+# $Id: conv.c,v 1.133 2007-03-07 21:04:44 mikeaubury Exp $
 #
 */
 
@@ -2991,7 +2991,9 @@ int A4GL_valid_dt (char *s, int *data,int size)
     "SECOND", "FRACTION1", "FRACTION2", "FRACTION3", "FRACTION4", "FRACTION5",
     0
   };
-
+  for (a=0;a<255;a++) {
+		ptr[a]=0;
+}
 
 #ifdef DEBUG
   A4GL_debug ("In valid_dt\n");
@@ -3208,16 +3210,41 @@ A4GL_debug("a=%d b=%d\n",a,b);
       A4GL_debug ("i=%d i-a=%d\n", i, i - a);
       if (i == 1 && strlen (ptr[i - a]) != 4)
 	{
-	  A4GL_debug ("Year no 4 digits\n");
+	  A4GL_debug ("Year not 4 digits\n");
 	  return 0;
 	}
 
       if (i != 1 && strlen (ptr[i - a]) != 2 && i != 7)
 	{
 	  	A4GL_debug ("expecting 2 digits -> '%s' i=%d\n", A4GL_null_as_null(ptr[i - a]),i);		
-		if (i!=4 && i!=5 && i!=3) { return 0; }
-		return 0;
+		if (i!=4 && i!=5 && i!=3 && i!=6) { return 0; }
+		A4GL_debug("ZZ9 : %d", strlen(ptr[i - a]));
+		if (i==2) {
+			if (atol(ptr[i - a])==0) { 
+					return 0; } // can't have a 0 in the month
+		}
+		if (i==3) {
+			if (atol(ptr[i - a])==0) { 
+					return 0; } // cant have a 0 in the day
+		}
+		if (strlen(ptr[i - a])!=1) {
+			return 0;
+		}
+		
 	}
+
+	if (i==2) { char *p; p=ptr[i - a]; 
+				//printf("R3 %s\n",p);
+				if (atol(p)==0 && 0) {
+						return 0;
+				}
+				} // can't have a 0 in the month
+	if (i==3) { char *p; p=ptr[i - a]; 
+				//printf("R4 %s\n",p);
+				if (atol(p)==0 && 0) {
+					return 0;
+				}
+	} // cant have a 0 in the day
 
       if (i == 7)
 	{
@@ -3246,11 +3273,24 @@ A4GL_debug("a=%d b=%d\n",a,b);
       A4GL_debug ("%s -> '%s'\n", A4GL_null_as_null(codes[i]), A4GL_null_as_null(ptr[i - a]));
     }
 
+  if ((size>>4)<=1 && (size&0xf)>=3) { // Year to day..
+	int y;
+	int m=1;
+		int d=1;
+		if (ptr[1-a]) {y= atol(ptr[1 - a]);}
+		if (ptr[2-a]) {m= atol(ptr[2 - a]);}
+		if (ptr[3-a]) {d= atol(ptr[3 - a]);}
+
+		if (m<=0 || d<=0) {
+			return 0;
+		}
+	}
+
   // Do we have a valid date ?
   if (data[0]&&data[1]&&data[2]) {
 	  long x;
 	  x=A4GL_gen_dateno(data[2],data[1],data[0]);
-	  if (x==DATE_INVALID) return 0;
+  	  if (x==DATE_INVALID) return 0;
 	  A4GL_debug("%ld!=%ld",x,DATE_INVALID);
   }
 

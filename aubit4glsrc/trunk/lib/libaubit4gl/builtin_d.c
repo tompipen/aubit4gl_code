@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.77 2006-12-11 11:03:31 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.78 2007-03-07 21:04:44 mikeaubury Exp $
 #
 */
 
@@ -416,6 +416,10 @@ aclfgl_mdy (int n)
   y = A4GL_pop_int ();
   d = A4GL_pop_int ();
   m = A4GL_pop_int ();
+  if (y<=0) {
+		A4GL_push_null(DTYPE_DATE,0);
+		return 1;
+	}
   z = A4GL_gen_dateno (d, m, y);
   A4GL_push_date (z);
   return 1;
