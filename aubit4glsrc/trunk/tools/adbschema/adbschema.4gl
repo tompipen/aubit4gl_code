@@ -297,16 +297,21 @@ function usage()
 	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
 	display " " 
 	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] "
+	display "          [-U] [-U4GL] [-L] [-L4GL] [-no-owner] [-prefix-idx] [-q]"
 	display "          [-r rolename] [-f procname] -d dbname [-ss] [filename]"
 	display ""
+	display "   -sys         Process Informix system tables with tabid < 99"
 	display "   -noperms     Do not include any GRANT/REVOKE"
 	display "   -fileschema  Generate a schema suitable for the FILESCHEMA SQL Module"
-	display "   -sys         Process Informix system tables with tabid < 99"
+        display "   -U           Generate unload statements"
+        display "   -U4GL        Generate a 4GL program with unload statements"
+        display "   -L           Generate load statements"
+        display "   -L4GL        Generate a 4GL program with load statements"
+	display "   -noowner     Do not output object's (table/index/etc) owner information"
 	display "   -prefix-idx  Add prefix to index names (IDX_)"
 	display "   -ss          todo"
-	display "   -noowner     Do not output object's (table/index/etc) owner information"
 	display " "
-	exit program 1
+    exit program 1
 end function
 
 
