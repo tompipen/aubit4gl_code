@@ -1,0 +1,25 @@
+database formonly
+screen
+{
+[t][m                          ]
+[t][m                          ]
+[t][m                          ]
+[t][m                          ]
+[t][m                          ]
+-------------------------------
+[d                             ]
+[d                             ]
+[d                             ]
+[d                             ]
+[d                             ]
+}
+
+attributes
+t = formonly.t,upshift,autonext;
+m = formonly.m,noentry;
+
+d = formonly.d;
+
+instructions
+screen record sa_head[5] (t, m)
+screen record sa_deta[5] (d)
