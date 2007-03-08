@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.356 2007-03-07 22:38:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.357 2007-03-08 20:36:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.356 2007-03-07 22:38:30 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.357 2007-03-08 20:36:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7825,7 +7825,8 @@ char* get_reset_state_after_call(void ) {
        int sio_id;
        static char buff[255];
                sio_id=get_sio_ids("ALL");
-               SPRINTF2(buff, "A4GL_reset_state_for(&_sio_%d,_sio_kw_%d);",sio_id,sio_id);
+	
+               SPRINTF2(buff, "{char *_p; _p=A4GL_get_currwin_name(); A4GL_ensure_current_window_is(_curr_win); A4GL_reset_state_for(&_sio_%d,_sio_kw_%d);  A4GL_ensure_current_window_is(_p);}",sio_id,sio_id);
                return buff;
    }
    return "";
