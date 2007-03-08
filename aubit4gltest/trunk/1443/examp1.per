@@ -1,0 +1,28 @@
+database formonly
+
+SCREEN
+{
+==========================================================================
+
+
+          DATE FROM:[b1        ]    Required
+                TO: [b2        ]
+           
+     LOAD TYPE: [b] A=All but Mis/Pkups B=All w/ Mis/Pkups, C=Cmpt. D=Dock 
+                    P=Pkups, R=Regular, X=Lease, S=Shuttle, 2=New Bus.
+
+}
+
+ATTRIBUTES
+b1 = formonly.beg_date, required, comments = 
+     "Enter starting ship date for this report.";
+b2 = formonly.end_date, required, comments = 
+     "Enter ending ship date for this report.";
+b  = formonly.ldgrp type char, upshift, {required, }
+     include = ("A", "B", "C", "D", "P", "R", "X", "S", "2"),
+     comments = "Enter load type(A,B,C,D,P,R,X,S,2) for this report.";
+
+INSTRUCTIONS
+
+delimiters "[]"
+

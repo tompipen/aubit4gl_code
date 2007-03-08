@@ -1,0 +1,22 @@
+database formonly
+screen
+{
+
+ Please enter more than one line of text into the multi-line field below
+ and then press enter.
+
+ [f1                  ]
+ [f1                  ]
+ [f1                  ]
+ [f1                  ]
+ [f1                  ]
+
+ [a]
+
+ Note that upon pressing enter, all but the first line of text disappears.
+ Also, the text is not breaking in the correct spot (on white space), it
+ breaks at the end of the line.
+}
+attributes
+	f1 = formonly.test_field,wordwrap;
+	a  = formonly.other_field;

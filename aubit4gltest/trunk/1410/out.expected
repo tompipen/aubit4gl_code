@@ -1,0 +1,25 @@
+                                                                                
+                                                                                
+                                                                                
+ Please enter more than one line of text into the multi-line field below        
+ and then press enter.                                                          
+                                                                                
+ [1234567890          ]                                                         
+ [1234567890          ]                                                         
+ [1234567890          ]                                                         
+ [1234567890          ]                                                         
+ [1234567890 123456789]                                                         
+                                                                                
+ [ ]                                                                            
+                                                                                
+ Note that upon pressing enter, all but the first line of text disappears.      
+ Also, the text is not breaking in the correct spot (on white space), it        
+ breaks at the end of the line.                                                 
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
