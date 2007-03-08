@@ -465,7 +465,19 @@ A4GL_debug("EXEC COMPLETE %d %d",a,list_cnt);
 		A4GL_debug("Qry type : %d",qry_type);
 end_query: ;
 	if (a4gl_sqlca.sqlcode<0) {
-		rewrite_query_input(list[a].lineno,err_at_col, get_qry_msg(qry_type,raffected));
+		int aa;
+		int c;
+		int ln;
+		ln=list[a].lineno;
+		c=err_at_col;
+		
+		for (aa=0;aa<strlen(list[a].stmt) && aa<err_at_col;aa++) {
+			if (list[a].stmt[aa]=='\n')  {
+				ln++;
+				c=err_at_col-(aa+1);
+			}
+		}
+		rewrite_query_input(ln,c, get_qry_msg(qry_type,raffected));
 	}
 	sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected, get_qry_msg(qry_type,raffected));
 endcode

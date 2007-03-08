@@ -261,12 +261,12 @@ A4GL_trim(msg);
 
 		if (cline>lv_ln && lv_ln>=0) {
 			//fprintf(r_fo,"# Line %d col %d\n", lv_ln, lv_col);
-			lv_ln=-1;
 			fprintf(r_fo,"#");
 			lv_col--;
 			while(lv_col>0) {fprintf(r_fo," "); lv_col--;}
 			fprintf(r_fo,"^\n");
-			fprintf(r_fo,"# %s",msg);
+			fprintf(r_fo,"# %s (%d %d)\n",msg, cline,lv_ln);
+			lv_ln=-1;
 		}
 
 		if (feof(r_f)) { break; }
