@@ -781,7 +781,6 @@ indicator=*col->sqlind ;
 
 
                 case CDECIMALTYPE:
-                case CMONEYTYPE:
                   {
                     dec_t *dec = (dec_t *) (col->sqldata);
                      char buff[33];
@@ -797,6 +796,41 @@ indicator=*col->sqlind ;
 	  		else
 	    		{
 	      		sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
+	    		}
+                    break;
+                  }
+
+                case CMONEYTYPE:
+                  {
+                    dec_t *dec = (dec_t *) (col->sqldata);
+                     char buff[33];
+                    dectoasc (dec, buff, 32, -1);
+                    buff[32]=0;
+                    A4GL_trim (buff);
+
+	  		if (display_mode == DISPLAY_DOWN || display_mode == DISPLAY_UNLOAD)
+	    		{
+	
+	      			if (display_mode == DISPLAY_UNLOAD) {
+	      				sprintf (buffer, "%s", buff);
+					trim_trailing_0 (buffer);
+				} else {
+	      				sprintf (buffer, "%s", buff);
+					if (A4GL_isyes(acl_getenv("A4GL_LOCALEMONEY"))) {
+					
+						strfmon(buffer,sizeof(buffer), "%n",atof(buff));
+					}
+				}
+	    		}
+	  		else
+	    		{
+				if (A4GL_isyes(acl_getenv("A4GL_LOCALEMONEY"))) {
+					char smbuff[200];
+						sprintf(smbuff,"%%%dn",columnWidths[idx - 1]);
+						strfmon(buffer,sizeof(buffer), smbuff,atof(buff));
+				} else {
+	      				sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
+				}
 	    		}
                     break;
                   }
@@ -1334,6 +1368,7 @@ get_size (int dtype, int size)
       return 10;
     case SQLDATE:
       return 12;
+
     case SQLMONEY:
       return 17;
 
@@ -2691,6 +2726,16 @@ A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
 		  break;
 
 		case CDECIMALTYPE:
+		  {
+		    dec_t *dec = (dec_t *) (col->sqldata);
+		     char buff[33];
+		    dectoasc (dec, buff, 32, -1);
+		    buff[32]=0;
+		    A4GL_trim (buff);
+		    fprintf (unlfile,"%s", buff);
+		    break;
+		  }
+
 		case CMONEYTYPE:
 		  {
 		    dec_t *dec = (dec_t *) (col->sqldata);
@@ -2701,6 +2746,7 @@ A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
 		    fprintf (unlfile,"%s", buff);
 		    break;
 		  }
+
 		case CDOUBLETYPE:
 		  fprintf (unlfile,"%lf", *(double *) (col->sqldata));
 		  break;
@@ -3040,6 +3086,10 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 	  break;
 
 	case SQLMONEY:
+	  col->sqltype = CMONEYTYPE;
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
+
 	case SQLDECIMAL:
 	  col->sqltype = CDECIMALTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
