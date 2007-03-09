@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.104 2007-03-02 16:22:38 gyver309 Exp $
+# $Id: sqlconvert.c,v 1.105 2007-03-09 13:42:32 mikeaubury Exp $
 #
 */
 
@@ -2510,7 +2510,8 @@ A4GLSQLCV_get_sqlconst (char *s)
 	    }
 	}
     }
-
+  if (strcmp(s,"TRUE")==0) return "1";
+  if (strcmp(s,"FALSE")==0) return "0";
   return s;
 }
 
