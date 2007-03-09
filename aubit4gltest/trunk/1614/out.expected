@@ -1,7 +1,7 @@
 before s =     1
 every row s =     1
 after s =     1
-    varchar:        test data
+    varchar:        test data                               
 before s =     2
 every row s =     2
 after s =     2
