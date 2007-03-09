@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.165 2007-02-23 17:06:34 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.166 2007-03-09 13:38:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.165 2007-02-23 17:06:34 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.166 2007-03-09 13:38:13 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2540,7 +2540,7 @@ print_report_table (char *repname, char type, int c, char *asc_desc,
       inbind = empty_genbind ('i');
       outbind = empty_genbind ('o');
       p = print_select_all_g (sql, 0, inbind, outbind,1);
-      print_declare_g ("0", p, cname, 0, 0, inbind, outbind);
+      print_declare_g ("0", p, cname, 2, 0, inbind, outbind);
       LEXLIB_print_open_cursor_g (cname, inbind);
 
 
