@@ -86,6 +86,25 @@ A4GL_trim(str);
 	A4GL_debug("XYXY str to dec : '%s'",str);
 #endif
 
+// We might have some whitespace around the numbers and their signs..
+for (a=0;a<strlen(str);a++) {
+	if (str[a]=='+' && str[a+1]==' ') {
+		str[a]=' ';
+		str[a+1]='+';
+	}
+	if (str[a]=='-' && str[a+1]==' ') {
+		str[a]=' ';
+		str[a+1]='-';
+	}
+}
+
+
+
+
+#ifdef DEBUG
+	A4GL_debug("XYXY str to dec : '%s'",str);
+#endif
+
 	digits  =dec->dec_data[0]&127;
 	decimals=dec->dec_data[1];
 
