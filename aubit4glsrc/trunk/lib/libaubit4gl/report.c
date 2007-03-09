@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.122 2007-03-07 22:37:23 mikeaubury Exp $
+# $Id: report.c,v 1.123 2007-03-09 13:35:11 mikeaubury Exp $
 #
 */
 
@@ -650,6 +650,8 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	int a;
 	char *ptr;
 	int init_col;
+	int orig_r;
+		orig_r=right_margin;
 
 
 
@@ -737,9 +739,16 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 				ptr+=right_margin;
 			}
 		} else {
+				char buff[10000];
+				int psize;
 				// it'll fit...
-
-				A4GL_push_char(ptr);
+				strcpy(buff,ptr);
+				psize=right_margin-rep->left_margin+1;
+				if (psize>0) {
+					A4GL_assertion(psize>sizeof(buff),"Buffer to small for padspace");
+					A4GL_pad_string(buff,psize);
+				}
+				A4GL_push_char(buff);
 				A4GL_rep_print(rep,1,dontwant_nl,0,entry);
 				return;
 		}
@@ -1395,7 +1404,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
       return 0;
     }
   A4GL_debug ("declare...");
-  A4GLSQL_declare_cursor (0, pstmt, 0, cursor_for_rep_tab (b));
+  A4GLSQL_declare_cursor (2, pstmt, 0, cursor_for_rep_tab (b));
   A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
   if (a4gl_sqlca.sqlcode != 0)
     {
