@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.297 2007-03-07 22:41:21 mikeaubury Exp $
+# $Id: mod.c,v 1.298 2007-03-09 19:19:08 mikeaubury Exp $
 #
 */
 
@@ -2492,6 +2492,8 @@ get_curr_rep ()
 void
 init_report_structure (struct rep_structure *rep)
 {
+  memset(rep,0,sizeof(struct rep_structure));
+  strcpy(rep->top_of_page, "");
   rep->top_margin = 3;
   rep->bottom_margin = 3;
   rep->left_margin = 5;
