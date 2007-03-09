@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.36 2007-02-28 16:16:25 mikeaubury Exp $
+# $Id: sql_common.c,v 1.37 2007-03-09 13:44:21 mikeaubury Exp $
 #
 */
 
@@ -117,7 +117,7 @@ void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 int
 A4GLSQL_set_status (int a, int sql)
 {
-  if (aclfgli_get_err_flg())
+  if (aclfgli_get_err_flg() && a<0)
   {
         A4GL_debug("set_status: errflg is set - not setting new status %d", a);
 	// -1 is a 'holding' error...
