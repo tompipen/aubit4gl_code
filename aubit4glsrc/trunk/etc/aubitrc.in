@@ -111,9 +111,9 @@ A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/incl
 ############
 #CONFIG FILE BASED CONVERSIONS
 #convert_sql() now uses configuration files.  These are by default
-#located in /opt/aubit4gl/etc/convertsql/, but that can be changed
+#located in @prefix@/aubit4gl/etc/convertsql/, but that can be changed
 #with A4GL_SQLCNVPATH.
-#A4GL_SQLCNVPATH=/opt/aubit4gl/etc/convertsql
+A4GL_SQLCNVPATH=@prefix@/aubit4gl/etc/convertsql
 
 ## ===================================================================
 ## 		 	Loadable modules (plug-ins) / library configurations
@@ -158,7 +158,7 @@ A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
 A4GL_LEXDIALECT_DETECTED="@A4GL_LEXDIALECT_DETECTED@"
 # for postgresql 8.x.x, uncomment A4GL_TARGETDIALECT line below
 # to use @prefix@/etc/convertsql/INFORMIX-POSTGRES8.cnv
-#A4GL_TARGETDIALECT=@A4GL_LEXDIALECT@8
+#A4GL_TARGETDIALECT=POSTGRES8
 
 ############
 #List of db plugins valid for use at compile-time with particular EC dialect output:
