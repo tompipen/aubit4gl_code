@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.106 2007-03-07 21:01:32 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.107 2007-03-09 13:48:24 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.106 2007-03-07 21:01:32 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.107 2007-03-09 13:48:24 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -459,13 +459,28 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	}
     }
 
+
+
+
   if (sio->fcntrl[a].op == FORMCONTROL_KEY_PRESS)
     {
+
+
       if (sio->fcntrl[a].state == 99)
 	{
 	  new_state = 75;
-	  last_key_code=sio->fcntrl[a].extent;
-	  rval = A4GL_EVENT_KEY_PRESS;
+          if (sio->mode == MODE_CONSTRUCT && last_key_code!=A4GLKEY_CANCEL) {
+			if (A4GL_has_event_for_keypress(sio->fcntrl[a].extent,evt)) { // We should be a litle worried...
+					if (!A4GL_do_after_field (sio->currform->currentfield, sio)) {
+							new_state=0;
+					}
+			}
+	  }
+
+	if (new_state!=0) {
+	  		last_key_code=sio->fcntrl[a].extent;
+	  		rval = A4GL_EVENT_KEY_PRESS;
+		}
 	}
 
 
@@ -643,6 +658,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
                         form=sio->currform;
 			mform=form->form;
 			xw= current_field (mform);
+
+
 			if (sio->currentfield!=xw) {
 					A4GL_debug("Wrong current field?"); 
 			}
