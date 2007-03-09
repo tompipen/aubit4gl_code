@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.104 2007-02-28 16:30:44 mikeaubury Exp $
+# $Id: ops.c,v 1.105 2007-03-09 13:43:45 mikeaubury Exp $
 #
 */
 
@@ -846,6 +846,100 @@ A4GL_dt_date_ops (int op)
 	A4GL_pop_param(&dt2,DTYPE_DTIME,0x13);
 	A4GL_push_variable(&dt2,0x13000a);
 	A4GL_dt_dt_ops(op);
+}
+
+
+void A4GL_char_dt_ops(int op) {
+	int dtype1;
+	int dtype2;
+	int sz1;
+	int sz2;
+	struct A4GLSQL_dtime *pdt2;
+	void *pdt1;
+	struct A4GLSQL_dtime dt1;
+	struct A4GLSQL_dtime dt2;
+	char *p;
+
+        A4GL_get_top_of_stack (1, &dtype2, &sz2, (void *) &pdt2);
+        A4GL_get_top_of_stack (2, &dtype1, &sz1, (void *) &pdt1);
+
+	dt1.stime=pdt2->stime;
+	dt1.ltime=pdt2->ltime;
+        A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
+	p=A4GL_char_pop();
+
+	A4GL_debug("popped everything off...");
+// Lets try converting our string to a datetime with the same units as our datetime...
+	A4GL_push_char(p);
+	dt2.stime= dt1.stime;
+	dt2.ltime= dt1.ltime;
+	A4GL_debug("Pushed our character back on - converting to a datetime...");
+
+        if (A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime)) {
+		// Success !
+		A4GL_debug("Converted ok");
+		A4GL_push_variable(&dt2,(ENCODE_SIZE(((dt2.stime * 16) + dt2.ltime)))+DTYPE_DTIME);
+		A4GL_push_variable(&dt1,(ENCODE_SIZE(((dt1.stime * 16) + dt1.ltime)))+DTYPE_DTIME);
+		A4GL_dt_dt_ops(op);
+		return;
+	} else {
+		// OK - we cant do that...
+      		A4GL_push_null (DTYPE_CHAR, 0);
+		return;
+	}
+	
+
+// Should never get here!
+     	A4GL_push_null (DTYPE_CHAR, 0);
+	return;
+
+}
+
+
+void A4GL_dt_char_ops(int op) {
+	int dtype1;
+	int dtype2;
+	int sz1;
+	int sz2;
+	struct A4GLSQL_dtime *pdt2;
+	void *pdt1;
+	struct A4GLSQL_dtime dt1;
+	struct A4GLSQL_dtime dt2;
+	char *p;
+A4GL_debug("in A4GL_dt_char_ops");
+        A4GL_get_top_of_stack (1, &dtype1, &sz1, (void *) &pdt1);
+        A4GL_get_top_of_stack (2, &dtype2, &sz2, (void *) &pdt2);
+
+	dt1.stime=pdt2->stime;
+	dt1.ltime=pdt2->ltime;
+	p=A4GL_char_pop();
+        A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
+
+	A4GL_debug("popped everything off...");
+// Lets try converting our string to a datetime with the same units as our datetime...
+	A4GL_push_char(p);
+	dt2.stime= dt1.stime;
+	dt2.ltime= dt1.ltime;
+	A4GL_debug("Pushed our character back on - converting to a datetime...");
+
+        if (A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime)) {
+		// Success !
+		A4GL_debug("Converted ok");
+		A4GL_push_variable(&dt1,(ENCODE_SIZE(((dt1.stime * 16) + dt1.ltime)))+DTYPE_DTIME);
+		A4GL_push_variable(&dt2,(ENCODE_SIZE(((dt2.stime * 16) + dt2.ltime)))+DTYPE_DTIME);
+		A4GL_dt_dt_ops(op);
+		return;
+	} else {
+		// OK - we cant do that...
+      		A4GL_push_null (DTYPE_CHAR, 0);
+		return;
+	}
+	
+
+// Should never get here!
+     	A4GL_push_null (DTYPE_CHAR, 0);
+	return;
+
 }
 
 void
@@ -3443,6 +3537,10 @@ DTYPE_SERIAL
 
   A4GL_add_op_function (DTYPE_DATE, DTYPE_DTIME, OP_MATH, A4GL_date_dt_ops);
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_DATE, OP_MATH, A4GL_dt_date_ops);
+
+
+  A4GL_add_op_function (DTYPE_CHAR, DTYPE_DTIME, OP_MATH, A4GL_char_dt_ops);
+  A4GL_add_op_function (DTYPE_DTIME, DTYPE_CHAR, OP_MATH, A4GL_dt_char_ops);
 
 
   A4GL_debug ("Finished adding default operations");
