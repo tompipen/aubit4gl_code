@@ -1059,8 +1059,13 @@ if (columnNames)
 
   for (index = 1; index <= numberOfColumns; index++)
     {
-    EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:size = LENGTH,: datatype = TYPE,:columnName =
-	NAME;
+  	struct sqlvar_struct *col;
+  	col = &master_desc->sqlvar[index-1];
+
+	strcpy(columnName,col->sqlname);
+	size=col->sqllen;
+	datatype=col->sqltype;
+
       cp_sqlca ();
       A4GL_trim (columnName);
       columnNames[index - 1] = strdup (columnName);
@@ -1112,6 +1117,9 @@ execute_select_prepare (int *err_at_col)
 		deallocate_descriptor_memory(master_desc);
   }
   EXEC SQL whenever error continue;
+
+
+/*
   EXEC SQL deallocate descriptor 'descExec';
   cp_sqlca ();
 
@@ -1136,13 +1144,16 @@ execute_select_prepare (int *err_at_col)
 	*err_at_col=sqlca.sqlerrd[4];
     return 0;
   }
-  A4GL_debug ("numberOfColumns : %d\n", numberOfColumns);
+
+*/
+
 
 
 
   EXEC SQL DESCRIBE stExec INTO master_desc;
   allocate_descriptor_memory(master_desc, &master_qualifiers, &master_indicators);
-
+  numberOfColumns=master_desc->sqld;
+  A4GL_debug ("numberOfColumns : %d\n", numberOfColumns);
 
 
   EXEC SQL declare crExec CURSOR FOR stExec;
@@ -1350,40 +1361,68 @@ A4GL_debug("Fetching");
 static int
 get_size (int dtype, int size)
 {
+
+
   switch (dtype)
     {
+    case CCHARTYPE:
     case SQLCHAR:
       return size;
+
+
+    case CSHORTTYPE:
     case SQLSMINT:
       return 6;
+
+    case CINTTYPE:
     case SQLINT:
       return 11;
+
+    case CDOUBLETYPE:
     case SQLFLOAT:
-      return 11;
+     return 11;
+
+    case CFLOATTYPE:
     case SQLSMFLOAT:
       return 11;
+
+    case CDECIMALTYPE:
     case SQLDECIMAL:
       return 16;
+
     case SQLSERIAL:
       return 10;
+
+    case CDATETYPE:
     case SQLDATE:
       return 12;
 
+    case CMONEYTYPE:
     case SQLMONEY:
       return 17;
 
+    case CDTIMETYPE:
     case SQLDTIME:
       return 21;
 
+    case CVARBINTYPE:
+    case CLOCATORTYPE:
     case SQLBYTES:
       return 20;
+
+
     case SQLTEXT:
       return 20;
+
+    case CVCHARTYPE:
     case SQLVCHAR:
       return size;
+
+    case CINVTYPE:
     case SQLINTERVAL:
       return 20;
     }
+
   return 10;
 }
 
@@ -3075,37 +3114,45 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 
       switch (col->sqltype)
 	{
+	case CFLOATTYPE:
 	case SQLSMFLOAT:
 	  col->sqltype = CFLOATTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+	case CDOUBLETYPE:
 	case SQLFLOAT:
 	  col->sqltype = CDOUBLETYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+	case CMONEYTYPE:
 	case SQLMONEY:
 	  col->sqltype = CMONEYTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+	case CDECIMALTYPE:
 	case SQLDECIMAL:
 	  col->sqltype = CDECIMALTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+	case CLONGTYPE:
 	case SQLSERIAL:
 	case SQLINT:
 	  col->sqltype = CLONGTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+	case CSHORTTYPE:
 	case SQLSMINT:
 	  col->sqltype = CSHORTTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+
+	case CFIXCHARTYPE:
 	case SQLVCHAR:
 	case SQLCHAR:
 	case SQLNVCHAR:
@@ -3116,6 +3163,7 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 
 #ifdef ESQLC_IUSTYPES  /* Do unload */
 	
+	case CLVCHARPTRTYPE:
         case SQLSET:
         case SQLMULTISET:
         case SQLLIST:
@@ -3130,22 +3178,26 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 #endif /* ESQLC_IUSTYPES */
 
 
+	case CDATETYPE:
 	case SQLDATE:
 	  col->sqltype = CFIXCHARTYPE;
 	  col->sqllen=11; //dd-mm-yyyy
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
 	  break;
 
+	case CINVTYPE:
 	case SQLINTERVAL:
 	  col->sqltype = CFIXCHARTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
 	  break;
 
+	case CDTIMETYPE:
 	case SQLDTIME:
 	  col->sqltype = CFIXCHARTYPE;
 	  fld_len = col->sqllen = rtypmsize (col->sqltype, 25);
 	  break;
 
+	case CLOCATORTYPE:
 	case SQLBYTES:
 	case SQLTEXT:
 	  col->sqltype = CLOCATORTYPE;
@@ -3160,7 +3212,6 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
     }
 
   buffer = (char *) A4GL_alloc_associated_mem (udesc, pos);
-
 
   //if (buffer == (char *) NULL)
     //{
@@ -3235,8 +3286,7 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
                         }
 #endif /* ESQLC_IUSTYPES */
 
-	case CDOUBLETYPE:
-	  break;
+
 	case CSHORTTYPE:
 	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
 	  cp = buffer + align;
@@ -3244,6 +3294,7 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 	  cp += col->sqllen;
 	  rlen += col->sqllen;
 	  break;
+
 	case CDTIMETYPE:
 	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
 	  cp = buffer + align;
@@ -3272,6 +3323,7 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 	  cp += (flen = rtypmsize (col->sqltype, col->sqllen));
 	  rlen += flen;
 	  break;
+
 	default:
 	  align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
 	  cp = buffer + align;
