@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.163 2007-03-07 21:01:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.164 2007-03-09 13:47:59 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.163 2007-03-07 21:01:32 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.164 2007-03-09 13:47:59 mikeaubury Exp $";
 #endif
 
 /**
@@ -1350,16 +1350,21 @@ int
 A4GL_get_field_width_w (void *f,int need_height)
 {
   int w;
+  int mno;
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
   fprop = (struct s_scr_field *) (field_userptr (f));
+
   formdets = UILIB_A4GL_get_curr_form (0);
+
   if (formdets == 0 || fprop == 0)
     {
       return A4GL_get_field_width (f);
     }
-
-  w = formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, f)].w;
+  mno=A4GL_get_metric_for (formdets, f);
+  A4GL_debug("mno=%d formdets=%p f=%p\n",mno,formdets, f);
+  A4GL_assertion(mno<0,"Invalid metric number");
+  w = formdets->fileform->metrics.metrics_val[mno].w;
   if (need_height) {
   	if (formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, f)].h>1) {
   		w*=formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, f)].h;
@@ -2779,6 +2784,11 @@ UILIB_A4GL_push_constr (void *vs)
 				     s->constr[a].colname, field_buffer (f,
 									 0),get_inc_quotes(fprop->datatype)
 		);
+
+	if (ptr==0) { // some error in the field...
+      		A4GL_push_char ("");
+      		return 0;
+	}
 	  if (strlen (ptr) > 0)
 	    {
 	      A4GL_debug ("ptr=%s\n", ptr);
