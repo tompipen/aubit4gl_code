@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.123 2007-03-09 13:35:11 mikeaubury Exp $
+# $Id: report.c,v 1.124 2007-03-09 16:05:11 mikeaubury Exp $
 #
 */
 
@@ -1050,8 +1050,6 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 	  A4GL_rep_print (rep, 0, 1, 0, -5);
 	}
     }
-
-
 }
 
 /**
