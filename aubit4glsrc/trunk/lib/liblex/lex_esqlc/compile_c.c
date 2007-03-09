@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.357 2007-03-08 20:36:03 mikeaubury Exp $
+# $Id: compile_c.c,v 1.358 2007-03-09 13:39:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.357 2007-03-08 20:36:03 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.358 2007-03-09 13:39:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1874,7 +1874,7 @@ real_print_expr (struct expr_str *ptr)
 		    printc ("A4GL_chk_err(%d,_module_name);",
 			    ptr->u_data.expr_function_call->line);
 		    printc ("}");
-		    printc ("%s", get_reset_state_after_call ());
+		    if (strcmp(ptr->u_data.expr_function_call->fname,"set_count")!=0) {printc ("%s", get_reset_state_after_call ());}
 		    printc ("}");
 
 		  }
@@ -1893,7 +1893,7 @@ real_print_expr (struct expr_str *ptr)
 			    ptr->u_data.expr_function_call->line);
 		    printc ("}");
 		    printc ("}");
-		    printc ("%s", get_reset_state_after_call ());
+		    if (strcmp(ptr->u_data.expr_function_call->fname,"set_count")!=0) { printc ("%s", get_reset_state_after_call ()); }
 		    printc ("} // FCALL 2");
 		  }
 		add_function_to_header (ptr->u_data.expr_function_call->fname,
@@ -3135,7 +3135,7 @@ real_print_func_call (t_expr_str * fcall)
 	  }
 	}
   		if (doing_a_report) { clr_doing_a_report_call(4); }
-      print_reset_state_after_call ();
+      if (strcmp(p->fname,"set_count")!=0) {print_reset_state_after_call ();}
       return;
     }
 
