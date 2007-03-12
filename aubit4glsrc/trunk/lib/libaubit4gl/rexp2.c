@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.39 2007-01-12 20:05:35 mikeaubury Exp $
+# $Id: rexp2.c,v 1.40 2007-03-12 15:52:34 mikeaubury Exp $
 #
 */
 
@@ -574,7 +574,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
     {
       if (z == RANGE)
 	{
-	  SPRINTF2 (buff3, "(%s  between '' and %s", colname, quote);
+	  SPRINTF2 (buff3, "(%s between '' and %s", colname, quote);
 	  for (z = 1; z < constr_size; z++)
 	    {
 	      ptr = A4GL_escape_single (constr_bits[z]);
@@ -585,7 +585,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	}
       else
 	{
-	  SPRINTF4 (buff3, "%s  between %s%s%s and ", colname, quote,
+	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote,
 		    constr_bits[0], quote);
 	  if (constr_size >= 2)
 	    {
@@ -610,7 +610,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
     {
       if (z == RANGE)
 	{
-	  SPRINTF2 (buff3, "(%s  between '' and %s", colname, quote);
+	  SPRINTF2 (buff3, "(%s between '' and %s", colname, quote);
 	  for (z = 1; z < constr_size; z++)
 	    {
 	      ptr = A4GL_escape_single (constr_bits[z]);
@@ -621,7 +621,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	}
       else
 	{
-	  SPRINTF4 (buff3, "%s  between %s%s%s and ", colname, quote,
+	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote,
 		    constr_bits[0], quote);
 	  if (constr_size >= 2)
 	    {
