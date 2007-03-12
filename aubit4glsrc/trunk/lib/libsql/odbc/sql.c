@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.182 2007-02-22 16:33:02 gyver309 Exp $
+# $Id: sql.c,v 1.183 2007-03-12 15:22:23 mikeaubury Exp $
 #
 */
 
@@ -1416,7 +1416,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
     retval = ODBC_exec_select ((SQLHSTMT) sid->hstmt);
 
-    if (sql_ok(retval) && retval != SQL_NO_DATA_FOUND)
+    if (sql_ok(retval) && a4gl_status!=100 )
     {
 	SQLRETURN rc;
 	nresultcols = 0;
@@ -1432,7 +1432,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     }
 
 
-    if (retval && a4gl_status != 100)
+
+
+    if (retval && a4gl_status != 100 && retval!=SQL_NO_DATA_FOUND)
     {
         A4GL_trc ("Calling post_fetch_proc_bind");
         A4GL_post_fetch_proc_bind (sid->obind, sid->no,
@@ -1449,7 +1451,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
         sql_free_stmt(&sid->hstmt);
         else
         A4GL_trc ("retval not set");*/
-
+ 
     if (singleton)
         sql_free_sid(&sid);
     else
@@ -2937,6 +2939,9 @@ Bool ODBC_exec_select (SQLHSTMT hstmt)
     if (rc == SQL_NO_DATA_FOUND)
     {
         a4gl_sqlca.sqlerrd[0] = 1;
+	A4GLSQL_set_status(100,1);
+	a4gl_sqlca.sqlcode=100;
+	a4gl_status=100;
         return True;
     }
 
@@ -2945,7 +2950,7 @@ Bool ODBC_exec_select (SQLHSTMT hstmt)
 	chk_rc_retonfail (rc, hstmt, "SQLFetch");
     if (rc != SQL_NO_DATA_FOUND)
     {
-	if (A4GLSQL_set_status (-284, 0))
+	if (A4GLSQL_set_status (-284, 1))
             set_global_status(-284, "HY000", "A subquery has returned not exactly one row");
         a4gl_sqlca.sqlerrd[0] = 0;
 	return False;
@@ -3037,7 +3042,11 @@ static Bool sql_free_stmt(SQLHSTMT *phstmt)
 static SQLRETURN sql_free_sid(struct s_sid **sid)
 {
     SQLRETURN rc;
+int sc=0;
+
     A4GL_trc("In sql_free_sid sid=%p &sid=%p", *sid, sid);
+
+  sc=a4gl_sqlca.sqlcode;
     rc = sql_free_stmt(&((*sid)->hstmt));
 
     if (sid_get_owns_bindings(*sid))
@@ -3051,6 +3060,10 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
 	    acl_free ((*sid)->obind);
     }
     acl_free (*sid);
+  if (a4gl_sqlca.sqlcode==0 && sc!=0) {
+		a4gl_sqlca.sqlcode=sc;
+		a4gl_status=sc;
+	}
     return rc;
 }
 /**
@@ -4102,6 +4115,10 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
             }
             else
             {
+
+		if (date1->uDate.date_ds.year==-1)  { // Null/no rows found..
+                    A4GL_setnull (DTYPE_DATE, date1->ptr, 0);
+		} else {
                 A4GL_dbg ("Date not as char");
                 A4GL_assertion (date1->uDate.date_ds.month < 1
                                 || date1->uDate.date_ds.month > 12,
@@ -4119,6 +4136,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
                                       date1->uDate.date_ds.month,
                                       date1->uDate.date_ds.year);
                 *(long *) date1->ptr = zz;
+		}
             }
 
             //*(long *) use_binding[bind_counter].ptr = zz;
@@ -5239,6 +5257,7 @@ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 static void set_global_status(int code, char *odbc_sqlstate, char *msg)
 {
     A4GL_dbg ("In set_global_status: odbc_sqlstate=%s msg=%s code=%d", odbc_sqlstate, msg, code);
+
     strcpy(a4gl_sqlca.sqlstate, odbc_sqlstate);
     strcpy(a4gl_sqlca.sqlerrm, "?");
     A4GL_set_lasterrorstr(msg);

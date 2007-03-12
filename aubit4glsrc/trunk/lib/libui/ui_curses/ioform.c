@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.164 2007-03-09 13:47:59 mikeaubury Exp $
+# $Id: ioform.c,v 1.165 2007-03-12 15:22:24 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.164 2007-03-09 13:47:59 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.165 2007-03-12 15:22:24 mikeaubury Exp $";
 #endif
 
 /**
@@ -894,16 +894,16 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 int chk_all_fields(struct s_screenio *sio) {
 int a;
-	//void *p;
-	//p=sio->currentfield;
+
+if  (sio->mode != MODE_CONSTRUCT) { 
+	// Might need to do something similar for construct ? 
           for (a=0;a<=sio->nfields;a++)  {
                 if (local_chk_field(sio->currform, sio->field_list[a])==-4) {
-			        //A4GL_init_control_stack (sio, 0);
-                                //A4GL_newMovement (sio, a);
 				return a;
                 }
           }
-	return -1;
+}
+return -1;
 
 }
 

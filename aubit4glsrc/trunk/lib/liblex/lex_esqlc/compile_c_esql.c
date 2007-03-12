@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.166 2007-03-09 13:38:13 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.167 2007-03-12 15:22:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.166 2007-03-09 13:38:13 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.167 2007-03-12 15:22:23 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -339,7 +339,8 @@ exit_loop("FOREACH");
   print_conversions_g (into_bind);
   clr_suppress_lines ();
 
-  printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
+  //printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
+  printc ("if (a4gl_sqlca.sqlcode==100) break;\n");
 }
 
 /**

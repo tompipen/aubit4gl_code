@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_sql.c,v 1.80 2007-02-20 19:24:02 gyver309 Exp $
+# $Id: compile_c_sql.c,v 1.81 2007-03-12 15:22:23 mikeaubury Exp $
 #
 */
 
@@ -33,7 +33,7 @@ void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_sql.c,v 1.80 2007-02-20 19:24:02 gyver309 Exp $";
+		"$Id: compile_c_sql.c,v 1.81 2007-03-12 15:22:23 mikeaubury Exp $";
 #endif
 
 
@@ -124,7 +124,9 @@ LEXLIB_print_foreach_next_g (char *cursorname, t_binding_comp_list  *using_bind,
   ni = LEXLIB_print_bind_definition_g (into_bind);
   LEXLIB_print_bind_set_value_g(into_bind);
   printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind); /* Foreach next */\n", cursorname, FETCH_RELATIVE, ni);
-  printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
+
+  //printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
+  printc ("if (a4gl_sqlca.sqlcode==100) break;\n");
 }
 
 /**
