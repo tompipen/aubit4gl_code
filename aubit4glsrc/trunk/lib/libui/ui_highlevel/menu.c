@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.41 2007-02-21 10:37:10 mikeaubury Exp $";
+  "$Id: menu.c,v 1.42 2007-03-12 09:36:14 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -622,7 +622,7 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
 
 	  while (f)
 	    {
-	      if (f->optkey[0] == key)
+	      if (f->optkey[0] == key && A4GL_is_unique_menu_key (menu, key)==1 )
 		{
 		  menu_response = res;
 		  break;

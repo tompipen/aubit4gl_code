@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.99 2007-02-21 11:43:56 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.100 2007-03-12 09:36:15 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +88,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.99 2007-02-21 11:43:56 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.100 2007-03-12 09:36:15 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -3462,6 +3462,83 @@ void A4GL_LL_opening_form(char *a,char *b) {
 void A4GL_LL_direct_to_ui(char *t, char *s) {
   /* Does nothing - required by api.. */
 }
+
+
+
+ACL_Menu_Opts *A4GL_LL_show_menu_large(ACL_Menu *menu, int key) {
+char buff[256];
+char disp[1024];
+int a;
+int cnt;
+int cw;
+ACL_Menu_Opts *uniq;
+buff[0]=key;
+buff[1]=0;
+
+	while (1) {
+		int l;
+		memset(disp,' ',sizeof(disp));
+		cw=UILIB_A4GL_get_curr_width();
+
+		// Clear the line first...
+		disp[cw]=0;
+	  	A4GL_wprintw ((void *) A4GL_get_currwin (), 0, 1, menu->gw_y+1, UILIB_A4GL_get_curr_width (), UILIB_A4GL_get_curr_height (), UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), disp);
+
+		
+		sprintf(disp,"Select: %s",buff);
+		l=strlen(disp);
+		cw-=l;
+	  	A4GL_wprintw ((void *) A4GL_get_currwin (), 0, 3+l, menu->gw_y+1, UILIB_A4GL_get_curr_width (), UILIB_A4GL_get_curr_height (), UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), A4GL_show_menu_large_get_matches(menu, buff, cw, &cnt,0));
+		//A4GL_mja_gotoxy (3+l, 2 + menu->menu_line);
+		//A4GL_tui_printr (0,"%s", A4GL_show_menu_large_get_matches(menu, buff, cw, &cnt,0));
+		A4GL_assertion(cnt==0,"cnt should not be zero at this point");
+	  	A4GL_wprintw ((void *) A4GL_get_currwin (), 0, 1, menu->gw_y+1, UILIB_A4GL_get_curr_width (), UILIB_A4GL_get_curr_height (), UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), disp);
+
+		//A4GL_mja_gotoxy (1, 2 + menu->menu_line);
+		//A4GL_tui_printr (1,"%s", disp);
+
+		a=0;
+  		A4GL_LL_screen_update ();
+		while (a==0)  {
+			a=A4GL_LL_getch_swin(0,0);
+		}
+
+		if (a_isprint(a)) {
+			char b[2];
+			b[0]=a;
+			b[1]=0;
+			strcat(buff,b);
+			A4GL_show_menu_large_get_matches(menu, buff,cw, &cnt,&uniq);
+			
+			A4GL_debug("got %d matches", cnt);
+			if (cnt==0) { // bad character...
+				A4GL_dobeep();
+				l=strlen(buff);
+				buff[l-1]=0;
+			}
+			if (cnt==1) { // Now its unique!
+				return uniq;
+			}
+			continue;
+		}
+
+		if (a==A4GLKEY_LEFT) {
+			int l;
+			l=strlen(buff);
+			if (l>1) {
+				buff[l-1]=0;
+			}
+			
+			A4GL_debug("menu_large - LEFT (%s)", buff);
+			continue;
+		}
+
+		if (a==A4GLKEY_ENTER) {
+			return menu->curr_option;
+		}
+	}
+}
+
 
 // --------------------------------------------------------------------------------------
 // FIXMEs...

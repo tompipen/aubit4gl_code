@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.110 2007-03-04 12:50:42 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.111 2007-03-12 09:36:14 mikeaubury Exp $";
 #endif
 
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
@@ -187,27 +187,35 @@ int
 A4GL_find_char (ACL_Menu * menu, int key)
 {
   ACL_Menu_Opts *opt1, *opt2;
-  int flg=0;
+  int flg = 0;
   opt2 = (ACL_Menu_Opts *) menu->curr_option;
 
   A4GL_debug ("ZZ : key = %d opt2->optkey=%s\n", key, opt2->optkey);
 
-  if (!opt2->attributes & ACL_MN_HIDE) {
-  if (strcmp (opt2->optkey, "EMPTY") != 0)
+  if (!opt2->attributes & ACL_MN_HIDE)
     {
-      A4GL_debug ("defined keys only");
-      flg = A4GL_check_keys (key, opt2->optkey);
+      if (strcmp (opt2->optkey, "EMPTY") != 0)
+	{
+	  A4GL_debug ("defined keys only");
+	  flg = A4GL_check_keys (key, opt2->optkey);
+	}
+      else
+	{
+	  A4GL_debug ("default key only");
+          if (A4GL_is_unique_menu_key (menu, key)==1)
+            {
+
+	  flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
+		}
+	}
     }
   else
     {
-      A4GL_debug ("default key only");
-      flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
+      if (strlen (opt2->opt_title) == 0)
+	{
+	  flg = A4GL_check_keys (key, opt2->optkey);
+	}
     }
-  } else {
-	    if (strlen (opt2->opt_title)==0) {
-		flg = A4GL_check_keys (key, opt2->optkey);
-	    }
-  }
 
   if (flg)
     {
@@ -215,48 +223,65 @@ A4GL_find_char (ACL_Menu * menu, int key)
       A4GL_debug ("We're on it!");
       return 1;
     }
-
-  A4GL_debug ("Checking next option...");
-  opt1 = (ACL_Menu_Opts *) opt2->next_option;
-
-  if (opt1 == 0)
-    opt1 = (ACL_Menu_Opts *) menu->first;
-
-  while (opt2 != opt1)
+  if (A4GL_is_unique_menu_key (menu, key) > 1)
     {
-      A4GL_debug ("ZZ2 : key = %d opt1->optkey=%s\n", key, opt1->optkey);
-      flg=0;
-
-  if (!opt1->attributes & ACL_MN_HIDE) {
-      if (strcmp (opt1->optkey, "EMPTY")!=0)
+      void *p;
+      p = A4GL_LL_show_menu_large (menu, key);
+      if (p)
 	{
-	  A4GL_debug ("defined keys only");
-	  flg = A4GL_check_keys (key, opt1->optkey);
-	}
-      else
-	{
-	  A4GL_debug ("default key only");
-	  flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
-	}
-  } else {
-	    if (strlen (opt1->opt_title)==0) {
-		flg = A4GL_check_keys (key, opt1->optkey);
-	    }
-  }
-
-      if (flg)
-	{
-	  menu->curr_option = (ACL_Menu_Opts *) opt1;
+	  menu->curr_option = p;
 	  return 1;
 	}
-      opt1 = (ACL_Menu_Opts *) opt1->next_option;
+      return 0;
+    }
+  else
+    {
+
+
+      A4GL_debug ("Checking next option...");
+      opt1 = (ACL_Menu_Opts *) opt2->next_option;
+
       if (opt1 == 0)
 	opt1 = (ACL_Menu_Opts *) menu->first;
+
+      while (opt2 != opt1)
+	{
+	  A4GL_debug ("ZZ2 : key = %d opt1->optkey=%s\n", key, opt1->optkey);
+	  flg = 0;
+
+	  if (!opt1->attributes & ACL_MN_HIDE)
+	    {
+	      if (strcmp (opt1->optkey, "EMPTY") != 0)
+		{
+		  A4GL_debug ("defined keys only");
+		  flg = A4GL_check_keys (key, opt1->optkey);
+		}
+	      else
+		{
+		  A4GL_debug ("default key only");
+		  flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
+		}
+	    }
+	  else
+	    {
+	      if (strlen (opt1->opt_title) == 0)
+		{
+		  flg = A4GL_check_keys (key, opt1->optkey);
+		}
+	    }
+
+	  if (flg)
+	    {
+	      menu->curr_option = (ACL_Menu_Opts *) opt1;
+	      return 1;
+	    }
+	  opt1 = (ACL_Menu_Opts *) opt1->next_option;
+	  if (opt1 == 0)
+	    opt1 = (ACL_Menu_Opts *) menu->first;
+	}
     }
   return 0;
 }
-
-
 
 static void
 A4GL_move_bar (ACL_Menu * menu, int a)
