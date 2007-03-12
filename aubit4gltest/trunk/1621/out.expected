@@ -1,0 +1,48 @@
+
+i= 1                         page: 1
+------------
+j= 1, line= 3 odd 
+j= 2, line= 4 even
+j= 3, line= 5 odd 
+j= 4, line= 6 even
+j= 5, line= 7 odd 
+j= 6, line= 8 even
+j= 7, line= 9 odd 
+
+
+
+i= 1                         page: 2
+------------
+j= 8, line= 0 even
+j= 9, line= 4 even
+j=10, line= 5 odd 
+j=11, line= 6 even
+j=12, line= 7 odd 
+
+
+
+
+
+i= 2                         page: 3
+------------
+j= 1, line= 3 odd 
+j= 2, line= 4 even
+j= 3, line= 5 odd 
+j= 4, line= 6 even
+j= 5, line= 7 odd 
+j= 6, line= 8 even
+j= 7, line= 9 odd 
+
+
+
+i= 2                         page: 4
+------------
+j= 8, line= 0 even
+j= 9, line= 4 even
+j=10, line= 5 odd 
+j=11, line= 6 even
+j=12, line= 7 odd 
+
+
+
+
