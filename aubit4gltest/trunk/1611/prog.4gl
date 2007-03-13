@@ -1,6 +1,6 @@
 {**
  * @file
- * ERror concatenating substrings, mantis bug 916
+ * Error concatenating substrings, mantis bug 916
  * @process TEST_GENERAL
  *}
  

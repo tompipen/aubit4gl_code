@@ -5,10 +5,8 @@
  * @process TEST_GENERAL
  *}
  
-#if you need to use database, use "test1"
 database test1
 main
-
 define w_f1 varchar(60)
 create temp table tempvar(f1 varchar(60))
 insert into tempvar values ("this with no spaces")

@@ -6,9 +6,7 @@
  * @process TEST_GENERAL
  *}
  
-#if you need to use database, use "test1"
 database test1
-
 DEFINE  ma_abon ARRAY[10] OF RECORD
 	   edlinucl   int,
 	   d_edlinucl char(20),
@@ -24,15 +22,6 @@ DEFINE  ma_abon ARRAY[10] OF RECORD
 	m_fech date
 
 main
-
-#It is recomended that you use temp tables
-#	create temp table abc(x char(10), y char(10))
-
-#Use 	
-#	call aclfgl_dump_screen("out")
-# To generate screen dump to be compared against expected screen representation
-# Default diff expect file names "out" and  "out.expected"
-
 define i,j, w_cant int
 
 create temp table clelinea (edlifech date, edlidocu char(10))

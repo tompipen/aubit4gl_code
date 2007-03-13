@@ -3,9 +3,9 @@
  * Memory corruption, content of a variable get NULL after printing a varchar
  *  with wordwrap right margin
  *
- * If variable define varchar(255) works fine, onlyfails if defined like table
+ * If variable define varchar(255) works fine, only fails if defined like table
  *
- * If worwrap removed also works fine
+ * If wordwrap removed also works fine
  *
  * @process TEST_GENERAL
  *}
@@ -17,7 +17,7 @@ DEFINE r RECORD
           s SMALLINT
         END RECORD,
         w_file CHAR(50)
-LET w_file = "out.expceted"
+LET w_file = "out.expected"
 {! LET w_file = "out" }
 START REPORT prog_report TO FILE w_file
 LET r.vc = "test data"
