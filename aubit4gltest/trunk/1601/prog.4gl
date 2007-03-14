@@ -10,4 +10,10 @@ let a = -10234.56
 display a using "(((,((&)", " ", a using "---,--&"
 display a using "(((,((&.)", " ", a using "---,--&."
 display a using "(((,((&.&)", " ", a using "---,--&.&"
+display a using "($$,$$$,$$&.&)", " ", a using "-$$$,$$&.&"
+let a = 10234.56
+display a using "(((,((&)", " ", a using "---,--&"
+display a using "(((,((&.)", " ", a using "---,--&."
+display a using "(((,((&.&)", " ", a using "---,--&.&"
+display a using "($$,$$$,$$&.&)", " ", a using "-$$$,$$&.&"
 end main
