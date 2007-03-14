@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.183 2007-03-12 15:22:23 mikeaubury Exp $
+# $Id: sql.c,v 1.184 2007-03-14 13:30:19 gyver309 Exp $
 #
 */
 
@@ -963,7 +963,6 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
             if (!chk_rc (rc, hstmt, "SQLNumResultCols"))
             {
                 nout = -1;
-		exitwith_sql_odbc ("Binding output failed (SQLNumResultCols)");
 		return False;
             }
             else
@@ -977,18 +976,12 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
         if (t == 'o')
         {
             if (!A4GL_obind_column (a, &b[a - 1], hstmt))
-	    {
-		exitwith_sql_odbc ("Binding output failed");
-	        return 0;
-	    }
+	        return False;
         }
         else
         {
             if (!A4GL_ibind_column (a, &b[a - 1], hstmt))
-	    {
-		exitwith_sql_odbc ("Binding input failed");
-	        return 0;
-	    }
+	        return False;
         }
         A4GL_trc ("Binding done...");
     }
@@ -1010,10 +1003,7 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
                 {
                     A4GL_dbg ("Binding scratch @ %d", a);
                     if (!A4GL_obind_column (a, &bind, hstmt))
-		    {
-			exitwith_sql_odbc ("Binding output failed");
-			return 0;
-		    }
+			return False;
                 }
             }
         }
@@ -1349,15 +1339,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void
     
 
     if (!A4GL_proc_bind (sid->obind, sid->no, 'o', (SQLHSTMT) sid->hstmt))
-    {
-	exitwith_sql_odbc ("Binding output failed");
         return 0;
-    }
     if (!A4GL_proc_bind (sid->ibind, sid->ni, 'i', (SQLHSTMT) sid->hstmt))
-    {
-	exitwith_sql_odbc ("Binding input failed");
         return 0;
-    }
     A4GL_trc ("Bound data ... ni=%d no=%d", sid->ni, sid->no);
 
     prettyprint_sql (sid->select, sid->ibind, sid->ni, "2");
@@ -1401,15 +1385,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     }
     A4GL_dbg ("Executing immediate: %s", sid->select);
     if (!A4GL_proc_bind (sid->obind, sid->no, 'o', (SQLHSTMT) sid->hstmt))
-    {
-	exitwith_sql_odbc ("Binding output failed");
         return -1;
-    }
     if (!A4GL_proc_bind (sid->ibind, sid->ni, 'i', (SQLHSTMT) sid->hstmt))
-    {
-	exitwith_sql_odbc ("Binding input failed");
         return -1;
-    }
     A4GL_trc ("Bound data ... ni=%d no=%d", sid->ni, sid->no);
 
     prettyprint_sql (sid->select, sid->ibind, sid->ni, "3");
@@ -1434,7 +1412,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
 
 
-    if (retval && a4gl_status != 100 && retval!=SQL_NO_DATA_FOUND)
+    if (retval && a4gl_status != 100)
     {
         A4GL_trc ("Calling post_fetch_proc_bind");
         A4GL_post_fetch_proc_bind (sid->obind, sid->no,
@@ -1457,11 +1435,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     else
         sql_free_stmt(&sid->hstmt);
 
-    if (sql_failed(retval))
-    {
-	exitwith_sql_odbc ("Execution of the statement failed");
+    if (retval == False)
 	return -1;
-    }
     return  0;
 }
 
@@ -2992,8 +2967,8 @@ A4GL_new_hstmt (SQLHSTMT * phstmt)
     A4GL_dbg ("after SQLAllocStmt: rc=%d, phstmt=%p *phstmt=%p", rc, phstmt, *phstmt);
     status = chk_rc(rc, 0, "SQLAllocStmt");
 #endif
-    if (!status)
-        exitwith_sql_odbc ("Allocating a statement failed");
+//    if (!status)
+//        exitwith_sql_odbc ("Allocating a statement failed");
     return status;
 }
 
@@ -3042,11 +3017,9 @@ static Bool sql_free_stmt(SQLHSTMT *phstmt)
 static SQLRETURN sql_free_sid(struct s_sid **sid)
 {
     SQLRETURN rc;
-int sc=0;
-
     A4GL_trc("In sql_free_sid sid=%p &sid=%p", *sid, sid);
 
-  sc=a4gl_sqlca.sqlcode;
+    ignore_next_sql_error = 1;
     rc = sql_free_stmt(&((*sid)->hstmt));
 
     if (sid_get_owns_bindings(*sid))
@@ -3060,10 +3033,6 @@ int sc=0;
 	    acl_free ((*sid)->obind);
     }
     acl_free (*sid);
-  if (a4gl_sqlca.sqlcode==0 && sc!=0) {
-		a4gl_sqlca.sqlcode=sc;
-		a4gl_status=sc;
-	}
     return rc;
 }
 /**
@@ -3426,7 +3395,6 @@ static int sql_get_next_column_info(struct sql_col_info_data *ci)
         if (rc != SQL_SUCCESS)
         {
             A4GL_wrn ("SQLFetch for SQLColumns failed");
-            exitwith_sql_odbc ("SQLFetch for SQLColumns failed\n");
             return 0;
         }
     }
@@ -3448,7 +3416,6 @@ static int sql_get_next_column_info(struct sql_col_info_data *ci)
         if (rc != SQL_SUCCESS)
         {
             A4GL_wrn ("SQLDescribeCol failed");
-            exitwith_sql_odbc ("SQLDescribeCol failed\n");
             return 0;
         }
     }
@@ -3919,7 +3886,7 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
     }
     else
     {
-        exitwith_sql_odbc ("Could not disconnect from database");
+        exitwith_sql_odbc ("Could not disconnect from the database");
         return 0;
     }
     return 1;
@@ -5437,18 +5404,21 @@ A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file)
     {
 	if (A4GLSQL_set_status (0, 0))
             set_global_status(0, "00000", "Success");
+	ignore_next_sql_error = 0;
 	return True;
     }
     else if (rc == SQL_NO_DATA_FOUND)
     {
 	if (A4GLSQL_set_status (100, 0))
             set_global_status(100, "00000", "Success with NO_DATA");
+	ignore_next_sql_error = 0;
 	return True;
     }
     else if (rc == SQL_INVALID_HANDLE)
     {
 	if (A4GLSQL_set_status (-2, 0))
             set_global_status(-2, "HY000", "Invalid handle - error info unavailable");
+	ignore_next_sql_error = 0;
         return False;
     }
     else if (rc == SQL_SUCCESS_WITH_INFO && hstmt == 0)
@@ -5459,16 +5429,19 @@ A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file)
 	    strcpy(a4gl_sqlca.sqlawarn, "       ");
 	    a4gl_sqlca.sqlawarn[0] = 'W';
 	}
+	ignore_next_sql_error = 0;
         return True;
     }
     else if (rc == SQL_ERROR && hstmt == 0)
     {
 	if (A4GLSQL_set_status (-1, 0))
             set_global_status(0, "HY000", "Error, details unavailable because of null handle");
+	ignore_next_sql_error = 0;
         return False;
     }
 
     A4GL_set_sqlca(hstmt, c);
+    ignore_next_sql_error = 0;
     return sql_ok(rc);
 //    return False;
 }
