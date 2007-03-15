@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.184 2007-03-14 13:30:19 gyver309 Exp $
+# $Id: sql.c,v 1.185 2007-03-15 17:53:28 gyver309 Exp $
 #
 */
 
@@ -3002,10 +3002,12 @@ static Bool sql_free_stmt(SQLHSTMT *phstmt)
     A4GL_trc("In sql_free_stmt hstmt=%p &hstmt=%p", *phstmt, phstmt);
 #if (ODBCVER >= 0x300)
     rc = SQLFreeHandle(SQL_HANDLE_STMT, *phstmt);
-    chk_rc(rc, *phstmt, "SQLFreeHandle");
+    if (!sql_ok(rc))
+	chk_rc(rc, *phstmt, "SQLFreeHandle");
 #else
     rc = SQLFreeStmt (*phstmt, SQL_DROP);
-    chk_rc(rc, *phstmt, "SQLFreeStmt");
+    if (!sql_ok(rc))
+	chk_rc(rc, *phstmt, "SQLFreeStmt");
 #endif
     if (sql_ok(rc))
     {
@@ -5193,6 +5195,7 @@ A4GL_clear_sqlca(void)
 	strcpy(a4gl_sqlca.sqlerrm, "?");
 	memset(a4gl_sqlca.sqlawarn, ' ', sizeof(a4gl_sqlca.sqlawarn));
 	strcpy(a4gl_sqlca.sqlstate, "00000");
+	A4GLSQL_set_status (0, 1);
     }
     else
     {

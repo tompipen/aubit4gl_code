@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.37 2007-03-09 13:44:21 mikeaubury Exp $
+# $Id: sql_common.c,v 1.38 2007-03-15 17:53:28 gyver309 Exp $
 #
 */
 
@@ -117,29 +117,22 @@ void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 int
 A4GLSQL_set_status (int a, int sql)
 {
-  if (aclfgli_get_err_flg() && a<0)
+  if (aclfgli_get_err_flg())
   {
-        A4GL_debug("set_status: errflg is set - not setting new status %d", a);
-	// -1 is a 'holding' error...
-	// we might have something better coming along...
-	if (a4gl_status!=-1)  {
-      		return 0;
-	}
+      A4GL_debug("set_status: errflg is set - not setting new status %d", a);
+      return 0;
   }
 
   A4GL_debug ("A4GLSQL_set_status(%d,%d)", a, sql);
 
-  if ( a >= 0)
+  if ((!aclfgli_get_err_flg ()) || a >= 0)
     {
       a4gl_status = a;
-
       if (sql)
-	a4gl_sqlca.sqlcode = a;
+        a4gl_sqlca.sqlcode = a;
 
-      if (a != 0)
-	{			// || s!=0
+      if (a < 0)
 	  aclfgli_set_err_flg ();
-	}
       A4GL_debug ("Status set to %d", a);
       return 1;
     }
@@ -148,14 +141,15 @@ A4GLSQL_set_status (int a, int sql)
       if (a4gl_status > 0)
 	{
 	  a4gl_status = a;
-	  if (sql) a4gl_sqlca.sqlcode = a;
+	  if (sql)
+	    a4gl_sqlca.sqlcode = a;
 	  return 1;
 	}
       else
 	{
-	  aclfgli_set_err_flg ();
-	  a4gl_status = a;
-	  if (sql) a4gl_sqlca.sqlcode = a;
+	  A4GL_debug
+	    ("Status set to %d and errflg is set - not setting it to %d/%d",
+	     a4gl_status, a, sql);
 	  return 0;
 	}
     }
