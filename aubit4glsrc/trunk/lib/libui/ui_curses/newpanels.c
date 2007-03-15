@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.138 2007-03-09 16:05:11 mikeaubury Exp $
+# $Id: newpanels.c,v 1.139 2007-03-15 18:06:37 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.138 2007-03-09 16:05:11 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.139 2007-03-15 18:06:37 mikeaubury Exp $";
 #endif
 
 /**
@@ -115,7 +115,7 @@ struct s_windows
   int x, y, w, h;
   PANEL *pan;
   WINDOW *win;
-  char name[20];
+  char name[100];
   struct s_form_dets *form;
   struct s_form_attr winattr;
 };

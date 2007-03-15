@@ -7,7 +7,7 @@ struct s_windows
 {
   int x, y, w, h;
   void *win;
-  char name[20];
+  char name[100];
   struct s_form_dets *form;
   struct s_form_attr winattr;
 };
