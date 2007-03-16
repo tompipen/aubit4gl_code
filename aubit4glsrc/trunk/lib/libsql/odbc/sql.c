@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.185 2007-03-15 17:53:28 gyver309 Exp $
+# $Id: sql.c,v 1.186 2007-03-16 16:35:59 gyver309 Exp $
 #
 */
 
@@ -152,7 +152,8 @@ enum {
     FLAG_SINGLETON = 1,
     FLAG_PREPARED = 2,
     FLAG_OWNS_BINDINGS = 3,
-    FLAG_OPEN = 4
+    FLAG_OPEN = 4,
+    FLAG_OWNS_SQLSTR = 5
 };
 
 // catalog query structures
@@ -380,6 +381,8 @@ static void sid_set_owns_bindings(struct s_sid *sid, Bool flg);
 static Bool sid_get_owns_bindings(struct s_sid *sid);
 static void cid_set_open(struct s_cid *cid, Bool flg);
 static Bool cid_get_open(struct s_cid *cid);
+static void sid_set_owns_sqlstr(struct s_sid *sid, Bool flg);
+static Bool sid_get_owns_sqlstr(struct s_sid *sid);
 static Bool prepare_statement_internal(struct s_sid *sid, char *s);
 
 // metadata functions
@@ -846,6 +849,16 @@ static Bool cid_get_open(struct s_cid *cid)
 //    return cid->hstmt == 0 ? False : True;
 }
     
+static void sid_set_owns_sqlstr(struct s_sid *sid, Bool flg)
+{
+    sid->extra_info = (void*)set_flag((unsigned int)(sid->extra_info), FLAG_OWNS_SQLSTR, flg);
+}
+
+static Bool sid_get_owns_sqlstr(struct s_sid *sid)
+{
+    return get_flag((unsigned int)(sid->extra_info), FLAG_OWNS_SQLSTR);
+}
+
 /**
  * Sets the parameters of an SQL statement.
  *
@@ -1085,16 +1098,17 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni,
 
     sid = acl_malloc2 (sizeof (struct s_sid));
     sid->extra_info = 0;
-    sid_set_owns_bindings(sid, True);
     sid_set_singleton(sid, singleton);
+
     sid->select = acl_strdup (s);
+    sid_set_owns_sqlstr(sid, True);
 
     // I'm going to copy the bindings....
     sid->ibind = acl_malloc2 (sizeof (struct BINDING) * ni);
     memcpy (sid->ibind, ibind, sizeof (struct BINDING) * ni);
-
     sid->obind = acl_malloc2 (sizeof (struct BINDING) * no);
     memcpy (sid->obind, obind, sizeof (struct BINDING) * no);
+    sid_set_owns_bindings(sid, True);
 
     sid->ni = ni;
     sid->no = no;
@@ -1150,7 +1164,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	    if (!chk_rc (rc, cid->statement->hstmt, "SQLFreeStmt(SQL_CLOSE)"))
 	    {
 		exitwith_sql_odbc_errm ("Closing cursor (%s) failed", cursname);
-		return -1;
+		return NULL;
 	    }
 	    cid_set_open(cid, False);
 	}
@@ -1207,6 +1221,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	    A4GL_trc ("nsid->ibind=%p nsid->ni=%d nsid->no=%s", nsid->ibind, nsid->ni, nsid->no);
 
 	    nsid->select = sid->select;
+	    sid_set_owns_sqlstr(nsid, False);
 	}
 
 	if (!A4GL_new_hstmt ((SQLHSTMT*) &nsid->hstmt))
@@ -1275,6 +1290,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 
     // prepare new cid
     cid = acl_malloc2 (sizeof (struct s_cid));
+    cid->extra_info = 0;
     nsid->extra_info = 0;
     A4GL_trc("Malloced cid=%p", cid);
     cid->statement = nsid;
@@ -1329,6 +1345,12 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void
 
     if (ni)
     {
+	if (sid_get_owns_bindings(sid))
+	{
+	    if (sid->ibind)
+		acl_free (sid->ibind);
+	    sid_set_owns_bindings(sid, False);
+	}
 	sid->ibind=binding;
 	sid->ni=ni;
     }
@@ -3024,11 +3046,13 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
     ignore_next_sql_error = 1;
     rc = sql_free_stmt(&((*sid)->hstmt));
 
-    if (sid_get_owns_bindings(*sid))
+    if (sid_get_owns_sqlstr(*sid))
     {
 	acl_free((*sid)->select);
 	(*sid)->select = NULL;
-
+    }
+    if (sid_get_owns_bindings(*sid))
+    {
 	if ((*sid)->ibind)
 	    acl_free ((*sid)->ibind);
 	if ((*sid)->obind)
