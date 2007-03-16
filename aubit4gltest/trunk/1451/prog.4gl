@@ -1,0 +1,19 @@
+#start of source
+main
+open  window w234567890 at 1, 1 with 16 rows,20 columns
+display "w234567890 "
+close window w234567890
+
+open  window w23456789012345 at 1, 1 with 16 rows,20 columns
+display "w23456789012345 "
+close window w23456789012345
+
+open  window w23456789012345678901 at 1, 1 with 16 rows,20 columns
+display "w23456789012345678901"
+close window w23456789012345678901
+open  window 
+w234567890123456789011111111111111111111111111111 at 1, 1 with 16 rows,20 columns
+display "w23456789012345678901"
+close window 
+w234567890123456789011111111111111111111111111111
+end main
