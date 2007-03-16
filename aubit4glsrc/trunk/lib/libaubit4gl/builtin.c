@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.107 2007-03-02 16:32:23 mikeaubury Exp $
+# $Id: builtin.c,v 1.108 2007-03-16 20:27:15 mikeaubury Exp $
 #
 */
 
@@ -301,7 +301,7 @@ aclfgl_length (int nargs)
 int A4GL_push_substr (char *ca, int dtype, int a, int b, ...) {
 char *p;  
 	p=a4gl_substr(ca,dtype,a,b);
-	A4GL_push_param(strdup(p),DTYPE_CHAR+ENCODE_SIZE(b-a+1)+DTYPE_MALLOCED);
+	A4GL_push_param(strdup(p),DTYPE_CHAR+(ENCODE_SIZE((b-a+1)))+DTYPE_MALLOCED);
 	return 1;
 }
 
@@ -319,12 +319,18 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
 {
   static char *np = 0;
   static char *np2 = 0;
+int sz;
   va_list ap;
   va_start (ap, b);
   va_end (ap);
   A4GL_debug("Entering a4gl_substr");
   if (A4GL_isnull(DTYPE_CHAR,ca)) return "";
 
+  sz=DECODE_SIZE(dtype);
+  if (b>sz && sz) {
+	A4GL_exitwith("A character variable has referenced subscripts that are out of range");
+	return "";
+  }
 
 #ifdef DEBUG
   {
@@ -338,9 +344,15 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   np = acl_strdup (ca);
   np2 = acl_strdup (ca);
 
+  if (a>strlen(ca)) {
+		a=strlen(ca);
+		return "";
+	}
 
+  if (b>strlen(ca)) { // We're past the end of the string...
+		b=strlen(ca);
+  }
 if (b) {
-
   if ((size_t)(b - a + 1) > strlen(ca)) {
 		A4GL_debug("Need a little more..");
 		free(np);
