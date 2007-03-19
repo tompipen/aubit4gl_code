@@ -111,9 +111,9 @@ A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/incl
 ############
 #CONFIG FILE BASED CONVERSIONS
 #convert_sql() now uses configuration files.  These are by default
-#located in @prefix@/etc/convertsql/, but that can be changed
+#located in @aubitdir@/etc/convertsql/, but that can be changed
 #with A4GL_SQLCNVPATH.
-A4GL_SQLCNVPATH=@prefix@/etc/convertsql
+A4GL_SQLCNVPATH=@aubitdir@/etc/convertsql
 
 ## ===================================================================
 ## 		 	Loadable modules (plug-ins) / library configurations
