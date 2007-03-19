@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.64 2007-03-07 11:16:01 mikeaubury Exp $
+# $Id: binding.c,v 1.65 2007-03-19 08:12:56 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.64 2007-03-07 11:16:01 mikeaubury Exp $";
+		"$Id: binding.c,v 1.65 2007-03-19 08:12:56 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -721,6 +721,8 @@ static char buff_ind[255];
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
 	  break;
+	default :
+		a4gl_yyerror("Unknown sqltype"); break;
 	}
 	strcat(buff,buff_ind);
     }
@@ -788,11 +790,16 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , bind->bind[a].dtype >> 16);
+	  SPRINTF2 (buff,"varchar _vo_%d[%d];", a , bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
 	  break;
+ 	default:
+	  SPRINTF1 (buff,"Unknown _vo_%d;", a);
+	  break;
+		a4gl_yyerror("Unknown datatype");
+		break;
 	}
 	strcat(buff,buff_ind);
     }
