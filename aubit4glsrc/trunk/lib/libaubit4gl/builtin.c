@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.108 2007-03-16 20:27:15 mikeaubury Exp $
+# $Id: builtin.c,v 1.109 2007-03-22 20:16:11 mikeaubury Exp $
 #
 */
 
@@ -1773,4 +1773,20 @@ char *str;
 	}
 	free(rpl_with); free(rpl_start); free(str);
 	return 1;
+}
+
+
+
+int aclfgl_aclfgl_call_in_shared(int a) {
+char *ptr1;
+char *ptr2;
+char *ptr3;
+
+	ptr1=A4GL_char_pop();
+	ptr2=A4GL_char_pop();
+	A4GL_convlower(ptr1);
+
+ 	return A4GL_call_4gl_dll (ptr2,ptr1, a-2);
+
+return 0;
 }
