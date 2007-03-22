@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.171 2007-03-07 22:47:11 mikeaubury Exp $
+# $Id: stack.c,v 1.172 2007-03-22 11:08:23 mikeaubury Exp $
 #
 */
 
@@ -182,6 +182,7 @@ struct param
  * @todo Validate if what we want is a ** and not a * and if so make the change
  */
 struct param *params = 0;
+int last_push_was_ascii_null=0;
 
 /**
  * The nuber of elements in the parameter stack
@@ -819,6 +820,7 @@ A4GL_push_param (void *p, int d)
   int ob;
 
 
+  last_push_was_ascii_null=0;
 
   size = DECODE_SIZE (d);
   d = d & 0xffff;
@@ -1703,8 +1705,16 @@ A4GL_push_ascii ()
   buff[0] = a;
   buff[1] = 0;
   A4GL_push_char (buff);
+  last_push_was_ascii_null=0;
+  if (a==0) {
+  	last_push_was_ascii_null=1;
+  } 
 }
 
+
+int A4GL_last_was_ascii_null(void) {
+	return last_push_was_ascii_null;
+}
 
 void A4GL_push_date_expr(void) {
 long l;

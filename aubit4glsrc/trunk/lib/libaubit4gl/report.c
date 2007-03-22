@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.124 2007-03-09 16:05:11 mikeaubury Exp $
+# $Id: report.c,v 1.125 2007-03-22 11:08:24 mikeaubury Exp $
 #
 */
 
@@ -186,6 +186,52 @@ static char *b=0; // Keep it hanging around....
 char **repnames=0;
 int nrepnames=0;
 
+
+static void print_rep_header(FILE *f, char *s) {
+int l;
+int a;
+if (strstr(s,"\\0")==0 || strlen(s)<2) {
+	FPRINTF(f,"%s",s);
+	return ;
+}
+l=strlen(s);
+for (a=0;a<l;a++) {
+	
+if (a) {
+	if (s[a-1]!='\\' && s[a]=='\\' && s[a+1]=='0') {
+		fputc(0,f);
+		a++;
+		continue;
+	}
+	if (s[a-1]=='\\' && s[a]=='\\' && s[a+1]=='0') {
+		continue;
+	}
+}
+	fputc(s[a],f);
+}
+
+}
+
+
+
+
+static char *report_header_encode(char *s) {
+static char *buff=0;
+int l;
+int a;
+int b=0;
+
+if (strstr(s,"\\0")==0) return s;
+l=strlen(s);
+buff=realloc(buff, l*4+10);
+
+for (a=0;a<l;a++) {
+	if (s[a]=='\\' && s[a+1]=='0') {buff[b++]='\\';}
+	buff[b++]=s[a];
+}
+buff[b]=0;
+return buff;
+}
  
 
 /* 
@@ -404,7 +450,10 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	    }
 	  else
 	    {
-	      FPRINTF (rep->output, "%s", rep->header);
+
+		print_rep_header(rep->output, rep->header);
+
+	      // FPRINTF (rep->output, "%s", rep->header);
 	      free (rep->header);
 	      rep->header = 0;
 	    }
@@ -416,7 +465,11 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	}
       else
 	{
-	  FPRINTF (rep->output, "%s", buff);
+	  if (strlen(buff)==0 && A4GL_last_was_ascii_null()) {
+			fputc(0, rep->output);
+	} else {
+	  		FPRINTF (rep->output, "%s", buff);
+		}
 	}
 
     }
@@ -444,7 +497,11 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	    }
 	  else
 	    {
-	      FPRINTF (rep->output, "%s", buff);
+	  	if (strlen(buff)==0 && A4GL_last_was_ascii_null()) {
+			fputc(0, rep->output);
+		} else {
+	      		FPRINTF (rep->output, "%s", buff);
+		}
 	    }
 
 	}
@@ -456,8 +513,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	{
 	  if (rep->header)
 	    {
-	      add_header_entry (rep, (struct s_save_header *) rep->header,
-				buff, entry);
+	      add_header_entry (rep, (struct s_save_header *) rep->header, buff, entry);
 	    }
 	  else
 	    {
@@ -466,7 +522,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	      hdr->save_cnt = 0;
 	      hdr->save = 0;
 	      rep->header = (char *) hdr;
-	      add_header_entry (rep, hdr, buff, entry);
+	      		add_header_entry (rep, hdr, buff, entry);	
 
 	    }
 	  //print_data (rep, buff, entry);
@@ -480,13 +536,22 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 	    {
 	      int a;
 	      a = strlen (rep->header);
-	      rep->header = realloc (rep->header, a + strlen (buff) + 2);
+	      rep->header = realloc (rep->header, a + strlen (buff) + 10); // a bit extra...
 	      rep->header[a] = 0;
-	      strcat (rep->header, buff);
+
+	  	if (strlen(buff)==0 && A4GL_last_was_ascii_null()) {
+	      		strcat (rep->header, "\\0");
+		} else {
+	      		strcat (rep->header, report_header_encode(buff));
+		}
 	    }
 	  else
 	    {
-	      rep->header = acl_strdup (buff);
+	  	if (strlen(buff)==0 && A4GL_last_was_ascii_null()) {
+	      		rep->header = acl_strdup ("\\0");
+		} else {
+	      		rep->header = acl_strdup (report_header_encode(buff));
+		}
 	    }
 
 
@@ -1632,7 +1697,6 @@ A4GL_report_char_pop (void)
 	}
 
     }
-
 
   return ptr;
 
