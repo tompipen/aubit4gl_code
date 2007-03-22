@@ -17,13 +17,10 @@ finish report reponull
 end main
 
 report reponull()
-define w_char char(10)
 output
 left margin 0 top margin 0 bottom margin 0 page length 1
 format
     on every row
         print "text file"
         print "here comes ", ascii 0, " a null"
-        let w_char = "null=", ascii 0, "."
-        print w_char
 end report
