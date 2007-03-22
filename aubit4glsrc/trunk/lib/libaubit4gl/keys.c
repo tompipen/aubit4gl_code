@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.41 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: keys.c,v 1.42 2007-03-22 11:13:32 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ A4GL_key_val (char *str)
 
 */
 int A4GL_is_special_key(int k, int type) {
-
+	A4GL_init_stddbscr();
 
 	if (k==type) return 1;
 	switch (type) {
@@ -197,6 +197,7 @@ A4GL_key_val2 (char *str_x)
   char str[256];
   strcpy(str,str_x);
   A4GL_trim(str);
+	A4GL_init_stddbscr();
 
   A4GL_debug ("In A4GL_key_val str=%s", str);
 
@@ -216,7 +217,6 @@ A4GL_key_val2 (char *str_x)
 
   if (mja_strcmp ("HELP", str) == 0)  return A4GLKEY_HELP;
    					//return std_dbscr.helpkey;
-
 
   if (A4GL_isyes(acl_getenv("USEPAGEKEYS"))) {
   	if (mja_strcmp ("NEXT", str) == 0) 		return A4GLKEY_PGDN;
