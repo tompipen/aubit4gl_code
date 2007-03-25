@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.185 2007-03-25 13:27:15 mikeaubury Exp $
+# $Id: esql.ec,v 1.186 2007-03-25 13:27:38 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.185 2007-03-25 13:27:15 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.186 2007-03-25 13:27:38 mikeaubury Exp $";
 #endif
 
 
@@ -235,19 +235,6 @@ static int getColumnsMax = 0;
 
 
 
-
-static void disp_dec(char *s, dec_t *num)
-{
-    mint n;
-
-    printf("%s dec_t structure:\n", s);
-    printf("\tdec_exp = %d, dec_pos = %d, dec_ndgts = %d, dec_dgts: ",
-      num->dec_exp, num->dec_pos, num->dec_ndgts);
-    n = 0;
-    while(n < num->dec_ndgts)
-      printf("%02d ", num->dec_dgts[n++]);
-    printf("\n\n");
-}
 
 /**
  * Handle the ocurrence of sql errors.
