@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.184 2007-03-04 12:37:18 mikeaubury Exp $
+# $Id: esql.ec,v 1.185 2007-03-25 13:27:15 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.184 2007-03-04 12:37:18 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.185 2007-03-25 13:27:15 mikeaubury Exp $";
 #endif
 
 
@@ -232,6 +232,22 @@ static int getColumnsMax = 0;
                     Functions definitions
 =====================================================================
 */
+
+
+
+
+static void disp_dec(char *s, dec_t *num)
+{
+    mint n;
+
+    printf("%s dec_t structure:\n", s);
+    printf("\tdec_exp = %d, dec_pos = %d, dec_ndgts = %d, dec_dgts: ",
+      num->dec_exp, num->dec_pos, num->dec_ndgts);
+    n = 0;
+    while(n < num->dec_ndgts)
+      printf("%02d ", num->dec_dgts[n++]);
+    printf("\n\n");
+}
 
 /**
  * Handle the ocurrence of sql errors.
@@ -1138,9 +1154,12 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   long date_var;
   dec_t money_var;
   dtime_t dtime_var;
+int d_scale=0;
+int d_prec=0;
   //datetime year to second dtime_var;
   intrvl_t interval_var;
   byte byte_var;
+	long dlength;
   /*
      fglbyte byte_var;
      fgltext text_var;
@@ -1149,7 +1168,7 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   EXEC SQL END DECLARE SECTION;
   fgldecimal *fgl_decimal;
   FglDate *fgl_date;
-  fglmoney *fgl_money;
+  //fglmoney *fgl_money;
   //fglbyte *fgl_byte;
   FglDatetime *fgl_dtime;
   //FglInterval *fgl_interval;
@@ -1236,15 +1255,21 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
 				/** @todo : We need to store this error */
 	    return 1;
 	  }
+
+	  d_prec=decimal_var.dec_ndgts*2;
+	  d_scale=d_prec-(decimal_var.dec_exp*2);
       }
-    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:decimal_var;
+
+
+    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:decimal_var,
+			 SCALE=:d_scale, PRECISION=:d_prec;
       break;
     case DTYPE_MONEY:
       {
 	char *b;
 	vptr = (void *) bind[idx].ptr;
-	fgl_money = (fglmoney *) vptr;
-	b = A4GL_dec_to_str ((void *) fgl_money, 0);
+	fgl_decimal = (fgldecimal *) vptr;
+	b = A4GL_dec_to_str ((void *) fgl_decimal, 0);
 	/* 
 	   warning: passing arg 1 of `A4GL_dec_to_str' from incompatible pointer type
 	   char *A4GL_dec_to_str (fgldecimal *dec, int size) ;  
@@ -1272,8 +1297,18 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
 				/** @todo : We need to store this error */
 	    return 1;
 	  }
+	  	d_prec=money_var.dec_ndgts*2;
+	  	d_scale=d_prec-(money_var.dec_exp*2);
+
+
+	if (d_prec==0) 		{ d_prec=16; }
+	if (d_scale>31) 	{ d_scale=31; }
+	if (d_prec<d_scale) d_prec=d_scale+1;
+
+
       }
-    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:money_var;
+    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:money_var,
+			 SCALE=:d_scale, PRECISION=:d_prec;
       break;
 
     case DTYPE_DATE:
