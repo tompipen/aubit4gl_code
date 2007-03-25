@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.125 2007-03-22 11:08:24 mikeaubury Exp $
+# $Id: report.c,v 1.126 2007-03-25 13:33:17 mikeaubury Exp $
 #
 */
 
@@ -795,7 +795,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 				char *buff;
 				buff=malloc(right_margin+1);
 				memset(buff,0,right_margin+1);
-				strncmp(buff,ptr,right_margin);
+				strncpy(buff,ptr,right_margin);
 				buff[right_margin]=0;
 				A4GL_push_char(buff);
 				A4GL_rep_print(rep,1,1,0,entry);
@@ -808,9 +808,13 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 				int psize;
 				// it'll fit...
 				strcpy(buff,ptr);
+			
+				//printf("right margin=%d left margin=%d orig_r=%d init_col=%d\n",right_margin,rep->left_margin, orig_r,init_col);
 				psize=right_margin-rep->left_margin+1;
+				if (init_col==0) psize--;
 				if (psize>0) {
 					A4GL_assertion(psize>sizeof(buff),"Buffer to small for padspace");
+					//printf("Padding to %d\n",psize);
 					A4GL_pad_string(buff,psize);
 				}
 				A4GL_push_char(buff);
@@ -854,7 +858,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 		    if (strlen(rep->top_of_page)==0) {
 	      		for (cnt = 0; cnt < rep->bottom_margin; cnt++) {
 			  report_print (rep, -1, "\n");
-			  rep->line_no++;
+			  //rep->line_no++;
 			}
 		    } else {
 			  report_print (rep, -1, top_of_page(rep->top_of_page,"B"));
@@ -959,10 +963,18 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
       rep->printed_left_margin = 0;
       report_print (rep, -1, "\n");
       rep->line_no++;
+
     }
   return;
 }
 
+
+int A4GL_report_lineno(struct rep_structure *rep) {
+	  if (rep->line_no > rep->page_length - rep->bottom_margin) { 
+		return 0;
+	  }
+	return rep->line_no-1;
+}
 
 /**
  *

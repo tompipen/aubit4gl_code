@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.41 2007-02-22 18:24:51 mikeaubury Exp $
+# $Id: error.c,v 1.42 2007-03-25 13:33:17 mikeaubury Exp $
 #
 */
 
@@ -256,6 +256,7 @@ void
 aclfgli_clr_err_flg (void)
 {
   int_err_flg = 0;
+  //a4gl_status=0;
   //if (a4gl_status!=0) {
 	  //A4GL_assertion(1,"should status be reset here ?");
   //}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.85 2007-03-01 20:05:11 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.86 2007-03-25 13:33:17 mikeaubury Exp $
 #
 */
 
@@ -361,6 +361,7 @@ a4gl_using (char *str, int s, char *fmt, double num)
 	if (fmt[a]==')') cb++;
   }
 
+memset(str,0,s);
 
 never_neg=num;
 if (num<0) never_neg=0.0-num;
@@ -388,14 +389,19 @@ if (num<0) never_neg=0.0-num;
 			if (buff2[a]=='(') buff2[a]='#';
 			if (buff2[a]==')') buff2[a]='#';
 		}
+			//printf("buff2=%s %lf \n",buff2, never_neg);
 		a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+			//printf("fmt2=%s\n",fmt2);
 		strncpy(strchr(fmt, '(')+1,fmt2,strlen(buff2));
 		if (num>0) {
-			ptr=strchr(fmt2,'(');	 *ptr=' ';
-			ptr=strchr(fmt2,')');	 *ptr=' ';
+			//printf("fmt=%s fmt2=%s\n",fmt,fmt2);
+			if (strchr(fmt,'(') && strchr(fmt,')')) {
+					ptr=strchr(fmt,'(');	 *ptr=' ';
+					ptr=strchr(fmt,')');	 *ptr=' ';
+			}
 		}
 		
-		strcpy(str,fmt2);
+		strcpy(str,fmt);
 		free(buff2);
 
 	}
@@ -405,6 +411,7 @@ if (num<0) never_neg=0.0-num;
 		char *ptr;
 		char fmt2[20000];
 
+		memset(fmt2,0,sizeof(fmt2));
 		buff2=malloc(strlen(fmt)+1);
 		strcpy(buff2,strchr(fmt, '(')+1);
 		ptr=strchr(buff2,')');

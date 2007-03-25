@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.263 2007-02-28 18:58:52 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.264 2007-03-25 13:33:16 mikeaubury Exp $
 #
 */
 
@@ -3152,6 +3152,7 @@ struct s_select_list_item * append_select_list_item_case (struct s_select_list_i
 struct s_select_list_item * new_select_list_item_case_element ( struct s_select_list_item *w,  struct s_select_list_item *e)  ;
 struct s_select_list_item * new_select_list_item_replace_var (char *s);
 int is_fake_rowid_column(char*s);
+int A4GL_last_was_ascii_null(void);
 char *A4GLSQLCV_check_colname_alias(char *alias,char *tabname, char *colname);
  
 

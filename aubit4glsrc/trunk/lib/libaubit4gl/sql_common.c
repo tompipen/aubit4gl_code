@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.38 2007-03-15 17:53:28 gyver309 Exp $
+# $Id: sql_common.c,v 1.39 2007-03-25 13:33:17 mikeaubury Exp $
 #
 */
 
@@ -117,7 +117,7 @@ void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 int
 A4GLSQL_set_status (int a, int sql)
 {
-  if (aclfgli_get_err_flg())
+  if (aclfgli_get_err_flg() )
   {
       A4GL_debug("set_status: errflg is set - not setting new status %d", a);
       return 0;
