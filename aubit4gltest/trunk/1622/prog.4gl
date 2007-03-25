@@ -18,5 +18,5 @@ update tablemoney set fb = fa * w_tica
 select * into w_fa, w_fb from tablemoney
 let w_a = w_fa * w_tica
 # w_fb and w_a should be the same
-display w_fa, w_fb, w_a
+display w_fa using "######&.&&&&&&", " ",w_fb using "######&.&&&&&&", " ",w_a using "######&.&&&&&&"
 end main
