@@ -1362,7 +1362,6 @@ static int
 get_size (int dtype, int size)
 {
 
-
   switch (dtype)
     {
     case CCHARTYPE:
@@ -1403,7 +1402,7 @@ get_size (int dtype, int size)
 
     case CDTIMETYPE:
     case SQLDTIME:
-      return 21;
+      return 25;
 
     case CVARBINTYPE:
     case CLOCATORTYPE:
@@ -1417,6 +1416,9 @@ get_size (int dtype, int size)
     case CVCHARTYPE:
     case SQLVCHAR:
       return size;
+
+    case CFIXCHARTYPE:
+	return size;
 
     case CINVTYPE:
     case SQLINTERVAL:
