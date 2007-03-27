@@ -15,6 +15,8 @@ let w_file = "out.expected"
 start report repodec to w_file
 let w_d = 0.000
 output to report repodec(w_d)
+let w_d = 19600.000
+output to report repodec(w_d)
 finish report repodec
 end main
 
