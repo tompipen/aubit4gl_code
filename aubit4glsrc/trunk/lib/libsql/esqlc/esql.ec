@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.186 2007-03-25 13:27:38 mikeaubury Exp $
+# $Id: esql.ec,v 1.187 2007-03-27 17:02:09 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.186 2007-03-25 13:27:38 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.187 2007-03-27 17:02:09 mikeaubury Exp $";
 #endif
 
 
@@ -1246,7 +1246,10 @@ int d_prec=0;
 	  d_prec=decimal_var.dec_ndgts*2;
 	  d_scale=d_prec-(decimal_var.dec_exp*2);
       }
-
+	if (d_prec==0) 		{ d_prec=16; }
+	if (d_scale>31) 	{ d_scale=31; }
+	if (d_prec==0 && d_scale==128) { /* 0.0 */ d_prec=5; d_scale=2; }
+	if (d_prec<d_scale) d_prec=d_scale+1;
 
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:decimal_var,
 			 SCALE=:d_scale, PRECISION=:d_prec;
@@ -1286,6 +1289,7 @@ int d_prec=0;
 	  }
 	  	d_prec=money_var.dec_ndgts*2;
 	  	d_scale=d_prec-(money_var.dec_exp*2);
+	if (d_prec==0 && d_scale==128) { /* 0.0 */ d_prec=5; d_scale=2; }
 
 
 	if (d_prec==0) 		{ d_prec=16; }
