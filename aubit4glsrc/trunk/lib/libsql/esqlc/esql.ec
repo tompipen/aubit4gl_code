@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.187 2007-03-27 17:02:09 mikeaubury Exp $
+# $Id: esql.ec,v 1.188 2007-03-27 18:07:17 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.187 2007-03-27 17:02:09 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.188 2007-03-27 18:07:17 mikeaubury Exp $";
 #endif
 
 
@@ -1100,8 +1100,30 @@ short indicat=0;
 
 }
 
+void get_scale(char *b, int *p_prec, int *p_scale) {
+char buff[10000];
+int c;
+int a;
+int l;
+strcpy(buff,b);
+A4GL_lrtrim(buff);
+*p_prec=2;
+*p_scale=0;
+l=strlen(buff);
+if (l==0) {*p_prec=2; return;}
 
+*p_prec=l;
 
+for (a=0;a<l;a++) {
+	if (buff[a]=='.' || buff[a]==',') {
+		*p_scale=strlen(&buff[a+1]); // get the number of remaining digits..
+		*p_prec=l;        // subtract from the total length
+		return ;
+	}
+}
+// defaults to p_prec=strlen, with p_scale=0 (because we didn't find a '.')
+
+}
 /**
  * Bind the value to input descriptor entry.
  *
@@ -1237,19 +1259,17 @@ int d_prec=0;
 	vptr = (void *) bind[idx].ptr;
 	fgl_decimal = (fgldecimal *) vptr;
 	b = A4GL_dec_to_str (fgl_decimal, 0);
+	get_scale(b, &d_prec, &d_scale);
+
 	if (deccvasc (b, strlen (b), &decimal_var))
 	  {
 				/** @todo : We need to store this error */
 	    return 1;
 	  }
 
-	  d_prec=decimal_var.dec_ndgts*2;
-	  d_scale=d_prec-(decimal_var.dec_exp*2);
+	  /* d_prec=decimal_var.dec_ndgts*2; d_scale=d_prec-(decimal_var.dec_exp*2); printf("d_prec=%d d_scale=%d %s\n", d_prec,d_scale, b); */
       }
-	if (d_prec==0) 		{ d_prec=16; }
-	if (d_scale>31) 	{ d_scale=31; }
-	if (d_prec==0 && d_scale==128) { /* 0.0 */ d_prec=5; d_scale=2; }
-	if (d_prec<d_scale) d_prec=d_scale+1;
+
 
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:decimal_var,
 			 SCALE=:d_scale, PRECISION=:d_prec;
@@ -1287,14 +1307,15 @@ int d_prec=0;
 				/** @todo : We need to store this error */
 	    return 1;
 	  }
-	  	d_prec=money_var.dec_ndgts*2;
-	  	d_scale=d_prec-(money_var.dec_exp*2);
-	if (d_prec==0 && d_scale==128) { /* 0.0 */ d_prec=5; d_scale=2; }
+	get_scale(b, &d_prec, &d_scale);
+	 //d_prec=money_var.dec_ndgts*2;
+	 //d_scale=d_prec-(money_var.dec_exp*2);
+	//if (d_prec==0 && d_scale==128) { /* 0.0 */ d_prec=5; d_scale=2; }
 
 
-	if (d_prec==0) 		{ d_prec=16; }
-	if (d_scale>31) 	{ d_scale=31; }
-	if (d_prec<d_scale) d_prec=d_scale+1;
+	//if (d_prec==0) 		{ d_prec=16; }
+	//if (d_scale>31) 	{ d_scale=31; }
+	//if (d_prec<d_scale) d_prec=d_scale+1;
 
 
       }
