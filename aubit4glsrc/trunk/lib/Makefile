@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.17 2007-03-28 09:18:43 mikeaubury Exp $
+# $Id: Makefile,v 1.18 2007-03-28 10:01:39 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -195,7 +195,7 @@ LIBUIGTK_DEPS		=$(wildcard ${LIBUIGTK_PATH}/*.c) $(wildcard ${LIBUIGTK_PATH}/*.h
 LIBUIHL_DEPS		=$(wildcard ${LIBUIHL_PATH}/*.c) $(wildcard ${LIBUIHL_PATH}/*.h) \
 					$(wildcard ${LIBUIHL_PATH}/lowlevel/*.c) \
 					$(wildcard ${LIBUIHL_PATH}/lowlevel/*.h) \
-					$(wildcard ${LIBUIHL_PATH}/Makefile) ${ALL_H}
+					$(wildcard ${LIBUIHL_PATH}/Makefile) ${ALL_H} ${LIBUIHL_PATH}/a4gl_API_lowlevel.h
 LIBUICURSES_DEPS	=$(wildcard ${LIBUICURSES_PATH}/*.c) $(wildcard ${LIBUICURSES_PATH}/*.h) \
 					$(wildcard ${LIBUICURSES_PATH}/Makefile) ${ALL_H}
 LIBUICONSOLE_DEPS	=$(wildcard ${LIBUICONSOLE_PATH}/*.c) $(wildcard ${LIBUICONSOLE_PATH}/*.h) \

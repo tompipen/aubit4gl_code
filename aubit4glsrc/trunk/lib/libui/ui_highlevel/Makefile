@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2007-03-28 09:18:44 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2007-03-28 10:01:39 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -191,8 +191,9 @@ PDCURSESX_OBJ		=lowlevel_tui_noformX.o form_tuiX.o width_narrow.o
 ##                              Targets
 ## ==================================================================
 
-all: ${ALL}
+all: a4gl_API_lowlevel.h ${ALL}
 	@echo "Default trgets (${ALL}) compiled sucessfuly."
+
 
 #What was this is should it be removed completely? Mike?
 #${LIBROOT}/libUI_HLGENERIC${SO_EXT}: $(OBJS) API_lowlevel.o
@@ -201,7 +202,7 @@ all: ${ALL}
 
 #Standard Curses based plug-in
 #${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUI${SO_EXT}
-${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: clean_hl_tui $(OBJS) ${OBJS2}
+${PLUGINDIR}/libUI_HL_TUI${SO_EXT}:  $(OBJS) ${OBJS2} 
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS2} \
 		${LINKLIBS} ${CURSES_LIB_NAME} 
 
@@ -209,13 +210,13 @@ TUIw: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
 
 #PDcurses with libform from CygWin added
 libUI_HL_TUIw${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
-${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: clean_hl_tuiw $(OBJS) lowlevel_tui_win32.o width_narrow.o
+${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}: $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
 		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform ${CURSES_LIB_NAME} 
 
 #PDcurses with libform from CygWin added - STATICALLY linked
 libUI_HL_TUIws${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}
-${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: clean_hl_tuiws $(OBJS) lowlevel_tui_win32.o width_narrow.o
+${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: $(OBJS) lowlevel_tui_win32.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) lowlevel_tui_win32.o width_narrow.o \
 		${LINKLIBS} -L$(ROOT)/tools/cygwin/libform -lform_g ${CURSES_LIB_NAME} 
 
@@ -223,25 +224,25 @@ ${PLUGINDIR}/libUI_HL_TUIws${SO_EXT}: clean_hl_tuiws $(OBJS) lowlevel_tui_win32.
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 
 #no libform implementation (PDcurses are only Curses implementation available for Windows)
 libUI_HL_TUIN${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}
-${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}: clean_hl_tuin $(OBJS) ${PDCURSES_OBJ}
+${PLUGINDIR}/libUI_HL_TUIN${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 #Statically linked TUIN
 libUI_HL_TUINs${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}
-${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}: clean_hl_tuins $(OBJS) ${PDCURSES_OBJ}
+${PLUGINDIR}/libUI_HL_TUINs${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${PD_CURSES_LIB_NAME}
 
 #Debug version of TUIN, using debug library libpanel_g
 libUI_HL_TUIN-DEBUG${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}
-${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}: clean_hl_tuind $(OBJS) ${PDCURSES_OBJ}
+${PLUGINDIR}/libUI_HL_TUIN-DEBUG${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSES_OBJ} \
 		${LINKLIBS} ${LIBS3}
 
 #Not shure what this is? Mike?
 libUI_HL_TUINW${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}
-${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}: clean_hl_tuinw $(OBJS) ${OBJS4}
+${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}: $(OBJS) ${OBJS4}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS4} ${LINKLIBS} \
 		-L/usr/local/widec/lib -static -lpanelw_g -lncursesw_g
 
@@ -261,14 +262,14 @@ ${PLUGINDIR}/libUI_HL_TUINW${SO_EXT}: clean_hl_tuinw $(OBJS) ${OBJS4}
 #
 #${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: CFLAGS=${PDCURSESX_CFLAGS}
-${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: clean_hl_tuix $(OBJS) ${PDCURSESX_OBJ} 
+${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: $(OBJS) ${PDCURSESX_OBJ} 
 	${LD} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSESX_OBJ} ${LINKLIBS} \
 		${XCURSES_LIBS} -lXpanel
 	
 	
 #Standard GTK+ based plug-in
 #${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: ${PLUGINDIR}/libUI_HL_GTK${SO_EXT}
-${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: clean_hl_gtk $(OBJS) ${OBJS5}
+${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: $(OBJS) ${OBJS5}
 	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $(OBJS) ${OBJS5} \
 		${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
 
@@ -375,7 +376,7 @@ show:
 
 cleanish: clean.capi
 	${RM} *${SO_EXT} *.o *.bak testit API_lowlevel.c API_lowlevel.h \
-	lowlevel/*.bak a4gl_API_lowlevel.h remote_client/*.o 
+	lowlevel/*.bak remote_client/*.o 
 
 clean: cleanish
 	${RM} ${PLUGINDIR}/libUI_HL_GTK${SO_EXT} \

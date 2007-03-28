@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.34 2005-03-20 04:26:43 afalout Exp $
+# $Id: amake,v 1.35 2007-03-28 10:01:39 mikeaubury Exp $
 #
 #####################################################################
 
@@ -785,7 +785,12 @@ function set_default_options () {
 			#CygWin does not install gmake link, make is gmake
 			MAKE=make
 		else
-			MAKE=gmake
+			if type gmake > /dev/null 2> /dev/null
+			then
+				MAKE=gmake
+			else
+				MAKE=make
+			fi
 		fi
 		
 		#note "MAKE was not set - defaulting to $MAKE" 
