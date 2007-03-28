@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2006-07-27 16:04:03 mikeaubury Exp $
+# $Id: Makefile.in,v 1.15 2007-03-28 13:32:29 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -69,6 +69,10 @@ endif
 
 ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
+endif
+
+ifeq "${TARGET_OS}" "darwin"
+        LINKLIBS+=-lncurses  -lpanel -lform  -L../.. -laubit4gl
 endif
 
 
