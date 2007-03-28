@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.112 2006-09-25 16:56:08 mikeaubury Exp $
+# $Id: compile.c,v 1.113 2007-03-28 07:49:12 mikeaubury Exp $
 #*/
 
 /**
@@ -90,6 +90,9 @@ int globals_only = 0;
 int yyin_len;
 char *default_database = 0;
 void remove_file(char *base,char *ext) ;
+#ifdef __DARWIN__
+#define YYDEBUG 1
+#endif
 
 #ifdef YYDEBUG
 extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
