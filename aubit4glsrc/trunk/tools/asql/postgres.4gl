@@ -58,7 +58,7 @@ char loadbuff[LOADBUFFSIZE];
 
 FILE *f_unloadFile=0;
 int firstFetchInit=0;
-extern char *delim;// delimiters for load/unload
+extern char *LoadUnload_delim;// delimiters for load/unload
 
 void cp_sqlca_full() ;
 int ec_check_and_report_error();
@@ -561,7 +561,7 @@ if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
         } 
 
 	if (display_mode==DISPLAY_UNLOAD) {
-                        fprintf(f_unloadFile,"%s%s",escape_delim(buffer),delim);
+                        fprintf(f_unloadFile,"%s%s",escape_delim(buffer),LoadUnload_delim);
 	}
 
 	if (display_mode==DISPLAY_ACROSS) {
@@ -1355,7 +1355,7 @@ return p;
 
 
 char delims[256];
-char *delim;
+//char *local_delim;
 FILE *loadFile=0;
 
 
@@ -1407,11 +1407,11 @@ int ok;
 char smbuff[2048];
 int nfields;
 int lineno=0;
-        delim=&delims[0];
-        strcpy(delim,"|");
+        LoadUnload_delim=&delims[0];
+        strcpy(LoadUnload_delim,"|");
 *err_at_col=1;
         if (loadFile) fclose(loadFile);
-        if (e->delim) { if (strlen(e->delim)) { strcpy(delim,e->delim); } }
+        if (e->delim) { if (strlen(e->delim)) { strcpy(LoadUnload_delim,e->delim); } }
         loadFile=fopen(e->fname,"r");
         if (loadFile==0) { set_sqlcode(-805); return 0; }
         ok=0;
@@ -1422,8 +1422,8 @@ int lineno=0;
                         break;
                 }
                 lineno++;
-                stripnlload (loadbuff, delim[0]);
-                nfields = find_delims (delim[0]);
+                stripnlload (loadbuff, LoadUnload_delim[0]);
+                nfields = find_delims (LoadUnload_delim[0]);
                 sprintf(ins_str,e->stmt);
                 strcat(ins_str," values (");
                 for (a=0;a<nfields;a++) {

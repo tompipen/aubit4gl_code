@@ -70,7 +70,7 @@ extern int display_mode;
 int numberOfColumns=0;
 char **colnames;
 int colnamesize=-1;
-extern char *delim;
+extern char *LoadUnload_delim;
 
 endcode
 
@@ -614,7 +614,7 @@ printField (FILE * outputFile, int idx, char *descName) {
 
   case DISPLAY_UNLOAD:
       fprintf (f_unloadFile, "%s", escape_delim (buff));
-      fprintf (f_unloadFile, "%s", delim);
+      fprintf (f_unloadFile, "%s", LoadUnload_delim);
 	break;
 	}
 }

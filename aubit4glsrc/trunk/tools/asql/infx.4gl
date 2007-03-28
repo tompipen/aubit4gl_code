@@ -137,7 +137,7 @@ void    mem_zap(Memory *m);
 
 
 
-extern char *delim;
+extern char *LoadUnload_delim;
 #define syntaxerror()  (sqlca.sqlcode = -201, sql_error("",""))
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
@@ -921,7 +921,7 @@ indicator=*col->sqlind ;
   if (display_mode == DISPLAY_UNLOAD)
     {
       fprintf (f_unloadFile, "%s", escape_delim (buffer));
-      fprintf (f_unloadFile, "%s", delim);
+      fprintf (f_unloadFile, "%s", LoadUnload_delim);
     }
 
 

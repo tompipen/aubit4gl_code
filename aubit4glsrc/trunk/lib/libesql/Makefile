@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.41 2007-03-28 09:26:56 mikeaubury Exp $
+# $Id: Makefile,v 1.42 2007-03-28 13:38:26 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -49,7 +49,18 @@ ifeq "${TARGET_OS}" "solaris"
 	LIBAUBIT4GL=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
 
+SHARED=--shared
+PGEXTRA=
+
+
+ifeq "${TARGET_OS}" "darwin"
+SHARED=-bundle
+PGEXTRA=-lpq `pg_config --libs` -L${LIBROOT} -laubit4gl
+PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes 
+else
 PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
+endif
+
 
 
 #Define default components to build
@@ -139,7 +150,7 @@ ifneq "${COMSPEC}" ""
 		$^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 #Unix:
-	${IFMX_ESQLC}  ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}  
+	${IFMX_ESQLC}  ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}  
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
@@ -149,30 +160,30 @@ endif
 ###################
 libESQL_POSTGRES${SO_EXT}: ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
 ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
-	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
+	${CC} ${STATIC} -g ${SHARED} $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL} ${PGEXTRA}
 # -Bstatic
 #gcc: file path prefix "static" never used
 
 ###################
 libESQL_SAP${SO_EXT}: ${PLUGINDIR}/libESQL_SAP${SO_EXT}
 ${PLUGINDIR}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
-	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
+	${CC} ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}
 
 ###################
 libESQL_QUERIX${SO_EXT}: ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}
 ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
-	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
+	${CC} ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
 
 ###################
 libESQL_INGRES${SO_EXT}: ${PLUGINDIR}/libESQL_INGRES${SO_EXT}
 ${PLUGINDIR}/libESQL_INGRES${SO_EXT}: helper_funcs_ingres.o
-	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
+	${CC} ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
 
 ###################
 libESQL_INFOFLEX${SO_EXT}: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
 INFOFLEX: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
 ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}: helper_funcs_infoflex.o
-	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INFOFLEX_LFLAGS} ${INFOFLEX_LIBS}
+	${CC} ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL} ${INFOFLEX_LFLAGS} ${INFOFLEX_LIBS}
 
 ## ==================================================================
 ##                              Sub-targets

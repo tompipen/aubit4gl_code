@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2007-01-04 18:44:01 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2007-03-28 13:38:28 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -80,6 +80,11 @@ endif
 
 .PHONY : ${ALL} clean all allodbc odbc32 #sqlite.static
 
+ifeq "${TARGET_OS}" "darwin"
+SQLITE_FLAGS=-L/opt/local/lib
+else
+SQLITE_FLAGS=-Wl,-call_shared -Wl,--dll-verbose 
+endif
 
 ## ==================================================================
 ##                              Targets
@@ -171,8 +176,8 @@ ${PLUGINDIR}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 libSQL_sqlite3${SO_EXT}: ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}
 ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLLEN=int -DSQLITE_DIRECT
 ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
-	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} -Wl,-call_shared -Wl,--dll-verbose \
-		-l${SQLITE_LIBNAME} ${LINKLIBS} > link.log 2>&1
+
+	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} ${SQLITE_FLAGS} -l${SQLITE_LIBNAME} ${LINKLIBS} > link.log 2>&1
 #ifdef COMSPEC
 	@echo "Should NOT be empty: '`cygcheck $@ | grep -v libSQL_ | grep ${SQLITE_LIBNAME}.dll`'"
 #endif
