@@ -637,7 +637,7 @@ typedef union YYSTYPE
 
 
 }
-/* Line 1528 of yacc.c.  */
+/* Line 1488 of yacc.c.  */
 #line 642 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -458,7 +458,7 @@ typedef union YYSTYPE
         char    str[1024];
 	struct mode mode;
 }
-/* Line 193 of yacc.c.  */
+/* Line 187 of yacc.c.  */
 #line 463 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

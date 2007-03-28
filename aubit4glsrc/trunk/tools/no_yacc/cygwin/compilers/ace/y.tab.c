@@ -504,7 +504,7 @@ typedef union YYSTYPE
 	struct commands commands;
 	struct agg_val agg_val;
 }
-/* Line 193 of yacc.c.  */
+/* Line 187 of yacc.c.  */
 #line 509 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
