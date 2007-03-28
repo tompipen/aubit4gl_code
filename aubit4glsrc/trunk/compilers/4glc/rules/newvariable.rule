@@ -98,7 +98,8 @@ var:
          //A4GL_lex_printcomment("/*variable with [...]*/");
          get_variable_dets (buff,&type,&arrsize,&size,&level,0);
          //A4GL_lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
-	 
+
+
          if (arrsize>0)
          {
              A4GL_debug("Is array...");
@@ -231,7 +232,7 @@ char buff2[256];
         sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.1*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
   } else {
  
-  if ( ( (type & 0xffff) != DTYPE_CHAR &&  (type & 0xffff) != DTYPE_VCHAR) || (arrsize>0))
+  if ( ( (type & 0xffff) != DTYPE_CHAR &&  (type & 0xffff) != DTYPE_VCHAR) || (arrsize!=0))
     {
 		A4GL_debug("MJA Path 1");
       //A4GL_lex_printcomment("/* changing optbase for array: %s */\n",$<str>2);

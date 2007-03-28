@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.172 2007-03-22 11:08:23 mikeaubury Exp $
+# $Id: stack.c,v 1.173 2007-03-28 10:17:41 mikeaubury Exp $
 #
 */
 
@@ -603,6 +603,7 @@ A4GL_char_pop_size (int *sz)
 #endif
       A4GL_push_char (s);
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
+	free(s);
     }				/* if last entry is not a character string make it one */
   else
     {
