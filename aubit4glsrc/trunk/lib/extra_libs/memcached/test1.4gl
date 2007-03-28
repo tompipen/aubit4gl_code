@@ -1,4 +1,4 @@
-define lv_dtabnames dynamic array of char(20)
+#define lv_dtabnames dynamic array of char(20)
 define lv_tabnames array[20] of char(20)
 
 main
@@ -6,8 +6,8 @@ define conn integer
 define lv_rcode integer
 define lv_a integer
 
-allocate array lv_dtabnames[20]
-let lv_dtabnames[1]="Hello"
+#allocate array lv_dtabnames[20]
+#let lv_dtabnames[1]="Hello"
 
 for lv_a=1 to 20
 	let lv_tabnames[lv_a]="TABLE_",lv_a using "<<<<"
