@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.40 2007-03-28 09:18:43 mikeaubury Exp $
+# $Id: Makefile,v 1.41 2007-03-28 09:26:56 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -139,7 +139,7 @@ ifneq "${COMSPEC}" ""
 		$^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 #Unix:
-	${IFMX_ESQLC}  ${STATIC} -g ${SO_LDFLAGS} $^ -o $@ ${LIBAUBIT4GL}  
+	${IFMX_ESQLC}  ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}  
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
@@ -149,30 +149,30 @@ endif
 ###################
 libESQL_POSTGRES${SO_EXT}: ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
 ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
-	${CC} ${STATIC} -g  ${SO_LDFLAGS} $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 # -Bstatic
 #gcc: file path prefix "static" never used
 
 ###################
 libESQL_SAP${SO_EXT}: ${PLUGINDIR}/libESQL_SAP${SO_EXT}
 ${PLUGINDIR}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
-	${CC} ${STATIC} -g  ${SO_LDFLAGS} $^ -o $@ ${LIBAUBIT4GL}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 ###################
 libESQL_QUERIX${SO_EXT}: ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}
 ${PLUGINDIR}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
-	${CC} ${STATIC} -g  ${SO_LDFLAGS} $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
 
 ###################
 libESQL_INGRES${SO_EXT}: ${PLUGINDIR}/libESQL_INGRES${SO_EXT}
 ${PLUGINDIR}/libESQL_INGRES${SO_EXT}: helper_funcs_ingres.o
-	${CC} ${STATIC} -g  ${SO_LDFLAGS} $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INGRES_LFLAGS} ${INGRES_LIBS}
 
 ###################
 libESQL_INFOFLEX${SO_EXT}: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
 INFOFLEX: ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}
 ${PLUGINDIR}/libESQL_INFOFLEX${SO_EXT}: helper_funcs_infoflex.o
-	${CC} ${STATIC} -g  ${SO_LDFLAGS} $^ -o $@ ${LIBAUBIT4GL} ${INFOFLEX_LFLAGS} ${INFOFLEX_LIBS}
+	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${INFOFLEX_LFLAGS} ${INFOFLEX_LIBS}
 
 ## ==================================================================
 ##                              Sub-targets
