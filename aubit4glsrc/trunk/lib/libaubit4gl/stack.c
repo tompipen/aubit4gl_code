@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.173 2007-03-28 10:17:41 mikeaubury Exp $
+# $Id: stack.c,v 1.174 2007-03-28 10:55:02 mikeaubury Exp $
 #
 */
 
@@ -553,7 +553,8 @@ char *
 A4GL_char_pop_size (int *sz)
 {
   int a;
-  char *s;
+  char *s=0;
+	char *s2=0;
   int f;
 
 #ifdef DEBUG
@@ -580,7 +581,7 @@ A4GL_char_pop_size (int *sz)
 	}
       else
 	{
-	  s = A4GL_new_string (dtype_alloc_char_size[f]);
+	  s2 = A4GL_new_string (dtype_alloc_char_size[f]);
 	if (f==DTYPE_DATE) {
 		static int len=0;
 		if (len==0) {
@@ -590,11 +591,12 @@ A4GL_char_pop_size (int *sz)
 				len=8;
 			}
 		}
-	  	A4GL_pop_char (s, len);
+	  	A4GL_pop_char (s2, len);
 	} else {
-	  	A4GL_pop_char (s, dtype_alloc_char_size[f]);
+	  	A4GL_pop_char (s2, dtype_alloc_char_size[f]);
 	}
-	  if (dtype_alloc_char_size[f]==40) {A4GL_trim(s);}
+	  if (dtype_alloc_char_size[f]==40) {A4GL_trim(s2);}
+		s=s2;
 	}
 
       //trim (s);
@@ -603,7 +605,7 @@ A4GL_char_pop_size (int *sz)
 #endif
       A4GL_push_char (s);
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
-	free(s);
+	if (s2) free(s2);
     }				/* if last entry is not a character string make it one */
   else
     {
