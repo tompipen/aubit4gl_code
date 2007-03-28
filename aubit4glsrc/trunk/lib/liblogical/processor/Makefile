@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2006-07-27 16:03:09 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2007-03-28 09:18:43 mikeaubury Exp $
 #
 ROOT		=../../..
 
@@ -44,6 +44,10 @@ ifeq "${TARGET_OS}" "mingw"
 	LD_EXE_FLAGS=--export-dynamic
 else
 	LD_EXE_FLAGS=-rdynamic
+endif
+
+ifeq "${TARGET_OS}" "darwin"
+	LD_EXE_FLAGS=-lz
 endif
 
 ifeq "${TARGET_OS}" "hpux"

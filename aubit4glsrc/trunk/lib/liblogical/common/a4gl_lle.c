@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -9,12 +10,12 @@
 #error gzfread should be a macro
 #endif
 
-int debug=0;
+static int debug=0;
 
 void read_entry(struct r_report_block *block) ;
 
 FILE *gzfin=0;
-int lvl;
+static int lvl;
 int ok;
 
 int max_page_no = -1;
@@ -23,7 +24,7 @@ int max_col_no = -1;
 static void read_block (void);
 void free_report(void *report) ;
 
-struct r_report *report;
+static struct r_report *report;
 /*
 #if defined (__MINGW32__)
 

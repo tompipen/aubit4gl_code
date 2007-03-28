@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.3 2007-01-15 19:52:58 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2007-03-28 09:18:43 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -55,7 +55,7 @@ ${ROOT}/bin/sql_parse: y.tab.o main.o
 #NB: why is it linked with libaubt4gl, when that lib is what loads it
 #at run-time (except on Windows where it needs to be linked to resolve symbols)?
 $(PLUGINDIR)/libSQLPARSE_INFORMIX${SO_EXT}: y.tab.o
-	${CC} -g -shared -I$(ROOT)/incl $< -o $@ -L$(LIBROOT) -l${AUBITLIBFULL} 
+	${CC} -g ${SO_LDFLAGS}  -I$(ROOT)/incl $< -o $@ -L$(LIBROOT) -l${AUBITLIBFULL} 
 
 	
 ## ==================================================================

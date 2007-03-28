@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2006-10-29 06:42:57 afalout Exp $
+# $Id: Makefile,v 1.5 2007-03-28 09:18:44 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -284,33 +284,33 @@ a4gl_API_lowlevel.h: ${LIBROOT}/libaubit4gl/API_lowlevel.spec
 	${SH} ${LIBROOT}/bin/dlmagic $^ -h > $@
 
 width_narrow.o: width.c
-	${CC} -DNO_WIDEC $^ ${CFLAGS} -c -o $@
+	${CC} -DNO_WIDEC  ${CFLAGS} -c -o $@ $^
 
 width_wide.o: width.c
-	${CC} -DWIDEC $^ ${CFLAGS} -c -o $@
+	${CC} -DWIDEC  ${CFLAGS} -c -o $@ $^
 
-lowlevel_tui.o: lowlevel/lowlevel_tui.c
-	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+lowlevel_tui.o: lowlevel/lowlevel_tui.c a4gl_API_lowlevel.h
+	${CC} ${CFLAGS} -I$(ROOT)/incl -I. -Ilowlevel -c -o $@ $<
 
-lowlevel_tui_win32.o: lowlevel/lowlevel_tui.c
-	${CC} ${CFLAGS} -I$(ROOT)/tools/cygwin/libform -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+lowlevel_tui_win32.o: lowlevel/lowlevel_tui.c a4gl_API_lowlevel.h
+	${CC} ${CFLAGS} -I$(ROOT)/tools/cygwin/libform -I$(ROOT)/incl -I. -Ilowlevel  -c -o $@ $<
 
 lowlevel_thin.o: lowlevel/lowlevel_thin.c
-	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+	${CC} ${CFLAGS} -I$(ROOT)/incl -I. -Ilowlevel -c -o $@ $^
 
-lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c
-	${CC} ${CFLAGS} -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c a4gl_API_lowlevel.h
+	${CC} ${CFLAGS} -DNO_CURSES_FORM -I$(ROOT)/incl -I. -Ilowlevel -c -o $@ $<
 
 lowlevel_tui_noformX.o: lowlevel/lowlevel_tui.c
 #Cant use warning flags here - xcurses headers produce flood of warnings 
 #and there is nothing we can do about it ...
-	${CC} $(filter-out ${CWARN},${PDCURSESX_CFLAGS}) -DNO_CURSES_FORM -c -Ilowlevel -I. $^ -o $@
+	${CC} $(filter-out ${CWARN},${PDCURSESX_CFLAGS}) -DNO_CURSES_FORM -Ilowlevel -I.  -c -o $@ $^
 	
 lowlevel_tui_noform_wide.o: lowlevel/lowlevel_tui.c
-	${CC} ${CFLAGS} -DWIDEC -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+	${CC} ${CFLAGS} -DWIDEC -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel -c -o $@ $^
 
 form_tui.o: lowlevel/form_tui.c
-	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
+	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel -c -o $@ $^
 
 form_tuiX.o: lowlevel/form_tui.c
 #Cant use warning flags here - xcurses headers produce flood of warnings 

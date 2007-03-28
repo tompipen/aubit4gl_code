@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.69 2006-09-25 16:56:22 mikeaubury Exp $
+# $Id: calldll.c,v 1.70 2007-03-28 09:18:43 mikeaubury Exp $
 #
 */
 
@@ -58,6 +58,9 @@
 		#define SO_EXT "sl"
 	#endif
 
+	#ifdef __DARWIN__
+		#define SO_EXT "bundle"
+	#endif
 
 	#ifdef USE_SHL
 		#include <dl.h>

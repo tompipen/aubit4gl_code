@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2006-10-30 10:56:35 afalout Exp $
+# $Id: Makefile,v 1.4 2007-03-28 09:18:43 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-ALL	= ${PLUGINDIR}/libA4GL_memcache${SO_EXT_LINKABLE} test1.4ae
+ALL	= ${PLUGINDIR}/libA4GL_memcache${SO_EXT} test1.4ae
 
 ## ==================================================================
 ##                              Targets
@@ -45,8 +45,8 @@ ALL	= ${PLUGINDIR}/libA4GL_memcache${SO_EXT_LINKABLE} test1.4ae
 all: ${ALL}
 	@echo "Done: ${ALL}"
 
-libA4GL_memcache${SO_EXT_LINKABLE}: ${PLUGINDIR}/libA4GL_memcache${SO_EXT_LINKABLE}
-${PLUGINDIR}/libA4GL_memcache${SO_EXT_LINKABLE}: memcache.c mem.4gl
+libA4GL_memcache${SO_EXT}: ${PLUGINDIR}/libA4GL_memcache${SO_EXT}
+${PLUGINDIR}/libA4GL_memcache${SO_EXT}: memcache.c mem.4gl
 	${ROOT}/bin/4glpc -g --as-dll -I. $^ -o $@
 
 ## ==================================================================
@@ -55,7 +55,7 @@ ${PLUGINDIR}/libA4GL_memcache${SO_EXT_LINKABLE}: memcache.c mem.4gl
 	
 test1.4ae: test1.4gl
 	-${ROOT}/bin/4glpc -g $^ -o $@
-	-$@
+	-./$@
 	
 ## ==================================================================
 ##                              Clean

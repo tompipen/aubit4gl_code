@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2006-12-03 08:58:32 afalout Exp $
+# $Id: Makefile,v 1.17 2007-03-28 09:18:43 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -594,16 +594,19 @@ ${PLUGINDIR}/libA4GL_pcre${SO_EXT}: ${4GLC} ${LIBPCRE_DEPS}
 ${PLUGINDIR}/libA4GL_sxml${SO_EXT}: ${4GLC} ${LIBSXML_DEPS}
 	$(MAKE) -C ${LIBSXML_PATH}
 
-${PLUGINDIR}/libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
+${PLUGINDIR}/libA4GL_HTML${SO_EXT}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
 
 	
 ##############
 #Libs that need 4glpc
-${PLUGINDIR}/libA4GL_memcache${SO_EXT_LINKABLE}: ${4GLPC} ${LIBMEMCACHE_DEPS}
+${PLUGINDIR}/libA4GL_memcache${SO_EXT}: ${4GLPC} ${LIBMEMCACHE_DEPS}
 	$(MAKE) -C ${LIBMEMCACHE_PATH} $@
 
 
+info:
+	echo "SO_EXT_LINKABLE ${SO_EXT_LINKABLE}"
+	echo "SO_EXT ${SO_EXT}"
 ############################
 #LibLogical libraries:
 

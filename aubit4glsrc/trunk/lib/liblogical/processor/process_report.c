@@ -11,7 +11,7 @@ static int do_we_have(char *s) ;
 static char * find_default_filter(char *rtype) ;
 
 // The report itself
-struct r_report *report;
+static struct r_report *report;
 
 
 // Summary information

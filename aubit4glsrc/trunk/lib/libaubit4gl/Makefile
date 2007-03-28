@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.27 2006-12-03 08:58:33 afalout Exp $
+# $Id: Makefile,v 1.28 2007-03-28 09:18:43 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -192,6 +192,7 @@ ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE}: $(OBJS)
 ifeq "${TARGET_OS}" "darwin"
 	${MKPATH} ${INST_PATH}
 	${CP} $@ ${INST_PATH}
+	${CP} $@ ${INST_PATH}/libaubit4gl.dylib
 endif
 ifeq "${SO_EXT_LINKABLE}" ".dll"
 #Note - no linking on Windows

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2006-09-01 20:02:35 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2007-03-28 09:18:43 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -46,7 +46,7 @@ OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 
 
 ${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}: ${OBJS}
-	${CC}  -fPIC -shared ${OBJS} -o $@ -L${LIBROOT} -l${AUBITLIBFULL}
+	${CC}  ${SO_LDFLAGS}  ${OBJS} -o $@ -L${LIBROOT} -l${AUBITLIBFULL}
 	
 process_csv.o: ../../processor/API_process.h
 	 ${CC} $(CFLAGS) -c -o process_csv.o process_csv.c

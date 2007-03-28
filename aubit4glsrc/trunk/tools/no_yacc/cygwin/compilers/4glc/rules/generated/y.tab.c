@@ -12978,7 +12978,8 @@ strcpy((yyval.str),"0,0");
 		strcpy(buff,(yyvsp[(2) - (2)].str));
 		s=strchr(buff,'[');
 		if (!s) {
-			a4gl_yyerror("Expecting an array and size");
+			printf("Buff=%s\n",buff);
+			a4gl_yyerror("Expecting an array and size (1)");
 			YYERROR;
 		}
 		*s=0;

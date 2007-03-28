@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2006-07-27 16:02:55 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2007-03-28 09:18:43 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -92,7 +92,7 @@ endif
 
 #CFLAGS=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl \
 #	`pkg-config --libs --cflags gtk+-2.0` \
-#	-I../common -I../../common -Wall -rdynamic -shared -g
+#	-I../common -I../../common -Wall -rdynamic  ${SO_LDFLAGS} -g
 
 CFLAGS		+=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -I../common -I../../common
 LINKLIBS	=-L$(ROOT)/lib -l${AUBITLIBFULL}

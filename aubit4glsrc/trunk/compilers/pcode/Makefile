@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.30 2007-01-18 21:12:32 mikeaubury Exp $
+# $Id: Makefile,v 1.31 2007-03-28 09:18:42 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -216,7 +216,7 @@ ${BINROOT}/runner_fgl_wrapper:
 #What is this?
 libDATA_pcode${SO_EXT}: ${LIBROOT}/libDATA_pcode${SO_EXT}
 ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
-	$(CC) -g -shared $^ -o $@
+	$(CC) -g ${SO_LDFLAGS} $^ -o $@
 
 #/* SYSCALLS.c:781:NC */ extern ENTRY *hsearch (ENTRY, ACTION);
 #/* SYSCALLS.c:773:NC */ extern int hcreate (size_t);

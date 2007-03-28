@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2006-07-27 16:03:58 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2007-03-28 09:18:44 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 $(PLUGINDIR)/libSQLPARSE_NONE${SO_EXT}: util.c
-	${CC} -shared -fPIC $^ -o $@
+	${CC} ${SO_LDFLAGS}  $^ -o $@
 	
 clean:
 	${RM} *.o $(PLUGINDIR)/libSQLPARSE_NONE${SO_EXT}

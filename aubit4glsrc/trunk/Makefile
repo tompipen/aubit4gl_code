@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.41 2007-01-19 16:50:30 mikeaubury Exp $
+# $Id: Makefile,v 1.42 2007-03-28 09:18:42 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -219,7 +219,12 @@ aace:
 	
 pcode:
 ifeq "${PCODE_ENABLED}" "yes"
-	$(MAKE) -C compilers/pcode
+ifneq "${BISON}" "no"
+		$(MAKE) -C compilers/pcode
+else
+		@echo "PCODE compilation skipped (no bison)"
+endif
+		
 else
 	@echo "PCODE compilation disabled   (PCODE_ENABLED='${PCODE_ENABLED}')"
 endif
