@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.130 2007-01-11 14:12:56 mikeaubury Exp $
+# $Id: resource.c,v 1.131 2007-03-29 21:17:50 mikeaubury Exp $
 #
 */
 
@@ -1370,13 +1370,16 @@ A4GL_dump_all_resource_vars (int export)
     PRINTF ("Built-in resources:\n");
   for (a = 0; strlen (res[a].name) != 0; a++)
     {
-      if (!export)
-	PRINTF ("  %s=%s\n", res[a].name, res[a].value);
+      if (!export) PRINTF ("  %s=%s\n", res[a].name, res[a].value);
       else
 	{
-	  if (getenv (res[a].name))
-	    PRINTF ("export %s='%s'\n", res[a].name,
-		    acl_getenv (res[a].name));
+		  if (getenv(res[a].name)) { PRINTF ("export %s='%s'\n", res[a].name, acl_getenv (res[a].name));}
+		  else {
+				char buff[2000];
+				sprintf(buff,"A4GL_%s",res[a].name);
+				//printf("%s\n",buff);
+		  		if (getenv(buff)) { PRINTF ("export A4GL_%s='%s'\n", res[a].name, acl_getenv (res[a].name));}
+		  }
 	}
     }
 
@@ -1392,11 +1395,17 @@ A4GL_dump_all_resource_vars (int export)
 	    PRINTF ("  %s=%s\n", res[a].name, res[a].value);
 	  else
 	    {
-	      if (getenv (res[a].name))
+	      if (getenv(res[a].name))
 		{
-		  PRINTF ("export %s='%s'\n", res[a].name,
-			  acl_getenv (res[a].name));
+		  	PRINTF ("export %s='%s'\n", res[a].name, acl_getenv (res[a].name));
 		}
+		  else {
+				char buff[2000];
+				
+				sprintf(buff,"A4GL_%s",res[a].name);
+				//printf("%s\n",buff);
+		  		if (getenv(buff)) { PRINTF ("export A4GL_%s='%s'\n", res[a].name, acl_getenv (res[a].name));}
+		  }
 	    }
 	}
     }
