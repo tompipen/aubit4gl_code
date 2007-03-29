@@ -3796,10 +3796,10 @@ if test "$ALL_LIBPATHS_FOUND" != ""; then
 		message "${L}                                                                    ${L}"
   if test "$FIX_LD" != "1"; then
 	if test "$LD_CONFIG" != ""; then
-		message "${L} Your system has ldconfig; if you run this scrip and add '--fix-ld':${L}"
-		message "${L} * if you run this script as user 'root', I can add all found       ${L}"
+		message "${L} Your system has ldconfig; if you run this script and add '--fix-ld':${L}"
+		message "${L}   if you run this script as user 'root', I can add all found       ${L}"
 		message "${L}   libraries to system ldconfig                                     ${L}"
-		message "${L} * If you dont have 'root' password, I can add all found            ${L}"
+		message "${L}   If you dont have 'root' password, I can add all found            ${L}"
 		message "${L}   libraries paths to LD_LIBRARY_PATH in your profile file          ${L}" 
 		message "${L}   (~/.profile otherwise)                                           ${L}"
 		
