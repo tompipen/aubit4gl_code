@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.105 2007-03-09 13:42:32 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.106 2007-03-29 21:14:21 mikeaubury Exp $
 #
 */
 
@@ -613,11 +613,20 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 
 
 
+static FILE *cnfopen(char *path,char *buff_sm) {
+FILE *f;
+char buff[512];
+sprintf(buff,"%s%s",path,buff_sm);
+f=fopen(buff,"r");
+return f;
+}
+
 
 static void
 A4GL_cv_fnlist (char *source, char *target, char *name)
 {
   char buff[201];
+  char path[201];
   char buff_sm[201];
   FILE *fh;
   char *t;
@@ -625,27 +634,30 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
   struct cvsql_data *conversion_rules = 0;
   int conversion_rules_cnt = 0;
 
-  strcpy (buff, acl_getenv ("SQLCNVPATH"));
+  SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
+
+
+  strcpy (path, acl_getenv ("SQLCNVPATH"));
+  fh=cnfopen(path, buff_sm);
+  if (!fh) {
 
   if (buff[0] == '\0') {
 #ifdef SIMPLIFIED
-    SPRINTF1 (buff, "%s", DATADIR);
+    	SPRINTF1 (path, "%s", DATADIR);
 #else
-    {
-	char *ae = acl_getenv("AUBITETC");
-	if (ae == NULL || strlen(ae) == 0)
-            SPRINTF1 (buff, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
-	else
-	    SPRINTF1 (buff, "%s/convertsql", acl_getenv ("AUBITETC"));
-    }
+	SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
+	fh=cnfopen(path, buff_sm);
+  	if (!fh) {
+            SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	    fh=cnfopen(path, buff_sm);
+	}
 #endif
   }
-  len = strlen (buff);
-  SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
-  strcat (buff, buff_sm);
+  }
 
-  A4GL_debug ("loading sql conversion file %s", buff);
-  if ((fh = fopen (buff, "r")) == NULL)
+
+
+  if (fh == NULL)
     {
       A4GL_debug ("failed to open file");
       return;			/* NULL */
