@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.39 2007-03-25 13:33:17 mikeaubury Exp $
+# $Id: sql_common.c,v 1.40 2007-03-30 19:11:17 mikeaubury Exp $
 #
 */
 
@@ -878,7 +878,7 @@ A4GLSQLPARSE_new_tablename (char *tname, char *alias)
 {
   struct s_table *ptr;
 
-  ptr = malloc (sizeof (struct s_table));
+  ptr = acl_malloc2 (sizeof (struct s_table));
   ptr->tabname = acl_strdup (tname);
   if (alias)
     {
@@ -932,13 +932,13 @@ A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t,
 {
   if (tl == 0)
     {
-      tl = malloc (sizeof (struct s_table_list));
+      tl = acl_malloc2 (sizeof (struct s_table_list));
       tl->ntables = 0;
       tl->tables = 0;
     }
   tl->ntables++;
   tl->tables =
-    realloc (tl->tables, sizeof (struct s_table_list_element) * tl->ntables);
+    acl_realloc (tl->tables, sizeof (struct s_table_list_element) * tl->ntables);
   tl->tables[tl->ntables - 1].tabname = 0;
   tl->tables[tl->ntables - 1].alias = 0;
   if (t)

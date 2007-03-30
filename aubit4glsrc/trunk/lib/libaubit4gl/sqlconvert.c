@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.106 2007-03-29 21:14:21 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.107 2007-03-30 19:11:18 mikeaubury Exp $
 #
 */
 
@@ -3795,4 +3795,7 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
         }
     }
 }
+ 
 
+void A4GL_free_select_stmt(struct s_select *s) {
+}

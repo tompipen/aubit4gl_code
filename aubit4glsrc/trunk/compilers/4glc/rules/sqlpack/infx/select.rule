@@ -9,6 +9,7 @@ select_statement_ss_str_converted : select_statement_ss_select  {
 		//run an extra statement
 		if ($<s_select>1->extra_statement != NULL)
 		    A4GL_CV_print_exec_sql($<s_select>1->extra_statement);
+		A4GL_free_select_stmt($<s_select>1);
 }
 ;
 
@@ -21,7 +22,7 @@ select_statement_ss_select :
 
 
 		$<s_select>$=$<s_select>7;
-		$<s_select>$->modifier=strdup($<str>2);
+		$<s_select>$->modifier=acl_strdup($<str>2);
 		$<s_select>$->into=$<sql_string>6;
 		$<s_select>$->select_list=$<s_select_list_item_list>4;
 		$<s_select>$->next=$<s_select>8;
@@ -35,7 +36,7 @@ union_select_statement2_ss:
 	table_expression_2_select
         sel_p2_select  {
 	        $<s_select>$=$<s_select>4;
-                $<s_select>$->modifier=strdup($<str>2);
+                $<s_select>$->modifier=acl_strdup($<str>2);
                 $<s_select>$->into=0;
                 $<s_select>$->select_list=$<s_select_list_item_list>3;
 		$<s_select>$->next=$<s_select>5;
@@ -57,20 +58,21 @@ select_statement21_ss_converted:
 	table_expression_2_select
         sel_p2_select sel_ordby_unload_slil {
 		struct s_select_finish *sf;
-
-		$<s_select>$=$<s_select>7;
-		$<s_select>$->modifier=strdup($<str>3);
-		$<s_select>$->into=$<sql_string>6;
-		$<s_select>$->select_list=$<s_select_list_item_list>4;
-		$<s_select>$->next=$<s_select>8;
-		sf=malloc(sizeof(struct s_select_finish));
+		struct s_select *s1;
+		s1=$<s_select>7;
+		s1->modifier=acl_strdup($<str>3);
+		s1->into=$<sql_string>6;
+		s1->select_list=$<s_select_list_item_list>4;
+		s1->next=$<s_select>8;
+		sf=acl_malloc2(sizeof(struct s_select_finish));
 		sf->into_temp=0;
 		sf->nolog=0;
 		sf->order_by=$<s_select_list_item_list>9;
-		$<s_select>$->sf=sf;
+		s1->sf=sf;
 		A4GL_set_sql_lineno(yylineno);
-		map_select_stmt("SELECT",$<s_select>$);
-		$<sql_string>$=make_select_stmt($<s_select>$);
+		map_select_stmt("SELECT",s1);
+		$<sql_string>$=make_select_stmt(s1);
+		A4GL_free_select_stmt(s1);
 }
 ;
 
@@ -78,7 +80,7 @@ select_statement21_ss_converted:
 sel_p2_select : { $<s_select>$=0;}
 	| UNION op_u_all union_select_statement2_ss { 
 		$<s_select>$=$<s_select>3;
-		$<s_select>$->union_op=strdup($<str>2);
+		$<s_select>$->union_op=acl_strdup($<str>2);
 		add_feature("SELECT_UNION"); 
 	}
 ;
@@ -93,13 +95,13 @@ sel_finish_sf: {
 		$<s_select_finish>$=0;
 	}
 	| order_by_clause_slil  {  
-		$<s_select_finish>$=malloc(sizeof(struct s_select_finish));
+		$<s_select_finish>$=acl_malloc2(sizeof(struct s_select_finish));
 		$<s_select_finish>$->order_by=$<s_select_list_item_list>1;
 		$<s_select_finish>$->into_temp=0;
 		$<s_select_finish>$->nolog=0;
 	}
 	| order_by_clause_slil INTO_TEMP tmp_tabname op_no_log_i { 
-		$<s_select_finish>$=malloc(sizeof(struct s_select_finish));
+		$<s_select_finish>$=acl_malloc2(sizeof(struct s_select_finish));
 		add_feature("SELECT_INTO_TEMP_ORDER_BY");
 		$<s_select_finish>$->order_by=$<s_select_list_item_list>1;
 		$<s_select_finish>$->into_temp=$<str>3;
@@ -107,7 +109,7 @@ sel_finish_sf: {
 
 	}
 	| INTO_TEMP tmp_tabname op_no_log_i { 
-		$<s_select_finish>$=malloc(sizeof(struct s_select_finish));
+		$<s_select_finish>$=acl_malloc2(sizeof(struct s_select_finish));
 		add_feature("SELECT_INTO_TEMP");
 		$<s_select_finish>$->order_by=0;
 		$<s_select_finish>$->into_temp=$<str>2;
@@ -119,7 +121,7 @@ sel_finish_sf: {
 tmp_tabname: identifier;
 
 
-opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string_and_free(acl_strdup(""),NULL); }
+opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=0; }
 	| INTO  obind_var_list { 
 		$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GL_get_into_part(doing_declare,get_bind_cnt('o'))),NULL ); 
 
@@ -131,7 +133,7 @@ opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string_and_free(a
 query_specification_select:
 	KW_SELECT op_ad select_list_slil table_expression_2_select {
 		$<s_select>$=$<s_select>4;
-		$<s_select>$->modifier=strdup($<str>2);
+		$<s_select>$->modifier=acl_strdup($<str>2);
 		$<s_select>$->select_list=$<s_select_list_item_list>3;
 	}
 ;
@@ -139,7 +141,7 @@ query_specification_select:
 subquery_sli:
 	OPEN_BRACKET KW_SELECT op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
 		$<s_select>$=$<s_select>5;
-		$<s_select>$->modifier=strdup($<str>3);
+		$<s_select>$->modifier=acl_strdup($<str>3);
 		$<s_select>$->select_list=$<s_select_list_item_list>4;
 		$<s_select_list_item>$=new_select_list_subquery($<s_select>$);
 	}
@@ -176,11 +178,11 @@ value_expression_pls_sli :
 	}
 	| value_expression_sli  identifier {
 		$<s_select_list_item>$=$<s_select_list_item>1;
-		$<s_select_list_item>$->alias=strdup($<str>2);
+		$<s_select_list_item>$->alias=acl_strdup($<str>2);
 	}
 	| value_expression_sli KW_AS identifier {
 		$<s_select_list_item>$=$<s_select_list_item>1;
-		$<s_select_list_item>$->alias=strdup($<str>3);
+		$<s_select_list_item>$->alias=acl_strdup($<str>3);
 	}
 ;
 

@@ -19,18 +19,18 @@ fetch_part_f:
 	fetch_place_fp  fetch_cursor_name {
 		A4GL_cursor_fetch($<str>2,$<s_fetch_place>1);
 		ADDMAP("Fetch Cursor",$<str>2);
-		$<s_fetch>$=malloc(sizeof(struct s_fetch));
+		$<s_fetch>$=acl_malloc2(sizeof(struct s_fetch));
 		strcpy($<s_fetch>$->cname,$<str>2);
 		$<s_fetch>$->fp=$<s_fetch_place>1;
 	}
         | fetch_cursor_name {
 		struct s_fetch_place *fp;
-		fp=malloc(sizeof(struct s_fetch_place));
+		fp=acl_malloc2(sizeof(struct s_fetch_place));
 		fp->ab_rel=FETCH_RELATIVE;
 		fp->fetch_expr=A4GL_new_literal_long_long(1);
 		A4GL_cursor_fetch($<str>1,fp);
 		ADDMAP("Fetch Cursor",$<str>1);
-		$<s_fetch>$=malloc(sizeof(struct s_fetch));
+		$<s_fetch>$=acl_malloc2(sizeof(struct s_fetch));
 		strcpy($<s_fetch>$->cname,$<str>1);
 		$<s_fetch>$->fp=fp;
 	}
@@ -62,20 +62,20 @@ opt_foreach_into_fetch_part: {
 
 fetch_place_fp : 
 	KW_FIRST {
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(1);
 		add_feature("FETCH_FIRST");
 		}
 	| KW_LAST {
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
 		add_feature("FETCH_LAST");
 		}
 	| KW_NEXT
 		{
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(1);
 		add_feature("FETCH_NEXT");
@@ -83,35 +83,35 @@ fetch_place_fp :
 
 	| KW_PREVIOUS
 		{
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
 		add_feature("FETCH_PREVIOUS");
 		}
 	| KW_PRIOR
 		{
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(-1);
 		add_feature("FETCH_PREVIOUS");
 		}
 	| KW_CURRENT
 		{
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=A4GL_new_literal_long_long(0);
 		add_feature("FETCH_CURRENT");
 		}
 	| KW_RELATIVE fgl_expr_c
 		{
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_RELATIVE;
 		$<s_fetch_place>$->fetch_expr=$<ptr>2;
 		add_feature("FETCH_RELATIVE");
 		}
 	| KW_ABSOLUTE fgl_expr_c
 		{
-		$<s_fetch_place>$=malloc(sizeof(struct s_fetch_place));
+		$<s_fetch_place>$=acl_malloc2(sizeof(struct s_fetch_place));
 		$<s_fetch_place>$->ab_rel=FETCH_ABSOLUTE;
 		$<s_fetch_place>$->fetch_expr=$<ptr>2;
 		add_feature("FETCH_ABSOLUTE");
@@ -327,14 +327,17 @@ colident: identifier
 
 in_select_statement_ss:
         KW_SELECT op_ad select_list_slil table_expression_2_select sel_p2_select  {
-	        $<s_select>$=$<s_select>4;
-                $<s_select>$->modifier=strdup($<str>2);
-                $<s_select>$->into=0;
-                $<s_select>$->select_list=$<s_select_list_item_list>3;
-                $<s_select>$->next=$<s_select>5;
+		struct s_select *s1;
+	        s1=$<s_select>4;
+                s1->modifier=acl_strdup($<str>2);
+                s1->into=0;
+                s1->select_list=$<s_select_list_item_list>3;
+                s1->next=$<s_select>5;
 		A4GL_set_sql_lineno(yylineno);
-		$<sql_string>$=make_select_stmt($<s_select>$);
-		map_select_stmt("SUBSELECT",$<s_select>$);
+		$<sql_string>$=make_select_stmt(s1);
+		map_select_stmt("SUBSELECT",s1);
+		A4GL_free_select_stmt(s1);
+			
 
 }
 

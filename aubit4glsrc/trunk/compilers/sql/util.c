@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.55 2007-03-06 07:34:58 mikeaubury Exp $
+# $Id: util.c,v 1.56 2007-03-30 19:11:16 mikeaubury Exp $
 #
 */
 
@@ -41,6 +41,8 @@
 
 #include "a4gl_API_sqlparse_lib.h"
 #include "a4gl_libaubit4gl.h"
+
+#define USE_STMT_CACHE
 
 
 #ifdef SIMPLIFIED
@@ -180,7 +182,7 @@ make_sql_string_and_free (char *first, ...)
 
       l += strlen (next);
       l++;			/* Extra space... */
-      ptr = realloc (ptr, l);
+      ptr = acl_realloc (ptr, l);
       strcat (ptr, next);
 
       if (next != kw_comma && next != kw_space && next != kw_ob
@@ -528,6 +530,10 @@ A4GLSQLCV_loadbuffer (char *fname)
 
   if (stmts)
     {
+	int a;
+	for (a=0;a<stmts_cnt;a++) {
+		free(stmts[a].val);
+	}
       free (stmts);
       stmts = 0;
       stmts_cnt = 0;
@@ -553,6 +559,10 @@ A4GLSQLCV_setbuffer (char *s)
   nbs = YYSCANSTRING (Sql);
   if (stmts)
     {
+	int a;
+	for (a=0;a<stmts_cnt;a++) {
+		free(stmts[a].val);
+	}
       free (stmts);
       stmts = 0;
       stmts_cnt = 0;
@@ -710,6 +720,7 @@ A4GL_CV_print_exec_sql (char *s)
     sql_string = 0;
   sql_string = acl_strdup (s);
   add_sql (sql_type, sql_string);
+free(s);
 }
 
 
@@ -935,7 +946,7 @@ add_sql (int n, char *s)
 	}
 
       stmts_cnt++;
-      stmts = realloc (stmts, sizeof (struct sql_stmt) * stmts_cnt);
+      stmts = acl_realloc (stmts, sizeof (struct sql_stmt) * stmts_cnt);
       stmts[stmts_cnt - 1].type = n;
       stmts[stmts_cnt - 1].val = s;
       mark_sql_start ();
@@ -1044,12 +1055,12 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
 	l += 2;
       if (ptr == 0)
 	{
-	  ptr = malloc (l);
+	  ptr = acl_malloc2 (l);
 	  strcpy (ptr, "");
 	}
       else
 	{
-	  ptr = realloc (ptr, l);
+	  ptr = acl_realloc (ptr, l);
 	}
       A4GL_debug ("Statement %d = %s", a, stmts[a].val);
       strcat (ptr, stmts[a].val);
@@ -1060,6 +1071,15 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
   A4GL_debug ("-->%s\n", ptr);
   return ptr;
 }
+
+struct conversions {
+	char *origsql;
+	char *newsql;
+	int last_usage;
+};
+
+#define MAXCONVERSIONS 200
+static struct conversions conv_list[MAXCONVERSIONS];
 
 
 /**
@@ -1074,6 +1094,35 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
   int cd;
   int st;
   int errflg;
+  static int init_conv_list=1;
+  int a;
+  static int cnt=0;
+  int last_used=0;
+  int use_this_time=0;
+  char *save_sql;
+
+
+#ifdef USE_STMT_CACHE
+  if (init_conv_list) {
+		init_conv_list=0;
+		for (a=0;a<MAXCONVERSIONS;a++) {
+			conv_list[a].origsql=0;
+			conv_list[a].newsql=0;
+			conv_list[a].last_usage=0;
+		}
+  }
+
+  for (a=0;a<MAXCONVERSIONS;a++) { // Have we already processed it ? 
+		if (conv_list[a].origsql==0) continue;
+		if (strcmp(conv_list[a].origsql, sql)==0) {
+			// Cool - no more work to do then !
+			return conv_list[a].newsql;
+		}
+  }
+
+  save_sql=strdup(sql);
+#endif
+
   cd=A4GLSQL_get_status();
   st=a4gl_status;
   errflg=aclfgli_get_err_flg();
@@ -1081,13 +1130,39 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
   strcpy (m_module, module);
   m_ln = ln;
   A4GL_logsql (ln, module, sql);
+  
+A4GL_set_malloc_context(sql);
   ptr = A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql, 0);
+A4GL_clr_malloc_context();
+  ptr=strdup(ptr);
+A4GL_free_malloc_context(sql);
+
   if (ptr != sql)
     free (sql);
   strcpy (m_module, "unknown");
   m_ln = 0;
   A4GLSQL_set_status(cd,1);
   if (!errflg) aclfgli_clr_err_flg();
+
+#ifdef USE_STMT_CACHE
+// Now - Cache that result...
+  last_used=-1;
+  for (a=0;a<MAXCONVERSIONS;a++) {
+	
+	if (conv_list[a].last_usage<last_used || last_used==-1 || conv_list[a].origsql==0) {
+		use_this_time=a;
+		last_used=conv_list[a].last_usage;
+		if (conv_list[a].origsql==0) break;
+	}
+  }
+  if (conv_list[use_this_time].origsql) free (conv_list[use_this_time].origsql) ;
+  if (conv_list[use_this_time].newsql) free (conv_list[use_this_time].newsql) ;
+  conv_list[use_this_time].last_usage=cnt++;
+  conv_list[use_this_time].origsql=save_sql;
+  conv_list[use_this_time].newsql=strdup(ptr);
+#endif
+
+
   //a4gl_sqlca.sqlcode=cd;
   //a4gl_status=st;
 

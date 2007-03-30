@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.165 2007-03-12 15:22:24 mikeaubury Exp $
+# $Id: ioform.c,v 1.166 2007-03-30 19:11:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.165 2007-03-12 15:22:24 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.166 2007-03-30 19:11:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -1843,6 +1843,9 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
       A4GL_debug_print_field_opts (field_list[a]);
       A4GL_debug ("set_init_pop complete");
     }
+
+  free(field_list);
+
   A4GL_mja_wrefresh (currwin);
   return 1;
 }
@@ -2122,11 +2125,13 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
 		     int max_number, va_list * ap)
 {
   struct s_field_name_list list;
+  int n;
   list.field_name_list = 0;
   A4GL_make_field_slist_from_ap (&list, ap);
 
-  return A4GL_gen_field_list_from_slist_internal (field_list, formdets,
-						  max_number, &list);
+  n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
+	free(list.field_name_list);
+  return n;
 
 }
 
@@ -2433,8 +2438,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 	      A4GL_debug
 		("Has a function - calling XXXX - size=%d decode_size=%d", s1,
 		 DECODE_SIZE (d1));
-	      ptr =
-		function (ptr1, s1, field_width, f, DISPLAY_TYPE_DISPLAY_TO);
+	      ptr = function (ptr1, s1, field_width, f, DISPLAY_TYPE_DISPLAY_TO);
 	      A4GL_debug ("Returns %p\n", ptr);
 	    }
 	  else

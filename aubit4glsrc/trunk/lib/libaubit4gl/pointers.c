@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.44 2006-09-14 13:26:30 briantan Exp $
+# $Id: pointers.c,v 1.45 2007-03-30 19:11:17 mikeaubury Exp $
 #
 */
 
@@ -182,7 +182,9 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   char ptrchar[800];
   A4GL_trim (orig_name);
   //A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
+  
   buff = (struct s_node *) malloc (sizeof (struct s_node));
+
   A4GL_assertion(buff==0,"Unable to allocate memory");
   buff->name[0] = type;
   buff->name[1] = 0;
@@ -193,16 +195,11 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 
   if (a)
     {
-      //A4GL_debug ("Found an existing one %p\n", a);
       anode = *(struct s_node **) a;
-      //A4GL_debug ("Node = %p\n", anode);
-      //A4GL_debug ("Node=%p name=%s\n", anode, anode->name);
       SPRINTF1 (ptrchar, ">%p", buff->ptr);
-      //A4GL_debug ("Copied ptr\n");
       anode->ptr = ptr;
-      //A4GL_debug ("Copy buffer %s\n", ptrchar);
       strcpy (buff2.name, ptrchar);
-      //A4GL_debug ("And find its pointer\n");
+
       a = FIND_X (&buff2);
       if (a)
 	{
@@ -212,10 +209,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 	  DELETE_X (&buff2);
 #else
 	  DELETE_X (&buff2);
-      //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
-
-	  //A4GL_debug ("Try to free %p\n", anode);
 	  strcpy (anode->name, "======");
 	  free (anode);
 	}
@@ -236,6 +230,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   //A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
   a = ADD_X (buff_add);
   //A4GL_debug ("Added...");
+
 }
 
 
@@ -318,6 +313,7 @@ A4GL_del_pointer (char *pname, char t)
       a = FIND_X (&buff2);
       if (a)
 	{
+  	struct s_node *anode;
 	  anode = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
 	  DELETE_X (&buff2);
@@ -334,6 +330,7 @@ A4GL_del_pointer (char *pname, char t)
       DELETE_X (buff);
       //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
+	  free (anode);
       free (buff);
     }
 }

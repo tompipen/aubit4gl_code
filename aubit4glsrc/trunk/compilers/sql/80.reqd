@@ -67,7 +67,7 @@ individual_sql_statement :
 	| unload_cmd  
 	| load_cmd  
 	| sql_commands 
-	| select_statement_ss_str_cfu 	{ print_exec_select($<sql_string>1); }
+	| select_statement_ss_str_cfu 	{ print_exec_select($<sql_string>1);  }
 	| set_cmd  			
 	| sql_bound_commands
 	| sql_transact_commands
@@ -122,7 +122,12 @@ set_cmd : SQLSEOFF 		 { print_exec_sql(acl_strdup($<str>1)); }
 ;
 
 
-var_ident_ibind_sli :  column_name_x { $<s_select_list_item>$=new_select_list_item_column_from_transform(strdup($<str>1));}
+var_ident_ibind_sli :  column_name_x { 
+	char *s;
+	s=acl_strdup($<str>1);
+	$<s_select_list_item>$=new_select_list_item_column_from_transform(s);
+	acl_free(s);
+	}
 	 | QUESTION_MARK {  
 		$<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_QUERY_PLACEHOLDER);}
 	| replace_with_variable {
@@ -130,12 +135,12 @@ var_ident_ibind_sli :  column_name_x { $<s_select_list_item>$=new_select_list_it
 	}
 ;
 
-var_ident_ibind_ss :  column_name_x { $<sql_string>$=strdup($<str>1);}
+var_ident_ibind_ss :  column_name_x { $<sql_string>$=acl_strdup($<str>1);}
 	 | QUESTION_MARK {  
 			if (A4GL_isyes(acl_getenv("DOING_CM"))) {
-				$<sql_string>$=strdup("?@@PARAM@@?");
+				$<sql_string>$=acl_strdup("?@@PARAM@@?");
 			} else {
-				$<sql_string>$=strdup("?");
+				$<sql_string>$=acl_strdup("?");
 			}
 	}
 	| replace_with_variable {
@@ -153,7 +158,7 @@ set_database_cmd :
 
 
 replace_with_variable : MARK_VAR CHAR_VALUE END_MARK_VAR {
-		$<sql_string>$=strdup($<str>2);
+		$<sql_string>$=acl_strdup($<str>2);
 }
 ;
 

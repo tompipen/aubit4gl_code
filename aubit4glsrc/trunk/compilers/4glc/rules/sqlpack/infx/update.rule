@@ -384,7 +384,7 @@ upd_var_ident_ibind_ss:  var_ident_ibind_ss { $<sql_string>$=$<sql_string>1; }
 
 
 op_upd_value_expr_list_ss :
-	{$<sql_string>$=strdup("");}
+	{$<sql_string>$=acl_strdup("");}
  | upd_value_expr_list_ss  {$<sql_string>$=$<sql_string>1;}
 ;
 
@@ -412,12 +412,14 @@ upd_units_qual:
 
 upd_subquery_ss:
         OPEN_BRACKET KW_SELECT op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
-	                $<s_select>$=$<s_select>5;
-                	$<s_select>$->modifier=strdup($<str>3);
-                	$<s_select>$->select_list=$<s_select_list_item_list>4;
-		A4GL_set_sql_lineno(yylineno);
-			$<sql_string>$=make_sql_string_and_free(acl_strdup("("),make_select_stmt($<s_select>$),acl_strdup(")"),NULL);
-			map_select_stmt("UPDATE",$<s_select>$);
+			struct s_select *s1;
+	                s1=$<s_select>5;
+                	s1->modifier=acl_strdup($<str>3);
+                	s1->select_list=$<s_select_list_item_list>4;
+			A4GL_set_sql_lineno(yylineno);
+			$<sql_string>$=make_sql_string_and_free(acl_strdup("("),make_select_stmt(s1),acl_strdup(")"),NULL);
+			map_select_stmt("UPDATE",s1);
+			A4GL_free_select_stmt(s1);
         }		
 ;
 

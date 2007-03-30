@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.46 2007-03-02 16:27:17 gyver309 Exp $
+# $Id: sqlexpr.c,v 1.47 2007-03-30 19:11:18 mikeaubury Exp $
 #
 */
 
@@ -92,7 +92,7 @@ static struct s_select_list_item *
 empty_select_list_item (enum e_sli type)
 {
   struct s_select_list_item *p;
-  p = malloc (sizeof (struct s_select_list_item));
+  p = acl_malloc2 (sizeof (struct s_select_list_item));
   p->type = type;
   p->alias = 0;
   p->sign = 0;
@@ -104,7 +104,7 @@ struct s_select_list_item_list *
 new_select_list_item_list (struct s_select_list_item *i)
 {
   struct s_select_list_item_list *p;
-  p = malloc (sizeof (struct s_select_list_item_list));
+  p = acl_malloc2 (sizeof (struct s_select_list_item_list));
   p->list = 0;
   p->nlist = 0;
   if (i)
@@ -118,7 +118,7 @@ add_select_list_item_list (struct s_select_list_item_list *p,
 {
   p->nlist++;
   p->list =
-    realloc (p->list, sizeof (struct s_select_list_item *) * p->nlist);
+    acl_realloc (p->list, sizeof (struct s_select_list_item *) * p->nlist);
   p->list[p->nlist - 1] = i;
   return p;
 }
@@ -177,7 +177,7 @@ append_select_list_item_case (struct s_select_list_item *l,
 {
   l->u_data.sqlcase.nelements++;
   l->u_data.sqlcase.elements =
-    realloc (l->u_data.sqlcase.elements,
+    acl_realloc (l->u_data.sqlcase.elements,
 	     sizeof (struct s_sli_case_element *) *
 	     l->u_data.sqlcase.nelements);
   l->u_data.sqlcase.elements[l->u_data.sqlcase.nelements - 1] = w;
@@ -492,7 +492,7 @@ struct s_select *
 new_empty_select (void)
 {
   struct s_select *p;
-  p = malloc (sizeof (struct s_select));
+  p = acl_malloc2 (sizeof (struct s_select));
   p->modifier = 0;
   p->limit.start = -1;
   p->limit.end = -1;
@@ -644,7 +644,7 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
   char *rval2;
   rval = get_select_list_item_i (select, p);
   rval2 = acl_strdup (A4GLSQLCV_check_expr (rval));
-  free (rval);
+  acl_free (rval);
   rval = rval2;
 
   if (p->sign == '-')
@@ -1045,7 +1045,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	params =
 	  get_select_list_item_list (select, p->u_data.builtin_fcall.params);
 	rval = acl_strdup (A4GLSQLCV_sql_func ("YEAR", params));
-	free (params);
+	acl_free (params);
 	return rval;
       }
     case E_SLI_BUILTIN_FUNC_MONTH:
@@ -1055,7 +1055,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	params =
 	  get_select_list_item_list (select, p->u_data.builtin_fcall.params);
 	rval = acl_strdup (A4GLSQLCV_sql_func ("MONTH", params));
-	free (params);
+	acl_free (params);
 	return rval;
       }
     case E_SLI_BUILTIN_FUNC_DAY:
@@ -1065,7 +1065,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	params =
 	  get_select_list_item_list (select, p->u_data.builtin_fcall.params);
 	rval = acl_strdup (A4GLSQLCV_sql_func ("DAY", params));
-	free (params);
+	acl_free (params);
 	return rval;
       }
     case E_SLI_BUILTIN_FUNC_DOW:
@@ -1075,7 +1075,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	params =
 	  get_select_list_item_list (select, p->u_data.builtin_fcall.params);
 	rval = acl_strdup (A4GLSQLCV_sql_func ("DOW", params));
-	free (params);
+	acl_free (params);
 	return rval;
       }
     case E_SLI_BUILTIN_FUNC_WEEKDAY:
@@ -1085,7 +1085,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	params =
 	  get_select_list_item_list (select, p->u_data.builtin_fcall.params);
 	rval = acl_strdup (A4GLSQLCV_sql_func ("WEEKDAY", params));
-	free (params);
+	acl_free (params);
 	return rval;
       }
     case E_SLI_BUILTIN_FUNC_MDY:
@@ -1095,7 +1095,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	params =
 	  get_select_list_item_list (select, p->u_data.builtin_fcall.params);
 	rval = acl_strdup (A4GLSQLCV_sql_func ("MDY", params));
-	free (params);
+	acl_free (params);
 	return rval;
       }
     case E_SLI_BUILTIN_FUNC_DATE:
@@ -1105,7 +1105,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	params =
 	  get_select_list_item_list (select, p->u_data.builtin_fcall.params);
 	rval = acl_strdup (A4GLSQLCV_sql_func ("DATE", params));
-	free (params);
+	acl_free (params);
 	return rval;
       }
     case E_SLI_BUILTIN_AGG_AVG:
@@ -1444,7 +1444,7 @@ make_table_expression (struct s_select *select)
       ptr = get_select_list_item (select, select->where_clause);
       strcat (buff, " WHERE ");
       strcat (buff, ptr);
-      free (ptr);
+      acl_free (ptr);
     }
 
   return acl_strdup (buff);
@@ -1913,7 +1913,7 @@ make_select_stmt (struct s_select *select)
 	strcat (buff, ",");
       strcat (buff, ptr);
       A4GL_debug ("buff=%s", buff);
-      free (ptr);
+      acl_free (ptr);
   
 
   }
@@ -1970,7 +1970,7 @@ make_select_stmt (struct s_select *select)
       ptr = get_select_list_item (select, select->where_clause);
       strcat (buff, " WHERE ");
       strcat (buff, ptr);
-      free (ptr);
+      acl_free (ptr);
     }
 
   A4GL_debug ("buff=%s", buff);
@@ -2011,7 +2011,7 @@ make_select_stmt (struct s_select *select)
       A4GL_debug ("buff=%s", buff);
       strcat (buff, ptr);
       A4GL_debug ("buff=%s", buff);
-      free (ptr);
+      acl_free (ptr);
     }
 
 
@@ -2063,7 +2063,7 @@ make_select_stmt (struct s_select *select)
 	    }
 
 	  strcpy (buff, ptr);
-	  free (ptr);
+	  acl_free (ptr);
 
 	}
       else
@@ -2314,7 +2314,7 @@ A4GL_debug("First=%s",first);
       A4GL_debug ("FREE %p (%s)\n", first, first);
       if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	{
-	  free (first);
+	  acl_free (first);
 	}
       first = 0;
     }
@@ -2338,7 +2338,7 @@ A4GL_debug("First=%s",first);
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
 		    PRINTF("Freeing : %s",next);
-	      free (next);
+	      acl_free (next);
 	    }
 	}
     }
@@ -2585,11 +2585,11 @@ int A4GL_has_column (char *t, char *c)
       A4GL_trim (s);
       if (A4GL_aubit_strcasecmp (s, c) == 0)
 	{
-	  free (s);
+	  acl_free (s);
 	  found = 1;
 	  break;
 	}
-      free (s);
+      acl_free (s);
     }
 
   if (opened)
