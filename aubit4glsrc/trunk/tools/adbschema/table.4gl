@@ -61,13 +61,13 @@ define lv_bigstr char(32000)
 define lv_l char(1)
 define lv_es,lv_ns  integer
 define lv_stid integer,
-       lv_stname,lv_so char(18)
+       lv_stname,lv_so char(64)
 define lv_txt CHAR(64)
 define lv_c1,lv_c2 integer
 define lv_nn char(10)
-define lv_servname char(18)
+define lv_servname char(64)
 define lv_fulldb char(256)
-define lv_dbname char(18)
+define lv_dbname char(64)
 DEFINE lv_systables integer	#true or false, process Informix sys* tables (default=0)
 DEFINE lv_prefix_idx smallint  #true or false, add prefic to index names (default=false)
 DEFINE lv_no_owner smallint
@@ -109,15 +109,16 @@ define lv_q1 char(512)
 	if lv_t="all" then
 		let mv_idx_cnt = 0
 		if lv_systables = 1 then
-				let lv_qry="select tabname from ",lv_systables_name
+				let lv_qry="select tabname from ",lv_systables_name clipped," order by 1"
 		else
-				let lv_qry="select tabname from ",lv_systables_name clipped," where tabid>99"
+				let lv_qry="select tabname from ",lv_systables_name clipped," where tabid>99 order by 1"
 		end if
 		
 		prepare p_get_tables from lv_qry
 			declare c_get_tables cursor for p_get_tables
 
 		foreach c_get_tables into lv_t
+		#display "dump table : ",lv_t
 			call dump_table(lv_t,lv_systables,lv_prefix_idx,lv_no_owner)
 		end foreach
 		return
