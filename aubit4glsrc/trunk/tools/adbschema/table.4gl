@@ -44,6 +44,7 @@ define lv_i record
 	part16     smallint
 end record
 define mv_located integer
+define mv_real_table char(64)
 
 
 #main
@@ -72,23 +73,50 @@ DEFINE lv_prefix_idx smallint  #true or false, add prefic to index names (defaul
 DEFINE lv_no_owner smallint
 define lv_qry char(80)
 define lv_c integer
+define lv_localdb char(64)
+define a integer
 
+define lv_systables_name char(128)
+define lv_syscolumns_name char(128)
+define lv_syssyntable_name char(128)
+define lv_sysviews_name char(128)
+define lv_q1 char(512)
 
 	call locate_blob()
 
+	let lv_systables_name="systables"
+	let lv_syscolumns_name="syscolumns"
+	let lv_syssyntable_name="syssyntable"
+	let lv_sysviews_name="sysviews"
+
 	let lv_t=downshift(lv_t)
+
+	if lv_t matches "*:*" then
+		let lv_localdb=lv_t
+		for a=1 to length(lv_localdb)
+			if lv_localdb[a]=":" then
+				let lv_t=lv_localdb[a+1,64]
+				let lv_localdb=lv_localdb[1,a-1]
+				let lv_systables_name=lv_localdb clipped,":systables"
+				let lv_syscolumns_name=lv_localdb clipped,":syscolumns"
+				let lv_syssyntable_name=lv_localdb clipped,":syssyntables"
+				let lv_sysviews_name=lv_localdb clipped,":sysviews"
+				exit for
+			end if
+		end for
+	end if
 	
 	if lv_t="all" then
 		let mv_idx_cnt = 0
 		if lv_systables = 1 then
-
-				let lv_qry="select tabname from systables "
+				let lv_qry="select tabname from ",lv_systables_name
 		else
-				let lv_qry="select tabname from systables where tabid>99"
+				let lv_qry="select tabname from ",lv_systables_name clipped," where tabid>99"
 		end if
 		
 		prepare p_get_tables from lv_qry
 			declare c_get_tables cursor for p_get_tables
+
 		foreach c_get_tables into lv_t
 			call dump_table(lv_t,lv_systables,lv_prefix_idx,lv_no_owner)
 		end foreach
@@ -96,13 +124,16 @@ define lv_c integer
 	end if
         if is_online() then
                 # Get our basic table information for online
-                select systables.tabid,systables.owner,systables.tabtype,systables.partnum into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum
-                from systables where tabname=lv_t
+		let lv_q1=" select tabid,owner,tabtype,partnum from ",lv_systables_name," where tabname='",lv_t clipped,"'"
+		
+		#display lv_q1
+	        prepare p_q1 from lv_q1
+		declare c_q1 cursor for p_q1 open c_q1 fetch c_q1 into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum 
         else
                 # Get our basic table information for SE
                 let lv_st.partnum=-1
-                select systables.tabid,systables.owner,systables.tabtype into lv_st.tabid,lv_st.owner,lv_st.tabtype
-                from systables where tabname=lv_t
+		let lv_q1=" select tabid,owner,tabtype from ", lv_systables_name clipped, " where tabname='",lv_t clipped,"'"
+	        prepare p_q2 from lv_q1 declare c_q2 cursor for p_q2 open c_q2 fetch c_q2 into lv_st.tabid,lv_st.owner,lv_st.tabtype 
         end if
 
 	
@@ -116,12 +147,18 @@ define lv_c integer
 	IF lv_st.tabtype="S" THEN
 		# create synonym "aubit4gl".stab2 for test1@mike_2:"informix".systables;
 		initialize lv_so to null
-		select servername, dbname, btabid,tabname,owner into lv_servname, lv_dbname, lv_stid, lv_stname,lv_so  from syssyntable where tabid=lv_st.tabid
+
+		let lv_q1="select servername, dbname, btabid,tabname,owner from ", 
+				lv_syssyntable_name clipped, " where tabid=",lv_st.tabid
+		#display lv_q1
+		prepare p_syn from  lv_q1
+		execute p_syn into lv_servname, lv_dbname, lv_stid, lv_stname,lv_so  
 
 		
 		if lv_stid is not null  then
-			select tabname into lv_stname from systables where tabid=lv_stid
-			select owner into lv_so from systables where tabid=lv_stid
+			let lv_q1="select tabname,owner from ",lv_systables_name," where tabid=",lv_stid
+			prepare p_so from  lv_q1
+			execute p_so into lv_stname,lv_so 
 		else 
 			#
 		end if
@@ -151,16 +188,18 @@ define lv_c integer
 				"\".",lv_stname clipped,";"
 			call outstr(lv_str)
 			call outstr(" ")
+		else
+			call dump_synonym_fileschema(lv_st.tabname,lv_fulldb, lv_stname);
 		end if
 	
 		RETURN
 	END IF
 	
 	
-	IF lv_st.tabtype="V" THEN
-		DECLARE c_get_view CURSOR FOR
-		SELECT viewtext,seqno FROM sysviews WHERE tabid=lv_st.tabid
-		ORDER BY seqno
+	IF lv_st.tabtype="V" and get_mode()!=1  THEN
+		let lv_q1="SELECT viewtext,seqno FROM ",lv_sysviews_name," WHERE tabid=",lv_st.tabid," ORDER BY seqno"
+		prepare p_sv from  lv_q1
+		DECLARE c_get_view CURSOR FOR p_sv
 		LET lv_bigstr=" "
 		let lv_c1=1 
 		let lv_c2=64
@@ -181,7 +220,7 @@ define lv_c integer
 	
 	
 	
-	IF lv_st.tabtype="T" THEN
+	IF lv_st.tabtype="T" OR (lv_st.tabtype="V" and get_mode()=1) THEN
 		# Generate out CREATE TABLE line
 	
 		if get_mode()=0 then
@@ -199,10 +238,11 @@ define lv_c integer
 		end if
 		
 		
-		declare c2 cursor for 
-		select colname,coltype,collength,colno,"" from syscolumns
-		where tabid=lv_st.tabid 
-		order by colno
+ 		let lv_q1=" select colname,coltype,collength,colno,'' from ",
+				lv_syscolumns_name clipped," where tabid=",lv_st.tabid ," order by colno"
+		prepare p_scols from lv_q1
+ 		declare c2 cursor for  p_scols
+
 		
 		
 		# Now process each bit of column information
@@ -914,4 +954,12 @@ FOREACH trigs into lv_t.*
 		END IF
 	END FOREACH
 END FOREACH
+END FUNCTION
+
+
+FUNCTION dump_synonym_fileschema(p_tabname,p_fulldb, p_stname)
+define p_tabname, p_fulldb, p_stname char(200)
+let mv_real_table=p_tabname
+let p_stname=p_fulldb clipped, p_stname clipped
+call dump_table(p_stname,0,0,0)
 END FUNCTION
