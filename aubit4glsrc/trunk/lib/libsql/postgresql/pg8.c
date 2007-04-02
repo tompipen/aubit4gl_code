@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.5 2007-03-06 07:44:33 mikeaubury Exp $
+# $Id: pg8.c,v 1.6 2007-04-02 14:13:31 mikeaubury Exp $
 #*/
 
 
@@ -1473,10 +1473,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   if (inTransaction ())
     {
       setSavepoint++;
-      if (CanUseSavepoints)
-	{
-	  Execute ("SAVEPOINT preExec", 1);
-	}
+      if (CanUseSavepoints) { Execute ("SAVEPOINT preExec", 1); }
     }
   A4GL_debug ("%s ni=%d\n", sql, n->ni);
 
@@ -2467,6 +2464,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
       cid->mode -= 0x1000;
     }
 
+
   n = (struct s_prepare *) cid->statement;
 
   if (ni == 0)
@@ -2559,14 +2557,14 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
 	}
       else
 	{
-	  SPRINTF1 (buff, "FETCH ABSOLUTE %s", cursor_name);
+	  SPRINTF2(buff, "FETCH ABSOLUTE %d FROM %s", fetch_when, cursor_name);
 	}
       break;
 
     case FETCH_RELATIVE:
       if (fetch_when != 1)
 	{
-	  SPRINTF2 (buff, "FETCH RELATIVE %d %s", fetch_when, cursor_name);
+	  SPRINTF2 (buff, "FETCH RELATIVE %d FROM %s", fetch_when, cursor_name);
 	}
       else
 	{

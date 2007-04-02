@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.107 2007-03-30 19:11:18 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.108 2007-04-02 14:13:31 mikeaubury Exp $
 #
 */
 
@@ -397,8 +397,8 @@ int low_cnt_a=-1;
 	A4GL_assertion(low_cnt_a==-1,"Ooops");
 	A4GL_assertion(low_cnt==-1,"Ooops");
 
-	free(saved_queries[low_cnt_a].fromsql);
-	free(saved_queries[low_cnt_a].tosql);
+	acl_free(saved_queries[low_cnt_a].fromsql);
+	acl_free(saved_queries[low_cnt_a].tosql);
 	saved_queries[low_cnt_a].fromsql=strdup(fromsql);
 	saved_queries[low_cnt_a].tosql=strdup(tosql);
 	saved_queries[low_cnt_a].last_cnt=last_cnt++;
@@ -487,7 +487,7 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int
     {
       sql_new = "";
     }
-  free (sql);
+  acl_free (sql);
   //for (a=0;a<strlen(sql_new);a++) { if (sql_new[a]=='\n') sql_new[a]=' '; }
   A4GL_debug ("check_sql.. %s", sql_new);
 
@@ -595,6 +595,7 @@ void
 A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 {
   char buff[256];
+void *p=0;
 
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
   A4GL_debug ("Load convert : %s %s", source_dialect, target_dialect);
@@ -604,11 +605,10 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
     {
       A4GL_cv_fnlist (source_dialect, target_dialect, buff);
     }
-
+  
 
   current_conversion_rules = A4GL_find_pointer (buff, SQL_CONVERSION);
-  current_conversion_rules_cnt =
-    (long) A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
+  current_conversion_rules_cnt = (long) A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
 }
 
 
@@ -675,7 +675,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 
       conversion_rules_cnt++;
       conversion_rules =
-	realloc (conversion_rules,
+	acl_realloc (conversion_rules,
 		 sizeof (*conversion_rules) * conversion_rules_cnt);
 
       conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len);
@@ -758,7 +758,7 @@ A4GLSQLCV_check_sql (char *s,int *converted)
 {
   int b;
   static char *buff = 0;
-  char *ptr;
+  char *ptr=0;
   A4GL_assertion (s == 0, "No pointer");
   A4GL_debug ("check sql : %s\n", s);
   *converted=1;
@@ -775,6 +775,7 @@ A4GLSQLCV_check_sql (char *s,int *converted)
 
   A4GL_debug ("check sql 2\n");
   ptr = acl_malloc2 (strlen (s) * 2 + 1000);
+  
   strcpy (ptr, s);
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
@@ -791,7 +792,7 @@ A4GLSQLCV_check_sql (char *s,int *converted)
     }
   A4GL_debug ("returning\n");
   if (buff)
-    free (buff);
+    acl_free (buff);
 
   if (A4GLSQLCV_check_requirement ("LIMIT_LINE"))
     {
@@ -801,7 +802,7 @@ A4GLSQLCV_check_sql (char *s,int *converted)
     {
       buff = acl_strdup (ptr);
     }
-  free (ptr);
+  acl_free (ptr);
 
   if (A4GL_isyes (acl_getenv ("A4GL_DUMP_SQL")))
     {
@@ -867,7 +868,7 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
       static char *ptr = 0;
       char *ptr2;
       if (ptr)
-	free (ptr);
+	acl_free (ptr);
       ptr = acl_strdup (sv);
       ptr2 = strchr (ptr, '(');
       *ptr2 = 0;
@@ -910,7 +911,7 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
       static char *ptr = 0;
       char *ptr2;
       if (ptr)
-	free (ptr);
+	acl_free (ptr);
       ptr = acl_strdup (s);
       ptr2 = strchr (ptr, '(');
       *ptr2 = 0;
@@ -977,7 +978,7 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
       static char *ptr = 0;
       char *ptr2;
       if (ptr)
-	free (ptr);
+	acl_free (ptr);
       ptr = acl_strdup (sv);
       ptr2 = strchr (ptr, '(');
       *ptr2 = 0;
@@ -1020,7 +1021,7 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
       static char *ptr = 0;
       char *ptr2;
       if (ptr)
-	free (ptr);
+	acl_free (ptr);
       ptr = acl_strdup (s);
       ptr2 = strchr (ptr, '(');
       *ptr2 = 0;
@@ -1119,7 +1120,7 @@ A4GL_cvsql_replace_str (char *buff, char *from, char *to)
   int dq = 0;
   int ln;
   l = strlen (buff) * 2 + 1000;
-  buff2 = realloc (buff2, l);
+  buff2 = acl_realloc (buff2, l);
   A4GL_debug ("replace_str from :%s to %s", from, to);
   strcpy (buff2, "");
   ln=strlen (buff);
@@ -1179,7 +1180,7 @@ A4GLSQLCV_check_expr (char *s)
 
   A4GL_debug("%s\n",s);
 
-  buff = realloc (buff, strlen (s) * 2 + 1000);
+  buff = acl_realloc (buff, strlen (s) * 2 + 1000);
   strcpy (buff, s);
 
   for (b = 0; b < current_conversion_rules_cnt; b++)
@@ -1883,7 +1884,7 @@ A4GL_cvsql_split_update (char *sql, char *args)
 
   A4GL_cv_replacestr (ob1, (cb2 - ob1 + 1), s);
 
-  free (s);
+  acl_free (s);
 }
 
 
@@ -2114,8 +2115,8 @@ A4GL_strwscmp (char *a, char *b)
     }
   o2[b_i] = 0;
   a_i = strcmp (o1, o2);
-  free (o1);
-  free (o2);
+  acl_free (o1);
+  acl_free (o2);
   return a_i;
 
 
@@ -2240,7 +2241,7 @@ A4GLSQLCV_datetime_value (char *s)
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
 	      SPRINTF2 (buff, "%s(\"%s\")", xx, ptr);
-	      free (ptr);
+	      acl_free (ptr);
 	      return buff;
 
 	    }
@@ -2268,7 +2269,7 @@ A4GLSQLCV_interval_value (char *s)
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
 	      SPRINTF2 (buff, "%s(\"%s\")", xx, ptr);
-	      free (ptr);
+	      acl_free (ptr);
 	      return buff;
 	    }
 	}
@@ -2307,10 +2308,11 @@ A4GLSQLCV_check_fullpath (char *s)
 char *
 A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 {
-  char *ptr;
+  static char *ptr=0;
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL"))
     {
+      if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       A4GL_debug ("Creating temp table called %s", tabname);
       if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
@@ -2325,6 +2327,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
     {
+      if (ptr) free(ptr);
 	ptr = acl_malloc2 (strlen (sel) + 2000);
 	A4GL_debug ("Creating temp table called %s (declare+insert) ", tabname);
 	if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
@@ -2337,6 +2340,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS"))
     {
+      if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       SPRINTF2 (ptr, "CREATE TEMP TABLE %s AS %s ", tabname, sel);
       return ptr;
@@ -2346,6 +2350,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS"))
     {
+      if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       SPRINTF2 (ptr, "CREATE TEMPORARY TABLE %s AS %s ", tabname, sel);
       return ptr;
@@ -2353,11 +2358,13 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()"))
     {
+      if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s AS ( %s )", tabname, sel);
       return ptr;
     }
 
+      if (ptr) free(ptr);
   ptr = acl_malloc2 (strlen (sel) + 2000);
   SPRINTF2 (ptr, "%s %s", sel, lp);
   return ptr;
@@ -2380,9 +2387,11 @@ char *
 A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
 			     char *oplog)
 {
-  char *ptr;
-  ptr =
-    acl_malloc2 (strlen (tabname) + strlen (elements) + strlen (extra) +
+  static char *ptr=0;
+
+  //if (ptr) free(ptr);
+
+  ptr = acl_malloc2 (strlen (tabname) + strlen (elements) + strlen (extra) +
 		 strlen (oplog) + 1000);
 
   save_temp_table (tabname,0);
@@ -2579,8 +2588,8 @@ static int sql_convert_func(char *srcfmt, char *srcparam, char *dstbuf, int dstb
     {
 	if (dstidx >= dstbuf_size-1)
 	{
-	    free(param);
-	    free(fmt);
+	    acl_free(param);
+	    acl_free(fmt);
 	    return 0;
 	}
 	if (fmt[i] == '%' && fmt[i+1] >= '1' && fmt[i+1] <= '9' )
@@ -2591,8 +2600,8 @@ static int sql_convert_func(char *srcfmt, char *srcparam, char *dstbuf, int dstb
 		{
 		    if (dstidx >= dstbuf_size-1)
 		    {
-			free(param);
-			free(fmt);
+			acl_free(param);
+			acl_free(fmt);
 			return 0;
 		    }
 		    dstbuf[dstidx++] = tparam[fmt[i+1] - '1'][j];
@@ -2603,8 +2612,8 @@ static int sql_convert_func(char *srcfmt, char *srcparam, char *dstbuf, int dstb
 	else
 	    dstbuf[dstidx++] = fmt[i];
     }
-    free(param);
-    free(fmt);
+    acl_free(param);
+    acl_free(fmt);
     return 1;
 }
 
@@ -2723,7 +2732,7 @@ A4GLSQLCV_check_tablename (char *t)
       A4GL_debug("table name mapped: \"%s\"(code) \"%s\"(db)\n", codeu, ptr);
       t = ptr;
   }
-  free(codeu);
+  acl_free(codeu);
 
   if (strstr (t, "amarta")&& A4GL_isyes(acl_getenv("AMARTA_TO_SOAL")))
     {
@@ -2852,7 +2861,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_today ();
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
 
@@ -2861,7 +2870,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_time ();
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
 
@@ -2870,7 +2879,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_user ();
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
 
@@ -2879,7 +2888,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 1);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_MONTH") == 0)
@@ -2887,7 +2896,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 2);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_DAY") == 0)
@@ -2895,7 +2904,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 3);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_HOUR") == 0)
@@ -2903,7 +2912,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 4);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_MINUTE") == 0)
@@ -2911,7 +2920,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 5);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_SECOND") == 0)
@@ -2919,7 +2928,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 6);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_FRACTION1") == 0)
@@ -2927,7 +2936,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 7);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_FRACTION2") == 0)
@@ -2935,7 +2944,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 8);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_FRACTION3") == 0)
@@ -2943,7 +2952,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 9);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_FRACTION4") == 0)
@@ -2951,7 +2960,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_YEAR_FRACTION5") == 0)
@@ -2959,7 +2968,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (1, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s0'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }				// ,11 aint working yet..
 
@@ -2968,7 +2977,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 2);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_DAY") == 0)
@@ -2976,7 +2985,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 3);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_HOUR") == 0)
@@ -2984,7 +2993,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 4);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_MINUTE") == 0)
@@ -2992,7 +3001,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 5);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_SECOND") == 0)
@@ -3000,7 +3009,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 6);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_FRACTION1") == 0)
@@ -3008,7 +3017,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 7);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_FRACTION2") == 0)
@@ -3016,7 +3025,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 8);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_FRACTION3") == 0)
@@ -3024,7 +3033,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 9);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_FRACTION4") == 0)
@@ -3032,7 +3041,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MONTH_FRACTION5") == 0)
@@ -3040,7 +3049,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (2, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s0'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }				// ,11 aint working yet..
 
@@ -3049,7 +3058,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 3);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_HOUR") == 0)
@@ -3057,7 +3066,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 4);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_MINUTE") == 0)
@@ -3065,7 +3074,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 5);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_SECOND") == 0)
@@ -3073,7 +3082,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 6);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_FRACTION1") == 0)
@@ -3081,7 +3090,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 7);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_FRACTION2") == 0)
@@ -3089,7 +3098,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 8);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_FRACTION3") == 0)
@@ -3097,7 +3106,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 9);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_FRACTION4") == 0)
@@ -3105,7 +3114,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_DAY_FRACTION5") == 0)
@@ -3113,7 +3122,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (3, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s0'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }				// ,11 aint working yet..
 
@@ -3122,7 +3131,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 4);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_HOUR_MINUTE") == 0)
@@ -3130,7 +3139,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 5);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_HOUR_SECOND") == 0)
@@ -3138,7 +3147,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 6);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_HOUR_FRACTION1") == 0)
@@ -3146,7 +3155,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 7);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_HOUR_FRACTION2") == 0)
@@ -3154,7 +3163,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 8);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_HOUR_FRACTION3") == 0)
@@ -3162,7 +3171,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 9);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_HOUR_FRACTION4") == 0)
@@ -3170,7 +3179,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_HOUR_FRACTION5") == 0)
@@ -3178,7 +3187,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (4, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s0'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }				// ,11 aint working yet..
 
@@ -3187,7 +3196,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (5, 5);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MINUTE_SECOND") == 0)
@@ -3195,7 +3204,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (5, 6);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MINUTE_FRACTION1") == 0)
@@ -3203,7 +3212,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (5, 7);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MINUTE_FRACTION2") == 0)
@@ -3211,7 +3220,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (5, 8);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MINUTE_FRACTION3") == 0)
@@ -3219,7 +3228,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (5, 9);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MINUTE_FRACTION4") == 0)
@@ -3227,7 +3236,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (5, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_MINUTE_FRACTION5") == 0)
@@ -3235,7 +3244,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (5, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s0'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }				// ,11 aint working yet..
 
@@ -3245,7 +3254,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (6, 6);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_SECOND_FRACTION1") == 0)
@@ -3253,7 +3262,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (6, 7);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_SECOND_FRACTION2") == 0)
@@ -3261,7 +3270,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (6, 8);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_SECOND_FRACTION3") == 0)
@@ -3269,7 +3278,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (6, 9);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_SECOND_FRACTION4") == 0)
@@ -3277,7 +3286,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (6, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }
   if (A4GL_aubit_strcasecmp (s, "$CURRENT_SECOND_FRACTION5") == 0)
@@ -3285,7 +3294,7 @@ get_dollared_sql_var (char *s)
       A4GL_push_current (6, 10);
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s0'", c);
-      free (c);
+      acl_free (c);
       return buff;
     }				// ,11 aint working yet..
 
@@ -3307,7 +3316,7 @@ A4GL_space_out (char *s)
   int in_single = 0;
 
   if (ptr)
-    free (ptr);
+    acl_free (ptr);
 
   ptr = acl_malloc2 (strlen (s) * 2 + 1);
 
@@ -3357,7 +3366,7 @@ add_mapping (char *t, char *c1, char *c2)
 {
   ncolumn_mappings++;
   column_mappings =
-    realloc (column_mappings,
+    acl_realloc (column_mappings,
 	     sizeof (struct column_remap) * ncolumn_mappings);
   column_mappings[ncolumn_mappings - 1].tabname = strdup (t);
   column_mappings[ncolumn_mappings - 1].from_col = strdup (c1);
@@ -3672,6 +3681,7 @@ is_sqlserver_reserved_word (char *s)
 }
 
 
+/*
 int  A4GL_aubit_strcasestr (char *h, char *n) {
 	char *s1;
 	char *s2;
@@ -3690,10 +3700,10 @@ int  A4GL_aubit_strcasestr (char *h, char *n) {
 	if (strstr(s1,s2)) rval=1;
 	else rval=0;
 
-	free(s1);
-	free(s2);
+	acl_free(s1);
+	acl_free(s2);
 	return rval;
-}
+}*/
 
 void A4GL_set_compile_time_convert(int a) {
 	is_compile_time_convert=a;
@@ -3739,7 +3749,7 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
             + 10;
     if (newSize > allocSize)
     {
-        buf = realloc(buf, newSize);
+        buf = acl_realloc(buf, newSize);
         if (allocSize == 0) // first pass - initialize statics
         {
             if (A4GLSQLCV_check_requirement("STRIP_QUOTES_FROM_OWNER"))

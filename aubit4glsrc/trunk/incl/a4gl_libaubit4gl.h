@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.265 2007-03-30 19:11:16 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.266 2007-04-02 14:13:31 mikeaubury Exp $
 #
 */
 
@@ -352,6 +352,11 @@
 #define PREPAREPG        	'|'
 
 #define BLOCK_USED		'R'
+#define ESQL_CURSOR_OPEN		'Y'
+int A4GL_ESQL_cursor_is_open(char *s) ;
+void A4GL_ESQL_set_cursor_is_open(char *s) ;
+void A4GL_ESQL_set_cursor_is_closed(char *s) ;
+
 
 /* 
  * these seem to be used only in lib/extra_libs/channel - 
@@ -1436,6 +1441,13 @@ void A4GL_debug(char *s);
   /* void A4GL_trim (char *p); */
   void A4GL_bnamexxx (char *str, char *str1, char *str2);
   void A4GL_pad_string (char *ptr, int size);
+  void acl_free_With_Context(void *ptr);
+  void *acl_malloc2_With_Context(long size);
+  char *acl_strdup_With_Context(void *a);
+  void *acl_realloc_With_Context(void *a,long b);
+  void *A4GL_current_malloc_context(void);
+  void *A4GL_get_malloc_context(void);
+
   /*void acl_free_full (void *ptr, char *f, long line); */
   void a4gl_using (char *str, int s, char *fmt, double num);
   int A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.167 2007-03-12 15:22:23 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.168 2007-04-02 14:13:31 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.167 2007-03-12 15:22:23 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.168 2007-04-02 14:13:31 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -285,6 +285,15 @@ LEXLIB_print_close (char type, char *name)
 	  printc ("sqlca.sqlcode=0;");
 	}
       print_copy_status ();
+
+
+  if (A4GLSQLCV_check_requirement ("CLOSE_CURSOR_BEFORE_OPEN"))
+    {
+	printc("A4GL_ESQL_set_cursor_is_closed(\"%s\");",A4GL_strip_quotes(name));
+    }
+
+
+
       break;
     }
   printc ("/* END OF CLOSE */");
@@ -928,7 +937,7 @@ LEXLIB_print_open_cursor_g (char *xcname, t_binding_comp_list *using_bind)
 
   if (A4GLSQLCV_check_requirement ("CLOSE_CURSOR_BEFORE_OPEN"))
     {
-      printc ("\nEXEC SQL CLOSE  %s; /* AUTOCLOSE */\n", cname);
+      printc ("\nif (A4GL_ESQL_cursor_is_open(\"%s\")) {\nEXEC SQL CLOSE  %s; /* AUTOCLOSE */\n}\n", cname, cname);
     }
 
   if (using_bind && using_bind->bind)
@@ -962,6 +971,10 @@ LEXLIB_print_open_cursor_g (char *xcname, t_binding_comp_list *using_bind)
 
 
   clr_suppress_lines ();
+  if (A4GLSQLCV_check_requirement ("CLOSE_CURSOR_BEFORE_OPEN"))
+    {
+	printc("if (sqlca.sqlcode>=0) {A4GL_ESQL_set_cursor_is_open(\"%s\");}",cname);
+    }
   print_copy_status ();
 }
 

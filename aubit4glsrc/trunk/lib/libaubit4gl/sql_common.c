@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.40 2007-03-30 19:11:17 mikeaubury Exp $
+# $Id: sql_common.c,v 1.41 2007-04-02 14:13:31 mikeaubury Exp $
 #
 */
 
@@ -1445,6 +1445,26 @@ struct s_select_list *A4GLSQLPARSE_new_select_list_str(char *expr,char *alias) {
 
 /*
 */
+
+int A4GL_ESQL_cursor_is_open(char *s) {
+	if (A4GL_has_pointer(s,ESQL_CURSOR_OPEN)) {
+		return 1;
+	}
+return 0;
+
+}
+
+void A4GL_ESQL_set_cursor_is_open(char *s) {
+	if (!A4GL_has_pointer(s,ESQL_CURSOR_OPEN)) {
+		A4GL_add_pointer(s,ESQL_CURSOR_OPEN,(void *)1);
+	}
+}
+
+void A4GL_ESQL_set_cursor_is_closed(char *s) {
+	if (A4GL_has_pointer(s,ESQL_CURSOR_OPEN)) {
+		A4GL_del_pointer(s,ESQL_CURSOR_OPEN);
+	}
+}
 
 
 /* =============================== EOF ============================== */

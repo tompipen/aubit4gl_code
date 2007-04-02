@@ -15,17 +15,16 @@ struct mem_extra {
 void *malloc_context=0;
 
 
-static int has_malloc_context(char *filename) {
-	if (malloc_context==0) return 0;
-	if (strcmp(filename,"sqlexpr.c")==0) return 1;
-	if (strcmp(filename,"sqlconvert.c")==0) return 1;
-	if (strcmp(filename,"sql_common.c")==0) return 1;
-	//if (strcmp(filename,"pointers.c")==0) return 0;
-	//if (strcmp(filename,"util.c")==0) return 0;
-	return 0;
+void *A4GL_current_malloc_context(void) {
+	return malloc_context;
 }
 
-static void *get_malloc_context(void) {
+static int has_malloc_context(void) {
+	if (malloc_context==0) return 0;
+	return 1;
+}
+
+void *A4GL_get_malloc_context(void) {
 	return malloc_context;
 }
 
@@ -46,6 +45,16 @@ void A4GL_clr_malloc_context(void ) {
 }
 
 
+
+void *acl_malloc2_With_Context(long size) {
+  void *p;
+  if (size>2000000) { A4GL_assertion(1,"Dubious amount of memory to malloc"); }
+  p = malloc (size);
+  A4GL_assertion(p==0,"Unable to allocate memory");
+  if (has_malloc_context()) { A4GL_set_associated_mem(A4GL_get_malloc_context(), p); }
+  return p;
+}
+
 /**
  * Aubit compiler malloc.
  *
@@ -65,7 +74,6 @@ acl_malloc_full (long size, char *why, char *f, long line)
   if (size>2000000) { A4GL_assertion(1,"Dubious amount of memory to malloc"); }
   p = malloc (size);
   A4GL_assertion(p==0,"Unable to allocate memory");
-  if (has_malloc_context(f)) { A4GL_set_associated_mem(get_malloc_context(), p); }
   //A4GL_debug ("alloc %d bytes : %p %s %s %d", size,p,why,f,line);
   return p;
 }
@@ -74,16 +82,32 @@ char *acl_strdup_full(void *a,char *r,char *f,int l) {
         char *p;
         p=strdup(a);
         A4GL_assertion(p==0,"Unable to allocate memory");
-  	if (has_malloc_context(f) ) { A4GL_set_associated_mem(get_malloc_context(), p); }
+        return p;
+}
+
+
+char *acl_strdup_With_Context(void *a) {
+        char *p;
+        p=strdup(a);
+        A4GL_assertion(p==0,"Unable to allocate memory");
+  	if (has_malloc_context() ) { A4GL_set_associated_mem(A4GL_get_malloc_context(), p); }
         return p;
 }
 
 void *acl_realloc_full(void *a,long b,char *r,char *f,int l) {
         void *p;
-  	if (has_malloc_context(f)) { A4GL_rm_associated_mem(get_malloc_context(), a); }
         p=realloc(a,b);
         A4GL_assertion(p==0,"Unable to allocate memory");
-        if (has_malloc_context(f)) { A4GL_set_associated_mem(get_malloc_context(), p); }
+        return p;
+}
+
+
+void *acl_realloc_With_Context(void *a,long b) {
+        void *p;
+  	if (has_malloc_context()) { A4GL_rm_associated_mem(A4GL_get_malloc_context(), a); }
+        p=realloc(a,b);
+        A4GL_assertion(p==0,"Unable to allocate memory");
+        if (has_malloc_context()) { A4GL_set_associated_mem(A4GL_get_malloc_context(), p); }
         return p;
 }
 
@@ -95,10 +119,21 @@ void *acl_realloc_full(void *a,long b,char *r,char *f,int l) {
 void
 acl_free_full (void *ptr, char *f, long line)
 {
-  if (has_malloc_context(f)) { 
-		A4GL_rm_associated_mem(get_malloc_context(), ptr); 
-	}
+  //if (has_malloc_context()) { 
+		//A4GL_rm_associated_mem(A4GL_get_malloc_context(), ptr); 
+	//}
   //A4GL_debug ("Free %p %s %d", ptr,f,line);
+  free (ptr);
+}
+
+
+
+void
+acl_free_With_Context (void *ptr)
+{
+  if (has_malloc_context()) { 
+		A4GL_rm_associated_mem(A4GL_get_malloc_context(), ptr); 
+  }
   free (ptr);
 }
 
@@ -145,6 +180,8 @@ void *A4GL_set_associated_mem(void *orig,void *newbytes) {
 	int nelem;
 	void *newblock=0;
 	struct mem_extra *ptr=0;
+
+	if (orig==0) return 0;
 
 	if (last_orig!=orig)  {
 		sprintf(buff,"%p",orig);
@@ -267,3 +304,5 @@ void A4GL_free_associated_mem(void *orig) {
 	A4GL_del_pointer(buff,MEMEXTRA);
 	
 }
+
+

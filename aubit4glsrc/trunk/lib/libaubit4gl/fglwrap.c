@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.118 2007-02-20 18:52:22 gyver309 Exp $
+# $Id: fglwrap.c,v 1.119 2007-04-02 14:13:31 mikeaubury Exp $
 #
 */
 
@@ -1406,5 +1406,30 @@ A4GL_debug (char *s)
 	  A4GL_debug_full ("ERROR  - A4GL_debug called in full with %s", s);
 }
 #endif
+
+
+int  A4GL_aubit_strcasestr (char *h, char *n) {
+        char *s1;
+        char *s2;
+        int rval;
+        int l1;
+         int l2;
+        int a;
+
+        s1=strdup(h);
+        s2=strdup(n);
+        l1=strlen(s1);
+        l2=strlen(s2);
+        for (a=0;a<l1;a++) { s1[a]=toupper(h[a]); }
+        for (a=0;a<l2;a++) { s2[a]=toupper(n[a]); }
+
+        if (strstr(s1,s2)) rval=1;
+        else rval=0;
+
+        free(s1);
+        free(s2);
+        return rval;
+}
+
 
 /* ================================= EOF ============================= */
