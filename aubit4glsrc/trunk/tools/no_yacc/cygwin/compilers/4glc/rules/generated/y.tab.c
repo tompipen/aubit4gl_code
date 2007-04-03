@@ -10823,7 +10823,7 @@ yyreduce:
 
   case 12:
 #line 1560 "fgl.infx.yacc"
-    { SPRINTF3((yyval.str),"%s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
+    { SPRINTF3((yyval.str),"(%s%s%s)",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 13:
