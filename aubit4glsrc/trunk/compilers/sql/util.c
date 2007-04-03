@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.56 2007-03-30 19:11:16 mikeaubury Exp $
+# $Id: util.c,v 1.57 2007-04-03 16:56:23 gyver309 Exp $
 #
 */
 
@@ -1029,7 +1029,7 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
 	return "<err>";
       else
       {
-	  if (A4GL_isyes(acl_getenv("EXIT_ON_BAD_SQL")))
+	  if (A4GL_isyes(acl_getenv("A4GL_EXIT_ON_BAD_SQL")))
 	  {
 	      A4GL_debug("Bad SQL: %s", sql);
 	      A4GL_set_errm(sql);
