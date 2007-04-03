@@ -7,7 +7,7 @@
 
 arr_expr :
 OPEN_BRACKET arr_expr CLOSE_BRACKET  {SPRINTF1($<str>$,"(%s)",$<str>2);}
-| arr_expr arr_next_math arr_expr { SPRINTF3($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
+| arr_expr arr_next_math arr_expr { SPRINTF3($<str>$,"(%s%s%s)",$<str>1,$<str>2,$<str>3);}
 | INT_VALUE {SPRINTF1($<str>$,"%d",atoi($<str>1));}
 | arr_int_sign INT_VALUE {SPRINTF2($<str>$,"(%s%s)",$<str>1,$<str>2);}
 | variable {

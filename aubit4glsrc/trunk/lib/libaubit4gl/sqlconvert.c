@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.108 2007-04-02 14:13:31 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.109 2007-04-03 08:02:14 mikeaubury Exp $
 #
 */
 
@@ -617,7 +617,9 @@ static FILE *cnfopen(char *path,char *buff_sm) {
 FILE *f;
 char buff[512];
 sprintf(buff,"%s%s",path,buff_sm);
+A4GL_debug("Trying to cnfopen %s", buff);
 f=fopen(buff,"r");
+A4GL_debug("Trying to cnfopen %s - f=%p", buff,f);
 return f;
 }
 
@@ -641,7 +643,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
   fh=cnfopen(path, buff_sm);
   if (!fh) {
 
-  if (buff[0] == '\0') {
+  //if (buff[0] == '\0') {
 #ifdef SIMPLIFIED
     	SPRINTF1 (path, "%s", DATADIR);
 #else
@@ -652,7 +654,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 	    fh=cnfopen(path, buff_sm);
 	}
 #endif
-  }
+  //}
   }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.266 2007-04-02 14:13:31 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.267 2007-04-03 08:02:13 mikeaubury Exp $
 #
 */
 
@@ -1893,6 +1893,7 @@ FORMCONTROL_HIDE_FIELD
     int h;
 	int insmode;
     int processed_onkey;
+	void *label;
   };
 
   int load_data (char *fname, char *delims, char *tabname, ...);

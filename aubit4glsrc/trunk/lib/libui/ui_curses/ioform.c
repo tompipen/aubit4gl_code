@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.166 2007-03-30 19:11:19 mikeaubury Exp $
+# $Id: ioform.c,v 1.167 2007-04-03 08:02:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.166 2007-03-30 19:11:19 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.167 2007-04-03 08:02:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -2813,6 +2813,9 @@ UILIB_A4GL_push_constr (void *vs)
     }
   if (flg == 0)
     A4GL_push_char (" 1=1");
+
+if (s->fcntrl) free(s->fcntrl);
+if (s->field_list) free(s->field_list);
   return 1;
 }
 

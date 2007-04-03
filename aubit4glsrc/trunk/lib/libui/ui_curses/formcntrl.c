@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.107 2007-03-09 13:48:24 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.108 2007-04-03 08:02:15 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.107 2007-03-09 13:48:24 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.108 2007-04-03 08:02:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -343,11 +343,13 @@ A4GL_debug("field=%d %p\n",attrib,sio->field_list);
 	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field,
 				     0, 0,__LINE__);
 	}
+      acl_free (ptr);
     }
   else
     {
       acl_free (ptr);
     }
+
   A4GL_debug ("Done newMovement - last_field was %p new_field is %p",
 	      last_field, new_field);
 }
@@ -1065,8 +1067,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
     }
   else
     {
-      A4GL_debug ("Popping type %d (%s) off control stack @ %d",
-		  sio->fcntrl[a].op, ops[sio->fcntrl[a].op], a);
+      A4GL_debug ("Popping type %d (%s) off control stack @ %d", sio->fcntrl[a].op, ops[sio->fcntrl[a].op], a);
       sio->fcntrl_cnt--;
       if (sio->fcntrl[a].parameter)
 	{
@@ -1149,9 +1150,11 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
 
 
 	      A4GL_newMovement (s, a);
+		free(ptr);
 	      return 1;
 	    }
 	}
+		free(ptr);
       A4GL_exitwith ("Field not found");
       return 0;
     }
