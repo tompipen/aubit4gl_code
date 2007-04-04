@@ -34,7 +34,7 @@ fgl_expr_c :
 		add_feature("ET_EXPR_NOT_MATCHES");
 	}
  	| fgl_expr_c LIKE fgl_expr_c expr_escape {
-		$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LIKE,0);
+		$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LIKE,$<ptr>4);
 	}
 	| fgl_expr_c NOT_LIKE fgl_expr_c expr_escape {
 		$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_NOT_LIKE,$<ptr>4);

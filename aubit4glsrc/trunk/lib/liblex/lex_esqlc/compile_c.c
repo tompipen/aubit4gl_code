@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.362 2007-03-25 13:33:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.363 2007-04-04 20:29:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.362 2007-03-25 13:33:18 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.363 2007-04-04 20:29:20 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2082,7 +2082,7 @@ real_print_expr (struct expr_str *ptr)
 	  real_print_expr (ptr->u_data.expr_op->right);
 	  if (ptr->u_data.expr_op->escape)
 	    {
-	      real_print_expr (ptr->u_data.expr_op->right);
+	      real_print_expr (ptr->u_data.expr_op->escape);
 	    }
 	  else
 	    {
@@ -2095,7 +2095,7 @@ real_print_expr (struct expr_str *ptr)
 	  real_print_expr (ptr->u_data.expr_op->right);
 	  if (ptr->u_data.expr_op->escape)
 	    {
-	      real_print_expr (ptr->u_data.expr_op->right);
+	      real_print_expr (ptr->u_data.expr_op->escape);
 	    }
 	  else
 	    {
