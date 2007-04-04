@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.57 2007-04-03 16:56:23 gyver309 Exp $
+# $Id: util.c,v 1.58 2007-04-04 13:58:48 gyver309 Exp $
 #
 */
 
@@ -41,9 +41,6 @@
 
 #include "a4gl_API_sqlparse_lib.h"
 #include "a4gl_libaubit4gl.h"
-
-#define USE_STMT_CACHE
-
 
 #ifdef SIMPLIFIED
 #include "../4glc/lib4glc/fix_insert.c"
@@ -1101,27 +1098,28 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
   int use_this_time=0;
   char *save_sql;
 
+  int cache = A4GL_isyes(acl_getenv("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
+  if (cache)
+  {
+      if (init_conv_list) {
+          init_conv_list=0;
+          for (a=0;a<MAXCONVERSIONS;a++) {
+              conv_list[a].origsql=0;
+              conv_list[a].newsql=0;
+              conv_list[a].last_usage=0;
+          }
+      }
 
-#ifdef USE_STMT_CACHE
-  if (init_conv_list) {
-		init_conv_list=0;
-		for (a=0;a<MAXCONVERSIONS;a++) {
-			conv_list[a].origsql=0;
-			conv_list[a].newsql=0;
-			conv_list[a].last_usage=0;
-		}
-  }
-
-  for (a=0;a<MAXCONVERSIONS;a++) { // Have we already processed it ? 
-		if (conv_list[a].origsql==0) continue;
-		if (strcmp(conv_list[a].origsql, sql)==0) {
-			// Cool - no more work to do then !
-			return conv_list[a].newsql;
-		}
+      for (a=0;a<MAXCONVERSIONS;a++) { // Have we already processed it ? 
+          if (conv_list[a].origsql==0) continue;
+          if (strcmp(conv_list[a].origsql, sql)==0) {
+              // Cool - no more work to do then !
+              return conv_list[a].newsql;
+          }
+      }
   }
 
   save_sql=strdup(sql);
-#endif
 
   cd=A4GLSQL_get_status();
   st=a4gl_status;
@@ -1144,23 +1142,24 @@ A4GL_free_malloc_context(sql);
   A4GLSQL_set_status(cd,1);
   if (!errflg) aclfgli_clr_err_flg();
 
-#ifdef USE_STMT_CACHE
-// Now - Cache that result...
-  last_used=-1;
-  for (a=0;a<MAXCONVERSIONS;a++) {
-	
-	if (conv_list[a].last_usage<last_used || last_used==-1 || conv_list[a].origsql==0) {
-		use_this_time=a;
-		last_used=conv_list[a].last_usage;
-		if (conv_list[a].origsql==0) break;
-	}
+  if (cache)
+  {
+      // Now - Cache that result...
+      last_used=-1;
+      for (a=0;a<MAXCONVERSIONS;a++) {
+
+          if (conv_list[a].last_usage<last_used || last_used==-1 || conv_list[a].origsql==0) {
+              use_this_time=a;
+              last_used=conv_list[a].last_usage;
+              if (conv_list[a].origsql==0) break;
+          }
+      }
+      if (conv_list[use_this_time].origsql) free (conv_list[use_this_time].origsql) ;
+      if (conv_list[use_this_time].newsql) free (conv_list[use_this_time].newsql) ;
+      conv_list[use_this_time].last_usage=cnt++;
+      conv_list[use_this_time].origsql=save_sql;
+      conv_list[use_this_time].newsql=strdup(ptr);
   }
-  if (conv_list[use_this_time].origsql) free (conv_list[use_this_time].origsql) ;
-  if (conv_list[use_this_time].newsql) free (conv_list[use_this_time].newsql) ;
-  conv_list[use_this_time].last_usage=cnt++;
-  conv_list[use_this_time].origsql=save_sql;
-  conv_list[use_this_time].newsql=strdup(ptr);
-#endif
 
 
   //a4gl_sqlca.sqlcode=cd;
