@@ -233,7 +233,6 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 {
   size_t bytes_sent = 0;
   int this_write;
-
   while (bytes_sent < count)
     {
       do

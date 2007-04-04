@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.42 2007-03-12 09:36:14 mikeaubury Exp $";
+  "$Id: menu.c,v 1.43 2007-04-04 15:32:48 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -25,6 +25,11 @@ static int A4GL_ll_menu_type (void ) ;
 void A4GL_LL_enable_menu(void);
 void A4GL_LL_disable_menu(void);
 
+static char *use_empty_string_if_null(char *s) {
+static char *s_empty="";
+if (s) return s;
+return s_empty;
+}
 
 void
 UILIB_A4GL_disp_h_menu (void *menuv)
@@ -45,7 +50,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
     {
       ACL_Menu_Opts *mo;
       int a;
-      A4GL_LL_disp_h_menu (menu->num_opts);
+      A4GL_LL_disp_h_menu (menu->num_opts, use_empty_string_if_null(menu->menu_title), use_empty_string_if_null(menu->mnstyle), use_empty_string_if_null(menu->mncomment),use_empty_string_if_null(menu->mnimage));
       mo = menu->first;
       // Seems so...
       for (a = 0; a < menu->num_opts; a++)
@@ -583,7 +588,7 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
   int key;
   int menu_response = -1;
 
-  A4GL_LL_disp_h_menu (menu->num_opts);
+  A4GL_LL_disp_h_menu (menu->num_opts, use_empty_string_if_null(menu->menu_title), use_empty_string_if_null(menu->mnstyle), use_empty_string_if_null(menu->mncomment),use_empty_string_if_null(menu->mnimage));
   if (A4GL_ll_menu_type () == 1)
     {
       ACL_Menu_Opts *mo;

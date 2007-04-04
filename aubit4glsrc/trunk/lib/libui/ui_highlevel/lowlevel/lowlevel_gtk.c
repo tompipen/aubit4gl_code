@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.113 2007-03-12 09:36:15 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.114 2007-04-04 15:32:50 mikeaubury Exp $";
 #endif
 
 
@@ -3464,7 +3464,7 @@ A4GL_show_ok_cancel (int n)
 
 
 int
-A4GL_LL_disp_h_menu (int num_opts)
+A4GL_LL_disp_h_menu (int num_opts, char *title, char* style,char* comment,char* image )
 {
   GtkWidget *bb;
   GtkWidget *b;

@@ -19,7 +19,7 @@ A4GL_LL_create_window int h int w int y int x int border -> void*
 A4GL_LL_current_field void* form -> void* 
 A4GL_LL_decode_aubit_attr int a char s -> int
 A4GL_LL_delete_errorwindow void* curr_error_window -> void
-A4GL_LL_disp_h_menu int num_opts -> void
+A4GL_LL_disp_h_menu int num_opts char* title char* style char* comment char* image -> void
 A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title char* shorthelp int attrib -> void
 A4GL_LL_display_form void* f int attrib int curr_width int curr_height int cb int currwinno int form_line void* currwin void* frm int maxline int maxcol char* name -> void* 
 A4GL_LL_opening_form_xml char* a char* filename char* b -> void
