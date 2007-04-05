@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.48 2007-04-02 14:13:31 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.49 2007-04-05 08:07:22 mikeaubury Exp $
 #
 */
 
@@ -1727,7 +1727,7 @@ preprocess_sql_statement (struct s_select *select)
 		  char *t;
 		  A4GL_debug ("Looking in %s\n",
 			      select->table_elements.tables[b].tabname);
-		  if (A4GL_isyes(acl_getenv ("NEVER_CONVERT"))) {
+		  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT")) {
 			  // Do nothing...
 		  } else {
 		  if (A4GL_has_column
@@ -2566,11 +2566,11 @@ int sold;
 	  return 0;
   }
 
-  if (A4GL_isyes(acl_getenv ("NEVER_CONVERT"))) {
+  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT")) {
 	  return 0;
   }
 
-  if (A4GL_isyes(acl_getenv ("NEVER_CONVERT_COLUMNS"))) {
+  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT_COLUMNS")) {
 	  return 0;
   }
 

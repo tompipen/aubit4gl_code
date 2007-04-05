@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.109 2007-04-03 08:02:14 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.110 2007-04-05 08:07:22 mikeaubury Exp $
 #
 */
 
@@ -161,6 +161,8 @@ static char *cvsql_names[] = {
   "CVSQL_EXPAND_COLUMNS",
   "CVSQL_DTYPE_ALIAS",
   "CVSQL_ODBC_LONGVARCHAR_AS_CHAR"
+  "CVSQL_NEVER_CONVERT",
+  "CVSQL_NEVER_CONVERT_COLUMN"
 };
 
 /*
@@ -272,7 +274,9 @@ enum cvsql_type
   CVSQL_FAKE_ROWID_NAME,
   CVSQL_EXPAND_COLUMNS,
   CVSQL_DTYPE_ALIAS,
-  CVSQL_ODBC_LONGVARCHAR_AS_CHAR
+  CVSQL_ODBC_LONGVARCHAR_AS_CHAR,
+  CVSQL_NEVER_CONVERT,
+  CVSQL_NEVER_CONVERT_COLUMN
 };
 
 
@@ -450,7 +454,7 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int
       return sql;
     }
 
-  if (A4GL_isyes (acl_getenv ("NEVER_CONVERT")))
+  if (A4GLSQLCV_check_requirement("NEVER_CONVERT"))
     {
       return sql;
     }
@@ -1729,6 +1733,10 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_EXPAND_COLUMNS;
   if (match_strncasecmp (p, "ODBC_LONGVARCHAR_AS_CHAR", len) == 0)
     return CVSQL_ODBC_LONGVARCHAR_AS_CHAR;
+  if (match_strncasecmp (p, "NEVER_CONVERT", len) == 0)
+    return CVSQL_NEVER_CONVERT;
+  if (match_strncasecmp (p, "NEVER_CONVERT_COLUMN", len) == 0)
+    return CVSQL_NEVER_CONVERT_COLUMN;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 

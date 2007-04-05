@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.41 2007-04-02 14:13:31 mikeaubury Exp $
+# $Id: sql_common.c,v 1.42 2007-04-05 08:07:21 mikeaubury Exp $
 #
 */
 
@@ -605,7 +605,7 @@ A4GL_apisql_must_convert (void)
 	  || A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
     {
       A4GL_debug ("Setting Must convert");
-      if (A4GL_isyes (acl_getenv ("NEVER_CONVERT")))
+      if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
 	{
 	  must_convert = 0;
 	}
