@@ -202,7 +202,7 @@ A4GL_LL_menu_loop void* menu -> int
 A4GL_LL_get_value char* s -> void*
 A4GL_LL_clear_prompt void* f void* p -> void
 
-A4GL_LL_disp_h_menu int num_opts -> int
+A4GL_LL_disp_h_menu int num_opts  char* title char* mnstyle char* mncomment char* mnimage -> int
 A4GL_LL_disp_h_menu_opt int opt_num int num_opts char* title char* shorthelp int attrib -> void
 A4GL_LL_menu_type -> int
 A4GL_LL_hide_h_menu -> int
