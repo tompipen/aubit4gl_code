@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.267 2007-04-03 08:02:13 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.268 2007-04-05 20:35:25 mikeaubury Exp $
 #
 */
 
@@ -2384,6 +2384,7 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 
 
 
+#ifndef gzfopen
 #if HAVE_ZLIB
 
 #include <zlib.h>
@@ -2407,6 +2408,7 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 #define gzfeof(f) feof(f)
 #define gzfgetc(a) fgetc(a)
 #define gzfputc(a,b) fputc(a,b)
+#endif
 #endif
 
 
@@ -3148,7 +3150,7 @@ struct s_select_list_item *new_select_list_item_variable (char *s);
 struct s_select_list_item *new_select_list_item_column_from_transform(char *s);
 struct s_select_list_item *new_select_list_item_ibind (char *s);
 struct s_select_list_item *new_select_list_item_op_slil (struct s_select_list_item *left, struct s_select_list_item_list *right, enum e_sli op);
-char *make_select_stmt(struct s_select *select);
+char *make_select_stmt(char *upd_or_del_table, struct s_select *select);
 
 void
 map_select_stmt (char *main_statement_type, struct s_select *select);

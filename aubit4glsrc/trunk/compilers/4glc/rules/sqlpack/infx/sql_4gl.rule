@@ -334,7 +334,7 @@ in_select_statement_ss:
                 s1->select_list=$<s_select_list_item_list>3;
                 s1->next=$<s_select>5;
 		A4GL_set_sql_lineno(yylineno);
-		$<sql_string>$=make_select_stmt(s1);
+		$<sql_string>$=make_select_stmt(current_upd_table, s1);
 		map_select_stmt("SUBSELECT",s1);
 		A4GL_free_select_stmt(s1);
 			

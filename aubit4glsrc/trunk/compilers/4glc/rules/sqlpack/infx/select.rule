@@ -3,7 +3,7 @@
 
 select_statement_ss_str_converted : select_statement_ss_select  {
 		A4GL_set_sql_lineno(yylineno);
-		$<sql_string>$=make_select_stmt($<s_select>1);
+		$<sql_string>$=make_select_stmt(current_upd_table, $<s_select>1);
 		map_select_stmt("SELECT",$<s_select>1);
 
 		//run an extra statement
@@ -71,7 +71,7 @@ select_statement21_ss_converted:
 		s1->sf=sf;
 		A4GL_set_sql_lineno(yylineno);
 		map_select_stmt("SELECT",s1);
-		$<sql_string>$=make_select_stmt(s1);
+		$<sql_string>$=make_select_stmt(current_upd_table, s1);
 		A4GL_free_select_stmt(s1);
 }
 ;

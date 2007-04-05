@@ -417,7 +417,7 @@ upd_subquery_ss:
                 	s1->modifier=acl_strdup($<str>3);
                 	s1->select_list=$<s_select_list_item_list>4;
 			A4GL_set_sql_lineno(yylineno);
-			$<sql_string>$=make_sql_string_and_free(acl_strdup("("),make_select_stmt(s1),acl_strdup(")"),NULL);
+			$<sql_string>$=make_sql_string_and_free(acl_strdup("("),make_select_stmt(current_upd_table, s1),acl_strdup(")"),NULL);
 			map_select_stmt("UPDATE",s1);
 			A4GL_free_select_stmt(s1);
         }		

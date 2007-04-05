@@ -1305,7 +1305,7 @@ put_val_int : CHAR_VALUE  {$<sql_string>$=strdup(convstrsql($<str>1));}
 
 query_specification_ss_converted:  query_specification_select {
 		A4GL_set_sql_lineno(yylineno);
-	$<sql_string>$=make_select_stmt($<s_select>1);
+	$<sql_string>$=make_select_stmt(current_upd_table, $<s_select>1);
 	map_select_stmt("SELECT",$<s_select>1);
 	A4GL_free_select_stmt($<s_select>1);
 }
