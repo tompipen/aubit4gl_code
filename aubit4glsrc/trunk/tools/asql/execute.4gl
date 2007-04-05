@@ -478,8 +478,14 @@ end_query: ;
 			}
 		}
 		rewrite_query_input(ln,c, get_qry_msg(qry_type,raffected));
+		if (exec_mode!=EXEC_MODE_FILE) {
+			sprintf(msg,"Q:%d %d - ( %s ) (%d)",qry_type, raffected, get_qry_msg(qry_type,raffected), exec_mode);
+		} else {
+			sprintf(msg,"Q:%d %d - ( %s )\nError in line %d\nNear character position %d\n",qry_type, raffected, get_qry_msg(qry_type,raffected), ln,c);
+		}
+	} else {
+		sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected, get_qry_msg(qry_type,raffected));
 	}
-	sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected, get_qry_msg(qry_type,raffected));
 endcode
 
 if sqlca.sqlcode>=0 then
