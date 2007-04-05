@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.49 2007-04-05 08:07:22 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.50 2007-04-05 16:38:49 mikeaubury Exp $
 #
 */
 
@@ -2570,7 +2570,7 @@ int sold;
 	  return 0;
   }
 
-  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT_COLUMNS")) {
+  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT_COLUMN")) {
 	  return 0;
   }
 
