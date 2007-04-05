@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.110 2007-04-05 08:07:22 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.111 2007-04-05 19:40:38 mikeaubury Exp $
 #
 */
 
@@ -2322,7 +2322,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL"))
     {
-      if (ptr) free(ptr);
+      //if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       A4GL_debug ("Creating temp table called %s", tabname);
       if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
@@ -2337,7 +2337,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
     {
-      if (ptr) free(ptr);
+      //if (ptr) free(ptr);
 	ptr = acl_malloc2 (strlen (sel) + 2000);
 	A4GL_debug ("Creating temp table called %s (declare+insert) ", tabname);
 	if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
@@ -2350,7 +2350,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS"))
     {
-      if (ptr) free(ptr);
+      //if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       SPRINTF2 (ptr, "CREATE TEMP TABLE %s AS %s ", tabname, sel);
       return ptr;
@@ -2360,7 +2360,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS"))
     {
-      if (ptr) free(ptr);
+      //if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       SPRINTF2 (ptr, "CREATE TEMPORARY TABLE %s AS %s ", tabname, sel);
       return ptr;
@@ -2368,13 +2368,14 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY()"))
     {
-      if (ptr) free(ptr);
+      //if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
       SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s AS ( %s )", tabname, sel);
       return ptr;
     }
 
-      if (ptr) free(ptr);
+
+      //if (ptr) free(ptr);
   ptr = acl_malloc2 (strlen (sel) + 2000);
   SPRINTF2 (ptr, "%s %s", sel, lp);
   return ptr;

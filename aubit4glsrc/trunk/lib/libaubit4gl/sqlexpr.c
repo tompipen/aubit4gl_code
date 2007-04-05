@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.50 2007-04-05 16:38:49 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.51 2007-04-05 19:40:38 mikeaubury Exp $
 #
 */
 
@@ -531,7 +531,7 @@ char * fix_delete_update_columns (char *table, struct s_select_list_item *i)
     new_select_list_item_list (new_select_list_item_literal ("1"));
   select->where_clause = i;
   select->first = A4GLSQLPARSE_new_tablename (table, 0);
-  s = make_select_stmt (select);
+  s = make_select_stmt (table, select);
   s = strstr (s, "WHERE ") + 6;
   return s;
 }
@@ -1351,7 +1351,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       return "";
 
     case E_SLI_SUBQUERY:
-      return make_select_stmt (p->u_data.subquery);
+      return make_select_stmt (0, p->u_data.subquery);
 
     
     case E_SLI_SUBQUERY_EXPRESSION:
@@ -1518,6 +1518,7 @@ char * find_table (struct s_select *select, struct s_select_list_item *i)
 		  }
 	    }
 	}
+
 	if (set_sql_lineno>0) {
       		FPRINTF (stderr, "Can't find table %s in FROM clause @ line %d\n", i->u_data.column.tabname,set_sql_lineno);
         } else {
@@ -1857,7 +1858,7 @@ find_tabname_for_alias (struct s_select *select, char *alias)
 
 
 char *
-make_select_stmt (struct s_select *select)
+make_select_stmt (char *c_upd_or_del, struct s_select *select)
 {
   char buff[40000];
   char buff_from[20000];
@@ -1996,7 +1997,7 @@ make_select_stmt (struct s_select *select)
   if (select->next)
     {
       char *ptr;
-      ptr = make_select_stmt (select->next);
+      ptr = make_select_stmt (0, select->next);
       A4GL_debug ("ptr=%s", ptr);
       A4GL_debug ("buff=%s", buff);
       strcat (buff, " UNION ");
