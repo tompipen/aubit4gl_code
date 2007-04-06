@@ -2,6 +2,10 @@
 # Sample debian/rules that uses debhelper.
 # GNU copyright 1997 to 1999 by Joey Hess.
 
+
+NOT USED ATM - JUST AN EXAMPLE
+
+
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 

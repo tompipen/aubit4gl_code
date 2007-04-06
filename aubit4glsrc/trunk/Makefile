@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.42 2007-03-28 09:18:42 mikeaubury Exp $
+# $Id: Makefile,v 1.43 2007-04-06 07:20:45 afalout Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -491,8 +491,8 @@ strip:
 #FIXME: "clean" should clean intermediate files resulting from compile, but will skip
 #executables and objects that are needed for instalation. After "clean", it should
 #still be possiblt to do "make install"
-clean:
-	@echo FIXME: only cleanall works
+clean: clean.all
+	@echo FIXME: only clean.all works
 
 #will clean EVERYTHING that is not source file from CVS
 distclean: clean.all clean.tools clean.aubitbuild clean.distclean clean.config
@@ -1468,7 +1468,7 @@ aubit4gl.lsm:
 
 
 ## ------------------------------------------------------------------
-##                      Deb packaging
+##           Alien packaging conversion (Deb and others)
 ## ------------------------------------------------------------------
 
 #Notes:
@@ -1479,7 +1479,7 @@ aubit4gl.lsm:
 ##############################
 # Convert RPM to Deb (aubit4gl-1.00.8-1.i686.rpm will be converted to aubit4gl_1.00.8-1_i386.deb)
 #deb: ${RPM_FILE}
-deb: ${RPM_FILE_TO_MAKE}
+convert.deb: ${RPM_FILE_TO_MAKE}
 #-k = keep original version number 	 --scripts = include pre/post RPM scriptlets
 	alien --to-deb --scripts -k $^
 #Stampede .slp:
@@ -1508,7 +1508,7 @@ deb: ${RPM_FILE_TO_MAKE}
 
 ##############################
 #
-deb.scp:
+convert.deb.scp:
 	scp ${shell find . -name ${AUBITNAME}_${AUBITVERSION}.${AUBITBUILD}-1_*.deb} root@192.168.1.200:/srv/www/htdocs/files
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| make $@: done. URL:"
@@ -1539,10 +1539,177 @@ all.packages.scp:
 
 ##############################
 #
-all.packages: rpm deb autopackage tar tar.bin
+all.packages: rpm dpkg autopackage tar tar.bin
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| make $@: done."
 	@echo "+--------------------------------------------------------------------+"
+	
+## ------------------------------------------------------------------
+##                      'real' Deb packaging
+## ------------------------------------------------------------------
+#debhelper package installs some interesting utilities:
+#           dh_desktop(1)
+#                  Register .desktop files
+#           dh_gconf(1)
+#                  generate GConf schema registration scripts
+#           dh_installcatalogs(1)
+#                  install and register SGML Catalogs
+#           dh_makeshlibs(1)
+#                  automatically create shlibs file
+#           dh_md5sums(1)
+#                  generate DEBIAN/md5sums file
+#           dh_perl(1)
+#                  calculates perl dependencies
+#           dh_shlibdeps(1)
+#                  calculate shared library dependancies
+#           dh_strip(1)
+#                  strip executables, shared libraries, and some static
+#                  libraries
+# .... and others...
+#
+#WARNING: Altho the following dpkg options look like they may allow user to 
+#relocate (specify alternative installation location) a deb package, they are
+#more or less useless, as they will fail to run maintainer scripts. Also, 
+#dpkg has no mechanism to tell (simmilar tp RPM_INSTALL_LOCATION variable) 
+#scripts where user decided to install. Search linux.debian.devel.mentors
+#for tread 'creating relocatable packages with dpkg' for a complete "explanation"
+#on how "this was not a dpkg design goal" and other funny storries.
+#Bottom line(s):
+#	- user MUST be root to install ANYTHING using dpkg
+#	- Installation location is determined when .deb package is created,
+#     based on location of files used to create it. PERIOD
+#	- Above prety much also implies that creation of .deb has to be done as root
+#	- ... and that no two versions of a package can be installed (using dpkg)
+#	  on Debian based system at any time. 
+#
+# While I do like dpkg infinitely more then RPM, even RPM managed to avoid 3
+# out of 4 of above limitations. 
+#
+#
+#     --root=dir | --admindir=dir | --instdir=dir
+#              Change   default   directories.    admindir  defaults  to
+#              /var/lib/dpkg and contains many files that give  informa‐
+#             tion  about  status of installed or uninstalled packages,
+#              etc.  instdir defaults to / and refers to  the  directory
+#              where  packages are to be installed.  instdir is also the
+#              directory passed to chroot(2)  before  running  package's
+#             installation  scripts,  which  means that the scripts see
+#              instdir as a root directory.  Changing root changes inst‐
+#              dir to dir and admindir to dir/var/lib/dpkg.
+
+
+#Location we install to using 'make install' will be used by dpkg as the 
+#default installation location when user installs .deb (see below)
+DEB_INSTALL_DEFAULT=/opt/aubit4gl-deb
+
+#Standard deb configuration files we dont use:
+#dirs docs files copyright rules conffiles shlibs substvars
+#Note that 'globals' is NOT a standard dpkg file - we invoke it from pre/post
+#scripts, but dpkg will simply ignore it.
+ALL_DEB_SCRIPTS=control postinst postrm preinst prerm templates config global
+ALL_DEB_CTRL_x=$(addprefix etc/debian/,${ALL_DEB_SCRIPTS})
+ALL_DEB_CTRL=$(addprefix $(DEB_INSTALL_DEFAULT)/DEBIAN/,${ALL_DEB_SCRIPTS})
+ALL_DEB_SCRIPTS_SRC=changelog control
+ALL_DEB_CTRL_SRC=$(addprefix ./debian/,${ALL_DEB_SCRIPTS_SRC})
+ALL_DEB_CTRL_SRC_x=$(addprefix etc/debian/,${ALL_DEB_SCRIPTS_SRC})
+
+##############################
+# Build all Debian packages
+deb: dpkg
+dpkg: dpkg.src dpkg.bin
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done."
+	@echo "+--------------------------------------------------------------------+"
+	
+##############################
+# Build a Debian package
+deb.bin: dpkg.bin
+dpkg.bin:
+	su -c "${MAKE} dpkg.bin.as.root"
+
+dpkg.bin.as.root: $(DEB_INSTALL_DEFAULT)/bin/4glc ${ALL_DEB_CTRL}
+	dpkg-deb --build $(DEB_INSTALL_DEFAULT) ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.deb
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. Created:"
+	@echo "| `ls ./${AUBITNAME}-${AUBIT_VERSION}.${AUBIT_BUILD}.x86.deb`"
+	@echo "+--------------------------------------------------------------------+"
+
+#############################
+# Dependency that checks for and if needed installs Aubit to default install
+# location for dpkg
+$(DEB_INSTALL_DEFAULT)/bin/4glc:
+#control directory has bad permissions 777 (must be >=0755 and <=0775)
+	su -c "${MAKE} install PREFIX=$(DEB_INSTALL_DEFAULT); \
+		mkdir -p $(DEB_INSTALL_DEFAULT)/DEBIAN; chmod 0775 $(DEB_INSTALL_DEFAULT)/DEBIAN"
+	
+
+#############################
+#Deinstall Aubit binary install created for the purpose of creating deb package
+#when no longer needed
+#TODO: since we use standard 'make install' to create this tree, we also get
+#links in bin and lib, which can conflict with our 'normal' install on this 
+#development machine; therefore, we should remove this automatically after
+#deb ics created, or add option to 'make install' (above) not to install links
+dpkg.deinstall.bin:
+	su -c "${MAKE} deinstall PREFIX=$(DEB_INSTALL_DEFAULT)"
+#WARNING: this looks easyer, but do we really want to use 'rm -rf' when we
+#have to be root, AND we are using variables???? A little mistake, and puffff....
+#	su -c "rm -rf $(DEB_INSTALL_DEFAULT)"
+	
+##############################
+# Create directory for controll files in bin tree
+$(DEB_INSTALL_DEFAULT)/DEBIAN:
+	su -c "mkdir -p $@; chmod 0775 $@"
+	
+#############################
+# Refresh controll file with AutoConf variables (in src tree)
+etc/debian/%: etc/debian/%.in
+	./config.status --file $@
+
+##############################
+# Copy controll file from src tree to bin tree
+dpkg.ctrl: ${ALL_DEB_CTRL}
+$(DEB_INSTALL_DEFAULT)/DEBIAN/%: etc/debian/% $(DEB_INSTALL_DEFAULT)/DEBIAN
+	cp $< $@
+#must be >=0555 and <=0775
+	chmod 0775 $@
+
+##############################
+# Remove controll files and directory from bin tree
+dpkg.clean: $(DEB_INSTALL_DEFAULT)/DEBIAN
+	rm -rf $<
+
+##############################
+# Create source code deb package; creates .dsc (Source controll file), 
+#.tar.gz (source code) and .diff.gz (Debainization diff, if appropriate)
+dpkg.src: clean.all ${ALL_DEB_CTRL_SRC}
+	cd ..; dpkg-source -b aubit4glsrc
+	rm -rf ./debian
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| make $@: done. Created:"
+	@echo "| `ls ./${AUBITNAME}_${AUBIT_VERSION}-${AUBIT_BUILD}.tar.gz`"
+	@echo "| `ls ./${AUBITNAME}_${AUBIT_VERSION}-${AUBIT_BUILD}.dsc`"
+	@echo "+--------------------------------------------------------------------+"
+
+###############################
+# Create Debian controll directory needed for packaging source code 
+./debian:
+	mkdir $@
+	
+##############################
+# Copy controll file from source tree etc/debin to root of src tree
+./debian/%: etc/debian/% ./debian
+	cp $< $@
+
+#Utility targets:
+dpkg.clean.ctrl:
+	cd etc/debian; rm -f ${ALL_DEB_SCRIPTS} ${ALL_DEB_SCRIPTS_SRC} *~
+	@echo "$@ done"
+	
+dpkg.make.ctrl: ${ALL_DEB_CTRL_x} ${ALL_DEB_CTRL_SRC_x}
+#	@echo $^
+	chmod a+x etc/debian/config
+	@echo "$@ done"
 	
 	
 ## ------------------------------------------------------------------

@@ -2,9 +2,12 @@ Source: @SHORTNAME@
 Section: devel
 Priority: optional
 Maintainer: Andrej Falout <andrej@falout.org>
-Standards-Version: 3.5.2
-Build-Depends: debhelper (>> 3.0.0), debconf, gmake, gcc, gawk, bison, flex, bash
-Comment: -------------------------------------------------------------
+Build-Depends: debhelper (>= 4.1.16), debconf, gmake, gcc, gawk, bison, flex, bash
+XBS-Comment1: is there Build-Recommends for libncurses5-dev, libgtk2.0-dev, libglade2-dev, ...
+Standards-Version: 3.6.1.0
+XBS-Comment2: The following empty line is MANDATORY:
+ 
+XBS-Comment3: ------------------------ Package: --------------------------------
 Package: @SHORTNAME@
 Architecture: @target_cpu@
 Essential: no

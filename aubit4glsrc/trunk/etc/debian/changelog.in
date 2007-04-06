@@ -1,0 +1,9 @@
+aubit4gl (1.00-9) testing; urgency=medium
+
+  * Created debian package
+    blah blah
+
+  * Created debian package
+    Use '822-date' to generate silly date line below...
+
+ -- Andrej Falout <andrej@falout.org>  Mon, 11 Dec 2006 01:07:00 +1100

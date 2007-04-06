@@ -1,4 +1,4 @@
-Template:aubit4gl/interactive
+Template: aubit4gl/interactive
 Type: boolean
 Default: false
 Description: Configure Aubit compile in interactive mode?
@@ -8,36 +8,36 @@ Description: Configure Aubit compile in interactive mode?
  .
  Or, it can be done completely automatically, without your interaction
 
-Template:aubit4gl/yes_or_no
+Template: aubit4gl/yes_or_no
 Type: boolean
 Default: true
 Description: xyz
 
-Template:aubit4gl/select
+Template: aubit4gl/select
 Type: select
 Choices: yes, no, maybe
 Default: yes
 Description: xyz
 
-Template:aubit4gl/multiselect
+Template: aubit4gl/multiselect
 Type: multiselect
 Choices: a, b, c
 Default: a
 Description: xyz
 
-Template:aubit4gl/string
+Template: aubit4gl/string
 Type: string
 Default: abc
 Description: xyz
 
-Template:aubit4gl/note
+Template: aubit4gl/note
 Type: note
 Description: xyz
 
-Template:aubit4gl/text
+Template: aubit4gl/text
 Type: text
 Description: xyz
 
-Template:aubit4gl/password
+Template: aubit4gl/password
 Type: password
 Description: xyz

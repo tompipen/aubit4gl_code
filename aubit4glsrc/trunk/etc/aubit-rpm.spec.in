@@ -4,7 +4,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.28 2007-04-02 14:50:41 fortiz Exp $
+# $Id: aubit-rpm.spec.in,v 1.29 2007-04-06 07:20:56 afalout Exp $
 #
 
 #--------------------------------------------------------------------------
@@ -858,7 +858,7 @@ fi
 	
 	#---------------------------------
 	# Show to user task summary
-	%{RPM_A4GL_EXIT} "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+	%{RPM_A4GL_EXIT} "$A4GL_TASK_MSG tasks exited, see $A4GL_TASK_LOG for details."
 	if test "%{A4GL_USER_INTERACTION}" = "1"; then
 		%{RPM_A4GL_EXIT} "NOTE: configuration tasks are running in the background - please WAIT for them to finish before trying to use Aubit compiler. (~2 minutes)"
 	fi
@@ -927,7 +927,7 @@ else
 fi
 	
 	if ! test -d ${CURR_A4GL_PREFIX}; then
-		%{RPM_A4GL_VERBOSE} "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
+		%{RPM_A4GL_ERROR} "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
 		%{RPM_A4GL_ERROR_EXIT} %{RPM_A4GL_ERROR_EXIT_CODE}
 	fi
 

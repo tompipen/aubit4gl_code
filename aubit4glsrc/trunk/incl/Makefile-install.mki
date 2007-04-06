@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.116 2006-12-28 12:49:36 gyver309 Exp $
+# $Id: Makefile-install.mki,v 1.117 2007-04-06 07:20:59 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -309,7 +309,7 @@ deinstall.files:
 	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin \
 	$(INSTALL_DIR)/incl/Makefile-common $(INSTALL_DIR)/incl/Makefile-common.in \
 	$(INSTALL_DIR)/etc/*.applications  $(INSTALL_DIR)/etc/*.desktop $(INSTALL_DIR)/docs/aubit4gl.png \
-	$(INSTALL_DIR)/bin/shtool
+	$(INSTALL_DIR)/bin/shtool $(INSTALL_DIR)/config.nice
 	${RM} $(addprefix $(INSTALL_DIR)/,${ALL_MAKEFILE})
 
 #######################################
@@ -320,6 +320,8 @@ deinstall.tree:
 	-rmdir $(INSTALL_DIR)/etc/convertsql
 	-rmdir $(INSTALL_DIR)/etc/import
 	-rmdir $(INSTALL_DIR)/etc
+	-rm -rf $(INSTALL_DIR)/debian
+	-rm -rf $(INSTALL_DIR)/DEBIAN
 	-rmdir $(INSTALL_DIR)/incl
 	-rmdir $(INSTALL_DIR)/tools/test/gui
 	-rmdir $(INSTALL_DIR)/tools/test

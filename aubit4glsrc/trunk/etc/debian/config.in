@@ -1,5 +1,6 @@
-#!/bin/sh -e
-
+#!/bin/sh
+#-e
+#
 #This shell script is erxecuted by dpkg BEFORE any other action is taken
 #and answers are storred in the database, so that answers are 'remebered'
 #for the time when pre/post un/install scripts are run, then this answers can 
@@ -7,9 +8,24 @@
 #Questions/prompts are defined in file 'templates'
 #Note taht this is run BEFORE package is unpacked; no Aubit files or directorues
 #exist at this point.
+#
+#NOTE: debconf uses frontend and question priority set by 'dpkg-reconfigure debconf'
+#where user can switch to GTK/CURSES/Qt/readline/etc frontend
+#
+#Seems we can run this script using 
+#'debconf --frontend=GTK --owner=aubit4gl --priority=medioum ./config' and that
+#lets us select UI, package, and priority without having to reconfigure 'debconf'
+#installation
+
+function verbose () { if test "$VERBOSE" = "1"; then echo "VERBOSE:$1" ; fi }
+
+export DEBCONF_DEBUG=developer
+VERBOSE=0
+THIS_DEBUG=1
 
 #Source debconf library
 if test -f /usr/share/debconf/confmodule; then
+	verbose "Sourcing confmodule"
 	. /usr/share/debconf/confmodule
 else
 	echo "WARNING: /usr/share/debconf/confmodule is missing"
@@ -17,17 +33,27 @@ else
 	exit 0
 fi
 
-#Clear record of preciouis naswers from the db; do this at the end of postrm too
-#db_purge
+if test "$THIS_DEBUG" = "1"; then
+	#Clear record of previous answers from the db; do this at the end of postrm too
+	#db_purge
+	#Mark question as not 'seen' so we ask again even if user previously answered
+	db_fset aubit4gl/interactive seen false
+fi
 
-db_input medium aubit4gl/interactive || true
+#WARNING: 'medium' priority often results in question beeing skipped, so
+#we have to use 'high' more or less allways
+db_input high aubit4gl/interactive || true
 db_go
 
 #When we need to know how user responded, we will Check the response:
-#db_get aubit4gl/interactive
-#if test "$RET" = "false"; then
-#	echo "false"
-#fi
+if test "$THIS_DEBUG" = "1"; then
+	db_get aubit4gl/interactive
+	if test "$RET" = "false"; then
+		echo "response was no"
+	else
+		echo "response was Yes"
+	fi
+fi
 
 
 
