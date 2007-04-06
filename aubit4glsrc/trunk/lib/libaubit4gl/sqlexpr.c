@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.51 2007-04-05 19:40:38 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.52 2007-04-06 09:57:59 mikeaubury Exp $
 #
 */
 
@@ -1864,10 +1864,15 @@ make_select_stmt (char *c_upd_or_del, struct s_select *select)
   char buff_from[20000];
   char into_temp[25600];
   int a;
+
   A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
+	if (c_upd_or_del) {
+		if (strlen(c_upd_or_del)) {
+			A4GLSQLPARSE_add_table_to_table_list(&select->table_elements, c_upd_or_del,0);
+		}
+	}
   preprocess_sql_statement (select);
-  A4GLSQLPARSE_from_clause (select, select->first, buff_from,
-			    &select->table_elements);
+  A4GLSQLPARSE_from_clause (select, select->first, buff_from, &select->table_elements);
 
 
   A4GL_debug ("Has %d tables :\n", select->table_elements.ntables);
