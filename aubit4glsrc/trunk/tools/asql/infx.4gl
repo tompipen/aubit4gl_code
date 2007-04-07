@@ -816,18 +816,22 @@ indicator=*col->sqlind ;
 					trim_trailing_0 (buffer);
 				} else {
 	      				sprintf (buffer, "%s", buff);
+#ifndef __WIN32__
 					if (A4GL_isyes(acl_getenv("A4GL_LOCALEMONEY"))) {
-					
 						strfmon(buffer,sizeof(buffer), "%n",atof(buff));
 					}
+#endif
 				}
 	    		}
 	  		else
 	    		{
 				if (A4GL_isyes(acl_getenv("A4GL_LOCALEMONEY"))) {
+	      				sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
+#ifndef __WIN32__
 					char smbuff[200];
 						sprintf(smbuff,"%%%dn",columnWidths[idx - 1]);
 						strfmon(buffer,sizeof(buffer), smbuff,atof(buff));
+#endif
 				} else {
 	      				sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
 				}
