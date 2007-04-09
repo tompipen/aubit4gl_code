@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.118 2007-04-09 14:02:39 fortiz Exp $
+# $Id: Makefile-install.mki,v 1.119 2007-04-09 14:54:37 fortiz Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -1026,17 +1026,17 @@ endif
 
 #################
 # 26: SQLite
-SQLITE_INFO=http://www.hwaci.com/sw/sqlite/index.html
-SQLITE_PATH=http://www.hwaci.com/sw/sqlite/
+SQLITE_INFO=http://www.sqlite.org/index.html
+SQLITE_PATH=http://www.sqlite.org
 #RPM containing documentation, header files, and static library:
-SQLITE_RPM_LIB=sqlite-devel-2.8.5-1.i386.rpm
+#SQLITE_RPM_LIB=sqlite-devel-2.8.5-1.i386.rpm
 #RPM containing shared libraries and the sqlite command-line program.
-SQLITE_RPM_DEV=sqlite-2.8.5-1.i386.rpm
+#SQLITE_RPM_DEV=sqlite-2.8.5-1.i386.rpm
 
-SQLITE_WIN_PATH=http://sqlite.org
-SQLITE_WIN_LIB=sqlitedll-3_0_8.zip
-SQLITE_WIN_EXE=sqlite-3_0_8.zip
-SQLITE_SRC_NAME=sqlite-3.0.8
+SQLITE_WIN_PATH=http://www.sqlite.org
+SQLITE_WIN_LIB=sqlitedll-3_3_15.zip
+SQLITE_WIN_EXE=sqlite-3_3_15.zip
+SQLITE_SRC_NAME=sqlite-3.3.15
 SQLITE_SRC_TAR_GZ=${SQLITE_SRC_NAME}.tar.gz
 
 #ODBC driver for SQLite:
@@ -1278,7 +1278,7 @@ install.iodbc: ${IODBC_SRC_TAR_GZ}
 	cp /etc/odbc.ini ${HOME}/odbc.ini.${TIME}.bak
 	cp /etc/odbcinst.ini ${HOME}/odbcinst.ini.${TIME}.bak
 #Must install as root as it installs files under /etc (and it has to)
-	su - c "cd /tmp/${IODBC_SRC_NAME}; make install"
+	su -c "cd /tmp/${IODBC_SRC_NAME}; make install"
 endif
 	@echo "Package info & manuals: ${IODBC_INFO}"
 	@echo " "
@@ -1752,11 +1752,11 @@ install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
 else
 install.sqlite: ${SQLITE_SRC_TAR_GZ}
 #warning: path in tarball is just 'sqlite' !
-	${MKPATH} /tmp/${SQLITE_SRC_NAME}
-	cd /tmp/${SQLITE_SRC_NAME}; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
-	cd /tmp/${SQLITE_SRC_NAME}/sqlite; ./configure
-	cd /tmp/${SQLITE_SRC_NAME}/sqlite; make
-	cd /tmp/${SQLITE_SRC_NAME}/sqlite; make install
+# Negative. tarball from sqlite.org includes version number
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SQLITE_SRC_NAME}; ./configure
+	cd /tmp/${SQLITE_SRC_NAME}; make
+	cd /tmp/${SQLITE_SRC_NAME}; make install
 endif
 endif
 	@echo " "
