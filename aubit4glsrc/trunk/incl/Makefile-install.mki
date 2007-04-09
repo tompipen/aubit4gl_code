@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.117 2007-04-06 07:20:59 afalout Exp $
+# $Id: Makefile-install.mki,v 1.118 2007-04-09 14:02:39 fortiz Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -1103,7 +1103,7 @@ PCRE_WIN_INSTALLER		=pcre-4.4-bin.exe
 ##################
 # 31: SXML
 SXML_INFO				=http://freshmeat.net/projects/sxml
-SXML_SRC_PATH			=http://scain.firenze.net
+SXML_SRC_PATH			=http://freshmeat.net/redir/sxml/17892/url_tgz
 SXML_SRC				=sxml
 SXML_SRC_GZ				=${SXML_SRC}.tar.gz
 
