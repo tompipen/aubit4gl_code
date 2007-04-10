@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.363 2007-04-04 20:29:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.364 2007-04-10 21:01:16 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.363 2007-04-04 20:29:20 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.364 2007-04-10 21:01:16 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3867,6 +3867,7 @@ LEXLIB_print_display_array_p2 (void)
   printc("{");
   print_event_list();
   printc("A4GL_ensure_current_window_is(_curr_win);");
+   print_reset_state_after_call(); 
   printc ("_exec_block=A4GL_disp_arr_v2(&_sio_%d,%s,%s,%s /* attr */ ,%s /*scroll */,_sio_evt);\n", sio_id,l_arrvar, l_srec, l_attr, l_scroll);
 	free(l_arrvar);
 	free(l_srec);
@@ -3875,6 +3876,7 @@ LEXLIB_print_display_array_p2 (void)
   printc("if (_exec_block==-999)  {break;}");
   printc("}");
   printc ("}\n}\n");
+  //print_reset_state_after_call();
   printcomment ("/* end display */\n");
 }
 
@@ -4554,7 +4556,8 @@ LEXLIB_print_input_2 (char *s)
   printc("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",sio_id,sio_id);
 
   printc ("}\n");
-  print_reset_state_after_call();
+
+  /* print_reset_state_after_call(); */
 
 
   /*}*/
@@ -4778,6 +4781,7 @@ LEXLIB_print_input_array (char *arrvar, char *helpno, char *defs, char *srec, ch
   printc("_exec_block=-1;");
   printc("ERR_CHK_ERROR { break;} ");
   printc("continue;\n");
+   print_reset_state_after_call(); 
   SPRINTF4 (buff2, "A4GL_inp_arr_v2(&_sio_%d,%s,%s,%s,_forminit,_sio_evt);\n", sio_id,defs, srec, attr);
   return buff2;
 }

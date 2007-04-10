@@ -36,6 +36,7 @@ int main (int argc, char *argv[])
 	printf("Has %d blocks\n", report_internal->nblocks);
 	exit(0);
   } else {
+	printf("Has no blocks\n");
 	exit(1);
   }
 	

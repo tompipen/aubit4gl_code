@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.123 2007-02-28 10:43:25 mikeaubury Exp $
+# $Id: iarray.c,v 1.124 2007-04-10 21:01:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.123 2007-02-28 10:43:25 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.124 2007-04-10 21:01:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -2843,6 +2843,8 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	      strcpy (buff, "");
 	    }
 
+if (fprop->flags) {
+
 
 	  A4GL_trim (buff);
 
@@ -2905,13 +2907,10 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
 
 
-	  A4GL_push_param (cptr,
-			   arr->binding[attrib].dtype +
-			   ENCODE_SIZE (arr->binding[attrib].size));
-	  A4GL_display_field_contents (arr->currentfield,
-				       arr->binding[attrib].dtype,
-				       arr->binding[attrib].size,
-				       cptr);
+	  A4GL_push_param (cptr, arr->binding[attrib].dtype + ENCODE_SIZE (arr->binding[attrib].size));
+	  A4GL_display_field_contents (arr->currentfield, arr->binding[attrib].dtype, arr->binding[attrib].size, cptr);
+
+}
 	  new_state = 0;
 	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
 	  last_field_name = arr->fcntrl[a].field_name;
