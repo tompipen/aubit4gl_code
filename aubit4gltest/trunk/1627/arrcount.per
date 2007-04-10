@@ -1,0 +1,20 @@
+database formonly
+screen
+{
+[a     |t]
+[a     |t]  : [d   ]
+[a     |t]  : [d   ]
+[a     |t]  : [d   ]
+[a     |t] 
+}
+
+attributes
+a = formonly.a,autonext;
+t = formonly.t,autonext;
+
+d = formonly.d,autonext;
+
+instructions
+delimiters ".."
+screen record sa1[5] (a, t)
+screen record sa2[3] (d)
