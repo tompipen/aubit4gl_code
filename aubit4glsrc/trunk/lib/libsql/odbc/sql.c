@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.186 2007-03-16 16:35:59 gyver309 Exp $
+# $Id: sql.c,v 1.187 2007-04-10 12:19:39 mikeaubury Exp $
 #
 */
 
@@ -901,11 +901,22 @@ A4GL_newSQLSetParam (SQLHSTMT hstmt, SQLUSMALLINT ipar, SQLSMALLINT fCType, SQLS
         return_chk_rc (rc, hstmt, "SQLBindParameter");
     }
 
-    A4GL_trc ("SQLBindParam %p %d %d %d %d %d %d %d", hstmt, ipar, fCType,
-            fSqlType, cbColDef, ibScale, rgbValue, pcbValue);
+    //printf ("SQLBindParam %p %d %d %d %d %d %d %d\n", hstmt, ipar, fCType, fSqlType, cbColDef, ibScale, rgbValue, pcbValue);
+    A4GL_trc ("SQLBindParam %p %d %d %d %d %d %d %d", hstmt, ipar, fCType, fSqlType, cbColDef, ibScale, rgbValue, pcbValue);
 
-    rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT,
+    if (fCType == SQL_C_CHAR) {
+	int l;
+	l=cbColDef;
+	if (strlen(rgbValue)>l) {
+		l=rgbValue+1;
+	}
+	//printf("l=%d\n",l);
+    	rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT,
+            fCType, fSqlType, cbColDef, ibScale, rgbValue, l, pcbValue);      // 3200
+    } else {
+    	rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT,
             fCType, fSqlType, cbColDef, ibScale, rgbValue, 256, pcbValue);      // 3200
+    }
     return_chk_rc (rc, hstmt, "SQLBindParameter");
 }
 
