@@ -12,68 +12,32 @@
 #c="../libpdf/*.c ../librpc/sun_rpc/*.c ../librpc/xml_rpc/*.c ../libui/ui_console/*.c ../libui/ui_curses/*.c"
 #SOURCES="$a $b $c"
 
-if test "$COMSPEC" != ""; then 
-	SOURCES=`/bin/find ../.. -name "*.c"`
-else
-	SOURCES=`find ../.. -name "*.c"`
-fi
+
+sh mkerrors2
 
 $AWK '
 BEGIN {
 errcnt=1;
 FS="|"
 
-while (getline < "data/errs") {
-if($0=="") break;
-a4gl_errno=$1
-if (a4gl_errno>errcnt) errcnt=a4gl_errno+1
-errmsg=$2
-errors[errmsg]=a4gl_errno
-}
-
-FS="|"
-close("data/errs")
-
 print "#define A4GL_ERR_BASE 30000"
 print "static struct s_err {"
 	print "char *errmsg;"
 	print "int a4gl_errno;"
         print "} errors[]={"
+
 }
 
-/IGNOREEXITWITH/ {next}
-/exitwith\(char/ {next}
-/exitwith_sql\(char/  {next}
-/exitwith_sql_odbc\(char/  {next}
-/exitwith_sql_odbc_errm\(char/  {next}
-/define exitwith exitwith_sql/  {next}
-/define IGNOREEXITWITH/   {next}
-/exitwith2/ {next}
-/local_exitwith/ {next}
-/exitwith/ {
-if ($NF==1) {
-	old=$0
-	getline
-	$0=old $0
-}
-gsub("\\\\\"","\"")
-b=substr($0,index($0,":")-1)
-a=substr($0,index($0,"exitwith")+9)
-a=substr(a,index(a,"\"")+1)
-a=substr(a,1,index(a,"\"")-1)
 
-#    a=substr(a,1,index(a,"\\")-1) # WHY WAS THIS PUT IN ?
-a4gl_errno=errors[a]
-if (a4gl_errno==0&&done[a]==0) a4gl_errno=errcnt++
-if (done[a]==0) {
-print "{\"" a "\"," a4gl_errno " },"
-done[a]=1
-print a4gl_errno "|" a > "../generated/errdefs"
+{
+a4gl_errno=$1
+errmsg=$2
+print "{\"" errmsg "\"," a4gl_errno " },"
 }
-}
+
 END {
 print "{0,0}"
 print "};"
 }
-' $SOURCES > ../generated/tmperrs.h
+' mkerrors2.out  > ../generated/tmperrs.h
 
