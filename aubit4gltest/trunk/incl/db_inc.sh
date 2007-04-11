@@ -2057,6 +2057,14 @@ function check_db2() {
 }
 
 ###############################################################
+#Stub function for postgresql 8.x native driver            
+###############################################################
+function check_pg8() {
+	DB_TYPE="PG8"
+	A4GL_TARGETDIALECT="POSTGRES8"
+}
+
+###############################################################
 #Check if we have .cnv file as per configuration
 ###############################################################
 function check_cnv_file () {
@@ -2113,6 +2121,8 @@ function check_database() {
 		check_oracle
 	elif test "$USE_DB2" = "1" -o "$NEW_DB2" = "1" -o "$ODBC_USE_DB" = "DB2"; then
 		check_db2
+	elif test "$USE_PG8" = "1" -o "$NEW_PG8" = "1"; then
+		check_pg8
 	else
 		warning "Database type not checked or set"
 	fi

@@ -901,7 +901,7 @@ LOAD_ONLY_CURR_DB=1
 		-a "$DB_TYPE" != "IFX-OL" -a "$DB_TYPE" != "IFX-SE" \
 		-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG-80" \
 		-a "$DB_TYPE" != "MYSQL" -a "$DB_TYPE" != "INGRES" \
-		-a "$DB_TYPE" != "PG-UNKNOWN" \
+		-a "$DB_TYPE" != "PG-UNKNOWN" -a "$DB_TYPE" != "PG8" \
 		; then 
 		#DB we have no info stored for, treat it as ANSI
 		#TODO: determine if we have .cnv file for that db
@@ -952,7 +952,7 @@ LOAD_ONLY_CURR_DB=1
 			Progress) 	STAT_FIELD=14 ;;
 			INGRES) 	STAT_FIELD=15 ;;
 			FireFox) 	STAT_FIELD=16 ;;
-			PG-80) 		STAT_FIELD=17 ;;
+			PG8) 		STAT_FIELD=17 ;;
 			xx2) 		STAT_FIELD=18 ;;
 			xx3) 		STAT_FIELD=19 ;;
 			*)	error "FEATURE_DB_TYPE=$FEATURE_DB_TYPE" "5" ;;
@@ -1171,7 +1171,7 @@ LOAD_ONLY_CURR_DB=1
 			echo "Depend on back-end ($DEPEND_CNT):"
 			echo "$SQL_FEATURES_NON_ANSI_DEPEND"
 			echo "Depend by type: DDL=$D_D_CNT SQL=$S_D_CNT Con=$C_D_CNT Proc=$P_D_CNT Func=$F_D_CNT Mix=$X_D_CNT"
-			echo 
+				echo 
 			echo "Ignored ($IGNORED_CNT):"
 			echo "$SQL_FEATURES_NON_ANSI_IGNORED"
 			echo			

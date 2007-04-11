@@ -818,6 +818,24 @@ for a in $FLAGS; do
 		;;
 
 
+    -pg8)   			#Use PostgreSQL version 8.x native plug-in for db tests
+		if ! test -f $LIBS_DIR/libSQL_pg8$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find PostgreSQL 8.X plug in"
+            fi
+            exit 9
+        fi
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_PG8=1
+		export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=pg8
+		if ! test "$NO_ECHO"; then
+			echo "** "
+			echo "** WARNING:"
+			echo "** PG8 native driver is still in development."
+			echo "** "
+        fi
+		;;
+
+
 	-pg-inst=*) #Use Postgres installed at particular location, and not
 				#the one potentially available at system locations lile
 				#/ust/bin /usr/lib etc
