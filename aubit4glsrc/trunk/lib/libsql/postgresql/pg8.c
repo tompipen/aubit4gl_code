@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.6 2007-04-02 14:13:31 mikeaubury Exp $
+# $Id: pg8.c,v 1.7 2007-04-11 15:25:03 mikeaubury Exp $
 #*/
 
 
@@ -122,8 +122,8 @@ char *pghost = "";
 char *pgport = NULL;
 char *pgoptions = NULL;
 char *pgtty = NULL;
-char *login = NULL;
-char *pwd = NULL;
+//char *login = NULL;
+//char *pwd = NULL;
 static struct expr_str_list *A4GL_add_validation_elements_to_expr (struct
 								   expr_str_list
 								   *ptr,
@@ -169,12 +169,18 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char *envname;
   char *envport;
   char tmpDb[256];
+char *u = NULL;
+char *p = NULL;
+    char uname_acl[256];
+    char passwd_acl[256];
+
 
 
   int i;
 
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
+
   envname = acl_getenv ("PG_DBPATH");
 
   if (envname)
@@ -234,17 +240,43 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	pgport = envport;
     }
 
+
+
+    if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl))
+    {
+        A4GL_dbg ("Found in ACL File...");
+        u = 0;
+        p = 0;
+        u = acl_getenv_only ("A4GL_SQLUID");
+        p = acl_getenv_only ("A4GL_SQLPWD");
+        if (u && strlen (u) == 0) u = NULL;
+        if (p && strlen (p) == 0) p = NULL;
+        if (!u || !p)
+        {
+            u = uname_acl;
+            p = passwd_acl;
+        }
+    } else {
+        u = acl_getenv_only ("A4GL_SQLUID");
+        p = acl_getenv_only ("A4GL_SQLPWD");
+        if (u && strlen (u) == 0) u = NULL;
+        if (p && strlen (p) == 0) p = NULL;
+    }
+
+
   if (pghost)
     A4GL_debug ("Host=%s", pghost);
   if (pgport)
     A4GL_debug ("Port=%s", pgport);
   if (dbName)
     A4GL_debug ("dbName=%s", dbName);
-  if (login)
-    A4GL_debug ("login=%s", login);
-  if (pwd)
-    A4GL_debug ("passwd=%s", pwd);
-  con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, login, pwd);
+
+  if (u)
+    A4GL_debug ("login=%s", u);
+  if (p)
+    A4GL_debug ("passwd=%s", p);
+
+  con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, u,p);
   if (con == NULL)
     {
 
@@ -320,7 +352,7 @@ A4GLSQL_get_status (void)
 int
 A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
-  PGconn *con;
+  PGconn *con=0;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
   con = (PGconn *) A4GL_find_pointer (sessname, SESSCODE);
@@ -328,6 +360,7 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
   if (con)
     {
       PQfinish (con);
+  	A4GL_del_pointer (sessname, SESSCODE);
     }
   return 1;
 

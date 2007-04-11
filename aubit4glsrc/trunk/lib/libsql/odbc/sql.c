@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.187 2007-04-10 12:19:39 mikeaubury Exp $
+# $Id: sql.c,v 1.188 2007-04-11 15:25:01 mikeaubury Exp $
 #
 */
 
@@ -4377,7 +4377,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
     HSTMT hstmt = 0;
     char *ptr;
     int tmode;
-    SQLRETURN rc;
+    SQLRETURN rc=SQL_SUCCESS;
 
     A4GL_clear_sqlca();
 
@@ -4406,7 +4406,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
             if (in_transaction)
                 rc = SQLSetConnectOption (hdbc,SQL_AUTOCOMMIT,odbc_autocommit);
             in_transaction = 0;
-            SQLTransact (henv, hdbc, SQL_COMMIT);
+            rc=SQLTransact (henv, hdbc, SQL_COMMIT);
         }
 
         if (mode == 0)
@@ -4414,7 +4414,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
             if (in_transaction)
                 rc = SQLSetConnectOption (hdbc,SQL_AUTOCOMMIT,odbc_autocommit);
             in_transaction = 0;
-            SQLTransact (henv, hdbc, SQL_ROLLBACK);
+            rc=SQLTransact (henv, hdbc, SQL_ROLLBACK);
         }
 
         if (mode == -1)
@@ -4434,19 +4434,19 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
         if (mode == -1)
         {
             in_transaction = 1;
-            SQLExecDirect (hstmt, (SQLCHAR*)"BEGIN WORK", SQL_NTS);
+            rc=SQLExecDirect (hstmt, (SQLCHAR*)"BEGIN WORK", SQL_NTS);
         }
 
         if (mode == 0)
         {
             in_transaction = 0;
-            SQLExecDirect (hstmt, (SQLCHAR*)"ROLLBACK WORK", SQL_NTS);
+            rc=SQLExecDirect (hstmt, (SQLCHAR*)"ROLLBACK WORK", SQL_NTS);
         }
 
         if (mode == 1)
         {
             in_transaction = 0;
-            SQLExecDirect (hstmt, (SQLCHAR*)"COMMIT WORK", SQL_NTS);
+            rc=SQLExecDirect (hstmt, (SQLCHAR*)"COMMIT WORK", SQL_NTS);
         }
 
         chk_rc (rc, hstmt, "Commit/Rollback2");
@@ -5445,21 +5445,27 @@ A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file)
 	ignore_next_sql_error = 0;
 	return True;
     }
-    else if (rc == SQL_NO_DATA_FOUND)
+
+
+    if (rc == SQL_NO_DATA_FOUND)
     {
 	if (A4GLSQL_set_status (100, 0))
             set_global_status(100, "00000", "Success with NO_DATA");
 	ignore_next_sql_error = 0;
 	return True;
     }
-    else if (rc == SQL_INVALID_HANDLE)
+
+
+    if (rc == SQL_INVALID_HANDLE)
     {
 	if (A4GLSQL_set_status (-2, 0))
             set_global_status(-2, "HY000", "Invalid handle - error info unavailable");
 	ignore_next_sql_error = 0;
         return False;
     }
-    else if (rc == SQL_SUCCESS_WITH_INFO && hstmt == 0)
+
+
+    if (rc == SQL_SUCCESS_WITH_INFO && hstmt == 0)
     {
 	if (A4GLSQL_set_status (1, 0))
 	{
@@ -5470,7 +5476,9 @@ A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file)
 	ignore_next_sql_error = 0;
         return True;
     }
-    else if (rc == SQL_ERROR && hstmt == 0)
+
+
+    if (rc == SQL_ERROR && hstmt == 0)
     {
 	if (A4GLSQL_set_status (-1, 0))
             set_global_status(0, "HY000", "Error, details unavailable because of null handle");
