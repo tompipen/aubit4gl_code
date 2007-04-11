@@ -2062,6 +2062,12 @@ function check_db2() {
 function check_pg8() {
 	DB_TYPE="PG8"
 	A4GL_TARGETDIALECT="POSTGRES8"
+	if test "$NEW_PG8" = "1"; then
+		echo "Creating tables and loading data..."
+		new_testdb postgres
+        exit 
+    fi
+
 }
 
 ###############################################################

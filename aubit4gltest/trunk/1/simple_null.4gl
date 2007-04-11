@@ -1,7 +1,8 @@
 DATABASE test1
 MAIN 
 #defined but not used, can be removed? 
-#define a record like systables.*
+# can be left, create missing tables with -pg-new, -pg8-new, -mysql-new, etc 
+define a record like systables.*
 
 	
 	CREATE TEMP TABLE xtemp ( 

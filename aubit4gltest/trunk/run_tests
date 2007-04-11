@@ -835,6 +835,10 @@ for a in $FLAGS; do
         fi
 		;;
 
+    -pg8-new)         	#Create new PostgreSQL database from scripts
+		USE_PG8=1; NEW_PG8=1
+        ;;
+
 
 	-pg-inst=*) #Use Postgres installed at particular location, and not
 				#the one potentially available at system locations lile
@@ -1353,6 +1357,7 @@ for a in $FLAGS; do
 		echo " -mysql      Use MySQL native plug-in for db tests"		
 		echo " -ec[i|s|p|q|g] Use Informix/SAP/PG/Querix/Ingres ESQL/C EC output in for db tests"
 		echo " -pg         Use PostgreSQL plug-in for db tests"
+		echo " -pg8        Use new native PostgreSQL 8.x plug-in for db tests"
 		echo " -pg-inst=x  Use PostgreSQL installed at x, not the one potentially available in system"
 		echo "             locations (/usr/bin /usr/lib etc)"
 		echo " -<x>odbc    Use <x> plug-in for db tests. <x> = "
@@ -1367,7 +1372,7 @@ for a in $FLAGS; do
 
 		echo " TEST DATABASE CREATION:"
 		echo " -<x>-new    Create new database from scripts. <x>="
-		echo "             sqlite | pg | informix | sap"
+		echo "             sqlite | pg | informix | sap | pg8"
 		echo ""
 		echo " -disable-sqlconvert Disable run-time conversion of SQL dialects"
 		echo " -sqlconvert         Enable run-time conversion of SQL dialects"
