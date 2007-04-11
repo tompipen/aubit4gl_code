@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.7 2007-04-11 15:25:03 mikeaubury Exp $
+# $Id: pg8.c,v 1.8 2007-04-11 20:26:40 mikeaubury Exp $
 #*/
 
 
@@ -132,7 +132,7 @@ static struct expr_str_list *A4GL_add_validation_elements_to_expr (struct
 
 static Oid *Oids (int nbind, struct BINDING *b);	// reserved for future enhancement :-)
 PGresult *Execute (char *s, int freeit);
-static char *replace_ibind (char *stmt, int ni, struct BINDING *ibind);
+static char *replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type);
 static int inTransaction (void);
 static int copy_to_obind (PGresult * res, int no, struct BINDING *obind,
 			  int row);
@@ -1040,18 +1040,22 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
   ibind = vibind;
 
   A4GL_debug ("Unload data..");
+
   if (nbind)
     {
-      A4GL_exitwith
-	("Currently unable to unload a statement that uses variables");
-      return;
+	//printf("Replacing in : %s (%d)\n",sqlStr_o, nbind);
+	sqlStr= replace_ibind (sqlStr_o, nbind, ibind,0);
+	//printf("Replace gives : %s\n",sqlStr);
+	sqlStr=strdup(sqlStr);
+    } else {
+  	sqlStr = strdup (sqlStr_o);
+  	A4GL_trim (sqlStr);
     }
 
+//printf("%s\n", sqlStr);
 
   fname = strdup (fname_o);
   A4GL_trim (fname);
-  sqlStr = strdup (sqlStr_o);
-  A4GL_trim (sqlStr);
   unloadFile = (FILE *) A4GL_mja_fopen (fname, "wt");
   a4gl_status = 0;
 
@@ -1487,12 +1491,12 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       A4GL_convlower (isInsert);
       if (A4GL_strstartswith (isInsert, "insert ") && use_insert_return == 1)
 	{
-	  sql = replace_ibind (n->sql, n->ni, n->ibind);
+	  sql = replace_ibind (n->sql, n->ni, n->ibind,1);
 	  strcat (sql, " returning *");
 	}
       else
 	{
-	  sql = replace_ibind (n->sql, n->ni, n->ibind);
+	  sql = replace_ibind (n->sql, n->ni, n->ibind,1);
 	}
 
 
@@ -1500,7 +1504,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   else
     {
       use_insert_return = 0;
-      sql = replace_ibind (n->sql, n->ni, n->ibind);
+      sql = replace_ibind (n->sql, n->ni, n->ibind,1);
     }
 
   if (inTransaction ())
@@ -1819,7 +1823,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   sql = n->sql;
   if (n->ni)
     {
-      sql = replace_ibind (sql, n->ni, n->ibind);
+      sql = replace_ibind (sql, n->ni, n->ibind,1);
     }
 
   res = PQexec (con, sql);
@@ -2514,7 +2518,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   //nnew->paramlen=malloc(sizeof(int)*n->ni);
   //nnew->paramform=malloc(sizeof(int)*n->ni);
 
-  buff2 = replace_ibind (cid->DeclareSql, ni, ibind);
+  buff2 = replace_ibind (cid->DeclareSql, ni, ibind,1);
   A4GL_debug ("cid->DeclareSql=%s buff2=%s\n", cid->DeclareSql, buff2);
   cid->hstmt = PQexec (con, buff2);
 
@@ -2719,7 +2723,7 @@ pgescape_str (char *s)
 
 
 char *
-replace_ibind (char *stmt, int ni, struct BINDING *ibind)
+replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 {
   static char buff2[64000];
   char buff3[200];
@@ -2727,13 +2731,17 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind)
     {
       int a;
       int buff2cnt = 0;
+	int next_param=0;
       int param;
       for (a = 0; a < strlen (stmt); a++)
 	{
-	  if (stmt[a] == '$')
+	int has_match;
+	has_match=0;
+
+
+	  if (stmt[a] == '$' && type==1)
 	    {
 	      int c;
-	      char *str;
 	      char x[10];
 	      for (c = 0; c < 10; c++)
 		{
@@ -2746,8 +2754,22 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind)
 		}
 	      x[c] = 0;
 	      param = atoi (x) - 1;
+	      has_match=1;
 	      a += c;
 	      buff2[buff2cnt] = 0;
+	}
+
+	if  (stmt[a] == '?' && type==0) {
+		param=next_param++;
+		has_match=1;
+	      a ++;
+	      buff2[buff2cnt] = 0;
+		
+	}
+
+	if (has_match) {
+	      char *str;
+
 
 	      if (A4GL_isnull
 		  (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr))
@@ -3521,7 +3543,7 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
       ibind = sid->ibind;
     }
 
-  newstr = replace_ibind (sid->sql, ni, ibind);
+  newstr = replace_ibind (sid->sql, ni, ibind,1);
 
   Execute (newstr, 1);		// we may need to add our errd[2] serial number checking here too...
 
