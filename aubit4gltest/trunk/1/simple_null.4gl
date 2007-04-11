@@ -1,6 +1,7 @@
 DATABASE test1
 MAIN 
-define a record like systables.*
+#defined but not used, can be removed? 
+#define a record like systables.*
 
 	
 	CREATE TEMP TABLE xtemp ( 
