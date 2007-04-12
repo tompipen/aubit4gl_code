@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.58 2007-03-07 11:13:45 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.59 2007-04-12 15:48:23 mikeaubury Exp $
 #
 */
 
@@ -578,8 +578,16 @@ long orig_date;
 	if (mode=='i') {
 		int4 infx_i;
 		if (p_indicat) *p_indicat=0;
-			if (A4GL_isnull(DTYPE_DATE,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
-		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);A4GL_debug("COPY IN NULL DATE");return;}
+
+		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {
+			rsetnull(CDATETYPE,(void *)infx);
+			if (p_indicat) {
+				if (p_indicat) *p_indicat=-1; return;
+			}
+
+			A4GL_debug("COPY IN NULL DATE");
+			return;
+		}
 		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
 		mdy[0]=mdy_i[0]; // In aubit - these are integers
 		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
@@ -624,7 +632,10 @@ short indicat=0;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	if (mode=='i') {
 		if (p_indicat) *p_indicat=0;
-			if (A4GL_isnull(1,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+		if (A4GL_isnull(1,(void *)a4gl) && p_indicat) {
+				rsetnull(CSHORTTYPE,(void *)infx);
+			if (p_indicat) *p_indicat=-1; return;
+		}
 		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(CSHORTTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
@@ -653,8 +664,10 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	if (mode=='i') {
 		if (p_indicat) *p_indicat=0;
-		if (A4GL_isnull(2,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
-		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;} 
+		if (A4GL_isnull(2,(void *)a4gl) && p_indicat) {
+				rsetnull(CLONGTYPE,(void *)infx);
+				if (p_indicat) *p_indicat=-1; return;}
+				if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;} 
 		*infx=*a4gl; // & 0xffffffff;
 	}
 	if (mode=='o') {

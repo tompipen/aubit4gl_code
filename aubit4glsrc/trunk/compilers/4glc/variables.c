@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.90 2006-11-22 07:48:07 mikeaubury Exp $
+# $Id: variables.c,v 1.91 2007-04-12 15:49:12 mikeaubury Exp $
 #
 */
 
@@ -2423,10 +2423,10 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 	strcpy(fmt,"");
 	dim=0;
 	if (v->arr_subscripts[0]) {strcat(fmt,"[%d]");dim=1;}
-	if (v->arr_subscripts[1]) {strcat(fmt,"[%d]");dim=2;}
-	if (v->arr_subscripts[2]) {strcat(fmt,"[%d]");dim=3;}
-	if (v->arr_subscripts[3]) {strcat(fmt,"[%d]");dim=4;}
-	if (v->arr_subscripts[4]) {strcat(fmt,"[%d]");dim=5;}
+	if (v->arr_subscripts[1]) {strcat(fmt,"[%d,%d]");dim=2;}
+	if (v->arr_subscripts[2]) {strcat(fmt,"[%d,%d,%d]");dim=3;}
+	if (v->arr_subscripts[3]) {strcat(fmt,"[%d,%d,%d,%d]");dim=4;}
+	if (v->arr_subscripts[4]) {strcat(fmt,"[%d,%d,%d,%d,%d]");dim=5;}
 	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))||bindtype=='N') { dim=0; }
 
 
@@ -2506,7 +2506,9 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 }
 
 
-struct record_list * split_record_list (char *s, char *prefix, struct record_list *list,char bindtype)
+struct record_list *
+split_record_list (char *s, char *prefix, struct record_list *list,
+		   char bindtype)
 {
   char *ptr;
   char record1[256];
@@ -2519,6 +2521,11 @@ struct record_list * split_record_list (char *s, char *prefix, struct record_lis
   int record_start = -1;
   int record_end = -1;
   struct variable *v_record;
+  char fmt[200];
+  int dim;
+  char buff[2560];
+
+
   A4GL_debug ("Split_record_list... %s", s);
 
   if (strchr (s, '\n'))
@@ -2531,17 +2538,17 @@ struct record_list * split_record_list (char *s, char *prefix, struct record_lis
 
       if (record2[0] >= 'A' && record2[0] <= 'Z' && record2[1] == '_')
 	{
-	  strcpy (record2, A4GL_unscope(ptr));
+	  strcpy (record2, A4GL_unscope (ptr));
 	}
 
-      A4GL_debug("Looking for dot in record1 : %s",record1);
+      A4GL_debug ("Looking for dot in record1 : %s", record1);
       dot[0] = strrchr (record1, '.');
-      A4GL_debug("Looking for dot in record2 : %s",record2);
+      A4GL_debug ("Looking for dot in record2 : %s", record2);
       dot[1] = strrchr (record2, '.');
 
       if (dot[0] == 0 || dot[1] == 0)
 	{
-	  /* Can't find a dot in a thru ?*/
+	  /* Can't find a dot in a thru ? */
 	  a4gl_yyerror
 	    ("At least one of the entries in the 'thru' is not part of a record");
 	  return 0;
@@ -2550,7 +2557,7 @@ struct record_list * split_record_list (char *s, char *prefix, struct record_lis
       *dot[1] = 0;
       if (strcasecmp (record1, record2) != 0)
 	{
-	A4GL_debug("Thru is bad : '%s' '%s'",record1,record2);
+	  A4GL_debug ("Thru is bad : '%s' '%s'", record1, record2);
 	  a4gl_yyerror ("The 'thru' contains different records..");
 	  return 0;
 	}
@@ -2578,15 +2585,15 @@ struct record_list * split_record_list (char *s, char *prefix, struct record_lis
 
       A4GL_debug ("subrecord1=%s subrecord2=%s\n", subrecord1, subrecord2);
 
-      /* At this point record1 and record2 should be the same...*/
+      /* At this point record1 and record2 should be the same... */
       /* We'll get rid of any crud from record2 (any brackets etc) to find it */
-      /* in our variables list*/
-      /* We'll keep record1 intact..*/
+      /* in our variables list */
+      /* We'll keep record1 intact.. */
 
       strip_bracket (record2);
       v_record = find_variable_ptr (record2);
 
-      /* Can we find it - is it declared ?*/
+      /* Can we find it - is it declared ? */
       if (v_record == 0)
 	{
 	  PRINTF ("Whoops - record not found for %s (1)\n", record2);
@@ -2641,17 +2648,18 @@ struct record_list * split_record_list (char *s, char *prefix, struct record_lis
 
 
 
-  if (v_record->variable_type != VARIABLE_TYPE_RECORD && v_record->variable_type != VARIABLE_TYPE_OBJECT)
+  if (v_record->variable_type != VARIABLE_TYPE_RECORD
+      && v_record->variable_type != VARIABLE_TYPE_OBJECT)
     {
 
       if (strstr (s, ".*") != 0 && strlen (prefix) == 0)
 	{
-	  /*extern int yyline;*/
+	  /*extern int yyline; */
 	  char buff[255];
 	  char buff2[255];
 	  char *ptr;
 	  struct record_list_entry *e;
-	  FPRINTF (stderr,"WARNING : Using a .* on a non-record - %s\n", s);
+	  FPRINTF (stderr, "WARNING : Using a .* on a non-record - %s\n", s);
 	  strcpy (buff, s);
 	  strip_bracket (buff);
 	  ptr = strstr (buff, ".*");
@@ -2703,23 +2711,116 @@ struct record_list * split_record_list (char *s, char *prefix, struct record_lis
     }
 
 
-  /* Now - we'll start scanning through our record entries - looking for the first one...*/
+  /* Now - we'll start scanning through our record entries - looking for the first one... */
 
 
-  for (a = record_start; a <= record_end; a++)
+
+  strcpy (fmt, "");
+  dim = 0;
+
+  if (v_record->arr_subscripts[0])
     {
-      if (add_to_record_list
-	  (&list, prefix_buff, v_record->data.v_record.variables[a],bindtype) == 0)
-	{
-	  PRINTF ("Bugger -  something went wrong...\n");
-	  /* Should free list here...*/
-	  return 0;
-	}
+      strcat (fmt, "[%d]");
+      dim = 1;
     }
+  if (v_record->arr_subscripts[1])
+    {
+      strcat (fmt, "[%d,%d]");
+      dim = 2;
+    }
+  if (v_record->arr_subscripts[2])
+    {
+      strcat (fmt, "[%d,%d,%d]");
+      dim = 3;
+    }
+  if (v_record->arr_subscripts[3])
+    {
+      strcat (fmt, "[%d,%d,%d,%d]");
+      dim = 4;
+    }
+  if (v_record->arr_subscripts[4])
+    {
+      strcat (fmt, "[%d,%d,%d,%d,%d]");
+      dim = 5;
+    }
+  if (A4GL_isyes (acl_getenv ("NO_ARRAY_EXPAND")) || bindtype == 'N')
+    {
+      dim = 0;
+    }
+
+
+  if (dim == 0 || strchr(prefix_buff,'['))
+    {
+      SPRINTF1 (buff, "%s", prefix_buff);
+      for (a = record_start; a <= record_end; a++)
+	{
+	  if (add_to_record_list
+	      (&list, prefix_buff, v_record->data.v_record.variables[a],
+	       bindtype) == 0)
+	    {
+	      PRINTF ("Bugger -  something went wrong...\n");	/* Should free list here... */
+	      return 0;
+	    }
+	}
+	return list;
+    }
+
+  if (dim == 1)
+    {
+      int b0;
+      for (b0 = 0; b0 < v_record->arr_subscripts[0]; b0++)
+	{
+	  char subscript[256];
+	  SPRINTF1 (subscript, fmt, b0);
+	  for (a = record_start; a <= record_end; a++)
+	    {
+	      sprintf (buff, "%s%s", prefix_buff, subscript);
+
+	      if (add_to_record_list
+		  (&list, buff, v_record->data.v_record.variables[a],
+		   bindtype) == 0)
+		{
+		  PRINTF ("Bugger -  something went wrong...\n");	/* Should free list here... */
+		  return 0;
+		}
+	    }
+	}
+	return list;
+
+    }
+
+  if (dim == 2)
+    {
+      int b0;
+      int b1;
+      for (b0 = 0; b0 < v_record->arr_subscripts[0]; b0++)
+	{
+	  for (b1 = 0; b1 < v_record->arr_subscripts[0]; b1++)
+	    {
+	      char subscript[256];
+	      SPRINTF2 (subscript, fmt, b0, b1);
+	      for (a = record_start; a <= record_end; a++)
+		{
+		  sprintf (buff, "%s%s", prefix_buff, subscript);
+
+		  if (add_to_record_list
+		      (&list, buff, v_record->data.v_record.variables[a],
+		       bindtype) == 0)
+		    {
+		      PRINTF ("Bugger -  something went wrong...\n");	/* Should free list here... */
+		      return 0;
+		    }
+		}
+	    }
+	}
+	return list;
+    }
+
+
+
+
   return list;
 }
-
-
 
 
 /******************************************************************************/
@@ -2823,6 +2924,9 @@ print_push_rec (char *s, void **b, int always_list)
   //char buff[256];
   struct record_list *list;
   struct expr_str *vlist;
+
+  struct variable *v_record;
+      v_record = find_variable_ptr (s);
 
 
   list = split_record_list (s, "", 0,' ');
