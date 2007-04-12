@@ -49,16 +49,18 @@ info[ \t\v\f]*indexes[ \t\v\f]*for { count(); return(KW_INFO_IDX); }
 info[ \t\v\f]*access[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
 info[ \t\v\f]*privileges[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
 info[ \t\v\f]*tables 		   { count(); return(KW_INFO_TABLES); }
-"SET{"		{ count(); return(KW_IDENTIFIER); }
-"SET[ 	]+{"		{ count(); return(KW_IDENTIFIER); }
-{L}({L}|{D})*		{ count(); return(KW_IDENTIFIER); }
-0[xX]{H}+{IS}?		{ count(); return(KW_CONSTANT); }
-0{D}+{IS}?		{ count(); return(KW_CONSTANT); }
-{D}+{IS}?		{ count(); return(KW_CONSTANT); }
-L?'(\\.|[^\\'])+'	{ count(); return(KW_CONSTANT); }
-{D}+{E}{FS}?		{ count(); return(KW_CONSTANT); }
-{D}*"."{D}+({E})?{FS}?	{ count(); return(KW_CONSTANT); }
-{D}+"."{D}*({E})?{FS}?	{ count(); return(KW_CONSTANT); }
+
+"SET{"		{ count(); return(KW_IDENTIFIER); } 
+"SET[ 	]+{"		{ count(); return(KW_IDENTIFIER); } 
+
+{L}({L}|{D})*		{ count();  return(KW_IDENTIFIER); }
+0[xX]{H}+{IS}?		{ count(); A4GL_debug("1"); return(KW_CONSTANT); }
+0{D}+{IS}?		{ count(); A4GL_debug("2"); return(KW_CONSTANT); }
+{D}+{IS}?		{ count(); A4GL_debug("3"); return(KW_CONSTANT); }
+L?'(\\.|[^\\'])*'	{ count(); A4GL_debug("4"); return(KW_CONSTANT); }
+{D}+{E}{FS}?		{ count(); A4GL_debug("5"); return(KW_CONSTANT); }
+{D}*"."{D}+({E})?{FS}?	{ count(); A4GL_debug("6"); return(KW_CONSTANT); }
+{D}+"."{D}*({E})?{FS}?	{ count(); A4GL_debug("7"); return(KW_CONSTANT); }
 L?\"(\\.|[^\\"])*\"	{ count(); return(KW_STRING_LITERAL); }
 [ \t\v\f]		{ count(); return (KW_SPACE); }
 [\n]			{ count(); return (KW_NL);}
@@ -90,6 +92,12 @@ count (void)
     else
       column++;
 
+if (strlen(yytext)>sizeof(yylval.str)) {
+	printf("Buffer : %d string : %d\n", strlen(yytext),sizeof(yylval.str));
+	//printf("%s\n", yytext);
+}
+
+A4GL_assertion(strlen(yytext)>sizeof(yylval.str),"String buffer too small");
     strcpy(yylval.str,yytext);
 }
 
