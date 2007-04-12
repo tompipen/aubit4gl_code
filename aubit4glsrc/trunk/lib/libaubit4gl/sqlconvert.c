@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.111 2007-04-05 19:40:38 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.112 2007-04-12 08:47:18 mikeaubury Exp $
 #
 */
 
@@ -2250,7 +2250,7 @@ A4GLSQLCV_datetime_value (char *s)
 	      xx = current_conversion_rules[hr - 1].data.from;
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
-	      SPRINTF2 (buff, "%s(\"%s\")", xx, ptr);
+	      SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
 	      acl_free (ptr);
 	      return buff;
 
@@ -2278,7 +2278,7 @@ A4GLSQLCV_interval_value (char *s)
 	      xx = current_conversion_rules[hr - 1].data.from;
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
-	      SPRINTF2 (buff, "%s(\"%s\")", xx, ptr);
+	      SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
 	      acl_free (ptr);
 	      return buff;
 	    }
