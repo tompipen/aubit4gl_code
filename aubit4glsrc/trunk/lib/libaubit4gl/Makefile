@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.28 2007-03-28 09:18:43 mikeaubury Exp $
+# $Id: Makefile,v 1.29 2007-04-12 11:45:09 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -228,7 +228,7 @@ ${LIBROOT}/generated/project.c:
 	(cd ${ROOT}/tools/project; ${SH} mkproject)
 
 ${LIBROOT}/generated/tmperrs.h :
-	${SH} ${LIBROOT}/bin/mkerrors
+	(cd ${LIBROOT}; ${SH} ${LIBROOT}/bin/mkerrors)
 
 ${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
 	${MAKE} -C ${ROOT}/compilers/fcompile rpc

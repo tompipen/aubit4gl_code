@@ -4,7 +4,13 @@
 #exitwith renamed to A4GL_exitwith - do we need to change it here?
 
 #Get settings
-. ../../etc/aubitrc
+
+if [ "$LIBROOT" = "" ]
+then
+	LIBROOT=$AUBITDIR
+fi
+. $LIBROOT/etc/aubitrc
+cd $LIBROOT/lib/bin
 
 #Why not use find here?
 #a="*.c ../libsql/odbc/*.c ../libsql/esqlc/*.ec ../libsql/nosql/nosql.c"
@@ -39,5 +45,5 @@ END {
 print "{0,0}"
 print "};"
 }
-' mkerrors2.out  > ../generated/tmperrs.h
+' mkerrors2.out  > $LIBROOT/lib/generated/tmperrs.h
 
