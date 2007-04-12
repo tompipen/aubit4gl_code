@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.364 2007-04-10 21:01:16 mikeaubury Exp $
+# $Id: compile_c.c,v 1.365 2007-04-12 10:06:42 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.364 2007-04-10 21:01:16 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.365 2007-04-12 10:06:42 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3382,7 +3382,7 @@ LEXLIB_print_when (int has_expr,t_expr_str *expr)
 			A4GL_warn("Use of string for WHEN in a CASE with no expression"); break;
 
 		case ET_EXPR_PUSH_VARIABLE:
-			if (expr->u_data.expr_push_variable->var_dtype!=DTYPE_INT && expr->u_data.expr_push_variable->var_dtype!=DTYPE_SMINT)  {
+			if ((expr->u_data.expr_push_variable->var_dtype & DTYPE_MASK)!=DTYPE_INT && (expr->u_data.expr_push_variable->var_dtype&DTYPE_MASK)!=DTYPE_SMINT)  {
 				A4GL_warn("Unexpected variable - would expect an INTEGER or SMALLINT for WHEN in a CASE with no expression");
 			}
 			break;
