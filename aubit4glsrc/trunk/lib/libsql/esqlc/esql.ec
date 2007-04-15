@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.188 2007-03-27 18:07:17 mikeaubury Exp $
+# $Id: esql.ec,v 1.189 2007-04-15 19:16:17 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.188 2007-03-27 18:07:17 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.189 2007-04-15 19:16:17 mikeaubury Exp $";
 #endif
 
 
@@ -2637,7 +2637,8 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
 
    cursorIdentification = acl_malloc2 (sizeof (struct s_cid));
-   cursorIdentification->statement = sid;
+   cursorIdentification->statement = acl_malloc2 (sizeof (struct s_sid));
+   memcpy(cursorIdentification->statement, sid, sizeof (struct s_sid));
   
   statementName = sid->statementName;
 
@@ -2682,13 +2683,17 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = s;
-  struct s_cid *cursorIdentification;
   EXEC SQL END DECLARE SECTION;
 
   if (A4GL_has_pointer (s, CURCODE))
     {
+  	struct s_cid *cursorIdentification;
       cursorIdentification = A4GL_find_pointer (s, CURCODE);
       EXEC SQL FREE:cursorName;
+	if (cursorIdentification->statement)  {	
+      		free (cursorIdentification->statement);
+	}
+
       free (cursorIdentification);
       A4GL_del_pointer (s, CURCODE);
       if (A4GL_has_pointer (s, PRECODE))
@@ -2704,8 +2709,9 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 
       if (A4GL_has_pointer (s, PRECODE))
 	{			/* Prepared instead ? */
-	  cursorIdentification = A4GL_find_pointer (s, PRECODE);	/* Prepared instead ? */
-	  if (cursorIdentification == 0)
+  	struct s_sid *statementIdentification;
+	  statementIdentification = A4GL_find_pointer (s, PRECODE);	/* Prepared instead ? */
+	  if (statementIdentification == 0)
 	    {
 	      //A4GL_exitwith("Statement/Cursor not found"); 
 	      return;
@@ -2714,7 +2720,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 	  EXEC SQL FREE:cursorName;
 	  A4GL_del_pointer (s, PRECODE);
 	  A4GL_del_pointer (s, PRECODE_R);
-	  free (cursorIdentification);
+	  free (statementIdentification);
 	  return;
 	}
     }
