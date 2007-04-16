@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.45 2007-03-30 19:11:17 mikeaubury Exp $
+# $Id: pointers.c,v 1.46 2007-04-16 16:23:10 mikeaubury Exp $
 #
 */
 
@@ -212,6 +212,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 #endif
 	  strcpy (anode->name, "======");
 	  free (anode);
+	free(buff);
 	}
       else
 	{
@@ -294,6 +295,7 @@ print_ptr_stack (void)
 void
 A4GL_del_pointer (char *pname, char t)
 {
+  void *a1;
   void *a;
   struct s_node *buff;
   struct s_node buff2;
@@ -304,10 +306,10 @@ A4GL_del_pointer (char *pname, char t)
   buff->name[1] = 0;
   strcat (buff->name, pname);
   //A4GL_debug ("Buff=%p pname=%s buff->name=%s\n", buff,pname,buff->name);
-  a = FIND_X (buff);
-  if (a)
+  a1 = FIND_X (buff);
+  if (a1)
     {
-      anode = *(struct s_node **) a;
+      anode = *(struct s_node **) a1;
       SPRINTF1 (ptrchar, ">%p", anode->ptr); // Was buff
       strcpy (buff2.name, ptrchar);
       a = FIND_X (&buff2);
@@ -330,7 +332,7 @@ A4GL_del_pointer (char *pname, char t)
       DELETE_X (buff);
       //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
-	  free (anode);
+      free (anode);
       free (buff);
     }
 }

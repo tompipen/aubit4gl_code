@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.112 2007-04-12 08:47:18 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.113 2007-04-16 16:23:10 mikeaubury Exp $
 #
 */
 
@@ -2423,7 +2423,7 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_CREATE_HASH"))
     {
-      SPRINTF4 (ptr, "CREATE TABLE %s (%s) %s %s", tabname, elements, extra,
+      SPRINTF4 (ptr, "CREATE TABLE #%s (%s) %s %s", tabname, elements, extra,
 		oplog);
       return ptr;
     }
