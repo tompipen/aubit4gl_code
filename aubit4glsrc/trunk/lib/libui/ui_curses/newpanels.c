@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.140 2007-04-03 08:02:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.141 2007-04-16 14:14:43 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.140 2007-04-03 08:02:23 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.141 2007-04-16 14:14:43 mikeaubury Exp $";
 #endif
 
 /**
@@ -569,6 +569,10 @@ void
 	    A4GL_debug ("Deleted window.. deleting panel %p", panel);
 	  }
 #endif
+
+
+	free(panel_userptr(panel));
+
 	  del_panel (panel);
 #ifdef DEBUG
 	  {
@@ -602,6 +606,7 @@ void
     A4GL_debug ("Deleting pointer %s", win_name);
   }
 #endif
+
   A4GL_del_pointer (win_name, WINCODE);
   
   A4GL_del_pointer (win_name, ATTRIBUTE);
