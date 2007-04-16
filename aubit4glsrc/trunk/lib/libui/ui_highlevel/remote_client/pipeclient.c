@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <signal.h>
 
+
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 #define USE_WINSOCK
 int A4GL_get_connection (int socket_type, u_short port, int *listener);
@@ -35,6 +36,17 @@ int A4GL_get_connection (int socket_type, u_short port, int *listener);
 
 #include <errno.h>		/* EINTR */
 
+
+#if (!defined(WIN32) || defined(__CYGWIN__))
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <ctype.h>
+
+#endif
+int A4GL_last_error (void);
+
+static int pipe_sock_puts (int sockfd, char *str);
 
 
 #include "pipeclient.h"
@@ -257,6 +269,7 @@ int pipe_flush(int sockfd) {
 	if (strlen(sock_buff)) {
 		pipe_sock_puts(sockfd,0);
 	}
+	return 1;
 }
 
 /**
@@ -438,7 +451,7 @@ handshake ()
 int
 client_connect (char *host, char *p)
 {
-  char buff[2000];
+  //char buff[2000];
   serversocket = pipe_make_connection (p, host);
   if (serversocket == 0)
     {
@@ -749,7 +762,7 @@ int SendFile(char *s) {
 	fseek(f,0,SEEK_END);
 	fl=ftell(f);
 
-	sprintf(fdets,"RECEIVEFILE %s ", s, fl);
+	sprintf(fdets,"RECEIVEFILE %s", s);
   	if (!pipe_sock_puts (serversocket,fdets)) return 0;
 	rewind(f);
 	m=malloc(fl);

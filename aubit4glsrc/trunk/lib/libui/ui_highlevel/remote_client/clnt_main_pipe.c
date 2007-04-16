@@ -1,5 +1,6 @@
 #include "a4gl_libaubit4gl.h"
 #include "ui_lowlevel.h"
+#include "pipeclient.h"
 
 char url[256] = "";
 
@@ -61,7 +62,7 @@ void A4GL_LL_switch_to_line_mode(void) {
 
 
 int A4GL_LL_getch_swin( void* window_ptr,char *why) {
-	ret_19 ret;
+	ret_A4GL_LL_getch_swin ret;
 	struct client_result *resultP;
 	init_client();
 	resultP = (struct client_result *)client_call("A4GL_LL_getch_swin", 1,"is",(long)window_ptr,why);
@@ -128,7 +129,7 @@ void A4GL_LL_opening_form(char *formfile, char *formname) {
 
 void A4GL_LL_direct_to_ui(char* t,char* s) {
 	if (strcmp(t,"SEND")==0) {
-		A4GL_LL_use_direct_to_ui(s);
+		A4GL_LL_use_direct_to_ui(t, s);
 	}
 	if (strcmp(t,"FILE")==0) {
 		SendFile(s);

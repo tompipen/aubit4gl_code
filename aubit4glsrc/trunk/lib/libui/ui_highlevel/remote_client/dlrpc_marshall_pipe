@@ -222,7 +222,7 @@ BEGIN {
 
 
 		if (rtype != "void") { 
-			printf("ret_" funccnt " ret;\n");
+			printf("ret_" fname " ret;\n");
 			if (rtype=="char*") {
 				print "static char *last=0;"
 			}
@@ -327,7 +327,7 @@ BEGIN {
 
 	if (mode=="server") {
 		if (rtype=="void") rval="void *";
-		else rval="ret_" funccnt " *"
+		else rval="ret_" fname " *"
 		printf("%s rpc_%s_1_svc(",rval , tolower(fname) )
 		if (c==0) {
 			printf "void *argp, struct svc_req *rqstp"
@@ -336,7 +336,7 @@ BEGIN {
 		}
 		printf(") {\n")
 		if (rtype=="void") print "static char * result=0;"
-		else print "static ret_" funccnt " result;"
+		else print "static ret_" fname " result;"
 
 
 		if (c) {
@@ -357,7 +357,7 @@ BEGIN {
 				print "use_with_call." param_name[b] " = " cast " argp->" param_name[b] ";"
 			}
 			if (rtype!="void") {
-				printf("result=(ret_" funccnt ") %s(",fname);
+				printf("result=(ret_" fname ") %s(",fname);
 			}  else {
 				printf("result=0; %s(",fname);
 			}
@@ -368,7 +368,7 @@ BEGIN {
 			printf(");\n");
 		} else {
 			if (rtype!="void") {
-				printf("result=(ret_" funccnt ") %s();",fname);
+				printf("result=(ret_" fname ") %s();",fname);
 			}  else {
 				printf("result=0; %s();",fname);
 			}

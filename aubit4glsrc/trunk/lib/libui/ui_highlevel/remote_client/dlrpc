@@ -194,11 +194,11 @@ BEGIN {
 		if (rtype=="void *") rtype="long";
 		if (rtype=="void*") rtype="long";
 		if (rtype=="char*") {
-				print "typedef string ret_" funccnt "<>;"
+				print "typedef string ret_" fname "<>;"
 		} else {
-				print "typedef " rtype "  ret_" funccnt ";"
+				print "typedef " rtype "  ret_" fname ";"
 		}
-		rtypes[funccnt]="ret_" funccnt
+		rtypes[funccnt]="ret_" fname
 	}
 	print ""
 }
