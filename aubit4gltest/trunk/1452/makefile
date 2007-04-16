@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "949: window name limitation"
+desc: ; @echo "962: construct statement weirdness "
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

@@ -20,6 +20,6 @@ SELECT * FROM temp_tbl WHERE temp_tbl.account_number>'3'
 No rows found
 SELECT * FROM temp_tbl WHERE temp_tbl.account_number>'3'
 No rows found
-SELECT * FROM temp_tbl WHERE temp_tbl.account_number  between '1' and '2'
+SELECT * FROM temp_tbl WHERE temp_tbl.account_number between '1' and '2'
 -->1
 -->2

@@ -17,6 +17,10 @@ let wa[3].obs = "1234567890"
 call set_count(3)
 input array wa without defaults from sa.*
 close form f_ivch
+display wa[1].obs
+display wa[2].obs
+display wa[3].obs
+
 let l = length(wa[1].obs)
 if l <> 8 then exit program 1 end if
 let l = length(wa[2].obs)

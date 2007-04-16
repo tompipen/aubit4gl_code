@@ -13,6 +13,6 @@ OPEN WINDOW v_cons AT 1,1 WITH FORM "cons" ATTRIBUTE(DIM)
 CONSTRUCT BY NAME w_prep ON f1
 CLOSE WINDOW v_cons
 if w_prep = "f1 between 1 and 3" then  exit program 0
-else                                   exit program 1
+else    display w_prep                               exit program 1
 end  if
 end main
