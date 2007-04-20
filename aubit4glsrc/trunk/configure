@@ -876,6 +876,7 @@ AUBITETC
 A4GL_SQLTYPE
 A4GL_SQLTYPE_DETECTED
 A4GL_SQLTYPE_COMPILE_ONLY_DETECTED
+STD_CFLAGS
 A4GL_PDFTYPE
 A4GL_PDFTYPE_DETECTED
 A4GL_RPCTYPE
@@ -2663,6 +2664,7 @@ Optional Features:
 
 Debugging options:
 
+  --disable-broken-make  Broken make checking=x
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3663,6 +3665,9 @@ ac_config_guess="$SHELL $ac_aux_dir/config.guess"  # Please don't use this var.
 ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
+
+
+STD_CFLAGS=$CFLAGS
 
 
 
@@ -6586,7 +6591,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6589 "configure"' > conftest.$ac_ext
+  echo '#line 6594 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9476,7 +9481,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9479 "configure"
+#line 9484 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9574,7 +9579,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9577 "configure"
+#line 9582 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10430,6 +10435,7 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 #aubitrc:
+
 
 
 
@@ -13147,6 +13153,7 @@ else
 	{ echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 fi
+
 { echo "$as_me:$LINENO: checking Aubit programs debugging" >&5
 echo $ECHO_N "checking Aubit programs debugging... $ECHO_C" >&6; }
 if test "$enable_debug" = "no" ; then
@@ -13161,6 +13168,7 @@ else
     A4GL_CFLAGS="$CFLAGS -g -Wall -DDEBUG"
     { echo "$as_me:$LINENO: result: yes. Set DEBUG=ALL to get debug.out trace." >&5
 echo "${ECHO_T}yes. Set DEBUG=ALL to get debug.out trace." >&6; }
+    STD_CFLAGS="$STD_CFLAGS -g"
 fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
@@ -13391,6 +13399,17 @@ echo "${ECHO_T}no" >&6; }
 fi
 
 
+
+
+ign_broken_make=no
+
+# Check whether --enable-broken-make was given.
+if test "${enable_broken_make+set}" = set; then
+  enableval=$enable_broken_make; ign_broken_make=$enableval
+
+fi
+
+
 # Extract the first word of "gmake", so it can be a program name with args.
 set dummy gmake; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -13469,11 +13488,17 @@ echo "$as_me: error: You will need GNU make version 3.50 or later (found $1.$2.$
 				#and on Windows (CygWin make) dont support C: drive notation any more (patch removed)
 				if test "$1" = "3" -a "$2" -gt "80"; then
 					if test "$AUBIT_SOURCE" = "1"; then
-						{ echo "$as_me:$LINENO: WARNING: GNU Make 3.81 and possibly up broken completely. Google for more info" >&5
-echo "$as_me: WARNING: GNU Make 3.81 and possibly up broken completely. Google for more info" >&2;}
-						{ { echo "$as_me:$LINENO: error: Please revert back to 3.80 or earlier" >&5
+						if test "$ign_broken_make" = "no"
+						then
+							{ echo "$as_me:$LINENO: WARNING: GNU Make 3.81 and possibly up broken completely. Google for more info. If you are sure your 3.81 version of gmake will work - retry with --enable-broken-make" >&5
+echo "$as_me: WARNING: GNU Make 3.81 and possibly up broken completely. Google for more info. If you are sure your 3.81 version of gmake will work - retry with --enable-broken-make" >&2;}
+							{ { echo "$as_me:$LINENO: error: Please revert back to 3.80 or earlier" >&5
 echo "$as_me: error: Please revert back to 3.80 or earlier" >&2;}
    { (exit 1); exit 1; }; }
+						else
+							{ echo "$as_me:$LINENO: WARNING: GNU Make 3.81 and possibly up broken completely. Google for more info - but you've chosen to ignore it..." >&5
+echo "$as_me: WARNING: GNU Make 3.81 and possibly up broken completely. Google for more info - but you've chosen to ignore it..." >&2;}
+						fi
 					fi
 				else
 					{ echo "$as_me:$LINENO: result: $1.$2.$3 (ok)" >&5
@@ -39744,7 +39769,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 39747 "configure"' > conftest.$ac_ext
+  echo '#line 39772 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -40269,7 +40294,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 40272 "configure"
+#line 40297 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -40367,7 +40392,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 40370 "configure"
+#line 40395 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -43141,7 +43166,7 @@ else
                 etc/aubitrc-bin \
 				incl/Makefile-common"
 fi
-
+STD_CFLAGS="$STD_CFLAGS $PIC"
 
 
   { echo "$as_me:$LINENO: result: " >&5
@@ -43884,12 +43909,12 @@ AUBITETC!$AUBITETC$ac_delim
 A4GL_SQLTYPE!$A4GL_SQLTYPE$ac_delim
 A4GL_SQLTYPE_DETECTED!$A4GL_SQLTYPE_DETECTED$ac_delim
 A4GL_SQLTYPE_COMPILE_ONLY_DETECTED!$A4GL_SQLTYPE_COMPILE_ONLY_DETECTED$ac_delim
+STD_CFLAGS!$STD_CFLAGS$ac_delim
 A4GL_PDFTYPE!$A4GL_PDFTYPE$ac_delim
 A4GL_PDFTYPE_DETECTED!$A4GL_PDFTYPE_DETECTED$ac_delim
 A4GL_RPCTYPE!$A4GL_RPCTYPE$ac_delim
 A4GL_RPCTYPE_DETECTED!$A4GL_RPCTYPE_DETECTED$ac_delim
 A4GL_UI!$A4GL_UI$ac_delim
-A4GL_UI_DETECTED!$A4GL_UI_DETECTED$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -43931,6 +43956,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+A4GL_UI_DETECTED!$A4GL_UI_DETECTED$ac_delim
 A4GL_LEXTYPE!$A4GL_LEXTYPE$ac_delim
 A4GL_LEXTYPE_DETECTED!$A4GL_LEXTYPE_DETECTED$ac_delim
 A4GL_LEXDIALECT!$A4GL_LEXDIALECT$ac_delim
@@ -44027,7 +44053,6 @@ PDFLIB_I_FLAGS!$PDFLIB_I_FLAGS$ac_delim
 PDFLIB_L_FLAGS!$PDFLIB_L_FLAGS$ac_delim
 DOXYGEN!$DOXYGEN$ac_delim
 HAVE_DOT!$HAVE_DOT$ac_delim
-DOT_PATH!$DOT_PATH$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -44069,6 +44094,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+DOT_PATH!$DOT_PATH$ac_delim
 DOXY_BIN_ABSPATH!$DOXY_BIN_ABSPATH$ac_delim
 CGI_DIR!$CGI_DIR$ac_delim
 APACHECTL!$APACHECTL$ac_delim
@@ -44165,7 +44191,6 @@ I4GL_PCOMPILER!$I4GL_PCOMPILER$ac_delim
 enable_minimal!$enable_minimal$ac_delim
 IS_SOURCE!$IS_SOURCE$ac_delim
 INNO_ROOTDIR!$INNO_ROOTDIR$ac_delim
-INNO_VERSION!$INNO_VERSION$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -44207,6 +44232,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+INNO_VERSION!$INNO_VERSION$ac_delim
 ISTOOL_ROOTDIR!$ISTOOL_ROOTDIR$ac_delim
 BINRELOC!$BINRELOC$ac_delim
 APGCC!$APGCC$ac_delim
@@ -44303,7 +44329,6 @@ RPMFILE_33!$RPMFILE_33$ac_delim
 RPMFILE_34!$RPMFILE_34$ac_delim
 RPMFILE_35!$RPMFILE_35$ac_delim
 RPMFILE_36!$RPMFILE_36$ac_delim
-RPMFILE_37!$RPMFILE_37$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -44345,6 +44370,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+RPMFILE_37!$RPMFILE_37$ac_delim
 RPMFILE_38!$RPMFILE_38$ac_delim
 RPMFILE_39!$RPMFILE_39$ac_delim
 RPMFILE_40!$RPMFILE_40$ac_delim
@@ -44441,7 +44467,6 @@ IS_THIRDPARTY_30!$IS_THIRDPARTY_30$ac_delim
 IS_THIRDPARTY_31!$IS_THIRDPARTY_31$ac_delim
 IS_THIRDPARTY_32!$IS_THIRDPARTY_32$ac_delim
 IS_THIRDPARTY_33!$IS_THIRDPARTY_33$ac_delim
-IS_THIRDPARTY_34!$IS_THIRDPARTY_34$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -44483,6 +44508,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+IS_THIRDPARTY_34!$IS_THIRDPARTY_34$ac_delim
 IS_THIRDPARTY_35!$IS_THIRDPARTY_35$ac_delim
 IS_THIRDPARTY_36!$IS_THIRDPARTY_36$ac_delim
 IS_THIRDPARTY_37!$IS_THIRDPARTY_37$ac_delim
@@ -44579,7 +44605,6 @@ ISLIBFILE_27!$ISLIBFILE_27$ac_delim
 ISLIBFILE_28!$ISLIBFILE_28$ac_delim
 ISLIBFILE_29!$ISLIBFILE_29$ac_delim
 ISLIBFILE_30!$ISLIBFILE_30$ac_delim
-ISLIBFILE_31!$ISLIBFILE_31$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -44621,6 +44646,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISLIBFILE_31!$ISLIBFILE_31$ac_delim
 ISLIBFILE_32!$ISLIBFILE_32$ac_delim
 ISLIBFILE_33!$ISLIBFILE_33$ac_delim
 ISLIBFILE_34!$ISLIBFILE_34$ac_delim
@@ -44717,7 +44743,6 @@ ISEXEFILE_24!$ISEXEFILE_24$ac_delim
 ISEXEFILE_25!$ISEXEFILE_25$ac_delim
 ISEXEFILE_26!$ISEXEFILE_26$ac_delim
 ISEXEFILE_27!$ISEXEFILE_27$ac_delim
-ISEXEFILE_28!$ISEXEFILE_28$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -44759,6 +44784,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISEXEFILE_28!$ISEXEFILE_28$ac_delim
 ISEXEFILE_29!$ISEXEFILE_29$ac_delim
 ISEXEFILE_30!$ISEXEFILE_30$ac_delim
 ISEXEFILE_31!$ISEXEFILE_31$ac_delim
@@ -44855,7 +44881,6 @@ INCFILE_31!$INCFILE_31$ac_delim
 INCFILE_32!$INCFILE_32$ac_delim
 INCFILE_33!$INCFILE_33$ac_delim
 INCFILE_34!$INCFILE_34$ac_delim
-INCFILE_35!$INCFILE_35$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -44897,6 +44922,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+INCFILE_35!$INCFILE_35$ac_delim
 INCFILE_36!$INCFILE_36$ac_delim
 INCFILE_37!$INCFILE_37$ac_delim
 INCFILE_38!$INCFILE_38$ac_delim
@@ -44993,7 +45019,6 @@ EXAMPFILE_58!$EXAMPFILE_58$ac_delim
 EXAMPFILE_59!$EXAMPFILE_59$ac_delim
 EXAMPFILE_60!$EXAMPFILE_60$ac_delim
 ISEXAMPFILE_1!$ISEXAMPFILE_1$ac_delim
-ISEXAMPFILE_2!$ISEXAMPFILE_2$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -45035,6 +45060,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISEXAMPFILE_2!$ISEXAMPFILE_2$ac_delim
 ISEXAMPFILE_3!$ISEXAMPFILE_3$ac_delim
 ISEXAMPFILE_4!$ISEXAMPFILE_4$ac_delim
 ISEXAMPFILE_5!$ISEXAMPFILE_5$ac_delim
@@ -45131,7 +45157,6 @@ ISMAKEFILE_15!$ISMAKEFILE_15$ac_delim
 ISMAKEFILE_16!$ISMAKEFILE_16$ac_delim
 ISMAKEFILE_17!$ISMAKEFILE_17$ac_delim
 ISMAKEFILE_18!$ISMAKEFILE_18$ac_delim
-ISMAKEFILE_19!$ISMAKEFILE_19$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -45173,6 +45198,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISMAKEFILE_19!$ISMAKEFILE_19$ac_delim
 ISMAKEFILE_20!$ISMAKEFILE_20$ac_delim
 DOCFILE_1!$DOCFILE_1$ac_delim
 DOCFILE_2!$DOCFILE_2$ac_delim
@@ -45269,7 +45295,6 @@ CONVFILE_12!$CONVFILE_12$ac_delim
 CONVFILE_13!$CONVFILE_13$ac_delim
 CONVFILE_14!$CONVFILE_14$ac_delim
 CONVFILE_15!$CONVFILE_15$ac_delim
-CONVFILE_16!$CONVFILE_16$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -45311,6 +45336,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+CONVFILE_16!$CONVFILE_16$ac_delim
 CONVFILE_17!$CONVFILE_17$ac_delim
 CONVFILE_18!$CONVFILE_18$ac_delim
 CONVFILE_19!$CONVFILE_19$ac_delim
@@ -45407,7 +45433,6 @@ ISIMPORTFILE_9!$ISIMPORTFILE_9$ac_delim
 ISIMPORTFILE_10!$ISIMPORTFILE_10$ac_delim
 ISIMPORTFILE_11!$ISIMPORTFILE_11$ac_delim
 ISIMPORTFILE_12!$ISIMPORTFILE_12$ac_delim
-ISIMPORTFILE_13!$ISIMPORTFILE_13$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -45449,6 +45474,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISIMPORTFILE_13!$ISIMPORTFILE_13$ac_delim
 ISIMPORTFILE_14!$ISIMPORTFILE_14$ac_delim
 ISIMPORTFILE_15!$ISIMPORTFILE_15$ac_delim
 ISIMPORTFILE_16!$ISIMPORTFILE_16$ac_delim
@@ -45545,7 +45571,6 @@ MSVC_COMP!$MSVC_COMP$ac_delim
 MSVC_LINK!$MSVC_LINK$ac_delim
 TMPIFMX_ESQLC!$TMPIFMX_ESQLC$ac_delim
 POSTMASTER!$POSTMASTER$ac_delim
-SQLITE!$SQLITE$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -45587,6 +45612,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+SQLITE!$SQLITE$ac_delim
 OLD_SQLITE!$OLD_SQLITE$ac_delim
 SQLITE_LIBVERSION!$SQLITE_LIBVERSION$ac_delim
 IODBC_CONFIG!$IODBC_CONFIG$ac_delim
@@ -45608,7 +45634,7 @@ CYGCHECK!$CYGCHECK$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 19; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 20; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -46383,7 +46409,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.371 2007-04-18 16:19:38 mikeaubury Exp $
+| $Id: configure,v 1.372 2007-04-20 07:12:11 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

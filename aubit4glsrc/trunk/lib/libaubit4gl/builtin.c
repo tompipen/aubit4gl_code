@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.109 2007-03-22 20:16:11 mikeaubury Exp $
+# $Id: builtin.c,v 1.110 2007-04-20 07:12:34 mikeaubury Exp $
 #
 */
 
@@ -358,6 +358,8 @@ if (b) {
 		free(np);
 		free(np2);
 	
+		A4GL_debug("b=%d a=%d", b,a);
+		A4GL_debug("Want %d bytes ",b - a + 2);
 		np=acl_malloc2((size_t) (b - a + 2));
 		np2=acl_malloc2((size_t) (b - a + 2));
 		memset(np,0,(size_t)(b - a + 2));
