@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.35 2007-03-28 10:01:39 mikeaubury Exp $
+# $Id: amake,v 1.36 2007-04-23 20:26:55 fortiz Exp $
 #
 #####################################################################
 
@@ -507,7 +507,7 @@ verbose "ONEPROG=$ONEPROG COMPOSITE=$COMPOSITE CORE_MK=$CORE_MK"
 # scan command line flags and set options and input files
 function process_cmd () {
 
-	if [ "$1" = "--help" -o "$1" = "-help" -o "$1" = "help" ] ; then
+	if [ "$ALL_FLAGS" = "--help" -o "$ALL_FLAGS" = "-help" -o "$ALL_FLAGS" = "help" ] ; then
 		show_help
 	fi
 	
