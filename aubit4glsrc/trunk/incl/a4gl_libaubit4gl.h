@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.268 2007-04-05 20:35:25 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.269 2007-04-23 06:57:57 mikeaubury Exp $
 #
 */
 
@@ -3222,7 +3222,7 @@ void A4GL_clr_malloc_context(void ) ;
 
 
 
-
+void A4GL_set_intr (void);
 
 
 

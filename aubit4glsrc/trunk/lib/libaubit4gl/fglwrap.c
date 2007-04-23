@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.119 2007-04-02 14:13:31 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.120 2007-04-23 06:57:57 mikeaubury Exp $
 #
 */
 
@@ -91,7 +91,7 @@ void A4GL_nodef_init (void);
 void A4GL_generateError (char *str, char *fileName, int lineno);
 void A4GL_null_func (void);
 int A4GL_ass_hash (char **a, int s, int d, char *str, long size, int rw);
-void A4GL_set_intr (void);
+//void A4GL_set_intr (void);
 void A4GL_def_int (void);
 void A4GL_def_quit (void);
 char *A4GL_clob (char *s, char *p);
