@@ -22089,7 +22089,7 @@ fi
 				#have to free cursors & statements differently
 				{ echo "$as_me:$LINENO: checking fglpc version" >&5
 echo $ECHO_N "checking fglpc version... $ECHO_C" >&6; }
-				set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^.*INFORMIX-4GL Version //' -e 's/\./ /g'`
+				set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^.*ion //' -e 's/\./ /g'`
 				if test "$1" != ""; then
 					#if test "$1" = "4" -a "$2" -lt "50"; then
 		            if test "$1" -lt "5"; then
@@ -46409,7 +46409,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.372 2007-04-20 07:12:11 mikeaubury Exp $
+| $Id: configure,v 1.373 2007-04-23 16:03:14 fortiz Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
