@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.189 2007-04-15 19:16:17 mikeaubury Exp $
+# $Id: esql.ec,v 1.190 2007-04-23 18:42:30 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.189 2007-04-15 19:16:17 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.190 2007-04-23 18:42:30 mikeaubury Exp $";
 #endif
 
 
@@ -2055,7 +2055,10 @@ return 0;
 
 static void free_blobs(struct s_extra_info *e) {
 	e->nblobs=0;
-	if (e->raw_blobs)	free(e->raw_blobs);
+	if (e->raw_blobs){
+		free(e->raw_blobs);
+		e->raw_blobs=0;
+	}
 }
 
 /**
@@ -2089,6 +2092,7 @@ processPreStatementBinds (struct s_sid *sid)
   } else {
 	ei= sid->extra_info;
 	free_blobs(ei);
+	sid->extra_info=0;
   }
 
   if (sid->ibind != (struct BINDING *) 0 && sid->ni > 0)
@@ -2256,6 +2260,7 @@ if (n) {
     }
 
     e=sid->extra_info;
+	if (e) {
 
     for (a=0;a<e->nblobs;a++) {
 	loc_t *i;
@@ -2263,6 +2268,7 @@ if (n) {
 	rsetnull(CLOCATORTYPE,(void *)i);
    }
 
+}
 
 
 
@@ -2286,8 +2292,10 @@ if (n) {
   if (sid->extra_info) {
 	struct s_extra_info *p;
 	p=sid->extra_info;
+	
 	free_blobs(p);
 	free(p);
+
 	sid->extra_info=0;
   }
   A4GL_debug ("All Ok in posStatementBinds");

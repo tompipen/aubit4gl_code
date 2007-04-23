@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.269 2007-04-23 06:57:57 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.270 2007-04-23 18:42:30 mikeaubury Exp $
 #
 */
 
@@ -331,6 +331,7 @@
 //unused? #define GOTO_USED		'Z'
 #define FEATURE_USED		'X'
 //unused? #define HP_IS_SERIAL		'V'
+#define LAST_STRING_EXPR       'V'
 #define LAST_STRING		'T'
 #define LAST_STRING_START	'U'
 
