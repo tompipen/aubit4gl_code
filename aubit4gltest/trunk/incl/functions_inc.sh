@@ -2137,7 +2137,7 @@ AS_USER=$5
 
    case $RDBMS in
 	informix)
-		EXEC="dbaccess $DB -qcr "
+		EXEC="dbaccess $DB $SCRIPT "
 		eval $EXEC
 		RET=$?
 		;;
