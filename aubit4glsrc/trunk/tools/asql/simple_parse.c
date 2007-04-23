@@ -203,6 +203,13 @@ int in_create_procedure;
 				elem->stmt=ptr; 
 				add_stmt(elem); 
 				free(elem); 
+			} else {
+				if (elem ) {
+				        elem->stmt=ptr;
+        				add_stmt(elem);
+        				free(elem);
+        				elem=0;
+				}
 			}
 			elem=0; ptr=0;continue;
 		}
