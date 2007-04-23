@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.54 2007-02-09 10:52:54 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.55 2007-04-23 06:50:41 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.54 2007-02-09 10:52:54 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.55 2007-04-23 06:50:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -56,6 +56,7 @@ int construct_last_key;
 
 static int A4GL_local_get_curr_window_attr (void);
 static int A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt);
+static int internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt);
 //int A4GL_has_event (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt);
@@ -1229,8 +1230,7 @@ int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
  * 4GL CALL
  * @todo Describe function
  */
-int
-internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
+int internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 {
   struct s_form_dets *form;
   int a;

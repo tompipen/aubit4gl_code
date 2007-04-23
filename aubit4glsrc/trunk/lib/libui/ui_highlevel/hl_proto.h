@@ -124,3 +124,5 @@ int A4GL_ll_field_opts (void *f);
 void A4GL_ll_set_field_opts (void *f,int l);
 void A4GL_submit_events(void *s, struct aclfgl_event_list *evt );
 int A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt);
+ACL_Menu_Opts *A4GL_LL_show_menu_large(ACL_Menu *menu, int key);
+int A4GL_get_field_width_with_form (void *fd, void *fld);

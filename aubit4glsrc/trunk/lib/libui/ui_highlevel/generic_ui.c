@@ -8,9 +8,10 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.112 2007-04-04 15:32:48 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.113 2007-04-23 06:50:41 mikeaubury Exp $";
 #endif
 
+static int A4GL_ll_field_opts_i (void *f);
 static int A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt);
 int A4GL_field_is_noentry (int doing_construct, struct struct_scr_field *f);
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -3700,7 +3701,7 @@ A4GL_ll_set_field_opts (void *f, int l)
   SPRINTF1 (buff, "%p", f);
 
   // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
-  if (A4GL_has_pointer (buff, FIELDOPTS))
+  if ((int)A4GL_has_pointer (buff, FIELDOPTS))
     {
       last = (int) A4GL_find_pointer (buff, FIELDOPTS);
       // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
@@ -3798,8 +3799,7 @@ A4GL_ll_field_opts (void *f)
 }
 
 
-int
-A4GL_ll_field_opts_i (void *f)
+int A4GL_ll_field_opts_i (void *f)
 {
   char buff[30];
 

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.35 2007-02-18 10:47:07 mikeaubury Exp $
+# $Id: display_array.c,v 1.36 2007-04-23 06:50:41 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.35 2007-02-18 10:47:07 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.36 2007-04-23 06:50:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -117,7 +117,7 @@ clear_srec (struct s_disp_arr *disp, struct struct_screen_record *srec)
 			       0,	// first_only
 			       srec1,	// screen record
 			       b + 1,	// field line
-			       0, 0);
+			       NULL, 0);
     }
 
 
@@ -192,7 +192,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
 			       no,	// arr_line
 			       first_only, srec2,	// screen record
 			       scr_line,	// field line
-			       0, 0);
+			       NULL, 0);
 
     }
   else
@@ -203,7 +203,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
 			       no,	// arr_line
 			       first_only, srec2,	// screen record
 			       scr_line,	// field line
-			       0, 0);
+			       NULL, 0);
 
       //A4GL_disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
     }
@@ -250,7 +250,7 @@ draw_arr_all (struct s_disp_arr *disp)
 				   0,	// first_only
 				   srec2,	// screen record
 				   a + 1,	// field line
-				   0, 0);
+				   NULL, 0);
 	}
 
     }

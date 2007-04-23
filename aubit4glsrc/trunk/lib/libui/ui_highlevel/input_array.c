@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.50 2007-02-19 19:41:11 fortiz Exp $
+# $Id: input_array.c,v 1.51 2007-04-23 06:50:41 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.50 2007-02-19 19:41:11 fortiz Exp $";
+  "$Id: input_array.c,v 1.51 2007-04-23 06:50:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -56,6 +56,8 @@ static char const module_id[] =
 #include "a4gl_API_lowlevel.h"
 
 #include <ctype.h>
+static
+int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int init, void *vevt);
 
 //int A4GL_has_event (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
@@ -1124,9 +1126,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib,
  * @param attrib Attributes used during input array
  * @return
  */
-int
-UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
-		       int init, void *vevt)
+int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int init, void *vevt)
 {
   void ***fld_list;
   int rval;
