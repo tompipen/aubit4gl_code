@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.65 2007-03-19 08:12:56 mikeaubury Exp $
+# $Id: binding.c,v 1.66 2007-04-26 17:28:11 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.65 2007-03-19 08:12:56 mikeaubury Exp $";
+		"$Id: binding.c,v 1.66 2007-04-26 17:28:11 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -635,7 +635,7 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , bind->bind[a].dtype >> 16 );
+	  SPRINTF2 (buff,"varchar _vo_%d[%d+1]=\"\";", a , bind->bind[a].dtype >> 16 );
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
@@ -790,7 +790,7 @@ static char buff_ind[255];
 	  SPRINTF1 (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"varchar _vo_%d[%d];", a , bind->bind[a].dtype >> 16);
+	  SPRINTF2 (buff,"varchar _vo_%d[%d+1];", a , bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
@@ -1206,7 +1206,7 @@ char buff_ind[255];
 	  SPRINTF1 (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  SPRINTF2 (buff,"varchar _vo_%d[%d]=\"\";", a , bind->bind[a].dtype >> 16 );
+	  SPRINTF2 (buff,"varchar _vo_%d[%d+1]=\"\";", a , bind->bind[a].dtype >> 16 );
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
