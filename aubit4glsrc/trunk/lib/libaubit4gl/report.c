@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.127 2007-04-26 07:42:56 mikeaubury Exp $
+# $Id: report.c,v 1.128 2007-04-26 12:59:10 mikeaubury Exp $
 #
 */
 
@@ -651,9 +651,9 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 
 	      if (strcmp (rep->output_loc, "stdout") == 0)
 		{
-		  //A4GL_gotolinemode ();
+		  A4GL_gotolinemode ();
 		  rep->output = stdout;
-		  //A4GL_gotolinemode ();
+		  A4GL_gotolinemode ();
 		}
 	      else
 		{
