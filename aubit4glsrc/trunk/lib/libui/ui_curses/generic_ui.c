@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.42 2007-03-12 15:22:23 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.43 2007-04-26 07:41:51 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1093,7 +1093,7 @@ void UILIB_A4GL_ui_exit(void) {
 #ifdef DEBUG
 			            A4GL_debug ("In screen mode - ending curses...");
 #endif
-				          A4GL_gotolinemode ();
+				          UILIB_A4GL_gotolinemode ();
 					      }
 
 }
