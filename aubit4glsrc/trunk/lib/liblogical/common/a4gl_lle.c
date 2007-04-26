@@ -304,34 +304,36 @@ void free_report(void *report) {
 
 
 
-void obtain_rbs_rbx(struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx) {
-int rbs;
-struct s_rbx *rbx;
-int a;
+void
+obtain_rbs_rbx (struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx)
+{
+  int rbs;
+  struct s_rbx *rbx;
+  int a;
   int block_cnt;
   int rblock_cnt;
   int entry_cnt;
-int found;
-int b;
- rbs=0;
- rbx=0;
+  int found;
+  int b;
+  rbs = 0;
+  rbx = 0;
 
   for (a = 0; a < report->nblocks; a++)
     {
       found = 0;
       if (rbs)
-        {
-          for (b = 0; b < rbs; b++)
-            {
-              if (report->blocks[a].rb == rbx[b].rb)
-                {
-                  found = 1;
-                  break;
-                }
-            }
-        }
+	{
+	  for (b = 0; b < rbs; b++)
+	    {
+	      if (report->blocks[a].rb == rbx[b].rb)
+		{
+		  found = 1;
+		  break;
+		}
+	    }
+	}
       if (found)
-        continue;
+	continue;
       rbs++;
 
       rbx = acl_realloc (rbx, sizeof (struct s_rbx) * rbs);
@@ -349,85 +351,100 @@ int b;
       rbx[block_cnt].max_size_entry = 0;
 
       for (rblock_cnt = 0; rblock_cnt < report->nblocks; rblock_cnt++)
-        {
-          if (rbx[block_cnt].rb != report->blocks[rblock_cnt].rb)
-            {
-              continue;
-            }
+	{
+	  if (rbx[block_cnt].rb != report->blocks[rblock_cnt].rb)
+	    {
+	      continue;
+	    }
 
-          for (entry_cnt = 0; entry_cnt < report->blocks[rblock_cnt].nentries;
-               entry_cnt++)
-            {
-		int nval;
-              if (report->blocks[rblock_cnt].entries[entry_cnt].entry_id >=
-                  rbx[block_cnt].max_entry)
-                {
-                  int nmax;
-                  nmax =
-                    report->blocks[rblock_cnt].entries[entry_cnt].entry_id +
-                    1;
-		nval=nmax;
-		if (report->blocks[rblock_cnt].nentries>nval) nval=report->blocks[rblock_cnt].nentries;
+	  for (entry_cnt = 0; entry_cnt < report->blocks[rblock_cnt].nentries; entry_cnt++)
+	    {
+	      int nval;
+		
+	      if (report->blocks[rblock_cnt].entries[entry_cnt].entry_id >= rbx[block_cnt].max_entry || entry_cnt>=rbx[block_cnt].max_entry)
+		{
+		  int nmax;
+		  nmax = report->blocks[rblock_cnt].entries[entry_cnt].entry_id + 1;
+		  nval = nmax;
 
-                  rbx[block_cnt].entry_nos = acl_realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nval+1));
-                  rbx[block_cnt].max_size_entry = acl_realloc (rbx[block_cnt].max_size_entry, sizeof (int) * (nval+1));
-                  for (a = rbx[block_cnt].max_entry; a < nval; a++)
-                    {
-                      rbx[block_cnt].entry_nos[a] = -1;
-                      rbx[block_cnt].max_size_entry[a] = 0;
-                    }
-                  rbx[block_cnt].max_entry = nmax;
-                }
+		  if (report->blocks[rblock_cnt].nentries > nval)
+		    {
+		      nval = report->blocks[rblock_cnt].nentries;
+		    }
 
-              if (strlen
-                  (report->blocks[rblock_cnt].entries[entry_cnt].string))
-                {
+		  rbx[block_cnt].entry_nos = acl_realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nval + 1));
+      			rbx[block_cnt].nentry_nos = nval + 1;
 
-			int eid;
-			int slen;
-		//printf("Have length for %d/%d\n",rblock_cnt,entry_cnt);
-                    eid = report->blocks[rblock_cnt].entries[entry_cnt].entry_id;
-			/*
-			if (entry_cnt>= rbx[block_cnt].max_size_entry) {
-				printf("OOPS1\n");
-			}
-			*/
-                    rbx[block_cnt].entry_nos[entry_cnt] = eid;
-                    slen=strlen (report->blocks[rblock_cnt].entries[entry_cnt].  string);
-                    rbx[block_cnt].max_size_entry[entry_cnt] =slen;
-                }
-            }
-        }
+		  //printf ("Realloc : Block %d %d\n", block_cnt, nval + 1);
+		  rbx[block_cnt].max_size_entry =
+		    acl_realloc (rbx[block_cnt].max_size_entry,
+				 sizeof (int) * (nval + 1));
+
+		  for (a = rbx[block_cnt].max_entry; a < nval; a++)
+		    {
+		      rbx[block_cnt].entry_nos[a] = -1;
+		      rbx[block_cnt].max_size_entry[a] = 0;
+		    }
+		  rbx[block_cnt].max_entry = nmax;
+		}
+
+	      if (strlen
+		  (report->blocks[rblock_cnt].entries[entry_cnt].string))
+		{
+
+		  int eid;
+		  int slen;
+		  //printf("Have length for %d/%d\n",rblock_cnt,entry_cnt);
+		  eid =
+		    report->blocks[rblock_cnt].entries[entry_cnt].entry_id;
+		  /*
+		     if (entry_cnt>= rbx[block_cnt].max_size_entry) {
+		     printf("OOPS1\n");
+		     }
+		   */
+		  //printf ("Using subscript : %d %d\n", block_cnt, entry_cnt);
+		if (entry_cnt> rbx[block_cnt].nentry_nos) {
+			printf("Internal error - nentry_nos exceeded...\n");
+			exit(2);
+		}
+
+		  rbx[block_cnt].entry_nos[entry_cnt] = eid;
+		  slen =
+		    strlen (report->blocks[rblock_cnt].entries[entry_cnt].
+			    string);
+		  rbx[block_cnt].max_size_entry[entry_cnt] = slen;
+		}
+	    }
+	}
       b = 0;
       tmp_space_e = acl_malloc2 (sizeof (int) * rbx[block_cnt].max_entry);
       tmp_space_s = acl_malloc2 (sizeof (int) * rbx[block_cnt].max_entry);
       for (a = 0; a < rbx[block_cnt].max_entry; a++)
-        {
-          if (rbx[block_cnt].entry_nos[a] >= 0
-              && rbx[block_cnt].max_size_entry[a])
-            {
-		//printf("Keeping %d\n",rbx[block_cnt].entry_nos[a]);
-              tmp_space_e[b] = rbx[block_cnt].entry_nos[a];
-              tmp_space_s[b] = rbx[block_cnt].max_size_entry[a];
-              b++;
-            }
-          else
-            {
-              //printf ("Discarding block %d entry %d - %d %d\n", block_cnt, a, rbx[block_cnt].entry_nos[a], rbx[block_cnt].max_size_entry[a]);
-            }
-        }
+	{
+	  if (rbx[block_cnt].entry_nos[a] >= 0
+	      && rbx[block_cnt].max_size_entry[a])
+	    {
+	      //printf("Keeping %d\n",rbx[block_cnt].entry_nos[a]);
+	      tmp_space_e[b] = rbx[block_cnt].entry_nos[a];
+	      tmp_space_s[b] = rbx[block_cnt].max_size_entry[a];
+	      b++;
+	    }
+	  else
+	    {
+	      //printf ("Discarding block %d entry %d - %d %d\n", block_cnt, a, rbx[block_cnt].entry_nos[a], rbx[block_cnt].max_size_entry[a]);
+	    }
+	}
       rbx[block_cnt].nentry_nos = b;
       memcpy (rbx[block_cnt].entry_nos, tmp_space_e,
-              sizeof (int) * rbx[block_cnt].nentry_nos);
+	      sizeof (int) * rbx[block_cnt].nentry_nos);
       memcpy (rbx[block_cnt].max_size_entry, tmp_space_s,
-              sizeof (int) * rbx[block_cnt].nentry_nos);
+	      sizeof (int) * rbx[block_cnt].nentry_nos);
       free (tmp_space_e);
       free (tmp_space_s);
     }
-*ptr_rbs=rbs;
-*ptr_rbx=rbx;
+  *ptr_rbs = rbs;
+  *ptr_rbx = rbx;
 }
-
 
 
 
