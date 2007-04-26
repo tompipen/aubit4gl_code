@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.190 2007-04-23 18:42:30 mikeaubury Exp $
+# $Id: esql.ec,v 1.191 2007-04-26 13:32:20 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.190 2007-04-23 18:42:30 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.191 2007-04-26 13:32:20 mikeaubury Exp $";
 #endif
 
 
@@ -1585,6 +1585,7 @@ int dstype;
 		if (dslength>bind[idx].size) ml=bind[idx].size; else ml=dslength;
       		strncpy (bind[idx].ptr, char_var,ml);
       		ptr=bind[idx].ptr;
+		A4GL_assertion(ptr==0,"No pointer");
       		ptr[ml]=0;
 		if (dataType==DTYPE_CHAR) {
 			A4GL_pad_string(bind[idx].ptr,bind[idx].size);
@@ -2439,7 +2440,8 @@ char buff[255];
 
 
   if (ni) {
-  	sid->ibind=ibind;
+
+	sid->ibind=ibind;
   	sid->ni=ni;
   }
 

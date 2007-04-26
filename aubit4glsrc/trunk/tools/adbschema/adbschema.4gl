@@ -240,7 +240,7 @@ function outstr(lv_s)
 define lv_s char(20000)
 define lv_f char(200)
 if lv_output is null then
-display lv_s clipped
+	display lv_s clipped
 else
 	let lv_f=lv_output
 code

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.365 2007-04-12 10:06:42 mikeaubury Exp $
+# $Id: compile_c.c,v 1.366 2007-04-26 13:32:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.365 2007-04-12 10:06:42 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.366 2007-04-26 13:32:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2666,7 +2666,7 @@ print_arr_bind_g (t_binding_comp_list *bind)
     {
 	set_suppress_lines();
       printc ("\n");
-      printc ("struct BINDING ibind[%d]={\n", bind->nbind);
+      printc ("static struct BINDING ibind[%d]={\n", bind->nbind);
       for (a = 0; a < bind->nbind; a++)
 	{
 	  if (a > 0)
@@ -2688,7 +2688,7 @@ print_arr_bind_g (t_binding_comp_list *bind)
     {
 	set_suppress_lines();
       printc ("\n");
-      printc ("struct BINDING obind[%d]={\n", bind->nbind );
+      printc ("static struct BINDING obind[%d]={\n", bind->nbind );
       for (a = 0; a < bind->nbind; a++)
 	{
 	  if (a > 0) printc (",\n");
@@ -7563,8 +7563,8 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
       switch (lbind->type)
 	{
 	case 'i':
-	  printc ("struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
-	case 'o': printc ("struct BINDING obind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
+	  printc ("static struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
+	case 'o': printc ("static struct BINDING obind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'e': printc ("struct BINDING ebind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'O':
 	  printc ("static struct BINDING _ordbind[%d]={\n",

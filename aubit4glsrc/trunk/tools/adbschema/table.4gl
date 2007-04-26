@@ -776,7 +776,7 @@ define lv_qry char(256)
 	if lv_st.tabtype = "T" then
 		case lv_type
 			when "U" call outstr("UNLOAD TO '"||lv_t clipped||".unl' SELECT * FROM "||lv_t clipped||";")
-			when "L" call outstr("LOAD FROM '"||lv_t clipped,".unl' INSERT INTO "||lv_t clipped||";")
+			when "L" call outstr("LOAD FROM '"||lv_t clipped||".unl' INSERT INTO "||lv_t clipped||";")
 {				
 issue - when loading data using LOAD FROM .... INSERT INTO ...
 that contains SERIAL column, data will be loaded, but associated sequence will 
