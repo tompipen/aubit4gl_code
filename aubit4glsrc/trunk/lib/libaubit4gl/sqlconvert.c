@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.113 2007-04-16 16:23:10 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.114 2007-04-26 07:42:56 mikeaubury Exp $
 #
 */
 
@@ -100,6 +100,11 @@ static char *cvsql_names[] = {
   "CVSQL_IGNORE_CLOSE_ERROR",
   "CVSQL_OMIT_INDEX_CLUSTER",
   "CVSQL_OMIT_INDEX_ORDER",
+
+  "CVSQL_OMIT_INDEX_IN",
+  "CVSQL_OMIT_INDEX_FILLFACTOR",
+  "CVSQL_OMIT_INDEX_USING",
+
   "CVSQL_ESQL_UNLOAD",
   "CVSQL_ESQL_UNLOAD_FULL_PATH",
   "CVSQL_ESQL_AFTER_INSERT",
@@ -215,6 +220,9 @@ enum cvsql_type
   CVSQL_IGNORE_CLOSE_ERROR,
   CVSQL_OMIT_INDEX_CLUSTER,
   CVSQL_OMIT_INDEX_ORDER,
+  CVSQL_OMIT_INDEX_IN,
+  CVSQL_OMIT_INDEX_FILLFACTOR,
+  CVSQL_OMIT_INDEX_USING,
   CVSQL_ESQL_UNLOAD,
   CVSQL_ESQL_UNLOAD_FULL_PATH,
   CVSQL_ESQL_AFTER_INSERT,
@@ -1607,6 +1615,13 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_OMIT_INDEX_CLUSTER;
   if (match_strncasecmp (p, "OMIT_INDEX_ORDER", len) == 0)
     return CVSQL_OMIT_INDEX_ORDER;
+
+  if (match_strncasecmp (p, "OMIT_INDEX_IN", len) == 0)
+    return CVSQL_OMIT_INDEX_IN;
+  if (match_strncasecmp (p, "OMIT_INDEX_FILLFACTOR", len) == 0)
+    return CVSQL_OMIT_INDEX_FILLFACTOR;
+  if (match_strncasecmp (p, "OMIT_INDEX_USING", len) == 0)
+    return CVSQL_OMIT_INDEX_USING;
 
   if (match_strncasecmp (p, "ESQL_UNLOAD", len) == 0)
     return CVSQL_ESQL_UNLOAD;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.126 2007-03-25 13:33:17 mikeaubury Exp $
+# $Id: report.c,v 1.127 2007-04-26 07:42:56 mikeaubury Exp $
 #
 */
 
@@ -616,7 +616,9 @@ void A4GL_close_report_file(struct rep_structure *rep) {
 	} else {
 		if (rep->output) {
 			fflush(rep->output); 
-			fclose(rep->output);
+			if (rep->output!=stdout) {
+				fclose(rep->output);
+			}
 			rep->output=0;
 		}
 	}
@@ -649,9 +651,9 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 
 	      if (strcmp (rep->output_loc, "stdout") == 0)
 		{
-		  A4GL_gotolinemode ();
+		  //A4GL_gotolinemode ();
 		  rep->output = stdout;
-		  A4GL_gotolinemode ();
+		  //A4GL_gotolinemode ();
 		}
 	      else
 		{
@@ -1661,11 +1663,13 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi)
 void
 A4GL_pause (char *s)
 {
+int a;
   A4GL_push_char (s);
   A4GL_push_int (-1);
   A4GL_push_int (-1);
   A4GL_display_at (1, 0);
-  getchar ();			// Not the best idea in the world....
+  //getchar ();			// Not the best idea in the world....
+  a=A4GL_get_key(-1);
 }
 
 
