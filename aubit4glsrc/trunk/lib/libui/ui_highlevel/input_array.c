@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.51 2007-04-23 06:50:41 mikeaubury Exp $
+# $Id: input_array.c,v 1.52 2007-04-27 15:29:02 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.51 2007-04-23 06:50:41 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.52 2007-04-27 15:29:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -69,6 +69,9 @@ int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, 
 //void A4GL_set_curr_infield (long a);
 //void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
+
+static int A4GL_double_chk_line(struct s_inp_arr *arr,int ln, char why) ;
+static char *get_field_with_no_picture(void *f) ;
 
 #define CONTROL_STACK_LENGTH 10
 
@@ -928,6 +931,16 @@ process_key_press (struct s_inp_arr *arr, int a)
 	}
       break;
 
+
+
+    case A4GLKEY_HOME:
+                A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);
+                          break;
+                              case A4GLKEY_END:
+                                    A4GL_LL_int_form_driver (mform, AUBIT_REQ_END_FIELD);
+                                              break;
+
+
     case A4GLKEY_LEFT:
       if (at_first)
 	{
@@ -1782,6 +1795,11 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
   if (arr_line != arr->arr_line)
     {
 	          struct s_movement ptr;
+
+        if (!A4GL_double_chk_line(arr,arr->scr_line-1, why)) { // somethings wrong with our current line
+                return;
+        }
+
 		        ptr.scr_line = scr_line;
 			      ptr.arr_line = arr_line;
 			            ptr.attrib_no = attrib;
@@ -2208,6 +2226,7 @@ int nv;
   if (arr->fcntrl[a].op == FORMCONTROL_KEY_PRESS)
     {
 
+//A4GL_pause_execution();
       //debug_print_flags(arr,"kp");
       if (arr->fcntrl[a].state == 99)
 	{
@@ -2248,6 +2267,7 @@ int nv;
 	  int has_picture = 0;
 	  char *picture = 0;
 	  new_state = 10;
+
 
 
 	  fprop =
@@ -2690,7 +2710,7 @@ int nv;
 	      strcpy (buff, "");
 	    }
 
-
+if (fprop->flags) {
 	  A4GL_trim (buff);
 
 	  if (strlen (buff))
@@ -2760,6 +2780,7 @@ int nv;
 				       arr->binding[cattrib].size,
 				       cptr);
 	  new_state = 0;
+}
 	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
 	  //A4GL_push_char (arr->fcntrl[a].field_name);
 	  if (A4GL_has_event_for_field
@@ -2841,6 +2862,12 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 
   struct struct_scr_field *fprop;
   A4GL_debug ("In disp_fields");
+
+  if (  arr->currform != UILIB_A4GL_get_curr_form (0))
+    {
+      A4GL_make_window_with_this_form_current (arr->currform);
+    }
+
   formdets = UILIB_A4GL_get_curr_form (1);
 
   flg = 0;
@@ -3006,6 +3033,18 @@ int nv;
 	      if (arr->currentfield)
 		{
 		  A4GL_init_control_stack (arr, 0);
+		} else {
+                        if (arr->fcntrl_cnt>=2) {
+                                if (arr->fcntrl[0].op==FORMCONTROL_BEFORE_FIELD && arr->fcntrl[1].op==FORMCONTROL_BEFORE_ROW) {
+                                        if (arr->fcntrl[2].op==FORMCONTROL_BEFORE_FIELD && arr->fcntrl[3].op==FORMCONTROL_BEFORE_ROW) {
+                                                free(arr->fcntrl[0].parameter);
+                                                free(arr->fcntrl[1].parameter);
+                                                memcpy(&arr->fcntrl[0],&arr->fcntrl[2],sizeof(arr->fcntrl[0]));
+                                                memcpy(&arr->fcntrl[1],&arr->fcntrl[3],sizeof(arr->fcntrl[0]));
+                                                arr->fcntrl_cnt=2;
+                                        }
+                                }
+                        }
 		}
 
 
@@ -3649,3 +3688,147 @@ A4GL_set_field_attr_with_attr_already_determined (void *field, int attr,
      attr);
   A4GL_set_field_colour_attr (field, r, attr);
 }
+
+
+
+
+
+static char *get_field_with_no_picture(void *f) {
+static char *p=0;
+struct struct_scr_field *fprop;
+char *picture;
+
+        if (p) free(p);
+        fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
+        p=strdup(A4GL_LL_field_buffer(f,0));
+        picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+        // remove any attached picture...
+        if (picture) {
+                        int z;
+                        for (z=0;z<strlen(p);z++) {
+                                if (z>strlen(picture)) break;
+                                if (picture[z]=='A') p[z]=' ';
+                                if (picture[z]=='X') p[z]=' ';
+                                if (picture[z]=='#') p[z]=' ';
+                        }
+        }
+        return p;
+}
+
+
+int
+A4GL_entire_row_is_blank (struct s_inp_arr *s,int ln)
+{
+  struct struct_scr_field *fprop;
+  int a;
+  int b;
+  int nv;
+  int isblank=1;
+
+    nv=s->nbind;
+      if (s->start_slice!=-1 && s->end_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+
+      for (b = 0; b < nv; b++)
+        {
+                void *f;
+                char *p;
+                f = s->field_list[ln][b];
+                p=get_field_with_no_picture(f);
+                // remove any attached picture...
+                A4GL_trim(p);
+                if (strlen(p)) {
+                        isblank=0;
+                        break;
+                }
+    }
+return isblank;
+}
+
+
+int
+A4GL_double_chk_line (struct s_inp_arr *s, int ln, char why)
+{
+// Lets just double check for any required fields...
+  struct struct_scr_field *fprop;
+  int a;
+  int b;
+  int nv;
+  int isblank = 1;
+  int is_all_blank = 0;
+if (ln<0) return 1;
+
+  is_all_blank = A4GL_entire_row_is_blank (s, ln);
+  nv = s->nbind;
+
+
+  if (s->start_slice != -1 && s->end_slice != -1)
+    {
+      nv = s->end_slice - s->start_slice + 1;
+    }
+
+  for (b = 0; b < nv; b++)
+    {
+      char *buff2;
+      void *f;
+      char *p;
+      f = s->field_list[ln][b];
+        fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
+      p = get_field_with_no_picture (f);
+      A4GL_trim (p);
+      if (strlen (p) == 0)
+        {
+          int chged = 0;
+          // Has the field changed ?
+          // Are we on a new line ?
+          if ((fprop->flags & 2)) //|| s->curr_line_is_new)
+            {
+              chged++;
+            }
+
+          // are we returning to a previous field ?
+          if (s->processed_onkey != A4GLKEY_UP && s->processed_onkey != A4GLKEY_LEFT)
+            {
+              A4GL_debug ("last key was not up or left");
+              chged++;
+            }
+
+
+
+          if (chged == 0)
+            {
+              if (!is_all_blank)
+                {
+                  chged++;
+                }
+            }
+
+          if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged)
+            {
+
+              int allow_it_anyway = 0;
+
+              // We'll still allow it - so long as there is null in the include list
+              if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+                {
+                  if (A4GL_check_field_for_include
+                      ("",
+                       A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype))
+                    {
+                      allow_it_anyway = 1;
+                    }
+                }
+
+              if (!allow_it_anyway)
+                {
+                  // Well there wasn't - so it is required....
+                  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+                  A4GL_newMovement (s, s->scr_line, s->arr_line, b, why);
+                  return 0;
+                }
+
+            }
+        }
+    }
+  return 1;
+}
+

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.136 2007-04-26 13:03:43 mikeaubury Exp $
+# $Id: curslib.c,v 1.137 2007-04-27 15:29:02 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.136 2007-04-26 13:03:43 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.137 2007-04-27 15:29:02 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -3223,6 +3223,12 @@ UILIB_A4GL_get_key (int timeout)
   abort_pressed = 0;
 
   if (A4GL_islinemode()) {
+	  x=A4GL_readkey();
+  	if (x!=0) {
+                A4GL_debug("Read %d from keyfile",x);
+                return x;
+        }
+
 	x=getchar();
 	return x;
   }

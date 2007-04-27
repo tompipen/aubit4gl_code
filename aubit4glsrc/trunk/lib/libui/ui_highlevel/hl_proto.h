@@ -80,7 +80,7 @@ void A4GL_set_field_attr_with_attr(void *field, int attr, int cmd_type);
 void A4GL_set_field_attr_with_attr_already_determined(void *field, int attr, int cmd_type);
 void A4GL_set_field_colour_attr(void *field, int do_reverse, int colour);
 void A4GL_set_field_pop_attr(void *field, int attr, int cmd_type);
-void A4GL_set_infield_from_parameter(int a);
+void A4GL_set_infield_from_parameter(long a);
 void A4GL_set_init_value(void *f, void *ptr, int dtype);
 void A4GL_set_option (ACL_Menu * menu, int opt);
 void A4GL_start_form(void *s);

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.43 2007-04-04 15:32:48 mikeaubury Exp $";
+  "$Id: menu.c,v 1.44 2007-04-27 15:29:02 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -351,20 +351,47 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
       xx = opt1->optpos + offset;
       yx = 1;
 
+      if (A4GL_isyes (acl_getenv ("BRACKETMENU")))
+	{
 
-      if (type == INVERT)
-	A4GL_wprintw ((void *) A4GL_get_currwin (), AUBIT_ATTR_REVERSE, xx,
-		      menu->gw_y, UILIB_A4GL_get_curr_width (),
-		      UILIB_A4GL_get_curr_height (),
-		      UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), "%s",
-		      opt1->opt_title);
+	  if (type == INVERT)
+	    {
+		char buff[256];
+              strcpy (buff, opt1->opt_title);
+              buff[0] = '<';
+              buff[strlen (buff) - 1] = '>';
+
+	      A4GL_wprintw ((void *) A4GL_get_currwin (), AUBIT_ATTR_REVERSE,
+			    xx, menu->gw_y, UILIB_A4GL_get_curr_width (),
+			    UILIB_A4GL_get_curr_height (),
+			    UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
+			    "%s", buff);
+
+	    }
+	  else
+	    {
+	      A4GL_wprintw ((void *) A4GL_get_currwin (), 0, xx, menu->gw_y,
+			    UILIB_A4GL_get_curr_width (),
+			    UILIB_A4GL_get_curr_height (),
+			    UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
+			    "%s", opt1->opt_title);
+	    }
+	}
       else
-	A4GL_wprintw ((void *) A4GL_get_currwin (), 0, xx, menu->gw_y,
-		      UILIB_A4GL_get_curr_width (),
-		      UILIB_A4GL_get_curr_height (),
-		      UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (), "%s",
-		      opt1->opt_title);
-
+	{
+	  if (type == INVERT)
+	    A4GL_wprintw ((void *) A4GL_get_currwin (), AUBIT_ATTR_REVERSE,
+			  xx, menu->gw_y, UILIB_A4GL_get_curr_width (),
+			  UILIB_A4GL_get_curr_height (),
+			  UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
+			  "%s", opt1->opt_title);
+	  else
+	    A4GL_wprintw ((void *) A4GL_get_currwin (), 0, xx, menu->gw_y,
+			  UILIB_A4GL_get_curr_width (),
+			  UILIB_A4GL_get_curr_height (),
+			  UILIB_A4GL_iscurrborder (), A4GL_get_currwinno (),
+			  "%s", opt1->opt_title);
+	}
 
 
     }
@@ -374,7 +401,6 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
   }
 #endif
 }
-
 
 void
 A4GL_clr_menu_disp (ACL_Menu * menu)
@@ -530,8 +556,11 @@ A4GL_menu_getkey (ACL_Menu * menu)
       A4GL_debug ("debugging - error box");
       A4GL_debug ("wprintw - printing menu title %s @ %d %d",
 		  menu->menu_title, menu->gw_x, menu->gw_y);
-
-      SPRINTF1 (buff, "%s:", menu->menu_title);
+	 if (strlen(menu->menu_title) > 0) {
+      		SPRINTF1 (buff, "%s:", menu->menu_title);
+	} else {
+      		SPRINTF1 (buff, "%s", menu->menu_title);
+	}
       A4GL_h_disp_title (menu, buff);
       A4GL_LL_screen_update ();
 

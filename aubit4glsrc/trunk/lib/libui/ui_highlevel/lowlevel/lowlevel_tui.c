@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.101 2007-04-04 15:32:52 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.102 2007-04-27 15:29:03 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +88,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.101 2007-04-04 15:32:52 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.102 2007-04-27 15:29:03 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1675,7 +1675,6 @@ A4GL_LL_set_current_field (void *form, void *field)
 	  if (A4GL_form_field_opts(field)&O_ACTIVE) ;
 	  else {
 		  A4GL_assertion(1,"Want to make current an inactive field");
-		  //A4GL_pause_execution();
 		  A4GL_debug("FIELD ISNT ACTIVE!");
 	  }
   } else {
@@ -1818,7 +1817,6 @@ A4GL_LL_int_form_driver (void *mform, int mode)
   if (mode >= 0x6000)
     {
       A4GL_debug ("FX1 Should be called with AUBIT_REQ not REQ %x\n", mode);
-      //A4GL_pause_execution ();
     }
 
   nmode = -1;

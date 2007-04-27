@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.36 2007-04-23 06:50:41 mikeaubury Exp $
+# $Id: display_array.c,v 1.37 2007-04-27 15:29:02 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.36 2007-04-23 06:50:41 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.37 2007-04-27 15:29:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -83,7 +83,7 @@ int cmode = 0;
 */
 
 
-static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank,
+static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int iscurr, int blank,
 				     int attr, int arr_line, int first_only,
 				     ...);
 /*
@@ -111,7 +111,9 @@ clear_srec (struct s_disp_arr *disp, struct struct_screen_record *srec)
 
   for (b = 0; b < srec->dim; b++)
     {
-      A4GL_disp_arr_fields_v2 (disp, 1,	// blank
+      A4GL_disp_arr_fields_v2 (disp, 
+				0,
+				1,	// blank
 			       0,	// Attribute
 			       0,	// arr_line
 			       0,	// first_only
@@ -187,7 +189,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   if (disp->highlight)
     {
       A4GL_debug ("With highlight");
-      A4GL_disp_arr_fields_v2 (disp, 0,	// blank
+      A4GL_disp_arr_fields_v2 (disp,type,  0,	// blank
 			       type * AUBIT_ATTR_REVERSE,	// Attribute
 			       no,	// arr_line
 			       first_only, srec2,	// screen record
@@ -198,7 +200,7 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   else
     {
       A4GL_debug ("Without highlight");
-      A4GL_disp_arr_fields_v2 (disp, 0,	// blank
+      A4GL_disp_arr_fields_v2 (disp, type,  0,	// blank
 			       0,	// Attribute
 			       no,	// arr_line
 			       first_only, srec2,	// screen record
@@ -244,7 +246,9 @@ draw_arr_all (struct s_disp_arr *disp)
 	  char srec2[256];
 	  strcpy (srec2, disp->srec->name);
 	  strcat (srec2, ".*");
-	  A4GL_disp_arr_fields_v2 (disp, 1,	// blank
+	  A4GL_disp_arr_fields_v2 (disp, 
+					0,
+					1,	// blank
 				   0,	// Attribute
 				   0,	// arr_line
 				   0,	// first_only
@@ -274,24 +278,11 @@ redisplay_arr (struct s_disp_arr *arr, int redisp)
 {
   if (redisp == 1)
     {
-      A4GL_debug ("Redisplay one");
       draw_arr (arr, 0, arr->last_arr);
-#ifdef DEBUG
-      {
-	A4GL_debug ("after draw_arr (4)");
-      }
-#endif
-      A4GL_debug ("Display one");
       draw_arr (arr, 1, arr->arr_line);
-#ifdef DEBUG
-      {
-	A4GL_debug ("after draw_arr (5)");
-      }
-#endif
     }
   if (redisp == 2)
     {
-      A4GL_debug ("Redisplay all");
       draw_arr_all (arr);
     }
   A4GL_LL_screen_update ();
@@ -453,7 +444,7 @@ disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
   redisp = 0;
   act_as = a;
 
-  if (a == A4GLKEY_ACCEPT)
+  if (a == A4GLKEY_ACCEPT ||   A4GL_is_special_key(a,A4GLKEY_ACCEPT)) 
     {
       act_as = A4GLKEY_ACCEPT;
     }
@@ -909,7 +900,7 @@ UILIB_aclfgl_fgl_set_scrline (int np)
 
 
 static void
-A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
+A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp,int iscurr,  int blank, int attr,
 			 int arr_line, int first_only, ...)
 {
   int a;
@@ -1008,18 +999,28 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr,
 
       if (attr & AUBIT_ATTR_REVERSE)
 	{
-	  if (nattr & AUBIT_ATTR_REVERSE)
-	    nattr = nattr - AUBIT_ATTR_REVERSE;
-	  else
-	    nattr = nattr + AUBIT_ATTR_REVERSE;
+	  if (nattr & AUBIT_ATTR_REVERSE) nattr = nattr - AUBIT_ATTR_REVERSE;
+	  else nattr = nattr + AUBIT_ATTR_REVERSE;
 	}
 
-      A4GL_debug ("XXXX3 nattr now =%d (reverse=%d)", nattr,
-		  attr & AUBIT_ATTR_REVERSE);
+      A4GL_debug ("XXXX3 nattr now =%d (reverse=%d)", nattr, attr & AUBIT_ATTR_REVERSE);
       A4GL_debug ("Attr=%d", attr);
-      if (nattr != 0)
-	A4GL_set_field_attr_with_attr (field_list[a], nattr,
-				       FGL_CMD_DISPLAY_CMD);
+
+	if (disp->curr_display ) {
+                 if (iscurr) {
+                                nattr = A4GL_get_attr_from_string (disp->curr_display);
+                                if (attr&AUBIT_ATTR_REVERSE) {
+                                if (nattr&AUBIT_ATTR_REVERSE)   nattr=nattr-AUBIT_ATTR_REVERSE;
+                                else                            nattr=nattr+AUBIT_ATTR_REVERSE;
+                                }
+                 } else {
+                         // Not current..
+                         // we need to remove the current settings..
+                 }
+                A4GL_set_field_attr_with_attr (field_list[a], nattr,FGL_CMD_DISPLAY_CMD);
+        } else {
+      		if (nattr != 0) A4GL_set_field_attr_with_attr (field_list[a], nattr, FGL_CMD_DISPLAY_CMD);
+	}
 
 
       if (first_only)

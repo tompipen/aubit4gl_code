@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.52 2007-02-18 10:47:08 mikeaubury Exp $";
+  "$Id: misc.c,v 1.53 2007-04-27 15:29:02 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -618,6 +618,11 @@ UILIB_A4GL_push_constr (void *vs)
 								 datatype));
 
 
+        if (ptr==0) { // some error in the field...
+                A4GL_push_char ("");
+                return 0;
+        }
+
 	  A4GL_assertion (ptr == 0,
 			  "Pointer returned from A4GL_construct is null");
 
@@ -645,6 +650,71 @@ UILIB_A4GL_push_constr (void *vs)
 }
 
 
+
+void
+A4GL_set_fields_sio (struct s_screenio *sio)
+{
+  int a;
+  int nv;
+  int flg;
+  char buff[8048];
+  struct s_form_dets *formdets;
+  struct struct_scr_field *field;
+  struct struct_scr_field *prop;
+  void **field_list;
+  void *firstfield = 0;
+  int nofields;
+  int attr;
+  void *was_current;
+  int b;
+        void *f;
+
+
+  formdets = sio->currform;
+  if (formdets == 0)
+    {
+      A4GL_exitwith ("No form");
+      return ;
+    }
+
+  nofields = sio->nfields;
+  field_list = (void **) sio->field_list;
+  nv = sio->novars;
+
+  //debug_print_field_opts(formdets);
+
+  for (a = 0; formdets->form_fields[a]; a++)
+    {
+        int should_be_on=0;
+        void *f;
+        f=formdets->form_fields[a];
+        field = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
+
+        if (field == 0) continue;
+
+        for (b = 0; b<=nofields ; b++)
+        {
+                if (f==field_list[b]) {
+                        A4GL_debug("Should be on... %p",f);
+                        should_be_on++;
+                        break;
+                }
+        }
+
+        if (should_be_on) {
+                A4GL_turn_field_on2 (f, sio->mode != MODE_CONSTRUCT);
+        } else {
+                A4GL_turn_field_off (f);
+        }
+
+    }
+
+  //debug_print_field_opts(formdets);
+
+}
+
+
+
 int
 UILIB_A4GL_set_fields (void *vsio)
 {
@@ -658,6 +728,7 @@ UILIB_A4GL_set_fields (void *vsio)
   struct struct_scr_field *prop;
   void **field_list;
   void *firstfield = 0;
+int changed=0;
   int nofields;
   struct s_screenio *sio;
   int attr;
@@ -752,7 +823,7 @@ UILIB_A4GL_set_fields (void *vsio)
 	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr,
 			       sio->vars[a].dtype +
 			       ENCODE_SIZE (sio->vars[a].size));
-
+		changed=0;
 
 	}
       else
@@ -773,20 +844,21 @@ UILIB_A4GL_set_fields (void *vsio)
 							  (prop,
 							   FA_S_DEFAULT))),
 				   0);
+		changed++;
 
 	    }
 	  else
 	    {
 	      A4GL_debug ("99  set_init_value as nothing...");
 	      A4GL_set_init_value (field_list[a], 0, 0);
+		changed=1;
 	    }
 	}
 
       if (sio->mode != MODE_CONSTRUCT)
 	{
-	  prop =
-	    (struct struct_scr_field *)
-	    A4GL_ll_get_field_userptr (field_list[a]);
+	  prop = (struct struct_scr_field *) A4GL_ll_get_field_userptr (field_list[a]);
+	if (changed) {
 	  strcpy (buff, A4GL_LL_field_buffer (field_list[a], 0));
 	  A4GL_trim (buff);
 
@@ -800,6 +872,7 @@ UILIB_A4GL_set_fields (void *vsio)
 
 	  A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype,
 			 sio->vars[a].size);
+	}
 	}
 
       if (flg == 0)
@@ -1365,3 +1438,43 @@ A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt)
 
   return 1;
 }
+
+
+void
+A4GL_ask_cmdline (char *prompt, char *s, int a)
+{
+  char lv_cmd[100 + 1];
+  //int x;
+  //int y;
+  int_flag = 0;
+  A4GL_push_long (UILIB_A4GL_get_curr_height ());
+  A4GL_push_long (1);
+  A4GL_push_long (1);
+  A4GL_push_long (UILIB_A4GL_get_curr_width ());
+  UILIB_A4GL_cr_window ("aclfgl_promptwin", 1, 255, 255, 1, 255, 0, 255, 255,
+                        (0x0));
+  A4GL_push_char ("!");
+//START_BLOCK_1:
+  {
+    char _p[36];
+    int _fld_dr;
+    UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0);
+    while (GET_AS_INT ("s_prompt", _p, "mode") != 2)
+      {
+        static struct aclfgl_event_list _sio_evt[] = { {0} };
+
+        _fld_dr = UILIB_A4GL_prompt_loop_v2 (&_p, 0, _sio_evt);
+        //CONTINUE_BLOCK_1:;      /* add_continue */
+      }
+    A4GL_pop_var (&lv_cmd, 6553600);
+  }
+//END_BLOCK_1:;
+  aclfgli_clr_err_flg ();
+  if (int_flag)
+    strcpy (lv_cmd, "");
+  A4GL_trim (lv_cmd);
+  lv_cmd[a] = 0;
+  strcpy (s, lv_cmd);
+  UILIB_A4GL_remove_window ("aclfgl_promptwin");
+}
+

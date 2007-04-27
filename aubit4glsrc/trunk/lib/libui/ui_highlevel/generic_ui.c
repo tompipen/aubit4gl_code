@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.113 2007-04-23 06:50:41 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.114 2007-04-27 15:29:02 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2330,6 +2330,286 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 
 
 
+
+int
+local_chk_field (struct s_form_dets *form, void *f)
+{
+  char buff[8000] = "";
+  char buff2[8000] = "";
+  char buff3[8000] = "";
+  void *mform;
+  int pprval;
+  //int x, y;
+  //int flg = 0;
+  //struct s_form_dets *form;
+  struct struct_scr_field *fprop;
+
+  if (A4GL_ll_get_field_userptr (f) != 0)
+    {
+      A4GL_debug ("Is a proper field");
+      fprop =
+	(struct struct_scr_field
+	 *) (A4GL_ll_get_field_userptr (f));
+      A4GL_debug ("fprop=%p", fprop);
+      if (fprop != 0)
+	{
+
+	  //int d1,s1;
+	  //char *ptr1;
+
+	  if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR)
+	    {
+
+
+
+	      A4GL_modify_size (&buff[4],
+				form->fileform->metrics.
+				metrics_val[A4GL_get_metric_for
+					    (form, f)].w);
+
+	      strcpy (&buff[4], A4GL_LL_field_buffer (f, 0));
+
+	      strcpy (buff2, &buff[4]);
+
+	      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+		{
+		  int a;
+		  int blank = 1;
+		  char *picture;
+		  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+		  A4GL_debug ("HAS PICTURE MJA123 : %s", buff2);
+		  for (a = 0; a < strlen (buff2); a++)
+		    {
+		      if (picture[a] == 'X' && buff2[a] != ' ')
+			{
+			  blank = 0;
+			  break;
+			}
+		      if (picture[a] == 'A' && buff2[a] != ' ')
+			{
+			  blank = 0;
+			  break;
+			}
+		      if (picture[a] == '#' && buff2[a] != ' ')
+			{
+			  blank = 0;
+			  break;
+			}
+		    }
+		  if (blank)
+		    strcpy (buff2, "");
+		}
+
+
+	      A4GL_trim (buff2);
+	      //getsyx (y, x);
+	      A4GL_trim (buff2);
+	      if (strlen (buff2) == 0)
+		{
+
+		  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+		    {
+		      int allow_it_anyway = 0;
+
+		      // We'll still allow it - so long as there is null in the include list
+		      if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+			{
+			  if (A4GL_check_field_for_include
+			      ("",
+			       A4GL_get_str_attribute (fprop,
+						       FA_S_INCLUDE),
+			       fprop->datatype))
+			    {
+			      allow_it_anyway = 1;
+			    }
+			}
+
+		      if (!allow_it_anyway)
+			{
+			  // Well there wasn't - so it is required....
+			  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+			  //A4GL_LL_set_current_field (mform, form->currentfield);
+			  return -4;
+			}
+
+
+		    }
+
+		  // Could still be thrown out if we have an include without a null in it....
+		  A4GL_debug ("X2222 MAYBE");
+		  if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		    {
+		      if (A4GL_check_field_for_include
+			  ("",
+			   A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+			   fprop->datatype))
+			{
+			  return 1;
+			}
+		      else
+			{
+			  A4GL_debug ("X2222 Check for include has null...");
+			  A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+                                  if (fprop != 0)
+                                    A4GL_comments (fprop);
+
+			  return -4;
+			}
+		    }
+
+
+		  return 0;
+		}
+
+
+	      A4GL_debug ("Pushing to validate : %s\n", buff2);
+
+	      pprval =
+		A4GL_check_and_copy_field_to_data_area (form, fprop,
+							buff2, buff);
+
+
+
+	      A4GL_debug ("pprval = %d\n", pprval);
+	      if (!pprval)
+		{
+		  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+                          if (fprop != 0)
+                            A4GL_comments (fprop);
+
+		  if (A4GL_isyes (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
+		    {
+		      A4GL_clr_field (f);
+		    }
+		  else
+		    {
+		      if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
+			{
+			  A4GL_LL_int_form_driver (mform,
+						   AUBIT_REQ_BEG_FIELD);
+			}
+
+		    }
+
+
+		  //A4GL_LL_set_current_field (mform, form->currentfield);
+		  return -4;
+		}
+	      else
+		{
+		  A4GL_debug ("pop_param returns ok...");
+		}
+	    }
+
+
+	  strcpy (buff3, A4GL_LL_field_buffer (f, 0));
+
+	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+	    {
+	      int a;
+	      int blank = 1;
+	      char *picture;
+	      picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+	      for (a = 0; a < strlen (buff3); a++)
+		{
+		  if (picture[a] == 'X' && buff3[a] != ' ')
+		    {
+		      blank = 0;
+		      break;
+		    }
+		  if (picture[a] == 'A' && buff3[a] != ' ')
+		    {
+		      blank = 0;
+		      break;
+		    }
+		  if (picture[a] == '#' && buff3[a] != ' ')
+		    {
+		      blank = 0;
+		      break;
+		    }
+		}
+	      if (blank)
+		strcpy (buff3, "");
+	    }
+
+
+	  if (A4GL_check_field_for_include
+	      (buff3, A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+	       fprop->datatype) == 0)
+	    {
+	      A4GL_debug ("Not in include list");
+	      A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+	      //A4GL_LL_set_current_field (mform, form->currentfield);
+	      return -4;
+	    }
+
+
+	  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+	    {
+	      char buff[8024];
+	      strcpy (buff, A4GL_LL_field_buffer (f, 0));
+	      A4GL_trim (buff);
+	      //
+
+	      if (strlen (buff) == 0)
+		{
+		  int allow_it_anyway = 0;
+
+		  // We'll still allow it - so long as there is null in the include list
+		  if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		    {
+		      if (A4GL_check_field_for_include
+			  ("",
+			   A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+			   fprop->datatype))
+			{
+			  allow_it_anyway = 1;
+			}
+		    }
+		  if (!allow_it_anyway)
+		    {
+		      A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+		      //A4GL_LL_set_current_field (mform, form->currentfield);
+		      return -4;
+		    }
+
+		}
+	    }
+
+	  // Could still be thrown out if we have an include without a null in it....
+	  if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+	    {
+	      if (A4GL_check_field_for_include
+		  ("", A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+		   fprop->datatype))
+		{
+		  return 1;
+		}
+	      else
+		{
+		  return 0;
+		}
+	    }
+
+
+
+
+	  return 0;
+
+
+
+
+
+	}
+    }
+  return 0;
+}
+
+
+
+
+
+
 int
 A4GL_form_field_constr (struct s_screenio *sio, int m)
 {
@@ -3299,7 +3579,7 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 
   if (strcmp (siotype, "s_disp_arr") == 0)
     {
-      static void *last_sio = 0;
+      //static void *last_sio = 0;
       struct s_disp_arr *s;
       s = sio;
 
@@ -3313,13 +3593,14 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
     }
 
 
-  if (strcmp (siotype, "s_screenio") == 0)
-    {
-	if (last_sio!=sio) {
-	 A4GL_set_fields(sio);
-	}
-      last_sio = sio;
-    }
+      if (strcmp(siotype, "s_screenio")==0) {
+                struct s_screenio *s;
+                s=sio;
+                A4GL_set_fields_sio(s);
+      }
+
+
+
 
 }
 
