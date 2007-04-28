@@ -503,16 +503,17 @@ let int_flag=false
 
 code
 {
-  struct BINDING ibind[1] = { {0, 0, 8000, 0, 0} };
+  struct BINDING ibind[1];
   static struct s_constr_list *constr_flds=0;
   int _fld_dr = -100;
   int _exec_block = 0;
   char *fldname;
-  char _sio_2[74];
+  char _sio_2[1000];
   char _inp_io_type = 'C';
   char *_sio_kw_2 = "s_screenio";
   int _forminit = 1;
   static struct s_field_name_list list={0,0};
+
 
   if (constr_flds) { // Free up what was there before - its static...
 		int c;
@@ -522,9 +523,15 @@ code
 		}
   }
 
+ ibind[0].ptr=NULL;
+ ibind[0].dtype=0;
+ ibind[0].size=8000;
+ ibind[0].start_char_subscript=0;
+ ibind[0].end_char_subscript=0;
+ ibind[0].libptr=0;
+
   // We just want our where clause popping - its a CONSTRUCT
   ibind[0].ptr = (void *)&lv_where_clause;
-
   // Number of fields...
   list.nfields=gv_fields;
   list.field_name_list=(struct s_field_name *)realloc(list.field_name_list,sizeof(list.field_name_list[0])*gv_fields);

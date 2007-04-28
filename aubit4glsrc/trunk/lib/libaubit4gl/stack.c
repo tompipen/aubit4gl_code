@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.174 2007-03-28 10:55:02 mikeaubury Exp $
+# $Id: stack.c,v 1.175 2007-04-28 09:57:31 mikeaubury Exp $
 #
 */
 
@@ -677,6 +677,8 @@ A4GL_conversion_ok(1);
   	} else {
 		//A4GL_debug("Doing conv");
 		A4GL_conversion_ok(1);
+		A4GL_debug("params[params_cnt].dtype=%d d=%d", params[params_cnt].dtype,d);
+		A4GL_debug("MASKED params[params_cnt].dtype=%d d=%d", params[params_cnt].dtype & DTYPE_MASK,d & DTYPE_MASK);
   		b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK, params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 		
 		if (b==0 ) {
@@ -2694,8 +2696,11 @@ A4GL_isnull (int type, char *buff)
   struct ival *iv;
   struct fgl_int_loc *ptr;
   static AInt16 i_int=0;
-  static AInt32 i_long=0;
-
+  static union {
+	char blah[32];
+	AInt32 i_long;
+  } Aint32union;
+  static int inited=0;
 
   static void *nullfuncs[]={
 	  	(void *)-1,
@@ -2719,6 +2724,15 @@ A4GL_isnull (int type, char *buff)
 	  	(void *)-1};
   type = type & DTYPE_MASK;
   //A4GL_debug ("20 ISNULL - %d %p\n", type, buff);
+
+
+  if (!inited) {
+	inited=1;
+	memset(Aint32union.blah,0,32);
+	A4GL_setnull(DTYPE_INT,&Aint32union.i_long,4);
+	A4GL_setnull(DTYPE_SMINT,&i_int,2);
+
+  }
 
   if (buff==0) return 1;
 
@@ -2769,14 +2783,8 @@ A4GL_isnull (int type, char *buff)
       			else return 0;
 
 	  case DTYPE_SMINT:
-			if (i_int==0) {
-				if (A4GL_null_other(buff,type)==1 && i_int==0) { 
-					i_int=*(AInt16 *)buff;
-					return 1;
-				}
-				return 0;
-			} else {
-				if (i_int==*(AInt16 *)buff) {
+			{
+				if ((i_int & 0xffff)==((*(AInt16 *)buff) & 0xffff)) {
 					if (A4GL_null_other(buff,type)!=1) { A4GL_assertion(1,"Null test failed 31"); }
 					return 1;
 				} else  {
@@ -2786,24 +2794,18 @@ A4GL_isnull (int type, char *buff)
 			}
 
 	  case DTYPE_INT:
-			if (i_long==0) {
-				if (A4GL_null_other(buff,type)==1 && i_long==0) { 
-					i_long=*(AInt32 *)buff;
-					return 1;
-				}
-				return 0;
-			} else {
+			{
 				long i1;
 				long i2;
-				i1=i_long&0xffffffff;
+
+				i1=Aint32union.i_long&0xffffffff;
 				A4GL_debug("i1=%d\n",i1);
-				i2=*(AInt32 *)buff&0xffffffff;
+				i2=(*(AInt32 *)buff)&0xffffffff;
 				A4GL_debug("i2=%d\n",i2);
 				if (i1==i2) {
 					if (A4GL_null_other(buff,type)!=1) { A4GL_assertion(1,"Null test failed 3.11"); }
 					return 1;
 				} else  {
-					A4GL_debug("i_long=%d buff=%d type=%d",i_long,*(AInt32 *)buff,type);
 					if (A4GL_null_other(buff,type)!=0) { A4GL_assertion(1,"Null test failed 3.12"); }
 					return 0;
 				}
