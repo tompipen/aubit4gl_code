@@ -192,6 +192,7 @@ if (a4gl_sqlca.sqlcode!=0) {
 	exit(1);
 }
 
+A4GL_trim(dbname);
 fprintf(file_out,"database %s\n",dbname);
 
 for (a=0;a<tabcnt;a++) {
@@ -211,16 +212,37 @@ for (a=0;a<tabcnt;a++) {
 	fprintf(file_out,"{\n");
 
 	while (1) {
+		int use_wordwrap=0;
+		char *p;
 		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
 		A4GL_trim(ccol);
 		if (rval==0) break;
 		fprintf(file_out,"%-19.19s",ccol);
 		fprintf(file_out,"[");
 		id=get_id(idtype,isize);
+		p=spaces(idtype,isize,id);
+		while (strlen(p)>43) {
+			char buff[2000];
+			strncpy(buff,p,43);
+			buff[43]=0;
+			p+=43;
+			strncpy(buff,id,strlen(id));
+			fprintf(file_out,"%s]\n",buff);
+			fprintf(file_out,"                   [");
+			use_wordwrap++;
+			if (strlen(p)<43) {
+				p=strdup("                                       ");
+			}
+		
+		}
+	
 		fprintf(file_out,"%s",id);
-		fprintf(file_out,spaces(idtype,isize,id));
-		fprintf(file_out,"]\n");
-		sprintf(buff,"%s = %s.%s;",id,tabname[a],ccol);
+		fprintf(file_out,"%s]\n",p);
+		if (use_wordwrap) {
+			sprintf(buff,"%s = %s.%s, wordwrap;",id,tabname[a],ccol);
+		} else {
+			sprintf(buff,"%s = %s.%s;",id,tabname[a],ccol);
+		}
 		attribs_cnt++;
 		attribs=realloc(attribs,sizeof(char *)*attribs_cnt);
 		attribs[attribs_cnt-1]=acl_strdup(buff);
