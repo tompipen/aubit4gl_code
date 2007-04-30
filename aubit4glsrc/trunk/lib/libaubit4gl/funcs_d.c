@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.86 2007-03-25 13:33:17 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.87 2007-04-30 16:29:49 gyver309 Exp $
 #
 */
 
@@ -829,7 +829,7 @@ A4GL_debug("str=%s",str);
 	l=strlen(p);
 	 for (a=0;a<l;a++) {
 		 if (str[a]==',') p[a]='.';
-		 if (str[a]=='.') p[a]=',';
+		 else if (str[a]=='.') p[a]=',';
 	 }
 	 strcpy(str,p);
 	 free(p);
