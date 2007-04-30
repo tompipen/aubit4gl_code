@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.42 2007-04-05 08:07:21 mikeaubury Exp $
+# $Id: sql_common.c,v 1.43 2007-04-30 13:45:19 mikeaubury Exp $
 #
 */
 
@@ -495,6 +495,27 @@ A4GL_apisql_add_sess (char *sessname)
   strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
   curr_sess->next = next;
   A4GL_apisql_must_convert ();
+}
+
+
+int
+A4GL_apisql_has_sess (char *sessname) {
+  struct sess *p;
+  struct sess *p2 = NULL;
+  p2 = NULL;
+  p = curr_sess;
+  while (p != NULL)
+    {
+
+      if (strcmp (p->sessname, sessname) != 0)
+	{
+	  p2 = p;
+	  p = p->next;
+	  continue;
+	}
+	return 1;
+    }
+return 0;
 }
 
 /**

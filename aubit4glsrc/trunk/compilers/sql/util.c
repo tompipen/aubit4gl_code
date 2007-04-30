@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.58 2007-04-04 13:58:48 gyver309 Exp $
+# $Id: util.c,v 1.59 2007-04-30 13:45:18 mikeaubury Exp $
 #
 */
 
@@ -301,8 +301,9 @@ fix_update_expr (int mode)
   if (mode == 1)
     {
       /* It will only be a '*' anyway.... */
-      if (db_used == 0)
+      if (db_used == 0 && !A4GL_apisql_has_sess("default"))
 	{
+	printf("No db\n");
 	  sprintf (buff,
 		   "You cannot use update * =  without specifying a database");
 	  sqlparse_yyerror (buff);

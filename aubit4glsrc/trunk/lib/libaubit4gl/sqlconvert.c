@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.114 2007-04-26 07:42:56 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.115 2007-04-30 13:45:20 mikeaubury Exp $
 #
 */
 
@@ -166,6 +166,7 @@ static char *cvsql_names[] = {
   "CVSQL_EXPAND_COLUMNS",
   "CVSQL_DTYPE_ALIAS",
   "CVSQL_ODBC_LONGVARCHAR_AS_CHAR"
+  "CVSQL_NO_UPDATE_TABLE",
   "CVSQL_NEVER_CONVERT",
   "CVSQL_NEVER_CONVERT_COLUMN"
 };
@@ -283,6 +284,7 @@ enum cvsql_type
   CVSQL_EXPAND_COLUMNS,
   CVSQL_DTYPE_ALIAS,
   CVSQL_ODBC_LONGVARCHAR_AS_CHAR,
+  CVSQL_NO_UPDATE_TABLE,
   CVSQL_NEVER_CONVERT,
   CVSQL_NEVER_CONVERT_COLUMN
 };
@@ -1748,6 +1750,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_EXPAND_COLUMNS;
   if (match_strncasecmp (p, "ODBC_LONGVARCHAR_AS_CHAR", len) == 0)
     return CVSQL_ODBC_LONGVARCHAR_AS_CHAR;
+  if (match_strncasecmp (p, "NO_UPDATE_TABLE", len) == 0)
+    return CVSQL_NO_UPDATE_TABLE;
   if (match_strncasecmp (p, "NEVER_CONVERT", len) == 0)
     return CVSQL_NEVER_CONVERT;
   if (match_strncasecmp (p, "NEVER_CONVERT_COLUMN", len) == 0)

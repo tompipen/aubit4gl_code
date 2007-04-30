@@ -41,7 +41,7 @@ arr_next_math:
 |       KW_MINUS arr_expr {sprintf($<str>$,"- %s",$<str>2);}
 |       KW_MULTIPLY arr_expr {sprintf($<str>$,"* %s",$<str>2);}
 |       KW_DIVIDE arr_expr {sprintf($<str>$,"/ %s",$<str>2);}
-|       KW_MOD arr_expr {sprintf($<str>$,"% %s",$<str>2);}
+|       KW_MOD arr_expr {sprintf($<str>$,"%% %s",$<str>2);}
 ;
 
 
