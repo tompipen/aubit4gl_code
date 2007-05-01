@@ -152,13 +152,13 @@ int UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int ab
 }
 
 
-void
+int
  UILIB_A4GLUI_ui_init (int argc, char *argv[])
 {
 
    gtk_init(&argc, &argv);
    glade_init();
-   return;
+   return 1;
 }
 
 

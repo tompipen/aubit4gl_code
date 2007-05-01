@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.366 2007-04-26 13:32:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.367 2007-05-01 07:42:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.366 2007-04-26 13:32:18 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.367 2007-05-01 07:42:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6007,7 +6007,7 @@ void
 LEXLIB_print_menu_block_end (int mn,int n)
 {
   if (mn==-2) {
-	  printc("A4GL_finish_create_menu(m_%d);",n);
+	  //printc("A4GL_finish_create_menu(m_%d);",n);
  }
   printc ("cmd_no_%d= -4;goto MENU_START_%d; } /* %d */", n, n,mn);
 }

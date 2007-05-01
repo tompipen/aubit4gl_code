@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.137 2007-04-27 15:29:02 mikeaubury Exp $
+# $Id: curslib.c,v 1.138 2007-05-01 07:42:28 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.137 2007-04-27 15:29:02 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.138 2007-05-01 07:42:28 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1258,11 +1258,12 @@ A4GL_puttext (int x1, int y1, int x2, int y2, char *buf)
 /**
  * Initialization of curses enviornment
  */
-void
+int
 UILIB_A4GLUI_ui_init (int argc, char *argv[])
 {
   A4GL_set_scrmode ('L');
   init_curses_mode = 0;
+  return 1;
 }
 
 

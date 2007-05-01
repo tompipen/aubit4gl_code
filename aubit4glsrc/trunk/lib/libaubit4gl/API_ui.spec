@@ -90,7 +90,7 @@ A4GL_iscurrborder -> int
 A4GL_init_color int n int r int g int b -> void
 A4GL_fgl_fieldtouched_input_ap void* input va_list* ap -> int
 A4GL_fgl_fieldtouched_input_array_ap void* input va_list* ap -> int
-A4GLUI_ui_init int argc,char** argv -> void
+A4GLUI_ui_init int argc,char** argv -> int
 A4GL_acli_scroll_ap int n va_list* ap -> void
 A4GL_get_key int timeout -> int
 A4GL_create_menu void* m char* id int mode void* handler -> void*

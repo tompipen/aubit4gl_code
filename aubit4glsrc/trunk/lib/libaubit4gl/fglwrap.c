@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.120 2007-04-23 06:57:57 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.121 2007-05-01 07:42:27 mikeaubury Exp $
 #
 */
 
@@ -263,18 +263,19 @@ char *p;
   fgl_callback(nargs,argv);
 
   
-#ifdef _PRELOAD_UI_
   /* Initialize the UI library (ie load the dll) */
   A4GL_debug("PRELOADING UI - %s\n",acl_getenv("A4GL_UI"));
   if (!A4GLUI_initlib ())
     {
-      PRINTF ("4gllib: Error opening UI library (A4GL_UI=%s)\n",
-	      acl_getenv ("A4GL_UI"));
+      PRINTF ("4gllib: Error opening UI library (A4GL_UI=%s)\n", acl_getenv ("A4GL_UI"));
       A4GL_fgl_die (1);
     }
+
   /* Do any startup required by the library */
-  A4GLUI_ui_init (nargs, argv);
-#endif
+  if (!A4GLUI_ui_init (nargs, argv)) {
+      PRINTF ("Error opening UI library (A4GL_UI=%s)\n", acl_getenv ("A4GL_UI"));
+      A4GL_fgl_die (1);
+  }
 
   /*
      FIXME: programs should make connection call only when they

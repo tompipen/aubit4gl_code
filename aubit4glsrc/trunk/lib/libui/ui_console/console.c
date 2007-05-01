@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.33 2007-02-17 10:00:43 mikeaubury Exp $
+# $Id: console.c,v 1.34 2007-05-01 07:42:28 mikeaubury Exp $
 #*/
 
 /**
@@ -95,11 +95,11 @@ static void A4GL_redisplay_menu (ACL_Menu * menu);
  *
  * @todo Describe function
  */
-void
+int 
  UILIB_A4GLUI_ui_init (int argc, char *argv[])
 {
 
-  return;
+  return 1;
 }
 
 

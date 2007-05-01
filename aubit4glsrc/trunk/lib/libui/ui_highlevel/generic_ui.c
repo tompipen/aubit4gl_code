@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.114 2007-04-27 15:29:02 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.115 2007-05-01 07:42:29 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1078,11 +1078,12 @@ A4GL_new_menu (char *title,
 
 
 
-void
+int
 UILIB_A4GLUI_ui_init (int argc, char *argv[])
 {
   A4GL_set_scrmode ('L');
   started = 1;
+return 1;
 }
 
 
