@@ -12822,7 +12822,7 @@ fi
 ## ==================================================================
 
 AMAKE_SH="amake genmake prepmake"
-ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper"
+ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper adbaccess aperform"
 #compilers/pcode/runner_fgl_wrapper is copied to bin by pcode makefile
 
 #obsolete: ecpg_wrap esql_wrap
@@ -46409,7 +46409,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.373 2007-04-23 16:03:14 fortiz Exp $
+| $Id: configure,v 1.374 2007-05-02 13:38:51 fortiz Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
