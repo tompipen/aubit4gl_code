@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.7 2007-02-14 17:47:27 mikeaubury Exp $
+# $Id: dialog.c,v 1.8 2007-05-02 18:34:06 mikeaubury Exp $
 #*/
 
 /**
@@ -318,11 +318,11 @@ void UILIB_A4GL_zrefresh(void) {
 
 
 void
-UILIB_A4GL_set_option_value_for_current_window (char type, int keyval) {
+UILIB_A4GL_set_option_value_for_current_window (char type, long keyval) {
 }
 
 
-int UILIB_A4GL_get_option_value_for_current_window (char type) {
+long UILIB_A4GL_get_option_value_for_current_window (char type) {
 	return 0;
 }
 

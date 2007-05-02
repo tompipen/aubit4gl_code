@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.34 2007-05-01 07:42:28 mikeaubury Exp $
+# $Id: console.c,v 1.35 2007-05-02 18:34:06 mikeaubury Exp $
 #*/
 
 /**
@@ -607,12 +607,12 @@ void UILIB_A4GLUI_set_intr(void) {
 
 
 void
-UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
+UILIB_A4GL_set_option_value_for_current_window (char type, long keyval)
 {
 return;
 }
 
-int
+long
 UILIB_A4GL_get_option_value_for_current_window (char type)
 {
 return 0;

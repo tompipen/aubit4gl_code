@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.42 2006-11-09 20:09:20 mikeaubury Exp $";
+  "$Id: forms.c,v 1.43 2007-05-02 18:34:07 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1910,7 +1910,7 @@ A4GL_add_window (int x, int y, int w, int h, char *name, void *fd, void *win)
  * @todo Describe function
  */
 void
-UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
+UILIB_A4GL_set_option_value_for_current_window (char type, long keyval)
 {
   struct s_form_attr *scr;
   scr = &windows[A4GL_get_currwinno ()].winattr;
@@ -1980,7 +1980,7 @@ UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
  *
  * @todo Describe function
  */
-int
+long
 UILIB_A4GL_get_option_value_for_current_window (char type)
 {
   struct s_form_attr *scr;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.42 2007-03-22 11:13:32 mikeaubury Exp $
+# $Id: keys.c,v 1.43 2007-05-02 18:34:06 mikeaubury Exp $
 #
 */
 
@@ -317,7 +317,7 @@ A4GL_key_val2 (char *str_x)
  * @todo Describe function
  */
 void
-A4GL_set_option_value (char type, int keyval)
+A4GL_set_option_value (char type, long keyval)
 {
   A4GL_init_stddbscr ();
   switch (type)

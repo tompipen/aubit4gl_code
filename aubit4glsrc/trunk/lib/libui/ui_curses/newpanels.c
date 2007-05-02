@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.141 2007-04-16 14:14:43 mikeaubury Exp $
+# $Id: newpanels.c,v 1.142 2007-05-02 18:34:06 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.141 2007-04-16 14:14:43 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.142 2007-05-02 18:34:06 mikeaubury Exp $";
 #endif
 
 /**
@@ -3289,7 +3289,7 @@ if (a!=-1) {
 
 
 void
-UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
+UILIB_A4GL_set_option_value_for_current_window (char type, long keyval)
 {
   struct s_form_attr *scr;
   if (currwinno<0) return;
@@ -3318,7 +3318,7 @@ UILIB_A4GL_set_option_value_for_current_window (char type, int keyval)
     }
 }
 
-int
+long
 UILIB_A4GL_get_option_value_for_current_window (char type)
 {
   struct s_form_attr *scr;

@@ -41,8 +41,8 @@ A4GL_menu_show_ap void* menu va_list* ap -> int
 aclfgli_pr_message_internal int attr int wait char* s -> void
 A4GL_display_error int attr int wait -> void
 A4GL_get_curr_form int warn_if_no_form -> void*
-A4GL_set_option_value_for_current_window char type  int keyval  -> void
-A4GL_get_option_value_for_current_window char type   -> int
+A4GL_set_option_value_for_current_window char type  long keyval  -> void
+A4GL_get_option_value_for_current_window char type   -> long
 A4GL_widget_name_match void* w char* name -> int
 A4GL_gen_field_chars_ap void* field_list void* formdets va_list* ap -> int
 A4GL_gen_field_list_from_slist void* field_listv void* formdetsv void* listv -> int
