@@ -300,6 +300,7 @@ define lv_cnt integer
 define lv_tabname char(200)
 define lv_runstr char(2048)
 define lv_i integer
+define lv_height integer
 
 let int_flag=false
 
@@ -307,34 +308,26 @@ initialize lv_form to null
 if has_prompt_action() then
 	let lv_form=get_prompt_action()
 end if
-
 if lv_form = "" or lv_form is null then
 	let lv_form=prompt_get("Generate Form >>","Enter the formname you which to generate")
 	#prompt "Generate Form > " for lv_form
 end if
-
 if int_flag then
 	return false
 end if
-
 if file_exists(lv_form clipped||".per") then
 	error "A form with that name already exists"
 	return false
 end if
-
 let lv_cnt=0
-
 while true
 	let int_flag=false
 	let lv_cnt=lv_cnt+1
-
     call table_select("SELECT TABLE >>") returning lv_tabname
-
     if lv_tabname is not null and lv_tabname not matches " " THEN
     else
         let int_flag=true
     end if
-
 	if int_flag then
 		if lv_cnt=1 then
 			return false
@@ -342,24 +335,25 @@ while true
 			exit while
 		end if
 	end if
-
 	let lv_tables[lv_cnt]=lv_tabname
-
 	case form_table_selection()
 		when "Table selection complete" exit while
 		when "Select more" exit while
 		when "Exit" return false
 	end case
-
 end while
-
-let lv_runstr=fgl_getenv("AUBITDIR") clipped,
-              "/bin/default_frm -d ", mv_db 
+let lv_runstr=fgl_getenv("AUBITDIR") clipped, "/bin/default_frm -d ", mv_db 
 for lv_i = 1 to lv_cnt
     let lv_runstr = lv_runstr clipped, " -t ", lv_tables[lv_i] 
 end for
 let lv_runstr = lv_runstr clipped, " -o ", lv_form
-#display lv_runstr)
+code
+lv_height = A4GL_get_curr_height();
+endcode
+if lv_height <> 0 then
+    let lv_runstr = lv_runstr clipped, " -l ", lv_height - 3
+end if
+display lv_runstr
 run lv_runstr
 
 let mv_lastused=lv_form
