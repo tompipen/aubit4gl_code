@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.110 2007-04-20 07:12:34 mikeaubury Exp $
+# $Id: builtin.c,v 1.111 2007-05-03 12:55:50 mikeaubury Exp $
 #
 */
 
@@ -1001,7 +1001,7 @@ aclfgli_extend (void)
   A4GL_decode_datetime (&dt2, &dtime_data2[0]);
 
   if (dtime_data2[1]==0) dtime_data2[1]=1; // cant have a 0 month...
-  if (dtime_data2[2]==0) dtime_data2[1]=1; // cant have a 0 day...
+  if (dtime_data2[2]==0) dtime_data2[2]=1; // cant have a 0 day...
   
   switch (n) {
 	case 0x11: // Year to year
