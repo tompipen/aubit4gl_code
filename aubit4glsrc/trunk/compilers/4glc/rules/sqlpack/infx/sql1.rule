@@ -216,7 +216,7 @@ db_priv:
 
 op_with_grant_option: {strcpy($<str>$,"");}
 	| WITH_GRANT_OPTION {sprintf($<str>$," %s ",$<str>1);}
-	| KW_AS identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	| KW_AS authorization_identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 ;
 
 privileges:
