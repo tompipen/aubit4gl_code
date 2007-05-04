@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.43 2007-02-07 14:47:24 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.44 2007-05-04 16:51:32 mikeaubury Exp $
 #*/
 
 /**
@@ -852,6 +852,11 @@ chk_for_wordwrap(void)
     the_form.fields.fields_val[a].metric.metric_len=1;
 
   }
+}
+
+
+void A4GLFORM_A4GL_delete_compiled_form_file(void) {
+/* ... */
 }
 
 

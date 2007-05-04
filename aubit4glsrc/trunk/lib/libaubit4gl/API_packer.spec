@@ -41,3 +41,4 @@ A4GL_close_packer char dir -> void
 A4GL_can_pack_all char* name -> int
 A4GL_pack_all char* name,void* ptr,char* fname -> int
 A4GL_unpack_all char* name,void* ptr,char* fname -> int
+A4GL_pack_remove_file char* fname -> int

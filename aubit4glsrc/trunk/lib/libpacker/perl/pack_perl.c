@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.12 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.13 2007-05-04 16:51:33 mikeaubury Exp $
 #*/
 
 /**
@@ -121,6 +121,11 @@ static void out_only (void);
 -------------------------------------------------------------
 */
 
+int A4GLPacker_A4GL_pack_remove_file(char *fname) {
+        char buff[512];
+        sprintf (buff, "%s.pl",fname);
+        return A4GL_delete_file(buff);
+}
 
 /**
  *

@@ -139,6 +139,9 @@ A4GL_add_srec_attribute char* tab,char* col,char* thru -> void
 /* void write_form (void) */
 A4GL_write_form -> void
 
+/* This is called before we compile a form to remove anything that exists */
+A4GL_delete_compiled_form_file -> void
+
 /**
  * Gets the datatype of the column from the database
  *

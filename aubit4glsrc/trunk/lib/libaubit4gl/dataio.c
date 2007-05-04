@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.12 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: dataio.c,v 1.13 2007-05-04 16:51:32 mikeaubury Exp $
 #
 */
 
@@ -131,7 +131,11 @@ A4GL_write_data_to_file (char *datatype, void *ptr, char *filename)
       return 0;
     }
 
-  SPRINTF1 (buff, "write_%s", datatype);
+  if (ptr) {
+  	SPRINTF1 (buff, "write_%s", datatype);
+  } else {
+	return A4GL_pack_remove_file(filename);
+  }
 
 #ifdef DEBUG
   A4GL_debug ("Looking for function : %s", A4GL_null_as_null(buff));

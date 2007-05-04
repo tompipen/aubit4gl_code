@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.11 2005-11-21 18:29:41 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.12 2007-05-04 16:51:33 mikeaubury Exp $
 #*/
 
 /**
@@ -132,6 +132,11 @@ int
 A4GLPacker_A4GL_unpack_all (char *name, void *s, char *filename)
 {
   return process_xdr ('I', name, s, filename);
+}
+
+
+int A4GLPacker_A4GL_pack_remove_file(char *fname) {
+        return A4GL_delete_file(fname);
 }
 
 

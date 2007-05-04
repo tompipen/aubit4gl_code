@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.70 2007-03-28 09:18:43 mikeaubury Exp $
+# $Id: calldll.c,v 1.71 2007-05-04 16:51:32 mikeaubury Exp $
 #
 */
 
@@ -317,6 +317,7 @@ A4GL_dl_openlibrary (char *type, char *p)
   char *plugin_name;
   char *aplugins;
 
+  memset(buff,0,sizeof(buff));
   SPRINTF1 (tmpbuff, "%s", p);
   plugin_name = tmpbuff;
 

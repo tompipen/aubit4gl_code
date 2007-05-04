@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.33 2006-09-13 20:58:17 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.34 2007-05-04 16:51:33 mikeaubury Exp $
 #*/
 
 /**
@@ -142,6 +142,13 @@ chk (void *x)
  File IO routines
 -------------------------------------------------------------
 */
+
+
+int A4GLPacker_A4GL_pack_remove_file(char *fname) {
+	char buff[512];
+      	sprintf (buff, "%s%s",fname,PACKED_EXT);
+	return A4GL_delete_file(buff);
+}
 
 /**
  *

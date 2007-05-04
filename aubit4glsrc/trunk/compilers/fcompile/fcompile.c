@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.52 2007-01-25 10:55:15 mikeaubury Exp $
+# $Id: fcompile.c,v 1.53 2007-05-04 16:51:32 mikeaubury Exp $
 #*/
 
 /**
@@ -119,6 +119,7 @@ main (int argc, char *argv[])
   char b[128];
   char c[128] = "";
   int waserr;
+  char errfile[513];
   char d[128] = "";
   int cnt;
   int cnt_files = 0;
@@ -253,6 +254,11 @@ main (int argc, char *argv[])
   A4GL_init_form ();
 
   atexit(bye);
+
+  sprintf (errfile, "%s.err", outputfilename);
+  A4GL_delete_file(errfile);
+  A4GL_delete_compiled_form_file();
+
   waserr=a4gl_form_yyparse ();
 
   if (!silent) {

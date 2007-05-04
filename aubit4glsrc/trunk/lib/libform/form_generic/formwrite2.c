@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.35 2007-02-07 14:47:24 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.36 2007-05-04 16:51:32 mikeaubury Exp $
 #*/
 
 /**
@@ -854,6 +854,18 @@ chk_for_wordwrap(void)
 }
 
 
+void A4GLFORM_A4GL_delete_compiled_form_file(void) {
+char fname[132];
+int a;
+	struct_form *ptr;
+	ptr = &the_form;
+	strcpy (fname, outputfilename);
+
+  	strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
+        a = A4GL_write_data_to_file ("struct_form", 0, fname);
+
+}
+
 /**
  * Write the compiled form file with the information parsed from the .per to memory
  */
@@ -878,6 +890,8 @@ int a;
 #endif
 
   strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
+
+
   chk_for_wordwrap();
   translate_form ();
 
