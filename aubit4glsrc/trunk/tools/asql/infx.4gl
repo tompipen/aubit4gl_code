@@ -641,7 +641,17 @@ A4GL_setenv("INFORMIXSERVER",lv_server,1);
 endcode
 call set_username(lv_username,lv_passwd)
 let lv_server="@",lv_server
-connect to lv_server user lv_username using lv_passwd
+if lv_username is not null and lv_username not matches " " then
+
+	if lv_passwd is not null and lv_passwd not matches " " then # Got the lot...
+		connect to lv_server user lv_username using lv_passwd
+	else
+		error "Password not specified"
+		connect to lv_server user lv_username using lv_passwd
+	end if
+else
+	connect to lv_server 
+end if
 
 call select_db()
 end function
