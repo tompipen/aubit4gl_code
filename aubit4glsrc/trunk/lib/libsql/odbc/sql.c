@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.188 2007-04-11 15:25:01 mikeaubury Exp $
+# $Id: sql.c,v 1.189 2007-05-04 11:53:17 mikeaubury Exp $
 #
 */
 
@@ -947,7 +947,7 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 
     A4GL_dbg ("In proc_bind: binding %p n=%d t=%c, stmt=%p", b, n, t, hstmt);
 
-    if (b == 0)
+    if (b == 0 ||  n==0)
 	return True;
 //        retfail("null binding");
 
