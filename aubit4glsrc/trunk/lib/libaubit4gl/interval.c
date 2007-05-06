@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.22 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: interval.c,v 1.23 2007-05-06 10:48:36 mikeaubury Exp $
 #
 */
 
@@ -180,6 +180,14 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
   i->i_seconds = data[5];
   i->i_fractions = data[6];
 
+  i->is_neg=0;
+
+  if (i->i_years<0) 	{ i->i_years*=-1; i->is_neg=1; }
+  if (i->i_days<0) 	{ i->i_days*=-1; i->is_neg=1; }
+  if (i->i_hours<0) 	{ i->i_hours*=-1; i->is_neg=1; }
+  if (i->i_minutes<0) 	{ i->i_minutes*=-1; i->is_neg=1; }
+  if (i->i_seconds<0) 	{ i->i_seconds*=-1; i->is_neg=1; }
+
   A4GL_debug ("Normalized data %d %d %d %d %d %d %d",
 	data[0],
 	data[1],
@@ -257,6 +265,9 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
   int val2;
   int val3;
   int size;
+int isneg_a;
+int isneg_b;
+int isneg_r;
   //char buff[256];
 
   double v1 = 0;
@@ -291,9 +302,10 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
      A4GL_valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
    */
 
-  A4GL_decode_interval (a, data_a);
-  A4GL_decode_interval (b, data_b);
+  A4GL_decode_interval (a, data_a,&isneg_a);
+  A4GL_decode_interval (b, data_b,&isneg_b);
 
+  rval_ival.is_neg=0;
   rval_ival.i_years=0;
   rval_ival.i_months=0;
   rval_ival.i_days=0;
@@ -359,7 +371,8 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
 	data_b[5] + (double) (data_b[6]) / 100000.0;
     }
 
-
+  if (isneg_a) v1*=-1.0;
+  if (isneg_b) v2*=-1.0;
 
 
 
@@ -424,11 +437,16 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
     }
   A4GL_debug ("r1=%lf mode=%d\n", r1, mode);
 
+   for(cnt=0;cnt<10;cnt++) {
+      data_r[cnt] = 0;
+   }
+  isneg_r=0;
 
   if (mode == 1)
     {				/* we have a number of years in r1 */
       double yd, md;
       int y = 0;
+      if (r1<0) {r1*=-1; isneg_r=1;}
       yd = floor (r1);
       md = (r1 - y) * 12.0;
       data_r[0] = yd;
@@ -439,6 +457,7 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
     {
       double sd, fd;
       int s;
+      if (r1<0) {r1*=-1; isneg_r=1;}
       sd = floor (r1);
       fd = r1 - sd;
       A4GL_debug ("sd=%lf fd=%lf\n", sd, fd);
@@ -461,6 +480,7 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
   val3 = (rval_ival.stime >> 4) & 15;
 
   size = A4GL_mk_int_size (rval_ival.stime, rval_ival.ltime);
+	rval_ival.is_neg=isneg_r;
 
   A4GL_conv_invdatatoc (data_r, val1, val2, val3, &rval_ival);
 
@@ -484,7 +504,7 @@ A4GL_mk_int_size (int s, int l)
  * @param data
  */
 void
-A4GL_decode_interval (struct ival *ival, int *data)
+A4GL_decode_interval (struct ival *ival, int *data,int *isneg)
 {
   int i;
   /*char buff[256];
@@ -598,6 +618,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
   data[4] = ival->i_minutes;
   data[5] = ival->i_seconds;
   data[6] = ival->i_fractions;
+   *isneg=ival->is_neg;
   A4GL_debug("Y %d M %d D %d  H %d M %d S %d F %d", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
 
 }

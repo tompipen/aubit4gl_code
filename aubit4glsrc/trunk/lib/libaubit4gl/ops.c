@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.105 2007-03-09 13:43:45 mikeaubury Exp $
+# $Id: ops.c,v 1.106 2007-05-06 10:48:36 mikeaubury Exp $
 #
 */
 
@@ -648,7 +648,9 @@ int se2;
 int d2;
 int s2;
 int ok=0;
-	  		char buff_6[256];
+char buff_6[256];
+int isneg_ival;
+
 
 #ifdef DEBUG
   A4GL_debug ("In dt_in_ops");
@@ -700,17 +702,16 @@ int ok=0;
 
   if (in2.stime==0 || in2.ltime==0) { A4GL_assertion(1,"Interval looks empty"); }
 
-  A4GL_decode_interval (&in2, ival_data);
-
+  A4GL_decode_interval (&in2, ival_data, &isneg_ival); //@FIXME negative intervals
 
 
   switch(op) {
   	case OP_ADD:
 		if (se2==6) {
-			double f;
-  			f=ival_data[6]+a;
+		      double f;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 			ok=1;
-	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+	  		SPRINTF1 (buff_6, "%lf", f);
 	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
@@ -726,9 +727,10 @@ int ok=0;
 	case OP_SUB:
 		if (se2==6) {
 			double f;
-  			f=ival_data[6]-a;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			f=f-a;
 			ok=1;
-	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+	  		SPRINTF1 (buff_6, "%lf", f);
 	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
@@ -742,9 +744,10 @@ int ok=0;
 	case OP_DIV:
 		if (se2==6) {
 			double f;
-  			f=ival_data[6]/a;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			f=f/a;
 			ok=1;
-	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+	  		SPRINTF1 (buff_6, "%lf", f);
 	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
@@ -759,9 +762,10 @@ int ok=0;
 	case OP_MULT:
 		if (se2==6) {
 			double f;
-  			f=ival_data[6]*a;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			f=f*a;
 			ok=1;
-	  		SPRINTF1 (buff_6, "%lf", f/100000.0);
+	  		SPRINTF1 (buff_6, "%lf", f);
 
 	  		acli_interval (buff_6, 0x867);
 			return ;
@@ -773,6 +777,35 @@ int ok=0;
 	  		acli_interval (buff_6, 0x822);
 			return ;
 		}
+
+	case OP_GREATER_THAN:
+	case OP_GREATER_THAN_EQ:
+	case OP_EQUAL:
+	case OP_NOT_EQUAL:
+	case OP_LESS_THAN:
+	case OP_LESS_THAN_EQ:
+		{
+		double f=0.0;
+		double ad;
+		if (se2==6) {
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			//f=ival_data[6]*a;
+		} else {
+  			f=ival_data[1];
+		}
+
+		if (isneg_ival) f*=-1.0;
+	
+		ad=(double )a;
+		
+		if (op==OP_GREATER_THAN ) { A4GL_push_int(f>ad); return; }
+		if (op==OP_GREATER_THAN_EQ ) { A4GL_push_int(f>=ad); return; }
+		if (op==OP_LESS_THAN_EQ ) { A4GL_push_int(f<=ad); return; }
+		if (op==OP_LESS_THAN ) { A4GL_push_int(f<ad); return; }
+		if (op==OP_EQUAL ) { A4GL_push_int(f==ad); return; }
+		if (op==OP_NOT_EQUAL ) { A4GL_push_int(f!=ad); return; }
+		}
+		break;
 
   }
 
@@ -792,6 +825,7 @@ A4GL_in_int_ops (int op)
   int a;
   struct ival in;
   int ival_data[10];
+  int isneg_ival;
 
 #ifdef DEBUG
   A4GL_debug ("In dt_in_ops");
@@ -799,7 +833,7 @@ A4GL_in_int_ops (int op)
   A4GL_pop_param (&a, DTYPE_INT, -1);
   A4GL_pop_param (&in, DTYPE_INTERVAL, -1);
 
-  A4GL_decode_interval (&in, &ival_data[0]);
+  A4GL_decode_interval (&in, &ival_data[0], &isneg_ival);
 
   A4GL_assertion(1,"Here");
   fflush (stdout);
@@ -816,6 +850,7 @@ A4GL_dt_in_ops (int op)
   struct A4GLSQL_dtime dt;
   struct ival in;
   int ival_data[10];
+  int isneg;
 
 #ifdef DEBUG
   A4GL_debug ("In dt_in_ops");
@@ -823,7 +858,8 @@ A4GL_dt_in_ops (int op)
   A4GL_pop_param (&in, DTYPE_INTERVAL, -1);
   A4GL_pop_param (&dt, DTYPE_DTIME, -1);
 
-  A4GL_decode_interval (&in, &ival_data[0]);
+  A4GL_assertion(1,"Here");
+  A4GL_decode_interval (&in, &ival_data[0],&isneg);
   fflush (stdout);
   A4GL_push_int (0);
 }
@@ -1033,6 +1069,7 @@ A4GL_in_dt_ops (int op)
   int s1;
   int mdy_m,mdy_d,mdy_y;
   int s2;
+  int isneg;
 
   long dt_days;
   double dt_seconds;
@@ -1109,7 +1146,7 @@ dt.ltime=-1;
     }
 
 
-  A4GL_decode_interval (&in, &ival_data[0]);
+  A4GL_decode_interval (&in, &ival_data[0],&isneg);
 
 
 	A4GL_debug("\n\nInterval : Y=%d\n",ival_data[0]);
@@ -1152,6 +1189,7 @@ dt.ltime=-1;
 A4GL_debug(":::1 %d %lf %d -  %s",dt_days,dt_seconds,in_months,(op==OP_ADD)?"Add":"Subtract");
 
   if (in_months) { // We're dealing with month information...
+	if (isneg) in_months*=-1;
 	if (op==OP_ADD) {
 		dtime_data[1]+=in_months;
 		ok=1;
@@ -1184,6 +1222,7 @@ A4GL_debug(":::1 %d %lf %d -  %s",dt_days,dt_seconds,in_months,(op==OP_ADD)?"Add
   	in_seconds+=(double)ival_data[4]*60.0; // Minutes
   	in_seconds+=ival_data[5]+(double)ival_data[6]/100000.0 ; // Seconds
 
+	if (isneg) in_seconds*=-1.0;
 	A4GL_debug(":::2 %d %lf %d %lf %s",dt_days,dt_seconds,in_months,in_seconds,(op==OP_ADD)?"Add":"Subtract");
 
 	if (op==OP_ADD) {
@@ -1982,6 +2021,8 @@ A4GL_in_in_ops (int op)
   int ival_data2[10];
   int d1, d2;
   int s1, s2;
+  int isneg_1;
+  int isneg_2;
   //void *ptr1;
   struct ival *pi1;
   struct ival *pi2;
@@ -2024,7 +2065,6 @@ A4GL_in_in_ops (int op)
   //A4GL_assertion(pi1==0,"First interval is 0 (2)");
   //A4GL_assertion(pi2==0,"Second interval is 0");
   //
-   //A4GL_pause_execution();
   if (pi1) { if (pi1->stime==0 && pi1->ltime==0) pi1=0; } // A null by any other name - would still be as null
   if (pi2) { if (pi2->stime==0 && pi2->ltime==0) pi2=0; } // A null by any other name - would still be as null
   if (pi1==0 || pi2==0) {
@@ -2104,8 +2144,8 @@ A4GL_in_in_ops (int op)
   A4GL_pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
   if (in1.stime==0 || in1.ltime==0 || in2.stime==0 || in2.ltime==0) { A4GL_assertion(1,"Interval looks empty"); }
 
-  A4GL_decode_interval (&in1, ival_data1);
-  A4GL_decode_interval (&in2, ival_data2);
+  A4GL_decode_interval (&in1, ival_data1, &isneg_1);
+  A4GL_decode_interval (&in2, ival_data2, &isneg_2);
 
 
   if (se1 == 2)
@@ -2128,6 +2168,11 @@ A4GL_in_in_ops (int op)
       d_i2 += df2;
       A4GL_debug ("d_i1=%f d_i2=%f", d_i1, d_i2);
     }
+
+
+  if (isneg_1) { d_i1*=-1.0; }
+  if (isneg_2) { d_i2*=-1.0; }
+   
 
 
   switch (op)
@@ -2153,7 +2198,9 @@ A4GL_in_in_ops (int op)
 
 
     case OP_SUB:
+  
       d_i1 = d_i2 - d_i1;
+	
       if (se1 == 2)
 	{
 	  char buff_5[256];
@@ -2340,6 +2387,7 @@ A4GL_dt_dt_ops (int op)
   struct ival in;
   //int ok = 0;
   char buff_7[256];
+  int cnt;
   //int start;
   //char *ptr;
   //double d_d1;
@@ -2458,12 +2506,11 @@ A4GL_dt_dt_ops (int op)
 
 
 
-  if (op == (OP_SUB) || op == (OP_LESS_THAN) || op == (OP_GREATER_THAN)
-      || op == (OP_LESS_THAN_EQ) || op == (OP_GREATER_THAN_EQ))
+  if (op == (OP_SUB) || op == (OP_LESS_THAN) || op == (OP_GREATER_THAN) || op == (OP_LESS_THAN_EQ) || op == (OP_GREATER_THAN_EQ))
     {
 	int s1;
 	int s2;
-
+	int inverted;
 	s1=-1;
 	s2=-1;
 
@@ -2492,10 +2539,26 @@ A4GL_dt_dt_ops (int op)
 	if (s1>5||s2>5) { dtime_data1[5]=0; dtime_data2[5]=0; }
 	if (s1>6||s2>6) { dtime_data1[6]=0; dtime_data2[6]=0; }
 
+	inverted=0;
+	for (cnt=0;cnt<6;cnt++) {
+		if (dtime_data2[cnt]>dtime_data1[cnt]) break;
+		if (dtime_data2[cnt]<dtime_data1[cnt]) {
+			inverted++; break;
+		}
+		// Same - look lower down..
+	}
 
+ 	if (inverted) {
+		int a;
+		int b;
+		for (a=0;a<=6;a++) {
+			b= dtime_data1[a];
+			dtime_data1[a]=dtime_data2[a];
+			dtime_data2[a]=b;
+		}
+	}
 
-      A4GL_debug ("Op LT : %d (-%d <%d >%d", op, OP_SUB, OP_LESS_THAN,
-		  OP_GREATER_THAN);
+      A4GL_debug ("Op LT : %d (-%d <%d >%d", op, OP_SUB, OP_LESS_THAN, OP_GREATER_THAN);
 
   A4GL_debug("%d %d %d %d %d %d %d", dtime_data1[0], dtime_data1[1], dtime_data1[2], dtime_data1[3], dtime_data1[4], dtime_data1[5], dtime_data1[6]);
   A4GL_debug("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
@@ -2577,6 +2640,7 @@ A4GL_dt_dt_ops (int op)
 	      // YEAR TO MONTH interval
 	      SPRINTF2 (buff_7, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
 	      A4GL_ctoint (buff_7, &in, 1298);
+		if(inverted) { in.is_neg=1; }
 	      A4GL_push_interval (&in);
 	    }
 	  else
@@ -2589,6 +2653,7 @@ A4GL_dt_dt_ops (int op)
 	      A4GL_debug ("Pushing Interval - %p - s=%x e=%x made from %s",
 			  &in, in.stime, in.ltime);
 	      A4GL_debug ("Buff = %s %x %x", buff_7);
+		if (inverted) { in.is_neg=1; }
 	      A4GL_push_interval (&in);
 	    }
 	}
@@ -2605,12 +2670,9 @@ A4GL_dt_dt_ops (int op)
 	    {
 	      int y;
 	      y = dtime_data2[0] * 12 + dtime_data2[1];
-	      if (y > 0)
-		gt = 1;
-	      if (y < 0)
-		lt = 1;
-	      if (y == 0)
-		eq = 1;
+	      if (y > 0) gt = 1;
+	      if (y < 0) lt = 1;
+	      if (y == 0) eq = 1;
 	    }
 	  else
 	    {
@@ -2623,13 +2685,21 @@ A4GL_dt_dt_ops (int op)
 	      d += dtime_data2[4];
 	      d *= 60;
 	      d += dtime_data2[5];
-	      if (d > 0)
-		gt = 1;
-	      if (d == 0)
-		eq = 1;
-	      if (d < 0)
-		lt = 1;
+	      if (d > 0) gt = 1;
+	      if (d == 0) eq = 1;
+	      if (d < 0) lt = 1;
 	    }
+
+	   if (inverted) {
+		if (gt) {
+			gt=0;
+			lt=1;
+		} else {
+			if (lt) { gt=1; lt=0; }
+		}
+	   }
+
+
 	  A4GL_debug (" Boolean values ->    %d %d %d", lt, eq, gt);
 
 	  if (op == (OP_LESS_THAN))

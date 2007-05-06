@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.103 2007-05-02 18:34:04 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.104 2007-05-06 10:48:35 mikeaubury Exp $
 */
 
 /**
@@ -191,6 +191,7 @@ extern "C"
     int i_minutes;
     int i_seconds;
     long i_fractions;
+	int is_neg;
   };
 
 #ifndef S_CONSTR_LIST

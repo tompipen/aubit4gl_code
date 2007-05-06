@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.270 2007-04-23 18:42:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.271 2007-05-06 10:48:35 mikeaubury Exp $
 #
 */
 
@@ -1545,7 +1545,7 @@ void A4GL_debug(char *s);
 
 
   /* ============================ conv.c ================================= */
-  void A4GL_decode_interval (struct ival *ival, int *data);
+  void A4GL_decode_interval (struct ival *ival, int *data,int *is_neg);
   int A4GL_stod (void *zz, void *aa, int sz_ignore);
   int A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size);
   void A4GL_set_convmatrix (int dtype1, int dtype2, void *ptr);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.133 2007-03-07 21:04:44 mikeaubury Exp $
+# $Id: conv.c,v 1.134 2007-05-06 10:48:36 mikeaubury Exp $
 #
 */
 
@@ -340,6 +340,8 @@ A4GL_inttoint (void *a, void *b, int size)
   struct ival *e;
   char buff[256];
   int ival_data[10];
+int isneg;
+int ok;
 
   A4GL_debug ("inttoint size=%d\n",size);
   d = b;
@@ -352,15 +354,21 @@ A4GL_inttoint (void *a, void *b, int size)
 
 	// We've got a single timespan..
 	if (e->ltime==2|| e->ltime==1) { // MONTH TO MONTH or YEAR TO YEAR
- 		A4GL_decode_interval (e, &ival_data[0]);
-			/* while (ival_data[1]>12 && 0) { ival_data[0]++; ival_data[1]-=12; } */
-		SPRINTF2(buff,"%d-%d",ival_data[0],ival_data[1]);
+ 		A4GL_decode_interval (e, &ival_data[0], &isneg);
+		/* while (ival_data[1]>12 && 0) { ival_data[0]++; ival_data[1]-=12; } */
+		SPRINTF2(buff,"%d-%d",ival_data[0],ival_data[1]); // @FIXME - negative interval
 	}
   }
   A4GL_trim (buff);
   //memset(d->data,0,sizeof(d->data));
   A4GL_debug ("Got Interval as : '%s'\n", A4GL_null_as_null(buff));
-  return A4GL_ctoint (buff, b, size);
+  ok= A4GL_ctoint (buff, b, size);
+  if (ok) {
+  	if (e->is_neg) d->is_neg=1;
+  	else d->is_neg=0;
+  }
+
+  return (ok);
 
 /*
 #ifdef DEBUG
@@ -405,6 +413,7 @@ A4GL_inttoc (void *a1, void *b, int size)
   int s1;
   int s2;
   int e;
+  int isneg;
   //int c;
   int cnt;
   //int cpc;
@@ -431,7 +440,8 @@ data[7]=0;
 data[8]=0;
 data[9]=0;
 
-  A4GL_decode_interval (a, data);
+  A4GL_decode_interval (a, data,&isneg);
+//@FIXME isneg interval
 
   A4GL_debug ("Y: %d", data[0]);	// -
   A4GL_debug ("M: %d", data[1]);	// -
@@ -458,9 +468,9 @@ data[9]=0;
   for (cnt = s2; cnt <= e; cnt++)
     {
 
-
       if (strlen (buff)) strcat (buff, pre[cnt - 1]);
 
+	A4GL_debug("cnt =%d data=%d\n", cnt,data[cnt- 1]);
 
       if (cnt == 7)
 	{
@@ -483,7 +493,20 @@ data[9]=0;
   if (s2>=8) {
 	SPRINTF1(buff,".%05d",data[7]);
   }
-
+  if (a->is_neg) {
+		char buffcp[2000];
+		if (buff[0]==' ') {
+			for (cnt=0;cnt<strlen(buff);cnt++) {
+				if (buff[cnt]==' ' && buff[cnt+1]!=' ') {
+					buff[cnt]='-';
+					break;
+				}
+			}
+		} else {
+			sprintf(buffcp,"-%s",buff);
+			strcpy(buff,buffcp);
+		}
+  }
   A4GL_debug ("-->'%s'\n", A4GL_null_as_null(buff));
   A4GL_ctoc (buff, b, size);
   return 1;
@@ -536,16 +559,31 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
   struct ival *d;
   int v1, v2, v3;
   char localchar[56];
+  int is_neg=0;
+int buff_size;
+int a;
+
   memset(localchar,0,56);
   memset(data,0,255);
 
   strcpy (localchar, a_char);
+
+  buff_size=strlen(localchar);
+  for (a=0;a<buff_size;a++) {
+	if (localchar[a]=='-') {
+		is_neg++;
+		localchar[a]=' ';
+		break;
+	}
+	if (localchar[a]!=' ')  break;
+  }
+
   d = (struct ival *) b_int;
 
   A4GL_debug ("ctoint - %s size_b=%x\n", A4GL_null_as_null(a_char), size_b);
   d->ltime = size_b & 15;
   d->stime = size_b >> 4;
-
+  d->is_neg=is_neg;
   A4GL_debug ("Set d->stime=%d d->ltime=%d %p", d->stime, d->ltime, d);
   A4GL_debug ("Set d->stime=%d d->ltime=%d %p", d->stime, d->ltime, d);
 
@@ -3234,13 +3272,11 @@ A4GL_debug("a=%d b=%d\n",a,b);
 	}
 
 	if (i==2) { char *p; p=ptr[i - a]; 
-				//printf("R3 %s\n",p);
 				if (atol(p)==0 && 0) {
 						return 0;
 				}
 				} // can't have a 0 in the month
 	if (i==3) { char *p; p=ptr[i - a]; 
-				//printf("R4 %s\n",p);
 				if (atol(p)==0 && 0) {
 					return 0;
 				}
@@ -3371,11 +3407,19 @@ A4GL_valid_int (char *s, int *data, int size)
   strcpy (buff, s);
   if (strlen(buff)==0) return 0;
   memset(type,0,255);
-
+  // Lets strip any leading '-'
+  //
+  buff_size = strlen (buff);
+  for (a=0;a<buff_size;a++) {
+	if (buff[a]=='-') {
+		buff[a]=' ';
+		break;
+	}
+	if (buff[a]!=' ')  break;
+  }
   ptr[0] = &buff[0];
   A4GL_debug ("Splitting '%s'\n", A4GL_null_as_null(buff));
   cnt = 0;
-  buff_size = strlen (buff);
 
   for (a = 1; a < buff_size; a++)
     {
