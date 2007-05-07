@@ -113,6 +113,8 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
   int page;
   int last_page = -1;
   int sz;
+  int max_page=0;
+  int this_page;
   page_touched = 0;
 
   report=rp;
@@ -156,34 +158,37 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
       lines[a] = acl_malloc2 (report->max_col + 1+report->left_margin);	// for the \NULL
     }
 
-  clear_page (report->max_col+report->left_margin, report->page_length);
 
+
+  max_page=0;
   for (block = 0; block < report->nblocks; block++)
     {
       for (entry = 0; entry < report->blocks[block].nentries; entry++)
 	{
 	  centry = &report->blocks[block].entries[entry];
 	  page = centry->page_no;
-	  if (page != last_page)
-	    {
-	      if (page_touched && last_page != -1)
-		{
-		  output_page (rep_fout, report->max_col, report->page_length);
-		  clear_page (report->max_col+report->left_margin, report->page_length);
-		}
-	      last_page = page;
-	    }
-
-
-	  x = centry->col_no+report->left_margin;
-	  y = centry->line_no; //+report->top_margin;
-	  set_text (x, y, centry->string);
+	  if (page>max_page) max_page=page;
 	}
     }
 
-  if (page_touched)
-    {
-      output_page (rep_fout, report->max_col, report->page_length);
+
+
+  for (this_page=1;this_page<max_page;this_page++) {
+  	clear_page (report->max_col+report->left_margin, report->page_length);
+  	for (block = 0; block < report->nblocks; block++)
+    		{
+      		for (entry = 0; entry < report->blocks[block].nentries; entry++)
+			{
+	  		centry = &report->blocks[block].entries[entry];
+	  		page = centry->page_no;
+	  		if (page == this_page) {
+	  			x = centry->col_no+report->left_margin;
+	  			y = centry->line_no; //+report->top_margin;
+	  			set_text (x, y, centry->string);
+			}
+    		}
+	}
+      	output_page (rep_fout, report->max_col, report->page_length);
     }
 
 
