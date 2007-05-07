@@ -173,7 +173,7 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
 
 
 
-  for (this_page=1;this_page<max_page;this_page++) {
+  for (this_page=1;this_page<=max_page;this_page++) {
   	clear_page (report->max_col+report->left_margin, report->page_length);
   	for (block = 0; block < report->nblocks; block++)
     		{
