@@ -441,6 +441,23 @@ field_type op_att
 }
 op_field_desc
 {
+	if (A4GL_has_str_attribute(fld,FA_S_FORMAT)) {
+		int dtype;
+		dtype=fld->datatype & DTYPE_MASK;
+
+		if (dtype!=DTYPE_INT  &&
+		    dtype!=DTYPE_SMINT  &&
+		    dtype!=DTYPE_FLOAT  &&
+		    dtype!=DTYPE_SMFLOAT  &&
+		    dtype!=DTYPE_DATE  &&
+		    dtype!=DTYPE_DECIMAL  &&
+		    dtype!=DTYPE_MONEY) {
+	        		yyerror("A FORMAT cannot be applied to this fields because of the datatype");
+	        		YYERROR;
+				printf("X1\n");
+		}
+	}
+
 	if (fld->datatype==90&&!(A4GL_has_str_attribute(fld,FA_S_DEFAULT)))
 	{
 	        extern FILE *yyin;
