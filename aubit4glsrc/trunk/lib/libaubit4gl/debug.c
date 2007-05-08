@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.55 2007-02-20 18:43:37 gyver309 Exp $
+# $Id: debug.c,v 1.56 2007-05-08 17:53:12 mikeaubury Exp $
 #
 */
 
@@ -125,7 +125,7 @@ void
 A4GL_debug_full_extended (char *fmt, ...)
 {
   static va_list args;
-#define MAX_DEBUG 10000
+#define MAX_DEBUG 90000
   static char buff[MAX_DEBUG+1];
   static int a;
   static int dbg_level=-1;

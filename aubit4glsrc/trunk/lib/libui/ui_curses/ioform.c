@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.167 2007-04-03 08:02:16 mikeaubury Exp $
+# $Id: ioform.c,v 1.168 2007-05-08 17:53:13 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.167 2007-04-03 08:02:16 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.168 2007-05-08 17:53:13 mikeaubury Exp $";
 #endif
 
 /**
@@ -1321,27 +1321,32 @@ A4GL_turn_field_on2 (FIELD * f, int a)
   if (fprop->dynamic != 0) {
       set_max_field (f, 0);
   } else {
-  	xx = set_max_field (f, A4GL_get_field_width_w (f,0));
+	int w;
+  	if (!a) {
+      		set_max_field (f, 0);
+			return;
+    	}
+	w=A4GL_get_field_width_w (f,0);
+
+  	xx = set_max_field (f, w);
 	
 	
-  	if (xx < 0)
+  	if (xx != 0)
     	{
-      	f->dcols = a;
-      	xx = set_max_field (f, A4GL_get_field_width_w (f,0));
+      		f->dcols = 0;
+      		xx = set_max_field (f, w);
     	}
 	
-  	if (xx < 0)
+	
+  	if (xx != 0)
     	{
       	A4GL_debug ("Unable to change field width\n");
+	A4GL_assertion(1,"Internal error - unable to change field width");
       	A4GL_exitwith ("Internal error - unable to change field width");
       	return;
     	}
   }
 
-  if (!a)
-    {
-      set_max_field (f, 0);
-    }
 
 }
 
@@ -2737,7 +2742,7 @@ UILIB_A4GL_push_constr (void *vs)
   int flg = 0;
   struct s_screenio *s;
   s = vs;
-
+A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------------");
   if (s->processed_onkey == A4GLKEY_INTERRUPT)
     {
       A4GL_push_char (s->vars[0].ptr);
@@ -2778,21 +2783,22 @@ UILIB_A4GL_push_constr (void *vs)
       if (fprop != 0)
 	{
 	  A4GL_debug ("getting ptr", fprop);
-	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
-		      (fprop->datatype) & 0xffff);
+	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname, (fprop->datatype) & 0xffff);
 
-
+		A4GL_debug("field_buffer (%p) =%s", f, field_buffer (f, 0));
+	
 
 	  ptr =
 	    (char *) A4GL_construct (s->constr[a].tabname,
-				     s->constr[a].colname, field_buffer (f,
-									 0),get_inc_quotes(fprop->datatype)
+				     s->constr[a].colname, field_buffer (f, 0),get_inc_quotes(fprop->datatype)
 		);
 
 	if (ptr==0) { // some error in the field...
       		A4GL_push_char ("");
       		return 0;
 	}
+	
+		A4GL_debug("ptr=%s\n",ptr);
 	  if (strlen (ptr) > 0)
 	    {
 	      A4GL_debug ("ptr=%s\n", ptr);

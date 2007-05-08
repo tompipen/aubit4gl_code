@@ -2061,6 +2061,10 @@ BUILD_LDFLAGS
 BUILD_LIBS
 BUILD_EXEEXT
 HAVE_WINSLEEP
+_libcurl_config
+LIBCURL_CPPFLAGS
+LIBCURL
+HAVE_LIBCURL
 LIBOBJS
 LIBHELLO_DLL_IMPORT
 LIBGREET_DLL_IMPORT
@@ -2804,6 +2808,7 @@ Optional Packages:
   --with-build-cppflags=XXX the build C preprocessor-flags
   --with-build-ldflags=XXX the build linker-flags
   --with-build-libs=XXX   the build libraries
+  --with-libcurl=DIR      look for the curl library in DIR
 
 Some influential environment variables:
   CC          C compiler command
@@ -3720,17 +3725,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Looking for configure parameters file:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Looking for configure parameters file:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Looking for configure parameters file:"
-	fi
-
 
 # Extract the first word of "aubitconf", so it can be a program name with args.
 set dummy aubitconf; ac_word=$2
@@ -3793,17 +3787,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Redirecting to 'aubitconf':${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Redirecting to 'aubitconf':${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Redirecting to 'aubitconf':"
-	fi
-
 			if test "$CONFIGURE_COMMAND" != ""; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -3859,17 +3842,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Invoked from 'aubitconf'-use 'make settings' to see flags:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Invoked from 'aubitconf'-use 'make settings' to see flags:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Invoked from 'aubitconf'-use 'make settings' to see flags:"
-	fi
-
 fi
 
 #This script will be used for configuring binary distributions
@@ -3897,34 +3869,12 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Configuring Aubit compiler source code:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Configuring Aubit compiler source code:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Configuring Aubit compiler source code:"
-	fi
-
 else
 
   { echo "$as_me:$LINENO: result: " >&5
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Configuring Aubit compiler binary distribution:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Configuring Aubit compiler binary distribution:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Configuring Aubit compiler binary distribution:"
-	fi
 
 fi
 
@@ -6591,7 +6541,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6594 "configure"' > conftest.$ac_ext
+  echo '#line 6544 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9481,7 +9431,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9484 "configure"
+#line 9434 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9579,7 +9529,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9582 "configure"
+#line 9532 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11938,6 +11888,7 @@ SYSDRIVE=$SYSTEMDRIVE
 
 
 
+
 #   Defines substitute variable OBJEXT based on the output of the compiler,
 #after .c files have been excluded. Typically set to `.o' if Unix, `.obj' if Win32.
 
@@ -12799,7 +12750,7 @@ COMP_EXE="4glc fcompile amkmessage convertsql 4glpc sql_parse adbschema \
 if test "$enable_minimal" != "yes"; then
 #Note: some of them will still be built, but not installed or packaged
 	COMP_EXE="$COMP_EXE aace generate_aace aace_4gl aace_perl \
-		mcompile mdecompile process_report adecompile ide1$A4GL_EXE_EXT \
+		mcompile mdecompile process_report quick_check_logrep adecompile ide1$A4GL_EXE_EXT \
 		fdecompile unmkmessage default_frm"
 	RUNTIME_EXE="$RUNTIME_EXE fshow loadmap"
 else
@@ -13125,22 +13076,13 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Configuring Debugging options${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Configuring Debugging options${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Configuring Debugging options"
-	fi
-
 
 # Check whether --enable- was given.
 if test "${enable_+set}" = set; then
   enableval=$enable_;
 fi
+
+
 
 
 
@@ -13525,17 +13467,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking standard programs:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking standard programs:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking standard programs:"
-	fi
 
 
 	# Extract the first word of "pkg-config", so it can be a program name with args.
@@ -16439,17 +16370,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for ORBit CORBA support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for ORBit CORBA support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for ORBit CORBA support:"
-	fi
-
 
 
 # Check whether --with-orbit was given.
@@ -16670,17 +16590,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Ingres ESQL/C compiler support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Ingres ESQL/C compiler support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Ingres ESQL/C compiler support:"
-	fi
-
 
 
 # Check whether --with-ingres was given.
@@ -16833,17 +16742,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Jabber support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Jabber support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Jabber support:"
-	fi
 
 
 
@@ -17251,17 +17149,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for MySQL client library support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for MySQL client library support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for MySQL client library support:"
-	fi
 
 
 
@@ -17676,17 +17563,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for mpz library support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for mpz library support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for mpz library support:"
-	fi
-
 
 
 # Check whether --with-mpz was given.
@@ -18002,17 +17878,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for XML-RPC support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for XML-RPC support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for XML-RPC support:"
-	fi
 
 
 
@@ -18542,17 +18407,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for SXML libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for SXML libraries:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for SXML libraries:"
-	fi
-
 
 # Check whether --with-sxml was given.
 if test "${with_sxml+set}" = set; then
@@ -18860,17 +18714,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for MQ libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for MQ libraries:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for MQ libraries:"
-	fi
-
 
 # Check whether --with-mq was given.
 if test "${with_mq+set}" = set; then
@@ -19174,17 +19017,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for PCRE libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PCRE libraries:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for PCRE libraries:"
-	fi
 
 
 # Check whether --with-pcre was given.
@@ -19510,17 +19342,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for POP libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for POP libraries:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for POP libraries:"
-	fi
 
 
 # Check whether --with-pop was given.
@@ -19898,17 +19719,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for SMTP libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for SMTP libraries:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for SMTP libraries:"
-	fi
-
 
 # Check whether --with-smtp was given.
 if test "${with_smtp+set}" = set; then
@@ -20226,17 +20036,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for ZLIB libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for ZLIB libraries:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for ZLIB libraries:"
-	fi
 
 
 # Check whether --with-zlib was given.
@@ -20590,17 +20389,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for PDF support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PDF support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for PDF support:"
-	fi
 
 
 
@@ -21020,17 +20808,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for C interpreter (Cint) :${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for C interpreter (Cint) :${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for C interpreter (Cint) :"
-	fi
 
 
 
@@ -21642,17 +21419,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}RPM package settings:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}RPM package settings:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "RPM package settings:"
-	fi
-
 	{ echo "$as_me:$LINENO: checking RPM build root" >&5
 echo $ECHO_N "checking RPM build root... $ECHO_C" >&6; }
 
@@ -21707,17 +21473,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for 4Js BDL / Informix D4GL:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for 4Js BDL / Informix D4GL:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for 4Js BDL / Informix D4GL:"
-	fi
 
 
 # Check whether --with-fourj was given.
@@ -21826,17 +21581,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Querix compiler:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Querix compiler:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Querix compiler:"
-	fi
-
 
 # Check whether --with-hydra was given.
 if test "${with_hydra+set}" = set; then
@@ -21906,17 +21650,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Plexus XDP AD32 - FGLC Compiler:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Plexus XDP AD32 - FGLC Compiler:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Plexus XDP AD32 - FGLC Compiler:"
-	fi
-
 
 # Check whether --with-plexus was given.
 if test "${with_plexus+set}" = set; then
@@ -21983,17 +21716,6 @@ else
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Classic Informix 4gl P-code:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Classic Informix 4gl P-code:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Classic Informix 4gl P-code:"
-	fi
 
 
 # Check whether --with-i4gl was given.
@@ -22089,7 +21811,7 @@ fi
 				#have to free cursors & statements differently
 				{ echo "$as_me:$LINENO: checking fglpc version" >&5
 echo $ECHO_N "checking fglpc version... $ECHO_C" >&6; }
-				set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^.*ion //' -e 's/\./ /g'`
+				set `fglpc -v 2>/dev/null | head -n 1|sed -e 's/^.*sion //' -e 's/\./ /g'`
 				if test "$1" != ""; then
 					#if test "$1" = "4" -a "$2" -lt "50"; then
 		            if test "$1" -lt "5"; then
@@ -22113,17 +21835,6 @@ echo "$as_me: error: Cannot get fglpc version." >&2;}
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Classic Informix 4gl C-code:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Classic Informix 4gl C-code:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Classic Informix 4gl C-code:"
-	fi
 
 			# Extract the first word of "c4gl", so it can be a program name with args.
 set dummy c4gl; ac_word=$2
@@ -22217,17 +21928,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Web server:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Web server:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Web server:"
-	fi
 
 
 
@@ -22391,17 +22091,6 @@ SAPDB_ESQLC="no"
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for SAP DB/MySQL MaxDB ESQL/C support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for SAP DB/MySQL MaxDB ESQL/C support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for SAP DB/MySQL MaxDB ESQL/C support:"
-	fi
 
 
 
@@ -22771,17 +22460,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Querix ESQL/C support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Querix ESQL/C support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Querix ESQL/C support:"
-	fi
-
 
 
 # Check whether --with-esqlc was given.
@@ -22983,17 +22661,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Informix ESQL/C support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Informix ESQL/C support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Informix ESQL/C support:"
-	fi
 
 
 
@@ -23620,6 +23287,9 @@ if test "$enable_stop_informix" = "yes" ; then
 	exit
 fi
 
+
+
+
 ## ==================================================================
 ##                 Checks for PostgreSQL engine
 ## ==================================================================
@@ -23629,17 +23299,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking PostgresSQL engine:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking PostgresSQL engine:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking PostgresSQL engine:"
-	fi
 
 
 # Check whether --with-pgsqleng was given.
@@ -23825,17 +23484,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for PostgresSQL library support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PostgresSQL library support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for PostgresSQL library support:"
-	fi
 
 
 # Check whether --with-pgsql was given.
@@ -24848,17 +24496,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for PostgresSQL ESQL pre-compiler:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PostgresSQL ESQL pre-compiler:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for PostgresSQL ESQL pre-compiler:"
-	fi
 
 
 # Check whether --with-ecpg was given.
@@ -26467,17 +26104,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking PostgresSQL Aubit/Informix compatibility:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking PostgresSQL Aubit/Informix compatibility:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking PostgresSQL Aubit/Informix compatibility:"
-	fi
-
 
 # Check whether --with-pgcompat was given.
 if test "${with_pgcompat+set}" = set; then
@@ -26578,17 +26204,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for SQLite library support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for SQLite library support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for SQLite library support:"
-	fi
 
 
 # Check whether --with-sqlite was given.
@@ -27598,17 +27213,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for SQLite ODBC library support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for SQLite ODBC library support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for SQLite ODBC library support:"
-	fi
-
 
 # Check whether --with-sqliteodbc was given.
 if test "${with_sqliteodbc+set}" = set; then
@@ -28026,17 +27630,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Informix ODBC driver:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Informix ODBC driver:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Informix ODBC driver:"
-	fi
 
 
 
@@ -28466,17 +28059,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for SAP DB ODBC driver support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for SAP DB ODBC driver support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for SAP DB ODBC driver support:"
-	fi
 
 
 
@@ -29213,17 +28795,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for iODBC support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for iODBC support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for iODBC support:"
-	fi
-
 
 
 
@@ -29737,17 +29308,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for unixODBC support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for unixODBC support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for unixODBC support:"
-	fi
 
 
 
@@ -30371,17 +29931,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Easysoft ODBC-ODBC Bridge support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Easysoft ODBC-ODBC Bridge support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Easysoft ODBC-ODBC Bridge support:"
-	fi
-
 #AC_MSG_CHECKING(for Easysoft ODBC-ODBC Bridge support)
 
 # Check whether --with-esoob was given.
@@ -30445,17 +29994,6 @@ if test -z "$ODBC_TYPE"; then
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for custom ODBC support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for custom ODBC support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for custom ODBC support:"
-	fi
 
 #AC_MSG_CHECKING(for a custom ODBC support)
 
@@ -30550,17 +30088,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for PostgreSQL ODBC driver support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PostgreSQL ODBC driver support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for PostgreSQL ODBC driver support:"
-	fi
 
 
 
@@ -31671,17 +31198,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for GTK+ GUI support using AC macros:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for GTK+ GUI support using AC macros:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for GTK+ GUI support using AC macros:"
-	fi
-
 
 
 # Check whether --with-gtk-ac was given.
@@ -31734,17 +31250,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for GTK+ GUI support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for GTK+ GUI support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for GTK+ GUI support:"
-	fi
 
 
 # Check whether --with-gtk was given.
@@ -32112,17 +31617,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Glade support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Glade support:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Glade support:"
-	fi
-
 
 
 # Check whether --with-glade was given.
@@ -32388,17 +31882,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Sun RPC support:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Sun RPC support:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Sun RPC support:"
-	fi
 
 
 if test "$FORCE_RPC" = "1"; then
@@ -33496,17 +32979,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for curses libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for curses libraries:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for curses libraries:"
-	fi
-
 
 # Check whether --with-curses was given.
 if test "${with_curses+set}" = set; then
@@ -34188,17 +33660,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for PDcurses/Xcurses:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for PDcurses/Xcurses:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for PDcurses/Xcurses:"
-	fi
-
 
 # Check whether --with-pdcurses was given.
 if test "${with_pdcurses+set}" = set; then
@@ -34777,17 +34238,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Java JNI:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Java JNI:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Java JNI:"
-	fi
-
 
 
 # Check whether --with-java was given.
@@ -34927,17 +34377,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for standard libraries:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for standard libraries:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for standard libraries:"
-	fi
 
 
 		case "$host" in
@@ -35294,17 +34733,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for header files:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for header files:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for header files:"
-	fi
 
 
 	#AC_STDC_HEADERS
@@ -36321,17 +35749,6 @@ fi
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for compiler characteristics:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for compiler characteristics:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for compiler characteristics:"
-	fi
 
 
 { echo "$as_me:$LINENO: checking for an ANSI C-conforming const" >&5
@@ -37450,17 +36867,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for cross compilation options:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for cross compilation options:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for cross compilation options:"
-	fi
-
 	###############################################################################
 	# If we're cross-compiling, allow the user to override the tools and their
 	# options.  The configure script is oriented toward identifying the host
@@ -37556,10 +36962,472 @@ fi
 
 fi
 
+
+## ==================================================================
+##                 Checks for libcurl
+## ==================================================================
+
+#AC_SUBST(LIBCURL_CPPFLAGS)
+#AC_SUBST(LIBCURL)
+
+#AC_SUBST(HAVE_LIBCURL)
+{ echo "$as_me:$LINENO: checking Checking LIBCURL support" >&5
+echo $ECHO_N "checking Checking LIBCURL support... $ECHO_C" >&6; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Check whether --with-libcurl was given.
+if test "${with_libcurl+set}" = set; then
+  withval=$with_libcurl; _libcurl_with=$withval
+else
+  _libcurl_with=yes
+fi
+
+
+  if test "$_libcurl_with" != "no" ; then
+
+     for ac_prog in gawk mawk nawk awk
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_AWK+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$AWK"; then
+  ac_cv_prog_AWK="$AWK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_AWK="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+AWK=$ac_cv_prog_AWK
+if test -n "$AWK"; then
+  { echo "$as_me:$LINENO: result: $AWK" >&5
+echo "${ECHO_T}$AWK" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+  test -n "$AWK" && break
+done
+
+
+     _libcurl_version_parse="eval $AWK '{split(\$NF,A,\".\"); X=256*256*A[1]+256*A[2]+A[3]; print X;}'"
+
+     _libcurl_try_link=yes
+
+     if test -d "$_libcurl_with" ; then
+        CPPFLAGS="${CPPFLAGS} -I$withval/include"
+        LDFLAGS="${LDFLAGS} -L$withval/lib"
+     fi
+
+     # Extract the first word of "curl-config", so it can be a program name with args.
+set dummy curl-config; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_path__libcurl_config+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $_libcurl_config in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path__libcurl_config="$_libcurl_config" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path__libcurl_config="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+_libcurl_config=$ac_cv_path__libcurl_config
+if test -n "$_libcurl_config"; then
+  { echo "$as_me:$LINENO: result: $_libcurl_config" >&5
+echo "${ECHO_T}$_libcurl_config" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+
+     if test x$_libcurl_config != "x" ; then
+        { echo "$as_me:$LINENO: checking for the version of libcurl" >&5
+echo $ECHO_N "checking for the version of libcurl... $ECHO_C" >&6; }
+if test "${libcurl_cv_lib_curl_version+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  libcurl_cv_lib_curl_version=`$_libcurl_config --version | $AWK '{print $2}'`
+fi
+{ echo "$as_me:$LINENO: result: $libcurl_cv_lib_curl_version" >&5
+echo "${ECHO_T}$libcurl_cv_lib_curl_version" >&6; }
+
+	_libcurl_version=`echo $libcurl_cv_lib_curl_version | $_libcurl_version_parse`
+	_libcurl_wanted=`echo 7.10.1 | $_libcurl_version_parse`
+
+        if test $_libcurl_wanted -gt 0 ; then
+	   { echo "$as_me:$LINENO: checking for libcurl >= version 7.10.1" >&5
+echo $ECHO_N "checking for libcurl >= version 7.10.1... $ECHO_C" >&6; }
+if test "${libcurl_cv_lib_version_ok+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+   	      if test $_libcurl_version -ge $_libcurl_wanted ; then
+	         libcurl_cv_lib_version_ok=yes
+      	      else
+	         libcurl_cv_lib_version_ok=no
+  	      fi
+
+fi
+{ echo "$as_me:$LINENO: result: $libcurl_cv_lib_version_ok" >&5
+echo "${ECHO_T}$libcurl_cv_lib_version_ok" >&6; }
+        fi
+
+	if test $_libcurl_wanted -eq 0 || test x$libcurl_cv_lib_version_ok = xyes ; then
+           if test x"$LIBCURL_CPPFLAGS" = "x" ; then
+              LIBCURL_CPPFLAGS=`$_libcurl_config --cflags`
+           fi
+           if test x"$LIBCURL" = "x" ; then
+              LIBCURL=`$_libcurl_config --libs`
+
+              # This is so silly, but Apple actually has a bug in their
+	      # curl-config script.  Fixed in Tiger, but there are still
+	      # lots of Panther installs around.
+              case "${host}" in
+                 powerpc-apple-darwin7*)
+                    LIBCURL=`echo $LIBCURL | sed -e 's|-arch i386||g'`
+                 ;;
+              esac
+           fi
+
+	   # All curl-config scripts support --feature
+	   _libcurl_features=`$_libcurl_config --feature`
+
+           # Is it modern enough to have --protocols? (7.12.4)
+	   if test $_libcurl_version -ge 461828 ; then
+              _libcurl_protocols=`$_libcurl_config --protocols`
+           fi
+	else
+           _libcurl_try_link=no
+	fi
+
+	unset _libcurl_wanted
+     fi
+
+     if test $_libcurl_try_link = yes ; then
+
+        # we didn't find curl-config, so let's see if the user-supplied
+        # link line (or failing that, "-lcurl") is enough.
+        LIBCURL=${LIBCURL-"-lcurl"}
+
+        { echo "$as_me:$LINENO: checking whether libcurl is usable" >&5
+echo $ECHO_N "checking whether libcurl is usable... $ECHO_C" >&6; }
+if test "${libcurl_cv_lib_curl_usable+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+           _libcurl_save_cppflags=$CPPFLAGS
+           CPPFLAGS="$CPPFLAGS $LIBCURL_CPPFLAGS"
+           _libcurl_save_libs=$LIBS
+           LIBS="$LIBS $LIBCURL"
+
+           cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <curl/curl.h>
+int
+main ()
+{
+
+/* Try and use a few common options to force a failure if we are
+   missing symbols or can't link. */
+int x;
+curl_easy_setopt(NULL,CURLOPT_URL,NULL);
+x=CURL_ERROR_SIZE;
+x=CURLOPT_WRITEFUNCTION;
+x=CURLOPT_FILE;
+x=CURLOPT_ERRORBUFFER;
+x=CURLOPT_STDERR;
+x=CURLOPT_VERBOSE;
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  libcurl_cv_lib_curl_usable=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	libcurl_cv_lib_curl_usable=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+           CPPFLAGS=$_libcurl_save_cppflags
+           LIBS=$_libcurl_save_libs
+           unset _libcurl_save_cppflags
+           unset _libcurl_save_libs
+
+fi
+{ echo "$as_me:$LINENO: result: $libcurl_cv_lib_curl_usable" >&5
+echo "${ECHO_T}$libcurl_cv_lib_curl_usable" >&6; }
+
+        if test $libcurl_cv_lib_curl_usable = yes ; then
+
+	   # Does curl_free() exist in this version of libcurl?
+	   # If not, fake it with free()
+
+           _libcurl_save_cppflags=$CPPFLAGS
+           CPPFLAGS="$CPPFLAGS $LIBCURL_CPPFLAGS"
+           _libcurl_save_libs=$LIBS
+           LIBS="$LIBS $LIBCURL"
+
+           { echo "$as_me:$LINENO: checking for curl_free" >&5
+echo $ECHO_N "checking for curl_free... $ECHO_C" >&6; }
+if test "${ac_cv_func_curl_free+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* Define curl_free to an innocuous variant, in case <limits.h> declares curl_free.
+   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+#define curl_free innocuous_curl_free
+
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char curl_free (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
+#undef curl_free
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char curl_free ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined __stub_curl_free || defined __stub___curl_free
+choke me
+#endif
+
+int
+main ()
+{
+return curl_free ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_func_curl_free=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_func_curl_free=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_func_curl_free" >&5
+echo "${ECHO_T}$ac_cv_func_curl_free" >&6; }
+if test $ac_cv_func_curl_free = yes; then
+  :
+else
+
+cat >>confdefs.h <<\_ACEOF
+#define curl_free free
+_ACEOF
+
+fi
+
+
+           CPPFLAGS=$_libcurl_save_cppflags
+           LIBS=$_libcurl_save_libs
+           unset _libcurl_save_cppflags
+           unset _libcurl_save_libs
+
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_LIBCURL 1
+_ACEOF
+
+
+
+
+           for _libcurl_feature in $_libcurl_features ; do
+	      cat >>confdefs.h <<_ACEOF
+#define `echo "libcurl_feature_$_libcurl_feature" | $as_tr_cpp` 1
+_ACEOF
+
+	      eval `echo "libcurl_feature_$_libcurl_feature" | $as_tr_sh`=yes
+           done
+
+	   if test "x$_libcurl_protocols" = "x" ; then
+
+	      # We don't have --protocols, so just assume that all
+	      # protocols are available
+	      _libcurl_protocols="HTTP FTP GOPHER FILE TELNET LDAP DICT"
+
+	      if test x$libcurl_feature_SSL = xyes ; then
+	         _libcurl_protocols="$_libcurl_protocols HTTPS"
+
+		 # FTPS wasn't standards-compliant until version
+		 # 7.11.0
+		 if test $_libcurl_version -ge 461568; then
+		    _libcurl_protocols="$_libcurl_protocols FTPS"
+		 fi
+	      fi
+	   fi
+
+	   for _libcurl_protocol in $_libcurl_protocols ; do
+	      cat >>confdefs.h <<_ACEOF
+#define `echo "libcurl_protocol_$_libcurl_protocol" | $as_tr_cpp` 1
+_ACEOF
+
+	      eval `echo "libcurl_protocol_$_libcurl_protocol" | $as_tr_sh`=yes
+           done
+        fi
+     fi
+
+     unset _libcurl_try_link
+     unset _libcurl_version_parse
+     unset _libcurl_config
+     unset _libcurl_feature
+     unset _libcurl_features
+     unset _libcurl_protocol
+     unset _libcurl_protocols
+     unset _libcurl_version
+  fi
+
+  if test x$_libcurl_with = xno || test x$libcurl_cv_lib_curl_usable != xyes ; then
+     # This is the IF-NO path
+     HAVE_LIBCURL=0
+  else
+     # This is the IF-YES path
+     HAVE_LIBCURL=1
+  fi
+
+  unset _libcurl_with
+
+
+
+
 ## ==================================================================
 ##                   Checks for library functions
 ## ==================================================================
-
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
@@ -37568,17 +37436,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for library functions:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for library functions:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for library functions:"
-	fi
 
 
 	{ echo "$as_me:$LINENO: checking for pid_t" >&5
@@ -39675,17 +39532,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Checking for Cygwin specific options:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Checking for Cygwin specific options:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Checking for Cygwin specific options:"
-	fi
-
 
 	#<example form hello.x>
 	# ----------------------------------------------------------------------
@@ -39769,7 +39615,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 39772 "configure"' > conftest.$ac_ext
+  echo '#line 39618 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -40294,7 +40140,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 40297 "configure"
+#line 40143 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -40392,7 +40238,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 40395 "configure"
+#line 40241 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -41878,17 +41724,6 @@ echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Seting defaults:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Seting defaults:${T_ME}" >&6; }
 
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Seting defaults:"
-	fi
-
 { echo "$as_me:$LINENO: checking Default SQL driver" >&5
 echo $ECHO_N "checking Default SQL driver... $ECHO_C" >&6; }
 
@@ -43173,17 +43008,6 @@ STD_CFLAGS="$STD_CFLAGS $PIC"
 echo "${ECHO_T}" >&6; }
   { echo "$as_me:$LINENO: result: ${T_MD}Creating files:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Creating files:${T_ME}" >&6; }
-
-	if test "$A4GL_dcopRef" != ""; then
-		#See functions progress_x in script bin/aubit
-		if test "$A4GL_DCOP_USER" != ""; then
-			DCOP_FLAGS="--user $A4GL_DCOP_USER"
-		fi
-		if test "$A4GL_PROGRESS_CNT" = ""; then A4GL_PROGRESS_CNT="0"; fi
-		let A4GL_PROGRESS_CNT=A4GL_PROGRESS_CNT+1
-    	dcop $DCOP_FLAGS $A4GL_dcopRef setProgress $A4GL_PROGRESS_CNT
-		dcop $DCOP_FLAGS $A4GL_dcopRef setLabel "Creating files:"
-	fi
 
 #AC _OUTPUT
 ac_config_files="$ac_config_files $GENERATED_FILES"
@@ -45627,6 +45451,10 @@ BUILD_LDFLAGS!$BUILD_LDFLAGS$ac_delim
 BUILD_LIBS!$BUILD_LIBS$ac_delim
 BUILD_EXEEXT!$BUILD_EXEEXT$ac_delim
 HAVE_WINSLEEP!$HAVE_WINSLEEP$ac_delim
+_libcurl_config!$_libcurl_config$ac_delim
+LIBCURL_CPPFLAGS!$LIBCURL_CPPFLAGS$ac_delim
+LIBCURL!$LIBCURL$ac_delim
+HAVE_LIBCURL!$HAVE_LIBCURL$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LIBHELLO_DLL_IMPORT!$LIBHELLO_DLL_IMPORT$ac_delim
 LIBGREET_DLL_IMPORT!$LIBGREET_DLL_IMPORT$ac_delim
@@ -45634,7 +45462,7 @@ CYGCHECK!$CYGCHECK$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 20; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 24; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -46409,7 +46237,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.374 2007-05-02 13:38:51 fortiz Exp $
+| $Id: configure,v 1.375 2007-05-08 17:52:53 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

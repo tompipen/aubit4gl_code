@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.271 2007-05-06 10:48:35 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.272 2007-05-08 17:53:12 mikeaubury Exp $
 #
 */
 
@@ -2394,6 +2394,7 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 #define gzfprintf gzprintf
 #define gzfread(a,b,c,d) gzread(d,a,b*c)
 #define gzfeof(f) gzeof(f)
+#define gzfgets( buf,len,f) gzgets(f, buf,len)
 #define gzfclose(a) gzclose(a)
 #define gzfgetc(a) gzgetc(a)
 #define gzfputc(a,b) gzputc(b,a)
@@ -2406,6 +2407,7 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 #define gzfseek(a,b,c) seek(a,b,c)
 #define gzrewind(a) rewind(a)
 #define gzfclose(a) fclose(a)
+#define gzfgets(buf,len,f) fgets(buf,len,f)
 #define gzfeof(f) feof(f)
 #define gzfgetc(a) fgetc(a)
 #define gzfputc(a,b) fputc(a,b)

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.346 2007-05-02 13:39:04 fortiz Exp $
+dnl # $Id: configure.in,v 1.347 2007-05-08 17:53:10 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.346 2007-05-02 13:39:04 fortiz Exp $)
+AC_REVISION($Id: configure.in,v 1.347 2007-05-08 17:53:10 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -1891,6 +1891,7 @@ AC_EXEEXT
 AC_OBJEXT
 
 
+
 AC_OBJEXT
 #   Defines substitute variable OBJEXT based on the output of the compiler, 
 #after .c files have been excluded. Typically set to `.o' if Unix, `.obj' if Win32.
@@ -2496,7 +2497,7 @@ COMP_EXE="4glc fcompile amkmessage convertsql 4glpc sql_parse adbschema \
 if test "$enable_minimal" != "yes"; then
 #Note: some of them will still be built, but not installed or packaged
 	COMP_EXE="$COMP_EXE aace generate_aace aace_4gl aace_perl \
-		mcompile mdecompile process_report adecompile ide1$A4GL_EXE_EXT \
+		mcompile mdecompile process_report quick_check_logrep adecompile ide1$A4GL_EXE_EXT \
 		fdecompile unmkmessage default_frm"
 	RUNTIME_EXE="$RUNTIME_EXE fshow loadmap"
 else
@@ -2818,6 +2819,8 @@ ETC_FILES="$ETC_FILES $FORM_FILES $ALL_HELP"
 
 PHP_CONFIGURE_PART(Configuring Debugging options)
 PHP_HELP_SEPARATOR([Debugging options:])
+
+
 
 AC_MSG_CHECKING(Autoconf debugging)
 if test "$enable_ac_debug" = "yes" ; then
@@ -5953,6 +5956,9 @@ fi
 if test "$enable_stop_informix" = "yes" ; then
 	exit
 fi
+
+
+
 
 ## ==================================================================
 ##                 Checks for PostgreSQL engine
@@ -9152,10 +9158,23 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AC_SUBST(HAVE_WINSLEEP)
 fi
 
+
+## ==================================================================
+##                 Checks for libcurl
+## ==================================================================
+
+#AC_SUBST(LIBCURL_CPPFLAGS)
+#AC_SUBST(LIBCURL)
+
+#AC_SUBST(HAVE_LIBCURL)
+AC_MSG_CHECKING(Checking LIBCURL support)
+LIBCURL_CHECK_CONFIG([yes],[7.9.7],HAVE_LIBCURL=1 ,HAVE_LIBCURL=0  )
+AC_SUBST(HAVE_LIBCURL)
+
+
 ## ==================================================================
 ##                   Checks for library functions
 ## ==================================================================
-
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	
@@ -10955,7 +10974,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.346 2007-05-02 13:39:04 fortiz Exp $
+| $Id: configure.in,v 1.347 2007-05-08 17:53:10 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

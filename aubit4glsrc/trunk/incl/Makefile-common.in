@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.211 2007-04-19 21:10:10 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.212 2007-05-08 17:53:11 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -599,6 +599,10 @@ USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
 RPCGEN				=@RPCGEN@
 RPCLIB_NAME			=@RPCLIB_NAME@
+
+HAVELIBCURL			=@HAVE_LIBCURL@
+LIBCURLCPPFLAGS			=@LIBCURL_CPPFLAGS@
+LIBCURL_LIBS			=@LIBCURL@
 
 ##################################################
 #definitions of names for binary distro file name:

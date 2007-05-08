@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.29 2007-04-12 11:45:09 mikeaubury Exp $
+# $Id: Makefile,v 1.30 2007-05-08 17:53:12 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -68,10 +68,10 @@ COMMONSRC= \
 	pointers.c \
 	read_dty.c readkeys.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
 	screen.c sql_common.c sqlconvert.c stack_ops.c stack.c string.c sqlca.c \
-	translate.c \
+	translate.c curl.c \
 	ui.c
 
-CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API}
+CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} 
 OBJS_API			=${CMODS_API:.c=.o}
 OBJS				=${CMODS:.c=.o}
 
@@ -110,6 +110,7 @@ LCLINT_CFLAGS   	=${C_IFLAGS} -I.
 ifeq "${TARGET_OS}" "solaris"
 	LINK_LIBS		+=-lsocket
 endif
+
 
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
@@ -173,6 +174,8 @@ ifeq "${HAVE_ZLIB}" "1"
 	LINK_LIBS		+=-lz
 endif
 
+LINK_LIBS 	+=${LIBCURL_LIBS}
+
 .PHONY: all ci splint lclint api clean clean.generated clean.api api.headers lib
 
 ## ==================================================================
@@ -184,6 +187,8 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
+info.linklibs:
+	echo ${LINK_LIBS}
 #################################
 # Build Aubit library file
 # NOTE: we are building versioned library; un-versioned one is a link to versioned library
@@ -220,6 +225,9 @@ endif
 
 ci: $(CMODS)
 	ci -l  $^
+
+curl.o: curl.c
+	${CC} ${CFLAGS} ${LIBCURLCPPFLAGS}  -c -o $@ $^
 
 project.o: ${LIBROOT}/generated/${CMODS_PROJECT}
 	${CC} ${CFLAGS} -c -o $@ $^
@@ -351,7 +359,6 @@ clean.api:
 	API_sqlparse_self.c API_ui_self.c
 
 #----------------------------------- EOF -------------------------------
-
 
 
 

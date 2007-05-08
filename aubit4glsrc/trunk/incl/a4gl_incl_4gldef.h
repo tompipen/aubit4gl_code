@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.104 2007-05-06 10:48:35 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.105 2007-05-08 17:53:11 mikeaubury Exp $
 */
 
 /**
@@ -475,6 +475,9 @@ void A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, c
 void A4GL_free_report (struct rep_structure *rep);
 int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb);
 void A4GL_pop_report_section (struct rep_structure *rep, int rb);
+void A4GL_pdf_pop_report_section (struct pdf_rep_structure *rep, int rb) ;
+
+int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) ;
 
 /*
 to fix the _nm_status error (if status is an int) change
