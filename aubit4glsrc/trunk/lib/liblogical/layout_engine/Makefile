@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2007-04-10 15:18:28 mikeaubury Exp $
+# $Id: Makefile,v 1.13 2007-05-08 17:49:47 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -159,5 +159,5 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} *.o ${ROOT}/bin/layout_engine API_layout.h API_layout.c *.dll.a *~  ../common/a4gl_lle.o
+	${RM} *.o ${ROOT}/bin/layout_engine ${ROOT}/bin/quick_check_logrep API_layout.h API_layout.c *.dll.a *~  ../common/a4gl_lle.o
 	

@@ -17,6 +17,7 @@ struct r_report *rep;
 #define YHEIGHT 15
 int fake_clicked(int a,int b);
 
+static int save_file_internal(char *fname) ;
 GtkWidget *create_block (int n);
 void msgbox (char *title, char *txt);
 static void quit_program (void);
@@ -25,16 +26,19 @@ static void start_lle (void);
 static void load_file (void);
 static void open_rv (void);
 static void open_pal (void);
+static int load_lrf(char *fname) ;
 void set_block_clicked (int rb);
 void set_clicked (int rb, int entry);
 void setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label);
 void setup_block (int b, GtkWidget * evt, GtkWidget * label);
 void edit_lle(struct r_report *r);
-
-
+char sendLRFto[200]="";
 int rbs;
+char lastLRF[200]=""; 	// Last LRF filename
+			// normally loaded from the command line...
 
 
+char defaultDir[200]=".";
 
 struct r_report *report_internal;
 struct s_rbx *rbx = 0;
@@ -62,7 +66,10 @@ preview_file (void)
 int main (int argc, char *argv[])
 {
   char buff_env[256];
-
+  char *fake_argv[100];
+  int fake_argc;
+  int a;
+  int save_new=0;
 
   //int npages;
   //char buff[256];
@@ -76,137 +83,57 @@ int main (int argc, char *argv[])
   //int entry_cnt;
   rbs = 0;
   rbx = 0;
+  
+  fake_argc=1;
 
-  if (argc != 3)
+  for (a=1;a<argc;a++) {
+		if (strcmp(argv[a],"-display")==0) {
+			a++;
+			A4GL_setenv("DISPLAY", argv[a],1);
+			continue;
+		}
+
+		if (strcmp(argv[a],"-sendto")==0) {
+			a++;
+			strcpy(sendLRFto,argv[a]);
+			continue;
+		}
+		if (strcmp(argv[a],"-defaultdir")==0) {
+			a++;
+			strcpy(defaultDir,argv[a]);
+			continue;
+		}
+
+		if (strcmp(argv[a],"-lrf")==0) {
+			a++;
+			sprintf(lastLRF, "%s", argv[a]);
+			continue;
+		}
+
+
+		fake_argv[fake_argc++]= argv[a];
+  }
+
+  if (fake_argc != 3)
     {
       printf ("Usage %s type file-name\n", argv[0]);
       exit (1);
     }
-  report_internal = read_report_output (argv[2]);
+
+  report_internal = read_report_output (fake_argv[2]);
 
   if (report_internal == 0)
     {
       printf ("Unable to open report output\n");
       exit (2);
     }
-  input_fname = argv[2];
-  A4GL_convupper (argv[1]);
-  sprintf (buff_env, "LOGREP=%s", argv[1]);
-  A4GL_setenv ("LOGREP", argv[1], 1);
+
+  input_fname = fake_argv[2];
+
+  A4GL_convupper (fake_argv[1]);
+  sprintf (buff_env, "LOGREP=%s", fake_argv[1]);
+  A4GL_setenv ("LOGREP", fake_argv[1], 1);
   A4GLLOGREP_initlib ();
-
-#ifdef MOVED_TO_COMMON
-
-  for (a = 0; a < report_internal->nblocks; a++)
-    {
-      found = 0;
-      if (rbs)
-	{
-	  for (b = 0; b < rbs; b++)
-	    {
-	      if (report_internal->blocks[a].rb == rbx[b].rb)
-		{
-		  found = 1;
-		  break;
-		}
-	    }
-	}
-      if (found)
-	continue;
-      rbs++;
-      rbx = realloc (rbx, sizeof (struct s_rbx) * rbs);
-      rbx[rbs - 1].rb = report_internal->blocks[a].rb;
-      rbx[rbs - 1].why = report_internal->blocks[a].why;
-      rbx[rbs - 1].where = report_internal->blocks[a].where;
-    }
-
-  printf ("%d distinct blocks...\n", rbs);
-
-  for (block_cnt = 0; block_cnt < rbs; block_cnt++)
-    {
-      int *tmp_space_e;
-      int *tmp_space_s;
-      rbx[block_cnt].max_entry = 0;
-      rbx[block_cnt].entry_nos = 0;
-      rbx[block_cnt].nentry_nos = 0;
-      rbx[block_cnt].max_size_entry = 0;
-
-      for (rblock_cnt = 0; rblock_cnt < report_internal->nblocks; rblock_cnt++)
-	{
-	  if (rbx[block_cnt].rb != report_internal->blocks[rblock_cnt].rb)
-	    {
-	      continue;
-	    }
-
-	  for (entry_cnt = 0; entry_cnt < report_internal->blocks[rblock_cnt].nentries;
-	       entry_cnt++)
-	    {
-	      if (report_internal->blocks[rblock_cnt].entries[entry_cnt].entry_id >=
-		  rbx[block_cnt].max_entry)
-		{
-		  int nmax;
-		  nmax =
-		    report_internal->blocks[rblock_cnt].entries[entry_cnt].entry_id +
-		    1;
-
-		  rbx[block_cnt].entry_nos =
-		    realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nmax));
-		  rbx[block_cnt].max_size_entry =
-		    realloc (rbx[block_cnt].max_size_entry,
-			     sizeof (int) * (nmax));
-		  for (a = rbx[block_cnt].max_entry; a < nmax; a++)
-		    {
-		      rbx[block_cnt].entry_nos[a] = -1;
-		      rbx[block_cnt].max_size_entry[a] = 0;
-		    }
-		  rbx[block_cnt].max_entry = nmax;
-		}
-
-	      if (strlen
-		  (report_internal->blocks[rblock_cnt].entries[entry_cnt].string))
-		{
-		  rbx[block_cnt].entry_nos[entry_cnt] = entry_cnt;
-		  rbx[block_cnt].max_size_entry[entry_cnt] =
-		    strlen (report_internal->blocks[rblock_cnt].entries[entry_cnt].
-			    string);
-		}
-	    }
-	}
-
-      // By the time we get here - we should have all our fields sized up
-      // some may not be used  - so we'll have -1 for the entry_nos.
-      // Some may have a size of zero - ie they are not used..
-      // Lets take these out...
-      b = 0;
-      tmp_space_e = malloc (sizeof (int) * rbx[block_cnt].max_entry);
-      tmp_space_s = malloc (sizeof (int) * rbx[block_cnt].max_entry);
-      for (a = 0; a < rbx[block_cnt].max_entry; a++)
-	{
-	  if (rbx[block_cnt].entry_nos[a] >= 0
-	      && rbx[block_cnt].max_size_entry[a])
-	    {
-	      tmp_space_e[b] = rbx[block_cnt].entry_nos[a];
-	      tmp_space_s[b] = rbx[block_cnt].max_size_entry[a];
-	      b++;
-	    }
-	  else
-	    {
-	      printf ("Discarding block %d entry %d - %d %d\n", block_cnt, a,
-		      rbx[block_cnt].entry_nos[a],
-		      rbx[block_cnt].max_size_entry[a]);
-	    }
-	}
-      rbx[block_cnt].nentry_nos = b;
-      memcpy (rbx[block_cnt].entry_nos, tmp_space_e,
-	      sizeof (int) * rbx[block_cnt].nentry_nos);
-      memcpy (rbx[block_cnt].max_size_entry, tmp_space_s,
-	      sizeof (int) * rbx[block_cnt].nentry_nos);
-      free (tmp_space_e);
-      free (tmp_space_s);
-    }
-
-#endif
-
 
   obtain_rbs_rbx(report_internal,&rbs,&rbx);
 
@@ -217,8 +144,28 @@ int main (int argc, char *argv[])
 
   start_lle ();
   edit_lle (report_internal);
+  if (strlen(lastLRF)) {
+		char orig[2000];
+		strcpy(orig, lastLRF);
+			if (!load_lrf(lastLRF)) {
+				// Try in the default diectory...
+				sprintf(lastLRF, "%s/%s", defaultDir, orig);
+				if (!load_lrf(lastLRF)) {
+					// Still nothing...
+					// must be new...
+					save_new=1;
+				}
+			}
+		}
+
+  if (save_new ) {
+	printf("Autosave new file\n");
+	save_file_internal(lastLRF);
+  }
+
   gtk_main ();
-return 0;
+
+  return 0;
 }
 
 
@@ -257,12 +204,22 @@ void quit_program (void)
 
 void save_file (void)
 {
-  FILE *fout;
   char *fname;
   int ok;
-  fname = create_file_selection (0);
+  fname = create_file_selection (lastLRF);
   if (fname)
     {
+ ok=save_file_internal(fname);
+      if (!ok) { msgbox ("Some error during save", "Warning - No save performed..."); }
+  } else
+    {
+      msgbox ("Save Aborted", "No save performed...");
+    }
+}
+
+int save_file_internal(char *fname) {
+  FILE *fout;
+  int ok;
       char *ptr;
       printf ("fname==%s\n", fname);
       ptr = strrchr (fname, '/');
@@ -282,15 +239,29 @@ void save_file (void)
       fprintf (fout, "%s %s\n", report_internal->repName, report_internal->modName);
       fprintf (fout, "%s\n", input_fname);
       ok=LR_save_file (report_internal,fout,rbx,rbs);
-      if (!ok) {
-		msgbox ("Some error during save", "Warning - No save performed...");
-	}
+
       fclose (fout);
-    }
-  else
-    {
-      msgbox ("Save Aborted", "No save performed...");
-    }
+
+	return ok;
+}
+
+
+int load_lrf(char *fname) {
+  FILE *fin=0;
+  int ok=0;
+  char buff[255]="Error loading file";
+
+        if (load_filter_file_header(fname,&fin,buff)) {
+                ok=LR_load_file (report_internal, fin,rbx,rbs);
+        } 
+	if (fin) {
+        	fclose(fin);
+	}
+	if (!ok)  {
+		printf("Unable to open lrf file (fname=%s)\n",fname);
+		return 0;
+	}
+	return 1;
 }
 
 void load_file (void)
@@ -304,7 +275,7 @@ void load_file (void)
   //char rname[255];
   //char mname[255];
 	
-  fname = create_file_selection (0);
+  fname = create_file_selection (lastLRF);
 
   if (fname) {
 	ok=0;
@@ -362,8 +333,10 @@ start_lle ()
 
   acc = gtk_accel_group_new ();
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  sprintf (desc, "Logical Layout Engine (Report : %s from Module : %s)",
-	   report_internal->repName, report_internal->modName);
+	printf("report_internal->repName=%s\n", report_internal->repName);
+	printf("report_internal->modName=%s\n", report_internal->modName);
+  sprintf (desc, "Logical Layout Engine (Report : %s from Module : %s)", report_internal->repName, report_internal->modName);
+printf("DESCRIPTION: %s\n", desc);
   gtk_window_set_title (GTK_WINDOW (window), desc);
   gtk_widget_set_usize (GTK_WIDGET (window), 400, 400);
 

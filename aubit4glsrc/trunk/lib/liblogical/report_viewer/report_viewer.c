@@ -10,13 +10,24 @@
 //int fake_clicked(int rb,int entry) ;
 
 
+#define SMALL_FONT "monospace 10"
+#define BIG_FONT "monospace 24"
+
+
+#define USE_PANGO_FONT
+
+#define fontSIZE_WIDTH 0
+#define fontSIZE_HEIGHT 1
+
+int fontSIZE(GtkWidget *parent, char *str, int type, PangoFontDescription * desc);
+
 GtkWidget *window;
 GtkWidget *notebook;
 
 FILE *fin;
 
 #define XWIDTH 8
-#define YHEIGHT 13
+#define YHEIGHT 17
 
 #define MIN_PAGE 10
 #define MAX_PAGE 10
@@ -37,10 +48,13 @@ static void select_block (int rb);
 static void unselect_block (int rb);
 void edit_lle ( struct r_report *report);
 
-char *style_selected = "style \"selected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
-char *style_unselected = "style \"unselected\" {font_name=\"monospace 6\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
-char *style_unselectable = "style \"unselectable\" {font_name=\"monospace 6\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
+char *style_selected_template = "style \"selected\" {font_name=\"%s\" bg[NORMAL] = \"#ffff77\"} widget \"*.selected\" style \"selected\"";
+char *style_unselected_template = "style \"unselected\" {font_name=\"%s\" bg[NORMAL] = \"#eeeeee\" } widget \"*.unselected\" style \"unselected\"";
+char *style_unselectable_template = "style \"unselectable\" {font_name=\"%s\" bg[NORMAL] = \"#ffffff\" } widget \"*.unselectable\" style \"unselectable\"";
 
+char style_selected [300]="";
+char style_unselected [300]="";
+char style_unselectable[300]="";
 
 
 
@@ -78,8 +92,8 @@ main (int argc, char *argv[])
 
   printf ("Time    : %s\n", ctime (&report->ctime));
 
-  printf ("Pages : %d maximum lines/page :%d maximum column position:%d\n",
-	  report->max_page, report->max_line, report->max_col);
+  printf ("Pages : %d maximum lines/page :%d maximum column position:%d\n", report->max_page, report->max_line, report->max_col);
+
 
   gtk_rc_parse_string (style_selected);
   gtk_rc_parse_string (style_unselected);
@@ -266,6 +280,55 @@ void edit_lle ( struct r_report *report)
   GtkWidget *vbox;
   GtkWidget *sw;
   char desc[256];
+char smfont[200];
+int x_units;
+int y_units;
+
+#ifdef USE_PANGO_FONT
+  PangoFontDescription *font_desc_small;
+  PangoFontDescription *font_desc_big;
+#endif
+  
+  if (acl_getenv_not_set_as_0("LAYOUTFONT")) {	
+		strcpy(smfont, acl_getenv_not_set_as_0("LAYOUTFONT"));
+  } else {
+		strcpy(smfont, SMALL_FONT);
+	}
+
+  if (strlen(style_selected)==0) {
+		sprintf(style_selected, style_selected_template, smfont);
+		sprintf(style_unselected, style_unselected_template, smfont);
+		sprintf(style_unselectable, style_unselectable_template, smfont);
+  }
+
+  gtk_rc_parse_string (style_selected);
+  gtk_rc_parse_string (style_unselected);
+  gtk_rc_parse_string (style_unselectable);
+
+  gtk_rc_parse_string ("style \"fixed\" { bg[NORMAL] = \"#ffffff\" } widget \"*.fixed\" style \"fixed\"");
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+
+#ifdef USE_PANGO_FONT
+{
+	GtkLabel *tst;
+        font_desc_small= pango_font_description_from_string (smfont);
+        font_desc_big = pango_font_description_from_string (BIG_FONT);
+
+        tst = (GtkLabel *)gtk_label_new ("W");
+  	gtk_widget_modify_font ((GtkWidget *)tst, font_desc_small); 
+	x_units=fontSIZE((GtkWidget *)tst, "W", fontSIZE_WIDTH, font_desc_small);
+	y_units=fontSIZE((GtkWidget *)tst, "W", fontSIZE_HEIGHT, font_desc_small);
+	#undef XWIDTH 
+	#undef YHEIGHT 
+
+	#define XWIDTH x_units
+	#define YHEIGHT y_units
+	printf("%d %d\n", x_units,y_units);
+
+	}
+
+#endif
 
 #define DRAG_TARGET_NAME_0 "ReportBlock"
 #define DRAG_TARGET_INFO_0 0
@@ -275,20 +338,12 @@ void edit_lle ( struct r_report *report)
   /* This is called in all GTK applications. Arguments are parsed
    * from the command line and are returned to the application. */
 
-  gtk_rc_parse_string (style_selected);
-  gtk_rc_parse_string (style_unselected);
-  gtk_rc_parse_string (style_unselectable);
-
-  gtk_rc_parse_string
-    ("style \"fixed\" { bg[NORMAL] = \"#ffffff\" } widget \"*.fixed\" style \"fixed\"");
-
 
 
   /* create a new window */
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 gtk_widget_set_usize (GTK_WIDGET (window),500,300);
   //sprintf(desc,"Report Output Viewer (Report : %s from Module : %s)",report->repName,report->modName);
-  gtk_window_set_title (GTK_WINDOW (window), desc);
+  gtk_window_set_title (GTK_WINDOW (window), "Report Viewer Window");
 
   /* When the window is given the "delete_event" signal (this is given
    * by the window manager, usually by the "close" option, or on the
@@ -334,6 +389,12 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 
 	
   label = gtk_label_new ("Your Report");
+
+#ifdef USE_PANGO_FONT
+  gtk_widget_modify_font (label, font_desc_big); 
+#endif
+
+
   gtk_container_add (GTK_CONTAINER (vbox), label);
   gtk_box_set_child_packing (GTK_BOX (vbox), label, 0, 0, 0, GTK_PACK_START);
 
@@ -663,3 +724,32 @@ void gtk_object_set_data_from_int (void *obj, char *name,int data) {
 	d=data;
 	gtk_object_set_data(obj,name,(void *)d);
 }
+
+
+
+int fontSIZE(GtkWidget *parent, char *str, int type, PangoFontDescription * desc)
+{
+int width, height, ret;
+//PangoFontDescription *desc;
+PangoLayout *layout = pango_layout_new (gtk_widget_get_pango_context (parent /* drawing area, e.g. */));
+
+pango_layout_set_text(layout, str, -1);
+pango_layout_set_font_description(layout, desc);
+pango_layout_get_pixel_size (layout, &width, &height);
+
+
+switch (type)
+{
+  case fontSIZE_HEIGHT:
+    ret = height;
+    break;
+  case fontSIZE_WIDTH:
+    ret = width;
+    break;
+}
+g_object_unref (layout);
+return(ret);
+}
+
+
+
