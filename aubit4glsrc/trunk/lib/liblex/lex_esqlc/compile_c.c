@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.367 2007-05-01 07:42:28 mikeaubury Exp $
+# $Id: compile_c.c,v 1.368 2007-05-08 17:46:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.367 2007-05-01 07:42:28 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.368 2007-05-08 17:46:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -865,7 +865,7 @@ LEXLIB_print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
 
-printc("A4GL_push_report_section(&_rep,_module_name,_reportName,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
+printc("A4GL_%spush_report_section(&_rep,_module_name,_reportName,%d,'%c',\"%s\",%d);",ispdf (), yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
 rep_print_entry=0;
 
 }
@@ -1158,7 +1158,7 @@ void
 /* print_rep_ret (void) */
 LEXLIB_print_rep_ret (int report_cntx,int addit)
 {
-  if (addit) printc("A4GL_pop_report_section(&_rep,%d);",rep_print_code++);
+  if (addit) printc("A4GL_%spop_report_section(&_rep,%d);",ispdf (), rep_print_code++);
   printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
 }
 
@@ -1198,6 +1198,8 @@ print_output_rep (struct rep_structure *rep)
 
   printc ("_rep.header=0;\n");
   printc ("_rep.finishing=0;\n");
+  printc ("_rep.nblocks=0;\n");
+  printc ("_rep.blocks=0;\n");
   printc ("_rep.repName=_reportName;\n");
   printc ("_rep.modName=_module_name;\n");
   printc ("_rep.page_no=%d;\n", rep->page_no);
@@ -1241,6 +1243,8 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("_rep.lines_in_first_header=-1;\n");
   printc ("_rep.print_section=0;\n");
   printc ("_rep.finishing=0;\n");
+  printc ("_rep.nblocks=0;\n");
+  printc ("_rep.blocks=0;\n");
   printc ("_rep.repName=_reportName;\n");
   printc ("_rep.modName=_module_name;\n");
 
