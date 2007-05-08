@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.129 2007-05-08 17:49:14 mikeaubury Exp $
+# $Id: report.c,v 1.130 2007-05-08 17:54:06 mikeaubury Exp $
 #
 */
 
@@ -353,7 +353,7 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
 	  hdr->save[hdr->save_cnt - 1].rb = rep->curr_rb;
 
 	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no, rep->line_no, rep->col_no, entry, buff);
-	  if (rep->col_no==0&&entry==0) A4GL_pause_execution();
+	  //if (rep->col_no==0&&entry==0) A4GL_pause_execution();
 	}
       free (n);
     }
