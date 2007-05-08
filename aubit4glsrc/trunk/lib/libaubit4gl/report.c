@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.128 2007-04-26 12:59:10 mikeaubury Exp $
+# $Id: report.c,v 1.129 2007-05-08 17:49:14 mikeaubury Exp $
 #
 */
 
@@ -88,6 +88,7 @@ struct s_save_header_entry
   int line_no;
   int col_no;
   int entry;
+  int rb;
   char *s;
 };
 
@@ -348,6 +349,9 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr,
 	  hdr->save[hdr->save_cnt - 1].col_no = rep->col_no;
 	  hdr->save[hdr->save_cnt - 1].entry = entry;
 	  hdr->save[hdr->save_cnt - 1].s = acl_strdup (buff);
+
+	  hdr->save[hdr->save_cnt - 1].rb = rep->curr_rb;
+
 	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no, rep->line_no, rep->col_no, entry, buff);
 	  if (rep->col_no==0&&entry==0) A4GL_pause_execution();
 	}
@@ -364,7 +368,9 @@ print_header_entries (struct rep_structure *rep)
   int c;
   int a;
   struct s_save_header *hdr;
+int last_rb;
 
+last_rb=rep->curr_rb;
 // Save these away - we'll need to change them...
 
   p = rep->page_no;
@@ -373,8 +379,19 @@ print_header_entries (struct rep_structure *rep)
   if (rep->header)
     {
       hdr = (struct s_save_header *) rep->header;
+
+
+
       for (a = 0; a < hdr->save_cnt; a++)
 	{
+
+ 	  if (rep->curr_rb!=hdr->save[a].rb)  {
+			int rb;
+			A4GL_pop_report_section (rep, rep->curr_rb);
+			rb=hdr->save[a].rb;
+			A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno,rep->blocks[rb].where,rep->blocks[rb].why, rb);
+ 	  }
+
 	  rep->page_no = hdr->save[a].page_no;
 	  rep->line_no = hdr->save[a].line_no;
 	  rep->col_no = hdr->save[a].col_no;
@@ -392,6 +409,16 @@ print_header_entries (struct rep_structure *rep)
       free (hdr->save);
       free (hdr);
     }
+
+  if ( rep->curr_rb!=last_rb ) {
+	int rb;
+		A4GL_pop_report_section (rep, rep->curr_rb);
+		rb=last_rb;
+		A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno,rep->blocks[rb].where,rep->blocks[rb].why, rb);
+
+  }
+
+
 }
 
 
@@ -1785,28 +1812,61 @@ print_report_block_end (struct rep_structure *rep, int rb)
 
 }
 
+void A4GL_pdf_pop_report_section (struct pdf_rep_structure *rep, int rb) {
+  rep->curr_rb=-1;
+}
 
-int
-A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname,
-			  int lineno, char where, char *why, int rb)
+int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) {
+  if (rb>=rep->nblocks) {
+	rep->nblocks=rb+1;
+	//printf("Allocating %d blocks in %p\n", rep->nblocks, rep->blocks);
+	rep->blocks=realloc(rep->blocks, sizeof(struct rb_blocks)*rep->nblocks);
+	//printf("=%p\n", rep->blocks);
+	rep->blocks[rb].lineno=lineno;
+	rep->blocks[rb].where=where;
+	strcpy(rep->blocks[rb].why,why);
+  }
+	
+}
+
+int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb)
 {
+
+
+  if (rb>=rep->nblocks) {
+	rep->nblocks=rb+1;
+	//printf("Allocating %d blocks in %p\n", rep->nblocks, rep->blocks);
+	rep->blocks=realloc(rep->blocks, sizeof(struct rb_blocks)*rep->nblocks);
+	//printf("=%p\n", rep->blocks);
+	rep->blocks[rb].lineno=lineno;
+	rep->blocks[rb].where=where;
+	strcpy(rep->blocks[rb].why,why);
+  }
+
+
   if (rep->output_mode == 'C')
     {
       print_report_block_start (rep, mod, repname, lineno, where, why, rb);
     }
+
+  rep->curr_rb=rb;
+
   lvl++;
   return rb;
 }
 
 
-void
-A4GL_pop_report_section (struct rep_structure *rep, int rb)
+void A4GL_pop_report_section (struct rep_structure *rep, int rb)
 {
+
   if (rep->output_mode == 'C')
     {
       lvl--;
       print_report_block_end (rep, rb);
     }
+
+  rep->curr_rb=-1;
+
 }
 
 
