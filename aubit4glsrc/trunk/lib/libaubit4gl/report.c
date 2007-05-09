@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.130 2007-05-08 17:54:06 mikeaubury Exp $
+# $Id: report.c,v 1.131 2007-05-09 18:46:24 mikeaubury Exp $
 #
 */
 
@@ -696,12 +696,16 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 	    }
 	  else
 	    {
-	      A4GL_debug ("popen '%s'", rep->output_loc);
-	      rep->output = popen (rep->output_loc, "w");
+	  	if (rep->output_mode == 'S') {
+		  rep->output = stdout;
+		} else {
+	      		A4GL_debug ("popen '%s'", rep->output_loc);
+	      		rep->output = popen (rep->output_loc, "w");
 	      if (rep->output == 0)
 		{
 		  A4GL_exitwith ("Could not open report output");
 		  return;
+		}
 		}
 	    }
 
