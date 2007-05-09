@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.59 2007-04-12 15:48:23 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.60 2007-05-09 06:30:22 mikeaubury Exp $
 #
 */
 
@@ -908,6 +908,10 @@ short *i;
 void *native;
 void *a4gl=0;
 int size;
+
+if (a4gl_bind==0) {
+	return;
+}
 
 for (a=0;a<n;a++) {
 	native=native_bind[a].ptr;
