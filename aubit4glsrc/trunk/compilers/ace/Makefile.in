@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.28 2007-01-15 19:52:57 mikeaubury Exp $
+# $Id: Makefile.in,v 1.29 2007-05-09 16:37:44 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -89,9 +89,9 @@ endif
 
 #generate_aace
 
-ifeq "${TARGET_OS}" "solaris"
-	LINK_LIBS		=-lnsl
-endif
+#ifeq "${TARGET_OS}" "solaris"
+	#LINK_LIBS		=-lnsl
+#endif
 
 TEST_DB				=mips_3_3 
 TEST_TABLE			=systables
@@ -105,19 +105,19 @@ all: ${ALL}
 
 #Main Ace executable
 ${ROOT}/bin/aace: ${OBJS}
-	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS} ${EXTRASYSTEMLIBS}
 
 #de-compiles compiled aace forms
 ${ROOT}/bin/adecompile:  ${OBJS_DECOMP}
-	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS} ${EXTRASYSTEMLIBS}
 
 #translates ace forms to 4gl
 ${ROOT}/bin/aace_4gl :  ${OBJS_4GL}
-	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS} ${EXTRASYSTEMLIBS}
 
 #translates ace forms to perl
 ${ROOT}/bin/aace_perl :  ${OBJS_PERL}
-	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
+	${LD_EXE} -o $@ ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS} ${EXTRASYSTEMLIBS}
 
 #program to create default ace form for a given table in selected database
 ${ROOT}/bin/generate_aace : generate.4gl

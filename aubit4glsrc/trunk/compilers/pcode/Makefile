@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.31 2007-03-28 09:18:42 mikeaubury Exp $
+# $Id: Makefile,v 1.32 2007-05-09 16:37:44 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -151,9 +151,9 @@ ifneq "${COMSPEC}" ""
 	#-lcygwin
 endif
 
-ifeq "${TARGET_OS}" "solaris"
-	RPCLINKLIBS=-lnsl
-endif
+#ifeq "${TARGET_OS}" "solaris"
+	#RPCLINKLIBS=-lnsl
+#endif
 
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"
@@ -181,7 +181,7 @@ all: ${ALL} ${BINROOT}/runner_fgl_wrapper
 	@echo "Default targets (${ALL}) compiled."
 
 ${BINROOT}/checker: $(OBJ_CHECKER_C) npcode.h
-	$(CC) -g -o $@ $(OBJ_CHECKER_C) ${LINKLIBS} ${RPCLINKLIBS}
+	$(CC) -g -o $@ $(OBJ_CHECKER_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
 
 #use "npcode.xs.h" instead of npcode.h
 #${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.h
@@ -190,7 +190,7 @@ ${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.xs.h
 #${RPCLINKLIBS}
 
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
-	$(CC) -g -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS}
+	$(CC) -g -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
 
 #${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.h
 ${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.xs.h
@@ -201,11 +201,11 @@ ${BINROOT}/link_fgl:  $(OBJ_LINKER) npcode.xs.h
 	$(CC) -g -o $@ $(OBJ_LINKER) ${LINKLIBS} 
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS}
+	$(CC) --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 
 #${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)  npcode.xs.h
-	$(CC) --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS}
+	$(CC) --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 #${RPCLINKLIBS}
 
 ${BINROOT}/runner_fgl_wrapper:

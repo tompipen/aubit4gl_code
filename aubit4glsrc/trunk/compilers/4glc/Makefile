@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.24 2006-11-29 11:14:17 mikeaubury Exp $
+# $Id: Makefile,v 1.25 2007-05-09 16:37:44 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -128,10 +128,10 @@ ifeq "${TARGET_OS}" "linux"
 	LD_EXE_FLAGS=-rdynamic
 endif
 
-ifeq "${TARGET_OS}" "solaris"
+#ifeq "${TARGET_OS}" "solaris"
 	#LINKLIBS	+=-ldl
-	AUBIT_LIB	+=-ldl
-endif
+	#AUBIT_LIB	+=-ldl
+#endif
 
 ifeq "something" "blah"
 	LD_EXE_FLAGS=-export-dynamic
@@ -149,7 +149,7 @@ all: a4gl_4glc_int.h ${ALL}
 a4gl_4glc_int.h: API_lex.c API_parse.c
 
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
-	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
+	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
 ifeq "${STRIP_EXECUTABLES}" "yes"
 	${CP}  $@${EXEEXT} $@-strip${EXEEXT}
 	${STRIP} $@-strip${EXEEXT}

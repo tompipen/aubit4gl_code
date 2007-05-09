@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.65 2007-01-15 19:52:57 mikeaubury Exp $
+# $Id: Makefile.in,v 1.66 2007-05-09 16:37:44 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -105,23 +105,23 @@ all: $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${ROOT}/bin/default_frm: create_default.o
-	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 
 ${ROOT}/bin/fcompile: $(OBJECTS)
-	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 
 #> ifneq "${TARGET_OS}" "hpux"
-#>         ${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+#>         ${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 #> else
 #>         ${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} -lLEX_EC -lSQL_esql
 #> endif
 
 
 ${ROOT}/bin/fdecompile-j : ${OBJS_DECOMPILE} ${OBJS_DUMP_JAVA}
-	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 
 ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
-	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 
 #fshow : clean.fshow ${ROOT}/bin/fshow
 

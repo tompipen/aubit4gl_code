@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.30 2007-05-08 17:53:12 mikeaubury Exp $
+# $Id: Makefile,v 1.31 2007-05-09 16:37:45 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -107,9 +107,9 @@ LCLINT_CFLAGS   	=${C_IFLAGS} -I.
 ##                        Platform specific options
 ## ==================================================================
 
-ifeq "${TARGET_OS}" "solaris"
-	LINK_LIBS		+=-lsocket
-endif
+#ifeq "${TARGET_OS}" "solaris"
+	#LINK_LIBS		+=-lsocket
+#endif
 
 
 ifneq "${TARGET_OS}" "hpux"
@@ -193,7 +193,7 @@ info.linklibs:
 # Build Aubit library file
 # NOTE: we are building versioned library; un-versioned one is a link to versioned library
 ${LIBROOT}/lib${AUBITLIBFULL}${SO_EXT_LINKABLE}: $(OBJS)
-	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS}
+	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS} ${EXTRASYSTEMLIBS}
 ifeq "${TARGET_OS}" "darwin"
 	${MKPATH} ${INST_PATH}
 	${CP} $@ ${INST_PATH}

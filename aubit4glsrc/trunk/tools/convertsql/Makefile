@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.3 2006-07-27 16:04:24 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2007-05-09 16:37:46 mikeaubury Exp $
 #
 
 ROOT      	= ../..
@@ -49,7 +49,7 @@ CFLAGS		+=-I${ROOT}/incl
 all:	$(PROGRAM)
 
 $(PROGRAM):	main.o convertsql.o
-	${CC} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL}
+	${CC} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL} ${EXTRASYSTEMLIBS}
 
 ## ==================================================================
 ##                    Clean
