@@ -13,6 +13,10 @@ void msgbox (char *title, char *txt);
 
 #define DRAG_TARGET_NAME_1 "ReportBlock"
 #define DRAG_TARGET_INFO_1 1
+
+#define DRAG_TARGET_NAME_2 "CustomText"
+#define DRAG_TARGET_INFO_2 2
+
 GtkTargetEntry target_entry[] = {
   {DRAG_TARGET_NAME_0, 0, DRAG_TARGET_INFO_0}
 };
@@ -20,6 +24,10 @@ GtkTargetEntry target_entry[] = {
 //int fake_clicked(int a,int b);
 
 int (*fake_clicked_ptr)(int a,int b) =0;
+
+GtkLabel *LastLabel=0;
+
+
 
 GtkTargetEntry target_block[] = {
   {DRAG_TARGET_NAME_1, 0, DRAG_TARGET_INFO_1}
@@ -29,13 +37,20 @@ GtkTargetEntry target_all[] = {
   {DRAG_TARGET_NAME_0, 0, DRAG_TARGET_INFO_0}
   ,
   {DRAG_TARGET_NAME_1, 0, DRAG_TARGET_INFO_1}
+  ,
+  {DRAG_TARGET_NAME_2, 0, DRAG_TARGET_INFO_2}
 };
 
+GtkTargetEntry target_text[] = {
+  {DRAG_TARGET_NAME_2, 0, DRAG_TARGET_INFO_2}
+};
 
 GtkWidget *window;
 
 static int gtk_object_get_data_as_int(void *obj,char *name) ;
 static void gtk_object_set_data_from_int (void *obj, char *name,int data) ;
+GtkWidget * create_text_block (int rbs) ;
+static void dbclick_drop(GtkWidget *clicked) ;
 
 
 struct r_report *rep;
@@ -48,10 +63,12 @@ void resize_table (GtkWidget * table, int nlines, int ncols,int src_block);
 void sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data);
 
 void do_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data);
+void do_data_get_tb (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data);
 GtkWidget * create_integer_spin_button (void);
 void make_dropable (GtkWidget * label, GtkWidget * evt);
 GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block);
 void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection_data, guint info, guint t, gpointer data);
+void do_drag_data_received_tb (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection_data, guint info, guint t, gpointer data) ;
 void do_data_get_block (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data);
 
 
@@ -129,7 +146,9 @@ vbox_in_sw=vvbox_in_sw;
     {
       gtk_container_add (GTK_CONTAINER (vbox_in_sw), create_block (block,rbx,rbs));
     }
+    gtk_container_add (GTK_CONTAINER (vbox_in_sw), create_text_block (9999));
 }
+
 
 
 gint grab_int_value (GtkSpinButton * a_spinner, gpointer user_data)
@@ -155,22 +174,80 @@ void LR_setup_callback(void *p) {
 	fake_clicked_ptr=p;
 }
 
-void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
+
+// Act on a button press on the report viewer side...
+gboolean btnpress (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
 {
+      if (event->type == GDK_2BUTTON_PRESS) {
+		// Fake a drop into the next label...
+		dbclick_drop(widget);
+	}
+  return FALSE;
+}
+
+void dbclick_drop(GtkWidget *clicked) {
+int rb;
+int entry;
+int type=0;
+int orig;
+int x;
+int a;
+int y;
+GtkWidget *NextLabel;
+char buff[256];
+GtkWidget *table;
+
+      rb=gtk_object_get_data_as_int(clicked	,"RB");
+      entry=gtk_object_get_data_as_int(clicked	,"ENTRY");
+  
+      if (LastLabel==0) return;
+
+
+      orig = gtk_object_get_data_as_int (GTK_OBJECT (LastLabel), "BLOCK");
+
+
+      if (orig != rb)
+	{
+	  printf
+	    ("\n\n\n***WARNING : Copying data to a different block may cause unexpected results!\n\n\n");
+	}
+
+      x=gtk_object_get_data_as_int (GTK_OBJECT (LastLabel), "X");
+      y=gtk_object_get_data_as_int (GTK_OBJECT (LastLabel), "Y");
+      printf("x=%d y=%d\n",x,y);
+
+	table=block_tables[orig];
+	  x=x+1;
+	  sprintf (buff, "CELL_LABEL_%d_%d", x, y);
+	  NextLabel = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (table), buff);
+	  if (NextLabel==0) { // X too big ? 
+		x=0;
+		y++;
+	  sprintf (buff, "CELL_LABEL_%d_%d", x, y);
+	  	NextLabel = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (table), buff);
+	  }
+	  if (NextLabel==0) { // Y too big ? 
+		printf("No space to place label\n");
+		return;
+	  }
+	LastLabel=NextLabel;
+      if (type == 0)
+	{
+	  char buff[255];
+	  sprintf (buff, "%d/%d", rb, entry);
+	  gtk_label_set_text (GTK_LABEL (LastLabel), buff); gtk_object_set_data_from_int (GTK_OBJECT (LastLabel), "DATA_TYPE",  0);
+	}
+}
+
+void do_drag_data_received_tb (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection_data, guint info, guint t, gpointer data) {
   int entry;
   int rb;
   int type;
   int orig;
-  GtkWidget *label;
-
-  printf ("DROP %p\n", data);
-
   if (selection_data == 0)
     return;
-  printf ("Have selection");
-
-
-
+  
+  printf("DROP TB selection_data=%p info=%d t=%d data=%p\n", selection_data, info,t,data);
   orig = gtk_object_get_data_as_int (GTK_OBJECT (widget), "BLOCK");
 
   if (info == DRAG_TARGET_INFO_0)
@@ -184,16 +261,74 @@ void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gin
 	  printf
 	    ("\n\n\n***WARNING : Copying data to a different block may cause unexpected results!\n\n\n");
 	}
-      label = gtk_object_get_data (GTK_OBJECT (widget), "LABEL");
 
       if (type == 0)
 	{
 	  char buff[255];
 	  sprintf (buff, "%d/%d", rb, entry);
-	  gtk_label_set_text (GTK_LABEL (label), buff);
+		printf("--->%s\n",buff);
+	  gtk_entry_set_text (GTK_ENTRY (data), buff);
 	}
-
     }
+
+}
+
+
+
+
+void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
+{
+  int entry;
+  int rb;
+  int type;
+  int orig;
+  GtkWidget *label;
+
+  printf ("DROP %p\n", data);
+
+  if (selection_data == 0)
+    return;
+  printf ("Have selection\n");
+
+
+
+  orig = gtk_object_get_data_as_int (GTK_OBJECT (widget), "BLOCK");
+
+  printf("INFO=%d\n",info);
+  if (info == DRAG_TARGET_INFO_0)
+    {
+      gchar *new_text = selection_data->data;
+      printf ("===> %s\n", new_text);
+      sscanf (new_text, "%d %d %d", &rb, &entry, &type);
+
+      if (orig != rb)
+	{
+	  printf
+	    ("\n\n\n***WARNING : Copying data to a different block may cause unexpected results!\n\n\n");
+	}
+      label = gtk_object_get_data (GTK_OBJECT (widget), "LABEL");
+
+      LastLabel=(GtkLabel *)label;
+
+      if (type == 0)
+	{
+	  char buff[255];
+	  sprintf (buff, "%d/%d", rb, entry);
+	  gtk_label_set_text (GTK_LABEL (label), buff); gtk_object_set_data_from_int (GTK_OBJECT (label), "DATA_TYPE",  0);
+	}
+    }
+
+  if (info == DRAG_TARGET_INFO_2) // Custom text...
+    {
+      gchar *new_text = selection_data->data;
+
+      label = gtk_object_get_data (GTK_OBJECT (widget), "LABEL");
+	printf("Label=%p new_text=%s\n", label, new_text);
+	  gtk_label_set_text (GTK_LABEL (label), new_text);
+  				gtk_object_set_data_from_int (GTK_OBJECT (label), "DATA_TYPE",  1);
+    }
+
+
   return;
 }
 
@@ -202,13 +337,9 @@ void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gin
 
 void make_dropable (GtkWidget * label, GtkWidget * evt)
 {
-  gtk_drag_dest_set (evt, GTK_DEST_DEFAULT_ALL, target_all,
-		     sizeof (target_all) / sizeof (GtkTargetEntry),
-		     GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  gtk_signal_connect (GTK_OBJECT (evt), "drag_data_received",
-		      GTK_SIGNAL_FUNC (do_drag_data_received), label);
-  gtk_signal_connect (GTK_OBJECT (label), "drag_data_received",
-		      GTK_SIGNAL_FUNC (do_drag_data_received), label);
+  gtk_drag_dest_set (evt, GTK_DEST_DEFAULT_ALL, target_all, sizeof (target_all) / sizeof (GtkTargetEntry), GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_signal_connect (GTK_OBJECT (evt), "drag_data_received", GTK_SIGNAL_FUNC (do_drag_data_received), label);
+  gtk_signal_connect (GTK_OBJECT (label), "drag_data_received", GTK_SIGNAL_FUNC (do_drag_data_received), label);
 }
 
 
@@ -244,7 +375,10 @@ evt_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
 		}
 	    }
 	}
-    }
+	printf("XXXX\n");
+    } else {
+	printf("TTTTT\n");
+	}
   return FALSE;
 }
 
@@ -286,6 +420,8 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
       gtk_table_resize (GTK_TABLE (table), nrows, ncols);
     }
 
+  gtk_table_set_homogeneous(GTK_TABLE (table), 0);
+
   //printf("%d cols %d rows\n",ncols,nrows);
 
   onc = gtk_object_get_data_as_int (GTK_OBJECT (table), "COLS");
@@ -311,8 +447,7 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 	  sprintf (buff, "CELL_EVT_%d_%d", x, y);
 	  evt = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (table), buff);
 	  sprintf (buff, "CELL_LABEL_%d_%d", x, y);
-	  label =
-	    (GtkWidget *) gtk_object_get_data (GTK_OBJECT (table), buff);
+	  label = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (table), buff);
 
 	  if (evt != 0)
 	    {
@@ -380,6 +515,9 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 	  if (label == 0)
 	    {
 	      label = gtk_label_new ("____");
+	  	gtk_object_set_data_from_int (GTK_OBJECT (label), "X", x);
+	  	gtk_object_set_data_from_int (GTK_OBJECT (label), "Y", y);
+  		gtk_object_set_data_from_int (GTK_OBJECT (label), "DATA_TYPE",  0);
 	    }
 
 
@@ -388,6 +526,7 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 	      //printf("Event Add\n");
 	      gtk_container_add (GTK_CONTAINER (evt), label);
 	    }
+
 
 	  gtk_object_set_data_from_int (GTK_OBJECT (label), "BLOCK", src_block);
 	  gtk_object_set_data_from_int (GTK_OBJECT (evt), "BLOCK", src_block);
@@ -408,8 +547,8 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 	  gtk_drag_source_set (evt, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK,
 			       target_entry,
 			       sizeof (target_entry) /
-			       sizeof (GtkTargetEntry),
-			       GDK_ACTION_MOVE | GDK_ACTION_COPY);
+			       sizeof (GtkTargetEntry), GDK_ACTION_MOVE | GDK_ACTION_COPY);
+
 	  gtk_signal_connect (GTK_OBJECT (evt), "drag_data_get",
 			      GTK_SIGNAL_FUNC (do_data_get_from_layout), evt);
 
@@ -420,8 +559,7 @@ GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 	  if (gtk_object_get_data (GTK_OBJECT (table), buff) == 0)
 	    {
 	      //printf("Table Add\n");
-	      gtk_table_attach (GTK_TABLE (table), evt, x, x + 1, y, y + 1, 0,
-				0, 2, 2);
+	      gtk_table_attach (GTK_TABLE (table), evt, x, x + 1, y, y + 1, GTK_SHRINK, GTK_SHRINK, 2, 2);
 	    }
 
 	  sprintf (buff, "CELL_EVT_%d_%d", x, y);
@@ -449,8 +587,38 @@ void sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data)
   resize_table (GTK_WIDGET (user_data), gtk_spin_button_get_value_as_int (spinbutton), -1, gtk_object_get_data_as_int (GTK_OBJECT (spinbutton), "BLOCK"));
 }
 
-GtkWidget *
-create_block (int n,void *vrbx,int rbs)
+
+GtkWidget * create_text_block (int rbs) {
+  GtkWidget *vbox;
+  GtkWidget *hbox;
+  GtkWidget *hsep;
+  GtkWidget *tb;
+  GtkWidget *Label;
+  vbox = gtk_vbox_new (0, 0);
+  hbox = gtk_hbox_new (0, 0);
+  hsep = gtk_hseparator_new ();
+  gtk_container_add (GTK_CONTAINER (vbox), hsep);
+  Label = gtk_label_new ("Custom Text");
+  tb = gtk_entry_new ();
+  gtk_misc_set_alignment (GTK_MISC (Label), 0, 0);
+  gtk_widget_show (Label);
+  gtk_widget_show (tb);
+  gtk_box_set_child_packing (GTK_BOX (hbox), Label, 0, 0, 0, GTK_PACK_START);
+  gtk_container_add (GTK_CONTAINER (hbox), Label);
+  gtk_container_add (GTK_CONTAINER (hbox), tb);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox);
+
+  //gtk_drag_dest_set (tb, GTK_DEST_DEFAULT_ALL, target_all, sizeof (target_all) / sizeof (GtkTargetEntry), GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  //gtk_signal_connect (GTK_OBJECT (tb), "drag_data_received", GTK_SIGNAL_FUNC (do_drag_data_received_tb), tb);
+
+
+  gtk_drag_source_set (tb, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_text, sizeof (target_text) / sizeof (GtkTargetEntry), GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_signal_connect (GTK_OBJECT (tb), "drag_data_get", GTK_SIGNAL_FUNC (do_data_get_tb), tb);
+  //gtk_signal_connect (GTK_OBJECT (tb), "drag_data_received", GTK_SIGNAL_FUNC (do_drag_data_received), label);
+  return vbox;
+}
+
+GtkWidget * create_block (int n,void *vrbx,int rbs)
 {
   GtkWidget *vbox;
   GtkWidget *label;
@@ -471,8 +639,7 @@ create_block (int n,void *vrbx,int rbs)
 
 
   gtk_container_add (GTK_CONTAINER (vbox), hsep);
-  sprintf (buff, "Block : %d (%c %s %d)", n, rbx[n].where, rbx[n].why,
-	   rbx[n].rb);
+  sprintf (buff, "Block : %d (%c %s %d)", n, rbx[n].where, rbx[n].why, rbx[n].rb);
   label = gtk_label_new (buff);
   gtk_widget_set_usize (GTK_WIDGET (label), 300, 20);
   gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
@@ -513,6 +680,20 @@ create_block (int n,void *vrbx,int rbs)
   return vbox;
 }
 
+void do_data_get_tb (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
+{
+  char text[256];
+  int rb;
+  int entry;
+	
+  //rb =  gtk_object_get_data_as_int (GTK_OBJECT (widget), "RB");
+  //entry =  gtk_object_get_data_as_int (GTK_OBJECT (widget), "ENTRY");
+  sprintf (text, "%s",gtk_entry_get_text(GTK_ENTRY(data)));
+
+  gtk_selection_data_set (selection_data, GDK_SELECTION_TYPE_STRING, 8,	/* 8 bits per character. */
+			  text, strlen (text));
+  printf ("do_data_get_tb : %s \n",text);
+}
 
 void do_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
 {
@@ -555,6 +736,7 @@ void do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc, GtkSelect
 				      /* 8 bits per character. */ text,
 				      strlen (text));
 	      gtk_label_set_text (GTK_LABEL (label), "____");
+  		gtk_object_set_data_from_int (GTK_OBJECT (label), "DATA_TYPE",  0);
 
 	    }
 	}
@@ -583,11 +765,10 @@ LR_setup_entry (void *report, int b, int e,  void *ev,void *lb)
 GtkWidget * evt; GtkWidget * label;
 evt=ev;
 label=lb;
-  gtk_drag_source_set (evt, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_entry,
-		       sizeof (target_entry) / sizeof (GtkTargetEntry),
-		       GDK_ACTION_MOVE | GDK_ACTION_COPY);
-  gtk_signal_connect (GTK_OBJECT (evt), "drag_data_get",
-		      GTK_SIGNAL_FUNC (do_data_get), evt);
+  gtk_drag_source_set (evt, GDK_BUTTON1_MASK | GDK_BUTTON2_MASK, target_entry, sizeof (target_entry) / sizeof (GtkTargetEntry), GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  gtk_signal_connect (GTK_OBJECT (evt), "drag_data_get", GTK_SIGNAL_FUNC (do_data_get), evt);
+  //gtk_signal_connect (GTK_OBJECT (evt), "button-press-event", GTK_SIGNAL_FUNC (btnpress), evt);
+  gtk_signal_connect (GTK_OBJECT (evt), "button-press-event", GTK_SIGNAL_FUNC (btnpress), label);
 }
 
 
@@ -686,17 +867,28 @@ for (a=0;a<rbs;a++) {
 			label=gtk_object_get_data(GTK_OBJECT(table),buff);
 			if (label) {
 				s=(char *)gtk_label_get_text(GTK_LABEL(label));
+				if (gtk_object_get_data_as_int(GTK_OBJECT(label),"DATA_TYPE")==0) {
 				if (s&&strlen(s)&&strcmp(s,"____")!=0) {
 					rb=-1;
 					entry=-1;
+					
 					sscanf(s,"%d/%d",&rb,&entry);
 					if (rb!=-1) {
 						centry=out.blocks[a].matrix[y];
 						centry[x].rb=rb;
 						centry[x].entry=entry;
 						centry[x].special=0;
+						centry[x].fixed_text=0;
 					} 
 				} 
+				} else {
+						centry=out.blocks[a].matrix[y];
+						centry[x].rb=rb;
+						centry[x].entry=entry;
+						centry[x].special=0;
+						centry[x].fixed_text=s;
+				}
+
 			} 
 		}
 	}
@@ -761,17 +953,26 @@ for (a=0;a<rbs;a++) {
 
 	for (y=0;y<rows;y++) {
 		for (x=0;x<cols;x++) {
+			char *fixed;
 			centry=in->blocks[a].matrix[y];
 			rb=centry[x].rb;
 			entry=centry[x].entry;
-			printf("rb=%d entry=%d x=%d y=%d block=%d\n",rb,entry,x,y,a);
+			fixed=centry[x].fixed_text;
   			sprintf (buff, "CELL_LABEL_%d_%d", x, y);
 			label=gtk_object_get_data(GTK_OBJECT(table),buff);
-			if (rb>=0) {
-				sprintf(buff,"%d/%d",rb,entry);
-				gtk_label_set_text(GTK_LABEL(label),buff);
+
+			if (fixed) {
+				gtk_label_set_text(GTK_LABEL(label),fixed);
+  				gtk_object_set_data_from_int (GTK_OBJECT (label), "DATA_TYPE",  1);
 			} else {
-				gtk_label_set_text(GTK_LABEL(label),"____");
+				if (rb>=0) {
+					sprintf(buff,"%d/%d",rb,entry);
+					gtk_label_set_text(GTK_LABEL(label),buff);
+  					gtk_object_set_data_from_int (GTK_OBJECT (label), "DATA_TYPE",  0);
+				} else {
+					gtk_label_set_text(GTK_LABEL(label),"____");
+  					gtk_object_set_data_from_int (GTK_OBJECT (label), "DATA_TYPE",  0);
+				}
 			}
 		}
 	}

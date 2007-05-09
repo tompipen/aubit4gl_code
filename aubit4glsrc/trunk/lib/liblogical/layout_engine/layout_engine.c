@@ -42,6 +42,7 @@ char defaultDir[200]=".";
 
 struct r_report *report_internal;
 struct s_rbx *rbx = 0;
+char *has_been_saved=0;
 
 
 char *input_fname;
@@ -165,6 +166,12 @@ int main (int argc, char *argv[])
 
   gtk_main ();
 
+  if(has_been_saved && strlen(sendLRFto)) {
+	A4GL_push_char(has_been_saved); // filename
+	A4GL_push_char(sendLRFto); // email
+	A4GL_call_4gl_dll ("fgl_smtp", "send_lrf", 2);
+  }
+
   return 0;
 }
 
@@ -242,6 +249,12 @@ int save_file_internal(char *fname) {
 
       fclose (fout);
 
+	if (ok) {
+		if (has_been_saved) {
+			free(has_been_saved);
+		}
+		has_been_saved=strdup(lastLRF);
+	}
 	return ok;
 }
 

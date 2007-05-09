@@ -130,6 +130,9 @@ unselect_all (void)
 
 /* ******************************************************************************** */
 
+
+
+
 static gboolean
 label_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
 {
@@ -447,6 +450,7 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 	      g_signal_connect (G_OBJECT (evt), "button_press_event", G_CALLBACK (evt_clicked), NULL);
 	      g_signal_connect (G_OBJECT (label), "button_press_event", G_CALLBACK (label_clicked), NULL);
 
+
 	      gtk_object_set_data_from_int (GTK_OBJECT (label), "RB", report->blocks[block].rb);
 	      gtk_object_set_data_from_int (GTK_OBJECT (label), "ENTRY", centry->entry_id);
 	      gtk_object_set_data (GTK_OBJECT (label), "DESCRIPTION", (void *) desc);
@@ -506,10 +510,10 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 
 		  gtk_container_add (GTK_CONTAINER (evt), label);
 		  gtk_fixed_put (GTK_FIXED (fixed), evt, 0, y);
-		  g_signal_connect (G_OBJECT (evt), "button_press_event",
-				    G_CALLBACK (evt_clicked_block), NULL);
-		  g_signal_connect (G_OBJECT (label), "button_press_event",
-				    G_CALLBACK (label_clicked_block), NULL);
+		  g_signal_connect (G_OBJECT (evt), "button_press_event", G_CALLBACK (evt_clicked_block), NULL);
+		  g_signal_connect (G_OBJECT (label), "button_press_event", G_CALLBACK (label_clicked_block), NULL);
+
+
 		  gtk_object_set_data (GTK_OBJECT (fixed), buff,
 				       (void *) evt);
 		}

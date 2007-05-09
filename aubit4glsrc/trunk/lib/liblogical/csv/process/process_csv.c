@@ -50,6 +50,9 @@ for (a=0;a<layout->nblocks;a++) {
 			if (centry[x].rb==rb) {
 				centry[x].special=0;
 			}
+			if (centry[x].fixed_text) {
+				centry[x].special=centry[x].fixed_text;
+			}
 
 		}
 	}
@@ -147,7 +150,7 @@ struct r_report *report;
 char fname[1024];
 int a;
 int b;
-struct s_rbx *rbx;
+struct s_rbx *rbx=0;
 rbx=vrbx;
 report=vreport;
 	rep_fout=0;

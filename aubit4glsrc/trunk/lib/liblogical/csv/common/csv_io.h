@@ -6,6 +6,7 @@ struct csv_entry {
 	int entry;
 	char *special;
 	char *last_value;
+	char *fixed_text;
 };
 
 struct csv_blocks {

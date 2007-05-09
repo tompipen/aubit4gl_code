@@ -136,6 +136,7 @@ main (int argc, char *argv[])
 	  printf ("Unable to open filter file : %s\n", buff);
 	  exit (2);
 	}
+
       if (!RP_load_file (report, fin_filter))
 	{
 	  printf ("Unable to open filter file : %s\n", buff);
@@ -168,6 +169,7 @@ main (int argc, char *argv[])
 			}
 	}
     }
+  		obtain_rbs_rbx (report, &rbs, &rbx);
 
   // at this point - we've loaded the report, and the backend should have a filter...
 
