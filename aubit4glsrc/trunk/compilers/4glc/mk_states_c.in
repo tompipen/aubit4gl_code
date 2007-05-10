@@ -29,7 +29,10 @@ BEGIN  {
 		print "    token_group_" this_val "," > "rules/generated/mk_states_1.h"
 	}
 	state=$2
-	delete arr
+        for (a in arr) {
+                delete arr[a]
+        }
+
 }
 
 (state=="") {next}

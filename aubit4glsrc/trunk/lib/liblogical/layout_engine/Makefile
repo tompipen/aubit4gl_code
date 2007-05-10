@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2007-05-08 17:49:47 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2007-05-10 21:07:48 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -119,14 +119,14 @@ all: ${ALL}
 
 ${ROOT}/bin/layout_engine: API_layout.h ${OBJS}
 #	${CC} -rdynamic -g ${OBJS} -o $@ ${LFLAGS}  
-	${LD} -g ${GTK_LIB_PATH} ${GTK_INC_PATH} ${LDFLAGS} ${CFLAGS} -o $@ ${OBJS} ${LINKLIBS} ${GTKLIBS}
+	${LD} -g ${GTK_LIB_PATH} ${GTK_INC_PATH} ${LDFLAGS} ${CFLAGS} -o $@ ${OBJS} ${LINKLIBS} ${GTKLIBS} ${EXTRASYSTEMLIBS}
 #	-Wl,--export-dynamic
 
 qc:${ROOT}/bin/quick_check_logrep
 
 ${ROOT}/bin/quick_check_logrep: API_layout.h ${QCOBJS}
 #	${CC} -rdynamic -g ${QCOBJS} -o $@ ${LFLAGS}  
-	${LD} -g ${LDFLAGS} ${CFLAGS} -o $@ ${QCOBJS} ${LINKLIBS} 
+	${LD} -g ${LDFLAGS} ${CFLAGS} -o $@ ${QCOBJS} ${LINKLIBS}  ${EXTRASYSTEMLIBS}
 
 API_layout.c: API_layout.spec
 	${LIBROOT}/bin/dlmagic $^ > $@

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.32 2007-05-09 16:37:44 mikeaubury Exp $
+# $Id: Makefile,v 1.33 2007-05-10 21:07:47 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -154,6 +154,9 @@ endif
 #ifeq "${TARGET_OS}" "solaris"
 	#RPCLINKLIBS=-lnsl
 #endif
+ifeq "${TARGET_OS}" "solaris"
+	CFLAGS+=-DSOLARIS
+endif
 
 ifneq "${TARGET_OS}" "hpux"
 	ifneq "${TARGET_OS}" "cygwin"

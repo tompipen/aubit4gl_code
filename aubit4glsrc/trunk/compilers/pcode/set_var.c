@@ -8,6 +8,10 @@
 #define u_int unsigned int
 #endif
 
+#if defined(SOLARIS)
+#define u_int unsigned int
+#endif
+
 #ifdef RPCGEN_HEADERS
 	#include "npcode.h"
 #else

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2006-07-27 16:03:11 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2007-05-10 21:07:48 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -102,7 +102,7 @@ all: ${ALL}
 
 ${ROOT}/bin/report_viewer: report_viewer.c main.c ../common/a4gl_lle.o
 #	${CC} -g $^ -o $@ ${LFLAGS} -I$(AUBITDIR)/incl
-	${LD} ${GTK_LIB_PATH} ${GTK_INC_PATH} ${LDFLAGS} ${CFLAGS} -o $@ $^ ${LINKLIBS} ${GTKLIBS}
+	${LD} ${GTK_LIB_PATH} ${GTK_INC_PATH} ${LDFLAGS} ${CFLAGS} -o $@ $^ ${LINKLIBS} ${GTKLIBS} ${EXTRASYSTEMLIBS}
 
 ## ==================================================================
 ##                              Clean

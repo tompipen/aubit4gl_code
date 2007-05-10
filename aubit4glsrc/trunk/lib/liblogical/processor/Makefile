@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2007-03-28 09:18:43 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2007-05-10 21:07:48 mikeaubury Exp $
 #
 ROOT		=../../..
 
@@ -43,7 +43,7 @@ OBJS=process_report.o ../common/a4gl_lle.o API_process.o
 ifeq "${TARGET_OS}" "mingw"
 	LD_EXE_FLAGS=--export-dynamic
 else
-	LD_EXE_FLAGS=-rdynamic
+	LD_EXE_FLAGS=${RDYNAMIC}
 endif
 
 ifeq "${TARGET_OS}" "darwin"
@@ -59,7 +59,7 @@ endif
 ## ==================================================================
 
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	${CC} -g ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${LD_EXE_FLAGS}
+	${CC} -g ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${LD_EXE_FLAGS} ${EXTRASYSTEMLIBS}
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@

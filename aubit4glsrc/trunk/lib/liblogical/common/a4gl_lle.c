@@ -47,7 +47,7 @@ static int read_int (void)
   int n;
 int a;
 /* Keep it simple for now */
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
   a=url_fread (&n, sizeof (n), 1, gzfin);
 #else
   a=gzfread (&n, sizeof (n), 1, gzfin);
@@ -65,7 +65,7 @@ static char read_char (void)
   int p;
   int a;
 
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
   	a=url_fread (&n, sizeof (n), 1, gzfin);
 #else
   	a=gzfread (&n, sizeof (n), 1, gzfin);
@@ -90,7 +90,7 @@ static char * read_string (void)
   n = read_int ();
   p = (char *) acl_malloc2 (n + 1);
 
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
   a=url_fread (p, n, 1, gzfin);
 #else
   a=gzfread (p, n, 1, gzfin);
@@ -142,7 +142,7 @@ struct r_report *read_report_output(char *fname) {
   char buff_c;
   char *l;
   int c;
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
   gzfin = url_fopen (fname, "rz");
 #else
   gzfin = gzfopen (fname, "r");
@@ -214,7 +214,7 @@ struct r_report *read_report_output(char *fname) {
     {
       buff_c = read_char ();
 
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
       if (url_feof (gzfin)) break;
 #else
       if (gzfeof (gzfin)) break;
@@ -258,7 +258,7 @@ static void read_block ()
   report->blocks[cblock].entries = 0;
   report->blocks[cblock].line = read_int (); 
 
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
 	if (gzfeof (gzfin)) { 
@@ -269,7 +269,7 @@ static void read_block ()
   report->blocks[cblock].where = read_char (); 
 
 
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
 	if (gzfeof (gzfin)) { 
@@ -278,7 +278,7 @@ static void read_block ()
 	if (debug) printf("where=%c\n",report->blocks[cblock].where);
   report->blocks[cblock].why = read_string (); 
 
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
 	if (gzfeof (gzfin)) { 
@@ -289,7 +289,7 @@ static void read_block ()
 	if (debug) printf("where=%s\n",report->blocks[cblock].why);
   report->blocks[cblock].rb = read_int (); 
 
-#ifdef HAVE_LIBCURL
+#if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
 	if (gzfeof (gzfin)) { 

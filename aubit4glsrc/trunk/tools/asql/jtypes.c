@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 /*
 
 99.9% of this code is taken from the excellent "sqlcmd" tool by Jonathon Leffler...

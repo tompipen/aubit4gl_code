@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2007-03-28 10:01:39 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2007-05-10 21:07:48 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -271,7 +271,7 @@ ${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: $(OBJS) ${PDCURSESX_OBJ}
 #${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: ${PLUGINDIR}/libUI_HL_GTK${SO_EXT}
 ${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: $(OBJS) ${OBJS5}
 	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $(OBJS) ${OBJS5} \
-		${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
+		${LINKLIBS} ${GTKLIBS} ${RDYNAMIC} -L/opt/gnome/lib  ${GTKLIBS}
 
 ## ==================================================================
 ##                              Sub-Targets
