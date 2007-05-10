@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.348 2007-05-10 13:53:23 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.349 2007-05-10 16:00:54 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.348 2007-05-10 13:53:23 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.349 2007-05-10 16:00:54 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -9168,7 +9168,12 @@ fi
 
 AC_LIBTOOL_LANG_CXX_CONFIG
 AC_SUBST(RDYNAMIC_FLAG)
-RDYNAMIC_FLAG=$lt_prog_compiler_wl$export_dynamic_flag_spec
+if test "x$export_dynamic_flag_spec" -eq "x" 
+then
+	RDYNAMIC_FLAG=""
+else
+	RDYNAMIC_FLAG=`eval "echo $export_dynamic_flag_spec"`
+fi
 
 #AC_SUBST(HAVE_LIBCURL)
 AC_MSG_CHECKING(Checking LIBCURL support)
@@ -10978,7 +10983,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.348 2007-05-10 13:53:23 mikeaubury Exp $
+| $Id: configure.in,v 1.349 2007-05-10 16:00:54 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

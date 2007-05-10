@@ -50864,7 +50864,12 @@ lt_cv_prog_gnu_ldcxx=$lt_cv_prog_gnu_ld
 lt_cv_prog_gnu_ld=$lt_save_with_gnu_ld
 
 
-RDYNAMIC_FLAG=$lt_prog_compiler_wl$export_dynamic_flag_spec
+if test "x$export_dynamic_flag_spec" -eq "x"
+then
+	RDYNAMIC_FLAG=""
+else
+	RDYNAMIC_FLAG=`eval "echo $export_dynamic_flag_spec"`
+fi
 
 #AC_SUBST(HAVE_LIBCURL)
 { echo "$as_me:$LINENO: checking Checking LIBCURL support" >&5
@@ -53530,7 +53535,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 53533 "configure"' > conftest.$ac_ext
+  echo '#line 53538 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -54571,7 +54576,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 54574 "configure"
+#line 54579 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -54671,7 +54676,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 54674 "configure"
+#line 54679 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -61248,7 +61253,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.376 2007-05-10 13:53:09 mikeaubury Exp $
+| $Id: configure,v 1.377 2007-05-10 16:00:35 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
