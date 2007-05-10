@@ -776,6 +776,7 @@ table_name:
 	| table_identifier {sprintf($<str>$,$<str>1); }
 	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);  }
 	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes($<str>1),$<str>2,$<str>3);  }
+	
 
 	;
 
@@ -1211,8 +1212,118 @@ string: CHAR_VALUE
 
 
 identifier: NAMED
+| reserved_word
 ;
 
+
+reserved_word:
+ AFTER 
+| ASC
+| AFTGROUP
+
+| BEFORE
+| BETWEEN
+| BOTTOM
+| BY
+| KW_CALL
+| CH
+| CHAR
+| CLIPPED
+| COLUMN
+| COMMANDS
+| COMPARISON
+| DATABASE
+| DATETIME
+| DECIMAL
+| DEFINE
+| DELIMITER
+| DESC
+| DO
+| ELSE
+| ESCAPE
+| EVERY
+| EXTERNAL
+| FIRST 
+| FLOAT
+| FOR
+| FORMAT
+| FRACTION
+| FROM
+| FUNCTION
+| GROUP
+| HEADER
+| HOUR
+| IF
+| IN
+| INPUT
+| LAST
+| LEFT
+| LENGTH
+| LET
+| LIKE
+| LINES
+| MARGIN
+| MINUTE
+| MONEY
+| NEED
+| KW_OF 
+| ON
+| OUTPUT
+| PAGE
+| PARAM
+| PAUSE
+| POW
+| PRINT
+| PRINTER
+| PROMPT
+| READ
+| REPORT
+| RIGHT
+| ROW
+| SECOND
+| SKIP
+| SMALLFLOAT
+| SMALLINT
+| SPACES
+| STEP
+| TEMP
+| THEN
+| TO
+| TOP
+| TOTAL
+| TRAILER
+| UPDATE
+| VARCHAR
+| VARIABLE
+| WHILE
+| XBEGIN
+| XMAX
+| XMIN
+;
+
+
+/* 
+| SUM
+| HAVING
+| UNIQUE
+| COUNT
+| MONTH
+| AVERAGE 
+| AVG
+| DAY
+| ANY
+| ALL
+| END
+| EXISTS
+| UNION
+| INTEGER
+| INTO
+| SOME
+| DISTINCT
+| DATE
+| NUMERIC
+| INTERVAL
+*/
 
 expr: val_expression 
 ;
