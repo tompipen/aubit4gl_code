@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.31 2007-05-09 16:37:45 mikeaubury Exp $
+# $Id: Makefile,v 1.32 2007-05-10 12:05:57 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -174,7 +174,9 @@ ifeq "${HAVE_ZLIB}" "1"
 	LINK_LIBS		+=-lz
 endif
 
-LINK_LIBS 	+=${LIBCURL_LIBS}
+ifeq "${HAVE_CURL}" "1"
+	LINK_LIBS 	+=${LIBCURL_LIBS}
+endif
 
 .PHONY: all ci splint lclint api clean clean.generated clean.api api.headers lib
 

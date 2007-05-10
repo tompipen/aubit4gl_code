@@ -1,14 +1,6 @@
 #include "a4gl_libaubit4gl_int.h"
 
-#ifndef HAVE_LIBCURL
-int A4GL_init_curl() { // does nothing..
-	return 0;
-}
-
-int A4GL_has_curl() {
-	return 0;
-}
-#else
+#if HAVE_LIBCURL
 
 #include <curl/curl.h>
 
@@ -624,4 +616,15 @@ main(int argc, char *argv[])
 }
 #endif
 
+#else
+
+
+// No libcurl....
+int A4GL_init_curl() { // does nothing..
+	return 0;
+}
+
+int A4GL_has_curl() {
+	return 0;
+}
 #endif
