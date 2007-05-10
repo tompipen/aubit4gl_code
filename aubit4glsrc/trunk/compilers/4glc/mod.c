@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.298 2007-03-09 19:19:08 mikeaubury Exp $
+# $Id: mod.c,v 1.299 2007-05-10 06:29:17 mikeaubury Exp $
 #
 */
 
@@ -5443,6 +5443,16 @@ l->str=0;
 return l;
 }
 
+
+int check_cursor_name(char *s) {
+	
+	if (A4GL_has_pointer(s,CURSOR_USED)){
+		set_yytext(s);
+		a4gl_yyerror("Cursor has already been used");
+		return 0;
+	}
+	A4GL_add_pointer(s,CURSOR_USED,1);
+}
 
 void llex_add_ibind(int dtype,char *var) {
         ibind=ensure_bind(&a_ibind,ibindcnt+1,ibind);

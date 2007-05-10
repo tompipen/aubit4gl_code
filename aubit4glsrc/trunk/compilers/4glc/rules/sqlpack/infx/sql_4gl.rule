@@ -179,7 +179,7 @@ flush_cmd : opt_use FLUSH fetch_cursor_name  {
 
 declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
-
+		check_cursor_name($<str>3);
 		print_declare_g("",$<curDef>6.str,$<str>3,0,0,$<curDef>6.inbind,$<curDef>6.outbind);
 
 		ADDMAP("Declare Cursor",$<str>3);
@@ -189,6 +189,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specifica
 	}
 	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD KW_FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
+		check_cursor_name($<str>3);
 		add_feature("HOLD_CURSOR");
 		print_declare_g("",$<curDef>7.str,$<str>3,2,0,$<curDef>7.inbind,$<curDef>7.outbind); 
 		ADDMAP("Declare Cursor",$<str>3);
@@ -198,6 +199,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specifica
 
         | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
+		check_cursor_name($<str>3);
 		add_feature("SCROLL_CURSOR");
 		print_declare_g("",$<curDef>5.str,$<str>3,0,1,$<curDef>5.inbind,$<curDef>5.outbind); 
 		ADDMAP("Declare Cursor",$<str>3);
@@ -206,6 +208,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR KW_FOR cursor_specifica
 	}
        	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD KW_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
 		add_feature("CURSOR_SELECT");
+		check_cursor_name($<str>3);
 		add_feature("SCROLL_CURSOR");
 		add_feature("HOLD_CURSOR");
 		print_declare_g("",$<curDef>7.str,$<str>3,2,1,$<curDef>7.inbind,$<curDef>7.outbind); 
