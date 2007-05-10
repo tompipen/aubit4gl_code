@@ -25,6 +25,7 @@
 <comment>[\n]	;
 
 "{"      { BEGIN comment; yymore(); }
+#.*$ 	;
 "."      {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
 "@"      {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 ":"      {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}
