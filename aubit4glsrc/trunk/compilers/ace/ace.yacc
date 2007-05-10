@@ -883,7 +883,7 @@ strcpy(temp_tab_name,$<str>3);
 
 subquery:
 	OPEN_BRACKET SELECT op_ad sq_select_list table_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	;
 
 op_ad: {strcpy($<str>$,"");}
