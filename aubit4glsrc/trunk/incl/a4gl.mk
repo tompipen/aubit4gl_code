@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.60 2006-10-21 13:02:49 afalout Exp $
+#	 $Id: a4gl.mk,v 1.61 2007-05-10 13:53:25 mikeaubury Exp $
 
 ##########################################################################
 #
@@ -79,7 +79,7 @@ endif
 
 ###########################
 #Name of the warper script for all Aubit commands, that we expect in the PATH
-AUBIT_WRAPER		=aubit
+AUBIT_WRAPER		= ${SHELL} aubit
 
 ###########################
 #Define command to be used to run Aubit compiler executables

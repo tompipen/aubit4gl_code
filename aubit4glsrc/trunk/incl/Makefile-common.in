@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.213 2007-05-09 16:37:45 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.214 2007-05-10 13:53:25 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -424,6 +424,9 @@ STRIP_EXECUTABLES   =@STRIP_EXECUTABLES@
 #          table in the code produced (see ld(1) on a Sun).
 
 #ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
+
+RDYNAMIC=@RDYNAMIC_FLAG@
+
 ifneq "${GCC_NO_rdynamic}" "1"
 	#gcc: unrecognized option `-rdynamic'
 	RDYNAMIC            =-rdynamic
@@ -506,8 +509,8 @@ endif
 
 
 ALL_LIBS			=@LIBS@
-AUTOCONF_CFLAGS     =@CFLAGS@
-STD_CFLAGS     =@STD_CFLAGS@
+#AUTOCONF_CFLAGS     =@CFLAGS@
+AUTOCONF_CFLAGS     =@STD_CFLAGS@
 DDEBUG				=-DDEBUG
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
