@@ -1141,6 +1141,13 @@ LET NAMED OPEN_SQUARE expr COMMA expr CLOSE_SQUARE EQUAL expr_concat {
 
 ;
 
+op_expr_concat : {
+		$<expr>$.type=EXPRTYPE_STRING;
+		$<expr>$.expr_u.s=acl_strdup("");
+		}
+	| expr_concat 
+;
+
 expr_concat: expr | expr_concat COMMA expr {
 
 	$<expr>$.type=EXPRTYPE_COMPLEX;
@@ -1166,7 +1173,7 @@ pause_command: PAUSE string {
 ;
 
 
-print_command: PRINT expr_concat op_semi  {
+print_command: PRINT op_expr_concat op_semi  {
 	$<cmd>$.cmd_type=CMD_PRINT;
 	$<cmd>$.command_u.cmd_print.printnl=atoi($<str>3);
 	$<cmd>$.command_u.cmd_print.print=$<expr>2;
@@ -1273,7 +1280,6 @@ reserved_word:
 | PARAM
 | PAUSE
 | POW
-| PRINT
 | PRINTER
 | PROMPT
 | READ
