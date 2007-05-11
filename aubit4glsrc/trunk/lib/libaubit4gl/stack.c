@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.176 2007-05-08 17:48:26 mikeaubury Exp $
+# $Id: stack.c,v 1.177 2007-05-11 14:09:12 mikeaubury Exp $
 #
 */
 
@@ -610,7 +610,7 @@ A4GL_char_pop_size (int *sz)
   else
     {
 #ifdef DEBUG
-	    A4GL_debug("Looks like it was a string..'%s'",params[params_cnt - 1].ptr);
+	    A4GL_debug("Looks like it was a string..'%s'",A4GL_null_as_null(params[params_cnt - 1].ptr));
 #endif
 	if (params[params_cnt - 1].ptr)
       		params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
