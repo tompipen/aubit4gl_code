@@ -43909,7 +43909,7 @@ echo "${ECHO_T}Disabled" >&6; }
 	else
 		#User specified location of curses library with --with-curses=path
 		if test "$withval" != "yes"; then
-			CURSES_LIB_PATH="-L$withval"
+			CURSES_LIB_PATH="-L$withval -L$withval/lib"
             CURSES_INC_PATH="-I$withval -I$withval/ncurses -I$withval/include/ncurses"
             ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Curses"
@@ -61269,7 +61269,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.378 2007-05-11 07:26:45 mikeaubury Exp $
+| $Id: configure,v 1.379 2007-05-11 18:08:02 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
