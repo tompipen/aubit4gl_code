@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.8 2007-04-11 20:26:40 mikeaubury Exp $
+# $Id: pg8.c,v 1.9 2007-05-11 06:33:28 mikeaubury Exp $
 #*/
 
 
@@ -2645,6 +2645,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
     {
 
       A4GL_debug ("rows found..");
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
       if (nobind)
 	{
 	  copy_to_obind (res, nobind, vobind, 0);
