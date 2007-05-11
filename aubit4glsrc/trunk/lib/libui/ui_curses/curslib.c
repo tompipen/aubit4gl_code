@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.138 2007-05-01 07:42:28 mikeaubury Exp $
+# $Id: curslib.c,v 1.139 2007-05-11 07:26:58 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.138 2007-05-01 07:42:28 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.139 2007-05-11 07:26:58 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -3275,6 +3275,8 @@ try_to_stop_alternate_view ()
   /*
    * Cancel xterm's alternate-screen mode.
    */
+  if (enter_ca_mode==0) return;
+  if (exit_ca_mode==0) return;
   if (isprivate (enter_ca_mode) && isprivate (exit_ca_mode))
     {
       /*

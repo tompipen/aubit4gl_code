@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.350 2007-05-11 07:05:07 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.351 2007-05-11 07:26:54 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.350 2007-05-11 07:05:07 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.351 2007-05-11 07:26:54 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -1847,6 +1847,7 @@ cygwin=0
 A4GL_PATH_SEP=":"
 SLASH=\\
 
+
 INFORMIXC=$CC
 HAVE_CURSES=0
 HAVE_PDCURSES=0
@@ -1996,6 +1997,7 @@ case $host in
 
 	#*-sun-solaris2.7 (Jonathan) and 2.8 (Andrej on SF CF)
 	*-sun-solaris*)
+		#INFORMIXC=cc
 		PIC="-fPIC"
 		;;
 
@@ -2038,6 +2040,8 @@ dnl Set of available languages.
 ALL_LINGUAS="en"
 dnl internationalization macros
 #AM_GNU_GETTEXT
+
+
 
 AC_ARG_WITH(sqluid,
 	[  --with-sqluid=username  Specify defauld A4GL_SQLUID database user ID (ODBC)],
@@ -5945,6 +5949,14 @@ done
 ],[
   AC_MSG_RESULT(--with-informix not specified)
 ])
+
+AC_ARG_WITH(informic,
+	[  --with-informixc=c-compiler  Specify default INFORMIXC],
+	[DEFINFORMIXC="$withval"])
+
+if test "$DEFINFORMIXC" != ""; then
+INFORMIXC=$DEFINFORMIXC
+fi
 
 #on Windows, we MUST quote INFORMIXDIR
 #On UNIX, we MUST NOT quote it
@@ -10983,7 +10995,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.350 2007-05-11 07:05:07 mikeaubury Exp $
+| $Id: configure.in,v 1.351 2007-05-11 07:26:54 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
