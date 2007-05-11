@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.142 2007-05-02 18:34:06 mikeaubury Exp $
+# $Id: newpanels.c,v 1.143 2007-05-11 12:56:23 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.142 2007-05-02 18:34:06 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.143 2007-05-11 12:56:23 mikeaubury Exp $";
 #endif
 
 /**
@@ -3042,7 +3042,7 @@ print_panel_stack (void)
   ptr = panel_below (0);
   while (ptr != 0)
     {
-      A4GL_debug ("Panel : %p (%s)", ptr, (char *)panel_userptr (ptr));
+      A4GL_debug ("Panel : %p (%s)", ptr, A4GL_null_as_null((char *)panel_userptr (ptr)));
       ptr = panel_below (ptr);
     }
 }
