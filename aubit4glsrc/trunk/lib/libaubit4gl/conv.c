@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.135 2007-05-11 19:24:05 mikeaubury Exp $
+# $Id: conv.c,v 1.136 2007-05-11 19:29:29 mikeaubury Exp $
 #
 */
 
@@ -2778,7 +2778,7 @@ A4GL_ctoc (void *a, void *b, int size)
 {
 #ifdef DEBUG
   {
-    //A4GL_debug ("--->Got size as %d", size);
+    /*A4GL_debug ("--->Got size as %d", size); */
   }
 #endif
 
@@ -2816,8 +2816,8 @@ A4GL_ltol (void *aa, void *bb, int sz_ignore)
   *b = *a;
 #ifdef DEBUG
   {
-    A4GL_debug ("ltol %ld", *a);
-    A4GL_debug ("ltol %ld", *b);
+    /* A4GL_debug ("ltol %ld", *a);
+    A4GL_debug ("ltol %ld", *b); */
   }
 #endif
   return 1;
