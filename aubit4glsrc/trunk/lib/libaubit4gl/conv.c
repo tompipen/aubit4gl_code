@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.134 2007-05-06 10:48:36 mikeaubury Exp $
+# $Id: conv.c,v 1.135 2007-05-11 19:24:05 mikeaubury Exp $
 #
 */
 
@@ -3016,15 +3016,15 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
  */
 int A4GL_valid_dt (char *s, int *data,int size)
 {
-  int a;
+  int a=0;
   char buff[256];
   char *ptr[256];
   char type[256];
-  int dt_type;
-  int b;
-  int i;
+  int dt_type=0;
+  int b=0;
+  int i=0;
   int cnt = 0;
-  int buff_size;
+  int buff_size=0;
   char *codes[] = { "", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION1", "FRACTION2", "FRACTION3", "FRACTION4", "FRACTION5",
     0
@@ -3032,7 +3032,7 @@ int A4GL_valid_dt (char *s, int *data,int size)
   for (a=0;a<255;a++) {
 		ptr[a]=0;
 }
-
+  memset(buff,0,sizeof(buff));
 #ifdef DEBUG
   A4GL_debug ("In valid_dt\n");
 #endif
@@ -3041,8 +3041,9 @@ int A4GL_valid_dt (char *s, int *data,int size)
       A4GL_debug ("Too long\n");
       return 0;
     }
-
   strcpy (buff, s);
+
+
   ptr[0] = &buff[0];
 #ifdef DEBUG
   A4GL_debug ("Splitting '%s' size=%d\n", A4GL_null_as_null(s),size);
@@ -3212,11 +3213,11 @@ int A4GL_valid_dt (char *s, int *data,int size)
 #endif
 	if (a==b) { 
 		if (a==1) data[0]=atoi(ptr[0]);
-		if (a==2) data[1]=atoi(ptr[0]);
-		if (a==3) data[2]=atoi(ptr[0]);
-		if (a==4) data[3]=atoi(ptr[0]);
-		if (a==5) data[4]=atoi(ptr[0]);
-		if (a==6) data[5]=atoi(ptr[0]);
+		if (a==2) data[1]=atoi(ptr[1]);
+		if (a==3) data[2]=atoi(ptr[2]);
+		if (a==4) data[3]=atoi(ptr[3]);
+		if (a==5) data[4]=atoi(ptr[4]);
+		if (a==6) data[5]=atoi(ptr[5]);
 	}
         return 2;			/* single number.. */
 	}
@@ -3310,12 +3311,18 @@ A4GL_debug("a=%d b=%d\n",a,b);
     }
 
   if ((size>>4)<=1 && (size&0xf)>=3) { // Year to day..
-	int y;
-	int m=1;
+		int y;
+		int m=1;
 		int d=1;
-		if (ptr[1-a]) {y= atol(ptr[1 - a]);}
-		if (ptr[2-a]) {m= atol(ptr[2 - a]);}
-		if (ptr[3-a]) {d= atol(ptr[3 - a]);}
+		if (a<=1) {
+			if (ptr[1-a]) {y= atol(ptr[1 - a]);}
+		}
+		if (a<=2) {
+			if (ptr[2-a]) {m= atol(ptr[2 - a]);}
+		}
+		if (a<=3) {
+			if (ptr[3-a]) {d= atol(ptr[3 - a]);}
+		}
 
 		if (m<=0 || d<=0) {
 			return 0;
