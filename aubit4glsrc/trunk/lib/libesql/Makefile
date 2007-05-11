@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.42 2007-03-28 13:38:26 mikeaubury Exp $
+# $Id: Makefile,v 1.43 2007-05-11 17:59:06 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -150,7 +150,7 @@ ifneq "${COMSPEC}" ""
 		$^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 #Unix:
-	${IFMX_ESQLC}  ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}  
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC}  ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}  
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
@@ -205,7 +205,7 @@ ifneq "${COMSPEC}" ""
 	-@rm $(basename $<).c $(basename $<).c_*
 else
 #UNIX:
-	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
+	export INFORMIXC=${INFORMIXC};  ${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
 		-I"${INFORMIXDIR}/incl" 
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl

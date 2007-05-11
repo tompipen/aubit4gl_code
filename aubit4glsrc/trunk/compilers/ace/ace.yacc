@@ -546,6 +546,7 @@ group_by_clause:
 column_specification_list:
 	  column_specification
 	| column_specification_list COMMA column_specification
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
 

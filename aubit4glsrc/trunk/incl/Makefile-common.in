@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.214 2007-05-10 13:53:25 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.215 2007-05-11 17:59:05 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -432,7 +432,7 @@ ifneq "${GCC_NO_rdynamic}" "1"
 	RDYNAMIC            =-rdynamic
 endif
 
-ifeq "${TARGET_OS}" "solaris"
+ifeq "${TARGET_OS}" "solarisxx_not_used"
 	#On Solaris: gcc: unrecognized option `-rdynamic'
 	#Apprently, this is when Sun native LD is used:	
 	#RDYNAMIC		=
