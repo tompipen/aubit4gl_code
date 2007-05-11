@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2007-03-28 13:32:29 mikeaubury Exp $
+# $Id: Makefile.in,v 1.16 2007-05-11 19:40:07 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -91,7 +91,7 @@ all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${PLUGINDIR}/libUI_TUI${SO_EXT}: ${ALLOBJ}
-	${LD} ${SO_LDFLAGS} -o $@ $^ @CURSES_LIB_NAME@ @CURSES_LIB_PATH@ ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ @CURSES_LIB_PATH@  @CURSES_LIB_NAME@  ${LINKLIBS}
 #If on CygWin, store libUI_TUI so we can package it with native Windows installer (MinGW)
 ifneq "${COMSPEC}" ""
 ifneq "${GCC_MINGW}" "yes"
