@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.136 2007-05-11 19:29:29 mikeaubury Exp $
+# $Id: conv.c,v 1.137 2007-05-12 07:42:14 mikeaubury Exp $
 #
 */
 
@@ -3213,11 +3213,11 @@ int A4GL_valid_dt (char *s, int *data,int size)
 #endif
 	if (a==b) { 
 		if (a==1) data[0]=atoi(ptr[0]);
-		if (a==2) data[1]=atoi(ptr[1]);
-		if (a==3) data[2]=atoi(ptr[2]);
-		if (a==4) data[3]=atoi(ptr[3]);
-		if (a==5) data[4]=atoi(ptr[4]);
-		if (a==6) data[5]=atoi(ptr[5]);
+		if (a==2) data[1]=atoi(ptr[0]);
+		if (a==3) data[2]=atoi(ptr[0]);
+		if (a==4) data[3]=atoi(ptr[0]);
+		if (a==5) data[4]=atoi(ptr[0]);
+		if (a==6) data[5]=atoi(ptr[0]);
 	}
         return 2;			/* single number.. */
 	}
