@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.215 2007-05-11 17:59:05 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.216 2007-05-12 17:19:09 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -504,6 +504,8 @@ ifeq "${TARGET_OS}" "solaris"
 endif
 ifeq "${TARGET_OS}" "darwin"
 	LD_EXE          =${CC} ${LDFLAGS} -ldl ${RDYNAMIC}
+        EXTRASYSTEMLIBS+=${LIBCURL_LIBS}
+
 endif
 
 
@@ -511,6 +513,11 @@ endif
 ALL_LIBS			=@LIBS@
 #AUTOCONF_CFLAGS     =@CFLAGS@
 AUTOCONF_CFLAGS     =@STD_CFLAGS@
+
+ifeq "${TARGET_OS}" "darwin"
+        AUTOCONF_CFLAGS+=-fno-common
+endif
+
 DDEBUG				=-DDEBUG
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
 #fixme: set -DDEBUG and -g from configure:
