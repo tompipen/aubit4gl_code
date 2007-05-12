@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.113 2007-05-11 19:29:29 mikeaubury Exp $
+# $Id: builtin.c,v 1.114 2007-05-12 08:15:04 mikeaubury Exp $
 #
 */
 
@@ -306,7 +306,7 @@ char *p;
 	} else {
 		p=malloc(2);
 		p[0]=0;
-		p[1]=0;
+		p[1]=1;
 		A4GL_push_param(p,DTYPE_CHAR+(ENCODE_SIZE((b-a+1)))+DTYPE_MALLOCED);
 	}
 	return 1;
