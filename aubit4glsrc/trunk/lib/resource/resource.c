@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.131 2007-03-29 21:17:50 mikeaubury Exp $
+# $Id: resource.c,v 1.132 2007-05-13 14:36:28 mikeaubury Exp $
 #
 */
 
@@ -700,7 +700,11 @@ if (ptr)  {
         }
 
 	if (strncmp(s,"A4GL_",5)!=0) { // No point looking for an A4GL_A4GL_...
+#if HAVE_SNPRINTF
         	snprintf (prefixed_string, sizeof(prefixed_string), "A4GL_%s", s);
+#else
+        	sprintf (prefixed_string, "A4GL_%s", s);
+#endif
 		prefixed_string[1000]=0;
 		ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
 	} else {
