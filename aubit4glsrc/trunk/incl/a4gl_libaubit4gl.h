@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.272 2007-05-08 17:53:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.273 2007-05-13 09:21:51 mikeaubury Exp $
 #
 */
 
@@ -2168,9 +2168,26 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 
 #define FPRINTF fprintf
 #define VFPRINTF vfprintf
+
 #define SNPRINTF snprintf
 #define VSPRINTF vsprintf
 #define VSNPRINTF vsnprintf
+
+#ifdef _WIN32
+#undef VSNPRINTF 
+#undef SNPRINTF
+
+#define HAVE_SNPRINTF 1
+#define HAVE_VSNPRINTF 1
+#define VSNPRINTF   _vsnprintf
+#define SNPRINTF    _snprintf
+#endif
+
+#if ((!(HAVE_SNPRINTF)) && (!(HAVE_VSNPRINTF)))
+#include "missing/snprintf.h"
+#endif
+
+
 #define PRINTF printf
 #define SPRINTF0(s,f)                        	A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f)
 #define SPRINTF1(s,f,p1)                        A4GL_sprintf(__FILE__,__LINE__,s,sizeof(s),f,p1)

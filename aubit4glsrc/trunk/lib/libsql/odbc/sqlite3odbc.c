@@ -2,7 +2,7 @@
  * @file sqlite3odbc.c
  * SQLite3 ODBC Driver main module.
  *
- * $Id: sqlite3odbc.c,v 1.6 2006-09-27 08:06:07 mikeaubury Exp $
+ * $Id: sqlite3odbc.c,v 1.7 2007-05-13 09:21:52 mikeaubury Exp $
  *
  * Copyright (c) 2004 Christian Werner <chw@ch-werner.de>
  *
@@ -13,6 +13,11 @@
 
 /* Added for Aubit */
 #undef  HAVE_CONFIG_H
+#define SNPRINTF snprintf
+#define VSPRINTF vsprintf
+#define VSNPRINTF vsnprintf
+
+
 
 #ifndef NODEBUG
 	#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
@@ -205,11 +210,13 @@ xstrdup_(char *str, char *file, int line)
 
 #endif
 
+/*
 #ifdef _WIN32
 #define vsnprintf   _vsnprintf
 #define snprintf    _snprintf
 #define strncasecmp _strnicmp
 #endif
+*/
 
 /*
  * tolower() replacement w/o locale
@@ -436,7 +443,7 @@ setstatd(DBC *d, int naterr, char *msg, char *st, ...)
 	int count;
 
 	va_start(ap, st);
-	count = vsnprintf(d->logmsg, sizeof (d->logmsg), msg, ap);
+	count = VSNPRINTF(d->logmsg, sizeof (d->logmsg), msg, ap);
 	va_end(ap);
 	if (count < 0) {
 	    d->logmsg[sizeof (d->logmsg) - 1] = '\0';
@@ -476,7 +483,7 @@ setstat(STMT *s, int naterr, char *msg, char *st, ...)
 	int count;
 
 	va_start(ap, st);
-	count = vsnprintf(s->logmsg, sizeof (s->logmsg), msg, ap);
+	count = VSNPRINTF(s->logmsg, sizeof (s->logmsg), msg, ap);
 	va_end(ap);
 	if (count < 0) {
 	    s->logmsg[sizeof (s->logmsg) - 1] = '\0';
@@ -6124,7 +6131,7 @@ drvdriverconnect(SQLHDBC dbc, SQLHWND hwnd,
 	int count;
 
 	buf[0] = '\0';
-	count = snprintf(buf, sizeof (buf),
+	count = SNPRINTF(buf, sizeof (buf),
 			 "DSN=%s;Database=%s;StepAPI=%s;Timeout=%s;"
 			 "Tracefile=%s",
 			 dsn, dbname, sflag, busy, tracef);
@@ -9884,7 +9891,7 @@ retry:
 	char drv_0 = setupdlg->attr[KEY_DRIVER].attr[0];
 
 	buf[0] = '\0';
-	count = snprintf(buf, sizeof (buf),
+	count = SNPRINTF(buf, sizeof (buf),
 			 "%s%s%s%s%s%sDatabase=%s;StepAPI=%s;"
 			 "Timeout=%s",
 			 dsn_0 ? "DSN=" : "",

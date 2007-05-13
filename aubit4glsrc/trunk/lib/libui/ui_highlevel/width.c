@@ -118,7 +118,7 @@ A4GL_wprintw (void *win, int attr, int x, int y, int cw, int ch, int cb,
   //A4GL_chkwin ();
   va_start (args, fmt);
   memset (buff, 0, sizeof (buff));
-  vsnprintf ((char *)buff, sizeof (buff) - 1, fmt, args);
+  VSNPRINTF ((char *)buff, sizeof (buff) - 1, fmt, args);
 
   buff[2047] = 0;
   A4GL_debug ("wprintw : x=%d", x);

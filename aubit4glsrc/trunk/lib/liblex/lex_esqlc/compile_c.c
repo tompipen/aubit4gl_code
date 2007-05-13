@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.368 2007-05-08 17:46:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.369 2007-05-13 09:21:51 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.368 2007-05-08 17:46:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.369 2007-05-13 09:21:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -697,7 +697,7 @@ int os;
 	return;
     }
 
-  os=vsnprintf (buff, sizeof(buff),fmt, *ap);
+  os=VSNPRINTF (buff, sizeof(buff),fmt, *ap);
 if (os>=sizeof(buff)) {
 	a4gl_yyerror("Internal error - string too big\n");
 	exit(0);

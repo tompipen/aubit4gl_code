@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.33 2007-05-10 13:53:25 mikeaubury Exp $
+# $Id: Makefile,v 1.34 2007-05-13 09:21:51 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -68,7 +68,7 @@ COMMONSRC= \
 	pointers.c \
 	read_dty.c readkeys.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
 	screen.c sql_common.c sqlconvert.c stack_ops.c stack.c string.c sqlca.c \
-	translate.c curl.c \
+	translate.c missing.c curl.c \
 	ui.c
 
 CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} 

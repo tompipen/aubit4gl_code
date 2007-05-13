@@ -264,7 +264,7 @@ LEXLIB_A4GL_internal_lex_printc (char *fmt, va_list * ap)
       if (outfile == 0)
 	return;
     }
-  os = vsnprintf (buff, sizeof (buff), fmt, *ap);
+  os = VSNPRINTF (buff, sizeof (buff), fmt, *ap);
   if (os >= sizeof (buff))
     {
       a4gl_yyerror ("Internal error - string too big\n");

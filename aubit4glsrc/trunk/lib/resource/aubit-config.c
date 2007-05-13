@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.24 2007-02-20 18:54:46 gyver309 Exp $
+# $Id: aubit-config.c,v 1.25 2007-05-13 09:21:52 mikeaubury Exp $
 #
 */
 
@@ -294,7 +294,7 @@ char xbuff[10000];
 		      		PRINTF("Unable to allocate memory..\n");
 				exit(1);
 		}
-              x=vsnprintf(c,sdest,fmt,args);
+              x=vsprintf(c,fmt,args);
               if (x>=sdest) {
 			PRINTF("sprintf trying to exceed allocated space @ %s (line %d)",f,l);
 			exit(1);
