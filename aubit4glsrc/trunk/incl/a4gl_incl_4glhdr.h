@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.42 2007-02-20 19:19:06 gyver309 Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.43 2007-05-13 19:53:14 mikeaubury Exp $
 */
 
 /**
@@ -168,6 +168,7 @@ int A4GL_get_set_as_int (char *str, void *ptr, int mode, char *name, long var);
 #define REPORT_RESTART -15
 #define REPORT_CONVERT -16
 #define REPORT_FREE    -17
+#define REPORT_NOTHING    -20
 #define REPORT_TERMINATE -9999
 
 

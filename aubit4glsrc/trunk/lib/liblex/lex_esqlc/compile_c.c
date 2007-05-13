@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.369 2007-05-13 09:21:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.370 2007-05-13 19:53:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.369 2007-05-13 09:21:51 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.370 2007-05-13 19:53:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -902,6 +902,7 @@ LEXLIB_print_report_ctrl (void)
   printc ("if (_rep.lines_in_trailer     ==-1) _rep.lines_in_trailer=%d;",
 	  rep_struct.lines_in_trailer);
 
+
   order_by_report_stack ();
 
   //printc ("A4GL_debug(\"ctrl=%%d _nargs=%%d\",acl_ctrl,_nargs);\n");
@@ -963,6 +964,7 @@ LEXLIB_print_report_ctrl (void)
 
   printc ("    if (acl_ctrl==REPORT_AFTERDATA ) {\n");
   pr_report_agg ();
+  printc ("    return;");
   printc ("    }\n");
 
 
@@ -996,7 +998,7 @@ pr_nongroup_report_agg_clr();
       /* on every row */
       if (get_report_stack_whytype (a) == 'E') {
 	printed_every=1;
-	printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+	printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING; goto rep_ctrl%d_%d;}\n", report_cnt, a);
 	}
 
       /* before group of */
@@ -1023,7 +1025,7 @@ pr_nongroup_report_agg_clr();
 	   report_cnt, a);
     }
 	if (!printed_every) {
-		printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;\n", report_cnt);
+		printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING;\n", report_cnt);
 		LEXLIB_print_rep_ret (report_cnt,0);
 		printc("}");
 	}
@@ -5285,6 +5287,7 @@ if (!A4GL_doing_pcode()) {
     ("   if (_g>0&&_useddata) {for (_p=acl_rep_ordcnt;_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
   printc ("   A4GL_pop_params(_rbind,%d);\n", cnt);
+  printc ("               %s(_p,REPORT_AFTERDATA);", get_curr_rep_name ());
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
   printc ("    A4GL_%srep_print(&_rep,0,1,0,-1);\n",ispdf()); // Mantis ID 573
