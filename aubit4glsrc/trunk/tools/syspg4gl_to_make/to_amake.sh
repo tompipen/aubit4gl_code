@@ -7,13 +7,17 @@ db=syspgm4gl
 if [ a$1 = a ]
 then
     echo "usage: $0 <program>"
+    echo "   type $0 -help for a description"
     exit 1
 fi
 if [ "$1" = "-h" -o "$1" = "-help" -o "$1" = "--help" ]
 then
     echo "This utility allows you to migrate the module dependency for a "
     echo "program stored in the $db database to a .mk suitable for being"
-    echo "used for the amake utility"
+    echo "used for the amake utility."
+    echo ""
+    echo "This information is normally stored by the utility r4gl in the"
+    echo "'Program' -> 'Modify' -> '4GL' menu option."
     exit -1
 fi
 work=$1.tmp
