@@ -498,13 +498,7 @@ op_order_by_clause: {strcpy($<str>$,"");} | order_by_clause;
 */
 
 order_by_clause:
-	ORDER_BY {
-		ordbycnt=0;
-	}
-		sort_specification_list {
-		sprintf($<str>$,"ORDER BY %s",$<str>3);
-		
-	}
+	ORDER_BY { ordbycnt=0; } sort_specification_list { sprintf($<str>$,"ORDER BY %s",$<str>3); }
 	;
 
 sort_specification_list:
@@ -861,7 +855,13 @@ sel_p2 : {strcpy($<str>$,"");}
 | INTO TEMP tmp_tabname op_no_log {
        sprintf($<str>$,"INTO TEMP %s%s ",$<str>3,$<str>4);
 	strcpy(temp_tab_name,$<str>3);
-};
+}
+| order_by_clause INTO TEMP tmp_tabname op_no_log {
+       sprintf($<str>$,"%s INTO TEMP %s%s ",$<str>1, $<str>4,$<str>5);
+	strcpy(temp_tab_name,$<str>3);
+}
+
+;
 
 
 op_no_log: {strcpy($<str>$,"");} | WITH_NO_LOG {strcpy($<str>$," WITH NO LOG");}
