@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.371 2007-05-14 16:20:56 mikeaubury Exp $
+# $Id: compile_c.c,v 1.372 2007-05-17 19:48:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.371 2007-05-14 16:20:56 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.372 2007-05-17 19:48:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -708,11 +708,13 @@ if (os>=sizeof(buff)) {
   if (A4GL_isyes (acl_getenv ("INCLINES")))
     {
       static int last_line=-1;
+	  int lastwas=0;
      
       for (a = 0; a < strlen (buff); a++)
 	{
 	  if (buff[a] == '\n' )
 	    {
+		lastwas=1;
 		if (suppress_lines==0 && strstr(buff,"EXEC SQL")==0) {
 			last_line=lastlineno;
 	      		if (infilename != 0) { 
@@ -726,9 +728,13 @@ if (os>=sizeof(buff)) {
 	    }
 	  else
 	    {
+		lastwas=0;
 	      FPRINTF (outfile, "%c", buff[a]);
 	    }
 	}
+	if (!lastwas && strlen(buff)>1) {
+	      FPRINTF (outfile, "\n");
+		}
     }
   else
     {
@@ -6281,9 +6287,11 @@ LEXLIB_print_fgllib_start (char *db)
   }
 
   if (doing_esql()) {
+	set_suppress_lines();
 	printc("#ifdef LEXDIALECT_TYPE");
 	printc("    A4GL_setenv (\"A4GL_LEXDIALECT\",LEXDIALECT_TYPE, 1);");
 	printc("#endif");
+	clr_suppress_lines();
   }
 
   if (!A4GL_doing_pcode ())
