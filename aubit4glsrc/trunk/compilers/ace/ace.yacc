@@ -481,6 +481,7 @@ literal: CHAR_VALUE {
         | NUMERIC
         | real_number
         | INTVAL
+/*
         | PLUS real_number
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
         | PLUS INTVAL
@@ -489,6 +490,7 @@ literal: CHAR_VALUE {
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
         | MINUS INTVAL
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+*/
        ;
 
 /*
@@ -921,20 +923,9 @@ units_qual:
 ;
 
 value_expression:
-	value_expression DIVIDE value_expression
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression MOD value_expression
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression POW value_expression
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression units_qual
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| value_expression MULTIPLY value_expression
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression PLUS value_expression
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression MINUS value_expression
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	value_expression val_expr_next  {
+			sprintf($<str>$,"%s%s", $<str>1,$<str>2);
+		}
 	| literal
 	| identifier
 	| identifier OPEN_SQUARE int_val CLOSE_SQUARE                {sprintf($<str>$," %s[%s]",$<str>1,$<str>3);}
@@ -972,7 +963,21 @@ sprintf($<str>$,"\n2(%d)",find_variable($<str>2));
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| COUNT OPEN_BRACKET op_all value_expression CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+;
 
+val_expr_next: 
+	DIVIDE value_expression_s 	{sprintf($<str>$,"/%s",$<str>2);}
+	|  MOD value_expression_s 	{sprintf($<str>$," MOD %s",$<str>2);}
+	|  POW value_expression_s 	{sprintf($<str>$," POW %s",$<str>2);}
+	| units_qual  			{sprintf($<str>$,"%s",$<str>1);}
+	| MULTIPLY value_expression_s 	{sprintf($<str>$,"*%s",$<str>2);}
+	| PLUS value_expression_s     	{sprintf($<str>$,"+%s",$<str>2);}
+	|  MINUS value_expression_s   	{sprintf($<str>$,"-%s",$<str>2);}
+;
+
+value_expression_s: value_expression
+	| PLUS value_expression
+	| MINUS value_expression
 ;
 
 value_expr_list : 
@@ -1395,6 +1400,25 @@ aggregate_elem:
 ;
 
 val_expression:
+	 MINUS val_expression  {
+		switch ( $<expr>2.type) {
+			case EXPRTYPE_DOUBLE:
+					COPY($<expr>$,$<expr>2); 
+					$<expr>$.expr_u.d=0.0-$<expr>$.expr_u.d;
+					break;
+			case EXPRTYPE_INT:
+					COPY($<expr>$,$<expr>2); 
+					$<expr>$.expr_u.i=0-$<expr>$.expr_u.i;
+					break;
+			default : 
+					$<expr>$.type=EXPRTYPE_COMPLEX;
+					$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+					set_expr_int(&$<expr>$.expr_u.expr->expr1, 0);
+					COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+					$<expr>$.expr_u.expr->operand=EXPR_SUB; 
+		}
+	}
+	| 
 	 val_expression DIVIDE val_expression 
 		{ 
 		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -1644,22 +1668,25 @@ literal_expr: CHAR_VALUE {
 		$<expr>$.type=EXPRTYPE_INT;
 		$<expr>$.expr_u.i=atoi($<str>1);
 	}
+/*
 	| PLUS real_number {
-		$<expr>$.type=EXPRTYPE_INT;
-		$<expr>$.expr_u.i=atoi($<str>2);
+		$<expr>$.type=EXPRTYPE_DOUBLE;
+		$<expr>$.expr_u.d=atof($<str>2);
 	}
 	| PLUS INTVAL {
 		$<expr>$.type=EXPRTYPE_INT;
 		$<expr>$.expr_u.i=atoi($<str>2);
 	}
 	| MINUS real_number {
-		$<expr>$.type=EXPRTYPE_INT;
-		$<expr>$.expr_u.i=0-atoi($<str>2);
+		$<expr>$.type=EXPRTYPE_DOUBLE;
+		$<expr>$.expr_u.d=0-atof($<str>2);
 	}
 	| MINUS INTVAL {
 		$<expr>$.type=EXPRTYPE_INT;
 		$<expr>$.expr_u.i=0-atoi($<str>2);
 	}
+*/
+
 ;
 
 
