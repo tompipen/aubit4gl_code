@@ -80,7 +80,7 @@ while (1) {
 		A4GL_debug("END OF FILE");
 		break;
 	}
-	if (lv_cnt>=display_lines) break;
+	if (lv_cnt>display_lines) break;
 	fgets(buff,sizeof(buff),in);
 
 	A4GL_debug("PAGINATE : %s",buff);
@@ -97,7 +97,7 @@ if (lv_cnt==0) outlines=0;
 endcode
 set pause mode off
 code
-	if (lv_cnt>=display_lines || lv_always) {
+	if (lv_cnt>display_lines || lv_always) {
 
 		aclfgl_display_menu(0);
 		lv_action=A4GL_pop_int();
