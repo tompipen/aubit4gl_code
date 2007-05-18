@@ -20,7 +20,7 @@
 
 %%
 [\r] ;
-[\n] 	{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
+[\n] 	{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;yylineno--;REJECT; }}
 <escaped>[\n] 	{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
 [ ]	{ if (ignorekw==1) return KW_WS; }
 <escaped>[ ]	{ if (ignorekw==1) return KW_WS; }
