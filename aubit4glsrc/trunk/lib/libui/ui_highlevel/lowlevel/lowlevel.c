@@ -2,7 +2,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel.c,v 1.6 2006-05-13 12:34:40 mikeaubury Exp $";
+  "$Id: lowlevel.c,v 1.7 2007-05-18 18:20:53 mikeaubury Exp $";
 #endif
 
 
@@ -227,7 +227,7 @@ A4GL_LL_field_buffer (void *field, int n)
 
 
 void
-A4GL_LL_set_field_buffer (void *field, int n, char *str)
+A4GL_LL_set_field_buffer (void *field, int n, char *str, char *orig)
 {
 }
 

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.52 2007-04-27 15:29:02 mikeaubury Exp $
+# $Id: input_array.c,v 1.53 2007-05-18 18:20:53 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.52 2007-04-27 15:29:02 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.53 2007-05-18 18:20:53 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3280,7 +3280,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
 					A4GL_get_field_width (form->
 							      currentfield));
 			A4GL_mja_set_field_buffer (form->currentfield, 0,
-						   buff);
+						   buff,0);
 		      }
 		    else
 		      {

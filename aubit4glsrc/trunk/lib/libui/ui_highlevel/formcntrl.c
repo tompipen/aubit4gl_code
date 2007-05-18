@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.56 2007-04-27 15:29:02 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.57 2007-05-18 18:20:52 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.56 2007-04-27 15:29:02 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.57 2007-05-18 18:20:52 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -765,7 +765,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 			  k = a4gl_toupper (k);
 			}
 		      A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
-		      A4GL_LL_set_field_buffer (sio->currentfield, 0, rbuff);
+		      A4GL_LL_set_field_buffer (sio->currentfield, 0, rbuff,0);
 		    }
 		}
 	    }
@@ -1793,9 +1793,13 @@ A4GL_assertion(fw==0,"NO field width");
       for (a = 0; a < fw; a++)
 	ff[a] = ' ';
       ff[fw - 1] = 0;
-    }
+  }
 
-  A4GL_mja_set_field_buffer (f, 0, ff);
+  if ((dtype & DTYPE_MASK) == DTYPE_CHAR ) {
+  		A4GL_mja_set_field_buffer (f, 0, ff,ptr);
+  } else {
+  		A4GL_mja_set_field_buffer (f, 0, ff,0);
+  }
   acl_free (ff);
   A4GL_debug ("Init complete");
 }

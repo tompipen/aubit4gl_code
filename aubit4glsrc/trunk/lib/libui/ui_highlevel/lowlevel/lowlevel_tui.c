@@ -45,7 +45,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.103 2007-05-08 17:53:15 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.104 2007-05-18 18:20:53 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +88,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.103 2007-05-08 17:53:15 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.104 2007-05-18 18:20:53 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1565,7 +1565,7 @@ A4GL_LL_field_buffer (void *field, int n)
 
 
 void
-A4GL_LL_set_field_buffer (void *field, int n, char *str)
+A4GL_LL_set_field_buffer (void *field, int n, char *str,char *orig)
 {
   int a;
   A4GL_debug ("LL_set_field_buffer : '%s' from ", str,A4GL_form_field_buffer (field, n));
@@ -2626,7 +2626,7 @@ A4GL_debug("Too small");
 
   buff[0] = 0;			/* -2 */
   A4GL_debug ("Setting Buffer %p to '%s'", prompt_field, buff);
-  A4GL_LL_set_field_buffer (prompt_field, 0, buff);
+  A4GL_LL_set_field_buffer (prompt_field, 0, buff,0);
   A4GL_debug ("Set buffer ");
 
   A4GL_debug ("Made fields");
@@ -2897,7 +2897,7 @@ A4GL_LL_construct_large (char *orig,
 
   a = A4GL_form_post_form (f);
   A4GL_debug ("construct - post_form = %d", a);
-  A4GL_LL_set_field_buffer (buff[1], 0, rbuff);
+  A4GL_LL_set_field_buffer (buff[1], 0, rbuff,0);
 
   A4GL_debug ("su");
   A4GL_LL_screen_update ();

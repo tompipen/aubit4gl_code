@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.114 2007-04-04 15:32:50 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.115 2007-05-18 18:20:53 mikeaubury Exp $";
 #endif
 
 
@@ -41,7 +41,7 @@ static void setup_ok_cancel (GtkWidget * ok_cancel);
 //int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
 int A4GL_LL_fieldnametoid (char *f, char *s, int n);
 void A4GL_win_stack (struct s_windows *w, int op);
-int A4GL_display_generic (GtkWidget * k, char *s);
+int A4GL_display_generic (GtkWidget * k, char *s,char *orig);
 //int A4GL_has_event (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt);
@@ -2385,7 +2385,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
 
   buff[0] = 0;			/* -2 */
   A4GL_debug ("Setting Buffer %p to '%s'", last_prompt_field, buff);
-  A4GL_LL_set_field_buffer (last_prompt_field, 0, buff);
+  A4GL_LL_set_field_buffer (last_prompt_field, 0, buff,0);
   A4GL_debug ("Set buffer ");
 
 
@@ -2882,9 +2882,9 @@ A4GL_LL_set_carat (void *vform)
 
 
 void
-A4GL_LL_set_field_buffer (void *field, int n, char *str)
+A4GL_LL_set_field_buffer (void *field, int n, char *str,char *orig)
 {
-  A4GL_display_generic (field, str);
+  A4GL_display_generic (field, str,orig);
 }
 
 void
@@ -2974,7 +2974,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       if (A4GL_LL_field_opts (cwidget) & AUBIT_O_BLANK && form->curcol == 0)
 	{
 	  //A4GL_clr_field(cwidget);
-	  A4GL_LL_set_field_buffer (cwidget, 0, " ");
+	  A4GL_LL_set_field_buffer (cwidget, 0, " ",0);
 	}
 
       if (form->ovlins == 1)
@@ -3353,7 +3353,7 @@ A4GL_LL_construct_large (char *orig, void *vevt, int init_key, int initpos,
   f = A4GL_LL_new_form (&lof);
 
   f->currentfield = 0;
-  A4GL_LL_set_field_buffer (fd.form_fields[0], 0, rbuff);
+  A4GL_LL_set_field_buffer (fd.form_fields[0], 0, rbuff,0);
 
   gtk_container_add (GTK_CONTAINER (v), fd.form_fields[0]);
 

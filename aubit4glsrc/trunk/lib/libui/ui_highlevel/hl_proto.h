@@ -71,7 +71,7 @@ void A4GL_initialize_screen_mode(void);
 void A4GL_make_window_with_this_form_current(void *form);
 void A4GL_mja_endwin(void);
 void A4GL_mja_set_current_field(void *form, void *field);
-void A4GL_mja_set_field_buffer(void *field, int nbuff, char *buff);
+void A4GL_mja_set_field_buffer(void *field, int nbuff, char *buff,char *orig_buff);
 void A4GL_mja_set_field_buffer_contrl(void *field, int nbuff, int ch);
 void A4GL_set_arr_fields(int n, int attr, ...);
 void A4GL_set_array_mode(int type);

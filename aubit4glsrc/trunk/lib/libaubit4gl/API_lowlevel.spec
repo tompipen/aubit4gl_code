@@ -139,7 +139,7 @@ A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis 
 A4GL_LL_set_field_back void* field int attr -> void
 
 /* void A4GL_LL_set_field_buffer void* field int n char* str */
-A4GL_LL_set_field_buffer void* field int n char* str -> void
+A4GL_LL_set_field_buffer void* field int n char* str char* origstr -> void
 
 
 /* OLD ?A4GL_LL_clr_field_buffer void* field int n -> void */

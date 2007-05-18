@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.54 2007-05-07 20:35:58 mikeaubury Exp $";
+  "$Id: misc.c,v 1.55 2007-05-18 18:20:53 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -121,7 +121,7 @@ UILIB_A4GL_clr_form (int to_default)
 	  if (!to_default)
 	    {
 	      A4GL_debug ("Blanking field %p MJAMJAMJA", f);
-	      A4GL_mja_set_field_buffer (f, 0, "");
+	      A4GL_mja_set_field_buffer (f, 0, "",0);
 	    }
 	  else
 	    {
@@ -134,7 +134,7 @@ UILIB_A4GL_clr_form (int to_default)
 							       A4GL_strip_quotes
 							       (A4GL_get_str_attribute
 								(prop,
-								 FA_S_DEFAULT))));
+								 FA_S_DEFAULT))),0);
 	    }
 	}
 
@@ -160,7 +160,7 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 
   for (a = 0; a <= c; a++)
     {
-      A4GL_mja_set_field_buffer (field_list[a], 0, "");
+      A4GL_mja_set_field_buffer (field_list[a], 0, "",0);
       f =
 	(struct struct_scr_field
 	 *) (A4GL_ll_get_field_userptr (field_list[a]));
@@ -1238,9 +1238,9 @@ UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
 	continue;
 
       A4GL_mja_set_field_buffer ((void *) formdets->fileform->metrics.
-				 metrics_val[a].dlm1, 0, sbuff0);
+				 metrics_val[a].dlm1, 0, sbuff0,0);
       A4GL_mja_set_field_buffer ((void *) formdets->fileform->metrics.
-				 metrics_val[a].dlm2, 0, sbuff1);
+				 metrics_val[a].dlm2, 0, sbuff1,0);
     }
 }
 
@@ -1306,9 +1306,9 @@ A4GL_get_field_width_with_form (void *fd, void *fld)
 
 
   if (fd==0) {
-  		formdets 	= (struct s_form_dets *) UILIB_A4GL_get_curr_form (0);
+  	formdets 	= (struct s_form_dets *) UILIB_A4GL_get_curr_form (0);
   } else {
-	  	formdets=fd;
+	formdets=fd;
   }
 
   fprop 	= (struct s_scr_field *) (A4GL_ll_get_field_userptr (fld));
@@ -1318,11 +1318,8 @@ A4GL_get_field_width_with_form (void *fd, void *fld)
 	    	//A4GL_pause_execution();
 		w= A4GL_LL_get_field_width_dynamic (fld);
     } else {
-  	w = formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, fld)].w;
+  		w = formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, fld)].w;
     }
-  if (w==0) {
-	  	A4GL_pause_execution();
-  }
 
   return w;
 }

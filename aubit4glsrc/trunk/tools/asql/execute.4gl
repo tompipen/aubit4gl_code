@@ -370,6 +370,8 @@ code
 						} else {
 							if (qry_type==1) {
 								A4GL_debug("display_mode=%d exec_mode=%d\n",display_mode,exec_mode);
+									A4GL_trim(l_db);
+									A4GL_trim_nl(l_db);
 									A4GL_push_char(l_db);
 									aclfgl_sql_select_db(1);
 								} else {

@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.30 2006-07-04 15:17:40 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.31 2007-05-18 18:20:54 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -58,7 +58,7 @@ void A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data);
 //void A4GL_add_signal_changed(GtkWidget *widget, void *funcptr);
 //void A4GL_add_signal_select_row(GtkWidget *widget, void *funcptr);
 //void A4GL_func(GtkWidget *w, char *mode);
-int A4GL_display_generic (GtkWidget * k, char *s);
+int A4GL_display_generic (GtkWidget * k, char *s,char *orig);
 
 char *A4GL_decode_config (struct_form * f, int a);
 
@@ -628,6 +628,10 @@ A4GL_size_widget (GtkWidget * w, int width)
     {
       gtk_widget_set_usize (GTK_WIDGET (w), x, y);
     }
+
+  gtk_object_set_data (GTK_OBJECT (w), "SIZE_X", x);
+  gtk_object_set_data (GTK_OBJECT (w), "SIZE_Y", y);
+
   lastWidth = x;
   lastHeight = y;
 }
@@ -671,8 +675,8 @@ A4GL_make_pixbuf_gw (char *filename)
   //GdkPixbuf *p;
   //GtkWidget *pixbuf;
   //GtkWidget *window,*hbox, *resized,*widget;
-  GtkWidget *widget;
-  GdkPixbuf *pixbuf, *resized;
+  GtkWidget *widget=0;
+  GdkPixbuf *pixbuf=0, *resized=0;
 
   if (filename == 0)
     filename = "";
@@ -680,38 +684,103 @@ A4GL_make_pixbuf_gw (char *filename)
   A4GL_trim (filename);
 
 
-  pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
+  if (strlen(filename)) {
+  		pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
+	} else {
+		pixbuf=0;
+	}
 
 
   widget = gtk_image_new ();
   A4GL_size_widget (widget, widget_next_size);
-  resized =
-    gdk_pixbuf_scale_simple (pixbuf, lastWidth - 20, lastHeight - 20,
+	if (pixbuf) {
+  		resized = gdk_pixbuf_scale_simple (pixbuf, lastWidth - 20, lastHeight - 20,
 			     GDK_INTERP_BILINEAR);
 
 
+	}
 
-
-  if (pixbuf == 0 || resized == 0)
+  if (pixbuf && resized == 0)
     {
       FPRINTF (stderr, "Make pixmap failed...");
     }
 
-  gtk_image_set_from_pixbuf (GTK_IMAGE (widget), resized);
-  gdk_pixbuf_unref (resized);
-
+  if (resized) {
+  	gtk_image_set_from_pixbuf (GTK_IMAGE (widget), resized);
+  	gdk_pixbuf_unref (resized);
+	}
 
   gtk_widget_show (widget);
   FPRINTF (stderr, "pixmap=%p\n", pixbuf);
   //gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, FALSE, 2);
 
+  if (pixbuf) {
   g_object_unref (pixbuf);
+	}
 
 
   //gtk_widget_show(hbox);
   gtk_widget_show (widget);
   return widget;
 }
+
+void
+A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
+{
+  //GdkPixbuf *p;
+  //GtkWidget *pixbuf;
+  //GtkWidget *window,*hbox, *resized,*widget;
+  GdkPixbuf *pixbuf, *resized;
+  int scaletofit;
+
+  if (filename == 0)
+    filename = "";
+  FPRINTF (stderr, "Making pixmap from file:%s (1)\n", filename);
+
+  A4GL_trim (filename);
+
+
+  pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
+  if (!pixbuf)
+    {
+      FPRINTF (stderr, "Make pixmap failed...");
+      return;
+    }
+  else
+    {
+
+      scaletofit = (int) gtk_object_get_data (GTK_OBJECT (widget), "SCALE");
+
+      if (scaletofit)
+	{
+	  resized = gdk_pixbuf_scale_simple (pixbuf, lastWidth - 20, lastHeight - 20, GDK_INTERP_BILINEAR);
+
+	  if (resized == 0)
+	    {
+	      FPRINTF (stderr, "resize pixmap failed...");
+	    }
+
+	  lastWidth =
+	    (int) gtk_object_get_data (GTK_OBJECT (widget), "SIZE_X");
+	  lastHeight =
+	    (int) gtk_object_get_data (GTK_OBJECT (widget), "SIZE_Y");
+	  gtk_image_set_from_pixbuf (GTK_IMAGE (widget), resized);
+	  gdk_pixbuf_unref (resized);
+	  g_object_unref (pixbuf);
+	}
+      else
+	{
+	  gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
+	  g_object_unref (pixbuf);
+
+	}
+    }
+  return;
+}
+
+
+
+
 #else
 void *
 A4GL_make_pixbuf_gw (char *filename)
@@ -753,6 +822,7 @@ A4GL_cr_picture (void)
 {
   GtkWidget *pixmap;
   char *filename;
+  char *scaletofit;
   filename = A4GL_find_param ("FILENAME");
 
   A4GL_debug ("Making picture filename=%s\n", filename);
@@ -762,6 +832,13 @@ A4GL_cr_picture (void)
       A4GL_add_signal_grab_focus (pixmap, 0);
       /* A4GL_add_signal_clicked (pixmap, 0); */  // GLib-GObject-CRITICAL **: g_signal_connect_closure_by_id: assertion `signal_id > 0' failed
     }
+
+
+  scaletofit = A4GL_find_param ("*SCALE");
+  if (scaletofit) { 
+		gtk_object_set_data(pixmap,"SCALE",scaletofit); 
+	}
+
   return pixmap;
 }
 
@@ -771,6 +848,7 @@ A4GL_cr_pixbuf (void)
 {
   GtkWidget *pixmap = 0;
   char *filename;
+  char *scaletofit;
   FPRINTF (stderr, "Find param\n");
 
   filename = A4GL_find_param ("FILENAME");
@@ -782,6 +860,10 @@ A4GL_cr_pixbuf (void)
   gtk_widget_show (pixmap);
   FPRINTF (stderr, "Made : %p\n", pixmap);
   A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
+  scaletofit = A4GL_find_param ("*SCALE");
+  if (scaletofit) { 
+		gtk_object_set_data(pixmap,"SCALE",scaletofit); 
+	}
   return pixmap;
 }
 #endif
@@ -1508,7 +1590,7 @@ A4GL_func (GtkWidget * w, char *mode)
  *   - 0 :idget type not found.
  */
 int
-A4GL_display_generic (GtkWidget * k, char *s)
+A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 {
   char *ptr;
   char *utf;
@@ -1587,6 +1669,26 @@ A4GL_display_generic (GtkWidget * k, char *s)
       g_free (utf);
       return 1;
     }
+
+
+  if (A4GL_aubit_strcasecmp (ptr, "PIXMAP") == 0 || A4GL_aubit_strcasecmp (ptr, "PIXBUF") == 0 ||  A4GL_aubit_strcasecmp (ptr, "FIELD_BMP")==0)
+    {
+  	if (A4GL_aubit_strcasecmp (ptr, "PIXMAP") == 0) {
+		FPRINTF(stderr,"Cant change a pixmap - use a PIXBUF instead...\n");
+	} else {
+		char *s=0;
+		if (orig) {
+		s=strdup(orig); 
+		A4GL_trim(s);
+		A4GL_set_pixbuf_gw(k,s);
+		free(s);
+		}
+	}
+      return 1;
+    }
+
+
+
 
   if (A4GL_aubit_strcasecmp (ptr, "ENTRY") == 0 || A4GL_aubit_strcasecmp (ptr, "TEXT") == 0)
     {

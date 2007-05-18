@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.115 2007-05-01 07:42:29 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.116 2007-05-18 18:20:52 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1800,6 +1800,7 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
   struct struct_scr_field *f;
   char *ff;
   static char *buff = 0;
+  char *orig=0;
 
 
 
@@ -1807,6 +1808,10 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
   A4GL_debug ("In display_field_contents");
   f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field));
   ff = A4GL_new_string (A4GL_get_field_width (field));
+  if ((d1 & DTYPE_MASK)==DTYPE_CHAR ) {
+		orig=A4GL_char_pop();
+		A4GL_push_char(orig);
+  }
 
   field_width = A4GL_get_field_width (field);
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
@@ -1882,11 +1887,11 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 	}
 
     }
-
+  
   A4GL_pop_char (ff, field_width);
   A4GL_debug ("set_field_contents : '%s'", ff);
   A4GL_add_recall_value (f->colname, ff);
-  A4GL_mja_set_field_buffer (field, 0, ff);
+  A4GL_mja_set_field_buffer (field, 0, ff,orig);
   if (buff)
     free (buff);
   buff = strdup (ff);
@@ -2872,7 +2877,7 @@ A4GL_clr_field (void *f)
 	  str[a] = picture[a];
 	}
     }
-  A4GL_mja_set_field_buffer (f, 0, str);
+  A4GL_mja_set_field_buffer (f, 0, str,0);
 }
 
 
@@ -3373,12 +3378,12 @@ UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
 	      A4GL_debug ("field[%d][%d] = buffer[%d][%d]", a, b, a - 1, b);
 	      ptr = A4GL_LL_field_buffer (buff[a - 1][b], 0);
 	      A4GL_debug ("              = %s", ptr);
-	      A4GL_LL_set_field_buffer (buff[a][b], 0, ptr);
+	      A4GL_LL_set_field_buffer (buff[a][b], 0, ptr,0);
 	    }
 	}
       for (b = 0; b < nfields; b++)
 	{
-	  A4GL_LL_set_field_buffer (buff[0][b], 0, "");
+	  A4GL_LL_set_field_buffer (buff[0][b], 0, "",0);
 	}
     }
 
@@ -3391,12 +3396,12 @@ UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
 	      A4GL_debug ("field[%d][%d] = buffer[%d][%d]", a, b, a + 1, b);
 	      ptr = A4GL_LL_field_buffer (buff[a + 1][b], 0);
 	      A4GL_debug ("              = %s", ptr);
-	      A4GL_LL_set_field_buffer (buff[a][b], 0, ptr);
+	      A4GL_LL_set_field_buffer (buff[a][b], 0, ptr,0);
 	    }
 	}
       for (b = 0; b < nfields; b++)
 	{
-	  A4GL_LL_set_field_buffer (buff[dim - 1][b], 0, "");
+	  A4GL_LL_set_field_buffer (buff[dim - 1][b], 0, "",0);
 	}
     }
 
@@ -3749,7 +3754,7 @@ A4GL_set_field_attr_for_ll (void *formdets, void *field)
 
 
 void
-A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
+A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff,char *orig)
 {
   char buff2[8024];
   int a;
@@ -3779,7 +3784,7 @@ A4GL_mja_set_field_buffer (void *field, int nbuff, char *buff)
     }
 
 
-  A4GL_LL_set_field_buffer (field, nbuff, buff2);
+  A4GL_LL_set_field_buffer (field, nbuff, buff2,orig);
 }
 
 
