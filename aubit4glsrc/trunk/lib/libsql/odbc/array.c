@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.22 2007-02-20 19:11:07 gyver309 Exp $
+# $Id: array.c,v 1.23 2007-05-18 12:42:46 gyver309 Exp $
 #
 */
 
@@ -442,7 +442,7 @@ struct  {
 					strncpy (&arr2[cnt * (szarr2 + 1)], data.dtname, szarr2);
 					break;
 				case 2:
-					SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%s(%d)",data.dtname, (int)szcolsize);
+					SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%s(%d)",data.dtname, colsize);
 					break;
 				default:
 					strncpy (&arr2[cnt * (szarr2 + 1)], data.tn, szarr2);
