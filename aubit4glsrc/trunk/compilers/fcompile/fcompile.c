@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.53 2007-05-04 16:51:32 mikeaubury Exp $
+# $Id: fcompile.c,v 1.54 2007-05-18 12:34:51 mikeaubury Exp $
 #*/
 
 /**
@@ -440,4 +440,36 @@ int doing_4gl(void) {
 	if (fcompile) return 1;
 	return 0;
 }
+
+int A4GL_check_compiled_form() {
+int a;
+int found;
+int b;
+  // Check that all field tags actually relate to things in the
+  // attribute section 
+  //
+  // 0 would be labels - they're never 'used' in attributes...
+  // so start at 1...
+  for (a = 1; a < the_form.fields.fields_len; a++)
+    {
+	found=0;
+	for (b=0;b<the_form.attributes.attributes_len;b++) {
+		if (the_form.attributes.attributes_val[b].field_no==a) {
+		found++;
+		break;
+		}
+	}
+	if (!found) {
+		char buff[256];
+		sprintf(buff, "Tag '%s' has not been used", the_form.fields.fields_val[a].tag);
+		a4gl_form_yyerror(buff);
+		return 0;
+        }
+    }
+
+
+return 1;
+
+}
+
 /* ================================== EOF ============================= */

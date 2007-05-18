@@ -108,7 +108,9 @@ FORMONLY COMMENT
 
 /* rules */
 form_def : 
-database_section screen_section op_table_section attribute_section op_instruction_section {A4GL_write_form();}
+database_section screen_section op_table_section attribute_section op_instruction_section {
+A4GL_check_compiled_form();
+A4GL_write_form();}
 ;
 database_section :
 DATABASE FORMONLY {the_form.dbname=acl_strdup("formonly");}
