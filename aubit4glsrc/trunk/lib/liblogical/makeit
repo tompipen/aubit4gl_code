@@ -9,9 +9,9 @@ then
 fi
 
 
-for a in layout_engine processor report_viewer txt csv pdf
+for a in layout_engine processor report_viewer txt csv pdf html
 do
-if [ $a = csv -o $a = txt -o $a = pdf ]
+if [ $a = csv -o $a = txt -o $a = pdf  o $a = html ]
 then
 	for b in layout process
 	do
