@@ -21,6 +21,7 @@ finish report r1  converting to many
         convert report r1 to "orig.output" AS "SAVE"  # Special - for use with layout_engine
         convert report r1 to "myfile3.pdf" AS "PDF"  # uses default layout
         convert report r1 to "myfile4.txt" AS "TXT"  # uses default layout
+        convert report r1 to "myfile4.html" AS "HTML"  # uses default layout
 free report r1
 
 end main

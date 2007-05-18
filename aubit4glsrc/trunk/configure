@@ -23577,8 +23577,8 @@ if test "$enable_minimal" != "yes"; then
 
 	#Define targets for liblogical
 	LIBLOGICAL_EXE_GTK2_DEPEND="layout_engine report_viewer"
-	LIBLOGICAL_BUILD="LOGREPPROC_TXT LOGREPPROC_CSV"
-	LIBLOGICAL_GTK2_DEPEND="LOGREP_CSV LOGREP_TXT"
+	LIBLOGICAL_BUILD="LOGREPPROC_TXT LOGREPPROC_CSV LOGREPPROC_HTML"
+	LIBLOGICAL_GTK2_DEPEND="LOGREP_CSV LOGREP_TXT LOGREP_HTML"
 	LIBLOGICAL_PDF_DEPEND="LOGREPPROC_PDF"
 	LIBLOGICAL_PDF_GTK2_DEPEND="LOGREP_PDF"
 fi
@@ -61272,7 +61272,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.380 2007-05-11 18:31:02 mikeaubury Exp $
+| $Id: configure,v 1.381 2007-05-18 13:03:23 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

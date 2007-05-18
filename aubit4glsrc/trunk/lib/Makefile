@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.19 2007-03-29 06:21:19 mikeaubury Exp $
+# $Id: Makefile,v 1.20 2007-05-18 13:03:39 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -616,6 +616,8 @@ ${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}:
 	$(MAKE) -C liblogical/csv/process
 ${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT}:
 	$(MAKE) -C liblogical/pdf/process
+${PLUGINDIR}/libLOGREPPROC_HTML${SO_EXT}:
+	$(MAKE) -C liblogical/html/process
 
 ${PLUGINDIR}/libLOGREP_TXT${SO_EXT}:
 	$(MAKE) -C liblogical/txt/layout
@@ -623,6 +625,8 @@ ${PLUGINDIR}/libLOGREP_CSV${SO_EXT}:
 	$(MAKE) -C liblogical/csv/layout
 ${PLUGINDIR}/libLOGREP_PDF${SO_EXT}:
 	$(MAKE) -C liblogical/pdf/layout
+${PLUGINDIR}/libLOGREP_HTML${SO_EXT}:
+	$(MAKE) -C liblogical/html/layout
 
 ##############
 #Not libraries - programs:
