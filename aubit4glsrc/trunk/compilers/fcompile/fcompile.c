@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.54 2007-05-18 12:34:51 mikeaubury Exp $
+# $Id: fcompile.c,v 1.55 2007-05-18 19:01:51 mikeaubury Exp $
 #*/
 
 /**
@@ -448,11 +448,12 @@ int b;
   // Check that all field tags actually relate to things in the
   // attribute section 
   //
-  // 0 would be labels - they're never 'used' in attributes...
-  // so start at 1...
-  for (a = 1; a < the_form.fields.fields_len; a++)
+  for (a = 0; a < the_form.fields.fields_len; a++)
     {
 	found=0;
+	if (strcmp(the_form.fields.fields_val[a].tag,"_label")==0) {
+	continue;
+	}
 	for (b=0;b<the_form.attributes.attributes_len;b++) {
 		if (the_form.attributes.attributes_val[b].field_no==a) {
 		found++;
