@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "tests not using a field doesn't trim its length"
+desc: ; @echo "MID 986: extend doesn't correctly"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -51,4 +51,3 @@ need_plugin:			; @echo ""
 
 
 # ============================= EOF ================================
-
