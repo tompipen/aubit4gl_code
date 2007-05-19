@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.178 2007-05-11 14:56:12 mikeaubury Exp $
+# $Id: stack.c,v 1.179 2007-05-19 08:28:49 mikeaubury Exp $
 #
 */
 
@@ -2607,13 +2607,9 @@ if (type>255) {
     {
       struct fgl_int_loc *ptr;
       ptr = (struct fgl_int_loc *) buff;
-      //if (ptr->where == 'M')
-	//{
-	A4GL_free_associated_mem(ptr);
-	  //free (ptr->ptr);
+      A4GL_free_associated_mem(ptr);
       ptr->ptr = 0;
-	//}
-      ptr->where = 'N';
+      ptr->isnull = 'Y';
       return;
     }
 
@@ -2763,7 +2759,7 @@ A4GL_isnull (int type, char *buff)
 	  case DTYPE_BYTE:
 	  case DTYPE_TEXT:
       		ptr = (struct fgl_int_loc *) buff;
-      		return ptr->where == 'N';
+      		return ptr->isnull == 'N';
     
 
 	  case DTYPE_DTIME:
@@ -2870,7 +2866,7 @@ A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename)
   A4GL_init_blob (p);
 
   A4GL_debug ("20 inited");
-
+  p->isnull='Y';
   p->ptr = 0;
   p->memsize = -1;
 
@@ -2937,6 +2933,7 @@ A4GL_init_blob (struct fgl_int_loc *p)
   p->memsize = -1;
   p->filename[0] = 0;
   p->where = 'N';
+  p->isnull='Y';
   p->f = 0;
 }
 

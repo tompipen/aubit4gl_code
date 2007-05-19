@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.60 2007-05-09 06:30:22 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.61 2007-05-19 08:28:50 mikeaubury Exp $
 #
 */
 
@@ -724,6 +724,31 @@ void ESQLAPI_A4GL_copy_blob_text(void *infx,struct fgl_int_loc  *a4gl,short *p_i
 #define ESQLAPI_A4GL_copy_blob_text ESQLAPI_A4GL_copy_blob
 
 void ESQLAPI_A4GL_init_out_text (void *v_a4gl,void * v_infx) {
+struct fgl_int_loc *a4gl;
+loc_t *infx;
+infx=v_infx;
+a4gl=v_a4gl;
+
+	
+                if (a4gl->where=='M') {
+                        infx->loc_loctype = LOCMEMORY;
+                        infx->loc_bufsize = a4gl->memsize;
+                        infx->loc_oflags = 0;
+                        infx->loc_indicator = 0;   /* not a null blob */
+                        infx->loc_buffer = (char *) a4gl->ptr;
+                }
+
+                if (a4gl->where=='F') {
+                        infx->loc_loctype = LOCFNAME;   /* blob is named file */
+                        infx->loc_fname = a4gl->filename;  /* here is its name */
+                        infx->loc_oflags = LOC_WONLY;   /* contents are to be read by engine */
+                        infx->loc_size = -1;            /* read to end of file */
+                        infx->loc_indicator = 0;        /* not a null blob */
+                        infx->loc_buffer = (char *) NULL;
+                }
+}
+
+void ESQLAPI_A4GL_init_out_byte (void *v_a4gl,void * v_infx) {
 struct fgl_int_loc *a4gl;
 loc_t *infx;
 infx=v_infx;

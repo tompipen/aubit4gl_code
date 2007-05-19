@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.105 2007-05-08 17:53:11 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.106 2007-05-19 08:28:49 mikeaubury Exp $
 */
 
 /**
@@ -133,6 +133,7 @@ extern "C"
 
   struct fgl_int_loc
   {
+    char isnull;
     char where;
     FILE *f;
     long memsize;	/**< Memory size */
