@@ -1492,7 +1492,7 @@ case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
 #line 23 "screen.lex"
-{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
+{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;yylineno--;REJECT; }}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
