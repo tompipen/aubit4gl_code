@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.26 2006-09-25 16:56:23 mikeaubury Exp $
+# $Id: sqlex.c,v 1.27 2007-05-19 08:42:52 mikeaubury Exp $
 #
 */
 
@@ -710,7 +710,7 @@ A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 	      return 0;
 	    }
 	}
-
+	blob->isnull=0;
       cnt = A4GL_get_blob_data_int (blob->f, hstmt, colno, 0);
 
       fclose (blob->f);
@@ -724,11 +724,13 @@ A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 	  free (blob->ptr);
 	}
       cnt = A4GL_get_blob_data_int (0, hstmt, colno, (char **) &blob->ptr);
+	blob->isnull=0;
 
     }
   if (cnt < 0)
     {
-      blob->where = 'N';
+      blob->isnull = 'Y';
+      //blob->where = 'N';
       return 0;
     }
   blob->memsize = cnt;
@@ -879,6 +881,7 @@ A4GL_set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob)
       cnt = A4GL_set_blob_data_int (blob->f, hstmt, blob);
 
       fclose (blob->f);
+	blob->isnull=0;
       blob->f = 0;
     }
   else
@@ -889,12 +892,14 @@ A4GL_set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob)
 	  free (blob->ptr);
 	}
       cnt = A4GL_set_blob_data_int (0, hstmt, blob);
+	blob->isnull=0;
 
     }
 
   if (cnt < 0)
     {
-      blob->where = 'N';
+      blob->isnull = 'Y';
+      //blob->where = 'N';
       return 0;
     }
 
@@ -924,6 +929,8 @@ A4GL_set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
 
   if (blob)
     rewind (blob);
+
+  if (b->isnull=='Y') return 0;
 
   if (blob == 0)
     {
