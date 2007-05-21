@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.169 2007-05-21 14:28:10 mikeaubury Exp $
+# $Id: ioform.c,v 1.170 2007-05-21 14:32:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.169 2007-05-21 14:28:10 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.170 2007-05-21 14:32:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -2138,7 +2138,9 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 }
 
 
-static void remove_tables_from_list(struct s_field_name_list *list) {
+
+// ADDED FOR MID 1014
+static void remove_tables_from_list(struct s_field_name_list *list) { 
 int a;
 
 for (a=0;a<list->nfields;a++) {
@@ -2166,10 +2168,12 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
   n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
 
 
-  if (field_status_strip_tabname && n==-1) {
+  if (field_status_strip_tabname && n==-1 && !A4GL_isno(acl_getenv("FIELDTOUCHEDTABLEFIXUP"))) { // MID 1014
 	remove_tables_from_list(&list);
   	n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
-  }
+  }  // END OF MID 1014
+
+
 	free(list.field_name_list);
   return n;
 
