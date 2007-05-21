@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.116 2007-05-18 18:20:52 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.117 2007-05-21 14:28:11 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -33,6 +33,7 @@ int A4GL_find_fields_no_metric (struct_form * f, int metric_no);
 int A4GL_find_attrib_from_field (struct_form * f, int field_no);
 
 void A4GL_LL_ui_exit (void);
+int field_status_strip_tabname=0;
 
 int aclfgl_a4gl_show_help (int n);
 //int UILIB_A4GLUI_initlib (void);
@@ -1572,17 +1573,40 @@ UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv,
   return a;
 }
 
+// MID 1014 - The things we do in the name of compatibility....
+static void remove_tables_from_list(struct s_field_name_list *list) { // MID 1014
+int a;                                                                // MID 1014
+for (a=0;a<list->nfields;a++) {                                       // MID 1014
+        char *ptr;                                                    // MID 1014
+        ptr=strchr(list->field_name_list[a].fname,'.');               // MID 1014
+        if (ptr) {                                                    // MID 1014
+                        list->field_name_list[a].fname=ptr+1;         // MID 1014
+                }                                                     // MID 1014
+}                                                                     // MID 1014
+} 
+
+
 int
 A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
 		     int max_number, va_list * ap)
 {
   struct s_field_name_list list;
+  int n;
   list.field_name_list = 0;
 
   A4GL_make_field_slist_from_ap (&list, ap);
+  n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
 
-  return A4GL_gen_field_list_from_slist_internal (field_list, formdets,
-						  max_number, &list);
+  if (field_status_strip_tabname && n==-1 && !A4GL_isno(acl_getenv("FIELDTOUCHEDTABLEFIXUP"))) { // MID 1014
+        remove_tables_from_list(&list);                                                          // MID 1014
+        n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);     // MID 1014
+   }
+
+
+   free(list.field_name_list);
+
+
+  return n;
 
 }
 
@@ -1646,7 +1670,9 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list,
 
       if (strlen (tabname) && strlen (colname) && srec_no == -1)
 	{
-	  A4GL_exitwith ("Table/Screen record does not exist in form");
+	  if (!field_status_strip_tabname ) {
+		A4GL_exitwith ("Table/Screen record does not exist in form");
+		}
 	  return -1;
 	}
 

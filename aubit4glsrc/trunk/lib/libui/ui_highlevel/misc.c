@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.55 2007-05-18 18:20:53 mikeaubury Exp $";
+  "$Id: misc.c,v 1.56 2007-05-21 14:28:11 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -28,6 +28,7 @@ int A4GL_UI_int_get_inc_quotes (int a);
 void A4GL_clear_menu (ACL_Menu * menu);
 int aclfgl_a4gl_show_help (int n);
 extern void *inp_current_field;
+extern int field_status_strip_tabname;
 
 int
 UILIB_aclfgl_a4gl_get_page (int n)
@@ -189,7 +190,9 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
   struct struct_scr_field *fprop;
   s = sv;
   A4GL_debug ("fgl_fieldtouched - input ");
+field_status_strip_tabname=1;
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+field_status_strip_tabname=0;
   if (c >= 0)
     {
       for (a = 0; a < c; a++)
@@ -273,8 +276,11 @@ int nv;
 
 //debug_print_flags(sv,"ft");
 
-
+field_status_strip_tabname=1;
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+field_status_strip_tabname=0;
+
+
   if (c >= 0)
     {
       /*

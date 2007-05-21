@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.168 2007-05-08 17:53:13 mikeaubury Exp $
+# $Id: ioform.c,v 1.169 2007-05-21 14:28:10 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.168 2007-05-08 17:53:13 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.169 2007-05-21 14:28:10 mikeaubury Exp $";
 #endif
 
 /**
@@ -83,6 +83,16 @@ static int get_inc_quotes(int a) ;
 =====================================================================
 */
 
+// In some circumstances - Informix allows 
+// the table prefix for a column in a field to be ignored.
+// In order to emulate this - we need to toggle this ability
+// At the moment - this is only set within the field_touched routine
+// We might need to add it to others later..
+// See mantis bug 1014....
+int field_status_strip_tabname=0; 
+
+
+
 extern WINDOW *currwin;
 //int tab_cnt = 0;
 //int srec_cnt = 0;
@@ -113,6 +123,10 @@ char * get_print_field_opts_as_string (FIELD * a);
                     Functions prototypes
 =====================================================================
 */
+
+
+
+
 
 
 void A4GL_clr_field (FIELD * f);
@@ -1954,7 +1968,9 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
        A4GL_debug("tabname='%s' colname='%s' fpos=%d",tabname,colname,fmetric);
       if (strlen (tabname) && strlen (colname) && srec_no == -1)
 	{
-	  A4GL_exitwith ("Table/Screen record does not exist in form");
+	  if (!field_status_strip_tabname) {
+			A4GL_exitwith ("Table/Screen record does not exist in form");
+	  }
 	  return -1;
 	}
 
@@ -2121,6 +2137,19 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
   return cnt - 1;
 }
 
+
+static void remove_tables_from_list(struct s_field_name_list *list) {
+int a;
+
+for (a=0;a<list->nfields;a++) {
+	char *ptr;
+	ptr=strchr(list->field_name_list[a].fname,'.');
+	if (ptr) {
+			list->field_name_list[a].fname=ptr+1;
+		}
+}
+
+}
 /**
  *
  * @todo Describe function
@@ -2135,6 +2164,12 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
   A4GL_make_field_slist_from_ap (&list, ap);
 
   n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
+
+
+  if (field_status_strip_tabname && n==-1) {
+	remove_tables_from_list(&list);
+  	n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
+  }
 	free(list.field_name_list);
   return n;
 
@@ -3711,7 +3746,9 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 
 
 
+  field_status_strip_tabname=1;
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  field_status_strip_tabname=0;
   if (c >= 0)
     {
       /*
@@ -3793,8 +3830,15 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
   struct s_screenio *s;
   struct struct_scr_field *fprop;
   s = sv;
-  A4GL_debug ("fgl_fieldtouched - input ");
+  A4GL_debug ("fgl_fieldtouched - input ");  
+  A4GLSQL_set_status (0, 0);
+
+
+  field_status_strip_tabname=1;
   c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  field_status_strip_tabname=0;
+
+
   if (c >= 0)
     {
       for (a = 0; a <= c; a++)
