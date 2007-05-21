@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.55 2007-05-18 19:01:51 mikeaubury Exp $
+# $Id: fcompile.c,v 1.56 2007-05-21 15:10:06 mikeaubury Exp $
 #*/
 
 /**
@@ -445,6 +445,14 @@ int A4GL_check_compiled_form() {
 int a;
 int found;
 int b;
+
+if ((the_form.dbname,"formonly")!=0) {
+	if (the_form.tables.tables_len==0) {
+		fprintf(stderr,"Warning: DATABASE defined - but no tables used\n");
+	}
+}
+
+
   // Check that all field tags actually relate to things in the
   // attribute section 
   //

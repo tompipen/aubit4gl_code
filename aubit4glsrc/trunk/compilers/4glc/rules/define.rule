@@ -333,6 +333,7 @@ dtype :
 			add_feature("DEFINE_INTEGER");
 		} 
 	|	SERIAL {
+		A4GL_warn("Use of SERIAL as a 4GL datatype is not portable");
 		   push_type("long",0,0);
 			add_feature("DEFINE_SERIAL");
 		} 
