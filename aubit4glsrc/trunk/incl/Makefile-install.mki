@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.119 2007-04-09 14:54:37 fortiz Exp $
+# $Id: Makefile-install.mki,v 1.120 2007-05-23 17:58:42 fortiz Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -735,8 +735,8 @@ IODBC_SRC_TAR_GZ	=${IODBC_SRC_NAME}.tar.gz
 PDFLIB_INFO			=http://www.pdflib.com
 
 #Unix source code:
-PDFLIB_PATH			=http://www.pdflib.com/binaries/PDFlib/700
-PDFLIB_SRC          =PDFlib-Lite-7.0.0p1
+PDFLIB_PATH			=http://www.pdflib.com/binaries/PDFlib/701
+PDFLIB_SRC          =PDFlib-Lite-7.0.1
 PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
 
 #Linux binary:
