@@ -1,3 +1,9 @@
+{**
+ * @file
+ * MID 899. Selecting two TEXT feilds, -> unread blob
+ * @process TEST_GENERAL
+ *}
+
 database test1
 
 define m_t1, m_t2 text
@@ -13,11 +19,11 @@ insert into twotext values (w_t1, w_t2)
 
 locate m_t1 in memory
 locate m_t2 in memory
-display "one select at the time .... 1"
-display "both select at once ....... 2"
-display "Run together .............. 3"
+#display "one select at the time .... 1"
+#display "both select at once ....... 2"
+#display "Run together .............. 3"
 #prompt "option ? " for w_op
-let w_op=2
+let w_op=3
 if w_op = 1 or w_op = 3 then
     display "one select at the time"
     select t1 into m_t1 from twotext
