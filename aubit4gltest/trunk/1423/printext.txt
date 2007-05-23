@@ -1,0 +1,2 @@
+this is a long text, should wrap
+MANTIS ID 838
