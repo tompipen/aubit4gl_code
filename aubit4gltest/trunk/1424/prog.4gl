@@ -1,3 +1,9 @@
+{**
+ * @file
+ * MID 851. Setting an environment variable using the aclfgl_setenv function
+ * @process TEST_GENERAL
+ *}
+
 main
     define envvar, val char(80)
 

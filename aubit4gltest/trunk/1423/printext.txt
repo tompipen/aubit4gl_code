@@ -1,2 +1,2 @@
 this is a long text, should wrap
-MANTIS ID 838
+MANTIS ID 828

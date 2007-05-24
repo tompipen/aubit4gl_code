@@ -1,3 +1,9 @@
+{**
+ * @file
+ * MID 828. WORDWRAP RIGHT MARGIN not working
+ * @process TEST_GENERAL
+ *}
+
 database test1
  
  define m_t text
