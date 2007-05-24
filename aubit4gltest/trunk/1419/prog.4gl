@@ -1,3 +1,9 @@
+{**
+ * @file
+ * Temp tables for report not dropped
+ * @process TEST_GENERAL
+ *}
+
 database test1
 
 main

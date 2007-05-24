@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests running a report several times";
+desc: ; @echo "Tests running a report several times. temp tables not dropped";
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
