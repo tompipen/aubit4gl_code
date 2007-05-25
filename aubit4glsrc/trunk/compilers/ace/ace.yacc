@@ -120,6 +120,7 @@ set_expr_int(struct expr *e,int a)
 %token COUNT
 %token DATABASE
 %token DATE
+%token TIME 
 %token DATETIME
 %token DAY
 %token DECIMAL
@@ -1512,6 +1513,15 @@ val_expression:
 	| DATE {
 		int v;
 		v=find_variable("today");
+		$<expr>$.type=EXPRTYPE_VARIABLE;
+		if (v==-1) {
+			printf("Warning : %s is not a defined variable\n",$<str>1);
+		} 
+		$<expr>$.expr_u.varid=v;
+	}
+	| TIME {
+		int v;
+		v=find_variable("time");
 		$<expr>$.type=EXPRTYPE_VARIABLE;
 		if (v==-1) {
 			printf("Warning : %s is not a defined variable\n",$<str>1);

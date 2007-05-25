@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.27 2007-02-20 19:24:02 gyver309 Exp $
+# $Id: data.c,v 1.28 2007-05-25 20:33:14 mikeaubury Exp $
 #*/
 
 /**
@@ -113,6 +113,7 @@ init_report (void)
   ace_add_variable ("pageno", "INTEGER", CAT_BUILTIN, 0, 2, 0);
   ace_add_variable ("lineno", "SMALLINT", CAT_BUILTIN, 0, 1, 0);
   ace_add_variable ("today", "DATE", CAT_BUILTIN, 0, 7, 0);
+  ace_add_variable ("time", "CHAR", CAT_BUILTIN, 0, 0, 8);
 }
 
 
