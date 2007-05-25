@@ -865,12 +865,21 @@ IF lv_from="4GL"  THEN
 				LET lv_new=get_fname(lv_base ,"EC")
 				LET lv_new2=get_fname(lv_base ,"OBJ")
 				call make_into(lv_new,"EC","OBJ")
+
+				if mv_keep=0 then
+					call remove_file_of_type(lv_base,"EC")
+				end if
 			ELSE
 				call make_into(lv_fname,"4GL","C")
 				LET lv_new=get_fname(lv_base ,"C")
 				LET lv_new2=get_fname(lv_base ,"OBJ")
 				call make_into(lv_new,"C","OBJ")
+
+				if mv_keep=0 then
+					call remove_file_of_type(lv_base,"C")
+				end if
 			END IF
+
 		OTHERWISE
 			display "Unhandled compilation : FROM=",lv_from," TO=",lv_to," for ",lv_fname
 			if mv_noerrcode=0 then
@@ -1639,3 +1648,25 @@ end if
 
 return lv_new
 end function
+
+FUNCTION  remove_file_of_type(lv_fname,lv_type)
+define lv_fname char(256)
+define lv_type CHAR(10 )
+
+IF mv_keep!=0 THEN
+	return
+END IF
+
+
+IF lv_type="C" THEN
+	#  DELETE THE INTERMEDIATE FILES...
+	CALL remove_file(get_fname(lv_fname clipped,"C"))
+	CALL remove_file(get_fname(lv_fname clipped,"H"))
+END IF
+
+IF lv_type="EC" THEN
+	#  DELETE THE INTERMEDIATE FILES...
+	CALL remove_file(get_fname(lv_fname clipped,"EC"))
+	CALL remove_file(get_fname(lv_fname clipped,"H"))
+END IF
+END FUNCTION
