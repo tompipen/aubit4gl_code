@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.115 2007-04-30 13:45:20 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.116 2007-05-25 10:05:04 mikeaubury Exp $
 #
 */
 
@@ -447,13 +447,14 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int
 {
   char *sql_new;
   char *sql;
+  int cache ;
   //int converted=0;
 
   //int a;
   sql = sqlx;
   A4GL_debug ("A4GL_convert_sql_new : %s", sql);
 
-  int cache = A4GL_isyes(acl_getenv("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
+  cache = A4GL_isyes(acl_getenv("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
   if (cache && has_query(sqlx,&sql_new)) {
 	return sql_new;
   }

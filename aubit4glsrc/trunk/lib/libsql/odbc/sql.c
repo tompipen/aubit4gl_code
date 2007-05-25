@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.189 2007-05-04 11:53:17 mikeaubury Exp $
+# $Id: sql.c,v 1.190 2007-05-25 10:04:21 mikeaubury Exp $
 #
 */
 
@@ -3517,10 +3517,10 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname,
 
     if (! sql_use_describe())
     {
+        char *buf = NULL;
         if (!A4GL_new_hstmt(&ci->hstmt))
             return False;
 
-        char *buf = NULL;
         // split table name to owner and table, if applicable
         buf = acl_strdup(ci->tabname);
         dotptr = strchr(buf, '.');
@@ -4482,9 +4482,9 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
     SQLSMALLINT scale;
     SQLSMALLINT nullable;
     FILE *fout;
+    SQLRETURN rc;
     ibind = vibind;
     fout = A4GL_mja_fopen (fname, "wt");
-    SQLRETURN rc;
 
     A4GL_clear_sqlca();
 
