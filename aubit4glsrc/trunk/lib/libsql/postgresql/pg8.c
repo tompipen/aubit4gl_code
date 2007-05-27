@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.9 2007-05-11 06:33:28 mikeaubury Exp $
+# $Id: pg8.c,v 1.10 2007-05-27 14:27:37 mikeaubury Exp $
 #*/
 
 
@@ -168,6 +168,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char buff2[256];
   char *envname;
   char *envport;
+  char *envhost;
   char tmpDb[256];
 char *u = NULL;
 char *p = NULL;
@@ -226,6 +227,8 @@ char *p = NULL;
 	      char *ptr;
 	      ptr = strchr (dbName, '@');
 	      *ptr = 0;
+		ptr++;
+		pghost=ptr;
 	    }
 	}
     }
@@ -238,6 +241,15 @@ char *p = NULL;
 	 envport);
       if (strlen (envport))
 	pgport = envport;
+    }
+
+  envhost = acl_getenv ("PG_HOST");
+  if (envhost)
+    {
+      if (strlen (envhost)) {
+        A4GL_debug ("Using a different database host %s specified from the environment", envhost);
+	pghost = envhost;
+	}
     }
 
 
