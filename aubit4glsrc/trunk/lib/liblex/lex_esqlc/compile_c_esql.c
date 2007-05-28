@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.168 2007-04-02 14:13:31 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.169 2007-05-28 08:33:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.168 2007-04-02 14:13:31 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.169 2007-05-28 08:33:30 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -787,8 +787,12 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;");
   printc ("char _u[256];");
   printc ("char _p[256];");
+  printc ("char _uAcl[256];");
+  printc ("char _pAcl[256];");
   printc ("char _d[256];");
   printc ("\nEXEC SQL END DECLARE SECTION;");
+
+
   clr_suppress_lines ();
   
 		/*
@@ -844,7 +848,8 @@ LEXLIB_print_open_session (char *s, char *v, char *user)
   //printc("}");
   //
   A4GL_save_sql ("CONNECT TO '%s'", v);
-
+  printc("if (A4GL_sqlid_from_aclfile (_d, _uAcl, _pAcl)) {"); //@FIXME - need to use the username & password from the aclfile
+  printc("}");
   if (strcmp (v, "?") == 0)
     {
 	switch (esql_type()) {
@@ -1170,6 +1175,8 @@ LEXLIB_print_init_conn (t_expr_str *db,char *exclusive)
 	  set_suppress_lines ();
 	  printc ("\nEXEC SQL BEGIN DECLARE SECTION; \n");
 	  printc ("char *_s;");
+	  printc ("char _uAcl[256]=\"\";");
+	  printc ("char _pAcl[256]=\"\";");
 	  printc ("\nEXEC SQL END DECLARE SECTION;\n");
 	  clr_suppress_lines ();
 	  printc ("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
@@ -1177,6 +1184,41 @@ LEXLIB_print_init_conn (t_expr_str *db,char *exclusive)
 	  printc ("}");
 	  print_expr(db);
 	  printc ("_s=A4GL_char_pop();A4GL_trim(_s);\n");
+  	  printc("if (A4GL_sqlid_from_aclfile (_s, _uAcl, _pAcl)) {");
+
+	  switch (esql_type ())
+	    {
+	    case E_DIALECT_NONE:
+	      A4GL_assertion (1, "No ESQL/C Dialect");
+	      break;
+	    case E_DIALECT_INFORMIX:
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	
+	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default'\n");
+	          printc ("USER :_uAcl USING :_pAcl; "); 
+
+	      break;
+	    case E_DIALECT_POSTGRES:
+	      A4GL_save_sql ("CONNECT TO $s", 0);		// ecpg 8.1.5
+	      printc ("\nEXEC SQL CONNECT TO :_s\n");		// ecpg 8.1.5
+	           printc ("USER :_uAcl USING :_pAcl; "); 
+	      break;
+
+	    case E_DIALECT_SAPDB:
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);
+	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
+	      break;
+
+	    case E_DIALECT_INGRES:
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
+	      printc ("\nEXEC SQL CONNECT :s ;\n");
+	      break;
+	    case E_DIALECT_INFOFLEX:
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
+	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
+	      break;
+	    }
+
+  	  printc("} else {");
 
 	  switch (esql_type ())
 	    {
@@ -1204,6 +1246,11 @@ LEXLIB_print_init_conn (t_expr_str *db,char *exclusive)
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
 	      break;
 	    }
+  	  printc("}");
+
+
+
+
     }
 
   switch (esql_type ())
