@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.116 2007-05-25 10:05:04 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.117 2007-05-29 09:59:47 mikeaubury Exp $
 #
 */
 
@@ -168,7 +168,8 @@ static char *cvsql_names[] = {
   "CVSQL_ODBC_LONGVARCHAR_AS_CHAR"
   "CVSQL_NO_UPDATE_TABLE",
   "CVSQL_NEVER_CONVERT",
-  "CVSQL_NEVER_CONVERT_COLUMN"
+  "CVSQL_NEVER_CONVERT_COLUMN",
+  "CVSQL_ADD_WITH_OIDS"
 };
 
 /*
@@ -286,7 +287,8 @@ enum cvsql_type
   CVSQL_ODBC_LONGVARCHAR_AS_CHAR,
   CVSQL_NO_UPDATE_TABLE,
   CVSQL_NEVER_CONVERT,
-  CVSQL_NEVER_CONVERT_COLUMN
+  CVSQL_NEVER_CONVERT_COLUMN,
+  CVSQL_ADD_WITH_OIDS
 };
 
 
@@ -1758,6 +1760,9 @@ A4GL_cv_str_to_func (char *p, int len)
   if (match_strncasecmp (p, "NEVER_CONVERT_COLUMN", len) == 0)
     return CVSQL_NEVER_CONVERT_COLUMN;
 
+  if (match_strncasecmp (p, "ADD_WITH_OIDS", len) == 0)
+    return CVSQL_ADD_WITH_OIDS;
+
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 
   PRINTF ("Unknown : %s\n", p);
@@ -2435,40 +2440,59 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
 	{
 	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
 	}
-      SPRINTF2 (ptr,
-		"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",
-		tabname, A4GL_space_out (elements));
+  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+      		SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname, A4GL_space_out (elements));
+	} else {
+      		SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname, A4GL_space_out (elements));
+	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_CREATE_HASH"))
     {
-      SPRINTF4 (ptr, "CREATE TABLE #%s (%s) %s %s", tabname, elements, extra,
-		oplog);
+  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+      		SPRINTF4 (ptr, "CREATE TABLE #%s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+	} else {
+      		SPRINTF4 (ptr, "CREATE TABLE #%s (%s) %s %s", tabname, elements, extra, oplog);
+	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_GLOBAL_TEMP_DELETE"))
     {
-      SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT DELETE ROWS", tabname, elements);
+  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS ON COMMIT DELETE ROWS", tabname, elements);
+	} else {
+      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT DELETE ROWS", tabname, elements);
+	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE"))
     {
-      SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT PRESERVE ROWS", tabname, elements);
+  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS ON COMMIT PRESERVE ROWS", tabname, elements);
+	} else {
+      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT PRESERVE ROWS", tabname, elements);
+	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("TEMP_AS_TEMPORARY"))
     {
-      SPRINTF4 (ptr, "CREATE TEMPORARY TABLE %s (%s) %s %s", tabname,
-		elements, extra, oplog);
+  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+      		SPRINTF4 (ptr, "CREATE TEMPORARY TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+	} else {
+      		SPRINTF4 (ptr, "CREATE TEMPORARY TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
+	}
       return ptr;
     }
 
-  SPRINTF4 (ptr, "CREATE TEMP TABLE %s (%s) %s %s", tabname, elements, extra,
-	    oplog);
+  if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+  	SPRINTF4 (ptr, "CREATE TEMP TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+  } else {
+  	SPRINTF4 (ptr, "CREATE TEMP TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
+  }
   return ptr;
 }
 
