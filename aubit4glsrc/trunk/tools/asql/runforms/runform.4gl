@@ -391,8 +391,9 @@ endcode
 	#display gv_dtypes[b]," ",lv_nbytes
 code
 	gv_field_data[b-1]=(long) malloc(lv_nbytes);
-	if (gv_dtypes[b-1]==0 || gv_dtypes[b-1]==13) {             /* CHAR or VARCHAR */
+	if (gv_dtypes[b-1]==0 || gv_dtypes[b-1]==13 || gv_dtypes[b-1]==5 || gv_dtypes[b-1]==8) {             /* CHAR or VARCHAR or DECIMAL*/
 		gv_edtype[b-1]=gv_dtypes[b-1]+ENCODE_SIZE(gv_dtypesize[b-1]);
+		//@FIXME -> SHOULDN'T WE ENCODE DATETIMES, INTERVALS, DECIMALS ETC ? 
 	} else {
 		gv_edtype[b-1]=gv_dtypes[b-1];
 	}
@@ -572,6 +573,7 @@ code
       if (_exec_block == 0)
         {
           SET ("s_screenio", _sio_2, "vars", ibind);
+          SET ("s_screenio", _sio_2, "processed_onkey",0);
           SET ("s_screenio", _sio_2, "novars", gv_fields);
           SET ("s_screenio", _sio_2, "attrib", 0);
           SET ("s_screenio", _sio_2, "currform", A4GL_get_curr_form (1));
@@ -824,6 +826,7 @@ code
 	  SET ("s_screenio", sio_2, "attrib", 0);
 	  SET ("s_screenio", sio_2, "novars", gv_fields);
 	  SET ("s_screenio", sio_2, "help_no", 0);
+	  SET ("s_screenio", sio_2, "field_list", 0);
 	  SET ("s_screenio", sio_2, "currentfield", 0);
 	  SET ("s_screenio", sio_2, "currentmetrics", 0);
 	  SET ("s_screenio", sio_2, "mode", 1 + lv_isupd);
