@@ -73,6 +73,7 @@ enum exprtype {
 	EXPRTYPE_DOUBLE,
 	EXPRTYPE_STRING,
 	EXPRTYPE_VARIABLE,
+	EXPRTYPE_VARIABLE_SUB,
 	EXPRTYPE_BUILTIN,
 	EXPRTYPE_COMPLEX,
 	EXPRTYPE_SIMPLE,
@@ -83,14 +84,6 @@ enum exprtype {
 
 };
 
-/*
-struct agg_val {
-	enum aggtypes type;
-	bool isgroup;
-	struct expr *expr;
-	struct expr *wexpr; 
-};
-*/
 
 union expr switch (exprtype type) {
 	case EXPRTYPE_NULL: 	int null;
@@ -99,6 +92,7 @@ union expr switch (exprtype type) {
 	case EXPRTYPE_STRING:    string s<>;
 	case EXPRTYPE_VARIABLE:  int varid;
 	case EXPRTYPE_BUILTIN:   string name<>; 
+        case EXPRTYPE_VARIABLE_SUB:  struct var_usage *var_usage;
 	case EXPRTYPE_COMPLEX:   struct complex_expr  *expr;
 	case EXPRTYPE_COMPARE:   struct compare_expr  *cexpr;
 	case EXPRTYPE_SIMPLE:    struct simple_expr  *sexpr;
@@ -110,6 +104,13 @@ union expr switch (exprtype type) {
 	case EXPRTYPE_AGG:    	 int aggid;
 };
 
+
+struct var_usage {
+      int varid;
+      char *varname;
+      struct expr *subscript1;
+      struct expr *subscript2;
+};
 
 
 	
@@ -290,11 +291,13 @@ enum formattype {
 	FORMAT_AFTER_GROUP,
 	FORMAT_ON_LAST_ROW
 };
+
+typedef struct var_usage *vup;
 	
 
 struct  format  {
 	enum formattype category;
-	string column<>;
+	struct expr *column;
 	struct commands commands; 
 };
 	
