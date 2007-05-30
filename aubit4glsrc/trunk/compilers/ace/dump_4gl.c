@@ -64,12 +64,12 @@ void dump_report (void);
 void print_inputs (void);
 void print_lvl (void);
 void print_set_params (void);
-void print_variable (int a);
+void print_variable (int a,struct expr *e1, struct expr *e2);
 void print_variables (int class, int inrec);
 char *generate_order_by (struct select_stmts *ptr);
 char *decode_op (int op);
 void decode_call (struct cmd_call *cmd);
-char *decode_column (struct format *f);
+void decode_column (struct format *f);
 int A4GL_read_data_from_file (char *datatype, void *ptr, char *filename);
 char * trans (char *s);
 
@@ -255,7 +255,7 @@ print_inputs ()
   for (a = 0; a < this_report.inputs.inputs_len; a++)
     {
       printf ("PROMPT \"%s\" FOR ", this_report.inputs.inputs_val[a].prompt);
-      print_variable (this_report.inputs.inputs_val[a].varid);
+      print_variable (this_report.inputs.inputs_val[a].varid,NULL,NULL);
       printf ("\n");
     }
 }
@@ -274,6 +274,8 @@ dump_output ()
     ("  TOP MARGIN %d\n  BOTTOM MARGIN %d\n  LEFT MARGIN %d\n  RIGHT MARGIN %d\n",
      this_report.output.top_margin, this_report.output.bottom_margin,
      this_report.output.left_margin, this_report.output.right_margin);
+  printf
+    ("  PAGE LENGTH %d\n",this_report.output.page_length);
 
   printf ("  TOP OF PAGE \"%s\"\n", this_report.output.top_of_page);
 
@@ -405,11 +407,12 @@ decode_complex (struct complex_expr *e)
 {
   if (e->operand != EXPR_CONCAT)
     printf ("(");
-  decode_expr (&e->expr1);
-  printf (" %s ", decode_op (e->operand));
-  decode_expr (&e->expr2);
-
-  if (e->operand != EXPR_CONCAT)
+  		decode_expr (&e->expr1);
+  		printf (" %s ", decode_op (e->operand));
+		
+  		decode_expr (&e->expr2);
+		
+  		if (e->operand != EXPR_CONCAT)
     printf (")");
 }
 
@@ -427,14 +430,14 @@ decode_compare (struct compare_expr *e)
 void
 decode_simple (struct simple_expr *e)
 {
-  if (e->operand == EXPR_CLIP)
+  if (e->operand == EXPR_CLIP || e->operand==EXPR_SPACES || e->operand==EXPR_ISNULL || e->operand==EXPR_ISNOTNULL)
     {
       decode_expr (&e->expr);
       printf (" %s ", decode_op (e->operand));
     }
   else
     {
-      if (e->operand == EXPR_COLUMN || e->operand == EXPR_ASCII)
+      if (e->operand == EXPR_COLUMN || e->operand == EXPR_ASCII) 
 	{
 	  printf (" %s ", decode_op (e->operand));
 	  decode_expr (&e->expr);
@@ -526,30 +529,43 @@ decode_expr (struct expr *e)
     case EXPRTYPE_INT:
       printf ("%d", e->expr_u.i);
       break;
+
     case EXPRTYPE_DOUBLE:
       printf ("%f", e->expr_u.d);
       break;
+
     case EXPRTYPE_STRING:
       printf ("\"%s\"", trans (e->expr_u.s));
       break;
+
     case EXPRTYPE_VARIABLE:
-      print_variable (e->expr_u.varid);
+      print_variable (e->expr_u.varid,0,0);
       break;
+
+    case EXPRTYPE_VARIABLE_SUB:
+      print_variable (e->expr_u.var_usage->varid, e->expr_u.var_usage->subscript1, e->expr_u.var_usage->subscript2);
+      break;
+
     case EXPRTYPE_BUILTIN:
       printf ("%s", e->expr_u.name);
       break;
+
     case EXPRTYPE_COMPLEX:
       decode_complex (e->expr_u.expr);
       break;
+
     case EXPRTYPE_COMPARE:
       decode_compare (e->expr_u.cexpr);
       break;
+
     case EXPRTYPE_SIMPLE:
       decode_simple (e->expr_u.sexpr);
       break;
+
     case EXPRTYPE_LIST:
       decode_list (e->expr_u.lexpr);
       break;
+
     case EXPRTYPE_FCALL:
       decode_fcall (e->expr_u.fcall);
       break;
@@ -557,6 +573,7 @@ decode_expr (struct expr *e)
     case EXPRTYPE_AGG:
       decode_agg (e->expr_u.aggid);
       break;
+
     case EXPRTYPE_NULL:
       decode_fcall (e->expr_u.fcall);
       break;
@@ -568,7 +585,7 @@ void
 decode_for (struct cmd_for *cmd)
 {
   printf ("FOR ");
-  print_variable (cmd->varid);
+  print_variable (cmd->varid,NULL,NULL);
   decode_expr (&cmd->start);
   printf (" TO ");
   decode_expr (&cmd->finish);
@@ -621,7 +638,7 @@ void
 decode_let (struct cmd_let *cmd)
 {
   printf ("LET ");
-  print_variable (cmd->varid);
+  print_variable (cmd->varid,NULL,NULL);
   printf ("=");
   decode_expr (&cmd->value);
   printf ("\n");
@@ -740,12 +757,14 @@ dump_commands (struct commands *cmd)
 }
 
 
-char *
+void
 decode_column (struct format *f)
 {
-  static char buff[256];
-  sprintf (buff, "%s", f->column);
-  return buff;
+  //s", f->column.column_val[0]->varname);
+  //return buff;
+decode_expr(f->column);
+//print_variable( f->column->varid, f->column->subscript1, f->column->subscript2);
+
 }
 
 void
@@ -775,12 +794,14 @@ dump_format ()
 	  printf ("\nON EVERY ROW\n");
 	  break;
 	case FORMAT_BEFORE_GROUP:
-	  printf ("\nBEFORE GROUP OF lv_data.%s\n",
-		  decode_column (&this_report.fmt.fmt_val[a]));
+	  printf ("\nBEFORE GROUP OF ");
+		  decode_column (&this_report.fmt.fmt_val[a]);
+		printf("\n");
 	  break;
 	case FORMAT_AFTER_GROUP:
-	  printf ("\nAFTER GROUP OF lv_data.%s\n",
-		  decode_column (&this_report.fmt.fmt_val[a]));
+	  printf ("\nAFTER GROUP OF ");
+		  decode_column (&this_report.fmt.fmt_val[a]);
+		printf("\n");
 	  break;
 	case FORMAT_ON_LAST_ROW:
 	  printf ("\nON LAST ROW\n");
@@ -796,8 +817,9 @@ dump_format ()
 
 
 void
-print_variable (int a)
+print_variable (int a, struct expr *sub1, struct expr *sub2)
 {
+int printed=0;
   if (a == -1)
     {
       printf ("Unknown...\n");
@@ -806,21 +828,37 @@ print_variable (int a)
     {
 
 
-      if (this_report.variables.variables_val[a].category == CAT_BUILTIN)
+      if (this_report.variables.variables_val[a].category == CAT_BUILTIN && ! printed)
 	{
 	  printf ("%s", this_report.variables.variables_val[a].name);
-	  return;
+		printed++;
 	}
 
-      if (this_report.variables.variables_val[a].category == CAT_SQL)
+      if (this_report.variables.variables_val[a].category == CAT_SQL && ! printed)
 	{
+		printed++;
 	  printf ("lv_data.%s", this_report.variables.variables_val[a].name);
-	  return;
 	}
 
-      if (this_report.variables.variables_val[a].category != CAT_SQL)
+      if (this_report.variables.variables_val[a].category != CAT_SQL && ! printed)
 	{
-	  printf ("mv_%s", this_report.variables.variables_val[a].name);
+		printed++;
+	  	printf ("mv_%s", this_report.variables.variables_val[a].name);
+	}
+
+
+	if (sub1) {
+		if (sub2) {
+			printf("[");
+			decode_expr(sub1);
+			printf(",");
+			decode_expr(sub2);
+			printf("]");
+		} else {
+			printf("[");
+			decode_expr(sub1);
+			printf("]");
+		}
 	}
     }
 }

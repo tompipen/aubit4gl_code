@@ -83,20 +83,20 @@ enum exprtype {
 
 };
 
-/*
-struct agg_val {
-	enum aggtypes type;
-	bool isgroup;
-	struct expr *expr;
-	struct expr *wexpr; 
+
+struct var_usage {
+	int varid;
+	char *varname;
+	union expr *subscript1;
+	union expr *subscript2;
 };
-*/
 
 union expr switch (exprtype type) {
 	case EXPRTYPE_NULL: 	int null;
 	case EXPRTYPE_INT: 	int i;
 	case EXPRTYPE_DOUBLE:    double d;
 	case EXPRTYPE_STRING:    string s<>;
+	case EXPRTYPE_VARIABLE_SUB:  struct var_usage *vusage;
 	case EXPRTYPE_VARIABLE:  int varid;
 	case EXPRTYPE_BUILTIN:   string name<>; 
 	case EXPRTYPE_COMPLEX:   struct complex_expr  *expr;
@@ -105,7 +105,6 @@ union expr switch (exprtype type) {
 	case EXPRTYPE_LIST:   	 struct expr_list  *lexpr;
 	case EXPRTYPE_FCALL:   	 struct expr_call  *fcall;
 
-	/* case EXPRTYPE_AGG:    	 struct agg_val  *aggval; */
 
 	case EXPRTYPE_AGG:    	 int aggid;
 };

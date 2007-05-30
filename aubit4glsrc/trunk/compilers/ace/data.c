@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.28 2007-05-25 20:33:14 mikeaubury Exp $
+# $Id: data.c,v 1.29 2007-05-30 13:44:28 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@ char *A4GL_decode_datatype (int dtype, int dim);
 void yyerror_sql (char *s);
 void print_variables (char *s);
 char *add_zero_rows_where (struct select_stmts *ptr);
-void add_fmt (int cat, char *col, struct commands commands);
+void add_fmt (int cat, struct expr *col, struct commands commands);
 int decode_dtype (char *s);
 
 /*
@@ -114,6 +114,7 @@ init_report (void)
   ace_add_variable ("lineno", "SMALLINT", CAT_BUILTIN, 0, 1, 0);
   ace_add_variable ("today", "DATE", CAT_BUILTIN, 0, 7, 0);
   ace_add_variable ("time", "CHAR", CAT_BUILTIN, 0, 0, 8);
+  ace_add_variable ("date", "CHAR", CAT_BUILTIN, 0, 0, 15);
 }
 
 
@@ -475,7 +476,7 @@ add_inputs (char *prompt, char *variable)
  * @todo Describe function
  */
 void
-add_fmt (int cat, char *col, struct commands commands)
+add_fmt (int cat, struct expr *col, struct commands commands)
 {
   this_report.fmt.fmt_len++;
   this_report.fmt.fmt_val =
@@ -483,10 +484,9 @@ add_fmt (int cat, char *col, struct commands commands)
 	     sizeof (struct format) * this_report.fmt.fmt_len);
 
   this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].category = cat;
-  this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].column = acl_strdup (col);
+  this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].column=col;
 
-  memcpy (&this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].commands,
-	  &commands, sizeof (struct commands));
+  memcpy (&this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].commands, &commands, sizeof (struct commands));
 
 
 

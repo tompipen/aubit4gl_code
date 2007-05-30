@@ -39,7 +39,7 @@ void *memdup(void *p,int l);
 =====================================================================
 */
 
-void add_fmt (int cat, char *col, struct commands commands);
+void add_fmt (int cat, struct expr *col, struct commands commands);
 
 /*
 =====================================================================
@@ -77,6 +77,7 @@ set_expr_int(struct expr *e,int a)
 	struct expr expr;
 	struct commands commands;
 	struct agg_val agg_val;
+	struct var_usage *var_usage;
 }
 
 
@@ -397,7 +398,7 @@ format_section:
 		struct commands cmd;
 		cmd.commands.commands_len=0;
 		cmd.commands.commands_val=0;
-		add_fmt(FORMAT_EVERY_ROW,"",cmd);
+		add_fmt(FORMAT_EVERY_ROW,NULL,cmd);
 	  }
 	| FORMAT format_actions  op_end
 		
@@ -413,49 +414,76 @@ format_actions : format_action | format_actions format_action
 format_action :
           FIRST PAGE HEADER 	commands  
 	{
-		add_fmt(FORMAT_FIRST_PAGE_HEADER,"",$<commands>4);
+		add_fmt(FORMAT_FIRST_PAGE_HEADER,NULL,$<commands>4);
 	}
         | PAGE TRAILER 		commands 
 	{
-		add_fmt(FORMAT_PAGE_TRAILER,"",$<commands>3);
+		add_fmt(FORMAT_PAGE_TRAILER,NULL,$<commands>3);
 	}
         | PAGE HEADER 		commands 
 	{
-		add_fmt(FORMAT_PAGE_HEADER,"",$<commands>3);
+		add_fmt(FORMAT_PAGE_HEADER,NULL,$<commands>3);
 	}
         | ON EVERY ROW 		commands 
 	{
-		add_fmt(FORMAT_ON_EVERY_ROW,"",$<commands>4);
+		add_fmt(FORMAT_ON_EVERY_ROW,NULL,$<commands>4);
 	}
-        | ON LAST ROW 		commands 
-	{
-		add_fmt(FORMAT_ON_LAST_ROW,"",$<commands>4);
+        | ON LAST ROW 		commands {
+		add_fmt(FORMAT_ON_LAST_ROW,NULL,$<commands>4);
 	}
-        | BEFORE GROUP KW_OF variable_sub_a commands 
-	{
-		add_fmt(FORMAT_BEFORE_GROUP,$<str>4,$<commands>5);
+        | BEFORE GROUP KW_OF variable_sub_a commands {
+		add_fmt(FORMAT_BEFORE_GROUP,DUP($<expr>4),$<commands>5);
 	}
-        | AFTER GROUP KW_OF variable_sub_a commands 
-	{
-		add_fmt(FORMAT_AFTER_GROUP,$<str>4,$<commands>5);
+        | AFTER GROUP KW_OF variable_sub_a commands {
+		add_fmt(FORMAT_AFTER_GROUP,DUP($<expr>4),$<commands>5);
 	}
 ;
 
 
 variable_sub: 
-NAMED  OPEN_SQUARE expr COMMA expr CLOSE_SQUARE
-| NAMED  OPEN_SQUARE expr CLOSE_SQUARE
-| NAMED 
+	NAMED  OPEN_SQUARE expr COMMA expr CLOSE_SQUARE {
+		$<var_usage>$=malloc(sizeof(struct var_usage));
+		$<var_usage>$->subscript1=DUP($<expr>3);
+		$<var_usage>$->subscript2=DUP($<expr>5);
+		$<var_usage>$->varname=strdup($<str>1);
+		$<var_usage>$->varid=find_variable($<var_usage>$->varname);
+		if ( $<var_usage>$->varid==-1) {
+			printf("Warning : %s is not a defined variable\n",$<str>1);
+		}
+	}
+	| NAMED  OPEN_SQUARE expr CLOSE_SQUARE {
+		$<var_usage>$=malloc(sizeof(struct var_usage));
+		$<var_usage>$->subscript1=DUP($<expr>3);
+		$<var_usage>$->subscript2=NULL;
+		$<var_usage>$->varname=strdup($<str>1);
+		$<var_usage>$->varid=find_variable($<var_usage>$->varname);
+		if ( $<var_usage>$->varid==-1) {
+			printf("Warning : %s is not a defined variable\n",$<str>1);
+		}
+	}
+	| NAMED  {
+		
+		$<var_usage>$=malloc(sizeof(struct var_usage));
+		$<var_usage>$->subscript1=NULL;
+		$<var_usage>$->subscript2=NULL;
+		$<var_usage>$->varname=strdup($<str>1);
+		$<var_usage>$->varid=find_variable($<var_usage>$->varname);
+		if ( $<var_usage>$->varid==-1) {
+			printf("Warning : %s is not a defined variable\n",$<str>1);
+		}
+	}
+
 ;
 
 variable_sub_a:
-	variable_sub | INTVAL {
-int vid;
-int a;
-a=atoi($<str>1);
-vid = find_sql_var (a);
-sprintf($<str>$,this_report.variables.variables_val[vid].name);
-}
+	variable_sub  {
+		$<expr>$.type=EXPRTYPE_VARIABLE_SUB;
+		$<expr>$.expr_u.var_usage=$<var_usage>1;
+	}
+	| INTVAL {
+		$<expr>$.type=EXPRTYPE_INT;
+		$<expr>$.expr_u.i=atoi($<str>1);
+	}
 ;
 
 
@@ -482,21 +510,8 @@ literal: CHAR_VALUE {
         | NUMERIC
         | real_number
         | INTVAL
-/*
-        | PLUS real_number
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-        | PLUS INTVAL
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-        | MINUS real_number
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-        | MINUS INTVAL
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-*/
        ;
 
-/*
-op_order_by_clause: {strcpy($<str>$,"");} | order_by_clause;
-*/
 
 order_by_clause:
 	ORDER_BY { ordbycnt=0; } sort_specification_list { sprintf($<str>$,"ORDER BY %s",$<str>3); }
@@ -748,25 +763,6 @@ op_all: {strcpy($<str>$,"");}
 
 
 
-/*
-variable_specification:
-	COLON identifier  identifier
-	;
-*/
-
-/*
-length: int_val
-;
-*/
-
-
-/*
-char_string_type:
-          CHAR
-        | CHAR OPEN_BRACKET length CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-        ;
-*/
 
 
 table_name:
@@ -929,19 +925,18 @@ value_expression:
 		}
 	| literal
 	| identifier
-	| identifier OPEN_SQUARE int_val CLOSE_SQUARE                {sprintf($<str>$," %s[%s]",$<str>1,$<str>3);}
-	| identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  {sprintf($<str>$," %s[%s,%s]",$<str>1,$<str>3,$<str>5);}
-	| identifier DOT identifier OPEN_SQUARE int_val CLOSE_SQUARE                {sprintf($<str>$," %s.%s[%s]",$<str>1,$<str>3,$<str>5);}
-	| identifier DOT identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  {sprintf($<str>$," %s.%s[%s,%s]",$<str>1,$<str>3,$<str>5,$<str>7);}
-	| DOLLAR identifier
-{
-if (find_variable($<str>2)==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
-sprintf($<str>$,"\n2(%d)",find_variable($<str>2));
-}
+	| identifier OPEN_SQUARE int_val CLOSE_SQUARE                			{sprintf($<str>$," %s[%s]",$<str>1,$<str>3);}
+	| identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  			{sprintf($<str>$," %s[%s,%s]",$<str>1,$<str>3,$<str>5);}
+	| identifier DOT identifier OPEN_SQUARE int_val CLOSE_SQUARE                	{sprintf($<str>$," %s.%s[%s]",$<str>1,$<str>3,$<str>5);}
+	| identifier DOT identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  	{sprintf($<str>$," %s.%s[%s,%s]",$<str>1,$<str>3,$<str>5,$<str>7);}
+	| DOLLAR identifier {
+			if (find_variable($<str>2)==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
+			sprintf($<str>$,"\n2(%d)",find_variable($<str>2));
+			}
 	| identifier DOT identifier
-{sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
+			{sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
 	| identifier DOT MULTIPLY
-{sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
+			{sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
 	| KW_TRUE
 	| KW_FALSE
 	| USER
@@ -953,27 +948,27 @@ sprintf($<str>$,"\n2(%d)",find_variable($<str>2));
 	| YEAR  OPEN_BRACKET  value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
 	| identifier OPEN_BRACKET value_expr_list CLOSE_BRACKET {sprintf($<str>$,"%s(%s)",$<str>1,$<str>3);}
 	| COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET 
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+			{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
  	| AVG OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| XMAX OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| XMIN OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| SUM OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| COUNT OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 ;
 
 val_expr_next: 
 	DIVIDE value_expression_s 	{sprintf($<str>$,"/%s",$<str>2);}
-	|  MOD value_expression_s 	{sprintf($<str>$," MOD %s",$<str>2);}
-	|  POW value_expression_s 	{sprintf($<str>$," POW %s",$<str>2);}
+	| MOD value_expression_s 	{sprintf($<str>$," MOD %s",$<str>2);}
+	| POW value_expression_s 	{sprintf($<str>$," POW %s",$<str>2);}
 	| units_qual  			{sprintf($<str>$,"%s",$<str>1);}
 	| MULTIPLY value_expression_s 	{sprintf($<str>$,"*%s",$<str>2);}
 	| PLUS value_expression_s     	{sprintf($<str>$,"+%s",$<str>2);}
-	|  MINUS value_expression_s   	{sprintf($<str>$,"-%s",$<str>2);}
+	| MINUS value_expression_s   	{sprintf($<str>$,"-%s",$<str>2);}
 ;
 
 value_expression_s: value_expression
@@ -1512,7 +1507,7 @@ val_expression:
 	}
 	| DATE {
 		int v;
-		v=find_variable("today");
+		v=find_variable("date");
 		$<expr>$.type=EXPRTYPE_VARIABLE;
 		if (v==-1) {
 			printf("Warning : %s is not a defined variable\n",$<str>1);
@@ -1578,7 +1573,7 @@ val_expression:
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
 		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
-		$<expr>$.expr_u.sexpr->operand=EXPR_COLUMN; 
+		$<expr>$.expr_u.sexpr->operand=EXPR_SPACES; 
 	}
 
 	| val_expression IS_NULL  {
@@ -1607,13 +1602,8 @@ val_expression:
 		sprintf($<str>$," %s %s",$<str>1,$<str>2);
 		}
 	| variable_sub {
-		int v;
-		v=find_variable($<str>1);
-		$<expr>$.type=EXPRTYPE_VARIABLE;
-		if (v==-1) {
-			printf("Warning : %s is not a defined variable\n",$<str>1);
-		} 
-		$<expr>$.expr_u.varid=v;
+		$<expr>$.type=EXPRTYPE_VARIABLE_SUB;
+		$<expr>$.expr_u.var_usage=$<var_usage>1;
 	}
 
 	| aggregate {

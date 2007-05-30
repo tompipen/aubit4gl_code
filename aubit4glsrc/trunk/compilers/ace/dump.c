@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.12 2005-03-31 13:35:36 afalout Exp $
+# $Id: dump.c,v 1.13 2007-05-30 13:44:29 mikeaubury Exp $
 #*/
 
 /**
@@ -63,7 +63,7 @@ struct report this_report;
 
 void dump_command (struct command *cmd);
 void decode_expr (struct expr *e);
-void print_variable (int a);
+void print_variable (int a,struct expr *e1, struct expr *e2);
 void decode_for (struct cmd_for *cmd);
 void decode_if (struct cmd_if *cmd);
 void decode_while (struct cmd_while *cmd);
@@ -333,7 +333,7 @@ dump_getdata (void)
 		{
 		  if (b)
 		    printf (",");
-		  print_variable (ptr->varids.varids_val[b]);
+		  print_variable (ptr->varids.varids_val[b],NULL,NULL);
 		}
 	    }
 
@@ -498,7 +498,10 @@ decode_expr (struct expr *e)
       printf ("%s", e->expr_u.s);
       break;
     case EXPRTYPE_VARIABLE:
-      print_variable (e->expr_u.varid);
+      print_variable (e->expr_u.varid,NULL,NULL);
+      break;
+    case EXPRTYPE_VARIABLE_SUB:
+      print_variable (e->expr_u.varid, e->expr_u.var_usage->subscript1, e->expr_u.var_usage->subscript2);
       break;
     case EXPRTYPE_BUILTIN:
       printf ("%s", e->expr_u.name);
@@ -542,7 +545,7 @@ void
 decode_for (struct cmd_for *cmd)
 {
   printf ("FOR ");
-  print_variable (cmd->varid);
+  print_variable (cmd->varid,NULL,NULL);
   decode_expr (&cmd->start);
   printf (" TO ");
   decode_expr (&cmd->finish);
@@ -593,7 +596,7 @@ void
 decode_let (struct cmd_let *cmd)
 {
   printf ("LET ");
-  print_variable (cmd->varid);
+  print_variable (cmd->varid,NULL,NULL);
   printf ("=");
   decode_expr (&cmd->value);
   printf ("\n");
@@ -821,7 +824,7 @@ dump_format (void)
  * @todo Describe function
  */
 void
-print_variable (int a)
+print_variable (int a,struct expr *e1, struct expr *e2)
 {
   if (a == -1)
     {
@@ -830,6 +833,15 @@ print_variable (int a)
   else
     {
       printf ("%s", this_report.variables.variables_val[a].name);
+	if (e1) {
+		printf("[");
+		decode_expr(e1);
+		if (e2) {
+			printf(",");
+			decode_expr(e2);
+		}
+		printf("]");
+	}
     }
 }
 
