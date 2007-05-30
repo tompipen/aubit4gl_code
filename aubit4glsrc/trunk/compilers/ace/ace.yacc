@@ -524,7 +524,11 @@ sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
 }
 	;
 
-sort_specification: sort_spec op_asc_desc;
+sort_specification: sort_spec op_asc_desc  {
+		if (strlen($<str>2)) {
+			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		}
+	};
 
 sort_spec: INTVAL  {
 		char buff[256];
@@ -540,7 +544,7 @@ sort_spec: INTVAL  {
 
 op_asc_desc: {strcpy($<str>$,"");}
 	| ASC
-	| DESC
+	| DESC 
 	;
 
 
