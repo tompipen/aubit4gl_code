@@ -1117,9 +1117,9 @@ LET NAMED EQUAL expr_concat {
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
 		$<cmd>$.command_u.cmd_let.varid=v;
-		$<cmd>$.command_u.cmd_let.value=$<expr>4;
-		set_expr_int(&$<cmd>$.command_u.cmd_let.sub1,-1);
-		set_expr_int(&$<cmd>$.command_u.cmd_let.sub2,-1); 
+		$<cmd>$.command_u.cmd_let.value=DUP($<expr>4);
+		$<cmd>$.command_u.cmd_let.sub1=0;
+		$<cmd>$.command_u.cmd_let.sub2=0; 
 	}
 
 |
@@ -1128,9 +1128,9 @@ LET NAMED OPEN_SQUARE expr CLOSE_SQUARE EQUAL expr_concat {
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
 		$<cmd>$.command_u.cmd_let.varid=v;
-		$<cmd>$.command_u.cmd_let.value=$<expr>7;
-		$<cmd>$.command_u.cmd_let.sub1=$<expr>4; 
-		$<cmd>$.command_u.cmd_let.sub2=$<expr>4; 
+		$<cmd>$.command_u.cmd_let.value=DUP($<expr>7);
+		$<cmd>$.command_u.cmd_let.sub1=DUP($<expr>4); 
+		$<cmd>$.command_u.cmd_let.sub2=0;
 	}
 
 |
@@ -1139,9 +1139,9 @@ LET NAMED OPEN_SQUARE expr COMMA expr CLOSE_SQUARE EQUAL expr_concat {
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
 		$<cmd>$.command_u.cmd_let.varid=v;
-		$<cmd>$.command_u.cmd_let.value=$<expr>9;
-		$<cmd>$.command_u.cmd_let.sub1=$<expr>4; 
-		$<cmd>$.command_u.cmd_let.sub2=$<expr>6; 
+		$<cmd>$.command_u.cmd_let.value=DUP($<expr>9);
+		$<cmd>$.command_u.cmd_let.sub1=DUP($<expr>4); 
+		$<cmd>$.command_u.cmd_let.sub2=DUP($<expr>6); 
 	}
 
 

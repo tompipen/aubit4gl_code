@@ -73,6 +73,12 @@ void decode_column (struct format *f);
 int A4GL_read_data_from_file (char *datatype, void *ptr, char *filename);
 char * trans (char *s);
 
+char *downshift (char *s) {
+static char buff[256];
+strcpy(buff,s);
+A4GL_make_downshift(buff);
+return buff;
+}
 
 int
 main (int argc, char *argv[])
@@ -639,8 +645,17 @@ decode_let (struct cmd_let *cmd)
 {
   printf ("LET ");
   print_variable (cmd->varid,NULL,NULL);
+  if (cmd->sub1) {
+		printf("[");
+		decode_expr(cmd->sub1);
+		if (cmd->sub2) {
+		printf(",");
+		decode_expr(cmd->sub2);
+		}
+		printf("]");
+  }
   printf ("=");
-  decode_expr (&cmd->value);
+  decode_expr (cmd->value);
   printf ("\n");
 }
 
@@ -837,13 +852,13 @@ int printed=0;
       if (this_report.variables.variables_val[a].category == CAT_SQL && ! printed)
 	{
 		printed++;
-	  printf ("lv_data.%s", this_report.variables.variables_val[a].name);
+	  printf ("lv_data.%s", downshift(this_report.variables.variables_val[a].name));
 	}
 
       if (this_report.variables.variables_val[a].category != CAT_SQL && ! printed)
 	{
 		printed++;
-	  	printf ("mv_%s", this_report.variables.variables_val[a].name);
+	  	printf ("mv_%s", downshift(this_report.variables.variables_val[a].name));
 	}
 
 

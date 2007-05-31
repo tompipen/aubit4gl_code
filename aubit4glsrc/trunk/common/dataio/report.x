@@ -225,9 +225,9 @@ struct cmd_while {
 
 struct cmd_let {
 	int varid;
-	struct expr value;
-	struct expr sub1;
-	struct expr sub2;
+	struct expr *value;
+	struct expr *sub1;
+	struct expr *sub2;
 };
 
 struct cmd_need {
