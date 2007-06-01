@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.23 2007-05-18 12:42:46 gyver309 Exp $
+# $Id: array.c,v 1.24 2007-06-01 15:09:13 gyver309 Exp $
 #
 */
 
@@ -36,7 +36,7 @@ The fill_array are supposed to populate an array with information on
 databases, tables or columns.
 
 The returns are into an char[szarr], so arr1 should really be something like
-	char arr1[mx][szarr1] (if you see what I mean)...
+        char arr1[mx][szarr1] (if you see what I mean)...
 
 The main interface is via fill_array where 'service' points to one of
 the other functions (DATABASES, TABLES or COLUMNS)...
@@ -45,41 +45,38 @@ The 'mode' specifies what data to load into the arrays
 the 'info' passes some extra details into the functions (like table names etc)
 
 DATABASES
-	Mode  - not used
-	Info - not used
-	Arr1 = DBName
-	Arr2 = Description ?
+        Mode - not used
+        Info - not used
+        Arr1 = DBName
+        Arr2 = Description ?
 
 TABLES
-	Mode =1 Exclude system tables
-		otherwise include them
+        Mode = 1 Exclude system tables
+                 otherwise include them
 
-	arr1 = Table name
-	arr2 = Table description
+        arr1 = Table name
+        arr2 = Schema/Owner of the Table
 
 COLUMNS
-	Mode= 0 - Fill arr2 with colsize
-		     1 - Fill arr2 with datatype name
-		Otherwise - fill it with the table name
-	Info - Table name we're looking at
-	arr1 = Column name
-
+        Mode= 0 - Fill arr2 with colsize
+              1 - Fill arr2 with datatype name
+                  Otherwise - fill it with the table name
+        Info - Table name we're looking at
+        arr1 = Column name
 
 
 In all cases if the pointer the the array (arr1 or arr2) is 0 (or C-NULL) then
 don't bother to fill it :-)
 
+*/
 
-
- *
- */
-
-int A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info);
+int A4GL_fill_array_columns_mk2(int mx, char *arr1, int szarr1, char *arr2,
+                                int szarr2, int mode, char *info);
 
 
 /*
 =====================================================================
-		                    Includes
+                           Includes
 =====================================================================
 */
 
@@ -105,12 +102,12 @@ static SDWORD outlen[512];
 =====================================================================
 */
 
-int A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
-			  int szarr2);
-int A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
-		       int mode);
-int A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
-			int szarr2, int mode, char *info);
+int A4GL_fill_array_databases(int mx, char *arr1, int szarr1, char *arr2,
+                              int szarr2);
+int A4GL_fill_array_tables   (int mx, char *arr1, int szarr1, char *arr2,
+                              int szarr2, int mode);
+int A4GL_fill_array_columns  (int mx, char *arr1, int szarr1, char *arr2,
+                              int szarr2, int mode, char *info);
 
 
 /*
@@ -133,72 +130,47 @@ int A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 int
 A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
 {
-  char buff1[100]="";
-  char buff2[255]="";
-  SWORD a;
-  SWORD b;
+  char srv_name[100] = "";
+  char srv_desc[255] = "";
+  SWORD l_srv_name = 0;
+  SWORD l_srv_desc = 0;
   int rc;
-  int fetch_mode;
-  int cnt;
-  a = 0;
-  b = 0;
-#ifdef DEBUG
-  A4GL_debug ("arr1=%p", arr1);
-#endif
-  fetch_mode = SQL_FETCH_FIRST;
-  cnt = 0;
-#ifdef DEBUG
-  A4GL_debug ("Filling database array...");
-#endif
+  int fetch_mode = SQL_FETCH_FIRST;
+  int cnt = 0;
 
+  A4GL_dbg ("Filling database arrayarr1=%p...", arr1);
 
-  if (henv==0) {
-	  A4GL_debug("No environment configured");
-	  return 0;
+  if (henv == 0)
+  {
+      A4GL_err("No environment configured");
+      return 0;
   }
 
-
-
   while (cnt < mx)
-    {
-
-      rc=SQLDataSources (henv, fetch_mode,
-	      (SQLCHAR*)buff1, sizeof(buff1), &a,
-	      (SQLCHAR*)buff2, sizeof(buff2), &b);
-      chk_rc (rc, 0, "SQLDataSources");
-
-#ifdef DEBUG
-      A4GL_debug ("  rc=%d", rc);
-      A4GL_debug ("  Buff1=%s Buff2=%s", buff1, buff2);
-      A4GL_debug ("  a=%d b=%d", a, b);
-#endif
-      if (rc!=SQL_SUCCESS) break;
-      fetch_mode = SQL_FETCH_NEXT;
+  {
+      rc = SQLDataSources (henv, fetch_mode,
+              (SQLCHAR*)srv_name, sizeof(srv_name), &l_srv_name,
+              (SQLCHAR*)srv_desc, sizeof(srv_desc), &l_srv_desc);
+      if ( ! chk_rc (rc, 0, "SQLDataSources"))
+          break;
+      A4GL_trc ("SQLDataSources returned rc=%d, srv_name=%s srv_desc=%s", rc, srv_name, srv_desc);
       if (rc == SQL_NO_DATA_FOUND)
-	break;
+          break;
+      fetch_mode = SQL_FETCH_NEXT;
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
-	{
-	  A4GL_set_sqlca ("fill_array_database", "");
-	  break;
-	}
+      {
+          A4GL_set_sqlca ("fill_array_database", "");
+          break;
+      }
 
-      if (arr1 != 0)
-	strncpy (&arr1[cnt * (szarr1 + 1)], buff1, szarr1);
-      if (arr2 != 0)
-	strncpy (&arr2[cnt * (szarr2 + 1)], buff2, szarr2);
+      if (arr1)
+          A4GL_strncpyz(&arr1[cnt * (szarr1 + 1)], srv_name, szarr1+1);
+      if (arr2)
+          A4GL_strncpyz(&arr2[cnt * (szarr2 + 1)], srv_desc, szarr2+1);
       cnt++;
-#ifdef DEBUG
-      A4GL_debug ("fill array databases : Rc= %d", rc);
-      A4GL_debug ("    Buff1=%s", buff1);
-      A4GL_debug ("    Buff2=%s", buff2);
-      A4GL_debug ("    a=%d", a);
-      A4GL_debug ("    b=%d", b);
-#endif
-    }
-  A4GL_debug("Found : %d\n",cnt);
-
+  }
+  A4GL_trc("Found %d datasources",cnt);
   return cnt;
-
 }
 
 
@@ -216,104 +188,91 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr
  */
 int
 A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
-		   int mode)
+                        int mode)
 {
   HSTMT hstmt;
-  char tq[256];
+//  char tq[256]; // we do not use these columns, but someone may need them
+                  // e.g. for debugging purposes
   char to[256];
   char tn[256];
   char tt[256];
-  char tr[256];
-  int a, b;
+//  char tr[256];
   int rc;
-  int cnt;
+  int cnt = 0;
 
   if (hdbc == 0)
-    {
+  {
       A4GL_exitwith ("Not connected to database");
       return 0;
-    }
-#ifdef DEBUG
-  A4GL_debug ("STart get tables ... Mode=%d", mode);
-#endif
+  }
+  A4GL_dbg ("Start get tables mode=%d arr1=%p arr2=%p", mode, arr1, arr2);
   A4GL_new_hstmt (&hstmt);
 
-  rc = SQLTables (hstmt, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
-
+  rc = SQLTables(hstmt, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
   chk_rc (rc, hstmt, "SQLTables");
-  a = 79;
-  b = 254;
-#ifdef DEBUG
-  A4GL_debug ("arr1=%p", arr1);
-#endif
-  cnt = 0;
 
-  rc = SQLBindCol (hstmt, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
-  chk_rc (rc, hstmt, "SQLBindCol");
+//  rc = SQLBindCol (hstmt, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
+//  chk_rc (rc, hstmt, "SQLBindCol");
   rc = SQLBindCol (hstmt, 2, SQL_C_CHAR, to, 255, &outlen[2]);
-  chk_rc (rc, hstmt, "SQLBindCol");
+  if (!chk_rc (rc, hstmt, "SQLBindCol"))
+  {
+      A4GL_free_hstmt(&hstmt);
+      return 0;
+  }
   rc = SQLBindCol (hstmt, 3, SQL_C_CHAR, tn, 255, &outlen[3]);
+  if (!chk_rc (rc, hstmt, "SQLBindCol"))
+  {
+      A4GL_free_hstmt(&hstmt);
+      return 0;
+  }
   chk_rc (rc, hstmt, "SQLBindCol");
   rc = SQLBindCol (hstmt, 4, SQL_C_CHAR, tt, 255, &outlen[4]);
   chk_rc (rc, hstmt, "SQLBindCol");
-  rc = SQLBindCol (hstmt, 5, SQL_C_CHAR, tr, 255, &outlen[5]);
-  chk_rc (rc, hstmt, "SQLBindCol");
+//  rc = SQLBindCol (hstmt, 5, SQL_C_CHAR, tr, 255, &outlen[5]);
+//  chk_rc (rc, hstmt, "SQLBindCol");
 
   while (cnt < mx)
-    {
-	    memset(tn,0,sizeof(tn));
-	    memset(tr,0,sizeof(tr));
+  {
+      memset(to, 0, sizeof(to));
+      memset(tn, 0, sizeof(tn));
       rc = SQLFetch (hstmt);
-      chk_rc (rc, hstmt, "SQLFetch");
-
+      if (!chk_rc (rc, hstmt, "SQLFetch"))
+          break;
       if (rc == SQL_NO_DATA_FOUND)
-	break;
+          break;
+
+      if (!strncmp("DUMMY ROW", tn, szarr1) && strlen(to) == 0) // for some weird reason DB2/VM returns such junk
+	  continue;
 
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("Some error getting data....");
-#endif
-	  SQLFreeStmt (hstmt, SQL_DROP);
-	  chk_rc (rc, 0, "SQLFreeStmt");
-	  break;
-	}
+      {
+          A4GL_inf("Some error getting data....");
+          A4GL_free_hstmt(&hstmt);
+          break;
+      }
 
-#ifdef DEBUG
-      A4GL_debug (" cnt=%d of %d tq= %s to= %s", cnt,mx,tq, to);
-      A4GL_debug (" tn= %s tt= %s", tn, tt);
-      A4GL_debug (" tr= %s", tr);
-      A4GL_debug ("Mode=%d", mode);
-#endif
-      if (mode == 1)
-	{
-	  if (strstr (tt, "SYSTEM"))
-	    {
-#ifdef DEBUG
-	      A4GL_debug ("Is system table");
-#endif
-	      continue;
-	    }
-	}
+      A4GL_trc ("cnt=%d of max %d to=%s tn=%s", cnt, mx, to, tn);
+      if (mode == 1 && strstr (tt, "SYSTEM"))
+          continue;
 
 
-      if (arr1!=0) {tn[szarr1+1]=0;A4GL_trim(tn);A4GL_debug("TN: %s",tn);}
-      if (arr2!=0) {tr[szarr2+1]=0;A4GL_trim(tr);A4GL_debug("TR: %s",tr);}
-
-      if (arr1) { memset(&arr1[cnt * (szarr1 + 1)],0,szarr1+1); }
-      if (arr2) { memset(&arr2[cnt * (szarr2 + 1)],0,szarr2+1); }
-      if (arr1 != 0) strncpy (&arr1[cnt * (szarr1 + 1)], tn, szarr1);
-      if (arr2 != 0) strncpy (&arr2[cnt * (szarr2 + 1)], tr, szarr2);
+      if (arr1)
+      {
+          tn[min(szarr1, sizeof(tn)-1)] = 0;
+          A4GL_trim(tn);
+          memset(&arr1[cnt * (szarr1 + 1)], 0, szarr1+1);
+          A4GL_strncpyz(&arr1[cnt * (szarr1 + 1)], tn, szarr1+1);
+      }
+      if (arr2)
+      {
+          to[min(szarr2, sizeof(to)-1)] = 0;
+          A4GL_trim(to);
+          memset(&arr2[cnt * (szarr2 + 1)], 0, szarr2+1);
+          A4GL_strncpyz(&arr2[cnt * (szarr2 + 1)], to, szarr2+1);
+      }
       cnt++;
-#ifdef DEBUG
-      A4GL_debug ("fill array tables : Rc= %d", rc);
-      A4GL_debug ("    a=%d", a);
-      A4GL_debug ("    b=%d", b);
-#endif
-    }
-
-  rc = SQLFreeStmt (hstmt, SQL_DROP);
-  chk_rc (rc, hstmt, "SQLFreeStmt");
+  }
+  A4GL_free_hstmt(&hstmt);
   return cnt;
 }
 
@@ -334,211 +293,82 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
  */
 int
 A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
-		    int mode, char *info)
+                         int mode, char *info)
 {
-  SQLHSTMT hstmt;
-struct  {
-  char tq[256];
-  char to[256];
-  char tn[256];
-  char cn[256];
-  int dt;
-  char dtname[256];
-  long prec;
-  long len;
-  long scale;
-  long radix;
-  long nullable;
-  char remarks[256];
-} data;
-  int colsize;
-  char szcolsize[20];
-  int a, b;
-  int rc;
-  int cnt;
-  SQLHSTMT ret;
-
-
-
-#ifdef DEBUG
-  A4GL_debug ("Fill array columns for table %s", info);
-#endif
+  int i;
+  int dtype;
+  int size;
+  int prec;
 
   if (hdbc == 0)
-    {
+  {
       A4GL_exitwith ("Not connected to database");
       return 0;
-    }
+  }
+  if (! A4GLSQL_get_columns (info, "", &dtype, &size))
+      return 0;
 
-  ret = (SQLHSTMT)A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+  A4GL_init_typeinfo();
+  for (i = 0; i < mx; ++i)
+  {
+      char *colname;
+      char scolsize[32];
+      char *s;
 
-#ifdef DEBUG
-  A4GL_debug ("Getting columns for '%s'", info);
-#endif
+      if ( ! A4GLSQL_next_column_detailed (&colname, NULL, &size, &prec, &dtype))
+          break;
+      if (size != prec && (size & 0xff) != 0) //two-part prec,size
+	  SPRINTF2 (scolsize, "%d,%d", ((size >> 8) & 0xff) - (size & 0xff), size & 0xff);
+      else
+	  SPRINTF1 (scolsize, "%d", A4GL_display_size (dtype, prec, (SQLCHAR*)""));
+      A4GL_trc("colname=%s dtype=%d(0x%x) size=%d(0x%x) prec=%d(0x%x) scolsize=%s", 
+                colname,   dtype,  dtype, size,   size, prec,   prec, scolsize);
+      if (arr1 != 0)
+          A4GL_strncpyz (&arr1[i * (szarr1 + 1)], colname, szarr1);
+      if (arr2 != 0)
+      {
+          s = &arr2[i * (szarr2 + 1)];
+          switch (mode)
+          {
+            case 0:
+              A4GL_strncpyz(&arr2[i * (szarr2+1)], scolsize, szarr2+1);
+              break;
+            case 1:
+              A4GL_strncpyz(&arr2[i * (szarr2+1)],
+                                   A4GL_type_id_to_name(dtype), szarr2+1);
+              break;
+            case 2:
+              {
+                  char scolsize_p[sizeof(scolsize)+3];
+                  int sizelen;
+                  int namelen;
+                  int max_namelen;
+                  A4GL_strncpyz (s, A4GL_type_id_to_name(dtype), szarr2+1);
+                  sprintf(scolsize_p, "(%s)", scolsize);
+                  sizelen = strlen(scolsize_p);
+                  max_namelen = szarr2 - sizelen;
+                  namelen = strlen(s);
+                  if (namelen > max_namelen)
+                  {
+                      s[max_namelen-1] = '~';
+                      A4GL_strncpyz(s + max_namelen, scolsize_p, sizelen+1);
+                  }
+                  else if (namelen > max_namelen)
+                      A4GL_strncpyz(s + max_namelen, scolsize_p, sizelen+1);
+                  else
+                      strcat(s, scolsize_p);
+              }
+              break;
+            default:
+              A4GL_strncpyz (&arr2[i * (szarr2 + 1)], info, szarr2+1);
+              break;
+          }
+      }
+  }
 
-  rc = SQLColumns (hstmt, NULL, 0, NULL, 0, (SQLCHAR*)info, SQL_NTS, NULL, 0);
-
-  chk_rc (rc, hstmt, "SQLColumns");
-
-#ifdef DEBUG
-  A4GL_debug (" SQLColumns returned rc=%d", rc);
-#endif
-  a = 79;
-  b = 254;
-#ifdef DEBUG
-  A4GL_debug ("arr1=%p", arr1);
-#endif
-
-  cnt = 0;
-
-  SQLBindCol (hstmt, 1, SQL_C_CHAR, data.tq, 255, &outlen[1]);
-  SQLBindCol (hstmt, 2, SQL_C_CHAR, data.to, 255, &outlen[2]);
-  SQLBindCol (hstmt, 3, SQL_C_CHAR, data.tn, 255, &outlen[3]);
-  SQLBindCol (hstmt, 4, SQL_C_CHAR, data.cn, 255, &outlen[4]);
-  SQLBindCol (hstmt, 6, SQL_C_CHAR, data.dtname, 255, &outlen[6]);
-  SQLBindCol (hstmt, 12, SQL_C_CHAR, data.remarks, 255, &outlen[12]);
-  SQLBindCol (hstmt, 5, SQL_C_LONG, &data.dt, 4, &outlen[5]);
-  SQLBindCol (hstmt, 7, SQL_C_LONG, &data.prec, 4, &outlen[7]);
-  SQLBindCol (hstmt, 8, SQL_C_LONG, &data.len, 4, &outlen[8]);
-  SQLBindCol (hstmt, 9, SQL_C_LONG, &data.scale, 4, &outlen[9]);
-  SQLBindCol (hstmt, 10, SQL_C_LONG, &data.radix, 4, &outlen[10]);
-  SQLBindCol (hstmt, 11, SQL_C_LONG, &data.nullable, 4, &outlen[11]);
-
-  	while (cnt < mx) {
-		memset(&data,0,sizeof(data));
-		rc = SQLFetch (hstmt);
-		if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR){
-			#ifdef DEBUG
-				A4GL_debug ("Done fetch - got %d", rc);
-			#endif
-			break;
-		}
-		#ifdef DEBUG
-		A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", data.cn, data.dt, data.len, rc);
-		A4GL_debug ("column %s %s %s %s", data.tq, data.to, data.tn, data.cn);
-		A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", data.dt, data.dtname, data.prec,
-	     	data.len, data.scale, data.radix, data.nullable, data.remarks);
-		#endif
-		colsize = A4GL_display_size (data.dt, data.prec, (SQLCHAR*)"");
-		SPRINTF1 (szcolsize, "%d", colsize);
-
-		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
-			#ifdef DEBUG
-				A4GL_debug ("Some error getting data....");
-			#endif
-			SQLFreeStmt (hstmt, SQL_DROP);
-			break;
-		}
-
-		if (arr1 != 0) {
-			strncpy (&arr1[cnt * (szarr1 + 1)], data.cn, szarr1);
-		}
-		if (arr2 != 0) {
-			switch (mode) {
-				case 0:
-					strncpy (&arr2[cnt * (szarr2 + 1)], szcolsize, szarr2);
-					break;
-				case 1:
-					strncpy (&arr2[cnt * (szarr2 + 1)], data.dtname, szarr2);
-					break;
-				case 2:
-					SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%s(%d)",data.dtname, colsize);
-					break;
-				default:
-					strncpy (&arr2[cnt * (szarr2 + 1)], data.tn, szarr2);
-					break;
-			}
-		}
-		cnt++;
-		#ifdef DEBUG
-			A4GL_debug ("fill array columns : Rc= %d", rc);
-			A4GL_debug ("    cb=%s dtname=%s", data.cn, data.dtname);
-		#endif
-    }
-	SQLFreeStmt (hstmt, SQL_DROP);
-	return cnt;
+  A4GLSQL_end_get_columns ();
+  return i;
 }
-
-int 
-A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info) {
-SQLHSTMT hstmt;
-int rc;
-SQLHSTMT ret;
-char buff[256];
-SQLSMALLINT scale;
-SQLSMALLINT nullable;
-int allow_no_rows=1;
-SQLSMALLINT ncols;
-char colname[64];
-SWORD colnamelen;
-SQLSMALLINT coltype;
-int colcnt;
-UDWORD collen;
-
-  	#ifdef DEBUG
-  		A4GL_debug ("Fill array columns for table %s", info);
-	#endif
-
-  	if (hdbc == 0){
-		A4GL_exitwith ("Not connected to database");
-		return 0;
-    }
-	ret = (SQLHSTMT)A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
-  	if (allow_no_rows) {
-		SPRINTF1(buff,"select * from %s where 1=0",info);
-	} else {
-		SPRINTF1(buff,"select * from %s ",info);
-	}
-
-	SQLPrepare ((SQLHSTMT)hstmt, (SQLCHAR*)buff, SQL_NTS);
-	rc = SQLExecute(hstmt);
-	chk_rc (rc, hstmt, "unload_data");
-	if (rc<0) {
-		return 0;
-	}
-	rc = SQLNumResultCols (hstmt, &ncols);
-	chk_rc (rc, hstmt, "unload_data");
-	if (rc<0) {
-		return 0;
-	}
-
-
-  	for (colcnt = 1; colcnt <= ncols; colcnt++) {
-		rc = SQLDescribeCol (hstmt, colcnt, (SQLCHAR*)colname, (SQLSMALLINT)sizeof (colname), 
-			&colnamelen, &coltype, &collen, &scale, &nullable);
-		chk_rc (rc, hstmt, "SQLDescribeCol");
-		if (arr1 != 0) {
-			strncpy (&arr1[(colcnt-1) * (szarr1 + 1)], colname, szarr1);
-		}
-		if (arr2 != 0) {
-			switch (mode) {
-				case 0:
-					{ char buff[256];
-						#ifdef SQLITE
-							SPRINTF1(buff,"%d",collen);
-						#else
-							SPRINTF1(buff,"%d",(int)collen);
-							/*warning: long int format, int arg (arg 3)
-							UDWORD collen;
-							*/
-						#endif
-						strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], buff, szarr2);
-					}
-					break;
-				case 1:
-              		strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], "CHAR(-1)", szarr2);
-					break;
-				default:
-					strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], info, szarr2);
-					break;
-            }
-        }
-	}
-
-	SQLFreeStmt (hstmt, SQL_DROP);
-	return colcnt-1;
-}
-
 
 /**
  * Fill array - depending on service specified, invokes appropriate function
@@ -557,59 +387,21 @@ UDWORD collen;
  */
 int
 A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
-		    char *service, int mode, char *info)
+        char *service, int mode, char *info)
 {
-#ifdef DEBUG
-  A4GL_debug ("Fill array.... mode = %d", mode);
-#endif
+    A4GL_dbg("Fill array... service=%s mode=%d info=%s, arr1=%p szarr1=%i arr2=%p szarr2=%i",
+            service, mode, info ? info : "<NULL>", arr1, szarr1, arr2, szarr2);
+    if (strcmp (service, "DATABASES") == 0)
+        return A4GL_fill_array_databases (mx, arr1, szarr1, arr2, szarr2);
 
-/*
+    if (strcmp (service, "TABLES") == 0)
+        return A4GL_fill_array_tables (mx, arr1, szarr1, arr2, szarr2, mode);
 
-array.c:435: warning: passing arg 2 of `fill_array_databases' from incompatible pointer type
-array.c:435: warning: passing arg 4 of `fill_array_databases' from incompatible pointer type
-array.c:443: warning: passing arg 2 of `fill_array_tables' from incompatible pointer type
-array.c:443: warning: passing arg 4 of `fill_array_tables' from incompatible pointer type
-array.c:451: warning: passing arg 2 of `fill_array_columns' from incompatible pointer type
-array.c:451: warning: passing arg 4 of `fill_array_columns' from incompatible pointer type
+    if (strcmp (service, "COLUMNS") == 0)
+        return A4GL_fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
 
-*/
-
-
-
-  if (strcmp (service, "DATABASES") == 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Get Databases");
-#endif
-      return A4GL_fill_array_databases (mx, arr1, szarr1, arr2, szarr2);
-    }
-
-  if (strcmp (service, "TABLES") == 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Get Tables");
-#endif
-      return A4GL_fill_array_tables (mx, arr1, szarr1, arr2, szarr2, mode);
-    }
-
-  if (strcmp (service, "COLUMNS") == 0)
-    {
-	int rval;
-#ifdef DEBUG
-      A4GL_debug ("Get columns");
-#endif
-	rval=A4GL_fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
-	if (rval<=0) {
-		// Try again a different way...
-		rval=A4GL_fill_array_columns_mk2 (mx, arr1, szarr1, arr2, szarr2, mode, info);
-	}
-	A4GL_debug("Got %d\n",rval);
-      return rval;
-    }
-#ifdef DEBUG
-  A4GL_debug ("****** ERROR unknown service :%s", service);
-#endif
-  return (0);
+    A4GL_err("****** ERROR unknown service :%s", service);
+    return 0;
 }
 
 

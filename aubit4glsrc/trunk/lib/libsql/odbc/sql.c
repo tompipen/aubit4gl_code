@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.190 2007-05-25 10:04:21 mikeaubury Exp $
+# $Id: sql.c,v 1.191 2007-06-01 15:09:14 gyver309 Exp $
 #
 */
 
@@ -74,15 +74,6 @@
 #endif
 #else
 #define ODBC_INI ".odbc.ini"
-#endif
-
-#undef min
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#undef max
-#define max(a, b) ((a) < (b) ? (b) : (a))
-
-#ifndef SQL_NO_DATA_FOUND
-#define SQL_NO_DATA_FOUND SQL_NO_DATA
 #endif
 
 #define retfail(s) { A4GL_trc("%s, returning False", s); return False; }
@@ -214,7 +205,7 @@ struct sql_col_info_data
     int size;
     int colsize;
     int colidx;
-    int dtype;
+    int dtype; // stored raw, as returned by the DB
     int prec;
     char colname[256];
     char tabname[256];
@@ -245,6 +236,12 @@ int conv_4gl_to_c[] = {
     SQL_C_CHAR,      /* Varchar */
     SQL_C_CHAR       /* Interval */
 };
+
+typedef struct {
+    int id;
+    char name[32];
+    
+} s_sql_type_info;
 
 
 /*
@@ -355,6 +352,10 @@ static char dbms_dialect[64] = "";
 static int in_transaction = 0;
 static int ignore_next_sql_error = 0;
 
+static s_sql_type_info *type_info = NULL;
+static int type_info_size = 0;
+static int type_warning_issued = 0;
+
 /*
 =====================================================================
                   Function prototypes - static
@@ -369,8 +370,6 @@ static Bool sql_ok(SQLRETURN rc);
 static Bool sql_failed(SQLRETURN rc);
 
 // statement-specific
-static Bool sql_free_stmt(SQLHSTMT *phstmt);
-static SQLRETURN sql_free_sid(struct s_sid **sid);
 static unsigned int set_flag(unsigned int flags, int bit, Bool value);
 static Bool get_flag(unsigned int flags, int bit);
 static void sid_set_singleton(struct s_sid *sid, Bool flg);
@@ -384,6 +383,7 @@ static Bool cid_get_open(struct s_cid *cid);
 static void sid_set_owns_sqlstr(struct s_sid *sid, Bool flg);
 static Bool sid_get_owns_sqlstr(struct s_sid *sid);
 static Bool prepare_statement_internal(struct s_sid *sid, char *s);
+static SQLRETURN sql_free_sid(struct s_sid **sid);
 
 // metadata functions
 static Bool sql_use_describe(void);
@@ -395,11 +395,11 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_c
 static void sql_clear_column_info(struct sql_col_info_data *ci, Bool clearTableData);
 static int conv_sqlprec (int ndtype, int sdim, int scale);
 static unsigned long conv_sqldtype (int sqldtype, int sdim);
+static char *type_id_to_name_fallback(int type_id);
 
 // other
 static void initenv (void);
 static void ListDSN (void);
-static char *strncpyz(char *dest, const char *src, size_t n);
 static int do_fake_transactions (void);
 
 /*
@@ -459,7 +459,6 @@ RETCODE SQL_API SQLDataSources (HENV henv, SQLUSMALLINT fDirection,
 extern int A4GL_set_blob_data (SQLHSTMT hstmt);
 extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt,
                                int colno);
-
 
 /*
 =====================================================================
@@ -690,11 +689,13 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
         if (ibind[c].dtype == DTYPE_FLOAT)
         {
             SPRINTF1 (sbuff, "%lf", *(double *) ibind[c].ptr);
+	    A4GL_decstr_convert(sbuff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
         }
 
         if (ibind[c].dtype == DTYPE_SMFLOAT)
         {
             SPRINTF1 (sbuff, "%f", *(float *) ibind[c].ptr);
+	    A4GL_decstr_convert(sbuff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
         }
 
         if (ibind[c].dtype == DTYPE_DECIMAL)
@@ -908,14 +909,14 @@ A4GL_newSQLSetParam (SQLHSTMT hstmt, SQLUSMALLINT ipar, SQLSMALLINT fCType, SQLS
 	int l;
 	l=cbColDef;
 	if (strlen(rgbValue)>l) {
-		l=rgbValue+1;
+//		l=rgbValue+1;
+		l=strlen(rgbValue)+1;
 	}
-	//printf("l=%d\n",l);
     	rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT,
             fCType, fSqlType, cbColDef, ibScale, rgbValue, l, pcbValue);      // 3200
     } else {
     	rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT,
-            fCType, fSqlType, cbColDef, ibScale, rgbValue, 256, pcbValue);      // 3200
+            fCType, fSqlType, cbColDef, ibScale, rgbValue, 256, pcbValue);    // 3200
     }
     return_chk_rc (rc, hstmt, "SQLBindParameter");
 }
@@ -1163,6 +1164,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
     struct s_sid *sid;
     struct s_cid *cid;
     SQLRETURN rc;
+    int forupdate = 0;
 
     sid = vsid;
 
@@ -1182,7 +1184,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	if (sid_get_singleton(cid->statement))
 	    sql_free_sid(&cid->statement);
 	else
-	    sql_free_stmt(&cid->statement->hstmt);
+	    A4GL_free_hstmt(&cid->statement->hstmt);
 	A4GL_del_pointer (cursname, CURCODE);
     }
 
@@ -1196,7 +1198,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	return NULL;
     }
 
-    if (sid_get_singleton(sid) && !scroll)
+    if (sid_get_singleton(sid) && !scroll && !forupdate)
     {
 	A4GL_trc ("Singleton and not scrollable - can safely use original sid");
 	nsid = sid;
@@ -1209,7 +1211,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	    A4GL_trc ("Singleton and scrollable - can safely use original sid, but must use new hstmt");
 	    nsid = sid;
 	    A4GL_trc ("Old hstmt useless - freeing orig hstmt=%p", sid->hstmt);
-	    sql_free_stmt(&sid->hstmt);
+	    A4GL_free_hstmt(&sid->hstmt);
 	}
 	else
 	{
@@ -1297,6 +1299,12 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	    chk_rc (rc, nsid->hstmt, "SQLSetStmtOption SCROLL_STATIC");
 
 	}
+//	if (forupdate)
+//	{
+//	    rc = SQLSetStmtOption ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CONCURRENCY,
+//		    SQL_CONCUR_LOCK);
+//	    chk_rc (rc, nsid->hstmt, "SQLSetStmtOption SQL_ATTR_CONCURRENCY");
+//	}
     }
 
     // prepare new cid
@@ -1320,7 +1328,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	if (sid_get_singleton(nsid))
 	    sql_free_sid(&nsid);
 	else
-	    sql_free_stmt(&nsid->hstmt);
+	    A4GL_free_hstmt(&nsid->hstmt);
         acl_free(cid);
 	return 0;
     }
@@ -1386,7 +1394,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void
     if (singleton)
         sql_free_sid(&sid);
 //    else
-//        sql_free_stmt(&sid->hstmt);
+//        A4GL_free_hstmt(&sid->hstmt);
 
     return retval;
 }
@@ -1438,7 +1446,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	    if (singleton)
 		sql_free_sid(&sid);
 	    else
-		sql_free_stmt(&sid->hstmt);
+		A4GL_free_hstmt(&sid->hstmt);
 	}
     }
 
@@ -1459,14 +1467,14 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     }
 
     /*  if (retval)
-        sql_free_stmt(&sid->hstmt);
+        A4GL_free_hstmt(&sid->hstmt);
         else
         A4GL_trc ("retval not set");*/
  
     if (singleton)
         sql_free_sid(&sid);
     else
-        sql_free_stmt(&sid->hstmt);
+        A4GL_free_hstmt(&sid->hstmt);
 
     if (retval == False)
 	return -1;
@@ -2101,7 +2109,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
 	if (sid_get_singleton(ptr->statement))
 	    sql_free_sid(&ptr->statement);
 	else
-	    sql_free_stmt(&ptr->statement->hstmt);
+	    A4GL_free_hstmt(&ptr->statement->hstmt);
 	A4GL_del_pointer (cname, CURCODE);
     }
 }
@@ -2510,10 +2518,10 @@ Bool ODBC_exec_sql (SQLCHAR * sqlstr)
   chk_rc (rc, 0, "SQLExecDirect");
   if (rc != SQL_SUCCESS)
   {
-      sql_free_stmt(&hstmt);
+      A4GL_free_hstmt(&hstmt);
       return False;
   }
-  sql_free_stmt(&hstmt);
+  A4GL_free_hstmt(&hstmt);
   return True;
 }
 
@@ -2676,7 +2684,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     /*review */
     int k = 0;
     void *ptr_to_use = 0;
-    SQLRETURN rc;
+    int retval;
 
     isnull = A4GL_isnull (bind->dtype, bind->ptr);
 
@@ -2687,9 +2695,10 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
     if (bind->dtype == DTYPE_DATE && A4GL_isyes (acl_getenv ("BINDDATEASINT")))
     {
-        rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, SQL_INTEGER, SQL_INTEGER,
+        retval = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, SQL_INTEGER, SQL_INTEGER,
                                   0, 0, bind->ptr, isnull ? &nullval : NULL);
-        return True;
+	
+        return retval ? True : False;
     }
 
     if (bind->dtype != DTYPE_CHAR && bind->dtype != DTYPE_VCHAR)
@@ -2714,6 +2723,8 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
             {
                 size_c =
                     bind->end_char_subscript - bind->start_char_subscript + 1;
+		if (bind->start_char_subscript > 1)
+		    ptr_to_use += bind->start_char_subscript-1;
             }
         }
     }
@@ -2732,7 +2743,10 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
     if (bind->dtype == DTYPE_CHAR)
     {
-        A4GL_trc (" Binding : %s ", bind->ptr);
+        A4GL_trc (" Binding : %s%s%s%s", bind->ptr,
+		bind->ptr != ptr_to_use ? "(" : "",
+		bind->ptr != ptr_to_use ? ptr_to_use : "",
+		bind->ptr != ptr_to_use ? ">" : "");
     }
     set_conv_4gl_to_c ();
     A4GL_trc ("Call SQLSetParam h=%p p=%d dt=%d dt=%d size=%d k=%d ptr=%p",
@@ -2873,7 +2887,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
         if (isnull)
         {
             A4GL_trc ("Calling setparam1");
-            rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos,
+            retval = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos,
                     conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype],
                     size, k, bind->ptr, &nullval);
         }
@@ -2883,7 +2897,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
             sz = acl_malloc2 (sizeof (SQLINTEGER));
             *sz = size_c;
             A4GL_trc ("Calling setparam2");
-            rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos,
+            retval = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos,
                     conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype],
                     size, k, ptr_to_use, sz);
         }
@@ -2891,14 +2905,14 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     else
     {
         A4GL_trc ("Calling setparam3");
-        rc = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos,
+        retval = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos,
                 conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype],
                 size, k, ptr_to_use, isnull ? &nullval : NULL);
     }
 
-    A4GL_trc ("Called newSQLSetParam = %d", rc);
+    A4GL_trc ("Called newSQLSetParam retval=%d", retval);
     /* chk_rc (rc, hstmt, "SQLSetParam"); */
-    return True;
+    return retval ? True : False;
 }
 
 /**
@@ -3029,10 +3043,10 @@ int conv_sqlprec (int ndtype, int sdim, int scale)
     return sdim;
 }
 
-static Bool sql_free_stmt(SQLHSTMT *phstmt)
+int A4GL_free_hstmt(SQLHSTMT *phstmt)
 {
     SQLRETURN rc;
-    A4GL_trc("In sql_free_stmt hstmt=%p &hstmt=%p", *phstmt, phstmt);
+    A4GL_trc("In A4GL_free_hstmt hstmt=%p &hstmt=%p", *phstmt, phstmt);
 #if (ODBCVER >= 0x300)
     rc = SQLFreeHandle(SQL_HANDLE_STMT, *phstmt);
     if (!sql_ok(rc))
@@ -3055,7 +3069,7 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
     A4GL_trc("In sql_free_sid sid=%p &sid=%p", *sid, sid);
 
     ignore_next_sql_error = 1;
-    rc = sql_free_stmt(&((*sid)->hstmt));
+    rc = A4GL_free_hstmt(&((*sid)->hstmt));
 
     if (sid_get_owns_sqlstr(*sid))
     {
@@ -3117,9 +3131,7 @@ static unsigned long conv_sqldtype (int sqldtype, int sdim)
     if (A4GL_isyes (acl_getenv ("NODATETIMES")))
     {
         if (ndtype == DTYPE_DTIME)
-        {
             ndtype = DTYPE_DATE;
-        }
     }
 
 
@@ -3316,20 +3328,6 @@ static Bool sql_cacheschema(void)
 #endif
 }
 
-char *strncpyz(char *dest, const char *src, size_t n)
-{
-    if (n == 0)
-        return dest;
-    if (src == NULL)
-        dest[0] = 0;
-    else
-    {
-        strncpy(dest, src, n-1);
-        dest[n-1] = 0;
-    }
-    return dest;
-}
-
 // returns false also if CACHESCHEMA disabled
 static Bool cache_make_key(char *tabname, char *colname, int colidx, struct sql_col_info_data *ci, char *dstbuf)
 {
@@ -3407,6 +3405,7 @@ static int sql_get_next_column_info(struct sql_col_info_data *ci)
 {
     SQLRETURN rc;
     sql_clear_column_info(ci, 0);
+    int fgldtype;
 
     if (! sql_use_describe())
     {
@@ -3461,16 +3460,23 @@ static int sql_get_next_column_info(struct sql_col_info_data *ci)
     //  SPRINTF1 (szcolsize, "%d", curcol.colsize);
     ci->colsize = A4GL_display_size(ci->bd.dt, ci->bd.prec, (SQLCHAR*)"");
     ci->prec = ci->bd.prec;
-    strncpyz(ci->colname, (char*)ci->bd.cn, sizeof(ci->colname));
+    ci->dtype = ci->bd.dt;
+    A4GL_strncpyz(ci->colname, (char*)ci->bd.cn, sizeof(ci->colname));
     A4GL_convlower(ci->colname);
 
-    ci->dtype = conv_sqldtype(ci->bd.dt, ci->prec);
+    fgldtype = conv_sqldtype(ci->dtype, ci->prec);
+
+    if (fgldtype == DTYPE_DTIME)
+        ci->prec = 0x46;
+
+/*    ci->dtype = conv_sqldtype(ci->bd.dt, ci->prec);
     if (ci->bd.dt == SQL_TIME)
     {
         ci->dtype = DTYPE_DTIME;
         ci->prec = 0x46;
-    }
-    ci->size = conv_sqlprec(ci->dtype, ci->prec, ci->bd.scale);
+    }*/
+
+    ci->size = conv_sqlprec(fgldtype, ci->prec, ci->bd.scale);
     return 1;
 }
 
@@ -3494,7 +3500,7 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname,
     A4GL_assertion(tabname == NULL, "NULL tabname in sql_columns");
 
     // ok, let's do table name mangling
-    strncpyz(ci->tabname, tabname, sizeof(ci->tabname));
+    A4GL_strncpyz(ci->tabname, tabname, sizeof(ci->tabname));
     A4GL_trim(ci->tabname);
     A4GL_assertion(strlen(ci->tabname) == 0, "read_columns: empty tabname");
 
@@ -3505,7 +3511,7 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname,
         A4GL_convupper(ci->tabname);
 
     // trim column name if needed
-    strncpyz(ci->colname, colname, sizeof(ci->colname));
+    A4GL_strncpyz(ci->colname, colname, sizeof(ci->colname));
     A4GL_trim(ci->colname);
 
     // try to get column's info from cache
@@ -3665,6 +3671,15 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 int
 A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
+    return A4GLSQLLIB_A4GLSQL_next_column_detailed(colname, dtype, size,
+                                                   NULL, NULL);
+}
+
+
+int
+A4GLSQLLIB_A4GLSQL_next_column_detailed(char **colname, int *dtype, int *size,
+                                        int *prec, int *raw_dtype)
+{
     static char colname_buf[sizeof(cidata.colname)];
 
     A4GL_clear_sqlca();
@@ -3679,13 +3694,19 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
         cache_try_add_coldata(NULL, cidata.colidx, &cidata);
     }
-    strncpyz(colname_buf, cidata.colname, sizeof(colname_buf));
-    *colname = colname_buf;
-    *dtype = cidata.dtype;
-    *size = cidata.size;
+    A4GL_strncpyz(colname_buf, cidata.colname, sizeof(colname_buf));
+    if (colname)
+        *colname = colname_buf;
+    if (dtype)
+        *dtype = conv_sqldtype(cidata.dtype, cidata.prec);
+    if (size)
+        *size = cidata.size;
+    if (prec)
+        *prec = cidata.prec;
+    if (raw_dtype)
+        *raw_dtype = cidata.dtype;
     return 1;
 }
-
 
 /**
  * Free all resources allocated in getting information about columns
@@ -3701,7 +3722,7 @@ A4GLSQLLIB_A4GLSQL_end_get_columns()
 
     if (cidata.hstmt != NULL)
     {
-        sql_free_stmt(&cidata.hstmt);
+        A4GL_free_hstmt(&cidata.hstmt);
         sql_clear_column_info(&cidata, 1);
     }
     return 0;
@@ -3725,6 +3746,144 @@ A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt)
     A4GL_newSQLSetParam (hstmt, pos, conv_4gl_to_c[0], conv_4gl_to_c[0], size,
                          0, s, NULL);
 }
+
+void
+A4GL_init_typeinfo()
+{
+    if (type_info_size)
+	free(type_info);
+    type_info_size = 0;
+    type_warning_issued = 0;
+    type_info = NULL;
+}
+
+static char *type_id_to_name_fallback(int type_id)
+{
+    // case cannot be used here, because in some conditions 
+    // there are duplicate case values
+    if (!type_warning_issued)
+    {
+        type_warning_issued = 1;
+        A4GL_wrn ("WARNING Using fallback method to retrieve type info for type %i", type_id);
+    }
+    if (type_id == SQL_UNKNOWN_TYPE) return "UnknownType";
+    if (type_id == SQL_CHAR) return "Char";
+    if (type_id == SQL_NUMERIC) return "Numeric";
+    if (type_id == SQL_DECIMAL) return "Decimal";
+    if (type_id == SQL_INTEGER) return "Integer";
+    if (type_id == SQL_SMALLINT) return "Smallint";
+    if (type_id == SQL_FLOAT) return "Float";
+    if (type_id == SQL_REAL) return "Real";
+    if (type_id == SQL_DOUBLE) return "Double";
+    if (type_id == SQL_DATE) return "Date";
+    if (type_id == SQL_VARCHAR) return "Varchar";
+    if (type_id == SQL_TIME) return "Time";
+    if (type_id == SQL_TIMESTAMP) return "Timestamp";
+    if (type_id == SQL_LONGVARCHAR) return "LVarchar";
+    if (type_id == SQL_BINARY) return "Binary";
+    if (type_id == SQL_VARBINARY) return "Varbinary";
+    if (type_id == SQL_LONGVARBINARY) return "LVarbinary";
+    if (type_id == SQL_BIGINT) return "BigInt";
+    if (type_id == SQL_TINYINT) return "TinyInt";
+    if (type_id == SQL_BIT) return "Bit";
+    if (type_id == SQL_INTERVAL_YEAR) return "IvYear";
+    if (type_id == SQL_INTERVAL_MONTH) return "IvMonth";
+    if (type_id == SQL_INTERVAL_YEAR_TO_MONTH) return "IvYearToMonth";
+    if (type_id == SQL_INTERVAL_DAY) return "IvDay";
+    if (type_id == SQL_INTERVAL_HOUR) return "IvHour";
+    if (type_id == SQL_INTERVAL_MINUTE) return "IvMinute";
+    if (type_id == SQL_INTERVAL_SECOND) return "IvSecond";
+    if (type_id == SQL_INTERVAL_DAY_TO_HOUR) return "IvDayToHour";
+    if (type_id == SQL_INTERVAL_DAY_TO_MINUTE) return "IvDayToMin";
+    if (type_id == SQL_INTERVAL_DAY_TO_SECOND) return "IvDayToSec";
+    if (type_id == SQL_INTERVAL_HOUR_TO_MINUTE) return "IvHourToMin";
+    if (type_id == SQL_INTERVAL_HOUR_TO_SECOND) return "IvHourToSec";
+    if (type_id == SQL_INTERVAL_MINUTE_TO_SECOND) return "IvMinToSec";
+    if (type_id == SQL_UNICODE) return "Unicode";
+    if (type_id == SQL_UNICODE_VARCHAR) return "UniVarchar";
+    if (type_id == SQL_UNICODE_LONGVARCHAR) return "UniLVarchar";
+    if (type_id == SQL_UNICODE_CHAR) return "UniChar";
+#if (ODBCVER >= 0x0300)
+    if (type_id == SQL_DATETIME) return "Datetime";
+    if (type_id == SQL_TYPE_DATE) return "Date";
+    if (type_id == SQL_TYPE_TIME) return "Time";
+    if (type_id == SQL_TYPE_TIMESTAMP) return "Timestamp";
+    if (type_id == SQL_INTERVAL) return "Interval";
+#endif
+#if (ODBCVER >= 0x0350)
+    if (type_id == SQL_GUID) return "GUID";
+#endif
+    {
+        static char buf[16];
+        A4GL_wrn ("WARNING Unknown type %i", type_id);
+        sprintf(buf, "%d", type_id);
+        return buf;
+    }
+}
+
+char *
+A4GL_type_id_to_name(int type_id)
+{
+    SQLHSTMT hstmt;
+    SQLRETURN rc;
+    int i;
+    SQLINTEGER len;
+    char buf[64];
+
+    type_id &= 0xffff;
+
+    A4GL_trc("Looking for name for type %i", type_id);
+
+    if (A4GL_isyes(acl_getenv("A4GL_BUILTIN_TYPE_NAMES")))
+    {
+	A4GL_trc("builtin/fallback method forced by env var");
+	return type_id_to_name_fallback(type_id);
+    }
+
+    for (i = 0; i < type_info_size; ++i)
+	if (type_info[i].id == type_id)
+	    return type_info[i].name;	// cached
+    
+    if (!A4GL_new_hstmt(&hstmt))
+	return type_id_to_name_fallback(type_id);
+    rc = SQLGetTypeInfo(hstmt, type_id);
+    if (!chk_rc(rc, hstmt, "SQLGetTypeInfo"))
+    {
+	A4GL_free_hstmt(&hstmt);
+	return type_id_to_name_fallback(type_id);
+    }
+    if (! chk_rc(SQLBindCol(hstmt, 1, SQL_C_CHAR, buf, sizeof(buf)-1, &len), hstmt, "SQLBindCol"))
+    {
+	A4GL_free_hstmt(&hstmt);
+	return type_id_to_name_fallback(type_id);
+    }
+
+    rc = SQLFetch(hstmt);
+    chk_rc(rc, hstmt, "SQLFetch");
+    if (rc == SQL_NO_DATA_FOUND)
+    {
+	A4GL_wrn("Unable to retrieve type info for type %i", type_id);
+	A4GL_free_hstmt(&hstmt);
+	return type_id_to_name_fallback(type_id);
+    }
+
+    if (rc == SQL_SUCCESS_WITH_INFO)
+	A4GL_inf("Some problem with SQLFetch for SQLGetTypeInfo? - SQL_SUCCESS_WITH_INFO returned");
+
+    if (rc != SQL_SUCCESS)
+    {
+	A4GL_free_hstmt(&hstmt);
+	return type_id_to_name_fallback(type_id);
+    }
+    A4GL_free_hstmt(&hstmt);
+
+    type_info = realloc(type_info, sizeof(s_sql_type_info) * (type_info_size+1));
+    type_info[type_info_size].id = type_id;
+    A4GL_strncpyz(type_info[type_info_size].name, buf, min(sizeof(type_info[type_info_size].name), len+1));
+
+    return type_info[type_info_size++].name;
+}
+
 
 /**
  * Init a new connection to the database and associate with an explicit
@@ -4452,7 +4611,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
         chk_rc (rc, hstmt, "Commit/Rollback2");
         //      A4GL_set_sqlca (hstmt, "Commit/Rollback", 0);
 
-	sql_free_stmt(&hstmt);
+	A4GL_free_hstmt(&hstmt);
     }
 }
 
@@ -4588,7 +4747,7 @@ SQLINTEGER *StrLen_or_Ind);
                 {
                     if (coltype[colcnt] == SQL_DOUBLE)
                     {
-                        if (strchr (databuf, '.') || strchr (databuf, ',')
+                        if (strchr (databuf, A4GL_get_convfmts()->db_decfmt.decsep)
                                 || strchr (databuf, 'e'))
                         {
                             FPRINTF (fout, "%s%c", databuf, delims[0]);
