@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.30 2007-02-20 18:40:26 gyver309 Exp $
+# $Id: corba_server_util.c,v 1.31 2007-06-01 15:04:09 gyver309 Exp $
 #
 */
 
@@ -465,6 +465,30 @@ l=strlen (p);
       p[a] = 0;
     }
 }
+
+/**
+ * Copy string like strncpy, but place terminating 0 at the end of the buffer
+ *
+ * @param dest Destination buffer
+ * @param src  Source buffer/string
+ * @param n    Destination buffer length
+ * @return     Destination buffer
+ */
+char *A4GL_strncpyz(char *dest, const char *src, size_t n)
+{
+    if (n == 0)
+        return dest;
+    if (src == NULL)
+        dest[0] = 0;
+    else
+    {
+        strncpy(dest, src, n-1);
+	if (strlen(src) >= n-1)
+	    dest[n-1] = 0;
+    }
+    return dest;
+}
+
 // --- from fglwrap.c
 /**
  * Checks if the string have some sort of yes (y,Y,1,true).
