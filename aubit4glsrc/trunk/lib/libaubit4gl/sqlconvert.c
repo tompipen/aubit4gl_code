@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.117 2007-05-29 09:59:47 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.118 2007-06-01 14:25:48 gyver309 Exp $
 #
 */
 
@@ -3819,15 +3819,16 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
     defaultOwner = acl_getenv("A4GL_DEFAULT_OWNER");
     if (defaultOwner)
     {
-	A4GL_trim(defaultOwner);
-	if (strlen(defaultOwner) == 0)
-	    defaultOwner = NULL;
+        A4GL_trim(defaultOwner);
+        if (strlen(defaultOwner) == 0)
+            defaultOwner = NULL;
     }
 
     if (ignoreOwner)
     {
         SPRINTF1(buf, "%s", table);
-        return buf;
+        return A4GLSQLCV_check_tablename(buf);
+//        return buf;
     }
     else
     {
@@ -3840,7 +3841,8 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
                 SPRINTF2(buf, "%s.%s", A4GL_strip_quotes(owner), table);
             else
                 SPRINTF1(buf, "%s", table);
-            return buf;
+            return A4GLSQLCV_check_tablename(buf);
+//            return buf;
         }
         if (escapeQuoteOwner)
         {
@@ -3848,7 +3850,8 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
                 SPRINTF2(buf, "\\\"%s\\\".%s", A4GL_strip_quotes(owner), table);
             else
                 SPRINTF1(buf, "%s", table);
-            return buf;
+            return A4GLSQLCV_check_tablename(buf);
+//            return buf;
         }
         else
         {
@@ -3856,7 +3859,8 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
                 SPRINTF2(buf, "\"%s\".%s", A4GL_strip_quotes(owner), table);
             else
                 SPRINTF1(buf, "%s", table);
-            return buf;
+            return A4GLSQLCV_check_tablename(buf);
+//            return buf;
         }
     }
 }
