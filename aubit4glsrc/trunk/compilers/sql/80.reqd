@@ -199,10 +199,10 @@ op_substr : {strcpy($<str>$,"");}
 
 column_name_x:
 	identifier {sprintf($<str>$,"%s", A4GLSQLCV_check_tablename($<str>1));}
-	| identifier KW_DOT KW_MULTIPLY {sprintf($<str>$,"%s.*", A4GLSQLCV_check_tablename(A4GLSQLCV_ownerize_tablename(NULL,$<str>1)));}
-	| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_check_tablename(A4GLSQLCV_ownerize_tablename(NULL,$<str>1)),$<str>3);}
-	| identifier KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_check_tablename(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3)),$<str>5);}
-	| CHAR_VALUE KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_check_tablename(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3)),$<str>5);}
+	| identifier KW_DOT KW_MULTIPLY {sprintf($<str>$,"%s.*", A4GLSQLCV_ownerize_tablename(NULL,$<str>1));}
+	| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3);}
+	| identifier KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5);}
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5);}
 	| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE 						{sprintf($<str>$,"%s", $<str>1); strcpy($<str>$, A4GLSQLCV_make_substr_s($<str>1, 1,$<str>3,0));}
 	| identifier KW_DOT identifier  OPEN_SQUARE arr_expr CLOSE_SQUARE 			{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>5,0));}
 	| identifier KW_DOT identifier KW_DOT identifier OPEN_SQUARE arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>7,0));  }
