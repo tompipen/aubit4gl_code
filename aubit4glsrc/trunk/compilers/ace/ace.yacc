@@ -72,33 +72,35 @@ set_expr_int(struct expr *e,int a)
 %name-prefix="a4gl_ace_yy"
 
 %union	  {
-	char	str[30000];
+	char   str[30000];
 	struct command cmd;
 	struct expr expr;
+	struct expr *exprptr;
 	struct commands commands;
 	struct agg_val agg_val;
 	struct var_usage *var_usage;
 }
 
-
-%right USING
+%token <str> NAME
+%left COMMA
+%right ASCII COLUMN SPACES USING
 %left WHERE
 %left KW_OR
-%left AND
+%left KW_AND
+%right CLIPPED
 %left NOT
 %left IS_NOT_NULL IS_NULL
-%left GREATER_THAN GREATER_THAN_EQ LESS_THAN LESS_THAN_EQ EQUAL NOT_EQUAL
+%left GREATER_THAN GREATER_THAN_EQ LESS_THAN LESS_THAN_EQ EQUAL NOT_EQUAL COMPARISON
 %right MATCHES NOT_MATCHES LIKE NOT_LIKE
 %left PLUS MINUS
 %left MULTIPLY DIVIDE
-%left POWER MOD
+%left POW MOD
 
 %token AFTER
 %token AFTGROUP
 %token ALL
 %token ANY
 %token ASC
-%right ASCII
 %token ATSIGN
 %token AVERAGE 
 %token AVG
@@ -110,12 +112,9 @@ set_expr_int(struct expr *e,int a)
 %token CH
 %token CHAR
 %token CHAR_VALUE
-%right CLIPPED
 %token CLOSE_BRACKET
 %token CLOSE_SQUARE
 %token COLON
-%right COLUMN
-%token COMMA
 %token COMMANDS
 %token COMPARISON
 %token COUNT
@@ -166,7 +165,6 @@ set_expr_int(struct expr *e,int a)
 %token LESS_THAN
 %token LESS_THAN_EQ
 %token LET
-%token LIKE
 %token LINES
 %token MARGIN
 %token MINUTE
@@ -192,7 +190,6 @@ set_expr_int(struct expr *e,int a)
 %token PARAM
 %token PAUSE
 %token PERCENT 
-%token POW
 %token PRINT
 %token PRINTER
 %token PRINT_FILE
@@ -208,7 +205,6 @@ set_expr_int(struct expr *e,int a)
 %token SMALLFLOAT
 %token SMALLINT
 %token SOME
-%right SPACES
 %token STEP
 %token SUM
 %token TEMP
@@ -441,7 +437,7 @@ format_action :
 
 
 variable_sub: 
-	NAMED  OPEN_SQUARE expr COMMA expr CLOSE_SQUARE {
+	NAMED  OPEN_SQUARE fmt_val_expression COMMA fmt_val_expression CLOSE_SQUARE {
 		$<var_usage>$=malloc(sizeof(struct var_usage));
 		$<var_usage>$->subscript1=DUP($<expr>3);
 		$<var_usage>$->subscript2=DUP($<expr>5);
@@ -451,7 +447,7 @@ variable_sub:
 			printf("Warning : %s is not a defined variable\n",$<str>1);
 		}
 	}
-	| NAMED  OPEN_SQUARE expr CLOSE_SQUARE {
+	| NAMED  OPEN_SQUARE fmt_val_expression CLOSE_SQUARE {
 		$<var_usage>$=malloc(sizeof(struct var_usage));
 		$<var_usage>$->subscript1=DUP($<expr>3);
 		$<var_usage>$->subscript2=NULL;
@@ -632,7 +628,7 @@ search_condition:
 
 boolean_term:
 	boolean_factor
-	| boolean_term AND boolean_factor
+	| boolean_term KW_AND boolean_factor
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
@@ -656,9 +652,9 @@ exists_predicate:
 
 
 quantified_predicate:
-	value_expression comp_op quantifier subquery
+	sql_value_expression comp_op_sql quantifier subquery
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| subquery comp_op value_expression 
+	| subquery comp_op_sql sql_value_expression 
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
@@ -696,13 +692,13 @@ escape_character:
 
 
 in_predicate:
-	value_expression IN OPEN_BRACKET in_value_list CLOSE_BRACKET
+	sql_value_expression IN OPEN_BRACKET in_value_list CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| value_expression IN subquery
+	| sql_value_expression IN subquery
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET
+	| sql_value_expression NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| value_expression NOT_IN subquery
+	| sql_value_expression NOT_IN subquery
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 
 	;
@@ -719,23 +715,20 @@ op_not: {strcpy($<str>$,"");}
 
 
 comparison_predicate:
-	value_expression op_not IS_NULL
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression op_not IS_NOT_NULL
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression comp_op value_expression
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression comp_op subquery
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| value_expression op_not BETWEEN value_expression AND value_expression
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
-	| value_expression op_not LIKE pattern op_escape
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+	sql_value_expression op_not IS_NULL
+		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| sql_value_expression op_not IS_NOT_NULL
+		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| sql_value_expression comp_op_sql sql_value_expression
+		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| sql_value_expression comp_op_sql subquery
+		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| sql_value_expression op_not BETWEEN sql_value_expression KW_AND sql_value_expression
+		{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 
 	;
 
-comp_op:
-	
+comp_op_sql:
 	  EQUAL 
 	| COMPARISON
 	| NOT_EQUAL
@@ -902,17 +895,18 @@ sq_select_list:
 	;
 
 value_expression_pls : 
-		value_expression {
+		sql_value_expression {
 			add_select_column($<str>1,$<str>1);
 		}
-	| 	value_expression  NAMED {
+	| 	sql_value_expression  NAMED {
 			sprintf($<str>$," %s %s",$<str>1,$<str>2);
 			add_select_column($<str>1,$<str>2);
 		}
 ;
 
 
-column_specification : value_expression;
+column_specification : sql_value_expression
+;
 
 units_qual:
         UNITS_YEAR {sprintf($<str>$,"UNITS YEAR");}
@@ -923,10 +917,8 @@ units_qual:
         | UNITS_SECOND {sprintf($<str>$,"UNITS SECOND);"); }
 ;
 
-value_expression:
-	value_expression val_expr_next  {
-			sprintf($<str>$,"%s%s", $<str>1,$<str>2);
-		}
+sql_value_expression:
+	sql_value_expression sql_val_expr_next  { sprintf($<str>$,"%s%s", $<str>1,$<str>2); }
 	| literal
 	| identifier
 	| identifier OPEN_SQUARE int_val CLOSE_SQUARE                			{sprintf($<str>$," %s[%s]",$<str>1,$<str>3);}
@@ -945,50 +937,52 @@ value_expression:
 	| KW_FALSE
 	| USER
 	| MULTIPLY {sprintf($<str>$," %s ",$<str>1);}
-	| OPEN_BRACKET value_expression CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| DATE  OPEN_BRACKET  value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| DAY  OPEN_BRACKET  value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| MONTH  OPEN_BRACKET  value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| YEAR  OPEN_BRACKET  value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| identifier OPEN_BRACKET value_expr_list CLOSE_BRACKET {sprintf($<str>$,"%s(%s)",$<str>1,$<str>3);}
-	| COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET 
-			{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
- 	| AVG OPEN_BRACKET op_all value_expression CLOSE_BRACKET
+	| OPEN_BRACKET sql_value_expression CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| DATE  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| DAY  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| MONTH  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| YEAR  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| identifier OPEN_BRACKET sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$,"%s(%s)",$<str>1,$<str>3);}
+ 	/* | COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}  */
+ 	| AVG OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
 			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| XMAX OPEN_BRACKET op_all value_expression CLOSE_BRACKET
+	| XMAX OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
 			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| XMIN OPEN_BRACKET op_all value_expression CLOSE_BRACKET
+	| XMIN OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
 			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| SUM OPEN_BRACKET op_all value_expression CLOSE_BRACKET
+	| SUM OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
 			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| COUNT OPEN_BRACKET op_all value_expression CLOSE_BRACKET
+	| COUNT OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
 			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 ;
 
-val_expr_next: 
-	DIVIDE value_expression_s 	{sprintf($<str>$,"/%s",$<str>2);}
-	| MOD value_expression_s 	{sprintf($<str>$," MOD %s",$<str>2);}
-	| POW value_expression_s 	{sprintf($<str>$," POW %s",$<str>2);}
+sql_val_expr_next: 
+	DIVIDE sql_value_expression_s 	{sprintf($<str>$,"/%s",$<str>2);}
+	| MOD sql_value_expression_s 	{sprintf($<str>$," MOD %s",$<str>2);}
+	| POW sql_value_expression_s 	{sprintf($<str>$," POW %s",$<str>2);}
 	| units_qual  			{sprintf($<str>$,"%s",$<str>1);}
-	| MULTIPLY value_expression_s 	{sprintf($<str>$,"*%s",$<str>2);}
-	| PLUS value_expression_s     	{sprintf($<str>$,"+%s",$<str>2);}
-	| MINUS value_expression_s   	{sprintf($<str>$,"-%s",$<str>2);}
+	| MULTIPLY sql_value_expression_s 	{sprintf($<str>$,"*%s",$<str>2);}
+	| PLUS sql_value_expression_s     	{sprintf($<str>$,"+%s",$<str>2);}
+	| MINUS sql_value_expression_s   	{sprintf($<str>$,"-%s",$<str>2);}
 ;
 
-value_expression_s: value_expression
-	| PLUS value_expression
-	| MINUS value_expression
+sql_value_expression_s: op_prefix sql_value_expression { sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
 ;
 
-value_expr_list : 
-	value_expression | value_expr_list COMMA value_expression
+op_prefix: {strcpy($<str>$,"");}
+	| PLUS  {strcpy($<str>$,"+");}
+	| MINUS  {strcpy($<str>$,"-");}
+;
+
+sql_value_expr_list : 
+	sql_value_expression | sql_value_expr_list COMMA sql_value_expression
 {
 	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
 }
 ;
 
 value_specification:
-	| literal
+	 literal
 	;
 
 
@@ -1064,7 +1058,7 @@ block_commands: command {
 */
 
 
-call_command :  KW_CALL func_identifier OPEN_BRACKET op_val_expr_list CLOSE_BRACKET {
+call_command :  KW_CALL func_identifier OPEN_BRACKET op_fmt_val_expr_list CLOSE_BRACKET {
 		$<cmd>$.cmd_type=CMD_CALL;
 		$<cmd>$.command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
                 $<cmd>$.command_u.cmd_call.fcall->fname=acl_strdup($<str>2);
@@ -1082,23 +1076,23 @@ func_identifier: DATE
 	| identifier
 ;
 for_command:
-	FOR variable EQUAL expr TO expr op_step DO command {
+	FOR variable EQUAL fmt_val_expression TO fmt_val_expression op_step DO command {
 		$<cmd>$.cmd_type=CMD_FOR;
 		$<cmd>$.command_u.cmd_for.varid=find_variable($<str>2);
-		$<cmd>$.command_u.cmd_for.start=$<expr>4;
-		$<cmd>$.command_u.cmd_for.finish=$<expr>6;
-		$<cmd>$.command_u.cmd_for.step=$<expr>7;
+		COPY($<cmd>$.command_u.cmd_for.start,$<expr>4);
+		COPY($<cmd>$.command_u.cmd_for.finish,$<expr>6);
+		COPY($<cmd>$.command_u.cmd_for.step,$<expr>7);
 	}
 ;
 
 op_step : { $<expr>$.type=EXPRTYPE_INT; $<expr>$.expr_u.i=1; }
-	| STEP expr { $<expr>$=$<expr>1;}
+	| STEP fmt_val_expression { COPY($<expr>$,$<expr>1);}
 ;
 
 
-if_command: IF expr THEN command op_else {
+if_command: IF fmt_val_expression THEN command op_else {
 	$<cmd>$.cmd_type=CMD_IF;
-	$<cmd>$.command_u.cmd_if.condition=$<expr>2;
+	COPY($<cmd>$.command_u.cmd_if.condition,$<expr>2);
 	$<cmd>$.command_u.cmd_if.command=(struct command *)DUP($<cmd>4);
 	$<cmd>$.command_u.cmd_if.elsecommand=(struct command *)DUP($<cmd>5);
 }
@@ -1123,7 +1117,7 @@ LET NAMED EQUAL expr_concat {
 	}
 
 |
-LET NAMED OPEN_SQUARE expr CLOSE_SQUARE EQUAL expr_concat {
+LET NAMED OPEN_SQUARE fmt_val_expression CLOSE_SQUARE EQUAL expr_concat {
 		int v;
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
@@ -1134,7 +1128,7 @@ LET NAMED OPEN_SQUARE expr CLOSE_SQUARE EQUAL expr_concat {
 	}
 
 |
-LET NAMED OPEN_SQUARE expr COMMA expr CLOSE_SQUARE EQUAL expr_concat {
+LET NAMED OPEN_SQUARE fmt_val_expression COMMA fmt_val_expression CLOSE_SQUARE EQUAL expr_concat {
 		int v;
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
@@ -1154,7 +1148,7 @@ op_expr_concat : {
 	| expr_concat 
 ;
 
-expr_concat: expr | expr_concat COMMA expr {
+expr_concat: fmt_val_expression | expr_concat COMMA fmt_val_expression {
 
 	$<expr>$.type=EXPRTYPE_COMPLEX;
 	$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr));
@@ -1208,9 +1202,9 @@ skip_command : SKIP int_val LINES {
 ;
 
 
-while_command: WHILE expr DO command {
+while_command: WHILE fmt_val_expression DO command {
 		$<cmd>$.cmd_type=CMD_WHILE;
-		$<cmd>$.command_u.cmd_while.condition=$<expr>2;
+		COPY($<cmd>$.command_u.cmd_while.condition,$<expr>2);
 		$<cmd>$.command_u.cmd_while.command=(struct command *)DUP($<cmd>4);
 }
 ;
@@ -1231,6 +1225,7 @@ identifier: NAMED
 
 reserved_word:
  AFTER 
+
 | ASC
 | AFTGROUP
 
@@ -1309,55 +1304,33 @@ reserved_word:
 | VARIABLE
 | WHILE
 | XBEGIN
-| XMAX
-| XMIN
+
+
 ;
 
 
-/* 
-| SUM
-| HAVING
-| UNIQUE
-| COUNT
-| MONTH
-| AVERAGE 
-| AVG
-| DAY
-| ANY
-| ALL
-| END
-| EXISTS
-| UNION
-| INTEGER
-| INTO
-| SOME
-| DISTINCT
-| DATE
-| NUMERIC
-| INTERVAL
-*/
 
-expr: val_expression 
+op_where_agg:  	{
+			$<exprptr>$=0;
+		}
+	| WHERE fmt_val_expression 
+		{ 
+			$<exprptr>$=DUP($<expr>2); 
+		}
 ;
 
 
-aggregate: aggregate_elem  {
+aggregate: aggregate_elem  op_where_agg 	
+		{
 		COPY($<agg_val>$,$<agg_val>1);
-		$<agg_val>$.isgroup=0;
-	}
-	| aggregate_elem WHERE expr {
-		COPY($<agg_val>$,$<agg_val>1);
-		$<agg_val>$.wexpr=(struct expr *)DUP($<expr>3);
-		$<agg_val>$.isgroup=0;
-	}
-	| GROUP aggregate_elem {
-		COPY($<agg_val>$,$<agg_val>2);
-		$<agg_val>$.isgroup=1;
-	}
-	| GROUP aggregate_elem WHERE expr {
-		COPY($<agg_val>$,$<agg_val>2);
-		$<agg_val>$.wexpr=(struct expr *)DUP($<expr>4);
-		$<agg_val>$.isgroup=1;
+		$<agg_val>$.wexpr=$<exprptr>2; 
+		}
+;
+
+
+of_expr: 
+		KW_OF fmt_val_expression {
+			$<exprptr>$=DUP($<expr>2);
 	}
 ;
 
@@ -1366,41 +1339,91 @@ aggregate_elem:
 		$<agg_val>$.type=AGG_COUNT;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=0;
+		$<agg_val>$.isgroup=0;
 	}
 	| PERCENT {
 		$<agg_val>$.type=AGG_PERCENT;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=0;
+		$<agg_val>$.isgroup=0;
 	}
- 	| AVERAGE KW_OF expr {
+ 	| AVERAGE of_expr {
 		$<agg_val>$.type=AGG_AVG;
 		$<agg_val>$.wexpr=0;
-		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
+		$<agg_val>$.expr=$<exprptr>2;
+		$<agg_val>$.isgroup=0;
 	}
-	| TOTAL KW_OF expr {
+	| TOTAL of_expr {
 		$<agg_val>$.type=AGG_TOTAL;
 		$<agg_val>$.wexpr=0;
-		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
+		$<agg_val>$.expr=$<exprptr>2;
+		$<agg_val>$.isgroup=0;
 	}
-	| AVG KW_OF expr {
+	| AVG of_expr {
 		$<agg_val>$.type=AGG_AVG;
 		$<agg_val>$.wexpr=0;
-		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
+		$<agg_val>$.expr=$<exprptr>2;
+		$<agg_val>$.isgroup=0;
 	}
-	| XMIN KW_OF expr {
+	| XMIN of_expr {
 		$<agg_val>$.type=AGG_MIN;
 		$<agg_val>$.wexpr=0;
-		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
+		$<agg_val>$.expr=$<exprptr>2;
+		$<agg_val>$.isgroup=0;
 	}
-	| XMAX KW_OF expr {
+	| XMAX of_expr {
 		$<agg_val>$.type=AGG_MAX;
 		$<agg_val>$.wexpr=0;
-		$<agg_val>$.expr=(struct expr *)DUP($<expr>3);
+		$<agg_val>$.expr=$<exprptr>2;
+		$<agg_val>$.isgroup=0;
+	}
+
+	| GROUP COUNT  {
+		$<agg_val>$.type=AGG_COUNT;
+		$<agg_val>$.isgroup=1;
+		$<agg_val>$.wexpr=0;
+		$<agg_val>$.expr=0;
+	}
+	| GROUP PERCENT {
+		$<agg_val>$.type=AGG_PERCENT;
+		$<agg_val>$.isgroup=1;
+		$<agg_val>$.wexpr=0;
+		$<agg_val>$.expr=0;
+	}
+ 	| GROUP AVERAGE of_expr {
+		$<agg_val>$.type=AGG_AVG;
+		$<agg_val>$.isgroup=1;
+		$<agg_val>$.wexpr=0;
+		$<agg_val>$.expr=$<exprptr>3;
+	}
+	| GROUP TOTAL of_expr {
+		$<agg_val>$.type=AGG_TOTAL;
+		$<agg_val>$.wexpr=0;
+		$<agg_val>$.isgroup=1;
+		$<agg_val>$.expr=$<exprptr>3;
+	}
+	| GROUP AVG of_expr {
+		$<agg_val>$.type=AGG_AVG;
+		$<agg_val>$.wexpr=0;
+		$<agg_val>$.isgroup=1;
+		$<agg_val>$.expr=$<exprptr>3;
+	}
+	| GROUP XMIN of_expr {
+		$<agg_val>$.type=AGG_MIN;
+		$<agg_val>$.wexpr=0;
+		$<agg_val>$.isgroup=1;
+		$<agg_val>$.expr=$<exprptr>3;
+	}
+	| GROUP XMAX of_expr {
+		$<agg_val>$.type=AGG_MAX;
+		$<agg_val>$.wexpr=0;
+		$<agg_val>$.isgroup=1;
+		$<agg_val>$.expr=$<exprptr>3;
 	}
 ;
 
-val_expression:
-	 MINUS val_expression  {
+fmt_val_expression:
+	 MINUS fmt_val_expression  {
 		switch ( $<expr>2.type) {
 			case EXPRTYPE_DOUBLE:
 					COPY($<expr>$,$<expr>2); 
@@ -1418,85 +1441,8 @@ val_expression:
 					$<expr>$.expr_u.expr->operand=EXPR_SUB; 
 		}
 	}
-	| 
-	 val_expression DIVIDE val_expression 
-		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_DIV; 
-		}
-
-	 | val_expression POW val_expression 
-		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_POW; 
-		}
-	 | val_expression MOD val_expression 
-		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_MOD; 
-		}
-
-
-	| val_expression MULTIPLY val_expression
-		{ 
-		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_MUL; 
-		}
-	| val_expression PLUS val_expression { 
-		$<expr>$.type=EXPRTYPE_COMPLEX; 
-		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_ADD; 
-	}
-	| val_expression AND val_expression { 
-		$<expr>$.type=EXPRTYPE_COMPLEX; 
-		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_AND; 
-	}
-
-	| val_expression KW_OR val_expression { 
-		$<expr>$.type=EXPRTYPE_COMPLEX; 
-		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_OR; 
-	}
-
-
-	| val_expression MINUS val_expression { 
-		$<expr>$.type=EXPRTYPE_COMPLEX;
-		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_SUB; 
-	}
-	| val_expression USING val_expression { 
-		$<expr>$.type=EXPRTYPE_COMPLEX;
-		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
-		$<expr>$.expr_u.expr->operand=EXPR_USING; 
-	}
 	| literal_expr { COPY($<expr>$,$<expr>1); }
 
-	| val_expression comp_op val_expression {
-		$<expr>$.type=EXPRTYPE_COMPARE;
-		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
-		COPY($<expr>$.expr_u.cexpr->expr1,$<expr>1); 
-		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>3); 
-		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>2); 
-	}
 	| KW_TRUE {
 		$<expr>$.type=EXPRTYPE_INT;
 		$<expr>$.expr_u.i=1;
@@ -1528,83 +1474,51 @@ val_expression:
 		$<expr>$.expr_u.varid=v;
 	}
 
-	| DATE  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
+	| DATE  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("DATE");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
-	| MONTH  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
+	| MONTH  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("MONTH");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
-	| YEAR  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
+	| YEAR  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("YEAR");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
-	| DAY  OPEN_BRACKET  val_expr_list CLOSE_BRACKET {
+	| DAY  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("DAY");
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
-	| NAMED OPEN_BRACKET val_expr_list CLOSE_BRACKET {
+	| NAMED OPEN_BRACKET fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup($<str>1);
                 $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
-	| OPEN_BRACKET val_expression CLOSE_BRACKET { COPY($<expr>$,$<expr>2); }
-	| COLUMN val_expression {
+	| OPEN_BRACKET fmt_val_expression CLOSE_BRACKET { COPY($<expr>$,$<expr>2); }
+	| COLUMN fmt_val_expression {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
 		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>2); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_COLUMN; 
 	}
-	| ASCII val_expression {
+	| ASCII fmt_val_expression {
 		$<expr>$.type=EXPRTYPE_SIMPLE; 
 		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
 		COPY($<expr>$.expr_u.sexpr->expr,$<expr>2); 
 		$<expr>$.expr_u.sexpr->operand=EXPR_ASCII; 
 	}
-	| val_expression SPACES  {
-		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
-		$<expr>$.expr_u.sexpr->operand=EXPR_SPACES; 
-	}
-
-	| val_expression IS_NULL  {
-		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
-		$<expr>$.expr_u.sexpr->operand=EXPR_ISNULL; 
-	}
-	| val_expression IS_NOT_NULL  {
-		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
-		$<expr>$.expr_u.sexpr->operand=EXPR_ISNOTNULL; 
-	}
-
-
-	| val_expression CLIPPED  {
-		$<expr>$.type=EXPRTYPE_SIMPLE; 
-		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
-		COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
-		$<expr>$.expr_u.sexpr->operand=EXPR_CLIP; 
-	}
-
-	| val_expression units_qual {
-		printf("NIY\n");
-		sprintf($<str>$," %s %s",$<str>1,$<str>2);
-		}
 	| variable_sub {
 		$<expr>$.type=EXPRTYPE_VARIABLE_SUB;
 		$<expr>$.expr_u.var_usage=$<var_usage>1;
@@ -1614,9 +1528,223 @@ val_expression:
 		$<expr>$.type=EXPRTYPE_AGG; 
 		$<expr>$.expr_u.aggid=add_agg($<agg_val>1);
 	}
+
+ 	| fmt_val_expression val_next {
+		struct expr *e1;
+		COPY($<expr>$,$<expr>2);
+		if ( $<expr>$.type==EXPRTYPE_SIMPLE)  {
+		  	COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
+		} else {
+			if ( $<expr>$.type==EXPRTYPE_COMPLEX ) {
+				COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
+			} else {
+				if ($<expr>$.type==EXPRTYPE_COMPARE)  {
+				COPY($<expr>$.expr_u.cexpr->expr1,$<expr>1); 
+
+				} else {
+					printf("BAD -> %d\n", $<expr>$.type);
+				}
+			}
+		}
+		e1=&$<expr>$;
+	}
 ;
 
-op_val_expr_list : null_expr {
+
+val_next : 
+	KW_AND fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX; 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_AND; 
+	}
+
+	| KW_OR fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX; 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1); */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_OR; 
+	}
+	| DIVIDE fmt_val_expression 
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_DIV; 
+		}
+
+	 | POW fmt_val_expression 
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_POW; 
+		}
+	 | MOD fmt_val_expression 
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_MOD; 
+		}
+
+
+	| MULTIPLY fmt_val_expression
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_MUL; 
+		}
+	| PLUS fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX; 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/* COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_ADD; 
+	}
+
+
+	| MINUS fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX;
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_SUB; 
+	}
+	|  USING fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX;
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1); */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_USING; 
+	}
+
+	| EQUAL  fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| COMPARISON fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| NOT_EQUAL fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| LESS_THAN fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| GREATER_THAN fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+        | NOT_MATCHES fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+        | NOT_LIKE fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| MATCHES fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| LIKE fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| LESS_THAN_EQ fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	| GREATER_THAN_EQ fmt_val_expression {
+		$<expr>$.type=EXPRTYPE_COMPARE;
+		$<expr>$.expr_u.cexpr=acl_malloc2(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.cexpr->expr2,$<expr>2); 
+		$<expr>$.expr_u.cexpr->method=acl_strdup($<str>1); 
+		}
+	
+
+	| SPACES  {
+		$<expr>$.type=EXPRTYPE_SIMPLE; 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr));  
+		/*COPY($<expr>$.expr_u.sexpr->expr,$<expr>1);  */
+		$<expr>$.expr_u.sexpr->operand=EXPR_SPACES; 
+	}
+
+	| IS_NULL  {
+		$<expr>$.type=EXPRTYPE_SIMPLE; 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr)); 
+		/*COPY($<expr>$.expr_u.sexpr->expr,$<expr>1);  */
+		$<expr>$.expr_u.sexpr->operand=EXPR_ISNULL; 
+	}
+	| IS_NOT_NULL  {
+		$<expr>$.type=EXPRTYPE_SIMPLE; 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr));  
+		/* COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); */
+		$<expr>$.expr_u.sexpr->operand=EXPR_ISNOTNULL; 
+	}
+
+
+	| CLIPPED  {
+		$<expr>$.type=EXPRTYPE_SIMPLE; 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr));  
+		/* COPY($<expr>$.expr_u.sexpr->expr,$<expr>1);  */
+		$<expr>$.expr_u.sexpr->operand=EXPR_CLIP; 
+	}
+/*
+        | UNITS_YEAR {
+		sprintf($<str>$,"UNITS YEAR");
+		A4GL_assertion(1,"NIY"); }
+        | UNITS_MONTH {sprintf($<str>$,"UNITS MONTH"); 
+		A4GL_assertion(1,"NIY"); }
+        | UNITS_DAY {sprintf($<str>$,"UNITS DAY);"); 
+		A4GL_assertion(1,"NIY"); }
+        | UNITS_HOUR {sprintf($<str>$,"UNITS HOUR);"); 
+		A4GL_assertion(1,"NIY"); }
+        | UNITS_MINUTE {sprintf($<str>$,"UNITS MINUTE);");
+		A4GL_assertion(1,"NIY"); }
+        | UNITS_SECOND {sprintf($<str>$,"UNITS SECOND);"); 
+		A4GL_assertion(1,"NIY"); }
+*/
+;
+
+
+/*
+	| units_qual {
+		printf("NIY\n");
+		A4GL_assertion(1,"NIY");
+		//sprintf($<str>$," %s %s",$<str>1,$<str>2);
+		}
+;
+*/
+
+op_fmt_val_expr_list : null_expr {
 		$<expr>$.type=EXPRTYPE_LIST;
 		$<expr>$.expr_u.lexpr=acl_malloc2(sizeof(struct expr_list));
 		$<expr>$.expr_u.lexpr->elem.elem_len=1;
@@ -1627,21 +1755,21 @@ op_val_expr_list : null_expr {
 		COPY($<expr>$.expr_u.lexpr->elem.elem_val[0],$<expr>1);
 		print_lexpr($<expr>$.expr_u.lexpr);
 	} 
-	| val_expr_list {
+	| fmt_val_expr_list {
 		COPY($<expr>$,$<expr>1);
 	}
 ;
 
 
-val_expr_list : 
-	val_expression {
+fmt_val_expr_list : 
+	fmt_val_expression {
 		$<expr>$.type=EXPRTYPE_LIST;
 		$<expr>$.expr_u.lexpr=acl_malloc2(sizeof(struct expr_list));
 		$<expr>$.expr_u.lexpr->elem.elem_len=1;
 		$<expr>$.expr_u.lexpr->elem.elem_val=0;
 		$<expr>$.expr_u.lexpr->elem.elem_val=realloc( $<expr>$.expr_u.lexpr->elem.elem_val,sizeof(struct expr)* $<expr>$.expr_u.lexpr->elem.elem_len);
 		COPY($<expr>$.expr_u.lexpr->elem.elem_val[0],$<expr>1);
-	} | val_expr_list COMMA val_expression {
+	} | fmt_val_expr_list COMMA fmt_val_expression {
 		COPY($<expr>$,$<expr>1);
 		$<expr>$.expr_u.lexpr->elem.elem_len++;
 		$<expr>$.expr_u.lexpr->elem.elem_val=realloc( $<expr>$.expr_u.lexpr->elem.elem_val,sizeof(struct expr)* $<expr>$.expr_u.lexpr->elem.elem_len);

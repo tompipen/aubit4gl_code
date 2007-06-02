@@ -52,7 +52,7 @@
 
 "AFTER" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AFTER;}
 "ALL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ALL;}
-"AND" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AND;}
+"AND" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_AND;}
 "ANY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ANY;}
 "BEGIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return XBEGIN;}
 "ASC" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ASC;}
