@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.64 2007-04-03 08:02:23 mikeaubury Exp $
+# $Id: prompt.c,v 1.65 2007-06-04 10:24:55 gyver309 Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.64 2007-04-03 08:02:23 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.65 2007-06-04 10:24:55 gyver309 Exp $";
 #endif
 
 /**
@@ -150,7 +150,8 @@ int
 	  return 0;
   }
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
-  set_new_page (sarr[field_cnt-1], 1);
+  if (field_cnt > 0)
+      set_new_page (sarr[field_cnt-1], 1);
   sarr[field_cnt++] = (FIELD *) A4GL_make_field (0, strlen (promptstr), 1, width + 1);
   prompt->field = sarr[field_cnt-1];
   sarr[field_cnt++] = 0;			/* (FIELD *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */

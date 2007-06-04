@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.191 2007-04-26 13:32:20 mikeaubury Exp $
+# $Id: esql.ec,v 1.192 2007-06-04 10:24:54 gyver309 Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.191 2007-04-26 13:32:20 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.192 2007-06-04 10:24:54 gyver309 Exp $";
 #endif
 
 
@@ -1115,7 +1115,7 @@ if (l==0) {*p_prec=2; return;}
 *p_prec=l;
 
 for (a=0;a<l;a++) {
-	if (buff[a]=='.' || buff[a]==',') {
+	if (buff[a]==A4GL_get_convfmts()->db_decfmt.decsep) {
 		*p_scale=strlen(&buff[a+1]); // get the number of remaining digits..
 		*p_prec=l;        // subtract from the total length
 		return ;

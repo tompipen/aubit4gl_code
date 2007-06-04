@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.27 2006-03-17 19:01:31 mikeaubury Exp $
+# $Id: datatypes.c,v 1.28 2007-06-04 10:24:52 gyver309 Exp $
 #
 */
 
@@ -166,6 +166,7 @@ A4GL_init_datatypes (void)
       A4GL_add_default_datatypes ();
 
     }
+  A4GL_init_default_formats();
 #ifdef DEBUG
   A4GL_debug ("Finished initializing data types");
 #endif
@@ -524,6 +525,14 @@ aclfgl_load_datatype (int nargs)
   free (s);
   /* End of code */
   return 0;
+}
+
+int A4GL_is_numeric_datatype(int dtype)
+{
+    return  dtype == DTYPE_DECIMAL ||
+	    dtype == DTYPE_FLOAT ||
+	    dtype == DTYPE_SMFLOAT ||
+	    dtype == DTYPE_MONEY;
 }
 
 /* =============================== EOF ================================ */

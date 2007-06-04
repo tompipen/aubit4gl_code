@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.57 2007-05-18 18:20:52 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.58 2007-06-04 10:24:55 gyver309 Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.57 2007-05-18 18:20:52 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.58 2007-06-04 10:24:55 gyver309 Exp $";
 #endif
 /**
  * @file
@@ -1051,7 +1051,7 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 	      if ((sio->vars[field_no].dtype == DTYPE_INT
 		   || sio->vars[field_no].dtype == DTYPE_SMINT
 		   || sio->vars[field_no].dtype == DTYPE_SERIAL)
-		  && strchr (buff, A4GL_get_decimal_char(0)))
+		  && strchr (buff, A4GL_get_convfmts()->ui_decfmt.decsep))
 		{
 		  really_ok = 0;
 		}

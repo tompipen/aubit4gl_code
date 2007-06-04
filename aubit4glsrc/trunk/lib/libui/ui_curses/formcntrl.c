@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.108 2007-04-03 08:02:15 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.109 2007-06-04 10:24:55 gyver309 Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.108 2007-04-03 08:02:15 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.109 2007-06-04 10:24:55 gyver309 Exp $";
 #endif
 /**
  * @file
@@ -280,7 +280,8 @@ A4GL_debug("field=%d %p\n",attrib,sio->field_list);
 
 	  if (dir == 0)
 	    {
-	      if (attrib >= sio->curr_attrib)
+	      if (attrib >= sio->curr_attrib ||
+		      sio->curr_attrib == sio->nfields) // last field - wrap to the first
 		{		// We want to move to the right..
 		  dir = 1;
 		}
@@ -986,8 +987,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 
                 if ( (sio->vars[field_no].dtype==DTYPE_INT|| sio->vars[field_no].dtype==DTYPE_SMINT|| sio->vars[field_no].dtype==DTYPE_SERIAL)){
-			 if (a_strchr(buff,A4GL_get_decimal_char(0)) ) {
-				A4GL_debug(". in an integer");
+			 if (a_strchr(buff,A4GL_get_convfmts()->ui_decfmt.decsep) ) {
+				A4GL_debug("%c in an integer", A4GL_get_convfmts()->ui_decfmt.decsep);
 				really_ok=0;
 			}
 		}

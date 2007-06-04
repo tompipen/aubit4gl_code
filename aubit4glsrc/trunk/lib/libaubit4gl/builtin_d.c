@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.80 2007-03-30 19:11:17 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.81 2007-06-04 10:24:52 gyver309 Exp $
 #
 */
 
@@ -778,54 +778,85 @@ A4GL_power (double a, double b)
  * @todo Describe function
  */
 void
-A4GL_func_using (void)
+A4GL_func_using()
 {
-  int s;
-  long d;
-  char *z;
-  char *fmt;
-  double a;
-  int f = 0;
+    int fmtlen;
+    char *fmt;
+    int dt;
 
-  fmt = A4GL_char_pop ();
+    fmt = A4GL_char_pop ();
+    A4GL_get_top_of_stack (0, &dt, NULL, NULL);
+    dt &= DTYPE_MASK;
 
-  if (strstr (fmt, "dd") || strstr (fmt, "mm") || strstr (fmt, "yy")) f = 1;
-  if (strstr (fmt, "DD") || strstr (fmt, "MM") || strstr (fmt, "YY")) f = 1;
+    if (A4GL_isyes(acl_getenv("A4GL_TRIMUSINGFMT")))
+	A4GL_trim (fmt);
+    fmtlen = (int)strlen (fmt);
 
-  if (f == 0)
+    switch (dt)
     {
-#ifdef DEBUG
-      {
- A4GL_debug ("Number using");
-      }
-#endif
-      A4GL_pop_param (&a, DTYPE_FLOAT, 0);
-  if (A4GL_isyes(acl_getenv("A4GL_TRIMUSINGFMT"))) {
-      A4GL_trim (fmt);
-  }
-      s = (int)strlen (fmt);
-      z = A4GL_new_string (s+1);
-	A4GL_debug("Calling a4gl_using a=%lf fmt=%s ",a,fmt);
-      a4gl_using (z, s, fmt, a);
-	A4GL_debug("z=%s\n",A4GL_null_as_null(z));
-      A4GL_push_char (z);
-	free(z);	
-    }
-  else
-    {
-      d = A4GL_pop_date ();
-#ifdef DEBUG
-      {
- A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null(fmt));
-      }
-#endif
+      case DTYPE_BYTE:
+      case DTYPE_SMINT:
+      case DTYPE_INT:
+      case DTYPE_SERIAL:
+      case DTYPE_SMFLOAT:
+      case DTYPE_FLOAT:
+      case DTYPE_DECIMAL:
+      case DTYPE_MONEY:
+	{
+	    char *z;
+	    double dbl;
+	    A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
+	    z = A4GL_new_string (fmtlen+1);
+	    A4GL_debug("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
+	    a4gl_using (z, fmtlen, fmt, dbl);
+	    A4GL_debug("z=%s\n", A4GL_null_as_null(z));
+	    A4GL_push_char (z);
+	    acl_free(z);	
+	}
+	break;
+      case DTYPE_DATE:
+	{
+	    long d;
+	    d = A4GL_pop_date();
+	    A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null(fmt));
+	    A4GL_push_char(A4GL_using_date(d, fmt));
+	}
+	break;
+      case DTYPE_CHAR:
+      case DTYPE_NULL:
+      case DTYPE_DTIME:
+      case DTYPE_TEXT:
+      case DTYPE_VCHAR:
+      case DTYPE_INTERVAL:
+      case DTYPE_NCHAR:
+      default:
+	{ // I hope this piece of code will be unneeded some day, so I copy-pasted it...
+	    A4GL_debug("WARNING: USING handled old way, data type will be determined by the format string");
 
-  if (A4GL_isyes(acl_getenv("A4GL_TRIMUSINGFMT"))) {
-      A4GL_trim (fmt);
-  }
-      A4GL_push_char (A4GL_using_date (d, fmt));
+	    if (strstr (fmt, "dd") || strstr (fmt, "mm") || strstr (fmt, "yy") ||
+	        strstr (fmt, "DD") || strstr (fmt, "MM") || strstr (fmt, "YY"))
+	    {
+                long d;
+		d = A4GL_pop_date ();
+                A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null(fmt));
+		A4GL_push_char (A4GL_using_date (d, fmt));
+	    }
+	    else
+            {
+                char *z;
+                double dbl;
+                A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
+                z = A4GL_new_string (fmtlen+1);
+                A4GL_debug("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
+                a4gl_using (z, fmtlen, fmt, dbl);
+                A4GL_debug("z=%s\n", A4GL_null_as_null(z));
+                A4GL_push_char (z);
+                acl_free(z);	
+            }
+	}
+	break;
     }
-  acl_free (fmt);
+    acl_free (fmt);
 }
 
 

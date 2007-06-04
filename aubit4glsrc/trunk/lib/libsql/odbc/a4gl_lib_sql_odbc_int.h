@@ -151,18 +151,29 @@
 
 #endif
 
-    /*  -------------- in sql.c ------------------ */
+#undef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#undef max
+#define max(a, b) ((a) < (b) ? (b) : (a))
+
+#ifndef SQL_NO_DATA_FOUND
+#define SQL_NO_DATA_FOUND SQL_NO_DATA
+#endif
+
 
 int A4GL_new_hstmt (HSTMT * hstmt);
+int A4GL_free_hstmt (SQLHSTMT *phstmt);
 
 
 int A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file);
 int A4GL_set_sqlca (SQLHSTMT hstmt, char *s);
 SQLUINTEGER A4GL_display_size (SQLSMALLINT coltype, SQLUINTEGER collen, SQLCHAR* colname);
-
-
-
+void A4GL_init_typeinfo(void);
+char * A4GL_type_id_to_name(int type_id);
 
 
 #include "a4gl_lib_sql_int.h"
 #include "a4gl_API_sql_lib.h"
+
+    /*  -------------- in sql.c ------------------ */
+

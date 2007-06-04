@@ -352,3 +352,12 @@
 486|Picture applied to a non-char field not implemented yet..
 487|The row or column number in DISPLAY AT exceeds the limits of your terminal 1
 488|The row or column number in DISPLAY AT exceeds the limits of your terminal 2
+490|Binding output failed (SQLNumResultCols)
+491|Binding output failed
+492|Binding input failed
+493|Execution of the statement failed
+494|Cursor (%s) already open
+495|SQLFetch for SQLColumns failed\n
+496|SQLDescribeCol failed\n
+497|A4GLSQLCV_check_tablename: buffer overrun\n
+498|USING cannot be applied to type other than numeric or date\n

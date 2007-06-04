@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.53 2007-05-18 18:20:53 mikeaubury Exp $
+# $Id: input_array.c,v 1.54 2007-06-04 10:24:56 gyver309 Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.53 2007-05-18 18:20:53 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.54 2007-06-04 10:24:56 gyver309 Exp $";
 #endif
 /**
  * @file
@@ -521,9 +521,9 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 	}
 
       if ((b[x].dtype == DTYPE_INT || b[x].dtype == DTYPE_SMINT
-	   || b[x].dtype == DTYPE_SERIAL) && strchr (buff, A4GL_get_decimal_char(0)))
+	   || b[x].dtype == DTYPE_SERIAL) && strchr (buff, A4GL_get_convfmts()->ui_decfmt.decsep))
 	{
-	  A4GL_debug ("Looks like its got a '.' in it");
+	  A4GL_debug ("Looks like its got a decimal separator in it");
 	  really_ok = 0;
 	}
 

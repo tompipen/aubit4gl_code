@@ -8,8 +8,383 @@
 //fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
 //int A4GL_conversion_ok(int);
 //char *A4GL_dec_to_str (fgldecimal *dec, int size) ;
-char master_decimal_char=0;
+//******************************************************************************
 
+s_convfmts a4gl_convfmts;
+
+s_convfmts * A4GL_get_convfmts(void)
+{
+    return &a4gl_convfmts;
+}
+
+/**
+ * Initialize default/configured decimal formats
+ */
+void A4GL_init_default_formats()
+{
+    char *tmp;
+    char buf[32];
+    float f;
+
+    // generic format
+    a4gl_convfmts.posix_decfmt.decsep = '.';
+    a4gl_convfmts.posix_decfmt.thsep = 0;
+
+    // a4gl default numeric format
+    a4gl_convfmts.ui_decfmt.decsep = '.';
+    a4gl_convfmts.ui_decfmt.thsep = 0;
+    tmp = acl_getenv("A4GL_NUMERIC");
+    if (tmp)
+    {
+        if (tmp[0])
+        {
+            a4gl_convfmts.ui_decfmt.decsep = tmp[0];
+            if (tmp[1])
+                a4gl_convfmts.ui_decfmt.thsep = tmp[1];
+        }
+    }
+
+    // db client library default numeric format
+    a4gl_convfmts.db_decfmt.decsep = '.';
+    a4gl_convfmts.db_decfmt.thsep = 0;
+    tmp = acl_getenv("A4GL_DB_NUMERIC");
+    if (tmp)
+    {
+        if (tmp[0])
+        {
+            a4gl_convfmts.db_decfmt.decsep = tmp[0];
+            if (tmp[1])
+                a4gl_convfmts.db_decfmt.thsep = tmp[1];
+        }
+    }
+
+    // detected 'printf' numeric format
+    sprintf(buf, "%f", 1.1);
+    a4gl_convfmts.printf_decfmt.decsep = buf[1];
+    sprintf(buf, "%f", 1111.1);
+    a4gl_convfmts.printf_decfmt.thsep =
+            (buf[1] >= '0' && buf[1] <= '9') ? 0 : buf[1];
+
+    // detected 'scanf' numeric format
+    // set scanf_decfmt to printf_decfmt (I suspect it should always be overwritten, but who knows...)
+    a4gl_convfmts.scanf_decfmt.decsep = a4gl_convfmts.printf_decfmt.decsep;
+    a4gl_convfmts.scanf_decfmt.thsep  = a4gl_convfmts.printf_decfmt.thsep;
+    f = 0;
+    if (sscanf("1.2", "%f", &f) == 1 && f > 1.1 && f < 1.3)
+        a4gl_convfmts.printf_decfmt.decsep =  '.';
+    else if (sscanf("1,2", "%f", &f) == 1 && f > 1.1 && f < 1.3)
+        a4gl_convfmts.printf_decfmt.decsep =  ',';
+    f = 0;
+    if (sscanf("1.111", "%f", &f) == 1 && f > 1000)
+        a4gl_convfmts.printf_decfmt.thsep =  '.';
+    else if (sscanf("1,111", "%f", &f) == 1 && f > 1000)
+        a4gl_convfmts.printf_decfmt.thsep =  ',';
+
+
+    // forced 'scanf' numeric format for broken scanf
+    // normally it should be the same as printf
+    // and for '.' and ',' it should be succesfully autodetected
+    tmp = acl_getenv("A4GL_SCANF_NUMERIC");
+    if (tmp)
+    {
+        if (tmp[0])
+        {
+            a4gl_convfmts.scanf_decfmt.decsep = tmp[0];
+            if (tmp[1])
+                a4gl_convfmts.scanf_decfmt.thsep = tmp[1];
+        }
+    }
+
+    a4gl_convfmts.using_decfmt = a4gl_convfmts.ui_decfmt;
+    a4gl_convfmts.using_decfmt.thsep = 0;
+
+    A4GL_debug("Default numeric formats: a4gl=<%c%c> db=<%c%c> printf=<%c%c> scanf=<%c%c> using=<%c%c>\n", 
+            a4gl_convfmts.ui_decfmt.decsep,   a4gl_convfmts.ui_decfmt.thsep,
+            a4gl_convfmts.db_decfmt.decsep,     a4gl_convfmts.db_decfmt.thsep,
+            a4gl_convfmts.printf_decfmt.decsep, a4gl_convfmts.printf_decfmt.thsep,
+            a4gl_convfmts.scanf_decfmt.decsep,  a4gl_convfmts.scanf_decfmt.thsep,
+            a4gl_convfmts.using_decfmt.decsep,  a4gl_convfmts.using_decfmt.thsep);
+}
+
+/**
+ * Convert decimal string from one format to another,
+ *   also strips all unneeded whitespace,
+ *   if conversion fails then conversion result is ""
+ *
+ * @param buf    source buffer (if newbuf == 0 also a destination)
+ * @param from   source format
+ * @param to     destination format
+ * @param newbuf    0: place result in buf
+ *               != 0: allocate a new buffer and place the result in it
+ * @param trim   0: do not trim the string
+ *               != 0: trim the string
+ * @param maxlen maximum length of the string, not including terminating \000,
+ *               -1: don't care; if the string after conversion is longer than
+ *               a given maximum it is filled with '*'s.
+ *               if the string does not fit in the buffer, but it is left
+ *               padded with sufficient number of whitespace to fit, it is
+ *               shifted to the left.
+ * @return       buf or a newly allocated buffer
+ */
+char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
+                          int newbuf, int trim, int maxlen)
+{
+#define MAX_DECSTR_SIZE 512 // should be sufficient for any weird string, even
+                         // padded with lot of whitespace
+    enum e_state {
+        S_0 = 0,
+        S_SGN = 1,
+        S_BD = 2,
+        S_AD1 = 3,
+        S_AD2 = 4,
+        S_AN = 5,
+        S_OK = 6,
+        S_ERR = 7
+    };
+    enum e_state st = S_0;
+    char b[MAX_DECSTR_SIZE+2];
+    int dpos;
+    int i, c, o;
+    char * optr;
+    char sign = 0;
+    // find a decimal separator
+    A4GL_debug("Converting \"%s\"", buf);
+    for (dpos = 0; buf[dpos]; ++dpos)
+    {
+        if (buf[dpos] == from.decsep)
+            break;
+    }
+
+    for (i = o = 0; st != S_ERR && st != S_OK && i < MAX_DECSTR_SIZE-1 && o < MAX_DECSTR_SIZE-1; ++i)
+    {
+        c = buf[i];
+        switch (st)
+        {
+          case S_0:
+            if (c >= '0' && c <= '9')
+            {
+                b[o++] = c;
+                st = S_BD;
+            }
+            else if (c == from.decsep)
+            {
+                b[o++] = to.decsep;
+                st = S_AD1;
+            }
+            else if (c == '-' || c == '+')
+            {
+                b[o++] = c;
+		sign = c;
+                st = S_SGN;
+            }
+            else if (c == '\t' || c == ' ')
+            {
+                if (! trim)
+                    b[o++] = c;
+                st = S_0;
+            }
+            else if (c == 0)
+            {
+                st = S_OK;
+            }
+            else
+            {
+                A4GL_debug("parse error, state %i\n", st);
+                st = S_ERR;
+            }
+            break;
+          case S_SGN:
+            if (c >= '0' && c <= '9')
+            {
+                b[o++] = c;
+                st = S_BD;
+            }
+            else if (c == from.decsep)
+            {
+                b[o++] = to.decsep;
+                st = S_AD1;
+            }
+            else if (c == '\t' || c == ' ')
+            {
+                if (! trim)
+                    b[o++] = c;
+                st = S_SGN;
+            }
+            else
+            {
+                A4GL_debug("parse error, state %i\n", st);
+                st = S_ERR;
+            }
+            break;
+          case S_BD:
+            if (dpos - i && (dpos - i) % (from.thsep ? 4 : 3) == 0 && to.thsep)
+                b[o++] = to.thsep;
+            if (c >= '0' && c <= '9')
+            {
+                b[o++] = c;
+                st = S_BD;
+            }
+            else if (c == from.decsep)
+            {
+                b[o++] = to.decsep;
+                st = S_AD1;
+            }
+            else if (from.thsep && c == from.thsep)
+            {
+                st = S_BD;
+            }
+            else if (c == '\t' || c == ' ')
+            {
+                if (! trim)
+                    b[o++] = c;
+                st = S_AN;
+            }
+            else if (c == 0)
+            {
+                st = S_OK;
+            }
+            else
+            {
+                A4GL_debug("parse error, state %i\n", st);
+                st = S_ERR;
+            }
+            break;
+          case S_AD1:
+            if (c >= '0' && c <= '9')
+            {
+                b[o++] = c;
+                st = S_AD2;
+            }
+            else
+            {
+                A4GL_debug("parse error, state %i\n", st);
+                st = S_ERR;
+            }
+            break;
+          case S_AD2:
+            //	    printf("c=%c, fts=%c, %i\n", c, from.thsep, (i-dpos)%4);
+            if (c >= '0' && c <= '9')
+            {
+                b[o++] = c;
+                st = S_AD2;
+            }
+            else if (from.thsep && c == from.thsep && i - dpos && (i - dpos) % (from.thsep ? 4 : 3) == 0)
+            {
+                if (to.thsep)
+                    b[o++] = to.thsep;
+                st = S_AD2;
+            }
+            else if (c == '\t' || c == ' ')
+            {
+                if (! trim)
+                    b[o++] = c;
+                st = S_AN;
+            }
+            else if (c == 0)
+            {
+                st = S_OK;
+            }
+            else
+            {
+                A4GL_debug("parse error, state %i\n", st);
+                st = S_ERR;
+            }
+            break;
+          case S_AN:
+            if (c == '\t' || c == ' ')
+            {
+                if (! trim)
+                    b[o++] = c;
+                st = S_AN;
+            }
+            else if (c == 0)
+            {
+                st = S_OK;
+            }
+            else
+            {
+                A4GL_debug("parse error, state %i\n", st);
+                st = S_ERR;
+            }
+            break;
+          default:
+            st = S_ERR;
+            break;
+        }
+    }
+    b[o] = 0;
+    if (st != S_OK)
+        b[0] = 0;
+
+    optr = b;
+    if (maxlen != -1)
+    {
+	if (o > maxlen)
+	{
+	    if (trim)
+	    {
+		A4GL_debug("maxlen exceeded, filling with '*'s");
+		memset(optr, '*', maxlen);
+		optr[maxlen] = 0;
+	    }
+	    else
+	    {
+		A4GL_debug("maxlen exceeded, trying to grab the whitespace, if possible");
+		int bl = 0;
+		if (sign)
+		{
+		    for (i = 0; optr[i]; ++i)
+		    {
+			if (optr[i] == '+' || optr[i] == '-') 
+			    optr[i] == ' ';
+		    }
+		    for (i = 0; optr[i]; ++i)
+		    {
+			if ((optr[i] >= '0' && optr[i] <= '9') || optr[i] == to.decsep)
+			{
+			    optr[i-1] = sign;
+			    break;
+			}
+		    }
+		}
+		bl = strlen(optr);
+		for (i = 0; optr[i] == ' ' || optr[i] == '\t'; ++i, --bl, ++optr)
+		{
+		    if (bl <= maxlen)
+			break;
+		}
+		if (bl > maxlen)
+		{
+		    A4GL_debug("maxlen exceeded, filling with '*'s");
+		    memset(optr, '*', maxlen);
+		    optr[maxlen] = 0;
+		}
+	    }
+	}
+    }
+
+    A4GL_debug("Conversion result\"%s\"", optr);
+    if (newbuf)
+        return strdup(optr);
+    strcpy(buf, optr);
+    return buf;
+}
+
+int A4GL_is_meaningful_in_decfmt(s_decfmt fmt, char c)
+{
+    if (c == fmt.decsep)
+        return 1;
+    if (    c == fmt.thsep ||
+            c == ' ' ||
+            c == ',' ||
+            c == '.' || 
+            c == '$' ||
+            c == '£')
+        return 0;
+    return 1;
+}
+
+//******************************************************************************
 
 /**
  * Initialize a decimal type variable
@@ -46,60 +421,15 @@ fgldecimal *A4GL_str_to_dec (char *str_orig, fgldecimal *dec) {
   int head_len;
   int tail_len;
   long head_i;
-  //char *ptr;
   char buff[256];
-char str[1024];
+  char str[1024];
   int round_cnt;
   int carry;
-  int local_decimal_char=0;
-int l1;
-int l2;
+  int l2;
+  char tmpbuf[2];
 
-
-  local_decimal_char=A4GL_get_decimal_char(str_orig);
-
-strcpy(str,str_orig);
-
-
-if (local_decimal_char=='.') {
-       int b=0;
-	l1=strlen(str_orig);
-       for (a=0;a<l1;a++) {
-               if (str_orig[a]==',') continue;
-               str[b++]=str_orig[a];
-       }
-       str[b]=0;
-} else {
-       int b=0;
-	l1=strlen(str_orig);
-       for (a=0;a<l1;a++) {
-               if (str_orig[a]=='.') continue;
-               str[b++]=str_orig[a];
-       }
-       str[b]=0;
-}
-
-
-A4GL_trim(str);
-
-#ifdef DEBUG
-	A4GL_debug("XYXY str to dec : '%s'",str);
-#endif
-
-// We might have some whitespace around the numbers and their signs..
-for (a=0;a<strlen(str);a++) {
-	if (str[a]=='+' && str[a+1]==' ') {
-		str[a]=' ';
-		str[a+1]='+';
-	}
-	if (str[a]=='-' && str[a+1]==' ') {
-		str[a]=' ';
-		str[a+1]='-';
-	}
-}
-
-
-
+  A4GL_strncpyz(str, str_orig, sizeof(str));
+  A4GL_trim(str);
 
 #ifdef DEBUG
 	A4GL_debug("XYXY str to dec : '%s'",str);
@@ -133,7 +463,7 @@ for (a=0;a<strlen(str);a++) {
 		  continue;
 	  }
 
-	  if (str[a]==local_decimal_char&&(sec=='h'||sec=='f')) {
+	  if (str[a]=='.' && (sec=='h'||sec=='f')) {
 		  sec='t';
 		  continue;
 	  }
@@ -227,13 +557,8 @@ for (a=0;a<strlen(str);a++) {
   
   
   strcpy(&dec->dec_data[2],buff);
-
-	if (local_decimal_char=='.') {
-  		strcat(&dec->dec_data[2],".");
-	} else {
-  		strcat(&dec->dec_data[2],",");
-	}
-
+  tmpbuf[0] = a4gl_convfmts.posix_decfmt.decsep; tmpbuf[1] = 0;
+  strcat(&dec->dec_data[2],tmpbuf);
   strcat(&dec->dec_data[2],tail);
   
   //while  (strlen(&dec->dec_data[2])!=digits+1) { strcat(&dec->dec_data[2],"0"); }
@@ -260,9 +585,7 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
   int a;
   char *ptr;
   int has_neg=0;
-int l;
-char dec_char;
-  dec_char=A4GL_get_decimal_char(0);
+  int l;
   strcpy(buff," ");
   if (dec->dec_data[0]&128) { has_neg=1; }
   
@@ -273,15 +596,17 @@ char dec_char;
   strcat(buff,ptr);
 	l=strlen(buff);
 	for (a=has_neg;a<l;a++) {
-		if (buff[a]==dec_char) break;
+		if (buff[a]==a4gl_convfmts.posix_decfmt.decsep) break;
 		if (buff[a]==' ') continue;
-		if (buff[a]=='0' && a==strlen(buff)-2&&buff[a+1]==dec_char) break;
+		if (buff[a]=='0' && a==strlen(buff)-2 && 
+			buff[a+1]==a4gl_convfmts.posix_decfmt.decsep) break;
 		if (buff[a]=='0') {buff[a]=' ';continue;}
 		//if (buff[a]=='-') continue;
 		break;
 	}
   A4GL_trim(buff);
-  if (buff[strlen(buff)-1]==dec_char) buff[strlen(buff)-1]=0;
+  if (buff[strlen(buff)-1]==a4gl_convfmts.posix_decfmt.decsep)
+      buff[strlen(buff)-1]=0;
 
 #ifdef DEBUG
   A4GL_debug("--->XYXY '%s'",buff);
@@ -296,56 +621,3 @@ char dec_char;
   return buff;
 }
 
-
-
-char
-A4GL_get_decimal_char (char *str_orig)
-{
-  int local_decimal_char = 0;
-  char buff[256];
-  if (master_decimal_char == 0)
-    {
-      SPRINTF1 (buff, "%f", 1.2);
-
-      if (strchr (buff, '.'))
-	master_decimal_char = '.';
-      if (strchr (buff, ','))
-	master_decimal_char = ',';
-
-      if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL")))
-	{
-	  master_decimal_char = ',';
-	}
-
-
-    }
-
-  if (master_decimal_char == 0)
-    {
-      master_decimal_char = '.';
-    }
-
-  local_decimal_char = master_decimal_char;
-
-
-  if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL")))
-    {
-      if (str_orig)
-	{
-	  if (local_decimal_char == '.' && !strchr (str_orig, '.')
-	      && strchr (str_orig, ','))
-	    {
-	      local_decimal_char = ',';
-	    }
-	}
-      else
-	{
-	  if (local_decimal_char == '.')
-	    {
-	      local_decimal_char = ',';
-	    }
-	}
-    }
-  return local_decimal_char;
-
-}

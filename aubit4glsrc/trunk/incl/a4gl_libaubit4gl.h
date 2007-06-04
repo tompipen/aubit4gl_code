@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.274 2007-05-13 19:53:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.275 2007-06-04 10:24:52 gyver309 Exp $
 #
 */
 
@@ -2037,7 +2037,6 @@ void *A4GL_pop_binding (int *n);
 int A4GL_push_binding (void *ptr, int num);
 int A4GL_stof (void *aa, void *zz, int sz_ignore);
 int A4GL_nullfunc (void);
-char A4GL_get_decimal_char(char *s);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
 char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s);
 void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
@@ -3288,6 +3287,31 @@ struct search_condition {
 
 void *A4GL_esql_dbopen_connection(void) ;
 //char *A4GL_var_for_inp_array(char *s);
+
+typedef struct
+{
+    char decsep;
+    char thsep;
+} s_decfmt;
+
+typedef struct
+{
+    s_decfmt posix_decfmt;
+    s_decfmt ui_decfmt;
+    s_decfmt db_decfmt;
+    s_decfmt printf_decfmt;
+    s_decfmt scanf_decfmt;
+    s_decfmt using_decfmt;
+} s_convfmts;
+
+extern s_convfmts a4gl_convfmts;
+s_convfmts * A4GL_get_convfmts(void);
+
+void A4GL_init_default_formats(void);
+char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim, int maxlen);
+int A4GL_is_numeric_datatype(int dtype);
+int A4GL_is_meaningful_in_decfmt(s_decfmt fmt, char c);
+
 #include "a4gl_API_sql.h"
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */

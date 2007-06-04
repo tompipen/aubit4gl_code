@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.87 2007-04-30 16:29:49 gyver309 Exp $
+# $Id: funcs_d.c,v 1.88 2007-06-04 10:24:53 gyver309 Exp $
 #
 */
 
@@ -351,7 +351,6 @@ a4gl_using (char *str, int s, char *fmt, double num)
   char new_str[256];
   double o;
 
-
   double never_neg;
   int lb=0;
   int cb=0;
@@ -515,11 +514,10 @@ if (num<0) never_neg=0.0-num;
 
 #if defined (__MINGW32__)
   if (a_strchr (fmt, '.'))
-    {
 #else
   if (index (fmt, '.'))
-    {
 #endif
+    {
       strcpy (fm1, fmt);
 #if defined (__MINGW32__)
       p = (char *) a_strchr (fm1, '.');
@@ -547,16 +545,19 @@ if (num<0) never_neg=0.0-num;
   o=num;
   num += ad;
 
-  	SPRINTF1 (number, "%64.32f", num);
+  SPRINTF1 (number, "%64.32f", num);
+  A4GL_decstr_convert(number, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, 64);
+
+	
   if (strlen(number)>64) {
-	  	// Its too big...
-	    memset (str, '*', a);
-		return;
-  }
+      // Its too big...
+      memset (str, '*', a);
+      return;
+    }
   
   num_dec=(num-floor(num))*1000000000.0;
   num_dec++;
- A4GL_assertion (num_dec>1000000000,"Bad numeric");
+  A4GL_assertion (num_dec>1000000000,"Bad numeric");
 
   A4GL_debug("Decimal portion = %ld",num_dec);
 
@@ -595,10 +596,10 @@ if (num<0) never_neg=0.0-num;
 	if (strchr(fmt,'$')) has_money=1;
 	else has_money=0;
 
-A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
+    A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
     if (f_cnt < n_cnt +has_money)
       {
- A4GL_debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
+        A4GL_debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
 	a = (int)strlen (fmt);
 	if (a > s)
 	  a = s;
@@ -779,7 +780,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
   ptr = (char *) rindex (str, '<');
 #endif
 
-A4GL_debug("str=%s",str);
+  A4GL_debug("str=%s",str);
   // for any unused leading "<" or "-<" format chars,
   // shift the output to the left
   if (ptr)
@@ -801,7 +802,7 @@ A4GL_debug("str=%s",str);
       strcpy (str, buff);
     }
 
-A4GL_debug("str=%s",str);
+   A4GL_debug("str=%s",str);
    for (a=0;a<(int)strlen(str);a++) {
 	if (str[a]==0x01) {
 
@@ -822,18 +823,13 @@ A4GL_debug("str=%s",str);
 		}
 	}
    }
- if (A4GL_get_decimal_char(0)==',') {
-	 char *p;
-	int l;
-	 p=strdup(str);
-	l=strlen(p);
-	 for (a=0;a<l;a++) {
-		 if (str[a]==',') p[a]='.';
-		 else if (str[a]=='.') p[a]=',';
-	 }
-	 strcpy(str,p);
-	 free(p);
- }
+   for (a = strlen(str)-1; a >= 0; --a)
+   {
+       if (str[a] == '.')
+	   str[a] = a4gl_convfmts.ui_decfmt.decsep;
+       else if (str[a] == a4gl_convfmts.ui_decfmt.decsep)
+	   str[a] = a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : '.';
+   }
   A4GL_debug ("using: result str=%s", str);
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.137 2007-05-12 07:42:14 mikeaubury Exp $
+# $Id: conv.c,v 1.138 2007-06-04 10:24:52 gyver309 Exp $
 #
 */
 
@@ -51,7 +51,6 @@
 #include <ctype.h>
 
 //int A4GL_conversion_ok(int);
-static int decimal_char=0;
 
 /*
 =====================================================================
@@ -112,7 +111,6 @@ fgldecimal *A4GL_divide_dec (fgldecimal *s, fgldecimal *w);
 int A4GL_dec_roundoff (fgldecimal *s, int n);
 void A4GL_dec_to_dec (fgldecimal *f, fgldecimal *t);
 void A4GL_dump (char *s);
-int A4GL_sscanf_double(char *s,  double *z) ;
 
 int A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
 	     char param);
@@ -980,7 +978,7 @@ A4GL_itodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
+  A4GL_debug ("converting %d to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   (void)A4GL_init_dec (z, h, t);
   SPRINTF1 (buff, "%016d", *(short *) a);
 
@@ -1071,6 +1069,7 @@ if (A4GL_isyes(acl_getenv("DBL2DEC_USING"))) {
 	ptr=acl_malloc2(strlen(fmt)+10);
 	a4gl_using (ptr, strlen(fmt), fmt, da);
 	strcpy(buff,ptr);
+  	A4GL_decstr_convert(buff, a4gl_convfmts.using_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
 	free(ptr);
 } else {
        //set format to the number of digits needed, to force round-off
@@ -1081,14 +1080,17 @@ if (A4GL_isyes(acl_getenv("DBL2DEC_USING"))) {
 	}
 	A4GL_debug("Format=%s",A4GL_null_as_null(fmt));
   	SPRINTF1 (buff, fmt, *(double *) a);
+  	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
 }
     }
   else
     {
       strcpy (fmt, "%-32.1f");
   SPRINTF1 (buff, fmt, *(double *) a);
+      A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
     }
 	A4GL_debug("buff=%s",A4GL_null_as_null(buff));
+
   eptr = A4GL_str_to_dec (buff, z);
 
   ptr = A4GL_dec_to_str (z, 0);
@@ -1125,6 +1127,7 @@ A4GL_sftodec (void *a, void *z, int size)
   A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   (void)A4GL_init_dec (z, h, t);
   SPRINTF1 (buff, "%32.16f", *(float *) a);
+  A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, 32);
   eptr = A4GL_str_to_dec (buff, z);
 
   if (eptr)
@@ -1385,97 +1388,12 @@ int
 A4GL_stof (void *aa, void *zz, int sz_ignore)
 {
   char *a;
-  double *z;
-  char *p=0;
-  char buff[32];
-  int n;
   int ok;
-  int duped = 0;
 
-
-  if (decimal_char == 0)
-    {
-	decimal_char=A4GL_get_decimal_char(0);
-	/*
-      SPRINTF1 (buff, "%f", 1.2);
-      if (a_strchr (buff, '.')) // C
-	decimal_char = '.'; // C
-      if (a_strchr (buff, ','))
-	decimal_char = ',';
-
-      if (decimal_char == 0)
-	{
-	  decimal_char = '.'; // C
-	}
-
-      if (A4GL_isyes (acl_getenv ("ALLOWCOMMAINDECIMAL")))
-	{
-	  decimal_char = ',';
-	}
-	*/
-
-
-    }
-
-  a = (char *) aa;
-
-  z = (double *) zz;
-  *z = 0;
-
-
-  /* watch out for any "," separators in the number - remove them first */
-
-  if (decimal_char == '.') // C
-    {
-      if (a_strchr (a, ','))
-	{
-	  a = buff;
-	  for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++)
-	    {
-	      if (*p != ',')
-		*a++ = *p;
-	    }
-	  *a = '\0';
-	  a = buff;
-	}
-    }
-  else
-    {
-      if (a_strchr (a, '.')) // C
-	{
-	  a = buff;
-	  for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++)
-	    {
-	      if (*p != '.') // C
-		*a++ = *p;
-	    }
-	  *a = '\0';
-	  a = buff;
-	}
-
-    }
-
-  if (decimal_char == ',' && a_strchr (a, '.') && !a_strchr (a, ',') // C
-      && A4GL_isyes (acl_getenv ("CHANGEDOTS")))
-    {
-      char *ptr;
-      a = acl_strdup (a);
-      ptr = a_strchr (a, '.'); // C
-      *ptr = ',';
-      duped = 1;
-
-    }
-
-  ok = A4GL_sscanf_double(a,z);
-
-  //ok = sscanf (a, "%lf", z);
-
-
-  if (duped)
-    free (a);
-  A4GL_debug ("stof: string %s ", A4GL_null_as_null (a));
-  A4GL_debug ("stof: float %lf", *z);
-  A4GL_debug ("stof: OK=%d", ok);
+  a = A4GL_decstr_convert((char*)aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  ok = (sscanf (a, "%lf", (double*)zz) == 1);
+  A4GL_debug ("stof: %s->%lf; OK=%d", A4GL_null_as_null(a), *(double*)zz, ok);
+  free(a);
   return ok;
 }
 /**
@@ -1491,88 +1409,14 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 int
 A4GL_stosf (void *aa, void *zz, int sz_ignore)
 {
-/* cc 04.11.28 
-change and use same logic as A4GL_stof() 
- to handle ',' as '.' 
   char *a;
-  float *z;
-  a = (char *) aa;
-  z = (float *) zz;
-  sscanf (a, "%f", z);
-  return 1;
-*/
+  int ok;
 
-char *a; 
- float *z; 
- char *p; 
-  double zd;
- char buff[32]; 
- int n; 
- int ok; 
- int duped=0; 
- 
- if (decimal_char==0) { 
-	decimal_char=A4GL_get_decimal_char(0);
-	/*
- 		SPRINTF1(buff,"%f",1.2); 
- 		if (a_strchr(buff,'.')) decimal_char='.';  //C
- 		if (a_strchr(buff,',')) decimal_char=',';  //C
- 		if (decimal_char==0) { 
- 		decimal_char='.';  //C
- 		}
-	*/
- }
-
-a = (char *) aa; 
- 
- z = (float *) zz; 
- *z=0; 
- 
- /* watch out for any "," separators in the number - remove them first */ 
-  if ( decimal_char=='.') { //C
- if (a_strchr (a, ',')) 
- { 
- 	a = buff; 
- 	for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++) 
- 	{ 
- 	if (*p != ',') 
- 	*a++ = *p; 
- 	} 
- 	*a = '\0'; 
- 	a = buff; 
- } 
- } else {
- if (a_strchr (a, '.'))  //C
- { 
- 	a = buff; 
- 	for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++) 
- 	{ 
- 	if (*p != '.')  //C
- 	*a++ = *p; 
- 	} 
- 	*a = '\0'; 
- 	a = buff; 
- } 
- }
-
-
- if (decimal_char==',' && a_strchr(a,'.') && A4GL_isyes(acl_getenv("CHANGEDOTS")) ) {  //C
- 	char *ptr; 
- 	a=acl_strdup(a); 
- 	ptr=a_strchr(a,'.');  //C
- 	*ptr=','; 
- 	duped=1; 
- } 
- 
-
- ok=A4GL_sscanf_double(a, &zd); 
- *z=zd;
- if (duped) free(a); 
- A4GL_debug ("stosf: string %s ", A4GL_null_as_null(a)); 
- A4GL_debug ("stosf: small float %lf", *z); 
- A4GL_debug ("stosf: OK=%d", ok); 
- return ok; 
-
+  a = A4GL_decstr_convert((char*)aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  ok = (sscanf (a, "%f", (float*)zz) == 1);
+  A4GL_debug ("stosf: %s->%f; OK=%d", A4GL_null_as_null(a), *(float*)zz, ok);
+  free(a);
+  return ok;
 }
 
 
@@ -3736,43 +3580,3 @@ A4GL_set_setdtype (int dtype, void *ptr)
   setdtype[dtype] = ptr;
 }
 
-
-int A4GL_sscanf_double(char *s,  double *z) {
-int ok;
-double f;
-static int locale_broken_scanf=-1;
-
-
-if (locale_broken_scanf==-1) {
-	if (A4GL_get_decimal_char(0)=='.') {
-		locale_broken_scanf=0;
-	} else {
-		// We've got a , as the decimal
-		// separator - sometime sscanf wont find this so we need to check..
-		sscanf("1,10", "%lf",&f);
-		if (f>1.05 && f<1.15) {
-			locale_broken_scanf=0; // nope - it looked ok
-		} else {
-			locale_broken_scanf=1; // its broke...
-		}
-	}
-}
-
-if (!locale_broken_scanf) {
-  	ok = sscanf (s, "%lf", z);
-} else {	
-	char *s2;
-	int a;
-	s2=strdup(s);
-	if (A4GL_get_decimal_char(0)!=',') { A4GL_assertion(1,"Unhandled decimal separator");}
-	for (a=0;a<strlen(s2);a++) {
-		if (s2[a]=='.') {A4GL_assertion(1,"Broken string in A4GL_sscanf_double - should not contain a '.'");}
-		if (s2[a]==',') {s2[a]='.';}
-	}
-  	ok = sscanf (s2, "%lf", z);
-	free(s2);
-}
-
-  return ok;
-}
-/* ============================= EOF ================================ */

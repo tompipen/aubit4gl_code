@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.106 2007-05-06 10:48:36 mikeaubury Exp $
+# $Id: ops.c,v 1.107 2007-06-04 10:24:53 gyver309 Exp $
 #
 */
 
@@ -184,6 +184,7 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
   ptr = A4GL_char_pop ();
   strcpy (buff_1, ptr);
   free (ptr);
+  A4GL_decstr_convert(buff_1, a4gl_convfmts.using_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
   return buff_1;
 }
 
@@ -712,6 +713,7 @@ int isneg_ival;
 		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%lf", f);
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
@@ -731,6 +733,7 @@ int isneg_ival;
   			f=f-a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%lf", f);
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
@@ -748,6 +751,7 @@ int isneg_ival;
   			f=f/a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%lf", f);
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
@@ -766,7 +770,7 @@ int isneg_ival;
   			f=f*a;
 			ok=1;
 	  		SPRINTF1 (buff_6, "%lf", f);
-
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  		acli_interval (buff_6, 0x867);
 			return ;
 		} else {
@@ -2183,6 +2187,7 @@ A4GL_in_in_ops (int op)
 	{
 	  char buff_3[256];
 	  SPRINTF1 (buff_3, "%f", d_i1);
+	  A4GL_decstr_convert(buff_3, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_3, 0x822);
 	  return;
 	}
@@ -2190,6 +2195,7 @@ A4GL_in_in_ops (int op)
 	{
 	  char buff_4[256];
 	  SPRINTF1 (buff_4, "%f", d_i1);
+	  A4GL_decstr_convert(buff_4, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  A4GL_debug ("Converting : %s to interval second to second", buff_4);
 	  acli_interval (buff_4, 0x867);	// was 866
 	  return;
@@ -2216,6 +2222,7 @@ A4GL_in_in_ops (int op)
 	{
 	  char buff_6[256];
 	  SPRINTF1 (buff_6, "%f", d_i1);
+	  A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  A4GL_debug ("Converting : %s to interval second to second", buff_6);
 	  acli_interval (buff_6, 0x867);	// Was 866
 	  return;
@@ -2949,6 +2956,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
 	}
       a = *(double *) ptr;
       SPRINTF1 (buff_10, "%14.2f", a);
+      A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
@@ -2961,11 +2969,12 @@ A4GL_display_float (void *ptr, int size, int size_c,
 	}
       a = *(double *) ptr;
       SPRINTF1 (buff_10, "%f", a);
+      A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 1, -1);
       for (cnt = strlen (buff_10) - 1; cnt > 0; cnt--)
 	{
 	  if (cnt <= 1)
 	    break;
-	  if (buff_10[cnt - 1] == '.' || buff_10[cnt - 1] == ',')
+	  if (buff_10[cnt - 1] == a4gl_convfmts.ui_decfmt.decsep)
 	    break;
 	  if (buff_10[cnt] != '0')
 	    break;
@@ -3002,6 +3011,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
       A4GL_pop_char (buff_10, size_c);
+      A4GL_decstr_convert(buff_10, a4gl_convfmts.using_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, size_c);
       return buff_10;
     }
   return buff_10;
@@ -3026,6 +3036,7 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
 	}
       a = *(float *) ptr;
       SPRINTF1 (buff_11, "%14.2f", a);
+      A4GL_decstr_convert(buff_11, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
@@ -3038,11 +3049,12 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
 	}
       a = *(float *) ptr;
       SPRINTF1 (buff_11, "%f", a);
+      A4GL_decstr_convert(buff_11, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 1, -1);
       for (cnt = strlen (buff_11) - 1; cnt > 0; cnt--)
 	{
 	  if (cnt <= 1)
 	    break;
-	  if (buff_11[cnt - 1] == '.' || buff_11[cnt - 1] == ',' )
+	  if (buff_11[cnt - 1] == a4gl_convfmts.ui_decfmt.decsep)
 	    break;
 	  if (buff_11[cnt] != '0')
 	    break;
@@ -3079,6 +3091,7 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
       A4GL_pop_char (buff_11, size_c);
+      A4GL_decstr_convert(buff_11, a4gl_convfmts.using_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, size_c);
     }
 
   return buff_11;
@@ -3232,6 +3245,7 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 {
   static char s_x0[256];
   static char buff_13[256];
+  char *tmpptr;
 
   A4GL_debug ("Display_decimal size=%d", size);
   //if (size_c==-1) { return 0; }
@@ -3264,7 +3278,22 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
       A4GL_push_char (A4GL_make_using_tostring (ptr, size >> 8, size & 255));
       A4GL_pushop (OP_USING);
       ptr = A4GL_char_pop ();
-      strcpy (s_x0, ptr);
+      if (a4gl_convfmts.ui_decfmt.thsep != 0)
+      {
+	  char *tmpptr;
+	  tmpptr = A4GL_decstr_convert(ptr,
+		  a4gl_convfmts.using_decfmt, a4gl_convfmts.ui_decfmt,
+		  1, 0, strlen(ptr)); //try to preserve length
+	  if (tmpptr[0] == '*') //overflow, length cannot be preserved
+	  {
+	      free(tmpptr);
+	      tmpptr = A4GL_decstr_convert(ptr, a4gl_convfmts.using_decfmt, a4gl_convfmts.ui_decfmt, 1, 0, -1);
+	  }
+	  strcpy (s_x0, tmpptr);
+	  free (tmpptr);
+      }
+      else
+	  strcpy (s_x0, ptr);
       free (ptr);
       return s_x0;
     }
@@ -3277,12 +3306,17 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 	{
 	  char *ptr;
 	  ptr = A4GL_char_pop ();
-	  strcpy (s_x0, ptr);
+	  tmpptr = A4GL_decstr_convert(ptr, a4gl_convfmts.posix_decfmt, a4gl_convfmts.ui_decfmt, 1, 0, -1);
+	  strcpy (s_x0, tmpptr);
+	  free (tmpptr);
 	  free (ptr);
 	}
       else
 	{
 	  A4GL_pop_char (s_x0, size_c);
+	  tmpptr = A4GL_decstr_convert(s_x0, a4gl_convfmts.posix_decfmt, a4gl_convfmts.ui_decfmt, 1, 0, size_c);
+	  strcpy (s_x0, tmpptr);
+	  free (tmpptr);
 	}
 
       A4GL_trim (s_x0);
@@ -3307,7 +3341,6 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
       else
 	{
 	  	fgldecimal *fgldec;
-		char *ptr2;
 		int ndig;
 		int ndec;
 	  	fgldec = (fgldecimal *)ptr;	
@@ -3319,6 +3352,7 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
       A4GL_pop_char (buff_13, size_c);
+      A4GL_decstr_convert(buff_13, a4gl_convfmts.using_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, size_c);
       return buff_13;
     }
 
@@ -3731,16 +3765,10 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 	  char *ptr;
 	  // It doesn't fit -
 	  // what happens if we remove all the decimal places ?
-	  if (A4GL_get_decimal_char(0)=='.') {
-	  	ptr = a_strchr (buff_sz, '.');
-	  } else {
-	  	ptr = a_strchr (buff_sz, ',');
-	  }
+	  ptr = a_strchr (buff_sz, a4gl_convfmts.ui_decfmt.decsep);
 
 	  if (ptr)
-	    {
 	      *ptr = 0;
-	    }
 
 	  if (strlen (buff_sz) > sz)
 	    {
@@ -3809,7 +3837,7 @@ if (s==0) return;
 
 	orig_conv_ok=A4GL_conversion_ok(-1);
 
-	if (strchr(s,'.') || strchr(s,',')) {
+	if (strchr(s, a4gl_convfmts.ui_decfmt.decsep)) {
 		// Check for a decimal
 
 		A4GL_conversion_ok(1);
@@ -3911,3 +3939,4 @@ A4GL_conversion_ok(orig_conv_ok);
 	A4GL_conversion_ok(orig_conv_ok);
 
 }
+

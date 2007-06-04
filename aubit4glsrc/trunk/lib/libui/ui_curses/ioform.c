@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.170 2007-05-21 14:32:36 mikeaubury Exp $
+# $Id: ioform.c,v 1.171 2007-06-04 10:24:55 gyver309 Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.170 2007-05-21 14:32:36 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.171 2007-06-04 10:24:55 gyver309 Exp $";
 #endif
 
 /**
@@ -4309,8 +4309,8 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
   char *ptr;
   ptr = A4GL_get_str_attribute (fprop, FA_S_FORMAT);
   A4GL_debug ("FLD_DATA_IGNORE_FORMAT : %s\n", fld_data);
-  if (ptr)
-    {
+//  if (ptr)
+//    {
       // It could the that there are some literals or other characters
       // in fld_data that we need to take out first...
       //
@@ -4327,25 +4327,20 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 
 	  for (a = 0; a < strlen (fld_data); a++)
 	    {
-	      if (fld_data[a] == '$' ||  fld_data[a] == '£') {
-			continue;
-		}
-
-	         if (A4GL_get_decimal_char(0)=='.') {
-			A4GL_debug("Standard decimal");
-			if (fld_data[a] == ',') continue; // skip thousands separator 
-		 } else {
-			A4GL_debug("decimal character is ','");
-			if (fld_data[a] == '.') continue; // skip thousands separator
-		 }
-
+	      if ( ! A4GL_is_meaningful_in_decfmt(A4GL_get_convfmts()->ui_decfmt, fld_data[a]))
+		  continue;
+	      if (fld_data[a] == A4GL_get_convfmts()->ui_decfmt.decsep)
+	      {
+	        buff_new[c++] = A4GL_get_convfmts()->posix_decfmt.decsep;
+	        continue;
+	      }
 	      buff_new[c++] = fld_data[a];
 	    }
 	  fld_data = buff_new;
 	  A4GL_debug ("COPY -> %s instead", fld_data);
 	}
 
-    }
+//    }
   A4GL_debug ("Returning : %s", fld_data);
   return fld_data;
 }
@@ -4362,9 +4357,19 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 
   fld_data = A4GL_fld_data_ignore_format (fprop, fld_data);
   A4GL_debug ("Got fld_data as : %s", fld_data);
-
-
+  if (A4GL_is_numeric_datatype(fprop->datatype))
+  {
+      char *tmpptr;
+      tmpptr = strdup(fld_data);
+      A4GL_decstr_convert(tmpptr,
+	      A4GL_get_convfmts()->posix_decfmt,
+	      A4GL_get_convfmts()->posix_decfmt, 0, 1, -1); // validate
+      if (tmpptr[0] != 0) //conversion succesful
+	  strcpy(fld_data, tmpptr);
+      free (tmpptr);
+  }
   A4GL_push_param (fld_data, DTYPE_CHAR);
+
   if ((fprop->datatype & 0xf) == DTYPE_CHAR
       || (fprop->datatype & 0xf) == DTYPE_VCHAR)
     {
@@ -4397,7 +4402,7 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 
       if ((fprop->datatype == DTYPE_INT || fprop->datatype == DTYPE_SMINT || fprop->datatype == DTYPE_SERIAL)) {
 	{
-		 if (a_strchr (fld_data, A4GL_get_decimal_char(0))) {
+		 if (a_strchr (fld_data, A4GL_get_convfmts()->ui_decfmt.decsep)) {
 	  		A4GL_debug ("Looks like a decimal in a numeric field");
 	  		pprval = 0;
 		}

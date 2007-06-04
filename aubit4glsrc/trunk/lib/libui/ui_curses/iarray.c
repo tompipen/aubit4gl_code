@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.124 2007-04-10 21:01:16 mikeaubury Exp $
+# $Id: iarray.c,v 1.125 2007-06-04 10:24:55 gyver309 Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.124 2007-04-10 21:01:16 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.125 2007-06-04 10:24:55 gyver309 Exp $";
 #endif
 
 /**
@@ -575,9 +575,9 @@ pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem,
     }
 
   if ((b[x_col].dtype == DTYPE_INT || b[x_col].dtype == DTYPE_SMINT
-       || b[x_col].dtype == DTYPE_SERIAL) && strchr (buff, '.'))
+       || b[x_col].dtype == DTYPE_SERIAL) && strchr (buff, A4GL_get_convfmts()->ui_decfmt.decsep))
     {
-      A4GL_debug ("Looks like its got a '.' in it");
+      A4GL_debug ("Looks like its got a '%c' in it", A4GL_get_convfmts()->ui_decfmt.decsep);
       really_ok = 0;
     }
 

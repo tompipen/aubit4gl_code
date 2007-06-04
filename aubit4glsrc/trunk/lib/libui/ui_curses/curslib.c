@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.139 2007-05-11 07:26:58 mikeaubury Exp $
+# $Id: curslib.c,v 1.140 2007-06-04 10:24:55 gyver309 Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.139 2007-05-11 07:26:58 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.140 2007-06-04 10:24:55 gyver309 Exp $";
 #endif
 /*
 =====================================================================
@@ -986,7 +986,7 @@ A4GL_check_type (char c, char type, int flg, int len)
 
   if (type == 'D')
     {
-      return (isdigit (c) || (c == '.' && flg == 0)
+      return (isdigit (c) || (c == A4GL_get_convfmts()->ui_decfmt.decsep && flg == 0)
 	      || (c == '-' && len == 0));
     }
 
@@ -1141,13 +1141,14 @@ A4GL_ask_dbl (prompt)		/*  prompt for an integer from user  */
      char *prompt;
 {
   double d;
-  char inbuf[80];
+  char inbuf[110];
   textarea area;
 
   d = 0.0;
   inbuf[0] = 0;
   message (&area, prompt, 0, 9);
   A4GL_edit (inbuf, 'D', 20, 0, 12);
+  A4GL_decstr_convert(inbuf, a4gl_convfmts.ui_decfmt, a4gl_convfmts.scanf_decfmt, 0, 1, -1);
   sscanf (inbuf, "%lf", &d);
   A4GL_clearbox (&area);
   return d;

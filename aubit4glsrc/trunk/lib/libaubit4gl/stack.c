@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.179 2007-05-19 08:28:49 mikeaubury Exp $
+# $Id: stack.c,v 1.180 2007-06-04 10:24:53 gyver309 Exp $
 #
 */
 
@@ -3050,11 +3050,13 @@ static int ln;
 void
 A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr)
 {
-	A4GL_assertion(params_cnt-a<0,"internal stack corruption");
-
-  *d = params[params_cnt - a].dtype;
-  *s = params[params_cnt - a].size;
-  *ptr = params[params_cnt - a].ptr;
+  A4GL_assertion(params_cnt-a<0,"internal stack corruption");
+  if (d)
+      *d = params[params_cnt - a].dtype;
+  if (s)
+      *s = params[params_cnt - a].size;
+  if (ptr)
+      *ptr = params[params_cnt - a].ptr;
 }
 
 /**
@@ -3114,6 +3116,7 @@ A4GL_conv_to_interval (int a)
     case OP_SECOND:
       d = d;
 	SPRINTF1(buff,"%f",d);
+	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
     }
   A4GL_debug ("11 D now set to %lf", d);
   A4GL_debug ("11 a=%d %d %d %d\n", a, OP_YEAR, OP_MONTH, OP_HOUR);
@@ -3130,6 +3133,7 @@ A4GL_conv_to_interval (int a)
   else
     {
       SPRINTF1 (buff, "%f", d);
+      A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
       A4GL_debug ("11 Calling acli_interval for second to fraction");
       acli_interval (buff, 0x46b);	// SECOND(4) TO FRACTION(5)
     }
