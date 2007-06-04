@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.299 2007-05-10 06:29:17 mikeaubury Exp $
+# $Id: mod.c,v 1.300 2007-06-04 10:11:57 gyver309 Exp $
 #
 */
 
@@ -2025,22 +2025,20 @@ add_bind (char i, char *var_i)
 	      char *ptrs[5] = { 0, 0, 0, 0, 0 };
 	      strcpy (buff2, &var[strlen ("a4gl_substr ") + 1]);
 	      ptrs[0] = buff2;
-	      ptrs[1] = strstr (ptrs[0] + 3, " , ");
+	      ptrs[1] = strstr (ptrs[0], ",");
 	      if (ptrs[1])
 		{
-			ptrs[1]++;
-		  *ptrs[1] = 0; ptrs[1]++;
+		  *ptrs[1] = 0; ptrs[1] += 1;
 		  strcpy (buff, ptrs[0]);
-		  ptrs[2] = strstr (ptrs[1] + 3, " , ");
+		  ptrs[2] = strstr (ptrs[1] + 3, ",");
 		  if (ptrs[2])
 		    {
-			ptrs[2]++;
-		      *ptrs[2] = 0; ptrs[2]++;
+		      *ptrs[2] = 0; ptrs[2] += 1;
 		      s_dtype = atol (ptrs[1]);
-		      ptrs[3] = strstr (ptrs[2] + 2, ",");
+		      ptrs[3] = strstr (ptrs[2], ",");
 		      if (ptrs[3])
 			{
-			  *ptrs[3] = 0; ptrs[3]++;
+		          *ptrs[3] = 0; ptrs[3] += 1;
 			  s_sstart = atol (ptrs[2]);
 			  s_send = atol (ptrs[3]);
 		//printf("%s :: %s\n",ptrs[2],ptrs[3]);
