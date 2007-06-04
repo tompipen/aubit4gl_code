@@ -77,29 +77,32 @@ endcode
 
 
 function check_db(dbname)
-define dbname char(255)
-return dbname
+    define dbname char(255)
+    return dbname
 end function
 
 function connection_connect()
-error "Not Implemented connection_connect"
+    error "Not Implemented connection_connect"
 end function
 
 
 
 
 FUNCTION do_paginate()
-define rpaginate integer
-MESSAGE ""
+  define rpaginate integer
+    MESSAGE ""
+    
 code
-   while (1) {
+    while (1) {
         extern int outlines;
 
-             if (outlines<=0) break;
-             aclfgl_paginate(0);
-             rpaginate=A4GL_pop_int();
-             if (rpaginate!=0) break;
-   }
+        if (outlines <= 0)
+            break;
+        aclfgl_paginate(0);
+        rpaginate = A4GL_pop_int();
+        if (rpaginate != 0)
+            break;
+    }
 endcode
 
 END FUNCTION
@@ -107,35 +110,37 @@ END FUNCTION
 
 
 function drop_db()
-	error "Not implemented drop_db"
+    error "Not implemented drop_db"
 end function
 
 
 
 function qry_translate()
-define a integer
-define b integer
-define n integer
-define lv_fname char(512)
+  define a integer
+  define b integer
+  define n integer
+  define lv_fname char(512)
 
-let lv_fname=get_tmp_fname("SQL")
+    let lv_fname=get_tmp_fname("SQL")
 
 code
 {
-extern FILE *asql_yyin;
-extern struct element *list;
-extern int list_cnt;
-char *snew;
-char *dialect;
-A4GL_trim(lv_fname);
-dialect=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
-if (dialect==0) dialect="POSTGRES";
-snew=A4GLSQLCV_convert_file(dialect, lv_fname);
-n=fopen(lv_fname,"w");
-if (n) fprintf((FILE *)n,"%s\n",snew);
-//free(snew);
-fclose(n);
-//printf("\n\r%s : %s \n\r",snew,lv_fname); fflush(stdout); sleep(5);
+    extern FILE *asql_yyin;
+    extern struct element *list;
+    extern int list_cnt;
+    char *snew;
+    char *dialect;
+    A4GL_trim(lv_fname);
+    dialect = acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
+    if (dialect == 0)
+        dialect = "POSTGRES";
+    snew = A4GLSQLCV_convert_file(dialect, lv_fname);
+    n = fopen(lv_fname, "w");
+    if (n)
+        fprintf((FILE *)n, "%s\n", snew);
+    //free(snew);
+    fclose(n);
+    //printf("\n\r%s : %s \n\r",snew,lv_fname); fflush(stdout); sleep(5);
 }
 endcode
 
@@ -148,223 +153,326 @@ end function
 
 
 function get_db_err_msg(lv_code)
-define lv_code integer
-define lv_err1 char(255)
-define lv_err2 char(255)
+  define lv_code integer
+  define lv_err1 char(255)
+  define lv_err2 char(255)
+  
 code
-A4GLSQL_get_errmsg(lv_code);
-A4GL_trim(lv_err2);
+    A4GLSQL_get_errmsg(lv_code);
+    A4GL_trim(lv_err2);
 endcode
-return lv_err2
+
+    return lv_err2
 end function
 
 
 function load_info_columns(lv_tabname)
-define lv_tabname char(18)
-define lv_arr array[1000] of char(18)
-define lv_a integer
-define lv_cnt integer
-define col_list array [1024] of char (18);
-define col_desc array [1024] of char (18);
-define lv_t integer 
-define lv_l char(20)
-define lv_buff char(80)
+  define lv_tabname char(37)   # schema + '.' + tabname
+  define lv_arr array[1000] of char(18)
+  define lv_a integer
+  define lv_cnt integer
+  define col_list array [1024] of char (18);
+  define col_desc array [1024] of char (48);
+  define lv_t integer 
+  define lv_l char(20)
+  define lv_buff char(80)
+
 code
-      lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, col_desc, 18, "COLUMNS", 2, lv_tabname);
+    lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, col_desc, 48, "COLUMNS", 2, lv_tabname);
 endcode
-for lv_a=1 to lv_cnt
-	if col_desc[lv_a][2]="(" then
-		let lv_t=col_desc[lv_a][1]
-		let lv_l=col_desc[lv_a][3,18]
-		let lv_l=lv_l[1,length(lv_l)-1]
-		let col_desc[lv_a]=get_type(lv_t,lv_l)
-	end if
-	if col_desc[lv_a][3]="(" then
-		let lv_t=col_desc[lv_a][1,2]
-		let lv_l=col_desc[lv_a][4,18]
-		let lv_l=lv_l[1,length(lv_l)-1]
-		let col_desc[lv_a]=get_type(lv_t,lv_l)
-	end if
 
-	let col_list[lv_a]=col_list[lv_a]," "
-	let lv_buff=col_list[lv_a]," ",col_desc[lv_a]
+    for lv_a=1 to lv_cnt
+        if col_desc[lv_a][2]="(" then
+            let lv_t=col_desc[lv_a][1]
+            let lv_l=col_desc[lv_a][3,48]
+            let lv_l=lv_l[1,length(lv_l)-1]
+            let col_desc[lv_a]=get_type(lv_t,lv_l)
+        end if
+        if col_desc[lv_a][3]="(" then
+            let lv_t=col_desc[lv_a][1,2]
+            let lv_l=col_desc[lv_a][4,48]
+            let lv_l=lv_l[1,length(lv_l)-1]
+            let col_desc[lv_a]=get_type(lv_t,lv_l)
+        end if
 
-	
-	call add_to_display_file(lv_buff)
-end for
-return 1
+        let col_list[lv_a]=col_list[lv_a]," "
+        let lv_buff=col_list[lv_a]," ",col_desc[lv_a]
+        
+        call add_to_display_file(lv_buff)
+    end for
+    return 1
 end function
 
-function load_info_indexes()
-error "Not Implemented Yet load_info_indexes"
+
+function before_dot(s)
+  define s char(254)
+
+code
+    int i;
+    int found = 0;
+    for (i = 0; i < sizeof(s); ++i)
+    {
+        if (s[i] == '.')
+        {
+            s[i] = 0;
+            found = 1;
+            break;
+        }
+    }
+    if ( ! found)
+        s[0] = 0;
+endcode
+
+    return s;
+end function
+
+function after_dot(s)
+  define s char(254)
+  define s1 char(254)
+
+code
+    int i;
+    for (i = 0; i < 254; ++i)
+        s1[i] = s[i];
+    for (i = 0; i < sizeof(s); ++i)
+    {
+        if (s[i] == '.')
+        {
+            int j;
+            for (j = 0; i+j+1 < sizeof(s1); ++j)
+                s1[j] = s[i+j+1];
+            break;
+        }
+    }
+endcode
+
+    return s1;
+  
+end function
+
+function load_info_indexes(qname)
+  define s char(255)
+  define qname char(37)   # schema + '.' + tabname
+  define tabname char(18)
+  define schname char(8)
+  define query char(4096)
+
+  define idxname    char(18)
+  define idxcols    char(254)
+  define idxtype    char(8)
+
+
+    initialize query to null
+    let query = fgl_getenv("A4GL_ASQL_SELECT_INDEXES");
+
+    let s = "Index Name"
+    let s[20,28] = "Type"
+    let s[30,80] = "Columns"
+
+    CALL add_to_display_file(s)
+
+    call before_dot(qname) returning schname;
+    call after_dot (qname) returning tabname;
+
+    prepare iidx from query
+    declare cidx cursor for iidx
+    foreach cidx using schname, tabname into idxname, idxcols, idxtype 
+        let s = ""
+        let s = idxname
+        let s[20,28] = idxtype
+        let s[30,79] = idxcols[1,50]
+        CALL add_to_display_file(s)
+        if (length(idxcols) > 50) then
+            let s = ""
+            let s[30,79] = idxcols[51, 100]
+            CALL add_to_display_file(s)
+        end if
+        if (length(idxcols) > 100) then
+            let s = ""
+            let s[30,79] = idxcols[101, 150]
+            CALL add_to_display_file(s)
+        end if
+    end foreach
+
+    return 1
 end function
 
 function load_info_priv()
-error "Not Implemented Yet load_info_priv"
+    error "Not Implemented Yet load_info_priv"
 end function
 
 function load_info_status()
-error "Not Implemented Yet load_info_status"
+    error "Not Implemented Yet load_info_status"
 end function
 
 function load_info_tables()
-define lv_tabname char(18)
-define lv_arr array[1000] of char(18)
-define lv_num_tables integer
-define lv_cnt integer
+  define lv_tabname char(18)
+  define lv_arr array[4000] of char(18)
+  define lv_sch array[4000] of char(18)
+  define lv_num_tables integer
+  define lv_cnt integer
+  
 code
-lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,0,0,"TABLES",1,0);
+    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,(char *)lv_sch,18,"TABLES",0,0);
 endcode
 
 
-call add_to_display_file("TableName")
-call add_to_display_file(" ")
+    call add_to_display_file("TableName")
+    call add_to_display_file(" ")
 
-for lv_cnt=1 to lv_num_tables
-	call add_to_display_file(lv_arr[lv_cnt])
-end for
+    for lv_cnt=1 to lv_num_tables
+        call add_to_display_file(lv_sch[lv_cnt] || "." || lv_arr[lv_cnt])
+    end for
 
-return 1
+    return 1
 end function
 
 
-
 function table_info()
-define lv_tabname char(255)
-define lv_txt char(128)
-define lv_cont integer
-define lv_option integer
-        if not has_db() then
-                call select_db()
-        end if
+  define lv_tabname char(255)
+  define lv_txt char(128)
+  define lv_cont integer
+  define lv_option integer
+
+    if not has_db() then
+        call select_db()
+    end if
 
 
-        if not has_db() then
+    if not has_db() then
+        return
+    end if
+
+    while true
+        call table_select("INFO FOR TABLE >>") returning lv_tabname
+
+        if lv_tabname is not null and lv_tabname not matches " " THEN
+        else
                 return
         end if
 
+        let lv_cont=0
 
+        CALL set_exec_mode(0)
+
+
+        let lv_txt="INFO - ",lv_tabname
+        call set_info_text(lv_txt)
         while true
-                call table_select("INFO FOR TABLE >>") returning lv_tabname
+            let lv_option=-1
 
-                if lv_tabname is not null and lv_tabname not matches " " THEN
-                else
-                        return
-                end if
+            case info_menu(lv_option)
 
-                let lv_cont=0
+                when "Columns" 
+                    CALL open_display_file()
+                    if load_info_columns(lv_tabname) then
+                            call do_paginate()
+                    end if
+                    let lv_option=0
 
-                CALL set_exec_mode(0)
+                when "Indexes" 
+                    CALL open_display_file()
+                    if load_info_indexes(lv_tabname) then
+                            call do_paginate()
+                    end if
+                    let lv_option=0
 
+                when "Table" 
+                    let lv_cont=1
+                    exit while
 
-                let lv_txt="INFO - ",lv_tabname
-		call set_info_text(lv_txt)
-		while true
-			let lv_option=-1
+                when "Exit" 
+                    let lv_cont=0
+                    exit while
 
-			case info_menu(lv_option)
+                otherwise
+                    call niy()
 
-                        	when "Columns" 
-                                	CALL open_display_file()
-                                	if load_info_columns(lv_tabname) then
-                                        	call do_paginate()
-                                	end if
-					let lv_option=0
-
-	
-                        	when "Table" 
-                                	let lv_cont=1
-                                	exit while
-	
-	
-                        	when "Exit" 
-                                	let lv_cont=0
-                                	exit while
-
-				otherwise
-					call niy()
-
-			end case
-                end while
+            end case
+        end while
 
         if lv_cont=0 then
-                exit while
+            exit while
         end if
-        end while
+    end while
 
 
 end function
 
 function table_select(lv_prompt)
-define lv_prompt char(64)
-define lv_tabname char(255)
-define lv_cnt integer
-define lv_arr array[1000] of char(18)
-define lv_num_tables integer
-define lv_found integer
+  define lv_prompt char(64)
+  define lv_tabname char(255)
+  define lv_cnt integer
+  define lv_arr array[4000] of char(18)
+  define lv_sch array[4000] of char(18)
+  define lv_num_tables integer
+  define lv_found integer
+
 code
-lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,0,0,"TABLES",1,0);
+    lv_num_tables=A4GLSQL_fill_array(1000,
+                                     (char *)lv_arr,18,
+                                     (char *)lv_sch,18,"TABLES",0,0);
 endcode
 
 
-for lv_cnt=1 to lv_num_tables
-        call set_pick(lv_cnt,lv_arr[lv_cnt])
-end for
+    for lv_cnt=1 to lv_num_tables
+        call set_pick(lv_cnt, lv_sch[lv_cnt] || "." || lv_arr[lv_cnt])
+    end for
+    call set_pick_cnt(lv_cnt-1)
 
+    while true
+        call prompt_pick(lv_prompt,"") returning lv_tabname
 
-call set_pick_cnt(lv_cnt-1)
-
-while true
-	call prompt_pick(lv_prompt,"") returning lv_tabname
-
-	if lv_tabname is not null then
-		let lv_found=0
-		for lv_cnt=1 to lv_num_tables
-			if lv_arr[lv_cnt]=lv_tabname then
-				let lv_found=1
-				exit for
-			end if
-		end for
-	
-        	if lv_found=0 then
-                	error "Table not found"
-		else
-			exit while
-        	end if
-	else
-        	exit while
-	end if
+        if lv_tabname is not null then
+            let lv_found=0
+            for lv_cnt=1 to lv_num_tables
+                if upshift(lv_tabname) = upshift(lv_sch[lv_cnt] || "." || lv_arr[lv_cnt]) then
+                    let lv_found=1
+                    exit for
+                end if
+            end for
+    
+            if lv_found=0 then
+                error "Table not found"
+            else
+                exit while
+            end if
+        else
+            exit while
+    end if
 end while
 
-return lv_tabname
+return upshift(lv_tabname)
 
 end function
 
 
 function select_db()
-define lv_arr array[100] of char(100);
-define lv_num_dbs integer
-define lv_cnt integer
-define lv_curr_db char(255)
-define lv_name char(255)
-define lv_newname char(255)
-define a integer
-let lv_curr_db=get_db();
+  define lv_arr array[100] of char(100);
+  define lv_num_dbs integer
+  define lv_cnt integer
+  define lv_curr_db char(255)
+  define lv_name char(255)
+  define lv_newname char(255)
+  define a integer
+    let lv_curr_db=get_db();
 
 code
-lv_num_dbs=A4GLSQL_fill_array(100,(char *)lv_arr,100,0,0,"DATABASES",0,0);
+    lv_num_dbs=A4GLSQL_fill_array(100,(char *)lv_arr,100,0,0,"DATABASES",0,0);
 endcode
-for a=1 to lv_num_dbs
-	call set_pick(a,lv_arr[a])
-end for
-call set_pick_cnt(lv_num_dbs)
 
-let lv_newname=prompt_pick("SELECT DATABASE >>","")
-if lv_newname is null then
+    for a=1 to lv_num_dbs
+        call set_pick(a,lv_arr[a])
+    end for
+
+    call set_pick_cnt(lv_num_dbs)
+
+    let lv_newname=prompt_pick("SELECT DATABASE >>","")
+    if lv_newname is null then
         let lv_newname=lv_curr_db
-end if
+    end if
 
-if lv_newname is not null and lv_newname not matches " " then
+    if lv_newname is not null and lv_newname not matches " " then
         whenever error continue
 
         close database
@@ -372,15 +480,15 @@ if lv_newname is not null and lv_newname not matches " " then
         whenever error stop
 
         if sqlca.sqlcode=0 then
-                call set_curr_db(lv_newname)
-                call display_banner()
-                message "Database Opened"
+            call set_curr_db(lv_newname)
+            call display_banner()
+            message "Database Opened"
         else
-                if check_and_report_error() then
-                        return
-                end if
+            if check_and_report_error() then
+                return
+            end if
         end if
-end if
+    end if
 end function
 
 
