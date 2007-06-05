@@ -1,6 +1,6 @@
 # When running Aubit programs as CGI in web server, use A4GL_UI=CONSOLE
 
-# $Id: libahtmllib.4gl,v 1.7 2003-05-16 06:49:34 afalout Exp $
+# $Id: libahtmllib.4gl,v 1.8 2007-06-05 18:06:20 fortiz Exp $
 
 ########################################################################
 #ANSI C libraryes for CGI programing:
@@ -96,8 +96,8 @@ end globals
 function html_init(cssfilename)
 #######################
 define
-    cssfilename
-        char (40)
+    cssfilename char (40),
+    lv_debug, lv_do_debug varchar(3)
 
 	call html_headers()
 
@@ -112,18 +112,6 @@ define
 		call getstdin()
     end if
 
-    if vread("do_debug") <> "" then
-        let do_debug = true
-    end if
-
-
-    if do_debug
-    then
-		display "HTTP_POST_VAR=[",HTTP_POST_VAR clipped, "]"
-		display "<BR>HTTP_GET_VAR=[",HTTP_GET_VAR clipped,"]"
-		display "<BR>"
-    end if
-
 
 	if www.REQUEST_METHOD = "POST"
 	then
@@ -132,9 +120,29 @@ define
 		call html_params(HTTP_GET_VAR)
     end if
 
-    if vread("do_debug") <> "" then
+    let lv_do_debug = vread("do_debug") clipped
+    if lv_do_debug = "on" then
         let do_debug = true
     end if
+    if lv_do_debug = "off" then
+        let do_debug = false
+    end if
+
+    let lv_debug = vread("debug") clipped
+    if lv_debug = "on" then
+        let do_debug = true
+    end if
+    if lv_debug = "off" then
+        let do_debug = false
+    end if
+
+    if do_debug
+    then
+		display "HTTP_POST_VAR=[",HTTP_POST_VAR clipped, "]"
+		display "<BR>HTTP_GET_VAR=[",HTTP_GET_VAR clipped,"]"
+		display "<BR>"
+    end if
+
 
     if vread("g_css") <> "0" then
         let g_css = vread("g_css")
@@ -209,11 +217,10 @@ code
 //printf("HTTP/1.1 200 OK");
 
 //Pragma: no-cache
-printf("Content-type: text/html");
+printf("Content-type: text/html\n\n");
 
 endcode
 
-	display ""
 
     return
 
@@ -568,14 +575,6 @@ define
 	#######
 	END FOR
 	#######
-
-        if vread("debug")
-        then
-                let do_debug = true
-                display "Debug mode ON<BR>"
-			    display "All params = ", allparams clipped , "<BR>"
-                #call show_webserver_vars()
-        end if
 
         let item = vread("item")
 
