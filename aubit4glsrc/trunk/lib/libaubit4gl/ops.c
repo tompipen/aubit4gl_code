@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.108 2007-06-05 09:40:47 mikeaubury Exp $
+# $Id: ops.c,v 1.109 2007-06-05 14:55:52 gyver309 Exp $
 #
 */
 
@@ -184,7 +184,7 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
   ptr = A4GL_char_pop ();
   strcpy (buff_1, ptr);
   free (ptr);
-  A4GL_decstr_convert(buff_1, a4gl_convfmts.using_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
+  A4GL_decstr_convert(buff_1, a4gl_convfmts.using_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   return buff_1;
 }
 
