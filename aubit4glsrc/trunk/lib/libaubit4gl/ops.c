@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.107 2007-06-04 10:24:53 gyver309 Exp $
+# $Id: ops.c,v 1.108 2007-06-05 09:40:47 mikeaubury Exp $
 #
 */
 
@@ -3397,14 +3397,21 @@ A4GL_display_money (void *ptr, int size, int size_c,
       strcpy (buff_14, "-");
       ubuff = A4GL_make_using_tostring (ptr, size >> 8, size & 255);
       strcat (buff_14, ubuff);
+	
+      for (a = 0; a < strlen (buff_14) ; a++) {
+	  if (buff_14[a] == '-') {
+	  	buff_14[a] = '$' ;
+	}
+	}
       for (a = strlen (buff_14) - 1; a >= 0; a--)
 	{
-	  if (buff_14[a] == '-')
+	  if (buff_14[a] == '$')
 	    {
-	      buff_14[a] = '$';
+	      buff_14[a] = '-';
 	      break;
 	    }
 	}
+	//printf("%s\n", buff_14);
       A4GL_push_char (buff_14);
       A4GL_pushop (OP_USING);
       ptr = A4GL_char_pop ();
