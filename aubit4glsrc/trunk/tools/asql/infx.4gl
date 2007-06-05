@@ -1127,9 +1127,10 @@ execute_select_prepare (int *err_at_col)
 {
 
   open_display_file_c ();
-  if (master_desc) {
-		deallocate_descriptor_memory(master_desc);
-  }
+  if (master_desc)
+    {
+      deallocate_descriptor_memory (master_desc);
+    }
   EXEC SQL whenever error continue;
 
 
@@ -1165,58 +1166,67 @@ execute_select_prepare (int *err_at_col)
 
 
   EXEC SQL DESCRIBE stExec INTO master_desc;
-  allocate_descriptor_memory(master_desc, &master_qualifiers, &master_indicators);
-  numberOfColumns=master_desc->sqld;
+  allocate_descriptor_memory (master_desc, &master_qualifiers,
+			      &master_indicators);
+  numberOfColumns = master_desc->sqld;
   A4GL_debug ("numberOfColumns : %d\n", numberOfColumns);
 
+  if (numberOfColumns==0) return 0;
 
-  EXEC SQL declare crExec CURSOR FOR stExec;
 
-  cp_sqlca ();
-  if (sqlca.sqlcode < 0) {
-	*err_at_col=sqlca.sqlerrd[4];
-    return 0;
-   }
-  A4GL_debug("Declared - opening");
-  EXEC SQL open crExec;
-  cp_sqlca ();
-  if (sqlca.sqlcode < 0) {
-	*err_at_col=sqlca.sqlerrd[4];
-    return 0;
-  }
 
-  A4GL_debug("opened");
+      EXEC SQL declare crExec CURSOR FOR stExec;
 
-  if (display_mode != DISPLAY_UNLOAD)
-    {
-      if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE || get_exec_mode_c () == EXEC_MODE_OUTPUT)
+      cp_sqlca ();
+      if (sqlca.sqlcode < 0)
 	{
-	  if (field_widths () > A4GL_get_curr_width ())
+	  *err_at_col = sqlca.sqlerrd[4];
+	  return 0;
+	}
+      A4GL_debug ("Declared - opening");
+      EXEC SQL open crExec;
+      cp_sqlca ();
+      if (sqlca.sqlcode < 0)
+	{
+	  *err_at_col = sqlca.sqlerrd[4];
+	  return 0;
+	}
+
+      A4GL_debug ("opened");
+
+      if (display_mode != DISPLAY_UNLOAD)
+	{
+	  if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE
+	      || get_exec_mode_c () == EXEC_MODE_OUTPUT)
 	    {
-	      display_mode = DISPLAY_DOWN;
+	      if (field_widths () > A4GL_get_curr_width ())
+		{
+		  display_mode = DISPLAY_DOWN;
+		}
+	      else
+		{
+		  display_mode = DISPLAY_ACROSS;
+		}
 	    }
 	  else
 	    {
-	      display_mode = DISPLAY_ACROSS;
-	    }
-	}
-      else
-	{
 
-	  if (stdin_screen_width == -1)
-	    stdin_screen_width = set_stdin_width ();
-	  if (field_widths () > stdin_screen_width)
-	    {
-	      display_mode = DISPLAY_DOWN;
-	    }
-	  else
-	    {
-	      display_mode = DISPLAY_ACROSS;
+	      if (stdin_screen_width == -1)
+		stdin_screen_width = set_stdin_width ();
+	      if (field_widths () > stdin_screen_width)
+		{
+		  display_mode = DISPLAY_DOWN;
+		}
+	      else
+		{
+		  display_mode = DISPLAY_ACROSS;
+		}
 	    }
 	}
-    }
   return 1;
 }
+
+
 
 /******************************************************************************/
 int

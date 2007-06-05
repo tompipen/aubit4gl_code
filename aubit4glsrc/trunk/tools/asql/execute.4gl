@@ -357,7 +357,7 @@ code
 
 		// Is it a select statement ?
 		// @todo - this needs refining as a select .. into temp would get caught..
-		if (list[a].type!='S'&&list[a].type!='s') {
+		if (list[a].type!='S'&&list[a].type!='s' && qry_type!=56) {
 			if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a],&err_at_col);
 			else {
 				if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a],&err_at_col);}
