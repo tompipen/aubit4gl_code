@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.191 2007-06-01 15:09:14 gyver309 Exp $
+# $Id: sql.c,v 1.192 2007-06-05 06:20:23 mikeaubury Exp $
 #
 */
 
@@ -3766,7 +3766,9 @@ static char *type_id_to_name_fallback(int type_id)
         type_warning_issued = 1;
         A4GL_wrn ("WARNING Using fallback method to retrieve type info for type %i", type_id);
     }
+#ifdef SQL_UNKNOWN_TYPE
     if (type_id == SQL_UNKNOWN_TYPE) return "UnknownType";
+#endif
     if (type_id == SQL_CHAR) return "Char";
     if (type_id == SQL_NUMERIC) return "Numeric";
     if (type_id == SQL_DECIMAL) return "Decimal";
@@ -3799,10 +3801,12 @@ static char *type_id_to_name_fallback(int type_id)
     if (type_id == SQL_INTERVAL_HOUR_TO_MINUTE) return "IvHourToMin";
     if (type_id == SQL_INTERVAL_HOUR_TO_SECOND) return "IvHourToSec";
     if (type_id == SQL_INTERVAL_MINUTE_TO_SECOND) return "IvMinToSec";
+#ifndef SQLITE_DIRECT
     if (type_id == SQL_UNICODE) return "Unicode";
     if (type_id == SQL_UNICODE_VARCHAR) return "UniVarchar";
     if (type_id == SQL_UNICODE_LONGVARCHAR) return "UniLVarchar";
     if (type_id == SQL_UNICODE_CHAR) return "UniChar";
+#endif
 #if (ODBCVER >= 0x0300)
     if (type_id == SQL_DATETIME) return "Datetime";
     if (type_id == SQL_TYPE_DATE) return "Date";

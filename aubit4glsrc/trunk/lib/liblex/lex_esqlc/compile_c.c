@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.373 2007-05-28 08:33:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.374 2007-06-05 06:20:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.373 2007-05-28 08:33:30 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.374 2007-06-05 06:20:22 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6817,7 +6817,7 @@ char *
 LEXLIB_A4GL_set_var_sql (int doing_declare, int n)
 {
   int a;
-  static char buff[8000];
+  static char buff[64000];
   extern char *current_upd_table;
 #define UPDVAL2 4
 
