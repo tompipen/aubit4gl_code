@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.131 2007-05-09 18:46:24 mikeaubury Exp $
+# $Id: report.c,v 1.132 2007-06-05 09:42:25 mikeaubury Exp $
 #
 */
 
@@ -627,7 +627,7 @@ gen_rep_tab_name (void *p)
 	sep = "";
     }
 
-    sprintf(buf, "%s%sRT%08X%08X", owner, sep, pid, (long)p & 0xffffffff);
+    sprintf(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
     return buf;
 }
 
@@ -791,7 +791,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 			int found=0;
 			// First - look forward - see if there are any '\n' in the next 'rightmargin' characters...
 			for (a=0;a<=right_margin;a++) {
-				int c;
+				//int c;
 				if (ptr[a]=='\n') { // This will do nicely...
 					ptr[a]=0;
 					A4GL_push_char(ptr);
@@ -1284,8 +1284,8 @@ static char *
 sz (int d, int s)
 {
   static char buff_1[256];
-  static char buff_2[256];
-  static char buff_3[256];
+  //static char buff_2[256];
+  //static char buff_3[256];
   switch (d & DTYPE_MASK)
     {
     case DTYPE_SMINT:
@@ -1830,7 +1830,7 @@ int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char
 	rep->blocks[rb].where=where;
 	strcpy(rep->blocks[rb].why,why);
   }
-	
+	return 1;
 }
 
 int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb)
@@ -2279,25 +2279,37 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 #endif
           if (b[cb].ptr == o[ca].ptr)
             {
+			int isnull1;
+			int isnull2;
+
               /* check value in o.ptr against that on the stack */
  
-              A4GL_read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
-              A4GL_push_param (b[cb].ptr, b[cb].dtype);
+                A4GL_read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
+		isnull1=A4GL_isnull(b[cb].dtype, b[cb].ptr);
+		isnull2=A4GL_isnull(b[cb].dtype, mptr);
 
-#ifdef DEBUG
-              /* {DEBUG} */ A4GL_debug ("   pushing this data");
-#endif
-              A4GL_push_param (mptr, b[cb].dtype);
-#ifdef DEBUG
-              /* {DEBUG} */
-              A4GL_debug
-                ("11   checking for equallity--------------------------------------------");
-#endif
-
-		// reverse logic so it takes into account NULL=NULL
-              A4GL_pushop (OP_NOT_EQUAL);
-              i = !A4GL_pop_bool ();
+		if (isnull1 && isnull2) {
+			i=1; 
+		} else {
+              		A4GL_push_param (b[cb].ptr, b[cb].dtype);
 		
+		#ifdef DEBUG
+              		/* {DEBUG} */ A4GL_debug ("   pushing this data");
+		#endif
+              		A4GL_push_param (mptr, b[cb].dtype);
+		#ifdef DEBUG
+              		/* {DEBUG} */
+              		A4GL_debug
+                		("11   checking for equallity--------------------------------------------");
+		#endif
+
+		
+              		A4GL_pushop (OP_EQUAL);
+              		i = A4GL_pop_bool ();
+			
+		}
+
+
 #ifdef DEBUG
               if ((b[cb].dtype & DTYPE_MASK)==DTYPE_VCHAR ) {
                         A4GL_debug(" VARCHAR: '%s' '%s' i=%d",b[cb].ptr,mptr,i);

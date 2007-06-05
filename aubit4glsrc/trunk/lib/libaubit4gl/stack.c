@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.180 2007-06-04 10:24:53 gyver309 Exp $
+# $Id: stack.c,v 1.181 2007-06-05 09:43:19 mikeaubury Exp $
 #
 */
 
@@ -1725,9 +1725,17 @@ int A4GL_last_was_ascii_null(void) {
 
 void A4GL_push_date_expr(void) {
 long l;
+char buff[256];
 A4GL_push_today();
 l=A4GL_pop_long();
-A4GL_push_char(A4GL_using_date(l,"ddd mmm dd yyyy"));
+
+strcpy(buff, A4GL_using_date(l,"ddd mmm dd yyyy")); 
+
+// DATE seems to use a space rather than a 0 for a lead on a day in the month...
+if (buff[8]=='0') {
+		buff[8]=' ';
+}
+A4GL_push_char(buff);
 }
 
 void A4GL_push_time_expr(void) {
