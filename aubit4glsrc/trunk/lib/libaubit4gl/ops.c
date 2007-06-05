@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.109 2007-06-05 14:55:52 gyver309 Exp $
+# $Id: ops.c,v 1.110 2007-06-05 15:54:17 mikeaubury Exp $
 #
 */
 
@@ -3367,6 +3367,9 @@ A4GL_display_money (void *ptr, int size, int size_c,
   static char buff_14[256];
   char *ubuff;
   int a;
+  int has_neg=0;
+ fgldecimal *fgldec;
+ fgldec=ptr;
 
   A4GL_debug ("Display_money");
 
@@ -3397,12 +3400,16 @@ A4GL_display_money (void *ptr, int size, int size_c,
       strcpy (buff_14, "-");
       ubuff = A4GL_make_using_tostring (ptr, size >> 8, size & 255);
       strcat (buff_14, ubuff);
-	
+
+      if (fgldec->dec_data[0]&128) { has_neg=1; }
+
       for (a = 0; a < strlen (buff_14) ; a++) {
 	  if (buff_14[a] == '-') {
 	  	buff_14[a] = '$' ;
 	}
 	}
+
+      if (has_neg) {
       for (a = strlen (buff_14) - 1; a >= 0; a--)
 	{
 	  if (buff_14[a] == '$')
@@ -3410,6 +3417,7 @@ A4GL_display_money (void *ptr, int size, int size_c,
 	      buff_14[a] = '-';
 	      break;
 	    }
+	}
 	}
 	//printf("%s\n", buff_14);
       A4GL_push_char (buff_14);
