@@ -9,4 +9,8 @@ main
 define w_mo money
 let w_mo = -0.17
 display w_mo
+let w_mo = -617
+display w_mo
+let w_mo = -617.17
+display w_mo
 end main
