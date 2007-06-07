@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.171 2007-06-04 10:24:55 gyver309 Exp $
+# $Id: ioform.c,v 1.172 2007-06-07 10:25:53 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.171 2007-06-04 10:24:55 gyver309 Exp $";
+		"$Id: ioform.c,v 1.172 2007-06-07 10:25:53 mikeaubury Exp $";
 #endif
 
 /**
@@ -106,7 +106,7 @@ void A4GL_set_field_attr_with_attr_already_determined (FIELD * field,
 int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 					    struct struct_scr_field *fprop,
 					    char *fld_data, char *data_area);
-static int A4GL_get_field_width_w (void *f,int need_height);
+//int A4GL_get_field_width_w (void *f,int need_height);
 void A4GL_set_infield_from_parameter (long a);
 void A4GL_set_curr_infield (void *a);
 
@@ -1259,6 +1259,19 @@ A4GL_get_field_width (FIELD * f)
   return x * y;
 }
 
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+A4GL_get_field_height (FIELD * f)
+{
+  int x, y, a;
+  dynamic_field_info (f, &y, &x, &a);
+  return y;
+}
+
 /**
  *
  * @todo Describe function
@@ -1351,7 +1364,7 @@ A4GL_turn_field_on2 (FIELD * f, int a)
       		xx = set_max_field (f, w);
     	}
 	
-	
+	A4GL_debug("set_max_field : %d\n",w);
   	if (xx != 0)
     	{
       	A4GL_debug ("Unable to change field width\n");
@@ -1413,18 +1426,18 @@ A4GL_set_fields_sio (struct s_screenio *sio)
 {
   int a;
   int nv;
-  int flg;
-  char buff[8048];
+  //int flg;
+  //char buff[8048];
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
-  struct struct_scr_field *prop;
+  //struct struct_scr_field *prop;
   FIELD **field_list;
-  FIELD *firstfield = 0;
+  //FIELD *firstfield = 0;
   int nofields;
-  int attr;
-  FIELD *was_current;
+  //int attr;
+  //FIELD *was_current;
   int b;
-	void *f;
+	//void *f;
 
 
   formdets = sio->currform;

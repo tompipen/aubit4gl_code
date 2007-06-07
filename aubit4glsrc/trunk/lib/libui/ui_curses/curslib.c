@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.140 2007-06-04 10:24:55 gyver309 Exp $
+# $Id: curslib.c,v 1.141 2007-06-07 10:25:53 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.140 2007-06-04 10:24:55 gyver309 Exp $";
+  "$Id: curslib.c,v 1.141 2007-06-07 10:25:53 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1895,8 +1895,8 @@ void
 A4GL_clear_prompt (struct s_prompt *prmt)
 {
   WINDOW *p;
-int a;
-FIELD **sarr;
+//int a;
+//FIELD **sarr;
 
 
 #ifdef DEBUG

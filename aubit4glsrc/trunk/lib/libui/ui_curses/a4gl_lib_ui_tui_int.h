@@ -238,6 +238,15 @@ void A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1);
 
 int A4GL_get_curr_border (void);
 //int A4GL_fgl_fieldtouched_input_array_ap (struct s_inp_arr *s, va_list * ap);
+int A4GL_get_field_width_w (void *f,int need_height);
+int A4GL_get_field_height (FIELD * f);
+int chk_all_fields(struct s_screenio *sio);
+void
+A4GL_set_fields_sio (struct s_screenio *sio);
+int
+A4GL_entire_row_is_blank (struct s_inp_arr *s,int ln);
+void debug_print_field_opts(struct s_form_dets *formdets);
+int A4GL_get_currwinno(void);
 
 void A4GL_mja_pos_form_cursor (FORM * form);
 int A4GL_turn_field_off (FIELD * f);

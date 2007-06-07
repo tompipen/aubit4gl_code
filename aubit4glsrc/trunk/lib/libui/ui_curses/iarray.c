@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.125 2007-06-04 10:24:55 gyver309 Exp $
+# $Id: iarray.c,v 1.126 2007-06-07 10:25:53 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.125 2007-06-04 10:24:55 gyver309 Exp $";
+		"$Id: iarray.c,v 1.126 2007-06-07 10:25:53 mikeaubury Exp $";
 #endif
 
 /**
@@ -2315,7 +2315,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 		for (a=0;a<arr->fcntrl_cnt;a++) {
 			if (arr->fcntrl[a].op==FORMCONTROL_BEFORE_FIELD) {
 				struct s_movement *m;
-				m=arr->fcntrl[a].parameter;
+				m=(struct s_movement *) arr->fcntrl[a].parameter;
 				if (m->scr_line!=arr->scr_line) {
 					m->scr_line=arr->scr_line;
 					//m->attrib_no=arr->curr_attrib;
@@ -3336,8 +3336,8 @@ return "Unknown FORMCONTROL";
 int
 A4GL_entire_row_is_blank (struct s_inp_arr *s,int ln)
 {
-  struct struct_scr_field *fprop;
-  int a;
+  //struct struct_scr_field *fprop;
+  //int a;
   int b;
   int nv;
   int isblank=1;
@@ -3366,10 +3366,10 @@ A4GL_double_chk_line (struct s_inp_arr *s, int ln, char why)
 {
 // Lets just double check for any required fields...
   struct struct_scr_field *fprop;
-  int a;
+  //int a;
   int b;
   int nv;
-  int isblank = 1;
+  //int isblank = 1;
   int is_all_blank = 0;
 if (ln<0) return 1;
 
@@ -3384,7 +3384,7 @@ if (ln<0) return 1;
 
   for (b = 0; b < nv; b++)
     {
-      char *buff2;
+      //char *buff2;
       FIELD *f;
       char *p;
       f = s->field_list[ln][b];

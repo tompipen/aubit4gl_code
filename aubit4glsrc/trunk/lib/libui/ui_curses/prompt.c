@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.65 2007-06-04 10:24:55 gyver309 Exp $
+# $Id: prompt.c,v 1.66 2007-06-07 10:25:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.65 2007-06-04 10:24:55 gyver309 Exp $";
+		"$Id: prompt.c,v 1.66 2007-06-07 10:25:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -54,7 +54,7 @@ static int prompt_last_key=0;
 //int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 //int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 //int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
-void A4GL_set_intr (void);
+//void A4GL_set_intr (void);
 
 /*
 =====================================================================
