@@ -44,6 +44,8 @@ getword (char *word, char *line, char stop)
 {
   int x = 0, y;
 
+	assert(strlen(line)>=ENTRY_SIZE);
+
   for (x = 0; ((line[x]) && (line[x] != stop)); x++)
     word[x] = line[x];
 
@@ -242,6 +244,9 @@ load_form_entries ()
   for (index = 0; content_length && (!feof (stdin)); index++)
     {
       num_form_entries = index;
+
+	assert(index>MAX_ENTRIES);
+
       form_entries[index].val = fmakeword (stdin, '&', &content_length);
       plustospace (form_entries[index].val);
       unescape_url (form_entries[index].val);
@@ -291,6 +296,7 @@ load_cmdln_entries ()
   for (index = 0; cl[0] != '\0'; index++)
     {
       num_cmdln_entries = index;
+	assert(index>=MAX_ENTRIES);
       getword (cmdln_entries[index].val, cl, '&');
       plustospace (cmdln_entries[index].val);
       unescape_url (cmdln_entries[index].val);
