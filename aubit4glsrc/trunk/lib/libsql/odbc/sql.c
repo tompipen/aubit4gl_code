@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.192 2007-06-05 06:20:23 mikeaubury Exp $
+# $Id: sql.c,v 1.193 2007-06-07 13:51:13 mikeaubury Exp $
 #
 */
 
@@ -3802,10 +3802,12 @@ static char *type_id_to_name_fallback(int type_id)
     if (type_id == SQL_INTERVAL_HOUR_TO_SECOND) return "IvHourToSec";
     if (type_id == SQL_INTERVAL_MINUTE_TO_SECOND) return "IvMinToSec";
 #ifndef SQLITE_DIRECT
+#ifndef IODBC
     if (type_id == SQL_UNICODE) return "Unicode";
     if (type_id == SQL_UNICODE_VARCHAR) return "UniVarchar";
     if (type_id == SQL_UNICODE_LONGVARCHAR) return "UniLVarchar";
     if (type_id == SQL_UNICODE_CHAR) return "UniChar";
+#endif
 #endif
 #if (ODBCVER >= 0x0300)
     if (type_id == SQL_DATETIME) return "Datetime";
