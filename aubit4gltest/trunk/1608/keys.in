@@ -1,12 +1,13 @@
-1\TAB        
+1\TAB
 tab
 \DOWN
 down
 \TAB
 tab
-\TAB                
+\TAB
 tab
-\TAB\DOWN
+\TAB
+\DOWN
 tabdown
 \DOWN
 down
