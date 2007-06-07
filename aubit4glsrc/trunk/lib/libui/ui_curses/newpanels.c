@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.144 2007-06-07 10:25:54 mikeaubury Exp $
+# $Id: newpanels.c,v 1.145 2007-06-07 16:38:17 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.144 2007-06-07 10:25:54 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.145 2007-06-07 16:38:17 mikeaubury Exp $";
 #endif
 
 /**
@@ -441,7 +441,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
   keypad (win, TRUE);
 
   A4GL_debug ("Deciding what to do... %s\n", name);
-  if (a4gl_toupper (name[0]) != name[0])
+  if (a4gl_toupper (name[0]) != name[0] || 1)
     {
 #ifdef DEBUG
       {
