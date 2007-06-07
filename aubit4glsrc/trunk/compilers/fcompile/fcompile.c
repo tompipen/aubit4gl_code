@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.56 2007-05-21 15:10:06 mikeaubury Exp $
+# $Id: fcompile.c,v 1.57 2007-06-07 11:15:29 mikeaubury Exp $
 #*/
 
 /**
@@ -446,7 +446,7 @@ int a;
 int found;
 int b;
 
-if ((the_form.dbname,"formonly")!=0) {
+if (strcmp(the_form.dbname,"formonly")!=0) {
 	if (the_form.tables.tables_len==0) {
 		fprintf(stderr,"Warning: DATABASE defined - but no tables used\n");
 	}
