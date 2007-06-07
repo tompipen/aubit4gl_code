@@ -639,8 +639,16 @@ sprintf(buff,"INFORMIXSERVER=%s",lv_server);
 A4GL_setenv("INFORMIXSERVER",lv_server,1);
 }
 endcode
+
+
 call set_username(lv_username,lv_passwd)
 let lv_server="@",lv_server
+
+code
+Exec sql disconnect all;
+endcode
+
+#whenever error continue
 if lv_username is not null and lv_username not matches " " then
 
 	if lv_passwd is not null and lv_passwd not matches " " then # Got the lot...
@@ -652,6 +660,12 @@ if lv_username is not null and lv_username not matches " " then
 else
 	connect to lv_server 
 end if
+whenever error stop
+
+if check_and_report_error() then
+	return
+end if
+
 
 call select_db()
 end function
