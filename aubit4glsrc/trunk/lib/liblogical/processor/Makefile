@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2007-05-10 21:07:48 mikeaubury Exp $
+# $Id: Makefile,v 1.13 2007-06-07 07:37:56 mikeaubury Exp $
 #
 ROOT		=../../..
 
@@ -32,13 +32,20 @@ ROOT		=../../..
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
+LAYOUTDIR=$(ROOT)/lib/liblogical/layout_engine
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-Wall -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC
+CFLAGS+=-Wall -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC -I$(LAYOUTDIR)
+LINKLIBS        =-L$(ROOT)/lib -l${AUBITLIBFULL}
+
 
 OBJS=process_report.o ../common/a4gl_lle.o API_process.o
+
+QCOBJS=quick_check.o ../common/a4gl_lle.o  \
+        $(LAYOUTDIR)/API_layout.o
+
 
 ifeq "${TARGET_OS}" "mingw"
 	LD_EXE_FLAGS=--export-dynamic
@@ -58,6 +65,7 @@ endif
 ##                              Targets
 ## ==================================================================
 
+all: ${ROOT}/bin/process_report ${ROOT}/bin/quick_check_logrep
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
 	${CC} -g ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${LD_EXE_FLAGS} ${EXTRASYSTEMLIBS}
 
@@ -71,8 +79,19 @@ API_process.h: API_process.spec
 ##                              Clean
 ## ==================================================================
 
+$(LAYOUTDIR)/API_layout.h: $(LAYOUTDIR)/API_layout.spec
+	$(MAKE) -C $(LAYOUTDIR) API_layout.h
+
+$(LAYOUTDIR)/API_layout.c: $(LAYOUTDIR)/API_layout.spec
+	$(MAKE) -C $(LAYOUTDIR) API_layout.c
+
+qc:${ROOT}/bin/quick_check_logrep
+
+${ROOT}/bin/quick_check_logrep: $(LAYOUTDIR)/API_layout.h ${QCOBJS}
+#	${CC} -rdynamic -g ${QCOBJS} -o $@ ${LFLAGS}  
+	${LD} -g ${LDFLAGS} ${CFLAGS} -o $@ ${QCOBJS} ${LINKLIBS}  ${EXTRASYSTEMLIBS}
+
+
 clean:
-	${RM} *.o process_report ${ROOT}/bin/process_report API_process.h \
+	${RM} *.o process_report ${ROOT}/bin/process_report API_process.h  ${ROOT}/bin/quick_check_logrep \
 	API_process.c *~
-
-

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.43 2007-04-06 07:20:45 afalout Exp $
+# $Id: Makefile,v 1.44 2007-06-07 07:37:55 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -79,7 +79,7 @@ endif
 ################################
 #Define targets for liblogical
 #Libraries are made with lib makefile
-LIBLOGICAL_BUILD=bin/process_report ${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT} \
+LIBLOGICAL_BUILD=bin/process_report ${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT} bin/quick_check_logrep \
 	${PLUGINDIR}/libLOGREPPROC_CSV${SO_EXT}
 LIBLOGICAL_GTK2_DEPEND=${PLUGINDIR}/libLOGREP_CSV${SO_EXT} bin/layout_engine bin/report_viewer \
 	${PLUGINDIR}/libLOGREP_TXT${SO_EXT}
@@ -268,8 +268,13 @@ endif
 
 bin/process_report:
 	$(MAKE) -C lib/liblogical/processor
+
+bin/quick_check_logrep:
+	$(MAKE) -C lib/liblogical/processor qc
+
 bin/layout_engine:
 	$(MAKE) -C lib/liblogical/layout_engine
+
 bin/report_viewer:
 	$(MAKE) -C lib/liblogical/report_viewer
 

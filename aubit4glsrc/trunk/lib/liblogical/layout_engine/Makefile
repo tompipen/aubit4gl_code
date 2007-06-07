@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2007-05-10 21:07:48 mikeaubury Exp $
+# $Id: Makefile,v 1.15 2007-06-07 07:37:56 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -86,7 +86,6 @@ ifeq "${GTKBUILD}" "yes"
 	ALL+=${ROOT}/bin/layout_engine
 endif
 
-ALL+=qc
 
 ## ==================================================================
 ##                              Options
@@ -105,8 +104,8 @@ OBJS=layout_engine.o ../common/a4gl_lle.o ../report_viewer/report_viewer.o \
 	API_layout.o file_hand.o
 
 
-QCOBJS=quick_check.o ../common/a4gl_lle.o  \
-	API_layout.o 
+#QCOBJS=quick_check.o ../common/a4gl_lle.o  \
+	#API_layout.o 
 
 CFLAGS		+=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -I../common -I../../common
 LINKLIBS	=-L$(ROOT)/lib -l${AUBITLIBFULL}
@@ -122,11 +121,11 @@ ${ROOT}/bin/layout_engine: API_layout.h ${OBJS}
 	${LD} -g ${GTK_LIB_PATH} ${GTK_INC_PATH} ${LDFLAGS} ${CFLAGS} -o $@ ${OBJS} ${LINKLIBS} ${GTKLIBS} ${EXTRASYSTEMLIBS}
 #	-Wl,--export-dynamic
 
-qc:${ROOT}/bin/quick_check_logrep
+#qc:${ROOT}/bin/quick_check_logrep
 
-${ROOT}/bin/quick_check_logrep: API_layout.h ${QCOBJS}
+#${ROOT}/bin/quick_check_logrep: API_layout.h ${QCOBJS}
 #	${CC} -rdynamic -g ${QCOBJS} -o $@ ${LFLAGS}  
-	${LD} -g ${LDFLAGS} ${CFLAGS} -o $@ ${QCOBJS} ${LINKLIBS}  ${EXTRASYSTEMLIBS}
+	#${LD} -g ${LDFLAGS} ${CFLAGS} -o $@ ${QCOBJS} ${LINKLIBS}  ${EXTRASYSTEMLIBS}
 
 API_layout.c: API_layout.spec
 	${LIBROOT}/bin/dlmagic $^ > $@
@@ -159,5 +158,5 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} *.o ${ROOT}/bin/layout_engine ${ROOT}/bin/quick_check_logrep API_layout.h API_layout.c *.dll.a *~  ../common/a4gl_lle.o
+	${RM} *.o ${ROOT}/bin/layout_engine  API_layout.h API_layout.c *.dll.a *~  ../common/a4gl_lle.o
 	
