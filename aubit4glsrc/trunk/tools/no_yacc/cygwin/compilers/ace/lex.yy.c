@@ -1630,7 +1630,7 @@ YY_RULE_SETUP
 case 36:
 YY_RULE_SETUP
 #line 55 "ace.lex"
-{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AND;}
+{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_AND;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
