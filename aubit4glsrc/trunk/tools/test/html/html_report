@@ -1,0 +1,4 @@
+#!/bin/bash
+. /etc/profile
+. /etc/bashrc
+/var/www/cgi-bin/html_report.4ae
