@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.132 2007-06-05 09:42:25 mikeaubury Exp $
+# $Id: report.c,v 1.133 2007-06-07 09:24:40 mikeaubury Exp $
 #
 */
 
@@ -596,7 +596,7 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
  * @todo Describe function
  */
 static char *
-gen_rep_tab_name (void *p)
+gen_rep_tab_name (void *p,int isCreateUsage)
 {
     static char buf[256];
     char *owner;
@@ -626,8 +626,15 @@ gen_rep_tab_name (void *p)
 	owner = "";
 	sep = "";
     }
-
-    sprintf(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
+    if (isCreateUsage) {
+    	sprintf(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
+    } else { 
+	if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_CREATE_HASH")) {
+    		sprintf(buf, "#%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
+	} else {
+    		sprintf(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
+	}
+    }
     return buf;
 }
 
@@ -1339,7 +1346,7 @@ static char * A4GL_drop_temp_tab (struct BINDING *b)
 {
   static char buff_3[30000];
 
-  SPRINTF1 (buff_3, "drop table %s\n", gen_rep_tab_name (b));
+  SPRINTF1 (buff_3, "drop table %s\n", gen_rep_tab_name (b,0));
   return buff_3;
 }
 
@@ -1362,7 +1369,7 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
    */
 
 
-  SPRINTF1 (buff_3, "create temp table %s (\n", gen_rep_tab_name (b));
+  SPRINTF1 (buff_3, "create temp table %s (\n", gen_rep_tab_name (b,1));
 
   for (a = 0; a < n; a++)
     {
@@ -1403,7 +1410,7 @@ A4GL_unload_report_table (struct BINDING *b)
   char buff[1024];
   struct BINDING *ibind = 0;
   return;
-  SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b));
+  SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b,0));
   A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind,0);
 }
 
@@ -1418,7 +1425,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   int a;
   void *x;
   A4GL_debug ("Add row report table");
-  SPRINTF1 (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b));
+  SPRINTF1 (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b,0));
 
   for (a = 0; a < n; a++)
     {
@@ -1460,7 +1467,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
   *reread = A4GL_duplicate_binding (b, n);
 
 
-  SPRINTF1 (buff, "select * from %s order by ", gen_rep_tab_name (b));
+  SPRINTF1 (buff, "select * from %s order by ", gen_rep_tab_name (b,0));
 
   A4GL_unload_report_table (b);	// This is useful for debugging....
 
