@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.118 2007-06-01 14:25:48 gyver309 Exp $
+# $Id: sqlconvert.c,v 1.119 2007-06-07 12:55:31 mikeaubury Exp $
 #
 */
 
@@ -47,6 +47,7 @@ static char *get_dollared_sql_var (char *s);
 static char *A4GL_cv_next_token (char *p, int *len, int dot);
 static char *A4GL_space_out (char *s);
 int is_compile_time_convert=1;
+char lastFieldData[256]="";
 
 /*
 =====================================================================
@@ -612,7 +613,7 @@ void
 A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 {
   char buff[256];
-void *p=0;
+//void *p=0;
 
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
   A4GL_debug ("Load convert : %s %s", source_dialect, target_dialect);
@@ -785,9 +786,19 @@ A4GLSQLCV_check_sql (char *s,int *converted)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_CMD)
 	{
+
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
-	      return current_conversion_rules[b].data.to;
+		static char buff[2000]="";
+		char *ptr;
+	      	ptr=current_conversion_rules[b].data.to;
+		if (ptr && strstr(ptr,"%s")){ 
+			A4GL_make_downshift(lastFieldData);
+			sprintf(buff,ptr,lastFieldData);
+			return buff;
+		} else {
+			return ptr;
+		}
 	    }
 	}
     }
@@ -2130,28 +2141,64 @@ A4GL_strwscmp (char *a, char *b)
   int b_i;
   char *o1;
   char *o2;
+  int lastWasWs;
+  char fieldData[256]="";
   b_i = 0;
   o1 = acl_strdup (a);
   o2 = acl_strdup (b);
   b_i = 0;
+  lastWasWs=0;
   for (a_i = 0; a_i < strlen (a); a_i++)
     {
-      if (a[a_i] == ' ' || a[a_i] == '\t')
-	continue;
+      if (a[a_i] == ' ' || a[a_i] == '\t') {
+		if (lastWasWs) continue;
+		lastWasWs=1;
+      } else {
+		lastWasWs=0;
+      }
       o1[b_i++] = toupper (a[a_i]);
     }
+
   o1[b_i] = 0;
   b_i = 0;
+
   for (a_i = 0; a_i < strlen (b); a_i++)
     {
-      if (b[a_i] == ' ' || b[a_i] == '\t')
-	continue;
-      o2[b_i++] = toupper (b[a_i]);
+      if (b[a_i] == ' ' || b[a_i] == '\t') {
+		if (lastWasWs) continue;
+		lastWasWs=1;
+      } else {
+		lastWasWs=0;
+      }
+      o2[b_i++] = toupper (b[a_i]); 
+
+	if (b_i>1) {
+      		if (o2[b_i-1]=='S' && o2[b_i-2]=='%') {
+				o2[b_i-1]='s';
+      		}
+	}
     }
   o2[b_i] = 0;
-  a_i = strcmp (o1, o2);
+  if (strstr(o2,"%s")) {
+	int r;
+	int n;
+	int chars=0;
+	char buff[2000];
+	strcpy(buff,o2);
+	strcat(buff,"%n");
+	a_i=-1;
+	r=sscanf(o1,buff,&fieldData,&chars);
+	if (r>=1 && strlen(o1)==chars) {
+		a_i=0;
+	}
+  } else {
+  	a_i = strcmp (o1, o2);
+  }
   acl_free (o1);
   acl_free (o2);
+
+  strcpy(lastFieldData,fieldData);
+
   return a_i;
 
 
