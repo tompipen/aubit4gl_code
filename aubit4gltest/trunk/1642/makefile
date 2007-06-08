@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "String to double convertion with invalid trailing chars"
+desc: ; @echo "String to numeric convertion with invalid trailing chars"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
