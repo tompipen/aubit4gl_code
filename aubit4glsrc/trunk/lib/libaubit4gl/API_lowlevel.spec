@@ -48,14 +48,18 @@ A4GL_LL_field_status void* field -> int
 /* void A4GL_LL_form_page void* form */
 A4GL_LL_form_page void* form -> int
 
-/* int A4GL_LL_get_carat void* form */
+/* Get the current X position in the field */
 A4GL_LL_get_carat void* form -> int
+
+/* Get the current y position in the field */
+A4GL_LL_get_carat_y void* form -> int
 
 A4GL_LL_init_color int c int r int g int b -> void
 
 
 /* int A4GL_LL_get_field_width void* f */
 A4GL_LL_get_field_width void* f -> int
+A4GL_LL_get_field_height void* f -> int
 
 
 
@@ -210,6 +214,7 @@ A4GL_LL_construct_large char* orig void* evt int initkey int initpos char* left 
 A4GL_LL_construct_large_finished void* f -> char*
 A4GL_LL_pause_mode int pm -> int
 A4GL_LL_get_field_width_dynamic void* f -> int
+A4GL_LL_get_field_height_dynamic void* f -> int
 A4GL_LL_submit_event int a void* s int event_type int block int keycode char* field -> void
 A4GL_LL_activate_events void* s -> void
 A4GL_LL_finished_with_events void* s -> void

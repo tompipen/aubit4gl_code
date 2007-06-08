@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.111 2007-06-05 16:56:00 mikeaubury Exp $
+# $Id: ops.c,v 1.112 2007-06-08 15:57:03 mikeaubury Exp $
 #
 */
 
@@ -3255,7 +3255,16 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
     {
       if (A4GL_isnull (DTYPE_DECIMAL, ptr))
 	{
-	  strcpy (buff_13, "");
+		int szptr;
+	  	strcpy (buff_13, "");
+		szptr=size >> 8;
+		szptr+=2;
+
+		if (szptr>0 && szptr<255) {
+			memset(buff_13,' ',sizeof(buff_13));
+			buff_13[szptr]=0;
+		} 
+
 	  return buff_13;
 	}
       A4GL_push_dec (ptr, 0, size);
@@ -3379,7 +3388,16 @@ char *offbuff;
     {
       if (A4GL_isnull (DTYPE_DECIMAL, ptr))
 	{
-	  strcpy (buff_14, "");
+		int szptr;
+	  	strcpy (buff_14, "");
+		szptr=size >> 8;
+		szptr+=3; //(size&255);
+		//if (size&255) szptr++;
+		//if (size&255) szptr++;
+		if (szptr>0 && szptr<255) {
+			memset(buff_14,' ',sizeof(buff_14));
+			buff_14[szptr]=0;
+		} 
 	  return buff_14;
 	}
       A4GL_push_dec (ptr, 1, size);
