@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.112 2007-06-08 15:57:03 mikeaubury Exp $
+# $Id: ops.c,v 1.113 2007-06-08 18:26:20 mikeaubury Exp $
 #
 */
 
@@ -2944,6 +2944,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
 {
   double a;
   static char buff_10[256];
+  int len=14;
   
 
   if (display_type == DISPLAY_TYPE_DISPLAY
@@ -2955,8 +2956,31 @@ A4GL_display_float (void *ptr, int size, int size_c,
 	  return buff_10;
 	}
       a = *(double *) ptr;
-      SPRINTF1 (buff_10, "%14.2f", a);
-      A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+      	SPRINTF1 (buff_10, "%14.2f", a);
+      	A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	if (!strchr(buff_10,'*')) {
+		return buff_10;
+	}
+
+      	SPRINTF1 (buff_10, "%14.1f", a);
+      	A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	if (!strchr(buff_10,'*')) {
+		return buff_10;
+	}
+
+      	SPRINTF1 (buff_10, "%14.0f", a);
+      	A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	if (!strchr(buff_10,'*')) {
+		return buff_10;
+	}
+      	SPRINTF1 (buff_10, "%14.8e", a);
+	//printf("--->%s\n", buff_10);
+      	//A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	if (!strchr(buff_10,'*')) {
+		return buff_10;
+	}
+
+
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)

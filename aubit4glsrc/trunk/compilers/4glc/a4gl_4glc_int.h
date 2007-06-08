@@ -612,7 +612,7 @@ void map_ui_endblock(char *s) ;
 int set_ignore_indicators(void);
 int clr_ignore_indicators(void);
 
-
+int check_cursor_name(char *s);
 
 
 // printf is often used for debug messages during
