@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.118 2007-06-04 10:24:56 gyver309 Exp $";
+  "$Id: generic_ui.c,v 1.119 2007-06-08 14:02:33 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -26,13 +26,13 @@ int A4GL_gen_field_list_from_slist_internal (void ***field_list,
 
 
 void A4GL_debug_print_opts (long z);
-void *A4GL_get_currwin (void);
+//void *A4GL_get_currwin (void);
 static int started = -1;
 int A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
 int A4GL_find_fields_no_metric (struct_form * f, int metric_no);
 int A4GL_find_attrib_from_field (struct_form * f, int field_no);
 
-void A4GL_LL_ui_exit (void);
+//void A4GL_LL_ui_exit (void);
 int field_status_strip_tabname=0;
 
 int aclfgl_a4gl_show_help (int n);
@@ -4008,7 +4008,7 @@ A4GL_ll_set_field_opts (void *f, int l)
   char buff[30];
   int hadit = 0;
   int last = -1;
-  long a;
+  //long a;
 
   A4GL_debug_print_opts(l);
   SPRINTF1 (buff, "%p", f);

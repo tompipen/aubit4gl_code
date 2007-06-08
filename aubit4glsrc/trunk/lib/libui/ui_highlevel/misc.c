@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.56 2007-05-21 14:28:11 mikeaubury Exp $";
+  "$Id: misc.c,v 1.57 2007-06-08 14:02:35 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -22,7 +22,7 @@ int initialized_screen_mode = 0;
 //int A4GL_field_opts_on (void *v, int n);
 
 int A4GL_LL_fieldnametoid (char *f, char *s, int n);
-void *A4GL_get_currwin (void);
+//void *A4GL_get_currwin (void);
 int A4GL_UI_int_get_inc_quotes (int a);
 
 void A4GL_clear_menu (ACL_Menu * menu);
@@ -662,18 +662,18 @@ A4GL_set_fields_sio (struct s_screenio *sio)
 {
   int a;
   int nv;
-  int flg;
-  char buff[8048];
+  //int flg;
+  //char buff[8048];
   struct s_form_dets *formdets;
   struct struct_scr_field *field;
-  struct struct_scr_field *prop;
+  //struct struct_scr_field *prop;
   void **field_list;
-  void *firstfield = 0;
+  //void *firstfield = 0;
   int nofields;
   int attr;
-  void *was_current;
+  //void *was_current;
   int b;
-        void *f;
+        //void *f;
 
 
   formdets = sio->currform;
@@ -1300,6 +1300,12 @@ A4GL_get_field_width (void *f) {
 	return A4GL_get_field_width_with_form(0,f);
 }
 
+
+int
+A4GL_get_field_height (void *f) {
+	return A4GL_get_field_height_with_form(0,f);
+}
+
 int
 A4GL_get_field_width_with_form (void *fd, void *fld)
 {
@@ -1321,7 +1327,6 @@ A4GL_get_field_width_with_form (void *fd, void *fld)
 
   if (formdets == 0 || fprop == 0)
     {
-	    	//A4GL_pause_execution();
 		w= A4GL_LL_get_field_width_dynamic (fld);
     } else {
   		w = formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, fld)].w;
@@ -1330,6 +1335,34 @@ A4GL_get_field_width_with_form (void *fd, void *fld)
   return w;
 }
 
+int
+A4GL_get_field_height_with_form (void *fd, void *fld)
+{
+  //int x, y, a;
+  int w;
+  struct s_form_dets *formdets;
+  struct s_scr_field *fprop;
+
+  //if (f==0) return 0;
+
+
+  if (fd==0) {
+  	formdets 	= (struct s_form_dets *) UILIB_A4GL_get_curr_form (0);
+  } else {
+	formdets=fd;
+  }
+
+  fprop 	= (struct s_scr_field *) (A4GL_ll_get_field_userptr (fld));
+
+  if (formdets == 0 || fprop == 0)
+    {
+		w= A4GL_LL_get_field_height_dynamic (fld);
+    } else {
+  		w = formdets->fileform->metrics.metrics_val[A4GL_get_metric_for (formdets, fld)].h;
+    }
+
+  return w;
+}
 
 
 
@@ -1349,7 +1382,7 @@ A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt)
   struct s_screenio *sio;
   //int attr;
   int *enabled=0;
-  int nenabled=0;
+  //int nenabled=0;
   int nfields;
 
   sio = vsio;

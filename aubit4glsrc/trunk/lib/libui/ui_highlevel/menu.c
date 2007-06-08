@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.44 2007-04-27 15:29:02 mikeaubury Exp $";
+  "$Id: menu.c,v 1.45 2007-06-08 14:02:34 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -18,12 +18,12 @@ void A4GL_h_disp_title (ACL_Menu * menu, char *str);
 //void A4GL_clr_menu_disp (ACL_Menu * menu);
 static int A4GL_menu_getkey (ACL_Menu * menu);
 void A4GL_size_menu (ACL_Menu * menu);
-void *A4GL_get_currwin (void);
+//void *A4GL_get_currwin (void);
 int aclfgli_show_help (int n);
 int A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts);
 static int A4GL_ll_menu_type (void ) ;
-void A4GL_LL_enable_menu(void);
-void A4GL_LL_disable_menu(void);
+//void A4GL_LL_enable_menu(void);
+//void A4GL_LL_disable_menu(void);
 
 static char *use_empty_string_if_null(char *s) {
 static char *s_empty="";

@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.115 2007-05-18 18:20:53 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.116 2007-06-08 14:02:37 mikeaubury Exp $";
 #endif
 
 
@@ -32,7 +32,7 @@ static char *stock_item (char *s);
 int gui_xwidth = 9;
 static int menu_response = -1;
 void A4GL_gui_prompt_style (int a);
-void *A4GL_get_currwin (void);
+//void *A4GL_get_currwin (void);
 //int A4GLHLUI_initlib(void);
 void tstamp (char *s);
 int A4GL_LL_disp_form_field_ap (int n, int attr, char *s, va_list * ap);
@@ -45,7 +45,7 @@ int A4GL_display_generic (GtkWidget * k, char *s,char *orig);
 //int A4GL_has_event (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
 //int A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt);
-GtkWidget *A4GL_make_widget (char *widget, char *config, int w);
+GtkWidget *A4GL_make_widget (char *widget, char *config, int w,int h);
 //void A4GL_clear_prompt(struct s_prompt *prmt) ;
 void A4GL_getxy_coords (int *x, int *y);
 void A4GL_show_console (void);
@@ -56,7 +56,7 @@ void A4GL_console_toggle (void);
 void A4GL_add_to_console (char *s);
 void A4GL_clear_console (char *s);
 void A4GL_create_console (void);
-int A4GL_LL_field_opts (void *field);
+//int A4GL_LL_field_opts (void *field);
 static int use_frames(void) ;
 //void A4GL_logkey(long a);
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt,
@@ -76,6 +76,7 @@ void MyStyleSetItemColor (GdkColor color,	/* The allocated color to be added to 
 void A4GL_alloc_colors (void);
 void A4GL_gui_set_active (GtkWidget * w, int en_dis);
 GtkWidget *last_construct_drwin = 0;
+static void A4GL_dobeep(void ) ;
 
 int window_frame_type = 0;
 char *A4GL_fld_val_generic (GtkWidget * k);
@@ -2070,10 +2071,13 @@ void
 A4GL_LL_set_max_field (void *f, int n,void *frm)
 {
   gtk_object_set_data (GTK_OBJECT (f), "MAXFIELD", (void *) n);
-  if (strcmp (gtk_object_get_data (GTK_OBJECT (f), "WIDGETSNAME"), "ENTRY") ==
-      0)
+  if (strcmp (gtk_object_get_data (GTK_OBJECT (f), "WIDGETSNAME"), "ENTRY") == 0)
     {
-      gtk_entry_set_max_length (f, n);
+	 if (gtk_object_get_data (GTK_OBJECT (f), "ISTEXTVIEW")) {
+
+	 } else {
+      		gtk_entry_set_max_length (f, n);
+	 }
     }
 
   // NEED MORE HERE...
@@ -2780,11 +2784,11 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
     config_str = "";
 
 
-  widget = (void *) A4GL_make_widget (widget_str, config_str, cols);
+  widget = (void *) A4GL_make_widget (widget_str, config_str, cols,rows);
   if (widget == 0)
     {
       // Ooops - didn't make a widget...
-      widget = (void *) A4GL_make_widget ("ENTRY", "", cols);
+      widget = (void *) A4GL_make_widget ("ENTRY", "", cols,rows);
       FPRINTF (stderr,
 	       "WARNING - Coulnd't make widget as %s %s, made an entry field instead\n",
 	       widget_str, config_str);
@@ -2873,9 +2877,12 @@ A4GL_LL_set_carat (void *vform)
     {
       if (strcmp (s, "ENTRY") == 0)
 	{
+	 if (gtk_object_get_data (GTK_OBJECT (w), "ISTEXTVIEW")) {
+	 } else {
 	  gtk_editable_set_position (GTK_EDITABLE
 				     (form->widgets[form->currentfield]),
 				     form->curcol);
+	  }
 	}
     }
 }
@@ -2977,6 +2984,13 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	  A4GL_LL_set_field_buffer (cwidget, 0, " ",0);
 	}
 
+
+     if (gtk_object_get_data (GTK_OBJECT (cwidget), "ISTEXTVIEW")) {
+
+		// Needs implementing...
+     } else {
+
+
       if (form->ovlins == 1)
 	{
 	  iopos = form->curcol;
@@ -2986,8 +3000,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	}
       else
 	{
-	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol,
-				    form->curcol + 1);
+	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol, form->curcol + 1);
 	  iopos = form->curcol;
 	  gtk_editable_insert_text (GTK_EDITABLE (cwidget), utf, strlen (utf),
 				    &iopos);
@@ -2996,6 +3009,9 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	    form->curcol = 0;
 	  //form->curcol+=strlen(utf);
 	}
+
+
+     }
       g_free (utf);
     }
   else
@@ -4234,7 +4250,12 @@ buff[1]=0;
 			
 			A4GL_debug("got %d matches", cnt);
 			if (cnt==0) { // bad character...
+
+
+
 				A4GL_dobeep();
+				
+			
 				l=strlen(buff);
 				buff[l-1]=0;
 			}
@@ -4261,7 +4282,8 @@ buff[1]=0;
 	}
 }
 
-
+static void A4GL_dobeep(void ) {
+}
 // --------------------------------------------------------------------------------------
 // FIXMEs...
 // --------------------------------------------------------------------------------------

@@ -25,6 +25,7 @@
 #define A4GL_form_set_form_sub set_form_sub
 #define A4GL_form_set_form_userptr set_form_userptr
 #define A4GL_form_set_form_win  set_form_win
+#define A4GL_form_form_win  form_win
 #define A4GL_form_set_max_field  set_max_field
 #define A4GL_form_set_new_page  set_new_page
 #define A4GL_form_new_field new_field

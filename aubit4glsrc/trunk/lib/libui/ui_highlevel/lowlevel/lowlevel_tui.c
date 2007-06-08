@@ -4,6 +4,7 @@
 #include <xcurses.h>
 #else
 #include <curses.h>
+
 #endif
 
 static int A4GL_curses_to_aubit (int a);
@@ -20,10 +21,11 @@ static int A4GL_curses_to_aubit_int (int a);
 extern bool trace_on;
 #endif
 int scr_mode=0;
-void A4GL_LL_ui_exit(void) ;
-void A4GL_LL_enable_menu (void);
-void A4GL_LL_disable_menu (void);
+//void A4GL_LL_ui_exit(void) ;
+//void A4GL_LL_enable_menu (void);
+//void A4GL_LL_disable_menu (void);
 
+static void A4GL_dobeep(void) ;
 /*
 
 Curses.h in Aubit tree (taken from Linux) has waddwstr:
@@ -45,7 +47,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.104 2007-05-18 18:20:53 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.105 2007-06-08 14:02:38 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -88,7 +90,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.104 2007-05-18 18:20:53 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.105 2007-06-08 14:02:38 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1696,12 +1698,14 @@ A4GL_LL_set_carat (void *form)
 int a;
 //PANEL *w;
 FORM *f;
+WINDOW *w;
 f=form;
   a=A4GL_form_pos_form_cursor (form);
   A4GL_debug ("CURSES : set_carat A4GL_form_pos_form_cursor=%d", a);
 
   A4GL_LL_screen_update ();
-  wrefresh(form_win(form));
+  w=A4GL_form_form_win(form);
+  wrefresh(w);
 
 
 }
@@ -1804,6 +1808,22 @@ A4GL_LL_get_carat (void *form)
   A4GL_debug ("get CARAT : %d in %p", mform->curcol,
 	      A4GL_form_current_field (mform));
   return mform->curcol;
+}
+
+
+/**
+ * PLEASE DESCRIBE THE BL*** FUNCTION!
+ *
+ * @param 
+ * @return 
+ */
+int
+A4GL_LL_get_carat_y (void *form)
+{
+  FORM *mform;
+  mform = form;
+  A4GL_debug ("get CARAT : %d in %p", mform->curcol, A4GL_form_current_field (mform));
+  return mform->currow;
 }
 
 /**
@@ -3541,6 +3561,16 @@ buff[1]=0;
 	}
 }
 
+static void A4GL_dobeep() {
+  if (A4GL_isyes (acl_getenv ("BEEPONERROR")))
+    {
+      beep ();
+    }
+  if (A4GL_isyes (acl_getenv ("FLASHONERROR")))
+    {
+      flash ();
+    }
+}
 
 // --------------------------------------------------------------------------------------
 // FIXMEs...

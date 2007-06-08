@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.43 2007-05-02 18:34:07 mikeaubury Exp $";
+  "$Id: forms.c,v 1.44 2007-06-08 14:02:30 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -41,7 +41,7 @@ struct s_windows windows[MAXWIN];
 void *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x,
 				 int y, int attr);
 void A4GL_win_stack (struct s_windows *w, int op);
-void *A4GL_get_currwin (void);
+//void *A4GL_get_currwin (void);
 
 
 

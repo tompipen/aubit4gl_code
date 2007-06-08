@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.31 2007-05-18 18:20:54 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.32 2007-06-08 14:02:38 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -22,6 +22,7 @@ void A4GL_add_signal_select_row (GtkWidget * widget, void *funcptr);
 extern GtkWidget *actionfield;
 //extern int keypressed;
 
+static void A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename);
 
 static GtkWidget *A4GL_cr_textbox (void);
 static GtkWidget *A4GL_cr_button (void);
@@ -41,7 +42,7 @@ static GtkWidget *A4GL_cr_scrollbar (void);
 void A4GL_dump_mem (char *ptr);
 void A4GL_split_config (char *str);
 void *A4GL_find_param (char *name);
-GtkWidget *A4GL_make_widget (char *widget, char *config, int w);
+GtkWidget *A4GL_make_widget (char *widget, char *config, int w,int h);
 char *A4GL_fld_val_generic (GtkWidget * k);
 void A4GL_gui_set_active (GtkWidget * w, int en_dis);
 //void A4GL_size_widget(GtkWidget *w, int width);
@@ -65,7 +66,7 @@ char *A4GL_decode_config (struct_form * f, int a);
 int A4GL_fake_a_keypress (GtkWidget * widget, int key);
 
 
-void A4GL_size_widget (GtkWidget * w, int width);
+void A4GL_size_widget (GtkWidget * w, int width,int height);
 
 struct s_widget_funcs
 {
@@ -120,7 +121,8 @@ struct s_widgets widgets[] = {
   {0}
 };
 GtkWidget *last_field_created;
-int widget_next_size;
+int widget_next_size=0;
+int widget_next_height=0;
 
 
 #define TYPE_CHAR 1
@@ -301,7 +303,7 @@ A4GL_find_param (char *name)
  * @param w The width of the widget.
  */
 GtkWidget *
-A4GL_make_widget (char *widget, char *config, int w)
+A4GL_make_widget (char *widget, char *config, int w,int h)
 {
   int a;
   GtkWidget *ptr;
@@ -316,10 +318,11 @@ A4GL_make_widget (char *widget, char *config, int w)
 	{
 	  char *key;
 	  widget_next_size = w;
+	  widget_next_height = h;
 	  A4GL_debug ("Making type %d", a);
 	  ptr = widgets[a].make ();
 	  A4GL_debug ("SIzing widget (%p)", ptr);
-	  A4GL_size_widget (ptr, w);
+	  A4GL_size_widget (ptr, w,h);
 	  //A4GL_dump_mem ((char *) ptr);
 	  key = A4GL_find_param ("*KEY");
 	  if (key)
@@ -387,7 +390,7 @@ A4GL_fld_val_generic (GtkWidget * k)
   char *ptr;
   char *txt;
   char *utf;
-  static char txt_buf[256];
+  static char txt_buf[2560];
 
   A4GL_debug ("in A4GL_fld_val_generic k=%p\n", k);
 
@@ -441,11 +444,24 @@ A4GL_fld_val_generic (GtkWidget * k)
 
   if (A4GL_aubit_strcasecmp (ptr, "ENTRY") == 0 || A4GL_aubit_strcasecmp (ptr, "TEXT") == 0)
     {
-      utf =
-	g_locale_from_utf8 (gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL,
-			    NULL, NULL);
-      strncpy (txt_buf, utf, 256);
-      g_free (utf);
+      	if (gtk_object_get_data (GTK_OBJECT (k), "ISTEXTVIEW")) {
+		GtkTextIter  start;
+		GtkTextIter  end;
+		GtkTextBuffer*b;
+		char *ptr;
+
+		b=gtk_text_view_get_buffer(GTK_TEXT_VIEW(k));
+	  	gtk_text_buffer_get_iter_at_offset (b, &start, 0);
+  		gtk_text_buffer_get_iter_at_offset (b, &end, 2560);
+
+		ptr=gtk_text_buffer_get_text (b,&start,&end,0 );
+      		utf = g_locale_from_utf8 (ptr, -1, NULL, NULL, NULL);
+      		strncpy (txt_buf, utf, 2560);
+	} else {
+      		utf = g_locale_from_utf8 (gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL, NULL, NULL);
+      		strncpy (txt_buf, utf, 2560);
+      		g_free (utf);
+	}
       return txt_buf;
     }
 
@@ -453,7 +469,7 @@ A4GL_fld_val_generic (GtkWidget * k)
   if (A4GL_aubit_strcasecmp (ptr, "CHECK") == 0)
     {
 	//utf = g_locale_from_utf8 (gtk_entry_get_text (GTK_ENTRY (k)), -1, NULL, NULL, NULL);
-      if (gtk_toggle_button_get_active(k)) {
+      if (gtk_toggle_button_get_active((GTK_TOGGLE_BUTTON(k)))) {
       	strcpy (txt_buf, "1");
       } else {
       	strcpy (txt_buf, "0");
@@ -603,7 +619,7 @@ int lastHeight = 0;
  * @param width The width wanted for the widget.
  */
 void
-A4GL_size_widget (GtkWidget * w, int width)
+A4GL_size_widget (GtkWidget * w, int width,int height)
 {
   int x, y;
 
@@ -621,7 +637,7 @@ A4GL_size_widget (GtkWidget * w, int width)
   if (y)
     y = y * YHEIGHT - (YHEIGHT / 2);
   else
-    y = 1 * YHEIGHT;		/* Use 1 character height */
+    y = height * YHEIGHT;		/* Use 1 character height */
 
 
   if (w)
@@ -629,8 +645,8 @@ A4GL_size_widget (GtkWidget * w, int width)
       gtk_widget_set_usize (GTK_WIDGET (w), x, y);
     }
 
-  gtk_object_set_data (GTK_OBJECT (w), "SIZE_X", x);
-  gtk_object_set_data (GTK_OBJECT (w), "SIZE_Y", y);
+  gtk_object_set_data (GTK_OBJECT (w), "SIZE_X", (void *)x);
+  gtk_object_set_data (GTK_OBJECT (w), "SIZE_Y", (void *)y);
 
   lastWidth = x;
   lastHeight = y;
@@ -692,7 +708,7 @@ A4GL_make_pixbuf_gw (char *filename)
 
 
   widget = gtk_image_new ();
-  A4GL_size_widget (widget, widget_next_size);
+  A4GL_size_widget (widget, widget_next_size, widget_next_height);
 	if (pixbuf) {
   		resized = gdk_pixbuf_scale_simple (pixbuf, lastWidth - 20, lastHeight - 20,
 			     GDK_INTERP_BILINEAR);
@@ -724,8 +740,7 @@ A4GL_make_pixbuf_gw (char *filename)
   return widget;
 }
 
-void
-A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
+void A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
 {
   //GdkPixbuf *p;
   //GtkWidget *pixbuf;
@@ -836,7 +851,7 @@ A4GL_cr_picture (void)
 
   scaletofit = A4GL_find_param ("*SCALE");
   if (scaletofit) { 
-		gtk_object_set_data(pixmap,"SCALE",scaletofit); 
+		gtk_object_set_data(GTK_OBJECT(pixmap),"SCALE",scaletofit); 
 	}
 
   return pixmap;
@@ -862,7 +877,7 @@ A4GL_cr_pixbuf (void)
   A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
   scaletofit = A4GL_find_param ("*SCALE");
   if (scaletofit) { 
-		gtk_object_set_data(pixmap,"SCALE",scaletofit); 
+		gtk_object_set_data(GTK_OBJECT(pixmap),"SCALE",scaletofit); 
 	}
   return pixmap;
 }
@@ -1032,21 +1047,33 @@ A4GL_cr_textbox (void)
   int maxchars;
   A4GL_debug ("Making textbox");
   maxchars = (int) A4GL_find_param ("*MAXCHARS");
-  if (maxchars)
+  if (widget_next_height > 1)
     {
-      entry = gtk_entry_new_with_max_length (maxchars);
+	// Its a text box...
+	entry=gtk_text_view_new();
+      	gtk_object_set_data (GTK_OBJECT (entry), "ISTEXTVIEW", (void *)1);
+  	gtk_widget_show (entry);
+	
     }
   else
     {
-      entry = gtk_entry_new ();
+
+      if (maxchars)
+	{
+	  entry = gtk_entry_new_with_max_length (maxchars);
+	}
+      else
+	{
+	  entry = gtk_entry_new ();
+	}
+  	gtk_widget_show (entry);
+  	A4GL_add_signal_changed (entry, 0);
+  	A4GL_add_signal_grab_focus (entry, 0);
     }
   A4GL_debug ("Created textbox widget %p", entry);
-  gtk_widget_show (entry);
-  A4GL_add_signal_changed (entry, 0);
-  A4GL_add_signal_grab_focus (entry, 0);
+
   return entry;
 }
-
 
 /**
  * Create and show a label widget.
@@ -1692,8 +1719,14 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
   if (A4GL_aubit_strcasecmp (ptr, "ENTRY") == 0 || A4GL_aubit_strcasecmp (ptr, "TEXT") == 0)
     {
-      gtk_entry_set_text (GTK_ENTRY (k), utf);
-      g_free (utf);
+      	if (gtk_object_get_data (GTK_OBJECT (k), "ISTEXTVIEW")) {
+	  	GtkTextBuffer *buffer;
+	  	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (k));
+	  	gtk_text_buffer_set_text (buffer,utf, -1);
+	 } else {
+      		gtk_entry_set_text (GTK_ENTRY (k), utf);
+      		g_free (utf);
+	 }
       return 1;
     }
 

@@ -27,6 +27,7 @@ int A4GL_get_curr_print_top(void);
 int A4GL_get_curr_top(void);
 int A4GL_get_currwinno(void);
 int A4GL_get_field_width(void *field);
+int A4GL_get_field_height(void *field);
 int A4GL_get_metric_for(struct s_form_dets *form, void *f);
 int A4GL_get_metric_no(struct s_form_dets *form, void *f);
 int A4GL_getch_win(int allow_acc_intr,char* why);
@@ -126,3 +127,19 @@ void A4GL_submit_events(void *s, struct aclfgl_event_list *evt );
 int A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt);
 ACL_Menu_Opts *A4GL_LL_show_menu_large(ACL_Menu *menu, int key);
 int A4GL_get_field_width_with_form (void *fd, void *fld);
+int A4GL_get_field_height_with_form (void *fd, void *fld);
+
+
+int local_chk_field (struct s_form_dets *form, void *f);
+void
+A4GL_set_fields_sio (struct s_screenio *sio);
+
+int A4GL_get_attr_from_string (char *s);
+
+void A4GL_ask_cmdline (char *prompt, char *s, int a);
+
+void *A4GL_get_currwin (void);
+void A4GL_LL_ui_exit (void);
+void A4GL_LL_enable_menu(void);
+void A4GL_LL_disable_menu(void);
+

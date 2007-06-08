@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.54 2007-06-04 10:24:56 gyver309 Exp $
+# $Id: input_array.c,v 1.55 2007-06-08 14:02:34 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.54 2007-06-04 10:24:56 gyver309 Exp $";
+  "$Id: input_array.c,v 1.55 2007-06-08 14:02:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -68,7 +68,7 @@ int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, 
 
 //void A4GL_set_curr_infield (long a);
 //void debug_print_flags (void *sv, char *txt);
-int A4GL_get_attr_from_string (char *s);
+//int A4GL_get_attr_from_string (char *s);
 
 static int A4GL_double_chk_line(struct s_inp_arr *arr,int ln, char why) ;
 static char *get_field_with_no_picture(void *f) ;
@@ -3716,11 +3716,10 @@ char *picture;
 }
 
 
-int
-A4GL_entire_row_is_blank (struct s_inp_arr *s,int ln)
+static int A4GL_entire_row_is_blank (struct s_inp_arr *s,int ln)
 {
-  struct struct_scr_field *fprop;
-  int a;
+  //struct struct_scr_field *fprop;
+  //int a;
   int b;
   int nv;
   int isblank=1;
@@ -3750,10 +3749,10 @@ A4GL_double_chk_line (struct s_inp_arr *s, int ln, char why)
 {
 // Lets just double check for any required fields...
   struct struct_scr_field *fprop;
-  int a;
+  //int a;
   int b;
   int nv;
-  int isblank = 1;
+  //int isblank = 1;
   int is_all_blank = 0;
 if (ln<0) return 1;
 
@@ -3768,7 +3767,7 @@ if (ln<0) return 1;
 
   for (b = 0; b < nv; b++)
     {
-      char *buff2;
+      //char *buff2;
       void *f;
       char *p;
       f = s->field_list[ln][b];
