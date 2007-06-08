@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.138 2007-06-04 10:24:52 gyver309 Exp $
+# $Id: conv.c,v 1.139 2007-06-08 11:55:56 mikeaubury Exp $
 #
 */
 
@@ -1389,10 +1389,25 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 {
   char *a;
   int ok;
+double b;
+char *eptr;
 
   a = A4GL_decstr_convert((char*)aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
   ok = (sscanf (a, "%lf", (double*)zz) == 1);
   A4GL_debug ("stof: %s->%lf; OK=%d", A4GL_null_as_null(a), *(double*)zz, ok);
+
+  if (!ok && !A4GL_isno(acl_getenv("ALLOWDBLCRUD")))  {
+  	b=strtod ((char *)aa, &eptr);
+	if (eptr!=aa) {
+		*(double*)zz = b;
+		ok=1;
+	} else {
+		ok=1;
+		*(double*)zz=0;
+	}
+  }
+
+
   free(a);
   return ok;
 }
@@ -1415,6 +1430,10 @@ A4GL_stosf (void *aa, void *zz, int sz_ignore)
   a = A4GL_decstr_convert((char*)aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
   ok = (sscanf (a, "%f", (float*)zz) == 1);
   A4GL_debug ("stosf: %s->%f; OK=%d", A4GL_null_as_null(a), *(float*)zz, ok);
+  if (ok==0) {
+	ok=1;
+	*(float*)zz=0;
+  }
   free(a);
   return ok;
 }
