@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.119 2007-06-08 14:02:33 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.120 2007-06-08 21:42:53 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1827,19 +1827,25 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
   char *ff;
   static char *buff = 0;
   char *orig=0;
+int height;
+int width;
 
 
 
 
   A4GL_debug ("In display_field_contents");
   f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field));
-  ff = A4GL_new_string (A4GL_get_field_width (field));
+  height=A4GL_get_field_height(field);
+ 
+  width=A4GL_get_field_width (field)*height;
+  ff = A4GL_new_string (width);
+ 
   if ((d1 & DTYPE_MASK)==DTYPE_CHAR ) {
 		orig=A4GL_char_pop();
 		A4GL_push_char(orig);
   }
 
-  field_width = A4GL_get_field_width (field);
+  field_width = width;
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
   A4GL_debug ("Has format : %d  ", has_format);
 
