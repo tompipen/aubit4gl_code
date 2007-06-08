@@ -23812,7 +23812,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			 add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("SET ("),acl_strdup((yyvsp[(2) - (7)].str)),acl_strdup(")=("),(yyvsp[(6) - (7)].sql_string),kw_cb,NULL);
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||0) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
 			(yyval.sql_string)=acl_strdup(fix_update_expr(0)); 
 			ansi_violation("Update (..)=(..)",0);
 		}  else {
@@ -23827,7 +23827,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			 add_feature("UPDATE_SET_STAR");
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("SET *=("),(yyvsp[(2) - (3)].sql_string),kw_cb,NULL);
 		A4GL_4glc_push_gen(UPDCOL,"*");
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||0) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
 			(yyval.sql_string)=acl_strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
@@ -23842,7 +23842,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			 add_feature("UPDATE_SET_STAR");
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("SET *=("),(yyvsp[(2) - (3)].sql_string),kw_cb,NULL);
 		A4GL_4glc_push_gen(UPDCOL,"*");
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||0) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
 			(yyval.sql_string)=acl_strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
@@ -23874,7 +23874,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			(yyval.sql_string)=make_sql_string_and_free(acl_strdup("SET *=("),(yyvsp[(2) - (2)].sql_string),kw_cb,NULL);
 		}
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||0) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
 			(yyval.sql_string)=acl_strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
@@ -23898,7 +23898,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
 			(yyval.sql_string)=make_sql_string_and_free(acl_strdup("SET *=("),(yyvsp[(2) - (2)].sql_string),kw_cb,NULL);
 		}
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||0) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
 			(yyval.sql_string)=acl_strdup(fix_update_expr(1));
 			ansi_violation("Update (..)=(..)",0);
 		} else {
