@@ -9,9 +9,12 @@ main
 define lr record like uptest.*,
        lv_b char(1)
 
-delete from uptest
 let lr.a = 1
 let lr.b = "a"
+whenever error continue
+drop table uptest
+create temp table uptest (a int, b char(1))
+whenever error stop
 insert into uptest values (lr.*)
 let lr.b = "b"
 update uptest set *=lr.* where a = lr.a
