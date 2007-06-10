@@ -12,8 +12,8 @@ MAIN
   LET exitStatus = 0
 	LET lv_char = "Hello aubit 4gl testing world"
 	LET lv_float = lv_char
-	IF lv_float IS NOT NULL THEN
-	   DISPLAY "A char with alfanumeric characters to float was not null"
+	IF lv_float !=0 THEN
+	   DISPLAY "A char with alfanumeric characters to float was not 0"
 		 LET exitStatus = 1
 	END IF
 
