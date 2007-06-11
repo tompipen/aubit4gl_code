@@ -1,0 +1,125 @@
+# Aubit Icon File
+# 
+# This file is used to determine the text and icons used for the toolbar 
+# and menubar
+# By default - the toolbar contains :
+#
+#   "HELP","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","Up","Down","Left","Right","PgUp","PgDn","Enter","Accept","Interrupt"
+# 
+# but you can add more using the "aclfgl_add_to_toolbar" function
+#
+# 	CALL aclfgl_add_to_toolbar("Text","Img","Tooltip",keyvalue,always_show)
+#
+# The 'keyvalue' must be active at the time of usage (normally via an ON KEY ) for it to be displayed..
+#
+# The text displayed is the second field, the icon the third.
+#
+# An entry can also be made for the application name - which
+# will set the title bar and icon for a running 4GL program.
+#
+# this is a tab delimited file for stock icons
+# the first field is the text to be matched
+# (the match will be case insensitive)
+# the second field is the text to be display on the button
+# This text will be display as per this file
+#
+# the second field is the image file to use
+# if a relative directory (or no directory) is used
+# then the file will be read from $AUBITDIR/images
+
+button	Button	Cancel
+buttonok	ButtonOk	button_ok.png
+interrupt	^C	button_cancel.png
+cancel	cancel	cancel.png
+apply	apply	apply.png
+bell	bell	bell.png
+bookmark	bookmark	bookmark.png
+close	close	fileclose.png
+comment	comment	comment.png
+db	db	db
+documentinfo	documentinfo	documentinfo.png
+down	Down	1downarrow.png
+down_dir	down	down.png
+update	Update	edit.png
+use-editor	Use Editor	wizard.png
+modify	Modify	edit.png
+edit	edit	edit.png
+editcopy	editcopy	editcopy.png
+editcut	editcut	editcut.png
+drop	Drop	editdelete.png
+translate	Translate	babelfish.png
+delete	Delete	editdelete.png
+editdelete	editdelete	editdelete.png
+editpaste	editpaste	editpaste.png
+emoticon	emoticon	emoticon.png
+run	Run	exec.png
+exec	Exec	exec.png
+quit	Quit	exit.png
+exit	Exit	exit.png
+Query	Query	find.png
+choose	Choose	filefind.png
+output	Output	gnome-dev-floppy.png
+find	find	filefind.png
+find	find	find.png
+flag	flag	flag.png
+forward	forward	forward.png
+free_icon	free_icon	free_icon.png
+gg_connecting	gg_connecting	gg_connecting.png
+gg_ignored	gg_ignored	gg_ignored.png
+history	history	history.png
+idea	idea	idea.png
+info	Info	info.png
+kalarm	kalarm	kalarm.png
+kdb_form	kdb_form	kdb_form.png
+kdb_table	kdb_table	kdb_table.png
+key_enter	key_enter	key_enter.png
+enter	Enter	key_enter.png
+launch	Launch	launch.png
+left	Left	1leftarrow.png
+list	List	list.png
+locationbar_erase	locationbar_erase	locationbar_erase.png
+lock	Lock	lock.png
+locked	Locked	locked.png
+misc	misc	misc.png
+money	money	money.png
+network	network	network.png
+Add	Add	filenew.png
+new	New	filenew.png
+no	no	no.png
+accept	Accept	ok.png
+ok	ok	ok.png
+open	open	fileopen.png
+outbox	outbox	outbox.png
+pipe	pipe	pipe.png
+player_eject	player_eject	player_eject.png
+player_end	player_end	player_end.png
+player_fwd	player_fwd	player_fwd.png
+player_pause	player_pause	player_pause.png
+player_play	player_play	player_play.png
+player_rew	player_rew	player_rew.png
+player_start	player_start	player_start.png
+player_stop	player_stop	player_stop.png
+playsound	playsound	playsound.png
+print	print	fileprint.png
+redled	redled	redled.png
+restart	Restart	redo.png
+asql_i.4ae	Aubit SQL	Aubit.gif
+redo	redo	redo.png
+reload_page	reload_page	reload_page.png
+next	Next	1rightarrow.png
+Previous	Previous	1leftarrow.png
+right	right	1rightarrow.png
+save	Save	filesave.png
+saveas	saveas	filesaveas.png
+tab_first	tab_first	tab_first.png
+tab_last	tab_last	tab_last.png
+tab_left	tab_left	tab_left.png
+tab_right	tab_right	tab_right.png
+trashcan_empty	trashcan_empty	trashcan_empty.png
+trashcan_full	trashcan_full	trashcan_full.png
+up	Up	1uparrow.png
+up_dir	Up	up.png
+up2	up2	up2.png
+wizard	wizard	wizard.png
+yellowled	yellowled	yellowled.png
+help	Help!	help.png
