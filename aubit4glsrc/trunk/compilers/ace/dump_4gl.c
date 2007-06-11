@@ -283,7 +283,9 @@ dump_output ()
   printf
     ("  PAGE LENGTH %d\n",this_report.output.page_length);
 
-  printf ("  TOP OF PAGE \"%s\"\n", this_report.output.top_of_page);
+	if (this_report.output.top_of_page && strlen(this_report.output.top_of_page)) {
+  		printf ("  TOP OF PAGE \"%s\"\n", this_report.output.top_of_page);
+	}
 
   if (this_report.output.report_to_where == 1)
     printf (" REPORT TO PRINTER");

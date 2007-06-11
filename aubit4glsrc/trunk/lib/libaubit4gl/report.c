@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.133 2007-06-07 09:24:40 mikeaubury Exp $
+# $Id: report.c,v 1.134 2007-06-11 18:13:32 mikeaubury Exp $
 #
 */
 
@@ -1109,10 +1109,16 @@ A4GL_aclfgli_skip_lines (struct rep_structure *rep)
 {
   long a;
   long b;
+int o_page;
   a = A4GL_pop_long ();
+  o_page=rep->page_no;
+
   for (b = 0; b < a; b++)
     {
-      A4GL_rep_print (rep, 0, 0, 0, -3);
+	
+  	if (rep->line_no - 1 > (rep->page_length - rep->bottom_margin - 1 - rep->lines_in_trailer)) break;
+
+      	A4GL_rep_print (rep, 0, 0, 0, -3);
     }
 }
 
@@ -1125,8 +1131,7 @@ A4GL_need_lines (struct rep_structure *rep)
 {
   int a;
   a = A4GL_pop_int ();
-  if (rep->line_no - 1 >
-      (rep->page_length - rep->bottom_margin - a - rep->lines_in_trailer))
+  if (rep->line_no - 1 > (rep->page_length - rep->bottom_margin - a - rep->lines_in_trailer))
     {
 
       A4GL_skip_top_of_page (rep, 2);
