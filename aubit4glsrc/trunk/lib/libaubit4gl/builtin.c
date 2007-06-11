@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.114 2007-05-12 08:15:04 mikeaubury Exp $
+# $Id: builtin.c,v 1.115 2007-06-11 17:50:30 mikeaubury Exp $
 #
 */
 
@@ -967,7 +967,7 @@ aclfgli_extend (void)
 {
   struct A4GLSQL_dtime c;
   int n;
-  char *ptr;
+  //char *ptr;
 	char buff[256]="";
   int  d2;
   int  s2;
@@ -1745,7 +1745,7 @@ int
 aclfgl_aclfgl_getcwd (int a)
 {
   char buff[512];
-  char buff2[512];
+  //char buff2[512];
 
 
 #ifdef MSVC
@@ -1789,7 +1789,7 @@ char *str;
 int aclfgl_aclfgl_call_in_shared(int a) {
 char *ptr1;
 char *ptr2;
-char *ptr3;
+// char *ptr3;
 
 	ptr1=A4GL_char_pop();
 	ptr2=A4GL_char_pop();

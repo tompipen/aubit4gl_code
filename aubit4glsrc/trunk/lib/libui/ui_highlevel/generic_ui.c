@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.120 2007-06-08 21:42:53 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.121 2007-06-11 17:50:37 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2375,13 +2375,13 @@ local_chk_field (struct s_form_dets *form, void *f)
   char buff[8000] = "";
   char buff2[8000] = "";
   char buff3[8000] = "";
-  void *mform;
+  void *mform=0;
   int pprval;
   //int x, y;
   //int flg = 0;
   //struct s_form_dets *form;
   struct struct_scr_field *fprop;
-
+  mform=form->form;
   if (A4GL_ll_get_field_userptr (f) != 0)
     {
       A4GL_debug ("Is a proper field");
@@ -3034,8 +3034,10 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt)
 {
   int a;
   A4GL_debug ("Prompt loop\n");
+  ActivateToolbar("Prompt",evt);
   a = A4GL_prompt_loop_v2_int (vprompt, timeout, evt);
   A4GL_debug ("Returns %d\n", a);
+  ActivateToolbar(0,0);
   return a;
 }
 

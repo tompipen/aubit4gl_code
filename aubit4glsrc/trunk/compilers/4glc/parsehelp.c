@@ -1195,6 +1195,8 @@ FGLPARSE_A4GL_lexer_find_type (char *s)
   A4GL_debug ("find_type %s\n", s);
   if (strcmp ("char", s) == 0) return 0;
   if (strcmp ("long", s) == 0) return 2;
+  if (strcmp ("int8", s) == 0) return DTYPE_INT8;
+  if (strcmp ("serial8", s) == 0) return DTYPE_SERIAL8;
   if (strcmp ("integer", s) == 0) return 1;
   if (strcmp ("int", s) == 0) return 1;
   if (strcmp ("short", s) == 0) return 1;

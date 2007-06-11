@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.45 2007-06-08 14:02:34 mikeaubury Exp $";
+  "$Id: menu.c,v 1.46 2007-06-11 17:50:38 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -50,6 +50,14 @@ UILIB_A4GL_disp_h_menu (void *menuv)
     {
       ACL_Menu_Opts *mo;
       int a;
+
+  	mnln = A4GL_getmenu_line ();
+  	//if (UILIB_A4GL_iscurrborder ()) mnln--;
+	UILIB_A4GL_display_internal(1,mnln," ",0,1);
+	UILIB_A4GL_display_internal(1,mnln+1," ",0,1);
+	  //A4GL_wprintw (A4GL_get_currwin(), 0, 0, mnln, UILIB_A4GL_get_curr_width(), UILIB_A4GL_get_curr_height(), UILIB_A4GL_iscurrborder(), A4GL_get_currwinno(), "*****");
+
+
       A4GL_LL_disp_h_menu (menu->num_opts, use_empty_string_if_null(menu->menu_title), use_empty_string_if_null(menu->mnstyle), use_empty_string_if_null(menu->mncomment),use_empty_string_if_null(menu->mnimage));
       mo = menu->first;
       // Seems so...
@@ -176,6 +184,9 @@ A4GL_display_menu (ACL_Menu * menu)
   //char buff[256];
   int disp_cnt;
   int have_displayed = 0;
+  if (A4GL_ll_menu_type () == 1) {
+		return;
+	}
 
   A4GL_debug ("In display_menu");
   if (menu->gw_x < 0)
@@ -267,6 +278,7 @@ A4GL_display_menu (ACL_Menu * menu)
 static void
 A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 {
+  if (A4GL_ll_menu_type () == 1) return;
   A4GL_debug ("MORE MARKERS : Displaying ... at %d %d", pos + offset, 1);
   A4GL_chkwin ();
   A4GL_wprintw ((void *) A4GL_get_currwin (), 0, pos + offset, menu->gw_y,
@@ -423,7 +435,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 
   menu = menuv;
   A4GL_chkwin ();
-
+  ActivateToolbar(0,0);
   A4GL_current_window (menu->parent_window_name);
   if (A4GL_ll_menu_type () == 1)
     {
@@ -616,7 +628,7 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
 {
   int key;
   int menu_response = -1;
-
+  ActivateToolbar(0,0);
   A4GL_LL_disp_h_menu (menu->num_opts, use_empty_string_if_null(menu->menu_title), use_empty_string_if_null(menu->mnstyle), use_empty_string_if_null(menu->mncomment),use_empty_string_if_null(menu->mnimage));
   if (A4GL_ll_menu_type () == 1)
     {

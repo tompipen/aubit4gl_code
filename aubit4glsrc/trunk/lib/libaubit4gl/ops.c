@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.113 2007-06-08 18:26:20 mikeaubury Exp $
+# $Id: ops.c,v 1.114 2007-06-11 17:50:32 mikeaubury Exp $
 #
 */
 
@@ -63,6 +63,7 @@ double trunc(double f);
 void A4GL_smfloat_float_ops (int op);
 void A4GL_float_smfloat_ops (int op);
 void A4GL_smfloat_smfloat_ops (int op);
+void A4GL_char_dt_ops(int op) ;
 //void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
 void A4GL_int_int_ops (int op);
@@ -72,8 +73,9 @@ int A4GL_dectos (void *z, void *w, int size);
 void A4GL_add_default_operations (void);
 void A4GL_dt_in_ops (int op);
 void A4GL_in_dt_ops (int op);
-void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+//void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 //void A4GL_ltrim(char *s) ;
+void A4GL_dt_char_ops(int op) ;
 void A4GL_dt_dt_ops (int op);
 //int A4GL_ctodt (void *a, void *b, int size);
 //int A4GL_ctoint (void *a, void *b, int size);
@@ -2944,7 +2946,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
 {
   double a;
   static char buff_10[256];
-  int len=14;
+  //int len=14;
   
 
   if (display_type == DISPLAY_TYPE_DISPLAY
@@ -3737,6 +3739,9 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", (void *)A4GL_display_interval);
   A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", (void *)A4GL_display_byte);
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", (void *)A4GL_display_text);
+
+  add_int8_support();
+
 
 
 #ifndef CSCC

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.374 2007-06-05 06:20:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.375 2007-06-11 17:50:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.374 2007-06-05 06:20:22 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.375 2007-06-11 17:50:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8200,7 +8200,7 @@ char *
 LEXLIB_rettype (char *s)
 {
     static int initialized = 0;
-    static char *vals[15]={
+    static char *vals[]={
 	"char",        // 0 
 	"short",       // 1 
 	"long",        // 2 
@@ -8215,7 +8215,12 @@ LEXLIB_rettype (char *s)
 	"fglbyte",     // 11 
 	"fgltext",     // 12 
 	"fglvarchar",        // 13 
-	"struct_ival"  // 14 
+	"struct_ival",  // 14 
+	"nchar", //15
+	"nvarchar",
+	"int8", // 17
+	"serial8", // 18
+	0
     };
     int i;
 
@@ -8224,7 +8229,7 @@ LEXLIB_rettype (char *s)
     if (! initialized)
     {
 	A4GL_debug ("In rettype - initializing type names");
-	for (i = 0; i < 15; ++i)
+	for (i = 0; vals[i]; i++)
 	{
 	    if (A4GL_has_datatype_function_i (i, "OUTPUT"))
 	    {
@@ -8236,13 +8241,15 @@ LEXLIB_rettype (char *s)
 	initialized = 1;
 	if (A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
 	    vals[12] = vals[0];
+
     }
 
     if (sscanf(s, "%d", &i) != 1)
 	a4gl_yyerror("Internal error - type conversion error\n");
 
-    if (i < 15)
+    if (i < sizeof(vals)/sizeof(char*)) {
 	return vals[i];
+     }
 
     a4gl_yyerror("Unsupported type id\n");
     return NULL;

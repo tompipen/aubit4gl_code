@@ -362,8 +362,8 @@ call display()
 end function
 
 function display_header()
-display edit_mode,": ESC    = Done editing      CTRL-A = Typeover/Insert    CTRL-R = Redraw" at 1,1
-display "        CTRL-X = Delete character  CTRL-D = Delete rest of line" at 2,1
+display edit_mode,": ESC    = Done editing      CTRL-A = Typeover/Insert    CTRL-R = Redraw","" at 1,1
+display "        CTRL-X = Delete character  CTRL-D = Delete rest of line","" at 2,1
 call display_banner()
 end function
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.139 2007-06-08 11:55:56 mikeaubury Exp $
+# $Id: conv.c,v 1.140 2007-06-11 17:50:30 mikeaubury Exp $
 #
 */
 
@@ -283,6 +283,19 @@ void (*setdtype[MAX_DTYPE]) (void *ptr1) =
 {
 A4GL_setc, A4GL_seti, A4GL_setl, A4GL_setf,
     A4GL_setsf, A4GL_setf, A4GL_setl, A4GL_setno, A4GL_setf, A4GL_setno, A4GL_setno, A4GL_setno, A4GL_setno, A4GL_setno, 
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
+A4GL_setno,
 A4GL_setno,
 A4GL_setno
 };
@@ -2797,7 +2810,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   //A4GL_debug ("In conv.. d1=%d d2=%d size=%d", dtype1, dtype2, size);
 
 
-
+char buff[256];
 
 
 
@@ -2847,16 +2860,32 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   }
 #endif
   A4GL_conversion_ok(1);
+  sprintf(buff,"CONVTO_%d", dtype2 & DTYPE_MASK);
+  if (A4GL_has_datatype_function_i(dtype1 & DTYPE_MASK, buff)) {
+	  	int (*function) (int, void *, int , void *, int);
+		function=A4GL_get_datatype_function_i (dtype1 & DTYPE_MASK, buff);
+		return function(dtype1 & DTYPE_MASK, p1, dtype2 & DTYPE_MASK, p2,size);
+	
+  }
+
   ptr = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK];
 
   //A4GL_debug("ptr=%p",ptr);
 
   if (ptr == NO)
     {
-      A4GL_debug ("No! - %d %d", dtype1, dtype2);
-      A4GL_exitwith("Invalid conversion");
+        A4GL_debug ("No! - %d %d", dtype1, dtype2);
+        A4GL_exitwith("Invalid conversion");
 
-      setdtype[dtype2 & DTYPE_MASK] (p2);
+	if (A4GL_has_datatype_function_i(dtype2, "SETDTYPE")) {
+		      	void (*function) (void *);
+      			function = A4GL_get_datatype_function_i (dtype2, "SETDTYPE");
+      			function (ptr);
+	} else {
+		if ((dtype2&DTYPE_MASK) <  (sizeof(setdtype)/sizeof(void *))) {
+      			setdtype[dtype2 & DTYPE_MASK] (p2);
+		}
+	}
       return -1;
     }
 

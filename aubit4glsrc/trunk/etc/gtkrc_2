@@ -55,7 +55,7 @@ style "0" {  # Black
 
   	#bg[NORMAL]       = "#8080ff"
 
-  	bg[NORMAL]       = "#d9d9d9"
+  	#bg[NORMAL]       = "#d9d9d9"
 
 
   	#bg[PRELIGHT]     = "#ffffff"
@@ -196,8 +196,8 @@ style "200" { # invisible
 style "AppWindow" {
 	#base[NORMAL]="#ffffff"
         #bg[NORMAL]       = "#000000"
-        bg[NORMAL]       = "#d9d9d9"
-        bg[ACTIVE]       = "#ffffff"
+        #bg[NORMAL]       = "#c0c0c0"
+        #bg[ACTIVE]       = "#c0c0c0"
 	#bg_pixmap[NORMAL]= "wall2.png"
 
 
@@ -251,7 +251,7 @@ style "Error" {
         bg[NORMAL]       = "#ff0000"
 	text[NORMAL]     = "#0000ff"
 	base[NORMAL]     = "#00ff00"
-  	font_name = "monospace 12"
+  	font_name = "monospace 8"
 }
 #class "GtkLabel" style "lblMenuButtons"
 #class "GtkButton" style "btnMenuButtons"

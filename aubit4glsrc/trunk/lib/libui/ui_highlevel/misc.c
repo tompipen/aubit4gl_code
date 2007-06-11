@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.57 2007-06-08 14:02:35 mikeaubury Exp $";
+  "$Id: misc.c,v 1.58 2007-06-11 17:50:38 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1280,16 +1280,14 @@ A4GL_getch_win (int allow_acc_intr,char *why)
 {
   int a;
   A4GL_debug ("getch_win called...");
-  if (allow_acc_intr)
-    {
-      A4GL_LL_set_acc_intr_keys (1);
-    }
+
+  if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys (1); }
+
   a = A4GL_getch_internal (A4GL_get_currwin (),why);
   if (a) A4GL_clr_error_nobox ("A4GL_getch_win");
-  if (allow_acc_intr)
-    {
-      A4GL_LL_set_acc_intr_keys (0);
-    }
+
+  if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys (0); }
+
   return a;
 }
 
@@ -1515,4 +1513,29 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   strcpy (s, lv_cmd);
   UILIB_A4GL_remove_window ("aclfgl_promptwin");
 }
+
+
+
+int UILIB_aclfgl_aclfgl_add_to_toolbar (int n) {
+	char *tag;
+	int keyval,alwaysShow;
+	char* toolTip;
+	char *img;
+	char *buttonText;
+
+	if (n!=6) {
+		A4GL_pop_args(n);
+		return 0;
+	}
+	A4GL_switch_to_scr_mode();
+	alwaysShow=A4GL_pop_int();
+	keyval=A4GL_pop_int();
+	toolTip=A4GL_char_pop();
+	img=A4GL_char_pop();
+	buttonText=A4GL_char_pop();
+	tag=A4GL_char_pop();
+	LL_AddButtonToolbar(tag, buttonText,img, toolTip, keyval,alwaysShow);
+	return 0;
+}
+
 

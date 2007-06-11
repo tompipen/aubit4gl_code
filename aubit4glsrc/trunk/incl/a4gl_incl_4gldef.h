@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.108 2007-06-05 15:54:17 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.109 2007-06-11 17:50:27 mikeaubury Exp $
 */
 
 /**
@@ -473,6 +473,7 @@ struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
 
 #include "a4gl_rep_structure.h"
 
+int A4GL_push_substr (char *ca, int dtype, int a, int b, ...) ;
 int A4GL_report_lineno(struct rep_structure *rep);
 void A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *layout, int to_pipe);
 int A4GL_pdf_pdffunc(void* p,char* fname,int n) ;
@@ -483,6 +484,13 @@ void A4GL_pop_report_section (struct rep_structure *rep, int rb);
 void A4GL_pdf_pop_report_section (struct pdf_rep_structure *rep, int rb) ;
 
 int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) ;
+#  if __WORDSIZE == 64
+#define int8 long 
+#define serial8 long 
+#else
+#define int8 long long
+#define serial8 long long
+#endif
 
 /*
 to fix the _nm_status error (if status is an int) change

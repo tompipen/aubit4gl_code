@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.55 2007-06-08 14:02:34 mikeaubury Exp $
+# $Id: input_array.c,v 1.56 2007-06-11 17:50:37 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.55 2007-06-08 14:02:34 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.56 2007-06-11 17:50:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1149,6 +1149,9 @@ int nv;
   struct s_inp_arr *inpa;
   evt = vevt;
   //int a;
+  //
+  
+  ActivateToolbar("InputArray",vevt);
 
   inpa = (struct s_inp_arr *) vinpa;
 
@@ -1173,6 +1176,7 @@ int nv;
       if (inpa->srec == 0)
 	{
 	  A4GL_exitwith ("Screen record not found");
+  	ActivateToolbar(0,0);
 	  return 0;
 	}
       inpa->currform = UILIB_A4GL_get_curr_form (1);
@@ -1216,6 +1220,7 @@ int nv;
 
 	  A4GL_debug ("Screen record does not exist");
 
+  	ActivateToolbar(0,0);
 	  return 0;
 
 	}
@@ -1232,6 +1237,7 @@ int nv;
 
 	  A4GL_debug ("Too many or too few variables for fields %d %d", inpa->srec->dim, nv);
 		A4GL_exitwith("Too many or too few variables for fields");
+  	ActivateToolbar(0,0);
 	  return 0;
 
 	}
@@ -1244,6 +1250,7 @@ int nv;
 	    {
 	      A4GL_exitwith
 		("MAXCOUNT out of range (<0 or > array record size)");
+  	ActivateToolbar(0,0);
 	      return 0;
 	    }
 	  inpa->arr_size = inpa->maxcount;
@@ -1287,6 +1294,7 @@ int nv;
       A4GL_debug ("inp_arr - returning -99  BEFORE INPUT....");
       if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
 	return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+  	ActivateToolbar(0,0);
       return -1;
     }
   A4GL_debug ("inpaarr4");
@@ -1298,6 +1306,7 @@ int nv;
       A4GL_debug ("FIXME : rval : %d\n", rval);
     }
 
+  	ActivateToolbar(0,0);
   return rval;
 }
 
@@ -2397,9 +2406,7 @@ int nv;
 	  if (arr->fcntrl[a].extent >= 28 && arr->fcntrl[a].extent <= 255)
 	    {
 	      rval = -1;
-	      fprop =
-		(struct struct_scr_field
-		 *) (A4GL_ll_get_field_userptr (arr->currentfield));
+	      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (arr->currentfield));
 
 	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT))	// Don't bother - it aint working...
 		{
@@ -2408,8 +2415,7 @@ int nv;
 		  //char buff[256];
 		  curses_form = arr->currform->form;
 		  //width = A4GL_get_field_width (arr->currentfield);
-		  if (A4GL_LL_current_field (curses_form) !=
-		      arr->currentfield)
+		  if (A4GL_LL_current_field (curses_form) != arr->currentfield ||  A4GL_LL_get_carat (curses_form)==0)
 		    {
 		      A4GL_LL_set_current_field (curses_form,
 						 arr->currentfield);

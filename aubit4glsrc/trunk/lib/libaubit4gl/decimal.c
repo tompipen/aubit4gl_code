@@ -336,7 +336,7 @@ char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
 		    for (i = 0; optr[i]; ++i)
 		    {
 			if (optr[i] == '+' || optr[i] == '-') 
-			    optr[i] == ' ';
+			    optr[i] = ' ';
 		    }
 		    for (i = 0; optr[i]; ++i)
 		    {

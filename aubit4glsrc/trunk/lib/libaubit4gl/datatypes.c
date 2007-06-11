@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.28 2007-06-04 10:24:52 gyver309 Exp $
+# $Id: datatypes.c,v 1.29 2007-06-11 17:50:30 mikeaubury Exp $
 #
 */
 
@@ -212,6 +212,8 @@ A4GL_has_datatype_function_i (int a, char *funcname)
   int n;
   if (!inited) A4GL_init_datatypes ();
   a = a & DTYPE_MASK;
+
+  //printf("DTPE %d  %s\n", a,funcname);
 
   for (n = 0; n < dtypes[a].funcs_len; n++)
     {

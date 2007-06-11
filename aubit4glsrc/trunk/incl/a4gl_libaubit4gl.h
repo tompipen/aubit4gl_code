@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.275 2007-06-04 10:24:52 gyver309 Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.276 2007-06-11 17:50:27 mikeaubury Exp $
 #
 */
 
@@ -505,6 +505,9 @@ void A4GL_ESQL_set_cursor_is_closed(char *s) ;
 #define DTYPE_VCHAR     13
 #define DTYPE_INTERVAL  14
 #define DTYPE_NCHAR  15
+#define DTYPE_INT8         17
+#define DTYPE_SERIAL8      18
+
 
 #define DTYPE_OBJECT    99
 
@@ -1008,6 +1011,9 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
     {"text", DTYPE_TEXT, 2, 0},
     {"varchar", DTYPE_VCHAR, 0, 0},
     {"interval", DTYPE_INTERVAL, 0, 0},
+    {"nchar", DTYPE_NCHAR, 0, 0},
+    {"int8", DTYPE_INT8, 0, 0},
+    {"serial8", DTYPE_SERIAL8, 0, 0},
     {0, 0, 0, 0}
   };
 #else
@@ -3200,11 +3206,17 @@ int A4GL_get_sql_conv (void);
 char *A4GL_get_esql_connection(void);
 void A4GL_set_esql_connection(char *s);
 int A4GL_copy_file(char *from,char *to);
+int A4GL_file_exists(char *fname);
 int A4GL_move_file(char *from,char *to);
 int A4GL_file_length(char *fname);
 int A4GL_delete_file(char *fname);
 void A4GL_status_ok(int sql_too);
 //void A4GL_set_sql_lineno(int n);
+void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+int aclfgl_aclfgl_getcwd (int a);
+int aclfgl_aclfgl_replace_start(int nargs);
+int aclfgl_aclfgl_call_in_shared(int a) ;
+void add_int8_support(void);
 
 struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a);
 

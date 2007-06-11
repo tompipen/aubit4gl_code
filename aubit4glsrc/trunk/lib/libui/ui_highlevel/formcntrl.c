@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.59 2007-06-08 14:02:30 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.60 2007-06-11 17:50:37 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.59 2007-06-08 14:02:30 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.60 2007-06-11 17:50:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1260,12 +1260,13 @@ void A4GL_submit_events(void *s, struct aclfgl_event_list *evt )
 int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
 	                int a;
                 a=-1;
-		                while (1) {
-
-				                a=internal_A4GL_form_loop_v2(vs,init,vevt);
-							A4GL_debug("internal_A4GL_form_loop_v2 returns %d\n", a);
-						                        if (init||a!=-1) break;
-						                }
+		  ActivateToolbar("Input",vevt);
+                while (1) {
+	                a=internal_A4GL_form_loop_v2(vs,init,vevt);
+			A4GL_debug("internal_A4GL_form_loop_v2 returns %d\n", a);
+                        if (init||a!=-1) break;
+                }
+		ActivateToolbar(0,0);
 		return a;
 
 }
@@ -1374,7 +1375,7 @@ int internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
       		A4GL_LL_activate_events(s);
   		A4GL_LL_set_carat (mform);
 
-  		a = A4GL_getch_win (1,"input");
+  		a = A4GL_getch_win (1,"Input");
 	      if (a==A4GLKEY_EVENT) {
 		A4GL_debug("input fired event...");
        		A4GL_evt_not_idle(evt);

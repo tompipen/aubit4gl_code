@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.43 2007-04-26 07:41:51 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.44 2007-06-11 17:50:36 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1099,4 +1099,7 @@ void UILIB_A4GL_ui_exit(void) {
 }
 
 
-
+int UILIB_aclfgl_aclfgl_add_to_toolbar (int n) {
+	// does nothing for this UI client...
+	return 0;
+}
