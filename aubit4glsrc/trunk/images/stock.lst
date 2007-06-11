@@ -17,7 +17,7 @@
 # The text displayed is the second field, the icon the third.
 #
 # An entry can also be made for the application name - which
-# will set the title bar and icon for a running 4GL program.
+# will set the title bar and icon for a running 4GL program. (look for asql_i.4ae in this file for an example)
 #
 # this is a tab delimited file for stock icons
 # the first field is the text to be matched
