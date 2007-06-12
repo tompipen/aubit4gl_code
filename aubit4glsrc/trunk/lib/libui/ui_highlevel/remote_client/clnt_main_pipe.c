@@ -136,3 +136,13 @@ void A4GL_LL_direct_to_ui(char* t,char* s) {
 	}
 }
 
+
+void ActivateToolbar(char *cmd, struct aclfgl_event_list *list)  {
+// does nothing but required by the API
+}
+
+
+void A4GL_LL_init_form(void *f) {
+
+// does nothing but required by the API
+}

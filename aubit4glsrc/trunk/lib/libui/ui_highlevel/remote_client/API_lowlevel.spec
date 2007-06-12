@@ -89,7 +89,7 @@ A4GL_LL_ui_exit -> void
 A4GL_LL_enable_menu -> void
 A4GL_LL_disable_menu -> void
 A4GL_LL_use_direct_to_ui char* t char* s -> void
-
+LL_AddButtonToolbar char* tag char* Text char* imgPassedIn char* toolTip int keyval int alwaysShow -> void
 
 
 * A4GL_LL_get_field_userptr void* field -> void*  
