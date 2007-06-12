@@ -224,7 +224,7 @@ if mv_cnt >=1 then
 	let lv_counter=0
 	#let lv_txt2=lv_txt clipped ,lv_Counter using "<<<<<<"
 	let lv_txt2=lv_txt
-	display lv_txt2 clipped ,"" at 1,1
+	#display lv_txt2 clipped ,"" at 1,1
 	while true
 		let lv_counter=lv_counter+1
 		call show_pick()
