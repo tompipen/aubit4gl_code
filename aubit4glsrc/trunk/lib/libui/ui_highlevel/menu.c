@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.46 2007-06-11 17:50:38 mikeaubury Exp $";
+  "$Id: menu.c,v 1.47 2007-06-12 19:02:45 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -435,7 +435,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 
   menu = menuv;
   A4GL_chkwin ();
-  ActivateToolbar(0,0);
+  ActivateToolbar(0,0,0);
   A4GL_current_window (menu->parent_window_name);
   if (A4GL_ll_menu_type () == 1)
     {
@@ -628,7 +628,7 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
 {
   int key;
   int menu_response = -1;
-  ActivateToolbar(0,0);
+  ActivateToolbar(0,0,0);
   A4GL_LL_disp_h_menu (menu->num_opts, use_empty_string_if_null(menu->menu_title), use_empty_string_if_null(menu->mnstyle), use_empty_string_if_null(menu->mncomment),use_empty_string_if_null(menu->mnimage));
   if (A4GL_ll_menu_type () == 1)
     {

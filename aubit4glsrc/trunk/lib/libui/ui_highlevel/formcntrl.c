@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.61 2007-06-12 12:48:13 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.62 2007-06-12 19:02:43 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.61 2007-06-12 12:48:13 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.62 2007-06-12 19:02:43 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1260,13 +1260,13 @@ void A4GL_submit_events(void *s, struct aclfgl_event_list *evt )
 int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
 	                int a;
                 a=-1;
-		  ActivateToolbar("Input",vevt);
+		  ActivateToolbar("Input",vevt,vs);
                 while (1) {
 	                a=internal_A4GL_form_loop_v2(vs,init,vevt);
 			A4GL_debug("internal_A4GL_form_loop_v2 returns %d\n", a);
                         if (init||a!=-1) break;
                 }
-		ActivateToolbar(0,0);
+		ActivateToolbar(0,0,0);
 		return a;
 
 }

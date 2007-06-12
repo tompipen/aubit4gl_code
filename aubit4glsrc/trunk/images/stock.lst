@@ -105,7 +105,6 @@ playsound	playsound	playsound.png
 print	print	fileprint.png
 redled	redled	redled.png
 restart	Restart	redo.png
-asql_i.4ae	Aubit SQL	Aubit.gif
 redo	redo	redo.png
 reload_page	reload_page	reload_page.png
 next	Next	1rightarrow.png
@@ -125,3 +124,5 @@ up2	up2	up2.png
 wizard	wizard	wizard.png
 yellowled	yellowled	yellowled.png
 help	Help!	help.png
+asql_i.4ae	Aubit SQL	Aubit.gif
+menuprog	Customer Maintenance Program	Aubit.gif

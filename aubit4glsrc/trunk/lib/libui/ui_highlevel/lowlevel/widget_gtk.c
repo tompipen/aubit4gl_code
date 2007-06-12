@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.32 2007-06-08 14:02:38 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.33 2007-06-12 19:02:46 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -14,6 +14,7 @@ static char const module_id[] =
 #include <gdk/gdkkeysyms.h>	/* GDK_Down */
 #include <ctype.h>
 
+void textField_focus(GtkWidget * w, char *mode) ;
 void A4GL_func (GtkWidget * w, char *mode);
 void A4GL_add_signal_clicked (GtkWidget * widget, void *funcptr);
 void A4GL_add_signal_grab_focus (GtkWidget * widget, void *funcptr);
@@ -1033,6 +1034,8 @@ A4GL_cr_radio (void)
   return GTK_WIDGET (hbox);
 }
 
+
+
 /**
  * Create a text box widget and show it.
  *
@@ -1067,7 +1070,9 @@ A4GL_cr_textbox (void)
 	  entry = gtk_entry_new ();
 	}
   	gtk_widget_show (entry);
+	gtk_object_set_data (GTK_OBJECT (entry), "HANDLER", (void *)textField_focus);
   	A4GL_add_signal_changed (entry, 0);
+	//A4GL_add_signal_clicked(entry,0);
   	A4GL_add_signal_grab_focus (entry, 0);
     }
   A4GL_debug ("Created textbox widget %p", entry);

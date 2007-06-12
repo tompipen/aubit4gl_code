@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.126 2007-06-07 10:25:53 mikeaubury Exp $
+# $Id: iarray.c,v 1.127 2007-06-12 19:02:43 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.126 2007-06-07 10:25:53 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.127 2007-06-12 19:02:43 mikeaubury Exp $";
 #endif
 
 /**
@@ -914,7 +914,6 @@ process_key_press (struct s_inp_arr *arr, int a)
 	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
 		}
 	  } else {
-  	  		//A4GL_newMovement (arr, arr->scr_dim, d, arr->curr_attrib, 'D');
 	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
 	  }
 	}

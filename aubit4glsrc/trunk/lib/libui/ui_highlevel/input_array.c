@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.57 2007-06-12 12:48:13 mikeaubury Exp $
+# $Id: input_array.c,v 1.58 2007-06-12 19:02:44 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.57 2007-06-12 12:48:13 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.58 2007-06-12 19:02:44 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1173,7 +1173,7 @@ int nv;
   //int a;
   //
   
-  ActivateToolbar("InputArray",vevt);
+  ActivateToolbar("InputArray",vevt,vinpa);
 
   inpa = (struct s_inp_arr *) vinpa;
 
@@ -1198,7 +1198,7 @@ int nv;
       if (inpa->srec == 0)
 	{
 	  A4GL_exitwith ("Screen record not found");
-  	ActivateToolbar(0,0);
+  	ActivateToolbar(0,0,0);
 	  return 0;
 	}
       inpa->currform = UILIB_A4GL_get_curr_form (1);
@@ -1242,7 +1242,7 @@ int nv;
 
 	  A4GL_debug ("Screen record does not exist");
 
-  	ActivateToolbar(0,0);
+  	ActivateToolbar(0,0,0);
 	  return 0;
 
 	}
@@ -1259,7 +1259,7 @@ int nv;
 
 	  A4GL_debug ("Too many or too few variables for fields %d %d", inpa->srec->dim, nv);
 		A4GL_exitwith("Too many or too few variables for fields");
-  	ActivateToolbar(0,0);
+  	ActivateToolbar(0,0,0);
 	  return 0;
 
 	}
@@ -1272,7 +1272,7 @@ int nv;
 	    {
 	      A4GL_exitwith
 		("MAXCOUNT out of range (<0 or > array record size)");
-  	ActivateToolbar(0,0);
+  	ActivateToolbar(0,0,0);
 	      return 0;
 	    }
 	  inpa->arr_size = inpa->maxcount;
@@ -1316,7 +1316,7 @@ int nv;
       A4GL_debug ("inp_arr - returning -99  BEFORE INPUT....");
       if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
 	return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
-  	ActivateToolbar(0,0);
+  	ActivateToolbar(0,0,0);
       return -1;
     }
   A4GL_debug ("inpaarr4");
@@ -1328,7 +1328,7 @@ int nv;
       A4GL_debug ("FIXME : rval : %d\n", rval);
     }
 
-  	ActivateToolbar(0,0);
+  	ActivateToolbar(0,0,0);
   return rval;
 }
 

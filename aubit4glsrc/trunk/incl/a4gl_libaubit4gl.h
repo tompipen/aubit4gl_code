@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.276 2007-06-11 17:50:27 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.277 2007-06-12 19:02:43 mikeaubury Exp $
 #
 */
 
@@ -276,6 +276,7 @@
 #define A4GLKEY_INTERRUPT	2011
 #define A4GLKEY_START_OF_FIELD  2019
 #define A4GLKEY_END_OF_FIELD    2020
+#define A4GLKEY_FIELD_CLICKED 	2021
 
 
 #define A4GLKEY_CANCEL 		0xfffe

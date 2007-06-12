@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.122 2007-06-12 12:48:13 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.123 2007-06-12 19:02:44 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3034,10 +3034,10 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt)
 {
   int a;
   A4GL_debug ("Prompt loop\n");
-  ActivateToolbar("Prompt",evt);
+  ActivateToolbar("Prompt",evt,vprompt);
   a = A4GL_prompt_loop_v2_int (vprompt, timeout, evt);
   A4GL_debug ("Returns %d\n", a);
-  ActivateToolbar(0,0);
+  ActivateToolbar(0,0,0);
   return a;
 }
 

@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.118 2007-06-12 12:48:14 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.119 2007-06-12 19:02:45 mikeaubury Exp $";
 #endif
 
 
@@ -78,6 +78,10 @@ struct sAubitStock {
 struct sAubitStock *AubitStock=0;
 int nAubitStock=0;
 void AddAubitStock(char *name, char *txt, char *img) ;
+
+char *currentCmd=0;
+void *currentSio=0;
+
 
 //void ActivateToolbar(char *cmd, struct aclfgl_event_list *list) ;
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt,
@@ -1094,7 +1098,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
   	//gtk_toolbar_set_space_size (GTK_TOOLBAR (toolbar), 5);
       	gtk_container_add (GTK_CONTAINER (MainFrame), toolbar);
       	gtk_container_add (GTK_CONTAINER (MainFrame), hbox);
-		ActivateToolbar(0,0);
+		ActivateToolbar(0,0,0);
       } else {
 	MainFrame=hbox;
       }
@@ -2946,6 +2950,8 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ROWS", (void *) rows);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_COLS", (void *) cols);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ISLABEL", (void *) 0);
+	printf("---->%s\n", tab_and_col);
+  gtk_object_set_data (GTK_OBJECT (widget), "TAB_AND_COL", strdup(tab_and_col));
 
   if (A4GL_aubit_strcasecmp ("LABEL", widget_str) == 0)
     {
@@ -4742,7 +4748,30 @@ return button;
 
 }
 
-void ActivateToolbar(char *cmd, struct aclfgl_event_list *list) {
+
+
+void textField_focus(GtkWidget * w, char *mode) {
+if (strcmp(mode,"on")==0) return;
+if (currentCmd==0) return;
+if (strcmp(currentCmd,"Input")==0) {
+	struct s_screenio *s;
+	s=(struct s_screenio *)currentSio;
+	if (w!=s->currentfield) { // we can ignore it if its the current field
+		char *tandc;
+		tandc=gtk_object_get_data(w,"TAB_AND_COL");
+		if (!A4GL_isyes(acl_getenv("NOGTKFIELDCLICK")))  {
+			A4GL_req_field(currentSio,'I','!',tandc,1,NULL,0); // Need this actioned - so fake a key press
+			A4GL_fake_a_keypress(w,A4GLKEY_FIELD_CLICKED);
+		}
+	}
+}
+
+}
+
+
+void ActivateToolbar(char *cmd, struct aclfgl_event_list *list,void *sio) {
+	currentCmd=cmd;
+	currentSio=sio;
 
 	if (cmd==NULL) {
 		if (toolbar) {
@@ -4895,6 +4924,7 @@ void A4GL_LL_init_form(void *f) {
 struct s_a4gl_gtk_form *form;
 form=f;
 form->curcol=0;
+form->currentfield=0;
 }
 
 static void A4GL_dobeep(void ) {
