@@ -47,7 +47,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.106 2007-06-11 17:50:39 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.107 2007-06-12 12:48:14 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -90,7 +90,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.106 2007-06-11 17:50:39 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.107 2007-06-12 12:48:14 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1643,6 +1643,10 @@ A4GL_LL_set_field_opts (void *field, int oopt)
 void
 A4GL_LL_set_field_fore (void *field, int attr)
 {
+	A4GL_debug("A4GL_LL_set_field_fore : %p %x (%s)\n",field,attr,A4GL_LL_field_buffer(field,0));
+	if (strcmp(A4GL_LL_field_buffer(field,0),"       0")==0 && attr==0x800) {
+		A4GL_pause_execution();
+	}
   A4GL_form_set_field_fore (field, attr);
 }
 
@@ -3377,8 +3381,8 @@ A4GL_default_attributes_in_ll (void *f, int dtype, int has_picture)
     }
 
   A4GL_debug ("STATIC");
-  A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
+  //A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
+  //A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
   A4GL_LL_set_max_field (f,A4GL_mja_get_field_width(f) ,0);
 
 }
@@ -3579,6 +3583,12 @@ void LL_AddButtonToolbar(char *tag, char *buttonText,char *img, char *toolTip, i
 void ActivateToolbar(char *cmd, struct aclfgl_event_list *list) {
 	// does nothing...
 }
+
+
+void A4GL_LL_init_form(void *f) {
+	// does nothing - required by API
+}
+
 
 // --------------------------------------------------------------------------------------
 // FIXMEs...

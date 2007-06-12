@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.56 2007-06-11 17:50:37 mikeaubury Exp $
+# $Id: input_array.c,v 1.57 2007-06-12 12:48:13 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.56 2007-06-11 17:50:37 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.57 2007-06-12 12:48:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -864,21 +864,43 @@ process_key_press (struct s_inp_arr *arr, int a)
 
     case A4GLKEY_PGDN:
       if (arr->arr_line + arr->scr_dim <= arr->arr_size)
-	{
-	  A4GL_newMovement (arr,
-			    arr->scr_line,
-			    arr->arr_line + arr->scr_dim, arr->curr_attrib,
-			    'D');
-	}
-      else
-	{
-	  int d;
-	  d = arr->arr_size - arr->arr_line;
-	  A4GL_newMovement (arr,
-			    arr->scr_dim,
-			    arr->arr_line + d, arr->curr_attrib, 'D');
+        {
+        A4GL_debug("Calling newmovement PGDN %d %d %d",arr->arr_line, arr->scr_dim, arr->no_arr);
 
-	}
+          if (arr->arr_line+ arr->scr_dim> arr->no_arr ) {
+                if (arr->arr_line+ arr->scr_dim > arr->no_arr+1) {
+                        /* ... */
+                        A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+                } else {
+                        A4GL_debug("A");
+                        if (arr->allow_insert) {
+                                A4GL_debug("allow_insert");
+                                A4GL_newMovement (arr, arr->scr_line, arr->no_arr+1, arr->curr_attrib, 'D');
+                        } else {
+                                A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+                        }
+                }
+          } else {
+                        A4GL_debug("nm1");
+                A4GL_newMovement (arr, arr->scr_line, arr->arr_line + arr->scr_dim, arr->curr_attrib, 'D');
+          }
+        }
+      else
+        {
+          int d;
+        A4GL_debug("XX");
+          d = arr->arr_size - arr->arr_line;
+          if (d>arr->no_arr) {
+                if (arr->allow_insert) {
+                        A4GL_newMovement (arr, arr->scr_dim, arr->no_arr+1, arr->curr_attrib, 'D');
+                } else {
+                        A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+                }
+          } else {
+                        A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+          }
+        }
+
       break;
 
     case A4GLKEY_PGUP:

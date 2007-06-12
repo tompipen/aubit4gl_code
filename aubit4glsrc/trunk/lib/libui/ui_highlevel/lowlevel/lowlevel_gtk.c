@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.117 2007-06-11 17:50:39 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.118 2007-06-12 12:48:14 mikeaubury Exp $";
 #endif
 
 
@@ -1074,6 +1074,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 
 	gtk_widget_show(MainFrame);
 	gtk_widget_show(toolbar);
+
   	gtk_toolbar_set_orientation (GTK_TOOLBAR (toolbar), GTK_ORIENTATION_HORIZONTAL);
 
 	if (strcmp(acl_getenv("TOOLBARSTYLE"),"ICONSONLY")==0) {
@@ -1100,11 +1101,11 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 
       gtk_container_add (GTK_CONTAINER (win), MainFrame);
       win_screen = fixed;
-      gtk_widget_set_usize (GTK_WIDGET (fixed),
-			    (A4GL_LL_screen_width ()) * gui_xwidth,
-			    (A4GL_LL_screen_height ()) * gui_yheight);
+      gtk_widget_set_usize (GTK_WIDGET (fixed), (A4GL_LL_screen_width ()) * gui_xwidth, (A4GL_LL_screen_height ()) * gui_yheight);
       gtk_object_set_data (GTK_OBJECT (win_screen), "BB", fglmenu_bb);
-      gtk_object_set_data (GTK_OBJECT (win_screen), "OKCANCEL", ok_cancel);
+	if (!useToolbar) {
+      		gtk_object_set_data (GTK_OBJECT (win_screen), "OKCANCEL", ok_cancel);
+	}
       gtk_object_set_data (GTK_OBJECT (win), "FIXED", fixed);
       gtk_signal_connect (GTK_OBJECT (win), "delete_event",
 			  GTK_SIGNAL_FUNC (A4GL_delete_event), win);
@@ -4890,6 +4891,11 @@ void AddAubitStock(char *name, char *txt, char *img) {
 	}
 }
 
+void A4GL_LL_init_form(void *f) {
+struct s_a4gl_gtk_form *form;
+form=f;
+form->curcol=0;
+}
 
 static void A4GL_dobeep(void ) {
 }

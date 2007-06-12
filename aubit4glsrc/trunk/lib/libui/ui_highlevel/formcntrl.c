@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.60 2007-06-11 17:50:37 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.61 2007-06-12 12:48:13 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.60 2007-06-11 17:50:37 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.61 2007-06-12 12:48:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1291,7 +1291,11 @@ int internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
   if (init == 1)
     {
       A4GL_debug ("------------------------------------------------------");
-      s->currform->currentfield = 0;
+//A4GL_pause_execution();
+      	s->currform->currentfield = 0;
+	A4GL_LL_init_form(s->currform->form);
+	//s->currform->curcol=0;
+
       abort_pressed = 0;
     }
   form = s->currform;

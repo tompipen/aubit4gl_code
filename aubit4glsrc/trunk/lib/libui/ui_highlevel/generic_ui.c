@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.121 2007-06-11 17:50:37 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.122 2007-06-12 12:48:13 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3781,6 +3781,11 @@ A4GL_set_field_attr_for_ll (void *formdets, void *field)
 
   a = A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext, invis, reqd, compress, has_picture);
   	A4GL_ll_set_field_opts (field, a);
+
+
+	//UILIB_A4GL_zrefresh(); // <-just for debugging...
+	//sleep (2);
+ 
 }
 
 
@@ -3930,9 +3935,10 @@ A4GL_default_attributes (void *f, int dtype, int has_picture,void *formdets)
 
   A4GL_debug ("STATIC");
 
-  A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
-  A4GL_LL_set_max_field (f, A4GL_get_field_width_with_form (formdets,f),formdets);
+
+  //A4GL_LL_set_field_fore (f, A4GL_LL_colour_code (7));
+  //A4GL_LL_set_field_back (f, A4GL_LL_colour_code (7));
+  //A4GL_LL_set_max_field (f, A4GL_get_field_width_with_form (formdets,f),formdets);
 
 }
 

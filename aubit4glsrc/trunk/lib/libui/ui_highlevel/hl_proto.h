@@ -144,3 +144,4 @@ void A4GL_LL_enable_menu(void);
 void A4GL_LL_disable_menu(void);
 void ActivateToolbar(char *cmd, struct aclfgl_event_list *list) ;
 void LL_AddButtonToolbar(char*tag, char *buttonText,char *img, char *toolTip, int keyval,int alwayShow);
+void A4GL_LL_init_form(void *f);
