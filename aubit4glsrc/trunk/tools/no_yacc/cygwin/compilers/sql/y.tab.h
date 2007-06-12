@@ -39,25 +39,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2149,
-     NAMED = 2150,
-     NAMED_GEN = 2151,
-     CHAR_VALUE = 2152,
-     NOT_USED_1 = 2153,
-     NOT_USED_2 = 2154,
-     NOT_USED_3 = 2155,
-     NOT_USED_4 = 2156,
-     NOT_USED_5 = 2157,
-     NOT_USED_6 = 2158,
-     NOT_USED_7 = 2159,
-     NOT_USED_8 = 2160,
-     NUMBER_VALUE = 2161,
-     SEMICOLON = 2162,
-     QUESTION_MARK = 2163,
-     CLINE = 2164,
-     CH = 2165,
-     MARK_VAR = 2166,
-     END_MARK_VAR = 2167,
+     INT_VALUE = 2151,
+     NAMED = 2152,
+     NAMED_GEN = 2153,
+     CHAR_VALUE = 2154,
+     NOT_USED_1 = 2155,
+     NOT_USED_2 = 2156,
+     NOT_USED_3 = 2157,
+     NOT_USED_4 = 2158,
+     NOT_USED_5 = 2159,
+     NOT_USED_6 = 2160,
+     NOT_USED_7 = 2161,
+     NOT_USED_8 = 2162,
+     NUMBER_VALUE = 2163,
+     SEMICOLON = 2164,
+     QUESTION_MARK = 2165,
+     CLINE = 2166,
+     CH = 2167,
+     MARK_VAR = 2168,
+     END_MARK_VAR = 2169,
      ON_CLOSE_APPLICATION_STOP = 1000,
      DIALOGSETCURRLINE = 1001,
      DIALOGKEYSETLABEL = 1002,
@@ -212,148 +212,150 @@
      KW_DECIMAL = 1493,
      DEFAULT = 1495,
      INTEGER = 1503,
-     MATCHES = 1506,
-     VARCHAR = 1519,
-     CLOSE_SQUARE = 1522,
-     GREATER_THAN = 1523,
-     KW_FALSE = 1524,
-     NOT_IN = 1525,
-     OPEN_BRACKET = 1527,
-     KW_DELETE = 1535,
-     KW_ESCAPE = 1538,
-     EXISTS = 1539,
-     EXTEND = 1540,
-     HAVING = 1544,
-     KW_INSERT = 1546,
-     MINUTE = 1550,
-     MODIFY = 1551,
-     EQUAL = 1553,
-     NOT_EQUAL = 1554,
-     OPEN_SQUARE = 1556,
-     PUBLIC = 1560,
-     REVOKE = 1563,
-     SECOND = 1567,
-     KW_SELECT = 1571,
-     SERIAL = 1572,
-     KW_SPACES = 1574,
-     UNIQUE = 1575,
-     KW_UPDATE = 1577,
-     VALUES = 1578,
-     KW_NULL = 1582,
-     KW_TRUE = 1583,
-     ALTER = 1585,
-     KW_ASCII = 1587,
-     CHECK = 1591,
-     COUNT = 1595,
-     KW_FIRST = 1600,
-     KW_FLOAT = 1601,
-     GRANT = 1604,
-     INDEX = 1607,
-     LESS_THAN = 1610,
-     MONEY = 1612,
-     MONTH = 1613,
-     KW_POWER = 1614,
-     KW_MULTIPLY = 1615,
-     ORDER = 1616,
-     OUTER = 1617,
-     UNION = 1626,
-     WHERE = 1628,
-     KW_BYTE = 1635,
-     CASE = 1637,
-     KW_DATE = 1639,
-     DESC = 1640,
-     KW_DIVIDE = 1641,
-     DROP = 1644,
-     ELSE = 1645,
-     FROM = 1649,
-     HOUR = 1655,
-     INTO = 1656,
-     LIKE = 1659,
-     REAL = 1668,
-     SOME = 1673,
-     KW_TEXT = 1677,
-     KW_THEN = 1678,
-     USER = 1679,
-     WHEN = 1681,
-     YEAR = 1684,
-     KW_DOW = 1685,
-     XSET = 1687,
-     ADD = 1688,
-     ALL = 1689,
-     KW_AND = 1690,
-     ANY = 1691,
-     ASC = 1692,
-     AVG = 1693,
-     COLON = 1694,
-     KW_COMMA = 1695,
-     DAY = 1696,
-     DBA = 1697,
-     KW_FOR = 1701,
-     KW_KEY = 1702,
-     KW_LET = 1704,
-     XMAX = 1706,
-     XMIN = 1707,
-     KW_MINUS = 1708,
-     KW_MOD = 1709,
-     KW_NOT = 1710,
-     KW_PAD = 1711,
-     KW_PUT = 1712,
-     KW_RED = 1713,
-     KW_ROW = 1714,
-     KW_SQL = 1716,
-     KW_SUM = 1717,
-     KW_TOP = 1718,
-     KW_USE = 1719,
-     ATSIGN = 1720,
-     KW_PLUS = 1721,
-     KW_AS = 1726,
-     KW_AT = 1727,
-     KW_BY = 1728,
-     KW_DOT = 1729,
-     KW_GO = 1730,
-     KW_IF = 1731,
-     KW_IN = 1732,
-     KW_OF = 1733,
-     KW_ON = 1734,
-     KW_OR = 1735,
-     KW_TO = 1736,
-     BEFORE = 1774,
-     KW_INPUT_ARRAY = 1775,
-     END = 1778,
-     TILDE = 1785,
-     ILIKE = 1786,
-     FILLFACTOR = 1789,
-     TIME = 1794,
-     KW_TODAY = 1801,
-     KW_IDLE = 2141,
-     CANCEL_INSERT = 2142,
-     CANCEL_DELETE = 2143,
-     FORCE_UI = 2144,
-     FGL_MODULE = 2145,
-     VIA = 2146,
-     SLICE = 2147
+     INTEGER8 = 1504,
+     SERIAL8 = 1505,
+     MATCHES = 1508,
+     VARCHAR = 1521,
+     CLOSE_SQUARE = 1524,
+     GREATER_THAN = 1525,
+     KW_FALSE = 1526,
+     NOT_IN = 1527,
+     OPEN_BRACKET = 1529,
+     KW_DELETE = 1537,
+     KW_ESCAPE = 1540,
+     EXISTS = 1541,
+     EXTEND = 1542,
+     HAVING = 1546,
+     KW_INSERT = 1548,
+     MINUTE = 1552,
+     MODIFY = 1553,
+     EQUAL = 1555,
+     NOT_EQUAL = 1556,
+     OPEN_SQUARE = 1558,
+     PUBLIC = 1562,
+     REVOKE = 1565,
+     SECOND = 1569,
+     KW_SELECT = 1573,
+     SERIAL = 1574,
+     KW_SPACES = 1576,
+     UNIQUE = 1577,
+     KW_UPDATE = 1579,
+     VALUES = 1580,
+     KW_NULL = 1584,
+     KW_TRUE = 1585,
+     ALTER = 1587,
+     KW_ASCII = 1589,
+     CHECK = 1593,
+     COUNT = 1597,
+     KW_FIRST = 1602,
+     KW_FLOAT = 1603,
+     GRANT = 1606,
+     INDEX = 1609,
+     LESS_THAN = 1612,
+     MONEY = 1614,
+     MONTH = 1615,
+     KW_POWER = 1616,
+     KW_MULTIPLY = 1617,
+     ORDER = 1618,
+     OUTER = 1619,
+     UNION = 1628,
+     WHERE = 1630,
+     KW_BYTE = 1637,
+     CASE = 1639,
+     KW_DATE = 1641,
+     DESC = 1642,
+     KW_DIVIDE = 1643,
+     DROP = 1646,
+     ELSE = 1647,
+     FROM = 1651,
+     HOUR = 1657,
+     INTO = 1658,
+     LIKE = 1661,
+     REAL = 1670,
+     SOME = 1675,
+     KW_TEXT = 1679,
+     KW_THEN = 1680,
+     USER = 1681,
+     WHEN = 1683,
+     YEAR = 1686,
+     KW_DOW = 1687,
+     XSET = 1689,
+     ADD = 1690,
+     ALL = 1691,
+     KW_AND = 1692,
+     ANY = 1693,
+     ASC = 1694,
+     AVG = 1695,
+     COLON = 1696,
+     KW_COMMA = 1697,
+     DAY = 1698,
+     DBA = 1699,
+     KW_FOR = 1703,
+     KW_KEY = 1704,
+     KW_LET = 1706,
+     XMAX = 1708,
+     XMIN = 1709,
+     KW_MINUS = 1710,
+     KW_MOD = 1711,
+     KW_NOT = 1712,
+     KW_PAD = 1713,
+     KW_PUT = 1714,
+     KW_RED = 1715,
+     KW_ROW = 1716,
+     KW_SQL = 1718,
+     KW_SUM = 1719,
+     KW_TOP = 1720,
+     KW_USE = 1721,
+     ATSIGN = 1722,
+     KW_PLUS = 1723,
+     KW_AS = 1728,
+     KW_AT = 1729,
+     KW_BY = 1730,
+     KW_DOT = 1731,
+     KW_GO = 1732,
+     KW_IF = 1733,
+     KW_IN = 1734,
+     KW_OF = 1735,
+     KW_ON = 1736,
+     KW_OR = 1737,
+     KW_TO = 1738,
+     BEFORE = 1776,
+     KW_INPUT_ARRAY = 1777,
+     END = 1780,
+     TILDE = 1787,
+     ILIKE = 1788,
+     FILLFACTOR = 1791,
+     TIME = 1796,
+     KW_TODAY = 1803,
+     KW_IDLE = 2143,
+     CANCEL_INSERT = 2144,
+     CANCEL_DELETE = 2145,
+     FORCE_UI = 2146,
+     FGL_MODULE = 2147,
+     VIA = 2148,
+     SLICE = 2149
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2149
-#define NAMED 2150
-#define NAMED_GEN 2151
-#define CHAR_VALUE 2152
-#define NOT_USED_1 2153
-#define NOT_USED_2 2154
-#define NOT_USED_3 2155
-#define NOT_USED_4 2156
-#define NOT_USED_5 2157
-#define NOT_USED_6 2158
-#define NOT_USED_7 2159
-#define NOT_USED_8 2160
-#define NUMBER_VALUE 2161
-#define SEMICOLON 2162
-#define QUESTION_MARK 2163
-#define CLINE 2164
-#define CH 2165
-#define MARK_VAR 2166
-#define END_MARK_VAR 2167
+#define INT_VALUE 2151
+#define NAMED 2152
+#define NAMED_GEN 2153
+#define CHAR_VALUE 2154
+#define NOT_USED_1 2155
+#define NOT_USED_2 2156
+#define NOT_USED_3 2157
+#define NOT_USED_4 2158
+#define NOT_USED_5 2159
+#define NOT_USED_6 2160
+#define NOT_USED_7 2161
+#define NOT_USED_8 2162
+#define NUMBER_VALUE 2163
+#define SEMICOLON 2164
+#define QUESTION_MARK 2165
+#define CLINE 2166
+#define CH 2167
+#define MARK_VAR 2168
+#define END_MARK_VAR 2169
 #define ON_CLOSE_APPLICATION_STOP 1000
 #define DIALOGSETCURRLINE 1001
 #define DIALOGKEYSETLABEL 1002
@@ -508,126 +510,128 @@
 #define KW_DECIMAL 1493
 #define DEFAULT 1495
 #define INTEGER 1503
-#define MATCHES 1506
-#define VARCHAR 1519
-#define CLOSE_SQUARE 1522
-#define GREATER_THAN 1523
-#define KW_FALSE 1524
-#define NOT_IN 1525
-#define OPEN_BRACKET 1527
-#define KW_DELETE 1535
-#define KW_ESCAPE 1538
-#define EXISTS 1539
-#define EXTEND 1540
-#define HAVING 1544
-#define KW_INSERT 1546
-#define MINUTE 1550
-#define MODIFY 1551
-#define EQUAL 1553
-#define NOT_EQUAL 1554
-#define OPEN_SQUARE 1556
-#define PUBLIC 1560
-#define REVOKE 1563
-#define SECOND 1567
-#define KW_SELECT 1571
-#define SERIAL 1572
-#define KW_SPACES 1574
-#define UNIQUE 1575
-#define KW_UPDATE 1577
-#define VALUES 1578
-#define KW_NULL 1582
-#define KW_TRUE 1583
-#define ALTER 1585
-#define KW_ASCII 1587
-#define CHECK 1591
-#define COUNT 1595
-#define KW_FIRST 1600
-#define KW_FLOAT 1601
-#define GRANT 1604
-#define INDEX 1607
-#define LESS_THAN 1610
-#define MONEY 1612
-#define MONTH 1613
-#define KW_POWER 1614
-#define KW_MULTIPLY 1615
-#define ORDER 1616
-#define OUTER 1617
-#define UNION 1626
-#define WHERE 1628
-#define KW_BYTE 1635
-#define CASE 1637
-#define KW_DATE 1639
-#define DESC 1640
-#define KW_DIVIDE 1641
-#define DROP 1644
-#define ELSE 1645
-#define FROM 1649
-#define HOUR 1655
-#define INTO 1656
-#define LIKE 1659
-#define REAL 1668
-#define SOME 1673
-#define KW_TEXT 1677
-#define KW_THEN 1678
-#define USER 1679
-#define WHEN 1681
-#define YEAR 1684
-#define KW_DOW 1685
-#define XSET 1687
-#define ADD 1688
-#define ALL 1689
-#define KW_AND 1690
-#define ANY 1691
-#define ASC 1692
-#define AVG 1693
-#define COLON 1694
-#define KW_COMMA 1695
-#define DAY 1696
-#define DBA 1697
-#define KW_FOR 1701
-#define KW_KEY 1702
-#define KW_LET 1704
-#define XMAX 1706
-#define XMIN 1707
-#define KW_MINUS 1708
-#define KW_MOD 1709
-#define KW_NOT 1710
-#define KW_PAD 1711
-#define KW_PUT 1712
-#define KW_RED 1713
-#define KW_ROW 1714
-#define KW_SQL 1716
-#define KW_SUM 1717
-#define KW_TOP 1718
-#define KW_USE 1719
-#define ATSIGN 1720
-#define KW_PLUS 1721
-#define KW_AS 1726
-#define KW_AT 1727
-#define KW_BY 1728
-#define KW_DOT 1729
-#define KW_GO 1730
-#define KW_IF 1731
-#define KW_IN 1732
-#define KW_OF 1733
-#define KW_ON 1734
-#define KW_OR 1735
-#define KW_TO 1736
-#define BEFORE 1774
-#define KW_INPUT_ARRAY 1775
-#define END 1778
-#define TILDE 1785
-#define ILIKE 1786
-#define FILLFACTOR 1789
-#define TIME 1794
-#define KW_TODAY 1801
-#define KW_IDLE 2141
-#define CANCEL_INSERT 2142
-#define CANCEL_DELETE 2143
-#define FORCE_UI 2144
-#define FGL_MODULE 2145
-#define VIA 2146
-#define SLICE 2147
+#define INTEGER8 1504
+#define SERIAL8 1505
+#define MATCHES 1508
+#define VARCHAR 1521
+#define CLOSE_SQUARE 1524
+#define GREATER_THAN 1525
+#define KW_FALSE 1526
+#define NOT_IN 1527
+#define OPEN_BRACKET 1529
+#define KW_DELETE 1537
+#define KW_ESCAPE 1540
+#define EXISTS 1541
+#define EXTEND 1542
+#define HAVING 1546
+#define KW_INSERT 1548
+#define MINUTE 1552
+#define MODIFY 1553
+#define EQUAL 1555
+#define NOT_EQUAL 1556
+#define OPEN_SQUARE 1558
+#define PUBLIC 1562
+#define REVOKE 1565
+#define SECOND 1569
+#define KW_SELECT 1573
+#define SERIAL 1574
+#define KW_SPACES 1576
+#define UNIQUE 1577
+#define KW_UPDATE 1579
+#define VALUES 1580
+#define KW_NULL 1584
+#define KW_TRUE 1585
+#define ALTER 1587
+#define KW_ASCII 1589
+#define CHECK 1593
+#define COUNT 1597
+#define KW_FIRST 1602
+#define KW_FLOAT 1603
+#define GRANT 1606
+#define INDEX 1609
+#define LESS_THAN 1612
+#define MONEY 1614
+#define MONTH 1615
+#define KW_POWER 1616
+#define KW_MULTIPLY 1617
+#define ORDER 1618
+#define OUTER 1619
+#define UNION 1628
+#define WHERE 1630
+#define KW_BYTE 1637
+#define CASE 1639
+#define KW_DATE 1641
+#define DESC 1642
+#define KW_DIVIDE 1643
+#define DROP 1646
+#define ELSE 1647
+#define FROM 1651
+#define HOUR 1657
+#define INTO 1658
+#define LIKE 1661
+#define REAL 1670
+#define SOME 1675
+#define KW_TEXT 1679
+#define KW_THEN 1680
+#define USER 1681
+#define WHEN 1683
+#define YEAR 1686
+#define KW_DOW 1687
+#define XSET 1689
+#define ADD 1690
+#define ALL 1691
+#define KW_AND 1692
+#define ANY 1693
+#define ASC 1694
+#define AVG 1695
+#define COLON 1696
+#define KW_COMMA 1697
+#define DAY 1698
+#define DBA 1699
+#define KW_FOR 1703
+#define KW_KEY 1704
+#define KW_LET 1706
+#define XMAX 1708
+#define XMIN 1709
+#define KW_MINUS 1710
+#define KW_MOD 1711
+#define KW_NOT 1712
+#define KW_PAD 1713
+#define KW_PUT 1714
+#define KW_RED 1715
+#define KW_ROW 1716
+#define KW_SQL 1718
+#define KW_SUM 1719
+#define KW_TOP 1720
+#define KW_USE 1721
+#define ATSIGN 1722
+#define KW_PLUS 1723
+#define KW_AS 1728
+#define KW_AT 1729
+#define KW_BY 1730
+#define KW_DOT 1731
+#define KW_GO 1732
+#define KW_IF 1733
+#define KW_IN 1734
+#define KW_OF 1735
+#define KW_ON 1736
+#define KW_OR 1737
+#define KW_TO 1738
+#define BEFORE 1776
+#define KW_INPUT_ARRAY 1777
+#define END 1780
+#define TILDE 1787
+#define ILIKE 1788
+#define FILLFACTOR 1791
+#define TIME 1796
+#define KW_TODAY 1803
+#define KW_IDLE 2143
+#define CANCEL_INSERT 2144
+#define CANCEL_DELETE 2145
+#define FORCE_UI 2146
+#define FGL_MODULE 2147
+#define VIA 2148
+#define SLICE 2149
 
 
 
@@ -650,7 +654,7 @@ typedef union YYSTYPE
 
 }
 /* Line 1488 of yacc.c.  */
-#line 654 "y.tab.h"
+#line 658 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
