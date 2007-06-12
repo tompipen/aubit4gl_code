@@ -466,7 +466,7 @@ decode_agg (int aggid)
   /*this_report.aggs.aggs_val[aggid].*/
   if (this_report.aggs.aggs_val[aggid].isgroup)
     {
-      printf (" GROUP ");
+      printf (" GROUP ", this_report.aggs.aggs_val[aggid].isgroup);
     }
   switch (this_report.aggs.aggs_val[aggid].type)
     {

@@ -101,6 +101,7 @@ set_expr_int(struct expr *e,int a)
 %token ALL
 %token ANY
 %token ASC
+%token SUM
 %token ATSIGN
 %token AVERAGE 
 %token AVG
@@ -118,6 +119,7 @@ set_expr_int(struct expr *e,int a)
 %token COMMANDS
 %token COMPARISON
 %token COUNT
+%token TOTAL 
 %token DATABASE
 %token DATE
 %token TIME 
@@ -206,13 +208,11 @@ set_expr_int(struct expr *e,int a)
 %token SMALLINT
 %token SOME
 %token STEP
-%token SUM
 %token TEMP
 %token THEN
 %token TO
 %token TOP
 %token TOP_OF_PAGE
-%token TOTAL
 %token TRAILER
 %token UNION
 %token UNIQUE
@@ -1329,9 +1329,7 @@ aggregate: aggregate_elem  op_where_agg
 
 
 of_expr: 
-		KW_OF fmt_val_expression {
-			$<exprptr>$=DUP($<expr>2);
-	}
+		KW_OF simple_fmt_val_expression { $<exprptr>$=DUP($<expr>2); }
 ;
 
 aggregate_elem:
@@ -1353,7 +1351,7 @@ aggregate_elem:
 		$<agg_val>$.expr=$<exprptr>2;
 		$<agg_val>$.isgroup=0;
 	}
-	| TOTAL of_expr {
+	| TOTAL of_expr  {
 		$<agg_val>$.type=AGG_TOTAL;
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.expr=$<exprptr>2;
@@ -1419,6 +1417,118 @@ aggregate_elem:
 		$<agg_val>$.wexpr=0;
 		$<agg_val>$.isgroup=1;
 		$<agg_val>$.expr=$<exprptr>3;
+	}
+;
+
+
+simple_fmt_val_expression:
+	 MINUS simple_fmt_val_expression  {
+		switch ( $<expr>2.type) {
+			case EXPRTYPE_DOUBLE:
+					COPY($<expr>$,$<expr>2); 
+					$<expr>$.expr_u.d=0.0-$<expr>$.expr_u.d;
+					break;
+			case EXPRTYPE_INT:
+					COPY($<expr>$,$<expr>2); 
+					$<expr>$.expr_u.i=0-$<expr>$.expr_u.i;
+					break;
+			default : 
+					$<expr>$.type=EXPRTYPE_COMPLEX;
+					$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+					set_expr_int(&$<expr>$.expr_u.expr->expr1, 0);
+					COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+					$<expr>$.expr_u.expr->operand=EXPR_SUB; 
+		}
+	}
+	| literal_expr { COPY($<expr>$,$<expr>1); }
+
+	| KW_TRUE {
+		$<expr>$.type=EXPRTYPE_INT;
+		$<expr>$.expr_u.i=1;
+		}
+	| KW_FALSE {
+		$<expr>$.type=EXPRTYPE_INT;
+		$<expr>$.expr_u.i=0;
+		}
+	| USER {
+		$<expr>$.type=EXPRTYPE_BUILTIN;
+		$<expr>$.expr_u.name=acl_strdup($<str>1);
+	}
+	| DATE {
+		int v;
+		v=find_variable("date");
+		$<expr>$.type=EXPRTYPE_VARIABLE;
+		if (v==-1) {
+			printf("Warning : %s is not a defined variable\n",$<str>1);
+		} 
+		$<expr>$.expr_u.varid=v;
+	}
+	| TIME {
+		int v;
+		v=find_variable("time");
+		$<expr>$.type=EXPRTYPE_VARIABLE;
+		if (v==-1) {
+			printf("Warning : %s is not a defined variable\n",$<str>1);
+		} 
+		$<expr>$.expr_u.varid=v;
+	}
+
+	| DATE  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
+		$<expr>$.type=EXPRTYPE_FCALL; 
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("DATE");
+                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+	}
+
+	| MONTH  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
+		$<expr>$.type=EXPRTYPE_FCALL; 
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("MONTH");
+                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+	}
+	| YEAR  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
+		$<expr>$.type=EXPRTYPE_FCALL; 
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("YEAR");
+                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+	}
+	| DAY  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
+		$<expr>$.type=EXPRTYPE_FCALL; 
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup("DAY");
+                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+	}
+
+	| NAMED OPEN_BRACKET fmt_val_expr_list CLOSE_BRACKET {
+		$<expr>$.type=EXPRTYPE_FCALL; 
+		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
+		$<expr>$.expr_u.fcall->fname=acl_strdup($<str>1);
+                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+	}
+	| OPEN_BRACKET fmt_val_expression CLOSE_BRACKET { COPY($<expr>$,$<expr>2); }
+	| variable_sub {
+		$<expr>$.type=EXPRTYPE_VARIABLE_SUB;
+		$<expr>$.expr_u.var_usage=$<var_usage>1;
+	}
+
+ 	| simple_fmt_val_expression simple_val_next {
+		struct expr *e1;
+		COPY($<expr>$,$<expr>2);
+		if ( $<expr>$.type==EXPRTYPE_SIMPLE)  {
+		  	COPY($<expr>$.expr_u.sexpr->expr,$<expr>1); 
+		} else {
+			if ( $<expr>$.type==EXPRTYPE_COMPLEX ) {
+				COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
+			} else {
+				if ($<expr>$.type==EXPRTYPE_COMPARE)  {
+				COPY($<expr>$.expr_u.cexpr->expr1,$<expr>1); 
+
+				} else {
+					printf("BAD -> %d\n", $<expr>$.type);
+				}
+			}
+		}
+		e1=&$<expr>$;
 	}
 ;
 
@@ -1550,6 +1660,76 @@ fmt_val_expression:
 	}
 ;
 
+simple_val_next : 
+	KW_AND simple_fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX; 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_AND; 
+	}
+
+	| KW_OR simple_fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX; 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1); */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_OR; 
+	}
+	| DIVIDE simple_fmt_val_expression 
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_DIV; 
+		}
+
+	 | POW simple_fmt_val_expression 
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_POW; 
+		}
+	 | MOD simple_fmt_val_expression 
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_MOD; 
+		}
+
+
+	| MULTIPLY simple_fmt_val_expression
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_MUL; 
+		}
+	| PLUS simple_fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX; 
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/* COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_ADD; 
+	}
+
+
+	| MINUS simple_fmt_val_expression { 
+		$<expr>$.type=EXPRTYPE_COMPLEX;
+		$<expr>$.expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
+		/*COPY($<expr>$.expr_u.expr->expr1,$<expr>1);  */
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>2); 
+		$<expr>$.expr_u.expr->operand=EXPR_SUB; 
+	}
+	| CLIPPED  {
+		$<expr>$.type=EXPRTYPE_SIMPLE; 
+		$<expr>$.expr_u.sexpr=acl_malloc2(sizeof(struct simple_expr));  
+		/* COPY($<expr>$.expr_u.sexpr->expr,$<expr>1);  */
+		$<expr>$.expr_u.sexpr->operand=EXPR_CLIP; 
+	}
+;
 
 val_next : 
 	KW_AND fmt_val_expression { 
@@ -1717,21 +1897,6 @@ val_next :
 		/* COPY($<expr>$.expr_u.sexpr->expr,$<expr>1);  */
 		$<expr>$.expr_u.sexpr->operand=EXPR_CLIP; 
 	}
-/*
-        | UNITS_YEAR {
-		sprintf($<str>$,"UNITS YEAR");
-		A4GL_assertion(1,"NIY"); }
-        | UNITS_MONTH {sprintf($<str>$,"UNITS MONTH"); 
-		A4GL_assertion(1,"NIY"); }
-        | UNITS_DAY {sprintf($<str>$,"UNITS DAY);"); 
-		A4GL_assertion(1,"NIY"); }
-        | UNITS_HOUR {sprintf($<str>$,"UNITS HOUR);"); 
-		A4GL_assertion(1,"NIY"); }
-        | UNITS_MINUTE {sprintf($<str>$,"UNITS MINUTE);");
-		A4GL_assertion(1,"NIY"); }
-        | UNITS_SECOND {sprintf($<str>$,"UNITS SECOND);"); 
-		A4GL_assertion(1,"NIY"); }
-*/
 ;
 
 
