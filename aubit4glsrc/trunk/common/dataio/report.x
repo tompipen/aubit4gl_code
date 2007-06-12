@@ -305,7 +305,7 @@ struct  format  {
 struct agg_val {
 	int format_id;       /* Format ID where aggregate is being used */
 	enum aggtypes type;  /* Type - SUM/AVG etc */
-	bool isgroup;        /* Is it a GROUP SUM/AVG etc */
+	int isgroup;        /* Is it a GROUP SUM/AVG etc */
 	struct expr *expr;   /* Expression to aggregate */
 	struct expr *wexpr;  /* Where clause to use (if applicable else 0)  */
 };
