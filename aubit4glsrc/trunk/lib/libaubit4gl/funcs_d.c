@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.88 2007-06-04 10:24:53 gyver309 Exp $
+# $Id: funcs_d.c,v 1.89 2007-06-12 20:01:03 mikeaubury Exp $
 #
 */
 
@@ -804,7 +804,9 @@ if (num<0) never_neg=0.0-num;
 
    A4GL_debug("str=%s",str);
    for (a=0;a<(int)strlen(str);a++) {
+		A4GL_debug("Here");
 	if (str[a]==0x01) {
+		A4GL_debug("Here as well");
 
 		if (a==0) str[a]=' ';
 		else str[a]=str[a-1];
@@ -829,6 +831,28 @@ if (num<0) never_neg=0.0-num;
 	   str[a] = a4gl_convfmts.ui_decfmt.decsep;
        else if (str[a] == a4gl_convfmts.ui_decfmt.decsep)
 	   str[a] = a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : '.';
+   }
+
+
+   if (has_money && !strchr(str,'$')) {
+		int first_non_space=-1;
+		A4GL_debug("Lacking money");
+		// Lacking money!
+		for (a=0;a<strlen(str);a++) {
+			if (str[a]!=' ') {
+				first_non_space=a;
+				break;
+			}
+		}
+		if (first_non_space>0) {
+			A4GL_debug("first_non_space=%d\n", first_non_space);
+			if (str[first_non_space]=='-' || str[first_non_space]=='(' || str[first_non_space]=='+'){
+				str[first_non_space-1]=str[first_non_space];
+				str[first_non_space]='$';
+			} else {
+				str[first_non_space-1]='$';
+			}
+		}
    }
   A4GL_debug ("using: result str=%s", str);
 }
