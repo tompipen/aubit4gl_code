@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.57 2007-06-07 11:15:29 mikeaubury Exp $
+# $Id: fcompile.c,v 1.58 2007-06-13 16:41:45 mikeaubury Exp $
 #*/
 
 /**
@@ -69,7 +69,7 @@ extern int lineno;
 extern FILE *yyin;
 extern char *outputfilename;	/* defined in libaubit4gl */
 extern struct struct_scr_field *fld;	/* defined in libaubit4gl */
-extern struct struct_form the_form;	/* defined in libaubit4gl */
+dll_import struct struct_form the_form;	/* defined in libaubit4gl */
 
 int silent=0;
 char outputfile[132];
