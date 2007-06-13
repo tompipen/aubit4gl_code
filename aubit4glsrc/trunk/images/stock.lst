@@ -92,8 +92,8 @@ accept	Accept	ok.png
 ok	ok	ok.png
 open	open	fileopen.png
 outbox	outbox	outbox.png
-PgDn	PageDown	PgDn.png
-PgUp	PageUp	PgUp.png
+PgDn	PageDown	2downarrow.png
+PgUp	PageUp	2uparrow.png
 pipe	pipe	pipe.png
 player_eject	player_eject	player_eject.png
 player_end	player_end	player_end.png
