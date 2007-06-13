@@ -431,6 +431,16 @@ void A4GL_lex_printc(char* fmt,... );
 //void A4GL_lex_printh(char* fmt,... );
 void A4GL_lex_printcomment(char* fmt,... );
 char get_curr_report_stack_whytype_1 (void);
+
+char *
+get_curr_report_stack_var (void);
+char *
+get_report_stack_var (int a);
+char *A4GL_lextype(void) ;
+char *field_name_list_as_quoted_char_list(struct fh_field_list *fl);
+
+
+
 void set_yytext (char *s);
 struct expr_str *A4GL_get_validate_expr(int n);
 void set_whento_store(char *p);

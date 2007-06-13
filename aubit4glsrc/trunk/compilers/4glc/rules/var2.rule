@@ -58,7 +58,7 @@ var_ident_qchar_e :
 		char buff[2000];
 		char *s;
 		s=variable_usage_as_string($<var_usg>1,VAR_USG_ANY);
-		sprintf(buff,"%s@$s",s,$<str>3);
+		sprintf(buff,"%s@%s",s,$<str>3);
 		$<ptr>$=A4GL_new_literal_string(s);
 	}
         | CHAR_VALUE  {

@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.119 2007-06-12 19:02:45 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.120 2007-06-13 13:26:18 mikeaubury Exp $";
 #endif
 
 
@@ -28,8 +28,10 @@ int gui_yheight = 20;		// 25
 static int has_stock_item (char *s);
 static int stock_item (char *name, char*txt, char*img,GtkWidget **w);
 int gui_xwidth = 9;
+void textField_focus(GtkWidget * w, char *mode) ;
 static int menu_response = -1;
 void A4GL_gui_prompt_style (int a);
+//static void register_my_stock_icons_in_dir (char *baseDir);
 //void *A4GL_get_currwin (void);
 //int A4GLHLUI_initlib(void);
 void tstamp (char *s);
@@ -2950,7 +2952,7 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ROWS", (void *) rows);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_COLS", (void *) cols);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ISLABEL", (void *) 0);
-	printf("---->%s\n", tab_and_col);
+	//printf("---->%s\n", tab_and_col);
   gtk_object_set_data (GTK_OBJECT (widget), "TAB_AND_COL", strdup(tab_and_col));
 
   if (A4GL_aubit_strcasecmp ("LABEL", widget_str) == 0)
@@ -4597,37 +4599,68 @@ static void FakeKeyToolbarEvent( GtkWidget *widget,
 
 static void register_my_stock_icons (void)
 {
+   static int loaded=0;
    GtkIconFactory *icon_factory;
    GtkIconSet *icon_set; 
    GtkIconSource *icon_source;
-   char *baseDir;
    //gint i;
    //static gint n_stock_icons=0;
    char buff[2560];
    char buff2[2560];
    char buff3[2560];
-	char name[256];
-	char txt[256];
+   char name[256];
+   char txt[256];
+   char extraDir[2000];
+   char filePath[2000]="";
    FILE *f;
-static int loaded=0;
+   char *imgdir;
    if (loaded) return;
    loaded++;
-   baseDir=acl_getenv_not_set_as_0("AUBITIMAGES");
-   if (baseDir==0) {
-	static char c[2000];
-		sprintf(c,"%s/images", acl_getenv("AUBITDIR"));
-		baseDir=c;
+
+   imgdir=acl_getenv_not_set_as_0("AUBITIMAGES");
+
+   if (imgdir) {
+   	sprintf(extraDir,"%s;%s/images", imgdir,acl_getenv("AUBITDIR"));
+   } else {
+   	sprintf(extraDir,"%s/images", acl_getenv("AUBITDIR"));
    }
 
+   sprintf(buff,"%s.lst",A4GL_get_running_program());
+
    // Is there an application specific image file ? 
-   sprintf(buff,"%s/%s.lst", baseDir, A4GL_get_running_program());
-   if (!A4GL_file_exists(buff)) { // Nope - just use the default one...
-   	sprintf(buff,"%s/stock.lst", baseDir);
+   //
+   f=A4GL_open_file_dbpath_plus_path (buff, extraDir,filePath);
+   if (f==0) {
+ 	strcpy(buff,"stock.lst");
+   	f=A4GL_open_file_dbpath_plus_path (buff, extraDir,filePath);
+	if (f==0) {
+		printf("********************************************************************************\n");
+		printf("WARNING : Cannot find any image files\n");
+		printf("Please ensure that you have\n");
+		printf("1) A $AUBITDIR/images directory with the required 'stock.lst' file, or\n");
+		printf("2) A $AUBITIMAGES directory with the required 'stock.lst' file, or\n");
+		printf("3) A stock.lst file somewhere in the DBPATH\n");
+		printf("(The images themselves should be in the same directory as the 'stock.lst' file)\n");
+		printf("\nCurrently - the image directory is not created or installed by default\n");
+		printf("but sample images should be available from the aubit4glsrc \n");
+		printf("or aubit4glbin directory which you installed from.\n");
+		printf("********************************************************************************\n");
+		
+		return ; // Cant find any .lst files...
+	}
    }
- 
-   f=fopen(buff,"r");
-   if (!f) return;
-   //printf("register_my_stock_icons\n");
+
+
+   if(strlen(filePath)) { // trim off the filename portion..
+		char *p;
+		p=strrchr(filePath,'/');
+		if (p) *p=0;
+		p=strrchr(filePath,'\\'); // dos paths...
+		if (p) *p=0;
+   }
+
+
+   // if we got to here - we found our file...
 
    icon_factory = gtk_icon_factory_new ();
    
@@ -4662,11 +4695,12 @@ static int loaded=0;
       		sprintf(buff,"%s", buff2);
 		//strcpy(name,strrchr(buff2,'/')+1);
 	} else {
-      		sprintf(buff,"%s/images/%s", acl_getenv("AUBITDIR"),buff2);
-		//strcpy(name,buff3);
+      		sprintf(buff,"%s/%s", filePath,buff2);
 	}
-	//printf("Loading %s %s\n", name,buff2);
+ 
       if (!A4GL_file_exists(buff)) continue;
+      if (has_stock_item(name)) continue; // don't overwrite something we've already loaded...
+
 
       //printf("Loading : %s from %s\n", name, buff);
       gtk_icon_source_set_filename (icon_source, buff);
@@ -4758,7 +4792,7 @@ if (strcmp(currentCmd,"Input")==0) {
 	s=(struct s_screenio *)currentSio;
 	if (w!=s->currentfield) { // we can ignore it if its the current field
 		char *tandc;
-		tandc=gtk_object_get_data(w,"TAB_AND_COL");
+		tandc=gtk_object_get_data(GTK_OBJECT(w),"TAB_AND_COL");
 		if (!A4GL_isyes(acl_getenv("NOGTKFIELDCLICK")))  {
 			A4GL_req_field(currentSio,'I','!',tandc,1,NULL,0); // Need this actioned - so fake a key press
 			A4GL_fake_a_keypress(w,A4GLKEY_FIELD_CLICKED);

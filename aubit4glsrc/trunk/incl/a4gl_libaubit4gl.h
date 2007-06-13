@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.277 2007-06-12 19:02:43 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.278 2007-06-13 13:26:09 mikeaubury Exp $
 #
 */
 
@@ -1587,6 +1587,9 @@ int A4GL_sock_write_int (char *buf, size_t count);
   /* =========================== from a4gl_io.h ================ */
 
   FILE *A4GL_open_file_dbpath (char *fname);
+  FILE * A4GL_open_file_dbpath_plus_path (char *fname, char*pluspath,char *usedFilePath);
+  char *A4GL_fullpath_dbpath_plus_path(char *fname, char *plus );
+
   char *A4GL_fullpath_dbpath (char *fname);
 
   /* ========================== match.c ================================== */

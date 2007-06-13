@@ -527,7 +527,7 @@ from_clause_ts:
 table_reference_list:
 	  tname {$<u_table>$=$<u_table>1;}
 	| table_reference_list KW_COMMA tname {
-		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,NULL);
+		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,0);
 	}
 	| table_reference_list KW_COMMA OUTER tname {
 		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>4,1);

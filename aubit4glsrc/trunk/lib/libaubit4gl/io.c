@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.35 2006-07-04 14:22:53 mikeaubury Exp $
+# $Id: io.c,v 1.36 2007-06-13 13:26:17 mikeaubury Exp $
 #
 */
 
@@ -62,7 +62,7 @@ int A4GL_read_int (FILE * ofile);
 void A4GL_write_int (FILE * ofile, int la);
 FILE *A4GL_try_to_open (char *path, char *name, int keepopen);
 static char * A4GL_fullpath_xpath (char *fname,char *path);
-
+char lastOpenedFile[2000]="";
 /*
 =====================================================================
                     Functions definitions
@@ -174,6 +174,10 @@ strcpy(str2,"");
 }
 
 
+static char *A4GL_get_fullname_from_dbpath_open(void) {
+	return lastOpenedFile;
+}
+
 /**
  * Try to open a file.
  *
@@ -198,6 +202,8 @@ FILE *f;
     } else {
 		strcpy (buff, name);
     }
+
+   strcpy(lastOpenedFile,buff);
 
 	//A4GL_debug ("Opening path '%s'", buff);
 	
@@ -229,6 +235,29 @@ FILE *f;
  * Open a file from the DBPATH (always for reading)
  *
  * @param fname The pointer to the filename to be opened.
+ * @param pluspath Extra path to append to the DBPATH (typically $AUBITDIR/...)
+ * @param usedFilePath Character string to store the file that was opened...
+ * @return The pointer to the file opened. 0 otherwise.
+ */
+FILE *
+A4GL_open_file_dbpath_plus_path (char *fname, char*pluspath,char *usedFilePath)
+{
+char *ptr;
+FILE *f;
+	strcpy(usedFilePath,"");
+	ptr=A4GL_fullpath_dbpath_plus_path(fname,pluspath);
+	if (ptr==0) return 0;
+	f=A4GL_try_to_open("",ptr,1);
+	if (f) {
+		strcpy(usedFilePath,A4GL_get_fullname_from_dbpath_open());
+	} 
+	return f;
+}
+
+/**
+ * Open a file from the DBPATH (always for reading)
+ *
+ * @param fname The pointer to the filename to be opened.
  * @return The pointer to the file opened. 0 otherwise.
  */
 FILE *
@@ -239,6 +268,14 @@ char *ptr;
 	if (ptr==0) return 0;
 	return A4GL_try_to_open("",ptr,1);
 }
+
+char *A4GL_fullpath_dbpath_plus_path(char *fname, char *plus ) {
+char buff[20000];
+	sprintf(buff,"%s:%s",acl_getenv("DBPATH"), plus);
+	return A4GL_fullpath_xpath(fname,buff);
+}
+
+
 
 /**
  * 
