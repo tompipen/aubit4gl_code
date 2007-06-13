@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.89 2007-06-12 20:01:03 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.90 2007-06-13 17:14:51 mikeaubury Exp $
 #
 */
 
@@ -42,6 +42,7 @@
 =====================================================================
 */
 
+#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 #include <wchar.h>		/* utf8 */

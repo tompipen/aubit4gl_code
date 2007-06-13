@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.181 2007-06-05 09:43:19 mikeaubury Exp $
+# $Id: stack.c,v 1.182 2007-06-13 17:14:51 mikeaubury Exp $
 #
 */
 
@@ -49,7 +49,7 @@
 
 
 
-
+#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 
 

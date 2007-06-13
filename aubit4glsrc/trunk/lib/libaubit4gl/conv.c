@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.140 2007-06-11 17:50:30 mikeaubury Exp $
+# $Id: conv.c,v 1.141 2007-06-13 17:14:50 mikeaubury Exp $
 #
 */
 
@@ -47,6 +47,7 @@
   */
 
 
+#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 
