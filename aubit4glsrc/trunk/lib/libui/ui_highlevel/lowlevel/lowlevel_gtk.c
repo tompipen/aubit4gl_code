@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.120 2007-06-13 13:26:18 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.121 2007-06-13 16:04:10 mikeaubury Exp $";
 #endif
 
 
@@ -2901,6 +2901,10 @@ A4GL_LL_form_page (void *vform)
 }
 
 
+int
+A4GL_LL_get_carat_y (void *vform) {
+	return 1;
+}
 
 int
 A4GL_LL_get_carat (void *vform)

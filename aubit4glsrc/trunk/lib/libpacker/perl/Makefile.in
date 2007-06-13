@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2006-07-27 16:03:30 mikeaubury Exp $
+# $Id: Makefile.in,v 1.6 2007-06-13 15:59:30 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -40,6 +40,12 @@ ALL 		=${PLUGINDIR}/libPACKER_PERL${SO_EXT}
 LOCAL_IFLAGS=-I..
 CFLAGS      +=${LOCAL_IFLAGS}
 
+ifneq "${COMSPEC}" ""
+        LINKLIBS        =-L${LIBROOT} -l${AUBITLIBFULL}
+endif
+
+
+
 ## ==================================================================
 ##                          Targets
 ## ==================================================================
@@ -48,7 +54,7 @@ ALL: ${ALL}
 
 
 ${PLUGINDIR}/libPACKER_PERL${SO_EXT}: ${CMODS}
-	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^
+	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 ## ==================================================================
 ##                          Clean
