@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.121 2007-06-13 16:04:10 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.122 2007-06-13 16:06:50 mikeaubury Exp $";
 #endif
 
 
@@ -2136,6 +2136,12 @@ int
 A4GL_LL_get_field_width_dynamic (void *f)
 {
   return (int) gtk_object_get_data (GTK_OBJECT ((GtkWidget *) f), "MF_COLS");
+}
+
+int
+A4GL_LL_get_field_height_dynamic (void *f)
+{
+  return (int) gtk_object_get_data (GTK_OBJECT ((GtkWidget *) f), "MF_ROWS");
 }
 
 #ifdef REMOVED

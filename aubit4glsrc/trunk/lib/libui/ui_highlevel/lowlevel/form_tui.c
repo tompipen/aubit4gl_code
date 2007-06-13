@@ -438,6 +438,10 @@ A4GL_form_set_form_win (FORM * form, WINDOW * win)
   return E_OK;
 }
 
+WINDOW *A4GL_form_form_win(const FORM *form)  {
+  return form->win ;
+}
+
 
 int
 A4GL_form_set_max_field (FIELD * field, int max)
