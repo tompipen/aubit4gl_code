@@ -9,6 +9,7 @@ ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
 ADD_CLEAN=
+DIFF_FLAGS=-w
 
 ## ======================================================================
 ##                 	Local Targets
