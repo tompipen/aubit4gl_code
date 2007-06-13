@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.121 2007-05-01 07:42:27 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.122 2007-06-13 21:06:46 mikeaubury Exp $
 #
 */
 
@@ -441,6 +441,17 @@ A4GL_generateError (char *str, char *fileName, int lineno)
   if (A4GLSTK_isStackInfo ())
     SPRINTF2 (str, "%s\n%s", str, A4GLSTK_getStackTrace ());
 }
+
+
+int aclfgl_aclfgl_get_stack_trace() {
+  if (A4GLSTK_isStackInfo ()) {
+	A4GL_push_char(A4GLSTK_getStackTrace ());
+  } else {
+	A4GL_push_char("Not available");
+	}
+	return 1;
+}
+
 
 /**
  * Check if have ocurred some error.
