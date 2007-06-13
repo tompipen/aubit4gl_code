@@ -132,16 +132,16 @@ char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
 #define MAX_DECSTR_SIZE 512 // should be sufficient for any weird string, even
                          // padded with lot of whitespace
     enum e_state {
-        S_0 = 0,
-        S_SGN = 1,
-        S_BD = 2,
-        S_AD1 = 3,
-        S_AD2 = 4,
-        S_AN = 5,
-        S_OK = 6,
-        S_ERR = 7
+        DEC_STATE_S_0 = 0,
+        DEC_STATE_S_SGN = 1,
+        DEC_STATE_S_BD = 2,
+        DEC_STATE_S_AD1 = 3,
+        DEC_STATE_S_AD2 = 4,
+        DEC_STATE_S_AN = 5,
+        DEC_STATE_S_OK = 6,
+        DEC_STATE_S_ERR = 7
     };
-    enum e_state st = S_0;
+    enum e_state st = DEC_STATE_S_0;
     char b[MAX_DECSTR_SIZE+2];
     int dpos;
     int i, c, o;
@@ -155,165 +155,165 @@ char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
             break;
     }
 
-    for (i = o = 0; st != S_ERR && st != S_OK && i < MAX_DECSTR_SIZE-1 && o < MAX_DECSTR_SIZE-1; ++i)
+    for (i = o = 0; st != DEC_STATE_S_ERR && st != DEC_STATE_S_OK && i < MAX_DECSTR_SIZE-1 && o < MAX_DECSTR_SIZE-1; ++i)
     {
         c = buf[i];
         switch (st)
         {
-          case S_0:
+          case DEC_STATE_S_0:
             if (c >= '0' && c <= '9')
             {
                 b[o++] = c;
-                st = S_BD;
+                st = DEC_STATE_S_BD;
             }
             else if (c == from.decsep)
             {
                 b[o++] = to.decsep;
-                st = S_AD1;
+                st = DEC_STATE_S_AD1;
             }
             else if (c == '-' || c == '+')
             {
                 b[o++] = c;
 		sign = c;
-                st = S_SGN;
+                st = DEC_STATE_S_SGN;
             }
             else if (c == '\t' || c == ' ')
             {
                 if (! trim)
                     b[o++] = c;
-                st = S_0;
+                st = DEC_STATE_S_0;
             }
             else if (c == 0)
             {
-                st = S_OK;
+                st = DEC_STATE_S_OK;
             }
             else
             {
                 A4GL_debug("parse error, state %i\n", st);
-                st = S_ERR;
+                st = DEC_STATE_S_ERR;
             }
             break;
-          case S_SGN:
+          case DEC_STATE_S_SGN:
             if (c >= '0' && c <= '9')
             {
                 b[o++] = c;
-                st = S_BD;
+                st = DEC_STATE_S_BD;
             }
             else if (c == from.decsep)
             {
                 b[o++] = to.decsep;
-                st = S_AD1;
+                st = DEC_STATE_S_AD1;
             }
             else if (c == '\t' || c == ' ')
             {
                 if (! trim)
                     b[o++] = c;
-                st = S_SGN;
+                st = DEC_STATE_S_SGN;
             }
             else
             {
                 A4GL_debug("parse error, state %i\n", st);
-                st = S_ERR;
+                st = DEC_STATE_S_ERR;
             }
             break;
-          case S_BD:
+          case DEC_STATE_S_BD:
             if (dpos - i && (dpos - i) % (from.thsep ? 4 : 3) == 0 && to.thsep)
                 b[o++] = to.thsep;
             if (c >= '0' && c <= '9')
             {
                 b[o++] = c;
-                st = S_BD;
+                st = DEC_STATE_S_BD;
             }
             else if (c == from.decsep)
             {
                 b[o++] = to.decsep;
-                st = S_AD1;
+                st = DEC_STATE_S_AD1;
             }
             else if (from.thsep && c == from.thsep)
             {
-                st = S_BD;
+                st = DEC_STATE_S_BD;
             }
             else if (c == '\t' || c == ' ')
             {
                 if (! trim)
                     b[o++] = c;
-                st = S_AN;
+                st = DEC_STATE_S_AN;
             }
             else if (c == 0)
             {
-                st = S_OK;
+                st = DEC_STATE_S_OK;
             }
             else
             {
                 A4GL_debug("parse error, state %i\n", st);
-                st = S_ERR;
+                st = DEC_STATE_S_ERR;
             }
             break;
-          case S_AD1:
+          case DEC_STATE_S_AD1:
             if (c >= '0' && c <= '9')
             {
                 b[o++] = c;
-                st = S_AD2;
+                st = DEC_STATE_S_AD2;
             }
             else
             {
                 A4GL_debug("parse error, state %i\n", st);
-                st = S_ERR;
+                st = DEC_STATE_S_ERR;
             }
             break;
-          case S_AD2:
+          case DEC_STATE_S_AD2:
             //	    printf("c=%c, fts=%c, %i\n", c, from.thsep, (i-dpos)%4);
             if (c >= '0' && c <= '9')
             {
                 b[o++] = c;
-                st = S_AD2;
+                st = DEC_STATE_S_AD2;
             }
             else if (from.thsep && c == from.thsep && i - dpos && (i - dpos) % (from.thsep ? 4 : 3) == 0)
             {
                 if (to.thsep)
                     b[o++] = to.thsep;
-                st = S_AD2;
+                st = DEC_STATE_S_AD2;
             }
             else if (c == '\t' || c == ' ')
             {
                 if (! trim)
                     b[o++] = c;
-                st = S_AN;
+                st = DEC_STATE_S_AN;
             }
             else if (c == 0)
             {
-                st = S_OK;
+                st = DEC_STATE_S_OK;
             }
             else
             {
                 A4GL_debug("parse error, state %i\n", st);
-                st = S_ERR;
+                st = DEC_STATE_S_ERR;
             }
             break;
-          case S_AN:
+          case DEC_STATE_S_AN:
             if (c == '\t' || c == ' ')
             {
                 if (! trim)
                     b[o++] = c;
-                st = S_AN;
+                st = DEC_STATE_S_AN;
             }
             else if (c == 0)
             {
-                st = S_OK;
+                st = DEC_STATE_S_OK;
             }
             else
             {
                 A4GL_debug("parse error, state %i\n", st);
-                st = S_ERR;
+                st = DEC_STATE_S_ERR;
             }
             break;
           default:
-            st = S_ERR;
+            st = DEC_STATE_S_ERR;
             break;
         }
     }
     b[o] = 0;
-    if (st != S_OK)
+    if (st != DEC_STATE_S_OK)
         b[0] = 0;
 
     optr = b;
