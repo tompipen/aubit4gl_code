@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.278 2007-06-13 13:26:09 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.279 2007-06-13 16:36:19 mikeaubury Exp $
 #
 */
 
@@ -3320,7 +3320,11 @@ typedef struct
     s_decfmt using_decfmt;
 } s_convfmts;
 
+#ifdef __WIN32__
+dll_import s_convfmts a4gl_convfmts;
+#else
 extern s_convfmts a4gl_convfmts;
+#endif
 s_convfmts * A4GL_get_convfmts(void);
 
 void A4GL_init_default_formats(void);

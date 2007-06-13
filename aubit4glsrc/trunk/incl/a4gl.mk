@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.61 2007-05-10 13:53:25 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.62 2007-06-13 16:36:19 mikeaubury Exp $
 
 ##########################################################################
 #
@@ -87,7 +87,7 @@ ifdef COMSPEC
 	#Must incoke shell scripts with bash on CygWin, since sh is default
 	#and sh is NOT bash, and it will fail because it does not understand
 	#functions
-	AUBIT_CMD   		=${SH} ${AUBIT_WRAPER}
+	AUBIT_CMD   		=${AUBIT_WRAPER}
 else
 	AUBIT_CMD   		=${AUBIT_WRAPER}
 endif
