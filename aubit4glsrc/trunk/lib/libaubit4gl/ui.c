@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.63 2007-02-28 18:58:52 mikeaubury Exp $
+# $Id: ui.c,v 1.64 2007-06-14 13:20:59 mikeaubury Exp $
 #
 */
 
@@ -92,6 +92,14 @@ char *A4GL_linemode_goto_column(int a) ;
 void A4GL_set_line_mode_column(int n,int ab_rel) ;
 int aclfgl_aclfgl_get_curr_width(int n);
 int aclfgl_aclfgl_get_curr_height(int n);
+struct sKeyCallbacks {
+        int keycode;
+        void *callbackFunction;
+};
+
+int nKeyCallbacks=0;
+struct sKeyCallbacks *KeyCallbacks=0;
+
 
 
 
@@ -679,7 +687,19 @@ void A4GL_chk_for_screen_print(int a) {
 static int have_key=0; // 0- don't know 1= do nothing 2=print screen to file 3=print screen to pipe
 static int key=0;
 char *ptr;
+int cnt;
 //char buff[256];
+
+for (cnt=0;cnt<nKeyCallbacks;cnt++) {
+        if(KeyCallbacks[cnt].keycode==a) {
+                int (*function )(int);
+                function=KeyCallbacks[cnt].callbackFunction;
+                function(0);
+                return ;
+        }
+}
+
+
 if (have_key==1) return;
 
 if (have_key==0) {
@@ -1522,7 +1542,6 @@ int
 A4GL_is_unique_menu_key (ACL_Menu * menu, int key)
 {
   int cnt;
-  int a;
   ACL_Menu_Opts *opt1;
   int flg;
 
@@ -1557,8 +1576,8 @@ char ldisp[1025];
 ACL_Menu_Opts *opt1;
 int elipses=0;
 int cnt;
-int cnt2;
-int max;
+//int cnt2;
+//int max;
 // This routine counts how many matching menu options there are
 // and generates the display string
         strcpy(disp,"");
@@ -1611,6 +1630,52 @@ int max;
                 }
                 return disp;
 }
+
+
+// Generic key callback routine
+// this is an extension to the print screen key functionality
+// and allows the developer to add a callback to any keypress
+//
+// Passing in NULL as the callback function will remove the callback.
+//
+
+// Heres an example callback which logs the current stacktrace to a file...
+//
+//	function callme()
+//	define lv_c char(20)
+//	define lv_u char(8)
+//	let lv_u=aclfgl_get_user()
+//	
+//	let lv_c=current year to second
+//	code
+//	{
+//	FILE *f;
+//	f=fopen("/tmp/calltrace.log","a");
+//	if (f) {
+        //	fprintf(f,"\nUser : %s Program : %s Time : %s\n%s\n", lv_u, A4GL_get_running_program(), lv_c, A4GLSTK_getStackTrace());
+//	}
+//	fclose(f);
+//	}
+//	endcode
+//	end function
+
+void aclfgl_key_callback(void *ptr, int keyCode) {
+int a;
+for (a=0;a<nKeyCallbacks;a++) {
+        if(KeyCallbacks[a].keycode==keyCode) {
+                KeyCallbacks[a].callbackFunction=ptr;
+                return ;
+        }
+}
+
+// Not there - so add it...
+nKeyCallbacks++;
+KeyCallbacks=realloc(KeyCallbacks, sizeof( struct sKeyCallbacks)*nKeyCallbacks);
+KeyCallbacks[nKeyCallbacks-1].callbackFunction=ptr;
+KeyCallbacks[nKeyCallbacks-1].keycode=keyCode;
+
+}
+
 
 
 /* ============================= EOF ================================ */
