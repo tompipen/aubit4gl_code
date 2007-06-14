@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.135 2007-06-13 20:52:45 mikeaubury Exp $
+# $Id: report.c,v 1.136 2007-06-14 08:07:39 mikeaubury Exp $
 #
 */
 
@@ -170,6 +170,7 @@ static char *b=0; // Keep it hanging around....
 	strcpy(b,s);
 	A4GL_trim(b);
 	if (A4GL_aubit_strcasecmp(b,"^L")==0) { // OK - we had 3 characters alloc'd
+			//b[0]=why[0];
 			b[0]=12;		// we're going to use just 2...
 			b[1]=0;
 	}
@@ -870,8 +871,11 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
   }
 
   if (rep->finishing && entry==-5 && no_param==0 && strlen(rep->top_of_page)) {
+		int a;
+		A4GL_pause_execution();
+  		a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer + 1;
 	  		// Reports finishing - lets get to the end of our page ...
-			  report_print (rep, -1, top_of_page(rep->top_of_page,"A"));
+			  if (a) report_print (rep, -1, top_of_page(rep->top_of_page,"A"));
 			  return;
   }
 
@@ -1166,8 +1170,8 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 	  		A4GL_rep_print (rep, 0, 0, 0, -4);
 		}
 	} else {
-	char *top;
-			  report_print (rep, -1, top_of_page(rep->top_of_page,"B"));
+		  report_print (rep, -1, top_of_page(rep->top_of_page,"D"));
+		rep->line_no+=a;
 	}
 
       if (rep->finishing || n == 0 || n == 999)
