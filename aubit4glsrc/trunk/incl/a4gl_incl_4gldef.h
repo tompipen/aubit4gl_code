@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.109 2007-06-11 17:50:27 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.110 2007-06-14 13:24:56 mikeaubury Exp $
 */
 
 /**
@@ -334,6 +334,7 @@ int a_isprint(int a);
   int aclfgl_arr_curr (int nargs);
   int aclfgl_length (int nargs);
   int acli_scroll (void *s, int n,int m);
+  void aclfgl_key_callback(void *p, int Keycode);
   void acli_datetime (char *s, int n);
 
 
@@ -386,6 +387,8 @@ void A4GL_ensure_current_window_is(char *s) ;
   void A4GL_set_option_value (char type, long keyval);
   int aclfgli_get_err_flg (void);
   void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
+  void A4GLSTK_getCurrentLine( char **moduleName, int *lineNumber);
+	char *A4GLSTK_lastSeenLine(void);
   void A4GL_clr_fields (int to_defaults,  ...);
   int A4GL_field_name_str_match(char *f1,char *f2);
   int A4GL_chk_iskey (char *base,char *iot, char *keys);
