@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.136 2007-06-14 08:07:39 mikeaubury Exp $
+# $Id: report.c,v 1.137 2007-06-15 07:01:39 mikeaubury Exp $
 #
 */
 
@@ -1119,8 +1119,11 @@ int o_page;
 
   for (b = 0; b < a; b++)
     {
-	
-  	if (rep->line_no - 1 > (rep->page_length - rep->bottom_margin - 1 - rep->lines_in_trailer)) break;
+	if (rep->print_section != SECTION_TRAILER) {
+  		if (rep->line_no - 1 > (rep->page_length - rep->bottom_margin - 1 - rep->lines_in_trailer)) break;
+	} else {
+  		if (rep->line_no - 1 > (rep->page_length - rep->bottom_margin - 1 )) break;
+	}
 
       	A4GL_rep_print (rep, 0, 0, 0, -3);
     }
