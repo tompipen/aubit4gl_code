@@ -53,9 +53,12 @@ static int pipe_sock_puts (int sockfd, char *str);
 static struct in_addr *internal_atoaddr (char *address);
 static int internal_atoport (char *service, char *proto);
 
-#define STREAM_BUFF_SIZE 10240
+//sk:#define STREAM_BUFF_SIZE 10240
+//sk:#define STREAM_BUFF_SIZE 50000
+#define STREAM_BUFF_SIZE 200000
 
-char sock_buff[20000]="";
+//sk:char sock_buff[20000]="";
+char sock_buff[100000]="";
 
 int serversocket = 0;
 
@@ -619,8 +622,10 @@ client_call (char *func, int expectresult, char *fmt, ...)
   va_list ap;
   struct client_result *r;
   int a;
-  static char buff[20000];
-  static char smbuff[20000];
+//sk:  static char buff[20000];
+//sk:  static char smbuff[20000];
+  static char buff[100000];
+  static char smbuff[100000];
   struct list_of_fields *lo;
   char *ptr;
   long l;
