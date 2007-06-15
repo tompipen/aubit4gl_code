@@ -367,7 +367,8 @@ char buff[256];
 int x;
 char *c;
 va_list args;
-char xbuff[20000];
+//sk:char xbuff[20000];
+char xbuff[50000];
 
 
 // DO NOT CALL A4GL_debug from this function!!!!
