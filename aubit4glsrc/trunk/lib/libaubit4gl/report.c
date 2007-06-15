@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.137 2007-06-15 07:01:39 mikeaubury Exp $
+# $Id: report.c,v 1.138 2007-06-15 18:39:44 mikeaubury Exp $
 #
 */
 
@@ -872,7 +872,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 
   if (rep->finishing && entry==-5 && no_param==0 && strlen(rep->top_of_page)) {
 		int a;
-		A4GL_pause_execution();
   		a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer + 1;
 	  		// Reports finishing - lets get to the end of our page ...
 			  if (a) report_print (rep, -1, top_of_page(rep->top_of_page,"A"));
@@ -1173,7 +1172,7 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 	  		A4GL_rep_print (rep, 0, 0, 0, -4);
 		}
 	} else {
-		  report_print (rep, -1, top_of_page(rep->top_of_page,"D"));
+		  //report_print (rep, -1, top_of_page(rep->top_of_page,"D"));
 		rep->line_no+=a;
 	}
 
