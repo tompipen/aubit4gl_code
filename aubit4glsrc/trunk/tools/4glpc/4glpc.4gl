@@ -60,8 +60,11 @@ define
 	mv_link_debug 		char(256),
 	mv_dll_opts 		char(256),
 	mv_include 		char(512),
-	mv_libs			char(512),
-	mv_aubit4gllib 		char(512)
+	mv_libs			char(5000),
+	mv_aubit4gllib 		char(5000)
+#skdebug 120607
+#	mv_libs			char(512),
+#	mv_aubit4gllib 		char(512)
 
 
 code 
