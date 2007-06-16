@@ -168,9 +168,11 @@ literal_expr:
 	}
 	| INT_VALUE {
 		$<ptr>$=A4GL_new_literal_long_str($<str>1);
+#ifdef LONG_MAX
 		if ($<ptr>$->u_data.expr_long==LONG_MAX) {
 			$<ptr>$=A4GL_new_literal_double_str($<str>1);
 		}
+#endif
 	} 
 ;
 
