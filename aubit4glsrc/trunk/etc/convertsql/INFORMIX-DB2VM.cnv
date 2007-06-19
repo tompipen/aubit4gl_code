@@ -49,14 +49,31 @@ REPLACE_EXPR CURRENT YEAR TO SECOND = current timestamp
 REPLACE_COMMAND COMMIT WORK = commit
 
 # needs real implementation
-REPLACE_COMMAND BEGIN WORK = select * from system.syscatalog where tname='no_any' 
-REPLACE_COMMAND SET ISOLATION TO DIRTY READ = select * from system.syscatalog where tname='no_any'
-REPLACE_COMMAND SET ISOLATION TO REPEATABLE READ =  select * from system.syscatalog where tname='no_any'
-REPLACE_COMMAND SET ISOLATION TO CURSOR STABILITY =  select * from system.syscatalog where tname='no_any'
-REPLACE_COMMAND SET ISOLATION TO COMMITTED READ =  select * from system.syscatalog where tname='no_any'
-REPLACE_COMMAND SET LOCK MODE TO NOT WAIT = select * from system.syscatalog where tname='no_any'
-REPLACE_COMMAND SET LOCK MODE TO WAIT = select * from system.syscatalog where tname='no_any'
-REPLACE_COMMAND SET LOCK MODE TO WAIT %s = select * from system.syscatalog where tname='no_any'
+#REPLACE_COMMAND BEGIN WORK = select * from system.syscatalog where tname='no_any' 
+REPLACE_COMMAND BEGIN WORK = select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO DIRTY READ = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO DIRTY READ = select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO REPEATABLE READ =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO REPEATABLE READ =  select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO CURSOR STABILITY =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO CURSOR STABILITY =  select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO COMMITTED READ =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO COMMITTED READ =  select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO NOT WAIT = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO NOT WAIT = select id from zmienne where id=1
+REPLACE SET LOCK MODE TO WAIT = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT = select * from system.syscatalog where tname='no_any'
+#REPLACE_COMMAND SET LOCK MODE TO WAIT %s = select * from system.syscatalog where tname='no_any'
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 1 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 1 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 2 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 2 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 3 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 3 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 4 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 4 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 5 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 5 = select id from zmienne where id=1
 
 REPLACE_SQLFUNC UPSHIFT = TRANSLATE(%s)
 REPLACE_SQLFUNC MDY = date(substr(digits(%3),7,4)||'-'||substr(digits(%1),9,2)||'-'||substr(digits(%2),9,2))
