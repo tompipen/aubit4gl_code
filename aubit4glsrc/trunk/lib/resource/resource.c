@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.134 2007-06-19 18:06:56 mikeaubury Exp $
+# $Id: resource.c,v 1.135 2007-06-19 18:09:32 mikeaubury Exp $
 #
 */
 
@@ -319,8 +319,12 @@ struct str_resource builtin_resource[] = {
   {"COLOR_TUI_WHITE","7"},
 #endif
 
+#ifdef A4GL_C_COMP
   {"A4GL_C_COMP", A4GL_C_COMP},
+#endif
+#ifdef A4GL_C_COMP
   {"A4GL_RDYNAMIC", A4GL_RDYNAMIC},
+#endif
   {"RESTARTLOG","N"},
   {"DBL2DEC_USING","Y"},
   {"COLOR_TUI_BKG_DEF","-1"},
