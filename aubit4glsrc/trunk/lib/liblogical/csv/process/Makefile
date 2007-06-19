@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2007-05-09 15:35:40 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2007-06-19 07:37:28 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-g -Wall -I$(ROOT)/incl -I../common -I../../common -fPIC
+CFLAGS+=-g ${WALL} -I$(ROOT)/incl -I../common -I../../common ${PIC}
 
 OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 

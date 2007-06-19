@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2007-06-07 07:37:56 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2007-06-19 07:37:30 mikeaubury Exp $
 #
 ROOT		=../../..
 
@@ -37,7 +37,7 @@ LAYOUTDIR=$(ROOT)/lib/liblogical/layout_engine
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-Wall -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC -I$(LAYOUTDIR)
+CFLAGS+=${WALL} -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl ${PIC} -I$(LAYOUTDIR)
 LINKLIBS        =-L$(ROOT)/lib -l${AUBITLIBFULL}
 
 
