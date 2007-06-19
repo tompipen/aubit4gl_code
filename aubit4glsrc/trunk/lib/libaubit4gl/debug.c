@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.56 2007-05-08 17:53:12 mikeaubury Exp $
+# $Id: debug.c,v 1.57 2007-06-19 19:40:34 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,7 @@ static char g_fname[1024];
 static char g_function[128];
 static char g_level[64];
 static int g_lineno;
+static int opened_debug_output=0;
 
 static char arg0[15] = "**undefined**";
 
@@ -107,13 +108,21 @@ if (strlen(debugfilename)==0) {
 	}
 }
 
-  debugfile = A4GL_mja_fopen (debugfilename, "w");
+  if (!opened_debug_output ) {
+    	opened_debug_output++;
+    	debugfile = fopen (debugfilename, "w");
+   } else {
+    	debugfile = fopen (debugfilename, "a");
+   }
   if (debugfile == 0)
     {
       PRINTF ("Unable to open debug.out - check directory permissions...\n");
 	A4GL_fgl_die(2);
     }
 }
+
+
+
 
 /**
  * The A4GL_debug function.
@@ -156,10 +165,6 @@ A4GL_debug_full_extended (char *fmt, ...)
 	}
     }
 
-  if (debugfile == 0)
-    {
-      open_debugfile ();
-    }
 
   if (isdigit(fmt[0])) {
 	if (!isdigit(fmt[1])) {
@@ -191,7 +196,7 @@ A4GL_debug_full_extended (char *fmt, ...)
   if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0
       || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
     {
-      va_start (args, fmt);
+        va_start (args, fmt);
 	memset(buff,0,sizeof(buff));
 
 #ifdef  HAVE_VSNPRINTF
@@ -201,6 +206,10 @@ A4GL_debug_full_extended (char *fmt, ...)
 #endif
 
 	buff[MAX_DEBUG]=0;
+
+  	open_debugfile ();
+
+  	if (!debugfile) return;
       if (buff[strlen (buff) - 1] != ':')
 	FPRINTF (debugfile, "%-20s %-6d %-3s (%6ld,%6ld,%1d) %s%s",
 		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg(),
@@ -213,7 +222,8 @@ A4GL_debug_full_extended (char *fmt, ...)
 	else
       		FPRINTF (debugfile, " %s\n", buff);
 
-      fflush (debugfile);
+	fclose(debugfile);
+
     }
   indebug=0;
 }
