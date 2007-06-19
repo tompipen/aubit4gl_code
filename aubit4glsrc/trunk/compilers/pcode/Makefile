@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.33 2007-05-10 21:07:47 mikeaubury Exp $
+# $Id: Makefile,v 1.34 2007-06-19 17:59:10 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS			=-Wall  -g -I../../incl
+CFLAGS			=${WALL}  -g -I../../incl
 
 ifeq "${LEX}" "no"
 	LEX_YY_C=lex.pregen.c

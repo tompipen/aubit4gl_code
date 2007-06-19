@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.66 2007-05-09 16:37:44 mikeaubury Exp $
+# $Id: Makefile.in,v 1.67 2007-06-19 18:00:35 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -161,7 +161,7 @@ form_x.h form_x_xdr.c: form_x.x
 	${RPCGEN}
 
 form_x_xdr.o: form_x_xdr.c
-	${CC} ${CFLAGS_FORM_X_XDR_C} -Wno-unused  -c -o $@ $^
+	${CC} ${CFLAGS_FORM_X_XDR_C} ${WARN_NONOUSED}  -c -o $@ $^
 
 
 #libexportlibformcomp.dll.a: ${4GLCAOBJ} ${4GLCOBJ_C}

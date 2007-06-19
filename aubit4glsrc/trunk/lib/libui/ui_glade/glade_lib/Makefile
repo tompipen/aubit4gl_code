@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2006-08-18 16:48:19 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2007-06-19 18:02:02 mikeaubury Exp $
 #
 
 ROOT			=../../../..
@@ -62,7 +62,7 @@ all: ${ALL}
 
 ${PLUGINDIR}/libA4GL_glade${SO_EXT} : ${OBJS}
 #	export A4GL_LEXTYPE=C && 
-	${FGLPCEXEC} -g ${AS_DLL} $^ -o $@ ${LINKLIBS}
+	${CC} ${SO_LDFLAGS} -g  $^ -o $@ ${LINKLIBS} -L${LIBROOT} -l${AUBITLIBFULL}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 	
 ## ==================================================================
