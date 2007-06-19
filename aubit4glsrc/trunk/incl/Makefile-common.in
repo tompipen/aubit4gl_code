@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.218 2007-06-19 07:54:05 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.219 2007-06-19 18:16:15 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -85,7 +85,11 @@ ifeq "${AC_TARGET_OS}" "mingw"
 	#AC_TARGET_OS            =mingw	
 	TARGET			=i686-pc-mingw
 else
-	TARGET			=${AC_TARGET}
+	ifeq "{CC}" "cc" # We'd normall expect gcc...
+		TARGET			=${AC_TARGET}-cc
+	else
+		TARGET			=${AC_TARGET}
+	endif
 endif
 
 ifeq "${TARGET_OS}" ""
