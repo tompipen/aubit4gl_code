@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2007-06-19 07:54:05 mikeaubury Exp $
+# $Id: Makefile,v 1.17 2007-06-19 08:00:00 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -217,7 +217,7 @@ ifneq "${COMSPEC}" ""
 else
 #UNIX
 	export INFORMIXC=${INFORMIXC}; \
-		${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} -Wall ${ESQL_INCLPATH} ${C_DFLAGS}
+		${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} ${WALL} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS_INFX} $(SO_LDFLAGS) -g  esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
 
