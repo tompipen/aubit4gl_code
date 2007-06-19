@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2007-05-10 21:07:48 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2007-06-19 07:54:06 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -66,13 +66,13 @@ GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
 #endif
 
 CFLAGS				+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} \
-					${GTK_LIB_PATH} -I/usr/local/include/ncurses
+					${GTK_LIB_PATH} -I/usr/local/include/ncurses -I/usr/local/include
 
 CFLAGS				:=$(subst /target/build,/usr,${CFLAGS})
 GTK_LIB_PATH   		:=$(subst /target/build,/usr,${GTK_LIB_PATH})
 
 CFLAGS		 		:=$(subst /target,/usr,${CFLAGS})
-CFLAGS				+=-fPIC
+CFLAGS				+=${PIC}
 GTK_LIB_PATH 		:=$(subst /target,/usr,${GTK_LIB_PATH})
 
 #-mms-bitfields or -fnative-struct
@@ -270,7 +270,7 @@ ${PLUGINDIR}/libUI_HL_TUIX${SO_EXT}: $(OBJS) ${PDCURSESX_OBJ}
 #Standard GTK+ based plug-in
 #${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: ${PLUGINDIR}/libUI_HL_GTK${SO_EXT}
 ${PLUGINDIR}/libUI_HL_GTK${SO_EXT}: $(OBJS) ${OBJS5}
-	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $(OBJS) ${OBJS5} \
+	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} ${PIC} -o $@ $(OBJS) ${OBJS5} \
 		${LINKLIBS} ${GTKLIBS} ${RDYNAMIC} -L/opt/gnome/lib  ${GTKLIBS}
 
 ## ==================================================================

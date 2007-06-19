@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2007-03-05 21:47:58 mikeaubury Exp $
+# $Id: Makefile.in,v 1.16 2007-06-19 07:54:06 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -80,11 +80,11 @@ ${PLUGINDIR}/libSQL_pg8${SO_EXT}: pg8.o
 #
 libSQL_pg8l${SO_EXT}: ${PLUGINDIR}/libSQL_pg8l${SO_EXT}
 ${PLUGINDIR}/libSQL_pg8l${SO_EXT}: pg8.c
-	LD_RUN_PATH=/home/postgres8/pg8/lib ${CC} -fPIC ${SO_LDFLAGS} -I. -I.. -I/home/postgres8/pg8/include -I$(AUBITDIR)/incl $^ -o $@  -L/home/postgres8/pg8/lib  -lpq
+	LD_RUN_PATH=/home/postgres8/pg8/lib ${CC} ${PIC} ${SO_LDFLAGS} -I. -I.. -I/home/postgres8/pg8/include -I$(AUBITDIR)/incl $^ -o $@  -L/home/postgres8/pg8/lib  -lpq
 
 libSQL_pg8ls${SO_EXT}: ${PLUGINDIR}/libSQL_pg8ls${SO_EXT}
 ${PLUGINDIR}/libSQL_pg8ls${SO_EXT}: pg8.c
-	LD_RUN_PATH=/home/postgres8/pg8/lib ${CC} -fPIC ${SO_LDFLAGS} -I. -I.. -I/home/postgres8/pg8/include -I$(AUBITDIR)/incl $^ -o $@  /home/postgres8/pg8/lib/libpq.a
+	LD_RUN_PATH=/home/postgres8/pg8/lib ${CC} ${PIC} ${SO_LDFLAGS} -I. -I.. -I/home/postgres8/pg8/include -I$(AUBITDIR)/incl $^ -o $@  /home/postgres8/pg8/lib/libpq.a
 
 
 #This "real" fully functional driver written in C++ was never 

@@ -1,11 +1,11 @@
-CFLAGS=-Wall  -g -fPIC -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libaubit4gl -DCONFIGURED_TARGET=\"X\" -DCONFIGURED_TARGET_OS=\"X\"   
+CFLAGS=${WALL}  -g ${PIC} -I.. -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libaubit4gl -DCONFIGURED_TARGET=\"X\" -DCONFIGURED_TARGET_OS=\"X\"   
 CC=gcc
 
 
 all: libUI_pipeclient.so 
 
 libUI_pipeclient.so:  clnt_main_pipe.o marshall_pipe_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o ../common_hlui.o  pipeclient.o
-	gcc -g -fPIC -shared clnt_main_pipe.o marshall_pipe_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o  ../common_hlui.o pipeclient.o -o libUI_pipeclient.so 
+	gcc -g ${PIC} -shared clnt_main_pipe.o marshall_pipe_client.o ../width_narrow.o ../forms.o ../generic_ui.o ../menu.o ../display_array.o ../formcntrl.o ../input_array.o ../misc.o  ../common_hlui.o pipeclient.o -o libUI_pipeclient.so 
 	cp libUI_pipeclient.so `aubit-config DEFAULT_PLUGINDIR`
 	
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.217 2007-06-13 16:36:19 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.218 2007-06-19 07:54:05 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -534,6 +534,8 @@ DDEBUG				=-DDEBUG
 NON_PEDANTIC_OK		=1
 #cannot use -pedantic, too much warnings, using Splint instead
 
+WARN_ALL=-Wall
+WARN_NONOUSED=-Wno-unused
 ifeq "${TARGET_OS}" "linux"
 	CWARN    		=-Wall -Wredundant-decls -Wmissing-declarations \
 						-Wmissing-prototypes -Wstrict-prototypes

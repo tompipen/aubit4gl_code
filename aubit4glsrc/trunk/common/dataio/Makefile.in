@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.22 2006-07-27 16:00:56 mikeaubury Exp $
+# $Id: Makefile.in,v 1.23 2007-06-19 07:54:04 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -183,16 +183,16 @@ report.xo.c report.xi.c report.xio.c: report.x
 # point -Wall'ing it and worrying users with warnings...
 # or, we can add -Wno-unused
 form_x_xdr.o: form_x_xdr.c
-	${CC} ${CFLAGS} -Wno-unused -c form_x_xdr.c -o form_x_xdr.o
+	${CC} ${CFLAGS} ${WARN_NONOUSED} -c form_x_xdr.c -o form_x_xdr.o
 
 menu_x_xdr.o: menu_x_xdr.c
-	${CC} ${CFLAGS} -Wno-unused -c menu_x_xdr.c -o menu_x_xdr.o
+	${CC} ${CFLAGS} ${WARN_NONOUSED} -c menu_x_xdr.c -o menu_x_xdr.o
 
 report_xdr.o: report_xdr.c
-	${CC} ${CFLAGS} -Wno-unused -c report_xdr.c -o report_xdr.o
+	${CC} ${CFLAGS} ${WARN_NONOUSED} -c report_xdr.c -o report_xdr.o
 
 npcode_xdr.o: npcode_xdr.c
-	${CC} ${CFLAGS} -Wno-unused -c npcode_xdr.c -o npcode_xdr.o
+	${CC} ${CFLAGS} ${WARN_NONOUSED} -c npcode_xdr.c -o npcode_xdr.o
 
 ${XGENEXE}:
 	${MAKE} -C ${ROOT}/compilers/xgen

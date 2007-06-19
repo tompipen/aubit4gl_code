@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2006-10-30 10:56:42 afalout Exp $
+# $Id: Makefile,v 1.16 2007-06-19 07:54:05 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -160,11 +160,11 @@ else
 endif
 
 ifeq "${TARGET_OS}" "solaris"
-	ESQL_FLAGS+=-fPIC
+	ESQL_FLAGS+=${PIC}
 endif
 
 ifeq "${TARGET_OS}" "linux"
-	ESQL_FLAGS+=-fPIC
+	ESQL_FLAGS+=${PIC}
 endif
 
 ifdef COMSPEC
