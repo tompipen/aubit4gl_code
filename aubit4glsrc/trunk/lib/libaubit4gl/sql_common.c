@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.43 2007-04-30 13:45:19 mikeaubury Exp $
+# $Id: sql_common.c,v 1.44 2007-06-20 14:16:55 gyver309 Exp $
 #
 */
 
@@ -526,28 +526,28 @@ return 0;
 void
 A4GL_apisql_set_sess (char *sessname)
 {
-  struct sess *p;
-  struct sess *p2 = NULL;
-  p2 = NULL;
-  p = curr_sess;
-  while (p != NULL)
-    {
+    struct sess *p;
+    struct sess *pprev = NULL;
+    struct sess *pprev_curr = NULL;
 
-      if (strcmp (p->sessname, sessname) != 0)
+    p = curr_sess;
+    while (p != NULL)
+    {
+	if (strcmp (p->sessname, sessname) == 0)
 	{
-	  p2 = p;
-	  p = p->next;
-	  continue;
+	    if (pprev)
+		pprev->next = p->next;
+	    else
+		break; // already on top
+	    pprev_curr = curr_sess;
+	    curr_sess = p;
+	    curr_sess->next = pprev_curr;
+	    break;
 	}
-      if (p2)
-	{
-	  p2->next = p->next;
-	}
-      p->next = curr_sess;
-      curr_sess = p;
-      A4GL_apisql_must_convert ();
-      break;
+	pprev = p;
+	p = p->next;
     }
+    A4GL_apisql_must_convert ();
 }
 
 /**
