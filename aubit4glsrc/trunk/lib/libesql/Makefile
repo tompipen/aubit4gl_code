@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.44 2007-06-19 18:01:20 mikeaubury Exp $
+# $Id: Makefile,v 1.45 2007-06-20 13:30:06 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -150,7 +150,7 @@ ifneq "${COMSPEC}" ""
 		$^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 #Unix:
-	 ${CC}  ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}   `esql -libs`
+	 ${CC}  ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}   -L${INFORMIXDIR}/lib -L${INFORMIXDIR}/lib/esql `esql -libs`
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
