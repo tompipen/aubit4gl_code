@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.139 2007-06-16 10:44:16 mikeaubury Exp $
+# $Id: report.c,v 1.140 2007-06-20 12:30:31 mikeaubury Exp $
 #
 */
 
@@ -269,6 +269,7 @@ static void deleted_rep(char *fname) {
 	int a;
 	if (repnames==0) return;
 	for (a=0;a<nrepnames;a++) {
+		if (repnames[a]==0) continue;
 		if (strcmp(fname,repnames[a])==0) {
 			free(repnames[a]);
 			repnames[a]=0;
@@ -369,7 +370,7 @@ print_header_entries (struct rep_structure *rep)
   int c;
   int a;
   struct s_save_header *hdr;
-int last_rb;
+int last_rb=0;
 
 last_rb=rep->curr_rb;
 // Save these away - we'll need to change them...
