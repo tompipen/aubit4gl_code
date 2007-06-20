@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.35 2007-06-11 17:50:29 mikeaubury Exp $
+# $Id: Makefile,v 1.36 2007-06-20 07:04:58 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -191,6 +191,8 @@ all: ${ALL}
 
 info.linklibs:
 	echo ${LINK_LIBS}
+info:
+	echo ${SO_LDFLAGS}
 #################################
 # Build Aubit library file
 # NOTE: we are building versioned library; un-versioned one is a link to versioned library

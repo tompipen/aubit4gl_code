@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2007-05-11 19:40:07 mikeaubury Exp $
+# $Id: Makefile.in,v 1.17 2007-06-20 07:04:58 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -42,7 +42,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 #Curses path must be BEFORE system paths:
-CFLAGS		:=@CURSES_INC_PATH@ -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/incl
+CFLAGS		:=@CURSES_INC_PATH@ -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/incl -I/usr/local/include
 #Note: On CygWin term.h is in -I/usr/include/ncurses
 #@RPCLIB_INCLUDE@
 #-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile

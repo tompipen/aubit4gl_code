@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.7 2005-02-15 01:32:22 afalout Exp $
+# $Id: Makefile,v 1.8 2007-06-20 07:04:59 mikeaubury Exp $
 #
 
 ROOT=../..
@@ -43,8 +43,8 @@ A4GL_LEXTYPE=C
 DEBUG=ALL
 A4GL_SQLTYPE=nosql
 A4GL_UI=CONSOLE
-
-export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
+A4GL_RDYNAMIC=${RDYNAMIC}
+export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI A4GL_RDYNAMIC
 
 ## ==================================================================
 ##                    Targets

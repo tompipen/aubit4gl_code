@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.219 2007-06-19 18:16:15 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.220 2007-06-20 07:04:58 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -57,6 +57,7 @@ MAKEFILE_COMMON_INCLUDED	=1
 #...unless user does not have sufficinet rights to install it there, as 
 #determined by Autoconf when running ./configure
 AUBITETC			=@AUBITETC@
+CC 					=@CC@
 
 #WARNING! configure is not creating this file when in binary tree,
 #it is copied in state as configured for source code distribution,
@@ -85,7 +86,7 @@ ifeq "${AC_TARGET_OS}" "mingw"
 	#AC_TARGET_OS            =mingw	
 	TARGET			=i686-pc-mingw
 else
-	ifeq "{CC}" "cc" # We'd normall expect gcc...
+     ifneq "{CC}" "gcc"
 		TARGET			=${AC_TARGET}-cc
 	else
 		TARGET			=${AC_TARGET}
@@ -363,7 +364,6 @@ CAT                 =cat
 RM 					=rm -f
 RMDIR				=rm -rf
 #CC	 				=c++
-CC 					=@CC@
 #/bin/sh /usr/local/src/php/php-4.2.3/libtool --silent --mode=compile gcc
 #LINK.c				=${CC}
 #LN_S 				=ln --symbolic --force
@@ -527,6 +527,15 @@ ALL_LIBS			=@LIBS@
 #AUTOCONF_CFLAGS     =@CFLAGS@
 AUTOCONF_CFLAGS     =@STD_CFLAGS@
 
+ifeq "${TARGET_OS}" "solaris"
+ifneq "${CC}" "gcc"
+        AUTOCONF_CFLAGS=-g  -Kpic
+        RDYNAMIC=
+        PIC=-kpic
+	SO_LDFLAGS=-G
+endif
+endif
+
 ifeq "${TARGET_OS}" "darwin"
         AUTOCONF_CFLAGS+=-fno-common
 endif
@@ -612,6 +621,15 @@ ifneq "${GCC_NO_PIC}" "1"
 	PIC					=@PIC@
 endif
 
+ifeq "${TARGET_OS}" "solaris"
+ifneq "${CC}" "gcc"
+        PIC=-Kpic
+	WARN_ALL=
+	WARN_NONOUSED=
+endif
+endif
+
+
 ifeq "${TARGET_OS}" "darwin"
 	#On Darwin Autoconf will set PIC = -fno-common
 	#The generation of position-independent code (PIC) is the default is the
@@ -692,6 +710,11 @@ CFLAGS      +=${PIC}
 ########################
 #flags to linker, when making shared libraries:
 SO_LDFLAGS  =-shared
+ifeq "${TARGET_OS}" "solaris"
+ifneq "${CC}" "gcc"
+	SO_LDFLAGS=-G
+endif
+endif
 
 ########################
 #list of Aubit plug-ins (loadable modules) that are to be linked statically

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.113 2007-03-28 07:49:12 mikeaubury Exp $
+# $Id: compile.c,v 1.114 2007-06-20 07:04:56 mikeaubury Exp $
 #*/
 
 /**
@@ -129,9 +129,9 @@ char compiling_module_name[256]="notset";
 
 static char *get_rdynamic(void ) {
 char *ptr;
-ptr=acl_getenv("A4GL_RDYNAMIC");
+ptr=acl_getenv_not_set_as_0("A4GL_RDYNAMIC");
 if (ptr==0) return "-rdynamic";
-if (strlen(ptr)==0) return "-rdynamic";
+//if (strlen(ptr)==0) return "-rdynamic";
 
 return ptr;
 }

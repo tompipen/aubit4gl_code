@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.135 2007-06-19 18:09:32 mikeaubury Exp $
+# $Id: resource.c,v 1.136 2007-06-20 07:04:59 mikeaubury Exp $
 #
 */
 
@@ -321,6 +321,7 @@ struct str_resource builtin_resource[] = {
 
 #ifdef A4GL_C_COMP
   {"A4GL_C_COMP", A4GL_C_COMP},
+  {"A4GL_LINK", A4GL_C_COMP},
 #endif
 #ifdef A4GL_C_COMP
   {"A4GL_RDYNAMIC", A4GL_RDYNAMIC},

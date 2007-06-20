@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.67 2007-06-19 18:00:35 mikeaubury Exp $
+# $Id: Makefile.in,v 1.68 2007-06-20 07:04:57 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -130,7 +130,7 @@ ${ROOT}/bin/fshow : fshow.4gl ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} ${PLUGINDIR}/l
 #	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
 #	${FAIL_OK}../../bin/4glc -o$@ $<
 #	echo "export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<" | ${SH}
-	A4GL_LEXTYPE=C; DEBUG=ALL; A4GL_SQLTYPE=nosql; A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<
+	A4GL_LEXTYPE=C; DEBUG=ALL; A4GL_RDYNAMIC=${RDYNAMIC}; A4GL_SQLTYPE=nosql; A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<
 	
 fshow.gdb:
 	@echo "set args -ofshow fshow.4gl"

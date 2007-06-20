@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.2 2007-01-15 19:52:58 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2007-06-20 07:04:58 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -104,6 +104,7 @@ show:
 	@echo "Y_TAB_C_DEP=${Y_TAB_C_DEP}"
 	@echo "LEX=${LEX}"
 	@echo "LEX_YY_C=${LEX_YY_C}"
+	@echo "CFLAGS=${CFLAGS}"
 
 
 ## ==================================================================
