@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.193 2007-06-07 13:51:13 mikeaubury Exp $
+# $Id: sql.c,v 1.194 2007-06-20 14:35:27 gyver309 Exp $
 #
 */
 
@@ -4080,6 +4080,7 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 
     if (rc == 0)
     {
+	A4GL_del_pointer(sessname, SESSCODE);
 	strcpy (OldDBname, "");
         A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode(0);
         acl_free (ptr);
@@ -4571,7 +4572,11 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
             if (in_transaction)
                 rc = SQLSetConnectOption (hdbc,SQL_AUTOCOMMIT,odbc_autocommit);
             in_transaction = 0;
+#if (ODBCVER >= 0x0300)
+            rc=SQLEndTran (SQL_HANDLE_DBC, hdbc, SQL_COMMIT);
+#else
             rc=SQLTransact (henv, hdbc, SQL_COMMIT);
+#endif
         }
 
         if (mode == 0)
@@ -4579,7 +4584,11 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
             if (in_transaction)
                 rc = SQLSetConnectOption (hdbc,SQL_AUTOCOMMIT,odbc_autocommit);
             in_transaction = 0;
+#if (ODBCVER >= 0x0300)
+            rc=SQLEndTran (SQL_HANDLE_DBC, hdbc, SQL_ROLLBACK);
+#else
             rc=SQLTransact (henv, hdbc, SQL_ROLLBACK);
+#endif
         }
 
         if (mode == -1)
