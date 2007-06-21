@@ -641,6 +641,7 @@ decode_for (struct cmd_for *cmd)
 {
   fprintf (fout,"FOR ");
   print_variable (cmd->varid, NULL, NULL);
+  fprintf (fout," = ");
   decode_expr (&cmd->start);
   fprintf (fout," TO ");
   decode_expr (&cmd->finish);
