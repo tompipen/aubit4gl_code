@@ -646,6 +646,7 @@ decode_for (struct cmd_for *cmd)
   decode_expr (&cmd->finish);
   fprintf (fout," STEP ");
   decode_expr (&cmd->step);
+  fprintf (fout,"\n");
   lvl++;
   dump_command (cmd->command);
   lvl--;
