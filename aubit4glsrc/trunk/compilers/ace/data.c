@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.29 2007-05-30 13:44:28 mikeaubury Exp $
+# $Id: data.c,v 1.30 2007-06-21 17:38:28 mikeaubury Exp $
 #*/
 
 /**
@@ -570,7 +570,7 @@ find_sql_var (int colno)
 	    return a;
 	}
     }
-
+  printf(stderr, "Warning - could not find %d\n", a);
   return -1;
 
 }

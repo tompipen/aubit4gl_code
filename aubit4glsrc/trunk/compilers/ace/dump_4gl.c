@@ -161,10 +161,17 @@ generate_order_by (struct select_stmts *ptr)
       return buff;
     }
   strcpy (buff, "ORDER EXTERNAL BY ");
-
+  
   for (a = 0; a < ptr->orderby_list.orderby_list_len; a++)
     {
       b = ptr->orderby_list.orderby_list_val[a];
+      if (b<0) {
+		fprintf(stderr,"***************************************************\n");
+		fprintf(stderr,"ERROR : Unable to get variable from orderby list\n");
+		fprintf(stderr,"Using subscripts in the order by can cause this...\n");
+		fprintf(stderr,"***************************************************\n");
+		exit(30);
+	}
       if (a)
 	strcat (buff, ",");
       strcat (buff, "lv_data.");
