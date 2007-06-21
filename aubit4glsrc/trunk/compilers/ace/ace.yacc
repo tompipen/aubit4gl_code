@@ -1082,6 +1082,7 @@ for_command:
 		COPY($<cmd>$.command_u.cmd_for.start,$<expr>4);
 		COPY($<cmd>$.command_u.cmd_for.finish,$<expr>6);
 		COPY($<cmd>$.command_u.cmd_for.step,$<expr>7);
+		$<cmd>$.command_u.cmd_for.command=(struct command *)DUP($<cmd>9);
 	}
 ;
 
