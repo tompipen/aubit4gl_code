@@ -2,6 +2,9 @@
 #include <string.h>
 #include "../../common/dataio/report.xs.h"
 #include "a4gl_memhandling.h"
+FILE *fout = 0;
+
+
 /*
 # 4GL code generator
 #
@@ -64,20 +67,25 @@ void dump_report (void);
 void print_inputs (void);
 void print_lvl (void);
 void print_set_params (void);
-void print_variable (int a,struct expr *e1, struct expr *e2);
+void print_variable (int a, struct expr *e1, struct expr *e2);
 void print_variables (int class, int inrec);
 char *generate_order_by (struct select_stmts *ptr);
 char *decode_op (int op);
 void decode_call (struct cmd_call *cmd);
 void decode_column (struct format *f);
 int A4GL_read_data_from_file (char *datatype, void *ptr, char *filename);
-char * trans (char *s);
+char *trans (char *s);
+void A4GL_make_downshift(char* s);
 
-char *downshift (char *s) {
-static char buff[256];
-strcpy(buff,s);
-A4GL_make_downshift(buff);
-return buff;
+void *A4GL_build_user_resources (void);
+
+static char *
+downshift (char *s)
+{
+  static char buff[256];
+  strcpy (buff, s);
+  A4GL_make_downshift (buff);
+  return buff;
 }
 
 int
@@ -85,24 +93,51 @@ main (int argc, char *argv[])
 {
   /*FILE *f; */
   int a;
+  int *used;
+  int nused;
+  char *name_param;
+  fout = stdout;
+  used=malloc(sizeof(int)*argc);
+  for (a=0;a<argc;a++) {
+		used[a]=0;
+	}
+  used[0]=1;
 
-  if (argc != 2)
+  if (argc>2) {
+	for (a=1;a<argc-1;a++) {
+		if (strcmp(argv[a],"-o")==0) {
+			used[a]=1;
+			used[a+1]=1;
+			fout=fopen(argv[a+1],"w");
+			a++;
+		}
+	}
+  } 
+
+  nused=0;
+  for (a=0;a<argc;a++) {
+	if (used[a]==0) nused++;
+  }
+  if (nused != 1)
     {
-      printf
-	("Usage %s filename [ Where filename is a compile report eg. simple.aarc ]\n",
-	 argv[0]);
+      fprintf
+	(stderr, "Usage %s filename [-o output] ( Where filename is a compile report eg. simple.aarc )\n", argv[0]);
       exit (0);
     }
+
+  for (a=1;a<argc;a++) {
+	if (used[a]==0) name_param=argv[a];
+  }
 
   A4GL_build_user_resources ();
 
   memset (&this_report, 0, sizeof (struct report));
 
-  a = A4GL_read_data_from_file ("report", &this_report, argv[1]);
+  a = A4GL_read_data_from_file ("report", &this_report, name_param);
 
   if (!a)
     {
-      printf ("Bad format\n");
+      fprintf (stderr, "Bad format\n");
       exit (1);
     }
 
@@ -143,54 +178,55 @@ generate_order_by (struct select_stmts *ptr)
 void
 dump_report ()
 {
-  printf ("DATABASE %s\n", this_report.dbname);
+
+  fprintf (fout, "DATABASE %s\n", this_report.dbname);
   print_variables (CAT_PARAM, 0);
   print_variables (CAT_VARIABLE, 0);
-  printf ("\n\n");
-  printf ("MAIN\n");
-  printf ("   CALL run_report_%s()\n", this_report.report_name);
-  printf ("END MAIN\n");
-  printf ("\n");
+  fprintf (fout, "\n\n");
+  fprintf (fout, "MAIN\n");
+  fprintf (fout, "   CALL run_report_%s()\n", this_report.report_name);
+  fprintf (fout, "END MAIN\n");
+  fprintf (fout, "\n");
 
 
-  printf ("FUNCTION run_report_%s()\n", this_report.report_name);
-  printf ("# Variables\n");
-  printf ("DEFINE lv_data RECORD\n");
+  fprintf (fout, "FUNCTION run_report_%s()\n", this_report.report_name);
+  fprintf (fout, "# Variables\n");
+  fprintf (fout, "DEFINE lv_data RECORD\n");
   print_variables (CAT_SQL, 1);
-  printf ("END RECORD\n");
+  fprintf (fout, "END RECORD\n");
   print_set_params ();
   print_inputs ();
-  printf ("# end of initialisation\n");
-  printf ("\n");
+  fprintf (fout, "# end of initialisation\n");
+  fprintf (fout, "\n");
   dump_getdata ();
 
-  printf ("REPORT rep_%s(lv_data)\n", this_report.report_name);
-  printf ("DEFINE lv_data RECORD\n");
+  fprintf (fout, "REPORT rep_%s(lv_data)\n", this_report.report_name);
+  fprintf (fout, "DEFINE lv_data RECORD\n");
   print_variables (CAT_SQL, 1);
-  printf ("END RECORD\n");
+  fprintf (fout, "END RECORD\n");
   dump_output ();
-  printf ("\n");
-  printf ("\n");
+  fprintf (fout, "\n");
+  fprintf (fout, "\n");
   dump_format ();
-  printf ("\nEND REPORT\n\n");
+  fprintf (fout, "\nEND REPORT\n\n");
 }
 
 
 void
 dump_ascii ()
 {
-  printf ("Dump Ascii not implemented\n");
+  fprintf (stderr, "Dump Ascii not implemented\n");
 }
 
 void
 dump_functions ()
 {
   int a;
-  printf ("Functions\n");
-  printf ("---------\n");
+  fprintf (stderr,"Functions\n");
+  fprintf (stderr,"---------\n");
   for (a = 0; a < this_report.functions.functions_len; a++)
     {
-      printf ("Function : %s\n", this_report.functions.functions_val[a].name);
+      fprintf (stderr,"Function : %s\n", this_report.functions.functions_val[a].name);
 
     }
 }
@@ -207,35 +243,35 @@ print_variables (int class, int inrec)
 	{
 
 	  if (k && inrec)
-	    printf (",\n");
+	    fprintf (fout, ",\n");
 
 	  if (inrec)
-	    printf ("   ");
+	    fprintf (fout, "   ");
 	  else
-	    printf ("DEFINE ");
+	    fprintf (fout, "DEFINE ");
 
 
 	  if (inrec)
 	    {
-	      printf ("%s %s",
+	      fprintf (fout, "%s %s",
 		      this_report.variables.variables_val[a].name,
 		      this_report.variables.variables_val[a].datatype_string);
 	    }
 	  else
 	    {
-	      printf ("mv_%s %s",
+	      fprintf (fout, "mv_%s %s",
 		      this_report.variables.variables_val[a].name,
 		      this_report.variables.variables_val[a].datatype_string);
 	    }
 
 	  k++;
 	  if (!inrec)
-	    printf ("\n");
+	    fprintf (fout, "\n");
 	}
 
     }
   if (inrec)
-    printf ("\n");
+    fprintf (fout, "\n");
 }
 
 
@@ -246,7 +282,7 @@ print_set_params ()
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
       if (this_report.variables.variables_val[a].category == CAT_PARAM)
-	printf ("LET mv_%s=arg_val(%d)\n",
+	fprintf (fout, "LET mv_%s=arg_val(%d)\n",
 		this_report.variables.variables_val[a].name,
 		this_report.variables.variables_val[a].param_no);
 
@@ -260,9 +296,9 @@ print_inputs ()
   int a;
   for (a = 0; a < this_report.inputs.inputs_len; a++)
     {
-      printf ("PROMPT \"%s\" FOR ", this_report.inputs.inputs_val[a].prompt);
-      print_variable (this_report.inputs.inputs_val[a].varid,NULL,NULL);
-      printf ("\n");
+      fprintf (fout, "PROMPT \"%s\" FOR ", this_report.inputs.inputs_val[a].prompt);
+      print_variable (this_report.inputs.inputs_val[a].varid, NULL, NULL);
+      fprintf (fout, "\n");
     }
 }
 
@@ -275,28 +311,29 @@ dump_output ()
 
 
 
-  printf ("OUTPUT\n");
-  printf
-    ("  TOP MARGIN %d\n  BOTTOM MARGIN %d\n  LEFT MARGIN %d\n  RIGHT MARGIN %d\n",
+  fprintf (fout, "OUTPUT\n");
+  fprintf
+    (fout, "  TOP MARGIN %d\n  BOTTOM MARGIN %d\n  LEFT MARGIN %d\n  RIGHT MARGIN %d\n",
      this_report.output.top_margin, this_report.output.bottom_margin,
      this_report.output.left_margin, this_report.output.right_margin);
-  printf
-    ("  PAGE LENGTH %d\n",this_report.output.page_length);
+  fprintf (fout, "  PAGE LENGTH %d\n", this_report.output.page_length);
 
-	if (this_report.output.top_of_page && strlen(this_report.output.top_of_page)) {
-  		printf ("  TOP OF PAGE \"%s\"\n", this_report.output.top_of_page);
-	}
+  if (this_report.output.top_of_page
+      && strlen (this_report.output.top_of_page))
+    {
+      fprintf (fout, "  TOP OF PAGE \"%s\"\n", this_report.output.top_of_page);
+    }
 
   if (this_report.output.report_to_where == 1)
-    printf (" REPORT TO PRINTER");
+    fprintf (fout, " REPORT TO PRINTER");
   if (this_report.output.report_to_where == 2)
-    printf (" REPORT TO PIPE %s\n", this_report.output.report_to_filename);
+    fprintf (fout, " REPORT TO PIPE %s\n", this_report.output.report_to_filename);
   if (this_report.output.report_to_where == 3)
-    printf (" REPORT TO \"%s\"\n", this_report.output.report_to_filename);
+    fprintf (fout, " REPORT TO \"%s\"\n", this_report.output.report_to_filename);
 
   if (reporderby)
     {
-      printf ("\n%s\n", reporderby);
+      fprintf (fout, "\n%s\n", reporderby);
     }
 }
 
@@ -318,7 +355,7 @@ dump_getdata ()
 
 	  if (a == this_report.getdata.get_data_u.selects.selects_len - 1)
 	    {
-	      printf ("DECLARE c_r_%s CURSOR FOR\n   %s\n\n",
+	      fprintf (fout, "DECLARE c_r_%s CURSOR FOR\n   %s\n\n",
 		      this_report.report_name, replace_vars_sql (ptr));
 	      generate_order_by (ptr);
 	    }
@@ -326,27 +363,27 @@ dump_getdata ()
 	    {
 	      if (strlen (ptr->temp_tab_name))
 		{
-		  printf
-		    ("WHENEVER ERROR CONTINUE\nDROP TABLE %s\nLET status=0\nLET sqlca.sqlcode=0\nWHENEVER ERROR STOP\n",
+		  fprintf
+		    (fout, "WHENEVER ERROR CONTINUE\nDROP TABLE %s\nLET status=0\nLET sqlca.sqlcode=0\nWHENEVER ERROR STOP\n",
 		     ptr->temp_tab_name);
 		}
-	      printf ("%s\n", replace_vars_sql (ptr));
+	      fprintf (fout, "%s\n", replace_vars_sql (ptr));
 	    }
 
 
 	}
-      printf ("START REPORT rep_%s\n\n", this_report.report_name);
-      printf ("FOREACH c_r_%s INTO lv_data.*\n\n", this_report.report_name);
-      printf ("  OUTPUT TO REPORT rep_%s (lv_data.*)\n",
+      fprintf (fout, "START REPORT rep_%s\n\n", this_report.report_name);
+      fprintf (fout, "FOREACH c_r_%s INTO lv_data.*\n\n", this_report.report_name);
+      fprintf (fout, "  OUTPUT TO REPORT rep_%s (lv_data.*)\n",
 	      this_report.report_name);
-      printf ("END FOREACH\n\n");
-      printf ("FINISH REPORT rep_%s\n\n", this_report.report_name);
-      printf ("END FUNCTION\n\n");
+      fprintf (fout, "END FOREACH\n\n");
+      fprintf (fout, "FINISH REPORT rep_%s\n\n", this_report.report_name);
+      fprintf (fout, "END FUNCTION\n\n");
     }
   else
     {
-      printf ("Using Read statement\n");
-      printf ("Dump NIY\n");
+      fprintf (stderr, "Using Read statement\n");
+      fprintf (stderr, "Dump NIY\n");
       exit (2);
     }
 }
@@ -359,7 +396,7 @@ print_lvl ()
   int a;
   for (a = 0; a < lvl; a++)
     {
-      printf ("   ");
+      fprintf (fout, "   ");
     }
 }
 
@@ -414,45 +451,46 @@ void
 decode_complex (struct complex_expr *e)
 {
   if (e->operand != EXPR_CONCAT)
-    printf ("(");
-  		decode_expr (&e->expr1);
-  		printf (" %s ", decode_op (e->operand));
-		
-  		decode_expr (&e->expr2);
-		
-  		if (e->operand != EXPR_CONCAT)
-    printf (")");
+    fprintf (fout, "(");
+  decode_expr (&e->expr1);
+  fprintf (fout, " %s ", decode_op (e->operand));
+
+  decode_expr (&e->expr2);
+
+  if (e->operand != EXPR_CONCAT)
+    fprintf (fout, ")");
 }
 
 
 void
 decode_compare (struct compare_expr *e)
 {
-  printf ("(");
+  fprintf (fout, "(");
   decode_expr (&e->expr1);
-  printf ("%s", e->method);
+  fprintf (fout, "%s", e->method);
   decode_expr (&e->expr2);
-  printf (")");
+  fprintf (fout, ")");
 }
 
 void
 decode_simple (struct simple_expr *e)
 {
-  if (e->operand == EXPR_CLIP || e->operand==EXPR_SPACES || e->operand==EXPR_ISNULL || e->operand==EXPR_ISNOTNULL)
+  if (e->operand == EXPR_CLIP || e->operand == EXPR_SPACES
+      || e->operand == EXPR_ISNULL || e->operand == EXPR_ISNOTNULL)
     {
       decode_expr (&e->expr);
-      printf (" %s ", decode_op (e->operand));
+      fprintf (fout, " %s ", decode_op (e->operand));
     }
   else
     {
-      if (e->operand == EXPR_COLUMN || e->operand == EXPR_ASCII) 
+      if (e->operand == EXPR_COLUMN || e->operand == EXPR_ASCII)
 	{
-	  printf (" %s ", decode_op (e->operand));
+	  fprintf (fout, " %s ", decode_op (e->operand));
 	  decode_expr (&e->expr);
 	}
       else
 	{
-	  printf (" %s ", decode_op (e->operand));
+	  fprintf (fout, " %s ", decode_op (e->operand));
 	  decode_expr (&e->expr);
 	}
     }
@@ -463,45 +501,45 @@ decode_simple (struct simple_expr *e)
 void
 decode_agg (int aggid)
 {
-  /*this_report.aggs.aggs_val[aggid].*/
+  /*this_report.aggs.aggs_val[aggid]. */
   if (this_report.aggs.aggs_val[aggid].isgroup)
     {
-      printf (" GROUP ", this_report.aggs.aggs_val[aggid].isgroup);
+      fprintf (fout, " GROUP ");
     }
   switch (this_report.aggs.aggs_val[aggid].type)
     {
     case AGG_COUNT:
-      printf ("COUNT(*)");
+      fprintf (fout, "COUNT(*)");
       break;
     case AGG_PERCENT:
-      printf ("PERCENT(*) ");
+      fprintf (fout, "PERCENT(*) ");
       break;
 
     case AGG_AVG:
-      printf ("AVERAGE(");
+      fprintf (fout, "AVERAGE(");
       decode_expr (this_report.aggs.aggs_val[aggid].expr);
-      printf (")");
+      fprintf (fout, ")");
       break;
     case AGG_TOTAL:
-      printf ("SUM(");
+      fprintf (fout, "SUM(");
       decode_expr (this_report.aggs.aggs_val[aggid].expr);
-      printf (")");
+      fprintf (fout, ")");
       break;
     case AGG_MIN:
-      printf ("MIN(");
+      fprintf (fout, "MIN(");
       decode_expr (this_report.aggs.aggs_val[aggid].expr);
-      printf (")");
+      fprintf (fout, ")");
       break;
     case AGG_MAX:
-      printf ("MAX(");
+      fprintf (fout, "MAX(");
       decode_expr (this_report.aggs.aggs_val[aggid].expr);
-      printf (")");
+      fprintf (fout, ")");
       break;
     }
 
   if (this_report.aggs.aggs_val[aggid].wexpr)
     {
-      printf (" WHERE ");
+      fprintf (fout, " WHERE ");
       decode_expr (this_report.aggs.aggs_val[aggid].wexpr);
     }
 
@@ -515,7 +553,7 @@ decode_list (struct expr_list *e)
   for (a = 0; a < e->elem.elem_len; a++)
     {
       if (a)
-	printf (", ");
+	fprintf (fout, ", ");
       decode_expr (&e->elem.elem_val[a]);
     }
 }
@@ -523,9 +561,9 @@ decode_list (struct expr_list *e)
 void
 decode_fcall (struct expr_call *e)
 {
-  printf (" %s(", e->fname);
+  fprintf (fout," %s(", e->fname);
   decode_list (e->lexpr);
-  printf (")");
+  fprintf (fout,")");
 }
 
 void
@@ -535,27 +573,29 @@ decode_expr (struct expr *e)
     {
 
     case EXPRTYPE_INT:
-      printf ("%d", e->expr_u.i);
+      fprintf (fout,"%d", e->expr_u.i);
       break;
 
     case EXPRTYPE_DOUBLE:
-      printf ("%f", e->expr_u.d);
+      fprintf (fout,"%f", e->expr_u.d);
       break;
 
     case EXPRTYPE_STRING:
-      printf ("\"%s\"", trans (e->expr_u.s));
+      fprintf (fout,"\"%s\"", trans (e->expr_u.s));
       break;
 
     case EXPRTYPE_VARIABLE:
-      print_variable (e->expr_u.varid,0,0);
+      print_variable (e->expr_u.varid, 0, 0);
       break;
 
     case EXPRTYPE_VARIABLE_SUB:
-      print_variable (e->expr_u.var_usage->varid, e->expr_u.var_usage->subscript1, e->expr_u.var_usage->subscript2);
+      print_variable (e->expr_u.var_usage->varid,
+		      e->expr_u.var_usage->subscript1,
+		      e->expr_u.var_usage->subscript2);
       break;
 
     case EXPRTYPE_BUILTIN:
-      printf ("%s", e->expr_u.name);
+      fprintf (fout,"%s", e->expr_u.name);
       break;
 
     case EXPRTYPE_COMPLEX:
@@ -592,86 +632,88 @@ decode_expr (struct expr *e)
 void
 decode_for (struct cmd_for *cmd)
 {
-  printf ("FOR ");
-  print_variable (cmd->varid,NULL,NULL);
+  fprintf (fout,"FOR ");
+  print_variable (cmd->varid, NULL, NULL);
   decode_expr (&cmd->start);
-  printf (" TO ");
+  fprintf (fout," TO ");
   decode_expr (&cmd->finish);
-  printf (" STEP ");
+  fprintf (fout," STEP ");
   decode_expr (&cmd->step);
   lvl++;
   dump_command (cmd->command);
   lvl--;
   print_lvl ();
-  printf ("END FOR\n\n");
+  fprintf (fout,"END FOR\n\n");
 }
 
 void
 decode_if (struct cmd_if *cmd)
 {
-  printf ("IF ");
-  /*printf ("");*/
+  fprintf (fout,"IF ");
+  /*printf (""); */
   decode_expr (&cmd->condition);
-  printf (" THEN \n");
+  fprintf (fout," THEN \n");
   lvl++;
   dump_command (cmd->command);
   lvl--;
   if (cmd->elsecommand->cmd_type != CMD_NULL)
     {
       print_lvl ();
-      printf (" ELSE \n");
+      fprintf (fout," ELSE \n");
       lvl++;
       dump_command (cmd->elsecommand);
       lvl--;
     }
   print_lvl ();
-  printf ("END IF\n\n");
+  fprintf (fout,"END IF\n\n");
 }
 
 void
 decode_while (struct cmd_while *cmd)
 {
-  printf ("WHILE ");
+  fprintf (fout,"WHILE ");
   decode_expr (&cmd->condition);
-  printf ("\n");
+  fprintf (fout,"\n");
   lvl++;
   dump_command (cmd->command);
   lvl--;
   print_lvl ();
-  printf ("END WHILE\n\n");
+  fprintf (fout,"END WHILE\n\n");
 }
 
 
 void
 decode_let (struct cmd_let *cmd)
 {
-  printf ("LET ");
-  print_variable (cmd->varid,NULL,NULL);
-  if (cmd->sub1) {
-		printf("[");
-		decode_expr(cmd->sub1);
-		if (cmd->sub2) {
-		printf(",");
-		decode_expr(cmd->sub2);
-		}
-		printf("]");
-  }
-  printf ("=");
+  fprintf (fout,"LET ");
+  print_variable (cmd->varid, NULL, NULL);
+  if (cmd->sub1)
+    {
+      fprintf (fout,"[");
+      decode_expr (cmd->sub1);
+      if (cmd->sub2)
+	{
+	  fprintf (fout,",");
+	  decode_expr (cmd->sub2);
+	}
+      fprintf (fout,"]");
+    }
+  fprintf (fout,"=");
   decode_expr (cmd->value);
-  printf ("\n");
+  fprintf (fout,"\n");
 }
 
 void
 decode_need (struct cmd_need *cmd)
 {
-  printf ("NEED %d LINES\n", cmd->nlines);
+  fprintf (fout,"NEED %d LINES\n", cmd->nlines);
 }
 
 
 void
 decode_pause (struct cmd_pause *cmd)
 {
-  printf ("PAUSE \"%s\"\n", cmd->message);
+  fprintf (fout,"PAUSE \"%s\"\n", cmd->message);
 }
 
 
@@ -679,26 +721,26 @@ void
 decode_skip (struct cmd_skip *cmd)
 {
   if (cmd->nlines < 0)
-    printf ("SKIP TO TOP OF PAGE\n");
+    fprintf (fout,"SKIP TO TOP OF PAGE\n");
   else
-    printf ("SKIP %d LINES\n", cmd->nlines);
+    fprintf (fout,"SKIP %d LINES\n", cmd->nlines);
 }
 
 
 void
 decode_print (struct cmd_print *cmd)
 {
-  printf ("PRINT ");
+  fprintf (fout,"PRINT ");
   decode_expr (&cmd->print);
   if (cmd->printnl == 0)
-    printf (";");
-  printf ("\n");
+    fprintf (fout,";");
+  fprintf (fout,"\n");
 }
 
 void
 decode_printfile (struct cmd_printfile *cmd)
 {
-  printf ("PRINTFILE\n");
+  fprintf (fout,"PRINTFILE\n");
 }
 
 void
@@ -714,9 +756,9 @@ decode_block (struct commands *cmd)
 void
 decode_call (struct cmd_call *cmd)
 {
-  printf ("CALL %s (", cmd->fcall->fname);
+  fprintf (fout,"CALL %s (", cmd->fcall->fname);
   decode_list (cmd->fcall->lexpr);
-  printf(")\n");
+  fprintf (fout,")\n");
 }
 
 void
@@ -779,7 +821,7 @@ decode_column (struct format *f)
 {
   //s", f->column.column_val[0]->varname);
   //return buff;
-decode_expr(f->column);
+  decode_expr (f->column);
 //print_variable( f->column->varid, f->column->subscript1, f->column->subscript2);
 
 }
@@ -788,7 +830,7 @@ void
 dump_format ()
 {
   int a;
-  printf ("FORMAT\n");
+  fprintf (fout,"FORMAT\n");
   for (a = 0; a < this_report.fmt.fmt_len; a++)
     {
 
@@ -796,32 +838,32 @@ dump_format ()
       switch (this_report.fmt.fmt_val[a].category)
 	{
 	case FORMAT_PAGE_HEADER:
-	  printf ("\nPAGE HEADER\n");
+	  fprintf (fout,"\nPAGE HEADER\n");
 	  break;
 	case FORMAT_FIRST_PAGE_HEADER:
-	  printf ("\nFIRST PAGE HEADER\n");
+	  fprintf (fout,"\nFIRST PAGE HEADER\n");
 	  break;
 	case FORMAT_PAGE_TRAILER:
-	  printf ("\nPAGE TRAILER\n");
+	  fprintf (fout,"\nPAGE TRAILER\n");
 	  break;
 	case FORMAT_EVERY_ROW:
-	  printf ("\nEVERY ROW\n");
+	  fprintf (fout,"\nEVERY ROW\n");
 	  break;
 	case FORMAT_ON_EVERY_ROW:
-	  printf ("\nON EVERY ROW\n");
+	  fprintf (fout,"\nON EVERY ROW\n");
 	  break;
 	case FORMAT_BEFORE_GROUP:
-	  printf ("\nBEFORE GROUP OF ");
-		  decode_column (&this_report.fmt.fmt_val[a]);
-		printf("\n");
+	  fprintf (fout,"\nBEFORE GROUP OF ");
+	  decode_column (&this_report.fmt.fmt_val[a]);
+	  fprintf (fout,"\n");
 	  break;
 	case FORMAT_AFTER_GROUP:
-	  printf ("\nAFTER GROUP OF ");
-		  decode_column (&this_report.fmt.fmt_val[a]);
-		printf("\n");
+	  fprintf (fout,"\nAFTER GROUP OF ");
+	  decode_column (&this_report.fmt.fmt_val[a]);
+	  fprintf (fout,"\n");
 	  break;
 	case FORMAT_ON_LAST_ROW:
-	  printf ("\nON LAST ROW\n");
+	  fprintf (fout,"\nON LAST ROW\n");
 	  break;
 	}
       lvl++;
@@ -836,46 +878,55 @@ dump_format ()
 void
 print_variable (int a, struct expr *sub1, struct expr *sub2)
 {
-int printed=0;
+  int printed = 0;
   if (a == -1)
     {
-      printf ("Unknown...\n");
+      fprintf (fout, "Unknown...\n");
     }
   else
     {
 
 
-      if (this_report.variables.variables_val[a].category == CAT_BUILTIN && ! printed)
+      if (this_report.variables.variables_val[a].category == CAT_BUILTIN
+	  && !printed)
 	{
-	  printf ("%s", this_report.variables.variables_val[a].name);
-		printed++;
+	  fprintf (fout, "%s", this_report.variables.variables_val[a].name);
+	  printed++;
 	}
 
-      if (this_report.variables.variables_val[a].category == CAT_SQL && ! printed)
+      if (this_report.variables.variables_val[a].category == CAT_SQL
+	  && !printed)
 	{
-		printed++;
-	  printf ("lv_data.%s", downshift(this_report.variables.variables_val[a].name));
+	  printed++;
+	  fprintf (fout, "lv_data.%s",
+		  downshift (this_report.variables.variables_val[a].name));
 	}
 
-      if (this_report.variables.variables_val[a].category != CAT_SQL && ! printed)
+      if (this_report.variables.variables_val[a].category != CAT_SQL
+	  && !printed)
 	{
-		printed++;
-	  	printf ("mv_%s", downshift(this_report.variables.variables_val[a].name));
+	  printed++;
+	  fprintf (fout, "mv_%s",
+		  downshift (this_report.variables.variables_val[a].name));
 	}
 
 
-	if (sub1) {
-		if (sub2) {
-			printf("[");
-			decode_expr(sub1);
-			printf(",");
-			decode_expr(sub2);
-			printf("]");
-		} else {
-			printf("[");
-			decode_expr(sub1);
-			printf("]");
-		}
+      if (sub1)
+	{
+	  if (sub2)
+	    {
+	      fprintf (fout, "[");
+	      decode_expr (sub1);
+	      fprintf (fout, ",");
+	      decode_expr (sub2);
+	      fprintf (fout, "]");
+	    }
+	  else
+	    {
+	      fprintf (fout, "[");
+	      decode_expr (sub1);
+	      fprintf (fout, "]");
+	    }
 	}
     }
 }
@@ -905,10 +956,9 @@ replace_vars_sql (struct select_stmts *ptr)
   lpos = &cptr[0];
   for (a = 0; a < ptr->varpos.varpos_len; a++)
     {
-      /* Firstly - split our string into segments*/
-      /* by blanking out the '?' to /0*/
-      /**/
-      cptr[ptr->varpos.varpos_val[a]] = 0;
+      /* Firstly - split our string into segments */
+      /* by blanking out the '?' to /0 */
+       /**/ cptr[ptr->varpos.varpos_val[a]] = 0;
       strcat (buff, lpos);
       strcat (buff, "mv_");
       strcat (buff,
@@ -950,7 +1000,7 @@ acl_strdup_full (void *a, char *r, char *f, int l)
   p = strdup (a);
   if (p == 0)
     {
-      printf ("Unable to allocate memory\n");
+      fprintf (stderr, "Unable to allocate memory\n");
       exit (1);
     }
   return p;
