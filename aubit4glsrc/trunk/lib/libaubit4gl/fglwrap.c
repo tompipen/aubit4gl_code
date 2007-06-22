@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.122 2007-06-13 21:06:46 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.123 2007-06-22 17:12:40 mikeaubury Exp $
 #
 */
 
@@ -182,6 +182,13 @@ char *p;
 	} else {
 		strcpy(running_program,"unknown");
 	}
+
+
+	if (!A4GL_isyes(acl_getenv("IGNORELOCALE"))) {
+  		setlocale(LC_ALL, "");
+		setlocale(LC_NUMERIC,"C");
+	}
+
 	A4GL_build_user_resources ();
 
 	/* 
@@ -212,11 +219,6 @@ char *p;
   /* setlocale (LC_ALL, ""); */
 
 // Can we not : 
-
-	if (!A4GL_isyes(acl_getenv("IGNORELOCALE"))) {
-  		setlocale(LC_ALL, "");
-		setlocale(LC_NUMERIC,"C");
-	}
 
 	A4GL_debug("isprint(pound)=%d\n",isprint(0xa3));
 	A4GL_debug("isprint(umlaut)=%d\n",isprint(220));
