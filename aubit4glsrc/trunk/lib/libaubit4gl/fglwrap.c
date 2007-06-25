@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.123 2007-06-22 17:12:40 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.124 2007-06-25 14:33:33 gyver309 Exp $
 #
 */
 
@@ -184,10 +184,10 @@ char *p;
 	}
 
 
-	if (!A4GL_isyes(acl_getenv("IGNORELOCALE"))) {
+	if (!A4GL_isyes(acl_getenv("IGNORELOCALE")))
   		setlocale(LC_ALL, "");
-		setlocale(LC_NUMERIC,"C");
-	}
+
+	A4GL_init_default_formats();
 
 	A4GL_build_user_resources ();
 
@@ -215,8 +215,6 @@ char *p;
 		ui_mode = 1;
 	
 	p_numargs = nargs;
-  /* setlocale(LC_ALL, "") could break DECIMAL handling, if LC_NUMERIC != C */
-  /* setlocale (LC_ALL, ""); */
 
 // Can we not : 
 

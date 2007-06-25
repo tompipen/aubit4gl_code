@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.29 2007-06-11 17:50:30 mikeaubury Exp $
+# $Id: datatypes.c,v 1.30 2007-06-25 14:33:33 gyver309 Exp $
 #
 */
 
@@ -166,7 +166,6 @@ A4GL_init_datatypes (void)
       A4GL_add_default_datatypes ();
 
     }
-  A4GL_init_default_formats();
 #ifdef DEBUG
   A4GL_debug ("Finished initializing data types");
 #endif

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.81 2007-06-04 10:24:52 gyver309 Exp $
+# $Id: builtin_d.c,v 1.82 2007-06-25 14:33:33 gyver309 Exp $
 #
 */
 
@@ -297,8 +297,16 @@ A4GL_push_dec (char *p, int ismoney,int size)
 
 void A4GL_push_double_str(char *p) {
   double *ptr;
+  char *cp;
   ptr = (double *) acl_malloc (sizeof (double), "push_double");
-  *ptr = atof(p);
+  cp = A4GL_decstr_convert(p, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  *ptr = atof(cp);
+  if (sscanf(cp, "%lf", ptr) != 1)
+  {
+      A4GL_debug("Conversion to double failed for string <%s>", cp);
+      *ptr = 0;
+  }
+  free(cp);
   A4GL_push_param (ptr, DTYPE_FLOAT + DTYPE_MALLOCED);
 }
 

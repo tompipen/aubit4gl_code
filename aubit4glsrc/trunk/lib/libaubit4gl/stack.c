@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.182 2007-06-13 17:14:51 mikeaubury Exp $
+# $Id: stack.c,v 1.183 2007-06-25 14:33:33 gyver309 Exp $
 #
 */
 
@@ -1762,7 +1762,6 @@ A4GL_push_today (void)
   time_t now;
   int month, year;		/* ch, yflag; */
 
-  /*      setlocale(LC_ALL,""); */
   (void) time (&now);
   local_time = localtime (&now);
 #ifndef DOING_CM
@@ -1930,7 +1929,6 @@ A4GL_push_time (void)
   struct tm *local_time;
   time_t now;
   char buff[20];
-/* setlocale(LC_ALL,""); */
   A4GL_debug ("In push_time");
   (void) time (&now);
   A4GL_debug ("Called time...");
