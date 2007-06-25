@@ -279,6 +279,7 @@ define lv_cont integer
 define rpaginate integer
 define l_db char(80)
 define err_at_col integer
+define hasrows integer
 let all_queries_ok=1
 let msg=""
 options message line last
@@ -395,7 +396,8 @@ code
 				}
 repeat_query: ;
 	A4GL_debug("EXEC Repeat query out=%p\n",file_out_result);
-				if (execute_select_prepare(&err_at_col)) {
+				if (execute_select_prepare(&err_at_col, qry_type, &hasrows)) {
+					if (hasrows) {
 
 					if (get_sqlcode()<0) goto end_query;
 
@@ -457,6 +459,10 @@ A4GL_assertion(file_out_result==0,"No output file (2)");
 
 					if (!execute_select_free()) goto end_query;
 					
+				} else {
+					// No rows - execute procedure ?
+					if (!execute_query_1(&raffected,&err_at_col)) goto end_query;
+				}
 				} else {
 					A4GL_debug("Error with %s - %d",p,get_sqlcode());
 					goto end_query;

@@ -2666,12 +2666,12 @@ if (columnNames)
 }
 
 int
-execute_select_prepare (int *err_at_col)
+execute_select_prepare (int *err_at_col,int type , int *hasrows)
 {
 
   open_display_file_c ();
 *err_at_col=1;
-
+*hasrows=1
 
 
 

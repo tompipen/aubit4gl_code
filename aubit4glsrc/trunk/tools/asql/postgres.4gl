@@ -67,9 +67,10 @@ char mv_errmsg[256]="No Message";
 
 #define cp_sqlca() cp_sqlca_full(__FILE__,__LINE__)
 
-int execute_select_prepare(int *errat) {
+int execute_select_prepare(int *errat,int type, int *hasrows) {
 static int done_alloc=0;
 *errat=1;
+*hasrows=1;
 	open_display_file_c();
 
 	EXEC SQL WHENEVER SQLERROR CONTINUE;

@@ -1137,9 +1137,9 @@ if (columnNames)
 
 
 int
-execute_select_prepare (int *err_at_col)
+execute_select_prepare (int *err_at_col,int type, int *hasrows)
 {
-
+ *hasrows=1;
   open_display_file_c ();
   if (master_desc)
     {
@@ -1185,6 +1185,9 @@ execute_select_prepare (int *err_at_col)
   numberOfColumns = master_desc->sqld;
   A4GL_debug ("numberOfColumns : %d\n", numberOfColumns);
 
+  if (type==56 && numberOfColumns==0) {
+			*hasrows=0; return 1;
+  }
   if (numberOfColumns==0) return 0;
 
 

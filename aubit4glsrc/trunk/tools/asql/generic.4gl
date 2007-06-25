@@ -586,10 +586,10 @@ set_sqlcode(int a) {
 
 
 
-int execute_select_prepare(int *err_at_col) {
+int execute_select_prepare(int *err_at_col,int type, int *hasrows) {
 void *ptr;
 static int done_alloc=0;
-
+*hasrows=1;
 
 open_display_file_c();
 
