@@ -127,7 +127,7 @@ check_for_max (int p, int l, int c, char *s)
     max_line_no = l;
   if (c > max_col_no)
     max_col_no = c;
-  if (max_page_no > 10000)
+  if (max_page_no > 50000)
     {
 	printf("Dubious number of pages - I think i'd better stop..\n");
 	exit(1);
