@@ -3,8 +3,12 @@
 #include "../../common/dataio/report.xs.h"
 #include "a4gl_memhandling.h"
 FILE *fout = 0;
-
-
+int printing_agg_functions=0;
+int compat=0; 			// Create a temp table so we can do report aggregates during the run like ace, rather
+				// than use the SUM/COUNT etc in 4gl which give running totals..
+int use_insert_cursor=0;  	// Use an insert cursor to insert into that temp table we're using for ACE compatibility
+int format_section_is_last=0;
+int batch_size=100;
 /*
 # 4GL code generator
 #
@@ -76,6 +80,8 @@ void decode_column (struct format *f);
 int A4GL_read_data_from_file (char *datatype, void *ptr, char *filename);
 char *trans (char *s);
 void A4GL_make_downshift(char* s);
+static void print_aggs(void) ;
+static int need_print_aggs(void) ;
 
 void *A4GL_build_user_resources (void);
 
@@ -110,9 +116,42 @@ main (int argc, char *argv[])
 			used[a+1]=1;
 			fout=fopen(argv[a+1],"w");
 			a++;
+			continue;
+		}
+		if (strcmp(argv[a],"-B")==0) {
+			used[a]=1;
+			used[a+1]=1;
+			batch_size=atoi(argv[a+1]);
+			if (batch_size<=0) {
+				fprintf(stderr,"Batch size must be a positive integer\n");
+				exit(3);
+			}
+			a++;
+			continue;
+		}
+
+		if (strcmp(argv[a],"-C")==0) {
+			used[a]=1;
+			compat++;
+			continue;
+		}
+
+		if (strcmp(argv[a],"-I")==0) {
+			used[a]=1;
+			use_insert_cursor++;
+			continue;
+		}
+
+		if (strcmp(argv[a],"-CI")==0) {
+			used[a]=1;
+			compat++;
+			use_insert_cursor++;
+			continue;
 		}
 	}
   } 
+
+
 
   nused=0;
   for (a=0;a<argc;a++) {
@@ -120,8 +159,12 @@ main (int argc, char *argv[])
   }
   if (nused != 1)
     {
-      fprintf
-	(stderr, "Usage %s filename [-o output] ( Where filename is a compile report eg. simple.aarc )\n", argv[0]);
+      fprintf (stderr, "Usage %s [options] filename [-o output] ( Where filename is a compile report eg. simple.aarc )\n", argv[0]);
+	fprintf(stderr,"    options :  -C  ACE Aggregate compatibilty mode\n");
+	fprintf(stderr,"               -C -I  Use INSERT cursor for compatibilty mode\n");
+	fprintf(stderr,"                         (required Transaction logging\n");
+	fprintf(stderr,"               -C -I -B n  Batch into 'n' inserts per transaction\n");
+
       exit (0);
     }
 
@@ -141,6 +184,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+
+  if (!need_print_aggs()) compat=0;
+
+  if (compat==0) use_insert_cursor=0; // cant use_insert_cursor if not compatible mode...
 
   dump_report ();
   exit (0);
@@ -201,6 +248,27 @@ dump_report ()
   fprintf (fout, "DEFINE lv_data RECORD\n");
   print_variables (CAT_SQL, 1);
   fprintf (fout, "END RECORD\n");
+  fprintf (fout, "DEFINE lv_rid INTEGER\n");
+  fprintf(fout,"DEFINE lv_cnt INTEGER\n");
+
+  fprintf(fout,"LET lv_cnt=0\n");
+
+  if (compat) {
+  	fprintf(fout,"WHENEVER ERROR CONTINUE\n");
+  	fprintf(fout,"DROP TABLE tmp_data\n");
+  	fprintf(fout,"CREATE TEMP TABLE tmp_data (\n");
+ 	fprintf(fout,"   a4gl_rid INTEGER,\n");
+  	print_variables (CAT_SQL, 1);
+  	fprintf(fout,") WITH NO LOG\n");
+
+	if (use_insert_cursor) {
+  		fprintf(fout,"DECLARE c_i_%s CURSOR WITH HOLD FOR INSERT INTO tmp_data VALUES(lv_rid, lv_data.*)\n", this_report.report_name);
+	}
+	
+  	fprintf(fout,"DECLARE c_t_%s CURSOR FOR SELECT * FROM tmp_data ORDER BY a4gl_rid\n", this_report.report_name);
+  	fprintf(fout,"WHENEVER ERROR STOP\n");
+  }
+
   print_set_params ();
   print_inputs ();
   fprintf (fout, "# end of initialisation\n");
@@ -216,6 +284,7 @@ dump_report ()
   fprintf (fout, "\n");
   dump_format ();
   fprintf (fout, "\nEND REPORT\n\n");
+  if (compat) print_aggs() ;
 }
 
 
@@ -362,8 +431,11 @@ dump_getdata ()
 
 	  if (a == this_report.getdata.get_data_u.selects.selects_len - 1)
 	    {
-	      fprintf (fout, "DECLARE c_r_%s CURSOR FOR\n   %s\n\n",
-		      this_report.report_name, replace_vars_sql (ptr));
+	      fprintf (fout, "DECLARE c_r_%s CURSOR ",this_report.report_name);
+		if (use_insert_cursor) {
+			fprintf(fout," WITH HOLD ");
+		} 
+	      fprintf (fout, "FOR\n   %s\n\n", replace_vars_sql (ptr));
 	      generate_order_by (ptr);
 	    }
 	  else
@@ -380,10 +452,39 @@ dump_getdata ()
 
 	}
       fprintf (fout, "START REPORT rep_%s\n\n", this_report.report_name);
-      fprintf (fout, "FOREACH c_r_%s INTO lv_data.*\n\n", this_report.report_name);
-      fprintf (fout, "  OUTPUT TO REPORT rep_%s (lv_data.*)\n",
-	      this_report.report_name);
-      fprintf (fout, "END FOREACH\n\n");
+      if (!compat) {
+      		fprintf (fout, "FOREACH c_r_%s INTO lv_data.*\n", this_report.report_name);
+      		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lv_data.*)\n", this_report.report_name);
+      		fprintf (fout, "END FOREACH\n\n");
+      } else {
+      		fprintf (fout, "# For compatibility mode - we need to create a full copy of our data...\n\n");
+		if (use_insert_cursor) {
+  			fprintf(fout,"BEGIN WORK\n");
+  			fprintf(fout,"OPEN c_i_%s\n", this_report.report_name);
+		}
+      		fprintf (fout, "LET lv_rid=0\n");
+      		fprintf (fout, "FOREACH c_r_%s INTO lv_data.*\n", this_report.report_name);
+		if (use_insert_cursor) {
+  			fprintf(fout,  "   LET lv_cnt=lv_cnt+1\n");
+			if (batch_size<100000) { // If its more than this - don't batch it at all...
+  				fprintf(fout,  "  IF lv_cnt>%d THEN # Batches of %d\n    LET lv_cnt=0\n    COMMIT WORK\n    BEGIN WORK\n  END IF\n",batch_size,batch_size);
+			}
+      			fprintf (fout, "   PUT c_i_%s\n", this_report.report_name);
+		} else {
+      			fprintf (fout, "   INSERT INTO tmp_data VALUES(lv_rid, lv_data.*)\n");
+		}
+      		fprintf (fout, "   LET lv_rid=lv_rid+1\n");
+      		fprintf (fout, "END FOREACH\n");
+		if (use_insert_cursor) {
+  			fprintf(fout,"CLOSE c_i_%s\n", this_report.report_name);
+			fprintf(fout,"COMMIT WORK\n");
+		}
+      		fprintf (fout, "\n");
+      		fprintf (fout, "# we can now read our data (again) to generate the report\n\n");
+      		fprintf (fout, "FOREACH c_t_%s INTO lv_rid, lv_data.*\n", this_report.report_name);
+      		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lv_data.*)\n", this_report.report_name);
+      		fprintf (fout, "END FOREACH\n\n");
+      }
       fprintf (fout, "FINISH REPORT rep_%s\n\n", this_report.report_name);
       fprintf (fout, "END FUNCTION\n\n");
     }
@@ -505,17 +606,112 @@ decode_simple (struct simple_expr *e)
 
 
 
-void
-decode_agg (int aggid)
+static void
+decode_agg_compat (int aggid)
+{
+  fprintf(fout,"agg_%d()", aggid);
+}
+
+
+static int need_print_aggs(void) {
+int a;
+for (a=0;a<this_report.aggs.aggs_len;a++) {
+int fmt;
+  // we dont care about BEFORE/AFTER GROUP OF
+  if (this_report.aggs.aggs_val[a].isgroup) continue;
+
+  // we dont care about ON LAST ROW either...
+  fmt=this_report.aggs.aggs_val[a].format_id;
+  if (this_report.fmt.fmt_val[fmt].category==FORMAT_ON_LAST_ROW) continue;
+
+  return 1;
+}
+return 0;
+}
+
+
+static void print_aggs(void) {
+int a;
+printing_agg_functions=1;
+for (a=0;a<this_report.aggs.aggs_len;a++) {
+  if (this_report.aggs.aggs_val[a].isgroup) continue;
+
+  fprintf(fout,"\n\nFUNCTION agg_%d()\n", a);
+  switch (this_report.aggs.aggs_val[a].type)
+    {
+    case AGG_COUNT: 	fprintf(fout,"DEFINE lv_var INTEGER\n"); break;
+    case AGG_AVG:
+    case AGG_TOTAL:
+    case AGG_PERCENT: 	fprintf(fout,"DEFINE lv_var FLOAT\n"); break;
+
+    case AGG_MIN:
+    case AGG_MAX:
+    default: 		fprintf(fout,"DEFINE lv_var VARCHAR(256)\n"); break;
+    }
+
+  fprintf(fout, "SELECT ");
+
+  switch (this_report.aggs.aggs_val[a].type)
+    {
+    case AGG_COUNT:
+      fprintf (fout, "COUNT(*)");
+      break;
+    case AGG_PERCENT:
+      fprintf (fout, "PERCENT(*) ");
+      break;
+
+    case AGG_AVG:
+      fprintf (fout, "AVERAGE(");
+      decode_expr (this_report.aggs.aggs_val[a].expr);
+      fprintf (fout, ")");
+      break;
+    case AGG_TOTAL:
+      fprintf (fout, "SUM(");
+      decode_expr (this_report.aggs.aggs_val[a].expr);
+      fprintf (fout, ")");
+      break;
+    case AGG_MIN:
+      fprintf (fout, "MIN(");
+      decode_expr (this_report.aggs.aggs_val[a].expr);
+      fprintf (fout, ")");
+      break;
+    case AGG_MAX:
+      fprintf (fout, "MAX(");
+      decode_expr (this_report.aggs.aggs_val[a].expr);
+      fprintf (fout, ")");
+      break;
+    }
+  
+  fprintf (fout, "\nINTO lv_var FROM tmp_data ");
+
+  if (this_report.aggs.aggs_val[a].wexpr)
+   {
+      fprintf (fout, " WHERE ");
+      decode_expr (this_report.aggs.aggs_val[a].wexpr);
+   }
+   fprintf(fout,"\n");
+   fprintf(fout,"RETURN lv_var\n");
+   fprintf(fout,"END FUNCTION\n");
+}
+
+printing_agg_functions=0;
+}
+
+
+static void
+decode_agg_notcompat (int aggid)
 {
   /*this_report.aggs.aggs_val[aggid]. */
   if (this_report.aggs.aggs_val[aggid].isgroup)
     {
       fprintf (fout, " GROUP ");
     }
+
+
   switch (this_report.aggs.aggs_val[aggid].type)
     {
     case AGG_COUNT:
+
       fprintf (fout, "COUNT(*)");
       break;
     case AGG_PERCENT:
@@ -550,6 +746,26 @@ decode_agg (int aggid)
       decode_expr (this_report.aggs.aggs_val[aggid].wexpr);
     }
 
+}
+
+
+void decode_agg (int aggid) {
+	if (compat) {
+		 if (! this_report.aggs.aggs_val[aggid].isgroup)  {
+			decode_agg_compat(aggid);
+		} else {
+			decode_agg_notcompat(aggid);
+		}
+	} else {
+		if (need_print_aggs()) {
+			if (this_report.aggs.aggs_val[aggid].isgroup==0) {
+               			fprintf(stderr,"WARNING: Use of non-'GROUP' aggregates behaves differently in ACE and 4GL\n");
+               			fprintf(stderr,"         unless used in an ON LAST ROW\n");
+				fprintf(stderr,"Use -C option to force compatibility\n");
+			}
+		}
+		decode_agg_notcompat(aggid);
+	}
 }
 
 
@@ -847,31 +1063,39 @@ dump_format ()
       switch (this_report.fmt.fmt_val[a].category)
 	{
 	case FORMAT_PAGE_HEADER:
+	format_section_is_last=0;
 	  fprintf (fout,"\nPAGE HEADER\n");
 	  break;
 	case FORMAT_FIRST_PAGE_HEADER:
+	format_section_is_last=0;
 	  fprintf (fout,"\nFIRST PAGE HEADER\n");
 	  break;
 	case FORMAT_PAGE_TRAILER:
+	format_section_is_last=0;
 	  fprintf (fout,"\nPAGE TRAILER\n");
 	  break;
 	case FORMAT_EVERY_ROW:
+	format_section_is_last=0;
 	  fprintf (fout,"\nEVERY ROW\n");
 	  break;
 	case FORMAT_ON_EVERY_ROW:
+	format_section_is_last=0;
 	  fprintf (fout,"\nON EVERY ROW\n");
 	  break;
 	case FORMAT_BEFORE_GROUP:
+	format_section_is_last=0;
 	  fprintf (fout,"\nBEFORE GROUP OF ");
 	  decode_column (&this_report.fmt.fmt_val[a]);
 	  fprintf (fout,"\n");
 	  break;
 	case FORMAT_AFTER_GROUP:
+	format_section_is_last=0;
 	  fprintf (fout,"\nAFTER GROUP OF ");
 	  decode_column (&this_report.fmt.fmt_val[a]);
 	  fprintf (fout,"\n");
 	  break;
 	case FORMAT_ON_LAST_ROW:
+	format_section_is_last=1;
 	  fprintf (fout,"\nON LAST ROW\n");
 	  break;
 	}
@@ -907,8 +1131,12 @@ print_variable (int a, struct expr *sub1, struct expr *sub2)
 	  && !printed)
 	{
 	  printed++;
-	  fprintf (fout, "lv_data.%s",
-		  downshift (this_report.variables.variables_val[a].name));
+
+	if (printing_agg_functions) {
+	  	fprintf (fout, "tmp_data.%s", downshift (this_report.variables.variables_val[a].name));
+	} else {
+	  	fprintf (fout, "lv_data.%s", downshift (this_report.variables.variables_val[a].name));
+	}
 	}
 
       if (this_report.variables.variables_val[a].category != CAT_SQL

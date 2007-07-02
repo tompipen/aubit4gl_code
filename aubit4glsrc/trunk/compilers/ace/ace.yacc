@@ -424,7 +424,7 @@ format_action :
 	{
 		add_fmt(FORMAT_ON_EVERY_ROW,NULL,$<commands>4);
 	}
-        | ON LAST ROW 		commands {
+        | ON LAST ROW commands {
 		add_fmt(FORMAT_ON_LAST_ROW,NULL,$<commands>4);
 	}
         | BEFORE GROUP KW_OF variable_sub_a commands {
