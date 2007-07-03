@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.183 2007-06-25 14:33:33 gyver309 Exp $
+# $Id: stack.c,v 1.184 2007-07-03 14:22:43 mikeaubury Exp $
 #
 */
 
@@ -2705,33 +2705,15 @@ A4GL_isnull (int type, char *buff)
 	AInt32 i_long;
   } Aint32union;
   static int inited=0;
-
-  static void *nullfuncs[]={
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1,
-	  	(void *)-1};
+  static void *nullfuncs[256];
   type = type & DTYPE_MASK;
   //A4GL_debug ("20 ISNULL - %d %p\n", type, buff);
 
 
   if (!inited) {
+	int a;
 	inited=1;
+	for (a=0;a<256;a++) nullfuncs[a]=(void *)-1;
 	memset(Aint32union.blah,0,32);
 	A4GL_setnull(DTYPE_INT,&Aint32union.i_long,4);
 	A4GL_setnull(DTYPE_SMINT,&i_int,2);
@@ -2739,6 +2721,9 @@ A4GL_isnull (int type, char *buff)
   }
 
   if (buff==0) return 1;
+  if (type>255) {
+		A4GL_assertion(1,"Unexpected type");
+  }
 
   if (nullfuncs[type]==(void *)-1) {
 	 // We've never seen this type before...
