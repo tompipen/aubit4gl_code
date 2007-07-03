@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.184 2007-07-03 14:22:43 mikeaubury Exp $
+# $Id: stack.c,v 1.185 2007-07-03 14:55:52 mikeaubury Exp $
 #
 */
 
@@ -2721,7 +2721,7 @@ A4GL_isnull (int type, char *buff)
   }
 
   if (buff==0) return 1;
-  if (type>255) {
+  if (type>16) {
 		A4GL_assertion(1,"Unexpected type");
   }
 
@@ -3189,6 +3189,8 @@ dif_add_bind (struct bound_list *list, void *dptr, int dtype, int size)
 //int l;
 //struct BINDING *b;
 //struct BINDING **pp;
+
+  A4GL_debug("dif_add_bind: %p %p %d %d\n", list,dptr,dtype,size);
 
   a = list->cnt + 1;
   list->ptr = realloc (list->ptr, sizeof (struct BINDING) * a);
