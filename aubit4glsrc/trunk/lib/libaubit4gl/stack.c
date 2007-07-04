@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.185 2007-07-03 14:55:52 mikeaubury Exp $
+# $Id: stack.c,v 1.186 2007-07-04 17:13:45 mikeaubury Exp $
 #
 */
 
@@ -3197,6 +3197,9 @@ dif_add_bind (struct bound_list *list, void *dptr, int dtype, int size)
   list->ptr[a - 1].ptr = dptr;
   list->ptr[a - 1].dtype = dtype;
   list->ptr[a - 1].size = size;
+  list->ptr[a - 1].start_char_subscript=0;
+  list->ptr[a - 1].end_char_subscript=0;
+  list->ptr[a - 1].libptr=0;
   list->cnt++;
 }
 

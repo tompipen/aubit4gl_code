@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.24 2007-06-01 15:09:13 gyver309 Exp $
+# $Id: array.c,v 1.25 2007-07-04 17:13:48 mikeaubury Exp $
 #
 */
 
@@ -70,8 +70,7 @@ don't bother to fill it :-)
 
 */
 
-int A4GL_fill_array_columns_mk2(int mx, char *arr1, int szarr1, char *arr2,
-                                int szarr2, int mode, char *info);
+int A4GL_fill_array_columns_mk2(int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info);
 
 
 /*

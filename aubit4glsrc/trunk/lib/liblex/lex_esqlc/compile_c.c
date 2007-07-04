@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.375 2007-06-11 17:50:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.376 2007-07-04 17:13:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.375 2007-06-11 17:50:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.376 2007-07-04 17:13:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -459,7 +459,7 @@ open_outfile (void)
 
   if (outputfilename == 0)
     {
-      A4GL_debug ("NO output file name");
+      A4GL_assertion (1,"NO output file name");
     }
 
   if (!A4GL_env_option_set("A4GL_LOCALOUTPUT")) {
