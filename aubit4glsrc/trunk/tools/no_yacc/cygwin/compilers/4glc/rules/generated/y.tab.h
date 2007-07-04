@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 2.2.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
 
@@ -2418,7 +2418,7 @@ typedef union YYSTYPE
 	struct s_cur_Def curDef;
 	struct list_of_integers *list_of_integers;
 	}
-/* Line 1488 of yacc.c.  */
+/* Line 1489 of yacc.c.  */
 #line 2423 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
