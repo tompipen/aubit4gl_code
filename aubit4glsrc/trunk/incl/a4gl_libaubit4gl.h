@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.280 2007-06-13 17:14:48 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.281 2007-07-05 07:06:46 mikeaubury Exp $
 #
 */
 
 /**
- * @file
+ * @file 
  *
  * Definition of structures and typedefs necessary for the libaubit4gl library
  * and commony used in most of Aubit code.

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.82 2007-06-25 14:33:33 gyver309 Exp $
+# $Id: builtin_d.c,v 1.83 2007-07-05 07:07:22 mikeaubury Exp $
 #
 */
 
@@ -49,7 +49,7 @@
 		                    Includes
 =====================================================================
 */
-
+#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 
 /*
