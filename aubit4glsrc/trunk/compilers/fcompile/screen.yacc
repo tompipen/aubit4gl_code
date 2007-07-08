@@ -114,14 +114,14 @@ A4GL_write_form();}
 ;
 database_section :
 DATABASE FORMONLY {the_form.dbname=acl_strdup("formonly");}
-| DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=($<str>2);
-if (A4GLF_open_db($<str>2)) {
+| DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=acl_strdup(downshift($<str>2));
+if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
 }
 | DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");}
-| DATABASE dbname {the_form.dbname=acl_strdup($<str>2);
-if (A4GLF_open_db($<str>2)) {
+| DATABASE dbname {the_form.dbname=acl_strdup(downshift($<str>2));
+if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.58 2007-06-13 16:41:45 mikeaubury Exp $
+# $Id: fcompile.c,v 1.59 2007-07-08 16:13:00 mikeaubury Exp $
 #*/
 
 /**
@@ -480,5 +480,26 @@ if (strcmp(the_form.dbname,"formonly")!=0) {
 return 1;
 
 }
+
+
+/**
+ *  * Downshift a string.
+ *   *
+ *    * @param a The string to be downshifted.
+ *     * @return A pointer to a staic buffer where the string downshifted is putted.
+ *      */
+char *
+downshift (char *a)
+{
+  int i;
+  static char buff[256];
+  strcpy (buff, a);
+  for (i = 0; i < strlen (buff); i++)
+    {
+      buff[i] = tolower (buff[i]);
+    }
+  return buff;
+}
+
 
 /* ================================== EOF ============================= */

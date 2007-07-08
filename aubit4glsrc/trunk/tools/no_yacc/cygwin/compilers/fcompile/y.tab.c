@@ -3236,8 +3236,8 @@ A4GL_write_form();}
 
   case 4:
 #line 117 "screen.yacc"
-    {the_form.dbname=((yyvsp[(2) - (5)].str));
-if (A4GLF_open_db((yyvsp[(2) - (5)].str))) {
+    {the_form.dbname=acl_strdup(downshift((yyvsp[(2) - (5)].str)));
+if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
 }
@@ -3250,8 +3250,8 @@ if (A4GLF_open_db((yyvsp[(2) - (5)].str))) {
 
   case 6:
 #line 123 "screen.yacc"
-    {the_form.dbname=acl_strdup((yyvsp[(2) - (2)].str));
-if (A4GLF_open_db((yyvsp[(2) - (2)].str))) {
+    {the_form.dbname=acl_strdup(downshift((yyvsp[(2) - (2)].str)));
+if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.186 2007-07-04 17:13:45 mikeaubury Exp $
+# $Id: stack.c,v 1.187 2007-07-08 16:13:00 mikeaubury Exp $
 #
 */
 
@@ -2721,9 +2721,11 @@ A4GL_isnull (int type, char *buff)
   }
 
   if (buff==0) return 1;
-  if (type>16) {
+  /*
+  	if (type>16) {
 		A4GL_assertion(1,"Unexpected type");
   }
+  */
 
   if (nullfuncs[type]==(void *)-1) {
 	 // We've never seen this type before...

@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.122 2007-06-13 16:06:50 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.123 2007-07-08 16:13:01 mikeaubury Exp $";
 #endif
 
 
@@ -1957,7 +1957,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
       lab = (GtkLabel *) gtk_label_new (lab_utf);
       g_free (lab_utf);
       e = (GtkEventBox *) gtk_event_box_new ();
-      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (e), A4GL_getx_coords (x+1), A4GL_gety_coords (y));
+      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (e), A4GL_getx_coords (x), A4GL_gety_coords (y));
       gtk_container_add (GTK_CONTAINER (e), GTK_WIDGET (lab));
 
       gtk_object_set_data (GTK_OBJECT (cwin), buff_label, lab);
