@@ -11,7 +11,6 @@ TABLE_ALIAS_AS
 COLUMN_ALIAS_AS
 EXPAND_COLUMNS
 STRIP_QUOTES_FROM_OWNER
-USE_DESCRIBE_NOT_SQLCOLUMNS
 
 # - works, but not in all cases; DB2 does not recognize expressions
 #   in form of set substr(col,2,3)='foo' (informix style is: set col[2,4]='foo')

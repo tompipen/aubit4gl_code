@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.194 2007-06-20 14:35:27 gyver309 Exp $
+# $Id: sql.c,v 1.195 2007-07-09 14:05:00 gyver309 Exp $
 #
 */
 
@@ -386,7 +386,7 @@ static Bool prepare_statement_internal(struct s_sid *sid, char *s);
 static SQLRETURN sql_free_sid(struct s_sid **sid);
 
 // metadata functions
-static Bool sql_use_describe(void);
+static Bool sql_use_sqlcolumns(void);
 static Bool sql_cacheschema(void);
 static Bool cache_make_key(char *tabname, char *colname, int colidx, struct sql_col_info_data *ci, char *dstbuf);
 static void cache_try_add_coldata(char *colname, int colidx, struct sql_col_info_data *ci);
@@ -3308,12 +3308,12 @@ static void sql_clear_column_info(struct sql_col_info_data *ci, Bool clearTableD
     }
 }
 
-static Bool sql_use_describe(void)
+static Bool sql_use_sqlcolumns(void)
 {
-    static int useDescribe = -1;
-    if (useDescribe == -1)
-        useDescribe = A4GLSQLCV_check_requirement("USE_DESCRIBE_NOT_SQLCOLUMNS");
-    return useDescribe ? True : False;
+    static int useSqlcolumns = -1;
+    if (useSqlcolumns == -1)
+        useSqlcolumns = A4GLSQLCV_check_requirement("ODBC_USE_DEPRECATED_SQLCOLUMNS");
+    return useSqlcolumns ? True : False;
 }
 
 static Bool sql_cacheschema(void)
@@ -3407,7 +3407,7 @@ static int sql_get_next_column_info(struct sql_col_info_data *ci)
     sql_clear_column_info(ci, 0);
     int fgldtype;
 
-    if (! sql_use_describe())
+    if (sql_use_sqlcolumns())
     {
         rc = SQLFetch(ci->hstmt);
 
@@ -3521,7 +3521,7 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname,
         return SQL_SUCCESS;
     }
 
-    if (! sql_use_describe())
+    if (sql_use_sqlcolumns())
     {
         char *buf = NULL;
         if (!A4GL_new_hstmt(&ci->hstmt))

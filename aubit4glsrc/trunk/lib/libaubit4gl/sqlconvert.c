@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.120 2007-06-28 15:22:00 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.121 2007-07-09 14:05:00 gyver309 Exp $
 #
 */
 
@@ -92,7 +92,7 @@ static char *cvsql_names[] = {
   "CVSQL_NO_OWNER_QUOTE",
   "CVSQL_IGNORE_OWNER",
   "CVSQL_STRIP_QUOTES_FROM_OWNER",
-  "CVSQL_USE_DESCRIBE_NOT_SQLCOLUMNS",
+  "CVSQL_ODBC_USE_DEPRECATED_SQLCOLUMNS",
   "CVSQL_CONSTRAINT_NAME_BEFORE",
   "CVSQL_CONSTRAINT_NAME_AFTER",
   "CVSQL_USE_INDICATOR",
@@ -214,7 +214,7 @@ enum cvsql_type
   CVSQL_NO_OWNER_QUOTE,
   CVSQL_IGNORE_OWNER,
   CVSQL_STRIP_QUOTES_FROM_OWNER,
-  CVSQL_USE_DESCRIBE_NOT_SQLCOLUMNS,
+  CVSQL_ODBC_USE_DEPRECATED_SQLCOLUMNS,
   CVSQL_CONSTRAINT_NAME_BEFORE,
   CVSQL_CONSTRAINT_NAME_AFTER,
   CVSQL_USE_INDICATOR,
@@ -1613,8 +1613,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_IGNORE_OWNER;
   if (match_strncasecmp (p, "STRIP_QUOTES_FROM_OWNER", len) == 0)
     return CVSQL_STRIP_QUOTES_FROM_OWNER;
-  if (match_strncasecmp (p, "USE_DESCRIBE_NOT_SQLCOLUMNS", len) == 0)
-    return CVSQL_USE_DESCRIBE_NOT_SQLCOLUMNS;
+  if (match_strncasecmp (p, "ODBC_USE_DEPRECATED_SQLCOLUMNS", len) == 0)
+    return CVSQL_ODBC_USE_DEPRECATED_SQLCOLUMNS;
   if (match_strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0)
     return CVSQL_CONSTRAINT_NAME_BEFORE;
   if (match_strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0)
