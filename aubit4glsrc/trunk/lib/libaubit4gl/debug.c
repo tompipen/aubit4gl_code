@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.57 2007-06-19 19:40:34 mikeaubury Exp $
+# $Id: debug.c,v 1.58 2007-07-10 18:22:34 mikeaubury Exp $
 #
 */
 
@@ -223,6 +223,7 @@ A4GL_debug_full_extended (char *fmt, ...)
       		FPRINTF (debugfile, " %s\n", buff);
 
 	fclose(debugfile);
+	debugfile=0;
 
     }
   indebug=0;
