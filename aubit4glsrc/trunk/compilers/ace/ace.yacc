@@ -103,6 +103,7 @@ set_expr_int(struct expr *e,int a)
 %token ASC
 %token SUM
 %token ATSIGN
+%token KW_AS
 %token AVERAGE 
 %token AVG
 %token BEFORE
@@ -902,6 +903,10 @@ value_expression_pls :
 			sprintf($<str>$," %s %s",$<str>1,$<str>2);
 			add_select_column($<str>1,$<str>2);
 		}
+	| 	sql_value_expression  KW_AS NAMED {
+			sprintf($<str>$," %s %s",$<str>1,$<str>3);
+			add_select_column($<str>1,$<str>3);
+		}
 ;
 
 
@@ -1229,7 +1234,7 @@ reserved_word:
 
 | ASC
 | AFTGROUP
-
+| KW_AS
 | BEFORE
 | BETWEEN
 | BOTTOM

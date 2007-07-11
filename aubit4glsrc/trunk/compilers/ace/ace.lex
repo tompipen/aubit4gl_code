@@ -119,6 +119,7 @@
 "LINES" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LINES;}
 "MARGIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MARGIN;}
 "MOD" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MOD;}
+"AS" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_AS;}
 "MINUTE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MINUTE;}
 "MONTH" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONTH;}
 "NAMED" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NAMED;}
