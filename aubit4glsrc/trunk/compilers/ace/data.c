@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.31 2007-07-11 20:06:56 mikeaubury Exp $
+# $Id: data.c,v 1.32 2007-07-11 20:07:51 mikeaubury Exp $
 #*/
 
 /**
@@ -658,7 +658,7 @@ execute_selects (void)
 			{
 			nvals[b]=malloc(10);
 			memset(nvals[b],0,10);
-			A4GL_setnull(DTYPE_CHAR, nvals,1);
+			A4GL_setnull(DTYPE_CHAR, nvals[b],1);
 			null_dtype=DTYPE_CHAR;
 			}
 			break;
