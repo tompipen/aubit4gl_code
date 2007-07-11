@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.91 2007-07-11 16:15:31 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.92 2007-07-11 19:51:29 mikeaubury Exp $
 #
 */
 
@@ -579,6 +579,12 @@ if (num<0) never_neg=0.0-num;
 			// No negative bit to display :-)
 			// so - we dont need to allow extra space for it...
 			n_cnt=0;
+		}
+	} else {
+		if (strchr(fmt,'(') || strchr(fmt,')') || strchr(fmt,'+')  ||  strchr(fmt,'-')) {
+			if (A4GL_isyes(acl_getenv("COMPATFMT"))) {
+			n_cnt=1;
+			}
 		}
 	}
     // count format string number place holders, up to decimal point
