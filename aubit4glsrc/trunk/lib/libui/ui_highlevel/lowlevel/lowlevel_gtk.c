@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.123 2007-07-08 16:13:01 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.124 2007-07-11 12:27:19 mikeaubury Exp $";
 #endif
 
 
@@ -1489,7 +1489,7 @@ A4GL_LL_gui_run_til_no_more (void)
 	gtk_main_iteration ();
       if (keypressed == 3)
 	{
-
+	keypressed=0;
 
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
@@ -2344,7 +2344,7 @@ A4GL_LL_set_bkg (void *win, int attr)
   // If its an appwindow - we don't want to rename it..
   if (strcmp (ptr, "AppWindow") == 0)
     return;
-
+  //printf("win=%p buff=%s\n", win,buff);
   gtk_widget_set_name (GTK_WIDGET (win), buff);
   x = gtk_object_get_data (GTK_OBJECT (win), "FIXED");
   if (x)
@@ -2444,6 +2444,12 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   gtk_fixed_put (GTK_FIXED (cw), p, iscurrborder,
 		 (promptline - 1) * gui_yheight);
 
+   if (ap) {
+	      A4GL_LL_set_field_back (p, A4GL_LL_decode_aubit_attr (ap, 'b'));
+	} else {
+		A4GL_LL_set_field_back (p, A4GL_LL_colour_code (0));
+	}
+
   if (p == 0)
     {
       A4GL_exitwith ("No prompt window created");
@@ -2476,18 +2482,19 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
 	  A4GL_debug ("AP...");
 	  if (strlen (promptstr))
 	    {
-		
-
+			//printf("label=%p evt=%p\n", widgets[0],evt);
 	      A4GL_LL_set_field_fore (widgets[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
 	      A4GL_LL_set_field_back (evt, A4GL_LL_decode_aubit_attr (ap, 'b'));
 	    }
 	}
 	  else
 	    {
-	      A4GL_LL_set_field_back (widgets[0], A4GL_LL_colour_code (0));
+			//printf("label=%p evt=%p\n", widgets[0],evt);
+	      A4GL_LL_set_field_back (evt, A4GL_LL_colour_code (0));
 	      A4GL_LL_set_field_fore (widgets[0], A4GL_LL_colour_code (7));
 	    }
     }
+
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1,
 	      width - 1);
 A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------------------------------
@@ -2568,7 +2575,6 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
   //A4GLSQL_set_status (0, 0);
   A4GL_LL_screen_update ();
-  FPRINTF (stderr, "All ok\n"); 
 
   return 1;
 }
@@ -4112,7 +4118,7 @@ A4GL_LL_get_value (char *s)
 {
   if (strcmp (s, "prompt.field") == 0)
     {
-      FPRINTF (stderr, "last_prompt_field : %p\n", last_prompt_field);
+      //FPRINTF (stderr, "last_prompt_field : %p\n", last_prompt_field);
       return (void *) last_prompt_field;
     }
   if (strcmp (s, "prompt.f") == 0)
@@ -4924,7 +4930,6 @@ if (!hasItem) {
 					i=gtk_image_new_from_file (img);
 					gtk_widget_show(i);
 				} 
-				//printf("SetToolbarButton: %s\n",txt);
 				SetToolbarButton(toolbarItems[a], txt,i) ;
 				found++;
 
