@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.30 2007-06-21 17:38:28 mikeaubury Exp $
+# $Id: data.c,v 1.31 2007-07-11 20:06:56 mikeaubury Exp $
 #*/
 
 /**
@@ -70,6 +70,7 @@ void print_variables (char *s);
 char *add_zero_rows_where (struct select_stmts *ptr);
 void add_fmt (int cat, struct expr *col, struct commands commands);
 int decode_dtype (char *s);
+void dif_add_bind (void *list, void *dptr, int dtype, int size);
 
 /*
 =====================================================================
@@ -558,7 +559,7 @@ int
 find_sql_var (int colno)
 {
   struct variable *ptr;
-  int a;
+  int a=0;
   int c = 0;
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
@@ -570,7 +571,7 @@ find_sql_var (int colno)
 	    return a;
 	}
     }
-  printf(stderr, "Warning - could not find %d\n", a);
+  fprintf(stderr, "Warning - could not find %d\n", a);
   return -1;
 
 }
@@ -603,7 +604,7 @@ execute_selects (void)
   int vid = 0;
 
   /* char * nval; */
-  int nval = 0;
+  void **nvals=0;
 
 
   /* printf("Execute selects...\n"); */
@@ -623,7 +624,6 @@ execute_selects (void)
 
   /* We need 1 null value */
   /* A4GL_setnull (2, &nval, 4); */
-  A4GL_setnull (2, (char *) &nval, 4);
   /*  warning: passing arg 2 of `setnull' from incompatible pointer type
      void       A4GL_setnull                         (int type, char *buff, int size);
    */
@@ -645,12 +645,27 @@ execute_selects (void)
 	    }
 	}
 
+	nvals=malloc(sizeof(void *)* ptr->varids.varids_len);
 
       for (b = 0; b < ptr->varids.varids_len; b++)
 	{
-	  /*printf("Add null value");*/
-	  /* void dif_add_bind_int (void *list, long a); */
-	  dif_add_bind_int (xi, (long) nval);
+	int varid;
+	int null_dtype;
+	varid=ptr->varids.varids_val[b];
+	switch ( this_report.variables.variables_val[varid].datatype &DTYPE_MASK) {
+		case DTYPE_VCHAR: 
+		case DTYPE_CHAR: 
+			{
+			nvals[b]=malloc(10);
+			memset(nvals[b],0,10);
+			A4GL_setnull(DTYPE_CHAR, nvals,1);
+			null_dtype=DTYPE_CHAR;
+			}
+			break;
+			
+		default: nvals[b]=malloc(sizeof(long)); null_dtype=DTYPE_INT; A4GL_setnull(DTYPE_INT,nvals[b],4); break;
+	}
+	  dif_add_bind (xi, nvals[b], null_dtype, 0);
 	  xic++;
 
 	}
