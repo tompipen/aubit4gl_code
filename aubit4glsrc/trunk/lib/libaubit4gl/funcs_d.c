@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.90 2007-06-13 17:14:51 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.91 2007-07-11 16:15:31 mikeaubury Exp $
 #
 */
 
@@ -573,6 +573,14 @@ if (num<0) never_neg=0.0-num;
     int f_cnt = 0;		// number of digits to left of dec. point in format
     int d_cnt = 0;		// number of digits to right of dec. point
     int n_cnt = isneg;		// number of left-digits needed for number supplied
+    if (isneg) {
+		if (strchr(fmt,'(') || strchr(fmt,')') || strchr(fmt,'+')  ||  strchr(fmt,'-')) ;
+		else {
+			// No negative bit to display :-)
+			// so - we dont need to allow extra space for it...
+			n_cnt=0;
+		}
+	}
     // count format string number place holders, up to decimal point
     for (a = 0; a < (int)strlen (fmt); a++)
       {
