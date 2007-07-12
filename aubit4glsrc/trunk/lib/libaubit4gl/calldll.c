@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.71 2007-05-04 16:51:32 mikeaubury Exp $
+# $Id: calldll.c,v 1.72 2007-07-12 10:43:26 mikeaubury Exp $
 #
 */
 
@@ -551,8 +551,11 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
   func_ptr = dlsym (dllhandle, tempbuff);
 #endif
 
-  if ((void *)func_ptr == (void *)0)
+  if ((void *)func_ptr == (void *)0) {
+	A4GL_debug("Not set");
     return (void *)&A4GL_nullfunc;
+  }
+  A4GL_debug("Set... %p",func_ptr);
   return (void *)func_ptr;
 }
 

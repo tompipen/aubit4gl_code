@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.58 2007-07-10 18:22:34 mikeaubury Exp $
+# $Id: debug.c,v 1.59 2007-07-12 10:46:07 mikeaubury Exp $
 #
 */
 
@@ -55,6 +55,7 @@ extern sqlca_struct a4gl_sqlca;
 #define DEBUG_NOTREQUIRED 	2
 #define DEBUG_REQUIRED 		1
 #define DEBUG_DONTKNOW 		0
+static char *getTimecode(void) ;
 
 
 /*
@@ -65,7 +66,7 @@ extern sqlca_struct a4gl_sqlca;
 
 FILE *debugfile = 0;
 int nodebug = DEBUG_DONTKNOW;
-static char g_fname[1024];
+static char g_fname[1024]="NotSet";
 static char g_function[128];
 static char g_level[64];
 static int g_lineno;
@@ -140,6 +141,8 @@ A4GL_debug_full_extended (char *fmt, ...)
   static int dbg_level=-1;
   static char buff_n[20];
   static int indebug=0;
+  static int lastnow=0;
+int isNow;
 
 
   if (nodebug == DEBUG_NOTREQUIRED) { return; }
@@ -210,6 +213,14 @@ A4GL_debug_full_extended (char *fmt, ...)
   	open_debugfile ();
 
   	if (!debugfile) return;
+
+	isNow=time(0);
+	if (lastnow!=isNow) {
+		FPRINTF (debugfile, "\n*** TIMECODE %s\n\n",getTimecode());
+		lastnow=isNow;
+        }
+
+
       if (buff[strlen (buff) - 1] != ':')
 	FPRINTF (debugfile, "%-20s %-6d %-3s (%6ld,%6ld,%1d) %s%s",
 		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg(),
@@ -245,6 +256,8 @@ A4GL_debug_full (char *fmt, ...)
   static int dbg_level=-1;
   static char buff_n[20];
   static int indebug=0;
+  static int lastnow=0;
+int isNow;
 
 
   if (nodebug == DEBUG_NOTREQUIRED) { return; }
@@ -313,6 +326,12 @@ A4GL_debug_full (char *fmt, ...)
 #else
       	VSPRINTF (buff, fmt, args);
 #endif
+
+	isNow=time(0);
+	if (lastnow!=isNow) {
+		FPRINTF (debugfile, "\n*** TIMECODE %s\n\n",getTimecode());
+		lastnow=isNow;
+        }
 
 	buff[MAX_DEBUG]=0;
       if (buff[strlen (buff) - 1] != ':')
@@ -469,6 +488,33 @@ a4gl_basename (char **ppsz)
       {
 	*ppsz = pszslash + 1;
       }
+}
+
+
+
+
+
+static char *getTimecode(void) {
+static char buff[30]="";
+  int mja_day;
+  struct tm *local_time;
+  int month, year;		/* ch, yflag; */
+  struct timeval tv1;
+  gettimeofday (&tv1, 0);
+  local_time = localtime (&tv1.tv_sec);
+  year = local_time->tm_year + 1900;
+  month = local_time->tm_mon + 1;
+  mja_day = local_time->tm_mday;
+
+  SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld",
+	   year, month, mja_day, local_time->tm_hour,
+	   local_time->tm_min, local_time->tm_sec, tv1.tv_usec
+	   /* , 0 */
+	   /* no support for fractions of a second yet */
+    );
+  buff[27] = 0;
+ 
+  return buff;
 }
 
 

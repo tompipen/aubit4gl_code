@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.44 2007-06-20 14:16:55 gyver309 Exp $
+# $Id: sql_common.c,v 1.45 2007-07-12 10:43:29 mikeaubury Exp $
 #
 */
 
@@ -617,6 +617,9 @@ A4GL_apisql_must_convert (void)
   /* SQLCONVERT=YES must be set, and source/DBMS dialects must differ
    */
   must_convert = 0;
+  if (A4GL_compile_time_convert()==0) {
+		return;
+  }
   A4GL_debug ("SQLCONVERT=%s source_dialect='%s' dbms_dialect='%s'",
 	      acl_getenv ("SQLCONVERT"), source_dialect,
 	      curr_sess->dbms_dialect);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.121 2007-07-09 14:05:00 gyver309 Exp $
+# $Id: sqlconvert.c,v 1.122 2007-07-12 10:43:30 mikeaubury Exp $
 #
 */
 
@@ -2401,6 +2401,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
       A4GL_debug ("Creating temp table called %s", tabname);
       if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
 	{
+		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
 	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
 	}
       SPRINTF2 (ptr,
@@ -2416,6 +2417,7 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 	A4GL_debug ("Creating temp table called %s (declare+insert) ", tabname);
 	if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
 	  {
+		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
 	    A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
 	  }
         SPRINTF2 (ptr, "INSERT INTO SESSION.%s %s", tabname, sel);
@@ -2463,6 +2465,7 @@ A4GLSQLCV_add_temp_table (char *tabname)
 {
   if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
     {
+		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
       A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
     }
 
@@ -2487,6 +2490,7 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
 
       if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
 	{
+		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
 	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
 	}
   	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
