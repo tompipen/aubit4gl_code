@@ -1,0 +1,106 @@
+#!/bin/sh
+# This script automatically runs an aace report by generating
+# a .4gl and compiling it (if required) and then running that 4gl.
+
+
+SUM=md5sum
+if type $SUM  > /dev/null
+then
+	:
+else
+	SUM=sum
+	if type $SUM  > /dev/null
+	then
+		:
+	else
+		SUM=cksum
+		if type $SUM  > /dev/null
+		then
+			:
+		else
+			echo "Can't locate a checksum program - please install sum or md5sum"
+			exit 2
+		fi
+	fi
+fi
+	
+
+if [ "$AUBITDIR" = "" ]
+then
+	echo "AUBITDIR is not set"
+	exit 2
+fi
+	
+if [ ! -d $AUBITDIR/etc/ace-cache ]
+then
+	mkdir  $AUBITDIR/etc/ace-cache
+fi
+
+if [ ! -d $AUBITDIR/etc/ace-cache ]
+then
+	echo "Directory $AUBITDIR/etc/ace-cache does not exist!"
+	exit 2
+fi
+
+
+a=`basename $1 .aarc`
+d=`dirname $1`
+
+chk1=`$SUM $AUBITDIR/etc/ace-cache/$a.4ae`
+
+if [ -f "$AUBITDIR/etc/ace-cache/$a.4ae" ]
+then
+	# We've got the .4ae - does it match the .aarc ?
+	if [ -f "$AUBITDIR/etc/ace-cache/$a.4ae.chksum" ]
+	then
+		# We've got a checksum file - does it match
+		# We'll 'squeeze' any spaces - because I've had problems of extra spaces...
+		chk2=`cat $AUBITDIR/etc/ace-cache/$a.4ae.chksum`
+
+		if [ "$chk1" != "$chk2" ]
+		then
+			#Different checksum!"
+			rm $AUBITDIR/etc/ace-cache/$a.4ae
+		fi
+	else
+		rm $AUBITDIR/etc/ace-cache/$a.4ae
+	fi
+fi
+
+
+if [ ! -f $AUBITDIR/etc/ace-cache/$a.4ae ]
+then
+	# We need to generate the .4gl and compile it...
+	if aace_4gl -o $AUBITDIR/etc/ace-cache/$a.4gl $1 > /dev/null 2> /dev/null
+	then
+		:
+	else
+		echo "Unable to generate 4gl file - does the .aarc file exist ? "
+		rm -f $AUBITDIR/etc/ace-cache/$a.4gl > /dev/null
+		exit 2
+	fi
+	
+	4glpc -K -o $AUBITDIR/etc/ace-cache/$a.4ae $AUBITDIR/etc/ace-cache/$a.4gl
+	rm -f $AUBITDIR/etc/ace-cache/$a.glb > /dev/null
+	rm -f $AUBITDIR/etc/ace-cache/$a.ao > /dev/null
+	rm -f $AUBITDIR/etc/ace-cache/$a.4gl > /dev/null
+
+	if [ ! -x $AUBITDIR/etc/ace-cache/$a.4ae ]
+	then
+		echo "Unable to generate executable"
+		exit 2
+	fi
+fi
+
+echo "$chk1" > $AUBITDIR/etc/ace-cache/$a.4ae.chksum
+
+if [ ! -x $AUBITDIR/etc/ace-cache/$a.4ae ]
+then
+	echo "No executable generated"
+fi
+
+
+# get rid of $1 - that was just the name of the ace report..
+shift
+
+$AUBITDIR/etc/ace-cache/$a.4ae $@

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.44 2007-06-07 07:37:55 mikeaubury Exp $
+# $Id: Makefile,v 1.45 2007-07-12 08:53:28 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -605,7 +605,7 @@ clean.makefiles:
     tools/adbaccess/Makefile tools/adbload/Makefile \
     tools/ide/Makefile \
     tools/odbctest/Makefile \
-    tools/test/Makefile tools/test/gui/Makefile \
+    tools/test/gui/Makefile \
 	common/dataio/Makefile compilers/ace/Makefile \
 	lib/libform/form_xdr/Makefile lib/libform/noform/Makefile \
 	lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_xdr/Makefile \
