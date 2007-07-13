@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.122 2007-07-12 10:43:30 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.123 2007-07-13 08:58:38 mikeaubury Exp $
 #
 */
 
@@ -618,7 +618,14 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
   A4GL_debug ("Load convert : %s %s", source_dialect, target_dialect);
 
+  if (A4GL_isyes(acl_getenv("COMPILETIMEFIX"))) {
+  	// The following function will return 0 
+  	// IFF - we're compiling 
+  	//       AND we're not compiling to ESQL/C code
+  	if (!A4GL_compile_time_convert())  return;
+  }
 
+  
   if (!A4GL_has_pointer (buff, SQL_CONVERSION))
     {
       A4GL_cv_fnlist (source_dialect, target_dialect, buff);

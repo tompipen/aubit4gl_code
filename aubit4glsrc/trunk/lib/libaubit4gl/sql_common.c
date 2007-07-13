@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.45 2007-07-12 10:43:29 mikeaubury Exp $
+# $Id: sql_common.c,v 1.46 2007-07-13 08:58:38 mikeaubury Exp $
 #
 */
 
@@ -376,8 +376,6 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
   SPRINTF2(uniq_id,"a4gl_st_%s_%d",buff,line);
   return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id, singleton); 
 }
-
-
 
 
 
