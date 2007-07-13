@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.123 2007-07-13 08:58:38 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.124 2007-07-13 12:04:38 mikeaubury Exp $
 #
 */
 
@@ -2490,16 +2490,16 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
 		 strlen (oplog) + 1000);
 
   save_temp_table (tabname,0);
+      if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
+	{
+	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
+	}
 
   if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
     {
       A4GL_debug ("Creating temp table called TABLE : %s", tabname);
 
-      if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
-	{
-		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
-	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
-	}
+      //if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE)) { A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1); }
   	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
       		SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname, A4GL_space_out (elements));
 	} else {
