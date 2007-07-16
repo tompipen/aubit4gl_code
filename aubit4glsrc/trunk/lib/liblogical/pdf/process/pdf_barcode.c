@@ -18,7 +18,7 @@ int even_odd=0; // CODE 25 variable..
 
 extern float this_page_height;
 
-static void InitBarPDF59(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
+static void InitBarPDF39(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
 width = x ;
 height = y;
 x00 = xpos ;
@@ -52,7 +52,7 @@ PDF_fill_stroke (p);
 
 }
 
-static void BarCharPDF59(PDF *p, char *mapstring) {
+static void BarCharPDF39(PDF *p, char *mapstring) {
 int x, barsize  ;
 for (x=0;x<9;x++) {
    if (mapstring[x]=='0') 
@@ -143,57 +143,57 @@ BarChar_25(p, t);
 
 
 
-static void PutBarsPDF59(PDF *p, char c) {
+static void PutBarsPDF39(PDF *p, char c) {
 switch (c) {
-   case '0': BarCharPDF59(p, "000110100");break;
-   case '1': BarCharPDF59(p, "100100001");break;
-   case '2': BarCharPDF59(p, "001100001");break;
-   case '3': BarCharPDF59(p, "101100000");break;
-   case '4': BarCharPDF59(p, "000110001");break;
-   case '5': BarCharPDF59(p, "100110000");break;
-   case '6': BarCharPDF59(p, "001110000");break;
-   case '7': BarCharPDF59(p, "000100101");break;
-   case '8': BarCharPDF59(p, "100100100");break;
-   case '9': BarCharPDF59(p, "001100100");break;
-   case '-': BarCharPDF59(p, "010000101");break;
-   case '.': BarCharPDF59(p, "110000100");break;
-   case ' ': BarCharPDF59(p, "011000100");break;
-   case '+': BarCharPDF59(p, "010001010");break;
-   case '%': BarCharPDF59(p, "000101010");break;
-   case '$': BarCharPDF59(p, "010101000");break;
-   case '/': BarCharPDF59(p, "010100010");break;
-   case 'A': BarCharPDF59(p, "100001001");break;
-   case 'B': BarCharPDF59(p, "001001001");break;
-   case 'C': BarCharPDF59(p, "101001000");break;
-   case 'D': BarCharPDF59(p, "000011001");break;
-   case 'E': BarCharPDF59(p, "100011000");break;
-   case 'F': BarCharPDF59(p, "001011000");break;
-   case 'G': BarCharPDF59(p, "000001101");break;
-   case 'H': BarCharPDF59(p, "100001100");break;
-   case 'I': BarCharPDF59(p, "001001100");break;
-   case 'J': BarCharPDF59(p, "000011100");break;
-   case 'K': BarCharPDF59(p, "100000011");break;
-   case 'L': BarCharPDF59(p, "001000011");break;
-   case 'M': BarCharPDF59(p, "101000010");break;
-   case 'N': BarCharPDF59(p, "000010011");break;
-   case 'O': BarCharPDF59(p, "100010010");break;
-   case 'P': BarCharPDF59(p, "001010010");break;
-   case 'Q': BarCharPDF59(p, "000000111");break;
-   case 'R': BarCharPDF59(p, "100000110");break;
-   case 'S': BarCharPDF59(p, "001000110");break;
-   case 'T': BarCharPDF59(p, "000010110");break;
-   case 'U': BarCharPDF59(p, "110000001");break;
-   case 'V': BarCharPDF59(p, "011000001");break;
-   case 'W': BarCharPDF59(p, "111000000");break;
-   case 'X': BarCharPDF59(p, "010010001");break;
-   case 'Y': BarCharPDF59(p, "110010000");break;
-   case 'Z': BarCharPDF59(p, "011010000");break;
-   default : BarCharPDF59(p, "010010100");break;
+   case '0': BarCharPDF39(p, "000110100");break;
+   case '1': BarCharPDF39(p, "100100001");break;
+   case '2': BarCharPDF39(p, "001100001");break;
+   case '3': BarCharPDF39(p, "101100000");break;
+   case '4': BarCharPDF39(p, "000110001");break;
+   case '5': BarCharPDF39(p, "100110000");break;
+   case '6': BarCharPDF39(p, "001110000");break;
+   case '7': BarCharPDF39(p, "000100101");break;
+   case '8': BarCharPDF39(p, "100100100");break;
+   case '9': BarCharPDF39(p, "001100100");break;
+   case '-': BarCharPDF39(p, "010000101");break;
+   case '.': BarCharPDF39(p, "110000100");break;
+   case ' ': BarCharPDF39(p, "011000100");break;
+   case '+': BarCharPDF39(p, "010001010");break;
+   case '%': BarCharPDF39(p, "000101010");break;
+   case '$': BarCharPDF39(p, "010101000");break;
+   case '/': BarCharPDF39(p, "010100010");break;
+   case 'A': BarCharPDF39(p, "100001001");break;
+   case 'B': BarCharPDF39(p, "001001001");break;
+   case 'C': BarCharPDF39(p, "101001000");break;
+   case 'D': BarCharPDF39(p, "000011001");break;
+   case 'E': BarCharPDF39(p, "100011000");break;
+   case 'F': BarCharPDF39(p, "001011000");break;
+   case 'G': BarCharPDF39(p, "000001101");break;
+   case 'H': BarCharPDF39(p, "100001100");break;
+   case 'I': BarCharPDF39(p, "001001100");break;
+   case 'J': BarCharPDF39(p, "000011100");break;
+   case 'K': BarCharPDF39(p, "100000011");break;
+   case 'L': BarCharPDF39(p, "001000011");break;
+   case 'M': BarCharPDF39(p, "101000010");break;
+   case 'N': BarCharPDF39(p, "000010011");break;
+   case 'O': BarCharPDF39(p, "100010010");break;
+   case 'P': BarCharPDF39(p, "001010010");break;
+   case 'Q': BarCharPDF39(p, "000000111");break;
+   case 'R': BarCharPDF39(p, "100000110");break;
+   case 'S': BarCharPDF39(p, "001000110");break;
+   case 'T': BarCharPDF39(p, "000010110");break;
+   case 'U': BarCharPDF39(p, "110000001");break;
+   case 'V': BarCharPDF39(p, "011000001");break;
+   case 'W': BarCharPDF39(p, "111000000");break;
+   case 'X': BarCharPDF39(p, "010010001");break;
+   case 'Y': BarCharPDF39(p, "110010000");break;
+   case 'Z': BarCharPDF39(p, "011010000");break;
+   default : BarCharPDF39(p, "010010100");break;
 }
 
 }
 
-static void PrintCharPDF59(PDF *p, double x, char c) {
+static void PrintCharPDF39(PDF *p, double x, char c) {
 double xabs,yabs;
 static char buff[200];
 xabs = x00 + (x * xscale);
@@ -206,17 +206,17 @@ yabs = y00 + height + (fontsize * 12.0);
 
 }
 
-static void PrintThisPDF59(PDF *p, char *s) {
+static void PrintThisPDF39(PDF *p, char *s) {
 int x;
-PutBarsPDF59(p, '*'); //   # starting delimiter 
+PutBarsPDF39(p, '*'); //   # starting delimiter 
 
 for (x=0; x<strlen(s);x++) {
 
-   PrintCharPDF59(p, atx,s[x]);
-   PutBarsPDF59(p, s[x]);
+   PrintCharPDF39(p, atx,s[x]);
+   PutBarsPDF39(p, s[x]);
 }
 
-PutBarsPDF59(p, '*');   //# ending delimiter 
+PutBarsPDF39(p, '*');   //# ending delimiter 
 }
 
 
@@ -242,7 +242,7 @@ static void TermBarPDF25(PDF *p) {
 	// Does nothing..
 }
 
-static void TermBarPDF59(PDF *p) {
+static void TermBarPDF39(PDF *p) {
 	// Does nothing..
 }
 
@@ -259,10 +259,18 @@ int char_length1;
 int i;
 double bar_length, bar_scale;
 char *S;
+int codetype=39;
 
-int codetype=59;
 
-if (codetype==59) {
+if (A4GL_isyes(acl_getenv("BARCODE25"))) {
+	codetype=25;
+}
+
+if (A4GL_isyes(acl_getenv("BARCODE39"))) {
+	codetype=39;
+}
+
+if (codetype==39) {
 	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
 	bigbar=20;               //# stays between 2:1 and 3:1
 	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
@@ -272,13 +280,13 @@ if (codetype==59) {
 	i=strlen(str) + 2;                                  //# delimiters
 	bar_length = char_length1 * i + (i-1) * littlebar;     //# gap
 	bar_scale = (x) / bar_length;
-	InitBarPDF59(p, xpos,ypos,x,y,font_size,bar_scale);
+	InitBarPDF39(p, xpos,ypos,x,y,font_size,bar_scale);
 	// Create an uppercased version
 	S=strdup(str);
 	a4gl_upshift(S);
-	PrintThisPDF59(p, S);
+	PrintThisPDF39(p, S);
 	free(S);
-	TermBarPDF59(p);
+	TermBarPDF39(p);
 } 
 
 if (codetype==25) {
