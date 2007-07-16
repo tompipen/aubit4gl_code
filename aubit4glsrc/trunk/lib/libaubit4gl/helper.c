@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.60 2007-02-14 17:47:26 mikeaubury Exp $
+# $Id: helper.c,v 1.61 2007-07-16 12:31:08 mikeaubury Exp $
 #
 */
 
@@ -1145,6 +1145,45 @@ char *s;
 	s=A4GL_char_pop();
 	A4GL_direct_to_ui("FILE",s);
 	return 0;
+}
+
+int aclfgl_aclfgl_embed_barcode (int _nargs){
+   static char *_functionName = "embed_barcode";
+   double x ;
+   double y ;
+   double w ;
+   double h ;
+   char *s ;
+
+        s=A4GL_char_pop();
+        h=A4GL_pop_double();
+        w=A4GL_pop_double();
+        y=A4GL_pop_double();
+        x=A4GL_pop_double();
+
+   A4GL_push_char("##BARCODE(");
+   A4GL_push_double(x); A4GL_push_char("<<<&.&&"); A4GL_pushop(OP_USING);
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_char(",");
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_double(y); A4GL_push_char("<<<&.&&"); A4GL_pushop(OP_USING);
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_char(",");
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_double(w); A4GL_push_char("<<<&.&&"); A4GL_pushop(OP_USING);
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_char(",");
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_double(h); A4GL_push_char("<<<&.&&"); A4GL_pushop(OP_USING);
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_char(",");
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_char(s);
+	acl_free(s);
+   A4GL_pushop(OP_CONCAT);
+   A4GL_push_char(")##");
+   A4GL_pushop(OP_CONCAT);
+   return 1;
 }
 
 
