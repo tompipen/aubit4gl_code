@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2006-09-01 20:02:36 mikeaubury Exp $
+# $Id: Makefile,v 1.13 2007-07-16 06:15:37 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -43,7 +43,7 @@ CFLAGS+=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC
 ##                              Targets
 ## ==================================================================
 
-${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT} : process_txt.o
+${PLUGINDIR}/libLOGREPPROC_TXT${SO_EXT} : process_txt.o txt_barcode.o
 #	gcc  -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -l${AUBITLIBFULL} 
 #	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -l${AUBITLIBFULL} 
 	${LD} ${SO_LDFLAGS} -o $@ $^ -L$(LIBROOT) -l${AUBITLIBFULL}

@@ -11,11 +11,14 @@ int font = -1;
 
 float layout_page_width = -1;
 float layout_page_height = -1;
+  float this_page_width = 0;
+  float this_page_height = 0;
 
 int setlinecolor = 0;
 float rline = 1.0;
 float gline = 1.0;
 float bline = 1.0;
+float eachline=0;
 
 
 // Fake music score rule
@@ -23,69 +26,8 @@ float bline = 1.0;
 #define STYLE_5BAR 1
 #define STYLE_RECTANGLE 2
 
-void
-output_page (PDF * p, int w, int h, char **lines)
-{
-  int a;
+void setupPageSize(int w) {
   int orient;
-  float this_page_width = 0;
-  float this_page_height = 0;
-  float printable;
-  float eachline;
-  int image;
-  int style=STYLE_NONE;
-
-  if (setlinecolor == 0)
-    {
-      char *str;
-      char str_b[260];
-      long l;
-      style = 0;
-      strcpy(str_b,layout.bluebar);
-
-      A4GL_trim(str_b);
-      str=str_b;
-
-      if (strlen(str)==0) {
-      	str = acl_getenv ("BLUEBAR");
-      }
-
-      if (acl_getenv_not_set_as_0 ("BLUEBAR") != 0)
-	{
-      	str = acl_getenv ("BLUEBAR");
-
-	  if (str[0]=='#') {
-	  	l=0xf0f0f0;
-	  	a=sscanf(&str[1],"%x,%s",&l,&style);
-		if (a!=2) {
-	  		a=sscanf(&str[1],"%xs",&l);
-	      		style = STYLE_RECTANGLE;
-		}
-
-		rline=((l&0xff0000)>>16)/255;
-		gline=((l&0xff00)>>8)/255;
-		bline=((l&0xff))/255;
-
-	  } else {
-	  	a = sscanf (str, "%f,%f,%f,%d", &rline, &gline, &bline, &style);
-	  	if (a != 4)
-	    	{
-	      	a = sscanf (str, "%f,%f,%f", &rline, &gline, &bline);
-	      	if (a==3) {
-	      		style = STYLE_RECTANGLE;
-	      	} 
-	    }
-	  }
-	  setlinecolor = 1;
-	}
-      else
-	{
-	  rline = 1.0;
-	  gline = 1.0;
-	  bline = 1.0;
-	  setlinecolor = 2;
-	}
-    }
 
   if (layout_page_width == -1)
     {
@@ -161,11 +103,106 @@ output_page (PDF * p, int w, int h, char **lines)
       this_page_width = layout_page_width;
       this_page_height = layout_page_height;
     }
+
   if (orient == PAPER_ORIENT_LANDSCAPE)
     {
       this_page_height = layout_page_width;
       this_page_width = layout_page_height;
     }
+
+}
+
+
+
+
+void
+start_pdf_page (PDF * p, int w, int h)
+{
+  int a;
+  float printable;
+  int image;
+  int style=STYLE_NONE;
+
+  if (setlinecolor == 0)
+    {
+      char *str;
+      char str_b[260];
+      long l;
+      style = 0;
+      strcpy(str_b,layout.bluebar);
+
+      A4GL_trim(str_b);
+      str=str_b;
+
+      if (strlen(str)==0) {
+      	str = acl_getenv ("BLUEBAR");
+      }
+
+      if (acl_getenv_not_set_as_0 ("BLUEBAR") != 0)
+	{
+      	str = acl_getenv ("BLUEBAR");
+
+	  if (str[0]=='#') {
+	  	l=0xf0f0f0;
+	  	a=sscanf(&str[1],"%x,%s",&l,&style);
+		if (a!=2) {
+	  		a=sscanf(&str[1],"%xs",&l);
+	      		style = STYLE_RECTANGLE;
+		}
+
+		rline=((l&0xff0000)>>16)/255;
+		gline=((l&0xff00)>>8)/255;
+		bline=((l&0xff))/255;
+
+	  } else {
+	  	a = sscanf (str, "%f,%f,%f,%d", &rline, &gline, &bline, &style);
+	  	if (a != 4)
+	    	{
+	      	a = sscanf (str, "%f,%f,%f", &rline, &gline, &bline);
+	      	if (a==3) {
+	      		style = STYLE_RECTANGLE;
+	      	} 
+	    }
+	  }
+	  setlinecolor = 1;
+	}
+      else
+	{
+	  rline = 1.0;
+	  gline = 1.0;
+	  bline = 1.0;
+	  setlinecolor = 2;
+	}
+    }
+
+
+  setupPageSize(w);
+
+/*
+  if (layout.paper_orient == PAPER_ORIENT_AUTO)
+    {
+      if (w <= 80)
+	orient = PAPER_ORIENT_PORTRAIT;
+      else
+	orient = PAPER_ORIENT_LANDSCAPE;
+    }
+  else
+    {
+      orient = layout.paper_orient;
+    }
+
+  if (orient == PAPER_ORIENT_PORTRAIT)
+    {
+      this_page_width = layout_page_width;
+      this_page_height = layout_page_height;
+    }
+  if (orient == PAPER_ORIENT_LANDSCAPE)
+    {
+      this_page_height = layout_page_width;
+      this_page_width = layout_page_height;
+    }
+*/
+
 
   PDF_begin_page (p, this_page_width, this_page_height);
 
@@ -201,6 +238,7 @@ output_page (PDF * p, int w, int h, char **lines)
 	  double y;
 	  x = layout.img_x;
 	  y = layout.img_y;
+
 	  PDF_fit_image (p, image, x, y, "fitmethod auto");
 	  PDF_close_image (p, image);
 	}
@@ -271,8 +309,11 @@ output_page (PDF * p, int w, int h, char **lines)
       PDF_setcolor (p, "both", "rgb", 0.0, 0.0, 0.0, 0);
     }
 
+}
 
+void output_page (PDF * p, int w, int h, char **lines) {
 
+int a;
 
   for (a = 0; a < h; a++)
     {
@@ -280,9 +321,7 @@ output_page (PDF * p, int w, int h, char **lines)
       ptr = lines[a];
       A4GL_trim (ptr);
       if (strlen(ptr)) {
-      	PDF_set_text_pos (p, (layout.leftmargin * 72.0),
-			this_page_height - ((float) a * eachline) -
-			(layout.topmargin * 72.0));
+      	PDF_set_text_pos (p, (layout.leftmargin * 72.0), this_page_height - ((float) a * eachline) - (layout.topmargin * 72.0));
       	PDF_show (p, ptr);
       }
     }

@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include "../../common/a4gl_lle.h"
 #include "../../processor/API_process.h"
-
+#include "txt_barcode.h"
+int term_crnl=0;
 char **lines;
 
 int page_touched = 0;
@@ -56,11 +57,79 @@ trim (char *s)
 
 
 
+static char *ChkForBarcode(char *s) {
+static char barcodeline[10024];
+char *barcode;
+char *p;
+char str[256];
+char spaces[2000];
+int a;
+int c;
+char *p2;
+double x,y,w,h;
+char * sstart;
+int len;
+x=0.0;
+y=0.0;
+w=0.0;
+h=0.0;
+
+	strcpy(barcodeline,s);
+	if (!A4GL_isyes(acl_getenv("EMBEDBARCODE")))  {
+		return s;
+	}
+
+	memset(spaces,'.',sizeof(spaces));
+
+	p=strstr(barcodeline,"##BARCODE(");
+	if (p==0)  {
+		return s;
+	}
+	sstart=p;
+	// Blank out the first # - so we can strcpy the initial portion
+	*p=0;
+	p++;
+	a=sscanf(p,"#BARCODE(%lf,%lf,%lf,%lf%n",&x,&y,&w,&h,&c);
+	if (a!=4) {
+		FPRINTF(stderr,"Invalid barcode description\n");
+		return s;
+	}
+	p+=c; 
+	if (*p!=',') {
+		FPRINTF(stderr,"Invalid barcode description\n");
+		return s;
+	}
+	p++;
+	p2=strstr(p,")##");
+	if (p2==0) {
+		FPRINTF(stderr,"Invalid barcode description\n");
+		return s;
+	}
+	*p2=0;
+	p2+=3;
+	len=p2-sstart;
+	A4GL_debug("Txt=%s x=%lf y=%lf w=%lf h=%lf\n",p, x,y,w,h);
+	A4GL_debug("barcodeline=%s\n",barcodeline);
+	barcode=strdup(generate_barcode(x,y,w,h,p));
+	p2=strdup(p2);
+	spaces[len]=0;
+	strcat(barcodeline,barcode);
+	strcat(barcodeline,spaces);
+	free(barcode);
+	strcat(barcodeline,p2);
+	free(p2);
+	
+	return barcodeline;
+
+}
+
 static void
 output_page (FILE * fout, int w, int h)
 {
   int a;
   int hnew;
+  char *ptr;
+
   if (A4GL_isyes (acl_getenv ("USETOPOFPAGE")))
     {
       hnew=h;
@@ -73,9 +142,15 @@ output_page (FILE * fout, int w, int h)
       for (a = 0; a < hnew; a++)
 	{
 	  if (a == hnew-1) {
-	  	fprintf (fout, "%s%c", lines[a],12);
+		ptr=ChkForBarcode(lines[a]);
+	  	fprintf (fout, "%s%c", ptr,12);
 	  } else {
-	  	fprintf (fout, "%s\n", lines[a]);
+		ptr=ChkForBarcode(lines[a]);
+		if (term_crnl) {
+	  		fprintf (fout, "%s\r\n", ptr);
+		} else {
+	  		fprintf (fout, "%s\n", ptr);
+		}
 	  }
 	}
 
@@ -87,10 +162,17 @@ output_page (FILE * fout, int w, int h)
       for (a = 0; a < h; a++)
 	{
 	  trim (lines[a]);
-	  fprintf (fout, "%s\n", lines[a]);
+	  ptr=ChkForBarcode(lines[a]);
+		if (term_crnl) {
+	  		fprintf (fout, "%s\r\n", ptr);
+		} else {
+	  		fprintf (fout, "%s\n", ptr);
+		}
 	}
     }
 }
+
+
 
 static void
 set_text (int x, int y, char *s)
@@ -121,6 +203,9 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
 
 
   if (rep_fout) fclose(rep_fout);
+  if (A4GL_isyes(acl_getenv("CONVREPCRLF"))) {
+		term_crnl=1;
+	}
 
   rep_fout=0;
 

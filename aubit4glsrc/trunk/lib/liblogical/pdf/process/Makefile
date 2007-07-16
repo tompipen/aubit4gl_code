@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2006-08-18 16:05:23 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2007-07-16 06:15:37 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -50,10 +50,10 @@ LINKLIBS=-L$(ROOT)/lib -l${AUBITLIBFULL}
 
 all: ${ALL}
 
-${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT} : process_pdf.o pdf_handling.o ../common/common_pdf.c
+${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT} : process_pdf.o pdf_handling.o ../common/common_pdf.c pdf_barcode.o
 	${LD} ${CFLAGS} ${PDFLIB_L_FLAGS} $(SO_LDFLAGS) $^ -o $@ ${LINKLIBS} -lpdf
 	
-process_pdf.o: ../../layout_engine/API_layout.h ../../processor/API_process.h
+process_pdf.o: ../../layout_engine/API_layout.h ../../processor/API_process.h process_pdf.c
 	${CC} $(CFLAGS) -c -o process_pdf.o process_pdf.c
 
 ../../layout_engine/API_layout.h:
