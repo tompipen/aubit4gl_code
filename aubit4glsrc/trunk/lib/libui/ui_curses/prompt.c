@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.66 2007-06-07 10:25:54 mikeaubury Exp $
+# $Id: prompt.c,v 1.67 2007-07-17 07:06:46 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.66 2007-06-07 10:25:54 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.67 2007-07-17 07:06:46 mikeaubury Exp $";
 #endif
 
 /**
@@ -106,8 +106,8 @@ int
   p = derwin (cw, 1, width, promptline-1  , UILIB_A4GL_iscurrborder ());
 
 #ifdef __WIN32__
-   wbkgd(p,'.');
-   wbkgdset(p,'.');
+   wbkgd(p,' ');
+   wbkgdset(p,' ');
 
    //wbkgd(p,'!');
    //wbkgdset(p,'!');
