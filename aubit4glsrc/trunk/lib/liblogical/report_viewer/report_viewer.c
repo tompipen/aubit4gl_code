@@ -556,8 +556,12 @@ add_widget (int rb, int evt, GtkWidget * w)
 {
 struct rb_widgets *bwidgets;
 struct rb_event_widgets *ewidgets;
+ if (rb==-1) {
+	return;
+ }
 
-
+ //printf("rb=%d\n",rb);
+ //
 /* make sure our block is allocated.. */
   while (rb >= block_widgets_cnt)
     {
