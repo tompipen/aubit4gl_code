@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.172 2007-06-07 10:25:53 mikeaubury Exp $
+# $Id: ioform.c,v 1.173 2007-07-17 07:35:35 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.172 2007-06-07 10:25:53 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.173 2007-07-17 07:35:35 mikeaubury Exp $";
 #endif
 
 /**
@@ -991,7 +991,7 @@ int local_chk_field(struct s_form_dets *form, FIELD *f) {
 		      if (strlen (buff2) == 0)
 			{
 
-			  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+			  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
 			    {
 			      int allow_it_anyway = 0;
 
@@ -1011,10 +1011,12 @@ int local_chk_field(struct s_form_dets *form, FIELD *f) {
 
 			      if (!allow_it_anyway)
 				{
+				A4GL_pause_execution();
+				A4GL_debug("FIELD_REQD_MSG");
 				  // Well there wasn't - so it is required....
 				  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
 
-				  //set_current_field (mform, form->currentfield);
+				  //set_current_field (form->form, f);
 
 				  return -4;
 				}
@@ -1135,7 +1137,7 @@ int local_chk_field(struct s_form_dets *form, FIELD *f) {
 		    }
 
 
-		  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+		  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED)  && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
 		    {
 		      char buff[8024];
 		      strcpy (buff, field_buffer (f, 0));
@@ -1159,6 +1161,7 @@ int local_chk_field(struct s_form_dets *form, FIELD *f) {
 			    }
 			  if (!allow_it_anyway)
 			    {
+				A4GL_debug("FIELD_REQD_MSG");
 			      A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
 			      //set_current_field (mform, form->currentfield);
 			      return -4;
@@ -4053,7 +4056,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 				A4GL_debug("changed=%d\n", chged);
 				//printf("changed=%d\n", chged);fflush(stdout);
 			
-			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged)
+			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
 			  {
 			    int allow_it_anyway = 0;
 
@@ -4073,6 +4076,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			    if (!allow_it_anyway)
 			      {
 				// Well there wasn't - so it is required....
+				A4GL_debug("FIELD_REQD_MSG");
 				A4GL_error_nobox (acl_getenv
 						  ("FIELD_REQD_MSG"), 0);
 				set_current_field (mform, form->currentfield);
@@ -4147,7 +4151,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 		strcpy (buff, field_buffer (sio->currform->currentfield, 0));
 		if (strlen (buff) == 0)
 		  {
-		    if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED))
+		    if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
 		      {
 			int allow_it_anyway = 0;
 
@@ -4167,6 +4171,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			if (!allow_it_anyway)
 			  {
 			    // Well there wasn't - so it is required....
+				A4GL_debug("FIELD_REQD_MSG");
 			    A4GL_error_nobox (acl_getenv
 					      ("FIELD_REQD_MSG"), 0);
 			    set_current_field (mform, form->currentfield);
