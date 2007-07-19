@@ -64,7 +64,7 @@ int charcpy( unsigned char *target, unsigned char *source, long len );
 static char *allocate_descriptor_memory(struct sqlda *udesc, short **qualifiers, short **indicators) ;
 static void deallocate_descriptor_memory(struct sqlda *udesc) ;
 static void prepare_for_fetch_into_descriptor(struct sqlda *udesc,short *qualifiers) ;
-
+void *A4GL_alloc_associated_mem(void *orig,int nbytes);
 #if HAVE_IFX_IUS
 #define ESQLC_IUSTYPES          1
 #endif
