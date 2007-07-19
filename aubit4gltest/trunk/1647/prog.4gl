@@ -11,11 +11,11 @@ DEFINE w_prep CHAR(70)
 OPEN WINDOW v_1 AT 1,1 WITH FORM "cons" # ATTRIBUTE(DIM, FORM LINE 3)
 CONSTRUCT BY NAME w_prep ON f1, f2
     # The following line is the problem
-    BEFORE CONSTRUCT display "", "" TO f1, f2
+    BEFORE CONSTRUCT display "0", "0" TO f1, f2
     ON KEY(ESC) EXIT CONSTRUCT
 END CONSTRUCT
 CLOSE WINDOW v_1
-if w_prep = "f1 between 123456789 and 987654321" then  exit program 0
+if w_prep = "f1 between 123456789 and 987654321 and f2=0" then  exit program 0
 else    display w_prep                               exit program 1
 end  if
 end main
