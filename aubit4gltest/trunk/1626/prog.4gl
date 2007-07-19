@@ -6,9 +6,11 @@
  *}
  
 main
-define wa array[3] of record obs varchar(255) end record,
+define wa array[8] of record obs varchar(255) end record,
        i, l int
 
+options next key control-a,
+        previous key control-b
 open form f_ivch from "ivch"
 display form f_ivch
 let wa[1].obs = "12345678"
