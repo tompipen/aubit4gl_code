@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.144 2007-07-12 10:49:44 mikeaubury Exp $
+# $Id: curslib.c,v 1.145 2007-07-19 09:56:03 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.144 2007-07-12 10:49:44 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.145 2007-07-19 09:56:03 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -725,7 +725,7 @@ A4GL_do_key_combi (int h)
       a = 0;
     }
 
-  if (a == ESC)
+  if (a == ESC) // IGNORE - nothing to do with ACCEPT
     {
       abort_pressed = 1;
     }
@@ -768,7 +768,7 @@ A4GL_do_key_menu (void)
 	curr_opt = 0;
     }
 
-  if (a == ESC || a == 'Q' || a == 'q')
+  if (a == ESC || a == 'Q' || a == 'q') // IGNORE - nothing to do with ACCEPT
     {
 #ifdef DEBUG
       A4GL_debug ("Abort Pressed in menu");
@@ -919,7 +919,7 @@ A4GL_edit (string, type, length, x, y)
       A4GL_mja_gotoxy (x + len + 1, y + 1);
       abort_pressed = FALSE;
       a = A4GL_getkey ();
-      if (a == ESC)
+      if (a == ESC) // IGNORE - nothing to do with ACCEPT
 	{
 	  abort_pressed = 1;
 	  A4GL_clearbox (&area);
