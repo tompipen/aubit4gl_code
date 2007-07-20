@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "918: include statement in form ignored"
+desc: ; @echo "tests an issue of saving field data in an input array with an onkey"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_SMALLINT DEFINE_INTEGER USE_REPORT FOR REPORT_ORDER_BY ON_EVERY_ROW   UI_PROMPT"
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
@@ -51,4 +51,3 @@ need_plugin:			; @echo ""
 
 
 # ============================= EOF ================================
-

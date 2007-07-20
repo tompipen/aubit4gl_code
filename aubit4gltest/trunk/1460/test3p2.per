@@ -1,0 +1,21 @@
+database formonly                                                               
+screen                                                                         
+{                                                                              
++--------- ADITIONAL MERCHADISE DESCRIPTION ---------+                           
+|[f001                                              ]|
+|[f001                                              ]|
+|[f001                                              ]|
+|----------------------------------------------------|
+| CTRL-N:Accept Changes  CTRL-C:Return to screen     |
++----------------------------------------------------+                           
+}                                                                              
+end                                                                            
+attributes                                                                     
+f001 = formonly.descite TYPE CHAR,
+                             UPSHIFT,
+                             AUTONEXT,
+                             REVERSE;
+                             
+end                                                                            
+instructions                                                                   
+screen record sc[3](descite)

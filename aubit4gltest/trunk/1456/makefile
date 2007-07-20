@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "918: include statement in form ignored"
+desc: ; @echo " 0001034: insert/delete row in input array not returning to correct place"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_SMALLINT DEFINE_INTEGER USE_REPORT FOR REPORT_ORDER_BY ON_EVERY_ROW   UI_PROMPT"
+sql_features_used:		; @echo "DATABASE_USED DEFINE_TEXT DEFINE_INTEGER DDL_TEXT CREATE_TEMP_TABLE LOCATE_FILE ANSI_INSERT LOCATE_MEM UI_DISPLAY_LINE_MODE DISPLAY UI_PROMPT IF "
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
@@ -51,4 +51,3 @@ need_plugin:			; @echo ""
 
 
 # ============================= EOF ================================
-

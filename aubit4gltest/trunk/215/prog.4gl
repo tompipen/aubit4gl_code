@@ -10,6 +10,7 @@ open window main_win at 3, 2 with 20 rows, 78 columns
     attribute(green, border) 
 open form main_form from "g6" 
 display form main_form attribute (cyan)
+options delete key f36, insert key f36
 
 initialize xarr[1].* to null
 initialize xarr[2].* to null

@@ -11,7 +11,6 @@ endif
 ADD_CLEAN=
 # Force the allowance of the comma in the decimal
 # this is normally dependant on the locale setting...
-export A4GL_ALLOWCOMMAINDECIMAL=Y
 
 ## ======================================================================
 ##                 	Local Targets
@@ -26,7 +25,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "check comma in decimal (may not work with informix)"
+desc: ; @echo "pretty much obelete test - ignore"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
