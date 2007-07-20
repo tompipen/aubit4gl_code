@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.173 2007-07-17 07:35:35 mikeaubury Exp $
+# $Id: ioform.c,v 1.174 2007-07-20 14:08:02 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.173 2007-07-17 07:35:35 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.174 2007-07-20 14:08:02 mikeaubury Exp $";
 #endif
 
 /**
@@ -1011,7 +1011,7 @@ int local_chk_field(struct s_form_dets *form, FIELD *f) {
 
 			      if (!allow_it_anyway)
 				{
-				A4GL_pause_execution();
+				//A4GL_pause_execution();
 				A4GL_debug("FIELD_REQD_MSG");
 				  // Well there wasn't - so it is required....
 				  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
