@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.376 2007-07-04 17:13:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.377 2007-07-20 10:19:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.376 2007-07-04 17:13:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.377 2007-07-20 10:19:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4044,6 +4044,7 @@ LEXLIB_print_foreach_start (void)
 {
   printc ("{");
   printc("int _cursoropen=0;");
+  printc("int _fetcherr=0;");
 }
 
 
@@ -7016,8 +7017,10 @@ LEXLIB_print_foreach_close (char *cname)
 {
   printc("if (_cursoropen) {");
   print_close ('C', cname);
-  printc("if (a4gl_status == 100) { a4gl_sqlca.sqlcode = a4gl_status = 0; }");
+  printc("if (a4gl_status == 0) { if (_fetcherr) {A4GLSQL_set_status(_fetcherr,1);}}");
+  printc("if (a4gl_status == 100) { if (_fetcherr) {a4gl_sqlca.sqlcode = a4gl_status=_fetcherr;} else {a4gl_sqlca.sqlcode = a4gl_status = 0; }}");
   printc("}");
+
   printc("}");
 }
 

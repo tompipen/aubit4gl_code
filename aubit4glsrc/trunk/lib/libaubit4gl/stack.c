@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.187 2007-07-08 16:13:00 mikeaubury Exp $
+# $Id: stack.c,v 1.188 2007-07-20 10:19:50 mikeaubury Exp $
 #
 */
 
@@ -2097,6 +2097,7 @@ int first;
       //b = strtod (z1,&ptr);
 	if (A4GL_stof (z1, &b, 0)) {
 		//A4GL_debug("OK as a float..");
+		A4GL_debug("looks like a float");
 	} else {
 		A4GL_debug("Doesn't look much like a float to me (%s)",A4GL_null_as_null(z1));
 		return -2;

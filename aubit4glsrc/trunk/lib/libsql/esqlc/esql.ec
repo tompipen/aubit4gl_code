@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.192 2007-06-04 10:24:54 gyver309 Exp $
+# $Id: esql.ec,v 1.193 2007-07-20 10:19:50 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.192 2007-06-04 10:24:54 gyver309 Exp $";
+  "@(#)$Id: esql.ec,v 1.193 2007-07-20 10:19:50 mikeaubury Exp $";
 #endif
 
 
@@ -1594,11 +1594,21 @@ int dstype;
       free (char_var);
       break;
     case DTYPE_SMINT:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smint_var =
+    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
 	DATA;
+
       if (isSqlError ())
 	return 1;
-      *(short *) bind[idx].ptr = smint_var;
+
+	if (int_var>=SHRT_MIN && int_var<=SHRT_MAX) {
+      		*(short *) bind[idx].ptr = int_var;
+	} else {
+		A4GL_set_a4gl_sqlca_sqlcode(-1214);
+      		//A4GL_exitwith ("Value exceeds limit of SMALLINT precision");
+      		*(short *) bind[idx].ptr = 0;
+		return 1;
+	}
+
       break;
     case DTYPE_SERIAL:
     case DTYPE_INT:
@@ -1820,20 +1830,22 @@ allocateOutputDescriptor (char *descName, int bCount, struct BINDING *bind)
   EXEC SQL begin declare section;
   char *descriptorName = descName;
   int bindCount = bCount;
+  int lstatus;
   EXEC SQL end declare section;
   //register int i;
 
   A4GL_debug ("allocOutput - %s cnt=%d", descriptorName, bindCount);
 
   bindCount += 256; 
+  lstatus=sqlca.sqlcode;
 
   EXEC SQL ALLOCATE DESCRIPTOR:descriptorName WITH MAX:bindCount;
-
-  A4GL_debug ("Status=%d", sqlca.sqlcode);
+  
+  A4GL_debug ("Status=%d lstatus=%d", sqlca.sqlcode, lstatus);
   if (sqlca.sqlcode == -480)
     {
-      sqlca.sqlcode = 0;
-      A4GL_set_a4gl_sqlca_sqlcode (0);
+      sqlca.sqlcode = lstatus;
+      A4GL_set_a4gl_sqlca_sqlcode (lstatus);
       A4GL_debug ("Try dealloc and alloc");
       EXEC SQL DEALLOCATE DESCRIPTOR:descriptorName;
       EXEC SQL ALLOCATE DESCRIPTOR:descriptorName WITH MAX:bindCount;
@@ -2932,7 +2944,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
   int o2;
 	      struct BINDING *obind;
 	obind=vobind;
-
+A4GL_debug("A4GLSQL_fetch_cursor\n");
   cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, CURCODE);
   if (cid==0) {
 	if (sqlca.sqlcode==0) {// Fetch attempted on unknown cursor and no error..
@@ -2966,6 +2978,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 
   /** @todo : Maybe input bind should be cleaned (if exist) */
   if (processPreStatementBinds (sid) == 1) {
+		A4GL_debug("prebind failed");
    	sid->obind=o1; sid->no=o2;
     	return 1;
   }
@@ -4063,14 +4076,22 @@ A4GLSQLLIB_A4GLSQL_dbms_name (void)
 int
 A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 {
+int lstatus;
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = currname;
   //void *ptr;
   EXEC SQL END DECLARE SECTION;
+  
+  lstatus=a4gl_sqlca.sqlcode;
 
   EXEC SQL CLOSE:cursorName;
   if (isSqlError ())
     return 1;
+  if (lstatus<0 && sqlca.sqlcode==0) {
+		A4GLSQL_set_status(lstatus,1);
+		//a4gl_status=lstatus;
+		//a4gl_sqlca.sqlcode=lstatus;
+  }
   return 0;
 }
 

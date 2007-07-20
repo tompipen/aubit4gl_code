@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.169 2007-05-28 08:33:30 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.170 2007-07-20 10:19:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.169 2007-05-28 08:33:30 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.170 2007-07-20 10:19:50 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -284,7 +284,8 @@ LEXLIB_print_close (char type, char *name)
 	{
 	  printc ("sqlca.sqlcode=0;");
 	}
-      print_copy_status ();
+
+     	print_copy_status ();
 
 
   if (A4GLSQLCV_check_requirement ("CLOSE_CURSOR_BEFORE_OPEN"))
@@ -329,6 +330,7 @@ exit_loop("FOREACH");
   printc("}");
 
   printc("_cursoropen=1;");
+  printc("_fetcherr=0;");
   printc ("while (1) {\n");
   ni = LEXLIB_print_bind_definition_g (using_bind);
   no = LEXLIB_print_bind_definition_g (into_bind);
@@ -343,12 +345,12 @@ exit_loop("FOREACH");
     { a4gl_yyerror ("You cannot use a FETCH without an INTO with the target database"); return;
     }
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n", cursorname, A4GL_get_into_part (0, no), ni, no);
+  printc("if (sqlca.sqlcode<0) _fetcherr=sqlca.sqlcode;");
   print_copy_status ();
+  
   printc ("internal_recopy_%s_o_Dir();", cursorname);
   print_conversions_g (into_bind);
   clr_suppress_lines ();
-
-  //printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
   printc ("if (a4gl_sqlca.sqlcode==100) break;\n");
 }
 

@@ -13,7 +13,7 @@ static int has_file(char *s) {
 int a;
 	if (nfiles==0) return -1;
 	for (a=0;a<nfiles;a++) {
-		if (strcmp(files[a].name,s)==0) return a;
+		if (A4GL_aubit_strcasecmp(files[a].name,s)==0) return a;
 	}
 	return -1;
 }
@@ -40,7 +40,7 @@ int b;
 static char buff[256];
 for (a=0;a<nfiles;a++) {
 	for (b=0;b<files[a].nlist;b++) {
-		if (strcmp(s,files[a].list[b].name)==0) {
+		if (A4GL_aubit_strcasecmp(s,files[a].list[b].name)==0) {
 			if (file) {
 				if (files[a].name[0]!=':') SPRINTF1 (buff,"\"%s\"",files[a].name);
 				else SPRINTF1 (buff,"%s",&files[a].name[1]);
