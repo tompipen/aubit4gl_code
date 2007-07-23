@@ -725,6 +725,7 @@ printField (FILE * outputFile, int idx, char *descName) {
       fprintf (f_unloadFile, "%s", LoadUnload_delim);
 	break;
 	}
+  return 0;
 }
 
 static int
