@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.195 2007-07-09 14:05:00 gyver309 Exp $
+# $Id: sql.c,v 1.196 2007-07-23 15:45:27 gyver309 Exp $
 #
 */
 
@@ -2201,7 +2201,7 @@ A4GL_display_size (SQLSMALLINT coltype, SQLUINTEGER collen, SQLCHAR* colname)
       case SQL_LONGVARBINARY:
       case SQL_LONGVARCHAR:
       case SQL_VARBINARY:
-        return 6;
+        return collen;
       case 9:			/* date */
 
         return 12;
