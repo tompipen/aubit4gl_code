@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.193 2007-07-20 10:19:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.194 2007-07-23 13:24:12 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,7 @@ int A4GL_dttoc (void *a, void *b, int size);
 #define _SQLCA_DEFINED_
 #include  <sqltypes.h>
 #include <string.h>
+#include <limits.h>
 //#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 static void copy_sqlca_Stuff(int warnings) ;
 
@@ -189,7 +190,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.193 2007-07-20 10:19:50 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.194 2007-07-23 13:24:12 mikeaubury Exp $";
 #endif
 
 

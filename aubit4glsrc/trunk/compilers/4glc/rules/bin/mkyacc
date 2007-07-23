@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.22 2006-11-27 08:46:41 mikeaubury Exp $
+# $Id: mkyacc,v 1.23 2007-07-23 13:21:34 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -64,14 +64,14 @@ echo "commands : | command1 ;" >> $ofile
 echo "all_commands : commands_all opt_semi ;" >> $ofile
 
 echo 'command1	: all_commands  {
-chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",$<str>$);
+chk4var=0;
 if (A4GL_isyes(acl_getenv("INCLINES")))
 A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 	A4GL_prchkerr(lastlineno,infilename);
 	lastlineno=yylineno;
 }
 | command1  all_commands {
-A4GL_lex_printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;
+chk4var=0;
 if (A4GL_isyes(acl_getenv("INCLINES")))
 A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 /* if (A4GL_aubit_strcasecmp($<str>$,"whenever")!=0)  */

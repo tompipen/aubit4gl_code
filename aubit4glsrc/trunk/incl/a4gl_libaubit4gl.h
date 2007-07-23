@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.281 2007-07-05 07:06:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.282 2007-07-23 13:21:35 mikeaubury Exp $
 #
 */
 
@@ -1359,11 +1359,11 @@ void A4GL_debug(char *s);
 
 #ifdef DEBUG
 #define A4GL_trc A4GL_set_line_extended(__FILE__,__LINE__,"trc",__func__),A4GL_debug_full_extended
-#else //!DEBUG
+#else 
 #define A4GL_trc null_func
-#endif //DEBUG
+#endif 
 
-#else //!NODEBUG
+#else 
 #define A4GL_ftl null_func
 #define A4GL_err null_func
 #define A4GL_wrn null_func
@@ -1371,7 +1371,7 @@ void A4GL_debug(char *s);
 #define A4GL_dbg null_func
 #define A4GL_trc null_func
 
-#endif //NODEBUG
+#endif 
 
   /* ====================== from data_if.c =================== */
 

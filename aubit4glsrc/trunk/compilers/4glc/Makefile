@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.25 2007-05-09 16:37:44 mikeaubury Exp $
+# $Id: Makefile,v 1.26 2007-07-23 13:21:33 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -132,6 +132,11 @@ endif
 	#LINKLIBS	+=-ldl
 	#AUBIT_LIB	+=-ldl
 #endif
+ifeq "${TARGET_OS}" "hpux"
+	BISON_CC=cc
+else
+	BISON_CC=${CC}
+endif
 
 ifeq "something" "blah"
 	LD_EXE_FLAGS=-export-dynamic
@@ -175,7 +180,7 @@ endif
 #	${MAKE} -C rules $(MKNAME)
 
 rules/generated/y.tab.o: ${Y_TAB_C} ${Y_TAB_H}
-	${CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
+	${BISON_CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
 
 rules/generated/mk_states.o:  rules/generated/mk_states.c
 	${CC} ${CFLAGS} -O2 -c -o $@ $< -I. -Irules/generated
