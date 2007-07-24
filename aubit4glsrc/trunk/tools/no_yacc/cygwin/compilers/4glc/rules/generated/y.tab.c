@@ -21502,7 +21502,7 @@ print_report_ctrl();
 #line 9128 "fgl.infx.yacc"
     {
 
-			(yyval.sql_string)=make_sql_string_and_free("",NULL);
+			(yyval.sql_string)=make_sql_string_and_free(acl_strdup(""),NULL);
 			A4GL_4glc_push_gen(INSCOL,"*"); 
 	}
     break;
@@ -21562,8 +21562,8 @@ print_report_ctrl();
   case 1671:
 #line 9176 "fgl.infx.yacc"
     {
-		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (3)].sql_string),kw_comma, (yyvsp[(3) - (3)].sql_string),NULL);
 		A4GL_4glc_push_gen_expand(INSVAL,(yyvsp[(3) - (3)].sql_string));
+		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (3)].sql_string),kw_comma, (yyvsp[(3) - (3)].sql_string),NULL);
 	}
     break;
 
@@ -24464,7 +24464,7 @@ sprintf((yyval.str),"%s,0",(yyvsp[(2) - (3)].str));
   case 2124:
 #line 11223 "fgl.infx.yacc"
     {
-chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",(yyval.str));
+chk4var=0;
 if (A4GL_isyes(acl_getenv("INCLINES")))
 A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 	A4GL_prchkerr(lastlineno,infilename);
@@ -24475,7 +24475,7 @@ A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstr
   case 2125:
 #line 11230 "fgl.infx.yacc"
     {
-A4GL_lex_printcomment("/* [COMM:%s] */\n",(yyvsp[(2) - (2)].str));chk4var=0;
+chk4var=0;
 if (A4GL_isyes(acl_getenv("INCLINES")))
 A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
 /* if (A4GL_aubit_strcasecmp($<str>$,"whenever")!=0)  */
