@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.124 2007-07-13 12:04:38 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.125 2007-07-24 12:47:46 mikeaubury Exp $
 #
 */
 
@@ -3927,4 +3927,12 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
  
 
 void A4GL_free_select_stmt(struct s_select *s) {
+int a;
+if (s->table_elements.ntables) {
+	for (a=0;a<s->table_elements.ntables;a++) {
+		if (s->table_elements.tables[a].tabname) free(s->table_elements.tables[a].tabname);
+		if (s->table_elements.tables[a].alias) free(s->table_elements.tables[a].alias);
+	}
+}
+free(s->table_elements.tables);
 }

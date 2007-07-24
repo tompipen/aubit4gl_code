@@ -39,7 +39,7 @@ ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET {
 
 op_insert_column_list: {
 
-			$<sql_string>$=make_sql_string_and_free("",NULL);
+			$<sql_string>$=make_sql_string_and_free(acl_strdup(""),NULL);
 			A4GL_4glc_push_gen(INSCOL,"*"); 
 	}
 	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {
@@ -86,8 +86,8 @@ insert_value_list_ss:
 		}
 	}
 	| insert_value_list_ss KW_COMMA insert_value_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,NULL);
 		A4GL_4glc_push_gen_expand(INSVAL,$<sql_string>3);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma, $<sql_string>3,NULL);
 	}
 ;
 

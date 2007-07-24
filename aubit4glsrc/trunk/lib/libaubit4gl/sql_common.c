@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.46 2007-07-13 08:58:38 mikeaubury Exp $
+# $Id: sql_common.c,v 1.47 2007-07-24 12:47:46 mikeaubury Exp $
 #
 */
 
@@ -959,8 +959,7 @@ A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t,
       tl->tables = 0;
     }
   tl->ntables++;
-  tl->tables =
-    acl_realloc (tl->tables, sizeof (struct s_table_list_element) * tl->ntables);
+  tl->tables = acl_realloc (tl->tables, sizeof (struct s_table_list_element) * tl->ntables);
   tl->tables[tl->ntables - 1].tabname = 0;
   tl->tables[tl->ntables - 1].alias = 0;
   if (t)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.59 2007-04-30 13:45:18 mikeaubury Exp $
+# $Id: util.c,v 1.60 2007-07-24 12:47:46 mikeaubury Exp $
 #
 */
 
@@ -734,6 +734,7 @@ A4GL_CV_print_exec_sql_bound (char *s)
     sql_string = 0;
   sql_string = acl_strdup (s);
   add_sql (sql_type, sql_string);
+free(s);
 }
 
 /* andrej 
@@ -1088,6 +1089,7 @@ char *
 A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
 				    char *module, int ln)
 {
+  static char *last_malloc=0;
   char *ptr;
   int cd;
   int st;
@@ -1100,6 +1102,11 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
   char *save_sql;
 
   int cache = A4GL_isyes(acl_getenv("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
+
+   if (last_malloc) {
+		free(last_malloc);
+		last_malloc=0;
+	}
   if (cache)
   {
       if (init_conv_list) {
@@ -1133,7 +1140,10 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
 A4GL_set_malloc_context(sql);
   ptr = A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql, 0);
 A4GL_clr_malloc_context();
+
+
   ptr=strdup(ptr);
+
 A4GL_free_malloc_context(sql);
 
   if (ptr != sql)
@@ -1160,9 +1170,11 @@ A4GL_free_malloc_context(sql);
       conv_list[use_this_time].last_usage=cnt++;
       conv_list[use_this_time].origsql=save_sql;
       conv_list[use_this_time].newsql=strdup(ptr);
-  }
+  } else {
+		free(save_sql);
+	}
 
-
+  last_malloc=ptr;
   //a4gl_sqlca.sqlcode=cd;
   //a4gl_status=st;
 
@@ -1246,6 +1258,7 @@ A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s)
 	  else
 	    {
 	      sprintf (buff, "%s", s);
+	      //free (s);
 	    }
 	  return acl_strdup (buff);
 	}

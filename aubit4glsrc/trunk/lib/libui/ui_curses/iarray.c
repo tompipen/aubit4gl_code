@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.128 2007-07-17 07:06:46 mikeaubury Exp $
+# $Id: iarray.c,v 1.129 2007-07-24 12:47:46 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.128 2007-07-17 07:06:46 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.129 2007-07-24 12:47:46 mikeaubury Exp $";
 #endif
 
 /**
@@ -1035,7 +1035,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 	{
 	  FIELD *f;
   		struct s_movement ptr;
-		int x_sz;
+		//int x_sz;
 
       		ptr.scr_line = arr->scr_line;
       		ptr.arr_line = arr->arr_line;

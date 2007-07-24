@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.52 2007-04-06 09:57:59 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.53 2007-07-24 12:47:46 mikeaubury Exp $
 #
 */
 
@@ -532,8 +532,10 @@ char * fix_delete_update_columns (char *table, struct s_select_list_item *i)
   select->where_clause = i;
   select->first = A4GLSQLPARSE_new_tablename (table, 0);
   s = make_select_stmt (table, select);
+
+A4GL_free_select_stmt(select);
   s = strstr (s, "WHERE ") + 6;
-  return s;
+  return strdup(s);
 }
 
 
@@ -649,18 +651,18 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 
   if (p->sign == '-')
     {
-      rval = make_sql_string_and_free ("-", rval, NULL);
+      rval = make_sql_string_and_free (acl_strdup_With_Context("-"), rval, NULL);
     }
 
   if (p->alias)
     {
       if (A4GLSQLCV_check_runtime_requirement ("COLUMN_ALIAS_AS"))
 	{
-	  rval = make_sql_string_and_free (rval, " AS ", p->alias, NULL);
+	  rval = make_sql_string_and_free (rval, acl_strdup_With_Context(" AS "), acl_strdup_With_Context(p->alias), NULL);
 	}
       else
 	{
-	  rval = make_sql_string_and_free (rval, " ", p->alias, NULL);
+	  rval = make_sql_string_and_free (rval, acl_strdup_With_Context(" "), acl_strdup_With_Context(p->alias), NULL);
 	}
     }
   return rval;
@@ -870,11 +872,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	char *p2;
 	p1 = get_select_list_item (select, p->u_data.regex.val);
 	p2 = get_select_list_item (select, p->u_data.regex.regex);
-	return make_sql_string_and_free (p1,
-					 A4GLSQLCV_matches_string ("", p2,
+	return make_sql_string_and_free (acl_strdup_With_Context(p1),
+					 acl_strdup_With_Context(A4GLSQLCV_matches_string ("", p2,
 								   p->u_data.
 								   regex.
-								   escape),
+								   escape)),
 					 NULL);
       }
 
@@ -884,12 +886,12 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	char *p2;
 	p1 = get_select_list_item (select, p->u_data.regex.val);
 	p2 = get_select_list_item (select, p->u_data.regex.regex);
-	return make_sql_string_and_free (p1,
-					 A4GLSQLCV_matches_string (" NOT ",
+	return make_sql_string_and_free (acl_strdup_With_Context(p1),
+					 acl_strdup_With_Context(A4GLSQLCV_matches_string (" NOT ",
 								   p2,
 								   p->u_data.
 								   regex.
-								   escape),
+								   escape)),
 					 NULL);
       }
     case E_SLI_REGEX_LIKE:
@@ -900,28 +902,28 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p2 = get_select_list_item (select, p->u_data.regex.regex);
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
-	    return make_sql_string_and_free (p1, " LIKE ", p2,
-					     p->u_data.regex.escape, NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context(p1), strdup(" LIKE "), strdup(p2),
+					     acl_strdup_With_Context(p->u_data.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " LIKE ", p2, NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context(p1), acl_strdup_With_Context(" LIKE "), acl_strdup_With_Context(p2), NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_LIKE:
       {
 	char *p1;
 	char *p2;
-	p1 = get_select_list_item (select, p->u_data.regex.val);
-	p2 = get_select_list_item (select, p->u_data.regex.regex);
+	p1 = acl_strdup_With_Context(get_select_list_item (select, p->u_data.regex.val));
+	p2 = acl_strdup_With_Context(get_select_list_item (select, p->u_data.regex.regex));
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
-	    return make_sql_string_and_free (p1, " NOT LIKE ", p2,
-					     p->u_data.regex.escape, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT LIKE "), p2,
+					     acl_strdup_With_Context(p->u_data.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " NOT LIKE ", p2, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT LIKE "), p2, NULL);
 	  }
       }
     case E_SLI_REGEX_ILIKE:
@@ -932,12 +934,12 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p2 = get_select_list_item (select, p->u_data.regex.regex);
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
-	    return make_sql_string_and_free (p1, " ILIKE ", p2,
-					     p->u_data.regex.escape, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" ILIKE "), p2,
+					     acl_strdup_With_Context(p->u_data.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " ILIKE ", p2, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" ILIKE "), p2, NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_ILIKE:
@@ -948,12 +950,12 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p2 = get_select_list_item (select, p->u_data.regex.regex);
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
-	    return make_sql_string_and_free (p1, " NOT ILIKE ", p2,
-					     p->u_data.regex.escape, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT ILIKE "), p2,
+					     acl_strdup_With_Context(p->u_data.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, " NOT ILIKE ", p2, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT ILIKE "), p2, NULL);
 	  }
       }
 
@@ -1110,35 +1112,35 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       }
     case E_SLI_BUILTIN_AGG_AVG:
       return make_sql_string_and_free (acl_strdup_With_Context ("AVG("),
-				       p->u_data.agg_expr.aud,
+				       acl_strdup_With_Context(p->u_data.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
 				       acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_MAX:
       return make_sql_string_and_free (acl_strdup_With_Context ("MAX("),
-				       p->u_data.agg_expr.aud,
+				       acl_strdup_With_Context(p->u_data.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
 				       acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_MIN:
       return make_sql_string_and_free (acl_strdup_With_Context ("MIN("),
-				       p->u_data.agg_expr.aud,
+				       acl_strdup_With_Context(p->u_data.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
 				       acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_SUM:
       return make_sql_string_and_free (acl_strdup_With_Context ("SUM("),
-				       p->u_data.agg_expr.aud,
+				       acl_strdup_With_Context(p->u_data.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
 				       acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_COUNT:
       return make_sql_string_and_free (acl_strdup_With_Context ("COUNT("),
-				       p->u_data.agg_expr.aud,
+				       acl_strdup_With_Context(p->u_data.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->u_data.
 							     agg_expr.expr),
@@ -1193,10 +1195,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_EXTEND:
       return make_sql_string_and_free (acl_strdup_With_Context ("EXTEND ("),
-				       get_select_list_item (select,
-							     p->u_data.extend.
-							     expr),
-				       acl_strdup_With_Context (","), p->u_data.extend.from,
+				       get_select_list_item (select, p->u_data.extend.  expr),
+				       acl_strdup_With_Context (","), 
+					acl_strdup_With_Context(p->u_data.extend.from),
 				       acl_strdup_With_Context (" TO "),
 				       acl_strdup_With_Context (p->u_data.extend.to), kw_cb,
 				       NULL);
@@ -2343,7 +2344,7 @@ A4GL_debug("First=%s",first);
 	  A4GL_debug ("FREE %p (%s)\n", next, next);
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
-		    PRINTF("Freeing : %s",next);
+		    //PRINTF("Freeing : %s",next);
 	      acl_free_With_Context (next);
 	    }
 	}

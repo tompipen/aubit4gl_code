@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.112 2007-07-20 10:19:51 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.113 2007-07-24 12:47:46 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.112 2007-07-20 10:19:51 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.113 2007-07-24 12:47:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1948,7 +1948,11 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
               if (last_sio!=sio) {
                       // May need to do a full redraw..
 			
-                      if (sio && last_sio) A4GL_idraw_arr_all(s);
+                      if (sio && last_sio) {
+				if (((struct s_inp_arr *)sio)->srec==((struct s_inp_arr *)last_sio)->srec) {
+					A4GL_idraw_arr_all(s);
+				}
+			}
                       last_sio=sio;
               }
 
