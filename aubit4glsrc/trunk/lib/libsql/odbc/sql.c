@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.196 2007-07-23 15:45:27 gyver309 Exp $
+# $Id: sql.c,v 1.197 2007-07-24 14:13:12 mikeaubury Exp $
 #
 */
 
@@ -431,7 +431,7 @@ int A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt);
 void A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
                                 HSTMT hstmt);
 void A4GL_add_cursor (struct s_cid *cid, char *cname);
-Bool ODBC_exec_stmt (SQLHSTMT *hstmt);
+Bool ODBC_exec_stmt (SQLHSTMT *hstmt, struct s_sid *sid);
 Bool ODBC_exec_select (SQLHSTMT hstmt);
 Bool ODBC_exec_sql (SQLCHAR * sqlstr);
 int ODBC_disconnect (void);
@@ -1388,7 +1388,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void
     prettyprint_sql (sid->select, sid->ibind, sid->ni, "2");
 
     A4GL_trc ("Calling ODBC_exec_stmt()");
-    retval = ODBC_exec_stmt (&sid->hstmt) ? 1 : 0;
+    retval = ODBC_exec_stmt (&sid->hstmt,sid) ? 1 : 0;
 
     //  if (retval && singleton) // why not to free sid if failed?
     if (singleton)
@@ -2534,7 +2534,7 @@ Bool ODBC_exec_sql (SQLCHAR * sqlstr)
  *   - 1 : The statement was correctly executed.
  *   - 0 : There was an error.
  */
-Bool ODBC_exec_stmt (SQLHSTMT *ptr_hstmt)
+Bool ODBC_exec_stmt (SQLHSTMT *ptr_hstmt,struct s_sid *sid)
 {
     SQLRETURN rc1;
     SQLRETURN rc2;
@@ -2565,8 +2565,20 @@ Bool ODBC_exec_stmt (SQLHSTMT *ptr_hstmt)
             A4GLSQLLIB_A4GLSQL_commit_rollback (-1);
         }
     }
-
-    rc1 = SQLExecute ((SQLHSTMT) *ptr_hstmt);	// Reformatted in caller
+    if (strncmp(sid->select,"CREATE TABLE #",14)==0 && A4GL_isyes(acl_getenv("SQLSERVERTEMPS"))) {
+		HSTMT hstmt=0;
+	
+        	if (A4GL_new_hstmt ((SQLHSTMT *) & hstmt)) {
+			A4GL_debug("FIXUP FOR http://support.microsoft.com/kb/198428");
+    			rc1 = SQLExecDirect (hstmt, sid->select, SQL_NTS);	// Reformatted in caller
+			A4GL_free_hstmt(&hstmt);
+		} else {
+			// Fall back...
+    			rc1 = SQLExecute ((SQLHSTMT) *ptr_hstmt);	// Reformatted in caller
+		}
+	} else {
+    		rc1 = SQLExecute ((SQLHSTMT) *ptr_hstmt);	// Reformatted in caller
+	}
     chk_rc (rc1, *ptr_hstmt, "SQLExecute");
 
     if (sql_ok(rc1))
@@ -4964,7 +4976,7 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
     sid = cid->statement;
     A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) sid->hstmt);
     prettyprint_sql (sid->select, ibind, ni, "8");
-    ODBC_exec_stmt ((SQLHSTMT*)&(sid->hstmt));
+    ODBC_exec_stmt ((SQLHSTMT*)&(sid->hstmt), sid);
 
 }
 
