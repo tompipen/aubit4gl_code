@@ -4,6 +4,7 @@ static void *last_orig=0;
 static struct mem_extra *last_ptr=0;
 static void *A4GL_set_associated_mem(void *orig,void *newbytes) ;
 void A4GL_rm_associated_mem(void *orig,void *newbytes) ;
+void A4GL_mark_as_freed_associated_mem(void *orig,void *newbytes) ;
 
 struct mem_extra {
 	int nmemalloc;
@@ -123,6 +124,11 @@ acl_free_full (void *ptr, char *f, long line)
 		//A4GL_rm_associated_mem(A4GL_get_malloc_context(), ptr); 
 	//}
   //A4GL_debug ("Free %p %s %d", ptr,f,line);
+  
+  if (has_malloc_context()) { 
+	 	A4GL_rm_associated_mem(A4GL_get_malloc_context(),ptr) ;
+  }
+
   free (ptr);
 }
 
@@ -132,6 +138,7 @@ void
 acl_free_With_Context (void *ptr)
 {
   if (has_malloc_context()) { 
+	
 		A4GL_rm_associated_mem(A4GL_get_malloc_context(), ptr); 
   }
   free (ptr);
@@ -288,7 +295,9 @@ void A4GL_free_associated_mem(void *orig) {
 	for (a=0;a<ptr->nmemalloc;a++) {
 		if (ptr->ptr[a]) {
 		A4GL_free_associated_mem(ptr->ptr[a]);	// free any children...
-		if (ptr->ptr[a]) free(ptr->ptr[a]); 			// free the allocated memory..
+		if (ptr->ptr[a]) {
+			free(ptr->ptr[a]); 			// free the allocated memory..
+		}
 		}
 	}
 	ptr->nmemalloc=0;
