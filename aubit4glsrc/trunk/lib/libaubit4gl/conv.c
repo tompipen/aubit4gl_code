@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.141 2007-06-13 17:14:50 mikeaubury Exp $
+# $Id: conv.c,v 1.142 2007-07-26 20:58:40 mikeaubury Exp $
 #
 */
 
@@ -2846,6 +2846,11 @@ char buff[256];
     {
       //char*ptr=0;*ptr=0;
       // we don't know how many decimals are required, 4 should be ok
+      //
+      if (size==0) {
+		A4GL_debug("%d\n",dtype1);
+		size=32*256+16;
+      }
 	A4GL_debug("DTYPE_DECIMAL fix in conv.c...");
       size += 8;
       if (size > 32)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.137 2007-07-24 12:47:47 mikeaubury Exp $
+# $Id: resource.c,v 1.138 2007-07-26 20:58:40 mikeaubury Exp $
 #
 */
 
@@ -191,6 +191,7 @@ struct str_resource builtin_resource[] = {
   {"BEEPONERROR","Y"},
   {"HELPTEXT", "Help"},
   {"USE_INDICATOR", "Y"},
+  {"TRIMWORDWRAP", "Y"},
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
   {"FIELD_ERROR_MSG", " Error in field "},

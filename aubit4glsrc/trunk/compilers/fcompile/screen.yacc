@@ -890,6 +890,7 @@ KW_CHAR {
 		int i;
 		i=atoi($<str>2);
 		strcpy($<str>$,"5");
+		/*
 		if (i==0) {  // No scale specified...
 			if (A4GL_isyes(acl_getenv("UNSCALEDDECIMALTOFLOAT"))) {
 				strcpy($<str>$,"3");
@@ -898,6 +899,7 @@ KW_CHAR {
 				i= (16<<8) + 2; 
 			}
 		}
+		*/
 		dtype_size=i;
 } 
 | MONEY opt_dec_ext {
