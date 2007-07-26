@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.174 2007-07-20 14:08:02 mikeaubury Exp $
+# $Id: ioform.c,v 1.175 2007-07-26 12:04:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.174 2007-07-20 14:08:02 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.175 2007-07-26 12:04:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -148,7 +148,7 @@ int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
 int A4GL_wcswidth(char *mbs);		/* utf8 */
 
-static int local_chk_field(struct s_form_dets *form,FIELD *f) ;
+static int local_chk_field(struct s_form_dets *form,FIELD *f,int allfields) ;
 
 /*
 =====================================================================
@@ -893,7 +893,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
       if (form->currentfield != 0)
 	{
 		int rval;
-		rval=local_chk_field(form, form->currentfield);
+		rval=local_chk_field(form, form->currentfield,0);
 		if (rval==-4) {
 				  set_current_field (mform, form->currentfield);
 		}
@@ -912,7 +912,7 @@ int a;
 if  (sio->mode != MODE_CONSTRUCT) { 
 	// Might need to do something similar for construct ? 
           for (a=0;a<=sio->nfields;a++)  {
-                if (local_chk_field(sio->currform, sio->field_list[a])==-4) {
+                if (local_chk_field(sio->currform, sio->field_list[a],1)==-4) {
 				return a;
                 }
           }
@@ -922,13 +922,27 @@ return -1;
 }
 
 
-int local_chk_field(struct s_form_dets *form, FIELD *f) {
+int local_chk_field(struct s_form_dets *form, FIELD *f,int allfields) {
   char buff[8000] = "";
   char buff2[8000] = "";
   char buff3[8000] = "";
   int pprval;
   int x, y;
   struct struct_scr_field *fprop=0;
+int chk_required;
+
+
+// We either check REQUIREDs after the FIELD, or AFTER INPUT...
+chk_required=0;
+if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
+	if (allfields==0) chk_required=1; // We'll check after each field...
+	else chk_required=0;
+} else {
+	if (allfields==0) chk_required=0; // We'll check after the input
+	else chk_required=1;
+}
+
+
 
 	  if (field_userptr (f) != 0)
 	    {
@@ -991,7 +1005,7 @@ int local_chk_field(struct s_form_dets *form, FIELD *f) {
 		      if (strlen (buff2) == 0)
 			{
 
-			  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
+			  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY)&& chk_required)
 			    {
 			      int allow_it_anyway = 0;
 
@@ -1137,7 +1151,7 @@ int local_chk_field(struct s_form_dets *form, FIELD *f) {
 		    }
 
 
-		  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED)  && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
+		  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED)  && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY) && chk_required)
 		    {
 		      char buff[8024];
 		      strcpy (buff, field_buffer (f, 0));
@@ -4056,7 +4070,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 				A4GL_debug("changed=%d\n", chged);
 				//printf("changed=%d\n", chged);fflush(stdout);
 			
-			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
+			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY) && A4GL_input_required_handling()==REQUIRED_TYPE_FIELD)
 			  {
 			    int allow_it_anyway = 0;
 
@@ -4151,7 +4165,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 		strcpy (buff, field_buffer (sio->currform->currentfield, 0));
 		if (strlen (buff) == 0)
 		  {
-		    if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
+		    if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY) && A4GL_input_required_handling()==REQUIRED_TYPE_FIELD)
 		      {
 			int allow_it_anyway = 0;
 

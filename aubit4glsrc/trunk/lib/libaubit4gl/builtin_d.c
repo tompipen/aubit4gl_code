@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.83 2007-07-05 07:07:22 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.84 2007-07-26 12:04:27 mikeaubury Exp $
 #
 */
 
@@ -232,6 +232,10 @@ A4GL_push_float (float p)
   A4GL_push_param (ptr, DTYPE_SMFLOAT + DTYPE_MALLOCED);
 }
 
+void
+A4GL_push_dec_dec (fgldecimal *p, int ismoney,int size) {
+	A4GL_push_dec ((char *)p,  ismoney,size);
+}
 /**
  * Called at run-time by the generated C code.
  * Its used to push a decimal value to the parameters stack.
@@ -294,10 +298,31 @@ A4GL_push_dec (char *p, int ismoney,int size)
     }
 }
 
+void A4GL_push_decimal_str(char *p) {
+	fgldecimal d;
+	
+	A4GL_init_dec(&d,32,16);
+	A4GL_str_to_dec(p,&d);
+  	A4GL_push_dec_dec(&d,0,16);
+}
 
 void A4GL_push_double_str(char *p) {
   double *ptr;
   char *cp;
+  char *pdot;
+  pdot=strchr(p,'.');
+  if (pdot==0) {
+  	pdot=strchr(p,',');
+  }
+  if (pdot) {
+	 int s;
+		s=strlen(p)-(pdot-p);
+	if (s>5) {
+		A4GL_push_decimal_str(p); // push a decimal instead..
+		return;
+	}
+		
+  }
   ptr = (double *) acl_malloc (sizeof (double), "push_double");
   cp = A4GL_decstr_convert(p, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
   *ptr = atof(cp);

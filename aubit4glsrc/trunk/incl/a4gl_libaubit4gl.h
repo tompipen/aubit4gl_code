@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.282 2007-07-23 13:21:35 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.283 2007-07-26 12:04:27 mikeaubury Exp $
 #
 */
 
@@ -1238,6 +1238,7 @@ enum cmd_types {
   void A4GL_push_date (long p);
   void A4GL_push_float (float p);
   void A4GL_push_dec (char *p, int ismoney,int size);
+  void A4GL_push_dec_dec (fgldecimal *p, int ismoney,int size);
   void A4GL_push_double (double p);
   void A4GL_push_chars (char *p, int dtype, int size);
   void A4GL_push_char (char *p);
@@ -1790,6 +1791,11 @@ FORMCONTROL_ENABLE_FIELD,
 FORMCONTROL_DISABLE_FIELD,
 FORMCONTROL_HIDE_FIELD
 };
+
+#define REQUIRED_TYPE_UNSET -1
+#define REQUIRED_TYPE_FIELD 0
+#define REQUIRED_TYPE_INPUT 1
+int A4GL_input_required_handling(void) ;
 
   struct s_formcontrol
   {

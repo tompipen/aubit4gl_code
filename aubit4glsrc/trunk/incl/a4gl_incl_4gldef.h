@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.110 2007-06-14 13:24:56 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.111 2007-07-26 12:04:27 mikeaubury Exp $
 */
 
 /**
@@ -364,6 +364,23 @@ A4GLSQL_init_connection (char *dbName);
   int aclfgl_mdy (int nargs);
   char *A4GL_char_pop (void);
 
+  int a4gl_decadd( fgldecimal *d1, fgldecimal *d2, fgldecimal *sum)  ;
+  int a4gl_deccmp(fgldecimal *d1, fgldecimal *d2)  ;
+  void a4gl_deccopy(fgldecimal *src, fgldecimal *target)  ;
+  int a4gl_deccvasc(char *s, int n, fgldecimal *d)   ;
+  int a4gl_deccvdbl(double d, fgldecimal *d1)   ;
+  int a4gl_deccvflt(float d, fgldecimal *d1)   ;
+  int a4gl_deccvint(int i, fgldecimal *d)   ;
+  int a4gl_deccvlong(long l, fgldecimal *d)  ;
+  int a4gl_decdiv( fgldecimal *d1, fgldecimal *d2, fgldecimal *res)  ;
+  int a4gl_decmul(fgldecimal *d1, fgldecimal *d2, fgldecimal *res)   ;
+  void a4gl_decround(fgldecimal *d1, int n)  ;
+  int a4gl_decsub(fgldecimal *d1, fgldecimal *d2, fgldecimal *res)  ;
+  int a4gl_dectoasc(fgldecimal *d, char *s, int l, int right)   ;
+  int a4gl_dectodbl(fgldecimal *d1, double *d)  ;
+  int a4gl_dectoint(fgldecimal *d1, int *ival)   ;
+  int a4gl_dectolong(fgldecimal *d1, long *lval)  ;
+  void a4gl_dectrunc(fgldecimal *d1,int n)  ;
 
   /* ======================= From buildtin_d.c ==================== */
 
@@ -465,6 +482,7 @@ int A4GL_check_version(char *module, char *version, int build );
 
   int aclfgl_load_datatype (int nargs);
 void A4GL_set_report_dim(int with_page_length,int with_left_margin,int with_right_margin,int with_top_margin,int with_bottom_margin,char *with_top_of_page);
+
 int A4GL_set_report_dim_int(char *type,int value);
 
 struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
@@ -485,6 +503,7 @@ void A4GL_free_report (struct rep_structure *rep);
 int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb);
 void A4GL_pop_report_section (struct rep_structure *rep, int rb);
 void A4GL_pdf_pop_report_section (struct pdf_rep_structure *rep, int rb) ;
+int A4GL_always_output_report(struct rep_structure *rep) ;
 
 int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) ;
 #  if __WORDSIZE == 64

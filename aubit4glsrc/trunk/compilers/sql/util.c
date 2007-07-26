@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.60 2007-07-24 12:47:46 mikeaubury Exp $
+# $Id: util.c,v 1.61 2007-07-26 12:04:26 mikeaubury Exp $
 #
 */
 
@@ -157,7 +157,7 @@ make_sql_string_and_free (char *first, ...)
       //A4GL_debug("FREE %p (%s)\n",first,first);
       if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	{
-	  free (first);
+	  acl_free (first);
 	}
       first = 0;
     }
@@ -188,7 +188,7 @@ make_sql_string_and_free (char *first, ...)
 	  //A4GL_debug("FREE %p (%s)\n",next,next);
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
-	      free (next);
+	      acl_free (next);
 	    }
 	}
     }

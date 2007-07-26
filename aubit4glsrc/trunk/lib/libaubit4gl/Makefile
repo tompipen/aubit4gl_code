@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.36 2007-06-20 07:04:58 mikeaubury Exp $
+# $Id: Makefile,v 1.37 2007-07-26 12:04:27 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -55,7 +55,10 @@ COMMONSRC= \
 	builtin.c builtin_d.c \
 	calldll.c mem.c assert.c fglextra.c net.c int8.c conv.c compat.c corba_server_util.c \
 	data_if.c common_ui.c dates.c dir.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
-	err.c error.c errfile.c sqlexpr.c expr.c  extfile.c eval_field.c \
+	err.c error.c errfile.c sqlexpr.c expr.c  extfile.c eval_field.c  \
+	mapm/mapmutil.c mapm/mapmutl1.c mapm/mapmutl2.c mapm/mapm_add.c mapm/mapm_div.c mapm/mapm_mul.c \
+	mapm/mapm_rnd.c mapm/mapmcnst.c mapm/mapmstck.c mapm/mapm_fft.c mapm/mapm_set.c mapm/mapm_fpf.c mapm/mapmfmul.c \
+	mapm/mapmistr.c mapm/mapm_flr.c mapm/mapm_rcp.c mapm/mapmgues.c \
 	fglwrap.c funcs_d.c function_call_stack.c file.c \
 	gtime.c gen_stack.c gui_io.c gui.c \
 	helper.c \
@@ -232,6 +235,12 @@ ci: $(CMODS)
 
 curl.o: curl.c
 	${CC} ${CFLAGS} ${LIBCURLCPPFLAGS}  -c -o $@ $^
+
+decimal.o: decimal.c
+	${CC} -Imapm -DUSE_MAPM ${CFLAGS} -c -o $@ $^
+
+mapm.a: mapm.c
+	${CC} -Imapm -DUSE_MAPM ${CFLAGS} -c -o $@ $^
 
 project.o: ${LIBROOT}/generated/${CMODS_PROJECT}
 	${CC} ${CFLAGS} -c -o $@ $^

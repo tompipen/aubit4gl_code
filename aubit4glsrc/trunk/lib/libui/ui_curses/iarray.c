@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.129 2007-07-24 12:47:46 mikeaubury Exp $
+# $Id: iarray.c,v 1.130 2007-07-26 12:04:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.129 2007-07-24 12:47:46 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.130 2007-07-26 12:04:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -61,6 +61,7 @@ void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current (void *form);
 int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int init, void *vevt);
 
+int A4GL_double_chk_arr_line (struct s_inp_arr *s, int ln, char why);
 
 #define CONTROL_STACK_LENGTH 10
 
@@ -787,9 +788,12 @@ process_key_press (struct s_inp_arr *arr, int a)
   int at_first = 0;
   int at_last = 0;
   int act_as;
+	  struct struct_scr_field *fprop;
 
   form = arr->currform;
   mform = form->form;
+
+  fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
 
 
   if (mform->curcol == 0)
@@ -863,6 +867,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
       A4GL_int_form_driver (mform, REQ_DEL_PREV);
+		  fprop->flags |= 2;	// Set the field status flag
       break;
 
     case 18:
@@ -874,6 +879,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
         A4GL_int_form_driver (mform, REQ_DEL_CHAR);
+		  fprop->flags |= 2;	// Set the field status flag
       	break;
 
     case 4:			// Control - D
@@ -881,6 +887,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
       A4GL_int_form_driver (mform, REQ_CLR_EOF);
+		  fprop->flags |= 2;	// Set the field status flag
       break;
 
     case 1:			// Control - A
@@ -1886,7 +1893,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 	A4GL_debug("db5 - %d %d",scr_line - 1,attrib);
 
   next_field = arr->field_list[scr_line - 1][attrib];
-  A4GL_debug("db6 - nextfield = %p\n",next_field);
+  A4GL_debug("db6 - nextfield = %p scrline=%d attrib=%d \n",next_field, scr_line,attrib);
   f = (struct struct_scr_field *) (field_userptr (next_field));
 
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)
@@ -2146,10 +2153,22 @@ if (arr->fcntrl[a].state==99) {
 	      arr->curr_line_is_new = 0;
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, arr->currentfield, 0, 0);
 	    }
-	  new_state = 50;
+	  new_state = 60;
 	  rval = -1;
 	}
 
+      if (arr->fcntrl[a].state == 60) {
+		int a;
+	  	new_state = 50;
+		for (a=0;a<arr->no_arr;a++) {
+			if (A4GL_double_chk_arr_line(arr,a, 'Q')==0) {
+	  			new_state = 0;
+				return -1;
+				break;
+			}
+		}
+	  	rval = -1;
+	}
 
       if (arr->fcntrl[a].state == 50)
 	{
@@ -2461,8 +2480,7 @@ if (arr->fcntrl[a].state==99) {
 	  new_state = 10;
 
 
-	  fprop =
-	    (struct struct_scr_field *) (field_userptr (arr->currentfield));
+	  fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
 	  A4GL_debug ("has_str_attrib - 1 field=%p fprop=%p",
 		      arr->currentfield, fprop);
 	A4GL_debug("FA_S_PICTURE");
@@ -3462,7 +3480,7 @@ if (ln<0) return 1;
 		}
 	    }
 
-	  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged)
+	  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged && A4GL_input_required_handling()==REQUIRED_TYPE_FIELD)
 	    {
 
 	      int allow_it_anyway = 0;
@@ -3493,6 +3511,96 @@ if (ln<0) return 1;
     }
   return 1;
 }
+
+
+int
+A4GL_double_chk_arr_line (struct s_inp_arr *s, int ln, char why)
+{
+// Lets just double check for any required fields...
+  struct struct_scr_field *fprop;
+  //int a;
+  int b;
+  int nv;
+  //int isblank = 1;
+  int is_all_blank = 0;
+
+  if (ln < 0)
+    return 1;
+A4GL_debug("A4GL_double_chk_arr_line ******************************************");
+  nv = s->nbind;
+  if (s->start_slice != -1 && s->end_slice != -1)
+    {
+      nv = s->end_slice - s->start_slice + 1;
+    }
+
+  for (b = 0; b < nv; b++)
+    {
+      FIELD *f;
+      int isnull;
+      char *ptr;
+      char *p;
+      f = s->field_list[0][b];
+      fprop = (struct struct_scr_field *) (field_userptr (f));
+
+      ptr = (char *) s->binding[b].ptr + (s->arr_elemsize * (ln));
+
+      isnull = A4GL_isnull (s->binding[b].dtype, ptr);
+
+      if ((s->binding[b].dtype & DTYPE_MASK) == DTYPE_CHAR
+	  || (s->binding[b].dtype & DTYPE_MASK) == DTYPE_VCHAR)
+	{
+	  char *buff;
+	  buff = strdup (ptr);
+	  A4GL_trim (buff);
+	  if (strlen (buff) == 0)
+	    isnull = 1;
+	}
+
+      if (isnull)
+	{
+	  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED)
+	      && A4GL_input_required_handling () == REQUIRED_TYPE_INPUT)
+	    {
+	      int allow_it_anyway = 0;
+	      // We'll still allow it - so long as there is null in the include list
+	      if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		{
+		  if (A4GL_check_field_for_include
+		      ("", A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
+		       fprop->datatype))
+		    {
+		      allow_it_anyway = 1;
+		    }
+		}
+
+	      if (!allow_it_anyway)
+		{
+		  // Well there wasn't - so it is required....
+		  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+			//s->last_scr_line=0;
+			s->last_scr_line=-1;
+			s->last_arr_line=-1;
+			A4GL_debug("Calling newMovement");
+		  s->currform->currentfield = 0;
+		  s->currentfield = 0;
+		  A4GL_init_control_stack (s, 0);
+	          if (ln+1<s->scr_dim) {
+		  	A4GL_newMovement (s, ln+1, ln+1, b, why);
+		  } else {
+		  	A4GL_newMovement (s, 1, ln+1, b, why);
+		  }
+		  return 0;
+		}
+
+	    }
+	}
+
+    }
+  return 1;
+}
+
+
+
 
 static char *get_field_with_no_picture(FIELD *f) {
 static char *p=0;

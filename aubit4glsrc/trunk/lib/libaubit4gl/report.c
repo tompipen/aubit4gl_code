@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.140 2007-06-20 12:30:31 mikeaubury Exp $
+# $Id: report.c,v 1.141 2007-07-26 12:04:27 mikeaubury Exp $
 #
 */
 
@@ -2374,4 +2374,16 @@ int A4GL_pdf_pdffunc(void* p,char* fname,int n)  {
 	return A4GL_pdf_pdffunc_internal(p,fname,n);
 }
 
+int A4GL_always_output_report(struct rep_structure *rep) {
+int force_print;
+	force_print=A4GL_isyes(acl_getenv("ALWAYSOUTPUTREPORT"));
+	if (!force_print) return 0;
+	if (rep->line_no!=0 || rep->col_no!=0 || rep->page_no!=0) {
+		return 0;
+	}
+	// Need to do something...
+	A4GL_push_int(1);
+	A4GL_aclfgli_skip_lines(rep);
+	return 1;
+}
 /* ============================= EOF ================================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.115 2007-06-13 17:14:51 mikeaubury Exp $
+# $Id: ops.c,v 1.116 2007-07-26 12:04:27 mikeaubury Exp $
 #
 */
 
@@ -188,6 +188,822 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
   free (ptr);
   A4GL_decstr_convert(buff_1, a4gl_convfmts.using_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   return buff_1;
+}
+
+
+static void A4GL_dec_dec_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2010);
+  A4GL_pop_var2(&a,5,0x2010);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+
+
+static void A4GL_dec_sm_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2000);
+  A4GL_pop_var2(&a,5,0x2010);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+
+
+static void A4GL_dec_int_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2000);
+  A4GL_pop_var2(&a,5,0x2010);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+static void A4GL_dec_float_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2005);
+  A4GL_pop_var2(&a,5,0x2010);
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+static void A4GL_dec_smfloat_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2005);
+  A4GL_pop_var2(&a,5,0x2010);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+static void A4GL_sm_dec_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2010);
+  A4GL_pop_var2(&a,5,0x2005);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+static void A4GL_int_dec_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2010);
+  A4GL_pop_var2(&a,5,0x2000);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+static void A4GL_float_dec_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2010);
+  A4GL_pop_var2(&a,5,0x2005);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+static void A4GL_smfloat_dec_ops(int op) {
+  fgldecimal a;
+  fgldecimal b;
+  fgldecimal dc;
+long l1;
+long l2;
+double dbl;
+int d;
+  //char *a1;
+  //char *a2;
+  A4GL_pop_var2(&b,5,0x2010);
+  A4GL_pop_var2(&a,5,0x2005);
+
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
+      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+    {
+	printf("Null\n");
+      A4GL_push_null (DTYPE_DECIMAL, 0);
+      return;
+    }
+  else
+    {
+      A4GL_debug ("OK - neither is null");
+    }
+  A4GL_init_dec(&dc,32,16);
+
+  switch (op)
+    {
+    case OP_ADD:
+	a4gl_decadd(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_SUB:
+	a4gl_decsub(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+    case OP_MULT:
+	a4gl_decmul(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+
+    case OP_DIV:
+	a4gl_decdiv(&a,&b,&dc);
+        A4GL_push_dec_dec (&dc,0,16);
+	return;
+
+    case OP_MOD:
+	a4gl_dectolong(&a,&l1);
+	a4gl_dectolong(&b,&l2);
+        A4GL_push_long (l1 % l2);
+      return;
+
+    case OP_POWER:
+	a4gl_dectolong(&b,&l2);
+      if (l2 == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (l2 == 1)
+	{
+	a4gl_dectodbl(&a,&dbl);
+	  A4GL_push_float (dbl);
+	  return;
+	}
+
+      a4gl_deccopy(&dc, &a);
+      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
+      A4GL_push_dec_dec (&dc,0,16);
+      return;
+
+    case OP_LESS_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+    case OP_GREATER_THAN:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+    case OP_LESS_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+    case OP_GREATER_THAN_EQ:
+	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+    case OP_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+    case OP_NOT_EQUAL:
+	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
 }
 
 
@@ -3721,6 +4537,17 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_DTIME, OP_MATH, A4GL_char_dt_ops);
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_CHAR, OP_MATH, A4GL_dt_char_ops);
 
+
+  A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_DECIMAL, OP_MATH, A4GL_dec_dec_ops);
+  A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_SMINT, OP_MATH, A4GL_dec_sm_ops);
+  A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_INT, OP_MATH, A4GL_dec_int_ops);
+  A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_FLOAT, OP_MATH, A4GL_dec_float_ops);
+  A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_SMFLOAT, OP_MATH, A4GL_dec_smfloat_ops);
+
+  A4GL_add_op_function (DTYPE_SMINT, DTYPE_DECIMAL,  OP_MATH, A4GL_sm_dec_ops);
+  A4GL_add_op_function (DTYPE_INT, DTYPE_DECIMAL,  OP_MATH, A4GL_int_dec_ops);
+  A4GL_add_op_function (DTYPE_FLOAT, DTYPE_DECIMAL,  OP_MATH, A4GL_float_dec_ops);
+  A4GL_add_op_function (DTYPE_SMFLOAT, DTYPE_DECIMAL,  OP_MATH, A4GL_smfloat_dec_ops);
 
   A4GL_debug ("Finished adding default operations");
 

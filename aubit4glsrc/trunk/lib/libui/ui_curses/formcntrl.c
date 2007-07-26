@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.113 2007-07-24 12:47:46 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.114 2007-07-26 12:04:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.113 2007-07-24 12:47:46 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.114 2007-07-26 12:04:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -944,7 +944,6 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		  if (blank)
 		    strcpy (buff, "");
 		}
-
 	if (fprop->flags) {
 
 	      A4GL_trim (buff);
@@ -1530,6 +1529,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
+	      fprop->flags |= 2;	// Set the field status flag
 	}
       else
 	{			// Just like A4GLKEY_LEFT.....
@@ -1541,6 +1541,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_DEL_CHAR);
+	      fprop->flags |= 2;	// Set the field status flag
 	}
       else
 	{
@@ -1551,7 +1552,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
     case A4GLKEY_UP:
 	if (isWordWrap) {
 		int cHeight;
-		int curPos;
+		//int curPos;
 		int r;
 	  	cHeight = mform->currow;
 		r=mform->curcol;
@@ -1714,6 +1715,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_CLR_EOF);
+	      fprop->flags |= 2;	// Set the field status flag
 	}
       else
 	{
@@ -2014,4 +2016,22 @@ int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
 	A4GL_debug("OK");
 	A4GL_debug("A4GL_field_is_noentry returns 0");
 	return 0;
+}
+
+
+
+
+int A4GL_input_required_handling(void) {
+static int input_required_type=REQUIRED_TYPE_UNSET;
+
+if (input_required_type==REQUIRED_TYPE_UNSET) {
+	char *ptr;
+	input_required_type=REQUIRED_TYPE_FIELD;
+	ptr=acl_getenv("INPUTREQUIREDTYPE");
+	if (ptr==0) ptr="";
+	if (A4GL_aubit_strcasecmp(ptr,"FIELD")==0) {input_required_type=REQUIRED_TYPE_FIELD;} 
+	if (A4GL_aubit_strcasecmp(ptr,"INPUT")==0) {input_required_type=REQUIRED_TYPE_INPUT;} 
+}
+
+return input_required_type;
 }

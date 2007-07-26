@@ -155,9 +155,11 @@ void A4GL_rm_associated_mem(void *orig,void *newbytes) {
 		SPRINTF1(buff,"%p",orig);
 		if (A4GL_has_pointer(buff,MEMEXTRA)) {
 			ptr=A4GL_find_pointer(buff,MEMEXTRA);
-		} 
-		last_orig=orig;
-		last_ptr=ptr;
+			last_orig=orig;
+			last_ptr=ptr;
+		}  else {
+			ptr=0;
+		}
 	} else {
 		// ptr will be set to point to the last one already...
 		ptr=last_ptr;
@@ -211,7 +213,7 @@ void *A4GL_set_associated_mem(void *orig,void *newbytes) {
 		ptr=last_ptr;
 		// ptr will be set to point to the last one already...
 	}
-
+	A4GL_assertion(ptr==0,"No pointer set...");
 	ptr->nmemalloc++;
 	nelem=ptr->nmemalloc;
 	// ptr will point to our mem_extra area now..
