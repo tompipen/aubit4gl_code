@@ -887,8 +887,18 @@ KW_CHAR {
 	dtype_size=0;
 } 
 | KW_DECIMAL opt_dec_ext {
-	strcpy($<str>$,"5");
-	dtype_size=atoi($<str>2);
+		int i;
+		i=atoi($<str>2);
+		strcpy($<str>$,"5");
+		if (i==0) {  // No scale specified...
+			if (A4GL_isyes(acl_getenv("UNSCALEDDECIMALTOFLOAT"))) {
+				strcpy($<str>$,"3");
+				dtype_size=0;
+			} else {
+				i= (16<<8) + 2; 
+			}
+		}
+		dtype_size=i;
 } 
 | MONEY opt_dec_ext {
 	strcpy($<str>$,"8");
@@ -962,7 +972,9 @@ CHAR_VALUE   {
 
 ;
 
-opt_dec_ext : {sprintf($<str>$,"%d",(16<<8) + 2);}
+opt_dec_ext : {
+			sprintf($<str>$,"0",(16<<8) + 2);
+		}
 	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",((atoi($<str>2)+2)<<8)+2);}
 	| OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",(atoi($<str>2)<<8)+atoi($<str>4));}
 ;
