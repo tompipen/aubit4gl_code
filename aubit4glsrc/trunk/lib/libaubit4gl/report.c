@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.141 2007-07-26 12:04:27 mikeaubury Exp $
+# $Id: report.c,v 1.142 2007-07-26 12:40:34 mikeaubury Exp $
 #
 */
 
@@ -768,6 +768,9 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	}
 	s=A4GL_report_char_pop();
 
+	// Informix4GL seems to automatically clip any wordwrap fields - so lets 
+	// do the same...
+	A4GL_trim(s);
 
 	ptr=s;
 	if (init_col>right_margin) {
