@@ -744,7 +744,7 @@ for a in $FLAGS; do
 		#export A4GL_SQLTYPE=esqlPG
 		#export A4GL_SQLTYPE=c_ecpg
 		#export A4GL_SQLTYPE=pgodbc
-		export A4GL_SQLTYPE=pg
+		export A4GL_SQLTYPE=pg8
 		# This "cascade" drops views when the tables they are based on are dropped
 		export A4GL_USE_CASCADE=Y
 		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then

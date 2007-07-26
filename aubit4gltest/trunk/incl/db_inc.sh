@@ -843,7 +843,7 @@ function check_postgresql () {
 		#A4GL_TARGETDIALECT="POSTGRES8"			74 %
 		#A4GL_TARGETDIALECT="POSTGRESSQL"		37 %
 		#A4GL_TARGETDIALECT="POSTGRES"	 		76 %	
-		export A4GL_TARGETDIALECT="POSTGRES"
+		export A4GL_TARGETDIALECT="POSTGRES8"
 		export A4GL_ESQL_UNLOAD=NO
 	elif test "$PG_TYPE" = "8_ODBC"; then
 		export A4GL_TARGETDIALECT="POSTGRESSQL"
@@ -2001,11 +2001,14 @@ function check_odbc() {
 			A4GL_TARGETDIALECT="MYSQL"
 			;;
 		
-		PG-IFX-74 | PG-74 | PG-80) 
+		PG-IFX-74 | PG-74 ) 
 			# INFORMIX-POSTGRES8.cnv   - for PostgreSQL V8 using ecpg 
 			# INFORMIX-POSTGRES.cnv    - for PostgreSQL V7.4 (with IFX patch) using ecpg
 			# INFORMIX-POSTGRESSQL.cnv - for PostgreSQL V7.4 or 8 over ODBC
 			A4GL_TARGETDIALECT="POSTGRESSQL"
+			;;
+		PG-80) 
+			A4GL_TARGETDIALECT="POSTGRESSQL8"
 			;;
 		DB2)
 			A4GL_TARGETDIALECT="DB2"

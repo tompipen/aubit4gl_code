@@ -16,14 +16,15 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
-#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
+run: compile ; ${DEFAULT_DUMP_DIFF}
+#${DEFAULT_RUN}
+#	${DEFAULT_DIFF} 
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Construct should preserve any upshift/downshift when moving to the extended field"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -43,7 +44,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_TEXT DEFINE_INTEGER DDL_TEXT CREATE_TEMP_TABLE LOCATE_FILE ANSI_INSERT LOCATE_MEM UI_DISPLAY_LINE_MODE DISPLAY UI_PROMPT IF "
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
