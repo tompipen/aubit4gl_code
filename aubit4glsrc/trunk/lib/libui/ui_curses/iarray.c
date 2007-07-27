@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.130 2007-07-26 12:04:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.131 2007-07-27 16:20:21 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.130 2007-07-26 12:04:29 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.131 2007-07-27 16:20:21 mikeaubury Exp $";
 #endif
 
 /**
@@ -231,6 +231,11 @@ insert_line_in_array (struct s_inp_arr *inpa)
   char *dest_ptr;
   struct struct_scr_field *prop;
 
+
+
+
+
+
   A4GL_debug ("insert_line_in_array no_arr=%d arr_size=%d arr_line=%d",
 	      inpa->no_arr, inpa->arr_size, inpa->arr_line);
 
@@ -246,6 +251,7 @@ insert_line_in_array (struct s_inp_arr *inpa)
       dest_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);
       memcpy (dest_ptr, src_ptr, inpa->arr_elemsize);
     }
+
   	  inpa->no_arr++;
   	  A4GL_set_arr_count (inpa->no_arr);
 
@@ -265,7 +271,7 @@ insert_line_in_array (struct s_inp_arr *inpa)
 
   }
   A4GL_idraw_arr_all (inpa);
-
+ 
 }
 
 static void
@@ -402,7 +408,7 @@ A4GL_idraw_arr_all (struct s_inp_arr *inpa)
   topline = inpa->arr_line - inpa->scr_line + 1;
 #ifdef DEBUG
   {
-    A4GL_debug ("Draw_arr_all");
+    A4GL_debug ("Draw_arr_all %d %d %d",  inpa->scr_line, inpa->arr_line , topline);
   }
 #endif
   for (a = 0; a < inpa->scr_dim; a++)
@@ -642,7 +648,7 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
   int reinpa;
   FORM *mform;
   struct struct_scr_field *fprop;
-
+  A4GL_debug(" arr line : arr_line=%d scr_line=%d", arr->arr_line, arr->scr_line);
   arr->scr_dim = arr->srec->dim;
   if (curr_arr_inp != arr || curr_arr_inp)
     {
@@ -1049,13 +1055,12 @@ process_key_press (struct s_inp_arr *arr, int a)
       		ptr.attrib_no = arr->curr_attrib; 
 
 	  	f = arr->field_list[arr->scr_line-1][arr->curr_attrib];
-		 A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, f, A4GL_memdup (&ptr, sizeof (struct s_movement)),0);
-
+		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, f, A4GL_memdup (&ptr, sizeof (struct s_movement)),0);
       		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
 	      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
 	      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
 	}
-      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, 0, 'I');
+      //A4GL_newMovement (arr, arr->scr_line, arr->arr_line, 0, 'I');
       break;
 
     case A4GLKEY_DEL:
