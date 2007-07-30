@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.116 2007-07-26 12:04:27 mikeaubury Exp $
+# $Id: ops.c,v 1.117 2007-07-30 14:03:23 mikeaubury Exp $
 #
 */
 
@@ -207,7 +207,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	////printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -299,7 +299,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -391,7 +391,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -480,7 +480,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -571,7 +571,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -661,7 +661,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -751,7 +751,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -841,7 +841,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -931,7 +931,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	printf("Null\n");
+	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
