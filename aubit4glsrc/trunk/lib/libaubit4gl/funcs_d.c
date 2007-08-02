@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.93 2007-08-02 15:14:11 fortiz Exp $
+# $Id: funcs_d.c,v 1.94 2007-08-02 15:29:40 fortiz Exp $
 #
 */
 
@@ -560,7 +560,7 @@ if (num<0) never_neg=0.0-num;
   num_dec++;
   A4GL_assertion (num_dec>1000000000,"Bad numeric");
 
-  /* MID 1042 /*
+  /* MID 1042 */
   if (num_dec==1000000000) {
     num = floor(num) + 1;
     num_dec=0;
