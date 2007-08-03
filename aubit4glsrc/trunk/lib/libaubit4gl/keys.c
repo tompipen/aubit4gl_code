@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.43 2007-05-02 18:34:06 mikeaubury Exp $
+# $Id: keys.c,v 1.44 2007-08-03 18:34:24 fortiz Exp $
 #
 */
 
@@ -220,14 +220,16 @@ A4GL_key_val2 (char *str_x)
 
   if (A4GL_isyes(acl_getenv("USEPAGEKEYS"))) {
   	if (mja_strcmp ("NEXT", str) == 0) 		return A4GLKEY_PGDN;
-  	if (mja_strcmp ("NEXTPAGE", str) == 0)  	return A4GLKEY_PGDN;
-  	if (mja_strcmp ("PREV", str) == 0)  		return A4GLKEY_PGUP;
-  	if (mja_strcmp ("PREVPAGE", str) == 0)  	return A4GLKEY_PGUP;
+  	if (mja_strcmp ("NEXTPAGE", str) == 0)  return A4GLKEY_PGDN;
+  	if (mja_strcmp ("PREV", str) == 0)  	return A4GLKEY_PGUP;
+  	if (mja_strcmp ("PREVIOUS", str) == 0)  return A4GLKEY_PGUP;
+  	if (mja_strcmp ("PREVPAGE", str) == 0)  return A4GLKEY_PGUP;
   } else {
   	if (mja_strcmp ("NEXT", str) == 0) 		return std_dbscr.nextkey;
-  	if (mja_strcmp ("NEXTPAGE", str) == 0) 		return std_dbscr.nextkey;
+  	if (mja_strcmp ("NEXTPAGE", str) == 0) 	return std_dbscr.nextkey;
   	if (mja_strcmp ("PREV", str) == 0) 		return std_dbscr.prevkey;
-  	if (mja_strcmp ("PREVPAGE", str) == 0) 		return std_dbscr.prevkey;
+  	if (mja_strcmp ("PREVIOUS", str) == 0) 	return std_dbscr.prevkey;
+  	if (mja_strcmp ("PREVPAGE", str) == 0) 	return std_dbscr.prevkey;
   }
 
 
