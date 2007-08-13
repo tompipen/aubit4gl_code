@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.10 2007-05-27 14:27:37 mikeaubury Exp $
+# $Id: pg8.c,v 1.11 2007-08-13 14:13:15 fortiz Exp $
 #*/
 
 
@@ -2602,7 +2602,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
     case FETCH_ABSOLUTE:
       if (fetch_when == -1)
 	{
-	  SPRINTF1 (buff, "FETCH LAST %s", cursor_name);
+	  SPRINTF1 (buff, "FETCH LAST FROM %s", cursor_name);
 	}
       else
 	{
