@@ -79,7 +79,7 @@ h=0.0;
 		return s;
 	}
 
-	memset(spaces,'.',sizeof(spaces));
+	memset(spaces,' ',sizeof(spaces));
 
 	p=strstr(barcodeline,"##BARCODE(");
 	if (p==0)  {
@@ -110,7 +110,10 @@ h=0.0;
 	len=p2-sstart;
 	A4GL_debug("Txt=%s x=%lf y=%lf w=%lf h=%lf\n",p, x,y,w,h);
 	A4GL_debug("barcodeline=%s\n",barcodeline);
+	p=strdup(p);
+        A4GL_trim(p);
 	barcode=strdup(generate_barcode(x,y,w,h,p));
+	free(p);
 	p2=strdup(p2);
 	spaces[len]=0;
 	strcat(barcodeline,barcode);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.37 2007-07-26 12:04:27 mikeaubury Exp $
+# $Id: Makefile,v 1.38 2007-08-15 18:52:38 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -239,6 +239,10 @@ curl.o: curl.c
 decimal.o: decimal.c
 	${CC} -Imapm -DUSE_MAPM ${CFLAGS} -c -o $@ $^
 
+funcs_d.o: funcs_d.c
+	${CC} -Imapm -DUSE_MAPM ${CFLAGS} -c -o $@ $^
+ops.o: ops.c
+	${CC} -Imapm -DUSE_MAPM ${CFLAGS} -c -o $@ $^
 mapm.a: mapm.c
 	${CC} -Imapm -DUSE_MAPM ${CFLAGS} -c -o $@ $^
 

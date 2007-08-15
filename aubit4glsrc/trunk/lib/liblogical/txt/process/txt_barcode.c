@@ -25,7 +25,7 @@ static char buff[256];
 	static char b[2000];
 	memset(b,'.',sizeof(b)); // SHOULD BE ' ' - but cant see those  :-)
 	b[strlen(str)]=0;
-	sprintf(buff,"^PY^-^M07,10,000^KF^T%04d^BYA%s^G^KF^-^PN^-%s",(int)(x*100),str,b);
+	sprintf(buff,"^PY^-^M07,10,000^KF^T%04d^BYA%s^G^KF^-^PN^-%s\n",(int)(x*100),str,b);
 return buff;
 }
 

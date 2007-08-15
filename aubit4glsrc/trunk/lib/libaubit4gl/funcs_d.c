@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.94 2007-08-02 15:29:40 fortiz Exp $
+# $Id: funcs_d.c,v 1.95 2007-08-15 18:52:38 mikeaubury Exp $
 #
 */
 
@@ -50,6 +50,18 @@
 #if HAVE_STRINGS_H
 #include <strings.h>
 #endif
+
+#ifdef HAVE_INDEX
+#define CHAR_INDEX index
+#else 
+#define CHAR_INDEX a_strchr
+#endif
+
+#include "m_apm.h"
+
+M_APM *m_increment=0;
+int nincrement=0;
+static void add_increment(void) ;
 
 /*
 =====================================================================
@@ -79,6 +91,72 @@ int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
 =====================================================================
 */
 
+// left pad a string with spaces..
+void A4GL_lpad(char *s, int l) {
+char buff[2000];
+int m;
+// its already long enough? 
+if (strlen(s)>=l) return;
+// how many spaces do we need ?
+m=l-strlen(s);
+memset(buff,' ',2000);
+buff[m]=0;
+// now - put our string on the end...
+strcat(buff,s);
+
+// and copy it back..
+strcpy(s,buff);
+}
+
+
+
+static void ensure_increment(int n) {
+int a;
+char buff[200];
+	
+	if (nincrement>=n) return;
+
+	while (nincrement<=n) {
+		add_increment();
+ 	}
+
+	/*
+ * 	for (a=0;a<nincrement;a++) {
+		m_apm_to_fixpt_string(buff,10,m_increment[a]);
+	}
+	*/
+}
+
+
+static void add_increment() {
+static M_APM m_point_5;
+static M_APM m_10;
+static M_APM m_tmp;
+static int inited=0;
+char buff[300];
+int a;
+
+	nincrement++;
+	m_increment=realloc(m_increment, nincrement*sizeof (M_APM));
+
+	if (!inited) {
+		m_increment[0]= m_apm_init();
+		m_10=m_apm_init();
+		m_tmp=m_apm_init();
+        	m_apm_set_string(m_increment[0], "0.5");
+        	m_apm_set_string(m_10, "10");
+		inited++;
+	}
+
+	if (nincrement==1) return;
+
+     	m_apm_divide(m_tmp, 32, m_increment[nincrement-2],m_10);
+	m_increment[nincrement-1]=m_apm_init();
+	m_apm_copy(m_increment[nincrement-1],m_tmp);
+
+}
+
+
 /**
  * Another implementation of basename. How many do we need?
  *
@@ -95,7 +173,7 @@ char b1[10];
 char b2[10];
 char b3[10];
 
-	if (!a_strchr (str, '/')) {
+	if (!CHAR_INDEX (str, '/')) {
 		return 0;
     }
 
@@ -331,40 +409,45 @@ static char buff[100];
  * @param num The (double-float) number to be formated.
  */
 void
-a4gl_using (char *str, int s, char *fmt, double num)
+a4gl_using_from_string (char *str, int s, char *fmt, char *numeric,int isneg)
 {
   int dig[MAXDIG];
   int pnt[MAXPNT];
-  char number[1000];
-  char fm1[128], fm2[128];
-  char *ptr1, *ptr;
-  char *ptr2;
-  int has_money;
-  char *p;
+char *dot;
+  char number[1000]="";
+  char fm1[128]="", fm2[128]="";
+  char *ptr=0;
+  int has_money=0;
+  char *p=0;
+  int num_places=64;
   char canfloat_head[] = "*-+($";
   char rep_digit[] = "*&#<-+()$";
-  char buff[800];
-  int isneg = 0;
-  int a, variable_called_b;
+  char buff[800]="";
+  int a=0, variable_called_b=0;
   int isprnt = 0;
-  double ad;
-  long num_dec;
-  char new_str[256];
-  double o;
+  char buff_decimal[2000];
+  char buff_integer[2000];
+  char *ptr_decimal;
 
-  double never_neg;
+  M_APM m_main;
+  M_APM m_integer;
+  M_APM m_tmp;
+  M_APM m_decimal;
+ 
   int lb=0;
   int cb=0;
+
+//printf("DEBUG %s\n",numeric);
 
   for (a=0;a<strlen(fmt);a++) {
 	if (fmt[a]=='(') lb++;
 	if (fmt[a]==')') cb++;
   }
 
-memset(str,0,s);
+  memset(str,0,s);
 
-never_neg=num;
-if (num<0) never_neg=0.0-num;
+//never_neg=num;
+//if (num<0) never_neg=0.0-num;
 
 	if (lb>1 && cb>1) {
 		return ;
@@ -390,17 +473,16 @@ if (num<0) never_neg=0.0-num;
 			if (buff2[a]==')') buff2[a]='#';
 		}
 			//printf("buff2=%s %lf \n",buff2, never_neg);
-		a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		a4gl_using_from_string(fmt2, sizeof(fmt2),buff2,numeric,0);
 			//printf("fmt2=%s\n",fmt2);
 		strncpy(strchr(fmt, '(')+1,fmt2,strlen(buff2));
-		if (num>0) {
+		if (!isneg) {
 			//printf("fmt=%s fmt2=%s\n",fmt,fmt2);
 			if (strchr(fmt,'(') && strchr(fmt,')')) {
 					ptr=strchr(fmt,'(');	 *ptr=' ';
 					ptr=strchr(fmt,')');	 *ptr=' ';
 			}
 		}
-		
 		strcpy(str,fmt);
 		free(buff2);
 
@@ -424,13 +506,13 @@ if (num<0) never_neg=0.0-num;
 		for (a=0;a<strlen(buff2);a++) {
 			if (buff2[a]=='(') buff2[a]='#';
 		}
-		//A4GL_pause_execution();
 
 		//printf("%s %s\n",fmt,fmt2);
-		a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		//a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		a4gl_using_from_string(fmt2, sizeof(fmt2),buff2,numeric,0);
 		strncpy(strchr(fmt, '(')+1,fmt2,strlen(buff2));
 
-		if (num>=0) {
+		if (!isneg) {
 			ptr=strchr(fmt,'(');	if (ptr) { *ptr=' ';}
 			ptr=strchr(fmt,')');	if (ptr) { *ptr=' ';}
 		} else {
@@ -465,13 +547,13 @@ if (num<0) never_neg=0.0-num;
 		for (a=0;a<strlen(buff2);a++) {
 			if (buff2[a]==')') buff2[a]='#';
 		}
-		//A4GL_pause_execution();
 
 		//printf("%s %s\n",fmt,fmt2);
-		a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		//a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
+		a4gl_using_from_string(fmt2, sizeof(fmt2),buff2,numeric,0);
 		strncpy(strchr(fmt, '(')+1,fmt2,strlen(buff2));
 
-		if (num>=0) {
+		if (!isneg) {
 			ptr=strchr(fmt,'(');	if (ptr) { *ptr=' ';}
 			ptr=strchr(fmt,')');	if (ptr) { *ptr=' ';}
 		} else {
@@ -493,7 +575,6 @@ if (num<0) never_neg=0.0-num;
   }
 
 
-  A4GL_debug ("In using... fmt=%s, num=%lf", fmt, num);
   for (a = 0; a < MAXPNT; a++)
     {
       pnt[a] = 0;
@@ -504,73 +585,103 @@ if (num<0) never_neg=0.0-num;
       dig[a] = 0;
     }
 
-  ptr1 = &number[0];
-  ptr2 = &number[32];
 
-  if (num < 0)
-    {
-      isneg = 1;
-      num = 0.0 - num;
-    }
+  m_main= m_apm_init();
+  m_tmp= m_apm_init();
+  m_integer= m_apm_init();
+  m_decimal= m_apm_init();
+  
 
-#if defined (__MINGW32__)
-  if (a_strchr (fmt, '.'))
-#else
-  if (index (fmt, '.'))
-#endif
+
+  m_apm_set_string(m_main, numeric);
+
+
+
+  if (CHAR_INDEX (fmt, '.'))
     {
       strcpy (fm1, fmt);
-#if defined (__MINGW32__)
-      p = (char *) a_strchr (fm1, '.');
-#else
-      p = (char *) index (fm1, '.');
-#endif
+      p = (char *) CHAR_INDEX (fm1, '.');
       p[0] = 0;
-#if defined (__MINGW32__)
-      strcpy (fm2, a_strchr (fmt, '.') + 1);
-#else
-      strcpy (fm2, index (fmt, '.') + 1);
-#endif
+      strcpy (fm2, CHAR_INDEX (fmt, '.') + 1);
+      num_places=strlen(fm2);
     }
   else
     {
       strcpy (fm1, fmt);
       strcpy (fm2, "");
+      num_places=0;
     }
-  ad = 0.5;
-  A4GL_trim (fm2);
+
+  
+
+  ensure_increment(num_places+2);
+/*
   for (a = 1; a <= (int)strlen (fm2); a++)
     {
-      ad = ad / 10;
+      m_apm_divide(m_tmp, strlen(fm2)+3, m_increment,m_10);
+      m_apm_copy(m_increment,m_tmp);
     }
-  o=num;
-  num += ad;
+*/
+  
 
-  SPRINTF1 (number, "%64.32f", num);
-  A4GL_decstr_convert(number, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, 64);
+  
 
-	
-  if (strlen(number)>64) {
+  m_apm_add(m_tmp, m_main, m_increment[num_places]);
+
+  m_apm_to_fixpt_string(buff, 32, m_main);
+  m_apm_add(m_tmp, m_main, m_increment[num_places]);
+  m_apm_to_fixpt_string(buff, 32, m_increment[num_places]);
+  m_apm_copy(m_main,m_tmp);
+
+
+//
+// we need to trunc our number to a specific number of decimal places
+// this is easiest by converting to a string and back again, because the m_apm_round is to significant digits
+// not to decimal places...
+  m_apm_to_fixpt_string(buff, 32, m_main);
+  dot=strchr(buff,'.');
+  if (dot) {
+		dot+=num_places+1;
+		*dot=0;
+  }
+  m_apm_set_string(m_tmp, buff);
+  m_apm_copy(m_main,m_tmp);
+
+
+
+
+
+
+
+  m_apm_floor(m_integer, m_main);
+  m_apm_subtract(m_decimal, m_main,m_integer);
+
+  	//m_apm_to_fixpt_string(buff,10, m_integer);
+	//printf("DEBUG m_integer=%s\n", buff);
+  	//m_apm_to_fixpt_string(buff,10, m_main);
+	//printf("DEBUG m_main=%s\n", buff);
+  	//m_apm_to_fixpt_string(buff,10, m_decimal);
+	//printf("DEBUG m_decimal=%s\n", buff);
+
+
+  m_apm_to_fixpt_string(buff_integer,0, m_integer);
+  m_apm_to_fixpt_string(buff_decimal,num_places, m_decimal); 
+
+  // should always start "0."
+  if (strcmp(buff_decimal,"0")==0) {
+		strcpy(buff_decimal,"0.0");
+  }
+  ptr_decimal=&buff_decimal[2];
+  A4GL_lpad(buff_integer,31);
+  //printf("%s ... %s\n", buff_integer, ptr_decimal);
+
+  if (num_places>64 || strlen(ptr_decimal)>=64) {
       // Its too big...
       memset (str, '*', a);
       return;
     }
-  
-  num_dec=(num-floor(num))*1000000000.0;
-  num_dec++;
-  A4GL_assertion (num_dec>1000000000,"Bad numeric");
-
-  /* MID 1042 */
-  if (num_dec==1000000000) {
-    num = floor(num) + 1;
-    num_dec=0;
-    SPRINTF1 (number, "%64.32f", num);
-    A4GL_debug("number rounded up to next digit %lf, number=%s", num, number);
-    }
-
-  A4GL_debug("Decimal portion = %ld",num_dec);
-
-  number[31] = 0;
+  strcat(buff_decimal,"000000000000000000000000000000000");
+  ptr_decimal[32]=0;
   strcpy (str, fmt);
   variable_called_b = 30;
   isprnt = 1;
@@ -600,19 +711,18 @@ if (num<0) never_neg=0.0-num;
       {
 	if (fmt[a] == '.')
 	  break;
-	if (a_strchr (rep_digit, fmt[a]))
+	if (CHAR_INDEX (rep_digit, fmt[a]))
 	  f_cnt++;
       }
     // count format string number place holders, after the decimal point
     while (a < (int)strlen (fmt))
       {
-	if (a_strchr (rep_digit, fmt[a]))
+	if (CHAR_INDEX (rep_digit, fmt[a]))
 	  d_cnt++;
 	a++;
       }
-	A4GL_debug("ptr1=%s b=%d",ptr1,variable_called_b);
     // count the digits in the integer part of the number
-    for (a = variable_called_b; (a > 0 && ptr1[a] != ' '); a--)
+    for (a = variable_called_b; (a > 0 && buff_integer[a] != ' '); a--)
       n_cnt++;
 
 
@@ -643,7 +753,7 @@ if (num<0) never_neg=0.0-num;
 	    if (isneg)
 	      {
 		memset (fmt, '-', (size_t)a);
-		num = 0 - num;
+		//num = 0 - num;
 	      }
 	    else
 	      {
@@ -651,11 +761,10 @@ if (num<0) never_neg=0.0-num;
 	      }
 	    if (n_cnt < a)
 	      fmt[n_cnt] = '.';
-	    if ((a - n_cnt > d_cnt) ||
-		(A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
+	    if ((a - n_cnt > d_cnt) || (A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
 	      {
-	 A4GL_debug ("trying fmt=%s", fmt);
-		a4gl_using (str, s, fmt, num);
+	 	A4GL_debug ("trying fmt=%s", fmt);
+		a4gl_using_from_string(str, s,fmt, numeric,isneg);
 		return ;
 	      }
 	  }
@@ -667,12 +776,13 @@ if (num<0) never_neg=0.0-num;
 
   for (a = (int)strlen (fm1) - 1; a >= 0; a--)
     {
-      if (a_strchr (rep_digit, fm1[a]))
+      if (CHAR_INDEX (rep_digit, fm1[a]))
 	{
 	if (variable_called_b>=0) {
-	  if (((ptr1[variable_called_b] == '0' && ptr1[variable_called_b - 1] == ' ') || ptr1[variable_called_b] == ' ') && isprnt == 1) isprnt = 0;
+		A4GL_debug("%c\n", buff_integer[variable_called_b]);
+	  if (((buff_integer[variable_called_b] == '0' && buff_integer[variable_called_b - 1] == ' ') || buff_integer[variable_called_b] == ' ') && isprnt == 1) isprnt = 0;
 	}
-	  str[a] = ptr1[variable_called_b--];
+	  str[a] = buff_integer[variable_called_b--];
 	  if (!isprnt)
 	    {
 	      if (fm1[a] == '#')
@@ -695,7 +805,7 @@ if (num<0) never_neg=0.0-num;
 		  str[a] = '<';
 		  continue;
 		}
-	      p = a_strchr (canfloat_head, fm1[a]);
+	      p = CHAR_INDEX (canfloat_head, fm1[a]);
 	      if (p)
 		{
 		  p[0] = 1;
@@ -750,7 +860,7 @@ if (num<0) never_neg=0.0-num;
 	}
       else
 	{
-	  if (ptr1[variable_called_b] == ' ' && str[a] == ',')
+	  if (buff_integer[variable_called_b] == ' ' && str[a] == ',')
 	    {
 	      if (fm1[a + 1] == '<')
 		{
@@ -765,15 +875,12 @@ if (num<0) never_neg=0.0-num;
     }
   variable_called_b = 0;
 
-  SPRINTF1(new_str,"%09ld",num_dec); 
-	
-  ptr2=&new_str[0];
-  A4GL_debug("str=%s fm1=%s fm2=%s ptr2=%s",str,fm1,fm2,ptr2);
+	A4GL_debug("s=%s\n",str);
 
   for (a = 0; a < (int)strlen (fm2); a++)
     {
       A4GL_debug("a=%d fm[a]=%c",a,fm2[a]);
-      if (a_strchr (rep_digit, fm2[a]))
+      if (CHAR_INDEX (rep_digit, fm2[a]))
 	{
 	  if (fm2[a] == ')')
 	    {
@@ -788,8 +895,8 @@ if (num<0) never_neg=0.0-num;
 		  continue;
 		}
 	    }
-	  A4GL_debug("setting str[%d]=%c",a + (int)strlen (fm1) + 1,ptr2[variable_called_b]);
-	  str[a + (int)strlen (fm1) + 1] = ptr2[variable_called_b++];
+	  A4GL_debug("setting str[%d]=%c",a + (int)strlen (fm1) + 1,ptr_decimal[variable_called_b]);
+	  str[a + (int)strlen (fm1) + 1] = ptr_decimal[variable_called_b++];
 	}
       else
 	{
@@ -797,10 +904,15 @@ if (num<0) never_neg=0.0-num;
 	  str[a + (int)strlen (fm1) + 1] = fm2[a];
 	}
     }
-#if defined (__MINGW32__)
+
+#ifdef HAVE_RINDEX
+  ptr = (char *) rindex (str, '<');
+#else
+#ifdef HAVE_STRRCHR
   ptr = (char *) strrchr (str, '<');
 #else
-  ptr = (char *) rindex (str, '<');
+#error No rindex function
+#endif
 #endif
 
   A4GL_debug("str=%s",str);
@@ -856,8 +968,7 @@ if (num<0) never_neg=0.0-num;
 	   str[a] = a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : '.';
    }
 
-
-   if (has_money && !strchr(str,'$')) {
+if (has_money && !strchr(str,'$')) {
 		int first_non_space=-1;
 		A4GL_debug("Lacking money");
 		// Lacking money!
@@ -878,8 +989,21 @@ if (num<0) never_neg=0.0-num;
 		}
    }
   A4GL_debug ("using: result str=%s", str);
+
 }
 
+void a4gl_using (char *str, int s, char *fmt, double num) {
+char string[2000];
+
+  if (num<0) {
+	num*=-1.0;
+  	SPRINTF1 (string, "%64.16f", num);
+	a4gl_using_from_string(str,s,fmt,string,1);
+  } else  {
+  	SPRINTF1 (string, "%64.16f", num);
+	a4gl_using_from_string(str,s,fmt,string,0);
+  }
+}
 
 
 int 

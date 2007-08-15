@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.84 2007-07-26 12:04:27 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.85 2007-08-15 18:52:38 mikeaubury Exp $
 #
 */
 
@@ -310,6 +310,8 @@ void A4GL_push_double_str(char *p) {
   double *ptr;
   char *cp;
   char *pdot;
+		A4GL_push_decimal_str(p); // push a decimal instead..
+  return;
   pdot=strchr(p,'.');
   if (pdot==0) {
   	pdot=strchr(p,',');
@@ -816,9 +818,11 @@ A4GL_func_using()
     int fmtlen;
     char *fmt;
     int dt;
+    int s1;
+    fgldecimal *ptr1;
 
     fmt = A4GL_char_pop ();
-    A4GL_get_top_of_stack (0, &dt, NULL, NULL);
+    A4GL_get_top_of_stack (1, &dt, NULL, NULL);
     dt &= DTYPE_MASK;
 
     if (A4GL_isyes(acl_getenv("A4GL_TRIMUSINGFMT")))
@@ -827,20 +831,49 @@ A4GL_func_using()
 
     switch (dt)
     {
+      case DTYPE_DECIMAL:
+      case DTYPE_MONEY:
+	{
+	    char *z;
+	    char *p;
+	int a;
+	    int isneg=0;
+	    z = A4GL_new_string (fmtlen+1);
+            A4GL_get_top_of_stack (1, &dt, &s1, (void **) &ptr1);
+	    p=acl_strdup(A4GL_dec_to_str (ptr1, 0));
+		A4GL_drop_param();
+	    // clean the string...
+	    //printf("p=%s\n",p);
+	    for (a=0;a<strlen(p);a++) {
+		if (p[a]>='0' && p[a]<='9') continue;
+		if (p[a]=='.') continue;
+		if (p[a]=='-') {p[a]=' '; isneg++;continue;}
+		p[a]=' ';
+	    }
+		//printf("p=%s\n",p);
+	    a4gl_using_from_string(z,fmtlen,fmt,p,isneg);
+
+	    //a4gl_using (z, fmtlen, fmt, dbl);
+	    A4GL_debug("z=%s\n", A4GL_null_as_null(z));
+	    A4GL_push_char (z);
+	    acl_free(p);
+	    acl_free(z);	
+	}
+	break;
+
       case DTYPE_BYTE:
       case DTYPE_SMINT:
       case DTYPE_INT:
       case DTYPE_SERIAL:
       case DTYPE_SMFLOAT:
       case DTYPE_FLOAT:
-      case DTYPE_DECIMAL:
-      case DTYPE_MONEY:
 	{
 	    char *z;
 	    double dbl;
 	    A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
 	    z = A4GL_new_string (fmtlen+1);
 	    A4GL_debug("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
+	    
 	    a4gl_using (z, fmtlen, fmt, dbl);
 	    A4GL_debug("z=%s\n", A4GL_null_as_null(z));
 	    A4GL_push_char (z);
@@ -850,9 +883,28 @@ A4GL_func_using()
       case DTYPE_DATE:
 	{
 	    long d;
+	    char *ptr;
 	    d = A4GL_pop_date();
 	    A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null(fmt));
-	    A4GL_push_char(A4GL_using_date(d, fmt));
+		ptr=A4GL_using_date(d, fmt);
+		// Did it convert nicely ? 
+	    if (ptr) {
+			A4GL_push_char(ptr);
+	    } else {
+		char buff[200];
+                char *z;
+		// No - it didnt convert nicely..
+                z = A4GL_new_string (fmtlen+1);
+		strcpy(z,fmt);
+	
+		//@ENV FMTDATETONUMBER formats a date to number when using a numeric format
+		if (A4GL_isyes(acl_getenv("FMTDATETONUMBER"))) {
+			sprintf(buff,"%d",d);
+                	a4gl_using_from_string (z, fmtlen, fmt, buff,0);
+		}
+                A4GL_push_char (z);
+                acl_free(z);	
+		}
 	}
 	break;
       case DTYPE_CHAR:

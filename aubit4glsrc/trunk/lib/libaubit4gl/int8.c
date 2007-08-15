@@ -15,6 +15,7 @@
 
 #ifdef NOINT8SUPPORT
 void add_int8_support(void) { 
+	A4GL_debug("No int8_support");
 }
 #else
 
@@ -111,6 +112,8 @@ static void A4GL_null_int8(void *p) {
 }
 
 static void A4GL_zero_int8(void *p) {
+	A4GL_assertion(p==0,"Pointer not set");
+ 	exit(30);
 	*(int8*)p = 0;
 }
 
@@ -145,15 +148,41 @@ if (d1==DTYPE_INT8) {
 		case DTYPE_SMFLOAT: 	*(float *)p2=*(int8*) p1; return 1;
 		case DTYPE_INT: 	*(int *)p2=*(int8*) p1; return 1;
 		case DTYPE_SMINT: 	*(short *)p2=*(int8*) p1; return 1;
+		case DTYPE_DECIMAL: 	{
+				char buff[2000];
+				sprintf(buff,"%lld",*(int8*)p1);
+				A4GL_push_char(buff);
+				A4GL_pop_param(p2,d2,size);
+				return 1;
+			}
+		case DTYPE_CHAR: 	{
+				char buff[2000];
+				sprintf(buff,"%lld",*(int8*)p1);
+				A4GL_push_char(buff);
+				A4GL_pop_param(p2,d2,size);
+				return 1;
+		}
 	}
 	return 0;
 } else {
-	// Convert FROM int8..
+	// Convert TO int8..
 	switch (d1) {
 		case DTYPE_FLOAT: *(int8*) p2=*(double *)p1; return 1;
 		case DTYPE_SMFLOAT: *(int8*) p2=*(float *)p1; return 1;
 		case DTYPE_INT: *(int8*) p2=*(int *)p1; return 1;
 		case DTYPE_SMINT: *(int8*) p2=*(short *)p1; return 1;
+		case DTYPE_DECIMAL: 
+				{
+				char buff[2000];
+				strcpy(buff,A4GL_dec_to_str(p1,0));
+				sscanf(buff,"%lld",(int8*)p2);
+				}
+				return 1;
+		case DTYPE_CHAR: 
+				sscanf(p1,"%lld",(int8*)p2);
+				return 1;
+
+
 		}
 	}
 return 0;
@@ -162,6 +191,7 @@ return 0;
 }
 
 void add_int8_support(void) {
+	A4GL_debug("Has int8_support");
 	A4GL_add_datatype_function_i (DTYPE_INT8, "INIT", (void *)A4GL_null_int8);
 	A4GL_add_datatype_function_i (DTYPE_INT8, "ISNULL", (void *)A4GL_isnull_int8); //
 	A4GL_add_datatype_function_i (DTYPE_INT8, "SETDTYPE", (void *)A4GL_zero_int8); // Invalid conversion set it to 0
@@ -169,6 +199,11 @@ void add_int8_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_INT8, "COPY", (void *)A4GL_copy_int8); 
 
 	A4GL_add_datatype_function_i (DTYPE_FLOAT, "CONVTO_17", (void *)A4GL_conv_int8); 
+	A4GL_add_datatype_function_i (DTYPE_DECIMAL,  "CONVTO_17", (void *)A4GL_conv_int8); 
+	A4GL_add_datatype_function_i (DTYPE_INT,  "CONVTO_17", (void *)A4GL_conv_int8); 
+	A4GL_add_datatype_function_i (DTYPE_SMINT,  "CONVTO_17", (void *)A4GL_conv_int8); 
+	A4GL_add_datatype_function_i (DTYPE_SMFLOAT,  "CONVTO_17", (void *)A4GL_conv_int8); 
+	A4GL_add_datatype_function_i (DTYPE_CHAR,  "CONVTO_17", (void *)A4GL_conv_int8); 
 
 
 	//A4GL_add_op_function (DTYPE_SMINT, 	DTYPE_INT8, OP_MATH, A4GL_smint_int8_ops);

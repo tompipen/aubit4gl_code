@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.131 2007-07-27 16:20:21 mikeaubury Exp $
+# $Id: iarray.c,v 1.132 2007-08-15 18:52:39 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.131 2007-07-27 16:20:21 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.132 2007-08-15 18:52:39 mikeaubury Exp $";
 #endif
 
 /**
@@ -1052,7 +1052,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 
       		ptr.scr_line = arr->scr_line;
       		ptr.arr_line = arr->arr_line;
-      		ptr.attrib_no = arr->curr_attrib; 
+      		ptr.attrib_no = 0; //arr->curr_attrib; 
 
 	  	f = arr->field_list[arr->scr_line-1][arr->curr_attrib];
 		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, f, A4GL_memdup (&ptr, sizeof (struct s_movement)),0);
@@ -2411,13 +2411,13 @@ if (arr->fcntrl[a].state==99) {
 	  FIELD *f;
 	  f = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	  new_state = 80;
-	  rval = -1; //A4GL_EVENT_BEFORE_INP; //? BEFORE_INPUT ?
+	  rval = -1; 
 	}
 
       if (arr->fcntrl[a].state == 80)
 	{
 	  insert_line_in_array (arr);
-	  rval = -1; //A4GL_EVENT_BEFORE_INP; //? BEFORE_INPUT ? 
+	  rval = -1; 
 	  new_state = 50;
 	}
 

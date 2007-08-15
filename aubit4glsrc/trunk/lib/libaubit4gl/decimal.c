@@ -641,6 +641,20 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
 	    if (buff[a]!=' ') {buff[a-1]='-'; break;}
     }
   }
+  if (strncmp(buff,"-.",2)==0) {
+		char buff2[2000];
+		strcpy(buff2,"-0.");
+		strcat(buff2,&buff[2]);
+		strcpy(buff,buff2);
+  }
+  if (strncmp(buff,".",1)==0) {
+		char buff2[2000];
+		strcpy(buff2,"0.");
+		strcat(buff2,&buff[1]);
+		strcpy(buff,buff2);
+  }
+
+
   return buff;
 }
 
@@ -649,6 +663,10 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
 #ifdef USE_MAPM
 
 #include "m_apm.h"
+
+void A4GL_push_dec_from_apm(M_APM tmp);
+
+
 
 int
 a4gl_decadd (fgldecimal * d1, fgldecimal * d2, fgldecimal * sum)
@@ -682,7 +700,7 @@ a4gl_deccmp (fgldecimal * d1, fgldecimal * d2)
 int a;
 	M_APM m1;
 	M_APM m2;
-	char buff[200];
+	//char buff[200];
 	m1= m_apm_init();
 	m2= m_apm_init();
 	m_apm_set_string(m1, A4GL_dec_to_str(d1,0));
@@ -877,7 +895,7 @@ char buff[2000];
 int
 a4gl_dectodbl (fgldecimal * d1, double *d)
 {
-char buff[256];
+//char buff[256];
    A4GL_stof (A4GL_dec_to_str(d1,0), d, 0);
 return 0;
 }
@@ -947,6 +965,17 @@ m_apm_divide(m1, norig, mres,m_mult);
 m_apm_to_fixpt_string(buff, d1->dec_data[1]+1, m1);
 A4GL_str_dot_to_dec(buff,d1);
 }
+
+
+void A4GL_push_dec_from_apm(M_APM tmp) {
+  fgldecimal d;
+  char buff[300];
+  A4GL_init_dec(&d,32,16);
+  m_apm_to_fixpt_string(buff, d.dec_data[1], tmp);
+  A4GL_str_dot_to_dec(buff,&d);
+  A4GL_push_dec_dec(&d,0,16);
+}
+
 
 #endif
 //a4gl_dececvt()
