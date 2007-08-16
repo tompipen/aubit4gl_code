@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.170 2007-07-20 10:19:50 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.171 2007-08-16 21:47:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.170 2007-07-20 10:19:50 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.171 2007-08-16 21:47:29 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -124,6 +124,7 @@ void print_conversions_g (t_binding_comp_list *bind);
 void print_report_table (char *repname, char type, int c,char *asc_desc,t_binding_comp_list *funclist, t_binding_comp_list *orderbind);
 void print_expr_db(t_expr_str *ptr) ;
 
+int print_bind_dir_definition_g (struct binding_comp_list *lbind,int ignore_esql);
 
 char *A4GL_mk_temp_tab (struct BINDING *b, int n);
 /*
@@ -137,7 +138,6 @@ static void A4GL_save_sql (char *s, char *s2);
 extern char buff_in[];
 
 
-int print_bind_dir_definition_g (struct binding_comp_list *lbind);
 void make_sql_bind_g ( t_binding_comp_list *bind);
 
 static void
@@ -2745,10 +2745,10 @@ print_exists_subquery (int i, struct expr_exists_sq *e_expr)
 	l.abind=e_expr->nibind;
 	l.str=0;
 
-  print_bind_dir_definition_g (&l);
+  print_bind_dir_definition_g (&l,0);
   LEXLIB_print_bind_set_value_g (&l);
-
   printc ("%s", l.str);
+
   if (esql_type () == E_DIALECT_INGRES)
     {
       printc ("sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR FOR %s;", cname,
@@ -2805,7 +2805,7 @@ print_in_subquery (int i, struct expr_in_sq *in_expr)
 	l.abind=in_expr->nibind;
 	l.str=0;
 
-  print_bind_dir_definition_g (&l);
+  print_bind_dir_definition_g (&l,0);
   LEXLIB_print_bind_set_value_g (&l);
 
 

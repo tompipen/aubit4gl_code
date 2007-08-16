@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.379 2007-07-26 18:57:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.380 2007-08-16 21:47:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.379 2007-07-26 18:57:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.380 2007-08-16 21:47:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -133,11 +133,12 @@ static int find_slice(char *av, char *s, int w) ;
 
 void print_Constant_1 (char *name, struct constant_data *c);
 static void print_returning_g (int from_where, t_binding_comp_list *bind,int allow_one_or_zero);
-int print_bind_dir_definition_g (struct binding_comp_list *lbind);
+int print_bind_dir_definition_g (struct binding_comp_list *lbind,int ignore_esql);
 
 int rep_print_code;
 int last_orderby_type = -1;
 void print_report_table (char *repname, char type, int c,char*asc_desc,t_binding_comp_list *funcbind, t_binding_comp_list *orderbind);
+int local_print_bind_set_value_g (t_binding_comp_list *bind,int ignore_esqlc,int only_native);
 extern int get_rep_no_orderby (void);
 int A4GL_doing_pcode (void);
 static int gen_ord (char *s);
@@ -2943,8 +2944,9 @@ static void print_returning_g (int from_where,t_binding_comp_list *bind,int allo
 
   if (bind->nbind) {
   	printc ("{ /* print_returning */\n");
-  	cnt = LEXLIB_print_bind_definition_g (bind);
-  	LEXLIB_print_bind_set_value_g (bind);
+	cnt=print_bind_dir_definition_g(bind,1);
+  	//cnt = LEXLIB_print_bind_definition_g (bind);
+  	local_print_bind_set_value_g (bind,1,0);
   } else {
 	  cnt=0;
   }
@@ -3507,14 +3509,14 @@ LEXLIB_print_construct_fl_g (int byname, t_binding_comp_list *bind, t_field_list
   if (f_list) {
 	  	 fld_list=field_name_list_as_char(f_list);
 	  }
-  k = LEXLIB_print_bind_definition_g (bind);
+  k = print_bind_dir_definition_g(bind,1); // LEXLIB_print_bind_definition_g (bind); // print_bind_dir_definition_g
 
   ccc = print_constr ();
   sio_id=get_sio_ids("CONSTRUCT");
   printc ("int _fld_dr= -100;int _exec_block= 0;char *_fldname;");
   printc("char _sio_%d[%d]; char *_curr_win=0; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", get_sio_ids("CONSTRUCT"),sizeof (struct s_screenio) + 10,sio_id);
   printc ("int _forminit=1;\n");
-   LEXLIB_print_bind_set_value_g (bind);
+   local_print_bind_set_value_g (bind,1,0);
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_exec_block == 0) {\n");
   printc ("_curr_win=A4GL_get_currwin_name();\n");
@@ -4606,7 +4608,7 @@ char *fldlist=0;
   printc ("*/");
   sio_id=get_sio_ids("INPUT");
   printc ("{\nint _fld_dr= -100;\nint _exec_block= 0;\nchar *_fldname;char *_curr_win;\n");
-  ccc = LEXLIB_print_bind_definition_g (bind);
+  ccc = print_bind_dir_definition_g (bind,1);
   printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
   printc("char _inp_io_type='I';");
   printc("char *_sio_kw_%d=\"s_screenio\";", sio_id);
@@ -4614,7 +4616,7 @@ char *fldlist=0;
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
   printc ("/* input by name */");
-  LEXLIB_print_bind_set_value_g (bind);
+  local_print_bind_set_value_g (bind,1,0);
   printc ("_curr_win=A4GL_get_currwin_name();\n");
   printc ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("if (GET_AS_INT(\"s_screenio\",&_sio_%d,\"currform\")==0) break;\n",sio_id);
@@ -4864,8 +4866,8 @@ LEXLIB_print_let_manyvars_g (t_expr_str_list *ptr,t_binding_comp_list *bind)
   real_print_expr_list(ptr);
   from_exprs=A4GL_new_list_get_count(ptr);
   printc ("{");
-  to_vars = LEXLIB_print_bind_definition_g (bind);
-  LEXLIB_print_bind_set_value_g (bind);
+  to_vars = print_bind_dir_definition_g (bind,1);
+  local_print_bind_set_value_g (bind,1,0);
 
   if (to_vars != from_exprs)
     {
@@ -5166,7 +5168,7 @@ LEXLIB_print_order_by_type (int type, int size,t_binding_comp_list *ordbind)
 {
 int a;
 
-  a=LEXLIB_print_bind_definition_g(ordbind);
+  a=print_bind_dir_definition_g(ordbind,1);
   if (size==0) size=a;
   printc ("static int acl_rep_ordcnt=%d;\n", size);
 	if (type==1) {
@@ -7557,18 +7559,18 @@ char i;
 	i=l->type;
 
 	switch (i) {
-		case 'i': return print_bind_dir_definition_g(l);
-		case 'o': return print_bind_dir_definition_g(l); 
-		case 'O': return print_bind_dir_definition_g(l); 
-		case 'N': return print_bind_dir_definition_g(l); 
-		case 'e': return print_bind_dir_definition_g(l); 
+		case 'i': return print_bind_dir_definition_g(l,0);
+		case 'o': return print_bind_dir_definition_g(l,0); 
+		case 'O': return print_bind_dir_definition_g(l,0); 
+		case 'N': return print_bind_dir_definition_g(l,0); 
+		case 'e': return print_bind_dir_definition_g(l,0); 
 		default : A4GL_assertion(1,"Unhandled print_bind_definition");
 	}
 	return -1;
 }
 
 
-int print_bind_dir_definition_g (struct binding_comp_list *lbind)
+int print_bind_dir_definition_g (struct binding_comp_list *lbind,int ignore_esql)
 {
   int a;
   
@@ -7583,8 +7585,7 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
       printc ("\n");
       switch (lbind->type)
 	{
-	case 'i':
-	  printc ("static struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
+	case 'i': printc ("static struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'o': printc ("static struct BINDING obind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'e': printc ("struct BINDING ebind[%d]={\n ", ONE_NOT_ZERO (lbind->nbind)); break;
 	case 'O':
@@ -7627,16 +7628,18 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
 	clr_suppress_lines();
      if (lbind->type != 'N')
 	{
-	  if (doing_esql ())
+	  if (doing_esql () && !ignore_esql)
 	    
 	    {
-	set_suppress_lines();
+		set_suppress_lines();
 	      make_sql_bind_g (lbind);
 	clr_suppress_lines();
 	    }
 	}
+  	//A4GL_assertion (lbind->str==0, "string is empty");
       return a;
     }
+
   printf ("UNEXPECTED BINDING %c\n", lbind->type);
   A4GL_assertion (1, "Unexpected binding");
   exit (3);
@@ -7647,55 +7650,7 @@ int print_bind_dir_definition_g (struct binding_comp_list *lbind)
 
 
 
-
-
-
-#ifdef OBSOLETE
-int
-print_bind_dir_set_value (char i,struct binding_comp *bind,int bindcnt)
-{
-  int a;
-
-  if (i == 'i')
-    {
-      for (a = 0; a < bindcnt; a++)
-	{
-	  printc ("ibind[%d].ptr= &%s;", a,bind[a].varname);
-	}
-      start_bind (i, 0);
-      return a;
-    }
-
-
-  if (i == 'o')
-    {
-      for (a = 0; a < bindcnt; a++)
-	{
-	  printc ("obind[%d].ptr= &%s;", a,bind[a].varname);
-	}
-      start_bind (i, 0);
-      return a;
-    }
-  if (i == 'O')
-    {
-	    	A4GL_assertion(1,"Not implemented");
-    }
-
-  if (i == 'N')
-    {
-      for (a = 0; a < bindcnt; a++)
-        {
-	  printc ("nullbind[%d].ptr=&%s;", a,bind[a].varname);
-        }
-      start_bind (i, 0);
-      return a;
-    }
-  return 0;
-}
-#endif
-
-int
-LEXLIB_print_bind_set_value_g (t_binding_comp_list *bind)
+int local_print_bind_set_value_g (t_binding_comp_list *bind,int ignore_esqlc,int only_native)
 {
   int a;
 
@@ -7706,14 +7661,17 @@ LEXLIB_print_bind_set_value_g (t_binding_comp_list *bind)
   if (bind->type == 'i')
     {
       for (a = 0; a < bind->nbind; a++)
-	{
-	  printc ("ibind[%d].ptr= &%s;", a,bind->bind[a].varname);
+        {
+	if (!ignore_esqlc && doing_esql()) {
+          printc ("native_binding_i[%d].ptr= &_vi_%d; ", a,a);
+          if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
+                printc ("native_binding_i_ind[%d].ptr= &_vii_%d; ", a,a);
+          }
 	}
-
-
-   	start_bind (bind->type, 0);
-
-
+	if (only_native) continue;
+          printc ("ibind[%d].ptr= &%s;", a,bind->bind[a].varname);
+        }
+        start_bind (bind->type, 0);
       return a;
     }
 
@@ -7721,27 +7679,38 @@ LEXLIB_print_bind_set_value_g (t_binding_comp_list *bind)
   if (bind->type == 'o')
     {
       for (a = 0; a < bind->nbind; a++)
-	{
-	  printc ("obind[%d].ptr= &%s; ", a,bind->bind[a].varname);
-	  if (doing_esql()) {
-	  	if ((bind->bind[a].dtype&DTYPE_MASK)==DTYPE_BYTE) {
-			printc("A4GL_init_out_byte(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
-	  	}
-	  	if ((bind->bind[a].dtype&DTYPE_MASK)==DTYPE_TEXT) {
-			printc("A4GL_init_out_text(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
-	  	}
-	  } 
+        {
+	if (!ignore_esqlc && doing_esql()) {
+          printc ("native_binding_o[%d].ptr= &_vo_%d; ", a,a);
+          if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
+                printc ("native_binding_o_ind[%d].ptr= &_voi_%d; ", a,a);
+          }
+	
 	}
+	if (only_native) continue;
+
+          printc ("obind[%d].ptr= &%s; ", a,bind->bind[a].varname);
+
+          if (doing_esql()) {
+                if ((bind->bind[a].dtype&DTYPE_MASK)==DTYPE_BYTE) {
+                        printc("A4GL_init_out_byte(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
+                }
+                if ((bind->bind[a].dtype&DTYPE_MASK)==DTYPE_TEXT) {
+                        printc("A4GL_init_out_text(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
+                }
+          }
+        }
       start_bind (bind->type, 0);
       return a;
     }
 
+
   if (bind->type == 'O')
     {
       for (a = 0; a < bind->nbind; a++)
-	{
-	  printc ("_ordbind[%d].ptr=&%s;", a,bind->bind[a].varname);
-	}
+        {
+          printc ("_ordbind[%d].ptr=&%s;", a,bind->bind[a].varname);
+        }
       start_bind (bind->type, 0);
       return a;
     }
@@ -7750,7 +7719,7 @@ LEXLIB_print_bind_set_value_g (t_binding_comp_list *bind)
     {
       for (a = 0; a < bind->nbind; a++)
         {
-	  printc ("nullbind[%d].ptr=&%s;", a,bind->bind[a].varname);
+          printc ("nullbind[%d].ptr=&%s;", a,bind->bind[a].varname);
         }
       start_bind (bind->type, 0);
       return a;
@@ -7760,7 +7729,7 @@ LEXLIB_print_bind_set_value_g (t_binding_comp_list *bind)
     {
       for (a = 0; a < bind->nbind; a++)
         {
-	  printc ("ebind[%d].ptr=&%s;", a,bind->bind[a].varname);
+          printc ("ebind[%d].ptr=&%s;", a,bind->bind[a].varname);
         }
       start_bind (bind->type, 0);
       return a;
@@ -7772,78 +7741,10 @@ A4GL_assertion(1,"Invalid bindtype");
 }
 
 
-
-#ifdef OBSOLETE
-/**
- * Print the declaration of bind structure array in the generated C source code
- * and its initialization values.
- *
- * @param i The binding type:
- *   i : Use the array ibind.
- *   N : Null binding.
- *   o : Use the array obind.
- *   O : Use the array ordbind.
- */
 int
-LEXLIB_print_bind_set_value (char i)
-{
-  int a;
-#ifdef DEBUG
-  A4GL_debug ("/* %c */\n", i);
-#endif
-  if (i == 'i')
-    {
-      for (a = 0; a < ibindcnt; a++)
-	{
-	  printc ("ibind[%d].ptr= &%s;", a,ibind[a].varname);
-	}
-      start_bind (i, 0);
-      return a;
-    }
-
-
-  if (i == 'o')
-    {
-      for (a = 0; a < obindcnt; a++)
-	{
-	  printc ("obind[%d].ptr= &%s; ", a,obind[a].varname);
-	  if (doing_esql()) {
-	  	if ((obind[a].dtype&DTYPE_MASK)==DTYPE_BYTE) {
-			printc("A4GL_init_out_byte(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
-	  	}
-	  	if ((obind[a].dtype&DTYPE_MASK)==DTYPE_TEXT) {
-			printc("A4GL_init_out_text(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
-	  	}
-	  } 
-	}
-      start_bind (i, 0);
-      return a;
-    }
-  if (i == 'O')
-    {
-      for (a = 0; a < current_ordbindcnt; a++)
-	{
-	  printc ("_ordbind[%d].ptr=&%s;", a,ordbind[a].varname);
-	}
-      start_bind (i, 0);
-      return a;
-    }
-
-  if (i == 'N')
-    {
-      for (a = 0; a < nullbindcnt; a++)
-        {
-	  printc ("nullbind[%d].ptr=&%s;", a,nullbind[a].varname);
-        }
-      start_bind (i, 0);
-      return a;
-    }
-  return 0;
+LEXLIB_print_bind_set_value_g (t_binding_comp_list *bind) {
+	return local_print_bind_set_value_g(bind,0,0);
 }
-#endif
-
-
-
 
 char* get_reset_state_after_call(void ) {
    if (isin_command ("INPUT")  || isin_command ("CONSTRUCT")||isin_command ("DISPLAY")) {
