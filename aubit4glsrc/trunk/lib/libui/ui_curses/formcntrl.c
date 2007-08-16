@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.114 2007-07-26 12:04:29 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.115 2007-08-16 16:55:10 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.114 2007-07-26 12:04:29 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.115 2007-08-16 16:55:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1135,27 +1135,54 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
 
   A4GL_debug ("req_field");
 
+
+  for (a = 0; a <= s->nfields; a++) {
+	struct struct_scr_field *fprop;
+  	fprop = (struct struct_scr_field *) (field_userptr(s->field_list[a]));
+	if (fprop) {
+		A4GL_debug("%s %s\n", fprop->tabname,fprop->colname);
+	}
+  }
+
   a = A4GL_gen_field_list (&ptr, s->currform, 1, ap);
 
   if (a >= 0)
     {
       for (a = 0; a <= s->nfields; a++)
 	{
+
 	  if (s->field_list[a] == ptr[0])
 	    {
 	      A4GL_init_control_stack (s, 0);
-
-
 	      // How risky is this ?
 	      s->currform->currentfield = 0;
-
-
 	      A4GL_newMovement (s, a);
 		free(ptr);
 	      return 1;
 	    }
 	}
-		free(ptr);
+
+	/* if we get to here - it wasn't found explicitly.. */
+	/* this could be because we're in an subscript of a screen array */
+      for (a = 0; a <= s->nfields; a++)
+	{
+	  struct struct_scr_field *fprop;
+  	  fprop = (struct struct_scr_field *) (field_userptr(ptr[0]));
+	  if (A4GL_field_name_match ((FIELD *) s->field_list[a], fprop->colname)) {
+	      // I think they mean this one...
+	      A4GL_init_control_stack (s, 0);
+	      // How risky is this ?
+	      s->currform->currentfield = 0;
+	      A4GL_newMovement (s, a);
+	      free(ptr);
+	      return 1;
+		
+	  }
+      }
+    
+
+
+      free(ptr);
       A4GL_exitwith ("Field not found");
       return 0;
     }
