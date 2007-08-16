@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.115 2007-06-11 17:50:30 mikeaubury Exp $
+# $Id: builtin.c,v 1.116 2007-08-16 16:56:46 mikeaubury Exp $
 #
 */
 
@@ -1668,6 +1668,10 @@ int aclfgl_fgl_getpid(int n) {
 	return 1;
 }
 
+int aclfgl_fgl_getppid(int n) {
+	A4GL_push_int(getppid());
+	return 1;
+}
 
 
 /*
