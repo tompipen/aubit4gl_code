@@ -231,7 +231,7 @@ style "280" {
 
 style "Error" { 
         fg[NORMAL]       = "#ffffff"
-        bg[NORMAL]       = "#ff0000"
+        bg[NORMAL]       = "#7f0000"
 	text[NORMAL]     = "#0000ff"
 	base[NORMAL]     = "#00ff00"
   	font_name = "monospace 8"

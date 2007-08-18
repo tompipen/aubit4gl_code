@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.69 2007-06-13 20:57:12 mikeaubury Exp $
+# $Id: binding.c,v 1.70 2007-08-18 08:15:37 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.69 2007-06-13 20:57:12 mikeaubury Exp $";
+		"$Id: binding.c,v 1.70 2007-08-18 08:15:37 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -225,7 +225,8 @@ make_sql_bind_g (t_binding_comp_list *bind)
 	    }
 	  for (a = 0; a < bind->nbind; a++)
 	    {
-	      printc ("   %c{&_vi_%d,%d,%d,0,0,0}", comma, a, bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
+	      //printc ("   %c{&_vi_%d,%d,%d,0,0,0}", comma, a, bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
+	      printc ("   %c{NULL,%d,%d,0,0,0}", comma,  bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
 	      comma = ',';
 	    }
 	  printc ("};\n");
@@ -239,7 +240,8 @@ make_sql_bind_g (t_binding_comp_list *bind)
 		}
 	      for (a = 0; a < bind->nbind; a++)
 		{
-		  printc (" %c{&_vii_%d,%d,%d,0,0,0}", comma, a, 2, 4);
+		  //printc (" %c{&_vii_%d,%d,%d,0,0,0}", comma, a, 2, 4);
+		  printc (" %c{NULL,%d,%d,0,0,0}", comma,  2, 4);
 		  comma = ',';
 		}
 	      printc ("};\n");
@@ -257,7 +259,8 @@ make_sql_bind_g (t_binding_comp_list *bind)
 	    }
 	  for (a = 0; a < bind->nbind; a++)
 	    {
-	      printc (" %c{&_vo_%d,%d,%d,0,0,0}", comma, a, bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
+	      //printc (" %c{&_vo_%d,%d,%d,0,0,0}", comma, a, bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
+	      printc (" %c{NULL,%d,%d,0,0,0}", comma,  bind->bind[a].dtype & 0xffff, bind->bind[a].dtype >> 16);
 	      comma = ',';
 	    }
 	  printc ("};\n");
@@ -272,7 +275,8 @@ make_sql_bind_g (t_binding_comp_list *bind)
 		}
 	      for (a = 0; a < bind->nbind; a++)
 		{
-		  printc (" %c{&_voi_%d,%d,%d,0,0,0}", comma, a, 2, 4);
+		  //printc (" %c{&_voi_%d,%d,%d,0,0,0}", comma, a, 2, 4);
+		  printc (" %c{NULL,%d,%d,0,0,0}", comma,  2, 4);
 		  comma = ',';
 		}
 	      printc ("};\n");

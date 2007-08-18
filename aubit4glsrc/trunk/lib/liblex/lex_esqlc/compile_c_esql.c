@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.171 2007-08-16 21:47:29 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.172 2007-08-18 08:15:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.171 2007-08-16 21:47:29 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.172 2007-08-18 08:15:37 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -2527,7 +2527,7 @@ print_report_table (char *repname, char type, int c, char *asc_desc,
 
       printc ("/* MJAMJA - printing obind */");
 
-
+	local_print_bind_set_value_g(&l,0,1);
       strcpy (f.cname, cname);
       f.fp = malloc (sizeof (struct s_fetch_place));
       f.fp->ab_rel = FETCH_RELATIVE;
