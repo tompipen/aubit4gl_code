@@ -69,6 +69,7 @@ void *A4GL_alloc_associated_mem(void *orig,int nbytes);
 #define ESQLC_IUSTYPES          1
 #endif
 
+#define USE_LONG_LONG 1
 
 off_t bpos = 0;
 
@@ -852,9 +853,11 @@ indicator=*col->sqlind ;
 				if (A4GL_isyes(acl_getenv("A4GL_LOCALEMONEY"))) {
 	      				sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
 #ifndef __WIN32__
+{
 					char smbuff[200];
 						sprintf(smbuff,"%%%dn",columnWidths[idx - 1]);
 						strfmon(buffer,sizeof(buffer), smbuff,atof(buff));
+}
 #endif
 				} else {
 	      				sprintf (buffer, "%*s", columnWidths[idx - 1], buff);
@@ -2627,7 +2630,9 @@ do_unload (struct element *e,long *raffected)
 	int  outbsize = 0, blobn;
   int *bbufs[1024];
   char *outbuff, *iptr, *optr, str[100];
+/*
   long long filebytes = (long long) 0;
+*/
   intrvl_t *ivp;
   short *qualifiers;
   short *indicators;
