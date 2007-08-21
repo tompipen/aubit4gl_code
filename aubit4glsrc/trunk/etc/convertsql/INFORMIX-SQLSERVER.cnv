@@ -111,7 +111,8 @@ OMIT_NO_LOG
 USE_INDICATOR
 REPLACE_EXPR rowid = oid
 
-REPLACE_SQLCONST today = date(now())
+#REPLACE_SQLCONST today = date(now())
+REPLACE_SQLCONST today = getdate()
 REPLACE_SQLFUNC year = date_part('YEAR',%s::timestamp with time zone)
 REPLACE_SQLFUNC month = date_part('MONTH',%s::timestamp with time zone)
 REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)
