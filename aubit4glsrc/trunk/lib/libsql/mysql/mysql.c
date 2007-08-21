@@ -205,13 +205,27 @@ niy_dtype (int dtype)
 static void
 conv_sqldtype (int dt, int len, int prec, int *fgldtype, int *fglprc)
 {
-
+int nd;
+int np;
   *fgldtype = 0;
   *fglprc = 0;
 
 
   switch (dt)
     {
+    case MYSQL_TYPE_NEWDECIMAL:
+		if (prec) {
+			nd=len-2;
+			np=prec;
+		} else {
+			nd=len-1;
+			np=prec;
+			//printf("(%d,%d)", len-1,prec);
+		}
+      *fgldtype = DTYPE_DECIMAL;
+      *fglprc = (nd<<8)+np;
+      break;
+
     case MYSQL_TYPE_DECIMAL:
       *fgldtype = DTYPE_FLOAT;
       *fglprc = 0;
