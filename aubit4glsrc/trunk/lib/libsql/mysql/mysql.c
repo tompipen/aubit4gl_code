@@ -1696,7 +1696,9 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
       copy_out_single_mysql_bind (stmt, associated_to, &obind[a], &mysql_obind[a], &indicators[a], PHASE_PRE_FETCH);
       indicators[a] = 0;
     }
-  mysql_stmt_bind_result (stmt, mysql_obind);
+  if (mysql_obind) {
+  	mysql_stmt_bind_result (stmt, mysql_obind);
+	}
   x = mysql_stmt_fetch (stmt);
 
   if (x == MYSQL_NO_DATA)
@@ -1766,7 +1768,10 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	}
     }
 
-
+  if (stmt==0) {
+      A4GL_exitwith ("No statement");
+	return 0;
+	}
   param_count = mysql_stmt_param_count (stmt);	// Number of paramters...
   if (ni != param_count)
     {
