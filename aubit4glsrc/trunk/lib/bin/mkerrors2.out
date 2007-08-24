@@ -343,3 +343,4 @@
 344|%s is not a statement or cursor name
 345|Could not disconnect from database
 346|Error opening file for unload
+348|No statement
