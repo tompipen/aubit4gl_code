@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.118 2007-08-15 18:52:38 mikeaubury Exp $
+# $Id: ops.c,v 1.119 2007-08-24 07:11:17 mikeaubury Exp $
 #
 */
 
@@ -207,7 +207,7 @@ int d;
   //char *a2;
   A4GL_pop_var2(&b,5,0x2010);
   A4GL_pop_var2(&a,5,0x2010);
-
+A4GL_debug("dec_dec_ops");
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {

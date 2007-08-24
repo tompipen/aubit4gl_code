@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.85 2007-08-15 18:52:38 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.86 2007-08-24 07:11:17 mikeaubury Exp $
 #
 */
 
@@ -232,9 +232,22 @@ A4GL_push_float (float p)
   A4GL_push_param (ptr, DTYPE_SMFLOAT + DTYPE_MALLOCED);
 }
 
+
+
+#define NUM_DIG(x)               ((x[0])&127 )
+#define NUM_DEC(x)               ((x[1]))
+#define NUM_BYTES(x)     (NUM_DIG(x)+OFFSET_DEC(x))
+
 void
 A4GL_push_dec_dec (fgldecimal *p, int ismoney,int size) {
-	A4GL_push_dec ((char *)p,  ismoney,size);
+int size_n;
+int ndig;
+int ndec;
+	ndig=NUM_DIG (p->dec_data);
+        ndec=NUM_DEC(p->dec_data);
+	if (ndig<ndec) { A4GL_assertion(1,"Insufficent digits"); }
+	size_n=(ndig<<8)+ndec;
+	A4GL_push_dec ((char *)p,  ismoney,size_n);
 }
 /**
  * Called at run-time by the generated C code.
@@ -265,9 +278,6 @@ A4GL_push_dec (char *p, int ismoney,int size)
   l=size>>8;
   d=size&255;
 
-#define NUM_DIG(x)               ((x[0])&127 )
-#define NUM_DEC(x)               ((x[1]))
-#define NUM_BYTES(x)     (NUM_DIG(x)+OFFSET_DEC(x))
 
 
   if (p) {
@@ -300,10 +310,18 @@ A4GL_push_dec (char *p, int ismoney,int size)
 
 void A4GL_push_decimal_str(char *p) {
 	fgldecimal d;
-	
+	int size;
+	int ndig;
+	int ndec;
 	A4GL_init_dec(&d,32,16);
 	A4GL_str_to_dec(p,&d);
-  	A4GL_push_dec_dec(&d,0,16);
+
+	ndig=NUM_DIG (d.dec_data);
+        ndec=NUM_DEC(d.dec_data);
+	if (ndig<ndec) { A4GL_assertion(1,"Insufficent digits"); }
+	size=(ndig<<8)+ndec;
+  	A4GL_push_dec_dec(&d,0,size);
+
 }
 
 void A4GL_push_double_str(char *p) {
