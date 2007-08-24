@@ -8,6 +8,7 @@ define lv_output char(64)
 define mv_silent integer
 define mv_mode integer
 define mv_perms integer
+define mv_prefix char(64)
 
 DEFINE gv_filter_out_table_prefix char (16)
 code
@@ -46,6 +47,11 @@ define
 
 			when "-fileschema"
 				let mv_mode=1
+
+			when "-code"
+				let mv_mode=2
+				let a=a+1
+				let mv_prefix=arg_val(a)
 
 			when "-noperms"
 				let mv_perms=0
@@ -299,6 +305,7 @@ function usage()
 	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] "
 	display "          [-U] [-U4GL] [-L] [-L4GL] [-no-owner] [-prefix-idx] [-q]"
 	display "          [-r rolename] [-f procname] -d dbname [-ss] [filename]"
+	display "          [-code prefix]"
 	display ""
 	display "   -sys         Process Informix system tables with tabid < 99"
 	display "   -noperms     Do not include any GRANT/REVOKE"
@@ -310,6 +317,7 @@ function usage()
 	display "   -noowner     Do not output object's (table/index/etc) owner information"
 	display "   -prefix-idx  Add prefix to index names (IDX_)"
 	display "   -ss          todo"
+	display "   -code prefix Generate code using the specified prefix"
 	display " "
     exit program 1
 end function
@@ -328,3 +336,6 @@ function get_perms()
 	return mv_perms
 end function
 
+function get_prefix()
+	return mv_prefix clipped
+end function

@@ -75,6 +75,8 @@ define lv_qry char(80)
 define lv_c integer
 define lv_localdb char(64)
 define a integer
+define lv_ncols integer
+
 
 define lv_systables_name char(128)
 define lv_syscolumns_name char(128)
@@ -118,7 +120,6 @@ define lv_q1 char(512)
 			declare c_get_tables cursor for p_get_tables
 
 		foreach c_get_tables into lv_t
-		#display "dump table : ",lv_t
 			call dump_table(lv_t,lv_systables,lv_prefix_idx,lv_no_owner)
 		end foreach
 		return
@@ -190,7 +191,7 @@ define lv_q1 char(512)
 			call outstr(lv_str)
 			call outstr(" ")
 		else
-			call dump_synonym_fileschema(lv_st.tabname,lv_fulldb, lv_stname);
+			call dump_synonym_fileschema(lv_t,lv_fulldb, lv_stname);
 		end if
 	
 		RETURN
@@ -234,8 +235,14 @@ define lv_q1 char(512)
 			
 			call outstr(lv_str clipped)
 		else
-			let lv_str="[",lv_t clipped," ",lv_st.tabid using "<<<<<<<<<<"," ",lv_st.partnum using "<<<<<<<<<<<<","]"
-			call outstr(lv_str clipped)
+			if get_mode()=1 then
+				if length(mv_real_table)>0 then
+				let lv_str="[",mv_real_table clipped," ",lv_st.tabid using "<<<<<<<<<<"," ",lv_st.partnum using "<<<<<<<<<<<<","]"
+				else
+				let lv_str="[",lv_t clipped," ",lv_st.tabid using "<<<<<<<<<<"," ",lv_st.partnum using "<<<<<<<<<<<<","]"
+				end if
+				call outstr(lv_str clipped)
+			end if
 		end if
 		
 		
@@ -245,6 +252,10 @@ define lv_q1 char(512)
  		declare c2 cursor for  p_scols
 
 		
+		let lv_ncols=0
+		foreach c2 into lv_sc.*
+			let lv_ncols=lv_ncols+1
+		end foreach
 		
 		# Now process each bit of column information
 		let lv_str=" "
@@ -253,17 +264,27 @@ define lv_q1 char(512)
 			let lv_colnames[lv_c]=lv_sc.colname
 	
 	
-			if get_mode()=0 then
+			case get_mode()
+			when 0 
 				if lv_str!=" " then 
 					let lv_str=lv_str clipped,"," 
 					call outstr(lv_str) 
 					let lv_str= " " 
 				end if
-			else
+			when 1
 				let lv_str=lv_sc.colname clipped," ",lv_sc.coltype using "<<<<<&"," ",lv_sc.collength using "<<<<<&"
 				call outstr(lv_str) 
 				let lv_str= " "
-			end if
+			when 2
+				if lv_sc.colno<lv_ncols then
+					let lv_str=get_prefix(),".",lv_sc.colname clipped,","
+				else
+					let lv_str=get_prefix(),".",lv_sc.colname clipped
+				end if
+				call outstr(lv_str) 
+				let lv_str= " "
+			end case
+				
 		
 			if lv_sc.coltype>255 then
 				let lv_sc.coltype=lv_sc.coltype-256
@@ -365,7 +386,7 @@ define lv_q1 char(512)
 	
 	# We don't need to worry about dumping indexes for 
 	# fileschema mode
-	if get_mode()=1 then
+	if get_mode()>=1 then
 		return
 	end if
 
@@ -963,4 +984,5 @@ define p_tabname, p_fulldb, p_stname char(200)
 let mv_real_table=p_tabname
 let p_stname=p_fulldb clipped, p_stname clipped
 call dump_table(p_stname,0,0,0)
+let mv_real_table=""
 END FUNCTION
