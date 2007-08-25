@@ -18,7 +18,7 @@
  */
 
 /*
- *      $Id: mapmutl1.c,v 1.1 2007-07-26 12:04:28 mikeaubury Exp $
+ *      $Id: mapmutl1.c,v 1.2 2007-08-25 11:45:04 mikeaubury Exp $
  *
  *      This file contains the utility function 'M_apm_log_error_msg'
  *
@@ -26,6 +26,13 @@
  *	their own custom version easily without changing the base library.
  *
  *      $Log: not supported by cvs2svn $
+ *      Revision 1.1  2007/07/26 12:04:28  mikeaubury
+ *      fix some issues with decimals
+ *      fix issue with freeing sql memory
+ *      fix REQUIRED on input and input array (set INPUTREQUIREDTYPE=INPUT)
+ *      fix character erase in fields
+ *      Add ALWAYSOUTPUTREPORT to force a blank page from a report
+ *
  *      Revision 1.3  2003/07/21 21:00:34  mike
  *      Modify error messages to be in a consistent format.
  *
@@ -37,18 +44,22 @@
  */
 
 #include "m_apm_lc.h"
+#include "a4gl_libaubit4gl_int.h"
 
 /****************************************************************************/
 void	M_apm_log_error_msg(int fatal, char *message)
 {
 if (fatal)
   {
-   fprintf(stderr, "MAPM Error: %s\n", message);
+	
+	A4GL_debug("MAPM Error: %s",message);
+   	A4GL_exitwith("MAPM Error");
    exit(100);
   }
 else
   {
-   fprintf(stderr, "MAPM Warning: %s\n", message);
+	A4GL_debug("MAPM Warning: %s",message);
+   	A4GL_exitwith("MAPM Warning");
   }
 }
 /****************************************************************************/

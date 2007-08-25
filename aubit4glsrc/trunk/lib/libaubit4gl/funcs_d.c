@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.96 2007-08-25 07:46:55 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.97 2007-08-25 11:45:04 mikeaubury Exp $
 #
 */
 
@@ -143,8 +143,8 @@ int a;
 		m_increment[0]= m_apm_init();
 		m_10=m_apm_init();
 		m_tmp=m_apm_init();
-        	acl_apm_set_string(m_increment[0], "0.5");
-        	acl_apm_set_string(m_10, "10");
+        	m_apm_set_string(m_increment[0], "0.5");
+        	m_apm_set_string(m_10, "10");
 		inited++;
 	}
 
@@ -593,7 +593,7 @@ char *dot;
   
 
 
-  acl_apm_set_string(m_main, numeric);
+  acl_apm_set_string(m_main, numeric,0);
 
 
 
@@ -644,7 +644,7 @@ char *dot;
 		dot+=num_places+1;
 		*dot=0;
   }
-  acl_apm_set_string(m_tmp, buff);
+  acl_apm_set_string(m_tmp, buff,0);
   m_apm_copy(m_main,m_tmp);
 
 
