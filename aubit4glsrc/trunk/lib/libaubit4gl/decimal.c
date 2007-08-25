@@ -674,9 +674,8 @@ void acl_apm_set_string(M_APM m1, char *s) {
 	strcpy(buff,s);
 
 	//@FIXME
-
-	A4GL_decstr_convert(buff,a4gl_convfmts.posix_decfmt, a4gl_convfmts.printf_decfmt,0, 1 , -1); 
         A4GL_decstr_convert(buff,a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt,0, 1 , -1); 
+
 	m_apm_set_string(m1,buff);
 }
 
