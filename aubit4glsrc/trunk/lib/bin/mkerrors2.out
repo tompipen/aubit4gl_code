@@ -344,3 +344,5 @@
 345|Could not disconnect from database
 346|Error opening file for unload
 348|No statement
+350|MAPM Error
+351|MAPM Warning

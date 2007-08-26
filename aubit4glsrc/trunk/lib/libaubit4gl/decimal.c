@@ -672,7 +672,7 @@ void A4GL_push_dec_from_apm(M_APM tmp);
 void acl_apm_set_string(M_APM m1, char *s,int convert) {
 	char buff[2000];
 	strcpy(buff,s);
-	if (strchr(s,'.')==0 && convert) {
+	if (strchr(s,'.')==0 && convert && a4gl_convfmts.printf_decfmt.decsep==',') {
 			A4GL_assertion(1,"set string from real decimal");
 		}
 	//@FIXME
