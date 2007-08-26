@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.41 2007-08-26 07:46:36 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.42 2007-08-26 11:13:25 mikeaubury Exp $
 #*/
 
 /**
@@ -923,7 +923,6 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
     {
       float fx, fy, fw, fh;
       char *text, *mode, *feature;
-	A4GL_pause_execution();
       int c;
 	if (n==7) {
       		feature = A4GL_char_pop ();
