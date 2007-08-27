@@ -8,6 +8,7 @@ define lv_lockit integer
 define lv_skip integer
 END GLOBALS
 
+define mv_tabname char(256)
 
 define lv_dbname char(256)
 define lv_cmdfile char(256)
@@ -190,32 +191,41 @@ end function
 function unlock_table(lv_tabname) 
 define lv_tabname char(256)
 define lv_str char(156)
-
+whenever error continue
 if lv_lockit!=-1 then
 	let lv_str="UNLOCK TABLE ",lv_tabname
 	PREPARE p_unlockit FROM lv_str
 	EXECUTE p_unlockit
 end if
+whenever error stop
 
 end function
 
 function lock_table(lv_tabname)
 define lv_tabname char(256)
 define lv_str char(256)
+if length(lv_tabname)>0 then
+	let mv_tabname=lv_tabname
+else
+	let lv_tabname=mv_tabname
+end if
+
 if lv_lockit!=-1 then
 	if lv_lockit=0 then
-		let lv_str="LOCK TABLE ",lv_tabname," IN SHARE MODE"
+		let lv_str="LOCK TABLE ",lv_tabname clipped," IN SHARE MODE"
 	else
-		let lv_str="LOCK TABLE ",lv_tabname," IN EXCLUSIVE MODE"
+		let lv_str="LOCK TABLE ",lv_tabname clipped," IN EXCLUSIVE MODE"
 	end if
 	WHENEVER ERROR CONTINUE
 	PREPARE p_lockit FROM lv_str
 	if sqlca.sqlcode<0 then
+		display "Error :", sqlca.sqlcode
 		return 0
 	end if
 
 	EXECUTE p_lockit
 	if sqlca.sqlcode<0 then
+		display "Error :", sqlca.sqlcode
 		return 0
 	end if
 	WHENEVER ERROR STOP

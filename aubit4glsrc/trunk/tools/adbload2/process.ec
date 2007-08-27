@@ -129,7 +129,6 @@ process_entry (struct s_dbloadline *dbload)
       load_err (0, errbuff);
       return 0;
     }
-
   if (!prepare_it (dbload))
     {
       return 0;
@@ -347,10 +346,12 @@ cp_memory_for_field (char *linein, struct s_dbloadline *dbload, char *ptr,
 int
 lock_table (struct s_dbloadline *dbload)
 {
+int a;
   // Do we need to lock our table ? 
   A4GL_push_char( dbload->i->tabname);
-  aclfgl_lock_table( 1);
-  return A4GL_pop_int();
+  aclfgl_lock_table(1);
+  a=A4GL_pop_int();
+  return a;
 }
 
 
@@ -389,7 +390,6 @@ prepare_it (struct s_dbloadline *dbload)
   // Now we've got our insert - create the cursor...
   //
   EXEC SQL PREPARE p_ins FROM $ptr_insert;
-
   if (sqlca.sqlcode < 0)
     {
       // Couldn't prepare it
@@ -466,10 +466,7 @@ prepare_it (struct s_dbloadline *dbload)
 
   do_begin_work ();
 
-  if (!lock_table (dbload))
-    {
-      return 0;
-    }
+  if (!lock_table (dbload)) { return 0; }
 
   EXEC SQL DECLARE c_insert CURSOR WITH HOLD FOR p_ins;
 
@@ -496,6 +493,7 @@ int
 do_commit_work ()
 {
   EXEC SQL COMMIT WORK;
+
 }
 
 
@@ -553,8 +551,8 @@ cleanup (struct s_dbloadline *dbload)
     }
 
   EXEC SQL CLOSE c_insert;
-  unlock_table (dbload);
   do_commit_work();
+  unlock_table (dbload);
 }
 
 
@@ -569,7 +567,6 @@ process_line (char *s, struct s_dbloadline *dbload)
   int len;
   load_ok = 1;
   currline++;
-
 
   if (currline < lv_skip)
     return 1;			// Its good - because we dont care...
@@ -676,8 +673,16 @@ process_line (char *s, struct s_dbloadline *dbload)
     }
 
   mem_del (&field);
-
   EXEC SQL PUT c_insert USING DESCRIPTOR idesc;
+  EXEC SQL FLUSH c_insert ;
+
+	if (sqlca.sqlcode<0) {
+		char buff[256];
+		sprintf(buff,"SQLError : %d", sqlca.sqlcode);
+	  	load_err (-1, buff);
+		return 0;
+	}
+
 
   // All our data should be setup - now we need to check for nulls...
 
@@ -686,6 +691,11 @@ process_line (char *s, struct s_dbloadline *dbload)
   if (curr_tx_count > lv_commit)
     {
 	do_commit_work();
+
+	  	A4GL_push_char( dbload->i->tabname);
+  		aclfgl_lock_table(1);
+  		a=A4GL_pop_int();
+
       do_begin_work ();
     }
 
