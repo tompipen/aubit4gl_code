@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.33 2007-06-12 19:02:46 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.34 2007-08-29 16:48:07 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -240,11 +240,11 @@ A4GL_split_config (char *str)
     {
       if (strlen (args_val[0]) == 0 && strlen (args[0]))
 	{
-	  FPRINTF (stderr, "Looking at :%s\n", args[0]);
+	  A4GL_debug ( "Looking at :%s\n", args[0]);
 	  if (A4GL_key_val (args[0]) > 255)
 	    {
 	      // Looks like the config is just a key..
-	      FPRINTF (stderr, "Key ? %s\n", args[0]);
+	      A4GL_debug ( "Key ? %s\n", args[0]);
 	      args_type[0] = TYPE_CHAR;
 	      args_val[0] = strdup (args[0]);	//@FIXME - memory leak
 	      //if (args_val[0][0]=='f' && (args_arg[0][1]>='1' && args_val[0][1]<='9')) {a4gl_upshift(args_val[0]);}
@@ -697,7 +697,7 @@ A4GL_make_pixbuf_gw (char *filename)
 
   if (filename == 0)
     filename = "";
-  FPRINTF (stderr, "Making pixmap from file:%s (1)\n", filename);
+  A4GL_debug ("Making pixmap from file:%s (1)\n", filename);
   A4GL_trim (filename);
 
 
@@ -728,7 +728,7 @@ A4GL_make_pixbuf_gw (char *filename)
 	}
 
   gtk_widget_show (widget);
-  FPRINTF (stderr, "pixmap=%p\n", pixbuf);
+  A4GL_debug ( "pixmap=%p\n", pixbuf);
   //gtk_box_pack_start(GTK_BOX(hbox), widget, FALSE, FALSE, 2);
 
   if (pixbuf) {
@@ -751,7 +751,7 @@ void A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
 
   if (filename == 0)
     filename = "";
-  FPRINTF (stderr, "Making pixmap from file:%s (1)\n", filename);
+  A4GL_debug ( "Making pixmap from file:%s (1)\n", filename);
 
   A4GL_trim (filename);
 
@@ -759,7 +759,7 @@ void A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
   pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
   if (!pixbuf)
     {
-      FPRINTF (stderr, "Make pixmap failed...");
+      A4GL_debug ( "Make pixmap failed...");
       return;
     }
   else
@@ -773,7 +773,7 @@ void A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
 
 	  if (resized == 0)
 	    {
-	      FPRINTF (stderr, "resize pixmap failed...");
+	      A4GL_debug ( "resize pixmap failed...");
 	    }
 
 	  lastWidth =
@@ -865,16 +865,16 @@ A4GL_cr_pixbuf (void)
   GtkWidget *pixmap = 0;
   char *filename;
   char *scaletofit;
-  FPRINTF (stderr, "Find param\n");
+  A4GL_debug ( "Find param\n");
 
   filename = A4GL_find_param ("FILENAME");
-  FPRINTF (stderr, "Found :%s\n", filename);
+  A4GL_debug ( "Found :%s\n", filename);
   A4GL_debug ("Making picture filename=%s PIXBUF\n", filename);
 #if GTK_CHECK_VERSION(2,0,0)
   pixmap = A4GL_make_pixbuf_gw (filename);
 #endif
   gtk_widget_show (pixmap);
-  FPRINTF (stderr, "Made : %p\n", pixmap);
+  A4GL_debug ( "Made : %p\n", pixmap);
   A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
   scaletofit = A4GL_find_param ("*SCALE");
   if (scaletofit) { 
@@ -905,7 +905,7 @@ A4GL_cr_button (void)
   label = A4GL_find_param ("*LABEL");
   image = A4GL_find_param ("*IMAGE");
   key = A4GL_find_param ("*KEY");
-  FPRINTF (stderr,"key=%s\n", key);
+  A4GL_debug ("key=%s\n", key);
 
   b = (GtkButton *) gtk_button_new (); 
   v = (GtkVBox *) gtk_vbox_new (0, 3);
@@ -959,7 +959,7 @@ A4GL_cr_button (void)
     {
       if (strlen (key))
 	{
-	  FPRINTF (stderr, "ISKEY:%s\n", key);
+	  A4GL_debug ( "ISKEY:%s\n", key);
 	  gtk_object_set_data (GTK_OBJECT (b), "KEY", key);
 	}
     }
@@ -1405,7 +1405,7 @@ A4GL_select_row_handler (GtkWidget * w,
 
   else
     {
-      FPRINTF (stderr, "Nothing to do\n");
+      A4GL_debug ( "Nothing to do\n");
     }
 }
 
@@ -1546,8 +1546,7 @@ A4GL_func (GtkWidget * w, char *mode)
 
       key = gtk_object_get_data (GTK_OBJECT (w), "KEY");
 
-      FPRINTF (stderr, "Key=%p (%s)\n", key, key);
-      fflush (stderr);
+      A4GL_debug ( "Key=%p (%s)\n", key, key);
 
       if (key)
 	{
@@ -1571,23 +1570,22 @@ A4GL_func (GtkWidget * w, char *mode)
 		  gtk_accelerator_parse (key, &keyn, (GdkModifierType *) ptr);
 		  if (keyn == 0 && m == 0)
 		    {
-		      FPRINTF (stderr, "Don't understand that key\n");
+		      FPRINTF (stderr, "Don't understand that key : %s\n",key);
 		      a4gl_upshift (key);
 		      gtk_accelerator_parse (key, &keyn,
 					     (GdkModifierType *) ptr);
 		      if (keyn == 0 && m == 0)
 			{
 			  keyn = A4GL_key_val (key);
-			  FPRINTF
-			    (stderr, "Still dont understand that key - hope the aubit one just passed through...");
+			  FPRINTF (stderr, "Still dont understand that key - hope the aubit one just passed through...");
 			}
 		    }
 		  if (m & 4 && tolower (keyn) >= 'a' && tolower (keyn) <= 'z')
 		    keyn = tolower (keyn) - 'a' + 1;
 
 		  A4GL_fake_a_keypress (w, keyn);
-		  FPRINTF (stderr, "keyn=%x m=%x\n", keyn, m);
-		  fflush (stderr);
+		  A4GL_debug ( "keyn=%x m=%x\n", keyn, m);
+		  //fflush (stderr);
 		}
 	    }
 	}
@@ -1706,7 +1704,7 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
   if (A4GL_aubit_strcasecmp (ptr, "PIXMAP") == 0 || A4GL_aubit_strcasecmp (ptr, "PIXBUF") == 0 ||  A4GL_aubit_strcasecmp (ptr, "FIELD_BMP")==0)
     {
   	if (A4GL_aubit_strcasecmp (ptr, "PIXMAP") == 0) {
-		FPRINTF(stderr,"Cant change a pixmap - use a PIXBUF instead...\n");
+		A4GL_debug("Cant change a pixmap - use a PIXBUF instead...\n");
 	} else {
 		char *s=0;
 		if (orig) {
@@ -1737,8 +1735,7 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
   if (A4GL_aubit_strcasecmp (ptr, "LIST") == 0)
     {
-      FPRINTF (stderr, "Adding to list...\n");
-      fflush (stderr);
+      A4GL_debug ( "Adding to list...\n");
       k = gtk_object_get_data (GTK_OBJECT (k), "Child");
       gtk_clist_append (GTK_CLIST (k), &utf);
       g_free (utf);

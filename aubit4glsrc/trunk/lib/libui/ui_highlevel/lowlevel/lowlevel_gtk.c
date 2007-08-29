@@ -19,7 +19,7 @@
 #include <ctype.h>
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.124 2007-07-11 12:27:19 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.125 2007-08-29 16:48:07 mikeaubury Exp $";
 #endif
 
 
@@ -457,7 +457,6 @@ A4GL_add_to_console (char *s)
 {
   char *utf;
 
-		//printf("txt=%s\n",s);
   utf = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
   gtk_clist_append (GTK_CLIST (console_list), &utf);
   g_free (utf);
@@ -615,7 +614,6 @@ add_button (GtkDialog * win, int but_code)
       A4GL_debug ("add_button: unknown button-code: %d\n", but_code);
     }
 
-		//printf("txt=%s\n",txt);
   txt_utf = g_locale_to_utf8 (txt, -1, NULL, NULL, NULL);
 
   gtk_object_set_data (GTK_OBJECT (win), "RETURNS", 0);
@@ -656,7 +654,6 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
   gtk_signal_connect (GTK_OBJECT (win),
 		      "delete_event", GTK_SIGNAL_FUNC (gtk_true), NULL);
   if (msg) {
-		//printf("txt=%s\n",msg);
     label_utf = g_locale_to_utf8 (msg, -1, NULL, NULL, NULL);
 	}
   else {
@@ -676,7 +673,6 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 
   if (strlen (caption))
     {
-		//printf("txt=%s\n",caption);
       label_utf = g_locale_to_utf8 (caption, -1, NULL, NULL, NULL);
       gtk_window_set_title (GTK_WINDOW (win), label_utf);
       g_free (label_utf);
@@ -1238,10 +1234,10 @@ A4GL_LL_getch_swin (void *window_ptr,char *why)
     {
       if (menu_response != -1)
 	{
-	  FPRINTF (stderr, "MENU RESPONSE : %d\n", menu_response);
+	  A4GL_debug ( "MENU RESPONSE : %d\n", menu_response);
 	  a = 0 - (menu_response + 1000);
 	  menu_response = -1;
-	  FPRINTF (stderr, "Returning : %d\n", a);
+	  A4GL_debug ( "Returning : %d\n", a);
 	  return a;
 	}
       a = get_keypress_from_buffer ();
@@ -1952,7 +1948,6 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
   if (!lab)
     {
       char *lab_utf ;
-		//printf("txt=%s\n",cbuff);
 	lab_utf= g_locale_to_utf8 (cbuff, -1, NULL, NULL, NULL);
       lab = (GtkLabel *) gtk_label_new (lab_utf);
       g_free (lab_utf);
@@ -1984,7 +1979,6 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
   else
     {
       char *txt_utf ;
-		//printf("txt=%s\n",cbuff);
 		txt_utf= g_locale_to_utf8 (cbuff, -1, NULL, NULL, NULL);
       has_old_attr = 1;
       gtk_label_set_text (lab, txt_utf);
@@ -2245,7 +2239,6 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
   GtkWidget *evt;		// And we'll use this to get a background colour...
   char buff[80];
   char *lab_utf ;
-	//printf("txt=%s\n",str);
 	lab_utf= g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
   A4GL_debug ("Create error window");
   if (str == 0)
@@ -2283,14 +2276,14 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
   if (attr == 0 || attr == -1)
     {
       SPRINTF0 (buff, "Error");
-      FPRINTF (stderr, "Error string : '%s'\n", str);
+      A4GL_debug ( "Error string : '%s'\n", str);
       gtk_widget_set_name (GTK_WIDGET (frame), buff);
       gtk_widget_set_name (GTK_WIDGET (evt), buff);
       gtk_widget_set_name (GTK_WIDGET (label), buff);
     }
   else
     {
-      FPRINTF (stderr, "ATTR = %x\n", attr);
+      A4GL_debug ( "ATTR = %x\n", attr);
       SPRINTF1 (buff, "%x", attr >> 8);
       gtk_widget_set_name (GTK_WIDGET (frame), buff);
       gtk_widget_set_name (GTK_WIDGET (evt), buff);
@@ -2344,7 +2337,6 @@ A4GL_LL_set_bkg (void *win, int attr)
   // If its an appwindow - we don't want to rename it..
   if (strcmp (ptr, "AppWindow") == 0)
     return;
-  //printf("win=%p buff=%s\n", win,buff);
   gtk_widget_set_name (GTK_WIDGET (win), buff);
   x = gtk_object_get_data (GTK_OBJECT (win), "FIXED");
   if (x)
@@ -2421,7 +2413,7 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   cw = gtk_object_get_data (GTK_OBJECT (cw), "FIXED");
   if (cw == 0)
     {
-      FPRINTF (stderr, "NO FIXED...\n");
+      A4GL_debug ( "NO FIXED...\n");
     }
 
   if (iscurrborder)
@@ -2453,7 +2445,7 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   if (p == 0)
     {
       A4GL_exitwith ("No prompt window created");
-      FPRINTF (stderr, "Nope1\n");
+      A4GL_debug ( "Nope1\n");
       return 0;
     }
   last_prompt_win = p;
@@ -2482,14 +2474,12 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
 	  A4GL_debug ("AP...");
 	  if (strlen (promptstr))
 	    {
-			//printf("label=%p evt=%p\n", widgets[0],evt);
 	      A4GL_LL_set_field_fore (widgets[0], A4GL_LL_decode_aubit_attr (ap, 'f'));
 	      A4GL_LL_set_field_back (evt, A4GL_LL_decode_aubit_attr (ap, 'b'));
 	    }
 	}
 	  else
 	    {
-			//printf("label=%p evt=%p\n", widgets[0],evt);
 	      A4GL_LL_set_field_back (evt, A4GL_LL_colour_code (0));
 	      A4GL_LL_set_field_fore (widgets[0], A4GL_LL_colour_code (7));
 	    }
@@ -2565,7 +2555,7 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   if (a4gl_status != 0)
     {
       //last_prompt_mode = 2;
-      FPRINTF (stderr, "Nope2\n");
+      A4GL_debug ("Nope2\n");
       return 2;
     }
 
@@ -2802,7 +2792,6 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 
 		  /* wh: allow non-ascii labels */
 		  gchar *utf ;
-	//printf("txt=%s\n",ptr);
 			utf= g_locale_to_utf8 (ptr, -1, NULL, NULL, NULL);
 		  for (b = 0; b < g_utf8_strlen (utf, -1); b++)
 		    {
@@ -2952,7 +2941,7 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
     {
       // Ooops - didn't make a widget...
       widget = (void *) A4GL_make_widget ("ENTRY", "", cols,rows);
-      FPRINTF (stderr,
+      A4GL_debug (
 	       "WARNING - Coulnd't make widget as %s %s, made an entry field instead\n",
 	       widget_str, config_str);
       if (widget == 0)
@@ -2968,7 +2957,6 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ROWS", (void *) rows);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_COLS", (void *) cols);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ISLABEL", (void *) 0);
-	//printf("---->%s\n", tab_and_col);
   gtk_object_set_data (GTK_OBJECT (widget), "TAB_AND_COL", strdup(tab_and_col));
 
   if (A4GL_aubit_strcasecmp ("LABEL", widget_str) == 0)
@@ -3001,7 +2989,6 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
       return 0;
     }
 
-	//printf("txt=%s\n",label);
   label_utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
   widget = gtk_label_new (label_utf);
 
@@ -3147,7 +3134,6 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       m = (int) gtk_object_get_data (GTK_OBJECT (cwidget), "MAXFIELD");
       buff[0] = mode;
       buff[1] = 0;
-	//printf("txt=%s\n",buff);
       utf = g_locale_to_utf8 (buff, -1, NULL, NULL, NULL);
 
       if (A4GL_LL_field_opts (cwidget) & AUBIT_O_BLANK && form->curcol == 0)
@@ -3286,7 +3272,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	default:
 	  if (mode > 255)
 	    {
-	      FPRINTF (stderr, "Unknown mode : %d\n", mode);
+	      A4GL_debug ( "Unknown mode : %d\n", mode);
 	      {
 		char *ptr = 0;
 		*ptr = 0;
@@ -3671,7 +3657,6 @@ A4GL_LL_disp_h_menu (int num_opts, char *title, char* style,char* comment,char* 
   int nbuttons;
   int a;
   char buff[255];
-  //FPRINTF (stderr, "disp_h_menu\n");
   if (A4GL_isyes (acl_getenv ("TRADMENU")))
     return 0;
 
@@ -3760,15 +3745,12 @@ current=gtk_object_get_data(GTK_OBJECT (b),"TEXT");
 if (current==0) {
 	isdiff=1;
 } else {
-	//printf("Current=%s\n",current);
-	//printf("txt=%s\n",txt);
       if (strcmp(current,txt)!=0) {
 		isdiff=1;
 	}
 }
 
 if (isdiff==0) {
-	//printf("SAME!!!\n");
 	return ;
 }
 
@@ -3784,11 +3766,8 @@ if (oldi==0 && i==0) { 	// No images :-)
 		}
 
 		if (l) {
-			//printf("Just Change Label %s %s \n",current,txt);
 			free(current);
-			//printf("Setting : %s\n", txt);
 			gtk_label_set_text(GTK_LABEL(l),txt);
-			//printf("Setting TEXT %s\n",txt);
 			gtk_object_set_data (GTK_OBJECT (b), "TEXT",strdup(txt));
 			return;
 		}
@@ -3797,7 +3776,6 @@ if (oldi==0 && i==0) { 	// No images :-)
 
 if (isdiff) {
 	GtkWidget *oldv=0;
-	//printf("Change label with image '%s'\n",txt);
 	
 	if (current) free(current);
 		gtk_object_set_data (GTK_OBJECT (b), "TEXT",strdup(txt));
@@ -3805,7 +3783,6 @@ if (isdiff) {
 	if (isToolbarItem) {
 		GtkWidget *l;
 		l=gtk_tool_button_get_label_widget(GTK_TOOL_BUTTON (b));
-			//printf("Setting : %s\n", txt);
 		gtk_label_set_text(GTK_LABEL(l),txt);
 		if (i) {
 			//l=gtk_tool_button_get_icon_widget(GTK_OBJECT (b));
@@ -3814,7 +3791,6 @@ if (isdiff) {
 		return;
 	}
 
-			//printf("Setting : %s\n", txt);
       	l=gtk_label_new (txt);
 
       	gtk_widget_show (l);
@@ -3840,14 +3816,11 @@ if (isdiff) {
 		gtk_box_pack_start (GTK_BOX(v), l, FALSE, FALSE, 0);
 	}
 	
-	//printf("Setting Label (%p) = %p\n",b,l);
       	gtk_object_set_data (GTK_OBJECT (b), 	"LABEL", l);
       	gtk_object_set_data (GTK_OBJECT (b), 	"IMAGE", i);
      	gtk_object_set_data (GTK_OBJECT (b), 	"BOX", v);
-			//printf("Setting TEXT %s\n",txt);
       	gtk_object_set_data(GTK_OBJECT(b),	"TEXT",strdup(txt));
 	
-			//printf("Setting : %s\n", txt);
       	gtk_label_set_text(GTK_LABEL (l), txt);
       //gtk_button_set_image(GTK_BUTTON (b), i);
 }
@@ -3864,7 +3837,6 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
   GtkWidget *bb;
   //GtkWidget *l = 0;
   char buff[255];
-  //FPRINTF (stderr, "disp_h_menu_opt\n");
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0) return ;
   SPRINTF1 (buff, "BUTTON_%d", opt_num);
@@ -3873,7 +3845,6 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
 
 
 
-  //FPRINTF (stderr, "option %d =%s\n", opt_num, opt_title);
 
 
   if (has_stock_item (opt_title))
@@ -3888,7 +3859,6 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
 			i=gtk_image_new_from_file (img);
 			gtk_widget_show(i);
 		}
-		//printf("txt=%s\n",txt);
 		label_utf = g_locale_to_utf8 (txt, -1, NULL, NULL, NULL);
 		SetMenuButton(b, label_utf,i);
       		g_free (label_utf);
@@ -3896,7 +3866,6 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
   else
     {
       		char *label_utf ;
-		//printf("txt=%s\n",opt_title);
 		label_utf= g_locale_to_utf8 (opt_title, -1, NULL, NULL, NULL);
       		//l = gtk_object_get_data (GTK_OBJECT (b), "LABEL");
 		
@@ -3904,7 +3873,6 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
 
       		//gtk_label_set_text (GTK_LABEL (l), label_utf);
 		//gtk_button_set_image(GTK_BUTTON (b), 0);
-      		//FPRINTF (stderr, "Set text (%s)\n", opt_title);
       		//gtk_button_set_label(GTK_BUTTON(b), label_utf);
       		g_free (label_utf);
     }
@@ -4118,7 +4086,6 @@ A4GL_LL_get_value (char *s)
 {
   if (strcmp (s, "prompt.field") == 0)
     {
-      //FPRINTF (stderr, "last_prompt_field : %p\n", last_prompt_field);
       return (void *) last_prompt_field;
     }
   if (strcmp (s, "prompt.f") == 0)
@@ -4689,12 +4656,10 @@ static void register_my_stock_icons (void)
       	fgets(buff3,255,f);
 	A4GL_trim_nl(buff3);
 	if (buff3[0]=='#') continue;
-	//printf("Buff3=%s\n",buff3);
 	p2=strchr(buff3,'\t');
 	if (p2==0) continue;
 	*p2=0;
 	p2++;
-	//printf("Buff3 now : %s\n",buff3);
 	p3=strchr(p2,'\t');
 	if (p3==0) continue;
 	*p3=0;
@@ -4703,7 +4668,6 @@ static void register_my_stock_icons (void)
 	strcpy(name,buff3);
 	strcpy(txt,p2);
 
-	//printf("buff2=%s\n",buff2);
       icon_set = gtk_icon_set_new ();
       icon_source = gtk_icon_source_new ();
 
@@ -4718,7 +4682,6 @@ static void register_my_stock_icons (void)
       if (has_stock_item(name)) continue; // don't overwrite something we've already loaded...
 
 
-      //printf("Loading : %s from %s\n", name, buff);
       gtk_icon_source_set_filename (icon_source, buff);
       gtk_icon_set_add_source (icon_set, icon_source);
       gtk_icon_source_free (icon_source);
@@ -4846,7 +4809,6 @@ void ActivateToolbar(char *cmd, struct aclfgl_event_list *list,void *sio) {
 			int ncnt=0;
 			int key=0;
 			char *title=0;
-			//printf("Enabling toolbar items : %s\n", cmd);
 			for (a=0;a< toolbarItemsCnt;a++) {
 				int ok=0;
 				key=(int) gtk_object_get_data(GTK_OBJECT(toolbarItems[a]),"KEY");
@@ -4870,7 +4832,6 @@ void ActivateToolbar(char *cmd, struct aclfgl_event_list *list,void *sio) {
 					int a;
 					for (a=0;list[a].event_type;a++) {	
 						if (list[a].event_type==A4GL_EVENT_KEY_PRESS) {		
-							//printf("Looking for key press : %d\n",list[a].keycode);
 							if (list[a].keycode==key) {
 								ok=1;
 								break;
@@ -4883,15 +4844,12 @@ void ActivateToolbar(char *cmd, struct aclfgl_event_list *list,void *sio) {
 					ncnt++;
 				
 					if (!gtk_object_get_data(toolbarItems[a],"ALWAYSON")) {
-						//printf("SHOW %s\n",title);
 						gtk_widget_show(toolbarItems[a]);	
 					}
 				} else {
 					if (!gtk_object_get_data(toolbarItems[a],"ALWAYSON")) {
-						//printf("HIDE %s\n",title);
 						gtk_widget_hide(toolbarItems[a]);
 					} else {
-						//printf("Not hidden - always on %s\n",title);
 					}
 				}
 			}
