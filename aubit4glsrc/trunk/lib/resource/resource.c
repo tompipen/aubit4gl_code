@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.139 2007-08-15 18:52:39 mikeaubury Exp $
+# $Id: resource.c,v 1.140 2007-09-01 07:52:48 mikeaubury Exp $
 #
 */
 
@@ -1177,6 +1177,9 @@ FILE *resourcefile = 0;
 		#endif
 		add_resources_in (resourcefile);
 		fclose (resourcefile);
+		#ifdef DEBUG
+      		A4GL_debug ("2:Read %s", buff);
+		#endif
     } else {
 		#ifdef DEBUG
 			A4GL_debug ("2:cannot read %s", buff);
@@ -1281,6 +1284,7 @@ add_resources_in (FILE * resourcefile)
       fgets (buff, 511, resourcefile);
       if (feof (resourcefile))
 	break;
+		A4GL_debug("Read %s",buff);
       ptr = strchr (buff, '#');
       if (ptr)
 	{

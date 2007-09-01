@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.115 2007-08-16 16:55:10 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.116 2007-09-01 07:52:47 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.115 2007-08-16 16:55:10 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.116 2007-09-01 07:52:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -48,7 +48,7 @@
 #define CONTROL_STACK_LENGTH 10
 //void A4GL_fgl_die_with_msg(int n,char *s);
 
-
+void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
 char *a_strchr(char *s,int c);
 void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 
@@ -66,11 +66,12 @@ static void do_key_move_fc (char lr, struct s_screenio *s, int a,
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
 static char *last_field_name;
 static int last_key_code;
+int construct_not_added=0;
 //int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 //int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 //int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 int A4GL_get_metric_for (struct s_form_dets *form, void *f);
-int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos, struct struct_scr_field *fprop) ;
+int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos, struct struct_scr_field *fprop,char *newfieldval) ;
 void A4GL_set_infield_from_parameter (long a);
 int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 void A4GL_clr_field (FIELD * f);
@@ -471,6 +472,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
       if (sio->fcntrl[a].state == 99)
 	{
+		construct_not_added=1;
 	  new_state = 75;
           if (sio->mode == MODE_CONSTRUCT && last_key_code!=A4GLKEY_CANCEL) {
 			if (A4GL_has_event_for_keypress(sio->fcntrl[a].extent,evt)) { // We should be a litle worried...
@@ -501,6 +503,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       if (sio->fcntrl[a].state == 50)
 	{
 	  struct struct_scr_field *fprop;
+	
 	  int has_picture = 0;
 	  char *picture = 0;
 	  int ok = 0;
@@ -594,8 +597,18 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	      if (ok == 1)
 		{
-		  A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
-		  A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+			int n;
+			char fb[2000];
+			construct_not_added=0;
+			A4GL_debug("Here...\n");
+			strcpy(fb, field_buffer(sio->currentfield,0));
+		        A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
+		        A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+			if (strcmp(fb, field_buffer(sio->currentfield,0))==0) { // its the same !
+				A4GL_debug("No difference : %s %s\n", fb, field_buffer(sio->currentfield,0));
+				if (sio->fcntrl[a].extent!=' ') construct_not_added=1;
+			}
+			A4GL_debug("Now : %s construct_not_added=%d\n", field_buffer(sio->currentfield,0), construct_not_added);
 		}
 
 
@@ -667,7 +680,13 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 					A4GL_debug("Wrong current field?"); 
 			}
 			memset(rbuff,0,sizeof(rbuff));
-                        strcpy(rbuff,field_buffer(sio->currentfield,0));
+
+			if (sio->constr[sio->curr_attrib].value) {
+                        	strcpy(rbuff,sio->constr[sio->curr_attrib].value);
+			} else {
+                        	strcpy(rbuff,field_buffer(sio->currentfield,0));
+			}
+
                         A4GL_trim(rbuff);
                         w=form->fileform->metrics. metrics_val[A4GL_get_metric_for (form, form->currentfield)].w;
                         A4GL_debug("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",rbuff,
@@ -677,8 +696,9 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
                                 int k;
 				int lm;
 				FIELD *cf;
+				char rval[10000];
 				strcpy(m_delims,form->fileform->delim);
-		  	A4GL_debug("curcol");
+		  		A4GL_debug("curcol");
 
 				lm=mform->curcol;
                                	set_field_buffer (sio->currentfield,0,rbuff); 
@@ -686,25 +706,49 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 				cf=sio->currentfield;
 				
 	      			fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-                                k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,mform->curcol, fprop);
-			
-
+				strcpy(rval,"");
+                                k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,mform->curcol, fprop,rval);
+				A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+  				A4GL_int_form_driver (mform, REQ_VALIDATION);
+				
 				if (k==A4GLKEY_CANCEL) {
 					A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, k,__LINE__);
 				} else {
+					A4GL_debug("A4GL_construct_large returns %s", rval);
                                 	fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
                                 	if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (k) && a4gl_isalpha (k)) { k = a4gl_tolower (k); }
                                 	if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (k) && a4gl_isalpha (k)) { k = a4gl_toupper (k); }
-					
 
 					// This isn't right....
 					// the keypress will already have been mostly actioned...
-                                	A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k,__LINE__);
+                                	if (!isprint(k)) A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k,__LINE__);
 
-                                	set_field_buffer (sio->currentfield,0,rbuff);
+					// Do we already have an extended value ? 
+					if (sio->constr[sio->curr_attrib].value) {
+						// get rid...
+						free(sio->constr[sio->curr_attrib].value);
+						sio->constr[sio->curr_attrib].value=0;
+					}
+
+					if (strlen(rval)>=w) {
+						A4GL_debug("Its too long for a normal buffer - setting value");
+						// Its too long for a normal buffer...
+						sio->constr[sio->curr_attrib].value=strdup(rval);
+                                		A4GL_mja_set_field_buffer (sio->currentfield,0,rval);
+					} else {
+						A4GL_debug("It fits into normal buffer - using that %s", rbuff);
+						// It fits in a normal buffer...
+                                		A4GL_mja_set_field_buffer (sio->currentfield,0,rval);
+					}
 				}
 				sio->currentfield=cf;
-                        }
+                        } else {
+				if (sio->constr[sio->curr_attrib].value) {
+					// get rid...
+					free(sio->constr[sio->curr_attrib].value);
+					sio->constr[sio->curr_attrib].value=0;
+				}
+			}
           }
           new_state = 2;
           rval = -1;
@@ -1779,7 +1823,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 }
 
 
-int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos, struct struct_scr_field *fprop) {
+int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos, struct struct_scr_field *fprop,char *newfieldval) {
         static char rbuff[1024];
         FIELD *buff[4];
         WINDOW *cwin;
@@ -1793,7 +1837,7 @@ int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,
 char m_d1[2];
 char m_d2[2];
 int x=0;
-        A4GL_debug("In construct_large");
+        A4GL_debug("In construct_large orig=%s init_key=%d initpos=%d construct_not_added=%d", orig,init_key,initpos, construct_not_added);
 
         strcpy(rbuff,orig);
 if (m_delims[0]==' ')  {
@@ -1806,7 +1850,7 @@ m_d2[0]=m_delims[1];
 m_d1[1]=0;
 m_d2[1]=0;
 
-
+strcpy(newfieldval,"");
         fwidth=UILIB_A4GL_get_curr_width ();
         if (fwidth>80) fwidth=80;
         cwin = (WINDOW *) A4GL_get_currwin ();
@@ -1844,11 +1888,36 @@ m_d2[1]=0;
         set_form_sub (f, drwin);
         a=post_form(f);
         A4GL_debug("construct - post_form = %d",a);
+	
+	if (isprint(init_key)) {
+		if (construct_not_added) {
+			char smbuff[2];
+			smbuff[0]=init_key;
+			smbuff[1]=0;
+			strcat(rbuff, smbuff);
+		} else {
+			char smbuff[2];
+			if (initpos<=1) {
+			
+				smbuff[0]=init_key;
+				smbuff[1]=0;
+				strcpy(rbuff, smbuff);
+			}
+		}
+	}
+	A4GL_debug("rbuff=%s\n",rbuff);
         set_field_buffer(buff[1],0,rbuff);
+
+
         A4GL_int_form_driver(f,REQ_OVL_MODE);
-        if (initpos) {
-                A4GL_int_form_driver(f,REQ_END_FIELD);
-        }
+
+        if (initpos>=1) {
+        	A4GL_int_form_driver(f,REQ_VALIDATION);
+		while (f->curcol<initpos) {
+        		A4GL_int_form_driver(f,REQ_NEXT_CHAR);
+        		A4GL_int_form_driver(f,REQ_VALIDATION);
+		}
+        }  
 
 
 
@@ -1918,14 +1987,14 @@ m_d2[1]=0;
         }
 
         A4GL_int_form_driver(f,REQ_VALIDATION);
-        strcpy(orig,field_buffer(buff[1],0));
+
+        strcpy(newfieldval,field_buffer(buff[1],0));
+
+	A4GL_trim(newfieldval);
 
 
-	A4GL_trim(orig);
 
-
-
-        A4GL_debug("Unpost and delete...");
+        A4GL_debug("Unpost and delete. : %s", newfieldval);
         unpost_form(f);
         delwin(drwin);
 	 A4GL_debug("delwin : %p",drwin);

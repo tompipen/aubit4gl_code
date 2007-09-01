@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.43 2007-05-13 19:53:14 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.44 2007-09-01 07:52:43 mikeaubury Exp $
 */
 
 /**
@@ -182,6 +182,7 @@ int A4GL_get_set_as_int (char *str, void *ptr, int mode, char *name, long var);
 struct s_constr_list {
 	char *tabname;
 	char *colname;
+	char *value;
 	};
 #endif
 //#include "a4gl_screenio.h"

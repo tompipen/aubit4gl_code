@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.111 2007-07-26 12:04:27 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.112 2007-09-01 07:52:42 mikeaubury Exp $
 */
 
 /**
@@ -197,7 +197,7 @@ extern "C"
 
 #ifndef S_CONSTR_LIST
 #define S_CONSTR_LIST
-struct s_constr_list {char *tabname;char *colname;};
+struct s_constr_list {char *tabname;char *colname;char *value;};
 #endif
 
 	/** 4gl Datetime data type definition */

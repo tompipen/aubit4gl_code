@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.42 2007-08-26 11:13:25 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.43 2007-09-01 07:52:47 mikeaubury Exp $
 #*/
 
 /**
@@ -117,6 +117,7 @@ int entry=0;
 	      else
 		{
 		  rep->pdf_ptr = PDF_new ();
+		  PDF_set_parameter(rep->pdf_ptr,"compatibility","1.4");
 		  A4GL_debug ("Opening file: %s\n", rep->output_loc);
 		  if (PDF_open_file (rep->pdf_ptr, rep->output_loc) == -1)
 		    {
@@ -162,6 +163,7 @@ int entry=0;
 
           if (rep->line_no > rep->page_length - rep->bottom_margin)
             {
+			A4GL_debug("setting line_no=0");
               rep->line_no = 0;
               if (rep->lines_in_trailer)
                 {
@@ -222,11 +224,13 @@ int entry=0;
       A4GL_debug ("B\n");
       A4GL_pdf_move (rep);
       rep->col_no = 0;
-      A4GL_debug ("CR\n");
+      A4GL_debug ("CR lineno was %lf\n",rep->line_no);
       rep->line_no += A4GL_pdf_metric (1, 'l', rep);
+      A4GL_debug ("CR lineno now %lf\n",rep->line_no);
 
       if (rep->line_no > rep->page_length - rep->bottom_margin)
 	{
+			A4GL_debug("setting line_no=0 lineno=%lf page_length=%lf bottom_margin=%lf", rep->line_no, rep->page_length, rep->bottom_margin);
 	  rep->line_no = 0;
 	  A4GL_pdf_rep_print (rep, 0, 0, 0, -1);
 	}
@@ -321,6 +325,7 @@ A4GLPDFREP_A4GL_pdf_skip_to (void *vrep, double a)
 
   A4GL_debug ("pdf_skip_by");
   a = A4GLPDFREP_A4GL_pdf_size (a, 'l', rep);
+			A4GL_debug("setting line_no=%lf",a);
   rep->line_no = a;
 }
 
@@ -371,8 +376,10 @@ A4GLPDFREP_A4GL_pdf_need_lines (void *vrep)
 
   A4GL_debug ("need lines");
   a = A4GL_pdf_metric (A4GL_pop_int (), 'l', rep);
-  if (rep->line_no > (rep->page_length - rep->bottom_margin - a))
-    A4GL_pdf_skip_top_of_page (rep, 2);
+  if (rep->line_no > (rep->page_length - rep->bottom_margin - a)) {
+			A4GL_debug("need forcing new page");
+    		A4GL_pdf_skip_top_of_page (rep, 2);
+	}
 }
 
 /**
@@ -389,6 +396,7 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
 
   rep = vrep;
 
+			A4GL_debug("pdf_skip_top_of_page");
 
   /* a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer; */
 
@@ -659,6 +667,8 @@ A4GLPDFREP_A4GL_pdf_blob_print (void *vp, void *vblob, char *type, int cr)
   double sx;
   double sy;
   int x, y;
+double ox;
+double oy;
   struct pdf_rep_structure *p;
   struct fgl_int_loc *blob;
   p = vp;
@@ -694,11 +704,31 @@ A4GLPDFREP_A4GL_pdf_blob_print (void *vp, void *vblob, char *type, int cr)
   y = PDF_get_value (p->pdf_ptr, "imageheight", n);
   x = PDF_get_value (p->pdf_ptr, "imagewidth", n);
 
+  ox=(double)x;
+  oy=(double)y;
+  sy=sx;
   y = (int) ((double) y * sy);
   x = (int) ((double) x * sx);
 
-  A4GL_debug ("Placing heght of image =%d line=%f length=%f",
-	      y, p->line_no, p->page_length);
+// If its just way to large to fit on the page - scale it back...
+// this doesn't care if we're too far down the page etc - thats a different problem :-)
+	while (y > (int)p->page_length) {
+			A4GL_debug("Too high %d %lf",y,p->page_length);
+			sx*=0.99;
+			sy*=0.99;
+  			y = (int) (oy * sy);
+  			x = (int) (ox * sx);
+	}
+
+	while (x > (int)p->page_width) {
+			A4GL_debug("Too wide %d %lf",x,p->page_width);
+			sx*=0.99;
+			sy*=0.99;
+  			y = (int) (oy * sy);
+  			x = (int) (ox * sx);
+	}
+
+  A4GL_debug ("Placing heght of image =%d col=%f line=%f length=%f scale=%lf", y, p->col_no, p->line_no, p->page_length,sx);
 
   if (p->col_no == 0)
     {
@@ -706,11 +736,14 @@ A4GLPDFREP_A4GL_pdf_blob_print (void *vp, void *vblob, char *type, int cr)
     }
   A4GL_debug ("x=%lf y=%lf", p->col_no, p->page_length - p->line_no - y);
 
-  PDF_place_image (p->pdf_ptr, n, p->col_no, p->page_length - p->line_no - y,
-		   sx);
+  PDF_place_image (p->pdf_ptr, n, p->col_no, p->page_length - p->line_no - y, sx);
 
   A4GL_debug ("Closing");
   PDF_close_image (p->pdf_ptr, n);
+
+A4GL_debug("lineno (%lf) +=  %lf", p->line_no,(double)y);
+A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
+
   p->line_no = p->line_no + (double) y;
   p->col_no = p->col_no + (double) x;
   A4GL_push_char ("");
@@ -774,6 +807,24 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       PDF_setcolor (p->pdf_ptr, "stroke","rgb",f1, f2,f3,0);
       return 0;
     }
+
+   if (strcmp(fname,"bookmark")==0) {
+	char *buf;
+	buf=A4GL_char_pop();
+	PDF_create_bookmark(p->pdf_ptr, buf, 0, "");
+	free(buf);
+   }
+
+   if (strcmp(fname,"add_bookmark")==0) {
+	char *buf;
+	int a;
+	a=A4GL_pop_int();
+	buf=A4GL_char_pop();
+	a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
+	A4GL_push_int(a);
+	free(buf);
+	return 1;
+	}
 
   if (strcmp (fname, "setfillcolor") == 0)
     {

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.175 2007-07-26 12:04:29 mikeaubury Exp $
+# $Id: ioform.c,v 1.176 2007-09-01 07:52:47 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.175 2007-07-26 12:04:29 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.176 2007-09-01 07:52:47 mikeaubury Exp $";
 #endif
 
 /**
@@ -138,7 +138,7 @@ static void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff,
 					      int ch);
 static void A4GL_set_field_colour_attr (FIELD * field, int do_reverse,
 					int colour);
-static void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
+void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
 static void A4GL_set_field_attr (FIELD * field);
 
 
@@ -572,7 +572,7 @@ A4GL_set_field_attr (FIELD * field)
       if (f->dynamic == -1)
 	{
 	  A4GL_debug ("Max size is lots");
-	  set_max_field (field, 0);
+	  set_max_field (field, 0); // DYNAMIC
 	}
       else
 	{
@@ -1341,7 +1341,6 @@ A4GL_turn_field_on (FIELD * f)
 void
 A4GL_turn_field_on2 (FIELD * f, int a)
 {
-
   struct struct_scr_field *fprop;
   int xx;
   A4GL_assertion (f == 0, "Field is zero in turn_field_on2");
@@ -1349,7 +1348,6 @@ A4GL_turn_field_on2 (FIELD * f, int a)
   fprop = (struct struct_scr_field *) (field_userptr (f));
   A4GL_assertion (fprop == 0, "Field has no properties");
   A4GL_debug ("turn_field_on2 a=%d fprop=%p", a, fprop);
-
   A4GL_debug ("Turn Field On %p %p", fprop->tabname, fprop->colname);
   A4GL_debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
   local_field_opts_on (f, O_ACTIVE);
@@ -1363,22 +1361,27 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 
 
   if (fprop->dynamic != 0) {
-      set_max_field (f, 0);
+      set_max_field (f, 0); // DYNAMIC
   } else {
 	int w;
-  	if (!a) {
-      		set_max_field (f, 0);
-			return;
+  	if (!a  ) {
+      		//set_max_field (f, 0); // CONSTRUCT
+      		if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)) {
+			local_field_opts_off (f, O_AUTOSKIP);
+		}
+		return;
     	}
 	w=A4GL_get_field_width_w (f,0);
 
   	xx = set_max_field (f, w);
 	
 	
-  	if (xx != 0)
+  	if (xx != 0 )
     	{
-      		f->dcols = 0;
+      		f->dcols = f->cols ;
+      		f->maxgrow = f->cols ;
       		xx = set_max_field (f, w);
+		A4GL_mja_pos_form_cursor(f->form);
     	}
 	
 	A4GL_debug("set_max_field : %d\n",w);
@@ -1572,6 +1575,7 @@ int changed=0;
       // this may need explanding if the column contains a '*'
       for (a = 0; a < nv; a++)
 	{
+	  sio->constr[a].value=0;
 	  if (strcmp (sio->constr[a].colname, "*") == 0)
 	    {			// It'll need expanding...
 	      need_fix = 1;
@@ -2277,14 +2281,16 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	{
 	  if (fprop->colname != 0)
 	    {
-	      A4GL_debug ("Calling constr with : '%s' '%s' datatype=%d",
-			  sio->constr[a].tabname, sio->constr[a].colname,fprop->datatype);
+		char *fbuf;
+		fbuf=field_buffer(f,0);
 
+		if (sio->constr[a].value) {
+			fbuf=sio->constr[a].value;
+		}
 
-	      ptr =
-		(char *) A4GL_construct (sio->constr[a].tabname,
-					 sio->constr[a].colname,
-					 field_buffer (f, 0),get_inc_quotes(fprop->datatype)
+	        A4GL_debug ("Calling constr with : '%s' '%s' datatype=%d", sio->constr[a].tabname, sio->constr[a].colname,fprop->datatype); 
+
+	        ptr = (char *) A4GL_construct (sio->constr[a].tabname, sio->constr[a].colname, fbuf,get_inc_quotes(fprop->datatype)
 					);
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0)
@@ -2456,7 +2462,8 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
    field_width= A4GL_get_field_width_w (field,1);
 
-  A4GL_debug ("In display_field_contents");
+  A4GL_debug ("In display_field_contents field width=%d", field_width);
+
   f = (struct struct_scr_field *) (field_userptr (field));
   ff = acl_malloc2  (field_width+1);
 
@@ -2750,11 +2757,13 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
     {
       A4GL_debug ("No padding required '%s'", buff);
     }
-  A4GL_debug("setting field buffer to %s",buff2);
 
   if (A4GL_isyes(acl_getenv("TRIMFIELD"))) {
-	  buff2[b]=0;
+	  	buff2[b]=0;
+		A4GL_debug("Trimmed");
   }
+
+  A4GL_debug("setting field buffer to %s",buff2);
 
   xerrno = set_field_buffer (field, nbuff, buff2);
 
@@ -2857,10 +2866,11 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
 		A4GL_debug("field_buffer (%p) =%s", f, field_buffer (f, 0));
 	
 
-	  ptr =
-	    (char *) A4GL_construct (s->constr[a].tabname,
-				     s->constr[a].colname, field_buffer (f, 0),get_inc_quotes(fprop->datatype)
-		);
+		if (s->constr[a].value) {
+	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, s->constr[a].value,get_inc_quotes(fprop->datatype));
+		} else {
+	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname,  field_buffer (f, 0),get_inc_quotes(fprop->datatype));
+		}
 
 	if (ptr==0) { // some error in the field...
       		A4GL_push_char ("");

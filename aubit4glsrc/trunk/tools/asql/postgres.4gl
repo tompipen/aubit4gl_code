@@ -1271,25 +1271,21 @@ call close_tmpfile("SQL")
 
 call open_tmpfile("SQL","w")
 code
-n=(FILE *)get_curr_mvfin("SQL");
+n=(long)get_curr_mvfin("SQL");
+for (b=0;b<=a-1;b++) {
+	char *s;
+	s = A4GL_apisql_strdup (list[b].stmt);
+	A4GL_debug("s=%s",s);
+	A4GL_trim(s);
+	A4GL_convert_sql_new("INFORMIX","POSTGRESQL",s,0);
+	A4GL_debug("s=%s",s);
+	if (n) fprintf((FILE *)n,"%s;\n\n",s);
+	free(s);
+	}
+}
 endcode
 
-for b=0 to a-1
-code 
-{
-char *s;
-s = A4GL_apisql_strdup (list[b].stmt);
-A4GL_debug("s=%s",s);
-A4GL_trim(s);
-A4GL_convert_sql("INFORMIX","POSTGRESQL",s);
-A4GL_debug("s=%s",s);
-if (n) fprintf((FILE *)n,"%s;\n\n",s);
-free(s);
-}
-}
-endcode
 call close_tmpfile("SQL")
-end for
 	
 end function
 

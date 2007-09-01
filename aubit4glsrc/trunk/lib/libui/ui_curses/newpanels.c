@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.145 2007-06-07 16:38:17 mikeaubury Exp $
+# $Id: newpanels.c,v 1.146 2007-09-01 07:52:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.145 2007-06-07 16:38:17 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.146 2007-09-01 07:52:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -1362,6 +1362,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
 	keypad(stdscr,TRUE);
       a = wgetch (stdscr); // GETCH - getch_swin
 #else
+      //a = wgetch (stdscr); // GETCH - getch_swin
       a = getch (); // GETCH - getch_swin
 #endif
       A4GL_debug("key press : %d",a);
