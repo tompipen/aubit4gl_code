@@ -75,6 +75,19 @@ define key_end		integer
 define key_pgup		integer
 define key_pgdn		integer
 define key_cancel	integer
+
+
+
+define mv_tabrec array[200] of record # array to store 'intellisense' style table/column lookups
+	tabname chaR(18),
+	colname char(18)
+end record
+define mv_txt array[1000] of char(80)
+
+define mv_tabrec_type char(1)
+define mv_tabrec_cnt integer
+define mv_tabrec_idx integer
+
 code
 int not_blank(char *s) {
 static int lastl=-1;
@@ -99,7 +112,6 @@ define cline char (255)
 
 
 let c=edit_top
-set pause mode on
 let max_x=0
 let max_y=0
 let t=edit_top
@@ -135,7 +147,6 @@ if cline is null then
 	let cline=" "
 end if
 display cline[cursor_x] at cursor_y+t-1,cursor_x attribute(reverse)
-set pause mode off
 end function
 
 
@@ -213,12 +224,15 @@ let topline=1
 let leftcol=1
 let cursor_x=1
 let cursor_y=1
+
+set pause mode on
 call display_full()
+set pause mode off
 let c_as_char=" "
 let int_flag=false
 
 while true
-	
+	set pause mode on
 	call display()
 	if insmode=0 then
 		let insmode_txt="O"
@@ -227,7 +241,7 @@ while true
 	end if
 	display insmode_txt at 4,78
 	display " Co:",cursor_x+leftcol-1,"/",max_x," Ln:",cursor_y+topline-1,"/",max_y," " at 4,2
-
+	set pause mode off
 
 code
 //c=getch();
@@ -345,6 +359,7 @@ endcode
 		when 1 let insmode=1-insmode
 		when 4 call clr_eol()
 		when 24 call clr_char()
+		when 2  call check_sense()
 		when 18 call display_full()
 		when 27 exit while
 		when -100 let int_flag=true exit while
@@ -355,6 +370,133 @@ if int_flag=false then
 let lv_err=edit_file_save() 
 end if
 end function
+
+
+function check_sense() 
+define tmp_x,tmp_y integer
+define tmp_line char(line_length)
+define lv_dot integer
+define a integer
+define b integer
+define lv_tab char(30)
+define lv_col char(30)
+define lv_start integer
+define lv_end integer
+define lv_rpl_end integer
+define lv_string char(line_length)
+let lv_start=-1
+let lv_end=-1
+
+
+	let tmp_x=cursor_x+leftcol-1
+	let tmp_y=cursor_y+topline-1
+	let tmp_line=lines[tmp_y]
+
+
+	if tmp_line[tmp_x]=" " and cursor_x>1 then
+		let cursor_x=cursor_x-1
+	end if
+
+# search forward to find the end of the current 'word'
+	for a=0 to line_length
+		let tmp_x=cursor_x+leftcol-1-a
+		if tmp_x>line_length then
+			let lv_start=1
+			exit for
+		end if
+		if upshift(tmp_line[tmp_x])>="A" and upshift(tmp_line[tmp_x])<="Z" then
+			continue for
+		end if
+		if tmp_line[tmp_x]="." or  tmp_line[tmp_x]="_" then
+			continue for
+		end if
+		if tmp_line[tmp_x]>="0" and tmp_line[tmp_x]<="9" then
+			continue for
+		end if
+		let lv_start=tmp_x+1
+		exit for
+	end for
+
+	for a=lv_start+1 to line_length
+		LET tmp_x=a
+		if upshift(tmp_line[tmp_x])>="A" and upshift(tmp_line[tmp_x])<="Z" then
+			continue for
+		end if
+		if tmp_line[tmp_x]="." or  tmp_line[tmp_x]="_" then
+			continue for
+		end if
+		if tmp_line[tmp_x]>="0" and tmp_line[tmp_x]<="9" then
+			continue for
+		end if
+		
+		let lv_end=a-1
+		exit for
+	end for
+
+	let lv_rpl_end=lv_end 
+	let lv_end=cursor_x+leftcol-1
+
+
+	if lv_start=-1 or lv_end=-1 then
+		error ""
+		return
+	end if
+
+	let lv_string=tmp_line[lv_start,lv_end]
+	let lv_dot=-1
+	for a=1 to length(lv_string)
+		if lv_string[a]="." then
+			let lv_dot=a
+			exit for
+		end if
+	end for
+	if lv_dot>0 then
+		let lv_tab=lv_string[1,lv_dot-1] clipped,"%"
+		let lv_col=lv_string[lv_dot+1,line_length] clipped,"%"
+	else
+		let lv_tab=lv_string clipped,"%"
+		let lv_col=" "
+	end if
+
+	if lv_dot<0 then
+		call find_table_nocol(lv_tab)
+	else
+		call find_table_col(lv_tab, lv_col)
+	end if
+
+	if mv_tabrec_cnt=0 then
+		error "No matches" 
+		return
+	end if
+
+	call show_tabrec() returning lv_string
+
+	if length(lv_string) then
+		let tmp_line=lines[tmp_y]
+		if lv_start>1 then
+			let tmp_line=tmp_line[1,lv_start-1],lv_string clipped,tmp_line[lv_rpl_end+1,line_length]
+		else
+			let tmp_line=lv_string clipped,tmp_line[lv_rpl_end+1,line_length]
+		end if
+		let lines[tmp_y]=tmp_line
+
+		let cursor_x=lv_start+length(lv_string)
+
+		if cursor_x<1 then
+			let cursor_x=1
+		end if
+		if cursor_x>80 then
+			let cursor_x=80
+		end if
+		
+	end if
+		
+	return
+end function
+
+
+
+
 
 function display_full()
 call display_header()
@@ -576,5 +718,169 @@ return lv_rval
 end function
 
 
+function start_table_col()
+	let mv_tabrec_cnt=0
+	let mv_tabrec_idx=0
+	let mv_tabrec_type='c'
+end function
+
+function add_table_col(lv_t,lv_c)
+define lv_t,lv_c char(18)
+	let mv_tabrec_cnt=mv_tabrec_cnt+1
+	let mv_tabrec[mv_tabrec_cnt].tabname=lv_t
+	let mv_tabrec[mv_tabrec_cnt].colname=lv_c
+end function
+
+function finish_table_col()
+	let mv_tabrec_type='C'
+end function
+
+function start_table_nocol()
+	let mv_tabrec_cnt=0
+	let mv_tabrec_idx=0
+	let mv_tabrec_type='t'
+end function
+
+function add_table_nocol(lv_t)
+define lv_t char(18)
+	let mv_tabrec_cnt=mv_tabrec_cnt+1
+	let mv_tabrec[mv_tabrec_cnt].tabname=lv_t
+end function
+
+function finish_table_nocol()
+	let mv_tabrec_type='T'
+end function
+
+
+function show_tabrec()
+define x,y integer
+define a integer
+define nrows integer
+define lv_cols integer
+define lv_line integer
+define lv_key integer
+define lv_top integer
+define lv_txt char(80)
+
+let x=20
+let y=6
+if mv_tabrec_cnt=0 then
+	error ""
+	return
+end if
+
+let nrows=mv_tabrec_cnt
+
+if mv_tabrec_cnt=1 then # Yeah ! just one...
+	if mv_tabrec_type="T" then
+		return mv_tabrec[1].tabname 
+	end if
+	if mv_tabrec_type="C" then
+		return mv_tabrec[1].tabname clipped||"."||mv_tabrec[1].colname 
+	end if
+end if
+
+
+if nrows>10 then
+	let nrows=10
+end if
+
+let y=edit_top+cursor_y-1
+let x=cursor_x
+
+while (y-nrows+2)>=edit_lines
+	let y=y-1
+end while
+
+
+
+let lv_cols=0
+for a=1 to mv_tabrec_cnt
+	if a>1000 then
+		exit for
+	end if
+	if mv_tabrec_type="T" then
+		let mv_txt[a]=" ",mv_tabrec[a].tabname 
+	end if
+	if mv_tabrec_type="C" then
+		let mv_txt[a]=" ",mv_tabrec[a].tabname clipped,".", mv_tabrec[a].colname 
+	end if
+	if length(mv_txt[a])>lv_cols then
+		let lv_cols=length(mv_txt[a])
+	end if
+end for
+
+let lv_cols=lv_cols+1
+
+while (x+lv_cols+2)>=80
+	let x=x-1
+end while
+
+
+open window w_show at y,x with nrows rows,lv_cols columns attribute(border)
+
+
+let lv_top=1
+let lv_line=1
+
+while true
+	set pause mode on
+	for a=1 to mv_tabrec_cnt
+		if a>nrows then
+			exit for
+		end if
+		if lv_line=a then
+			display mv_txt[a+lv_top-1] at a,1 attribute(reverse)
+		else
+			display mv_txt[a+lv_top-1] at a,1 
+		end if
+	end for
+	display " " at lv_line,lv_cols attribute(reverse)
+	set pause mode off
+	let int_flag=false
+	let lv_key=fgl_getkey()
+	if int_flag=true then
+		let int_flag=false
+		let lv_key=fgl_keyval("INTERRUPT")
+	end if
+
+	case lv_key
+		when fgl_keyval("UP") 
+			let lv_line=lv_line-1
+			if lv_line<1 then
+				let lv_top=lv_top-1
+				if lv_top<1 then
+					let lv_top=1
+				end if
+				let lv_line=1
+			end if
+
+		when fgl_keyval("DOWN") 
+			let lv_line=lv_line+1
+			if lv_line>nrows then
+				let lv_top=lv_top+1
+				let lv_line=nrows
+				if lv_top+lv_line+1>mv_tabrec_cnt then
+					let lv_top=mv_tabrec_cnt-lv_line+1
+				end if
+			end if
+
+		when fgl_keyval("ENTER")
+				close window w_show
+				let lv_txt=mv_txt[lv_line+lv_top-1]
+				return lv_txt[2,80]
+		
+		when fgl_keyval("ACCEPT")
+				close window w_show
+				let lv_txt=mv_txt[lv_line+lv_top-1]
+				return lv_txt[2,80]
+
+		when fgl_keyval("INTERRUPT")
+				close window w_show
+				return ""
+
+	end case
+end while
+end function
 
 

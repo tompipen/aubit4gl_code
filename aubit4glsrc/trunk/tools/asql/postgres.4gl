@@ -185,6 +185,7 @@ foreach c_gettables_drop into lv_tabname
         call set_pick(lv_cnt,lv_tabname)
         let lv_cnt=lv_cnt+1
 end foreach
+
 call set_pick_cnt(lv_cnt-1)
 
 call prompt_pick(lv_prompt,"") returning lv_tabname
@@ -1473,3 +1474,66 @@ end function
 function init_sql()
 end function
 
+
+
+function find_table_col(lv_tab, lv_col)
+define lv_tab,lv_t char(20)
+define lv_col,lv_c char(20)
+define lv_query char(2000)
+define lv_tabid integer
+call start_table_nocol()
+
+let lv_query=" SELECT c.relname,c.oid FROM pg_catalog.pg_class c",
+     " LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner",
+     " LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace",
+     " WHERE c.relkind IN ('r','')",
+     " AND n.nspname NOT IN ('pg_catalog', 'pg_toast')",
+     " AND pg_catalog.pg_table_is_visible(c.oid)",
+     " AND c.relname LIKE '",lv_tab clipped,"'",
+     "  ORDER BY 1"
+
+	prepare p_qxc from lv_query
+	declare c_gettables_findc cursor for p_qxc
+	foreach c_gettables_findc into lv_t,lv_tabid
+        	let lv_query=" SELECT a.attname ",
+                	" FROM pg_catalog.pg_attribute a ",
+                	" WHERE a.attrelid = '",lv_tabid using "<<<<<<<<<","' AND a.attnum > 0 AND NOT a.attisdropped and a.attname LIKE '",lv_col clipped,"'",
+                	" ORDER BY a.attname "
+
+        	prepare p_qli21 from lv_query
+        	DECLARE info_curs_fc CURSOR WITH HOLD FOR p_qli21
+        	foreach info_curs_fc into lv_c
+        		call add_table_col(lv_t,lv_c)
+		end foreach
+end foreach
+
+
+call finish_table_col()
+end function
+
+
+function find_table_nocol(lv_tab)
+define lv_tab,lv_t char(20)
+define lv_col,lv_c char(20)
+define lv_query char(2000)
+call start_table_nocol()
+
+let lv_query=" SELECT c.relname FROM pg_catalog.pg_class c",
+     " LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner",
+     " LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace",
+     " WHERE c.relkind IN ('r','')",
+     " AND n.nspname NOT IN ('pg_catalog', 'pg_toast')",
+     " AND pg_catalog.pg_table_is_visible(c.oid)",
+     " AND c.relname LIKE '",lv_tab clipped,"'",
+     "  ORDER BY 1"
+
+
+prepare p_qx from lv_query 
+
+declare c_gettables_find cursor for p_qx
+foreach c_gettables_find into lv_t
+	call add_table_nocol(lv_t)
+end foreach
+
+call finish_table_nocol()
+end function

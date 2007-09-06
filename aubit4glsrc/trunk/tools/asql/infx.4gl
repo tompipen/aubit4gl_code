@@ -3417,3 +3417,39 @@ int i;
 }
 endcode
 
+
+function find_table_col(lv_tab, lv_col)
+define lv_tab,lv_t char(20)
+define lv_col,lv_c char(20)
+declare c_ft cursor for 
+	select tabname,colname from systables,syscolumns 
+	where tabname like lv_tab and colname like lv_col
+		and systables.tabid=syscolumns.tabid
+	order by 1,2
+message "Searching for ", lv_t, " ",lv_c
+call start_table_col()
+foreach c_ft into lv_t, lv_c
+	call add_table_col(lv_t,lv_c)
+end foreach
+call finish_table_col()
+end function
+
+
+function find_table_nocol(lv_tab)
+define lv_tab,lv_t char(20)
+define lv_col,lv_c char(20)
+declare c_ftn cursor for 
+	select tabname from systables 
+	where tabname like lv_tab 
+	order by 1
+
+call start_table_nocol()
+
+foreach c_ftn into lv_t
+	call add_table_nocol(lv_t)
+end foreach
+
+call finish_table_nocol()
+end function
+
+
