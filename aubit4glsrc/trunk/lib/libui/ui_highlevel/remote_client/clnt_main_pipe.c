@@ -131,10 +131,39 @@ void A4GL_LL_direct_to_ui(char* t,char* s) {
 	init_client();
 	if (strcmp(t,"SEND")==0) {
 		A4GL_LL_use_direct_to_ui(t, s);
+		return;
 	}
 	if (strcmp(t,"FILE")==0) {
 		SendFile(s);
+		return;
 	}
+
+	if (strcmp(t,"dialog_setkeylabel")==0) {
+		int a;
+		int params;
+		char *p1;
+		char *p2;
+		p2=A4GL_char_pop();
+		p1=A4GL_char_pop();
+		A4GL_LL_dialog_setkeylabel(p1,p2);
+		free(p1);
+		free(p2);
+		return;
+	}
+	if (strcmp(t,"setkeylabel")==0) {
+		int a;
+		int params;
+		char *p1;
+		char *p2;
+		p2=A4GL_char_pop();
+		p1=A4GL_char_pop();
+		A4GL_LL_setkeylabel(p1,p2);
+		free(p1);
+		free(p2);
+		return;
+	}
+
+	printf("unhandled direct to ui call\n");
 }
 
 

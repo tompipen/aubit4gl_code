@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.117 2007-08-17 06:42:49 mikeaubury Exp $
+# $Id: builtin.c,v 1.118 2007-09-07 12:56:04 mikeaubury Exp $
 #
 */
 
@@ -1577,10 +1577,12 @@ int aclfgl_fgl_setkeylabel(int n)  {
 	char *p1;
 	char *p2;
 	A4GL_debug ("WARNING: fgl_setkeylabel() not yet implemented!");
-	p1=A4GL_char_pop();
-	p2=A4GL_char_pop();
-	free(p1);
-	free(p2);
+	//p1=A4GL_char_pop();
+	//p2=A4GL_char_pop();
+	A4GL_direct_to_ui("setkeylabel",(char *)n);
+
+	//free(p1);
+	//free(p2);
 	return 0;
 }
 
@@ -1588,10 +1590,11 @@ int aclfgl_fgl_dialog_setkeylabel(int n)  {
 	char *p1;
 	char *p2;
 	A4GL_debug ("WARNING: fgl_dialog_setkeylabel() not yet implemented!");
-	p1=A4GL_char_pop();
-	p2=A4GL_char_pop();
-	free(p1);
-	free(p2);
+	//p1=A4GL_char_pop();
+	//p2=A4GL_char_pop();
+	A4GL_direct_to_ui("dialog_setkeylabel",(char *)n);
+	//free(p1);
+	//free(p2);
 	return 0;
 }
 
