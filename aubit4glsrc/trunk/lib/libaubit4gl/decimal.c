@@ -654,10 +654,6 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
 		strcpy(buff,buff2);
   }
   
-
-	//@FIXME
-	A4GL_decstr_convert(buff,a4gl_convfmts.posix_decfmt, a4gl_convfmts.printf_decfmt,0, 1 , -1); 
-
   return buff;
 }
 
@@ -675,11 +671,6 @@ void acl_apm_set_string(M_APM m1, char *s,int convert) {
 	if (strchr(s,'.')==0 && convert && a4gl_convfmts.printf_decfmt.decsep==',') {
 			A4GL_assertion(1,"set string from real decimal");
 		}
-	//@FIXME
-	if (convert) {
-        	A4GL_decstr_convert(buff,a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt,0, 1 , -1); 
-	}
-
 	m_apm_set_string(m1,buff);
 }
 
