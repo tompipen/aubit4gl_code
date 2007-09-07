@@ -128,6 +128,7 @@ void A4GL_LL_opening_form(char *formfile, char *formname) {
 
 
 void A4GL_LL_direct_to_ui(char* t,char* s) {
+	init_client();
 	if (strcmp(t,"SEND")==0) {
 		A4GL_LL_use_direct_to_ui(t, s);
 	}
