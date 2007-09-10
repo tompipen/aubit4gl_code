@@ -82,7 +82,7 @@ void setupPageSize(int w) {
 	  layout_page_height = p11x17_height;
 	  break;
 	default:
-	  printf ("Bad paper size\n");
+	  fprintf (stderr, "Bad paper size\n");
 	}
     }
 
@@ -321,7 +321,10 @@ int a;
       ptr = lines[a];
       A4GL_trim (ptr);
       if (strlen(ptr)) {
-      	PDF_set_text_pos (p, (layout.leftmargin * 72.0), this_page_height - ((float) a * eachline) - (layout.topmargin * 72.0));
+		double y;
+		y=this_page_height - ((float) a * eachline) - (layout.topmargin * 72.0);
+		y=y-eachline;
+      	PDF_set_text_pos (p, (layout.leftmargin * 72.0), y);
       	PDF_show (p, ptr);
       }
     }

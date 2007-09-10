@@ -42,7 +42,7 @@ int a;
 struct csv_blocks *block;
 struct csv_entry *centry;
 
-printf("Start block %d\n",rb);
+//printf("Start block %d\n",rb);
 
 for (a=0;a<layout->nblocks;a++) {
 	block=&layout->blocks[a];
@@ -71,7 +71,7 @@ int last;
 struct csv_blocks *block;
 struct csv_entry *centry;
 
-printf("End block %d\n",rb);
+//printf("End block %d\n",rb);
 
 // First - we need to find our block to print...
 for (a=0;a<layout->nblocks;a++) {
@@ -96,9 +96,11 @@ for (a=0;a<layout->nblocks;a++) {
 		// Print all of these cells...
 		for (x=0;x<=last;x++) {
 			if (x) fprintf(rep_fout,",");
+			/*
 			if (x==0 && centry[x].special) {
 				printf("%s\n", centry[x].special);
 			}
+			*/
 			if (centry[x].special && strlen(centry[x].special) && centry[x].rb>=0 && centry[x].entry>=0) {
 				fprintf(rep_fout,"\"%s\"",centry[x].special);
 			} else {
@@ -139,17 +141,21 @@ for (a=0;a<layout->nblocks;a++) {
 	for (y=0;y<block->nrows;y++) {
 		centry=block->matrix[y];
 		for (x=0;x<block->ncols;x++) {
+			/*
 			if (x==0) {
 				printf("%d %d %d %d --> %s\n", centry[x].entry, entry_id,  centry[x].rb, block_id,s);
 			}
+			*/
 			if (centry[x].entry==entry_id && centry[x].rb==block_id) {
 				//if (centry[x].special!=NULL) {
 					//free(centry[x].special);
 					//centry[x].special=NULL;
 				//}
+				/*
 				if (x==0) {
 					printf("Setting special to be %s\n", s);
 				}
+				*/
 				centry[x].special=s;
 			}
 		}

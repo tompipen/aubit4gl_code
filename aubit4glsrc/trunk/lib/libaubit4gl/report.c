@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.143 2007-07-26 12:43:01 mikeaubury Exp $
+# $Id: report.c,v 1.144 2007-09-10 06:15:01 mikeaubury Exp $
 #
 */
 
@@ -1961,6 +1961,7 @@ print_data (struct rep_structure *rep, char *buff, int entry)
 	  report_write_int (rep, rep->page_no);
 	  report_write_int (rep, rep->line_no);
 	  report_write_int (rep, rep->col_no);
+		A4GL_assertion(entry<0, "Invalid entry");
 	  report_write_int (rep, entry);
 	  report_write_string (rep, s);
 	}
