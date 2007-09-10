@@ -763,7 +763,10 @@ int SendFile(char *s) {
 	}
 
         f=A4GL_open_file_dbpath(s);
-	if (f==0) return 0;
+	if (f==0) {
+			fprintf(stderr, "File could not be opened(%s)!\n",s);
+			return 0;
+	}
 	fseek(f,0,SEEK_END);
 	fl=ftell(f);
 
