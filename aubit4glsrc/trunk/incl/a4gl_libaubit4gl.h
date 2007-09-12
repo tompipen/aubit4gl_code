@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.283 2007-07-26 12:04:27 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.284 2007-09-12 07:30:44 mikeaubury Exp $
 #
 */
 
@@ -2065,6 +2065,7 @@ char *A4GLSQLCV_create_temp_table(char *tabname,char *elements,char *extra,char 
 char *A4GLSQLCV_check_tablename(char *t) ;
 char *A4GLSQLCV_make_tablename(char *t,char *c) ;
 char *A4GLSQLCV_ownerize_tablename(char *owner, char *table);
+char *A4GLSQLCV_db_tablename(char *dbname, char*instance, char*ownerized_tablename );
 
 
 void A4GL_add_feature(char *s);
