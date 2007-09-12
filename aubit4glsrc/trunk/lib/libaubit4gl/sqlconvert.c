@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.125 2007-07-24 12:47:46 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.126 2007-09-12 07:24:45 mikeaubury Exp $
 #
 */
 
@@ -62,7 +62,9 @@ char *CV_matches (char *typ, char *string, char *esc);
 static int set_sql_conv_success;
 int is_sqlserver_reserved_word (char *s);
 static void load_column_mappings_i (char *ptr);
+static void load_table_mappings_i (char *ptr);
 char fake_rowid_column[256];
+static int loaded_columns = 0;
 
 static char *cvsql_names[] = {
   "CVSQL_NONE",
@@ -312,6 +314,16 @@ struct cvsql_data *current_conversion_rules = 0;
 int current_conversion_rules_cnt = 0;
 
 
+struct table_remap
+{
+  char *orig_db;
+  char *orig_instance;
+  char *tabname;
+  char *newtabname;
+};
+
+struct table_remap *table_mappings = 0;
+int ntable_mappings = 0;
 
 struct column_remap
 {
@@ -2190,7 +2202,6 @@ A4GL_strwscmp (char *a, char *b)
 	A4GL_trim(o2);
   if (strstr(o2,"%s")) {
 	int r;
-	int n;
 	int chars=0;
 	char buff[2000];
 	strcpy(buff,o2);
@@ -3477,6 +3488,97 @@ A4GL_space_out (char *s)
 
 
 static void
+add_table_mapping (char *db, char *instance, char *tab, char* newtab)
+{
+  ntable_mappings++;
+A4GL_debug("ADD MAP db=%s inst=%s tab=%s newtab=%s\n", db,instance,tab,newtab);
+  table_mappings = acl_realloc (table_mappings, sizeof (struct table_remap) * ntable_mappings);
+  table_mappings[ntable_mappings - 1].orig_db= strdup (db);
+  table_mappings[ntable_mappings - 1].orig_instance = strdup (instance);
+  table_mappings[ntable_mappings - 1].tabname = strdup (tab);
+  table_mappings[ntable_mappings - 1].newtabname = strdup (newtab);
+}
+
+static void
+load_table_mappings (void) {
+char *ptr;
+  ptr = acl_getenv ("TABLE_MAP");
+  if (ptr) { if (strlen (ptr)) {load_table_mappings_i(ptr);}}
+  ptr = acl_getenv ("LOCAL_COLUMN_MAP");
+  if (ptr) { if (strlen (ptr)) {load_table_mappings_i(ptr);}}
+}
+
+
+static void load_table_mappings_i (char *ptr)
+{
+  FILE *f;
+  char buff[256];
+  char *t;
+  char *c1;
+  char *c2;
+  char *c;
+	char db[200];
+	char inst[200];
+	char tabname[200];
+
+  f = fopen (ptr, "r"); if (f == 0) return;
+
+
+  while (1)
+    {
+	int a;
+	char *p_at;
+	char *p_colon;
+      c1 = 0;
+      c2 = 0;
+      c = fgets (buff, 256, f);
+      if (!c)
+	break;
+      A4GL_trim_nl (buff);
+      if (buff[0] == '*')
+	continue;
+      t = buff;
+      c1 = strchr (buff, ' ');
+      if (c1)
+	{
+	  *c1 = 0;
+	  c1++;
+	}
+
+	strcpy(db,"");
+	strcpy(inst,"");
+	strcpy(tabname,"");
+	p_at=strchr(t,'@');
+	p_colon=strchr(t,':');
+	
+	if (p_at) {
+		if (p_colon) {
+			*p_colon=0; p_colon++;
+			*p_at=0; p_at++;
+			strcpy(db,buff);
+			strcpy(inst,p_at);
+			strcpy(tabname,p_colon);
+		} else {
+			*p_at=0; p_at++;
+			strcpy(tabname,buff);
+			strcpy(inst,p_at);
+		}
+	} else {
+		if (strchr(t,':')) {
+			*p_colon=0; p_colon++;
+			strcpy(db,buff);
+			strcpy(tabname,p_colon);
+		} else {
+			strcpy(tabname,buff);
+		}
+	}
+
+      add_table_mapping (db,inst,tabname,c1);
+    }
+}
+
+
+static void
 add_mapping (char *t, char *c1, char *c2)
 {
   ncolumn_mappings++;
@@ -3551,6 +3653,9 @@ static void load_column_mappings_i (char *ptr)
 
 
 
+void chk_loaded_mappings() {
+  if (!loaded_columns) { loaded_columns = 1; load_column_mappings (); load_table_mappings(); }
+}
 
 
 
@@ -3558,14 +3663,9 @@ char *
 A4GL_confirm_colname (char *t, char *c)
 {
   static char buff[256];
-  static int loaded_columns = 0;
   int a;
-  if (!loaded_columns)
-    {
-      loaded_columns = 1;
-      load_column_mappings ();
 
-    }
+  chk_loaded_mappings();
   for (a = 0; a < ncolumn_mappings; a++)
     {
       if (t == 0)
@@ -3847,6 +3947,35 @@ A4GL_new_escape_quote_owner (void)
   return 1;
 }
 
+char *A4GLSQLCV_db_tablename(char *dbname, char*instance, char*ownerized_tablename ) {
+static char buff[512];
+int a;
+    chk_loaded_mappings();
+
+	if (dbname==NULL && instance==NULL) {
+		strcpy(buff,ownerized_tablename);
+	} else {
+		if ( instance==NULL) {
+			sprintf(buff,"%s:%s", dbname, ownerized_tablename);
+		} else {
+			if ( dbname==NULL) {
+				sprintf(buff,"%s@%s", instance, ownerized_tablename);
+			} else {
+				sprintf(buff,"%s@%s:%s", dbname, instance, ownerized_tablename);
+			}
+		}
+	}
+	if (dbname==0) dbname="";
+	if (instance==0) instance="";
+	for (a=0;a<ntable_mappings;a++) {
+		if (strcmp(table_mappings[a].orig_db, dbname)!=0)  continue;
+		if (strcmp(table_mappings[a].orig_instance, instance)!=0)  continue;
+		if (strcmp(table_mappings[a].tabname, ownerized_tablename)!=0)  continue;
+		return table_mappings[a].newtabname;
+	}
+	return buff;
+}
+
 char *
 A4GLSQLCV_ownerize_tablename (char *owner, char *table)
 {
@@ -3857,6 +3986,8 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
     static int escapeQuoteOwner = 0;
     static char *defaultOwner = NULL;
     int newSize;
+
+    chk_loaded_mappings();
 
     newSize = (defaultOwner ? strlen(defaultOwner) : 0)
             + (owner        ? strlen(owner)        : 0)
