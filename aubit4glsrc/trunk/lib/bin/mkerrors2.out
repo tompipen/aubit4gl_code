@@ -346,3 +346,4 @@
 348|No statement
 350|MAPM Error
 351|MAPM Warning
+352|Value exceeds limit of SMALLINT precision

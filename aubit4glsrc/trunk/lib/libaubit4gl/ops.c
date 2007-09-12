@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.119 2007-08-24 07:11:17 mikeaubury Exp $
+# $Id: ops.c,v 1.120 2007-09-12 16:34:36 mikeaubury Exp $
 #
 */
 
@@ -5748,9 +5748,11 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 
   if (l > sz)
     {
-      A4GL_dectos (ptr, buff_sz, 64);
+      //A4GL_dectos (ptr, buff_sz, 64);
+	strcpy(buff_sz, A4GL_dec_to_str(ptr,0,1));
       A4GL_ltrim (buff_sz);
       A4GL_trim (buff_sz);
+	
       A4GL_debug ("make_using_sz dectos returns ---> %s", buff_sz);
 	if (buff_sz[0]=='-' && buff_sz[1]=='.') { 
 		char buff[200];
@@ -5771,7 +5773,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 	  char *ptr;
 	  // It doesn't fit -
 	  // what happens if we remove all the decimal places ?
-	  ptr = a_strchr (buff_sz, a4gl_convfmts.ui_decfmt.decsep);
+	  ptr = a_strchr (buff_sz, '.');
 
 	  if (ptr)
 	      *ptr = 0;
@@ -5781,7 +5783,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 	      // Still doesn't fit - we're stuffed...
 	      memset (buff_sz, '*', sz);
 	      buff_sz[sz] = 0;
-	      A4GL_debug ("make_using_sz - doesn't fit");
+	      A4GL_debug ("make_using_sz - doesn't fit buff_sz=%s", buff_sz);
 	      return buff_sz;
 	    }
 

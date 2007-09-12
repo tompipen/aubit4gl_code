@@ -602,7 +602,7 @@ fgldecimal *A4GL_str_to_dec (char *str_orig, fgldecimal *dec) {
  * @param size The total size of the decimal
  * @return A pointer to a static buffer that contains the decimal.
  */
-char *A4GL_dec_to_str (fgldecimal *dec, int size) {
+char *A4GL_dec_to_str (fgldecimal *dec, int size,int force_dot_separator) {
   static char buff[256];
   //char buff2[256];
   int a;
@@ -686,8 +686,8 @@ char buff[2000];
 	m2= m_apm_init();
 	mres= m_apm_init();
 
-	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
-	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0),1);
+	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0,1),1);
+	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0,1),1);
 
 	m_apm_add(mres, m1, m2);
 
@@ -710,8 +710,8 @@ int a;
 	//char buff[200];
 	m1= m_apm_init();
 	m2= m_apm_init();
-	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
-	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0),1);
+	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0,1),1);
+	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0,1),1);
 	a=m_apm_compare(m1,m2);
 	m_apm_free(m1);
 	m_apm_free(m2);
@@ -801,8 +801,8 @@ char buff[2000];
 	m2= m_apm_init();
 	mres= m_apm_init();
 
-	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
-	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0),1);
+	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0,1),1);
+	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0,1),1);
 
 
 	m_apm_divide(mres, res->dec_data[1]+1, m1, m2);
@@ -830,8 +830,8 @@ char buff[2000];
 	m2= m_apm_init();
 	mres= m_apm_init();
 
-	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
-	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0),1);
+	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0,1),1);
+	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0,1),1);
 
 	m_apm_multiply(mres, m1, m2);
 
@@ -850,7 +850,7 @@ a4gl_decround (fgldecimal * d1, int n)
 M_APM m1;
 char buff[200];
      m1= m_apm_init();
-     acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
+     acl_apm_set_string(m1, A4GL_dec_to_str(d1,0,1),1);
      m_apm_to_fixpt_string(buff,n,m1);
      A4GL_str_dot_to_dec(buff,d1);
 	m_apm_free(m1);
@@ -868,8 +868,8 @@ char buff[2000];
 	m2= m_apm_init();
 	mres= m_apm_init();
 
-	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
-	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0),1);
+	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0,1),1);
+	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0,1),1);
 
 	m_apm_subtract(mres, m1, m2);
 
@@ -889,7 +889,7 @@ a4gl_dectoasc (fgldecimal * d, char *s, int l, int right)
 M_APM m1;
 char buff[2000];
 	m1= m_apm_init();
-	acl_apm_set_string(m1, A4GL_dec_to_str(d,0),1);
+	acl_apm_set_string(m1, A4GL_dec_to_str(d,0,1),1);
 	m_apm_to_fixpt_string(buff, right, m1);
 	if (strlen(buff)>l) {
 		return -1;
@@ -903,21 +903,21 @@ int
 a4gl_dectodbl (fgldecimal * d1, double *d)
 {
 //char buff[256];
-   A4GL_stof (A4GL_dec_to_str(d1,0), d, 0);
+   A4GL_stof (A4GL_dec_to_str(d1,0,0), d, 0);
 return 0;
 }
 
 int
 a4gl_dectoint (fgldecimal * d1, int *ival)
 {
-   A4GL_stoi (A4GL_dec_to_str(d1,0), ival, 0);
+   A4GL_stoi (A4GL_dec_to_str(d1,0,0), ival, 0);
   return 0;
 }
 
 int
 a4gl_dectolong (fgldecimal * d1, long *lval)
 {
-   A4GL_stol (A4GL_dec_to_str(d1,0), lval, 0);
+   A4GL_stol (A4GL_dec_to_str(d1,0,0), lval, 0);
   return 0;
 }
 
@@ -937,7 +937,7 @@ m_mult= m_apm_init();
 m10= m_apm_init();
 mres= m_apm_init();
 
-acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
+acl_apm_set_string(m1, A4GL_dec_to_str(d1,0,1),1);
 
 m_apm_set_long(m_mult,1);
 m_apm_set_long(m10,10);

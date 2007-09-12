@@ -174,7 +174,7 @@ if (d1==DTYPE_INT8) {
 		case DTYPE_DECIMAL: 
 				{
 				char buff[2000];
-				strcpy(buff,A4GL_dec_to_str(p1,0));
+				strcpy(buff,A4GL_dec_to_str(p1,0,0));
 				sscanf(buff,"%lld",(int8*)p2);
 				}
 				return 1;

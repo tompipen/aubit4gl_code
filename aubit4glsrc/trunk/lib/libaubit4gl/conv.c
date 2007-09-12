@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.142 2007-07-26 20:58:40 mikeaubury Exp $
+# $Id: conv.c,v 1.143 2007-09-12 16:34:36 mikeaubury Exp $
 #
 */
 
@@ -1107,7 +1107,7 @@ if (A4GL_isyes(acl_getenv("DBL2DEC_USING"))) {
 
   eptr = A4GL_str_to_dec (buff, z);
 
-  ptr = A4GL_dec_to_str (z, 0);
+  	ptr = A4GL_dec_to_str (z, 0,1);
 	A4GL_debug("---> %s\n",ptr);
   if (eptr)
     return 1;
@@ -1175,7 +1175,7 @@ A4GL_dectodec (void *a, void *z, int size)
   errno = 0;
   //A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   (void)A4GL_init_dec (z, h, t);
-  buff = A4GL_dec_to_str (a, 0);
+  buff = A4GL_dec_to_str (a, 0,0);
   eptr = A4GL_str_to_dec (buff, z);
 
   if (eptr)
@@ -1236,7 +1236,7 @@ A4GL_mdectos (void *z, void *w, int size)
   char *buff;
   char buff2[200];
 
-  buff = A4GL_dec_to_str (z, size);
+  buff = A4GL_dec_to_str (z, size,0);
 
   A4GL_debug ("mdec_to_str -> '%s'\n", A4GL_null_as_null(buff));
 
@@ -1268,7 +1268,7 @@ A4GL_mdectol (void *zz, void *aa, int sz_ignore)
   A4GL_debug ("mdectol");
   a = (long *) aa;
   z = (fgldecimal *) zz;
-  strcpy (buff, A4GL_dec_to_str (z, 0));
+  strcpy (buff, A4GL_dec_to_str (z, 0,0));
   return A4GL_stol (buff, a, 0);
 }
 
@@ -1291,7 +1291,7 @@ A4GL_mdectoi (void *zz, void *aa, int sz_ignore)
   A4GL_debug ("mdectoi");
   a = (short *) aa;
   z = (fgldecimal *) zz;
-  strcpy (buff, A4GL_dec_to_str (z, 0));
+  strcpy (buff, A4GL_dec_to_str (z, 0,0));
   return A4GL_stoi (buff, a, 0);
 }
 
@@ -1313,7 +1313,7 @@ A4GL_mdectod (void *zz, void *aa, int sz_ignore)
   fgldecimal *z;
   a = (long *) aa;
   z = (fgldecimal *) zz;
-  strcpy (buff, A4GL_dec_to_str (z, 0));
+  strcpy (buff, A4GL_dec_to_str (z, 0,0));
   return A4GL_stol (buff, a, 0);
 }
 
@@ -1336,7 +1336,7 @@ A4GL_mdectof (void *zz, void *aa, int sz_ignore)
   a = (double *) aa;
   z = (fgldecimal *) zz;
 
-  strcpy (buff, A4GL_dec_to_str (z, 0));
+  strcpy (buff, A4GL_dec_to_str (z, 0,0));
   return A4GL_stof (buff, a, 0);
 }
 
@@ -1358,7 +1358,7 @@ A4GL_mdectosf (void *zz, void *aa, int sz_ignore)
   float *a;
   z = (fgldecimal *) zz;
   a = (float *) aa;
-  strcpy (buff, A4GL_dec_to_str (z, 0));
+  strcpy (buff, A4GL_dec_to_str (z, 0,0));
   return A4GL_stosf (buff, a, 0);
 }
 
@@ -1378,7 +1378,7 @@ A4GL_dectos (void *z, void *w, int size)
 {
   char *buff;
   char buff2[200];
-  buff = A4GL_dec_to_str (z, size);
+  buff = A4GL_dec_to_str (z, size,0);
   A4GL_debug ("dec_to_str -> '%s'\n", A4GL_null_as_null(buff));
   strcpy(buff2,buff);
   A4GL_ltrim(buff2);
