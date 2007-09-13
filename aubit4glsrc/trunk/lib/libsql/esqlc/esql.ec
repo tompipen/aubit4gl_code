@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.194 2007-07-23 13:24:12 mikeaubury Exp $
+# $Id: esql.ec,v 1.195 2007-09-13 08:10:05 mikeaubury Exp $
 #
 */
 
@@ -190,7 +190,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.194 2007-07-23 13:24:12 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.195 2007-09-13 08:10:05 mikeaubury Exp $";
 #endif
 
 
@@ -1259,7 +1259,7 @@ int d_prec=0;
 	char *b;
 	vptr = (void *) bind[idx].ptr;
 	fgl_decimal = (fgldecimal *) vptr;
-	b = A4GL_dec_to_str (fgl_decimal, 0);
+	b = A4GL_dec_to_str (fgl_decimal, 0,1);
 	get_scale(b, &d_prec, &d_scale);
 
 	if (deccvasc (b, strlen (b), &decimal_var))
@@ -1280,7 +1280,7 @@ int d_prec=0;
 	char *b;
 	vptr = (void *) bind[idx].ptr;
 	fgl_decimal = (fgldecimal *) vptr;
-	b = A4GL_dec_to_str ((void *) fgl_decimal, 0);
+	b = A4GL_dec_to_str ((void *) fgl_decimal, 0,1);
 	/* 
 	   warning: passing arg 1 of `A4GL_dec_to_str' from incompatible pointer type
 	   char *A4GL_dec_to_str (fgldecimal *dec, int size) ;  

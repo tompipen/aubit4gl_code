@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.126 2007-09-12 07:24:45 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.127 2007-09-13 08:10:05 mikeaubury Exp $
 #
 */
 
@@ -149,7 +149,7 @@ static char *cvsql_names[] = {
   "CVSQL_CLOSE_CURSOR_BEFORE_OPEN",
 
   "CVSQL_DTIME_AS_CHAR",
-  "CVSQL_DATE_AS_CHAR",
+  "CVSQL_DATE_AS_ISO_DATE_STRING",
   "CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH",
   "CVSQL_SELECT_INTO_TEMP_INTO_HASH",
   "CVSQL_CREATE_TEMP_AS_CREATE_HASH",
@@ -268,7 +268,7 @@ enum cvsql_type
   CVSQL_ESQL_UNLOAD_LIB_FALLBACK,
   CVSQL_CLOSE_CURSOR_BEFORE_OPEN,
   CVSQL_DTIME_AS_CHAR,
-  CVSQL_DATE_AS_CHAR,
+  CVSQL_DATE_AS_ISO_DATE_STRING,
   CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH,
   CVSQL_SELECT_INTO_TEMP_INTO_HASH,
   CVSQL_CREATE_TEMP_AS_CREATE_HASH,
@@ -1739,8 +1739,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_ESQL_UNLOAD_STRING;
   if (match_strncasecmp (p, "ESQL_UNLOAD_LIB_FALLBACK", len) == 0)
     return CVSQL_ESQL_UNLOAD_LIB_FALLBACK;
-  if (match_strncasecmp (p, "DATE_AS_CHAR", len) == 0)
-    return CVSQL_DATE_AS_CHAR;
+  if (match_strncasecmp (p, "DATE_AS_ISO_DATE_STRING", len) == 0)
+    return CVSQL_DATE_AS_ISO_DATE_STRING;
   if (match_strncasecmp (p, "DTIME_AS_CHAR", len) == 0)
     return CVSQL_DTIME_AS_CHAR;
   if (match_strncasecmp (p, "DTYPE_ALIAS", len) == 0)

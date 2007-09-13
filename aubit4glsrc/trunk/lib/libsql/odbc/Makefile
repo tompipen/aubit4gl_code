@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2007-03-28 13:38:28 mikeaubury Exp $
+# $Id: Makefile,v 1.15 2007-09-13 08:10:06 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -128,25 +128,25 @@ ${PLUGINDIR}/libSQL_odbc32${SO_EXT} : ${OBJECTS}
 
 ################################
 #Aubit ODBC plug-in code linked with iODBC ODBC manager library
-${PLUGINDIR}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC -DSQLLEN=int ${IODBC_INCLUDE} ${IODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${PLUGINDIR}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC  ${IODBC_INCLUDE} ${IODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${PLUGINDIR}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${IODBC_LIBS} ${IODBC_LFLAGS}
 
 ################################
 #Aubit ODBC plug-in code linked with unixODBC ODBC manager library
-${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC -DSQLLEN=int ${UNIXODBC_LFLAGS} ${UNIXODBC_INCLUDE} ${CFLAGS}
+${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${UNIXODBC_INCLUDE} ${CFLAGS}
 ${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${UNIXODBC_LIBS} ${UNIXODBC_LFLAGS}
 
 ################################
 #Aubit ODBC plug-in code linked with (Informix) ODBC driver library, for use without ODBC manager
-${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: CFLAGS:=-DIFXODBC -DSQLLEN=int -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
+${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: CFLAGS:=-DIFXODBC  -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
 ${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -lifdmr -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
 
 ################################
 #Aubit ODBC plug-in code linked with (PG) ODBC driver library, for use without ODBC manager
-${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC -DSQLHDBC=HDBC -DSQLLEN=int -DINCLUDEDATASOURCES ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
+${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC -DSQLHDBC=HDBC  -DINCLUDEDATASOURCES ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -l${PGODBC_LIBNAME} ${PGODBC_LFLAGS}
 
@@ -159,7 +159,7 @@ ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
 ###############################
 #Aubit ODBC plug-in linked with SQLite ODBC driver for use without ODBC manager
 #${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbctest/incl
-${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl -DSQLLEN=int ${CFLAGS_SQLITE}
+${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl  ${CFLAGS_SQLITE}
 ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -L${SQLITE_ODBC_LIBDIR} -l${SQLITE_ODBC_LIBNAME_SHARED}
 
@@ -167,14 +167,14 @@ ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 #SQLite plug-in dynamically linked with SQLite library/engine:
 #This plug-in consists of 1) Aubit ODBC plug-in code 2) SQLiteODBC code we have
 #a private copy of in Aubit CVS, and 3) SQLite engine library 
-${PLUGINDIR}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLLEN=int -DSQLITE_DIRECT
+${PLUGINDIR}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}  -DSQLITE_DIRECT
 ${PLUGINDIR}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} -l${SQLITE_LIBNAME} ${LINKLIBS}
 
 ################################	
 #Same as above, but with SQLite VERSION 3
 libSQL_sqlite3${SO_EXT}: ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}
-${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLLEN=int -DSQLITE_DIRECT
+${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}  -DSQLITE_DIRECT
 ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} ${SQLITE_FLAGS} -l${SQLITE_LIBNAME} ${LINKLIBS} > link.log 2>&1

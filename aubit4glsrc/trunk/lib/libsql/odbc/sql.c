@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.197 2007-07-24 14:13:12 mikeaubury Exp $
+# $Id: sql.c,v 1.198 2007-09-13 08:10:06 mikeaubury Exp $
 #
 */
 
@@ -87,6 +87,10 @@
                        Type definitions
 =====================================================================
 */
+
+#ifndef SQLLEN
+#define SQLLEN int
+#endif
 
 //typedef int SQLRETURN;
 
@@ -412,7 +416,7 @@ int A4GL_dttoc (void *a, void *b, int size);
 int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (void *ptr_to_dtime_var);
 void *A4GL_bind_interval (void *ptr_to_ival);
-void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+//void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 int A4GL_inttoc (void *a1, void *b, int size);
 int A4GL_has_cache_column (char *buff);
 char * A4GL_find_cache_column(char *buff);
@@ -736,12 +740,12 @@ ensure_as_char (void)
         return;
     ensured++;
 
-    if (A4GLSQLCV_check_requirement ("DATE_AS_CHAR"))
+    if (A4GLSQLCV_check_requirement ("DATE_AS_ISO_DATE_STRING"))
         date_as_char = 1;
     if (A4GLSQLCV_check_requirement ("DTIME_AS_CHAR"))
         dtime_as_char = 1;
 
-    if (A4GL_isno (acl_getenv ("DATE_AS_CHAR")))
+    if (A4GL_isno (acl_getenv ("DATE_AS_ISO_DATE_STRING")))
         date_as_char = 0;
     if (A4GL_isno (acl_getenv ("DTIME_AS_CHAR")))
         dtime_as_char = 0;
@@ -3581,7 +3585,7 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname,
                 && chk_rc(SQLBindCol(ci->hstmt, 5, SQL_C_LONG, &ci->bd.dt, sizeof(ci->bd.dt), &ci->bd.len_dt), ci->hstmt, "SQLBindCol(5)")
                 && chk_rc(SQLBindCol(ci->hstmt, 7, SQL_C_LONG, &ci->bd.prec, sizeof(ci->bd.prec), &ci->bd.len_prec), ci->hstmt, "SQLBindCol(7)")
                 && chk_rc(SQLBindCol(ci->hstmt, 8, SQL_C_LONG, &ci->bd.buflen, sizeof(ci->bd.buflen), &ci->bd.len_buflen), ci->hstmt, "SQLBindCol(8)")
-                && chk_rc(SQLBindCol(ci->hstmt, 9, SQL_C_LONG, &ci->bd.scale, sizeof(ci->bd.scale), &ci->bd.len_scale), ci->hstmt, "SQLBindCol(9)")
+                && chk_rc(SQLBindCol(ci->hstmt, 9, SQL_C_LONG, &ci->bd.scale, sizeof(ci->bd.scale), (void*)&ci->bd.len_scale), ci->hstmt, "SQLBindCol(9)")
                 && chk_rc(SQLBindCol(ci->hstmt, 10, SQL_C_LONG, &ci->bd.radix, sizeof(ci->bd.radix), &ci->bd.len_radix), ci->hstmt, "SQLBindCol(10)")
                 && chk_rc(SQLBindCol(ci->hstmt, 11, SQL_C_LONG, &ci->bd.nullable, sizeof(ci->bd.nullable), &ci->bd.len_nullable), ci->hstmt, "SQLBindCol(11)")
                 && chk_rc(SQLBindCol(ci->hstmt, 12, SQL_C_CHAR, ci->bd.remarks, sizeof(ci->bd.remarks)-1, &ci->bd.len_remarks), ci->hstmt, "SQLBindCol(12)"); 

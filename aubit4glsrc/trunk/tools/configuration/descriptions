@@ -666,12 +666,12 @@ CORE_ON_ASSERT RUNTIME/DEBUG Force a core dump when encountering an assert
 	wrong internally. Setting this option will force a Core dump (Seg Fault) which
 	should allow any attached debugger to check exactly where the assertion failed 
 	and investigate why it failed.
-DATE_AS_CHAR SQL/ODBC Use character strings for dates
+DATE_AS_ISO_DATE_STRING SQL/ODBC Use character strings for dates
 =YES|NO
 	This specifies that when communicating with the ODBC driver, dates should
 	always be refered to as strings. Some ODBC do not correctly handle dates using
 	the proper ODBC SQL_DATE datatype - when this situation occurs, specifying 
-	DATE_AS_CHAR may help
+	DATE_AS_ISO_DATE_STRING may help
 DTIME_AS_CHAR SQL/ODBC Use character strings for datetimes
 =YES|NO
 	This specifies that when communicating with the ODBC driver, datetimes should

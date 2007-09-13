@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.301 2007-06-13 13:26:01 mikeaubury Exp $
+# $Id: mod.c,v 1.302 2007-09-13 08:10:03 mikeaubury Exp $
 #
 */
 
@@ -1250,7 +1250,7 @@ set_4gl_vars (void)
   variable_action (-1, "long", "", "", "push_type");
   variable_action (-1, "err_file_name", "", "", "a4gl_add_variable");
   variable_action (-1, "char", "32", "", "push_type");
-  variable_action (-1, "err_file_no", "", "", "a4gl_add_variable");
+  variable_action (-1, "err_line_no", "", "", "a4gl_add_variable");
   variable_action (-1, "long", "", "", "push_type");
   variable_action (-1, "curr_file_name", "", "", "a4gl_add_variable");
   variable_action (-1, "char", "32", "", "push_type");

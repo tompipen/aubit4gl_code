@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2007-06-20 07:04:58 mikeaubury Exp $
+# $Id: Makefile.in,v 1.18 2007-09-13 08:10:06 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -98,6 +98,11 @@ ifneq "${GCC_MINGW}" "yes"
 	cp $@ /tmp
 endif
 endif
+
+libUI_TUI_wide: ${PLUGINDIR}/libUI_TUI_wide${SO_EXT}
+
+${PLUGINDIR}/libUI_TUI_wide${SO_EXT}: ${ALLOBJ}
+	${LD} ${SO_LDFLAGS} -o $@ $^ @CURSES_LIB_PATH@  -lncursesw  -lpanelw -lformw  ${LINKLIBS}
 
 ## ==================================================================
 ##                            Sub Targets
