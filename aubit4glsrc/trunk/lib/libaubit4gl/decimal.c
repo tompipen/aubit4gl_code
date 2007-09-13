@@ -170,7 +170,8 @@ char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
     char * optr;
     char sign = 0;
     // find a decimal separator
-    A4GL_debug("Converting \"%s\" from.decsep=%c to.decsep=%c", buf, from.decsep, to.decsep);
+    A4GL_debug("Converting \"%s\" %c%c->%c%c", buf,
+	    from.decsep, from.thsep ? from.thsep : 'N', to.decsep, to.thsep ? to.thsep : 'N');
     for (dpos = 0; buf[dpos]; ++dpos)
     {
         if (buf[dpos] == from.decsep)
@@ -373,6 +374,16 @@ char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
 		{
 		    if (bl <= maxlen)
 			break;
+		}
+		if (bl > maxlen && to.thsep)
+		{
+		    A4GL_debug("maxlen exceeded, trying to grab thousand separators");
+		    s_decfmt tmpfrom = to;
+		    s_decfmt tmpto = to;
+		    from.thsep = to.thsep;
+		    tmpto.thsep = NULL;
+		    A4GL_decstr_convert(optr, tmpfrom, tmpto, 0, 1, maxlen);
+		    bl = strlen(optr);
 		}
 		if (bl > maxlen)
 		{
