@@ -17,9 +17,11 @@
 #include "formdriver.h"
 #include "low_gtk.h"
 #include <ctype.h>
+
+int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.125 2007-08-29 16:48:07 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.126 2007-09-13 17:21:54 mikeaubury Exp $";
 #endif
 
 
@@ -1566,6 +1568,7 @@ A4GL_LL_initialize_display (void)
 #endif
 #endif
   gtk_init (0, 0);
+  ran_gtk_init++;
   register_my_stock_icons();
 
   if (acl_getenv ("CELL_HEIGHT"))
@@ -2172,7 +2175,11 @@ A4GL_LL_set_field_status (void *f, int stat)
 void
 A4GL_LL_out_linemode (char *s)
 {
-  A4GL_add_to_console (s);
+  if (ran_gtk_init) {
+  	A4GL_add_to_console (s);
+  } else {
+	printf("%s\n",s);
+  }
 }
 
 
