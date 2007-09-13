@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.53 2007-07-24 12:47:46 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.54 2007-09-13 16:43:40 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,7 @@ char *kw_cb = ")";
 int place_holder_cnt = 0;
 int dont_set_for_single_table = 0;
 int set_sql_lineno=0;
+int has_columns_cnt=0;
 
 //char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
 //char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;
@@ -1250,9 +1251,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    if (select->table_elements.ntables == 1)
 	      {
 
-		if (A4GL_has_column
-		    (select->table_elements.tables[0].tabname,
-		     p->u_data.column.colname))
+		if (A4GL_has_column (select->table_elements.tables[0].tabname, p->u_data.column.colname))
 		  {
 			  rval= acl_strdup_With_Context (A4GLSQLCV_check_colname (select->table_elements.tables[0].tabname, p->u_data.column.colname));
 	      A4GL_debug("returning %s\n",rval);
@@ -1542,7 +1541,8 @@ preprocess_sql_statement (struct s_select *select)
 //
 // Lets collect all our expressions in one place....
 //
-  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS")|| A4GL_isyes(acl_getenv("MAP4GL"))) 
+  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS")
+      || A4GL_isyes (acl_getenv ("MAP4GL")))
     {
       expand_many = 0;
       for (a = 0; a < select->select_list->nlist; a++)
@@ -1554,7 +1554,9 @@ preprocess_sql_statement (struct s_select *select)
 	      if (select->table_elements.ntables == 1)
 		{
 		  tname = select->table_elements.tables[0].tabname;
-		  select->select_list->list[a] = new_select_list_item_col (acl_strdup_With_Context (tname), "*", 0);
+		  select->select_list->list[a] =
+		    new_select_list_item_col (acl_strdup_With_Context (tname),
+					      "*", 0);
 		}
 	      else
 		{
@@ -1629,9 +1631,11 @@ preprocess_sql_statement (struct s_select *select)
 
 		  if (strcmp (p->u_data.column.tabname, "") == 0)
 		    {
-		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
-		      PRINTF ("No tabname - got %d tables...\n", select->table_elements.ntables);
-		      }
+		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
+			{
+			  PRINTF ("No tabname - got %d tables...\n",
+				  select->table_elements.ntables);
+			}
 		      if (select->table_elements.ntables == 1 && !dont_set_for_single_table)	// A
 			{
 			  p->u_data.column.tabname =
@@ -1641,9 +1645,11 @@ preprocess_sql_statement (struct s_select *select)
 
 		  if (strcmp (p->u_data.column.tabname, "") == 0)
 		    {
-		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
-		      		PRINTF ("WARNING: No table specified for expansion - column expansion not possible\n");
-		      }
+		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
+			{
+			  PRINTF
+			    ("WARNING: No table specified for expansion - column expansion not possible\n");
+			}
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
@@ -1651,7 +1657,8 @@ preprocess_sql_statement (struct s_select *select)
 		  tname =
 		    find_tabname_for_alias (select, p->u_data.column.tabname);
 
-		  rval = A4GLSQL_get_columns (tname, colname, &idtype, &isize);
+		  rval =
+		    A4GLSQL_get_columns (tname, colname, &idtype, &isize);
 
 		  if (rval == 0)
 		    {		//
@@ -1661,8 +1668,8 @@ preprocess_sql_statement (struct s_select *select)
 				   "WARNING: Unable to locate %s in the database - column expansion not possible\n",
 				   tname);
 			}
-//			A4GLSQL_set_status(0,0);
-	
+//                      A4GLSQL_set_status(0,0);
+
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
@@ -1678,7 +1685,10 @@ preprocess_sql_statement (struct s_select *select)
 			  break;
 			}
 		      A4GL_trim (ccol);
-		      if (is_fake_rowid_column(ccol)) {continue;}
+		      if (is_fake_rowid_column (ccol))
+			{
+			  continue;
+			}
 
 		      pnew =
 			new_select_list_item_col (p->u_data.column.tabname,
@@ -1686,7 +1696,7 @@ preprocess_sql_statement (struct s_select *select)
 		      add_select_list_item_list (n, pnew);
 		    }
 		  if (need_end_columns)
-		      A4GLSQL_end_get_columns ();
+		    A4GLSQL_end_get_columns ();
 		  continue;
 		}
 	    }
@@ -1721,31 +1731,57 @@ preprocess_sql_statement (struct s_select *select)
 	  int b;
 	  if (p->u_data.column.tabname == 0)
 	    {
-		    int nelements;
-		    nelements=select->table_elements.ntables;
-	      A4GL_debug ("No tabname for column : %s %d\n", p->u_data.column.colname, select->table_elements.ntables);
-	      for (b = nelements-1; b >=0 ; b--) 
+	      int nelements;
+	      char *t = 0;
+	      int matches = 0;
+	      nelements = select->table_elements.ntables;
+	      A4GL_debug ("No tabname for column : %s %d\n",
+			  p->u_data.column.colname,
+			  select->table_elements.ntables);
+	      for (b = nelements - 1; b >= 0; b--)
 		{
-		  char *t;
 		  A4GL_debug ("Looking in %s\n",
 			      select->table_elements.tables[b].tabname);
-		  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT")) {
-			  // Do nothing...
-		  } else {
-		  if (A4GL_has_column
-		      (select->table_elements.tables[b].tabname,
-		       p->u_data.column.colname))
+		  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
 		    {
-		      t = select->table_elements.tables[b].alias;
-		      if (!t) {
-			      		t = select->table_elements.tables[b].tabname;
-			}
-		      
-		      p->u_data.column.tabname = acl_strdup_With_Context (t);
-		      A4GL_debug ("Setting to %s\n", t);
-		      break;
+		      // Do nothing...
 		    }
-		  }
+		  else
+		    {
+		      if (A4GL_has_column (select->table_elements.tables[b].tabname, p->u_data.column.colname))
+			{
+			  matches++;
+			  if (matches == 1)
+			    {
+			      t = select->table_elements.tables[b].alias;
+			      if (!t)
+				{
+				  t = select->table_elements.tables[b].tabname;
+				}
+			    } else {
+				t=0;
+			    }
+			}
+		      else
+			{
+			  if (has_columns_cnt == 0)
+			    {	// Table didn't exist - maybe its a temp table
+			      // if it is - it could have any columns - so we'll assume it can match..
+			      matches=99999; // Lots and lots...
+			    }
+
+			}
+
+		    }
+		}
+
+	      if (matches == 1)
+		{
+		  A4GL_debug ("Setting to %s\n", t);
+		  p->u_data.column.tabname = acl_strdup_With_Context (t);
+		  break;
+		} else {
+		  p->u_data.column.tabname = 0;
 		}
 	    }
 
@@ -1822,7 +1858,6 @@ preprocess_sql_statement (struct s_select *select)
 	}
     }
 }
-
 
 char *
 find_tabname_for_alias (struct s_select *select, char *alias)
@@ -2567,7 +2602,9 @@ int A4GL_has_column (char *t, char *c)
   int size;
   int opened = 0;
   int found = 0;
-int sold;
+  int sold;
+
+  has_columns_cnt=0;
 
   if (strcmp(acl_getenv("SQLTYPE"),"nosql")==0) {
 	  return 0;
@@ -2583,9 +2620,7 @@ int sold;
 
   sold=A4GL_get_a4gl_sqlca_sqlcode();
   rc = A4GLSQL_get_columns (t, "", &dtype, &size);
-  if (A4GL_get_a4gl_sqlca_sqlcode()!=sold) {
-  	A4GL_set_a4gl_sqlca_sqlcode(sold);
-	}
+  if (A4GL_get_a4gl_sqlca_sqlcode()!=sold) { A4GL_set_a4gl_sqlca_sqlcode(sold); }
   while (rc)
     {
       char *s = 0;
@@ -2593,6 +2628,8 @@ int sold;
       rc = A4GLSQL_next_column (&cptr, &dtype, &size);
       if (!rc)
 	break;
+
+	has_columns_cnt=1;
       s = acl_strdup_With_Context (cptr);
       A4GL_trim (s);
       if (A4GL_aubit_strcasecmp (s, c) == 0)

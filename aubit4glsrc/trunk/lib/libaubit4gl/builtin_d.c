@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.89 2007-09-12 16:34:36 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.90 2007-09-13 16:43:40 mikeaubury Exp $
 #
 */
 
@@ -737,19 +737,50 @@ int
 A4GL_func_clip (void)
 {
   char *z;
+	int d1;
+	int s1;
+	char *ptr1;
+int isnumeric=0;
+
+A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+
+d1=d1&DTYPE_MASK;
+switch (d1) {
+	case DTYPE_SMINT:
+	case DTYPE_INT:
+	case DTYPE_DECIMAL:
+	case DTYPE_FLOAT:
+	case DTYPE_SMFLOAT:
+	case DTYPE_MONEY: isnumeric=1; break;
+	default: isnumeric=0;
+}
+
+if (A4GL_isno(acl_getenv("NUMERICCLIPPED"))) {
+	isnumeric=0;
+}
+
+  if (isnumeric) {
+		return; // does nothing..
+  }
   z = A4GL_char_pop ();
 
   if (strlen(z)) {
-  	A4GL_trim_not_nl (z);
+	if (isnumeric) {
+		char *ptr;
+  		A4GL_lrtrim (z);
+	} else {
+		
+  		A4GL_trim_not_nl (z);
+	}
 	if (strlen(z)) {
   		A4GL_push_char (z);
 	} else {
 		char buff[2];
 		buff[0]=0;
 		buff[1]=1;
-	A4GL_debug("Pushing a zero length non null string");
+		A4GL_debug("Pushing a zero length non null string");
   		A4GL_push_char (buff);
-	A4GL_debug("Done that");
+		A4GL_debug("Done that");
 	}
   } else {
 	A4GL_push_null(0,0);
