@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.198 2007-09-13 08:10:06 mikeaubury Exp $
+# $Id: sql.c,v 1.199 2007-09-13 12:46:35 gyver309 Exp $
 #
 */
 
@@ -1139,7 +1139,10 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni,
     else
     {
 	exitwith_sql_odbc_errm ("Preparing statement failed: %s", s);
-	acl_free(sid);
+	if (sid_get_singleton(sid))
+	    sql_free_sid(&sid);
+	else
+	    A4GL_free_hstmt(&sid->hstmt);
 	return NULL;
     }
 }
@@ -3602,10 +3605,18 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname,
 
         sprintf(s, "select * from %s", ci->tabname);
         rc = SQLPrepare(ci->hstmt, (SQLCHAR*)s, SQL_NTS);
-        chk_rc_retonfail(rc, ci->hstmt, "sql_columns: SQLPrepare()");
+        if ( ! chk_rc(rc, ci->hstmt, "sql_columns: SQLPrepare()"))
+	{
+	    A4GL_free_hstmt(& ci->hstmt);
+	    return False;
+	}
 
         rc = SQLNumResultCols(ci->hstmt, &ci->nColumns);
-        chk_rc_retonfail(rc, ci->hstmt, "sql_columns: SQLNumResultCols()");
+        if ( ! chk_rc(rc, ci->hstmt, "sql_columns: SQLNumResultCols()"))
+	{
+	    A4GL_free_hstmt(& ci->hstmt);
+	    return False;
+	}
 
         if (ci->nColumns == 0)
         {
