@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.286 2007-09-13 17:13:21 gyver309 Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.287 2007-09-13 17:56:52 mikeaubury Exp $
 #
 */
 
@@ -1404,6 +1404,8 @@ void A4GL_debug(char *s);
   int A4GL_func_clip (void);
   void A4GL_func_concat (void);
   void A4GL_func_using (void);
+void a4gl_using_from_string (char *str, int s, char *fmt, char *numeric,int isneg);
+void A4GL_push_decimal_str(char *p);
   int A4GL_find_function (char *a);
   double A4GL_power (double a, double b);
 
@@ -2257,6 +2259,7 @@ int aclfgl_fgl_buffertouched(int n);
 
 int aclfgl_fgl_settitle(int n);
 int aclfgl_fgl_getpid(int n);
+int aclfgl_fgl_getppid(int n);
 int aclfgl_fgl_winquestion(int n);
 int aclfgl_fgl_winbutton(int n);
 
