@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.120 2007-09-12 16:34:36 mikeaubury Exp $
+# $Id: ops.c,v 1.121 2007-09-13 17:13:30 gyver309 Exp $
 #
 */
 
@@ -5749,7 +5749,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
   if (l > sz)
     {
       //A4GL_dectos (ptr, buff_sz, 64);
-	strcpy(buff_sz, A4GL_dec_to_str(ptr,0,1));
+	strcpy(buff_sz, A4GL_dec_to_str(ptr,0));
       A4GL_ltrim (buff_sz);
       A4GL_trim (buff_sz);
 	

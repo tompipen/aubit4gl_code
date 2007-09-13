@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.97 2007-08-25 11:45:04 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.98 2007-09-13 17:13:29 gyver309 Exp $
 #
 */
 
@@ -993,15 +993,17 @@ if (has_money && !strchr(str,'$')) {
 }
 
 void a4gl_using (char *str, int s, char *fmt, double num) {
-char string[2000];
+char buff[2000];
 
   if (num<0) {
 	num*=-1.0;
-  	SPRINTF1 (string, "%64.16f", num);
-	a4gl_using_from_string(str,s,fmt,string,1);
+  	SPRINTF1 (buff, "%64.16f", num);
+	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, sizeof(buff));
+	a4gl_using_from_string(str,s,fmt,buff,1);
   } else  {
-  	SPRINTF1 (string, "%64.16f", num);
-	a4gl_using_from_string(str,s,fmt,string,0);
+  	SPRINTF1 (buff, "%64.16f", num);
+	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, sizeof(buff));
+	a4gl_using_from_string(str,s,fmt,buff,0);
   }
 }
 

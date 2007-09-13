@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.90 2007-09-13 16:43:40 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.91 2007-09-13 17:13:23 gyver309 Exp $
 #
 */
 
@@ -890,7 +890,7 @@ A4GL_func_using()
 	    int isneg=0;
 	    z = A4GL_new_string (fmtlen+1);
             A4GL_get_top_of_stack (1, &dt, &s1, (void **) &ptr1);
-	    p=acl_strdup(A4GL_dec_to_str (ptr1, 0,1));
+	    p=acl_strdup(A4GL_dec_to_str (ptr1, 0));
 		strcpy(pold,p);
 	
 		A4GL_drop_param();

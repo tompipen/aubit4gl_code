@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.285 2007-09-12 16:34:34 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.286 2007-09-13 17:13:21 gyver309 Exp $
 #
 */
 
@@ -2043,7 +2043,7 @@ void A4GL_ltrim(char *s) ;
 void A4GL_fgl_die(int n);
 fgldecimal *A4GL_init_dec (fgldecimal *s, int len, int d);
 //char *A4GL_str_to_dec (char *s, fgldecimal *w);
-char *A4GL_dec_to_str (fgldecimal *dec, int size, int force_dot_separator) ;
+char *A4GL_dec_to_str (fgldecimal *dec, int size) ;
 
 fgldecimal *A4GL_str_to_dec (char *str_orig, fgldecimal *dec);
 
