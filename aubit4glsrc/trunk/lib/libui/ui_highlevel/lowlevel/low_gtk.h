@@ -2,7 +2,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
 
-
+char *a4gl_locale_to_utf8(char *s);
 #define DIALOG_DISABLE_NONE             0
 #define DIALOG_DISABLE_PROGRAM          1
 #define DIALOG_DISABLE_ALL              2

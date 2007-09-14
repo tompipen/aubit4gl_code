@@ -21,7 +21,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.126 2007-09-13 17:21:54 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.127 2007-09-14 12:51:30 mikeaubury Exp $";
 #endif
 
 
@@ -459,7 +459,7 @@ A4GL_add_to_console (char *s)
 {
   char *utf;
 
-  utf = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
+  utf = a4gl_locale_to_utf8 (s) ;
   gtk_clist_append (GTK_CLIST (console_list), &utf);
   g_free (utf);
 }
@@ -616,7 +616,7 @@ add_button (GtkDialog * win, int but_code)
       A4GL_debug ("add_button: unknown button-code: %d\n", but_code);
     }
 
-  txt_utf = g_locale_to_utf8 (txt, -1, NULL, NULL, NULL);
+  txt_utf = a4gl_locale_to_utf8 (txt); 
 
   gtk_object_set_data (GTK_OBJECT (win), "RETURNS", 0);
   but = (GtkButton *) gtk_button_new_with_label (txt_utf);
@@ -656,7 +656,7 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
   gtk_signal_connect (GTK_OBJECT (win),
 		      "delete_event", GTK_SIGNAL_FUNC (gtk_true), NULL);
   if (msg) {
-    label_utf = g_locale_to_utf8 (msg, -1, NULL, NULL, NULL);
+    label_utf = a4gl_locale_to_utf8 (msg) ;
 	}
   else {
     label_utf = NULL;
@@ -675,7 +675,7 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 
   if (strlen (caption))
     {
-      label_utf = g_locale_to_utf8 (caption, -1, NULL, NULL, NULL);
+      label_utf = a4gl_locale_to_utf8 (caption);
       gtk_window_set_title (GTK_WINDOW (win), label_utf);
       g_free (label_utf);
     }
@@ -1951,7 +1951,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
   if (!lab)
     {
       char *lab_utf ;
-	lab_utf= g_locale_to_utf8 (cbuff, -1, NULL, NULL, NULL);
+	lab_utf= a4gl_locale_to_utf8 (cbuff);
       lab = (GtkLabel *) gtk_label_new (lab_utf);
       g_free (lab_utf);
       e = (GtkEventBox *) gtk_event_box_new ();
@@ -1982,7 +1982,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
   else
     {
       char *txt_utf ;
-		txt_utf= g_locale_to_utf8 (cbuff, -1, NULL, NULL, NULL);
+		txt_utf= a4gl_locale_to_utf8 (cbuff);
       has_old_attr = 1;
       gtk_label_set_text (lab, txt_utf);
       g_free (txt_utf);
@@ -2023,7 +2023,11 @@ A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch,
 
   A4GL_debug ("UNICHAR %d %d %x (%lc)", x, y, ch, ch);
 
-  g_snprintf (label_text, sizeof (label_text), "%lc", ch);
+/*
+gint        g_unichar_to_utf8               (gunichar c, gchar *outbuf); */
+memset(label_text,0,sizeof(label_text));
+  g_unichar_to_utf8 (ch, label_text); // , sizeof (label_text), "%lc", ch);
+A4GL_debug("label text=%s", label_text);
 
   SPRINTF2 (buff_label, "LABEL_%d_%d", x, y);
   SPRINTF2 (buff_char, "LABEL_%d_%d_C", x, y);
@@ -2061,8 +2065,7 @@ A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch,
       gtk_container_add (GTK_CONTAINER (e), GTK_WIDGET (lab));
 
       gtk_object_set_data (GTK_OBJECT (cwin), buff_label, lab);
-      gtk_object_set_data (GTK_OBJECT (cwin), buff_char,
-			   (void *) (ch & 0xff));
+      gtk_object_set_data (GTK_OBJECT (cwin), buff_char, (void *) (ch & 0xff));
 
       gtk_object_set_data (GTK_OBJECT (cwin), buff_evt, e);
       gtk_misc_set_alignment (GTK_MISC (lab), 0.5f, 0.5f);
@@ -2074,8 +2077,8 @@ A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch,
 
       has_old_attr = 0;
 
-      gtk_widget_show (GTK_WIDGET (lab));
       gtk_widget_show (GTK_WIDGET (e));
+      gtk_widget_show (GTK_WIDGET (lab));
 
     }
   else
@@ -2246,7 +2249,7 @@ A4GL_LL_create_errorwindow (int h, int w, int y, int x, int attr, char *str)
   GtkWidget *evt;		// And we'll use this to get a background colour...
   char buff[80];
   char *lab_utf ;
-	lab_utf= g_locale_to_utf8 (str, -1, NULL, NULL, NULL);
+	lab_utf= a4gl_locale_to_utf8 (str);
   A4GL_debug ("Create error window");
   if (str == 0)
     return 0;
@@ -2645,6 +2648,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
   GtkWidget *drwin;
   GtkFixed *cwin;
   int x, y;
+  char *utf;
 
 
   int fl;
@@ -2659,6 +2663,8 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 
   w = (GtkWidget *) currwin;
   cwin = gtk_object_get_data (GTK_OBJECT (w), "FIXED");
+
+
 
 
   if (w == 0)
@@ -2798,18 +2804,24 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 		   */
 
 		  /* wh: allow non-ascii labels */
-		  gchar *utf ;
-			utf= g_locale_to_utf8 (ptr, -1, NULL, NULL, NULL);
+		if (!A4GL_isno(acl_getenv("UTFPROCESS"))) {
+		  utf= a4gl_locale_to_utf8 (ptr);
 		  for (b = 0; b < g_utf8_strlen (utf, -1); b++)
 		    {
-		      gunichar uni =
-			g_utf8_get_char_validated (g_utf8_offset_to_pointer
-						   (utf, b), -1);
-		      A4GL_LL_wadd_gunichar_xy_col (drwin, x + b, y, uni,
-						    curr_width, curr_height,
-						    iscurrborder, currwinno);
+		      gunichar uni = g_utf8_get_char_validated (g_utf8_offset_to_pointer (utf, b), -1);
+			if (uni!=-1 && uni!=-2) {
+		      		A4GL_LL_wadd_gunichar_xy_col (drwin, x + b, y, uni, curr_width, curr_height, iscurrborder, currwinno);
+				A4GL_LL_gui_run_til_no_more();
+			}
+
 		    }
 		  g_free (utf);
+		} else {
+		  for (b = 0; b < strlen (ptr); b++) {
+		      A4GL_LL_wadd_char_xy_col (drwin, x + b, y, ptr[b], curr_width, curr_height, iscurrborder, currwinno);
+		  }
+		}
+
 		}
 
 	    }
@@ -2996,7 +3008,7 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
       return 0;
     }
 
-  label_utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
+  label_utf = a4gl_locale_to_utf8 (label);
   widget = gtk_label_new (label_utf);
 
 #if GTK_CHECK_VERSION(2,0,0)
@@ -3141,7 +3153,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
       m = (int) gtk_object_get_data (GTK_OBJECT (cwidget), "MAXFIELD");
       buff[0] = mode;
       buff[1] = 0;
-      utf = g_locale_to_utf8 (buff, -1, NULL, NULL, NULL);
+      utf = a4gl_locale_to_utf8 (buff);
 
       if (A4GL_LL_field_opts (cwidget) & AUBIT_O_BLANK && form->curcol == 0)
 	{
@@ -3866,14 +3878,14 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
 			i=gtk_image_new_from_file (img);
 			gtk_widget_show(i);
 		}
-		label_utf = g_locale_to_utf8 (txt, -1, NULL, NULL, NULL);
+		label_utf = a4gl_locale_to_utf8 (txt);
 		SetMenuButton(b, label_utf,i);
       		g_free (label_utf);
     }
   else
     {
       		char *label_utf ;
-		label_utf= g_locale_to_utf8 (opt_title, -1, NULL, NULL, NULL);
+		label_utf= a4gl_locale_to_utf8 (opt_title);
       		//l = gtk_object_get_data (GTK_OBJECT (b), "LABEL");
 		
 		SetMenuButton(b, label_utf,0);
@@ -4943,6 +4955,25 @@ form->currentfield=0;
 
 static void A4GL_dobeep(void ) {
 }
+
+
+char *a4gl_locale_to_utf8(char *s) {
+  GError *gerr=0;
+char *utf;
+ A4GL_debug("a4gl_locale_to_utf8 : %s",s);
+  utf= g_locale_to_utf8 (s, -1, NULL, NULL, &gerr);
+  if (gerr) {
+	A4GL_set_errm(gerr->message);
+	A4GL_exitwith("GTK ERROR (%s)");
+	return 0;
+  }
+  A4GL_assertion(utf==0,"Unable to generate UTF8 string");
+A4GL_debug("returns %s\n",s);
+  return utf;
+}
+
+
+
 // --------------------------------------------------------------------------------------
 // FIXMEs...
 // --------------------------------------------------------------------------------------

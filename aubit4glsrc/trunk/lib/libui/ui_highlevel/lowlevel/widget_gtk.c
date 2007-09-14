@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.34 2007-08-29 16:48:07 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.35 2007-09-14 12:51:30 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -61,6 +61,7 @@ void A4GL_grab_focus_handler (GtkWidget * w, gpointer user_data);
 //void A4GL_add_signal_select_row(GtkWidget *widget, void *funcptr);
 //void A4GL_func(GtkWidget *w, char *mode);
 int A4GL_display_generic (GtkWidget * k, char *s,char *orig);
+
 
 char *A4GL_decode_config (struct_form * f, int a);
 
@@ -922,7 +923,7 @@ A4GL_cr_button (void)
     {
       if (strlen (label))
 	{
-	  char *utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
+	  char *utf = a4gl_locale_to_utf8 (label);
 		l = (GtkLabel *) gtk_label_new (utf);
 #if GTK_CHECK_VERSION(2,0,0)
 	  /*
@@ -1010,8 +1011,7 @@ A4GL_cr_radio (void)
 
       btn =
 	gtk_radio_button_new_with_label (btn_grp,
-					 g_locale_to_utf8 (ptr, -1, NULL,
-							   NULL, NULL));
+					 a4gl_locale_to_utf8 (ptr));
       btn_grp = (GSList *) gtk_radio_button_group (GTK_RADIO_BUTTON (btn));
       gtk_box_pack_start (GTK_BOX (hbox), btn, TRUE, TRUE, 0);
       gtk_widget_show (btn);
@@ -1093,7 +1093,7 @@ A4GL_cr_label (void)
   char *utf = NULL;
   caption = A4GL_find_param ("CAPTION");
   if (caption)
-    utf = g_locale_to_utf8 (caption, -1, NULL, NULL, NULL);
+    utf = a4gl_locale_to_utf8 (caption);
   label = gtk_label_new (utf);
   g_free (utf);
   gtk_widget_show (label);
@@ -1118,7 +1118,7 @@ A4GL_cr_check (void)
 
   if (label)
     {
-      char *utf = g_locale_to_utf8 (label, -1, NULL, NULL, NULL);
+      char *utf = a4gl_locale_to_utf8 (label);
       checkbox = gtk_check_button_new_with_label (utf);
       g_free (utf);
     }
@@ -1627,6 +1627,8 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
   char *btn;
   A4GL_debug ("in A4GL_display_generic k=%p s='%s'\n", k, s);
 
+
+
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WIDGETSNAME");
 
   if (ptr == 0)
@@ -1637,7 +1639,11 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
   A4GL_debug ("Widgettye=%s\n", ptr);
 
-  utf = g_locale_to_utf8 (s, -1, NULL, NULL, NULL);
+  utf = a4gl_locale_to_utf8 (s);
+
+  if (utf==0) return 0;
+
+  A4GL_debug("Here..");
 
   if (A4GL_aubit_strcasecmp (ptr, "BUTTON") == 0)
     {
@@ -1722,11 +1728,16 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
   if (A4GL_aubit_strcasecmp (ptr, "ENTRY") == 0 || A4GL_aubit_strcasecmp (ptr, "TEXT") == 0)
     {
+	A4GL_debug("Entry..");
       	if (gtk_object_get_data (GTK_OBJECT (k), "ISTEXTVIEW")) {
 	  	GtkTextBuffer *buffer;
+	A4GL_debug("getting buffer..");
 	  	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (k));
+	A4GL_debug("setting text..");
 	  	gtk_text_buffer_set_text (buffer,utf, -1);
+	A4GL_debug("set..");
 	 } else {
+		A4GL_debug("Entry...2 : '%s'",utf);
       		gtk_entry_set_text (GTK_ENTRY (k), utf);
       		g_free (utf);
 	 }
