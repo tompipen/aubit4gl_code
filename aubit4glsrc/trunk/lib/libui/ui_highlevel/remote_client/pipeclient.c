@@ -608,6 +608,13 @@ pipe_get_result (char *func,struct client_result *r,int expectresult)
 	  return r;
 	}
 
+      if (strncmp (buff, "START ", 6) == 0) {
+		char buff2[2000];
+		strcpy(buff2,&buff[6]);
+		strcat(buff2," &");
+		system(buff2);
+		continue;
+      }
 
       printf ("Unexpected return...");
 
