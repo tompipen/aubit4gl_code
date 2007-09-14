@@ -616,7 +616,7 @@ pipe_get_result (char *func,struct client_result *r,int expectresult)
 		continue;
       }
 
-      printf ("Unexpected return...");
+      printf ("Unexpected return : %s\n",buff);
 
     }
   return r;
