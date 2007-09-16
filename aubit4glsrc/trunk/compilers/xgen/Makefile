@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.3 2007-06-20 07:04:58 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2007-09-16 15:56:19 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -69,7 +69,7 @@ ${ROOT}/bin/xgen: ${OBJS}
 	${CC} ${EXE_CFLAGS} $^ -o $@
 #	${CP} $@ ${ROOT}/bin
 
-y.tab.c: x.yacc lex.yy.c
+y.tab.c: x.yacc 
 #${ROOT}/common/dataio/form_x.x.h
 #	@echo "YACC=>>${YACC}<<"
 ifeq "${YACC}" "no"
@@ -97,7 +97,7 @@ endif
 ${API_HEADERS}:
 	${MAKE} -C ../../lib/libaubit4gl api.headers
 
-y.tab.o: ${API_HEADERS}
+y.tab.o: lex.yy.c
 
 show:
 	@echo "YACC=${YACC}"
