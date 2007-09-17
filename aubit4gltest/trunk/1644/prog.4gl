@@ -20,4 +20,8 @@ let lr.b = "b"
 update uptest set *=lr.* where a = lr.a
 select b into lv_b from uptest
 if lv_b <> lr.b then display "bad" exit program 2 end if
+let lr.b = "c"
+update uptest set uptest.*=lr.* where a = lr.a
+select b into lv_b from uptest
+if lv_b <> lr.b then display "bad" exit program 2 end if
 end main
