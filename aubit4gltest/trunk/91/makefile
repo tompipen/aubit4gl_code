@@ -17,7 +17,7 @@ desc:
 #If database this test runs against MUST NOT have transactions support, set to "2"
 #"0" means "don't care"
 transaction:
-	@echo "2"
+	@echo "1"
 	
 db_test:
 	@echo "1"
@@ -33,7 +33,7 @@ db_test:
 #...etc...
 #See run_tests script for full list of features the are checked against
 sql_features_used:
-	@echo "PUT_CURSOR  DEFINE_INTEGER DEFINE_CHAR CREATE_TEMP_TABLE PREPARE CURSOR_SELECT OPEN_CURSOR CLOSE_CURSOR INITIALIZE_NULL FOREACH UI_DISPLAY_LINE_MODE DISPLAY"
+	@echo "PUT_CURSOR  DEFINE_INTEGER DEFINE_CHAR CREATE_TEMP_TABLE PREPARE CURSOR_SELECT OPEN_CURSOR CLOSE_CURSOR INITIALIZE_NULL FOREACH UI_DISPLAY_LINE_MODE DISPLAY  BEGIN_WORK COMMIT_WORK"
 
 
 

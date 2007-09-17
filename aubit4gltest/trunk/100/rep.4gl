@@ -24,6 +24,9 @@ display "preparing..."
 display "declaring..."
 	  declare ins_j_curs cursor for i_1
 display "opening..."
+
+      begin work
+
 	  open ins_j_curs
       for cnt = 1 to 3
 display "PUT:"
@@ -34,6 +37,8 @@ let lv_b="abc"
 
 display "closing..."
 	  close ins_j_curs
+
+      commit work
 
 display "declaring..."
 	declare c2 cursor for

@@ -18,11 +18,15 @@ define lv_b char(10)
 	let lv_cnt=1
 	declare c1 cursor for select * from tmp_a1 for update  of b
 	
+        begin work
+
 	foreach c1
 		update tmp_a1 set b=lv_arr[lv_cnt]
 			where current of c1
 		let lv_cnt=lv_cnt+1
 	end foreach
+
+        commit work
 	
 	
 	declare c2 cursor for

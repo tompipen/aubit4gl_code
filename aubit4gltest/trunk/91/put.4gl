@@ -38,6 +38,8 @@ main
 
 	declare c_ins cursor for p1
 
+        begin work 
+
 	open c_ins
 
 	put c_ins from abc.*
@@ -46,6 +48,8 @@ main
 
 	put c_ins from abc.*
 	close c_ins
+
+        commit work
 
 	initialize abc.* to null
 	declare c1 cursor for select * from t_abc
