@@ -50,6 +50,7 @@ HELP=${MSG:.msg=${HLP_EXT}}
 ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
+EXTRA_4GLC=--sqltype=FILESCHEMA
 
 ## ======================================================================
 ##                 	Local Targets
