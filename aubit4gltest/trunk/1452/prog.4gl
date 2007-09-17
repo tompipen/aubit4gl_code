@@ -13,4 +13,9 @@ close window win1
 
 display q_txt
 
+if q_txt <> "systables.version in ('12345678','12345678','12345678','12345678','12345678','12345678')" then
+    display "bad"
+    exit program 1
+end if
+exit program 0
 end main
