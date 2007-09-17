@@ -17,7 +17,7 @@ desc:
 #If database this test runs against MUST NOT have transactions support, set to "2"
 #"0" means "don't care"
 transaction:
-	@echo "2"
+	@echo "1"
 db_test:
 	@echo "1"
 

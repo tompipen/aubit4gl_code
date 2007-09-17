@@ -16,8 +16,7 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
-	${DEFAULT_DIFF}
+run: compile ; ${DEFAULT_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions

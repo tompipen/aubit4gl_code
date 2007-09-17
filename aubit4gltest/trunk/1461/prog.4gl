@@ -19,7 +19,7 @@ MAIN
         LET texto2 = "aaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaa",
                      "bbbbbbbbbbbbbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbb bbbbbbbbbbbbbb"
 
-        START REPORT listado
+        START REPORT listado TO "out"
            
         OUTPUT TO REPORT listado (texto1, texto2)
  
