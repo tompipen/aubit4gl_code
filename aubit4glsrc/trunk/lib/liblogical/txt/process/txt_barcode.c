@@ -23,7 +23,7 @@ static char *BarChar_25(char *mapstring) ;
 static char *generate_barcode_CODEV(double xpos,double ypos,double x,double y,char *str) {
 static char buff[256];
 	static char b[2000];
-	memset(b,'.',sizeof(b)); // SHOULD BE ' ' - but cant see those  :-)
+	memset(b,' ',sizeof(b)); // SHOULD BE ' ' - but cant see those  :-)
 	b[strlen(str)]=0;
 	sprintf(buff,"^PY^-^M07,10,000^KF^T%04d^BYA%s^G^KF^-^PN^-%s\n",(int)(x*100),str,b);
 return buff;

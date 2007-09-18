@@ -117,7 +117,12 @@ h=0.0;
 	p2=strdup(p2);
 	spaces[len]=0;
 	strcat(barcodeline,barcode);
-	strcat(barcodeline,spaces);
+	if (A4GL_isyes(acl_getenv("CODEVSPACES"))) {	
+		strcat(barcodeline,spaces);
+	} 
+	if (A4GL_isyes(acl_getenv("CODEVTRIM"))) {
+		A4GL_trim(barcodeline);
+	}
 	free(barcode);
 	strcat(barcodeline,p2);
 	free(p2);
