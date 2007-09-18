@@ -812,8 +812,18 @@ char buff[2000];
 	m2= m_apm_init();
 	mres= m_apm_init();
 
-	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
 	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0),1);
+	acl_apm_set_string(m1, "0",1);
+	if (m_apm_compare(m1,m2)==0) { //
+			// Divide by zero!
+		  A4GL_setnull(DTYPE_DECIMAL,res,res->dec_data[0]*256+res->dec_data[1]);	
+
+		return;
+			
+	}
+
+
+	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
 
 
 	m_apm_divide(mres, res->dec_data[1]+1, m1, m2);
