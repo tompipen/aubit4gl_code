@@ -12,7 +12,7 @@ MAIN
 
   LET smallfloat_var = 999999999999999.999999999999999
 	DISPLAY smallfloat_var 
-	IF smallfloat_var != 999999999999999.1 THEN
+	IF smallfloat_var - 999999999999999.1> 0.01 THEN
 	  DISPLAY "Error on largest smallfloat comparison "
 		LET exitStatus = 1
 	END IF

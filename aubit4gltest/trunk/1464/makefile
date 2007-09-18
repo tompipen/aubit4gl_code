@@ -16,14 +16,15 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
-#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
+run: compile ; ${DEFAULT_DIFF} 
+#${DEFAULT_RUN} 
+#	${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "tests an issue of saving field data in an input array with an onkey"
+desc: ; @echo "Decimal precision checks"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -43,7 +44,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_TEXT DEFINE_INTEGER DDL_TEXT CREATE_TEMP_TABLE LOCATE_FILE ANSI_INSERT LOCATE_MEM UI_DISPLAY_LINE_MODE DISPLAY UI_PROMPT IF   DEFINE_SMALLINT DEFINE_CHAR SELECT_INTO_TEMP_WITH_NO_LOG CURSOR_SELECT FOREACH SQLCA_SQLCODE EXIT_PROGRAM_EXPR"
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""

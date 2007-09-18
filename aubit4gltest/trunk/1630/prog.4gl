@@ -8,6 +8,9 @@ DATABASE test1
 
 MAIN
 DEFINE w_prep CHAR(80)
+whenever error continue
+drop table testtab
+whenever error stop
 CREATE TEMP TABLE testtab (p1 int, p2 int)
 INSERT INTO testtab values (2,2)
 LET w_prep = "SELECT p1, p2 FROM testtab WHERE p1 = ? AND p2 = ? "
