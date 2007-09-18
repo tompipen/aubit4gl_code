@@ -173,7 +173,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
