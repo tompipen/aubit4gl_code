@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.144 2007-09-13 17:13:27 gyver309 Exp $
+# $Id: conv.c,v 1.145 2007-09-18 20:21:16 mikeaubury Exp $
 #
 */
 
@@ -555,6 +555,26 @@ int A4GL_dectoint(void *a_dec, void *b_int, int size_b) {
 	return  A4GL_ctoint(buff,b_int,size_b);
 }
 
+static void A4GL_trim_trailing_0(char *s) {
+int a;
+int last_zero=-1;
+int has_dot;
+A4GL_lrtrim(s);
+for (a=0;a<strlen(s);a++) {
+	if (s[a]=='.') has_dot=1;
+	if (has_dot && s[a]=='0') {
+		if (last_zero==-1) {
+			last_zero=a;
+		}
+	}
+	if (s[a]!='0') {
+		last_zero=-1;
+	}
+}
+if (last_zero!=-1) {
+	s[last_zero]=0;
+}
+}
 
 /**
  *
@@ -570,16 +590,22 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
   int data[256];
   struct ival *d;
   int v1, v2, v3;
-  char localchar[56];
+  char localchar[65];
   int is_neg=0;
 int buff_size;
 int a;
 
-  memset(localchar,0,56);
+  memset(localchar,0,65);
   memset(data,0,255);
 
   strcpy (localchar, a_char);
-
+  A4GL_trim_trailing_0(localchar);
+  if (localchar[0]=='.') {
+		char b[2000];
+		strcpy(b,"0");
+		strcat(b,localchar);
+		strcpy(localchar,b);
+  }
   buff_size=strlen(localchar);
   for (a=0;a<buff_size;a++) {
 	if (localchar[a]=='-') {
@@ -617,7 +643,6 @@ int a;
       A4GL_debug ("CHECK1 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
       A4GL_conv_invdatatoc (data, v1, v2, v3, d);
       A4GL_debug ("CHECK2 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
-
       return 1;
     }
   else
