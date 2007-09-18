@@ -29,7 +29,7 @@ static char buff[256];
 return buff;
 }
 
-char *format_float(double d) {
+static char *format_float(double d) {
 static char buff[10][200]; // We'll have a rotating buffer so we can have multiple calls
 static int a=0;            // otherwise - we'd be splatting already used memory..
 a++;
