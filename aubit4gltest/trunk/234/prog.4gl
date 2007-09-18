@@ -17,19 +17,31 @@ create temp table xaa (
 
 prepare p1 from "insert into xaa values(?,?)"
 declare c1 cursor for p1
+
+begin work
+
 open c1
 let lv_a.a="HELLO"
 let lv_a.b=1
 put c1 from lv_a.*
 close c1
+
+commit work
+
 display "Insert 1"
 
 declare c2 cursor for insert into xaa values(lv_a.a,lv_a.b)
+
+begin work
+
 open c2
 let lv_a.a="World"
 let lv_a.b=2
 put c2 #from lv_a.*
 close c2
+
+commit work
+
 display "Insert 2"
 
 let c=0
