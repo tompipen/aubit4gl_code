@@ -18,6 +18,9 @@ MAIN
   DECLARE crUpd CURSOR FOR 
     SELECT secondColumn, thirdColumn FROM xpto
     FOR UPDATE
+
+  BEGIN WORK
+
   OPEN crUpd
   FETCH crUpd 
   UPDATE xpto 
@@ -25,6 +28,9 @@ MAIN
         thirdColumn = 3
     WHERE CURRENT OF crUpd
   CLOSE crUpd
+
+  COMMIT WORK
+
   DECLARE cr CURSOR FOR 
     SELECT secondColumn, thirdColumn
       FROM xpto
