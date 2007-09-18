@@ -22,7 +22,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "wordwrap in multiline, add spaces after moving word to next line. MID 996."
+desc: ; @echo "wordwrap in multiline, add spaces, compress not working. MID 996."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -34,7 +34,7 @@ graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"
 long_test:				; @echo "0"
-cert_test:				; @echo "0"
+cert_test:				; @echo "1"
 obsolete_test:			; @echo "0"
 compat_test:			; @echo "0"
 expect_code:			; @echo "0"
