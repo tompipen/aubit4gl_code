@@ -172,7 +172,9 @@ for (x=0;x<9;x++) {
    else 
       barsize=bigbar;
 
-   if (x % 2) strcat(buff,DoRectanglePCL(atx,barsize,aty ));
+   if ((x+1) % 2) {
+		strcat(buff,DoRectanglePCL(atx,barsize,aty ));
+	}
 
    atx +=barsize;
 }
