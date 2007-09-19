@@ -727,14 +727,6 @@ int a;
 	m_apm_free(m1);
 	m_apm_free(m2);
 
-/*
-	m_apm_to_fixpt_string(buff, 10, m1);
-		printf("-->%s ",buff);
-	m_apm_to_fixpt_string(buff, 10, m2);
-		printf(" %s",buff);
-
-	printf("=%d\n",a);
-*/
   return a;
 }
 

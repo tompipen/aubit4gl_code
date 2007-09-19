@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.54 2007-09-13 16:43:40 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.55 2007-09-19 06:13:52 mikeaubury Exp $
 #
 */
 
@@ -1253,7 +1253,14 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
 		if (A4GL_has_column (select->table_elements.tables[0].tabname, p->u_data.column.colname))
 		  {
-			  rval= acl_strdup_With_Context (A4GLSQLCV_check_colname (select->table_elements.tables[0].tabname, p->u_data.column.colname));
+			char *t;
+			if (select->table_elements.tables[0].alias) {
+				t=select->table_elements.tables[0].alias;
+			} else {
+				t=select->table_elements.tables[0].tabname;
+			}
+			A4GL_debug("t=%s",t);
+			  rval= acl_strdup_With_Context (A4GLSQLCV_check_colname (t, p->u_data.column.colname));
 	      A4GL_debug("returning %s\n",rval);
 		//ADDMAP("UseColumn",rval);
 			  return rval;
@@ -1740,8 +1747,7 @@ preprocess_sql_statement (struct s_select *select)
 			  select->table_elements.ntables);
 	      for (b = nelements - 1; b >= 0; b--)
 		{
-		  A4GL_debug ("Looking in %s\n",
-			      select->table_elements.tables[b].tabname);
+		  A4GL_debug ("Looking in %s\n", select->table_elements.tables[b].tabname);
 		  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
 		    {
 		      // Do nothing...
@@ -1750,14 +1756,18 @@ preprocess_sql_statement (struct s_select *select)
 		    {
 		      if (A4GL_has_column (select->table_elements.tables[b].tabname, p->u_data.column.colname))
 			{
+				A4GL_debug("select->table_elements.tables[b].tabname=%s has columns %s", select->table_elements.tables[b].tabname, p->u_data.column.colname);
 			  matches++;
 			  if (matches == 1)
 			    {
+			
 			      t = select->table_elements.tables[b].alias;
 			      if (!t)
 				{
+					
 				  t = select->table_elements.tables[b].tabname;
 				}
+				A4GL_debug("table set to %s", t);
 			    } else {
 				t=0;
 			    }
@@ -1781,6 +1791,7 @@ preprocess_sql_statement (struct s_select *select)
 		  p->u_data.column.tabname = acl_strdup_With_Context (t);
 		  break;
 		} else {
+		  A4GL_debug ("No table for column %s\n", p->u_data.column.colname);
 		  p->u_data.column.tabname = 0;
 		}
 	    }

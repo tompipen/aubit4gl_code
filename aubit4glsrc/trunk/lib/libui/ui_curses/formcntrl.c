@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.116 2007-09-01 07:52:47 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.117 2007-09-19 06:13:58 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.116 2007-09-01 07:52:47 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.117 2007-09-19 06:13:58 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1877,7 +1877,11 @@ strcpy(newfieldval,"");
         local_field_opts_on (buff[1], O_ACTIVE);
         local_field_opts_on (buff[1], O_EDIT);
         local_field_opts_on (buff[1], O_BLANK);
+        local_field_opts_off (buff[1], O_AUTOSKIP);
+        local_field_opts_off (buff[1], O_WRAP);
+        local_field_opts_off (buff[1], O_STATIC);
 
+	set_max_field (buff[1], 0);
 
         buff[2]=A4GL_make_label(0,fwidth-1,m_d2);
         buff[3]=0;

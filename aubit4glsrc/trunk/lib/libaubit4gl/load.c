@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.43 2007-03-04 12:44:34 mikeaubury Exp $
+# $Id: load.c,v 1.44 2007-09-19 06:13:52 mikeaubury Exp $
 #
 */
 
@@ -503,7 +503,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	}
       lineno++;
       stripnlload (loadbuff, delim);
-      printf ("Read line '%s'", loadbuff);
+      //printf ("Read line '%s'", loadbuff);
       nfields = find_delims (delim);
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
 	if (nfields==0 && delim==0) nfields=1; // No delimiter - whole line...
