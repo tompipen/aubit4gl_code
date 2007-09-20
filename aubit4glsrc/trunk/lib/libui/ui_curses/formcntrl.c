@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.117 2007-09-19 06:13:58 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.118 2007-09-20 10:23:21 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.117 2007-09-19 06:13:58 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.118 2007-09-20 10:23:21 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -66,7 +66,9 @@ static void do_key_move_fc (char lr, struct s_screenio *s, int a,
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
 static char *last_field_name;
 static int last_key_code;
+int A4GL_field_name_match (FIELD * f, char *s);
 int construct_not_added=0;
+int construct_not_moved=0;
 //int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 //int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 //int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
@@ -597,17 +599,34 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	      if (ok == 1)
 		{
-			int n;
+			//int n;
 			char fb[2000];
+			int last_place=0;
+			int this_place=0;
+			FORM *mform;
 			construct_not_added=0;
+			construct_not_moved=0;
 			A4GL_debug("Here...\n");
+			mform=sio->currform->form;
 			strcpy(fb, field_buffer(sio->currentfield,0));
+		        A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+			last_place=mform->curcol;
 		        A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
 		        A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+			this_place=mform->curcol;
+
 			if (strcmp(fb, field_buffer(sio->currentfield,0))==0) { // its the same !
 				A4GL_debug("No difference : %s %s\n", fb, field_buffer(sio->currentfield,0));
-				if (sio->fcntrl[a].extent!=' ') construct_not_added=1;
+				if (sio->fcntrl[a].extent!=' ') {
+					construct_not_added=1;
+				}
 			}
+
+			if (this_place==last_place) {
+				//printf("construct_not_moved!!!\n");
+				construct_not_moved=1;
+			} 
+				//printf("%d %d\n", this_place, last_place);
 			A4GL_debug("Now : %s construct_not_added=%d\n", field_buffer(sio->currentfield,0), construct_not_added);
 		}
 
@@ -695,6 +714,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
                                 struct struct_scr_field *fprop;
                                 int k;
 				int lm;
+				int this_place;
 				FIELD *cf;
 				char rval[10000];
 				strcpy(m_delims,form->fileform->delim);
@@ -702,12 +722,19 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 				lm=mform->curcol;
                                	set_field_buffer (sio->currentfield,0,rbuff); 
-				mform->curcol=lm;
+  				A4GL_int_form_driver (mform, REQ_VALIDATION);
+				while (mform->curcol<lm) {
+  					A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+  					A4GL_int_form_driver (mform, REQ_VALIDATION);
+				}
 				cf=sio->currentfield;
 				
 	      			fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 				strcpy(rval,"");
-                                k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,mform->curcol, fprop,rval);
+				//A4GL_int_form_driver (mform, REQ_VALIDATION);
+				this_place=mform->curcol+construct_not_moved;
+				A4GL_debug("this_place=%d curcol=%d construct_not_moved=%d", this_place,mform->curcol,construct_not_moved);
+                                k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,this_place, fprop,rval);
 				A4GL_int_form_driver (mform, REQ_BEG_FIELD);
   				A4GL_int_form_driver (mform, REQ_VALIDATION);
 				
@@ -1901,12 +1928,14 @@ strcpy(newfieldval,"");
 			strcat(rbuff, smbuff);
 		} else {
 			char smbuff[2];
-			if (initpos<=1) {
 			
+			if (initpos<=1) {
 				smbuff[0]=init_key;
 				smbuff[1]=0;
 				strcpy(rbuff, smbuff);
 			}
+			
+			
 		}
 	}
 	A4GL_debug("rbuff=%s\n",rbuff);

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.176 2007-09-01 07:52:47 mikeaubury Exp $
+# $Id: ioform.c,v 1.177 2007-09-20 10:23:22 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.176 2007-09-01 07:52:47 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.177 2007-09-20 10:23:22 mikeaubury Exp $";
 #endif
 
 /**
@@ -563,6 +563,9 @@ A4GL_set_field_attr (FIELD * field)
       local_field_opts_off (field, O_PUBLIC);
     }
 
+  if (f->dynamic == 0) {
+      local_field_opts_on (field, O_STATIC);
+  }
   if (f->dynamic != 0)
     {
       A4GL_debug ("ZZZZ - SET OPTS - STATIC OFF");
@@ -572,10 +575,12 @@ A4GL_set_field_attr (FIELD * field)
       if (f->dynamic == -1)
 	{
 	  A4GL_debug ("Max size is lots");
-	  set_max_field (field, 0); // DYNAMIC
+		A4GL_assertion(1,"Dynamic fields not working atm...");
+	  		set_max_field (field, 0); // DYNAMIC
 	}
       else
 	{
+		A4GL_assertion(1,"Dynamic fields not working atm...");
 	  set_max_field (field, f->dynamic);
 	  A4GL_debug ("Max size=%d", f->dynamic);
 	}
@@ -1361,6 +1366,7 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 
 
   if (fprop->dynamic != 0) {
+		A4GL_assertion(1,"Dynamic fields not working atm...");
       set_max_field (f, 0); // DYNAMIC
   } else {
 	int w;
@@ -1372,15 +1378,18 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 		return;
     	}
 	w=A4GL_get_field_width_w (f,0);
-
-  	xx = set_max_field (f, w);
+	if (w!=0) {
+  		xx = set_max_field (f, w);
+	}
 	
 	
   	if (xx != 0 )
     	{
       		f->dcols = f->cols ;
       		f->maxgrow = f->cols ;
+		if (w!=0) {
       		xx = set_max_field (f, w);
+		}
 		A4GL_mja_pos_form_cursor(f->form);
     	}
 	
