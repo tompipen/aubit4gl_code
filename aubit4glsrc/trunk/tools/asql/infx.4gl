@@ -3216,10 +3216,8 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
         case SQLMULTISET:
         case SQLLIST:
         case SQLLVARCHAR:
-                col->sqltype = CLVCHARPTRTYPE;
-                col->sqllen  = jtypcsize(col->sqltype, col->sqllen);
-                col->sqltype = jtypctype(col->sqltype);
-                fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+			fld_len = rtypmsize (col->sqltype, col->sqllen);
+			col->sqltype = CLVCHARPTRTYPE;
                 break;
 
                 break;
@@ -3258,7 +3256,6 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 	}
       pos = (int) rtypalign (pos, col->sqltype) + fld_len;
     }
-
   buffer = (char *) A4GL_alloc_associated_mem (udesc, pos);
 
   //if (buffer == (char *) NULL)
@@ -3325,9 +3322,10 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
            case CLVCHARPTRTYPE:
                         {
                                 void *data = 0;
-                                ifx_var_flag(&data, 1);
 	  			align = (int) rtypalign ((int) (cp - buffer), col->sqltype);
 	  			cp = buffer + align;
+				data=cp;
+                                ifx_var_flag(&data, 1);
 	  			cp += (flen = rtypmsize (col->sqltype, col->sqllen));
 	  			rlen += flen;
                                 col->sqldata = (char *)data;    /*=C++=*/
