@@ -245,12 +245,16 @@ while true
 
 code
 //c=getch();
+while (1) {
 c=A4GL_get_key(-1);
+if (c!=0) break;
+}
 
 if (c==A4GLKEY_DC) c=key_left;
 if (c==A4GLKEY_ENTER)  c=13;
 c_as_char[0]=c;
 endcode
+
 	if c>=32 and c<127 then
 		let tmp_x=cursor_x+leftcol-1
 		let tmp_y=cursor_y+topline-1
@@ -290,6 +294,7 @@ endcode
 	if c=fgl_keyval("INTERRUPT") then let c=-100 end if
 
 	case c
+
 		when key_home
 			let cursor_x=1 
 			let leftcol=1
@@ -319,6 +324,16 @@ endcode
 			else
 				if leftcol<line_length then
 					let leftcol=leftcol+1
+				end if
+			end if
+
+		when 9
+			
+			if cursor_x<79 then 
+				let cursor_x=cursor_x+3 
+			else
+				if leftcol<line_length then
+					let leftcol=leftcol+3
 				end if
 			end if
 
