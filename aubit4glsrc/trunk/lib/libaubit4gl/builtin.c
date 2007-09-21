@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.119 2007-09-13 16:43:40 mikeaubury Exp $
+# $Id: builtin.c,v 1.120 2007-09-21 15:53:24 mikeaubury Exp $
 #
 */
 
@@ -986,6 +986,13 @@ aclfgli_extend (void)
 
   if ((d2&DTYPE_MASK)!=DTYPE_DTIME) {
 		if ((d2&DTYPE_MASK)==DTYPE_DATE) {
+			// Can't extend a non-datetime!
+			pi=0;
+			A4GL_pop_var2 (&c, DTYPE_DTIME, n);
+			A4GL_push_dtime (&c);
+			return;
+		}
+		if ((d2&DTYPE_MASK)==DTYPE_CHAR) {
 			// Can't extend a non-datetime!
 			pi=0;
 			A4GL_pop_var2 (&c, DTYPE_DTIME, n);

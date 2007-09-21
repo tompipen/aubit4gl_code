@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.145 2007-09-18 20:21:16 mikeaubury Exp $
+# $Id: conv.c,v 1.146 2007-09-21 15:53:25 mikeaubury Exp $
 #
 */
 
@@ -3574,7 +3574,7 @@ atoi_n (char *s, int n)
 void
 A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data)
 {
-  int cnt;
+  int cnt=0;
   char buff[256];
   int x;
   int pos[] = { 0, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19 };
