@@ -60,7 +60,7 @@ for (x=0;x<9;x++) {
    else 
       barsize=bigbar;
 
-   if (x % 2) DoRectanglePDF(p, atx,barsize,aty );
+   if ((x+1) % 2) DoRectanglePDF(p, atx,barsize,aty );
 
    atx +=barsize;
 }
