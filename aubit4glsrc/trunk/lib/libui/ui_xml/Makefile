@@ -1,7 +1,9 @@
 
-libUI_XML.so: xml.c libuilib.a
+libUI_XML.so: xml.c libuilib.a proxy
 	gcc -g -Wall -I$(AUBITDIR)/incl -I. -Iuilib  -shared -o libUI_XML.so xml.c -Bstatic  -Luilib -luilib
 	cp *.so `aubit-config DEFAULT_PLUGINDIR`
+proxy: proxy.o pipe.o debug.o
+	gcc -g -o proxy proxy.o pipe.o debug.o
 
 libuilib.a: 
 	cd uilib && make -f Makefile.libaubit4gl libuilib.a
