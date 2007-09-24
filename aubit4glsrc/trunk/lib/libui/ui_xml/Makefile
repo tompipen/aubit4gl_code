@@ -1,6 +1,6 @@
 
 libUI_XML.so: xml.c libuilib.a
-	gcc -g -Wall -I$(AUBITDIR)/incl -I/home/aubit4gl/cm/proxy/uilib -shared -o libUI_XML.so xml.c -Bstatic  -Luilib -luilib
+	gcc -g -Wall -I$(AUBITDIR)/incl -I. -Iuilib  -shared -o libUI_XML.so xml.c -Bstatic  -Luilib -luilib
 	cp *.so `aubit-config DEFAULT_PLUGINDIR`
 
 libuilib.a: 
