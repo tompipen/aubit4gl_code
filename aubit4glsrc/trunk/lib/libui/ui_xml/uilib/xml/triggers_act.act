@@ -1,0 +1,148 @@
+<!DOCTYPE actions SYSTEM "flexml-act.dtd">
+<actions>
+<top>
+<![CDATA[
+
+#include <stdio.h>                  
+#include <stdlib.h>                  
+#include <string.h>
+#include "attr.h"
+static char *inbuff=0;
+char *myinputptr;
+int myinputlim;
+
+static struct s_attr lexed_attr;
+static struct s_syncvalues sync;
+
+struct s_attr *xml_parse(char *s) {
+        inbuff=s;
+        myinputlim=strlen(s);
+        myinputptr=inbuff;
+        memset(&lexed_attr,0, sizeof(struct s_attr));
+        UIdebug(3,"INPUT = %s\n",s);
+
+        if (xml_yylex()) {
+                printf("X1 - yylex returned true\n");
+                return &lexed_attr;
+        } else {
+                return &lexed_attr;
+                printf("X2 - yylex returned false\n");
+        }
+}
+
+int my_yyinput(char *buf,int maxsize) {
+int n=attr_min(maxsize,myinputlim);
+if (n>0) {
+        memcpy(buf,myinputptr,n);
+        myinputptr+=n;
+        myinputlim-=n;
+        }
+return n;
+}
+
+
+]]>
+</top>
+
+<start tag='TRIGGERED'>
+	<![CDATA[ 
+	{
+		sync.vals=0;
+		sync.nvalues=0;
+		lexed_attr.id=0;
+		lexed_attr.data=0;
+		lexed_attr.type=0;
+		lexed_attr.scrline=0;
+		lexed_attr.arrline=0;
+		lexed_attr.arrcount=0;
+		if ({ID}) lexed_attr.id=strdup({ID}); 
+		if ({TYPE}) lexed_attr.type=strdup({TYPE}); 
+		if ({DATA}) lexed_attr.data=strdup({DATA}); 
+		if ({SCRLINE}) lexed_attr.scrline=atoi({SCRLINE}); 
+		if ({ARRLINE}) lexed_attr.arrline=atoi({ARRLINE}); 
+		if ({ARRCOUNT}) lexed_attr.arrcount=atoi({ARRCOUNT}); 
+		
+		
+	}
+	]]>
+</start>
+<end tag='TRIGGERED'>
+	<![CDATA[ 
+	{
+		/* dump_attr(&lexed_attr); */
+	}
+	]]>
+</end>
+
+<start tag='SYNCVALUES'>
+	<![CDATA[ 
+	{
+		/* Just to be sure these are cleared down... */
+		if (sync.vals) {
+			int a;
+			for (a=0;a<sync.nvalues;a++) {
+				free(sync.vals[a]);
+			}
+			free(sync.vals);
+		}
+		sync.nvalues=0;
+		sync.vals=0;
+	}
+	]]>
+</start>
+
+<end tag='SYNCVALUES'>
+	<![CDATA[ 
+	{
+		memcpy(&lexed_attr.sync,&sync,sizeof(sync));
+	}
+	]]>
+</end>
+
+<end tag='SYNCVALUE'>
+	<![CDATA[ 
+	{
+		sync.nvalues++;
+		sync.vals=realloc(sync.vals, sizeof(char *)*sync.nvalues) ;
+		sync.vals[sync.nvalues-1]=strdup({#PCDATA});
+	}
+	]]>
+</end>
+
+<start tag='SYNCROWS'>
+	<![CDATA[ 
+	{
+	if (lexed_attr.rows.row) {
+		/* free_rows(lexed_attr.rows.row); */
+	}
+	lexed_attr.rows.nrows=0;
+	lexed_attr.rows.row=0;
+	}
+	]]>
+</start>
+<start tag='ROW'>
+	<![CDATA[ 
+	{
+		lexed_attr.rows.nrows++;
+		lexed_attr.rows.row=realloc(lexed_attr.rows.row,sizeof(struct s_row)* lexed_attr.rows.nrows);
+		lexed_attr.rows.row[lexed_attr.rows.nrows-1].rownum=atoi({SUBSCRIPT});
+		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.nvalues=0;
+		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals=0;
+	}
+	]]>
+</start>
+
+<end tag='ROW'>
+	<![CDATA[ 
+	{
+		int a;
+		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.nvalues=sync.nvalues;
+		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals=malloc(sizeof(char *)*sync.nvalues);
+		for (a=0;a<sync.nvalues;a++) {
+			lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals[a]=strdup(sync.vals[a]);
+		}
+	}
+	]]>
+</end>
+<main/>
+</actions>

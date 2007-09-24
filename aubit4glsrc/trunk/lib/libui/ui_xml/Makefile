@@ -4,7 +4,7 @@ libUI_XML.so: xml.c libuilib.a
 	cp *.so `aubit-config DEFAULT_PLUGINDIR`
 
 libuilib.a: 
-	cd uilib && make libuilib.a
+	cd uilib && make -f Makefile.libaubit4gl libuilib.a
 
 
 update : 
@@ -12,3 +12,7 @@ update :
 	cp /home/aubitv2/aubit4glsrc/proxy/pipe.[ch] .
 	cp -r /home/aubitv2/aubit4glsrc/proxy/uilib .
 
+clean: 
+	rm libUI_XML.so `aubit-config DEFAULT_PLUGINDIR`/libUI_XML.so 
+	cd uilib && make clean
+	cd uilib/xml && make clean
