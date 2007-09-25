@@ -8,6 +8,7 @@ struct s_windows
 {
   int w, h,border;
   char name[100];
+  int visible;
   //struct s_form_dets *form;
   //struct s_form_attr winattr;
 };
@@ -105,6 +106,7 @@ struct s_windows *win;
 	win->w=w;
 	win->h=h;
 	win->border=border;
+	win->visible=1;
 	A4GL_win_stack(win,s,'+');
 }
 
@@ -388,6 +390,7 @@ char **f;
   strcat(buff,"</FIELDLIST>");
   f=field_list;
   *f=buff;
+return 1;
 }
 
 int UILIB_A4GL_gen_field_list_from_slist(void* field_listv,void* formdetsv,void* listv) {
@@ -456,6 +459,7 @@ get_key_codes (char *keys)
   char *k1;
   static int *x = 0;
   int xcnt = 0;
+
 
   if (x)
     {
@@ -785,17 +789,25 @@ void UILIB_A4GL_ui_exit() {
 }
 
 int UILIB_A4GL_movewin(char* winname,int absol) {
-int rval;
-niy();
+int rval=0;
+int x;
+int y;
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
+
+  send_to_ui ("<MOVEWINDOW WINDOW=\"%s\"/ x=\"%d\" y=\"%d\" ABSOLUTE=\"%d\" >", winname,x,y,absol);
+
 return rval;
 }
 
 void UILIB_A4GL_hide_window(char* winname) {
-niy();
+  send_to_ui ("<HIDEWINDOW WINDOW=\"%s\"/>", winname);
+  //A4GL_win_stack(0,win_name,'!');
 }
 
 void UILIB_A4GL_show_window(char* winname) {
-niy();
+  send_to_ui ("<SHOWWINDOW WINDOW=\"%s\"/>", winname);
+  A4GL_win_stack(0,winname,'^');
 }
 
 int UILIB_A4GL_fgl_infield_ap(void* inp,va_list* ap) {
@@ -810,11 +822,12 @@ return rval;
 }
 
 void UILIB_A4GL_clr_window(char* winname) {
-niy();
+	send_to_ui ("<CLEARWINDOW WINDOW=\"%s\"/>", winname);
 }
 
 void UILIB_A4GL_remove_window(char* win_name) {
-niy();
+  A4GL_del_pointer (win_name, WINCODE);
+  send_to_ui ("<CLOSEWINDOW WINDOW=\"%s\"/>", win_name);
 }
 
 int UILIB_A4GL_disp_arr_v2(void* disp,void* ptr,char* srecname,int attrib,int scrollf,int scrollw,void* evt) {
@@ -848,7 +861,7 @@ return rval;
 }
 
 void UILIB_A4GL_clr_form(int to_defaults) {
-niy();
+send_to_ui ("<CLEARFORM TODEFAULTS=\"%d\"/>",to_defaults);
 }
 
 void UILIB_A4GL_clr_form_fields(int to_defaults,char* defs) {
@@ -1023,8 +1036,15 @@ return rval;
 
 char* UILIB_A4GL_ui_fgl_winquestion(char* title,char* text,char* def,char* pos,char* icon,int danger,int winbutton) {
 char* rval;
-niy();
-return rval;
+int a;
+send_to_ui("<WINQUESTION TITLE=\"%s\" TEXT=\"%s\" DEFAULT=\"%s\" POS=\"%s\" ICON=\"%s\" DANGER=\"%s\" BUTTON=\"%s\" />", title, uilib_xml_escape(text), def, pos, icon,  danger, winbutton);
+send_to_ui ("<WAITFOREVENT/>");
+flush_ui ();
+a=get_event_from_ui();
+if (a==-100) { return "cancel";}
+if (a==-101) { return "yes";}
+if (a==-102) { return "no";}
+return "InvalidReturnedValue";
 }
 
 
@@ -1036,9 +1056,32 @@ exit(4);
 
 void* UILIB_A4GL_cr_window(char* s,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib) {
 void* rval;
-niy();
-return rval;
+int x,y,w,h;
+  w = A4GL_pop_int ();
+  h = A4GL_pop_int ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
+
+  if (A4GL_has_pointer (s, WINCODE))
+    {
+#ifdef DEBUG
+      {
+        A4GL_debug ("Window already exists");
+      }
+#endif
+      A4GL_set_errm (s);
+      A4GL_exitwith ("Window already exists (%s)");
+      return 0;
+    }
+
+    A4GL_add_pointer (s, WINCODE, (void *)1); // Just some value - maybe later we'll do something useful with it...
+    send_to_ui("<CREATEWINDOW NAME=\"%s\" X=\"%d\" Y=\"%d\" W=\"%d\" H=\"%d\" FORMLINE=\"%d\" ERRORLINE=\"%d\" PROMPTLINE=\"%d\" MENULINE=\"%d\" COMMENTLINE=\"%d\" MESSAGELINE=\"%d\" BORDER=\"%d\" ATTRIBUTE=\"%d\"", s, x,y,w,h,form_line, error_line, prompt_line, menu_line, comment_line, message_line, border, attrib);
+
+
+    return 1;
 }
+
+
 
 int UILIB_A4GL_set_fields(void* sio) {
  return 1;

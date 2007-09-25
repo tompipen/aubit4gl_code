@@ -317,7 +317,7 @@ maintain_socket (int newfd_orig)
   int newfd_read;		// Normally these would be the
   int newfd_write;		// same - except when using STDIN and STDOUT in standalone mode..
   int a;
-  int s;
+  int sock_s;
   struct sigaction sa;
 
 
@@ -396,7 +396,7 @@ maintain_socket (int newfd_orig)
   UIdebug (5,"Creating pipes\n");
   // Now - tell our child process who we are...
   setenv ("PROXYID", buff, 1);
-  s = create_pipes ();
+  sock_s = create_pipes ();
   UIdebug (5,"RUN prg:%s\n", prg);
 
   sa.sa_handler = sigterm_handler;	// reap all dead processes
@@ -460,13 +460,13 @@ maintain_socket (int newfd_orig)
    * Listen on the socket.
    */
 
-  if (listen (s, 5) < 0)
+  if (listen (sock_s, 5) < 0)
     {
       perror ("server: listen");
       exit (1);
     }
 
-  wait_for_some_action (newfd_read, newfd_write, s);
+  wait_for_some_action (newfd_read, newfd_write, sock_s);
 
 }
 

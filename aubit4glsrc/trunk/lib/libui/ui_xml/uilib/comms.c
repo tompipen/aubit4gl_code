@@ -219,6 +219,10 @@ get_event_from_ui ()
 	  n = -100;
 	}
 
+      if (strcmp (attr->id, "CANCEL") == 0) 	{ n = -100; }
+      if (strcmp (attr->id, "YES") == 0) 	{ n = -101; }
+      if (strcmp (attr->id, "NO") == 0) 	{ n = -102; }
+
       if (strcmp (attr->id, "INTERRUPT") == 0)
 	{
 	  n = -101;
