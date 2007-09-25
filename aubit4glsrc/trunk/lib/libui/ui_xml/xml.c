@@ -1045,9 +1045,25 @@ int UILIB_A4GL_set_fields(void* sio) {
 }
 
 void UILIB_A4GL_add_menu_timeout(void* menu,char timeout_type,int timeoutlen,int cmd_no_on_timeout,long* timeoutvar) {
-niy();
+static long ln=0;
+long context;
+ln=(long)menu;
+A4GL_push_char("xml");
+A4GL_push_int(ln);
+uilib_get_context(2);
+context=A4GL_pop_long();
+mn_id++;
+send_to_ui ("<MENUTIMEOUT CONTEXT=\"%d\" ID=\"%d\" CMD_NO=\"%d\" TYPE=\"%c\" TIMEOUT=\"%d\" />", context, mn_id,cmd_no_on_timeout, timeoutlen);
 }
 
 void UILIB_A4GL_add_menu_action(void* menu,char* action,int cmd_no_on_timeout) {
-niy();
+static long ln=0;
+long context;
+ln=(long)menu;
+A4GL_push_char("xml");
+A4GL_push_int(ln);
+uilib_get_context(2);
+context=A4GL_pop_long();
+mn_id++;
+send_to_ui ("<MENUACTION CONTEXT=\"%d\" ID=\"%d\" ACTION=\"%s\" CMD_NO_TIMEOUT=\"%d\" />", context, mn_id, action, cmd_no_on_timeout); 
 }
