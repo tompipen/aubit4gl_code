@@ -81,3 +81,4 @@ int uilib_free_input_array(int nargs);
 int uilib_getfldbuf(int nargs) ;
 int uilib_infield(int nargs) ;
 int uilib_fgl_drawbox(int nargs);
+int uilib_set_field_list_directly (char *s);

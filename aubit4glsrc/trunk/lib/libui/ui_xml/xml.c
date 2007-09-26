@@ -222,9 +222,12 @@ mn_id=0;
 return (void *)ln;
 }
 
-void UILIB_A4GL_add_menu_option(void* menu,char* txt,char* keys,char* desc,int helpno,int attr) {
+void UILIB_A4GL_add_menu_option(void* menu,char* txt,char* keys_orig,char* desc,int helpno,int attr) {
 static long ln=0;
 long context;
+char keys[2000];
+int len;
+strcpy(keys,keys_orig);
 ln=(long)menu;
 A4GL_push_char("xml");
   A4GL_push_int(ln);
@@ -235,7 +238,45 @@ mn_id++;
 
 A4GL_push_int(mn_id);
 A4GL_push_char(txt);
-A4GL_push_char(keys);
+
+if (strstr(keys,"||")) {
+	int cnt;
+	char a[100];
+	char buff[3000]="";
+	int start=0;
+	
+	int b=0;
+	len=strlen(keys);
+	for(cnt=0;cnt<=len;cnt++) {
+		if ((keys[cnt]=='|' && keys[cnt+1]=='|') || keys[cnt]==0) {
+			keys[cnt]=0;
+			if (keys[cnt]=='|') {
+				keys[cnt+1]=' ';
+			}
+			b=A4GL_key_val(&keys[start]);
+			sprintf(a,"%d",b);
+			if (start) strcat(buff,",");
+			strcat(buff,a);
+			start=cnt+2;
+		}
+	}
+	A4GL_push_char(buff);
+	
+
+} else {
+	int a;
+	char buff[200];
+	A4GL_lrtrim(keys);
+	a=A4GL_key_val(keys);
+	if (a==-1) {
+		A4GL_push_char("");
+	} else {
+		sprintf(buff,"%d",a);
+		A4GL_push_char(buff);
+	}
+}
+
+
 A4GL_push_char(desc);
 A4GL_push_int(helpno);
 
@@ -347,7 +388,6 @@ void UILIB_A4GL_display_error(int attr,int wait) {
 }
 
 void* UILIB_A4GL_get_curr_form(int warn_if_no_form) {
-void* rval;
 //fprintf(stderr,"Got a call to UILIB_A4GL_get_curr_form\n");
 return (void *)1;
 }
@@ -399,7 +439,7 @@ niy();
 return rval;
 }
 
-
+/*
 static char *
 decode_keys (int a)
 {
@@ -449,8 +489,9 @@ decode_keys (int a)
   A4GL_assertion (1, "Unknown keycode");
   return "UNKNOWN";
 }
+*/
 
-
+/*
 static int *
 get_key_codes (char *keys)
 {
@@ -501,6 +542,7 @@ get_key_codes (char *keys)
   x[xcnt - 1] = 0;
   return x;
 }
+*/
 
 
 static char *
@@ -606,7 +648,7 @@ get_field_codes (char *fields)
 static void dump_events(struct aclfgl_event_list *e) {
 int a;
 int b;
-  int *keys;
+  //int *keys;
 uilib_start_events(0);
 for (a=0;e[a].event_type;a++) {
 char **fields;
@@ -652,7 +694,11 @@ sreal=s;
 if (init) {
 	A4GL_push_char("XML");
 	A4GL_push_int(((long)s) &0xffffffff);
-	uilib_set_field_list_directly(sreal->field_list);
+	
+
+	uilib_set_field_list_directly((char *)sreal->field_list);
+
+
 	if (sreal->mode & 3) {
 		int a;
 		int cno;
@@ -703,7 +749,9 @@ int UILIB_A4GL_push_constr(void* s) {
 	A4GL_push_int(((long)s) &0xffffffff);
 
 	uilib_get_context(2);
+
 	uilib_construct_query(1);
+	return 1;
 }
 
 int UILIB_aclfgl_aclfgl_add_to_toolbar(int n) {
@@ -1023,15 +1071,15 @@ niy();
 
 
 int UILIB_A4GL_screen_mode(int sm) {
-int rval;
+//int rval;
 return 1;
-return rval;
+//return rval;
 }
 
 
 
 char* UILIB_A4GL_ui_fgl_winquestion(char* title,char* text,char* def,char* pos,char* icon,int danger,int winbutton) {
-char* rval;
+//char* rval;
 int a;
 send_to_ui("<WINQUESTION TITLE=\"%s\" TEXT=\"%s\" DEFAULT=\"%s\" POS=\"%s\" ICON=\"%s\" DANGER=\"%s\" BUTTON=\"%s\" />", title, uilib_xml_escape(text), def, pos, icon,  danger, winbutton);
 send_to_ui ("<WAITFOREVENT/>");
@@ -1051,7 +1099,7 @@ exit(4);
 }
 
 void* UILIB_A4GL_cr_window(char* s,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib) {
-void* rval;
+//void* rval;
 int x,y,w,h;
   w = A4GL_pop_int ();
   h = A4GL_pop_int ();
@@ -1074,7 +1122,7 @@ int x,y,w,h;
     send_to_ui("<CREATEWINDOW NAME=\"%s\" X=\"%d\" Y=\"%d\" W=\"%d\" H=\"%d\" FORMLINE=\"%d\" ERRORLINE=\"%d\" PROMPTLINE=\"%d\" MENULINE=\"%d\" COMMENTLINE=\"%d\" MESSAGELINE=\"%d\" BORDER=\"%d\" ATTRIBUTE=\"%d\"", s, x,y,w,h,form_line, error_line, prompt_line, menu_line, comment_line, message_line, border, attrib);
 
 
-    return 1;
+    return (void *)1;
 }
 
 
