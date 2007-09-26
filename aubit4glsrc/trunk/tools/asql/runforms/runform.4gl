@@ -3,6 +3,10 @@ globals "globals.4gl"
 code
 #include <string.h>
 #include <stdlib.h>
+#ifndef DTYPE_CHAR
+#define DTYPE_CHAR      0
+#define DTYPE_VCHAR     13
+#endif
 endcode
 define mv_table_cnt integer
 define mv_table char(255)
@@ -12,6 +16,7 @@ define mv_taglines array[mv_cnt_taglines] of char(80)
 define mv_column_list char(8000)
 define b_prepared integer
 define mv_field_list array[gv_max_fields] of char(80)
+define mv_field_list_dtype array[gv_max_fields] of integer
 define mv_field_pointers array[gv_max_fields] of integer
 
 define mv_acurrent_position array[gv_max_tables] of integer
@@ -367,6 +372,7 @@ for a=0 to lv_nfields-1
 	end if
 
 	let mv_field_list[b]=lv_tmpnam
+	let mv_field_list_dtype[b]=dbi_get_datatype(lv_tmpnam)
 
 	if gv_field_data[b] is not null then
 
@@ -844,7 +850,19 @@ code
 	}			/* end of initialization */
 
 
-      if (_exec_block == 1) { break; }
+      if (_exec_block == 1) { 
+			if (lv_isupd) {
+				A4GL_push_char("U");
+			} else {
+				A4GL_push_char("I");
+			}
+			aclfgl_null_check_obind(1);
+			if (A4GL_pop_long()) {
+				break;
+			}
+	}
+
+
       if (_exec_block == 2) { 
 		int a;
 		// Before input...
@@ -875,6 +893,8 @@ A4GL_finish_screenio (sio_2, sio_kw_2);
 }
 endcode
 
+
+
 if int_flag=true then
 	# the user has just aborted...
 	# If we're on a row - redisplay it to remove any changes
@@ -887,6 +907,7 @@ if int_flag=true then
 
 	return
 end if
+
 
 
 
@@ -1089,6 +1110,7 @@ if mv_acurrent_position[mv_table_cnt]=0 then
 	call dbi_fill_query_rows_table(mv_table_cnt,"") 
 end if
 
+
 if dbi_execute_sql_using_obind_i(sql,mv_max_rows[mv_table_cnt]+1,mv_table_cnt) then
 	message "Executes ok..."
 	sleep 1
@@ -1137,4 +1159,52 @@ end if
 if  mv_acurrent_position[mv_table_cnt]>0 then
 	call get_and_display_row()
 end if
+end function
+
+
+################################################################################
+
+
+function  null_check_obind(lv_type)
+# I for Insert, U for Update
+define lv_type char (1) 
+define lv_cnt integer
+define lv_err char(80)
+
+let lv_err=" "
+code
+{
+	for ( lv_cnt=0;lv_cnt<gv_fields;lv_cnt++) {
+		if (A4GL_isnull(ibind[lv_cnt].dtype, ibind[lv_cnt].ptr)) { 
+			// We've got a null in our field..
+			// Does the field allow nulls ?
+			A4GL_push_long(ibind[lv_cnt].ptr);
+			if (mv_field_list_dtype[lv_cnt]&256) {
+				/* No - it doesnt! */
+				char *ptr;
+				char *cptr;
+				ptr=strdup(mv_field_list[lv_cnt]);
+				A4GL_trim(ptr);
+				if ((mv_field_list_dtype[lv_cnt]&255)==DTYPE_CHAR || (mv_field_list_dtype[lv_cnt]&255)==DTYPE_VCHAR) { // 
+					cptr=(char *)ibind[lv_cnt].ptr;
+					cptr[0]=' '; // JUst make it a space for now..
+					cptr[1]=0; // JUst make it a space for now..
+				} else {
+					sprintf(lv_err,"Error: field '%s' does not allow nulls",ptr);
+					free(ptr);
+					break;
+				}
+			}
+		}
+	}
+}
+
+endcode
+
+if length(lv_err) then
+	error lv_err
+	return false
+end if
+
+return true
 end function

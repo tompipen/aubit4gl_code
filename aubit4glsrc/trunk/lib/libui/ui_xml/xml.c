@@ -185,13 +185,12 @@ char buff[300];
 }
 
 void UILIB_A4GL_close_form(char* name) {
-niy();
+send_to_ui ("<CLOSEFORM FORM=\"%s\"/>", name);
 }
 
 int UILIB_A4GL_disp_form(char* name,int attr) {
 int rval=0;
 send_to_ui ("<DISPLAYFORM FORM=\"%s\" ATTRIBUTE=\"%d\"/>", name, attr);
-
 return rval;
 }
 
@@ -202,8 +201,24 @@ int UILIB_A4GL_current_window(char* win_name) {
 }
 
 int UILIB_aclfgl_fgl_drawbox(int n) {
-int rval;
-niy();
+int rval=1;
+        int x1,x2,x3,x4,x5;
+        if (n==4) {
+                x1=A4GL_pop_int();
+                x2=A4GL_pop_int();
+                x3=A4GL_pop_int();
+                x4=A4GL_pop_int();
+		send_to_ui("<DRAWBOX arg1=\"%d\" arg2=\"%d\" arg3=\"%d\" arg4=\"%d\" />",x1,x2,x3,x4);
+        }
+        if (n==5) {
+                x1=A4GL_pop_int();
+                x2=A4GL_pop_int();
+                x3=A4GL_pop_int();
+                x4=A4GL_pop_int();
+                x5=A4GL_pop_int();
+		send_to_ui("<DRAWBOX arg1=\"%d\" arg2=\"%d\" arg3=\"%d\" arg4=\"%d\" arg5=\"%d\"/>",x1,x2,x3,x4,x5);
+        }
+
 return rval;
 }
 
@@ -334,15 +349,50 @@ int a;
 
 }
 
-int UILIB_A4GL_req_field_input(void* s,char type,va_list* ap) {
-int rval;
-niy();
+int UILIB_A4GL_req_field_input(void* sv,char type,va_list* ap) {
+int rval=1;
+int context;
+int a;
+  struct s_field_name_list list;
+  struct s_screenio *s;
+s=sv;
+	A4GL_push_char("XML");
+	A4GL_push_int(((long)s) &0xffffffff);
+	uilib_get_context(2);
+	context=A4GL_pop_int();
+if (type=='+') { send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"NEXT\"/>", context); return 1; }
+if (type=='-') { send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"PREVIOUS\"/>", context); return 1; }
+if (type=='0') { send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"CURRENT\"/>", context); return 1; }
+
+
+A4GL_make_field_slist_from_ap (&list, ap);
+
+send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname,list.field_name_list[0].fpos);
+
 return rval;
 }
 
-int UILIB_A4GL_req_field_input_array(void* s,char type,va_list* ap) {
-int rval;
-niy();
+int UILIB_A4GL_req_field_input_array(void* sv,char type,va_list* ap) {
+int rval=1;
+struct s_inp_arr *arr;
+int context;
+  struct s_field_name_list list;
+arr=sv;
+	A4GL_push_char("XML");
+	A4GL_push_int(((long)arr) &0xffffffff);
+	uilib_get_context(2);
+	context=A4GL_pop_int();
+
+if (type=='+') { send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"NEXT\"/>", context); return 1; }
+if (type=='-') { send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"PREVIOUS\"/>", context); return 1; }
+if (type=='0') { send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"CURRENT\"/>", context); return 1; }
+
+
+A4GL_make_field_slist_from_ap (&list, ap);
+
+send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname,list.field_name_list[0].fpos);
+
+
 return rval;
 }
 
@@ -692,8 +742,8 @@ int UILIB_A4GL_form_loop_v2(void* s,int init,void* evt) {
 struct s_screenio *sreal;
 sreal=s;
 if (init) {
-	A4GL_push_char("XML");
-	A4GL_push_int(((long)s) &0xffffffff);
+	//A4GL_push_char("XML");
+	//A4GL_push_int(((long)s) &0xffffffff);
 	
 
 	uilib_set_field_list_directly((char *)sreal->field_list);
@@ -745,10 +795,11 @@ while (1) {
 }
 
 int UILIB_A4GL_push_constr(void* s) {
+	int context;
 	A4GL_push_char("XML");
 	A4GL_push_int(((long)s) &0xffffffff);
-
 	uilib_get_context(2);
+	context=A4GL_pop_int();
 
 	uilib_construct_query(1);
 	return 1;

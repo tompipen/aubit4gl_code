@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.199 2007-09-13 12:46:35 gyver309 Exp $
+# $Id: sql.c,v 1.200 2007-09-26 17:59:02 mikeaubury Exp $
 #
 */
 
@@ -1808,21 +1808,23 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
         use_extended_fetch = 0;
         if (A4GL_chk_getenv ("EXTENDED_FETCH", TRUE))
             use_extended_fetch = 1;
+	if (A4GL_chk_getenv("ALWAYS_EXTENDED_FETCH",TRUE)) {
+            		use_extended_fetch = 2;
+		}
         if (strcmp ("INGRES", A4GLSQL_dbms_dialect ()) == 0)
             use_extended_fetch = 0;
     }
 
-    A4GL_dbg ("use_Extended_fetch=%d\n", use_extended_fetch);
+    A4GL_dbg ("use_Extended_fetch=%d mode=%d (SQL_FETCH_NEXT=%d)\n", use_extended_fetch,mode, SQL_FETCH_NEXT);
 
-    if (use_extended_fetch == 1 && mode != SQL_FETCH_NEXT)
+    if ((use_extended_fetch == 1 && mode != SQL_FETCH_NEXT) || use_extended_fetch==2)
     {
         A4GL_dbg ("Calling SQLextended/SQLFetchScroll fetch(%p %d %d)",
                 cid->statement->hstmt, mode, fetch_when);
         nr = 1;
 
 #if (ODBCVER >= 0x0300) && !PGODBC
-        A4GL_dbg ("Calling SQLFetchScroll(%p,%d,%d)",
-                    cid->statement->hstmt, mode, fetch_when);
+        A4GL_dbg ("Calling SQLFetchScroll(%p,%d,%d)", cid->statement->hstmt, mode, fetch_when);
         rc = SQLFetchScroll((SQLHSTMT) cid->statement->hstmt, mode, fetch_when);
         if (!chk_rc(rc, cid->statement->hstmt, "SQLFetchScroll"))
 	{

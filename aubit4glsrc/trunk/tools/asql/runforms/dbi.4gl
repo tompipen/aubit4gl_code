@@ -54,8 +54,6 @@ return lv_cnt
 END FUNCTION
 
 
-
-
 ################################################################################
 FUNCTION dbi_fetch(lv_tabno,lv_sql,lv_pos)
 define lv_tabno integer
@@ -237,3 +235,40 @@ static void do_execute_sql(struct BINDING *ibind, int nbind,char *sql) {
 
 
 endcode
+
+
+function dbi_get_datatype(lv_ct)
+define lv_ct char(256)
+define lv_col char(256)
+define lv_tab char(256)
+define lv_dtype integer
+
+if lv_ct not matches "*.*" then
+	return 0 # Dont know
+end if
+
+code
+{
+char *ptr;
+ptr=strchr(lv_ct,'.');
+*ptr=0;
+ptr++;
+strcpy(lv_tab,lv_ct);
+strcpy(lv_col,ptr);
+}
+endcode
+
+let lv_dtype=0
+
+select coltype into lv_dtype from systables,syscolumns
+where systables.tabid=syscolumns.tabid 
+and tabname=lv_tab 
+and colname=lv_col
+if sqlca.sqlcode!=0 then
+	error "Unable to get datatype for column : ", lv_ct clipped sleep 1
+end if
+return lv_dtype
+
+end function
+
+
