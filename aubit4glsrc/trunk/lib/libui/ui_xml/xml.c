@@ -611,16 +611,12 @@ uilib_start_events(0);
 for (a=0;e[a].event_type;a++) {
 char **fields;
 	if (e[a].event_type==A4GL_EVENT_KEY_PRESS) {
-          keys = get_key_codes (e[a].field);
-          for (b = 0; keys[b]; b++)
-            {
+          		//keys = get_key_codes (e[a].field);
 		A4GL_push_int(a + 1);
 		A4GL_push_char("ONKEY");
-		A4GL_push_char(decode_keys (keys[b]));
+		A4GL_push_int(e[a].keycode);
 		uilib_event(3);
-              //printf ("CALL UILIB_EVENT(%d,\"ONKEY\",\"%s\")", a + 1, decode_keys (keys[b]));
-            }
-	continue;
+		continue;
 	}
       fields = get_field_codes(e[a].field);
       for (b = 0; fields[b]; b++)
