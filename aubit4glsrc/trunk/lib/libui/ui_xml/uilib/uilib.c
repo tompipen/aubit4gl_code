@@ -156,8 +156,12 @@ for (a=0;a<l;a++) {
 	if (s[a]=='"') { buff[b++]='&'; buff[b++]='a';buff[b++]='p';buff[b++]='o'; buff[b++]='s'; buff[b++]=';';continue;}
 	if (s[a]<31 || s[a]>126) { 
 			int z1;
+			char buff2[20];
 			z1=((unsigned char)s[a]);
-			buff[b++]='&'; buff[b++]='#';buff[b++]=hex_digit((z1>>4));buff[b++]=hex_digit((z1&0x0f)); buff[b++]=';';continue;
+			sprintf(buff2,"&#%d;",z1);
+			for (z1=0;z1<strlen(buff2);z1++) {
+				buff[b++]=buff2[z1];
+			}
 		}
 	buff[b++]=s[a];
 }
