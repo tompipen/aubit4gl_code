@@ -213,6 +213,7 @@ int np;
 
   switch (dt)
     {
+#ifdef MYSQL_TYPE_NEWDECIMAL
     case MYSQL_TYPE_NEWDECIMAL:
 		if (prec) {
 			nd=len-2;
@@ -225,6 +226,7 @@ int np;
       *fgldtype = DTYPE_DECIMAL;
       *fglprc = (nd<<8)+np;
       break;
+#endif
 
     case MYSQL_TYPE_DECIMAL:
       *fgldtype = DTYPE_FLOAT;
@@ -1672,7 +1674,10 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
 	mysql_obind[a].buffer=NULL;
 	mysql_obind[a].buffer_length=0;
 	mysql_obind[a].buffer_type=0;
+
+#if MYSQL_VERSION_ID > 50000
  	mysql_obind[a].error = 0;
+#endif
 
 /*
  mysql_obind[a].buffer_type = 0;;
