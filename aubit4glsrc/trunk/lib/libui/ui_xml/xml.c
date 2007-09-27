@@ -34,6 +34,48 @@ return 0;
 }
 
 
+static void A4GL_XML_opening_form_xml(char *formname,char *formfile,  char *fbuff) {
+int a;
+send_to_ui("<FORM NAME=\"%s\" FILE=\"%s\">", formname, formfile);
+for (a=0;a<strlen(fbuff);a+=256) {
+	char b[300];
+	strncpy(b,&fbuff[a],256);
+	b[256]=0;
+	send_to_ui("%s",uilib_xml_escape(b));
+}
+send_to_ui("</FORM>");
+}
+
+static void A4GL_XML_opening_form(char *formfile, char *formname) {
+        FILE *f;
+        char *fbuff;
+        char buff[2000];
+        char buff_formname[2000];
+        strcpy(buff,formfile);
+        A4GL_trim(buff);
+        strcpy(buff_formname,formname);
+        A4GL_trim(buff_formname);
+        strcat(buff,".xml");
+        f=A4GL_open_file_dbpath(buff);
+
+        if (f) {
+                long l;
+                fseek(f,0,SEEK_END);
+                l=ftell(f);
+                rewind(f);
+                fbuff=malloc(l+1);
+                fread(fbuff,l,1,f);
+                fbuff[l]=0;
+                fclose(f);
+                A4GL_XML_opening_form_xml(buff_formname,formfile,  fbuff);
+                free(fbuff);
+        } else {
+		printf("File %s doesn't exist\n", buff);
+	}
+}
+
+
+
 void *
 A4GL_win_stack (struct s_windows *w,char *name, int op)
 {
@@ -120,6 +162,9 @@ int y;
 fname=A4GL_char_pop();
 x=A4GL_pop_int();
 y=A4GL_pop_int();
+
+  A4GL_XML_opening_form(fname,name);
+
 send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"/>", name, x, y, attrib, fname);
 
 return 0;
@@ -179,6 +224,9 @@ char buff[300];
   buff[255] = 0;
   A4GL_trim (buff);
   A4GLSQL_set_status (0, 0);
+
+  A4GL_XML_opening_form(buff,name);
+
   send_to_ui ("<OPENFORM FORM=\"%s\" SOURCE=\"%s\"/>", name, buff);
   free(s);
   return 0; // Success...
@@ -907,6 +955,7 @@ void UILIB_A4GL_show_window(char* winname) {
 
 int UILIB_A4GL_fgl_infield_ap(void* inp,va_list* ap) {
 int rval;
+	
 return rval;
 }
 
@@ -1054,20 +1103,20 @@ return rval;
 
 int UILIB_aclfgl_aclfgl_dump_screen(int n) {
 int rval;
-niy();
+send_to_ui("<DUMPSCREEN>");
 return rval;
 }
 
 int UILIB_A4GL_get_curr_width() {
-return win_stack[win_stack_cnt-1]->w;
+	return win_stack[win_stack_cnt-1]->w;
 }
 
 int UILIB_A4GL_get_curr_height() {
-return win_stack[win_stack_cnt-1]->h;
+	return win_stack[win_stack_cnt-1]->h;
 }
 
 int UILIB_A4GL_iscurrborder() {
-return win_stack[win_stack_cnt-1]->border;
+	return win_stack[win_stack_cnt-1]->border;
 }
 
 void UILIB_A4GL_init_color(int n,int r,int g,int b) {

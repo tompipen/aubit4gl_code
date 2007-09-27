@@ -110,6 +110,17 @@ struct ui_context *contexts = 0;
 static char **get_args (int nargs);
 static void send_input_array_change (int ci);
 
+static char hex_digit(int n) {
+        if (n>=0&&n<=9) return n+'0';
+        if (n==10) return 'a';
+        if (n==11) return 'b';
+        if (n==12) return 'c';
+        if (n==13) return 'd';
+        if (n==14) return 'e';
+        if (n==15) return 'f';
+        return 'x';
+}
+
 
 
 static char *xml_escape(char *s) {
@@ -123,6 +134,8 @@ c=0;
 if (strchr(s,'&')) c++;
 if (strchr(s,'<')) c++;
 if (strchr(s,'>')) c++;
+if (strchr(s,'"')) c++;
+if (strchr(s,'\'')) c++;
 
 if (c==0) {
 	return s;
@@ -139,6 +152,13 @@ for (a=0;a<l;a++) {
 	if (s[a]=='>') { buff[b++]='&'; buff[b++]='g'; buff[b++]='t'; buff[b++]=';';continue;}
 	if (s[a]=='<') { buff[b++]='&'; buff[b++]='l'; buff[b++]='t'; buff[b++]=';';continue;}
 	if (s[a]=='&') { buff[b++]='&'; buff[b++]='a';buff[b++]='m';buff[b++]='p';buff[b++]=';';continue;}
+	if (s[a]=='"') { buff[b++]='&'; buff[b++]='q';buff[b++]='u';buff[b++]='o'; buff[b++]='t'; buff[b++]=';';continue;}
+	if (s[a]=='"') { buff[b++]='&'; buff[b++]='a';buff[b++]='p';buff[b++]='o'; buff[b++]='s'; buff[b++]=';';continue;}
+	if (s[a]<31 || s[a]>126) { 
+			int z1;
+			z1=((unsigned char)s[a]);
+			buff[b++]='&'; buff[b++]='#';buff[b++]=hex_digit((z1>>4));buff[b++]=hex_digit((z1&0x0f)); buff[b++]=';';continue;
+		}
 	buff[b++]=s[a];
 }
 
