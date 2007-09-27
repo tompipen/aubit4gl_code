@@ -4,8 +4,12 @@ main
 	define n,c smallint, txt char(3)
 	let txt=" "
 	let c=0
-		#drop table a
+	whenever error continue
+	drop table a
+	whenever error stop
+
 	while 1
+
 		create temp table a(f1 char(3))
 
 		begin work

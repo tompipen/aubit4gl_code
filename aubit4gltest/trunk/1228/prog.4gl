@@ -3,7 +3,9 @@ database test1
 
 main
 	define d date
-
+whenever error continue
+	drop table a
+whenever error stop
 	create temp table a(dt date)
 	let d=mdy(2,10,2004)
 

@@ -1,7 +1,9 @@
 database test1
 main
 define lv_a char(20)
-
+whenever error continue
+drop table a
+whenever error stop
 create temp table a (a char(20))
 insert into a values ("Hello")
 
