@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.172 2007-08-18 08:15:37 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.173 2007-09-28 07:56:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.172 2007-08-18 08:15:37 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.173 2007-09-28 07:56:06 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -346,12 +346,13 @@ exit_loop("FOREACH");
     }
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n", cursorname, A4GL_get_into_part (0, no), ni, no);
   printc("if (sqlca.sqlcode<0) _fetcherr=sqlca.sqlcode;");
+  printc("_fetchstatus=sqlca.sqlcode;");
   print_copy_status ();
   
   printc ("internal_recopy_%s_o_Dir();", cursorname);
   print_conversions_g (into_bind);
   clr_suppress_lines ();
-  printc ("if (a4gl_sqlca.sqlcode==100) break;\n");
+  printc ("if (_fetchstatus==100) break;\n");
 }
 
 /**

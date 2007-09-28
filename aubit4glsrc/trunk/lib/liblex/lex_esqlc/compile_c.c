@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.380 2007-08-16 21:47:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.381 2007-09-28 07:56:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.380 2007-08-16 21:47:29 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.381 2007-09-28 07:56:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4047,6 +4047,7 @@ LEXLIB_print_foreach_start (void)
   printc ("{");
   printc("int _cursoropen=0;");
   printc("int _fetcherr=0;");
+  printc("int _fetchstatus=0;");
 }
 
 
