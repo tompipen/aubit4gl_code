@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.177 2007-09-20 10:23:22 mikeaubury Exp $
+# $Id: ioform.c,v 1.178 2007-09-28 07:57:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.177 2007-09-20 10:23:22 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.178 2007-09-28 07:57:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -1897,7 +1897,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 
 	A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
       fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
-      fprop->flags |= 2;
+      fprop->flags |= FLAG_FIELD_TOUCHED;
 
 
 
@@ -3502,16 +3502,6 @@ A4GL_copy_field_data (struct s_form_dets *form)
 }
 
 
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_get_curr_field_col (FORM * mform)
-{
-  return mform->curcol;
-}
-
 
 /**
  *
@@ -3844,7 +3834,7 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 		  fprop =
 		    (struct struct_scr_field
 		     *) (field_userptr (s->field_list[s->scr_line - 1][b]));
-		  if (fprop->flags & 2)
+		  if (fprop->flags & FLAG_FIELD_TOUCHED)
 		    {
 		      A4GL_debug
 			("fieldtouched Field status is set for %p - %d line %d - b=%d",
@@ -3938,7 +3928,7 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 	  A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
 	  fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
 
-	  if (fprop->flags & 2)
+	  if (fprop->flags & FLAG_FIELD_TOUCHED)
 	    {
 	      A4GL_debug ("fieldtouched Field status is set for %p",
 			  field_list[a]);
@@ -4071,7 +4061,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			int chged=0;
 			// Has the field changed ? 
 			// Are we on a new line ? 
-			if ((fprop->flags&2) || sio->curr_line_is_new) {
+			if ((fprop->flags&FLAG_FIELD_TOUCHED) || sio->curr_line_is_new) {
 					chged++;
 			}
 

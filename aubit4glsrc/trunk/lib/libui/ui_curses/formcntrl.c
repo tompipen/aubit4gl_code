@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.118 2007-09-20 10:23:21 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.119 2007-09-28 07:57:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.118 2007-09-20 10:23:21 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.119 2007-09-28 07:57:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -80,6 +80,7 @@ void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current(void *form);
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
 
+//int A4GL_get_curr_field_col(FORM *mform) ;
 /*
 =====================================================================
                     Variables definitions
@@ -95,7 +96,6 @@ struct s_movement
 int do_input_nowrap = 0;
 extern WINDOW *currwin;
 char m_delims[10]="[]|";
-
 
 char *ops[] = {
   "",
@@ -380,8 +380,23 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
   if (sio->fcntrl[a].op == FORMCONTROL_BEFORE_INPUT)
     {
-      new_state = 0;
-      rval = A4GL_EVENT_BEFORE_INP;
+	if (sio->fcntrl[a].state == 99) {
+      		new_state = 50;
+		rval = A4GL_EVENT_BEFORE_INP;
+	} 
+
+	if (sio->fcntrl[a].state == 50) {
+		int c;
+		for (c=0;c<=sio->nfields;c++) {
+			FIELD *p;
+	  		struct struct_scr_field *fprop;
+			p=sio->field_list[c];
+	  		fprop = (struct struct_scr_field *) (field_userptr (p));
+			fprop->flags=0;
+		}
+      		new_state = 0;
+		rval = -1;
+	}
     }
 
   if (sio->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
@@ -525,14 +540,15 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	    has_picture = 0;
 
 	
-	//if (sio->fcntrl[a].extent=='1') {A4GL_pause_execution();}
 
 	  if (sio->fcntrl[a].extent >= 0 && sio->fcntrl[a].extent <= 255
 	      &&
 	      ((a_isprint (sio->fcntrl[a].extent) || sio->fcntrl[a].extent == 1
 		|| sio->fcntrl[a].extent == 4)))
 	    {
-	      if ((fprop->flags & 1) == 0 && !has_picture)
+	      A4GL_debug("fprop->flags=%d curcol=%d\n",fprop->flags, A4GL_get_curr_field_col(sio->currform->form));
+
+	      if (A4GL_get_curr_field_col(sio->currform->form)== 0 && !has_picture)
 		{
 		  switch (sio->vars[sio->curr_attrib].dtype & DTYPE_MASK)
 		    {
@@ -550,7 +566,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		    }
 		}
 	      A4GL_debug ("SETTING FLAGS ");
-	      fprop->flags |= 2;	// Set the field status flag
+
+	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
 
 
 
@@ -561,7 +578,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		  FORM *mform;
 		  mform = sio->currform->form;
 		  	A4GL_debug("curcol");
-		  i = mform->curcol;
+		  	i = A4GL_get_curr_field_col(mform);
 		  	A4GL_debug("curcol");
 		  ok = 1;
 		  key = sio->fcntrl[a].extent;
@@ -609,11 +626,11 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			A4GL_debug("Here...\n");
 			mform=sio->currform->form;
 			strcpy(fb, field_buffer(sio->currentfield,0));
-		        A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
-			last_place=mform->curcol;
+		        //A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+			last_place=A4GL_get_curr_field_col(sio->currform->form);
 		        A4GL_int_form_driver (sio->currform->form, sio->fcntrl[a].extent);
-		        A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
-			this_place=mform->curcol;
+		        //A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
+			this_place=A4GL_get_curr_field_col(sio->currform->form);
 
 			if (strcmp(fb, field_buffer(sio->currentfield,0))==0) { // its the same !
 				A4GL_debug("No difference : %s %s\n", fb, field_buffer(sio->currentfield,0));
@@ -635,16 +652,20 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		{
 		  FORM *mform;
 		  mform = sio->currform->form;
+		int n;
+			n=A4GL_get_curr_field_col(mform);
 		  	A4GL_debug("curcol");
-		  if (a_strchr ("A#X", picture[mform->curcol]) == 0
-		      && picture[mform->curcol])
+		  if (a_strchr ("A#X", picture[n]) == 0 && picture[n])
 		    do_key_move_fc ('R', sio, sio->fcntrl[a].extent, has_picture, picture);
 		}
 
 	    }
-	  A4GL_debug("Clr because of %d", sio->fcntrl[a].extent);
-		if (fprop->flags&2 ||  sio->fcntrl[a].extent==A4GLKEY_RIGHT) { // has it changed ? 
-	  		fprop->flags |= 1;	// Clear the before field flag
+	  	A4GL_debug("Clr because of %d", sio->fcntrl[a].extent);
+
+
+		if (fprop->flags&FLAG_FIELD_TOUCHED ||  sio->fcntrl[a].extent==A4GLKEY_RIGHT) { 
+								// has it changed ? 
+	  		fprop->flags |= FLAG_BEFORE_FIELD;	// Clear the before field flag
 		}
 	  rval = -1;
 	}
@@ -666,7 +687,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		  FORM *curses_form;
 		  curses_form = sio->currform->form;
 
-		  if (current_field (curses_form) != sio->currentfield || curses_form->curcol==0)
+		  if (current_field (curses_form) != sio->currentfield || A4GL_get_curr_field_col(curses_form)==0)
 		    {
 	  		if (A4GL_get_dbscr_inputmode() == 0 && A4GL_curr_metric_is_used_last_s_screenio (sio, sio->currentfield)) {
 	      			A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_OK, 0, 0, 0,__LINE__);
@@ -720,10 +741,10 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 				strcpy(m_delims,form->fileform->delim);
 		  		A4GL_debug("curcol");
 
-				lm=mform->curcol;
+				lm=A4GL_get_curr_field_col(mform);
                                	set_field_buffer (sio->currentfield,0,rbuff); 
-  				A4GL_int_form_driver (mform, REQ_VALIDATION);
-				while (mform->curcol<lm) {
+  				//A4GL_int_form_driver (mform, REQ_VALIDATION);
+				while (A4GL_get_curr_field_col(mform)<lm) {
   					A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
   					A4GL_int_form_driver (mform, REQ_VALIDATION);
 				}
@@ -929,7 +950,13 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  A4GL_comments (fprop);
 
 	  //if ((fprop->flags & 1)) {
-	    	fprop->flags = 0;	// Clear a flag to indicate that we're just starting on this field
+  	  A4GL_debug("Clear field touched");
+
+	  if (fprop->flags &FLAG_FIELD_TOUCHED) {
+	    	fprop->flags = FLAG_FIELD_TOUCHED;	// Clear a flag to indicate that we're just starting on this field
+	  } else {
+	   	fprop->flags = 0;	// Clear a flag to indicate that we're just starting on this field
+	  }
 	  //}
 	  new_state = 0;
 	  A4GL_debug ("Setting rval to -1");
@@ -1069,6 +1096,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			// 
                         A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
  			A4GL_comments (fprop);
+			fprop->flags=0;
                         if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
                                         A4GL_clr_field (sio->currform->currentfield);
                         } else {
@@ -1442,13 +1470,14 @@ do_key_move_fc (char lr, struct s_screenio *s, int some_a, int has_picture,
   f = s->currentfield;
 
 		  	A4GL_debug("curcol");
-  if (mform->curcol == 0)
+  if (A4GL_get_curr_field_col(mform)== 0)
     {
       at_first = 1;
     }
 
 		  	A4GL_debug("curcol");
   if (mform->curcol == A4GL_get_field_width (current_field (mform)) - 1 )
+
     {
       at_last = 1;
       A4GL_debug ("AT LAST..... XYXYXY");
@@ -1498,7 +1527,7 @@ do_key_move_fc (char lr, struct s_screenio *s, int some_a, int has_picture,
       int newpos;
       FORM *mform;
       mform = s->currform->form;
-      newpos = mform->curcol;
+      newpos = A4GL_get_curr_field_col(mform);
 		  	A4GL_debug("curcol");
       if (a_strchr ("A#X", picture[newpos]))
 	return;
@@ -1528,13 +1557,13 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   int at_last = 0;
 
   A4GL_debug ("curcol");
-  if (mform->curcol == 0)
+  if (A4GL_get_curr_field_col(mform) == 0)
     {
       at_first = 1;
     }
 
   A4GL_debug ("curcol");
-  if (mform->curcol == A4GL_get_field_width (current_field (mform)) - 1)
+  if (A4GL_get_curr_field_col(mform) == A4GL_get_field_width (current_field (mform)) - 1)
     {
       A4GL_debug ("AT LAST");
       at_last = 1;
@@ -1627,7 +1656,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
-	      fprop->flags |= 2;	// Set the field status flag
+	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
 	}
       else
 	{			// Just like A4GLKEY_LEFT.....
@@ -1639,7 +1668,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_DEL_CHAR);
-	      fprop->flags |= 2;	// Set the field status flag
+	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
 	}
       else
 	{
@@ -1653,7 +1682,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 		//int curPos;
 		int r;
 	  	cHeight = mform->currow;
-		r=mform->curcol;
+		r=A4GL_get_curr_field_col(mform);
 	      	if (cHeight >0) {
 		  	A4GL_int_form_driver (mform, REQ_PREV_LINE);
 			while (mform->curcol< r) {
@@ -1683,9 +1712,9 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	  int r;
 	  int cnt;
 	  int cHeight;
-	  //A4GL_pause_execution();
 	  w = A4GL_get_field_width_w (f, 0);
-	  r = mform->curcol + 1;
+	
+	  r = A4GL_get_curr_field_col(mform) + 1;
 	  while (r % 8 != 0)
 	    r++;
 	  cHeight = mform->currow;
@@ -1703,7 +1732,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 		  if (A4GL_isyes (acl_getenv ("WAITENDOFWORDWRAP")))
 		    {
 		      r = w - 1;
-		      for (cnt = mform->curcol; cnt < r; cnt++)
+		      for (cnt = A4GL_get_curr_field_col(mform); cnt < r; cnt++)
 			{
 			  do_key_move_fc ('R', s, a, has_picture, picture);
 			}
@@ -1726,7 +1755,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	    }
 	  else
 	    {
-	      for (cnt = mform->curcol; cnt < r; cnt++)
+	      for (cnt = A4GL_get_curr_field_col(mform); cnt < r; cnt++)
 		{
 		  do_key_move_fc ('R', s, a, has_picture, picture);
 		}
@@ -1769,12 +1798,12 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 		int cHeight;	
 		int r;
 	  	cHeight = mform->currow;
-	  	r = mform->curcol ;
+	  	r = A4GL_get_curr_field_col(mform) ;
 	        fieldHeight = A4GL_get_field_height (f);
 	        A4GL_debug ("fieldHeight=%d cHeight=%d", fieldHeight, cHeight);
 	        if (cHeight + 1 < fieldHeight) {
 		  	A4GL_int_form_driver (mform, REQ_NEXT_LINE);
-			while (mform->curcol< r) {
+			while (A4GL_get_curr_field_col(mform)< r) {
 		  		A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
 			}
 			break;
@@ -1813,7 +1842,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_CLR_EOF);
-	      fprop->flags |= 2;	// Set the field status flag
+	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
 	}
       else
 	{
@@ -1945,8 +1974,7 @@ strcpy(newfieldval,"");
         A4GL_int_form_driver(f,REQ_OVL_MODE);
 
         if (initpos>=1) {
-        	A4GL_int_form_driver(f,REQ_VALIDATION);
-		while (f->curcol<initpos) {
+		while (A4GL_get_curr_field_col(f)<initpos) {
         		A4GL_int_form_driver(f,REQ_NEXT_CHAR);
         		A4GL_int_form_driver(f,REQ_VALIDATION);
 		}
@@ -2000,8 +2028,8 @@ strcpy(newfieldval,"");
                         case '\t': looping=0; break;
 
                         case A4GLKEY_LEFT:
-		  	A4GL_debug("curcol");
-                                if (f->curcol==0)  {looping=0;break;}
+		  		A4GL_debug("curcol");
+                                if (A4GL_get_curr_field_col(f)==0)  {looping=0;break;}
                                 A4GL_int_form_driver (f, REQ_PREV_CHAR);
                                 break;
 
@@ -2163,4 +2191,10 @@ if (input_required_type==REQUIRED_TYPE_UNSET) {
 }
 
 return input_required_type;
+}
+
+
+int A4GL_get_curr_field_col(FORM *mform) {
+	form_driver (mform, REQ_VALIDATION);
+	return mform->curcol;
 }

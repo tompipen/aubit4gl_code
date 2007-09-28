@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.132 2007-08-15 18:52:39 mikeaubury Exp $
+# $Id: iarray.c,v 1.133 2007-09-28 07:57:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.132 2007-08-15 18:52:39 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.133 2007-09-28 07:57:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -873,7 +873,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
       A4GL_int_form_driver (mform, REQ_DEL_PREV);
-		  fprop->flags |= 2;	// Set the field status flag
+		  fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
       break;
 
     case 18:
@@ -885,7 +885,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
         A4GL_int_form_driver (mform, REQ_DEL_CHAR);
-		  fprop->flags |= 2;	// Set the field status flag
+		  fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
       	break;
 
     case 4:			// Control - D
@@ -893,7 +893,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
       A4GL_int_form_driver (mform, REQ_CLR_EOF);
-		  fprop->flags |= 2;	// Set the field status flag
+		  fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
       break;
 
     case 1:			// Control - A
@@ -2507,7 +2507,7 @@ if (arr->fcntrl[a].state==99) {
 		{
 		A4GL_debug("Extent check1 %d for currentfield=%p zz9pa",fprop->flags,arr->currentfield);
 
-		  if ((fprop->flags & 1) == 0)
+		  if ((fprop->flags & FLAG_BEFORE_FIELD) == 0)
 		    {
 			int attrib;
 		A4GL_debug("Extent check2");
@@ -2530,7 +2530,7 @@ if (arr->fcntrl[a].state==99) {
 			}
 		    }
 		  A4GL_debug ("SETTING FLAGS IA for currentfield=%p zz9pa",arr->currentfield);
-		  fprop->flags |= 2;	// Set the field status flag
+		  fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
 		}
 
 
@@ -2600,7 +2600,7 @@ if (arr->fcntrl[a].state==99) {
 		
 	      if (a_isprint(arr->fcntrl[a].extent) && arr->fcntrl[a].extent!='\n'&&arr->fcntrl[a].extent!='\t') {
 	      A4GL_debug ("Setting BF flag for current field %p zz9pa ok=%d",arr->currentfield,ok);
-	      fprop->flags |= 1;	// Clear the before field flag
+	      fprop->flags |= FLAG_BEFORE_FIELD;	// Clear the before field flag
 		}
 	    }
 	  rval = -1;
@@ -2819,8 +2819,8 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 		      arr->scr_line - 1, arr->curr_attrib,arr->currentfield);
 
 	
-	  if ((fprop->flags & 1))
-	    fprop->flags -= 1;
+	  if ((fprop->flags & FLAG_BEFORE_FIELD))
+	    fprop->flags -= FLAG_BEFORE_FIELD;
 
 	  new_state = 0;
 	}
@@ -2911,7 +2911,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 	      strcpy (buff, "");
 	    }
 
-if (fprop->flags) {
+if (fprop->flags & FLAG_FIELD_TOUCHED) {
 
 
 	  A4GL_trim (buff);
@@ -3464,7 +3464,7 @@ if (ln<0) return 1;
 	  int chged = 0;
 	  // Has the field changed ? 
 	  // Are we on a new line ? 
-	  if ((fprop->flags & 2)) //|| s->curr_line_is_new)
+	  if ((fprop->flags & FLAG_FIELD_TOUCHED)) //|| s->curr_line_is_new)
 	    {
 	      chged++;
 	    }

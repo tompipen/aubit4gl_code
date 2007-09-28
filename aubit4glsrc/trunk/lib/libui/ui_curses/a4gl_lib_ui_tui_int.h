@@ -58,6 +58,9 @@ typedef struct
 }
 textarea;
 
+#define FLAG_BEFORE_FIELD 1
+#define FLAG_FIELD_TOUCHED 2
+
 
 //void *A4GL_memdup (void *ptr, int size);
 int A4GL_form_field_chk (struct s_screenio *sio, int m);
