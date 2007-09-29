@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.61 2007-05-19 08:28:50 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.62 2007-09-29 18:25:17 mikeaubury Exp $
 #
 */
 
@@ -373,7 +373,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
 	#ifdef HAVE_INT64_TIMESTAMP
-		#error INT64 timestamp not implemented
+		A4GL_assertion(1,"POSTGRESQL INT64 timestamp not implemented");
 	#endif
 
 	if (*infx==0) indicat=-1;
