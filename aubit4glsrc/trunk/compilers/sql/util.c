@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.61 2007-07-26 12:04:26 mikeaubury Exp $
+# $Id: util.c,v 1.62 2007-10-03 20:23:52 mikeaubury Exp $
 #
 */
 
@@ -1346,10 +1346,12 @@ void map_create_temp(char *tab, char *src) {
 }
 
 int set_ignore_indicators(void) {
+	return 0;
 	// required ...
 }
 
 int clr_ignore_indicators(void) {
+	return 0;
 	// required ...
 }
 /* ====================================== EOF ============================ */

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
+#include "alias.h"
 //#include "sqlcompiler.h"
 
 #define SQL_SET_EXPLAIN_OFF 1

@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.5 2007-06-19 07:54:04 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2007-10-03 20:23:52 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -16,10 +16,10 @@ include ${ROOT}/incl/Makefile-common
 #YACC=no
 
 ifeq "${LEX}" "no"
-	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c
+	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/sql/lex.yy.c
 	CFLAGS+=-DLEX_YY_PREGEN=1
 else
-	LEX_YY_C	=lex.sqlparse_yy.c
+	LEX_YY_C	=lex.yy.c
 endif
 
 ifeq "${YACC}" "no"
@@ -93,7 +93,8 @@ endif
 
 ${LEX_YY_C}: m2.lex
 ifneq "${LEX}" "no"
-	${LEX} -Psqlparse_yy -i $<
+	${LEX} -i $<
+	cp lex.yy.c lex.sqlparse.yy.c
 else
 	@echo "No lex (${LEX}) Using ${LEX_YY_C}"
 endif
@@ -107,7 +108,7 @@ y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h ../4glc/fix_insert.c
 
 clean:
 	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ sql.yacc \
-	y.tab.h y.tab.c y.output m2.lex lex.yy.c lex.sqlparse_yy.c
+	y.tab.h y.tab.c y.output m2.lex lex.yy.c lex.yy.c 
 
 
 
