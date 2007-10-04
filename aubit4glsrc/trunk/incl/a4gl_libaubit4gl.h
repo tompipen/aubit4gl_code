@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.288 2007-10-04 17:20:28 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.289 2007-10-04 19:26:12 mikeaubury Exp $
 #
 */
 
@@ -1630,7 +1630,7 @@ short a4gl_ntohs(long x);
   /* ============================ rexp2.c ================================= */
   void A4GL_stripnl (char *buff);
   int A4GL_mja_match (char *str1, char *str2, int likeormatch);
-  char *A4GL_construct (char *tabname,char *colname, char *val, int inc_quotes);
+  char *A4GL_construct (char *tabname,char *colname, char *val, int inc_quotes,int dtype,int dtype_size);
 
   /* =========================== stack.c ================================ */
 

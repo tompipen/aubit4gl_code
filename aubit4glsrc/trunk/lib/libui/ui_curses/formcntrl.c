@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.121 2007-10-04 17:20:31 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.122 2007-10-04 19:26:13 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.121 2007-10-04 17:20:31 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.122 2007-10-04 19:26:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1924,22 +1924,24 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
 
 int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos, struct struct_scr_field *fprop,char *newfieldval) {
-        static char rbuff[1024];
-        FIELD *buff[4];
-        WINDOW *cwin;
-        WINDOW *drwin=0;
-        FORM *f;
-        int ins_ovl='o';
-        int looping=1;
-        int fl=0; // comment line...
-        int fwidth;
-        int a;
+char rbuff[1024];
+FIELD *buff[4];
+WINDOW *cwin;
+WINDOW *drwin=0;
+FORM *f;
+int ins_ovl='o';
+int looping=1;
+int fl=0; // comment line...
+int fwidth;
+int a;
 char m_d1[2];
 char m_d2[2];
 int x=0;
-        A4GL_debug("In construct_large orig=%s init_key=%d initpos=%d construct_not_added=%d", orig,init_key,initpos, construct_not_added);
 
-        strcpy(rbuff,orig);
+A4GL_debug("In construct_large orig=%s init_key=%d initpos=%d construct_not_added=%d", orig,init_key,initpos, construct_not_added);
+
+strcpy(rbuff,orig);
+
 if (m_delims[0]==' ')  {
         m_delims[1]=' ';
         m_delims[2]=' ';
@@ -1954,6 +1956,7 @@ strcpy(newfieldval,"");
         fwidth=UILIB_A4GL_get_curr_width ();
         if (fwidth>80) fwidth=80;
         cwin = (WINDOW *) A4GL_get_currwin ();
+
 
 
 
@@ -2012,6 +2015,16 @@ strcpy(newfieldval,"");
 		}
 	}
 	A4GL_debug("rbuff=%s\n",rbuff);
+
+//ftest=fopen("/tmp/log","a"); fprintf(ftest,"2. %s\n",rbuff); fclose(ftest);
+/*
+	{
+	FILE *f;
+		f=fopen("/tmp/log","a");
+		fprintf(f,"1.%s\n",rbuff);
+		fclose(f);
+	}
+*/
         set_field_buffer(buff[1],0,rbuff);
 
 
@@ -2055,6 +2068,9 @@ strcpy(newfieldval,"");
 
                 switch (a) {
 
+                        case 4:
+				A4GL_int_form_driver(f,REQ_CLR_EOF);
+				break;
                         case 1:
                                 if (ins_ovl=='o') {
                                         ins_ovl='i';
@@ -2063,7 +2079,7 @@ strcpy(newfieldval,"");
                                         ins_ovl='o';
                                         A4GL_int_form_driver(f,REQ_OVL_MODE);
                                 }
-
+				break;
                         case 27:
                         case A4GLKEY_ACCEPT:
                         case A4GLKEY_DOWN:

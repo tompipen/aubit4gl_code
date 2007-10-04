@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.42 2007-10-04 17:20:30 mikeaubury Exp $
+# $Id: rexp2.c,v 1.43 2007-10-04 19:26:13 mikeaubury Exp $
 #
 */
 
@@ -215,7 +215,7 @@ A4GL_escape_single (char *s)
  * @return
  */
 char *
-A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
+A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dtype, int dtype_size)
 {
   char *ptr2;
   int a;
@@ -235,7 +235,40 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
   char *ptr;
 
   if (inc_quotes==3 || inc_quotes==4) {
-		allow_range_character=0;
+		if (dtype==DTYPE_DTIME) { 
+			char *p;
+			int a;
+			// DATETIME RANGE KLUDGE
+			// one problem we have is if we have a datetime - and a range
+			//
+			// Lets figure out how long out datetime should be
+			// Quick and dirty way is to measure the length of
+			// a 'CURRENT' with the same dimensions...
+			A4GL_push_current(dtype_size>>4, dtype_size&0xf);
+			p=A4GL_char_pop(); 
+	
+			if (strchr(p,':')) {	
+				// Darn - it contains a ':' - so we cant use this as a range character
+				allow_range_character=0;
+			} else {
+				allow_range_character=1;
+			}
+			a=strlen(p);
+			free(p);
+			if (strlen(val)>a && !A4GL_is_construct_op (val, 0)) {
+				if (val[a]==':') {
+					static char buffx[2000]; // Static so we can keep a reference to it..
+					// Those fools have specified a range..
+					// Lets convert it from a 'VAL1:VAL2' style range
+					// to a 'VAL1..VAL2' style range
+					strcpy(buffx,val);
+					buffx[a]=0;
+					strcat(buffx,"..");
+					strcat(buffx,&val[a+1]);
+					val=buffx;
+				}
+			}
+		}
   } else {
 		allow_range_character=1;
   }
@@ -453,10 +486,20 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 	      int n;
 		int parts[10];
 		char buff[2000];
-		if (!A4GL_valid_dt(constr_bits[zz], parts,0)) {
-		  	A4GL_debug ("CDATETIME Returns false for %s or its null",
-			      constr_bits[zz]);
+		struct A4GLSQL_dtime d;
+		if (!A4GL_valid_dt(constr_bits[zz], parts,dtype_size)) {
+			
+		  		A4GL_debug ("CDATETIME Returns false for %s or its null", constr_bits[zz]);
 		  return 0;
+		}
+		n=A4GL_ctodt(constr_bits[zz],&d,dtype_size);
+		if (n==0) {
+			return 0;
+		}
+		A4GL_dttoc(&d,buff,40);
+		if (strlen(buff)!=strlen(constr_bits[zz])) {
+			// Too long or too short
+			return 0;
 		}
 
 	    }
