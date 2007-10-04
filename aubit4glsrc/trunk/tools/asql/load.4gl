@@ -79,7 +79,8 @@ int hasrows;
 	display_mode_unload(1);
 	if (execute_select_prepare(errat,0,&hasrows)) {
 		while (get_sqlcode()==0) {
-			b=execute_sql_fetch(&raffected);
+			int errat;
+			b=execute_sql_fetch(&raffected,&errat);
 			if (b!=0) break;
 		}
 		if (get_sqlcode()!=100)  raffected=-1;
