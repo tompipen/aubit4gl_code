@@ -907,6 +907,12 @@ SAVE_COMMENTS COMPILE Filename to save comments to
 	to. These comments can then be more easily analysed.
 AUBITPLUGINDIR COMPILE/RUNTIME Specifies the directory where plugins reside
 	This is typically $AUBITDIR/plugins-version
+CLRFIELDSTATUS TUI Clear 'field touched' after the BEFORE INPUT
+=YES|NO
+	In certain versions of Informix4GL it appears that field status flags are
+	cleared *AFTER* a BEFORE INPUT/BEFORE CONSTRUCT. This means that any DISPLAYs
+	done during the BEFORE INPUT or BEFORE CONSTRUCT do not set the field_touched
+	flags for the fields. Setting this flag emulates this behaviour..
 A4GL_FRM_BASE_LIST RUNTIME Specify a list of extensions which may be used for a formname
 	If set - this is a colon separated list of file extensions which may be used when opening 
 	form files. If not set, then the standard FRM_BASE_EXT will be used

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.119 2007-09-28 07:57:36 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.120 2007-10-04 07:28:18 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.119 2007-09-28 07:57:36 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.120 2007-10-04 07:28:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -387,12 +387,14 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	if (sio->fcntrl[a].state == 50) {
 		int c;
+		if (A4GL_isyes(acl_getenv("CLRFIELDSTATUS"))) {
 		for (c=0;c<=sio->nfields;c++) {
 			FIELD *p;
 	  		struct struct_scr_field *fprop;
 			p=sio->field_list[c];
 	  		fprop = (struct struct_scr_field *) (field_userptr (p));
 			fprop->flags=0;
+		}
 		}
       		new_state = 0;
 		rval = -1;
