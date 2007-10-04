@@ -797,7 +797,7 @@ if (init) {
 	uilib_set_field_list_directly((char *)sreal->field_list);
 
 
-	if (sreal->mode & 3) {
+	if (sreal->mode==MODE_CONSTRUCT) {
 		int a;
 		int cno;
 		cno=3; // number of things pushed..
