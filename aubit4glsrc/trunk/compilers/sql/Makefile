@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.6 2007-10-03 20:23:52 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2007-10-04 07:27:13 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -94,7 +94,7 @@ endif
 ${LEX_YY_C}: m2.lex
 ifneq "${LEX}" "no"
 	${LEX} -i $<
-	cp lex.yy.c lex.sqlparse.yy.c
+	cp lex.yy.c lex.sqlparse_yy.c
 else
 	@echo "No lex (${LEX}) Using ${LEX_YY_C}"
 endif
