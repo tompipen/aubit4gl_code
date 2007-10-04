@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.41 2007-04-02 07:26:14 mikeaubury Exp $
+# $Id: rexp2.c,v 1.42 2007-10-04 17:20:30 mikeaubury Exp $
 #
 */
 
@@ -105,6 +105,12 @@ static char *constr_bits[256];
 int mja_matchcmp (char *a, char *s_match);
 static int A4GL_is_construct_op (char *str, int i);
 static void convert_constr_buffer (char *str);
+
+
+// The 'range' character is the ':' - but this is valid for 
+// a datetime (hour/minute minute/second separator)
+// So - this flag is set when we're in a DATETIME field which has hours->minutes or minutes->seconds
+int allow_range_character=1; 
 
 /*
 =====================================================================
@@ -227,6 +233,13 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
   int ismatch;
   char colname[256];
   char *ptr;
+
+  if (inc_quotes==3 || inc_quotes==4) {
+		allow_range_character=0;
+  } else {
+		allow_range_character=1;
+  }
+
   for (a=0;a<100;a++) {strcpy(using_dates[a],"");}
 
   if (tabname == 0)
@@ -252,8 +265,10 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 		inc_quotes);
   }
 #endif
-  if (strcmp (val, "") == 0)
+  if (strcmp (val, "") == 0) {
+	A4GL_debug("Returning %s", buff3);
     return buff3;
+  }
 
   constr_size = 0;
   constr_bits[constr_size++] = buffer;
@@ -393,15 +408,14 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 
   if (inc_quotes == 2)		/* Its a date */
     {
+	//A4GL_pause_execution();
       A4GL_debug ("constr_size = %d\n", constr_size);
       for (zz = 0; zz < constr_size; zz++)
 	{
-	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0
-	      || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
+	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
 	    {
 	      int n;
-	      if (A4GL_stod (constr_bits[zz], &n, 0)
-		  && !A4GL_isnull (DTYPE_DATE, (void *) &n))
+	      if (A4GL_stod (constr_bits[zz], &n, 0) && !A4GL_isnull (DTYPE_DATE, (void *) &n))
 		{
 		char *p;
 			int b;
@@ -419,16 +433,56 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 		}
 	      else
 		{
-		  return 0;
 		  A4GL_debug ("CDATE Returns false for %s or its null",
 			      constr_bits[zz]);
+		  return 0;
 		}
 
 	    }
 	}
     }
 
+  if (inc_quotes == 3)		/* Its a datetime */
+    {
+		
+      A4GL_debug ("constr_size = %d\n", constr_size);
+      for (zz = 0; zz < constr_size; zz++)
+	{
+	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
+	    {
+	      int n;
+		int parts[10];
+		char buff[2000];
+		if (!A4GL_valid_dt(constr_bits[zz], parts,0)) {
+		  	A4GL_debug ("CDATETIME Returns false for %s or its null",
+			      constr_bits[zz]);
+		  return 0;
+		}
 
+	    }
+	}
+    }
+
+  if (inc_quotes == 4)		/* Its an interval */
+    {
+      A4GL_debug ("constr_size = %d\n", constr_size);
+      for (zz = 0; zz < constr_size; zz++)
+	{
+	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
+	    {
+	      int n;
+		int parts[10];
+		char buff[2000];
+		if (!A4GL_valid_int(constr_bits[zz], parts,0)) {
+		  	A4GL_debug ("CINTERVAL Returns false for %s or its null",
+			      constr_bits[zz]);
+		  return 0;
+		}
+
+	    }
+	}
+	
+    }
 
   strcpy (buff2, "");
   z = A4GL_is_construct_op (constr_bits[0], 0);
@@ -462,6 +516,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes)
 		  ptr = A4GL_escape_single (constr_bits[0]);
 		  SPRINTF3 (ptr2, "%s%s%s", quote, ptr, quote);
 		  sprintf(ptr3, "%s %s", colname, A4GLSQLCV_matches_string ("", ptr2, "\"\\\""));
+			A4GL_debug("Returning %s", ptr3);
 		  return ptr3;
 		}
 	    }
@@ -684,7 +739,7 @@ A4GL_is_construct_op (char *str, int i)
     return GTHN;
   if (str[i] == '|')
     return OR;
-  if (str[i] == ':')
+  if (str[i] == ':' && allow_range_character)
     return RANGE;
   if (str[i] == '.' && str[i + 1] == '.')
     return RANGE_DOT_DOT;

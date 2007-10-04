@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.178 2007-09-28 07:57:36 mikeaubury Exp $
+# $Id: ioform.c,v 1.179 2007-10-04 17:20:32 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.178 2007-09-28 07:57:36 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.179 2007-10-04 17:20:32 mikeaubury Exp $";
 #endif
 
 /**
@@ -507,7 +507,7 @@ A4GL_default_attributes (FIELD * f, int dtype)
 
       A4GL_debug ("MMMM DTYPE & 255 = %d", dtype);
 
-      if ((dtype & 255) == 0)
+      if ((dtype & 255) == DTYPE_CHAR || (dtype & 255) == DTYPE_VCHAR)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
@@ -517,8 +517,11 @@ A4GL_default_attributes (FIELD * f, int dtype)
 	{
 	  A4GL_debug ("ZZZZ - SET OPTS");
 	  A4GL_debug ("BLANK BLANK");
-	  local_set_field_opts (f,
-			  O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_BLANK);
+		if (A4GL_isyes(acl_getenv("USEOBLANK"))) {
+	  		local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_BLANK);
+		} else {
+	  		local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT );
+		}
 	}
     }
 
@@ -1092,12 +1095,17 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 			  if (A4GL_isyes
 			      (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
 			    {
+				                                        A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                                        A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+
 			      A4GL_clr_field (f);
 			    }
 			  else
 			    {
 			      if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
 				{
+	                          A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
 				  A4GL_int_form_driver (form->form, REQ_BEG_FIELD);
 				}
 
@@ -1150,6 +1158,9 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 		       fprop->datatype) == 0)
 		    {
 		      A4GL_debug ("Not in include list");
+	                          A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+				  A4GL_int_form_driver (form->form, REQ_BEG_FIELD);
 		      A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 		      //set_current_field (mform, form->currentfield);
 		      return -4;
@@ -1331,9 +1342,11 @@ A4GL_turn_field_on (FIELD * f)
   a = local_field_opts_on (f, O_ACTIVE);
   A4GL_debug ("a=%d", a);
   a = local_field_opts_on (f, O_EDIT);
-  if ((fprop->datatype & 255) != 0)
+  if ((fprop->datatype & 255) != DTYPE_CHAR && (fprop->datatype & 255) != DTYPE_VCHAR)
     {
-      local_field_opts_on (f, O_BLANK);
+	if (A4GL_isyes(acl_getenv("USEOBLANK"))) {
+      		local_field_opts_on (f, O_BLANK);
+	}
     }
   A4GL_debug ("a=%d", a);
   A4GL_set_field_attr (f);
@@ -1357,9 +1370,11 @@ A4GL_turn_field_on2 (FIELD * f, int a)
   A4GL_debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
   local_field_opts_on (f, O_ACTIVE);
   local_field_opts_on (f, O_EDIT);
-  if ((fprop->datatype & 255) != 0)
+  if ((fprop->datatype & 255) != DTYPE_CHAR && (fprop->datatype & 255) != DTYPE_VCHAR)
     {
-      local_field_opts_on (f, O_BLANK);
+	if (A4GL_isyes(acl_getenv("USEOBLANK"))) {
+      		local_field_opts_on (f, O_BLANK);
+	}
     }
 
   A4GL_set_field_attr (f);
@@ -1710,7 +1725,7 @@ int changed=0;
 	A4GL_set_field_attr_with_attr (field_list[a], attr, FGL_CMD_INPUT);
 
       set_field_status (field_list[a], 0);
-      prop->flags = 0;
+	A4GL_fprop_flag_clear(field_list[a],0xff); // ALL
     }
 
   if (firstfield)
@@ -1897,7 +1912,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 
 	A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
       fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
-      fprop->flags |= FLAG_FIELD_TOUCHED;
+	A4GL_fprop_flag_set(field_list[a],FLAG_FIELD_TOUCHED); 
 
 
 
@@ -2236,6 +2251,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
   struct struct_scr_field *fprop;
   FORM *mform;
 
+  mform = sio->currform->form;
   A4GL_debug ("Do after field status=%d", field_status (f));
   A4GL_debug ("do after field buffer set to '%s'", field_buffer (f, 0));
 
@@ -2266,7 +2282,6 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
       if (sio->currform->currentfield)
 	{
 	  A4GL_debug ("Got current field %p\n", sio->currform->currentfield);
-	  mform = sio->currform->form;
 	  fprop = (struct struct_scr_field *) (field_userptr (f));
 	  A4GL_debug ("Got form %p", sio->currform->form);
 	  if (A4GL_check_field_for_include
@@ -2275,6 +2290,9 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	       fprop->datatype) == 0)
 	    {
 	      A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+	                          A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+				  A4GL_int_form_driver (mform, REQ_BEG_FIELD);
 	      set_current_field (mform, sio->currform->currentfield);
 	    }
 	}
@@ -2305,6 +2323,10 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	      if (ptr == 0)
 		{
 		  A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
+		                                  A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+                                  A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+
 		  return 0;
 		}
 	    }
@@ -3831,10 +3853,9 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 	      if (f == s->field_list[0][b])
 		{
 		  // Found @ position b....
-		  fprop =
-		    (struct struct_scr_field
-		     *) (field_userptr (s->field_list[s->scr_line - 1][b]));
-		  if (fprop->flags & FLAG_FIELD_TOUCHED)
+		  fprop = (struct struct_scr_field *) (field_userptr (s->field_list[s->scr_line - 1][b]));
+
+		  if (A4GL_fprop_flag_get(s->field_list[s->scr_line - 1][b],  FLAG_FIELD_TOUCHED)) 
 		    {
 		      A4GL_debug
 			("fieldtouched Field status is set for %p - %d line %d - b=%d",
@@ -3928,7 +3949,7 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 	  A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
 	  fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
 
-	  if (fprop->flags & FLAG_FIELD_TOUCHED)
+	  if (A4GL_fprop_flag_get(field_list[a],  FLAG_FIELD_TOUCHED))
 	    {
 	      A4GL_debug ("fieldtouched Field status is set for %p",
 			  field_list[a]);
@@ -4061,7 +4082,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			int chged=0;
 			// Has the field changed ? 
 			// Are we on a new line ? 
-			if ((fprop->flags&FLAG_FIELD_TOUCHED) || sio->curr_line_is_new) {
+			if ((A4GL_fprop_flag_get(form->currentfield, FLAG_FIELD_TOUCHED)) || sio->curr_line_is_new) {
 					chged++;
 			}
 
@@ -4126,6 +4147,9 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 				  ("X2222 Check for include has null...");
 				A4GL_error_nobox (acl_getenv
 						  ("FIELD_INCL_MSG"), 0);
+	                          A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+				  A4GL_int_form_driver (mform, REQ_BEG_FIELD);
 				return -4;
 			      }
 			  }
@@ -4223,6 +4247,9 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			      ("X2222 Check for include has null...");
 			    A4GL_error_nobox (acl_getenv
 					      ("FIELD_INCL_MSG"), 0);
+	                          A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+				  A4GL_int_form_driver (mform, REQ_BEG_FIELD);
 			    return -4;
 			  }
 		      }
@@ -4239,6 +4266,9 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			 fprop->datatype) == 0)
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+	                          A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+				  A4GL_int_form_driver (mform, REQ_BEG_FIELD);
 			set_current_field (mform, form->currentfield);
 			return -4;
 		      }
@@ -4458,8 +4488,8 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 static int get_inc_quotes(int a) {
      if ((a & DTYPE_MASK ) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR) return 1;
 	if ((a & DTYPE_MASK) == DTYPE_DATE) return 2;
-	if ((a & DTYPE_MASK) == DTYPE_DTIME) return 2;
-	if ((a & DTYPE_MASK) == DTYPE_INTERVAL) return 2;
+	if ((a & DTYPE_MASK) == DTYPE_DTIME) return 3;
+	if ((a & DTYPE_MASK) == DTYPE_INTERVAL) return 4;
 	return 0;
 }
 

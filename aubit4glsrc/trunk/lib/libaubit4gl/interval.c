@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.23 2007-05-06 10:48:36 mikeaubury Exp $
+# $Id: interval.c,v 1.24 2007-10-04 17:20:30 mikeaubury Exp $
 #
 */
 
@@ -288,19 +288,6 @@ int isneg_r;
 
   A4GL_debug ("Converting intervals to strings...");
 
-
-  /*
-     inttoc(a, &a_str, mk_int_size(a->stime,a->ltime));
-     A4GL_debug("Converted first...");
-     A4GL_debug("a=%p b=%p\n",a,b);
-     inttoc(b, &b_str, mk_int_size(b->stime,b->ltime));
-
-     A4GL_debug("Converted second...");
-     A4GL_debug("INtervals as strings = %s  & %s",a_str,b_str);
-
-     A4GL_valid_int (a_str, data_a,mk_int_size(a->stime,a->ltime));
-     A4GL_valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
-   */
 
   A4GL_decode_interval (a, data_a,&isneg_a);
   A4GL_decode_interval (b, data_b,&isneg_b);

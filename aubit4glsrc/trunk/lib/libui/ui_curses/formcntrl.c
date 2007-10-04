@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.120 2007-10-04 07:28:18 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.121 2007-10-04 17:20:31 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.120 2007-10-04 07:28:18 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.121 2007-10-04 17:20:31 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -222,6 +222,28 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
 }
 
 
+int A4GL_fprop_flag_get(FIELD *f, int flag) {
+	struct struct_scr_field *fprop;
+	fprop = (struct struct_scr_field *) (field_userptr (f));
+	if ( fprop->flags&flag) return 1;
+	return 0;
+}
+
+int A4GL_fprop_flag_set(FIELD *f,int flag) {
+	struct struct_scr_field *fprop;
+	fprop = (struct struct_scr_field *) (field_userptr (f));
+	fprop->flags|=flag;
+	return fprop->flags;
+}
+
+int A4GL_fprop_flag_clear(FIELD *f,int flag) {
+	struct struct_scr_field *fprop;
+	fprop = (struct struct_scr_field *) (field_userptr (f));
+	fprop->flags-=(fprop->flags&flag);
+	return fprop->flags;
+}
+
+
 /*
  *  Set up a record for a desired movement...
  */
@@ -390,10 +412,11 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		if (A4GL_isyes(acl_getenv("CLRFIELDSTATUS"))) {
 		for (c=0;c<=sio->nfields;c++) {
 			FIELD *p;
-	  		struct struct_scr_field *fprop;
+	  		struct struct_scr_field *fprop=0;
 			p=sio->field_list[c];
 	  		fprop = (struct struct_scr_field *) (field_userptr (p));
-			fprop->flags=0;
+			A4GL_debug("Flags=0");
+			A4GL_fprop_flag_clear(p,0xff); // ALL FLAGS
 		}
 		}
       		new_state = 0;
@@ -521,7 +544,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
       if (sio->fcntrl[a].state == 50)
 	{
-	  struct struct_scr_field *fprop;
+	  struct struct_scr_field *fprop=0;
 	
 	  int has_picture = 0;
 	  char *picture = 0;
@@ -548,11 +571,17 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	      ((a_isprint (sio->fcntrl[a].extent) || sio->fcntrl[a].extent == 1
 		|| sio->fcntrl[a].extent == 4)))
 	    {
-	      A4GL_debug("fprop->flags=%d curcol=%d\n",fprop->flags, A4GL_get_curr_field_col(sio->currform->form));
-
-	      if (A4GL_get_curr_field_col(sio->currform->form)== 0 && !has_picture)
+		int use_dtype;
+		if (sio->mode == MODE_CONSTRUCT) {
+			use_dtype=fprop->datatype & DTYPE_MASK;
+		} else {
+			use_dtype=sio->vars[sio->curr_attrib].dtype&DTYPE_MASK;
+		}
+	      A4GL_debug("fprop=%p fprop->Flags=%d curcol=%d\n",fprop, fprop->flags, A4GL_get_curr_field_col(sio->currform->form));
+		
+	      if (A4GL_get_curr_field_col(sio->currform->form)== 0 && !has_picture && !A4GL_fprop_flag_get(sio->currentfield, FLAG_MOVED_IN_FIELD))
 		{
-		  switch (sio->vars[sio->curr_attrib].dtype & DTYPE_MASK)
+		  switch (use_dtype)
 		    {
 		    case DTYPE_SMINT:
 		    case DTYPE_INT:
@@ -569,7 +598,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 	      A4GL_debug ("SETTING FLAGS ");
 
-	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
+			A4GL_debug("Flags|=FLAG_FIELD_TOUCHED fpropt=%p", fprop);
+		A4GL_fprop_flag_set(sio->currentfield, FLAG_FIELD_TOUCHED);
 
 
 
@@ -662,13 +692,18 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 
 	    }
-	  	A4GL_debug("Clr because of %d", sio->fcntrl[a].extent);
+	  	A4GL_debug("Clr because of %d Flag=%d", sio->fcntrl[a].extent, fprop->flags);
 
 
-		if (fprop->flags&FLAG_FIELD_TOUCHED ||  sio->fcntrl[a].extent==A4GLKEY_RIGHT) { 
-								// has it changed ? 
-	  		fprop->flags |= FLAG_BEFORE_FIELD;	// Clear the before field flag
+		//if (fprop->flags&FLAG_FIELD_TOUCHED ||  sio->fcntrl[a].extent==A4GLKEY_RIGHT) { 
+		
+		if ( A4GL_fprop_flag_get(sio->currentfield, FLAG_MOVING_TO_FIELD)) {
+			// This is the first bit - this key stroke has moved us to this field..
+			 A4GL_fprop_flag_clear(sio->currentfield, FLAG_MOVING_TO_FIELD);
+		} else {
+			 A4GL_fprop_flag_set(sio->currentfield, FLAG_MOVED_IN_FIELD);
 		}
+		
 	  rval = -1;
 	}
 
@@ -852,7 +887,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  A4GL_debug ("Processed after users 'BEFORE FIELD'");
 	  pos_form_cursor (sio->currform->form);
 	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	
+
+
 	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
 
 	  if (attr != 0) {
@@ -951,15 +987,13 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	  A4GL_comments (fprop);
 
-	  //if ((fprop->flags & 1)) {
   	  A4GL_debug("Clear field touched");
+	  A4GL_fprop_flag_clear(sio->currentfield, FLAG_MOVED_IN_FIELD);
+	  A4GL_fprop_flag_set(sio->currentfield, FLAG_MOVING_TO_FIELD);
+	  //fprop->flags-=(fprop->flags&FLAG_MOVED_IN_FIELD);
+	  //fprop->flags|=FLAG_MOVING_TO_FIELD;
 
-	  if (fprop->flags &FLAG_FIELD_TOUCHED) {
-	    	fprop->flags = FLAG_FIELD_TOUCHED;	// Clear a flag to indicate that we're just starting on this field
-	  } else {
-	   	fprop->flags = 0;	// Clear a flag to indicate that we're just starting on this field
-	  }
-	  //}
+	  A4GL_debug("Clear Flags : %d (%p)", fprop->flags, fprop);
 	  new_state = 0;
 	  A4GL_debug ("Setting rval to -1");
 	}
@@ -1044,7 +1078,9 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		  if (blank)
 		    strcpy (buff, "");
 		}
-	if (fprop->flags) {
+
+
+	if (A4GL_fprop_flag_get( sio->currentfield, FLAG_FIELD_TOUCHED)) {
 
 	      A4GL_trim (buff);
 
@@ -1098,14 +1134,17 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			// 
                         A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
  			A4GL_comments (fprop);
-			fprop->flags=0;
+			A4GL_debug("Clear Flags");
                         if (A4GL_isyes(acl_getenv("A4GL_CLR_FIELD_ON_ERROR"))) {
+					A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+					A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
                                         A4GL_clr_field (sio->currform->currentfield);
                         } else {
                                 if (A4GL_isyes(acl_getenv("FIRSTCOL_ONERR"))) {
+					A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+					A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
                                         A4GL_int_form_driver (sio->currform->form, REQ_BEG_FIELD);
                                 }
-
                         }
 
 
@@ -1658,7 +1697,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
-	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
+			A4GL_debug("Flags|=FLAG_FIELD_TOUCHED");
+		A4GL_fprop_flag_set(f, FLAG_FIELD_TOUCHED); // Set the field status flag
 	}
       else
 	{			// Just like A4GLKEY_LEFT.....
@@ -1670,7 +1710,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_DEL_CHAR);
-	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
+			A4GL_debug("Flags|=FLAG_FIELD_TOUCHED");
+		A4GL_fprop_flag_set(f, FLAG_FIELD_TOUCHED); // Set the field status flag
 	}
       else
 	{
@@ -1844,7 +1885,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_CLR_EOF);
-	      fprop->flags |= FLAG_FIELD_TOUCHED;	// Set the field status flag
+			A4GL_debug("Flags|=FLAG_FIELD_TOUCHED");
+		A4GL_fprop_flag_set(f, FLAG_FIELD_TOUCHED); // Set the field status flag
 	}
       else
 	{
@@ -2200,3 +2242,4 @@ int A4GL_get_curr_field_col(FORM *mform) {
 	form_driver (mform, REQ_VALIDATION);
 	return mform->curcol;
 }
+

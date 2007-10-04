@@ -58,8 +58,13 @@ typedef struct
 }
 textarea;
 
-#define FLAG_BEFORE_FIELD 1
-#define FLAG_FIELD_TOUCHED 2
+#define FLAG_MOVED_IN_FIELD  1
+#define FLAG_FIELD_TOUCHED   2
+#define FLAG_MOVING_TO_FIELD 4
+int A4GL_fprop_flag_get(FIELD *f, int flag) ;
+int A4GL_fprop_flag_set(FIELD *f,int flag) ;
+int A4GL_fprop_flag_clear(FIELD *f,int flag) ;
+
 
 
 //void *A4GL_memdup (void *ptr, int size);

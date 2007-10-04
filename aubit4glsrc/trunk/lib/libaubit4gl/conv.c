@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.146 2007-09-21 15:53:25 mikeaubury Exp $
+# $Id: conv.c,v 1.147 2007-10-04 17:20:30 mikeaubury Exp $
 #
 */
 
@@ -124,7 +124,7 @@ void A4GL_double_to_dec (double arg, char *buf, size_t length, size_t digits);
 //void A4GL_assertion                        (int a, char *s);
 
 
-static int A4GL_valid_dt (char *s, int *data,int size);
+//int A4GL_valid_dt (char *s, int *data,int size);
 
 
 int A4GL_itoint(void *a_short, void *b_int, int size_b) ;
@@ -221,7 +221,7 @@ int A4GL_sftodec (void *a, void *z, int size);
 //int A4GL_stomdec (void *a, void *z, int size);
 int A4GL_stosf (void *aa, void *zz, int sz_ignore);
 int A4GL_stoi (void *aa, void *zi, int sz_ignore);
-void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+//void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 int A4GL_mdectod (void *zz, void *aa, int sz_ignore);
 

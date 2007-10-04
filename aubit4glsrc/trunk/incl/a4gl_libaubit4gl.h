@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.287 2007-09-13 17:56:52 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.288 2007-10-04 17:20:28 mikeaubury Exp $
 #
 */
 
@@ -3248,6 +3248,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 int A4GL_fgl_keyval (int _np);
 int A4GL_aubit_strcasestr(char *h,char *n);
 int aclfgl_aclfgl_random(int n) ;
+int A4GL_valid_dt (char *s, int *data,int size);
 
 int A4GL_include_range_check (char *ss, char *ptr, int dtype);
 

@@ -8,7 +8,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.123 2007-06-12 19:02:44 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.124 2007-10-04 17:20:32 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3650,10 +3650,13 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 int
 A4GL_UI_int_get_inc_quotes (int a)
 {
-  if ((a & 0xff) == DTYPE_CHAR || (a & 0xff) == DTYPE_VCHAR)
+  if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR)
     return 1;
-  if ((a & 0xff) == DTYPE_DATE)
+  if ((a & DTYPE_MASK) == DTYPE_DATE)
     return 2;
+
+  if ((a & DTYPE_MASK) == DTYPE_DTIME) return 3;
+  if ((a & DTYPE_MASK) == DTYPE_INTERVAL) return 4;
   return 0;
 }
 
