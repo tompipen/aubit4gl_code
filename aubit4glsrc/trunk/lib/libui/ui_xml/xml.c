@@ -809,6 +809,8 @@ if (init) {
 			cno++;
 		}
 		
+		A4GL_push_char("XML");
+		A4GL_push_int(((long)s) &0xffffffff);
 		A4GL_push_int(sreal->attrib);
 		uilib_construct_start(cno);
 		dump_events(evt);
