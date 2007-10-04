@@ -816,6 +816,8 @@ if (init) {
 		dump_events(evt);
 		uilib_construct_initialised (0);
 	} else {
+		A4GL_push_char("XML");
+		A4GL_push_int(((long)s) &0xffffffff);
 		A4GL_push_int(sreal->mode & 0x1);
 		A4GL_push_int(sreal->attrib);
 		uilib_input_start(4);
