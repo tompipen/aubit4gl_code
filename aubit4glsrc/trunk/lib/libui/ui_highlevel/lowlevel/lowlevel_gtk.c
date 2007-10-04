@@ -21,7 +21,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.127 2007-09-14 12:51:30 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.128 2007-10-04 19:24:51 mikeaubury Exp $";
 #endif
 
 
@@ -2773,11 +2773,28 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
   A4GL_clr_form (0);
   A4GL_debug ("And return");
   A4GL_LL_screen_update ();
-  if (!form->notebook)
+  if (!form->notebook || 1)
     {
+	int page=-1;
+	char buff[200];
+	GtkWidget *pageinnotebook_or_fixed=0;
       for (a = 0; a < form->nwidgets; a++)
 	{
+		if (form->notebook) {
+	  		if (gtk_object_get_data(GTK_OBJECT(form->widgets[a]), "NEWPAGE")||page==-1 ) {
+					printf("NEW PAGE %d from %d\n", page,a); fflush(stdout);
+					if (page==-1) page=1;
+	  				else page++;
+					sprintf(buff,"PAGE_%d",page);
+					pageinnotebook_or_fixed=gtk_object_get_data(GTK_OBJECT(form->notebook),buff);
+	 			}
+		} else {
+			pageinnotebook_or_fixed=drwin;
+		}
+
+
 	  if (gtk_object_get_data
+	
 	      (GTK_OBJECT (form->widgets[a]), "MF_ISLABEL"))
 	    {
 	      char *ptr;
@@ -2810,7 +2827,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 		    {
 		      gunichar uni = g_utf8_get_char_validated (g_utf8_offset_to_pointer (utf, b), -1);
 			if (uni!=-1 && uni!=-2) {
-		      		A4GL_LL_wadd_gunichar_xy_col (drwin, x + b, y, uni, curr_width, curr_height, iscurrborder, currwinno);
+		      		A4GL_LL_wadd_gunichar_xy_col (pageinnotebook_or_fixed, x + b, y, uni, curr_width, curr_height, iscurrborder, currwinno);
 				A4GL_LL_gui_run_til_no_more();
 			}
 
@@ -2818,7 +2835,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 		  g_free (utf);
 		} else {
 		  for (b = 0; b < strlen (ptr); b++) {
-		      A4GL_LL_wadd_char_xy_col (drwin, x + b, y, ptr[b], curr_width, curr_height, iscurrborder, currwinno);
+		      A4GL_LL_wadd_char_xy_col (pageinnotebook_or_fixed, x + b, y, ptr[b], curr_width, curr_height, iscurrborder, currwinno);
 		  }
 		}
 
@@ -2833,7 +2850,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 	      y =
 		(int) gtk_object_get_data (GTK_OBJECT (form->widgets[a]),
 					   "MF_FROW") * gui_yheight;
-	      gtk_fixed_put (GTK_FIXED (drwin), form->widgets[a], x, y);
+	      gtk_fixed_put (GTK_FIXED (pageinnotebook_or_fixed), form->widgets[a], x, y);
 	      gtk_widget_ref (form->widgets[a]);
 	    }
 	  gtk_widget_show (form->widgets[a]);
@@ -3103,10 +3120,26 @@ A4GL_LL_new_form (list_of_fields * vfd)
   form->nwidgets = vfd->a.a_len;
   form->widgets = acl_malloc2 (sizeof (void *) * vfd->a.a_len);
 
-  if (form->npages > 1)
+  if (form->npages > 1  )
     {
+	int a;
       form->notebook = gtk_notebook_new ();
       gtk_widget_show (form->notebook);
+
+	for (a=0;a<form->npages;a++) {
+		GtkWidget *w;
+		char buff[300];
+		w=gtk_fixed_new();
+		gtk_notebook_insert_page(GTK_NOTEBOOK(form->notebook), w,NULL,-1);
+		if (A4GL_isyes(acl_getenv("HIDEPAGES")) && a>0) {
+			A4GL_debug("hiding pages");
+		} else {
+			gtk_widget_show(w);
+		}
+		sprintf(buff,"PAGE_%d",a+1);
+		gtk_object_set_data(GTK_OBJECT(form->notebook),buff,w);
+		gtk_object_set_data (GTK_OBJECT (w), "FIXED",w);
+	}
     }
   else
     {

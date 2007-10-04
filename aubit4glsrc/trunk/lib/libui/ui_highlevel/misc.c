@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.59 2007-06-12 12:48:13 mikeaubury Exp $";
+  "$Id: misc.c,v 1.60 2007-10-04 19:24:50 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -621,7 +621,7 @@ UILIB_A4GL_push_constr (void *vs)
 				     s->constr[a].colname,
 				     A4GL_LL_field_buffer (f, 0),
 				     A4GL_UI_int_get_inc_quotes (fprop->
-								 datatype));
+								 datatype), fprop->datatype, fprop->dtype_size);
 
 
         if (ptr==0) { // some error in the field...
