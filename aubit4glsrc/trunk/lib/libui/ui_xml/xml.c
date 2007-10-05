@@ -750,6 +750,9 @@ int b;
 uilib_start_events(0);
 for (a=0;e[a].event_type;a++) {
 char **fields;
+	if (e[a].event_type==A4GL_EVENT_AFTER_INP_CLEAN) {
+		continue;
+	}
 	if (e[a].event_type==A4GL_EVENT_KEY_PRESS) {
           		//keys = get_key_codes (e[a].field);
 		A4GL_push_int(a + 1);
@@ -766,16 +769,22 @@ char **fields;
 		A4GL_push_int(a + 1);
 		A4GL_push_char( decode_event_id (e[a].event_type));
 		A4GL_push_char(fields[b]);
+		uilib_event(3);
               //printf ("CALL UILIB_EVENT(%d,\"%s\",%s)", a + 1,  decode_event_id (e[a].event_type), fields[b]);
             }
           else
             {
                 if (e[a].event_type==A4GL_EVENT_BEFORE_INP || e[a].event_type==A4GL_EVENT_AFTER_INP_CLEAN) {
                         //printc ("CALL UILIB_EVENT(%d,\"%s\",\"\")", a + 1, decode_event_id (event_id));
+			A4GL_push_int(a + 1);
+			A4GL_push_char( decode_event_id (e[a].event_type));
+			A4GL_push_char("");
+		uilib_event(3);
                 } else {
 			A4GL_push_int(a + 1);
 			A4GL_push_char( decode_event_id (e[a].event_type));
 			A4GL_push_char("");
+		uilib_event(3);
                         //printf ("CALL UILIB_EVENT(%d,\"%s\",\"\")", a + 1, decode_event_id (e[a].event_type));
                 }
             }
