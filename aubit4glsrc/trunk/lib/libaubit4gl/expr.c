@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.19 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: expr.c,v 1.20 2007-10-05 15:00:14 mikeaubury Exp $
 #
 */
 
@@ -325,8 +325,17 @@ struct expr_str *A4GL_new_literal_long_str (char *value)
 {
   struct expr_str *ptr;
   FILE *f;
+  long l;
   ptr=A4GL_new_expr_simple (ET_EXPR_LITERAL_LONG);
-  ptr->u_data.expr_long=atol(value);
+  l=atol(value);
+
+  if (sizeof(l)>4) { // 64 bit..
+	if (l<INT32_MIN || l>INT32_MAX) {
+		l=LONG_MAX;
+	}
+  }
+
+  ptr->u_data.expr_long=l;
 
   if (A4GL_isyes(acl_getenv("LOG_STRINGS"))) {
 	if (value[0]=='"') {
