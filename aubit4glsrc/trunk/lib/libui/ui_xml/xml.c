@@ -34,19 +34,19 @@ return 0;
 }
 
 
-static void A4GL_XML_opening_form_xml(char *formname,char *formfile,  char *fbuff) {
+static void  A4GL_XML_opening_form_xml(char *formname,char *formfile,  char *fbuff) {
 int a;
-send_to_ui("<FORM NAME=\"%s\" FILE=\"%s\">", formname, formfile);
+send_to_ui("<XMLFORM NAME=\"%s\" FILE=\"%s\">", formname, formfile);
 for (a=0;a<strlen(fbuff);a+=256) {
 	char b[300];
 	strncpy(b,&fbuff[a],256);
 	b[256]=0;
 	send_to_ui("%s",uilib_xml_escape(b));
 }
-send_to_ui("</FORM>");
+send_to_ui("</XMLFORM>");
 }
 
-static void A4GL_XML_opening_form(char *formfile, char *formname) {
+static int A4GL_XML_opening_form(char *formfile, char *formname) {
         FILE *f;
         char *fbuff;
         char buff[2000];
@@ -69,8 +69,9 @@ static void A4GL_XML_opening_form(char *formfile, char *formname) {
                 fclose(f);
                 A4GL_XML_opening_form_xml(buff_formname,formfile,  fbuff);
                 free(fbuff);
+		return 1;
         } else {
-		printf("File %s doesn't exist\n", buff);
+		return 0;
 	}
 }
 
@@ -159,13 +160,26 @@ int UILIB_A4GL_cr_window_form(char* name,int iswindow,int form_line,int error_li
 char *fname;
 int x;
 int y;
+struct s_form_dets *form;
 fname=A4GL_char_pop();
 x=A4GL_pop_int();
 y=A4GL_pop_int();
 
-  A4GL_XML_opening_form(fname,name);
+  A4GL_trim(fname);
+// Can we find a pregenerated XML form ? 
+  if (!A4GL_XML_opening_form(fname,name)) {
+	// Nope - lets send a non-xml form instead..
+	// this will callback to our UILIB_A4GL_read_metrics function..
+	send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" >", name, x, y, attrib);
+  	send_to_ui ("<FORM>");
+  	form = A4GL_read_form (fname, name);
+  	send_to_ui ("<FORM>");
+	send_to_ui ("</OPENWINDOWWITHFORM>");
+  } else {
+	send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"/>", name, x, y, attrib, fname);
+  }
 
-send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"/>", name, x, y, attrib, fname);
+
 
 return 0;
 }
@@ -219,15 +233,28 @@ return rval;
 int UILIB_A4GL_open_form(char* name) {
 char *s;
 char buff[300];
+struct s_form_dets *form;
+
   s = A4GL_char_pop ();
   strncpy (buff, s, 256);
   buff[255] = 0;
   A4GL_trim (buff);
   A4GLSQL_set_status (0, 0);
 
-  A4GL_XML_opening_form(buff,name);
 
-  send_to_ui ("<OPENFORM FORM=\"%s\" SOURCE=\"%s\"/>", name, buff);
+// Can we find a pregenerated XML form ? 
+  if (!A4GL_XML_opening_form(buff,name)) {
+	// Nope - lets send a non-xml form instead..
+	// this will callback to our UILIB_A4GL_read_metrics function..
+  	send_to_ui ("<OPENFORM FORM=\"%s\">", name, buff);
+  	send_to_ui ("<FORM>");
+  	form = A4GL_read_form (buff, name);
+  	send_to_ui ("<FORM>");
+	send_to_ui ("</OPENFORM>");
+  } else {
+  	send_to_ui ("<OPENFORM FORM=\"%s\" SOURCE=\"%s\"/>", name, buff);
+  }
+
   free(s);
   return 0; // Success...
 }
@@ -400,7 +427,6 @@ int a;
 int UILIB_A4GL_req_field_input(void* sv,char type,va_list* ap) {
 int rval=1;
 int context;
-int a;
   struct s_field_name_list list;
   struct s_screenio *s;
 s=sv;
@@ -689,6 +715,10 @@ decode_event_id (int i)
   if (i == A4GL_EVENT_AFTER_INSERT)
     {
       return "AFTER INSERT";
+    }
+  if (i == A4GL_EVENT_ON_ACTION)
+    {
+      return "ON ACTION";
     }
 
 
@@ -1059,16 +1089,9 @@ niy();
 }
 
 int UILIB_A4GL_read_fields(void* formdets) {
-int rval;
-niy();
-return rval;
+return 1;
 }
 
-int UILIB_A4GL_read_metrics(void* formdets) {
-int rval;
-niy();
-return rval;
-}
 
 int UILIB_aclfgl_a4gl_set_page(int n) {
 int rval;
@@ -1266,4 +1289,228 @@ uilib_get_context(2);
 context=A4GL_pop_long();
 mn_id++;
 send_to_ui ("<MENUACTION CONTEXT=\"%d\" ID=\"%d\" ACTION=\"%s\" CMD_NO_TIMEOUT=\"%d\" />", context, mn_id, action, cmd_no_on_timeout); 
+}
+
+
+static void A4GL_make_label (int frow, int fcol, char *label) {
+	send_to_ui("<LABEL ROW=\"%d\" COLUMN=\"%d\">%s</LABEL>",frow,fcol,uilib_xml_escape(label));
+}
+
+
+static void A4GL_make_field( int frow, int fcol, int rows, int cols, char* widget, char* config, char* inc, void* id, char* tab_and_col, char* action) {
+send_to_ui("<FIELD ROW=\"%d\" COLUMN=\"%d\" ROWS=\"%d\" COLS=\"%d\" WIDGET=\"%s\" CONFIG=\"%s\" INC=\"%s\" ID=\"%d\" TABCOL=\"%s\" ACTION=\"%s\"/>",
+frow,  fcol, rows, cols, uilib_xml_escape(widget), uilib_xml_escape( config), uilib_xml_escape(inc),(long)id,
+uilib_xml_escape(tab_and_col),  uilib_xml_escape(action));
+}
+
+
+
+static char *
+A4GL_decode_str_fprop (struct_scr_field * fprop, int type)
+{
+  int b;
+  if (fprop == 0)
+    return 0;
+  if (fprop->str_attribs.str_attribs_val == 0)
+    return 0;
+  for (b = 0; b < fprop->str_attribs.str_attribs_len; b++)
+    {
+      if (fprop->str_attribs.str_attribs_val[b].type == type)
+	{
+	  return fprop->str_attribs.str_attribs_val[b].value;
+	}
+    }
+  return "";
+}
+
+/**
+ *  * Find fields
+ *   *
+ *    * @param f A pointer to a form describing strucutre.
+ *     * @param metric_no The metric sequence number.
+ *      * @return The metric number.
+ *       */
+static int
+A4GL_find_fields_no_metric (struct_form * f, int metric_no)
+{
+  int a, b;
+  A4GL_debug ("BB - Looking for metric : %d\n", metric_no);
+  for (a = 0; a < f->fields.fields_len; a++)
+    {
+      for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
+	{
+	  if (f->fields.fields_val[a].metric.metric_val[b] == metric_no)
+	    {
+	      A4GL_debug ("Found metric : %d\n", f);
+	      return a;
+	    }
+	}
+    }
+  A4GL_debug ("Metric not found %d", metric_no);
+  return -1;
+}
+
+
+static int
+A4GL_find_attrib_from_field (struct_form * f, int field_no)
+{
+  int a;
+  A4GL_debug ("AA\n");
+  A4GL_debug ("field_no=%d\n", field_no);
+  if (field_no == -1)
+    return -1;
+  for (a = 0; a < f->attributes.attributes_len; a++)
+    {
+      if (f->attributes.attributes_val[a].field_no == field_no)
+	{
+	  A4GL_debug ("Found field %d @ %d - %s\n", field_no, a,
+		      f->attributes.attributes_val[a].colname);
+	  return a;
+	}
+    }
+  A4GL_debug ("Not found\n");
+  return -1;
+
+}
+
+
+
+static int
+A4GL_find_attrib_from_metric (struct_form * f, int metric_no)
+{
+  return A4GL_find_attrib_from_field (f,
+				      A4GL_find_fields_no_metric (f,
+								  metric_no));
+}
+
+static char *
+make_tab_and_col (char *t, char *c)
+{
+  static char buff[256];
+  SPRINTF2 (buff, "%s.%s", t, c);
+  return buff;
+}
+
+
+/**
+ *
+ * @todo Describe function
+ *  @todo Validate the calls to A4GL_make_label that alocates space to a FIELD
+ *  struct and assigns the pointer to integers.
+ */
+int
+UILIB_A4GL_read_metrics (void *formdetsv)
+{
+  struct s_form_dets *formdets;
+  int metric_no, n;
+  char delims[3][2];
+  char *widget;
+  char *config;
+  char *include;
+  struct struct_scr_field *fprop = 0;
+  char *action;
+
+  formdets = formdetsv;
+  delims[0][0] = formdets->fileform->delim[0];
+  delims[1][0] = formdets->fileform->delim[1];
+  delims[2][0] = formdets->fileform->delim[2];
+  delims[0][1] = 0;
+  delims[1][1] = 0;
+  delims[2][1] = 0;
+  n = formdets->fileform->metrics.metrics_len;
+  A4GL_debug ("metrics len=%d", n);
+
+
+  for (metric_no = 0; metric_no < n; metric_no++)
+    {
+
+
+      formdets->fileform->metrics.metrics_val[metric_no].pos_code = 0;
+      A4GL_debug ("checking label %s\n",
+		  formdets->fileform->metrics.metrics_val[metric_no].label);
+
+
+      if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) !=
+	  0)
+	{
+	  A4GL_make_label (formdets->fileform->metrics.metrics_val[metric_no].
+			   y,
+			   formdets->fileform->metrics.metrics_val[metric_no].
+			   x,
+			   formdets->fileform->metrics.metrics_val[metric_no].
+			   label);
+	}
+      else
+	{
+	  int attr_no;
+	  attr_no =
+	    A4GL_find_attrib_from_metric (formdets->fileform, metric_no);
+	  if (attr_no == -1)
+	    continue;
+	  widget = 0;
+	  config = 0;
+	  include = 0;
+	  action = 0;
+	  if (attr_no >= 0)
+	    {
+	      fprop = &formdets->fileform->attributes.attributes_val[attr_no];
+	      A4GL_debug ("attr_no=%d fprop=%p", attr_no, fprop);
+
+	      widget = A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
+	      config = A4GL_decode_str_fprop (fprop, FA_S_CONFIG);
+	      include = 0;
+	      if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		{
+		  include = A4GL_get_str_attribute (fprop, FA_S_INCLUDE);
+		}
+	      else
+		{
+		  include = 0;
+		}
+	      action = 0;
+	      if (A4GL_has_str_attribute (fprop, FA_S_ACTION))
+		{
+		  action = A4GL_get_str_attribute (fprop, FA_S_ACTION);
+		}
+	      else
+		{
+		  action = 0;
+		}
+	    }
+	  else
+	    {
+	      widget = 0;
+	      config = 0;
+	      include = 0;
+	      action = 0;
+	    }
+
+	  if (widget == 0)
+	    widget = "";
+	  if (config == 0)
+	    config = "";
+	  if (include == 0)
+	    include = "";
+	  if (action == 0)
+	    action = "";
+
+
+
+	  A4GL_make_field (formdets->fileform->metrics.
+			   metrics_val[metric_no].y,
+			   formdets->fileform->metrics.
+			   metrics_val[metric_no].x,
+			   formdets->fileform->metrics.
+			   metrics_val[metric_no].h,
+			   formdets->fileform->metrics.
+			   metrics_val[metric_no].w, widget,
+			   config, include, fprop,
+			   make_tab_and_col (fprop->tabname,
+					     fprop->colname), action);
+
+	}
+
+    }
+
+  return 1;
 }

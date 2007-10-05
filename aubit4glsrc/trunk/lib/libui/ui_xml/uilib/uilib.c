@@ -847,8 +847,15 @@ uilib_event (int nargs)
 	}
       else
 	{
-	  send_to_ui (" <%s_EVENT FIELD=\"%s\" ID=\"%d\"/>", no_space(evt_type),
-		      field_or_key, event_id);
+		printf("%s\n", evt_type);
+		if (strcmp (evt_type, "ON ACTION")==0) {
+	  		send_to_ui (" <%s_EVENT ACTION=\"%s\" ID=\"%d\"/>", no_space(evt_type),
+		      		field_or_key, event_id);
+	
+		} else {
+	  		send_to_ui (" <%s_EVENT FIELD=\"%s\" ID=\"%d\"/>", no_space(evt_type),
+		      		field_or_key, event_id);
+		}
 	}
     }
   else
