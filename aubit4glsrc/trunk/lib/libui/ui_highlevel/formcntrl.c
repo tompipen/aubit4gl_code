@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.62 2007-06-12 19:02:43 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.63 2007-10-06 14:43:23 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: formcntrl.c,v 1.62 2007-06-12 19:02:43 mikeaubury Exp $";
+  "$Id: formcntrl.c,v 1.63 2007-10-06 14:43:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -687,7 +687,6 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 								       currentfield))
 			{
 
-				////A4GL_pause_execution();
 			  A4GL_add_to_control_stack (sio,
 						     FORMCONTROL_EXIT_INPUT_OK,
 						     0, 0, 0);
@@ -1009,7 +1008,6 @@ process_control_stack (struct s_screenio *sio, struct aclfgl_event_list *evt)
 		}
 
         if (fprop->flags) {
-//A4GL_pause_execution();
 	      A4GL_trim (buff);
 
 	      if (strlen (buff))
@@ -1264,6 +1262,7 @@ int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
                 while (1) {
 	                a=internal_A4GL_form_loop_v2(vs,init,vevt);
 			A4GL_debug("internal_A4GL_form_loop_v2 returns %d\n", a);
+
                         if (init||a!=-1) break;
                 }
 		ActivateToolbar(0,0,0);
@@ -1291,7 +1290,6 @@ int internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
   if (init == 1)
     {
       A4GL_debug ("------------------------------------------------------");
-//A4GL_pause_execution();
       	s->currform->currentfield = 0;
 	A4GL_LL_init_form(s->currform->form);
 	//s->currform->curcol=0;
@@ -1506,7 +1504,6 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
 	  if (A4GL_get_dbscr_inputmode() == 0
 	      && A4GL_curr_metric_is_used_last_s_screenio (s, f))
 	    {
-				//A4GL_pause_execution();
 	      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0,
 					 a);
 	      return;
@@ -1621,7 +1618,6 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
 
   if (a == A4GLKEY_ACCEPT)
     {
-				//A4GL_pause_execution();
       A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       return -1;
     }
@@ -1723,7 +1719,6 @@ break;
           int r;
           int cnt;
           int cHeight;
-          //A4GL_pause_execution();
           w = A4GL_get_field_width (f);
           r = A4GL_LL_get_carat(mform) + 1;
           while (r % 8 != 0)
