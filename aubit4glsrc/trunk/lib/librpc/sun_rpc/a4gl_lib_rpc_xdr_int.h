@@ -25,6 +25,7 @@ pmap_clnt.h was NOT included - have to explicity specify it to get
 proto for pmap_unset:
 */
 #include "rpc/types.h"
+#include "rpc/rpc.h"
 #include "rpc/pmap_clnt.h" /* pmap_unset() */
 
 
