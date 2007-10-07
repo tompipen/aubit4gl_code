@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.38 2007-08-15 18:52:38 mikeaubury Exp $
+# $Id: Makefile,v 1.39 2007-10-07 16:29:56 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -115,16 +115,18 @@ LCLINT_CFLAGS   	=${C_IFLAGS} -I.
 #endif
 
 
-ifneq "${TARGET_OS}" "hpux"
-	ifneq "${TARGET_OS}" "cygwin"
-		ifneq "${GCC_MINGW}" "yes"
-            #all platforms except HP-UX, CygWin and MinGW:
-			LINK_LIBS           =-ldl -lm
-		endif
+ifeq "${USE_LIBDL}" "1"
+	LINK_LIBS=-ldl
+endif
+
+ifeq "${TARGET_OS}" "hpux"
+	LINK_LIBS           +=-lcl -lm -lnsl
+endif
+
+ifneq "${TARGET_OS}" "cygwin"
+	ifneq "${GCC_MINGW}" "yes"
+		LINK_LIBS           +=-lm
 	endif
-else
-            #HP-UX only:
-			LINK_LIBS           =-lcl -lm -lnsl
 endif
 
 

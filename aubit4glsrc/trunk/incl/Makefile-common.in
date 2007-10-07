@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.221 2007-07-23 13:21:34 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.222 2007-10-07 16:29:56 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -356,6 +356,7 @@ LCLINTERR           =-
 ####################
 #commands to use:
 MAKE				=@MAKE@
+GMAKE				=@GMAKE@
 MKDIR 				=mkdir
 CD 					=cd
 CP 					=cp
@@ -1050,6 +1051,9 @@ CURSES_INC_PATH 	=@CURSES_INC_PATH@
 CURSES_LIB_PATH		=@CURSES_LIB_PATH@
 CURSES_LIB_NAME 	=@CURSES_LIB_NAME@
 HAVE_ZLIB		=@HAVE_ZLIB@
+HAVE_LIBDL		=@HAVE_LIBDL@
+USE_LIBDL=	@USE_LIBDL@
+
 
 
 # PDcurses

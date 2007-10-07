@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.360 2007-10-07 14:22:40 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.361 2007-10-07 16:29:54 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.360 2007-10-07 14:22:40 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.361 2007-10-07 16:29:54 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -646,6 +646,8 @@ AC_SUBST(SMTP_INC_PATH)
 AC_SUBST(SMTP_LIB_PATH)
 
 AC_SUBST(HAVE_ZLIB)
+AC_SUBST(HAVE_LIBDL)
+AC_SUBST(USE_LIBDL)
 AC_SUBST(ZLIB_INC_PATH)
 AC_SUBST(ZLIB_LIB_PATH)
 
@@ -3022,7 +3024,7 @@ else
 					if test "$AUBIT_SOURCE" = "1"; then
 						if test "$ign_broken_make" = "no" 
 						then
-							AC_MSG_WARN(GNU Make 3.81 and possibly up broken completely. Google for more info. If you are sure your 3.81 version of gmake will work - retry with --enable-broken-make)
+							AC_MSG_WARN(GNU Make 3.81 is possibly broken. Google for more info. If you are sure your 3.81 version of gmake will work - retry with --enable-broken-make)
 							AC_MSG_ERROR(Please revert back to 3.80 or earlier)
 						else
 							AC_MSG_WARN(GNU Make 3.81 and possibly up broken completely. Google for more info - but you've chosen to ignore it...)
@@ -8992,21 +8994,24 @@ fi
 
 
 PHP_CONFIGURE_PART(Checking for standard libraries:)
-
+		HAVE_LIBDL=0
 		case "$host" in
 		*-*-cygwin | *-*-cygwin* | *-*-mingw* | *-*-pw32* )
 			AC_MSG_CHECKING(libdl)
 			AC_MSG_RESULT(Cygwin DLL contains emulation of libdl functions.)
+			USE_LIBDL=0
 		    ;;
 
 		*alpha* )
 			#DEC Alpha ES40 (uname -a gives: OSF1 maxdev V5.1 732 alpha)
 			AC_MSG_CHECKING(libdl)
 			AC_MSG_RESULT(DEC Alpha has dlopen in standard libraries.)
+			USE_LIBDL=0
 		;;
 		*freebsd* ) 
 			AC_MSG_CHECKING(libdl)
 			AC_MSG_RESULT(Freebsd has dlopen in standard libraries.)
+			USE_LIBDL=0
             ;;
 
         *hp-hpux* )
@@ -9017,6 +9022,7 @@ PHP_CONFIGURE_PART(Checking for standard libraries:)
 			#uname -v = U
 			AC_MSG_CHECKING(libdl)
 			AC_MSG_RESULT(HP-UX has dlopen in standard libraries.)
+			USE_LIBDL=0
 
             ;;
 
@@ -9040,7 +9046,10 @@ PHP_CONFIGURE_PART(Checking for standard libraries:)
 				if test "$ac_cv_lib_dl_dlopen" != "yes"; then
 					AC_MSG_ERROR(No dl lib found - please install it. Stop.)
 				else
+					HAVE_LIBDL=1
+					USE_LIBDL=1
 					AC_DEFINE(HAVE_LIB_DL)
+				
 				fi
 				LDFLAGS="$old_LDFLAGS"
 		    fi
@@ -9048,6 +9057,10 @@ PHP_CONFIGURE_PART(Checking for standard libraries:)
 			
 		    ;;
 		esac
+
+if test "$ac_cv_lib_dl_dlopen" = "yes"; then
+	USE_LIBDL=1
+fi
 
 
 # FIXME: Replace `main' with a function in `-lc':
@@ -11045,7 +11058,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.360 2007-10-07 14:22:40 mikeaubury Exp $
+| $Id: configure.in,v 1.361 2007-10-07 16:29:54 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
