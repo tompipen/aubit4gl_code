@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.20 2007-10-05 15:00:14 mikeaubury Exp $
+# $Id: expr.c,v 1.21 2007-10-07 15:58:08 mikeaubury Exp $
 #
 */
 
@@ -48,6 +48,11 @@
 #if HAVE_STRINGS_H
 #include <strings.h>
 #endif
+#if HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
+
 struct binding_comp
 {
 	  char varname[132];
@@ -319,6 +324,10 @@ struct expr_str *A4GL_new_quoted_string (char *value)
   ptr->u_data.expr_string=acl_strdup(value);
   return ptr;
 }
+#ifndef INT32_MAX
+	#define INT32_MAX  2147483647
+	#define INT32_MIN -2147483647-1
+#endif
 
 
 struct expr_str *A4GL_new_literal_long_str (char *value)
