@@ -45420,7 +45420,7 @@ echo "${ECHO_T}Cygwin DLL contains emulation of libdl functions." >&6; }
 echo $ECHO_N "checking libdl... $ECHO_C" >&6; }
 			{ echo "$as_me:$LINENO: result: DEC Alpha has dlopen in standard libraries." >&5
 echo "${ECHO_T}DEC Alpha has dlopen in standard libraries." >&6; }
-		*freebsd*)
+		*freebsd* )
 			{ echo "$as_me:$LINENO: checking libdl" >&5
 echo $ECHO_N "checking libdl... $ECHO_C" >&6; }
 			{ echo "$as_me:$LINENO: result: Freebsd has dlopen in standard libraries." >&5
@@ -61493,7 +61493,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.384 2007-10-07 14:02:49 mikeaubury Exp $
+| $Id: configure,v 1.385 2007-10-07 14:12:49 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
