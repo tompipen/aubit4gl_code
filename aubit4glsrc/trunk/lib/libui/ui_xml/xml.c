@@ -1128,7 +1128,10 @@ return rval;
 }
 
 void UILIB_A4GL_finish_screenio(void* sio,char* siotype) {
-niy();
+	A4GL_push_char("XML");
+	A4GL_push_int(((long)sio) &0xffffffff);
+	uilib_get_context(2);
+	uilib_free_input(1);
 }
 
 void* UILIB_A4GL_make_pixmap_gw(char* filename) {
