@@ -1085,7 +1085,7 @@ return rval;
 }
 
 void UILIB_A4GL_zrefresh() {
-niy();
+	flush_ui ();
 }
 
 void UILIB_A4GL_gotolinemode() {
