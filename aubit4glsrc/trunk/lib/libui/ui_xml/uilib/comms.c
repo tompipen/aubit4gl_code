@@ -209,6 +209,7 @@ get_event_from_ui ()
   if (attr->id)
     {
       int n = -1;
+		printf("---->%s\n", attr->id);
       if (strcmp (attr->id, "DIE") == 0 || strcmp (attr->id, "-999")==0)
         {
           exit(2);

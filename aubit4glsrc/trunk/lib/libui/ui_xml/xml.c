@@ -828,11 +828,16 @@ uilib_end_events(0);
 int UILIB_A4GL_form_loop_v2(void* s,int init,void* evt) {
 struct s_screenio *sreal;
 sreal=s;
+
+if (sreal->fcntrl_cnt) {
+
+}
+
+
 if (init) {
 	//A4GL_push_char("XML");
 	//A4GL_push_int(((long)s) &0xffffffff);
 	
-
 	uilib_set_field_list_directly((char *)sreal->field_list);
 
 
@@ -868,19 +873,27 @@ if (init) {
 
 while (1) {
 	int a;
+
 	A4GL_push_char("XML");
 	A4GL_push_int(((long)s) &0xffffffff);
 	uilib_get_context(2);
 
 	uilib_construct_loop(1);
 	a=A4GL_pop_int();
-	//printf("Got a as %d\n",a);
+	printf("Got a as %d\n",a);
 	if (a==0) continue;
 	if (a==-1) continue;
 	if (a==-100) { // Accept...
-		return  1;
+		if (A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt)) {	
+				return A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt);
+		}
 	}
-	return a-1;
+	if (a==-101) { // Interrupt
+		if (A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt)) {	
+				return A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt);
+		}
+	}
+	return a;
 }
 
 }
