@@ -124,6 +124,7 @@ main (int argc, char *argv[])
   int yes = 1;
 
 
+  setenv ("A4GL_UI", "XML", 1);
 // PIPEDIR specified where the names pipes that the 4gl programs
 // will connect to are stored
   if (!getenv ("PIPEDIR"))

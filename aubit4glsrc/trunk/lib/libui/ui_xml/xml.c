@@ -173,7 +173,7 @@ y=A4GL_pop_int();
 	send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" >", name, x, y, attrib);
   	send_to_ui ("<FORM>");
   	form = A4GL_read_form (fname, name);
-  	send_to_ui ("<FORM>");
+  	send_to_ui ("</FORM>");
 	send_to_ui ("</OPENWINDOWWITHFORM>");
   } else {
 	send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"/>", name, x, y, attrib, fname);
@@ -249,7 +249,7 @@ struct s_form_dets *form;
   	send_to_ui ("<OPENFORM FORM=\"%s\">", name, buff);
   	send_to_ui ("<FORM>");
   	form = A4GL_read_form (buff, name);
-  	send_to_ui ("<FORM>");
+  	send_to_ui ("</FORM>");
 	send_to_ui ("</OPENFORM>");
   } else {
   	send_to_ui ("<OPENFORM FORM=\"%s\" SOURCE=\"%s\"/>", name, buff);
