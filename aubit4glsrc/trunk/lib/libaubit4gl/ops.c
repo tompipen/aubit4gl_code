@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.121 2007-09-13 17:13:30 gyver309 Exp $
+# $Id: ops.c,v 1.122 2007-10-11 08:29:11 mikeaubury Exp $
 #
 */
 
@@ -195,7 +195,7 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
 
 /******************************************************************************/
 
-static void A4GL_dec_dec_ops(int op) {
+void A4GL_dec_dec_ops(int op) {
   fgldecimal a;
   fgldecimal b;
   fgldecimal dc;
@@ -205,13 +205,12 @@ double dbl;
 int d;
   //char *a1;
   //char *a2;
-  A4GL_pop_var2(&b,5,0x2010);
-  A4GL_pop_var2(&a,5,0x2010);
+  A4GL_pop_var2(&b,5,0x4020);
+  A4GL_pop_var2(&a,5,0x4020);
 A4GL_debug("dec_dec_ops");
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	////printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -219,27 +218,27 @@ A4GL_debug("dec_dec_ops");
     {
       A4GL_debug ("OK - neither is null");
     }
-  A4GL_init_dec(&dc,32,16);
+  A4GL_init_dec(&dc,64,32);
 
   switch (op)
     {
     case OP_ADD:
 	a4gl_decadd(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,16);
+        A4GL_push_dec_dec (&dc,0,32);
       return;
     case OP_SUB:
 	a4gl_decsub(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,16);
+        A4GL_push_dec_dec (&dc,0,32);
       return;
     case OP_MULT:
 	a4gl_decmul(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,16);
+        A4GL_push_dec_dec (&dc,0,32);
       return;
 
 
     case OP_DIV:
 	a4gl_decdiv(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,16);
+        A4GL_push_dec_dec (&dc,0,32);
 	return;
 
     case OP_MOD:
@@ -264,7 +263,7 @@ A4GL_debug("dec_dec_ops");
 
       a4gl_deccopy(&dc, &a);
       for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
-      A4GL_push_dec_dec (&dc,0,16);
+      A4GL_push_dec_dec (&dc,0,32);
       return;
 
     case OP_LESS_THAN:
@@ -303,7 +302,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	////printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -396,7 +394,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	////printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -489,7 +486,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	////printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -582,7 +578,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -675,7 +670,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -768,7 +762,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -861,7 +854,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -954,7 +946,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1048,7 +1039,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1141,7 +1131,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1235,7 +1224,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1329,7 +1317,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1422,7 +1409,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1515,7 +1501,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1608,7 +1593,6 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1702,7 +1686,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1795,7 +1778,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1888,7 +1870,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1981,7 +1962,6 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-	//printf("Null\n");
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -3326,7 +3306,7 @@ A4GL_int_int_ops (int op)
   long a;
   long b;
   long c;
-  double dc;
+  //double dc;
   long d;
 
   b = A4GL_pop_long ();
@@ -4864,7 +4844,6 @@ A4GL_display_float (void *ptr, int size, int size_c,
 		return buff_10;
 	}
       	SPRINTF1 (buff_10, "%14.8e", a);
-	//printf("--->%s\n", buff_10);
       	//A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
 	if (!strchr(buff_10,'*')) {
 		return buff_10;
@@ -5347,7 +5326,6 @@ char *offbuff;
 	    }
 	}
 
-      //printf("%s\n", buff_14);
       if (has_neg)
 	{
 	  for (a = strlen (buff_14) - 1; a >= 0; a--)
@@ -5358,7 +5336,6 @@ char *offbuff;
 		}
 	    }
 	}
-      //printf("%s\n", buff_14);
       A4GL_push_char (buff_14);
       A4GL_pushop (OP_USING);
       offbuff = A4GL_char_pop ();
@@ -5749,7 +5726,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
   if (l > sz)
     {
       //A4GL_dectos (ptr, buff_sz, 64);
-	strcpy(buff_sz, A4GL_dec_to_str(ptr,0));
+	strcpy(buff_sz, A4GL_dec_to_str((fgldecimal *)ptr,0));
       A4GL_ltrim (buff_sz);
       A4GL_trim (buff_sz);
 	

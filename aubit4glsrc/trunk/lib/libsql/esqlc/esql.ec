@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.196 2007-09-13 17:13:23 gyver309 Exp $
+# $Id: esql.ec,v 1.197 2007-10-11 08:29:12 mikeaubury Exp $
 #
 */
 
@@ -111,6 +111,7 @@ char unloadBuffer[BUFSIZ];
 //extern sqlca_struct a4gl_sqlca;
 dll_export sqlca_struct a4gl_sqlca;
 
+void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode) ;
 
 #if defined (WIN32) || defined (__CYGWIN__)
 #define _NO_FORM_H_
@@ -173,7 +174,7 @@ EXEC SQL END DECLARE SECTION;
 
 #include "a4gl_lib_sql_esqlc_int.h"
 
-static int error_just_in_case ();
+static int error_just_in_case (void);
 static int processPreStatementBinds (struct s_sid *sid);
 
 
@@ -190,7 +191,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.196 2007-09-13 17:13:23 gyver309 Exp $";
+  "@(#)$Id: esql.ec,v 1.197 2007-10-11 08:29:12 mikeaubury Exp $";
 #endif
 
 
@@ -257,24 +258,25 @@ esqlWarningHandler (void)
 {
 }
 
-
+/*
 int A4GLSQLLIB_A4GLSQL_initlib(void) {
 	return 1;
 }
+*/
 
 
 int A4GLSQLLIB_SQL_initlib(void) {
 	return 1;
 }
 
-void strmaxcpy (char *dest, char *src, int atmost) {
+static void strmaxcpy (char *dest, char *src, int atmost) {
 	strncpy(dest,src,atmost);
 	dest[atmost]=atmost;
 	A4GL_pad_string(dest,atmost);
 }
 
 
-void A4GL_sql_exitwith(char *s) {
+static void A4GL_sql_exitwith(char *s) {
 		int s1;
 		s1=a4gl_status;
 		A4GL_exitwith(s);
@@ -326,7 +328,7 @@ A4GL_debug("isSqlError Called from : %s %d",s,l);
  *   - 0 : Row found
  */
 static int
-isNotFound ()
+isNotFound (void)
 {
   if (strcmp (SQLSTATE, "02000") == 0)
     {
@@ -406,7 +408,7 @@ getGlobalStatementName (void)
  * @return A pointer to the connecion allocated.
  */
 static DbConnection *
-NewDbConnection ()
+NewDbConnection (void)
 {
   DbConnection *connection;
 
@@ -597,7 +599,7 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
  *  - 1 : Connection does not exist or error ocurred.
  */
 int
-A4GLSQL_close_connection (void)
+xxx_obsolete_A4GLSQL_close_connection (void)
 {
   return A4GLSQL_close_session ("default");
 }
@@ -616,7 +618,7 @@ A4GLSQL_close_connection (void)
  *   - 1 : Connection estabilished.
  *   - 0 : there was an error connecting to database.
  */
-int A4GLSQL_make_connection
+int xxx_obsolete_A4GLSQL_make_connection
   (char * server, char * uid_p, char * pwd_p)
 {
   EXEC SQL begin declare section;
@@ -1101,9 +1103,9 @@ short indicat=0;
 
 }
 
-void get_scale(char *b, int *p_prec, int *p_scale) {
+static void get_scale(char *b, int *p_prec, int *p_scale) {
 char buff[10000];
-int c;
+//int c;
 int a;
 int l;
 strcpy(buff,b);
@@ -1169,7 +1171,7 @@ int d_prec=0;
   //datetime year to second dtime_var;
   intrvl_t interval_var;
   byte byte_var;
-	long dlength;
+	//long dlength;
   /*
      fglbyte byte_var;
      fgltext text_var;
@@ -1464,8 +1466,10 @@ bindOutputValue (struct s_sid *sid, char *descName, int idx, struct BINDING *bin
   short indicator;
   //loc_t blob;
   char *char_var;
-  short smint_var;
+  //short smint_var;
   long int_var;
+  int8 int8_var;
+  int8 *iptr;
   double float_var;
   float smfloat_var;
   dec_t decimal_var;
@@ -1611,6 +1615,19 @@ int dstype;
 	}
 
       break;
+
+   case DTYPE_SERIAL8:
+   case DTYPE_INT8:
+    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int8_var = DATA;
+	{
+	iptr=bind[idx].ptr;
+
+      	if (isSqlError ()) return 1;
+      	*iptr = int8_var;
+
+	}
+      break;
+
     case DTYPE_SERIAL:
     case DTYPE_INT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var = DATA;
@@ -1622,6 +1639,7 @@ int dstype;
       		*(long *) bind[idx].ptr = int_var;
 	}
       break;
+
     case DTYPE_FLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:float_var =
 	DATA;
@@ -1765,6 +1783,7 @@ int dstype;
 
       break;
 
+
     case DTYPE_TEXT:
        EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:byte_var = DATA;
 	ei=sid->extra_info;
@@ -1793,6 +1812,7 @@ int dstype;
 
     default:
       A4GL_exitwith ("Invalid data type\n");
+	return 1;
     }
   A4GL_debug ("Got to here");
   if (isSqlError ())
@@ -1900,7 +1920,7 @@ processOutputBind (struct s_sid *sid,char *descName, int bCount, struct BINDING 
  *   - O : Descriptor for output bind.
  * @return The descriptor name.
  */
-char *
+static char *
 getDescriptorName (char *statementName, char bindType)
 {
   char *descriptorName;
@@ -1992,7 +2012,7 @@ executeStatement (struct s_sid *sid)
  * @return Allways 0
  */
 int
-A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
+xxx_obsolete_A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
 {
   return 0;
 }
@@ -2006,7 +2026,7 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 	int n;
 	struct s_extra_info *e2;
 	int nb;
-	int a;
+	//int a;
 	EXEC SQL END DECLARE SECTION;
 
 	e->nblobs++;
@@ -3757,7 +3777,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
  * Convert the length qualifiers for a datetime from the
  *  informix notation to the A4GL notation
  */
-int
+static int
 Infx_dt_to_A4gl_dt (int n)
 {
   switch (n)
@@ -3978,7 +3998,7 @@ getSQLDataType (char *connName, char *tabname, char *colname,
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
+xxx_obsolete_A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
@@ -4044,7 +4064,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *
  *   - Otherwise : The datatype code.
  */
 int
-A4GLSQL_get_datatype (char *db, char *tab, char *col)
+xxx_obsolete_A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
   int dataType;
   int length;

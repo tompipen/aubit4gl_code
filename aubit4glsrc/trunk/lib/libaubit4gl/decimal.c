@@ -38,7 +38,6 @@ A4GL_str_to_dec(buff,d);
 
 }
 
-
 /**
  * Initialize default/configured decimal formats
  */
@@ -81,9 +80,9 @@ void A4GL_init_default_formats()
     }
 
     // detected 'printf' numeric format
-    sprintf(buf, "%f", 1.1);
+    SPRINTF1(buf, "%f", 1.1);
     a4gl_convfmts.printf_decfmt.decsep = buf[1];
-    sprintf(buf, "%f", 1111.1);
+    SPRINTF1(buf, "%f", 1111.1);
     a4gl_convfmts.printf_decfmt.thsep =
             (buf[1] >= '0' && buf[1] <= '9') ? 0 : buf[1];
 
@@ -402,6 +401,7 @@ char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
     return buf;
 }
 
+
 int A4GL_is_meaningful_in_decfmt(s_decfmt fmt, char c)
 {
     if (c == fmt.decsep)
@@ -664,7 +664,8 @@ char *A4GL_dec_to_str (fgldecimal *dec, int size) {
 		strcat(buff2,&buff[1]);
 		strcpy(buff,buff2);
   }
-  
+
+
   return buff;
 }
 
@@ -718,11 +719,15 @@ a4gl_deccmp (fgldecimal * d1, fgldecimal * d2)
 int a;
 	M_APM m1;
 	M_APM m2;
+	char p1[1000];
+	char p2[1000];
 	//char buff[200];
 	m1= m_apm_init();
 	m2= m_apm_init();
-	acl_apm_set_string(m1, A4GL_dec_to_str(d1,0),1);
-	acl_apm_set_string(m2, A4GL_dec_to_str(d2,0),1);
+	strcpy(p1,A4GL_dec_to_str(d1,0));
+	strcpy(p2,A4GL_dec_to_str(d2,0));
+	acl_apm_set_string(m1, p1,1);
+	acl_apm_set_string(m2, p2,1);
 	a=m_apm_compare(m1,m2);
 	m_apm_free(m1);
 	m_apm_free(m2);
@@ -996,6 +1001,100 @@ void A4GL_push_dec_from_apm(M_APM tmp) {
   A4GL_push_dec_dec(&d,0,16);
 }
 
+static M_APM A4GL_str_dot_to_m_apm(char *s) {
+M_APM ret;
+char buff[2000];
+char *ptr;
+strcpy(buff,s);
+ptr=strchr(buff,',');
+while (ptr) {
+        *ptr='.';
+        ptr=strchr(ptr,',');
+
+}
+
+ret= m_apm_init();
+
+acl_apm_set_string(ret, s,0);
+
+return ret;
+
+}
+
+
+
+// s1 = String for first parameter
+// s2 = string for second parameter (or 0 is its just a range check)
+// op = Operation being performed
+// overflow_dtype = datatype to check range for..
+int A4GL_apm_str_detect_overflow(char *s1, char *s2,int op,int overflow_dtype) {
+char buff[256];
+M_APM m1;
+M_APM m2;
+M_APM mres;
+fgldecimal *sum;
+mres=m_apm_init();
+
+if (s2) {
+m1=A4GL_str_dot_to_m_apm(s1);
+m2=A4GL_str_dot_to_m_apm(s2);
+
+switch (op) {
+    case OP_ADD:
+	m_apm_add(mres, m1, m2);
+	break;
+		
+    case OP_SUB:
+	m_apm_subtract(mres, m1, m2); break;
+
+    case OP_MULT:
+	m_apm_multiply(mres, m1, m2); break;
+
+    case OP_DIV:
+	m_apm_divide(mres, 0, m1, m2); break;
+
+    case OP_POWER:
+	/* m_apm_pow(mres, 0, m1, m2); break; */
+
+    case OP_MOD:
+	return 0;
+}
+}  else {
+mres=A4GL_str_dot_to_m_apm(s1);
+}
+
+switch (overflow_dtype) {
+	case DTYPE_INT8:
+		m1= A4GL_str_dot_to_m_apm("9223372036854775807");
+		m_apm_compare(m1,mres);
+		if (m1>0) {
+			if (s2) {
+				sum=malloc(sizeof(*sum));
+				A4GL_init_dec(sum,64,0);
+        			m_apm_to_fixpt_string(buff, 0, mres);
+        			A4GL_str_dot_to_dec(buff,sum);
+				A4GL_push_dec_dec(sum,0,0);
+			}
+			return 1;
+		}
+
+		m1= A4GL_str_dot_to_m_apm("-9223372036854775807");
+		m_apm_compare(m1,mres);
+		if (m1<0) {
+			if (s2) {
+				sum=malloc(sizeof(*sum));
+				A4GL_init_dec(sum,64,0);
+        			m_apm_to_fixpt_string(buff, 0, mres);
+        			A4GL_str_dot_to_dec(buff,sum);
+				A4GL_push_dec_dec(sum,0,0);
+			}
+			return 1;
+		}
+
+}
+return 0;
+
+}
 
 #endif
 //a4gl_dececvt()

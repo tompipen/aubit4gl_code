@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.147 2007-10-04 17:20:30 mikeaubury Exp $
+# $Id: conv.c,v 1.148 2007-10-11 08:29:11 mikeaubury Exp $
 #
 */
 
@@ -2911,7 +2911,7 @@ char buff[256];
 	if (A4GL_has_datatype_function_i(dtype2, "SETDTYPE")) {
 		      	void (*function) (void *);
       			function = A4GL_get_datatype_function_i (dtype2, "SETDTYPE");
-      			function (ptr);
+      			function (p2);
 	} else {
 		if ((dtype2&DTYPE_MASK) <  (sizeof(setdtype)/sizeof(void *))) {
       			setdtype[dtype2 & DTYPE_MASK] (p2);

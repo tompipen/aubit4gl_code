@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.289 2007-10-04 19:26:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.290 2007-10-11 08:29:11 mikeaubury Exp $
 #
 */
 
@@ -1211,6 +1211,10 @@ enum cmd_types {
   char *get_bind_varname(char i,int n);
   int A4GL_pop_bool (void);
   short A4GL_pop_int (void);
+
+  int8 A4GL_pop_int8 (void);
+  int A4GL_push_int8 (int8 a);
+
   long A4GL_pop_long (void);
   long A4GL_pop_date (void);
   float A4GL_pop_float (void);
@@ -3265,7 +3269,7 @@ void A4GL_set_malloc_context(void *a) ;
 void A4GL_free_malloc_context(void *s) ;
 void A4GL_clr_malloc_context(void ) ;
 
-
+void A4GL_dec_dec_ops(int op);
 
 
 

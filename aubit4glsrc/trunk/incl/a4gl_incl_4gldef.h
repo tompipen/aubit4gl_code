@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.112 2007-09-01 07:52:42 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.113 2007-10-11 08:29:11 mikeaubury Exp $
 */
 
 /**
@@ -113,7 +113,7 @@ extern "C"
 	 */
   typedef struct
   {
-    unsigned char dec_data[64];	       /**< The value stored in decimal variable */
+    unsigned char dec_data[128];	       /**< The value stored in decimal variable */
   }
   fgldecimal;
 

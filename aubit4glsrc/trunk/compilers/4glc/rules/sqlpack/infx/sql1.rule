@@ -840,6 +840,18 @@ exact_numeric_type:
 				sprintf($<str>$,"SERIAL(%s)",$<str>3);
 			}
 	}
+
+	| SERIAL8  {strcpy($<str>$,"SERIAL8"); add_feature("DDL_SERIAL8"); }
+
+	| SERIAL8 OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+			add_feature("DDL_SERIAL8");
+			if (A4GLSQLCV_check_requirement("NO_SERIAL_START_VALUE"))  {
+				sprintf($<str>$,"SERIAL8");
+			} else {
+				sprintf($<str>$,"SERIAL8(%s)",$<str>3);
+			}
+	}
+
 	| KW_DECIMAL  {
  			add_feature("DDL_DECIMAL");
 	}

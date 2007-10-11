@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.188 2007-07-20 10:19:50 mikeaubury Exp $
+# $Id: stack.c,v 1.189 2007-10-11 08:29:11 mikeaubury Exp $
 #
 */
 
@@ -304,6 +304,31 @@ A4GL_pop_int (void)
   return ptr;
 }
 
+/**
+ * Pop an integer8 value from the stack
+ *
+ * @return The value poped.
+ */
+int8
+A4GL_pop_int8 (void)
+{
+ int8 b=0;
+ A4GL_pop_param (&b, DTYPE_INT8, 0);
+A4GL_debug("POPPED = %lld\n",b);
+ return b;
+}
+
+int A4GL_push_int8(int8 a) {
+	int8 *ptr;
+
+	ptr=malloc(sizeof(a));
+	memcpy(ptr,&a,sizeof(a));
+
+	A4GL_debug("%lld %lld\n",*(int8 *)ptr, a);
+  	A4GL_push_param (ptr, DTYPE_INT8 + DTYPE_MALLOCED);
+	return 1;
+
+}
 /**
  * Pop a long value from the stack.
  *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.91 2007-09-13 17:13:23 gyver309 Exp $
+# $Id: builtin_d.c,v 1.92 2007-10-11 08:29:11 mikeaubury Exp $
 #
 */
 
@@ -313,7 +313,7 @@ void A4GL_push_decimal_str(char *p) {
 	int size;
 	int ndig;
 	int ndec;
-	A4GL_init_dec(&d,32,16);
+	A4GL_init_dec(&d,64,32);
 	A4GL_str_to_dec(p,&d);
 
 	ndig=NUM_DIG (d.dec_data);

@@ -31,7 +31,7 @@
 	int fgl_getkey(void);
 	void popdub (double *s);
 	int rgetkey(void);
-	
+	int A4GL_apm_str_detect_overflow(char *s1, char *s2,int op,int overflow_dtype);
 	/* Prototypes from builtin.c */
 	int aclfgl_fgl_getkey(int n) ;
 	int aclfgl_fgl_getkey_wait(int n) ;
