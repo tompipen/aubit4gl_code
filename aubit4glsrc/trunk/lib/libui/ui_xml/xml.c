@@ -845,6 +845,8 @@ if (init) {
 		int a;
 		int cno;
 		cno=3; // number of things pushed..
+		A4GL_push_char("XML");
+		A4GL_push_int(((long)s) &0xffffffff);
 		for (a=0;a<sreal->novars;a++) {
 			char buff[2000];
 			sprintf(buff, "%s.%s",sreal->constr[a].tabname,sreal->constr[a].colname);
@@ -853,8 +855,6 @@ if (init) {
 			cno++;
 		}
 		
-		A4GL_push_char("XML");
-		A4GL_push_int(((long)s) &0xffffffff);
 		A4GL_push_int(sreal->attrib);
 		uilib_construct_start(cno);
 		dump_events(evt);
