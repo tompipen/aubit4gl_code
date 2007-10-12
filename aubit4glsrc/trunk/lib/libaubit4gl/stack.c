@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.190 2007-10-12 07:49:16 mikeaubury Exp $
+# $Id: stack.c,v 1.191 2007-10-12 07:56:04 mikeaubury Exp $
 #
 */
 
@@ -323,7 +323,6 @@ int A4GL_push_int8(int8 a) {
 	int8 *ptr;
 
 	ptr=malloc(sizeof(a));
-	printf("Malloc %p\n",ptr);
 	memcpy(ptr,&a,sizeof(a));
 
 	A4GL_debug("%lld %lld\n",*(int8 *)ptr, a);
