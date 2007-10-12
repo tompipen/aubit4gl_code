@@ -83,6 +83,7 @@ char *acl_strdup_full(void *a,char *r,char *f,int l) {
         char *p;
         p=strdup(a);
         A4GL_assertion(p==0,"Unable to allocate memory");
+	
         return p;
 }
 
@@ -123,12 +124,11 @@ acl_free_full (void *ptr, char *f, long line)
   //if (has_malloc_context()) { 
 		//A4GL_rm_associated_mem(A4GL_get_malloc_context(), ptr); 
 	//}
-  //A4GL_debug ("Free %p %s %d", ptr,f,line);
+  A4GL_debug ("Free %p %s %d", ptr,f,line);
   
   if (has_malloc_context()) { 
 	 	A4GL_rm_associated_mem(A4GL_get_malloc_context(),ptr) ;
   }
-
   free (ptr);
 }
 

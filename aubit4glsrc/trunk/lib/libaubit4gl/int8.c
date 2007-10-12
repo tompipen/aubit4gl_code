@@ -141,15 +141,12 @@ static int A4GL_isnull_int8(void *p) {
 	return isnull;
 }
 
-static int A4GL_tostring_int8(void *p) {
-	
-	return 0;
-}
 
 
 static void *A4GL_copy_int8(void *p) {
 	int8 *ptr;
-	ptr=(int8*)malloc(sizeof(int8));
+	ptr=(int8 *)malloc(sizeof(int8));
+	A4GL_debug("Malloc : %p", ptr);
 	*ptr=*(int8*)p;
 	return ptr;
 }
@@ -159,7 +156,7 @@ int8 b;
 int a;
 int8 c;
 int d;
-fgldecimal c_d;
+//fgldecimal c_d;
 char s1[2000];
 char s2[2000];
 A4GL_debug("here");
@@ -173,7 +170,7 @@ A4GL_debug("here");
     case OP_POWER:
     case OP_MOD: 
 		// Overflow detection...-  Do the same thing with decimals..
-		sprintf(s1,"%ld",a); sprintf(s2,"%lld",b);
+		sprintf(s1,"%d",a); sprintf(s2,"%lld",b);
 		if (A4GL_apm_str_detect_overflow(s1,s2,op,DTYPE_INT8)) {
 			double d;
 			d=A4GL_pop_double();
@@ -238,7 +235,7 @@ int d;
 char s1[2000];
 char s2[2000];
 
-fgldecimal c_d;
+//fgldecimal c_d;
 A4GL_debug("here");
   b = A4GL_pop_int ();
   a = A4GL_pop_int8 ();
@@ -250,7 +247,7 @@ A4GL_debug("here");
     case OP_POWER:
     case OP_MOD: 
 		// Overflow detection...-  Do the same thing with decimals..
-		sprintf(s1,"%lld",a); sprintf(s2,"%ld",b);
+		sprintf(s1,"%lld",a); sprintf(s2,"%d",b);
 		if (A4GL_apm_str_detect_overflow(s1,s2,op,DTYPE_INT8)) {
 			double d;
 			d=A4GL_pop_double();
@@ -316,10 +313,11 @@ int8 c;
 int d;
 char s1[2000];
 char s2[2000];
-fgldecimal c_d;
+//fgldecimal c_d;
 A4GL_debug("here");
   b = A4GL_pop_int8 ();
   a = A4GL_pop_int8 ();
+
   switch (op) {
     case OP_ADD: 
     case OP_SUB: 
@@ -402,7 +400,7 @@ int b;
 int8 a;
 int8 c;
 int d;
-fgldecimal c_d;
+//fgldecimal c_d;
 char s1[2000];
 char s2[2000];
 
@@ -419,7 +417,7 @@ A4GL_debug("here");
     case OP_POWER:
     case OP_MOD: 
 		// Overflow detection...-  Do the same thing with decimals..
-		sprintf(s1,"%lld",a); sprintf(s2,"%lld",b);
+		sprintf(s1,"%lld",a); sprintf(s2,"%d",b);
 		if (A4GL_apm_str_detect_overflow(s1,s2,op,DTYPE_INT8)) {
 			double d;
 			d=A4GL_pop_double();
@@ -494,9 +492,9 @@ int8 b=0;
 long a=0;
 int8 c;
 int d;
-fgldecimal a_d;
-fgldecimal b_d;
-fgldecimal c_d;
+//fgldecimal a_d;
+//fgldecimal b_d;
+//fgldecimal c_d;
 char s1[2000];
 char s2[2000];
 
@@ -515,7 +513,7 @@ A4GL_debug("here");
     case OP_POWER:
     case OP_MOD: 
 		// Overflow detection...-  Do the same thing with decimals..
-		sprintf(s1,"%lld",a); sprintf(s2,"%lld",b);
+		sprintf(s1,"%ld",a); sprintf(s2,"%lld",b);
 		if (A4GL_apm_str_detect_overflow(s1,s2,op,DTYPE_INT8)) {
 			double d;
 			d=A4GL_pop_double();
@@ -912,10 +910,10 @@ A4GL_debug("dec_dec_ops");
 static int
 A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
 {
-  int8 l;
+  //int8 l;
 char buff[256];
 
-  A4GL_debug ("A4GL_conv_int8 %d %d\n", d1, d2);
+  A4GL_debug ("A4GL_conv_int8 %d %d p1=%p p2=%p\n", d1, d2,p1,p2);
   if (d1 == DTYPE_INT8)
     {
       // Convert FROM int8..
