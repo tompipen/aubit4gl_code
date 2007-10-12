@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.302 2007-09-13 08:10:03 mikeaubury Exp $
+# $Id: mod.c,v 1.303 2007-10-12 21:20:02 mikeaubury Exp $
 #
 */
 
@@ -863,7 +863,6 @@ scan_variables (char *s_n, int mode)
   int dtype;
   int size;
   int vval;
-
 
   if (strlen (s_n) > 1023)
     {
@@ -1971,6 +1970,9 @@ add_bind (char i, char *var_i)
     {
       A4GL_debug ("Scanning...");
       dtype = scan_variable (var_i);
+	if (i=='i' && dtype==-1) {
+			A4GL_pause_execution();
+	}
 
 
       switch (i)
@@ -1992,6 +1994,7 @@ add_bind (char i, char *var_i)
 
   if (i == 'i')
     {
+	
       if (dtype == -2 || strstr (var, ".*"))
 	{
 	  char buff[2000];

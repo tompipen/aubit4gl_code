@@ -57459,7 +57459,7 @@ else
 	else
 		#we can compile only HL_TUIN with PDcurses
 		if test "$HAVE_PDCURSES" = "1"; then
-			A4GL_UI="HL_TUIN"
+			A4GL_UI="TUI"
 			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN UI_HL_TUIw"
 		fi
 		if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
@@ -61511,7 +61511,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.387 2007-10-07 16:29:45 mikeaubury Exp $
+| $Id: configure,v 1.388 2007-10-12 21:19:55 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

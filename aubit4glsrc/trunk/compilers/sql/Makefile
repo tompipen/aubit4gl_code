@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.7 2007-10-04 07:27:13 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2007-10-12 21:20:04 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -32,7 +32,7 @@ else
 endif
 
 ALL					=${ROOT}/bin/sql_parse $(PLUGINDIR)/libSQLPARSE_INFORMIX${SO_EXT}
-CFLAGS				+=-g ${PIC} -I$(ROOT)/incl -I.
+CFLAGS				+=-g ${PIC} -I$(ROOT)/incl -I. -DSQLCOMPILER
 LDFLAGS				=-g
 SQLPACK_IFX_PATH	=../4glc/rules/sqlpack/infx
 

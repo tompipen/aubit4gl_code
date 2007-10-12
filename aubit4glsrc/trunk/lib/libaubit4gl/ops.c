@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.122 2007-10-11 08:29:11 mikeaubury Exp $
+# $Id: ops.c,v 1.123 2007-10-12 21:20:05 mikeaubury Exp $
 #
 */
 
@@ -4843,11 +4843,45 @@ A4GL_display_float (void *ptr, int size, int size_c,
 	if (!strchr(buff_10,'*')) {
 		return buff_10;
 	}
+
+	if (a>=0) {
       	SPRINTF1 (buff_10, "%14.8e", a);
       	//A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
 	if (!strchr(buff_10,'*')) {
+		char *ptr;
+		char buff2[200];
+		ptr=strstr(buff_10,"e+");
+		if (ptr) {	
+      			SPRINTF1 (buff_10, "%14.9e", a);
+			ptr=strstr(buff_10,"e+");
+			*ptr=0;
+			strcpy(buff2,buff_10);
+			strcat(buff2,"e");
+			strcat(buff2,ptr+2);
+			strcpy(buff_10,buff2);
+		}
 		return buff_10;
 	}
+	} else {
+      	SPRINTF1 (buff_10, "%14.7e", a);
+      	//A4GL_decstr_convert(buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	if (!strchr(buff_10,'*')) {
+		char *ptr;
+		char buff2[200];
+		ptr=strstr(buff_10,"e+");
+		if (ptr) {	
+      			SPRINTF1 (buff_10, "%14.8e", a);
+			ptr=strstr(buff_10,"e+");
+			*ptr=0;
+			strcpy(buff2,buff_10);
+			strcat(buff2,"e");
+			strcat(buff2,ptr+2);
+			strcpy(buff_10,buff2);
+		}
+		return buff_10;
+	}
+	}
+
 
 
     }

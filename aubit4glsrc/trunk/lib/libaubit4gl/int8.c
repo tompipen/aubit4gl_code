@@ -36,7 +36,7 @@ static char *A4GL_display_int8 (void *ptr, int size, int size_c,
   memset(buff_16,0,sizeof(buff_16));
   A4GL_debug ("A4GL_display_int..");
 	if (ptr==0) { // Assume its null
-          strcpy (buff_16, "           ");
+          strcpy (buff_16, "                    ");
   return buff_16;
 
 	}
@@ -46,7 +46,7 @@ static char *A4GL_display_int8 (void *ptr, int size, int size_c,
     {
       if (A4GL_isnull (DTYPE_INT8, ptr))
         {
-          strcpy (buff_16, "           ");
+          strcpy (buff_16, "                    ");
         }
       else
         {
@@ -500,10 +500,9 @@ char s2[2000];
 
 A4GL_debug("here");
 
-  a = A4GL_pop_long ();
 //A4GL_pop_param (&b, DTYPE_INT8, 0);
+  a = A4GL_pop_long ();
  b = A4GL_pop_int8 ();
-
 
   switch (op) {
     case OP_ADD: 
@@ -513,7 +512,7 @@ A4GL_debug("here");
     case OP_POWER:
     case OP_MOD: 
 		// Overflow detection...-  Do the same thing with decimals..
-		sprintf(s1,"%ld",a); sprintf(s2,"%lld",b);
+		sprintf(s2,"%ld",a); sprintf(s1,"%lld",b);
 		if (A4GL_apm_str_detect_overflow(s1,s2,op,DTYPE_INT8)) {
 			double d;
 			d=A4GL_pop_double();
