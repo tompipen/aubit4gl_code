@@ -1,5 +1,5 @@
 
-#line 3 "lex.sqlparse_yy.c"
+#line 3 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -133,7 +133,7 @@ typedef unsigned int flex_uint32_t;
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
 
 /* Special action meaning "start processing a new file". */
-#define YY_NEW_FILE sqlparse_yyrestart(sqlparse_yyin  )
+#define YY_NEW_FILE yyrestart(yyin  )
 
 #define YY_END_OF_BUFFER_CHAR 0
 
@@ -151,9 +151,9 @@ typedef unsigned int flex_uint32_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
-extern int sqlparse_yyleng;
+extern int yyleng;
 
-extern FILE *sqlparse_yyin, *sqlparse_yyout;
+extern FILE *yyin, *yyout;
 
 #define EOB_ACT_CONTINUE_SCAN 0
 #define EOB_ACT_END_OF_FILE 1
@@ -161,30 +161,30 @@ extern FILE *sqlparse_yyin, *sqlparse_yyout;
 
     /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
      *       access to the local variable yy_act. Since yyless() is a macro, it would break
-     *       existing scanners that call yyless() from OUTSIDE sqlparse_yylex. 
+     *       existing scanners that call yyless() from OUTSIDE yylex. 
      *       One obvious solution it to make yy_act a global. I tried that, and saw
-     *       a 5% performance hit in a non-sqlparse_yylineno scanner, because yy_act is
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
      *       normally declared as a register variable-- so it is not worth it.
      */
     #define  YY_LESS_LINENO(n) \
             do { \
                 int yyl;\
-                for ( yyl = n; yyl < sqlparse_yyleng; ++yyl )\
-                    if ( sqlparse_yytext[yyl] == '\n' )\
-                        --sqlparse_yylineno;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
             }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
 		{ \
-		/* Undo effects of setting up sqlparse_yytext. */ \
+		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
 		*yy_cp = (yy_hold_char); \
 		YY_RESTORE_YY_MORE_OFFSET \
 		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
-		YY_DO_BEFORE_ACTION; /* set up sqlparse_yytext again */ \
+		YY_DO_BEFORE_ACTION; /* set up yytext again */ \
 		} \
 	while ( 0 )
 
@@ -257,8 +257,8 @@ struct yy_buffer_state
 	 * possible backing-up.
 	 *
 	 * When we actually see the EOF, we change the status to "new"
-	 * (via sqlparse_yyrestart()), so that the user can continue scanning by
-	 * just pointing sqlparse_yyin at a new input file.
+	 * (via yyrestart()), so that the user can continue scanning by
+	 * just pointing yyin at a new input file.
 	 */
 #define YY_BUFFER_EOF_PENDING 2
 
@@ -285,51 +285,51 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
  */
 #define YY_CURRENT_BUFFER_LVALUE (yy_buffer_stack)[(yy_buffer_stack_top)]
 
-/* yy_hold_char holds the character lost when sqlparse_yytext is formed. */
+/* yy_hold_char holds the character lost when yytext is formed. */
 static char yy_hold_char;
 static int yy_n_chars;		/* number of characters read into yy_ch_buf */
-int sqlparse_yyleng;
+int yyleng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
 static int yy_init = 0;		/* whether we need to initialize */
 static int yy_start = 0;	/* start state number */
 
-/* Flag which is used to allow sqlparse_yywrap()'s to do buffer switches
- * instead of setting up a fresh sqlparse_yyin.  A bit of a hack ...
+/* Flag which is used to allow yywrap()'s to do buffer switches
+ * instead of setting up a fresh yyin.  A bit of a hack ...
  */
 static int yy_did_buffer_switch_on_eof;
 
-void sqlparse_yyrestart (FILE *input_file  );
-void sqlparse_yy_switch_to_buffer (YY_BUFFER_STATE new_buffer  );
-YY_BUFFER_STATE sqlparse_yy_create_buffer (FILE *file,int size  );
-void sqlparse_yy_delete_buffer (YY_BUFFER_STATE b  );
-void sqlparse_yy_flush_buffer (YY_BUFFER_STATE b  );
-void sqlparse_yypush_buffer_state (YY_BUFFER_STATE new_buffer  );
-void sqlparse_yypop_buffer_state (void );
+void yyrestart (FILE *input_file  );
+void yy_switch_to_buffer (YY_BUFFER_STATE new_buffer  );
+YY_BUFFER_STATE yy_create_buffer (FILE *file,int size  );
+void yy_delete_buffer (YY_BUFFER_STATE b  );
+void yy_flush_buffer (YY_BUFFER_STATE b  );
+void yypush_buffer_state (YY_BUFFER_STATE new_buffer  );
+void yypop_buffer_state (void );
 
-static void sqlparse_yyensure_buffer_stack (void );
-static void sqlparse_yy_load_buffer_state (void );
-static void sqlparse_yy_init_buffer (YY_BUFFER_STATE b,FILE *file  );
+static void yyensure_buffer_stack (void );
+static void yy_load_buffer_state (void );
+static void yy_init_buffer (YY_BUFFER_STATE b,FILE *file  );
 
-#define YY_FLUSH_BUFFER sqlparse_yy_flush_buffer(YY_CURRENT_BUFFER )
+#define YY_FLUSH_BUFFER yy_flush_buffer(YY_CURRENT_BUFFER )
 
-YY_BUFFER_STATE sqlparse_yy_scan_buffer (char *base,yy_size_t size  );
-YY_BUFFER_STATE sqlparse_yy_scan_string (yyconst char *yy_str  );
-YY_BUFFER_STATE sqlparse_yy_scan_bytes (yyconst char *bytes,int len  );
+YY_BUFFER_STATE yy_scan_buffer (char *base,yy_size_t size  );
+YY_BUFFER_STATE yy_scan_string (yyconst char *yy_str  );
+YY_BUFFER_STATE yy_scan_bytes (yyconst char *bytes,int len  );
 
-void *sqlparse_yyalloc (yy_size_t  );
-void *sqlparse_yyrealloc (void *,yy_size_t  );
-void sqlparse_yyfree (void *  );
+void *yyalloc (yy_size_t  );
+void *yyrealloc (void *,yy_size_t  );
+void yyfree (void *  );
 
-#define yy_new_buffer sqlparse_yy_create_buffer
+#define yy_new_buffer yy_create_buffer
 
 #define yy_set_interactive(is_interactive) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){ \
-        sqlparse_yyensure_buffer_stack (); \
+        yyensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            sqlparse_yy_create_buffer(sqlparse_yyin,YY_BUF_SIZE ); \
+            yy_create_buffer(yyin,YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
 	}
@@ -337,9 +337,9 @@ void sqlparse_yyfree (void *  );
 #define yy_set_bol(at_bol) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){\
-        sqlparse_yyensure_buffer_stack (); \
+        yyensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            sqlparse_yy_create_buffer(sqlparse_yyin,YY_BUF_SIZE ); \
+            yy_create_buffer(yyin,YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
@@ -350,16 +350,16 @@ void sqlparse_yyfree (void *  );
 
 typedef unsigned char YY_CHAR;
 
-FILE *sqlparse_yyin = (FILE *) 0, *sqlparse_yyout = (FILE *) 0;
+FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
 
 typedef int yy_state_type;
 
-extern int sqlparse_yylineno;
+extern int yylineno;
 
-int sqlparse_yylineno = 1;
+int yylineno = 1;
 
-extern char *sqlparse_yytext;
-#define yytext_ptr sqlparse_yytext
+extern char *yytext;
+#define yytext_ptr yytext
 
 static yy_state_type yy_get_previous_state (void );
 static yy_state_type yy_try_NUL_trans (yy_state_type current_state  );
@@ -367,12 +367,12 @@ static int yy_get_next_buffer (void );
 static void yy_fatal_error (yyconst char msg[]  );
 
 /* Done after the current pattern has been matched and before the
- * corresponding action - sets up sqlparse_yytext.
+ * corresponding action - sets up yytext.
  */
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
 	(yytext_ptr) -= (yy_more_len); \
-	sqlparse_yyleng = (size_t) (yy_cp - (yytext_ptr)); \
+	yyleng = (size_t) (yy_cp - (yytext_ptr)); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
@@ -2186,8 +2186,8 @@ static yyconst flex_int32_t yy_rule_can_match_eol[377] =
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
 
-extern int sqlparse_yy_flex_debug;
-int sqlparse_yy_flex_debug = 0;
+extern int yy_flex_debug;
+int yy_flex_debug = 0;
 
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
@@ -2198,7 +2198,7 @@ static int yy_more_len = 0;
 #define yymore() ((yy_more_flag) = 1)
 #define YY_MORE_ADJ (yy_more_len)
 #define YY_RESTORE_YY_MORE_OFFSET
-char *sqlparse_yytext;
+char *yytext;
 #line 1 "m2.lex"
 #line 4 "m2.lex"
 
@@ -2206,7 +2206,7 @@ char *sqlparse_yytext;
 Generated by gen_lex
 */
 
-#line 2210 "lex.sqlparse_yy.c"
+#line 2210 "lex.yy.c"
 
 #define INITIAL 0
 #define comment 1
@@ -2231,9 +2231,9 @@ static int yy_init_globals (void );
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int sqlparse_yywrap (void );
+extern "C" int yywrap (void );
 #else
-extern int sqlparse_yywrap (void );
+extern int yywrap (void );
 #endif
 #endif
 
@@ -2267,7 +2267,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO (void) fwrite( sqlparse_yytext, sqlparse_yyleng, 1, sqlparse_yyout )
+#define ECHO (void) fwrite( yytext, yyleng, 1, yyout )
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -2280,18 +2280,18 @@ static int input (void );
 		int c = '*'; \
 		size_t n; \
 		for ( n = 0; n < max_size && \
-			     (c = getc( sqlparse_yyin )) != EOF && c != '\n'; ++n ) \
+			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
 		if ( c == '\n' ) \
 			buf[n++] = (char) c; \
-		if ( c == EOF && ferror( sqlparse_yyin ) ) \
+		if ( c == EOF && ferror( yyin ) ) \
 			YY_FATAL_ERROR( "input in flex scanner failed" ); \
 		result = n; \
 		} \
 	else \
 		{ \
 		errno=0; \
-		while ( (result = fread(buf, 1, max_size, sqlparse_yyin))==0 && ferror(sqlparse_yyin)) \
+		while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
 			{ \
 			if( errno != EINTR) \
 				{ \
@@ -2299,7 +2299,7 @@ static int input (void );
 				break; \
 				} \
 			errno=0; \
-			clearerr(sqlparse_yyin); \
+			clearerr(yyin); \
 			} \
 		}\
 \
@@ -2332,12 +2332,12 @@ static int input (void );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int sqlparse_yylex (void);
+extern int yylex (void);
 
-#define YY_DECL int sqlparse_yylex (void)
+#define YY_DECL int yylex (void)
 #endif /* !YY_DECL */
 
-/* Code executed at the beginning of each rule, after sqlparse_yytext and sqlparse_yyleng
+/* Code executed at the beginning of each rule, after yytext and yyleng
  * have been set up.
  */
 #ifndef YY_USER_ACTION
@@ -2363,7 +2363,7 @@ YY_DECL
 #line 24 "m2.lex"
 
 
-#line 2367 "lex.sqlparse_yy.c"
+#line 2367 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -2376,19 +2376,19 @@ YY_DECL
 		if ( ! (yy_start) )
 			(yy_start) = 1;	/* first start state */
 
-		if ( ! sqlparse_yyin )
-			sqlparse_yyin = stdin;
+		if ( ! yyin )
+			yyin = stdin;
 
-		if ( ! sqlparse_yyout )
-			sqlparse_yyout = stdout;
+		if ( ! yyout )
+			yyout = stdout;
 
 		if ( ! YY_CURRENT_BUFFER ) {
-			sqlparse_yyensure_buffer_stack ();
+			yyensure_buffer_stack ();
 			YY_CURRENT_BUFFER_LVALUE =
-				sqlparse_yy_create_buffer(sqlparse_yyin,YY_BUF_SIZE );
+				yy_create_buffer(yyin,YY_BUF_SIZE );
 		}
 
-		sqlparse_yy_load_buffer_state( );
+		yy_load_buffer_state( );
 		}
 
 	while ( 1 )		/* loops until end-of-file is reached */
@@ -2401,7 +2401,7 @@ YY_DECL
 			}
 		yy_cp = (yy_c_buf_p);
 
-		/* Support of sqlparse_yytext. */
+		/* Support of yytext. */
 		*yy_cp = (yy_hold_char);
 
 		/* yy_bp points to the position in yy_ch_buf of the start of
@@ -2444,10 +2444,10 @@ yy_find_action:
 		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
 			{
 			int yyl;
-			for ( yyl = (yy_more_len); yyl < sqlparse_yyleng; ++yyl )
-				if ( sqlparse_yytext[yyl] == '\n' )
+			for ( yyl = (yy_more_len); yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
 					   
-    sqlparse_yylineno++;
+    yylineno++;
 ;
 			}
 
@@ -2484,9 +2484,9 @@ YY_RULE_SETUP
 { BEGIN comment; yymore(); }
 	YY_BREAK
 case 5:
-*yy_cp = (yy_hold_char); /* undo effects of setting up sqlparse_yytext */
+*yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 (yy_c_buf_p) = yy_cp -= 1;
-YY_DO_BEFORE_ACTION; /* set up sqlparse_yytext again */
+YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
 #line 30 "m2.lex"
 {yymore();}
@@ -2495,1951 +2495,1951 @@ case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
 #line 33 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ON_CLOSE_APPLICATION_STOP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ON_CLOSE_APPLICATION_STOP;} /* 1 */
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
 #line 35 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DIALOGSETCURRLINE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DIALOGSETCURRLINE;} /* 1 */
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
 #line 37 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DIALOGKEYSETLABEL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DIALOGKEYSETLABEL;} /* 1 */
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
 #line 39 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DIALOGKEYSETLABEL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DIALOGKEYSETLABEL;} /* 2 */
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
 #line 41 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UI_INTERFACE_DOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UI_INTERFACE_DOT;} /* 1 */
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
 #line 43 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UI_WINDOW_DOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UI_WINDOW_DOT;} /* 1 */
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
 #line 45 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UIWINDOW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UIWINDOW;} /* 1 */
 	YY_BREAK
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
 #line 47 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOSQLCLOBBER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOSQLCLOBBER;} /* 1 */
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 #line 49 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOCLOBBER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOCLOBBER;} /* 1 */
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
 #line 51 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ALWAYSSQLCLOBBER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALWAYSSQLCLOBBER;} /* 1 */
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
 #line 53 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ALWAYSCLOBBER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALWAYSCLOBBER;} /* 1 */
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
 #line 55 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return OMDOMNODE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OMDOMNODE;} /* 1 */
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
 #line 57 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return OMNODELIST;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OMNODELIST;} /* 1 */
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
 #line 59 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return USING_BTREE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USING_BTREE;} /* 1 */
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
 #line 61 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return USING_RTREE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USING_RTREE;} /* 1 */
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
 #line 63 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return BASECHANNEL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BASECHANNEL;} /* 1 */
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
 #line 65 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UI_DOT_FORM_DOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UI_DOT_FORM_DOT;} /* 1 */
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
 #line 67 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DIALOG_DOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DIALOG_DOT;} /* 1 */
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
 #line 69 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DIALOG_DOT;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DIALOG_DOT;} /* 2 */
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 71 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return STRING;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return STRING;} /* 1 */
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 73 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_COMMENT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_COMMENT;} /* 1 */
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 75 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_IMAGE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_IMAGE;} /* 1 */
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
 #line 77 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DEBUG_FILE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEBUG_FILE;} /* 1 */
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
 #line 79 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return REPLACE_STRING;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REPLACE_STRING;} /* 1 */
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
 #line 81 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return STOP_REPLACE_STRING;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return STOP_REPLACE_STRING;} /* 1 */
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
 #line 83 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return IGNORE_FUNCTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return IGNORE_FUNCTION;} /* 1 */
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
 #line 85 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SET_BUFFERED_LOG;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_BUFFERED_LOG;} /* 1 */
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 88 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MDY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MDY;} /* 1 */
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 90 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return WEEKDAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WEEKDAY;} /* 1 */
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
 #line 92 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MISC_INFX_SQL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MISC_INFX_SQL;} /* 1 */
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
 #line 94 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MISC_INFX_SQL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MISC_INFX_SQL;} /* 2 */
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
 #line 96 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MISC_INFX_SQL;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MISC_INFX_SQL;} /* 3 */
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
 #line 98 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CONVERTING_VIA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CONVERTING_VIA;} /* 1 */
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
 #line 100 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return AS_CONVERTIBLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return AS_CONVERTIBLE;} /* 1 */
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
 #line 102 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return AS_CONVERTIBLE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return AS_CONVERTIBLE;} /* 2 */
 	YY_BREAK
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
 #line 104 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return AS_CONVERTIBLE;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return AS_CONVERTIBLE;} /* 3 */
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
 #line 106 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 1 */
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
 #line 108 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 2 */
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
 #line 110 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 3 */
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
 #line 112 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 4 */
 	YY_BREAK
 case 46:
 /* rule 46 can match eol */
 YY_RULE_SETUP
 #line 114 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 5 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 5 */
 	YY_BREAK
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
 #line 116 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 6 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 6 */
 	YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
 #line 118 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 7 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 7 */
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
 #line 120 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 8 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 8 */
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
 #line 122 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 9 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 9 */
 	YY_BREAK
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
 #line 124 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 10 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 10 */
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
 #line 126 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 11 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 11 */
 	YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
 #line 128 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 12 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 12 */
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
 #line 130 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 13 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 13 */
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
 #line 132 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 14 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 14 */
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
 #line 134 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 15 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 15 */
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
 #line 136 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME_VALUE;} /* 16 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME_VALUE;} /* 16 */
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
 #line 138 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 1 */
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
 #line 140 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 2 */
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
 #line 142 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 3 */
 	YY_BREAK
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
 #line 144 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 4 */
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
 #line 146 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 5 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 5 */
 	YY_BREAK
 case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
 #line 148 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 6 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 6 */
 	YY_BREAK
 case 64:
 /* rule 64 can match eol */
 YY_RULE_SETUP
 #line 150 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 7 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 7 */
 	YY_BREAK
 case 65:
 /* rule 65 can match eol */
 YY_RULE_SETUP
 #line 152 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 8 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 8 */
 	YY_BREAK
 case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
 #line 154 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL_VALUE;} /* 9 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;} /* 9 */
 	YY_BREAK
 case 67:
 /* rule 67 can match eol */
 YY_RULE_SETUP
 #line 156 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return RECOVER_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RECOVER_TABLE;} /* 1 */
 	YY_BREAK
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
 #line 158 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ROLLFORWARD_DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ROLLFORWARD_DATABASE;} /* 1 */
 	YY_BREAK
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
 #line 160 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_TRIGGER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_TRIGGER;} /* 1 */
 	YY_BREAK
 case 70:
 /* rule 70 can match eol */
 YY_RULE_SETUP
 #line 162 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_AUDIT_FOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_AUDIT_FOR;} /* 1 */
 	YY_BREAK
 case 71:
 /* rule 71 can match eol */
 YY_RULE_SETUP
 #line 164 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_AUDIT_FOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_AUDIT_FOR;} /* 1 */
 	YY_BREAK
 case 72:
 /* rule 72 can match eol */
 YY_RULE_SETUP
 #line 166 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EXECUTE_PROCEDURE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXECUTE_PROCEDURE;} /* 1 */
 	YY_BREAK
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
 #line 168 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EXECUTE_PROCEDURE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXECUTE_PROCEDURE;} /* 2 */
 	YY_BREAK
 case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
 #line 170 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ALTER_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER_TABLE;} /* 1 */
 	YY_BREAK
 case 75:
 /* rule 75 can match eol */
 YY_RULE_SETUP
 #line 172 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ALTER_INDEX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER_INDEX;} /* 1 */
 	YY_BREAK
 case 76:
 /* rule 76 can match eol */
 YY_RULE_SETUP
 #line 174 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NEXT_SIZE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NEXT_SIZE;} /* 1 */
 	YY_BREAK
 case 77:
 /* rule 77 can match eol */
 YY_RULE_SETUP
 #line 176 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XSET_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 78:
 /* rule 78 can match eol */
 YY_RULE_SETUP
 #line 178 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
 #line 180 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL;} /* 1 */
 	YY_BREAK
 case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
 #line 182 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XSET_MULTIPLY_EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_MULTIPLY_EQUAL;} /* 1 */
 	YY_BREAK
 case 81:
 /* rule 81 can match eol */
 YY_RULE_SETUP
 #line 184 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XSET_OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 82:
 /* rule 82 can match eol */
 YY_RULE_SETUP
 #line 186 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_DATABASE;} /* 1 */
 	YY_BREAK
 case 83:
 /* rule 83 can match eol */
 YY_RULE_SETUP
 #line 188 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_DATABASE;} /* 1 */
 	YY_BREAK
 case 84:
 /* rule 84 can match eol */
 YY_RULE_SETUP
 #line 190 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ADD_CONSTRAINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ADD_CONSTRAINT;} /* 1 */
 	YY_BREAK
 case 85:
 /* rule 85 can match eol */
 YY_RULE_SETUP
 #line 192 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_CONSTRAINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_CONSTRAINT;} /* 1 */
 	YY_BREAK
 case 86:
 /* rule 86 can match eol */
 YY_RULE_SETUP
 #line 194 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_SYNONYM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_SYNONYM;} /* 1 */
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
 #line 196 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CONSTRAINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CONSTRAINT;} /* 1 */
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
 #line 198 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_ARG_VAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ARG_VAL;} /* 1 */
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
 #line 200 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DOUBLE_PRECISION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DOUBLE_PRECISION;} /* 1 */
 	YY_BREAK
 case 90:
 /* rule 90 can match eol */
 YY_RULE_SETUP
 #line 202 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return COUNT_MULTIPLY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COUNT_MULTIPLY;} /* 1 */
 	YY_BREAK
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
 #line 204 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MODIFY_NEXT_SIZE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODIFY_NEXT_SIZE;} /* 1 */
 	YY_BREAK
 case 92:
 /* rule 92 can match eol */
 YY_RULE_SETUP
 #line 206 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LOCK_MODE_PAGE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_PAGE;} /* 1 */
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
 #line 208 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LOCK_MODE_PAGE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_PAGE;} /* 2 */
 	YY_BREAK
 case 94:
 /* rule 94 can match eol */
 YY_RULE_SETUP
 #line 210 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LOCK_MODE_ROW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_ROW;} /* 1 */
 	YY_BREAK
 case 95:
 /* rule 95 can match eol */
 YY_RULE_SETUP
 #line 212 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LOCK_MODE_ROW;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_ROW;} /* 2 */
 	YY_BREAK
 case 96:
 /* rule 96 can match eol */
 YY_RULE_SETUP
 #line 214 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_YEAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 1 */
 	YY_BREAK
 case 97:
 /* rule 97 can match eol */
 YY_RULE_SETUP
 #line 216 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_YEAR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 2 */
 	YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
 #line 218 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_YEAR;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 3 */
 	YY_BREAK
 case 99:
 /* rule 99 can match eol */
 YY_RULE_SETUP
 #line 220 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_YEAR;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 4 */
 	YY_BREAK
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
 #line 222 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MONTH;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 1 */
 	YY_BREAK
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
 #line 224 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MONTH;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 2 */
 	YY_BREAK
 case 102:
 /* rule 102 can match eol */
 YY_RULE_SETUP
 #line 226 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MONTH;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 3 */
 	YY_BREAK
 case 103:
 /* rule 103 can match eol */
 YY_RULE_SETUP
 #line 228 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MONTH;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 4 */
 	YY_BREAK
 case 104:
 /* rule 104 can match eol */
 YY_RULE_SETUP
 #line 230 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_DAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 1 */
 	YY_BREAK
 case 105:
 /* rule 105 can match eol */
 YY_RULE_SETUP
 #line 232 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_DAY;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 2 */
 	YY_BREAK
 case 106:
 /* rule 106 can match eol */
 YY_RULE_SETUP
 #line 234 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_DAY;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 3 */
 	YY_BREAK
 case 107:
 /* rule 107 can match eol */
 YY_RULE_SETUP
 #line 236 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_DAY;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 4 */
 	YY_BREAK
 case 108:
 /* rule 108 can match eol */
 YY_RULE_SETUP
 #line 238 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_HOUR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 1 */
 	YY_BREAK
 case 109:
 /* rule 109 can match eol */
 YY_RULE_SETUP
 #line 240 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_HOUR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 2 */
 	YY_BREAK
 case 110:
 /* rule 110 can match eol */
 YY_RULE_SETUP
 #line 242 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_HOUR;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 3 */
 	YY_BREAK
 case 111:
 /* rule 111 can match eol */
 YY_RULE_SETUP
 #line 244 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_HOUR;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 4 */
 	YY_BREAK
 case 112:
 /* rule 112 can match eol */
 YY_RULE_SETUP
 #line 246 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MINUTE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 1 */
 	YY_BREAK
 case 113:
 /* rule 113 can match eol */
 YY_RULE_SETUP
 #line 248 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MINUTE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 2 */
 	YY_BREAK
 case 114:
 /* rule 114 can match eol */
 YY_RULE_SETUP
 #line 250 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MINUTE;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 3 */
 	YY_BREAK
 case 115:
 /* rule 115 can match eol */
 YY_RULE_SETUP
 #line 252 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_MINUTE;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 4 */
 	YY_BREAK
 case 116:
 /* rule 116 can match eol */
 YY_RULE_SETUP
 #line 254 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_SECOND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 1 */
 	YY_BREAK
 case 117:
 /* rule 117 can match eol */
 YY_RULE_SETUP
 #line 256 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_SECOND;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 2 */
 	YY_BREAK
 case 118:
 /* rule 118 can match eol */
 YY_RULE_SETUP
 #line 258 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_SECOND;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 3 */
 	YY_BREAK
 case 119:
 /* rule 119 can match eol */
 YY_RULE_SETUP
 #line 260 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNITS_SECOND;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 4 */
 	YY_BREAK
 case 120:
 /* rule 120 can match eol */
 YY_RULE_SETUP
 #line 262 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return TO_CLUSTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TO_CLUSTER;} /* 1 */
 	YY_BREAK
 case 121:
 /* rule 121 can match eol */
 YY_RULE_SETUP
 #line 264 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return TO_NOT_CLUSTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TO_NOT_CLUSTER;} /* 1 */
 	YY_BREAK
 case 122:
 /* rule 122 can match eol */
 YY_RULE_SETUP
 #line 266 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_UC_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_UC_IDX;} /* 1 */
 	YY_BREAK
 case 123:
 /* rule 123 can match eol */
 YY_RULE_SETUP
 #line 268 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_UC_IDX;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_UC_IDX;} /* 2 */
 	YY_BREAK
 case 124:
 /* rule 124 can match eol */
 YY_RULE_SETUP
 #line 270 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_U_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_U_IDX;} /* 1 */
 	YY_BREAK
 case 125:
 /* rule 125 can match eol */
 YY_RULE_SETUP
 #line 272 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_U_IDX;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_U_IDX;} /* 2 */
 	YY_BREAK
 case 126:
 /* rule 126 can match eol */
 YY_RULE_SETUP
 #line 274 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_C_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_C_IDX;} /* 1 */
 	YY_BREAK
 case 127:
 /* rule 127 can match eol */
 YY_RULE_SETUP
 #line 276 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_IDX;} /* 1 */
 	YY_BREAK
 case 128:
 /* rule 128 can match eol */
 YY_RULE_SETUP
 #line 278 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return USE_MEMBER_FUNCTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USE_MEMBER_FUNCTION;} /* 1 */
 	YY_BREAK
 case 129:
 /* rule 129 can match eol */
 YY_RULE_SETUP
 #line 280 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return USE_MEMBER_FUNCTION;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USE_MEMBER_FUNCTION;} /* 2 */
 	YY_BREAK
 case 130:
 /* rule 130 can match eol */
 YY_RULE_SETUP
 #line 282 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return USE_MEMBER_OF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USE_MEMBER_OF;} /* 1 */
 	YY_BREAK
 case 131:
 /* rule 131 can match eol */
 YY_RULE_SETUP
 #line 284 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSICS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICS;} /* 1 */
 	YY_BREAK
 case 132:
 /* rule 132 can match eol */
 YY_RULE_SETUP
 #line 286 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSICS;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICS;} /* 2 */
 	YY_BREAK
 case 133:
 /* rule 133 can match eol */
 YY_RULE_SETUP
 #line 288 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_SCHEMA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SCHEMA;} /* 1 */
 	YY_BREAK
 case 134:
 /* rule 134 can match eol */
 YY_RULE_SETUP
 #line 290 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSIRR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIRR;} /* 1 */
 	YY_BREAK
 case 135:
 /* rule 135 can match eol */
 YY_RULE_SETUP
 #line 292 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSIRR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIRR;} /* 2 */
 	YY_BREAK
 case 136:
 /* rule 136 can match eol */
 YY_RULE_SETUP
 #line 294 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UPDATESTATS_T;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UPDATESTATS_T;} /* 1 */
 	YY_BREAK
 case 137:
 /* rule 137 can match eol */
 YY_RULE_SETUP
 #line 296 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSICR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICR;} /* 1 */
 	YY_BREAK
 case 138:
 /* rule 138 can match eol */
 YY_RULE_SETUP
 #line 298 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSICR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICR;} /* 2 */
 	YY_BREAK
 case 139:
 /* rule 139 can match eol */
 YY_RULE_SETUP
 #line 300 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSIDR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIDR;} /* 1 */
 	YY_BREAK
 case 140:
 /* rule 140 can match eol */
 YY_RULE_SETUP
 #line 302 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSIDR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIDR;} /* 2 */
 	YY_BREAK
 case 141:
 /* rule 141 can match eol */
 YY_RULE_SETUP
 #line 304 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_TEMP_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_TEMP_TABLE;} /* 1 */
 	YY_BREAK
 case 142:
 /* rule 142 can match eol */
 YY_RULE_SETUP
 #line 306 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return WITH_CHECK_OPTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_CHECK_OPTION;} /* 1 */
 	YY_BREAK
 case 143:
 /* rule 143 can match eol */
 YY_RULE_SETUP
 #line 308 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return WITH_GRANT_OPTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_GRANT_OPTION;} /* 1 */
 	YY_BREAK
 case 144:
 /* rule 144 can match eol */
 YY_RULE_SETUP
 #line 310 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSLMNW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSLMNW;} /* 1 */
 	YY_BREAK
 case 145:
 /* rule 145 can match eol */
 YY_RULE_SETUP
 #line 312 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return WHERE_CURRENT_OF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHERE_CURRENT_OF;} /* 1 */
 	YY_BREAK
 case 146:
 /* rule 146 can match eol */
 YY_RULE_SETUP
 #line 314 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_NULL_UNIQUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_NULL_UNIQUE;} /* 1 */
 	YY_BREAK
 case 147:
 /* rule 147 can match eol */
 YY_RULE_SETUP
 #line 316 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSLMW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSLMW;} /* 1 */
 	YY_BREAK
 case 148:
 /* rule 148 can match eol */
 YY_RULE_SETUP
 #line 318 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ALL_PRIVILEGES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALL_PRIVILEGES;} /* 1 */
 	YY_BREAK
 case 149:
 /* rule 149 can match eol */
 YY_RULE_SETUP
 #line 320 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_SYNONYM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 1 */
 	YY_BREAK
 case 150:
 /* rule 150 can match eol */
 YY_RULE_SETUP
 #line 322 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_SYNONYM;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 2 */
 	YY_BREAK
 case 151:
 /* rule 151 can match eol */
 YY_RULE_SETUP
 #line 324 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_SYNONYM;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 3 */
 	YY_BREAK
 case 152:
 /* rule 152 can match eol */
 YY_RULE_SETUP
 #line 326 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_TABLE;} /* 1 */
 	YY_BREAK
 case 153:
 /* rule 153 can match eol */
 YY_RULE_SETUP
 #line 328 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INEXCLUSIVE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INEXCLUSIVE;} /* 1 */
 	YY_BREAK
 case 154:
 /* rule 154 can match eol */
 YY_RULE_SETUP
 #line 330 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UPDATESTATS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UPDATESTATS;} /* 1 */
 	YY_BREAK
 case 155:
 /* rule 155 can match eol */
 YY_RULE_SETUP
 #line 332 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_TABLE;} /* 1 */
 	YY_BREAK
 case 156:
 /* rule 156 can match eol */
 YY_RULE_SETUP
 #line 334 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DEFAULT_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_NULL;} /* 1 */
 	YY_BREAK
 case 157:
 /* rule 157 can match eol */
 YY_RULE_SETUP
 #line 336 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DEFAULT_TODAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_TODAY;} /* 1 */
 	YY_BREAK
 case 158:
 /* rule 158 can match eol */
 YY_RULE_SETUP
 #line 338 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DEFAULT_USER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_USER;} /* 1 */
 	YY_BREAK
 case 159:
 /* rule 159 can match eol */
 YY_RULE_SETUP
 #line 340 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNLOCK_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNLOCK_TABLE;} /* 1 */
 	YY_BREAK
 case 160:
 /* rule 160 can match eol */
 YY_RULE_SETUP
 #line 342 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ROLLBACK_W;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ROLLBACK_W;} /* 1 */
 	YY_BREAK
 case 161:
 /* rule 161 can match eol */
 YY_RULE_SETUP
 #line 344 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSEON;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSEON;} /* 1 */
 	YY_BREAK
 case 162:
 /* rule 162 can match eol */
 YY_RULE_SETUP
 #line 346 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SQLSEOFF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSEOFF;} /* 1 */
 	YY_BREAK
 case 163:
 /* rule 163 can match eol */
 YY_RULE_SETUP
 #line 348 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CREATE_VIEW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_VIEW;} /* 1 */
 	YY_BREAK
 case 164:
 /* rule 164 can match eol */
 YY_RULE_SETUP
 #line 350 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DELETE_FROM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DELETE_FROM;} /* 1 */
 	YY_BREAK
 case 165:
 /* rule 165 can match eol */
 YY_RULE_SETUP
 #line 352 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EXTENT_SIZE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXTENT_SIZE;} /* 1 */
 	YY_BREAK
 case 166:
 /* rule 166 can match eol */
 YY_RULE_SETUP
 #line 354 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FOREIGN_KEY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOREIGN_KEY;} /* 1 */
 	YY_BREAK
 case 167:
 /* rule 167 can match eol */
 YY_RULE_SETUP
 #line 356 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INSERT_INTO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INSERT_INTO;} /* 1 */
 	YY_BREAK
 case 168:
 /* rule 168 can match eol */
 YY_RULE_SETUP
 #line 358 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return IS_NOT_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return IS_NOT_NULL;} /* 1 */
 	YY_BREAK
 case 169:
 /* rule 169 can match eol */
 YY_RULE_SETUP
 #line 360 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_MATCHES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_MATCHES;} /* 1 */
 	YY_BREAK
 case 170:
 /* rule 170 can match eol */
 YY_RULE_SETUP
 #line 362 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return PRIMARY_KEY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return PRIMARY_KEY;} /* 1 */
 	YY_BREAK
 case 171:
 /* rule 171 can match eol */
 YY_RULE_SETUP
 #line 364 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return USE_SESSION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USE_SESSION;} /* 1 */
 	YY_BREAK
 case 172:
 /* rule 172 can match eol */
 YY_RULE_SETUP
 #line 366 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return WITH_NO_LOG;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_NO_LOG;} /* 1 */
 	YY_BREAK
 case 173:
 /* rule 173 can match eol */
 YY_RULE_SETUP
 #line 368 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INSHARE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INSHARE;} /* 1 */
 	YY_BREAK
 case 174:
 /* rule 174 can match eol */
 YY_RULE_SETUP
 #line 370 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return BEGIN_WORK;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BEGIN_WORK;} /* 1 */
 	YY_BREAK
 case 175:
 /* rule 175 can match eol */
 YY_RULE_SETUP
 #line 372 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_INDEX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_INDEX;} /* 1 */
 	YY_BREAK
 case 176:
 /* rule 176 can match eol */
 YY_RULE_SETUP
 #line 374 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FOR_UPDATE_OF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOR_UPDATE_OF;} /* 1 */
 	YY_BREAK
 case 177:
 /* rule 177 can match eol */
 YY_RULE_SETUP
 #line 376 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FOR_UPDATE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOR_UPDATE;} /* 1 */
 	YY_BREAK
 case 178:
 /* rule 178 can match eol */
 YY_RULE_SETUP
 #line 378 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LOCK_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_TABLE;} /* 1 */
 	YY_BREAK
 case 179:
 /* rule 179 can match eol */
 YY_RULE_SETUP
 #line 380 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_EXISTS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EXISTS;} /* 1 */
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
 #line 382 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return REFERENCES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REFERENCES;} /* 1 */
 	YY_BREAK
 case 181:
 /* rule 181 can match eol */
 YY_RULE_SETUP
 #line 384 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return RENCOL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RENCOL;} /* 1 */
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
 #line 386 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SMALLFLOAT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SMALLFLOAT;} /* 1 */
 	YY_BREAK
 case 183:
 /* rule 183 can match eol */
 YY_RULE_SETUP
 #line 388 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return COMMIT_W;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COMMIT_W;} /* 1 */
 	YY_BREAK
 case 184:
 /* rule 184 can match eol */
 YY_RULE_SETUP
 #line 390 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return RENTAB;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RENTAB;} /* 1 */
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
 #line 392 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_CHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CHAR;} /* 1 */
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
 #line 394 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_CHAR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CHAR;} /* 2 */
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
 #line 396 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NCHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NCHAR;} /* 1 */
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
 #line 398 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NVARCHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NVARCHAR;} /* 1 */
 	YY_BREAK
 case 189:
 YY_RULE_SETUP
 #line 400 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DELIMITER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DELIMITER;} /* 1 */
 	YY_BREAK
 case 190:
 /* rule 190 can match eol */
 YY_RULE_SETUP
 #line 402 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP_VIEW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_VIEW;} /* 1 */
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
 #line 404 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EXCLUSIVE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXCLUSIVE;} /* 1 */
 	YY_BREAK
 case 192:
 /* rule 192 can match eol */
 YY_RULE_SETUP
 #line 406 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return GREATER_THAN_EQ;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GREATER_THAN_EQ;} /* 1 */
 	YY_BREAK
 case 193:
 /* rule 193 can match eol */
 YY_RULE_SETUP
 #line 408 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTO_TEMP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTO_TEMP;} /* 1 */
 	YY_BREAK
 case 194:
 /* rule 194 can match eol */
 YY_RULE_SETUP
 #line 410 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LOAD_FROM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOAD_FROM;} /* 1 */
 	YY_BREAK
 case 195:
 /* rule 195 can match eol */
 YY_RULE_SETUP
 #line 412 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNLOAD_TO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNLOAD_TO;} /* 1 */
 	YY_BREAK
 case 196:
 /* rule 196 can match eol */
 YY_RULE_SETUP
 #line 414 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VARIABLE_ATTRIBUTES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARIABLE_ATTRIBUTES;} /* 1 */
 	YY_BREAK
 case 197:
 /* rule 197 can match eol */
 YY_RULE_SETUP
 #line 416 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VARIABLE_ATTRIBUTES;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARIABLE_ATTRIBUTES;} /* 2 */
 	YY_BREAK
 case 198:
 YY_RULE_SETUP
 #line 418 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VARIABLE_ATTRIBUTES;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARIABLE_ATTRIBUTES;} /* 3 */
 	YY_BREAK
 case 199:
 /* rule 199 can match eol */
 YY_RULE_SETUP
 #line 420 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VARIABLE_ATTRIBUTES;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARIABLE_ATTRIBUTES;} /* 4 */
 	YY_BREAK
 case 200:
 /* rule 200 can match eol */
 YY_RULE_SETUP
 #line 422 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VARIABLE_ATTRIBUTES;} /* 5 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARIABLE_ATTRIBUTES;} /* 5 */
 	YY_BREAK
 case 201:
 YY_RULE_SETUP
 #line 424 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VARIABLE_ATTRIBUTES;} /* 6 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARIABLE_ATTRIBUTES;} /* 6 */
 	YY_BREAK
 case 202:
 YY_RULE_SETUP
 #line 426 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATABASE;} /* 1 */
 	YY_BREAK
 case 203:
 YY_RULE_SETUP
 #line 428 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DATETIME;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME;} /* 1 */
 	YY_BREAK
 case 204:
 YY_RULE_SETUP
 #line 430 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DISTINCT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DISTINCT;} /* 1 */
 	YY_BREAK
 case 205:
 YY_RULE_SETUP
 #line 432 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FRACTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FRACTION;} /* 1 */
 	YY_BREAK
 case 206:
 /* rule 206 can match eol */
 YY_RULE_SETUP
 #line 434 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return GROUP_BY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GROUP_BY;} /* 1 */
 	YY_BREAK
 case 207:
 YY_RULE_SETUP
 #line 436 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTERVAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL;} /* 1 */
 	YY_BREAK
 case 208:
 /* rule 208 can match eol */
 YY_RULE_SETUP
 #line 438 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_LIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_LIKE;} /* 1 */
 	YY_BREAK
 case 209:
 /* rule 209 can match eol */
 YY_RULE_SETUP
 #line 440 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_ILIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_ILIKE;} /* 1 */
 	YY_BREAK
 case 210:
 /* rule 210 can match eol */
 YY_RULE_SETUP
 #line 442 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_NULL;} /* 1 */
 	YY_BREAK
 case 211:
 YY_RULE_SETUP
 #line 444 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return RESOURCE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RESOURCE;} /* 1 */
 	YY_BREAK
 case 212:
 YY_RULE_SETUP
 #line 446 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SMALLINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SMALLINT;} /* 1 */
 	YY_BREAK
 case 213:
 YY_RULE_SETUP
 #line 448 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_WORDWRAP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_WORDWRAP;} /* 1 */
 	YY_BREAK
 case 214:
 /* rule 214 can match eol */
 YY_RULE_SETUP
 #line 450 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return IS_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return IS_NULL;} /* 1 */
 	YY_BREAK
 case 215:
 /* rule 215 can match eol */
 YY_RULE_SETUP
 #line 452 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LESS_THAN_EQ;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LESS_THAN_EQ;} /* 1 */
 	YY_BREAK
 case 216:
 YY_RULE_SETUP
 #line 454 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return BETWEEN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BETWEEN;} /* 1 */
 	YY_BREAK
 case 217:
 YY_RULE_SETUP
 #line 456 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_CLIPPED;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CLIPPED;} /* 1 */
 	YY_BREAK
 case 218:
 YY_RULE_SETUP
 #line 458 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CLOSE_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CLOSE_BRACKET;} /* 1 */
 	YY_BREAK
 case 219:
 YY_RULE_SETUP
 #line 460 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CONNECT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CONNECT;} /* 1 */
 	YY_BREAK
 case 220:
 YY_RULE_SETUP
 #line 462 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_CURRENT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CURRENT;} /* 1 */
 	YY_BREAK
 case 221:
 YY_RULE_SETUP
 #line 464 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DECIMAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 1 */
 	YY_BREAK
 case 222:
 YY_RULE_SETUP
 #line 466 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DECIMAL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 2 */
 	YY_BREAK
 case 223:
 YY_RULE_SETUP
 #line 468 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DECIMAL;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 3 */
 	YY_BREAK
 case 224:
 YY_RULE_SETUP
 #line 470 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DEFAULT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT;} /* 1 */
 	YY_BREAK
 case 225:
 YY_RULE_SETUP
 #line 472 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTEGER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER;} /* 1 */
 	YY_BREAK
 case 226:
 YY_RULE_SETUP
 #line 474 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTEGER;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER;} /* 2 */
 	YY_BREAK
 case 227:
 YY_RULE_SETUP
 #line 476 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTEGER8;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER8;} /* 1 */
 	YY_BREAK
 case 228:
 YY_RULE_SETUP
 #line 478 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTEGER8;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER8;} /* 2 */
 	YY_BREAK
 case 229:
 YY_RULE_SETUP
 #line 480 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTEGER8;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER8;} /* 3 */
 	YY_BREAK
 case 230:
 YY_RULE_SETUP
 #line 482 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTEGER8;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER8;} /* 4 */
 	YY_BREAK
 case 231:
 YY_RULE_SETUP
 #line 484 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SERIAL8;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SERIAL8;} /* 1 */
 	YY_BREAK
 case 232:
 YY_RULE_SETUP
 #line 486 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MATCHES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MATCHES;} /* 1 */
 	YY_BREAK
 case 233:
 YY_RULE_SETUP
 #line 488 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VARCHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARCHAR;} /* 1 */
 	YY_BREAK
 case 234:
 YY_RULE_SETUP
 #line 490 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CLOSE_SQUARE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CLOSE_SQUARE;} /* 1 */
 	YY_BREAK
 case 235:
 YY_RULE_SETUP
 #line 492 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return GREATER_THAN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GREATER_THAN;} /* 1 */
 	YY_BREAK
 case 236:
 YY_RULE_SETUP
 #line 494 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_FALSE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FALSE;} /* 1 */
 	YY_BREAK
 case 237:
 /* rule 237 can match eol */
 YY_RULE_SETUP
 #line 496 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_IN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_IN;} /* 1 */
 	YY_BREAK
 case 238:
 YY_RULE_SETUP
 #line 498 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 239:
 YY_RULE_SETUP
 #line 500 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DELETE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DELETE;} /* 1 */
 	YY_BREAK
 case 240:
 YY_RULE_SETUP
 #line 502 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_ESCAPE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ESCAPE;} /* 1 */
 	YY_BREAK
 case 241:
 YY_RULE_SETUP
 #line 504 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_ESCAPE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ESCAPE;} /* 2 */
 	YY_BREAK
 case 242:
 YY_RULE_SETUP
 #line 506 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EXISTS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXISTS;} /* 1 */
 	YY_BREAK
 case 243:
 YY_RULE_SETUP
 #line 508 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EXTEND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXTEND;} /* 1 */
 	YY_BREAK
 case 244:
 YY_RULE_SETUP
 #line 510 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return HAVING;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return HAVING;} /* 1 */
 	YY_BREAK
 case 245:
 YY_RULE_SETUP
 #line 512 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_INSERT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_INSERT;} /* 1 */
 	YY_BREAK
 case 246:
 YY_RULE_SETUP
 #line 514 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MINUTE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MINUTE;} /* 1 */
 	YY_BREAK
 case 247:
 YY_RULE_SETUP
 #line 516 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MODIFY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODIFY;} /* 1 */
 	YY_BREAK
 case 248:
 /* rule 248 can match eol */
 YY_RULE_SETUP
 #line 518 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EQUAL;} /* 1 */
 	YY_BREAK
 case 249:
 YY_RULE_SETUP
 #line 520 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return EQUAL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EQUAL;} /* 2 */
 	YY_BREAK
 case 250:
 /* rule 250 can match eol */
 YY_RULE_SETUP
 #line 522 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EQUAL;} /* 1 */
 	YY_BREAK
 case 251:
 /* rule 251 can match eol */
 YY_RULE_SETUP
 #line 524 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return NOT_EQUAL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EQUAL;} /* 2 */
 	YY_BREAK
 case 252:
 YY_RULE_SETUP
 #line 526 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return OPEN_SQUARE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OPEN_SQUARE;} /* 1 */
 	YY_BREAK
 case 253:
 YY_RULE_SETUP
 #line 528 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return PUBLIC;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return PUBLIC;} /* 1 */
 	YY_BREAK
 case 254:
 YY_RULE_SETUP
 #line 530 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return REVOKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REVOKE;} /* 1 */
 	YY_BREAK
 case 255:
 YY_RULE_SETUP
 #line 532 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SECOND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SECOND;} /* 1 */
 	YY_BREAK
 case 256:
 YY_RULE_SETUP
 #line 534 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_SELECT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SELECT;} /* 1 */
 	YY_BREAK
 case 257:
 YY_RULE_SETUP
 #line 536 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SERIAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SERIAL;} /* 1 */
 	YY_BREAK
 case 258:
 YY_RULE_SETUP
 #line 538 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_SPACES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SPACES;} /* 1 */
 	YY_BREAK
 case 259:
 YY_RULE_SETUP
 #line 540 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_SPACES;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SPACES;} /* 2 */
 	YY_BREAK
 case 260:
 YY_RULE_SETUP
 #line 542 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNIQUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNIQUE;} /* 1 */
 	YY_BREAK
 case 261:
 YY_RULE_SETUP
 #line 544 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_UPDATE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_UPDATE;} /* 1 */
 	YY_BREAK
 case 262:
 YY_RULE_SETUP
 #line 546 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VALUES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VALUES;} /* 1 */
 	YY_BREAK
 case 263:
 YY_RULE_SETUP
 #line 548 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_NULL;} /* 1 */
 	YY_BREAK
 case 264:
 YY_RULE_SETUP
 #line 550 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_TRUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TRUE;} /* 1 */
 	YY_BREAK
 case 265:
 YY_RULE_SETUP
 #line 552 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ALTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER;} /* 1 */
 	YY_BREAK
 case 266:
 YY_RULE_SETUP
 #line 554 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_ASCII;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ASCII;} /* 1 */
 	YY_BREAK
 case 267:
 YY_RULE_SETUP
 #line 556 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CHECK;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CHECK;} /* 1 */
 	YY_BREAK
 case 268:
 YY_RULE_SETUP
 #line 558 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return COUNT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COUNT;} /* 1 */
 	YY_BREAK
 case 269:
 YY_RULE_SETUP
 #line 560 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_FIRST;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FIRST;} /* 1 */
 	YY_BREAK
 case 270:
 YY_RULE_SETUP
 #line 562 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_FLOAT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FLOAT;} /* 1 */
 	YY_BREAK
 case 271:
 YY_RULE_SETUP
 #line 564 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return GRANT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GRANT;} /* 1 */
 	YY_BREAK
 case 272:
 YY_RULE_SETUP
 #line 566 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INDEX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INDEX;} /* 1 */
 	YY_BREAK
 case 273:
 YY_RULE_SETUP
 #line 568 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LESS_THAN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LESS_THAN;} /* 1 */
 	YY_BREAK
 case 274:
 YY_RULE_SETUP
 #line 570 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MONEY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MONEY;} /* 1 */
 	YY_BREAK
 case 275:
 YY_RULE_SETUP
 #line 572 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return MONTH;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MONTH;} /* 1 */
 	YY_BREAK
 case 276:
 /* rule 276 can match eol */
 YY_RULE_SETUP
 #line 574 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_POWER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_POWER;} /* 1 */
 	YY_BREAK
 case 277:
 YY_RULE_SETUP
 #line 576 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_MULTIPLY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MULTIPLY;} /* 1 */
 	YY_BREAK
 case 278:
 YY_RULE_SETUP
 #line 578 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ORDER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ORDER;} /* 1 */
 	YY_BREAK
 case 279:
 YY_RULE_SETUP
 #line 580 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return OUTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OUTER;} /* 1 */
 	YY_BREAK
 case 280:
 YY_RULE_SETUP
 #line 582 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return UNION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNION;} /* 1 */
 	YY_BREAK
 case 281:
 YY_RULE_SETUP
 #line 584 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return WHERE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHERE;} /* 1 */
 	YY_BREAK
 case 282:
 YY_RULE_SETUP
 #line 586 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_BYTE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_BYTE;} /* 1 */
 	YY_BREAK
 case 283:
 YY_RULE_SETUP
 #line 588 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CASE;} /* 1 */
 	YY_BREAK
 case 284:
 YY_RULE_SETUP
 #line 590 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DATE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DATE;} /* 1 */
 	YY_BREAK
 case 285:
 YY_RULE_SETUP
 #line 592 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DESC;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DESC;} /* 1 */
 	YY_BREAK
 case 286:
 YY_RULE_SETUP
 #line 594 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DIVIDE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DIVIDE;} /* 1 */
 	YY_BREAK
 case 287:
 YY_RULE_SETUP
 #line 596 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DROP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP;} /* 1 */
 	YY_BREAK
 case 288:
 YY_RULE_SETUP
 #line 598 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ELSE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ELSE;} /* 1 */
 	YY_BREAK
 case 289:
 YY_RULE_SETUP
 #line 600 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FROM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FROM;} /* 1 */
 	YY_BREAK
 case 290:
 YY_RULE_SETUP
 #line 602 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return HOUR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return HOUR;} /* 1 */
 	YY_BREAK
 case 291:
 YY_RULE_SETUP
 #line 604 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return INTO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTO;} /* 1 */
 	YY_BREAK
 case 292:
 YY_RULE_SETUP
 #line 606 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return LIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LIKE;} /* 1 */
 	YY_BREAK
 case 293:
 YY_RULE_SETUP
 #line 608 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return REAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REAL;} /* 1 */
 	YY_BREAK
 case 294:
 YY_RULE_SETUP
 #line 610 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SOME;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SOME;} /* 1 */
 	YY_BREAK
 case 295:
 YY_RULE_SETUP
 #line 612 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_TEXT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TEXT;} /* 1 */
 	YY_BREAK
 case 296:
 YY_RULE_SETUP
 #line 614 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_THEN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_THEN;} /* 1 */
 	YY_BREAK
 case 297:
 YY_RULE_SETUP
 #line 616 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return USER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USER;} /* 1 */
 	YY_BREAK
 case 298:
 YY_RULE_SETUP
 #line 618 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return WHEN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHEN;} /* 1 */
 	YY_BREAK
 case 299:
 YY_RULE_SETUP
 #line 620 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return YEAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return YEAR;} /* 1 */
 	YY_BREAK
 case 300:
 YY_RULE_SETUP
 #line 622 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DOW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DOW;} /* 1 */
 	YY_BREAK
 case 301:
 YY_RULE_SETUP
 #line 624 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XSET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET;} /* 1 */
 	YY_BREAK
 case 302:
 YY_RULE_SETUP
 #line 626 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ADD;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ADD;} /* 1 */
 	YY_BREAK
 case 303:
 YY_RULE_SETUP
 #line 628 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ALL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALL;} /* 1 */
 	YY_BREAK
 case 304:
 YY_RULE_SETUP
 #line 630 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_AND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AND;} /* 1 */
 	YY_BREAK
 case 305:
 YY_RULE_SETUP
 #line 632 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ANY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ANY;} /* 1 */
 	YY_BREAK
 case 306:
 YY_RULE_SETUP
 #line 634 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ASC;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ASC;} /* 1 */
 	YY_BREAK
 case 307:
 YY_RULE_SETUP
 #line 636 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return AVG;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return AVG;} /* 1 */
 	YY_BREAK
 case 308:
 YY_RULE_SETUP
 #line 638 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return COLON;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COLON;} /* 1 */
 	YY_BREAK
 case 309:
 YY_RULE_SETUP
 #line 640 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_COMMA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_COMMA;} /* 1 */
 	YY_BREAK
 case 310:
 YY_RULE_SETUP
 #line 642 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DAY;} /* 1 */
 	YY_BREAK
 case 311:
 YY_RULE_SETUP
 #line 644 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return DBA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DBA;} /* 1 */
 	YY_BREAK
 case 312:
 YY_RULE_SETUP
 #line 646 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_FOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FOR;} /* 1 */
 	YY_BREAK
 case 313:
 YY_RULE_SETUP
 #line 648 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_KEY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_KEY;} /* 1 */
 	YY_BREAK
 case 314:
 YY_RULE_SETUP
 #line 650 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_LET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_LET;} /* 1 */
 	YY_BREAK
 case 315:
 YY_RULE_SETUP
 #line 652 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XMAX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XMAX;} /* 1 */
 	YY_BREAK
 case 316:
 YY_RULE_SETUP
 #line 654 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return XMIN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XMIN;} /* 1 */
 	YY_BREAK
 case 317:
 YY_RULE_SETUP
 #line 656 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_MINUS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MINUS;} /* 1 */
 	YY_BREAK
 case 318:
 YY_RULE_SETUP
 #line 658 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_MOD;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MOD;} /* 1 */
 	YY_BREAK
 case 319:
 YY_RULE_SETUP
 #line 660 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_NOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_NOT;} /* 1 */
 	YY_BREAK
 case 320:
 YY_RULE_SETUP
 #line 662 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_PAD;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PAD;} /* 1 */
 	YY_BREAK
 case 321:
 YY_RULE_SETUP
 #line 664 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_PUT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PUT;} /* 1 */
 	YY_BREAK
 case 322:
 YY_RULE_SETUP
 #line 666 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_RED;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_RED;} /* 1 */
 	YY_BREAK
 case 323:
 YY_RULE_SETUP
 #line 668 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_ROW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ROW;} /* 1 */
 	YY_BREAK
 case 324:
 YY_RULE_SETUP
 #line 670 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_SQL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SQL;} /* 1 */
 	YY_BREAK
 case 325:
 YY_RULE_SETUP
 #line 672 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_SUM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SUM;} /* 1 */
 	YY_BREAK
 case 326:
 YY_RULE_SETUP
 #line 674 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_TOP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TOP;} /* 1 */
 	YY_BREAK
 case 327:
 YY_RULE_SETUP
 #line 676 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_USE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_USE;} /* 1 */
 	YY_BREAK
 case 328:
 YY_RULE_SETUP
 #line 678 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ATSIGN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ATSIGN;} /* 1 */
 	YY_BREAK
 case 329:
 YY_RULE_SETUP
 #line 680 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_PLUS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PLUS;} /* 1 */
 	YY_BREAK
 case 330:
 /* rule 330 can match eol */
 YY_RULE_SETUP
 #line 682 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_PLUS;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PLUS;} /* 2 */
 	YY_BREAK
 case 331:
 YY_RULE_SETUP
 #line 684 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_AS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AS;} /* 1 */
 	YY_BREAK
 case 332:
 YY_RULE_SETUP
 #line 686 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_AT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AT;} /* 1 */
 	YY_BREAK
 case 333:
 YY_RULE_SETUP
 #line 688 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_BY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_BY;} /* 1 */
 	YY_BREAK
 case 334:
 YY_RULE_SETUP
 #line 690 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_DOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DOT;} /* 1 */
 	YY_BREAK
 case 335:
 YY_RULE_SETUP
 #line 692 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_GO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_GO;} /* 1 */
 	YY_BREAK
 case 336:
 YY_RULE_SETUP
 #line 694 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_IF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_IF;} /* 1 */
 	YY_BREAK
 case 337:
 YY_RULE_SETUP
 #line 696 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_IN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_IN;} /* 1 */
 	YY_BREAK
 case 338:
 YY_RULE_SETUP
 #line 698 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_OF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_OF;} /* 1 */
 	YY_BREAK
 case 339:
 YY_RULE_SETUP
 #line 700 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_ON;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ON;} /* 1 */
 	YY_BREAK
 case 340:
 YY_RULE_SETUP
 #line 702 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_OR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_OR;} /* 1 */
 	YY_BREAK
 case 341:
 YY_RULE_SETUP
 #line 704 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_TO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TO;} /* 1 */
 	YY_BREAK
 case 342:
 YY_RULE_SETUP
 #line 706 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return BEFORE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BEFORE;} /* 1 */
 	YY_BREAK
 case 343:
 /* rule 343 can match eol */
 YY_RULE_SETUP
 #line 708 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_INPUT_ARRAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_INPUT_ARRAY;} /* 1 */
 	YY_BREAK
 case 344:
 YY_RULE_SETUP
 #line 710 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return END;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return END;} /* 1 */
 	YY_BREAK
 case 345:
 YY_RULE_SETUP
 #line 712 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return TILDE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TILDE;} /* 1 */
 	YY_BREAK
 case 346:
 YY_RULE_SETUP
 #line 714 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return ILIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ILIKE;} /* 1 */
 	YY_BREAK
 case 347:
 YY_RULE_SETUP
 #line 716 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FILLFACTOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FILLFACTOR;} /* 1 */
 	YY_BREAK
 case 348:
 YY_RULE_SETUP
 #line 718 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return TIME;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TIME;} /* 1 */
 	YY_BREAK
 case 349:
 YY_RULE_SETUP
 #line 720 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_TODAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TODAY;} /* 1 */
 	YY_BREAK
 case 350:
 YY_RULE_SETUP
 #line 722 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return KW_IDLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_IDLE;} /* 1 */
 	YY_BREAK
 case 351:
 /* rule 351 can match eol */
 YY_RULE_SETUP
 #line 724 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CANCEL_INSERT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CANCEL_INSERT;} /* 1 */
 	YY_BREAK
 case 352:
 /* rule 352 can match eol */
 YY_RULE_SETUP
 #line 726 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return CANCEL_DELETE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CANCEL_DELETE;} /* 1 */
 	YY_BREAK
 case 353:
 /* rule 353 can match eol */
 YY_RULE_SETUP
 #line 728 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FORCE_UI;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FORCE_UI;} /* 1 */
 	YY_BREAK
 case 354:
 YY_RULE_SETUP
 #line 730 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return FGL_MODULE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FGL_MODULE;} /* 1 */
 	YY_BREAK
 case 355:
 YY_RULE_SETUP
 #line 732 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return VIA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VIA;} /* 1 */
 	YY_BREAK
 case 356:
 YY_RULE_SETUP
 #line 734 "m2.lex"
-{ a4gl_upshift(sqlparse_yytext); strcpy(yylval.str,sqlparse_yytext);  return SLICE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SLICE;} /* 1 */
 	YY_BREAK
 case 357:
 /* rule 357 can match eol */
@@ -4471,49 +4471,49 @@ YY_RULE_SETUP
 case 362:
 YY_RULE_SETUP
 #line 741 "m2.lex"
-{strcpy(yylval.str,sqlparse_yytext);return NAMED;}
+{strcpy(yylval.str,yytext);return NAMED;}
 	YY_BREAK
 case 363:
 YY_RULE_SETUP
 #line 743 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return NOT_EQUAL;}
+{  strcpy(yylval.str,yytext); return NOT_EQUAL;}
 	YY_BREAK
 case 364:
 YY_RULE_SETUP
 #line 744 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return NOT_EQUAL;}
+{  strcpy(yylval.str,yytext); return NOT_EQUAL;}
 	YY_BREAK
 case 365:
 YY_RULE_SETUP
 #line 745 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return LESS_THAN_EQ;}
+{  strcpy(yylval.str,yytext); return LESS_THAN_EQ;}
 	YY_BREAK
 case 366:
 YY_RULE_SETUP
 #line 746 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return GREATER_THAN_EQ;}
+{  strcpy(yylval.str,yytext); return GREATER_THAN_EQ;}
 	YY_BREAK
 case 367:
 /* rule 367 can match eol */
 YY_RULE_SETUP
 #line 747 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return CHAR_VALUE;}
+{  strcpy(yylval.str,yytext); return CHAR_VALUE;}
 	YY_BREAK
 case 368:
 YY_RULE_SETUP
 #line 748 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return CHAR_VALUE;}
+{  strcpy(yylval.str,yytext); return CHAR_VALUE;}
 	YY_BREAK
 case 369:
 /* rule 369 can match eol */
 YY_RULE_SETUP
 #line 749 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return CHAR_VALUE;}
+{  strcpy(yylval.str,yytext); return CHAR_VALUE;}
 	YY_BREAK
 case 370:
 YY_RULE_SETUP
 #line 750 "m2.lex"
-{  strcpy(yylval.str,sqlparse_yytext); return CHAR_VALUE;}
+{  strcpy(yylval.str,yytext); return CHAR_VALUE;}
 	YY_BREAK
 case 371:
 YY_RULE_SETUP
@@ -4528,24 +4528,24 @@ YY_RULE_SETUP
 case 373:
 YY_RULE_SETUP
 #line 754 "m2.lex"
-{strcpy(yylval.str, sqlparse_yytext); return(INT_VALUE);}
+{strcpy(yylval.str, yytext); return(INT_VALUE);}
 	YY_BREAK
 case 374:
 YY_RULE_SETUP
 #line 755 "m2.lex"
-{strcpy(yylval.str, sqlparse_yytext); return(NUMBER_VALUE);}
+{strcpy(yylval.str, yytext); return(NUMBER_VALUE);}
 	YY_BREAK
 case 375:
 YY_RULE_SETUP
 #line 757 "m2.lex"
-{strcpy(yylval.str,sqlparse_yytext);return CH;}
+{strcpy(yylval.str,yytext);return CH;}
 	YY_BREAK
 case 376:
 YY_RULE_SETUP
 #line 759 "m2.lex"
 ECHO;
 	YY_BREAK
-#line 4549 "lex.sqlparse_yy.c"
+#line 4549 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(comment):
 	yyterminate();
@@ -4563,15 +4563,15 @@ case YY_STATE_EOF(comment):
 			{
 			/* We're scanning a new file or input source.  It's
 			 * possible that this happened because the user
-			 * just pointed sqlparse_yyin at a new source and called
-			 * sqlparse_yylex().  If so, then we have to assure
+			 * just pointed yyin at a new source and called
+			 * yylex().  If so, then we have to assure
 			 * consistency between YY_CURRENT_BUFFER and our
 			 * globals.  Here is the right place to do so, because
 			 * this is the first action (other than possibly a
 			 * back-up) that will match for the new input source.
 			 */
 			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-			YY_CURRENT_BUFFER_LVALUE->yy_input_file = sqlparse_yyin;
+			YY_CURRENT_BUFFER_LVALUE->yy_input_file = yyin;
 			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
 			}
 
@@ -4624,11 +4624,11 @@ case YY_STATE_EOF(comment):
 				{
 				(yy_did_buffer_switch_on_eof) = 0;
 
-				if ( sqlparse_yywrap( ) )
+				if ( yywrap( ) )
 					{
 					/* Note: because we've taken care in
 					 * yy_get_next_buffer() to have set up
-					 * sqlparse_yytext, we can now set up
+					 * yytext, we can now set up
 					 * yy_c_buf_p so that if some total
 					 * hoser (like flex itself) wants to
 					 * call the scanner after we return the
@@ -4677,7 +4677,7 @@ case YY_STATE_EOF(comment):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
-} /* end of sqlparse_yylex */
+} /* end of yylex */
 
 /* yy_get_next_buffer - try to read in a new buffer
  *
@@ -4755,7 +4755,7 @@ static int yy_get_next_buffer (void)
 
 				b->yy_ch_buf = (char *)
 					/* Include room in for 2 EOB chars. */
-					sqlparse_yyrealloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
+					yyrealloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
 				}
 			else
 				/* Can't grow it, we don't own it. */
@@ -4787,7 +4787,7 @@ static int yy_get_next_buffer (void)
 		if ( number_to_move == YY_MORE_ADJ )
 			{
 			ret_val = EOB_ACT_END_OF_FILE;
-			sqlparse_yyrestart(sqlparse_yyin  );
+			yyrestart(yyin  );
 			}
 
 		else
@@ -4873,7 +4873,7 @@ static int yy_get_next_buffer (void)
     
     yy_cp = (yy_c_buf_p);
 
-	/* undo effects of setting up sqlparse_yytext */
+	/* undo effects of setting up yytext */
 	*yy_cp = (yy_hold_char);
 
 	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
@@ -4900,7 +4900,7 @@ static int yy_get_next_buffer (void)
 	*--yy_cp = (char) c;
 
     if ( c == '\n' ){
-        --sqlparse_yylineno;
+        --yylineno;
     }
 
 	(yytext_ptr) = yy_bp;
@@ -4949,13 +4949,13 @@ static int yy_get_next_buffer (void)
 					 */
 
 					/* Reset buffer status. */
-					sqlparse_yyrestart(sqlparse_yyin );
+					yyrestart(yyin );
 
 					/*FALLTHROUGH*/
 
 				case EOB_ACT_END_OF_FILE:
 					{
-					if ( sqlparse_yywrap( ) )
+					if ( yywrap( ) )
 						return EOF;
 
 					if ( ! (yy_did_buffer_switch_on_eof) )
@@ -4975,12 +4975,12 @@ static int yy_get_next_buffer (void)
 		}
 
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
-	*(yy_c_buf_p) = '\0';	/* preserve sqlparse_yytext */
+	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
 
 	if ( c == '\n' )
 		   
-    sqlparse_yylineno++;
+    yylineno++;
 ;
 
 	return c;
@@ -4992,32 +4992,32 @@ static int yy_get_next_buffer (void)
  * 
  * @note This function does not reset the start condition to @c INITIAL .
  */
-    void sqlparse_yyrestart  (FILE * input_file )
+    void yyrestart  (FILE * input_file )
 {
     
 	if ( ! YY_CURRENT_BUFFER ){
-        sqlparse_yyensure_buffer_stack ();
+        yyensure_buffer_stack ();
 		YY_CURRENT_BUFFER_LVALUE =
-            sqlparse_yy_create_buffer(sqlparse_yyin,YY_BUF_SIZE );
+            yy_create_buffer(yyin,YY_BUF_SIZE );
 	}
 
-	sqlparse_yy_init_buffer(YY_CURRENT_BUFFER,input_file );
-	sqlparse_yy_load_buffer_state( );
+	yy_init_buffer(YY_CURRENT_BUFFER,input_file );
+	yy_load_buffer_state( );
 }
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
  * 
  */
-    void sqlparse_yy_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
+    void yy_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
     
 	/* TODO. We should be able to replace this entire function body
 	 * with
-	 *		sqlparse_yypop_buffer_state();
-	 *		sqlparse_yypush_buffer_state(new_buffer);
+	 *		yypop_buffer_state();
+	 *		yypush_buffer_state(new_buffer);
      */
-	sqlparse_yyensure_buffer_stack ();
+	yyensure_buffer_stack ();
 	if ( YY_CURRENT_BUFFER == new_buffer )
 		return;
 
@@ -5030,21 +5030,21 @@ static int yy_get_next_buffer (void)
 		}
 
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
-	sqlparse_yy_load_buffer_state( );
+	yy_load_buffer_state( );
 
 	/* We don't actually know whether we did this switch during
-	 * EOF (sqlparse_yywrap()) processing, but the only time this flag
-	 * is looked at is after sqlparse_yywrap() is called, so it's safe
+	 * EOF (yywrap()) processing, but the only time this flag
+	 * is looked at is after yywrap() is called, so it's safe
 	 * to go ahead and always set it.
 	 */
 	(yy_did_buffer_switch_on_eof) = 1;
 }
 
-static void sqlparse_yy_load_buffer_state  (void)
+static void yy_load_buffer_state  (void)
 {
     	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
 	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
-	sqlparse_yyin = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+	yyin = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
 	(yy_hold_char) = *(yy_c_buf_p);
 }
 
@@ -5054,35 +5054,35 @@ static void sqlparse_yy_load_buffer_state  (void)
  * 
  * @return the allocated buffer state.
  */
-    YY_BUFFER_STATE sqlparse_yy_create_buffer  (FILE * file, int  size )
+    YY_BUFFER_STATE yy_create_buffer  (FILE * file, int  size )
 {
 	YY_BUFFER_STATE b;
     
-	b = (YY_BUFFER_STATE) sqlparse_yyalloc(sizeof( struct yy_buffer_state )  );
+	b = (YY_BUFFER_STATE) yyalloc(sizeof( struct yy_buffer_state )  );
 	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in sqlparse_yy_create_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
 	b->yy_buf_size = size;
 
 	/* yy_ch_buf has to be 2 characters longer than the size given because
 	 * we need to put in 2 end-of-buffer characters.
 	 */
-	b->yy_ch_buf = (char *) sqlparse_yyalloc(b->yy_buf_size + 2  );
+	b->yy_ch_buf = (char *) yyalloc(b->yy_buf_size + 2  );
 	if ( ! b->yy_ch_buf )
-		YY_FATAL_ERROR( "out of dynamic memory in sqlparse_yy_create_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
 	b->yy_is_our_buffer = 1;
 
-	sqlparse_yy_init_buffer(b,file );
+	yy_init_buffer(b,file );
 
 	return b;
 }
 
 /** Destroy the buffer.
- * @param b a buffer created with sqlparse_yy_create_buffer()
+ * @param b a buffer created with yy_create_buffer()
  * 
  */
-    void sqlparse_yy_delete_buffer (YY_BUFFER_STATE  b )
+    void yy_delete_buffer (YY_BUFFER_STATE  b )
 {
     
 	if ( ! b )
@@ -5092,9 +5092,9 @@ static void sqlparse_yy_load_buffer_state  (void)
 		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
 	if ( b->yy_is_our_buffer )
-		sqlparse_yyfree((void *) b->yy_ch_buf  );
+		yyfree((void *) b->yy_ch_buf  );
 
-	sqlparse_yyfree((void *) b  );
+	yyfree((void *) b  );
 }
 
 #ifndef _UNISTD_H /* assume unistd.h has isatty() for us */
@@ -5113,20 +5113,20 @@ extern int isatty (int );
     
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
- * such as during a sqlparse_yyrestart() or at EOF.
+ * such as during a yyrestart() or at EOF.
  */
-    static void sqlparse_yy_init_buffer  (YY_BUFFER_STATE  b, FILE * file )
+    static void yy_init_buffer  (YY_BUFFER_STATE  b, FILE * file )
 
 {
 	int oerrno = errno;
     
-	sqlparse_yy_flush_buffer(b );
+	yy_flush_buffer(b );
 
 	b->yy_input_file = file;
 	b->yy_fill_buffer = 1;
 
-    /* If b is the current buffer, then sqlparse_yy_init_buffer was _probably_
-     * called from sqlparse_yyrestart() or through yy_get_next_buffer.
+    /* If b is the current buffer, then yy_init_buffer was _probably_
+     * called from yyrestart() or through yy_get_next_buffer.
      * In that case, we don't want to reset the lineno or column.
      */
     if (b != YY_CURRENT_BUFFER){
@@ -5143,7 +5143,7 @@ extern int isatty (int );
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
  * 
  */
-    void sqlparse_yy_flush_buffer (YY_BUFFER_STATE  b )
+    void yy_flush_buffer (YY_BUFFER_STATE  b )
 {
     	if ( ! b )
 		return;
@@ -5163,7 +5163,7 @@ extern int isatty (int );
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
 	if ( b == YY_CURRENT_BUFFER )
-		sqlparse_yy_load_buffer_state( );
+		yy_load_buffer_state( );
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -5172,14 +5172,14 @@ extern int isatty (int );
  *  @param new_buffer The new state.
  *  
  */
-void sqlparse_yypush_buffer_state (YY_BUFFER_STATE new_buffer )
+void yypush_buffer_state (YY_BUFFER_STATE new_buffer )
 {
     	if (new_buffer == NULL)
 		return;
 
-	sqlparse_yyensure_buffer_stack();
+	yyensure_buffer_stack();
 
-	/* This block is copied from sqlparse_yy_switch_to_buffer. */
+	/* This block is copied from yy_switch_to_buffer. */
 	if ( YY_CURRENT_BUFFER )
 		{
 		/* Flush out information for old buffer. */
@@ -5193,8 +5193,8 @@ void sqlparse_yypush_buffer_state (YY_BUFFER_STATE new_buffer )
 		(yy_buffer_stack_top)++;
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
-	/* copied from sqlparse_yy_switch_to_buffer. */
-	sqlparse_yy_load_buffer_state( );
+	/* copied from yy_switch_to_buffer. */
+	yy_load_buffer_state( );
 	(yy_did_buffer_switch_on_eof) = 1;
 }
 
@@ -5202,18 +5202,18 @@ void sqlparse_yypush_buffer_state (YY_BUFFER_STATE new_buffer )
  *  The next element becomes the new top.
  *  
  */
-void sqlparse_yypop_buffer_state (void)
+void yypop_buffer_state (void)
 {
     	if (!YY_CURRENT_BUFFER)
 		return;
 
-	sqlparse_yy_delete_buffer(YY_CURRENT_BUFFER );
+	yy_delete_buffer(YY_CURRENT_BUFFER );
 	YY_CURRENT_BUFFER_LVALUE = NULL;
 	if ((yy_buffer_stack_top) > 0)
 		--(yy_buffer_stack_top);
 
 	if (YY_CURRENT_BUFFER) {
-		sqlparse_yy_load_buffer_state( );
+		yy_load_buffer_state( );
 		(yy_did_buffer_switch_on_eof) = 1;
 	}
 }
@@ -5221,7 +5221,7 @@ void sqlparse_yypop_buffer_state (void)
 /* Allocates the stack if it does not exist.
  *  Guarantees space for at least one push.
  */
-static void sqlparse_yyensure_buffer_stack (void)
+static void yyensure_buffer_stack (void)
 {
 	int num_to_alloc;
     
@@ -5232,7 +5232,7 @@ static void sqlparse_yyensure_buffer_stack (void)
 		 * immediate realloc on the next call.
          */
 		num_to_alloc = 1;
-		(yy_buffer_stack) = (struct yy_buffer_state**)sqlparse_yyalloc
+		(yy_buffer_stack) = (struct yy_buffer_state**)yyalloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
 		
@@ -5249,7 +5249,7 @@ static void sqlparse_yyensure_buffer_stack (void)
 		int grow_size = 8 /* arbitrary grow size */;
 
 		num_to_alloc = (yy_buffer_stack_max) + grow_size;
-		(yy_buffer_stack) = (struct yy_buffer_state**)sqlparse_yyrealloc
+		(yy_buffer_stack) = (struct yy_buffer_state**)yyrealloc
 								((yy_buffer_stack),
 								num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
@@ -5266,7 +5266,7 @@ static void sqlparse_yyensure_buffer_stack (void)
  * 
  * @return the newly allocated buffer state object. 
  */
-YY_BUFFER_STATE sqlparse_yy_scan_buffer  (char * base, yy_size_t  size )
+YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size )
 {
 	YY_BUFFER_STATE b;
     
@@ -5276,9 +5276,9 @@ YY_BUFFER_STATE sqlparse_yy_scan_buffer  (char * base, yy_size_t  size )
 		/* They forgot to leave room for the EOB's. */
 		return 0;
 
-	b = (YY_BUFFER_STATE) sqlparse_yyalloc(sizeof( struct yy_buffer_state )  );
+	b = (YY_BUFFER_STATE) yyalloc(sizeof( struct yy_buffer_state )  );
 	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in sqlparse_yy_scan_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_buffer()" );
 
 	b->yy_buf_size = size - 2;	/* "- 2" to take care of EOB's */
 	b->yy_buf_pos = b->yy_ch_buf = base;
@@ -5290,33 +5290,33 @@ YY_BUFFER_STATE sqlparse_yy_scan_buffer  (char * base, yy_size_t  size )
 	b->yy_fill_buffer = 0;
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
-	sqlparse_yy_switch_to_buffer(b  );
+	yy_switch_to_buffer(b  );
 
 	return b;
 }
 
-/** Setup the input buffer state to scan a string. The next call to sqlparse_yylex() will
+/** Setup the input buffer state to scan a string. The next call to yylex() will
  * scan from a @e copy of @a str.
  * @param str a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
- *       sqlparse_yy_scan_bytes() instead.
+ *       yy_scan_bytes() instead.
  */
-YY_BUFFER_STATE sqlparse_yy_scan_string (yyconst char * yystr )
+YY_BUFFER_STATE yy_scan_string (yyconst char * yystr )
 {
     
-	return sqlparse_yy_scan_bytes(yystr,strlen(yystr) );
+	return yy_scan_bytes(yystr,strlen(yystr) );
 }
 
-/** Setup the input buffer state to scan the given bytes. The next call to sqlparse_yylex() will
+/** Setup the input buffer state to scan the given bytes. The next call to yylex() will
  * scan from a @e copy of @a bytes.
  * @param bytes the byte buffer to scan
  * @param len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE sqlparse_yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
+YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
@@ -5325,18 +5325,18 @@ YY_BUFFER_STATE sqlparse_yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_l
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
-	buf = (char *) sqlparse_yyalloc(n  );
+	buf = (char *) yyalloc(n  );
 	if ( ! buf )
-		YY_FATAL_ERROR( "out of dynamic memory in sqlparse_yy_scan_bytes()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_bytes()" );
 
 	for ( i = 0; i < _yybytes_len; ++i )
 		buf[i] = yybytes[i];
 
 	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
-	b = sqlparse_yy_scan_buffer(buf,n );
+	b = yy_scan_buffer(buf,n );
 	if ( ! b )
-		YY_FATAL_ERROR( "bad buffer in sqlparse_yy_scan_bytes()" );
+		YY_FATAL_ERROR( "bad buffer in yy_scan_bytes()" );
 
 	/* It's okay to grow etc. this buffer, and we should throw it
 	 * away when we're done.
@@ -5362,14 +5362,14 @@ static void yy_fatal_error (yyconst char* msg )
 #define yyless(n) \
 	do \
 		{ \
-		/* Undo effects of setting up sqlparse_yytext. */ \
+		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		sqlparse_yytext[sqlparse_yyleng] = (yy_hold_char); \
-		(yy_c_buf_p) = sqlparse_yytext + yyless_macro_arg; \
+		yytext[yyleng] = (yy_hold_char); \
+		(yy_c_buf_p) = yytext + yyless_macro_arg; \
 		(yy_hold_char) = *(yy_c_buf_p); \
 		*(yy_c_buf_p) = '\0'; \
-		sqlparse_yyleng = yyless_macro_arg; \
+		yyleng = yyless_macro_arg; \
 		} \
 	while ( 0 )
 
@@ -5378,89 +5378,89 @@ static void yy_fatal_error (yyconst char* msg )
 /** Get the current line number.
  * 
  */
-int sqlparse_yyget_lineno  (void)
+int yyget_lineno  (void)
 {
         
-    return sqlparse_yylineno;
+    return yylineno;
 }
 
 /** Get the input stream.
  * 
  */
-FILE *sqlparse_yyget_in  (void)
+FILE *yyget_in  (void)
 {
-        return sqlparse_yyin;
+        return yyin;
 }
 
 /** Get the output stream.
  * 
  */
-FILE *sqlparse_yyget_out  (void)
+FILE *yyget_out  (void)
 {
-        return sqlparse_yyout;
+        return yyout;
 }
 
 /** Get the length of the current token.
  * 
  */
-int sqlparse_yyget_leng  (void)
+int yyget_leng  (void)
 {
-        return sqlparse_yyleng;
+        return yyleng;
 }
 
 /** Get the current token.
  * 
  */
 
-char *sqlparse_yyget_text  (void)
+char *yyget_text  (void)
 {
-        return sqlparse_yytext;
+        return yytext;
 }
 
 /** Set the current line number.
  * @param line_number
  * 
  */
-void sqlparse_yyset_lineno (int  line_number )
+void yyset_lineno (int  line_number )
 {
     
-    sqlparse_yylineno = line_number;
+    yylineno = line_number;
 }
 
 /** Set the input stream. This does not discard the current
  * input buffer.
  * @param in_str A readable stream.
  * 
- * @see sqlparse_yy_switch_to_buffer
+ * @see yy_switch_to_buffer
  */
-void sqlparse_yyset_in (FILE *  in_str )
+void yyset_in (FILE *  in_str )
 {
-        sqlparse_yyin = in_str ;
+        yyin = in_str ;
 }
 
-void sqlparse_yyset_out (FILE *  out_str )
+void yyset_out (FILE *  out_str )
 {
-        sqlparse_yyout = out_str ;
+        yyout = out_str ;
 }
 
-int sqlparse_yyget_debug  (void)
+int yyget_debug  (void)
 {
-        return sqlparse_yy_flex_debug;
+        return yy_flex_debug;
 }
 
-void sqlparse_yyset_debug (int  bdebug )
+void yyset_debug (int  bdebug )
 {
-        sqlparse_yy_flex_debug = bdebug ;
+        yy_flex_debug = bdebug ;
 }
 
 static int yy_init_globals (void)
 {
         /* Initialization is the same as for the non-reentrant scanner.
-     * This function is called from sqlparse_yylex_destroy(), so don't allocate here.
+     * This function is called from yylex_destroy(), so don't allocate here.
      */
 
-    /* We do not touch sqlparse_yylineno unless the option is enabled. */
-    sqlparse_yylineno =  1;
+    /* We do not touch yylineno unless the option is enabled. */
+    yylineno =  1;
     
     (yy_buffer_stack) = 0;
     (yy_buffer_stack_top) = 0;
@@ -5471,36 +5471,36 @@ static int yy_init_globals (void)
 
 /* Defined in main.c */
 #ifdef YY_STDINIT
-    sqlparse_yyin = stdin;
-    sqlparse_yyout = stdout;
+    yyin = stdin;
+    yyout = stdout;
 #else
-    sqlparse_yyin = (FILE *) 0;
-    sqlparse_yyout = (FILE *) 0;
+    yyin = (FILE *) 0;
+    yyout = (FILE *) 0;
 #endif
 
     /* For future reference: Set errno on error, since we are called by
-     * sqlparse_yylex_init()
+     * yylex_init()
      */
     return 0;
 }
 
-/* sqlparse_yylex_destroy is for both reentrant and non-reentrant scanners. */
-int sqlparse_yylex_destroy  (void)
+/* yylex_destroy is for both reentrant and non-reentrant scanners. */
+int yylex_destroy  (void)
 {
     
     /* Pop the buffer stack, destroying each element. */
 	while(YY_CURRENT_BUFFER){
-		sqlparse_yy_delete_buffer(YY_CURRENT_BUFFER  );
+		yy_delete_buffer(YY_CURRENT_BUFFER  );
 		YY_CURRENT_BUFFER_LVALUE = NULL;
-		sqlparse_yypop_buffer_state();
+		yypop_buffer_state();
 	}
 
 	/* Destroy the stack itself. */
-	sqlparse_yyfree((yy_buffer_stack) );
+	yyfree((yy_buffer_stack) );
 	(yy_buffer_stack) = NULL;
 
     /* Reset the globals. This is important in a non-reentrant scanner so the next time
-     * sqlparse_yylex() is called, initialization will occur. */
+     * yylex() is called, initialization will occur. */
     yy_init_globals( );
 
     return 0;
@@ -5530,12 +5530,12 @@ static int yy_flex_strlen (yyconst char * s )
 }
 #endif
 
-void *sqlparse_yyalloc (yy_size_t  size )
+void *yyalloc (yy_size_t  size )
 {
 	return (void *) malloc( size );
 }
 
-void *sqlparse_yyrealloc  (void * ptr, yy_size_t  size )
+void *yyrealloc  (void * ptr, yy_size_t  size )
 {
 	/* The cast to (char *) in the following accommodates both
 	 * implementations that use char* generic pointers, and those
@@ -5547,9 +5547,9 @@ void *sqlparse_yyrealloc  (void * ptr, yy_size_t  size )
 	return (void *) realloc( (char *) ptr, size );
 }
 
-void sqlparse_yyfree (void * ptr )
+void yyfree (void * ptr )
 {
-	free( (char *) ptr );	/* see sqlparse_yyrealloc() for (char *) cast */
+	free( (char *) ptr );	/* see yyrealloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"
