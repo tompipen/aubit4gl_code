@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.145 2007-07-19 09:56:03 mikeaubury Exp $
+# $Id: curslib.c,v 1.146 2007-10-15 17:11:31 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.145 2007-07-19 09:56:03 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.146 2007-10-15 17:11:31 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1041,7 +1041,7 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   A4GL_push_long (1);
   A4GL_push_long (UILIB_A4GL_get_curr_width ());
   UILIB_A4GL_cr_window ("aclfgl_promptwin", 1, 255, 255, 1, 255, 0, 255, 255,
-			(0x0));
+			(0x0),0,0);
   A4GL_push_char ("!");
 //START_BLOCK_1:
   {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.67 2007-10-12 21:20:13 mikeaubury Exp $
+# $Id: ui.c,v 1.68 2007-10-15 17:11:29 mikeaubury Exp $
 #
 */
 
@@ -1206,7 +1206,7 @@ char *A4GL_recall_field(char *t,char *c,int x,int y,int show) {
 
         A4GL_push_long(rows);
         A4GL_push_long(cols);
-	A4GL_cr_window("a4gl_recall", 1,255,255,255,255,1,255,255,(0x0));
+	A4GL_cr_window("a4gl_recall", 1,255,255,255,255,1,255,255,(0x0),0,0);
 
 
 	sline=0;

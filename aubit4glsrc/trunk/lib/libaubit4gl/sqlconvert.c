@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.127 2007-09-13 08:10:05 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.128 2007-10-15 17:11:29 mikeaubury Exp $
 #
 */
 
@@ -3526,7 +3526,6 @@ static void load_table_mappings_i (char *ptr)
 
   while (1)
     {
-	int a;
 	char *p_at;
 	char *p_colon;
       c1 = 0;
@@ -3653,7 +3652,7 @@ static void load_column_mappings_i (char *ptr)
 
 
 
-void chk_loaded_mappings() {
+void chk_loaded_mappings(void) {
   if (!loaded_columns) { loaded_columns = 1; load_column_mappings (); load_table_mappings(); }
 }
 

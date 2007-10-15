@@ -46,9 +46,18 @@ xabs = x00 + (atx * xscale);
 yabs = y00;
 xabs2 = xsize * xscale;
 yabs2 = height;
+
+
 PDF_setlinewidth( p, 0.000001 );
 PDF_rect (p, xabs, this_page_height-yabs, xabs2,height); //xabs2-xabs,this_page_height-(yabs2-yabs));
 PDF_fill_stroke (p);
+/*
+PDF_setlinewidth( p, 0.000001); //xabs-xabs2/2);
+PDF_moveto(p, xabs, this_page_height-yabs);
+PDF_lineto(p, xabs, this_page_height-yabs+height);
+PDF_stroke (p);
+*/
+
 
 }
 

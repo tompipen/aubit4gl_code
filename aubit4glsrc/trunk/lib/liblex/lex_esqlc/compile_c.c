@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.381 2007-09-28 07:56:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.382 2007-10-15 17:11:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.381 2007-09-28 07:56:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.382 2007-10-15 17:11:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5634,6 +5634,9 @@ LEXLIB_print_prompt_end (char *s)
 void
 LEXLIB_print_open_window (char *name, t_ow_open_window *type,t_expr_str *y,t_expr_str *x,char *Text,char *Style)
 {
+if (Text==0) Text="0";
+if (Style==0) Style="0";
+
   if (type->type==OW_AT) {
   	  real_print_expr(y);
   	  real_print_expr(x);
@@ -5641,7 +5644,7 @@ LEXLIB_print_open_window (char *name, t_ow_open_window *type,t_expr_str *y,t_exp
 	  real_print_expr(type->u_data.x_y.x);
   	  printc ("A4GL_cr_window(%s,",  name);
   	  print_form_attrib (&form_attrib);
-  	  printc (");\n");
+  	  printc (",%s,%s);\n", Text, Style);
   }
   if (type->type==OW_FORM) {
   	  real_print_expr(y);
@@ -5649,7 +5652,7 @@ LEXLIB_print_open_window (char *name, t_ow_open_window *type,t_expr_str *y,t_exp
 	  real_print_expr(type->u_data.formname);
   	  printc ("A4GL_cr_window_form(%s,",  name);
   	  print_form_attrib (&form_attrib);
-  	  printc (");\n");
+  	  printc (",%s,%s);\n", Text, Style);
 
   }
 }
@@ -5678,7 +5681,7 @@ LEXLIB_print_open_form_gui (char *name,char *at_gui,char *like_gui,char *disable
 //A4GL_open_gui_form(&%s,%s,%s,%s,%s,hnd_e_%s,hnd_c_%s);",name,name,at_gui,like_gui,disable,formhandler,formhandler);
 	if (A4GL_isyes(acl_getenv("A4GL_NOCLOBBER")) && 0) {
         	if (scan_variable (name) == -1) {
-	  		set_yytext(name);
+	  		set_yyStyletext(name);
 	  		a4gl_yyerror ("Form variable not defined");
 	  		return;
 		}

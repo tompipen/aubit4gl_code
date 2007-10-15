@@ -16,8 +16,8 @@ LIB_PREFIX UILIB_
 #include <stdarg.h>
 
 
-A4GL_cr_window char* s int iswindow int form_line int error_line int prompt_line int menu_line int border int comment_line int message_line int attrib -> void*
-A4GL_cr_window_form char* name int iswindow int form_line int error_line int prompt_line int menu_line int border int comment_line int message_line int attrib -> int
+A4GL_cr_window char* s int iswindow int form_line int error_line int prompt_line int menu_line int border int comment_line int message_line int attrib char* Text char* style -> void*
+A4GL_cr_window_form char* name int iswindow int form_line int error_line int prompt_line int menu_line int border int comment_line int message_line int attrib char* Text char* style -> int
 A4GL_disp_fields_ap int n int attr va_list* ap -> int
 A4GL_disp_form_fields_ap int n int attr char* formname va_list* ap -> int
 A4GL_open_form char* name -> int

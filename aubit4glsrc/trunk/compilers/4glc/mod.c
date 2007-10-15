@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.303 2007-10-12 21:20:02 mikeaubury Exp $
+# $Id: mod.c,v 1.304 2007-10-15 17:11:27 mikeaubury Exp $
 #
 */
 
@@ -2645,6 +2645,8 @@ reset_attrib (struct form_attr *form_attrib)
   form_attrib->menu_line = 0xff;
 
   form_attrib->border = 0;
+  //form_attrib->ExtText = 0;
+  //form_attrib->ExtStyle = 0;
 }
 
 

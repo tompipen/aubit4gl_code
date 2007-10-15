@@ -180,7 +180,7 @@ int
 UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
 			   int error_line, int prompt_line, int menu_line,
 			   int border, int comment_line, int message_line,
-			   int attrib)
+			   int attrib,char *text, char *style)
 {
 //int rval;
   char *fname;
@@ -190,6 +190,8 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   fname = A4GL_char_pop ();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
+if (style==0) style="";
+if (text==0) text="";
 
   A4GL_trim (fname);
 // Can we find a pregenerated XML form ? 
@@ -198,8 +200,9 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
       // Nope - lets send a non-xml form instead..
       // this will callback to our UILIB_A4GL_read_metrics function..
       send_to_ui
-	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" >",
-	 name, x, y, attrib);
+	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" ", name, x, y, attrib);
+	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", text, style, error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
+	send_to_ui(">");
       send_to_ui ("<FORM>");
       form = A4GL_read_form (fname, name);
       send_to_ui ("</FORM>");
@@ -208,8 +211,12 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   else
     {
       send_to_ui
-	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"/>",
+	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"",
 	 name, x, y, attrib, fname);
+	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", text, style, error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
+
+
+	send_to_ui("/>");
     }
 
 
@@ -1648,7 +1655,7 @@ XML_A4GL_assertion (int n, char *s)
 void *
 UILIB_A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
 		      int prompt_line, int menu_line, int border,
-		      int comment_line, int message_line, int attrib)
+		      int comment_line, int message_line, int attrib,char *text, char *style)
 {
 //void* rval;
   int x, y, w, h;
@@ -1656,6 +1663,7 @@ UILIB_A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
   h = A4GL_pop_int ();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
+if (style==0) style="";
 
   if (A4GL_has_pointer (s, WINCODE))
     {
@@ -1671,9 +1679,9 @@ UILIB_A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
 
   A4GL_add_pointer (s, WINCODE, (void *) 1);	// Just some value - maybe later we'll do something useful with it...
   send_to_ui
-    ("<CREATEWINDOW NAME=\"%s\" X=\"%d\" Y=\"%d\" W=\"%d\" H=\"%d\" FORMLINE=\"%d\" ERRORLINE=\"%d\" PROMPTLINE=\"%d\" MENULINE=\"%d\" COMMENTLINE=\"%d\" MESSAGELINE=\"%d\" BORDER=\"%d\" ATTRIBUTE=\"%d\"",
+    ("<CREATEWINDOW NAME=\"%s\" X=\"%d\" Y=\"%d\" W=\"%d\" H=\"%d\" FORMLINE=\"%d\" ERRORLINE=\"%d\" PROMPTLINE=\"%d\" MENULINE=\"%d\" COMMENTLINE=\"%d\" MESSAGELINE=\"%d\" BORDER=\"%d\" ATTRIBUTE=\"%d\" STYLE=\"%s\" TEXT=\"%s\" />",
      s, x, y, w, h, form_line, error_line, prompt_line, menu_line,
-     comment_line, message_line, border, attrib);
+     comment_line, message_line, border, attrib,style,text);
 
 
   return (void *) 1;

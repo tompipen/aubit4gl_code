@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.60 2007-10-04 19:24:50 mikeaubury Exp $";
+  "$Id: misc.c,v 1.61 2007-10-15 17:11:32 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1489,7 +1489,7 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   A4GL_push_long (1);
   A4GL_push_long (UILIB_A4GL_get_curr_width ());
   UILIB_A4GL_cr_window ("aclfgl_promptwin", 1, 255, 255, 1, 255, 0, 255, 255,
-                        (0x0));
+                        (0x0),0,0);
   A4GL_push_char ("!");
 //START_BLOCK_1:
   {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.35 2007-05-02 18:34:06 mikeaubury Exp $
+# $Id: console.c,v 1.36 2007-10-15 17:11:31 mikeaubury Exp $
 #*/
 
 /**
@@ -623,7 +623,7 @@ return 0;
 
 
 char* UILIB_A4GL_get_currwin_name(void )  NOPE0
-int UILIB_A4GL_cr_window_form(char* name,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib)  NOPE0
+int UILIB_A4GL_cr_window_form(char* name,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib, char *text, char *style)  NOPE0
 int UILIB_A4GL_current_window(char* win_name)  NOPE0
 int UILIB_A4GL_disp_arr_v2(void* disp,void* ptr,char* srecname,int attrib,int scrollf,int scrollw,void* evt)  NOPE0
 int UILIB_A4GL_disp_fields_ap(int n,int attr,va_list* ap)  NOPE0
@@ -661,7 +661,7 @@ int UILIB_aclfgl_fgl_drawbox(int n)  NOPE0
 int UILIB_aclfgl_fgl_set_arrline(int nparam)  NOPE0
 int UILIB_aclfgl_fgl_set_scrline(int nparam)  NOPE0
 int UILIB_aclfgl_set_window_title(int nargs)  NOPE0
-void* UILIB_A4GL_cr_window(char* s,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib)  NOPE0
+void* UILIB_A4GL_cr_window(char* s,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib,char *text, char *style)  NOPE0
 void* UILIB_A4GL_create_menu(void* m,char* id,int mode,void* handler)  NOPE0
 void* UILIB_A4GL_get_curr_form(int warn_if_no_form)  NOPE0
 void* UILIB_A4GL_make_pixmap_gw(char* filename)  NOPE0
