@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.148 2007-10-11 08:29:11 mikeaubury Exp $
+# $Id: conv.c,v 1.149 2007-10-15 18:29:56 mikeaubury Exp $
 #
 */
 
@@ -1500,7 +1500,11 @@ int rval;
   z = (char *) zz;
   A4GL_debug ("dectol");
   A4GL_dectos (z, buff_dectol, 64);
-  rval=A4GL_stol (buff_dectol, a, 0);
+  if (A4GL_apm_str_detect_overflow(buff_dectol, 0,0,DTYPE_INT)) {
+	A4GL_setnull(DTYPE_INT, a,0);
+  } else {
+  	rval=A4GL_stol (buff_dectol, a, 0);
+  }
   A4GL_debug("rval=%d",rval);
   return rval;
 }
