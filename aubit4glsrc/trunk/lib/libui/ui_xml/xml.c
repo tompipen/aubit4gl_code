@@ -977,9 +977,82 @@ void UILIB_A4GLUI_set_intr() {
   send_to_ui ("<SETINTR/>");
 }
 
+static void  A4GL_XML_opening_file_xml(char *filename,  char *fbuff) {
+int a;
+send_to_ui("<FILE NAME=\"%s\">", filename);
+for (a=0;a<strlen(fbuff);a+=256) {
+	char b[300];
+	strncpy(b,&fbuff[a],256);
+	b[256]=0;
+	send_to_ui("%s",uilib_xml_escape(b));
+}
+send_to_ui("</FILE>");
+}
+
+static int SendFile(char *filename) {
+        FILE *f;
+        char *fbuff;
+        char buff[2000];
+        strcpy(buff,filename);
+        A4GL_trim(buff);
+        f=A4GL_open_file_dbpath(buff);
+
+        if (f) {
+                long l;
+                fseek(f,0,SEEK_END);
+                l=ftell(f);
+                rewind(f);
+                fbuff=malloc(l+1);
+                fread(fbuff,l,1,f);
+                fbuff[l]=0;
+                fclose(f);
+                A4GL_XML_opening_file_xml(filename,  fbuff);
+                free(fbuff);
+		return 1;
+        } else {
+		return 0;
+	}
+}
+
+
+
 void UILIB_A4GL_direct_to_ui(char* what,char* string) {
-  send_to_ui ("<UI TYPE='%s'>%s</UI>", what, uilib_xml_escape(string));
-  flush_ui ();
+        if (strcmp(what,"SEND")==0) {
+		send_to_ui("<UIDIRECT>%s</UIDIRECT>",uilib_xml_escape(string));
+                return;
+        }
+        if (strcmp(what,"FILE")==0) {
+                SendFile(string);
+                return;
+        }
+
+        if (strcmp(what,"dialog_setkeylabel")==0) {
+                //int a;
+                //int params;
+                char *p1;
+                char *p2;
+                p2=A4GL_char_pop();
+                p1=A4GL_char_pop();
+		send_to_ui("<SETKEYLABEL DIALOG=\"1\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1,p2);
+                free(p1);
+                free(p2);
+                return;
+        }
+        if (strcmp(what,"setkeylabel")==0) {
+                //int a;
+                //int params;
+                char *p1;
+                char *p2;
+                p2=A4GL_char_pop();
+                p1=A4GL_char_pop();
+		send_to_ui("<SETKEYLABEL DIALOG=\"0\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1,p2);
+                free(p1);
+                free(p2);
+                return;
+        }
+
+        printf("unhandled direct to ui call\n");
+
 }
 
 void UILIB_A4GL_ui_exit() {
