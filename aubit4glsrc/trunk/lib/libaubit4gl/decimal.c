@@ -1090,6 +1090,7 @@ switch (overflow_dtype) {
 			}
 			return 1;
 		}
+		break;
 
 	case DTYPE_INT:
 		m1= A4GL_str_dot_to_m_apm("2147483647");
@@ -1117,6 +1118,34 @@ switch (overflow_dtype) {
 			}
 			return 1;
 		}
+		break;
+	case DTYPE_SMINT:
+		m1= A4GL_str_dot_to_m_apm("32767");
+		m_apm_compare(m1,mres);
+		if (m1>0) {
+			if (s2) {
+				sum=malloc(sizeof(*sum));
+				A4GL_init_dec(sum,64,0);
+        			m_apm_to_fixpt_string(buff, 0, mres);
+        			A4GL_str_dot_to_dec(buff,sum);
+				A4GL_push_dec_dec(sum,0,0);
+			}
+			return 1;
+		}
+
+		m1= A4GL_str_dot_to_m_apm("-32768");
+		m_apm_compare(m1,mres);
+		if (m1<0) {
+			if (s2) {
+				sum=malloc(sizeof(*sum));
+				A4GL_init_dec(sum,64,0);
+        			m_apm_to_fixpt_string(buff, 0, mres);
+        			A4GL_str_dot_to_dec(buff,sum);
+				A4GL_push_dec_dec(sum,0,0);
+			}
+			return 1;
+		}
+		break;
 
 
 }
