@@ -16,15 +16,17 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_DIFF} 
+run: compile ; 	${DEFAULT_DIFF} 
+# ${DEFAULT_RUN}
+#	${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests selecting into from a union'd statement with no cursor"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
-db_test: 				; @echo "1"
+db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
@@ -34,7 +36,7 @@ graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"
 long_test:				; @echo "0"
-cert_test:				; @echo "1"
+cert_test:				; @echo "0"
 obsolete_test:			; @echo "0"
 compat_test:			; @echo "0"
 expect_code:			; @echo "0"
@@ -42,7 +44,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR CREATE_TEMP_TABLE ANSI_INSERT UNION_ALL SELECT_UNION UI_DISPLAY_LINE_MODE DISPLAY   DROP_TABLE"
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
@@ -50,4 +52,3 @@ need_plugin:			; @echo ""
 
 
 # ============================= EOF ================================
-

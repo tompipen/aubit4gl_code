@@ -1,4 +1,8 @@
-database sysmaster
+database test1
+## This one is complicated because informix
+## is inconsistent between versions
+## If you want the field statuses to be cleared *AFTER* the "BEFORE CONSTRUCT"
+## then set CLRFIELDSTATUS=Y, the default is to clear the field statuses before the "BEFORE CONSTRUCT"
 
 main
 define
@@ -6,7 +10,7 @@ define
    q_txt      char(200)
 
 let tab_p = "TEST"
-
+call aclfgl_setenv("CLRFIELDSTATUS","Y")
 open window win1 at 2, 2 with form "test39" attribute (border)
 
 construct q_txt on systables.tabname, systables.version

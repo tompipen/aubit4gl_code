@@ -14,6 +14,8 @@ MAIN
 	if num1=1 and num2=1 then
 		exit program 0
 	else
+		display num1
+		display num2
 		exit program 1
 	end if
 

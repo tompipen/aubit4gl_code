@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "MID 1055- field_status issues"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo ""
+sql_features_used:		; @echo "DATABASE_USED DEFINE_DECIMAL DEFINE_CHAR DDL_DECIMAL SELECT_INTO_TEMP_WITH_NO_LOG CREATE_TEMP_TABLE INSERT_COLUMNLIST_EQ_VALUELIST ANSI_INSERT IF UI_DISPLAY_LINE_MODE DISPLAY EXIT_PROGRAM_EXPR "
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
