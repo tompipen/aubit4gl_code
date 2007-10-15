@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.30 2007-06-14 13:20:59 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.31 2007-10-15 20:38:57 mikeaubury Exp $
 #*/
 
 /**
@@ -144,12 +144,12 @@ A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber)
 
 
 void A4GLSTK_getCurrentLine( char **moduleName, int *lineNumber) {
-	moduleName=currentModuleName;
+	*moduleName=(char *)currentModuleName;
   	*lineNumber=currentFglLineNumber;
 }
 
 char *A4GLSTK_lastSeenLine(void) {
-static buff[2000];
+static char buff[2000];
 	sprintf(buff, "Module : %s  Line : %d", currentModuleName,currentFglLineNumber);
 	return buff;
 }
@@ -189,7 +189,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
   } else {
   	functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, n);
   }
-	A4GL_debug("%s(%s)",functionName,A4GL_null_as_null(functionCallStack[functionCallPointer].params));
+	A4GL_debug("%s(%s)",functionName,A4GL_null_as_null((char *)functionCallStack[functionCallPointer].params));
   functionCallPointer++;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.62 2007-09-29 18:25:17 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.63 2007-10-15 20:38:57 mikeaubury Exp $
 #
 */
 
@@ -688,6 +688,37 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
  * @todo describe function
  */
 void 
+ESQLAPI_A4GL_copy_int8(int8 *infx,int8 *a4gl,short *p_indicat,int size,char mode) 
+{
+short indicat=0;
+A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
+
+
+
+
+	if (mode=='i') {
+		if (p_indicat) *p_indicat=0;
+		if (A4GL_isnull(2,(void *)a4gl) && p_indicat) {
+				rsetnull(CINT8TYPE,(void *)infx);
+				if (p_indicat) *p_indicat=-1; return;}
+				if (A4GL_isnull(DTYPE_INT8,(void *)a4gl)) {rsetnull(CINT8TYPE,(void *)infx);return;} 
+		*infx=*a4gl; // & 0xffffffff;
+	}
+	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
+		if (indicat==-2) return;
+		if (indicat==-1||risnull(CINT8TYPE,(void*)infx)) { A4GL_setnull(DTYPE_INT8,(void *)a4gl,size); return;}
+		*a4gl=(*infx) ;  // & 0xffffffff;
+	}
+}
+
+
+/**
+ *
+ *
+ * @todo describe function
+ */
+void 
 ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,short *p_indicat,int size,char mode) 
 {
 short indicat=0;
@@ -990,6 +1021,7 @@ for (a=0;a<n;a++) {
 		case DTYPE_TEXT: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
 		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_char(native,a4gl,i,-1,dir,x,y); break;
 		case DTYPE_INTERVAL: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
+		case DTYPE_INT8: ESQLAPI_A4GL_copy_int8(native,a4gl,i,size,dir); break;
 	}
 }
 

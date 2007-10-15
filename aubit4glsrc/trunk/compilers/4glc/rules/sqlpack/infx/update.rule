@@ -136,20 +136,12 @@ set_clause_list_ss:
                 v = find_variable_ptr ($<str>2);
 
                 if (v->variable_type!=VARIABLE_TYPE_RECORD) { a4gl_yyerror("Variable is not a record"); }
-/*
-                t=v->data.v_record.variables[0]->defsrc;
-                if (t==0) { a4gl_yyerror("Variable is not a declared LIKE"); }
-                strcpy(buff,t);
-                ptr=strchr(buff,'.');
-                if (ptr) *ptr=0;
-                if (A4GL_aubit_strcasecmp(current_upd_table, buff)!=0 && v->scope!='G') { A4GL_warn("Variable is not declared LIKE this table"); }
-*/
                 sql=acl_strdup("SET ");
-
                 for (a=0;a<v->data.v_record.record_cnt;a++) {
                         int idtype, isize;
                         int rval;
                         char *colname;
+			char *vsql;
                         colname=v->data.v_record.variables[a]->names.name;
                         idtype=v->data.v_record.variables[a]->data.v_simple.datatype;
                         if (idtype!=DTYPE_SERIAL && idtype!=DTYPE_INT) { idtype=-1; rval=1; } else { idtype=2; }
@@ -159,15 +151,16 @@ set_clause_list_ss:
                                 if (idtype==DTYPE_SERIAL) { /* Its a serial !!! */ continue; }
                         }
                         A4GL_4glc_push_gen(UPDCOL,"*");
-                        A4GL_4glc_push_gen(UPDVAL,"?");
                         sprintf(buff,"%s.%s", $<str>2, colname);
+                        add_bind('i',buff);
+			vsql=A4GL_set_var_sql(0,1);
+                        A4GL_4glc_push_gen(UPDVAL,acl_strdup(vsql));
                         if (printed) {
-                                sql=make_sql_string_and_free(sql,kw_comma,strdup(colname),strdup("=?"), NULL);
+                                sql=make_sql_string_and_free(sql,kw_comma,strdup(colname),strdup("="), acl_strdup(vsql), NULL);
                         } else {
                                 printed++;
-                                sql=make_sql_string_and_free(sql,strdup(colname),strdup("=?"), NULL);
+                                sql=make_sql_string_and_free(sql,strdup(colname),strdup("="),acl_strdup(vsql),  NULL);
                         }
-                        add_bind('i',buff);
                 }
 
                 $<sql_string>$=sql ;
@@ -191,15 +184,6 @@ set_clause_list_ss:
                 add_feature("UPDATE_SET_STAR");
                 v = find_variable_ptr ($<str>2);
                 if (v->variable_type!=VARIABLE_TYPE_RECORD) { a4gl_yyerror("Variable is not a record"); }
-/*
-                t=v->data.v_record.variables[0]->defsrc;
-                if (t==0) { a4gl_yyerror("Variable is not a declared LIKE"); }
-                strcpy(buff,t);
-                ptr=strchr(buff,'.');
-                if (ptr) *ptr=0;
-
-                if (A4GL_aubit_strcasecmp(current_upd_table, buff)!=0 && v->scope!='G') { A4GL_warn("Variable is not declared LIKE this table"); }
-*/
                 sql=acl_strdup("SET ");
 
                 for (a=0;a<v->data.v_record.record_cnt;a++) {
@@ -207,6 +191,7 @@ set_clause_list_ss:
                         int rval;
 			char *ptr;
                         char *colname;
+			char *vsql;
                         colname=v->data.v_record.variables[a]->names.name;
                         idtype=v->data.v_record.variables[a]->data.v_simple.datatype;
                         if (idtype!=DTYPE_SERIAL && idtype!=DTYPE_INT) { idtype=-1; rval=1; } else { idtype=2; }
@@ -215,16 +200,19 @@ set_clause_list_ss:
                                 if (rval!=1) { a4gl_yyerror("Unable to get details"); }
                                 if (idtype==DTYPE_SERIAL) { /* Its a serial !!! */ continue; }
                         }
-                        A4GL_4glc_push_gen(UPDCOL,"*");
-                        A4GL_4glc_push_gen(UPDVAL,"?");
+
                         sprintf(buff,"%s.%s", $<str>2, colname);
+                        add_bind('i',strdup(buff));
+
+                        A4GL_4glc_push_gen(UPDCOL,"*");
+			vsql=A4GL_set_var_sql(0,1);
+                        A4GL_4glc_push_gen(UPDVAL,vsql);
                         if (printed) {
-                                sql=make_sql_string_and_free(sql,kw_comma,strdup(colname),strdup("=?"), NULL);
+                                sql=make_sql_string_and_free(sql,kw_comma,strdup(colname),strdup("="),strdup(vsql), NULL);
                         } else {
                                 printed++;
-                                sql=make_sql_string_and_free(sql,strdup(colname),strdup("=?"), NULL);
+                                sql=make_sql_string_and_free(sql,strdup(colname),strdup("="), strdup(vsql),NULL);
                         }
-                        add_bind('i',strdup(buff));
                 }
 
                 $<sql_string>$=sql ;

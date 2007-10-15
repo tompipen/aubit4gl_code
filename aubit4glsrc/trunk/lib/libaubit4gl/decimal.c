@@ -380,7 +380,7 @@ char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to,
 		    s_decfmt tmpfrom = to;
 		    s_decfmt tmpto = to;
 		    from.thsep = to.thsep;
-		    tmpto.thsep = NULL;
+		    tmpto.thsep = (int)NULL;
 		    A4GL_decstr_convert(optr, tmpfrom, tmpto, 0, 1, maxlen);
 		    bl = strlen(optr);
 		}
@@ -683,6 +683,7 @@ void acl_apm_set_string(M_APM m1, char *s,int convert) {
 	if (strchr(s,'.')==0 && convert && a4gl_convfmts.printf_decfmt.decsep==',') {
 			A4GL_assertion(1,"set string from real decimal");
 		}
+	A4GL_trim(buff);
 	m_apm_set_string(m1,buff);
 }
 
@@ -1032,9 +1033,9 @@ char buff[256];
 M_APM m1;
 M_APM m2;
 M_APM mres;
+int o;
 fgldecimal *sum;
 mres=m_apm_init();
-
 if (s2) {
 m1=A4GL_str_dot_to_m_apm(s1);
 m2=A4GL_str_dot_to_m_apm(s2);
@@ -1066,8 +1067,8 @@ mres=A4GL_str_dot_to_m_apm(s1);
 switch (overflow_dtype) {
 	case DTYPE_INT8:
 		m1= A4GL_str_dot_to_m_apm("9223372036854775807");
-		m_apm_compare(m1,mres);
-		if (m1>0) {
+		o=m_apm_compare(mres,m1);
+		if (o>0) {
 			if (s2) {
 				sum=malloc(sizeof(*sum));
 				A4GL_init_dec(sum,64,0);
@@ -1079,8 +1080,8 @@ switch (overflow_dtype) {
 		}
 
 		m1= A4GL_str_dot_to_m_apm("-9223372036854775807");
-		m_apm_compare(m1,mres);
-		if (m1<0) {
+		m_apm_compare(mres,m1);
+		if (o<0) {
 			if (s2) {
 				sum=malloc(sizeof(*sum));
 				A4GL_init_dec(sum,64,0);
@@ -1094,8 +1095,8 @@ switch (overflow_dtype) {
 
 	case DTYPE_INT:
 		m1= A4GL_str_dot_to_m_apm("2147483647");
-		m_apm_compare(m1,mres);
-		if (m1>0) {
+		o=m_apm_compare(mres,m1);
+		if (o>0) {
 			if (s2) {
 				sum=malloc(sizeof(*sum));
 				A4GL_init_dec(sum,64,0);
@@ -1107,8 +1108,8 @@ switch (overflow_dtype) {
 		}
 
 		m1= A4GL_str_dot_to_m_apm("-2147483648");
-		m_apm_compare(m1,mres);
-		if (m1<0) {
+		o=m_apm_compare(mres,m1);
+		if (o<0) {
 			if (s2) {
 				sum=malloc(sizeof(*sum));
 				A4GL_init_dec(sum,64,0);
@@ -1121,8 +1122,8 @@ switch (overflow_dtype) {
 		break;
 	case DTYPE_SMINT:
 		m1= A4GL_str_dot_to_m_apm("32767");
-		m_apm_compare(m1,mres);
-		if (m1>0) {
+		o=m_apm_compare(mres,m1);
+		if (o>0) {
 			if (s2) {
 				sum=malloc(sizeof(*sum));
 				A4GL_init_dec(sum,64,0);
@@ -1134,8 +1135,8 @@ switch (overflow_dtype) {
 		}
 
 		m1= A4GL_str_dot_to_m_apm("-32768");
-		m_apm_compare(m1,mres);
-		if (m1<0) {
+		o=m_apm_compare(mres,m1);
+		if (o<0) {
 			if (s2) {
 				sum=malloc(sizeof(*sum));
 				A4GL_init_dec(sum,64,0);

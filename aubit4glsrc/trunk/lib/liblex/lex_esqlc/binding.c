@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.70 2007-08-18 08:15:37 mikeaubury Exp $
+# $Id: binding.c,v 1.71 2007-10-15 20:38:57 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.70 2007-08-18 08:15:37 mikeaubury Exp $";
+		"$Id: binding.c,v 1.71 2007-10-15 20:38:57 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -583,6 +583,9 @@ char buff_ind[255];
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
 	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vi_%d;", a);
+	  break;
 	}
 	strcat(buff,buff_ind);
     }
@@ -643,6 +646,9 @@ char buff_ind[255];
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
+	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vo_%d;", a);
 	  break;
 	}
 	strcat(buff,buff_ind);
@@ -725,6 +731,9 @@ static char buff_ind[255];
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
 	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vi_%d;", a);
+	  break;
 	default :
 		a4gl_yyerror("Unknown sqltype"); break;
 	}
@@ -799,6 +808,11 @@ static char buff_ind[255];
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
 	  break;
+
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vo_%d;", a);
+	  break;
+
  	default:
 	  SPRINTF1 (buff,"Unknown _vo_%d;", a);
 	  break;
@@ -889,6 +903,9 @@ static char buff_ind[255];
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
 	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vi_%d;", a);
+	  break;
 	}
 	strcat(buff,buff_ind);
     }
@@ -956,6 +973,9 @@ static char buff_ind[255];
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
+	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vo_%d;", a);
 	  break;
 	}
 	strcat(buff,buff_ind);
@@ -1031,6 +1051,9 @@ static char buff_ind[255];
 	case 14:
 	  SPRINTF1 (buff,"char _vi_%d[30];", a);
 	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vi_%d;", a);
+	  break;
 	}
 	strcat(buff,buff_ind);
     }
@@ -1090,6 +1113,9 @@ static char buff_ind[255];
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"char _vo_%d[30]=\"\";", a);
+	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vo_%d;", a);
 	  break;
 	}
 	strcat(buff,buff_ind);
@@ -1158,6 +1184,9 @@ char buff_ind[255];
 	case 14:
 	  SPRINTF1 (buff,"interval _vi_%d;", a);
 	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vi_%d;", a);
+	  break;
 	}
 	strcat(buff,buff_ind);
     }
@@ -1214,6 +1243,9 @@ char buff_ind[255];
 	  break;
 	case 14:
 	  SPRINTF1 (buff,"interval _vo_%d;", a);
+	  break;
+	case DTYPE_INT8:
+	  SPRINTF1 (buff,"int8 _vo_%d;", a);
 	  break;
 	}
 	strcat(buff,buff_ind);

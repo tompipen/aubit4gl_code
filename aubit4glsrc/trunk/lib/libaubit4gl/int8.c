@@ -143,7 +143,7 @@ static int A4GL_isnull_int8(void *p) {
 
 
 
-static void *A4GL_copy_int8(void *p) {
+static void *A4GL_conv_copy_int8(void *p) {
 	int8 *ptr;
 	ptr=(int8 *)malloc(sizeof(int8));
 	A4GL_debug("Malloc : %p", ptr);
@@ -1016,7 +1016,7 @@ void add_int8_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_INT8, "ISNULL", (void *)A4GL_isnull_int8); //
 	A4GL_add_datatype_function_i (DTYPE_INT8, "SETDTYPE", (void *)A4GL_zero_int8); // Invalid conversion set it to 0
 	A4GL_add_datatype_function_i (DTYPE_INT8, "DISPLAY", (void *)A4GL_display_int8); 
-	A4GL_add_datatype_function_i (DTYPE_INT8, "COPY", (void *)A4GL_copy_int8); 
+	A4GL_add_datatype_function_i (DTYPE_INT8, "COPY", (void *)A4GL_conv_copy_int8); 
 	A4GL_add_datatype_function_i (DTYPE_INT8, "CONVTO_17", (void *)A4GL_conv_int8); 
 
 	A4GL_add_datatype_function_i (DTYPE_FLOAT, "CONVTO_17", (void *)A4GL_conv_int8); 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.149 2007-10-15 18:29:56 mikeaubury Exp $
+# $Id: conv.c,v 1.150 2007-10-15 20:38:57 mikeaubury Exp $
 #
 */
 
@@ -1294,7 +1294,12 @@ A4GL_mdectol (void *zz, void *aa, int sz_ignore)
   a = (long *) aa;
   z = (fgldecimal *) zz;
   strcpy (buff, A4GL_dec_to_str (z, 0));
-  return A4GL_stol (buff, a, 0);
+  if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_INT)) {
+		A4GL_setnull(DTYPE_INT, a,0);
+		return 1;
+	} else {
+  		return A4GL_stol (buff, a, 0);
+	}
 }
 
 /**
@@ -1321,10 +1326,10 @@ A4GL_mdectoi (void *zz, void *aa, int sz_ignore)
 }
 
 /**
- * Convert a decimal value to double.
+ * Convert a decimal value to date
  *
  * @param zz The decimal value.
- * @param aa A pointer where to return the double value.
+ * @param aa A pointer where to return the date value.
  * @param sz_ignore Not used.
  * @return 
  *   - 0 : Value invalid or error.
@@ -1502,6 +1507,7 @@ int rval;
   A4GL_dectos (z, buff_dectol, 64);
   if (A4GL_apm_str_detect_overflow(buff_dectol, 0,0,DTYPE_INT)) {
 	A4GL_setnull(DTYPE_INT, a,0);
+	rval=1;
   } else {
   	rval=A4GL_stol (buff_dectol, a, 0);
   }
@@ -1532,7 +1538,12 @@ int rval;
   A4GL_dectos (z, buff_dectoi, 64);
   A4GL_debug("--> %s\n",A4GL_null_as_null(buff_dectoi));
 
-  rval=A4GL_stoi (buff_dectoi, a, 0);
+  if (A4GL_apm_str_detect_overflow(buff_dectoi, 0,0,DTYPE_SMINT)) {
+	A4GL_setnull(DTYPE_SMINT, a,0);
+	rval=1;
+  } else {
+  	rval=A4GL_stoi (buff_dectoi, a, 0);
+  }
 
   return rval;
 }
@@ -2350,11 +2361,17 @@ A4GL_ftoc (void *aa, void *zz, int c)
 int
 A4GL_ftoi (void *aa, void *zz, int c)
 {
+char buff[200];
   double *a;
   short *z;
   z = (short *) zz;
   a = (double *) aa;
-  *z = (short) *a;
+   sprintf(buff,"%lf",*a);
+  if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_SMINT)) {
+	A4GL_setnull(DTYPE_SMINT, z,0);
+  } else {
+  	*z = (short) *a;
+  }
   return 1;
 }
 
@@ -2371,10 +2388,16 @@ A4GL_ftol (void *aa, void *zz, int c)
 {
   double *a;
   long *z;
+  char buff[256];
   a = (double *) aa;
   z = (long *) zz;
   A4GL_debug ("ftol");
-  *z = (long) *a;
+	sprintf(buff,"%lf",*a);
+  if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_INT)) {
+	A4GL_setnull(DTYPE_INT, z,0);
+  } else {
+  	*z = (long) *a;
+  }
 #ifdef DEBUG
   {
     A4GL_debug ("a=%lf z=%d\n", *a, *z);
@@ -2493,9 +2516,15 @@ A4GL_sftoi (void *aa, void *zz, int c)
 {
   float *a;
   short *z;
+  char buff[256];
   z = (short *) zz;
   a = (float *) aa;
-  *z = (short) *a;
+  sprintf(buff,"%f",*a);
+  if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_SMINT)) {
+	A4GL_setnull(DTYPE_SMINT, z,0);
+  } else {
+  	*z = (short) *a;
+  }
   return 1;
 }
 
@@ -2512,9 +2541,15 @@ A4GL_sftol (void *aa, void *zz, int c)
 {
   float *a;
   long *z;
+char buff[200];
   z = (long *) zz;
   a = (float *) aa;
-  *z = (long) *a;
+  sprintf(buff,"%f",*a);
+  if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_INT)) {
+	A4GL_setnull(DTYPE_INT, z,0);
+  } else {
+  	*z = (long) *a;
+  }
   return 1;
 }
 

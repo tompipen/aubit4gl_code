@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.382 2007-10-15 17:11:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.383 2007-10-15 20:38:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.382 2007-10-15 17:11:30 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.383 2007-10-15 20:38:57 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7835,7 +7835,7 @@ LEXLIB_print_import (char *func, int nargs)
 
 char *pdtype(int n) {
 	static char buff[40];
-	switch (n&0xf) {
+	switch (n&DTYPE_MASK) {
 		case DTYPE_CHAR: return "String";
 		case DTYPE_SMINT: return "short";
 		case DTYPE_SERIAL: 
@@ -7843,6 +7843,7 @@ char *pdtype(int n) {
 		case DTYPE_DATE: return "Date";
 		case DTYPE_SMFLOAT: return "float";
 		case DTYPE_FLOAT: return "double";
+		case DTYPE_INT8: return "int8";
 	}
 	SPRINTF1(buff,"DTYPE_%x",n);
 	return buff;
