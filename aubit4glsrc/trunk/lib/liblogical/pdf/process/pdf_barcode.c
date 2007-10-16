@@ -203,26 +203,27 @@ switch (c) {
 
 }
 
-static void PrintCharPDF39(PDF *p, double x, char c, float p_page_height) {
+static void PrintCharPDF39(PDF *p, double x, char c, float p_page_height,int incl_text) {
 double xabs,yabs;
 static char buff[200];
 xabs = x00 + (x * xscale);
 yabs = y00 + height + (fontsize * 12.0);
-	SPRINTF1(buff,"%c",c);
-        PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
-
-        PDF_show (p, buff);
+	if (incl_text) {
+		SPRINTF1(buff,"%c",c);
+        	PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
+        	PDF_show (p, buff);
+	}
 
 
 }
 
-static void PrintThisPDF39(PDF *p, char *s,float p_page_height) {
+static void PrintThisPDF39(PDF *p, char *s,float p_page_height,int incl_text) {
 int x;
 PutBarsPDF39(p, '*',p_page_height); //   # starting delimiter 
 
 for (x=0; x<strlen(s);x++) {
 
-   PrintCharPDF39(p, atx,s[x],p_page_height);
+   PrintCharPDF39(p, atx,s[x],p_page_height,incl_text);
    PutBarsPDF39(p, s[x],p_page_height);
 }
 
@@ -263,7 +264,7 @@ static void TermBarPDF39(PDF *p) {
 // # SCCS    : @(#) bc.4gl 1.1 96/04/18 15:33:10
 // # Author  : Ti Lian Hwang (tilh@sin-co.sg.dhl.com)
 // # Date    : 04 Oct 95
-void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height) {
+void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height,int incl_text) {
 
 double font_size;
 int char_length1;
@@ -295,7 +296,7 @@ if (codetype==39) {
 	// Create an uppercased version
 	S=strdup(str);
 	a4gl_upshift(S);
-	PrintThisPDF39(p, S,p_page_height);
+	PrintThisPDF39(p, S,p_page_height,incl_text);
 	free(S);
 	TermBarPDF39(p);
 } 

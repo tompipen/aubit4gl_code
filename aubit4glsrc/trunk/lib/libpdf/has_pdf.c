@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.44 2007-10-16 12:53:13 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.45 2007-10-16 16:38:16 mikeaubury Exp $
 #*/
 
 /**
@@ -46,7 +46,7 @@
 
 #define USE_PDFLIB_H
 #include "a4gl_lib_exreport_pdf_int.h"
-void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height);
+void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height,int incl_text);
 
 
 
@@ -328,6 +328,7 @@ A4GLPDFREP_A4GL_pdf_skip_to (void *vrep, double a)
   a = A4GLPDFREP_A4GL_pdf_size (a, 'l', rep);
 			A4GL_debug("setting line_no=%lf",a);
   rep->line_no = a;
+  rep->col_no = 0;
 }
 
 
@@ -776,12 +777,17 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       return 0;
     }
 
-  if (strcmp (fname, "moveto") == 0)
+  if (strcmp (fname, "moveto") == 0 || strcmp (fname, "moveto_top") == 0)
     {
       float f1;
       float f2;
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
+		if (strcmp (fname, "moveto_top") == 0) {
+			f2=p->page_length-f2;
+		}
+
+
       PDF_moveto (p->pdf_ptr, f1, f2);
       return 0;
     }
@@ -850,12 +856,27 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
 	double x,y,w,h;
 	char *str;
 	str=A4GL_char_pop();
-	h=A4GL_pop_double()*72.0;
-	w=A4GL_pop_double()*72.0;
-	y=A4GL_pop_double()*72.0;
-	x=A4GL_pop_double()*72.0;
+	h=A4GL_pop_double();
+	w=A4GL_pop_double();
+	y=A4GL_pop_double();
+	x=A4GL_pop_double();
 	y=y+h;
-	generate_barcode(p->pdf_ptr, x,y,w,h,str,p->page_length);
+	generate_barcode(p->pdf_ptr, x,y,w,h,str,p->page_length,1);
+	free(str);
+      return 0;
+    }
+
+  if (strcmp (fname, "barcode_no_text") == 0)
+    {
+	double x,y,w,h;
+	char *str;
+	str=A4GL_char_pop();
+	h=A4GL_pop_double();
+	w=A4GL_pop_double();
+	y=A4GL_pop_double();
+	x=A4GL_pop_double();
+	y=y+h;
+	generate_barcode(p->pdf_ptr, x,y,w,h,str,p->page_length,0);
 	free(str);
       return 0;
     }
@@ -872,12 +893,15 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       return 0;
     }
 
-  if (strcmp (fname, "lineto") == 0)
+  if (strcmp (fname, "lineto") == 0 || strcmp (fname, "lineto_top") == 0)
     {
       float f1;
       float f2;
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
+		if (strcmp (fname, "lineto_top") == 0) {
+			f2=p->page_length-f2;
+		}
       PDF_lineto (p->pdf_ptr, f1, f2);
       return 0;
     }
@@ -970,23 +994,44 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
   }
 
 // rect(x, y, w, h);
-  if (strcmp (fname, "rect") == 0)
+  if (strcmp (fname, "rect") == 0 || strcmp (fname, "rect_top") == 0)
     {
       float fx, fy, fw, fh;
       fh = A4GL_pop_double ();
       fw = A4GL_pop_double ();
       fy = A4GL_pop_double ();
+	if (strcmp (fname, "rect_top") == 0) {
+		fy=p->page_length-fy;
+	}
       fx = A4GL_pop_double ();
       PDF_rect (p->pdf_ptr, fx, fy, fw, fh);
       PDF_stroke (p->pdf_ptr);
       return 0;
     }
 
+  if (strcmp (fname, "show_text_pos") == 0 || strcmp (fname, "show_text_pos_top") == 0)
+    {
+      float fx, fy;
+	char *ptr;
+	ptr=A4GL_char_pop();
+      fy = A4GL_pop_double ();
+	if (strcmp (fname, "set_text_pos_top") == 0) {
+		fy=p->page_length-fy;
+	}
+      fx = A4GL_pop_double ();
+       PDF_set_text_pos (p->pdf_ptr, fx, fy - p->font_size);
+        PDF_show (p->pdf_ptr, ptr);
+	free(ptr);
+      return 0;
+    }
+
+
+
 // show_boxed(text, x, y, w, h, mode, feature) returning rc;
 // mode=(left, right, center, justify, fulljustify);
 // if w=h=0, x,y is anchor point for left,right,center single line formatting
 // feature=blind used for testing if text fit. rc is no of chars not fit.
-  if (strcmp (fname, "show_boxed") == 0)
+  if (strcmp (fname, "show_boxed") == 0 || strcmp (fname, "show_boxed_top") == 0)
     {
       float fx, fy, fw, fh;
       char *text, *mode, *feature;
@@ -1002,16 +1047,23 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       fy = A4GL_pop_double ();
       fx = A4GL_pop_double ();
       text = A4GL_char_pop ();
+	if (strcmp (fname, "show_boxed_top") == 0) {
+		fy=p->page_length-fy;
+	}
       if (strcmp (mode, "left") != 0
 	&& strcmp (mode, "right") !=0
 	&& strcmp (mode, "center") !=0
 	&& strcmp (mode, "justify") !=0
 	&& strcmp (mode, "fulljustify") !=0) mode = "justify";
+
       if (strcmp (feature, "blind") != 0) feature = "";
+
       c = PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, feature);
       A4GL_push_double ((double) c);
       return 1;
     }
+
+
 
   return 0;
 }

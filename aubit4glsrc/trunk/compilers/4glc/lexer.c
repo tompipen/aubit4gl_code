@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.126 2006-12-28 12:09:10 gyver309 Exp $
+# $Id: lexer.c,v 1.127 2007-10-16 16:38:16 mikeaubury Exp $
 #*/
 
 /**
@@ -1411,7 +1411,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		if (t==1) a=INT_VALUE;
 		if (t==2) {
 				a=NUMBER_VALUE;
-				printf("SETTING TO NUMBER VALUE 2 : %s\n",buff);
+				//printf("SETTING TO NUMBER VALUE 2 : %s\n",buff);
 			}
 		if (t!=1&&t!=2) {
 		 	if (isident (buff)) {
@@ -1472,7 +1472,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	case 2:
 	  A4GL_debug (" Constant switch %s Float", buffval);
 	  strcpy (buff, buffval);
-				printf("SETTING TO NUMBER VALUE 3\n");
+				//printf("SETTING TO NUMBER VALUE 3\n");
 	  a = NUMBER_VALUE;
 	  break;		/* 'f' */
 	case 3:

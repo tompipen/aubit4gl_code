@@ -139,7 +139,7 @@ double xd,yd,wd,hd;
         {
           A4GL_debug ("Couldn't read image file for barcode(%s) - generating lines instead\n",str);
 		// Try drawing it instead...
-		generate_barcode(p, xd*72.0,(yd*72),wd*72.0,hd*72.0,str,this_page_height);
+		generate_barcode(p, xd*72.0,(yd*72),wd*72.0,hd*72.0,str,this_page_height,1);
 
 
         }
