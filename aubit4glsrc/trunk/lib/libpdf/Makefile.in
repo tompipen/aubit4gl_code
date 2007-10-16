@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2006-07-27 16:03:35 mikeaubury Exp $
+# $Id: Makefile.in,v 1.20 2007-10-16 12:53:13 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -50,7 +50,8 @@ ifneq "${COMSPEC}" ""
 endif
 
 OBJECTS_NOPDF	=nopdf.o
-OBJECTS_PDF		=has_pdf.o
+OBJECTS_PDF		=has_pdf.o ../liblogical/pdf/process/pdf_barcode.o
+
 
 ## ==================================================================
 ##                              Targets

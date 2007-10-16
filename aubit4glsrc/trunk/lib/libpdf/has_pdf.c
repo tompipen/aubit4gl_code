@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.43 2007-09-01 07:52:47 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.44 2007-10-16 12:53:13 mikeaubury Exp $
 #*/
 
 /**
@@ -46,6 +46,7 @@
 
 #define USE_PDFLIB_H
 #include "a4gl_lib_exreport_pdf_int.h"
+void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height);
 
 
 
@@ -841,6 +842,21 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
   if (strcmp (fname, "stroke") == 0)
     {
       PDF_stroke (p->pdf_ptr);
+      return 0;
+    }
+
+  if (strcmp (fname, "barcode") == 0)
+    {
+	double x,y,w,h;
+	char *str;
+	str=A4GL_char_pop();
+	h=A4GL_pop_double()*72.0;
+	w=A4GL_pop_double()*72.0;
+	y=A4GL_pop_double()*72.0;
+	x=A4GL_pop_double()*72.0;
+	y=y+h;
+	generate_barcode(p->pdf_ptr, x,y,w,h,str,p->page_length);
+	free(str);
       return 0;
     }
 
