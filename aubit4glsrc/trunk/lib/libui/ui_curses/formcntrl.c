@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.122 2007-10-04 19:26:13 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.123 2007-10-16 06:32:06 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.122 2007-10-04 19:26:13 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.123 2007-10-16 06:32:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -221,6 +221,43 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
   sio->fcntrl_cnt = 0;
 }
 
+static void A4GL_trim_trailing_in_wordwrap_field_on_stack(int width) {
+char *a;
+char **buff=0;
+int n;
+int c;
+
+
+a=A4GL_char_pop();
+n=0;
+while (c<=strlen(a)) {
+	n++;
+	c+=width;
+}
+
+buff=malloc(sizeof(char *)*n+1);
+
+for (c=0;c<=n;c++) {
+	//if (width*c>strlen(a)) {buff[c]=""; break;}
+	buff[c]=malloc(width+1);
+	strncpy(buff[c],&a[width*c],width);
+	buff[c][width]=0;
+	A4GL_trim(buff[c]);
+}
+
+A4GL_debug("a=%s\n",a);
+A4GL_debug("n=%d\n",n);
+
+strcpy(a,"");
+for (c=0;c<=n;c++) {
+	if (c) strcat(a," ");
+	strcat(a,buff[c]);
+	A4GL_debug("%s\n", buff[c]);
+	free(buff[c]);
+}
+A4GL_push_char(a);
+free(buff);
+}
 
 int A4GL_fprop_flag_get(FIELD *f, int flag) {
 	struct struct_scr_field *fprop;
@@ -1103,7 +1140,13 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			  sio->vars[field_no].ptr, sio->vars[field_no].dtype,
 			  sio->vars[field_no].size);
 
-		
+                if ((sio->vars[field_no].dtype& DTYPE_MASK)==DTYPE_CHAR || (sio->vars[field_no].dtype& DTYPE_MASK)==DTYPE_VCHAR) {
+                        fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+                        if (A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP)) {
+                                        A4GL_trim_trailing_in_wordwrap_field_on_stack(A4GL_get_field_width_w(sio->currentfield,0));
+                        }
+                }
+
 	        A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
 
 		if (sio->vars[field_no].dtype==0) {
