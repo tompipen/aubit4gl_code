@@ -707,7 +707,7 @@ UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap)
     }
   strcat (buff, "</FIELDLIST>");
   f = field_list;
-  *f = buff;
+  *f = strdup(buff);
   return 1;
 }
 
@@ -996,11 +996,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
   struct s_screenio *sreal;
   sreal = s;
 
-  if (sreal->fcntrl_cnt)
-    {
-
-    }
-
+printf("FORM LOOP\n");
 
   if (init)
     {
@@ -1047,16 +1043,22 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
   while (1)
     {
-      int a;
-	int context;
+      int a=0;
+	int context=0;
 
       A4GL_push_char ("XML");
       A4GL_push_int (((long) s) & 0xffffffff);
       uilib_get_context (2);
-	a=A4GL_pop_int (); // Context..
-	A4GL_push_int(context);
-
-      uilib_construct_loop (1);
+	context=A4GL_pop_int (); // Context..
+	printf("Context=%d\n",context);
+      if (sreal->mode == MODE_CONSTRUCT)
+	{
+		A4GL_push_int(context);
+      		uilib_construct_loop (1);
+	} else {
+		A4GL_push_int(context);
+      		uilib_input_loop (1);
+	}
       a = A4GL_pop_int ();
       printf ("Got a as %d\n", a);
       if (a == 0)
@@ -1066,21 +1068,18 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
       if (a == -100)
 	{			// Accept...
-	  if (last_attr->sync.nvalues) { 
-			set_construct_clause(context, generate_construct_result(sreal));
-			//contexts[context].ui.construct.constr_clause=generate_construct_result(sreal); 
-	}
+      if (sreal->mode == MODE_CONSTRUCT) { if (last_attr->sync.nvalues) { set_construct_clause(context, generate_construct_result(sreal)); } else { set_construct_clause(context, strdup(sreal->vars[0].ptr)); } }
+
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
 	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	    }
 
-
 	}
+
       if (a == -101)
 	{			// Interrupt
-			set_construct_clause(context, strdup(sreal->vars[0].ptr));
-	  //contexts[context].ui.construct.constr_clause=strdup(sreal->vars[0].ptr);
+      		if (sreal->mode == MODE_CONSTRUCT) { set_construct_clause(context, strdup(sreal->vars[0].ptr)); }
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
 		
@@ -2019,4 +2018,6 @@ static int get_inc_quotes(int a) {
         if ((a & DTYPE_MASK) == DTYPE_INTERVAL) return 4;
         return 0;
 }
+
+
 

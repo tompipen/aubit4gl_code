@@ -1380,6 +1380,7 @@ uilib_construct_start (int nargs)
   ln=POPint();
   mod=charpop();
   cconstruct = new_context (UICONSTRUCT,mod,ln);
+	printf("NEW CONTEXT : %s %d = %d\n", mod, ln, cconstruct);
   contexts[cconstruct].ui.construct.constr_clause = 0;
   contexts[cconstruct].ui.construct.setfield = 0;
   UIdebug(5,"Construct - state=%d",  contexts[cconstruct].state);
@@ -1445,7 +1446,7 @@ uilib_construct_query (int nargs)
   int context;
   context = POPint ();
 
-//printf("COntext=%d data=%s\n", context, contexts[context].ui.construct.constr_clause);
+printf("COntext=%d data=%s\n", context, contexts[context].ui.construct.constr_clause);
 
   if (contexts[context].ui.construct.constr_clause)
     {
@@ -1492,6 +1493,7 @@ for (a=0;a<ncontexts;a++) {
 	if (contexts[a].lineno==line && contexts[a].state!=UI_FREE) {
 		if (strcmp(contexts[a].modulename,mod)==0){
 				UIdebug(9,"FOUND CONTEXT : %s %d=%d\n",mod,line,a);
+				printf("FOUND CONTEXT : %s %d=%d\n",mod,line,a);
 				pushint(a); return 1;
 		}
 	}
@@ -1948,7 +1950,8 @@ return 0;
 
 
 void set_construct_clause(int context, char *ptr) {
-
+	
+printf("SETTING CONSTRUCT RESULT TO ---> %s for %d\n", ptr,context);
 	contexts[context].ui.construct.constr_clause=ptr;
 }
 
