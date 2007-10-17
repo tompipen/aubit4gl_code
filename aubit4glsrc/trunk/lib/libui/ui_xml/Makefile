@@ -1,4 +1,4 @@
-
+CFLAGS+=-I$(AUBITDIR)/incl
 libUI_XML.so: xml.c libuilib.a proxy
 	gcc -g -Wall -I$(AUBITDIR)/incl -I. -Iuilib  -shared -o libUI_XML.so xml.c -Bstatic  -Luilib -luilib
 	cp *.so `aubit-config DEFAULT_PLUGINDIR`

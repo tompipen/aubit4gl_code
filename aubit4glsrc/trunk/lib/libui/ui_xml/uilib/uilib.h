@@ -82,3 +82,4 @@ int uilib_getfldbuf(int nargs) ;
 int uilib_infield(int nargs) ;
 int uilib_fgl_drawbox(int nargs);
 int uilib_set_field_list_directly (char *s);
+void set_construct_clause(int context, char *ptr);

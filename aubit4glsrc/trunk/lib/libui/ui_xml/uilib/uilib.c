@@ -770,7 +770,7 @@ uilib_prompt_loop (int n)
   if (last_attr->sync.nvalues)
     {
       // Got a prompt result...
-      contexts[context].ui.prompt.promptresult = last_attr->sync.vals[0];
+      contexts[context].ui.prompt.promptresult = last_attr->sync.vals[0].value;
     }
   pushint (i);
   return 1;
@@ -1214,7 +1214,7 @@ uilib_input_loop (int nargs)
 		if (contexts[context].ui.input.variable_data[a]) {
 			free(contexts[context].ui.input.variable_data[a]);
 		}
-		contexts[context].ui.input.variable_data[a]=last_attr->sync.vals[a];
+		contexts[context].ui.input.variable_data[a]=last_attr->sync.vals[a].value;
       }
     }
   pushint (i);
@@ -1435,11 +1435,6 @@ uilib_construct_loop (int nargs)
       flush_ui ();
     }
 
-  if (last_attr->sync.nvalues)
-    {
-      /* Got a construct result... */
-             contexts[context].ui.construct.constr_clause = last_attr->sync.vals[0];
-      }
   pushint (i);
   return 1;
 }
@@ -1449,6 +1444,8 @@ uilib_construct_query (int nargs)
 {
   int context;
   context = POPint ();
+
+//printf("COntext=%d data=%s\n", context, contexts[context].ui.construct.constr_clause);
 
   if (contexts[context].ui.construct.constr_clause)
     {
@@ -1825,7 +1822,6 @@ int uilib_input_array_loop (int n)
 	int a;
 	int b;
 	int arrline;
-
 	for (a=0;a<last_attr->rows.nrows;a++) {
 		arrline=last_attr->rows.row[a].rownum-1;
 		contexts[context].ui.inputarray.changed_rows[arrline]=1;
@@ -1842,7 +1838,7 @@ int uilib_input_array_loop (int n)
 			if (p[b]) {
 				free(p[b]);
 			}
-			p[b]=strdup(last_attr->rows.row[a].sync.vals[b]);
+			p[b]=strdup(last_attr->rows.row[a].sync.vals[b].value);
 		}
 	}
   }
@@ -1949,3 +1945,11 @@ exit(2);
 }
 return 0;
 }
+
+
+void set_construct_clause(int context, char *ptr) {
+
+	contexts[context].ui.construct.constr_clause=ptr;
+}
+
+

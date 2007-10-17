@@ -1,6 +1,6 @@
 
 NAME=`uname | tr '-' '_'`
-CFLAGS=-fPIC -g -Wall  -Iaubit4gl
+CFLAGS=-fPIC -g -Wall  -Iaubit4gl -I$(AUBITDIR)/incl
 
 all: libuilib.a uirunner uirunner_s
 clean:

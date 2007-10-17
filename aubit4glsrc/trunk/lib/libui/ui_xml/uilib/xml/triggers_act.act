@@ -55,12 +55,18 @@ return n;
 		lexed_attr.scrline=0;
 		lexed_attr.arrline=0;
 		lexed_attr.arrcount=0;
+
+		lexed_attr.lastkey=0;
+		lexed_attr.infield=0;
 		if ({ID}) lexed_attr.id=strdup({ID}); 
 		if ({TYPE}) lexed_attr.type=strdup({TYPE}); 
 		if ({DATA}) lexed_attr.data=strdup({DATA}); 
 		if ({SCRLINE}) lexed_attr.scrline=atoi({SCRLINE}); 
 		if ({ARRLINE}) lexed_attr.arrline=atoi({ARRLINE}); 
 		if ({ARRCOUNT}) lexed_attr.arrcount=atoi({ARRCOUNT}); 
+
+		if ({LASTKEY}) lexed_attr.lastkey=atoi({LASTKEY}); 
+		if ({INFIELD}) lexed_attr.infield=strdup({INFIELD}); 
 		
 		
 	}
@@ -81,7 +87,7 @@ return n;
 		if (sync.vals) {
 			int a;
 			for (a=0;a<sync.nvalues;a++) {
-				free(sync.vals[a]);
+				free(sync.vals[a].value);
 			}
 			free(sync.vals);
 		}
@@ -103,8 +109,14 @@ return n;
 	<![CDATA[ 
 	{
 		sync.nvalues++;
-		sync.vals=realloc(sync.vals, sizeof(char *)*sync.nvalues) ;
-		sync.vals[sync.nvalues-1]=strdup({#PCDATA});
+		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
+		sync.vals[sync.nvalues-1].value=strdup({#PCDATA});
+
+		if ({FIELDTYPE}) {
+			sync.vals[sync.nvalues-1].fieldtype=atoi({FIELDTYPE});
+		} else {
+			sync.vals[sync.nvalues-1].fieldtype=-1;
+		}
 	}
 	]]>
 </end>
@@ -139,7 +151,7 @@ return n;
 		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.nvalues=sync.nvalues;
 		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals=malloc(sizeof(char *)*sync.nvalues);
 		for (a=0;a<sync.nvalues;a++) {
-			lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals[a]=strdup(sync.vals[a]);
+			lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals[a].value=strdup(sync.vals[a].value);
 		}
 	}
 	]]>

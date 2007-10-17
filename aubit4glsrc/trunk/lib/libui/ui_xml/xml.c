@@ -1,7 +1,8 @@
 #include "a4gl_libaubit4gl.h"
 #include "comms.h"
 #include "uilib.h"
-
+#include "uilib/xml/attr.h"
+extern struct s_attr *last_attr;
 #include <stdarg.h>
 int mn_id = 0;
 struct s_windows
@@ -17,8 +18,11 @@ struct s_windows *win_stack[MAXWIN];
 int win_stack_cnt = 0;
 int XML_A4GL_assertion (int n, char *s);
 
+static int get_inc_quotes(int a) ;
 
 #define niy() A4GL_niy((char *)__PRETTY_FUNCTION__)
+
+char *generate_construct_result (struct s_screenio *s);
 
 int
 A4GL_win_stack_cnt (void)
@@ -1044,10 +1048,13 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
   while (1)
     {
       int a;
+	int context;
 
       A4GL_push_char ("XML");
       A4GL_push_int (((long) s) & 0xffffffff);
       uilib_get_context (2);
+	a=A4GL_pop_int (); // Context..
+	A4GL_push_int(context);
 
       uilib_construct_loop (1);
       a = A4GL_pop_int ();
@@ -1056,19 +1063,30 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	continue;
       if (a == -1)
 	continue;
+
       if (a == -100)
 	{			// Accept...
+	  if (last_attr->sync.nvalues) { 
+			set_construct_clause(context, generate_construct_result(sreal));
+			//contexts[context].ui.construct.constr_clause=generate_construct_result(sreal); 
+	}
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
 	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	    }
+
+
 	}
       if (a == -101)
 	{			// Interrupt
+			set_construct_clause(context, strdup(sreal->vars[0].ptr));
+	  //contexts[context].ui.construct.constr_clause=strdup(sreal->vars[0].ptr);
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
+		
 	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	    }
+		
 	}
       return a;
     }
@@ -1083,7 +1101,7 @@ UILIB_A4GL_push_constr (void *s)
   A4GL_push_int (((long) s) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();
-
+  A4GL_push_int(context);
   uilib_construct_query (1);
   return 1;
 }
@@ -1960,3 +1978,45 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 
   return 1;
 }
+
+char *generate_construct_result (struct s_screenio *s)
+{
+int a;
+char *ptr;
+int flg=0;
+char *buff=0;
+
+for (a=0;a<last_attr->sync.nvalues;a++) {
+        ptr=A4GL_construct (s->constr[a].tabname, s->constr[a].colname,
+                                last_attr->sync.vals[a].value,get_inc_quotes(last_attr->sync.vals[0].fieldtype),
+                                last_attr->sync.vals[0].fieldtype &DTYPE_MASK, last_attr->sync.vals[0].fieldtype>>16);
+        if (ptr==0) { /* Some error... */
+                if (buff) free(buff);
+                return 0;
+        }
+
+        if (strlen(ptr)) {
+                flg++;
+                if (buff) {
+                        buff=realloc(buff,strlen(buff)+strlen(ptr)+10);
+                        strcat(buff," and ");
+                        strcat(buff,ptr);
+                } else {
+                        buff=strdup(ptr);
+                }
+        }
+}
+
+if (!buff) buff=strdup(" 1=1");
+return buff;
+}
+
+
+static int get_inc_quotes(int a) {
+     if ((a & DTYPE_MASK ) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR) return 1;
+        if ((a & DTYPE_MASK) == DTYPE_DATE) return 2;
+        if ((a & DTYPE_MASK) == DTYPE_DTIME) return 3;
+        if ((a & DTYPE_MASK) == DTYPE_INTERVAL) return 4;
+        return 0;
+}
+
