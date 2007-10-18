@@ -1079,7 +1079,8 @@ printf("FORM LOOP\n");
 
       if (a == -101)
 	{			// Interrupt
-      		if (sreal->mode == MODE_CONSTRUCT) { set_construct_clause(context, strdup(sreal->vars[0].ptr)); }
+		//int_flag=1;
+      	if (sreal->mode == MODE_CONSTRUCT) { set_construct_clause(context, strdup(sreal->vars[0].ptr)); }
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
 		
@@ -1356,8 +1357,79 @@ int
 UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib,
 			int scrollf, int scrollw, void *evt)
 {
-  int rval;
-  niy ();
+char buff[2000];
+int a,b;
+int n;
+struct s_disp_arr *d;
+int context;
+int rval;
+d=(struct s_disp_arr *)disp;
+
+	if (d->srec==0) {
+		d->srec=(void *)srecname;
+      		d->last_arr = -1;
+      		d->scr_line = 1;
+      		d->arr_line = 1;
+      		d->cntrl = 1;
+      		d->highlight = 0;
+      		d->attribute = attrib;
+
+  		sprintf(buff,"<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>",srecname);
+		uilib_set_field_list_directly(buff);
+	
+      		A4GL_push_char ("XML");
+      		A4GL_push_int (((long) disp) & 0xffffffff);
+		A4GL_push_int(attrib);
+
+		A4GL_push_int(d->no_arr);
+		uilib_set_count(1);
+		uilib_display_array_start(3);
+		uilib_array_lines_start(0);
+
+		for (a=0;a<d->no_arr;a++) {
+			A4GL_push_int(a);
+			for (b=0;b<d->nbind;b++) {
+				char *cptr;
+          			cptr = (char *) d->binding[b].ptr + d->arr_elemsize * (a);
+          			A4GL_push_param (cptr, d->binding[b].dtype + ENCODE_SIZE (d->binding[b].size));
+			}
+			uilib_display_array_line(d->nbind+1);
+		}
+		uilib_array_lines_end(0);
+	  	dump_events (evt);
+/*
+                CALL UILIB_START_EVENTS()
+                CALL UILIB_EVENT(1,"ONKEY","F1")
+                CALL UILIB_END_EVENTS()
+*/
+
+
+		uilib_display_array_initialised(0);
+	}
+
+A4GL_push_char ("XML");
+A4GL_push_int (((long) disp) & 0xffffffff);
+uilib_get_context(2);
+context=A4GL_pop_int();
+A4GL_push_int(context);
+
+
+  uilib_display_array_loop(context);
+  rval=A4GL_pop_int();
+	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);
+	if (last_attr->arrcount) A4GL_set_arr_count(last_attr->arrcount);
+	if (last_attr->scrline) A4GL_set_scr_line(last_attr->scrline);
+
+  if (rval==-100) { 	
+	// ACCEPT...
+  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
+  }
+  if (rval==-101) { 	
+	// INTERRUPT
+	int_flag=1;
+  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
+  }
+
   return rval;
 }
 
