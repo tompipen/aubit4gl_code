@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.180 2007-10-04 19:26:13 mikeaubury Exp $
+# $Id: ioform.c,v 1.181 2007-10-18 16:34:26 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.180 2007-10-04 19:26:13 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.181 2007-10-18 16:34:26 mikeaubury Exp $";
 #endif
 
 /**
@@ -1843,7 +1843,7 @@ A4GL_field_name_match (FIELD * f, char *s)
 	      0)
 	    {
 	      char buff[256];
-	      sprintf (buff, "%s.%s",
+	      SPRINTF2 (buff, "%s.%s",
 		       fdets->fileform->attributes.attributes_val[attr_no].
 		       tabname,
 		       fdets->fileform->attributes.attributes_val[attr_no].

@@ -218,6 +218,9 @@ void save_file (void)
     {
  ok=save_file_internal(fname);
       if (!ok) { msgbox ("Some error during save", "Warning - No save performed..."); }
+	else {
+		strcpy(lastLRF,fname);
+		}
   } else
     {
       msgbox ("Save Aborted", "No save performed...");
@@ -299,7 +302,9 @@ void load_file (void)
 
    	if (!ok) {
 		msgbox ("Some error during load",buff);
-        }
+        } else {
+		strcpy(lastLRF,fname);
+	}
   } else {
       msgbox ("Load Aborted", "No load performed...");
   }
