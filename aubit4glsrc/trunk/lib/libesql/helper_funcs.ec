@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.63 2007-10-15 20:38:57 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.64 2007-10-18 20:50:49 mikeaubury Exp $
 #
 */
 
@@ -144,7 +144,6 @@ void *ptr=0;
 	} else {
 		ptr=0;
 	}
-	//printf("ptr=%p\n",ptr);
 }
 #endif
 return ptr;
@@ -435,7 +434,6 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			ndig_s=size>>8;
 			s=(size>>4)&0xf;
 			e=(size&0xf);
-			//printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
 			infx->in_qual=TU_IENCODE(ndig_s,tr[s],tr[e]);
 		}
 	#endif
@@ -444,9 +442,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	// Debugging stuff only
 		A4GL_debug("Copy interval in - aubit=%s\n",ptr);
-		//printf("Copy interval in - aubit=%s\n",ptr);
 			intoasc(infx,buff);
-		//printf("                Informix=%s\n",buff);
 		A4GL_debug("                Informix=%s\n",buff);
 	// End of Debugging stuff only
 
@@ -1002,9 +998,6 @@ for (a=0;a<n;a++) {
 	x=a4gl_bind[a].start_char_subscript;
 	y=a4gl_bind[a].end_char_subscript;
 
-		//if ((a4gl_bind[a].dtype&DTYPE_MASK)==0) {
-			//printf("%p %p %p %d %c %d %d\n",native,a4gl,i,size,dir,x,y);
-		//}
 	switch (a4gl_bind[a].dtype&DTYPE_MASK) {
 		case DTYPE_CHAR:  ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
 		case DTYPE_SMINT:  ESQLAPI_A4GL_copy_smint(native,a4gl,i,size,dir); break;

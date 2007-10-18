@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.45 2007-06-20 13:30:06 mikeaubury Exp $
+# $Id: Makefile,v 1.46 2007-10-18 20:50:49 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -199,13 +199,13 @@ ifneq "${COMSPEC}" ""
 #that may contain spaces. If you get message "Input file name has invalid suffix ''"
 #that is probably what happened. You must double-quote it ('"..."')
 	export INFORMIXDIR=${INFORMIXDIR_UNQUOTED} ; \
-		$(ESQL) -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR_CSDK}/incl"' -e $<
+		$(ESQL) -nln -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR_CSDK}/incl"' -e $<
 	$(CC) $(CFLAGS) -DDIALECT_INFORMIX -I"${INFORMIXDIR_CSDK}/incl/esql" \
 		-I"${INFORMIXDIR_CSDK}/incl" -c $(basename $<).c -o $@
 	-@rm $(basename $<).c $(basename $<).c_*
 else
 #UNIX:
-	export INFORMIXC=${INFORMIXC};  ${IFMX_ESQLC} ${PIC} -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
+	export INFORMIXC=${INFORMIXC};  ${IFMX_ESQLC} ${PIC}  -nln -G -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
 		-I"${INFORMIXDIR}/incl" 
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.383 2007-10-15 20:38:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.384 2007-10-18 20:50:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.383 2007-10-15 20:38:57 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.384 2007-10-18 20:50:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7687,7 +7687,7 @@ int local_print_bind_set_value_g (t_binding_comp_list *bind,int ignore_esqlc,int
 	if (!ignore_esqlc && doing_esql()) {
           printc ("native_binding_o[%d].ptr= &_vo_%d; ", a,a);
           if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
-                printc ("native_binding_o_ind[%d].ptr= &_voi_%d; ", a,a);
+                printc ("native_binding_o_ind[%d].ptr= &_voi_%d; _voi_%d= -2; ", a,a,a);
           }
 	
 	}
