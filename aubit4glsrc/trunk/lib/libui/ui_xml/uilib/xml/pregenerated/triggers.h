@@ -1,5 +1,5 @@
 /* XML processor/application API for triggers.dtd.
- * Generated 2007/09/24 15:40:55.
+ * Generated 2007/10/17 20:30:27.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -61,47 +61,59 @@ extern void STag_SYNCVALUE(void);
 extern void ETag_SYNCVALUE(void);
 
 /* XML application data. */
-typedef int AT_TRIGGERED_DATA;
-#define AU_TRIGGERED_DATA NULL
-typedef int AT_TRIGGERED_xmlns_c_xsd;
-#define AU_TRIGGERED_xmlns_c_xsd NULL
-typedef int AT_TRIGGERED_xmlns_c_xsi;
-#define AU_TRIGGERED_xmlns_c_xsi NULL
 typedef int AT_TRIGGERED_SCRLINE;
 #define AU_TRIGGERED_SCRLINE NULL
-typedef int AT_TRIGGERED_TYPE;
-#define AU_TRIGGERED_TYPE NULL
 typedef int AT_ROW_SUBSCRIPT;
 #define AU_ROW_SUBSCRIPT NULL
+typedef int AT_TRIGGERED_INFIELD;
+#define AU_TRIGGERED_INFIELD NULL
 typedef int AT_TRIGGERED_ARRLINE;
 #define AU_TRIGGERED_ARRLINE NULL
+typedef int AT_TRIGGERED_LASTKEY;
+#define AU_TRIGGERED_LASTKEY NULL
 typedef int AT_TRIGGERED_ARRCOUNT;
 #define AU_TRIGGERED_ARRCOUNT NULL
 typedef int AT_TRIGGERED_ID;
 #define AU_TRIGGERED_ID NULL
+typedef int AT_TRIGGERED_DATA;
+#define AU_TRIGGERED_DATA NULL
+typedef int AT_TRIGGERED_xmlns_c_xsd;
+#define AU_TRIGGERED_xmlns_c_xsd NULL
+typedef int AT_SYNCVALUE_FIELDTYPE;
+#define AU_SYNCVALUE_FIELDTYPE NULL
+typedef int AT_TRIGGERED_xmlns_c_xsi;
+#define AU_TRIGGERED_xmlns_c_xsi NULL
+typedef int AT_TRIGGERED_TYPE;
+#define AU_TRIGGERED_TYPE NULL
 
 /* FleXML-provided data. */
 extern int pcdata_ix;
 extern char *bufferstack;
 #define pcdata (bufferstack + pcdata_ix)
-extern AT_TRIGGERED_DATA AX_TRIGGERED_DATA;
-#define A_TRIGGERED_DATA (bufferstack + AX_TRIGGERED_DATA)
-extern AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
-#define A_TRIGGERED_xmlns_c_xsd (bufferstack + AX_TRIGGERED_xmlns_c_xsd)
-extern AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
-#define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
 extern AT_TRIGGERED_SCRLINE AX_TRIGGERED_SCRLINE;
 #define A_TRIGGERED_SCRLINE (bufferstack + AX_TRIGGERED_SCRLINE)
-extern AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
-#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
 extern AT_ROW_SUBSCRIPT AX_ROW_SUBSCRIPT;
 #define A_ROW_SUBSCRIPT (bufferstack + AX_ROW_SUBSCRIPT)
+extern AT_TRIGGERED_INFIELD AX_TRIGGERED_INFIELD;
+#define A_TRIGGERED_INFIELD (bufferstack + AX_TRIGGERED_INFIELD)
 extern AT_TRIGGERED_ARRLINE AX_TRIGGERED_ARRLINE;
 #define A_TRIGGERED_ARRLINE (bufferstack + AX_TRIGGERED_ARRLINE)
+extern AT_TRIGGERED_LASTKEY AX_TRIGGERED_LASTKEY;
+#define A_TRIGGERED_LASTKEY (bufferstack + AX_TRIGGERED_LASTKEY)
 extern AT_TRIGGERED_ARRCOUNT AX_TRIGGERED_ARRCOUNT;
 #define A_TRIGGERED_ARRCOUNT (bufferstack + AX_TRIGGERED_ARRCOUNT)
 extern AT_TRIGGERED_ID AX_TRIGGERED_ID;
 #define A_TRIGGERED_ID (bufferstack + AX_TRIGGERED_ID)
+extern AT_TRIGGERED_DATA AX_TRIGGERED_DATA;
+#define A_TRIGGERED_DATA (bufferstack + AX_TRIGGERED_DATA)
+extern AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
+#define A_TRIGGERED_xmlns_c_xsd (bufferstack + AX_TRIGGERED_xmlns_c_xsd)
+extern AT_SYNCVALUE_FIELDTYPE AX_SYNCVALUE_FIELDTYPE;
+#define A_SYNCVALUE_FIELDTYPE (bufferstack + AX_SYNCVALUE_FIELDTYPE)
+extern AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
+#define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
+extern AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
+#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
 
 /* XML application utilities. */
 extern int element_context(int);
