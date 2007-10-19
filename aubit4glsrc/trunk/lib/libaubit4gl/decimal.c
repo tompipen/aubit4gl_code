@@ -680,7 +680,7 @@ void A4GL_push_dec_from_apm(M_APM tmp);
 void acl_apm_set_string(M_APM m1, char *s,int convert) {
 	char buff[2000];
 	strcpy(buff,s);
-	if (strchr(s,'.')==0 && convert && a4gl_convfmts.printf_decfmt.decsep==',') {
+	if (strchr(s,'.')==0 && strchr(s,',')!=0 && convert && a4gl_convfmts.printf_decfmt.decsep==',') {
 			A4GL_assertion(1,"set string from real decimal");
 		}
 	A4GL_trim(buff);
@@ -816,7 +816,7 @@ char buff[2000];
 			// Divide by zero!
 		  A4GL_setnull(DTYPE_DECIMAL,res,res->dec_data[0]*256+res->dec_data[1]);	
 
-		return;
+		return 0 ;
 			
 	}
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.150 2007-10-15 20:38:57 mikeaubury Exp $
+# $Id: conv.c,v 1.151 2007-10-19 07:30:33 mikeaubury Exp $
 #
 */
 
@@ -1274,6 +1274,21 @@ A4GL_mdectos (void *z, void *w, int size)
   return 1;
 }
 
+static void prepend_0_if_required(char *ptr) {
+static char buff[200];
+strcpy(buff,ptr);
+if (ptr[0]=='.') {
+	strcpy(buff,"0");
+	strcat(buff,ptr);
+} 
+if (ptr[0]=='0' && ptr[1]=='.') {
+	strcpy(buff,"-0");
+	strcat(buff,&ptr[1]);
+}
+strcpy(ptr,buff);
+}
+
+
 /**
  * Convert a decimal value to long.
  *
@@ -1298,6 +1313,10 @@ A4GL_mdectol (void *zz, void *aa, int sz_ignore)
 		A4GL_setnull(DTYPE_INT, a,0);
 		return 1;
 	} else {
+		char *ptr;
+	prepend_0_if_required(buff);
+		ptr=strchr(buff,a4gl_convfmts.scanf_decfmt.decsep); if (ptr) *ptr=0;
+		ptr=strchr(buff,a4gl_convfmts.posix_decfmt.decsep); if (ptr) *ptr=0;
   		return A4GL_stol (buff, a, 0);
 	}
 }
@@ -1481,8 +1500,6 @@ A4GL_stosf (void *aa, void *zz, int sz_ignore)
   free(a);
   return ok;
 }
-
-
 /**
  * Convert a decimal value to long.
  *
@@ -1509,6 +1526,11 @@ int rval;
 	A4GL_setnull(DTYPE_INT, a,0);
 	rval=1;
   } else {
+	char *ptr;
+	char buff2[2000];
+	prepend_0_if_required(buff_dectol);
+	ptr=strchr(buff_dectol,a4gl_convfmts.scanf_decfmt.decsep); if (ptr) *ptr=0;
+	ptr=strchr(buff_dectol,a4gl_convfmts.posix_decfmt.decsep); if (ptr) *ptr=0;
   	rval=A4GL_stol (buff_dectol, a, 0);
   }
   A4GL_debug("rval=%d",rval);
@@ -1542,6 +1564,10 @@ int rval;
 	A4GL_setnull(DTYPE_SMINT, a,0);
 	rval=1;
   } else {
+		char *ptr;
+	prepend_0_if_required(buff_dectoi);
+		ptr=strchr(buff_dectoi,a4gl_convfmts.scanf_decfmt.decsep); if (ptr) *ptr=0;
+		ptr=strchr(buff_dectoi,a4gl_convfmts.posix_decfmt.decsep); if (ptr) *ptr=0;
   	rval=A4GL_stoi (buff_dectoi, a, 0);
   }
 
