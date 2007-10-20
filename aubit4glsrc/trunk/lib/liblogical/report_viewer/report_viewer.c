@@ -213,7 +213,7 @@ label_clicked_block (GtkWidget * widget, GdkEventButton * event,
 
   where_why = (char *) gtk_object_get_data (GTK_OBJECT (widget), "BLOCK_TXT");
   block = gtk_object_get_data_as_int (GTK_OBJECT (widget), "BLOCK");
-  sprintf (txt, "Status: Block (%s) selected", where_why);
+  sprintf (txt, "Status: Block (%s) selected (%d)", where_why, block);
   status = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (window), "STATUS");
 
 

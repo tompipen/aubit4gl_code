@@ -15,6 +15,16 @@
 #define PAPER_ORIENT_PORTRAIT 	2
 #define PAPER_ORIENT_AUTO 	3
 
+struct fonts {
+	char font[100];
+	int size;
+	int block;
+	int entry;
+	char replacementtext[256];
+	double xoffset;
+	double yoffset;
+};
+
 struct pdf_layout {
 	char fontname[100];
 	int fontsize;
@@ -26,6 +36,8 @@ struct pdf_layout {
 	int img_x;
 	int img_y;
 	char bluebar[256];
+	int nfonts;
+	struct fonts *fonts;
 };
 
 void pdf_default_file(void) ;

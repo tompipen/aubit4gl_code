@@ -272,7 +272,6 @@ int i;
 double bar_length, bar_scale;
 char *S;
 int codetype=39;
-//printf(" generate_barcode(%p, %lf,%lf,%lf,%lf,%s,%f);\n", p, xpos,ypos,x,y,str,p_page_height);
 
 if (A4GL_isyes(acl_getenv("BARCODE25"))) {
 	codetype=25;

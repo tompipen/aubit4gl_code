@@ -5,19 +5,19 @@
 #include "../common/common_pdf.h"
 #include "../../processor/API_process.h"
 #include "pdf_barcode.h"
+#include "pdf_handling.h"
 
-
-void setupPageSize(int w);
+extern int default_font_no;
+extern int default_font_size;
 
 char **lines;
 int max_pages;
 int page_cnt;
 extern struct pdf_layout layout;
-
+float get_eachline(void);
 
 int page_touched = 0;
 PDF *p;
-void output_page (PDF *p, int w, int h,char **lines);
 
 extern float this_page_width;
 extern float this_page_height;
@@ -72,7 +72,7 @@ trim (char *s)
 
 
 
-int isBarcode(char *s,double *x,double *y, double *w,double *h, char  *str) {
+static int isBarcode(char *s,double *x,double *y, double *w,double *h, char  *str) {
 char *p;
 char *p2;
 int c;
@@ -116,18 +116,31 @@ char barcodeline[3000];
 }
 
 static void
-set_text (int x, int y, char *s)
+set_text (int x, int y, char *s,int use_default)
 {
   char *ptr;
-int w;
-int h;
+/*int w;*/
+/*int h; */
 char str[256];
 char str_img[256];
+char buff[2000];
 int image;
 double xd,yd,wd,hd;
     if (!isBarcode(s, &xd,&yd,&wd,&hd,str)) {
-  		ptr = lines[y - 1];
-  		memcpy (&ptr[x - 1], s, strlen (s));
+		if (use_default ) {
+  			ptr = lines[y - 1];
+  			memcpy (&ptr[x - 1], s, strlen (s));
+		} else {
+	                double y2;
+			double x2;
+			strcpy(buff,lines[y-1]);
+			buff[x-1]=0;
+			x2=PDF_stringwidth(p,buff,default_font_no,default_font_size);
+                	y2=this_page_height - ((float) (y-1) * get_eachline()) - (layout.topmargin * 72.0);
+                	y2=y2-get_eachline();
+			PDF_set_text_pos (p, (layout.leftmargin * 72.0)+x2, y2);
+			PDF_show (p, s);
+		}
     } else {
 
 
@@ -137,10 +150,9 @@ double xd,yd,wd,hd;
 	strcat(str_img,".png");
         if ((image = PDF_load_image (p, "auto", str_img, 0, "")) == -1)
         {
-          A4GL_debug ("Couldn't read image file for barcode(%s) - generating lines instead\n",str);
+          	A4GL_debug ("Couldn't read image file for barcode(%s) - generating lines instead\n",str);
 		// Try drawing it instead...
 		generate_barcode(p, xd*72.0,(yd*72),wd*72.0,hd*72.0,str,this_page_height,1);
-
 
         }
       else
@@ -152,7 +164,6 @@ double xd,yd,wd,hd;
 	  yd=this_page_height - ((layout.topmargin+yd) * 72.0)-hd;
 	   sprintf(buff,"boxsize {%lf %lf} fitmethod meet", wd,hd);
 	
-           //printf("fit image %p %d %lf %lf %s\n", p, image, xd, yd, buff);
            PDF_fit_image (p, image, xd, yd, buff);
            PDF_close_image (p, image);
         }
@@ -175,7 +186,8 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
   struct r_report_block_entries *centry;
   int x, y;
   int page;
-  int last_page = -1;
+  int uses_default_font=0;
+  //int last_page = -1;
   page_touched = 0;
   report=vreport;
  
@@ -243,10 +255,14 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
 		  //clear_page (report->max_col+report->left_margin, report->page_length);
 	  x = centry->col_no+report->left_margin;
 	  y = centry->line_no; //+report->top_margin;
-	  set_text (x, y, centry->string);
+	  uses_default_font=select_font_for(report->blocks[block].rb,centry->entry_id);
+	  //uses_default_font=0;
+	  set_text (x, y, centry->string,uses_default_font);
 	}
     }
-      output_page (p, report->max_col, report->page_length,lines);
+
+    //select_font_for(-1,-1); // Wont be found - so it'll use the default..
+    output_page (p, report->max_col, report->page_length,lines);
   }
 
 

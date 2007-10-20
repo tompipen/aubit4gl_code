@@ -1,13 +1,18 @@
+
+#include "a4gl_libaubit4gl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../common/common_pdf.h"
 #include "pdflib.h"
+#include "pdf_handling.h"
 
 
 PDF *p = 0;
 extern struct pdf_layout layout;
-int font = -1;
+//int font = -1;
+int default_font_no=-1;
+int default_font_size=-1;
 
 float layout_page_width = -1;
 float layout_page_height = -1;
@@ -21,10 +26,15 @@ float bline = 1.0;
 float eachline=0;
 
 
-// Fake music score rule
-#define STYLE_NONE 0
-#define STYLE_5BAR 1
-#define STYLE_RECTANGLE 2
+struct s_loaded_fonts {
+	char *font;
+	int fontno;
+};
+
+struct s_loaded_fonts *loaded_fonts=0;
+int nloaded_fonts=0;
+
+
 
 void setupPageSize(int w) {
   int orient;
@@ -112,6 +122,96 @@ void setupPageSize(int w) {
 
 }
 
+static int find_font (char *s) {
+int a;
+	for (a=0;a<nloaded_fonts;a++) {
+		if (A4GL_aubit_strcasecmp(loaded_fonts[a].font, s)==0) return a;
+	}
+	return -1;
+}
+
+
+static void rm_str(char *s,char *rm) {
+char *a;
+int cnt;
+char buff[2000];
+int b;
+a=strstr(s,rm);
+if (a==0) return ;
+b=0;
+for (cnt=0;cnt<strlen(s);cnt++) {
+	if (strncmp(&s[cnt],rm,strlen(rm))==0) {
+		cnt+=strlen(rm);
+		continue;
+	}
+	buff[b++]=s[cnt];
+}
+buff[b]=0;
+strcpy(s,buff);
+}
+
+static int add_font(char *s) {
+	char *s2;
+	char fontstyle[2000]="";
+	nloaded_fonts++;
+	s2=strdup(s);
+
+	if (strstr(s2,"+bold")) {
+		rm_str(s2,"+bold");
+		strcat(fontstyle,"fontstyle bold");
+	}
+
+	if (strstr(s2,"+italic")) {
+		rm_str(s2,"+italic");
+		strcat(fontstyle,"fontstyle italic");
+	}
+
+	if (strstr(s2,"+normal")) {
+		rm_str(s2,"+normal");
+		strcat(fontstyle,"fontstyle normal");
+	}
+
+	if (strstr(s2,"+bolditalic")) {
+		rm_str(s2,"+bolditalic");
+		strcat(fontstyle,"fontstyle bolditalic");
+	}
+
+
+	loaded_fonts=realloc(loaded_fonts,sizeof(loaded_fonts[0])*nloaded_fonts);
+	loaded_fonts[nloaded_fonts-1].font=strdup(s);
+	loaded_fonts[nloaded_fonts-1].fontno= PDF_load_font (p, s2, 0, "host", fontstyle);
+	if (loaded_fonts[nloaded_fonts-1].fontno<0) {
+	  	loaded_fonts[nloaded_fonts-1].fontno=PDF_load_font (p, "Courier", 0, "host", "");
+	}
+	return nloaded_fonts-1;
+
+}
+static int select_font(char *fname,int size,int isdefault) {
+	char buff[2000];
+	int a;
+	strcpy(buff,fname);
+
+
+        A4GL_trim (buff);
+  	a=find_font(buff);
+	if (a==-1) {
+		a=add_font(buff);
+	}
+
+	if (a==-1) {
+		fprintf(stderr, "Unable to load font : %s\n",buff);
+	}
+
+	if (isdefault && default_font_no) {
+		default_font_no=loaded_fonts[nloaded_fonts-1].fontno;
+		default_font_size=size;
+	}
+
+  	PDF_setfont (p, loaded_fonts[a].fontno, size);
+
+	return 1;
+}
+
 
 
 
@@ -144,9 +244,9 @@ start_pdf_page (PDF * p, int w, int h)
 
 	  if (str[0]=='#') {
 	  	l=0xf0f0f0;
-	  	a=sscanf(&str[1],"%x,%s",&l,&style);
+	  	a=sscanf(&str[1],"%lx,%d",&l,&style);
 		if (a!=2) {
-	  		a=sscanf(&str[1],"%xs",&l);
+	  		a=sscanf(&str[1],"%lx",&l);
 	      		style = STYLE_RECTANGLE;
 		}
 
@@ -244,19 +344,8 @@ start_pdf_page (PDF * p, int w, int h)
 	}
     }
 
+  select_font(layout.fontname,layout.fontsize,1);
 
-  if (font == -1)
-    {
-      A4GL_trim (layout.fontname);
-      font = PDF_load_font (p, layout.fontname, 0, "host", "");
-      if (font < 0)
-	{
-	  font = PDF_load_font (p, "Courier", 0, "host", "");	// Couldn't load there one - so default it..
-	}
-
-    }
-
-  PDF_setfont (p, font, layout.fontsize);
   printable = this_page_height - (layout.topmargin * 72.0);
   eachline = printable / h;
 
@@ -271,7 +360,7 @@ start_pdf_page (PDF * p, int w, int h)
 	{
 	  for (a = 0; a < h; a += 2)
 	    {
-	      char *ptr;
+	      //char *ptr;
 	      int bb;
 	      float spacing;
 	      spacing = 0;
@@ -294,8 +383,8 @@ start_pdf_page (PDF * p, int w, int h)
 	{
 	  for (a = 0; a <= h; a += 2)
 	    {
-	      char *ptr;
-	      int bb;
+	      //char *ptr;
+	      //int bb;
 	      float offset;
 	      offset = 2.0 * (float) eachline / 10;
 	      //spacing -= (float) eachline / 10;
@@ -315,6 +404,8 @@ void output_page (PDF * p, int w, int h, char **lines) {
 
 int a;
 
+  select_font(layout.fontname,layout.fontsize,0);
+
   for (a = 0; a < h; a++)
     {
       char *ptr;
@@ -330,4 +421,42 @@ int a;
     }
 
   PDF_end_page (p);
+}
+
+
+int select_font_for(int block,int entry) {
+static int require_reset=0;
+int a;
+int use_default;
+
+
+use_default=1;
+
+// Anything specific ? 
+for (a=0;a<layout.nfonts;a++) {
+	if (layout.fonts[a].block==block && layout.fonts[a].entry==entry) {
+		use_default=0;
+		select_font(layout.fonts[a].font,layout.fonts[a].size,0);
+		require_reset=1;
+		return 0;
+	}
+}
+
+// Anything specific to this block ? 
+for (a=0;a<layout.nfonts;a++) {
+	if (layout.fonts[a].block==block && layout.fonts[a].entry==-1) {
+		use_default=0;
+		select_font(layout.fonts[a].font,layout.fonts[a].size,0);
+		require_reset=1;
+		return 0;
+	}
+}
+
+
+return use_default;
+}
+
+
+float get_eachline() {
+	return eachline;
 }
