@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.12 2007-10-24 07:27:36 mikeaubury Exp $
+# $Id: pg8.c,v 1.13 2007-10-24 17:00:02 mikeaubury Exp $
 #*/
 
 
@@ -174,13 +174,18 @@ char *u = NULL;
 char *p = NULL;
     char uname_acl[256];
     char passwd_acl[256];
-
+static int loaded=0;
 
 
   int i;
 
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
+
+if (!loaded) {
+	loaded++;
+A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
+}
 
   envname = acl_getenv ("PG_DBPATH");
 

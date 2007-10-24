@@ -139,11 +139,18 @@ END FUNCTION
 
 ################################################################################
 FUNCTION dbi_get_Rowid()
-	if fgl_getenv("A4GL_SQLTYPE") matches "pg*" THEN
-		return "oid"
-	else
-        	RETURN "rowid"
-	end if
+define lv_rowid char(80)
+LET lv_rowid="rowid"
+
+code
+{
+char *ptr;
+ptr=A4GLSQLCV_get_sqlconst("ROWID");
+if (ptr) strcpy(lv_rowid, ptr);
+}
+endcode
+
+return lv_rowid clipped
 END FUNCTION
 
 

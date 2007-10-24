@@ -969,7 +969,7 @@ if lv_screen>=lv_max_screen then
 	let lv_screen=0
 end if
 call a4gl_set_page(lv_screen)
-error "Screen ", lv_screen," of ",lv_max_screen
+error "Screen ", (lv_screen+1)," of ",lv_max_screen
 end function
 
 
