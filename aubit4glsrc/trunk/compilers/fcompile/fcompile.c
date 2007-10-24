@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.60 2007-10-24 13:35:03 mikeaubury Exp $
+# $Id: fcompile.c,v 1.61 2007-10-24 15:02:49 mikeaubury Exp $
 #*/
 
 /**
@@ -462,12 +462,32 @@ if (strcmp(the_form.dbname,"formonly")!=0) {
 	if (strcmp(the_form.fields.fields_val[a].tag,"_label")==0) {
 	continue;
 	}
+
 	for (b=0;b<the_form.attributes.attributes_len;b++) {
+		int c;
+		int d;
+
 		if (the_form.attributes.attributes_val[b].field_no==a) {
-		found++;
-		break;
+			found++;
+			break;
 		}
+
+		// Check if its in a lookup instead...
+		if (the_form.attributes.attributes_val[b].lookup.lookups.lookups_len==0) continue;
+
+		for (c=0;c<the_form.attributes.attributes_val[b].lookup.lookups.lookups_len;c++) {
+			struct s_lookups *s;
+			s=the_form.attributes.attributes_val[b].lookup.lookups.lookups_val[c];
+			for (d=0;d<s->lookups.lookups_len;d++) {
+				if(strcmp(the_form.fields.fields_val[a].tag, s->lookups.lookups_val[d]->fieldtag )==0) {
+					found++; break;}
+			}
+
+
+		}
+		if (found) break;
 	}
+	
 	if (!found) {
 		char buff[256];
 		sprintf(buff, "Tag '%s' has not been used", the_form.fields.fields_val[a].tag);

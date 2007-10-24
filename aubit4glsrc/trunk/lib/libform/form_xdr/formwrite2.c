@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.45 2007-10-24 13:35:03 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.46 2007-10-24 15:02:50 mikeaubury Exp $
 #*/
 
 /**
@@ -172,6 +172,8 @@ A4GLFORM_A4GL_init_fld (void)
   xxfield.dynamic = 0;
   xxfield.datatype = 0;
   xxfield.dtype_size = 0;
+  xxfield.lookup.lookups.lookups_len = 0;
+  xxfield.lookup.lookups.lookups_val = 0;
   fld = &xxfield;
   A4GL_debug ("done init_fld\n");
 }
@@ -218,6 +220,7 @@ A4GLFORM_A4GL_find_field (char *s)
 	  return a;
 	}
     }
+
   return -1;
 }
 
@@ -401,7 +404,10 @@ real_set_field (char *s, struct struct_scr_field *f)
                 mno=the_form.fields.fields_val[f->field_no].metric.metric_val[0];
                 w=the_form.metrics.metrics_val[mno].w;
                 if (strlen(fmt)!=w) {
-                        A4GL_error_with ("FORMAT string is not the same size as the field\n", 0, 0);
+			if (A4GL_isyes(acl_getenv("IGNOREFMTERR"))) ; // Very dangerous - can mess up form handling...
+			else {
+                        	A4GL_error_with ("FORMAT string is not the same size as the field\n", 0, 0);
+			}
                 }
   }
   }

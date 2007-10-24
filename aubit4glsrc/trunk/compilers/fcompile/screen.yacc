@@ -52,7 +52,6 @@ struct local_expr_list {
 };
 
 
-/* extern FILE *yyin; */
 int in_screen_section=0;
 int dtype_size=0;
 char *rm_dup_quotes(char *s) ;
@@ -63,7 +62,6 @@ char *rm_dup_quotes(char *s) ;
 */
 
 char *chk_alias(char *s);
-/* extern char *char_val(char*s); */
 int A4GL_wcswidth(char *mbs);	/* utf8 */
 
 /*
@@ -93,6 +91,8 @@ int A4GL_wcswidth(char *mbs);	/* utf8 */
 	struct u_action *at_action;
 	struct s_bef_aft *befact;
 	struct s_control_block *control_block;
+	struct s_lookups *lookups;
+	struct s_lookup *lookup;
 }
 
 %token <str> 
@@ -601,26 +601,48 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 
 
 
-lu_ft: field_tag_name 
-;
 
 lu_ft_eq_c:
-	lu_ft_eq_c_i
-	| lu_ft_eq_c COMMA lu_ft_eq_c_i
-;
-lu_ft_eq_c_i:
-	lu_ft EQUAL lu_fc 
+	lu_ft_eq_c_i {
+		$<lookups>$=malloc(sizeof(s_lookups));
+		$<lookups>$->lookups.lookups_len=0;
+		$<lookups>$->lookups.lookups_val=0;
+
+		$<lookups>$->lookups.lookups_len++;
+		$<lookups>$->lookups.lookups_val=realloc($<lookups>$->lookups.lookups_val, sizeof($<lookups>$->lookups.lookups_val[0])*$<lookups>$->lookups.lookups_len);
+		$<lookups>$->lookups.lookups_val[$<lookups>$->lookups.lookups_len-1]=$<lookup>1;
+	}
+	| lu_ft_eq_c COMMA lu_ft_eq_c_i {
+		$<lookups>$=$<lookups>1;
+		$<lookups>$->lookups.lookups_len++;
+		$<lookups>$->lookups.lookups_val=realloc($<lookups>$->lookups.lookups_val, sizeof($<lookups>$->lookups.lookups_val[0])*$<lookups>$->lookups.lookups_len);
+		$<lookups>$->lookups.lookups_val[$<lookups>$->lookups.lookups_len-1]=$<lookup>3;
+	}
 ;
 
-lu_fc: 	named_or_kw_any DOT named_or_kw_any
-	| named_or_kw_any
+lu_ft_eq_c_i:
+	lu_ft EQUAL lu_fc  {
+		$<lookup>$=malloc(sizeof(struct s_lookup));
+		$<lookup>$->fieldtag=strdup($<str>1);
+		$<lookup>$->tabcol=strdup($<str>3);
+}
+;
+
+lu_ft: field_tag_name ;
+
+lu_fc: 	named_or_kw_any DOT named_or_kw_any {
+			sprintf($<str>$,"%s.%s", $<str>1,$<str>3);
+		}
+	| named_or_kw_any {
+			sprintf($<str>$,"%s", $<str>1);
+	}
 ;
 
 lu_joincol:
- 	named_or_kw_any DOT named_or_kw_any
-	| named_or_kw_any
- 	| STAR named_or_kw_any DOT named_or_kw_any
-	| STAR named_or_kw_any
+ 	named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"%s.%s", $<str>1,$<str>3);}
+	| named_or_kw_any {sprintf($<str>$,"%s",$<str>1);}
+ 	| STAR named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"*%s.%s", $<str>1,$<str>3);}
+	| STAR named_or_kw_any {sprintf($<str>$,"*%s",$<str>1);}
 ;
 
 lu_join: JOINING 
@@ -657,7 +679,12 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 
 		}
 } 
-| LOOKUP  lu_ft_eq_c lu_join lu_joincol 
+| LOOKUP  lu_ft_eq_c lu_join lu_joincol  {
+	$<lookups>2->joincol=strdup($<str>4);
+	fld->lookup.lookups.lookups_len++;
+	fld->lookup.lookups.lookups_val=realloc(fld->lookup.lookups.lookups_val, sizeof(fld->lookup.lookups.lookups_val[0])*fld->lookup.lookups.lookups_len);
+	fld->lookup.lookups.lookups_val[fld->lookup.lookups.lookups_len-1]=$<lookups>2;
+}
 | COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
 | DEFAULT EQUAL def_val { A4GL_add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
 | DISPLAY LIKE named_or_kw_any {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
@@ -788,16 +815,6 @@ srec_dim : named_or_kw_any  {
    A4GL_set_dim_srec($<str>1,atoi($<str>3));
 };
 
-/*
-field_list : 
-field_list_element {
-	sprintf($<str>$,"%s",$<str>1);
-} 
-| field_list COMMA field_list_element {
-	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
-};
-*/
-
 
 srec_field_list : 
 field_list_element {
@@ -902,16 +919,6 @@ KW_CHAR {
 		int i;
 		i=atoi($<str>2);
 		strcpy($<str>$,"5");
-		/*
-		if (i==0) {  // No scale specified...
-			if (A4GL_isyes(acl_getenv("UNSCALEDDECIMALTOFLOAT"))) {
-				strcpy($<str>$,"3");
-				dtype_size=0;
-			} else {
-				i= (16<<8) + 2; 
-			}
-		}
-		*/
 		dtype_size=i;
 } 
 | MONEY opt_dec_ext {
@@ -1421,14 +1428,14 @@ column_list: column_entry {
 		$<col_list>$->columns.columns_val[0].tabname=$<column>1.tabname;
 		$<col_list>$->columns.columns_val[0].colname=$<column>1.colname;
 	}
-	| column_list COMMA column_entry {
+	| column_list op_comma column_entry {
 		$<col_list>$=$<col_list>1;
 		$<col_list>$->columns.columns_len++;
 		$<col_list>$->columns.columns_val=realloc($<col_list>$->columns.columns_val, sizeof(struct s_column)*$<col_list>$->columns.columns_len);
 		$<col_list>$->columns.columns_val[$<col_list>$->columns.columns_len-1].tabname=$<column>3.tabname;
 		$<col_list>$->columns.columns_val[$<col_list>$->columns.columns_len-1].colname=$<column>3.colname;
-
 	}
+	
 ;
 
 column_entry : 
@@ -1697,8 +1704,6 @@ st_kword :
 
 any_kword : 
       KW_COMPOSITES 
-     /* | INSTRUCTIONS  */
-     /* | ATTRIBUTES  */
      | DATABASE 
      | BY 
      | KW_SCREEN_TITLE 
@@ -1709,7 +1714,6 @@ any_kword :
      | COMMENT 
      | DYNAMIC 
      | WITHOUT 
-     /* | KW_NULL  */
      | INPUT 
      | TABLES 
      | LOOKUP 
@@ -1784,7 +1788,6 @@ any_kword :
      | KWNOT 
      | KWBETWEEN 
      | KWIN 
-     /* | XVAL  */
      | KWNULLCHK 
      | KWNOTNULLCHK 
      | YEAR 
@@ -1797,7 +1800,6 @@ any_kword :
      | LISTBOX 
      | BUTTON 
      | KW_PANEL 
-     /* | DISPLAYONLY  */
      | ALLOWING 
      | KW_MASTER_OF 
      | KW_BEFORE 
@@ -1815,7 +1817,6 @@ any_kword :
      | KW_BELL 
      | KW_ABORT 
      | KW_LET 
-     /* | KW_EXITNOW  */
      | KW_NEXTFIELD 
      | KW_IF 
      | KW_THEN 

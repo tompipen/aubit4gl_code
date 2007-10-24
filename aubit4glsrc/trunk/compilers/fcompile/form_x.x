@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.16 2007-10-24 13:35:03 mikeaubury Exp $
+# $Id: form_x.x,v 1.17 2007-10-24 15:02:49 mikeaubury Exp $
 #*/
 
 /**
@@ -121,6 +121,25 @@ struct colours {
 };
 
 
+typedef struct s_lookup *ptrslookup;
+
+struct s_lookups {
+	ptrslookup lookups<>;
+	string joincol<>;
+};
+
+typedef struct s_lookups *ptrlookups;
+
+struct s_all_lookups {
+	ptrlookups lookups<>;
+};
+
+struct s_lookup {
+	string fieldtag<>;
+	string tabcol<>;
+};
+
+
 struct struct_scr_field
   {
     int field_no;
@@ -138,6 +157,7 @@ struct struct_scr_field
     struct colours colours<>;
     int general_ptr;
     int flags;
+    struct s_all_lookups lookup;
 };
 
 struct s_column {

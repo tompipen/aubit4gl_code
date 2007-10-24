@@ -266,7 +266,8 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "queryclear"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return QUERYCLEAR;}
 "displayonly"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DISPLAYONLY;}
 "allowing"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ALLOWING;}
-"master of" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER_OF;}
+master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER_OF;}
+
 "lookup" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LOOKUP;}
 "joining" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return JOINING;}
 "wordwrap"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WORDWRAP;}
