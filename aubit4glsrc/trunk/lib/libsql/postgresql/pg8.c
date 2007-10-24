@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.11 2007-08-13 14:13:15 fortiz Exp $
+# $Id: pg8.c,v 1.12 2007-10-24 07:27:36 mikeaubury Exp $
 #*/
 
 
@@ -2837,11 +2837,11 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      break;
 
 		    case DTYPE_DATE:
-		      strcat (buff2, "'");
+		      strcat (buff2, "to_date('");
 		      strcat (buff2,
 			      A4GL_using_date (*((long *) ibind[param].ptr),
 					       "yyyy-mm-dd"));
-		      strcat (buff2, "'");
+		      strcat (buff2, "','YYYY-MM-DD')");
 		      break;
 
 		    default:
