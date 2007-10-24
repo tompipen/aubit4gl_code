@@ -1229,7 +1229,7 @@ action:
 	| comments {
 		$<at_action>$=malloc(sizeof(struct u_action));
 		$<at_action>$->type=ACTION_TYPE_COMMENTS;
-		$<at_action>$->u_action_u.cmd_comment=$<at_action>1;
+		$<at_action>$->u_action_u.cmd_comment=$<at_comments>1;
 	}
 	| if {
 		$<at_action>$=malloc(sizeof(struct u_action));
@@ -1325,14 +1325,14 @@ actions: action  {
 
 		$<at_block>$->actions.actions_len++;
 		$<at_block>$->actions.actions_val=realloc( $<at_block>$->actions.actions_val, sizeof($<at_block>$->actions.actions_val[0])*$<at_block>$->actions.actions_len);
-		$<at_block>$->actions.actions_val[$<at_block>$->actions.actions_len-1]=$<at_action>1;
+		$<at_block>$->actions.actions_val[$<at_block>$->actions.actions_len-1].uaction=$<at_action>1;
 
 	}
 	| actions action {
 		$<at_block>$=$<at_block>1;
 		$<at_block>$->actions.actions_len++;
 		$<at_block>$->actions.actions_val=realloc( $<at_block>$->actions.actions_val, sizeof($<at_block>$->actions.actions_val[0])*$<at_block>$->actions.actions_len);
-		$<at_block>$->actions.actions_val[$<at_block>$->actions.actions_len-1]=$<at_action>2;
+		$<at_block>$->actions.actions_val[$<at_block>$->actions.actions_len-1].uaction=$<at_action>2;
 		}
 ;
 

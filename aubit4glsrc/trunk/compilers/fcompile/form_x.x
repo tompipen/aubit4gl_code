@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.17 2007-10-24 15:02:49 mikeaubury Exp $
+# $Id: form_x.x,v 1.18 2007-10-24 17:55:18 mikeaubury Exp $
 #*/
 
 /**
@@ -359,9 +359,15 @@ struct s_at_nextfield {
 	int isexitnow;
 };
 
-typedef union u_action *t_ptraction;
+
+struct s_act_ptr {
+	struct u_action *uaction;
+};
+
 
 struct s_at_block {
-	t_ptraction actions<>;
+	struct s_act_ptr actions<>;
 };
+
+
 /* =============================== EOF =============================== */

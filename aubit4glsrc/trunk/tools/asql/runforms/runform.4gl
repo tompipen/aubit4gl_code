@@ -661,8 +661,11 @@ if lv_cnt =0 then
 	let mv_acurrent_position[mv_table_cnt]=0
 	call clr_form()
 end if
-
-message (lv_cnt-1) using "<<<<<<<", " row(s) found"
+if lv_cnt-1>0 then
+	message (lv_cnt-1) using "<<<<<<<", " row(s) found"
+else
+	message "No rows found"
+end if
 let mv_acurrent_position[mv_table_cnt]=1
 let mv_max_rows[mv_table_cnt]=lv_cnt-1
 call get_and_display_row()

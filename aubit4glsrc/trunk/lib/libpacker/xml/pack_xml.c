@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.23 2007-05-05 09:33:55 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.24 2007-10-24 17:55:18 mikeaubury Exp $
 #*/
 
 /**
@@ -857,6 +857,8 @@ int
 A4GLPacker_input_enum (char *name, int *d)
 {
   chk (d);
+//if (strcmp(name,"ACTION_TYPES")==0) A4GL_pause_execution();
+//A4GL_debug("name=%s\n",name);
   /* <ENUM TYPE=\"%s\" DESCRIPTION=\"%s\" VALUE=\"%d\"/> */
   if (!getaline ())
     return 0;
