@@ -139,7 +139,11 @@ END FUNCTION
 
 ################################################################################
 FUNCTION dbi_get_Rowid()
-        RETURN "rowid"
+	if fgl_getenv("A4GL_SQLTYPE") matches "pg*" THEN
+		return "oid"
+	else
+        	RETURN "rowid"
+	end if
 END FUNCTION
 
 
@@ -242,10 +246,13 @@ define lv_ct char(256)
 define lv_col char(256)
 define lv_tab char(256)
 define lv_dtype integer
+define lv_size integer
+define lv_found integer
 
 if lv_ct not matches "*.*" then
 	return 0 # Dont know
 end if
+let lv_dtype=0
 
 code
 {
@@ -255,16 +262,20 @@ ptr=strchr(lv_ct,'.');
 ptr++;
 strcpy(lv_tab,lv_ct);
 strcpy(lv_col,ptr);
+A4GL_trim(lv_tab);
+A4GL_trim(lv_col);
+lv_found=A4GLSQL_read_columns(lv_tab, lv_col,&lv_dtype, &lv_size);
 }
 endcode
 
-let lv_dtype=0
 
-select coltype into lv_dtype from systables,syscolumns
-where systables.tabid=syscolumns.tabid 
-and tabname=lv_tab 
-and colname=lv_col
-if sqlca.sqlcode!=0 then
+
+#select coltype into lv_dtype from systables,syscolumns
+#where systables.tabid=syscolumns.tabid 
+#and tabname=lv_tab 
+#and colname=lv_col
+
+if lv_found=0 then
 	error "Unable to get datatype for column : ", lv_ct clipped sleep 1
 end if
 return lv_dtype
