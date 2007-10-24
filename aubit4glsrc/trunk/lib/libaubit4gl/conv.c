@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.151 2007-10-19 07:30:33 mikeaubury Exp $
+# $Id: conv.c,v 1.152 2007-10-24 11:10:07 mikeaubury Exp $
 #
 */
 
@@ -2393,6 +2393,7 @@ char buff[200];
   z = (short *) zz;
   a = (double *) aa;
    sprintf(buff,"%lf",*a);
+	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_SMINT)) {
 	A4GL_setnull(DTYPE_SMINT, z,0);
   } else {
@@ -2418,7 +2419,10 @@ A4GL_ftol (void *aa, void *zz, int c)
   a = (double *) aa;
   z = (long *) zz;
   A4GL_debug ("ftol");
-	sprintf(buff,"%lf",*a);
+
+	sprintf(buff,"%lf",*a); 
+	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
+
   if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_INT)) {
 	A4GL_setnull(DTYPE_INT, z,0);
   } else {
@@ -2546,6 +2550,7 @@ A4GL_sftoi (void *aa, void *zz, int c)
   z = (short *) zz;
   a = (float *) aa;
   sprintf(buff,"%f",*a);
+	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_SMINT)) {
 	A4GL_setnull(DTYPE_SMINT, z,0);
   } else {
@@ -2571,6 +2576,7 @@ char buff[200];
   z = (long *) zz;
   a = (float *) aa;
   sprintf(buff,"%f",*a);
+	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   if (A4GL_apm_str_detect_overflow(buff, 0,0,DTYPE_INT)) {
 	A4GL_setnull(DTYPE_INT, z,0);
   } else {
