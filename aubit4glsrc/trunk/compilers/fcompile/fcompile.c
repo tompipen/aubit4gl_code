@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.59 2007-07-08 16:13:00 mikeaubury Exp $
+# $Id: fcompile.c,v 1.60 2007-10-24 13:35:03 mikeaubury Exp $
 #*/
 
 /**
@@ -441,7 +441,7 @@ int doing_4gl(void) {
 	return 0;
 }
 
-int A4GL_check_compiled_form() {
+int A4GL_check_compiled_form(void) {
 int a;
 int found;
 int b;
@@ -496,7 +496,7 @@ downshift (char *a)
   strcpy (buff, a);
   for (i = 0; i < strlen (buff); i++)
     {
-      buff[i] = tolower (buff[i]);
+      buff[i] = a4gl_tolower (buff[i]);
     }
   return buff;
 }

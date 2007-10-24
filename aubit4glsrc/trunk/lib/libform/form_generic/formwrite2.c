@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.36 2007-05-04 16:51:32 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.37 2007-10-24 13:35:03 mikeaubury Exp $
 #*/
 
 /**
@@ -1056,6 +1056,15 @@ A4GLFORM_A4GL_init_form (void)
 
   the_form.records.records_len = 0;
   the_form.records.records_val = 0;
+  the_form.control_blocks.control_blocks_len=0;
+  the_form.control_blocks.control_blocks_val=0;
+
+  the_form.master_of.master_of_len=0;
+  the_form.master_of.master_of_val=0;
+
+  the_form.composites.composites_len=0;
+  the_form.composites.composites_val=0;
+
 }
 
 /**
@@ -1174,7 +1183,8 @@ char buff[1024];
     "WORDWRAP",
     "COMPRESS",
     "UPSHIFT",
-    "DOWNSHIFT","REQUIRED"
+    "DOWNSHIFT",
+	"REQUIRED","NOUPDATE","QUERYCLEAR","ZEROFILL","RIGHT"
   };
 
   A4GL_debug ("add_bool_attr\n");
@@ -1212,8 +1222,7 @@ char buff[1024];
     }
   else
     {
-      printf ("Warning : Attribute already used for %s.%s (%s)\n",
-	      f->tabname, f->colname, attrs[type]);
+      printf ("Warning : Attribute already used for %s.%s (%s)\n", f->tabname, f->colname, attrs[type]);
     }
 }
 

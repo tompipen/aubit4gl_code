@@ -556,6 +556,7 @@ struct_element : element SEMICOLON
 element:
 	ENUM NAMED vname  	{ print_elem("enum",$<str>2,$<mode>3); }
 	| STRUCT NAMED vname 	{ print_elem("struct",$<str>2,$<mode>3); }
+	| UNION NAMED vname 	{ print_elem("struct",$<str>2,$<mode>3); }
 	| NAMED vname 		{ print_elem("istypedefed",$<str>1,$<mode>2); }
 	| BOOL vname 		{ print_elem("bool","bool",$<mode>2); }
 	| INT vname 		{ print_elem("int","int",$<mode>2); }

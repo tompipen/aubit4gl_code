@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.13 2006-09-15 09:00:08 mikeaubury Exp $
+# $Id: form_x.x,v 1.14 2007-10-24 13:35:02 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  * that results in compiler warnings for unused variable
  */
 
-const FCOMILE_XDR_VERSION = 107;
+const FCOMILE_XDR_VERSION = 108;
 const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
@@ -78,7 +78,10 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_UPSHIFT,
 	FA_B_DOWNSHIFT,
 	FA_B_REQUIRED,
-	FA_B_NOUPDATE
+	FA_B_NOUPDATE,
+	FA_B_QUERYCLEAR,
+	FA_B_ZEROFILL,
+	FA_B_RIGHT
 	
 };
 
@@ -137,6 +140,88 @@ struct struct_scr_field
     int flags;
 };
 
+struct s_column {
+	string tabname<>;
+	string colname<>;
+};
+
+struct s_column_list {
+	struct s_column columns<>;
+};
+	
+struct s_composites {
+	struct s_column_list *col_left;
+	struct s_column_list *col_right;
+	int has_star;
+};
+
+
+enum e_bef_aft_act {
+	 E_BA_EDITADD,
+         E_BA_REMOVE,
+         E_BA_ADD,
+         E_BA_UPDATE,
+         E_BA_QUERY,
+         E_BA_DISPLAY,
+         E_BA_EDITUPDATE
+};
+
+enum e_control_block {
+	E_CB_BEFORE,
+	E_CB_AFTER,
+	E_CB_ONBEGINNING,
+	E_CB_ONENDING
+};
+
+
+enum ACTION_TYPES {
+	 ACTION_TYPE_ABORT,
+	 ACTION_TYPE_NOP,
+         ACTION_TYPE_COMMENTS,
+         ACTION_TYPE_IF,
+         ACTION_TYPE_LET,
+         ACTION_TYPE_NEXTFIELD,
+         ACTION_TYPE_FUNC_CALL,
+         ACTION_TYPE_BLOCK
+
+};
+
+union u_action switch (enum ACTION_TYPES type) {
+	 case ACTION_TYPE_NOP:  	/* No operation - used for ELSE if there isn't one */
+	 case ACTION_TYPE_ABORT: 	void;
+         case ACTION_TYPE_COMMENTS: 	struct s_at_comments *cmd_comment;
+         case ACTION_TYPE_IF:		struct s_at_if *cmd_if;
+         case ACTION_TYPE_LET:		struct s_at_let *cmd_let;
+         case ACTION_TYPE_NEXTFIELD:	struct s_at_nextfield *cmd_nextfield;
+         case ACTION_TYPE_FUNC_CALL:	struct s_at_call *cmd_call;
+         case ACTION_TYPE_BLOCK: 	struct s_at_block *cmd_block;
+	
+};
+
+
+
+struct s_bef_aft {
+	enum  e_bef_aft_act befaftlist<>;
+	struct s_column_list *column_list;
+	struct s_at_block *cmds;
+};
+
+typedef struct u_expression *listitem;
+
+struct s_at_call {
+	string fname<>;
+	listitem list_parameters<>;
+};
+
+
+
+union s_control_block switch (enum e_control_block cbtype) {
+	case E_CB_BEFORE:
+        case E_CB_AFTER: 	struct s_bef_aft *befaft;
+        case E_CB_ONBEGINNING:
+        case E_CB_ONENDING:	struct s_at_call *onbegend;
+};
+
 struct struct_tables
   {
     string tabname<>;
@@ -145,6 +230,11 @@ struct struct_tables
 
 struct screen_name {
 	string name<>;
+};
+
+struct struct_master_of {
+	string tab_master<>;
+	string tab_detail<>;
 };
 	
 
@@ -180,6 +270,9 @@ struct struct_form
 	struct struct_form_field fields<>;
 	struct struct_screen_record records<>;
 	struct struct_tables tables<>;
+	struct s_control_block control_blocks<>;
+	struct struct_master_of  master_of<>;
+	struct s_composites composites<>;
 	string magic2<>;
 };
 
@@ -193,7 +286,8 @@ enum ITEMTYPES {
 
 	ITEMTYPE_SPECIAL=5,
 	ITEMTYPE_LIST=6,
-	ITEMTYPE_NOT=7
+	ITEMTYPE_NOT=7,
+	ITEMTYPE_EXITNOW=8
 };
 
 enum EXPRESSIONTYPES {
@@ -209,21 +303,6 @@ struct s_complex_expr {
 };
 
 
-typedef struct u_expression *listitem;
-
-/*
-Code generated from this file (form_x.xi.c) produces following warning when compiled:
-
-form_x.xi.c: In function `input_u_expression':
-form_x.xi.c:351: warning: passing arg 2 of `input_listitem' from incompatible pointer type
-
-Mike say:
-
-Should shouldn't cause any problems - a fix would be quite complicated 
-and would possibly mean a change in the format of the form files 
- - this will have to be put on hold (but it should do no harm)
-
-*/
 
 union u_expression switch (int itemtype) {
 	case ITEMTYPE_INT     : int intval;
@@ -238,5 +317,31 @@ union u_expression switch (int itemtype) {
 typedef struct s_complex_expr t_complex_expr; 
 typedef union u_expression t_expression; 
 
+struct s_at_comments {
+	string comment<>;
+	int hasbell;
+	int isreverse;
+};
 
+struct s_at_if {
+	struct u_expression *test_condition;
+	struct u_action *if_true;
+	struct u_action *if_false;
+};
+
+struct s_at_let {
+	struct u_expression *field_tag;
+	struct u_expression *value;
+};
+
+struct s_at_nextfield {
+	struct u_expression *field_tag;
+	int isexitnow;
+};
+
+typedef union u_action *t_ptraction;
+
+struct s_at_block {
+	t_ptraction actions<>;
+};
 /* =============================== EOF =============================== */

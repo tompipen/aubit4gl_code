@@ -45,6 +45,13 @@ extern char *outputfilename;
 extern char *tablist[];
 int A4GL_get_dtype_size(void) ;
 int A4GL_get_attr_from_string (char *s);
+
+struct local_expr_list {
+	listitem *expr_list;
+	int nlist;
+};
+
+
 /* extern FILE *yyin; */
 int in_screen_section=0;
 int dtype_size=0;
@@ -73,7 +80,21 @@ int A4GL_wcswidth(char *mbs);	/* utf8 */
 %union	  {
 	char	str[1024];
 	u_expression *expr;
+	int intval;
+	struct s_column_list *col_list;
+	struct s_column column;
+	struct local_expr_list *el;
+	struct s_at_comments *at_comments;
+	struct s_at_if *at_if;
+	struct s_at_let *at_let;
+	struct s_at_nextfield *at_nextfield;
+	struct s_at_call *fcall;
+	struct s_at_block *at_block;
+	struct u_action *at_action;
+	struct s_bef_aft *befact;
+	struct s_control_block *control_block;
 }
+
 %token <str> 
 %token CH
 %token GRAPH_CH
@@ -435,8 +456,6 @@ field_type op_att
 {
 	A4GL_make_downshift(fld->tabname);
 	A4GL_make_downshift(fld->colname);
-
-	//fld->colour=FA_C_WHITE;
 	fld->colours.colours_len=0;
 	fld->colours.colours_val=0;
 	A4GL_debug("add color %d\n",FA_C_WHITE);
@@ -552,20 +571,17 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->dtype_size=dtype_size;
 }
 | named_or_kw_any DOT named_or_kw_any {
-	//printf("%s %s\n",$<str>1,$<str>3);
 	fld->tabname=acl_strdup($<str>1); 
 	fld->colname=acl_strdup($<str>3);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
         fld->dtype_size=A4GL_get_dtype_size();
-        //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 | named_or_kw_any {
 	fld->colname=acl_strdup($<str>1);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
         fld->dtype_size=A4GL_get_dtype_size();
-        //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 
 | STAR named_or_kw_any DOT named_or_kw_any {
@@ -574,7 +590,6 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
         fld->dtype_size=A4GL_get_dtype_size();
-        //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 | STAR named_or_kw_any {
 	fld->colname=acl_strdup($<str>2);
@@ -657,27 +672,20 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | CONFIG EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_CONFIG,$<str>3); }
 | KW_ACTION EQUAL named_or_kw_any { A4GL_add_str_attr(fld,FA_S_ACTION,$<str>3); }
 | INVISIBLE { A4GL_add_bool_attr(fld,FA_B_INVISIBLE); }
-| DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4);
-A4GL_debug("fld->dynamic=%d",fld->dynamic); }
+| DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4); A4GL_debug("fld->dynamic=%d",fld->dynamic); }
 | DYNAMIC  { fld->dynamic=-1; A4GL_debug("dynamic=-1"); }
 | SQLONLY  { printf("Warning %s is not implemented for 4GL\n",$<str>1); }
 | NOENTRY { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 | NOUPDATE { A4GL_add_bool_attr(fld,FA_B_NOUPDATE); }
 | PICTURE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_PICTURE,$<str>3); }
 | PROGRAM EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_PROGRAM,$<str>3); }
-| REQUIRED {
-	A4GL_add_bool_attr(fld,FA_B_REQUIRED);
-}
-| REVERSE {
-	A4GL_add_bool_attr(fld,FA_B_REVERSE);
-}
-| VERIFY { A4GL_add_bool_attr(fld,FA_B_VERIFY); }
-| QUERYCLEAR   /* ADD */
-| KW_ZEROFILL   /* ADD */
-| KW_RIGHT   /* ADD */
-| WORDWRAP  {
-	A4GL_add_bool_attr(fld,FA_B_WORDWRAP);
-}
+| REQUIRED 	{ A4GL_add_bool_attr(fld,FA_B_REQUIRED); }
+| REVERSE 	{ A4GL_add_bool_attr(fld,FA_B_REVERSE); }
+| VERIFY 	{ A4GL_add_bool_attr(fld,FA_B_VERIFY); }
+| QUERYCLEAR   	{ A4GL_add_bool_attr(fld,FA_B_QUERYCLEAR); }
+| KW_ZEROFILL   { A4GL_add_bool_attr(fld,FA_B_ZEROFILL); }
+| KW_RIGHT   	{ A4GL_add_bool_attr(fld,FA_B_RIGHT); }
+| WORDWRAP  	{ A4GL_add_bool_attr(fld,FA_B_WORDWRAP); }
 | WORDWRAP  COMPRESS {
 	A4GL_add_bool_attr(fld,FA_B_WORDWRAP);
 	A4GL_add_bool_attr(fld,FA_B_COMPRESS);
@@ -733,9 +741,7 @@ color :
 ;
 
 op_instruction_section : 
-| INSTRUCTIONS {
-} 
-instruct_opts op_end;
+	| INSTRUCTIONS instruct_opts op_end;
 
 instruct_opts :  
 	instruct_op_1 | instruct_opts  instruct_op_1 ;
@@ -753,19 +759,25 @@ DELIMITERS CHAR_VALUE {
 	}
 	the_form.delim=acl_strdup(buff);
 }
+| control_block  {
+	the_form.control_blocks.control_blocks_len++;
+	the_form.control_blocks.control_blocks_val= realloc( the_form.control_blocks.control_blocks_val, sizeof(the_form.control_blocks.control_blocks_val[0])*the_form.control_blocks.control_blocks_len);
+	memcpy(&the_form.control_blocks.control_blocks_val[the_form.control_blocks.control_blocks_len-1], $<control_block>1,sizeof(struct s_control_block));
+;
+}
 | KW_SCREEN RECORD {
 A4GL_add_srec();
 } srec_dim OPEN_BRACKET srec_field_list CLOSE_BRACKET op_ltype op_semi
 | KW_PANEL OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET TO OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET 
 | composites
 | master_of
-| control_block 
 ;
 
 
 op_ltype : | AS LISTBOX;
  
-op_star: | STAR;
+op_star: {$<intval>$=0;} | STAR {$<intval>$=1;} 
+;
 
 op_semi: | SEMICOLON;
 
@@ -975,7 +987,7 @@ CHAR_VALUE   {
 ;
 
 opt_dec_ext : {
-			sprintf($<str>$,"0",(16<<8) + 2);
+			sprintf($<str>$,"0");
 		}
 	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",((atoi($<str>2)+2)<<8)+2);}
 	| OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",(atoi($<str>2)<<8)+atoi($<str>4));}
@@ -1123,14 +1135,49 @@ value_list : value {
 
 
 composites:
-	KW_COMPOSITES LESSTHAN comp_list GREATERTHAN op_star LESSTHAN comp_list GREATERTHAN
+	KW_COMPOSITES composites_list
 ;
 
-comp_list: comp_item
-	| comp_list COMMA comp_item
+composites_list: composite_entry 
+		| composites_list composite_entry
 ;
 
-comp_item : table_name DOT column_name 
+composite_entry: 
+	LESSTHAN comp_list GREATERTHAN op_star LESSTHAN comp_list GREATERTHAN {
+		the_form.composites.composites_len++;
+		the_form.composites.composites_val= realloc(the_form.composites.composites_val, 
+			sizeof(the_form.composites.composites_val[0])* the_form.composites.composites_len);
+		the_form.composites.composites_val[the_form.composites.composites_len-1].col_left=$<col_list>2;
+		the_form.composites.composites_val[the_form.composites.composites_len-1].col_right=$<col_list>6;
+		the_form.composites.composites_val[the_form.composites.composites_len-1].has_star=$<intval>4;
+	}
+;
+
+comp_list: comp_item {
+		$<col_list>$=malloc(sizeof(struct s_column_list));
+		$<col_list>$->columns.columns_len=1;
+		$<col_list>$->columns.columns_val=malloc(sizeof(struct s_column));
+		$<col_list>$->columns.columns_val[0].tabname=$<column>1.tabname;
+		$<col_list>$->columns.columns_val[0].colname=$<column>1.colname;
+	}
+	| comp_list COMMA comp_item  {
+		$<col_list>$=$<col_list>1;
+		$<col_list>$->columns.columns_len++;
+		$<col_list>$->columns.columns_val=realloc($<col_list>$->columns.columns_val, sizeof(struct s_column)*$<col_list>$->columns.columns_len);
+		$<col_list>$->columns.columns_val[$<col_list>$->columns.columns_len-1].tabname=$<column>3.tabname;
+		$<col_list>$->columns.columns_val[$<col_list>$->columns.columns_len-1].colname=$<column>3.colname;
+	}
+;
+
+comp_item : table_name DOT column_name {
+	$<column>$.tabname=strdup($<str>1);
+	$<column>$.colname=strdup($<str>3);
+} |  column_name
+{
+	$<column>$.tabname=strdup("");
+	$<column>$.colname=strdup($<str>1);
+}
+
 ;
 
 table_name : named_or_kw_any
@@ -1140,107 +1187,310 @@ column_name : named_or_kw_any
 ;
 
 control_block :
-	KW_BEFORE bef_act_list KW_OF column_list actions
-	| KW_AFTER aft_act_list KW_OF column_list actions
-	| KW_ON_BEGINNING func_call
-	| KW_ON_ENDING func_call
-	
+	KW_BEFORE bef_act_list KW_OF column_list actions {
+		$<control_block>$=malloc(sizeof(struct s_control_block));
+		$<control_block>$->cbtype=E_CB_BEFORE;
+		$<control_block>$->s_control_block_u.befaft=$<befact>2;
+		$<control_block>$->s_control_block_u.befaft->column_list=$<col_list>4;
+		$<control_block>$->s_control_block_u.befaft->cmds=$<at_block>5;
+	}
+	| KW_AFTER aft_act_list KW_OF column_list actions {
+		$<control_block>$=malloc(sizeof(struct s_control_block));
+		$<control_block>$->cbtype=E_CB_AFTER;
+		$<control_block>$->s_control_block_u.befaft=$<befact>2;
+		$<control_block>$->s_control_block_u.befaft->column_list=$<col_list>4;
+		$<control_block>$->s_control_block_u.befaft->cmds=$<at_block>5;
+
+	}
+	| KW_ON_BEGINNING func_call {
+		$<control_block>$=malloc(sizeof(struct s_control_block));
+		$<control_block>$->cbtype=E_CB_ONBEGINNING;
+		$<control_block>$->s_control_block_u.onbegend=$<fcall>2;
+	}
+	| KW_ON_ENDING func_call {
+		$<control_block>$=malloc(sizeof(struct s_control_block));
+		$<control_block>$->cbtype=E_CB_ONENDING;
+		$<control_block>$->s_control_block_u.onbegend=$<fcall>2;
+	}
 ;
 
 action:
-	abort
-	| comments
-	| if
-	| let
-	| nextfield
-	| func_call
-	| block
+	abort {
+		$<at_action>$=malloc(sizeof(struct u_action));
+		$<at_action>$->type=ACTION_TYPE_ABORT;
+	}
+	| comments {
+		$<at_action>$=malloc(sizeof(struct u_action));
+		$<at_action>$->type=ACTION_TYPE_COMMENTS;
+		$<at_action>$->u_action_u.cmd_comment=$<at_action>1;
+	}
+	| if {
+		$<at_action>$=malloc(sizeof(struct u_action));
+		$<at_action>$->type=ACTION_TYPE_IF;
+		$<at_action>$->u_action_u.cmd_if=$<at_if>1;
+	}
+	| let {
+		$<at_action>$=malloc(sizeof(struct u_action));
+		$<at_action>$->type=ACTION_TYPE_LET;
+		$<at_action>$->u_action_u.cmd_let=$<at_let>1;
+	}
+	| nextfield {
+		$<at_action>$=malloc(sizeof(struct u_action));
+		$<at_action>$->type=ACTION_TYPE_NEXTFIELD;
+		$<at_action>$->u_action_u.cmd_nextfield=$<at_nextfield>1;
+	}
+	| func_call {
+		$<at_action>$=malloc(sizeof(struct u_action));
+		$<at_action>$->type=ACTION_TYPE_FUNC_CALL;
+		$<at_action>$->u_action_u.cmd_call=$<fcall>1;
+	}
+	| block {
+		$<at_action>$=malloc(sizeof(struct u_action));
+		$<at_action>$->type=ACTION_TYPE_BLOCK;
+		$<at_action>$->u_action_u.cmd_block=$<at_block>1;
+
+	}
 ;
 
 
-if: KW_IF expression KW_THEN action op_else
+if: KW_IF expression KW_THEN action op_else {
+		$<at_if>$=malloc(sizeof(struct s_at_if));
+		$<at_if>$->test_condition=$<expr>2;
+		$<at_if>$->if_true=$<at_action>4;
+		$<at_if>$->if_false=$<at_action>5;
+	}
 ;
 
 
-op_else: | KW_ELSE action
+op_else: {$<at_action>$=0;} 
+	| KW_ELSE action {	
+		$<at_action>$=$<at_action>2;
+	}
 ;
 
-abort : KW_ABORT 
+abort : KW_ABORT  
 ;
 
 let   : KW_LET field_tag_name EQUAL expression 
+		{
+			$<at_let>$=malloc(sizeof(struct s_at_let));
+			$<at_let>$->field_tag=create_field_expr($<str>2);
+			$<at_let>$->value=$<expr>4;
+		}
 ;
 
-nextfield : KW_NEXTFIELD field_tag_name
+nextfield : KW_NEXTFIELD field_tag_name 
+		{
+			$<at_nextfield>$=malloc(sizeof(struct s_at_nextfield));
+			$<at_nextfield>$->field_tag=create_field_expr($<str>2);
+			$<at_nextfield>$->isexitnow=0;
+		}
 	  | KW_NEXTFIELD EQUAL field_tag_name
+		{
+			$<at_nextfield>$=malloc(sizeof(struct s_at_nextfield));
+			$<at_nextfield>$->field_tag=create_field_expr($<str>3);
+			$<at_nextfield>$->isexitnow=0;
+		}
 	  | KW_NEXTFIELD KW_EXITNOW
+		{
+			$<at_nextfield>$=malloc(sizeof(struct s_at_nextfield));
+			$<at_nextfield>$->field_tag=0;
+			$<at_nextfield>$->isexitnow=0;
+		}
 	  | KW_NEXTFIELD EQUAL KW_EXITNOW
+		{
+			$<at_nextfield>$=malloc(sizeof(struct s_at_nextfield));
+			$<at_nextfield>$->field_tag=0;
+			$<at_nextfield>$->isexitnow=1;
+		}
 ;
 
 block: 
-	KW_BEGIN actions KW_END
+	KW_BEGIN actions KW_END {
+		 $<at_block>$= $<at_block>2;
+	}
 ;
 
-actions: action 
-	| actions action
+actions: action  {
+		$<at_block>$=malloc(sizeof(struct s_at_block));
+		$<at_block>$->actions.actions_len=0;
+		$<at_block>$->actions.actions_val=0;
+
+		$<at_block>$->actions.actions_len++;
+		$<at_block>$->actions.actions_val=realloc( $<at_block>$->actions.actions_val, sizeof($<at_block>$->actions.actions_val[0])*$<at_block>$->actions.actions_len);
+		$<at_block>$->actions.actions_val[$<at_block>$->actions.actions_len-1]=$<at_action>1;
+
+	}
+	| actions action {
+		$<at_block>$=$<at_block>1;
+		$<at_block>$->actions.actions_len++;
+		$<at_block>$->actions.actions_val=realloc( $<at_block>$->actions.actions_val, sizeof($<at_block>$->actions.actions_val[0])*$<at_block>$->actions.actions_len);
+		$<at_block>$->actions.actions_val[$<at_block>$->actions.actions_len-1]=$<at_action>2;
+		}
 ;
 
 
 comments :
-	COMMENTS CHAR_VALUE
-	| COMMENTS KW_BELL CHAR_VALUE
-	| COMMENTS REVERSE CHAR_VALUE
+	COMMENTS CHAR_VALUE {
+		$<at_comments>$=malloc(sizeof(struct s_at_comments));
+		$<at_comments>$->comment=strdup(A4GL_strip_quotes($<str>2));
+		$<at_comments>$->hasbell=0;
+		$<at_comments>$->isreverse=0;
+	}
+	| COMMENTS KW_BELL CHAR_VALUE {
+		$<at_comments>$=malloc(sizeof(struct s_at_comments));
+		$<at_comments>$->comment=strdup(A4GL_strip_quotes($<str>3));
+		$<at_comments>$->hasbell=1;
+		$<at_comments>$->isreverse=0;
+	}
+	| COMMENTS REVERSE CHAR_VALUE {
+		$<at_comments>$=malloc(sizeof(struct s_at_comments));
+		$<at_comments>$->comment=strdup(A4GL_strip_quotes($<str>3));
+		$<at_comments>$->hasbell=0;
+		$<at_comments>$->isreverse=1;
+	}
+	| COMMENTS KW_BELL REVERSE CHAR_VALUE {
+		$<at_comments>$=malloc(sizeof(struct s_at_comments));
+		$<at_comments>$->comment=strdup(A4GL_strip_quotes($<str>4));
+		$<at_comments>$->hasbell=1;
+		$<at_comments>$->isreverse=1;
+	}
 ;
 
 
 bef_act_list: 
-	bef_act | bef_act_list bef_act
+	bef_act {
+		$<befact>$=malloc(sizeof(struct s_bef_aft));
+		$<befact>$->cmds=0;
+		$<befact>$->column_list=0;
+		$<befact>$->befaftlist.befaftlist_len=0;
+		$<befact>$->befaftlist.befaftlist_val=0;		
+
+		$<befact>$->befaftlist.befaftlist_len++;
+		$<befact>$->befaftlist.befaftlist_val=realloc($<befact>$->befaftlist.befaftlist_val, sizeof($<befact>$->befaftlist.befaftlist_val[0])*$<befact>$->befaftlist.befaftlist_len);
+		$<befact>$->befaftlist.befaftlist_val[$<befact>$->befaftlist.befaftlist_len-1]=$<intval>1;
+
+	}
+	| bef_act_list bef_act {
+		$<befact>$->befaftlist.befaftlist_len++;
+		$<befact>$->befaftlist.befaftlist_val=realloc($<befact>$->befaftlist.befaftlist_val, sizeof($<befact>$->befaftlist.befaftlist_val[0])*$<befact>$->befaftlist.befaftlist_len);
+		$<befact>$->befaftlist.befaftlist_val[$<befact>$->befaftlist.befaftlist_len-1]=$<intval>2;
+	}
 ;
 
 aft_act_list: 
-	aft_act | aft_act_list aft_act
+	aft_act  {
+		$<befact>$=malloc(sizeof(struct s_bef_aft));
+		$<befact>$->cmds=0;
+		$<befact>$->column_list=0;
+		$<befact>$->befaftlist.befaftlist_len=0;
+		$<befact>$->befaftlist.befaftlist_val=0;		
+
+		$<befact>$->befaftlist.befaftlist_len++;
+		$<befact>$->befaftlist.befaftlist_val=realloc($<befact>$->befaftlist.befaftlist_val, sizeof($<befact>$->befaftlist.befaftlist_val[0])*$<befact>$->befaftlist.befaftlist_len);
+		$<befact>$->befaftlist.befaftlist_val[$<befact>$->befaftlist.befaftlist_len-1]=$<intval>1;
+
+	}
+	| aft_act_list aft_act {
+		$<befact>$->befaftlist.befaftlist_len++;
+		$<befact>$->befaftlist.befaftlist_val=realloc($<befact>$->befaftlist.befaftlist_val, sizeof($<befact>$->befaftlist.befaftlist_val[0])*$<befact>$->befaftlist.befaftlist_len);
+		$<befact>$->befaftlist.befaftlist_val[$<befact>$->befaftlist.befaftlist_len-1]=$<intval>2;
+	}
 ;
 
 bef_act :
-	KW_EDITADD
-	| KW_EDITUPDATE
-	| KW_REMOVE
+	KW_EDITADD 	{$<intval>$=E_BA_EDITADD;}
+	| KW_EDITUPDATE {$<intval>$=E_BA_EDITUPDATE;}
+	| KW_REMOVE	{$<intval>$=E_BA_REMOVE;}
 ;
 
 aft_act:
-	KW_EDITADD
-	| KW_ADD
-	| KW_UPDATE
-	| KW_QUERY
-	| KW_REMOVE
-	| DISPLAY
-	| KW_EDITUPDATE
+	KW_EDITADD 	{$<intval>$=E_BA_EDITADD;}
+	| KW_ADD	{$<intval>$=E_BA_ADD;}
+	| KW_UPDATE	{$<intval>$=E_BA_UPDATE;}
+	| KW_QUERY	{$<intval>$=E_BA_QUERY;}
+	| KW_REMOVE	{$<intval>$=E_BA_REMOVE;}
+	| DISPLAY	{$<intval>$=E_BA_DISPLAY;}
+	| KW_EDITUPDATE	{$<intval>$=E_BA_EDITUPDATE;}
 ;
 
-column_list: column_entry
-	| column_list COMMA column_entry
+column_list: column_entry {
+		$<col_list>$=malloc(sizeof(struct s_column_list));
+		$<col_list>$->columns.columns_len=1;
+		$<col_list>$->columns.columns_val=malloc(sizeof(struct s_column));
+		$<col_list>$->columns.columns_val[0].tabname=$<column>1.tabname;
+		$<col_list>$->columns.columns_val[0].colname=$<column>1.colname;
+	}
+	| column_list COMMA column_entry {
+		$<col_list>$=$<col_list>1;
+		$<col_list>$->columns.columns_len++;
+		$<col_list>$->columns.columns_val=realloc($<col_list>$->columns.columns_val, sizeof(struct s_column)*$<col_list>$->columns.columns_len);
+		$<col_list>$->columns.columns_val[$<col_list>$->columns.columns_len-1].tabname=$<column>3.tabname;
+		$<col_list>$->columns.columns_val[$<col_list>$->columns.columns_len-1].colname=$<column>3.colname;
+
+	}
 ;
 
 column_entry : 
-	table_name DOT column_name
-	| column_name
+	table_name DOT column_name {
+		$<column>$.tabname=strdup($<str>1);
+		$<column>$.colname=strdup($<str>3);
+	}
+	| column_name {
+		$<column>$.tabname=strdup("");
+		$<column>$.colname=strdup($<str>1);
+	}
 ;
 
 master_of:
-	table_name KW_MASTER_OF table_name op_semi
+	table_name KW_MASTER_OF table_name op_semi {
+		the_form.master_of.master_of_len++;
+		the_form.master_of.master_of_val=realloc(the_form.master_of.master_of_val, sizeof(the_form.master_of.master_of_val[0])*the_form.master_of.master_of_len);
+		the_form.master_of.master_of_val[the_form.master_of.master_of_len-1].tab_master=strdup($<str>1);
+		the_form.master_of.master_of_val[the_form.master_of.master_of_len-1].tab_detail=strdup($<str>3);
+	}
 ;
 
-func_call: KW_CALL named_or_kw_any OPEN_BRACKET op_func_call_args CLOSE_BRACKET
+func_call: KW_CALL named_or_kw_any OPEN_BRACKET {
+			$<fcall>$=malloc(sizeof(struct s_at_call));
+			$<fcall>$->fname=strdup($<str>2);
+			$<fcall>$->list_parameters.list_parameters_len=0;
+			$<fcall>$->list_parameters.list_parameters_val=0;
+	} op_func_call_args CLOSE_BRACKET {
+		if ($<el>5) {
+			listitem *l;
+			$<fcall>$->list_parameters.list_parameters_len=$<el>5->nlist;
+			l=$<el>5->expr_list;
+			$<fcall>$->list_parameters.list_parameters_val=l;
+		}
+	}
+	
 ;
 
-op_func_call_args: | func_call_args;
-
+op_func_call_args: {$<el>$=0;} 
+	| func_call_args {
+		$<el>$=$<el>1;
+	}
+;
 
 func_call_args: 
-	func_call_arg | func_call_args COMMA func_call_arg
+	func_call_arg  {
+		$<el>$=malloc(sizeof(struct local_expr_list));
+		$<el>$->nlist=1;
+		$<el>$->expr_list=malloc(sizeof($<el>$->expr_list[0]));
+		$<el>$->expr_list[0]=$<expr>1;
+	}
+	| func_call_args COMMA func_call_arg {
+		$<el>$=$<el>1;
+		$<el>$->nlist++;
+		$<el>$->expr_list=realloc($<el>$->expr_list, sizeof($<el>$->expr_list[0])*$<el>$->nlist);
+		$<el>$->expr_list[$<el>$->nlist-1]=$<expr>3;
+	}
 ;
 
-func_call_arg : expression
+func_call_arg : expression {
+		$<expr>$=$<expr>1;
+	}
 ;
 
 
@@ -1268,7 +1518,7 @@ single_expression:
 	| KWNOT expression { $<expr>$=create_not_expr($<expr>2); }
 	| OPEN_BRACKET expression CLOSE_BRACKET { $<expr>$=$<expr>2; }
 	| fcall_name OPEN_BRACKET op_expression_list CLOSE_BRACKET { $<expr>$=$<expr>3; }
-	| KW_TOTAL KW_OF field_tag_name { $<expr>$=$<expr>3; }
+	| KW_TOTAL KW_OF field_tag_name { $<expr>$=create_field_expr($<str>3); }
 	| expression COMPARISON expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression LESSTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression GREATERTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }

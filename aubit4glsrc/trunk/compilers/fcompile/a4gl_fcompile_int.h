@@ -20,6 +20,10 @@ int yyparse (void);
 		/* ====================== From fcompile.c ======================== */
 int yywrap (void);
 #endif
+char * downshift (char *a);
+void clr_status(void);
+void err_on_status(void);
+int A4GL_check_compiled_form(void);
 int yylex (void);
 
 	/* ====================== From fcompile.c ======================== */

@@ -152,6 +152,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "<" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return LESSTHAN;}
 ">" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return GREATERTHAN;}
 "MATCHES" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
+"NOT MATCHES" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPARISON;}
 "where" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWWHERE;}
 "AND" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWAND;}
 "OR" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWOR;}
