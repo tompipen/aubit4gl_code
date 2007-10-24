@@ -1573,9 +1573,11 @@ UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
 int
 UILIB_aclfgl_set_window_title (int nargs)
 {
-  int rval;
-  niy ();
-  return rval;
+char *s;
+s=A4GL_char_pop();
+send_to_ui("<SETWINDOWTITLE TEXT=\"%s\"/>",uilib_xml_escape (s));
+free(s);
+return 1;
 }
 
 void
