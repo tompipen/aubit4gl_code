@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.123 2007-10-16 06:32:06 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.124 2007-10-25 14:37:50 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.123 2007-10-16 06:32:06 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.124 2007-10-25 14:37:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1980,10 +1980,12 @@ int a;
 char m_d1[2];
 char m_d2[2];
 int x=0;
-
+memset(rbuff,0,sizeof(rbuff));
 A4GL_debug("In construct_large orig=%s init_key=%d initpos=%d construct_not_added=%d", orig,init_key,initpos, construct_not_added);
 
 strcpy(rbuff,orig);
+
+A4GL_debug("rbuff=%s\n",rbuff);
 
 if (m_delims[0]==' ')  {
         m_delims[1]=' ';
@@ -2039,12 +2041,13 @@ strcpy(newfieldval,"");
         a=post_form(f);
         A4GL_debug("construct - post_form = %d",a);
 	
-	if (isprint(init_key)) {
+	if (isprint(init_key) && init_key>=0 && init_key<=255) {
 		if (construct_not_added) {
 			char smbuff[2];
 			smbuff[0]=init_key;
 			smbuff[1]=0;
 			strcat(rbuff, smbuff);
+			A4GL_debug("rbuff=%s\n",rbuff);
 		} else {
 			char smbuff[2];
 			
@@ -2052,6 +2055,7 @@ strcpy(newfieldval,"");
 				smbuff[0]=init_key;
 				smbuff[1]=0;
 				strcpy(rbuff, smbuff);
+			A4GL_debug("rbuff=%s\n",rbuff);
 			}
 			
 			
@@ -2059,27 +2063,19 @@ strcpy(newfieldval,"");
 	}
 	A4GL_debug("rbuff=%s\n",rbuff);
 
-//ftest=fopen("/tmp/log","a"); fprintf(ftest,"2. %s\n",rbuff); fclose(ftest);
-/*
-	{
-	FILE *f;
-		f=fopen("/tmp/log","a");
-		fprintf(f,"1.%s\n",rbuff);
-		fclose(f);
-	}
-*/
         set_field_buffer(buff[1],0,rbuff);
 
 
         A4GL_int_form_driver(f,REQ_OVL_MODE);
 
-        if (initpos>=1) {
+        if (initpos>=1 && init_key<=255) {
 		while (A4GL_get_curr_field_col(f)<initpos) {
         		A4GL_int_form_driver(f,REQ_NEXT_CHAR);
-        		A4GL_int_form_driver(f,REQ_VALIDATION);
+   			A4GL_int_form_driver(f,REQ_VALIDATION);
 		}
         }  
 
+   	A4GL_int_form_driver(f,REQ_VALIDATION);
 
 
         while (looping) {
