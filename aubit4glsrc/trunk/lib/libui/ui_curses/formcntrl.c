@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.124 2007-10-25 14:37:50 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.125 2007-10-25 19:46:18 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.124 2007-10-25 14:37:50 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.125 2007-10-25 19:46:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1378,17 +1378,60 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
 
 
 
-int UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt) {
-	        int a;
-		a=-1;
-		while (1) {
 
-	        a=internal_A4GL_form_loop_v2(vs,init,vevt);
-			if (init||a!=-1) break;
+int
+UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
+{
+  int a;
+      int cnt;
+  struct s_screenio *s;
+  s = vs;
+  a = -1;
+  if (s->mode == MODE_CONSTRUCT)
+    {
+      if (init)
+	{
+	  for (cnt = 0; cnt <= s->nfields; cnt++)
+	    {
+	      s->constr[cnt].fldbuf = 0;
+	    }
+	}
+      else
+	{
+	  for (cnt = 0; cnt <= s->nfields; cnt++)
+	    {
+	      if (s->constr[cnt].fldbuf == 0)
+		continue;
+	      if (strcmp (s->constr[cnt].fldbuf, field_buffer (s->field_list[cnt], 0)) != 0)
+		{		// They've change the field buffer..
+		  if (s->constr[cnt].value)
+		    {
+		      free (s->constr[cnt].value);
+		      s->constr[cnt].value = 0;
+		    }
 		}
-	       return a;
-}
+	      free (s->constr[cnt].fldbuf);
+	    }
+	}
+    }
 
+  while (1)
+    {
+
+      a = internal_A4GL_form_loop_v2 (vs, init, vevt);
+      if (init || a != -1)
+	break;
+    }
+
+  if (s->mode == MODE_CONSTRUCT) {
+  for (cnt = 0; cnt <= s->nfields; cnt++)
+	    {
+	      s->constr[cnt].fldbuf=strdup( field_buffer (s->field_list[cnt], 0));
+	    }
+	}
+
+  return a;
+}
 
 
 /**

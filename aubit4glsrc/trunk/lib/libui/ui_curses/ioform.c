@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.181 2007-10-18 16:34:26 mikeaubury Exp $
+# $Id: ioform.c,v 1.182 2007-10-25 19:46:18 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.181 2007-10-18 16:34:26 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.182 2007-10-25 19:46:18 mikeaubury Exp $";
 #endif
 
 /**
@@ -2890,13 +2890,14 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
       A4GL_debug ("fprop=%p", fprop);
       if (fprop != 0)
 	{
+		char buff[32000];
 	  A4GL_debug ("getting ptr", fprop);
 	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname, (fprop->datatype) & 0xffff);
 
 		A4GL_debug("field_buffer (%p) =%s", f, field_buffer (f, 0));
-	
 
 		if (s->constr[a].value) {
+		
 	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, s->constr[a].value,get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size);
 		} else {
 	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname,  field_buffer (f, 0),get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size);
