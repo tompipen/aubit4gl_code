@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.290 2007-10-11 08:29:11 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.291 2007-10-26 09:21:42 mikeaubury Exp $
 #
 */
 
@@ -2945,6 +2945,7 @@ enum e_sli {
 	E_SLI_BUILTIN_CONST_STAR,
 	E_SLI_BUILTIN_CONST_COUNT_STAR,
 	E_SLI_BUILTIN_CONST_CURRENT,
+	E_SLI_BUILTIN_CONST_ROWID,
 	E_SLI_BUILTIN_FUNC_YEAR,
 	E_SLI_BUILTIN_FUNC_MONTH,
 	E_SLI_BUILTIN_FUNC_DAY,

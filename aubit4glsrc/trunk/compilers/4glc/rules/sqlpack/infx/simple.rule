@@ -80,7 +80,7 @@ table_name_not_for_column_prefix_i:
         }
 
 	| identifier ATSIGN identifier {
-             sprintf($<str>$,"%s@%s", A4GLSQLCV_db_tablename(NULL, $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
+             sprintf($<str>$,"%s", A4GLSQLCV_db_tablename(NULL, $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
 	     ADDMAP("Use Table",$<str>$);
 	}
 	| identifier ATSIGN identifier COLON identifier {

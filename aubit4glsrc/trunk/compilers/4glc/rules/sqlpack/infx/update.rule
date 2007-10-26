@@ -396,6 +396,7 @@ $<sql_string>$=make_sql_string_and_free(
         | KW_FALSE {$<sql_string>$=make_sql_string_and_free(acl_strdup("FALSE"),NULL);}
         | USER {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("USER")),NULL);}
         | KW_TODAY {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("TODAY")),NULL);}
+        | KW_ROWID {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("ROWID")),NULL);}
         | TIME {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("TIME")),NULL);}
         | COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(acl_strdup("COUNT(*)"),NULL);}
 ;
