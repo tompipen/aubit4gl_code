@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.125 2007-10-25 19:46:18 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.126 2007-10-27 08:32:47 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.125 2007-10-25 19:46:18 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.126 2007-10-27 08:32:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -250,11 +250,23 @@ A4GL_debug("n=%d\n",n);
 
 strcpy(a,"");
 for (c=0;c<=n;c++) {
-	if (c) strcat(a," ");
+	if (c) {
+		char *ptr;
+
+		if (c<=n) {
+			ptr=buff[c];
+			if (ptr[0]!=' ') {
+ 				strcat(a," ");
+			}
+		} else  {
+ 			strcat(a," ");
+		}
+	}
 	strcat(a,buff[c]);
 	A4GL_debug("%s\n", buff[c]);
 	free(buff[c]);
 }
+A4GL_debug("--->%s",a);
 A4GL_push_char(a);
 free(buff);
 }
