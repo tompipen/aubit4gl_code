@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.134 2007-10-04 17:20:32 mikeaubury Exp $
+# $Id: iarray.c,v 1.135 2007-10-28 16:17:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.134 2007-10-04 17:20:32 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.135 2007-10-28 16:17:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -3305,9 +3305,22 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 		  // How risky is this ?
 		  arr->currform->currentfield = 0;
 		  arr->currentfield = 0;
-	A4GL_debug("Calling newmovement");
-		  A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a,
-				    'Q');
+		  A4GL_debug("Calling newmovement");
+		  A4GL_newMovement (arr, arr->scr_line, arr->arr_line, a, 'Q');
+		} else {
+			// We're nextfielding to ourselve but we still need a BEFORE FIELD...
+  			struct s_movement ptr;
+			FIELD *f;
+      			ptr.scr_line = arr->scr_line;
+      			ptr.arr_line = arr->arr_line;
+      			ptr.attrib_no = arr->curr_attrib; 
+	  		f = arr->field_list[arr->scr_line-1][arr->curr_attrib];
+			if (arr->fcntrl_cnt>=2) {
+				if (arr->fcntrl[0].op==FORMCONTROL_BEFORE_FIELD && arr->fcntrl[1].op==FORMCONTROL_BEFORE_ROW) ; // We'll be goinh there anyway...
+				else {
+					A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, f, A4GL_memdup (&ptr, sizeof (struct s_movement)),0);
+				}
+			}
 		}
 	      return 1;
 	    }

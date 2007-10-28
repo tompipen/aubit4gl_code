@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.126 2007-10-27 08:32:47 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.127 2007-10-28 16:17:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.126 2007-10-27 08:32:47 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.127 2007-10-28 16:17:48 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -585,7 +585,15 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  new_state = 50;
 	  if (sio->processed_onkey != 0)
 	    {
-	      A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form, sio);
+	  	struct struct_scr_field *fprop=0;
+		int r;
+	  	fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	      	r=A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form, sio);
+		if (fprop->datatype==DTYPE_BYTE || fprop->datatype==DTYPE_TEXT) {
+			if (r==0) {
+				new_state=0;
+			}
+		}
 	    }
 	  rval = -1;
 	}
@@ -1691,18 +1699,20 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   char *picture = 0;
   int isWordWrap = 0;
 
+  int isBlob = 0;
 
   int at_first = 0;
   int at_last = 0;
 
   A4GL_debug ("curcol");
-  if (A4GL_get_curr_field_col(mform) == 0)
+  if (A4GL_get_curr_field_col (mform) == 0)
     {
       at_first = 1;
     }
 
   A4GL_debug ("curcol");
-  if (A4GL_get_curr_field_col(mform) == A4GL_get_field_width (current_field (mform)) - 1)
+  if (A4GL_get_curr_field_col (mform) ==
+      A4GL_get_field_width (current_field (mform)) - 1)
     {
       A4GL_debug ("AT LAST");
       at_last = 1;
@@ -1712,13 +1722,19 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   form = &fd->form_details;
   do_input_nowrap = 0;
 
-  A4GL_debug ("proc_key .... %d", a);
   f = current_field (mform);
+  fprop = (struct struct_scr_field *) (field_userptr (f));
+  A4GL_debug ("proc_key .... %d", a);
   A4GL_debug ("Current field=%p\n", f);
+
+  if (fprop->datatype == DTYPE_BYTE || fprop->datatype == DTYPE_TEXT)
+    {
+      isBlob = 1;
+    }
+
   if (a != 10)
     {
       A4GL_debug ("Getting fprop");
-      fprop = (struct struct_scr_field *) (field_userptr (f));
       A4GL_debug ("fprop=%p\n", fprop);
 
       if (fprop != 0)
@@ -1756,6 +1772,75 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
     }
 
+  if (isBlob)
+    {
+      char buff[1024];
+      char filename[2000] = "blah";
+      int reloadblob = 0;
+      struct fgl_int_loc *blob;
+
+      blob = s->vars[s->curr_attrib].ptr;
+      if (blob->where != 'F' && blob->where != 'M')
+	{
+	  A4GL_exitwith ("Blob not located");
+	  return 0;
+	}
+
+      if (blob->where != 'F')
+	{
+	  FILE *fwr;
+	  strcpy (filename, tmpnam (NULL));
+	  fwr = fopen (filename, "w");
+	  fwrite (blob->ptr, blob->memsize, 1, fwr);
+	  fclose (fwr);
+	  reloadblob=1;
+	} else {
+          strcpy(filename, blob->filename);
+        }
+
+      if (a == '!')
+	{
+	  char *program = 0;
+	  // start program...
+	  if (A4GL_has_str_attribute (fprop, FA_S_PROGRAM))
+	    {
+	      program = A4GL_get_str_attribute (fprop, FA_S_PROGRAM);
+	    }
+	  if (program == 0)
+	    program = "vi";
+	  if (strstr(program,"%s")) {
+	  	sprintf (buff, program, filename);
+	  } else {
+	  	sprintf (buff, "%s %s", program, filename);
+	  }
+	  UILIB_A4GL_gotolinemode ();
+          system(buff);
+		A4GL_chkwin();
+	  if (reloadblob) {
+                int fl;
+	        FILE *fre;
+		fre=fopen (filename, "r");
+		free(blob->ptr);
+		blob->ptr=0;
+                fseek(fre,0,SEEK_END);
+		fl=ftell(fre);
+		rewind(fre);
+		blob->ptr=malloc(fl+1);
+		blob->memsize=fl;
+		fread(blob->ptr,1,fl,fre);
+		//blob->ptr[fl]=0;
+          }
+	  return 0;
+	}
+      else
+	{
+	  if (a >= 32 && a < 255)
+	    {
+	      A4GL_error_nobox (acl_getenv ("FIELD_BLOB_PLING_MSG"), 0);
+	      return 0;
+	    }
+	}
+    }
 
   if (A4GL_is_special_key (a, A4GLKEY_ACCEPT))
     {
@@ -1770,7 +1855,10 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
   if (A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP))
     {
-      isWordWrap = 1;
+      if (isBlob)
+	isWordWrap = 0;
+      else
+	isWordWrap = 1;
     }
 
   switch (a)
@@ -1792,48 +1880,58 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
     case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
-      if (!has_picture)
+      if (!isBlob)
 	{
-	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
-			A4GL_debug("Flags|=FLAG_FIELD_TOUCHED");
-		A4GL_fprop_flag_set(f, FLAG_FIELD_TOUCHED); // Set the field status flag
-	}
-      else
-	{			// Just like A4GLKEY_LEFT.....
-	  do_key_move_fc ('L', s, a, has_picture, picture);
+	  if (!has_picture)
+	    {
+	      A4GL_int_form_driver (mform, REQ_DEL_PREV);
+	      A4GL_debug ("Flags|=FLAG_FIELD_TOUCHED");
+	      A4GL_fprop_flag_set (f, FLAG_FIELD_TOUCHED);	// Set the field status flag
+	    }
+	  else
+	    {			// Just like A4GLKEY_LEFT.....
+	      do_key_move_fc ('L', s, a, has_picture, picture);
+	    }
 	}
       break;
 
     case 24:
-      if (!has_picture)
+      if (!isBlob)
 	{
-	  A4GL_int_form_driver (mform, REQ_DEL_CHAR);
-			A4GL_debug("Flags|=FLAG_FIELD_TOUCHED");
-		A4GL_fprop_flag_set(f, FLAG_FIELD_TOUCHED); // Set the field status flag
-	}
-      else
-	{
-	  A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
+	  if (!has_picture)
+	    {
+	      A4GL_int_form_driver (mform, REQ_DEL_CHAR);
+	      A4GL_debug ("Flags|=FLAG_FIELD_TOUCHED");
+	      A4GL_fprop_flag_set (f, FLAG_FIELD_TOUCHED);	// Set the field status flag
+	    }
+	  else
+	    {
+	      A4GL_error_nobox (acl_getenv ("FIELD_PICTURE_MSG"), 0);
+	    }
 	}
       break;
 
     case A4GLKEY_UP:
-	if (isWordWrap) {
-		int cHeight;
-		//int curPos;
-		int r;
-	  	cHeight = mform->currow;
-		r=A4GL_get_curr_field_col(mform);
-	      	if (cHeight >0) {
-		  	A4GL_int_form_driver (mform, REQ_PREV_LINE);
-			while (mform->curcol< r) {
-		  		A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
-			}
-			break;
+      if (isWordWrap)
+	{
+	  int cHeight;
+	  //int curPos;
+	  int r;
+	  cHeight = mform->currow;
+	  r = A4GL_get_curr_field_col (mform);
+	  if (cHeight > 0)
+	    {
+	      A4GL_int_form_driver (mform, REQ_PREV_LINE);
+	      while (mform->curcol < r)
+		{
+		  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
 		}
+	      break;
+	    }
 	}
-      	A4GL_debug ("MJA Try to move to previous field : %d\n", s->curr_attrib - 1);
-      	A4GL_newMovement (s, s->curr_attrib - 1);
+      A4GL_debug ("MJA Try to move to previous field : %d\n",
+		  s->curr_attrib - 1);
+      A4GL_newMovement (s, s->curr_attrib - 1);
       break;
 
     case 2:
@@ -1854,8 +1952,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	  int cnt;
 	  int cHeight;
 	  w = A4GL_get_field_width_w (f, 0);
-	
-	  r = A4GL_get_curr_field_col(mform) + 1;
+
+	  r = A4GL_get_curr_field_col (mform) + 1;
 	  while (r % 8 != 0)
 	    r++;
 	  cHeight = mform->currow;
@@ -1873,7 +1971,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 		  if (A4GL_isyes (acl_getenv ("WAITENDOFWORDWRAP")))
 		    {
 		      r = w - 1;
-		      for (cnt = A4GL_get_curr_field_col(mform); cnt < r; cnt++)
+		      for (cnt = A4GL_get_curr_field_col (mform); cnt < r;
+			   cnt++)
 			{
 			  do_key_move_fc ('R', s, a, has_picture, picture);
 			}
@@ -1896,29 +1995,32 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	    }
 	  else
 	    {
-	      for (cnt = A4GL_get_curr_field_col(mform); cnt < r; cnt++)
+	      for (cnt = A4GL_get_curr_field_col (mform); cnt < r; cnt++)
 		{
 		  do_key_move_fc ('R', s, a, has_picture, picture);
 		}
 	    }
 	  break;
 
-	} else {
-		// Exactly the same as 13 or 10 
-      if (A4GL_get_dbscr_inputmode () == 0
-	  && A4GL_curr_metric_is_used_last_s_screenio (s, f))
+	}
+      else
 	{
-	  A4GL_debug ("ACCEPT - EXIT_INPUT_OK\n");
-	  A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a,
-				     __LINE__);
-	  return 0;
+	  // Exactly the same as 13 or 10 
+	  if (A4GL_get_dbscr_inputmode () == 0
+	      && A4GL_curr_metric_is_used_last_s_screenio (s, f))
+	    {
+	      A4GL_debug ("ACCEPT - EXIT_INPUT_OK\n");
+	      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0,
+					 a, __LINE__);
+	      return 0;
+	    }
+	  A4GL_debug ("MJA Try to move to next field : %d\n",
+		      s->curr_attrib + 1);
+	  A4GL_newMovement (s, s->curr_attrib + 1);
 	}
-      A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
-      A4GL_newMovement (s, s->curr_attrib + 1);
-	}
-	break;
+      break;
 
-	
+
     case 13:
     case 10:
       if (A4GL_get_dbscr_inputmode () == 0
@@ -1931,25 +2033,28 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	}
       A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
       A4GL_newMovement (s, s->curr_attrib + 1);
-	break;
+      break;
 
     case A4GLKEY_DOWN:
-	if (isWordWrap) {
-		int fieldHeight;
-		int cHeight;	
-		int r;
-	  	cHeight = mform->currow;
-	  	r = A4GL_get_curr_field_col(mform) ;
-	        fieldHeight = A4GL_get_field_height (f);
-	        A4GL_debug ("fieldHeight=%d cHeight=%d", fieldHeight, cHeight);
-	        if (cHeight + 1 < fieldHeight) {
-		  	A4GL_int_form_driver (mform, REQ_NEXT_LINE);
-			while (A4GL_get_curr_field_col(mform)< r) {
-		  		A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
-			}
-			break;
+      if (isWordWrap)
+	{
+	  int fieldHeight;
+	  int cHeight;
+	  int r;
+	  cHeight = mform->currow;
+	  r = A4GL_get_curr_field_col (mform);
+	  fieldHeight = A4GL_get_field_height (f);
+	  A4GL_debug ("fieldHeight=%d cHeight=%d", fieldHeight, cHeight);
+	  if (cHeight + 1 < fieldHeight)
+	    {
+	      A4GL_int_form_driver (mform, REQ_NEXT_LINE);
+	      while (A4GL_get_curr_field_col (mform) < r)
+		{
+		  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
 		}
-	
+	      break;
+	    }
+
 	}
 
       if (A4GL_get_dbscr_inputmode () == 0
@@ -1972,19 +2077,25 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       break;
 
     case A4GLKEY_LEFT:
-      do_key_move_fc ('L', s, a, has_picture, picture);
+      if (!isBlob)
+	{
+	  do_key_move_fc ('L', s, a, has_picture, picture);
+	}
       break;
 
     case A4GLKEY_RIGHT:
-      do_key_move_fc ('R', s, a, has_picture, picture);
+      if (!isBlob)
+	{
+	  do_key_move_fc ('R', s, a, has_picture, picture);
+	}
       break;
 
     case 4:			// Control - D
       if (!has_picture)
 	{
 	  A4GL_int_form_driver (mform, REQ_CLR_EOF);
-			A4GL_debug("Flags|=FLAG_FIELD_TOUCHED");
-		A4GL_fprop_flag_set(f, FLAG_FIELD_TOUCHED); // Set the field status flag
+	  A4GL_debug ("Flags|=FLAG_FIELD_TOUCHED");
+	  A4GL_fprop_flag_set (f, FLAG_FIELD_TOUCHED);	// Set the field status flag
 	}
       else
 	{
@@ -2019,7 +2130,6 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
   return -1;
 }
-
 
 int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos, struct struct_scr_field *fprop,char *newfieldval) {
 char rbuff[1024];

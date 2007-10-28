@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.140 2007-09-01 07:52:48 mikeaubury Exp $
+# $Id: resource.c,v 1.141 2007-10-28 16:17:48 mikeaubury Exp $
 #
 */
 
@@ -196,6 +196,7 @@ struct str_resource builtin_resource[] = {
   {"TRIMWORDWRAP", "Y"},
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
+  {"FIELD_BLOB_PLING_MSG", " Use '!' to edit TEXT and BYTE fields "},
   {"FIELD_ERROR_MSG", " Error in field "},
   {"FIELD_INCL_MSG", " This value is not among the valid possibilities "},
   {"FIELD_REQD_MSG", " This field required an entered value "},

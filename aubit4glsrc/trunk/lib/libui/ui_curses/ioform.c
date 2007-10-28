@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.182 2007-10-25 19:46:18 mikeaubury Exp $
+# $Id: ioform.c,v 1.183 2007-10-28 16:17:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.182 2007-10-25 19:46:18 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.183 2007-10-28 16:17:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -2505,6 +2505,11 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 // If we are passing **IN** a character string
 // for example - we'll omit the formatting...
 
+  if ((d1 & DTYPE_MASK)==DTYPE_TEXT || (d1 & DTYPE_MASK)==DTYPE_BYTE) {
+	// Can't display a blob :-)
+	return;
+  }
+
   switch (d1 & DTYPE_MASK)
     {
     case DTYPE_CHAR:
@@ -2890,7 +2895,7 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
       A4GL_debug ("fprop=%p", fprop);
       if (fprop != 0)
 	{
-		char buff[32000];
+		//char buff[32000];
 	  A4GL_debug ("getting ptr", fprop);
 	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname, (fprop->datatype) & 0xffff);
 
