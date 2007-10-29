@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.136 2007-10-29 15:07:21 mikeaubury Exp $
+# $Id: iarray.c,v 1.137 2007-10-29 15:08:49 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.136 2007-10-29 15:07:21 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.137 2007-10-29 15:08:49 mikeaubury Exp $";
 #endif
 
 /**
@@ -3312,7 +3312,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
   			struct s_movement ptr;
 			FIELD *f;
 			int a;
-			int already;
+			int already=0;
       			ptr.scr_line = arr->scr_line;
       			ptr.arr_line = arr->arr_line;
       			ptr.attrib_no = arr->curr_attrib; 
