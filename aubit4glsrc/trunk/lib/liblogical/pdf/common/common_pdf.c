@@ -41,7 +41,7 @@ int pdf_load_file(FILE *fin) {
 	if (size!=sizeof(layout)) {
 		printf("Incompatible sizes (Old file format ?)...\n");
 		if (!ignore_err) { return 0;}
-		fread(&layout,sizeof(layout),1,fin);
+		fread(&layout,size,1,fin);
 		layout.fonts=0;
 		layout.nfonts=0;
 		return 1;
