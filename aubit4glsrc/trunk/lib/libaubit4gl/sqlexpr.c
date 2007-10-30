@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.56 2007-10-26 09:21:42 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.57 2007-10-30 07:48:20 mikeaubury Exp $
 #
 */
 
@@ -307,6 +307,9 @@ new_select_list_item_col (char *t, char *c, struct ilist *subscripts)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_COLUMN);
+	if (A4GL_aubit_strcasecmp(c,"ROWID")==0) {
+		c=A4GLSQLCV_get_sqlconst ("ROWID");
+	}
 
   p->u_data.column.tabname = 0;
   p->u_data.column.colname = 0;

@@ -24,22 +24,6 @@ var_ident :  var2_vu
 ;
 
 
-/*
-var_ident_e : var2_vu
-{
-	char *s;
-	s=variable_usage_as_string($<var_usg>1,VAR_USG_ANY);
-
-	if (scan_variable(variable_usage_as_string($<var_usg>1,VAR_USG_ANY))!=-1) {
-		char buff[1024];
-		sprintf(buff,"%s",fgl_add_scope(variable_usage_as_string($<var_usg>1,VAR_USG_VARIABLE),0));
-		$<ptr>$=A4GL_generate_variable_expr (s);
-	} else {
-		 $<ptr>$=A4GL_new_quoted_string(s);
-	}
-}
-;
-*/
 
 var_ident_qchar_e :
  	var2_vu {
@@ -50,7 +34,8 @@ var_ident_qchar_e :
 			char buff[1024];
 			sprintf(buff,"%s",fgl_add_scope(variable_usage_as_string($<var_usg>1,VAR_USG_VARIABLE),0));
 			$<ptr>$=A4GL_generate_variable_expr (s);
-		} else {
+		} else {	
+			printf("-->%s\n",s);
 		 	$<ptr>$=A4GL_new_literal_string(s);
 		}
 	}
