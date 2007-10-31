@@ -1577,7 +1577,7 @@ char *s;
 s=A4GL_char_pop();
 send_to_ui("<SETWINDOWTITLE TEXT=\"%s\"/>",uilib_xml_escape (s));
 free(s);
-return 1;
+return 0;
 }
 
 void
