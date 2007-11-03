@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.152 2007-10-24 11:10:07 mikeaubury Exp $
+# $Id: conv.c,v 1.153 2007-11-03 10:40:53 mikeaubury Exp $
 #
 */
 
@@ -1820,8 +1820,32 @@ A4GL_stod (void *str_v, void *date_v, int sz_ignore)
   int n;
   char *str;
   int *date;
+	char c[5];
+	int d;
+int y;
   str = (char *) str_v;
   date = (int *) date_v;
+n=sscanf(str,"%c%c%c. %d,%d",&c[0],&c[1],&c[2],&d,&y);
+if (n==5) { // Oddball date format..
+			int a;
+		c[3]=0;
+		for (a=1;a<=12;a++) {
+				int m;
+				if (A4GL_aubit_strcasecmp(c, (char *) A4GL_find_str_resource_int ("_MON", a))==0) {
+					m=a;
+      				y = A4GL_modify_year (y);
+
+  				*date = A4GL_gen_dateno (d, m, y);
+
+  				if (*date==DATE_INVALID) {
+					return 0;
+  				} else {
+					return 1;
+				}
+				}
+		}
+	} 
+
 //A4GL_debug("STOD : %s %d",str_v,*date);
   // set date format from (A4GL_)DBDATE, or use Informix default "mdy4".
   // we only need to do this once, the first time stod() is called.
