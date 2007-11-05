@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.184 2007-11-05 14:37:29 mikeaubury Exp $
+# $Id: ioform.c,v 1.185 2007-11-05 20:39:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.184 2007-11-05 14:37:29 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.185 2007-11-05 20:39:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -1387,7 +1387,7 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 	int w;
   	if (!a  ) {
       		//set_max_field (f, 0); // CONSTRUCT
-      		if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)  && ! A4GL_has_bool_attribute (f, FA_B_WORDWRAP)) {
+      		if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)  && ! A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP)) {
 			local_field_opts_off (f, O_AUTOSKIP);
 		}
 		return;
