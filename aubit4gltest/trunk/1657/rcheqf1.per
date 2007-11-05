@@ -1,0 +1,33 @@
+database formonly 
+screen size 24 by 80
+{
+
+
+
+
+                XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+               YYYYYYYYYYYYYYY        [fpol    ]
+
+               YYYYYYYYYYYYYYY        [ncta]
+
+               YYYYYYYYYYYYYYY        [scta  ] 
+
+               YYYYYYYYYYYYYYY        [N]
+
+
+
+-                                                                              -
+}
+end
+
+attributes
+fpol = formonly.polcfpol,AUTONEXT;
+ncta = formonly.polcncta,AUTONEXT;
+scta = formonly.polcscta,AUTONEXT;
+N    = FORMONLY.m_graba TYPE CHAR,AUTONEXT,UPSHIFT,
+       INCLUDE=("N","S"),DEFAULT="N",
+              COMMENTS='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+INSTRUCTIONS
+delimiters " "
+screen record s_opci (polcfpol, polcncta, polcscta)
