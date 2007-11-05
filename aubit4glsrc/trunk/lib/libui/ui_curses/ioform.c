@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.183 2007-10-28 16:17:48 mikeaubury Exp $
+# $Id: ioform.c,v 1.184 2007-11-05 14:37:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.183 2007-10-28 16:17:48 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.184 2007-11-05 14:37:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -552,7 +552,7 @@ A4GL_set_field_attr (FIELD * field)
   A4GL_default_attributes (field, f->datatype);
   A4GL_debug ("Set defs");
 
-  if (A4GL_has_bool_attribute (f, FA_B_AUTONEXT))
+  if (A4GL_has_bool_attribute (f, FA_B_AUTONEXT) && ! A4GL_has_bool_attribute (f, FA_B_WORDWRAP))
     {
       A4GL_debug ("Autoskip");
       A4GL_debug ("ZZZZ - SET OPTS");
@@ -1387,7 +1387,7 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 	int w;
   	if (!a  ) {
       		//set_max_field (f, 0); // CONSTRUCT
-      		if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)) {
+      		if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT)  && ! A4GL_has_bool_attribute (f, FA_B_WORDWRAP)) {
 			local_field_opts_off (f, O_AUTOSKIP);
 		}
 		return;

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.128 2007-11-05 14:09:43 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.129 2007-11-05 14:37:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.128 2007-11-05 14:09:43 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.129 2007-11-05 14:37:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -784,7 +784,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  if (sio->fcntrl[a].extent >= 28 && sio->fcntrl[a].extent <= 255)
 	    {
 	      fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT))
+	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT) && !A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP))
 		{
 		  FORM *curses_form;
 		  curses_form = sio->currform->form;
