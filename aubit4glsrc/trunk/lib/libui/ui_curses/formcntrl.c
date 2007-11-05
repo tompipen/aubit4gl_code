@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.127 2007-10-28 16:17:48 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.128 2007-11-05 14:09:43 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.127 2007-10-28 16:17:48 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.128 2007-11-05 14:09:43 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -225,22 +225,30 @@ static void A4GL_trim_trailing_in_wordwrap_field_on_stack(int width) {
 char *a;
 char **buff=0;
 int n;
-int c;
-
+int c=0;
+int l;
+int l2;
+char *a2;
 
 a=A4GL_char_pop();
+
+l=strlen(a);
 n=0;
-while (c<=strlen(a)) {
+
+while (c<=l) {
 	n++;
 	c+=width;
 }
-
-buff=malloc(sizeof(char *)*n+1);
+l2=n*width+10;
+a2=malloc(l2);
+memset(a2,0,l2);
+strcpy(a2,a);
+buff=malloc(sizeof(char *)*(n+1));
 
 for (c=0;c<=n;c++) {
 	//if (width*c>strlen(a)) {buff[c]=""; break;}
 	buff[c]=malloc(width+1);
-	strncpy(buff[c],&a[width*c],width);
+	strncpy(buff[c],&a2[width*c],width);
 	buff[c][width]=0;
 	A4GL_trim(buff[c]);
 }
