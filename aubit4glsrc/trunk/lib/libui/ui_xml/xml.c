@@ -1,6 +1,7 @@
 #include "a4gl_libaubit4gl.h"
 #include "comms.h"
 #include "uilib.h"
+#include "pipe.h"
 #include "uilib/xml/attr.h"
 extern struct s_attr *last_attr;
 #include <stdarg.h>
@@ -553,11 +554,13 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
       return 1;
     }
 
-
+ 
   A4GL_make_field_slist_from_ap (&list, ap);
-
-  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context,
-	      list.field_name_list[0].fname, list.field_name_list[0].fpos);
+  if (list.field_name_list[0].fpos!=0 && list.field_name_list[0].fpos!=1) {
+  	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname, list.field_name_list[0].fpos);
+	} else {
+  	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, list.field_name_list[0].fname);
+	}
 
   return rval;
 }
