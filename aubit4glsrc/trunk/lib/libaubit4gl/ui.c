@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.68 2007-10-15 17:11:29 mikeaubury Exp $
+# $Id: ui.c,v 1.69 2007-11-05 16:52:47 mikeaubury Exp $
 #
 */
 
@@ -919,6 +919,8 @@ void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap)
         //long f;
         char *s;
         list->nfields=0;
+	list->field_name_list = 0;
+
         while (1) {
                 s = va_arg (*ap, char *);
                 if (s==0)  break;
