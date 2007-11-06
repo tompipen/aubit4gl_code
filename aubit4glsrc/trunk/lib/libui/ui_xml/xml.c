@@ -1242,6 +1242,15 @@ SendFile (char *filename)
 }
 
 
+static int GetFile(char *id,char *filename) {
+	if (uilib_save_file(id,filename)) {
+		A4GL_push_int(1);
+		return ;
+	} else {
+		A4GL_push_int(0);
+		return ;
+	}
+}
 
 void
 UILIB_A4GL_direct_to_ui (char *what, char *string)
@@ -1251,9 +1260,24 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       send_to_ui ("<UIDIRECT>%s</UIDIRECT>", uilib_xml_escape (string));
       return;
     }
+
   if (strcmp (what, "FILE") == 0)
     {
       SendFile (string);
+      return;
+    }
+
+
+  if (strcmp (what, "GETFILE") == 0)
+    {
+      char *p1;
+      char *p2;
+      p2 = A4GL_char_pop ();
+      p1 = A4GL_char_pop ();
+      GetFile (p1,p2);
+	free(p1);
+	free(p2);
+
       return;
     }
 
@@ -1271,6 +1295,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       free (p2);
       return;
     }
+
   if (strcmp (what, "setkeylabel") == 0)
     {
       //int a;

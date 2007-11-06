@@ -209,7 +209,6 @@ get_event_from_ui ()
   if (attr->id)
     {
       int n = -1;
-		printf("---->%s\n", attr->id);
       if (strcmp (attr->id, "DIE") == 0 || strcmp (attr->id, "-999")==0)
         {
           exit(2);
@@ -223,6 +222,7 @@ get_event_from_ui ()
       if (strcmp (attr->id, "CANCEL") == 0) 	{ n = -100; }
       if (strcmp (attr->id, "YES") == 0) 	{ n = -101; }
       if (strcmp (attr->id, "NO") == 0) 	{ n = -102; }
+      if (strcmp (attr->id, "FILEREQUEST") == 0) 	{ n = -103; }
 
       if (strcmp (attr->id, "INTERRUPT") == 0)
 	{

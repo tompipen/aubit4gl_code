@@ -33,6 +33,8 @@ struct s_attr {
 	int scrline;
 	int arrcount;
 	int lastkey;
+	char *fileid;
+	int filelen;
 	char *infield;
 } ;
 

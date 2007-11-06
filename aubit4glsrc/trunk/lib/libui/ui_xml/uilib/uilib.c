@@ -1893,6 +1893,28 @@ void brpoint() {
 printf("Break here");
 }
 
+int uilib_save_file(char *id, char *s) {
+	FILE *f;
+	int i;
+	send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (id));
+	flush_ui();
+	i = get_event_from_ui ();
+	if (i!=-103) {
+		return 0;
+	}
+	if (strcmp(last_attr->fileid, id)!=0) {
+		// Invalid id
+		return 0;
+	}
+	f=fopen(s,"w");
+	if (f) {
+		//printf("FILELEN : %d\n", last_attr->filelen);
+		fwrite(last_attr->sync.vals[0].value, last_attr->filelen, 1,f);
+		fclose(f);
+	}
+	
+	return 1;
+}
 
 
 int

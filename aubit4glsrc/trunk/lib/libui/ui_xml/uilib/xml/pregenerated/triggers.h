@@ -1,5 +1,5 @@
 /* XML processor/application API for triggers.dtd.
- * Generated 2007/10/18 12:19:01.
+ * Generated 2007/11/06 19:18:16.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -75,6 +75,8 @@ typedef int AT_TRIGGERED_ARRCOUNT;
 #define AU_TRIGGERED_ARRCOUNT NULL
 typedef int AT_TRIGGERED_ID;
 #define AU_TRIGGERED_ID NULL
+typedef int AT_TRIGGERED_FILEID;
+#define AU_TRIGGERED_FILEID NULL
 typedef int AT_TRIGGERED_DATA;
 #define AU_TRIGGERED_DATA NULL
 typedef int AT_TRIGGERED_xmlns_c_xsd;
@@ -85,6 +87,8 @@ typedef int AT_TRIGGERED_xmlns_c_xsi;
 #define AU_TRIGGERED_xmlns_c_xsi NULL
 typedef int AT_TRIGGERED_TYPE;
 #define AU_TRIGGERED_TYPE NULL
+typedef int AT_TRIGGERED_FILELEN;
+#define AU_TRIGGERED_FILELEN NULL
 
 /* FleXML-provided data. */
 extern int pcdata_ix;
@@ -104,6 +108,8 @@ extern AT_TRIGGERED_ARRCOUNT AX_TRIGGERED_ARRCOUNT;
 #define A_TRIGGERED_ARRCOUNT (bufferstack + AX_TRIGGERED_ARRCOUNT)
 extern AT_TRIGGERED_ID AX_TRIGGERED_ID;
 #define A_TRIGGERED_ID (bufferstack + AX_TRIGGERED_ID)
+extern AT_TRIGGERED_FILEID AX_TRIGGERED_FILEID;
+#define A_TRIGGERED_FILEID (bufferstack + AX_TRIGGERED_FILEID)
 extern AT_TRIGGERED_DATA AX_TRIGGERED_DATA;
 #define A_TRIGGERED_DATA (bufferstack + AX_TRIGGERED_DATA)
 extern AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
@@ -114,6 +120,8 @@ extern AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
 #define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
 extern AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
 #define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
+extern AT_TRIGGERED_FILELEN AX_TRIGGERED_FILELEN;
+#define A_TRIGGERED_FILELEN (bufferstack + AX_TRIGGERED_FILELEN)
 
 /* XML application utilities. */
 extern int element_context(int);

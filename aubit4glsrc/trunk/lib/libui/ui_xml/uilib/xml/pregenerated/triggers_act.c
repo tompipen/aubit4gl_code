@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2007/10/18 12:19:01.
+ * Generated 2007/11/06 19:18:15.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -107,6 +107,8 @@ void STag_TRIGGERED(void)
 		lexed_attr.scrline=0;
 		lexed_attr.arrline=0;
 		lexed_attr.arrcount=0;
+		lexed_attr.filelen=-1;
+		lexed_attr.fileid=0;
 
 		lexed_attr.lastkey=0;
 		lexed_attr.infield=0;
@@ -119,6 +121,8 @@ void STag_TRIGGERED(void)
 
 		if (A_TRIGGERED_LASTKEY) lexed_attr.lastkey=atoi(A_TRIGGERED_LASTKEY); 
 		if (A_TRIGGERED_INFIELD) lexed_attr.infield=strdup(A_TRIGGERED_INFIELD); 
+		if (A_TRIGGERED_FILEID) lexed_attr.fileid=strdup(A_TRIGGERED_FILEID); 
+		if (A_TRIGGERED_FILELEN) lexed_attr.filelen=atoi(A_TRIGGERED_FILELEN); 
 		
 		
 	}
@@ -128,7 +132,7 @@ void STag_TRIGGERED(void)
 
 void ETag_TRIGGERED(void)
 {
-#line 75 "triggers_act.act"
+#line 79 "triggers_act.act"
 
 	 
 	{
@@ -140,7 +144,7 @@ void ETag_TRIGGERED(void)
 
 void STag_SYNCVALUES(void)
 {
-#line 83 "triggers_act.act"
+#line 87 "triggers_act.act"
 
 	 
 	{
@@ -161,7 +165,7 @@ void STag_SYNCVALUES(void)
 
 void ETag_SYNCVALUES(void)
 {
-#line 100 "triggers_act.act"
+#line 104 "triggers_act.act"
 
 	 
 	{
@@ -173,13 +177,21 @@ void ETag_SYNCVALUES(void)
 
 void ETag_SYNCVALUE(void)
 {
-#line 108 "triggers_act.act"
+#line 112 "triggers_act.act"
 
 	 
 	{
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
-		sync.vals[sync.nvalues-1].value=strdup(pcdata);
+		if (lexed_attr.fileid && lexed_attr.filelen)  {
+			char *ptr;
+			sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
+			ptr=pcdata;
+
+			memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
+		} else {
+			sync.vals[sync.nvalues-1].value=strdup(pcdata);
+		}
 
 		if (A_SYNCVALUE_FIELDTYPE) {
 			sync.vals[sync.nvalues-1].fieldtype=atoi(A_SYNCVALUE_FIELDTYPE);
@@ -193,7 +205,7 @@ void ETag_SYNCVALUE(void)
 
 void STag_SYNCROWS(void)
 {
-#line 124 "triggers_act.act"
+#line 136 "triggers_act.act"
 
 	 
 	{
@@ -209,7 +221,7 @@ void STag_SYNCROWS(void)
 
 void STag_ROW(void)
 {
-#line 135 "triggers_act.act"
+#line 147 "triggers_act.act"
 
 	 
 	{
@@ -225,7 +237,7 @@ void STag_ROW(void)
 
 void ETag_ROW(void)
 {
-#line 147 "triggers_act.act"
+#line 159 "triggers_act.act"
 
 	 
 	{
@@ -241,7 +253,7 @@ void ETag_ROW(void)
 } /* ETag_ROW */
 
 
-#line 159 "triggers_act.act"
+#line 171 "triggers_act.act"
 
 
 /* XML application entry points. */

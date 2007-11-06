@@ -55,6 +55,8 @@ return n;
 		lexed_attr.scrline=0;
 		lexed_attr.arrline=0;
 		lexed_attr.arrcount=0;
+		lexed_attr.filelen=-1;
+		lexed_attr.fileid=0;
 
 		lexed_attr.lastkey=0;
 		lexed_attr.infield=0;
@@ -67,6 +69,8 @@ return n;
 
 		if ({LASTKEY}) lexed_attr.lastkey=atoi({LASTKEY}); 
 		if ({INFIELD}) lexed_attr.infield=strdup({INFIELD}); 
+		if ({FILEID}) lexed_attr.fileid=strdup({FILEID}); 
+		if ({FILELEN}) lexed_attr.filelen=atoi({FILELEN}); 
 		
 		
 	}
@@ -110,7 +114,15 @@ return n;
 	{
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
-		sync.vals[sync.nvalues-1].value=strdup({#PCDATA});
+		if (lexed_attr.fileid && lexed_attr.filelen)  {
+			char *ptr;
+			sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
+			ptr={#PCDATA};
+
+			memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
+		} else {
+			sync.vals[sync.nvalues-1].value=strdup({#PCDATA});
+		}
 
 		if ({FIELDTYPE}) {
 			sync.vals[sync.nvalues-1].fieldtype=atoi({FIELDTYPE});
