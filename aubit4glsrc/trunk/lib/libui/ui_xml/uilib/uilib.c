@@ -1110,6 +1110,7 @@ uilib_input_loop (int nargs)
     {
       UIdebug (5,"not initialized\n");
       contexts[context].state = UI_WANT_BEFORE_INPUT;
+	contexts[context].ui.input.variable_data=0;
       // Return -1 to intialize all the control blocks..
       pushint (-1);
       return 1;
