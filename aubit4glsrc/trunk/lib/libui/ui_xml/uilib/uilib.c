@@ -1213,7 +1213,8 @@ uilib_input_loop (int nargs)
     {
       for (a=0;a<last_attr->sync.nvalues;a++) {
 		if (contexts[context].ui.input.variable_data[a]) {
-			free(contexts[context].ui.input.variable_data[a]);
+			/* free(contexts[context].ui.input.variable_data[a]); */
+			contexts[context].ui.input.variable_data[a]=0;
 		}
 		contexts[context].ui.input.variable_data[a]=strdup(last_attr->sync.vals[a].value);
       }
