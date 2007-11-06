@@ -1138,7 +1138,7 @@ uilib_input_loop (int nargs)
 	      UIdebug (5,"WAS %s NOW %s\n",
 		     contexts[context].ui.input.variable_data[a], args[a]);
 	      free (contexts[context].ui.input.variable_data[a]);	// Remove old value
-	      contexts[context].ui.input.variable_data[a] = args[a];	// Copy in new value
+	      contexts[context].ui.input.variable_data[a] = strdup(args[a]);	// Copy in new value
 	      contexts[context].ui.input.changed[a] = 1;	// Mark as changed
 	      changed++;
 	    }
@@ -1163,7 +1163,7 @@ uilib_input_loop (int nargs)
 	{
 	  UIdebug (5,"using variable_data : %d\n", nargs);
 	  contexts[context].ui.input.changed[a] = 1;
-	  contexts[context].ui.input.variable_data[a] = args[a];	// Copy in new value
+	  contexts[context].ui.input.variable_data[a] = strdup(args[a]);	// Copy in new value
 	  changed++;
 	}
     }
@@ -1214,7 +1214,7 @@ uilib_input_loop (int nargs)
 		if (contexts[context].ui.input.variable_data[a]) {
 			free(contexts[context].ui.input.variable_data[a]);
 		}
-		contexts[context].ui.input.variable_data[a]=last_attr->sync.vals[a].value;
+		contexts[context].ui.input.variable_data[a]=strdup(last_attr->sync.vals[a].value);
       }
     }
   pushint (i);
