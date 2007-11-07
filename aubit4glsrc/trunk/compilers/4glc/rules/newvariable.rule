@@ -72,17 +72,16 @@ varsetidentdot : var KW_DOT
 
 var: 
  varsetidentdot dot_part_var { 
+	A4GL_debug("varsetidentdot dotpart");
          sprintf ($<str>$, "%s.%s", $<str>1, $<str>2); 
-         //A4GL_lex_printcomment("/* record building -> %s */\n",$<str>$);
          }
 | varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE {
 
          int type,arrsize,size,level;
          char buff[256];
          char buff2[256];
-         //char arrbuff[256];
 
-         //A4GL_lex_printcomment("/* OPEN_SQUARE.. */\n");
+	A4GL_debug("varsetidentdot identifier");
 
 	if (strcmp($<str>1,"sqlca")==0) {
 		strcpy($<str>1,"a4gl_sqlca");
@@ -121,10 +120,8 @@ var:
          int type,arrsize,size,level;
          char buff[256];
          char buff2[256];
-         //char arrbuff[256];
 
-         //A4GL_lex_printcomment("/* OPEN_SQUARE.. */\n");
-
+	A4GL_debug("varsetidentdot identifier");
 	if (strcmp($<str>1,"sqlca")==0) {
 		strcpy($<str>1,"a4gl_sqlca");
 	}
@@ -156,7 +153,7 @@ var:
 
 }
 
-| array_r_variable
+| array_r_variable 
 | identifier
 | assoc_var_read
 ;
@@ -265,8 +262,8 @@ arr_subscripts :
 	}
 |
 	OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
-	 A4GL_debug("---> Subscript & substring");
 		sprintf($<str>$,"%s:%s",$<str>2,$<str>5);
+	 A4GL_debug("---> Subscript & substring : %s", $<str>$);
 	}
 ;
 

@@ -287,7 +287,9 @@ value_expression_initial_sli :
 	| SOME subquery_sli  		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_SOME,$<s_select_list_item>2); }
 	| ATSIGN identifier op_col_arr 		{ $<s_select_list_item>$=new_select_list_item_col(0,$<str>2,&$<int_list>3); }
 	| ATSIGN identifier KW_DOT identifier op_col_arr { $<s_select_list_item>$=new_select_list_item_col($<str>2,$<str>4,&$<int_list>5); }
+	| identifier COLON identifier KW_DOT identifier op_col_arr { char buff[2000];sprintf(buff,"%s:%s",$<str>1,$<str>3); $<s_select_list_item>$=new_select_list_item_col(buff,$<str>5,&$<int_list>6); }
 ;
+
 
 
 fgl_sql_statement: 
