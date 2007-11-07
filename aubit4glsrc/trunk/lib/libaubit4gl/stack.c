@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.191 2007-10-12 07:56:04 mikeaubury Exp $
+# $Id: stack.c,v 1.192 2007-11-07 10:19:19 mikeaubury Exp $
 #
 */
 
@@ -869,7 +869,11 @@ static int call_list=0;
   last_push_was_ascii_null=0;
 
   size = DECODE_SIZE (d);
+  
   d = d & 0xffff;
+	if ((d&DTYPE_MASK)==DTYPE_CHAR && size<0) {
+		A4GL_assertion(1,"Size<0 for char");
+	}
   A4GL_debug("50 push_param %p %d size=%d",p,d,size);
 
   if (params == 0)

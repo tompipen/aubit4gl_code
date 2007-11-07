@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.26 2006-11-22 07:55:27 mikeaubury Exp $
+# $Id: string.c,v 1.27 2007-11-07 10:19:19 mikeaubury Exp $
 #
 */
 
@@ -83,10 +83,20 @@ int A4GL_strnullcmp (char *s1, char *s2);
 void
 A4GL_string_set (char *ptr, char *b, int size)
 {
-  char buff[50000];
+  static char buff[50000];
+
+A4GL_assertion(b==0,"No source string");
+A4GL_assertion(ptr==0,"No destination string");
+A4GL_assertion(size<0,"Invalid size");
+
+if (size==0) {
+	strcpy(ptr,b);
+	return;
+}
   if (size>50000) {
 		A4GL_assertion(1,"Buff not big enough in string_set");
-	}
+  }
+  memset(&buff[0],0,size);
   strncpy (buff, b, size);
   strncpy (ptr, buff, size);
   ptr[size] = 0;		/* MJA 16.08.2001 */
