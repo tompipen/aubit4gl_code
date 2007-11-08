@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.304 2007-10-15 17:11:27 mikeaubury Exp $
+# $Id: mod.c,v 1.305 2007-11-08 20:44:34 mikeaubury Exp $
 #
 */
 
@@ -5013,6 +5013,7 @@ A4GL_generate_variable_expr (char *s)
   if (a == -1)
     {
       char buff[25600];		// Typically a substr-check for that first...
+	strcpy(buff, s);
       if (strstr (s, "a4gl_substr"))
 	{
 	  char *ptr_str;

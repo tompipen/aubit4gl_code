@@ -108,6 +108,8 @@ var:
          else
          {
              A4GL_debug ("Is string...");
+
+
              sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff,0), (int)scan_variable (buff), $<str>4);
              ADDMAP("Use Variable",buff);
              //A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
@@ -141,8 +143,7 @@ var:
 		char buff2[256];
              A4GL_debug("Is array...");
              sprintf (buff2, "%s[%s]", buff, change_arr_elem($<str>4));
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff2,0), (int)scan_variable (buff2), $<str>4);
-             //A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d */\n", $<str>$,num_arr_elem($<str>4));
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff2,0), (int)scan_variable (buff2), $<str>7);
          }
          else
          {
