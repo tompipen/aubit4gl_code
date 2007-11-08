@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.129 2007-11-05 14:37:29 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.130 2007-11-08 11:04:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.129 2007-11-05 14:37:29 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.130 2007-11-08 11:04:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2373,18 +2373,24 @@ void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
 void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
 
       if (strcmp(siotype,"s_inp_arr")==0) {
+	      
               static void* last_sio=0;
               struct s_inp_arr *s;
+	      static struct struct_screen_record *last_srec=0;
+
               s=sio;
-              if (last_sio!=sio) {
+              if (last_srec!=s->srec) {
                       // May need to do a full redraw..
 			
-                      if (sio && last_sio) {
-				if (((struct s_inp_arr *)sio)->srec==((struct s_inp_arr *)last_sio)->srec) {
+                      if (s->srec && last_srec) {
+				A4GL_debug("ptr for sio=%p", s->srec);
+				A4GL_debug("ptr for last_sio=%p", last_srec);
+				if (s->srec==last_srec) {
 					A4GL_idraw_arr_all(s);
 				}
 			}
                       last_sio=sio;
+                      last_srec=s->srec;
               }
 
               if (s) {
