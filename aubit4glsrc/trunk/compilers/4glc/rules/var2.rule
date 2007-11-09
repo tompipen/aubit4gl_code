@@ -35,7 +35,6 @@ var_ident_qchar_e :
 			sprintf(buff,"%s",fgl_add_scope(variable_usage_as_string($<var_usg>1,VAR_USG_VARIABLE),0));
 			$<ptr>$=A4GL_generate_variable_expr (s);
 		} else {	
-			printf("-->%s\n",s);
 		 	$<ptr>$=A4GL_new_literal_string(s);
 		}
 	}

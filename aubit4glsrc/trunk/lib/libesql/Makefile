@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.46 2007-10-18 20:50:49 mikeaubury Exp $
+# $Id: Makefile,v 1.47 2007-11-09 16:14:18 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -118,7 +118,7 @@ ifdef COMSPEC
 
 #from Mikes Makefile.cygwin:
 	CFLAGS		:=-g -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl ${CFLAGS} 
-	ESQL		=esql -g
+	ESQL		=esql -g 
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=
 	#IFX_CSDK_DIR=/CSDK

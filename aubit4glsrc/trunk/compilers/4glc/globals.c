@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.40 2007-09-10 08:00:00 mikeaubury Exp $
+# $Id: globals.c,v 1.41 2007-11-09 16:14:11 mikeaubury Exp $
 #
 */
 
@@ -584,7 +584,7 @@ void
 read_glob (char *s)
 {
   FILE *f;
-  char ii[64];
+  char ii[255];
   char iii[256];
   char *dbname;
   int gvars;

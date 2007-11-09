@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.292 2007-11-09 09:46:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.293 2007-11-09 16:14:16 mikeaubury Exp $
 #
 */
 
@@ -3250,6 +3250,7 @@ int aclfgl_aclfgl_getcwd (int a);
 int aclfgl_aclfgl_replace_start(int nargs);
 int aclfgl_aclfgl_call_in_shared(int a) ;
 void add_int8_support(void);
+int A4GL_wcswidth(char *mbs);
 
 struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a);
 

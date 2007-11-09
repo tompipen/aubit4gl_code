@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.193 2007-11-09 11:27:46 mikeaubury Exp $
+# $Id: stack.c,v 1.194 2007-11-09 16:14:17 mikeaubury Exp $
 #
 */
 
@@ -2858,6 +2858,10 @@ A4GL_isnull (int type, char *buff)
 	  case DTYPE_BYTE:
 	  case DTYPE_TEXT:
       		ptr = (struct fgl_int_loc *) buff;
+		//printf("%c %c %p %d\n",ptr->where,ptr->isnull, ptr->ptr,ptr->memsize);
+		//if (ptr->isnull=='N') return 1;
+		//if (ptr->where=='M' && ptr->ptr==0) return 1;
+		//if (ptr->where=='M' && ptr->memsize<0) return 1;
       		return ptr->isnull == 'N';
     
 

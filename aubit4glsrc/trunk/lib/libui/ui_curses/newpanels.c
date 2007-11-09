@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.147 2007-10-15 17:11:31 mikeaubury Exp $
+# $Id: newpanels.c,v 1.148 2007-11-09 16:14:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.147 2007-10-15 17:11:31 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.148 2007-11-09 16:14:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -1710,9 +1710,10 @@ void
 int nattr;
 int lastpos;
 WINDOW *wot;
+char *ptr;
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,attr,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",attr);
-
+  ptr=strdup(s);
   if (x == -1 && y == -1)
     {
       A4GL_debug ("Line mode display");
@@ -1772,8 +1773,12 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 
       a4glattr_wattrset (wot, attr);
       A4GL_mja_gotoxy (x, y);
+	if (w-x+1<strlen(ptr)) {
+		ptr[w-x+1]=0;
+	}
       A4GL_debug("X=%d Y=%d",x,y);
-      A4GL_tui_printr (0,"%s", s);
+      A4GL_tui_printr (0,"%s", ptr);
+	free(ptr);
 
       if (clr_line)
 	{

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.197 2007-10-11 08:29:12 mikeaubury Exp $
+# $Id: esql.ec,v 1.198 2007-11-09 16:14:18 mikeaubury Exp $
 #
 */
 
@@ -191,7 +191,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.197 2007-10-11 08:29:12 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.198 2007-11-09 16:14:18 mikeaubury Exp $";
 #endif
 
 
@@ -1075,7 +1075,7 @@ short indicat=0;
         if (mode=='o') {
                 if (p_indicat) indicat=*p_indicat;
                 if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { 
-		A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
+			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
 		}
 		if (infx->loc_indicator==-1) {
 			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
@@ -1083,6 +1083,7 @@ short indicat=0;
 
                 if (infx->loc_loctype==LOCMEMORY) {
                         a4gl->where = 'M';
+                        //a4gl->isnull = 'N';
 			A4GL_free_associated_mem(a4gl);
                         a4gl->memsize=  infx->loc_bufsize ;
                         a4gl->ptr= A4GL_alloc_associated_mem(a4gl, infx->loc_bufsize);
@@ -1091,6 +1092,7 @@ short indicat=0;
 
                 if (a4gl->where=='F') {
                         a4gl->where = 'F';
+                        //a4gl->isnull = 'N';
                         a4gl->memsize=0;
                         a4gl->ptr= 0;
                         strcpy(a4gl->filename, infx->loc_fname);

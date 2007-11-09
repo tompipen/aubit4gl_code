@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.65 2007-11-09 09:46:49 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.66 2007-11-09 16:14:18 mikeaubury Exp $
 #
 */
 
@@ -804,12 +804,24 @@ a4gl=v_a4gl;
 void 
 ESQLAPI_A4GL_copy_blob(loc_t *infx,struct fgl_int_loc *a4gl,short *p_indicat,int size,char mode)  {
 short indicat=0;
-
+int isnull;
 
 	if (mode=='i') {
+		isnull=A4GL_isnull(DTYPE_TEXT,(void *)a4gl);
+		if (a4gl->where=='M' && a4gl->ptr==0) isnull=1;
+		if (a4gl->where=='M' && a4gl->memsize<0) isnull=1;
+
 		if (p_indicat) *p_indicat=0;
-		if (A4GL_isnull(DTYPE_TEXT,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
-		if (A4GL_isnull(DTYPE_TEXT,(void *)a4gl)) {rsetnull(CLOCATORTYPE,(void *)infx);return;}
+		if (isnull) {
+			if (p_indicat) {
+				rsetnull(CLOCATORTYPE,(void *)infx);
+				*p_indicat=-1; 
+				return;
+			} else {
+				rsetnull(CLOCATORTYPE,(void *)infx);return;
+			}
+		}
+
 
                 if (a4gl->where=='M') {
                         infx->loc_loctype = LOCMEMORY;
@@ -833,15 +845,20 @@ short indicat=0;
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-2) return;
-		if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { A4GL_setnull(DTYPE_TEXT,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { 
+				A4GL_setnull(DTYPE_TEXT,(void *)a4gl,size); return;
+			}
+
 	        if (infx->loc_loctype==LOCMEMORY) {
                         a4gl->where = 'M';
+                        a4gl->isnull = 'Y'; // Initialized - not null
                         a4gl->memsize=  infx->loc_bufsize ;
                         a4gl->ptr= infx->loc_buffer;
                 }
 
                 if (a4gl->where=='F') {
                         a4gl->where = 'F';
+                        a4gl->isnull = 'Y'; // Initialized - not null
                         a4gl->memsize=0;
                         a4gl->ptr= 0;
                         strcpy(a4gl->filename, infx->loc_fname);
