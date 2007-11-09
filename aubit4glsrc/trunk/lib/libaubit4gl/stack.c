@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.192 2007-11-07 10:19:19 mikeaubury Exp $
+# $Id: stack.c,v 1.193 2007-11-09 11:27:46 mikeaubury Exp $
 #
 */
 
@@ -2312,6 +2312,7 @@ A4GL_debug_print_stack (void)
 	A4GL_debug("*    %d %p %s",params[a].dtype&DTYPE_MASK,params[a].ptr,A4GL_null_as_null(buff));
     }
 
+free(buff);
 #ifdef DEBUG
   A4GL_debug ("**************************************************************");
 #endif

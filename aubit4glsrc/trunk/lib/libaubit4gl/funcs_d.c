@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.98 2007-09-13 17:13:29 gyver309 Exp $
+# $Id: funcs_d.c,v 1.99 2007-11-09 11:27:46 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,7 @@
 #define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+
 #include <wchar.h>		/* utf8 */
 
 #if HAVE_STRINGS_H
@@ -62,7 +63,7 @@
 M_APM *m_increment=0;
 int nincrement=0;
 static void add_increment(void) ;
-
+void acl_apm_set_string(M_APM m1, char *s,int convert);
 /*
 =====================================================================
                     Variables definitions
@@ -92,7 +93,7 @@ int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
 */
 
 // left pad a string with spaces..
-void A4GL_lpad(char *s, int l) {
+static void A4GL_lpad(char *s, int l) {
 char buff[2000];
 int m;
 // its already long enough? 
@@ -111,8 +112,8 @@ strcpy(s,buff);
 
 
 static void ensure_increment(int n) {
-int a;
-char buff[200];
+//int a;
+//char buff[200];
 	
 	if (nincrement>=n) return;
 
@@ -129,12 +130,12 @@ char buff[200];
 
 
 static void add_increment() {
-static M_APM m_point_5;
+//static M_APM m_point_5;
 static M_APM m_10;
 static M_APM m_tmp;
 static int inited=0;
-char buff[300];
-int a;
+//char buff[300];
+//int a;
 
 	nincrement++;
 	m_increment=realloc(m_increment, nincrement*sizeof (M_APM));
@@ -414,7 +415,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric,int isneg)
   int dig[MAXDIG];
   int pnt[MAXPNT];
 char *dot;
-  char number[1000]="";
+  //char number[1000]="";
   char fm1[128]="", fm2[128]="";
   char *ptr=0;
   int has_money=0;
@@ -429,10 +430,10 @@ char *dot;
   char buff_integer[2000];
   char *ptr_decimal;
 
-  M_APM m_main;
-  M_APM m_integer;
-  M_APM m_tmp;
-  M_APM m_decimal;
+  M_APM M_main;
+  M_APM M_integer;
+  M_APM M_tmp;
+  M_APM M_decimal;
  
   int lb=0;
   int cb=0;
@@ -586,14 +587,14 @@ char *dot;
     }
 
 
-  m_main= m_apm_init();
-  m_tmp= m_apm_init();
-  m_integer= m_apm_init();
-  m_decimal= m_apm_init();
+  M_main= m_apm_init();
+  M_tmp= m_apm_init();
+  M_integer= m_apm_init();
+  M_decimal= m_apm_init();
   
 
 
-  acl_apm_set_string(m_main, numeric,0);
+  acl_apm_set_string(M_main, numeric,0);
 
 
 
@@ -626,46 +627,46 @@ char *dot;
 
   
 
-  m_apm_add(m_tmp, m_main, m_increment[num_places]);
+  m_apm_add(M_tmp, M_main, m_increment[num_places]);
 
-  m_apm_to_fixpt_string(buff, 32, m_main);
-  m_apm_add(m_tmp, m_main, m_increment[num_places]);
+  m_apm_to_fixpt_string(buff, 32, M_main);
+  m_apm_add(M_tmp, M_main, m_increment[num_places]);
   m_apm_to_fixpt_string(buff, 32, m_increment[num_places]);
-  m_apm_copy(m_main,m_tmp);
+  m_apm_copy(M_main,M_tmp);
 
 
 //
 // we need to trunc our number to a specific number of decimal places
 // this is easiest by converting to a string and back again, because the m_apm_round is to significant digits
 // not to decimal places...
-  m_apm_to_fixpt_string(buff, 32, m_main);
+  m_apm_to_fixpt_string(buff, 32, M_main);
   dot=strchr(buff,'.');
   if (dot) {
 		dot+=num_places+1;
 		*dot=0;
   }
-  acl_apm_set_string(m_tmp, buff,0);
-  m_apm_copy(m_main,m_tmp);
+  acl_apm_set_string(M_tmp, buff,0);
+  m_apm_copy(M_main,M_tmp);
+  
+
+
+	m_apm_free(M_tmp);
 
 
 
 
+  m_apm_floor(M_integer, M_main);
+  m_apm_subtract(M_decimal, M_main,M_integer);
+
+
+	m_apm_free(M_main);
 
 
 
-  m_apm_floor(m_integer, m_main);
-  m_apm_subtract(m_decimal, m_main,m_integer);
-
-  	//m_apm_to_fixpt_string(buff,10, m_integer);
-	//printf("DEBUG m_integer=%s\n", buff);
-  	//m_apm_to_fixpt_string(buff,10, m_main);
-	//printf("DEBUG m_main=%s\n", buff);
-  	//m_apm_to_fixpt_string(buff,10, m_decimal);
-	//printf("DEBUG m_decimal=%s\n", buff);
-
-
-  m_apm_to_fixpt_string(buff_integer,0, m_integer);
-  m_apm_to_fixpt_string(buff_decimal,num_places, m_decimal); 
+  m_apm_to_fixpt_string(buff_integer,0, M_integer);
+	m_apm_free(M_integer);
+  m_apm_to_fixpt_string(buff_decimal,num_places, M_decimal); 
+	m_apm_free(M_decimal);
 
   // should always start "0."
   if (strcmp(buff_decimal,"0")==0) {
