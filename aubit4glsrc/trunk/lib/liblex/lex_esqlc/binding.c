@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.72 2007-10-18 20:50:50 mikeaubury Exp $
+# $Id: binding.c,v 1.73 2007-11-09 09:46:49 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.72 2007-10-18 20:50:50 mikeaubury Exp $";
+		"$Id: binding.c,v 1.73 2007-11-09 09:46:49 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -116,7 +116,11 @@ if (bind->str==0) {
 
   if (bind->type == 'o')
     {
-      printc ("{if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", bind->str);
+	if (doing_esql()) {
+      		printc ("{if (sqlca.sqlcode==0) { %s } }/* buff_out */\n", bind->str);
+	} else {
+      		printc ("{if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", bind->str);
+	}
     }
 
   if (bind->type == 'I')
@@ -126,7 +130,11 @@ if (bind->str==0) {
 
   if (bind->type == 'O')
     {
-      printh ("{ if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", bind->str);
+	if (doing_esql()) {
+      		printh ("{ if (sqlca.sqlcode==0) { %s } }/* buff_out */\n", bind->str);
+	} else {
+      		printh ("{ if (A4GL_get_a4gl_status()==0) { %s } }/* buff_out */\n", bind->str);
+	}
     }
 
 

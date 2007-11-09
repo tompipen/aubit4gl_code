@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.291 2007-10-26 09:21:42 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.292 2007-11-09 09:46:47 mikeaubury Exp $
 #
 */
 
@@ -917,7 +917,6 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
   char *A4GL_glob_window (int x, int y, int w, int h, int border);
   void *A4GL_find_pointer (const char *pname, char t);
 
-
   struct s_form_attr
   {
     int mode;
@@ -948,6 +947,20 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
     char *dispattr_s;
   };
 
+struct s_std_attr
+{
+  int colour;
+
+  int reverse;
+  int underline;
+  int bold;
+  int dim;
+  int blink;
+  int invisible;
+
+  int normal;
+  int help_no;
+};
 
 #define MAX_RECALL_VALUES 100
   struct s_recall_entry {
@@ -1695,6 +1708,7 @@ int A4GL_conversion_ok(int a);
   int A4GL_has_str_attribute (struct struct_scr_field *f, int str);
   int A4GL_attr_name_match (struct struct_scr_field *field, char *s);
   char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
+int A4GL_evaluate_field_colour(char *field_contents, struct struct_scr_field *fprop);
 #endif
   void A4GL_set_last_key (int a);
   char *A4GL_strip_quotes (char *s);

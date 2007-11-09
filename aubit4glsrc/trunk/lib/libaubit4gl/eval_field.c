@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.9 2005-07-28 10:11:39 mikeaubury Exp $
+# $Id: eval_field.c,v 1.10 2007-11-09 09:46:48 mikeaubury Exp $
 #
 */
 
@@ -34,7 +34,6 @@
 
 
 
-int A4GL_evaluate_field_colour(char *field_contents, struct struct_scr_field *fprop);
 static int evaluate_field_expr(char *s,u_expression *expr,long *value,int *is_char) ;
 static long field_expr_is_true (char *s, struct u_expression *expr) ;
 

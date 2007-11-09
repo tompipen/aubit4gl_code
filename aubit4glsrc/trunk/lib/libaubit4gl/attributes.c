@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.41 2006-11-16 13:03:35 mikeaubury Exp $
+# $Id: attributes.c,v 1.42 2007-11-09 09:46:47 mikeaubury Exp $
 #*/
 
 /**
@@ -50,6 +50,8 @@
 */
 
 
+static void A4GL_attr_int_to_std_from_form (int attr, struct s_std_attr *p);
+
 /*
 CONSTRUCT 
 DISPLAY
@@ -60,6 +62,7 @@ INPUT ARRAY
 MESSAGE
 PROMPT
 */
+#ifdef MOVED
 struct s_std_attr
 {
   int colour;
@@ -74,6 +77,7 @@ struct s_std_attr
   int normal;
   int help_no;
 };
+#endif
 
 /*
 OPEN WINDOW 
@@ -178,7 +182,6 @@ struct s_all_attributes
 */
 
 int A4GL_get_attr_from_string (char *s);
-int A4GL_evaluate_field_colour(char *field_contents, struct struct_scr_field *fprop);
 
 struct s_std_attr *A4GL_determine_attribute_as_std_attr (int cmd_type,
 							 struct s_std_attr
@@ -603,6 +606,40 @@ A4GL_determine_attribute_internal (struct s_std_attr *attrib_curr,
 
 }
 
+static void A4GL_attr_int_to_std_from_form (int attr, struct s_std_attr *p)
+{
+  int col_int;
+  col_int = (attr<<8 & 0xf00);
+
+  p->colour = col_int;
+  p->reverse = 0;
+  p->underline = 0;
+  p->bold = 0;
+  p->blink = 0;
+  p->dim = 0;
+  p->invisible = 0;
+  p->normal = 0;
+
+  if (attr & AUBIT_ATTR_NORMAL)
+    p->normal = 1;
+  if (attr & AUBIT_ATTR_REVERSE)
+    p->reverse = 1;
+  if (attr & AUBIT_ATTR_UNDERLINE)
+    p->underline = 1;
+  if (attr & AUBIT_ATTR_BOLD)
+    p->bold = 1;
+  if (attr & AUBIT_ATTR_BLINK)
+    p->blink = 1;
+  if (attr & AUBIT_ATTR_DIM)
+    p->dim = 1;
+  if (attr & AUBIT_ATTR_INVISIBLE)
+    p->invisible = 1;
+
+  A4GL_debug ("30 Attribute : %x %d %d %d %d %d %d", p->colour, p->normal,
+	      p->reverse, p->underline, p->bold, p->blink, p->dim);
+}
+
+
 
 void
 A4GL_attr_int_to_std (int attr, struct s_std_attr *p)
@@ -728,6 +765,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop,
       attrib_field.normal = 0;
 
       a = A4GL_evaluate_field_colour (val_for_field, fprop);
+
 A4GL_debug("eval = %d",a);
 
       if (a == -1)
@@ -736,9 +774,12 @@ A4GL_debug("eval = %d",a);
 	}
       else
 	{
-		A4GL_debug("a =%d",a);
-	  A4GL_attr_int_to_std (a << 8, &attrib_field);
+	  	A4GL_debug("a =%d",a);
+		
+	  A4GL_attr_int_to_std_from_form (a, &attrib_field);
 	  attr = attrib_field.colour;
+	
+		
         }
 
 

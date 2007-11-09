@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.64 2007-10-18 20:50:49 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.65 2007-11-09 09:46:49 mikeaubury Exp $
 #
 */
 
@@ -1015,6 +1015,7 @@ for (a=0;a<n;a++) {
 		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_char(native,a4gl,i,-1,dir,x,y); break;
 		case DTYPE_INTERVAL: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
 		case DTYPE_INT8: ESQLAPI_A4GL_copy_int8(native,a4gl,i,size,dir); break;
+		default: A4GL_assertion(1,"Unhandled datatype"); break;
 	}
 }
 
