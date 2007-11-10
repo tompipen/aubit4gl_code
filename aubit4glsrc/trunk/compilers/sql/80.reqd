@@ -235,7 +235,6 @@ op_fgl_expr :  {strcpy($<str>$,"");}
 reserved_word:
 CONSTRAINT
 |REFERENCES
-|KW_ROWID 
 |SMALLFLOAT
 |NCHAR
 |NVARCHAR
