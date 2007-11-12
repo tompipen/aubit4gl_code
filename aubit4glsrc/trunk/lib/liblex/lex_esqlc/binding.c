@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.73 2007-11-09 09:46:49 mikeaubury Exp $
+# $Id: binding.c,v 1.74 2007-11-12 14:18:19 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.73 2007-11-09 09:46:49 mikeaubury Exp $";
+		"$Id: binding.c,v 1.74 2007-11-12 14:18:19 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -691,7 +691,7 @@ static char buff_ind[255];
 	  } else {
 	  	SPRINTF1 (buff,"long _vi_%d;", a);
 	  }
-	  SPRINTF1 (buff,"int _vi_%d;", a);
+	  //SPRINTF1 (buff,"int _vi_%d;", a);
 	  break;
 
 
