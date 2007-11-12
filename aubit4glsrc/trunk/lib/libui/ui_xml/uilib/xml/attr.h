@@ -1,16 +1,15 @@
 #define attr_min(X,Y) (((X) < (Y)) ? (X) : (Y))
 
-
 struct s_syncvalue {
-	char *value;
-	int fieldtype;
+        char *value;
+	char *fieldname;
+        int fieldtype;
 };
 
 
 struct s_syncvalues {
 	int nvalues;
 	struct s_syncvalue *vals;
-	
 };
 
 struct s_row {
@@ -32,10 +31,11 @@ struct s_attr {
 	int arrline;
 	int scrline;
 	int arrcount;
-	int lastkey;
-	char *fileid;
-	int filelen;
+	char *lastkey;
 	char *infield;
+        char *fileid;
+        int filelen;
+
 } ;
 
 

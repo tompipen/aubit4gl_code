@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2007/11/06 19:18:15.
+ * Generated 2007/11/12 16:58:13.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -107,23 +107,22 @@ void STag_TRIGGERED(void)
 		lexed_attr.scrline=0;
 		lexed_attr.arrline=0;
 		lexed_attr.arrcount=0;
-		lexed_attr.filelen=-1;
-		lexed_attr.fileid=0;
-
 		lexed_attr.lastkey=0;
 		lexed_attr.infield=0;
+                lexed_attr.filelen=-1;
+                lexed_attr.fileid=0;
+
 		if (A_TRIGGERED_ID) lexed_attr.id=strdup(A_TRIGGERED_ID); 
 		if (A_TRIGGERED_TYPE) lexed_attr.type=strdup(A_TRIGGERED_TYPE); 
 		if (A_TRIGGERED_DATA) lexed_attr.data=strdup(A_TRIGGERED_DATA); 
 		if (A_TRIGGERED_SCRLINE) lexed_attr.scrline=atoi(A_TRIGGERED_SCRLINE); 
 		if (A_TRIGGERED_ARRLINE) lexed_attr.arrline=atoi(A_TRIGGERED_ARRLINE); 
 		if (A_TRIGGERED_ARRCOUNT) lexed_attr.arrcount=atoi(A_TRIGGERED_ARRCOUNT); 
+		if (A_TRIGGERED_LASTKEY) lexed_attr.lastkey=strdup(A_TRIGGERED_LASTKEY); 
+		if (A_TRIGGERED_INFIELD) lexed_attr.infield=strdup(A_TRIGGERED_ARRCOUNT); 
+		if (A_TRIGGERED_FILEID) lexed_attr.fileid=strdup(A_TRIGGERED_FILEID);
+                if (A_TRIGGERED_FILELEN) lexed_attr.filelen=atoi(A_TRIGGERED_FILELEN);
 
-		if (A_TRIGGERED_LASTKEY) lexed_attr.lastkey=atoi(A_TRIGGERED_LASTKEY); 
-		if (A_TRIGGERED_INFIELD) lexed_attr.infield=strdup(A_TRIGGERED_INFIELD); 
-		if (A_TRIGGERED_FILEID) lexed_attr.fileid=strdup(A_TRIGGERED_FILEID); 
-		if (A_TRIGGERED_FILELEN) lexed_attr.filelen=atoi(A_TRIGGERED_FILELEN); 
-		
 		
 	}
 	
@@ -132,7 +131,7 @@ void STag_TRIGGERED(void)
 
 void ETag_TRIGGERED(void)
 {
-#line 79 "triggers_act.act"
+#line 78 "triggers_act.act"
 
 	 
 	{
@@ -144,7 +143,7 @@ void ETag_TRIGGERED(void)
 
 void STag_SYNCVALUES(void)
 {
-#line 87 "triggers_act.act"
+#line 86 "triggers_act.act"
 
 	 
 	{
@@ -152,12 +151,13 @@ void STag_SYNCVALUES(void)
 		if (sync.vals) {
 			int a;
 			for (a=0;a<sync.nvalues;a++) {
-				free(sync.vals[a].value);
+				if (sync.vals[a].value) 	free(sync.vals[a].value);
+				if (sync.vals[a].fieldname) 	free(sync.vals[a].fieldname);
 			}
 			free(sync.vals);
 		}
-		sync.nvalues=0;
-		sync.vals=0;
+                sync.nvalues=0;
+                sync.vals=0;
 	}
 	
 
@@ -182,22 +182,27 @@ void ETag_SYNCVALUE(void)
 	 
 	{
 		sync.nvalues++;
+	
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
-		if (lexed_attr.fileid && lexed_attr.filelen)  {
-			char *ptr;
-			sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
-			ptr=pcdata;
 
-			memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
-		} else {
-			sync.vals[sync.nvalues-1].value=strdup(pcdata);
-		}
+                if (lexed_attr.fileid && lexed_attr.filelen)  {
+                        char *ptr;
+                        sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
+                        ptr=pcdata;
 
-		if (A_SYNCVALUE_FIELDTYPE) {
-			sync.vals[sync.nvalues-1].fieldtype=atoi(A_SYNCVALUE_FIELDTYPE);
-		} else {
-			sync.vals[sync.nvalues-1].fieldtype=-1;
-		}
+                        memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
+                } else {
+                        sync.vals[sync.nvalues-1].value=strdup(pcdata);
+                }
+
+                if (A_SYNCVALUE_FIELDTYPE) {
+                        sync.vals[sync.nvalues-1].fieldtype=atoi(A_SYNCVALUE_FIELDTYPE);
+                } else {
+                        sync.vals[sync.nvalues-1].fieldtype=-1;
+                }
+
+		sync.vals[sync.nvalues-1].fieldname=strdup(A_SYNCVALUE_FIELDNAME);
+
 	}
 	
 
@@ -205,7 +210,7 @@ void ETag_SYNCVALUE(void)
 
 void STag_SYNCROWS(void)
 {
-#line 136 "triggers_act.act"
+#line 141 "triggers_act.act"
 
 	 
 	{
@@ -221,7 +226,7 @@ void STag_SYNCROWS(void)
 
 void STag_ROW(void)
 {
-#line 147 "triggers_act.act"
+#line 152 "triggers_act.act"
 
 	 
 	{
@@ -237,15 +242,17 @@ void STag_ROW(void)
 
 void ETag_ROW(void)
 {
-#line 159 "triggers_act.act"
+#line 164 "triggers_act.act"
 
 	 
 	{
 		int a;
 		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.nvalues=sync.nvalues;
-		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals=malloc(sizeof(char *)*sync.nvalues);
+		lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals=malloc(sizeof(struct s_syncvalue)*sync.nvalues);
 		for (a=0;a<sync.nvalues;a++) {
 			lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals[a].value=strdup(sync.vals[a].value);
+			lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals[a].fieldtype=sync.vals[a].fieldtype;
+			lexed_attr.rows.row[lexed_attr.rows.nrows-1].sync.vals[a].fieldname=strdup(sync.vals[a].fieldname);
 		}
 	}
 	
@@ -253,7 +260,7 @@ void ETag_ROW(void)
 } /* ETag_ROW */
 
 
-#line 171 "triggers_act.act"
+#line 178 "triggers_act.act"
 
 
 /* XML application entry points. */

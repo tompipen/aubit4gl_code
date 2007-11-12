@@ -276,14 +276,6 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 }
 
 int
-UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
 UILIB_A4GL_open_form (char *name)
 {
   char *s;
@@ -375,7 +367,7 @@ UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type,
 				      int help_no, char *comment, char *style,
 				      char *image)
 {
-  static char mn[20] = "xml";
+  static char mn[20] = "XML";
   static long ln = 0;
 
   ln++;
@@ -398,7 +390,7 @@ UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig,
   int len;
   strcpy (keys, keys_orig);
   ln = (long) menu;
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int (ln);
   uilib_get_context (2);
   context = A4GL_pop_long ();
@@ -466,7 +458,7 @@ UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig,
 void
 UILIB_A4GL_finish_create_menu (void *menu)
 {
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int ((long) menu);
   uilib_get_context (2);
   uilib_menu_initialised (1);
@@ -484,7 +476,7 @@ UILIB_A4GL_menu_loop_v2 (void *menu, void *evt)
   int a;
   while (1)
     {
-      A4GL_push_char ("xml");
+      A4GL_push_char ("XML");
       A4GL_push_int ((long) menu);
       uilib_get_context (2);
       uilib_menu_loop (1);
@@ -503,7 +495,7 @@ void
 UILIB_A4GL_next_option (void *menu, char *nextopt)
 {
   long context;
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int ((long) menu);
   uilib_get_context (2);
   context = A4GL_pop_long ();
@@ -517,7 +509,7 @@ int
 UILIB_A4GL_free_menu (void *menu)
 {
   int a;
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int ((long) menu);
   uilib_get_context (2);
   uilib_free_menu (1);
@@ -610,7 +602,7 @@ UILIB_A4GL_menu_hide_ap (void *menu, va_list * ap)
   char *argp;
   int rval = 0;
   long context;
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int ((long) menu);
   uilib_get_context (2);
   context = A4GL_pop_long ();
@@ -628,7 +620,7 @@ UILIB_A4GL_menu_show_ap (void *menu, va_list * ap)
 {
   char *argp;
   long context;
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int ((long) menu);
   uilib_get_context (2);
   context = A4GL_pop_long ();
@@ -668,21 +660,6 @@ UILIB_A4GL_set_option_value_for_current_window (char type, long keyval)
   send_to_ui ("<OPTIONS TYPE=\"%c\" VALUE=\"%d\"/>", type, keyval);
 }
 
-long
-UILIB_A4GL_get_option_value_for_current_window (char type)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
-UILIB_A4GL_widget_name_match (void *w, char *name)
-{
-  int rval;
-  niy ();
-  return rval;
-}
 
 int
 UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap)
@@ -712,15 +689,6 @@ UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap)
   f = field_list;
   *f = strdup(buff);
   return 1;
-}
-
-int
-UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv,
-				      void *listv)
-{
-  int rval;
-  niy ();
-  return rval;
 }
 
 /*
@@ -1245,10 +1213,10 @@ SendFile (char *filename)
 static int GetFile(char *id,char *filename) {
 	if (uilib_save_file(id,filename)) {
 		A4GL_push_int(1);
-		return ;
+		return 1;
 	} else {
 		A4GL_push_int(0);
-		return ;
+		return 1;
 	}
 }
 
@@ -1352,22 +1320,6 @@ UILIB_A4GL_show_window (char *winname)
   A4GL_win_stack (0, winname, '^');
 }
 
-int
-UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
-{
-  int rval;
-
-  return rval;
-}
-
-int
-UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
 void
 UILIB_A4GL_clr_window (char *winname)
 {
@@ -1442,11 +1394,20 @@ context=A4GL_pop_int();
 A4GL_push_int(context);
 
 
-  uilib_display_array_loop(context);
+  uilib_display_array_loop(1);
   rval=A4GL_pop_int();
+
+  if (rval==0) {
+	if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
+		return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+	}
+  }
+
+  if (last_attr) {
 	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);
 	if (last_attr->arrcount) A4GL_set_arr_count(last_attr->arrcount);
 	if (last_attr->scrline) A4GL_set_scr_line(last_attr->scrline);
+  }
 
   if (rval==-100) { 	
 	// ACCEPT...
@@ -1461,14 +1422,224 @@ A4GL_push_int(context);
   return rval;
 }
 
+
 int
-UILIB_A4GL_inp_arr_v2 (void *disp, int defs, char *srecname, int attrib,
-		       int init, void *evt)
+UILIB_aclfgl_set_window_title (int nargs)
+{
+char *s;
+s=A4GL_char_pop();
+send_to_ui("<SETWINDOWTITLE TEXT=\"%s\"/>",uilib_xml_escape (s));
+free(s);
+return 0;
+}
+
+void
+UILIB_A4GL_finish_screenio (void *sio, char *siotype)
+{
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) sio) & 0xffffffff);
+  uilib_get_context (2);
+  uilib_free_input (1);
+}
+
+void
+UILIB_A4GL_clr_form (int to_defaults)
+{
+  send_to_ui ("<CLEARFORM TODEFAULTS=\"%d\"/>", to_defaults);
+}
+
+int
+UILIB_A4GL_read_fields (void *formdets)
+{
+  return 1;
+}
+
+int
+UILIB_aclfgl_aclfgl_dump_screen (int n)
+{
+  int rval;
+  send_to_ui ("<DUMPSCREEN/>");
+  return rval;
+}
+
+void
+UILIB_A4GL_zrefresh ()
+{
+  flush_ui ();
+}
+
+void
+UILIB_A4GL_gotolinemode ()
+{
+// Does nothing...
+}
+
+char *
+UILIB_A4GL_get_currwin_name ()
+{
+  return win_stack[win_stack_cnt - 1]->name;
+
+}
+
+int
+UILIB_A4GL_get_curr_width ()
+{
+  return win_stack[win_stack_cnt - 1]->w;
+}
+
+int
+UILIB_A4GL_get_curr_height ()
+{
+  return win_stack[win_stack_cnt - 1]->h;
+}
+
+int
+UILIB_A4GL_iscurrborder ()
+{
+  return win_stack[win_stack_cnt - 1]->border;
+}
+
+int
+UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv,
+				      void *listv)
 {
   int rval;
   niy ();
   return rval;
 }
+
+long
+UILIB_A4GL_get_option_value_for_current_window (char type)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_A4GL_widget_name_match (void *w, char *name)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+int
+UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+
+int
+UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
+		       int init, void *evt)
+{
+  int rval;
+  struct s_inp_arr *inp;
+  int context=-1;
+  int a;
+  inp = vinp;
+
+
+  if (init)
+    {
+	char buff[2000];
+	A4GL_push_int(A4GL_get_count());
+	uilib_set_count(1);
+  suspend_flush(1);
+      sprintf (buff, "<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>", srecname);
+      uilib_set_field_list_directly (buff);
+	
+      A4GL_push_char ("XML");
+      A4GL_push_int (((long) inp) & 0xffffffff);
+      A4GL_push_int (defs);
+      A4GL_push_int (attrib);
+      A4GL_push_int (inp->arr_size);
+      A4GL_push_int (inp->nbind);
+      uilib_input_array_start (6);
+
+  A4GL_push_char ("XML");
+  A4GL_push_int ((long)vinp & (0xffffffff));
+  uilib_get_context (2);
+  context = A4GL_pop_long ();
+
+
+      if (defs)
+	{
+	  for (a = 0; a < inp->no_arr; a++)
+	    {
+	      int b;
+	      A4GL_push_int (context);
+	      A4GL_push_int (a + 1);
+	      for (b = 0; b < inp->nbind; b++)
+		{
+		  char *cptr;
+		  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (a);
+		  A4GL_push_param (cptr, inp->binding[b].dtype + ENCODE_SIZE (inp->binding[b].size));
+		}
+		uilib_input_array_sync(inp->nbind+2);
+	    }
+	}
+
+        dump_events (evt);
+	uilib_input_array_initialised(0);
+  	suspend_flush(-1);
+    }
+
+ if (context==-1) {
+  A4GL_push_char ("XML");
+  A4GL_push_int ((long)vinp&0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_long ();
+  }
+  A4GL_push_int (context);
+  uilib_input_array_loop(1);
+
+  rval=A4GL_pop_int();
+  if (rval==0) {
+	if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
+		return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+	}
+  }
+
+	printf("RVAL=%d\n",rval);
+  if (last_attr) {
+  	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);
+  	if (last_attr->arrcount) A4GL_set_arr_count(last_attr->arrcount);
+  	if (last_attr->scrline) A4GL_set_scr_line(last_attr->scrline);
+  }
+  if (rval==-100) { 	
+	// ACCEPT...
+  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
+  }
+  if (rval==-101) { 	
+	// INTERRUPT
+	int_flag=1;
+  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
+  }
+
+  return rval;
+
+  return rval;
+}
+int
+UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
+{
+  int rval;
+
+  return rval;
+}
+
+int
+UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
 
 int
 UILIB_A4GL_prompt_loop_v2 (void *prompt, int timeout, void *evt_list)
@@ -1492,12 +1663,6 @@ UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
   int rval;
   niy ();
   return rval;
-}
-
-void
-UILIB_A4GL_clr_form (int to_defaults)
-{
-  send_to_ui ("<CLEARFORM TODEFAULTS=\"%d\"/>", to_defaults);
 }
 
 void
@@ -1529,34 +1694,9 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
 }
 
 void
-UILIB_A4GL_zrefresh ()
-{
-  flush_ui ();
-}
-
-void
-UILIB_A4GL_gotolinemode ()
-{
-// Does nothing...
-}
-
-char *
-UILIB_A4GL_get_currwin_name ()
-{
-  return win_stack[win_stack_cnt - 1]->name;
-
-}
-
-void
 UILIB_A4GL_gui_run_til_no_more ()
 {
   niy ();
-}
-
-int
-UILIB_A4GL_read_fields (void *formdets)
-{
-  return 1;
 }
 
 
@@ -1598,24 +1738,6 @@ UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
   return rval;
 }
 
-int
-UILIB_aclfgl_set_window_title (int nargs)
-{
-char *s;
-s=A4GL_char_pop();
-send_to_ui("<SETWINDOWTITLE TEXT=\"%s\"/>",uilib_xml_escape (s));
-free(s);
-return 0;
-}
-
-void
-UILIB_A4GL_finish_screenio (void *sio, char *siotype)
-{
-  A4GL_push_char ("XML");
-  A4GL_push_int (((long) sio) & 0xffffffff);
-  uilib_get_context (2);
-  uilib_free_input (1);
-}
 
 void *
 UILIB_A4GL_make_pixmap_gw (char *filename)
@@ -1625,31 +1747,7 @@ UILIB_A4GL_make_pixmap_gw (char *filename)
   return rval;
 }
 
-int
-UILIB_aclfgl_aclfgl_dump_screen (int n)
-{
-  int rval;
-  send_to_ui ("<DUMPSCREEN>");
-  return rval;
-}
 
-int
-UILIB_A4GL_get_curr_width ()
-{
-  return win_stack[win_stack_cnt - 1]->w;
-}
-
-int
-UILIB_A4GL_get_curr_height ()
-{
-  return win_stack[win_stack_cnt - 1]->h;
-}
-
-int
-UILIB_A4GL_iscurrborder ()
-{
-  return win_stack[win_stack_cnt - 1]->border;
-}
 
 void
 UILIB_A4GL_init_color (int n, int r, int g, int b)
@@ -1726,9 +1824,7 @@ UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
 int
 UILIB_A4GL_screen_mode (int sm)
 {
-//int rval;
   return 1;
-//return rval;
 }
 
 
@@ -1821,7 +1917,7 @@ UILIB_A4GL_add_menu_timeout (void *menu, char timeout_type, int timeoutlen,
   static long ln = 0;
   long context;
   ln = (long) menu;
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int (ln);
   uilib_get_context (2);
   context = A4GL_pop_long ();
@@ -1837,7 +1933,7 @@ UILIB_A4GL_add_menu_action (void *menu, char *action, int cmd_no_on_timeout)
   static long ln = 0;
   long context;
   ln = (long) menu;
-  A4GL_push_char ("xml");
+  A4GL_push_char ("XML");
   A4GL_push_int (ln);
   uilib_get_context (2);
   context = A4GL_pop_long ();

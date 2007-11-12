@@ -9,12 +9,15 @@
 #include "comms.h"
 #include "fglsys.h"
 
+static void local_trim (char *p);
 void brpoint(void) ; // DUMMY FUNCTION USED FOR DEBUGGING...
 
+static int field_match(char *a,char *b) ;
 static char *last_field_list = 0;
 static int m_arr_curr=0; 
 static int m_scr_line=0;
 static int m_arr_count=0;
+char *mLastKey=0;
 
 
 enum ui_state
@@ -23,7 +26,8 @@ enum ui_state
   UI_WANT_BEFORE_MENU,
   UI_WANT_BEFORE_INPUT,
   UI_INITIALIZED,
-  UI_FREE
+  UI_FREE,
+  UI_AFTER_BEFORE_MENU
 };
 
 
@@ -32,8 +36,10 @@ struct uiinput
   int nfields;
   int *changed;
   char **variable_data;
-  //char **field_data;
   char *setfield;
+  int num_field_data;
+  char **field_data;
+  char *infield;
 };
 
 
@@ -41,6 +47,9 @@ struct uiconstruct
 {
   char *constr_clause;
   char *setfield;
+  int num_field_data;
+  char **field_data;
+  char *infield;
 };
 
 struct uimenu
@@ -67,6 +76,9 @@ struct uiinputarray
   char *setfield;
   char ***variable_data;
   int *changed_rows;
+  int num_field_data;
+  char **field_data;
+  char *infield;
 };
 
 struct uiprompt
@@ -122,7 +134,6 @@ static char hex_digit(int n) {
 }
 
 
-
 static char *xml_escape(char *s) {
 static char *buff=0;
 static int last_len=0;
@@ -134,8 +145,8 @@ c=0;
 if (strchr(s,'&')) c++;
 if (strchr(s,'<')) c++;
 if (strchr(s,'>')) c++;
-if (strchr(s,'"')) c++;
-if (strchr(s,'\'')) c++;
+if (strchr(s,'"')) c++;  
+if (strchr(s,'\'')) c++; 
 
 if (c==0) {
 	return s;
@@ -152,17 +163,17 @@ for (a=0;a<l;a++) {
 	if (s[a]=='>') { buff[b++]='&'; buff[b++]='g'; buff[b++]='t'; buff[b++]=';';continue;}
 	if (s[a]=='<') { buff[b++]='&'; buff[b++]='l'; buff[b++]='t'; buff[b++]=';';continue;}
 	if (s[a]=='&') { buff[b++]='&'; buff[b++]='a';buff[b++]='m';buff[b++]='p';buff[b++]=';';continue;}
-	if (s[a]=='"') { buff[b++]='&'; buff[b++]='q';buff[b++]='u';buff[b++]='o'; buff[b++]='t'; buff[b++]=';';continue;}
-	if (s[a]=='"') { buff[b++]='&'; buff[b++]='a';buff[b++]='p';buff[b++]='o'; buff[b++]='s'; buff[b++]=';';continue;}
-	if (s[a]<31 || s[a]>126) { 
-			int z1;
-			char buff2[20];
-			z1=((unsigned char)s[a]);
-			sprintf(buff2,"&#%d;",z1);
-			for (z1=0;z1<strlen(buff2);z1++) {
-				buff[b++]=buff2[z1];
-			}
-		}
+        if (s[a]=='"') { buff[b++]='&'; buff[b++]='q';buff[b++]='u';buff[b++]='o'; buff[b++]='t'; buff[b++]=';';continue;}
+        if (s[a]=='\'') { buff[b++]='&'; buff[b++]='a';buff[b++]='p';buff[b++]='o'; buff[b++]='s'; buff[b++]=';';continue;}
+        if (s[a]<31 || s[a]>126) {
+                        int z1;
+                        char buff2[20];
+                        z1=((unsigned char)s[a]);
+                        sprintf(buff2,"&#%d;",z1);
+                        for (z1=0;z1<strlen(buff2);z1++) {
+                                buff[b++]=buff2[z1];
+                        }
+                }
 	buff[b++]=s[a];
 }
 
@@ -271,7 +282,7 @@ charpop (void)
 {
   char s[1024];
   popstring (s, 1023);
-  trim (s);
+  local_trim (s);
   return strdup (s);
 }
 
@@ -761,6 +772,7 @@ uilib_prompt_loop (int n)
     {
       contexts[context].ui.prompt.promptresult = 0;
       i = get_event_from_ui ();
+	mLastKey=last_attr->lastkey;
       if (i != -1)
 	break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
@@ -847,15 +859,15 @@ uilib_event (int nargs)
 	}
       else
 	{
-		printf("%s\n", evt_type);
-		if (strcmp (evt_type, "ON ACTION")==0) {
-	  		send_to_ui (" <%s_EVENT ACTION=\"%s\" ID=\"%d\"/>", no_space(evt_type),
-		      		field_or_key, event_id);
-	
-		} else {
-	  		send_to_ui (" <%s_EVENT FIELD=\"%s\" ID=\"%d\"/>", no_space(evt_type),
-		      		field_or_key, event_id);
-		}
+                if (strcmp (evt_type, "ON ACTION")==0) {
+                        send_to_ui (" <%s_EVENT ACTION=\"%s\" ID=\"%d\"/>", no_space(evt_type),
+                                field_or_key, event_id);
+
+                } else {
+                        send_to_ui (" <%s_EVENT FIELD=\"%s\" ID=\"%d\"/>", no_space(evt_type),
+                                field_or_key, event_id);
+                }
+
 	}
     }
   else
@@ -942,6 +954,25 @@ uilib_menu_add (int nargs)
   return 0;
 }
 
+
+int
+uilib_menu_set (int nargs)
+{
+  int context;
+  char *desc;
+  char *mn;
+  int id;
+
+  desc = charpop ();
+  mn = charpop ();
+  id = POPint ();
+  context = POPint ();
+
+  send_to_ui ("<MENUSET CONTEXT=\"%d\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\"/>", context,  id, mn, desc);
+  return 0;
+}
+
+
 int
 uilib_free_menu (int nargs)
 {
@@ -975,10 +1006,20 @@ uilib_menu_loop (int nargs)
     {
       UIdebug (5,"before menu\n");
       // return whatever the before menu was...
-      contexts[context].state = UI_INITIALIZED;
+      contexts[context].state = UI_AFTER_BEFORE_MENU;
       pushint (0);
       return 1;
     }
+
+  if (contexts[context].state == UI_AFTER_BEFORE_MENU)
+    {
+      UIdebug (5,"before menu\n");
+      // return whatever the before menu was...
+      contexts[context].state = UI_INITIALIZED;
+      pushint (-2);
+      return 1;
+    }
+
 
   // if we've got to here - we're in our menu loop proper...
   send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" />", context);
@@ -986,6 +1027,7 @@ uilib_menu_loop (int nargs)
   while (1)
     {
       i = get_event_from_ui ();
+	mLastKey=last_attr->lastkey;
       if (i != -1)
 	break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
@@ -1061,7 +1103,6 @@ uilib_free_input (int nargs)
 
 
 
-  //if (contexts[context].ui.input.field_data) free (contexts[context].ui.input.field_data);
 
   send_to_ui ("<FREE TYPE=\"INPUT\" CONTEXT=\"%d\"/>", context);
   return 0;
@@ -1110,7 +1151,8 @@ uilib_input_loop (int nargs)
     {
       UIdebug (5,"not initialized\n");
       contexts[context].state = UI_WANT_BEFORE_INPUT;
-	contexts[context].ui.input.variable_data=0;
+      contexts[context].ui.input.num_field_data = 0;
+      contexts[context].ui.input.field_data = 0;
       // Return -1 to intialize all the control blocks..
       pushint (-1);
       return 1;
@@ -1121,6 +1163,7 @@ uilib_input_loop (int nargs)
       UIdebug (5,"before menu\n");
       // return whatever the before menu was...
       contexts[context].state = UI_INITIALIZED;
+      contexts[context].ui.input.infield=0;
       pushint (0);
       return 1;
     }
@@ -1139,7 +1182,7 @@ uilib_input_loop (int nargs)
 	      UIdebug (5,"WAS %s NOW %s\n",
 		     contexts[context].ui.input.variable_data[a], args[a]);
 	      free (contexts[context].ui.input.variable_data[a]);	// Remove old value
-	      contexts[context].ui.input.variable_data[a] = strdup(args[a]);	// Copy in new value
+	      contexts[context].ui.input.variable_data[a] = args[a];	// Copy in new value
 	      contexts[context].ui.input.changed[a] = 1;	// Mark as changed
 	      changed++;
 	    }
@@ -1158,13 +1201,19 @@ uilib_input_loop (int nargs)
       UIdebug (5,"alloced changed\n");
       contexts[context].ui.input.variable_data =
 	malloc (sizeof (char *) * contexts[context].ui.input.nfields);
+
+      contexts[context].ui.input.num_field_data = contexts[context].ui.input.nfields;
+      contexts[context].ui.input.field_data = malloc (sizeof (char *) * contexts[context].ui.input.nfields);
+		for (a=0;a< contexts[context].ui.input.num_field_data;a++) {
+			contexts[context].ui.input.field_data[a]=0;
+		}
       UIdebug (5,"alloced variable_data\n");
 
       for (a = 0; a < nargs; a++)
 	{
 	  UIdebug (5,"using variable_data : %d\n", nargs);
 	  contexts[context].ui.input.changed[a] = 1;
-	  contexts[context].ui.input.variable_data[a] = strdup(args[a]);	// Copy in new value
+	  contexts[context].ui.input.variable_data[a] = args[a];	// Copy in new value
 	  changed++;
 	}
     }
@@ -1202,6 +1251,7 @@ uilib_input_loop (int nargs)
   while (1)
     {
       i = get_event_from_ui ();
+	mLastKey=last_attr->lastkey;
       if (i != -1)
 	break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>",
@@ -1213,12 +1263,25 @@ uilib_input_loop (int nargs)
     {
       for (a=0;a<last_attr->sync.nvalues;a++) {
 		if (contexts[context].ui.input.variable_data[a]) {
-			/* free(contexts[context].ui.input.variable_data[a]); */
+			free(contexts[context].ui.input.variable_data[a]);
 			contexts[context].ui.input.variable_data[a]=0;
 		}
-		contexts[context].ui.input.variable_data[a]=strdup(last_attr->sync.vals[a].value);
+		if (contexts[context].ui.input.field_data[a]) {
+			free(contexts[context].ui.input.field_data[a]);
+			contexts[context].ui.input.field_data[a]=0;
+		}
+		contexts[context].ui.input.variable_data[a]=last_attr->sync.vals[a].value;
+		if (contexts[context].ui.input.field_data) {
+			if (last_attr->sync.vals[a].fieldname) {
+				contexts[context].ui.input.field_data[a]=last_attr->sync.vals[a].fieldname;
+			}
+		}
       }
     }
+  if (last_attr->infield) {
+		if (contexts[context].ui.input.infield) free(contexts[context].ui.input.infield);
+		contexts[context].ui.input.infield=strdup(last_attr->infield);
+	}
   pushint (i);
   return 1;
 }
@@ -1268,8 +1331,11 @@ uilib_input_start (int nargs)
   mod=charpop();
   cinput = new_context (UIINPUT,mod,ln);
   contexts[cinput].ui.input.variable_data = 0;
+  contexts[cinput].ui.input.field_data = 0;
+  contexts[cinput].ui.input.num_field_data = 0;
   contexts[cinput].ui.input.changed = 0;
   contexts[cinput].ui.input.setfield = 0;
+  contexts[cinput].ui.input.nfields = 0;
   suspend_flush (1);
   send_to_ui ("<INPUT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WITHOUT_DEFAULTS=\"%d\">\n%s", cinput, attr,todefs, last_field_list);
   //pushint (cinput);
@@ -1382,9 +1448,11 @@ uilib_construct_start (int nargs)
   ln=POPint();
   mod=charpop();
   cconstruct = new_context (UICONSTRUCT,mod,ln);
-	printf("NEW CONTEXT : %s %d = %d\n", mod, ln, cconstruct);
   contexts[cconstruct].ui.construct.constr_clause = 0;
   contexts[cconstruct].ui.construct.setfield = 0;
+  contexts[cconstruct].ui.construct.infield = 0;
+  contexts[cconstruct].ui.construct.num_field_data = 0; 
+  contexts[cconstruct].ui.construct.field_data = 0; 
   UIdebug(5,"Construct - state=%d",  contexts[cconstruct].state);
   suspend_flush (1); 
 	UIdebug(5, "Construct start - state=%d", contexts[cconstruct].state);
@@ -1425,12 +1493,13 @@ uilib_construct_loop (int nargs)
       return 1;
     }
 
-      UIdebug (5,"construct wait for event\n");
+  UIdebug (5,"construct wait for event\n");
   send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" />", context);
   flush_ui ();
   while (1)
     {
       i = get_event_from_ui ();
+	mLastKey=last_attr->lastkey;
       if (i != -1)
 	break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>",
@@ -1438,6 +1507,18 @@ uilib_construct_loop (int nargs)
       flush_ui ();
     }
 
+  if (last_attr->sync.nvalues)
+    {
+      /* Got a construct result... */
+             contexts[context].ui.construct.constr_clause = last_attr->sync.vals[0].value;
+    }
+  
+  if (last_attr->infield) {
+		if (contexts[context].ui.construct.infield) {
+			free(contexts[context].ui.construct.infield);
+		}
+		contexts[context].ui.construct.infield=strdup(last_attr->infield);
+  }
   pushint (i);
   return 1;
 }
@@ -1447,8 +1528,6 @@ uilib_construct_query (int nargs)
 {
   int context;
   context = POPint ();
-
-printf("COntext=%d data=%s\n", context, contexts[context].ui.construct.constr_clause);
 
   if (contexts[context].ui.construct.constr_clause)
     {
@@ -1495,7 +1574,6 @@ for (a=0;a<ncontexts;a++) {
 	if (contexts[a].lineno==line && contexts[a].state!=UI_FREE) {
 		if (strcmp(contexts[a].modulename,mod)==0){
 				UIdebug(9,"FOUND CONTEXT : %s %d=%d\n",mod,line,a);
-				printf("FOUND CONTEXT : %s %d=%d\n",mod,line,a);
 				pushint(a); return 1;
 		}
 	}
@@ -1616,6 +1694,7 @@ uilib_display_array_loop (int n)
   while (1)
     {
       i = get_event_from_ui ();
+	mLastKey=last_attr->lastkey;
       if (i != -1) break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
@@ -1810,6 +1889,7 @@ int uilib_input_array_loop (int n)
   while (1)
     {
       i = get_event_from_ui ();
+	mLastKey=last_attr->lastkey;
       if (i != -1) break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
@@ -1826,6 +1906,7 @@ int uilib_input_array_loop (int n)
 	int a;
 	int b;
 	int arrline;
+
 	for (a=0;a<last_attr->rows.nrows;a++) {
 		arrline=last_attr->rows.row[a].rownum-1;
 		contexts[context].ui.inputarray.changed_rows[arrline]=1;
@@ -1894,27 +1975,35 @@ printf("Break here");
 }
 
 int uilib_save_file(char *id, char *s) {
-	FILE *f;
-	int i;
-	send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (id));
-	flush_ui();
-	i = get_event_from_ui ();
-	if (i!=-103) {
-		return 0;
-	}
-	if (strcmp(last_attr->fileid, id)!=0) {
-		// Invalid id
-		return 0;
-	}
-	f=fopen(s,"w");
-	if (f) {
-		//printf("FILELEN : %d\n", last_attr->filelen);
-		fwrite(last_attr->sync.vals[0].value, last_attr->filelen, 1,f);
-		fclose(f);
-	}
-	
+        FILE *f;
+        int i;
+        send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (id));
+        flush_ui();
+        i = get_event_from_ui ();
+        if (i!=-103) {
+                return 0;
+        }
+        if (strcmp(last_attr->fileid, id)!=0) {
+                // Invalid id
+                return 0;
+        }
+        f=fopen(s,"w");
+        if (f) {
+                //printf("FILELEN : %d\n", last_attr->filelen);
+                fwrite(last_attr->sync.vals[0].value, last_attr->filelen, 1,f);
+                fclose(f);
+        }
+
+        return 1;
+}
+
+
+
+int uilib_lastkey( int nargs) {
+	PUSHquote(mLastKey);
 	return 1;
 }
+
 
 
 int
@@ -1930,20 +2019,83 @@ uilib_free_input_array (int nargs)
 int uilib_getfldbuf(int nargs) {
 	int context;
 	char *fld;
-	fld=charpop();
+	int nfields;
+	char **fields;
+	int a;
+
+	nfields=nargs-1;
+	fields=malloc(sizeof(char*)*nfields);
+	for (a=0;a<nfields;a++) {
+		fields[a]=charpop();
+	}
 	context=POPint();
-	PUSHquote("XXX");
-	return 1;
+
+	if (context) {
+ 		if (contexts[context].type==UIINPUT) {
+			int a;
+			int b;
+			char **flist;
+			int nflist;
+			flist=contexts[context].ui.input.field_data;
+			nflist=contexts[context].ui.input.num_field_data;
+			for (b=0;b<nfields;b++) {
+				int pushed=0;
+				for (a=0;a<nflist;a++) {
+					if (field_match(flist[a],fields[b])) {
+							PUSHquote(contexts[context].ui.input.variable_data[a]);
+							pushed++;
+							break;
+					}
+				}
+				if (!pushed) {
+							PUSHquote("<notfound>");
+				}
+			}
+			return nfields;
+		}
+	}
+
+	fprintf(stderr,"******** UNSUPPORTED GETFLDBUF OPERATION **********\n");
+
+	for (a=0;a<nfields;a++) {
+		PUSHquote("<notset>");
+	}
+	return nfields;
 }
+
+
 
 int uilib_infield(int n) {
 	int context;
 	char *fld;
+	char *f=0;
 	fld=charpop();
 	context=POPint();
-	pushint(0);
+	if (context) {
+		f=0;
+		
+ 		if (contexts[context].type==UIINPUT) {
+			f=contexts[context].ui.input.infield;
+		}
+ 		if (contexts[context].type==UICONSTRUCT) {
+			f=contexts[context].ui.construct.infield;
+		}
+		
+	}
+
+	if (f) {
+		if (field_match(fld,f)==0) {
+			pushint(1);
+		} else {
+			pushint(0);
+		}
+	} else {
+		pushint(0);
+	}
 	return 1;
 }
+
+
 
 int uilib_fgl_drawbox(int n) {
 	int x1,x2,x3,x4,x5;
@@ -1973,10 +2125,52 @@ return 0;
 }
 
 
-void set_construct_clause(int context, char *ptr) {
-	
-printf("SETTING CONSTRUCT RESULT TO ---> %s for %d\n", ptr,context);
-	contexts[context].ui.construct.constr_clause=ptr;
+
+static void local_trim (char *p)
+{
+  int a;
+  for (a = strlen (p) - 1; a >= 0; a--)
+    {
+      if (p[a] != ' ' && p[a] != '\t' && p[a] != '\n' && p[a] != '\r')
+        break;
+      p[a] = 0;
+    }
 }
 
 
+int uilib_trace(int n) {
+   FILE *f;
+   static char *p=0;
+   char *a;
+
+   a=charpop();
+   if (p==0) {
+      p=getenv("TRACEFILE");
+   }
+   if (p==0) {
+      free(a);
+      return 0;
+   }
+   f=fopen(p,"a");
+   if (f==0) {
+      free(a);
+         return 0;
+   }
+   fprintf(f,"%s\n",a);
+   free(a);
+   fclose(f);
+   return 0;
+}
+
+void set_construct_clause(int context, char *ptr) {
+
+        contexts[context].ui.construct.constr_clause=ptr;
+}
+
+
+
+static int field_match(char *a,char *b) {
+	fprintf(stderr,"Field  name match : %s %s\n",a,b);
+	if(strcmp(a,b)==0) return 1;
+	return 0;
+}

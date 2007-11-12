@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.46 2007-04-16 16:23:10 mikeaubury Exp $
+# $Id: pointers.c,v 1.47 2007-11-12 20:49:43 mikeaubury Exp $
 #
 */
 
@@ -125,6 +125,11 @@ A4GL_strcmpare (const void *a, const void *b)
   return strcmp (a, b);
 }
 
+
+int aclfgl_aclfgl_walk_pointers(int n) {
+	print_ptr_stack();
+	return 0;
+}
 /**
  * Function to be executed when iterating in one node.
  *
@@ -145,20 +150,20 @@ A4GL_action (const void *nodep, const VISIT which, const int depth)
   char buff[800];
 
   memset (buff, ' ', 800);
-  buff[depth * 4] = 0;
+  buff[0] = 0;
   switch (which)
     {
     case preorder:
       break;
     case postorder:
       datap = *(struct s_node **) nodep;
-      ////A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
+      printf ("%s%s %p\n\r", buff, datap->name, datap->ptr);
       break;
     case endorder:
       break;
     case leaf:
       datap = *(struct s_node **) nodep;
-      //A4GL_debug ("%s%s %p :", buff, datap->name, datap->ptr);
+       printf ("%s%s %p\n\r", buff, datap->name, datap->ptr);
       break;
     }
   return;
@@ -182,22 +187,24 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   char ptrchar[800];
   A4GL_trim (orig_name);
   //A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
-  
   buff = (struct s_node *) malloc (sizeof (struct s_node));
+
+
 
   A4GL_assertion(buff==0,"Unable to allocate memory");
   buff->name[0] = type;
   buff->name[1] = 0;
   strcat (buff->name, orig_name);
   buff->ptr = ptr;
-  //A4GL_debug ("Buff=%p\n", buff);
+
   a = FIND_X (buff);
 
   if (a)
     {
       anode = *(struct s_node **) a;
-      SPRINTF1 (ptrchar, ">%p", buff->ptr);
       anode->ptr = ptr;
+#ifdef ADD_POINTER_TO_POINTER
+      SPRINTF1 (ptrchar, ">%p", buff->ptr);
       strcpy (buff2.name, ptrchar);
 
       a = FIND_X (&buff2);
@@ -205,32 +212,23 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 	{
 	  //A4GL_debug ("Found ptr... \n");
 	  anode = *(struct s_node **) a;
-#if ! defined(__MINGW32__)
 	  DELETE_X (&buff2);
-#else
-	  DELETE_X (&buff2);
-#endif
 	  strcpy (anode->name, "======");
 	  free (anode);
 	free(buff);
 	}
-      else
-	{
-	  //A4GL_debug ("No pointer\n");
-	}
+#endif
     }
   else
     {
-      //A4GL_debug ("tfind ... a=%p\n", a);
       a = ADD_X (buff);
-      //A4GL_debug ("tsearch ... a=%p %p\n", a, buff);
     }
+#ifdef ADD_POINTER_TO_POINTER
   buff_add = (struct s_node *) acl_malloc2 (sizeof (struct s_node));
   SPRINTF1 (buff_add->name, ">%p", ptr);
   buff_add->ptr = buff;
-  //A4GL_debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
   a = ADD_X (buff_add);
-  //A4GL_debug ("Added...");
+#endif
 
 }
 
@@ -305,11 +303,12 @@ A4GL_del_pointer (char *pname, char t)
   buff->name[0] = t;
   buff->name[1] = 0;
   strcat (buff->name, pname);
-  //A4GL_debug ("Buff=%p pname=%s buff->name=%s\n", buff,pname,buff->name);
   a1 = FIND_X (buff);
   if (a1)
     {
       anode = *(struct s_node **) a1;
+
+#ifdef ADD_POINTER_TO_POINTER
       SPRINTF1 (ptrchar, ">%p", anode->ptr); // Was buff
       strcpy (buff2.name, ptrchar);
       a = FIND_X (&buff2);
@@ -317,21 +316,13 @@ A4GL_del_pointer (char *pname, char t)
 	{
   	struct s_node *anode;
 	  anode = *(struct s_node **) a;
-#if ! defined(__MINGW32__)
 	  DELETE_X (&buff2);
-#else
-	  DELETE_X (&buff2);
-      //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
-#endif
 	  strcpy (anode->name, "======");
 	  free (anode);
 	}
-#if ! defined(__MINGW32__)
-      DELETE_X (buff);
-#else
-      DELETE_X (buff);
-      //A4GL_assertion(1,"Apparently - MINGW can't delete a pointer");
 #endif
+
+      DELETE_X (buff);
       free (anode);
       free (buff);
     }
@@ -368,13 +359,12 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
   struct s_node buff;
   struct s_node *anode;
   void *a;
-  //A4GL_debug ("Finding pointer to pointer %p", ptr);
-  SPRINTF1 (buff.name, ">%p", ptr);
-  //A4GL_debug ("Finding %s", buff.name);
-  buff.ptr = 0;
 
+A4GL_assertion(1,"Obsoleted function");
+
+  SPRINTF1 (buff.name, ">%p", ptr);
+  buff.ptr = 0;
   a = FIND_X (&buff);
-  //A4GL_debug ("Find returns %p", a);
   if (a)
     {
       anode = *(struct s_node **) a;
@@ -387,7 +377,6 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
     }
   else
     {
-      //A4GL_debug ("Not found");
       return 0;
     }
 }

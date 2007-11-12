@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.148 2007-11-09 16:14:19 mikeaubury Exp $
+# $Id: newpanels.c,v 1.149 2007-11-12 20:49:43 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.148 2007-11-09 16:14:19 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.149 2007-11-12 20:49:43 mikeaubury Exp $";
 #endif
 
 /**
@@ -535,9 +535,14 @@ void
 {
   int a;
   WINDOW *win = 0;
+char buff[256];
   PANEL *panel = 0;
+  struct s_form_dets *f;
   A4GL_debug("before remove window - currwinno=%d",currwinno);
   A4GL_chkwin ();
+
+
+  f=A4GL_find_pointer (win_name, S_FORMDETSCODE);
 #ifdef DEBUG
   {
     A4GL_debug ("Remove Window : %s", win_name);
@@ -608,9 +613,19 @@ void
 #endif
 
   A4GL_del_pointer (win_name, WINCODE);
-  
+
+	if (f) {
+  		sprintf(buff,"%p",f);
+  		A4GL_del_pointer (buff, ATTRIBUTE);
+		if (f->fileform) {
+			free(f->fileform);
+		}
+		free(f);
+	}
+
   A4GL_del_pointer (win_name, ATTRIBUTE);
   A4GL_del_pointer (win_name, S_WINDOWSCODE);
+  A4GL_del_pointer (win_name, S_FORMDETSCODE);
 
   A4GL_debug("after remove window - currwinno=%d",currwinno);
 
@@ -2016,6 +2031,7 @@ int
   A4GL_debug ("border=%d\n", border);
   form->form_details.border = border;
   form->form_details.colour = attrib;
+
   A4GL_add_pointer (name, S_FORMDETSCODE, form);
 
   win = A4GL_display_form_new_win (name, form, x, y,attrib);
@@ -2172,75 +2188,6 @@ A4GL_set_window (int a)
 }
 
 
-#ifdef OLD
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_refresh_menu_window (char *name, int top)
-{
-  PANEL *ptr;
-  int rc;
-  char nm[40];
-  char s;
-
-  A4GL_debug ("In A4GL_refresh_menu_window %s", name);
-  print_panel_stack ();
-  ptr = A4GL_find_pointer (name, MNPARCODE);
-  A4GL_find_pointer_ptr (nm, &s, ptr);
-
-  if (nm)
-    {
-      A4GL_debug ("Making menus parent window current %s", nm);
-      ptr = A4GL_find_pointer (nm, PANCODE);
-      A4GL_debug ("Parent window=%p", ptr);
-      rc = top_panel (ptr);
-
-      A4GL_debug ("Rc=%d", rc);
-    }
-  else
-    {
-      A4GL_debug ("Not found parent window - %p", ptr);
-    }
-
-  A4GL_debug ("Setting menu (%s) panel to top", name);
-  ptr = A4GL_find_pointer (name, PANCODE);
-  A4GL_debug ("refresh menu with pointer to %p", ptr);
-
-  if (top) {
-	A4GL_debug("top");
-    rc = top_panel (ptr);
-  }
-  else {
-	A4GL_debug("bottom");
-    rc = bottom_panel (ptr);
-  }
-
-  A4GL_debug ("Rc=%d", rc);
-  A4GL_debug ("Topped");
-
-  make_error_panel_top();
-
-/*
-  if (curr_error_panel) {
-	A4GL_debug("top_panel curr_error_panel : %p",curr_error_panel);
-	top_panel(curr_error_panel);
-  }
-*/
-
-  print_panel_stack ();
-  A4GL_do_update_panels ();
-
-
-#ifdef NDEF
-  doupdate ();
-  UILIB_A4GL_zrefresh ();
-#endif
-  print_panel_stack ();
-  return 0;
-}
-#endif
 
 /**
  *
