@@ -594,11 +594,11 @@ if (strncasecmp(s,"database",8)==0) {
 	return 1;
 }
 
-if (type>='1'&&type<='9') return 255;
+if (type>='1'&&type<='9') return 257;
 
 qry_type=0;
 
-if (type!='S'&&type!='s') qry_type=255;
+if (type!='S'&&type!='s') qry_type=257;
 
    if (prepared) {
        EXEC SQL free stExec;cp_sqlca();

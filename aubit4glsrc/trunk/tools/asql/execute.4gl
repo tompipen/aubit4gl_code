@@ -325,7 +325,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 			qry_type=prepare_query_1(p,list[a].type, &err_at_col);
 			if (list[a].type=='C'||list[a].type=='c') qry_type=255;
 		} else {
-			qry_type=255;
+			qry_type=256;
 		}
 			if (qry_type==-1) { goto end_query; }
 
@@ -712,7 +712,7 @@ return a;
 #define MAX_QRY  80
 
 
-char *qry_strings[255]={
+char *qry_strings[258]={
 	"%d Rows found", // 0
 	"Database selected",
 	"%d Rows found",
@@ -822,8 +822,19 @@ return w;
 
 char *get_qry_msg(int qry_type,int n) {
 static char buff[256];
+static int set_unl_msg=1;
+
+if (set_unl_msg) {
+	printf("Here\n");
+	qry_strings[255]="%d row(s) unloaded";
+	qry_strings[256]="%d row(s) loaded";
+	qry_strings[257]="Operation Succeeded (%d) rows affected";
+	set_unl_msg=0;
+}
+
+
 if (get_sqlcode()>=0) {
-	if (qry_type<=MAX_QRY && qry_strings[qry_type]!=0) {
+	if ((qry_type<=MAX_QRY || qry_type>=255)  && qry_strings[qry_type]!=0) {
 		sprintf(buff,qry_strings[qry_type],n);
 	} else {
 		sprintf(buff,"Operation Succeeded (%d) rows affected",n);
