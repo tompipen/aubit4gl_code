@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.35 2006-07-17 14:09:16 mikeaubury Exp $
+# $Id: readforms.c,v 1.36 2007-11-14 15:18:41 mikeaubury Exp $
 #*/
 
 /**
@@ -143,6 +143,7 @@ real_read_form (char *fname, char *formname)
 {
   int a;
   struct s_form_dets *formdets;
+void *oldcontext=0;
   //char buff[512];
 
   A4GL_trim (fname);
@@ -156,10 +157,16 @@ real_read_form (char *fname, char *formname)
   A4GL_debug ("fname=%s formname=%s ", fname, formname);
 #endif
 
+
+
   //A4GL_gui_startform (formname);
   formdets =
     (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
+
+  oldcontext=A4GL_get_malloc_context();
+	A4GL_clr_malloc_context();
+  A4GL_set_malloc_context(formdets);
 
    memset(formdets,0,sizeof (struct s_form_dets));
 
@@ -175,6 +182,10 @@ real_read_form (char *fname, char *formname)
 
 
   a = A4GL_read_data_from_file ("struct_form", formdets->fileform, fname);
+   A4GL_clr_malloc_context();
+   if (oldcontext) {
+     A4GL_set_malloc_context(oldcontext);
+   }
 
   A4GL_debug("A4GL_read_data_from_file returns %d",a);
   if (a==0)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.47 2007-11-12 20:49:43 mikeaubury Exp $
+# $Id: pointers.c,v 1.48 2007-11-14 15:18:41 mikeaubury Exp $
 #
 */
 
@@ -203,6 +203,8 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
     {
       anode = *(struct s_node **) a;
       anode->ptr = ptr;
+	free(buff);
+
 #ifdef ADD_POINTER_TO_POINTER
       SPRINTF1 (ptrchar, ">%p", buff->ptr);
       strcpy (buff2.name, ptrchar);

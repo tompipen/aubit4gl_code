@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.34 2007-05-04 16:51:33 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.35 2007-11-14 15:18:41 mikeaubury Exp $
 #*/
 
 /**
@@ -545,7 +545,7 @@ char *xptr;
   }
   A4GL_assertion(l<0||l>64000,"Dubious length of string") ;
   A4GL_debug ("Got length as 0x%d", l);
-	xptr=acl_malloc2 (l+1);	/* Extra 1 for the \0 */
+	xptr=acl_malloc2_With_Context (l+1);	/* Extra 1 for the \0 */
  A4GL_assertion(xptr==0,"Failed to allocate memory");
   *val = xptr;
   memset(xptr,0,l+1);

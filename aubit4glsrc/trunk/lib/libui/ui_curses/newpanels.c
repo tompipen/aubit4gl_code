@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.149 2007-11-12 20:49:43 mikeaubury Exp $
+# $Id: newpanels.c,v 1.150 2007-11-14 15:18:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.149 2007-11-12 20:49:43 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.150 2007-11-14 15:18:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -611,7 +611,6 @@ char buff[256];
     A4GL_debug ("Deleting pointer %s", win_name);
   }
 #endif
-
   A4GL_del_pointer (win_name, WINCODE);
 
 	if (f) {
@@ -2038,6 +2037,7 @@ int
   if (win)
     {
       A4GL_add_pointer (name, WINCODE, win);
+	
       A4GL_mja_wrefresh (currwin);
     }
   else
