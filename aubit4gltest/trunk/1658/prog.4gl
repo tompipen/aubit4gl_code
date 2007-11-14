@@ -1,20 +1,18 @@
 {**
  * @file
- * Describe the test here
+ * Arithmetic negative int/decimal -> smallint
  * @process TEST_GENERAL
  *}
  
-#if you need to use a database, use "test1"
-#database test1
 main
+define w_sald int,
+       w_prom decimal(6,1),
+       w_dias smallint
 
-#It is recomended that you use temp tables
-#	create temp table abc(x char(10), y char(10))
-
-#Use 	
-#	call aclfgl_dump_screen("out")
-# To generate screen dump to be compared against expected screen representation
-# Default diff expect file names "out" and  "out.expected"
-
-
+let w_sald = -174
+let w_prom = 375.0
+let w_dias = w_sald / w_prom
+if w_dias = 0 then  display "ok" exit program 0
+else   display "bad" exit program 1
+end if
 end main
