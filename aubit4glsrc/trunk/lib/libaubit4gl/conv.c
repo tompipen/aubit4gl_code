@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.153 2007-11-03 10:40:53 mikeaubury Exp $
+# $Id: conv.c,v 1.154 2007-11-14 16:28:08 mikeaubury Exp $
 #
 */
 
@@ -1281,7 +1281,7 @@ if (ptr[0]=='.') {
 	strcpy(buff,"0");
 	strcat(buff,ptr);
 } 
-if (ptr[0]=='0' && ptr[1]=='.') {
+if (ptr[0]=='-' && ptr[1]=='.') {
 	strcpy(buff,"-0");
 	strcat(buff,&ptr[1]);
 }
@@ -1561,6 +1561,7 @@ int rval;
   A4GL_debug("--> %s\n",A4GL_null_as_null(buff_dectoi));
 
   if (A4GL_apm_str_detect_overflow(buff_dectoi, 0,0,DTYPE_SMINT)) {
+		A4GL_debug("Overflow");
 	A4GL_setnull(DTYPE_SMINT, a,0);
 	rval=1;
   } else {
