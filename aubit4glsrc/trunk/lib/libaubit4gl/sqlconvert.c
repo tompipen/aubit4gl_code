@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.128 2007-10-15 17:11:29 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.129 2007-11-16 10:57:39 mikeaubury Exp $
 #
 */
 
@@ -65,6 +65,8 @@ static void load_column_mappings_i (char *ptr);
 static void load_table_mappings_i (char *ptr);
 char fake_rowid_column[256];
 static int loaded_columns = 0;
+void chk_loaded_mappings(void) ;
+
 
 static char *cvsql_names[] = {
   "CVSQL_NONE",
@@ -124,6 +126,7 @@ static char *cvsql_names[] = {
   "CVSQL_FAKE_IMMEDIATE",
   "CVSQL_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_TEMP_AS_TEMPORARY",
+  "CVSQL_TEMP_AS_GLOBAL_TEMPORARY",
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_INSERT",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
@@ -244,6 +247,7 @@ enum cvsql_type
   CVSQL_FAKE_IMMEDIATE,
   CVSQL_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_TEMP_AS_TEMPORARY,
+  CVSQL_TEMP_AS_GLOBAL_TEMPORARY,
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_INSERT,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
@@ -1692,6 +1696,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_TEMP_AS_DECLARE_GLOBAL;
   if (match_strncasecmp (p, "TEMP_AS_TEMPORARY", len) == 0)
     return CVSQL_TEMP_AS_TEMPORARY;
+  if (match_strncasecmp (p, "TEMP_AS_GLOBAL_TEMPORARY", len) == 0)
+    return CVSQL_TEMP_AS_GLOBAL_TEMPORARY;
   if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL;
   if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_INSERT", len) == 0)
@@ -2545,6 +2551,16 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
       		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS ON COMMIT PRESERVE ROWS", tabname, elements);
 	} else {
       		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT PRESERVE ROWS", tabname, elements);
+	}
+      return ptr;
+    }
+
+  if (A4GLSQLCV_check_requirement ("TEMP_AS_GLOBAL_TEMPORARY"))
+    {
+  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+      		SPRINTF4 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+	} else {
+      		SPRINTF4 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
 	}
       return ptr;
     }
@@ -3950,6 +3966,10 @@ char *A4GLSQLCV_db_tablename(char *dbname, char*instance, char*ownerized_tablena
 static char buff[512];
 int a;
     chk_loaded_mappings();
+    if (A4GL_isyes(acl_getenv("ALWAYSIGNDBNAMETAB"))) {
+		dbname=NULL;
+		instance=NULL;
+	}
 
 	if (dbname==NULL && instance==NULL) {
 		strcpy(buff,ownerized_tablename);

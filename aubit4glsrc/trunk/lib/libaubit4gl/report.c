@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.144 2007-09-10 06:15:01 mikeaubury Exp $
+# $Id: report.c,v 1.145 2007-11-16 10:57:39 mikeaubury Exp $
 #
 */
 
@@ -1388,8 +1388,11 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
      Andrej say: yes it can!
    */
 
-
-  SPRINTF1 (buff_3, "create temp table %s (\n", gen_rep_tab_name (b,1));
+  if (A4GL_isyes(acl_getenv("USEREALTABLEFORREP"))) {
+  	SPRINTF1 (buff_3, "create table %s (\n", gen_rep_tab_name (b,1));
+  } else {
+  	SPRINTF1 (buff_3, "create temp table %s (\n", gen_rep_tab_name (b,1));
+  }
 
   for (a = 0; a < n; a++)
     {
@@ -1429,9 +1432,10 @@ A4GL_unload_report_table (struct BINDING *b)
 {
   char buff[1024];
   struct BINDING *ibind = 0;
-  return;
-  SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b,0));
-  A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind,0);
+  if (A4GL_isyes(acl_getenv("UNLOADREPDBG"))) {
+  	SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b,0));
+  	A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind,0);
+  }
 }
 
 /**
