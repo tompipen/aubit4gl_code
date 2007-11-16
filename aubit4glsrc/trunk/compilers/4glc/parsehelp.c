@@ -105,6 +105,42 @@ iscontinuecmd (char *s)
 }
 
 
+int strsplit(char *orig,char *srch, ...) {
+char **p;
+char *buff;
+int a;
+static va_list args;
+char *ptr;
+
+
+buff=strdup(orig);
+p=malloc(strlen(srch)+1);
+p[0]=buff;
+for (a=0;a<strlen(srch);a++) {
+	p[a+1]=strchr(p[a],srch[a]);
+	if (p[a+1]) {
+		*p[a+1]=0;
+		p[a+1]++;
+	} else {
+		free(p);
+		free(buff);
+		return 0;
+	}
+}
+va_start (args, srch);
+
+
+
+ptr=va_arg(args, char*);
+a=0;
+while (ptr && a<=strlen(srch)) {
+	strcpy(ptr, p[a]);
+	a++;
+	ptr=va_arg(args, char*);
+}
+va_end(args);
+return strlen(srch)+1;
+}
 
 
 
@@ -169,10 +205,41 @@ pushLikeTableColumn (char *tableName, char *columnName)
   int isize;
   char csize[20];
   char cdtype[20];
+			int a;
   char buff[300];
   char *cname;
+  char s_tab[200];
+  char s_db[200];
+  char s_instance[200];
 
   A4GL_debug ("pushLikeTableColumn()");
+
+  if (strchr(tableName,'@')) {
+	if (strchr(tableName,':')) {
+			a=strsplit(tableName, "@:",s_db,s_instance,s_tab);
+			if (a==3) {
+				strcpy(s_tab, A4GLSQLCV_db_tablename(s_db, s_instance, s_tab ));
+				tableName=s_tab;
+			}
+  	}  else {
+			a=strsplit(tableName, "@",s_instance,s_tab);
+			if (a==2) {
+				strcpy(s_tab, A4GLSQLCV_db_tablename(NULL,s_instance, s_tab ));
+				tableName=s_tab;
+			}
+	}
+  } else {
+	if ( strchr(tableName,':')) {
+			a=strsplit(tableName, ":",s_db,s_tab);
+			if (a==2) {
+				strcpy(s_tab,A4GLSQLCV_db_tablename( s_db,NULL, s_tab));
+				tableName=s_tab;
+			}
+  	}  else {
+		strcpy(s_tab,A4GLSQLCV_db_tablename( NULL,NULL, tableName));
+		tableName=s_tab;
+	}
+  }
 
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
   cname = A4GL_confirm_colname (tableName, columnName);
@@ -1450,3 +1517,6 @@ int clr_ignore_indicators() {
         }
 	return ignore_indicators;
 }
+
+
+
