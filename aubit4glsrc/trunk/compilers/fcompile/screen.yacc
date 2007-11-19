@@ -1712,6 +1712,7 @@ any_kword :
      | TITLE 
      | FORMONLY 
      | COMMENT 
+	|INSTRUCTIONS
      | DYNAMIC 
      | WITHOUT 
      | INPUT 
