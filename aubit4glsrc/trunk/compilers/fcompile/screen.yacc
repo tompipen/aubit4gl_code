@@ -1190,7 +1190,7 @@ comp_item : table_name DOT column_name {
 table_name : named_or_kw_any
 ;
 
-column_name : named_or_kw_any
+column_name : named_or_kw_st
 ;
 
 control_block :
@@ -1569,11 +1569,11 @@ evalue_list : evalue {
 st_kword : 
       KW_COMPOSITES 
 
-     | INSTRUCTIONS 
      | ATTRIBUTES 
      | DATABASE 
      | BY 
      | KW_SIZE 
+	|INSTRUCTIONS
 
      | KW_END 
      | TITLE 
@@ -1712,7 +1712,6 @@ any_kword :
      | TITLE 
      | FORMONLY 
      | COMMENT 
-	|INSTRUCTIONS
      | DYNAMIC 
      | WITHOUT 
      | INPUT 
