@@ -481,10 +481,12 @@ UILIB_A4GL_menu_loop_v2 (void *menu, void *evt)
       uilib_get_context (2);
       uilib_menu_loop (1);
       a = A4GL_pop_int ();
-      if (a == -1)
-	continue;
-      if (a == 0)
-	continue;
+
+      if (a == -1) continue;
+
+      if (a == -2) continue;
+
+      if (a == 0) continue;
       return a - 1;
       break;
     }
