@@ -413,6 +413,7 @@ enum: ENUM NAMED {
 /*	fprintf(cfi,"char *name=\"%s\";\n",$<str>2); */
 
 	fprintf(cfi,"char *name;\n");
+	fprintf(cfi,"A4GL_debug(\"input_%s\");\n",$<str>2);
 	fprintf(cfi,"name=\"%s\";\n",$<str>2);
 
 	fprintf(hsf,"enum %s {",$<str>2);
@@ -488,10 +489,10 @@ struct: STRUCT NAMED {
 
 	fprintf(hf,"int input_%s(char *rn,%s *r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfi,"int input_%s(char *rn,%s *r,int isptr,int arr) {\n",$<str>2,$<str>2);
-/*	fprintf(cfi,"char *name=\"%s\";\n",$<str>2); */
 	fprintf(cfi,"char *name;\n");
 	fprintf(cfi,"name=\"%s\";\n",$<str>2);
-
+	fprintf(cfi,"A4GL_debug(\"input_%s\");\n",$<str>2);
+	
 
 	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
 
@@ -611,6 +612,7 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 /*	fprintf(cfi,"char *name=\"%s\";\n",$<str>2); */
 	fprintf(cfi,"char *name;\n");
 	fprintf(cfi,"name=\"%s\";\n",$<str>2);
+	fprintf(cfi,"A4GL_debug(\"input_%s\");\n",$<str>2);
 
 	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
 	fprintf(cfi,"if (!input_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);

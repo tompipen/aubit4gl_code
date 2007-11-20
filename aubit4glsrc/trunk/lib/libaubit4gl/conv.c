@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.154 2007-11-14 16:28:08 mikeaubury Exp $
+# $Id: conv.c,v 1.155 2007-11-20 14:09:30 mikeaubury Exp $
 #
 */
 
@@ -1234,14 +1234,29 @@ A4GL_stodec (void *a, void *z, int size)
   (void)A4GL_init_dec (z, h, t);
 
   A4GL_debug ("After init\n");
-  //A4GL_dump (z);
   eptr = A4GL_str_to_dec (a, z);
-  //A4GL_dump (z);
+  A4GL_debug("z111");
+  
 
-  if (eptr)
-    {
-      return 1;
-    }
+  if (A4GL_isno(acl_getenv("TRYDECSTRINGTWICE"))) {
+  	if (eptr) { A4GL_debug("eptr..."); return 1; }
+  } else {
+
+	if (!A4GL_conversion_ok(-1)) {
+		eptr=0;
+	} else {
+  		if (eptr) { A4GL_debug("eptr..."); return 1; }
+	}
+
+	A4GL_debug("Didn't work... %c %c\n", a4gl_convfmts.printf_decfmt.decsep,a4gl_convfmts.posix_decfmt.decsep);
+  	if (a4gl_convfmts.printf_decfmt.decsep!=a4gl_convfmts.posix_decfmt.decsep ){
+		char buff[300];
+		strcpy(buff,a);
+ 		A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, 32);
+  		eptr = A4GL_str_to_dec (buff, z);
+  		if (eptr) { return 1; }
+  	}
+  }
   return 0;
 }
 

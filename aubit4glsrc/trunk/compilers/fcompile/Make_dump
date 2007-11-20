@@ -1,0 +1,4 @@
+CFLAGS=-g
+fdecompile_4gl : dump_4gl.c decompile.o 
+	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
+

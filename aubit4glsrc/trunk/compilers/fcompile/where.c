@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.16 2007-11-20 08:09:47 mikeaubury Exp $
+# $Id: where.c,v 1.17 2007-11-20 14:08:42 mikeaubury Exp $
 #
 */
 
@@ -168,8 +168,8 @@ create_list_expr (void)
   t_expression *ptr;
   ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_LIST;
-  ptr->u_expression_u.list.list_len = 0;
-  ptr->u_expression_u.list.list_val = 0;
+  ptr->u_expression_u.listy.listy_len=0;
+  ptr->u_expression_u.listy.listy_val=0;
   return ptr;
 }
 
@@ -186,14 +186,12 @@ add_list_expr (t_expression * ptr, t_expression * expr)
       printf ("Internal error - adding a listitem to a non-list\n");
       exit (2);
     }
-  ptr->u_expression_u.list.list_len++;
-  a = ptr->u_expression_u.list.list_len;
+  ptr->u_expression_u.listy.listy_len++;
+  a = ptr->u_expression_u.listy.listy_len;
 
-  ptr->u_expression_u.list.list_val =
-    realloc (ptr->u_expression_u.list.list_val,
-	     sizeof (struct u_expression *) * a);
+  ptr->u_expression_u.listy.listy_val = realloc (ptr->u_expression_u.listy.listy_val, sizeof (struct listitemlist) * a);
 
-  ptr->u_expression_u.list.list_val[a - 1] = expr;
+  ptr->u_expression_u.listy.listy_val[a - 1].listx = expr;
   return ptr;
 }
 
@@ -259,9 +257,9 @@ dump_expr (t_expression * expr, int lvl)
     {
       print_lvl (lvl);
       printf ("[");
-      for (a = 0; a < expr->u_expression_u.list.list_len; a++)
+      for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
-	  dump_expr (expr->u_expression_u.list.list_val[a], lvl + 1);
+	  dump_expr (expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
       printf ("]");
     }

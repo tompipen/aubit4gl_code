@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.24 2007-10-24 17:55:18 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.25 2007-11-20 14:09:32 mikeaubury Exp $
 #*/
 
 /**
@@ -626,7 +626,7 @@ A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
-A4GL_debug("input_int : ptr=%d\n",ptr);
+A4GL_debug("input_int : ptr=%d ibuff=%s\n",ptr, ibuff);
   a = atoi (A4GL_find_contents (ibuff));
   *val = a;
 

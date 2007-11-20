@@ -1,3 +1,4 @@
+
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -24,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.20 2007-11-20 14:08:40 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.1 2007-11-20 14:08:41 mikeaubury Exp $
 #*/
 
 /**
@@ -76,6 +77,10 @@ char *desc_bool[] = {
   "UPSHIFT",
   "DOWNSHIFT",
   "REQUIRED",
+  "NOUPDATE",
+  "QUERYCLEAR",
+  "ZEROFILL",
+  "RIGHT",
   0
 };
 
@@ -85,6 +90,9 @@ char *desc_bool[] = {
 =====================================================================
 */
 
+#define MAXSCREENS 20
+char mscreen[MAXSCREENS][100][100];
+int max_y[MAXSCREENS];
 
 static void dump_attributes (struct_form * f);
 static void dump_metrics (struct_form * f);
@@ -97,12 +105,108 @@ void print_lvl (int lvl);
 
 
 
+char *find_tag_for(struct_form * f, int n) ;
+static void dump_attribute(struct_scr_field *a,char *tag) ;
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
 
+
+
+void
+make_screen (struct_form * f)
+{
+  int x, y;
+  int spc;
+  int screens;
+  int a;
+  int fno;
+  int b;
+  int fields[1000];
+  int nfields;
+
+for (a=0;a<1000;a++) fields[a]=-1;
+for (a=0;a<MAXSCREENS;a++) max_y[a]=0;
+
+  if (f->maxcol > 100 || f->maxline > 100)
+    {
+      printf ("Too wide or too long\n");
+      exit (1);
+    }
+  for (screens=0;screens<MAXSCREENS;screens++) {
+  for (y = 0; y < f->maxline; y++)
+    {
+      memset (mscreen[screens][y], ' ', f->maxcol);
+      mscreen[screens][y][f->maxcol + 1] = 0;
+    }
+  }
+
+  for (a = 0; a < f->metrics.metrics_len; a++)
+    {
+      int w;
+	int screen;
+      x = f->metrics.metrics_val[a].x;
+      y = f->metrics.metrics_val[a].y;
+      w = f->metrics.metrics_val[a].w;
+      screen = f->metrics.metrics_val[a].scr-1;
+
+
+      if (f->metrics.metrics_val[a].label[0] == '\n')
+	continue;		// Ignore graphics characters-  line drawing
+
+
+      if (strlen (f->metrics.metrics_val[a].label))
+	{
+	  strncpy (&mscreen[screen][y][x], f->metrics.metrics_val[a].label,
+		   strlen (f->metrics.metrics_val[a].label));
+
+		if (y>max_y[screen]) max_y[screen]=y;
+
+	}
+      else
+	{
+	char buff[2000];
+	char *p;
+	memset(buff,' ',2000);
+	p=find_tag_for(f,a);
+	buff[0]='[';
+	memcpy(&buff[1],p,strlen(p));
+		buff[w+1]=']';
+		buff[w+2]=0;
+	  memcpy(&mscreen[screen][y][x-1], buff,strlen(buff));
+
+		if (y>max_y[screen]) max_y[screen]=y;
+	}
+    }
+}
+
+char *find_tag_for(struct_form * f, int n) {
+  int a, b;
+  for (a = 0; a < f->fields.fields_len; a++)
+    {
+      //printf (" %d Tag '%s'\n", a, f->fields.fields_val[a].tag);
+      for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
+        {
+		if (f->fields.fields_val[a].metric.metric_val[b]==n) return f->fields.fields_val[a].tag;
+        }
+    }
+return "<unknown>";
+}
+
+char *screen_has_attribute(struct_form * f, int scr, int attr_no) {
+int fno;
+int b;
+int metric_no;
+	fno=f->attributes.attributes_val[attr_no].field_no;
+      for (b = 0; b < f->fields.fields_val[fno].metric.metric_len; b++)
+        {
+		metric_no=f->fields.fields_val[fno].metric.metric_val[b];
+		if (f->metrics.metrics_val[metric_no].scr==scr+1) return f->fields.fields_val[fno].tag;
+        }
+	return 0;
+}
 
 /**
  * Dumps a complete form description
@@ -115,24 +219,48 @@ void
 dump_form_desc (struct_form * f,char *fname)
 {
   int a;
-  printf ("DB         : '%s'\n", f->dbname);
-  printf ("Delimiters : '%s'\n", f->delim);
-  printf ("maxcol     : %d\n", f->maxcol);
-  printf ("maxline    : %d\n", f->maxline);
-  printf ("XDR Version: %ld\n", f->fcompile_version);
-  printf ("Compiled   : %s\n", ctime (&f->compiled_time));
-
-  printf ("Screens :%d\n", f->snames.snames_len);
+ int y;
+  make_screen(f);
   for (a = 0; a < f->snames.snames_len; a++)
     {
-      printf ("%s\n", f->snames.snames_val[a].name);
+  	printf ("DATABASE %s\n", f->dbname);
+	printf ("SCREEN\n");
+	printf ("{\n");
+	for (y=0;y<max_y[a];y++) {
+		A4GL_trim(mscreen[a][y]);
+      		printf ("%s\n", mscreen[a][y]);
+	}
+	printf ("}\nend\n");
+  	dump_tables (f);
+	printf("ATTRIBUTES\n");
+	for (y=0;y<f->attributes.attributes_len;y++) {
+		char *ptr;
+		ptr=screen_has_attribute(f,a, y);
+		if (ptr) {
+			printf("  %s=",ptr);
+			dump_attribute(&f->attributes.attributes_val[y], ptr);
+			printf(";\n");
+		}
+	}
+
+  	printf ("INSTRUCTIONS\n");
+  	printf ("DELIMITERS '%s'\n", f->delim);
+
     }
 
-  dump_attributes (f);
-  dump_metrics (f);
-  dump_fields_desc (f);
-  dump_records (f);
-  dump_tables (f);
+  //dump_attributes (f);
+  //dump_metrics (f);
+  //dump_fields_desc (f);
+  //dump_records (f);
+}
+
+char *decode_dtype_formonly(int type, int n) {
+static char buff[2000];
+if ((type & DTYPE_MASK)==DTYPE_CHAR) return "";
+if ((type & DTYPE_MASK)==DTYPE_SMINT) return " TYPE SMALLINT";
+if ((type & DTYPE_MASK)==DTYPE_INT) return " TYPE INTEGER";
+sprintf(buff,"TYPE(%d,%d)",type,n);
+return buff;
 }
 
 /**
@@ -148,36 +276,120 @@ int b;
 	printf ("\nAttributes %d\n", f->attributes.attributes_len);
 	for (a = 0; a < f->attributes.attributes_len; a++) {
 		printf ("Attribute %d\n", a);
-		printf ("   field_no : %d\n", f->attributes.attributes_val[a].field_no);
-		printf ("   colname : '%s'\n", f->attributes.attributes_val[a].colname);
-		printf ("   tabname : '%s'\n", f->attributes.attributes_val[a].tabname);
-		printf ("   subscript[0] : %d\n",f->attributes.attributes_val[a].subscripts[0]);
-		printf ("   subscript[1] : %d\n",f->attributes.attributes_val[a].subscripts[1]);
-		printf ("   subscript[2] : %d\n", f->attributes.attributes_val[a].subscripts[2]);
-		printf ("   datatype : %d (%d)\n", f->attributes.attributes_val[a].datatype,
-	      	f->attributes.attributes_val[a].dtype_size);
-		printf ("   dynamic  : %d\n", f->attributes.attributes_val[a].dynamic);
-		for (b = 0; b < f->attributes.attributes_val[a].str_attribs.str_attribs_len; b++) {
-			printf ("          STRING (%d) %s='%s'\n",
-				f->attributes.attributes_val[a].str_attribs.str_attribs_val[b].type,
-				desc_str[f->attributes.attributes_val[a].str_attribs.str_attribs_val[b].type],
-				f->attributes.attributes_val[a].str_attribs.str_attribs_val[b].value);
+		dump_attribute(&f->attributes.attributes_val[a],"");
+	}
+}
+
+int need_quote(int dtype) {
+if ((dtype&DTYPE_MASK)==DTYPE_CHAR) return 1;
+return 0;
+}
+
+char *decode_include(char *s,int dtype) {
+static char buff[200000];
+char smbuff[200];
+char sm[2];
+int a;
+sm[0]=0;
+sm[1]=0;
+sprintf(buff,"INCLUDE=(");
+
+if (need_quote(dtype)) {
+	strcat(buff,"\"");
+}
+
+for (a=0;a<strlen(s);a++)  {
+	if (s[a]=='\n') {
+		if (need_quote(dtype)) {
+			strcat(buff,"\"");
 		}
-		for (b = 0; b < f->attributes.attributes_val[a].bool_attribs.bool_attribs_len; b++){
-			printf ("          BOOLEAN %d %s\n",
-				f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b],
-				desc_bool[f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]]);
-		}
-		if (f->attributes.attributes_val[a].colours.colours_len) {
-			int b;
-			printf ("   Specified colours (%d)\n", f->attributes.attributes_val[a].colours.colours_len);
-			for (b = 0; b < f->attributes.attributes_val[a].colours.colours_len;b++){
-				printf ("        colour=%d WHERE ",
-					(int)f->attributes.attributes_val[a].colours.colours_val[b].colour);
-				dump_expr (f->attributes.attributes_val[a].colours.colours_val[b].whereexpr, 0);
+		if (strlen(buff)>5) {
+			int l;
+			l=strlen(buff)-6;
+			if (strcmp(&buff[l],"\"NULL\"")==0) {
+				buff[l]=0;
+				strcat(buff,"\"\"");
 			}
 		}
-    }
+		strcat(buff,",");
+		if (need_quote(dtype)) {
+			strcat(buff,"\"");
+		}
+	} else {
+		if (s[a]=='\t') {
+			strcat(buff," TO ");
+		} else {
+			sm[0]=s[a];
+			strcat(buff,sm);
+		}
+	}
+}
+
+		if (need_quote(dtype)) {
+			int l;
+			l=strlen(buff)-5;
+			if (strcmp(&buff[l],"\"NULL")==0) {
+				buff[l]=0;
+				strcat(buff,"\"\")");
+			} else {
+				strcat(buff,"\")");
+			}
+		}
+return buff;
+}
+
+static void dump_attribute(struct_scr_field *a,char *tag) {
+int b;
+/*
+		if (strcmp(a->tabname,"displayonly")==0) {
+				char buff[300];
+				a->tabname="formonly";
+				sprintf(buff,"fld_%s",tag);
+				a->colname=buff;
+		}
+*/
+
+		printf ("%s.%s", a->tabname, a->colname);
+		if (a->subscripts[0]>0) {
+			printf ("[%d",a->subscripts[0]);
+			if (a->subscripts[1]) {
+				printf (",%d",a->subscripts[1]);
+				if (a->subscripts[2]) {
+					printf (",%d", a->subscripts[2]);
+				}
+			}
+			printf("]");
+		}
+
+		if (strcmp(a->tabname,"formonly")==0 ) {
+			printf ("%s", decode_dtype_formonly(a->datatype, a->dtype_size));
+		}
+
+		for (b = 0; b < a->str_attribs.str_attribs_len; b++) {
+			if (a->str_attribs.str_attribs_val[b].type==FA_S_INCLUDE) {
+				printf(",%s", decode_include(a->str_attribs.str_attribs_val[b].value, a->datatype));
+			} else {
+			printf (",%s=\"%s\"",
+				desc_str[a->str_attribs.str_attribs_val[b].type], a->str_attribs.str_attribs_val[b].value);
+			}
+		}
+		for (b = 0; b < a->bool_attribs.bool_attribs_len; b++){
+			/* Skip any isql form attributes */
+			if (a->bool_attribs.bool_attribs_val[b]==FA_B_NOUPDATE) continue;
+			if (a->bool_attribs.bool_attribs_val[b]==FA_B_QUERYCLEAR) continue;
+			if (a->bool_attribs.bool_attribs_val[b]==FA_B_ZEROFILL) continue;
+			if (a->bool_attribs.bool_attribs_val[b]==FA_B_RIGHT) continue;
+			printf (", %s",desc_bool[a->bool_attribs.bool_attribs_val[b]]);
+		}
+		if (a->colours.colours_len) {
+			int b;
+			printf ("   Specified colours (%d)\n", a->colours.colours_len);
+			for (b = 0; b < a->colours.colours_len;b++){
+				printf ("        colour=%d WHERE ",
+					(int)a->colours.colours_val[b].colour);
+				dump_expr (a->colours.colours_val[b].whereexpr, 0);
+			}
+		}
 }
 
 /**
@@ -254,11 +466,14 @@ static void
 dump_tables (struct_form * f)
 {
   int a;
-  printf ("\nTables %d\n", f->tables.tables_len);
+  printf ("tables\n");
   for (a = 0; a < f->tables.tables_len; a++)
     {
-      printf ("%d '%s' '%s'\n", a, f->tables.tables_val[a].tabname,
-	      f->tables.tables_val[a].alias);
+	if (strcmp(f->tables.tables_val[a].tabname, f->tables.tables_val[a].alias)==0) {
+      		printf ("   %s\n", f->tables.tables_val[a].tabname);
+	} else {
+      		printf ("   %s %s\n", f->tables.tables_val[a].tabname, f->tables.tables_val[a].alias);
+	}
     }
 }
 

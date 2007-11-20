@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.16 2007-10-24 17:55:16 mikeaubury Exp $
+# $Id: form_x.x,v 1.17 2007-11-20 14:09:29 mikeaubury Exp $
 #*/
 
 /**
@@ -322,6 +322,9 @@ struct s_complex_expr {
 	struct u_expression *item2;
 };
 
+struct listitemlist  {
+	struct u_expression *listx;
+};
 
 
 union u_expression switch (int itemtype) {
@@ -330,7 +333,7 @@ union u_expression switch (int itemtype) {
 	case ITEMTYPE_FIELD   : string field<>;
 	case ITEMTYPE_COMPLEX : struct s_complex_expr *complex_expr;
 	case ITEMTYPE_SPECIAL : string special<>;
-	case ITEMTYPE_LIST    : listitem list<>;
+	case ITEMTYPE_LIST    : struct listitemlist listy<>;
 	case ITEMTYPE_NOT     : struct u_expression *notexpr;
 };
 
