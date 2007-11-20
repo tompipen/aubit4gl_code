@@ -1540,6 +1540,7 @@ single_expression:
 	| expression KWNOTNULLCHK { void *p; p=create_char_expr("ISNOTNULL"); $<expr>$=create_expr_comp_expr($<expr>1,p,"ISNOTNULL"); }
 	| expression KWBETWEEN expression KWAND expression { $<expr>$=create_list_expr(); add_list_expr($<expr>$,$<expr>3); add_list_expr($<expr>$,$<expr>5); $<expr>$=create_expr_comp_expr($<expr>1,$<expr>$,"BETWEEN"); }
 	| expression KWIN OPEN_BRACKET evalue_list CLOSE_BRACKET { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"IN"); }
+	| expression KWNOT KWIN OPEN_BRACKET evalue_list CLOSE_BRACKET { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>5,"NOTIN"); }
 ;
 
 fcall_name: named_or_kw_any

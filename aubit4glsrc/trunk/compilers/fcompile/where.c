@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.15 2005-07-14 11:32:49 mikeaubury Exp $
+# $Id: where.c,v 1.16 2007-11-20 08:09:47 mikeaubury Exp $
 #
 */
 
@@ -187,7 +187,7 @@ add_list_expr (t_expression * ptr, t_expression * expr)
       exit (2);
     }
   ptr->u_expression_u.list.list_len++;
-  a = ptr->u_expression_u.list.list_len++;
+  a = ptr->u_expression_u.list.list_len;
 
   ptr->u_expression_u.list.list_val =
     realloc (ptr->u_expression_u.list.list_val,
