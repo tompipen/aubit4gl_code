@@ -21,7 +21,7 @@ attributes_def	: ATTRIBUTES OPEN_BRACKET {
 				last_style=0; last_text=0;
 				} 
 		attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>4); }
-		| VARIABLE_ATTRIBUTES OPEN_BRACKET  {
+		| VARIABLE OPEN_BRACKET  {
 				if (last_text) { free(last_text); }
 				if (last_style) { free(last_style); }
 				last_style=0; last_text=0;
