@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.67 2007-07-17 07:06:46 mikeaubury Exp $
+# $Id: prompt.c,v 1.68 2007-11-22 13:52:21 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.67 2007-07-17 07:06:46 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.68 2007-11-22 13:52:21 mikeaubury Exp $";
 #endif
 
 /**
@@ -275,7 +275,6 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 
     case 127:
     case 8:
-    case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
       A4GL_debug ("Req del prev");
@@ -286,6 +285,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 	}
       return 0;
 
+    case A4GLKEY_DC:
     case 24:
       A4GL_int_form_driver (mform, REQ_DEL_CHAR);
       return 0;

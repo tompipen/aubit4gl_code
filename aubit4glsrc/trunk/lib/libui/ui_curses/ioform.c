@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.185 2007-11-05 20:39:16 mikeaubury Exp $
+# $Id: ioform.c,v 1.186 2007-11-22 13:52:21 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.185 2007-11-05 20:39:16 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.186 2007-11-22 13:52:21 mikeaubury Exp $";
 #endif
 
 /**
@@ -4499,6 +4499,9 @@ static int get_inc_quotes(int a) {
 }
 
 void UILIB_A4GL_direct_to_ui(char *t, char *s) {
+if (strcmp(t,"FLUSHINP")==0) {
+	flushinp();
+}
 // Does nothing - require by the API...
 }
 

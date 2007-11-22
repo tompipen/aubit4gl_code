@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.130 2007-11-08 11:04:36 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.131 2007-11-22 13:52:20 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.130 2007-11-08 11:04:36 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.131 2007-11-22 13:52:20 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1885,7 +1885,6 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
     case 127:
     case 8:
-    case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
       if (!isBlob)
@@ -1903,6 +1902,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	}
       break;
 
+    case A4GLKEY_DC:
     case 24:
       if (!isBlob)
 	{
@@ -2305,13 +2305,12 @@ strcpy(newfieldval,"");
                                 A4GL_int_form_driver (f, REQ_PREV_CHAR);
                                 break;
 
-
                         case 127:
                         case 8:
-                        case A4GLKEY_DC:
                         case A4GLKEY_DL:
                         case A4GLKEY_BACKSPACE: A4GL_int_form_driver (f, REQ_DEL_PREV); break;
 
+                        case A4GLKEY_DC:
                         case 24:                A4GL_int_form_driver (f, REQ_DEL_CHAR);break;
                         case A4GLKEY_RIGHT:     A4GL_int_form_driver (f, REQ_NEXT_CHAR);break;
                         default :               A4GL_int_form_driver (f, a);break;

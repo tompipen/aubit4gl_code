@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.137 2007-10-29 15:08:49 mikeaubury Exp $
+# $Id: iarray.c,v 1.138 2007-11-22 13:52:21 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.137 2007-10-29 15:08:49 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.138 2007-11-22 13:52:21 mikeaubury Exp $";
 #endif
 
 /**
@@ -865,14 +865,14 @@ process_key_press (struct s_inp_arr *arr, int a)
   switch (act_as)
     {
 
+
     case 127:
     case 8:
-    case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
-			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
-      A4GL_int_form_driver (mform, REQ_DEL_PREV);
+		  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
+      			A4GL_int_form_driver (mform, REQ_DEL_PREV);
 			A4GL_fprop_flag_set(arr->currentfield, FLAG_FIELD_TOUCHED);  // Set the field status flag
       break;
 
@@ -881,6 +881,7 @@ process_key_press (struct s_inp_arr *arr, int a)
       A4GL_mja_refresh ();
       break;
 
+    case A4GLKEY_DC:
     case 24:
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
