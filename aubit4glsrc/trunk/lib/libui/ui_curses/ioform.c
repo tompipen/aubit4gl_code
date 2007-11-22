@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.186 2007-11-22 13:52:21 mikeaubury Exp $
+# $Id: ioform.c,v 1.187 2007-11-22 14:23:33 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.186 2007-11-22 13:52:21 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.187 2007-11-22 14:23:33 mikeaubury Exp $";
 #endif
 
 /**
@@ -4092,7 +4092,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			}
 
 			// are we returning to a previous field ? 
-			if ( sio->processed_onkey!=A4GLKEY_ACCEPT   && sio->processed_onkey!=A4GLKEY_UP && sio->processed_onkey!=A4GLKEY_LEFT) {
+			if ( sio->processed_onkey!=A4GLKEY_ACCEPT   && sio->processed_onkey!=A4GLKEY_UP && sio->processed_onkey!=A4GLKEY_LEFT && sio->processed_onkey!=A4GLKEY_SHTAB) {
 				A4GL_debug("last key was not up or left");
 				chged++;
 			}

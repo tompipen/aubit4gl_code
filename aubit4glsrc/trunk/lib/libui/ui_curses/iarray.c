@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.138 2007-11-22 13:52:21 mikeaubury Exp $
+# $Id: iarray.c,v 1.139 2007-11-22 14:23:31 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.138 2007-11-22 13:52:21 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.139 2007-11-22 14:23:31 mikeaubury Exp $";
 #endif
 
 /**
@@ -1076,11 +1076,12 @@ process_key_press (struct s_inp_arr *arr, int a)
     case 13:
     case '\t':
 	A4GL_debug("Calling newmovement");
-      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
-			arr->curr_attrib + 1, 'R');
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib + 1, 'R');
 
       break;
 
+    case A4GLKEY_SHTAB:
+      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib - 1, 'L');
 
     case A4GLKEY_UP:
 	A4GL_debug("Calling newmovement");
@@ -3468,7 +3469,7 @@ if (ln<0) return 1;
 	    }
 
 	  // are we returning to a previous field ? 
-	  if (s->processed_onkey != A4GLKEY_UP && s->processed_onkey != A4GLKEY_LEFT)
+	  if (s->processed_onkey != A4GLKEY_UP && s->processed_onkey != A4GLKEY_LEFT && s->processed_onkey != A4GLKEY_SHTAB)
 	    {
 	      A4GL_debug ("last key was not up or left");
 	      chged++;

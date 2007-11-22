@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.131 2007-11-22 13:52:20 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.132 2007-11-22 14:23:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.131 2007-11-22 13:52:20 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.132 2007-11-22 14:23:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1919,6 +1919,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	}
       break;
 
+	case A4GLKEY_SHTAB:
     case A4GLKEY_UP:
       if (isWordWrap)
 	{
@@ -1946,6 +1947,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       A4GL_debug ("FIELD OPTS : ");
       A4GL_debug_print_field_opts (s->currentfield);
       break;
+
 
 
 

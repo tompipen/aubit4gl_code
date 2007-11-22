@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.68 2007-11-22 13:52:21 mikeaubury Exp $
+# $Id: prompt.c,v 1.69 2007-11-22 14:23:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.68 2007-11-22 13:52:21 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.69 2007-11-22 14:23:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -608,6 +608,7 @@ A4GL_debug("curses -> aubit a=%d %x\n",a,a);
   }
 
   if (a == KEY_DC) return A4GLKEY_DC;
+  if (a == KEY_BTAB) return A4GLKEY_SHTAB;
   if (a == KEY_DL) return A4GLKEY_DL;
   if (a == KEY_BACKSPACE) return A4GLKEY_BACKSPACE;
 
