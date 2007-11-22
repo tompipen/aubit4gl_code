@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.62 2007-11-06 19:26:50 mikeaubury Exp $
+# $Id: helper.c,v 1.63 2007-11-22 15:06:43 mikeaubury Exp $
 #
 */
 
@@ -1151,6 +1151,12 @@ int aclfgl_aclfgl_getclientfile(int n) {
 	char *s;
 	A4GL_direct_to_ui("GETFILE","");
 	return 1;
+}
+
+int aclfgl_aclfgl_flushinp(int n) {
+	char *s;
+	A4GL_direct_to_ui("FLUSHINP","");
+	return 0;
 }
 
 int aclfgl_aclfgl_embed_barcode (int _nargs){

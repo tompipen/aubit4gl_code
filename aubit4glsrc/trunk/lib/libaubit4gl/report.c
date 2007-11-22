@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.145 2007-11-16 10:57:39 mikeaubury Exp $
+# $Id: report.c,v 1.146 2007-11-22 15:06:44 mikeaubury Exp $
 #
 */
 
@@ -416,6 +416,16 @@ last_rb=rep->curr_rb;
 	int rb;
 		A4GL_pop_report_section (rep, rep->curr_rb);
 		rb=last_rb;
+
+		A4GL_debug("rep=%p", rep);	
+		A4GL_debug("rep->modName=%s", rep->modName);
+		A4GL_debug("rep->repName=%s", rep->repName);
+		A4GL_debug("rb=%d",rb);
+		A4GL_debug("lineno=%d",rep->blocks[rb].lineno);
+		A4GL_debug("where=%c",rep->blocks[rb].where);
+		A4GL_debug("why=%s",rep->blocks[rb].why);
+		A4GL_assertion(rb > rep->nblocks,"Corrupt block (rb > rep->nblocks)");
+
 		A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno,rep->blocks[rb].where,rep->blocks[rb].why, rb);
 
   }
