@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.173 2007-09-28 07:56:06 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.174 2007-11-22 13:31:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.173 2007-09-28 07:56:06 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.174 2007-11-22 13:31:29 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -597,6 +597,19 @@ LEXLIB_print_prepare (char *xstmt, char *sqlvar)
 void
 LEXLIB_print_execute_g (char *stmt, int using, t_binding_comp_list* using_bind, t_binding_comp_list* into_bind)
 {
+int started_with_aclfgli=0;
+  if (A4GL_strstartswith (stmt, "aclfgli_str_to_id"))
+    {
+	static char buff[200];
+	started_with_aclfgli=1;
+      printc ("{");
+	printc("EXEC SQL BEGIN DECLARE SECTION;");
+	printc("char *_sid;\n");
+	printc("EXEC SQL END DECLARE SECTION;");
+      printc ("_sid=%s;\n", stmt);
+	sprintf(buff,"$_sid");
+		stmt=buff;
+    }
 
   if (using == 0)
     {
@@ -766,6 +779,9 @@ LEXLIB_print_execute_g (char *stmt, int using, t_binding_comp_list* using_bind, 
     }
 
 
+  if (started_with_aclfgli) {
+		printc("}");
+  }
 
 
 
