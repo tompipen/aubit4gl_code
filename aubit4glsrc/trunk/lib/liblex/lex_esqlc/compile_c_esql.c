@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.174 2007-11-22 13:31:29 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.175 2007-11-22 19:12:08 briantan Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.174 2007-11-22 13:31:29 mikeaubury Exp $";
+  "$Id: compile_c_esql.c,v 1.175 2007-11-22 19:12:08 briantan Exp $";
 #endif
 extern int yylineno;
 
@@ -607,7 +607,7 @@ int started_with_aclfgli=0;
 	printc("char *_sid;\n");
 	printc("EXEC SQL END DECLARE SECTION;");
       printc ("_sid=%s;\n", stmt);
-	sprintf(buff,"$_sid");
+	sprintf(buff,":_sid");
 		stmt=buff;
     }
 
