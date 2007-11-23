@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.146 2007-11-22 15:06:44 mikeaubury Exp $
+# $Id: report.c,v 1.147 2007-11-23 09:50:53 mikeaubury Exp $
 #
 */
 
@@ -1692,11 +1692,14 @@ A4GL_free_duplicate_binding (struct BINDING *b, int n)
  * @todo Describe function
  */
 void
-A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi)
+A4GL_rep_file_print (struct rep_structure *rep, char *fname_x, int opt_semi)
 {
   FILE *f;
   char buff[10000];
+  char fname[1000];
   int has_cr;
+	strcpy(fname, fname_x);
+	A4GL_trim(fname);
   f = fopen (fname, "r");
   if (f == 0)
     {
