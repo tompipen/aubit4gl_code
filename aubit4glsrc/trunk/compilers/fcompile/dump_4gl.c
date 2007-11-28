@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.5 2007-11-28 04:17:21 briantan Exp $
+# $Id: dump_4gl.c,v 1.6 2007-11-28 04:39:21 briantan Exp $
 #*/
 
 /**
@@ -331,6 +331,7 @@ for (a=0;a<strlen(s);a++)  {
 
 		if (need_quote(dtype)) {
 			int l;
+			to_used = 0;
 			l=strlen(buff)-5;
 			if (strcmp(&buff[l],"\"NULL")==0) {
 				buff[l]=0;
@@ -374,7 +375,7 @@ int b;
 
 		for (b = 0; b < a->str_attribs.str_attribs_len; b++) {
 			if (a->str_attribs.str_attribs_val[b].type==FA_S_INCLUDE) {
-				printf(",%s", decode_include(a->str_attribs.str_attribs_val[b].value, a->datatype));
+				printf(", %s", decode_include(a->str_attribs.str_attribs_val[b].value, a->datatype));
 			} else {
 			printf (", %s=\"%s\"",
 				desc_str[a->str_attribs.str_attribs_val[b].type], a->str_attribs.str_attribs_val[b].value);
