@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.1 2007-11-20 14:08:41 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.2 2007-11-28 02:50:44 briantan Exp $
 #*/
 
 /**
@@ -226,7 +226,7 @@ dump_form_desc (struct_form * f,char *fname)
   	printf ("DATABASE %s\n", f->dbname);
 	printf ("SCREEN\n");
 	printf ("{\n");
-	for (y=0;y<max_y[a];y++) {
+	for (y=0;y<=max_y[a];y++) {
 		A4GL_trim(mscreen[a][y]);
       		printf ("%s\n", mscreen[a][y]);
 	}
