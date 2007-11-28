@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.2 2007-11-28 02:50:44 briantan Exp $
+# $Id: dump_4gl.c,v 1.3 2007-11-28 03:14:36 briantan Exp $
 #*/
 
 /**
@@ -223,6 +223,8 @@ dump_form_desc (struct_form * f,char *fname)
   make_screen(f);
   for (a = 0; a < f->snames.snames_len; a++)
     {
+  	printf ("{-------------------- Screen %d / %d --------------------}\n",
+		(a+1), f->snames.snames_len);
   	printf ("DATABASE %s\n", f->dbname);
 	printf ("SCREEN\n");
 	printf ("{\n");
@@ -244,7 +246,7 @@ dump_form_desc (struct_form * f,char *fname)
 	}
 
   	printf ("INSTRUCTIONS\n");
-  	printf ("DELIMITERS '%s'\n", f->delim);
+  	printf ("DELIMITERS '%s'\n\n", f->delim);
 
     }
 
