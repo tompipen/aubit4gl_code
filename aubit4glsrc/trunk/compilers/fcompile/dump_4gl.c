@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.4 2007-11-28 04:12:49 briantan Exp $
+# $Id: dump_4gl.c,v 1.5 2007-11-28 04:17:21 briantan Exp $
 #*/
 
 /**
@@ -376,13 +376,14 @@ int b;
 			if (a->str_attribs.str_attribs_val[b].type==FA_S_INCLUDE) {
 				printf(",%s", decode_include(a->str_attribs.str_attribs_val[b].value, a->datatype));
 			} else {
-			printf (",%s=\"%s\"",
+			printf (", %s=\"%s\"",
 				desc_str[a->str_attribs.str_attribs_val[b].type], a->str_attribs.str_attribs_val[b].value);
 			}
 		}
 		for (b = 0; b < a->bool_attribs.bool_attribs_len; b++){
 			/* Skip any isql form attributes */
-			if (a->bool_attribs.bool_attribs_val[b]==FA_B_NOUPDATE) continue;
+// need to know if field not to be updated 
+//			if (a->bool_attribs.bool_attribs_val[b]==FA_B_NOUPDATE) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_QUERYCLEAR) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_ZEROFILL) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_RIGHT) continue;
