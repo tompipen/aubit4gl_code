@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.6 2007-11-28 04:39:21 briantan Exp $
+# $Id: dump_4gl.c,v 1.7 2007-11-28 08:10:30 mikeaubury Exp $
 #*/
 
 /**
@@ -320,7 +320,13 @@ for (a=0;a<strlen(s);a++)  {
 		}
 	} else {
 		if (s[a]=='\t') {
+			if (need_quote(dtype)) {
+				strcat(buff,"\"");
+			}
 			strcat(buff," TO ");
+			if (need_quote(dtype)) {
+				strcat(buff,"\"");
+			}
 			to_used = 1;
 		} else {
 			sm[0]=s[a];
