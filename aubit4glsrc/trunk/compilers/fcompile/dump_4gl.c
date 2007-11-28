@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.3 2007-11-28 03:14:36 briantan Exp $
+# $Id: dump_4gl.c,v 1.4 2007-11-28 04:12:49 briantan Exp $
 #*/
 
 /**
@@ -239,14 +239,14 @@ dump_form_desc (struct_form * f,char *fname)
 		char *ptr;
 		ptr=screen_has_attribute(f,a, y);
 		if (ptr) {
-			printf("  %s=",ptr);
+			printf("%s\t= ",ptr);
 			dump_attribute(&f->attributes.attributes_val[y], ptr);
 			printf(";\n");
 		}
 	}
 
   	printf ("INSTRUCTIONS\n");
-  	printf ("DELIMITERS '%s'\n\n", f->delim);
+  	printf ("  DELIMITERS '%s'\n\n", f->delim);
 
     }
 
@@ -292,10 +292,11 @@ static char buff[200000];
 char smbuff[200];
 char sm[2];
 int a;
+bool to_used;
 sm[0]=0;
 sm[1]=0;
 sprintf(buff,"INCLUDE=(");
-
+to_used = 0;
 if (need_quote(dtype)) {
 	strcat(buff,"\"");
 }
@@ -320,6 +321,7 @@ for (a=0;a<strlen(s);a++)  {
 	} else {
 		if (s[a]=='\t') {
 			strcat(buff," TO ");
+			to_used = 1;
 		} else {
 			sm[0]=s[a];
 			strcat(buff,sm);
@@ -337,6 +339,9 @@ for (a=0;a<strlen(s);a++)  {
 				strcat(buff,"\")");
 			}
 		}
+if (to_used) {
+  strcat(buff,")");
+}
 return buff;
 }
 
