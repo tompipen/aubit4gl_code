@@ -28160,7 +28160,7 @@ if test "${with_mysql+set}" = set; then
 			withval="`$CYGPATH -m $withval`"
 		fi
 
-		MYSQL_LFLAGS="-L$withval/lib -L$withval/mysql -L/usr/lib/mysql"
+		MYSQL_LFLAGS="-L$withval/lib -L$withval/mysql -L/usr/lib/mysql -L/usr/lib"
 		MYSQL_IFLAGS="-I$withval/include -I/usr/include/mysql"
 
 		CFLAGS="$MYSQL_IFLAGS $CFLAGS"
@@ -61511,7 +61511,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.388 2007-10-12 21:19:55 mikeaubury Exp $
+| $Id: configure,v 1.389 2007-11-29 19:13:20 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

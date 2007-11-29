@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.362 2007-10-12 21:20:01 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.363 2007-11-29 19:13:19 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.362 2007-10-12 21:20:01 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.363 2007-11-29 19:13:19 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -3979,7 +3979,7 @@ AC_ARG_WITH(mysql,
 			withval="`$CYGPATH -m $withval`"
 		fi
 		
-		MYSQL_LFLAGS="-L$withval/lib -L$withval/mysql -L/usr/lib/mysql"
+		MYSQL_LFLAGS="-L$withval/lib -L$withval/mysql -L/usr/lib/mysql -L/usr/lib"
 		MYSQL_IFLAGS="-I$withval/include -I/usr/include/mysql"
 
 		CFLAGS="$MYSQL_IFLAGS $CFLAGS"
@@ -11058,7 +11058,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.362 2007-10-12 21:20:01 mikeaubury Exp $
+| $Id: configure.in,v 1.363 2007-11-29 19:13:19 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
