@@ -581,6 +581,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->colname=acl_strdup($<str>1);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
+	fld->tabname=A4GL_get_found_in_tab();
         fld->dtype_size=A4GL_get_dtype_size();
 }
 
@@ -595,6 +596,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->colname=acl_strdup($<str>2);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
+	fld->tabname=A4GL_get_found_in_tab();
         fld->dtype_size=A4GL_get_dtype_size();
 }
 ;

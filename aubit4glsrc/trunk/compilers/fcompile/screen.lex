@@ -323,7 +323,7 @@ on[	 ]beginning 	{if (ignorekw||doing_4gl()) REJECT;strcpy(yylval.str,yytext); r
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
 	A4GL_debug("NAMED : %s\n",yytext);
-	if (yydebug) printf("NAMED: %s\n",yytext);
+	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
  	return(NAMED);
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
@@ -354,7 +354,7 @@ if (ignorekw!=1) REJECT;
 strcpy(yylval.str, yytext);
  A4GL_debug("NAMED : %s\n",yytext); 
 	A4GL_debug("NAMED : %s\n",yytext);
-	if (yydebug) printf("NAMED: %s\n",yytext);
+	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
 return(NAMED);}
 
 .	{

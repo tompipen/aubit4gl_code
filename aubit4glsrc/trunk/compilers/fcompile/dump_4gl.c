@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.7 2007-11-28 08:10:30 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.8 2007-11-29 14:33:29 mikeaubury Exp $
 #*/
 
 /**
@@ -94,19 +94,19 @@ char *desc_bool[] = {
 char mscreen[MAXSCREENS][100][100];
 int max_y[MAXSCREENS];
 
-static void dump_attributes (struct_form * f);
+static void dump_attributes (FILE *fout, struct_form * f);
 static void dump_metrics (struct_form * f);
 static void dump_fields_desc (struct_form * f);
 static void dump_records (struct_form * f);
-static void dump_tables (struct_form * f);
+static void dump_tables (FILE *fout,struct_form * f);
 //andrej void dump_form_desc (struct_form * f);
-void dump_expr (t_expression * expr, int lvl);
+void dump_expr (FILE *fout, t_expression * expr, int lvl);
 void print_lvl (int lvl);
 
 
 
 char *find_tag_for(struct_form * f, int n) ;
-static void dump_attribute(struct_scr_field *a,char *tag) ;
+static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) ;
 /*
 =====================================================================
                     Functions definitions
@@ -220,33 +220,40 @@ dump_form_desc (struct_form * f,char *fname)
 {
   int a;
  int y;
+  FILE *fout;
+char fname_split[300];
   make_screen(f);
+
   for (a = 0; a < f->snames.snames_len; a++)
     {
-  	printf ("{-------------------- Screen %d / %d --------------------}\n",
-		(a+1), f->snames.snames_len);
-  	printf ("DATABASE %s\n", f->dbname);
-	printf ("SCREEN\n");
-	printf ("{\n");
+	sprintf(fname_split,"Split_%s_%d.per",fname,a);
+	fout=fopen(fname_split,"w");
+	if (!fout) {
+		printf("Unable to open output file\n");
+	}
+  	fprintf (fout, "{-------------------- Screen %d / %d --------------------}\n", (a+1), f->snames.snames_len);
+  	fprintf (fout,"DATABASE %s\n", f->dbname);
+	fprintf (fout,"SCREEN\n");
+	fprintf (fout,"{\n");
 	for (y=0;y<=max_y[a];y++) {
 		A4GL_trim(mscreen[a][y]);
-      		printf ("%s\n", mscreen[a][y]);
+      		fprintf (fout,"%s\n", mscreen[a][y]);
 	}
-	printf ("}\nend\n");
-  	dump_tables (f);
-	printf("ATTRIBUTES\n");
+	fprintf (fout,"}\nend\n");
+  	dump_tables (fout,f);
+	fprintf(fout,"ATTRIBUTES\n");
 	for (y=0;y<f->attributes.attributes_len;y++) {
 		char *ptr;
 		ptr=screen_has_attribute(f,a, y);
 		if (ptr) {
-			printf("%s\t= ",ptr);
-			dump_attribute(&f->attributes.attributes_val[y], ptr);
-			printf(";\n");
+			fprintf(fout,"%s\t= ",ptr);
+			dump_attribute(fout, &f->attributes.attributes_val[y], ptr);
+			fprintf(fout,";\n");
 		}
 	}
 
-  	printf ("INSTRUCTIONS\n");
-  	printf ("  DELIMITERS '%s'\n\n", f->delim);
+  	fprintf (fout,"INSTRUCTIONS\n");
+  	fprintf (fout,"  DELIMITERS '%s'\n\n", f->delim);
 
     }
 
@@ -271,14 +278,14 @@ return buff;
  * @param f A pointer to a form description record
  */
 static void
-dump_attributes (struct_form * f)
+dump_attributes (FILE *fout, struct_form * f)
 {
 int a;
 int b;
 	printf ("\nAttributes %d\n", f->attributes.attributes_len);
 	for (a = 0; a < f->attributes.attributes_len; a++) {
 		printf ("Attribute %d\n", a);
-		dump_attribute(&f->attributes.attributes_val[a],"");
+		dump_attribute(fout, &f->attributes.attributes_val[a],"");
 	}
 }
 
@@ -352,7 +359,7 @@ if (to_used) {
 return buff;
 }
 
-static void dump_attribute(struct_scr_field *a,char *tag) {
+static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) {
 int b;
 /*
 		if (strcmp(a->tabname,"displayonly")==0) {
@@ -363,27 +370,27 @@ int b;
 		}
 */
 
-		printf ("%s.%s", a->tabname, a->colname);
+		fprintf (fout,"%s.%s", a->tabname, a->colname);
 		if (a->subscripts[0]>0) {
-			printf ("[%d",a->subscripts[0]);
+			fprintf (fout,"[%d",a->subscripts[0]);
 			if (a->subscripts[1]) {
-				printf (",%d",a->subscripts[1]);
+				fprintf (fout, ",%d",a->subscripts[1]);
 				if (a->subscripts[2]) {
-					printf (",%d", a->subscripts[2]);
+					fprintf (fout,",%d", a->subscripts[2]);
 				}
 			}
-			printf("]");
+			fprintf(fout,"]");
 		}
 
 		if (strcmp(a->tabname,"formonly")==0 ) {
-			printf ("%s", decode_dtype_formonly(a->datatype, a->dtype_size));
+			fprintf (fout,"%s", decode_dtype_formonly(a->datatype, a->dtype_size));
 		}
 
 		for (b = 0; b < a->str_attribs.str_attribs_len; b++) {
 			if (a->str_attribs.str_attribs_val[b].type==FA_S_INCLUDE) {
-				printf(", %s", decode_include(a->str_attribs.str_attribs_val[b].value, a->datatype));
+				fprintf(fout,", %s", decode_include(a->str_attribs.str_attribs_val[b].value, a->datatype));
 			} else {
-			printf (", %s=\"%s\"",
+			fprintf (fout,", %s=\"%s\"",
 				desc_str[a->str_attribs.str_attribs_val[b].type], a->str_attribs.str_attribs_val[b].value);
 			}
 		}
@@ -394,15 +401,14 @@ int b;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_QUERYCLEAR) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_ZEROFILL) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_RIGHT) continue;
-			printf (", %s",desc_bool[a->bool_attribs.bool_attribs_val[b]]);
+			fprintf (fout,", %s",desc_bool[a->bool_attribs.bool_attribs_val[b]]);
 		}
 		if (a->colours.colours_len) {
 			int b;
-			printf ("   Specified colours (%d)\n", a->colours.colours_len);
 			for (b = 0; b < a->colours.colours_len;b++){
-				printf ("        colour=%d WHERE ",
+				fprintf (fout,"        colour=%d WHERE ",
 					(int)a->colours.colours_val[b].colour);
-				dump_expr (a->colours.colours_val[b].whereexpr, 0);
+				dump_expr (fout,a->colours.colours_val[b].whereexpr, 0);
 			}
 		}
 }
@@ -478,16 +484,16 @@ dump_records (struct_form * f)
  * @param f A pointer to a form description record
  */
 static void
-dump_tables (struct_form * f)
+dump_tables (FILE *fout,struct_form * f)
 {
   int a;
-  printf ("tables\n");
+  fprintf (fout,"tables\n");
   for (a = 0; a < f->tables.tables_len; a++)
     {
 	if (strcmp(f->tables.tables_val[a].tabname, f->tables.tables_val[a].alias)==0) {
-      		printf ("   %s\n", f->tables.tables_val[a].tabname);
+      		fprintf (fout,"   %s\n", f->tables.tables_val[a].tabname);
 	} else {
-      		printf ("   %s %s\n", f->tables.tables_val[a].tabname, f->tables.tables_val[a].alias);
+      		fprintf (fout,"   %s %s\n", f->tables.tables_val[a].tabname, f->tables.tables_val[a].alias);
 	}
     }
 }
@@ -500,7 +506,7 @@ dump_tables (struct_form * f)
  * @param
  */
 void
-dump_expr (t_expression * expr, int lvl)
+dump_expr (FILE *fout, t_expression * expr, int lvl)
 {
   t_complex_expr *ptr2;
   int a;
@@ -508,62 +514,55 @@ dump_expr (t_expression * expr, int lvl)
 
   if (expr->itemtype == ITEMTYPE_INT)
     {
-      print_lvl (lvl);
-      printf ("%%%d", expr->u_expression_u.intval);
+      fprintf (fout, "%%%d", expr->u_expression_u.intval);
     }
 
   if (expr->itemtype == ITEMTYPE_SPECIAL)
     {
-      print_lvl (lvl);
-      printf ("*%s", expr->u_expression_u.special);
+      fprintf (fout, "*%s", expr->u_expression_u.special);
     }
 
   if (expr->itemtype == ITEMTYPE_LIST)
     {
-      print_lvl (lvl);
-      printf ("[");
+      fprintf (fout, "[");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
-	  dump_expr (expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
+	  dump_expr (fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
-      printf ("]");
+      fprintf (fout, "]");
     }
 
   if (expr->itemtype == ITEMTYPE_FIELD)
     {
-      print_lvl (lvl);
-      printf ("$%s", expr->u_expression_u.field);
+      fprintf (fout,"$%s", expr->u_expression_u.field);
     }
 
   if (expr->itemtype == ITEMTYPE_CHAR)
     {
-      print_lvl (lvl);
-      printf ("'%s'", expr->u_expression_u.charval);
+      fprintf (fout,"'%s'", expr->u_expression_u.charval);
     }
 
   if (expr->itemtype == ITEMTYPE_NOT)
     {
-      printf ("!(");
-      dump_expr (expr->u_expression_u.notexpr, lvl + 1);
-      printf (")");
+      fprintf (fout,"!(");
+      dump_expr (fout, expr->u_expression_u.notexpr, lvl + 1);
+      fprintf (fout,")");
 
     }
 
   if (expr->itemtype == ITEMTYPE_COMPLEX)
     {
-      print_lvl (lvl);
-      printf ("(");
+      fprintf (fout,"(");
       ptr2 = expr->u_expression_u.complex_expr;
-      dump_expr (ptr2->item1, lvl + 1);
-      print_lvl (lvl);
-      printf (" %s ", ptr2->comparitor);
-      dump_expr (ptr2->item2, lvl + 1);
-      printf (")");
+      dump_expr (fout,ptr2->item1, lvl + 1);
+      fprintf (fout," %s ", ptr2->comparitor);
+      dump_expr (fout,ptr2->item2, lvl + 1);
+      fprintf (fout,")");
 
     }
 
   if (lvl == 0)
-    printf ("\n");
+    fprintf (fout, "\n");
 
 }
 
