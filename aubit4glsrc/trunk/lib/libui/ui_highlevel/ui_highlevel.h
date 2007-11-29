@@ -24,4 +24,3 @@ void A4GL_set_bkg(void *win, int attr) ;
 int A4GL_decode_aubit_attr (int a, char s) ;
 
 ACL_Menu_Opts *A4GL_LL_show_menu_large(ACL_Menu *menu, int key);
-

@@ -2,7 +2,14 @@
 #include <stdio.h>
 
 void A4GL_assertion_failed(char *s)  {
+static int asserting=0;
       fflush (stdout);
+	/* Make sure we're only called once 
+		if this assert is causing a later assert - we
+		need to ignore any later ones...
+	*/
+	if (asserting) return;
+	asserting++;
       A4GL_set_errm (s);
       A4GL_debug ("%s", A4GL_null_as_null(s));
 
@@ -16,7 +23,7 @@ void A4GL_assertion_failed(char *s)  {
 		*ptr=0;
       		A4GL_chk_err (0, "Unknown");
 	}
-
+	A4GL_gotolinemode();
       A4GL_set_lasterrorstr(s);
       A4GL_exitwith ("Assertion failed");
       FPRINTF (stderr, "Assertion failed: %s\n", A4GL_null_as_null(s));

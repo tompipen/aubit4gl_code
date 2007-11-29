@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.57 2007-10-30 07:48:20 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.58 2007-11-29 13:48:05 mikeaubury Exp $
 #
 */
 
@@ -1940,8 +1940,19 @@ make_select_stmt (char *c_upd_or_del, struct s_select *select)
     }
   A4GL_debug ("\n");
 
+  strcpy(buff,"");
+  if (select->sf) {
+  	if (select->sf->insert_into) {
+  		if (!A4GLSQLCV_check_runtime_requirement("INSERT_INTO_AS_SELECT_INTO")) {
+			sprintf(buff,"INSERT INTO %s SELECT ", select->sf->insert_into);
+		}
+	}
+  }
 
-  strcpy (buff, "SELECT ");
+
+  if (strlen(buff)==0) {
+  	strcpy (buff, "SELECT ");
+  }
   A4GL_debug ("buff=%s", buff);
 
 
@@ -1992,6 +2003,12 @@ make_select_stmt (char *c_upd_or_del, struct s_select *select)
 
   if (select->sf)
     {
+	if (select->sf->insert_into) {
+	   if (A4GLSQLCV_check_runtime_requirement("INSERT_INTO_AS_SELECT_INTO")) {
+		sprintf (into_temp, "INTO %s ", select->sf->insert_into);
+		strcat (buff, into_temp);
+	   }
+	}
       if (select->sf->into_temp)
 	{
 	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH"))
@@ -2129,10 +2146,9 @@ make_select_stmt (char *c_upd_or_del, struct s_select *select)
 	  if (select->sf->order_by)
 	    {
 	      strcat (into_temp, " ORDER BY ");
-	      strcat (into_temp,
-		      get_select_list_item_list_ob (select,
-						    select->sf->order_by));
+	      strcat (into_temp, get_select_list_item_list_ob (select, select->sf->order_by));
 	    }
+
 	  strcat (buff, into_temp);
 	}
 

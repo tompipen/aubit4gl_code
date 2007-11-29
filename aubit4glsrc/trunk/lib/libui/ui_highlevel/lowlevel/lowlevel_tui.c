@@ -47,7 +47,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.109 2007-06-13 16:06:51 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.110 2007-11-29 13:48:07 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -90,7 +90,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.109 2007-06-13 16:06:51 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.110 2007-11-29 13:48:07 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1445,7 +1445,7 @@ A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext,
     {
       A4GL_debug ("Autoskip");
       A4GL_debug ("ZZZZ - SET OPTS");
-      A4GL_form_field_opts_on (field, O_AUTOSKIP);
+      /* A4GL_form_field_opts_on (field, O_AUTOSKIP); */
     }
 
   if (invis)
@@ -1623,6 +1623,7 @@ A4GL_LL_set_field_opts (void *field, int oopt)
   A4GL_debug ("SET FIELD OPTS : %x ", oopt);
   a=A4GL_form_set_field_opts (field, oopt);
   A4GL_debug_print_field_opts (field);
+
   if (A4GL_form_field_opts(field)!=oopt) {
 	  a=A4GL_form_field_opts(field);
 	  A4GL_debug("Couldn't set field opts a=%d",a);

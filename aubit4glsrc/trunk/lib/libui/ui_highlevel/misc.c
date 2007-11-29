@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.61 2007-10-15 17:11:32 mikeaubury Exp $";
+  "$Id: misc.c,v 1.62 2007-11-29 13:48:06 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -616,12 +616,11 @@ UILIB_A4GL_push_constr (void *vs)
 
 	  //A4GL_debug ("Calling constr with : '%s' '%s'", s->constr[a].tabname, s->constr[a].colname);
 
-	  ptr =
-	    (char *) A4GL_construct (s->constr[a].tabname,
-				     s->constr[a].colname,
-				     A4GL_LL_field_buffer (f, 0),
-				     A4GL_UI_int_get_inc_quotes (fprop->
-								 datatype), fprop->datatype, fprop->dtype_size);
+	if (s->constr[a].value) {
+	  ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, s->constr[a].value, A4GL_UI_int_get_inc_quotes (fprop-> datatype), fprop->datatype, fprop->dtype_size);
+	} else {
+	  ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, A4GL_LL_field_buffer (f, 0), A4GL_UI_int_get_inc_quotes (fprop-> datatype), fprop->datatype, fprop->dtype_size);
+	}
 
 
         if (ptr==0) { // some error in the field...
@@ -787,6 +786,7 @@ int changed=0;
       // this may need explanding if the column contains a '*'
       for (a = 0; a < nv; a++)
 	{
+		sio->constr[a].value=0;
 	  if (strcmp (sio->constr[a].colname, "*") == 0)
 	    {			// It'll need expanding...
 	      need_fix = 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.305 2007-11-08 20:44:34 mikeaubury Exp $
+# $Id: mod.c,v 1.306 2007-11-29 13:47:57 mikeaubury Exp $
 #
 */
 
@@ -4874,10 +4874,10 @@ A4GL_add_feature (char *feature)
 
 
 char *
-A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s)
+A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s,int is_select_into)
 {
   char buff[40000];
-  if (A4GLSQLCV_check_requirement ("FULL_INSERT"))
+  if (A4GLSQLCV_check_requirement ("FULL_INSERT") && !is_select_into)
     {
       char *p;
       if (strstr (s, " VALUES "))
@@ -4891,7 +4891,6 @@ A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s)
 	    }
 	}
     }
-
 
   return s;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.130 2007-11-16 14:08:41 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.131 2007-11-29 13:48:04 mikeaubury Exp $
 #
 */
 
@@ -127,6 +127,7 @@ static char *cvsql_names[] = {
   "CVSQL_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_TEMP_AS_TEMPORARY",
   "CVSQL_TEMP_AS_GLOBAL_TEMPORARY",
+  "CVSQL_INSERT_INTO_AS_SELECT_INTO",
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_INSERT",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
@@ -248,6 +249,7 @@ enum cvsql_type
   CVSQL_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_TEMP_AS_TEMPORARY,
   CVSQL_TEMP_AS_GLOBAL_TEMPORARY,
+  CVSQL_INSERT_INTO_AS_SELECT_INTO,
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_INSERT,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
@@ -1698,6 +1700,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_TEMP_AS_TEMPORARY;
   if (match_strncasecmp (p, "TEMP_AS_GLOBAL_TEMPORARY", len) == 0)
     return CVSQL_TEMP_AS_GLOBAL_TEMPORARY;
+  if (match_strncasecmp (p, "INSERT_INTO_AS_SELECT_INTO", len) == 0)
+    return CVSQL_INSERT_INTO_AS_SELECT_INTO;
   if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0)
     return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL;
   if (match_strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_INSERT", len) == 0)

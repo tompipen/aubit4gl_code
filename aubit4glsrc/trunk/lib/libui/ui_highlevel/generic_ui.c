@@ -5,10 +5,11 @@
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
 #include "input_array.h"
+#include "formcntrl.h"
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.125 2007-10-04 19:24:50 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.126 2007-11-29 13:48:05 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2976,6 +2977,13 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	{
 	  if (fprop->colname != 0)
 	    {
+                char *fbuf;
+                fbuf=A4GL_LL_field_buffer(f,0);
+
+                if (sio->constr[a].value) {
+                        fbuf=sio->constr[a].value;
+                }
+
 	      A4GL_debug ("Calling constr with : '%s' '%s'",
 			  sio->constr[a].tabname, sio->constr[a].colname);
 
@@ -2983,13 +2991,16 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	      ptr =
 		(char *) A4GL_construct (sio->constr[a].tabname,
 					 sio->constr[a].colname,
-					 A4GL_LL_field_buffer (f, 0),
+					 fbuf,
 					 A4GL_UI_int_get_inc_quotes (fprop->
 								     datatype), fprop->datatype, fprop->dtype_size);
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0)
 		{
 		  A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
+		  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+                  A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);
+
 		  return 0;
 		}
 	    }
@@ -4092,6 +4103,7 @@ A4GL_ll_set_field_opts (void *f, int l)
       // we should be using A4GL_ll_set_field_opts everywhere else so we'll hit this code...
 
     }
+A4GL_debug_print_field_opts(f);
 }
 
 

@@ -66,6 +66,7 @@ select_statement21_ss_converted:
 		s1->next=$<s_select>8;
 		sf=acl_malloc2(sizeof(struct s_select_finish));
 		sf->into_temp=0;
+		sf->insert_into=0;
 		sf->nolog=0;
 		sf->order_by=$<s_select_list_item_list>9;
 		s1->sf=sf;
@@ -98,6 +99,7 @@ sel_finish_sf: {
 		$<s_select_finish>$=acl_malloc2(sizeof(struct s_select_finish));
 		$<s_select_finish>$->order_by=$<s_select_list_item_list>1;
 		$<s_select_finish>$->into_temp=0;
+		$<s_select_finish>$->insert_into=0;
 		$<s_select_finish>$->nolog=0;
 	}
 	| order_by_clause_slil INTO_TEMP tmp_tabname op_no_log_i { 
@@ -105,6 +107,7 @@ sel_finish_sf: {
 		add_feature("SELECT_INTO_TEMP_ORDER_BY");
 		$<s_select_finish>$->order_by=$<s_select_list_item_list>1;
 		$<s_select_finish>$->into_temp=$<str>3;
+		$<s_select_finish>$->insert_into=0;
 		$<s_select_finish>$->nolog=$<integer_val>4;
 
 	}
@@ -113,6 +116,7 @@ sel_finish_sf: {
 		add_feature("SELECT_INTO_TEMP");
 		$<s_select_finish>$->order_by=0;
 		$<s_select_finish>$->into_temp=$<str>2;
+		$<s_select_finish>$->insert_into=0;
 		$<s_select_finish>$->nolog=$<integer_val>3;
 } 
 ;

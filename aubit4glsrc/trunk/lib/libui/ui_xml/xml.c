@@ -334,7 +334,7 @@ UILIB_A4GL_current_window (char *win_name)
 int
 UILIB_aclfgl_fgl_drawbox (int n)
 {
-  int rval = 1;
+  int rval = 0;
   int x1, x2, x3, x4, x5;
   if (n == 4)
     {

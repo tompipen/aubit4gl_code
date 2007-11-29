@@ -5,6 +5,9 @@ libUI_XML.so: xml.c libuilib.a proxy
 proxy: proxy.o pipe.o debug.o
 	gcc -g -o proxy proxy.o pipe.o debug.o
 
+noproxy: noproxy.o pipe.o debug.o
+	gcc -g -o noproxy noproxy.o pipe.o debug.o
+
 libuilib.a: 
 	cd uilib && make -f Makefile.libaubit4gl libuilib.a
 

@@ -13,29 +13,50 @@ rollback_statement:
 insert_statement_ss:
 	INSERT_INTO { insql=1;start_bind('i',0);} 
 	table_name_not_for_column_prefix  { 
-			
 			strcpy(current_ins_table,A4GLSQLCV_check_tablename($<str>3));A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!");ADDMAP("InsertInto",current_ins_table);
 	}
-	op_insert_column_list 
-	ins_2_ss {
-		
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), kw_space,acl_strdup(current_ins_table),kw_space,acl_strdup($<sql_string>5),kw_space,$<sql_string>6,NULL);  
-
-		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
-			A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!"); 
+	op_insert_column_list  {
+			/* WARNING - THIS STRING MAY BE USED BY THE ins_2_ss RULE - BE CAREFUL ABOUT MOVING IT */
+			$<sql_string>$=$<sql_string>5;  
+			/* WARNING - THIS STRING MAY BE USED BY THE ins_2_ss RULE - BE CAREFUL ABOUT MOVING IT */
+	} ins_2_ss {
+		$<sql_string>$=$<sql_string>7;
+		A4GL_4glc_pop_all_gen(INSCOL,"!"); A4GL_4glc_pop_all_gen(INSVAL,"!"); 
 		add_feature("ANSI_INSERT");
 		map_delete_update("INSERT",current_ins_table,0);
 	}
 ;
 
 ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { 
+		char buff[1000];
+		sprintf(buff,"INSERT INTO %s%s VALUES(", current_ins_table, $<sql_string>0);
 		insql=0; 
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), acl_strdup(" ("),$<sql_string>4,kw_cb,NULL);
+		$<sql_string>$=make_sql_string_and_free(acl_strdup(buff), $<sql_string>4,kw_cb,NULL);
+		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$,0);
 	}
-	| query_specification_ss_converted {
-			$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");
+	| query_specification_select {
+				char *ptr;
+				char buff[2000];
+                		A4GL_set_sql_lineno(yylineno);
+				if ($<s_select>1->sf==0) {
+				        $<s_select>1->sf=acl_malloc2(sizeof(struct s_select_finish));
+					$<s_select>1->sf->order_by=0;
+					$<s_select>1->sf->into_temp=0;
+					$<s_select>1->sf->nolog=0;
+					$<s_select>1->sf->insert_into=0;
+				}
+ 				sprintf(buff,"%s%s", current_ins_table, $<sql_string>0);
+				$<s_select>1->sf->insert_into=acl_strdup(buff);
+        			ptr=make_select_stmt(current_ins_table, $<s_select>1);
+        			map_select_stmt("SELECT",$<s_select>1);
+        			A4GL_free_select_stmt($<s_select>1);
+				add_feature("INSERT_INTO_SELECT_FROM");
+				$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,ptr,1);
 	}
 ;
+
+
+
 
 op_insert_column_list: {
 
@@ -45,7 +66,6 @@ op_insert_column_list: {
 	| OPEN_BRACKET insert_column_list CLOSE_BRACKET {
 			
 			$<sql_string>$=make_sql_string_and_free(kw_ob, $<sql_string>2, kw_cb,NULL);
-			//sprintf($<str>$," (%s)",$<str>1,$<str>2,$<str>3);
 			 add_feature("INSERT_COLUMNLIST_EQ_VALUELIST");
 		}
 ;

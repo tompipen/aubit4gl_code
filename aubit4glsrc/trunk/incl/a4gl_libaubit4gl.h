@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.293 2007-11-09 16:14:16 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.294 2007-11-29 13:48:03 mikeaubury Exp $
 #
 */
 
@@ -2074,7 +2074,7 @@ int A4GL_push_binding (void *ptr, int num);
 int A4GL_stof (void *aa, void *zz, int sz_ignore);
 int A4GL_nullfunc (void);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
-char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s);
+char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s,  int is_select_into);
 void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
 char *A4GLSQLCV_check_sql(char *s ,int *converted) ;
 char *A4GLSQLCV_dtype_alias(char *s ) ;
@@ -3035,6 +3035,7 @@ struct s_select_list_item_list  {
 struct s_select_finish {
 		struct s_select_list_item_list *order_by;
 		char *into_temp;
+		char *insert_into;
 		int nolog;
 };
 

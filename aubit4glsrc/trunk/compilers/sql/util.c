@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.62 2007-10-03 20:23:52 mikeaubury Exp $
+# $Id: util.c,v 1.63 2007-11-29 13:48:01 mikeaubury Exp $
 #
 */
 
@@ -1241,10 +1241,10 @@ A4GLPARSE_SQLPARSE_initlib (void)
  * @todo Describe function
  */
 char *
-A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s)
+A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s, int is_select_into)
 {
   char buff[40000];
-  if (A4GLSQLCV_check_requirement ("FULL_INSERT"))
+  if (A4GLSQLCV_check_requirement ("FULL_INSERT") && !is_select_into)
     {
       char *p;
       if (strstr (s, " VALUES "))
@@ -1263,6 +1263,7 @@ A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s)
 	  return acl_strdup (buff);
 	}
     }
+
   return s;
 
 }
