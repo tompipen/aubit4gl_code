@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.17 2005-08-17 13:57:25 mikeaubury Exp $
+# $Id: read_dty.c,v 1.18 2007-11-29 14:35:27 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,7 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
-
+static char *last_tab;
 int A4GL_get_dtype_size(void) ;
 /*
 =====================================================================
@@ -125,11 +125,13 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 
   b = 0;
   last_size=0;
+  last_tab=0;
 
   if (strlen (tabname) != 0)
     {
       rval = A4GLSQL_read_columns (tabname, colname, &idtype, &isize);
       if (rval != 0) {
+  	last_tab=tabname;
 	last_size=isize;
 	return idtype;
 	}
@@ -147,8 +149,10 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
     {
       b = A4GLSQL_read_columns (tablist[a], colname, &idtype, &isize);
 	last_size=isize;
-      if (b != 0)
+      if (b != 0) {
+	last_tab=tablist[a];
 	return idtype;
+	}
     }
 
   return -1;
@@ -156,6 +160,10 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 
 int A4GL_get_dtype_size(void) {
 	return last_size;
+}
+
+char * A4GL_get_found_in_tab(void) {
+	return last_tab;
 }
 
 /* ========================= EOF ============================== */
