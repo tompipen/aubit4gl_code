@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.9 2007-11-30 12:00:10 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.10 2007-11-30 12:49:54 mikeaubury Exp $
 #*/
 
 /**
@@ -265,11 +265,22 @@ switch (act->type) {
 
 }
 
+
+char *get_field_name_var(struct_form *f, u_expression *field_tag_u) {
+static char buff[200];
+char *ptr;
+ptr=get_field_name(f,field_tag_u);
+if (strcmp(ptr,"TODAY")==0) return ptr;
+sprintf(buff,"gr_%s",ptr);
+return buff;
+}
+
 char *get_field_name(struct_form *f, u_expression *field_tag_u) {
 int a;
 int b;
 char *field_tag=0;
-char buff[200];
+static char buff[200];
+
 switch (field_tag_u->itemtype) {
 	case ITEMTYPE_FIELD: field_tag=field_tag_u->u_expression_u.field; break;
 	case ITEMTYPE_COMPLEX: 
@@ -282,6 +293,7 @@ switch (field_tag_u->itemtype) {
 		printf("Unhandled itemtype for get_field_name : %d\n", field_tag_u->itemtype);
 		exit(20);
 }
+
 
 for (a=0;a<f->fields.fields_len;a++) {
 	if (strcmp(field_tag, f->fields.fields_val[a].tag)==0) {
@@ -299,7 +311,13 @@ for (a=0;a<f->fields.fields_len;a++) {
 		}
 	}
 }
-return "Unknown";
+
+if (strcmp(field_tag,"today")==0) {
+	return "TODAY";
+}
+
+sprintf(buff,"Unknown('%s')",field_tag);
+return buff;
 }
 
 void dump_commands(struct_form *f, FILE *fout, int lvl, struct s_at_block *cmds) {
@@ -448,6 +466,13 @@ char fname_split[300];
 		printf("Unable to open output file\n");
 		exit(2);
    	}
+	fprintf(fout,"DATABASE %s\n",f->dbname);
+	fprintf(fout,"GLOBALS\n");
+  	for (a = 0; a < f->tables.tables_len; a++)
+    	{
+      		fprintf (fout,"   DEFINE gr_%-20s RECORD LIKE %20s.*\n", f->tables.tables_val[a].tabname, f->tables.tables_val[a].tabname);
+    	}
+	fprintf(fout,"END GLOBALS\n\n");
 
    	fprintf(fout,"FUNCTION form_validation(lv_when, lv_action, lv_tab, lv_col)\n");
    	fprintf(fout,"DEFINE lv_when, lv_action,lv_tab,lv_col CHAR(20)\n");
@@ -455,8 +480,33 @@ char fname_split[300];
 		fprintf(fout,"\n\n#%d\n",a);
 		dump_control_block(f, fout, &f->control_blocks.control_blocks_val[a]);
    	}
-   	fprintf(fout,"RETURN 1");
+   	fprintf(fout,"RETURN 1\n");
+   	fprintf(fout,"END FUNCTION\n\n");
+
+	fprintf(fout,"FUNCTION set_field(lv_field,lv_value)\n");
+	fprintf(fout,"DEFINE lv_field CHAR(20)\n");
+	fprintf(fout,"DEFINE lv_value CHAR(255)\n");
+
+	fprintf(fout,"CASE lv_field\n");
+
+	for (a=0;a<f->attributes.attributes_len;a++) {
+		fprintf(fout,"  WHEN \"%s.%s\"\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+		fprintf(fout,"     CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\",\"%s\")\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+		if (strcmp(f->attributes.attributes_val[a].tabname,"formonly")!=0) {
+			fprintf(fout,"     LET gr_%s.%s=lv_value\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+			fprintf(fout,"     DISPLAY BY NAME gr_%s.%s\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+		} else {
+			fprintf(fout,"     DISPLAY lv_value TO %s.%s\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+		}
+		fprintf(fout,"     CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\",\"%s\")\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+
+		
+	}
+
+	fprintf(fout,"END CASE\n");
+
    	fprintf(fout,"END FUNCTION");
+
 	fclose(fout);
     }
 
@@ -803,7 +853,8 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
 
   if (expr->itemtype == ITEMTYPE_FIELD)
     {
-      fprintf (fout,"gr_%s", get_field_name(f,expr));
+	
+      fprintf (fout,"%s", get_field_name_var(f,expr));
     }
 
   if (expr->itemtype == ITEMTYPE_CHAR)
