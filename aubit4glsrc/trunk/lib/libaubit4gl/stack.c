@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.196 2007-11-14 07:30:45 mikeaubury Exp $
+# $Id: stack.c,v 1.197 2007-11-30 22:33:26 mikeaubury Exp $
 #
 */
 
@@ -2864,7 +2864,23 @@ A4GL_isnull (int type, char *buff)
 		//if (ptr->isnull=='N') return 1;
 		//if (ptr->where=='M' && ptr->ptr==0) return 1;
 		//if (ptr->where=='M' && ptr->memsize<0) return 1;
-      		return ptr->isnull == 'N';
+		if (ptr->where=='M') {
+			int isnull;
+			if (ptr->isnull=='Y') { isnull=1; } else { isnull=0; }
+			return isnull;
+		}
+		if (ptr->where=='F') {
+			int isnull;
+
+			if (ptr->filename && A4GL_file_exists(ptr->filename)) { 
+				return 0;
+			}
+			if (ptr->isnull=='Y') { isnull=1; } else { isnull=0; }
+			return isnull;
+		}
+
+	
+
     
 
 	  case DTYPE_DTIME:
@@ -2989,6 +3005,11 @@ A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename)
       A4GL_trim (p->filename);
     }
   A4GL_debug ("7 Located at %c %s", p->where, p->filename);
+}
+
+int A4GL_islocated(struct fgl_int_loc *p) {
+if (p->where=='F' || p->where=='M') return 1;
+return 0;
 }
 
 

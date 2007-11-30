@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.198 2007-11-09 16:14:18 mikeaubury Exp $
+# $Id: esql.ec,v 1.199 2007-11-30 22:33:26 mikeaubury Exp $
 #
 */
 
@@ -191,7 +191,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.198 2007-11-09 16:14:18 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.199 2007-11-30 22:33:26 mikeaubury Exp $";
 #endif
 
 
@@ -1044,11 +1044,16 @@ void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat
 //
 short indicat=0;
 
-
         if (mode=='i') {
                 if (p_indicat) *p_indicat=0;
-                if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
-                if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl)) {rsetnull(CLOCATORTYPE,(void *)infx);return;}
+                if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl) && p_indicat) {
+			if (p_indicat) *p_indicat=-1; 
+                        infx->loc_indicator = -1;   /* a null blob */
+return;}
+                if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl)) {
+			rsetnull(CLOCATORTYPE,(void *)infx);
+                        infx->loc_indicator = -1;   /* a null blob */
+return;}
 
 		memset(infx,0,sizeof(*infx));
                 infx->loc_loctype = -1;
@@ -1063,10 +1068,10 @@ short indicat=0;
                 if (a4gl->where=='F') {
                         infx->loc_loctype = LOCFNAME;   /* blob is named file */
                         infx->loc_fname = a4gl->filename;  /* here is its name */
-                        infx->loc_oflags = LOC_WONLY;   /* contents are to be read by engine */
+                        infx->loc_oflags = LOC_RONLY;   /* contents are to be read by engine */
                         infx->loc_size = -1;            /* read to end of file */
                         infx->loc_indicator = 0;   	/* not a null blob */
-                        infx->loc_buffer = (char *) NULL;
+                        //infx->loc_buffer = (char *) NULL;
                 }
 		return;
         }
@@ -1083,7 +1088,7 @@ short indicat=0;
 
                 if (infx->loc_loctype==LOCMEMORY) {
                         a4gl->where = 'M';
-                        //a4gl->isnull = 'N';
+                        a4gl->isnull = 'N';
 			A4GL_free_associated_mem(a4gl);
                         a4gl->memsize=  infx->loc_bufsize ;
                         a4gl->ptr= A4GL_alloc_associated_mem(a4gl, infx->loc_bufsize);
@@ -1092,7 +1097,7 @@ short indicat=0;
 
                 if (a4gl->where=='F') {
                         a4gl->where = 'F';
-                        //a4gl->isnull = 'N';
+                        a4gl->isnull = 'N';
                         a4gl->memsize=0;
                         a4gl->ptr= 0;
                         strcpy(a4gl->filename, infx->loc_fname);
@@ -1774,6 +1779,7 @@ int dstype;
 					memcpy(x,byte_var.loc_buffer,byte_var.loc_bufsize);
 					x[byte_var.loc_bufsize]=0;
 					((fglbyte *)ei->raw_blobs[cnt].f)->ptr=x;
+					((fglbyte *) ei->raw_blobs[cnt].f)->isnull='N';
 				}
 			}
 		}
@@ -1800,6 +1806,7 @@ int dstype;
 					x=acl_malloc2(byte_var.loc_bufsize+1);
 					memcpy(x,byte_var.loc_buffer,byte_var.loc_bufsize);
 					x[byte_var.loc_bufsize]=0;
+					((fglbyte *) ei->raw_blobs[cnt].f)->isnull='N';
 					((fglbyte *)ei->raw_blobs[cnt].f)->ptr=x;
 				}
 			}
@@ -2172,7 +2179,7 @@ processPreStatementBinds (struct s_sid *sid)
       //
       for (a=0;a<sid->no;a++) {
 		if (sid->obind[a].dtype==DTYPE_BYTE|| sid->obind[a].dtype==DTYPE_TEXT) {
-			if (A4GL_isnull(sid->obind[a].dtype,sid->obind[a].ptr)) {
+			if (!A4GL_islocated(sid->obind[a].ptr)) {
 				// It wasn't initialize - or located..
 				A4GL_exitwith("Use of unlocated blob variable...");
 			} else { // It is located...

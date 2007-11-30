@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.67 2007-11-30 14:26:19 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.68 2007-11-30 22:33:26 mikeaubury Exp $
 #
 */
 
@@ -851,7 +851,7 @@ int isnull;
 
 	        if (infx->loc_loctype==LOCMEMORY) {
                         a4gl->where = 'M';
-                        a4gl->isnull = 'Y'; // Initialized - not null
+                        a4gl->isnull = 'N'; // Initialized - not null
                         a4gl->memsize=  infx->loc_bufsize ;
                         a4gl->ptr= infx->loc_buffer;
                 }
@@ -859,7 +859,7 @@ int isnull;
                 if (a4gl->where=='F') {
 			char *p;
                         a4gl->where = 'F';
-                        a4gl->isnull = 'Y'; // Initialized - not null
+                        a4gl->isnull = 'N'; // Initialized - not null
                         a4gl->memsize=0;
                         a4gl->ptr= 0;
 

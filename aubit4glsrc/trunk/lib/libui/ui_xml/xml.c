@@ -1606,7 +1606,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
 	}
   }
 
-	printf("RVAL=%d\n",rval);
+printf("RVAL=%d\n",rval);
   if (last_attr) {
   	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);
   	if (last_attr->arrcount) A4GL_set_arr_count(last_attr->arrcount);
@@ -1623,9 +1623,10 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
   }
 
   return rval;
-
-  return rval;
 }
+
+
+
 int
 UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
 {
