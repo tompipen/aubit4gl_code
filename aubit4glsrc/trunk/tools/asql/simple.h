@@ -28,6 +28,9 @@
 #define KW_EXPLAIN 283
 #define KW_CREATE_PROCEDURE 284
 #define KW_END_PROCEDURE 285
+#define KW_OUTPUT_TO_PIPE 286
+#define KW_OUTPUT_TO 287
+#define KW_WITHOUT_HEADINGS 288
 
 struct element {
 	int lineno;
@@ -35,6 +38,7 @@ struct element {
 	char *stmt;
 	char *delim;
 	char *fname;
+	int with_headings;
 };
 
 

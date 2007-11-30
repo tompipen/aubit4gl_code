@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.66 2007-11-09 16:14:18 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.67 2007-11-30 14:26:19 mikeaubury Exp $
 #
 */
 
@@ -857,11 +857,16 @@ int isnull;
                 }
 
                 if (a4gl->where=='F') {
+			char *p;
                         a4gl->where = 'F';
                         a4gl->isnull = 'Y'; // Initialized - not null
                         a4gl->memsize=0;
                         a4gl->ptr= 0;
-                        strcpy(a4gl->filename, infx->loc_fname);
+
+			// make sure we're not overwriting the same bit of memory...
+			p=strdup(infx->loc_fname);
+                        strcpy(a4gl->filename, p);
+			free(p);
 		}
               
 	}

@@ -31,8 +31,10 @@ code
 
 
 extern int numberOfColumns;
+int heading_flag=-1;
+char *heading_delim;
 
-
+int isdump(char s) ;
 int rewrite_query_input(int errline, int errcol, char*msg) ;
 int width;
 int display_mode;
@@ -73,6 +75,7 @@ struct element {
         char *stmt;
         char *delim;
         char *fname;
+	int with_headings;
 };
 
 char *get_qry_msg(int qry_type,int n);
@@ -80,6 +83,20 @@ char *get_qry_msg(int qry_type,int n);
 extern struct element *list;
 extern int list_cnt;
 
+
+void set_heading_flag(int n, char *delim) {
+        heading_flag=n;
+	heading_delim=delim;
+}
+
+int get_heading_flag(void) {
+        return heading_flag;
+}
+
+char *get_delim_flag(void) {
+	if (heading_delim==0) return " ";
+	return heading_delim;
+}
 void display_mode_unload(int a) {
 	if (a) 
 	display_mode=DISPLAY_UNLOAD;
@@ -276,10 +293,8 @@ define a integer
 define msg char(512)
 define qry_type integer
 define lv_cont integer
-define rpaginate integer
 define l_db char(80)
 define err_at_col integer
-define hasrows integer
 let all_queries_ok=1
 let msg=""
 options message line last
@@ -323,7 +338,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 		display_mode_unload(0);
 		if (list[a].type!='L'&&list[a].type!='l') {
 			qry_type=prepare_query_1(p,list[a].type, &err_at_col);
-			if (list[a].type=='C'||list[a].type=='c') qry_type=255;
+			if (isdump(list[a].type)) qry_type=255;
 		} else {
 			qry_type=256;
 		}
@@ -359,8 +374,35 @@ code
 		// Is it a select statement ?
 		// @todo - this needs refining as a select .. into temp would get caught..
 		if (list[a].type!='S'&&list[a].type!='s' && qry_type!=56) {
-			if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a],&err_at_col);
-			else {
+			if (isdump(list[a].type)) {
+					if (tolower(list[a].type)=='C') { /* UNLOAD */
+						raffected=asql_unload_data(&list[a],&err_at_col);
+					} else { /* OUTPUT */
+						FILE *fout=0;
+						if (tolower(list[a].type)=='x') { /* output to */
+							fout=fopen(list[a].fname,"w");
+						} 
+						if (tolower(list[a].type)=='y') { /* output to pipe */
+							fout=popen(list[a].fname,"w");
+						} 
+						if (fout) {
+							FILE *last_fout;
+							last_fout=exec_out;
+							exec_out=fout;
+							//if (!execute_query_1(&raffected,&err_at_col)) goto end_query;
+								set_heading_flag(list[a].with_headings, list[a].delim);
+								if (run_q (&err_at_col,qry_type)==0) {
+										A4GL_push_long(0);
+									  	return 1;
+								}
+			
+							//
+							fclose(fout);
+							exec_out=last_fout;
+						}
+				
+					}
+			} else {
 				if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a],&err_at_col);}
 				else {
 					if (list[a].type>='1'&&list[a].type<='9') {
@@ -390,87 +432,19 @@ code
 					}
 				}
 			} else {
-				rpaginate=0;
+				//rpaginate=0;
 				if (a==0) {
 					if (file_out_result) fprintf(file_out_result,"\n\n");
 				}
-repeat_query: ;
-	A4GL_debug("EXEC Repeat query out=%p\n",file_out_result);
-				if (execute_select_prepare(&err_at_col, qry_type, &hasrows)) {
-					if (hasrows) {
-
-					if (get_sqlcode()<0) goto end_query;
-
-					while (1) {
-					int b;
-					int done_once=0;
-					char buff[244];
-						A4GL_debug("Fetching..");
-						b=execute_sql_fetch(&raffected, &err_at_col);
-
-				
-						if (exec_mode==EXEC_MODE_INTERACTIVE) {
-							rpaginate=0;
-							while (outlines>=display_lines || (outlines && b!=0)) {
-								done_once=1;
-								aclfgl_paginate(0);
-								rpaginate=A4GL_pop_int();
-								if (rpaginate!=0) break;
-								fetchFirst=1;
-							}
-
-							if (outlines && done_once &&rpaginate==0) {
-								aclfgl_paginate_always(0);
-								rpaginate=A4GL_pop_int();
-								if (rpaginate!=0) break;
-								fetchFirst=1;
-							}
-
-							if (rpaginate!=0) break;
-
-							if (b!=0) goto end_query;
-
-						} else {
-							rpaginate=0;
-							if (b!=0) goto end_query;
-						}
-					}
-
-					if (rpaginate==1) {
-						A4GL_debug("EXEC REPEAT");
-						if (file_out_result) {fclose(file_out_result); file_out_result=0;}
-						first_open=1;
-						goto repeat_query;
-					}
-
-
-					if (rpaginate==2) {
-						A4GL_debug("EXEC EXIT");
+								set_heading_flag(list[a].with_headings, list[a].delim);
+				if (run_q(&err_at_col,qry_type)==0) {
 endcode
-						return 0;
+					# 4GL RETURN...
+					return 0
 code
-					}
-
-
-				A4GL_debug("EXEC CLOSEDOWN - %d",outlines);
-	
-A4GL_assertion(file_out_result==0,"No output file (2)");
-					if (file_out_result) {fprintf(file_out_result,")\n");fclose(file_out_result);file_out_result=0;}
-
-					if (!execute_select_free()) goto end_query;
-					
-				} else {
-					// No rows - execute procedure ?
-					if (!execute_query_1(&raffected,&err_at_col)) goto end_query;
-				}
-				} else {
-					A4GL_debug("Error with %s - %d",p,get_sqlcode());
-					goto end_query;
-					
 				}
 			}
-A4GL_debug("EXEC COMPLETE %d %d",a,list_cnt);
-		A4GL_debug("Qry type : %d",qry_type);
+
 end_query: ;
 	if (a4gl_sqlca.sqlcode<0) {
 		int aa;
@@ -825,7 +799,6 @@ static char buff[256];
 static int set_unl_msg=1;
 
 if (set_unl_msg) {
-	printf("Here\n");
 	qry_strings[255]="%d row(s) unloaded";
 	qry_strings[256]="%d row(s) loaded";
 	qry_strings[257]="Operation Succeeded (%d) rows affected";
@@ -875,7 +848,7 @@ define lv_fmode char(1)
 define lv_amode char(1)
 define lv_out integer
 define lv_rval integer
-Call set_exec_mode(2)
+call set_exec_mode(2)
 
 if lv_fmode="p" then
 	display "" # go into line mode...
@@ -941,6 +914,132 @@ int a;
 	aclfgl_create_err_file(3);
 	a=A4GL_pop_int();
 	return a;
+}
+
+int isdump(char s) { /* unload to output */
+	if (s=='C') return 1;
+	if (s=='c') return 1;
+	if (s=='x') return 1;
+	if (s=='y') return 1;
+	if (s=='X') return 1;
+	if (s=='Y') return 1;
+	return 0;
+}
+
+
+
+int run_q (int *err_at_colptr,int qry_type)
+{
+int rpaginate;
+int hasrows;
+rpaginate=0;
+repeat_query:;
+
+  A4GL_debug ("EXEC Repeat query out=%p\n", file_out_result);
+  if (execute_select_prepare (err_at_colptr, qry_type, &hasrows))
+    {
+      if (hasrows)
+	{
+
+	  if (get_sqlcode () < 0)
+	    goto end_query_X;
+
+	  while (1)
+	    {
+	      int b;
+	      int done_once = 0;
+	      char buff[244];
+	      A4GL_debug ("Fetching..");
+	      b = execute_sql_fetch (&raffected, err_at_colptr);
+
+
+	      if (exec_mode == EXEC_MODE_INTERACTIVE)
+		{
+		  rpaginate = 0;
+		  while (outlines >= display_lines || (outlines && b != 0))
+		    {
+		      done_once = 1;
+		      aclfgl_paginate (0);
+		      rpaginate = A4GL_pop_int ();
+		      if (rpaginate != 0)
+			break;
+		      fetchFirst = 1;
+		    }
+
+		  if (outlines && done_once && rpaginate == 0)
+		    {
+		      aclfgl_paginate_always (0);
+		      rpaginate = A4GL_pop_int ();
+		      if (rpaginate != 0)
+			break;
+		      fetchFirst = 1;
+		    }
+
+		  if (rpaginate != 0)
+		    break;
+
+		  if (b != 0)
+		    goto end_query_X;
+
+		}
+	      else
+		{
+		  rpaginate = 0;
+		  if (b != 0)
+		    goto end_query_X;
+		}
+	    }
+
+	  if (rpaginate == 1)
+	    {
+	      A4GL_debug ("EXEC REPEAT");
+	      if (file_out_result)
+		{
+		  fclose (file_out_result);
+		  file_out_result = 0;
+		}
+	      first_open = 1;
+	      goto repeat_query;
+	    }
+
+
+	  if (rpaginate == 2)
+	    {
+	      A4GL_debug ("EXEC EXIT");
+	      return 0;
+	    }
+
+
+	  A4GL_debug ("EXEC CLOSEDOWN - %d", outlines);
+
+	  A4GL_assertion (file_out_result == 0, "No output file (2)");
+	  if (file_out_result)
+	    {
+	      if (get_heading_flag()) { fprintf (file_out_result, "\n"); }
+	      fclose (file_out_result);
+	      file_out_result = 0;
+	    }
+
+	  if (!execute_select_free ())
+	    goto end_query_X;
+
+	}
+      else
+	{
+	  // No rows - execute procedure ?
+	  if (!execute_query_1 (&raffected, err_at_colptr))
+	    goto end_query_X;
+	}
+    }
+  else
+    {
+      goto end_query_X;
+
+    }
+  A4GL_debug ("Qry type : %d", qry_type);
+
+end_query_X:;
+  return 1;
 }
 
 endcode

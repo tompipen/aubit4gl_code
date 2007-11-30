@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.126 2007-11-29 13:48:05 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.127 2007-11-30 14:26:21 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -35,6 +35,8 @@ int A4GL_find_attrib_from_field (struct_form * f, int field_no);
 
 //void A4GL_LL_ui_exit (void);
 int field_status_strip_tabname=0;
+static char *set_current_display_delims=0;
+
 
 int aclfgl_a4gl_show_help (int n);
 //int UILIB_A4GLUI_initlib (void);
@@ -1427,7 +1429,30 @@ UILIB_A4GL_read_fields (void *formdetsv)
   return 1;
 }
 
+/* 
+ This function sets a value which is used for the
+ beginning and end of field delimiters (normally [ and ] )
+ so that they can be easily changed from the 4gl code
 
+ This is normally done to emulate the isql perform action
+ where only the fields for the current form have their '[' and ']'
+ displayed.
+
+ In order to use this value - you have to DISPLAY something to the field
+
+	Example usage : 
+
+
+	call aclfgl_set_display_field_delimiters("  ")
+	display "hh" to tabname
+	call aclfgl_set_display_field_delimiters("[]")
+	display "hh" to tabname
+*/
+int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int n) {
+        if (set_current_display_delims) free(set_current_display_delims);
+        set_current_display_delims=A4GL_char_pop();
+        return 0;
+}
 
 
 int
@@ -1473,11 +1498,28 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
     {
 
       A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
-      fprop =
-	(struct struct_scr_field
-	 *) (A4GL_ll_get_field_userptr (field_list[a]));
-      fprop->flags |= 2;
+      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field_list[a]));
+ 	A4GL_fprop_flag_set(field_list[a],FLAG_FIELD_TOUCHED);
 
+        if (set_current_display_delims) {
+                int dl;
+                // Search through our fields and get our metrics_val - that way
+                // we can change our delimiters
+                for (dl=0;dl<formdets->fileform->metrics.metrics_len;dl++) {
+                        if ((void *)formdets->fileform->metrics.metrics_val[dl].field==(void *)field_list[a]) {
+                                        char buff[2];
+                                        buff[1]=0;
+                                        buff[0]=set_current_display_delims[0];
+					if (formdets->fileform->metrics.metrics_val[dl].dlm1) {
+                                        	A4GL_LL_set_field_buffer((void*)formdets->fileform->metrics.metrics_val[dl].dlm1,0,buff, buff);
+					}
+                                        buff[0]=set_current_display_delims[1];
+					if (formdets->fileform->metrics.metrics_val[dl].dlm2) {
+                                        	A4GL_LL_set_field_buffer((void*)formdets->fileform->metrics.metrics_val[dl].dlm2,0,buff, buff);
+					}
+                        }
+                }
+        }
 
 
     }

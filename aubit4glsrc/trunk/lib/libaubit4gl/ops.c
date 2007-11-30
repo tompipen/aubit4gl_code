@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.123 2007-10-12 21:20:05 mikeaubury Exp $
+# $Id: ops.c,v 1.124 2007-11-30 14:26:16 mikeaubury Exp $
 #
 */
 
@@ -5532,8 +5532,12 @@ fglbyte *p;
 		if (lptr) free(lptr);
 		lptr=malloc(p->memsize+1);
 		if (ptr) {
-			memcpy(lptr,p->ptr, p->memsize);
+			char *xptr;
+			/* Make sure we're not overwriting ourselves */
+			xptr=A4GL_memdup (p->ptr, p-> memsize);
+			memcpy(lptr,xptr, p->memsize);
 			lptr[p->memsize]=0;
+			free(xptr);
 			return lptr;
 		} else {
 			A4GL_exitwith("Unread blob");

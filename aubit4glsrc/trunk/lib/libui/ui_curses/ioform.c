@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.187 2007-11-22 14:23:33 mikeaubury Exp $
+# $Id: ioform.c,v 1.188 2007-11-30 14:26:20 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.187 2007-11-22 14:23:33 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.188 2007-11-30 14:26:20 mikeaubury Exp $";
 #endif
 
 /**
@@ -56,7 +56,7 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 					     int max_number,
 					     struct s_field_name_list *list);
 static int get_inc_quotes(int a) ;
-
+static char *set_current_display_delims=0;
 /*
 =====================================================================
                     Constants definitions
@@ -1855,6 +1855,32 @@ A4GL_field_name_match (FIELD * f, char *s)
     }
   return 0;
 }
+/*
+ This function sets a value which is used for the
+ beginning and end of field delimiters (normally [ and ] )
+ so that they can be easily changed from the 4gl code
+
+ This is normally done to emulate the isql perform action
+ where only the fields for the current form have their '[' and ']'
+ displayed.
+
+ In order to use this value - you have to DISPLAY something to the field
+
+        Example usage :
+
+
+        call aclfgl_set_display_field_delimiters("  ")
+        display "hh" to tabname
+        call aclfgl_set_display_field_delimiters("[]")
+        display "hh" to tabname
+*/
+
+int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int n) {
+	if (set_current_display_delims) free(set_current_display_delims);
+	set_current_display_delims=A4GL_char_pop();
+	return 0;
+}
+
 
 
 /**
@@ -1907,8 +1933,22 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
       /* fldattr=field_opts(field_list[a]); */
       A4GL_debug ("MJA Calling A4GL_set_field_pop_attr - 1 - attr=%d", attr);
 
-
-
+	if (set_current_display_delims) {
+		int dl;
+		// Search through our fields and get our metrics_val - that way
+		// we can change our delimiters
+		for (dl=0;dl<formdets->fileform->metrics.metrics_len;dl++) {
+			if ((FIELD *)formdets->fileform->metrics.metrics_val[dl].field==(FIELD *)field_list[a]) {
+		//A4GL_pause_execution();
+					char buff[2];
+					buff[1]=0;
+					buff[0]=set_current_display_delims[0];
+					set_field_buffer((FIELD*)formdets->fileform->metrics.metrics_val[dl].dlm1,0,buff);
+					buff[0]=set_current_display_delims[1];
+					set_field_buffer((FIELD*)formdets->fileform->metrics.metrics_val[dl].dlm2,0,buff);
+			}
+		}
+	}
 
 	A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
       fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));

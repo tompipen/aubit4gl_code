@@ -132,7 +132,9 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
                 display_mode=DISPLAY_ACROSS;
         }
 }
-
+if (get_heading_flag()==0) {
+  display_mode=DISPLAY_ACROSS;
+}
 
 }
 endcode
@@ -552,14 +554,24 @@ if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
 }
 
         if (display_mode==DISPLAY_DOWN) {
-		sprintf(fmt,"%%-%d.%ds %%s\n",colnamesize+1,colnamesize+1);
+		if (get_heading_flag()==1) {
+			sprintf(fmt,"%%-%d.%ds %%s\n",colnamesize+1,colnamesize+1);
+	
+                	if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+                        	fprintf(outputFile,fmt,columnNames[idx-1],buffer);
+                	} else {
+                        	fprintf(exec_out,fmt,columnNames[idx-1],buffer);
+                	}
+		} else {
+	
+                	if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+                        	fprintf(outputFile,"%s",buffer);
+                	} else {
+                        	fprintf(exec_out,"%s",buffer);
+                	}
 
-                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-                        fprintf(outputFile,fmt,columnNames[idx-1],buffer);
-                } else {
-                        fprintf(exec_out,fmt,columnNames[idx-1],buffer);
-                }
-                outlines++;
+		}
+                	outlines++;
         } 
 
 	if (display_mode==DISPLAY_UNLOAD) {
@@ -762,7 +774,9 @@ int a;
 
         if (sqlca.sqlcode==100) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
-                                fprintf(file_out_result,"\n");
+				if (get_heading_flag()==1) {
+                                	fprintf(file_out_result,"\n");
+				}
                         }
                 return 100;
         }
@@ -789,17 +803,18 @@ int a;
         if (fetchFirst==1) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 				if (display_mode!=DISPLAY_UNLOAD) {
-                                	fprintf(file_out_result,"\n");
+                                	if (get_heading_flag()==1) fprintf(file_out_result,"\n");
+					
 				}
                         }
                         else {
 				if (display_mode!=DISPLAY_UNLOAD) {
-                                	fprintf(exec_out,"\n");
+                                	if (get_heading_flag()==1) fprintf(exec_out,"\n");
 				}
                         }
         }
 
-        if (display_mode==DISPLAY_ACROSS&&fetchFirst==1) {
+        if (display_mode==DISPLAY_ACROSS&&fetchFirst==1 && get_heading_flag()==1) {
                 for (a=0;a<numberOfColumns;a++) {
                         if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 
@@ -843,10 +858,17 @@ int a;
                 }
 
                 if (a<numberOfColumns && display_mode==DISPLAY_ACROSS) {
-                        if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
-                                fprintf(file_out_result," ");
-                        else
-                                fprintf(exec_out," ");
+			if (get_heading_flag()==1) {
+                        	if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                                	fprintf(file_out_result," ");
+                        	else
+                                	fprintf(exec_out," ");
+			} else {
+                        	if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                                	fprintf(file_out_result,get_delim_flag());
+                        	else
+                                	fprintf(exec_out,get_delim_flag());
+			}
                 }
         }
 

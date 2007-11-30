@@ -21,6 +21,7 @@ IS			(u|U|l|L)*
 #include <stdio.h>
 #include "simple.h"
 #include <string.h>                   /* strcpy() */
+void A4GL_debug(char *s);
 
 void count(void);
 %}
@@ -42,6 +43,9 @@ create[ \t\v\f]*procedure	{ count(); return(KW_CREATE_PROCEDURE); }
 end[ \t\v\f]*procedure		{ count(); return(KW_END_PROCEDURE); }
 load[ \t\v\f]*from	{ count(); return(KW_LOAD); }
 unload[ \t\v\f]*to	{ count(); return(KW_UNLOAD); }
+output[ \t\v\f]*to	{ count(); return(KW_OUTPUT_TO); }
+output[ \t\v\f]*to[ \t\v\f]*pipe	{ count(); return(KW_OUTPUT_TO_PIPE); }
+without[ \t\v\f]*headings	{ count(); return(KW_WITHOUT_HEADINGS); }
 "delimiter"		{ count(); return(KW_DELIMITER); }
 info[ \t\v\f]*columns[ \t\v\f]*for { count(); return(KW_INFO_COL); }
 info[ \t\v\f]*status[ \t\v\f]*for  { count(); return(KW_INFO_STAT); }

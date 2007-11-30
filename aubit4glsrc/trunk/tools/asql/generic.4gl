@@ -521,6 +521,7 @@ char *p;
 int qry_type;
 p=s;
 *err_at_col=1;
+free_bind();
    if (strncasecmp(s,"database",8)==0) { return 1; }
    if (type>='1'&&type<='9') return 255;
    qry_type=0;
@@ -695,15 +696,20 @@ printField (FILE * outputFile, int idx, char *descName) {
   switch (display_mode) {
 
  case DISPLAY_DOWN:
-      sprintf (fmt, "%%-%d.%ds %%s\n", colnamesize + 1, colnamesize + 1);
-      if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
-        {
-          fprintf (outputFile, fmt, columnNames[idx - 1], buff);
-        }
-      else
-        {
-          fprintf (exec_out, fmt, columnNames[idx - 1], buff);
-        }
+	if (get_heading_flag()==1) {
+      		sprintf (fmt, "%%-%d.%ds %%s\n", colnamesize + 1, colnamesize + 1);
+      		if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE) {
+         		fprintf (outputFile, fmt, columnNames[idx - 1], buff);
+       		} else {
+         		fprintf (exec_out, fmt, columnNames[idx - 1], buff);
+       		}
+	} else {
+      		if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE) {
+          		fprintf (outputFile, "%s", buff);
+        	} else {
+          		fprintf (exec_out, "%s", buff);
+        	}
+	}
       outlines++; break;
 
   case DISPLAY_ACROSS:
@@ -857,6 +863,9 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
                 display_mode=DISPLAY_ACROSS;
         }
 }
+                if (get_heading_flag()==0) {
+                        display_mode = DISPLAY_ACROSS;
+                }
 
 
 }
@@ -881,6 +890,9 @@ int execute_sql_fetch(int *raffected, int *err_at_col) {
 	if (gen_obind==0) {
 		gen_obind=acl_malloc2(sizeof(struct BINDING)*numberOfColumns);
 		gen_obind_copy=acl_malloc2(sizeof(struct BINDING)*numberOfColumns);
+		memset(gen_obind,0, sizeof(struct BINDING)*numberOfColumns);
+		memset(gen_obind_copy,0, sizeof(struct BINDING)*numberOfColumns);
+
 		for (a=0;a<numberOfColumns;a++) {
 			colname=A4GLSQL_describe_stmt ("generic_stexecp",a+1,1);
 			coltype=A4GLSQL_describe_stmt ("generic_stexecp",a+1,0);
@@ -932,16 +944,16 @@ int execute_sql_fetch(int *raffected, int *err_at_col) {
           if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
             {
               A4GL_assertion (file_out_result == 0, "No output file (3.1)");
-              fprintf (file_out_result, "\n");
+              if (get_heading_flag()==1) fprintf (file_out_result, "\n");
             }
           else
             {
               A4GL_assertion (exec_out == 0, "No output file (3.2)");
-              fprintf (exec_out, "\n");
+              if (get_heading_flag()==1) fprintf (exec_out, "\n");
             }
         }
     }
-  if (display_mode == DISPLAY_ACROSS && fetchFirst == 1)
+  if (display_mode == DISPLAY_ACROSS && fetchFirst == 1 && get_heading_flag()==1)
     {
       for (a = 0; a < numberOfColumns; a++)
         {
@@ -999,10 +1011,13 @@ int execute_sql_fetch(int *raffected, int *err_at_col) {
 
       if (a < numberOfColumns && display_mode == DISPLAY_ACROSS)
         {
-          if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
-            fprintf (file_out_result, " ");
-          else
-            fprintf (exec_out, " ");
+	if (get_heading_flag()==1) {
+          if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE) fprintf (file_out_result, " ");
+          else fprintf (exec_out, " ");
+	} else {
+          if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE) fprintf (file_out_result, "%s",get_delim_flag());
+          else fprintf (exec_out, "%s",get_delim_flag());
+	}
         }
     }
 
@@ -1072,7 +1087,8 @@ function prepareit(p)
 define p char(20000)
 code
 	if (need_cursor_free) { 
-		printf("----> %d\n",need_cursor_free); execute_select_free(); 
+		printf("----> %d\n",need_cursor_free); 
+			execute_select_free(); 
 	}
 endcode
    PREPARE stExecP from p

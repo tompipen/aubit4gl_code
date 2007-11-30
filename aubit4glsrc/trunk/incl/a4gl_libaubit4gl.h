@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.294 2007-11-29 13:48:03 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.295 2007-11-30 14:26:13 mikeaubury Exp $
 #
 */
 
@@ -1962,6 +1962,7 @@ int A4GL_input_required_handling(void) ;
 
   /* ============================ read_dty.c ============================= */
   int A4GL_get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);
+	char * A4GL_get_found_in_tab(void);
 
   /* ========================= from a4gl_acl_string.h ============ */
   void A4GL_modify_size (char *z, int a);

@@ -31,7 +31,6 @@ void clr_stmt(void) {
 
 
 void add_stmt(struct element *e) {
-//printf("%c %d '%s' fname='%s' delim='%s'\n",e->type,e->lineno,e->stmt,e->fname,e->delim);
 if (e->type!='W') {
 	list=realloc(list,(list_cnt+1)*sizeof(struct element));
 	memcpy(&list[list_cnt],e,sizeof(struct element));
@@ -87,7 +86,6 @@ int in_create_procedure;
 
 		if (a==0) break;
 		/* Eat up comments */
-		//printf("-->%s (%d) %d\n",yylval.str,a,need_delim);
 
 		if (need_fname) {
 			if (a==KW_SPACE||a==KW_NL) continue;
@@ -98,7 +96,6 @@ int in_create_procedure;
 				strcpy(buff,A4GL_strip_quotes(buff));
 				elem->fname=strdup(buff);
 				// We also need to remove the UNLOAD ... bit...
-				//printf("Scrapping %s\n",ptr);
 				free(ptr); ptr=0;
 				need_fname=0;
 				continue;
@@ -130,14 +127,12 @@ int in_create_procedure;
 		}
 
                 if (need_delim&&(a==KW_IDENTIFIER||a==KW_STRING_LITERAL||a==KW_CONSTANT)) {
-			//printf("Have delimiter : %s",yylval.str);
 			if ((a==KW_STRING_LITERAL||a==KW_CONSTANT) &&(yylval.str[0]=='"'||yylval.str[0]=='\'')) {
                         	elem->delim=strdup(&yylval.str[1]);
                         	elem->delim[strlen(elem->delim)-1]=0;
 			} else {
                         	elem->delim=strdup(yylval.str);
 			}
-			//printf("Have delimiter : %s (%d) %d %d %d",e->delim,a,KW_IDENTIFIER,KW_STRING_LITERAL,KW_CONSTANT);
                         free(ptr); ptr=0;
                         need_delim=0;
 			continue;
@@ -165,8 +160,12 @@ int in_create_procedure;
 		}
 
 		if (a==KW_DELIMITER) {
-			//printf("NEED DELIM\n");
 			need_delim=1;
+			continue;
+		}
+
+		if (a==KW_WITHOUT_HEADINGS) {
+			elem->with_headings=0;
 			continue;
 		}
 
@@ -219,6 +218,7 @@ int in_create_procedure;
 			elem->type='?';
 			elem->delim=0;
 			elem->fname=0;
+			elem->with_headings=1;
 		}
 
 
@@ -227,6 +227,10 @@ int in_create_procedure;
 		if (elem->type=='?') {
 			if (a==KW_LOAD)   {elem->type='L';need_fname=1;}
 			if (a==KW_UNLOAD) {elem->type='C';need_fname=1;}
+
+			if (a==KW_OUTPUT_TO) {elem->type='X';need_fname=1;}
+			if (a==KW_OUTPUT_TO_PIPE) {elem->type='Y';need_fname=1;}
+
 			if (a==KW_UPDATE) elem->type='U';
 			if (a==KW_INSERT) elem->type='I';
 			if (a==KW_DELETE) elem->type='D';

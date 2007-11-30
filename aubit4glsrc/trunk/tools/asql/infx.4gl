@@ -923,16 +923,28 @@ indicator=*col->sqlind ;
 
 
 
-  if (display_mode == DISPLAY_DOWN)
+  if (display_mode == DISPLAY_DOWN )
     {
-      sprintf (fmt, "%%-%d.%ds %%s\n", colnamesize + 1, colnamesize + 1);
-      if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
-	{
-	  fprintf (outputFile, fmt, columnNames[idx - 1], buffer);
-	}
-      else
-	{
-	  fprintf (exec_out, fmt, columnNames[idx - 1], buffer);
+	if (get_heading_flag()==1) {
+      		sprintf (fmt, "%%-%d.%ds %%s\n", colnamesize + 1, colnamesize + 1);
+      		if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
+		{
+	  		fprintf (outputFile, fmt, columnNames[idx - 1], buffer);
+		}
+      		else
+		{
+	  		fprintf (exec_out, fmt, columnNames[idx - 1], buffer);
+		}
+	} else {
+      		if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
+		{
+	  		fprintf (outputFile, "%s\n", buffer);
+		}
+      		else
+		{
+	  		fprintf (exec_out, "%s\n",  buffer);
+		}
+
 	}
       outlines++;
     }
@@ -1242,6 +1254,9 @@ execute_select_prepare (int *err_at_col,int type, int *hasrows)
 		  display_mode = DISPLAY_ACROSS;
 		}
 	    }
+		if (get_heading_flag()==0) {
+			display_mode = DISPLAY_ACROSS;
+		}
 	}
   return 1;
 }
@@ -1294,25 +1309,24 @@ A4GL_debug("Fetching");
 	  if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
 	    {
 	      A4GL_assertion (file_out_result == 0, "No output file (3.1)");
-	      fprintf (file_out_result, "\n");
+	      if (get_heading_flag()==1) fprintf (file_out_result, "\n");
 	    }
 	  else
 	    {
 	      A4GL_assertion (exec_out == 0, "No output file (3.2)");
-	      fprintf (exec_out, "\n");
+	      if (get_heading_flag()==1) fprintf (exec_out, "\n");
 	    }
 	}
     }
 
-  if (display_mode == DISPLAY_ACROSS && fetchFirst == 1)
+  if (display_mode == DISPLAY_ACROSS && fetchFirst == 1 && get_heading_flag()==1)
     {
       for (a = 0; a < numberOfColumns; a++)
 	{
 	  if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
 	    {
 	      A4GL_assertion (file_out_result == 0, "No output file (5)");
-	      if (a)
-		fprintf (file_out_result, " ");
+	      if (a) fprintf (file_out_result, " ");
 	      if (columnAlign[a])
 		{		// CA 1
 		  fprintf (file_out_result, "%*.*s", columnWidths[a], columnWidths[a], columnNames[a]);	// CA 1
@@ -1364,10 +1378,17 @@ A4GL_debug("Fetching");
 
       if (a < numberOfColumns && display_mode == DISPLAY_ACROSS)
 	{
-	  if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
-	    fprintf (file_out_result, " ");
-	  else
-	    fprintf (exec_out, " ");
+		if (get_heading_flag()==1) {
+	  		if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
+	    		fprintf (file_out_result, " ");
+	  		else
+	    		fprintf (exec_out, " ");
+		} else {
+	  		if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
+	    		fprintf (file_out_result, "%s",get_delim_flag());
+	  		else
+	    		fprintf (exec_out, "%s",get_delim_flag());
+		}
 	}
     }
 

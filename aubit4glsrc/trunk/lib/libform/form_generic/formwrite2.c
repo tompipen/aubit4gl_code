@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.38 2007-10-24 15:02:50 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.39 2007-11-30 14:26:20 mikeaubury Exp $
 #*/
 
 /**
@@ -409,7 +409,7 @@ real_set_field (char *s, struct struct_scr_field *f)
 		if (strlen(fmt)!=w) {
 			if (A4GL_isyes(acl_getenv("IGNOREFMTERR"))) ;
                         else {
-      			A4GL_error_with ("FORMAT string is not the same size as the field\n", 0, 0);
+      				A4GL_error_with ("FORMAT string is not the same size as the field\n", 0, 0);
 			}
 		}
   }
