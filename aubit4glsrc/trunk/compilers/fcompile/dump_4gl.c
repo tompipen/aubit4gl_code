@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.10 2007-11-30 12:49:54 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.11 2007-11-30 13:45:03 mikeaubury Exp $
 #*/
 
 /**
@@ -218,7 +218,7 @@ switch (act->type) {
 					if (act->u_action_u.cmd_nextfield->isexitnow) {
 						fprintf(fout,"CALL exitnow()");
 					} else {
-						fprintf(fout,"NEXT FIELD %s\n", get_field_name(f, act->u_action_u.cmd_nextfield->field_tag));
+						fprintf(fout,"CALL set_next_field(\"%s\")\n", get_field_name(f, act->u_action_u.cmd_nextfield->field_tag));
 					}
 					break;
 
@@ -244,9 +244,9 @@ switch (act->type) {
 					fprintf(fout,"END IF\n");
 					break;
         case ACTION_TYPE_LET:
-				fprintf(fout,"CALL set_field(\"%s\",", get_field_name(f,act->u_action_u.cmd_let->field_tag));
+				fprintf(fout,"CALL display_field(\"%s\",", get_field_name(f,act->u_action_u.cmd_let->field_tag));
 				dump_expr_instructions (f, fout, act->u_action_u.cmd_let->value,0);
-				fprintf(fout,")\n");
+				fprintf(fout,",1)\n");
 				break;
 			
         case ACTION_TYPE_FUNC_CALL:
@@ -483,30 +483,51 @@ char fname_split[300];
    	fprintf(fout,"RETURN 1\n");
    	fprintf(fout,"END FUNCTION\n\n");
 
-	fprintf(fout,"FUNCTION set_field(lv_field,lv_value)\n");
+	fprintf(fout,"FUNCTION display_field(lv_field,lv_value,lv_set_variable)\n");
 	fprintf(fout,"DEFINE lv_field CHAR(20)\n");
 	fprintf(fout,"DEFINE lv_value CHAR(255)\n");
+	fprintf(fout,"DEFINE lv_set_variable SMALLINT\n");
 
-	fprintf(fout,"CASE lv_field\n");
 
+	fprintf(fout,"CASE \n");
 	for (a=0;a<f->attributes.attributes_len;a++) {
-		fprintf(fout,"  WHEN \"%s.%s\"\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+		fprintf(fout,"   WHEN lv_field=\"%s.%s\"\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname, f->attributes.attributes_val[a].tabname);
 		fprintf(fout,"     CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\",\"%s\")\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 		if (strcmp(f->attributes.attributes_val[a].tabname,"formonly")!=0) {
-			fprintf(fout,"     LET gr_%s.%s=lv_value\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+			fprintf(fout,"     IF lv_set_variable THEN\n        LET gr_%s.%s=lv_value\n     END IF\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 			fprintf(fout,"     DISPLAY BY NAME gr_%s.%s\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 		} else {
 			fprintf(fout,"     DISPLAY lv_value TO %s.%s\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 		}
 		fprintf(fout,"     CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\",\"%s\")\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
-
+		fprintf(fout,"\n");
 		
 	}
 
 	fprintf(fout,"END CASE\n");
+   	fprintf(fout,"END FUNCTION\n\n");
 
-   	fprintf(fout,"END FUNCTION");
+  	for (a = 0; a < f->tables.tables_len; a++) {
+		int b;
+      		fprintf (fout,"FUNCTION display_%s()\n",f->tables.tables_val[a].tabname);
+		fprintf(fout,"  CALL form_validation(\"BEFORE\",\"DISPLAY\", \"\",\"%s\")\n", f->tables.tables_val[a].tabname);
+		for (b=0;b<f->attributes.attributes_len;b++) {
+			if (strcmp(f->attributes.attributes_val[b].tabname, f->tables.tables_val[a].tabname)==0) {
+				fprintf(fout,"  CALL display_field(\"%s.%s\", gr_%s.%s,0)\n", f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname, f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname);
+			}
+		}
+		fprintf(fout,"  CALL form_validation(\"AFTER\",\"DISPLAY\", \"\",\"%s\")\n", f->tables.tables_val[a].tabname);
+      		fprintf (fout,"END FUNCTION\n\n");
+	}
 
+	fprintf(fout,"FUNCTION display_table(lv_table)\n");
+	fprintf(fout,"DEFINE lv_table CHAR(20)\n");
+	fprintf(fout,"CASE lv_table\n");
+  	for (a = 0; a < f->tables.tables_len; a++) {
+      		fprintf (fout,"   WHEN \"%s\" CALL display_%s()\n", f->tables.tables_val[a].tabname, f->tables.tables_val[a].tabname);
+	}
+	fprintf(fout,"END CASE\n");
+	fprintf(fout,"END FUNCTION\n\n");
 	fclose(fout);
     }
 
