@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.8 2007-11-29 14:33:29 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.9 2007-11-30 12:00:10 mikeaubury Exp $
 #*/
 
 /**
@@ -94,6 +94,8 @@ char *desc_bool[] = {
 char mscreen[MAXSCREENS][100][100];
 int max_y[MAXSCREENS];
 
+void dump_commands(struct_form *f, FILE *fout, int lvl, struct s_at_block *cmds) ;
+char *get_field_name(struct_form *f, u_expression *field_tag_u) ;
 static void dump_attributes (FILE *fout, struct_form * f);
 static void dump_metrics (struct_form * f);
 static void dump_fields_desc (struct_form * f);
@@ -101,6 +103,7 @@ static void dump_records (struct_form * f);
 static void dump_tables (FILE *fout,struct_form * f);
 //andrej void dump_form_desc (struct_form * f);
 void dump_expr (FILE *fout, t_expression * expr, int lvl);
+void dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl);
 void print_lvl (int lvl);
 
 
@@ -195,6 +198,117 @@ char *find_tag_for(struct_form * f, int n) {
 return "<unknown>";
 }
 
+
+void dump_command(struct_form *f, FILE *fout,int lvl, struct u_action *act) {
+int a;
+for (a=0;a<lvl;a++) { fprintf(fout,"   "); }
+switch (act->type) {
+
+	case ACTION_TYPE_ABORT: 	fprintf(fout,"RETURN 0 # ABORT\n"); break;
+
+	case ACTION_TYPE_NOP: 		fprintf(fout,"# NOP\n"); break;
+
+        case ACTION_TYPE_COMMENTS:	fprintf(fout,"CALL show_comments(\"%s\",%d,%d)\n", 
+						act->u_action_u.cmd_comment->comment,
+						act->u_action_u.cmd_comment->hasbell,
+						act->u_action_u.cmd_comment->isreverse);
+					break;
+
+        case ACTION_TYPE_NEXTFIELD:	
+					if (act->u_action_u.cmd_nextfield->isexitnow) {
+						fprintf(fout,"CALL exitnow()");
+					} else {
+						fprintf(fout,"NEXT FIELD %s\n", get_field_name(f, act->u_action_u.cmd_nextfield->field_tag));
+					}
+					break;
+
+        case ACTION_TYPE_BLOCK: 
+					fprintf(fout,"#\n");
+					dump_commands(f, fout, lvl+1, act->u_action_u.cmd_block);
+					break;
+	
+        case ACTION_TYPE_IF:
+					fprintf(fout,"IF ");
+					dump_expr_instructions (f, fout, act->u_action_u.cmd_if->test_condition,0);
+					fprintf(fout," THEN\n");
+					if (act->u_action_u.cmd_if->if_true) {
+						dump_command(f, fout, lvl+1, act->u_action_u.cmd_if->if_true);
+					}
+
+					if (act->u_action_u.cmd_if->if_false) {
+						for (a=0;a<lvl;a++) { fprintf(fout,"   "); }
+						fprintf(fout,"ELSE\n");
+						dump_command(f, fout, lvl+1, act->u_action_u.cmd_if->if_false);
+					}
+					for (a=0;a<lvl;a++) { fprintf(fout,"   "); }
+					fprintf(fout,"END IF\n");
+					break;
+        case ACTION_TYPE_LET:
+				fprintf(fout,"CALL set_field(\"%s\",", get_field_name(f,act->u_action_u.cmd_let->field_tag));
+				dump_expr_instructions (f, fout, act->u_action_u.cmd_let->value,0);
+				fprintf(fout,")\n");
+				break;
+			
+        case ACTION_TYPE_FUNC_CALL:
+				fprintf(fout,"CALL %s(", act->u_action_u.cmd_call->fname);
+				for (a=0;a<act->u_action_u.cmd_call->list_parameters.list_parameters_len;a++) {
+						if (a) fprintf(fout,",");
+						dump_expr_instructions (f, fout, act->u_action_u.cmd_call->list_parameters.list_parameters_val[a],0);
+				}
+				fprintf(fout,")\n");
+				break;
+	default : 
+		printf("UNKNOWN ACTION TYPE\n");
+		exit(40);
+
+}
+
+}
+
+char *get_field_name(struct_form *f, u_expression *field_tag_u) {
+int a;
+int b;
+char *field_tag=0;
+char buff[200];
+switch (field_tag_u->itemtype) {
+	case ITEMTYPE_FIELD: field_tag=field_tag_u->u_expression_u.field; break;
+	case ITEMTYPE_COMPLEX: 
+			A4GL_pause_execution();
+			exit(2);
+			break;
+	case ITEMTYPE_SPECIAL: sprintf(buff,"SPECIAL_%s", field_tag_u->u_expression_u.special);
+				field_tag=buff; break;
+	default : 
+		printf("Unhandled itemtype for get_field_name : %d\n", field_tag_u->itemtype);
+		exit(20);
+}
+
+for (a=0;a<f->fields.fields_len;a++) {
+	if (strcmp(field_tag, f->fields.fields_val[a].tag)==0) {
+		for (b=0;b<f->attributes.attributes_len;b++) {
+			if (f->attributes.attributes_val[b].field_no==a) {
+				// We've found it..
+				static char buff[200];
+				if (strlen(f->attributes.attributes_val[b].tabname)) {
+					sprintf(buff,"%s.%s", f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname);
+				} else {
+					sprintf(buff,"%s", f->attributes.attributes_val[b].colname);
+				}
+				return  buff;
+			}
+		}
+	}
+}
+return "Unknown";
+}
+
+void dump_commands(struct_form *f, FILE *fout, int lvl, struct s_at_block *cmds) {
+	int a;
+	for (a=0;a<cmds->actions.actions_len;a++) {
+		dump_command(f, fout,lvl,cmds->actions.actions_val[a].uaction);
+	}
+}
+
 char *screen_has_attribute(struct_form * f, int scr, int attr_no) {
 int fno;
 int b;
@@ -207,6 +321,75 @@ int metric_no;
         }
 	return 0;
 }
+
+void dump_control_block(struct_form *f, FILE *fout, s_control_block *blk) {
+int a;
+struct s_bef_aft *ba;
+	switch (blk->cbtype) {
+		
+		case E_CB_BEFORE:
+        	case E_CB_AFTER:   
+				ba=blk->s_control_block_u.befaft;
+				if (blk->cbtype==E_CB_BEFORE) {
+					fprintf(fout,"IF lv_when=\"BEFORE\" THEN\n");
+				} else {
+					fprintf(fout,"IF lv_when=\"AFTER\" THEN\n");
+				}
+				fprintf(fout,"   IF ");
+				for (a=0;a<ba->befaftlist.befaftlist_len;a++) {
+					if (a) fprintf(fout,"OR ");
+					switch ( ba->befaftlist.befaftlist_val[a]) {
+         					case E_BA_EDITADD: 	fprintf(fout,"lv_action=\"EDITADD\" "); break;
+         					case E_BA_REMOVE: 	fprintf(fout,"lv_action=\"REMOVE\" "); break;
+         					case E_BA_ADD: 		fprintf(fout,"lv_action=\"ADD\" "); break;
+         					case E_BA_UPDATE: 	fprintf(fout,"lv_action=\"UPDATE\" "); break;
+         					case E_BA_QUERY: 	fprintf(fout,"lv_action=\"QUERY\" "); break;
+         					case E_BA_DISPLAY: 	fprintf(fout,"lv_action=\"DISPLAY\" "); break;
+         					case E_BA_EDITUPDATE: 	fprintf(fout,"lv_action=\"EDITUPDATE\" "); break;
+					}
+				}
+				fprintf(fout, "THEN\n");
+				fprintf(fout,"      IF ");
+				for (a=0;a<ba->column_list->columns.columns_len;a++) {
+					char *tab=0;
+					if (a) fprintf(fout,"OR ");
+					tab=ba->column_list->columns.columns_val[a].tabname;
+					if (tab!=0) {
+						if (strlen(tab)==0) tab=0;
+					}
+					if (tab) {
+					fprintf(fout,"(lv_tab=\"%s\" AND lv_col=\"%s\") ", ba->column_list->columns.columns_val[a].tabname,ba->column_list->columns.columns_val[a].colname);
+					} else {
+					fprintf(fout,"lv_col=\"%s\" ", ba->column_list->columns.columns_val[a].colname);
+					}
+				}
+				fprintf(fout,"THEN\n");
+				fprintf(fout,"#COMMANDS\n");
+				dump_commands(f, fout,3, ba->cmds);
+				fprintf(fout,"      END IF\n");
+				fprintf(fout,"   END IF\n");
+				fprintf(fout,"END IF\n");
+			break;
+
+        	case E_CB_ONBEGINNING:
+        	case E_CB_ONENDING:     
+				if (blk->cbtype==E_CB_ONBEGINNING) {
+					fprintf(fout,"IF lv_when=\"ON BEGINNING\" THEN\n");
+				} else {
+					fprintf(fout,"IF lv_when=\"ON ENDING\" THEN\n");
+				}
+				fprintf(fout,"CALL %s(", blk->s_control_block_u.onbegend->fname);
+				for (a=0;a<blk->s_control_block_u.onbegend->list_parameters.list_parameters_len;a++) {
+						if (a) fprintf(fout,",");
+						dump_expr_instructions (f, fout, blk->s_control_block_u.onbegend->list_parameters.list_parameters_val[a],0);
+				}
+				fprintf(fout,")\n");
+				fprintf(fout, "END IF\n");
+			break;
+	}
+}
+
+
 
 /**
  * Dumps a complete form description
@@ -230,6 +413,7 @@ char fname_split[300];
 	fout=fopen(fname_split,"w");
 	if (!fout) {
 		printf("Unable to open output file\n");
+	exit(2);
 	}
   	fprintf (fout, "{-------------------- Screen %d / %d --------------------}\n", (a+1), f->snames.snames_len);
   	fprintf (fout,"DATABASE %s\n", f->dbname);
@@ -256,6 +440,26 @@ char fname_split[300];
   	fprintf (fout,"  DELIMITERS '%s'\n\n", f->delim);
 
     }
+
+   if (f->control_blocks.control_blocks_len) {
+   	sprintf(fname_split,"Split_%s.4gl",fname);
+   	fout=fopen(fname_split,"w");
+   	if (!fout) {
+		printf("Unable to open output file\n");
+		exit(2);
+   	}
+
+   	fprintf(fout,"FUNCTION form_validation(lv_when, lv_action, lv_tab, lv_col)\n");
+   	fprintf(fout,"DEFINE lv_when, lv_action,lv_tab,lv_col CHAR(20)\n");
+   	for (a=0;a< f->control_blocks.control_blocks_len;a++) {
+		fprintf(fout,"\n\n#%d\n",a);
+		dump_control_block(f, fout, &f->control_blocks.control_blocks_val[a]);
+   	}
+   	fprintf(fout,"RETURN 1");
+   	fprintf(fout,"END FUNCTION");
+	fclose(fout);
+    }
+
 
   //dump_attributes (f);
   //dump_metrics (f);
@@ -565,6 +769,85 @@ dump_expr (FILE *fout, t_expression * expr, int lvl)
     fprintf (fout, "\n");
 
 }
+
+void
+dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl)
+{
+  t_complex_expr *ptr2;
+  int a;
+
+
+  if (expr->itemtype == ITEMTYPE_INT)
+    {
+      fprintf (fout, "%d", expr->u_expression_u.intval);
+    }
+
+  if (expr->itemtype == ITEMTYPE_SPECIAL)
+    {
+	if (strcmp(expr->u_expression_u.special,"NULL")==0) {
+		fprintf (fout, "NULL");
+	} else {
+		fprintf (fout, "get_value(%s)", expr->u_expression_u.special);
+	}
+    }
+
+  if (expr->itemtype == ITEMTYPE_LIST)
+    {
+      fprintf (fout, "[");
+      for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
+	{
+	  dump_expr_instructions (f, fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
+	}
+      fprintf (fout, "]");
+    }
+
+  if (expr->itemtype == ITEMTYPE_FIELD)
+    {
+      fprintf (fout,"gr_%s", get_field_name(f,expr));
+    }
+
+  if (expr->itemtype == ITEMTYPE_CHAR)
+    {
+      fprintf (fout,"\"%s\"", expr->u_expression_u.charval);
+    }
+
+  if (expr->itemtype == ITEMTYPE_NOT)
+    {
+      fprintf (fout,"NOT (");
+      dump_expr_instructions (f, fout, expr->u_expression_u.notexpr, lvl + 1);
+      fprintf (fout,")");
+
+    }
+
+  if (expr->itemtype == ITEMTYPE_COMPLEX)
+    {
+	ptr2 = expr->u_expression_u.complex_expr;
+	if (strcmp(ptr2->comparitor,"ISNOTNULL")==0 || strcmp(ptr2->comparitor,"ISNULL")==0 ) {
+		if (strcmp(ptr2->comparitor,"ISNOTNULL")==0) {
+			dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
+			fprintf(fout," IS NOT NULL");
+		}
+		if (strcmp(ptr2->comparitor,"ISNULL")==0 ) {
+			dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
+			fprintf(fout," IS NULL");
+		}
+	} else {
+      		fprintf (fout,"(");
+      		ptr2 = expr->u_expression_u.complex_expr;
+      		dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
+      		fprintf (fout," %s ", ptr2->comparitor);
+      		dump_expr_instructions (f, fout,ptr2->item2, lvl + 1);
+      		fprintf (fout,")");
+	}
+
+    }
+
+
+}
+
+
+
+
 
 /**
  *

@@ -94,6 +94,14 @@ int A4GL_wcswidth(char *mbs);	/* utf8 */
 	struct s_lookups *lookups;
 	struct s_lookup *lookup;
 }
+%left KW_OR
+%left KW_AND
+%left KW_NOT
+%left IS_NULL IS_NOT_NULL
+%left  GREATERTHAN  LESSTHAN 
+%left KW_MINUS KW_PLUS
+%left KW_DIVIDE KW_MULTIPLY
+%left KW_POWER KW_MOD
 
 %token <str> 
 %token CH
@@ -1304,7 +1312,7 @@ nextfield : KW_NEXTFIELD field_tag_name
 		{
 			$<at_nextfield>$=malloc(sizeof(struct s_at_nextfield));
 			$<at_nextfield>$->field_tag=0;
-			$<at_nextfield>$->isexitnow=0;
+			$<at_nextfield>$->isexitnow=1;
 		}
 	  | KW_NEXTFIELD EQUAL KW_EXITNOW
 		{
