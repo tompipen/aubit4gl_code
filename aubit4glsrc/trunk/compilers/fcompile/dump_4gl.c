@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.12 2007-11-30 16:10:50 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.13 2007-11-30 16:16:13 mikeaubury Exp $
 #*/
 
 /**
@@ -474,8 +474,8 @@ char fname_split[300];
 	fprintf(fout,"   DEFINE gv_screen_no INTEGER\n\n");
 	fprintf(fout,"END GLOBALS\n\n");
 
-   	fprintf(fout,"FUNCTION form_validation(lv_when, lv_action, lv_tab, lv_col)\n");
-   	fprintf(fout,"DEFINE lv_when, lv_action,lv_tab,lv_col CHAR(20)\n");
+   	fprintf(fout,"FUNCTION form_validation(lv_when, lv_action, lv_col)\n");
+   	fprintf(fout,"DEFINE lv_when, lv_action,lv_col CHAR(20)\n");
    	for (a=0;a< f->control_blocks.control_blocks_len;a++) {
 		fprintf(fout,"\n\n#%d\n",a);
 		dump_control_block(f, fout, &f->control_blocks.control_blocks_val[a]);
@@ -503,7 +503,7 @@ char fname_split[300];
 	fprintf(fout,"CASE \n");
 	for (a=0;a<f->attributes.attributes_len;a++) {
 		fprintf(fout,"   WHEN lv_field=\"%s.%s\"\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname, f->attributes.attributes_val[a].tabname);
-		fprintf(fout,"     CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\",\"%s\")\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+		fprintf(fout,"     CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\")\n",  f->attributes.attributes_val[a].colname);
 		if (strcmp(f->attributes.attributes_val[a].tabname,"formonly")!=0) {
 			fprintf(fout,"     IF lv_set_variable THEN\n        LET gr_%s.%s=lv_value\n     END IF\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 			fprintf(fout,"     IF field_on_screen(\"%s\",\"%s\",gv_screen_no) THEN\n",f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
@@ -514,7 +514,7 @@ char fname_split[300];
 			fprintf(fout,"     DISPLAY lv_value TO %s.%s\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 			fprintf(fout,"     END IF\n");
 		}
-		fprintf(fout,"     CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\",\"%s\")\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+		fprintf(fout,"     CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\")\n", f->attributes.attributes_val[a].colname);
 		fprintf(fout,"\n");
 		
 	}
@@ -559,13 +559,13 @@ char fname_split[300];
   	for (a = 0; a < f->tables.tables_len; a++) {
 		int b;
       		fprintf (fout,"FUNCTION display_%s()\n",f->tables.tables_val[a].tabname);
-		fprintf(fout,"  CALL form_validation(\"BEFORE\",\"DISPLAY\", \"\",\"%s\")\n", f->tables.tables_val[a].tabname);
+		fprintf(fout,"  CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\")\n", f->tables.tables_val[a].tabname);
 		for (b=0;b<f->attributes.attributes_len;b++) {
 			if (strcmp(f->attributes.attributes_val[b].tabname, f->tables.tables_val[a].tabname)==0) {
 				fprintf(fout,"  CALL display_field(\"%s.%s\", gr_%s.%s,0)\n", f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname, f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname);
 			}
 		}
-		fprintf(fout,"  CALL form_validation(\"AFTER\",\"DISPLAY\", \"\",\"%s\")\n", f->tables.tables_val[a].tabname);
+		fprintf(fout,"  CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\")\n", f->tables.tables_val[a].tabname);
       		fprintf (fout,"END FUNCTION\n\n");
 	}
 
