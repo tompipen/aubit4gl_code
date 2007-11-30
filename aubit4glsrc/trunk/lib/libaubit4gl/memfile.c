@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.34 2006-11-22 07:55:27 mikeaubury Exp $
+# $Id: memfile.c,v 1.35 2007-11-30 17:16:47 mikeaubury Exp $
 #
 */
 
@@ -112,6 +112,9 @@ void *
 A4GL_memdup (void *ptr, int size)
 {
   void *p2;
+  A4GL_assertion(ptr==0,"No pointer to copy");
+  A4GL_assertion(size<=0,"Invalid side for memdup");
+
   A4GL_debug("A4GL_memdup - ptr=%p size=%p",ptr,size);
   p2 = acl_malloc2 (size);
   memcpy (p2, ptr, size);
