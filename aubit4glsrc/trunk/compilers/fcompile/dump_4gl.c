@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.15 2007-12-02 05:22:27 briantan Exp $
+# $Id: dump_4gl.c,v 1.16 2007-12-02 05:24:59 briantan Exp $
 #*/
 
 /**
@@ -561,13 +561,13 @@ char fname_split[300];
 		int b;
       		fprintf (fout,"FUNCTION display_%s()\n",f->tables.tables_val[a].tabname);
 		fprintf(fout,"  CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\")\n", f->tables.tables_val[a].tabname);
-		fprintf(fout,"  SET PAUSE MODE OFF\n");
+		fprintf(fout,"  SET PAUSE MODE ON\n");
 		for (b=0;b<f->attributes.attributes_len;b++) {
 			if (strcmp(f->attributes.attributes_val[b].tabname, f->tables.tables_val[a].tabname)==0) {
 				fprintf(fout,"  CALL display_field(\"%s.%s\", gr_%s.%s,0)\n", f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname, f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname);
 			}
 		}
-		fprintf(fout,"  SET PAUSE MODE ON\n");
+		fprintf(fout,"  SET PAUSE MODE OFF\n");
 		fprintf(fout,"  CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\")\n", f->tables.tables_val[a].tabname);
       		fprintf (fout,"END FUNCTION\n\n");
 	}
