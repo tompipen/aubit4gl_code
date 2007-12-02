@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.13 2007-11-30 16:16:13 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.14 2007-12-02 05:20:46 briantan Exp $
 #*/
 
 /**
@@ -471,7 +471,8 @@ char fname_split[300];
     	{
       		fprintf (fout,"   DEFINE gr_%-20s RECORD LIKE %20s.*\n", f->tables.tables_val[a].tabname, f->tables.tables_val[a].tabname);
     	}
-	fprintf(fout,"   DEFINE gv_screen_no INTEGER\n\n");
+	fprintf(fout,"   DEFINE gv_screen_no INTEGER\n");
+	fprintf(fout,"   DEFINE gv_attribute CHAR(32)\n\n");
 	fprintf(fout,"END GLOBALS\n\n");
 
    	fprintf(fout,"FUNCTION form_validation(lv_when, lv_action, lv_col)\n");
@@ -507,11 +508,11 @@ char fname_split[300];
 		if (strcmp(f->attributes.attributes_val[a].tabname,"formonly")!=0) {
 			fprintf(fout,"     IF lv_set_variable THEN\n        LET gr_%s.%s=lv_value\n     END IF\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 			fprintf(fout,"     IF field_on_screen(\"%s\",\"%s\",gv_screen_no) THEN\n",f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
-			fprintf(fout,"        DISPLAY BY NAME gr_%s.%s\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+			fprintf(fout,"        DISPLAY BY NAME gr_%s.%s ATTRIBUTE(gv_attribute)\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 			fprintf(fout,"     END IF\n");
 		} else {
 			fprintf(fout,"     IF field_on_screen(\"%s\",\"%s\",gv_screen_no) THEN\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
-			fprintf(fout,"     DISPLAY lv_value TO %s.%s\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
+			fprintf(fout,"     DISPLAY lv_value TO %s.%s ATTRIBUTE(gv_attribute)\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
 			fprintf(fout,"     END IF\n");
 		}
 		fprintf(fout,"     CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\")\n", f->attributes.attributes_val[a].colname);
@@ -560,11 +561,13 @@ char fname_split[300];
 		int b;
       		fprintf (fout,"FUNCTION display_%s()\n",f->tables.tables_val[a].tabname);
 		fprintf(fout,"  CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\")\n", f->tables.tables_val[a].tabname);
+		fprintf(fout,"  SET PAUSE MODE OFF\n");
 		for (b=0;b<f->attributes.attributes_len;b++) {
 			if (strcmp(f->attributes.attributes_val[b].tabname, f->tables.tables_val[a].tabname)==0) {
 				fprintf(fout,"  CALL display_field(\"%s.%s\", gr_%s.%s,0)\n", f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname, f->attributes.attributes_val[b].tabname, f->attributes.attributes_val[b].colname);
 			}
 		}
+		fprintf(fout,"  SET PAUSE MODE ON\n");
 		fprintf(fout,"  CALL form_validation(\"AFTER\",\"DISPLAY\", \"%s\")\n", f->tables.tables_val[a].tabname);
       		fprintf (fout,"END FUNCTION\n\n");
 	}
