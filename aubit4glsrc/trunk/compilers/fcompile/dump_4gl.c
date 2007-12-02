@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.14 2007-12-02 05:20:46 briantan Exp $
+# $Id: dump_4gl.c,v 1.15 2007-12-02 05:22:27 briantan Exp $
 #*/
 
 /**
@@ -481,7 +481,7 @@ char fname_split[300];
 		fprintf(fout,"\n\n#%d\n",a);
 		dump_control_block(f, fout, &f->control_blocks.control_blocks_val[a]);
    	}
-   	fprintf(fout,"RETURN 1\n");
+   	fprintf(fout,"# RETURN 1\n");
    	fprintf(fout,"END FUNCTION\n\n");
 
    	fprintf(fout,"FUNCTION display_form(lv_scr_no)\n");
