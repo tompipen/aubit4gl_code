@@ -1441,7 +1441,11 @@ UILIB_A4GL_finish_screenio (void *sio, char *siotype)
   A4GL_push_char ("XML");
   A4GL_push_int (((long) sio) & 0xffffffff);
   uilib_get_context (2);
-  uilib_free_input (1);
+  if (strcmp(siotype,"s_inp_arr")==0) {
+  	uilib_free_input_array(1);
+  } else {
+  	uilib_free_input (1);
+  }
 }
 
 void
@@ -1600,26 +1604,39 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
   uilib_input_array_loop(1);
 
   rval=A4GL_pop_int();
+  printf("RVAL=%d xxx \n",rval);
+
   if (rval==0) {
 	if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
 		return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
 	}
   }
 
-printf("RVAL=%d\n",rval);
   if (last_attr) {
   	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);
   	if (last_attr->arrcount) A4GL_set_arr_count(last_attr->arrcount);
   	if (last_attr->scrline) A4GL_set_scr_line(last_attr->scrline);
   }
   if (rval==-100) { 	
+	printf("ACCEPT....\n");
 	// ACCEPT...
-  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
+        //A4GL_push_int (context); uilib_free_input_array(1);
+  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { 
+		int a;
+		a=A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); 
+		printf("Returning %d\n",a);
+		return a;
+	}
+	A4GL_assertion(1,"Should have an A4GL_EVENT_AFTER_INP_CLEAN");
   }
   if (rval==-101) { 	
 	// INTERRUPT
 	int_flag=1;
-  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
+        //A4GL_push_int (context); uilib_free_input_array(1);
+  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { 
+		return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); 
+	}
+	A4GL_assertion(1,"Should have an A4GL_EVENT_AFTER_INP_CLEAN");
   }
 
   return rval;
@@ -2222,3 +2239,6 @@ static int get_inc_quotes(int a) {
 
 
 
+int UILIB_UI_initlib() {
+	return 1;
+}

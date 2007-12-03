@@ -1868,6 +1868,7 @@ int uilib_input_array_loop (int n)
       UIdebug (5,"not initialized\n");
       contexts[context].state = UI_WANT_BEFORE_INPUT;
       // Return -1 to intialize all the control blocks..
+      printf("NOT INIT\n");
       pushint (-1);
       return 1;
     }
@@ -1875,21 +1876,25 @@ int uilib_input_array_loop (int n)
   if (contexts[context].state == UI_WANT_BEFORE_INPUT)
     {
       UIdebug (5,"before menu\n");
+      printf("BEFORE INPUT\n");
       // return whatever the before menu was...
       contexts[context].state = UI_INITIALIZED;
       pushint (0);
       return 1;
     }
 
+      printf("WAITING...\n");
   send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" >", context);
   send_input_array_change(context);
   send_to_ui("</WAITFOREVENT>");
   flush_ui ();
-
+  printf("Before while\n");
   while (1)
     {
+  printf("In while\n");
       i = get_event_from_ui ();
 	mLastKey=last_attr->lastkey;
+      printf("WAITED ID=%d\n", i);
       if (i != -1) break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();

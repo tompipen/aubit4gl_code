@@ -11,6 +11,15 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
+
+
+#define NOPROXY
+
+#ifdef NOPROXY
+#include <netinet/in.h>
+#include <netdb.h>
+#endif
+
 #include "xml/attr.h"
 #include "../debug.h"
 #include "../pipe.h"
@@ -25,6 +34,60 @@ struct s_attr *last_attr = 0;
 
 char sockbuff[20000] = "";
 static void timeout_flush_ui (void);
+
+
+#ifdef NOPROXY
+/**
+ * Gets a port from where to act as a server using TCP.
+ * Tries to check by name in /etc/services and then return it as a number
+ * (if valid).
+ *
+ * @param service The service name to found in /etc/services.
+ * @param proto Protocol (normaly TCP).
+ */
+
+static int
+atoport (char *service,char *proto)
+{
+  int port;
+  long int lport;
+  struct servent *serv;
+  char *errpos;
+
+  // First try to read it from /etc/services
+  serv = getservbyname (service, proto);
+  if (serv != NULL) port = serv->s_port;
+  else
+    {                           // Not in services, maybe a number?
+      lport = strtol (service, &errpos, 0);
+      if ((errpos[0] != 0) || (lport < 1) || (lport > 65535))
+        return -1;              // Invalid port address
+      port = htons (lport);
+    }
+  return port;
+}
+
+static struct in_addr *
+atoaddr (char *address)
+{
+  struct hostent *host;
+  static struct in_addr saddr;
+
+  // First try it as aaa.bbb.ccc.ddd.
+  saddr.s_addr = inet_addr (address);
+  if (saddr.s_addr != -1)
+    {
+      return &saddr;
+    }
+  host = gethostbyname (address);
+  if (host != NULL)
+    {
+      return (struct in_addr *) *host->h_addr_list;
+    }
+  return (struct in_addr *)0;
+}
+
+#endif
 
 
 int
@@ -43,11 +106,80 @@ exit(2);
 return 0;
 }
 
-
-
+static char *local_acl_getenv(char *s) {
+	return getenv(s);
+}
 
 int
-connect_ui (void)
+connect_ui (void) {
+if (local_acl_getenv("AFGLSERVER")) {
+	return connect_ui_noproxy();
+} else {
+	return connect_ui_proxy();
+}
+}
+
+int
+connect_ui_noproxy (void)
+{
+  struct sockaddr_un server;
+  struct sockaddr_in address;
+  struct in_addr *addr;
+  int rval;
+  int cnt;
+int type=SOCK_STREAM;
+int port;
+  char *netport="1300";
+  char *netaddress = "localhost";
+
+
+  if (local_acl_getenv("AFGLSERVER")) {
+  	netaddress=local_acl_getenv("AFGLSERVER");
+  }
+  port= atoport (netport, "tcp");
+  addr = atoaddr (netaddress);
+
+  memset ((char *) &address, 0, sizeof (address));
+  address.sin_family = AF_INET;
+  address.sin_port = (port);
+  address.sin_addr.s_addr = addr->s_addr;
+
+
+  clientui_sock_read = socket (AF_INET, type, 0);
+  if (clientui_sock_read < 0)
+    {
+      perror ("opening stream socket");
+      exit (1);
+    }
+  UIdebug (3, "Got socket\n");
+  clientui_sock_write = clientui_sock_read;
+
+
+  for (cnt = 0; cnt < 4; cnt++)
+    {
+      usleep (100000);
+      rval = connect (clientui_sock_read, (struct sockaddr *) &address, sizeof (address));
+
+      if (rval < 0)
+	continue;
+      break;
+    }
+
+
+  if (rval < 0)
+    {
+      UIdebug (3, "closing - connect to %s failed.(%d)\n", server.sun_path, rval);
+      close (clientui_sock_read);
+      return 0;
+    }
+  UIdebug (3, "set envelope\n");
+  set_envelope_mode ();
+
+  return 1;
+}
+
+int
+connect_ui_proxy (void)
 {
   struct sockaddr_un server;
 
@@ -169,14 +301,20 @@ get_event_from_ui ()
 		      // Cool - its a single line triggered...
 		      UIdebug (5,"Single line trigger\n");
 		      attr = xml_parse (localbuff);
-		      //if (attr)
-			//{
 			  break;
-			//}
 		    }
 		}
 	    }
+	if (strlen(buff)) {
 	  localbuff = strdup (buff);
+	A4GL_trim(localbuff);
+	
+	if (strlen(buff)==0) {
+			free(localbuff);
+			localbuff=0;
+		}
+	}
+	if (localbuff==0) continue;
 	}
       else
 	{
@@ -363,3 +501,6 @@ static void timeout_flush_ui ()
   }
   gettimeofday(&tl,0);
 }
+
+
+
