@@ -2532,7 +2532,7 @@ YY_RULE_SETUP
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
 	A4GL_debug("NAMED : %s\n",yytext);
-	if (yydebug) printf("NAMED: %s\n",yytext);
+	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
  	return(NAMED);
 }
 	YY_BREAK
@@ -2567,7 +2567,7 @@ if (ignorekw!=1) REJECT;
 strcpy(yylval.str, yytext);
  A4GL_debug("NAMED : %s\n",yytext); 
 	A4GL_debug("NAMED : %s\n",yytext);
-	if (yydebug) printf("NAMED: %s\n",yytext);
+	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
 return(NAMED);}
 	YY_BREAK
 case 194:
