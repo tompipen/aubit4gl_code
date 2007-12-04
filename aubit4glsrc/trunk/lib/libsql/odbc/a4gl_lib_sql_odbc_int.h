@@ -37,6 +37,7 @@
 		/* infromix headers require wchar_t to be already defined
 		   so we have to include stdio.h here */
 		#include <stdio.h>
+		#include <wchar.h>
 
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.384 2007-10-18 20:50:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.385 2007-12-04 13:28:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.384 2007-10-18 20:50:50 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.385 2007-12-04 13:28:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -258,6 +258,25 @@ void printcomment (char *fmt, ...);
                     Functions definitions
 =====================================================================
 */
+
+static char *
+trans_quote (char *s)
+{
+static char buff[2000];
+  int c;
+  int a;
+  c = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == '"')
+        {
+          buff[c++] = '\\';
+        }
+      buff[c++] = s[a];
+      buff[c] = 0;
+    }
+  return buff;
+}
 
 
 static void set_doing_a_report_call(void) {
@@ -4430,11 +4449,46 @@ void
 LEXLIB_print_init_table_g (t_binding_comp_list *b, char *s)
 {
   int cnt;
-  printc ("{\n");
-  cnt = LEXLIB_print_bind_definition_g (b);
-  cnt = LEXLIB_print_bind_set_value_g (b);
-  printc ("A4GL_set_init(nullbind,%d);\n", cnt);
-  printc ("}\n");
+  t_binding_comp_list bnew;
+  bnew.nbind=0;
+  bnew.bind=malloc(sizeof(bnew.bind[0])*b->nbind);
+  bnew.type=b->type;
+  for (cnt=0;cnt<b->nbind;cnt++) {
+	char buff[200];
+	char *ptr;
+	char *tab;
+	char *col;
+	strcpy(buff, A4GL_4glc_get_gen(INITCOL,cnt));
+	tab=&buff[0];
+	col=strchr(tab,'.');
+	if (!col) {
+		a4gl_yyerror("Unable to find table/column");
+		return;
+	}
+	*col=0;
+	col++;
+	ptr=A4GLSQL_syscolval_expr(tab,col,"DEFAULT");
+	if (ptr==0) {
+		bnew.nbind++;
+		bnew.bind[bnew.nbind-1]=b->bind[cnt];
+	} else {
+		int n;
+		n=strlen(ptr);
+		A4GL_trim(ptr);
+		if (strlen(ptr)==0 && n) {
+			ptr=" ";
+		}
+		printc("A4GL_push_char(\"%s\");",trans_quote(ptr));
+	      	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", b->bind[cnt].varname, (int) b->bind[cnt].dtype & 0xffff, (int) b->bind[cnt].dtype >> 16);
+	}
+  }
+  if (bnew.nbind) {
+  	printc ("{\n");
+  	cnt = LEXLIB_print_bind_definition_g (&bnew);
+  	cnt = LEXLIB_print_bind_set_value_g (&bnew);
+  	printc ("A4GL_set_init(nullbind,%d);\n", cnt);
+  	printc ("}\n");
+	}
 }
 
 void

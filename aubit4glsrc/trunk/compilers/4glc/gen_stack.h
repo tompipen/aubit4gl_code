@@ -7,6 +7,7 @@
 #define INSCOL 5
 #define INSVAL 6
 #define TCOL 7
+#define INITCOL 8
 #define GEN_STACKS                10
 
 #ifdef GEN_STACK_HERE

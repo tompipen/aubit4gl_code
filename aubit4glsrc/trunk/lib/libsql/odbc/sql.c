@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.200 2007-09-26 17:59:02 mikeaubury Exp $
+# $Id: sql.c,v 1.201 2007-12-04 13:28:22 mikeaubury Exp $
 #
 */
 
@@ -5031,7 +5031,47 @@ A4GLSQLLIB_SQL_initlib (void)
 char *
 A4GLSQLLIB_A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
 {
-    return 0;
+    static char buff[300];
+    char val[65];
+    char *cptr = 0;
+    struct BINDING obind[1] = { {0, 0, 64, 0, 0} };	/* end of binding */
+
+    A4GL_clear_sqlca();
+
+    obind[0].ptr = &val;
+
+    cptr = acl_getenv ("A4GL_SYSCOL_VAL");
+    if (cptr == 0)
+        return 0;
+    if (strlen (cptr) == 0)
+        return 0;
+    if (strcmp (cptr, "NONE") == 0)
+        return 0;
+SPRINTF4(buff,"select attrval from %s where attrname='%s' and tabname='%s' and colname='%s'",
+cptr ,typ,tabname,colname);
+aclfgli_clr_err_flg();
+    A4GLSQL_add_prepare ("p_get_val2", (void *) A4GLSQL_prepare_select_internal(
+                                         0, 0, 0, 0, buff,"__internal_sql_1", 0));
+    if (a4gl_sqlca.sqlcode != 0)
+        return NULL;
+    A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0,
+            A4GLSQL_find_prepare ("p_get_val2"), 0, "c_get_val2");
+    if (a4gl_sqlca.sqlcode != 0)
+        return NULL;
+    A4GLSQLLIB_A4GLSQL_open_cursor ("c_get_val2", 0, 0);
+    if (a4gl_sqlca.sqlcode != 0)
+        return NULL;
+
+    while (1)
+    {
+        A4GLSQL_fetch_cursor ("c_get_val2", 2, 1, 1, obind);
+        if (a4gl_sqlca.sqlcode != 0) break;
+    	A4GLSQLLIB_A4GLSQL_close_cursor ("c_get_val2");
+	A4GLSQLLIB_A4GLSQL_free_cursor ("c_get_val2");
+	strcpy(buff, obind[0].ptr);
+	return buff;
+    }
+    return NULL;
 }
 
 struct expr_str_list *

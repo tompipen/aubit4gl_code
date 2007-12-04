@@ -9,9 +9,15 @@ init_cmd : INITIALIZE init_bind_var_list KW_TO KW_NULL {
 	add_feature("INITIALIZE_NULL");
 	print_init_explicit();
  }
-| INITIALIZE init_bind_var_list LIKE init_tab_list  {
-	add_feature("INITIALIZE_LIKE");
-	print_init_table_g(copy_togenbind('N'),   $<str>4);
+| INITIALIZE init_bind_var_list LIKE {
+		A4GL_4glc_pop_all_gen(INITCOL,"!");
+	} init_tab_list  {
+		add_feature("INITIALIZE_LIKE");
+	if (atoi($<str>5)!=get_bind_cnt('N') ) {
+		a4gl_yyerror("Number of columns in LIKE is not the same as the number of variables");
+	} else {
+		print_init_table_g(copy_togenbind('N'), $<str>5);
+	}
 }
 ;
 
@@ -19,8 +25,14 @@ init_cmd : INITIALIZE init_bind_var_list KW_TO KW_NULL {
 init_tab_list : init_tab | init_tab_list KW_COMMA init_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
 	;
 
-init_tab : init_table_name KW_DOT column_name {setrecord($<str>$,$<str>1,$<str>3);}
-	 | init_table_name KW_DOT KW_MULTIPLY {setrecord($<str>$,$<str>1,0);}
+init_tab : init_table_name KW_DOT column_name {
+			strcpy($<str>$,"");
+			setrecord($<str>$,$<str>1,$<str>3);
+		}
+	 | init_table_name KW_DOT KW_MULTIPLY {
+			strcpy($<str>$,"");
+			setrecord($<str>$,$<str>1,0);
+		}
 	;
 
 

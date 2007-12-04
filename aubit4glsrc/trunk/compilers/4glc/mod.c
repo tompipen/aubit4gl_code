@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.306 2007-11-29 13:47:57 mikeaubury Exp $
+# $Id: mod.c,v 1.307 2007-12-04 13:28:15 mikeaubury Exp $
 #
 */
 
@@ -56,6 +56,7 @@
 #define GEN_STACK_HERE
 #include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
+#include "gen_stack.h"
 char                 hdr_dbname[64]="";
 
 char force_ui[FORCE_UI_SIZE];
@@ -3317,7 +3318,45 @@ pop_menu (void)
 int
 setrecord (char *s, char *t, char *c)
 {
-  return 0;
+  if (c)
+    {
+      char smbuff[200];
+      sprintf (smbuff, "%s.%s", t, c);
+      A4GL_4glc_push_gen (INITCOL, smbuff);
+      sprintf (s, "%d", A4GL_4glc_gen_cnt (INITCOL));
+    }
+  else
+    {
+      int rval;
+      int isize = 0;
+      int idtype = 0;
+      char colname[256] = "";
+      char buff[300];
+      char *ccol;
+      rval = A4GLSQL_get_columns (t, 0, &idtype, &isize);
+      A4GL_debug ("rval = %d", rval);
+      if (rval == 0 && t)
+	{
+	  SPRINTF1 (buff, "%s does not exist in the database", t);
+	  a4gl_yyerror (buff);
+	  A4GLSQL_end_get_columns ();
+	  return 1;
+	}
+
+      while (1)
+	{
+	  colname[0] = 0;
+	  rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+	  if (rval == 0)
+	    break;
+	  strcpy (colname, ccol);
+	  trim_spaces (colname);
+	  setrecord (s, t, colname);
+	}
+      A4GLSQL_end_get_columns ();
+      return 1;
+    }
+  return 1;
 }
 
 /**
@@ -3475,7 +3514,7 @@ inc_report_cnt (void)
  * @return A pointer to a static buffer with the escaped string.
  */
 /*
-static char *
+char *
 trans_quote (char *s)
 {
   int c;
