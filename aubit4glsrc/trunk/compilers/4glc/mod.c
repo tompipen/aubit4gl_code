@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.307 2007-12-04 13:28:15 mikeaubury Exp $
+# $Id: mod.c,v 1.308 2007-12-04 15:30:03 mikeaubury Exp $
 #
 */
 
@@ -3318,6 +3318,10 @@ pop_menu (void)
 int
 setrecord (char *s, char *t, char *c)
 {
+ if (t[0]=='\\') {
+	t=strchr(t,'.');
+	t++;
+ }
   if (c)
     {
       char smbuff[200];

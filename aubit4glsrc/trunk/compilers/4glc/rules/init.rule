@@ -13,16 +13,17 @@ init_cmd : INITIALIZE init_bind_var_list KW_TO KW_NULL {
 		A4GL_4glc_pop_all_gen(INITCOL,"!");
 	} init_tab_list  {
 		add_feature("INITIALIZE_LIKE");
-	if (atoi($<str>5)!=get_bind_cnt('N') ) {
+	if (A4GL_4glc_gen_cnt(INITCOL) !=get_bind_cnt('N') ) {
+		printf("%s : %d\n", A4GL_4glc_gen_cnt(INITCOL) , get_bind_cnt('N') );
 		a4gl_yyerror("Number of columns in LIKE is not the same as the number of variables");
 	} else {
-		print_init_table_g(copy_togenbind('N'), $<str>5);
+		print_init_table_g(copy_togenbind('N'), "");
 	}
 }
 ;
 
 
-init_tab_list : init_tab | init_tab_list KW_COMMA init_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
+init_tab_list : init_tab | init_tab_list KW_COMMA init_tab 
 	;
 
 init_tab : init_table_name KW_DOT column_name {
