@@ -78,15 +78,16 @@ define a integer
 define lv_ncols integer
 
 
-define lv_systables_name char(128)
+define lv_systab_name char(128)
 define lv_syscolumns_name char(128)
 define lv_syssyntable_name char(128)
 define lv_sysviews_name char(128)
 define lv_q1 char(512)
 
+
 	call locate_blob()
 
-	let lv_systables_name="systables"
+	let lv_systab_name="systables"
 	let lv_syscolumns_name="syscolumns"
 	let lv_syssyntable_name="syssyntable"
 	let lv_sysviews_name="sysviews"
@@ -99,7 +100,7 @@ define lv_q1 char(512)
 			if lv_localdb[a]=":" then
 				let lv_t=lv_localdb[a+1,64]
 				let lv_localdb=lv_localdb[1,a-1]
-				let lv_systables_name=lv_localdb clipped,":systables"
+				let lv_systab_name=lv_localdb clipped,":systables"
 				let lv_syscolumns_name=lv_localdb clipped,":syscolumns"
 				let lv_syssyntable_name=lv_localdb clipped,":syssyntables"
 				let lv_sysviews_name=lv_localdb clipped,":sysviews"
@@ -111,9 +112,9 @@ define lv_q1 char(512)
 	if lv_t="all" then
 		let mv_idx_cnt = 0
 		if lv_systables = 1 then
-				let lv_qry="select tabname from ",lv_systables_name clipped," order by 1"
+				let lv_qry="select tabname,tabid from ",lv_systab_name clipped," order by 2"
 		else
-				let lv_qry="select tabname from ",lv_systables_name clipped," where tabid>99 order by 1"
+				let lv_qry="select tabname,tabid from ",lv_systab_name clipped," where tabid>99 order by 2"
 		end if
 		
 		prepare p_get_tables from lv_qry
@@ -126,15 +127,14 @@ define lv_q1 char(512)
 	end if
         if is_online() then
                 # Get our basic table information for online
-		let lv_q1=" select tabid,owner,tabtype,partnum from ",lv_systables_name," where tabname='",lv_t clipped,"'"
+		let lv_q1=" select tabid,owner,tabtype,partnum from ",lv_systab_name," where tabname='",lv_t clipped,"'"
 		
-		#display lv_q1
 	        prepare p_q1 from lv_q1
 		declare c_q1 cursor for p_q1 open c_q1 fetch c_q1 into lv_st.tabid,lv_st.owner,lv_st.tabtype ,lv_st.partnum 
         else
                 # Get our basic table information for SE
                 let lv_st.partnum=-1
-		let lv_q1=" select tabid,owner,tabtype from ", lv_systables_name clipped, " where tabname='",lv_t clipped,"'"
+		let lv_q1=" select tabid,owner,tabtype from ", lv_systab_name clipped, " where tabname='",lv_t clipped,"'"
 	        prepare p_q2 from lv_q1 declare c_q2 cursor for p_q2 open c_q2 fetch c_q2 into lv_st.tabid,lv_st.owner,lv_st.tabtype 
         end if
 
@@ -158,7 +158,7 @@ define lv_q1 char(512)
 
 		
 		if lv_stid is not null  then
-			let lv_q1="select tabname,owner from ",lv_systables_name," where tabid=",lv_stid
+			let lv_q1="select tabname,owner from ",lv_systab_name," where tabid=",lv_stid
 			prepare p_so from  lv_q1
 			execute p_so into lv_stname,lv_so 
 		else 
@@ -313,6 +313,7 @@ define lv_q1 char(512)
 				when 13 let lv_sc.coldesc="VARCHAR(",decode_varchar(lv_sc.collength) clipped,")"," ",lv_nn
 				when 14 let lv_sc.coldesc=decode_interval(lv_sc.collength) clipped," ",lv_nn
 				when 15 let lv_sc.coldesc="NCHAR(",lv_sc.collength using "<<<<<<<",")"," ",lv_nn
+				when 17 let lv_sc.coldesc="INT8"," ",lv_nn
 	#Andrej mod
 				#This is just a hack to allow us to retrive Informix sys* tables info
 				#and is higly unlikely to be used in 4GL code anyway
@@ -873,15 +874,12 @@ ORDER BY evalpos
 call locate_blob()
 foreach  frags
 
-	#display "...."
-	#display lv_rec.evalpos," ",lv_rec.strat
 	if lv_rec.evalpos=0 then
 		if lv_rec.strat="R" then
 			let lv_str="FRAGMENT BY ROUND ROBIN IN ",lv_rec.dbspace
 		end if
 
 		if lv_rec.strat="E" then
-			#display "Calling byte as str"
                          let lv_str="FRAGMENT BY EXPRESSION ",aclfgl_byte_as_str(mv_exprtext)," IN ",lv_rec.dbspace
 		end if
 	else
@@ -890,7 +888,6 @@ foreach  frags
 			let lv_str=lv_str clipped," ",lv_rec.dbspace
 		end if
 		if lv_rec.strat="E" then
-			#display "Calling byte as str"
                          let lv_str=lv_str clipped," ",aclfgl_byte_as_str(mv_exprtext)," IN ",lv_rec.dbspace
 		end if
 	
