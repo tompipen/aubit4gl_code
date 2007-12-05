@@ -1189,9 +1189,13 @@ comp_list: comp_item {
 comp_item : table_name DOT column_name {
 	$<column>$.tabname=strdup($<str>1);
 	$<column>$.colname=strdup($<str>3);
-} |  column_name
-{
-	$<column>$.tabname=strdup("");
+} |  column_name {
+	int n;
+	char *tabname;
+        n=A4GLF_getdatatype_fcompile($<str>1,"");
+        tabname=A4GL_get_found_in_tab();
+
+	$<column>$.tabname=strdup(tabname);
 	$<column>$.colname=strdup($<str>1);
 }
 
