@@ -1038,6 +1038,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
   int o;
   fgldecimal *sum;
   mres = m_apm_init ();
+
   if (s2)
     {
       m1 = A4GL_str_dot_to_m_apm (s1);
@@ -1065,6 +1066,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
 	case OP_MOD:
 		m_apm_free(m1);
 		m_apm_free(m2);
+		m_apm_free(mres);
 	  return 0;
 	}
 	m_apm_free(m1);
