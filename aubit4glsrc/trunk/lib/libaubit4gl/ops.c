@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.124 2007-11-30 14:26:16 mikeaubury Exp $
+# $Id: ops.c,v 1.125 2007-12-05 14:08:13 mikeaubury Exp $
 #
 */
 
@@ -135,6 +135,10 @@ int A4GL_days_in_month (int m, int y);
 
 void A4GL_in_int_ops (int op);
 void A4GL_int_in_ops (int op);
+
+void A4GL_in_double_ops (int op);
+void A4GL_double_in_ops (int op);
+
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
 
@@ -2693,6 +2697,222 @@ A4GL_in_int_ops (int op)
   fflush (stdout);
   A4GL_push_int (0);
 }
+
+
+
+
+/**
+ * Add all the default operations to the system
+ *
+ * @return
+ */
+void
+A4GL_double_in_ops (int op)
+{
+  double a_double;
+  struct ival in2;
+  struct ival *pi2;
+  int ival_data[10];
+int se2;
+int d2;
+int s2;
+int ok=0;
+char buff_6[256];
+int isneg_ival;
+
+
+#ifdef DEBUG
+  A4GL_debug ("In dt_in_ops");
+#endif
+
+  A4GL_pop_param (&a_double, DTYPE_FLOAT, -1);
+
+
+
+
+  A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi2);
+
+  if ((d2 & DTYPE_MASK) != DTYPE_INTERVAL)
+    {
+      PRINTF ("Confused... %d != %d\n", d2 & DTYPE_MASK, DTYPE_INTERVAL);
+      A4GL_assertion(1,"Invalid datatype");
+    }
+
+  se2 = pi2->stime & 0xf;
+
+
+  if (se2 == 1 || se2 == 2)
+    {
+      se2 = 2;
+    }
+
+
+ if (se2!=2) {
+	se2=6;
+  }
+
+
+  if (se2 == 2)
+    {
+      in2.stime = 0x82;
+      in2.ltime = 2;
+
+    }
+  else
+    {
+      in2.stime = 0x86;
+      in2.ltime = 11;
+    }
+
+  A4GL_debug("in_in.....");
+  A4GL_debug_print_stack();
+
+  A4GL_pop_param (&in2, DTYPE_INTERVAL, in2.stime * 16 + in2.ltime);
+
+  if (in2.stime==0 || in2.ltime==0) { A4GL_assertion(1,"Interval looks empty"); }
+
+  A4GL_decode_interval (&in2, ival_data, &isneg_ival); //@FIXME negative intervals
+
+
+  switch(op) {
+  	case OP_ADD:
+		if (se2==6) {
+		      double f;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f);
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
+	  		acli_interval (buff_6, 0x867);
+			return ;
+		} else {
+
+			double f;
+  			f=ival_data[1]+a_double;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);
+			return ;
+		}
+
+	case OP_SUB:
+		if (se2==6) {
+			double f;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			f=f-a_double;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f);
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
+	  		acli_interval (buff_6, 0x867);
+			return ;
+		} else {
+			double f;
+  			f=ival_data[1]-a_double;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);
+			return ;
+		}
+	case OP_DIV:
+		if (se2==6) {
+			double f;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			f=f/a_double;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f);
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
+	  		acli_interval (buff_6, 0x867);
+			return ;
+		} else {
+			double f;
+  			f=ival_data[1]/a_double;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);
+			return ;
+		}
+
+	case OP_MULT:
+		if (se2==6) {
+			double f;
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			f=f*a_double;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%lf", f);
+			A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
+	  		acli_interval (buff_6, 0x867);
+			return ;
+		} else {
+			double f;
+  			f=ival_data[1]*a_double;
+			ok=1;
+	  		SPRINTF1 (buff_6, "%d", (int)f);
+	  		acli_interval (buff_6, 0x822);
+			return ;
+		}
+
+	case OP_GREATER_THAN:
+	case OP_GREATER_THAN_EQ:
+	case OP_EQUAL:
+	case OP_NOT_EQUAL:
+	case OP_LESS_THAN:
+	case OP_LESS_THAN_EQ:
+		{
+		double f=0.0;
+		double ad;
+		if (se2==6) {
+		        f = ival_data[5] + (double) (ival_data[6]) / 100000.0;
+  			//f=ival_data[6]*a;
+		} else {
+  			f=ival_data[1];
+		}
+
+		if (isneg_ival) f*=-1.0;
+	
+		ad=(double )a_double;
+		
+		if (op==OP_GREATER_THAN ) { A4GL_push_int(f>ad); return; }
+		if (op==OP_GREATER_THAN_EQ ) { A4GL_push_int(f>=ad); return; }
+		if (op==OP_LESS_THAN_EQ ) { A4GL_push_int(f<=ad); return; }
+		if (op==OP_LESS_THAN ) { A4GL_push_int(f<ad); return; }
+		if (op==OP_EQUAL ) { A4GL_push_int(f==ad); return; }
+		if (op==OP_NOT_EQUAL ) { A4GL_push_int(f!=ad); return; }
+		}
+		break;
+
+  }
+
+  A4GL_assertion(1,"Unimplemented int_in operation");
+  fflush (stdout);
+  A4GL_push_int (0);
+}
+
+/**
+ * Add all the default operations to the system
+ *
+ * @return
+ */
+void
+A4GL_in_double_ops (int op)
+{
+  double a;
+  struct ival in;
+  int ival_data[10];
+  int isneg_ival;
+
+#ifdef DEBUG
+  A4GL_debug ("In dt_in_ops");
+#endif
+  A4GL_pop_param (&a, DTYPE_FLOAT, -1);
+  A4GL_pop_param (&in, DTYPE_INTERVAL, -1);
+
+  A4GL_decode_interval (&in, &ival_data[0], &isneg_ival);
+
+  A4GL_assertion(1,"Here");
+  fflush (stdout);
+  A4GL_push_int (0);
+}
+
+
 /**
  * Add all the default operations to the system
  *
@@ -4227,7 +4447,7 @@ if (A4GL_isnull(d1,(void *)pi1)) {
 
 
 
-	A4GL_push_interval(&in1);
+	A4GL_push_interval(&in1,s1);
 
 	done1=0;
 	if (d2==DTYPE_CHAR) { free(ptr); A4GL_exitwith("Invalid operation on a character string (1)"); return; }
@@ -4518,7 +4738,7 @@ A4GL_dt_dt_ops (int op)
 	      SPRINTF2 (buff_7, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
 	      A4GL_ctoint (buff_7, &in, 1298);
 		if(inverted) { in.is_neg=1; }
-	      A4GL_push_interval (&in);
+	      A4GL_push_interval (&in,1298);
 	    }
 	  else
 	    {
@@ -4531,7 +4751,7 @@ A4GL_dt_dt_ops (int op)
 			  &in, in.stime, in.ltime);
 	      A4GL_debug ("Buff = %s %x %x", buff_7);
 		if (inverted) { in.is_neg=1; }
-	      A4GL_push_interval (&in);
+	      A4GL_push_interval (&in,1298);
 	    }
 	}
       else
@@ -5610,6 +5830,9 @@ DTYPE_SERIAL
 
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INT, OP_MATH, A4GL_int_in_ops);
   A4GL_add_op_function (DTYPE_INT, DTYPE_INTERVAL, OP_MATH, A4GL_in_int_ops);
+
+  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_FLOAT, OP_MATH, A4GL_double_in_ops);
+  A4GL_add_op_function (DTYPE_FLOAT, DTYPE_INTERVAL, OP_MATH, A4GL_in_double_ops);
 
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_INTERVAL, OP_MATH, A4GL_in_dt_ops);
   A4GL_add_op_function (DTYPE_DATE, DTYPE_INTERVAL, OP_MATH, A4GL_in_date_ops);

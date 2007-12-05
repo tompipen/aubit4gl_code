@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.131 2007-11-29 13:48:04 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.132 2007-12-05 14:08:13 mikeaubury Exp $
 #
 */
 
@@ -1137,8 +1137,7 @@ A4GLSQLCV_dtype_alias (char *s)
 	{
 	  if (current_conversion_rules[b].type == CVSQL_DTYPE_ALIAS)
 	    {
-	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from)
-		  == 0)
+	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
 		  A4GL_debug ("Substitute : %s\n",
 			      current_conversion_rules[b].data.to);
@@ -2163,53 +2162,55 @@ A4GL_cv_delchstr (char *str, int n)
 
 
 
+static void remove_ws_and_upshift(char *s) {
+char p[1000];
+int a;
+int c=0;
+strcpy(p,s);
+for (a=0;a<strlen(s);a++) {
+	if (!isspace(s[a])) {
+		if (s[a]=='(' || s[a]==')') {
+			if (!isspace(p[c-1])) {
+					p[c++]=' ';
+			}
+		}
+		p[c++]=toupper(s[a]);
+		if (s[a]=='(' || s[a]==')') {
+			p[c++]=' ';
+		}
+		continue;
+	}
+	if (c==0) continue;
+	if (isspace(p[c-1])) continue;
+	p[c++]=toupper(s[a]);
+}
+p[c]=0;
+strcpy(s,p);
+}
+
+
 int
 A4GL_strwscmp (char *a, char *b)
 {
   int a_i;
   int b_i;
-  char *o1;
-  char *o2;
+  char o1[1000];
+  char o2[1000];
   int lastWasWs;
   char fieldData[256]="";
   b_i = 0;
-  o1 = acl_strdup (a);
-  o2 = acl_strdup (b);
+  
+  strcpy(o1 ,a);
+  strcpy(o2 ,b);
   b_i = 0;
   lastWasWs=0;
-  for (a_i = 0; a_i < strlen (a); a_i++)
-    {
-      if (a[a_i] == ' ' || a[a_i] == '\t') {
-		if (lastWasWs) continue;
-		lastWasWs=1;
-      } else {
-		lastWasWs=0;
-      }
-      o1[b_i++] = toupper (a[a_i]);
-    }
 
-  o1[b_i] = 0;
-  b_i = 0;
+  remove_ws_and_upshift(o1);
+  remove_ws_and_upshift(o2);
 
-  for (a_i = 0; a_i < strlen (b); a_i++)
-    {
-      if (b[a_i] == ' ' || b[a_i] == '\t') {
-		if (lastWasWs) continue;
-		lastWasWs=1;
-      } else {
-		lastWasWs=0;
-      }
-      o2[b_i++] = toupper (b[a_i]); 
-
-	if (b_i>1) {
-      		if (o2[b_i-1]=='S' && o2[b_i-2]=='%') {
-				o2[b_i-1]='s';
-      		}
-	}
-    }
-  o2[b_i] = 0;
 	A4GL_trim(o1);
 	A4GL_trim(o2);
+
   if (strstr(o2,"%s")) {
 	int r;
 	int chars=0;
@@ -2222,12 +2223,12 @@ A4GL_strwscmp (char *a, char *b)
 		a_i=0;
 	}
   } else {
+
   	a_i = strcmp (o1, o2);
   }
-  acl_free (o1);
-  acl_free (o2);
 
   strcpy(lastFieldData,fieldData);
+
 
   return a_i;
 

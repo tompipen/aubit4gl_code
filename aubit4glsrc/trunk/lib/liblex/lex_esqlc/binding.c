@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.74 2007-11-12 14:18:19 mikeaubury Exp $
+# $Id: binding.c,v 1.75 2007-12-05 14:08:14 mikeaubury Exp $
 */
 
 /**
@@ -37,7 +37,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.74 2007-11-12 14:18:19 mikeaubury Exp $";
+		"$Id: binding.c,v 1.75 2007-12-05 14:08:14 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -737,7 +737,7 @@ static char buff_ind[255];
 	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
-	  SPRINTF1 (buff,"interval _vi_%d;", a);
+	  SPRINTF1 (buff,"char _vi_%d[40];", a);
 	  break;
 	case DTYPE_INT8:
 	  SPRINTF1 (buff,"int8 _vi_%d;", a);
@@ -814,7 +814,7 @@ static char buff_ind[255];
 	  SPRINTF2 (buff,"varchar _vo_%d[%d+1];", a , bind->bind[a].dtype >> 16);
 	  break;
 	case 14:
-	  SPRINTF1 (buff,"interval _vo_%d;", a);
+	  SPRINTF1 (buff,"char _vo_%d[40];", a);
 	  break;
 
 	case DTYPE_INT8:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.147 2007-11-23 09:50:53 mikeaubury Exp $
+# $Id: report.c,v 1.148 2007-12-05 14:08:13 mikeaubury Exp $
 #
 */
 
@@ -56,7 +56,7 @@
 //int A4GL_call_4gl_dll (char *filename, char *function, int args);
 static void A4GL_unload_report_table (struct BINDING *b);
 void A4GL_close_report_file(struct rep_structure *rep) ;
-int A4GL_wcswidth(char *mbs);	/* utf8 */
+//int A4GL_wcswidth(char *mbs);	/* utf8 */
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2
@@ -639,12 +639,12 @@ gen_rep_tab_name (void *p,int isCreateUsage)
 	sep = "";
     }
     if (isCreateUsage) {
-    	sprintf(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
+    	SPRINTF4(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
     } else { 
 	if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_CREATE_HASH")) {
-    		sprintf(buf, "#%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
+    		SPRINTF4(buf, "#%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
 	} else {
-    		sprintf(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
+    		SPRINTF4(buf, "%s%sRT%08X%08X", owner, sep, (unsigned int)pid, (unsigned int)p & 0xffffffff);
 	}
     }
     return buf;
@@ -655,7 +655,6 @@ void A4GL_close_report_file(struct rep_structure *rep) {
       if (rep->output_mode == 'C')
 	{
 		if (rep->output) {
-			//printf("CLose %s\n",rep->output_loc);
 			gzfclose(rep->output);
 			rep->output=0;
 		}
@@ -866,12 +865,10 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 				// it'll fit...
 				strcpy(buff,ptr);
 			
-				//printf("right margin=%d left margin=%d orig_r=%d init_col=%d\n",right_margin,rep->left_margin, orig_r,init_col);
 				psize=right_margin-rep->left_margin+1;
 				if (init_col==0) psize--;
 				if (psize>0) {
 					A4GL_assertion(psize>sizeof(buff),"Buffer to small for padspace");
-					//printf("Padding to %d\n",psize);
 					A4GL_pad_string(buff,psize);
 				}
 				A4GL_push_char(buff);
@@ -1336,7 +1333,7 @@ sz (int d, int s)
       return "";
 
     case DTYPE_DTIME:
-		sprintf(buff_1,"%s TO %s",decode_dt_elem(s>>4),decode_dt_elem(s&0xf));
+		SPRINTF2(buff_1,"%s TO %s",decode_dt_elem(s>>4),decode_dt_elem(s&0xf));
 		return buff_1;
       /* return " YEAR TO FRACTION(5)"; */
 
@@ -1350,8 +1347,6 @@ sz (int d, int s)
       return buff_1;
 
     case DTYPE_INTERVAL:
-		/* sprintf(buff_1,"%s TO %s",decode_in_elem(s>>4),decode_in_elem(s&0xf));
-		return buff_1; */
       SPRINTF0 (buff_1, decode_interval(s));
       return buff_1;
     }
@@ -1429,6 +1424,7 @@ int a;
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0,0), 1,0,0);
   if (a==0 ) {
 	aclfgli_clr_err_flg(); // we don't care if the drop fails...
+	A4GLSQL_set_sqlca_sqlcode (0);
   }
 
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_mk_temp_tab (b, n),"__internal_report",99,0,0), 1,0,0);
@@ -1828,8 +1824,7 @@ print_report_block_start (struct rep_structure *rep, char *mod, char *repname,
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
       print_gzlvl (rep, lvl);
-      gzfprintf (rep->output,
-	       "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n",
+      gzfprintf (rep->output, "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n",
 	       lineno, where, why, rb);
     }
   else
@@ -1867,9 +1862,7 @@ void A4GL_pdf_pop_report_section (struct pdf_rep_structure *rep, int rb) {
 int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) {
   if (rb>=rep->nblocks) {
 	rep->nblocks=rb+1;
-	//printf("Allocating %d blocks in %p\n", rep->nblocks, rep->blocks);
 	rep->blocks=realloc(rep->blocks, sizeof(struct rb_blocks)*rep->nblocks);
-	//printf("=%p\n", rep->blocks);
 	rep->blocks[rb].lineno=lineno;
 	rep->blocks[rb].where=where;
 	strcpy(rep->blocks[rb].why,why);
@@ -1883,9 +1876,7 @@ int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repnam
 
   if (rb>=rep->nblocks) {
 	rep->nblocks=rb+1;
-	//printf("Allocating %d blocks in %p\n", rep->nblocks, rep->blocks);
 	rep->blocks=realloc(rep->blocks, sizeof(struct rb_blocks)*rep->nblocks);
-	//printf("=%p\n", rep->blocks);
 	rep->blocks[rb].lineno=lineno;
 	rep->blocks[rb].where=where;
 	strcpy(rep->blocks[rb].why,why);
@@ -2409,4 +2400,230 @@ int force_print;
 	A4GL_aclfgli_skip_lines(rep);
 	return 1;
 }
+
+
+
+int A4GL_push_agg(char type, long agg_type, void *agg, long aggcnt) {
+	switch (type) {
+
+		case 'A': 
+			A4GL_push_param(agg,agg_type);
+			A4GL_push_double((double)aggcnt);
+			A4GL_pushop(OP_DIV);
+
+			switch (agg_type&DTYPE_MASK) {
+				case DTYPE_INT:
+					A4GL_cast_top_of_stack_to_dtype(DTYPE_DECIMAL+ENCODE_SIZE(((31<<8)+2)));
+					break;
+				case DTYPE_SMINT:
+					A4GL_cast_top_of_stack_to_dtype(DTYPE_DECIMAL+ENCODE_SIZE(((30<<8)+2)));
+					break;
+				case DTYPE_INTERVAL:
+					//printf("%lx\n", agg_type);
+					A4GL_cast_top_of_stack_to_dtype(DTYPE_INTERVAL+ENCODE_SIZE(agg_type>>16));
+					break;
+			}
+
+			break;
+
+		case 'S': 
+			if (aggcnt) {
+				A4GL_push_param(agg,agg_type);
+				//A4GL_cast_top_of_stack_to_dtype(DTYPE_FLOAT);
+				switch (agg_type&DTYPE_MASK) {
+					case DTYPE_INT:
+						A4GL_cast_top_of_stack_to_dtype(DTYPE_DECIMAL+ENCODE_SIZE(((16<<8)+3)));
+						break;
+					case DTYPE_SMINT:
+						A4GL_cast_top_of_stack_to_dtype(DTYPE_DECIMAL+ENCODE_SIZE(((15<<8)+3)));
+						break;
+				}
+			} else {
+				A4GL_push_null(1,0);
+			}
+			break;
+
+
+		case 'N':
+				A4GL_push_param(agg,agg_type);
+				break;
+
+		case 'X':
+				A4GL_push_param(agg,agg_type);
+				break;
+
+		case 'C':
+				A4GL_push_int(*(long *)agg);
+				A4GL_cast_top_of_stack_to_dtype(DTYPE_DECIMAL+ENCODE_SIZE(((16<<8)+3)));
+				break;
+
+		case 'P':
+				A4GL_push_double((double)(*(long *)agg*100)/(double)aggcnt);
+				A4GL_cast_top_of_stack_to_dtype(DTYPE_DECIMAL+ENCODE_SIZE(((35<<8)+2)));
+				break;
+
+		default : 
+			printf("%c\n",type);
+			A4GL_assertion(1,"Not implemented yet");
+	}
+	return 1;
+}
+
+int A4GL_set_agg(char type, long *agg_type, void **aggptr, long *aggused) {
+int d1;
+int s1;
+void *ptr1;
+void *agg;
+	agg=*aggptr;
+
+	A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+	if (agg==0) {
+		*agg_type=d1+ENCODE_SIZE(s1);
+		if (*agg_type & DTYPE_MALLOCED) {
+			*agg_type -= DTYPE_MALLOCED;
+		}
+		*aggused=0;
+		switch (d1&DTYPE_MASK) {
+			case DTYPE_CHAR:
+			case DTYPE_VCHAR:
+				agg=malloc(s1+1); 
+				break;
+
+			case DTYPE_SERIAL:
+			case DTYPE_DATE:
+			case DTYPE_INT:
+				agg=malloc(sizeof(long)); 
+				*(long *)agg=0;
+				break;
+
+			case DTYPE_SMINT:
+				agg=malloc(sizeof(short)); 
+				*(short *)agg=0;
+				break;
+
+			case DTYPE_SMFLOAT:
+				agg=malloc(sizeof(float)); 
+				*(float *)agg=0.0;
+				break;
+
+			case DTYPE_FLOAT:
+				agg=malloc(sizeof(double)); 
+				*(double *)agg=0.0;
+				break;
+
+			case DTYPE_INTERVAL:
+				{
+				struct ival *i;
+				agg=malloc(sizeof(struct ival)); 
+				A4GL_setnull(d1&DTYPE_MASK,agg,s1);
+				i=(struct ival *)agg;
+				i->ltime=((struct ival *)ptr1)->ltime;
+				i->stime=((struct ival *)ptr1)->stime;
+				}
+				break;
+
+			default:
+				agg=malloc(255); 
+				memset(agg,0,255);
+				A4GL_setnull(d1&DTYPE_MASK,agg,s1);
+				break; /* should be enough for most */
+		}
+		*aggptr=agg;
+	}
+
+	switch (type) {
+		case 'S':  /* SUM */
+				if (!A4GL_isnull(d1,ptr1)) {
+					/* We only add it on - if its not null */
+					if (*aggused==0) {
+
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+					} else {
+						A4GL_push_param(agg,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_pushop(OP_ADD);
+					}
+					A4GL_pop_var2(agg,d1,s1);
+				}
+				/* But - we count it anyway */
+				(*aggused)++;
+				break;
+
+		case 'A':  /* AVERAGE */
+				
+				if (!A4GL_isnull(d1,ptr1)) {
+					if (*aggused==0) {
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+					} else {
+						A4GL_push_param(agg,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_pushop(OP_ADD);
+					}
+					A4GL_pop_var2(agg,d1,s1);
+					(*aggused)++;
+				}
+				break;
+				
+		case 'N':  /* MIN */
+				if (!A4GL_isnull(d1,ptr1)) {
+					// Have we got any value set yet ? 
+					if (*aggused==0) {
+						/* Nope - so this must be the minimum ! */
+						(*aggused)++;
+						A4GL_push_long(1);
+					} else {
+						/* Yes - check see if we're less */
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_push_param(agg,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_pushop(OP_LESS_THAN);
+					}
+
+					if (A4GL_pop_bool()) {
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_pop_var2(agg,(d1&DTYPE_MASK),s1);
+					}
+				}
+				break;
+		case 'X':  /* MAX */
+				if (!A4GL_isnull(d1,ptr1)) {
+					// Have we got any value set yet ? 
+					if (*aggused==0) {
+						/* Nope - so this must be the maximum ! */
+						(*aggused)++;
+						A4GL_push_long(1);
+					} else {
+						/* Yes - check see if we're more */
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_push_param(agg,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_pushop(OP_GREATER_THAN);
+					}
+
+					if (A4GL_pop_bool()) {
+						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_pop_var2(agg,(d1&DTYPE_MASK),s1);
+					}
+				}
+				break;
+				
+				
+
+		default : A4GL_assertion(1,"Not implemented yet"); break;
+	}
+
+	return 1;
+}
+
+int A4GL_init_agg(void **aggptr, int type) {
+void *agg;
+agg=*aggptr;
+
+if (agg) {
+	free(agg);
+	agg=0;
+	*aggptr=0;
+}
+
+return 1;
+}
+
 /* ============================= EOF ================================ */

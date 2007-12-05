@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.68 2007-11-30 22:33:26 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.69 2007-12-05 14:08:14 mikeaubury Exp $
 #
 */
 
@@ -422,7 +422,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		if (p_indicat) *p_indicat=0;
 			if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 			if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4gl)) {rsetnull(CINVTYPE,(void *)infx);return;}
-			A4GL_push_interval(a4gl);
+			A4GL_push_interval(a4gl, size);
 			ptr=A4GL_char_pop();
 
 	#ifdef DIALECT_INFORMIX
@@ -469,7 +469,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 
 	// Debugging stuff only
-			A4GL_push_interval(a4gl);
+			A4GL_push_interval(a4gl, size);
 			ptr=A4GL_char_pop();
 		A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
 		A4GL_debug("                Informix=%s\n",buff);
@@ -483,9 +483,40 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 #ifdef DIALECT_POSTGRES
 
+/* In postgres - there is no INTERVAL type - so we'll bind as a character string... */
 void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,char mode)  {
 short indicat=0;
-	printf("A4GL_copy_interval for postgres not implemented yet\n");
+char *p;
+
+A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
+
+
+	if (mode=='i') {
+			if (p_indicat) *p_indicat=0;
+			if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4glv) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+			if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4glv)) {
+				rsetnull(CCHARTYPE,infxv);
+				return;
+			}
+		
+		A4GL_push_interval(a4glv,size);
+		p=A4GL_char_pop();
+		A4GL_trim(p); 
+		strcpy((char *)infxv,p);
+		free(p);
+		A4GL_debug("copy interval to char - > %s",infxv);
+	}
+
+
+	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
+		if (indicat==-2) return;
+		if (indicat==-1) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4glv,size); return;}
+		A4GL_debug("Copy : '%s' from character to a4gl interval",infxv);
+		if (risnull(CCHARTYPE,(void*)infxv)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4glv,size); return;}
+		A4GL_push_char(infxv);
+		A4GL_pop_var2(a4glv, DTYPE_INTERVAL,size);
+	}
 	if (p_indicat) indicat=*p_indicat;
 
 }

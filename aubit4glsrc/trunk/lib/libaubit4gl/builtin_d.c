@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.92 2007-10-11 08:29:11 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.93 2007-12-05 14:08:13 mikeaubury Exp $
 #
 */
 
@@ -760,13 +760,12 @@ if (A4GL_isno(acl_getenv("NUMERICCLIPPED"))) {
 }
 
   if (isnumeric) {
-		return; // does nothing..
+		return 1; // does nothing..
   }
   z = A4GL_char_pop ();
 
   if (strlen(z)) {
 	if (isnumeric) {
-		char *ptr;
   		A4GL_lrtrim (z);
 	} else {
 		
@@ -951,7 +950,7 @@ A4GL_func_using()
 	
 		//@ENV FMTDATETONUMBER formats a date to number when using a numeric format
 		if (A4GL_isyes(acl_getenv("FMTDATETONUMBER"))) {
-			sprintf(buff,"%d",d);
+			sprintf(buff,"%ld",d);
                 	a4gl_using_from_string (z, fmtlen, fmt, buff,0);
 		}
                 A4GL_push_char (z);
@@ -1051,34 +1050,19 @@ A4GL_push_dtime (struct A4GLSQL_dtime *p)
  * @todo Describe function
  */
 void
-A4GL_push_interval (struct ival *p)
+A4GL_push_interval (struct ival *p,int size)
 {
   struct ival *ptr;
   struct ival *ival;
   ptr = (struct ival *) acl_malloc (sizeof (struct ival), "push_ival");
   memset(ptr,0,sizeof(struct ival));
   memcpy (ptr, p, sizeof (struct ival));
+
   A4GL_debug ("Copied - %x %x", ptr->stime, ptr->ltime);
-  A4GL_push_param (ptr, DTYPE_INTERVAL + DTYPE_MALLOCED);
-  //for (a=0;a<23;a++) { A4GL_debug("Ival %d %c",a,ival->data[a]); }
+
+  A4GL_push_param (ptr, DTYPE_INTERVAL + DTYPE_MALLOCED+ENCODE_SIZE(size));
 
 ival=ptr;
-/*
-  SPRINTF24 (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-           ival->data[0], ival->data[1], ival->data[2], ival->data[3],
-           ival->data[4], ival->data[5],
-           ival->data[6], ival->data[7],
-           ival->data[8], ival->data[9],
-           ival->data[10], ival->data[11],
-           ival->data[12], ival->data[13],
-           ival->data[14], ival->data[15],
-           ival->data[16], ival->data[17], ival->data[18],
-           ival->data[19], ival->data[20], ival->data[21],
-           ival->data[22], ival->data[23]);
-A4GL_debug("buff=%s",buff);
-*/
-
-//debug_print_stack();
 }
 
 /**
@@ -1209,7 +1193,8 @@ A4GL_push_variable (void *ptr, int dtype)
 #ifdef DEBUG
 		A4GL_debug("Interval - %d %d",dtype,DTYPE_INTERVAL);
 #endif
-      A4GL_push_interval (ptr);
+	//printf("%x\n", dtype);
+      A4GL_push_interval (ptr,dtype>>16);
       return;
     }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.199 2007-11-30 22:33:26 mikeaubury Exp $
+# $Id: esql.ec,v 1.200 2007-12-05 14:08:15 mikeaubury Exp $
 #
 */
 
@@ -191,7 +191,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.199 2007-11-30 22:33:26 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.200 2007-12-05 14:08:15 mikeaubury Exp $";
 #endif
 
 
@@ -779,9 +779,9 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
         a4gl=a4glv;
                 if (mode=='i') {
                         char *ptr;
-                        char buff[255];
+                        char buff[255]="";
                         if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4gl)) {rsetnull(CINVTYPE,(void *)infx);return;}
-                        A4GL_push_interval((void *)a4gl);
+                        A4GL_push_interval((void *)a4gl, size);
                         ptr=A4GL_char_pop();
 
                 if (!A4GL_isyes(acl_getenv("KEEP_QUALIFIER"))) {
@@ -818,7 +818,7 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
                         	//A4GL_pop_param(a4gl,DTYPE_INTERVAL,size);
 	
 				// DEBUG
-                        	A4GL_push_interval(a4gl);
+                        	A4GL_push_interval(a4gl,size);
                         	ptr=A4GL_char_pop();
                 		A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
                 		A4GL_debug("                Informix=%s\n",buff);

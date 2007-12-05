@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.121 2007-11-07 10:19:18 mikeaubury Exp $
+# $Id: builtin.c,v 1.122 2007-12-05 14:08:13 mikeaubury Exp $
 #
 */
 
@@ -1195,7 +1195,7 @@ acli_interval (char *s, int n)
   c.stime = n / 16;
   A4GL_ctoint (s, &c, n);
   A4GL_debug ("acli_interval - pop'd c - n=%x", n);
-  A4GL_push_interval (&c);
+  A4GL_push_interval (&c,n);
 
 }
 

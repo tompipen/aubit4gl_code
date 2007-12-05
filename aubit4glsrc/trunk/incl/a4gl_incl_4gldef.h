@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.114 2007-10-25 19:46:18 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.115 2007-12-05 14:08:12 mikeaubury Exp $
 */
 
 /**
@@ -493,6 +493,11 @@ struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
 
 
 #include "a4gl_rep_structure.h"
+
+int A4GL_set_agg(char type, long *agg_type, void **aggptr, long *aggused) ;
+int A4GL_push_agg(char type, long agg_type, void *agg, long aggcnt);
+int A4GL_init_agg(void **aggptr, int type);
+
 
 int A4GL_push_substr (char *ca, int dtype, int a, int b, ...) ;
 int A4GL_report_lineno(struct rep_structure *rep);

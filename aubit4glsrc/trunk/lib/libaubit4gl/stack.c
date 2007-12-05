@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.197 2007-11-30 22:33:26 mikeaubury Exp $
+# $Id: stack.c,v 1.198 2007-12-05 14:08:13 mikeaubury Exp $
 #
 */
 
@@ -380,6 +380,14 @@ A4GL_pop_double (void)
   double ptr;
   A4GL_pop_param (&ptr, DTYPE_FLOAT, 0);
   return ptr;
+}
+
+
+void A4GL_cast_top_of_stack_to_dtype(int dtype) {
+char buff1[10000];
+//char buff2[10000];
+A4GL_pop_var2(buff1,dtype&DTYPE_MASK, DECODE_SIZE(dtype));
+A4GL_push_variable(buff1,dtype);
 }
 
 /**
@@ -1352,8 +1360,7 @@ A4GL_debug("51 Have data");
       A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
 
 
-      if (d1 != DTYPE_INTERVAL || d1 != DTYPE_DTIME || d2 != DTYPE_INTERVAL
-	  || d2 != DTYPE_DTIME)
+      if ((d1&DTYPE_MASK) != DTYPE_INTERVAL || (d1&DTYPE_MASK) != DTYPE_DTIME || (d2&DTYPE_MASK) != DTYPE_INTERVAL || (d2&DTYPE_MASK) != DTYPE_DTIME)
 	{
 	  doublea = A4GL_pop_double ();
 	  doubleb = A4GL_pop_double ();

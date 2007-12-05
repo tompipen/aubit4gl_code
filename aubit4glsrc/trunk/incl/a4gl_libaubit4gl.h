@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.295 2007-11-30 14:26:13 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.296 2007-12-05 14:08:12 mikeaubury Exp $
 #
 */
 
@@ -1261,7 +1261,7 @@ enum cmd_types {
   void A4GL_push_char (char *p);
   void A4GL_push_empty_char(void);
   void A4GL_push_variable (void *ptr, int dtype);
-  void A4GL_push_interval (struct ival *p);
+  void A4GL_push_interval (struct ival *p,int size);
   void A4GL_pop_args (int a);
 #endif
 
@@ -1565,6 +1565,8 @@ void A4GL_push_decimal_str(char *p);
   int A4GL_conv_to_interval (int a);
   int A4GL_chknull_boolean (int n, int n1, int n2,int d1,int d2);
   int A4GL_chknull (int n, int n1, int n2,int d1,int d2);
+  void A4GL_cast_top_of_stack_to_dtype(int dtype) ;
+
 
   /* ============================ calldll.c ============================== */
   void *A4GL_dl_openlibrary (char *type, char *name);
@@ -1581,6 +1583,7 @@ void A4GL_push_decimal_str(char *p);
 int A4GL_stodec (void *a, void *z, int size);
 int A4GL_stol (void *aa, void *zi, int sz_ignore);
 int A4GL_valid_int (char *s, int *data, int size);
+
 
   /* ============================ fglwrap.c ============================== */
   //int A4GL_fgl_error (int a, char *s, int err, int stat);

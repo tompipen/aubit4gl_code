@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.155 2007-11-20 14:09:30 mikeaubury Exp $
+# $Id: conv.c,v 1.156 2007-12-05 14:08:13 mikeaubury Exp $
 #
 */
 
@@ -558,7 +558,7 @@ int A4GL_dectoint(void *a_dec, void *b_int, int size_b) {
 static void A4GL_trim_trailing_0(char *s) {
 int a;
 int last_zero=-1;
-int has_dot;
+int has_dot=0;
 A4GL_lrtrim(s);
 for (a=0;a<strlen(s);a++) {
 	if (s[a]=='.') has_dot=1;
@@ -2535,7 +2535,7 @@ A4GL_sftoc (void *aa, void *zz, int c)
   char *buff;
   a = (float *) aa;
   z = (char *) zz;
-  buff=malloc(c+20);
+  buff=malloc(c+40);
   strcpy (buff, "******************************************");
   if (A4GL_digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
     {

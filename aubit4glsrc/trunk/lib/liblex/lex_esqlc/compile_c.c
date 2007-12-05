@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.385 2007-12-04 13:28:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.386 2007-12-05 14:08:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.385 2007-12-04 13:28:19 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.386 2007-12-05 14:08:14 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -118,7 +118,11 @@ char cmodname[256]="";
 
 int doing_a_report=0;
 static int find_slice(char *av, char *s, int w) ;
+void merge_files (void);
 
+char filename_for_h[132];
+char filename_for_c[132];
+char filename_for_output[132];
 
 /*
 =====================================================================
@@ -472,8 +476,6 @@ static char *is_single_string(struct expr_str_list *ptr) {
 static void
 open_outfile (void)
 {
-  char filename_for_h[132];
-  char filename_for_c[132];
   char err[132];
   char *ptr;
 
@@ -552,6 +554,8 @@ open_outfile (void)
 
 	}
 	strcat(filename_for_c,A4GL_get_esql_ext());
+	strcpy(filename_for_output,filename_for_c);
+	strcat(filename_for_c,"tmp");
     }
   else
     {
@@ -559,20 +563,33 @@ open_outfile (void)
 	{
 	  /* C#*/
 	  strcat (filename_for_c, ".csp");
+	  strcpy (filename_for_output, filename_for_c);
+	strcat(filename_for_c,"tmp");
 	}
       else
 	{
 	  strcat (filename_for_c, ".c");
+	  strcpy (filename_for_output, filename_for_c);
+	  strcat(filename_for_c,"tmp");
 	}
     }
 
   if (A4GL_isyes(acl_getenv("DOING_CM"))) {
   	strcat (filename_for_h, "_xxx.h");
   } else {
-  	strcat (filename_for_h, ".h");
+  	strcat (filename_for_h, ".htmp");
   }
 
   strcat (err, ".err");
+
+
+  hfile = A4GL_mja_fopen (filename_for_h, "w");
+  if (hfile == 0)
+    {
+      printf ("Unable to open file %s (Check permissions)\n", filename_for_h);
+      exit (3);
+    }
+
 
   outfile = A4GL_mja_fopen (filename_for_c, "w");
   if (outfile == 0)
@@ -591,23 +608,23 @@ open_outfile (void)
 	case E_DIALECT_NONE: A4GL_assertion(1,"No ESQL/C Dialect"); break;
 
 	case E_DIALECT_INFORMIX:
-	  FPRINTF (outfile, "#define DIALECT_INFORMIX\n");
+	  FPRINTF (hfile, "#define DIALECT_INFORMIX\n");
 	  if (!A4GL_isno(acl_getenv("ALWAYS_CONVERT_PREPARED"))) {
-		  FPRINTF(outfile,"#define ALWAYS_CONVERT_PREPARED\n");
+		  FPRINTF(hfile,"#define ALWAYS_CONVERT_PREPARED\n");
 	  }
 	  break;
 	case E_DIALECT_POSTGRES:
-	  FPRINTF (outfile, "#define DIALECT_POSTGRES\n");
+	  FPRINTF (hfile, "#define DIALECT_POSTGRES\n");
 	  break;
 	case E_DIALECT_SAPDB:
-	  FPRINTF (outfile, "#define DIALECT_SAPDB\n");
+	  FPRINTF (hfile, "#define DIALECT_SAPDB\n");
 	  break;
 	case E_DIALECT_INGRES:
-	  FPRINTF (outfile, "#define DIALECT_INGRES\n");
-	  FPRINTF (outfile, "EXEC SQL INCLUDE SQLCA;\n");
+	  FPRINTF (hfile, "#define DIALECT_INGRES\n");
+	  FPRINTF (hfile, "EXEC SQL INCLUDE SQLCA;\n");
 	  break;
 	case E_DIALECT_INFOFLEX:
-	  FPRINTF (outfile, "#define DIALECT_INFOFLEX\n");
+	  FPRINTF (hfile, "#define DIALECT_INFOFLEX\n");
 	  break;
 
 	}
@@ -616,34 +633,36 @@ open_outfile (void)
 
   if (strcmp (acl_getenv ("LEXTYPE"), "CS") == 0)
     {
-      FPRINTF (outfile, "#define THIS_MODULE %s\n", outputfilename);
-      FPRINTF (outfile, "#include \"cs_header.h\"\n");
+      FPRINTF (hfile, "#define THIS_MODULE %s\n", outputfilename);
+      FPRINTF (hfile, "#include \"cs_header.h\"\n");
     }
   else
     {
-      FPRINTF (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
+      FPRINTF (hfile, "#include \"a4gl_incl_4glhdr.h\"\n");
     }
 
   if (doing_esql ())
     {
       if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
-      		FPRINTF (outfile, "#define ESQL_USING_INDICATORS\n");
+      		FPRINTF (hfile, "#define ESQL_USING_INDICATORS\n");
 	}
 	if (esql_type()==4) {
-      		FPRINTF (outfile, "EXEC SQL WHENEVER SQLERROR CONTINUE;\n");
+      		FPRINTF (hfile, "EXEC SQL WHENEVER SQLERROR CONTINUE;\n");
 	}
-      FPRINTF (outfile, "#include \"a4gl_esql.h\"\n");
+      FPRINTF (hfile, "#include \"a4gl_esql.h\"\n");
     }
 
+/*
   if (strchr (filename_for_h, '/') != 0)
     FPRINTF (outfile, "#include \"%s\"\n", strrchr (filename_for_h, '/') + 1);
   else
     FPRINTF (outfile, "#include \"%s\"\n", filename_for_h);
+*/
 
 
   if (doing_cs ())
     {
-      FPRINTF (outfile, "static string module_name=\"%s.4gl\";\n",
+      FPRINTF (hfile, "static string module_name=\"%s.4gl\";\n",
 	       outputfilename);
 
     }
@@ -661,19 +680,12 @@ open_outfile (void)
 	    }
 
 	    if (A4GL_doing_pcode()) {
-      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", buff);
+      		FPRINTF (hfile, "static char *_module_name=\"%s.4gl\";\n", buff);
 	    } else {
-      		FPRINTF (outfile, "static char *_module_name=\"%s.4gl\";\n", buff);
+      		FPRINTF (hfile, "static char *_module_name=\"%s.4gl\";\n", buff);
       	    }
     }
   SPRINTF1(cmodname,"%s.4gl",outputfilename);
-
-  hfile = A4GL_mja_fopen (filename_for_h, "w");
-  if (hfile == 0)
-    {
-      printf ("Unable to open file %s (Check permissions)\n", filename_for_h);
-      exit (3);
-    }
 
 }
 
@@ -1330,78 +1342,80 @@ pr_report_agg (void)
       A4GL_debug ("pr_report_agg - %c %d z=%d\n", t, a, z);
 #endif
 
-      if (t == 'C')
+      if (t == 'C') /* Count */
 	{
 	  LEXLIB_print_expr (sreports[z].rep_where_expr);
 	  printc ("if (A4GL_pop_bool()) _g%d++;\n", a);
 	}
 
-      if (t == 'P')
+      if (t == 'P') /* Percent */
 	{
 	  printc ("_g%d++;", a + 1);
 	  LEXLIB_print_expr (sreports[z].rep_where_expr);
 	  printc (" if (A4GL_pop_bool()) _g%d++; \n", a);
 	}
 
-      if (t == 'S')
+      if (t == 'S') /* SUM */
 	{
-	  A4GL_debug ("X0");
 	  LEXLIB_print_expr (sreports[z].rep_where_expr);
-	  A4GL_debug ("X1");
 	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  A4GL_debug ("X2");
 	  LEXLIB_print_expr (sreports[z].rep_cond_expr);
-	  A4GL_debug ("X3");
-
-
- 		if (A4GL_doing_pcode()) {
-	  		printc ("A4GL_pop_into_double_null_as_zero(&_res);");
-		} else {
+  	  printc ("A4GL_set_agg('S',&_gt_%d,&_g%d,&_g%dused);",a,a,a);
+	  printc("}");
+		/*
+ 	  	if (A4GL_doing_pcode()) {
+	 		printc ("A4GL_pop_into_double_null_as_zero(&_res);");
+	  	} else {
 	  		printc ("_res=A4GL_pop_double_null_as_zero();");
-		}
+	  	}
+		*/
 
-	  printc ("_g%dused++; _g%d+=_res;}\n ", a,a);
+	  //printc ("_g%dused++; _g%d+=_res;}\n ", a,a);
 	}
 
-      if (t == 'A')
+      if (t == 'A') /* Average */
+	{
+	  LEXLIB_print_expr (sreports[z].rep_where_expr);
+	  printc ("if (A4GL_pop_bool()) {");
+	  LEXLIB_print_expr (sreports[z].rep_cond_expr);
+  	  printc ("A4GL_set_agg('A',&_gt_%d,&_g%d,&_g%d);",a,a,a+1);
+	  printc("}");
+	  //printc ("if (!A4GL_isnull(3,&_res)) { _g%d+=_res;_g%d++;}}\n", a, a + 1);
+	}
+
+      if (t == 'N') /* Min */
 	{
 	  LEXLIB_print_expr (sreports[z].rep_where_expr);
 	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  LEXLIB_print_expr (sreports[z].rep_cond_expr);
+  	  printc ("A4GL_set_agg('N',&_gt_%d,&_g%d,&_g%dused);",a,a,a);
+	  printc("}");
 
- 	  if (A4GL_doing_pcode()) {
-	  	printc ("A4GL_pop_double_into(&_res); ");
-	  } else {
-	  	printc ("_res=A4GL_pop_double(); ");
-	  }
-
-	  printc ("if (!A4GL_isnull(3,&_res)) { _g%d+=_res;_g%d++;}}\n", a, a + 1);
-	}
-
-      if (t == 'N')
-	{
-	  LEXLIB_print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  LEXLIB_print_expr (sreports[z].rep_cond_expr);
+	/*
  	  if (A4GL_doing_pcode()) {
 	  	printc ("A4GL_pop_double_into(&_res); ");
 	  } else {
 	  	printc ("_res=A4GL_pop_double();");
 	  }
 	  printc ("if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
+	*/
 	}
 
-      if (t == 'X')
+      if (t == 'X') /* Max */
 	{
 	  LEXLIB_print_expr (sreports[z].rep_where_expr);
 	  printc ("if (A4GL_pop_bool()) {double _res;");
 	  LEXLIB_print_expr (sreports[z].rep_cond_expr);
+  	  printc ("A4GL_set_agg('X',&_gt_%d,&_g%d,&_g%dused);",a,a,a);
+	  printc("}");
+	/*
  	  if (A4GL_doing_pcode()) {
 	  	printc ("A4GL_pop_double_into(&_res); ");
 	  } else {
 	  	printc ("_res=A4GL_pop_double();");
 	  }
 	  printc ("if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
+		*/
 	}
 
     }
@@ -1445,48 +1459,61 @@ pr_nongroup_report_agg_clr (void)
 
 /**
  * Generate the C code to clear the report agregate conditions.
- */
-static void
-pr_report_agg_clr (void)
+ */ 
+static void 
+pr_report_agg_clr (void) 
 {
   int z;
   int a;
   int t;
   int in_b;
-char b[255];
+  char b[255];
   for (z = 0; z < sreports_cnt; z++)
+    
     {
-/*
-      strcpy (s2, sreports[z].rep_cond);
-      strcpy (s1, sreports[z].rep_expr);
-*/
       a = sreports[z].a;
       t = sreports[z].t;
-	SPRINTF1(b,"%d",sreports[z].in_b);
-      in_b = gen_ord(b);
-      
+      SPRINTF1 (b, "%d", sreports[z].in_b);
+      in_b = gen_ord (b);
       if (in_b > 0)
+	
 	{
 	  printc ("if (_nargs==-%d&&acl_ctrl==REPORT_AFTERGROUP) {\n", in_b);
-	  printc ("/* t=%c */\n", t);
+
 	  if (t == 'C' || t == 'N' || t == 'X' || t == 'S')
+	    
 	    {
-	      printc ("_g%d=0;\n", a);
+	      if (t == 'C') 
+		{
+		  printc ("_g%d=0;\n", a, a);
+		} else {
+		  printc ("A4GL_init_agg(&_g%d,_gt_%d);\n", a, a);
+		}
 	    }
 
-	  if (t == 'N' || t == 'X' || t=='S')
+	  if (t == 'N' || t == 'X' || t == 'S')
+	    
 	    {
 	      printc ("_g%dused=0;\n", a);
 	    }
 
-	  if (t == 'P' || t == 'A')
+	  if (t == 'P')
 	    {
-	      printc ("_g%d=0;_g%d=0;\n", a + 1, a);
+	      printc ("_g%d=0;", a + 1);
+	      printc ("_g%d=0;\n", a);
 	    }
+
+	  if (t == 'A')
+	    {
+	      printc ("A4GL_init_agg(&_g%d,_gt_%d);\n", a, a);
+	      printc ("_g%d=0;", a + 1);
+	    }
+
 	  printc ("}\n");
 	}
     }
 }
+
 
 /**
  * Do not do nothing. - called from /compilers/4glc/mod.c
@@ -1813,22 +1840,34 @@ real_print_expr (struct expr_str *ptr)
 
 	case ET_EXPR_AGGREGATE :
 		if (ptr->u_data.expr_agg->agg_type == 'C') { 
-			printc("A4GL_push_int(_g%d);\n",ptr->u_data.expr_agg->expr_num);
+			//printc("A4GL_push_int(_g%d);\n",ptr->u_data.expr_agg->expr_num);
+			printc("A4GL_push_agg('C',2, &_g%d, 1);\n",ptr->u_data.expr_agg->expr_num);
 		}
 
 		if (ptr->u_data.expr_agg->agg_type == 'P') { 
-			printc("A4GL_push_double((double)_g%d/(double)_g%d);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1); 
+			printc("A4GL_push_agg('P',2, &_g%d, _g%d);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1);
+			//printc("A4GL_push_double((double)(_g%d*100)/(double)_g%d);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1); 
 		}
 
 		if (ptr->u_data.expr_agg->agg_type == 'S') { 
-			printc("if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num); 
+			printc("A4GL_push_agg('S',_gt_%d, _g%d, _g%dused);\n",ptr->u_data.expr_agg->expr_num, ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num);
+			//printc("if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num); 
 		}
 
-		if (ptr->u_data.expr_agg->agg_type == 'N' || ptr->u_data.expr_agg->agg_type == 'X') {
-			printc("A4GL_push_double(_g%d);\n",ptr->u_data.expr_agg->expr_num);
+		if (ptr->u_data.expr_agg->agg_type == 'N') {
+			printc("A4GL_push_agg('N',_gt_%d, _g%d, _g%dused);\n",ptr->u_data.expr_agg->expr_num, ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num);
+			//printc("A4GL_push_double(_g%d);\n",ptr->u_data.expr_agg->expr_num);
 		}
+
+		if (ptr->u_data.expr_agg->agg_type == 'X') {
+			printc("A4GL_push_agg('X',_gt_%d, _g%d, _g%dused);\n",ptr->u_data.expr_agg->expr_num, ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num);
+			//printc("A4GL_push_double(_g%d);\n",ptr->u_data.expr_agg->expr_num);
+		}
+
+
  		if (ptr->u_data.expr_agg->agg_type == 'A') {
-			printc("A4GL_push_double(_g%d/(double)_g%d);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1);
+			printc("A4GL_push_agg('A',_gt_%d, _g%d, _g%d);\n",ptr->u_data.expr_agg->expr_num, ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1);
+			//printc("A4GL_push_double(_g%d/(double)_g%d);\n",ptr->u_data.expr_agg->expr_num,ptr->u_data.expr_agg->expr_num+1);
 		}
  		break;
 	      
@@ -7006,6 +7045,8 @@ LEXLIB_A4GL_lex_parsed_fgl ()
     }
   if (hfile)
     fclose (hfile);
+
+  merge_files();
 }
 
 void
@@ -8232,7 +8273,7 @@ char *LEXLIB_get_keyval_str(char *s) {
 int LEXLIB_print_agg_defines(char t,int a) {
 
 
-  if (t == 'C')
+  if (t == 'C') /* Count */
     {
           A4GL_lex_printh ("static long _g%d=0;\n", a);
 
@@ -8241,31 +8282,35 @@ int LEXLIB_print_agg_defines(char t,int a) {
       return 1;
     }
 
-  if (t == 'P')
+  if (t == 'P') /* Percent */
     {
           A4GL_lex_printh ("static long _g%d=0,_g%d=0;\n", a, a + 1);
 	//sprintf(usage,"A4GL_push_double((double)_g%d/(double)_g%d);\n",a,a+1);
       return 2;
     }
 
-  if (t == 'S')
+  if (t == 'S') /* Sum */
     {
-          A4GL_lex_printh ("static int _g%dused=0;\n", a);
-          A4GL_lex_printh ("static double _g%d=0;\n", a);
+          A4GL_lex_printh ("static long _g%dused=0;\n", a);
+          A4GL_lex_printh ("static void* _g%d=0;\n", a);
+          A4GL_lex_printh ("static long _gt_%d=0;\n", a);
 	//sprintf(usage,"if (_g%dused) A4GL_push_double(_g%d); else A4GL_push_null(1,0);\n",a,a);
       return 1;
     }
-  if (t == 'N' || t == 'X')
+
+  if (t == 'N' || t == 'X') /* Min/Max */
     {
-          A4GL_lex_printh ("static double _g%d=0;\n", a);
-          A4GL_lex_printh ("static int _g%dused=0;\n", a);
+          A4GL_lex_printh ("static void *_g%d=0;\n", a);
+          A4GL_lex_printh ("static long _gt_%d=0;\n", a);
+          A4GL_lex_printh ("static long _g%dused=0;\n", a);
 	//sprintf(usage,"A4GL_push_double(_g%d);\n",a);
       return 1;
     }
 
-  if (t == 'A')
+  if (t == 'A') 	/* Average */
     {
-          A4GL_lex_printh ("static double _g%d=0;\n", a);
+          A4GL_lex_printh ("static void *_g%d=0;\n", a);
+          A4GL_lex_printh ("static long _gt_%d=0;\n", a);
           A4GL_lex_printh ("static long   _g%d=0;\n", a + 1);
 	//sprintf(usage,"A4GL_push_double(_g%d/(double)_g%d);\n",a,a+1);
 
@@ -8394,5 +8439,76 @@ for (a=0;a<l->nbind;a++) {
         }
 }
 return 0;
+}
+
+
+
+
+
+void merge_files (void)
+{
+  FILE *h;
+  FILE *c;
+  char buff[100001];
+  FILE *final_o;
+
+
+  if (A4GL_isyes (acl_getenv ("A4GL_NOCFILE")))
+    {
+      A4GL_debug (">>> NO C FILES... ");
+      return;
+    }
+
+
+  A4GL_assertion (strlen (filename_for_c) == 0, "No cfile defined");
+  A4GL_assertion (strlen (filename_for_h) == 0, "No hfile defined");
+  A4GL_assertion (strlen (filename_for_output) == 0, "No outfile defined");
+  c = fopen (filename_for_c, "r");
+  h = fopen (filename_for_h, "r");
+
+  final_o = fopen (filename_for_output, "wb");
+  if (c == 0)
+    {
+      printf ("Can't open %s\n", filename_for_c);
+      exit (1);
+    }
+
+  if (h == 0)
+    {
+      printf ("Can't open %s\n", filename_for_h);
+      exit (1);
+    }
+
+  if (final_o == 0)
+    {
+      printf ("Can't open %s\n", filename_for_output);
+      exit (1);
+    }
+
+  while (1)
+    {
+      fgets (buff, 100000, h);
+      if (feof (h))
+	break;
+      A4GL_trim (buff);
+	  if (final_o)
+	    FPRINTF (final_o, "%s\n", buff);
+    }
+  fclose (h);
+  unlink (filename_for_h);
+
+  while (1)
+    {
+      fgets (buff, 100000, c);
+      if (feof (c))
+	break;
+      A4GL_trim (buff);
+      if (final_o)
+	FPRINTF (final_o, "%s\n", buff);
+
+    }
+  fclose (c);
+  unlink (filename_for_c);
+  fclose (final_o);
 }
 
