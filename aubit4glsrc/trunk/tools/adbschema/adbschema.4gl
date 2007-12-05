@@ -130,11 +130,31 @@ define
 		call usage()
 	end if
 
-	database lv_dbname
-
+	if fgl_getenv("USECONNECT")="Y" THEN
+	
+code
+{
+char lv_server[200];
+char lv_u[200];
+char lv_p[200];
+A4GL_trim(lv_dbname);
+sprintf(lv_server,"%s@%s",lv_dbname,acl_getenv("INFORMIXSERVER"));
+strcpy(lv_u,acl_getenv("SQLUID"));
+strcpy(lv_p,acl_getenv("SQLPWD"));
+if (strlen(lv_u) && strlen(lv_p) && strlen(lv_server)) {
+A4GL_trim(lv_server);
+A4GL_trim(lv_u);
+A4GL_trim(lv_p);
+A4GLSQL_init_session("default",lv_server,lv_u,lv_p);
+}
+}
+endcode
+	else
+		database lv_dbname
+	end if
 
 	if mv_silent=0 then
-		display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
+		display "ADBSCHEMA (c) 2005-2007 Aubit Computing Ltd"
 	end if
 
 	if lv_procname is not null then
@@ -300,7 +320,7 @@ end function
 
 function usage()
 	display " " 
-	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
+	display "ADBSCHEMA (c) 2005-2007 Aubit Computing Ltd"
 	display " " 
 	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] "
 	display "          [-U] [-U4GL] [-L] [-L4GL] [-no-owner] [-prefix-idx] [-q]"
