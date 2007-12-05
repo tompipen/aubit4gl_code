@@ -374,7 +374,6 @@ code
 		// Is it a select statement ?
 		// @todo - this needs refining as a select .. into temp would get caught..
 		if (list[a].type!='S'&&list[a].type!='s' && qry_type!=56) {
-A4GL_pause_execution();
 			if (isdump(list[a].type)) {
 					if (tolower(list[a].type)=='c') { /* UNLOAD */
 						raffected=asql_unload_data(&list[a],&err_at_col);
