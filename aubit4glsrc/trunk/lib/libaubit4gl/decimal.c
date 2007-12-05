@@ -1037,10 +1037,10 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
   M_APM mres;
   int o;
   fgldecimal *sum;
-  mres = m_apm_init ();
 
   if (s2)
     {
+      mres = m_apm_init ();
       m1 = A4GL_str_dot_to_m_apm (s1);
       m2 = A4GL_str_dot_to_m_apm (s2);
 
