@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.146 2007-10-15 17:11:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.147 2007-12-05 18:17:57 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.146 2007-10-15 17:11:31 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.147 2007-12-05 18:17:57 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2044,7 +2044,7 @@ A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 void
 A4GL_clr_menu_disp (ACL_Menu * menu)
 {
-  char *buff = 0;
+  static char *buff = 0;
   int w;
   w = UILIB_A4GL_get_curr_width ();
   A4GL_menu_setcolor (menu, NORMAL_TEXT);

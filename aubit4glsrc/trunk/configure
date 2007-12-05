@@ -23754,7 +23754,7 @@ fi
 ## ==================================================================
 
 AMAKE_SH="amake genmake prepmake"
-ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper adbaccess aperform aace_runner"
+ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper misql aperform aace_runner"
 #compilers/pcode/runner_fgl_wrapper is copied to bin by pcode makefile
 
 #obsolete: ecpg_wrap esql_wrap
@@ -58213,7 +58213,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				lib/libpacker/xdr/Makefile \
 				lib/libpacker/xml/Makefile \
    				lib/libexdata/Makefile \
-                tools/adbaccess/Makefile \
+                tools/misql/Makefile \
                 tools/loadmap/Makefile \
                 tools/adbload/Makefile \
                 tools/ide/Makefile \
@@ -61511,7 +61511,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.389 2007-11-29 19:13:20 mikeaubury Exp $
+| $Id: configure,v 1.390 2007-12-05 18:17:35 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

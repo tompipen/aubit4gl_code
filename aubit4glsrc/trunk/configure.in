@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.363 2007-11-29 19:13:19 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.364 2007-12-05 18:17:56 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.363 2007-11-29 19:13:19 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.364 2007-12-05 18:17:56 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -2526,7 +2526,7 @@ fi
 ## ==================================================================
 
 AMAKE_SH="amake genmake prepmake"
-ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper adbaccess aperform aace_runner"
+ALL_SH="aubit ecpg_wrap $AMAKE_SH runner_fgl_wrapper misql aperform aace_runner"
 #compilers/pcode/runner_fgl_wrapper is copied to bin by pcode makefile
 
 #obsolete: ecpg_wrap esql_wrap
@@ -10667,7 +10667,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				lib/libpacker/xdr/Makefile \
 				lib/libpacker/xml/Makefile \
    				lib/libexdata/Makefile \
-                tools/adbaccess/Makefile \
+                tools/misql/Makefile \
                 tools/loadmap/Makefile \
                 tools/adbload/Makefile \
                 tools/ide/Makefile \
@@ -11058,7 +11058,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.363 2007-11-29 19:13:19 mikeaubury Exp $
+| $Id: configure.in,v 1.364 2007-12-05 18:17:56 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

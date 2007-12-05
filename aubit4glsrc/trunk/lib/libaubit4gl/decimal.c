@@ -1028,132 +1028,167 @@ return ret;
 // s2 = string for second parameter (or 0 is its just a range check)
 // op = Operation being performed
 // overflow_dtype = datatype to check range for..
-int A4GL_apm_str_detect_overflow(char *s1, char *s2,int op,int overflow_dtype) {
-char buff[256];
-M_APM m1;
-M_APM m2;
-M_APM mres;
-int o;
-fgldecimal *sum;
-mres=m_apm_init();
-if (s2) {
-m1=A4GL_str_dot_to_m_apm(s1);
-m2=A4GL_str_dot_to_m_apm(s2);
+int
+A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
+{
+  char buff[256];
+  M_APM m1;
+  M_APM m2;
+  M_APM mres;
+  int o;
+  fgldecimal *sum;
+  mres = m_apm_init ();
+  if (s2)
+    {
+      m1 = A4GL_str_dot_to_m_apm (s1);
+      m2 = A4GL_str_dot_to_m_apm (s2);
 
-switch (op) {
-    case OP_ADD:
-	m_apm_add(mres, m1, m2);
-	break;
-		
-    case OP_SUB:
-	m_apm_subtract(mres, m1, m2); break;
+      switch (op)
+	{
+	case OP_ADD:
+	  m_apm_add (mres, m1, m2);
+	  break;
 
-    case OP_MULT:
-	m_apm_multiply(mres, m1, m2); break;
+	case OP_SUB:
+	  m_apm_subtract (mres, m1, m2);
+	  break;
 
-    case OP_DIV:
-	m_apm_divide(mres, 0, m1, m2); break;
+	case OP_MULT:
+	  m_apm_multiply (mres, m1, m2);
+	  break;
 
-    case OP_POWER:
-	/* m_apm_pow(mres, 0, m1, m2); break; */
+	case OP_DIV:
+	  m_apm_divide (mres, 0, m1, m2);
+	  break;
 
-    case OP_MOD:
-	return 0;
+	case OP_POWER:
+	case OP_MOD:
+		m_apm_free(m1);
+		m_apm_free(m2);
+	  return 0;
+	}
+	m_apm_free(m1);
+	m_apm_free(m2);
+    }
+  else
+    {
+      mres = A4GL_str_dot_to_m_apm (s1);
+    }
+
+  switch (overflow_dtype)
+    {
+    case DTYPE_INT8:
+      m1 = A4GL_str_dot_to_m_apm ("9223372036854775807");
+      o = m_apm_compare (mres, m1);
+      m_apm_free(m1);
+      if (o > 0)
+	{
+	  if (s2)
+	    {
+	      sum = malloc (sizeof (*sum));
+	      A4GL_init_dec (sum, 64, 0);
+	      m_apm_to_fixpt_string (buff, 0, mres);
+	      A4GL_str_dot_to_dec (buff, sum);
+	      A4GL_push_dec_dec (sum, 0, 0);
+	    }
+	  m_apm_free(mres);
+	  return 1;
+	}
+
+      m1 = A4GL_str_dot_to_m_apm ("-9223372036854775807");
+      m_apm_compare (mres, m1);
+      m_apm_free(m1);
+      if (o < 0)
+	{
+	  if (s2)
+	    {
+	      sum = malloc (sizeof (*sum));
+	      A4GL_init_dec (sum, 64, 0);
+	      m_apm_to_fixpt_string (buff, 0, mres);
+	      A4GL_str_dot_to_dec (buff, sum);
+	      A4GL_push_dec_dec (sum, 0, 0);
+	    }
+	  m_apm_free(mres);
+	  return 1;
+	}
+      break;
+
+    case DTYPE_INT:
+      m1 = A4GL_str_dot_to_m_apm ("2147483647");
+      o = m_apm_compare (mres, m1);
+      m_apm_free(m1);
+      if (o > 0)
+	{
+	  if (s2)
+	    {
+	      sum = malloc (sizeof (*sum));
+	      A4GL_init_dec (sum, 64, 0);
+	      m_apm_to_fixpt_string (buff, 0, mres);
+	      A4GL_str_dot_to_dec (buff, sum);
+	      A4GL_push_dec_dec (sum, 0, 0);
+	    }
+	  m_apm_free(mres);
+	  return 1;
+	}
+
+      m1 = A4GL_str_dot_to_m_apm ("-2147483648");
+      o = m_apm_compare (mres, m1);
+      m_apm_free(m1);
+      if (o < 0)
+	{
+	  if (s2)
+	    {
+	      sum = malloc (sizeof (*sum));
+	      A4GL_init_dec (sum, 64, 0);
+	      m_apm_to_fixpt_string (buff, 0, mres);
+	      A4GL_str_dot_to_dec (buff, sum);
+	      A4GL_push_dec_dec (sum, 0, 0);
+	    }
+	  m_apm_free(mres);
+	  return 1;
+	}
+      break;
+    case DTYPE_SMINT:
+      m1 = A4GL_str_dot_to_m_apm ("32767");
+      o = m_apm_compare (mres, m1);
+      m_apm_free(m1);
+      if (o > 0)
+	{
+	  if (s2)
+	    {
+	      sum = malloc (sizeof (*sum));
+	      A4GL_init_dec (sum, 64, 0);
+	      m_apm_to_fixpt_string (buff, 0, mres);
+	      A4GL_str_dot_to_dec (buff, sum);
+	      A4GL_push_dec_dec (sum, 0, 0);
+	    }
+	  m_apm_free(mres);
+	  return 1;
+	}
+
+      m1 = A4GL_str_dot_to_m_apm ("-32768");
+      o = m_apm_compare (mres, m1);
+      m_apm_free(m1);
+      if (o < 0)
+	{
+	  if (s2)
+	    {
+	      sum = malloc (sizeof (*sum));
+	      A4GL_init_dec (sum, 64, 0);
+	      m_apm_to_fixpt_string (buff, 0, mres);
+	      A4GL_str_dot_to_dec (buff, sum);
+	      A4GL_push_dec_dec (sum, 0, 0);
+	    }
+	  m_apm_free(mres);
+	  return 1;
+	}
+      break;
+    }
+
+  m_apm_free(mres);
+  return 0;
+
 }
-}  else {
-mres=A4GL_str_dot_to_m_apm(s1);
-}
-
-switch (overflow_dtype) {
-	case DTYPE_INT8:
-		m1= A4GL_str_dot_to_m_apm("9223372036854775807");
-		o=m_apm_compare(mres,m1);
-		if (o>0) {
-			if (s2) {
-				sum=malloc(sizeof(*sum));
-				A4GL_init_dec(sum,64,0);
-        			m_apm_to_fixpt_string(buff, 0, mres);
-        			A4GL_str_dot_to_dec(buff,sum);
-				A4GL_push_dec_dec(sum,0,0);
-			}
-			return 1;
-		}
-
-		m1= A4GL_str_dot_to_m_apm("-9223372036854775807");
-		m_apm_compare(mres,m1);
-		if (o<0) {
-			if (s2) {
-				sum=malloc(sizeof(*sum));
-				A4GL_init_dec(sum,64,0);
-        			m_apm_to_fixpt_string(buff, 0, mres);
-        			A4GL_str_dot_to_dec(buff,sum);
-				A4GL_push_dec_dec(sum,0,0);
-			}
-			return 1;
-		}
-		break;
-
-	case DTYPE_INT:
-		m1= A4GL_str_dot_to_m_apm("2147483647");
-		o=m_apm_compare(mres,m1);
-		if (o>0) {
-			if (s2) {
-				sum=malloc(sizeof(*sum));
-				A4GL_init_dec(sum,64,0);
-        			m_apm_to_fixpt_string(buff, 0, mres);
-        			A4GL_str_dot_to_dec(buff,sum);
-				A4GL_push_dec_dec(sum,0,0);
-			}
-			return 1;
-		}
-
-		m1= A4GL_str_dot_to_m_apm("-2147483648");
-		o=m_apm_compare(mres,m1);
-		if (o<0) {
-			if (s2) {
-				sum=malloc(sizeof(*sum));
-				A4GL_init_dec(sum,64,0);
-        			m_apm_to_fixpt_string(buff, 0, mres);
-        			A4GL_str_dot_to_dec(buff,sum);
-				A4GL_push_dec_dec(sum,0,0);
-			}
-			return 1;
-		}
-		break;
-	case DTYPE_SMINT:
-		m1= A4GL_str_dot_to_m_apm("32767");
-		o=m_apm_compare(mres,m1);
-		if (o>0) {
-			if (s2) {
-				sum=malloc(sizeof(*sum));
-				A4GL_init_dec(sum,64,0);
-        			m_apm_to_fixpt_string(buff, 0, mres);
-        			A4GL_str_dot_to_dec(buff,sum);
-				A4GL_push_dec_dec(sum,0,0);
-			}
-			return 1;
-		}
-
-		m1= A4GL_str_dot_to_m_apm("-32768");
-		o=m_apm_compare(mres,m1);
-		if (o<0) {
-			if (s2) {
-				sum=malloc(sizeof(*sum));
-				A4GL_init_dec(sum,64,0);
-        			m_apm_to_fixpt_string(buff, 0, mres);
-        			A4GL_str_dot_to_dec(buff,sum);
-				A4GL_push_dec_dec(sum,0,0);
-			}
-			return 1;
-		}
-		break;
-
-
-}
-return 0;
-
-}
-
 #endif
 //a4gl_dececvt()
 //a4gl_decfcvt() 
