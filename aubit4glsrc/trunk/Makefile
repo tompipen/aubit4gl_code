@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.45 2007-07-12 08:53:28 mikeaubury Exp $
+# $Id: Makefile,v 1.46 2007-12-05 15:39:40 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -58,7 +58,7 @@ endif
 
 ###############################
 #Things we compile with 'extra' target
-ALL_EXTRA  			=ide odbctest libhtml adbaccess adbload
+ALL_EXTRA  			=ide odbctest libhtml misql adbload
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
 ALL_EXTRA_BROKEN=
@@ -335,10 +335,10 @@ libhtml:
 	$(MAKE) -C tools/html libA4GL_HTML${SO_EXT}
 
 #This is now more or less obsolete - use asql instead
-adbaccess:
-#	$(MAKE) -C tools/adbaccess use.amake
+misql:
+#	$(MAKE) -C tools/misql use.amake
 #We have a problem with getopt_long() on CygWin, so use 4glpc for now:
-	$(MAKE) -C tools/adbaccess misql.4ae
+	$(MAKE) -C tools/misql misql.4ae
 
 odbctest:
 	$(MAKE) -C tools/odbctest
@@ -541,7 +541,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/afinderr clean
 	$(MAKE) -C tools/configuration clean
 	$(MAKE) -C tools/asql clean
-	$(MAKE) -C tools/adbaccess clean
+	$(MAKE) -C tools/misql clean
 	$(MAKE) -C tools/aupscol clean
 	$(MAKE) -C tools/adbload2 clean
 	$(MAKE) -C help clean
@@ -565,7 +565,7 @@ clean.tools:
 	$(MAKE) -C tools/ide clean
 	$(MAKE) -C tools/html clean
 	$(MAKE) -C tools/jabber clean
-	$(MAKE) -C tools/adbaccess clean
+	$(MAKE) -C tools/misql clean
 	$(MAKE) -C tools/adbload clean
 	$(MAKE) -C tools/odbctest clean
 	$(MAKE) -C tools/4gl_beautify/dbbeauty clean
@@ -602,7 +602,7 @@ clean.makefiles:
     lib/extra_libs/string/Makefile lib/libui/ui_curses/Makefile \
     tools/test/db/Makefile tools/test/lang/Makefile \
 	tools/test/regression/Makefile tools/test/db/Makefile \
-    tools/adbaccess/Makefile tools/adbload/Makefile \
+    tools/misql/Makefile tools/adbload/Makefile \
     tools/ide/Makefile \
     tools/odbctest/Makefile \
     tools/test/gui/Makefile \
@@ -643,7 +643,7 @@ clean.aubitbuild:
     warning.log
 #FIXME: move this to appropriate makefile :
 	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h \
-	tools/ide/debug.out tools/adbaccess/debug.out *.${ARCHEXT} *.htm *.html *.tmp
+	tools/ide/debug.out tools/misql/debug.out *.${ARCHEXT} *.htm *.html *.tmp
 
 clean.rpc:
 	${RM} compilers/fcompile/form_x_xdr.c compilers/menus/menu_x_xdr.c \

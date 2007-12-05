@@ -1,0 +1,26 @@
+{ $Id: coxxq01e.per,v 1.1 2007-12-05 15:39:41 mikeaubury Exp $ }
+DATABASE formonly
+SCREEN
+{
+
+[f01            ][f02                                ] 
+[f01            ][f03                                ]  
+[f01            ][f04                                ]  
+[f01            ][f05                                ]  
+[f01            ][f06                                ]  
+
+
+}
+
+ATTRIBUTES
+f01 = formonly.keyname;
+f02 = formonly.keyqbe1;
+f03 = formonly.keyqbe2;
+f04 = formonly.keyqbe3;
+f05 = formonly.keyqbe4;
+f06 = formonly.keyqbe5;
+
+INSTRUCTIONS
+    DELIMITERS " "
+    SCREEN RECORD anyqbe[5](formonly.keyname)
+    SCREEN RECORD scrrr(formonly.keyqbe1 THRU formonly.keyqbe5)
