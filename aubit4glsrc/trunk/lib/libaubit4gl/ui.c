@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.69 2007-11-05 16:52:47 mikeaubury Exp $
+# $Id: ui.c,v 1.70 2007-12-06 13:43:22 mikeaubury Exp $
 #
 */
 
@@ -579,7 +579,11 @@ A4GL_debug("z=%d n=%d\n",z,n);
 
 
 		if (ptr) ptr=acl_strdup(ptr);
+		if (ptr) {
 		A4GL_debug("Display returns %s\n",ptr);
+		}
+
+		
 
         } 
 
