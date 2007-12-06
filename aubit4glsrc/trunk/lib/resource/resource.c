@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.141 2007-10-28 16:17:48 mikeaubury Exp $
+# $Id: resource.c,v 1.142 2007-12-06 14:46:18 mikeaubury Exp $
 #
 */
 
@@ -1190,7 +1190,7 @@ FILE *resourcefile = 0;
   /* -----------------  from ~/.aubitrc (USER'S HOME DIRECTORY) */
 
   //Whooops: ~ works on shell command line, not from here!
-  sprintf (buff, "%s/%s", acl_getenv ("HOME"), "/.aubit4gl/aubitrc");
+  sprintf (buff, "%s/%s", acl_getenv ("HOME"), ".aubit4gl/aubitrc");
   resourcefile = fopen (buff, "r");
   	if (resourcefile != 0) {
 		#ifdef DEBUG
