@@ -81,6 +81,9 @@ A4GL_setenv("A4GL_AUTOBANG","Y",1);
 atexit(bye);
 endcode
 
+initialize mv_curr_db to null
+call open_db()
+
 let lv_cnt=1
 if num_args()>0 then
 	for lv_a=1 to num_args()
@@ -194,6 +197,9 @@ function open_db()
 	if first_init is null or first_init=0 then
 		call init_sql()
 		let first_init=1
+	end if
+	if mv_curr_db is null then
+		return
 	end if
 	call check_db(mv_curr_db) returning lv_db
 	database mv_curr_db
