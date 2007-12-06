@@ -585,10 +585,13 @@ code
 if (f_in!=0)  {
         while (1) {
                 if (feof(f_in)) break;
+		sprintf(buff,"#\n");
                 fgets(buff,sizeof(buff),f_in);
                 ptr=strchr(buff,'#'); if (ptr) {*ptr=0;}
                 ptr=strchr(buff,' '); if (ptr) {*ptr=0;}
                 ptr=strchr(buff,'\t'); if (ptr) {*ptr=0;}
+                ptr=strchr(buff,'\n'); if (ptr) {*ptr=0;}
+                ptr=strchr(buff,'\r'); if (ptr) {*ptr=0;}
                 A4GL_trim(buff);
                 if (strlen(buff)) {
                         A4GL_debug("SQLHOSTS - buff='%s' (%d)",buff,strlen(buff));
@@ -647,9 +650,11 @@ let lv_server="@",lv_server
 
 code
 Exec sql disconnect all;
+Exec sql disconnect default;
+sqlca.sqlcode=0;
 endcode
 
-#whenever error continue
+whenever error continue
 if lv_username is not null and lv_username not matches " " then
 
 	if lv_passwd is not null and lv_passwd not matches " " then # Got the lot...
@@ -661,6 +666,7 @@ if lv_username is not null and lv_username not matches " " then
 else
 	connect to lv_server 
 end if
+
 whenever error stop
 
 if check_and_report_error() then
@@ -1549,6 +1555,10 @@ if lv_newname is not null and lv_newname not matches " " then
         whenever error continue
 
         close database
+code
+	Exec sql disconnect all;
+	Exec sql disconnect default;
+endcode
 	call connect_to_db(lv_newname)
 	whenever error stop
 
