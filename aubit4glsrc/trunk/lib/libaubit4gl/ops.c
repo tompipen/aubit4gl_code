@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.125 2007-12-05 14:08:13 mikeaubury Exp $
+# $Id: ops.c,v 1.126 2007-12-07 12:11:22 mikeaubury Exp $
 #
 */
 
@@ -4141,6 +4141,7 @@ A4GL_in_in_ops (int op)
   A4GL_get_top_of_stack (2, &d2, &s2, (void *) &pi2);
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &pi1);
 
+//printf("Here d1=%d s1=%x d2=%d s2=%x\n",d1,s1,d2,s2);
 
   A4GL_debug_print_stack();
 
@@ -4260,6 +4261,7 @@ A4GL_in_in_ops (int op)
       df2 /= 100000.0;
       d_i1 += df1;
       d_i2 += df2;
+      //printf ("d_i1=%f d_i2=%f", d_i1, d_i2);
       A4GL_debug ("d_i1=%f d_i2=%f", d_i1, d_i2);
     }
 
@@ -4279,6 +4281,7 @@ A4GL_in_in_ops (int op)
 	  SPRINTF1 (buff_3, "%f", d_i1);
 	  A4GL_decstr_convert(buff_3, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  acli_interval (buff_3, 0x822);
+	  A4GL_cast_top_of_stack_to_dtype(DTYPE_INTERVAL+ENCODE_SIZE(0x512));
 	  return;
 	}
       else
@@ -4288,6 +4291,7 @@ A4GL_in_in_ops (int op)
 	  A4GL_decstr_convert(buff_4, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  A4GL_debug ("Converting : %s to interval second to second", buff_4);
 	  acli_interval (buff_4, 0x867);	// was 866
+	  A4GL_cast_top_of_stack_to_dtype(DTYPE_INTERVAL+ENCODE_SIZE(0x249));
 	  return;
 	}
 
@@ -4306,6 +4310,7 @@ A4GL_in_in_ops (int op)
 		d_i1-=yrs*12;
 	  	SPRINTF2 (buff_5, "%d-%d", yrs,(int)d_i1);
 	  acli_interval (buff_5, 0x812);
+	  A4GL_cast_top_of_stack_to_dtype(DTYPE_INTERVAL+ENCODE_SIZE(0x512));
 	  return;
 	}
       else
@@ -4315,6 +4320,7 @@ A4GL_in_in_ops (int op)
 	  A4GL_decstr_convert(buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
 	  A4GL_debug ("Converting : %s to interval second to second", buff_6);
 	  acli_interval (buff_6, 0x867);	// Was 866
+	  A4GL_cast_top_of_stack_to_dtype(DTYPE_INTERVAL+ENCODE_SIZE(0x249));
 	  return;
 	}
 
