@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.366 2007-12-07 12:11:20 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.367 2007-12-07 15:44:30 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.366 2007-12-07 12:11:20 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.367 2007-12-07 15:44:30 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -8086,7 +8086,19 @@ AC_ARG_WITH(gtk,
 				#First try to see if pgk-config has info on GTK+ version 2
 				GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gtk+-2.0 " | head -n 1 | awk '{print $1}'`
 				GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^gdk-2.0 " | head -n 1 | awk '{print $1}'`
-				GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib-2.0 " |  head -n 1 | awk '{print $1}'`
+				
+				# On some platforms - we have gtk but not gdk
+				# like fedora core 8..
+				if test "$GDK_NAME" = ""  -a "$GTK_NAME" = "gtk+-2.0"
+				then
+					# Well - we must have gdk - because we've got gtk+, so just fake it..
+					GDK_NAME="gdk-2.0"
+					GLIB_NAME="glib-2.0"
+					#GDK_NAME_OK=1
+					#GLIB_NAME_OK=1
+				else
+					GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep "^glib-2.0 " |  head -n 1 | awk '{print $1}'`
+				fi
 	
 				if test "$GTK_NAME" = "" -o "$GDK_NAME" = "" -o "$GLIB_NAME" = ""; then
 					#No GTK+ version 2 info, try old 1.2
@@ -11059,7 +11071,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.366 2007-12-07 12:11:20 mikeaubury Exp $
+| $Id: configure.in,v 1.367 2007-12-07 15:44:30 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
