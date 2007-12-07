@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.1 2007-12-07 07:11:22 briantan Exp $
+# $Id: dump_form.c,v 1.2 2007-12-07 08:21:06 mikeaubury Exp $
 #*/
 
 /**
@@ -138,6 +138,10 @@ static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) ;
 */
 
 
+static char *decode_comparitor(char *s) {
+	if (strcmp(s,"NOTIN")==0) return "NOT IN";
+	return s;
+}
 
 void
 make_screen (struct_form * f)
@@ -1321,12 +1325,13 @@ dump_expr (FILE *fout, t_expression * expr, int lvl)
 
   if (expr->itemtype == ITEMTYPE_LIST)
     {
-      fprintf (fout, "[");
+      fprintf (fout, "(");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
+		if (a) fprintf (fout, ",");
 	  dump_expr (fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
-      fprintf (fout, "]");
+      fprintf (fout, ")");
     }
 
   if (expr->itemtype == ITEMTYPE_FIELD)
@@ -1352,7 +1357,7 @@ dump_expr (FILE *fout, t_expression * expr, int lvl)
       fprintf (fout,"(");
       ptr2 = expr->u_expression_u.complex_expr;
       dump_expr (fout,ptr2->item1, lvl + 1);
-      fprintf (fout," %s ", ptr2->comparitor);
+      fprintf (fout," %s ", decode_comparitor(ptr2->comparitor));
       dump_expr (fout,ptr2->item2, lvl + 1);
       fprintf (fout,")");
 
@@ -1387,12 +1392,13 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
 
   if (expr->itemtype == ITEMTYPE_LIST)
     {
-      fprintf (fout, "[");
+      fprintf (fout, "(");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
+      		if (a) fprintf (fout, ",");
 	  dump_expr_instructions (f, fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
-      fprintf (fout, "]");
+      fprintf (fout, ")");
     }
 
   if (expr->itemtype == ITEMTYPE_FIELD)
@@ -1430,7 +1436,7 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
       		fprintf (fout,"(");
       		ptr2 = expr->u_expression_u.complex_expr;
       		dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
-      		fprintf (fout," %s ", ptr2->comparitor);
+      		fprintf (fout," %s ", decode_comparitor(ptr2->comparitor));
       		dump_expr_instructions (f, fout,ptr2->item2, lvl + 1);
       		fprintf (fout,")");
 	}

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.16 2007-12-02 05:24:59 briantan Exp $
+# $Id: dump_4gl.c,v 1.17 2007-12-07 08:21:06 mikeaubury Exp $
 #*/
 
 /**
@@ -851,12 +851,13 @@ dump_expr (FILE *fout, t_expression * expr, int lvl)
 
   if (expr->itemtype == ITEMTYPE_LIST)
     {
-      fprintf (fout, "[");
+      fprintf (fout, "(");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
+	if (a) fprintf (fout, ",");
 	  dump_expr (fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
-      fprintf (fout, "]");
+      fprintf (fout, ")");
     }
 
   if (expr->itemtype == ITEMTYPE_FIELD)
@@ -916,12 +917,14 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
 
   if (expr->itemtype == ITEMTYPE_LIST)
     {
-      fprintf (fout, "[");
+      fprintf (fout, "(");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
+	
+      fprintf (fout, ",");
 	  dump_expr_instructions (f, fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
-      fprintf (fout, "]");
+      fprintf (fout, ")");
     }
 
   if (expr->itemtype == ITEMTYPE_FIELD)
