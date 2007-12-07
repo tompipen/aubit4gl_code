@@ -25,6 +25,7 @@
 code
 #undef UCHAR
 #include "simple.h"
+char *A4GL_apisql_strdup (char *sql);
 //EXEC SQL include sqltypes;
 EXEC sql include sql3types;
 EXEC sql include sqlca;
@@ -34,6 +35,7 @@ EXEC SQL END DECLARE SECTION;
 static int field_widths(void);
 extern FILE *file_out_result;
 extern FILE *exec_out;
+char *get_delim_flag(void);
 extern int outlines;
 extern int display_mode;
 extern int fetchFirst;
@@ -41,6 +43,7 @@ static int get_size(int dtype,int size) ;
 int need_cursor_free=0;
 int stdin_screen_width=-1;
 int colnamesize=-1;
+static int inited=0;
 
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
@@ -54,7 +57,6 @@ extern int *columnAlign; // CA1
 
 #define LOADBUFFSIZE 32000
 char loadbuff[LOADBUFFSIZE];
-
 
 FILE *f_unloadFile=0;
 int firstFetchInit=0;
@@ -189,7 +191,6 @@ foreach c_gettables_drop into lv_tabname
 end foreach
 
 call set_pick_cnt(lv_cnt-1)
-
 call prompt_pick(lv_prompt,"") returning lv_tabname
 
 return lv_tabname
@@ -301,77 +302,68 @@ define lv_informixdir char(255)
 define lv_passwd char(255)
 define lv_username char(255)
 define lv_cnt integer
-define lv_server char(80)
+define lv_port,lv_server char(80)
 define a,x,y integer
 define buff char(255)
-let lv_informixdir=fgl_getenv("INFORMIXDIR")
+define lv_ok integer
 let lv_cnt=1
 clear screen
 call display_banner()
-#
-# In order to find out what connections are available
-# Have a look in the sqlhosts file
-#
+
+CALL use_pghosts() RETURNING lv_server, lv_port, lv_username, lv_passwd
+
+IF lv_server IS NULL OR lv_server MATCHES " " THEN
+	let lv_server=prompt_get("SELECT DATABASE SERVER >>","")
+	IF lv_server is null or lv_server matches " " then
+        	return
+	END IF
+END IF
+
+IF lv_port IS NULL OR lv_port MATCHES " " THEN
+	let lv_port=prompt_get("SELECT PORT (Default : 5432) >>","")
+	IF lv_port is null or lv_port matches " " then
+		LET lv_port="5432"
+	END IF
+END IF
+
+IF lv_username IS NULL OR lv_username MATCHES " " THEN
+	let lv_username=prompt_get("USER NAME >>","Enter the username")
+END IF
+
+IF lv_username is null or lv_username=" " then
+ELSE
+	IF lv_passwd IS NULL OR lv_passwd MATCHES " " THEN
+		let lv_passwd=prompt_get("PASSWORD >>","Enter the password")
+	END IF
+END IF
+
+IF lv_passwd is null or lv_passwd matches " " THEN
+	# No point having a username with no password...
+       	initialize lv_username to null
+END IF
+IF lv_username IS NULL OR lv_username MATCHES " " THEN
+	# No point having a password with no username...
+	INITIALIZE lv_passwd TO NULL
+END IF
+
 code
 {
-char fname[1024];
-FILE *f_in;
-char *ptr;
-A4GL_trim(lv_informixdir);
-sprintf(fname,"%s/etc/sqlhosts",lv_informixdir);
-f_in=fopen(fname,"r");
-if (f_in!=0)  {
-        while (1) {
-                if (feof(f_in)) break;
-                fgets(buff,sizeof(buff),f_in);
-                ptr=strchr(buff,'#'); if (ptr) {*ptr=0;}
-                ptr=strchr(buff,' '); if (ptr) {*ptr=0;}
-                ptr=strchr(buff,'\t'); if (ptr) {*ptr=0;}
-                A4GL_trim(buff);
-                if (strlen(buff)) {
-                        A4GL_debug("SQLHOSTS - buff='%s' (%d)",buff,strlen(buff));
-endcode
-                                call  set_pick(lv_cnt,buff)
-code
-                        //strcpy(mv_arr[lv_cnt-1],buff);
-                        lv_cnt++;
-                }
-        }
-}
-fclose(f_in);
-}
-endcode
-call set_pick_cnt(lv_cnt-1)
-if lv_cnt=1 then
-        error "Either the SQLHOSTS file cannot be read - or it is empty"
-end if
-
-let lv_server=prompt_pick("SELECT DATABASE SERVER >>","")
-
-if lv_server is null or lv_server matches " " then
-        return
-end if
-
-let lv_username=prompt_get("USER NAME >>","Enter the username")
-#prompt "USER NAME >> " for lv_username
-
-if lv_username is null or lv_username=" " then
-else
-	let lv_passwd=prompt_get("PASSWORD >>","Enter the password")
-        #prompt "PASSWORD >> " for lv_passwd
-        if lv_passwd is null or lv_passwd matches " " then
-                initialize lv_username to null
-        end if
-end if
-#
-code
-{
-static char buff[1024];
 A4GL_trim(lv_server);
-A4GL_setenv("INFORMIXSERVER",lv_server,1);
+A4GL_setenv("PGHOST",lv_server,1);
+A4GL_trim(lv_port);
+A4GL_setenv("PGPORT",lv_port,1);
 }
 endcode
+
 call set_username(lv_username,lv_passwd)
+LET lv_ok=1
+
+IF NOT connect_to_template1() THEN
+	ERROR "Unable to connect to 'template1' to get database list (Error : ", sqlca.sqlcode USING "-<<<<<<<<",")"
+	RETURN
+END IF
+
+
 call select_db()
 end function
 
@@ -865,9 +857,9 @@ int a;
                                 	fprintf(exec_out," ");
 			} else {
                         	if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
-                                	fprintf(file_out_result,get_delim_flag());
+                                	fprintf(file_out_result,"%s",get_delim_flag());
                         	else
-                                	fprintf(exec_out,get_delim_flag());
+                                	fprintf(exec_out,"%s",get_delim_flag());
 			}
                 }
         }
@@ -943,6 +935,92 @@ if (sqlca.sqlcode<0) {
 endcode
 
 
+function connect_to_template1()
+define lv_uname,lv_pass char(80)
+define lv_connstr char(256)
+let lv_uname	=get_username()
+let lv_pass	=get_password()
+
+if lv_uname is not null and length(lv_uname)>0 then
+code
+	EXEC SQL BEGIN DECLARE SECTION;
+	char *e_uname;
+	char *e_passwd;
+	EXEC SQL END DECLARE SECTION;
+	e_uname=lv_uname;
+	e_passwd=lv_pass;	
+	A4GL_trim(e_uname);
+	A4GL_trim(e_passwd);
+	EXEC SQL CONNECT TO template1 USER :e_uname USING :e_passwd;		// AS 'default';  ecpg 8.1.5
+endcode
+else
+code
+	EXEC SQL CONNECT TO template1;		// AS 'default';  ecpg 8.1.5
+endcode
+end if
+
+if sqlca.sqlcode=0 then
+	return TRUE
+else
+	return FALSE
+end if
+end function
+
+
+function connect_to_db(lv_dbname)
+define lv_dbname char(80)
+define lv_uname,lv_pass char(80)
+define lv_connstr char(256)
+
+let lv_uname	=get_username()
+let lv_pass	=get_password()
+
+# If theres nothing been set explicitly - 
+# see if theres anything in the ACL file for
+# this database.
+IF lv_uname IS NULL OR lv_uname MATCHES " " THEN
+code
+	A4GL_trim(lv_dbname);
+	A4GL_sqlid_from_aclfile(lv_dbname, lv_uname, lv_pass);
+endcode
+END IF
+
+if lv_uname is not null and length(lv_uname)>0 then
+code
+	EXEC SQL BEGIN DECLARE SECTION;
+	char *e_uname;
+	char *e_passwd;
+	char *e_dbname;
+	EXEC SQL END DECLARE SECTION;
+	e_uname=lv_uname;
+	e_passwd=lv_pass;	
+	e_dbname=lv_dbname;
+	A4GL_trim(e_uname);
+	A4GL_trim(e_passwd);
+	A4GL_trim(e_dbname);
+	EXEC SQL CONNECT TO :e_dbname USER :e_uname USING :e_passwd;		// AS 'default';  ecpg 8.1.5
+endcode
+else
+code
+	EXEC SQL BEGIN DECLARE SECTION;
+	char *e_dbname;
+	EXEC SQL END DECLARE SECTION;
+	e_dbname=lv_dbname;
+	A4GL_trim(e_dbname);
+	EXEC SQL CONNECT TO :e_dbname;		// AS 'default';  ecpg 8.1.5
+endcode
+end if
+
+if sqlca.sqlcode=0 then
+	return TRUE
+else
+	return FALSE
+end if
+end function
+
+
+
+
 function select_db()
 define lv_cnt integer
 define lv_curr_db char(255)
@@ -950,24 +1028,39 @@ define lv_name char(255)
 define lv_newname char(255)
 define ndbs integer
 define a integer
+define lv_Err integer
 let lv_curr_db=get_db();
 
+LET lv_err=0
 LET ndbs=0
+IF NOT connect_to_template1() THEN
+	ERROR "Unable to connect to 'template1' to get database list (Error : ", sqlca.sqlcode USING "-<<<<<<<<",")"
+	RETURN
+END IF
+
 code
 {
 EXEC SQL BEGIN DECLARE SECTION;
 char dbsname[80];
 EXEC SQL END DECLARE SECTION;
-
-EXEC SQL CONNECT TO template1;		// AS 'default';  ecpg 8.1.5
-if (sqlca.sqlcode!=0) goto here;
 EXEC SQL DECLARE c_getdbs CURSOR WITH HOLD FOR select datname from pg_catalog.pg_database order by datname;
-if (sqlca.sqlcode!=0) goto here;
+if (sqlca.sqlcode!=0) {
+	lv_err=sqlca.sqlcode;
+	A4GL_debug("Error : %d", sqlca.sqlcode);
+	goto here;
+}
 EXEC SQL  open c_getdbs;
-if (sqlca.sqlcode!=0) goto here;
+if (sqlca.sqlcode!=0) {
+	lv_err=sqlca.sqlcode;
+	A4GL_debug("Error : %d", sqlca.sqlcode);
+	goto here;
+}
 while (1)  {
 	EXEC SQL FETCH c_getdbs INTO :dbsname;
-	if (sqlca.sqlcode!=0) break;
+	if (sqlca.sqlcode!=0) {
+		lv_err=sqlca.sqlcode;
+		break;
+	}
 	strcpy(lv_name,dbsname);
 	ndbs++;
 endcode
@@ -979,7 +1072,10 @@ here:
 }
 exec sql close c_getdbs;
 endcode
-
+if lv_err<0 then
+	error "Error getting databases : ",lv_err
+	return
+end if
 
 call set_pick_cnt(ndbs)
 
@@ -991,12 +1087,14 @@ end if
 
 if lv_newname is not null and lv_newname not matches " " then
         whenever error continue
-
         close database
+        whenever error stop
 code
 	need_cursor_free=0;
 endcode
+        whenever error continue
         database lv_newname
+        whenever error stop
 
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
@@ -1066,12 +1164,13 @@ end if
 
 
 if lv_newname is not null and lv_newname not matches " " then
-        whenever error continue
 
 	if confirm_drop_db()="Yes" then
                         let lv_sql="drop database ",lv_newname
                         prepare p_drop from lv_sql
+        whenever error continue
                         execute p_drop
+        whenever error stop
 
                         if sqlca.sqlcode=0 then
                                 call set_curr_db("")
@@ -1079,6 +1178,7 @@ if lv_newname is not null and lv_newname not matches " " then
                                 message "Database dropped..."
                         else
                                 if check_and_report_error() then
+					return
 					# can't drop...
 				end if
                         end if
@@ -1494,6 +1594,24 @@ end function
 
 
 function init_sql()
+define lv_server char(60)
+define lv_uname,lv_passwd char(50)
+define lv_hasacl integer
+
+code
+if (inited) {
+        // don't reconnect if we've already connected
+        lv_hasacl=0;
+} else {
+        inited++;
+        lv_hasacl=A4GL_sqlid_from_aclfile("default",lv_uname,lv_passwd);
+}
+endcode
+
+if lv_hasacl then
+	call set_username(lv_uname,lv_passwd)
+end if
+
 end function
 
 
@@ -1558,4 +1676,114 @@ foreach c_gettables_find into lv_t
 end foreach
 
 call finish_table_nocol()
+end function
+
+################################################################################
+#
+# This function will read a $A4GL_PGHOSTS (if specified)
+# which can be used to provide a 'pick list' of servers.
+# Each host is defined using  : 
+#
+#        ServerName Host Port [username [password]]
+#
+# If any of these are not set - they will be prompted for
+#
+# Storing Usernames/Passwords in the PGHOSTS file is not recommended
+# Its much better to set these in an ACL file (A4GL_SQLACL)..
+# You can do this by putting in an entry in the form :
+#
+#      server:username:password
+#
+# (you can also specify the username/password at the database level)
+#
+################################################################################
+function use_pghosts() 
+DEFINE lv_host_file char(300)
+DEFINE lv_server,lv_host,lv_port,lv_username,lv_password CHAR(80)
+DEFINE lv_Records ARRAY[1000] OF RECORD
+	lv_server,lv_host,lv_port,lv_username,lv_password CHAR(80)
+END RECORD
+DEFINE lv_a INTEGER
+DEFINE lv_cnt INTEGER
+
+#@ENV A4GL_PGHOSTS Specify a PGHOSTS file which works in a similar way to the SQLHOSTS file for informix for the 'CONNECT' option in asql
+LET lv_host_file=fgl_getenv("A4GL_PGHOSTS")
+
+IF lv_host_file IS NULL OR lv_host_file matches " " THEN
+	RETURN NULL,NULL,NULL,NULL
+END IF
+
+LET lv_cnt=0
+
+code
+{
+FILE *f_in;
+char *ptr;
+char buff[512];
+A4GL_trim(lv_host_file);
+f_in=fopen(lv_host_file,"r");
+if (f_in==0) {
+endcode
+	# File doesn't exist
+	ERROR "Invalid PGHOSTS setting"
+	RETURN  NULL,NULL,NULL,NULL
+code
+}
+
+while (1) {
+		int a;
+                if (feof(f_in)) break;
+		strcpy(buff,"#");
+                fgets(buff,sizeof(buff),f_in);
+                A4GL_trim(buff);
+                ptr=strchr(buff,'#'); if (ptr) {*ptr=0;}
+		strcpy(lv_server,"");
+		strcpy(lv_host,"");
+		strcpy(lv_port,"");
+		strcpy(lv_username,"");
+		strcpy(lv_password,"");
+                if (strlen(buff)==0) continue;
+		a=sscanf(buff,"%s %s %s %s %s", lv_server, lv_host, lv_port, lv_username, lv_password);
+		if (a<3) continue;
+
+		if (strlen(lv_username)==0 && strlen(lv_password)==0) {
+			// We might have the username/password in the aclfile..
+			A4GL_trim(lv_server);
+			A4GL_sqlid_from_aclfile(lv_server, lv_username, lv_password);
+		}
+
+		strcpy(lv_records[lv_cnt].lv_server, lv_server);
+		strcpy(lv_records[lv_cnt].lv_host, lv_host);
+		strcpy(lv_records[lv_cnt].lv_port, lv_port);
+		strcpy(lv_records[lv_cnt].lv_username, lv_username);
+		strcpy(lv_records[lv_cnt].lv_password, lv_password);
+		lv_cnt++;
+                }
+fclose(f_in);
+
+}
+endcode
+
+IF lv_cnt=0 THEN
+	ERROR "No entries in PGHOSTS"
+	RETURN  NULL,NULL,NULL,NULL
+END IF
+FOR lv_a=1 TO lv_cnt
+         call  set_pick(lv_a,lv_records[lv_a].lv_server)
+END FOR
+call set_pick_cnt(lv_cnt)
+call prompt_pick("SELECT SERVER >>","") returning lv_server
+IF lv_server IS NULL OR lv_server MATCHES " " THEN
+	RETURN  NULL,NULL,NULL,NULL
+END IF
+
+for lv_a=1 to lv_cnt
+	IF lv_server=lv_records[lv_a].lv_server THEN
+		RETURN lv_records[lv_a].lv_host, lv_records[lv_a].lv_port, lv_records[lv_a].lv_username, lv_records[lv_a].lv_password
+	END IF
+END FOR
+
+ERROR "Strange : Couldn't find server PGHOSTS"
+RETURN  NULL,NULL,NULL,NULL
+
 end function
