@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.2 2007-12-07 08:21:06 mikeaubury Exp $
+# $Id: dump_form.c,v 1.3 2007-12-07 08:30:40 mikeaubury Exp $
 #*/
 
 /**
@@ -141,6 +141,34 @@ static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) ;
 static char *decode_comparitor(char *s) {
 	if (strcmp(s,"NOTIN")==0) return "NOT IN";
 	return s;
+}
+
+
+
+#define TRIM_MUNG
+char *mung(char *s) {
+static char buff[2000];
+char *ptr;
+	strcpy(buff,s);
+	ptr=strchr(buff,'.');
+//
+// If we've got some '.' - we can't use these as cursor names
+// so we need to mung them
+// we can do this by removing everything after the '.' or converting the '.'
+// to a '_'
+//
+#ifdef TRIM_MUNG
+	if (ptr) {
+		*ptr=0;
+	}
+#else
+	// Replace 
+	while (ptr) {
+		*ptr='_';
+		ptr=strchr(buff,'.');
+	}
+#endif
+	return buff;
 }
 
 void
@@ -643,7 +671,7 @@ printf("now in get_join_tables\n");
     fprintf (fout,"   # n,1 formname n,2 formdesc n,3 formcolor\n");
     for (s=0; s<f->snames.snames_len; s++) {
       	    fprintf (fout,"    LET ga_screen_name[%d,1] = \"f_%s%02d\"\n",
-		s+1, fname, s+1);
+		s+1, mung(fname), s+1);
       	    fprintf (fout,"    LET ga_screen_name[%d,2] = \"screen%02d\"\n",
 		s+1, s+1);
       	    fprintf (fout,"    LET ga_screen_name[%d,3] = \"GREEN\"\n",
@@ -907,8 +935,7 @@ printf("now in get_join_tables\n");
 		for (a=0; a<jf->join_fields_len;a++) {
 		    if (!printed) {
 			fprintf(fout,"      # get table %d\n",s+1);
-			fprintf(fout,"      DECLARE c_%s%02d%02d CURSOR FOR\n",
-				fname,t+1,s+1);
+			fprintf(fout,"      DECLARE c_%s%02d%02d CURSOR FOR\n", mung(fname),t+1,s+1);
 			fprintf(fout,"          SELECT * FROM %s\n",
 			f->tables.tables_val[s].tabname);
 			fprintf(fout,"          WHERE ");
@@ -922,10 +949,10 @@ printf("now in get_join_tables\n");
 			j.join_tables_val[m].master_tabname,
 			jf->join_fields_val[a].master_colname);
 		}
-		fprintf(fout,"      OPEN c_%s%02d%02d\n", fname,t+1,s+1);
+		fprintf(fout,"      OPEN c_%s%02d%02d\n", mung(fname),t+1,s+1);
 		fprintf(fout,"      FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
-			fname,t+1,s+1, f->tables.tables_val[s].tabname);
-		fprintf(fout,"      CLOSE c_%s%02d%02d\n", fname,t+1,s+1);
+			mung(fname),t+1,s+1, f->tables.tables_val[s].tabname);
+		fprintf(fout,"      CLOSE c_%s%02d%02d\n", mung(fname),t+1,s+1);
 		fprintf(fout,"\n");
 		break;
 	    }
