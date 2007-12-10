@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.4 2007-12-10 02:05:31 briantan Exp $
+# $Id: dump_form.c,v 1.5 2007-12-10 05:49:52 briantan Exp $
 #*/
 
 /**
@@ -304,7 +304,12 @@ switch (act->type) {
 					fprintf(fout,"END IF\n");
 					break;
         case ACTION_TYPE_LET:
-			    if (setvar) {
+			    if (!setvar) {
+				fprintf(fout,"DISPLAY ");
+				dump_expr_instructions (f, fout, act->u_action_u.cmd_let->value,0);
+				fprintf(fout," TO %s\n\t\tATTRIBUTE(gv_attribute)\n",
+				get_field_name(f,act->u_action_u.cmd_let->field_tag,0));
+			    } else {
 				fprintf(fout,"LET gr_%s = ",
 			get_field_name(f,act->u_action_u.cmd_let->field_tag,0));
 				dump_expr_instructions (f, fout, act->u_action_u.cmd_let->value,0);
@@ -312,11 +317,6 @@ switch (act->type) {
 				for (a=0;a<lvl;a++) { fprintf(fout,"  "); }
 				fprintf(fout,"DISPLAY BY NAME gr_%s ATTRIBUTE(gv_attribute)\n",
 			get_field_name(f,act->u_action_u.cmd_let->field_tag,0));
-			    } else {
-				fprintf(fout,"DISPLAY ");
-				dump_expr_instructions (f, fout, act->u_action_u.cmd_let->value,0);
-				fprintf(fout," TO %s\n\t\tATTRIBUTE(gv_attribute)\n",
-				get_field_name(f,act->u_action_u.cmd_let->field_tag,0));
 			    }
 				break;
 			
@@ -429,6 +429,16 @@ int metric_no;
 		if (f->metrics.metrics_val[metric_no].scr==scr+1) return f->fields.fields_val[fno].tag;
         }
 	return 0;
+}
+
+char *screen_has_column(struct_form * f, int scr, char *colname) {
+int a;
+  for(a=0;a<f->attributes.attributes_len;a++) {
+    if (strcmp(f->attributes.attributes_val[a].colname,colname)==0) {
+	return screen_has_attribute(f,scr,a);
+    }
+  }
+  return 0;
 }
 
 void dump_control_block(struct_form *f, FILE *fout, s_control_block *blk) {
@@ -553,7 +563,7 @@ dump_form_desc (struct_form * f,char *fname)
 	fclose(fout);
   }
 
-  if (f->control_blocks.control_blocks_len) {
+//  if (f->control_blocks.control_blocks_len) {
    	sprintf(fname_split,"%s.4gl",fname);
    	fout=fopen(fname_split,"w");
    	if (!fout) {
@@ -639,6 +649,8 @@ printf("now in get_join_tables\n");
 	}
     }
 
+//    print_control_block(f, fout);
+
     fprintf(fout,"GLOBALS \"global.4gl\"\n");
     fprintf(fout,"\n");
     for (t = 0; t < f->tables.tables_len; t++) {
@@ -682,7 +694,7 @@ printf("now in get_join_tables\n");
 		j.join_tables_val[t].master_tabname,
 		j.join_tables_val[t].detail_tabname);
 	    for (a=0; a<jf->join_fields_len;a++) {
-	        fprintf (fout,"    # %d) (%d) %s.%s\t= (%d) %s.%s\n", a+1,
+	        fprintf (fout,"    # %d) (%02d) %s.%s\t= (%02d) %s.%s\n", a+1,
 		    jf->join_fields_val[a].master_colno,
 		    j.join_tables_val[t].master_tabname,
 		    jf->join_fields_val[a].master_colname,
@@ -725,6 +737,7 @@ printf("now in table_screen\n");
 	    struct struct_join_fields *jf;
 	    jf = &(j.join_tables_val[m].join_fields);
 	    for (b=0; b<jf->join_fields_len; b++) {
+//printf("t=%d s=%d a=%d m=%d b=%d\n",t,s,a,m,b);
 	      if (strcmp(j.join_tables_val[m].master_tabname,
 			f->attributes.attributes_val[a].tabname)==0 &&
 	          strcmp(jf->join_fields_val[b].master_colname,
@@ -755,6 +768,7 @@ printf("now in table_screen\n");
     }
     fprintf(fout,"\n");
 	
+printf("now in main program\n");
     fprintf(fout,"    CALL prog_init()\n");
     fprintf(fout,"    DEFER INTERRUPT\n");
     fprintf(fout,"\n");
@@ -764,6 +778,7 @@ printf("now in table_screen\n");
 //	    f->tables.tables_val[0].tabname);
     fprintf(fout,"    CALL aclfgl_set_display_field_delimiters(\"  \")\n");
     print_display_only(f, fout, 0, 2);
+printf("finish print_display_only\n");
     fprintf(fout,"    CALL aclfgl_set_display_field_delimiters(\"[]\")\n");
 
     fprintf(fout,"\n");
@@ -775,6 +790,7 @@ printf("now in table_screen\n");
     fprintf(fout,"END MAIN\n");
 
     fprintf(fout,"\n");
+printf("now in display_record\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"FUNCTION display_record()\n");
     fprintf(fout,"##################################################\n");
@@ -830,7 +846,7 @@ printf("now in table_screen\n");
 	print_display_only(f, fout, s, 4);
 	fprintf(fout,"        CALL aclfgl_set_display_field_delimiters(\"[]\")\n");
 	fprintf(fout,"\n");
-	fprintf(fout,"        CASE gv_table_no\n");
+	int case_printed=0;
 	for (m=0;m<f->tables.tables_len;m++) {
 	      int printed=0;
 	      for (a=0;a<j.join_tables_len;a++) {
@@ -846,6 +862,10 @@ printf("now in table_screen\n");
 			jf->join_fields_val[b].detail_colno);
 		    if (!ptr) continue;
 		    if (j.join_tables_val[a].master_tabno==m) {
+		      if (!case_printed) {
+			fprintf(fout,"        CASE gv_table_no\n");
+			case_printed++;
+		      }
 		      if (!printed) {
 		        fprintf(fout,"          WHEN %d\t# %s\n",
 			    m+1, f->tables.tables_val[m].tabname);
@@ -881,7 +901,7 @@ printf("now in table_screen\n");
 		fprintf(fout,"            ATTRIBUTE(gv_attribute)\n");
 	      }
 	}
-	fprintf(fout,"        END CASE #gv_table_no\n");
+	if (case_printed) fprintf(fout,"        END CASE #gv_table_no\n");
 	fprintf(fout,"\n");
     }
     fprintf(fout,"    END CASE #gv_screen_no\n");
@@ -890,6 +910,7 @@ printf("now in table_screen\n");
     fprintf(fout,"\n");
 
     //char *ptr;
+printf("now in query_by_example\n");
     int attr_found, printed;
     fprintf(fout,"##################################################\n");
     fprintf(fout,"FUNCTION query_by_example()\n");
@@ -1003,6 +1024,7 @@ printf("now in table_screen\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
+printf("now in get_record\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"FUNCTION get_record()\n");
     fprintf(fout,"##################################################\n");
@@ -1104,7 +1126,7 @@ printf("now in table_screen\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
-    printf("now in add_record\n");
+printf("now in add_record\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"FUNCTION add_record()\n");
     fprintf(fout,"##################################################\n");
@@ -1139,13 +1161,13 @@ printf("now in table_screen\n");
     }
     fprintf(fout,"  END CASE #gv_table_no\n");
     fprintf(fout,"  IF abort_flag THEN\n");
-    fprintf(fout,"    CALL get_record()");
+    fprintf(fout,"    CALL get_record()\n");
     fprintf(fout,"  END IF\n");
-    fprintf(fout,"  CALL display_record()");
+    fprintf(fout,"  CALL display_record()\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
-    printf("now in update_record\n");
+printf("now in update_record\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"FUNCTION update_record()\n");
     fprintf(fout,"##################################################\n");
@@ -1178,13 +1200,13 @@ printf("now in table_screen\n");
     }
     fprintf(fout,"  END CASE #gv_table_no\n");
     fprintf(fout,"  IF abort_flag THEN\n");
-    fprintf(fout,"    CALL get_record()");
+    fprintf(fout,"    CALL get_record()\n");
     fprintf(fout,"  END IF\n");
-    fprintf(fout,"  CALL display_record()");
+    fprintf(fout,"  CALL display_record()\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
-    printf("now in remove_record\n");
+printf("now in remove_record\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"FUNCTION remove_record()\n");
     fprintf(fout,"##################################################\n");
@@ -1210,17 +1232,43 @@ printf("now in table_screen\n");
     }
     fprintf(fout,"  END CASE #gv_table_no\n");
     fprintf(fout,"  IF abort_flag THEN\n");
-    fprintf(fout,"    CALL get_record()");
+    fprintf(fout,"    CALL get_record()\n");
     fprintf(fout,"  END IF\n");
-    fprintf(fout,"  CALL display_record()");
+    fprintf(fout,"  CALL display_record()\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
-    printf("now in input_record\n");
+printf("now in input_record\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"FUNCTION input_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
+    int fo_printed=0;
+    for (a=0;a<f->attributes.attributes_len;a++) {
+	if (strcmp(f->attributes.attributes_val[a].tabname,"formonly")==0) {
+	    if (!fo_printed) {
+		fprintf(fout,"  DEFINE gr_formonly RECORD\n");
+		fo_printed++;
+	    } else {
+		fprintf(fout,",\n");
+	    }
+	    fprintf(fout,"\t%s\t", f->attributes.attributes_val[a].colname);
+	    switch (f->attributes.attributes_val[a].datatype & DTYPE_MASK) {
+		case DTYPE_CHAR:	fprintf(fout,"VARCHAR(100)"); break;
+		case DTYPE_SMINT:	fprintf(fout,"SMALLINT"); break;
+		case DTYPE_INT:		fprintf(fout,"INTEGER"); break;
+		case DTYPE_SMFLOAT:	fprintf(fout,"SMALLFLOAT"); break;
+		case DTYPE_FLOAT:	fprintf(fout,"FLOAT"); break;
+		case DTYPE_DECIMAL:	fprintf(fout,"DECIMAL"); break;
+		case DTYPE_DATE:	fprintf(fout,"DATE"); break;
+		default:		fprintf(fout,"VARCHAR(300)"); break;
+	    }
+	}
+    }
+    if (fo_printed) {
+	fprintf(fout,"\n\tEND RECORD\n");
+	fprintf(fout,"\n");
+    }
     fprintf(fout,"  LET int_flag = FALSE\n");
     fprintf(fout,"  LET abort_flag = FALSE\n");
     fprintf(fout,"  LET gv_attribute = get_color(0)\n");
@@ -1300,7 +1348,7 @@ printf("now in table_screen\n");
     fprintf(fout,"\n");
 
     fclose(fout);
-  }
+//  }
 
 
   //dump_attributes (f);
@@ -1712,8 +1760,10 @@ print_lvl (int lvl)
 
 /* print display only fields for screen s */
 void print_display_only(struct_form *f, FILE *fout, int s, int lvl) {
-    int a,b,c,t;
+    int a,b,c,d,t;
+printf("now in print_display_only s=%d\n",s);
 	for (c=0;c< f->control_blocks.control_blocks_len;c++) {
+//printf("\n#%d\n",c);
 	    switch (f->control_blocks.control_blocks_val[c].cbtype) {
 		case E_CB_BEFORE:
 		case E_CB_AFTER:
@@ -1731,15 +1781,39 @@ void print_display_only(struct_form *f, FILE *fout, int s, int lvl) {
 		}
 	    }
 	    if (!found_ba_display) continue;
+//	    for (d=0; d<ba->column_list->columns.columns_len; d++) {
+//	      fprintf(fout,"# c=%d, b=%d columns[%d]=%s.%s\n",c,b,d,
+//	                ba->column_list->columns.columns_val[d].tabname,
+//	                ba->column_list->columns.columns_val[d].colname);
+//	      printf("# c=%d, b=%d columns[%d]=%s.%s\n",c,b,d,
+//	                ba->column_list->columns.columns_val[d].tabname,
+//	                ba->column_list->columns.columns_val[d].colname);
+//	    }
+
 	    for (t=0;t<ba->cmds->actions.actions_len;t++) {
 	        struct u_action *act;
-	        act = ba->cmds->actions.actions_val[t].uaction;
+	        act=ba->cmds->actions.actions_val[t].uaction;
+		fprintf(fout,"#   actions[%d] type=",t);
+//		printf("#   actions[%d] type=",t);
 		switch (act->type) {
 		    case ACTION_TYPE_IF:
-			a= get_attr_from_field(f, act->u_action_u.cmd_if->if_true->u_action_u.cmd_let->field_tag);
+//			fprintf(fout,"IF\n");
+//			printf("IF\n");
+//	  printf("     field type %d\n",
+//		act->u_action_u.cmd_if->test_condition->itemtype);
+			switch (act->u_action_u.cmd_if->test_condition->itemtype) {
+			  case 3:
+	    a= get_attr_from_field(f, act->u_action_u.cmd_if->if_true->u_action_u.cmd_let->field_tag);
+				break;
+			  case 4:
+	    a= get_attr_from_field(f, act->u_action_u.cmd_if->test_condition->u_expression_u.complex_expr->item1);
+				break;
+		        }
 			if (!a) continue;
 			break;
 		    case ACTION_TYPE_LET:
+			fprintf(fout,"LET\n");
+//			printf("LET\n");
 			a= get_attr_from_field(f, act->u_action_u.cmd_let->field_tag);
 			if (!a) continue;
 			break;
@@ -1810,7 +1884,7 @@ void print_control_block(struct_form *f, FILE *fout) {
 					}
 					fprintf(fout,"END IF\n");
 					break;
-//	case ACTION_TYPE_LET:	fprintf(fout,"LET\n"); break;
+	case ACTION_TYPE_LET:	fprintf(fout,"LET\n"); break;
 	case ACTION_TYPE_NEXTFIELD:	fprintf(fout,"NEXTFIELD\n"); break;
 	case ACTION_TYPE_FUNC_CALL:	fprintf(fout,"FUNC_CALL\n"); break;
 	case ACTION_TYPE_BLOCK:	fprintf(fout,"BLOCK\n"); break;
@@ -1822,7 +1896,7 @@ void print_control_block(struct_form *f, FILE *fout) {
 /* print field validation for input */
 /* ba = 1 before field, =2 after field =3 after input*/
 void print_validation(struct_form *f, FILE *fout, int t, int s, int beaf, int lvl) {
-printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
+if (beaf==1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
     int a,b,c,d,e,g,h,l;
 	for (c=0;c< f->control_blocks.control_blocks_len;c++) {
 	    switch (f->control_blocks.control_blocks_val[c].cbtype) {
@@ -1862,7 +1936,7 @@ printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
 		    break;
 		}
 	      }
-//	      fprintf(fout,"# c=%d b=%d d=%d columns[%d]=%s.%s istable=%d\n",
+//	      printf("# c=%d b=%d d=%d columns[%d]=%s.%s istable=%d\n",
 //			c,b,d,d,
 //			ba->column_list->columns.columns_val[d].tabname,
 //			ba->column_list->columns.columns_val[d].colname,
@@ -1871,15 +1945,31 @@ printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
 	      if (istable && beaf!=3) continue;
 	      if (!istable && beaf==3) continue;
 //printf("c=%d b=%d d=%d %s\n",c,b,d,
-//			ba->column_list->columns.columns_val[d].colname);
+//		ba->column_list->columns.columns_val[d].colname);
+//	      if (ba->column_list->columns.columns_val[d].tabname==0) {
+		  for (a=0;a<f->attributes.attributes_len;a++) {
+		    if (strcmp(f->attributes.attributes_val[a].colname,
+			ba->column_list->columns.columns_val[d].colname)==0) {
+			break;
+		    }
+		  }
+//	      }
 	      for (g=0;g<ba->cmds->actions.actions_len; g++) {
 	          struct u_action *act;
 	          act = ba->cmds->actions.actions_val[g].uaction;
 		  switch (act->type) {
+		    case ACTION_TYPE_COMMENTS:
+			break;
+
 		    case ACTION_TYPE_IF:
-//printf("c=%d b=%d d=%d IF\n",c,b,d);
-	//		a= get_attr_from_field(f, act->u_action_u.cmd_if->if_true->u_action_u.cmd_let->field_tag);
+			switch (act->u_action_u.cmd_if->test_condition->itemtype) {
+			  case 3:
+	    a= get_attr_from_field(f, act->u_action_u.cmd_if->if_true->u_action_u.cmd_let->field_tag);
+				break;
+			  case 4:
 	    a= get_attr_from_field(f, act->u_action_u.cmd_if->test_condition->u_expression_u.complex_expr->item1);
+				break;
+		        }
 			if (!a) continue;
 			break;
 		    case ACTION_TYPE_LET:
@@ -1888,7 +1978,8 @@ printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
 			if (!a) continue;
 			break;
 		  }
-	          if (!screen_has_attribute(f,s, a)) continue;
+		  if (!a) continue;
+		  if (!screen_has_attribute(f,s, a)) continue;
 		  if (strcmp(f->attributes.attributes_val[a].tabname,
 			f->tables.tables_val[t].tabname)!=0) continue;
 		  int reject_field=0;
