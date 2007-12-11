@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.5 2007-12-10 05:49:52 briantan Exp $
+# $Id: dump_form.c,v 1.6 2007-12-11 16:09:53 briantan Exp $
 #*/
 
 /**
@@ -714,8 +714,8 @@ printf("now in get_join_tables\n");
     for (s=0; s<f->snames.snames_len; s++) {
       	    fprintf (fout,"    LET ga_screen_name[%d,1] = \"f_%s%02d\"\n",
 		s+1, mung(fname), s+1);
-      	    fprintf (fout,"    LET ga_screen_name[%d,2] = \"screen%02d\"\n",
-		s+1, s+1);
+      	    fprintf (fout,"    LET ga_screen_name[%d,2] = \"%s%02d\"\n",
+		s+1, mung(fname), s+1);
       	    fprintf (fout,"    LET ga_screen_name[%d,3] = \"GREEN\"\n",
 		s+1);
     }
