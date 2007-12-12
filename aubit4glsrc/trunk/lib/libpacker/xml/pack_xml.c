@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.26 2007-12-12 22:18:59 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.27 2007-12-12 22:54:10 mikeaubury Exp $
 #*/
 
 /**
@@ -575,7 +575,7 @@ getaline (void)
 {
   char *a;
   a = fgets (ibuff, sizeof (ibuff), infile);
-
+printf(">%s",a);
   if (a == 0)
     {
       printf ("Unexpected end of file\n");
@@ -785,10 +785,6 @@ int
 A4GLPacker_input_start_struct (char *s, char *n, int ptr, int isarr)
 {
   /* <STRUCT NAME=".." TYPE=".."> */
-if (ptr)  {
-  if (!getaline ())
-    return 0;
-}
   if (!getaline ())
     return 0;
   return 1;
@@ -861,9 +857,6 @@ int
 A4GLPacker_input_enum (char *name, int *d)
 {
   chk (d);
-//if (strcmp(name,"ACTION_TYPES")==0) A4GL_pause_execution();
-//A4GL_debug("name=%s\n",name);
-  /* <ENUM TYPE=\"%s\" DESCRIPTION=\"%s\" VALUE=\"%d\"/> */
   if (!getaline ())
     return 0;
   *d = atoi (A4GL_find_attr (ibuff, "VALUE"));

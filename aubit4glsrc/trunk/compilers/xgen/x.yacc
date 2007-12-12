@@ -183,10 +183,10 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 		if (m.pointer==0) {
 				fprintf(cfo,"   if (!output_%s(\"%s\",r,0,-1)) return 0;\n",s,m.name); /* ,buff); */
 				/*to prevent warning: */
-				fprintf(cfo,"return 0;\n");
+				fprintf(cfo,"return 1;\n");
         }
 		if (m.pointer==1) {
-			fprintf(cfo,"   if (r) {output_okptr(\"\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",buff,s); /* ,m.name,buff); */
+			fprintf(cfo,"   if (r) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",m.name, buff,s); /* ,m.name,buff); */
 			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 
 			/*to prevent control reaches end of non-void function warning: (OK) */
@@ -226,7 +226,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		fprintf(cfi,"      int cnt; if (r->%s.%s_len) {\n",buff,m.name);
 	        fprintf(cfi,"      r->%s.%s_val=acl_malloc2_With_Context(r->%s.%s_len*sizeof(r->%s.%s_val[0]));\n", buff,m.name, buff,m.name, buff,m.name);
 	        fprintf(cfi,"      for (cnt=0;cnt<r->%s.%s_len;cnt++) {\n",buff,m.name);
-		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",(void *)&r->%s.%s_val[cnt],0,cnt)) return 0; /*MJALI2*/\n",s,m.name,buff,m.name);
+		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",&r->%s.%s_val[cnt],0,cnt)) return 0; /*MJALI2*/\n",s,m.name,buff,m.name);
 		if (m.pointer==1) {
 			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s.%s_val[cnt]=0;\n",buff,m.name);
 			fprintf(cfi,"   else r->%s.%s_val[cnt]=acl_malloc2_With_Context(sizeof(%s));\n",buff,m.name,s);
@@ -263,12 +263,13 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		if (m.pointer==0) {
 			fprintf(cfi,"   if (!input_%s(\"%s\",&r,0,-1)) return 0;\n",m.name,buff);
 			/*to prevent warning: */
-			fprintf(cfi,"return 0;\n");
+			fprintf(cfi,"return 1;\n");
         }
 		if (m.pointer==1) {
-			fprintf(cfi,"   if (!input_%s(\"%s\",r,1,-1)) return 0;\n",m.name,buff);
+			fprintf(cfi,"   if (!input_ptr_ok()) {*r=0; return 1;}\n",m.name,buff);
+			fprintf(cfi,"   *r=acl_malloc2_With_Context(sizeof(%s)); if (!input_%s(\"%s\",*r,0,-1)) return 0;\n",s, m.name,buff);
 			/*to prevetn warning: */
-			fprintf(cfi,"return 0;\n");
+			fprintf(cfi,"return 1;\n");
 		}
 		return;
 	}
@@ -348,11 +349,11 @@ typedef:
 
 typedef_elem:
 	STRUCT NAMED STAR NAMED {
-		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",$<str>4,$<str>2);
-		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",$<str>4,$<str>2);
+		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef1 */\n",$<str>4,$<str>2);
+		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef2 */\n",$<str>4,$<str>2);
 
-		fprintf(hf,"int input_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",$<str>4,$<str>2);
-		fprintf(cfi,"int input_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",$<str>4,$<str>2);
+		fprintf(hf,"int input_%s(char *rn,struct %s **r,int isptr,int arr) ; /* typedef3 */\n",$<str>4,$<str>2);
+		fprintf(cfi,"int input_%s(char *rn,struct %s **r,int isptr,int arr) { /* typedef4 */\n",$<str>4,$<str>2);
 
 		$<mode>$.type=3; $<mode>$.size=0; $<mode>$.pointer=1; strcpy($<mode>$.name,$<str>2);
 		print_elem("struct",$<str>2,$<mode>$); 
@@ -362,10 +363,10 @@ typedef_elem:
 	}
 		
 	| STRUCT NAMED NAMED {
-		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef */\n",$<str>3,$<str>2);
-		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef */\n",$<str>3,$<str>2);
-		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef */\n",$<str>3,$<str>2);
-		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef */\n",$<str>3,$<str>2);
+		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef5 */\n",$<str>3,$<str>2);
+		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef6 */\n",$<str>3,$<str>2);
+		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef7 */\n",$<str>3,$<str>2);
+		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef8 */\n",$<str>3,$<str>2);
 		$<mode>$.type=3; $<mode>$.size=0; $<mode>$.pointer=0; strcpy($<mode>$.name,$<str>2);
 		print_elem("struct",$<str>2,$<mode>$); 
 		fprintf(cfo,"}\n");
@@ -373,10 +374,10 @@ typedef_elem:
 		fprintf(hsf,"typedef %s %s;\n",$<str>2,$<str>3);
 	}
 	| UNION NAMED NAMED {
-		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef */",$<str>3,$<str>2);
-		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef */",$<str>3,$<str>2);
-		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef */",$<str>3,$<str>2);
-		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef */",$<str>3,$<str>2);
+		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef9 */",$<str>3,$<str>2);
+		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef10 */",$<str>3,$<str>2);
+		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef11 */",$<str>3,$<str>2);
+		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef12 */",$<str>3,$<str>2);
 		$<mode>$.type=3; $<mode>$.size=0; $<mode>$.pointer=0; strcpy($<mode>$.name,$<str>2);
 		print_elem("struct",$<str>2,$<mode>$); 
 		fprintf(cfo,"}\n");
@@ -384,10 +385,10 @@ typedef_elem:
 		fprintf(hsf,"typedef %s %s;\n",$<str>2,$<str>3);
 	}
 	| UNION NAMED STAR NAMED {
-		fprintf(hf,"int input_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",$<str>4,$<str>2);
-		fprintf(cfi,"int input_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",$<str>4,$<str>2);
-		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",$<str>4,$<str>2);
-		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",$<str>4,$<str>2);
+		fprintf(hf,"int input_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef13 */\n",$<str>4,$<str>2);
+		fprintf(cfi,"int input_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef14 */\n",$<str>4,$<str>2);
+		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef15 */\n",$<str>4,$<str>2);
+		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef16 */\n",$<str>4,$<str>2);
 		$<mode>$.type=3; $<mode>$.size=0; $<mode>$.pointer=1; strcpy($<mode>$.name,$<str>2);
 		print_elem("struct",$<str>2,$<mode>$); 
 		fprintf(cfo,"}\n");
