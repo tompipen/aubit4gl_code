@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.21 2005-09-29 15:29:47 mikeaubury Exp $
+# $Id: decompile.c,v 1.22 2007-12-12 15:03:16 briantan Exp $
 #
 */
 
@@ -53,10 +53,12 @@ int main (int argc, char *argv[])
   //FILE *f;
 //XDR xdrp;
   int a;
+  char *module;
+  char form[32];
 
-  if (argc != 2)
+  if (argc < 2)
     {
-      printf ("Usage %s filename\n", argv[0]);
+      printf ("Usage %s filename [modulename]\n", argv[0]);
       exit (0);
     }
 
@@ -87,7 +89,11 @@ int main (int argc, char *argv[])
 
   //a=isolated_xdr_struct_form(&xdrp,&the_form); /* in lib/libform/form_xdr/formwrite2.c */
 
-  a = A4GL_read_data_from_file ("struct_form", &the_form, argv[1]);
+  //a = A4GL_read_data_from_file ("struct_form", &the_form, argv[1]);
+  strcpy(form,argv[1]);
+  strcat(form,".afr");
+printf("opening form %s\n",form);
+  a = A4GL_read_data_from_file ("struct_form", &the_form, form);
 
   if (!a)
     {
@@ -103,7 +109,13 @@ int main (int argc, char *argv[])
     }
 
   //printf ("Dumping form..\n");
-  dump_form_desc (&the_form,argv[1]);
+  if (argc ==3 ) {
+	module = argv[2];
+  } else {
+	module = argv[1];
+  }
+  printf ("Dumping form %s\n",module);
+  dump_form_desc (&the_form,module);
 return 0;
 }
 
