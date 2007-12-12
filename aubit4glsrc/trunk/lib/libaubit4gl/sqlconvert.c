@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.132 2007-12-05 14:08:13 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.133 2007-12-12 09:39:26 mikeaubury Exp $
 #
 */
 
@@ -76,6 +76,7 @@ static char *cvsql_names[] = {
   "CVSQL_REPLACE_SQLCONST",
   "CVSQL_REPLACE_SQLFUNC",
   "CVSQL_DOUBLE_TO_SINGLE",
+  "CVSQL_TRIMSQLLIKEVAL",
   "CVSQL_MATCHES_TO_LIKE",
   "CVSQL_MATCHES_TO_REGEX",
   "CVSQL_MATCHES_TO_REGEXP",
@@ -200,6 +201,7 @@ enum cvsql_type
   CVSQL_REPLACE_SQLCONST,
   CVSQL_REPLACE_SQLFUNC,
   CVSQL_DOUBLE_TO_SINGLE,
+  CVSQL_TRIMSQLLIKEVAL,
   CVSQL_MATCHES_TO_LIKE,
   CVSQL_MATCHES_TO_REGEX,
   CVSQL_MATCHES_TO_REGEXP,
@@ -1596,6 +1598,8 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_REPLACE_SQLFUNC;
   if (match_strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0)
     return CVSQL_DOUBLE_TO_SINGLE;
+  if (match_strncasecmp (p, "TRIMSQLLIKEVAL", len) == 0)
+    return CVSQL_TRIMSQLLIKEVAL;
   if (match_strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
     return CVSQL_MATCHES_TO_LIKE;
   if (match_strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)

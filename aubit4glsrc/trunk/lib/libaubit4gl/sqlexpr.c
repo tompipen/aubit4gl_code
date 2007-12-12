@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.58 2007-11-29 13:48:05 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.59 2007-12-12 09:39:26 mikeaubury Exp $
 #
 */
 
@@ -640,7 +640,20 @@ char * get_select_list_item_ob (struct s_select *select, struct s_select_list_it
 
 }
 
-
+/* 
+ * Some RDBMs (like Postgres) fail to LIKE with trailing spaces..
+ * This function checks to see if TRIMSQLLIKEVAL is set - and if it is, will
+ * remove the trailing spaces from the value so it can be 'LIKE'd like informix
+ * 
+*/
+static char *like_trim(char *s) {
+if (A4GLSQLCV_check_requirement ("TRIMSQLLIKEVAL")) {
+	static char buff[20000];
+	sprintf(buff,"TRIM(%s)",s);
+	return buff;
+}
+return s;
+}
 
 
 char *
@@ -906,23 +919,23 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p2 = get_select_list_item (select, p->u_data.regex.regex);
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
-	    return make_sql_string_and_free (acl_strdup_With_Context(p1), strdup(" LIKE "), strdup(p2),
+	    return make_sql_string_and_free (acl_strdup_With_Context(like_trim(p1)), strdup(" LIKE "), strdup(p2),
 					     acl_strdup_With_Context(p->u_data.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (acl_strdup_With_Context(p1), acl_strdup_With_Context(" LIKE "), acl_strdup_With_Context(p2), NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context(like_trim(p1)), acl_strdup_With_Context(" LIKE "), acl_strdup_With_Context(p2), NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_LIKE:
       {
 	char *p1;
 	char *p2;
-	p1 = acl_strdup_With_Context(get_select_list_item (select, p->u_data.regex.val));
+	p1 = acl_strdup_With_Context(like_trim(get_select_list_item (select, p->u_data.regex.val)));
 	p2 = acl_strdup_With_Context(get_select_list_item (select, p->u_data.regex.regex));
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
-	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT LIKE "), p2,
+	    return make_sql_string_and_free (acl_strdup_With_Context(p1), acl_strdup_With_Context(" NOT LIKE "), p2,
 					     acl_strdup_With_Context(p->u_data.regex.escape), NULL);
 	  }
 	else
@@ -934,8 +947,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *p1;
 	char *p2;
-	p1 = get_select_list_item (select, p->u_data.regex.val);
-	p2 = get_select_list_item (select, p->u_data.regex.regex);
+	p1 = acl_strdup_With_Context(like_trim(get_select_list_item (select, p->u_data.regex.val)));
+	p2 = acl_strdup_With_Context(get_select_list_item (select, p->u_data.regex.regex));
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" ILIKE "), p2,
@@ -950,8 +963,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *p1;
 	char *p2;
-	p1 = get_select_list_item (select, p->u_data.regex.val);
-	p2 = get_select_list_item (select, p->u_data.regex.regex);
+	p1 = acl_strdup_With_Context(like_trim(get_select_list_item (select, p->u_data.regex.val)));
+	p2 = acl_strdup_With_Context(get_select_list_item (select, p->u_data.regex.regex));
 	if (p->u_data.regex.escape && strlen (p->u_data.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT ILIKE "), p2,
