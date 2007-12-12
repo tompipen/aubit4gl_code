@@ -1634,6 +1634,25 @@ printf("ninp=%d defs=%d\n",ninp,defs);
 		return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
 	}
   }
+  // If we've got to here we need to copy down our values...
+  while (1) {
+	int gc_arr_cnt;
+	int b;
+	A4GL_push_int (context);
+	uilib_has_array_values(1);
+	gc_arr_cnt=A4GL_pop_long();
+        if (gc_arr_cnt<=0) break;
+	A4GL_push_long (context);
+	A4GL_push_long (gc_arr_cnt);
+        uilib_input_get_array_values(2);
+        for (b = 0; b < inp->nbind; b++)
+          {
+          char *cptr;
+          cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (gc_arr_cnt);
+          A4GL_pop_var2 (cptr, inp->binding[b].dtype , inp->binding[b].size);
+        }
+   }
+
 
   if (last_attr) {
   	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);

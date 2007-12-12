@@ -183,11 +183,23 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
   ensure_sock(sockfd);
   while (bytes_sent < count)
     {
+	int loop_cnt=0;
+	
       do
 	{
+	errno=0;
 	  this_write = write (sockfd, buf, count - bytes_sent);
+		loop_cnt++;
+
+		if(errno) {
+			if (errno==EBADF || errno==EBADR) {
+				// something wrong - so die..
+				break;
+			}
+		}
 	}
       while ((this_write < 0));
+
       if (this_write <= 0)
 	{
 	  return this_write;
