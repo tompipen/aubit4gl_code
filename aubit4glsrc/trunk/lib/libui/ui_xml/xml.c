@@ -1545,16 +1545,16 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
   int rval;
   struct s_inp_arr *inp;
   int context=-1;
-  int a;
+  int acnt;
+int ninp;
   inp = vinp;
-
 
   if (init)
     {
 	char buff[2000];
 	A4GL_push_int(A4GL_get_count());
 	uilib_set_count(1);
-  suspend_flush(1);
+        suspend_flush(1);
       sprintf (buff, "<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>", srecname);
       uilib_set_field_list_directly (buff);
 	
@@ -1571,23 +1571,24 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
   uilib_get_context (2);
   context = A4GL_pop_long ();
 
+	ninp=A4GL_get_count();
+printf("ninp=%d defs=%d\n",ninp,defs);
 
-      if (defs)
+  if (defs==0 && ninp) {
+	printf("Initialize everything to null\n");
+  for (acnt = 0; acnt < ninp; acnt++)
+    {
+      int b;
+      for (b = 0; b < inp->nbind; b++)
 	{
-	  for (a = 0; a < inp->no_arr; a++)
-	    {
-	      int b;
-	      A4GL_push_int (context);
-	      A4GL_push_int (a + 1);
-	      for (b = 0; b < inp->nbind; b++)
-		{
-		  char *cptr;
-		  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (a);
-		  A4GL_push_param (cptr, inp->binding[b].dtype + ENCODE_SIZE (inp->binding[b].size));
-		}
-		uilib_input_array_sync(inp->nbind+2);
-	    }
+	  char *cptr;
+	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
+	  A4GL_setnull ( inp->binding[b].dtype ,cptr, inp->binding[b].size);
 	}
+    }
+    }
+
+
 
         dump_events (evt);
 	uilib_input_array_initialised(0);
@@ -1600,6 +1601,28 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
   uilib_get_context (2);
   context = A4GL_pop_long ();
   }
+
+
+  uilib_arr_count(0);
+  ninp=A4GL_pop_long();
+
+  for (acnt = 0; acnt < ninp; acnt++)
+    {
+      int b;
+      A4GL_push_int (context);
+      A4GL_push_int (acnt + 1);
+      for (b = 0; b < inp->nbind; b++)
+	{
+	  char *cptr;
+	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
+	  A4GL_push_param (cptr, inp->binding[b].dtype + ENCODE_SIZE (inp->binding[b].size));
+	}
+	uilib_input_array_sync(inp->nbind+2);
+    }
+  
+
+
+
   A4GL_push_int (context);
   uilib_input_array_loop(1);
 
