@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.142 2007-12-06 14:46:18 mikeaubury Exp $
+# $Id: resource.c,v 1.143 2007-12-12 14:31:42 mikeaubury Exp $
 #
 */
 
@@ -1189,19 +1189,22 @@ FILE *resourcefile = 0;
 
   /* -----------------  from ~/.aubitrc (USER'S HOME DIRECTORY) */
 
+
   //Whooops: ~ works on shell command line, not from here!
-  sprintf (buff, "%s/%s", acl_getenv ("HOME"), ".aubit4gl/aubitrc");
-  resourcefile = fopen (buff, "r");
+  if (acl_getenv_not_set_as_0("HOME")) {
+  	sprintf (buff, "%s/%s", acl_getenv ("HOME"), ".aubit4gl/aubitrc");
+  	resourcefile = fopen (buff, "r");
   	if (resourcefile != 0) {
-		#ifdef DEBUG
-			A4GL_debug ("3:From %s", buff);
-		#endif
-		add_resources_in (resourcefile);
-		fclose (resourcefile);
-    } else {
-		#ifdef DEBUG
-			A4GL_debug ("3:cannot read %s", buff);
-		#endif
+			#ifdef DEBUG
+				A4GL_debug ("3:From %s", buff);
+			#endif
+			add_resources_in (resourcefile);
+			fclose (resourcefile);
+    	} else {
+			#ifdef DEBUG
+				A4GL_debug ("3:cannot read %s", buff);
+			#endif
+    	}
     }
 
   /* ----------------- from ./.aubtirc (CURENT DIRECTORY) */
