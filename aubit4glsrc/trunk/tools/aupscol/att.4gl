@@ -142,7 +142,7 @@ menu "ATTRIBUTE"
 
 	command "Exit_set"
 		if lv_rid<=0 then
-			let lv_str="INSERT INTO ",fgl_getenv("A4GL_SYSCOL_ATT")," values (?,?,?,?,?,?,?,?,?)"
+			let lv_str="INSERT INTO ",fgl_getenv("A4GL_SYSCOL_ATT")," values (?,?,?,?,?,?,?,?,?,?)"
 			prepare p_ins_att from lv_str
 			execute p_ins_att using lv_rec.*
 		else

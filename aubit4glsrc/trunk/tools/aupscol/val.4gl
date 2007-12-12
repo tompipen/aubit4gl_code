@@ -127,9 +127,9 @@ if lv_rid<=0 then
 	# Insert
 	LET lv_str="INSERT INTO ",fgl_getenv("A4GL_SYSCOL_VAL")," VALUES (?,?,?,?)      "
 	PREPARE p_ins_add_val FROM lv_str
-	DISPLAY lv_str at 19,1
-	display lv_tabname," ",lv_colname," ",lv_type," ",lv_value at 20,1
-	sleep 2
+	#DISPLAY lv_str at 19,1
+	#display lv_tabname," ",lv_colname," ",lv_type," ",lv_value at 20,1
+	#sleep 2
 	EXECUTE p_ins_add_val USING lv_tabname,lv_colname,lv_type,lv_value
 ELSE
 	LET lv_str="UPDATE ",fgl_getenv("A4GL_SYSCOL_VAL")," SET attrname=?, attrval=? WHERE ",get_rowid(),"=?"
