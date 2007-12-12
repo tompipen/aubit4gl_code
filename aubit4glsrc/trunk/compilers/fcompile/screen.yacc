@@ -110,7 +110,7 @@ int A4GL_wcswidth(char *mbs);	/* utf8 */
 %token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED  OPEN_BRACE CLOSE_BRACE TITLE
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
-%token SEMICOLON LOOKUP JOINING
+%token SEMICOLON LOOKUP JOINING LOOKUP_FROM
 %token OPEN_BRACKET CLOSE_BRACKET STAR DIVIDE PLUS MINUS RECORD COMMA THROUGH TYPE DELIMITERS
 %token KW_CHAR KW_INT KW_DATE KW_FLOAT SMALLFLOAT SMALLINT KW_DECIMAL MONEY DATETIME INTERVAL LIKE
 %token BLACK BLUE GREEN CYAN RED MAGENTA WHITE YELLOW NORMAL REVERSE LEFT BOLD BLINK UNDERLINE DIM
@@ -452,13 +452,13 @@ SEMICOLON
 
 fpart_list : 
 fpart 
-| fpart_list fpart
+| fpart_list fpart 
 | fpart_list SEMICOLON fpart
 ;
 
 fpart : 
 EQUAL { 
-A4GL_init_fld();
+	A4GL_init_fld();
 }
 field_type op_att 
 {
@@ -651,8 +651,8 @@ lu_fc: 	named_or_kw_any DOT named_or_kw_any {
 lu_joincol:
  	named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"%s.%s", $<str>1,$<str>3);}
 	| named_or_kw_any {sprintf($<str>$,"%s",$<str>1);}
- 	| STAR named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"*%s.%s", $<str>1,$<str>3);}
-	| STAR named_or_kw_any {sprintf($<str>$,"*%s",$<str>1);}
+ 	| STAR named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"*%s.%s", $<str>2,$<str>4);}
+	| STAR named_or_kw_any {sprintf($<str>$,"*%s",$<str>2);}
 ;
 
 lu_join: JOINING 
@@ -689,6 +689,24 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 
 		}
 } 
+| LOOKUP_FROM  lu_joincol  {
+	   struct s_lookup  *l;
+           l=malloc(sizeof(struct s_lookup));
+           l->fieldtag=strdup("<<FROM>>");
+           l->tabcol=strdup($<str>2);
+
+	   $<lookups>$=malloc(sizeof(s_lookups));
+	   $<lookups>$->lookups.lookups_len=0;
+	   $<lookups>$->lookups.lookups_val=0;
+	   $<lookups>$->lookups.lookups_len++;
+	   $<lookups>$->lookups.lookups_val=realloc($<lookups>$->lookups.lookups_val, 
+			sizeof($<lookups>$->lookups.lookups_val[0])*$<lookups>$->lookups.lookups_len);
+  	   $<lookups>$->lookups.lookups_val[$<lookups>$->lookups.lookups_len-1]=l;
+		$<lookups>$->joincol="<<FROM>>";
+	   fld->lookup.lookups.lookups_len++;
+	   fld->lookup.lookups.lookups_val=realloc(fld->lookup.lookups.lookups_val, sizeof(fld->lookup.lookups.lookups_val[0])*fld->lookup.lookups.lookups_len);
+	   fld->lookup.lookups.lookups_val[fld->lookup.lookups.lookups_len-1]=$<lookups>$;
+}
 | LOOKUP  lu_ft_eq_c lu_join lu_joincol  {
 	$<lookups>2->joincol=strdup($<str>4);
 	fld->lookup.lookups.lookups_len++;
