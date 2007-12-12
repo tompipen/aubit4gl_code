@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.25 2007-11-20 14:09:32 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.26 2007-12-12 22:18:59 mikeaubury Exp $
 #*/
 
 /**
@@ -785,6 +785,10 @@ int
 A4GLPacker_input_start_struct (char *s, char *n, int ptr, int isarr)
 {
   /* <STRUCT NAME=".." TYPE=".."> */
+if (ptr)  {
+  if (!getaline ())
+    return 0;
+}
   if (!getaline ())
     return 0;
   return 1;
