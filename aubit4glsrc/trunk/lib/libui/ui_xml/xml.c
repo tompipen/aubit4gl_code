@@ -1539,25 +1539,24 @@ UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 
 
 int
-UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib,
-		       int init, void *evt)
+UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int init, void *evt)
 {
   int rval;
   struct s_inp_arr *inp;
-  int context=-1;
+  int context = -1;
   int acnt;
-int ninp;
+  int ninp;
   inp = vinp;
 
   if (init)
     {
-	char buff[2000];
-	A4GL_push_int(A4GL_get_count());
-	uilib_set_count(1);
-        suspend_flush(1);
+      char buff[2000];
+      A4GL_push_int (A4GL_get_count ());
+      uilib_set_count (1);
+      suspend_flush (1);
       sprintf (buff, "<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>", srecname);
       uilib_set_field_list_directly (buff);
-	
+
       A4GL_push_char ("XML");
       A4GL_push_int (((long) inp) & 0xffffffff);
       A4GL_push_int (defs);
@@ -1566,45 +1565,45 @@ int ninp;
       A4GL_push_int (inp->nbind);
       uilib_input_array_start (6);
 
-  A4GL_push_char ("XML");
-  A4GL_push_int ((long)vinp & (0xffffffff));
-  uilib_get_context (2);
-  context = A4GL_pop_long ();
+      A4GL_push_char ("XML");
+      A4GL_push_int ((long) vinp & (0xffffffff));
+      uilib_get_context (2);
+      context = A4GL_pop_long ();
 
-	ninp=A4GL_get_count();
-printf("ninp=%d defs=%d\n",ninp,defs);
+      ninp = A4GL_get_count ();
 
-  if (defs==0 && ninp) {
-	printf("Initialize everything to null\n");
-  for (acnt = 0; acnt < ninp; acnt++)
-    {
-      int b;
-      for (b = 0; b < inp->nbind; b++)
+      if (defs == 0 && ninp)
 	{
-	  char *cptr;
-	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
-	  A4GL_setnull ( inp->binding[b].dtype ,cptr, inp->binding[b].size);
+	  for (acnt = 0; acnt < ninp; acnt++)
+	    {
+	      int b;
+	      for (b = 0; b < inp->nbind; b++)
+		{
+		  char *cptr;
+		  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
+		  A4GL_setnull (inp->binding[b].dtype, cptr, inp->binding[b].size);
+		}
+	    }
 	}
-    }
-    }
 
 
 
-        dump_events (evt);
-	uilib_input_array_initialised(0);
-  	suspend_flush(-1);
+      dump_events (evt);
+      uilib_input_array_initialised (0);
+      suspend_flush (-1);
     }
 
- if (context==-1) {
-  A4GL_push_char ("XML");
-  A4GL_push_int ((long)vinp&0xffffffff);
-  uilib_get_context (2);
-  context = A4GL_pop_long ();
-  }
+  if (context == -1)
+    {
+      A4GL_push_char ("XML");
+      A4GL_push_int ((long) vinp & 0xffffffff);
+      uilib_get_context (2);
+      context = A4GL_pop_long ();
+    }
 
 
-  uilib_arr_count(0);
-  ninp=A4GL_pop_long();
+  uilib_arr_count (0);
+  ninp = A4GL_pop_long ();
 
   for (acnt = 0; acnt < ninp; acnt++)
     {
@@ -1617,74 +1616,83 @@ printf("ninp=%d defs=%d\n",ninp,defs);
 	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
 	  A4GL_push_param (cptr, inp->binding[b].dtype + ENCODE_SIZE (inp->binding[b].size));
 	}
-	uilib_input_array_sync(inp->nbind+2);
+      uilib_input_array_sync (inp->nbind + 2);
     }
-  
+
 
 
 
   A4GL_push_int (context);
-  uilib_input_array_loop(1);
+  uilib_input_array_loop (1);
 
-  rval=A4GL_pop_int();
-  printf("RVAL=%d xxx \n",rval);
+  rval = A4GL_pop_int ();
 
-  if (rval==0) {
-	if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
-		return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+  if (rval == 0)
+    {
+      if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
+	{
+	  return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
 	}
-  }
+    }
   // If we've got to here we need to copy down our values...
-  while (1) {
-	int gc_arr_cnt;
-	int b;
-	A4GL_push_int (context);
-	uilib_has_array_values(1);
-	gc_arr_cnt=A4GL_pop_long();
-        if (gc_arr_cnt<=0) break;
-	A4GL_push_long (context);
-	A4GL_push_long (gc_arr_cnt);
-        uilib_input_get_array_values(2);
-        for (b = 0; b < inp->nbind; b++)
-          {
-          char *cptr;
-          cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (gc_arr_cnt);
-          A4GL_pop_var2 (cptr, inp->binding[b].dtype , inp->binding[b].size);
-        }
-   }
+  while (1)
+    {
+      int gc_arr_cnt;
+      int b;
+      A4GL_push_int (context);
+      uilib_has_array_values (1);
+      gc_arr_cnt = A4GL_pop_long ();
+      if (gc_arr_cnt <= 0)
+	break;
+      A4GL_push_long (context);
+      A4GL_push_long (gc_arr_cnt);
+      uilib_input_get_array_values (2);
+      for (b = 0; b < inp->nbind; b++)
+	{
+	  char *cptr;
+	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (gc_arr_cnt-1);
+	  A4GL_pop_var2 (cptr, inp->binding[b].dtype, inp->binding[b].size);
+	}
+    }
 
 
-  if (last_attr) {
-  	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);
-  	if (last_attr->arrcount) A4GL_set_arr_count(last_attr->arrcount);
-  	if (last_attr->scrline) A4GL_set_scr_line(last_attr->scrline);
-  }
-  if (rval==-100) { 	
-	printf("ACCEPT....\n");
-	// ACCEPT...
-        //A4GL_push_int (context); uilib_free_input_array(1);
-  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { 
-		int a;
-		a=A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); 
-		printf("Returning %d\n",a);
-		return a;
+  if (last_attr)
+    {
+      if (last_attr->arrline)
+	A4GL_set_arr_curr (last_attr->arrline);
+      if (last_attr->arrcount)
+	A4GL_set_arr_count (last_attr->arrcount);
+      if (last_attr->scrline)
+	A4GL_set_scr_line (last_attr->scrline);
+    }
+  if (rval == -100)
+    {
+      printf ("ACCEPT....\n");
+      // ACCEPT...
+      //A4GL_push_int (context); uilib_free_input_array(1);
+      if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	{
+	  int a;
+	  a = A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
+	  printf ("Returning %d\n", a);
+	  return a;
 	}
-	A4GL_assertion(1,"Should have an A4GL_EVENT_AFTER_INP_CLEAN");
-  }
-  if (rval==-101) { 	
-	// INTERRUPT
-	int_flag=1;
-        //A4GL_push_int (context); uilib_free_input_array(1);
-  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { 
-		return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); 
+      A4GL_assertion (1, "Should have an A4GL_EVENT_AFTER_INP_CLEAN");
+    }
+  if (rval == -101)
+    {
+      // INTERRUPT
+      int_flag = 1;
+      //A4GL_push_int (context); uilib_free_input_array(1);
+      if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	{
+	  return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	}
-	A4GL_assertion(1,"Should have an A4GL_EVENT_AFTER_INP_CLEAN");
-  }
+      A4GL_assertion (1, "Should have an A4GL_EVENT_AFTER_INP_CLEAN");
+    }
 
   return rval;
 }
-
-
 
 int
 UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)

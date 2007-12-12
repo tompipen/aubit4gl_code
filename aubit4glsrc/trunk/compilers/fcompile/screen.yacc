@@ -691,21 +691,25 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 } 
 | LOOKUP_FROM  lu_joincol  {
 	   struct s_lookup  *l;
+	   struct s_lookups *ls;
            l=malloc(sizeof(struct s_lookup));
            l->fieldtag=strdup("<<FROM>>");
            l->tabcol=strdup($<str>2);
 
-	   $<lookups>$=malloc(sizeof(s_lookups));
-	   $<lookups>$->lookups.lookups_len=0;
-	   $<lookups>$->lookups.lookups_val=0;
-	   $<lookups>$->lookups.lookups_len++;
-	   $<lookups>$->lookups.lookups_val=realloc($<lookups>$->lookups.lookups_val, 
-			sizeof($<lookups>$->lookups.lookups_val[0])*$<lookups>$->lookups.lookups_len);
-  	   $<lookups>$->lookups.lookups_val[$<lookups>$->lookups.lookups_len-1]=l;
-		$<lookups>$->joincol="<<FROM>>";
+	   ls=malloc(sizeof(s_lookups));
+	   ls->lookups.lookups_len=0;
+	   ls->lookups.lookups_val=0;
+
+	   ls->lookups.lookups_len++;
+	   ls->lookups.lookups_val=realloc(ls->lookups.lookups_val, sizeof(ls->lookups.lookups_val[0])*ls->lookups.lookups_len);
+  	   ls->lookups.lookups_val[ls->lookups.lookups_len-1]=l;
+	   ls->joincol="<<FROM>>";
+
 	   fld->lookup.lookups.lookups_len++;
 	   fld->lookup.lookups.lookups_val=realloc(fld->lookup.lookups.lookups_val, sizeof(fld->lookup.lookups.lookups_val[0])*fld->lookup.lookups.lookups_len);
-	   fld->lookup.lookups.lookups_val[fld->lookup.lookups.lookups_len-1]=$<lookups>$;
+	   fld->lookup.lookups.lookups_val[fld->lookup.lookups.lookups_len-1]=ls;
+
+
 }
 | LOOKUP  lu_ft_eq_c lu_join lu_joincol  {
 	$<lookups>2->joincol=strdup($<str>4);

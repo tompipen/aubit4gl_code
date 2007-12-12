@@ -269,7 +269,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER_OF;}
 
 "lookup" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LOOKUP;}
-lookup[	 ]+from 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LOOKUP_FROM;}
+"lookup from" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LOOKUP_FROM;}
 "joining" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return JOINING;}
 "wordwrap"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WORDWRAP;}
 "compress"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMPRESS;}

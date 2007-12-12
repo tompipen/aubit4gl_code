@@ -44,7 +44,7 @@ FILE *dbgfile;
 char buff[20000];
 int a;
 
-if (lvl>9) return;
+if (lvl>99) return;
   va_start (args, s);
   vsprintf (buff, s, args);
   for (a=0;a<strlen(buff)-2;a++)  {

@@ -57429,14 +57429,14 @@ else
 		#A4GL_UI="HL_TUI"
 		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI HL_TUIN"
 	else
+		if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
+				A4GL_UI="HL_TUINs"
+				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs UI_HL_TUIws"
+		fi
 		#we can compile only HL_TUIN with PDcurses
 		if test "$HAVE_PDCURSES" = "1"; then
 			A4GL_UI="TUI"
 			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN UI_HL_TUIw"
-		fi
-		if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
-				A4GL_UI="HL_TUINs"
-				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs UI_HL_TUIws"
 		fi
 	fi
 
@@ -61482,7 +61482,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.393 2007-12-07 15:44:13 mikeaubury Exp $
+| $Id: configure,v 1.394 2007-12-12 23:18:03 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

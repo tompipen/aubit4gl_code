@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.367 2007-12-07 15:44:30 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.368 2007-12-12 23:18:32 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.367 2007-12-07 15:44:30 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.368 2007-12-12 23:18:32 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -9934,14 +9934,14 @@ else
 		#A4GL_UI="HL_TUI"
 		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI HL_TUIN"
 	else
+		if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
+				A4GL_UI="HL_TUINs"
+				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs UI_HL_TUIws"
+		fi
 		#we can compile only HL_TUIN with PDcurses
 		if test "$HAVE_PDCURSES" = "1"; then
 			A4GL_UI="TUI"
 			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN UI_HL_TUIw"
-		fi
-		if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
-				A4GL_UI="HL_TUINs"
-				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs UI_HL_TUIws"
 		fi
 	fi
 
@@ -11071,7 +11071,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.367 2007-12-07 15:44:30 mikeaubury Exp $
+| $Id: configure.in,v 1.368 2007-12-12 23:18:32 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

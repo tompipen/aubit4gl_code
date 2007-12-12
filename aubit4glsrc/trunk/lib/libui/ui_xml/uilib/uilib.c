@@ -1768,6 +1768,7 @@ uilib_input_array_start (int nargs)
   contexts[ci].ui.inputarray.nvals=nvals;
 
   contexts[ci].ui.inputarray.changed_rows=malloc(arrsize*sizeof(int));
+printf("CREATING\n");
   contexts[ci].ui.inputarray.variable_data=malloc(arrsize*sizeof(char **));
 
   for (a=0;a<arrsize;a++) {
@@ -1796,19 +1797,20 @@ int uilib_input_array_sync(int nargs) {
   int row;
   int a;
   int ci;
+char **p;
   args = get_args (nargs - 2);
   row=POPint()-1;
   ci=POPint();
 	UIdebug(5,"Input arry sync : row = %d ci=%d", row,ci);
+p=contexts[ci].ui.inputarray.variable_data[row];
 
   for (a=0;a<nargs-2;a++) {
-	char **p;
-	p=contexts[ci].ui.inputarray.variable_data[row];
 	if (p[a]==0) {
 		p[a]=args[a];
 		contexts[ci].ui.inputarray.changed_rows[row]=1;
 	} else {
 		if (strcmp(p[a],args[a])!=0) {
+
 			free(p[a]);
 			p[a]=args[a];
 			contexts[ci].ui.inputarray.changed_rows[row]=1;
@@ -1924,6 +1926,7 @@ int uilib_input_array_loop (int n)
 		}
 		for (b=0;b<contexts[context].ui.inputarray.nvals;b++) {
 			char **p;
+			printf("SETTING\n");
 			p=contexts[context].ui.inputarray.variable_data[arrline];
 			if (p[b]) {
 				free(p[b]);

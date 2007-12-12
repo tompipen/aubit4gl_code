@@ -1,5 +1,5 @@
 AUBITDIR=../..
-CFLAGS=-g -I$(AUBITDIR)/incl
+CFLAGS=-g -I$(AUBITDIR)/incl -Wall
 
 #.PHONY: all
 

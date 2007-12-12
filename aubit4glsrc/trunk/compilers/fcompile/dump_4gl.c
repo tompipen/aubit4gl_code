@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.17 2007-12-07 08:21:06 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.18 2007-12-12 23:18:34 mikeaubury Exp $
 #*/
 
 /**
@@ -423,6 +423,8 @@ dump_form_desc (struct_form * f,char *fname)
  int y;
   FILE *fout;
 char fname_split[300];
+int has_lookups=0;
+int printed_tag;
   make_screen(f);
 
   for (a = 0; a < f->snames.snames_len; a++)
@@ -448,17 +450,49 @@ char fname_split[300];
 		char *ptr;
 		ptr=screen_has_attribute(f,a, y);
 		if (ptr) {
-			fprintf(fout,"%s\t= ",ptr);
+			char *p2=0;
+			if (!printed_tag) {
+				fprintf(fout,"%s\t= ",ptr);
+				printed_tag++;
+			}
+		
+			if (y<f->attributes.attributes_len-1) { p2=screen_has_attribute(f,a, y+1); } else {p2="";}
+			if (p2) {
+				fprintf (fout,"%s.%s=", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
+				if (strcmp(ptr,p2)==0) continue;
+			}
+
+
 			dump_attribute(fout, &f->attributes.attributes_val[y], ptr);
 			fprintf(fout,";\n");
+			printed_tag=0;
+
+			if (f->attributes.attributes_val[y].lookup.lookups.lookups_len) {
+				int cnt;
+				// We've got some links..
+				for (cnt=0;cnt<f->attributes.attributes_val[y].lookup.lookups.lookups_len;cnt++) {
+					struct s_lookups *p;
+					int cnt1;
+					p=f->attributes.attributes_val[y].lookup.lookups.lookups_val[cnt];
+					for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
+						struct s_lookup *p2;
+						has_lookups++;
+						p2=p->lookups.lookups_val[cnt1];
+						fprintf(fout,"%s=%s;\n",p2->fieldtag, p2->tabcol);
+					}
+	
+				}
+			}
+
 		}
+		
 	}
 
   	fprintf (fout,"INSTRUCTIONS\n");
   	fprintf (fout,"  DELIMITERS '%s'\n\n", f->delim);
     }
 
-   if (f->control_blocks.control_blocks_len) {
+   if (f->control_blocks.control_blocks_len || has_lookups) {
    	sprintf(fname_split,"Split_%s.4gl",fname);
    	fout=fopen(fname_split,"w");
    	if (!fout) {
@@ -477,6 +511,7 @@ char fname_split[300];
 
    	fprintf(fout,"FUNCTION form_validation(lv_when, lv_action, lv_col)\n");
    	fprintf(fout,"DEFINE lv_when, lv_action,lv_col CHAR(20)\n");
+
    	for (a=0;a< f->control_blocks.control_blocks_len;a++) {
 		fprintf(fout,"\n\n#%d\n",a);
 		dump_control_block(f, fout, &f->control_blocks.control_blocks_val[a]);
@@ -504,6 +539,23 @@ char fname_split[300];
 	fprintf(fout,"CASE \n");
 	for (a=0;a<f->attributes.attributes_len;a++) {
 		fprintf(fout,"   WHEN lv_field=\"%s.%s\"\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname, f->attributes.attributes_val[a].tabname);
+			if (f->attributes.attributes_val[a].lookup.lookups.lookups_len) {
+				int cnt;
+				// We've got some links..
+				for (cnt=0;cnt<f->attributes.attributes_val[a].lookup.lookups.lookups_len;cnt++) {
+					struct s_lookups *p;
+					int cnt1;
+					p=f->attributes.attributes_val[a].lookup.lookups.lookups_val[cnt];
+					for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
+						struct s_lookup *p2;
+						p2=p->lookups.lookups_val[cnt1];
+						fprintf(fout,"# %s.%s LOOK UP %s JOINCOL=%s\n",
+							f->attributes.attributes_val[a].colname, f->attributes.attributes_val[a].tabname,
+p2->tabcol, p->joincol);
+					}
+	
+				}
+			}
 		fprintf(fout,"     CALL form_validation(\"BEFORE\",\"DISPLAY\", \"%s\")\n",  f->attributes.attributes_val[a].colname);
 		if (strcmp(f->attributes.attributes_val[a].tabname,"formonly")!=0) {
 			fprintf(fout,"     IF lv_set_variable THEN\n        LET gr_%s.%s=lv_value\n     END IF\n", f->attributes.attributes_val[a].tabname,  f->attributes.attributes_val[a].colname);
