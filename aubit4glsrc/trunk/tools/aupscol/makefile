@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.7 2006-10-02 07:52:40 afalout Exp $
+# $Id: makefile,v 1.8 2007-12-12 13:38:02 mikeaubury Exp $
 #
 
 # Currently Informix only
@@ -45,16 +45,16 @@ include ${ROOT}/incl/a4gl.mk
 ##                              Options
 ## ==================================================================
 
-A4GL_LEXTYPE=EC
-export A4GL_LEXTYPE
-A4GL_LEXDIALECT=INFORMIX
-export A4GL_LEXDIALECT
+#A4GL_LEXTYPE=EC
+#export A4GL_LEXTYPE
+#A4GL_LEXDIALECT=INFORMIX
+#export A4GL_LEXDIALECT
 #INFORMIXC=gcc
 #export INFORMIXC
 
 #4GLC=${FGLPCEXEC} ${VERBOSE_FLAG}
 #FGLPC_VERBOSE_FLAG=-V5
-4GLC			=4glpc ${FGLPC_VERBOSE_FLAG}
+4GLC			=4glpc -t C ${FGLPC_VERBOSE_FLAG}
 
 
 ALL=${ROOT}/bin/aupscol
@@ -92,7 +92,7 @@ endif
 all: ${ALL}
 	@echo "Default target (${ALL}) succesfuly compiled."
 	
-${ROOT}/bin/aupscol: main.ao upscol.ao infx.ao ../asql/ifx_pick.ao val.ao att.ao
+${ROOT}/bin/aupscol: main.ao upscol.ao generic.ao pick.ao val.ao att.ao
 	${4GLC} ${VERBOSE_FLAG} $^ -o $@
 
 
@@ -100,8 +100,8 @@ ${ROOT}/bin/aupscol: main.ao upscol.ao infx.ao ../asql/ifx_pick.ao val.ao att.ao
 ##                              Sub-targets
 ## ==================================================================
 
-../asql/ifx_pick.ao:
-	${MAKE} -C ../asql
+pick.ao: ../asql/pick.4gl
+	${4GLC} ${VERBOSE_FLAG} -o $@  $^
 
 run:
 	${ROOT}/bin/aupscol${EXE_EXT}

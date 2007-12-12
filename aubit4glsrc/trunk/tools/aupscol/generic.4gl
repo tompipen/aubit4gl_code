@@ -1,3 +1,6 @@
+define lv_r array[1000] of char(128)
+DEFINE mv_rowid CHAR(30)
+
 function select_db()
 define lv_cnt integer
 define lv_curr_db char(255)
@@ -8,40 +11,15 @@ define a integer
 let lv_curr_db=get_db();
 clear screen
 call display_banner()
-#database aubit4gl
-#call set_curr_db("aubit4gl")
-#return
-
-if fgl_getenv("A4GL_LEXDIALECT") != "INFORMIX" then
-	call aclfgl_setenv("A4GL_LEXDIALECT","INFORMIX")
-end if
 
 display "Please wait..." at 2,1
 code
-{
-#define MAXDBS 100
-#define FASIZ (MAXDBS * 19)
-char *dbsname[MAXDBS+1];
-char            dbsarea[FASIZ];
-
- a4gl_sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
-
+ndbs=A4GLSQL_fill_array(1000,lv_r,sizeof(lv_r[0])-1,0,0,"DATABASES",0,0);
 endcode
 
-if sqlca.sqlcode!=0 then
-        call check_and_report_error()
-        return
-end if
 for a=1 to ndbs
-code
-        strcpy(lv_name,dbsname[a-1]);
-endcode
-        call set_pick(a,lv_name)
+        call set_pick(a,lv_r[a])
 end for
-code
-}
-endcode
-
 call set_pick_cnt(ndbs)
 
 display  "Choose a database with the arrow keys, or type one in" at 2,1
@@ -73,18 +51,19 @@ end function
 function choose_table()
 define lv_name char(40)
 define a integer
-declare c_choose_tab cursor for
-	select tabname from systables
-	where tabid>99
-	order by tabname
-let a=1
+define ntab integer
+code
+	ntab=A4GLSQL_fill_array(1000,lv_r,sizeof(lv_r[0])-1,0,0,"TABLES",1,0);
+endcode
+
 clear screen
+
 call display_banner()
-foreach c_choose_tab into lv_name
-        call set_pick(a,lv_name)
-	let a=a+1
-end foreach
-call set_pick_cnt(a-1)
+
+for a=1 to ntab
+        call set_pick(a,lv_r[a])
+end for
+call set_pick_cnt(ntab)
 
 display  "Choose a table with the arrow keys, or type one in" at 2,1
 let lv_name=prompt_pick("SELECT TABLE >>","")
@@ -103,6 +82,7 @@ define lv_name char(40)
 define a integer
 define lv_str char(255)
 define lv_tabname char(30)
+define ncol integer
 clear screen
 call display_banner()
 let lv_tabname=get_curr_tab()
@@ -112,19 +92,26 @@ if lv_tabname is null or lv_tabname matches " " then
 	return 0
 end if
 let a=1
-let lv_str="select colname,colno from syscolumns,systables where tabname=? and systables.tabid=syscolumns.tabid order by 2"
-prepare p_choose_col from lv_str
-declare c_choose_col cursor for p_choose_col
-foreach c_choose_col using lv_tabname into lv_name
-        call set_pick(a,lv_name)
-	let a=a+1
-end foreach
 
-if a<=1 then
+code
+A4GL_trim(lv_tabname);
+ncol=A4GLSQL_fill_array(1000,lv_r,sizeof(lv_r[0])-1,0,0,"COLUMNS",1,lv_tabname);
+endcode
+
+clear screen
+
+call display_banner()
+
+
+if ncol<=0 then
 	error "No columns found for table ",lv_tabname
 	return 0
 end if
-call set_pick_cnt(a-1)
+
+for a=1 to ncol
+        call set_pick(a,lv_r[a])
+end for
+call set_pick_cnt(ncol)
 
 display  "Choose a column with the arrow keys, or type one in" at 2,1
 let lv_name=prompt_pick("SELECT COLUMN >>","")
@@ -139,5 +126,11 @@ end function
 
 
 FUNCTION get_rowid()
-return "rowid"
+if mv_rowid IS NULL THEN
+code
+	strcpy(mv_rowid,A4GLSQLCV_get_sqlconst ("ROWID"));
+endcode
+end if
+
+return mv_rowid clipped
 END FUNCTION
