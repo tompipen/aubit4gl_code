@@ -1574,6 +1574,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 
       if (defs == 0 && ninp)
 	{
+		printf("CLEARING down array - we want defaults\n");
 	  for (acnt = 0; acnt < ninp; acnt++)
 	    {
 	      int b;
@@ -1634,6 +1635,8 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	  return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
 	}
     }
+
+  if (rval>=0 ) {
   // If we've got to here we need to copy down our values...
   while (1)
     {
@@ -1654,7 +1657,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	  A4GL_pop_var2 (cptr, inp->binding[b].dtype, inp->binding[b].size);
 	}
     }
-
+  }
 
   if (last_attr)
     {

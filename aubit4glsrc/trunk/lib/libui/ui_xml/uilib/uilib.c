@@ -1798,6 +1798,7 @@ int uilib_input_array_sync(int nargs) {
   int a;
   int ci;
 char **p;
+int changed=0;
   args = get_args (nargs - 2);
   row=POPint()-1;
   ci=POPint();
@@ -1806,18 +1807,27 @@ p=contexts[ci].ui.inputarray.variable_data[row];
 
   for (a=0;a<nargs-2;a++) {
 	if (p[a]==0) {
+		
+		UIdebug(5,"New Value @%d %s",a, args[a]);
 		p[a]=args[a];
 		contexts[ci].ui.inputarray.changed_rows[row]=1;
+		changed++;
 	} else {
+		UIdebug(5,"Compare Value @%d %s %s",a, p[a], args[a]);
 		if (strcmp(p[a],args[a])!=0) {
 
 			free(p[a]);
 			p[a]=args[a];
 			contexts[ci].ui.inputarray.changed_rows[row]=1;
+		changed++;
 		}
 	}
   }
 
+if (changed) {
+	printf("some values changes - will need to resync row = %d ci=%d\n", row,ci);
+	UIdebug(5,"some values changes - will need to resync row = %d ci=%d", row,ci);
+}
 
   return 0;
 }
@@ -1864,7 +1874,7 @@ int uilib_input_array_loop (int n)
   context = POPint ();
   i = 1;
 
-
+printf("contexts[#].ui.inputarray.changed_rows[0]=%d\n", contexts[context].ui.inputarray.changed_rows[0]);
   if (contexts[context].state == UI_NOT_INITIALIZED)
     {
       UIdebug (5,"not initialized\n");
@@ -1878,14 +1888,12 @@ int uilib_input_array_loop (int n)
   if (contexts[context].state == UI_WANT_BEFORE_INPUT)
     {
       UIdebug (5,"before menu\n");
-      printf("BEFORE INPUT\n");
       // return whatever the before menu was...
       contexts[context].state = UI_INITIALIZED;
       pushint (0);
       return 1;
     }
 
-      printf("WAITING...\n");
   send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" >", context);
   send_input_array_change(context);
   send_to_ui("</WAITFOREVENT>");
@@ -1926,7 +1934,6 @@ int uilib_input_array_loop (int n)
 		}
 		for (b=0;b<contexts[context].ui.inputarray.nvals;b++) {
 			char **p;
-			printf("SETTING\n");
 			p=contexts[context].ui.inputarray.variable_data[arrline];
 			if (p[b]) {
 				free(p[b]);
