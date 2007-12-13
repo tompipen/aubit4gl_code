@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.386 2007-12-05 14:08:14 mikeaubury Exp $
+# $Id: compile_c.c,v 1.387 2007-12-13 16:53:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.386 2007-12-05 14:08:14 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.387 2007-12-13 16:53:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1632,8 +1632,12 @@ static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
 
-  if ((when_code & 15) == WHEN_CONTINUE)
-    return 0;
+  if ((when_code & 15) == WHEN_CONTINUE) {
+		if (strstr(when_str,"ERR_CHK_ERROR")) {
+      			printc ("%s { A4GL_err_continue_log(%d,_module_name); }\n", when_str, l, when_code);
+		}
+    		return 0;
+  }
 
   if ((when_code & 15) == WHEN_NOTSET)
     return 0;
@@ -1649,6 +1653,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
       }
       printcomment ("/* WHENSTOP */");
     }
+
   if (when_code == WHEN_CALL)
     {
 	char buff[256];

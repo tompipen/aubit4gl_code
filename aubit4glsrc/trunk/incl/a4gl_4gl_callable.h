@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.31 2007-02-20 19:17:32 gyver309 Exp $
+# $Id: a4gl_4gl_callable.h,v 1.32 2007-12-13 16:53:27 mikeaubury Exp $
 */
 
 /**
@@ -149,6 +149,8 @@ void A4GL_push_null (int dtype,int size);
 void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
 void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
 void A4GL_chk_err (int lineno, char *fname);
+void A4GL_err_continue_log (int lineno, char *fname);
+
 int A4GLSTK_isStackInfo (void);
 char *A4GLSTK_getStackTrace (void);
 void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);

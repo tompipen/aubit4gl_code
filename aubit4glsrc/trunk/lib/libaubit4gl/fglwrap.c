@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.124 2007-06-25 14:33:33 gyver309 Exp $
+# $Id: fglwrap.c,v 1.125 2007-12-13 16:53:29 mikeaubury Exp $
 #
 */
 
@@ -432,8 +432,28 @@ A4GL_isno (char *s)
 void
 A4GL_generateError (char *str, char *fileName, int lineno)
 {
-      SPRINTF4 (str,
-	       "Program stopped at '%s', line number %d.\nError status number %d.\n%s.\n",
+      SPRINTF5 (str,
+	       "Program %s stopped at '%s', line number %d.\nError status number %d.\n%s.\n", A4GL_get_running_program(),
+	       fileName,
+	       lineno,
+	       (int) a4gl_status,
+	       A4GL_err_print (a4gl_status, a4gl_sqlca.sqlerrm));
+  if (A4GLSTK_isStackInfo ())
+    SPRINTF2 (str, "%s\n%s", str, A4GLSTK_getStackTrace ());
+}
+
+/**
+ * Create an error in a string.
+ *
+ * @para str A pointer to the place where the error string will be generated.
+ * @param fileName A string with the source name.
+ * @param lineno The line in the source where the error ocurred.
+ */
+void
+A4GL_generateErrorSkipped (char *str, char *fileName, int lineno)
+{
+      SPRINTF5 (str,
+	       "Program %s CONTINUEd after error at '%s', line number %d.\nError status number %d.\n%s.\n", A4GL_get_running_program(),
 	       fileName,
 	       lineno,
 	       (int) a4gl_status,
@@ -454,7 +474,7 @@ int aclfgl_aclfgl_get_stack_trace() {
 
 
 /**
- * Check if have ocurred some error.
+ * Check if have ocurred some error. - similar to A4GL_err_continue_log
  * This check is made with the value of global variable status.
  *
  * @param lineno The source line number where the error ocurred.
@@ -511,6 +531,43 @@ A4GL_chk_err (int lineno, char *fname)
 
       }
   A4GL_fgl_die (1);
+}
+
+/**
+ * Check if have ocurred some error  - similar to A4GL_chk_err
+ *
+ * This special version can be turned on to log errors
+ * that have been skipped because WHENEVER ERROR CONTINUE has been set.
+ *
+ * This check is made with the value of global variable status.
+ *
+ * @param lineno The source line number where the error ocurred.
+ * @param fname The source 4gl file number where the error ocurred.
+ */
+void
+A4GL_err_continue_log (int lineno, char *fname)
+{
+static int log_continue_errs=-1;
+  char s[2048];
+
+  if (log_continue_errs==-1) {
+		//@ENV ERRLOG_CONTINUE_ERRORS Log errors generated but skipped because WHENEVER ERROR CONTINUE is set
+		if (A4GL_isyes(acl_getenv("ERRLOG_CONTINUE_ERRORS"))) {
+			log_continue_errs=1;
+		} else {
+			log_continue_errs=0;
+		}
+  }
+  if (a4gl_status >= 0 || log_continue_errs==0 || !A4GL_has_errorlog())
+    return;
+
+  A4GL_generateErrorSkipped (s, fname, lineno);
+
+      if (strcmp (fname, "Unknown") != 0 )
+	{
+	  A4GL_push_char (s);
+	  A4GL_errorlog (fname, lineno, 1);
+	}
 }
 
 /**

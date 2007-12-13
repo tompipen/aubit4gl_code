@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.296 2007-12-05 14:08:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.297 2007-12-13 16:53:27 mikeaubury Exp $
 #
 */
 
@@ -1214,6 +1214,7 @@ enum cmd_types {
   void A4GLSTK_popFunction (void);
   void A4GL_pushop (int a);
   void A4GL_chk_err (int lineno, char *fname);
+  void A4GL_err_continue_log (int lineno, char *fname);
 
   void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
   void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
