@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.149 2007-12-12 09:19:42 mikeaubury Exp $
+# $Id: report.c,v 1.150 2007-12-13 12:19:39 mikeaubury Exp $
 #
 */
 
@@ -2456,6 +2456,7 @@ int A4GL_push_agg(char type, long agg_type, void *agg, long aggcnt) {
 				A4GL_push_long(*(long *)agg);
 				A4GL_cast_top_of_stack_to_dtype(DTYPE_DECIMAL+ENCODE_SIZE(((16<<8)+3)));
 				break;
+			
 
 		case 'P':
 				A4GL_push_double((double)(*(long *)agg*100)/(double)aggcnt);

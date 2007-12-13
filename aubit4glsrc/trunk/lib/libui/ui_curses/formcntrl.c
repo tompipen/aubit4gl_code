@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.133 2007-12-13 10:31:30 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.134 2007-12-13 12:19:40 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.133 2007-12-13 10:31:30 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.134 2007-12-13 12:19:40 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -437,7 +437,14 @@ A4GL_debug("field=%d %p\n",attrib,sio->field_list);
 	      last_field, new_field);
 }
 
-
+int check_for_construct_large_for_key(int a) {
+	if (a=='\t' || a=='\n' || a=='\r') return 0;
+	if (a==A4GLKEY_DOWN) return 0;
+	if (a==A4GLKEY_UP) return 0;
+	if (a==A4GLKEY_RIGHT) return 0;
+	if (a==A4GLKEY_LEFT) return 0;
+	return 1;
+}
 
 /* 
 * process any waiting actions 
@@ -831,9 +838,11 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
                         A4GL_trim(rbuff);
                         w=form->fileform->metrics. metrics_val[A4GL_get_metric_for (form, form->currentfield)].w;
+
                         A4GL_debug("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",rbuff,
-							A4GL_get_field_width(sio->currentfield),strlen(rbuff),w);
-                        if (strlen(rbuff)>=w) {
+				A4GL_get_field_width(sio->currentfield),strlen(rbuff),w);
+
+                        if (strlen(rbuff)>=w && check_for_construct_large_for_key(sio->fcntrl[a].extent)) {
                                 struct struct_scr_field *fprop;
                                 int k;
 				int lm;
@@ -841,7 +850,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 				FIELD *cf;
 				char rval[10000];
 				strcpy(m_delims,form->fileform->delim);
-		  		A4GL_debug("curcol");
+		  		A4GL_debug("curcol movement 1");
 
 				lm=A4GL_get_curr_field_col(mform);
                                	set_field_buffer (sio->currentfield,0,rbuff); 
@@ -858,6 +867,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 				this_place=mform->curcol+construct_not_moved;
 				A4GL_debug("this_place=%d curcol=%d construct_not_moved=%d", this_place,mform->curcol,construct_not_moved);
                                 k=A4GL_construct_large(rbuff,evt,sio->fcntrl[a].extent,this_place, fprop,rval);
+				construct_not_moved=0;
 				A4GL_int_form_driver (mform, REQ_BEG_FIELD);
   				A4GL_int_form_driver (mform, REQ_VALIDATION);
 				
@@ -2154,6 +2164,7 @@ int fwidth;
 int a;
 char m_d1[2];
 char m_d2[2];
+int moved;
 int x=0;
 memset(rbuff,0,sizeof(rbuff));
 A4GL_debug("In construct_large orig=%s init_key=%d initpos=%d construct_not_added=%d", orig,init_key,initpos, construct_not_added);
@@ -2199,7 +2210,7 @@ strcpy(newfieldval,"");
         buff[1]=A4GL_make_field(0,1,1,fwidth-2);
         local_field_opts_on (buff[1], O_ACTIVE);
         local_field_opts_on (buff[1], O_EDIT);
-        local_field_opts_on (buff[1], O_BLANK);
+        //local_field_opts_on (buff[1], O_BLANK);
         local_field_opts_off (buff[1], O_AUTOSKIP);
         local_field_opts_off (buff[1], O_WRAP);
         local_field_opts_off (buff[1], O_STATIC);
@@ -2224,11 +2235,31 @@ strcpy(newfieldval,"");
 			strcat(rbuff, smbuff);
 			A4GL_debug("rbuff=%s\n",rbuff);
 		} else {
-			char smbuff[2];
-			
+			char smbuff[2000];
 			if (initpos<=1) {
-				smbuff[0]=init_key;
-				smbuff[1]=0;
+				int use_dtype;
+			 	use_dtype=fprop->datatype & DTYPE_MASK;
+		  		switch (use_dtype)
+		    			{
+		    			case DTYPE_SMINT:
+		    			case DTYPE_INT:
+		    			case DTYPE_SERIAL:
+		    			case DTYPE_FLOAT:
+		    			case DTYPE_DATE:
+		    			case DTYPE_SMFLOAT:
+		    			case DTYPE_DECIMAL:
+		    			case DTYPE_MONEY:
+						smbuff[0]=init_key;
+						smbuff[1]=0;
+						break;
+					default :
+						strcpy(smbuff,orig);
+						smbuff[0]=init_key;
+						break;
+					}
+				
+				//smbuff[0]=init_key;
+				//smbuff[1]=0;
 				strcpy(rbuff, smbuff);
 			A4GL_debug("rbuff=%s\n",rbuff);
 			}
@@ -2253,6 +2284,7 @@ strcpy(newfieldval,"");
    	A4GL_int_form_driver(f,REQ_VALIDATION);
 
 
+moved=0;
         while (looping) {
 		pos_form_cursor(f);
       		A4GL_mja_refresh ();
@@ -2292,9 +2324,11 @@ strcpy(newfieldval,"");
                 switch (a) {
 
                         case 4:
+				moved++;
 				A4GL_int_form_driver(f,REQ_CLR_EOF);
 				break;
                         case 1:
+				moved++;
                                 if (ins_ovl=='o') {
                                         ins_ovl='i';
                                         A4GL_int_form_driver(f,REQ_INS_MODE);
@@ -2308,9 +2342,12 @@ strcpy(newfieldval,"");
                         case A4GLKEY_DOWN:
                         case A4GLKEY_UP:
                         case A4GLKEY_ENTER:
-                        case '\t': looping=0; break;
+                        case '\t': 
+				moved++;
+				looping=0; break;
 
                         case A4GLKEY_LEFT:
+				moved++;
 		  		A4GL_debug("curcol");
                                 if (A4GL_get_curr_field_col(f)==0)  {looping=0;break;}
                                 A4GL_int_form_driver (f, REQ_PREV_CHAR);
@@ -2319,12 +2356,39 @@ strcpy(newfieldval,"");
                         case 127:
                         case 8:
                         case A4GLKEY_DL:
-                        case A4GLKEY_BACKSPACE: A4GL_int_form_driver (f, REQ_DEL_PREV); break;
+                        case A4GLKEY_BACKSPACE: 
+				moved++;
+				A4GL_int_form_driver (f, REQ_DEL_PREV); break;
 
                         case A4GLKEY_DC:
-                        case 24:                A4GL_int_form_driver (f, REQ_DEL_CHAR);break;
-                        case A4GLKEY_RIGHT:     A4GL_int_form_driver (f, REQ_NEXT_CHAR);break;
-                        default :               A4GL_int_form_driver (f, a);break;
+                        case 24:                
+					moved++;
+					A4GL_int_form_driver (f, REQ_DEL_CHAR);break;
+                        case A4GLKEY_RIGHT:     
+					moved++;
+					A4GL_int_form_driver (f, REQ_NEXT_CHAR);break;
+                        default : 
+		
+	      			if (moved==0 && 0)
+					{
+						int use_dtype;
+			 			use_dtype=fprop->datatype & DTYPE_MASK;
+		  			switch (use_dtype)
+		    			{
+		    			case DTYPE_SMINT:
+		    			case DTYPE_INT:
+		    			case DTYPE_SERIAL:
+		    			case DTYPE_FLOAT:
+		    			case DTYPE_DATE:
+		    			case DTYPE_SMFLOAT:
+		    			case DTYPE_DECIMAL:
+		    			case DTYPE_MONEY:
+		      			A4GL_int_form_driver (f, REQ_CLR_EOF);
+		      			A4GL_debug
+						("Clear to end of field because of datatype");
+		    			}
+				}
+			        A4GL_int_form_driver (f, a);break;
                 }
 
         }
