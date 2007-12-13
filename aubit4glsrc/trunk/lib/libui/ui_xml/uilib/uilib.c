@@ -1768,7 +1768,7 @@ uilib_input_array_start (int nargs)
   contexts[ci].ui.inputarray.nvals=nvals;
 
   contexts[ci].ui.inputarray.changed_rows=malloc(arrsize*sizeof(int));
-printf("CREATING\n");
+//printf("CREATING\n");
   contexts[ci].ui.inputarray.variable_data=malloc(arrsize*sizeof(char **));
 
   for (a=0;a<arrsize;a++) {
@@ -1825,7 +1825,7 @@ p=contexts[ci].ui.inputarray.variable_data[row];
   }
 
 if (changed) {
-	printf("some values changes - will need to resync row = %d ci=%d\n", row,ci);
+	//printf("some values changes - will need to resync row = %d ci=%d\n", row,ci);
 	UIdebug(5,"some values changes - will need to resync row = %d ci=%d", row,ci);
 }
 
@@ -1874,13 +1874,14 @@ int uilib_input_array_loop (int n)
   context = POPint ();
   i = 1;
 
-printf("contexts[#].ui.inputarray.changed_rows[0]=%d\n", contexts[context].ui.inputarray.changed_rows[0]);
+
+UIdebug(9, "contexts[#].ui.inputarray.changed_rows[0]=%d\n", contexts[context].ui.inputarray.changed_rows[0]);
   if (contexts[context].state == UI_NOT_INITIALIZED)
     {
       UIdebug (5,"not initialized\n");
       contexts[context].state = UI_WANT_BEFORE_INPUT;
       // Return -1 to intialize all the control blocks..
-      printf("NOT INIT\n");
+      //printf("NOT INIT\n");
       pushint (-1);
       return 1;
     }
@@ -1898,13 +1899,10 @@ printf("contexts[#].ui.inputarray.changed_rows[0]=%d\n", contexts[context].ui.in
   send_input_array_change(context);
   send_to_ui("</WAITFOREVENT>");
   flush_ui ();
-  printf("Before while\n");
   while (1)
     {
-  printf("In while\n");
       i = get_event_from_ui ();
 	mLastKey=last_attr->lastkey;
-      printf("WAITED ID=%d\n", i);
       if (i != -1) break;
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();

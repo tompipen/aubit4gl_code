@@ -1636,7 +1636,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	}
     }
 
-  if (rval>=0 ) {
+  if (rval>=0 || rval== -100) {
   // If we've got to here we need to copy down our values...
   while (1)
     {
@@ -1650,7 +1650,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
       A4GL_push_long (context);
       A4GL_push_long (gc_arr_cnt);
       uilib_input_get_array_values (2);
-      for (b = 0; b < inp->nbind; b++)
+      for (b = inp->nbind-1; b>=0; b--)
 	{
 	  char *cptr;
 	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (gc_arr_cnt-1);
