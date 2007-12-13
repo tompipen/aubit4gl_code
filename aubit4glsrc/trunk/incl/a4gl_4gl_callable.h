@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.32 2007-12-13 16:53:27 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.33 2007-12-13 17:54:54 mikeaubury Exp $
 */
 
 /**
@@ -164,6 +164,7 @@ int A4GL_key_val(char *s);
 int A4GL_internal_build (void);
 char *A4GL_internal_version (void);
 int aclfgl_aclfgl_setenv(int n);
+int aclfgl_aclfgl_get_stack_trace(int n);
 int A4GL_setenv(char *name, char *value, int overwrite);
 int A4GL_isyes(char *s);
 void A4GL_set_esql_connection(char *s);

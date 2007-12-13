@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.198 2007-12-05 14:08:13 mikeaubury Exp $
+# $Id: stack.c,v 1.199 2007-12-13 17:55:07 mikeaubury Exp $
 #
 */
 
@@ -3006,10 +3006,13 @@ A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename)
     }
   else
     {
+	char *s;
       A4GL_debug ("8 Locating blob in file %s", filename);
       p->where = 'F';
-      strcpy (p->filename, filename);
-      A4GL_trim (p->filename);
+	s=strdup(filename);
+      A4GL_trim (s);
+      strcpy (p->filename, s);
+	free(s);
     }
   A4GL_debug ("7 Located at %c %s", p->where, p->filename);
 }

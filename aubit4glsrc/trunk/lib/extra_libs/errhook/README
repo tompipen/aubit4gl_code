@@ -1,0 +1,26 @@
+This is a sample error hook function
+
+The function takes 4 parameters 
+	Line 
+	Module
+	Error  # 
+	ErrorMessage
+
+
+Usage
+-----
+
+You need to set the environment variable CALLERRHOOK to be the name of the library that holds a function called 'errlog'.
+That function is called when a program dies because of an error (it isn't called for a core dump, or an EXIT PROGRAM etc)
+
+eg: 
+	
+    cd lib/extra_libs/errhook
+    make
+    export CALLERRHOOK=errhook_sample
+
+(you dont need the 'lib' or the '.so')
+
+
+
+

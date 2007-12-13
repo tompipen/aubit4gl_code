@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.297 2007-12-13 16:53:27 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.298 2007-12-13 17:54:55 mikeaubury Exp $
 #
 */
 
@@ -1278,6 +1278,7 @@ enum cmd_types {
 
 
 int aclfgl_fgl_compare(int n);
+int aclfgl_aclfgl_get_stack_trace(int n);
 int aclfgl_fgl_round(int nargs);
 	int A4GL_set_a4gl_sqlca_errd(int n,int v);
 	int A4GL_set_a4gl_sqlca_sqlstate(char *s);

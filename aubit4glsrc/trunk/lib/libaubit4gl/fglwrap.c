@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.125 2007-12-13 16:53:29 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.126 2007-12-13 17:55:06 mikeaubury Exp $
 #
 */
 
@@ -449,7 +449,7 @@ A4GL_generateError (char *str, char *fileName, int lineno)
  * @param fileName A string with the source name.
  * @param lineno The line in the source where the error ocurred.
  */
-void
+static void
 A4GL_generateErrorSkipped (char *str, char *fileName, int lineno)
 {
       SPRINTF5 (str,
@@ -463,7 +463,7 @@ A4GL_generateErrorSkipped (char *str, char *fileName, int lineno)
 }
 
 
-int aclfgl_aclfgl_get_stack_trace() {
+int aclfgl_aclfgl_get_stack_trace(int n) {
   if (A4GLSTK_isStackInfo ()) {
 	A4GL_push_char(A4GLSTK_getStackTrace ());
   } else {
@@ -484,14 +484,33 @@ void
 A4GL_chk_err (int lineno, char *fname)
 {
   char s[2048];
+  char *errhook=0;
+static int dying=0;
 #ifdef DEBUG
   {
     A4GL_debug ("Checking exit status %d %s",lineno,fname);
   }
 #endif
+ if (dying) return;
+  dying=1;
 
   if (a4gl_status >= 0)
     return;
+
+  A4GL_generateError (s, fname, lineno);
+
+
+
+    errhook=acl_getenv_not_set_as_0("CALLERRHOOK");
+    if (errhook) {
+   		A4GL_push_long(lineno);
+   		A4GL_push_char(fname);
+   		A4GL_push_long(a4gl_status);
+   		A4GL_push_char(s);
+   		A4GL_call_4gl_dll(errhook,"errlog",4);
+    }
+   
+
 
   if (A4GL_isscrmode ())
     A4GL_gotolinemode ();
@@ -499,7 +518,6 @@ A4GL_chk_err (int lineno, char *fname)
 #ifdef DEBUG
   A4GL_debug ("Error...");
 #endif
-  A4GL_generateError (s, fname, lineno);
 #ifdef DEBUG
       A4GL_debug ("Write error to screen...");
 #endif
@@ -508,6 +526,7 @@ A4GL_chk_err (int lineno, char *fname)
 	  A4GL_push_char (s);
 	  A4GL_errorlog (fname, lineno, 1);
 	}
+
       A4GL_debug ("%s",s);
       FPRINTF (stderr, "Err:%s", s);
 
@@ -530,6 +549,7 @@ A4GL_chk_err (int lineno, char *fname)
 	}
 
       }
+
   A4GL_fgl_die (1);
 }
 
