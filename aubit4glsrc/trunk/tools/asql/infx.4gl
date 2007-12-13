@@ -1168,38 +1168,6 @@ execute_select_prepare (int *err_at_col,int type, int *hasrows)
     }
   EXEC SQL whenever error continue;
 
-
-/*
-  EXEC SQL deallocate descriptor 'descExec';
-  cp_sqlca ();
-
-  EXEC SQL allocate descriptor 'descExec';
-  cp_sqlca ();
-  if (sqlca.sqlcode < 0) {
-	*err_at_col=sqlca.sqlerrd[4];
-    return 0;
-  }
-
-  EXEC SQL describe stExec USING SQL DESCRIPTOR 'descExec';
-  cp_sqlca ();
-  if (sqlca.sqlcode < 0) {
-	*err_at_col=sqlca.sqlerrd[4];
-    return 0;
-  }
-
-  EXEC SQL get descriptor 'descExec':numberOfColumns = COUNT;
-
-  cp_sqlca ();
-  if (sqlca.sqlcode < 0) {
-	*err_at_col=sqlca.sqlerrd[4];
-    return 0;
-  }
-
-*/
-
-
-
-
   EXEC SQL DESCRIBE stExec INTO master_desc;
   allocate_descriptor_memory (master_desc, &master_qualifiers,
 			      &master_indicators);

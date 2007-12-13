@@ -932,12 +932,15 @@ int run_q (int *err_at_colptr,int qry_type)
 {
 int rpaginate;
 int hasrows;
+int need_free;
 rpaginate=0;
 repeat_query:;
+
 
   A4GL_debug ("EXEC Repeat query out=%p\n", file_out_result);
   if (execute_select_prepare (err_at_colptr, qry_type, &hasrows))
     {
+	need_free++;
       if (hasrows)
 	{
 
@@ -1018,9 +1021,9 @@ repeat_query:;
 	      if (get_heading_flag()) { fprintf (file_out_result, "\n"); }
 	      fclose (file_out_result);
 	      file_out_result = 0;
-	    }
-
-	  if (!execute_select_free ())
+    	}
+	  need_free=0;
+	  if (!execute_select_free ()) 
 	    goto end_query_X;
 
 	}
@@ -1039,6 +1042,9 @@ repeat_query:;
   A4GL_debug ("Qry type : %d", qry_type);
 
 end_query_X:;
+  if (need_free) {
+   execute_select_free ();
+  }
   return 1;
 }
 
