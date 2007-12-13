@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.150 2007-12-13 12:19:39 mikeaubury Exp $
+# $Id: report.c,v 1.151 2007-12-13 19:01:29 mikeaubury Exp $
 #
 */
 
@@ -2480,9 +2480,7 @@ void *agg;
 	A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
 	if (agg==0) {
 		*agg_type=d1+ENCODE_SIZE(s1);
-		if (*agg_type & DTYPE_MALLOCED) {
-			*agg_type -= DTYPE_MALLOCED;
-		}
+		if (*agg_type & DTYPE_MALLOCED) { *agg_type -= DTYPE_MALLOCED; }
 		*aggused=0;
 		switch (d1&DTYPE_MASK) {
 			case DTYPE_CHAR:
@@ -2523,6 +2521,36 @@ void *agg;
 				}
 				break;
 
+			case DTYPE_MONEY:
+				if (type=='S') {
+					int ndig;
+					ndig=s1&0xff;
+					agg=malloc(sizeof(fglmoney)); 
+					A4GL_push_int(0);
+					A4GL_pop_var2(agg,DTYPE_MONEY,0x2000+ndig);
+					*agg_type=DTYPE_MONEY+ENCODE_SIZE((0x2000+ndig));
+				} else {
+					agg=malloc(255); 
+					memset(agg,0,255);
+					A4GL_setnull(d1&DTYPE_MASK,agg,s1);
+				}
+				break;
+
+			case DTYPE_DECIMAL:
+				if (type=='S') {
+					int ndig;
+					ndig=s1&0xff;
+					agg=malloc(sizeof(fgldecimal)); 
+					A4GL_push_int(0);
+					A4GL_pop_var2(agg,DTYPE_DECIMAL,0x2000+ndig);
+					*agg_type=DTYPE_DECIMAL+ENCODE_SIZE((0x2000+ndig));
+				} else {
+					agg=malloc(255); 
+					memset(agg,0,255);
+					A4GL_setnull(d1&DTYPE_MASK,agg,s1);
+				}
+				break;
+	
 			default:
 				agg=malloc(255); 
 				memset(agg,0,255);
@@ -2540,11 +2568,11 @@ void *agg;
 
 						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
 					} else {
-						A4GL_push_param(agg,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_push_param(agg,*agg_type);
 						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
 						A4GL_pushop(OP_ADD);
 					}
-					A4GL_pop_var2(agg,d1,s1);
+					A4GL_pop_var2(agg,(*agg_type)&DTYPE_MASK, DECODE_SIZE((*agg_type)));
 				}
 				/* But - we count it anyway */
 				(*aggused)++;
@@ -2556,7 +2584,7 @@ void *agg;
 					if (*aggused==0) {
 						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
 					} else {
-						A4GL_push_param(agg,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
+						A4GL_push_param(agg,*agg_type);
 						A4GL_push_param(ptr1,(d1&DTYPE_MASK)+ENCODE_SIZE(s1));
 						A4GL_pushop(OP_ADD);
 					}
