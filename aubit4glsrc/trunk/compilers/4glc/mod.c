@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.309 2007-12-13 13:30:46 mikeaubury Exp $
+# $Id: mod.c,v 1.310 2007-12-13 21:34:42 mikeaubury Exp $
 #
 */
 
@@ -5519,11 +5519,19 @@ void output_to_report_definition(char *s, struct expr_str_list  *p) {
 		function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
 		function_definitions[nfunction_definitions-1].fname=strdup(s);
 		function_definitions[nfunction_definitions-1].type='R';
+		if (p) {
 		function_definitions[nfunction_definitions-1].params=p->nlist;
+		} else {
+		function_definitions[nfunction_definitions-1].params=0;
+		}
 		function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
 		return;
 	}
-	nbind=p->nlist;
+	if (p) {
+		nbind=p->nlist;
+	} else {
+		nbind=0;
+	}
 	if (nbind==function_definitions[curr_fdef].params) return;
 	sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
 	set_yytext(buff);
@@ -5541,11 +5549,19 @@ void add_report_definition(char *s, struct  binding_comp_list *params) {
 		function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
 		function_definitions[nfunction_definitions-1].fname=strdup(s);
 		function_definitions[nfunction_definitions-1].type='R';
+		if (params) {
 		function_definitions[nfunction_definitions-1].params=params->nbind;
+		} else {
+		function_definitions[nfunction_definitions-1].params=0;
+		}
 		function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
 		return;
 	}
+	if (params) {
 	nbind=params->nbind;
+	} else {
+	nbind=0;
+	}
 	if (nbind==function_definitions[curr_fdef].params) return;
 	sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
 	set_yytext(buff);
