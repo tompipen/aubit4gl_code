@@ -311,11 +311,6 @@ define lv_err2 char(255)
 if sqlca.sqlcode>=0 then
 	return 0
 end if
-code
-if(a4gl_sqlca.sqlcode<0) {
-A4GL_pause_execution();
-}
-endcode
 
 let lv_err2=get_db_err_msg(sqlca.sqlcode)
 
