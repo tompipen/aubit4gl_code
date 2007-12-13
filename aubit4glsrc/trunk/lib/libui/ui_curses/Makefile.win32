@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.win32,v 1.4 2006-07-27 16:04:05 mikeaubury Exp $
+# $Id: Makefile.win32,v 1.5 2007-12-13 22:19:45 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -42,7 +42,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 #Curses path must be BEFORE system paths:
-CFLAGS		:= -Ic:/gnu/pdc27_ming_w32 -I$(ROOT)/tools/cygwin/ncurses-5.5/form -I$(ROOT)/tools/cygwin/ncurses-5.5/include ${CFLAGS}  -I.. -I. -I${ROOT}/incl
+CFLAGS		:= -Ic:/gnu/pdc27_ming_w32 -I$(ROOT)/tools/cygwin/ncurses-5.5/form -I$(ROOT)/tools/cygwin/ncurses-5.5/include ${CFLAGS}  -I.. -I. -I${ROOT}/incl -DALTERNATE_COLOURS
 #Note: On CygWin term.h is in -I/usr/include/ncurses
 #
 #-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.27 2005-07-06 15:32:15 mikeaubury Exp $
+# $Id: colours.c,v 1.28 2007-12-13 22:19:45 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: colours.c,v 1.27 2005-07-06 15:32:15 mikeaubury Exp $";
+		"$Id: colours.c,v 1.28 2007-12-13 22:19:45 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -106,7 +106,34 @@ A4GL_colour_code (int a)
 		a=COLOR_PAIR(8);
 		//a=0;
 	} else {
+#ifdef ALTERNATE_COLOURS
+// 7 = cyan
+// 6 = magenta
+// 5 = blue
+// 4 = yellow
+// 3 = green
+// 2 = red
+		switch (a) {	
+			case 0: 
+  				a=COLOR_PAIR (8); break;
+			case 1: 
+  				a=COLOR_PAIR (5); break;
+			case 2: 
+  				a=COLOR_PAIR (3); break;
+			case 3: 
+  				a=COLOR_PAIR (7); break;
+			case 4: 
+  				a=COLOR_PAIR (2); break;
+			case 5: 
+  				a=COLOR_PAIR (6); break;
+			case 6: 
+  				a=COLOR_PAIR (4); break;
+			case 7: 
+  				a=COLOR_PAIR (8); break;
+		}
+#else
   		a=COLOR_PAIR (a + 1);
+#endif
 	}
   A4GL_debug ("MJA Returning color code = %d\n", a);
   return a;
