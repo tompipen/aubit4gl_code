@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.308 2007-12-04 15:30:03 mikeaubury Exp $
+# $Id: mod.c,v 1.309 2007-12-13 13:30:46 mikeaubury Exp $
 #
 */
 
@@ -300,6 +300,15 @@ char    last_tmp_name[256]="";
 /*#define GEN_STACK_SIZE 5000*/
 #define GEN_STACK_SIZE 10000
 
+
+struct s_func_def {
+	char *fname;
+	char type;
+	int rvals;
+	int params;
+};
+struct s_func_def *function_definitions=0;
+int nfunction_definitions=0;
 
 
 
@@ -5489,6 +5498,59 @@ l->str=0;
 return l;
 }
 
+
+static int get_function_definition(char *s) {
+int a;
+for (a=0;a<nfunction_definitions;a++) {
+	if (A4GL_aubit_strcasecmp(s, function_definitions[a].fname)==0) {
+		return a;
+	}
+}
+return -1;
+}
+
+void output_to_report_definition(char *s, struct expr_str_list  *p) {
+	int nbind;
+	int curr_fdef;
+	char buff[256];
+	curr_fdef=get_function_definition(s);
+	if (curr_fdef==-1) {
+		nfunction_definitions++;
+		function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
+		function_definitions[nfunction_definitions-1].fname=strdup(s);
+		function_definitions[nfunction_definitions-1].type='R';
+		function_definitions[nfunction_definitions-1].params=p->nlist;
+		function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
+		return;
+	}
+	nbind=p->nlist;
+	if (nbind==function_definitions[curr_fdef].params) return;
+	sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
+	set_yytext(buff);
+
+	a4gl_yyerror("Report has been defined with a different number of parameters");
+}
+
+void add_report_definition(char *s, struct  binding_comp_list *params) { 
+	int nbind;
+	char buff[256];
+	int curr_fdef;
+	curr_fdef=get_function_definition(s);
+	if (curr_fdef==-1) {
+		nfunction_definitions++;
+		function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
+		function_definitions[nfunction_definitions-1].fname=strdup(s);
+		function_definitions[nfunction_definitions-1].type='R';
+		function_definitions[nfunction_definitions-1].params=params->nbind;
+		function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
+		return;
+	}
+	nbind=params->nbind;
+	if (nbind==function_definitions[curr_fdef].params) return;
+	sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
+	set_yytext(buff);
+	a4gl_yyerror("Report has already been called with a different number of parameters");
+}
 
 int check_cursor_name(char *s) {
 	if (A4GL_has_pointer(s,CURSOR_USED)){

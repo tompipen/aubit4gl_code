@@ -158,7 +158,10 @@ op_fgl_expr_list_ptr:  {$<ptr_list>$=0;}
 output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET op_fgl_expr_list_ptr CLOSE_BRACKET {
 		add_feature("USE_REPORT");
 		ADDMAP("Output to report",$<str>2);
+
+
 		print_output_to_report($<ptr_list>5,$<str>2); 
+		output_to_report_definition($<str>2, $<ptr_list>5);
 		}
 ;
 
@@ -697,8 +700,10 @@ report_def : REPORT
 		}
 	report_section 
 	{
-		
-		print_report_2_g(0,$<str>11,order_asc_desc,copy_togenbind('F'), copy_togenbind('O'));
+		struct  binding_comp_list *params;
+		params=copy_togenbind('F');
+		print_report_2_g(0,$<str>11,order_asc_desc,params, copy_togenbind('O'));
+		add_report_definition($<str>3,params);
 	start_bind('o',0);
 	start_bind('i',0);
 		rordcnt=atoi($<str>11);

@@ -623,6 +623,8 @@ int set_ignore_indicators(void);
 int clr_ignore_indicators(void);
 
 int check_cursor_name(char *s);
+void output_to_report_definition(char *s, struct expr_str_list  *p);
+void add_report_definition(char *s, struct  binding_comp_list *params);
 
 
 // printf is often used for debug messages during
