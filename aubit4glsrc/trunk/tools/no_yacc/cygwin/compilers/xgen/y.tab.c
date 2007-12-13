@@ -332,10 +332,10 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 		if (m.pointer==0) {
 				fprintf(cfo,"   if (!output_%s(\"%s\",r,0,-1)) return 0;\n",s,m.name); /* ,buff); */
 				/*to prevent warning: */
-				fprintf(cfo,"return 0;\n");
+				fprintf(cfo,"return 1;\n");
         }
 		if (m.pointer==1) {
-			fprintf(cfo,"   if (r) {output_okptr(\"\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",buff,s); /* ,m.name,buff); */
+			fprintf(cfo,"   if (r) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",m.name, buff,s); /* ,m.name,buff); */
 			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 
 			/*to prevent control reaches end of non-void function warning: (OK) */
@@ -375,7 +375,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		fprintf(cfi,"      int cnt; if (r->%s.%s_len) {\n",buff,m.name);
 	        fprintf(cfi,"      r->%s.%s_val=acl_malloc2_With_Context(r->%s.%s_len*sizeof(r->%s.%s_val[0]));\n", buff,m.name, buff,m.name, buff,m.name);
 	        fprintf(cfi,"      for (cnt=0;cnt<r->%s.%s_len;cnt++) {\n",buff,m.name);
-		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",(void *)&r->%s.%s_val[cnt],0,cnt)) return 0; /*MJALI2*/\n",s,m.name,buff,m.name);
+		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",&r->%s.%s_val[cnt],0,cnt)) return 0; /*MJALI2*/\n",s,m.name,buff,m.name);
 		if (m.pointer==1) {
 			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s.%s_val[cnt]=0;\n",buff,m.name);
 			fprintf(cfi,"   else r->%s.%s_val[cnt]=acl_malloc2_With_Context(sizeof(%s));\n",buff,m.name,s);
@@ -412,12 +412,13 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		if (m.pointer==0) {
 			fprintf(cfi,"   if (!input_%s(\"%s\",&r,0,-1)) return 0;\n",m.name,buff);
 			/*to prevent warning: */
-			fprintf(cfi,"return 0;\n");
+			fprintf(cfi,"return 1;\n");
         }
 		if (m.pointer==1) {
-			fprintf(cfi,"   if (!input_%s(\"%s\",r,1,-1)) return 0;\n",m.name,buff);
+			fprintf(cfi,"   if (!input_ptr_ok()) {*r=0; return 1;}\n",m.name,buff);
+			fprintf(cfi,"   *r=acl_malloc2_With_Context(sizeof(%s)); if (!input_%s(\"%s\",*r,0,-1)) return 0;\n",s, m.name,buff);
 			/*to prevetn warning: */
-			fprintf(cfi,"return 0;\n");
+			fprintf(cfi,"return 1;\n");
 		}
 		return;
 	}
@@ -453,13 +454,13 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 290 "x.yacc"
+#line 291 "x.yacc"
 {
         char    str[1024];
 	struct mode mode;
 }
 /* Line 187 of yacc.c.  */
-#line 463 "y.tab.c"
+#line 464 "y.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -472,7 +473,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 476 "y.tab.c"
+#line 477 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -791,15 +792,15 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   333,   333,   333,   336,   337,   338,   339,   340,   341,
-     346,   350,   364,   375,   386,   397,   398,   399,   402,   402,
-     428,   428,   431,   446,   465,   471,   471,   471,   471,   471,
-     474,   474,   512,   512,   515,   521,   527,   533,   539,   545,
-     553,   558,   559,   561,   562,   563,   564,   565,   566,   567,
-     568,   574,   580,   586,   594,   622,   594,   641,   641,   644,
-     644,   648,   648,   655,   655,   659,   665,   665,   669,   680,
-     681,   683,   683,   687,   687,   690,   690,   691,   691,   692,
-     695,   700
+       0,   334,   334,   334,   337,   338,   339,   340,   341,   342,
+     347,   351,   365,   376,   387,   398,   399,   400,   403,   403,
+     429,   429,   432,   447,   466,   472,   472,   472,   472,   472,
+     475,   475,   513,   513,   516,   522,   528,   534,   540,   546,
+     554,   559,   560,   562,   563,   564,   565,   566,   567,   568,
+     569,   575,   581,   587,   595,   623,   595,   642,   642,   645,
+     645,   649,   649,   656,   656,   660,   666,   666,   670,   681,
+     682,   684,   684,   688,   688,   691,   691,   692,   692,   693,
+     696,   701
 };
 #endif
 
@@ -1812,13 +1813,13 @@ yyreduce:
   switch (yyn)
     {
         case 11:
-#line 350 "x.yacc"
+#line 351 "x.yacc"
     {
-		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
-		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef1 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef2 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
 
-		fprintf(hf,"int input_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
-		fprintf(cfi,"int input_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(hf,"int input_%s(char *rn,struct %s **r,int isptr,int arr) ; /* typedef3 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(cfi,"int input_%s(char *rn,struct %s **r,int isptr,int arr) { /* typedef4 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
 
 		(yyval.mode).type=3; (yyval.mode).size=0; (yyval.mode).pointer=1; strcpy((yyval.mode).name,(yyvsp[(2) - (4)].str));
 		print_elem("struct",(yyvsp[(2) - (4)].str),(yyval.mode)); 
@@ -1829,12 +1830,12 @@ yyreduce:
     break;
 
   case 12:
-#line 364 "x.yacc"
+#line 365 "x.yacc"
     {
-		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
-		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
-		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
-		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef5 */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef6 */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ; /* typedef7 */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) { /* typedef8 */\n",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
 		(yyval.mode).type=3; (yyval.mode).size=0; (yyval.mode).pointer=0; strcpy((yyval.mode).name,(yyvsp[(2) - (3)].str));
 		print_elem("struct",(yyvsp[(2) - (3)].str),(yyval.mode)); 
 		fprintf(cfo,"}\n");
@@ -1844,12 +1845,12 @@ yyreduce:
     break;
 
   case 13:
-#line 375 "x.yacc"
+#line 376 "x.yacc"
     {
-		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
-		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
-		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
-		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(hf,"int input_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef9 */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(cfi,"int input_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef10 */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(hf,"int output_%s(char *rn,struct %s r,int isptr,int arr) ;\n /* typedef11 */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
+		fprintf(cfo,"int output_%s(char *rn,struct %s r,int isptr,int arr) {\n /* typedef12 */",(yyvsp[(3) - (3)].str),(yyvsp[(2) - (3)].str));
 		(yyval.mode).type=3; (yyval.mode).size=0; (yyval.mode).pointer=0; strcpy((yyval.mode).name,(yyvsp[(2) - (3)].str));
 		print_elem("struct",(yyvsp[(2) - (3)].str),(yyval.mode)); 
 		fprintf(cfo,"}\n");
@@ -1859,12 +1860,12 @@ yyreduce:
     break;
 
   case 14:
-#line 386 "x.yacc"
+#line 387 "x.yacc"
     {
-		fprintf(hf,"int input_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
-		fprintf(cfi,"int input_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
-		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
-		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(hf,"int input_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef13 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(cfi,"int input_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef14 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(hf,"int output_%s(char *rn,struct %s *r,int isptr,int arr) ; /* typedef15 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
+		fprintf(cfo,"int output_%s(char *rn,struct %s *r,int isptr,int arr) { /* typedef16 */\n",(yyvsp[(4) - (4)].str),(yyvsp[(2) - (4)].str));
 		(yyval.mode).type=3; (yyval.mode).size=0; (yyval.mode).pointer=1; strcpy((yyval.mode).name,(yyvsp[(2) - (4)].str));
 		print_elem("struct",(yyvsp[(2) - (4)].str),(yyval.mode)); 
 		fprintf(cfo,"}\n");
@@ -1874,22 +1875,22 @@ yyreduce:
     break;
 
   case 15:
-#line 397 "x.yacc"
-    { fprintf(hsf,"typedef %s %s;\n",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); }
-    break;
-
-  case 16:
 #line 398 "x.yacc"
     { fprintf(hsf,"typedef %s %s;\n",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); }
     break;
 
-  case 17:
+  case 16:
 #line 399 "x.yacc"
+    { fprintf(hsf,"typedef %s %s;\n",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); }
+    break;
+
+  case 17:
+#line 400 "x.yacc"
     {fprintf(hsf,"typedef char *%s;\n",(yyvsp[(2) - (4)].str));}
     break;
 
   case 18:
-#line 402 "x.yacc"
+#line 403 "x.yacc"
     {
 	cu_cnt++;
 	strcpy(cu[cu_cnt],"");
@@ -1912,7 +1913,7 @@ yyreduce:
     break;
 
   case 19:
-#line 420 "x.yacc"
+#line 421 "x.yacc"
     {
 	fprintf(cfo,"return 1;\n}\n\n");
 	fprintf(cfi,"   if (!input_enum(name,(int *)r)) return 0;\nreturn 1;\n}\n\n");
@@ -1922,7 +1923,7 @@ yyreduce:
     break;
 
   case 22:
-#line 431 "x.yacc"
+#line 432 "x.yacc"
     {
 		fprintf(cfo,"if (r==%d) {\n", enumv);
 		fprintf(cfo,"  if (!output_enum(name,\"%s\",%d)) return 0;\n",(yyvsp[(1) - (1)].str),enumv);
@@ -1941,7 +1942,7 @@ yyreduce:
     break;
 
   case 23:
-#line 446 "x.yacc"
+#line 447 "x.yacc"
     {
 		enumv=atoi((yyvsp[(3) - (3)].str));
 		fprintf(cfo,"if (r==%d) {\n", enumv);
@@ -1961,14 +1962,14 @@ yyreduce:
     break;
 
   case 24:
-#line 465 "x.yacc"
+#line 466 "x.yacc"
     {
 	fprintf(hsf,"#define %s %s\n",(yyvsp[(2) - (5)].str),(yyvsp[(4) - (5)].str));
 	}
     break;
 
   case 30:
-#line 474 "x.yacc"
+#line 475 "x.yacc"
     {
 	cu_cnt++;
 	strcpy(cu[cu_cnt],"");
@@ -2001,7 +2002,7 @@ yyreduce:
     break;
 
   case 31:
-#line 502 "x.yacc"
+#line 503 "x.yacc"
     {
 	fprintf(cfo,"if (!output_end_struct(\"%s\",rn)) return 0;\n",(yyvsp[(2) - (7)].str));
 	fprintf(cfo,"return 1;\n}\n\n");
@@ -2013,7 +2014,7 @@ yyreduce:
     break;
 
   case 34:
-#line 515 "x.yacc"
+#line 516 "x.yacc"
     {
 		(yyval.mode).pointer=0;
 		(yyval.mode).type=0;
@@ -2023,7 +2024,7 @@ yyreduce:
     break;
 
   case 35:
-#line 521 "x.yacc"
+#line 522 "x.yacc"
     {
 		(yyval.mode).pointer=0;
 		(yyval.mode).type=1;
@@ -2033,7 +2034,7 @@ yyreduce:
     break;
 
   case 36:
-#line 527 "x.yacc"
+#line 528 "x.yacc"
     {
 		(yyval.mode).pointer=0;
 		(yyval.mode).type=2;
@@ -2043,7 +2044,7 @@ yyreduce:
     break;
 
   case 37:
-#line 533 "x.yacc"
+#line 534 "x.yacc"
     {
 		(yyval.mode).pointer=1;
 		(yyval.mode).type=0;
@@ -2053,7 +2054,7 @@ yyreduce:
     break;
 
   case 38:
-#line 539 "x.yacc"
+#line 540 "x.yacc"
     {
 		(yyval.mode).pointer=1;
 		(yyval.mode).type=1;
@@ -2063,7 +2064,7 @@ yyreduce:
     break;
 
   case 39:
-#line 545 "x.yacc"
+#line 546 "x.yacc"
     {
 		(yyval.mode).pointer=1;
 		(yyval.mode).type=2;
@@ -2073,57 +2074,57 @@ yyreduce:
     break;
 
   case 41:
-#line 558 "x.yacc"
+#line 559 "x.yacc"
     { print_elem("enum",(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].mode)); }
     break;
 
   case 42:
-#line 559 "x.yacc"
+#line 560 "x.yacc"
     { print_elem("struct",(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].mode)); }
     break;
 
   case 43:
-#line 561 "x.yacc"
+#line 562 "x.yacc"
     { print_elem("istypedefed",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 44:
-#line 562 "x.yacc"
+#line 563 "x.yacc"
     { print_elem("bool","bool",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 45:
-#line 563 "x.yacc"
+#line 564 "x.yacc"
     { print_elem("int","int",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 46:
-#line 564 "x.yacc"
+#line 565 "x.yacc"
     { print_elem("long","long",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 47:
-#line 565 "x.yacc"
+#line 566 "x.yacc"
     { print_elem("short","short",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 48:
-#line 566 "x.yacc"
+#line 567 "x.yacc"
     { print_elem("string","string",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 49:
-#line 567 "x.yacc"
+#line 568 "x.yacc"
     { print_elem("opaque","opaque",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 50:
-#line 568 "x.yacc"
+#line 569 "x.yacc"
     { print_elem("double","double",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 51:
-#line 574 "x.yacc"
+#line 575 "x.yacc"
     { 
 		fprintf(cfo,"if (!output_%s(\"%s\",r.%s,isptr,arr)) return 0;\n",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str),(yyvsp[(2) - (2)].str));
 		fprintf(cfi,"if (!input_%s(\"%s\",&r->%s,isptr,arr)) return 0;\n",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str),(yyvsp[(2) - (2)].str));
@@ -2133,7 +2134,7 @@ yyreduce:
     break;
 
   case 52:
-#line 580 "x.yacc"
+#line 581 "x.yacc"
     { 
 		fprintf(cfo,"if (!output_int(\"%s\",r.%s,isptr,arr)) return 0;\n",(yyvsp[(2) - (2)].str),(yyvsp[(2) - (2)].str));
 		fprintf(cfi,"if (!input_int(\"%s\",&r->%s,isptr,arr)) return 0;\n",(yyvsp[(2) - (2)].str),(yyvsp[(2) - (2)].str));
@@ -2143,7 +2144,7 @@ yyreduce:
     break;
 
   case 53:
-#line 586 "x.yacc"
+#line 587 "x.yacc"
     {
 		fprintf(cfo,"if (!output_%s(\"%s\",r.%s,isptr,arr)) return 0;\n",(yyvsp[(2) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
 		fprintf(cfi,"if (!input_%s(\"%s\",&r->%s,isptr,arr)) return 0;\n",(yyvsp[(2) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -2153,7 +2154,7 @@ yyreduce:
     break;
 
   case 54:
-#line 594 "x.yacc"
+#line 595 "x.yacc"
     {
 	cu_cnt++;
 	sprintf(cu[cu_cnt],"%s_u.",(yyvsp[(2) - (4)].str));
@@ -2186,7 +2187,7 @@ yyreduce:
     break;
 
   case 55:
-#line 622 "x.yacc"
+#line 623 "x.yacc"
     {
 	fprintf(cfo,"switch(r.%s) {\n",(yyvsp[(6) - (7)].str));
 	fprintf(cfi,"switch(r->%s) {\n",(yyvsp[(6) - (7)].str));
@@ -2197,7 +2198,7 @@ yyreduce:
     break;
 
   case 56:
-#line 628 "x.yacc"
+#line 629 "x.yacc"
     {
 	fprintf(cfo,"} /* switch */\n");
 	fprintf(cfo,"if (!output_end_union(\"%s\",rn)) return 0;\n",(yyvsp[(2) - (12)].str));
@@ -2212,7 +2213,7 @@ yyreduce:
     break;
 
   case 61:
-#line 648 "x.yacc"
+#line 649 "x.yacc"
     {
 	fprintf(cfo,"case %s:\n",(yyvsp[(2) - (3)].str));
 	fprintf(cfi,"case %s:\n",(yyvsp[(2) - (3)].str));
@@ -2220,7 +2221,7 @@ yyreduce:
     break;
 
   case 65:
-#line 659 "x.yacc"
+#line 660 "x.yacc"
     {
 	fprintf(cfo,"         break;\n");
 	fprintf(cfi,"         break;\n");
@@ -2228,7 +2229,7 @@ yyreduce:
     break;
 
   case 68:
-#line 669 "x.yacc"
+#line 670 "x.yacc"
     {
 	char *ptr;
 	ptr=acl_strdup((yyvsp[(1) - (1)].str));
@@ -2242,7 +2243,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 2246 "y.tab.c"
+#line 2247 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2456,7 +2457,7 @@ yyreturn:
 }
 
 
-#line 706 "x.yacc"
+#line 707 "x.yacc"
 
 
 
