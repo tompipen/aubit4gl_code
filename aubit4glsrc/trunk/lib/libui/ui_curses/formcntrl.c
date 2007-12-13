@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.132 2007-11-22 14:23:29 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.133 2007-12-13 10:31:30 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.132 2007-11-22 14:23:29 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.133 2007-12-13 10:31:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2270,14 +2270,23 @@ strcpy(newfieldval,"");
 			break;
 
 		}
-                if (A4GL_has_event_for_keypress(a,evt)) return a;
 
-                   	if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT)) {
-					if (a4gl_isupper (a) && a4gl_isalpha (a)) { a = a4gl_tolower (a); }
+                if (A4GL_has_event_for_keypress(a,evt)) {
+			if (a==A4GLKEY_ACCEPT) { 
+				// still need to copy in the value..
+        			A4GL_int_form_driver(f,REQ_VALIDATION);
+        			strcpy(newfieldval,field_buffer(buff[1],0));
+				A4GL_trim(newfieldval);
 			}
-                      	if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT)) {
-					if ( a4gl_islower (a) && a4gl_isalpha (a)) { a = a4gl_toupper (a); }
-			}
+			return a;
+		}
+
+                if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT)) {
+				if (a4gl_isupper (a) && a4gl_isalpha (a)) { a = a4gl_tolower (a); }
+		}
+                if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT)) {
+				if ( a4gl_islower (a) && a4gl_isalpha (a)) { a = a4gl_toupper (a); }
+		}
 
 
                 switch (a) {
@@ -2321,9 +2330,7 @@ strcpy(newfieldval,"");
         }
 
         A4GL_int_form_driver(f,REQ_VALIDATION);
-
         strcpy(newfieldval,field_buffer(buff[1],0));
-
 	A4GL_trim(newfieldval);
 
 
