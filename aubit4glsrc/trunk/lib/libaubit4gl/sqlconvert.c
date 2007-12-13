@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.133 2007-12-12 09:39:26 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.134 2007-12-13 16:18:57 mikeaubury Exp $
 #
 */
 
@@ -2198,8 +2198,8 @@ A4GL_strwscmp (char *a, char *b)
 {
   int a_i;
   int b_i;
-  char o1[1000];
-  char o2[1000];
+  char o1[10000];
+  char o2[10000];
   int lastWasWs;
   char fieldData[256]="";
   b_i = 0;
