@@ -267,20 +267,21 @@ get_event_from_ui ()
 {
   char buff[25600];
   char *localbuff = 0;
-  int l=0;
+  int l = 0;
   struct s_attr *attr = 0;
 
   last_attr = 0;
-  UIdebug (4,"Get_event_from_ui\n");
+  UIdebug (4, "Get_event_from_ui\n");
 
   while (1)
     {
-      UIdebug (4,"Getting from buffer\n");
-      if (!pipe_sock_gets (clientui_sock_read, buff, 255))
+      UIdebug (4, "Getting from buffer\n");
+      if (!pipe_sock_gets (clientui_sock_read, buff, 2550))
 	{
-	  UIdebug (2,"PIPE CLOSED - client disconnected ?\n");
+	  UIdebug (2, "PIPE CLOSED - client disconnected ?\n");
 	  exit (0);
 	}
+
 
       if (localbuff == 0)
 	{
@@ -299,35 +300,39 @@ get_event_from_ui ()
 		  if (!strchr (&localbuff[1], '<'))
 		    {
 		      // Cool - its a single line triggered...
-		      UIdebug (5,"Single line trigger\n");
+		      UIdebug (5, "Single line trigger : %s\n", buff);
 		      attr = xml_parse (localbuff);
-			  break;
+		      break;
 		    }
 		}
 	    }
-	if (strlen(buff)) {
-	  localbuff = strdup (buff);
-	A4GL_trim(localbuff);
-	
-	if (strlen(buff)==0) {
-			free(localbuff);
-			localbuff=0;
+	  if (strlen (buff))
+	    {
+	      localbuff = strdup (buff);
+	      A4GL_trim (localbuff);
+
+	      if (strlen (buff) == 0)
+		{
+		  free (localbuff);
+		  localbuff = 0;
 		}
-	}
-	if (localbuff==0) continue;
+	    }
+	  if (localbuff == 0)
+	    continue;
 	}
       else
 	{
-	UIdebug(5,"l=%d localbuff=%p '%s' buff='%s'\n",l,localbuff,localbuff,buff);
-	l=strlen(localbuff);
-	l += strlen (buff);
-	UIdebug(5,"l=%d localbuff=%p\n",l,localbuff);
+	  //UIdebug (5, "l=%d localbuff=%p '%s' buff='%s'\n", l, localbuff, localbuff, buff);
+	  l = strlen (localbuff);
+	  l += strlen (buff);
+	  //UIdebug (5, "l=%d localbuff=%p\n", l, localbuff);
 
 	  localbuff = realloc (localbuff, l + 10);
-	if (localbuff==0) {
-			UIdebug(0,"Unable to allocate memory");
-			exit(1);
-		}
+	  if (localbuff == 0)
+	    {
+	      UIdebug (0, "Unable to allocate memory");
+	      exit (1);
+	    }
 	  strcat (localbuff, buff);
 	}
 
@@ -347,20 +352,32 @@ get_event_from_ui ()
   if (attr->id)
     {
       int n = -1;
-      if (strcmp (attr->id, "DIE") == 0 || strcmp (attr->id, "-999")==0)
-        {
-          exit(2);
-        }
+      if (strcmp (attr->id, "DIE") == 0 || strcmp (attr->id, "-999") == 0)
+	{
+	  exit (2);
+	}
 
       if (strcmp (attr->id, "ACCEPT") == 0)
 	{
 	  n = -100;
 	}
 
-      if (strcmp (attr->id, "CANCEL") == 0) 	{ n = -100; }
-      if (strcmp (attr->id, "YES") == 0) 	{ n = -101; }
-      if (strcmp (attr->id, "NO") == 0) 	{ n = -102; }
-      if (strcmp (attr->id, "FILEREQUEST") == 0) 	{ n = -103; }
+      if (strcmp (attr->id, "CANCEL") == 0)
+	{
+	  n = -100;
+	}
+      if (strcmp (attr->id, "YES") == 0)
+	{
+	  n = -101;
+	}
+      if (strcmp (attr->id, "NO") == 0)
+	{
+	  n = -102;
+	}
+      if (strcmp (attr->id, "FILEREQUEST") == 0)
+	{
+	  n = -103;
+	}
 
       if (strcmp (attr->id, "INTERRUPT") == 0)
 	{
@@ -378,106 +395,10 @@ get_event_from_ui ()
       return n;
     }
 
-  UIdebug(0, "End of get_event_from_ui - shouldn't happen");
-  exit(2);
+  UIdebug (0, "End of get_event_from_ui - shouldn't happen");
+  exit (2);
 }
 
-
-#ifdef OBSOLETE
-
-int
-get_event_from_ui_old (char *srch, char **res)
-{
-  char buff[256];
-  char *ptr;
-  int n;
-  char nstr[200];
-  flush_ui ();
-
-
-  UIdebug ("FGLPROG : WAITING FOR SOME UI\n");
-
-  UIdebug ("FGLPROG LOOP\n");
-  if (!pipe_sock_gets (clientui_sock_read, buff, 255))
-    {
-      printf ("PIPE CLOSED - client disconnected ?\n");
-      exit (0);
-    }
-
-  UIdebug ("Buff=%s\n", buff);
-
-  if (strncmp (buff, "<TRIGGERED", 10) != 0)
-    {				// Invalid packet back ...
-      return -1;
-    }
-
-  sscanf (buff, "<TRIGGERED ID=\"%s\"", &nstr);
-
-  UIdebug ("nstr=%s\n", nstr);
-  ptr = strchr (nstr, '"');
-  if (ptr)
-    *ptr = 0;
-  ptr = strchr (nstr, '\'');
-  if (ptr)
-    *ptr = 0;
-
-  UIdebug ("nstr=%s\n", nstr);
-  n = -1;
-
-  if (strcmp (nstr, "ACCEPT") == 0)
-    {
-      n = -100;
-    }
-
-  if (strcmp (nstr, "INTERRUPT") == 0)
-    {
-      n = -101;
-    }
-  UIdebug ("nstr=%s\n", nstr);
-  if (n == -1)
-    {
-      n = atoi (nstr);
-    }
-  UIdebug ("n=%d\n", n);
-  if (srch)
-    {
-      char buff2[200];
-      UIdebug ("Got srch\n");
-      UIdebug ("Srch=%s\n", srch);
-      for (ptr = buff + 11; *ptr && *ptr != ' '; ptr++);
-      if (*ptr == 0)
-	{
-	  *res = 0;
-	  return n;
-	}
-      if (*ptr == ' ')
-	ptr++;
-      UIdebug ("ptr=%s\n", srch);
-
-      if (strncmp (ptr, srch, strlen (srch) != 0))
-	{
-	  UIdebug ("SRCH not found (%s %s)\n", ptr, srch);
-	  return n;
-	}
-      ptr += strlen (srch);
-      ptr++;			// = 
-      ptr++;			// "
-      strcpy (buff2, ptr);
-      ptr = strchr (buff2, '"');
-      if (ptr)
-	*ptr = 0;
-      ptr = strchr (buff2, '\'');
-      if (ptr)
-	*ptr = 0;
-      UIdebug ("RESULT : %s\n", buff2);
-      UIdebug ("setting res\n", srch);
-      *res = strdup (buff2);
-
-      return n;
-    }
-  return n;
-}
-#endif
 
 void
 flush_ui ()

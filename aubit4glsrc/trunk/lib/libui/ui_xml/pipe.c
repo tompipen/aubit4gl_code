@@ -135,6 +135,12 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
 	  current_position++;
 	  total_count++;
 	}
+      if (total_count >= count) {
+    		current_position[0] = 0;
+		printf("Partial : %s\n\n\n\n", str);
+  		UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
+		return 1;
+	}
     }
   if (count > 0)
     current_position[0] = 0;

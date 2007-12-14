@@ -20,31 +20,3 @@ void dump_attr(struct s_attr *a) {
 	}
 
 }
-/*
-struct s_attr *xml_parse(char *s) {
-	inbuff=s;
-	myinputlim=strlen(s);
-	myinputptr=inbuff;
-	memset(&lexed_attr,0, sizeof(struct s_attr));
-	UIdebug(3,"INPUT = %s\n",s);
-
-	if (xml_yylex()) {
-		printf("X1 - yylex returned true\n");
-		return &lexed_attr;
-	} else {
-		return &lexed_attr;
-		printf("X2 - yylex returned false\n");
-	}
-}
-*/
-/*
-int my_yyinput(char *buf,int maxsize) {
-int n=attr_min(maxsize,myinputlim);
-if (n>0) {
-	memcpy(buf,myinputptr,n);
-	myinputptr+=n;
-	myinputlim-=n;
-	}
-return n;
-}
-*/

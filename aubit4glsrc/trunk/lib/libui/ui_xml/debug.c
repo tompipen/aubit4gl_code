@@ -41,7 +41,7 @@ static char *get_timestamp(void) {
 void UIdebug(int lvl, char *s,...) {
 static va_list args;
 FILE *dbgfile;
-char buff[20000];
+char buff[200000];
 int a;
 
 if (lvl>99) return;
