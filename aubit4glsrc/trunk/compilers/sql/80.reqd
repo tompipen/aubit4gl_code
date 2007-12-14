@@ -200,6 +200,7 @@ op_substr : {strcpy($<str>$,"");}
 column_name_x:
 	identifier {sprintf($<str>$,"%s", A4GLSQLCV_check_tablename($<str>1));}
 	| identifier KW_DOT KW_MULTIPLY {sprintf($<str>$,"%s.*", A4GLSQLCV_ownerize_tablename(NULL,$<str>1));}
+	| identifier KW_DOT KW_ROWID {sprintf($<str>$,"%s.%s", $<str>1,A4GLSQLCV_get_sqlconst ("rowid"));}
 	| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3);}
 	| identifier KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5);}
 	| CHAR_VALUE KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5);}
