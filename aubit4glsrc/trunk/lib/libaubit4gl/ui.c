@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.71 2007-12-14 10:22:08 mikeaubury Exp $
+# $Id: ui.c,v 1.72 2007-12-14 10:41:46 mikeaubury Exp $
 #
 */
 
@@ -559,8 +559,6 @@ int ls;
     {
 A4GL_debug("z=%d n=%d\n",z,n);
       A4GL_get_top_of_stack (z+1, &tos_dtype, &tos_size, (void **) &tos_ptr);
-//printf("%p %d %d\n",tos_ptr, tos_dtype, tos_size);
-      //A4GL_assertion(tos_ptr==0,"Top of the stack has 0 for the pointer..");
 
       ptr = 0;
       if (A4GL_has_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY"))

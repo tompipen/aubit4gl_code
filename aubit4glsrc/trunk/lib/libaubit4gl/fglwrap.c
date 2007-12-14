@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.126 2007-12-13 17:55:06 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.127 2007-12-14 10:41:46 mikeaubury Exp $
 #
 */
 
@@ -1350,7 +1350,6 @@ int a;
 		PRINTF ("(c) 1997-2006 Aubit project\n%s\n\n", program);
 		PRINTF ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
-
 		A4GL_fgl_die (0);
 	}
 
