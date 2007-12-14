@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.19 2007-12-14 15:14:20 briantan Exp $
+# $Id: dump_4gl.c,v 1.20 2007-12-14 15:34:38 briantan Exp $
 #*/
 
 /**
@@ -489,8 +489,10 @@ int printed_tag=0;
 		
 			if (y<f->attributes.attributes_len-1) { p2=screen_has_attribute(f,a, y+1); } else {p2="";}
 			if (p2) {
-				fprintf (fout,"%s.%s=", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
-				if (strcmp(ptr,p2)==0) continue;
+				if (strcmp(ptr,p2)==0) {
+				    fprintf (fout,"%s.%s= ", f->attributes.attributes_val[y].tabname, f->attributes.attributes_val[y].colname);
+				    continue;
+				}
 			}
 
 
