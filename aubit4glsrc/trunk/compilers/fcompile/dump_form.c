@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.6 2007-12-11 16:09:53 briantan Exp $
+# $Id: dump_form.c,v 1.7 2007-12-14 15:14:20 briantan Exp $
 #*/
 
 /**
@@ -135,6 +135,7 @@ static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) ;
 void print_display_only(struct_form *f, FILE *fout, int s, int lvl);
 void print_validation(struct_form *f, FILE *fout, int t, int s, int ba, int lvl) ;
 void print_control_block(struct_form *f, FILE *fout);
+void dump_attr_lookup (struct_form * f, FILE *fout);
 
 /*
 =====================================================================
@@ -266,8 +267,7 @@ switch (act->type) {
 
 	case ACTION_TYPE_NOP: 		fprintf(fout,"# NOP\n"); break;
 
-        case ACTION_TYPE_COMMENTS:
-					fprintf(fout,"CALL show_comments(\"%s\",%d,%d)\n", 
+        case ACTION_TYPE_COMMENTS:	fprintf(fout,"CALL show_comments(\"%s\",%d,%d)\n", 
 						act->u_action_u.cmd_comment->comment,
 						act->u_action_u.cmd_comment->hasbell,
 						act->u_action_u.cmd_comment->isreverse);
@@ -431,16 +431,6 @@ int metric_no;
 	return 0;
 }
 
-char *screen_has_column(struct_form * f, int scr, char *colname) {
-int a;
-  for(a=0;a<f->attributes.attributes_len;a++) {
-    if (strcmp(f->attributes.attributes_val[a].colname,colname)==0) {
-	return screen_has_attribute(f,scr,a);
-    }
-  }
-  return 0;
-}
-
 void dump_control_block(struct_form *f, FILE *fout, s_control_block *blk) {
 int a;
 struct s_bef_aft *ba;
@@ -522,13 +512,12 @@ dump_form_desc (struct_form * f,char *fname)
 {
   int a;
   int y;
+  int has_lookups=0;
+  int printed_tag=0;
   FILE *fout;
   char fname_split[300];
-//  char fname_only[32];
   make_screen(f);
 
-//  strcpy(fname_only, fname);
- // fname_only[strlen(fname_only)-4]=0;
   for (a = 0; a < f->snames.snames_len; a++) {
 	sprintf(fname_split,"f_%s%02d.per",fname,a+1);
 	fout=fopen(fname_split,"w");
@@ -552,9 +541,41 @@ dump_form_desc (struct_form * f,char *fname)
 		char *ptr;
 		ptr=screen_has_attribute(f,a, y);
 		if (ptr) {
-			fprintf(fout,"%s\t= ",ptr);
+                        char *p2=0;
+                        if (!printed_tag) {
+                                fprintf(fout,"%s\t= ",ptr);
+                                printed_tag++;
+                        }
+                
+                        if (y<f->attributes.attributes_len-1) { p2=screen_has_attribute(f,a, y+1); } else {p2="";}
+                        if (p2) {
+                                fprintf (fout,"%s.%s=", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
+                                if (strcmp(ptr,p2)==0) continue;
+                       }
+	 
+
 			dump_attribute(fout, &f->attributes.attributes_val[y], ptr);
 			fprintf(fout,";\n");
+                        printed_tag=0;
+  
+                        if (f->attributes.attributes_val[y].lookup.lookups.lookups_len) {
+                                int cnt;
+                                // We've got some links..
+                                for (cnt=0;cnt<f->attributes.attributes_val[y].lookup.lookups.lookups_len;cnt++) {
+                                        struct s_lookups *p;
+                                        int cnt1;
+                                        p=f->attributes.attributes_val[y].lookup.lookups.lookups_val[cnt];
+                                        for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
+                                                struct s_lookup *p2;
+                                                has_lookups++;
+                                                p2=p->lookups.lookups_val[cnt1];
+                                                fprintf(fout,"%s=%s;\n",p2->fieldtag, p2->tabcol);
+                                        }
+        
+                                }
+                        }
+  
+
 		}
 	}
 
@@ -563,7 +584,7 @@ dump_form_desc (struct_form * f,char *fname)
 	fclose(fout);
   }
 
-//  if (f->control_blocks.control_blocks_len) {
+//  if (f->control_blocks.control_blocks_len || has_lookups) {
    	sprintf(fname_split,"%s.4gl",fname);
    	fout=fopen(fname_split,"w");
    	if (!fout) {
@@ -778,7 +799,6 @@ printf("now in main program\n");
 //	    f->tables.tables_val[0].tabname);
     fprintf(fout,"    CALL aclfgl_set_display_field_delimiters(\"  \")\n");
     print_display_only(f, fout, 0, 2);
-printf("finish print_display_only\n");
     fprintf(fout,"    CALL aclfgl_set_display_field_delimiters(\"[]\")\n");
 
     fprintf(fout,"\n");
@@ -803,7 +823,7 @@ printf("now in display_record\n");
     fprintf(fout,"    CASE gv_screen_no\n");
     /* display individual screen x tables */
     for (s=0;s< f->snames.snames_len; s++) {
-	fprintf(fout,"      WHEN %d\n", s+1);
+	fprintf(fout,"      WHEN %d\t# display screen %d\n", s+1, s+1);
 
 	// char *ptr;
 	int attr_found, printed;
@@ -843,6 +863,7 @@ printf("now in display_record\n");
 	}
 	fprintf(fout,"        LET gv_attribute = \"BLACK\"\n");
 	fprintf(fout,"        CALL aclfgl_set_display_field_delimiters(\"  \")\n");
+//    print_control_block(f, fout);
 	print_display_only(f, fout, s, 4);
 	fprintf(fout,"        CALL aclfgl_set_display_field_delimiters(\"[]\")\n");
 	fprintf(fout,"\n");
@@ -867,8 +888,8 @@ printf("now in display_record\n");
 			case_printed++;
 		      }
 		      if (!printed) {
-		        fprintf(fout,"          WHEN %d\t# %s\n",
-			    m+1, f->tables.tables_val[m].tabname);
+		        fprintf(fout,"          WHEN %d\t# screen %d table %s\n",
+			    m+1, s+1, f->tables.tables_val[m].tabname);
 		        fprintf(fout,"            LET gv_attribute = get_color(%d)\n", m+1);
 		        fprintf(fout,"            DISPLAY BY NAME\n");
 		        printed++;
@@ -881,8 +902,8 @@ printf("now in display_record\n");
 		    }
 		    if (j.join_tables_val[a].detail_tabno==m) {
 		      if (!printed) {
-		        fprintf(fout,"          WHEN %d\t# %s\n",
-			    m+1, f->tables.tables_val[m].tabname);
+		        fprintf(fout,"          WHEN %d\t# screen %d table %s\n",
+			    m+1, s+1, f->tables.tables_val[m].tabname);
 		        fprintf(fout,"            LET gv_attribute = get_color(%d)\n", m+1);
 		        fprintf(fout,"            DISPLAY BY NAME\n");
 		        printed++;
@@ -920,7 +941,8 @@ printf("now in query_by_example\n");
     fprintf(fout,"  CASE gv_table_no\n");
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
-	fprintf(fout,"    WHEN %d\n", t+1);
+	fprintf(fout,"    WHEN %d\t# query table %s\n",
+		t+1, f->tables.tables_val[t]);
 	int mt = 0;
 	for (d=0; d<f->master_of.master_of_len; d++) {
 	    if (strcmp(f->master_of.master_of_val[d].tab_detail,
@@ -966,7 +988,8 @@ printf("now in query_by_example\n");
 	}
         fprintf(fout,"        CASE gv_screen_no\n");
         for (s=0;s< f->snames.snames_len; s++) {
-	    fprintf(fout,"        WHEN %d\n", s+1);
+	    fprintf(fout,"        WHEN %d\t# table %s screen %d\n",
+		s+1, f->tables.tables_val[t], s+1);
 	    attr_found = 0; printed = 0;
 	    for (a=0;a<f->attributes.attributes_len;a++) {
 		if (strcmp(f->attributes.attributes_val[a].tabname,
@@ -1314,7 +1337,7 @@ printf("now in input_record\n");
 	      fprintf(fout,"                LET abort_flag = TRUE\n");
 	      fprintf(fout,"                EXIT INPUT\n");
 	      fprintf(fout,"# before field validation\n");
-//		print_control_block(f, fout);
+//	print_control_block(f, fout);
 	      print_validation(f, fout, t, s, 1, 7);
 	      fprintf(fout,"# after field validation\n");
 	      print_validation(f, fout, t, s, 2, 7);
@@ -1346,6 +1369,7 @@ printf("now in input_record\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
+    dump_attr_lookup(f, fout);
 
     fclose(fout);
 //  }
@@ -1687,7 +1711,8 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
       fprintf (fout, "(");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
-      		if (a) fprintf (fout, ",");
+//      	if (a) fprintf (fout, ",");
+      	  fprintf (fout, ",");
 	  dump_expr_instructions (f, fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
       fprintf (fout, ")");
@@ -1763,7 +1788,7 @@ void print_display_only(struct_form *f, FILE *fout, int s, int lvl) {
     int a,b,c,d,t;
 printf("now in print_display_only s=%d\n",s);
 	for (c=0;c< f->control_blocks.control_blocks_len;c++) {
-//printf("\n#%d\n",c);
+printf("\n#c=%d of %d\n",c, f->control_blocks.control_blocks_len);
 	    switch (f->control_blocks.control_blocks_val[c].cbtype) {
 		case E_CB_BEFORE:
 		case E_CB_AFTER:
@@ -1793,11 +1818,11 @@ printf("now in print_display_only s=%d\n",s);
 	    for (t=0;t<ba->cmds->actions.actions_len;t++) {
 	        struct u_action *act;
 	        act=ba->cmds->actions.actions_val[t].uaction;
-		fprintf(fout,"#   actions[%d] type=",t);
+		fprintf(fout,"#   c=%d b=%d actions[%d] type=",c,b,t);
 //		printf("#   actions[%d] type=",t);
 		switch (act->type) {
 		    case ACTION_TYPE_IF:
-//			fprintf(fout,"IF\n");
+			fprintf(fout,"IF\n");
 //			printf("IF\n");
 //	  printf("     field type %d\n",
 //		act->u_action_u.cmd_if->test_condition->itemtype);
@@ -1820,10 +1845,11 @@ printf("now in print_display_only s=%d\n",s);
 		}
 	        if (!screen_has_attribute(f,s, a)) continue;
 //	    dump_expr_instructions (f, fout, act->u_action_u.cmd_let->value,0);
-	        fprintf(fout,"\n#%d\n",c);
+//	        fprintf(fout,"\n#%d\n",c);
 //	    fprintf(fout,"field=%s.%s value=%$\n", 
 //		ba->cmds->actions.actions_val[0].uaction->u_action_u.cmd_let->value);
-		dump_commands(f, fout, lvl, ba->cmds);
+//		dump_commands(f, fout, lvl, ba->cmds);
+		dump_command(f, fout,lvl,ba->cmds->actions.actions_val[t].uaction,0);
 	    }
 	}
 }
@@ -2010,6 +2036,34 @@ fprintf(fout,"#  cb[%d] ba[%d] column[%d] action[%d]\n",c,b,d,g);
 //		ba->cmds->actions.actions_val[0].uaction->u_action_u.cmd_let->value);
 
 	}
+}
+
+void dump_attr_lookup(struct_form * f, FILE *fout) {
+  int a, b, c, l, ls;
+  int has_lookups;
+    fprintf (fout, "\n");
+    fprintf (fout, "# Total Attributes %d\n", f->attributes.attributes_len);
+    for (a = 0; a < f->attributes.attributes_len; a++) {
+	fprintf (fout, "# %d fld=%d %s.%s ty=%d ptr=%d flg=%d\n", a,
+	    f->attributes.attributes_val[a].field_no,
+	    f->attributes.attributes_val[a].tabname,
+	    f->attributes.attributes_val[a].colname,
+	    f->attributes.attributes_val[a].datatype,
+	    f->attributes.attributes_val[a].general_ptr,
+	    f->attributes.attributes_val[a].flags);
+	for (b = 0; b < f->attributes.attributes_val[a].lookup.lookups.lookups_len; b++) {
+	    struct s_lookups *ls;
+	    ls = f->attributes.attributes_val[a].lookup.lookups.lookups_val[b];
+	    fprintf(fout, "#  joincol=%s\n", ls->joincol);
+	    for (c = 0; c < ls->lookups.lookups_len; c++) {
+	        struct s_lookup *l;
+	        has_lookups++;
+	        l = ls->lookups.lookups_val[c];
+	        fprintf (fout, "#  lookup[%d] fieldtag=%s tabcol=%s\n", c,
+		    l->fieldtag, l->tabcol);
+	    }
+	}
+  }
 }
 
 /* ================================ EOF ============================= */

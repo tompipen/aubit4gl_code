@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.18 2007-12-12 23:18:34 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.19 2007-12-14 15:14:20 briantan Exp $
 #*/
 
 /**
@@ -116,7 +116,38 @@ static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) ;
 =====================================================================
 */
 
+static char *decode_comparitor(char *s) {
+        if (strcmp(s,"NOTIN")==0) return "NOT IN";
+        return s;
+}
 
+
+
+#define TRIM_MUNG
+char *mung(char *s) {
+static char buff[2000];
+char *ptr;
+        strcpy(buff,s);
+        ptr=strchr(buff,'.');
+//
+// If we've got some '.' - we can't use these as cursor names
+// so we need to mung them
+// we can do this by removing everything after the '.' or converting the '.'
+// to a '_'
+//
+#ifdef TRIM_MUNG
+        if (ptr) {
+		*ptr=0;
+	}
+#else
+	// Replace 
+	while (ptr) {
+		*ptr='_';
+		ptr=strchr(buff,'.');
+       }
+#endif
+	return buff;
+}
 
 void
 make_screen (struct_form * f)
@@ -424,7 +455,7 @@ dump_form_desc (struct_form * f,char *fname)
   FILE *fout;
 char fname_split[300];
 int has_lookups=0;
-int printed_tag;
+int printed_tag=0;
   make_screen(f);
 
   for (a = 0; a < f->snames.snames_len; a++)
@@ -775,8 +806,7 @@ int b;
 		}
 		for (b = 0; b < a->bool_attribs.bool_attribs_len; b++){
 			/* Skip any isql form attributes */
-// need to know if field not to be updated 
-//			if (a->bool_attribs.bool_attribs_val[b]==FA_B_NOUPDATE) continue;
+			if (a->bool_attribs.bool_attribs_val[b]==FA_B_NOUPDATE) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_QUERYCLEAR) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_ZEROFILL) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_RIGHT) continue;
@@ -1011,12 +1041,12 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
 			fprintf(fout," IS NULL");
 		}
 	} else {
-      		fprintf (fout,"(");
+//     		fprintf (fout,"(");
       		ptr2 = expr->u_expression_u.complex_expr;
       		dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
       		fprintf (fout," %s ", ptr2->comparitor);
       		dump_expr_instructions (f, fout,ptr2->item2, lvl + 1);
-      		fprintf (fout,")");
+//     		fprintf (fout,")");
 	}
 
     }
