@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.42 2007-03-25 13:33:17 mikeaubury Exp $
+# $Id: error.c,v 1.43 2007-12-14 21:44:17 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,7 @@
 #include "tmperrs.h"
 #endif
 
+char *err_txt;
 /*
 =====================================================================
                     Constants definitions
@@ -104,6 +105,7 @@ char *A4GL_get_errmsg (int z);
  *
  * @todo Describe function
  */
+static 
 struct s_err * A4GL_get_err_for_errstr (char *s)
 {
     static struct s_err err_default = {"Unknown error", -1};
@@ -248,6 +250,20 @@ A4GL_get_errmsg (int z)
 }
 
 
+char *A4GL_get_err_txt(void ) {
+	return err_txt;
+}
+
+
+void A4GL_set_err_txt(char *s) {
+	if (err_txt) free(err_txt);
+	if (s) {
+		err_txt=strdup(s);
+		A4GL_trim(err_txt);
+	} else {
+		err_txt=0;
+	}
+}
 /**
  *
  * @todo Describe function
@@ -256,6 +272,9 @@ void
 aclfgli_clr_err_flg (void)
 {
   int_err_flg = 0;
+
+  A4GL_set_err_txt(0);
+
   //a4gl_status=0;
   //if (a4gl_status!=0) {
 	  //A4GL_assertion(1,"should status be reset here ?");

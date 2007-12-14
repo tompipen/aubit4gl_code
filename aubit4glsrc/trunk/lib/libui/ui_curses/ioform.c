@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.188 2007-11-30 14:26:20 mikeaubury Exp $
+# $Id: ioform.c,v 1.189 2007-12-14 21:44:17 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.188 2007-11-30 14:26:20 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.189 2007-12-14 21:44:17 mikeaubury Exp $";
 #endif
 
 /**
@@ -578,12 +578,16 @@ A4GL_set_field_attr (FIELD * field)
       if (f->dynamic == -1)
 	{
 	  A4GL_debug ("Max size is lots");
+	if (!A4GL_isyes(acl_getenv("ALLOWDYNAMIC"))) {
 		A4GL_assertion(1,"Dynamic fields not working atm...");
+	}
 	  		set_max_field (field, 0); // DYNAMIC
 	}
       else
 	{
+		if (!A4GL_isyes(acl_getenv("ALLOWDYNAMIC"))) {
 		A4GL_assertion(1,"Dynamic fields not working atm...");
+		}
 	  set_max_field (field, f->dynamic);
 	  A4GL_debug ("Max size=%d", f->dynamic);
 	}
@@ -1381,7 +1385,9 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 
 
   if (fprop->dynamic != 0) {
-		A4GL_assertion(1,"Dynamic fields not working atm...");
+		if (!A4GL_isyes(acl_getenv("ALLOWDYNAMIC"))) {
+			A4GL_assertion(1,"Dynamic fields not working atm...");
+		}
       set_max_field (f, 0); // DYNAMIC
   } else {
 	int w;

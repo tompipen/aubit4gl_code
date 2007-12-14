@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.175 2007-11-22 19:12:08 briantan Exp $
+# $Id: compile_c_esql.c,v 1.176 2007-12-14 21:44:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -32,7 +32,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: compile_c_esql.c,v 1.175 2007-11-22 19:12:08 briantan Exp $";
+  "$Id: compile_c_esql.c,v 1.176 2007-12-14 21:44:17 mikeaubury Exp $";
 #endif
 extern int yylineno;
 
@@ -569,10 +569,12 @@ LEXLIB_print_prepare (char *xstmt, char *sqlvar)
   if (A4GL_strstartswith (stmt, "aclfgli_str_to_id"))
     {
       printc ("_sid=%s;\n", xstmt);
+      printc("A4GL_set_err_txt(_s);");
       printc ("\nEXEC SQL PREPARE :_sid FROM :_s;\n", sqlvar);
     }
   else
     {
+      printc("A4GL_set_err_txt(_s);");
       printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", stmt, sqlvar);
     }
   A4GL_save_sql ("PREPARE %s", sqlvar);

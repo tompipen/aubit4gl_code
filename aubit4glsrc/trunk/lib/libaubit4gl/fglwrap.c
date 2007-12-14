@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.127 2007-12-14 10:41:46 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.128 2007-12-14 21:44:17 mikeaubury Exp $
 #
 */
 
@@ -432,12 +432,19 @@ A4GL_isno (char *s)
 void
 A4GL_generateError (char *str, char *fileName, int lineno)
 {
-      SPRINTF5 (str,
-	       "Program %s stopped at '%s', line number %d.\nError status number %d.\n%s.\n", A4GL_get_running_program(),
+if (A4GL_get_err_txt()) {
+      SPRINTF6 (str, "Program %s stopped at '%s', line number %d.\nError status number %d.\n[%s]\n%s.\n", A4GL_get_running_program(),
+	       fileName,
+	       lineno,
+	       (int) a4gl_status, A4GL_get_err_txt(),
+	       A4GL_err_print (a4gl_status, a4gl_sqlca.sqlerrm));
+} else {
+      SPRINTF5 (str, "Program %s stopped at '%s', line number %d.\nError status number %d.\n%s.\n", A4GL_get_running_program(),
 	       fileName,
 	       lineno,
 	       (int) a4gl_status,
 	       A4GL_err_print (a4gl_status, a4gl_sqlca.sqlerrm));
+}
   if (A4GLSTK_isStackInfo ())
     SPRINTF2 (str, "%s\n%s", str, A4GLSTK_getStackTrace ());
 }
