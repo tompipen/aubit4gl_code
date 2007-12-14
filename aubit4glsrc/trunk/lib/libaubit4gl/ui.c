@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.70 2007-12-06 13:43:22 mikeaubury Exp $
+# $Id: ui.c,v 1.71 2007-12-14 10:22:08 mikeaubury Exp $
 #
 */
 
@@ -108,7 +108,7 @@ struct sKeyCallbacks *KeyCallbacks=0;
 #define UI_MODE_TEXT    0
 #define UI_MODE_GTK     1
 extern int ui_mode;
-int currscrmode = SCREEN_MODE;
+int currscrmode = LINE_MODE;
 
 
 void

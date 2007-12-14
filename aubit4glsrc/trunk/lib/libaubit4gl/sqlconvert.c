@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.134 2007-12-13 16:18:57 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.135 2007-12-14 10:22:08 mikeaubury Exp $
 #
 */
 
@@ -2167,7 +2167,7 @@ A4GL_cv_delchstr (char *str, int n)
 
 
 static void remove_ws_and_upshift(char *s) {
-char p[1000];
+char p[10000];
 int a;
 int c=0;
 strcpy(p,s);
