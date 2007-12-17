@@ -120,7 +120,6 @@ return n;
                         char *ptr;
                         sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
                         ptr={#PCDATA};
-A4GL_pause_execution();
 
                         memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
                 } else {

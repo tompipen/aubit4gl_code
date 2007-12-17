@@ -40,10 +40,12 @@ cd /home/aubit4gl/aubit4glsrc
 cd lib/libui/ui_curses
 sh make_static
 
+
 cd /home/aubit4gl/aubit4glsrc
 cd lib/libsql/esqlc
 sh make_static
 sh make_simple
+
 
 set -x
 cd /home/aubit4gl/aubit4glsrc/lib/libesql
@@ -53,6 +55,9 @@ sh make_simple
 cd /home/aubit4gl/aubit4glsrc/lib/liblogical
 sh makeit
 
+cd /home/aubit4gl/aubit4glsrc
+cd lib/libui/ui_xml
+make
 
 cd /home/aubit4gl/aubit4glsrc
 cp lib/*.so /home/aubit4gl/aubit4gl/lib

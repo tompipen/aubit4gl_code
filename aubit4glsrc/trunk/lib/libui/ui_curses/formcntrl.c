@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.135 2007-12-17 16:15:28 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.136 2007-12-17 18:10:37 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.135 2007-12-17 16:15:28 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.136 2007-12-17 18:10:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -441,8 +441,8 @@ int check_for_construct_large_for_key(int a) {
 	if (a=='\t' || a=='\n' || a=='\r') return 0;
 	if (a==A4GLKEY_DOWN) return 0;
 	if (a==A4GLKEY_UP) return 0;
-	if (a==A4GLKEY_RIGHT) return 0;
-	if (a==A4GLKEY_LEFT) return 1;
+	if (a==A4GLKEY_RIGHT) return 1;
+	if (a==A4GLKEY_LEFT) return 0;
 	return 1;
 }
 
@@ -856,7 +856,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 				lm=A4GL_get_curr_field_col(mform);
                                	set_field_buffer (sio->currentfield,0,rbuff); 
-  				//A4GL_int_form_driver (mform, REQ_VALIDATION);
+
 				while (A4GL_get_curr_field_col(mform)<lm) {
   					A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
   					A4GL_int_form_driver (mform, REQ_VALIDATION);
@@ -920,8 +920,12 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
       if (sio->fcntrl[a].state == 2)
         {
+		if (sio->mode == MODE_CONSTRUCT) {
 		if (sio->constr[sio->curr_attrib].value) {
 			A4GL_debug("Field now : %s Extended value : %s",field_buffer(sio->currentfield,0), sio->constr[sio->curr_attrib].value);
+		} else {
+			A4GL_debug("Field now : %s",field_buffer(sio->currentfield,0));
+		}
 		} else {
 			A4GL_debug("Field now : %s",field_buffer(sio->currentfield,0));
 		}
@@ -2281,7 +2285,7 @@ strcpy(newfieldval,"");
 
         A4GL_int_form_driver(f,REQ_OVL_MODE);
 
-        if (initpos>=1 && init_key<=255) {
+        if (initpos>=1 && (init_key<=255 || init_key==A4GLKEY_RIGHT)) {
 		while (A4GL_get_curr_field_col(f)<initpos) {
         		A4GL_int_form_driver(f,REQ_NEXT_CHAR);
    			A4GL_int_form_driver(f,REQ_VALIDATION);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.115 2007-12-05 14:08:12 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.116 2007-12-17 18:10:37 mikeaubury Exp $
 */
 
 /**
@@ -401,6 +401,10 @@ void A4GL_ensure_current_window_is(char *s) ;
   int A4GL_gen_field_chars (void ***field_list, void *formdets, ...);
   /* int A4GL_set_fields (void *sio); */
   void aclfgli_clr_err_flg (void);
+
+char *A4GL_get_err_txt(void ) ;
+void A4GL_set_err_txt(char *s);
+
   void A4GL_set_option_value (char type, long keyval);
   int aclfgli_get_err_flg (void);
   void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
