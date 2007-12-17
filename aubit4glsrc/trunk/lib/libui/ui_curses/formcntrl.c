@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.134 2007-12-13 12:19:40 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.135 2007-12-17 16:15:28 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.134 2007-12-13 12:19:40 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.135 2007-12-17 16:15:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -442,7 +442,7 @@ int check_for_construct_large_for_key(int a) {
 	if (a==A4GLKEY_DOWN) return 0;
 	if (a==A4GLKEY_UP) return 0;
 	if (a==A4GLKEY_RIGHT) return 0;
-	if (a==A4GLKEY_LEFT) return 0;
+	if (a==A4GLKEY_LEFT) return 1;
 	return 1;
 }
 
@@ -832,17 +832,19 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 			if (sio->constr[sio->curr_attrib].value) {
                         	strcpy(rbuff,sio->constr[sio->curr_attrib].value);
+				A4GL_debug("Has construct value",rbuff);
 			} else {
                         	strcpy(rbuff,field_buffer(sio->currentfield,0));
+				A4GL_debug("No construct value - using field buffer : %s",rbuff);
 			}
 
                         A4GL_trim(rbuff);
                         w=form->fileform->metrics. metrics_val[A4GL_get_metric_for (form, form->currentfield)].w;
 
-                        A4GL_debug("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",rbuff,
-				A4GL_get_field_width(sio->currentfield),strlen(rbuff),w);
+                        A4GL_debug("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",rbuff, A4GL_get_field_width(sio->currentfield),strlen(rbuff),w);
 
-                        if (strlen(rbuff)>=w && check_for_construct_large_for_key(sio->fcntrl[a].extent)) {
+                        if (strlen(rbuff)>=w) {
+				if (check_for_construct_large_for_key(sio->fcntrl[a].extent)) {
                                 struct struct_scr_field *fprop;
                                 int k;
 				int lm;
@@ -902,6 +904,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 					}
 				}
 				sio->currentfield=cf;
+				}
                         } else {
 				if (sio->constr[sio->curr_attrib].value) {
 					// get rid...
@@ -917,7 +920,11 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
       if (sio->fcntrl[a].state == 2)
         {
-		A4GL_debug("Field now : %s",field_buffer(sio->currentfield,0));
+		if (sio->constr[sio->curr_attrib].value) {
+			A4GL_debug("Field now : %s Extended value : %s",field_buffer(sio->currentfield,0), sio->constr[sio->curr_attrib].value);
+		} else {
+			A4GL_debug("Field now : %s",field_buffer(sio->currentfield,0));
+		}
                 rval=-1;
                 new_state=0;
         }
