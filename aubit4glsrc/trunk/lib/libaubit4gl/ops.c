@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.126 2007-12-07 12:11:22 mikeaubury Exp $
+# $Id: ops.c,v 1.127 2007-12-19 08:27:11 mikeaubury Exp $
 #
 */
 
@@ -62,7 +62,7 @@ void A4GL_push_dec_from_apm(M_APM tmp) ;
 void A4GL_date_date_ops (int op);
 void A4GL_date_int_ops (int op);
 void A4GL_int_date_ops (int op);
-double trunc(double f);
+double a4gl_local_trunc(double f);
 void A4GL_smfloat_float_ops (int op);
 void A4GL_float_smfloat_ops (int op);
 void A4GL_smfloat_smfloat_ops (int op);
@@ -148,6 +148,12 @@ void A4GL_double_in_ops (int op);
 =====================================================================
 
 */
+
+
+double a4gl_local_trunc(double d) {
+	if (d<0) return ceil(d);
+	return floor(d);
+}
 
 char *
 A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
@@ -3310,7 +3316,7 @@ A4GL_debug(":::1 %d %lf %d -  %s",dt_days,dt_seconds,in_months,(op==OP_ADD)?"Add
 		ok=1;
 
 		dt_seconds+=in_seconds;
-		dt=trunc(dt_seconds);
+		dt=a4gl_local_trunc(dt_seconds);
 		d=(long)dt;
 		dtime_data[5]=d;
 		dt_seconds-=dt-0.000005;
@@ -3350,7 +3356,7 @@ if (op==OP_SUB) {
 	ok=1;
 
 	dt_seconds-=in_seconds;
-	dt=trunc(dt_seconds);
+	dt=a4gl_local_trunc(dt_seconds);
 	d=(long)dt;
 	dtime_data[5]=d;
 	dt_seconds-=dt-0.000005;
