@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.27 2007-12-12 22:54:10 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.28 2007-12-19 22:58:04 briantan Exp $
 #*/
 
 /**
@@ -575,7 +575,7 @@ getaline (void)
 {
   char *a;
   a = fgets (ibuff, sizeof (ibuff), infile);
-printf(">%s",a);
+//printf(">%s",a);
   if (a == 0)
     {
       printf ("Unexpected end of file\n");
