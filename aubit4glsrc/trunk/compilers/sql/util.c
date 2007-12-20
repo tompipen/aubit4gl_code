@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.63 2007-11-29 13:48:01 mikeaubury Exp $
+# $Id: util.c,v 1.64 2007-12-20 14:31:10 mikeaubury Exp $
 #
 */
 
@@ -58,6 +58,7 @@
 #define THEYYWRAP sqlparse_yywrap
 #define YYSCANSTRING sqlparse_yy_scan_string
 #else
+#include "alias.h"
 #define DELETE_BUFFER yy_delete_buffer
 #define THEYYWRAP yywrap
 #define YYSCANSTRING yy_scan_string
