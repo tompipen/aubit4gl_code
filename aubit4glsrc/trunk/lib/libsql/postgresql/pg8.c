@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.13 2007-10-24 17:00:02 mikeaubury Exp $
+# $Id: pg8.c,v 1.14 2007-12-28 10:58:10 mikeaubury Exp $
 #*/
 
 
@@ -615,6 +615,24 @@ fixtype (char *type, int *d, int *s)
       l2++;
     }
 
+
+  if (strcmp (buff, "interval day to day") == 0) { *d = DTYPE_INTERVAL; *s = 0x233; return; }
+  if (strcmp (buff, "interval day to hour") == 0) { *d = DTYPE_INTERVAL; *s = 0x234; return; }
+  if (strcmp (buff, "interval day to minute") == 0) { *d = DTYPE_INTERVAL; *s = 0x235; return; }
+  if (strcmp (buff, "interval day to second") == 0) { *d = DTYPE_INTERVAL; *s = 0x236; return; }
+  if (A4GL_strstartswith (buff, "interval day to fraction")) { *d = DTYPE_INTERVAL; *s = 0x239; return; }
+
+  if (strcmp (buff, "interval hour to hour") == 0) { *d = DTYPE_INTERVAL; *s = 0x244; return; }
+  if (strcmp (buff, "interval hour to minute") == 0) { *d = DTYPE_INTERVAL; *s = 0x245; return; }
+  if (strcmp (buff, "interval hour to second") == 0) { *d = DTYPE_INTERVAL; *s = 0x246; return; }
+  if (A4GL_strstartswith (buff, "interval hour to fraction")) { *d = DTYPE_INTERVAL; *s = 0x249; return; }
+  if (strcmp (buff, "interval minute to minute") == 0) { *d = DTYPE_INTERVAL; *s = 0x255; return; }
+  if (strcmp (buff, "interval minute to second") == 0) { *d = DTYPE_INTERVAL; *s = 0x256; return; }
+  if (A4GL_strstartswith (buff, "interval minute to fraction")) { *d = DTYPE_INTERVAL; *s = 0x259; return; }
+  if (strcmp (buff, "interval second to second") == 0) { *d = DTYPE_INTERVAL; *s = 0x266; return; }
+  if (A4GL_strstartswith (buff, "interval second to fraction")) { *d = DTYPE_INTERVAL; *s = 0x269; return; }
+
+
   if (A4GL_strstartswith (buff, "character varying"))
     {
       buff[9] = '_';
@@ -692,7 +710,7 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "interval") == 0)
     {
       *d = DTYPE_INTERVAL;
-      *s = 0x249000e;
+      *s = 0x249; //000e;
     }
 
 
