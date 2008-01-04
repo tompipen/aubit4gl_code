@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.151 2007-12-13 19:01:29 mikeaubury Exp $
+# $Id: report.c,v 1.152 2008-01-04 14:43:34 mikeaubury Exp $
 #
 */
 
@@ -1705,19 +1705,22 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname_x, int opt_semi)
   while (!feof (f))
     {
       char *a;
+	memset(buff,0,sizeof (buff));
       a = fgets (buff, sizeof (buff) - 1, f);
       if (!a)
 	break;
       has_cr = 0;
-      // Trim any trailing \n
-      while (buff[strlen (buff) - 1] == '\n'
-	     || buff[strlen (buff) - 1] == '\r')
-	{
-	  int c;
-	  has_cr++;
-	  c = strlen (buff);
-	  buff[c - 1] = 0;
-	}
+	
+      if (strlen (buff)) {
+      	// Trim any trailing \n
+      	while (buff[strlen (buff) - 1] == '\n' || buff[strlen (buff) - 1] == '\r')
+		{
+	  	int c;
+	  	has_cr++;
+	  	c = strlen (buff);
+	  	buff[c - 1] = 0;
+		}
+      }
       A4GL_push_char (buff);
       if (has_cr)
 	A4GL_rep_print (rep, 1, 0, 0, -1);
