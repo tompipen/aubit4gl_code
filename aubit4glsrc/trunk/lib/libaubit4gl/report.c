@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.152 2008-01-04 14:43:34 mikeaubury Exp $
+# $Id: report.c,v 1.153 2008-01-07 11:12:15 mikeaubury Exp $
 #
 */
 
@@ -1692,11 +1692,14 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname_x, int opt_semi)
 {
   FILE *f;
   char buff[10000];
-  char fname[1000];
+  char *fname;
   int has_cr;
-	strcpy(fname, fname_x);
-	A4GL_trim(fname);
+
+  fname=strdup(fname_x);
+  A4GL_trim(fname);
   f = fopen (fname, "r");
+  free(fname); fname=0;
+
   if (f == 0)
     {
       A4GL_exitwith ("Unable to open PRINT FILE file");
