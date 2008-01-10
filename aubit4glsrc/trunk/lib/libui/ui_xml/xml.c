@@ -1029,8 +1029,13 @@ printf("FORM LOOP\n");
 		A4GL_push_int(context);
       		uilib_construct_loop (1);
 	} else {
+		int b;
 		A4GL_push_int(context);
-      		uilib_input_loop (1);
+      		for (b = 0; b < sreal->novars; b++)
+			{
+	  		A4GL_push_param (sreal->vars[b].ptr, sreal->vars[b].dtype + ENCODE_SIZE (sreal->vars[b].size));
+			}
+     			uilib_input_loop (sreal->novars+1);
 	}
       a = A4GL_pop_int ();
       printf ("Got a as %d\n", a);
