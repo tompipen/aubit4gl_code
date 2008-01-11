@@ -56,6 +56,12 @@ extern int *columnAlign; // CA1
 #define EXEC_MODE_OUTPUT        2
 
 #define LOADBUFFSIZE 32000
+
+
+#define CHAR_SINGLE_QUOTE 39
+#define CHAR_BACKSLASH 92  
+
+
 char loadbuff[LOADBUFFSIZE];
 
 FILE *f_unloadFile=0;
@@ -1454,7 +1460,7 @@ if(strlen(s)>plen) {
 
 c=0;
 for (a=0;a<strlen(s);a++) {
-        if (s[a]!='\\')   {p[c++]=s[a];continue;}
+        if (s[a]!=CHAR_BACKSLASH)   {p[c++]=s[a];continue;}
         continue;
 }
 p[c]=0;
@@ -1463,9 +1469,9 @@ p2=strdup(p);
 c=0;
 // First - escape any quotes
 for(a=0;a<strlen(p2);a++) {
-                if (p2[a]!='\'') {p[c++]=p2[a];continue;}
-                p[c++]='\\';
-                p[c++]='\'';
+                if (p2[a]!=CHAR_SINGLE_QUOTE) {p[c++]=p2[a];continue;}
+                p[c++]=CHAR_BACKSLASH;
+                p[c++]=CHAR_SINGLE_QUOTE;
 }
 p[c]=0;
 free(p2);
@@ -1497,7 +1503,7 @@ find_delims (char delim)
 
   for (a = 0; a < strlen (loadbuff); a++)
     {
-      if ((loadbuff[a] == delim && loadbuff[a-1]!='\\') || loadbuff[a] == 0)
+      if ((loadbuff[a] == delim && loadbuff[a-1]!=CHAR_BACKSLASH) || loadbuff[a] == 0)
         {
           colptr[cnt++] = &loadbuff[a + 1];
         }
