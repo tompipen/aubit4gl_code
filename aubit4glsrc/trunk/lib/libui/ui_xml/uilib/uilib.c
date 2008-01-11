@@ -1262,6 +1262,9 @@ uilib_input_loop (int nargs)
   if (last_attr->sync.nvalues) // Did we get some field values back ? 
     {
       for (a=0;a<last_attr->sync.nvalues;a++) {
+		if (contexts[context].ui.input.num_field_data<last_attr->sync.nvalues) {
+			A4GL_assertion(1,"too many values sent back");
+		}
 		if (contexts[context].ui.input.variable_data[a]) {
 			free(contexts[context].ui.input.variable_data[a]);
 			contexts[context].ui.input.variable_data[a]=0;

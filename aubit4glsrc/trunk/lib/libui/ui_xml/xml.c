@@ -969,7 +969,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
   struct s_screenio *sreal;
   sreal = s;
 
-printf("FORM LOOP\n");
+  printf ("FORM LOOP\n");
 
   if (init)
     {
@@ -989,8 +989,7 @@ printf("FORM LOOP\n");
 	  for (a = 0; a < sreal->novars; a++)
 	    {
 	      char buff[2000];
-	      sprintf (buff, "%s.%s", sreal->constr[a].tabname,
-		       sreal->constr[a].colname);
+	      sprintf (buff, "%s.%s", sreal->constr[a].tabname, sreal->constr[a].colname);
 	      //printf("PUSHING : %s\n",buff);
 	      A4GL_push_char (buff);
 	      cno++;
@@ -1016,37 +1015,60 @@ printf("FORM LOOP\n");
 
   while (1)
     {
-      int a=0;
-	int context=0;
+      int a = 0;
+      int context = 0;
 
       A4GL_push_char ("XML");
       A4GL_push_int (((long) s) & 0xffffffff);
       uilib_get_context (2);
-	context=A4GL_pop_int (); // Context..
-	printf("Context=%d\n",context);
+      context = A4GL_pop_int ();	// Context..
+      printf ("Context=%d\n", context);
       if (sreal->mode == MODE_CONSTRUCT)
 	{
-		A4GL_push_int(context);
-      		uilib_construct_loop (1);
-	} else {
-		int b;
-		A4GL_push_int(context);
-      		for (b = 0; b < sreal->novars; b++)
-			{
-	  		A4GL_push_param (sreal->vars[b].ptr, sreal->vars[b].dtype + ENCODE_SIZE (sreal->vars[b].size));
-			}
-     			uilib_input_loop (sreal->novars+1);
+	  A4GL_push_int (context);
+	  uilib_construct_loop (1);
+	}
+      else
+	{
+	  int b;
+	  A4GL_push_int (context);
+	  for (b = 0; b < sreal->novars; b++)
+	    {
+	      A4GL_push_param (sreal->vars[b].ptr, sreal->vars[b].dtype + ENCODE_SIZE (sreal->vars[b].size));
+	    }
+	  uilib_input_loop (sreal->novars + 1);
 	}
       a = A4GL_pop_int ();
       printf ("Got a as %d\n", a);
+
       if (a == 0)
 	continue;
       if (a == -1)
 	continue;
 
+
+     if (sreal->mode != MODE_CONSTRUCT && last_attr->sync.nvalues) { 
+		int b;
+		A4GL_push_int(context);
+		uilib_input_get_values(1); 
+	         for (b = sreal->novars-1; b>=0; b--) {
+          		A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype ,sreal->vars[b].size);
+			}
+	}
+
       if (a == -100)
 	{			// Accept...
-      if (sreal->mode == MODE_CONSTRUCT) { if (last_attr->sync.nvalues) { set_construct_clause(context, generate_construct_result(sreal)); } else { set_construct_clause(context, strdup(sreal->vars[0].ptr)); } }
+	  if (sreal->mode == MODE_CONSTRUCT)
+	    {
+	      if (last_attr->sync.nvalues)
+		{
+		  set_construct_clause (context, generate_construct_result (sreal));
+		}
+	      else
+		{
+		  set_construct_clause (context, strdup (sreal->vars[0].ptr));
+		}
+	    } 
 
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
@@ -1057,20 +1079,22 @@ printf("FORM LOOP\n");
 
       if (a == -101)
 	{			// Interrupt
-		//int_flag=1;
-      	if (sreal->mode == MODE_CONSTRUCT) { set_construct_clause(context, strdup(sreal->vars[0].ptr)); }
+	  //int_flag=1;
+	  if (sreal->mode == MODE_CONSTRUCT)
+	    {
+	      set_construct_clause (context, strdup (sreal->vars[0].ptr));
+	    }
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
-		
+
 	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	    }
-		
+
 	}
       return a;
     }
 
 }
-
 int
 UILIB_A4GL_push_constr (void *s)
 {
