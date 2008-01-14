@@ -14,7 +14,10 @@
 #include <sys/select.h>
 #include "pipe.h"
 #include "debug.h"
-#define STREAM_BUFF_SIZE 50000
+
+int stream_buff_size=50000;
+
+//#define stream_buff_size 50000
 char **sock_buff=0;
 int nsock=0;
 int startedenvelope=0;
@@ -41,7 +44,7 @@ void suspend_flush(int a) {
 	UIdebug(4,"Suspend flush called with %d (%d)\n",a,cantflush);
 	cantflush+=a;
 	if (cantflush<0) {
-		printf("Internal error - can't flush went below zero cantflush=%d\n",cantflush);
+		FPRINTF(stderr,"Internal error - can't flush went below zero cantflush=%d\n",cantflush);
 		exit(2);
 	}
 	UIdebug(4,"Suspend flush done (%d)\n",cantflush);
@@ -72,7 +75,7 @@ if (nsock==0) {
 nsock=n;
 
 if ( sock_buff[n]==0) {
-		sock_buff[n]=malloc(STREAM_BUFF_SIZE+40);
+		sock_buff[n]=malloc(stream_buff_size+40);
 		
 			strcpy(sock_buff[n],get_leadin(n));
 }
@@ -137,7 +140,7 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
 	}
       if (total_count >= count) {
     		current_position[0] = 0;
-		printf("Partial : %s\n\n\n\n", str);
+		FPRINTF(stderr, "Partial : %s\n\n\n\n", str);
   		UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
 		return 1;
 	}
@@ -219,13 +222,10 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 
 
 void timeout_flush(int sockfd) {
-printf("TIMEOUT FLUSH\n");
   if (cantflush)  {
-		printf("CANT FLUSH\n");
 		return;
 	}
   if (strlen (sock_buff[sockfd])==0) {
-		printf("Nothing to FLUSH (%d)\n",sockfd);
 		return;
 	}
   pipe_flush(sockfd);
@@ -235,7 +235,7 @@ printf("TIMEOUT FLUSH\n");
 char *get_leadin(int n) {
 static char leadin[200];
    if (!handshaking) {
- 		sprintf (leadin, "<ENVELOPE ID=\"%d\">\n<COMMANDS>\n",n);
+ 		SPRINTF (leadin, "<ENVELOPE ID=\"%d\">\n<COMMANDS>\n",n);
 		return leadin;
    } else {
 		return "";
@@ -253,7 +253,7 @@ pipe_flush (int sockfd)
 {
   if (cantflush)  {
 	UIdebug(4,"INTERNAL ERROR CANT FLUSH ATM - cantflush=%d\n",cantflush);
-	printf("INTERNAL ERROR CANT FLUSH ATM\n");
+	FPRINTF(stderr, "INTERNAL ERROR CANT FLUSH ATM\n");
 	exit(1);
   }
 
@@ -265,7 +265,7 @@ pipe_flush (int sockfd)
       char buff[2000]="";
       pipe_sock_write (sockfd, sock_buff[sockfd], strlen (sock_buff[sockfd]));
 	if (!handshaking) {
-      		sprintf(buff,"</COMMANDS>\n</ENVELOPE>\n");
+      		SPRINTF(buff,"</COMMANDS>\n</ENVELOPE>\n");
 	}
      
       pipe_sock_write (sockfd, buff, strlen (buff));
@@ -290,7 +290,7 @@ pipe_sock_puts (int sockfd, char *str)
   static int lastsock = -1;
 
   if (str==0) {
-		printf("PIPE_SOCK_PUTS called with str=0");
+		FPRINTF(stderr, "PIPE_SOCK_PUTS called with str=0");
 		exit(2);
   }
 
@@ -301,7 +301,6 @@ pipe_sock_puts (int sockfd, char *str)
 
   if ((sockfd != lastsock) && lastsock!=-1)
     {
-	printf("FLUSH!\n");
       pipe_flush (lastsock);
     }
   lastsock = sockfd;
@@ -314,15 +313,20 @@ pipe_sock_puts (int sockfd, char *str)
     }
 
   // Do we need to send what we've got ? 
-  if (sz_buff > STREAM_BUFF_SIZE || sz_str + sz_buff > STREAM_BUFF_SIZE || sz_str > STREAM_BUFF_SIZE )
+  if (sz_buff > stream_buff_size || sz_str + sz_buff > stream_buff_size || sz_str > stream_buff_size )
     {
-      if (str != 0)
-	{
-	  UIdebug (4,"BUFFER FULL ;-) %d %d\n", sz_buff, sz_str);
-	}
+	if (cantflush) {
+		// We can't flush - we need to increase the buffer size instead...
+		stream_buff_size*=2;
+		sock_buff[sockfd]=realloc(sock_buff[sockfd] , stream_buff_size);
+	} else {
+      		if (str != 0) {
+	  		UIdebug (4,"BUFFER FULL ;-) %d %d\n", sz_buff, sz_str);
+			}
 
-	pipe_flush(sockfd);
-        sz_buff = 0;
+		pipe_flush(sockfd);
+        	sz_buff = 0;
+	}
     }
 
 
@@ -334,7 +338,7 @@ pipe_sock_puts (int sockfd, char *str)
 
 
 
-  if (sz_str > STREAM_BUFF_SIZE)
+  if (sz_str > stream_buff_size)
     {
       // Its too large to cache...
       if (ok)
@@ -366,13 +370,13 @@ pipe_expect (int serversocket, char *s)
 
   if (strcmp (buff, s) != 0)
     {
-      printf ("Expecting %s - got '%s'\n", s, buff);
+      FPRINTF (stderr, "Expecting %s - got '%s'\n", s, buff);
       for (a = 0; a < 17; a++)
 	{
-	  printf ("(%02x %c) ", buff[a] & 0xff,
+	  FPRINTF (stderr, "(%02x %c) ", buff[a] & 0xff,
 		  isprint (buff[a]) ? buff[a] : '.');
 	}
-      printf ("\n");
+      FPRINTF (stderr, "\n");
       return 0;
     }
   else

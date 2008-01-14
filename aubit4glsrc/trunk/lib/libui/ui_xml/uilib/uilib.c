@@ -2179,7 +2179,9 @@ int uilib_trace(int n) {
 }
 
 void set_construct_clause(int context, char *ptr) {
-
+	if (strcmp(ptr,"")==0 || strcmp(ptr,"1")==0) {
+		ptr=" 1=1";
+	}
         contexts[context].ui.construct.constr_clause=ptr;
 }
 

@@ -1,3 +1,11 @@
+#ifndef FPRINTF
+#define FPRINTF fprintf
+#endif
+
+#ifndef SPRINTF
+#define SPRINTF sprintf
+#endif
+
 int pipe_sock_gets (int sockfd, char *str, size_t count);
 int pipe_sock_read (int sockfd, char *buf, size_t count);
 int pipe_sock_write (int sockfd, char *buf, size_t count);

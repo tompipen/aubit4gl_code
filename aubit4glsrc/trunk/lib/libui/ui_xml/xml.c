@@ -22,7 +22,6 @@ int XML_A4GL_assertion (int n, char *s);
 static int get_inc_quotes(int a) ;
 
 #define niy() A4GL_niy((char *)__PRETTY_FUNCTION__)
-
 char *generate_construct_result (struct s_screenio *s);
 
 int
@@ -35,9 +34,78 @@ int
 A4GL_niy (char *func)
 {
   char buff[245];
-  sprintf (buff, "Not implemented: %s", func);
+  SPRINTF (buff, "Not implemented: %s", func);
   XML_A4GL_assertion (1, buff);
   return 0;
+}
+
+
+int exiting_context[100];
+int exiting_context_state[100];
+int exiting_context_cnt=0;
+
+
+void
+clr_exiting_context (int n)
+{
+  int a;
+  for (a = 0; a < exiting_context_cnt; a++)
+    {
+      if (exiting_context[a] == n)
+	{
+	  exiting_context[n] = -1;
+	}
+    }
+}
+
+
+void
+set_exiting_context (int n, int state)
+{
+  int a;
+// Is it already set ? 
+  for (a = 0; a < exiting_context_cnt; a++)
+    {
+      if (exiting_context[a] == n)
+	{
+	  exiting_context_state[a] = state;
+	  return;
+	}
+    }
+
+
+// Is there a gap to set it in ? 
+  for (a = 0; a < exiting_context_cnt; a++)
+    {
+      if (exiting_context[a] == -1)
+	{
+	  exiting_context_state[a] = state;
+	  exiting_context[a] = n;
+	  return;
+	}
+    }
+
+// Add it at the end...
+  exiting_context_cnt++;
+  exiting_context[exiting_context_cnt - 1] = n;
+  exiting_context_state[exiting_context_cnt - 1] = state;
+}
+
+
+int
+isset_exiting_context (int n, int *state)
+{
+  int a;
+  for (a = 0; a < exiting_context_cnt; a++)
+    {
+      if (exiting_context[a] == n)
+	{
+	  if (state)
+	    *state = exiting_context_state[a];
+	  return 1;
+	}
+    }
+return 0;
 }
 
 
@@ -129,7 +197,7 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
 
   if (w == 0)
     {
-      printf ("**** WINDOW NOT FOUND *****");
+      FPRINTF (stderr, "**** WINDOW NOT FOUND *****");
       return 0;
     }
 
@@ -419,7 +487,7 @@ UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig,
 		  keys[cnt + 1] = ' ';
 		}
 	      b = A4GL_key_val (&keys[start]);
-	      sprintf (a, "%d", b);
+	      SPRINTF (a, "%d", b);
 	      if (start)
 		strcat (buff, ",");
 	      strcat (buff, a);
@@ -442,7 +510,7 @@ UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig,
 	}
       else
 	{
-	  sprintf (buff, "%d", a);
+	  SPRINTF (buff, "%d", a);
 	  A4GL_push_char (buff);
 	}
     }
@@ -532,6 +600,9 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
   A4GL_push_int (((long) s) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();
+
+  clr_exiting_context (context);
+
   if (type == '+')
     {
       send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"NEXT\"/>", context);
@@ -679,11 +750,11 @@ UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap)
       A4GL_trim (argp);
       if (i == 1)
 	{
-	  sprintf (smbuff, "<FIELD NAME=\"%s\"/>", argp);
+	  SPRINTF (smbuff, "<FIELD NAME=\"%s\"/>", argp);
 	}
       else
 	{
-	  sprintf (smbuff, "<FIELD NAME=\"%s[%d]\"/>", argp, i);
+	  SPRINTF (smbuff, "<FIELD NAME=\"%s[%d]\"/>", argp, i);
 	}
       strcat (buff, smbuff);
     }
@@ -969,7 +1040,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
   struct s_screenio *sreal;
   sreal = s;
 
-  printf ("FORM LOOP\n");
+  A4GL_debug ("FORM LOOP\n");
 
   if (init)
     {
@@ -989,7 +1060,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  for (a = 0; a < sreal->novars; a++)
 	    {
 	      char buff[2000];
-	      sprintf (buff, "%s.%s", sreal->constr[a].tabname, sreal->constr[a].colname);
+	      SPRINTF (buff, "%s.%s", sreal->constr[a].tabname, sreal->constr[a].colname);
 	      //printf("PUSHING : %s\n",buff);
 	      A4GL_push_char (buff);
 	      cno++;
@@ -1013,6 +1084,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
     }
 
+
   while (1)
     {
       int a = 0;
@@ -1022,7 +1094,17 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
       A4GL_push_int (((long) s) & 0xffffffff);
       uilib_get_context (2);
       context = A4GL_pop_int ();	// Context..
-      printf ("Context=%d\n", context);
+
+
+      if (isset_exiting_context(context,0)) {
+		clr_exiting_context (context);
+		// We had an AFTER INPUT - now we need to exit the input cleanly...
+	  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	    	{
+	      		return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
+	    	}
+      }
+
       if (sreal->mode == MODE_CONSTRUCT)
 	{
 	  A4GL_push_int (context);
@@ -1039,7 +1121,6 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  uilib_input_loop (sreal->novars + 1);
 	}
       a = A4GL_pop_int ();
-      printf ("Got a as %d\n", a);
 
       if (a == 0)
 	continue;
@@ -1070,23 +1151,32 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 		}
 	    } 
 
+	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
+	    		set_exiting_context(context,-100);
+			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+	    }
+
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
 	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	    }
-
 	}
 
       if (a == -101)
 	{			// Interrupt
-	  //int_flag=1;
+	  int_flag=1;
 	  if (sreal->mode == MODE_CONSTRUCT)
 	    {
 	      set_construct_clause (context, strdup (sreal->vars[0].ptr));
 	    }
+
+	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
+	    		set_exiting_context(context,-101);
+			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+	    }
+
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
-
 	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	    }
 
@@ -1159,7 +1249,6 @@ UILIB_A4GL_sleep_i ()
 {
   int a;
   a = A4GL_pop_int ();
-  printf ("Sleeping %d\n", a);
   sleep (a);
 }
 
@@ -1310,7 +1399,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       return;
     }
 
-  printf ("unhandled direct to ui call\n");
+  FPRINTF (stderr, "unhandled direct to ui call\n");
 
 }
 
@@ -1385,7 +1474,7 @@ d=(struct s_disp_arr *)disp;
       		d->highlight = 0;
       		d->attribute = attrib;
 
-  		sprintf(buff,"<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>",srecname);
+  		SPRINTF(buff,"<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>",srecname);
 		uilib_set_field_list_directly(buff);
 	
       		A4GL_push_char ("XML");
@@ -1583,7 +1672,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
       A4GL_push_int (A4GL_get_count ());
       uilib_set_count (1);
       suspend_flush (1);
-      sprintf (buff, "<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>", srecname);
+      SPRINTF (buff, "<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>", srecname);
       uilib_set_field_list_directly (buff);
 
       A4GL_push_char ("XML");
@@ -1603,7 +1692,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 
       if (defs == 0 && ninp)
 	{
-		printf("CLEARING down array - we want defaults\n");
+		A4GL_debug("CLEARING down array - we want defaults\n");
 	  for (acnt = 0; acnt < ninp; acnt++)
 	    {
 	      int b;
@@ -1699,14 +1788,17 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
     }
   if (rval == -100)
     {
-      printf ("ACCEPT....\n");
+      A4GL_debug ("ACCEPT....\n");
       // ACCEPT...
-      //A4GL_push_int (context); uilib_free_input_array(1);
+	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
+	    		set_exiting_context(context,-100);
+			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+	    }
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
 	  int a;
 	  a = A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
-	  printf ("Returning %d\n", a);
+	  A4GL_debug ("Returning %d\n", a);
 	  return a;
 	}
       A4GL_assertion (1, "Should have an A4GL_EVENT_AFTER_INP_CLEAN");
@@ -1715,6 +1807,12 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
     {
       // INTERRUPT
       int_flag = 1;
+	set_exiting_context(context,-101);
+
+        if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
+	    		set_exiting_context(context,-101);
+			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+        }
       //A4GL_push_int (context); uilib_free_input_array(1);
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
@@ -1964,7 +2062,7 @@ XML_A4GL_assertion (int n, char *s)
 {
   if (!n)
     return 0;
-  fprintf (stderr, "************ ASSERTION FAILED %s\n", s);
+  FPRINTF (stderr, "************ ASSERTION FAILED %s\n", s);
   fflush (stdout);
   exit (4);
 }
