@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.21 2007-03-07 21:04:44 mikeaubury Exp $
+# $Id: dates.c,v 1.22 2008-01-15 20:39:52 mikeaubury Exp $
 #
 */
 
@@ -196,6 +196,9 @@ gen_dateno2 (int day, int month, int year)
 	A4GL_debug("Invalid date (>month end)");
     return DATE_INVALID;
 	}
+
+  if (year<0 || year>9999) return DATE_INVALID;
+
   temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
     + A4GL_day_in_year (day, month, year);
   return temp - EPOCH;
