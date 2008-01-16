@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.32 2007-07-11 20:07:51 mikeaubury Exp $
+# $Id: data.c,v 1.33 2008-01-16 20:38:52 mikeaubury Exp $
 #*/
 
 /**
@@ -44,7 +44,8 @@
 
 #include "a4gl_ace_int.h"
 
-#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
+
+//#define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 
 /*
 =====================================================================
@@ -56,6 +57,14 @@ struct report this_report;
 extern char *outputfilename;
 extern char *ordby[256];
 extern int ordbycnt;
+
+#define COLUMNS_METHOD_UNSET -1
+#define COLUMNS_METHOD_INTO_TEMP 0
+#define COLUMNS_METHOD_DESCRIBE  1
+
+int columns_method=COLUMNS_METHOD_UNSET;
+//int columns_method=COLUMNS_METHOD_DESCRIBE;
+int need_to_open_cursor=2;
 
 /*
 =====================================================================
@@ -268,6 +277,19 @@ ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
 
 
 
+static int has_sql_variable(char *s) {
+  struct variable *ptr;
+	int a;
+	for (a=0;a<this_report.variables.variables_len;a++) {
+		ptr=&this_report.variables.variables_val[a];
+
+		if (ptr->category==CAT_SQL && strcmp(ptr->name,s)==0) {
+			// Already got one of these...
+			return 1;
+		}
+	}
+	return 0;
+}
 
 /**
  *
@@ -599,12 +621,25 @@ execute_selects (void)
 
   int colsize;
   int coltype;
-  /*char colname[256];*/
+  /*char colname[256]; */
   char *colname;
   int vid = 0;
 
   /* char * nval; */
-  void **nvals=0;
+  void **nvals = 0;
+
+  
+  if (columns_method==COLUMNS_METHOD_UNSET) {
+
+	columns_method=COLUMNS_METHOD_DESCRIBE;
+	if (strcmp(acl_getenv("COLUMNS_METHOD"),"DESCRIBE")==0) {
+		columns_method=COLUMNS_METHOD_DESCRIBE;
+	}
+
+	if (strcmp(acl_getenv("COLUMNS_METHOD"),"INTO")==0) {
+		columns_method=COLUMNS_METHOD_INTO_TEMP;
+	}
+  }
 
 
   /* printf("Execute selects...\n"); */
@@ -640,38 +675,42 @@ execute_selects (void)
 	  if (strstr (ptr->statement, " INTO TEMP ") == 0)
 	    {
 	      /* printf ("%s\n", ptr->statement); */
-	      a4gl_ace_yyerror
-		("An SQL statement which is not the last statement must be into a temporary table");
+	      a4gl_ace_yyerror ("An SQL statement which is not the last statement must be into a temporary table");
 	    }
 	}
 
-	nvals=malloc(sizeof(void *)* ptr->varids.varids_len);
+      nvals = malloc (sizeof (void *) * ptr->varids.varids_len);
 
       for (b = 0; b < ptr->varids.varids_len; b++)
 	{
-	int varid;
-	int null_dtype;
-	varid=ptr->varids.varids_val[b];
-	switch ( this_report.variables.variables_val[varid].datatype &DTYPE_MASK) {
-		case DTYPE_VCHAR: 
-		case DTYPE_CHAR: 
-			{
-			nvals[b]=malloc(10);
-			memset(nvals[b],0,10);
-			A4GL_setnull(DTYPE_CHAR, nvals[b],1);
-			null_dtype=DTYPE_CHAR;
-			}
-			break;
-			
-		default: nvals[b]=malloc(sizeof(long)); null_dtype=DTYPE_INT; A4GL_setnull(DTYPE_INT,nvals[b],4); break;
-	}
+	  int varid;
+	  int null_dtype;
+	  varid = ptr->varids.varids_val[b];
+	  switch (this_report.variables.variables_val[varid].datatype & DTYPE_MASK)
+	    {
+	    case DTYPE_VCHAR:
+	    case DTYPE_CHAR:
+	      {
+		nvals[b] = malloc (10);
+		memset (nvals[b], 0, 10);
+		A4GL_setnull (DTYPE_CHAR, nvals[b], 1);
+		null_dtype = DTYPE_CHAR;
+	      }
+	      break;
+
+	    default:
+	      nvals[b] = malloc (sizeof (long));
+	      null_dtype = DTYPE_INT;
+	      A4GL_setnull (DTYPE_INT, nvals[b], 4);
+	      break;
+	    }
 	  dif_add_bind (xi, nvals[b], null_dtype, 0);
 	  xic++;
 
 	}
       strcpy (nstatement, add_zero_rows_where (ptr));
 
-      if (a == mx)
+      if (a == mx && columns_method == COLUMNS_METHOD_INTO_TEMP)
 	{
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");
 	}
@@ -680,14 +719,11 @@ execute_selects (void)
       A4GL_debug ("Executing select..");
       A4GL_debug ("%s", nstatement);
 
-      psql =
-	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
-					 dif_get_bind (xo), 0, nstatement,"__internal_data",1,0,0);
+      psql = (void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, nstatement, "__internal_data", 1, 0, 0);
       a4gl_status = 0;
       if (psql == 0)
 	{
-	  printf ("Some error preparing SQL (Error %d)\n",
-		  A4GLSQL_get_status ());
+	  printf ("Some error preparing SQL (Error %d)\n", A4GLSQL_get_status ());
 	  if (A4GLSQL_get_status () == -217)
 	    {
 	      printf
@@ -697,85 +733,133 @@ execute_selects (void)
 	}
 
 
-      /* printf("Executing... %s",nstatement); */
 
-      if (A4GLSQL_execute_implicit_select (psql,1) != 0)
-	{
-	  printf ("Some error executing SQL (Error %d)\n",
-		  A4GLSQL_get_status ());
-	  yyerror_sql ("SQL Error");
+	if ( columns_method == COLUMNS_METHOD_INTO_TEMP) {
+      		/* printf("Executing... %s",nstatement); */
+      		if (A4GLSQL_execute_implicit_select (psql, 1) != 0)
+			{
+	  			printf ("Some error executing SQL (Error %d)\n", A4GLSQL_get_status ());
+	  			yyerror_sql ("SQL Error");
+			}
 	}
 
 
       if (a == mx)
 	{
-	  /* This is the last select - we lied a little and forced this
-	     into a temporary table too, so that we could easily get
-	     at its columns
-	   */
+	  if (columns_method == COLUMNS_METHOD_DESCRIBE) {
+		int no_cols;
+		int a;
+			A4GLSQL_add_prepare("p1_p1",psql);
 
-	  /* too few arguments to function `A4GLSQL_get_columns'
-	     int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size);
-
-	     if (A4GLSQL_get_columns ("a4gl_drep1234") == 0)
-	   */
-	  if (A4GLSQL_get_columns ("a4gl_drep1234", "", 0, 0) == 0)
-	    {
-	      a4gl_ace_yyerror
-		("Unable to get column types for a temporary table");
-	    }
-
-	  /*
-	     passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
-	     int A4GLSQL_next_column(char **colname, int *dtype,int *size); 
-	   */
-	  while (A4GLSQL_next_column (&colname, &coltype, &colsize))
-	    {
-	      A4GL_trim (colname);
-	      ace_add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);
-	    }
-
-	  /* printf ("ordbycnt=%d\n", ordbycnt); */
-
-	  if (ordbycnt)
-	    {
-	      ptr->orderby_list.orderby_list_len = ordbycnt;
-	      ptr->orderby_list.orderby_list_val =
-		acl_malloc2 (sizeof (int) * ordbycnt);
-	      for (oby_cnt = 0; oby_cnt < ordbycnt; oby_cnt++)
-		{
-		  /* printf("---> %d %d\n",oby_cnt,ordbycnt); */
-
-		  cptr = ordby[oby_cnt];
-
-		  /*
-		     printf ("cptr=%p\n", cptr);
-		     printf ("cptr=%s\n", cptr);
-		   */
-		  if (cptr[0] == 'I')
-		    {
-		      vid = find_sql_var (atoi (&cptr[1]));
-		      if (vid < 0)
-			{
-			  a4gl_ace_yyerror
-			    ("Order by column number too high for select statement");
+			if (need_to_open_cursor ) {
+				A4GLSQL_declare_cursor(0+0,A4GLSQL_find_prepare("p1_p1"),0,"p1_c1");
+				A4GLSQL_open_cursor("p1_c1",0,0);
+				if (need_to_open_cursor==2) {
+					A4GLSQL_fetch_cursor("p1_c1",2,1,0,0);
+				}
 			}
-		    }
-		  else
-		    {
-		      vid = find_variable (&cptr[1]);
-		    }
 
-		  ptr->orderby_list.orderby_list_val[oby_cnt] = vid;
-		  /* printf("Adding %d to orderby list @ %d\n",vid,oby_cnt); */
+			no_cols=A4GLSQL_describe_stmt ("p1_p1", 0, 5);
+
+			if (no_cols==0) {
+				printf("Internal error - unable to get number of columns\n");
+				exit(3);
+				//printf("%s\n", A4GLSQL_describe_stmt ("p1_p1", 1, 0));
+			}
+
+			for (a=0;a<no_cols;a++) {
+				char buff[200];
+				char cname[256];
+				char *p;
+				int type, scale,len;
+				p=(char *)A4GLSQL_describe_stmt ("p1_p1",a+1, 1);
+				if (p) {strcpy(cname,p);} else {strcpy(cname,"");}
+				A4GL_trim(cname);
+				type=A4GLSQL_describe_stmt ("p1_p1", a+1, 0); // 4,5 7
+				scale=A4GLSQL_describe_stmt ("p1_p1",a+1, 2); // 4,5 7
+				len=A4GLSQL_describe_stmt ("p1_p1", a+1, 3); // 4,5 7
+				A4GL_debug("-->%s %d %d %d\n",cname, type,scale,len);
+				if (strlen(cname)==0) {
+					printf("Internal error - unable to get the name... %s %d %d %d\n",cname, type,scale,len);
+				}
+				if (!has_sql_variable(cname)) {
+		  			ace_add_variable (cname, 0, CAT_SQL, 0, type, scale);
+				} else {
+					static int dup_cnt=0;
+					// Its a duplicate column name
+					 sprintf(buff,"a4gl_dup%d_%s",dup_cnt++, cname);
+		  			ace_add_variable (buff, 0, CAT_SQL, 0, type, scale);
+				}
+			}
+	  }
+
+
+	  if (columns_method == COLUMNS_METHOD_INTO_TEMP)
+	    {
+	      /* This is the last select - we lied a little and forced this
+	         into a temporary table too, so that we could easily get
+	         at its columns
+	       */
+
+	      /* too few arguments to function `A4GLSQL_get_columns'
+	         int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size);
+
+	         if (A4GLSQL_get_columns ("a4gl_drep1234") == 0)
+	       */
+	      if (A4GLSQL_get_columns ("a4gl_drep1234", "", 0, 0) == 0)
+		{
+		  a4gl_ace_yyerror ("Unable to get column types for a temporary table");
+		}
+
+	      /*
+	         passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+	         int A4GLSQL_next_column(char **colname, int *dtype,int *size); 
+	       */
+	      while (A4GLSQL_next_column (&colname, &coltype, &colsize))
+		{
+		  A4GL_trim (colname);
+		  ace_add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);
+		}
+	}
+
+	      /* printf ("ordbycnt=%d\n", ordbycnt); */
+
+	      if (ordbycnt)
+		{
+		  ptr->orderby_list.orderby_list_len = ordbycnt;
+		  ptr->orderby_list.orderby_list_val = acl_malloc2 (sizeof (int) * ordbycnt);
+		  for (oby_cnt = 0; oby_cnt < ordbycnt; oby_cnt++)
+		    {
+		      /* printf("---> %d %d\n",oby_cnt,ordbycnt); */
+
+		      cptr = ordby[oby_cnt];
+
+		      /*
+		         printf ("cptr=%p\n", cptr);
+		         printf ("cptr=%s\n", cptr);
+		       */
+		      if (cptr[0] == 'I')
+			{
+			  vid = find_sql_var (atoi (&cptr[1]));
+			  if (vid < 0)
+			    {
+			      a4gl_ace_yyerror ("Order by column number too high for select statement");
+			    }
+			}
+		      else
+			{
+			  vid = find_variable (&cptr[1]);
+			}
+
+		      ptr->orderby_list.orderby_list_val[oby_cnt] = vid;
+		      /* printf("Adding %d to orderby list @ %d\n",vid,oby_cnt); */
+		    }
 		}
 	    }
-	}
 
 
     }
 }
-
 
 /**
  *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.14 2007-12-28 10:58:10 mikeaubury Exp $
+# $Id: pg8.c,v 1.15 2008-01-16 20:38:52 mikeaubury Exp $
 #*/
 
 
@@ -154,6 +154,7 @@ struct s_prepare
   int *paramlen;
   int *paramform;
   int reallyprepared;
+  PGresult *last_result;
 };
 //static int setParams (struct s_prepare *p);
 
@@ -1266,6 +1267,7 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
   n->no = no;
   n->ibind = ibind;
   n->obind = obind;
+  n->last_result=0;
   //n->hstmt=0;
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
@@ -1550,7 +1552,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   A4GL_debug ("%s ni=%d\n", sql, n->ni);
 
   res = PQexec (con, sql);
-
+   n->last_result=res;
 
   A4GL_debug ("::: %s - %d\n", n->sql, PQresultStatus (res));
 
@@ -1862,11 +1864,13 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     }
 
   res = PQexec (con, sql);
-
+  n->last_result=res;
   A4GL_debug ("res=%p\n", res);
   A4GL_set_a4gl_sqlca_errd (0, PQntuples (res));
   A4GL_set_a4gl_sqlca_errd (2, atoi (PQcmdTuples (res)));
   A4GL_set_a4gl_sqlca_errd (1, 0);
+
+  n->last_result=res;
 
   switch (PQresultStatus (res))
     {
@@ -2650,6 +2654,11 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
   res = PQexec (con, buff);
   A4GL_debug ("%s - %d \n", buff, PQresultStatus (res));
 
+  if (cid->statement) {
+	struct s_prepare *n;
+		n= (struct s_prepare *) cid->statement;
+		n->last_result=res;
+  }
 
   switch (PQresultStatus (res))
     {
@@ -3451,7 +3460,7 @@ A4GL_describecolumn (PGresult * res, int colno, int type)
   int dtype;
   int prc;
   int column_count;
-  int rval;
+  int rval=0;
 
 
   if (type == 6)
@@ -3505,11 +3514,13 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   struct s_sid *sid;
   struct s_cid *cid;
+	struct s_prepare *n=0;
   PGresult *res;
   int z;
   sid = A4GLSQL_find_prepare (stmt);
   if (sid == 0)
     {
+	A4GL_debug("Not found as a prepare - look for a cursor...");
       cid = A4GLSQL_find_cursor (stmt);
       if (cid == 0)
 	{
@@ -3518,11 +3529,21 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 
 	}
       res = cid->hstmt;
+	n=(struct s_prepare *)cid->statement;
+	if (n) {
+		if (n->last_result) {
+				res=n->last_result;
+		}
+	}
 
     }
   else
     {
       res = sid->hstmt;
+	n=(struct s_prepare *)sid ;
+	if (n->last_result) {
+		res=n->last_result;
+	}
     }
 
   if (sid == 0 && cid == 0)
@@ -3530,10 +3551,12 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
       A4GL_exitwith_sql ("Statement could not be found");
     }
 
-  if (res == 0)
+  if (res == 0) {
+	A4GL_debug("No result");
     return 0;
-
-  z = A4GL_describecolumn (res, colno, type);
+   }
+  
+  z = A4GL_describecolumn (res, colno-1, type);
 
   return z;
 }
