@@ -210,11 +210,9 @@ int np;
   *fgldtype = 0;
   *fglprc = 0;
 
-
   switch (dt)
     {
-#ifdef MYSQL_TYPE_NEWDECIMAL
-    case MYSQL_TYPE_NEWDECIMAL:
+    case 246: 			// MYSQL_TYPE_NEWDECIMAL:
 		if (prec) {
 			nd=len-2;
 			np=prec;
@@ -226,7 +224,6 @@ int np;
       *fgldtype = DTYPE_DECIMAL;
       *fglprc = (nd<<8)+np;
       break;
-#endif
 
     case MYSQL_TYPE_DECIMAL:
       *fgldtype = DTYPE_FLOAT;
