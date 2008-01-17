@@ -53,7 +53,7 @@ clr_exiting_context (int n)
     {
       if (exiting_context[a] == n)
 	{
-	  exiting_context[n] = -1;
+	  exiting_context[a] = -1;
 	}
     }
 }
