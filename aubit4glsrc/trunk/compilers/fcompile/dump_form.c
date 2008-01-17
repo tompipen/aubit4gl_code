@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.8 2007-12-14 15:34:38 briantan Exp $
+# $Id: dump_form.c,v 1.9 2008-01-17 00:33:16 briantan Exp $
 #*/
 
 /**
@@ -136,6 +136,7 @@ void print_display_only(struct_form *f, FILE *fout, int s, int lvl);
 void print_validation(struct_form *f, FILE *fout, int t, int s, int ba, int lvl) ;
 void print_control_block(struct_form *f, FILE *fout);
 void dump_attr_lookup (struct_form * f, FILE *fout);
+int split_table_field(char *fullname, char *tablename, char *fieldname);
 
 /*
 =====================================================================
@@ -541,19 +542,21 @@ dump_form_desc (struct_form * f,char *fname)
 		char *ptr;
 		ptr=screen_has_attribute(f,a, y);
 		if (ptr) {
-                        char *p2=0;
-                        if (!printed_tag) {
-                                fprintf(fout,"%s\t= ",ptr);
-                                printed_tag++;
-                        }
+//                        char *p2=0;
+//                        if (!printed_tag) {
+//                                fprintf(fout,"%s\t= ",ptr);
+//                                printed_tag++;
+//                        }
                 
-                        if (y<f->attributes.attributes_len-1) { p2=screen_has_attribute(f,a, y+1); } else {p2="";}
-			if (p2) {
-                            if (strcmp(ptr,p2)==0) {
-			        fprintf (fout,"%s.%s= ", f->attributes.attributes_val[y].tabname, f->attributes.attributes_val[y].colname);
-			        continue;
-			    }
-                       }
+//                        if (y<f->attributes.attributes_len-1) { p2=screen_has_attribute(f,a, y+1); } else {p2="";}
+//			if (p2) {
+//                            if (strcmp(ptr,p2)==0) {
+//			        fprintf (fout,"%s.%s= ", f->attributes.attributes_val[y].tabname, f->attributes.attributes_val[y].colname);
+//			        continue;
+//			    }
+//                       }
+                        fprintf(fout,"%s\t= ",ptr);
+//		        fprintf (fout,"%s.%s, ", f->attributes.attributes_val[y].tabname, f->attributes.attributes_val[y].colname);
 	 
 
 			dump_attribute(fout, &f->attributes.attributes_val[y], ptr);
@@ -571,7 +574,11 @@ dump_form_desc (struct_form * f,char *fname)
                                                 struct s_lookup *p2;
                                                 has_lookups++;
                                                 p2=p->lookups.lookups_val[cnt1];
-                                                fprintf(fout,"%s=%s;\n",p2->fieldtag, p2->tabcol);
+						if (strcmp(p2->fieldtag,"<<FROM>>")==0) {
+                                                  fprintf(fout,"{ Validate against %s;}\n", p2->tabcol);
+						} else {
+                                                  fprintf(fout,"%s\t= formonly.%s, NOENTRY; { From %s }\n",p2->fieldtag, p2->fieldtag, p2->tabcol);
+						}
                                         }
         
                                 }
@@ -680,6 +687,31 @@ printf("now in get_join_tables\n");
 	fprintf (fout,"    DEFINE gr_%-20s RECORD LIKE %20s.*\n",
 	    f->tables.tables_val[t].tabname,
 	    f->tables.tables_val[t].tabname);
+    }
+    int cnt=0;
+    int do_printed=0;
+    for (a=0;a<f->attributes.attributes_len;a++) {
+	for (cnt=0;cnt<f->attributes.attributes_val[a].lookup.lookups.lookups_len;cnt++) {
+	    struct s_lookups *p;
+	    int cnt1;
+	    p=f->attributes.attributes_val[a].lookup.lookups.lookups_val[cnt];
+	    for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
+		struct s_lookup *p2;
+		p2=p->lookups.lookups_val[cnt1];
+		if (strcmp(p2->fieldtag,"<<FROM>>")!=0) {
+		  if (!do_printed) {
+		    fprintf(fout,"    DEFINE gr_display RECORD\n");
+		    do_printed++;
+		  } else {
+		    fprintf(fout,",\n");
+		  }
+		    fprintf(fout,"\t%s\tVARCHAR(60)",p2->fieldtag);
+		}
+	    }
+	}
+    }
+    if (do_printed) {
+	fprintf(fout,"\n    END RECORD\n");
     }
     fprintf(fout,"    DEFINE ga_oid ARRAY[10] OF INTEGER\n");
     fprintf(fout,"    DEFINE gv_rec_found, gv_mode INTEGER\n");
@@ -799,9 +831,9 @@ printf("now in main program\n");
 
 //    fprintf(fout,"    CALL form_validation(\"AFTER\",\"DISPLAY\",\"%s\")\n",
 //	    f->tables.tables_val[0].tabname);
-    fprintf(fout,"    CALL aclfgl_set_display_field_delimiters(\"  \")\n");
+    fprintf(fout,"    LET gv_attribute = set_delimiter(0,0)\n");
     print_display_only(f, fout, 0, 2);
-    fprintf(fout,"    CALL aclfgl_set_display_field_delimiters(\"[]\")\n");
+    fprintf(fout,"    LET gv_attribute = set_delimiter(0,1)\n");
 
     fprintf(fout,"\n");
     fprintf(fout,"    WHILE gv_screen_no <> 0\n");
@@ -830,19 +862,16 @@ printf("now in display_record\n");
 	// char *ptr;
 	int attr_found, printed;
 	for (t=0;t< f->tables.tables_len; t++) {
+	    fprintf(fout,"         # display screen %d table %d\n", s+1, t+1);
 	    attr_found = 0; printed = 0;
 	    for (a=0;a<f->attributes.attributes_len;a++) {
 		if (strcmp(f->attributes.attributes_val[a].tabname,
 			       f->tables.tables_val[t].tabname)!=0) continue;
 		ptr=screen_has_attribute(f,s, a);
 		if (!ptr) continue;
+
 		if (!attr_found) {
-		    fprintf(fout,"        LET gv_attribute = get_color(%d)\n",
-				t+1);
-		    fprintf(fout,"        IF gv_table_no <> %d THEN\n", t+1);
-		    fprintf(fout,
-	"            CALL aclfgl_set_display_field_delimiters(\"  \")\n");
-		    fprintf(fout,"        END IF\n", t+1);
+		    fprintf(fout,"        LET gv_attribute = set_delimiter(%d,0)\n", t+1);
 		    fprintf(fout,"        DISPLAY BY NAME\n");
 		    attr_found++;
 		}
@@ -855,19 +884,66 @@ printf("now in display_record\n");
 	    if (attr_found) {
 		fprintf(fout,"\n");
 		fprintf(fout,"          ATTRIBUTE(gv_attribute)\n");
-		fprintf(fout,"        IF gv_table_no <> %d THEN\n", t+1);
-		fprintf(fout,
-	"            CALL aclfgl_set_display_field_delimiters(\"[]\")\n");
-		fprintf(fout,"        END IF\n", t+1);
+		fprintf(fout,"        LET gv_attribute = set_delimiter(%d,1)\n", t+1);
+		fprintf(fout,"\n");
 	    }
 
+	    // Now print the derived fields.
+	    attr_found = 0;
+	    for (a=0;a<f->attributes.attributes_len;a++) {
+		if (strcmp(f->attributes.attributes_val[a].tabname,
+			       f->tables.tables_val[t].tabname)!=0) continue;
+		ptr=screen_has_attribute(f,s, a);
+		if (!ptr) continue;
+
+		int cnt;
+		for (cnt=0;cnt<f->attributes.attributes_val[a].lookup.lookups.lookups_len;cnt++) {
+		    struct s_lookups *p;
+		    int cnt1;
+		    p=f->attributes.attributes_val[a].lookup.lookups.lookups_val[cnt];
+		    for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
+
+			struct s_lookup *p2;
+			p2=p->lookups.lookups_val[cnt1];
+			if (strcmp(p2->fieldtag,"<<FROM>>")!=0) {
+			    char tablename[32], fieldname[32];
+			    int star;
+			    if (!attr_found) {
+			        fprintf(fout, "        LET gv_attribute = set_delimiter(0,0)\n");
+			        attr_found++;
+			    }
+			    star = split_table_field(p2->tabcol, tablename, fieldname);
+fprintf(fout,"# LOOKUP %s DISPLAY %s\n", p->joincol, p2->tabcol);
+			    fprintf(fout,"        IF gr_%s.%s IS NOT NULL THEN\n",
+			        f->attributes.attributes_val[a].tabname,
+			        f->attributes.attributes_val[a].colname);
+			    fprintf(fout,"          SELECT %s INTO gr_display.%s FROM %s\n",
+			        fieldname, p2->fieldtag, tablename);
+			    star = split_table_field(p->joincol, tablename, fieldname);
+			    fprintf(fout,"            WHERE %s = gr_%s.%s\n",
+			        fieldname, f->attributes.attributes_val[a].tabname,
+			        f->attributes.attributes_val[a].colname);
+			    fprintf(fout,"          IF STATUS <> 0 THEN\n");
+			    fprintf(fout,"            LET gr_display.%s = \"** NOT FOUND **\"\n", p2->fieldtag);
+			    fprintf(fout,"          END IF\n");
+			    fprintf(fout,"        ELSE\n");
+			    fprintf(fout,"          INITIALIZE gr_display.%s TO NULL\n", p2->fieldtag);
+			    fprintf(fout,"        END IF\n");
+			    fprintf(fout,"        DISPLAY BY NAME gr_display.%s ATTRIBUTE(gv_attribute)\n", p2->fieldtag);
+			}
+		    }
+		}
+	    }
+	    if (attr_found) {
+		fprintf(fout,"        LET gv_attribute = set_delimiter(0,1)\n");
+		fprintf(fout,"\n");
+	    }
 
 	}
-	fprintf(fout,"        LET gv_attribute = \"BLACK\"\n");
-	fprintf(fout,"        CALL aclfgl_set_display_field_delimiters(\"  \")\n");
+	fprintf(fout,"        LET gv_attribute = set_delimiter(0,0)\n");
 //    print_control_block(f, fout);
 	print_display_only(f, fout, s, 4);
-	fprintf(fout,"        CALL aclfgl_set_display_field_delimiters(\"[]\")\n");
+	fprintf(fout,"        LET gv_attribute = set_delimiter(0,1)\n");
 	fprintf(fout,"\n");
 	int case_printed=0;
 	for (m=0;m<f->tables.tables_len;m++) {
@@ -1268,6 +1344,7 @@ printf("now in input_record\n");
     fprintf(fout,"FUNCTION input_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
+
     int fo_printed=0;
     for (a=0;a<f->attributes.attributes_len;a++) {
 	if (strcmp(f->attributes.attributes_val[a].tabname,"formonly")==0) {
@@ -1294,6 +1371,7 @@ printf("now in input_record\n");
 	fprintf(fout,"\n\tEND RECORD\n");
 	fprintf(fout,"\n");
     }
+
     fprintf(fout,"  LET int_flag = FALSE\n");
     fprintf(fout,"  LET abort_flag = FALSE\n");
     fprintf(fout,"  LET gv_attribute = get_color(0)\n");
@@ -1329,7 +1407,27 @@ printf("now in input_record\n");
 		fprintf(fout,"            gr_%s.%s",
 			f->attributes.attributes_val[a].tabname,
 			f->attributes.attributes_val[a].colname);
+		int cnt;
+		int lookup_printed=0;
+		for (cnt=0;cnt<f->attributes.attributes_val[a].lookup.lookups.lookups_len;cnt++) {
+		    struct s_lookups *p;
+		    int cnt1;
+		    p=f->attributes.attributes_val[a].lookup.lookups.lookups_val[cnt];
+		    for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
+			char tablename[32], fieldname[32];
+			int star;
+			star = split_table_field(p->joincol, tablename, fieldname);
+			struct s_lookup *p2;
+			p2=p->lookups.lookups_val[cnt1];
+			fprintf(fout,"{ LOOKUP=%s JOINCOL=%s STAR=%d }",
+			    tablename, fieldname, star);
+//			    p2->tabcol, p->joincol);
+//		    lookup_printed++;
+		    }
+
+		}
 		printed++;
+//		if (lookup_printed) printed=0;
 	    }
 	    if (attr_found) {
 	      fprintf(fout,"\n");
@@ -1713,8 +1811,7 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
       fprintf (fout, "(");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
-//      	if (a) fprintf (fout, ",");
-      	  fprintf (fout, ",");
+      	if (a) fprintf (fout, ",");
 	  dump_expr_instructions (f, fout, expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
       fprintf (fout, ")");
@@ -1743,6 +1840,7 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
     {
 	ptr2 = expr->u_expression_u.complex_expr;
 	if (strcmp(ptr2->comparitor,"ISNOTNULL")==0 || strcmp(ptr2->comparitor,"ISNULL")==0 ) {
+//      		fprintf (fout,"(");
 		if (strcmp(ptr2->comparitor,"ISNOTNULL")==0) {
 			dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
 			fprintf(fout," IS NOT NULL");
@@ -1751,13 +1849,20 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
 			dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
 			fprintf(fout," IS NULL");
 		}
+//      		fprintf (fout,")");
 	} else {
-//      		fprintf (fout,"(");
-      		ptr2 = expr->u_expression_u.complex_expr;
+	    if (strcmp(ptr2->comparitor,"+")==0 ||
+		strcmp(ptr2->comparitor,"-")==0) {
+      		fprintf (fout,"(");
+	    }
+//      		ptr2 = expr->u_expression_u.complex_expr;
       		dump_expr_instructions (f, fout,ptr2->item1, lvl + 1);
       		fprintf (fout," %s ", decode_comparitor(ptr2->comparitor));
       		dump_expr_instructions (f, fout,ptr2->item2, lvl + 1);
-//      		fprintf (fout,")");
+	    if (strcmp(ptr2->comparitor,"+")==0 ||
+		strcmp(ptr2->comparitor,"-")==0) {
+      		fprintf (fout,")");
+	    }
 	}
 
     }
@@ -1790,7 +1895,7 @@ void print_display_only(struct_form *f, FILE *fout, int s, int lvl) {
     int a,b,c,d,t;
 printf("now in print_display_only s=%d\n",s);
 	for (c=0;c< f->control_blocks.control_blocks_len;c++) {
-printf("\n#c=%d of %d\n",c, f->control_blocks.control_blocks_len);
+//printf("\n#c=%d of %d\n",c, f->control_blocks.control_blocks_len);
 	    switch (f->control_blocks.control_blocks_val[c].cbtype) {
 		case E_CB_BEFORE:
 		case E_CB_AFTER:
@@ -2007,9 +2112,9 @@ if (beaf==1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,be
 			break;
 		  }
 		  if (!a) continue;
-		  if (!screen_has_attribute(f,s, a)) continue;
 		  if (strcmp(f->attributes.attributes_val[a].tabname,
 			f->tables.tables_val[t].tabname)!=0) continue;
+		  if (!screen_has_attribute(f,s, a)) continue;
 		  int reject_field=0;
 		  for (b=0; b<f->attributes.attributes_val[a].bool_attribs.bool_attribs_len; b++) {
 		    switch (f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]) {
@@ -2038,6 +2143,62 @@ fprintf(fout,"#  cb[%d] ba[%d] column[%d] action[%d]\n",c,b,d,g);
 //		ba->cmds->actions.actions_val[0].uaction->u_action_u.cmd_let->value);
 
 	}
+    if (beaf!=2) return;	// only after field validation
+    for (a=0; a<f->attributes.attributes_len; a++) {
+	if (strcmp(f->attributes.attributes_val[a].tabname,
+		f->tables.tables_val[t].tabname)!=0) continue;
+	if (!screen_has_attribute(f,s, a)) continue;
+	int cnt;
+	int lookup_printed=0;
+	for (cnt=0;cnt<f->attributes.attributes_val[a].lookup.lookups.lookups_len;cnt++) {
+	    struct s_lookups *p;
+	    int cnt1;
+	    p=f->attributes.attributes_val[a].lookup.lookups.lookups_val[cnt];
+	    for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
+		struct s_lookup *p2;
+		p2=p->lookups.lookups_val[cnt1];
+fprintf(fout,"# LOOKUP %s DISPLAY %s\n", p->joincol, p2->tabcol);
+		char look_tablename[32], look_fieldname[32];
+		char disp_tablename[32], disp_fieldname[32];
+		int star;
+		star = split_table_field(p->joincol, look_tablename, look_fieldname);
+		star = split_table_field(p2->tabcol, disp_tablename, disp_fieldname);
+		fprintf(fout,"            AFTER FIELD %s\n",
+		    f->attributes.attributes_val[a].colname);
+		fprintf(fout,"              IF gr_%s.%s IS NOT NULL THEN\n",
+		    f->attributes.attributes_val[a].tabname,
+		    f->attributes.attributes_val[a].colname);
+		fprintf(fout,"                ");
+		if (strcmp(p2->fieldtag,"<<FROM>>")!=0) {
+		    fprintf(fout,"SELECT %s INTO gr_display.%s FROM %s\n",
+			disp_fieldname, p2->fieldtag, disp_tablename);
+		    fprintf(fout,"                  WHERE %s = gr_%s.%s\n",
+		        look_fieldname, f->attributes.attributes_val[a].tabname,
+		        f->attributes.attributes_val[a].colname);
+		} else {
+		    fprintf(fout,"SELECT %s FROM %s\n",
+			disp_fieldname, disp_tablename);
+		    fprintf(fout,"                  WHERE %s = gr_%s.%s\n",
+		        disp_fieldname, f->attributes.attributes_val[a].tabname,
+		        f->attributes.attributes_val[a].colname);
+		}
+		fprintf(fout,"                IF STATUS <> 0 THEN\n");
+		if (strcmp(p2->fieldtag,"<<FROM>>")!=0) {
+		    fprintf(fout,"                  CALL show_comments(\"Data entered not found in %s table (field %s) \",0,1)\n", look_tablename, look_fieldname);
+		} else {
+		    fprintf(fout,"                  CALL show_comments(\"Data entered not found in %s table (field %s) \",0,1)\n", disp_tablename, disp_fieldname);
+		}
+		fprintf(fout,"                  NEXT FIELD %s\n",
+		    f->attributes.attributes_val[a].colname);
+		fprintf(fout,"                END IF\n");
+		if (strcmp(p2->fieldtag,"<<FROM>>")!=0) {
+		    fprintf(fout,"                DISPLAY BY NAME gr_display.%s ATTRIBUTE(BLACK)\n", p2->fieldtag);
+		}
+
+		fprintf(fout,"              END IF\n");
+	    }
+	}
+    }
 }
 
 void dump_attr_lookup(struct_form * f, FILE *fout) {
@@ -2066,6 +2227,27 @@ void dump_attr_lookup(struct_form * f, FILE *fout) {
 	    }
 	}
   }
+}
+
+int split_table_field(char *fullname, char *tablename, char *fieldname) {
+    int i, idx=0, infield=0;
+    int star = 0;
+    for (i=0;i<strlen(fullname);i++) {
+	if (fullname[i]=='*') {
+	    star = 1;
+	    continue;
+	}
+	if (fullname[i]=='.') {
+		tablename[idx] = 0;
+		infield = 1;
+		idx = 0;
+		continue;
+	}
+	if (!infield) tablename[idx++] = fullname[i];
+	if (infield) fieldname[idx++] = fullname[i];
+    }
+    fieldname[idx] = 0;
+    return star;
 }
 
 /* ================================ EOF ============================= */
