@@ -102,6 +102,7 @@ ows     [ \t\n]*
 "IN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return IN;}
 "INPUT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INPUT;}
 "INTEGER" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INTEGER;}
+"INT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INTEGER;}
 "INTERVAL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INTERVAL;}
 "INTO" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INTO;}
 "GROUP" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return GROUP;}
