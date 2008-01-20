@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.298 2007-12-13 17:54:55 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.299 2008-01-20 17:37:46 mikeaubury Exp $
 #
 */
 
@@ -1040,6 +1040,9 @@ struct s_std_attr
   /* not strictly voids - but saves getting into the details */
   void *prepare_glob_sql (char *s, int ni, void *b);
 void A4GL_set_sql_lineno(int n);
+char *
+A4GLSQL_translate (char *sql1);
+
 
 
 enum cmd_types {

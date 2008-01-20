@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.47 2007-07-24 12:47:46 mikeaubury Exp $
+# $Id: sql_common.c,v 1.48 2008-01-20 17:37:33 mikeaubury Exp $
 #
 */
 
@@ -398,6 +398,24 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BI
     }
   A4GL_trim (fname);
   A4GLSQL_unload_data_internal (fname, delims, sql1, nbind, ibind);
+}
+
+
+
+/**
+ *
+ *
+ * @param
+ * @return
+ */
+/* int -- void in sql;.c */
+char *
+A4GLSQL_translate (char *sql1)
+{
+   char *s;
+    s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1,0);
+	if (s) return s;
+return sql1;
 }
 
 
