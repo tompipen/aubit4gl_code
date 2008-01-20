@@ -965,7 +965,7 @@ decode_print (struct cmd_print *cmd)
 void
 decode_printfile (struct cmd_printfile *cmd)
 {
-  fprintf (fout,"PRINTFILE\n");
+  fprintf (fout,"PRINT FILE\n");
 }
 
 void
