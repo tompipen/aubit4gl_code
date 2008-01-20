@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.15 2008-01-16 20:38:52 mikeaubury Exp $
+# $Id: pg8.c,v 1.16 2008-01-20 21:18:35 mikeaubury Exp $
 #*/
 
 
@@ -2130,7 +2130,21 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
       *a4gl_dtype = DTYPE_DATE;
       *a4gl_len = pglen;
       break;
+
+#ifdef NUMERICOID
+    case NUMERICOID:
+	if (pglen==-1)  {
+      		*a4gl_dtype = DTYPE_FLOAT;
+      		*a4gl_len = pglen;
+	} else { 
+		// Length,scale ? 
+      		*a4gl_dtype = DTYPE_FLOAT;
+      		*a4gl_len = pglen;
+	}
+      break;
+#endif
     default:
+	fprintf(stderr,"WARNING : Unrecognised postgres datatype : %d - please add to pg8.c\n", pgtype);
       *a4gl_dtype = DTYPE_VCHAR;
       *a4gl_len = pglen;
       break;
