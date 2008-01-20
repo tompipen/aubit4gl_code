@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.16 2008-01-20 21:18:35 mikeaubury Exp $
+# $Id: pg8.c,v 1.17 2008-01-20 21:19:09 mikeaubury Exp $
 #*/
 
 
@@ -2145,8 +2145,9 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
 #endif
     default:
 	fprintf(stderr,"WARNING : Unrecognised postgres datatype : %d - please add to pg8.c\n", pgtype);
+	// Char(20) should cover most things..
       *a4gl_dtype = DTYPE_VCHAR;
-      *a4gl_len = pglen;
+      *a4gl_len = 20;
       break;
     }
   return 1;
