@@ -14,6 +14,8 @@
 %o 4200
 %x comment
 %option yylineno
+ws      [ \t\n]+
+ows     [ \t\n]*
 %%
 [\r] ;
 [\n] 	{lineno++;colno=0;REJECT}
@@ -141,8 +143,8 @@
 "ROW" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ROW;}
 "LAST" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LAST;}
 "OR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_OR;}
-"ORDER BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_BY;}
-"ORDER EXTERNAL BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_EXTERNAL_BY;}
+"ORDER"{ws}"BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_BY;}
+"ORDER"{ws}"EXTERNAL"{ws}"BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ORDER_EXTERNAL_BY;}
 "OUTER" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OUTER;}
 "OUTPUT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OUTPUT;}
 "PAGE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PAGE;}
