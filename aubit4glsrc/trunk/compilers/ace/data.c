@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.33 2008-01-16 20:38:52 mikeaubury Exp $
+# $Id: data.c,v 1.34 2008-01-20 17:37:12 mikeaubury Exp $
 #*/
 
 /**
@@ -719,7 +719,7 @@ execute_selects (void)
       A4GL_debug ("Executing select..");
       A4GL_debug ("%s", nstatement);
 
-      psql = (void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, nstatement, "__internal_data", 1, 0, 0);
+      psql = (void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, A4GLSQL_translate (nstatement), "__internal_data", 1, 0, 0);
       a4gl_status = 0;
       if (psql == 0)
 	{
@@ -736,7 +736,7 @@ execute_selects (void)
 
 	if ( columns_method == COLUMNS_METHOD_INTO_TEMP) {
       		/* printf("Executing... %s",nstatement); */
-      		if (A4GLSQL_execute_implicit_select (psql, 1) != 0)
+      		if (A4GLSQL_execute_implicit_select (A4GLSQL_translate (psql), 1) != 0)
 			{
 	  			printf ("Some error executing SQL (Error %d)\n", A4GLSQL_get_status ());
 	  			yyerror_sql ("SQL Error");
