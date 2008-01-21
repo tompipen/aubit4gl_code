@@ -28,7 +28,7 @@
 
 
 code
-
+char *acl_getenv_not_set_as_0(char *s);
 FILE *f_unloadFile=0;
 struct BINDING *gen_obind=0;
 struct BINDING *gen_obind_copy=0;
@@ -118,7 +118,6 @@ end function
 function qry_translate()
   define a integer
   define b integer
-  define n integer
   define lv_fname char(512)
 
     let lv_fname=get_tmp_fname("SQL")
@@ -126,14 +125,17 @@ function qry_translate()
 code
 {
     extern FILE *asql_yyin;
+    FILE *n;
     extern struct element *list;
     extern int list_cnt;
     char *snew;
     char *dialect;
     A4GL_trim(lv_fname);
     dialect = acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
-    if (dialect == 0)
-        dialect = "POSTGRES";
+    if (dialect == 0) {
+		dialect=A4GLSQL_dbms_name();
+        //dialect = "POSTGRES";
+	}
     snew = A4GLSQLCV_convert_file(dialect, lv_fname);
     n = fopen(lv_fname, "w");
     if (n)
@@ -178,7 +180,7 @@ function load_info_columns(lv_tabname)
   define lv_buff char(80)
 
 code
-    lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, col_desc, 48, "COLUMNS", 2, lv_tabname);
+    lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, (char *)col_desc, 48, "COLUMNS", 2, lv_tabname);
 endcode
 
     for lv_a=1 to lv_cnt
@@ -305,6 +307,19 @@ function load_info_status()
     error "Not Implemented Yet load_info_status"
 end function
 
+
+function get_table_name(lv_sch,lv_tab)
+define lv_sch char(256)
+define lv_tab char(256)
+if lv_sch is null or length(lv_sch)=0 then
+	return lv_tab clipped
+else
+	return (lv_sch clipped||"."||lv_tab clipped)
+end if
+end function
+
+
+
 function load_info_tables()
   define lv_tabname char(18)
   define lv_arr array[4000] of char(18)
@@ -321,7 +336,7 @@ endcode
     call add_to_display_file(" ")
 
     for lv_cnt=1 to lv_num_tables
-        call add_to_display_file(lv_sch[lv_cnt] || "." || lv_arr[lv_cnt])
+        	call add_to_display_file(get_table_name(lv_sch[lv_cnt], lv_arr[lv_cnt]))
     end for
 
     return 1
@@ -416,7 +431,7 @@ endcode
 
 
     for lv_cnt=1 to lv_num_tables
-        call set_pick(lv_cnt, lv_sch[lv_cnt] || "." || lv_arr[lv_cnt])
+        call set_pick(lv_cnt, get_table_name(lv_sch[lv_cnt] , lv_arr[lv_cnt]))
     end for
     call set_pick_cnt(lv_cnt-1)
 
@@ -426,7 +441,7 @@ endcode
         if lv_tabname is not null then
             let lv_found=0
             for lv_cnt=1 to lv_num_tables
-                if upshift(lv_tabname) = upshift(lv_sch[lv_cnt] || "." || lv_arr[lv_cnt]) then
+                if upshift(lv_tabname) = upshift(get_table_name(lv_sch[lv_cnt] ,lv_arr[lv_cnt])) then
                     let lv_found=1
                     exit for
                 end if
@@ -442,7 +457,11 @@ endcode
     end if
 end while
 
-return upshift(lv_tabname)
+
+# This used to return upshift(lv_tabname) 
+# but that seems wrong to me...
+
+return lv_tabname
 
 end function
 
@@ -522,6 +541,8 @@ int qry_type;
 p=s;
 *err_at_col=1;
 free_bind();
+A4GL_assertion(s==0,"No query");
+//if (s==0) return -1;
    if (strncasecmp(s,"database",8)==0) { return 1; }
    if (type>='1'&&type<='9') return 255;
    qry_type=0;
@@ -551,7 +572,7 @@ free_bind();
 
    if (type=='T') qry_type=3;
    if (type=='t') qry_type=3;
-  err_at_col=1;
+  *err_at_col=1;
    if (prepared) return qry_type;
    return -1;
 }
@@ -809,7 +830,7 @@ columnWidths=acl_malloc2(sizeof(int) * (numberOfColumns+1));
 columnAlign=acl_malloc2(sizeof(int) * (numberOfColumns+1));
 for(index=1;index<=numberOfColumns;index++) {
 
-	columnName=A4GLSQL_describe_stmt ("generic_stexecp",index,1);
+	columnName=(char *)A4GLSQL_describe_stmt ("generic_stexecp",index,1);
         datatype=A4GLSQL_describe_stmt ("generic_stexecp",index,0);
         size=A4GLSQL_describe_stmt ("generic_stexecp",index,3);
         A4GL_trim(columnName);
@@ -873,7 +894,7 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
 int execute_sql_fetch(int *raffected, int *err_at_col) {
 	int coltype;
 	int colsize;
-	int colname;
+	char * colname;
 	int a;
 
 
@@ -894,7 +915,7 @@ int execute_sql_fetch(int *raffected, int *err_at_col) {
 		memset(gen_obind_copy,0, sizeof(struct BINDING)*numberOfColumns);
 
 		for (a=0;a<numberOfColumns;a++) {
-			colname=A4GLSQL_describe_stmt ("generic_stexecp",a+1,1);
+			colname=(char *)A4GLSQL_describe_stmt ("generic_stexecp",a+1,1);
 			coltype=A4GLSQL_describe_stmt ("generic_stexecp",a+1,0);
 			colsize=A4GLSQL_describe_stmt ("generic_stexecp",a+1,3);
 
@@ -1272,10 +1293,50 @@ END FUNCTION
 
 function init_sql()
 end function
+
+
 function find_table_col(lv_tab, lv_col)
 define lv_tab,lv_t char(20)
 define lv_col,lv_c char(20)
+define lv_tabname char(18)
+define lv_arr array[4000] of char(18)
+define lv_sch array[4000] of char(18)
+define lv_num_tables integer
+define lv_cnt integer
+define lv_match char(200)
+define lv_num_columns integer
+define lv_cnt_cols integer
+define lv_srch_tab char(64)
+define col_list array [1024] of char (18)
+define col_desc array [1024] of char (48)
+#define lv_arr_col array[1000] of char(18)
 call start_table_col()
+
+code
+    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,(char *)lv_sch,18,"TABLES",0,0);
+endcode
+
+let lv_match=lv_tab 
+for lv_cnt=1 to lv_num_tables
+	#message "Check ", lv_arr[lv_cnt] clipped ," against ", lv_match clipped sleep 1
+	if lv_arr[lv_cnt] like lv_match then
+		## Table matches - what about the column ? 
+	let lv_srch_tab=lv_arr[lv_cnt]
+code
+    		lv_num_columns = A4GLSQL_fill_array (1024, (char *) col_list, 18, (char *)col_desc, 48, "COLUMNS", 2,lv_srch_tab);
+endcode
+		for lv_cnt_cols=1 to lv_num_columns
+			#message "Check ", lv_arr[lv_cnt] clipped ,".", col_list[lv_cnt_cols] clipped, " against ", lv_col clipped sleep 10
+			if col_list[lv_cnt_cols] like lv_col then
+				
+				 call add_table_col(lv_arr[lv_cnt],col_list[lv_cnt_cols])
+			end if
+		end for
+
+	end if
+end for
+
+
 call finish_table_col()
 end function
 
@@ -1283,7 +1344,25 @@ end function
 function find_table_nocol(lv_tab)
 define lv_tab,lv_t char(20)
 define lv_col,lv_c char(20)
+  define lv_tabname char(18)
+  define lv_arr array[4000] of char(18)
+  define lv_sch array[4000] of char(18)
+  define lv_num_tables integer
+  define lv_cnt integer
+define lv_match char(200)
 call start_table_nocol()
+
+code
+    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,(char *)lv_sch,18,"TABLES",0,0);
+endcode
+let lv_match=lv_tab 
+for lv_cnt=1 to lv_num_tables
+	#message "Check ", lv_arr[lv_cnt] clipped ," against ", lv_match clipped sleep 2
+	if lv_arr[lv_cnt] like lv_match then
+		call add_table_nocol(lv_arr[lv_cnt])
+	end if
+end for
+
 call finish_table_nocol()
 end function
 
