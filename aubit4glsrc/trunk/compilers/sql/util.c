@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.64 2007-12-20 14:31:10 mikeaubury Exp $
+# $Id: util.c,v 1.65 2008-01-21 18:54:39 mikeaubury Exp $
 #
 */
 
@@ -508,8 +508,10 @@ get_bad_sql (void)
 static void
 A4GLSQLCV_loadbuffer (char *fname)
 {
-  if (nbs)
+  if (nbs) {
     DELETE_BUFFER (nbs);
+	nbs=0;
+  }
 
   if (strcmp (fname, "-") == 0)
     {
@@ -549,8 +551,10 @@ A4GLSQLCV_loadbuffer (char *fname)
 static void
 A4GLSQLCV_setbuffer (char *s)
 {
-  if (nbs)
+  if (nbs) {
     DELETE_BUFFER (nbs);
+	nbs=0;
+  }
   if (Sql)
     free (Sql);
   Sql = acl_strdup (s);
