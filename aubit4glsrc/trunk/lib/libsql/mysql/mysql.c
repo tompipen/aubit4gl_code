@@ -888,7 +888,9 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
   if (mysql_stmt_prepare (stmt, s, strlen (s)) != 0)
     {
       // Some error...
-      A4GL_debug ("Err : %s (%p)\n", mysql_stmt_error (stmt), stmt);
+      A4GL_debug ("Err : %s (%p)\n", mysql_stmt_error (stmt), stmt);	
+	A4GL_set_errm( mysql_stmt_error (stmt));
+
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
       if (mysql_errno (conn) == 1295)
 	{			// Can't prepare it...
@@ -1113,7 +1115,15 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
   int cnt = 0;
   MYSQL_RES *result;
   MYSQL_FIELD *field;
-  result = mysql_list_fields (conn, info, NULL);
+  char buff_info[2000];
+
+  strcpy(buff_info,info);
+A4GL_convlower(buff_info);
+
+  result = mysql_list_fields (conn, buff_info, NULL);
+  if (result==0) {
+	return 0;
+  }
 
   while ((field = mysql_fetch_field (result)))
     {
