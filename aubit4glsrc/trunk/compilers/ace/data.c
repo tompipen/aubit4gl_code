@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.36 2008-01-20 22:15:07 mikeaubury Exp $
+# $Id: data.c,v 1.37 2008-01-21 07:16:11 mikeaubury Exp $
 #*/
 
 /**
@@ -720,6 +720,7 @@ execute_selects (void)
       A4GL_debug ("Executing select..");
       A4GL_debug ("%s", nstatement);
 	translated= A4GLSQL_translate (nstatement);
+	printf("%s\n", translated);
       A4GL_debug ("%s", translated);
       psql = (void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
       a4gl_status = 0;

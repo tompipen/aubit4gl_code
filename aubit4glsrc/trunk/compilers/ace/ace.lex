@@ -67,7 +67,7 @@ ows     [ \t\n]*
 "BY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BY;}
 "CHAR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CHAR;}
 "CLIPPED" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CLIPPED;}
-"PRINT FILE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PRINT_FILE;}
+"PRINT"{ws}"FILE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PRINT_FILE;}
 
 "COUNT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COUNT;}
 "DATABASE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DATABASE;}
