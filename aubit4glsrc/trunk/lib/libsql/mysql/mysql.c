@@ -238,7 +238,7 @@ int np;
       *fglprc = 0;
       break;
     case MYSQL_TYPE_LONG:
-      *fgldtype = DTYPE_SMINT;
+      *fgldtype = DTYPE_INT;
       *fglprc = 0;
       break;
     case MYSQL_TYPE_FLOAT:
