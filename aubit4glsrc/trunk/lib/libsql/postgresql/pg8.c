@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.17 2008-01-20 21:19:09 mikeaubury Exp $
+# $Id: pg8.c,v 1.18 2008-01-21 00:06:11 briantan Exp $
 #*/
 
 
@@ -68,6 +68,8 @@ static void SetErrno (PGresult * res);
 #define FLOAT4OID 700
 #define TIMESTAMPOID  1114
 #define DATEOID                       1082
+#define NUMERICOID                       1700
+#define TEXTOID                       25
 
 
 #define INPUT_OUTPUT_BIND               0
@@ -2139,6 +2141,18 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
 	} else { 
 		// Length,scale ? 
       		*a4gl_dtype = DTYPE_FLOAT;
+      		*a4gl_len = pglen;
+	}
+      break;
+#endif
+#ifdef TEXTOID
+    case TEXTOID:
+	if (pglen==-1)  {
+      		*a4gl_dtype = DTYPE_TEXT;
+      		*a4gl_len = pglen;
+	} else { 
+		// Length,scale ? 
+      		*a4gl_dtype = DTYPE_TEXT;
       		*a4gl_len = pglen;
 	}
       break;
