@@ -64,6 +64,11 @@ initialize mv_curr_db to null
 
 let lv_actions_cnt=0
 let lv_actions_used=0
+
+IF LENGTH(fgl_getenv("A4GL_ASQLERRLOG"))>0 THEN
+	CALL startlog(fgl_getenv("A4GL_ASQLERRLOG"))
+END IF
+
 call edit_init()
 
 

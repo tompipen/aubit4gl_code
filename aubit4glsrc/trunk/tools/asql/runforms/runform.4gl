@@ -70,6 +70,11 @@ define a integer
 	defer interrupt
 
 	options message line last-1
+
+IF LENGTH(fgl_getenv("A4GL_RUNFORMERRLOG"))>0 THEN
+        CALL startlog(fgl_getenv("A4GL_RUNFORMERRLOG"))
+END IF
+
 	let mv_field_list_for=""
 
 	for a=1 to mv_cnt_taglines
