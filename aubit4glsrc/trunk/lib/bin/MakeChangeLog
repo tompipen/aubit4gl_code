@@ -1,0 +1,40 @@
+if [ "$1" = "" ]
+then
+	c=`cat $AUBITDIR/lib/bin/changelog.lastrun`
+	autorun=1
+	#echo "Usage $0 \"date\""
+	#echo "Eg $  $0 \"19 january 2007\""
+	#exit 0
+else
+	autorun=0
+	c="$1"
+fi
+
+
+cd $AUBITDIR
+cvs2cl -l  -d ">$c" --stdout --summary --hide-filenames | grep -v "^200[789]"   > /tmp/out.1
+grep -v ".no log message." /tmp/out.1 | sed 's/^[\t ]*//g' | uniq > /tmp/out.2 
+
+cd lib/bin
+
+if [ $autorun = 1 ]
+then
+	odir=Changelogs/`aubit-config A4GL_VERSION_STRING`
+	mkdir -p $odir
+	ofile=$odir/ChangeLog.`date +%s`
+	cp /tmp/out.2 $ofile
+	date +"%d %B %Y" > changelog.lastrun
+	b=`date`
+	echo "---------------------------"  > /tmp/changes
+	date >> /tmp/changes 
+	echo "---------------------------" >> /tmp/changes
+	echo `aubit-config A4GL_VERSION_STRING` Released >> /tmp/changes
+	echo "---------------------------" >> /tmp/changes
+	cat $ofile | sed 's/^/	/g' >> /tmp/changes
+	cat $AUBITDIR/ChangeLog >> /tmp/changes
+	mv  /tmp/changes $AUBITDIR/ChangeLog
+else
+	cat /tmp/out.2
+fi
+
+#rm /tmp/out.2

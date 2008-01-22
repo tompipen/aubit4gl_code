@@ -1,3 +1,53 @@
+---------------------------
+Tue Jan 22 14:39:41 GMT 2008
+---------------------------
+1.00_72 Released
+---------------------------
+	
+	MID 1096: runforms.4ae enhancement Add A4GL_ASQLERRLOG &
+	A4GL_RUNFORMERRLOG to be filenames of ERRLOG files (if set.)
+	
+	Small fixups for memory problems and substrings on nulls
+	
+	generic fixups (tested against mysql )
+	
+	Mysql fixups
+	
+	PRINT FILE quotes
+	
+	TEXTOID
+	
+	add NUMERICOID
+	
+	Try adding in SQL translation
+	
+	"print file" and multiple spaces in 'ORDER BY' fixups
+	
+	PRINTFILE error
+	
+	ace fixups
+	
+	Fixup the NEWDECIMAL
+	
+	MID 1095 : construct doesn't do checks on hiting ESC if same field
+	
+	INPUT fixup
+	
+	Fix broken ecpg in 8.3 (Doesn't seem to like '\'')
+	
+	fixups for INPUT
+	
+	1093: PRINT FILE ".." fails if repeated more than 1,000 times
+	
+	Small valgrind fixup
+	
+	Interval fixup
+	
+	Added extra aliases - trying to make sure we dont get any name
+	clashes...
+	
+	Replace trunc function
+	
 
 	936: a report affected by the output section of the previous report
 

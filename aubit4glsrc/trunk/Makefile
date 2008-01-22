@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.46 2007-12-05 15:39:40 mikeaubury Exp $
+# $Id: Makefile,v 1.47 2008-01-22 14:41:01 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2247,6 +2247,8 @@ build:
 	@echo AUBITVERSION = ${AUBITVERSION} AUBITBUILD = ${AUBITBUILD}
 	@chmod a+x tools/project/mkproject
 	(cd tools/project; ${SH} mkproject -increase)
+	(cd lib/bin; ${SH} MakeChangeLog)
+
 	@echo After build number increase:
 	@echo "AUBITVERSION = `cat $(SOURCE)/tools/project/version` AUBITBUILD = `cat $(SOURCE)/tools/project/build`"
 	@echo " "	
