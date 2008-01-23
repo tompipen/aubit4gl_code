@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.21 2007-10-07 15:58:08 mikeaubury Exp $
+# $Id: expr.c,v 1.22 2008-01-23 18:17:28 mikeaubury Exp $
 #
 */
 
@@ -385,6 +385,14 @@ struct expr_str *A4GL_new_expr_temp(char *s,int dtype) {
   ptr->u_data.expr_tmp->dtype=dtype;
   return ptr;
 }
+
+struct expr_str * A4GL_new_translated_string (char *value) {
+  struct expr_str *ptr;
+  ptr=A4GL_new_expr_simple (ET_EXPR_QUOTED_STRING);
+  ptr->u_data.expr_string=acl_strdup(value);
+  return ptr;
+}
+
 
 struct expr_str *A4GL_new_literal_string (char *value)
 {

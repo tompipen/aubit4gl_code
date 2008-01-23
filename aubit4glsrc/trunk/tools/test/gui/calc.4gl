@@ -1,3 +1,5 @@
+define list FORM
+define calc FORM
 main
 	#set pause mode on
 	hide window _variable("screen")

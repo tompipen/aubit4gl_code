@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.127 2007-10-16 16:38:16 mikeaubury Exp $
+# $Id: lexer.c,v 1.128 2008-01-23 18:17:28 mikeaubury Exp $
 #*/
 
 /**
@@ -734,8 +734,10 @@ read_word (FILE * f, int *t)
       s[strlen (s) - 1] = 0;
       A4GL_dumpstring (s, yylineno, infilename);
       s2 = A4GL_translate (s);
-      if (s2)
+      if (s2) {
 	ptr = s2;
+		*t=CHAR_VALUE_TRANSLATED;
+	}
     }
 
   /* if (s) ptr=s; */

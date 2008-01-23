@@ -23920,7 +23920,7 @@ FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT "
 ##       Define permanent list of documentation files to build/install
 ## ==================================================================
 
-ALL_DOC="changelog.txt COPYING CREDITS LICENSE aubit4gl.ico aubit4gl.png"
+ALL_DOC="COPYING CREDITS LICENSE aubit4gl.ico aubit4gl.png"
 
 if test "$COMSPEC" != ""; then
 	ALL_DOC="$ALL_DOC README-Windows.txt"
@@ -35621,7 +35621,13 @@ echo "${ECHO_T}No-$PG_ESQLC_VERSION" >&6; }
 echo "${ECHO_T}Maybe-$PG_ESQLC_VERSION" >&6; }
 					PG_ESQLC_IFXCOMPAT=maybe
 					PG_ESQLC_V3=1
-		            ;;
+				;;
+				4.*.*) #4.0.0 and up
+			    		{ echo "$as_me:$LINENO: result: Maybe-$PG_ESQLC_VERSION" >&5
+echo "${ECHO_T}Maybe-$PG_ESQLC_VERSION" >&6; }
+					PG_ESQLC_IFXCOMPAT=maybe
+					PG_ESQLC_V3=1
+		            	;;
 				*)
 			    	{ echo "$as_me:$LINENO: result: No-Invalid version number format-$PG_ESQLC_VERSION" >&5
 echo "${ECHO_T}No-Invalid version number format-$PG_ESQLC_VERSION" >&6; }
@@ -49718,11 +49724,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:49721: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:49727: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:49725: \$? = $ac_status" >&5
+   echo "$as_me:49731: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -49822,11 +49828,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:49825: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:49831: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:49829: \$? = $ac_status" >&5
+   echo "$as_me:49835: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -53739,7 +53745,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 53742 "configure"' > conftest.$ac_ext
+  echo '#line 53748 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -54787,7 +54793,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 54790 "configure"
+#line 54796 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -54887,7 +54893,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 54890 "configure"
+#line 54896 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -61482,7 +61488,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.394 2007-12-12 23:18:03 mikeaubury Exp $
+| $Id: configure,v 1.395 2008-01-23 18:17:18 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.3 2006-10-10 05:45:52 afalout Exp $
+# $Id: Makefile,v 1.4 2008-01-23 18:17:29 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -59,7 +59,8 @@ DEFAULT	=hello${A4GL_EXE_EXT} hello2${A4GL_EXE_EXT} hello_db${A4GL_EXE_EXT} \
 		form${A4GL_FRM_EXT} helpfile.hlp  file${A4GL_EXE_EXT}
 
 
-SUB		=guidemos
+SUB		=
+#guidemos
 
 ALL		=${DEFAULT} assoc2${A4GL_EXE_EXT}
 
@@ -119,7 +120,7 @@ all: ${ALL}
 
 
 solitaire${A4GL_EXE_EXT}: sol.4gl random.4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
+	${FGLPCEXEC_NAME} ${4GLPCFLAGS} $^ -o $@
 
 ## ==================================================================
 ##              Targets for testing compiler build success

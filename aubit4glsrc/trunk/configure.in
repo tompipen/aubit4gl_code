@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.368 2007-12-12 23:18:32 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.369 2008-01-23 18:17:27 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.368 2007-12-12 23:18:32 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.369 2008-01-23 18:17:27 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -2693,7 +2693,7 @@ FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT "
 ##       Define permanent list of documentation files to build/install
 ## ==================================================================
 
-ALL_DOC="changelog.txt COPYING CREDITS LICENSE aubit4gl.ico aubit4gl.png"
+ALL_DOC="COPYING CREDITS LICENSE aubit4gl.ico aubit4gl.png"
 
 if test "$COMSPEC" != ""; then
 	ALL_DOC="$ALL_DOC README-Windows.txt"
@@ -6358,7 +6358,12 @@ if test "$withval" != "no"; then
 			    	AC_MSG_RESULT(Maybe-$PG_ESQLC_VERSION)
 					PG_ESQLC_IFXCOMPAT=maybe
 					PG_ESQLC_V3=1
-		            ;;
+				;;
+				4.*.*) #4.0.0 and up
+			    		AC_MSG_RESULT(Maybe-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=maybe
+					PG_ESQLC_V3=1
+		            	;;
 				*)
 			    	AC_MSG_RESULT(No-Invalid version number format-$PG_ESQLC_VERSION)
 					PG_ESQLC_IFXCOMPAT=no
@@ -11071,7 +11076,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.368 2007-12-12 23:18:32 mikeaubury Exp $
+| $Id: configure.in,v 1.369 2008-01-23 18:17:27 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

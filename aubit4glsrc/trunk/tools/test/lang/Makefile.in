@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.4 2003-02-07 04:01:48 afalout Exp $
+# $Id: Makefile.in,v 1.5 2008-01-23 18:17:30 mikeaubury Exp $
 #
 
 #Internationalization / language translation example
@@ -57,7 +57,7 @@ lang: ${HLPFILES} ${4GLFILES}
 	(export TRANSLATEFILE=source.lang;  ${FGLPCEXEC} ${4GLFILES} -o $@)
 
 %.hlp: %.msg
-	${MKMESS} $*
+	${MKMESS} $*.msg
 
 source.lang:
 	(export DUMPSTRINGS=ident; xxxx what?)

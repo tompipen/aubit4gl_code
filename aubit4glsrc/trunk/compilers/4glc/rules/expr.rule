@@ -163,6 +163,19 @@ literal_expr:
 			$<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
 		}
 	}
+	| CHAR_VALUE_TRANSLATED  {
+		if (strcmp($<str>1,"\"\"")==0) {
+			$<ptr>$=A4GL_new_literal_empty_str ();
+		} else {
+		char *ptr;
+			ptr=$<str>1;
+			if (ptr[0]=='"') {
+				$<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
+			} else {	
+				$<ptr>$=A4GL_new_translated_string($<str>1);
+			}
+		}
+	}
 	| real_number {
 		$<ptr>$=A4GL_new_literal_double_str($<str>1);
 	}

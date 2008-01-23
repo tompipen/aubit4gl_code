@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.18 2008-01-21 00:06:11 briantan Exp $
+# $Id: pg8.c,v 1.19 2008-01-23 18:17:29 mikeaubury Exp $
 #*/
 
 
@@ -399,35 +399,6 @@ A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
 }
 
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-int
-A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
-				 int *size)
-{
-  char *buff;
-  if (A4GL_esql_db_open (-1, 0, 0, ""))
-    {
-      con = A4GL_esql_dbopen_connection ();
-    }
-  if (con == 0)
-    {
-      A4GL_exitwith_sql ("Not connected to database");
-      return 0;
-    }
-  A4GLSQLLIB_A4GLSQL_get_columns (tabname, colname, dtype, size);
-
-  while (A4GLSQL_next_column (&buff, dtype, size))
-    {
-      if (strcasecmp (colname, buff) == 0)
-	return 1;
-    }
-  return 0;
-}
-#endif
 
 /**
  *

@@ -18,6 +18,7 @@
 %right COMMAND
 %token NUMBER_VALUE
 %token CHAR_VALUE
+%token CHAR_VALUE_TRANSLATED
 %token INT_VALUE
 %token NAMED_GEN
 /* %token COMMENT */
