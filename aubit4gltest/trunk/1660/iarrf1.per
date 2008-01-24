@@ -1,0 +1,18 @@
+database formonly
+screen
+{
+[f1   ][f2     ][f3   ] [t]
+[f1   ][f2     ][f3   ] [t]
+[f1   ][f2     ][f3   ] [t]
+[f1   ][f2     ][f3   ] [t]
+[f1   ][f2     ][f3   ] [t]
+}
+
+attributes
+f1 = formonly.f1;
+f2 = formonly.f2;
+f3 = formonly.f3;
+t = formonly.trap,noentry;
+
+instructions
+screen record sa[5] (f1, f2, f3, trap)
