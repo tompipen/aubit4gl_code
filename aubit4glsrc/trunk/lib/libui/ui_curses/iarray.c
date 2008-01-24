@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.139 2007-11-22 14:23:31 mikeaubury Exp $
+# $Id: iarray.c,v 1.140 2008-01-24 20:06:13 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.139 2007-11-22 14:23:31 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.140 2008-01-24 20:06:13 mikeaubury Exp $";
 #endif
 
 /**
@@ -1058,6 +1058,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 	  	f = arr->field_list[arr->scr_line-1][arr->curr_attrib];
 		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, f, A4GL_memdup (&ptr, sizeof (struct s_movement)),0);
       		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
+	//A4GL_pause_execution();
 	      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
 	      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
 	}
@@ -1745,7 +1746,6 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
   void *last_field = 0;
   void *next_field;
   struct struct_scr_field *f;
-
   A4GL_debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
   if (arr_line > 800000)
     {
@@ -1999,7 +1999,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
       if (last_field|| why=='Q')
 	{
-
+	//A4GL_pause_execution();
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 		A4GL_debug("Checking curr_line_is_new : %d",arr->curr_line_is_new);
@@ -2379,6 +2379,8 @@ if (arr->fcntrl[a].state==99) {
 /******************************************************************************/
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_ROW)
     {
+	//A4GL_pause_execution();
+	A4GL_debug("A4GL_EVENT_AFT_ROW");
       new_state = 0;
       rval = A4GL_EVENT_AFT_ROW;
     }
@@ -3271,7 +3273,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 
   a = 1;
   colname = va_arg (*ap, char *);
-
+ A4GL_debug("NEXT FIELD %s",colname);
 	nv=arr->nbind;
   	if (arr->start_slice!=-1 && arr->end_slice!=-1) { nv=arr->end_slice-arr->start_slice+1; }
 
@@ -3284,7 +3286,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 
 	    {
 	      A4GL_debug ("Init control stack");
-	      if (arr->currentfield) {
+	      if (arr->currentfield || type =='!') {
 		  A4GL_init_control_stack (arr, 0);
 		} else {
 			if (arr->fcntrl_cnt>=2) {

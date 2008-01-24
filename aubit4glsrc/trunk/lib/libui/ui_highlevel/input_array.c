@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.59 2007-11-29 13:48:06 mikeaubury Exp $
+# $Id: input_array.c,v 1.60 2008-01-24 20:06:14 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.59 2007-11-29 13:48:06 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.60 2008-01-24 20:06:14 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3069,7 +3069,7 @@ int nv;
 	    //if (arr->field_list[arr->scr_line][a] == ptr[0])
 	    {
 	      A4GL_debug ("Init control stack");
-	      if (arr->currentfield)
+	      if (arr->currentfield || type =='!')
 		{
 		  A4GL_init_control_stack (arr, 0);
 		} else {
