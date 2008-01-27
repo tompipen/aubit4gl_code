@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.154 2008-01-09 21:18:41 mikeaubury Exp $
+# $Id: report.c,v 1.155 2008-01-27 15:15:18 mikeaubury Exp $
 #
 */
 
@@ -676,15 +676,15 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 
       if (rep->output_mode == 'C')
 	{
-	  tmpnam (rep->output_loc);
+	  tmpnam (rep->output_loc_str);
 
-	  rep->output = gzfopen (rep->output_loc, "w");
+	  rep->output = gzfopen (rep->output_loc_str, "w");
 	  if (rep->output == 0)
 	    {
 	      A4GL_exitwith ("Could not open report output");
 	      return;
 	    }
-	    add_convertible_report(rep->output_loc);
+	    add_convertible_report(rep->output_loc_str);
 
 	}
       else
@@ -694,7 +694,7 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 	    {
 
 
-	      if (strcmp (rep->output_loc, "stdout") == 0)
+	      if (strcmp (rep->output_loc_str, "stdout") == 0)
 		{
 		  A4GL_gotolinemode ();
 		  rep->output = stdout;
@@ -702,7 +702,7 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 		}
 	      else
 		{
-		  rep->output = A4GL_mja_fopen (rep->output_loc, "w");
+		  rep->output = A4GL_mja_fopen (rep->output_loc_str, "w");
 		  if (rep->output == 0)
 		    {
 		      A4GL_exitwith ("Could not open report output");
@@ -717,8 +717,8 @@ void A4GL_internal_open_report_file(struct rep_structure *rep,int no_param) {
 	  	if (rep->output_mode == 'S') {
 		  rep->output = stdout;
 		} else {
-	      		A4GL_debug ("popen '%s'", rep->output_loc);
-	      		rep->output = popen (rep->output_loc, "w");
+	      		A4GL_debug ("popen '%s'", rep->output_loc_str);
+	      		rep->output = popen (rep->output_loc_str, "w");
 	      if (rep->output == 0)
 		{
 		  A4GL_exitwith ("Could not open report output");
@@ -2080,13 +2080,13 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 	  SPRINTF6 (buff,
 		   "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' '%s'",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
-		   rep->output_loc, layout);
+		   rep->output_loc_str, layout);
 	}
       else
 	{
 	  SPRINTF5 (buff, "%s/bin/process_report -M '%s' -p '%s' '%s' '%s' ",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
-		   rep->output_loc);
+		   rep->output_loc_str);
 	}
     }
 
@@ -2097,13 +2097,13 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 	  SPRINTF6 (buff,
 		   "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' '%s'",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
-		   rep->output_loc, layout);
+		   rep->output_loc_str, layout);
 	}
       else
 	{
 	  SPRINTF5 (buff, "%s/bin/process_report -M '%s' -o '%s' '%s' '%s' ",
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype,
-		   rep->output_loc);
+		   rep->output_loc_str);
 	}
     }
 
@@ -2125,13 +2125,13 @@ A4GL_free_report (struct rep_structure *rep)
   if (rep->output_mode == 'C')
     {
       rep->output_mode = ' ';
-      unlink(rep->output_loc);
-      deleted_rep(rep->output_loc);
+      unlink(rep->output_loc_str);
+      deleted_rep(rep->output_loc_str);
     }
 
   if (rep->output_mode == 'M')
     {
-      //email_report(rep->output_loc,0);
+      //email_report(rep->output_loc_str,0);
       rep->output_mode = ' ';
     }
 

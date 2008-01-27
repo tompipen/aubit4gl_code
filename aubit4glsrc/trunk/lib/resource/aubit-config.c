@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.25 2007-05-13 09:21:52 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.26 2008-01-27 15:20:00 mikeaubury Exp $
 #
 */
 
@@ -168,7 +168,7 @@ A4GL_debug_full (char *fmt, ...)
 }
 
 void
-A4GL_debug_full_extended (char *fmt, ...)
+A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const char *func,char *fmt, ...)
 {
   va_list args;
   static char buff[4096];

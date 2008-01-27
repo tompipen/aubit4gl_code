@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.40 2007-12-05 17:12:58 mikeaubury Exp $
+# $Id: Makefile,v 1.41 2008-01-27 15:15:17 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -68,7 +68,7 @@ COMMONSRC= \
 	match.c maths.c memfile.c \
 	ns.c \
 	others.c ops.c outer.c \
-	pointers.c \
+	pointers.c parsecommon.c \
 	read_dty.c readkeys.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
 	screen.c sql_common.c sqlconvert.c stack_ops.c stack.c string.c sqlca.c \
 	translate.c missing.c curl.c \

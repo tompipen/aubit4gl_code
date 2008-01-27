@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.135 2007-12-14 10:22:08 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.136 2008-01-27 15:15:18 mikeaubury Exp $
 #
 */
 
@@ -2816,22 +2816,22 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
   int a;
   if (A4GLSQLCV_check_requirement ("CASE_AS_PROCEDURE"))
     {
-      if (i->nelements == 2)
+      if (i->elements.elements_len == 2)
 	{
-	  p = i->elements[1];
-	  if (p->u_data.sqlcaseelement.condition == 0)
+	  p = i->elements.elements_val[1];
+	  if (p->data.s_select_list_item_data_u.sqlcaseelement.condition == 0)
 	    {
 	      // Looks like an IF - THEN - ELSE 
 	      //
 	      SPRINTF3 (buff, "DECODE(%s,%s,%s)",
 		       get_select_list_item (select,
-					     i->elements[0]->u_data.
+					     i->elements.elements_val[0]->data.s_select_list_item_data_u.
 					     sqlcaseelement.condition),
 		       get_select_list_item (select,
-					     i->elements[0]->u_data.
+					     i->elements.elements_val[0]->data.s_select_list_item_data_u.
 					     sqlcaseelement.response),
 		       get_select_list_item (select,
-					     i->elements[1]->u_data.
+					     i->elements.elements_val[1]->data.s_select_list_item_data_u.
 					     sqlcaseelement.response));
 	      return buff;
 	    }
@@ -2842,10 +2842,10 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
   else
     {
       strcpy (buff, "CASE");
-      for (a = 0; a < i->nelements; a++)
+      for (a = 0; a < i->elements.elements_len; a++)
 	{
-	  p = i->elements[a];
-	  ii = &p->u_data.sqlcaseelement;
+	  p = i->elements.elements_val[a];
+	  ii = &p->data.s_select_list_item_data_u.sqlcaseelement;
 	  if (ii->condition)
 	    {
 	      SPRINTF1 (small_buff1, " WHEN %s THEN ",
@@ -4087,11 +4087,13 @@ A4GLSQLCV_ownerize_tablename (char *owner, char *table)
 
 void A4GL_free_select_stmt(struct s_select *s) {
 int a;
-if (s->table_elements.ntables) {
-	for (a=0;a<s->table_elements.ntables;a++) {
-		if (s->table_elements.tables[a].tabname) free(s->table_elements.tables[a].tabname);
-		if (s->table_elements.tables[a].alias) free(s->table_elements.tables[a].alias);
+if (s->table_elements.tables.tables_len) {
+	for (a=0;a<s->table_elements.tables.tables_len;a++) {
+		if (s->table_elements.tables.tables_val[a].tabname) free(s->table_elements.tables.tables_val[a].tabname);
+		if (s->table_elements.tables.tables_val[a].alias) free(s->table_elements.tables.tables_val[a].alias);
 	}
 }
-free(s->table_elements.tables);
+free(s->table_elements.tables.tables_val);
+s->table_elements.tables.tables_len=0;
+s->table_elements.tables.tables_val=0;
 }

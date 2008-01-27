@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.48 2008-01-20 17:37:33 mikeaubury Exp $
+# $Id: sql_common.c,v 1.49 2008-01-27 15:15:18 mikeaubury Exp $
 #
 */
 
@@ -973,20 +973,20 @@ A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t,
   if (tl == 0)
     {
       tl = acl_malloc2 (sizeof (struct s_table_list));
-      tl->ntables = 0;
-      tl->tables = 0;
+      tl->tables.tables_len = 0;
+      tl->tables.tables_val = 0;
     }
-  tl->ntables++;
-  tl->tables = acl_realloc (tl->tables, sizeof (struct s_table_list_element) * tl->ntables);
-  tl->tables[tl->ntables - 1].tabname = 0;
-  tl->tables[tl->ntables - 1].alias = 0;
+  tl->tables.tables_len++;
+  tl->tables.tables_val = acl_realloc (tl->tables.tables_val, sizeof (struct s_table_list_element) * tl->tables.tables_len);
+  tl->tables.tables_val[tl->tables.tables_len - 1].tabname = 0;
+  tl->tables.tables_val[tl->tables.tables_len - 1].alias = 0;
   if (t)
     {
-      tl->tables[tl->ntables - 1].tabname = acl_strdup (t);
+      tl->tables.tables_val[tl->tables.tables_len - 1].tabname = acl_strdup (t);
     }
   if (a)
     {
-      tl->tables[tl->ntables - 1].alias = acl_strdup (a);
+      tl->tables.tables_val[tl->tables.tables_len - 1].alias = acl_strdup (a);
     }
   return tl;
 }
@@ -1047,32 +1047,32 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
   strcpy (outer, "");
 
   strcpy (join, "");
-  for (a = 0; a < select->list_of_items.nlist; a++)
+  for (a = 0; a < select->list_of_items.list.list_len; a++)
     {
-      if (select->list_of_items.list[a]->type == E_SLI_JOIN)
+      if (select->list_of_items.list.list_val[a]->data.type == E_SLI_JOIN)
 	{
 	  struct s_select_list_item *p;
 	  struct s_select_list_item *l;
 	  struct s_select_list_item *r;
 	  char *lt;
 	  char *rt;
-	  p = select->list_of_items.list[a];
-	  l = p->u_data.complex_expr.left;
-	  r = p->u_data.complex_expr.right;
-	  lt = l->u_data.column.tabname;
-	  rt = r->u_data.column.tabname;
+	  p = select->list_of_items.list.list_val[a];
+	  l = p->data.s_select_list_item_data_u.complex_expr.left;
+	  r = p->data.s_select_list_item_data_u.complex_expr.right;
+	  lt = l->data.s_select_list_item_data_u.column.tabname;
+	  rt = r->data.s_select_list_item_data_u.column.tabname;
 
 	  if (strcmp (t->tabname, lt) == 0 && strcmp (left, rt) == 0)
 	    {
 	      char tmpbuff[256];
 	      SPRINTF4 (tmpbuff, " ON %s.%s=%s.%s",
-			l->u_data.column.tabname,
-			l->u_data.column.colname,
-			r->u_data.column.tabname, r->u_data.column.colname);
+			l->data.s_select_list_item_data_u.column.tabname,
+			l->data.s_select_list_item_data_u.column.colname,
+			r->data.s_select_list_item_data_u.column.tabname, r->data.s_select_list_item_data_u.column.colname);
 	      if (strlen (join))
 		strcat (join, " AND ");
 	      strcat (join, tmpbuff);
-	      p->type = E_SLI_BUILTIN_CONST_TRUE;
+	      p->data.type = E_SLI_BUILTIN_CONST_TRUE;
 
 	    }
 
@@ -1080,13 +1080,13 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
 	    {
 	      char tmpbuff[256];
 	      SPRINTF4 (tmpbuff, " ON %s.%s=%s.%s",
-			l->u_data.column.tabname,
-			l->u_data.column.colname,
-			r->u_data.column.tabname, r->u_data.column.colname);
+			l->data.s_select_list_item_data_u.column.tabname,
+			l->data.s_select_list_item_data_u.column.colname,
+			r->data.s_select_list_item_data_u.column.tabname, r->data.s_select_list_item_data_u.column.colname);
 	      if (strlen (join))
 		strcat (join, " AND ");
 	      strcat (join, tmpbuff);
-	      p->type = E_SLI_BUILTIN_CONST_TRUE;
+	      p->data.type = E_SLI_BUILTIN_CONST_TRUE;
 	    }
 	}
     }
@@ -1470,7 +1470,7 @@ struct s_select_list *A4GLSQLPARSE_new_select_list_str(char *expr,char *alias) {
 	struct s_select_list *ptr;
 	ptr=malloc(sizeof(struct s_select_list));
 	ptr->type=0;
-	ptr->u_data.expression=strdup(expr);
+	ptr->data.s_select_list_item_data_u.expression=strdup(expr);
 	if (alias) {
 		ptr->alias=strdup(alias);
 	} else {

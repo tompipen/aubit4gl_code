@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.13 2007-05-04 16:51:32 mikeaubury Exp $
+# $Id: dataio.c,v 1.14 2008-01-27 15:15:17 mikeaubury Exp $
 #
 */
 
@@ -89,13 +89,13 @@ static int (*A4GL_func) (void *ptr, char *filename);	/*FIXME-warning: function d
  * @param
  */
 int
-A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
+A4GL_read_data_from_file_generic (char *package, char *datatype, void *ptr, char *filename)
 {
   char buff[256];
 #ifdef DEBUG
-  A4GL_debug ("Read_data_from_file : %s %p %s", A4GL_null_as_null(datatype), ptr, A4GL_null_as_null(filename));
+  A4GL_debug ("Read_data_from_file : %s %s %p %s",A4GL_null_as_null(package),  A4GL_null_as_null(datatype), ptr, A4GL_null_as_null(filename));
 #endif
-  libptr = (void *) A4GL_dl_openlibrary ("DATA", datatype);
+  libptr = (void *) A4GL_dl_openlibrary ("DATA", package);
   if (libptr == 0)
     {
       A4GL_exitwith ("Unable to open library");
@@ -107,7 +107,6 @@ A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
   return A4GL_func (ptr, filename);
 }
 
-
 /**
  *
  *
@@ -116,15 +115,35 @@ A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
  * @param
  */
 int
-A4GL_write_data_to_file (char *datatype, void *ptr, char *filename)
+A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
+{
+	return A4GL_read_data_from_file_generic(datatype,datatype,ptr,filename);
+}
+
+
+int A4GL_write_data_to_file (char *datatype, void *ptr, char *filename) {
+// Most often - the datatype and the package are the same
+// sometimes - we just want to write a subset of the data
+// so here - we just pass the datatype as the package name and the variable type..
+return A4GL_write_data_to_file_generic(datatype,datatype,ptr,filename);
+}
+
+/**
+ *
+ *
+ * @param
+ * @param
+ * @param
+ */
+int A4GL_write_data_to_file_generic (char *package, char *datatype, void *ptr, char *filename)
 {
   char buff[256];
   int result;
 #ifdef DEBUG
-  A4GL_debug ("Write data to file : datatype=%s ptr=%p file=%s\n",
+  A4GL_debug ("Write data to file : package=%s datatype=%s ptr=%p file=%s\n",A4GL_null_as_null(package),
 	 A4GL_null_as_null(datatype), ptr, A4GL_null_as_null(filename));
 #endif
-  libptr = (void *) A4GL_dl_openlibrary ("DATA", datatype);
+  libptr = (void *) A4GL_dl_openlibrary ("DATA", package);
   if (libptr == 0)
     {
       A4GL_exitwith ("Unable to open library");

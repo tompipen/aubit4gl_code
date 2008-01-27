@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.35 2007-11-30 17:16:47 mikeaubury Exp $
+# $Id: memfile.c,v 1.36 2008-01-27 15:15:18 mikeaubury Exp $
 #
 */
 
@@ -56,10 +56,11 @@ static char *buff;
 static long buff_len;
 static FILE *in;
 static long pos = 0;
-static void reload_comments(void) ;
+//static void reload_comments(void) ;
 //FILE *A4GL_mja_fopen (char *name, char *mode);
 
 void A4GL_dump_buffer (char *s, int l);
+static void add_comment(int n,int c, char *s,char type) ;
 
 
 FILE *
@@ -104,6 +105,15 @@ A4GL_memfile_fopen (char *f, char *mode)
 	}
     }
 
+while (1) {
+	char *ptr;
+	// convert any ^m to whitespace.
+	ptr=strchr(buff,13);
+	if (ptr==0) break;
+	*ptr=' ';
+}
+
+
   pos = 0;
   return in;
 }
@@ -112,6 +122,7 @@ void *
 A4GL_memdup (void *ptr, int size)
 {
   void *p2;
+
   A4GL_assertion(ptr==0,"No pointer to copy");
   A4GL_assertion(size<=0,"Invalid side for memdup");
 
@@ -154,6 +165,16 @@ A4GL_memfile_fopen_buffer (char *ptr, int len)
   return (FILE *) buff;
 }
 
+
+static void A4GL_trimnl(char *s) {
+int a;
+for (a=strlen(s)-1;a>=0;a--) {
+	if (s[a]=='\n') {s[a]=0; continue;}
+	if (s[a]=='\r') {s[a]=0; continue;}
+	break;
+
+}
+}
 
 
 int
@@ -343,24 +364,46 @@ A4GL_dump_buffer (char *s, int l)
 
 
 
+struct s_comments {
+	int lineno;
+	int colno;
+	char *comment;
+	int printed;
+	int type;
+};
+
+
+struct s_comments *load_comments=0;
+int ncomments=0;
+
+
+
 void A4GL_remove_comments_in_memfile(FILE *f) {
 int a;
 int b;
 int type=0;
 FILE *last;
-FILE *save_comment=0;
-char *save=0;
+//FILE *save_comment=0;
+//char *save=0;
 static int lineno=1;
+char cmbuff[20000];
+int cmcnt=0;
+int colno=0;
 
-save=acl_getenv("SAVE_COMMENTS");
-if (save) {
+/*
+  save=acl_getenv("SAVE_COMMENTS");
+
+  if (save) {
 	if (strlen(save)) {
 		save_comment=fopen(save,"w");
 	}
-}
+  }
+*/
 
-
-  if (!A4GL_isyes(acl_getenv("RM_COMMENTS_FIRST"))) return;
+  if (!A4GL_isyes(acl_getenv("RM_COMMENTS_FIRST"))) {
+		//printf("Not removing comments!");
+		return;
+	}
 
   if (f != in)
     {
@@ -371,11 +414,15 @@ if (save) {
 
 
     for (a=0;a<buff_len;a++) {
-	if (buff[a]=='\n') lineno++;
+	if (buff[a]=='\n') {lineno++; colno=0;}
+	colno++;
 
 	if (buff[a]=='\n'&&type!=1) type=0; 	// newlines always reset everything.
 					// That way - if we get confused - it won't propagate too far..
 					//
+        if (strncmp(&buff[a],"code\n",5)==0 && a==0) {
+			type+=1;
+	}
 
         if (strncmp(&buff[a],"\ncode\n",6)==0) {
 			type+=1;
@@ -413,14 +460,19 @@ if (save) {
 		}
 
 		if (buff[a+2]!=no_comment_char) {
-			if (save_comment) FPRINTF(save_comment,"%d|",lineno);
+
+			cmcnt=0;
                 	for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
-				if (save_comment&&b>a+1) FPRINTF(save_comment,"%c",buff[b]);
-				
+
+				if (b>a+1) {
+					cmbuff[cmcnt++]=buff[b];
+				}
 				buff[b]=' ';
 			}
-			if (save_comment) FPRINTF(save_comment,"\n");
+			cmbuff[cmcnt]=0;
+			add_comment(lineno,colno,cmbuff,'-');
                 	a=b-1;
+			colno=0;
                 	continue;
 		} else {
 			buff[a]=' ';
@@ -430,29 +482,47 @@ if (save) {
         }
 
         if (buff[a]=='#'&&type==0) {
-		if (save_comment) FPRINTF(save_comment,"%d|",lineno);
+		cmcnt=0;
                 for (b=a;buff[b]!='\n'&&b<buff_len;b++) {
-			if (save_comment&&b>a) FPRINTF(save_comment,"%c",buff[b]);
+			if (b>a) {
+				cmbuff[cmcnt++]=buff[b];
+			}
+
 			buff[b]=' ';
 		}
-			if (save_comment) FPRINTF(save_comment,"\n");
+		cmbuff[cmcnt]=0;
+		add_comment(lineno,colno,cmbuff,'#');
+		colno=0;
+		
                 a=b-1;
                 continue;
         }
+
         if (buff[a]=='{'&&type==0&&buff[a+1]!='!') {
-		if (save_comment) FPRINTF(save_comment,"%d|",lineno);
+		char pr='{';
+		cmcnt=0;
                 for (b=a;buff[b]!='}'&&b<buff_len;b++) {
+			colno++;
 			if (buff[b]=='\n') {
-				if (save_comment) FPRINTF(save_comment,"\n");
+				cmbuff[cmcnt]=0;
+				add_comment(lineno, colno,cmbuff,pr);
+				pr='.';
+				cmcnt=0;
+				colno=0;
 				lineno++;
-				if (save_comment) FPRINTF(save_comment,"%d|",lineno);
-				
 				continue;
 			}
-			if (save_comment&&b>a) FPRINTF(save_comment,"%c",buff[b]);
+			if (b!=a) {
+			cmbuff[cmcnt++]=buff[b];
+			}
 			buff[b]=' ';
 		}
-		if (save_comment) FPRINTF(save_comment,"\n");
+		cmbuff[cmcnt]=0;
+		if (strlen(cmbuff)) {
+				add_comment(lineno, colno,cmbuff,pr);
+				strcpy(cmbuff,"");
+		}
+		add_comment(lineno, colno,cmbuff,'}');
 		buff[b]=' ';
                 a=b-1;
                 continue;
@@ -468,6 +538,7 @@ if (save) {
 		buff[b]=' ';
 		buff[b+1]=' ';
                 a=b-1;
+		colno++;
                 continue;
         }
 
@@ -480,46 +551,63 @@ if (save) {
     if (A4GL_isyes(acl_getenv("A4GL_DUMP_LAST"))) {
 	last=fopen("last","w");
 	fwrite(buff,1,buff_len,last);
-	fclose(last);
+
     }
 
-if (save_comment) {fclose(save_comment); reload_comments(); }
-
+#ifdef DEBUG
+for (a=0;a<ncomments;a++) {
+A4GL_debug("%d %d - %s\n", 
+		load_comments[a].lineno,
+		load_comments[a].colno,
+		load_comments[a].comment);
+}
+#endif
 }
 
 
+int A4GL_GetNumberOfComments(void) {
+	return ncomments;
+}
 
+int A4GL_GetComment(int a, char **s, int *l, int *c, char *type) {
+	if (a<ncomments) {
+		*s=load_comments[a].comment;
+		*l=load_comments[a].lineno;
+		*c=load_comments[a].colno;
+		*type=load_comments[a].type;
+	}
+	return 1;
+}
 
-struct s_comments {
-	int lineno;
-	char *comment;
-};
-
-
-struct s_comments *load_comments=0;
-int ncomments=0;
-
-
-char *A4GL_has_comment(int n) {
+char *A4GL_has_comment(int n,int c) {
 	int a;
 	for (a=0;a<ncomments;a++) {
-		if ( load_comments[a].lineno==-1) continue;
+		if ( load_comments[a].printed) continue;
 
-		if (load_comments[a].lineno<=n) {
-			load_comments[a].lineno=-1;
+		if (load_comments[a].lineno<n) {
+			load_comments[a].printed++;
+			return load_comments[a].comment;
+		}
+		if (load_comments[a].lineno==n && c< load_comments[a].colno) {
+			load_comments[a].printed++;
 			return load_comments[a].comment;
 		}
 	}
 	return 0;
 }
 
-static void add_comment(int n,char *s) {
+static void add_comment(int n,int c, char *s, char type) {
 	ncomments++;
 	load_comments=realloc(load_comments,sizeof(struct s_comments)*ncomments);
+	load_comments[ncomments-1].printed=0;
 	load_comments[ncomments-1].lineno=n;
+	load_comments[ncomments-1].colno=c;
 	load_comments[ncomments-1].comment=strdup(s);
+	A4GL_trimnl(load_comments[ncomments-1].comment);
+	load_comments[ncomments-1].type=type;
 }
 
+#ifdef OBSOLETE
 static void reload_comments(void) {
 char buff[2048];
 int lineno;
@@ -541,6 +629,7 @@ while(1) {
 	char *ptr;
 	if (feof(load_comment)) break;
 	fgets(buff,sizeof(buff)-1,load_comment);
+	if (feof(load_comment)) break;
 	A4GL_trim(buff);
 	ptr=strchr(buff,'|');
 	if (!ptr) continue;
@@ -553,3 +642,4 @@ while(1) {
 fclose(load_comment);
 
 }
+#endif

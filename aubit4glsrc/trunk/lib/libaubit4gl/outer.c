@@ -137,7 +137,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	    }
 
 
-	  for (b = 0; b < select->list_of_items.nlist; b++)
+	  for (b = 0; b < select->list_of_items.list.list_len; b++)
 	    {
 	      struct s_select_list_item *p;
 	      struct s_select_list_item *l;
@@ -146,18 +146,18 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	      char *rt;
 	      char *lc;
 	      char *rc;
-	      if (select->list_of_items.list[b]->type == E_SLI_JOIN)
+	      if (select->list_of_items.list.list_val[b]->data.type == E_SLI_JOIN)
 		{
 		  //int tnl;
 		  //int tnr;
 		  int found = 0;
-		  p = select->list_of_items.list[b];
-		  l = p->u_data.complex_expr.left;
-		  r = p->u_data.complex_expr.right;
-		  lt = l->u_data.column.tabname;
-		  rt = r->u_data.column.tabname;
-		  lc = l->u_data.column.colname;
-		  rc = r->u_data.column.colname;
+		  p = select->list_of_items.list.list_val[b];
+		  l = p->data.s_select_list_item_data_u.complex_expr.left;
+		  r = p->data.s_select_list_item_data_u.complex_expr.right;
+		  lt = l->data.s_select_list_item_data_u.column.tabname;
+		  rt = r->data.s_select_list_item_data_u.column.tabname;
+		  lc = l->data.s_select_list_item_data_u.column.colname;
+		  rc = r->data.s_select_list_item_data_u.column.colname;
 
 		  if (lt == 0 || rt == 0)
 		    continue;
@@ -173,9 +173,9 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 		      SPRINTF2 (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
 			       get_select_list_item (select,
 						     select->list_of_items.
-						     list[b]));
-		      select->list_of_items.list[b]->type = E_SLI_LITERAL;
-		      p->u_data.expression = acl_strdup ("(1=1)");
+						     list.list_val[b]));
+		      select->list_of_items.list.list_val[b]->data.type = E_SLI_LITERAL;
+		      p->data.s_select_list_item_data_u.expression = acl_strdup ("(1=1)");
 		      strcat (buff, buff2);
 		    }
 		}
