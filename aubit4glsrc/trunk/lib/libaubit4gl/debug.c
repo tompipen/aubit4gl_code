@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.59 2007-07-12 10:46:07 mikeaubury Exp $
+# $Id: debug.c,v 1.60 2008-01-27 15:10:45 mikeaubury Exp $
 #
 */
 
@@ -42,6 +42,7 @@
 
 
 #define NOSTRCPYMAP
+#include <sys/time.h>
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 extern sqlca_struct a4gl_sqlca;
@@ -124,6 +125,123 @@ if (strlen(debugfilename)==0) {
 
 
 
+void
+A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const char *func, char *fmt, ...) {
+  if (nodebug == DEBUG_NOTREQUIRED) { return ; }
+  if (nodebug == 1)
+    {
+      strcpy (g_fname, fname);
+      strcpy (g_level, level);
+      strcpy (g_function, func);
+      g_lineno = lineno;
+    }
+
+  static va_list args;
+#define MAX_DEBUG 90000
+  static char buff[MAX_DEBUG+1];
+  static int a;
+  static int dbg_level=-1;
+  static char buff_n[20];
+  static int indebug=0;
+  static int lastnow=0;
+int isNow;
+
+
+  if (nodebug == DEBUG_NOTREQUIRED) { return; }
+
+  if (indebug) return;
+  indebug++;
+
+
+  if (strlen(fmt)==0) {
+		A4GL_assertion(1,"No format for debug");
+		A4GL_pause_execution();
+  }
+
+  if (nodebug == DEBUG_DONTKNOW)
+    {
+      if (strlen (acl_getenv ("DEBUG")))
+	nodebug = DEBUG_REQUIRED;
+      else
+	{
+	  nodebug = DEBUG_NOTREQUIRED;
+	  indebug=0;
+	  return;
+	}
+    }
+
+
+  if (isdigit(fmt[0])) {
+	if (!isdigit(fmt[1])) {
+		buff_n[0]=fmt[0];
+		buff_n[1]=0;
+	} else {
+		buff_n[0]=fmt[0];
+		buff_n[1]=fmt[1];
+		buff_n[2]=0;
+	}
+	if (dbg_level==-1)  {
+  		dbg_level=atoi(acl_getenv("DEBUG_LEVEL"));
+	}
+  	a=atoi(buff_n);
+  	if (a && dbg_level && a > dbg_level) {
+		indebug=0;
+		return;
+  	}
+  }
+
+  if (strncmp(g_fname,"API",3)==0) {
+		char buff2[MAX_DEBUG+100];
+		SPRINTF1(buff2,"API %s\n",buff);
+#ifdef USE_MONITOR
+		A4GL_monitor_puts_int(buff2);
+#endif
+  }
+
+  if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0
+      || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
+    {
+        va_start (args, fmt);
+	memset(buff,0,sizeof(buff));
+
+#ifdef  HAVE_VSNPRINTF
+	VSNPRINTF (buff, MAX_DEBUG,fmt, args);
+#else
+      	VSPRINTF (buff, fmt, args);
+#endif
+
+	buff[MAX_DEBUG]=0;
+
+  	open_debugfile ();
+
+  	if (!debugfile) return;
+
+	isNow=time(0);
+	if (lastnow!=isNow) {
+		FPRINTF (debugfile, "\n*** TIMECODE %s\n\n",getTimecode());
+		lastnow=isNow;
+        }
+
+
+      if (buff[strlen (buff) - 1] != ':')
+	FPRINTF (debugfile, "%-20s %-6d %-3s (%6ld,%6ld,%1d) %s%s",
+		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg(),
+		 g_function, g_function[0] == 0 ? "": "() ");
+      else
+	FPRINTF (debugfile, "%-20s                       "," ");
+
+	if (a_strchr(buff,'\n')) 
+      		FPRINTF (debugfile, " %s", buff);
+	else
+      		FPRINTF (debugfile, " %s\n", buff);
+
+	fclose(debugfile);
+	debugfile=0;
+
+    }
+  indebug=0;
+
+}
 
 /**
  * The A4GL_debug function.
@@ -135,7 +253,6 @@ void
 A4GL_debug_full_extended (char *fmt, ...)
 {
   static va_list args;
-#define MAX_DEBUG 90000
   static char buff[MAX_DEBUG+1];
   static int a;
   static int dbg_level=-1;
@@ -250,7 +367,7 @@ void
 A4GL_debug_full (char *fmt, ...)
 {
   static va_list args;
-#define MAX_DEBUG 10000
+//#define MAX_DEBUG 10000
   static char buff[MAX_DEBUG+1];
   static int a;
   static int dbg_level=-1;
