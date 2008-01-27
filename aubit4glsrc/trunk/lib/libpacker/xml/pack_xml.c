@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.28 2007-12-19 22:58:04 briantan Exp $
+# $Id: pack_xml.c,v 1.29 2008-01-27 14:51:24 mikeaubury Exp $
 #*/
 
 /**
@@ -74,7 +74,7 @@ char ibuff[20000];		/* Input line buffer */
 int attrok = 0;
 int contentok = 0;
 int level = 0;
-
+int inlineno=0;
 /*
 =====================================================================
                     Functions prototypes
@@ -198,7 +198,7 @@ A4GL_find_attr (char *s, char *n)
 char *
 A4GL_find_contents (char *s)
 {
-  static char buff[2000];
+  static char buff[20000];
   char *ptr;
   contentok = 0;
   ptr = strchr (s, '>');
@@ -241,6 +241,7 @@ chk (void *x)
 -------------------------------------------------------------
 */
 
+
 int A4GLPacker_A4GL_pack_remove_file(char *fname) {
         char buff[512];
         sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_XML_EXT"));
@@ -252,12 +253,18 @@ int A4GLPacker_A4GL_pack_remove_file(char *fname) {
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir)
+A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
 {
   char buff[256];
 
   sprintf (buff, "Basename=>%s< dir=%c\n", basename, dir);
   A4GL_debug (buff);
+                if (A4GL_isyes(acl_getenv("A4GL_LOCALOUTPUT"))) {
+                        char *b;
+                        b=strrchr(basename,'/');
+                        if (b) basename=b+1;
+                }
+
   sprintf (buff, "%s%s", basename, acl_getenv ("A4GL_XML_EXT"));
   A4GL_debug (buff);
 
@@ -283,6 +290,7 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir)
     {
       /* read XML file */
       infile = A4GL_open_file_dbpath (buff);
+	inlineno=0;
       if (infile == 0)
 	{
 	  A4GL_exitwith ("Unable to open");
@@ -348,7 +356,7 @@ A4GLPacker_output_start_array (char *s, int type, int len)
  * @todo Describe function
  */
 int
-A4GLPacker_output_end_array (char *s, int type)
+A4GLPacker_output_end_array (char *s, int type,int len)
 {
   level--;
   print_level ();
@@ -501,8 +509,9 @@ A4GLPacker_output_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_output_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_output_start_union (char *s,char *en, int e, char *n, int ptr, int isarr)
 {
+  if (!output_int(en,e,ptr,isarr)) return 0;
   print_level ();
   fprintf (outfile, "<UNION NAME=\"%s\" TYPE=\"%s\"%s>\n", n, s,
 	   A4GL_pr_elem (isarr, ptr));
@@ -510,12 +519,13 @@ A4GLPacker_output_start_union (char *s, char *n, int ptr, int isarr)
   return 1;
 }
 
+
 /**
  *
  * @todo Describe function
  */
 int
-A4GLPacker_output_nullptr (char *s)
+A4GLPacker_output_nullptr (char *s,char *sname, int isunion)
 {
   print_level ();
   fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"NULLPTR\"/>\n", s);
@@ -539,7 +549,7 @@ A4GLPacker_output_okptr (char *s)
  * @todo Describe function
  */
 int
-A4GLPacker_output_end_union (char *s, char *n)
+A4GLPacker_output_end_union (char *s,char *en, int e, char *n)
 {
   level--;
   print_level ();
@@ -552,11 +562,10 @@ A4GLPacker_output_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_output_enum (char *name, char *s, int d)
+A4GLPacker_output_enum (char *rn, char *name, char *s, int d)
 {
   print_level ();
-  fprintf (outfile, "<ENUM TYPE=\"%s\" DESCRIPTION=\"%s\" VALUE=\"%d\"/>\n",
-	   name, s, d);
+  fprintf (outfile, "<ENUM NAME=\"%s\" TYPE=\"%s\" DESCRIPTION=\"%s\" VALUE=\"%d\"/>\n",rn, name, s, d);
   return 1;
 }
 
@@ -574,8 +583,11 @@ static int
 getaline (void)
 {
   char *a;
+	inlineno++;
   a = fgets (ibuff, sizeof (ibuff), infile);
-//printf(">%s",a);
+
+  A4GL_debug("%d. %s", inlineno,ibuff);
+
   if (a == 0)
     {
       printf ("Unexpected end of file\n");
@@ -626,7 +638,7 @@ A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
-A4GL_debug("input_int : ptr=%d ibuff=%s\n",ptr, ibuff);
+A4GL_debug("input_int : ptr=%d\n",ptr);
   a = atoi (A4GL_find_contents (ibuff));
   *val = a;
 
@@ -809,7 +821,7 @@ A4GLPacker_input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *en, int e,char *n, int ptr, int isarr)
 {
   /*   <UNION NAME=".." TYPE=".."> */
   if (!getaline ())
@@ -841,7 +853,7 @@ A4GLPacker_input_ptr_ok ()
  * @todo Describe function
  */
 int
-A4GLPacker_input_end_union (char *s, char *n)
+A4GLPacker_input_end_union (char *s, char *en, int e,char *n)
 {
   /* </UNION> */
   if (!getaline ())
@@ -854,9 +866,10 @@ A4GLPacker_input_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_enum (char *name, int *d)
+A4GLPacker_input_enum (char *rn, char *name, int *d)
 {
   chk (d);
+  /* <ENUM TYPE=\"%s\" DESCRIPTION=\"%s\" VALUE=\"%d\"/> */
   if (!getaline ())
     return 0;
   *d = atoi (A4GL_find_attr (ibuff, "VALUE"));

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.12 2007-05-04 16:51:33 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.13 2008-01-27 14:51:24 mikeaubury Exp $
 #*/
 
 /**
@@ -100,7 +100,7 @@ A4GLPacker_A4GL_can_pack_all (char *name)
    as we're doing the whole thing in one go using xdr
 */
 int
-A4GLPacker_A4GL_open_packer (char *fname, char dir)
+A4GLPacker_A4GL_open_packer (char *fname, char dir, char *struct_name)
 {
   return 1;
 }

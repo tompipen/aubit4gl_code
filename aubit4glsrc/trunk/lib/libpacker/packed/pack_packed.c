@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.35 2007-11-14 15:18:41 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.36 2008-01-27 14:51:23 mikeaubury Exp $
 #*/
 
 /**
@@ -155,12 +155,18 @@ int A4GLPacker_A4GL_pack_remove_file(char *fname) {
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir)
+A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
 {
   char buff[256];
   is_in_mem = 0;
 
   if (toupper (dir) == 'O')  {
+                if (A4GL_isyes(acl_getenv("A4GL_LOCALOUTPUT"))) {
+                        char *b;
+                        b=strrchr(basename,'/');
+                        if (b) basename=b+1;
+                }
+
       sprintf (buff, "%s%s", basename,PACKED_EXT);
       outfile = fopen (buff, "wb");
 
@@ -239,7 +245,7 @@ A4GLPacker_output_start_array (char *s, int type, int len)
  * @todo Describe function
  */
 int
-A4GLPacker_output_end_array (char *s, int type)
+A4GLPacker_output_end_array (char *s, int type, int len)
 {
   return 1;
 }
@@ -366,8 +372,9 @@ A4GLPacker_output_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_output_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_output_start_union (char *s, char *en, int e,char *n, int ptr, int isarr)
 {
+if (!output_int(en,e,ptr,isarr)) return 0;
   return 1;
 }
 
@@ -376,7 +383,7 @@ A4GLPacker_output_start_union (char *s, char *n, int ptr, int isarr)
  * @todo Describe function
  */
 int
-A4GLPacker_output_nullptr (char *s)
+A4GLPacker_output_nullptr (char *s,char *sname, int isunion)
 {
   char n = 0;
   return fwrite (&n, 1, sizeof (n), outfile);
@@ -398,7 +405,7 @@ A4GLPacker_output_okptr (char *s)
  * @todo Describe function
  */
 int
-A4GLPacker_output_end_union (char *s, char *n)
+A4GLPacker_output_end_union (char *s, char *en, int e,char *n)
 {
   return 1;
 }
@@ -408,7 +415,7 @@ A4GLPacker_output_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_output_enum (char *name, char *s, int d)
+A4GLPacker_output_enum (char *rn, char *name, char *s, int d)
 {
   return A4GLPacker_output_int (name, d, 0, -1);
 }
@@ -592,7 +599,7 @@ A4GLPacker_input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *en, int e,char *n, int ptr, int isarr)
 {
   return 1;
 }
@@ -617,7 +624,7 @@ A4GLPacker_input_ptr_ok ()
  * @todo Describe function
  */
 int
-A4GLPacker_input_end_union (char *s, char *n)
+A4GLPacker_input_end_union (char *s, char *en, int e,char *n)
 {
   return 1;
 }
@@ -627,7 +634,7 @@ A4GLPacker_input_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_enum (char *name, int *d)
+A4GLPacker_input_enum (char *rn, char *name, int *d)
 {
   return A4GLPacker_input_int (name, d, 0, -1);
 }

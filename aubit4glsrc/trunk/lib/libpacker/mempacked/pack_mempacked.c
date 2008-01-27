@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.11 2006-09-15 11:15:50 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.12 2008-01-27 14:51:23 mikeaubury Exp $
 #*/
 
 /**
@@ -270,7 +270,7 @@ A4GLPacker_input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_start_union (char *s, char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *en, int e,char *n, int ptr, int isarr)
 {
   return 1;
 }
@@ -295,7 +295,7 @@ A4GLPacker_input_ptr_ok ()
  * @todo Describe function
  */
 int
-A4GLPacker_input_end_union (char *s, char *n)
+A4GLPacker_input_end_union (char *s,char *en, int e, char *n)
 {
   return 1;
 }
@@ -305,7 +305,7 @@ A4GLPacker_input_end_union (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_enum (char *name, int *d)
+A4GLPacker_input_enum (char *name, char *en,  int *d)
 {
   return A4GLPacker_input_int (name, d, 0, -1);
 }
@@ -329,7 +329,7 @@ A4GLPacker_input_enum (char *name, int *d)
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir)
+A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
 {
   //char buff[256];
   char *ptr = 0;
