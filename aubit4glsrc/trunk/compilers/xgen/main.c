@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.20 2007-10-24 17:55:18 mikeaubury Exp $
+# $Id: main.c,v 1.21 2008-01-27 14:50:30 mikeaubury Exp $
 #*/
 
 /**
@@ -315,7 +315,8 @@ write_genout (void)
 	   export_name, export_name);
   fprintf (cfio, "%s s_s;\n", export_name);
   fprintf (cfio, "memcpy(&s_s,s,sizeof(s_s));\n");
-  fprintf (cfio, "if (!A4GL_open_packer(filename,'O')) return 0;\n");
+  //fprintf (cfio, "if (!A4GL_open_packer(filename,'O')) return 0;\n");
+fprintf (cfio, "if (!A4GL_open_packer(filename,'O', \"%s\")) return 0;\n", export_name);
   fprintf (cfio,
 	   "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n",
 	   export_name, export_name, export_name, export_name);
@@ -326,7 +327,8 @@ write_genout (void)
 
   fprintf (cfio, "\n\nint read_%s(%s *s,char *filename) {\nint a;\n",
 	   export_name, export_name);
-  fprintf (cfio, "if (!A4GL_open_packer(filename,'I')) return 0;\n");
+  //fprintf (cfio, "if (!A4GL_open_packer(filename,'I')) return 0;\n");
+fprintf (cfio, "if (!A4GL_open_packer(filename,'I', \"%s\")) return 0;\n", export_name);
   fprintf (cfio,
 	   "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n",
 	   export_name, export_name, export_name, export_name);
