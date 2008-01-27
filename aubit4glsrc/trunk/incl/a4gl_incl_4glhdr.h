@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.45 2007-10-25 19:46:18 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.46 2008-01-27 15:08:05 mikeaubury Exp $
 */
 
 /**
@@ -205,26 +205,36 @@ struct s_constr_list {
 # endif
 #endif
 
+/*
 #define A4GL_ftl A4GL_set_line_extended(__FILE__,__LINE__,"FTL",__func__),A4GL_debug_full_extended
 #define A4GL_err A4GL_set_line_extended(__FILE__,__LINE__,"ERR",__func__),A4GL_debug_full_extended
 #define A4GL_wrn A4GL_set_line_extended(__FILE__,__LINE__,"WRN",__func__),A4GL_debug_full_extended
 #define A4GL_inf A4GL_set_line_extended(__FILE__,__LINE__,"inf",__func__),A4GL_debug_full_extended
 #define A4GL_dbg A4GL_set_line_extended(__FILE__,__LINE__,"dbg",__func__),A4GL_debug_full_extended
 #define A4GL_debug A4GL_dbg
+*/
+
+#define A4GL_ftl(fmt,...) A4GL_debug_full_extended_ln(__FILE__,__LINE__,"FTL",__func__, fmt,## __VA_ARGS__)
+#define A4GL_err(fmt,...) A4GL_debug_full_extended_ln(__FILE__,__LINE__,"ERR",__func__, fmt,## __VA_ARGS__)
+#define A4GL_wrn(fmt,...) A4GL_debug_full_extended_ln(__FILE__,__LINE__,"WRN",__func__, fmt,## __VA_ARGS__)
+#define A4GL_inf(fmt,...) A4GL_debug_full_extended_ln(__FILE__,__LINE__,"inf",__func__, fmt,## __VA_ARGS__)
+#define A4GL_dbg(fmt,...) A4GL_debug_full_extended_ln(__FILE__,__LINE__,"dbg",__func__, fmt,## __VA_ARGS__)
+#define A4GL_debug A4GL_dbg
 
 #ifdef DEBUG
-#define A4GL_trc A4GL_set_line_extended(__FILE__,__LINE__,"trc",__func__),A4GL_debug_full_extended
+#define A4GL_trc(fmt,...) A4GL_debug_full_extended_ln(__FILE__,__LINE__,"trc",__func__, fmt, ## __VA_ARGS__)
 #else //!DEBUG
-#define A4GL_trc null_func
+#define A4GL_trc 
 #endif //DEBUG
 
 #else //!NODEBUG
-#define A4GL_ftl null_func
-#define A4GL_err null_func
-#define A4GL_wrn null_func
-#define A4GL_inf null_func
-#define A4GL_dbg null_func
-#define A4GL_trc null_func
+
+#define A4GL_ftl(fmt,...) 
+#define A4GL_err(fmt,...) 
+#define A4GL_wrn(fmt,...) 
+#define A4GL_inf(fmt,...) 
+#define A4GL_dbg(fmt,...) 
+#define A4GL_trc(fmt,...) 
 
 #endif //NODEBUG
 

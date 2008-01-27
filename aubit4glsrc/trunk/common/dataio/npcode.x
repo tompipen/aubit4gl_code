@@ -9,7 +9,7 @@ struct vstring {
 };
 
 
-enum cmd_type {
+enum npcode_cmd_type {
 	CMD_NULL, /* NOT USED */
 	CMD_BLOCK,
 	CMD_END_BLOCK,
@@ -274,7 +274,7 @@ struct cmd_pop_var2 {
 };
 
 /* An individual command */
-union cmd switch(int  cmd_type) {
+union cmd switch(int  npcode_cmd_type) {
 	case CMD_BLOCK: 	struct cmd_block *	c_block;
 	case CMD_END_BLOCK: 	struct cmd_end_block *	c_endblock;
 	case CMD_CALL: 		struct npcmd_call *	c_call;

@@ -92,7 +92,7 @@ union expr switch (exprtype type) {
 	case EXPRTYPE_STRING:    string s<>;
 	case EXPRTYPE_VARIABLE:  int varid;
 	case EXPRTYPE_BUILTIN:   string name<>; 
-        case EXPRTYPE_VARIABLE_SUB:  struct var_usage *var_usage;
+        case EXPRTYPE_VARIABLE_SUB:  struct acerep_var_usage *var_usage;
 	case EXPRTYPE_COMPLEX:   struct complex_expr  *expr;
 	case EXPRTYPE_COMPARE:   struct compare_expr  *cexpr;
 	case EXPRTYPE_SIMPLE:    struct simple_expr  *sexpr;
@@ -105,7 +105,7 @@ union expr switch (exprtype type) {
 };
 
 
-struct var_usage {
+struct acerep_var_usage {
       int varid;
       char *varname;
       struct expr *subscript1;
@@ -142,7 +142,7 @@ struct simple_expr {
 };
 
 
-struct variable {
+struct acerep_variable {
 	string name<>;
 	string datatype_string<>;
 	int category;
@@ -153,7 +153,7 @@ struct variable {
 };
 
 struct ascii {
-	struct variable variables<>;
+	struct acerep_variable variables<>;
 };
 	
 struct input_vals {
@@ -204,13 +204,13 @@ struct cmd_for {
 	struct expr start;
 	struct expr finish;
 	struct expr step;
-	struct command *command;
+	struct acerep_command *command;
 };
 
 struct cmd_if {
 	struct expr condition;
-	struct command *command;
-	struct command *elsecommand;
+	struct acerep_command *command;
+	struct acerep_command *elsecommand;
 
 };
 
@@ -220,7 +220,7 @@ struct cmd_call {
 
 struct cmd_while {
 	struct expr condition;
-	struct command *command;
+	struct acerep_command *command;
 };
 
 struct cmd_let {
@@ -262,11 +262,11 @@ struct a4gl_report_function {
 	string name<>;
 };
 
-struct commands {
-	struct command commands<>;
+struct acerep_commands {
+	struct acerep_command commands<>;
 };
 
-union command  switch (cmdtypes cmd_type) {
+union acerep_command  switch (cmdtypes cmd_type) {
 	case CMD_NULL   :       int null;
 	case CMD_FOR	: 	struct cmd_for cmd_for;
 	case CMD_IF	: 	struct cmd_if cmd_if;
@@ -277,7 +277,7 @@ union command  switch (cmdtypes cmd_type) {
 	case CMD_SKIP	:	struct cmd_skip cmd_skip;
 	case CMD_PRINT	:	struct cmd_print cmd_print;
 	case CMD_PRINTFILE: 	struct cmd_printfile cmd_printfile;
-	case CMD_BLOCK	: 	struct commands commands;
+	case CMD_BLOCK	: 	struct acerep_commands acerep_commands;
 	case CMD_CALL	: 	struct cmd_call cmd_call;
 };
 
@@ -292,13 +292,13 @@ enum formattype {
 	FORMAT_ON_LAST_ROW
 };
 
-typedef struct var_usage *vup;
+typedef struct acerep_var_usage *vup;
 	
 
 struct  format  {
 	enum formattype category;
 	struct expr *column;
-	struct commands commands; 
+	struct acerep_commands commands; 
 };
 	
 
@@ -322,7 +322,7 @@ struct report {
 	string dbname<>;
 	struct ascii ascii;
 	struct a4gl_report_function functions<>;
-	struct variable variables<>;
+	struct acerep_variable variables<>;
 	struct input_vals inputs<>;
 	struct output output;
 	struct get_data getdata;
