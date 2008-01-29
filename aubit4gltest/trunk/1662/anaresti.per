@@ -1,0 +1,26 @@
+DATABASE FORMONLY
+SCREEN
+{
+     ---=== HEADER ===---
+
+ Field 1:   [x01              ]
+ Field 2:   [x02              ]
+--------------------------------
+
+ SubForm   A: [y01            ]
+           B: [y02            ]
+--------------------------------
+PgDn - Next Form, Esc,F10 - Exit
+}
+END
+
+ATTRIBUTES
+ x01 = FORMONLY.str1    TYPE CHAR;
+ x02 = FORMONLY.str2    TYPE CHAR;
+ y01 = FORMONLY.sub1    TYPE CHAR;
+ y02 = FORMONLY.sub2    TYPE CHAR;
+END
+
+INSTRUCTIONS
+  DELIMITERS "  "
+END
