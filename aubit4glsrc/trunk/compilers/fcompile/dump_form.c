@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.9 2008-01-17 00:33:16 briantan Exp $
+# $Id: dump_form.c,v 1.10 2008-01-31 05:07:13 briantan Exp $
 #*/
 
 /**
@@ -714,7 +714,7 @@ printf("now in get_join_tables\n");
 	fprintf(fout,"\n    END RECORD\n");
     }
     fprintf(fout,"    DEFINE ga_oid ARRAY[10] OF INTEGER\n");
-    fprintf(fout,"    DEFINE gv_rec_found, gv_mode INTEGER\n");
+    fprintf(fout,"    DEFINE gv_rec_found, gv_mode, gv_idx INTEGER\n");
     fprintf(fout,"    DEFINE gv_cursor, gv_statement CHAR(32)\n");
     fprintf(fout,"    DEFINE where_part, query_text VARCHAR(1000)\n");
     fprintf(fout,"\n");
@@ -849,7 +849,7 @@ printf("now in display_record\n");
     fprintf(fout,"FUNCTION display_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
-    fprintf(fout,"    IF ga_rec_found[gv_table_no] = 0 THEN\n");
+    fprintf(fout,"    IF ga_rec_found[gv_table_no] <= 0 THEN\n");
     fprintf(fout,"        RETURN\n");
     fprintf(fout,"    END IF\n");
     fprintf(fout,"\n");
@@ -1067,7 +1067,7 @@ printf("now in query_by_example\n");
         fprintf(fout,"        CASE gv_screen_no\n");
         for (s=0;s< f->snames.snames_len; s++) {
 	    fprintf(fout,"        WHEN %d\t# table %s screen %d\n",
-		s+1, f->tables.tables_val[t], s+1);
+		s+1, f->tables.tables_val[t].tabname, s+1);
 	    attr_found = 0; printed = 0;
 	    for (a=0;a<f->attributes.attributes_len;a++) {
 		if (strcmp(f->attributes.attributes_val[a].tabname,
@@ -1093,6 +1093,11 @@ printf("now in query_by_example\n");
         fprintf(fout,"          LET int_flag = FALSE\n");
         fprintf(fout,"          RETURN\n");
         fprintf(fout,"        END IF\n");
+	fprintf(fout,"\n");
+	fprintf(fout,"        FOR gv_idx = 1 TO %d\n", max_table+1);
+	fprintf(fout,"          LET ga_rec_found[gv_idx] = -1\n");
+	fprintf(fout,"        END FOR\n");
+	fprintf(fout,"\n");
 	if (mt) {
           fprintf(fout,"      END IF\n");
 	}
@@ -1103,6 +1108,7 @@ printf("now in query_by_example\n");
     }
     fprintf(fout,"  END CASE # gv_table_no\n");
     fprintf(fout,"\n");
+
     fprintf(fout,"  LET gv_statement = \"s_\", gv_module CLIPPED, ");
     fprintf(fout,"		gv_table_no using \"&&&\"\n");
     fprintf(fout,"  LET gv_cursor    = \"c_\", gv_module CLIPPED, ");
@@ -1165,7 +1171,9 @@ printf("now in get_record\n");
 		for (a=0; a<jf->join_fields_len;a++) {
 		    if (!printed) {
 			fprintf(fout,"      # get table %d\n",s+1);
-			fprintf(fout,"      DECLARE c_%s%02d%02d CURSOR FOR\n", mung(fname),t+1,s+1);
+			fprintf(fout,"      IF ga_rec_found[%d] = -1 THEN\n",
+					s+1);
+			fprintf(fout,"        DECLARE c_%s%02d%02d CURSOR FOR\n", mung(fname),t+1,s+1);
 			fprintf(fout,"          SELECT * FROM %s\n",
 			f->tables.tables_val[s].tabname);
 			fprintf(fout,"          WHERE ");
@@ -1179,10 +1187,13 @@ printf("now in get_record\n");
 			j.join_tables_val[m].master_tabname,
 			jf->join_fields_val[a].master_colname);
 		}
-		fprintf(fout,"      OPEN c_%s%02d%02d\n", mung(fname),t+1,s+1);
-		fprintf(fout,"      FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
+		fprintf(fout,"        OPEN c_%s%02d%02d\n",
+			mung(fname),t+1,s+1);
+		fprintf(fout,"        FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
 			mung(fname),t+1,s+1, f->tables.tables_val[s].tabname);
-		fprintf(fout,"      CLOSE c_%s%02d%02d\n", mung(fname),t+1,s+1);
+		fprintf(fout,"        CLOSE c_%s%02d%02d\n",
+			mung(fname),t+1,s+1);
+		fprintf(fout,"      END IF\n");
 		fprintf(fout,"\n");
 		break;
 	    }
@@ -1197,8 +1208,10 @@ printf("now in get_record\n");
 		if (j.join_tables_val[m].detail_tabno != s+1) continue;
 		for (a=0; a<jf->join_fields_len;a++) {
 		    if (!printed) {
-			fprintf(fout,"      # get table %d\n",s+1);
-			fprintf(fout,"      DECLARE c_%s%02d%02d CURSOR FOR\n", mung(fname),t+1,s+1);
+			fprintf(fout,"      # get table %d\n", s+1);
+			fprintf(fout,"      IF ga_rec_found[%d] = -1 THEN\n",
+				s+1);
+			fprintf(fout,"        DECLARE c_%s%02d%02d CURSOR FOR\n", mung(fname),t+1,s+1);
 			fprintf(fout,"          SELECT * FROM %s\n",
 			f->tables.tables_val[s].tabname);
 			fprintf(fout,"          WHERE ");
@@ -1212,10 +1225,13 @@ printf("now in get_record\n");
 			j.join_tables_val[m].detail_tabname,
 			jf->join_fields_val[a].detail_colname);
 		}
-		fprintf(fout,"      OPEN c_%s%02d%02d\n", mung(fname),t+1,s+1);
-		fprintf(fout,"      FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
+		fprintf(fout,"        OPEN c_%s%02d%02d\n",
+			mung(fname),t+1,s+1);
+		fprintf(fout,"        FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
 			mung(fname),t+1,s+1, f->tables.tables_val[s].tabname);
-		fprintf(fout,"      CLOSE c_%s%02d%02d\n", mung(fname),t+1,s+1);
+		fprintf(fout,"        CLOSE c_%s%02d%02d\n",
+			mung(fname),t+1,s+1);
+		fprintf(fout,"      END IF\n");
 		fprintf(fout,"\n");
 		break;
 	    }
@@ -1464,12 +1480,7 @@ printf("now in input_record\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
-    fprintf(fout,"##################################################\n");
-    fprintf(fout,"FUNCTION print_report()\n");
-    fprintf(fout,"##################################################\n");
-    fprintf(fout,"END FUNCTION\n");
-    fprintf(fout,"\n");
-    dump_attr_lookup(f, fout);
+//    dump_attr_lookup(f, fout);
 
     fclose(fout);
 //  }
