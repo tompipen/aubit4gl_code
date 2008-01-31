@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.10 2008-01-31 05:07:13 briantan Exp $
+# $Id: dump_form.c,v 1.11 2008-01-31 17:12:06 briantan Exp $
 #*/
 
 /**
@@ -1126,6 +1126,7 @@ printf("now in query_by_example\n");
     fprintf(fout,"  CLOSE _variable(gv_cursor)\n");
     fprintf(fout,"  LET ga_rec_found[gv_table_no] = gv_rec_found\n");
     fprintf(fout,"  LET ga_rec_no[gv_table_no] = 1\n");
+    fprintf(fout,"  MESSAGE ga_rec_found[gv_table_no] using \"<<<<<<\", \" record\"\n");
     fprintf(fout,"  CALL get_record()\n");
     fprintf(fout,"  \n");
     fprintf(fout,"END FUNCTION\n");
@@ -1138,12 +1139,12 @@ printf("now in get_record\n");
     fprintf(fout,"\n");
     fprintf(fout,"  LET gv_cursor    = \"c_\", gv_module CLIPPED, ");
     fprintf(fout,"gv_table_no using \"&&&\"\n");
-    fprintf(fout,"message \"get_record:\", ");
-    fprintf(fout,"\"oid=\", ga_oid[gv_table_no],\n");
-    fprintf(fout,"\t\" table=\", gv_table_no using \"<<\",\n");
-    fprintf(fout,"\t\" screen=\", gv_screen_no using \"<<\",\n");
-    fprintf(fout,"\t\" rec=\", ga_rec_no[gv_table_no] using \"<<<<<<\",\n");
-    fprintf(fout,"\t\" of \", ga_rec_found[gv_table_no] using \"<<<<<<\"\n");
+//    fprintf(fout,"message \"get_record:\", ");
+//    fprintf(fout,"\"oid=\", ga_oid[gv_table_no],\n");
+//    fprintf(fout,"\t\" table=\", gv_table_no using \"<<\",\n");
+//    fprintf(fout,"\t\" screen=\", gv_screen_no using \"<<\",\n");
+//    fprintf(fout,"\t\" rec=\", ga_rec_no[gv_table_no] using \"<<<<<<\",\n");
+//    fprintf(fout,"\t\" of \", ga_rec_found[gv_table_no] using \"<<<<<<\"\n");
     fprintf(fout,"  CASE gv_table_no\n");
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
