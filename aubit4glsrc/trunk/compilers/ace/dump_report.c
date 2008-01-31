@@ -458,7 +458,8 @@ dump_getdata ()
 
 
 	}
-      fprintf (fout, "  START REPORT rep_%s\n\n", this_report.report_name);
+      fprintf (fout, "  START REPORT rep_%s TO spool_file\n\n",
+		this_report.report_name);
       if (!compat) {
       		fprintf (fout, "  FOREACH c_%s INTO lr_data.*\n", this_report.report_name);
       		fprintf (fout, "    OUTPUT TO REPORT rep_%s (lr_data.*)\n", this_report.report_name);
