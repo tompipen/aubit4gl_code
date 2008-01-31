@@ -233,7 +233,7 @@ void
 dump_report ()
 {
 
-  fprintf (fout, "GLOBALS \"global.4gl\"\n");
+  fprintf (fout, "#GLOBALS \"global.4gl\"\n");
   fprintf (fout, "# PARAM\n");
   print_variables (CAT_PARAM, 0);
   fprintf (fout, "# VARIABLE\n");
@@ -248,9 +248,9 @@ dump_report ()
 //  print_variables (CAT_PARAM, 0);
 //  print_variables (CAT_VARIABLE, 0);
   fprintf (fout, "\n");
-  fprintf (fout, "  IF NOT job_init() THEN\n");
-  fprintf (fout, "    EXIT PROGRAM\n");
-  fprintf (fout, "  END IF\n");
+  fprintf (fout, "#  IF NOT job_init() THEN\n");
+  fprintf (fout, "#    EXIT PROGRAM\n");
+  fprintf (fout, "#  END IF\n");
   fprintf (fout, "\n");
   fprintf (fout, "# start of initialisation\n");
   fprintf (fout,"  LET lv_cnt=0\n");
@@ -277,7 +277,7 @@ dump_report ()
   fprintf (fout, "\n");
   dump_getdata ();
   fprintf (fout, "\n");
-  fprintf (fout, "  CALL job_prnt()\n");
+  fprintf (fout, "#  CALL job_prnt()\n");
   fprintf (fout, "END MAIN\n");
   fprintf (fout, "\n");
 
@@ -458,7 +458,7 @@ dump_getdata ()
 
 
 	}
-      fprintf (fout, "  START REPORT rep_%s TO spool_file\n\n",
+      fprintf (fout, "  START REPORT rep_%s # TO spool_file\n\n",
 		this_report.report_name);
       if (!compat) {
       		fprintf (fout, "  FOREACH c_%s INTO lr_data.*\n", this_report.report_name);
