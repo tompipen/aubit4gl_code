@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.29 2008-01-27 14:51:24 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.30 2008-02-11 17:13:13 mikeaubury Exp $
 #*/
 
 /**
@@ -821,11 +821,17 @@ A4GLPacker_input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_start_union (char *s, char *en, int e,char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *en, int *e,char *n, int ptr, int isarr)
 {
+int a;
   /*   <UNION NAME=".." TYPE=".."> */
-  if (!getaline ())
+a=A4GLPacker_input_int (en, e, ptr, isarr);
+if (!a) return 0;
+
+if (!getaline ())
     return 0;
+
+
   return 1;
 }
 

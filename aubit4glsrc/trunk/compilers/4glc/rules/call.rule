@@ -5,59 +5,56 @@
 */
 
 
-call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
+call_cmd	: FCALL atline {set_cmdlineno($<integer_val>2);} call_ext {$<cmd>$=$<cmd>4;}
 ;
 
 
 
 
 call_ext: function_call_expr opt_return {
-   		print_func_call_g($<ptr>1,$<binding_comp_list>2);
-		start_bind('i',0);
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>1),$<ptr_list>2);
+		//start_bind('i',0);
 	}
    | DIALOGKEYSETLABEL OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_fcall("fgl_dialog_setkeylabel",$<ptr_list>3,infilename,lastlineno);
-   		print_func_call_g($<ptr>$,NULL);
-		start_bind('i',0);
+		$<ptr>$=A4GL_new_expr_fcall("fgl_dialog_setkeylabel",$<ptr_list>3,infilename,lastlineno,get_namespace("fgl_dialog_setkeylabel"));
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
+		//start_bind('i',0);
 	}
    | DIALOGSETCURRLINE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_fcall("fgl_dialog_setcurrline",$<ptr_list>3,infilename,lastlineno);
-   		print_func_call_g($<ptr>$,NULL);
-		start_bind('i',0);
+		$<ptr>$=A4GL_new_expr_fcall("fgl_dialog_setcurrline",$<ptr_list>3,infilename,lastlineno,get_namespace("fgl_dialog_setcurrline"));
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
+		//start_bind('i',0);
 	}
    | DIALOG_DOT NAMED OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
 		sprintf(buff,"fgl_dialog_%s",downshift($<str>2));
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
-   		print_func_call_g($<ptr>$,NULL);
-		start_bind('i',0);
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff) );
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
+		//start_bind('i',0);
 	}
-   | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA CHAR_VALUE KW_COMMA CHAR_VALUE CLOSE_BRACKET {
-		print_form_is_compiled($<str>3,$<str>5,$<str>7);
+   | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA func_expr_call_args CLOSE_BRACKET {
+			expr_str *e;
+			expr_str_list *p;
+			e=A4GL_new_expr_form_is_compiled($<str>3, $<ptr_list>5,infilename,lastlineno);
+   			$<cmd>$=new_call_cmd(e,NULL);
 	}
-   | KW_CHANNEL_WRITE OPEN_BRACKET  fgl_expr_c KW_COMMA opt_cw_func_call_args CLOSE_BRACKET opt_return {
-		struct expr_str_list *p1;
-		p1=A4GL_new_prepend_ptr_list($<ptr_list>5,$<ptr>3);
-		print_call_shared_g(p1, "\"channel\"","\"write\"",$<binding_comp_list>7);
-		start_bind('i',0);
- 	} 
-	
-   | pdf_functions
-   | variable OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
-                char *p;
-		struct expr_str *ptr;
-                p=strrchr($<str>1,'.');
-                if (!p) {
-                        a4gl_yyerror("Not a member function");
-                        YYERROR;
-                        $<ptr>$=0;
-                }
-                *p=0;
-                p++;
-                ptr=A4GL_new_expr_member_fcall($<str>1,p,$<ptr_list>3,infilename,lastlineno);
-   		print_func_call_g(ptr,$<binding_comp_list>5);
-		start_bind('i',0);
+   | KW_CHANNEL_WRITE OPEN_BRACKET char_or_var_vl KW_COMMA opt_cw_ebind_var_list CLOSE_BRACKET  opt_return {
+	        struct expr_str_list *p1;
+		char errbuff[256];
+		ensure_variable(errbuff, $<ptr>3,1);
+                p1=A4GL_new_prepend_ptr_list($<ptr_list>5,$<ptr>3);
+		$<ptr>$=A4GL_new_expr_shared_fcall("channel", "write",p1,infilename,lastlineno, get_namespace("channel::write"));
+                /* $<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"write\"",infilename,lastlineno,$<ptr>3, $<ptr_list>5, get_namespace("channel::write")); */
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>7);
         }
+
+
+	
+   | pdf_functions {$<cmd>$=$<cmd>1;}
+   | variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
+                $<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1));
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>5);
+     }
 
 ;
 
@@ -66,8 +63,8 @@ call_ext: function_call_expr opt_return {
 
 
 
-opt_return 	: {start_bind('i',0);$<binding_comp_list>$=copy_togenbind('i');} 
-		| RETURNING {start_bind('i',0);} ibind_var_list {$<binding_comp_list>$=copy_togenbind('i'); }
+opt_return 	:  {$<ptr_list>$=0;}
+		| RETURNING expanded_ibind_var_list {$<ptr_list>$=$<ptr_list>2;}
 ;
 
 
@@ -77,7 +74,7 @@ opt_without_waiting: {$<integer_val>$=0;} | WITHOUT_WAITING {$<integer_val>$=1;}
 
 
 opt_func_call_args : { $<ptr_list>$=0; }
-		|  func_expr_call_args { $<ptr_list>$=$<ptr_list>1; }
+		|  func_expr_call_args { $<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); }
 ;
 
 func_expr_call_args	: func_arg { $<ptr_list>$=A4GL_new_ptr_list($<ptr>1); }

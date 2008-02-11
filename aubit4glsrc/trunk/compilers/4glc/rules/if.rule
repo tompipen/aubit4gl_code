@@ -1,21 +1,41 @@
 if_cmd	: 
-	KW_IF 
-	fgl_expr_c
-	KW_THEN  {
+	KW_IF fgl_expr_c atline KW_THEN  commands_as_list {
+                if_print_stack_cnt++;
+                if_print_stack[if_print_stack_cnt][0]=0;
+                if_print_stack[if_print_stack_cnt][1]=0;
+                if_print_section[if_print_stack_cnt]=0;
 		add_feature("IF");
-		if_print_stack_cnt++;
-		if_print_stack[if_print_stack_cnt][0]=0;
-		if_print_stack[if_print_stack_cnt][1]=0;
-		if_print_section[if_print_stack_cnt]=0;
-		print_if_start($<ptr>2);
-	 lastlineno=yylineno;}
-		commands {
-		if_print_section[if_print_stack_cnt]=1;
-	} op_else END_IF {
+	} atline op_else atline END_IF {
+		int a;
 		char wt;
-		print_if_end();
+		int val_last;
+		if_conds x;
+		$<struct_if_cmd>$=$<struct_if_cmd>8;
+		x.conditions.conditions_len=$<struct_if_cmd>8->truths.conditions.conditions_len;
+		x.conditions.conditions_val=$<struct_if_cmd>8->truths.conditions.conditions_val;
+		
+		if ($<struct_if_cmd>8->truths.conditions.conditions_val==0) {
+			$<struct_if_cmd>$->truths.conditions.conditions_val=malloc(sizeof($<struct_if_cmd>$->truths.conditions.conditions_val[0]) );
+			$<struct_if_cmd>$->truths.conditions.conditions_len=1;
+			$<struct_if_cmd>$->truths.conditions.conditions_val[0].test_expr=chk_expr($<ptr>2);
+			$<struct_if_cmd>$->truths.conditions.conditions_val[0].lineno=$<integer_val>3;
+			$<struct_if_cmd>$->truths.conditions.conditions_val[0].whentrue=$<commands>5; // setup the first one...
+		} else{
+			val_last=$<struct_if_cmd>8->truths.conditions.conditions_len;
+			$<struct_if_cmd>$->truths.conditions.conditions_val=malloc(sizeof($<struct_if_cmd>$->truths.conditions.conditions_val[0]) * ($<struct_if_cmd>8->truths.conditions.conditions_len+1));
+			$<struct_if_cmd>$->truths.conditions.conditions_val[0].test_expr=chk_expr($<ptr>2);
+			$<struct_if_cmd>$->truths.conditions.conditions_val[0].lineno=$<integer_val>3;
+			$<struct_if_cmd>$->truths.conditions.conditions_val[0].whentrue=$<commands>5; // setup the first one...
+			// now copy the rest
+			for (a=0;a<x.conditions.conditions_len;a++) {
+				$<struct_if_cmd>$->truths.conditions.conditions_val[a+1].test_expr =x.conditions.conditions_val[a].test_expr;
+				$<struct_if_cmd>$->truths.conditions.conditions_val[a+1].whentrue  =x.conditions.conditions_val[a].whentrue;
+				$<struct_if_cmd>$->truths.conditions.conditions_val[a+1].lineno  =x.conditions.conditions_val[a].lineno;
+			}
+			$<struct_if_cmd>$->truths.conditions.conditions_len++;
+		}
+		
 	        wt=get_curr_report_stack_whytype_1();
-		//if (wt=='P'||wt=='p'||wt=='T') {
 		if (wt=='T') {
 			if (if_print_stack[if_print_stack_cnt][0]!=if_print_stack[if_print_stack_cnt][0]) {
 				a4gl_yyerror("Number of lines printed in an IF.. THEN must be the same for TRUE and FALSE");
@@ -27,16 +47,32 @@ if_cmd	:
 			}
 		}
 		if_print_stack_cnt--;
+		set_cmdlineno($<integer_val>3);
+		$<cmd>$=new_if_cmd(&$<struct_if_cmd>$->truths, $<struct_if_cmd>$->whenfalse, $<integer_val>7,$<integer_val>9);
 	}
 ;
 
-op_else : | ELSE {
-		print_if_else();
-	 lastlineno=yylineno;} commands 
-	| ELIF { print_if_else(); } fgl_expr_c KW_THEN {
-		add_feature("ELIF");
-		print_if_start($<ptr>3);
-	 lastlineno=yylineno;} commands op_else {
-		print_if_end();
+op_else : 	{ 
+		$<struct_if_cmd>$=malloc(sizeof(struct_if_cmd));
+		$<struct_if_cmd>$->whenfalse=0;
+		$<struct_if_cmd>$->truths.conditions.conditions_len=0;
+		$<struct_if_cmd>$->truths.conditions.conditions_val=0;
+		}
+	| ELSE atline commands_as_list {
+		$<struct_if_cmd>$=malloc(sizeof(struct_if_cmd));
+		$<struct_if_cmd>$->whenfalse= $<commands>3;
+		$<struct_if_cmd>$->lineno= $<integer_val>2;
+		$<struct_if_cmd>$->truths.conditions.conditions_len=0;
+		$<struct_if_cmd>$->truths.conditions.conditions_val=0;
+	}
+	| ELIF atline fgl_expr_c KW_THEN commands_as_list op_else {
+		$<struct_if_cmd>$=$<struct_if_cmd>6;
+		$<struct_if_cmd>$->truths.conditions.conditions_len++;
+		$<struct_if_cmd>$->truths.conditions.conditions_val =realloc(  $<struct_if_cmd>$->truths.conditions.conditions_val, 
+							sizeof( $<struct_if_cmd>$->truths.conditions.conditions_val[0]) * $<struct_if_cmd>$->truths.conditions.conditions_len);
+		$<struct_if_cmd>$->truths.conditions.conditions_val[$<struct_if_cmd>$->truths.conditions.conditions_len-1].test_expr=chk_expr($<ptr>3);
+		$<struct_if_cmd>$->truths.conditions.conditions_val[$<struct_if_cmd>$->truths.conditions.conditions_len-1].lineno=$<integer_val>2;
+		$<struct_if_cmd>$->truths.conditions.conditions_val[$<struct_if_cmd>$->truths.conditions.conditions_len-1].whentrue=$<commands>5;
+		
 	};
 

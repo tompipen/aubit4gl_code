@@ -179,12 +179,12 @@ fix_insert_expr (int mode)
 	for (b=0;b<A4GL_4glc_gen_cnt(INSCOL);b++) {
 		found=0;
   		for (a=0;a<A4GL_4glc_gen_cnt(TCOL);a++) {
-			if (strcasecmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_4glc_get_gen(TCOL,a))==0) {
+			if (A4GL_aubit_strcasecmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_4glc_get_gen(TCOL,a))==0) {
 
 				found++;
 				break;
 			}
-			if (strcasecmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_confirm_colname (current_ins_table,A4GL_4glc_get_gen(TCOL,a)))==0) {
+			if (A4GL_aubit_strcasecmp(A4GL_4glc_get_gen(INSCOL,b),A4GL_confirm_colname (current_ins_table,A4GL_4glc_get_gen(TCOL,a)))==0) {
 				found++;
 				break;
 			}

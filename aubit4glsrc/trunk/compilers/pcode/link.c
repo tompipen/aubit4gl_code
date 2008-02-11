@@ -456,7 +456,7 @@ replace_variable_id (struct module *new_module, long *newid)
 	{
 
 	  if (new_module->functions.functions_val[b].cmds.cmds_val[c].
-	      cmd_type == CMD_BLOCK)
+	      npcode_cmd_type == CMD_BLOCK)
 	    {
 	      // this is probably only ever when c=0 - but for testing we'll look at all the commands
 	      // if we ever hit an assertion - we'll know I was wrong ;-)
@@ -478,7 +478,7 @@ replace_variable_id (struct module *new_module, long *newid)
 	    }
 
 	  if (new_module->functions.functions_val[b].cmds.cmds_val[c].
-	      cmd_type == CMD_SET_VAR)
+	      npcode_cmd_type == CMD_SET_VAR)
 	    {
 	      struct cmd_set_var *sv;
 	      sv =
@@ -488,7 +488,7 @@ replace_variable_id (struct module *new_module, long *newid)
 	    }
 
 	  if (new_module->functions.functions_val[b].cmds.cmds_val[c].
-	      cmd_type == CMD_SET_VAR_ONCE)
+	      npcode_cmd_type == CMD_SET_VAR_ONCE)
 	    {
 	      struct cmd_set_var1 *sv1;
 	      sv1 =
@@ -566,7 +566,7 @@ replace_id (module * nm, int oldid, int newid)
 
       for (b = 0; b < nm->functions.functions_val[a].cmds.cmds_len; b++)
 	{
-	  if (nm->functions.functions_val[a].cmds.cmds_val[b].cmd_type == CMD_BLOCK)
+	  if (nm->functions.functions_val[a].cmds.cmds_val[b].npcode_cmd_type == CMD_BLOCK)
 	    {
 	      struct cmd_block *blk;
 	      blk = nm->functions.functions_val[a].cmds.cmds_val[b].cmd_u.c_block;
@@ -576,7 +576,7 @@ replace_id (module * nm, int oldid, int newid)
 				     newid);
 		}
 	    }
-	  if (nm->functions.functions_val[a].cmds.cmds_val[b].cmd_type == CMD_CALL)
+	  if (nm->functions.functions_val[a].cmds.cmds_val[b].npcode_cmd_type == CMD_CALL)
 	    {
 	      struct npcmd_call *c;
 	      c = nm->functions.functions_val[a].cmds.cmds_val[b].cmd_u.c_call;
@@ -586,7 +586,7 @@ replace_id (module * nm, int oldid, int newid)
 	    	}
 	    }
 
-	  if (nm->functions.functions_val[a].cmds.cmds_val[b].cmd_type == CMD_ECALL)
+	  if (nm->functions.functions_val[a].cmds.cmds_val[b].npcode_cmd_type == CMD_ECALL)
 	    {
 	      struct ecall *c;
 	      c = nm->functions.functions_val[a].cmds.cmds_val[b].cmd_u.c_ecall;

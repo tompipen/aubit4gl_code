@@ -1,9 +1,11 @@
 #ifndef FGLC_VARIABLES_H
 #define FGLC_VARIABLES_H
+
+#include "dataio/fgl.xs.h"
 // We allow 5 levels of array subscription...
+
 #define MAX_ARR_SUB 15
-
-
+/*
 enum e_variable_type {
 	VARIABLE_TYPE_SIMPLE   ,
 	VARIABLE_TYPE_RECORD    ,
@@ -13,6 +15,7 @@ enum e_variable_type {
 	VARIABLE_TYPE_OBJECT    ,
 	VARIABLE_TYPE_ASSOC_INTERNAL     
 };
+*/
 
 // This is used to store a list of
 // variables extrapolated from a .* or a 'thru' entry
@@ -30,13 +33,13 @@ struct record_list_entry
 };
 
 // A list of names
-struct name_list
+struct orig_name_list
 {
   char *name;
   char *alias;
   struct name_list *next;
 };
-
+/*
 // A simple variable
 struct simple_variable
 {
@@ -55,16 +58,16 @@ struct record_variable
   char *object_type; // Used for OBJECTS and RECORDs - for a record this will be 0
   char user_ptr[256];
 };
-
+*/
 
 
 
 // Contant datatype...
-#define CONST_TYPE_CHAR    1
-#define CONST_TYPE_FLOAT   2
-#define CONST_TYPE_INTEGER 3
-#define CONST_TYPE_IDENT   4
-
+//#define CONST_TYPE_CHAR    1
+//#define CONST_TYPE_FLOAT   2
+//#define CONST_TYPE_INTEGER 3
+//#define CONST_TYPE_IDENT   4
+/*
 struct constant_data
 {
   int consttype;		// The contant type
@@ -113,10 +116,6 @@ struct variable
 };
 
 
-struct binding_list {
-	        int nbindings;
-	        char **bindings;
-};
 
 #ifndef BINDING_COMP_LIST
 
@@ -127,7 +126,6 @@ struct binding_comp_list {
         char type;
 	char *str;
 };
-typedef struct binding_comp_list t_binding_comp_list;
 
 struct binding_comp
 {
@@ -142,9 +140,16 @@ struct  binding_comp_list *copy_togenbind(char i);
 
 #define BINDING_COMP_LIST
 #endif
-
+*/
 
 /* Interface functions */
+//typedef struct binding_comp_list t_binding_comp_list;
+//
+
+struct binding_list {
+	        int nbindings;
+	        char **bindings;
+};
 
 void set_variable_user_system (char n);
 void variable_action (int category, char *name, char *type, char *n,
@@ -164,7 +169,13 @@ struct variable *get_next_variable (struct variable *record,
 				    struct variable *v1, struct variable *v2);
 void set_current_variable_scope (char n);
 struct record_list *split_record_list (char *s, char *prefix, struct record_list *list,char bindtype);
-void print_nullify (char type);
+//void print_nullify (char type);
 
 typedef struct variable s_variable;
+struct binding_comp_list *copy_togenbind(int i) ;
+int inc_var_usage_from_binding_list(struct expr_str_list *l);
+struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, char *scope, int err_if_whole_array) ;
+struct variable_usage *check_var_usage (struct variable_usage *v);
+struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array);
+
 #endif

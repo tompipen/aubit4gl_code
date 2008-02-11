@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
+#include "dataio/fgl.xs.h"
+#include "a4gl_expr.h"
 #include "alias.h"
 //#include "sqlcompiler.h"
 
@@ -19,7 +21,13 @@
 #define add_feature A4GL_add_feature
 void add_sql_function(char *s);
 
-int A4GL_cursor_current(char *s);
+int A4GL_cursor_current(expr_str *s);
+struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l);
+char *get_insert_cmd (struct struct_insert_cmd *insertCmd,int *converted);
+char *get_update_cmd(struct struct_update_cmd *updateCmd, int *converted) ;
+char * get_delete_cmd (struct struct_delete_cmd *deleteCmd, int *converted) ;
+
+str_list *generate_update_column_list_for(char *tabname);
 int sqlparse_yylex(void);
 extern int place_holder_cnt;
 void A4GL_warn(char *s);
@@ -141,6 +149,8 @@ static int scan_variable (char *s);
 #else
 #include "y.tab.h"
 #endif
+struct s_select_list_item_list * local_new_select_list_item_list(  struct s_select_list_item *i) ;
+struct s_select_list_item_list * local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i);
 
 #define GEN_STACK_HERE
 #include "a4gl_gen_stack.h"
@@ -184,6 +194,14 @@ int db_used=0;
         struct s_select *s_select;
         int     integer_val;
         float   float_val;
+	enum e_boolean e_boolean;
+	 struct expr_str_list *ptr_list;
+	        struct struct_update_cmd *update_cmd;
+        struct struct_insert_cmd *insert_cmd;
+        struct struct_delete_cmd *delete_cmd;
+        struct s_update_pair *upd_pair;
+        struct expr_str *ptr;
+        struct str_list *str_list;
 
 
 }

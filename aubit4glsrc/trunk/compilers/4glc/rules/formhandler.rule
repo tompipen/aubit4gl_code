@@ -5,112 +5,174 @@
 */
 
 formhandler_def :
-        FORMHANDLER {isin_formhandler=1;} identifier {	
-		sprintf(curr_func,"%s",$<str>3); 
-		print_formhandler($<str>3);
-		push_blockcommand("FORMHANDLER");
-        } define_section  {
-		print_variables();
-		print_getwin();
-	} op_code op_bef_ev_list op_input_section op_aft_ev_list 
-	END_FORMHANDLER { 
+        FORMHANDLER identifier {	isin_formhandler=1;
+		} define_section  op_code op_bef_ev_list op_input_section op_aft_ev_list 
+	END_FORMHANDLER  {
+		$<module_entry>$=new_formhandler_definition($<str>2, $<formhandler_dets>7.str_list, $<formhandler_dets>7.on_events, $<on_events>6, $<on_events>8);
+		set_variables(&$<module_entry>$->module_entry_u.formhandler_definition.variables,'L');
+                A4GL_chk_and_clr_labels();
 		isin_formhandler=0;
-		pop_blockcommand("FORMHANDLER"); print_end_formhandler(); 
-}
+	}
 ;
 
-op_input_section : | input_section;
+op_input_section :  {
+			//start_bind('i',0); 
+			$<formhandler_dets>$.str_list=0; $<formhandler_dets>$.on_events=0; } 
+	| input_section  {
+		$<formhandler_dets>$.str_list= $<formhandler_dets>1.str_list;
+		$<formhandler_dets>$.on_events=$<formhandler_dets>1.on_events;
+	}
+		
+;
 
-op_bef_ev_list :
-        | bef_ev_list
+op_bef_ev_list : { $<on_events>$=0;}
+        	| bef_ev_list {$<on_events>$=$<on_events>1;}
 ;
 
 bef_ev_list :
-        bef_ev | bef_ev_list bef_ev
+        bef_ev  {
+                $<on_events>$=malloc(sizeof(on_events));
+                $<on_events>$->event.event_len=1;
+                $<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+                $<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+		}
+	| bef_ev_list bef_ev {
+	        $<on_events>$=$<on_events>1;
+                $<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+                $<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+                $<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+		}
 ;
 
 bef_ev :
-        BEFORE_EVENT {
-		print_event('B');
-         lastlineno=yylineno;}  commands {
-		print_event_2();
+        BEFORE_EVENT atline commands_as_list  {
+		$<on_event>$=new_event(EVENT_BEFORE_EVENT, NULL,$<commands>3,$<integer_val>2);
         }
-        | BEFORE_OPEN_FORM {
-		print_event('b');
-       lastlineno=yylineno;  } commands {
-		print_event_2();
+        | BEFORE_OPEN_FORM atline commands_as_list {
+		$<on_event>$=new_event(EVENT_BEFORE_OPEN_FORM, NULL,$<commands>3,$<integer_val>2);
         }
 ;
 
-op_aft_ev_list :
-        | aft_ev_list
+op_aft_ev_list : { $<on_events>$=0;}
+        | aft_ev_list {$<on_events>$=$<on_events>1;}
 ;
 
 aft_ev_list :
-        aft_ev | aft_ev_list aft_ev
+        aft_ev {
+                $<on_events>$=malloc(sizeof(on_events));
+                $<on_events>$->event.event_len=1;
+                $<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+                $<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+                }
+
+	| aft_ev_list aft_ev {
+                $<on_events>$=$<on_events>1;
+                $<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+                $<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+                $<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+                }
 ;
 
 aft_ev :
-         AFTER_EVENT {
-		print_event('A');
-         lastlineno=yylineno;}  commands {
-		print_event_2();
-        }
-        | BEFORE_CLOSE_FORM {
-		print_event('a');
-         lastlineno=yylineno;} commands {
-		print_event_2();
-        }
+        AFTER_EVENT  atline commands_as_list  {
+		$<on_event>$=new_event(EVENT_AFTER_EVENT, NULL,$<commands>3,$<integer_val>2);
+	}
+        | BEFORE_CLOSE_FORM atline commands_as_list {
+		$<on_event>$=new_event(EVENT_BEFORE_CLOSE_FORM, NULL,$<commands>3,$<integer_val>2);
+	}
 ;
 
 input_section : 
-	FINPUT in_variable_list FROM in_id_list field_ops END_INPUT
-	| FINPUT BY_NAME in_bn_variable_list field_ops END_INPUT
-	| FINPUT field_ops END_INPUT
+	FINPUT formhandler_input_next field_ops END_INPUT{
+		$<formhandler_dets>$.str_list= $<str_list>2;
+		$<formhandler_dets>$.on_events=$<on_events>3;
+	}
 ;
 
 
-in_variable_list :
-        variable | in_variable_list KW_COMMA variable
+formhandler_input_next: {	
+		$<str_list>$=0;
+		//start_bind('i',0);
+	}
+	| expanded_ibind_var_list FROM in_id_list {
+			$<str_list>$=$<str_list>3;
+	}
+	| BY_NAME expanded_ibind_var_list {
+			$<str_list>$=0;
+	}
 ;
 
-in_id_list : identifier | in_id_list KW_COMMA identifier
+
+
+in_id_list : identifier {
+                      $<str_list>$=malloc(sizeof(str_list));
+                      $<str_list>$->str_list_entry.str_list_entry_len=1;
+                      $<str_list>$->str_list_entry.str_list_entry_val=malloc(sizeof($<str_list>$->str_list_entry.str_list_entry_val[0]) * $<str_list>$->str_list_entry.str_list_entry_len);
+                      $<str_list>$->str_list_entry.str_list_entry_val[$<str_list>$->str_list_entry.str_list_entry_len-1]=strdup($<str>1);
+		}
+		| in_id_list KW_COMMA identifier {
+                                $<str_list>$=$<str_list>1;
+                                $<str_list>$->str_list_entry.str_list_entry_len=$<str_list>1->str_list_entry.str_list_entry_len+1;
+                                $<str_list>$->str_list_entry.str_list_entry_val=realloc($<str_list>1->str_list_entry.str_list_entry_val, sizeof($<str_list>$->str_list_entry.str_list_entry_val[0]) * $<str_list>$->str_list_entry.str_list_entry_len);
+                                $<str_list>$->str_list_entry.str_list_entry_val[$<str_list>$->str_list_entry.str_list_entry_len-1]=strdup($<str>3);
+
+	}
 ;
 
-in_bn_variable_list :
-        variable | in_bn_variable_list KW_COMMA variable
-;
+
 
 field_ops :
-        field_op | field_ops field_op
+        field_op  {
+                $<on_events>$=malloc(sizeof(on_events));
+                $<on_events>$->event.event_len=1;
+                $<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+                $<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+	}
+	| field_ops field_op {
+	        $<on_events>$=$<on_events>1;
+                $<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+                $<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+                $<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+
+	}
 ;
 
 field_op :
-        BEFORE_ANY { 
-			print_gtk_field('B',0);
-	 lastlineno=yylineno;	} commands {
-			print_gtk_field_2();
-		}
-        | AFTER_ANY { 
-			print_gtk_field('A',0);
-		 lastlineno=yylineno;} commands {
-			print_gtk_field_2();
-		}
-        | BEFORE in_id_list {
-			print_gtk_field('b',$<str>2);
-		 lastlineno=yylineno;} commands { 
-			print_gtk_field_2();
-		}
-        | AFTER in_id_list {
-			print_gtk_field('a',$<str>2);
-		 lastlineno=yylineno;} commands { 
-			print_gtk_field_2();
-		}
-        | KW_ON in_id_list { 
-			print_gtk_field('o',$<str>2);
-		 lastlineno=yylineno;} commands { 
-			print_gtk_field_2();
-		}
+        BEFORE_ANY atline commands_as_list 		{$<on_event>$=new_event(EVENT_BEFORE_ANY, NULL,$<commands>3,$<integer_val>2);}
+        | AFTER_ANY  atline commands_as_list 		{$<on_event>$=new_event(EVENT_AFTER_ANY, NULL,$<commands>3,$<integer_val>2);}
+        | BEFORE in_id_list atline commands_as_list 	{$<on_event>$=new_event(EVENT_BEFORE, $<str_list>2,$<commands>4,$<integer_val>3);}
+        | AFTER in_id_list atline commands_as_list  	{$<on_event>$=new_event(EVENT_AFTER, $<str_list>2,$<commands>4,$<integer_val>3);}
+        | KW_ON in_id_list atline commands_as_list  	{$<on_event>$=new_event(EVENT_ON, $<str_list>2,$<commands>4,$<integer_val>3);}
 ;
 
+
+
+next_form_cmd : NEXTFORM identifier KWFIELD identifier { 
+		$<cmd>$=new_next_form_cmd($<str>2,$<str>4);
+} ;
+
+
+
+enable_cmd :  ENABLE field_name_list_as_struct {
+		$<cmd>$=new_enable_cmd($<field_list>2);
+}
+;
+
+
+enable_form_cmd : ENABLE_FORM form_name_p KWFIELD field_name_list_as_struct
+{
+		$<cmd>$=new_enable_form_cmd($<ptr>2,$<field_list>2);
+}
+;
+
+
+disable_cmd : DISABLE field_name_list_as_struct { 
+		$<cmd>$=new_disable_cmd($<field_list>2);
+}
+;
+
+disable_form_cmd : DISABLE_FORM form_name_p KWFIELD field_name_list_as_struct {
+		$<cmd>$=new_disable_form_cmd($<ptr>2,$<field_list>2);
+}
+;
 

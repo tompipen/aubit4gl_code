@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.60 2008-01-27 15:15:19 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.61 2008-02-11 17:13:11 mikeaubury Exp $
 #
 */
 
@@ -220,6 +220,16 @@ new_select_list_item_variable_usage (struct variable_usage *v)
   p->data.s_select_list_item_data_u.var_usage = v;
   return p;
 }
+
+struct s_select_list_item *
+new_select_list_item_variable_usage_list (struct s_select_list_item_list *vs)
+{
+  struct s_select_list_item *p;
+  p = empty_select_list_item (E_SLI_VARIABLE_USAGE_LIST);
+  p->data.s_select_list_item_data_u.var_usage_list = vs;
+  return p;
+}
+
 
 struct s_select_list_item *
 new_select_list_item_column_from_transform (char *s)
@@ -527,6 +537,7 @@ new_empty_select (void)
   p->table_elements.tables.tables_val = 0;
   p->group_by = 0;
   p->having = 0;
+  p->extra_statement = 0;
   p->list_of_items.list.list_len = 0;
   p->list_of_items.list.list_val = 0;
   p->where_clause = 0;
@@ -1464,7 +1475,15 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								 sq_expression.
 								 sq), kw_cb,
 					   NULL);
+
+
 	}
+	case E_SLI_QUERY:
+		A4GL_assertion(1,"Shouldnt use E_SLI_QUERY here"); break;
+
+	case E_SLI_VARIABLE_USAGE_LIST:
+		A4GL_assertion(1,"Should get E_SLI_VARIABLE_USAGE_LIST - use the 'rationalize_select_list_item_list' function to flatten the list first");
+		break;
 
     }
   A4GL_assertion (1, "Shouldn't happen...");
@@ -1619,6 +1638,28 @@ if (select==NULL) return ;
   }
 }
 
+
+
+/* Flatten a select_list_item_list - if it contains any lists itself */
+s_select_list_item_list * rationalize_select_list_item_list ( s_select_list_item_list *old )
+{
+struct s_select_list_item_list *n;
+int a;
+n=new_select_list_item_list (NULL);
+for (a=0;a<old->list.list_len;a++) {
+	if (old->list.list_val[a]->data.type!=E_SLI_VARIABLE_USAGE_LIST) {
+		add_select_list_item_list (n, old->list.list_val[a]);
+	} else {
+		int b;
+		struct s_select_list_item_list *newlist;
+		newlist=rationalize_select_list_item_list( old->list.list_val[a]->data.s_select_list_item_data_u.var_usage_list);
+		for (b=0;b<newlist->list.list_len;b++) {
+			add_select_list_item_list (n, newlist->list.list_val[b]);
+		}
+	}
+}
+return n;
+}
 
 void
 preprocess_sql_statement (struct s_select *select)
@@ -2259,7 +2300,6 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   A4GL_debug ("buff=%s", buff);
 
 
-
   A4GL_debug ("--->%s\n", buff);
   return acl_strdup_With_Context (buff);
 
@@ -2468,6 +2508,12 @@ get_sli_type (enum e_sli type)
       return "E_SLI_VAR_REPLACE";
  	case E_SLI_VARIABLE_USAGE:
 	return "E_SLI_VARIABLE_USAGE";
+case E_SLI_BUILTIN_CONST_NULL:
+	return "E_SLI_BUILTIN_CONST_NULL";
+	case E_SLI_QUERY:
+		return "E_SLI_QUERY";
+	case E_SLI_VARIABLE_USAGE_LIST:
+	return "E_SLI_VARIABLE_USAGE_LIST";
     }
   return "Unknown";
 }

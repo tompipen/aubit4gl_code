@@ -124,7 +124,7 @@ find_function (char *s)
 
 
 long
-new_command (enum cmd_type cmd_type, void *ptr)
+new_command (enum npcode_cmd_type npcode_cmd_type, void *ptr)
 {
 //int a;
   if (this_module_ptr->functions.functions_len == 0)
@@ -133,7 +133,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
       exit (1);
     }
 
-  if (cmd_type == CMD_NULL)
+  if (npcode_cmd_type == CMD_NULL)
     {
       printf ("CMD NULL PASSED IN\n");
       exit (2);
@@ -143,7 +143,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
 					 1];
 /*
   for (a=0;a<current_function->cmds.cmds_len;a++) {
-		if (current_function->cmds.cmds_val[a].cmd_type==CMD_NULL) {
+		if (current_function->cmds.cmds_val[a].npcode_cmd_type==CMD_NULL) {
 				printf("Whoops - something got splatted\n");
 				exit(2);
 		}
@@ -160,9 +160,9 @@ new_command (enum cmd_type cmd_type, void *ptr)
 
 #define CURRENT_CMD current_function->cmds.cmds_val[current_function->cmds.cmds_len - 1]
 
-  CURRENT_CMD.cmd_type = cmd_type;
+  CURRENT_CMD.npcode_cmd_type = npcode_cmd_type;
 
-  switch (cmd_type)
+  switch (npcode_cmd_type)
     {
     case CMD_BLOCK:
       CURRENT_CMD.cmd_u.c_block = ptr;
@@ -272,10 +272,10 @@ new_command (enum cmd_type cmd_type, void *ptr)
 		break;
 
     default:
-      printf ("Unknown Command : %d", cmd_type);
+      printf ("Unknown Command : %d", npcode_cmd_type);
       exit (1);
     }
-  //printf("New command : %d in %p -> %d\n",this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len-1].cmds.cmds_len-1,&this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len-1],cmd_type);
+  //printf("New command : %d in %p -> %d\n",this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len-1].cmds.cmds_len-1,&this_module_ptr->functions.functions_val[this_module_ptr->functions.functions_len-1],npcode_cmd_type);
   return this_module_ptr->functions.functions_val[this_module_ptr->functions.
 					     functions_len -
 					     1].cmds.cmds_len - 1;
@@ -909,7 +909,7 @@ resolve_gotos_func (int function_cnt)
   for (cmd_cnt = 0; cmd_cnt < current_function->cmds.cmds_len; cmd_cnt++)
     {
 
-      if (current_function->cmds.cmds_val[cmd_cnt].cmd_type == CMD_GOTO_LABEL)
+      if (current_function->cmds.cmds_val[cmd_cnt].npcode_cmd_type == CMD_GOTO_LABEL)
 	{
 	  b =
 	    find_label ((char *) current_function->cmds.cmds_val[cmd_cnt].
@@ -922,12 +922,12 @@ resolve_gotos_func (int function_cnt)
 	      exit (1);
 	    }
 	  A4GL_debug ("find label returns %d\n", b);
-	  current_function->cmds.cmds_val[cmd_cnt].cmd_type = CMD_GOTO_PC;
+	  current_function->cmds.cmds_val[cmd_cnt].npcode_cmd_type = CMD_GOTO_PC;
 	  current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_goto_pc =
 	    b - cmd_cnt;
 	}
 
-      if (current_function->cmds.cmds_val[cmd_cnt].cmd_type == CMD_IF)
+      if (current_function->cmds.cmds_val[cmd_cnt].npcode_cmd_type == CMD_IF)
 	{
 
 	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false)
@@ -994,7 +994,7 @@ resolve_gotos ()
       for (cmd_cnt = 0; cmd_cnt < current_function->cmds.cmds_len; cmd_cnt++)
 	{
 
-	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_type ==
+	  if (current_function->cmds.cmds_val[cmd_cnt].npcode_cmd_type ==
 	      CMD_GOTO_LABEL)
 	    {
 	      b =
@@ -1008,12 +1008,12 @@ resolve_gotos ()
 		  exit (1);
 		}
 	      A4GL_debug ("find label returns %d\n", b);
-	      current_function->cmds.cmds_val[cmd_cnt].cmd_type = CMD_GOTO_PC;
+	      current_function->cmds.cmds_val[cmd_cnt].npcode_cmd_type = CMD_GOTO_PC;
 	      current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_goto_pc =
 		b - cmd_cnt;
 	    }
 
-	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_type == CMD_IF)
+	  if (current_function->cmds.cmds_val[cmd_cnt].npcode_cmd_type == CMD_IF)
 	    {
 
 	      if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->

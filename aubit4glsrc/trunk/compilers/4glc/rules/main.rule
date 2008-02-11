@@ -22,8 +22,21 @@ trad_module: op_module_header
 	
 		set_4gl_vars();
 
-		set_current_variable_scope('g'); print_variables (); set_current_variable_scope('G'); print_variables (); set_current_variable_scope('m'); print_variables ();
-print_module_variable_init();
+		set_current_variable_scope('g'); 
+		 /* print_variables (); */
+
+		set_variables(&this_module.exported_global_variables,'g');
+
+		set_current_variable_scope('G'); 
+		set_variables(&this_module.imported_global_variables,'G');
+
+		set_current_variable_scope('m'); 
+		 /* print_variables (); */
+
+		set_variables(&this_module.module_variables,'m');
+
+
+		/* print_module_variable_init(); */
 		set_current_variable_scope('m');
 	}
 	func_main_def
@@ -31,12 +44,16 @@ print_module_variable_init();
 
 
 
-op_module_header: | module_header {
-	}
+op_module_header: | module_header 
+	
 ;
 
-module_header	:	module_entry 
-		| 	module_header module_entry
+module_header	:	module_entry  {
+				add_module_entry($<module_entry>1);
+		}
+		| 	module_header module_entry {
+				add_module_entry($<module_entry>2);
+		}
 ;
 
 
@@ -44,14 +61,15 @@ module_header	:	module_entry
 	
 
 module_entry : 
-module_import 
-| module_code 
-| whenever_cmd
-| import_package
-| module_globals_section 
-| module_define_section  
-| db_section
-| pragma
+	module_import  			{$<module_entry>$=$<module_entry>1;}
+	| module_code  			{$<module_entry>$=new_module_code_cmd($<cmd>1);}
+	| whenever_cmd 			{$<module_entry>$=$<module_entry>1;}
+	| import_package 		{$<module_entry>$=0;}
+	| module_globals_section  	{$<module_entry>$=0;}
+	| module_define_section   	{$<module_entry>$=0;}
+	| db_section 			{$<module_entry>$=0;}
+	| pragma 			{$<module_entry>$=0;}
+
 	;
 
 
@@ -61,40 +79,41 @@ func_main_def	: /* could be empty file */
                  {strcpy($<str>$,"");}
                 | func_or_main2
 ;
-func_or_main2 : func_or_main
-	| func_or_main2 func_or_main
+func_or_main2 : func_or_main {
+		add_module_entry($<module_entry>1);
+	}
+	| func_or_main2 func_or_main {
+		add_module_entry($<module_entry>2);
+	}
 	;
 
-at_term_cmd :
-        AT_TERMINATION_CALL  identifier {
-		print_at_termination($<str>2);
+at_term_cmd : AT_TERMINATION_CALL  identifier {
+		$<cmd>$=new_at_term_cmd($<str>2);
 	}
 ;
 
-func_or_main	:	func_def
-		|	main_def
-		|	report_def
-		|	pdf_report_def
-                |       menu_def
-                |       formhandler_def
-		|	code_cmd
-		| 	import_m
-		| 	pragma
-		|       whenever_cmd
-		| error
+func_or_main	:	func_def {$<module_entry>$=$<module_entry>1;}
+		|	main_def {$<module_entry>$=$<module_entry>1;}
+		|	report_def {$<module_entry>$=$<module_entry>1;}
+		|	pdf_report_def {$<module_entry>$=$<module_entry>1;}
+		| 	formhandler_def {$<module_entry>$=$<module_entry>1;}
+		|	code_cmd {$<module_entry>$=new_module_code_cmd($<cmd>1);}
+		| 	import_m {$<module_entry>$=$<module_entry>1;}
+		| 	pragma {$<module_entry>$=0;}
+		|       whenever_cmd {$<module_entry>$=new_module_code_cmd($<cmd>1);}
+		| 	error 
 		;
 
-module_code : code_cmd   ;
+module_code : code_cmd   {$<cmd>$=$<cmd>1;}
+;
 
-op_code : | code_cmd   ;
+op_code : {$<cmd>$=0;} | code_cmd  {$<cmd>$=$<cmd>1;} ;
 
 module_define_section : define_set ;
 
 
-ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL_FUNCTION
-{
-strcpy($<str>$,"static ");
-} ;
+ldeffunction :  FUNCTION {$<e_boolean>$=EB_FALSE;} | LOCAL_FUNCTION { $<e_boolean>$=EB_TRUE; } 
+;
 
 /*
  * Function definition 
@@ -105,7 +124,9 @@ func_def	: ldeffunction {
 				}
   				clr_variable(); 
 				lastlineno=yylineno;
+				A4GL_clr_extra_warnings();
   				clr_function_constants (); 
+				clr_call_list();
 		} identifier  OPEN_BRACKET  op_param_var_list CLOSE_BRACKET  { 
 			if (is_builtin_func($<str>3)&&!compiling_system_4gl) {
 				a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
@@ -119,74 +140,85 @@ func_def	: ldeffunction {
 			map_function_start(curr_func);
   			ADDMAP_MODULE("Declare Function",curr_func);
   			cnt=0;
-  			print_func_start_1($<str>1,$<str>3,0);
   			push_blockcommand("FUNC");
-		} define_section {
+			new_whenever_cmd(-1,0);
+		} atline define_section {
   			int c;
-  			print_func_start_2($<str>1,$<str>3,0);
+			struct variable_list v;
+			char errbuff[256];
+  			/* 
+			print_func_start_2($<str>1,$<str>3,0);
   			printDeclareFunctionStack($<str>3);
-  			A4GL_lex_printcomment("/*end of define section */\n");
   			print_variables();
-  			c=print_param_g('f',$<str>3, copy_togenbind('F'));
+  			c=print_param_g('f',$<str>3, $<ptr_list>5);
   			printPushFunction();
   			print_func_args(c);
-			 lastlineno=yylineno;} op_code commands end_func_command
-;
+			*/
+                        set_variables(&v,'L');
+                        if (!check_parameters(errbuff,&v, $<ptr_list>5)) {
+                                a4gl_yyerror(errbuff);
+                                YYERROR;
+                        }
 
-/*
- * The end of the function rule 
- */
-end_func_command : 
-  END_FUNCTION 
-  {
-    printPopFunction();
-    print_func_defret0();
-    pop_blockcommand("FUNC");
-    print_func_end();
-    clr_function_constants ();
-    A4GL_lex_printcomment("/*end function*/\n");
-    A4GL_chk_and_clr_labels();
-	map_function_end();
-  }
+
+			inc_var_assigned_from_binding_list(expand_parameters(&v,$<ptr_list>5));
+
+
+			lastlineno=yylineno;
+			} 
+			commands_as_list END_FUNCTION {
+				$<module_entry>$=new_function_definition($<str>3,$<e_boolean>1,$<ptr_list>5, $<commands>11,$<integer_val>8);
+				set_variables(&$<module_entry>$->module_entry_u.function_definition.variables,'L');
+    				pop_blockcommand("FUNC");
+    				clr_function_constants ();
+    				A4GL_lex_printcomment("/*end function*/\n");
+				
+    				A4GL_chk_and_clr_labels();
+				map_function_end();
+  			}
 ;
 
 
 main_def:	
-  MAIN 
+  MAIN  atline
   { 
-    if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
-    lastlineno=yylineno;
-    variable_action(-1,$<str>1,"","","add_function");
-    sprintf(curr_func,"MAIN");
-    clr_variable(); 
-    print_main_1();
-    push_blockcommand("MAIN"); 
-    ADDMAP_MODULE("MAIN","MAIN");
-	map_function_start("MAIN");
-  } 
-  define_section
-  {
-	print_variables();
-    printDeclareFunctionStack("MAIN");
-    print_fgllib_start(get_hdrdbname() );
-    printInitFunctionStack();
-    printPushFunction();
- lastlineno=yylineno;  }
-commands END_MAIN {
-pop_blockcommand("MAIN");
-    A4GL_chk_and_clr_labels();
+				A4GL_clr_extra_warnings();
+    		if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+		if (token_read_on_line<$<integer_val>2) {
+			$<integer_val>2=token_read_on_line;
+		}
+    		lastlineno=token_read_on_line;
+		$<integer_val>$=token_read_on_line;
+    		variable_action(-1,$<str>1,"","","add_function");
+    		sprintf(curr_func,"MAIN");
+    		clr_variable(); 
+  				clr_function_constants (); 
+		clr_call_list();
+    		push_blockcommand("MAIN"); 
+    		ADDMAP_MODULE("MAIN","MAIN");
+			map_function_start("MAIN");
+			new_whenever_cmd(-1,0);
+  	} 
+  define_section commands_as_list END_MAIN {
+	pop_blockcommand("MAIN");
+    	A4GL_chk_and_clr_labels();
 	map_function_end();
-print_main_end();
-A4GL_lex_printcomment("/*end main */\n");} ;
+	A4GL_lex_printcomment("/*end main */\n");
+	//printf("iv2=%d iv3=%d\n", $<integer_val>2, $<integer_val>3);
+	$<module_entry>$=new_main_definition($<commands>5,$<integer_val>2);
+	set_variables(&$<module_entry>$->module_entry_u.function_definition.variables,'L');
+} 
+;
 
-return_cmd : KW_RETURN op_fgl_expr_ret_list_v2 { 
+return_cmd : KW_RETURN atline op_fgl_expr_ret_list_v2 { 
     int nreturn;
     struct expr_str_list *pl;
-    printPopFunction();
-    pl=$<ptr_list>2;
+
+    pl=$<ptr_list>3;
+
     if (pl) {
 	pl=A4GL_rationalize_list(pl);
-        nreturn=pl->nlist;
+        nreturn=pl->list.list_len;
     } else {
 		nreturn=0;
 	}
@@ -198,12 +230,14 @@ return_cmd : KW_RETURN op_fgl_expr_ret_list_v2 {
 				sprintf(buff,"%d!=%d",nreturn_values,nreturn);
 				set_yytext(buff);
 				a4gl_yyerror("Different number of return values");
+			} else {
+				//A4GL_lint("Different number of return values");
 			}
 		}
     }
     nreturn_values=nreturn;
-  
-    print_return($<ptr_list>2);
+	set_cmdlineno($<integer_val>2);
+    $<cmd>$=new_return_cmd(make_fgl_expr_list(pl));
   }
 ;
 
@@ -211,17 +245,19 @@ return_cmd : KW_RETURN op_fgl_expr_ret_list_v2 {
 db_section	:	  DATABASE dbase_name {
 					add_feature("DATABASE_USED");
 					open_db($<str>2);
-					set_hdrdbname($<str>2);
+
+					set_module_dbname($<str>2,EB_FALSE);
+
 					lastlineno=yylineno;
-					is_schema=0;
-				file_out_nl("1");
+					file_out_nl("1");	
+					
 			}
 		| SCHEMA dbase_name {
 					add_feature("SCHEMA_USED");
 					open_db($<str>2);
-					set_hdrdbname($<str>2);
+
+					set_module_dbname($<str>2,EB_TRUE);
 					lastlineno=yylineno;
-					is_schema=1;
 				file_out_nl("2");
 			}
 ;
@@ -239,14 +275,13 @@ xglobals_entry : globals_entry
 ;
 
 globals_entry: GLOBALS {
-strcpy(curr_func,"[Globals]");
-set_current_variable_scope('g');
-A4GL_lex_printcomment("/* start of globals */\n");
-} 
-glob_section  {
+		strcpy(curr_func,"[Globals]");
+		set_current_variable_scope('g');
+		A4GL_lex_printcomment("/* start of globals */\n");
+		} glob_section  {
 				file_out_nl("3");
-strcpy(curr_func,"Module");
-}
+				strcpy(curr_func,"Module");
+		}
 ;
 
 glob_section : define_section END_GLOBALS {
@@ -255,7 +290,7 @@ glob_section : define_section END_GLOBALS {
 	lastlineno=yylineno;
 	set_current_variable_scope('m');
 }
-| file_name {
+| g_file_name {
 	char b[256];
 	lastlineno=yylineno;
 	strcpy(b,$<str>1);
@@ -264,8 +299,10 @@ glob_section : define_section END_GLOBALS {
 	A4GL_debug("Reading globals file %s\n",b);
 	rm_quote(b);
 	read_glob(b);
-	print_loaded_globals_file(b);
+	add_globals_file_to_this_module(b);
+	/* print_loaded_globals_file(b);  */
 	set_current_variable_scope('m');
+	
 }
 | module_code  
 | db_section

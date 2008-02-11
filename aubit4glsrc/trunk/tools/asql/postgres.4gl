@@ -1403,12 +1403,14 @@ code
 n=(long)get_curr_mvfin("SQL");
 for (b=0;b<=a-1;b++) {
 	char *s;
+	char *p;
 	s = A4GL_apisql_strdup (list[b].stmt);
 	A4GL_debug("s=%s",s);
 	A4GL_trim(s);
-	A4GL_convert_sql_new("INFORMIX","POSTGRESQL",s,0);
+	p=A4GL_convert_sql_new("INFORMIX","POSTGRES8",s,0);
+	A4GL_debug("p=%s",p);
 	A4GL_debug("s=%s",s);
-	if (n) fprintf((FILE *)n,"%s;\n\n",s);
+	if (n) fprintf((FILE *)n,"%s;\n\n",p);
 	free(s);
 	}
 }

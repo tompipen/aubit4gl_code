@@ -5,107 +5,161 @@
 */
 
 open_window_cmd :
-	OPEN_WINDOW open_win_name KW_AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
+	OPEN_WINDOW open_win_name_p KW_AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
+
+			$<cmd>$=new_open_window_cmd($<ptr>2,chk_expr($<ptr>6),chk_expr($<ptr>4),&$<wt>8,$<attrib>9);
 			add_feature("UI_OPEN_WINDOW");
 			map_ui("OPENWINDOW");
-			form_attrib.iswindow=1;
-			print_open_window($<str>2,$<open_window_type>8,$<ptr>4,$<ptr>6,last_text,last_style);
-			sprintf($<str>$,"open window");
 			}
 ;
 
-op_at_statusbox : 
-	| KW_AT OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET op_size_statusbox
-;
-
-op_size_statusbox : 
-	| KW_SIZE OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET
-;
 
 open_statusbox_cmd :
-	OPEN_STATUSBOX identifier op_at_statusbox { print_niy("OPEN_STATUSBOX"); }
+	OPEN_STATUSBOX identifier { 
+			$<cmd>$=new_open_statusbox_cmd($<str>2, NULL,NULL,NULL,NULL);
+	}
+	| OPEN_STATUSBOX identifier KW_AT OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET
+	{ 
+			$<cmd>$=new_open_statusbox_cmd($<str>2, $<ptr>5,$<ptr>7,NULL,NULL);
+	}
+	| OPEN_STATUSBOX identifier KW_AT OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET KW_SIZE OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET
+	{ 
+			$<cmd>$=new_open_statusbox_cmd($<str>2, $<ptr>5,$<ptr>7,$<ptr>11,$<ptr>13);
+	}
 ;
 
 formhandler_name:identifier {
 ADDMAP("Call Formhandler",$<str>1); 
 }
 ;
+
+
 open_form_cmd :
-	OPEN_FORM open_form_name FROM fgl_expr_c { 
+	OPEN_FORM open_form_name_p atline FROM fgl_expr_c { 
+		clr_attrib(&curr_attrib);
 		add_feature("USES_FORM");
-		form_attrib.iswindow=0;
-		map_open_form($<ptr>4);
-		print_open_form($<str>2,$<ptr>4);
-		}
-	| OPEN_FORM open_form_name op_at_gui op_like_gui op_disable KW_USING formhandler_name {
-		print_open_form_gui($<str>2,$<str>3,$<str>4,$<str>5,$<str>7);
+		set_cmdlineno($<integer_val>3);
+		map_open_form($<ptr>2);
+                $<cmd>$=new_open_form_cmd($<ptr>2, chk_expr($<ptr>5));
+                
+	}
+	| OPEN_FORM open_form_name_p atline op_at_gui op_like_gui_p op_disable KW_USING formhandler_name {
+	        clr_attrib(&curr_attrib);
+                add_feature("USES_FORM");
+		set_cmdlineno($<integer_val>3);
+                map_open_form($<ptr>2);
+                $<cmd>$=new_open_form_gui_cmd($<ptr>2,$<pair_expr>4.s1, $<pair_expr>4.s2,$<ptr>5,atoi($<str>6),$<str>8);
+                
 	}
 ;
 
 
 
-op_at_gui:{strcpy($<str>$,"0,0");} | KW_AT op_absolute OPEN_BRACKET fgl_expr_x KW_COMMA fgl_expr_x CLOSE_BRACKET 
-	{sprintf($<str>$,"%s,2",$<str>2);}
-;
-
-op_like_gui: {strcpy($<str>$,"\"\"");} |
-	LIKE ident_or_var {strcpy($<str>$,$<str>2);}
-;
-
-op_absolute: {strcpy($<str>$,"0");}
-	| KW_ABSOLUTE {strcpy($<str>$,"1");}
-;
-
-open_session_cmd : 
- OPEN_SESSION conn_id TO_DATABASE var_ident user_details
- {
-add_feature("OPEN_SESSION");
-print_open_session($<str>2,$<str>4,$<str>5);
-
-}
+op_at_gui: {
+		$<pair_expr>$.s1=0;
+		$<pair_expr>$.s2=0;
+	} 
+	| KW_AT op_absolute OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c CLOSE_BRACKET {
+		$<pair_expr>$.s1=$<ptr>4;
+		$<pair_expr>$.s2=$<ptr>6;
+	}
 
 ;
+
+op_like_gui_p: {$<ptr>$=0;} |
+	LIKE ident_or_var_p {$<ptr>$=$<ptr>2;}
+;
+
+op_absolute: {$<e_boolean>$=0;}
+	| KW_ABSOLUTE {$<e_boolean>$=1;}
+;
+
+open_session_cmd : OPEN_SESSION conn_id_p TO_DATABASE var_ident_vl user_details {
+				add_feature("OPEN_SESSION");
+				if ($<user_details>5) {
+					$<cmd>$=new_connect_cmd($<ptr>2,$<ptr>4,$<user_details>5->username, $<user_details>5->password);
+				}
+		}
+;
+
+
+
 open_cursor_cmd :
-	OPEN fetch_cursor_name 					{ print_open_cursor_g($<str>2,empty_genbind('i')); add_feature("OPEN_CURSOR");}
-	| OPEN fetch_cursor_name KW_USING ibind_var_list 	{ print_open_cursor_g($<str>2,copy_togenbind('i')); add_feature("OPEN_CURSOR");}
+	opt_use2_p OPEN fetch_cursor_name_p 
+		{ 
+			$<cmd>$=new_open_cursor_cmd($<ptr>1, $<ptr>3,0);
+			add_feature("OPEN_CURSOR");
+			        //start_bind('i',0);
+        			//start_bind('o',0);
+			
+		}
+
+	| opt_use2_p OPEN fetch_cursor_name_p KW_USING expanded_ibind_var_list 	{ 
+			$<cmd>$=new_open_cursor_cmd($<ptr>1, $<ptr>3, $<ptr_list>5);
+			add_feature("OPEN_CURSOR");
+			        //start_bind('i',0);
+        			//start_bind('o',0);
+			
+	}
 ;
 
 
-user_details :  {sprintf($<str>$,"0,0");}
-	| KW_AS USER char_or_var PASSWORD char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
-	| KW_AS USER char_or_var KW_COMMA PASSWORD char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>3,$<str>6);}
-	| KW_AS char_or_var KW_COMMA char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
+user_details :  {
+		$<user_details>$=malloc(sizeof(user_details)); 
+		$<user_details>$->username=0;
+		$<user_details>$->password=0;
+	}
+	| KW_AS_USER char_or_var_vl PASSWORD char_or_var_vl {
+		$<user_details>$=malloc(sizeof(user_details)); 
+		$<user_details>$->username=$<ptr>2;
+		$<user_details>$->password=$<ptr>4;
+		}
+	| KW_AS_USER char_or_var_vl KW_COMMA PASSWORD char_or_var_vl
+              {
+		$<user_details>$=malloc(sizeof(user_details)); 
+		$<user_details>$->username=$<ptr>2;
+		$<user_details>$->password=$<ptr>5;
+		}
+	| KW_AS char_or_var_vl KW_COMMA char_or_var_vl {
+		$<user_details>$=malloc(sizeof(user_details)); 
+		$<user_details>$->username=$<ptr>2;
+		$<user_details>$->password=$<ptr>4;
+	}
 ;
 
-op_disable : {strcpy($<str>$,"0");} | DISABLE_PROGRAM {strcpy($<str>$,"1");}
-| DISABLE_ALL {strcpy($<str>$,"2");}
+op_disable : 	{strcpy($<str>$,"0");} 
+		| DISABLE_PROGRAM {strcpy($<str>$,"1");}
+		| DISABLE_ALL {strcpy($<str>$,"2");}
 ;
 
 
 connect_cmd :
-CONNECT KW_TO var_ident op_connect_as con_user_details {
+CONNECT KW_TO var_ident_vl op_connect_as_p con_user_details {
 	add_feature("CONNECT");
-	print_open_session($<str>4,$<str>3,$<str>5);
+	$<cmd>$=new_connect_cmd($<ptr>3,$<ptr>4,$<pair>5.s1,$<pair>5.s2);
 }
 ;
 
 
 
-op_connect_as :
-        {strcpy($<str>$,"\"default_conn\"");}
-        | KW_AS ident_or_var_sql {strcpy($<str>$,$<str>2);}
-
+op_connect_as_p :
+        {$<ptr>$=0;}
+        | KW_AS ident_or_var_sql_p {$<ptr>$=$<ptr>2;} 
 ;
 
 con_user_details :
-        {sprintf($<str>$,"0,0");}
-        | KW_AS USER char_or_var KW_USING char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>3,$<str>5);}
-        | USER char_or_var KW_USING char_or_var
-              {sprintf($<str>$,"%s, %s",$<str>2,$<str>4);}
+        {
+					$<pair>$.s1=0;
+					$<pair>$.s2=0;
+	}
+        | KW_AS_USER char_or_var_vl KW_USING char_or_var_vl {
+					$<pair>$.s1=$<ptr>2;
+					$<pair>$.s2=$<ptr>4;
+		}
+        | USER char_or_var_vl KW_USING char_or_var_vl {
+					$<pair>$.s1=$<ptr>2;
+					$<pair>$.s2=$<ptr>4;
+		}
 ;
 
 /* ======================= open.rule =========================== */

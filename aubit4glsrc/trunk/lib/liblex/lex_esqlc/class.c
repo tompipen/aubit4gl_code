@@ -5,8 +5,9 @@
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 
+extern struct module_definition *current_module;
 
-extern char infilename[];
+//extern char infilename[];
 struct s_method {
 	char *name;
 	char *sig;
@@ -30,6 +31,9 @@ char parent_name[256]="";
 void LEXLIB_CLASS_set_class_name(char *name) {
 char buff[1024];
 char *ptr;
+char *infilename;
+infilename=get_current_module_name();
+
 ptr=strrchr(infilename,'/');
 if (ptr) {
 	ptr++;
@@ -79,7 +83,7 @@ printcomment("/* Parent Members */");
 if (strlen(parent_name)) {
 	char **buff;
 	int redirect=0;
-	parents=CLASS_get_members (parent_name);
+	parents=LEXLIB_CLASS_get_members (parent_name);
 	if (parents==(void *)-1) { 
 		nparents=0;
 	} else {
@@ -101,7 +105,7 @@ if (strlen(parent_name)) {
 			
 		}
 		if (redirect==1) {
-			CLASS_add_method(parents[a],"") ;
+			LEXLIB_CLASS_add_method(parents[a],"") ;
 			printc("int aclfgl_%s(int n) { printf(\"REDIRECT : %%s %%s %%d\",\"%s\",\"%s\",n);}",parents[a],parent_name,parents[a]);
 		}
 	}

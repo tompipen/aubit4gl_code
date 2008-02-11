@@ -5,136 +5,73 @@
 */
 
 
-opt_attributes:	/*empty*/ {
-	 	A4GL_debug("Using default attribute of WHITE");
-		sprintf($<str>$,"-1");
-		if (last_text) { free(last_text); }
-		if (last_style) { free(last_style); }
-		last_style=0; last_text=0;
+opt_attributes:	 { clr_attrib(&curr_attrib); $<attrib>$=0;}
+		| attributes_def { $<attrib>$=$<attrib>1;}
+;
+
+attributes_def	: ATTRIBUTES OPEN_BRACKET { clr_attrib(&curr_attrib); } attribs_sec CLOSE_BRACKET  {
+			$<attrib>$=malloc(sizeof(attrib)); memcpy($<attrib>$, &curr_attrib,sizeof(struct attrib));
 		}
-		| attributes_def {strcpy($<str>$,$<str>1);}
-;
-
-attributes_def	: ATTRIBUTES OPEN_BRACKET {
-				if (last_text) { free(last_text); }
-				if (last_style) { free(last_style); }
-				last_style=0; last_text=0;
-				} 
-		attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>4); }
-		| VARIABLE OPEN_BRACKET  {
-				if (last_text) { free(last_text); }
-				if (last_style) { free(last_style); }
-				last_style=0; last_text=0;
-				} 
-				var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>4); }
-		| ATTRIBUTES OPEN_BRACKET  {
-				if (last_text) { free(last_text); }
-				if (last_style) { free(last_style); }
-				last_style=0; last_text=0;
-				} 
-				VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>6); }
-		| ATTRIBUTES OPEN_BRACKET  {
-				if (last_text) { free(last_text); }
-				if (last_style) { free(last_style); }
-				last_style=0; last_text=0;
-				} 
-				var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>4); }
-		| KW_SIZE OPEN_BRACKET 
-			INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
-;
-
-attribs_sec	: attribute {strcpy($<str>$,$<str>1);}
-		| attribs_sec KW_COMMA attribute {sprintf($<str>$,"%d",atoi($<str>1)|atoi($<str>3));
-}
 ;
 
 
-attribute	:BLACK     {sprintf($<str>$,"%d",attr_code("BLACK"));}
-		|BLUE      {sprintf($<str>$,"%d",attr_code("BLUE"));}
-		|CYAN      {sprintf($<str>$,"%d",attr_code("CYAN"));}
-		|GREEN     {sprintf($<str>$,"%d",attr_code("GREEN"));}
-		|MAGENTA   {sprintf($<str>$,"%d",attr_code("MAGENTA"));}
-		|KW_RED       {sprintf($<str>$,"%d",attr_code("RED"));}
-		|WHITE     {sprintf($<str>$,"%d",attr_code("WHITE"));}
-		|YELLOW    {sprintf($<str>$,"%d",attr_code("YELLOW"));}
-		|REVERSE   {sprintf($<str>$,"%d",attr_code("REVERSE"));}
-		|BLINK     {sprintf($<str>$,"%d",attr_code("BLINK"));}
-		|UNDERLINE {sprintf($<str>$,"%d",attr_code("UNDERLINE"));}
-		|BOLD      {sprintf($<str>$,"%d",attr_code("BOLD"));}
-		|NORMAL    {sprintf($<str>$,"%d",attr_code("NORMAL"));}
-		|INVISIBLE {sprintf($<str>$,"%d",attr_code("INVISIBLE"));}
-		|DIM       {sprintf($<str>$,"%d",attr_code("DIM"));}
-              	|NO_NEW_LINES {inp_flags=inp_flags | 0x1; strcpy($<str>$,"0");}  
-		| input_array_attributes {strcpy($<str>$,"0");}
-		| KW_STYLE EQUAL CHAR_VALUE {
-			if (last_style) {
-				free(last_style);
-			}
-			last_style=strdup($<str>3);
-			strcpy($<str>$,"0");
-		}
+
+attribs_sec	: attribute 
+		| attribs_sec KW_COMMA attribute 
+
+;
+
+
+attribute	: BLACK     			{curr_attrib.color=attr_code("BLACK");}
+		| BLUE      			{curr_attrib.color=attr_code("BLUE");}
+		| CYAN      			{curr_attrib.color=attr_code("CYAN");}
+		| GREEN     			{curr_attrib.color=attr_code("GREEN");}
+		| MAGENTA   			{curr_attrib.color=attr_code("MAGENTA");}
+		| KW_RED    			{curr_attrib.color=attr_code("RED");}
+		| WHITE     			{curr_attrib.color=attr_code("WHITE");}
+		| YELLOW    			{curr_attrib.color=attr_code("YELLOW");}
+		| REVERSE   			{curr_attrib.reverse=EB_TRUE;}
+		| BLINK      			{curr_attrib.blink=EB_TRUE;}
+		| UNDERLINE 			{curr_attrib.underline=EB_TRUE;}
+		| BOLD       			{curr_attrib.bold=EB_TRUE;}
+		| NORMAL     			{curr_attrib.normal=EB_TRUE;}
+		| INVISIBLE  			{curr_attrib.invisible=EB_TRUE;}
+		| DIM        			{curr_attrib.dim=EB_TRUE;}
+              	| NO_NEW_LINES 			{curr_attrib.no_new_lines=EB_TRUE;}
+		| KW_STYLE EQUAL CHAR_VALUE 	{curr_attrib.style=strdup($<str>3); }
+		| char_or_var_vl 		{curr_attrib.var_attrib=$<ptr>1; }
+		| input_array_attributes 
 	;
 
-win_attributes:	/*empty*/
-		| win_attributes_def
+win_attributes:	/*empty*/ { clr_attrib(&curr_attrib);  $<attrib>$=0; } 
+		| win_attributes_def {  $<attrib>$=malloc(sizeof(attrib)); memcpy($<attrib>$, &curr_attrib,sizeof(struct attrib)); }
 ;
 
-win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET {
-		A4GL_debug("win_attributes_def");
-		A4GL_debug("Started states");
-		form_attrib.attrib=0;
-		form_attrib.attrib_str=0;
-		form_attrib.comment_line=0xff;
-		form_attrib.form_line=0xff;
-		form_attrib.error_line=0xff;
-		form_attrib.menu_line=0xff;
-		form_attrib.message_line=0xff;
-		form_attrib.prompt_line=0xff;
-		/* form_attrib.ExtText=0x0; */
-		/* form_attrib.ExtStyle=0x0; */
-		if (last_text) free(last_text);
-		if (last_style) free(last_style);
-		last_text=0;
-		last_style=0;
-		} wattribs_sec CLOSE_BRACKET {
-				strcpy($<str>$,"");
-			/*
-			if (last_style) {
-				form_attrib.ExtStyle=acl_strdup(last_style);
-			}
-			*/
-		}
+	
+win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET { clr_attrib(&curr_attrib); } 
+				wattribs_sec CLOSE_BRACKET 
+
 ;
 
 wattribs_sec	: 	wattribute {strcpy($<str>$,$<str>1);}
 		| 	wattribs_sec KW_COMMA wattribute {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
-wattribute	: attribute { form_attrib.attrib      =form_attrib.attrib|atoi($<str>1); }
-		| BORDER { form_attrib.border      =1;}
-		| KW_PAD CHAR_VALUE {int a; char *buff; a=form_attrib.attrib&255; if (strlen($<str>2) > 2) { buff=$<str>2; form_attrib.attrib=form_attrib.attrib+buff[1]; } else  { form_attrib.attrib=form_attrib.attrib+' '; } }
-		| COMMENT_LINE line_no { form_attrib.comment_line=atoi($<str>2); }
-		| FORM_LINE line_no { form_attrib.form_line   =atoi($<str>2); }
-		| ERROR_LINE line_no { form_attrib.error_line  =atoi($<str>2); }
-		| MENU_LINE line_no { form_attrib.menu_line   =atoi($<str>2); }
-		| MSG_LINE line_no { form_attrib.message_line=atoi($<str>2); }
-		| PROMPT_LINE line_no { form_attrib.prompt_line =atoi($<str>2); }
-		| VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET {
-			sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>3); 
-			form_attrib.attrib_str=(long)acl_strdup($<str>$);
-		}
-		|  var_or_string  {
-			sprintf($<str>$,"A4GL_strattr_to_num(%s)",$<str>1); 
-			form_attrib.attrib_str=(long)acl_strdup($<str>$);
-		}
-		| KW_TEXT EQUAL CHAR_VALUE {
-			form_attrib.attrib_str=acl_strdup($<str>3);
-			if (last_text) {
-				free(last_text);
-			}
-			last_text=strdup($<str>3);
-			strcpy($<str>$,"0");
-		}
+wattribute	: attribute  
+		| BORDER 			{ curr_attrib.border=EB_TRUE; }
+		| KW_PAD CHAR_VALUE 		{ curr_attrib.pad=strdup($<str>2); }
+		| COMMENT_LINE line_no 		{ curr_attrib.comment_line=$<ptr>2; }
+		| FORM_LINE line_no 		{ curr_attrib.form_line   =$<ptr>2; }
+		| ERROR_LINE line_no 		{ curr_attrib.error_line  =$<ptr>2; }
+		| MENU_LINE line_no 		{ curr_attrib.menu_line   =$<ptr>2; }
+		| MSG_LINE line_no 		{ curr_attrib.message_line=$<ptr>2; }
+		| PROMPT_LINE line_no 		{ curr_attrib.prompt_line =$<ptr>2; }
+		| KW_TEXT EQUAL CHAR_VALUE 	{ curr_attrib.text=strdup($<str>3); }
+		| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+			/* Decode this with A4GL_strattr_to_num */
+                        curr_attrib.variable_str=$<ptr>3;
+                }
+
 ;
 
 

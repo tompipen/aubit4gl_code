@@ -120,11 +120,12 @@ for a=topline to topline+edit_lines-1
 	if length(lines[a])>max_x then
 		let max_x=length(lines[a])
 	end if
+	
 	let l=lines[a][leftcol,line_length]
 	if c==cursor_y+t-1 then
 		let cline=l
 	end if
-	display l,"" at c,1 	# attribute(green,dim)  # for that olde green screen feeling...
+	display l,"" at c,1 #	 attribute(green,dim)  # for that olde green screen feeling...
 
 	if leftcol>1 then display "+" at c,1 end if
 	let rest=lines[a][leftcol,line_length]

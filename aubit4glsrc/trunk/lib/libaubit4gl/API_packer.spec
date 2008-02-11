@@ -31,7 +31,7 @@ input_string char* name,char** val,int ptr,int isarr -> int
 input_double char* name,double* val,int ptr,int isarr -> int
 input_start_struct char* s,char* n,int ptr,int isarr -> int
 input_end_struct char* s,char* n -> int
-input_start_union char* s,char* enumname, int enum_val,char* n,int ptr,int isarr -> int
+input_start_union char* s,char* enumname, int* enum_val,char* n,int ptr,int isarr -> int
 input_ptr_ok -> int
 input_end_union char* s,char* en,int e char* n -> int
 input_enum char* rn char* name,int* d -> int

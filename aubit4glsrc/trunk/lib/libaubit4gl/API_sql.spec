@@ -19,7 +19,7 @@ A4GLSQL_next_column_detailed char** colname int* dtype int* size int* prec int* 
 
 * A4GLSQL_read_columns char* tabname char* colname int* dtype int* size -> int
 
-A4GLSQL_get_validation_expr char* tabname char* colname -> t_expr_str_list*
+A4GLSQL_get_validation_expr char* tabname char* colname -> expr_str_list*
 A4GLSQL_syscolval_expr char* tabname char* colname char* typ -> char*
 
 

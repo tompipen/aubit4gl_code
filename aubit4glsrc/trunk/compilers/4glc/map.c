@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.48 2007-01-02 17:03:03 mikeaubury Exp $
+# $Id: map.c,v 1.49 2008-02-11 17:13:06 mikeaubury Exp $
 #*/
 
 /**
@@ -194,6 +194,10 @@ addmap (char *t, char *s, char *w, int l, char *m)
     FPRINTF (mapfile, "%s|%s|%s|%d|%s|\n", t, s, w, l, m);
 }
 
+void
+addmap_p (char *t, struct expr_str *s, char *w, int l, char *m) {
+//@ FIXME
+}
 /**
  * Close the map file
  */

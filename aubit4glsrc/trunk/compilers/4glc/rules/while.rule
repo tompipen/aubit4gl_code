@@ -5,16 +5,12 @@
 */
 
 
-while_cmd : WHILE {
-		print_while_1();
-		push_blockcommand("WHILE");
-		} fgl_expr_c {
-			print_while_2($<ptr>3);
-				 lastlineno=yylineno;
-		} commands END_WHILE {
-			continue_blockcommand("WHILE");
-			print_while_end();
+while_cmd : WHILE atline  fgl_expr_c {
+			push_blockcommand("WHILE");
+		} commands_as_list END_WHILE {
+			set_cmdlineno($<integer_val>2);
 			pop_blockcommand("WHILE");
+			$<cmd>$=new_while_cmd(chk_expr($<ptr>3), $<commands>5);
 		}
 ;
 

@@ -1,3 +1,4 @@
+//#include "fgl.xs.h"
 #include "variables.h"
 #include "a4gl_4glc_int.h"
 #include "var_handling.h"
@@ -6,9 +7,8 @@
 #include <string.h>
 
 
-static void variable_usage_as_string_int (struct variable_usage *var,
-					  char *buff, int ident_flg);
-
+//static void variable_usage_as_string_int (struct variable_usage *var, char *buff, int ident_flg);
+#ifdef MOVED
 struct variable_usage *
 new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 {
@@ -17,17 +17,21 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
   newv = acl_malloc2 (sizeof (struct variable_usage));
 
   newv->variable_name = acl_strdup (partname);
-  newv->nsubscripts = 0;
-  for (a = 0; a < 10; a++)
-    {
-      newv->subscripts[a] = 0;
-    }
 
-  newv->nsubstrings = 0;
-  newv->substrings[0] = 0;
-  newv->substrings[1] = 0;
+  newv->subscripts.subscripts_len = 0;
+  newv->subscripts.subscripts_val = 0;
+
+  //for (a = 0; a < 10; a++)
+    //{
+      //newv->subscripts[a] = 0;
+    //}
+
+  //newv->nsubstrings = 0;
+  newv->substrings_start = 0;
+  newv->substrings_end   = 0;
 
   newv->variable_id = -1;
+  newv->datatype = -1;
   newv->scope = 0;
   newv->next = 0;
 
@@ -36,17 +40,22 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
     {
       if (prepend)
 	{
-	  newv->next = old;
+		//A4GL_debug("NEW VARIABLE USAGE RETURNING : %s\n", cmds_get_variable_usage_as_string(newv));
 	  return newv;
 	}
       else
 	{
-	  old->next = newv;
+	 	struct variable_usage *n;	
+		n=old;
+		while (n->next) n=n->next;
+	  	n->next = newv;
+		//A4GL_debug("NEW VARIABLE USAGE RETURNING : %s\n", cmds_get_variable_usage_as_string(old));
 	  return old;
 	}
     }
   else
     {
+		//A4GL_debug("NEW VARIABLE USAGE RETURNING : %s\n", cmds_get_variable_usage_as_string(newv));
       return newv;
     }
 }
@@ -61,37 +70,54 @@ append_variable_usage (struct variable_usage *old,
   while (old->next)
     old = old->next;
   old->next = new_usg;
+		// A4GL_debug("APPEND VARIABLE USAGE RETURNING : %s\n", cmds_get_variable_usage_as_string(orig));
   return orig;
 }
+#endif
+
+
+
+static void add_subscript(struct variable_usage *var) {
+	var->subscripts.subscripts_len++;
+	if (var->subscripts.subscripts_len==1) {
+		var->subscripts.subscripts_val=malloc(sizeof(var->subscripts.subscripts_val[0]));
+	} else {
+		var->subscripts.subscripts_val=realloc(var->subscripts.subscripts_val, var->subscripts.subscripts_len*sizeof(var->subscripts.subscripts_val[0]));
+	}
+	var->subscripts.subscripts_val[var->subscripts.subscripts_len-1]=0;
+}
 
 void
-set_variable_usage_subscript (struct variable_usage *var, int sub, char *val)
+set_variable_usage_subscript (struct variable_usage *var, int sub, expr_str *val)
 {
-  var->subscripts[sub] = acl_strdup (val);
-  if (sub >= var->nsubscripts)
-    {
-      var->nsubscripts = sub + 1;
-    }
+  while (var->subscripts.subscripts_len<=sub) {
+		add_subscript(var);
+  }
+  var->subscripts.subscripts_val[sub] = val;
 }
 
 
 void
-set_variable_usage_substr (struct variable_usage *var, int sub, char *val)
+set_variable_usage_substr (struct variable_usage *var, int sub, expr_str *val)
 {
   if (sub > 1)
     {
       a4gl_yyerror ("Substring expression expected to be start or start,end");
       return;
     }
-  var->substrings[sub] = acl_strdup (val);
-  if (sub >= var->nsubstrings)
-    {
-      var->nsubstrings = sub + 1;
-    }
+
+  if (sub==0) {
+	var->substrings_start=val; 
+  } 
+
+  if (sub==1) {
+	var->substrings_end=val; 
+  }
+
 }
 
 
-
+#ifdef FIXME
 
 char *
 variable_usage_as_string (struct variable_usage *var, int ident_flg)
@@ -148,7 +174,7 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
       // we just want the variable structure
       // not the array contents...
 
-      if (var->nsubscripts && var->nsubstrings == 0)
+      if (var->nsubscripts && var->substring_start == 0)
 	{
 	  // It might be a substring..
 	  //
@@ -158,20 +184,20 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 	  if (arrsize == 0 || type == -1 || ident_flg == VAR_USG_IDENT)
 	    {
 	      // This is a substring - not a subscript...
-	      var->nsubstrings = var->nsubscripts;
-	      var->substrings[0] = var->subscripts[0];
-	      var->substrings[1] = var->subscripts[1];
-	      if (var->nsubstrings > 2)
+	      var->substrings_start = var->subscripts.subscripts_val[0];
+	      var->substrings_end = var->subscripts.subscripts_val[1];
+	      if (var->subscripts.subscripts_len > 2)
 		{
 		  a4gl_yyerror ("Too many subscripts for a substring");
 		  return;
 		}
-	      var->nsubscripts = 0;
+	      var->subscripts.subscript_len = 0;
+	      var->subscripts.subscript_val = 0;
 	    }
 	}
 
 
-      if (var->nsubscripts)
+      if (var->subscripts.subscripts_len)
 	{
 	  if (ident_flg == VAR_USG_VARIABLE)
 	    {
@@ -181,7 +207,16 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
 		{
 		  if (a)
 		    strcat (buff, "][");
-		  SPRINTF1 (tmpbuff, "((%s)-1)", var->subscripts[a]);
+		if (strcmp(acl_getenv("A4GL_LEXTYPE"),"FGL")==0 ) {
+		  			SPRINTF1 (tmpbuff, "%s", expr_as_string(var->subscripts[a]));
+		} else {
+					if (strcmp(acl_getenv("A4GL_LEXTYPE"),"CSNEW")==0) {
+						ensure_int(var->subscripts[a],1);
+		  			SPRINTF1 (tmpbuff, "%s-1", expr_as_string(var->subscripts[a]));
+				} else {
+		  		SPRINTF1 (tmpbuff, "((%s)-1)", expr_as_string(var->subscripts[a]));
+				}
+		}
 		  strcat (buff, tmpbuff);
 		}
 	      strcat (buff, "]");
@@ -277,9 +312,10 @@ variable_usage_as_string_int (struct variable_usage *var, char *buff,
       variable_usage_as_string_int (var->next, buff, ident_flg);
     }
 }
+#endif
 
 
-
+/*
 struct num_list *
 new_num_list_item (char *s)
 {
@@ -300,3 +336,4 @@ append_num_list_items (struct num_list *list, struct num_list *next)
   list->next = next;
   return orig;
 }
+*/

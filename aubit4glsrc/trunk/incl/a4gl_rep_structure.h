@@ -17,8 +17,8 @@ struct rb_blocks {
     char *rep_table;		/* database table for aggregate values */
     struct BINDING *group_data;
     char output_mode;
-    struct expr_str *output_loc;
-    char *output_loc_str;
+    struct expr_str *output_loc; 
+    char output_loc_str[512];
     char top_of_page[256];
     FILE *output;
     long page_no;
@@ -55,7 +55,7 @@ struct rb_blocks {
     struct BINDING *group_data;
     char output_mode;
     struct expr_str *output_loc;
-    char *output_loc_str;
+    char output_loc_str[512];
     FILE *output;
     int page_no;
     int printed_page_no;

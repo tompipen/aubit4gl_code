@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.71 2006-07-21 09:55:24 mikeaubury Exp $
+# $Id: 4glc.c,v 1.72 2008-02-11 17:13:06 mikeaubury Exp $
 #
 */
 
@@ -40,7 +40,6 @@
 */
 
 #include "a4gl_4glc_int.h"
-
 /*
 =====================================================================
                     Variables definitions
@@ -155,6 +154,9 @@ main (int argc, char *argv[])
     //}
 
   /* dump_var_records();*/
+
+  //A4GL_write_generated_code(module);
+
   A4GL_debug ("Exiting 4glc");
   exit (x);
 }

@@ -4,9 +4,11 @@
 =====================================================================
 */
 
-sleep_cmd : SLEEP fgl_expr_c {
+sleep_cmd : SLEEP atline fgl_expr_c {
 		add_feature("SLEEP");
-		print_sleep($<ptr>2);
+		set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_sleep_cmd(chk_expr($<ptr>3));
+		
 	}
 ;
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.26 2007-07-23 13:21:33 mikeaubury Exp $
+# $Id: Makefile,v 1.27 2008-02-11 17:13:06 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -73,13 +73,14 @@ CMODS_LIB       =\
 				field_handling.c \
 				globals.c \
 				import.c labels.c insert_curs.c fix_insert.c \
+				linearise.c \
 				rules/generated/kw.c \
-				list.c lexer.c lex.c \
-				mod.c map.c extendedmap.c parsehelp.c \
-				../../lib/generated/std_funcs.c  \
-				var_handling.c variables.c \
-                ${Y_TAB_C} \
-                ${WANTKW_C}
+				list.c lexer.c lex.c  expr_munging.c lint.c \
+                                mod.c commands.c  map.c extendedmap.c parsehelp.c common.c \
+                                ../../lib/generated/std_funcs.c  \
+                                var_handling.c variables.c \
+                		${Y_TAB_C} \
+                		${WANTKW_C}
 
 CMODS           =${CMODS_EXE} ${CMODS_LIB}
 
@@ -294,6 +295,34 @@ clean.rules.generated:
 	
 clean.rules:
 	${MAKE} -C rules clean
+
+
+extra: reload reload_static fgllint calltree fglsplit
+
+reload: reload.c API_lex.c
+	cc -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex.c -o reload -L$(AUBITDIR)/lib -laubit4gl -lz 
+
+
+
+reload_static: reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c
+	cc -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o reload -L$(AUBITDIR)/lib -laubit4gl -lz -L/home/aubit4gl/aubit4glsrc.new/plugins-1.10Dev_73 -lLEX_C
+
+fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c
+	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	cp fgllint $(AUBITDIR)/bin
+
+calltree: calltree.o API_lex.o  linearise.o calltree_expr.o
+	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	cp calltree $(AUBITDIR)/bin
+
+fglsplit: split.o API_lex.o  linearise.o
+	gcc -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	cp $@ $(AUBITDIR)/bin
+
+fgllink: write_4gl.o API_lex.o
+	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	cp fgllink $(AUBITDIR)/bin
+
 
 # --------------------------------- EOF -----------------------------
 

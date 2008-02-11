@@ -6,4 +6,5 @@
 #include "lex.yy.c"
 #endif
 #include "util.c"
+#include "cmds.c"
 

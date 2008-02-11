@@ -481,7 +481,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
 	  command = &this_module_ptr->functions.functions_val[this_module_ptr->functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
 
 	}
-      if (command->cmd_type != CMD_BLOCK)
+      if (command->npcode_cmd_type != CMD_BLOCK)
 	{
 	  printf ("I've got confused...\nIt happens...\n");
 	  exit (1);
@@ -1013,28 +1013,28 @@ move_defines ()
     {
       func = &this_module_ptr->functions.functions_val[a];
       // 0 will always be the functions block...
-      if (func->cmds.cmds_val[0].cmd_type != CMD_BLOCK)
+      if (func->cmds.cmds_val[0].npcode_cmd_type != CMD_BLOCK)
 	{
 	  fprintf (stderr,"Confused - expecting first command to be a block");
 	}
 
       for (b = 1; b < func->cmds.cmds_len; b++)
 	{
-	  if (func->cmds.cmds_val[b].cmd_type == CMD_BLOCK)
+	  if (func->cmds.cmds_val[b].npcode_cmd_type == CMD_BLOCK)
 	    {
 
 	      move_define (func->cmds.cmds_val[b].cmd_u.c_block,
 			   func->cmds.cmds_val[0].cmd_u.c_block);
-	      func->cmds.cmds_val[b].cmd_type = CMD_NOP;
+	      func->cmds.cmds_val[b].npcode_cmd_type = CMD_NOP;
 	      nop++;
 	    }
 
-	  if (func->cmds.cmds_val[b].cmd_type == CMD_END_BLOCK)
+	  if (func->cmds.cmds_val[b].npcode_cmd_type == CMD_END_BLOCK)
 	    {
 	      if (func->cmds.cmds_val[b].cmd_u.c_endblock->pc_start_block !=
 		  0)
 		{
-		  func->cmds.cmds_val[b].cmd_type = CMD_NOP;
+		  func->cmds.cmds_val[b].npcode_cmd_type = CMD_NOP;
 		  nop++;
 		}
 	    }
@@ -1057,7 +1057,7 @@ struct cmd_block *get_base(int block_pc) {
 	  command = &this_module_ptr->functions.functions_val[this_module_ptr->functions.  functions_len - 1].cmds.cmds_val[block_pc];
 
 	}
-      if (command->cmd_type != CMD_BLOCK)
+      if (command->npcode_cmd_type != CMD_BLOCK)
 	{
 	  printf ("I've got confused...\nIt happens...\n");
 	  exit (1);

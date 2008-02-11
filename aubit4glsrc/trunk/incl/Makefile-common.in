@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.222 2007-10-07 16:29:56 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.223 2008-02-11 17:13:10 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1397,8 +1397,8 @@ endif
 
 #Additional files to clean even if we would not install them under
 #current configuration:
-LIB_ALLWAYSCLEAN+=libA4GL_cint${SO_EXT} libMENU_XDR${SO_EXT} libUI_GTK${SO_EXT} \
-	libMENU_GENERIC${SO_EXT} libSQL_esqlSAP${SO_EXT}
+LIB_ALLWAYSCLEAN+=libA4GL_cint${SO_EXT}  libUI_GTK${SO_EXT} \
+	 libSQL_esqlSAP${SO_EXT}
 
 ## ==================================================================
 ##                    To docs directory

@@ -5,53 +5,30 @@
 */
 
 
-ext_cmd : EXIT_WHILE
-        { if (in_command("WHILE")) { add_feature("EXIT_WHILE"); exit_loop("WHILE"); } else { YYERROR;} }
-	| EXIT_INPUT
-        { if (in_command("INPUT")) { add_feature("EXIT_INPUT"); exit_loop("INPUT"); } else { YYERROR;} }
-	| EXIT_FOREACH
-        { if (in_command("FOREACH")) { add_feature("EXIT_FOREACH"); exit_loop("FOREACH"); } else { YYERROR;} }
-	| EXIT_FOR
-        { if (in_command("FOR")) { add_feature("EXIT_FOR"); exit_loop("FOR"); } else { YYERROR;} }
-	| EXIT_CONSTRUCT
-        { if (in_command("CONSTRUCT")) { add_feature("EXIT_CONSTRUCT"); exit_loop("CONSTRUCT"); } else { YYERROR;} }
-	| EXIT_DISPLAY
-        { if (in_command("DISPLAY")) { add_feature("EXIT_DISPLAY"); exit_loop("DISPLAY"); } else { YYERROR;} }
-	| EXIT_MENU  { add_feature("EXIT_MENU");
-	if (in_command("MENU")) {
-		
-		exit_loop("MENU");
-		/* A4GL_lex_printc("cmd_no=-3;continue;\n"); */
-	} 
-              else YYERROR;}
-	| EXIT_CASE { add_feature("EXIT_CASE");
-		if (in_command("CASE")) { exit_loop("CASE"); } else { YYERROR;} 
-	}
-	| EXIT_PROMPT { add_feature("EXIT_PROMPT");
-		if (in_command("PROMPT")) { exit_loop("PROMPT"); } else { YYERROR;} 
-	}
+ext_cmd : 
+	  EXIT_WHILE 		{ add_feature("EXIT_WHILE");     if (in_command("WHILE")) 	{ $<cmd>$=new_ext_cmd(EBC_WHILE); } else { YYERROR;} }
+	| EXIT_INPUT 		{ add_feature("EXIT_INPUT");     if (in_command("INPUT")) 	{ $<cmd>$=new_ext_cmd(EBC_INPUT);  } else { YYERROR;} }
+	| EXIT_FOREACH 		{ add_feature("EXIT_FOREACH");   if (in_command("FOREACH")) 	{ $<cmd>$=new_ext_cmd(EBC_FOREACH);  } else { YYERROR;} }
+	| EXIT_FOR 		{ add_feature("EXIT_FOR");       if (in_command("FOR")) 	{ $<cmd>$=new_ext_cmd(EBC_FOR);  } else { YYERROR;} }
+	| EXIT_CONSTRUCT 	{ add_feature("EXIT_CONSTRUCT"); if (in_command("CONSTRUCT")) 	{ $<cmd>$=new_ext_cmd(EBC_CONSTRUCT);  } else { YYERROR;} }
+	| EXIT_DISPLAY 		{ add_feature("EXIT_DISPLAY");   if (in_command("DISPLAY")) 	{ $<cmd>$=new_ext_cmd(EBC_DISPLAY);  } else { YYERROR;} }
+	| EXIT_MENU  		{ add_feature("EXIT_MENU");      if (in_command("MENU")) 	{ $<cmd>$=new_ext_cmd(EBC_MENU);  } else { YYERROR;} }
+	| EXIT_CASE 		{ add_feature("EXIT_CASE");      if (in_command("CASE")) 	{ $<cmd>$=new_ext_cmd(EBC_CASE);  } else { YYERROR;} }
+	| EXIT_PROMPT 		{ add_feature("EXIT_PROMPT");    if (in_command("PROMPT")) 	{ $<cmd>$=new_ext_cmd(EBC_PROMPT);  } else { YYERROR;} }
 ;
 
-continue_cmd : CONTINUE_WHILE {  add_feature("CONTINUE_WHILE");
-if (in_command("WHILE")) { continue_loop("WHILE");  } else { YYERROR;} }
-	| CONTINUE_INPUT {  add_feature("CONTINUE_INPUT");
-if (in_command("INPUT")) { continue_loop("INPUT"); } else { YYERROR;} }
-	| CONTINUE_FOREACH {  add_feature("CONTINUE_FOREACH");
-if (in_command("FOREACH")) { continue_loop("FOREACH");} else { YYERROR;} }
-	| CONTINUE_FOR {  add_feature("CONTINUE_FOR");
-if (in_command("FOR")) { continue_loop("FOR"); } else { YYERROR;} }
-	| CONTINUE_CONSTRUCT {  add_feature("CONTINUE_CONSTRUCT");
-if (in_command("CONSTRUCT")) { continue_loop("CONSTRUCT"); } else { YYERROR;} }
-	| CONTINUE_DISPLAY {  add_feature("CONTINUE_DISPLAY");
-if (in_command("DISPLAY")) { continue_loop("DISPLAY"); } else { YYERROR;} }
-	| CONTINUE_MENU {  add_feature("CONTINUE_MENU");
-if (in_command("MENU")) {  continue_loop("MENU");  } else { YYERROR;} }
+continue_cmd : 
+	  CONTINUE_WHILE 	{ add_feature("CONTINUE_WHILE");     if (in_command("WHILE"))     { $<cmd>$=new_continue_cmd(EBC_WHILE); } else { YYERROR;} }
+	| CONTINUE_INPUT 	{ add_feature("CONTINUE_INPUT");     if (in_command("INPUT"))     { $<cmd>$=new_continue_cmd(EBC_INPUT); } else { YYERROR;} }
+	| CONTINUE_FOREACH 	{ add_feature("CONTINUE_FOREACH");   if (in_command("FOREACH"))   { $<cmd>$=new_continue_cmd(EBC_FOREACH); } else { YYERROR;} }
+	| CONTINUE_FOR 		{ add_feature("CONTINUE_FOR");       if (in_command("FOR"))       { $<cmd>$=new_continue_cmd(EBC_FOR); } else { YYERROR;} }
+	| CONTINUE_CONSTRUCT 	{ add_feature("CONTINUE_CONSTRUCT"); if (in_command("CONSTRUCT")) { $<cmd>$=new_continue_cmd(EBC_CONSTRUCT); } else { YYERROR;} }
+	| CONTINUE_DISPLAY 	{ add_feature("CONTINUE_DISPLAY");   if (in_command("DISPLAY"))   { $<cmd>$=new_continue_cmd(EBC_DISPLAY); } else { YYERROR;} }
+	| CONTINUE_MENU 	{ add_feature("CONTINUE_MENU");      if (in_command("MENU"))      { $<cmd>$=new_continue_cmd(EBC_MENU); } else { YYERROR;} }
+	| CONTINUE_PROMPT 	{ add_feature("CONTINUE_PROMPT");    if (in_command("PROMPT"))    { $<cmd>$=new_continue_cmd(EBC_PROMPT); } else { YYERROR;} }
 
 /* There is no continue case... */
-	/* | CONTINUE_CASE */
-        /* { if (in_command("CASE")) { continue_loop("CASE");  } else { YYERROR;} } */
-	| CONTINUE_PROMPT
-        { if (in_command("PROMPT")) { continue_loop("PROMPT"); } else { YYERROR;} }
+	/* | CONTINUE_CASE { if (in_command("CASE")) { continue_loop("CASE");  } else { YYERROR;} } */
 ;
 
 

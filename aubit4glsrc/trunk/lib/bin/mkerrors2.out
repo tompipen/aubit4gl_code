@@ -3,62 +3,62 @@
 4|Unable to open LEX library...
 5|Unable to open PARSER library...
 6|Bad SQL: %s
-7|Invalid data type\n
-8|Unable to open file
-9|File is not open
-10|Assertion failed %s
-11|Assertion failed
-12|Unknown attribute
-13|A character variable has referenced subscripts that are out of range
-14|Unable to open Error Log file
-15|Error Log file is not open
-16|4Js DDE functions not implemented
-17|4Js keysetlabel function not implemented
-18|4Js winmessage function not implemented
-19|4Js winexecwait function not implemented
-20|4Js winexec function not implemented
-21|trunc not implemented\n
-22|round not implemented\n
-23|exp not implemented\n
-24|logn not implemented\n
-25|log not implemented\n
-26|Internal Error : Couldnt process datatype %x\n
-27|Internal Error : Couldnt process datatype \n
-28|DLL functions not available yet for WIN32 platforms
-29|No DLL Loaded
-30|0: Non-existing function called in DLL\n
-31|Error: Cannot determine AUBITDIR - STOP.
-32|
-33|Error: can't open DLL - STOP. See debug.out
-34|Could not open shared library
-35|Could not find function in shared library
-36|Could not open share library
-37|2: Non-existing function (%s) called in DLL
-38|Unable to load shared library file
-39|Unable to load function from shared libary
-40|conv.c - Invalid DBDATE format: %s
-41|Value exceeds limit of SMALLINT 
-42|Invalid conversion
-43|Unable to open library
-44|Unable to open EXDTYPE library.
-45|Unable to find function
-46|Invalid date
-47|dmy.c - Invalid DBDATE format: %s
-48|Can't resize a non-allocated dynamic array
-49|Dynamic Array has not been allocated or has already been freed
-50|Unknown error
-51|Unknown/non-handled special name in field colour where clause
-52|Unknown comparison %s
-53|Internal error - unhandled field comparison
-54|Unable to open help file
-55|Unable to open language file
-56|No language file
-57|message not found
-58|Could not read lang text
-59|Could not defer interrupt
-60|Could not attach SegFault Handler
-61|Unable to attach SIGCLD handler
-62|Unable to attach SIGPIPE handler
+7|XMLRPC Error
+8|Call failed
+9|Assertion failed %s
+10|Assertion failed
+11|Unknown attribute
+12|A character variable has referenced subscripts that are out of range
+13|Unable to open Error Log file
+14|Error Log file is not open
+15|4Js DDE functions not implemented
+16|4Js keysetlabel function not implemented
+17|4Js winmessage function not implemented
+18|4Js winexecwait function not implemented
+19|4Js winexec function not implemented
+20|trunc not implemented\n
+21|round not implemented\n
+22|exp not implemented\n
+23|logn not implemented\n
+24|log not implemented\n
+25|Internal Error : Couldnt process datatype %x\n
+26|Internal Error : Couldnt process datatype \n
+27|DLL functions not available yet for WIN32 platforms
+28|No DLL Loaded
+29|0: Non-existing function called in DLL\n
+30|Error: Cannot determine AUBITDIR - STOP.
+31|
+32|Error: can't open DLL - STOP. See debug.out
+33|Could not open shared library
+34|Could not find function in shared library
+35|Could not open share library
+36|2: Non-existing function (%s) called in DLL
+37|Unable to load shared library file
+38|Unable to load function from shared libary
+39|conv.c - Invalid DBDATE format: %s
+40|Value exceeds limit of SMALLINT 
+41|Invalid conversion
+42|Unable to open library
+43|Unable to open EXDTYPE library.
+44|Unable to find function
+45|Invalid date
+46|dmy.c - Invalid DBDATE format: %s
+47|Can't resize a non-allocated dynamic array
+48|Dynamic Array has not been allocated or has already been freed
+49|Unknown error
+50|Unknown/non-handled special name in field colour where clause
+51|Unknown comparison %s
+52|Internal error - unhandled field comparison
+53|Unable to open help file
+54|Unable to open language file
+55|No language file
+56|message not found
+57|Could not read lang text
+58|Could not defer interrupt
+59|Could not attach SegFault Handler
+60|Unable to attach SIGCLD handler
+61|Unable to attach SIGPIPE handler
+62|Unable to open UI library...
 63|Unable to start TCP session
 64|Form was not found
 65|Invalid Form info request
@@ -110,197 +110,197 @@
 111|Unable to open MENU library...
 112|Unable to open PACKER library...
 113|Unable to open FORM library...
-114|Unable to open UI library...
-115|Unable to open SQLPARSE library...
-116|Unable to open SQL library...
-117|Unable to open RPC library...
-118|Unable to open EXREPORT library...
-119|Form compilation error
-120|Unable to read form
-121|This form has a version number that I can't handle
-122|Couldnt open form - does not appear to be a valid form file
-123|Couldnt open form
-124|Menu item does not exist
-125|Unable to open LOGREP library...
-126|Unable to open LOGREPPROC library...
-127|Not available in TUI mode (show_menu)
-128|No menu displayed
-129|Invalid menu ID
-130|Help message not found
-131|Could not read help message
-132|Unable to open form in memory
-133|Unable to open
-134|Error opening output\n
-135|Unable to locate font
-136|Blob not located
-137|Not implemented yet...\n
-138|Unable to open file %s %s
-139|Unable to open file.
-140|Unable to connect to host
-141|Untransmittable data
-142|RPC call failed
-143|Unprintable datatype
-144|serious bug in rpc_server.c
-145|Function not registered
-146|unable to free arguments
-147|cannot create udp service.
-148|unable to register (FGL_RPC, FGL_RPC_VER, udp).
-149|cannot create tcp service.
-150|unable to register (FGL_RPC, FGL_RPC_VER, tcp).
-151|Function Already registered
-152|RPC server failed
-153|Unable to send asynchronous reply!
-154|XMLRPC Error
-155|Call failed
-156|Can't Handle Base64 Data
-157|Can't Handle Complex Data
-158|Can't Handle Pointers
-159|Got a 0xDEAD
-160|UNKNOWN XML TYPE
-161|Database name not seted
-162|Session already opened
-163|Invalid bind\n
-164|Use of unlocated blob variable...
-165|Statement/Cursor not found
-166|Cursor not found
-167|Invalid cursor type
-168|Invalid fetch
-169|Error binding
-170|Unable to open file for unload
-171|Could not fill_array - Wrong mode asked!
-172|Could not fill_array - Invalid service asked !
-173|Statement could not be found
-174|Invalid datatype
-175|Out of memory 1
-176|Out of memory2
-177|Internal Error
-178|Invalid Datatype
-179|Internal error
-180|Not connected to database
-181|Number of host variables does not match the sql string
-182|Cursor (%s) not found
-183|Preparing statement failed: %s
-184|Closing cursor (%s) failed
-185|declare_cursor (%s): Statement could not be found (sid == 0)
-186|declare_cursor: Cannot set cursor name (%s)
-187|Statement (%s) could not be found
-188|Preparing cursor (%s) failed
-189|Too many or too few host variables for 
-190|Binding input failed; cursor (%s)
-191|Opening cursor (%s) failed
-192|Binding output failed; cursor (%s)
-193|Fetch attempted on unopened cursor (%s)
-194|Fetching cursor (%s) failed
-195|SQLite database file not found in DBPATH=%s
-196|Could not connect to database (%s)
-197|Can't free cursor (%s) that hasn't been defined
-198|Can't close cursor (%s) that hasn't been defined
-199|Not connected to database (%s)
-200|Allocating a statement failed
-201|Statement has not been prepared
-202|Internal Error (describecolumn)
-203|Unable to retrieve column info for table (%s)\n
-204|Session (%s) already opened
-205|Could not make session (%s) current as it does not exist
-206|Session Id (%s) does not exist
-207|Could not disconnect from the database
-208|Error opening file (%s) for unload
-209|Not implemented A4GLSQL_flush_cursor
-210|Parameter is not applicable to option
-211|Option was not found
-212|Unable to open blob
-213|Could not connect to database
-214|Could not connect to database 
-215|Unexpected postgres return code\n
-216|Table not found\n
-217|Invalid datatype for Aubit4GL
-218|Database not open
-219|Currently unable to unload a statement that uses variables
-220|Unexpected postgres return code1\n
-221|Unexpected postgres return code2\n
-222|Unexpected postgres return code3\n
-223|Unexpected postgres return code4\n
-224|Can't declare cursor for non-prepared statement
-225|Can't open cursor that hasn't been defined
-226|Can't close cursor that hasn't been defined
-227|Can't free cursor that hasn't been defined
-228|Column out of range
-229|Could not find statement or cursor specified
-230|Couldn't open schema file
-231|Parse error in schema file - no ']'
-232|Sessions not implemented
-233|Could not start MySQL embedded server
-234|Started MySQL embedded server
-235|SQL Transaction Error
-236|No database connection
-237|Too many or too few host variables
-238|Fetch Relative or Absolute on a non-scroll cursor
-239|Can't open file for unload
-240|Not available in console driver
-241|Input form is not the current form!
-242|Screen record not found
-243|Screen record does not exist
-244|Too many or too few variables for fields
-245|set_scrline requires 1 parameter
-246|set_arrline requires 1 parameter
-247|set_scrline() may only be called when in a display/input array
-248|Internal error - expected a .* in screen record
-249|Unknown screen record
-250|Internal error - couldn't create error window
-251|Internal error - negative messageline
-252|Not available in TUI mode (enable/disable)
-253|Cant open gui form in curses mode..
-254|Internal error - no change in state 
-255|Unhandled code...
-256|Field not found
-257|The NEXT OPTION name is not in the menu
-258|Menu option not found
-259|No current option
-260|MAXCOUNT out of range (<0 or > array record size)
-261|Number of fields is not the same as the number of variables
-262|Picture applied to a non-char field not implemented yet..
-263|Internal error - no change in state
-264|Unable to create field
-265|Failed to create the loaded the form
-266|Internal error - unable to change field width
-267|No form
-268|Construct needs fixing to handle 'byname on tab.*'
-269|No form displayed
-270|Table/Screen record does not exist in form
-271|Dubious form\n
-272|Field subscript out of bounds
-273|Too few variables for the number of fields
-274|Field name not found
-275|after field : field number not found!
-276|Format is wider than the field
-277|Internal error - no field list
-278|Form driver complaint
-279|Not implemented for TUI mode
-280|Field is not currently being input
-281|field_touched called with no fields...
-282|Screen too wide - maximum 255 characters
-283|Couldnt create window
-284|No spare windows left...
-285|Window not found
-286|Window is too small to display this form (too high)
-287|Window is too small to display this form (too wide)
-288|Window is too small to display this form
-289|Unable to create form
-290|No current form
-291|The row or column number in DISPLAY AT exceeds the limits of your terminal
-292|Internal error - window on top =0
-293|NOCURSES Mode has been specified - operation not permitted
-294|Window already exists (%s)
-295|Error displaying form in window
-296|Form not open
-297|The form has not been opened
-298|Panel not found....
-299|Window to move was not found
-300|Couldnt move window
-301|No prompt window created
-302|Prompt message is too long to fit in the window.
-303|Invalid Form
-304|Unknown widget ID
+114|Unable to open SQLPARSE library...
+115|Unable to open SQL library...
+116|Unable to open RPC library...
+117|Unable to open EXREPORT library...
+118|MAPM Error
+119|MAPM Warning
+120|Form compilation error
+121|Unable to read form
+122|This form has a version number that I can't handle
+123|Couldnt open form - does not appear to be a valid form file
+124|Couldnt open form
+125|Menu item does not exist
+126|Unable to open LOGREP library...
+127|Unable to open LOGREPPROC library...
+128|Not available in TUI mode (show_menu)
+129|No menu displayed
+130|Invalid menu ID
+131|Help message not found
+132|Could not read help message
+133|Unable to open form in memory
+134|Unable to open
+135|Error opening output\n
+136|Unable to locate font
+137|Blob not located
+138|Not implemented yet...\n
+139|Unable to open file %s %s
+140|Unable to open file.
+141|Unable to connect to host
+142|Untransmittable data
+143|RPC call failed
+144|Unprintable datatype
+145|serious bug in rpc_server.c
+146|Function not registered
+147|unable to free arguments
+148|cannot create udp service.
+149|unable to register (FGL_RPC, FGL_RPC_VER, udp).
+150|cannot create tcp service.
+151|unable to register (FGL_RPC, FGL_RPC_VER, tcp).
+152|Function Already registered
+153|RPC server failed
+154|Unable to send asynchronous reply!
+155|Can't Handle Base64 Data
+156|Can't Handle Complex Data
+157|Can't Handle Pointers
+158|Got a 0xDEAD
+159|UNKNOWN XML TYPE
+160|Database name not seted
+161|Session already opened
+162|Invalid data type\n
+163|Value exceeds limit of SMALLINT precision
+164|Invalid bind\n
+165|Use of unlocated blob variable...
+166|Statement/Cursor not found
+167|Cursor not found
+168|Invalid cursor type
+169|Invalid fetch
+170|Error binding
+171|Unable to open file for unload
+172|Could not fill_array - Wrong mode asked!
+173|Could not fill_array - Invalid service asked !
+174|Statement could not be found
+175|Invalid datatype
+176|Out of memory 1
+177|Out of memory2
+178|Internal Error
+179|Invalid Datatype
+180|Internal error
+181|Not connected to database
+182|Number of host variables does not match the sql string
+183|Cursor (%s) not found
+184|Preparing statement failed: %s
+185|Closing cursor (%s) failed
+186|declare_cursor (%s): Statement could not be found (sid == 0)
+187|declare_cursor: Cannot set cursor name (%s)
+188|Statement (%s) could not be found
+189|Preparing cursor (%s) failed
+190|Too many or too few host variables for 
+191|Binding input failed; cursor (%s)
+192|Opening cursor (%s) failed
+193|Binding output failed; cursor (%s)
+194|Fetch attempted on unopened cursor (%s)
+195|Fetching cursor (%s) failed
+196|SQLite database file not found in DBPATH=%s
+197|Could not connect to database (%s)
+198|Can't free cursor (%s) that hasn't been defined
+199|Can't close cursor (%s) that hasn't been defined
+200|Not connected to database (%s)
+201|Allocating a statement failed
+202|Statement has not been prepared
+203|Internal Error (describecolumn)
+204|Unable to retrieve column info for table (%s)\n
+205|Session (%s) already opened
+206|Could not make session (%s) current as it does not exist
+207|Session Id (%s) does not exist
+208|Could not disconnect from the database
+209|Error opening file (%s) for unload
+210|Not implemented A4GLSQL_flush_cursor
+211|Parameter is not applicable to option
+212|Option was not found
+213|Unable to open blob
+214|Could not connect to database
+215|Could not connect to database 
+216|Unexpected postgres return code\n
+217|Table not found\n
+218|Invalid datatype for Aubit4GL
+219|Database not open
+220|Currently unable to unload a statement that uses variables
+221|Unexpected postgres return code1\n
+222|Unexpected postgres return code2\n
+223|Unexpected postgres return code3\n
+224|Unexpected postgres return code4\n
+225|Can't declare cursor for non-prepared statement
+226|Can't open cursor that hasn't been defined
+227|Can't close cursor that hasn't been defined
+228|Can't free cursor that hasn't been defined
+229|Column out of range
+230|Could not find statement or cursor specified
+231|Couldn't open schema file
+232|Parse error in schema file - no ']'
+233|Sessions not implemented
+234|Could not start MySQL embedded server
+235|Started MySQL embedded server
+236|SQL Transaction Error
+237|No database connection
+238|No statement
+239|Too many or too few host variables
+240|Fetch Relative or Absolute on a non-scroll cursor
+241|Can't open file for unload
+242|Not available in console driver
+243|Internal error - couldn't create error window
+244|Internal error - negative messageline
+245|Not available in TUI mode (enable/disable)
+246|Cant open gui form in curses mode..
+247|Input form is not the current form!
+248|Screen record not found
+249|Screen record does not exist
+250|Too many or too few variables for fields
+251|set_scrline requires 1 parameter
+252|set_arrline requires 1 parameter
+253|set_scrline() may only be called when in a display/input array
+254|Internal error - expected a .* in screen record
+255|Unknown screen record
+256|Internal error - no change in state 
+257|Unhandled code...
+258|Field not found
+259|The NEXT OPTION name is not in the menu
+260|Menu option not found
+261|No current option
+262|MAXCOUNT out of range (<0 or > array record size)
+263|Number of fields is not the same as the number of variables
+264|Picture applied to a non-char field not implemented yet..
+265|Internal error - no change in state
+266|Unable to create field
+267|Failed to create the loaded the form
+268|Internal error - unable to change field width
+269|No form
+270|Construct needs fixing to handle 'byname on tab.*'
+271|No form displayed
+272|Table/Screen record does not exist in form
+273|Dubious form\n
+274|Field subscript out of bounds
+275|Too few variables for the number of fields
+276|Field name not found
+277|after field : field number not found!
+278|Format is wider than the field
+279|Internal error - no field list
+280|Form driver complaint
+281|Not implemented for TUI mode
+282|Field is not currently being input
+283|field_touched called with no fields...
+284|Screen too wide - maximum 255 characters
+285|Couldnt create window
+286|No spare windows left...
+287|Window not found
+288|Window is too small to display this form (too high)
+289|Window is too small to display this form (too wide)
+290|Window is too small to display this form
+291|Unable to create form
+292|No current form
+293|The row or column number in DISPLAY AT exceeds the limits of your terminal
+294|Internal error - window on top =0
+295|NOCURSES Mode has been specified - operation not permitted
+296|Window already exists (%s)
+297|Error displaying form in window
+298|Form not open
+299|The form has not been opened
+300|Panel not found....
+301|Window to move was not found
+302|Couldnt move window
+303|No prompt window created
+304|Prompt message is too long to fit in the window.
 305|Unable to open glade file\n
 306|Unable to find form
 307|Form was not opened
@@ -309,43 +309,42 @@
 310|Unable to create new window
 311|Unable to open form
 312|serious bug in widget.c
-313|Invalid Widget
-314|Error creating pixmap
-315|make_pixbuf not available with GTK1.2
-316|That shouldn't be posted by now...
-317|Not in TUI mode
-318|Internal error - no break\n
-319|Internal error - bad change in state 
-320|Input form is not current
-321|no fields found to clear...
-322|Invalid response - did the client die ?
-323|Not connected
-324|Socket write failed
-325|The row or column number in DISPLAY AT exceeds the limits of your terminal 1
-326|The row or column number in DISPLAY AT exceeds the limits of your terminal 2
-327|Internal error - no change in state..
-328|Invalid DBDATE format(1)
-329|Invalid DBDATE format(2)
-330|Invalid DBDATE format(3)
-331|string is too long to convert to BOOLEAN
-332|string value cannot be converted to BOOLEAN
-333|Can't use aclfgl_byte_as_str with a blob in a file
-334|Could not fill_array - DATABASES service not implemented !
-335|Could not fill_array - TABLES service not implemented !
-336|Can't execute unprepared statement
-337|Memory Allocation Error
-338|Cursor already open
-339|Fetch attempted on unopened cursor
-340|SQLite database file not found in DBPATH
-341|Can't free cursor thats not been defined
-342|Table does not exist\n
-343|Error getting column info\n
-344|%s is not a statement or cursor name
-345|Could not disconnect from database
-346|Error opening file for unload
-348|No statement
-350|MAPM Error
-351|MAPM Warning
-352|Value exceeds limit of SMALLINT precision
-354|GTK ERROR
-356|GTK ERROR (%s)
+313|GTK ERROR (%s)
+314|That shouldn't be posted by now...
+315|Not in TUI mode
+316|Invalid Widget
+317|Error creating pixmap
+318|make_pixbuf not available with GTK1.2
+319|Internal error - no break\n
+320|Internal error - bad change in state 
+321|Input form is not current
+322|no fields found to clear...
+323|Invalid response - did the client die ?
+324|Not connected
+325|Socket write failed
+326|The row or column number in DISPLAY AT exceeds the limits of your terminal 1
+327|The row or column number in DISPLAY AT exceeds the limits of your terminal 2
+328|Internal error - no change in state..
+329|Invalid DBDATE format(1)
+330|Invalid DBDATE format(2)
+331|Invalid DBDATE format(3)
+332|string is too long to convert to BOOLEAN
+333|string value cannot be converted to BOOLEAN
+334|Can't use aclfgl_byte_as_str with a blob in a file
+335|Could not fill_array - DATABASES service not implemented !
+336|Could not fill_array - TABLES service not implemented !
+337|Can't execute unprepared statement
+338|Memory Allocation Error
+339|Cursor already open
+340|Fetch attempted on unopened cursor
+341|SQLite database file not found in DBPATH
+342|Can't free cursor thats not been defined
+343|Table does not exist\n
+344|Error getting column info\n
+345|%s is not a statement or cursor name
+346|Could not disconnect from database
+347|Error opening file for unload
+348|Invalid Form
+349|Unknown widget ID
+350|Unable to open file
+351|File is not open

@@ -1,29 +1,44 @@
-locate_cmd : LOCATE obind_var_list IN_MEMORY {
-int vtype;
-int a;
+locate_cmd : LOCATE expanded_obind_var_list IN_MEMORY {
+	int vtype;
+	int a;
+	struct locate_pos p;
+		p.where=E_LOC_MEMORY;
 		add_feature("LOCATE_MEM");
-for (a=0;a<get_bind_cnt('o');a++) {
-	vtype=scan_variable(get_bind_varname('o',a))&DTYPE_MASK;
-	if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
-		a4gl_yyerror("Only Byte & Text may be located...");
-		YYERROR;
+	// @FIXME - add in this check later...
+	/*
+		for (a=0;a<get_bind_cnt('o');a++) {
+			vtype=scan_variable(get_bind_varname('o',a))&DTYPE_MASK;
+			if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
+				a4gl_yyerror("Only Byte & Text may be located...");
+				YYERROR;
+			}
+		}
+	*/
+
+		$<cmd>$=new_locate_cmd($<ptr_list>2,&p);
+
+}
+| LOCATE expanded_obind_var_list IN_FILE file_name {
+	int vtype;
+	int a;
+	struct locate_pos p;
+	add_feature("LOCATE_FILE");
+     
+	// @FIXME - add in this check later...
+	/*
+
+	for (a=0;a<get_bind_cnt('o');a++) {
+		vtype=scan_variable(get_bind_varname('o',a))&DTYPE_MASK;
+		if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
+			printf("vtype=%d (%x)\n",vtype,vtype);
+			a4gl_yyerror("Only Byte & Text may be located...");
+			YYERROR;
+		}
 	}
-	print_locate('M',get_bind_varname('o',a),"0");
-}
-}
-| LOCATE obind_var_list IN_FILE file_name {
-int vtype;
-int a;
-		add_feature("LOCATE_FILE");
-for (a=0;a<get_bind_cnt('o');a++) {
-	vtype=scan_variable(get_bind_varname('o',a))&DTYPE_MASK;
-	if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
-		printf("vtype=%d (%x)\n",vtype,vtype);
-		a4gl_yyerror("Only Byte & Text may be located...");
-		YYERROR;
-	}
-	print_locate('F',get_bind_varname('o',a),$<str>4);
-}
+	*/
+	p.where=E_LOC_FILE;
+	p.locate_pos_u.filename=$<ptr>4;
+	$<cmd>$=new_locate_cmd($<ptr_list>2,&p);
 }
 ;
 

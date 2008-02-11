@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.47 2008-01-22 14:41:01 mikeaubury Exp $
+# $Id: Makefile,v 1.48 2008-02-11 17:12:56 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -497,7 +497,7 @@ strip:
 #executables and objects that are needed for instalation. After "clean", it should
 #still be possiblt to do "make install"
 clean: clean.all
-	@echo FIXME: only clean.all works
+	@echo "Cleaned.."
 
 #will clean EVERYTHING that is not source file from CVS
 distclean: clean.all clean.tools clean.aubitbuild clean.distclean clean.config
@@ -608,7 +608,6 @@ clean.makefiles:
     tools/test/gui/Makefile \
 	common/dataio/Makefile compilers/ace/Makefile \
 	lib/libform/form_xdr/Makefile lib/libform/noform/Makefile \
-	lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_xdr/Makefile \
 	lib/libmsg/msg_native/Makefile lib/libpacker/packed/Makefile \
 	lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile \
 	lib/libpacker/xml/Makefile lib/librpc/no_rpc/Makefile \
@@ -617,7 +616,7 @@ clean.makefiles:
 	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
 	lib/liblex/lex_esqlc/Makefile \
 	lib/libexdata/Makefile lib/libsql/postgresql/Makefile \
-    lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
+    lib/libform/form_generic/Makefile  \
 	lib/libsql/sapdb/Makefile tools/4glunit/Makefile \
 	tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile \
     tools/fgldoc/Makefile 
@@ -2753,7 +2752,7 @@ test.build:
 DIRS_TOP=common compilers lib tools glade
 DIRS_COMPILERS=4glc ace fcompile helpcompile menus pcode sql xgen
 DIRS_LIB=extra_libs libaubit4gl libesql libexdata libform libhelp liblex \
-		liblogical libmenu libmsg libpacker libpdf librpc libsql libsqlparse \
+		liblogical libmsg libpacker libpdf librpc libsql libsqlparse \
 		libui 
 DIRS_TOOLS=4glpc afinderr asql aupscol configuration convertsql
 
@@ -2799,7 +2798,6 @@ metrics.indexpage:
 	@echo "    <li><a href='lib/libhelp/cccc.html'>libhelp</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='lib/liblex/cccc.html'>liblex</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='lib/liblogical/cccc.html'>liblogical</a></li>" >> ${OUTFILE}
-	@echo "    <li><a href='lib/libmenu/cccc.html'>libmenu</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='lib/libmsg/cccc.html'>libmsg</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='lib/libpacker/cccc.html'>libpacker</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='lib/libpdf/cccc.html'>libpdf</a></li>" >> ${OUTFILE}

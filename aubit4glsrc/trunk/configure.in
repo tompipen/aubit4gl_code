@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.369 2008-01-23 18:17:27 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.370 2008-02-11 17:12:59 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.369 2008-01-23 18:17:27 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.370 2008-02-11 17:12:59 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -465,8 +465,6 @@ AC_SUBST(A4GL_LEXDIALECT_DETECTED)
 AC_SUBST(A4GL_FORMTYPE)
 AC_SUBST(A4GL_FORMTYPE_DETECTED)
 
-AC_SUBST(A4GL_MENUTYPE)
-AC_SUBST(A4GL_MENUTYPE_DETECTED)
 
 AC_SUBST(A4GL_MSGTYPE)
 AC_SUBST(A4GL_MSGTYPE_DETECTED)
@@ -1935,8 +1933,6 @@ A4GL_LEXDIALECT=""
 A4GL_LEXDIALECT_DETECTED=""
 A4GL_FORMTYPE=NOFORM
 A4GL_FORMTYPE_DETECTED=NOFORM
-A4GL_MENUTYPE=NOMENU
-A4GL_MENUTYPE_DETECTED=NOMENU
 A4GL_MSGTYPE=NATIVE
 A4GL_MSGTYPE_DETECTED=NATIVE
 
@@ -2433,8 +2429,8 @@ fi
 
 ALL_LIBS="$NEED_4GLC_ALL_libs $NEED_4GLPC_ALL_libs"
 
-ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
-		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
+ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MSG_NATIVE UI_CONSOLE \
+		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_report \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA \
 		SQLPARSE_NONE SQLPARSE_INFORMIX $LIBLOGICAL_BUILD"
 #UI_HLGENERIC
@@ -9867,33 +9863,6 @@ fi
 AC_MSG_RESULT(${T_MD}$A4GL_FORMTYPE${T_ME})
 AC_MSG_RESULT(Detected:$A4GL_FORMTYPE_DETECTED)
 
-## ==================================================================
-##            Decide on default MENU driver
-## ==================================================================
-
-AC_MSG_CHECKING(Default menu driver)
-
-if test "$default_menu" != ""; then
-	#User can force MENU driver default with --default-menu=xxxx switch
-	A4GL_MENUTYPE="$default_menu"
-else
-	#menus need GTK
-	if test "$GTKBUILD" != "no"; then
-
-	    #Why would we want XDR menu as default in any case?
-		if test "$HAVE_RPCLIB" != "0"; then
-			A4GL_MENUTYPE="XDR"
-	       	A4GL_MENUTYPE_DETECTED="$A4GL_MENUTYPE_DETECTED $A4GL_MENUTYPE"
-		fi
-
-		A4GL_MENUTYPE="GENERIC"
-		A4GL_MENUTYPE_DETECTED="$A4GL_MENUTYPE_DETECTED $A4GL_MENUTYPE"
-    fi
-fi
-
-
-AC_MSG_RESULT(${T_MD}$A4GL_MENUTYPE${T_ME})
-AC_MSG_RESULT(Detected:$A4GL_MENUTYPE_DETECTED)
 
 ## ==================================================================
 ##            Decide on default EXTended REPorts driver
@@ -10204,14 +10173,14 @@ PLUGIN_NO_LINKABLE=
 	fi
 
 	if test "$HAVE_RPCLIB" != "0"; then
-		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
 	else
 		if test "$GCC_MINGW" != "yes"; then
 			#SUN RPC does not exist for MinGW anyway
-			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sunrpc"
 		else
-			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR  XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
         fi
 	fi
 
@@ -10289,9 +10258,9 @@ PLUGIN_NO_LINKABLE=
 	#GTK plug-in may need to recompile assist.4gl, so it may need to have 4glc,
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
 	if test "$GTKBUILD" != "no"; then
-		PLUGIN_YES="$PLUGIN_YES MENU_GENERIC UI_HL_GTK"
+		PLUGIN_YES="$PLUGIN_YES UI_HL_GTK"
 	else
-        PLUGIN_NO="$PLUGIN_NO MENU_GENERIC UI_HL_GTK"
+        PLUGIN_NO="$PLUGIN_NO UI_HL_GTK"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 	
@@ -10312,13 +10281,13 @@ PLUGIN_NO_LINKABLE=
 	#All libMENU_xxx need libUI_GTK on Windows to be linked with, to
     #resolve symbols - so all libMENU_ must be built after libUI_GTK
 	if test "$HAVE_RPCLIB" != "0" -a "$GTKBUILD" != "no"; then
-		PLUGIN_YES="$PLUGIN_YES MENU_XDR"
+		PLUGIN_YES="$PLUGIN_YES "
     else
 		if test "$GCC_MINGW" != "yes"; then	
 			#hide MENU_XDR from list of not to build - no Sun RPC with MinGW GCC
-			PLUGIN_NO="$PLUGIN_NO MENU_XDR"
+			PLUGIN_NO="$PLUGIN_NO "
 		else
-			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS MENU_XDR" 
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS " 
 		fi
     fi
 
@@ -10652,7 +10621,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	#TODO: move this from .in to normal files, and include Makefile-common;
 	#There is no need for them to be .in files:
 	GENERATED_FILES="$GENERATED_FILES \
-				common/dataio/Makefile \
                 compilers/4glc/rules/Makefile \
                 compilers/fcompile/Makefile \
                 compilers/helpcompile/Makefile \
@@ -10660,9 +10628,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libform/form_xdr/Makefile \
                 lib/libform/noform/Makefile \
                 lib/libform/form_generic/Makefile \
-                lib/libmenu/menu_xdr/Makefile \
-                lib/libmenu/menu_nomenu/Makefile \
-                lib/libmenu/menu_generic/Makefile \
                 lib/libmsg/msg_native/Makefile \
                 lib/liblex/lex_c/Makefile \
                 lib/liblex/lex_esqlc/Makefile \
@@ -11076,7 +11041,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.369 2008-01-23 18:17:27 mikeaubury Exp $
+| $Id: configure.in,v 1.370 2008-02-11 17:12:59 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

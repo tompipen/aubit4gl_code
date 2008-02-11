@@ -106,3 +106,5 @@ struct generic_entry *new_entry (char type, void *entry);
 struct generic_entry_list *new_list (struct generic_entry *entry);
 void append_list (struct generic_entry_list *orig, struct generic_entry *entry);
 
+
+

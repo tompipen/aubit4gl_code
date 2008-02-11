@@ -8,7 +8,7 @@
 /* FIXME: this should be a4gl_xgen_int.h */
 #define NOSTRCPYMAP
 #include "a4gl_libaubit4gl.h"
-
+#include <ctype.h>
 #define YYDEBUG 1
 int lineno=0;
 int colno=0;
@@ -19,6 +19,18 @@ FILE *cfi;
 FILE *hf;
 FILE *hsf;
 FILE *ccrf;
+FILE *cmd_file;
+FILE *cmd_file2;
+FILE *decode_enum;
+
+/* 
+variable to indicate we are dumping the command data
+this is used to generate a skeleton cmds.c file which we
+can populate to create a new output type
+ */
+int dumping_command_data=0;
+int printed_cmd_file2_dtype=0;
+
 
 char sw_elem[256];
 
@@ -42,7 +54,25 @@ void print_elem_in(char *type,char *s,struct mode m);
 void print_elem_sh(char *type,char *s,struct mode m);
 void print_elem(char *type,char *s,struct mode m);
 static int is_union(char *s);
+
+static  void local_convlower (char *s)
+{
+  int a;
+  for (a = 0; s[a]; a++)
+    {
+      s[a] = tolower (s[a]);
+    }
+
+}
+
+
 void print_elem(char *type,char *s,struct mode m) {
+	if (dumping_command_data) {
+		fprintf(cmd_file,"cd->command_data_u.%s",m.name);
+		fprintf(cmd_file2,"%s *cmd_data",s);
+		printed_cmd_file2_dtype++;
+		
+	}
 	print_elem_out(type,s,m);
 	print_elem_in(type,s,m);
 	print_elem_sh(type,s,m);
@@ -308,7 +338,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 			fprintf(cfi,"return 1;\n");
         }
 		if (m.pointer==1) {
-			fprintf(cfi,"   if (!input_ptr_ok()) {*r=0; return 1;}\n",m.name,buff);
+			fprintf(cfi,"   if (!input_ptr_ok()) {*r=0; return 1;}\n");
 			fprintf(cfi,"   *r=acl_malloc2_With_Context(sizeof(%s)); if (!input_%s(\"%s\",*r,0,-1)) return 0;\n",s, m.name,buff);
 			/*to prevetn warning: */
 			fprintf(cfi,"return 1;\n");
@@ -460,11 +490,22 @@ enum: ENUM NAMED {
 	fprintf(cfi,"name=\"%s\";\n",$<str>2);
 
 	fprintf(hsf,"enum %s {",$<str>2);
+
+	if (decode_enum) {
+		fprintf(decode_enum,"char *decode_%s(enum %s value) {\n",$<str>2,$<str>2);
+		fprintf(decode_enum," switch (value) {\n");
+	}
+
 	} OPEN_BRACE enum_list CLOSE_BRACE SEMICOLON {
 	fprintf(cfo,"return 1;\n}\n\n");
 	fprintf(cfi,"   if (!input_enum(rn, name,(int *)r)) return 0;\nreturn 1;\n}\n\n");
 	fprintf(hsf,"\n};\ntypedef enum %s %s;\n\n",$<str>2,$<str>2);
 	cu_cnt--;
+	if (decode_enum) {
+		fprintf(decode_enum," default: return \"Unhandled\";\n");
+		fprintf(decode_enum," } /* end of switch */\n");
+		fprintf(decode_enum,"}\n");
+	}
 }
 ;
 
@@ -484,7 +525,9 @@ enum_element: NAMED {
 		if (enumv) fprintf(hsf,",\n");
 		else       fprintf(hsf,"\n");
 		fprintf(hsf," %s = %d ",$<str>1,enumv);
-
+		if (decode_enum) {
+			fprintf(decode_enum," case %-20s: return \"%s\";\n", $<str>1, $<str>1);
+		}
 		enumv++; 
 	}
 	| NAMED EQUAL INT_VAL {
@@ -501,6 +544,9 @@ enum_element: NAMED {
 		if (enumv) fprintf(hsf,",\n");
 		else       fprintf(hsf,"\n");
 		fprintf(hsf," %s = %d ",$<str>1,enumv);
+		if (decode_enum) {
+			fprintf(decode_enum," case %-20s: return \"%s\";\n", $<str>1, $<str>1);
+		}
 
 		enumv++; 
 	}
@@ -650,6 +696,19 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 	} switch_element CLOSE_BRACKET  {
 	add_as_union($<str>2);
 
+	if (strcmp($<str>2,"command_data")==0) {
+		if (cmd_file) {
+			fprintf(cmd_file,"#include \"a4gl_lib_lex_esqlc_int.h\"\n");
+			fprintf(cmd_file,"#define ONE_NOT_ZERO(x) (x?x:1)\n");
+			fprintf(cmd_file,"#include \"field_handling.h\"\n");
+			fprintf(cmd_file,"#include \"compile_c.h\"\n");
+			fprintf(cmd_file,"int ok;\n");
+			fprintf(cmd_file,"int dump_command(struct command_data *cd) {\n");
+			fprintf(cmd_file,"switch(cd->%s) {\n",$<str>6);
+			dumping_command_data++;
+		}
+	}
+
 	//fprintf(cfo,"if (!output_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 
 fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;\n",$<str>2, $<str>6, $<str>6);
@@ -663,7 +722,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
 
 	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
 	//fprintf(cfi,"if (!input_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
-	fprintf(cfi,"if (!input_start_union(\"%s\",\"%s\",r->%s,rn,isptr,arr)) return 0;\n",$<str>2,$<str>6, $<str>6);
+	fprintf(cfi,"if (!input_start_union(\"%s\",\"%s\",(int *)&r->%s,rn,isptr,arr)) return 0;\n",$<str>2,$<str>6, $<str>6);
 
 	fprintf(hsf,"struct %s {\n",$<str>2);
 
@@ -683,6 +742,14 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
  	fprintf(cfi,"if (!input_end_union(\"%s\",\"%s\",r->%s,rn)) return 0;\n",$<str>2,$<str>6, $<str>6);
 	fprintf(cfi," return 1;\n}\n\n");
 	fprintf(hsf,"} %s_u;\n};\ntypedef struct %s %s;\n",$<str>2,$<str>2,$<str>2);
+	if (strcmp($<str>2,"command_data")==0) {
+		if (cmd_file) {
+			fprintf(cmd_file,"} /* end of switch */\n");
+			fprintf(cmd_file,"return ok;\n");
+			fprintf(cmd_file,"}\n");
+			dumping_command_data--;
+		}
+	}
 	cu_cnt--;
 }
 ;
@@ -695,9 +762,22 @@ uelement : VOID | element
 
 
 union_element:  CASE case_val COLON  {
+	if (dumping_command_data) {
+		char buff[200];
+		char *ptr;
+		strcpy(buff, $<str>2);
+	ptr=buff;
+		ptr+=6;
+		local_convlower(ptr);
+	
+		fprintf(cmd_file,"   case %-27s: ok=print_%s(",$<str>2,ptr);
+		fprintf(cmd_file2,"int print_%s(",ptr);
+			printed_cmd_file2_dtype=0;
+	}
 	fprintf(cfo,"case %s:\n",$<str>2);
 	fprintf(cfi,"case %s:\n",$<str>2);
-	} op_union_element_desc
+	} op_union_element_desc 
+	
 
 ;
 
@@ -706,6 +786,19 @@ op_union_element_desc: | union_element_desc
 
 union_element_desc:
 	uelement SEMICOLON {
+	if (dumping_command_data) {
+		fprintf(cmd_file,"); break;\n");
+		if  (!printed_cmd_file2_dtype) {
+			fprintf(cmd_file2,"void) {\n");
+		} else {
+			fprintf(cmd_file2,") {\n");
+		}
+		fprintf(cmd_file2,"// ---- \n");
+		fprintf(cmd_file2,"}\n");
+		fprintf(cmd_file2,"\n");
+		fprintf(cmd_file2,"\n");
+	
+	}
 	fprintf(cfo,"         break;\n");
 	fprintf(cfi,"         break;\n");
 	}

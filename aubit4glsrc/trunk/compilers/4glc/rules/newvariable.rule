@@ -1,595 +1,336 @@
 /*
-=====================================================================
-                        Source: newvariable.rule
-=====================================================================
+ebind_var_list
+ibind_var_list
+init_bind_var_list
+obind_var_let_list
+obind_var_list
+obind_var_list_ord
+op_param_var_list
+use_arr_var 
+var
+var_ident_ibind_sli
+var_ident_ibind_ss
+var_ident_qchar_e
+var_ident_vl
+variable
 */
 
 
-variable: var_int
-{
-char buff[256];
-char buff2[256];
-int n;
-
-if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-if (strncmp($<str>1,"sqlca.",6)==0) { 
-	char xbuff[256];
-	char xbuff2[256];
-	strcpy(xbuff,"a4gl_sqlca.");
-	strcpy(xbuff2,$<str>1);
-	strcat(xbuff,&xbuff2[6]);
-	strcpy($<str>1,xbuff);
-}
-strcpy(buff,$<str>1);
-//A4GL_lex_printcomment("/* .. var %s*/",buff);
-if (buff[0]!=' ') ADDMAP("Use Variable",buff);
-
-if (strncmp(buff," ASSOCIATE_",11)!=0) {
- A4GL_convlower(buff);
-}
-
-strcpy($<str>$,buff);
-A4GL_debug("Checking variable '%s'",buff);
-strcpy(buff2,buff);
-n=scan_variable(buff2);
-
-  A4GL_debug("scan variable returns -> %d\n",n);
-
-if (A4GL_is_class_static(buff)) {
-	strcpy($<str>$,buff);
-} else {
-  if (n == -1&&buff[0]!=' ') {
-           sprintf(buff2,"'%s' does not represent a defined variable (1)",buff);
-           a4gl_yyerror(buff2);
-  }
-
-  strcpy(buff2,$<str>1);
-
-
-  if (strstr(buff,".*") && n!=-2) {
-		char *ptr;
-		strcpy(buff,$<str>1);
-		printf("WARNING : Using a .* on a non-record - %s\n",$<str>1);
-		ptr=strstr(buff,".*");
-		*ptr=0;
-                
-		sprintf($<str>$,"%s",fgl_add_scope(buff,0));
-  } else {
-               	sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
-  }
-}
- 
+var_ident_vl: variable_usage_expression {
+		char errbuff[256];
+		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1) { 
+			// Its not a variable - so we dont care about any errors..
+			if (is_valid_identifier($<ptr>1)) {
+				char *ident;
+				ident=get_id_from_variable_usage_expression($<ptr>1);
+				$<ptr>$=A4GL_new_expr_simple_string(ident, ET_EXPR_IDENTIFIER);
+			} else {
+				a4gl_yyerror("Invalid identifier");
+				YYERROR;
+			}
+		}  else {
+			$<ptr>$=$<ptr>1;
+		}
 }
 ;
 
-
-var_int :
-	var | DOLLAR var {strcpy($<str>$,$<str>2);}
-;
-
-varsetidentdot : var KW_DOT
-;
-
-var: 
- varsetidentdot dot_part_var { 
-	A4GL_debug("varsetidentdot dotpart");
-         sprintf ($<str>$, "%s.%s", $<str>1, $<str>2); 
-         }
-| varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE {
-
-         int type,arrsize,size,level;
-         char buff[256];
-         char buff2[256];
-
-	A4GL_debug("varsetidentdot identifier");
-
-	if (strcmp($<str>1,"sqlca")==0) {
-		strcpy($<str>1,"a4gl_sqlca");
+obind_var_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("obind_var_list", buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$=$<ptr_list>1;
 	}
-         sprintf(buff,"%s.%s",$<str>1,$<str>2);
-         if (scan_variable(buff)==-1) {
+;
+
+
+opt_cw_ebind_var_list: expanded_obind_var_list 
+	|  OPEN_SQUARE expanded_obind_var_list CLOSE_SQUARE { $<ptr_list>$=$<ptr_list>2;}
+;
+
+
+ebind_var_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("ebind_var_list",buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,1,1);
+	}
+;
+
+obind_var_let_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("obind_var_let_list",buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$=fully_expand_variables_in_expr_str_list($<ptr_list>1);
+	}
+;
+
+init_bind_var_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("init_bind_var_list",buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$= expand_variables_in_expr_str_list( $<ptr_list>1,1,0);
+	}
+;
+
+
+bind_var_list:	bind_var  {
+			$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+	}
+	|	bind_var_list KW_COMMA bind_var  {
+			$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
+
+bind_var : 
+	bind_var_2
+	| DOLLAR bind_var_2 {
+		$<ptr>$=$<ptr>2;
+	}
+;
 	
-           sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
-           a4gl_yyerror(buff2);
-           YYERROR;
-         }
 
-         //A4GL_lex_printcomment("/*variable with [...]*/");
-         get_variable_dets (buff,&type,&arrsize,&size,&level,0);
-         //A4GL_lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
-
-
-         if (arrsize>0)
-         {
-             A4GL_debug("Is array...");
-             sprintf ($<str>$, "%s[%s]", buff, change_arr_elem($<str>4));
-             //A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d */\n", $<str>$,num_arr_elem($<str>4));
-         }
-         else
-         {
-             A4GL_debug ("Is string...");
-
-
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff,0), (int)scan_variable (buff), $<str>4);
-             ADDMAP("Use Variable",buff);
-             //A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-         }
-
-}
-
-| varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
-
-         int type,arrsize,size,level;
-         char buff[256];
-         char buff2[256];
-
-	A4GL_debug("varsetidentdot identifier");
-	if (strcmp($<str>1,"sqlca")==0) {
-		strcpy($<str>1,"a4gl_sqlca");
+bind_var_2: variable_usage_expression  { $<ptr>$=$<ptr>1; }
+	| variable_usage_expression THRU variable_usage_expression  {
+                $<ptr>$=A4GL_new_expr_list();
+		$<ptr>$->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
 	}
-         sprintf(buff,"%s.%s",$<str>1,$<str>2);
-         if (scan_variable(buff)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
-           a4gl_yyerror(buff2);
-           YYERROR;
-         }
-
-         //A4GL_lex_printcomment("/*variable with [...]*/");
-         get_variable_dets (buff,&type,&arrsize,&size,&level,0);
-         //A4GL_lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
-	 
-         if (arrsize>0)
-         {
-		char buff2[256];
-             A4GL_debug("Is array...");
-             sprintf (buff2, "%s[%s]", buff, change_arr_elem($<str>4));
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff2,0), (int)scan_variable (buff2), $<str>7);
-         }
-         else
-         {
-		a4gl_yyerror("Expecting an array of chars...");
-		YYERROR;
-
-         }
-
-}
-
-| array_r_variable 
-| identifier
-| assoc_var_read
 ;
 
-assoc_var_read  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
-{
-char buff2[256];
-         if (scan_variable($<str>1)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (3)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-//A4GL_lex_printcomment("/*Associative Variable : %s*/\n",$<str>3);
-sprintf($<str>$," ASSOCIATE_%s(%s,1)",upshift($<str>1),$<str>3);
-};
-
-
-assoc_var_write  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
-{
-char buff2[256];
-         if (scan_variable($<str>1)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (4)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-//A4GL_lex_printcomment("/*Associative Variable : %s*/\n",$<str>3);
-sprintf($<str>$," ASSOCIATE_%s(%s,0)",upshift($<str>1),$<str>3);
-};
-
-assoc_sub : variable | CHAR_VALUE
+var_ident_ibind_sli: var_ident_vl  {
+		$<s_select_list_item>$=convert_fgl_expr_to_sql_expr($<ptr>1);
+	} 
+ 	|  var_ident_vl THRU var_ident_vl {
+		expr_str *e;
+		struct s_select_list_item *i;
+ 		e=A4GL_new_expr_list();
+                e->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list(e->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list(e->expr_str_u.expr_list,$<ptr>3);
+		i=convert_fgl_expr_to_sql_expr(e);
+		$<s_select_list_item>$=i;
+	}
 ;
 
-
-dot_part_var:
- KW_MULTIPLY | 
- identifier 
-;
-
-
-
-array_r_variable:
-identifier arr_subscripts
-{
-int type,arrsize,size,level;
-char buff2[256];
-//char arrbuff[256];
-
-  A4GL_debug("ARRAY (array_r_variable) : %s %s",$<str>1,$<str>2);
-  get_variable_dets ($<str>1,&type,&arrsize,&size,&level,0);
-  if (scan_variable($<str>1)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (7)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-
+/* Ibinds are slightly different - because we can have literals too */
+ibind_var_list: ibind_var  {
+		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
 	}
-
-
-  A4GL_debug("Type=%d (%d) arrsize=%d",type,type&0xffff,arrsize);
-
-  if (strchr($<str>2,':'))  {
-	char lbuff[256];
-	char rbuff[256];
-	char tmpbuff[256];
-	char *ptr;
-	strcpy(lbuff,$<str>2);
-	strcpy(rbuff,strchr($<str>2,':')+1);
-	ptr=strchr(lbuff,':');
-	*ptr=0;
-        sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-	if (arrsize==0)  {
-		a4gl_yyerror("The variable has already had substrings applied to it");
-		sprintf($<str>$,"<BAD>");
-	} else {
-        sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.1*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
-	}
-  } else {
- 
-  if ( ( (type & 0xffff) != DTYPE_CHAR &&  (type & 0xffff) != DTYPE_VCHAR) || (arrsize!=0))
-    {
-		A4GL_debug("MJA Path 1");
-      sprintf ($<str>$, "%s[%s]", $<str>1, change_arr_elem($<str>2));
-    }
-  else
-    {
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.2*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
-             ADDMAP("Use Variable",$<str>1);
-    }
-}
-
-}
-;
-
-
-
-
-
-
-
-
-
-arr_subscripts : 
-	OPEN_SQUARE num_list CLOSE_SQUARE {
-	 A4GL_debug("---> Subscript or substring");
-		strcpy($<str>$,$<str>2);
-	}
-|
-	OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE {
-		sprintf($<str>$,"%s:%s",$<str>2,$<str>5);
-	 A4GL_debug("---> Subscript & substring : %s", $<str>$);
+        |       ibind_var_list KW_COMMA ibind_var  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
 	}
 ;
 
 
-num_list: num_list_element
-{
-A4GL_debug("List element");
-  sprintf ($<str>$, "%s", $<str>1);
-}
-|num_list KW_COMMA num_list_element
-{
-A4GL_debug("List element continues");
-  sprintf ($<str>$, "%s,%s", $<str>1, $<str>3); 
-}
+expanded_ibind_var_list: ibind_var_list {
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); 
+	}
+;
+expanded_obind_var_list: obind_var_list {
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,1,1); 
+	}
+;
+
+ibind_var : variable_usage_expression  
+            | variable_usage_expression THRU variable_usage_expression  {
+                $<ptr>$=A4GL_new_expr_list();
+		$<ptr>$->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+            }
+	    | literal_expr
 ;
 
 
-
-
-num_list_element: arr_expr
-{
-  sprintf ($<str>$, "%s", $<str>1);
-};
-
-
-let_variable: let_var
-{
-char buff[256];
-if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-if (strncmp($<str>1,"sqlca.",6)==0) {
-        char xbuff[256];
-        char xbuff2[256];
-        strcpy(xbuff,"a4gl_sqlca.");
-        strcpy(xbuff2,$<str>1);
-        strcat(xbuff,&xbuff2[6]);
-        strcpy($<str>1,xbuff);
-}
-strcpy(buff,$<str>1);
-if (buff[0]!=' ') ADDMAP("Let Variable",buff);
-if (strncmp(buff," ASSOCIATE_",11)!=0) {
-A4GL_convlower(buff);
-}
-strcpy($<str>$,buff);
-//A4GL_lex_printcomment("/* %s */\n",$<str>1);
-
-
-  if (scan_variable (buff) == -1&&buff[0]!=' ')
-    {
-      //A4GL_lex_printcomment ("/*NOt a variable*/");
-      sprintf(buff,"%s is not a variable",$<str>1);
-      a4gl_yyerror(buff);
-    }
-
-
-  sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
-};
-
-let_var: let_array_r_variable {
-	 A4GL_debug("Array..");
-}
-| let_var KW_DOT let_var_dot { sprintf ($<str>$, "%s.%s", $<str>1, $<str>3); }
-| let_var KW_DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
-{
-  int a;
-  int b;
-  char buff[256];
-  char buff2[256];
-  //A4GL_lex_printcomment("/*array variable .let. */");
-  if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-  if (strcmp($<str>1,"sqlca")==0) {
-        strcpy($<str>1,"a4gl_sqlca");
-  }
-  sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
-
-         if (scan_variable($<str>$)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (5)",$<str>$);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-  A4GL_debug("?1arrvar=%s",$<str>$);
-  b = isarrvariable ($<str>$);
-  a = scan_variable ($<str>$);
-
-  //A4GL_lex_printcomment("/*a=%x b=%x */\n",a,b);
-
-  if (b != 0)
-    {
-      sprintf ($<str>$, "%s.%s[%s] ", $<str>1, $<str>3,get_array_rebase($<str>5));
-    }
-  else
-    {
-      sprintf(buff,"%s.%s",$<str>1,$<str>3);
-      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M4 */", fgl_add_scope(buff,0), a, $<str>5);
-
-      ADDMAP("Let Variable",buff);
-      A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
-    }
-
-
-}
-| let_var KW_DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
-{
-  int a;
-  int b;
-  char buff[256];
-  char buff2[256];
-  A4GL_lex_printcomment("/*array variable .let. */");
-  if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
-  if (strcmp($<str>1,"sqlca")==0) {
-        strcpy($<str>1,"a4gl_sqlca");
-  }
-  sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
-
-         if (scan_variable($<str>$)==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (5)",$<str>$);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-  A4GL_debug("?1arrvar=%s",$<str>$);
-  b = isarrvariable ($<str>$);
-  a = scan_variable ($<str>$);
-
-  A4GL_lex_printcomment("/*a=%x b=%x */\n",a,b);
-
-  if (b != 0)
-    {
-      sprintf (buff, "%s.%s[%s] ", $<str>1, $<str>3,get_array_rebase($<str>5));
-      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M1 */", fgl_add_scope(buff,0), a, $<str>8);
-      A4GL_lex_printcomment ("/* subscript on array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-		a4gl_yyerror("I was really hoping for an array");
-		YYERROR;
-
-    }
-
-
-}
-
-
-| identifier
-| assoc_var_write
+obind_var_list_ord: obind_var_ord  {$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);}
+         | obind_var_list_ord KW_COMMA obind_var_ord  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
 ;
 
-let_var_dot :
-KW_MULTIPLY 
-| identifier 
-;
-
-let_array_r_variable:
-identifier arr_subscripts
-{
-  int a;
-  int b;
-  char buff2[256];
-  A4GL_lex_printcomment("/*.let. array variable */");
-
-  A4GL_debug("?2 arrvar=%s",$<str>1);
-  if (strchr($<str>2,':'))  {
-	char lbuff[256];
-	char rbuff[256];
-	char tmpbuff[256];
-	char *ptr;
-	strcpy(lbuff,$<str>2);
-	strcpy(rbuff,strchr($<str>2,':')+1);
-	ptr=strchr(lbuff,':');
-	*ptr=0;
-        sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M2 */", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
-  } else {
-  	b = isarrvariable ($<str>1);
-  	a = scan_variable ($<str>1);
-
-         if (a==-1) {
-           sprintf(buff2,"'%s' does not represent a defined variable (6)",$<str>1);
-           a4gl_yyerror(buff2); 
-           YYERROR;
-         }
-
-
-  A4GL_debug("/*a=%d b=%d*/\n",a,b);
-
-  if (b != 0)
-    {
-      sprintf ($<str>$, "%s[%s]", $<str>1, A4GL_decode_array_string($<str>1,$<str>2));
-      A4GL_debug ("/* array variable %s*/\n", $<str>$);
-    }
-  else
-    {
-      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M3 */", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
-
-      ADDMAP("Let Variable",$<str>1);
-      A4GL_debug ("/*character variable %s*/\n", $<str>$);
-    }
- }
-
+obind_var_ord : variable_usage_expression optional_asc_desc {
+	$<ptr>$=A4GL_new_variable_usage_with_asc_desc($<ptr>1,$<str>2);
 }
 ;
 
+optional_asc_desc:
+        { strcpy($<str>$,"A");}
+        | ASC { strcpy($<str>$,"A");  }
+        | DESC { strcpy($<str>$,"D"); }
+;
 
 
-op_param_var_list: {
-		start_bind('f',0);
-		strcpy($<str>$,"0");
+op_param_var_list:   {$<ptr_list>$=0;}
+                | fparam_var_list {$<ptr_list>$=$<ptr_list>1;}
+;
+
+
+fparam_var_list:        func_def_var {
+				$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+                        }
+                        | fparam_var_list KW_COMMA func_def_var {
+				$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+                        }
+;
+
+func_def_var: 
+		identifier {
+			$<ptr>$=A4GL_new_expr_simple_string($<str>1, ET_EXPR_PARAMETER);
 		}
-		| fparam_var_list
+	/*
+		| identifier KW_DOT identifier {
+			sprintf($<str>$,"%s.%s",$<str>1,$<str>2);
+			$<ptr>$=A4GL_new_expr_simple_string($<str>$, ET_EXPR_PARAMETER);
+		}
+	*/
 ;
 
+var_ident_qchar_e :
+	variable_usage_expression {
+		char errbuff[256]="";
 
-fparam_var_list:	func_def_var {
-				start_bind('f',$<str>1);
-				start_bind('O',0);
-				sprintf($<str>$,"1");
+		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1) { 
+                        if (is_valid_identifier($<ptr>1)) {
+                                char *ident;
+                                ident=get_id_from_variable_usage_expression($<ptr>1);
+                                $<ptr>$=A4GL_new_expr_simple_string(ident, ET_EXPR_IDENTIFIER);
+			} else {
+				a4gl_yyerror("Invalid identifier");
+				YYERROR;
 			}
-			| fparam_var_list KW_COMMA func_def_var {
-				int c;
-				c=add_bind('f',$<str>3);
-				sprintf($<str>$,"%d",c); 
-			}
-;
-
-
-
-
-ibind_var_list:	ibind_var {
-		start_bind('i',$<str>1);
-		strcpy($<str>$,"");
+		} else {
+                	$<ptr>$=$<ptr>1;
 		}
-	|	ibind_var_list KW_COMMA ibind_var {
-		add_bind('i',$<str>3);
-		strcpy($<str>$,"");
-}
+	}
+	| variable_usage_expression ATSIGN identifier {
+		char buff[300];
+		sprintf(buff,"%s@%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3);
+                $<ptr>$=A4GL_new_literal_string(buff);
+	}
+        | CHAR_VALUE  {
+                $<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
+        }
 ;
 
 
-func_def_var : identifier | identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>2);}
-;
 
-ibind_var : variable  {A4GL_lex_printcomment("/* Variable */\n");}
-		| variable THRU variable { A4GL_debug("Got an ibind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
-		| CHAR_VALUE 
-		| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
-		| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
-;
-
-obind_var_list:	obind_var  { start_bind('o',$<str>1); } 
-	|	obind_var_list KW_COMMA obind_var { add_bind('o',$<str>3); strcpy($<str>$,""); }
-;
-
-obind_var : variable   { ADDMAP("OBIND",$<str>1); }
-	| variable THRU variable { A4GL_debug("Got an obind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
-;
-
-ebind_var_list:	ebind_var  { start_bind('e',$<str>1); } 
-	|	ebind_var_list KW_COMMA ebind_var { add_bind('e',$<str>3); strcpy($<str>$,""); }
-;
-
-ebind_var : variable   { ADDMAP("EBIND",$<str>1); }
-	| variable THRU variable { A4GL_debug("Got an ebind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
+variable_usage_expression: variable_usage  {
+		$<ptr>$=A4GL_new_expr_push_variable($<var_usg>1);
+	} 
 ;
 
 
-obind_var_let_list:	obind_let_var  {
-A4GL_lex_printcomment("/* start obind with  %s*/\n",$<str>1);
-A4GL_debug("obind_var_let_list ---> %s\n",$<str>1);
-start_bind('o',$<str>1);
-} 
-	|	obind_var_let_list KW_COMMA obind_let_var {
-A4GL_lex_printcomment("/* add to obind %s */\n",$<str>3);
-add_bind('o',$<str>3);
-A4GL_debug("obind_var_let_list ---> %s\n",$<str>3);
-strcpy($<str>$,"");
-}
+variable_usage: variable_usage_i {
+		 $<var_usg>$=check_var_usage($<var_usg>1);
+	}
 ;
-
-obind_let_var : let_variable   {
-A4GL_lex_printcomment("/* Read variable %s*/\n",$<str>1);
-}
-;
-
-use_arr_var : variable {
-    A4GL_lex_printcomment("/* use_arr_var */\n");
-    start_arr_bind('o',$<str>1);
-    A4GL_lex_printcomment("/* use_arr_var complete */\n");
-}
-;
-
-obind_var_list_ord: obind_var_ord  {
-		start_bind('O',$<str>1);
-	} | obind_var_list_ord KW_COMMA obind_var_ord {
-               add_bind('O',$<str>3);
-               strcpy($<str>$,"");
+variable_usage_i:
+	var4_item_vu
+	| variable_usage KW_DOT var4_item_vu {
+		$<var_usg>$=append_variable_usage($<var_usg>1,$<var_usg>3);
+	}
+	| variable_usage KW_DOT KW_MULTIPLY {
+		$<var_usg>$=new_variable_usage($<var_usg>1,"*",0);
 	}
 ;
 
-obind_var_ord : variable optional_asc_desc;
-
-optional_asc_desc: 
-	{ last_orderby_ascdesc='A'; } 
-	| ASC { last_orderby_ascdesc='A'; } 
-	| DESC { last_orderby_ascdesc='D'; }
+num_list_e: num_list_element_e
+{
+ $<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+}
+|num_list_e KW_COMMA num_list_element_e
+{
+ $<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+}
 ;
 
 
-init_bind_var_list:	init_bind_var {
-		start_bind('N',$<str>1);
-		strcpy($<str>$,"");
-		}
-	|	
-		init_bind_var_list KW_COMMA init_bind_var {
-		add_bind('N',$<str>3);
-		strcpy($<str>$,"");
-		}
+
+
+num_list_element_e: arr_expr_e
+{
+        $<ptr>$=$<ptr>1;
+};
+
+
+
+var4_item_vu:
+        array_r_variable_or_ident_vu {
+			$<var_usg>$=$<var_usg>1;
+	} 
+	| identifier { $<var_usg>$=new_variable_usage(0,$<str>1,0); }
 ;
 
-init_bind_var : variable  {
-		strcpy($<str>$,$<str>1);
+
+
+array_r_variable_or_ident_vu: identifier arr_subscripts_al
+{
+  struct expr_str_list *array;
+  struct expr_str_list *substr;
+	struct expr_str *assoc_ptr;
+  struct array_list *al;
+
+  $<var_usg>$=new_variable_usage(0,$<str>1,0);
+  al=$<array_list>2;
+  array=al->array;
+  substr=al->substr;
+  assoc_ptr=al->assoc_var;
+
+  if (array) {
+	for (cnt=0;cnt< array->list.list_len;cnt++) {
+		set_variable_usage_subscript($<var_usg>$,cnt,array->list.list_val[cnt]);
 	}
-	| variable THRU variable {
-			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
-		}
+  }
+
+  if (substr) {
+	for (cnt=0;cnt< substr->list.list_len;cnt++) {
+		set_variable_usage_substr($<var_usg>$,cnt,substr->list.list_val[cnt]);
+	}
+  }
+
+  if (assoc_ptr) {
+		expr_str *p;
+		p=A4GL_new_expr_assoc($<str>1,assoc_ptr);
+		set_variable_usage_subscript($<var_usg>$,cnt,p);
+  }
+}
 ;
 
-/* ========================= newvariable.rule ======================= */
+arr_subscripts_al :
+        OPEN_SQUARE num_list_e CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript or substring");
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=$<ptr_list>2;
+		al->substr=NULL;
+		al->assoc_var=NULL;
+		$<array_list>$=al;
+        } 
+	| OPEN_SQUARE num_list_e CLOSE_SQUARE OPEN_SQUARE num_list_e CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript & substring");
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=$<ptr_list>2;
+		al->substr=$<ptr_list>5;
+		al->assoc_var=NULL;
+		$<array_list>$=al;
+        }
+	| OPEN_SHEV fgl_expr_c CLOSE_SHEV {
+		struct array_list *al;
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=NULL;
+		al->substr=NULL;
+		al->assoc_var=$<ptr>2;
+		$<array_list>$=al;
+	}
+;
 

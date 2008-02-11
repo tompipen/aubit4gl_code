@@ -897,8 +897,6 @@ A4GL_LEXDIALECT
 A4GL_LEXDIALECT_DETECTED
 A4GL_FORMTYPE
 A4GL_FORMTYPE_DETECTED
-A4GL_MENUTYPE
-A4GL_MENUTYPE_DETECTED
 A4GL_MSGTYPE
 A4GL_MSGTYPE_DETECTED
 A4GL_PACKER
@@ -6509,7 +6507,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6512 "configure"' > conftest.$ac_ext
+  echo '#line 6510 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9020,11 +9018,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9023: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9021: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9027: \$? = $ac_status" >&5
+   echo "$as_me:9025: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9310,11 +9308,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9313: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9311: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9317: \$? = $ac_status" >&5
+   echo "$as_me:9315: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9414,11 +9412,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9417: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9415: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9421: \$? = $ac_status" >&5
+   echo "$as_me:9419: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11776,7 +11774,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11779 "configure"
+#line 11777 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11876,7 +11874,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11879 "configure"
+#line 11877 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14296,11 +14294,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14299: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14297: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14303: \$? = $ac_status" >&5
+   echo "$as_me:14301: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14400,11 +14398,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14403: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14401: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14407: \$? = $ac_status" >&5
+   echo "$as_me:14405: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15975,11 +15973,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15978: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15976: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15982: \$? = $ac_status" >&5
+   echo "$as_me:15980: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16079,11 +16077,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16082: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16080: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16086: \$? = $ac_status" >&5
+   echo "$as_me:16084: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18279,11 +18277,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18282: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18280: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18286: \$? = $ac_status" >&5
+   echo "$as_me:18284: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18569,11 +18567,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18572: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18570: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18576: \$? = $ac_status" >&5
+   echo "$as_me:18574: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18673,11 +18671,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18676: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18674: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18680: \$? = $ac_status" >&5
+   echo "$as_me:18678: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21395,8 +21393,6 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
-
-
 #SQL
 
 
@@ -22989,8 +22985,6 @@ A4GL_LEXDIALECT=""
 A4GL_LEXDIALECT_DETECTED=""
 A4GL_FORMTYPE=NOFORM
 A4GL_FORMTYPE_DETECTED=NOFORM
-A4GL_MENUTYPE=NOMENU
-A4GL_MENUTYPE_DETECTED=NOMENU
 A4GL_MSGTYPE=NATIVE
 A4GL_MSGTYPE_DETECTED=NATIVE
 
@@ -23658,8 +23652,8 @@ fi
 
 ALL_LIBS="$NEED_4GLC_ALL_libs $NEED_4GLPC_ALL_libs"
 
-ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
-		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
+ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MSG_NATIVE UI_CONSOLE \
+		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_report \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA \
 		SQLPARSE_NONE SQLPARSE_INFORMIX $LIBLOGICAL_BUILD"
 #UI_HLGENERIC
@@ -49724,11 +49718,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:49727: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:49721: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:49731: \$? = $ac_status" >&5
+   echo "$as_me:49725: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -49828,11 +49822,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:49831: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:49825: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:49835: \$? = $ac_status" >&5
+   echo "$as_me:49829: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -53745,7 +53739,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 53748 "configure"' > conftest.$ac_ext
+  echo '#line 53742 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -54793,7 +54787,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 54796 "configure"
+#line 54790 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -54893,7 +54887,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 54896 "configure"
+#line 54890 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -57356,36 +57350,6 @@ echo "${ECHO_T}${T_MD}$A4GL_FORMTYPE${T_ME}" >&6; }
 { echo "$as_me:$LINENO: result: Detected:$A4GL_FORMTYPE_DETECTED" >&5
 echo "${ECHO_T}Detected:$A4GL_FORMTYPE_DETECTED" >&6; }
 
-## ==================================================================
-##            Decide on default MENU driver
-## ==================================================================
-
-{ echo "$as_me:$LINENO: checking Default menu driver" >&5
-echo $ECHO_N "checking Default menu driver... $ECHO_C" >&6; }
-
-if test "$default_menu" != ""; then
-	#User can force MENU driver default with --default-menu=xxxx switch
-	A4GL_MENUTYPE="$default_menu"
-else
-	#menus need GTK
-	if test "$GTKBUILD" != "no"; then
-
-	    #Why would we want XDR menu as default in any case?
-		if test "$HAVE_RPCLIB" != "0"; then
-			A4GL_MENUTYPE="XDR"
-	       	A4GL_MENUTYPE_DETECTED="$A4GL_MENUTYPE_DETECTED $A4GL_MENUTYPE"
-		fi
-
-		A4GL_MENUTYPE="GENERIC"
-		A4GL_MENUTYPE_DETECTED="$A4GL_MENUTYPE_DETECTED $A4GL_MENUTYPE"
-    fi
-fi
-
-
-{ echo "$as_me:$LINENO: result: ${T_MD}$A4GL_MENUTYPE${T_ME}" >&5
-echo "${ECHO_T}${T_MD}$A4GL_MENUTYPE${T_ME}" >&6; }
-{ echo "$as_me:$LINENO: result: Detected:$A4GL_MENUTYPE_DETECTED" >&5
-echo "${ECHO_T}Detected:$A4GL_MENUTYPE_DETECTED" >&6; }
 
 ## ==================================================================
 ##            Decide on default EXTended REPorts driver
@@ -57709,14 +57673,14 @@ PLUGIN_NO_LINKABLE=
 	fi
 
 	if test "$HAVE_RPCLIB" != "0"; then
-		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
 	else
 		if test "$GCC_MINGW" != "yes"; then
 			#SUN RPC does not exist for MinGW anyway
-			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sunrpc"
 		else
-			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR XDRPACKER_menu_list XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR  XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
         fi
 	fi
 
@@ -57794,9 +57758,9 @@ PLUGIN_NO_LINKABLE=
 	#GTK plug-in may need to recompile assist.4gl, so it may need to have 4glc,
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
 	if test "$GTKBUILD" != "no"; then
-		PLUGIN_YES="$PLUGIN_YES MENU_GENERIC UI_HL_GTK"
+		PLUGIN_YES="$PLUGIN_YES UI_HL_GTK"
 	else
-        PLUGIN_NO="$PLUGIN_NO MENU_GENERIC UI_HL_GTK"
+        PLUGIN_NO="$PLUGIN_NO UI_HL_GTK"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 
@@ -57817,13 +57781,13 @@ PLUGIN_NO_LINKABLE=
 	#All libMENU_xxx need libUI_GTK on Windows to be linked with, to
     #resolve symbols - so all libMENU_ must be built after libUI_GTK
 	if test "$HAVE_RPCLIB" != "0" -a "$GTKBUILD" != "no"; then
-		PLUGIN_YES="$PLUGIN_YES MENU_XDR"
+		PLUGIN_YES="$PLUGIN_YES "
     else
 		if test "$GCC_MINGW" != "yes"; then
 			#hide MENU_XDR from list of not to build - no Sun RPC with MinGW GCC
-			PLUGIN_NO="$PLUGIN_NO MENU_XDR"
+			PLUGIN_NO="$PLUGIN_NO "
 		else
-			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS MENU_XDR"
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS "
 		fi
     fi
 
@@ -58158,7 +58122,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	#TODO: move this from .in to normal files, and include Makefile-common;
 	#There is no need for them to be .in files:
 	GENERATED_FILES="$GENERATED_FILES \
-				common/dataio/Makefile \
                 compilers/4glc/rules/Makefile \
                 compilers/fcompile/Makefile \
                 compilers/helpcompile/Makefile \
@@ -58166,9 +58129,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libform/form_xdr/Makefile \
                 lib/libform/noform/Makefile \
                 lib/libform/form_generic/Makefile \
-                lib/libmenu/menu_xdr/Makefile \
-                lib/libmenu/menu_nomenu/Makefile \
-                lib/libmenu/menu_generic/Makefile \
                 lib/libmsg/msg_native/Makefile \
                 lib/liblex/lex_c/Makefile \
                 lib/liblex/lex_esqlc/Makefile \
@@ -59037,8 +58997,6 @@ A4GL_LEXDIALECT!$A4GL_LEXDIALECT$ac_delim
 A4GL_LEXDIALECT_DETECTED!$A4GL_LEXDIALECT_DETECTED$ac_delim
 A4GL_FORMTYPE!$A4GL_FORMTYPE$ac_delim
 A4GL_FORMTYPE_DETECTED!$A4GL_FORMTYPE_DETECTED$ac_delim
-A4GL_MENUTYPE!$A4GL_MENUTYPE$ac_delim
-A4GL_MENUTYPE_DETECTED!$A4GL_MENUTYPE_DETECTED$ac_delim
 A4GL_MSGTYPE!$A4GL_MSGTYPE$ac_delim
 A4GL_MSGTYPE_DETECTED!$A4GL_MSGTYPE_DETECTED$ac_delim
 A4GL_PACKER!$A4GL_PACKER$ac_delim
@@ -59115,6 +59073,8 @@ RPCLIB_INCLUDE!$RPCLIB_INCLUDE$ac_delim
 RPCLIB_LFLAGS!$RPCLIB_LFLAGS$ac_delim
 RPCLIB_NAME!$RPCLIB_NAME$ac_delim
 USE_RPCGEN!$USE_RPCGEN$ac_delim
+HAVE_RPCLIB!$HAVE_RPCLIB$ac_delim
+XML_RPC!$XML_RPC$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59156,8 +59116,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-HAVE_RPCLIB!$HAVE_RPCLIB$ac_delim
-XML_RPC!$XML_RPC$ac_delim
 XMLRPC_C_CONFIG!$XMLRPC_C_CONFIG$ac_delim
 XMLRPC_LFLAGS!$XMLRPC_LFLAGS$ac_delim
 XMLRPC_IFLAGS!$XMLRPC_IFLAGS$ac_delim
@@ -59253,6 +59211,8 @@ SQLITE_ODBC!$SQLITE_ODBC$ac_delim
 SQLITE_ODBC_VER!$SQLITE_ODBC_VER$ac_delim
 SQLITE_ODBC_LIBNAME_SHARED!$SQLITE_ODBC_LIBNAME_SHARED$ac_delim
 SQLITE_ODBC_LIBNAME_STATIC!$SQLITE_ODBC_LIBNAME_STATIC$ac_delim
+SQLITE_ODBC_LIBDIR!$SQLITE_ODBC_LIBDIR$ac_delim
+Q_ESQLC!$Q_ESQLC$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59294,8 +59254,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-SQLITE_ODBC_LIBDIR!$SQLITE_ODBC_LIBDIR$ac_delim
-Q_ESQLC!$Q_ESQLC$ac_delim
 AUBIT_LICENSE!$AUBIT_LICENSE$ac_delim
 AUBIT_COPYRIGHT_MSG!$AUBIT_COPYRIGHT_MSG$ac_delim
 PCRE_INC_PATH!$PCRE_INC_PATH$ac_delim
@@ -59391,6 +59349,8 @@ RPMFILE_20!$RPMFILE_20$ac_delim
 RPMFILE_21!$RPMFILE_21$ac_delim
 RPMFILE_22!$RPMFILE_22$ac_delim
 RPMFILE_23!$RPMFILE_23$ac_delim
+RPMFILE_24!$RPMFILE_24$ac_delim
+RPMFILE_25!$RPMFILE_25$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59432,8 +59392,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-RPMFILE_24!$RPMFILE_24$ac_delim
-RPMFILE_25!$RPMFILE_25$ac_delim
 RPMFILE_26!$RPMFILE_26$ac_delim
 RPMFILE_27!$RPMFILE_27$ac_delim
 RPMFILE_28!$RPMFILE_28$ac_delim
@@ -59529,6 +59487,8 @@ IS_THIRDPARTY_17!$IS_THIRDPARTY_17$ac_delim
 IS_THIRDPARTY_18!$IS_THIRDPARTY_18$ac_delim
 IS_THIRDPARTY_19!$IS_THIRDPARTY_19$ac_delim
 IS_THIRDPARTY_20!$IS_THIRDPARTY_20$ac_delim
+IS_THIRDPARTY_21!$IS_THIRDPARTY_21$ac_delim
+IS_THIRDPARTY_22!$IS_THIRDPARTY_22$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59570,8 +59530,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-IS_THIRDPARTY_21!$IS_THIRDPARTY_21$ac_delim
-IS_THIRDPARTY_22!$IS_THIRDPARTY_22$ac_delim
 IS_THIRDPARTY_23!$IS_THIRDPARTY_23$ac_delim
 IS_THIRDPARTY_24!$IS_THIRDPARTY_24$ac_delim
 IS_THIRDPARTY_25!$IS_THIRDPARTY_25$ac_delim
@@ -59667,6 +59625,8 @@ ISLIBFILE_14!$ISLIBFILE_14$ac_delim
 ISLIBFILE_15!$ISLIBFILE_15$ac_delim
 ISLIBFILE_16!$ISLIBFILE_16$ac_delim
 ISLIBFILE_17!$ISLIBFILE_17$ac_delim
+ISLIBFILE_18!$ISLIBFILE_18$ac_delim
+ISLIBFILE_19!$ISLIBFILE_19$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59708,8 +59668,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-ISLIBFILE_18!$ISLIBFILE_18$ac_delim
-ISLIBFILE_19!$ISLIBFILE_19$ac_delim
 ISLIBFILE_20!$ISLIBFILE_20$ac_delim
 ISLIBFILE_21!$ISLIBFILE_21$ac_delim
 ISLIBFILE_22!$ISLIBFILE_22$ac_delim
@@ -59805,6 +59763,8 @@ ISEXEFILE_11!$ISEXEFILE_11$ac_delim
 ISEXEFILE_12!$ISEXEFILE_12$ac_delim
 ISEXEFILE_13!$ISEXEFILE_13$ac_delim
 ISEXEFILE_14!$ISEXEFILE_14$ac_delim
+ISEXEFILE_15!$ISEXEFILE_15$ac_delim
+ISEXEFILE_16!$ISEXEFILE_16$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59846,8 +59806,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-ISEXEFILE_15!$ISEXEFILE_15$ac_delim
-ISEXEFILE_16!$ISEXEFILE_16$ac_delim
 ISEXEFILE_17!$ISEXEFILE_17$ac_delim
 ISEXEFILE_18!$ISEXEFILE_18$ac_delim
 ISEXEFILE_19!$ISEXEFILE_19$ac_delim
@@ -59943,6 +59901,8 @@ INCFILE_18!$INCFILE_18$ac_delim
 INCFILE_19!$INCFILE_19$ac_delim
 INCFILE_20!$INCFILE_20$ac_delim
 INCFILE_21!$INCFILE_21$ac_delim
+INCFILE_22!$INCFILE_22$ac_delim
+INCFILE_23!$INCFILE_23$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59984,8 +59944,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-INCFILE_22!$INCFILE_22$ac_delim
-INCFILE_23!$INCFILE_23$ac_delim
 INCFILE_24!$INCFILE_24$ac_delim
 INCFILE_25!$INCFILE_25$ac_delim
 INCFILE_26!$INCFILE_26$ac_delim
@@ -60081,6 +60039,8 @@ EXAMPFILE_45!$EXAMPFILE_45$ac_delim
 EXAMPFILE_46!$EXAMPFILE_46$ac_delim
 EXAMPFILE_47!$EXAMPFILE_47$ac_delim
 EXAMPFILE_48!$EXAMPFILE_48$ac_delim
+EXAMPFILE_49!$EXAMPFILE_49$ac_delim
+EXAMPFILE_50!$EXAMPFILE_50$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60122,8 +60082,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-EXAMPFILE_49!$EXAMPFILE_49$ac_delim
-EXAMPFILE_50!$EXAMPFILE_50$ac_delim
 EXAMPFILE_51!$EXAMPFILE_51$ac_delim
 EXAMPFILE_52!$EXAMPFILE_52$ac_delim
 EXAMPFILE_53!$EXAMPFILE_53$ac_delim
@@ -60219,6 +60177,8 @@ ISMAKEFILE_2!$ISMAKEFILE_2$ac_delim
 ISMAKEFILE_3!$ISMAKEFILE_3$ac_delim
 ISMAKEFILE_4!$ISMAKEFILE_4$ac_delim
 ISMAKEFILE_5!$ISMAKEFILE_5$ac_delim
+ISMAKEFILE_6!$ISMAKEFILE_6$ac_delim
+ISMAKEFILE_7!$ISMAKEFILE_7$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60260,8 +60220,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-ISMAKEFILE_6!$ISMAKEFILE_6$ac_delim
-ISMAKEFILE_7!$ISMAKEFILE_7$ac_delim
 ISMAKEFILE_8!$ISMAKEFILE_8$ac_delim
 ISMAKEFILE_9!$ISMAKEFILE_9$ac_delim
 ISMAKEFILE_10!$ISMAKEFILE_10$ac_delim
@@ -60357,6 +60315,8 @@ ISCONFFILE_19!$ISCONFFILE_19$ac_delim
 ISCONFFILE_20!$ISCONFFILE_20$ac_delim
 CONVFILE_1!$CONVFILE_1$ac_delim
 CONVFILE_2!$CONVFILE_2$ac_delim
+CONVFILE_3!$CONVFILE_3$ac_delim
+CONVFILE_4!$CONVFILE_4$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60398,8 +60358,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-CONVFILE_3!$CONVFILE_3$ac_delim
-CONVFILE_4!$CONVFILE_4$ac_delim
 CONVFILE_5!$CONVFILE_5$ac_delim
 CONVFILE_6!$CONVFILE_6$ac_delim
 CONVFILE_7!$CONVFILE_7$ac_delim
@@ -60495,6 +60453,8 @@ IMPORTFILE_16!$IMPORTFILE_16$ac_delim
 IMPORTFILE_17!$IMPORTFILE_17$ac_delim
 IMPORTFILE_18!$IMPORTFILE_18$ac_delim
 IMPORTFILE_19!$IMPORTFILE_19$ac_delim
+IMPORTFILE_20!$IMPORTFILE_20$ac_delim
+ISIMPORTFILE_1!$ISIMPORTFILE_1$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60536,8 +60496,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-IMPORTFILE_20!$IMPORTFILE_20$ac_delim
-ISIMPORTFILE_1!$ISIMPORTFILE_1$ac_delim
 ISIMPORTFILE_2!$ISIMPORTFILE_2$ac_delim
 ISIMPORTFILE_3!$ISIMPORTFILE_3$ac_delim
 ISIMPORTFILE_4!$ISIMPORTFILE_4$ac_delim
@@ -60633,6 +60591,8 @@ LDD!$LDD$ac_delim
 LCLINTEXE2!$LCLINTEXE2$ac_delim
 PROG_SENDMAIL!$PROG_SENDMAIL$ac_delim
 IKSPERF!$IKSPERF$ac_delim
+LIBWWW_CONFIG!$LIBWWW_CONFIG$ac_delim
+PDFLIB_CONFIG!$PDFLIB_CONFIG$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60674,8 +60634,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-LIBWWW_CONFIG!$LIBWWW_CONFIG$ac_delim
-PDFLIB_CONFIG!$PDFLIB_CONFIG$ac_delim
 MAKECINT!$MAKECINT$ac_delim
 FJS_PCOMPILER!$FJS_PCOMPILER$ac_delim
 FJS_PRUNTIME!$FJS_PRUNTIME$ac_delim
@@ -60713,7 +60671,7 @@ CYGCHECK!$CYGCHECK$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 37; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 35; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -61488,7 +61446,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.395 2008-01-23 18:17:18 mikeaubury Exp $
+| $Id: configure,v 1.396 2008-02-11 17:12:56 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

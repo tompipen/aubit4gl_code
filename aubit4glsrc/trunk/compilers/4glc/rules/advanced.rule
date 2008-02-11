@@ -5,46 +5,58 @@
 */
 
 
-pause_screen_on_cmd : SETPMON  { print_screen_mode(0);}
+pause_screen_on_cmd : SETPMON  { 
+			$<cmd>$=new_command(E_CMD_PAUSE_SCREEN_ON_CMD);
+			//print_screen_mode(0);
+		}
 ;
 
-pause_screen_off_cmd : SETPMOFF  { print_screen_mode(1);}
+pause_screen_off_cmd : SETPMOFF  { 
+		$<cmd>$=new_command(E_CMD_PAUSE_SCREEN_OFF_CMD);
+		//print_screen_mode(1);
+		}
 ;
 
-start_rpc_cmd : START_EXTERN valid_port CLOSE_SQUARE KW_FOR  remote_func_list
+start_rpc_cmd : START_EXTERN valid_port_eptr CLOSE_SQUARE KW_FOR  remote_func_list
 	{
-		print_start_server($<str>2,$<str>5);
+		$<cmd>$=new_start_rpc_cmd($<ptr>2,$<funcname_list>5);
+		//print_start_server($<str>2,$<str>5);
 	}
 ;
 
 stop_rpc_cmd : STOP_ALL_EXTERNAL 
 	{
-	print_stop_external();
+	$<cmd>$=new_command(E_CMD_STOP_RPC_CMD);
+	//print_stop_external();
 	}
 ;
 
-valid_port : variable {
-		if (scan_variable($<str>1)!=2) {
-		char buff[256];
-			strcpy(buff,"START EXTERNAL ..ON must be an integer");
-			a4gl_yyerror(buff);
-			YYERROR;
-		}
-	} | INT_VALUE
+valid_port_eptr : 
+	fgl_expr_c
 ;
 
 
-remote_func_list :  remote_func |  remote_func_list KW_COMMA remote_func
+remote_func_list :  remote_func  {
+                   $<funcname_list>$.name.name_len=1;
+                   $<funcname_list>$.name.name_val=malloc(sizeof($<funcname_list>$.name.name_val[0]) * $<funcname_list>$.name.name_len);
+                  $<funcname_list>$.name.name_val[$<funcname_list>$.name.name_len-1]=strdup($<str>1);
+
+	} |  remote_func_list KW_COMMA remote_func
 	{
-	sprintf($<str>$,"%s%s",$<str>1,$<str>3);
+                     $<funcname_list>$.name.name_len=$<funcname_list>1.name.name_len+1;
+                     $<funcname_list>$.name.name_val=realloc($<funcname_list>1.name.name_val, sizeof($<funcname_list>$.name.name_val[0]) * $<funcname_list>$.name.name_len);
+                     $<funcname_list>$.name.name_val[$<funcname_list>$.name.name_len-1]=strdup($<str>3);
 	}
 ;
 
-remote_func : identifier {
+remote_func : identifier 
+	/*
+	{
 	print_remote_func($<str>1);
-	sprintf($<str>$, "A4GL_unregister_func(\"%s\");\n", $<str>1); /* @fixme  direct C code - fixme ? */
+	sprintf($<str>$, "A4GL_unregister_func(\"%s\");\n", $<str>1); 
 	ADDMAP("Call Remote",$<str>1);
 	}
+	*/
 ;
 
 

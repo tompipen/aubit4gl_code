@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.128 2007-12-14 21:44:17 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.129 2008-02-11 17:13:11 mikeaubury Exp $
 #
 */
 
@@ -80,6 +80,7 @@ static int initsig_child(void );
 static char *p_args[MAX_ARGS];
 
 int fgl_initialised=0;
+int a4gl_lib_status=0;
 
 /*
 =====================================================================
@@ -324,7 +325,7 @@ int oval;
 	MODE_FORM} ui_mode;
   ;
   ui_mode=MODE_NORMAL;
-
+A4GLSQL_set_status(0,0);
 
 /* did they specify a mode on the RUN .. line ? */
   if (a>255) {
@@ -503,6 +504,12 @@ static int dying=0;
 
   if (a4gl_status >= 0)
     return;
+
+  if (lineno<=0) {
+	static char *buff;
+		A4GLSTK_getCurrentLine( &buff, &lineno);
+		fname=buff;
+  }
 
   A4GL_generateError (s, fname, lineno);
 

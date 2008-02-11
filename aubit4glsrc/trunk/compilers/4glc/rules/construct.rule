@@ -4,109 +4,92 @@
 =====================================================================
 */
 
-construct_cmd	:	CONSTRUCT
-{
-add_feature("UI_CONSTRUCT");
-push_blockcommand("CONSTRUCT");
-map_ui_block("CONSTRUCT");
-A4GL_new_events();
-} 
-constr_rest 
-{
-	print_construct_1();
-} 
-end_constr {
-	print_construct_2($<str>3);
-map_ui_endblock("CONSTRUCT");
-A4GL_drop_events();
-start_bind('i',0);
-}
+construct_cmd	:	CONSTRUCT {
+		add_feature("UI_CONSTRUCT");
+		push_blockcommand("CONSTRUCT");
+		 $<integer_val>$=get_sio_id("CONSTRUCT");
+		map_ui_block("CONSTRUCT");
+		A4GL_new_events();
+		} 
+		constr_rest end_constr {
+			map_ui_endblock("CONSTRUCT");
+			pop_blockcommand ("CONSTRUCT");
+			A4GL_drop_events();
+			$<cmd>$=$<cmd>3;
+			$<cmd>$->cmd_data.command_data_u.construct_cmd.events=$<on_events>4;
+		}
 ;
 
 
 constr_rest:
-BY_NAME variable KW_ON constr_col_list opt_defs op_help input_attributes
+BY_NAME ensured_variable_usage_expression KW_ON constr_col_list opt_defs opt_help_no_i input_attributes
 {
-	start_bind ('i', $<str>2);
-	print_construct_fl_g(1,copy_togenbind('i'),0,$<str>7,atoi($<str>7),last_style);
-	strcpy($<str>$,A4GL_get_formloop_str(0));
-	 start_bind('i',0);
+	int a;
+	/*
+	fh_field_list *f;
+
+        f = new_field_list ();
+	for (a=0;a<$<cons_list>4->list.list_len;a++) {
+		char *colname;
+		colname=$<cons_list>4->list.list_val[a]->colname;
+                append_field_to_list (f, new_field_entry (colname, NULL, 1));
+	}
+	*/
+	$<cmd>$=new_construct_cmd(EB_TRUE, $<ptr>2, $<cons_list>4, NULL, NULL, $<attrib>7, $<e_boolean>5, $<integer_val>6, get_sio_id("CONSTRUCT")); 
 	reset_constr();
 }
-| variable KW_ON constr_col_list opt_defs FROM field_name_list_as_struct op_help input_attributes
+| ensured_variable_usage_expression KW_ON constr_col_list opt_defs FROM field_name_list_as_struct opt_help_no_i input_attributes
 {
-	start_bind ('i', $<str>1);
-	print_construct_fl_g(0,copy_togenbind('i'),$<field_list>6,$<str>8,atoi($<str>8),last_style);
-	strcpy($<str>$,A4GL_get_formloop_str(0));
-	 start_bind('i',0);
 	reset_constr();
+	$<cmd>$=new_construct_cmd(EB_FALSE, $<ptr>1, $<cons_list>3, $<field_list>6, NULL, $<attrib>8, $<e_boolean>4, $<integer_val>7, get_sio_id("CONSTRUCT")); 
 }
 ;
 
-end_constr : 
-| constr_extra_commands END_CONSTRUCT 
+end_constr :  {$<on_events>$=0;}
+| constr_extra_commands END_CONSTRUCT  { $<on_events>$=$<on_events>1;}
 ;
 
-constr_col_list : constr_col | constr_col_list KW_COMMA constr_col
-;
+constr_col_list : constr_col  {
+		$<cons_list>$=malloc(sizeof(cons_list));
+		$<cons_list>$->list.list_len=1;
+		$<cons_list>$->list.list_val=malloc(sizeof($<cons_list>$->list.list_val[0]) * $<cons_list>$->list.list_len);
+		$<cons_list>$->list.list_val[$<cons_list>$->list.list_len-1]=$<cons_list_entry>1;
 
-constr_col : identifier 
-             {
-                push_construct("",$<str>$);
-             }
-|            identifier KW_DOT identifier 
-             {
-                sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
-                push_construct($<str>1,$<str>3); 
-             }
-| identifier KW_DOT KW_MULTIPLY 
-             {
-                push_construct($<str>1,"*");
-             }
-;
-
-
-constr_extra_commands : constr_extra_command | constr_extra_commands constr_extra_command
-;
-
-constr_extra_command :  
-	  BEFFIELD bef_c_field_list_as_struct { A4GL_add_event(A4GL_EVENT_BEFORE_FIELD,field_name_list_as_or_char($<field_list>2)); print_befaft_field_1(field_name_list_as_or_char($<field_list>2));  lastlineno=yylineno;} commands { print_befaft_field_2(); }
-	| AFTFIELD aft_c_field_list_as_struct { A4GL_add_event(A4GL_EVENT_AFTER_FIELD,field_name_list_as_or_char($<field_list>2)); print_befaft_field_1(field_name_list_as_or_char($<field_list>2));  lastlineno=yylineno;} commands { print_befaft_field_2(); }
-	| on_key_command { A4GL_add_onkey_key($<str>1); print_onkey_1($<str>1);  lastlineno=yylineno;} commands { print_onkey_2(); }
-	| on_action { A4GL_add_onaction($<str>1); print_onaction_1($<str>1); lastlineno=yylineno;} commands { print_onaction_2(); }
-        | on_timer {
-                A4GL_add_ontimer($<str>1);
-                print_ontimer_1($<str>1);
-        lastlineno=yylineno; } commands { print_ontimer_2(); }
-
-
-	| AFTCONSTRUCT { A4GL_add_event(A4GL_EVENT_AFTER_INP,""); print_befaft_field_1("AFTER_INP");  lastlineno=yylineno;} commands { print_befaft_field_2(); }
-	| BEFCONSTRUCT { A4GL_add_event(A4GL_EVENT_BEFORE_INP,""); print_befaft_field_1("BEFORE_INP");  lastlineno=yylineno;} commands { print_befaft_field_2(); }
-;
-
-
-
-
-
-bef_c_field_list_as_struct :
-	field_name2_as_struct {
-			$<field_list>$=new_field_list();
-			$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
 	}
-	| bef_c_field_list_as_struct KW_COMMA field_name2_as_struct {
-			$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+	| constr_col_list KW_COMMA constr_col {
+		$<cons_list>$=$<cons_list>1;
+		$<cons_list>$->list.list_len=$<cons_list>1->list.list_len+1;
+		$<cons_list>$->list.list_val=realloc($<cons_list>1->list.list_val, sizeof($<cons_list>$->list.list_val[0]) * $<cons_list>$->list.list_len);
+		$<cons_list>$->list.list_val[$<cons_list>$->list.list_len-1]=$<cons_list_entry>3;
 	}
 ;
 
-aft_c_field_list_as_struct :
-	field_name2_as_struct {
-			$<field_list>$=new_field_list();
-			$<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
-	}
-	|aft_c_field_list_as_struct KW_COMMA field_name2_as_struct {
-			$<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
-	}
+constr_col : identifier {
+			$<cons_list_entry>$=malloc(sizeof(cons_list_entry));
+			$<cons_list_entry>$->tabname=strdup("");
+			$<cons_list_entry>$->colname=strdup($<str>1);
+        }
+	| identifier KW_DOT identifier {
+			$<cons_list_entry>$=malloc(sizeof(cons_list_entry));
+			$<cons_list_entry>$->tabname=strdup($<str>1);
+			$<cons_list_entry>$->colname=strdup($<str>3);
+        }
+	| identifier KW_DOT KW_MULTIPLY {
+			$<cons_list_entry>$=malloc(sizeof(cons_list_entry));
+			$<cons_list_entry>$->tabname=strdup($<str>1);
+			$<cons_list_entry>$->colname=strdup("*");
+        }
 ;
+
+
+constr_extra_commands : 
+		events_construct
+;
+
+
+
+
+
 
 
 /* ========================== construct.rule ====================== */

@@ -6,13 +6,16 @@
 
 
 error_cmd	: KW_ERROR fgl_expr_concat opt_attributes {
-			add_feature("ERROR");
-		map_ui("ERROR");
-			print_error($<ptr_list>2, $<str>3,0,last_style);
+				add_feature("ERROR");
+				map_ui("ERROR");
+				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>2), EB_FALSE , $<attrib>3 );
+				//print_error($<ptr_list>2, $<str>3,0,last_style);
 		}
 		| KW_ERROR fgl_expr_concat opt_attributes  WAIT_FOR_KEY { 
-			add_feature("ERROR_WAIT");
-		map_ui("ERRORWAIT");
-			print_error($<ptr_list>2, $<str>3,1,last_style);
+				add_feature("ERROR_WAIT");
+				map_ui("ERRORWAIT");
+				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>2), EB_TRUE , $<attrib>3 );
+
+				// print_error($<ptr_list>2, $<str>3,1,last_style);
 			}
 ;

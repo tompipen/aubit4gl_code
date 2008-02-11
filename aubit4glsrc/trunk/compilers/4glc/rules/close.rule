@@ -5,10 +5,30 @@
 */
 
 
-close_cmd	:	CLOSE_FORM form_name { print_close('F',$<str>2); add_feature("CLOSE_FORM");}
-		|	CLOSE_WINDOW win_name { print_close('W',$<str>2); add_feature("CLOSE_WINDOW");}
-		|	CLOSE_STATUSBOX win_name { print_close('W',$<str>2); }
-		|	CLOSE_DATABASE { add_feature("CLOSE_DATABASE"); print_close('D',0); add_feature("CLOSE_DATABASE");}
-		|	CLOSE_SESSION conn_id { add_feature("CLOSE_SESSION"); print_close('S',$<str>2); add_feature("CLOSE_SESSION");}
-		|	CLOSE fetch_cursor_name { add_feature("CLOSE_CURSOR"); print_close('C',$<str>2); add_feature("CLOSE_CURSOR");}
+close_cmd	:	CLOSE_FORM form_name_p { 
+
+				$<cmd>$=new_close_cmd(E_CT_FORM,$<ptr>2);
+
+				add_feature("CLOSE_FORM");
+		}
+		|	CLOSE_WINDOW atline win_name_p { 
+				set_cmdlineno($<integer_val>2);
+				$<cmd>$=new_close_cmd(E_CT_WINDOW,$<ptr>3);
+				add_feature("CLOSE_WINDOW");
+		}
+		|	CLOSE_STATUSBOX win_name_p { 
+				$<cmd>$=new_close_cmd(E_CT_STATUSBOX,$<ptr>2);
+		}
+		|	CLOSE_DATABASE { 
+				$<cmd>$=new_close_sql_cmd(E_CT_DATABASE,0);
+				add_feature("CLOSE_DATABASE"); 
+			}
+		|	CLOSE_SESSION conn_id_p { 
+				$<cmd>$=new_close_sql_cmd(E_CT_SESSION,$<ptr>2);
+				add_feature("CLOSE_SESSION"); 
+		}
+		|	CLOSE fetch_cursor_name_p { 
+				$<cmd>$=new_close_sql_cmd(E_CT_CURS_OR_PREP,$<ptr>2);
+				add_feature("CLOSE_CURSOR"); 
+		}
 ;

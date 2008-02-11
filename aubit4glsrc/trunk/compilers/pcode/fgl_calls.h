@@ -179,35 +179,35 @@ void *resolve_externs(char *name) {
 int special_cmd(struct cmd *c) {
 
 
-	if (c->cmd_type==CMD_PUSH_LONG) {
+	if (c->npcode_cmd_type==CMD_PUSH_LONG) {
 			A4GL_push_long(c->cmd_u.c_push_long);
 			return 1;
 	}
 
-	if (c->cmd_type==CMD_PUSH_INT) {
+	if (c->npcode_cmd_type==CMD_PUSH_INT) {
 			A4GL_push_int(c->cmd_u.c_push_int);
 			return 1;
 	}
 
-	if (c->cmd_type==CMD_PUSH_OP) {
+	if (c->npcode_cmd_type==CMD_PUSH_OP) {
 			A4GL_debug("Push op : %x\n",c->cmd_u.c_push_op);
 			A4GL_pushop(c->cmd_u.c_push_op);
 			return 1;
 	}
 
-	if (c->cmd_type==CMD_PUSH_OP_ISNULL) { A4GL_pushop(OP_ISNULL); return 1; }
-	if (c->cmd_type==CMD_PUSH_OP_AND) { A4GL_pushop(OP_AND); return 1; }
-	if (c->cmd_type==CMD_PUSH_OP_OR) { A4GL_pushop(OP_OR); return 1; }
-	if (c->cmd_type==CMD_PUSH_OP_EQUAL) { A4GL_pushop(OP_EQUAL); return 1; }
-	if (c->cmd_type==CMD_PUSH_OP_CONCAT) { A4GL_pushop(OP_CONCAT); return 1; }
+	if (c->npcode_cmd_type==CMD_PUSH_OP_ISNULL) { A4GL_pushop(OP_ISNULL); return 1; }
+	if (c->npcode_cmd_type==CMD_PUSH_OP_AND) { A4GL_pushop(OP_AND); return 1; }
+	if (c->npcode_cmd_type==CMD_PUSH_OP_OR) { A4GL_pushop(OP_OR); return 1; }
+	if (c->npcode_cmd_type==CMD_PUSH_OP_EQUAL) { A4GL_pushop(OP_EQUAL); return 1; }
+	if (c->npcode_cmd_type==CMD_PUSH_OP_CONCAT) { A4GL_pushop(OP_CONCAT); return 1; }
 
 
-	if (c->cmd_type==CMD_PUSH_CHAR) {
+	if (c->npcode_cmd_type==CMD_PUSH_CHAR) {
 			A4GL_push_char(this_module_ptr->string_table.string_table_val[c->cmd_u.c_push_char].s);
 			return 1;
 	}
 
-        if (c->cmd_type==CMD_ECALL) {
+        if (c->npcode_cmd_type==CMD_ECALL) {
 /*
 		printf("ECALL : %s %d %d\n", this_module_ptr->string_table.string_table_val[c->cmd_u.c_ecall->func_id].s,
 				c->cmd_u.c_ecall->ln,
@@ -221,56 +221,56 @@ int special_cmd(struct cmd *c) {
         }
 
 
-	if (c->cmd_type==CMD_CLR_ERR) {
+	if (c->npcode_cmd_type==CMD_CLR_ERR) {
 			aclfgli_clr_err_flg();
 			return 1;
 	}
 
-	if (c->cmd_type==CMD_CHK_ERR) {
+	if (c->npcode_cmd_type==CMD_CHK_ERR) {
 			fprintf(logfile,"CHKERR %ld %s\n",c->cmd_u.c_chk_err_lineno,this_module_ptr->module_name);
 			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module_ptr->module_name);
 			return 1;
 	}
 
-	if (c->cmd_type==CMD_SET_STAT) {
+	if (c->npcode_cmd_type==CMD_SET_STAT) {
 			A4GLSQL_set_status(c->cmd_u.c_setval,0);
 			return 1;
 	}
 
-	if (c->cmd_type==CMD_SET_LINE) {
+	if (c->npcode_cmd_type==CMD_SET_LINE) {
 			A4GLSTK_setCurrentLine("module",c->cmd_u.c_cline);
 			return 1;
 	}
 
-	if (c->cmd_type==CMD_ERRCHK) {
+	if (c->npcode_cmd_type==CMD_ERRCHK) {
 			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}
-	if (c->cmd_type==CMD_ERRCHK_40110) {
+	if (c->npcode_cmd_type==CMD_ERRCHK_40110) {
 			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}
-	if (c->cmd_type==CMD_ERRCHK_40010) {
-			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
-			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
-			// error checking...
-			return 1;
-	}
-
-	if (c->cmd_type==CMD_ERRCHK_40000) {
+	if (c->npcode_cmd_type==CMD_ERRCHK_40010) {
 			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}
 
+	if (c->npcode_cmd_type==CMD_ERRCHK_40000) {
+			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
+			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
+			// error checking...
+			return 1;
+	}
 
 
-	printf("Unknown command : %d\n",c->cmd_type);
+
+	printf("Unknown command : %d\n",c->npcode_cmd_type);
 	return 0;
 }
 

@@ -39,7 +39,7 @@ void *memdup(void *p,int l);
 =====================================================================
 */
 
-void add_fmt (int cat, struct expr *col, struct commands commands);
+void add_fmt (int cat, struct expr *col, struct acerep_commands commands);
 
 /*
 =====================================================================
@@ -73,12 +73,12 @@ set_expr_int(struct expr *e,int a)
 
 %union	  {
 	char   str[30000];
-	struct command cmd;
+	struct acerep_command cmd;
 	struct expr expr;
 	struct expr *exprptr;
-	struct commands commands;
+	struct acerep_commands commands;
 	struct agg_val agg_val;
-	struct var_usage *var_usage;
+	struct acerep_var_usage *var_usage;
 }
 
 %token <str> NAME
@@ -392,7 +392,7 @@ op_delim: | DELIMITER string
 
 format_section: 
 	  FORMAT EVERY ROW END {
-		struct commands cmd;
+		struct acerep_commands cmd;
 		cmd.commands.commands_len=0;
 		cmd.commands.commands_val=0;
 		add_fmt(FORMAT_EVERY_ROW,NULL,cmd);
@@ -439,7 +439,7 @@ format_action :
 
 variable_sub: 
 	NAMED  OPEN_SQUARE fmt_val_expression COMMA fmt_val_expression CLOSE_SQUARE {
-		$<var_usage>$=malloc(sizeof(struct var_usage));
+		$<var_usage>$=malloc(sizeof(struct acerep_var_usage));
 		$<var_usage>$->subscript1=DUP($<expr>3);
 		$<var_usage>$->subscript2=DUP($<expr>5);
 		$<var_usage>$->varname=strdup($<str>1);
@@ -449,7 +449,7 @@ variable_sub:
 		}
 	}
 	| NAMED  OPEN_SQUARE fmt_val_expression CLOSE_SQUARE {
-		$<var_usage>$=malloc(sizeof(struct var_usage));
+		$<var_usage>$=malloc(sizeof(struct acerep_var_usage));
 		$<var_usage>$->subscript1=DUP($<expr>3);
 		$<var_usage>$->subscript2=NULL;
 		$<var_usage>$->varname=strdup($<str>1);
@@ -460,7 +460,7 @@ variable_sub:
 	}
 	| NAMED  {
 		
-		$<var_usage>$=malloc(sizeof(struct var_usage));
+		$<var_usage>$=malloc(sizeof(struct acerep_var_usage));
 		$<var_usage>$->subscript1=NULL;
 		$<var_usage>$->subscript2=NULL;
 		$<var_usage>$->varname=strdup($<str>1);
@@ -1003,7 +1003,7 @@ value_specification:
 commands:
 	command {
 		$<commands>$.commands.commands_len=1;
-		$<commands>$.commands.commands_val=acl_malloc2(sizeof(struct command));
+		$<commands>$.commands.commands_val=acl_malloc2(sizeof(struct acerep_command));
 		COPY($<commands>$.commands.commands_val[0],$<cmd>1);
 		} 
 	| commands command  {
@@ -1011,7 +1011,7 @@ commands:
 		$<commands>$.commands.commands_len++;
 		$<commands>$.commands.commands_val=realloc(
 		$<commands>$.commands.commands_val,
-		$<commands>$.commands.commands_len*sizeof(struct command));
+		$<commands>$.commands.commands_len*sizeof(struct acerep_command));
 		COPY($<commands>$.commands.commands_val[ $<commands>$.commands.commands_len-1 ],$<cmd>2);
 	}
 ;
@@ -1030,8 +1030,8 @@ command:
 	| call_command
 	| XBEGIN commands END {
 		$<cmd>$.cmd_type=CMD_BLOCK;
-		$<cmd>$.command_u.commands.commands.commands_val=$<commands>2.commands.commands_val;
-		$<cmd>$.command_u.commands.commands.commands_len=$<commands>2.commands.commands_len;
+		$<cmd>$.acerep_command_u.acerep_commands.commands.commands_val=$<commands>2.commands.commands_val;
+		$<cmd>$.acerep_command_u.acerep_commands.commands.commands_len=$<commands>2.commands.commands_len;
 	}
 ;
 
@@ -1039,26 +1039,26 @@ command:
 block_commands: command {
 	$<cmd>$.cmd_type=CMD_BLOCK;
 
-	$<cmd>$.command_u.commands.commands.commands_len=1;
-	printf("L1= %d\n",$<cmd>$.command_u.commands.commands.commands_len);
-	$<cmd>$.command_u.commands.commands.commands_val=acl_malloc2(sizeof(struct command));
+	$<cmd>$.acerep_command_u.commands.commands.commands_len=1;
+	printf("L1= %d\n",$<cmd>$.acerep_command_u.commands.commands.commands_len);
+	$<cmd>$.acerep_command_u.commands.commands.commands_val=acl_malloc2(sizeof(struct acerep_command));
 
-	COPY($<cmd>$.command_u.commands.commands.commands_val[0],$<cmd>1);
+	COPY($<cmd>$.acerep_command_u.commands.commands.commands_val[0],$<cmd>1);
 
 	}
 	| block_commands command {
 	COPY($<cmd>$,$<cmd>1);
-	$<cmd>$.command_u.commands.commands.commands_len++;
-	printf("L2= %d\n",$<cmd>$.command_u.commands.commands.commands_len);
+	$<cmd>$.acerep_command_u.commands.commands.commands_len++;
+	printf("L2= %d\n",$<cmd>$.acerep_command_u.commands.commands.commands_len);
 
-	$<cmd>$.command_u.commands.commands.commands_val=realloc(
-		$<cmd>$.command_u.commands.commands.commands_val,
-		sizeof(struct command)* 
-		$<cmd>$.command_u.commands.commands.commands_len
+	$<cmd>$.acerep_command_u.commands.commands.commands_val=realloc(
+		$<cmd>$.acerep_command_u.commands.commands.commands_val,
+		sizeof(struct acerep_command)* 
+		$<cmd>$.acerep_command_u.commands.commands.commands_len
 	);
 
-	COPY($<cmd>$.command_u.commands.commands.commands_val[
-		$<cmd>$.command_u.commands.commands.commands_len-1],$<cmd>2);
+	COPY($<cmd>$.acerep_command_u.commands.commands.commands_val[
+		$<cmd>$.acerep_command_u.commands.commands.commands_len-1],$<cmd>2);
 
 }
 ;
@@ -1067,11 +1067,11 @@ block_commands: command {
 
 call_command :  KW_CALL func_identifier OPEN_BRACKET op_fmt_val_expr_list CLOSE_BRACKET {
 		$<cmd>$.cmd_type=CMD_CALL;
-		$<cmd>$.command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
-                $<cmd>$.command_u.cmd_call.fcall->fname=acl_strdup($<str>2);
+		$<cmd>$.acerep_command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
+                $<cmd>$.acerep_command_u.cmd_call.fcall->fname=acl_strdup($<str>2);
 	
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>4.expr_u.lexpr;
-		print_lexpr( $<cmd>$.command_u.cmd_call.fcall->lexpr);
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>4.expr_u.lexpr;
+		print_lexpr( $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr);
 }
 ;
 
@@ -1085,11 +1085,11 @@ func_identifier: DATE
 for_command:
 	FOR variable EQUAL fmt_val_expression TO fmt_val_expression op_step DO command {
 		$<cmd>$.cmd_type=CMD_FOR;
-		$<cmd>$.command_u.cmd_for.varid=find_variable($<str>2);
-		COPY($<cmd>$.command_u.cmd_for.start,$<expr>4);
-		COPY($<cmd>$.command_u.cmd_for.finish,$<expr>6);
-		COPY($<cmd>$.command_u.cmd_for.step,$<expr>7);
-		$<cmd>$.command_u.cmd_for.command=(struct command *)DUP($<cmd>9);
+		$<cmd>$.acerep_command_u.cmd_for.varid=find_variable($<str>2);
+		COPY($<cmd>$.acerep_command_u.cmd_for.start,$<expr>4);
+		COPY($<cmd>$.acerep_command_u.cmd_for.finish,$<expr>6);
+		COPY($<cmd>$.acerep_command_u.cmd_for.step,$<expr>7);
+		$<cmd>$.acerep_command_u.cmd_for.command=(struct acerep_command *)DUP($<cmd>9);
 	}
 ;
 
@@ -1100,15 +1100,15 @@ op_step : { $<expr>$.type=EXPRTYPE_INT; $<expr>$.expr_u.i=1; }
 
 if_command: IF fmt_val_expression THEN command op_else {
 	$<cmd>$.cmd_type=CMD_IF;
-	COPY($<cmd>$.command_u.cmd_if.condition,$<expr>2);
-	$<cmd>$.command_u.cmd_if.command=(struct command *)DUP($<cmd>4);
-	$<cmd>$.command_u.cmd_if.elsecommand=(struct command *)DUP($<cmd>5);
+	COPY($<cmd>$.acerep_command_u.cmd_if.condition,$<expr>2);
+	$<cmd>$.acerep_command_u.cmd_if.command=(struct acerep_command *)DUP($<cmd>4);
+	$<cmd>$.acerep_command_u.cmd_if.elsecommand=(struct acerep_command *)DUP($<cmd>5);
 }
 ;
 
 op_else : {
 		$<cmd>$.cmd_type=CMD_NULL;
-		$<cmd>$.command_u.null=1;
+		$<cmd>$.acerep_command_u.null=1;
 	} | ELSE command { COPY($<cmd>$,$<cmd>2); }
 ;
 
@@ -1118,10 +1118,10 @@ LET NAMED EQUAL expr_concat {
 		int v;
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
-		$<cmd>$.command_u.cmd_let.varid=v;
-		$<cmd>$.command_u.cmd_let.value=DUP($<expr>4);
-		$<cmd>$.command_u.cmd_let.sub1=0;
-		$<cmd>$.command_u.cmd_let.sub2=0; 
+		$<cmd>$.acerep_command_u.cmd_let.varid=v;
+		$<cmd>$.acerep_command_u.cmd_let.value=DUP($<expr>4);
+		$<cmd>$.acerep_command_u.cmd_let.sub1=0;
+		$<cmd>$.acerep_command_u.cmd_let.sub2=0; 
 	}
 
 |
@@ -1129,10 +1129,10 @@ LET NAMED OPEN_SQUARE fmt_val_expression CLOSE_SQUARE EQUAL expr_concat {
 		int v;
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
-		$<cmd>$.command_u.cmd_let.varid=v;
-		$<cmd>$.command_u.cmd_let.value=DUP($<expr>7);
-		$<cmd>$.command_u.cmd_let.sub1=DUP($<expr>4); 
-		$<cmd>$.command_u.cmd_let.sub2=0;
+		$<cmd>$.acerep_command_u.cmd_let.varid=v;
+		$<cmd>$.acerep_command_u.cmd_let.value=DUP($<expr>7);
+		$<cmd>$.acerep_command_u.cmd_let.sub1=DUP($<expr>4); 
+		$<cmd>$.acerep_command_u.cmd_let.sub2=0;
 	}
 
 |
@@ -1140,10 +1140,10 @@ LET NAMED OPEN_SQUARE fmt_val_expression COMMA fmt_val_expression CLOSE_SQUARE E
 		int v;
 		$<cmd>$.cmd_type=CMD_LET;
 		v=find_variable($<str>2);
-		$<cmd>$.command_u.cmd_let.varid=v;
-		$<cmd>$.command_u.cmd_let.value=DUP($<expr>9);
-		$<cmd>$.command_u.cmd_let.sub1=DUP($<expr>4); 
-		$<cmd>$.command_u.cmd_let.sub2=DUP($<expr>6); 
+		$<cmd>$.acerep_command_u.cmd_let.varid=v;
+		$<cmd>$.acerep_command_u.cmd_let.value=DUP($<expr>9);
+		$<cmd>$.acerep_command_u.cmd_let.sub1=DUP($<expr>4); 
+		$<cmd>$.acerep_command_u.cmd_let.sub2=DUP($<expr>6); 
 	}
 
 
@@ -1170,21 +1170,21 @@ expr_concat: fmt_val_expression | expr_concat COMMA fmt_val_expression {
 
 need_command: NEED int_val LINES {
 	$<cmd>$.cmd_type=CMD_NEED;
-	$<cmd>$.command_u.cmd_need.nlines=atoi($<str>2);
+	$<cmd>$.acerep_command_u.cmd_need.nlines=atoi($<str>2);
 }
 ;
 
 pause_command: PAUSE string {
 	$<cmd>$.cmd_type=CMD_PAUSE;
-	$<cmd>$.command_u.cmd_pause.message=acl_strdup($<str>2);
+	$<cmd>$.acerep_command_u.cmd_pause.message=acl_strdup($<str>2);
 }
 ;
 
 
 print_command: PRINT op_expr_concat op_semi  {
 	$<cmd>$.cmd_type=CMD_PRINT;
-	$<cmd>$.command_u.cmd_print.printnl=atoi($<str>3);
-	$<cmd>$.command_u.cmd_print.print=$<expr>2;
+	$<cmd>$.acerep_command_u.cmd_print.printnl=atoi($<str>3);
+	$<cmd>$.acerep_command_u.cmd_print.print=$<expr>2;
 }
 
 ;
@@ -1194,26 +1194,26 @@ op_semi: {strcpy($<str>$,"1");} | SEMICOLON {strcpy($<str>$,"0");}
 
 print_file_command: PRINT_FILE string {
 	$<cmd>$.cmd_type=CMD_PRINTFILE;
-	$<cmd>$.command_u.cmd_printfile.filename=acl_strdup($<str>2);
+	$<cmd>$.acerep_command_u.cmd_printfile.filename=acl_strdup($<str>2);
 }
 ;
 
 skip_command : SKIP int_val LINES {
 		$<cmd>$.cmd_type=CMD_SKIP;
-		$<cmd>$.command_u.cmd_skip.nlines=atoi($<str>2);
+		$<cmd>$.acerep_command_u.cmd_skip.nlines=atoi($<str>2);
 
 	}
 	| SKIP TO TOP_OF_PAGE {
 		$<cmd>$.cmd_type=CMD_SKIP;
-		$<cmd>$.command_u.cmd_skip.nlines=-1;
+		$<cmd>$.acerep_command_u.cmd_skip.nlines=-1;
 	}
 ;
 
 
 while_command: WHILE fmt_val_expression DO command {
 		$<cmd>$.cmd_type=CMD_WHILE;
-		COPY($<cmd>$.command_u.cmd_while.condition,$<expr>2);
-		$<cmd>$.command_u.cmd_while.command=(struct command *)DUP($<cmd>4);
+		COPY($<cmd>$.acerep_command_u.cmd_while.condition,$<expr>2);
+		$<cmd>$.acerep_command_u.cmd_while.command=(struct acerep_command *)DUP($<cmd>4);
 }
 ;
 
@@ -1485,33 +1485,33 @@ simple_fmt_val_expression:
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("DATE");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
 	| MONTH  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("MONTH");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| YEAR  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("YEAR");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| DAY  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("DAY");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
 	| NAMED OPEN_BRACKET fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup($<str>1);
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| OPEN_BRACKET fmt_val_expression CLOSE_BRACKET { COPY($<expr>$,$<expr>2); }
 	| variable_sub {
@@ -1596,33 +1596,33 @@ fmt_val_expression:
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("DATE");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
 	| MONTH  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("MONTH");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| YEAR  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("YEAR");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| DAY  OPEN_BRACKET  fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup("DAY");
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 
 	| NAMED OPEN_BRACKET fmt_val_expr_list CLOSE_BRACKET {
 		$<expr>$.type=EXPRTYPE_FCALL; 
 		$<expr>$.expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		$<expr>$.expr_u.fcall->fname=acl_strdup($<str>1);
-                $<cmd>$.command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
+                $<cmd>$.acerep_command_u.cmd_call.fcall->lexpr=$<expr>3.expr_u.lexpr;
 	}
 	| OPEN_BRACKET fmt_val_expression CLOSE_BRACKET { COPY($<expr>$,$<expr>2); }
 	| COLUMN fmt_val_expression {

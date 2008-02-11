@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.310 2007-12-13 21:34:42 mikeaubury Exp $
+# $Id: mod.c,v 1.311 2008-02-11 17:13:06 mikeaubury Exp $
 #
 */
 
@@ -52,12 +52,25 @@
 #include "variables.h"
 #include <ctype.h>
 #include "field_handling.h"
+#include "parsehelp.h"
+#include "a4gl_expr.h"
+//#include "fgl.xs.h"
 #include <errno.h>
 #define GEN_STACK_HERE
+
+struct s_func_def {
+        char *fname;
+        char type;
+        int rvals;
+        int params;
+};
+struct s_func_def *function_definitions=0;
+int nfunction_definitions=0;
+
+
 #include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
-#include "gen_stack.h"
-char                 hdr_dbname[64]="";
+//char                 hdr_dbname[64]="";
 
 char force_ui[FORCE_UI_SIZE];
 char debug_filename[DEBUG_FILENAME_SIZE]="";
@@ -67,12 +80,13 @@ int             chk4var=0;
 char            curr_func[256]="Module";
 int isin_formhandler=0;
 int sql_mode=0;
-int             is_schema=0;
+//int             is_schema=0;
 
 
 int             menu_cmd_cnt[MAXMENUOPTS] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int             menu_blk[MAXMENU]         ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
+int add_bind_subs (char i, char *var_i, char *sub_start, char *sub_end);
 /*
 =====================================================================
                     Constants definitions
@@ -131,6 +145,7 @@ struct s_replacements *replacements = 0;
 int nreplacements = 0;
 
 static void A4GL_set_sql_features (void);
+void expand_ordbind2(void ) ;
 
 int A4GL_get_nevents (void);
 void A4GL_get_event (int n, int *i, char **s);
@@ -144,19 +159,20 @@ int nreturn_values = -1;
 
 int A4GL_findex (char *str, char c);
 /*void push_validate (char *t2);*/
-int A4GL_get_attr_from_string (char *s);
+
+//int A4GL_get_attr_from_string (char *s);
 //char get_curr_report_stack_whytype_1 (void);
 char *get_curr_report_stack_why (void);
-char find_variable_scope (char *s_in);
-char *A4GL_get_important_from_clobber (char *s);
+//char find_variable_scope (char *s_in);
+//char *A4GL_get_important_from_clobber (char *s);
 char *A4GL_get_clobber_from_orig (char *s);
 //char *A4GLSQLCV_check_sql(char *s) ;
 int get_rep_no_orderby (void);
-int get_validate_list_cnt (void);
+//int get_validate_list_cnt (void);
 char *sql_features = 0;
 //int get_ccnt(void);
 //void set_ccnt(int a);
-int get_block_no (int n);
+//int get_block_no (int n);
 //struct fh_field_list *new_field_list(void);
 //char *A4GL_decode_packtype(char *s) ;
 
@@ -202,19 +218,20 @@ int rep_type = 0;	      /** The report type */
 //int isin_command (char *cmd_type);
 
 
+#ifdef OLD
 /**
  * Array where all the WHENEVER conditions are stored.
  */
-int when_code[8] = {
-  WHEN_STOP,      // A_WHEN_ERROR 	     
-  WHEN_NOTSET,    // A_WHEN_ANYERROR   
-  WHEN_STOP,      // A_WHEN_SQLERROR   
-  WHEN_CONTINUE,  // A_WHEN_WARNING 	  
-  WHEN_CONTINUE,  // A_WHEN_SQLWARNING 
-  WHEN_CONTINUE,  // A_WHEN_NOTFOUND   
-  WHEN_NOTSET,    // A_WHEN_SUCCESS	  
-  WHEN_NOTSET     // A_WHEN_SQLSUCCESS 
+int when_code[8] = { WHEN_STOP,
+  WHEN_NOTSET,
+  WHEN_STOP,
+  WHEN_CONTINUE,
+  WHEN_CONTINUE,
+  WHEN_CONTINUE,
+  WHEN_NOTSET,
+  WHEN_NOTSET
 };
+#endif
 
 int lines_printed = 0;
 
@@ -261,7 +278,7 @@ char            where_having[1024];
 char            menu[2048];
 char            varstring[100];
 char            current_del_table[64]="";
-int             rordcnt;
+// int             rordcnt;
 int             racnt=0;
 int             ccode=0;
 int             errbomb=0;
@@ -289,7 +306,7 @@ char *into_temp_clause=0;
 struct          rep_structure rep_struct;
 struct          pdf_rep_structure pdf_rep_struct;
 struct          form_attr form_attrib;
-struct          input_array_attribs curr_input_array_attribs;
+/* struct          input_array_attribs curr_input_array_attribs; */
 int             if_print_stack[100][2];
 int     if_print_stack_cnt=0;
 int     if_print_section[100]={0,0,0,0};
@@ -301,19 +318,12 @@ char    last_tmp_name[256]="";
 #define GEN_STACK_SIZE 10000
 
 
-struct s_func_def {
-	char *fname;
-	char type;
-	int rvals;
-	int params;
-};
-struct s_func_def *function_definitions=0;
-int nfunction_definitions=0;
-
 
 
 struct s_constr_buff constr_buff[256];
 int constr_cnt = 0;
+
+
 
 /**
  * Input bind array.
@@ -321,34 +331,36 @@ int constr_cnt = 0;
  * Used for instructions like execute using or open using wher we have a list 
  * of variables that act as input for the statement.
  */
-struct binding_comp *ibind = 0;	//[NUMBINDINGS];
-long a_ibind = 0;
-struct binding_comp *nullbind = 0;	//[NUMBINDINGS];
-long a_nullbind = 0;
+//struct binding_comp *ibind = 0;	//[NUMBINDINGS];
+//long a_ibind = 0;
+//struct binding_comp *nullbind = 0;	//[NUMBINDINGS];
+//long a_nullbind = 0;
 
 /**
  * Output bind array.
  */
-struct binding_comp *obind = 0;	//[NUMBINDINGS];
-long a_obind = 0;
-struct binding_comp *fbind = 0;	//[NUMBINDINGS];
-long a_fbind = 0;
-struct binding_comp *ebind = 0;	//[NUMBINDINGS];
-long a_ebind = 0;
-struct binding_comp *ordbind = 0;	//[NUMBINDINGS];
-long a_ordbind = 0;
+//struct binding_comp *obind = 0;	//[NUMBINDINGS];
+//long a_obind = 0;
+//struct binding_comp *fbind = 0;	//[NUMBINDINGS];
+//long a_fbind = 0;
+//struct binding_comp *ebind = 0;	//[NUMBINDINGS];
+//long a_ebind = 0;
+//struct binding_comp *ordbind = 0;	//[NUMBINDINGS];
+//long a_ordbind = 0;
+//
+//int ordbindcnt = 0;
+//int ibindcnt = 0;			/** Number of elements in ibind array */
+//int nullbindcnt = 0;
+//int obindcnt = 0;
+//int fbindcnt = 0;
+//int ebindcnt = 0;
 
-int ordbindcnt = 0;
-int ibindcnt = 0;			/** Number of elements in ibind array */
-int nullbindcnt = 0;
-int obindcnt = 0;
-int fbindcnt = 0;
-int ebindcnt = 0;
 
-struct binding_comp *ensure_bind (long *a_bindp, long need,
-				  struct binding_comp *b);
-struct binding_list *new_bind_list (char *s);
-struct binding_list *append_bind_list (struct binding_list *l, char *s);
+
+
+//struct binding_comp *ensure_bind (long *a_bindp, long need, struct binding_comp *b);
+//struct binding_list *new_bind_list (char *s);
+//struct binding_list *append_bind_list (struct binding_list *l, char *s);
 
 /**
  * Module current scope level for variable declaration.
@@ -388,7 +400,7 @@ struct sreports *get_sreports (int z);
 void a4gl_add_variable (char *name, char *type, char *n);
 static void push_validate_column (char *tabname, char *colname);
 
-char *get_namespace (char *s);
+//char *get_namespace (char *s);
 char *make_sql_string_and_free (char *first, ...);
 char *do_clobbering (char *f, char *s);
 char *do_clobbering_sql (char *f, char *s);
@@ -874,6 +886,7 @@ scan_variables (char *s_n, int mode)
   int size;
   int vval;
 
+
   if (strlen (s_n) > 1023)
     {
       A4GL_assertion (1, "scan_variables buffers too small");
@@ -1006,130 +1019,6 @@ scan_variable (char *s)
 
 
 
-#ifdef OLD_STUFF
-/**
- *
- * @todo Document the possible return values
- *
- * @param s
- * @param mode
- * @return
- *   - 0
- *   - -1
- *   - 1
- *   - 
- */
-static long
-isvartype (char *s, int mode)
-{
-  int a;
-  char buff[256];
-  char *ptr;
-  int flg;
-  int dir;
-  int lvl = 0;
-
-  /* MJA - NEWVARIABLE */
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-  strcpy (buff, s);
-
-
-
-
-
-
-
-  strip_bracket (buff);
-  A4GL_debug ("Striped2\n");
-  strcat (buff, ".");
-  ptr = strtok (buff, ".");
-  a = varcnt;
-  dir = -1;
-  while (1)
-    {
-      a += dir;
-      if (lvl > 0 && dir == -1)
-	{
-	  dir = 1;
-	  a += 2;
-	}
-      if (a >= varcnt && dir == 1)
-	break;
-      if (a < 0 && dir == -1)
-	break;
-      if (lvl > vars[a].level)
-	break;
-      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0)
-	  && vars[a].level == lvl)
-	{
-	  ptr = strtok (0, ".");
-	  flg = 0;
-	  if (ptr == 0)
-	    flg = 1;
-	  else if (strcmp (ptr, "*") == 0)
-	    flg = 1;
-
-	  if (flg && mode == 1)
-	    {
-	      A4GL_debug ("Seems to A4GL_match %s %d",
-			  A4GL_null_as_null (vars[a].var_name),
-			  vars[a].var_arrsize);
-	      return atoi (vars[a].var_arrsize);
-	    }
-
-	  if (flg && mode == 2)
-	    {
-	      return (strcmp (vars[a].var_type, "_RECORD") == 0);
-	    }
-
-	  lvl++;
-	}
-    }
-  return 0;
-}
-
-/**
- * Check if the variable is array type.
- *
- * @todo Document the possible return values
- *
- * @param s The variable name
- * @return
- *   - -1 
- *   - 0 
- *   - 1
- */
-long
-isarrvariable (char *s)
-{
-  long a;
-  A4GL_debug ("isarrvariable\n");
-  a = isvartype (s, 1);
-  A4GL_debug ("Checking if %s is an array %d", A4GL_null_as_null (s), a);
-  return a;
-}
-
-/**
- * Check if a variable is a record.
- *
- * @todo Document the possible return values
- *
- * @param s The variable name
- * @return
- *   - -1
- *   - 0
- *   - 1
- */
-static long
-isrecvariable (char *s)
-{
-  A4GL_debug ("isrecvariable\n");
-  return isvartype (s, 2);
-}
-#endif
 
 /**
  * This function is not used.
@@ -1210,6 +1099,8 @@ void
 set_4gl_vars (void)
 {
   set_current_variable_scope ('G');
+set_variable_user_system('S');
+
   variable_action (-1, "int_flag", "", "", "a4gl_add_variable");
   variable_action (-1, "long", "", "", "push_type");
   variable_action (-1, "quit_flag", "", "", "a4gl_add_variable");
@@ -1269,6 +1160,7 @@ set_4gl_vars (void)
   variable_action (-1, "long", "", "", "push_type");
   variable_action (-1, "aiplib_status", "", "", "a4gl_add_variable");
   variable_action (-1, "long", "", "", "push_type");
+set_variable_user_system('-');
 
   set_current_variable_scope ('m');
 }
@@ -1312,115 +1204,11 @@ open_db (char *s)
 
 
 
-#ifdef MOVED
-/**
- * Gets the C data type corresponding to 4gl data type
- *
- * @param s A string with the numeric 4gl data type (@see find_type()) 
- * @return The string (static) with the C declaration
- */
-char *
-rettype (char *s)
-{
-  static char rs[20] = "long";
-  int a;
-  A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
-
-  a = atoi (s);
-
-  A4GL_debug ("In rettype");
-  if (A4GL_has_datatype_function_i (a, "OUTPUT"))
-    {
-      /* char *(*function) (); */
-      char *(*function) (void);
-      A4GL_debug ("In datatype");
-      function = A4GL_get_datatype_function_i (a, "OUTPUT");
-      A4GL_debug ("Copy");
-      strcpy (rs, function ());
-      A4GL_debug ("Returning %s\n", A4GL_null_as_null (rs));
-      return rs;
-    }
-  if (strcmp (s, "0") == 0)
-    strcpy (rs, "char");
-  if (strcmp (s, "1") == 0)
-    strcpy (rs, "short");
-  if (strcmp (s, "2") == 0)
-    strcpy (rs, "long");
-  if (strcmp (s, "3") == 0)
-    strcpy (rs, "double");
-  if (strcmp (s, "4") == 0)
-    strcpy (rs, "float");
-  if (strcmp (s, "5") == 0)
-    strcpy (rs, "fgldecimal");
-  if (strcmp (s, "6") == 0)
-    strcpy (rs, "long");
-  if (strcmp (s, "7") == 0)
-    strcpy (rs, "fgldate");
-  if (strcmp (s, "8") == 0)
-    strcpy (rs, "fglmoney");
-  if (strcmp (s, "10") == 0)
-    strcpy (rs, "struct_dtime");
-  if (strcmp (s, "11") == 0)
-    strcpy (rs, "fglbyte");
-  if (strcmp (s, "12") == 0)
-    strcpy (rs, "fgltext");
-  if (strcmp (s, "13") == 0)
-    strcpy (rs, "char");
-  if (strcmp (s, "14") == 0)
-    strcpy (rs, "struct_ival");
-  return rs;
-}
-#endif
-
 
 
 #include "trim_spaces.h"
 
 
-
-#ifdef MOVED
-/**
- * Acces to the database and push a variable declaration for a simple
- * like variable (the ones that are not like table.*)
- *
- * @param tableName The name of the table
- * @param columnName The name of the column
- *
- * @return
- *   - 0 : Column does not exist or an error ocurred.
- *   - 1 : Type readed.
- */
-static int
-pushLikeTableColumn (char *tableName, char *columnName)
-{
-  int rval;
-  int idtype;
-  int isize;
-  char csize[20];
-  char cdtype[20];
-  char buff[300];
-  char *cname;
-
-  A4GL_debug ("pushLikeTableColumn()");
-
-  rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
-  cname = A4GL_confirm_colname (tableName, columnName);
-
-  if (rval == 0)
-    {
-      SPRINTF2 (buff, "%s.%s does not exist in the database", tableName,
-	       columnName);
-      a4gl_yyerror (buff);
-      return 0;
-    }
-  SPRINTF1 (cdtype, "%d", idtype & DTYPE_MASK);
-  SPRINTF1 (csize, "%d", isize);
-
-  trim_spaces (cname);
-  push_type (rettype (cdtype), csize, (char *) 0);
-  return 1;
-}
-#endif
 
 
 static int
@@ -1506,148 +1294,6 @@ pushValidateAllTableColumns (char *tableName)
 }
 
 
-#ifdef MOVED
-/**
- * Find all columns of a table from the database to declare a record like
- * table.*
- *
- * @param tableName The name of the table
- */
-static int
-pushLikeAllTableColumns (char *tableName)
-{
-  int rval;
-  int isize = 0;
-  int idtype = 0;
-  char colname[256] = "";
-  char csize[20];
-  char cdtype[20];
-  char buff[300];
-  char *ccol = 0;
-  int ncol = 0;
-  char *cname;
-
-
-  A4GL_debug ("pushLikeAllTableColumns()");
-  /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
-  A4GL_debug ("Calling get_columns : '%s'\n", A4GL_null_as_null (tableName));
-  rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
-  A4GL_debug ("rval = %d", rval);
-  if (rval == 0 && tableName)
-    {
-      SPRINTF1 (buff, "%s does not exist in the database", tableName);
-      a4gl_yyerror (buff);
-      A4GLSQL_end_get_columns ();
-      return 1;
-    }
-
-  A4GL_debug ("Rval (%d) !=0", rval);
-
-  while (1)
-    {
-      colname[0] = 0;
-
-      /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
-      ccol = 0;
-      rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-      if (rval == 0)
-	{
-	  A4GL_debug ("Got rval back from next_column as 0");
-	  break;
-	}
-
-      ncol++;
-
-      A4GL_assertion (ccol == 0, "No column name set");
-
-      A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
-      A4GL_debug ("next column for table '%s' is '%s'",
-		  A4GL_null_as_null (tableName), A4GL_null_as_null (ccol));
-      strcpy (colname, ccol);
-
-
-      /*
-         warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
-         we are sending char ARRAY to function expecting char POINTER !!!!
-       */
-
-
-      SPRINTF1 (cdtype, "%d", idtype & 15);
-      SPRINTF1 (csize, "%d", isize);
-      A4GL_debug ("%d %d", idtype, isize);
-      A4GL_debug ("---> %s %s", A4GL_null_as_null (cdtype),
-		  A4GL_null_as_null (csize));
-      A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s",
-		  A4GL_null_as_null (colname), A4GL_null_as_null (cdtype),
-		  A4GL_null_as_null (csize));
-
-
-      //cname=A4GL_confirm_colname(tableName,colname);
-      cname = strdup (colname);
-
-
-      trim_spaces (cname);
-      push_name (cname, 0);
-      push_type (rettype (cdtype), csize, 0);
-    }
-  A4GL_debug ("ncol=%d\n", ncol);
-  if (ncol == 0)
-    {
-
-      SPRINTF1 (buff, "%s does not exist in the database", tableName);
-      a4gl_yyerror (buff);
-      A4GLSQL_end_get_columns ();
-      return 1;
-    }
-  A4GLSQL_end_get_columns ();
-  return 0;
-}
-#endif
-
-#ifdef MOVED
-/**
- * The parser found a variable declared like table.column
- * It needs to go to the database to find the data type in order to do the
- * proper declaration, binds and convertions.
- *
- * @param t2 The table and column (table.column format)
- */
-static void
-push_like2 (char *t2)
-{
-  char buff[300];
-  char *tableName;
-  char *columnName;
-  char t[256];
-  A4GL_debug ("In push_like2");
-
-  if (db_used == 0)
-    {
-      SPRINTF0 (buff, "You cannot use LIKE without specifying a database");
-      a4gl_yyerror (buff);
-      return;
-    }
-
-  strcpy (t, t2);
-  strcpy (buff, t);
-  strcat (buff, ".");
-
-  tableName = strtok (buff, ".");	/* table name */
-  columnName = strtok (0, ".");	/* column name */
-  A4GL_debug ("a='%s' b='%s'", A4GL_null_as_null (tableName),
-	      A4GL_null_as_null (columnName));
-
-  if (columnName)
-    {
-      pushLikeTableColumn (tableName, columnName);
-      return;
-    }
-
-  pushLikeAllTableColumns (tableName);
-  return;
-}
-#endif 
-
 
 void
 push_validate (char *t2)
@@ -1702,34 +1348,6 @@ push_validate (char *t2)
 
 
 
-#ifdef MOVED
-/**
- * The parser found a new variable like table.column.
- *
- * Its gonna be inserted in the variables array.
- *
- * @param t The table and column (table.column format)
- */
-void
-push_like (char *t)
-{
-
-  A4GL_debug (">>>>>> %s\n", A4GL_null_as_null (t));
-  push_like2 (t);
-  A4GL_debug ("<<<<<<\n");
-}
-
-/**
- * The parse found a new record like table.*
- *
- * @param t The table name
- */
-void
-push_rectab (char *t)
-{
-  push_like (t);
-}
-#endif
 
 /**
  * Insert a new menu title in the menu titles array.
@@ -1743,152 +1361,8 @@ push_menu_title (char *s)
 {
   strcpy (mmtitle[menu_cnt], s);
 }
-#ifdef MOVED
-/**
- * The parser found the begining of a new block command
- *
- * Some of the commands are marked in the generated code as a C label.
- * Others (Main, func, report, globals, etc) are just added to the command 
- * stack.
- *
- * @param cmd_type The type of the command found:
- */
-int
-push_blockcommand (char *cmd_type)
-{
-int ccnt;
-ccnt=A4GL_get_ccnt();
-//printf("push block : %d %s\n",ccnt,cmd_type);
-  A4GL_debug ("START BLOCK %s", cmd_type);
-  A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
-  A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);
-  strcpy (command_stack[ccnt].cmd_type, cmd_type);
-  if (strcmp (cmd_type, "MAIN") == 0
-      || strcmp (cmd_type, "FUNC") == 0 ||
-      strcmp (cmd_type, "REPORT") == 0 || strcmp (cmd_type, "GLOBALS") == 0 ||
-      strcmp (cmd_type, "FORMHANDLER") == 0
-      || strcmp (cmd_type, "MENUHANDLER") == 0)
-    {
-      command_stack[ccnt].block_no = -1;
-    }
-  else
-    {
-      print_start_block (nblock_no);
-
-      command_stack[ccnt].block_no = nblock_no++;
-    }
-  A4GL_debug (" Added new block");
-  ccnt++;
-  file_out_indent (ccnt);
-  A4GL_set_ccnt(ccnt);
-  return command_stack[ccnt].block_no;
-}
 
 
-#endif
-
-
-#ifdef MOVED
-/**
- * Check if is a continue of a command.
- *
- * @param s The keyword / token for it could be a continue.
- *
- * @return 
- *   - 1 : Is a continue command.
- *   - 0 : Otherwise.
- */
-static int
-iscontinuecmd (char *s)
-{
-
-  //if (strcmp (s, "FOR") == 0) return 1;
-  /* if (strcmp(s,"FOREACH")==0) return 1; */
-  //if (strcmp (s, "WHILE") == 0) return 1;
-  //if (strcmp (s, "CASE") == 0) return 1;
-  /*
-     if (strcmp(s,"CONSTRUCT")==0) return 1;
-     if (strcmp(s,"DISPLAY")==0) return 1;
-     if (strcmp(s,"PROMPT")==0) return 1;
-   */
-
-  return 0;
-}
-#endif
-
-
-#ifdef MOVED
-
-void
-continue_blockcommand (char *cmd_type)
-{
-	int ccnt;
-	ccnt=A4GL_get_ccnt();
-  //int a;
-
-  //char err[80];
-  print_continue_block (command_stack[ccnt - 1].block_no, 0, cmd_type);
-}
-#endif
-
-
-#ifdef MOVED
-/**
- * An end of a block command was ocurred.
- *
- *   - End the block with the necessary command.
- *   - Decrement the increment count.
- *
- * @param cmd_type The type of the block that was ended.
- */
-void
-pop_blockcommand (char *cmd_type)
-{
-  int a;
-  int ccnt;
-  char err[80];
-  A4GL_debug ("END BLOCK %s", cmd_type);
-  ccnt=A4GL_get_ccnt();
-  /* more checks here ! */
-
-  ccnt--;
-  A4GL_set_ccnt(ccnt);
-  file_out_indent (ccnt);
-  if (command_stack[ccnt].block_no > 0)
-    {
-
-      if (iscontinuecmd (cmd_type))
-	{
-	  print_continue_block (command_stack[ccnt].block_no, 0, cmd_type);
-	}
-      print_end_block (command_stack[ccnt].block_no);
-    }
-
-  A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
-
-  if (strcmp (command_stack[ccnt].cmd_type, cmd_type) == 0)
-    {
-
-      command_stack[ccnt].cmd_type[0] = 0;
-
-      return;
-
-    }
-
-  SPRINTF3 (err, "%s was not last block command (I've got a %s @ %d)\n",
-	   cmd_type, command_stack[ccnt].cmd_type, ccnt);
-  A4GL_debug (err);
-  A4GL_debug ("------------------\n");
-  for (a = 0; a <= ccnt; a++)
-    {
-      A4GL_debug ("   %s\n", command_stack[a].cmd_type);
-    }
-  A4GL_debug ("------------------\n");
-  a4gl_yyerror (err);
-  //exit (0);
-}
-
-#endif
 /**
  *
  * @param cmd_type
@@ -1950,7 +1424,11 @@ trim(char *s)
 
 */
 
-
+#ifdef OLD
+int
+add_bind (char i, char *var_i) {
+	return add_bind_subs(i,var_i,0,0);
+}
 
 /**
  * Add a new bind to the specific aray (acording to the type).
@@ -1963,8 +1441,7 @@ trim(char *s)
  *   - F :
  * @param var The variable name to be binded.
  */
-int
-add_bind (char i, char *var_i)
+int add_bind_subs (char i, char *var_i, char *sub_start, char *sub_end)
 {
   long dtype;
 /*char c;*/
@@ -1980,9 +1457,6 @@ add_bind (char i, char *var_i)
     {
       A4GL_debug ("Scanning...");
       dtype = scan_variable (var_i);
-	if (i=='i' && dtype==-1) {
-			A4GL_pause_execution();
-	}
 
 
       switch (i)
@@ -2002,6 +1476,8 @@ add_bind (char i, char *var_i)
 
   A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype, A4GL_null_as_null (var), i);
 
+
+
   if (i == 'i')
     {
 	
@@ -2019,8 +1495,8 @@ add_bind (char i, char *var_i)
       else
 	{
 	  ibind = ensure_bind (&a_ibind, ibindcnt, ibind);
-	  ibind[ibindcnt].start_char_subscript = 0;
-	  ibind[ibindcnt].end_char_subscript = 0;
+	  ibind[ibindcnt].start_char_subscript_s = sub_start;
+	  ibind[ibindcnt].end_char_subscript_s = sub_end;
 
 	  if (strncmp (var, " a4gl_substr(", 8) != 0)
 	    {
@@ -2074,17 +1550,21 @@ add_bind (char i, char *var_i)
 
 	      //printf("s_sstart=%d s_send=%d\n", s_sstart,s_send);
 	      ibind[ibindcnt].dtype = s_dtype;
-	      ibind[ibindcnt].start_char_subscript = s_sstart;
-	      ibind[ibindcnt].end_char_subscript = s_send;
+              ibind[ibindcnt].dtype = s_dtype;
+                sprintf(buff,"%d",s_sstart);
+              ibind[ibindcnt].start_char_subscript_s = strdup(buff); //s_sstart;
+                sprintf(buff,"%d",s_send);
+              ibind[ibindcnt].end_char_subscript_s = strdup(buff);
+
 	    }
 	  ibindcnt++;
 	}
       return ibindcnt;
     }
-
   if (i == 'N')
     {
-      if (dtype == -2 || strstr (var, ".*"))
+	
+      if ((dtype == -2 || strstr (var, ".*") ) && strcmp(acl_getenv("A4GL_LEXTYPE"),"FGL")!=0)
 	{
 	  char buff[2000];
 	  A4GL_debug ("push_bind_rec...");
@@ -2097,10 +1577,40 @@ add_bind (char i, char *var_i)
 	  push_bind_rec (buff, i);
 	}
       else
-	{
-	  nullbind = ensure_bind (&a_nullbind, nullbindcnt, nullbind);
-	  strcpy (nullbind[nullbindcnt].varname, var);
+	{ // not a record - or its FGL
+	  nullbind = ensure_bind (&a_nullbind, nullbindcnt+1, nullbind);
+	  nullbind[nullbindcnt].varname=strdup( var);
 	  nullbind[nullbindcnt].dtype = dtype;
+	  nullbind[nullbindcnt].start_char_subscript_s = sub_start;
+	  nullbind[nullbindcnt].end_char_subscript_s = sub_end;
+	  nullbindcnt++;
+
+	}
+      return nullbindcnt;
+    }
+
+  if (i == 'n')
+    {
+	
+      if ((dtype == -2 || strstr (var, ".*") ))
+	{
+	  char buff[2000];
+	  A4GL_debug ("push_bind_rec...");
+	  strcpy (buff, var);
+	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0)
+	    {
+	      strcpy (buff, var);
+	      strcat (buff, ".*");
+	    }
+	  push_bind_rec (buff, i);
+	}
+      else
+	{ // not a record - or its FGL
+	  nullbind = ensure_bind (&a_nullbind, nullbindcnt+1, nullbind);
+	  nullbind[nullbindcnt].varname=strdup( var);
+	  nullbind[nullbindcnt].dtype = dtype;
+	  nullbind[nullbindcnt].start_char_subscript_s = sub_start;
+	  nullbind[nullbindcnt].end_char_subscript_s = sub_end;
 	  nullbindcnt++;
 
 	}
@@ -2109,21 +1619,92 @@ add_bind (char i, char *var_i)
 
 
 
+
   if (i == 'o')
     {
       if (dtype == -2 || strstr (var, ".*"))
 	{
 	  push_bind_rec (var, i);
+      return obindcnt;
 	}
       else
 	{
-	  obind = ensure_bind (&a_obind, obindcnt, obind);
-	  obind[obindcnt].start_char_subscript = 0;
-	  obind[obindcnt].end_char_subscript = 0;
-	  strcpy (obind[obindcnt].varname, var);
-	  obind[obindcnt].dtype = dtype;
-	  obindcnt++;
+	    obind = ensure_bind (&a_obind, obindcnt+1, obind);
+
+	    if (strncmp (var, " a4gl_let_substr(", 12) != 0)
+            {
+	  		obind[obindcnt].start_char_subscript_s = sub_start;
+	  		obind[obindcnt].end_char_subscript_s = sub_end;
+	  		obind[obindcnt].varname=strdup( var);
+	  		obind[obindcnt].dtype = dtype;
+            }
+          else
+            {
+              char buff[256];
+              char buff2[256];
+              int sc_dtype=0;
+              char *sc_sstart=0;
+              char *sc_send=0;
+              //int a;
+              char *ptrs[5] = { 0, 0, 0, 0, 0 };
+              strcpy (buff2, &var[strlen (" a4gl_let_substr") + 1]);
+		//printf("%s '%s'\n",var,buff2);
+              ptrs[0] = buff2;
+              ptrs[1] = strstr (ptrs[0] + 1, " , ");
+		
+              if (ptrs[1])
+                {
+                        ptrs[1]++;
+                  *ptrs[1] = 0; ptrs[1]++;
+			//printf("X1: %s\n", ptrs[0]);
+                  strcpy (buff, ptrs[0]);
+                  ptrs[2] = strstr (ptrs[1] + 2, " , ");
+                  if (ptrs[2])
+                    {
+                        ptrs[2]++;
+                      *ptrs[2] = 0; ptrs[2]++;
+			//printf("X2: %s\n", ptrs[1]);
+                      sc_dtype = atol(ptrs[1]);
+                      ptrs[3] = strstr (ptrs[2] + 2, " , ");
+                      if (ptrs[3])
+                        {
+                          *ptrs[3] = 0; ptrs[3]+=2;
+			//printf("X3: %s\n", ptrs[2]);
+                          sc_sstart = (ptrs[2]);
+                          sc_send = (ptrs[3]+1);
+
+			ptrs[4]=strchr(ptrs[3],',');
+			if (ptrs[4]) {
+				*ptrs[4]=0;
+			}
+
+			ptrs[4]=strrchr(sc_send,')');
+			if (ptrs[4]) {
+				*ptrs[4]=0;
+			}
+                ////printf("%s :: %s\n",ptrs[2],ptrs[3]);
+                        }
+                    }
+                }
+
+              obind[obindcnt].varname=strdup( buff);
+
+              //printf("s_sstart=%d s_send=%d\n", s_sstart,s_send);
+              //printf("sc_dtype=%x\n", sc_dtype);
+              //printf("sc_sstart=%s\n", sc_sstart);
+              //printf("sc_send=%s\n", sc_send);
+
+              obind[obindcnt].dtype = sc_dtype;
+		if (sc_sstart==0) sc_sstart="";
+		if (sc_send==0) sc_send="";
+              obind[obindcnt].start_char_subscript_s = strdup(sc_sstart);
+              obind[obindcnt].end_char_subscript_s = strdup(sc_send);
+            }
+
+
+
 	}
+	  obindcnt++;
       return obindcnt;
     }
 
@@ -2135,10 +1716,10 @@ add_bind (char i, char *var_i)
 	}
       else
 	{
-	  ebind = ensure_bind (&a_ebind, ebindcnt, ebind);
-	  ebind[ebindcnt].start_char_subscript = 0;
-	  ebind[ebindcnt].end_char_subscript = 0;
-	  strcpy (ebind[ebindcnt].varname, var);
+	  ebind = ensure_bind (&a_ebind, ebindcnt+1, ebind);
+	  ebind[ebindcnt].start_char_subscript_s = 0;
+	  ebind[ebindcnt].end_char_subscript_s = 0;
+	  ebind[ebindcnt].varname=strdup( var);
 	  ebind[ebindcnt].dtype = dtype;
 	  ebindcnt++;
 	}
@@ -2147,21 +1728,23 @@ add_bind (char i, char *var_i)
 
   if (i == 'O')
     {
-      if (dtype == -2 || strstr (var, ".*"))
-	push_bind_rec (var, i);
+      if (dtype == -2 || strstr (var, ".*")) {
+		push_bind_rec (var, i);
+	}
       else
 	{
-	  ordbind = ensure_bind (&a_ordbind, ordbindcnt, ordbind);
+	  ordbind = ensure_bind (&a_ordbind, ordbindcnt+1, ordbind);
 	  memset (&ordbind[ordbindcnt], 0, sizeof (ordbind[ordbindcnt]));
-	  strcpy (ordbind[ordbindcnt].varname, var);
+	  ordbind[ordbindcnt].varname=strdup( var);
 	  ordbind[ordbindcnt].dtype = dtype;
 	  order_asc_desc=realloc(order_asc_desc,ordbindcnt+2); // 0 based, and an extra one for the null...
+
 	  if (last_orderby_ascdesc!='-') {
 	  	//printf("%d =%c\n",ordbindcnt,last_orderby_ascdesc);
-	  	//A4GL_pause_execution();
 	  	order_asc_desc[ordbindcnt]=last_orderby_ascdesc;
 	  	order_asc_desc[ordbindcnt+1]=0;
 	  }
+	  
 	  ordbindcnt++;
 	}
       return ordbindcnt;
@@ -2179,10 +1762,10 @@ add_bind (char i, char *var_i)
 	push_bind_rec (var, i);
       else
 	{
-	  fbind = ensure_bind (&a_fbind, fbindcnt, fbind);
-	  fbind[fbindcnt].start_char_subscript = 0;
-	  fbind[fbindcnt].end_char_subscript = 0;
-	  strcpy (fbind[fbindcnt].varname, var);
+	  fbind = ensure_bind (&a_fbind, fbindcnt+1, fbind);
+	  fbind[fbindcnt].start_char_subscript_s = 0;
+	  fbind[fbindcnt].end_char_subscript_s = 0;
+	  fbind[fbindcnt].varname=strdup( var);
 	  fbind[fbindcnt].dtype = 0;
 	  fbindcnt++;
 	  return fbindcnt;
@@ -2310,142 +1893,15 @@ how_many_in_bind (char i)
 
   return 0;
 }
-
-#ifdef MOVED
-/**
- * The parser found a CONTINUE instruction for a specific loop command.
- *
- * One example could be CONTINUE WHILE.
- *
- * The loop commands could be:
- *   - WHILE
- *   - INPUT
- *   - FOREACH
- *   - FOR
- *   - CONSTRUCT
- *   - DISPLAY
- *   - MENU
- *
- *   Finds backwards the opened corresponding command. 
- *   This means that if we have a CONTINUE WHILE then it belongs to the
- *   last founded (and not yet closed) WHILE.
- *
- * @param cmd_type The string containing the type name of the loop used
- */
-void
-continue_loop (char *cmd_type)
-{
-  int a;
-  int g = 0;
-  char *internal_cmd_type;
-int ccnt;
-ccnt=A4GL_get_ccnt();
-
-
-/* We have to do some messing around here...*/
-/* If we want to 'continue input' - we call continue_input("INPUT")*/
-/* if we want a next field ... that does the next field bit - then calls continue_input("INPUTREQ")*/
-/* Here - we will always be looking for "INPUT" - but pass on the INPUT/INPUTREQ to the print stage...*/
-/* Same goes for construct*/
-
-
-  internal_cmd_type = acl_strdup (cmd_type);
-
-  if (strcmp (cmd_type, "INPUTREQ") == 0)
-    strcpy (internal_cmd_type, "INPUT");
-  if (strcmp (cmd_type, "CONSTRUCTREQ") == 0)
-    strcpy (internal_cmd_type, "CONSTRUCT");
-
-  for (a = ccnt - 1; a >= 0; a--)
-    {
-      A4GL_debug ("continue_loop:%s %s %s\n", command_stack[a].cmd_type,
-		  cmd_type, internal_cmd_type);
-
-      if (strcmp (command_stack[a].cmd_type, internal_cmd_type) == 0)
-	{
-	  g = 1;
-	  break;
-	}
-    }
-  if (g == 0)
-    {
-      A4GL_debug ("/* wanted to continue a %s but wasnt in one! */",
-		  cmd_type);
-      return;
-    }
-  print_continue_loop (command_stack[a].block_no, cmd_type);
-}
-
 #endif
+
 
 int
 get_block_no (int n)
 {
   return command_stack[n].block_no;
 }
-#ifdef MOVED
-/**
- * The parser found a EXIT instruction for a specific loop command.
- *
- * One example could be EXIT WHILE.
- *
- * The loop commands could be:
- *   - WHILE
- *   - INPUT
- *   - FOREACH
- *   - FOR
- *   - CONSTRUCT
- *   - DISPLAY
- *   - MENU
- *
- *   Finds backwards the opened corresponding command.
- *   This means that if we have a EXIT WHILE then it belongs to the
- *   last founded (and not yet closed) WHILE.
- *
- * @param cmd_type The string containing the type name of the loop used
- */
-void
-exit_loop (char *cmd_type)
-{
-  int a;
-  int ccnt;
-  int g = 0;
-  int printed = 0;
-  ccnt=A4GL_get_ccnt();
 
-  for (a = ccnt - 1; a >= 0; a--)
-    {
-      A4GL_debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
-
-      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
-	{
-	  g = 1;
-	  break;
-	}
-    }
-  if (g == 0)
-    {
-    printf("wanted to exit a %s but wasnt in one!\n",cmd_type);
-      A4GL_debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
-      return;
-    }
-  if (strcmp (cmd_type, "MENU") == 0)
-    {
-      print_exit_loop ('M', command_stack[a].block_no,cmd_type);
-      printed = 1;
-    }
-  if (strcmp (cmd_type, "PROMPT") == 0)
-    {
-      print_exit_loop ('P', 0,cmd_type);
-      printed = 1;
-    }
-  if (printed == 0)
-    {
-      print_exit_loop (0, command_stack[a].block_no,cmd_type);
-    }
-}
-
-#endif
 
 /**
  *
@@ -2455,30 +1911,11 @@ exit_loop (char *cmd_type)
 void
 set_curr_block (int a)
 {
+	//printf("Setting block=%d\n",a);
   curr_rep_block = a;
 }
 
 
-#ifdef MOVED
-/**
- * The parser found a new report block
- *
- * @todo Comment the parameters
- *
- * @param why
- * @param whytype
- */
-void
-push_report_block (char *why, char whytype)
-{
-  set_curr_block (0);
-  strcpy (report_stack[report_stack_cnt].why, why);
-  report_stack[report_stack_cnt].whytype = whytype;
-  print_repctrl_block ();
-  report_stack_cnt++;
-  lines_printed = 0;
-}
-#endif
 
 
 /**
@@ -2504,7 +1941,7 @@ void
 init_report_structure (struct rep_structure *rep)
 {
   memset(rep,0,sizeof(struct rep_structure));
-  strcpy(rep->top_of_page, "");
+
   rep->top_margin = 3;
   rep->bottom_margin = 3;
   rep->left_margin = 5;
@@ -2514,11 +1951,12 @@ init_report_structure (struct rep_structure *rep)
   rep->printed_page_no = 0;
   rep->line_no = 0;
   rep->col_no = 0;
-  rep->output_mode = 'F';
+  rep->output_mode = '-';
   rep->lines_in_header = 0;
   rep->lines_in_first_header = 0;
   rep->lines_in_trailer = 0;
-  strcpy (rep->output_loc, "\"stdout\"");
+  strcpy(rep->top_of_page,"");
+  rep->output_loc=0;
 }
 
 
@@ -2546,7 +1984,7 @@ pdf_init_report_structure (struct pdf_rep_structure *rep)
   rep->lines_in_first_header = 0;
   rep->lines_in_trailer = 0;
   strcpy (rep->font_name, "\"Helvetica\"");
-  strcpy (rep->output_loc, "\"stdout\"");
+  rep->output_loc=0;
 }
 
 /**
@@ -2609,17 +2047,34 @@ resize_paper (struct pdf_rep_structure *pdf_rep_struct)
 
 }
 
+
+
+#ifdef OLD
 /**
  *
  *
  * @param
  */
-int
-scan_orderby (char *varname, int cnt)
+int scan_orderby (char *varname)
 {
   int a;
   char b1[256];
   char b2[256];
+int cnt;
+struct binding_comp *ordbind2;
+int ordbindcnt2;
+int rval=-1;
+
+  ordbind2=malloc(sizeof(struct binding_comp)* ordbindcnt);
+  ordbindcnt2=ordbindcnt;
+
+  memcpy(ordbind2 , ordbind, sizeof(struct binding_comp)* ordbindcnt);
+
+  expand_bind (&ordbind[0], 'O', ordbindcnt,1);
+
+
+  cnt=ordbindcnt;
+
   A4GL_debug ("Scanning order by for %s %d", varname, ordbindcnt);
   for (a = 0; a <= cnt; a++)
     {
@@ -2628,11 +2083,20 @@ scan_orderby (char *varname, int cnt)
       strcpy (b2, A4GL_unscope (ordbind[a].varname));
       //if (b2[0]>='A'&&b2[0]<='Z'&&b2[1]=='_') { strcpy(b2,&ordbind[a].varname[2]); }
       A4GL_debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
-      if (A4GL_aubit_strcasecmp (b1, b2) == 0)
-	return a;
+
+
+      if (A4GL_aubit_strcasecmp (b1, b2) == 0) {
+		rval=a;
+		break;
+	}
+
     }
-  return -1;
+  ordbindcnt=ordbindcnt2;
+  memcpy(ordbind , ordbind2, sizeof(struct binding_comp)* ordbindcnt);
+
+  return rval;
 }
+#endif
 
 /**
  *
@@ -2655,8 +2119,6 @@ reset_attrib (struct form_attr *form_attrib)
   form_attrib->menu_line = 0xff;
 
   form_attrib->border = 0;
-  //form_attrib->ExtText = 0;
-  //form_attrib->ExtStyle = 0;
 }
 
 
@@ -2842,6 +2304,7 @@ dec_counter_by (int a)
 }
 */
 
+#ifdef OLD
 /**
  *
  *
@@ -2878,7 +2341,7 @@ add_arr_bind (char i, char *nvar)
       else
 	{
 	  ibind = ensure_bind (&a_ibind, ibindcnt, ibind);
-	  strcpy (ibind[ibindcnt].varname, var);
+	  ibind[ibindcnt].varname=strdup( var);
 	  ibind[ibindcnt].dtype = dtype;
 	  ibindcnt++;
 	}
@@ -2892,7 +2355,7 @@ add_arr_bind (char i, char *nvar)
       else
 	{
 	  nullbind = ensure_bind (&a_nullbind, nullbindcnt, nullbind);
-	  strcpy (nullbind[nullbindcnt].varname, var);
+	  nullbind[nullbindcnt].varname=strdup( var);
 	  nullbind[nullbindcnt].dtype = dtype;
 	  nullbindcnt++;
 	}
@@ -2906,7 +2369,7 @@ add_arr_bind (char i, char *nvar)
       else
 	{
 	  obind = ensure_bind (&a_obind, obindcnt, obind);
-	  strcpy (obind[obindcnt].varname, var);
+	  obind[obindcnt].varname=strdup(var);
 	  obind[obindcnt].dtype = dtype;
 	  obindcnt++;
 	}
@@ -2919,7 +2382,7 @@ add_arr_bind (char i, char *nvar)
       else
 	{
 	  ebind = ensure_bind (&a_ebind, ebindcnt, ebind);
-	  strcpy (ebind[ebindcnt].varname, var);
+	  ebind[ebindcnt].varname=strdup( var);
 	  ebind[ebindcnt].dtype = dtype;
 	  ebindcnt++;
 	}
@@ -2930,9 +2393,9 @@ add_arr_bind (char i, char *nvar)
   if (i == 'f' || i == 'F')
     {
       fbind = ensure_bind (&a_fbind, fbindcnt, fbind);
-      fbind[fbindcnt].start_char_subscript = 0;
-      fbind[fbindcnt].end_char_subscript = 0;
-      strcpy (fbind[fbindcnt].varname, var);
+      fbind[fbindcnt].start_char_subscript_s = 0;
+      fbind[fbindcnt].end_char_subscript_s = 0;
+      fbind[fbindcnt].varname=strdup( var);
       fbind[fbindcnt].dtype = dtype;
       fbindcnt++;
       return fbindcnt;
@@ -2974,6 +2437,7 @@ start_arr_bind (char i, char *var)
     add_arr_bind (i, var);
 }
 
+#endif
 
 
 /**
@@ -3105,6 +2569,7 @@ convstrsql (char *s)
   return buff;
 }
 
+#ifdef MOVED
 /**
  * Upshift a string.
  *
@@ -3143,6 +2608,8 @@ downshift (char *a)
   return buff;
 }
 
+#endif
+
 /**
  * Obtain the current report block.
  *
@@ -3155,57 +2622,6 @@ get_curr_block (void)
 }
 
 
-#ifdef MOVED
-/**
- * Add a report ???
- *
- * @param t
- * @param s1
- * @param s2
- * @param a
- *
- * @return
- */
-struct expr_str *add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,long *n)
-{
-int rval;
-struct expr_str *x;
-  A4GL_debug ("In add_report_agg a=%d\n", a);
-  if (use_group)
-    {
-      sreports[sreports_cnt].in_b = get_curr_block ();
-    }
-  else
-    {
-      sreports[sreports_cnt].in_b = 0;
-    }
-
-  if (s2 == 0)
-    {
-
-      A4GL_debug ("Adding default where on report aggregate of 1");
-      sreports[sreports_cnt].rep_where_expr =A4GL_new_literal_long_str("1");
-    }
-  else
-    {
-      A4GL_debug ("Adding non-default where on report aggregate");
-      sreports[sreports_cnt].rep_where_expr = s2;
-    }
-
-
-  sreports[sreports_cnt].rep_cond_expr = s1;
-  sreports[sreports_cnt].a = a;
-  sreports[sreports_cnt].t = t;
-  sreports_cnt++;
-  
-   rval=print_agg_defines(t,a);
-   *n=rval;
-   x=A4GL_new_expr_agg(t,a);
-   use_group = 0;
-
-   return x;
-}
-#endif
 
 /**
  * Generate the name for the current report.
@@ -3327,49 +2743,7 @@ pop_menu (void)
 int
 setrecord (char *s, char *t, char *c)
 {
- if (t[0]=='\\') {
-	t=strchr(t,'.');
-	t++;
- }
-  if (c)
-    {
-      char smbuff[200];
-      sprintf (smbuff, "%s.%s", t, c);
-      A4GL_4glc_push_gen (INITCOL, smbuff);
-      sprintf (s, "%d", A4GL_4glc_gen_cnt (INITCOL));
-    }
-  else
-    {
-      int rval;
-      int isize = 0;
-      int idtype = 0;
-      char colname[256] = "";
-      char buff[300];
-      char *ccol;
-      rval = A4GLSQL_get_columns (t, 0, &idtype, &isize);
-      A4GL_debug ("rval = %d", rval);
-      if (rval == 0 && t)
-	{
-	  SPRINTF1 (buff, "%s does not exist in the database", t);
-	  a4gl_yyerror (buff);
-	  A4GLSQL_end_get_columns ();
-	  return 1;
-	}
-
-      while (1)
-	{
-	  colname[0] = 0;
-	  rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-	  if (rval == 0)
-	    break;
-	  strcpy (colname, ccol);
-	  trim_spaces (colname);
-	  setrecord (s, t, colname);
-	}
-      A4GLSQL_end_get_columns ();
-      return 1;
-    }
-  return 1;
+  return 0;
 }
 
 /**
@@ -3435,48 +2809,6 @@ num_arr_elem (char *s)
   return c;
 }
 
-#ifdef MOVED
-/**
- *
- *
- * @param
- */
-char *
-change_arr_elem (char *s)
-{
-  static char buff[1024];
-  int a;
-  char buff2[2];
-  char *lptr;
-  int slen;
-  buff2[1] = 0;
-  buff[0] = 0;
-  strcpy (buff, "");
-  A4GL_debug ("change_arr_elem: %s", s);
-  lptr=s;
-
-  slen=strlen (s);
-
-  for (a = 0; a < slen; a++)
-    {
-      if (s[a] == ',')
-	{
-	  s[a]=0;
-	  strcat(buff,get_array_rebase(lptr));
-	  strcat(buff,"][");
-	  lptr=s+a+1;
-	}
-      else
-	{
-	  //buff2[0] = s[a];
-	  //strcat (buff, buff2);
-	}
-    }
-  strcat (buff, get_array_rebase(lptr));
-  A4GL_debug ("Generated... %s", buff);
-  return buff;
-}
-#endif
 
 /**
  * Executed at the end of the parsing process by bison.
@@ -3516,6 +2848,7 @@ void
 inc_report_cnt (void)
 {
   sreports_cnt = 0;
+  reset_report_aggregates();
   report_cnt++;
   report_stack_cnt = 0;
 }
@@ -3527,7 +2860,7 @@ inc_report_cnt (void)
  * @return A pointer to a static buffer with the escaped string.
  */
 /*
-char *
+static char *
 trans_quote (char *s)
 {
   int c;
@@ -3680,22 +3013,27 @@ ispdf (void)
     return "pdf_";
 }
 
+#ifdef OLD
 void expand_bind_g (t_binding_comp_list *l) {
 t_binding_comp_list *l2;
 // This will add it back to the original binding list...
 // so we need to copy that back our our list
-	expand_bind(l->bind,l->type,l->nbind,0);
+	expand_bind(l->bindings.bindings_val,l->type,l->bindings.bindings_len,0);
 
 	l2=copy_togenbind(l->type);
 
-	free(l->bind);
-	l->bind=l2->bind;
-	l->nbind=l2->nbind;
-	l->abind=l2->abind;
-	l->str=l2->str;
-}
+	free(l->bindings.bindings_val);
+	l->bindings.bindings_val=l2->bindings.bindings_val;
+	l->bindings.bindings_len=l2->bindings.bindings_len;
 
+	l->abind=l2->abind;
+	l->data=l2->data;
+}
+#endif
+
+#ifdef OLD
 /**
+ *
  *
  * When you've got a function definition which includes a record
  * You don't know when adding to the binding the structures involved
@@ -3727,10 +3065,19 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_loc
     return;			/* theres nothing there to expand */
 
 
+/*
+  for (xxxa = 0; xxxa <cnt ; xxxa++)
+    {
+	printf("BEFORE %s %s %s\n", bind[xxxa].varname, bind[xxxa].start_char_subscript_s, bind[xxxa].end_char_subscript_s);
+   }
+*/
   save_bind = acl_realloc (save_bind, sizeof (struct binding_comp) * cnt);
   for (xxxa = 0; xxxa < cnt; xxxa++)
     {
-      strcpy (save_bind[xxxa].varname, bind[xxxa].varname);
+      save_bind[xxxa].varname= bind[xxxa].varname;
+      save_bind[xxxa].start_char_subscript_s= bind[xxxa].start_char_subscript_s;
+      save_bind[xxxa].end_char_subscript_s= bind[xxxa].end_char_subscript_s;
+
       save_bind[xxxa].dtype = bind[xxxa].dtype;
     }
 
@@ -3758,7 +3105,7 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_loc
 
 
       dim = 1;
-      if (A4GL_isyes (acl_getenv ("NO_ARRAY_EXPAND"))||btype=='N')
+      if (A4GL_isyes (acl_getenv ("NO_ARRAY_EXPAND"))||btype=='N' || btype=='n')
 	dim = 0;
       if (strncmp (buff, " a4gl_let_substr", 16) == 0)
 	dim = 0;
@@ -3848,14 +3195,24 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_loc
 
       if (scan_variable (buff) == -2)
 	{
-	  strcat (buff, ".*");
+		if (strstr(buff,".*")==0) {
+	  		strcat (buff, ".*");
+		}
 	}
+
   	if (btype=='O') {
 		last_orderby_ascdesc='-';
   	}
-      add_bind (btype, buff);
-    }
+		/* printf("Add bind :%s %s ", save_bind[xxxa].start_char_subscript_s, save_bind[xxxa].end_char_subscript_s); */
+      add_bind_subs (btype, buff, save_bind[xxxa].start_char_subscript_s, save_bind[xxxa].end_char_subscript_s);
 
+    }
+/*
+  for (xxxa = 0; xxxa <cnt ; xxxa++)
+    {
+	printf("AFTER %s %s %s\n", bind[xxxa].varname, bind[xxxa].start_char_subscript_s, bind[xxxa].end_char_subscript_s);
+	}
+*/
 }
 
 /**
@@ -3866,6 +3223,7 @@ expand_obind (void)
 {
   expand_bind (obind, 'o', obindcnt, 0);
 }
+#endif
 
 
 /**
@@ -3945,15 +3303,13 @@ dump_expr (struct expr_str *orig_ptr)
       int printed = 0;
       if (orig_ptr->expr_type == ET_EXPR_STRING)
 	{
-	  A4GL_debug ("     %d - %s", orig_ptr->expr_type,
-		      orig_ptr->u_data.expr_char);
+	  A4GL_debug ("     %d - %s", orig_ptr->expr_type, orig_ptr->expr_str_u.expr_string);
 	  printed = 1;
 	}
       if (!printed)
 	{
 	  A4GL_debug ("exprtype : %d", orig_ptr->expr_type);
 	}
-      orig_ptr = orig_ptr->next;
     }
   A4GL_debug ("---------------------------------------------------");
 }
@@ -4049,41 +3405,6 @@ get_sreports (int z)
 }
 
 
-#ifdef MOVED
-/**
- *
- *
- * @param
- */
-void
-add_ex_dtype (char *sx)
-{
-  char s[256];
-  char ss[256];
-  strcpy (s, sx);
-  A4GL_trim (s);
-  strcpy (s, downshift (s));
-  A4GL_debug ("Initializing datatype : %s\n",s);
-
-  A4GLEXDATA_initlib (s);
-
-  A4GL_debug ("Checking if we need an extra include...");
-
-  if (A4GL_has_datatype_function_n (s, "INCLUDE"))
-    {
-      /* char *(*function) (); */
-      char *(*function) (void);
-      A4GL_debug ("yep");
-
-      function = A4GL_get_datatype_function_n (s, "INCLUDE");
-
-      A4GL_debug ("function=%s\n", function);
-
-      strcpy (ss, function ());
-      print_include (ss);
-    }
-}
-#endif
 
 /**
  *
@@ -4113,6 +3434,28 @@ subtract_one (char *s)
   return buff;
 }
 
+
+void chk_for_update_on_serial(char *tab) {
+int a;
+int idtype, isize;
+//printf("Tab=%s current_upd_table=%s\n", tab, current_upd_table);
+//printf("A4GL_4glc_gen_cnt=%d\n", A4GL_4glc_gen_cnt (UPDCOL));
+  for (a = 0; a < A4GL_4glc_gen_cnt (UPDCOL); a++)
+    {
+	char *ptr;
+	int rval;
+	idtype=-1;
+	ptr=A4GL_4glc_get_gen (UPDCOL, a);
+	rval = A4GLSQL_read_columns (current_upd_table, ptr, &idtype, &isize);
+	if (idtype==-1 || rval!=1) continue;
+//printf("Here %d %d rval=%d\n", idtype,isize,rval);
+	if ((idtype &  DTYPE_MASK )==DTYPE_SERIAL) {
+		A4GL_warn("Updating a serial column");
+	}
+	
+    }
+}
+
 /**
  * @param mode If mode is set to 1 - expect a '*' as column names...
 */
@@ -4130,15 +3473,6 @@ fix_update_expr (int mode)
   char *notab;
   strcpy (big_buff, "SET ");
 
-
-  if (mode==0) {
-	if (A4GL_4glc_gen_cnt(UPDCOL)==1) {
-		if (strcmp(A4GL_4glc_get_gen(UPDCOL,0),"*")==0) {
-			// Its just a '*' too...
-			mode=1;
-		}
-	}
-  }
   if (mode == 1)
     {
       /* It will only be a '*' anyway.... */
@@ -4157,6 +3491,7 @@ fix_update_expr (int mode)
 	A4GLSQL_get_columns (current_upd_table, colname, &idtype, &isize);
       if (rval == 0)
 	{
+	set_yytext(current_upd_table);
 	  a4gl_yyerror ("Table is not in the database");
 	  A4GLSQL_end_get_columns ();
 	  return 0;
@@ -4211,64 +3546,6 @@ fix_update_expr (int mode)
 
 
 
-#ifdef MOVED_TO_LIBAUBIT4GL
-
-
-char *
-make_sql_string_and_free (char *first, ...)
-{
-  va_list ap;
-  char *ptr = 0;
-  int l;
-  char *next;
-  int n;
-
-  extern char *kw_space;
-  extern char *kw_comma;
-  extern char *kw_ob;
-  extern char *kw_cb;
-
-  n = 0;
-  va_start (ap, first);
-  ptr = acl_strdup (first);
-
-
-  if (first != kw_comma && first != kw_space && first != kw_ob
-      && first != kw_cb)
-    {
-      A4GL_debug ("FREE %p (%s)\n", first, first);
-      if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
-	{
-	  free (first);
-	}
-      first = 0;
-    }
-  l = strlen (ptr);
-
-  while (1)
-    {
-      n++;
-      next = va_arg (ap, char *);
-      if (next == 0)
-	break;
-      l += strlen (next);
-      l++;			/* Extra space... */
-      ptr = acl_realloc (ptr, l);
-      strcat (ptr, next);
-      if (next != kw_comma && next != kw_space && next != kw_ob
-	  && next != kw_cb)
-	{
-	  A4GL_debug ("FREE %p (%s)\n", next, next);
-	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
-	    {
-	      free (next);
-	    }
-	}
-    }
-  A4GL_debug ("Generated : %s\n", ptr);
-  return ptr;
-}
-#endif
 
 char *
 pg_make_sql_string_and_free (char *first, ...)
@@ -4319,23 +3596,6 @@ pg_make_sql_string_and_free (char *first, ...)
 
 
 
-
-#ifdef MOVED
-
-void
-do_print_menu_1 (void)
-{
-  print_menu_1 (get_blk_no ());
-  print_menu_1b (get_blk_no ());
-}
-
-void
-do_print_menu_block_end (int mn)
-{
-  print_menu_block_end (mn, get_blk_no ());
-}
-
-#endif 
 
 
 
@@ -4469,7 +3729,7 @@ add_clobber (char *buff_orig, char *important)
 
   strcpy (b1, important);
   b1[9] = 0;
-  SPRINTF2 (buff_new, "\"a4gl_%03d_%s\"", p++, b1);
+  SPRINTF2 (buff_new, "a4gl_%03d_%s", p++, b1);
   clob_arr[clob_arr_cnt - 1].orig = acl_strdup (buff_orig);
   clob_arr[clob_arr_cnt - 1].new = acl_strdup (buff_new);
   clob_arr[clob_arr_cnt - 1].important = acl_strdup (important);
@@ -4483,7 +3743,7 @@ do_clobbering (char *f, char *s)
 
   if (A4GL_isyes (acl_getenv ("A4GL_NOCLOBBER")))
     {
-      SPRINTF1 (buff, "\"%s\"", s);
+      SPRINTF1 (buff, "%s", s);
       if (!has_clobber (buff))
 	{
 	  add_clobber (buff, s);
@@ -4492,9 +3752,9 @@ do_clobbering (char *f, char *s)
     }
 
   if (strlen(f)) {
-  SPRINTF2 (buff, "\"%s_%s\"", f, s);
+  SPRINTF2 (buff, "%s_%s", f, s);
   } else {
-  SPRINTF1 (buff, "\"%s\"",  s);
+  SPRINTF1 (buff, "%s",  s);
   }
 
   if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSCLOBBER")))
@@ -4520,7 +3780,7 @@ do_clobbering_sql (char *f, char *s)
 
   if (A4GL_isyes (acl_getenv ("A4GL_NOSQLCLOBBER")))
     {
-      SPRINTF1 (buff, "\"%s\"", s);
+      SPRINTF1 (buff, "%s", s);
       if (!has_clobber (buff))
 	{
 	  add_clobber (buff, s);
@@ -4529,9 +3789,9 @@ do_clobbering_sql (char *f, char *s)
     }
 
   if (strlen(f)) {
-  SPRINTF2 (buff, "\"%s_%s\"", f, s);
+  SPRINTF2 (buff, "%s_%s", f, s);
   } else {
-  SPRINTF1 (buff, "\"%s\"",  s);
+  SPRINTF1 (buff, "%s",  s);
   }
 
   if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSSQLCLOBBER")))
@@ -4570,10 +3830,15 @@ fgl_add_scope (char *s, int n)
   if (c == 'C' || c == 'P');
   else
     {
-      if (A4GL_isyes (acl_getenv ("MARK_SCOPE"))
-	  || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")));
+      if (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")));
       else
 	{
+		/*
+	  	if (c=='L' && buffer2[0]!='l') { A4GL_warn("Local variable not prefixed with 'l'"); }
+	  	if (c=='M' && buffer2[0]!='m') { A4GL_warn("Module variable not prefixed with 'm'"); }
+	  	if (c=='G' && buffer2[0]!='g') { A4GL_warn("Global variable not prefixed with 'g'"); }
+	  	if (c=='g' && buffer2[0]!='g') { A4GL_warn("Global variable not prefixed with 'g'"); }
+		*/
 	  return s;
 	}
     }
@@ -4667,7 +3932,7 @@ struct s_validate
 {
   char tabname[65];
   char colname[65];
-  struct expr_str *expr;
+  struct expr_str_list *expr;
 };
 
 struct s_validate *validate_list = 0;
@@ -4710,7 +3975,7 @@ push_validate_column (char *tabname, char *colname)
 
 }
 
-struct expr_str *
+struct expr_str_list *
 A4GL_get_validate_expr (int n)
 {
   return validate_list[n].expr;
@@ -4820,14 +4085,16 @@ A4GL_get_event (int n, int *i, char **s)
 }
 
 
+#ifdef OLD
 void
 A4GL_copy_fbind_to_Obind (void)
 {
   ordbind = ensure_bind (&a_ordbind, ordbindcnt, ordbind);
   memcpy (ordbind, fbind, sizeof (struct binding_comp) * fbindcnt);
   ordbindcnt = fbindcnt;
+  //expand_ordbind2();
 }
-
+#endif
 
 
 /* 
@@ -4925,8 +4192,29 @@ A4GL_add_feature (char *feature)
 }
 
 
+#ifdef MOVED
+int
+A4GL_escape_quote_owner (void)
+{
+  if (A4GLSQLCV_check_requirement ("QUOTE_OWNER"))
+    {
+      return 1;
+    }
+  if (A4GLSQLCV_check_requirement ("NO_OWNER_QUOTE"))
+    {
+      return 0;
+    }
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+    {
+      return 0;
+    }
+  return 1;
+}
+#endif
+
+
 char *
-A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s,int is_select_into)
+A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s,int is_select_into )
 {
   char buff[40000];
   if (A4GLSQLCV_check_requirement ("FULL_INSERT") && !is_select_into)
@@ -4943,6 +4231,7 @@ A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s,int is_select_in
 	    }
 	}
     }
+
 
   return s;
 
@@ -4970,9 +4259,9 @@ A4GL_set_sql_features (void)
 void
 emulate_insert (char *s)
 {
-  char buff[256];
-  SPRINTF1 (buff, "\"%s\"", s);
-  A4GL_cursor_defined (buff, 'I');
+char buff[256];
+	strcpy(buff,do_clobbering_sql(clobber,downshift(s)));
+  	A4GL_cursor_defined (A4GL_new_expr_simple_string(buff, ET_EXPR_IDENTIFIER), 'I');
 }
 
 
@@ -4989,26 +4278,18 @@ do_yyerror (char *s)
   a4gl_yyerror (s);
 }
 
+
+
+
 #ifdef NDEF
-char *
-A4GL_print_start_to_is_expr (struct expr_str *ptr)
-{
-  A4GL_append_expr (ptr, "A4GL_set_rep_start_from_stack();");
-  print_expr (ptr);
-  return "A4GL_get_rep_start()";
-}
-#endif
-
-
-
-
-
 struct expr_str *
 A4GL_generate_variable_expr (char *s)
 {
   int a;
   int flg = 0;
   void *p1 = 0;
+char orig[1024];
+strcpy(orig,s);
 
   if (strchr (s, '\n') == 0)
     {
@@ -5047,7 +4328,7 @@ A4GL_generate_variable_expr (char *s)
 
       if (flg == 0)
 	{
-	  p1 = A4GL_new_expr_push_variable (s, (int) scan_variable (s));
+	  p1 = A4GL_new_expr_push_variable (s, (int) scan_variable (s), find_variable_scope(s)); inc_var_usage(s);
 	}
 
 
@@ -5064,7 +4345,6 @@ A4GL_generate_variable_expr (char *s)
   if (a == -1)
     {
       char buff[25600];		// Typically a substr-check for that first...
-	strcpy(buff, s);
       if (strstr (s, "a4gl_substr"))
 	{
 	  char *ptr_str;
@@ -5107,10 +4387,9 @@ A4GL_generate_variable_expr (char *s)
 		  type = 0;
 		}
 	    }
-
-	  p1 =
-	    A4GL_new_substring_expr (ptr_str, atol (ptr_len), ptr_s, ptr_e,
-				     type);
+	
+//printf("Calling A4GL_new_substring_expr %s with %s %d %s %s\n", orig, ptr_str,atol (ptr_len),ptr_s,ptr_e);
+	  p1 = A4GL_new_substring_expr (ptr_str, atol (ptr_len), ptr_s, ptr_e, type);
 	  return p1;
 	}
       else
@@ -5120,7 +4399,7 @@ A4GL_generate_variable_expr (char *s)
 
 	  A4GL_assertion (1, "Is this used for anything else too ?");
      SPRINTF1 (buff, "A4GL_push_char(%s); /* NOT SUBSTR EXPR */", s);;
-      p1 = A4GL_new_expr_obsol (buff);
+      /* p1 = A4GL_new_expr_obsol (buff); */
     }
 
   if (a == -2)
@@ -5130,6 +4409,7 @@ A4GL_generate_variable_expr (char *s)
   return p1;
 
 }
+#endif
 
 /*
 int A4GL_am_doing_a_print(void) {
@@ -5138,7 +4418,7 @@ int A4GL_am_doing_a_print(void) {
 */
 
 
-
+#ifdef MOVED
 struct binding_comp *
 ensure_bind (long *a_bindp, long need, struct binding_comp *b)
 {
@@ -5164,8 +4444,10 @@ ensure_bind (long *a_bindp, long need, struct binding_comp *b)
   *a_bindp = a_bind;
   return b;
 }
+#endif
 
 
+#ifdef OLD
 void ensure_bind_g (t_binding_comp_list *binding,int need) 
 {
   long a_bind;
@@ -5184,8 +4466,8 @@ void ensure_bind_g (t_binding_comp_list *binding,int need)
 	  a_bind = a_bind * 2;	// just double it ?
 	}
     }
-  binding->bind = realloc (binding->bind, sizeof (struct binding_comp) * a_bind);
-  A4GL_assertion (binding->bind == 0, "Unable to allocation memory for binding");
+  binding->bindings.bindings_val = realloc (binding->bindings.bindings_val, sizeof (struct binding_comp) * a_bind);
+  A4GL_assertion (binding->bindings.bindings_val == 0, "Unable to allocation memory for binding");
   binding->abind = a_bind;
 }
 
@@ -5211,41 +4493,6 @@ append_bind_list (struct binding_list *l, char *s)
   l->bindings[l->nbindings - 1] = strdup (s);
   return l;
 }
-
-
-#ifdef MOVED
-void
-print_display_by_name (char *attr,char *Style)
-{
-  int a;
-  char tabname[40];
-  char colname[40];
-
-  t_dt_display dt;
-  struct expr_str *e;
-  struct expr_str_list *l;
-  l = A4GL_new_ptr_list (0);
-  dt.u_data.field_list = new_field_list ();
-
-  for (a = 0; a < ibindcnt; a++)
-    {
-      e = A4GL_new_expr_push_variable (ibind[a].varname, ibind[a].dtype);
-      l = A4GL_new_append_ptr_list (l, e);
-
-      A4GL_bname (ibind[a].varname, tabname, colname);
-      append_field_to_list (dt.u_data.field_list,
-			    new_field_entry (colname, "1", 1));
-    }
-
-  dt.type = DT_DISPLAY_TYPE_FIELD_LIST;
-
-  print_display_new (l, &dt, attr,Style);
-  start_bind ('i', 0);
-
-}
-#endif
-
-
 
 int
 A4GL_4glc_push_gen_expand (int n, char *v)
@@ -5301,7 +4548,7 @@ A4GL_4glc_push_gen_expand (int n, char *v)
 
   return 1;
 }
-
+#endif
 
 
 
@@ -5326,7 +4573,9 @@ add_sql_function (char *s)
 int
 get_sio_ids (char *s)
 {
-  return get_block_no (get_sio_id (s) - 1);
+int a;
+  a=get_block_no (get_sio_id (s) - 1);
+return a;
 }
 
 
@@ -5409,37 +4658,47 @@ int A4GL_is_internal_class_function(char *class,char *name) {
 }
 
 
-
+#ifdef OLD
 void expand_fbind(void ) {
  expand_bind (&fbind[0], 'F', fbindcnt,1);
 }
 
 void expand_ordbind(void ) {
- expand_bind (&ordbind[0], 'O', ordbindcnt,1);
+	return;
+ 	expand_bind (&ordbind[0], 'O', ordbindcnt,1);
 }
 
+void expand_ordbind2(void ) {
+	return ;
+ 	expand_bind (&ordbind[0], 'O', ordbindcnt,1);
+}
+#endif
+
+
+#ifdef OLD
 char *
 get_hdrdbname(void)
 {
 	        return hdr_dbname;
 }
 
-void
-set_hdrdbname(char *s)
+void set_hdrdbname(char *s)
 {
 	        strcpy(hdr_dbname,s);
 }
+#endif
 
 
 
+#ifdef OLD
 struct  binding_comp_list *ensure_binding_comp_list (struct  binding_comp_list *l) {
 	struct binding_comp_list *local;
 	if (l==0) {
 		local=malloc(sizeof(struct binding_comp_list));
-		local->nbind=0;
-		local->bind=0;
+		local->bindings.bindings_len=0;
+		local->bindings.bindings_val=0;
 		local->abind=0;
-		local->str=0;
+		local->data=0;
 		return local;
 	}
 	return l;
@@ -5454,23 +4713,25 @@ struct  binding_comp_list *ensure_binding_comp_list_type (struct  binding_comp_l
 	}
 	return l;
 }
+#endif
 
 
-
-struct  binding_comp_list *empty_genbind(char i) {
+#ifdef OLD
+struct  binding_comp_list *empty_genbind(int i) {
 struct binding_comp_list *l=0;
 	l=malloc(sizeof(struct binding_comp_list));
-	l->bind=0;
-	l->nbind=0;
+	l->bindings.bindings_val=0;
+	l->bindings.bindings_len=0;
 	l->abind=0;
-	l->str=0;
+	l->data=0;
 	l->type=i;
 	return l;
 }
 
-struct  binding_comp_list *copy_togenbind(char i) {
+struct binding_comp_list *copy_togenbind(int i) {
 struct binding_comp_list *l=0;
 struct binding_comp *from=0;
+int a;
 
 int nlist=0;
 
@@ -5479,8 +4740,13 @@ switch (i) {
 	case 'o': nlist=obindcnt; from=obind; break;
 	case 'f': expand_bind(&fbind[0], 'f', fbindcnt,1);nlist=fbindcnt; from=fbind; break;
 	case 'F': expand_bind(&fbind[0], 'F', fbindcnt,1);nlist=fbindcnt; from=fbind; break;
-	case 'O': expand_bind(&ordbind[0], 'O', ordbindcnt,0); nlist=ordbindcnt; from=ordbind;  break;	
-	case 'N': expand_bind(&nullbind[0], 'N', nullbindcnt,0); nlist=nullbindcnt; from=nullbind;  break;	
+	case 'O': nlist=ordbindcnt; from=ordbind;  break;	
+	case 'n': 
+		 nlist=nullbindcnt; from=nullbind;  break;	
+	case 'N': 
+		 if (strcmp(acl_getenv("A4GL_LEXTYPE"),"FGL")!=0 ) {
+			expand_bind(&nullbind[0], 'N', nullbindcnt,0); 
+		} nlist=nullbindcnt; from=nullbind;  break;	
 
 default:
 	printf("BINDING : %c\n",i);
@@ -5489,105 +4755,33 @@ default:
 
 
 l=malloc(sizeof(struct binding_comp_list));
-l->bind=malloc(sizeof(struct binding_comp)*nlist);
-memcpy(l->bind,from,sizeof(struct binding_comp)*nlist);
-l->nbind=nlist;
+l->bindings.bindings_val=malloc(sizeof(struct binding_comp)*nlist);
+memcpy(l->bindings.bindings_val,from,sizeof(struct binding_comp)*nlist);
+l->bindings.bindings_len=nlist;
 l->abind=nlist;
 l->type=i;
-l->str=0;
+l->data=0;
+
+for (a=0;a<l->bindings.bindings_len;a++) {
+	l->bindings.bindings_val[a].scope=find_variable_scope(l->bindings.bindings_val[a].varname);
+}
+
 return l;
 }
 
 
-static int get_function_definition(char *s) {
-int a;
-for (a=0;a<nfunction_definitions;a++) {
-	if (A4GL_aubit_strcasecmp(s, function_definitions[a].fname)==0) {
-		return a;
-	}
-}
-return -1;
-}
-
-void output_to_report_definition(char *s, struct expr_str_list  *p) {
-	int nbind;
-	int curr_fdef;
-	char buff[256];
-	curr_fdef=get_function_definition(s);
-	if (curr_fdef==-1) {
-		nfunction_definitions++;
-		function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
-		function_definitions[nfunction_definitions-1].fname=strdup(s);
-		function_definitions[nfunction_definitions-1].type='R';
-		if (p) {
-		function_definitions[nfunction_definitions-1].params=p->nlist;
-		} else {
-		function_definitions[nfunction_definitions-1].params=0;
-		}
-		function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
-		return;
-	}
-	if (p) {
-		nbind=p->nlist;
-	} else {
-		nbind=0;
-	}
-	if (nbind==function_definitions[curr_fdef].params) return;
-	sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
-	set_yytext(buff);
-
-	a4gl_yyerror("Report has been defined with a different number of parameters");
-}
-
-void add_report_definition(char *s, struct  binding_comp_list *params) { 
-	int nbind;
-	char buff[256];
-	int curr_fdef;
-	curr_fdef=get_function_definition(s);
-	if (curr_fdef==-1) {
-		nfunction_definitions++;
-		function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
-		function_definitions[nfunction_definitions-1].fname=strdup(s);
-		function_definitions[nfunction_definitions-1].type='R';
-		if (params) {
-		function_definitions[nfunction_definitions-1].params=params->nbind;
-		} else {
-		function_definitions[nfunction_definitions-1].params=0;
-		}
-		function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
-		return;
-	}
-	if (params) {
-	nbind=params->nbind;
-	} else {
-	nbind=0;
-	}
-	if (nbind==function_definitions[curr_fdef].params) return;
-	sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
-	set_yytext(buff);
-	a4gl_yyerror("Report has already been called with a different number of parameters");
-}
-
-int check_cursor_name(char *s) {
-	if (A4GL_has_pointer(s,CURSOR_USED)){
-		set_yytext(s);
-		a4gl_yyerror("Cursor has already been used");
-		return 0;
-	}
-	A4GL_add_pointer(s,CURSOR_USED,(void *)1);
-	return 1;
-}
-
 void llex_add_ibind(int dtype,char *var) {
         ibind=ensure_bind(&a_ibind,ibindcnt+1,ibind);
-        strcpy(ibind[ibindcnt].varname,var);
-        ibind[ibindcnt].start_char_subscript=0;
-        ibind[ibindcnt].end_char_subscript=0;
+        ibind[ibindcnt].varname=strdup(var);
+        ibind[ibindcnt].start_char_subscript_s=0;
+        ibind[ibindcnt].end_char_subscript_s=0;
         ibind[ibindcnt].dtype=dtype;
         ibindcnt++;
 }
+#endif
 
 
+#ifdef OLD
 void fail_on_select_ibind() {
 if (ibindcnt) {
 	if (!A4GL_isno(acl_getenv("NOSELECTVARWARNING"))) {
@@ -5598,6 +4792,7 @@ if (ibindcnt) {
 	return;
 }
 }
+#endif
 
 
 char *A4GL_lextype(void) {
@@ -5605,7 +4800,7 @@ char *A4GL_lextype(void) {
 }
 
 
-#ifdef NEWNOTUSED
+#ifdef OLD
 struct binding_comp_list * add_genbind (struct binding_comp_list *l, char *var_i,char *type)
 {
 char var[2048] = "";
@@ -5614,10 +4809,10 @@ strcpy (var, var_i);
 
 if (l==0) {
            l=malloc(sizeof(struct binding_comp_list));
-           l->bind=0;
-           l->nbind=0;
+           l->bindings.bindings_val=0;
+           l->bindings.bindings_len=0;
            l->abind=0;
-           l->str=0;
+           l->data=0;
 	   l->type=' ';
 
 	   if (strcmp(type,"null")) {
@@ -5627,52 +4822,366 @@ if (l==0) {
 
 
 
-  if (var_i[0] == '"')
-    {
-      dtype = (strlen (var) - 2) << 16;
-      strcpy (var, var_i);
-    }
-  else
-    {
-      A4GL_debug ("Scanning...");
-      dtype = scan_variable (var_i);
-      switch (l->type)
-	{
-	case 'f':
-	  strcpy (var, fgl_add_scope (var_i, 'L'));
-	  break;		/* Function parameters */
-	case 'O':
-	  strcpy (var, fgl_add_scope (var_i, 'L'));
-	  break;		/* Report order by */
-	default:
-	  strcpy (var, fgl_add_scope (var_i, 0));
-	}
-
-    }
-
+  A4GL_debug ("Scanning...");
+  dtype = scan_variable (var_i);
 
 
   if (dtype == -2 || strstr (var, ".*"))
     {
-	if (l->type=='N') {
-      		gen_push_bind_rec (l, var, 'N');
-	} else {
-      		gen_push_bind_rec (l, var, ' ');
-	}
+		A4GL_assertion(1, "Not implemented");
     }
   else
     {
-      l->bind = ensure_bind (&l->abind, l->nbind, l->bind);
-      l->bind[l->nbind].start_char_subscript = 0;
-      l->bind[l->nbind].end_char_subscript = 0;
-      strcpy (l->bind[l->nbind].varname, var);
-      l->bind[l->nbind].dtype = dtype;
-      l->nbind++;
+      l->bindings.bindings_val = ensure_bind (&l->abind, l->bindings.bindings_len, l->bindings.bindings_val);
+      l->bindings.bindings_val[l->bindings.bindings_len].start_char_subscript_s = 0;
+      l->bindings.bindings_val[l->bindings.bindings_len].end_char_subscript_s = 0;
+      l->bindings.bindings_val[l->bindings.bindings_len].varname=strdup( var);
+      l->bindings.bindings_val[l->bindings.bindings_len].dtype = dtype;
+      l->bindings.bindings_val[l->bindings.bindings_len].scope = find_variable_scope(var);
+      l->bindings.bindings_len++;
     }
 
   return l;
 }
+
+struct binding_comp * make_bind (char *var_i)
+{
+	struct binding_comp *p=0;
+  long dtype;
+  char var[2048] = "";
+  strcpy (var, var_i);
+  
+  if (var_i[0] == '"') { dtype = (strlen (var) - 2) << 16; strcpy (var, var_i); }
+  else { A4GL_debug ("Scanning..."); dtype = scan_variable (var_i); strcpy (var, fgl_add_scope (var_i, 0)); }
+
+
+
+      if (dtype == -2 || strstr (var, ".*"))
+	{
+	  char buff[2000];
+	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0) { strcpy (buff, var); strcat (buff, ".*"); }
+	  A4GL_debug ("push_bind_rec...");
+	A4GL_assertion(1, "Cant put more than one variable here...");
+	}
+      else
+	{
+	p=malloc(sizeof(struct binding_comp));
+	  p->start_char_subscript_s = 0;
+	  p->end_char_subscript_s = 0;
+	  p->scope=find_variable_scope(var_i);
+
+	  if (strncmp (var, " a4gl_let_substr(", 17) == 0) { 
+			printf("---> %s\n",var);
+			A4GL_assertion(1,"let_substr not implemented for make_bind");
+	}
+
+	  if (strncmp (var, " a4gl_substr(", 13) != 0) { p->varname= strdup(var); p->dtype = dtype; }
+	  else
+	    {
+	      char buff[256];
+	      char buff2[256];
+	      int s_dtype=-1;
+	      int s_sstart=-1;
+	      int s_send=-1;
+	      //int a;
+	      char *ptrs[5] = { 0, 0, 0, 0, 0 };
+	      strcpy (buff2, &var[strlen ("a4gl_substr ") + 1]);
+	      ptrs[0] = buff2;
+	      ptrs[1] = strstr (ptrs[0] + 3, " , ");
+	      if (ptrs[1]) { ptrs[1]++; *ptrs[1] = 0; ptrs[1]++; strcpy (buff, ptrs[0]); ptrs[2] = strstr (ptrs[1] + 3, " , "); if (ptrs[2])
+		    { ptrs[2]++; *ptrs[2] = 0; ptrs[2]++; s_dtype = atol (ptrs[1]); ptrs[3] = strstr (ptrs[2] + 2, ","); if (ptrs[3]) { *ptrs[3] = 0; ptrs[3]++; s_sstart = atol (ptrs[2]); s_send = atol (ptrs[3]);
+			}
+		    }
+		}
+	      if (ptrs[3] == 0 || s_sstart<0 || s_send<0 || s_dtype<0)
+		{
+		  A4GL_debug ("Error processing : %s\n", A4GL_null_as_null (buff2));
+		  set_yytext (buff2);
+		  a4gl_yyerror ("Internal error - (split substr)");
+		}
+	      if (s_send == 0)
+		s_send = s_sstart;
+	      p->varname=strdup(buff);
+
+	      //printf("s_sstart=%d s_send=%d\n", s_sstart,s_send);
+	      p->dtype = s_dtype;
+		sprintf(buff,"%d",s_sstart);
+	      p->start_char_subscript_s = strdup(buff);
+		sprintf(buff,"%d",s_send);
+	      p->end_char_subscript_s = strdup(buff);;
+	    }
+	}
+	return p;
+    }
 #endif
+
+
+
+struct expr_str *chk_expr(struct expr_str *p) {
+	return p;
+}
+
+struct expr_str_list *make_fgl_expr_list(expr_str_list *p) {
+	
+return fully_expand_variables_in_expr_str_list(p);
+
+//expand_variables_in_expr_str_list(p,0,1);
+}
+
+int dump_x(void *p) {
+return 0;
+}
+
+
+#ifdef OLD
+char *vorl_as_string(struct variable_or_literal *v) {
+	if (v->vttype==E_V_OR_LIT_STRING) {
+		return v->variable_or_literal_u.s;
+	}
+	if (v->vttype==E_V_OR_LIT_VAR) {
+		return v->variable_or_literal_u.var->varname;
+	}
+A4GL_assertion(1,"Bad vorl...");
+return 0;
+}
+#endif
+
+static int get_function_definition(char *s) {
+int a;
+for (a=0;a<nfunction_definitions;a++) {
+        if (A4GL_aubit_strcasecmp(s, function_definitions[a].fname)==0) {
+                return a;
+        }
+}
+return -1;
+}
+
+void output_to_report_definition(char *s, struct expr_str_list  *p) {
+        int nbind;
+        int curr_fdef;
+        char buff[256];
+        curr_fdef=get_function_definition(s);
+        if (curr_fdef==-1) {
+                nfunction_definitions++;
+                function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
+                function_definitions[nfunction_definitions-1].fname=strdup(s);
+                function_definitions[nfunction_definitions-1].type='R';
+                if (p) {
+                function_definitions[nfunction_definitions-1].params=p->list.list_len;
+                } else {
+                function_definitions[nfunction_definitions-1].params=0;
+                }
+                function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
+                return;
+        }
+        if (p) {
+                nbind=p->list.list_len;
+        } else {
+                nbind=0;
+        }
+
+        if (nbind==function_definitions[curr_fdef].params) return;
+
+        sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
+        set_yytext(buff);
+        a4gl_yyerror("Report has been defined with a different number of parameters");
+}
+
+
+
+void add_report_definition(char *s, struct  expr_str_list *params) {
+
+        int nbind;
+        char buff[256];
+        int curr_fdef;
+        curr_fdef=get_function_definition(s);
+	
+	if (params) {
+		params=expand_variables_in_expr_str_list(params,1,1);
+	}
+        if (curr_fdef==-1) {
+                nfunction_definitions++;
+                function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));
+                function_definitions[nfunction_definitions-1].fname=strdup(s);
+                function_definitions[nfunction_definitions-1].type='R';
+                if (params) {
+                	function_definitions[nfunction_definitions-1].params=params->list.list_len;
+                } else {
+                	function_definitions[nfunction_definitions-1].params=0;
+                }
+                function_definitions[nfunction_definitions-1].rvals=-1; /* reserved for future use.. */
+                return;
+        }
+        if (params) {
+        nbind=params->list.list_len;
+        } else {
+        nbind=0;
+        }
+        if (nbind==function_definitions[curr_fdef].params) return;
+        sprintf(buff,"%d != %d", nbind,function_definitions[curr_fdef].params);
+        set_yytext(buff);
+        a4gl_yyerror("Report has already been called with a different number of parameters");
+}
+
+int check_cursor_name(expr_str *si) {
+char *s;
+if (si->expr_type==ET_EXPR_IDENTIFIER) {
+	s=si->expr_str_u.expr_string;
+        if (A4GL_has_pointer(s,CURSOR_USED)){
+                set_yytext(s);
+                a4gl_yyerror("Cursor has already been used");
+                return 0;
+        }
+        A4GL_add_pointer(s,CURSOR_USED,(void *)1);
+}
+        return 1;
+}
+
+
+/*
+ * Add a table/column to an string list
+ * this is only really needed for the INITIALIZE LIKE - and then
+ * only if they pass in a table.*
+ * in which case - we need to add all the columns for that table..
+ **/
+void add_to_str_list_set_record(struct str_list *sl, struct s_full_col *sfc) {
+char smbuff[200];
+if (sfc->col) {
+        // Nice and simple - theres only a single column...
+        sl->str_list_entry.str_list_entry_len=sl->str_list_entry.str_list_entry_len+1;
+        sl->str_list_entry.str_list_entry_val=realloc(sl->str_list_entry.str_list_entry_val, sizeof(char *)* sl->str_list_entry.str_list_entry_len);
+        sprintf(smbuff,"%s.%s", sfc->tab, sfc->col);
+        sl->str_list_entry.str_list_entry_val[sl->str_list_entry.str_list_entry_len-1]=strdup(smbuff);
+        return ;
+} else {
+// Theres a .* - so we need all the columns...
+      int rval;
+      int isize = 0;
+      int idtype = 0;
+      char colname[256] = "";
+      char buff[300];
+      char *ccol;
+      rval = A4GLSQL_get_columns (sfc->tab, 0, &idtype, &isize);
+      A4GL_debug ("rval = %d", rval);
+      if (rval == 0 && sfc->tab)
+        {
+          SPRINTF1 (buff, "%s does not exist in the database", sfc->tab);
+          a4gl_yyerror (buff);
+          A4GLSQL_end_get_columns ();
+          return ;
+        }
+
+      while (1)
+        {
+                struct s_full_col new_sfc;
+                colname[0] = 0;
+                rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+                if (rval == 0) break;
+                strcpy (colname, ccol);
+                trim_spaces (colname);
+                new_sfc.tab=sfc->tab;
+                new_sfc.col=colname;
+                add_to_str_list_set_record(sl, &new_sfc);
+          //setrecord (s, t, colname);
+        }
+      A4GLSQL_end_get_columns ();
+      return ;
+    }
+}
+
+
+str_list *generate_update_column_list_for(char *tabname) {
+char colname[2000];
+  int isize = 0;
+  int idtype = 0;
+  char *ccol;
+struct str_list *l;
+int rval;
+l=NULL;
+
+      strcpy (colname, "");
+      rval = A4GLSQL_get_columns (tabname, colname, &idtype, &isize);
+      if (rval == 0)
+        {
+	set_yytext(tabname);
+          a4gl_yyerror ("Table is not in the database)");
+          A4GLSQL_end_get_columns ();
+          return NULL;
+        }
+
+	l=new_str_list(0);
+
+      while (1)
+        {
+          colname[0] = 0;
+          rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+          strcpy (colname, ccol);
+          if (rval == 0)
+            break;
+          trim_spaces (colname);
+	  add_str_list(l, colname);
+          //A4GL_4glc_push_gen (UPDCOL, colname);
+        }
+      A4GLSQL_end_get_columns ();
+
+	return l;
+}
+
+
+
+
+/* 
+ * these indirect to the ones in lib/libaubit4gl so that we can do some expansions of variables first 
+ * and some checks/debugs/breakpoints etc
+ * */
+struct s_select_list_item_list * local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i)
+{
+struct s_select_list_item_list * prval;
+ //A4GL_pause_execution();
+
+
+
+ prval=add_select_list_item_list(p,i);
+
+  return prval;
+}
+
+/* 
+ * these indirect to the ones in lib/libaubit4gl so that we can do some expansions of variables first 
+ * and some checks/debugs/breakpoints etc
+ * */
+struct s_select_list_item_list * local_new_select_list_item_list(  struct s_select_list_item *i) {
+ struct s_select_list_item_list * prval;
+ struct variable_usage *u;
+ if (i->data.type !=E_SLI_VARIABLE_USAGE) {
+  	prval=new_select_list_item_list(i);
+  	return prval;
+ } 
+
+ // Its a variable usage - is it for a record ? 
+ u=i->data.s_select_list_item_data_u.var_usage;
+ u=usage_bottom_level(u);
+ if (u->datatype==-2) {
+	// Its - its a record... 
+	A4GL_assertion(1,"Not expecting a record...");
+ } else {
+	// Not - it must be a single variable...
+  	prval=new_select_list_item_list(i);
+  	return prval;
+ }
+ 
+return prval;
+}
+
+/* 
+ * these indirect to the ones in lib/libaubit4gl so that we can do some expansions of variables first 
+ * and some checks/debugs/breakpoints etc
+ * */
+struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l) {
+
+ l=rationalize_select_list_item_list(l);
+ return l;
+}
 
 
 /* ================================= EOF ============================= */

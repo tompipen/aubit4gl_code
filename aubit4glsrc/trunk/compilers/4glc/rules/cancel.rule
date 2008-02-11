@@ -1,5 +1,10 @@
 cancel_cmd : 
-		CANCEL_INSERT { print_cancel("INSERT");}
-		| CANCEL_DELETE{ print_cancel("DELETE");}
+		CANCEL_INSERT { 
+                                $<cmd>$=new_cancel_cmd(CT_INSERT);
+
+		}
+		| CANCEL_DELETE{ 
+                                $<cmd>$=new_cancel_cmd(CT_DELETE);
+			}
 ;
 		

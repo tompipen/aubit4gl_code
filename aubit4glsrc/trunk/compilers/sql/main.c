@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.12 2006-07-04 14:22:51 mikeaubury Exp $
+# $Id: main.c,v 1.13 2008-02-11 17:13:09 mikeaubury Exp $
 #
 */
 
@@ -85,29 +85,44 @@ int converted=0;
 	}
 	set_write_std_err_on_error();
 	dialect=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
+
+	// Load any explicit temp table names
 	load_temp_table();
-	if (dialect==0) dialect="POSTGRES";
+	//if (dialect==0) dialect="POSTGRES";
 	if (A4GL_isyes(acl_getenv("YYDEBUG"))) {
 		printf("YYDEBUG\n");
 		sqlparse_yydebug=1;
 	}
 
-	if (argc==3) {
+	if (argc>=3) {
 		default_database=acl_getenv_not_set_as_0("DEFAULT_DATABASE");
 		if (default_database==0) {
 			default_database=argv[2];
+			if (strlen(default_database)==0) {
+				default_database=0;
+			} else {
+				if (strcmp(default_database,"-")==0) {
+					default_database=0;
+				}
+			}
 		}
-	        A4GLSQL_set_status (0, 1);
-  		A4GLSQL_init_connection (default_database);
-  		if (A4GLSQL_get_status () != 0) {
-			printf("Couldn't connect to database\n");
-			exit(1);
-    		}
-		//printf("Opened database : %s\n",default_database);
-		db_used=1;
+
+		if (default_database) {
+	        	A4GLSQL_set_status (0, 1);
+  			A4GLSQL_init_connection (default_database);
+  			if (A4GLSQL_get_status () != 0) {
+				printf("Couldn't connect to database\n");
+				exit(1);
+    			}
+			//printf("Opened database : %s\n",default_database);
+			db_used=1;
+		}
 
 	}
 
+	if (argc>=4) {
+		dialect=argv[3];
+	}
 	
 	snew=A4GLSQLCV_convert_file(dialect,argv[1]);
 	if (snew==0) {

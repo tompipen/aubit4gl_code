@@ -21,6 +21,7 @@ time....
 /* ------------ functions from compile_[c|perl].c -------------- */
 
 
+#ifdef NDEF
 void A4GL_lex_printc(char* fmt,... ) {
 va_list ap;
    va_start(ap,fmt);
@@ -34,13 +35,10 @@ void A4GL_lex_printh(char* fmt,... ) {
    A4GL_internal_lex_printh(fmt,&ap);
    va_end(ap);
 }
+#endif
+
 
 void A4GL_lex_printcomment(char* fmt,... ) {
 va_list ap;
 return;
-   va_start(ap,fmt);
-   A4GL_internal_lex_printcomment(fmt,&ap);
-   va_end(ap);
 }
-
-

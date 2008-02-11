@@ -55,6 +55,7 @@ table_name_not_for_column_prefix: table_name_not_for_column_prefix_i  {
 
 table_name_not_for_column_prefix_i:
          CHAR_VALUE KW_DOT identifier {
+
 	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
 	     ADDMAP("Use Table",$<str>$);
         }

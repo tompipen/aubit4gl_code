@@ -6,33 +6,35 @@
 
 
 init_cmd : INITIALIZE init_bind_var_list KW_TO KW_NULL {
-	add_feature("INITIALIZE_NULL");
-	print_init_explicit();
+		$<cmd>$= new_init_cmd($<ptr_list>2, NULL);
+		add_feature("INITIALIZE_NULL");
  }
-| INITIALIZE init_bind_var_list LIKE {
-		A4GL_4glc_pop_all_gen(INITCOL,"!");
-	} init_tab_list  {
-		add_feature("INITIALIZE_LIKE");
-	if (A4GL_4glc_gen_cnt(INITCOL) !=get_bind_cnt('N') ) {
-		printf("%s : %d\n", A4GL_4glc_gen_cnt(INITCOL) , get_bind_cnt('N') );
-		a4gl_yyerror("Number of columns in LIKE is not the same as the number of variables");
-	} else {
-		print_init_table_g(copy_togenbind('N'), "");
-	}
+| INITIALIZE init_bind_var_list LIKE init_tab_list  {
+	add_feature("INITIALIZE_LIKE");
+		$<cmd>$= new_init_cmd($<ptr_list>2, $<str_list>4);
 }
 ;
 
 
-init_tab_list : init_tab | init_tab_list KW_COMMA init_tab 
+init_tab_list : init_tab  {
+			$<str_list>$=malloc(sizeof(struct str_list));
+                        $<str_list>$->str_list_entry.str_list_entry_len=0;
+                        $<str_list>$->str_list_entry.str_list_entry_val=0;
+			add_to_str_list_set_record($<str_list>$, &$<s_full_col>1);
+	}
+	| init_tab_list KW_COMMA init_tab {
+			$<str_list>$=$<str_list>1;
+			add_to_str_list_set_record($<str_list>$, &$<s_full_col>3);
+	}
 	;
 
 init_tab : init_table_name KW_DOT column_name {
-			strcpy($<str>$,"");
-			setrecord($<str>$,$<str>1,$<str>3);
+			$<s_full_col>$.tab=strdup($<str>1);
+			$<s_full_col>$.col=strdup($<str>3);
 		}
 	 | init_table_name KW_DOT KW_MULTIPLY {
-			strcpy($<str>$,"");
-			setrecord($<str>$,$<str>1,0);
+			$<s_full_col>$.tab=strdup($<str>1);
+			$<s_full_col>$.col=0;
 		}
 	;
 

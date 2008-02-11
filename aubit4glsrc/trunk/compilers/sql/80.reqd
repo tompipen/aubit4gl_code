@@ -1,7 +1,7 @@
 identifier: NAMED | reserved_word
 ;
 
-fetch_cursor_name: NAMED
+fetch_cursor_name_p: NAMED
 ;
 
 real_number : NUMBER_VALUE 
@@ -15,6 +15,7 @@ var_ident_qchar : NAMED
 ;
 
 
+opt_into_sel: ;
 
 
 char_or_var : CHAR_VALUE 
@@ -60,17 +61,36 @@ sql_statement :
 ;
 
 
+sql_bound_commands : insert_statement_c  {
+			int converted;
+			$<sql_string>$=get_insert_cmd($<insert_cmd>1,&converted);
+
+		}
+                | update_statement_c {
+			int converted;
+			$<sql_string>$=get_update_cmd($<update_cmd>1,&converted);
+		}
+                | delete_statement_c {
+			int converted;
+			$<sql_string>$=get_delete_cmd($<delete_cmd>1,&converted);
+		}
+;
+
+
 
 individual_sql_statement : 
 		/* Empty statement */
 	| set_database_cmd 
-	| unload_cmd  
-	| load_cmd  
-	| sql_commands 
+	/* | unload_cmd  */
+	/* | load_cmd   */
+	| sql_commands  		{ print_exec_select($<sql_string>1);  }
 	| select_statement_ss_str_cfu 	{ print_exec_select($<sql_string>1);  }
 	| set_cmd  			
-	| sql_bound_commands
-	| sql_transact_commands
+	| sql_bound_commands 		{ print_exec_select($<sql_string>1);  }
+
+	| sql_transact_commands {
+			print_sql_commit ($<integer_val>1);
+	}
 	| error				{print_unable_to_parse();}
 ;
 
@@ -80,6 +100,14 @@ select_statement_ss_str_cfu:
 
 ;
 
+var_ident_vl : var_ident
+;
+
+select_statement_ss_str_converted:
+		select_statement_ss_select {
+			$<sql_string>$=make_select_stmt_v2("", $<s_select>1,"");
+		}
+;
 
 curs_forupdate : {strcpy($<str>$,"");}
                 | FOR_UPDATE {

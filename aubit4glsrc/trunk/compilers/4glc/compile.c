@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.114 2007-06-20 07:04:56 mikeaubury Exp $
+# $Id: compile.c,v 1.115 2008-02-11 17:13:06 mikeaubury Exp $
 #*/
 
 /**
@@ -45,7 +45,7 @@
 
 #include "a4gl_4glc_int.h"
 //#include "memfile.h"
-
+extern struct module_definition this_module;
 /*
 =====================================================================
                     Variables definitions
@@ -73,6 +73,7 @@ extern FILE *yyin;
 extern int glob_only;
 extern long fpos;					/** current file position for direct fseek */
 extern int yylineno;
+
 
 /* -------- unknown --------- */
 int compiling_system_4gl = 0;
@@ -1118,6 +1119,13 @@ char single_output_object[128] = "";
 char fgl_file[128];			/*The 4gl file*/
 char a_part[128], b_part[128];	//for bname()
 char *ptr;
+int cnt;
+        int ncomm;
+        char *s;
+        int lineno;
+char type;
+        int colno;
+
 //static FILE *filep = 0;
 char ext[256];
 static char local_pass_options[1024] = "";
@@ -1137,6 +1145,7 @@ static char local_pass_options[1024] = "";
 	SPRINTF2 (fgl_file, "%s%s", fgl_basename, ".4gl");
 	strcpy (buff, fgl_file);
 	strcpy(compiling_module_name,fgl_basename);
+	A4GL_set_clobber(compiling_module_name);
 	//Note: output_object is empty when compilation is invoked because
 	//that 4gl file was specified as GLOBALS file
 	//
@@ -1174,6 +1183,24 @@ static char local_pass_options[1024] = "";
 
 	A4GL_memfile_fseek (yyin, 0, SEEK_END);
 	A4GL_remove_comments_in_memfile(yyin);
+
+        ncomm=A4GL_GetNumberOfComments();
+        if (ncomm==0) {
+                this_module.comment_list.comment_list_val=0;
+                this_module.comment_list.comment_list_len=0;
+        } else {
+                this_module.comment_list.comment_list_len=ncomm;
+                this_module.comment_list.comment_list_val=malloc(sizeof(struct comment)* ncomm);
+                for (cnt=0;cnt<ncomm;cnt++) {
+                        A4GL_GetComment(cnt, &s,&lineno,&colno,&type);
+                        this_module.comment_list.comment_list_val[cnt].lineno=lineno;
+                        this_module.comment_list.comment_list_val[cnt].colno=colno;
+                        this_module.comment_list.comment_list_val[cnt].printed=0;
+                        this_module.comment_list.comment_list_val[cnt].comment=s;
+                        this_module.comment_list.comment_list_val[cnt].type=type;
+                }
+        }
+
 	yyin_len = A4GL_memfile_ftell (yyin);
 	A4GL_memfile_rewind (yyin);
 	A4GL_load_features();
@@ -1185,9 +1212,10 @@ static char local_pass_options[1024] = "";
 	
 	
 	if (yydebug) { PRINTF ("Opened : %s\n", fgl_file); }
-if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
-	openmap (outputfilename);
-}
+
+	if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
+		openmap (outputfilename);
+	}
 
 	if (!silent) {
 		if (globals_only) {
@@ -1206,15 +1234,40 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 			#endif
 		}
     }
+
+  this_module.module_name = strdup (outputfilename);
+  this_module.namespace = strdup (get_namespace(""));
+  this_module.compiled_time = time (0);
+  this_module.genStackInfo=genStackInfo;
+
+  this_module.global_files = malloc (sizeof (str_list));
+  this_module.global_files->str_list_entry.str_list_entry_len = 0;
+  this_module.global_files->str_list_entry.str_list_entry_val = 0;
+  this_module.module_entries.module_entries_len = 0;
+  this_module.module_entries.module_entries_val = 0;
+
+  this_module.module_variables.variables.variables_len = 0;
+  this_module.module_variables.variables.variables_val = 0;
+
+  this_module.exported_global_variables.variables.variables_len = 0;
+  this_module.exported_global_variables.variables.variables_val = 0;
+
+  this_module.imported_global_variables.variables.variables_len = 0;
+  this_module.imported_global_variables.variables.variables_val = 0;
+
+  this_module.external_datatypes.external_datatypes_len = 0;
+  this_module.external_datatypes.external_datatypes_val = 0;
+
 	yyparse_ret = doparse ();		/* we core A4GL_dump here on Darwin */
 	#ifdef DEBUG
 		A4GL_debug ("after yyparse\n");
 	#endif
 
+	this_module.force_ui=get_force_ui();
+	this_module.debug_filename=get_debug_filename();
 
 
-	A4GL_lexer_parsed_fgl ();
-
+	//A4GL_lexer_parsed_fgl ();
 
 
 	if (yydebug) { PRINTF ("Closing map : %d\n", yyparse_ret); }
@@ -1223,6 +1276,9 @@ if (!A4GL_isyes(acl_getenv("DOING_CM"))) {
 	if (A4GL_db_used()) {
 		A4GL_close_database();
 	}
+	if (!only_doing_globals()) {
+	  A4GL_write_generated_code(&this_module);
+        }
 	#ifdef DEBUG
 		A4GL_debug ("after closemap");
 	#endif
@@ -1656,13 +1712,28 @@ a4gl_yyerror (char *s)
   SPRINTF1 (errfile, "%s.err", outputfile);
   a = 0;
 
-
-/* Need a real fseek here */
-  fseek (yyin, fpos, SEEK_SET);
+  if (fpos!=ld) {
+	char buff[512];
+	int ln=0;
+	// We've read the file completely - this is a post parse error...
+	rewind(yyin);
+	while (1) {
+		if (feof(yyin)) break;
+		memset(buff,0,sizeof(buff));
+		fgets(buff,sizeof(buff),yyin);
+		if (strchr(buff,'\n')) ln++;
+		if (ln>yylineno) break;
+		fpos=ftell (yyin);
+		ld=fpos;
+	}
+  } else {
+	/* Need a real fseek here */
+  	fseek (yyin, fpos, SEEK_SET);
+  }
   f = A4GL_write_errfile (yyin, errfile, ld, yylineno);
 
 
-  fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
+  fprintf (f, "| %s%s (%s)", s, errbuff, yytext,fpos,ld);
 
   if (atoi(acl_getenv("RUNNING_TEST"))) {
         char buff[256];

@@ -6,7 +6,8 @@
 
 
 whenever_cmd : KW_WHENEVER_SET {
-		set_whenever_from_store();
+		$<cmd>$=set_whenever_from_store_cmd();
+		//set_whenever_from_store();
 }
 ;
 

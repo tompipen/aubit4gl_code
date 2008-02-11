@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.35 2007-09-14 12:51:30 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.36 2008-02-11 17:13:13 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1273,7 +1273,7 @@ A4GL_cr_scrollbar (void)
 
 struct_scr_field *attr;
 struct_metrics *metr;
-char *field;
+char *gtfield;
 char *widgettype;
 
 /*
@@ -1293,7 +1293,7 @@ set_widget_data (GtkWidget * widget)
 {
   attr = gtk_object_get_data (GTK_OBJECT (widget), "Attribute");
   metr = gtk_object_get_data (GTK_OBJECT (widget), "Metric");
-  field = gtk_object_get_data (GTK_OBJECT (widget), "Field");
+  gtfield = gtk_object_get_data (GTK_OBJECT (widget), "Field");
   widgettype = gtk_object_get_data (GTK_OBJECT (widget), "WidgetType");
 }
 
@@ -1524,7 +1524,7 @@ A4GL_func (GtkWidget * w, char *mode)
 
   A4GL_debug ("in func");
   A4GL_debug ("**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype,
-	      field);
+	      gtfield);
 
   if (A4GL_aubit_strcasecmp (mode, "grab_focus") == 0)
     {

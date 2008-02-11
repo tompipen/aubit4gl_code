@@ -6,64 +6,135 @@
 
 
 start_cmd : 
-	START_REPORT rep_name TO_PRINTER  op_with_dim {
+	START_REPORT rep_name atline  TO_PRINTER  op_with_dim {
 			struct expr_str *p;
+			$<startrep>$=$<startrep>5;
+			$<startrep>$->towhat='|';
+		set_cmdlineno($<integer_val>3);
+
 			p=A4GL_new_expr_simple(ET_EXPR_REPORT_PRINTER);
+
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			map_start_report($<str>2);
-			print_start_report("P",p,$<str>2,$<str>4);
+			$<startrep>$->s1=chk_expr(p);
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
+
 			}
-	| START_REPORT rep_name TO_EMAIL  op_with_dim {
+	| START_REPORT rep_name atline  TO_EMAIL  op_with_dim {
 			struct expr_str *p;
-			add_feature("USE_REPORT");
-			ADDMAP("Start Report",$<str>2);
-			map_start_report($<str>2);
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>5;
+			$<startrep>$->towhat='@';
 			p=A4GL_new_expr_simple_string($<str>2,ET_EXPR_REPORT_EMAIL);
-			print_start_report("M",p,$<str>2,$<str>4);
-			}
-	    | START_REPORT rep_name KW_TO rout op_with_dim {
+			$<startrep>$->s1=chk_expr(p);
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			map_start_report($<str>2);
-			print_start_report("F",$<ptr>4,$<str>2,$<str>5);
+
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
 			}
-	    | START_REPORT rep_name TO_FILE rout op_with_dim {
+	    | START_REPORT rep_name atline  KW_TO rout op_with_dim {
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>6;
+			$<startrep>$->towhat='F';
+			$<startrep>$->s1=chk_expr($<ptr>5);
+
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			map_start_report($<str>2);
-			print_start_report("F",$<ptr>4,$<str>2,$<str>5);
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
 			}
-	    | START_REPORT rep_name TO_PIPE rout op_with_dim {
+	    | START_REPORT rep_name atline  TO_FILE rout op_with_dim {
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>6;
+			$<startrep>$->towhat='F';
+			$<startrep>$->s1=chk_expr($<ptr>5);
+
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			map_start_report($<str>2);
-			print_start_report("P",$<ptr>4,$<str>2,$<str>5);
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
 			}
-	    | START_REPORT rep_name TO_SCREEN op_with_dim {
+	    | START_REPORT rep_name atline  TO_PIPE rout op_with_dim {
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>6;
+			$<startrep>$->towhat='|';
+			$<startrep>$->s1=chk_expr($<ptr>5);
+
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			map_start_report($<str>2);
-			print_start_report("S",0,$<str>2,$<str>4);
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
 			}
-	    | START_REPORT rep_name AS_CONVERTIBLE  op_with_dim {
+	    | START_REPORT rep_name atline  TO_SCREEN op_with_dim {
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>5;
+			$<startrep>$->towhat='S';
+			$<startrep>$->s1=0;
+
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			map_start_report($<str>2);
-			print_start_report("C",0,$<str>2,$<str>4);
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
 			}
-	    | START_REPORT rep_name  op_with_dim {
+	    | START_REPORT rep_name atline  AS_CONVERTIBLE  op_with_dim {
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>5;
+			$<startrep>$->towhat='C';
+			$<startrep>$->s1=0;
+
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
 			map_start_report($<str>2);
-			print_start_report("",0,$<str>2,$<str>3);
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
+
+			}
+	    | START_REPORT rep_name  atline  op_with_dim {
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>4;
+			$<startrep>$->towhat=0;
+			$<startrep>$->s1=0;
+
+			add_feature("USE_REPORT");
+			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
+
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
+
 			}
 ;
 
 op_with_dim:
-	{strcpy($<str>$,"-1,-1,-1,-1,-1,\"\"");}
-	| WITH with_list {sprintf($<str>$,"%d,%d,%d,%d,%d,\"%s\"",with_page_length,with_left_margin,with_right_margin,with_top_margin,with_bottom_margin,with_top_of_page);
+	{
+			$<startrep>$=malloc(sizeof(startrep));
+			$<startrep>$->with_page_length=-1;
+			/*$<startrep>$->with_page_width=-1; */
+			$<startrep>$->with_left_margin=-1; 
+			$<startrep>$->with_right_margin= -1;
+			$<startrep>$->with_top_margin= -1;
+			$<startrep>$->with_bottom_margin= -1;
+			$<startrep>$->with_top_of_page= strdup("");
 			with_page_length=-1;
+			/* with_page_width=-1; */
+			with_left_margin=-1;
+			with_right_margin=-1;
+			with_top_margin=-1;
+			with_bottom_margin=-1;
+			with_top_of_page="";
+	}
+	| WITH with_list {
+			$<startrep>$=malloc(sizeof(startrep));
+			$<startrep>$->with_page_length=with_page_length;
+			/*$<startrep>$->with_page_width=with_page_width; */
+			$<startrep>$->with_left_margin= with_left_margin;
+			$<startrep>$->with_right_margin= with_right_margin;
+			$<startrep>$->with_top_margin= with_top_margin;
+			$<startrep>$->with_bottom_margin= with_bottom_margin;
+			$<startrep>$->with_top_of_page= strdup(with_top_of_page);
+
+			with_page_length=-1;
+			/*with_page_width=-1; */
 			with_left_margin=-1;
 			with_right_margin=-1;
 			with_top_margin=-1;
@@ -80,6 +151,7 @@ with_list:
 
 with_entry:
 	PAGE_LENGTH INT_VALUE {with_page_length=atoi($<str>2);}
+	/* | PAGE_WIDTH INT_VALUE {with_page_width=atoi($<str>2);} */
 	| TOP_MARGIN INT_VALUE {with_top_margin=atoi($<str>2);}
 	| BOTTOM_MARGIN INT_VALUE {with_bottom_margin=atoi($<str>2);}
 	| LEFT_MARGIN INT_VALUE {with_left_margin=atoi($<str>2);}
@@ -87,50 +159,98 @@ with_entry:
 	| TOP_OF_PAGE CHAR_VALUE {with_top_of_page=acl_strdup($<str>2);}
 ;
 	
- 
 
-convert_cmd : 	CONVERT_REPORT rep_name KW_TO var_or_char KW_AS var_or_char KW_USING var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"FILE");
-		}
- 		| CONVERT_REPORT rep_name KW_TO var_or_char KW_AS var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","FILE");
-		}
- 		| CONVERT_REPORT rep_name TO_PIPE var_or_char KW_AS var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","PIPE");
-		}
- 		| CONVERT_REPORT rep_name TO_FILE var_or_char KW_AS var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","PIPE");
-		}
- 		| CONVERT_REPORT rep_name TO_PRINTER KW_AS var_or_char {
-			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
-		}
- 		| CONVERT_REPORT rep_name TO_EMAIL KW_AS var_or_char {
-			char buff[255];
-sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
-			print_convert_report($<str>2,    buff ,$<str>5,"\"\"","EMAIL");
-		}
+conv_rep_conv:  { $<convert>$=0; }
+	| KW_TO char_or_var_vl KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=0;
+		$<convert>$->conv_type=$<ptr>4;
+	}
+	|  VIA via_functionname {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='f';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=0;
+		$<convert>$->conv_type=0;
+	}
+	| TO_PIPE char_or_var_vl KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='|';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=0;
+		$<convert>$->conv_type=$<ptr>4;
+	}
+	| TO_PRINTER KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='P';
+		$<convert>$->conv_type=$<ptr>2;
+		$<convert>$->s1=0;
+		$<convert>$->filter=0;
+	}
+	| TO_EMAIL KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='@';
+		$<convert>$->conv_type=$<ptr>3;
+		$<convert>$->s1=0;
+		$<convert>$->filter=0;
+	}
+	| TO_FILE char_or_var_vl KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->filter=0;
+	}
+	| KW_TO char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->filter=$<ptr>6;
+	}
+	| TO_FILE char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->filter=$<ptr>6;
 
- 		| CONVERT_REPORT rep_name VIA via_functionname {
-				print_convert_report_via($<str>2,$<str>4);
-		}
- 		| CONVERT_REPORT rep_name TO_PIPE var_or_char KW_AS var_or_char KW_USING var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
-		}
- 		| CONVERT_REPORT rep_name TO_FILE var_or_char KW_AS var_or_char KW_USING var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
-		}
- 		| CONVERT_REPORT rep_name TO_PRINTER KW_AS var_or_char KW_USING var_or_char {
-			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
-		}
- 		| CONVERT_REPORT rep_name TO_EMAIL KW_AS var_or_char KW_USING var_or_char {
-                        char buff[255];
-			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
-			print_convert_report($<str>2, buff,$<str>5,$<str>7,"EMAIL");
-		}
-
+	}
+	| TO_PIPE char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='|';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=$<ptr>6;
+		$<convert>$->conv_type=$<ptr>4;
+	}
+	| TO_PRINTER KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='P';
+		$<convert>$->s1=0;
+		$<convert>$->filter=$<ptr>5;
+		$<convert>$->conv_type=$<ptr>3;
+	}
+	| TO_EMAIL KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='@';
+		$<convert>$->s1=0;
+		$<convert>$->filter=$<ptr>5;
+		$<convert>$->conv_type=$<ptr>3;
+	}
 ;
 
-via_functionname: identifier
+convert_cmd : 	CONVERT_REPORT rep_name conv_rep_conv {
+			$<cmd>$=new_convert_cmd($<str>2, $<convert>3);
+		}
+;
+
+via_functionname: identifier {
+		char buff[256];
+		sprintf(buff,"%s%s", get_namespace($<str>1),$<str>1);
+		$<ptr>$=A4GL_new_literal_string(buff);
+	}
 ;
 
 rout : fgl_expr_c {
@@ -140,7 +260,7 @@ rout : fgl_expr_c {
 
 
 free_rep_cmd : FREE_REPORT rep_name {
-		print_free_convertible($<str>2);
+		$<cmd>$=new_free_rep_cmd($<str>2);
 }
 ;
 
@@ -156,191 +276,248 @@ op_fgl_expr_list_ptr:  {$<ptr_list>$=0;}
 
 
 output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET op_fgl_expr_list_ptr CLOSE_BRACKET {
+		struct expr_str_list *l;	
+		l=expand_variables_in_expr_str_list($<ptr_list>5,0,1);
+		$<cmd>$=new_output_cmd($<str>2,l);
 		add_feature("USE_REPORT");
+		output_to_report_definition($<str>2, l);
 		ADDMAP("Output to report",$<str>2);
-
-
-		print_output_to_report($<ptr_list>5,$<str>2); 
-		output_to_report_definition($<str>2, $<ptr_list>5);
 		}
 ;
 
-finish_cmd : FINISH_REPORT rep_name {
-			add_feature("USE_REPORT");
+finish_cmd : FINISH_REPORT rep_name rep_conv {
 		ADDMAP("Finish Report",$<str>2);
-		print_finish_report($<str>2);
-		print_free_convertible($<str>2); // Shouldn't really be needed - but they may have started it "AS CONVERTIBLE"
-		}
-	| FINISH_REPORT rep_name CONVERTING_TO_MANY   {
-			add_feature("USE_REPORT");
-		ADDMAP("Finish Report",$<str>2);
-		print_finish_report($<str>2);
-		// Can't free convertible here - developer needs to do that using FREE REPORT
-	}
-	| FINISH_REPORT rep_name CONVERTING_TO var_or_char KW_AS var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
-		print_free_convertible($<str>2);
-	}
-	| FINISH_REPORT rep_name CONVERTING_VIA via_functionname {
 		add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report_via($<str>2,$<str>4);
-		print_free_convertible($<str>2);
-	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char KW_AS var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","PIPE");
-		print_free_convertible($<str>2);
-	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER KW_AS var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
-		print_free_convertible($<str>2);
-	}
-	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL KW_AS var_or_char {
-                        char buff[255];
-			add_feature("USE_REPORT");
-			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,buff,$<str>5,"\"\"","EMAIL");
-		print_free_convertible($<str>2);
-	}
+		$<cmd>$=new_finish_cmd($<str>2,$<convert>3);
+		}
+;
 
 
-	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char KW_AS var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
-		print_free_convertible($<str>2);
+rep_conv:  { $<convert>$=0; }
+	|  CONVERTING_TO_MANY   {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='M';
+		$<convert>$->s1=0;
+		$<convert>$->conv_type=0;
+		$<convert>$->filter=0;
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO var_or_char KW_AS var_or_char KW_USING var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
-		print_free_convertible($<str>2);
+	| CONVERTING_TO char_or_var_vl KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=0;
+		$<convert>$->conv_type=$<ptr>4;
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char KW_AS var_or_char KW_USING var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
-		print_free_convertible($<str>2);
+	|  CONVERTING_VIA via_functionname {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='f';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=0;
+		$<convert>$->conv_type=0;
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char KW_AS var_or_char KW_USING var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"PIPE");
-		print_free_convertible($<str>2);
+	| CONVERTING_TO_PIPE char_or_var_vl KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='|';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=0;
+		$<convert>$->conv_type=$<ptr>4;
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER KW_AS var_or_char KW_USING var_or_char {
-			add_feature("USE_REPORT");
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
-		print_free_convertible($<str>2);
+	| CONVERTING_TO_PRINTER KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='P';
+		$<convert>$->conv_type=$<ptr>3;
+		$<convert>$->s1=0;
+		$<convert>$->filter=0;
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL KW_AS var_or_char KW_USING var_or_char {
-                        char buff[255];
-			add_feature("USE_REPORT");
-			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,buff,$<str>5,$<str>7,"EMAIL");
-		print_free_convertible($<str>2);
+	| CONVERTING_TO_EMAIL KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='@';
+		$<convert>$->conv_type=$<ptr>3;
+		$<convert>$->s1=0;
+		$<convert>$->filter=0;
 	}
+	| CONVERTING_TO_FILE char_or_var_vl KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->filter=0;
+	}
+	| CONVERTING_TO char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->filter=$<ptr>6;
+	}
+	| CONVERTING_TO_FILE char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='F';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->filter=$<ptr>6;
 
-
-	
+	}
+	| CONVERTING_TO_PIPE char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='|';
+		$<convert>$->s1=$<ptr>2;
+		$<convert>$->filter=$<ptr>6;
+		$<convert>$->conv_type=$<ptr>4;
+	}
+	| CONVERTING_TO_PRINTER KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='P';
+		$<convert>$->s1=0;
+		$<convert>$->filter=$<ptr>5;
+		$<convert>$->conv_type=$<ptr>3;
+	}
+	| CONVERTING_TO_EMAIL KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='@';
+		$<convert>$->s1=0;
+		$<convert>$->filter=$<ptr>5;
+		$<convert>$->conv_type=$<ptr>3;
+	}
 ;
 
 
 term_rep_cmd : TERMINATE_REPORT rep_name {
-			add_feature("USE_REPORT");
+		add_feature("USE_REPORT");
 		ADDMAP("Terminate Report",$<str>2);
-		print_terminate_report($<str>2);
+		$<cmd>$=new_term_rep_cmd($<str>2);
 }
 ;
 
-report_section: op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
 
 format_section: FORMAT EVERY_ROW {
-	print_format_every_row(copy_togenbind('f'));
+	        $<report_format_section>$=malloc(sizeof(report_format_section));
+                $<report_format_section>$->entries.entries_len=1;
+                $<report_format_section>$->entries.entries_val=malloc(sizeof($<report_format_section>$->entries.entries_val[0]) * $<report_format_section>$->entries.entries_len);
+                $<report_format_section>$->entries.entries_val[$<report_format_section>$->entries.entries_len-1]=new_report_format_section_entry(RB_FORMAT_EVERY_ROW,0, NULL,0, yylineno);
+			$<report_format_section>$->lines_in_header=rep_struct.lines_in_header;
+			$<report_format_section>$->lines_in_first_header=rep_struct.lines_in_first_header;
+			$<report_format_section>$->lines_in_trailer=rep_struct.lines_in_trailer;
 }
 | 
-FORMAT format_actions
+FORMAT format_actions {$<report_format_section>$=$<report_format_section>2;
+			$<report_format_section>$->lines_in_header=rep_struct.lines_in_header;
+			$<report_format_section>$->lines_in_first_header=rep_struct.lines_in_first_header;
+			$<report_format_section>$->lines_in_trailer=rep_struct.lines_in_trailer;
+}
 ;
 
-format_actions : format_action | format_actions format_action;
+format_actions : format_action  {
+		$<report_format_section>$=malloc(sizeof(report_format_section));
+		$<report_format_section>$->entries.entries_len=1;
+		$<report_format_section>$->entries.entries_val=malloc(sizeof($<report_format_section>$->entries.entries_val[0]) * $<report_format_section>$->entries.entries_len);
+		$<report_format_section>$->entries.entries_val[$<report_format_section>$->entries.entries_len-1]=$<report_format_section_entry>1;
+		}
+
+	| format_actions format_action {
+		$<report_format_section>$=$<report_format_section>1;
+		$<report_format_section>$->entries.entries_len=$<report_format_section>1->entries.entries_len+1;
+		$<report_format_section>$->entries.entries_val=realloc($<report_format_section>1->entries.entries_val, sizeof($<report_format_section>$->entries.entries_val[0]) * $<report_format_section>$->entries.entries_len);
+		$<report_format_section>$->entries.entries_val[$<report_format_section>$->entries.entries_len-1]=$<report_format_section_entry>2;
+	}
+;
+
+
 
 format_action :
-	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P',""); lastlineno=yylineno;} commands {
+	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P',""); } atline commands_as_list {
 	 	add_feature("REPORT_FIRST_PAGE_HEADER");
 		rep_struct.lines_in_first_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
-		print_rep_ret(0,1);
+
+		set_cmdlineno($<integer_val>3);
+		$<report_format_section_entry>$=new_report_format_section_entry(RB_FIRST_PAGE_HEADER,NULL, $<commands>4,0,$<integer_val>3);
 		}
 	| PAGE_TRAILER { 
 	 	add_feature("REPORT_PAGE_TRAILER");
 		push_report_block("TRAILER",'T',"");
 		if_print_stack[0][0]=0;
 		if_print_stack[0][1]=0;
- lastlineno=yylineno;	} commands {
+ 			} atline commands_as_list {
 		rep_struct.lines_in_trailer=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
-		print_rep_ret(0,1);
+		set_cmdlineno($<integer_val>3);
+		$<report_format_section_entry>$=new_report_format_section_entry(RB_PAGE_TRAILER,NULL, $<commands>4,0,$<integer_val>3);
 	}
-	| PAGE_HEADER { push_report_block("HEADER",'p',""); lastlineno=yylineno;} commands {
+	| PAGE_HEADER { push_report_block("HEADER",'p',""); } atline commands_as_list {
 	 	add_feature("REPORT_PAGE_HEADER");
 		rep_struct.lines_in_header=if_print_stack[0][0];
 		pdf_rep_struct.lines_in_header=if_print_stack[0][0];
-		print_rep_ret(0,1);}
-	| ON_EVERY_ROW { push_report_block("EVERY",'E',""); add_feature("ON_EVERY_ROW");  lastlineno=yylineno;} commands {print_rep_ret(0,1);}
-	| ON_LAST_ROW { push_report_block("LAST",'L',""); add_feature("ON_LAST_ROW"); lastlineno=yylineno;} commands {print_rep_ret(0,1);}
-	| BEFGROUP variable  {
+		set_cmdlineno($<integer_val>3);
+		$<report_format_section_entry>$=new_report_format_section_entry(RB_PAGE_HEADER,NULL, $<commands>4,0,$<integer_val>3);
+	}
+	| ON_EVERY_ROW { push_report_block("EVERY",'E',""); add_feature("ON_EVERY_ROW");  } atline commands_as_list {
+		set_cmdlineno($<integer_val>3);
+		$<report_format_section_entry>$=new_report_format_section_entry(RB_ON_EVERY_ROW,NULL, $<commands>4,0,$<integer_val>3);
+		}
+	| ON_LAST_ROW { push_report_block("LAST",'L',""); add_feature("ON_LAST_ROW"); } atline commands_as_list {
+		set_cmdlineno($<integer_val>3);
+		$<report_format_section_entry>$=new_report_format_section_entry(RB_ON_LAST_ROW,NULL, $<commands>4,0,$<integer_val>3);
+	}
+	| BEFGROUP variable_usage_expression  {
 		int a;
 		char buff[80];
-		A4GL_debug("rordcnt=%d",rordcnt);
-		a=scan_orderby($<str>2,rordcnt);
+		
+		a=scan_orderby(current_orderby, $<ptr>2);
 		if (a<0) {
-   		sprintf(buff,"%s is not in the order by list",$<str>2);
-   		a4gl_yyerror(buff);
+   			sprintf(buff,"%s is not in the order by list",get_variable_as_string_from_variable_usage_expression($<ptr>2)); //@FIXME
+   			a4gl_yyerror(buff);
 			YYERROR;
 		}
+		
 		add_feature("REPORT_BEFORE_GROUP");
 		sprintf(buff,"%d",a+1);
 		push_report_block(buff,'B',$<str>2);
 		set_curr_block(a+1);
-		 lastlineno=yylineno;} commands {print_rep_ret(0,1);}
-	| AFTGROUP variable { 
+		 } atline commands_as_list {
+			int a;
+			a=scan_orderby(current_orderby, $<ptr>2)+1;
+		set_cmdlineno($<integer_val>4);
+
+		$<report_format_section_entry>$=new_report_format_section_entry(RB_BEFORE_GROUP_OF,$<ptr>2, $<commands>5,a,$<integer_val>4);
+	}
+	| AFTGROUP variable_usage_expression { 
 		int a;
 		char buff[80];
-		
 		add_feature("REPORT_AFTER_GROUP");
-		A4GL_debug("rordcnt=%d",rordcnt);
-		a=scan_orderby($<str>2,rordcnt);
+		
+		
+		a=scan_orderby(current_orderby, $<ptr>2);
 		if (a<0) {
-   		sprintf(buff,"%s is not in the order by list",$<str>2);
-   		a4gl_yyerror(buff);
+   			sprintf(buff,"%s is not in the order by list",get_variable_as_string_from_variable_usage_expression($<ptr>2));
+   			a4gl_yyerror(buff);
 			YYERROR;
 		}
+		
 		
 		sprintf(buff,"%d",a+1);
 		push_report_block(buff,'A',$<str>2);
 		set_curr_block(a+1);
-		
-		 lastlineno=yylineno;} commands {print_rep_ret(0,1);}
+		} atline  commands_as_list {
+			int a;
+			set_cmdlineno($<integer_val>4);
+			a=scan_orderby(current_orderby, $<ptr>2)+1;
+
+			$<report_format_section_entry>$=new_report_format_section_entry(RB_AFTER_GROUP_OF,$<ptr>2, $<commands>5, a,$<integer_val>4);
+		}
 ;
 
 
 need_cmd :
 	 NEED fgl_expr_c  KWLINE {
-	print_need_lines($<ptr>2);
-}
+		$<cmd>$=new_need_cmd(chk_expr($<ptr>2));
+	}
 ;
 
 op_lines : {strcpy($<str>$,"0");} | KWLINE {strcpy($<str>$,"1");}
 ;
+
+
 
 skip_cmd : 
 	SKIP INT_VALUE op_lines {
@@ -349,24 +526,26 @@ skip_cmd :
 			strcpy(buff,$<str>3);
 			n=atof($<str>2);
 			if (buff[0]=='1') {
-				print_skip_lines(n);
+				int ni;
+				ni=atoi($<str>2);
+				$<cmd>$=new_skip_cmd(ni);
 				if (if_print_stack_cnt==0) if_print_section[0]=0;
 				if (get_curr_report_stack_whytype_1()=='T') {
 					if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=(int)n;
 				}
 			} else {
-				if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by(n); }
+				if (rep_type!=REP_TYPE_PDF) { 
+					a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; 
+				} 
+				$<cmd>$=new_skip_by_cmd(n);
 			}
+	}
 	;
 
 
 skip_to_top_cmd : 
-	SKIP_TO_TOP { print_skip_top(); }
+	SKIP_TO_TOP { $<cmd>$=new_command(E_CMD_SKIP_TO_TOP_CMD);}
 ;
-
-/*
-	| FONT_SIZE nval { print_niy("FONT SIZE"); }
-*/
 
 
 skip_by_cmd :  SKIP_BY nval {
@@ -376,31 +555,40 @@ skip_by_cmd :  SKIP_BY nval {
 				a4gl_yyerror("SKIP BY is only in PDF reports");
 				YYERROR;
 			}
-			print_skip_by(n);
+			$<cmd>$=new_skip_by_cmd(n);
 		}
 ;
 
 skip_to_cmd : SKIP_TO nval {
+			double n;
+			n=atof($<str>2);
 			if (rep_type!=REP_TYPE_PDF) {
 				a4gl_yyerror("SKIP TO is only in PDF reports");
 				YYERROR;
 			}
-			print_skip_to($<str>2);
+			$<cmd>$=new_skip_to_cmd(n);
 		}
 
 
 ;
 
 
-opt_rep_expr_list : {strcpy($<str>$,"");}
-	| xrep_expr_list
+opt_rep_expr_list : {$<ptr_list>$=0;}
+	| xrep_expr_list {$<ptr_list>$=$<ptr_list>1;}
 ;
 
-xrep_expr_list: xxrep_expr_list
-	| xrep_expr_list xxrep_expr_list
+xrep_expr_list: xxrep_expr_list {
+		$<ptr_list>$=$<ptr_list>1;
+	}
+	/* | xrep_expr_list xxrep_expr_list {
+		....$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr_list>3);... would need fixing...
+		}
+		*/
 ;
 
-xxrep_expr_list : rep_expr_list opt_print_at 
+xxrep_expr_list : rep_expr_list opt_print_at  {
+		$<ptr_list>$=$<ptr_list>1;
+	}
 ;
 
 opt_print_at : | KW_AT nval {
@@ -408,16 +596,19 @@ opt_print_at : | KW_AT nval {
 }
 ;
 
-print_cmd : PRINT opt_rep_expr_list opt_semi {
+print_cmd : PRINT opt_rep_expr_list opt_semi_b {
 	char wt;
 	doing_a_print=0;
-	print_report_print(0,$<str>3,0);
+
+
+	$<cmd>$=new_print_cmd(	make_fgl_expr_list($<ptr_list>2), $<e_boolean>3);
+
 	if (!isin_command("REPORT")) {
                         a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
                         YYERROR;
 	}
 	wt=get_curr_report_stack_whytype_1();
-	if (strcmp($<str>3,"0")==0) {
+	if ($<e_boolean>3==0) {
 		if (wt=='P'||wt=='p'||wt=='T') { /* Page header or trailer */
 			if (isin_command("WHILE")||isin_command("FOR")) {
 				a4gl_yyerror("You can't print within a loop in a PAGE HEADER or PAGE TRAILER");
@@ -425,9 +616,9 @@ print_cmd : PRINT opt_rep_expr_list opt_semi {
 			}
 		}
 	}
-	if (strcmp($<str>3,"0")==0) {
+	if ($<e_boolean>3==0) {
 			if (if_print_stack_cnt==0) if_print_section[0]=0;
-		if (get_curr_report_stack_whytype_1()=='T') {
+		if (wt=='T') {
 			if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=1;
 		}
 	}
@@ -437,45 +628,50 @@ print_cmd : PRINT opt_rep_expr_list opt_semi {
 
 
 pf_char_or_var:
-	char_or_var
-	| OPEN_BRACKET char_or_var CLOSE_BRACKET {
-		strcpy($<str>$,$<str>2);
+	char_or_var_vl {$<ptr>$=$<ptr>1;}
+	| OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+		$<ptr>$=$<ptr>2;
 	}
 ;
 
 
 print_file_cmd : 
-	PRINT_FILE pf_char_or_var opt_semi { 
+	PRINT_FILE pf_char_or_var opt_semi_b { 
 	add_feature("PRINT_FILE");
 	if (!isin_command("REPORT")) {
                         a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
                         YYERROR;
 	}
-	print_report_print_file($<str>2,$<str>3);
+	$<cmd>$=new_print_file_cmd($<ptr>2, $<e_boolean>3);
 } ;
 
 
 print_img_cmd : 
-	PRINT_IMAGE blob_var img_types opt_scaling opt_semi { 
-	print_expr($<ptr>4);
+	PRINT_IMAGE blob_var img_types opt_scaling opt_semi_b { 
 	if (!isin_command("REPORT")) {
                         a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
                         YYERROR;
 	}
-	print_report_print_img("",$<str>2,$<str>3,$<str>5);
+
+	$<cmd>$=new_print_img_cmd($<ptr>2,
+				chk_expr($<pair_expr>4.s2),
+				chk_expr($<pair_expr>4.s1),$<str>3,$<e_boolean>5);
+		
 } 
 ;
 
 opt_scaling :
-	{ struct expr_str *p;
-		p=A4GL_new_literal_double_str("1.0");
-		$<ptr>$=A4GL_append_expr_expr(p,p);
+	{ 
+		$<pair_expr>$.s1=A4GL_new_literal_double_str("1.0");
+		$<pair_expr>$.s2=A4GL_new_literal_double_str("1.0");
 	}
 	| SCALED_BY fgl_expr_c { 
-			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>2);
+		$<pair_expr>$.s1=$<ptr>2;
+		$<pair_expr>$.s2=$<ptr>2;
 	}
 	| SCALED_BY fgl_expr_c KW_COMMA fgl_expr_c {
-			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>4);
+		$<pair_expr>$.s1=$<ptr>2;
+		$<pair_expr>$.s2=$<ptr>4;
 	}
 ;
 
@@ -487,36 +683,37 @@ img_types :
 ;
 
 
-blob_var :  variable {
-	int vtype;
-	vtype=scan_variable($<str>1);
-	if (vtype!=11&&vtype!=12) {
-	a4gl_yyerror("Only Blobs may be printed...");
-	YYERROR;
-	}
+blob_var :  variable_usage_expression {
+			int vtype;
+			char errbuff[256];
+			vtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1) & DTYPE_MASK;
+			if (vtype==-1) {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			} else {
+			if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
+				a4gl_yyerror("Only Blobs may be printed...");
+				YYERROR;
+			}
+			}
 }
 ;
 
-opt_semi : {
-strcpy($<str>$,"0");
-} | SEMICOLON {
-strcpy($<str>$,"1");
-};
+opt_semi_b : { $<e_boolean>$=EB_FALSE; } | SEMICOLON { $<e_boolean>$=EB_TRUE; };
 
-rep_expr_list : 
-	rep_expr_p {
-	print_report_print(1,0,$<ptr>1);
-	} 
+rep_expr_list : rep_expr_p {
+		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+} 
 | rep_expr_list KW_COMMA rep_expr_p {
-	print_report_print(1,0,$<ptr>3); /* changed from $<str>1 */
+	$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
 }
 ;
 
 rep_expr_p : fgl_expr_c op_wordwrap {
-	if (strcmp($<str>2,"0")==0) {
+	if ($<ptr>2==0) {
 		$<ptr>$=$<ptr>1;
 	} else {
-		$<ptr>$=A4GL_new_expr_wordwrap($<ptr>1,$<str>2);
+		$<ptr>$=A4GL_new_expr_wordwrap($<ptr>1,$<ptr>2);
 	}
 }
 ;
@@ -572,22 +769,33 @@ rep_agg :
 		}
 ;
 
-op_output_section : | OUTPUT output_commands ;
+op_output_section : {$<startrep>$=0;} | OUTPUT output_commands  {
+	                $<startrep>$=malloc(sizeof(startrep));
+                        $<startrep>$->with_page_length=rep_struct.page_length;
+                        $<startrep>$->with_left_margin=rep_struct.left_margin;
+                        $<startrep>$->with_right_margin= rep_struct.right_margin;
+                        $<startrep>$->with_top_margin= rep_struct.top_margin;
+                        $<startrep>$->with_bottom_margin= rep_struct.bottom_margin;
+                        $<startrep>$->with_top_of_page= strdup(rep_struct.top_of_page);
+                        $<startrep>$->towhat=rep_struct.output_mode;
+			$<startrep>$->s1=rep_struct.output_loc;
+}
+;
 
 output_commands : output_command | output_commands output_command;
 
 output_command : 
-  LEFT_MARGIN INT_VALUE {rep_struct.left_margin=atoi($<str>2);}
-| RIGHT_MARGIN INT_VALUE {rep_struct.right_margin=atoi($<str>2);}
-| TOP_MARGIN INT_VALUE {rep_struct.top_margin=atoi($<str>2);}
-| BOTTOM_MARGIN INT_VALUE {rep_struct.bottom_margin=atoi($<str>2);}
-| PAGE_LENGTH INT_VALUE {rep_struct.page_length=atoi($<str>2);}
-| REPORT_TO_PRINTER  { rep_struct.output_mode='P';strcpy(rep_struct.output_loc,"acl_getenv(\"DBPRINT\")");}
-| REPORT_TO CHAR_VALUE {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
-| REPORT_TO variable {rep_struct.output_mode='F';strcpy(rep_struct.output_loc,$<str>2);}
-| REPORT_TO_PIPE CHAR_VALUE {rep_struct.output_mode='P';strcpy(rep_struct.output_loc,$<str>2);}
-| REPORT_TO_PIPE variable {rep_struct.output_mode='P';strcpy(rep_struct.output_loc,$<str>2);}
-| TOP_OF_PAGE CHAR_VALUE {strcpy(rep_struct.top_of_page,$<str>2);}
+  LEFT_MARGIN INT_VALUE 		{rep_struct.left_margin=atoi($<str>2);}
+| RIGHT_MARGIN INT_VALUE 		{rep_struct.right_margin=atoi($<str>2);}
+| TOP_MARGIN INT_VALUE 			{rep_struct.top_margin=atoi($<str>2);}
+| BOTTOM_MARGIN INT_VALUE 		{rep_struct.bottom_margin=atoi($<str>2);}
+| PAGE_LENGTH INT_VALUE 		{rep_struct.page_length=atoi($<str>2);}
+| REPORT_TO_PRINTER  			{rep_struct.output_mode='R';rep_struct.output_loc=A4GL_new_expr_simple(ET_EXPR_REPORT_PRINTER);}
+| REPORT_TO CHAR_VALUE 			{rep_struct.output_mode='F';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2)); }
+| REPORT_TO variable_usage_expression 	{rep_struct.output_mode='F';rep_struct.output_loc=$<ptr>2; }
+| REPORT_TO_PIPE CHAR_VALUE 		{rep_struct.output_mode='P';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));} 
+| REPORT_TO_PIPE variable_usage_expression 	{rep_struct.output_mode='P';rep_struct.output_loc=$<ptr>2;}
+| TOP_OF_PAGE CHAR_VALUE 		{strcpy(rep_struct.top_of_page,$<str>2);}
 ;
 
 pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_command;
@@ -602,7 +810,29 @@ nval: nval_number KW_POINTS {sprintf($<str>$,"-%f",atof($<str>1));}
 nval_number: real_number | INT_VALUE
 ;
 
-pdf_op_output_section : | OUTPUT pdf_output_commands ;
+pdf_op_output_section : {$<pdf_startrep>$=0;} | OUTPUT pdf_output_commands 
+	{
+		$<pdf_startrep>$=malloc(sizeof(pdf_startrep));
+	        $<pdf_startrep>$->towhat=pdf_rep_struct.output_mode;
+         	$<pdf_startrep>$->s1=pdf_rep_struct.output_loc;
+         	$<pdf_startrep>$->with_page_length=pdf_rep_struct.page_length;
+         	$<pdf_startrep>$->with_page_width=pdf_rep_struct.page_width;
+        	$<pdf_startrep>$->with_left_margin=pdf_rep_struct.left_margin;
+        	$<pdf_startrep>$->with_right_margin=pdf_rep_struct.right_margin;
+         	$<pdf_startrep>$->with_top_margin=pdf_rep_struct.top_margin;
+         	$<pdf_startrep>$->with_bottom_margin=pdf_rep_struct.bottom_margin;
+         	$<pdf_startrep>$->fontname=strdup(pdf_rep_struct.font_name);
+        	$<pdf_startrep>$->fontsize=pdf_rep_struct.font_size;
+        	$<pdf_startrep>$->papersize=pdf_rep_struct.paper_size;
+        	$<pdf_startrep>$->pageheadersize=0.0;
+        	$<pdf_startrep>$->firstpageheadersize=0.0;
+         	$<pdf_startrep>$->pagetrailersize=0.0;
+        	$<pdf_startrep>$->isdefault=EB_NOTSET;
+        	$<pdf_startrep>$->ascii_height=EB_NOTSET;
+        	$<pdf_startrep>$->ascii_width=EB_NOTSET;
+
+}
+;
 
 pdf_output_command : 
   LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);A4GL_debug("Left margin=%s\n",$<str>2);}
@@ -627,8 +857,8 @@ pdf_output_command :
 | PAGE_TRAILER_SIZE nval 
 | PAGE_HEADER_SIZE nval 
 | FIRST_PAGE_HEADER_SIZE nval 
-| REPORT_TO CHAR_VALUE {pdf_rep_struct.output_mode='F';strcpy(pdf_rep_struct.output_loc,$<str>2);}
-| REPORT_TO_PIPE CHAR_VALUE {pdf_rep_struct.output_mode='P';strcpy(pdf_rep_struct.output_loc,$<str>2);}
+| REPORT_TO CHAR_VALUE {pdf_rep_struct.output_mode='F';pdf_rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));}
+| REPORT_TO_PIPE CHAR_VALUE {pdf_rep_struct.output_mode='P';pdf_rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));}
 | DEFAULT
 | ASCII_HEIGHT_ALL
 | ASCII_WIDTH_ALL
@@ -636,90 +866,64 @@ pdf_output_command :
 
 
 op_rep_order_by : {
-int a;
-set_rep_no_orderby(1);
-if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
-a=print_order_by_type(2,-1, copy_togenbind('O'));
-sprintf($<str>$,"%d",a);
+	$<report_orderby_section>$=new_report_orderby_section(REPORT_ORDERBY_IMPLICIT, NULL);
 }
 | ORDER KW_BY obind_var_list_ord
 {
-int a;
-set_rep_no_orderby(0);
-add_feature("REPORT_ORDER_BY");
-if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
-expand_ordbind();
-a=print_order_by_type(1,0, copy_togenbind('O'));
-sprintf($<str>$,"%d",a);
-A4GL_debug("Order by Gives :%d\n",a);
+	add_feature("REPORT_ORDER_BY");
+	$<report_orderby_section>$=new_report_orderby_section(REPORT_ORDERBY, $<ptr_list>3);
 }
 | ORDER_EXTERNAL_BY obind_var_list_ord {
-int a;
-set_rep_no_orderby(0);
-if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
-expand_ordbind();
-a=print_order_by_type(2,0, copy_togenbind('O'));
-sprintf($<str>$,"%d",a);
-A4GL_debug("Order by Gives :%d\n",a);
+	$<report_orderby_section>$=new_report_orderby_section(REPORT_ORDERBY_EXTERNAL, $<ptr_list>2);
 }
 ;
 
 
-report_def : REPORT 
-	{ 
-	add_feature("USE_REPORT");
-    if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+rep_or_localrep:  REPORT {$<e_boolean>$=EB_FALSE;} | LOCAL_REPORT {$<e_boolean>$=EB_TRUE;}
+;
 
+report_def : rep_or_localrep
+	{ 
+		add_feature("USE_REPORT");
+		A4GL_clr_extra_warnings();
+    		if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 		rep_type=REP_TYPE_NORMAL; 
 		clr_function_constants (); 
 		clr_variable(); 
+				clr_call_list();
 		lastlineno=yylineno; 
 		init_report_structure(&rep_struct); 
 		}
-	identifier 
+	identifier  atline
 	OPEN_BRACKET
 	{
 		inc_report_cnt();
 		sprintf(curr_func,"%s",$<str>3);
 		ADDMAP_MODULE("Define Report",curr_func);
-	map_report_start(curr_func);
+		map_report_start(curr_func);
 		variable_action(-1,$<str>3,"","","add_function");
 		set_curr_rep_name($<str>3);
-		print_report_1($<str>3);
 		push_blockcommand("REPORT");
 		}
-	op_param_var_list 
-	CLOSE_BRACKET 
-	{
-		lastlineno=yylineno;
+	op_param_var_list CLOSE_BRACKET define_section op_output_section op_rep_order_by  {
+		char errbuff[256];
+			struct variable_list v;
+			add_report_definition($<str>3,$<ptr_list>7);
+                        set_variables(&v,'L');
+			if (!check_parameters(errbuff,&v, $<ptr_list>7)) {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			}
+			 inc_var_assigned_from_binding_list(expand_parameters(&v,$<ptr_list>7));
+			set_report_orderby(&v, $<ptr_list>7, $<report_orderby_section>11);
 		}
-	define_section 
-	{
-		print_report_2_1();
-		print_variables();
-		}
-	report_section 
-	{
-		struct  binding_comp_list *params;
-		params=copy_togenbind('F');
-		print_report_2_g(0,$<str>11,order_asc_desc,params, copy_togenbind('O'));
-		add_report_definition($<str>3,params);
-	start_bind('o',0);
-	start_bind('i',0);
-		rordcnt=atoi($<str>11);
-	 A4GL_debug("SET rordcnt=%d %s",rordcnt,$<str>11);
-		}
-	format_section 
-	{
-		print_report_ctrl();
-		}
-
-	END_REPORT 
-	{
+	format_section END_REPORT 
+		{
 		pop_blockcommand("REPORT");
- 	A4GL_chk_and_clr_labels();
-		print_report_end() ;
-	map_report_end();
+ 			A4GL_chk_and_clr_labels();
+			map_report_end();
+                	$<module_entry>$=new_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<startrep>10, $<report_orderby_section>11, $<report_format_section>13 ,$<integer_val>4) ;
+			set_variables(&$<module_entry>$->module_entry_u.report_definition.variables,'L');
 		}
 ;
 
@@ -736,93 +940,84 @@ rep_where :  { strcpy($<str>$,"");
 
 
 pause_cmd : 
-	PAUSE pause_msg
-{
-if (!in_command("REPORT")) {
-	a4gl_yyerror("PAUSE can only be used in reportes");
-	YYERROR;
-        }
-
-print_pause($<str>2) ;
-}
+	PAUSE pause_msg {
+		if (!in_command("REPORT")) {
+			a4gl_yyerror("PAUSE can only be used in reportes");
+			YYERROR;
+        		}
+		$<cmd>$=new_pause_cmd($<ptr>2);
+	}
 
 ;
 
-pause_msg : {strcpy($<str>$,"\"\"");}
-	|
-	var_or_char 
+pause_msg : {$<ptr>$=0;}
+	| char_or_var_vl {$<ptr>$=$<ptr>1;}
 ;
 
-pdf_report_def : 
-PDF_REPORT 
-{
-    if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 
-rep_type=REP_TYPE_PDF;
-clr_function_constants();
-clr_variable(); 
-lastlineno=yylineno; 
-pdf_init_report_structure(&pdf_rep_struct);
-}
-identifier OPEN_BRACKET
-{
-inc_report_cnt();
-variable_action(-1,$<str>3,"","","add_function");
-sprintf(curr_func,"%s",$<str>3);
-ADDMAP_MODULE("Define PDF Report",curr_func);
-set_curr_rep_name($<str>3);
-print_report_1($<str>3);
-push_blockcommand("REPORT");
-}
-op_param_var_list CLOSE_BRACKET 
-{
-lastlineno=yylineno;
-}
-define_section  {
-	print_variables();
-}
-pdf_report_section 
-{
-resize_paper(&pdf_rep_struct);
-	print_report_2_g(1,$<str>11,order_asc_desc,copy_togenbind('F'),copy_togenbind('O'));
-	start_bind('o',0);
-	start_bind('i',0);
-	A4GL_debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);
-	rordcnt=atoi($<str>11);
-}
-format_section 
-{
-print_report_ctrl();
-}
-END_REPORT {
-	pop_blockcommand("REPORT");
-	print_report_end();
-}
+
+pdf_rep_or_localrep:  PDF_REPORT {$<e_boolean>$=EB_FALSE;} | LOCAL_PDF_REPORT {$<e_boolean>$=EB_TRUE;}
 ;
 
-pdf_report_section: pdf_op_output_section op_rep_order_by  { strcpy($<str>$,$<str>2); } ;
+pdf_report_def : pdf_rep_or_localrep {
+				A4GL_clr_extra_warnings();
+    	if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+		rep_type=REP_TYPE_PDF;
+		clr_function_constants();
+		clr_variable(); 
+				clr_call_list();
+		lastlineno=yylineno; 
+		pdf_init_report_structure(&pdf_rep_struct);
+		}
+	identifier atline OPEN_BRACKET
+		{
+		inc_report_cnt();
+		variable_action(-1,$<str>3,"","","add_function");
+		sprintf(curr_func,"%s",$<str>3);
+		ADDMAP_MODULE("Define PDF Report",curr_func);
+		set_curr_rep_name($<str>3);
+		push_blockcommand("REPORT");
+		}
+	op_param_var_list CLOSE_BRACKET define_section  pdf_op_output_section op_rep_order_by  
+		{
+			char errbuff[256];
+			struct variable_list v;
+                	set_variables(&v,'L');
+			if (!check_parameters(errbuff,&v, $<ptr_list>7)) {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			}
+			set_report_orderby(&v, $<ptr_list>7, $<report_orderby_section>11);
+			resize_paper(&pdf_rep_struct);
+			//start_bind('o',0);
+			//start_bind('i',0);
+		}
+	format_section END_REPORT { 
+		pop_blockcommand("REPORT"); 
+                $<module_entry>$=new_pdf_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<pdf_startrep>10, $<report_orderby_section>11, $<report_format_section>13,$<integer_val>4 ) ;
+			set_variables(&$<module_entry>$->module_entry_u.pdf_report_definition.variables,'L');
+
+		
+
+		
+	}
+;
 
 
 pdf_functions :
-	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE KW_COMMA {new_counter();
-   		ADDMAP("CALL",$<str>3);
-   		}
-   		opt_func_call_args
-   		{
-		sprintf($<str>$,"%d",get_counter_val());drop_counter();
-		}
-   		CLOSE_BRACKET opt_return
-   		{
-			print_pdf_call_g($<str>3,$<ptr_list>6,$<str>7,$<binding_comp_list>9);
-			 start_bind('i',0);
+	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE KW_COMMA opt_func_call_args CLOSE_BRACKET opt_return {
+   				ADDMAP("CALL",$<str>3);
+		                $<ptr>$=A4GL_new_expr_pdf_fcall($<str>3,$<ptr_list>5,infilename,lastlineno,get_namespace($<str>3));
+                		$<cmd>$=new_pdf_call_cmd(chk_expr($<ptr>$),$<ptr_list>7);
+                		//start_bind('i',0);
    		}
 ;
 
 op_wordwrap:
-	{strcpy($<str>$,"0");}
- 	| KW_WORDWRAP { strcpy($<str>$,"_rep.right_margin"); }
-	| KW_WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
-	| KW_WORDWRAP RIGHT_MARGIN variable { sprintf($<str>$,"%s",$<str>3); }
+	{$<ptr>$=0;} 
+ 	| KW_WORDWRAP { $<ptr>$=A4GL_new_literal_long_long(0);} // @ FIXME - use default right margin
+	| KW_WORDWRAP RIGHT_MARGIN INT_VALUE { $<ptr>$=A4GL_new_literal_long_long(atoi($<str>3));} 
+	| KW_WORDWRAP RIGHT_MARGIN variable_usage_expression { $<ptr>$=$<ptr>3; }
 ;
 
 /* ============================ report.rule ========================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.128 2008-01-23 18:17:28 mikeaubury Exp $
+# $Id: lexer.c,v 1.129 2008-02-11 17:13:06 mikeaubury Exp $
 #*/
 
 /**
@@ -110,6 +110,8 @@ int word_cnt = 0;
 char yyline[10000] = "";		/* Current line read so far, incl. CR/LF */
 int yyline_len = 0;		/* Length of current line */
 long yyline_fpos = 0;		/* FIle position of start of current line */
+int token_read_on_line=0;
+int token_read_on_col=0;
 
 
 char *lastword;
@@ -128,9 +130,9 @@ struct translate_string
 };
 
 //int is_builtin_func (char *s);
-char *get_namespace (char *s);
+//char *get_namespace (char *s);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
-char namespace[256] = "aclfgl_";
+//char namespace[256] = "aclfgl_";
 
 #define NEWLIST
 /* Extern reserved words table */
@@ -448,7 +450,7 @@ read_word2 (FILE * f, int *t)
 		{
 		  break;
 		}
-	      ccat (word, a, instrs || instrd);
+      		ccat (word, a, instrs || instrd);
 	      a = mja_fgetc (f);
 	    }
 	  *t = CLINE;
@@ -577,8 +579,10 @@ read_word2 (FILE * f, int *t)
 	    }
 	  if (strlen (word) > 0)
 	    return word;
-	  else
+	  else {
+                token_read_on_line++;
 	    continue;
+		}
 	}
 
 
@@ -726,6 +730,7 @@ read_word (FILE * f, int *t)
   char *ptr;
   char *s2;
 
+ token_read_on_line=yylineno;
   ptr = read_word2 (f, t);
   if (*t == CHAR_VALUE)
     {
@@ -1012,13 +1017,14 @@ chk_word (FILE * f, char *str)
   char *p;
   int t;
   char buff[1024];
+  char trimmed[1024];
 
   /* read the next word from the 4GL source file */
   p = read_word (f, &t);
   set_yytext(p);
 
-
-
+  strcpy(trimmed,p);
+  A4GL_trim(trimmed);
 
 
   A4GL_debug ("chk_word: read_word returns %s\n", p);
@@ -1031,8 +1037,8 @@ chk_word (FILE * f, char *str)
    * and ends with the word 'endcode'.
    */
 
-  if ((A4GL_aubit_strcasecmp (p, "--!code") == 0
-       || A4GL_aubit_strcasecmp (p, "code") == 0)
+  if ((A4GL_aubit_strcasecmp (trimmed, "--!code") == 0
+       || A4GL_aubit_strcasecmp (trimmed, "code") == 0)
       && (xccode == 0) && (A4GL_mja_strncmp (yyline, p, strlen (p)) == 0))
     {
       xccode = 1;
@@ -1047,14 +1053,14 @@ chk_word (FILE * f, char *str)
 
   if (t == TYPE_EOF && xccode)
     {
-      FPRINTF (stderr, "Unexpected end of file - no endcode\n");
+      FPRINTF (stderr, "Unexpected end of file - no endcode (xccode=%d)\n",xccode);
       exit (1);
     }
 
-  if (xccode && (A4GL_aubit_strcasecmp (p, "endcode") == 0
-		 || A4GL_aubit_strcasecmp (p, "--!endcode") == 0
-		 || A4GL_aubit_strcasecmp (p, "--!end code") == 0
-		 || A4GL_aubit_strcasecmp (p, "end code") == 0))
+  if (xccode && (A4GL_aubit_strcasecmp (trimmed, "endcode") == 0
+		 || A4GL_aubit_strcasecmp (trimmed, "--!endcode") == 0
+		 || A4GL_aubit_strcasecmp (trimmed, "--!end code") == 0
+		 || A4GL_aubit_strcasecmp (trimmed, "end code") == 0))
     {
       xccode = 0;
       return KW_CEND;
@@ -1582,7 +1588,7 @@ turn_state (int kw, int v)
 }
 
 
-
+#ifdef MOVED
 /**
  *
  * @param s
@@ -1610,9 +1616,10 @@ get_namespace (char *s)
 //printf("%s\n",namespace);
   return namespace;
 }
+#endif
 
 
-
+#ifdef MOVED
 
 /**
  *
@@ -1631,7 +1638,7 @@ is_builtin_func (char *s)
     }
   return 0;
 }
-
+#endif
 
 
 
@@ -1690,6 +1697,7 @@ int is_sql_kw(int a) {
 	if (a==CLOSE_SQUARE) return 1;
 	if (a==OPEN_BRACKET) return 1;
 	if (a==DOLLAR) return 1;
+	if (a==KW_MULTIPLY) return 1;
 	if (a==KW_DOT) return 1;
 	if (a==NAMED_GEN) return 1;
 	if (a==END_SQL) return 1;

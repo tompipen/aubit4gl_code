@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.13 2007-05-30 13:44:29 mikeaubury Exp $
+# $Id: dump.c,v 1.14 2008-02-11 17:13:09 mikeaubury Exp $
 #*/
 
 /**
@@ -61,7 +61,7 @@ struct report this_report;
 =====================================================================
 */
 
-void dump_command (struct command *cmd);
+void dump_command (struct acerep_command *cmd);
 void decode_expr (struct expr *e);
 void print_variable (int a,struct expr *e1, struct expr *e2);
 void decode_for (struct cmd_for *cmd);
@@ -73,9 +73,9 @@ void decode_pause (struct cmd_pause *cmd);
 void decode_skip (struct cmd_skip *cmd);
 void decode_print (struct cmd_print *cmd);
 void decode_printfile (struct cmd_printfile *cmd);
-void decode_block (struct commands *cmd);
+void decode_block (struct acerep_commands *cmd);
 void decode_call (struct cmd_call *cmd);
-void dump_commands (struct commands *cmd);
+void dump_commands (struct acerep_commands *cmd);
 char *decode_column (struct format *f);
 void dump_format (void);
 void print_lvl (void);
@@ -598,7 +598,7 @@ decode_let (struct cmd_let *cmd)
   printf ("LET ");
   print_variable (cmd->varid,NULL,NULL);
   printf ("=");
-  decode_expr (&cmd->value);
+  decode_expr (cmd->value);
   printf ("\n");
 }
 
@@ -667,7 +667,7 @@ decode_printfile (struct cmd_printfile *cmd)
  * @todo Describe function
  */
 void
-decode_block (struct commands *cmd)
+decode_block (struct acerep_commands *cmd)
 {
   int a;
   printf ("BEGIN\n");
@@ -694,7 +694,7 @@ decode_call (struct cmd_call *cmd)
  * @todo Describe function
  */
 void
-dump_command (struct command *cmd)
+dump_command (struct acerep_command *cmd)
 {
   int a;
   a = cmd->cmd_type;
@@ -703,37 +703,37 @@ dump_command (struct command *cmd)
   switch (a)
     {
     case CMD_FOR:
-      decode_for (&cmd->command_u.cmd_for);
+      decode_for (&cmd->acerep_command_u.cmd_for);
       break;
     case CMD_IF:
-      decode_if (&cmd->command_u.cmd_if);
+      decode_if (&cmd->acerep_command_u.cmd_if);
       break;
     case CMD_WHILE:
-      decode_while (&cmd->command_u.cmd_while);
+      decode_while (&cmd->acerep_command_u.cmd_while);
       break;
     case CMD_LET:
-      decode_let (&cmd->command_u.cmd_let);
+      decode_let (&cmd->acerep_command_u.cmd_let);
       break;
     case CMD_NEED:
-      decode_need (&cmd->command_u.cmd_need);
+      decode_need (&cmd->acerep_command_u.cmd_need);
       break;
     case CMD_PAUSE:
-      decode_pause (&cmd->command_u.cmd_pause);
+      decode_pause (&cmd->acerep_command_u.cmd_pause);
       break;
     case CMD_SKIP:
-      decode_skip (&cmd->command_u.cmd_skip);
+      decode_skip (&cmd->acerep_command_u.cmd_skip);
       break;
     case CMD_PRINT:
-      decode_print (&cmd->command_u.cmd_print);
+      decode_print (&cmd->acerep_command_u.cmd_print);
       break;
     case CMD_PRINTFILE:
-      decode_printfile (&cmd->command_u.cmd_printfile);
+      decode_printfile (&cmd->acerep_command_u.cmd_printfile);
       break;
     case CMD_BLOCK:
-      decode_block (&cmd->command_u.commands);
+      decode_block (&cmd->acerep_command_u.acerep_commands);
       break;
     case CMD_CALL:
-      decode_call (&cmd->command_u.cmd_call);
+      decode_call (&cmd->acerep_command_u.cmd_call);
       break;
     }
   lvl--;
@@ -744,7 +744,7 @@ dump_command (struct command *cmd)
  * @todo Describe function
  */
 void
-dump_commands (struct commands *cmd)
+dump_commands (struct acerep_commands *cmd)
 {
   int a;
   for (a = 0; a < cmd->commands.commands_len; a++)

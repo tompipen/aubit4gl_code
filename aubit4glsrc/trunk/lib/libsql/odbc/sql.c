@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.201 2007-12-04 13:28:22 mikeaubury Exp $
+# $Id: sql.c,v 1.202 2008-02-11 17:13:13 mikeaubury Exp $
 #
 */
 
@@ -1808,9 +1808,11 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
         use_extended_fetch = 0;
         if (A4GL_chk_getenv ("EXTENDED_FETCH", TRUE))
             use_extended_fetch = 1;
+
 	if (A4GL_chk_getenv("ALWAYS_EXTENDED_FETCH",TRUE)) {
             		use_extended_fetch = 2;
-		}
+	}
+
         if (strcmp ("INGRES", A4GLSQL_dbms_dialect ()) == 0)
             use_extended_fetch = 0;
     }

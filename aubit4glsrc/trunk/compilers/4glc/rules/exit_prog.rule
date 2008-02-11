@@ -6,13 +6,17 @@
 
 
 exit_prog_cmd :
-EXIT_PROGRAM {
-	add_feature("EXIT_PROGRAM");
-	print_exit_program(0);
+	EXIT_PROGRAM atline {
+		add_feature("EXIT_PROGRAM");
+		set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_exit_prog_cmd(chk_expr(A4GL_new_literal_long_str("0")));
+		
 } 
-| EXIT_PROGRAM fgl_expr_c {
-	add_feature("EXIT_PROGRAM_EXPR");
-	print_exit_program($<ptr>2);
+| EXIT_PROGRAM atline fgl_expr_c {
+		add_feature("EXIT_PROGRAM_EXPR");
+		set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_exit_prog_cmd(chk_expr($<ptr>3));
+		
 } 
 ;
 

@@ -256,7 +256,7 @@ void replace_param (struct module *mptr, int from, int to)
 	  struct cmd *c;
 	  c = &mptr->functions.functions_val[a].cmds.cmds_val[b];
 
-	  switch (c->cmd_type)
+	  switch (c->npcode_cmd_type)
 	    {
 
 	    case CMD_CALL:
@@ -429,7 +429,7 @@ optimize ()
       // First pass - generate our list of old -> new pointers...
       for (b = 0; b < func->cmds.cmds_len; b++)
 	{
-	  if (func->cmds.cmds_val[b].cmd_type == CMD_NOP)
+	  if (func->cmds.cmds_val[b].npcode_cmd_type == CMD_NOP)
 	    {
 	      old_pc_to_new_pc[b] = b - pcoff;
 	      pcoff++;
@@ -456,7 +456,7 @@ optimize ()
 
 // Ok - we know they're are some no-ops there - shuffle them out of the way...
       for (b = 0; b < func->cmds.cmds_len; b++)
-	if (func->cmds.cmds_val[b].cmd_type != CMD_NOP)
+	if (func->cmds.cmds_val[b].npcode_cmd_type != CMD_NOP)
 	  {
 	    int new_offset;
 	    new_offset = old_pc_to_new_pc[b];
@@ -478,7 +478,7 @@ optimize ()
 		    sizeof (struct cmd));
 
 	    // Some commands point to PCs or relative PCs - fix them too...
-	    if (cmds[new_offset].cmd_type == CMD_IF)
+	    if (cmds[new_offset].npcode_cmd_type == CMD_IF)
 	      {
 		cmds[new_offset].cmd_u.c_if->goto_true =
 		  old_pc_to_new_pc[b +
@@ -490,7 +490,7 @@ optimize ()
 				   goto_false] - new_offset;
 	      }
 
-	    if (cmds[new_offset].cmd_type == CMD_GOTO_PC)
+	    if (cmds[new_offset].npcode_cmd_type == CMD_GOTO_PC)
 	      {
 		cmds[new_offset].cmd_u.c_goto_pc =
 		  old_pc_to_new_pc[b + cmds[new_offset].cmd_u.c_goto_pc] -
@@ -518,7 +518,7 @@ optimize ()
 	  free (o);
 	  for (b = 0; b < func->cmds.cmds_len; b++)
 	    {
-	      if (func->cmds.cmds_val[b].cmd_type == CMD_NULL)
+	      if (func->cmds.cmds_val[b].npcode_cmd_type == CMD_NULL)
 		{
 		  fprintf (stderr,"Something went wrong with %d\n", b);
 		  exit (54);

@@ -1,15 +1,56 @@
-run_cmd : KW_RUN fgl_expr_c  				{ map_run($<ptr>2); print_system_run($<ptr>2,0,0); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c run_mode 			{ map_run($<ptr>2); print_system_run($<ptr>2,$<integer_val>3,0); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c RETURNING variable 		{ map_run($<ptr>2); print_system_run($<ptr>2,1,$<str>4); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c WITHOUT_WAITING 		{ map_run($<ptr>2); print_system_run($<ptr>2,2,0); add_feature("RUN");}
-	| KW_RUN fgl_expr_c run_mode RETURNING variable { map_run($<ptr>2); print_system_run($<ptr>2,1+$<integer_val>3,$<str>5); add_feature("RUN");} 
-	| KW_RUN fgl_expr_c run_mode WITHOUT_WAITING 	{ map_run($<ptr>2); print_system_run($<ptr>2,2+$<integer_val>3,0); add_feature("RUN");}
-	| KW_RUN fgl_expr_c WAIT 			{ map_run($<ptr>2); print_system_run($<ptr>2,0,0); add_feature("RUN");}
-	| KW_RUN fgl_expr_c EXIT 			{ map_run($<ptr>2); print_system_run($<ptr>2,0,0); add_feature("RUN");}
+run_cmd : KW_RUN fgl_expr_c  				{ 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_TRUE, ERM_NOT_SET, NULL);
+			map_run($<ptr>2); 
+			add_feature("RUN");} 
+	| KW_RUN fgl_expr_c run_mode 			{ 
+			map_run($<ptr>2); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_TRUE, $<integer_val>3, NULL);
+			
+			add_feature("RUN");} 
+	| KW_RUN fgl_expr_c RETURNING ensured_variable_usage_expression 		{ 
+			//struct binding_comp_list *x;
+			//x=add_genbind(NULL,$<str>4,"o");
+			map_run($<ptr>2); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_TRUE, ERM_NOT_SET, $<ptr>4);
+			
+			add_feature("RUN");} 
+	| KW_RUN fgl_expr_c WITHOUT_WAITING 		{ 
+			map_run($<ptr>2); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_FALSE, ERM_NOT_SET, NULL);
+			
+			add_feature("RUN");}
+	| KW_RUN fgl_expr_c run_mode RETURNING ensured_variable_usage_expression { 
+			/* struct binding_comp_list *x; x=add_genbind(NULL,$<str>5,"o"); */
+			map_run($<ptr>2); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_TRUE, $<integer_val>3, $<ptr>5);
+			
+			add_feature("RUN");} 
+	| KW_RUN fgl_expr_c run_mode WITHOUT_WAITING 	{ 
+			map_run($<ptr>2); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_FALSE, $<integer_val>3, NULL);
+			
+			add_feature("RUN");
+	}
+	| KW_RUN fgl_expr_c WAIT 			{ 
+			map_run($<ptr>2); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_FALSE,ERM_NOT_SET, NULL);
+			
+			add_feature("RUN");
+	}
+	| KW_RUN fgl_expr_c EXIT 			{ 
+			map_run($<ptr>2); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>2),EB_FALSE,ERM_NOT_SET, NULL);
+			
+			add_feature("RUN");
+	}
 ;
 
 run_mode : 
-	 IN_FORM_MODE {$<integer_val>$=512;}
-	| IN_LINE_MODE {$<integer_val>$=256;}
+	 IN_FORM_MODE {
+			$<integer_val>$=ERM_FORM_MODE;
+	}
+	| IN_LINE_MODE {
+			$<integer_val>$=ERM_LINE_MODE;
+	}
 ;
 	

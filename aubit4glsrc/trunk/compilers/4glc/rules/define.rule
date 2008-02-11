@@ -14,6 +14,10 @@ define_multiple :
 	|	define_multiple define_set {file_out_nl("dms");}
 ;
 
+opt_semi: 
+	| SEMICOLON
+;
+
 
 define_set :
 		DEFINE {
@@ -333,19 +337,20 @@ dtype :
 			add_feature("DEFINE_INTEGER");
 		} 
 	|	SERIAL {
-		A4GL_warn("Use of SERIAL as a 4GL datatype is not portable");
+			A4GL_warn("Use of SERIAL as a 4GL datatype is not portable");
 		   push_type("long",0,0);
 			add_feature("DEFINE_SERIAL");
 		} 
-	|	INTEGER8 {
-		   push_type("int8",0,0);
-			add_feature("DEFINE_INTEGER");
-		} 
-	|	SERIAL8 {
-		A4GL_warn("Use of SERIAL as a 4GL datatype is not portable");
-		   push_type("serial8",0,0);
-			add_feature("DEFINE_SERIAL");
-		} 
+	|       INTEGER8 {
+                   push_type("int8",0,0);
+                        add_feature("DEFINE_INTEGER");
+                }
+        |       SERIAL8 {
+                A4GL_warn("Use of SERIAL as a 4GL datatype is not portable");
+                   push_type("serial8",0,0);
+                        add_feature("DEFINE_SERIAL");
+                }
+
 	|	KW_AS define_ident {
 		    A4GL_debug("Using specified type...");
 			if (find_dim($<str>2)) {

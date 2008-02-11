@@ -28,4 +28,4 @@ A4GL_lexer_get_hashed_list int arr -> void*
 A4GL_lexer_import_package char* s -> void
 A4GL_lexer_find_type char* s  -> int
 A4GL_lexer_parsed_fgl -> void
-do_print_declare_associate_1  char* var char* size char* n -> void
+*do_print_declare_associate_1  char* var char* size char* n -> void

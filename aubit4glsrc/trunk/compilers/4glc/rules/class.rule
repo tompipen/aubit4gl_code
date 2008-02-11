@@ -1,46 +1,8 @@
 class_definition:
-	KW_CLASS identifier { 
-		char buff[256];
-		if (class_cnt!=0) {
-			a4gl_yyerror("Only a single class can be defined in any single module");
-			}
-
-		set_4gl_vars();
-                set_current_variable_scope('g'); print_variables (); 
-		set_current_variable_scope('G'); print_variables (); 
-		set_current_variable_scope('m'); print_variables ();
- 		print_module_variable_init();
-                set_current_variable_scope('m');
-
-
-		printf("CLASS NAME : %s FILENAME %s\n",$<str>2,infilename);
-		CLASS_set_class_name($<str>2);
-
-		set_current_variable_scope('C'); 
-
-		printf("Pushing THIS as a new record\n");
-		class_cnt++;
-		variable_action (-1, "THIS", "", "", "a4gl_add_variable");
-		push_record();in_record++;
-		sprintf(buff,"\"%s\"",$<str>2);
-		variable_action (-1, "_class_name", buff, "c", "add_constant");
-		} 
-	op_extends  { 
-		char buff[256];
-		printf("Calling read_class (%s,1)\n",$<str>4);  
-		sprintf(buff,"\"%s\"",$<str>4);
-		variable_action (-1, "_parent_name", buff, "c", "add_constant");
-	}
-	define_section { 
-		pop_record();in_record--;
-		read_class($<str>4,1); 
-		print_variables(); 
-		class_set_parent();
-		} 
-	class_entries END_CLASS  {
-		class_cnt++; 
-		CLASS_print_reflector();
-		dump_class();
+	KW_CLASS identifier op_extends define_section  {
+			new_class($<str>2,$<str>3);
+		} class_entries END_CLASS   {
+			add_class_module_entry();
 		}
 
 ;
@@ -48,26 +10,22 @@ class_definition:
 
 op_extends:
 	{
-	static char buff[256];
-		strcpy(buff,"default_object");
-		CLASS_set_parent_name(buff);
-		strcpy($<str>$,buff);
-	} | EXTENDS identifier {
-		CLASS_set_parent_name($<str>2);
+		strcpy($<str>$,"");
+	} | KW_EXTENDS identifier {
+		/* Should probably read the parent definition here... */
 		strcpy($<str>$,$<str>2);
 	}
 ;
 
 
 class_entries :
-	class_entry
+	class_entry 
 	| class_entries class_entry
 ;
 
 
-class_entry: func_def
-| module_code
-| whenever_cmd
-
+class_entry: func_def {add_class_entry($<module_entry>1);}
+| module_code {add_class_entry($<module_entry>1);}
+| whenever_cmd {add_class_entry($<module_entry>1);}
 ;
 

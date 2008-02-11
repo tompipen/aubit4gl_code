@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.20 2007-05-18 13:03:39 mikeaubury Exp $
+# $Id: Makefile,v 1.21 2008-02-11 17:13:10 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -54,9 +54,6 @@ ALL_H   =$(wildcard ${ROOT}/incl/*.h)
 
 LIBAUBIT4GL_PATH    =libaubit4gl
 LIBSQLODBC_PATH     =libsql/odbc
-LIBMENUXDR_PATH		=libmenu/menu_xdr
-LIBMENUNOMENU_PATH	=libmenu/menu_nomenu
-LIBMENUGENERIC_PATH	=libmenu/menu_generic
 
 LIBPACKERPACKED_PATH=libpacker/packed
 LIBPACKERMEMPACKED_PATH=libpacker/mempacked
@@ -142,12 +139,6 @@ LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*
 					$(wildcard ${LIBSQLPG_PATH}/*.c) $(wildcard ${LIBSQLPG_PATH}/Makefile) ${ALL_H}
 LIBSQLODBC_DEPS     =$(wildcard ${LIBSQLODBC_PATH}/*.c) $(wildcard ${LIBSQLODBC_PATH}/*.h) \
 					$(wildcard ${LIBSQLODBC_PATH}/Makefile) ${ALL_H}
-LIBMENUXDR_DEPS		=$(wildcard ${LIBMENUXDR_PATH}/*.c) $(wildcard ${LIBMENUXDR_PATH}/*.h) \
-					$(wildcard ${LIBMENUXDR_PATH}/Makefile) ${ALL_H}
-LIBMENUNOMENU_DEPS	=$(wildcard ${LIBMENUNOMENU_PATH}/*.c) $(wildcard ${LIBMENUNOMENU_PATH}/*.h) \
-					$(wildcard ${LIBMENUNOMENU_PATH}/Makefile) ${ALL_H}
-LIBMENUGENERIC_DEPS	=$(wildcard ${LIBMENUGENERIC_PATH}/*.c) $(wildcard ${LIBMENUGENERIC_PATH}/*.h) \
-					$(wildcard ${LIBMENUGENERIC_PATH}/Makefile) ${ALL_H}
 LIBPACKERPACKED_DEPS=$(wildcard ${LIBPACKERPACKED_PATH}/*.c) $(wildcard ${LIBPACKERPACKED_PATH}/*.h) \
 					$(wildcard ${LIBPACKERPACKED_PATH}/Makefile) ${ALL_H}
 
@@ -335,17 +326,6 @@ ${PLUGINDIR}/libFORM_XDR${SO_EXT} : ${LIBFORMXDR_DEPS}
 ${PLUGINDIR}/libFORM_GENERIC${SO_EXT}: ${LIBFORMGENERIC_DEPS}
 	${MAKE} -C ${LIBFORMGENERIC_PATH}
 
-##############
-#libMENU_
-
-${PLUGINDIR}/libMENU_NOMENU${SO_EXT} : ${LIBMENUNOMENU_DEPS}
-	${MAKE} -C ${LIBMENUNOMENU_PATH}
-
-${PLUGINDIR}/libMENU_GENERIC${SO_EXT} : ${LIBMENUGENERIC_DEPS}
-	${MAKE} -C ${LIBMENUGENERIC_PATH}
-
-${PLUGINDIR}/libMENU_XDR${SO_EXT} : ${LIBMENUXDR_DEPS}
-	${MAKE} -C ${LIBMENUXDR_PATH}
 
 ##############
 #libREPORT_
@@ -541,8 +521,8 @@ ${PLUGINDIR}/libEXDTYPE_mpz${SO_EXT}: ${LIBEXDATA_DEPS}
 ##############
 #libDATA_ & libXDRPACKER_
 
-${PLUGINDIR}/libDATA_menu_list${SO_EXT} ${PLUGINDIR}/libDATA_struct_form${SO_EXT} ${PLUGINDIR}/libDATA_report${SO_EXT}\
-${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT} ${PLUGINDIR}/libXDRPACKER_menu_list${SO_EXT} \
+${PLUGINDIR}/libDATA_struct_form${SO_EXT} ${PLUGINDIR}/libDATA_report${SO_EXT}\
+${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT}  \
 ${PLUGINDIR}/libXDRPACKER_report${SO_EXT}: ${LIBDATA_DEPS}
 	${MAKE} -C ${LIBDATA_PATH}
 
@@ -652,7 +632,7 @@ ${FCOMPILE}:
 clean.all: clean
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.librpc clean.libroot \
-	clean.other clean.libui clean.libmenu clean.libform clean.libpacker \
+	clean.other clean.libui clean.libform clean.libpacker \
 	clean.cint clean.liblogical clean.plugindir
 
 #FIXME; this targets are not cleaned from plugindir:
@@ -697,10 +677,6 @@ clean.librpc:
 	${MAKE} -C ${LIBRPCNORPC_PATH} clean
 	${MAKE} -C ${LIBRPCSUNRPC_PATH} clean
 
-clean.libmenu:
-	${MAKE} -C ${LIBMENUNOMENU_PATH} clean
-	${MAKE} -C ${LIBMENUGENERIC_PATH} clean
-	${MAKE} -C ${LIBMENUXDR_PATH} clean
 
 clean.libform:
 	${MAKE} -C ${LIBFORMGENERIC_PATH} clean

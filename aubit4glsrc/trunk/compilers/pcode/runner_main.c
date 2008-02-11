@@ -190,7 +190,7 @@ First things first - initialize our block
 this should be the first thing in our function, always @ PC=0
 */
   c = &this_module_ptr->functions.functions_val[func_no].cmds.cmds_val[pc];
-  if (c->cmd_type != CMD_BLOCK)
+  if (c->npcode_cmd_type != CMD_BLOCK)
     {
       fprintf (stderr,
 	       "First thing in a function should always be a block...\n");
@@ -280,10 +280,10 @@ Now we've done our function startup - we can get on with actually running it...
 	}
 
       c = &this_module_ptr->functions.functions_val[func_no].cmds.cmds_val[pc];
-      fprintf (logfile, "%-20.20s %03d\n", cmd_type_str[c->cmd_type], c->cmd_type); fflush(logfile);
+      fprintf (logfile, "%-20.20s %03d\n", cmd_type_str[c->npcode_cmd_type], c->npcode_cmd_type); fflush(logfile);
 
 
-      switch (c->cmd_type)
+      switch (c->npcode_cmd_type)
 	{
 	case CMD_NULL:
 	  pc++;

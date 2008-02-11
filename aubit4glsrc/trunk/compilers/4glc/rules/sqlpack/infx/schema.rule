@@ -6,20 +6,20 @@ drops_statement : drops_c  { $<sql_string>$=make_sql_string_and_free(acl_strdup(
 
 drops_c : DROP_TABLE table_name_not_for_column_prefix {
 			if (A4GLSQLCV_check_requirement("ADD_CASCADE")) {
-				sprintf($<str>$, "DROP TABLE %s CASCADE",$<str>2);
+				SPRINTF1($<str>$, "DROP TABLE %s CASCADE",$<str>2);
 			} else {
-				sprintf($<str>$, "DROP TABLE %s",$<str>2);
+				SPRINTF1($<str>$, "DROP TABLE %s",$<str>2);
 			}
 			add_feature("DROP_TABLE");
 		}
 	| DROP_VIEW table_name_not_for_column_prefix 		{sprintf($<str>$,"%s %s ",$<str>1,$<str>2);
 			add_feature("DROP_VIEW");
 }
-	| DROP_INDEX idx_name 		{sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+	| DROP_INDEX idx_name 		{SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("DROP_INDEX_QUALIFIED_PATH");
 			add_feature("DROP_INDEX");
 }
-	| DROP_TRIGGER identifier 	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+	| DROP_TRIGGER identifier 	{SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);
 			add_feature("DROP_TRIGGER");
 }
 ;
@@ -31,11 +31,12 @@ create_statement_ss : create_c_1  {$<sql_string>$=acl_strdup($<str>1);}
 
 create_c_2_ss  : 
 	CREATE_TABLE table_name_not_for_column_prefix OPEN_BRACKET table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
-		if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-			$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,acl_strdup(" WITH OIDS "),acl_strdup($<str>6),NULL);
-		} else {
-			$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,acl_strdup($<str>6),NULL);
-		}
+                if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
+                        $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,acl_strdup(" WITH OIDS "),acl_strdup($<str>6),NULL);
+                } else {
+                        $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_space,acl_strdup($<str>2),kw_space,kw_ob,$<sql_string>4,kw_cb,acl_strdup($<str>6),NULL);
+                }
+
 		add_feature("CREATE_TABLE");
 	} 
 
@@ -58,16 +59,16 @@ opt_cr_table_extra : {strcpy($<str>$,"");} |
 
 cr_table_extra :
 	cr_table_extra_entry |
-	cr_table_extra cr_table_extra_entry {sprintf($<str>$,"%s%s",$<str>1,$<str>2); }
+	cr_table_extra cr_table_extra_entry {SPRINTF2($<str>$,"%s%s",$<str>1,$<str>2); }
 ;
 
 
 cr_table_extra_entry : 
-	KW_IN space_name {sprintf($<str>$," IN %s",$<str>2);add_feature("CREATE_TABLE_IN");}
-	| EXTENT_SIZE INT_VALUE {sprintf($<str>$," EXTENT SIZE %s",$<str>2); add_feature("CREATE_TABLE_EXTENT_SIZE");}
-	| NEXT_SIZE INT_VALUE {sprintf($<str>$," NEXT SIZE %s",$<str>2); add_feature("CREATE_TABLE_NEXT_SIZE"); }
-	| LOCK_MODE_PAGE {sprintf($<str>$," LOCK MODE PAGE"); add_feature("CREATE_TABLE_LOCK_MODE"); }
-	| LOCK_MODE_ROW {sprintf($<str>$," LOCK MODE ROW"); add_feature("CREATE_TABLE_LOCK_MODE");}
+	KW_IN space_name {SPRINTF1($<str>$," IN %s",$<str>2);add_feature("CREATE_TABLE_IN");}
+	| EXTENT_SIZE INT_VALUE {SPRINTF1($<str>$," EXTENT SIZE %s",$<str>2); add_feature("CREATE_TABLE_EXTENT_SIZE");}
+	| NEXT_SIZE INT_VALUE {SPRINTF1($<str>$," NEXT SIZE %s",$<str>2); add_feature("CREATE_TABLE_NEXT_SIZE"); }
+	| LOCK_MODE_PAGE {SPRINTF0($<str>$," LOCK MODE PAGE"); add_feature("CREATE_TABLE_LOCK_MODE"); }
+	| LOCK_MODE_ROW {SPRINTF0($<str>$," LOCK MODE ROW"); add_feature("CREATE_TABLE_LOCK_MODE");}
 ;
 
 space_name : NAMED;
@@ -76,45 +77,45 @@ op_cr_index_extra: {strcpy($<str>$,"");} | cr_index_extra {strcpy($<str>$,$<str>
 ;
 
 cr_index_extra : cr_index_extra_entry 
-	| cr_index_extra cr_index_extra_entry {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
+	| cr_index_extra cr_index_extra_entry {SPRINTF2($<str>$,"%s%s",$<str>1,$<str>2);}
 ;
 
 cr_index_extra_entry :
-	KW_IN space_name {
-			if (A4GLSQLCV_check_requirement("OMIT_INDEX_IN")) {
-				strcpy($<str>$,"");
-			} else {
-				sprintf($<str>$," IN %s",$<str>2); add_feature("INDEX_IN");
-			}
-	}
-	| FILLFACTOR INT_VALUE {
-			if (A4GLSQLCV_check_requirement("OMIT_INDEX_FILLFACTOR")) {
-				strcpy($<str>$,"");
-			} else {
-				sprintf($<str>$,"FILLFACTOR %s",$<str>2); add_feature("INDEX_FILLFACTOR");
-			}
-	}
-	| USING_BTREE {
-			if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
-				strcpy($<str>$,"");
-			} else {
-				sprintf($<str>$,"USING BTREE"); add_feature("INDEX_BTREE");
-			}
-	}
-	| USING_RTREE {
-			if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
-				strcpy($<str>$,"");
-			} else {
-				sprintf($<str>$,"USING RTREE"); add_feature("INDEX_RTREE");
-			}
-	}
+        KW_IN space_name {
+                        if (A4GLSQLCV_check_requirement("OMIT_INDEX_IN")) {
+                                strcpy($<str>$,"");
+                        } else {
+                                sprintf($<str>$," IN %s",$<str>2); add_feature("INDEX_IN");
+                        }
+        }
+        | FILLFACTOR INT_VALUE {
+                        if (A4GLSQLCV_check_requirement("OMIT_INDEX_FILLFACTOR")) {
+                                strcpy($<str>$,"");
+                        } else {
+                                sprintf($<str>$,"FILLFACTOR %s",$<str>2); add_feature("INDEX_FILLFACTOR");
+                        }
+        }
+        | USING_BTREE {
+                        if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
+                                strcpy($<str>$,"");
+                        } else {
+                                sprintf($<str>$,"USING BTREE"); add_feature("INDEX_BTREE");
+                        }
+        }
+        | USING_RTREE {
+                        if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
+                                strcpy($<str>$,"");
+                        } else {
+                                sprintf($<str>$,"USING RTREE"); add_feature("INDEX_RTREE");
+                        }
+        }
 ;
 
 cr_table_name: table_name_not_for_column_prefix { strcpy(last_tmp_name,$<str>1); } ;
 
 
 create_c_1  : 
-	CREATE_U_IDX idx_name KW_ON cr_table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+	CREATE_U_IDX idx_name KW_ON cr_table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {SPRINTF7($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
@@ -128,9 +129,9 @@ create_c_1  :
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
-		sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+		SPRINTF7($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		} else {
-		sprintf($<str>$,"CREATE UNIQUE CLUSTER INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+		SPRINTF7($<str>$,"CREATE UNIQUE CLUSTER INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		}
 	} 
 	| CREATE_C_IDX idx_name KW_ON cr_table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
@@ -139,47 +140,47 @@ create_c_1  :
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
-			sprintf($<str>$,"CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+			SPRINTF7($<str>$,"CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		} else {
-			sprintf($<str>$,"CREATE CLUSTER INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+			SPRINTF7($<str>$,"CREATE CLUSTER INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		}
 	} 
 	| CREATE_IDX idx_name KW_ON cr_table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 			add_feature("CREATE_INDEX");
-			sprintf($<str>$," CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
+			SPRINTF7($<str>$," CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 	} 
-	| CREATE_DATABASE var_ident {
+	| CREATE_DATABASE var_ident_vl {
 		add_feature("CREATE_DATABASE");
 		a4gl_yyerror("You cannot create a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
-	| DROP_DATABASE var_ident {
+	| DROP_DATABASE var_ident_vl {
 		add_feature("DROP_DATABASE");
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
 	| CREATE_SYNONYM table_name_not_for_column_prefix KW_FOR table_name_not_for_column_prefix { 
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_SYNONYM_QUALIFIED_PATH");
 			add_feature("CREATE_SYNONYM");
-			sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); 
+			SPRINTF3($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); 
 	}
 	| CREATE_AUDIT_FOR table_name_not_for_column_prefix KW_IN CHAR_VALUE { 
 		add_feature("CREATE_AUDIT");
-		sprintf($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4)); 
+		SPRINTF2($<str>$,"CREATE AUDIT FOR %s IN '%s'",$<str>2,A4GL_strip_quotes($<str>4)); 
 	}
 	| DROP_AUDIT_FOR table_name_not_for_column_prefix  { 
 		add_feature("DROP_AUDIT");
-		sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2); }
+		SPRINTF1($<str>$,"DROP AUDIT FOR %s",$<str>2); }
 	| DROP_SYNONYM table_name_not_for_column_prefix { 
 		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("DROP_SYNONYM_QUALIFIED_PATH");
 		add_feature("DROP_SYNONYM");
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2); }
+		SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2); }
 	| RECOVER_TABLE table_name_not_for_column_prefix { 
 		add_feature("RECOVER_TABLE");
-		sprintf($<str>$,"RECOVER TABLE %s",$<str>2); }
-	| ROLLFORWARD_DATABASE var_ident_qchar { 
+		SPRINTF1($<str>$,"RECOVER TABLE %s",$<str>2); }
+	| ROLLFORWARD_DATABASE identifier { 
 		add_feature("ROLLFORWARD_DATABASE");
-		sprintf($<str>$,"ROLLFORWARD DATABASE %s",$<str>2); }
+		SPRINTF1($<str>$,"ROLLFORWARD DATABASE %s",$<str>2); }
 ;
 
 
@@ -190,7 +191,7 @@ op_no_log : {strcpy($<str>$,"");}
 		if (A4GLSQLCV_check_requirement("OMIT_NO_LOG")) {
 			strcpy($<str>$,"");
 		} else {
-			sprintf($<str>$," %s ",$<str>1);
+			SPRINTF1($<str>$," %s ",$<str>1);
 		}
 	}
 ;
@@ -201,7 +202,7 @@ op_no_log_i : {$<integer_val>$=0;}
 
 idx_column_list : 
 		idx_column 
-		| idx_column_list KW_COMMA idx_column {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+		| idx_column_list KW_COMMA idx_column {SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 idx_column : 
@@ -209,18 +210,18 @@ idx_column :
 		add_feature("CREATE_INDEX_ASC");
 		strcpy($<str>$,A4GL_confirm_colname(last_tmp_name,$<str>1));
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_ORDER")) {
-			sprintf($<str>$,"%s",$<str>1);
+			SPRINTF1($<str>$,"%s",$<str>1);
 		} else {
-			sprintf($<str>$,"%s ASC",$<str>1);
+			SPRINTF1($<str>$,"%s ASC",$<str>1);
 		}
 }
 | identifier DESC {
 		add_feature("CREATE_INDEX_DESC");
 		strcpy($<str>$,A4GL_confirm_colname(last_tmp_name,$<str>1));
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_ORDER")) {
-			sprintf($<str>$,"%s",$<str>1);
+			SPRINTF1($<str>$,"%s",$<str>1);
 		} else {
-			sprintf($<str>$,"%s DESC",$<str>1);
+			SPRINTF1($<str>$,"%s DESC",$<str>1);
 		}
 }
 | identifier {
@@ -234,16 +235,16 @@ table_element_list_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| table_element_list_ss KW_COMMA table_element_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,strdup("\n"),$<sql_string>3,NULL);
 	}
 ;
 	
 table_element_ss:
 	  ct_column_definiton_ss {
-		$<sql_string>$=$<sql_string>1;
+		$<sql_string>$=make_sql_string_and_free(strdup("   "),$<sql_string>1,NULL);
 	}
 	| table_constraint_definition_ss {
-		$<sql_string>$=$<sql_string>1;
+		$<sql_string>$=make_sql_string_and_free(strdup("   "),$<sql_string>1,NULL);
 	}
 	;
 	
@@ -345,10 +346,10 @@ add_column_clauses_ss:
 
 alter_drop_clause:
 	DROP drop_column {
-		sprintf($<str>$,"DROP %s",$<str>2);
+		SPRINTF1($<str>$,"DROP %s",$<str>2);
 	}
 	| DROP OPEN_BRACKET drop_column_list CLOSE_BRACKET {
-		sprintf($<str>$,"DROP (%s)",$<str>3);
+		SPRINTF1($<str>$,"DROP (%s)",$<str>3);
 	}
 ;
 
@@ -356,7 +357,7 @@ alter_drop_clause:
 drop_column_list:
 	drop_column 
 	| drop_column_list KW_COMMA drop_column {
-		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+		SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);
 	}
 ;
 
@@ -396,7 +397,7 @@ alter_lock_mode :
 alter_modify_next :
 	MODIFY_NEXT_SIZE INT_VALUE {
 		add_feature("DDL_NEXT_SIZE");
-		sprintf($<str>$,"MODIFY NEXT SIZE %d",atoi($<str>2));
+		SPRINTF1($<str>$,"MODIFY NEXT SIZE %d",atoi($<str>2));
 	}
 ;
 
@@ -404,11 +405,11 @@ alter_add_constraint_clause:
 
 	ADD_CONSTRAINT table_constraint_definition_ss opt_constraint_name {
 		add_feature("DDL_CONSTRAINT");
-		sprintf($<str>$,"ADD CONSTRAINT %s%s",$<sql_string>2,$<str>3);
+		SPRINTF2($<str>$,"ADD CONSTRAINT %s%s",$<sql_string>2,$<str>3);
 	}
 	| ADD_CONSTRAINT OPEN_BRACKET table_constraint_definition_list_ss CLOSE_BRACKET {
 		add_feature("ADD_CONSTRAINT");
-		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
+		SPRINTF1($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
 	}
 ;
 
@@ -421,20 +422,20 @@ table_constraint_definition_list_ss: table_constraint_definition_ss opt_constrai
 ;
 
 opt_constraint_name : {strcpy($<str>$,"");} 
-		| CONSTRAINT identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2); add_feature("DDL_CONSTRAINT");}
+		| CONSTRAINT identifier {SPRINTF2($<str>$," %s %s",$<str>1,$<str>2); add_feature("DDL_CONSTRAINT");}
 ;
 
 alter_drop_constraint_clause:
 	DROP_CONSTRAINT constraint_names
-		{ sprintf($<str>$,"DROP CONSTRAINT %s",$<str>2); add_feature("DROP_CONSTRAINT"); }
+		{ SPRINTF1($<str>$,"DROP CONSTRAINT %s",$<str>2); add_feature("DROP_CONSTRAINT"); }
 	| DROP_CONSTRAINT OPEN_BRACKET constraint_names CLOSE_BRACKET {add_feature("DROP_CONSTRAINT");
-		sprintf($<str>$,"DROP CONSTRAINT (%s)",$<str>3);
+		SPRINTF1($<str>$,"DROP CONSTRAINT (%s)",$<str>3);
 	}
 ;
 
 constraint_names :
 	constraint_name {strcpy($<str>$,$<str>1);}
-	| constraint_names KW_COMMA constraint_name {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+	| constraint_names KW_COMMA constraint_name {SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 constraint_name: identifier

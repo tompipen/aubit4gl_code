@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.4 2008-01-23 18:17:29 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2008-02-11 17:13:14 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -40,7 +40,8 @@ include ${ROOT}/incl/?4gl.mk
 
 
 A4GL_LEXTYPE=C
-DEBUG=ALL
+
+#DEBUG=ALL
 A4GL_SQLTYPE=nosql
 A4GL_UI=CONSOLE
 
@@ -55,7 +56,6 @@ export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
 #ONLY FOR A LIGHT DEMO AND TO CONFIRM THAT COMPILER WORKS AND IS INSTALLED
 #CORRECTLY - SO WE DON'T WANT TOO MANY PROGRAMS HERE
 DEFAULT	=hello${A4GL_EXE_EXT} hello2${A4GL_EXE_EXT} hello_db${A4GL_EXE_EXT} \
-		testmenu${A4GL_EXE_EXT} testmenu${A4GL_MNU_EXT} \
 		form${A4GL_FRM_EXT} helpfile.hlp  file${A4GL_EXE_EXT}
 
 

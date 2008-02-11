@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.12 2006-07-04 15:17:40 mikeaubury Exp $
+# $Id: menu_gtk.c,v 1.13 2008-02-11 17:13:13 mikeaubury Exp $
 #*/
 
 /**
@@ -64,11 +64,11 @@
 #include "formdriver.h"
 #include "low_gtk.h"
 #include <ctype.h>
-#include "menu_x.x.h"
+//#include "menu_x.x.h"
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu_gtk.c,v 1.12 2006-07-04 15:17:40 mikeaubury Exp $";
+  "$Id: menu_gtk.c,v 1.13 2008-02-11 17:13:13 mikeaubury Exp $";
 #endif
 
 
@@ -144,6 +144,7 @@ A4GL_mn_help (char *s)
   return ptr + 1;
 }
 
+#ifdef DEPRECIATED
 /**
  * Create a menu.
  *
@@ -435,6 +436,6 @@ A4GL_endis_menuitems (int en_dis, ...)
 	}
     }
 }
-
+#endif
 
 /* =================================== EOF ============================= */

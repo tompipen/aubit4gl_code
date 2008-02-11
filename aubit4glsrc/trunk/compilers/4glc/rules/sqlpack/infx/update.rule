@@ -6,229 +6,153 @@
 */
 
 
-update_statement_ss:
-	KW_UPDATE table_name_not_for_column_prefix {
-		/* A4GL_add_crud("UPDATE",$<str>2); */
-		strcpy(current_upd_table,$<str>2);
-		ADDMAP("UPDATE",current_upd_table);
-		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
-		/* $<sql_string>$=acl_strdup(""); */
-	} set_clause_list_ss  {
-	} where_upd_ss {
-		if (strlen($<sql_string>6)==0) { A4GL_warn("UPDATE with no WHERE clause"); }
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("UPDATE "),acl_strdup($<str>2),kw_space,$<sql_string>4,kw_space,$<sql_string>6,NULL);
-		strcpy(current_upd_table,"");
+update_statement_c:
+	KW_UPDATE table_name_not_for_column_prefix  set_clause_list_uc  where_upd_p {
+		// chk_for_update_on_serial($<str>2);
+		if ($<ptr>4==0) {
+		 	A4GL_warn("UPDATE with no WHERE clause"); 
+		}
+		$<update_cmd>$=$<update_cmd>3;
+		$<update_cmd>$->table=strdup($<str>2);
+		$<update_cmd>$->where_clause=$<ptr>4;
+		$<update_cmd>$->value_list=expand_slil($<update_cmd>$->value_list);
+
+		if ($<update_cmd>$->column_list==0) {
+			$<update_cmd>$->column_list=generate_update_column_list_for($<str>2);
+		}
 	}
 ;
 
 
 
-where_upd_ss : {
-		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
-		$<sql_string>$=acl_strdup("");
-		  map_delete_update("UPDATE",current_upd_table,0);
+where_upd_p : {
+		$<ptr>$=0;
 	}
-	| WHERE_CURRENT_OF fetch_cursor_name { 
+	| WHERE_CURRENT_OF fetch_cursor_name_p { 
 		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
 			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
 		} else {
 
-		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
-		rm_quotes($<str>2);
+		//rm_quotes($<str>2);
 		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
 		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
 		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
-                                strcpy($<str>$,"");
+			$<ptr>$=0;
 		} else {
-			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-			A4GL_cursor_current($<str>2);
+			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2, ET_EXPR_WHERE_CURRENT_OF);
+			A4GL_cursor_current($<ptr>2);
 		}
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>$),NULL);
 		add_feature("UPDATE_WHERE_CURRENT_OF");
 		}
 	}
-	| WHERE upd_search_condition_sli_as_string {
-		A4GL_4glc_pop_all_gen(UPDCOL,"!"); A4GL_4glc_pop_all_gen(UPDVAL,"!"); A4GL_4glc_pop_all_gen(UPDVAL2,"!");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("WHERE "),$<sql_string>2,NULL);
+	| WHERE search_condition_sli {
+		$<ptr>$=A4GL_new_select_list_item_expr($<s_select_list_item>2);
 	}
 	;
 
-where_del_ss : {
-		$<sql_string>$=acl_strdup("");
-		  map_delete_update("DELETE",current_upd_table,0);
+where_del_p : {
+		$<ptr>$=0;
 	}
-	| WHERE_CURRENT_OF fetch_cursor_name { 
+	| WHERE_CURRENT_OF fetch_cursor_name_p { 
 		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
 			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
 		} else {
 
-		rm_quotes($<str>2);
+		//rm_quotes($<str>2);
 		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
 		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
 		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
-                                strcpy($<str>$,"");
+				$<ptr>$=0;
 		} else {
-			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-			A4GL_cursor_current($<str>2);
+			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2, ET_EXPR_WHERE_CURRENT_OF);
+                        A4GL_cursor_current($<ptr>2);
 		}
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>$),NULL);
 		add_feature("DELETE_WHERE_CURRENT_OF");
 		}
 	}
-	| WHERE del_search_condition_sli_as_string {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("WHERE "),$<sql_string>2,NULL);
+	| WHERE search_condition_sli {
+		 $<ptr>$=A4GL_new_select_list_item_expr($<s_select_list_item>2);
 	}
 ;
 
-set_clause_list_ss: 
-    XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {
-			 add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("SET ("),acl_strdup($<str>2),acl_strdup(")=("),$<sql_string>6,kw_cb,NULL);
-
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
-			$<sql_string>$=acl_strdup(fix_update_expr(0)); 
-			ansi_violation("Update (..)=(..)",0);
-		}  else {
-			ansi_violation("Update (..)=(..)",1);
-		}
+set_clause_list_uc: 
+    XSET_OPEN_BRACKET upd_col_list_sl CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_slil CLOSE_BRACKET {
+		add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=$<str_list>2;
+		$<update_cmd>$->value_list=$<s_select_list_item_list>6;
+		$<update_cmd>$->where_clause=0;
     }
-    | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
-			 add_feature("UPDATE_SET_STAR");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("SET *=("),$<sql_string>2,kw_cb,NULL);
-		A4GL_4glc_push_gen(UPDCOL,"*");
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
-			$<sql_string>$=acl_strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
+    | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_slil CLOSE_BRACKET {	
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		$<update_cmd>$->where_clause=0;
+		add_feature("UPDATE_SET_STAR");
     }
-    | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
-			 add_feature("UPDATE_SET_STAR");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("SET *=("),$<sql_string>2,kw_cb,NULL);
-		A4GL_4glc_push_gen(UPDCOL,"*");
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||A4GLSQLCV_check_requirement("ANSI_UPDATE_SYNTAX")) { 
-			$<sql_string>$=acl_strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
+    | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_slil CLOSE_BRACKET {	
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		$<update_cmd>$->where_clause=0;
+		 add_feature("UPDATE_SET_STAR");
     }
-
-
-    | XSET upd_columns_ss  {
-			 add_feature("UPDATE_COLUMN_EQ_VALUE_LIST");
-		$<sql_string>$=make_sql_string_and_free(acl_strdup("SET "),$<sql_string>2,NULL);
+    | XSET upd_columns_uc  {
+		$<update_cmd>$=$<update_cmd>2;
+		add_feature("UPDATE_COLUMN_EQ_VALUE_LIST");
     }
     | XSET_MULTIPLY_EQUAL identifier KW_DOT KW_MULTIPLY  {
+		char buff[200];
+		sprintf(buff,"%s.*", $<str>2);
 #ifdef SQLCOMPILER
-                $<sql_string>$=strdup("IMPOSSIBLE") ;
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
 #else
-                char *ptr;
-                struct variable *v;
-                int a;
-                char buff[3000];
-                char *sql;
-                char *sql_vars=0;
-                char *t;
-                int printed=0;
-                add_feature("UPDATE_SET_STAR");
-                v = find_variable_ptr ($<str>2);
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
+		$<update_cmd>$->where_clause=0;
 
-                if (v->variable_type!=VARIABLE_TYPE_RECORD) { a4gl_yyerror("Variable is not a record"); }
-                sql=acl_strdup("SET ");
-                for (a=0;a<v->data.v_record.record_cnt;a++) {
-                        int idtype, isize;
-                        int rval;
-                        char *colname;
-			char *vsql;
-                        colname=v->data.v_record.variables[a]->names.name;
-                        idtype=v->data.v_record.variables[a]->data.v_simple.datatype;
-                        if (idtype!=DTYPE_SERIAL && idtype!=DTYPE_INT) { idtype=-1; rval=1; } else { idtype=2; }
-                        if (idtype==2) {
-                                rval=A4GLSQL_read_columns (current_upd_table, colname, &idtype, &isize);
-                                if (rval!=1) { a4gl_yyerror("Unable to get details"); }
-                                if (idtype==DTYPE_SERIAL) { /* Its a serial !!! */ continue; }
-                        }
-                        A4GL_4glc_push_gen(UPDCOL,"*");
-                        sprintf(buff,"%s.%s", $<str>2, colname);
-                        add_bind('i',buff);
-			vsql=A4GL_set_var_sql(0,1);
-                        A4GL_4glc_push_gen(UPDVAL,acl_strdup(vsql));
-                        if (printed) {
-                                sql=make_sql_string_and_free(sql,kw_comma,strdup(colname),strdup("="), acl_strdup(vsql), NULL);
-                        } else {
-                                printed++;
-                                sql=make_sql_string_and_free(sql,strdup(colname),strdup("="),acl_strdup(vsql),  NULL);
-                        }
-                }
-
-                $<sql_string>$=sql ;
 #endif
-
-        }
-
+	}
     | XSET_ident_DOT_MULTIPLY_EQUAL identifier KW_DOT KW_MULTIPLY  {
-
+		char buff[200];
+		sprintf(buff,"%s.*", $<str>2);
 #ifdef SQLCOMPILER
-                $<sql_string>$=strdup("IMPOSSIBLE") ;
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
 #else
-                char *ptr;
-                struct variable *v;
-                int a;
-                char buff[3000];
-                char *sql;
-                char *sql_vars=0;
-                char *t;
-                int printed=0;
-                add_feature("UPDATE_SET_STAR");
-                v = find_variable_ptr ($<str>2);
-                if (v->variable_type!=VARIABLE_TYPE_RECORD) { a4gl_yyerror("Variable is not a record"); }
-                sql=acl_strdup("SET ");
-
-                for (a=0;a<v->data.v_record.record_cnt;a++) {
-                        int idtype, isize;
-                        int rval;
-			char *ptr;
-                        char *colname;
-			char *vsql;
-                        colname=v->data.v_record.variables[a]->names.name;
-                        idtype=v->data.v_record.variables[a]->data.v_simple.datatype;
-                        if (idtype!=DTYPE_SERIAL && idtype!=DTYPE_INT) { idtype=-1; rval=1; } else { idtype=2; }
-                        if (idtype==2) {
-                                rval=A4GLSQL_read_columns (current_upd_table, colname, &idtype, &isize);
-                                if (rval!=1) { a4gl_yyerror("Unable to get details"); }
-                                if (idtype==DTYPE_SERIAL) { /* Its a serial !!! */ continue; }
-                        }
-
-                        sprintf(buff,"%s.%s", $<str>2, colname);
-                        add_bind('i',strdup(buff));
-
-                        A4GL_4glc_push_gen(UPDCOL,"*");
-			vsql=A4GL_set_var_sql(0,1);
-                        A4GL_4glc_push_gen(UPDVAL,vsql);
-                        if (printed) {
-                                sql=make_sql_string_and_free(sql,kw_comma,strdup(colname),strdup("="),strdup(vsql), NULL);
-                        } else {
-                                printed++;
-                                sql=make_sql_string_and_free(sql,strdup(colname),strdup("="), strdup(vsql),NULL);
-                        }
-                }
-
-                $<sql_string>$=sql ;
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
+		$<update_cmd>$->where_clause=0;
 #endif
-
-        }
-
+	}
 ;
 
 
-upd_columns_ss : 
-	col_1_ss  {
-		$<sql_string>$=$<sql_string>1;
+
+
+upd_columns_uc : 
+	col_1_up  {
+		$<update_cmd>$=malloc(sizeof(struct_update_cmd));
+		$<update_cmd>$->column_list=new_str_list($<upd_pair>1->column_name);
+		$<update_cmd>$->value_list=0;
+		$<update_cmd>$->where_clause=0;
+		$<update_cmd>$->value_list=local_new_select_list_item_list($<upd_pair>1->value);
 	}
-	| upd_columns_ss KW_COMMA col_1_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
+	| upd_columns_uc KW_COMMA col_1_up {
+		$<update_cmd>$=$<update_cmd>1;
+		add_str_list($<update_cmd>$->column_list, $<upd_pair>3->column_name);
+		local_add_select_list_item_list($<update_cmd>$->value_list, $<upd_pair>3->value);
 	}
 ;
 
@@ -254,15 +178,16 @@ upd_column_name_specific: identifier op_col_arr {
         | identifier KW_DOT identifier op_col_arr {
                 struct ilist *i;
                 if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
-		if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
-			strcpy($<str>$,$<str>3);
-		} else {
-			if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                		sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>3));
-			} else {
-                		sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3));
-			}
-		}
+                if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
+                        strcpy($<str>$,$<str>3);
+                } else {
+                        if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
+                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>3));
+                        } else {
+                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3));
+                        }
+                }
+
                 ADDMAP("Use Column",$<str>$);
                 i=&$<int_list>4;
                 strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
@@ -270,30 +195,31 @@ upd_column_name_specific: identifier op_col_arr {
         | identifier KW_DOT identifier  KW_DOT identifier op_col_arr {
                 struct ilist *i;
                 if (strcmp($<str>5,"rowid")==0) { add_feature("ROWID"); }
+                if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
+                        strcpy($<str>$,$<str>5);
+                } else {
+                        if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
+                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>5));
+                        } else {
+                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5));
+                        }
+                }
 
-		if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
-			strcpy($<str>$,$<str>5);
-		} else {
-			if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                		sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>5));
-			} else {
-                		sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5));
-			}
-		}
                 ADDMAP("Use Column",$<str>$);
                 i=&$<int_list>6;
                 strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
         }
         | identifier  KW_DOT KW_MULTIPLY {
-		if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
-			strcpy($<str>$,"*");
-		} else {
-		if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
-		} else {
-                	sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),"*"));
-		}
-		}
+                if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
+                        strcpy($<str>$,"*");
+                } else {
+                if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
+                        sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
+                } else {
+                        sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),"*"));
+                }
+                }
+
                 ADDMAP("Use Column",$<str>$);
         }
 ;
@@ -303,204 +229,40 @@ upd_column_name_specific: identifier op_col_arr {
 
 
 
-col_1_ss : 
-	upd_column_name EQUAL upd_val_ss {
-		A4GL_4glc_push_gen(UPDCOL,$<str>1); 
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),acl_strdup("="),$<sql_string>3,NULL);
+col_1_up : 
+	upd_column_name EQUAL upd_val_sli {
+		$<upd_pair>$=malloc(sizeof(struct s_update_pair));
+		$<upd_pair>$->column_name=acl_strdup($<str>1);
+		$<upd_pair>$->value=$<s_select_list_item>3;
 	}
 ;
 
-upd_col_list  : upd_column_name	{
-			A4GL_4glc_push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>1);
+
+
+upd_col_list_sl  : upd_column_name	{
+			$<str_list>$=new_str_list($<str>1);
 		} 
-		| upd_col_list KW_COMMA upd_column_name {
-			A4GL_4glc_push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+		| upd_col_list_sl KW_COMMA upd_column_name {
+			$<str_list>$=add_str_list($<str_list>1, $<str>3);
 		}
-
 ;
 
 
-upd_val_list_ss  : 
-	upd_val_ss { 
-		$<sql_string>$=$<sql_string>1; 
-		if (A4GL_4glc_gen_cnt(UPDVAL2)) {
-			A4GL_4glc_copy_gen(UPDVAL,UPDVAL2);
-		} else {
-                	A4GL_4glc_push_gen_expand(UPDVAL,$<sql_string>1);
-		}
+
+upd_val_list_slil  : 
+	upd_val_sli { 
+		$<s_select_list_item_list>$=local_new_select_list_item_list($<s_select_list_item>1);
 	}
-	| upd_val_list_ss KW_COMMA upd_val_ss { 
-		if (A4GL_4glc_gen_cnt(UPDVAL2)) {
-			A4GL_4glc_copy_gen(UPDVAL,UPDVAL2);
-		} else {
-                	A4GL_4glc_push_gen(UPDVAL,$<sql_string>3);
-		}
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL); 
+	| upd_val_list_slil KW_COMMA upd_val_sli { 
+		$<s_select_list_item_list>$=local_add_select_list_item_list($<s_select_list_item_list>1,$<s_select_list_item>3);
 	} 
 ;
 
 
 
-upd_val_ss : 
-	KW_NULL {
-		$<sql_string>$=acl_strdup($<str>1);
-	}
-	| upd_value_expression_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
+upd_val_sli : 
+	value_expression_sli  {$<s_select_list_item>$=$<s_select_list_item>1;}
+	| KW_NULL  {$<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_NULL); }
 ;
 
-
-
-upd_value_expression_ss:
-        upd_value_expression_initial_ss {
-                $<sql_string>$=acl_strdup(A4GLSQLCV_check_expr($<sql_string>1));
-		free($<sql_string>1);
-        }
-        | KW_MINUS upd_value_expression_initial_ss {
-                $<sql_string>$=make_sql_string_and_free(acl_strdup("-"),acl_strdup(A4GLSQLCV_check_expr($<sql_string>2)),NULL);
-		free($<sql_string>2);
-			
-        }
-        | KW_PLUS upd_value_expression_initial_ss {
-                $<sql_string>$=make_sql_string_and_free(acl_strdup("+"),acl_strdup(A4GLSQLCV_check_expr($<sql_string>2)),NULL);
-		free($<sql_string>2);
-        }
-;
-
-
-
-upd_value_expression_initial_ss :
-        upd_var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
-        | upd_subquery_ss { $<sql_string>$=$<sql_string>1; }
-        | ATSIGN identifier op_col_arr { 
-			struct ilist *i;
-			i=&$<int_list>3;
-$<sql_string>$=make_sql_string_and_free(
-						acl_strdup(
-						A4GLSQLCV_make_substr(
-							A4GLSQLCV_check_colname(current_upd_table,$<str>2),i->i0,i->i1,i->i2
-							)
-						),NULL); 
-		}
-        | ATSIGN identifier KW_DOT identifier op_col_arr { 
-		char buff[256];
-			struct ilist *i;
-			i=&$<int_list>5;
-		sprintf(buff,"%s.%s",$<str>2,$<str>4);
-		$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>2),$<str>4),i->i0,i->i1,i->i2)),NULL); 
-		}
-        | upd_value_expression_complex_ss { $<sql_string>$=$<sql_string>1; A4GL_4glc_pop_all_gen(UPDVAL2,"!"); }
-        | literal {$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),NULL); }
-        | KW_TRUE {$<sql_string>$=make_sql_string_and_free(acl_strdup("TRUE"),NULL);}
-        | KW_FALSE {$<sql_string>$=make_sql_string_and_free(acl_strdup("FALSE"),NULL);}
-        | USER {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("USER")),NULL);}
-        | KW_TODAY {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("TODAY")),NULL);}
-        | KW_ROWID {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("ROWID")),NULL);}
-        | TIME {$<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_get_sqlconst("TIME")),NULL);}
-        | COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(acl_strdup("COUNT(*)"),NULL);}
-;
-
-
-upd_value_expression_complex_ss :
-        upd_value_expression_initial_ss KW_DIVIDE upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("/"),$<sql_string>3,NULL);}
-        | upd_value_expression_initial_ss upd_units_qual 			{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);}
-        | upd_value_expression_initial_ss KW_MULTIPLY upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("*"),$<sql_string>3,NULL);}
-        | upd_value_expression_initial_ss KW_PLUS upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("+"),$<sql_string>3,NULL);}
-        | upd_value_expression_initial_ss KW_MINUS upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup("-"),$<sql_string>3,NULL);}
-        | AVG OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("AVERAGE("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
-        | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("MAX("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
-        | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("MIN("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
-        | KW_SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("SUM("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
-        | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(acl_strdup("COUNT("),acl_strdup($<str>3),$<sql_string>4,kw_cb,NULL);}
-        | identifier OPEN_BRACKET op_upd_value_expr_list_ss CLOSE_BRACKET 		{
-			add_sql_function($<str>1);
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,NULL);}
-        | KW_DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(acl_strdup("DATE("),$<sql_string>3,kw_cb,NULL);}
-        | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(kw_ob,$<sql_string>2,kw_cb,NULL);}
-
-        | EXTEND OPEN_BRACKET upd_extend_qual_ss CLOSE_BRACKET {
-			add_feature("EXTEND");
-                        $<sql_string>$=$<sql_string>3;
-        }
-
-        | datetime_value_qualified 						{$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),NULL); add_feature("FUNC_DATETIME");}
-        | interval_value_qualified 						{$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),NULL); add_feature("FUNC_INTERVAL");}
-        | YEAR OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=acl_strdup(A4GLSQLCV_sql_func("YEAR",$<sql_string>3));}
-        | MONTH OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=acl_strdup(A4GLSQLCV_sql_func("MONTH",$<sql_string>3));}
-        | DAY OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=acl_strdup(A4GLSQLCV_sql_func("DAY",$<sql_string>3));}
-        | KW_DOW OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=acl_strdup(A4GLSQLCV_sql_func("DOW",$<sql_string>3));}
-
-
-
-
-;
-
-
-
-upd_var_ident_ibind_ss:  var_ident_ibind_ss { $<sql_string>$=$<sql_string>1; }
-;
-
-
-op_upd_value_expr_list_ss :
-	{$<sql_string>$=acl_strdup("");}
- | upd_value_expr_list_ss  {$<sql_string>$=$<sql_string>1;}
-;
-
-
-upd_value_expr_list_ss :
-        upd_value_expression_ss {$<sql_string>$=$<sql_string>1;}
-        | upd_value_expr_list_ss KW_COMMA upd_value_expression_ss {
-        $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
-}
-
-;
-
-
-
-
-upd_units_qual:
-        UNITS_YEAR {strcpy($<str>$," UNITS YEAR");}
-        | UNITS_MONTH {strcpy($<str>$," UNITS MONTH"); }
-        | UNITS_DAY {strcpy($<str>$," UNITS DAY"); }
-        | UNITS_HOUR {strcpy($<str>$," UNITS HOUR"); }
-        | UNITS_MINUTE {strcpy($<str>$," UNITS MINUTE"); }
-        | UNITS_SECOND {strcpy($<str>$," UNITS SECOND"); }
-;
-
-
-upd_subquery_ss:
-        OPEN_BRACKET KW_SELECT op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
-			struct s_select *s1;
-	                s1=$<s_select>5;
-                	s1->modifier=acl_strdup($<str>3);
-                	s1->select_list=$<s_select_list_item_list>4;
-			A4GL_set_sql_lineno(yylineno);
-			$<sql_string>$=make_sql_string_and_free(acl_strdup("("),make_select_stmt(current_upd_table, s1),acl_strdup(")"),NULL);
-			map_select_stmt("UPDATE",s1);
-			A4GL_free_select_stmt(s1);
-        }		
-;
-
-
-
-upd_extend_qual_ss:
-        KW_CURRENT KW_COMMA s_curr KW_TO e_curr {
-                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>3,$<str>5,1)),NULL);
-        }
-        | var_ident_ibind_ss KW_COMMA s_curr KW_TO e_curr {
-                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),NULL);
-                        free($<sql_string>1);
-                //$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),acl_strdup($<str>3),kw_space,acl_strdup($<str>4),kw_space,acl_strdup($<str>5),NULL);
-        }
-        | KW_CURRENT s_curr KW_TO e_curr {
-                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>2,$<str>4,1)),NULL);
-
-                //$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),acl_strdup($<str>2),kw_space,acl_strdup($<str>3),kw_space,acl_strdup($<str>4),NULL);
-        }
-        | upd_value_expression_ss KW_COMMA s_curr KW_TO e_curr {
-                        $<sql_string>$=make_sql_string_and_free(acl_strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),NULL);
-                        free($<sql_string>1);
-        }
-;
 

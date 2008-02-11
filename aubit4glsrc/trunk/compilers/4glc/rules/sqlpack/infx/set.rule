@@ -6,27 +6,33 @@
 
 
 set_cmd :
-	SQLSEON {A4GL_CV_print_exec_sql($<str>1);add_feature("SET_EXPLAIN");}
-	| SQLSEOFF {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_EXPLAIN");}
-	| SQLSLMW op_int_val {sprintf($<str>$,"%s %s",$<str>1,$<str>2); A4GL_CV_print_exec_sql($<str>$);  add_feature("SET_LOCK_MODE");}
-	| SQLSLMNW  {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_LOCK_MODE");}
-	| SQLSIDR   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION"); }
-	| SQLSIRR   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION");}
-	| SQLSICS   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION");}
-	| SQLSICR   {A4GL_CV_print_exec_sql($<str>1); add_feature("SET_ISOLATION");}
-	| SET_SESSION_TO conn_id { 
-		print_set_conn($<str>2);
+	opt_use2_p SQLSEON 		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_EXPLAIN");}
+	| opt_use2_p SQLSEOFF 		{$<cmd>$=new_sql_cmd($<ptr>1,$<str>2); add_feature("SET_EXPLAIN");}
+	| opt_use2_p SQLSLMW op_int_val {char buff[256]; SPRINTF2(buff,"%s %s",$<str>2,$<str>3); $<cmd>$=new_sql_cmd($<ptr>1, buff); add_feature("SET_LOCK_MODE");}
+	| opt_use2_p SQLSLMNW  		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_LOCK_MODE");}
+	| opt_use2_p SQLSIDR   		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_ISOLATION");}
+	| opt_use2_p SQLSIRR   		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_ISOLATION");}
+	| opt_use2_p SQLSICS   		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_ISOLATION");}
+	| opt_use2_p SQLSICR   		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_ISOLATION");}
+;
+
+set_session_cmd : 
+	SET_SESSION_TO conn_id_p { 
+		$<cmd>$=new_set_session_cmd("session",$<ptr>2,NULL,NULL);
 	}
-	| SET_SESSION op_conn_id OPTION char_or_var KW_TO char_or_var {
-		print_set_options("conn",$<str>2,$<str>4,$<str>6);
+	| SET_SESSION op_conn_id_p OPTION char_or_var_vl KW_TO char_or_var_vl {
+		$<cmd>$=new_set_session_cmd("conn",$<ptr>2,$<ptr>4,$<ptr>6);
 	}
-	| SET_CURSOR cursor_name OPTION char_or_var KW_TO char_or_var {
-		print_set_options("stmt",$<str>2,$<str>4,$<str>6);
+	| SET_CURSOR cursor_name_1_p OPTION char_or_var_vl KW_TO char_or_var_vl {
+		$<cmd>$=new_set_session_cmd("stmt",$<ptr>2,$<ptr>4,$<ptr>6);
 	}
 ;
 
-op_conn_id : 
-	{strcpy($<str>$,"\"default\"");} | conn_id
+op_conn_id_p : 
+        {$<ptr>$=0;} 
+        | conn_id_p {$<ptr>$=$<ptr>1;}
+
+
 ;
 
 
@@ -35,10 +41,6 @@ op_int_val :
 	{strcpy($<str>$,"");} | INT_VALUE
 ;
 
-/*
-op_fgl_expr :
-{strcpy($<str>$,"");} | fgl_expr;
-*/
 
 /* ================================================================ */
 

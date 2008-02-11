@@ -6,10 +6,11 @@
 
 
 free_cmd :
-		FREE fetch_cursor_name {
+		opt_use2_p FREE fetch_cursor_name_p {
 			add_feature("FREE_CURSOR");
-			print_free_cursor($<str>2);
-			strcpy($<str>$,"");
+			set_cmdlineno(token_read_on_line);
+			$<cmd>$=new_free_cmd($<ptr>1, $<ptr>3);
+			
 		}
 ;
 

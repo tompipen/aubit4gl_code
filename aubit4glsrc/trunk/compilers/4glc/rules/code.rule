@@ -6,20 +6,23 @@
 
 code_cmd : KW_CSTART emb_code KW_CEND
 {
-add_feature("EMBEDDED_C_CODE");
+	$<cmd>$=new_code_cmd($<sql_string>2);
+	add_feature("EMBEDDED_C_CODE");
 }
 ;
 
-emb_code : sql_code | c_code;
-sql_code : sql_code_part | sql_code sql_code_part
+emb_code : c_code;
+
+
+c_code : c_code_part  {
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),NULL);
+		}
+	| c_code c_code_part {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),NULL);
+	}
+
 ;
 
-sql_code_part: SQLLINE { A4GL_lex_printc("%s",$<str>1); }
-;
-
-c_code : c_code_part | c_code c_code_part
-
-;
-
-c_code_part  : CLINE { A4GL_lex_printc("%s\n",$<str>1); }
+c_code_part  : CLINE { sprintf($<str>$,"%s\n",$<str>1); 
+}
 ;

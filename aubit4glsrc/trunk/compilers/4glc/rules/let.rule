@@ -5,36 +5,21 @@
 */
 
 
-let_cmd : KW_LET obind_var_let_list EQUAL op_expr_null {
+let_cmd : KW_LET atline obind_var_let_list EQUAL op_expr_null {
 int to_vars;
-	expand_obind();
-	to_vars=how_many_in_bind('o');
-	if (to_vars>=1) {
-		add_feature("LET_MANY");
-		if (!print_let_manyvars_g($<ptr_list>4, copy_togenbind('o')))
-		{
-	    		a4gl_yyerror("Number of variables in let not equal to number of values\n");YYERROR;
-		}
-		start_bind('o',0);
-	} else {
-	        print_bind_pop2_g($<ptr_list>4,copy_togenbind('o'));
-		start_bind('o',0);
-	}
-
+		set_cmdlineno($<integer_val>2);
+		/* $<cmd>$=new_let_cmd($<ptr_list>3,make_fgl_expr_list($<ptr_list>5)); */
+		$<cmd>$=new_let_cmd($<ptr_list>3,$<ptr_list>5);
 }
 ;
 
 op_expr_null : KW_NULL { 
-			int to_vars;
-			expand_obind();
-			$<ptr_list>$=A4GL_new_ptr_list(0);
-			to_vars=how_many_in_bind('o'); 
-			for (cnt=0;cnt<=to_vars;cnt++) { 
-				A4GL_new_append_ptr_list($<ptr_list>$,A4GL_new_expr_simple(ET_EXPR_NULL)); 
-			}
+		$<ptr_list>$=0; 
 	}
-	| fgl_expr_concat  {$<ptr_list>$=$<ptr_list>1;}
-	;
+	| fgl_expr_concat  {
+		$<ptr_list>$=$<ptr_list>1;
+	}
+;
 
 
 /* ============================= let.rule ========================== */

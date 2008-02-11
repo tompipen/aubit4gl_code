@@ -178,6 +178,7 @@ function load_info_columns(lv_tabname)
   define lv_t integer 
   define lv_l char(20)
   define lv_buff char(80)
+define lv_length integer
 
 code
     lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, (char *)col_desc, 48, "COLUMNS", 2, lv_tabname);
@@ -187,13 +188,15 @@ endcode
         if col_desc[lv_a][2]="(" then
             let lv_t=col_desc[lv_a][1]
             let lv_l=col_desc[lv_a][3,48]
-            let lv_l=lv_l[1,length(lv_l)-1]
+		let lv_length=length(lv_l)
+            let lv_l=lv_l[1,lv_length-1]
             let col_desc[lv_a]=get_type(lv_t,lv_l)
         end if
         if col_desc[lv_a][3]="(" then
             let lv_t=col_desc[lv_a][1,2]
             let lv_l=col_desc[lv_a][4,48]
-            let lv_l=lv_l[1,length(lv_l)-1]
+		let lv_length=length(lv_l)
+            let lv_l=lv_l[1,lv_length-1]
             let col_desc[lv_a]=get_type(lv_t,lv_l)
         end if
 

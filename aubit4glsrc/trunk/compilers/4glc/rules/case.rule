@@ -4,60 +4,62 @@
 =====================================================================
 */
 
+op_case_fgl_expr_c : {$<ptr>$=0;} | fgl_expr_c {$<ptr>$=$<ptr>1;}
+;
 
-case_cmd	: CASE fgl_expr_c  {
+case_cmd	: CASE atline op_case_fgl_expr_c  {
 			push_blockcommand("CASE");
 			add_feature("CASE_EXPR");
 			setinc(1);
-			A4GL_incprint();
-			print_case($<ptr>2);
-			setinc(1);
-		} when_unit_expr op_otherwise_command_expr end_case_command {
-			/*print_after_when(0); */
-			continue_blockcommand("CASE");
-			print_case_end();
-			pop_blockcommand("CASE");
-			print_case_free();
-		}
-		| CASE {  
-			push_blockcommand("CASE"); 
-			add_feature("CASE_NO_EXPR");
-			setinc(1);
-			A4GL_incprint(); 
-			print_case(0);
 			setinc(1);
 		} when_unit op_otherwise_command end_case_command {
-			/* print_after_when(0); */
-			continue_blockcommand("CASE");
-			print_case_end();
+			
+			/*print_after_when(0); */
+			//continue_blockcommand("CASE");
 			pop_blockcommand("CASE");
+			set_cmdlineno($<integer_val>2);
+			$<cmd>$=new_case_cmd(chk_expr($<ptr>3), $<whens>5, $<commands>6);
 		}
 ;
 
-when_unit : when_command | when_unit when_command 
+
+
+op_then :
+       | KW_THEN
+
+
+when_unit : when_command  {
+			$<whens>$=malloc(sizeof(whens));
+			$<whens>$->whens.whens_len=1;
+			$<whens>$->whens.whens_val=malloc(sizeof($<whens>$->whens.whens_val[0]) * $<whens>$->whens.whens_len);
+			$<whens>$->whens.whens_val[$<whens>$->whens.whens_len-1]=$<when>1;
+		}
+		| when_unit when_command  {
+			$<whens>$=$<whens>1;
+			$<whens>$->whens.whens_len=$<whens>1->whens.whens_len+1;
+			$<whens>$->whens.whens_val=realloc($<whens>1->whens.whens_val, sizeof($<whens>$->whens.whens_val[0]) * $<whens>$->whens.whens_len);
+			$<whens>$->whens.whens_val[$<whens>$->whens.whens_len-1]=$<when>2;
+		}
 ;
 
-when_unit_expr : when_command_expr | when_unit_expr when_command_expr 
+
+end_case_command : END_CASE 
 ;
 
-end_case_command : END_CASE {setinc(-1);A4GL_incprint();}
+op_otherwise_command : {$<commands>$=0;} | OTHERWISE {  lastlineno=yylineno;} commands_as_list { $<commands>$=$<commands>3; }
 ;
 
-op_otherwise_command : | OTHERWISE { A4GL_incprint();print_otherwise();  lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(0); }
+
+when_command		: WHEN fgl_expr_c atline op_then {  lastlineno=yylineno;} commands_as_list { 	
+				$<when>$=malloc(sizeof(when));
+				$<when>$->when_expr=chk_expr($<ptr>2);
+				$<when>$->when_commands=$<commands>6;
+				$<when>$->lineno=$<integer_val>3;
+				$<when>$->colno=0;
+ 				setinc(-1);
+			}
 ;
 
-op_otherwise_command_expr : | OTHERWISE {A4GL_incprint();print_otherwise(); lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(0); }
-;
-
-op_then : 
-	| KW_THEN
-;
-
-when_command		: WHEN fgl_expr_c op_then { print_when(0,$<ptr>2); A4GL_incprint();  lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
-;
-
-when_command_expr	: WHEN fgl_expr_c op_then { A4GL_incprint(); print_when(1,$<ptr>2);  lastlineno=yylineno;} commands {A4GL_incprint(); print_after_when(1); setinc(-1);}
-;
 
 
 /* ================================= case.rule ============================= */

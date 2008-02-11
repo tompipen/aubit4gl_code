@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: generic.c,v 1.8 2006-02-12 09:56:16 mikeaubury Exp $
+# $Id: generic.c,v 1.9 2008-02-11 17:13:06 mikeaubury Exp $
 #*/
 
 /**

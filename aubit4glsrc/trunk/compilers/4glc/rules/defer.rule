@@ -6,13 +6,18 @@
 
 
 defer_cmd	:	DEFER_INTERRUPT {
+				set_cmdlineno(token_read_on_line);
+			//printf("%d %d\n",token_read_on_line,yylineno);
+				$<cmd>$=new_defer_cmd(EDEFER_INTERRUPT);
 				add_feature("DEFER_INTERRUPT");
-				print_defer(0);
+				//print_defer(0);
 			}
 
 		|	DEFER_QUIT {
+				//set_cmdlineno(token_read_on_line);
+				$<cmd>$=new_defer_cmd(EDEFER_QUIT);
 				add_feature("DEFER_QUIT");
-				print_defer(1);
+				//print_defer(1);
 			}
 		;
 

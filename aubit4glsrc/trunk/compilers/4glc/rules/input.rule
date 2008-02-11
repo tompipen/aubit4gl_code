@@ -4,118 +4,24 @@
 =====================================================================
 */
 
-end_input :
-	| field_commands END_INPUT 
-	| END_INPUT
+end_input :  { $<on_events>$=0;}
+	| events_input END_INPUT  { $<on_events>$= $<on_events>1;}
+	| END_INPUT { $<on_events>$=0;}
 ;
+
+end_input_array : { $<on_events>$=0;}
+	| events_iarray END_INPUT  { $<on_events>$= $<on_events>1;}
+	| END_INPUT { $<on_events>$=0;}
+;
+
+
 
 opt_defs : {
-sprintf($<str>$,"0");
-} | WITHOUT_DEFAULTS {
-sprintf($<str>$,"1");
+		$<e_boolean>$=EB_FALSE;
+	} | WITHOUT_DEFAULTS {
+		$<e_boolean>$=EB_TRUE;
 }
 ;
-
-field_commands : field_command | field_commands field_command;
-
-field_command :  
-	  BEFFIELD bef_field_list_as_struct
-		{
-		A4GL_add_event(A4GL_EVENT_BEFORE_FIELD,field_name_list_as_or_char($<field_list>2));
-		print_befaft_field_1(field_name_list_as_or_char($<field_list>2));
- lastlineno=yylineno;} commands {
-	print_befaft_field_2();
-	map_ui_endevent(A4GL_EVENT_BEFORE_FIELD);
-}
-	| AFTFIELD aft_field_list_as_struct
-		{
-		A4GL_add_event(A4GL_EVENT_AFTER_FIELD,field_name_list_as_or_char($<field_list>2));
-		print_befaft_field_1(field_name_list_as_or_char($<field_list>2));
- lastlineno=yylineno;} commands {
-	print_befaft_field_2();
-	map_ui_endevent(A4GL_EVENT_AFTER_FIELD);
-}
-	| AFTROW {
-		A4GL_add_event(A4GL_EVENT_AFT_ROW,"");
-		print_befaft_field_1("AFT_ROW");
- lastlineno=yylineno;} commands {
-	print_befaft_field_2();
-	map_ui_endevent(A4GL_EVENT_AFT_ROW);
-}
-	| BEFROW {
-		A4GL_add_event(A4GL_EVENT_BEF_ROW,"");
-		A4GL_lex_printcomment("/* before row */ \n");
-		print_befaft_field_1("BEF_ROW");
- lastlineno=yylineno;} commands {
-	print_befaft_field_2();
-	map_ui_endevent(A4GL_EVENT_BEF_ROW);
-		}
-	| on_key_command {
-	A4GL_add_onkey_key($<str>1);
-	print_onkey_1($<str>1);
- lastlineno=yylineno;} commands {
-	print_onkey_2();
-	map_ui_endevent(A4GL_EVENT_KEY_PRESS);
-}
-	| on_action { A4GL_add_onaction($<str>1); print_onaction_1($<str>1);  lastlineno=yylineno;} commands { print_onaction_2();
-
-
-	map_ui_endevent(A4GL_EVENT_ON_ACTION);
- }
-        | on_timer {
-                A4GL_add_ontimer($<str>1);
-                print_ontimer_1($<str>1);
-         lastlineno=yylineno;} commands { print_ontimer_2(); 
-
-	map_ui_endevent(A4GL_EVENT_ON_TIME);
-}
-
-	| AFTINP {
-		A4GL_add_event(A4GL_EVENT_AFTER_INP,"");
-		print_befaft_field_1("AFTER_INP");
- lastlineno=yylineno;} commands {
-	print_befaft_field_2();
-	map_ui_endevent(A4GL_EVENT_AFTER_INP);
-}
-	| BEFINP {
-		A4GL_add_event(A4GL_EVENT_BEFORE_INP,"");
-		print_befaft_field_1("BEFORE_INP");
- lastlineno=yylineno;} commands {
-	print_befaft_field_2();
-	map_ui_endevent(A4GL_EVENT_BEFORE_INP);
-}
-	| BEFORE_DELETE  {
-		A4GL_add_event(A4GL_EVENT_BEFORE_DELETE,"");
-		print_befaft_field_1("DO_BEFORE_DELETE");
-	 lastlineno=yylineno;} commands { print_befaft_field_2(); 
-	map_ui_endevent(A4GL_EVENT_BEFORE_DELETE);
-}
-	| BEFORE_INSERT  { A4GL_add_event(A4GL_EVENT_BEFORE_INSERT,""); print_befaft_field_1("DO_BEFORE_INSERT");  lastlineno=yylineno;} commands { print_befaft_field_2(); 
-	map_ui_endevent(A4GL_EVENT_BEFORE_INSERT);
-}
-	| BEFORE_INSERT_DELETE  { A4GL_add_event(A4GL_EVENT_BEF_INSERT_DELETE,""); print_befaft_field_1("DO_BEFORE_INSERT_DELETE");  lastlineno=yylineno;} commands { print_befaft_field_2(); 
-	map_ui_endevent(A4GL_EVENT_BEF_INSERT_DELETE);
-}
-	| AFTER_INSERT_DELETE  { A4GL_add_event(A4GL_EVENT_AFT_INSERT_DELETE,""); print_befaft_field_1("DO_AFTER_INSERT_DELETE");  lastlineno=yylineno;} commands { print_befaft_field_2(); 
-	map_ui_endevent(A4GL_EVENT_AFT_INSERT_DELETE);
-
-}
-	| AFTER_DELETE  {
-		A4GL_add_event(A4GL_EVENT_AFTER_DELETE,"");
-		print_befaft_field_1("DO_AFTER_DELETE");
-	 lastlineno=yylineno;} commands { print_befaft_field_2(); 
-	map_ui_endevent(A4GL_EVENT_AFTER_DELETE);
-}
-	| AFTER_INSERT  {
-		A4GL_add_event(A4GL_EVENT_AFTER_INSERT,"");
-		print_befaft_field_1("DO_AFTER_INSERT");
-	 lastlineno=yylineno;} commands { print_befaft_field_2(); 
-	map_ui_endevent(A4GL_EVENT_AFTER_INSERT);
-}
-
-
-;
-
 
 
 bef_field_list_as_struct :
@@ -138,83 +44,93 @@ aft_field_list_as_struct :
         }
 ;
 
-next_field_cmd : NEXTFIELD next_field {
-print_next_field($<str>2);
-		map_ui("NEXTFIELD");
-}
+next_field_cmd : 
+		NEXTFIELD atline KW_NEXT { set_cmdlineno($<integer_val>2); $<cmd>$=new_next_field_cmd(1, NULL); map_ui("NEXTFIELD"); }
+		| NEXTFIELD atline KW_PREVIOUS { set_cmdlineno($<integer_val>2); $<cmd>$=new_next_field_cmd(-1, NULL); map_ui("NEXTFIELD"); }
+		| NEXTFIELD atline field_name_as_struct {set_cmdlineno($<integer_val>2); $<cmd>$=new_next_field_cmd(0, $<field_entry>3); map_ui("NEXTFIELD"); }
 ;
 
-next_form_cmd : NEXTFORM identifier KWFIELD next_field {
-print_next_form_field($<str>2,$<str>4);
-}
-;
 
-next_field	:	KW_NEXT {sprintf($<str>$,"\"+\"");}
-		| 	KW_PREVIOUS {sprintf($<str>$,"\"-\"");}
-		| 	field_name_as_struct {sprintf($<str>$,field_name_as_char($<field_entry>1));}
-;
 
 
 
 
 input_cmd	:	KW_INPUT inp_rest {
-					print_input_1();
   					A4GL_new_events();
+					push_blockcommand ("INPUT");
+			
 			} end_input { 
-					print_input_2($<str>2);
+				int sio;
+				int blk;
+					blk=get_sio_ids("INPUT");
+					$<cmd>$=$<cmd>2;
+					sio=get_sio_id("INPUT");
+					$<cmd>$->cmd_data.command_data_u.input_cmd.sio=sio;
+					$<cmd>$->cmd_data.command_data_u.input_cmd.blockid=blk;
+					pop_blockcommand ("INPUT");
 					map_ui_endblock("INPUT");
 					A4GL_drop_events();
+					$<cmd>$->cmd_data.command_data_u.input_cmd.events=$<on_events>4;
+
 			}
 		;
 
-input_array_cmd	:	KW_INPUT_ARRAY use_arr_var opt_slice opt_defs FROM idm_input_array opt_help_no {
-					add_feature("UI_INPUT_ARRAY");
-					map_ui_block("INPUT_ARRAY");
-					curr_input_array_attribs.maxcount=0;
-					curr_input_array_attribs.count=0;
-					curr_input_array_attribs.allow_insert=1;
-					curr_input_array_attribs.allow_delete=1;
-					curr_input_array_attribs.curr_row_display=0;
-					inp_flags=0;
+input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FROM idm_input_array opt_help_no_i {
+				if (!check_input_or_display_array_variable($<ptr>2)) {
+					a4gl_yyerror("Variable cannot be used for an INPUT ARRAY");
+				}
+				push_blockcommand ("INPUT");
+				add_feature("UI_INPUT_ARRAY");
+				map_ui_block("INPUT_ARRAY");
+				inp_flags=0;
 		} input_attributes {
-  					A4GL_new_events();
-					strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>7,$<str>4,$<str>6,$<str>9,&curr_input_array_attribs,last_style,copy_togenbind('o'), $<str>3));
-					print_input_1();
-		} end_input { 
-				print_input_2($<str>10);
+  			A4GL_new_events();
+			
+		} end_input_array { 
+				int blk;
+				int sio;
+				blk=get_sio_ids("INPUT");
+				sio=get_sio_id("INPUT");
+
+				  pop_blockcommand ("INPUT");
+				$<cmd>$=new_input_array_cmd($<ptr>6, $<ptr>2, $<attrib>9,$<on_events>11, $<e_boolean>4, $<integer_val>7,sio,blk,$<str>3);
 				map_ui_endblock("INPUT");
 				A4GL_drop_events();
 		}
 ;
 
-input_attributes: opt_attributes {
-                     if (strncmp($<str>1,"A4GL_",5)==0)  {
-                                strcpy($<str>$,$<str>1);
-                     } else {
-                                sprintf($<str>$,"0x%lx",atol($<str>1));
-                     }
-}
+input_attributes: opt_attributes  {$<attrib>$=$<attrib>1;}
 ;
 
 inp_rest:
-BY_NAME ibind_var_list opt_defs opt_help_no input_attributes 
+BY_NAME expanded_ibind_var_list opt_defs opt_help_no_i input_attributes 
 {
+	//struct fh_field_list *f;
+  	char tabname[40];
+	int a;
+  	char colname[40];
 	map_ui_block("INPUT");
 	add_feature("UI_INPUT_BY_NAME");
-	print_input_fl_g(1,$<str>3,$<str>4,0,$<str>5,last_style,copy_togenbind('i'));
-	strcpy($<str>$,A4GL_get_formloop_str(0));
+	
+	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>2,1,1), NULL,NULL, $<attrib>5,$<e_boolean>3, $<integer_val>4,0);
 }
-| ibind_var_list opt_defs FROM field_name_list_as_struct  opt_help_no input_attributes 
+| expanded_ibind_var_list opt_defs FROM field_name_list_as_struct  opt_help_no_i input_attributes 
 {
 	map_ui_block("INPUT");
 	add_feature("UI_INPUT");
-	print_input_fl_g(0,$<str>2,$<str>5,$<field_list>4,$<str>6,last_style,copy_togenbind('i'));
-	strcpy($<str>$,A4GL_get_formloop_str(0));
+	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>1,1,1), $<field_list>4,NULL, $<attrib>6,$<e_boolean>2, $<integer_val>5, 0);
 }
 ;
 
-idm_input_array :identifier KW_DOT KW_MULTIPLY {sprintf($<str>$,"\"%s\"",$<str>1);}
-	| VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET {sprintf($<str>$,"A4GL_var_for_inp_array(%s)",$<str>3);}
+idm_input_array :identifier KW_DOT KW_MULTIPLY {
+				$<ptr>$=A4GL_new_expr_simple_string($<str>1,ET_EXPR_IDENTIFIER);
+				/* sprintf($<str>$,"\"%s\"",$<str>1); */
+		}
+	| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+				$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3, ET_EXPR_VARIABLE_IDENTIFIER);
+
+				/* sprintf($<str>$,"A4GL_var_for_inp_array(%s)",$<str>3); */
+	}
 ;
 
 
@@ -222,66 +138,88 @@ scroll_cmd :
 	SCROLL field_name_list_as_struct up_or_down {
 		map_ui("SCROLL");
 		add_feature("UI_SCROLL");
-		print_scroll(field_name_list_as_char($<field_list>2),$<str>3);
+		$<cmd>$=new_scroll_cmd($<field_list>2,chk_expr($<ptr>3));
+		
 	}
 ;
 
 up_or_down :
-	 KWUP_BY INT_VALUE {sprintf($<str>$,"%s",$<str>2);}
-	| KWDOWN_BY INT_VALUE {sprintf($<str>$,"-%s",$<str>2);}
-	| KWUP {strcpy($<str>$,"1");} 
-	| KWDOWN {strcpy($<str>$,"-1");}
-	| KWUP_BY variable {
-  		int a;
-  		a=scan_variable($<str>2)&15;
-  		if (a!=1&&a!=2) {
-    		a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
-    		YYERROR;
-    		/* error processing */;
-  		}
-  		sprintf($<str>$,"%s",fgl_add_scope($<str>2,0));
+	 KWUP_BY INT_VALUE {
+			sprintf($<str>$,"%s",$<str>2);
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
 	}
-	| KWDOWN_BY variable {
+	| KWDOWN_BY INT_VALUE {
+			sprintf($<str>$,"-%s",$<str>2);
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
+	}
+	| KWUP {
+			strcpy($<str>$,"1");
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
+		} 
+	| KWDOWN {
+				strcpy($<str>$,"-1");
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
+		}
+	| KWUP_BY variable_usage_expression {
   		int a;
-  		a=scan_variable($<str>2)&15;
-  		if (a!=1&&a!=2) {
-    		a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
-    		YYERROR;
+		char errbuff[256];
+  		a=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>2)&DTYPE_MASK;
+		if (a==-1) {
+			a4gl_yyerror(errbuff);
+			YYERROR;
+		} else {
+  		if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
+    			a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    			YYERROR;
     		/* error processing */;
   		}
-  		sprintf($<str>$,"%s",fgl_add_scope($<str>2,0));
+		}
+		$<ptr>$=$<ptr>2;
+	}
+	| KWDOWN_BY variable_usage_expression {
+  		int a;
+		char errbuff[256];
+  		a=get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>2)&DTYPE_MASK;
+		if (a==-1) {
+			a4gl_yyerror(errbuff);
+			YYERROR;
+		} else {
+  		if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
+    			a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    			YYERROR;
+    		/* error processing */;
+  		}
+		}
+		 $<ptr>$=A4GL_new_op_expr(A4GL_new_literal_long_str("0"),$<ptr>2,ET_EXPR_OP_SUB,0);
 	}
 
 
 ;
 
-op_help : {strcpy($<str>$,"");} | KW_HELP INT_VALUE
-;
 
-input_array_attributes: input_array_attributes_int {
-	strcpy($<str>$,"");
-}
+input_array_attributes: input_array_attributes_int 
 ;
 
 
 input_array_attributes_int : 
-	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 	{ curr_input_array_attribs.curr_row_display=acl_strdup($<str>2); }
-	| COUNT EQUAL INT_VALUE 		{ curr_input_array_attribs.count=acl_strdup($<str>3); }
-	| COUNT EQUAL variable 			{ curr_input_array_attribs.count=acl_strdup($<str>3); }
-	| MAXCOUNT EQUAL INT_VALUE 		{ curr_input_array_attribs.maxcount=acl_strdup($<str>3); }
-	| MAXCOUNT EQUAL variable 		{ curr_input_array_attribs.maxcount=acl_strdup($<str>3); }
-	| INSERT_ROW_EQUAL_TRUE 		{ curr_input_array_attribs.allow_insert=1; }
-	| INSERT_ROW_EQUAL_FALSE 		{ curr_input_array_attribs.allow_insert=0; }
-	| DELETE_ROW_EQUAL_TRUE 		{ curr_input_array_attribs.allow_delete=1; }
-	| DELETE_ROW_EQUAL_FALSE 		{ curr_input_array_attribs.allow_delete=0; }
+	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 			{ curr_attrib.currentrowdisplay=acl_strdup($<str>2); }
+	| COUNT EQUAL INT_VALUE 				{ curr_attrib.count=new_variable_or_literal( ET_E_V_OR_LIT_INT, $<str>3); }
+	| COUNT EQUAL variable_usage_expression 		{ curr_attrib.count=$<ptr>3; }
+	| MAXCOUNT EQUAL INT_VALUE 				{ curr_attrib.maxcount=new_variable_or_literal( ET_E_V_OR_LIT_INT, $<str>3); }
+	| MAXCOUNT EQUAL variable_usage_expression 		{ curr_attrib.maxcount=$<ptr>3; }
+	| INSERT_ROW_EQUAL_TRUE 		{ curr_attrib.allow_insert=EB_TRUE; }
+	| INSERT_ROW_EQUAL_FALSE 		{ curr_attrib.allow_insert=EB_FALSE; }
+	| DELETE_ROW_EQUAL_TRUE 		{ curr_attrib.allow_delete=EB_TRUE; }
+	| DELETE_ROW_EQUAL_FALSE 		{ curr_attrib.allow_delete=EB_FALSE; }
 ;
+
+
 
 opt_slice : {strcpy($<str>$,"");}
-        | SLICE OPEN_BRACKET identifier THRU identifier CLOSE_BRACKET {	
-			sprintf($<str>$,"%s:%s",$<str>3,$<str>5);
-	}
+        | SLICE OPEN_BRACKET identifier THRU identifier CLOSE_BRACKET {
+                        sprintf($<str>$,"%s:%s",$<str>3,$<str>5);
+        }
 ;
-
 
 
 /* ========================= input.rule ============================= */

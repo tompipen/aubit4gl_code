@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.16 2006-08-20 11:30:22 mikeaubury Exp $
+# $Id: class.c,v 1.17 2008-02-11 17:13:06 mikeaubury Exp $
 #
 */
 
@@ -41,6 +41,8 @@
 
 #include "a4gl_4glc_int.h"
 #include "variables.h"
+#include "commands.h"
+#include "parsehelp.h"
 
 /*
 =====================================================================
@@ -98,6 +100,7 @@ static void do_append (void);
 //andrej void dump_class (void);
 int class_call(char *s,char *f,int args);
 
+struct s_class_definition *this_class;
 /*
 =====================================================================
                     Functions definitions
@@ -221,8 +224,8 @@ dump_class (void)
   int a;
   struct variable *v;
 
-  write_class_string ("DATABASE", get_hdrdbname ());
-  write_class_int ("SCHEMA_ONLY", is_schema);
+  write_class_string ("DATABASE", get_module_dbname ());
+  write_class_int ("SCHEMA_ONLY", get_module_isschema());
   write_class_int ("NUMVARS", list_class_cnt);
   for (a = 0; a < list_class_cnt; a++)
     {
@@ -245,71 +248,69 @@ dump_class (void)
 static void
 write_variable_header (struct variable *v)
 {
-  struct name_list *ptr;
+  /* struct name_list *ptr; */
   int a;
   int cnt;
-  write_class_string ("NAME", v->names.name);
-  ptr = v->names.next;
+  write_class_string ("NAME", v->names.names.names_val[0].name);
+  /* ptr = v->names.next; */
 
-  write_class_int ("TYPE", v->variable_type);
+  write_class_int ("TYPE", v->var_data.variable_type);
   write_class_char ("USER_SYSTEM", v->user_system);
-  write_class_int ("IS_ARRAY", v->is_array);
+  // write_class_int ("IS_ARRAY", v->is_array);
   write_class_string ("SRC_MODULE", v->src_module);
 
 
-  if (v->is_array)
+  if (v->arr_subscripts.arr_subscripts_len)
     {
       cnt = 0;
-      for (a = 0; a < MAX_ARR_SUB; a++)
-	{
-	  if (v->arr_subscripts[a])
-	    cnt++;
-	}
+
+	cnt=v->arr_subscripts.arr_subscripts_len;
+
       write_class_int ("ARR_SUBSCRIPTS_CNT", cnt);
 
       for (a = 0; a < cnt; a++)
 	{
-	  if (v->arr_subscripts[a])
-	    write_class_int ("ARR_SUBSCRIPT", v->arr_subscripts[a]);
+	  if (v->arr_subscripts.arr_subscripts_val[a])
+	    write_class_int ("ARR_SUBSCRIPT", v->arr_subscripts.arr_subscripts_val[a]);
 	}
     }
 
-  if (v->variable_type == VARIABLE_TYPE_SIMPLE)
+  if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
     {
       write_variable_simple (v);
       return;
     }
 
-  if (v->variable_type == VARIABLE_TYPE_RECORD)
+  if (v->var_data.variable_type == VARIABLE_TYPE_RECORD)
     {
       write_variable_record (v);
       return;
     }
 
-  if (v->variable_type == VARIABLE_TYPE_OBJECT)
+  if (v->var_data.variable_type == VARIABLE_TYPE_OBJECT)
     {
       write_variable_object (v);
       return;
     }
 
-  if (v->variable_type == VARIABLE_TYPE_ASSOC)
+  if (v->var_data.variable_type == VARIABLE_TYPE_ASSOC)
     {
       write_variable_assoc (v);
       return;
     }
 
-  if (v->variable_type == VARIABLE_TYPE_CONSTANT)
+  if (v->var_data.variable_type == VARIABLE_TYPE_CONSTANT)
     {
       write_variable_constant (v);
       return;
     }
 
-  if (v->variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
+  if (v->var_data.variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
     {
       write_variable_function (v);
       return;
     }
-  FPRINTF (stderr,"Warning - unknown variable type : %d\n", v->variable_type);
+  FPRINTF (stderr,"Warning - unknown variable type : %d\n", v->var_data.variable_type);
 }
 
 
@@ -321,9 +322,9 @@ write_variable_header (struct variable *v)
 static void
 write_variable_simple (struct variable *v)
 {
-  write_class_int ("DATATYPE", v->data.v_simple.datatype);
-  write_class_int ("DIMENSIONS_1", v->data.v_simple.dimensions[0]);
-  write_class_int ("DIMENSIONS_2", v->data.v_simple.dimensions[1]);
+  write_class_int ("DATATYPE", v->var_data.variable_data_u.v_simple.datatype);
+  write_class_int ("DIMENSIONS_1", v->var_data.variable_data_u.v_simple.dimensions[0]);
+  write_class_int ("DIMENSIONS_2", v->var_data.variable_data_u.v_simple.dimensions[1]);
 }
 
 
@@ -336,33 +337,33 @@ write_variable_simple (struct variable *v)
 static void
 write_variable_linked (struct variable *v)
 {
+int a;
+/*
   struct name_list *ptr;
   int cnt;
+*/
 
-  write_class_string ("LINKTABLE", v->data.v_record.linked->tabname);
+  write_class_string ("LINKTABLE", v->var_data.variable_data_u.v_record.linked->tabname);
 
 
-
+/*
   cnt = 1;
-  ptr = v->data.v_record.linked->col_list.next;
+  ptr = v->var_data.variable_data_u.v_record.linked->col_list.next;
   while (ptr)
     {
       cnt++;
       ptr = ptr->next;
     }
+*/
 
 
 
-  write_class_int ("LINKCOLUMNS", cnt);
+  write_class_int ("LINKCOLUMNS", v->var_data.variable_data_u.v_record.linked->col_list.names.names_len);
 
-  write_class_string ("LINKCOLUMN", v->data.v_record.linked->col_list.name);
+  for (a=0;a<v->var_data.variable_data_u.v_record.linked->col_list.names.names_len;a++) {
+  	write_class_string ("LINKCOLUMN", v->var_data.variable_data_u.v_record.linked->col_list.names.names_val[a].name);
+  }
 
-  ptr = v->data.v_record.linked->col_list.next;
-  while (ptr)
-    {
-      write_class_string ("LINKCOLUMN", ptr->name);
-      ptr = ptr->next;
-    }
 
 }
 
@@ -377,18 +378,19 @@ static void
 write_variable_record (struct variable *v)
 {
   int a;
-  write_class_int ("COUNT", v->data.v_record.record_cnt);
-  if (v->data.v_record.record_cnt == 0)
+#ifdef OLD
+  write_class_int ("COUNT", v->var_data.variable_data_u.v_record.variables.variables_len);
+  if (v->var_data.variable_data_u.v_record.variables.variables_len == 0)
     return;
 
-  if (v->data.v_record.linked == 0)
+  if (v->var_data.variable_data_u.v_record.linked == 0)
     {
       write_class_int ("LINKED", 0);
     }
   else
     {
 
-      if (v->data.v_record.linked->tabname)
+      if (v->var_data.variable_data_u.v_record.linked->tabname)
 	{
 	  write_class_int ("LINKED", 1);
 	  write_variable_linked (v);
@@ -400,10 +402,11 @@ write_variable_record (struct variable *v)
     }
 
 
-  for (a = 0; a < v->data.v_record.record_cnt; a++)
+  for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++)
     {
-      write_variable_header (v->data.v_record.variables[a]);
+      write_variable_header (v->var_data.variable_data_u.v_record.variables.variables_val[a]);
     }
+#endif
 }
 
 
@@ -417,18 +420,19 @@ static void
 write_variable_object (struct variable *v)
 {
   int a;
-  write_class_int ("COUNT", v->data.v_record.record_cnt);
-  if (v->data.v_record.record_cnt == 0)
+#ifdef OLD
+  write_class_int ("COUNT", v->var_data.variable_data_u.v_record.variables.variables_len);
+  if (v->var_data.variable_data_u.v_record.variables.variables_len == 0)
     return;
 
-  if (v->data.v_record.linked == 0)
+  if (v->var_data.variable_data_u.v_record.linked == 0)
     {
       write_class_int ("LINKED", 0);
     }
   else
     {
 
-      if (v->data.v_record.linked->tabname)
+      if (v->var_data.variable_data_u.v_record.linked->tabname)
 	{
 	  write_class_int ("LINKED", 1);
 	  write_variable_linked (v);
@@ -440,11 +444,12 @@ write_variable_object (struct variable *v)
     }
 
 
-  for (a = 0; a < v->data.v_record.record_cnt; a++)
+  for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++)
     {
-      write_variable_header (v->data.v_record.variables[a]);
+      write_variable_header (v->var_data.variable_data_u.v_record.variables.variables_val[a]);
     }
-	write_class_string("OBJECT_TYPE",v->data.v_record.object_type);
+	write_class_string("OBJECT_TYPE",v->var_data.variable_data_u.v_record.object_type);
+#endif
 }
 
 
@@ -458,9 +463,9 @@ static void
 write_variable_assoc (struct variable *v)
 {
   struct variable *ptr;
-  write_class_int ("SIZE", v->data.v_assoc.size);
-  write_class_int ("CHARSIZE", v->data.v_assoc.char_size);
-  ptr = v->data.v_assoc.variables[0];
+  write_class_int ("SIZE", v->var_data.variable_data_u.v_assoc.size);
+  write_class_int ("CHARSIZE", v->var_data.variable_data_u.v_assoc.char_size);
+  ptr = v->var_data.variable_data_u.v_assoc.variables.variables_val[0];
   write_variable_header (ptr);
 
 }
@@ -475,23 +480,25 @@ static void
 write_variable_constant (struct variable *v)
 {
 
-  write_class_int ("CONSTANT_TYPE", v->data.v_const.consttype);
+  write_class_int ("CONSTANT_TYPE", v->var_data.variable_data_u.v_const.consttype);
 
-  if (v->data.v_const.consttype == CONST_TYPE_INTEGER)
+  if (v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_INTEGER)
     {
-      write_class_int ("CONSTANT_VALUE", v->data.v_const.data.data_i);
+      write_class_int ("CONSTANT_VALUE", v->var_data.variable_data_u.v_const.constant_data_u.data_i);
     }
 
 
-  if (v->data.v_const.consttype == CONST_TYPE_CHAR
-      || v->data.v_const.consttype == CONST_TYPE_IDENT)
+  if (v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_CHAR) 
     {
-      write_class_string ("CONSTANT_VALUE", v->data.v_const.data.data_c);
+      write_class_string ("CONSTANT_VALUE", v->var_data.variable_data_u.v_const.constant_data_u.data_c);
     }
+  if ( v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_IDENT) {
+      write_class_string ("CONSTANT_VALUE", v->var_data.variable_data_u.v_const.constant_data_u.data_ident);
+	}
 
-  if (v->data.v_const.consttype == CONST_TYPE_FLOAT)
+  if (v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_FLOAT)
     {
-      write_class_float ("CONSTANT_VALUE", v->data.v_const.data.data_f);
+      write_class_float ("CONSTANT_VALUE", v->var_data.variable_data_u.v_const.constant_data_u.data_f);
     }
 
 }
@@ -516,7 +523,7 @@ int read_class (char *s, int is_parent)
   struct variable *nptr;
   nline = 0;
 
-
+#ifdef OLD
   class_variable_data = CLASS_get_variable (s);
   class_members = CLASS_get_members (s);
 
@@ -541,8 +548,9 @@ int read_class (char *s, int is_parent)
 
   if (strlen (dbname) > 0)
     {
-      set_hdrdbname (dbname);
-      open_db (dbname);
+
+	set_module_dbname(dbname, is_schema);
+      	open_db (dbname);
     }
 
   A4GL_debug ("Adding parent record");
@@ -573,41 +581,43 @@ int read_class (char *s, int is_parent)
 	  if (list_class_cnt == 0)
 	    {
 	      list_class[0] = acl_malloc2 (sizeof (struct variable));
-	      list_class[0]->variable_type = VARIABLE_TYPE_RECORD;
-	      list_class[0]->names.name = acl_strdup ("this_class_c");
-	      list_class[0]->names.next = 0;
+	      list_class[0]->var_data.variable_type = VARIABLE_TYPE_RECORD;
+	      list_class[0]->names.names.names_val=malloc(sizeof(vname));
+	      list_class[0]->names.names.names_len=0;
+	      list_class[0]->names.names.names_val[0].name = acl_strdup ("this_class_c");
 	      list_class[0]->user_system = 'U';
 	      list_class[0]->scope = 'P';
-	      list_class[0]->is_array = 0;
+	      //list_class[0]->is_array = 0;
 	      list_class[0]->is_static = 0;
 	      list_class[0]->is_extern = 0;
 	      for (a = 0; a < MAX_ARR_SUB; a++)
 		list_class[0]->arr_subscripts[a] = 0;
 	      list_class[0]->src_module = acl_strdup ("IMPLICIT");
-	      list_class[0]->data.v_record.variables = 0;
-	      list_class[0]->data.v_record.record_alloc = 0;
-	      list_class[0]->data.v_record.record_cnt = 0;
+	      list_class[0]->var_data.variable_data_u.v_record.variables.variables_len = 0;
+	      list_class[0]->var_data.variable_data_u.v_record.variables.variables_val = 0;
+
+	      list_class[0]->var_data.variable_data_u.v_record.record_alloc = 0;
+	      list_class[0]->var_data.variable_data_u.v_record.variables.variables_len = 0;
 
 	    }
 	  read_variable_header (&np);
 
 
 
-	  list_class[0]->data.v_record.record_alloc++;
-	  list_class[0]->data.v_record.record_cnt++;
-	  pid = list_class[0]->data.v_record.record_cnt - 1;
-	  list_class[0]->data.v_record.variables =
-	    acl_realloc (list_class[0]->data.v_record.variables,
+	  list_class[0]->var_data.variable_data_u.v_record.record_alloc++;
+	  list_class[0]->var_data.variable_data_u.v_record.variables.variables_len++;
+	  pid = list_class[0]->var_data.variable_data_u.v_record.variables.variables_len - 1;
+	  list_class[0]->var_data.variable_data_u.v_record.variables.variables_val = acl_realloc (list_class[0]->var_data.variable_data_u.v_record.variables.variables_val,
 		     sizeof (struct variable *) *
-		     list_class[0]->data.v_record.record_alloc);
-	  list_class[0]->data.v_record.linked = 0;
+		     list_class[0]->var_data.variable_data_u.v_record.record_alloc);
+	  list_class[0]->var_data.variable_data_u.v_record.linked = 0;
 
 
 
-	  list_class[0]->data.v_record.variables[pid] =
+	  list_class[0]->var_data.variable_data_u.v_record.variables.variables_val[pid] =
 	    acl_malloc2 (sizeof (struct variable));
 
-	  memcpy (list_class[0]->data.v_record.variables[pid], &np,
+	  memcpy (list_class[0]->var_data.variable_data_u.v_record.variables.variables_val[pid], &np,
 		  sizeof (struct variable));
 
 
@@ -620,11 +630,11 @@ int read_class (char *s, int is_parent)
 		  memset (list_class[a + list_class_cnt], 0,
 			  sizeof (struct variable));
 		  read_variable_header (list_class[a + list_class_cnt]);
-		  if (list_class[a + list_class_cnt]->variable_type == 4)
+		  if (list_class[a + list_class_cnt]->var_data.variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
 		    {
 		      char buff[1024];
-		      SPRINTF2 (buff, "%s.%s", s, list_class[a + list_class_cnt]->names.name);
-		      list_class[a + list_class_cnt]->names.name =
+		      SPRINTF2 (buff, "%s.%s", s, list_class[a + list_class_cnt]->names.names.names_val[0].name);
+		      list_class[a + list_class_cnt]->names.names.names_val[0].name =
 			acl_strdup (buff);
 
 		    }
@@ -640,7 +650,7 @@ int read_class (char *s, int is_parent)
 			/* Does nothing */
 	}
 
-      dump_variable_records (list_class, list_class_cnt, 0);
+      /* dump_variable_records (list_class, list_class_cnt, 0); */
 
     } else {
 	//int a;
@@ -653,7 +663,7 @@ int read_class (char *s, int is_parent)
 	read_variable_header (&np);
 
 
-	if (strcmp(np.names.name,"parent")!=0) {
+	if (strcmp(np.names.names.names_val[0].name,"parent")!=0) {
 		a4gl_yyerror("Not set to parent in class");
 		return 0;
 	}
@@ -661,7 +671,7 @@ int read_class (char *s, int is_parent)
 
 
 
-	if (np.variable_type!=VARIABLE_TYPE_RECORD) {
+	if (np.var_data.variable_type!=VARIABLE_TYPE_RECORD) {
 		a4gl_yyerror("Not a record in class");
 		return 0;
 	}
@@ -688,7 +698,6 @@ int read_class (char *s, int is_parent)
 	//nptr->v_record,np;
 
 
-	//A4GL_pause_execution();
 
   	//class_members = CLASS_get_members (s);
 	//
@@ -717,6 +726,7 @@ int read_class (char *s, int is_parent)
 	//dim_push_name("_object_type",""); dim_push_type("long","4","");
 	//dim_pop_record();
     }
+#endif
   return 1;
 }
 
@@ -845,66 +855,70 @@ read_variable_header (struct variable *v)
   int a;
   int cnt;
   int vt;
- v->names.alias=0;
+v->names.names.names_val=malloc(sizeof(vname));
+v->names.names.names_len=1;
+
+ v->names.names.names_val[0].alias=0;
   memset(v,0, sizeof(struct variable));
-  read_class_string ("NAME", &v->names.name, 1);
-  if (strcmp (v->names.name, "THIS") == 0)
+  read_class_string ("NAME", &v->names.names.names_val[0].name, 1);
+
+  if (strcmp (v->names.names.names_val[0].name, "THIS") == 0)
     {
-      v->names.name = acl_strdup ("parent");
+      v->names.names.names_val[0].name = acl_strdup ("parent");
     }
-  v->names.next = 0;
+
 #ifdef DEBUG
-  A4GL_debug ("Read variable : %s", v->names.name);
+  A4GL_debug ("Read variable : %s", v->names.names.names_val[0].name);
 #endif
   v->is_static = 0;
 
   read_class_int ("TYPE", &vt);
-  v->variable_type=vt;
+  v->var_data.variable_type=vt;
   read_class_char ("USER_SYSTEM", &v->user_system);
-  read_class_int ("IS_ARRAY", &v->is_array);
+  //read_class_int ("IS_ARRAY", &v->is_array);
   read_class_string ("SRC_MODULE", &v->src_module, 1);
   v->scope = 'P';
 
-  for (a = 0; a < MAX_ARR_SUB; a++)
-    {
-      v->arr_subscripts[a] = 0;
-    }
+v->arr_subscripts.arr_subscripts_len=0;
+v->arr_subscripts.arr_subscripts_val=0;
 
-  if (v->is_array)
-    {
       read_class_int ("ARR_SUBSCRIPTS_CNT", &cnt);
 
-      for (a = 0; a < cnt; a++)
-	{
-	  read_class_int ("ARR_SUBSCRIPT", &v->arr_subscripts[a]);
+	v->arr_subscripts.arr_subscripts_len=cnt;
+	if (cnt) {
+		v->arr_subscripts.arr_subscripts_val=malloc(cnt*sizeof (v->arr_subscripts.arr_subscripts_val[0]));
+	
+      		for (a = 0; a < cnt; a++)
+		{
+	  	read_class_int ("ARR_SUBSCRIPT", &v->arr_subscripts.arr_subscripts_val[a]);
+		}
 	}
-    }
 
-  if (v->variable_type == VARIABLE_TYPE_SIMPLE)
+  if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
     {
       read_variable_simple (v);
     }
 
-  if (v->variable_type == VARIABLE_TYPE_RECORD)
+  if (v->var_data.variable_type == VARIABLE_TYPE_RECORD)
     {
       read_variable_record (v);
     }
 
-  if (v->variable_type == VARIABLE_TYPE_OBJECT)
+  if (v->var_data.variable_type == VARIABLE_TYPE_OBJECT)
     {
       read_variable_object (v);
     }
 
-  if (v->variable_type == VARIABLE_TYPE_ASSOC)
+  if (v->var_data.variable_type == VARIABLE_TYPE_ASSOC)
     {
       read_variable_assoc (v);
     }
-  if (v->variable_type == VARIABLE_TYPE_CONSTANT)
+  if (v->var_data.variable_type == VARIABLE_TYPE_CONSTANT)
     {
       read_variable_constant (v);
     }
 
-  if (v->variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
+  if (v->var_data.variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
     {
       read_variable_function (v);
     }
@@ -919,9 +933,9 @@ read_variable_header (struct variable *v)
 static void
 read_variable_simple (struct variable *v)
 {
-  read_class_int ("DATATYPE", &v->data.v_simple.datatype);
-  read_class_int ("DIMENSIONS_1", &v->data.v_simple.dimensions[0]);
-  read_class_int ("DIMENSIONS_2", &v->data.v_simple.dimensions[1]);
+  read_class_int ("DATATYPE", &v->var_data.variable_data_u.v_simple.datatype);
+  read_class_int ("DIMENSIONS_1", &v->var_data.variable_data_u.v_simple.dimensions[0]);
+  read_class_int ("DIMENSIONS_2", &v->var_data.variable_data_u.v_simple.dimensions[1]);
 }
 
 /**
@@ -933,23 +947,20 @@ static void
 read_variable_linked (struct variable *v)
 {
   int cnt;
-  struct name_list *ptr;
+  int a;
 
-  read_class_string ("LINKTABLE", &v->data.v_record.linked->tabname, 1);
+  read_class_string ("LINKTABLE", &v->var_data.variable_data_u.v_record.linked->tabname, 1);
   read_class_int ("LINKCOLUMNS", &cnt);
-  read_class_string ("LINKCOLUMN",
-		     &v->data.v_record.linked->col_list.name, 1);
 
-  ptr = &v->data.v_record.linked->col_list;
+  v->var_data.variable_data_u.v_record.linked->col_list.names.names_len=cnt;
+  v->var_data.variable_data_u.v_record.linked->col_list.names.names_val=malloc(sizeof(vname)*cnt);
+  v->var_data.variable_data_u.v_record.linked->col_list.names.names_val[0].alias=0;
 
-  while (cnt > 1)
-    {
-      ptr->next = acl_malloc2 (sizeof (struct name_list));
-      ptr = ptr->next;
-      ptr->next = 0;
-      read_class_string ("LINKCOLUMN", &ptr->name, 1);
-      cnt--;
-    }
+  for (a=0;a<cnt;a++) {
+  	read_class_string ("LINKCOLUMN", &v->var_data.variable_data_u.v_record.linked->col_list.names.names_val[a].name, 1);
+  }
+
+
 }
 
 /**
@@ -962,9 +973,10 @@ read_variable_record (struct variable *v)
 {
   int a;
   int is_linked;
-  v->data.v_record.linked = 0;
-  read_class_int ("COUNT", &v->data.v_record.record_cnt);
-  if (v->data.v_record.record_cnt == 0)
+#ifdef OLD
+  v->var_data.variable_data_u.v_record.linked = 0;
+  read_class_int ("COUNT", &v->var_data.variable_data_u.v_record.variables.variables_len);
+  if (v->var_data.variable_data_u.v_record.variables.variables_len == 0)
     {
 
       return;
@@ -975,19 +987,19 @@ read_variable_record (struct variable *v)
 
   if (is_linked)
     {
-      v->data.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
+      v->var_data.variable_data_u.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
       read_variable_linked (v);
     }
 
-  v->data.v_record.variables =
-    acl_malloc2 (sizeof (struct variable *) * v->data.v_record.record_cnt + 1);
+  v->var_data.variable_data_u.v_record.variables.variables_val =
+    acl_malloc2 (sizeof (struct variable *) * v->var_data.variable_data_u.v_record.variables.variables_len + 1);
 
-  for (a = 0; a < v->data.v_record.record_cnt; a++)
+  for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++)
     {
-      v->data.v_record.variables[a] = acl_malloc2 (sizeof (struct variable));
-      read_variable_header (v->data.v_record.variables[a]);
+      v->var_data.variable_data_u.v_record.variables.variables_val[a] = acl_malloc2 (sizeof (struct variable));
+      read_variable_header (v->var_data.variable_data_u.v_record.variables.variables_val[a]);
     }
-
+#endif
 }
 
 
@@ -1001,10 +1013,10 @@ read_variable_object (struct variable *v) {
 int a;
 int is_linked;
 char buff[255];
-
-  v->data.v_record.linked = 0;
-  read_class_int ("COUNT", &v->data.v_record.record_cnt);
-  if (v->data.v_record.record_cnt == 0)
+#ifdef OLD
+  v->var_data.variable_data_u.v_record.linked = 0;
+  read_class_int ("COUNT", &v->var_data.variable_data_u.v_record.variables.variables_len);
+  if (v->var_data.variable_data_u.v_record.variables.variables_len == 0)
     {
 
       return;
@@ -1015,22 +1027,22 @@ char buff[255];
 
   if (is_linked)
     {
-      v->data.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
+      v->var_data.variable_data_u.v_record.linked = acl_malloc2 (sizeof (struct linked_variable));
       read_variable_linked (v);
     }
 
-  v->data.v_record.variables =
-    acl_malloc2 (sizeof (struct variable *) * v->data.v_record.record_cnt + 1);
+  v->var_data.variable_data_u.v_record.variables.variables_val =
+    acl_malloc2 (sizeof (struct variable *) * v->var_data.variable_data_u.v_record.variables.variables_len + 1);
 
-  for (a = 0; a < v->data.v_record.record_cnt; a++)
+  for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++)
     {
-      v->data.v_record.variables[a] = acl_malloc2 (sizeof (struct variable));
-      read_variable_header (v->data.v_record.variables[a]);
+      v->var_data.variable_data_u.v_record.variables.variables_val[a] = acl_malloc2 (sizeof (struct variable));
+      read_variable_header (v->var_data.variable_data_u.v_record.variables.variables_val[a]);
     }
 
 	read_class_string ("OBJECT_TYPE", (char **)buff,255);
-	v->data.v_record.object_type=acl_strdup(buff);
-
+	v->var_data.variable_data_u.v_record.object_type=acl_strdup(buff);
+#endif
 }
 
 
@@ -1044,10 +1056,10 @@ read_variable_assoc (struct variable *v)
 {
   struct variable *ptr;
 
-  read_class_int ("SIZE", &v->data.v_assoc.size);
-  read_class_int ("CHARSIZE", &v->data.v_assoc.char_size);
-  v->data.v_assoc.variables = acl_malloc2 (sizeof (struct variable *) * 1);
-  ptr = v->data.v_assoc.variables[0];
+  read_class_int ("SIZE", &v->var_data.variable_data_u.v_assoc.size);
+  read_class_int ("CHARSIZE", &v->var_data.variable_data_u.v_assoc.char_size);
+  v->var_data.variable_data_u.v_assoc.variables.variables_val = acl_malloc2 (sizeof (struct variable *) * 1);
+  ptr = v->var_data.variable_data_u.v_assoc.variables.variables_val[0];
   read_variable_header (ptr);
 }
 
@@ -1067,26 +1079,29 @@ read_variable_function (struct variable *v)
 static void
 read_variable_constant (struct variable *v)
 {
-  read_class_int ("CONSTANT_TYPE", &v->data.v_const.consttype);
+int a;
 
-  if (v->data.v_const.consttype == CONST_TYPE_INTEGER)
+  read_class_int ("CONSTANT_TYPE", &a);
+  v->var_data.variable_data_u.v_const.consttype=a;
+
+  if (v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_INTEGER)
     {
-      read_class_int ("CONSTANT_VALUE", &v->data.v_const.data.data_i);
+      read_class_int ("CONSTANT_VALUE", &v->var_data.variable_data_u.v_const.constant_data_u.data_i);
     }
 
-  if (v->data.v_const.consttype == CONST_TYPE_CHAR)
+  if (v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_CHAR)
     {
-      read_class_string ("CONSTANT_VALUE", &v->data.v_const.data.data_c, 1);
+      read_class_string ("CONSTANT_VALUE", &v->var_data.variable_data_u.v_const.constant_data_u.data_c, 1);
     }
 
-  if (v->data.v_const.consttype == CONST_TYPE_IDENT)
+  if (v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_IDENT)
     {
-      read_class_string ("CONSTANT_VALUE", &v->data.v_const.data.data_c, 1);
+      read_class_string ("CONSTANT_VALUE", &v->var_data.variable_data_u.v_const.constant_data_u.data_ident, 1);
     }
 
-  if (v->data.v_const.consttype == CONST_TYPE_FLOAT)
+  if (v->var_data.variable_data_u.v_const.consttype == CONST_TYPE_FLOAT)
     {
-      read_class_float ("CONSTANT_VALUE", &v->data.v_const.data.data_f);
+      read_class_float ("CONSTANT_VALUE", &v->var_data.variable_data_u.v_const.constant_data_u.data_f);
     }
 
 }
@@ -1121,7 +1136,7 @@ int isclassvariable(char *s) {
 		return 0; // We're expecting a record/object
 	}
 
-	if (ptr->variable_type != VARIABLE_TYPE_OBJECT) {
+	if (ptr->var_data.variable_type != VARIABLE_TYPE_OBJECT) {
 		return 0; // We're expecting an object
 	}
 
@@ -1140,7 +1155,7 @@ int isclassmember(char *s,char *f) {
 	if (vval!=-2) {
 		return 0; // We're expecting a record/object
 	}
-	if (ptr->variable_type != VARIABLE_TYPE_OBJECT) {
+	if (ptr->var_data.variable_type != VARIABLE_TYPE_OBJECT) {
 		return 0; // We're expecting an object
 	}
 
@@ -1154,10 +1169,31 @@ int isclassmember(char *s,char *f) {
 	else {
 		for (a=0;class_members[a];a++) {if (A4GL_aubit_strcasecmp(f,class_members[a])==0) return 1;}
 	}
-
-
-
 	return 0;
+}
+
+void add_class_module_entry(void) {
+	struct module_entry *e;
+	e=new_module_entry(E_MET_CLASS_DEFINITION);
+	memcpy(&e->module_entry_u.class_definition, this_class,sizeof(struct s_class_definition));
+	add_module_entry(e);
+	this_class=0;
+}
+
+void add_class_entry(struct module_entry *e) {
+	this_class->class_entries.class_entries_len++;
+	this_class->class_entries.class_entries_val=realloc(this_class->class_entries.class_entries_val, sizeof(struct module_entry *)* this_class->class_entries.class_entries_len);
+	this_class->class_entries.class_entries_val[this_class->class_entries.class_entries_len-1]=e;
+}
+
+void new_class(char *cname, char *pname) {
+	this_class=malloc(sizeof(struct s_class_definition));
+	/* this_class->classname=strdup(cname);
+	this_class->parentname=strdup(pname); */
+	this_class->public_variables.variables.variables_len=0;
+	this_class->private_variables.variables.variables_len=0;
+	this_class->class_entries.class_entries_len=0;
+	this_class->class_entries.class_entries_val=0;
 }
 
 

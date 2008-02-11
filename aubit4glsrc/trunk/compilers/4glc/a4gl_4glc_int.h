@@ -2,7 +2,6 @@
 #ifndef _A4GL_4GLC_INT_H_
 #define _A4GL_4GLC_INT_H_
 
-#include "variables.h"
 
 //      #define __GNU_LIBRARY__
 
@@ -41,8 +40,11 @@
 
 
 #include "a4gl_libaubit4gl.h"
+//#include "fgl.x.h"
+#include "a4gl_expr.h"
 #include "a4gl_API_lex.h"
 #include <stdio.h>
+#include "variables.h"
 
 
 #ifdef __MINGW32__
@@ -166,13 +168,13 @@ long scan_variable (char *s);
 void add_constant (char t, char *ptr, char *name);
 void set_4gl_vars (void);
 void open_db (char *s);
-void push_like (char *t);
-void push_rectab (char *t);
+//void push_like (char *t);
+//void push_rectab (char *t);
 void dump_vars (void);
 void push_menu_title (char *s);
-int push_blockcommand (char *cmd_type);
+//int push_blockcommand (char *cmd_type);
 void add_continue_blockcommand (char *cmd_type);
-void pop_blockcommand (char *cmd_type);
+//void pop_blockcommand (char *cmd_type);
 int in_command (char *cmd_type);
 //void push_gen (int a, char *s);
 void pop_all_gen (int a, char *s);
@@ -184,15 +186,14 @@ int get_sio_id(char *cmd_type);
 char *command_type_for_stack_pos(int n);
 int add_bind (char i, char *var);
 int how_many_in_bind (char i);
-void continue_loop (char *cmd_type);
+//void continue_loop (char *cmd_type);
 void exit_loop (char *cmd_type);
-void push_report_block (char *why, char whytype,char *variable);
+//void push_report_block (char *why, char whytype,char *variable);
 void init_report_structure (struct rep_structure *rep);
 int attr_code (char *s);
 void set_mod_level (int a);
 long get_variable_dets (char *s, int *type, int *arrsize,
 			int *size, int *level, char *arr);
-int scan_orderby (char *varname, int cnt);
 void pdf_init_report_structure (struct pdf_rep_structure *rep);
 
 void reset_attrib (struct form_attr *form_attrib);
@@ -212,13 +213,13 @@ char *convstrsql (char *s);
 void read_glob (char *s);
 char *upshift (char *a);
 char *downshift (char *a);
-struct expr_str *add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,long *racnt);
+//struct expr_str *add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a,long *racnt);
 void set_curr_rep_name (char *s);
 char *get_curr_rep_name (void);
 void set_curr_block (int a);
 void set_ingroup (void);
 void set_whento (char *p);
-void set_whenever (int c, char *p);
+//void set_whenever (int c, char *p);
 void clr_function_constants (void);
 int check_for_constant (char *name, char *buff);
 int npush_menu (void);
@@ -289,7 +290,7 @@ struct s_report
 	   uppercase-lowercase! So i renamed it to "binding_comp"
 	   used in compile_c.c compile_perl.c mod.c */
 
-
+/*
 #ifndef BINDING_COMP_LIST
 
 struct binding_comp_list {
@@ -299,7 +300,7 @@ struct binding_comp_list {
 	char type;
 	char *str;
 };
-typedef struct binding_comp_list t_binding_comp_list;
+typedef struct expr_str_list  struct expr_str_list;
 
 struct binding_comp
 {
@@ -312,13 +313,17 @@ struct binding_comp
 struct  binding_comp_list *copy_togenbind(char i);
 #define BINDING_COMP_LIST
 #endif
-
-
+*/
+/*
 struct s_cur_Def {
-        t_binding_comp_list *inbind;
-        t_binding_comp_list *outbind;
-        char *str;
+        struct expr_str_list *inbind;
+        struct expr_str_list *outbind;
+        char *forUpdate;
+        char *insert_str;
+        expr_str *ident;
+        struct s_select *select;
 } ;
+*/
 
 
 
@@ -333,13 +338,13 @@ struct s_constr_buff
 
 void expand_ordbind(void );
 void expand_fbind(void );
-void expand_bind_g (t_binding_comp_list *l);
+void expand_bind_g (struct expr_str_list *l);
 struct  binding_comp_list *ensure_binding_comp_list (struct  binding_comp_list *l) ;
 struct  binding_comp_list *ensure_binding_comp_list_type (struct  binding_comp_list *l,char type) ;
 void llex_add_ibind(int dtype,char *var);
 char *get_debug_filename(void);
-void ensure_bind_g (t_binding_comp_list *binding,int need);
-int print_linked_cmd (int type, char *var);
+void ensure_bind_g (struct expr_str_list *binding,int need);
+//struct command *print_linked_cmd (int type, char *var);
 
 //void expand_bind (struct binding_comp *bind, int btype, int cnt);
 char *get_var_name (int z);
@@ -350,11 +355,12 @@ void dump_expr (struct expr_str *orig_ptr);
 //void *A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr);
 //int length_expr (struct expr_str *ptr);
 void tr_glob_fname (char *s);
-void add_ex_dtype (char *sx);
+//void add_ex_dtype (char *sx);
 
 	/* ====================== Implemented in map.c ======================= */
 void openmap (char *s);
 void addmap (char *t, char *s, char *w, int l, char *m);
+void addmap_p (char *t, struct expr_str *s, char *w, int l, char *m);
 void closemap (void);
 
 
@@ -418,15 +424,16 @@ char get_curr_report_stack_whytype (void);
 int is_builtin_func (char *s);
 int get_blk_no(void) ;
 int get_blk_no_1(void);
-void do_print_menu_1(void) ;
+//void do_print_menu_1(void) ;
 void set_rep_no_orderby(int n) ;
 void clr_validate_list(void) ;
 void A4GL_remove_comments_in_memfile(void *yyin);
-void do_print_menu_block_end(int mn) ;
+
+//void do_print_menu_block_end(int mn) ;
 int A4GL_escape_quote_owner(void) ;
 void push_validate (char *t2);
 int gen_cnt (int a);
-void expand_bind (struct binding_comp *bind, int btype, int cnt,int must_be_local);
+//void expand_bind (struct binding_comp *bind, int btype, int cnt,int must_be_local);
 void A4GL_lex_printc(char* fmt,... );
 //void A4GL_lex_printh(char* fmt,... );
 void A4GL_lex_printcomment(char* fmt,... );
@@ -437,12 +444,11 @@ get_curr_report_stack_var (void);
 char *
 get_report_stack_var (int a);
 char *A4GL_lextype(void) ;
-char *field_name_list_as_quoted_char_list(struct fh_field_list *fl);
+//char *field_name_list_as_quoted_char_list(struct fh_field_list *fl);
 
 
 
 void set_yytext (char *s);
-struct expr_str *A4GL_get_validate_expr(int n);
 void set_whento_store(char *p);
 
 char *get_last_class_var(void);
@@ -497,7 +503,7 @@ typedef struct dt_display t_dt_display;
 
 
 /* Import stuff : */
-
+/*
 enum flist_type {
         FLIST_NORMAL,
         FLIST_SPECIAL
@@ -516,6 +522,7 @@ struct file_description {
         struct flist *list;
         int nlist;
 };
+*/
 
 
 char *check_colname(char *s) ;
@@ -524,7 +531,7 @@ void file_out_nl(char *why);
 int read_class (char *s,int is_parent);
 void dump_class (void);
 char *matches_string(char *m,char *e);
-void set_whenever_from_store(void) ;
+//void set_whenever_from_store(void) ;
 
 /*
 struct ilist {
@@ -550,25 +557,25 @@ void A4GL_CV_print_exec_sql(char *s) ;
 
 void A4GL_CV_print_exec_sql_bound(char *s) ;
 
-void A4GL_CV_print_do_select(char *s,t_binding_comp_list *outbind) ;
+void A4GL_CV_print_do_select(char *s,struct expr_str_list *outbind) ;
 
 
-char *A4GL_CV_print_select_all(char *s,t_binding_comp_list *inbind, t_binding_comp_list *outbind,int used_with_declare) ;
+char *A4GL_CV_print_select_all(char *s,struct expr_str_list *inbind, struct expr_str_list *outbind,int used_with_declare) ;
 //char *A4GL_compiled_sqlpack(void);
 char *A4GL_decode_packtype(char *s);
-void A4GL_cursor_defined(char *s,char type) ;
-void A4GL_cursor_fetch(char *s,t_fetch_place *fp);
-void A4GL_cursor_current(char *s) ;
-void A4GL_cursor_flush(char *s) ;
-char *A4GL_get_insert_prep(char *s) ;
-void A4GL_insert_cursor_prep(char *cname,char *stmt);
+void A4GL_cursor_defined(struct expr_str *s,char type) ;
+void A4GL_cursor_fetch(struct expr_str *s,struct s_fetch_place *fp);
+void A4GL_cursor_current(struct expr_str *s) ;
+void A4GL_cursor_flush(struct expr_str *s) ;
+char *A4GL_get_insert_prep(struct expr_str *s) ;
+void A4GL_insert_cursor_prep(struct expr_str *cname,char *stmt);
 void A4GL_cursor_is_insert(void);
-int A4GL_open_class_dll(char *s);
+//int A4GL_open_class_dll(char *s);
 void A4GL_cursor_is_select(void);
 void A4GL_load_features(void);
 void A4GL_lex_printh(char* fmt,... );
 void emulate_insert(char *s);
-char A4GL_cursor_type(char *s);
+char A4GL_cursor_type(struct expr_str *s);
 char *A4GL_print_start_to_is_expr(struct expr_str *ptr) ;
 long get_variable_dets_arr3 (char *s, int *type, int *arrsize1,int *arrsize2,int *arrsize3, int *size, int *level, char *arr);
 int isclassvariable(char *s);
@@ -619,12 +626,25 @@ void map_display_at(struct expr_str *x,struct expr_str *y) ;
 void map_run(struct expr_str *s) ;
 void map_ui_block(char *s) ;
 void map_ui_endblock(char *s) ;
-int set_ignore_indicators(void);
-int clr_ignore_indicators(void);
 
-int check_cursor_name(char *s);
+
+struct s_pair_expr {
+        struct expr_str *s1;
+        struct expr_str *s2;
+};
+
+struct s_pair_expr_list {
+        struct expr_str_list *s1;
+        struct expr_str_list *s2;
+};
+
+
+//int set_ignore_indicators(void);
+//int clr_ignore_indicators(void);
+
+int check_cursor_name(expr_str *s);
 void output_to_report_definition(char *s, struct expr_str_list  *p);
-void add_report_definition(char *s, struct  binding_comp_list *params);
+void add_report_definition(char *s, struct  expr_str_list *params);
 
 
 // printf is often used for debug messages during
@@ -638,6 +658,73 @@ void add_report_definition(char *s, struct  binding_comp_list *params);
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
 #endif 
 
+
+long expr_str_to_long(struct expr_str *ptr);
+struct expr_str_list * add_genbind (struct expr_str_list *l, char *var_i,char *type);
+//struct command * cmd_display_by_name (struct attrib *attr);
+struct expr_str_list * make_bind (char *var_i);
+//char * get_curr_report_stack_var (void);
+//char * get_report_stack_var (int a);
+
+//void set_variables (variable_list *v,char why) ;
+//void set_module_dbname(char *db,e_boolean isschema);
+
+//char *get_module_dbname(void) ;
+//e_boolean get_module_isschema(void) ;
+//void add_globals_file_to_this_module(char *s);
+struct expr_str_list *make_fgl_expr_list(expr_str_list *p);
+
+struct expr_str *chk_expr(struct expr_str *p);
+//void add_module_entry(module_entry *m);
+//struct command *set_whenever_from_store_cmd(void);
+char *A4GL_get_important_from_clobber (char *s);
+int inc_var_assigned(expr_str *s);
+int inc_var_usage(expr_str *s);
+//void debug_func(struct module_entry *e);
+//void clr_call_list(void) ;
+//void add_to_call_list_by_call(struct command *c) ;
+//void add_to_call_list_by_expr(expr_str *c) ;
+char *get_namespace (char *s);
+
+
+struct s_formhandler_dets {
+        void *str_list;
+        void *on_events;
+};
+
+//struct on_events *new_event_list(on_event *evt);
+//struct on_events *append_event_list(struct on_events * evtlist, struct on_event *evt);
+
+struct s_pair {
+        struct expr_str *s1;
+        struct expr_str *s2;
+};
+int get_block_no (int n);
+int scan_orderby(struct report_orderby_section *c_orderby, expr_str *v) ;
+
+void chk_for_update_on_serial(char *tab);
+//char *A4GLSQLCV_make_substr_s(char *colname,int n, struct expr_str *l,struct expr_str *r) ;
+int inc_var_assigned_from_binding_list(expr_str_list *l) ;
+//struct  binding_comp_list *empty_genbind(int i);
+char *A4GL_get_current_comments(int lineno,int colno);
+void add_to_str_list_set_record(struct str_list *sl, struct s_full_col *sfc);
+char *vorl_as_string(struct expr_str *v);
+//void A4GL_lint (char *module, int line, char *code, char *type, char *extra);
+void ensure_bool (struct expr_str *s, int notnull);
+void map_prepare(char *p_stmt, char *sql);
+char find_variable_scope (char *s_in);
+char *rettype (char *s);
+str_list *generate_update_column_list_for(char *tabname);
+struct expr_str_list * A4GL_get_validate_expr (int n);
+struct variable_usage *clone_variable_usage(struct variable_usage *vu);
+struct s_select_list_item_list * local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i);
+struct variable_usage *usage_bottom_level( variable_usage *u);
+void reset_report_aggregates(void);
+struct s_select_list_item_list * local_new_select_list_item_list(  struct s_select_list_item *i);
+int attributes_as_int (struct attrib *a);
+struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l);
+struct expr_str_list *fully_expand_variables_in_expr_str_list(expr_str_list *l);
+expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
 #endif   //ifndef _A4GL_4GLC_INT_H_
 
 /* ============================= EOF ================================= */

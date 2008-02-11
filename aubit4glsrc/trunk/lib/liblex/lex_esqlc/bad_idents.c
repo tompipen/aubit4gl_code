@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: bad_idents.c,v 1.9 2005-05-20 18:34:28 mikeaubury Exp $";
+		"$Id: bad_idents.c,v 1.10 2008-02-11 17:13:11 mikeaubury Exp $";
 #endif
 
 char *reserved_words_in_c[] = {
@@ -62,7 +62,7 @@ char *reserved_words_in_c[] = {
 };
 
 int
-LEXLIB_A4GL_bad_identifiers (char *s)
+A4GL_bad_identifiers (char *s)
 {
   int a;
   for (a = 0; reserved_words_in_c[a]; a++)

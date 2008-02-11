@@ -25,59 +25,56 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: field_handling.c,v 1.10 2006-11-14 21:24:33 mikeaubury Exp $
+# $Id: field_handling.c,v 1.11 2008-02-11 17:13:06 mikeaubury Exp $
 #*/
 
-#include "field_handling.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_memhandling.h"
-#include "API_lex.h"
+#include "API_lex_int.h"
+#include "field_handling.h"
 
 //char *acl_strdup(char *x);
 //char *strcat(char *x,char *y);
 
 
-struct fh_field_entry *new_field_entry(char *f,char *n,int needs_quoting) {
+struct fh_field_entry *new_field_entry(expr_str *f,struct expr_str *n,int needs_quoting) {
 	struct fh_field_entry *field;
 	char buff[256];
 	field=acl_malloc2(sizeof(struct fh_field_entry));
-	if (needs_quoting) {
-		SPRINTF1 (buff,"\"%s\"",f);
-	} else {
-		SPRINTF1 (buff,"%s",f);
-	}
-	field->field_name =acl_strdup(buff);
-	field->field_sub  =acl_strdup(n);
+	field->field =f;
+	field->fieldsub  =n;
 	return field;
 }
 
 void free_field(struct fh_field_entry *field) {
-	free(field->field_name);
-	free(field->field_sub);
+	//
+	//
+	//@ FIXME - more to free ?
 	free(field);
 }
 
 struct fh_field_list *new_field_list() {
 	struct fh_field_list *field_list;
 	field_list=acl_malloc2(sizeof(struct fh_field_list));
-	field_list->fields=0;
-	field_list->nfields=0;
+	field_list->field_list_entries.field_list_entries_val=0;
+	field_list->field_list_entries.field_list_entries_len=0;
 	return field_list;
 };
 
 
 struct fh_field_list *append_field_to_list(struct fh_field_list *field_list, struct fh_field_entry *field) {
-	field_list->nfields++;
-	field_list->fields=acl_realloc(field_list->fields,sizeof(struct fh_field_entry)*field_list->nfields);
-	memcpy(&field_list->fields[field_list->nfields-1],field,sizeof(struct fh_field_entry));
+	field_list->field_list_entries.field_list_entries_len ++;
+	field_list->field_list_entries.field_list_entries_val=acl_realloc(field_list->field_list_entries.field_list_entries_val,sizeof(struct fh_field_entry)*field_list->field_list_entries.field_list_entries_len);
+	memcpy(&field_list->field_list_entries.field_list_entries_val[field_list->field_list_entries.field_list_entries_len-1],field,sizeof(struct fh_field_entry));
 	return field_list;
 }
 
 
-struct fh_field_list *append_field_name_to_list (struct fh_field_list *field_list,char *n,char *s,int quoteit) {
+#ifdef OBSOLETE
+struct fh_field_list *append_field_name_to_list (struct fh_field_list *field_list,char *n,struct expr_str *s,int quoteit) {
 	struct fh_field_entry *field;
 	if (field_list==0) {
 		field_list=new_field_list();
@@ -86,7 +83,9 @@ struct fh_field_list *append_field_name_to_list (struct fh_field_list *field_lis
 	append_field_to_list(field_list,field);
 	return field_list;
 }
+#endif
 
+#ifdef OLD
 char *field_name_as_char(struct fh_field_entry *f) {
 	char *s;
 	s=A4GL_field_name_as_char(f->field_name,f->field_sub);
@@ -103,8 +102,8 @@ char *ptr=0;
 char *ptr_field;
 ptr=acl_malloc2(10); /* Set it up initially...*/
 strcpy(ptr,"");
-for (a=0;a<fl->nfields;a++) {
-	ptr_field=field_name_as_char(&fl->fields[a]);
+for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
+	ptr_field=field_name_as_char(&fl->field_list_entries.field_list_entries_val[a]);
 	ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+2);
 	if (strlen(ptr)) strcat(ptr,",");
 	strcat(ptr,ptr_field);
@@ -119,8 +118,8 @@ char *ptr=0;
 char *ptr_field;
 ptr=acl_malloc2(10); /* Set it up initially...*/
 strcpy(ptr,"\"");
-for (a=0;a<fl->nfields;a++) {
-	ptr_field=field_name_as_char(&fl->fields[a]);
+for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
+	ptr_field=field_name_as_char(&fl->field_list_entries.field_list_entries_val[a]);
 	ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+10);
 	if (a) strcat(ptr,"\",\"");
 	strcat(ptr,ptr_field);
@@ -138,8 +137,8 @@ char *ptr=0;
 char *ptr_field;
 ptr=acl_malloc2(10); /* Set it up initially...*/
 strcpy(ptr,"");
-for (a=0;a<fl->nfields;a++) {
-	ptr_field=field_name_as_char(&fl->fields[a]);
+for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
+	ptr_field=field_name_as_char(&fl->field_list_entries.field_list_entries_val[a]);
 	ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+4);
 	if (strlen(ptr)) strcat(ptr,"||");
 	strcat(ptr,ptr_field);
@@ -148,3 +147,4 @@ for (a=0;a<fl->nfields;a++) {
 return ptr;
 
 }
+#endif

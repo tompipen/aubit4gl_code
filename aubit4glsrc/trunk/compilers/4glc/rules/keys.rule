@@ -1,21 +1,44 @@
-on_key_command : 
-        ONKEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;} 
-|
-        ON_ANY_KEY {strcpy($<str>$,"->ANY");} 
-;
 
-key_val : KW_KEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;};
-
-accept_key :  ACCEPTKEY key_value {strcpy($<str>$,get_keyval_str($<str>2)); iskey=0;}
-;
+key_val_sl : KW_KEY key_do_sl {$<str_list>$=$<str_list>2;};
 
 
-single_key_val : KW_KEY key_do {strcpy($<str>$,get_keyval_str($<str>2));iskey=0;}
+
+
+single_key_val : KW_KEY key_do {strcpy($<str>$,$<str>2);}
 ;
 
 key_do	: key_value  {strcpy($<str>$,$<str>1);}
 	| OPEN_BRACKET key_value_list CLOSE_BRACKET  {strcpy($<str>$,$<str>2);}
 ;
+
+
+key_do_sl	: key_value  {
+		$<str_list>$=malloc(sizeof(str_list));
+		$<str_list>$->str_list_entry.str_list_entry_len=1;
+		$<str_list>$->str_list_entry.str_list_entry_val=malloc(sizeof($<str_list>$->str_list_entry.str_list_entry_val[0]) * $<str_list>$->str_list_entry.str_list_entry_len);
+		$<str_list>$->str_list_entry.str_list_entry_val[$<str_list>$->str_list_entry.str_list_entry_len-1]=strdup($<str>1);
+	}
+	| OPEN_BRACKET key_value_list_sl CLOSE_BRACKET  {
+		$<str_list>$=$<str_list>2;
+	}
+;
+
+
+key_value_list_sl : key_value  {
+			$<str_list>$=malloc(sizeof(str_list));
+			$<str_list>$->str_list_entry.str_list_entry_len=1;
+			$<str_list>$->str_list_entry.str_list_entry_val=malloc(sizeof($<str_list>$->str_list_entry.str_list_entry_val[0]) * $<str_list>$->str_list_entry.str_list_entry_len);
+			$<str_list>$->str_list_entry.str_list_entry_val[$<str_list>$->str_list_entry.str_list_entry_len-1]=strdup($<str>1);
+		}
+		| key_value_list_sl KW_COMMA key_value {
+			$<str_list>$=$<str_list>1;
+			$<str_list>$->str_list_entry.str_list_entry_len=$<str_list>1->str_list_entry.str_list_entry_len+1;
+			$<str_list>$->str_list_entry.str_list_entry_val=realloc($<str_list>1->str_list_entry.str_list_entry_val, sizeof($<str_list>$->str_list_entry.str_list_entry_val[0]) * $<str_list>$->str_list_entry.str_list_entry_len);
+			$<str_list>$->str_list_entry.str_list_entry_val[$<str_list>$->str_list_entry.str_list_entry_len-1]=strdup($<str>3);
+
+		}
+;
+
 
 key_value_list : key_value | key_value_list KW_COMMA key_value {
 	sprintf($<str>$,"%s||%s",$<str>1,$<str>3);
@@ -48,19 +71,10 @@ key_value_1 : 	KW_FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
 ;
 
 
-on_action : 
-	KW_ON KW_ACTION identifier {sprintf($<str>$,"\"%s\"",$<str>3);}
+idle_time: INT_VALUE {$<integer_val>$=atoi($<str>1);}
+| INT_VALUE IDLE_SECONDS {$<integer_val>$=atoi($<str>1);}
+| INT_VALUE IDLE_MINUTES {$<integer_val>$=atoi($<str>1)*60;}
+| INT_VALUE IDLE_HOURS {$<integer_val>$=atoi($<str>1)*60*60;}
 ;
 
-on_timer : 
-	KW_ON KW_IDLE idle_time {sprintf($<str>$,"D %s",$<str>3);}
-	| KW_ON INTERVAL idle_time {sprintf($<str>$,"V %s",$<str>3);}
-	/* T %s is reserved for TIMESTAMP - when we get round to it... */
-;
-
-idle_time: INT_VALUE {sprintf($<str>$,"%d",atoi($<str>1));}
-| INT_VALUE IDLE_SECONDS {sprintf($<str>$,"%d",atoi($<str>1));}
-| INT_VALUE IDLE_MINUTES {sprintf($<str>$,"%d",atoi($<str>1)*60);}
-| INT_VALUE IDLE_HOURS {sprintf($<str>$,"%d",atoi($<str>1)*60*60);}
-;
 

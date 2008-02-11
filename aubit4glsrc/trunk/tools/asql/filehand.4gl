@@ -52,8 +52,10 @@ end function
 
 function open_tmpfile_as_stdin(lv_type) 
 define lv_type char(3)
+define lv_a integer
+let lv_a=get_type_id(lv_type)
 code
-mv_fin[get_type_id(lv_type)]=(long)stdin;
+mv_fin[lv_a]=(long)stdin;
 endcode
 end function
 
@@ -73,7 +75,9 @@ end function
 ################################################################################
 function close_tmpfile(lv_type)
 define lv_type CHAR(3)
-if mv_fin[get_type_id(lv_type)] then
+define lv_a integer
+let lv_a=get_type_id(lv_type)
+if mv_fin[lv_a] then
 code
 	fclose((FILE *)mv_fin[get_type_id(lv_type)]);
 	mv_fin[get_type_id(lv_type)]=0;
@@ -139,9 +143,11 @@ end function
 function has_err_file() 
 define lv_fname char(256)
 define fl integer
+define lv_a integer
 
 let fl=0
-let lv_fname=mv_tmpinfile[get_type_id("ERR")]
+let lv_a=get_type_id("ERR")
+let lv_fname=mv_tmpinfile[lv_a]
 code
 {
 	FILE *f;
@@ -297,6 +303,7 @@ end function
 function init_filename()
 define do_init integer
 define fin integer
+define lv_a integer
 
 code
 {
@@ -319,8 +326,9 @@ endcode
 
 call open_tmpfile("SQL","w")
 
-if mv_fin[get_type_id("SQL")]=0 then
-	error "Unable to write temporary file",mv_tmpinfile[get_type_id("SQL")]
+let lv_a=get_type_id("SQL")
+if mv_fin[lv_a]=0 then
+	error "Unable to write temporary file",mv_tmpinfile[lv_a]
 	exit program
 end if
 

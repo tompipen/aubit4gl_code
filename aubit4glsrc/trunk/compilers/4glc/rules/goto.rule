@@ -4,17 +4,17 @@
 =====================================================================
 */
 
-
 goto_cmd : GOTO label_goto {
-	char buff[256];
-	strcpy(buff,$<str>2);
-add_feature("GOTO");
-	A4GL_convlower(buff);
-	print_goto(buff);
-	A4GL_label_used(buff);
+        char buff[256];
+        strcpy(buff,$<str>2);
+        add_feature("GOTO");
+        A4GL_convlower(buff);
+        $<cmd>$=new_goto_cmd(buff);
+        A4GL_label_used(buff);
 }
 ;
 
 label_goto      :       identifier
                 |       COLON identifier {sprintf($<str>$,"%s",$<str>2);}
-                ;
+;
+

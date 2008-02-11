@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <string.h>
 #include "../../common/dataio/report.xs.h"
 #include "a4gl_memhandling.h"
@@ -44,7 +43,7 @@ char *replace_vars_sql (struct select_stmts *ptr);
 char *reporderby = 0;
 
 void decode_agg (int aggid);
-void decode_block (struct commands *cmd);
+void decode_block (struct acerep_commands *cmd);
 void decode_compare (struct compare_expr *e);
 void decode_complex (struct complex_expr *e);
 void decode_expr (struct expr *e);
@@ -61,8 +60,8 @@ void decode_simple (struct simple_expr *e);
 void decode_skip (struct cmd_skip *cmd);
 void decode_while (struct cmd_while *cmd);
 void dump_ascii (void);
-void dump_command (struct command *cmd);
-void dump_commands (struct commands *cmd);
+void dump_command (struct acerep_command *cmd);
+void dump_commands (struct acerep_commands *cmd);
 void dump_format (void);
 void dump_functions (void);
 void dump_getdata (void);
@@ -969,7 +968,7 @@ decode_printfile (struct cmd_printfile *cmd)
 }
 
 void
-decode_block (struct commands *cmd)
+decode_block (struct acerep_commands *cmd)
 {
   int a;
   for (a = 0; a < cmd->commands.commands_len; a++)
@@ -987,7 +986,7 @@ decode_call (struct cmd_call *cmd)
 }
 
 void
-dump_command (struct command *cmd)
+dump_command (struct acerep_command *cmd)
 {
   int a;
   a = cmd->cmd_type;
@@ -995,43 +994,43 @@ dump_command (struct command *cmd)
   switch (a)
     {
     case CMD_FOR:
-      decode_for (&cmd->command_u.cmd_for);
+      decode_for (&cmd->acerep_command_u.cmd_for);
       break;
     case CMD_IF:
-      decode_if (&cmd->command_u.cmd_if);
+      decode_if (&cmd->acerep_command_u.cmd_if);
       break;
     case CMD_WHILE:
-      decode_while (&cmd->command_u.cmd_while);
+      decode_while (&cmd->acerep_command_u.cmd_while);
       break;
     case CMD_LET:
-      decode_let (&cmd->command_u.cmd_let);
+      decode_let (&cmd->acerep_command_u.cmd_let);
       break;
     case CMD_NEED:
-      decode_need (&cmd->command_u.cmd_need);
+      decode_need (&cmd->acerep_command_u.cmd_need);
       break;
     case CMD_PAUSE:
-      decode_pause (&cmd->command_u.cmd_pause);
+      decode_pause (&cmd->acerep_command_u.cmd_pause);
       break;
     case CMD_SKIP:
-      decode_skip (&cmd->command_u.cmd_skip);
+      decode_skip (&cmd->acerep_command_u.cmd_skip);
       break;
     case CMD_PRINT:
-      decode_print (&cmd->command_u.cmd_print);
+      decode_print (&cmd->acerep_command_u.cmd_print);
       break;
     case CMD_PRINTFILE:
-      decode_printfile (&cmd->command_u.cmd_printfile);
+      decode_printfile (&cmd->acerep_command_u.cmd_printfile);
       break;
     case CMD_BLOCK:
-      decode_block (&cmd->command_u.commands);
+      decode_block (&cmd->acerep_command_u.acerep_commands);
       break;
     case CMD_CALL:
-      decode_call (&cmd->command_u.cmd_call);
+      decode_call (&cmd->acerep_command_u.cmd_call);
       break;
     }
 }
 
 void
-dump_commands (struct commands *cmd)
+dump_commands (struct acerep_commands *cmd)
 {
   int a;
   for (a = 0; a < cmd->commands.commands_len; a++)
@@ -1242,3 +1241,4 @@ acl_strdup_full (void *a, char *r, char *f, int l)
     }
   return p;
 }
+#include <stdio.h>

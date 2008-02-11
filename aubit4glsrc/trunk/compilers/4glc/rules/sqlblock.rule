@@ -1,59 +1,85 @@
-sql_block_cmd : KW_SQL {
+sql_block_cmd : opt_use2_p KW_SQL {
 		sql_mode=1;
 		add_feature("SQL_BLOCK");
-		start_bind('i',0);
-		start_bind('o',0);
 	} sql_block END_SQL {
 			sql_mode=0;
-			print_sql_block_cmd_g($<sql_string>3,copy_togenbind('i'), copy_togenbind('o') );
-			start_bind('i',0);
-			start_bind('o',0);
+			$<cmd>$=new_sql_block_cmd($<ptr>1, $<ptr_list>4);
 	}
 ;
 
 
 sql_block :
 	sql_block_entry  {
-		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),0);
+        		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
 	}
 	| sql_block sql_block_entry  {
-			if (strlen($<str>2)) {
-				char *ptr;
-				ptr=$<str>2;
-				if (ispunct(ptr[0]) && strlen(ptr)==1) {
-					$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
-				} else {
-					char *ptr;
-					int need_space=1;
-					ptr=$<sql_string>1;
-
-					if (ptr[strlen(ptr)-1]=='.') {
-						need_space=0;
-					}
-
-				 	if (!need_space) {
-						$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
-					} else {
-						$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,acl_strdup($<str>2),0);
-					}
-				}
-			} else {
-				$<sql_string>$=$<sql_string>1;
-			}
+		        $<ptr_list>$=$<ptr_list>1;
+        		A4GL_new_append_ptr_list($<ptr_list>$, $<ptr>2);
 	}
 ;
 
 sql_block_entry:
-	SQL_TEXT  { strcpy($<str>$,$<str>1); }
-	| INSERT_INTO {
-		strcpy($<str>$,"INSERT INTO");}
-	| INTO obind_var_list { 
-		strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o')));
-		}
-	| DOLLAR var_ident_ibind_ss { strcpy($<str>$,$<sql_string>2); }
-	| sqlblock_kw
-	
+	INTO expanded_obind_var_list { 
+		        $<ptr>$=A4GL_new_expr_simple (ET_EXPR_SQLBLOCK_INTO);
+        		$<ptr>$->expr_str_u.expr_list=$<ptr_list>2;
+	}
+	| DOLLAR ensured_variable_usage_expression { 
+			$<ptr>$=$<ptr>2;
+	}
+	| sql_block_text {
+		$<ptr>$=A4GL_new_expr_simple_string($<sql_string>1, ET_EXPR_SQLBLOCK_TEXT);
+		free($<sql_string>1);
+	}
 ;
+
+sql_block_text :
+	sql_block_text_entry  {
+		$<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1),0);
+	}
+	| sql_block_text sql_block_text_entry {
+                        if (strlen($<str>2)) {
+                                char *ptr;
+                                ptr=$<str>2;
+                                if (ispunct(ptr[0]) && strlen(ptr)==1) {
+					char *p1;
+					char *p2;
+					char plast;
+					p1=$<sql_string>1;
+					p2=$<str>2;
+					plast=p1[strlen(p1)-1];
+					if (p2[0]=='*' && isalnum(plast)) {
+                                        	$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space, acl_strdup($<str>2),0);
+					} else {
+                                        	$<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
+					}
+                                } else {
+                                        char *ptr;
+                                        int need_space=1;
+                                        ptr=$<sql_string>1;
+
+                                        if (ptr[strlen(ptr)-1]=='.') {
+                                                need_space=0;
+                                        }
+
+                                        if (!need_space) {
+                                                $<sql_string>$=make_sql_string_and_free($<sql_string>1,acl_strdup($<str>2),0);
+                                        } else {
+                                                $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,acl_strdup($<str>2),0);
+                                        }
+                                }
+                        } else {
+                                $<sql_string>$=$<sql_string>1;
+                        }
+
+	}
+;
+
+sql_block_text_entry:
+	SQL_TEXT  { strcpy($<str>$,$<str>1); }
+	| INSERT_INTO {strcpy($<str>$,$<str>1);}
+	| sqlblock_kw  
+;
+
 
 sqlblock_kw : 
 	KW_COMMA {strcpy($<str>$,",");}
@@ -61,8 +87,9 @@ sqlblock_kw :
 	| CLOSE_SQUARE {strcpy($<str>$,"]");}
 	| OPEN_BRACKET {strcpy($<str>$,"(");}
 	| CLOSE_BRACKET {strcpy($<str>$,")");}
-	| DOLLAR {strcpy($<str>$,"$");}
+	/* | DOLLAR {strcpy($<str>$,"$");} */
 	| KW_DOT {strcpy($<str>$,".");}
+	| KW_MULTIPLY {strcpy($<str>$,"*");}
 	| NAMED_GEN {strcpy($<str>$,$<str>1);}
 	| CONCAT_PIPES  {strcpy($<str>$,"||");}
 	| LESS_THAN_EQ  {strcpy($<str>$,"<=");}

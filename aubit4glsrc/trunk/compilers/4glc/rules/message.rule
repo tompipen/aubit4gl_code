@@ -1,39 +1,16 @@
-message_cmd : KWMESSAGE { 
-	      } msg_next 
+message_cmd : KWMESSAGE atline {
+		 set_cmdlineno($<integer_val>2);
+		} msg_next  {$<cmd>$=$<cmd>4; }
 ;
 
-msg_next : fgl_expr_list_ptr {
-		print_message($<ptr_list>1,0,"0",0,last_style);
-		add_feature("MESSAGE");
-		map_ui("MESSAGE");
-	}
- 	| fgl_expr_list_ptr attributes_def op_msg_wait { 
-		print_message($<ptr_list>1,0,$<str>2,atoi($<str>3),last_style);
+msg_next : 
+ 	fgl_expr_list_ptr opt_attributes op_msg_wait { 
+		$<cmd>$=new_message_cmd(make_fgl_expr_list($<ptr_list>1),$<attrib>2, $<e_boolean>3);
 		add_feature("MESSAGE");
 		map_ui("MESSAGE");
 	} 
- 	| fgl_expr_list_ptr msg_wait { 
-		print_message($<ptr_list>1, 0,"0",atoi($<str>2),last_style);
-		add_feature("MESSAGE");
-		map_ui("MESSAGE");
-	} 
-	| fgl_expr_list_ptr gui_message  {
-		map_ui("MESSAGE");
-	}
-;
-
-gui_message:
-	 	gm_caption
-   		| gm_icon
-   		| gm_buttons
-   		| gm_disable_msg
-   		| gm_returning_msg 
 ;
 
 
-
-op_msg_wait : {strcpy($<str>$,"0");} | WAIT_FOR_KEY {strcpy($<str>$,"1");} 
-;
-
-msg_wait :  WAIT_FOR_KEY {strcpy($<str>$,"1");} 
+op_msg_wait : {$<e_boolean>$=EB_FALSE;} | WAIT_FOR_KEY {$<e_boolean>$=EB_TRUE;} 
 ;

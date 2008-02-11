@@ -158,9 +158,9 @@ for a=1 to mv_cnt
 		let x=mv_printat[a].x
 		let y=mv_printat[a].y
 		if a=mv_curr_option then
-         		display mv_arr[a][1,mv_max_option_width]  at y,x attribute(reverse)
+         		display mv_arr[a][1,mv_max_option_width],"*"  at y,x attribute(reverse)
 		else
-                	display mv_arr[a][1,mv_max_option_width]  at y,x
+                	display mv_arr[a][1,mv_max_option_width]," "  at y,x
         	end if
 	end if
 end for

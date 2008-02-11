@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.14 2008-01-27 14:51:24 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.15 2008-02-11 17:13:13 mikeaubury Exp $
 #*/
 
 /**
@@ -572,8 +572,7 @@ A4GLPacker_input_end_struct (char *s, char *n)
  *
  * @todo Describe function
  */
-int
-A4GLPacker_input_start_union (char *s,  char *en, int e,char *n, int ptr, int isarr)
+int A4GLPacker_input_start_union(char* s,char* enumname,int* enum_val,char* n,int ptr,int isarr)
 {
   out_only ();
   return 0;

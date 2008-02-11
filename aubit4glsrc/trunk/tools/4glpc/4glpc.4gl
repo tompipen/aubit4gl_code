@@ -489,7 +489,6 @@ endcode
 
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
-
 	CASE lv_arg
 		WHEN "-?" 			call show_help(2)  continue for
 		WHEN "-help" 			call show_help(2)  continue for
@@ -613,7 +612,8 @@ endcode
 		WHEN "--nomap"			let mv_map=0 continue for
 		WHEN "--make-compile"		let mv_makecompile=1 continue for
 
-		WHEN "-g"			let mv_debug=1 continue for
+		WHEN "-g"			
+					let mv_debug=1 continue for
 		WHEN "--debug"			let mv_debug=1 continue for
 		WHEN "-static"			let mv_static=1 continue for
 

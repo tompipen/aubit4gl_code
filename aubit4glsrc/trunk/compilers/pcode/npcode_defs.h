@@ -1,5 +1,7 @@
 #include "a4gl_incl_config.h"
 
+#include "npcode.xs.h"
+
 struct define_variables
 {
   int var_len;
@@ -190,7 +192,8 @@ void make_new_param(int *n,struct param **p);
 void set_indirection(int n,int up_down);
 struct use_variable *get_use_variable(int n);
 struct cmd_block *get_base(int block_pc);
-long new_command (enum cmd_type cmd_type, void *ptr);
+long new_command (enum npcode_cmd_type cmd_type, void *ptr);
+
 
 #ifdef NEED_CMD_TYPE_STR
 static char *cmd_type_str[] = {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.6 2006-12-05 17:20:09 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.7 2008-02-11 17:13:06 mikeaubury Exp $
 #*/
 
 
@@ -36,6 +36,8 @@
 
 #include <stdarg.h>
 #include "a4gl_4glc_int.h"
+
+
 static void map_select_list_item (char *stmttype, struct s_select *select,
 				  struct s_select_list_item *p);
 static void map_select_list_item_list (char *stmttype, char *listtype,
@@ -50,30 +52,31 @@ static char *xml_escape(char *s) ;
 
 
 enum e_mapset {
-	MAPSET_NONE,
+	MAPSET_NONE=0,
 
-	MAPSET_UI_OPENFORM,
+	MAPSET_UI_OPENFORM=1,
 
-	MAPSET_LIBCALL_WORKFLOW,
-	MAPSET_LIBCALL_CORR,
-	MAPSET_LIBCALL_AWB,
-	MAPSET_LIBCALL,
-	MAPSET_CALL,
-	MAPSET_RUN,
+	MAPSET_LIBCALL_WORKFLOW=2,
+	MAPSET_LIBCALL_CORR=3,
+	MAPSET_LIBCALL_AWB=4,
+	MAPSET_LIBCALL=5,
+	MAPSET_CALL=6,
+	MAPSET_RUN=7,
 
-	MAPSET_CRUD_SELECT,
-	MAPSET_CRUD_UPDATE,
-	MAPSET_CRUD_DELETE,
-	MAPSET_CRUD_INSERT,
-	MAPSET_CRUD_OTHER,
-	MAPSET_CRUD_CREATE_TEMP, 
-	MAPSET_UI,
-	MAPSET_EVENTS,
-	MAPSET_ENV,
+	MAPSET_CRUD_SELECT=8,
+	MAPSET_CRUD_UPDATE=9,
+	MAPSET_CRUD_DELETE=10,
+	MAPSET_CRUD_INSERT=11,
+	MAPSET_CRUD_OTHER=12,
+	MAPSET_CRUD_DYNAMIC=13,
+	MAPSET_CRUD_CREATE_TEMP=14, 
+	MAPSET_UI=15,
+	MAPSET_EVENTS=16,
+	MAPSET_ENV=17,
 	//MAPSET_DISPLAY_AT,
 
 
-	MAPSET_LAST
+	MAPSET_LAST=18
 };
 
 /*
@@ -180,6 +183,7 @@ static void dump_mapset(enum e_mapset e) {
 		case MAPSET_CRUD_INSERT: 	dump_mapset_to_crud("INSERTS",e); break;
 		case MAPSET_CRUD_CREATE_TEMP: 	dump_mapset_to_crud("TEMPTABLES",e); break;
 		case MAPSET_CRUD_OTHER: 	dump_mapset_to_crud("OTHERSQLS",e); break;
+		case MAPSET_CRUD_DYNAMIC: 	dump_mapset_to_crud("DYNAMICSQLS",e); break;
 		case MAPSET_UI_OPENFORM: 	dump_mapset_to_crud("FORMS",e); break;
 		case MAPSET_CALL: 		dump_mapset_to_crud("CALLS",e); break;
 		case MAPSET_EVENTS: 		dump_mapset_to_crud("EVENTS",e); break;
@@ -217,9 +221,11 @@ static enum e_mapset get_currmapset(void) {
 
 static void A4GL_add_xmlmap (enum e_mapset mapset, char *fmt, ...) {
 va_list args;
-char buff[1025];
+char buff[10025];
 va_start (args, fmt);
+
 vsprintf (buff, fmt, args);
+A4GL_assertion(strlen(buff)>=sizeof(buff),"Buffer too small");
 map_crud[mapset].nlines++;
 map_crud[mapset].lines=realloc(map_crud[mapset].lines,map_crud[mapset].nlines*sizeof(char *));
 map_crud[mapset].lines[map_crud[mapset].nlines-1]=strdup(buff);
@@ -248,9 +254,9 @@ map_select_list_item_list (char *stmttype, char *listtype,
   if (strcmp(listtype,"VALUESLIST")==0) {
   		A4GL_add_xmlmap (get_currmapset(), "   <LIST_%s>\n", listtype);
 	}
-  for (a = 0; a < i->nlist; a++)
+  for (a = 0; a < i->list.list_len; a++)
     {
-      map_select_list_item (stmttype, select, i->list[a]);
+      map_select_list_item (stmttype, select, i->list.list_val[a]);
     }
 
   if (strcmp(listtype,"VALUESLIST")==0) {
@@ -264,7 +270,7 @@ static void
 map_select_list_item_i (char *stmttype, struct s_select *select,
 			struct s_select_list_item *p)
 {
-  switch (p->type)
+  switch (p->data.type)
     {
     case E_SLI_CHAR:
       A4GL_assertion (1, "Not used");
@@ -284,106 +290,106 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
       return;
 
     case E_SLI_COLUMN_NOT_TRANSFORMED:
-      		A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"%s\" />\n", p->u_data.expression);
+      		A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"%s\" />\n", p->data.s_select_list_item_data_u.expression);
       return;
 
     case E_SLI_OP:
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.left);
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.right);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.left);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.right);
       return;
 
 
     case E_SLI_JOIN:
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.left);
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.right);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.left);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.right);
       return;
 
 
     case E_SLI_IN_VALUES:
-      map_select_list_item (stmttype, select, p->u_data.slil_expr.left);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.slil_expr.left);
       map_select_list_item_list (stmttype, "IN", select,
-				 p->u_data.slil_expr.right_list);
+				 p->data.s_select_list_item_data_u.slil_expr.right_list);
       return;
 
     case E_SLI_NOT_IN_VALUES:
-      map_select_list_item (stmttype, select, p->u_data.slil_expr.left);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.slil_expr.left);
       map_select_list_item_list (stmttype, "NOTIN", select,
-				 p->u_data.slil_expr.right_list);
+				 p->data.s_select_list_item_data_u.slil_expr.right_list);
       return;
 
 
     case E_SLI_IN_SELECT:
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.left);
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.right);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.left);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.right);
       return;
 
     case E_SLI_NOT_IN_SELECT:
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.left);
-      map_select_list_item (stmttype, select, p->u_data.complex_expr.right);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.left);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.right);
       return;
 
     case E_SLI_REGEX_MATCHES:
-      map_select_list_item (stmttype, select, p->u_data.regex.val);
-      map_select_list_item (stmttype, select, p->u_data.regex.regex);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return;
 
     case E_SLI_REGEX_NOT_MATCHES:
-      map_select_list_item (stmttype, select, p->u_data.regex.val);
-      map_select_list_item (stmttype, select, p->u_data.regex.regex);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return;
     case E_SLI_REGEX_LIKE:
-      map_select_list_item (stmttype, select, p->u_data.regex.val);
-      map_select_list_item (stmttype, select, p->u_data.regex.regex);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return;
 
     case E_SLI_REGEX_NOT_LIKE:
-      map_select_list_item (stmttype, select, p->u_data.regex.val);
-      map_select_list_item (stmttype, select, p->u_data.regex.regex);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return;
     case E_SLI_REGEX_ILIKE:
-      map_select_list_item (stmttype, select, p->u_data.regex.val);
-      map_select_list_item (stmttype, select, p->u_data.regex.regex);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return;
     case E_SLI_REGEX_NOT_ILIKE:
-      map_select_list_item (stmttype, select, p->u_data.regex.val);
-      map_select_list_item (stmttype, select, p->u_data.regex.regex);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return;
     case E_SLI_ISNULL:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_ISNOTNULL:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_ASC:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_DESC:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_NOT:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
 
     case E_SLI_BRACKET_EXPR:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_UNITS_YEAR:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_UNITS_MONTH:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_UNITS_DAY:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_UNITS_HOUR:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_UNITS_MINUTE:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
     case E_SLI_UNITS_SECOND:
-      map_select_list_item (stmttype, select, p->u_data.simple_op_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return;
 
 
@@ -407,86 +413,86 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 
     case E_SLI_BUILTIN_FUNC_YEAR:
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.builtin_fcall.params);
+				 p->data.s_select_list_item_data_u.builtin_fcall.params);
       return;
 
     case E_SLI_BUILTIN_FUNC_MONTH:
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.builtin_fcall.params);
+				 p->data.s_select_list_item_data_u.builtin_fcall.params);
       return;
     case E_SLI_BUILTIN_FUNC_DAY:
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.builtin_fcall.params);
+				 p->data.s_select_list_item_data_u.builtin_fcall.params);
       return;
     case E_SLI_BUILTIN_FUNC_DOW:
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.builtin_fcall.params);
+				 p->data.s_select_list_item_data_u.builtin_fcall.params);
       return;
     case E_SLI_BUILTIN_FUNC_WEEKDAY:
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.builtin_fcall.params);
+				 p->data.s_select_list_item_data_u.builtin_fcall.params);
       return;
     case E_SLI_BUILTIN_FUNC_MDY:
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.builtin_fcall.params);
+				 p->data.s_select_list_item_data_u.builtin_fcall.params);
       return;
     case E_SLI_BUILTIN_FUNC_DATE:
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.builtin_fcall.params);
+				 p->data.s_select_list_item_data_u.builtin_fcall.params);
       return;
 
     case E_SLI_BUILTIN_AGG_AVG:
-      map_select_list_item (stmttype, select, p->u_data.agg_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.agg_expr.expr);
       return;
 
     case E_SLI_BUILTIN_AGG_MAX:
-      map_select_list_item (stmttype, select, p->u_data.agg_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.agg_expr.expr);
       return;
 
     case E_SLI_BUILTIN_AGG_MIN:
-      map_select_list_item (stmttype, select, p->u_data.agg_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.agg_expr.expr);
       return;
 
     case E_SLI_BUILTIN_AGG_SUM:
-      map_select_list_item (stmttype, select, p->u_data.agg_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.agg_expr.expr);
       return;
 
     case E_SLI_BUILTIN_AGG_COUNT:
-      map_select_list_item (stmttype, select, p->u_data.agg_expr.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.agg_expr.expr);
       return;
 
     case E_SLI_BETWEEN:
-      map_select_list_item (stmttype, select, p->u_data.between_expr.val);
-      map_select_list_item (stmttype, select, p->u_data.between_expr.from);
-      map_select_list_item (stmttype, select, p->u_data.between_expr.to);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.between_expr.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.between_expr.from);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.between_expr.to);
       return;
 
     case E_SLI_NOT_BETWEEN:
-      map_select_list_item (stmttype, select, p->u_data.between_expr.val);
-      map_select_list_item (stmttype, select, p->u_data.between_expr.from);
-      map_select_list_item (stmttype, select, p->u_data.between_expr.to);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.between_expr.val);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.between_expr.from);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.between_expr.to);
       return;
 
 
     case E_SLI_FCALL:
-      A4GL_add_xmlmap (get_currmapset(), "<SQLCALL NAME=\"%s\" LINENO=\"%d\"/>\n", p->u_data.fcall.fname, yylineno);
+      A4GL_add_xmlmap (get_currmapset(), "<SQLCALL NAME=\"%s\" LINENO=\"%d\"/>\n", p->data.s_select_list_item_data_u.fcall.fname, yylineno);
       map_select_list_item_list (stmttype, "PARAMETERS", select,
-				 p->u_data.fcall.params);
+				 p->data.s_select_list_item_data_u.fcall.params);
       return;
 
 
 
     case E_SLI_EXTEND:
-      map_select_list_item (stmttype, select, p->u_data.extend.expr);
+      map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.extend.expr);
       return;
 
 
     case E_SLI_COLUMN:
-      if (p->u_data.column.colname == 0)
+      if (p->data.s_select_list_item_data_u.column.colname == 0)
 	return;
-      if (p->u_data.column.tabname && strlen (p->u_data.column.tabname))
+      if (p->data.s_select_list_item_data_u.column.tabname && strlen (p->data.s_select_list_item_data_u.column.tabname))
 	{
-	  A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"%s\" TABLE=\"%s\" REALTABLE=\"%s\" />\n", p->u_data.column.colname, p->u_data.column.tabname, find_tabname_for_alias (select, p->u_data.column.tabname));
+	  A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"%s\" TABLE=\"%s\" REALTABLE=\"%s\" />\n", p->data.s_select_list_item_data_u.column.colname, p->data.s_select_list_item_data_u.column.tabname, find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname));
 	  return;
 	}
       else
@@ -496,26 +502,26 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 	    {
 	      int a;
 	      int cnt;
-	      if (select->table_elements.ntables == 1)
+	      if (select->table_elements.tables.tables_len == 1)
 		{
 
 		  if (A4GL_has_column
-		      (select->table_elements.tables[0].tabname,
-		       p->u_data.column.colname))
+		      (select->table_elements.tables.tables_val[0].tabname,
+		       p->data.s_select_list_item_data_u.column.colname))
 		    {
 		      A4GL_add_xmlmap (get_currmapset(),
 			       "<COLUMN NAME=\"%s\" TABLE=\"%s\"/>\n",
-			       p->u_data.column.colname,
-			       select->table_elements.tables[0].tabname);
+			       p->data.s_select_list_item_data_u.column.colname,
+			       select->table_elements.tables.tables_val[0].tabname);
 		      return;
 		    }
 		}
 	      cnt = 0;
-	      for (a = 0; a < select->table_elements.ntables; a++)
+	      for (a = 0; a < select->table_elements.tables.tables_len; a++)
 		{
 		  if (A4GL_has_column
-		      (select->table_elements.tables[a].tabname,
-		       p->u_data.column.colname))
+		      (select->table_elements.tables.tables_val[a].tabname,
+		       p->data.s_select_list_item_data_u.column.colname))
 		    {
 		      cnt++;
 		    }
@@ -523,22 +529,22 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
 
 	      if (cnt == 1)
 		{		// Column only existed in one table...
-		  for (a = 0; a < select->table_elements.ntables; a++)
+		  for (a = 0; a < select->table_elements.tables.tables_len; a++)
 		    {
 		      if (A4GL_has_column
-			  (select->table_elements.tables[a].tabname,
-			   p->u_data.column.colname))
+			  (select->table_elements.tables.tables_val[a].tabname,
+			   p->data.s_select_list_item_data_u.column.colname))
 			{
 			  A4GL_add_xmlmap (get_currmapset(),
 				   "<COLUMN NAME=\"%s\" TABLE=\"%s\"/>\n",
-				   p->u_data.column.colname,
-				   select->table_elements.tables[a].tabname);
+				   p->data.s_select_list_item_data_u.column.colname,
+				   select->table_elements.tables.tables_val[a].tabname);
 			}
 		    }
 		}
 	    }
 	  A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"%s\"/>\n",
-		   p->u_data.column.colname);
+		   p->data.s_select_list_item_data_u.column.colname);
 
 	}
       return;
@@ -548,18 +554,18 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
     case E_SLI_CASE:
       PRINTF ("WARNING : Mapping case in selects not handled yet");
       return;
-      //return make_sql_string_and_free (A4GLSQLCV_make_case (select, &p->u_data.sqlcase), NULL);
+      //return make_sql_string_and_free (A4GLSQLCV_make_case (select, &p->data.s_select_list_item_data_u.sqlcase), NULL);
 
     case E_SLI_CASE_ELEMENT:
       return;
 
     case E_SLI_SUBQUERY:
-     	/* map_select_stmt ("SUBSELECT", p->u_data.subquery); */
+     	/* map_select_stmt ("SUBSELECT", p->data.s_select_list_item_data_u.subquery); */
       return;
 
 
     case E_SLI_SUBQUERY_EXPRESSION:
-      	/* map_select_list_item (stmttype, select, p->u_data.sq_expression.sq); */
+      	/* map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.sq_expression.sq); */
       return;
 
 
@@ -596,12 +602,12 @@ map_open_form (struct expr_str *s)
     return;
   if (s->expr_type == ET_EXPR_EXPR_LIST)
     {
-      //s=s->u_data.expr_list->list[0];
+      //s=s->data.s_select_list_item_data_u.expr_list->list[0];
     }
 
   if (s->expr_type == ET_EXPR_LITERAL_STRING)
     {
-	A4GL_add_xmlmap( MAPSET_UI_OPENFORM, "<FORM FILENAME=\"%s\" LINENO=\"%d\"/>\n", s->u_data.expr_string, yylineno);
+	A4GL_add_xmlmap( MAPSET_UI_OPENFORM, "<FORM FILENAME=\"%s\" LINENO=\"%d\"/>\n", s->expr_str_u.expr_string, yylineno);
     }
   else
     {
@@ -632,6 +638,19 @@ map_function_end ()
 }
 
 
+void map_prepare(char *p_stmt, char *sql) {
+	char *escaped;
+	escaped=xml_escape(sql);
+                A4GL_add_xmlmap (MAPSET_CRUD_DYNAMIC, "<PREPARE STMT=\"%s\" LINENO=\"%d\">%s</PREPARE>\n",
+                        p_stmt,
+                        yylineno,
+                        escaped);
+if (A4GL_isyes(acl_getenv("MAPPREPARE"))) {
+	A4GLSQLCV_convert_sql("INFORMIX",sql);
+}
+}
+
+
 void
 map_call (struct expr_str *p)
 {
@@ -641,18 +660,20 @@ map_call (struct expr_str *p)
   int a;
 char *s;
 
-s=p->u_data.expr_function_call->fname;
+s=p->expr_str_u.expr_function_call->fname;
 
 
   if (crudfile)
     {
 	if (strcmp(s,"fgl_getenv")==0) {
 			int printed=0;
-			if (p->u_data.expr_function_call->parameters->nlist==1) {
+			if (p->expr_str_u.expr_function_call->parameters->list.list_len==1) {
 				struct expr_str *pl;
-				pl=p->u_data.expr_function_call->parameters->list[0];
+
+				pl=p->expr_str_u.expr_function_call->parameters->list.list_val[0];
+
 				if (pl->expr_type==ET_EXPR_LITERAL_STRING) {
-	  				A4GL_add_xmlmap (MAPSET_ENV, "<ENV VAR=\"%s\" LINENO=\"%d\"/>\n", pl->u_data.expr_string, yylineno);
+	  				A4GL_add_xmlmap (MAPSET_ENV, "<ENV VAR=\"%s\" LINENO=\"%d\"/>\n", pl->expr_str_u.expr_string, yylineno);
 					printed++;
 				}
 			} 
@@ -862,11 +883,11 @@ map_display_at (struct expr_str *x, struct expr_str *y)
 
   if (x->expr_type == ET_EXPR_LITERAL_LONG)
     {
-      SPRINTF1 (x_str, "%ld", x->u_data.expr_long);
+      SPRINTF1 (x_str, "%ld", x->expr_str_u.expr_long);
     }
   if (y->expr_type == ET_EXPR_LITERAL_LONG)
     {
-      SPRINTF1 (y_str, "%ld", y->u_data.expr_long);
+      SPRINTF1 (y_str, "%ld", y->expr_str_u.expr_long);
     }
 
   A4GL_add_xmlmap (MAPSET_UI, "<UI TYPE=\"DISPLAY_AT\" X=\"%s\" Y=\"%s\" LINENO=\"%d\" />\n", x_str, y_str, yylineno);
@@ -878,6 +899,8 @@ static char buff[20000];
 int a;
 int b;
 b=0;
+A4GL_assertion(strlen(s)>sizeof(buff),"String too long");
+
 for (a=0;a<strlen(s);a++) {
 	
 	if (s[a]=='&') { strcat(buff,"&amp;"); b+=5;continue; }
@@ -892,37 +915,39 @@ return buff;
 void
 map_run (struct expr_str *s)
 {
+/*
   if (crudfile)
     {
 
       if (s->expr_type == ET_EXPR_LITERAL_STRING)
 	{
-	  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno,xml_escape(s->u_data.expr_string));
+	  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno,xml_escape(s->expr_str_u.expr_string));
 	}
 
       if (s->expr_type == ET_EXPR_PUSH_VARIABLE)
 	{
 	  if (A4GL_has_pointer
-	      (s->u_data.expr_push_variable->variable, LAST_STRING))
+	      (s->expr_str_u.expr_push_variable->variable, LAST_STRING))
 	    {
-	      A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno, xml_escape((char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING)));
+	      A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"KNOWN\" >%s</RUN>\n", yylineno, xml_escape((char *) A4GL_find_pointer (s->expr_str_u.  expr_push_variable-> variable, LAST_STRING)));
 	    }
 	  else
 	    {
 	      if (A4GL_has_pointer
-		  (s->u_data.expr_push_variable->variable, LAST_STRING_START))
+		  (s->expr_str_u.expr_push_variable->variable, LAST_STRING_START))
 		{
-		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"START_KNOWN\" >%s</RUN>\n", yylineno,xml_escape((char *) A4GL_find_pointer (s->u_data.  expr_push_variable-> variable, LAST_STRING_START)));
+		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"START_KNOWN\" >%s</RUN>\n", yylineno,xml_escape((char *) A4GL_find_pointer (s->expr_str_u.  expr_push_variable-> variable, LAST_STRING_START)));
 		}
 	      else
 		{
-		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"UNKNOWN\" >%s</RUN>\n", yylineno, s->u_data.expr_push_variable->variable);
+		  A4GL_add_xmlmap (MAPSET_RUN, "<RUN LINENO=\"%d\" TYPE=\"UNKNOWN\" >%s</RUN>\n", yylineno, s->expr_str_u.expr_push_variable->variable);
 		}
 
 	    }
 	}
 
     }
+*/
 }
 
 void
@@ -939,9 +964,10 @@ char *into_temp=0;
 
   if (crudfile == 0)
     return;
-if (select->sf) {
+
+  if (select->sf) {
 	into_temp=select->sf->into_temp;
-}
+  }
 
   if (strcmp (main_statement_type, "SUBSELECT") != 0)
     {
@@ -971,15 +997,15 @@ if (select->sf) {
 
       A4GL_add_xmlmap (get_currmapset(), "   <TABLES>\n");
 
-	if (select->table_elements.ntables>10000) {
+	if (select->table_elements.tables.tables_len>10000) {
 		A4GL_assertion(1,"Dubious number of tables!");
 	}
-  for (a = 0; a < select->table_elements.ntables; a++)
+  for (a = 0; a < select->table_elements.tables.tables_len; a++)
     {
       char *tabname;
       char *alias;
-      tabname = strdup (select->table_elements.tables[a].tabname);
-      alias = select->table_elements.tables[a].alias;
+      tabname = strdup (select->table_elements.tables.tables_val[a].tabname);
+      alias = select->table_elements.tables.tables_val[a].alias;
       if (alias == 0)
 	{
 	  alias = tabname;
@@ -1250,7 +1276,7 @@ int isSpecial (char *fname, char *lib,char *cat)
 }
 
 static int find_subqueries (char *stmttype, struct s_select *select, struct s_select_list_item *p) {
-  switch (p->type)
+  switch (p->data.type)
     {
     case E_SLI_CHAR:
       A4GL_assertion (1, "Not used");
@@ -1301,8 +1327,8 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
       return 0;
 
     case E_SLI_OP:
-      find_subqueries (stmttype, select, p->u_data.complex_expr.left);
-      find_subqueries (stmttype, select, p->u_data.complex_expr.right);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.left);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.right);
       return 0;
 
     case E_SLI_NOT_IN_VALUES:
@@ -1310,59 +1336,59 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
 
 
     case E_SLI_IN_SELECT:
-      find_subqueries (stmttype, select, p->u_data.complex_expr.left);
-      find_subqueries (stmttype, select, p->u_data.complex_expr.right);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.left);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.right);
       return 0;
 
     case E_SLI_NOT_IN_SELECT:
-      find_subqueries (stmttype, select, p->u_data.complex_expr.left);
-      find_subqueries (stmttype, select, p->u_data.complex_expr.right);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.left);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.complex_expr.right);
       return 0;
 
     case E_SLI_REGEX_MATCHES:
-      find_subqueries (stmttype, select, p->u_data.regex.val);
-      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return 0;
 
     case E_SLI_REGEX_NOT_MATCHES:
-      find_subqueries (stmttype, select, p->u_data.regex.val);
-      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return 0;
     case E_SLI_REGEX_LIKE:
-      find_subqueries (stmttype, select, p->u_data.regex.val);
-      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return 0;
 
     case E_SLI_REGEX_NOT_LIKE:
-      find_subqueries (stmttype, select, p->u_data.regex.val);
-      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return 0;
     case E_SLI_REGEX_ILIKE:
-      find_subqueries (stmttype, select, p->u_data.regex.val);
-      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return 0;
     case E_SLI_REGEX_NOT_ILIKE:
-      find_subqueries (stmttype, select, p->u_data.regex.val);
-      find_subqueries (stmttype, select, p->u_data.regex.regex);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.regex.regex);
       return 0;
     case E_SLI_ISNULL:
-      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return 0;
     case E_SLI_ISNOTNULL:
-      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return 0;
     case E_SLI_ASC:
-      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return 0;
     case E_SLI_DESC:
-      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return 0;
     case E_SLI_NOT:
-      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return 0;
 
     case E_SLI_BRACKET_EXPR:
-      find_subqueries (stmttype, select, p->u_data.simple_op_expr.expr);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.expr);
       return 0;
 
 
@@ -1370,15 +1396,15 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
 
 
     case E_SLI_BETWEEN:
-      find_subqueries (stmttype, select, p->u_data.between_expr.val);
-      find_subqueries (stmttype, select, p->u_data.between_expr.from);
-      find_subqueries (stmttype, select, p->u_data.between_expr.to);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.between_expr.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.between_expr.from);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.between_expr.to);
       return 0;
 
     case E_SLI_NOT_BETWEEN:
-      find_subqueries (stmttype, select, p->u_data.between_expr.val);
-      find_subqueries (stmttype, select, p->u_data.between_expr.from);
-      find_subqueries (stmttype, select, p->u_data.between_expr.to);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.between_expr.val);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.between_expr.from);
+      find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.between_expr.to);
       return 0;
 
 
@@ -1389,18 +1415,18 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
       return 0;
 
     case E_SLI_SUBQUERY:
-	subq_stmts[stmts_cnt]=p->u_data.subquery;
+	subq_stmts[stmts_cnt]=p->data.s_select_list_item_data_u.subquery;
 	//subq_selects[stmts_cnt++]=select;
 
-     	 //map_select_stmt ("SUBSELECT", p->u_data.subquery); */
+     	 //map_select_stmt ("SUBSELECT", p->expr_str_u.subquery); */
       return 0;
 
 
     case E_SLI_SUBQUERY_EXPRESSION:
-	//subq_stmts[stmts_cnt]= p->u_data.sq_expression.sq;
+	//subq_stmts[stmts_cnt]= p->expr_str_u.sq_expression.sq;
 	//subq_selects[stmts_cnt++]=select;
 
-      	find_subqueries (stmttype, select, p->u_data.sq_expression.sq); 
+      	find_subqueries (stmttype, select, p->data.s_select_list_item_data_u.sq_expression.sq); 
       return 0;
 
 

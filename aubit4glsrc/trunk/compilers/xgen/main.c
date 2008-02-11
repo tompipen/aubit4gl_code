@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.21 2008-01-27 14:50:30 mikeaubury Exp $
+# $Id: main.c,v 1.22 2008-02-11 17:13:10 mikeaubury Exp $
 #*/
 
 /**
@@ -66,11 +66,15 @@ char ccrfile[134];
 
 extern FILE *cfo;
 extern FILE *cfio;
+extern FILE *cmd_file;
+extern FILE *cmd_file2;
+extern FILE *decode_enum;
+
 extern FILE *cfi;
 extern FILE *hf;
 extern FILE *hsf;
 extern FILE *ccrf;
-char export_name[128];
+char x_export_name[128];
 
 
 /*
@@ -84,6 +88,7 @@ int yywrap (void);
 void yyerror (char *s);
 
 extern int yyparse (void);	/* in y.tab.c */
+void write_generate_export(char *export_name) ;
 
 /*
 =====================================================================
@@ -161,14 +166,6 @@ main (int argc, char *argv[])
 
       strcpy (c, argv[1]);
 
-      if (argc > 2)
-	{
-	  strcpy (export_name, argv[2]);
-	}
-      else
-	{
-	  strcpy (export_name, argv[1]);
-	}
 
 
       A4GL_bname (c, a, b);
@@ -205,6 +202,26 @@ main (int argc, char *argv[])
       strcpy (ofile, outputfilename);
       strcat (ofile, ".xio.c");
       cfio = (FILE *) fopen (ofile, "w");
+
+
+
+
+	// This section is a quick hack to generate some extra files I needed
+	// when I change the parsing routines..
+	// the only significant thing in the future might be the fgl_enums.c type file
+	// which dumps the enumerations and their character string equivilents to a file...
+	//
+	if (strcmp(outputfilename,"fgl")==0 && 1 ) { // CHANGE THE 0 to a 1 to enable dumping of the cmds.c and cmds_funcs.c files
+      		cmd_file =    (FILE *) fopen ("cmds.c", "w");
+      		cmd_file2 =   (FILE *) fopen ("cmds_funcs.c", "w");
+      		decode_enum = (FILE *) fopen ("fgl_enums.c", "w");
+		fprintf(decode_enum,"#include \"a4gl_lib_lex_esqlc_int.h\"\n");
+		fprintf(decode_enum,"#define ONE_NOT_ZERO(x) (x?x:1)\n");
+		fprintf(decode_enum,"#include \"field_handling.h\"\n");
+		fprintf(decode_enum,"#include \"compile_c.h\"\n");
+		fprintf(decode_enum,"#include \"cmd_funcs.h\"\n");
+	}
+
       if (cfi == 0)
 	{
 	  printf ("Unable to open output file\n");
@@ -260,8 +277,23 @@ main (int argc, char *argv[])
     }
 
 
+
   write_genout ();
   rval = yyparse ();
+
+      if (argc > 2)
+	{
+	int a;
+	for (a=2;a<argc;a++) {
+	  write_generate_export(argv[a]);
+		}
+	  //strcpy (export_name, argv[2]);
+	}
+      else
+	{
+	  write_generate_export(argv[1]);
+	}
+
 
   fclose (cfo);
   fclose (cfi);
@@ -292,51 +324,45 @@ yywrap (void)
  *
  * @todo Describe function
  */
-void
-write_genout (void)
-{
-  fprintf (cfi, "#include \"%s\"\n", hfile);
-  fprintf (cfi, "#include \"a4gl_libaubit4gl.h\"\n");
 
 
-  fprintf (cfio, "#include \"%s\"\n", hfile);
-  fprintf (cfio, "#include \"a4gl_libaubit4gl.h\"\n");
+void write_generate_export(char *export_name) {
 
-  fprintf (cfo, "#include \"%s\"\n", hfile);
-/*      fprintf(cfo,"#include \"a4gl_API_packer.h\"\n"); fprintf(cfo,"#include \"a4gl_lib_packer_int.h\"\n"); */
-  fprintf (cfo, "#include \"a4gl_libaubit4gl.h\"\n");
 
-  fprintf (cfio, "\n\nint write_%s(%s *s,char *filename);\n", export_name,
-	   export_name);
-  fprintf (cfio, "int read_%s(%s *s,char *filename);\n", export_name,
-	   export_name);
 
-  fprintf (cfio, "\n\nint write_%s(%s *s,char *filename) {\nint a;\n",
-	   export_name, export_name);
+  fprintf (hf, "\n\nint write_%s(%s *s,char *filename);\n", export_name, export_name);
+  fprintf (hf, "int read_%s(%s *s,char *filename);\n", export_name, export_name);
+
+  fprintf (cfio, "\n\nint write_%s(%s *s,char *filename) {\nint a;\n", export_name, export_name);
   fprintf (cfio, "%s s_s;\n", export_name);
   fprintf (cfio, "memcpy(&s_s,s,sizeof(s_s));\n");
-  //fprintf (cfio, "if (!A4GL_open_packer(filename,'O')) return 0;\n");
-fprintf (cfio, "if (!A4GL_open_packer(filename,'O', \"%s\")) return 0;\n", export_name);
-  fprintf (cfio,
-	   "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n",
-	   export_name, export_name, export_name, export_name);
+  fprintf (cfio, "if (!A4GL_open_packer(filename,'O', \"%s\")) return 0;\n", export_name);
+  fprintf (cfio, "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n", export_name, export_name, export_name, export_name);
   fprintf (cfio, "A4GL_close_packer('O');\n");
   fprintf (cfio, "return a;\n");
   fprintf (cfio, "}\n");
   fprintf (cfio, " \n");
 
-  fprintf (cfio, "\n\nint read_%s(%s *s,char *filename) {\nint a;\n",
-	   export_name, export_name);
-  //fprintf (cfio, "if (!A4GL_open_packer(filename,'I')) return 0;\n");
-fprintf (cfio, "if (!A4GL_open_packer(filename,'I', \"%s\")) return 0;\n", export_name);
-  fprintf (cfio,
-	   "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n",
-	   export_name, export_name, export_name, export_name);
+  fprintf (cfio, "\n\nint read_%s(%s *s,char *filename) {\nint a;\n", export_name, export_name);
+  fprintf (cfio, "if (!A4GL_open_packer(filename,'I', \"%s\")) return 0;\n", export_name);
+  fprintf (cfio, "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n", export_name, export_name, export_name, export_name);
   fprintf (cfio, "A4GL_close_packer('I');\n");
   fprintf (cfio, "return a;\n");
   fprintf (cfio, "}\n");
   fprintf (cfio, " \n");
 
+
+
+}
+
+
+void
+write_genout (void)
+{
+  fprintf (cfi, "#include \"%s\"\n", hfile);
+  fprintf (cfi, "#include \"a4gl_libaubit4gl.h\"\n");
+  fprintf (cfo, "#include \"%s\"\n", hfile);
+  fprintf (cfo, "#include \"a4gl_libaubit4gl.h\"\n");
   fprintf (hf, "#ifndef X_%s_X_H\n", outputfilename);
   fprintf (hf, "#define X_%s_X_H\n", outputfilename);
 
@@ -350,6 +376,8 @@ fprintf (cfio, "if (!A4GL_open_packer(filename,'I', \"%s\")) return 0;\n", expor
   fprintf (hsf, "#include <stdlib.h>\n");
 
   fprintf (hf, "#include \"%s\"\n", hsfile);
+  fprintf (cfio, "#include \"%s\"\n", hfile);
+  fprintf (cfio, "#include \"a4gl_libaubit4gl.h\"\n");
 }
 
 

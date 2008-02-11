@@ -1,11 +1,15 @@
 label_cmd :  LABEL  {
-char buff[256];
-A4GL_debug("Label : %s\n",get_idents(0));
-add_feature("LABEL");
-strcpy(buff,get_idents(0));
-A4GL_convlower(buff);
-print_label(buff);
-A4GL_label_defined(buff);
+	char buff[256];
+	A4GL_debug("Label : %s\n",get_idents(0));
+	add_feature("LABEL");
+	strcpy(buff,get_idents(0));
+	A4GL_convlower(buff);
+
+	$<cmd>$=new_label_cmd(buff);
+	
+
+	/* print_label(buff); */
+	A4GL_label_defined(buff);
 }
 ;
 

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.150 2007-11-14 15:18:41 mikeaubury Exp $
+# $Id: newpanels.c,v 1.151 2008-02-11 17:13:13 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.150 2007-11-14 15:18:41 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.151 2008-02-11 17:13:13 mikeaubury Exp $";
 #endif
 
 /**
@@ -3156,6 +3156,7 @@ void
 {
   int a;
   a = A4GL_pop_int ();
+  A4GLSQL_set_status(0,0);
   sleep (a);
 }
 

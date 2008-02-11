@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.127 2007-11-30 14:26:21 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.128 2008-02-11 17:13:13 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -97,8 +97,7 @@ A4GL_string_width (char *s)
 }
 
 void
-A4GL_strip_nl (str)
-     char *str;
+A4GL_strip_nl (char *str)
 {
   int a;
   for (a = 0; a <= strlen (str); a++)

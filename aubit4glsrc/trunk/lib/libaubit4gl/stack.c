@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.199 2007-12-13 17:55:07 mikeaubury Exp $
+# $Id: stack.c,v 1.200 2008-02-11 17:13:11 mikeaubury Exp $
 #
 */
 
@@ -3708,6 +3708,23 @@ double get_now_as_double(void) {
 	        d=(double)tv1.tv_sec+(((double)tv1.tv_usec)/1000000.0);
 		  return d;
 
+}
+
+
+/* when a function call is used as an array subscript
+ * we need to extract back the integer returned from the
+ * call..
+ * The function must take no parameters for this to work though
+ **/
+int A4GL_get_single_int_returned_from_call(int n) {
+int t;
+	if (n!=1) {
+		A4GL_pop_args(n);
+		return 0;
+	}
+
+	t=A4GL_pop_long();
+	return t;
 }
 
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.23 2007-07-23 13:21:34 mikeaubury Exp $
+# $Id: mkyacc,v 1.24 2008-02-11 17:13:08 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -59,34 +59,34 @@ fi
 
 cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule sqlpack/$A4GL_SQLPACK/*.rule  generated/single_words.rule > $ofile
 echo "/* ========================== from mkyacc =========================== */" >> $ofile
-echo "commands : | command1 ;" >> $ofile
+#echo "commands_xxx : | command1 ;" >> $ofile
 
-echo "all_commands : commands_all opt_semi ;" >> $ofile
+#echo "all_commands : commands_all opt_semi ;" >> $ofile
 
-echo 'command1	: all_commands  {
-chk4var=0;
-if (A4GL_isyes(acl_getenv("INCLINES")))
-A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
-	A4GL_prchkerr(lastlineno,infilename);
-	lastlineno=yylineno;
-}
-| command1  all_commands {
-chk4var=0;
-if (A4GL_isyes(acl_getenv("INCLINES")))
-A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
-/* if (A4GL_aubit_strcasecmp($<str>$,"whenever")!=0)  */
-A4GL_prchkerr(lastlineno,infilename);
-lastlineno=yylineno;
-}
-;' >> $ofile
+#echo 'command1	: all_commands  {
+#chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",$<str>$);
+#if (A4GL_isyes(acl_getenv("INCLINES")))
+#A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+	#A4GL_prchkerr(lastlineno,infilename);
+	#lastlineno=yylineno;
+#}
+#| command1  all_commands {
+#A4GL_lex_printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;
+#if (A4GL_isyes(acl_getenv("INCLINES")))
+#A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+###/* if (A4GL_aubit_strcasecmp($<str>$,"whenever")!=0)  */
+#A4GL_prchkerr(lastlineno,infilename);
+#lastlineno=yylineno;
+#}
+#;' >> $ofile
 
+#commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
 echo "
-commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
 commands_all1 	:" >> $ofile
 
 grep -h "^[^ ]*_cmd.*:" $ofile | $AWK '
-(NR==1) {print " 		" $1 " {add_used_cmd(\"" $1 "\");}" }
-(NR!=1) {print "	|	" $1 " {add_used_cmd(\"" $1 "\");}" }' > /tmp/aaa$$
+(NR==1) {print " 		" $1 " {add_used_cmd(\"" $1 "\");$<cmd>$=$<cmd>1;}" }
+(NR!=1) {print "	|	" $1 " {add_used_cmd(\"" $1 "\");$<cmd>$=$<cmd>1;}" }' > /tmp/aaa$$
 cat /tmp/aaa$$ >> $ofile
 rm /tmp/aaa$$
 echo " | error;" >> $ofile

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.45 2007-10-16 16:38:16 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.46 2008-02-11 17:13:13 mikeaubury Exp $
 #*/
 
 /**
@@ -93,8 +93,8 @@ int entry=0;
     {
       if (rep->output_mode == 'C')
 	{
-	  tmpnam (rep->output_loc);
-	  rep->output = fopen (rep->output_loc, "w");
+	  tmpnam (rep->output_loc_str);
+	  rep->output = fopen (rep->output_loc_str, "w");
 	  if (rep->output == 0)
 	    {
 	      A4GL_exitwith ("Could not open report output");
@@ -107,7 +107,7 @@ int entry=0;
 
 	  if (rep->output_mode == 'F')
 	    {
-	      if (strcmp (rep->output_loc, "stdout") == 0)
+	      if (strcmp (rep->output_loc_str, "stdout") == 0)
 		{
 		  A4GL_push_char ("");
 		  A4GL_push_int (-1);
@@ -119,8 +119,8 @@ int entry=0;
 		{
 		  rep->pdf_ptr = PDF_new ();
 		  PDF_set_parameter(rep->pdf_ptr,"compatibility","1.4");
-		  A4GL_debug ("Opening file: %s\n", rep->output_loc);
-		  if (PDF_open_file (rep->pdf_ptr, rep->output_loc) == -1)
+		  A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
+		  if (PDF_open_file (rep->pdf_ptr, rep->output_loc_str) == -1)
 		    {
 		      A4GL_exitwith ("Error opening output\n");
 		      return;
@@ -131,7 +131,7 @@ int entry=0;
 	    }
 	  else
 	    {
-	      rep->output = popen (rep->output_loc, "w");
+	      rep->output = popen (rep->output_loc_str, "w");
 	      if (rep->output == 0)
 		{
 		  A4GL_exitwith ("Could not open report output");

@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.44 2007-06-11 17:50:36 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.45 2008-02-11 17:13:13 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -25,8 +25,7 @@ A4GL_string_width (char *s)
 }
 
 void
-A4GL_strip_nl (str)
-     char *str;
+A4GL_strip_nl (char *str)
 {
   int a;
   for (a = 0; a <= strlen (str); a++)

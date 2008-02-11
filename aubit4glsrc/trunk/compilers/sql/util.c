@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.66 2008-01-22 09:11:32 mikeaubury Exp $
+# $Id: util.c,v 1.67 2008-02-11 17:13:09 mikeaubury Exp $
 #
 */
 
@@ -42,11 +42,11 @@
 #include "a4gl_API_sqlparse_lib.h"
 #include "a4gl_libaubit4gl.h"
 
-#ifdef SIMPLIFIED
-#include "../4glc/lib4glc/fix_insert.c"
-#else
-#include "../4glc/fix_insert.c"
-#endif
+//#ifdef SIMPLIFIED
+//#include "../4glc/lib4glc/fix_insert.c"
+//#else
+//#include "../4glc/fix_insert.c"
+//#endif
 //#include "sqlcompiler.h"
 
 
@@ -279,6 +279,8 @@ ansi_violation (char *s, int n)
 {
 }
 
+
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -360,6 +362,8 @@ fix_update_expr (int mode)
 
   return big_buff;
 }
+
+#endif
 
 
 
@@ -925,6 +929,35 @@ print_unable_to_parse ()
 }
 
 
+
+char *remove_duplicate_nl(char *orig) {
+char *s;
+int a;
+int b;
+int l;
+l=strlen(orig);
+
+if (l==0) return;
+s=strdup(orig);
+b=0;
+
+for (a=0;a<l;a++) {
+	if (orig[a]=='\n' || orig[a]=='\r') {
+		if (a==0) continue;
+		if (orig[a-1]==' ' || orig[a-1] == '\n' || orig[a-1]=='\t' || orig[a-1]=='\r' || orig[a+1]==' ' || orig[a+1]=='\t') {
+			continue;
+		}
+		s[b++]='\n';
+	} else {
+		s[b++]=orig[a];
+	}
+}
+s[b]=0;
+strcpy(orig,s);
+free(s);
+return orig;
+}
+
 /**
  *
  * @todo Describe function
@@ -934,7 +967,7 @@ add_sql (int n, char *s)
 {
   static int last_was_err = 0;
   static char *last_s = 0;
-
+remove_duplicate_nl(s);
   if (n == -1)
     {
       last_s = 0;
@@ -1245,6 +1278,9 @@ A4GLPARSE_SQLPARSE_initlib (void)
   return 0;
 }
 
+
+
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -1276,6 +1312,7 @@ A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s, int is_select_i
   return s;
 
 }
+#endif
 
 
 
@@ -1289,7 +1326,7 @@ A4GL_db_used (void)
 }
 
 int
-A4GL_cursor_current (char *s)
+A4GL_cursor_current (expr_str *s)
 {
   return 0;
 }
@@ -1364,4 +1401,99 @@ int clr_ignore_indicators(void) {
 	return 0;
 	// required ...
 }
+
+
+/*
+ * these indirect to the ones in lib/libaubit4gl so that we can do some expansions of variables first
+ * and some checks/debugs/breakpoints etc
+ * */
+struct s_select_list_item_list * local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i)
+{
+struct s_select_list_item_list * prval;
+ //A4GL_pause_execution();
+
+
+
+ prval=add_select_list_item_list(p,i);
+
+  return prval;
+}
+
+/*
+ * these indirect to the ones in lib/libaubit4gl so that we can do some expansions of variables first
+ * and some checks/debugs/breakpoints etc
+ * */
+struct s_select_list_item_list * local_new_select_list_item_list(  struct s_select_list_item *i) {
+ struct s_select_list_item_list * prval;
+ struct variable_usage *u;
+        return new_select_list_item_list(i);
+}
+
+
+struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l) {
+
+ l=rationalize_select_list_item_list(l);
+ return l;
+}
+
+
+/**
+ *  *  * Trim the spaces at the right part of a string.
+ *   *   *
+ *    *    * @param s The string to be trimmed
+ *     *     */
+static void trim_spaces (char *s)
+{
+          int l;
+            for (l = strlen (s) - 1; l >= 0; l--)
+                        {
+                                      if (s[l] == ' ')
+                                                      s[l] = 0;
+                                            else
+                                                            break;
+                                                }
+}
+
+
+
+str_list *generate_update_column_list_for(char *tabname) {
+char colname[2000];
+  int isize = 0;
+  int idtype = 0;
+  char *ccol;
+struct str_list *l;
+int rval;
+l=NULL;
+
+      strcpy (colname, "");
+      rval = A4GLSQL_get_columns (tabname, colname, &idtype, &isize);
+      if (rval == 0)
+        {
+        //set_yytext(tabname);
+          a4gl_yyerror ("Table is not in the database)");
+          A4GLSQL_end_get_columns ();
+          return NULL;
+        }
+
+        l=new_str_list(0);
+
+      while (1)
+        {
+          colname[0] = 0;
+          rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+          strcpy (colname, ccol);
+          if (rval == 0)
+            break;
+          trim_spaces (colname);
+          add_str_list(l, colname);
+          //A4GL_4glc_push_gen (UPDCOL, colname);
+        }
+      A4GLSQL_end_get_columns ();
+
+        return l;
+}
+
+
+
+
 /* ====================================== EOF ============================ */

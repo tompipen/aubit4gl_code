@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.12 2008-01-27 14:51:23 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.13 2008-02-11 17:13:12 mikeaubury Exp $
 #*/
 
 /**
@@ -270,9 +270,13 @@ A4GLPacker_input_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_input_start_union (char *s, char *en, int e,char *n, int ptr, int isarr)
+A4GLPacker_input_start_union (char *s, char *en, int *e,char *n, int ptr, int isarr)
 {
-  return 1;
+int a;
+  a=A4GLPacker_input_int (en, e, 0, -1);
+  if (!a) { A4GL_debug("Failed to read %s %s %s",s,en,n); }
+  return a;
+
 }
 
 /**

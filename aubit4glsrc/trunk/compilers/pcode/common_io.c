@@ -108,7 +108,7 @@ if (dir=='O') {
 		
 	for (a=0;a<objp->functions.functions_len;a++) {
 		for (b=0;b<objp->functions.functions_val[a].cmds.cmds_len;b++) {
-			types[objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type]++;
+			types[objp->functions.functions_val[a].cmds.cmds_val[b].npcode_cmd_type]++;
 		}
 	}
 #ifdef OUTPUT_DEBUG_INFO
@@ -236,9 +236,9 @@ printf("Write more...\n");
 		
 	for (a=0;a<objp->functions.functions_len;a++) {
 		for (b=0;b<objp->functions.functions_val[a].cmds.cmds_len;b++) {
-			sprintf(fname,"cmds/%04d_%04d_%d.cmd",a,b,objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type);
+			sprintf(fname,"cmds/%04d_%04d_%d.cmd",a,b,objp->functions.functions_val[a].cmds.cmds_val[b].npcode_cmd_type);
   			fxx = fopen (fname, "wb");
-			types[objp->functions.functions_val[a].cmds.cmds_val[b].cmd_type]++;
+			types[objp->functions.functions_val[a].cmds.cmds_val[b].npcode_cmd_type]++;
   			xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
 			xdr_cmd (&xdrp, &objp->functions.functions_val[a].cmds.cmds_val[b]);
   			xdr_destroy (&xdrp);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.37 2008-01-21 07:16:11 mikeaubury Exp $
+# $Id: data.c,v 1.38 2008-02-11 17:13:09 mikeaubury Exp $
 #*/
 
 /**
@@ -135,7 +135,7 @@ init_report (void)
 int
 find_variable (char *name)
 {
-  struct variable *ptr;
+  struct acerep_variable *ptr;
   int a;
   for (a = 0; a < this_report.variables.variables_len; a++)
     {
@@ -205,7 +205,7 @@ void
 ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
 		  int dim)
 {
-  struct variable *ptr;
+  struct acerep_variable *ptr;
   char buff[256];
   char *ob;
   char buff2[256];
@@ -261,11 +261,10 @@ ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
   this_report.variables.variables_len++;
   this_report.variables.variables_val =
     realloc (this_report.variables.variables_val,
-	     this_report.variables.variables_len * sizeof (struct variable));
+	     this_report.variables.variables_len * sizeof (struct acerep_variable));
 
   ptr =
-    &this_report.variables.variables_val[this_report.variables.variables_len -
-					 1];
+    &this_report.variables.variables_val[this_report.variables.variables_len - 1];
   ptr->name = acl_strdup (name);
   ptr->datatype_string = acl_strdup (dstring);
   ptr->category = category;
@@ -278,7 +277,7 @@ ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
 
 
 static int has_sql_variable(char *s) {
-  struct variable *ptr;
+  struct acerep_variable *ptr;
 	int a;
 	for (a=0;a<this_report.variables.variables_len;a++) {
 		ptr=&this_report.variables.variables_val[a];
@@ -580,7 +579,7 @@ add_zero_rows_where (struct select_stmts *ptr)
 int
 find_sql_var (int colno)
 {
-  struct variable *ptr;
+  struct acerep_variable *ptr;
   int a=0;
   int c = 0;
   for (a = 0; a < this_report.variables.variables_len; a++)
@@ -871,7 +870,7 @@ execute_selects (void)
 void
 print_variables (char *s)
 {
-  struct variable *ptr;
+  struct acerep_variable *ptr;
   int a;
   /* printf("---> %s\n",s); */
   for (a = 0; a < this_report.variables.variables_len; a++)

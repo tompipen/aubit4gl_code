@@ -1,3 +1,6 @@
+#ifndef SQL_COMPILER_ALIAS_H
+#define SQL_COMPILER_ALIAS_H
+
 int set_ignore_indicators(void);
 int clr_ignore_indicators(void);
 
@@ -89,3 +92,4 @@ int clr_ignore_indicators(void);
 #define yytname sqlparse_yytname
 #define yytranslate sqlparse_yytranslate
 #define yyunput sqlparse_yyunput
+#endif

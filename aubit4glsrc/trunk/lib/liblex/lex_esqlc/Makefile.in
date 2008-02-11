@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.18 2006-07-27 16:02:35 mikeaubury Exp $
+# $Id: Makefile.in,v 1.19 2008-02-11 17:13:11 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -40,7 +40,8 @@ include ${ROOT}/incl/Makefile-common
 
 #Since compile_c.c includes calls to make_sql_bind, which is defined in binding.c, binding.c, must
 #be linked in C as well, because there cannot be any unsresolved symbols at link time on Windows:
-COMMON_OBJ      =compile_c.o compile_c_gtk.o binding.o init.o bad_idents.o class.o
+COMMON_OBJ      =compile_c.o compile_c_gtk.o binding.o init.o bad_idents.o class.o cmds.o cmds_funcs.o dump_report.o err_hand.o fgl_enums.o
+
 
 4GLCOBJ_C		=compile_c_sql.o ${COMMON_OBJ} 
 
@@ -139,6 +140,9 @@ ${LIBROOT}/lib4glc${SO_EXT}:
 ## ==================================================================
 
 compile_c.o compile_c_sql.o: ${KW_H} ${Y_TAB_H}
+
+proto: 
+	cproto compile_c.c -I. -I.. -I../../../incl -I../../../compilers/4glc -I../../..
 
 ${KW_H} ${Y_TAB_H}:
 	${MAKE} -C ${ROOT}/compilers/4glc rules/generated/y.tab.c

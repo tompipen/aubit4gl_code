@@ -1,50 +1,60 @@
 /* =============================== put.rule ======================== */
 put_cmd :
-        KW_PUT put_cursor_name  {
-                if (A4GLSQLCV_check_requirement("NO_INSERT_CURSOR")) {
-                        a4gl_yyerror("Insert cursors are not supported for this rdbms");
-                }
+        opt_use2_p KW_PUT put_cursor_name_p  {
+                	if (A4GLSQLCV_check_requirement("NO_INSERT_CURSOR")) {
+                        	a4gl_yyerror("Insert cursors are not supported for this rdbms");
+					         YYERROR;
+                	}
 
-		add_feature("PUT_CURSOR");
-		start_bind('i',0);
+			if (A4GLSQLCV_check_requirement ("EMULATE_INSERT_CURSOR")) {
+				if (A4GL_cursor_type ($<ptr>3)!='I') {
+			          	a4gl_yyerror ("Got confused - I didn't think that was an insert cursor\\n Use 'PRAGMA EMULATE INSERT CURSOR FOR CursorName' to hint the compiler");
+					         YYERROR;
+
+				}
+			}
+
+			add_feature("PUT_CURSOR");
+			//start_bind('i',0);
 		}
-		put_from
+	put_from
 		{
-		print_put_g($<str>2,$<sql_string>4,copy_togenbind('i'));
-		start_bind('i',0);
+		$<cmd>$=new_put_cmd($<ptr>1,$<ptr>3, $<ptr_list>5);
+		//start_bind('i',0);
 	}
 ;
 
-put_from: {$<sql_string>$=make_sql_string_and_free(acl_strdup(""),NULL);} 
-| FROM put_val_list { 
-	$<sql_string>$=$<sql_string>2;
-}
+put_from: {$<ptr_list>$=0;}
+	| FROM put_val_list { $<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>2,0,1); }
 ;
 
-put_val_list  : put_val_ss {A4GL_4glc_push_gen(PUTVAL,$<sql_string>1);} | 
-                put_val_list KW_COMMA put_val_ss {A4GL_4glc_push_gen(PUTVAL,$<sql_string>3); 
-			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,NULL);
+put_val_list  : put_val_p {
+			$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+		} 
+		| put_val_list KW_COMMA put_val_p {
+			$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
 		} 
 ;
 
 
 
-put_val_ss : put_val_int {
-	char buff[2560];	
-	strcpy(buff,$<sql_string>1);
-	A4GL_debug("put buff=%s\n",buff);
-	if (buff[0]!='\''&&strncmp(buff,"?",1)!=0&&strncmp(buff," :",2)!=0) {
-		A4GL_debug("Got : %s - expecting '..', : or ?",buff);
- 		a4gl_yyerror("Put values must be variables, strings or 'NULL'");
-		YYERROR;
+put_val_p : put_val_int_p {
+		$<ptr>$=$<ptr>1;
+	} 
+	| KW_NULL  {
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);
 	}
-	A4GL_add_put_string(buff);
-	$<sql_string>$=make_sql_string_and_free(acl_strdup(buff),NULL);
-} | KW_NULL  {
-	$<sql_string>$=make_sql_string_and_free(acl_strdup("NULL"),NULL);
-}
 
 
+;
+
+
+put_val_int_p : CHAR_VALUE  {
+		$<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
+        }
+        | variable_usage_expression {
+		$<ptr>$=$<ptr>1;
+        }
 ;
 
 

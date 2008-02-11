@@ -1,18 +1,31 @@
 
 
 validate_cmd : 
-VALIDATE init_bind_var_list LIKE {
+VALIDATE expanded_ibind_var_list LIKE {
 	add_feature("VALIDATE_LIKE");
 	clr_validate_list();
 } validate_tab_list  {
-	print_validate_g(copy_togenbind('N'),$<str>5);
+	$<cmd>$=new_validate_cmd($<ptr_list>2,$<str_list>5);
 }
 ;
 
 
-validate_tab_list : validate_tab | validate_tab_list KW_COMMA validate_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+validate_tab_list : validate_tab  {
+                     $<str_list>$=malloc(sizeof(struct str_list));
+                       $<str_list>$->str_list_entry.str_list_entry_len=1;
+                       $<str_list>$->str_list_entry.str_list_entry_val=malloc(sizeof(char *)* $<str_list>$->str_list_entry.str_list_entry_len);
+                      $<str_list>$->str_list_entry.str_list_entry_val[0]=$<str>1;
+
+}
+        | validate_tab_list KW_COMMA validate_tab {
+                   $<str_list>$=$<str_list>1;
+                   $<str_list>$->str_list_entry.str_list_entry_len=$<str_list>1->str_list_entry.str_list_entry_len+1;
+                   $<str_list>$->str_list_entry.str_list_entry_val=realloc($<str_list>1->str_list_entry.str_list_entry_val, sizeof($<str_list>$->str_list_entry.str_list_entry_val[0]) * $<str_list>$->str_list_entry.str_list_entry_len);
+                   $<str_list>$->str_list_entry.str_list_entry_val[$<str_list>$->str_list_entry.str_list_entry_len-1]=strdup($<str>3);
 }
 ;
+
+
 
 validate_tab : table_name KW_DOT column_name {
 		sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
@@ -20,7 +33,7 @@ validate_tab : table_name KW_DOT column_name {
 	}
 	| table_name KW_DOT KW_MULTIPLY {
 		sprintf($<str>$,"%s.*",$<str>1);
-	push_validate($<str>$);
+		push_validate($<str>$);
 	}
 ;
 

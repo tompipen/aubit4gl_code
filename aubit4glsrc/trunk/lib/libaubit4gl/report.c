@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.155 2008-01-27 15:15:18 mikeaubury Exp $
+# $Id: report.c,v 1.156 2008-02-11 17:13:11 mikeaubury Exp $
 #
 */
 
@@ -1676,7 +1676,7 @@ A4GL_free_duplicate_binding (struct BINDING *b, int n)
   for (a = 0; a < n; a++)
     {
       A4GL_debug ("Freeing %p", b[a].ptr);
-      free (b[a].ptr);
+      if (b[a].ptr) free (b[a].ptr);
     }
   A4GL_debug ("Freeing structure %p", b);
   free (b);

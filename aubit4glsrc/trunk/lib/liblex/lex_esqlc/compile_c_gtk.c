@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.16 2005-05-20 18:34:28 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.17 2008-02-11 17:13:11 mikeaubury Exp $
 #
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_gtk.c,v 1.16 2005-05-20 18:34:28 mikeaubury Exp $";
+		"$Id: compile_c_gtk.c,v 1.17 2008-02-11 17:13:11 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -117,7 +117,7 @@ static int printed_gtk = 0;
  * @todo Describe function
  */
 void
-LEXLIB_print_formhandler (char *name)
+print_formhandler (char *name)
 {
   if (printed_gtk == 0)
     {
@@ -132,9 +132,9 @@ LEXLIB_print_formhandler (char *name)
       printed_gtk++;
     }
   strcpy (lname, name);
-  A4GL_lex_printh ("int hnd_e_%s(void *widget,void *event,void * data);\n", name);
-  A4GL_lex_printh ("int hnd_c_%s(void *widget,void * data);\n", name);
-  A4GL_lex_printh ("int hnd_%s (void *widget, int isevent,void *event,void * data);\n", name);
+  printh ("int hnd_e_%s(void *widget,void *event,void * data);\n", name);
+  printh ("int hnd_c_%s(void *widget,void * data);\n", name);
+  printh ("int hnd_%s (void *widget, int isevent,void *event,void * data);\n", name);
   printc ("int hnd_e_%s(void *widget,void *event,void * data) {\n", name);
   printc ("  hnd_%s(widget,1,event,data);\n", name);
   printc ("return 0;}\n");
@@ -150,7 +150,7 @@ LEXLIB_print_formhandler (char *name)
  * @todo Describe function
  */
 void
-LEXLIB_print_getwin (void)
+print_getwin (void)
 {
   printc
     ("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,A4GL_get_currwin_name());\n",
@@ -165,7 +165,7 @@ LEXLIB_print_getwin (void)
  * @todo Describe function
  */
 void
-LEXLIB_print_end_formhandler (void)
+print_end_formhandler (void)
 {
   printc ("}\n");
 }
@@ -176,7 +176,7 @@ LEXLIB_print_end_formhandler (void)
  * @todo Describe function
  */
 void
-LEXLIB_print_event (int type)
+print_event (int type)
 {
 
   if (type == 'B')
@@ -195,7 +195,7 @@ LEXLIB_print_event (int type)
  * @todo Describe function
  */
 void
-LEXLIB_print_event_2 (void)
+print_event_2 (void)
 {
   printc ("}\n");
 }
@@ -205,7 +205,7 @@ LEXLIB_print_event_2 (void)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_field (int type, char *s)
+print_gtk_field (int type, char *s)
 {
   if (type == 'B')
     printc ("if (BEFORE_ANY) {\n");
@@ -226,7 +226,7 @@ LEXLIB_print_gtk_field (int type, char *s)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_field_2 (void)
+print_gtk_field_2 (void)
 {
   printc ("}\n");
 }
@@ -239,7 +239,7 @@ LEXLIB_print_gtk_field_2 (void)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_menuhandler_1 (char *name)
+print_gtk_menuhandler_1 (char *name)
 {
   printc ("void aclfglmn_%s(char *p) {\n", name);
 }
@@ -249,7 +249,7 @@ LEXLIB_print_gtk_menuhandler_1 (char *name)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_menuhandler_bsm (void)
+print_gtk_menuhandler_bsm (void)
 {
   printc ("if (strcmp(p,\"__BSM__\")==0) {\n");
 }
@@ -260,7 +260,7 @@ LEXLIB_print_gtk_menuhandler_bsm (void)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_menuhandler_bsm_end (void)
+print_gtk_menuhandler_bsm_end (void)
 {
   printc ("}/* before show menu*/\n");
 }
@@ -270,7 +270,7 @@ LEXLIB_print_gtk_menuhandler_bsm_end (void)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_menuhandler_on (char *s)
+print_gtk_menuhandler_on (char *s)
 {
   char buff[256];
   print_gtk_menuhandler_bsm ();
@@ -287,7 +287,7 @@ LEXLIB_print_gtk_menuhandler_on (char *s)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_menuhandler_on_end (void)
+print_gtk_menuhandler_on_end (void)
 {
   printc ("}\n");
 }
@@ -297,7 +297,7 @@ LEXLIB_print_gtk_menuhandler_on_end (void)
  * @todo Describe function
  */
 void
-LEXLIB_print_gtk_menuhandler_end (void)
+print_gtk_menuhandler_end (void)
 {
   printc ("}\n");
 }

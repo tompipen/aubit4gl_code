@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.88 2007-02-17 10:15:21 mikeaubury Exp $
+# $Id: 1.reqd,v 1.89 2008-02-11 17:13:07 mikeaubury Exp $
 #
 */
 
@@ -121,6 +121,7 @@
 #include "field_handling.h"
 #include "a4gl_gen_stack.h"
 #include "a4gl_API_parse_lib.h"
+#include "parsehelp.h"
 
 /*
 =====================================================================
@@ -128,7 +129,10 @@
 =====================================================================
 */
 
-extern int 	lineno;
+extern struct module_definition this_module;
+//extern int 	lineno;
+extern int 	token_read_on_line;
+extern int 	token_read_on_col;
 extern int 	read_glob_var;
 extern int 	modlevel;
 extern int 	charno;
@@ -159,10 +163,14 @@ extern char *kw_comma;
 extern char *kw_space;
 extern char *kw_ob;
 extern char *kw_cb;
-extern struct binding_comp *ibind;
-extern int ibindcnt;
-extern struct binding_comp *ebind;
-extern int ebindcnt;
+//extern struct binding_comp *ibind;
+//extern int ibindcnt;
+//extern struct binding_comp *ebind;
+//extern int ebindcnt;
+struct attrib curr_attrib;
+extern struct expr_str *menu_attrib_comment;
+extern struct expr_str *menu_attrib_style;
+extern struct expr_str *menu_attrib_image;
 
 
 
@@ -185,7 +193,7 @@ extern char		menu[2048];
 extern char 		varstring[100];
 extern char 		current_del_table[64];
 
-extern int 		rordcnt;
+// extern int 		rordcnt;
 extern int 		racnt;
 extern int 		ccode;
 extern int 		errbomb;
@@ -224,26 +232,24 @@ extern char *order_asc_desc;
 
 
 char *		make_sql_string_and_free(char *first,...);
-char *		get_namespace (char *s);
+//char *		get_namespace (char *s);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char *do_clobbering(char *f,char *s);
 char *do_clobbering_sql (char *f, char *s);
 void print_expr_list_concat (struct expr_str_list *l);
 
-extern struct expr_str *menu_attrib_comment;
-extern struct expr_str *menu_attrib_style;
-extern struct expr_str *menu_attrib_image;
 
-	
+//char *get_namespace (char *s);
 
 #define ADDMAP(x,y) addmap(x,y,curr_func,yylineno,infilename)
+#define ADDMAP_P(x,y) addmap_p(x,y,curr_func,yylineno,infilename)
 #define ADDMAP_MODULE(x,y) addmap(x,y,"MODULE",yylineno,infilename) 
 
 #ifndef A4GL_strcpy_defined
 #define A4GL_strcpy_defined
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 #endif
-
+extern struct report_orderby_section *current_orderby;
 
 #ifndef SIMPLIFIED
 #include "../generic.h"
@@ -252,7 +258,6 @@ extern struct expr_str *menu_attrib_image;
 #include "generic.h"
 #include "field_handling.h"
 #endif
-
 
 
 /*
@@ -297,15 +302,62 @@ extern struct expr_str *menu_attrib_image;
 	struct s_table *u_table;
 	struct s_select *s_select;
 	struct dt_display *display;
-	struct ow_open_window *open_window_type;
-	struct binding_comp *binding_comp;
-	struct binding_list *binding_list;
+	struct s_cur_def curDef;
+        struct list_of_integers *list_of_integers;
+	struct s_formhandler_dets formhandler_dets;
+
+
+
+	/*struct variable_or_literal * variable_or_literal; */
+	struct funcname_list funcname_list;
+	struct windowtype wt;
+
+	/* struct ow_open_window *open_window_type; */
+	/* struct binding_comp *binding_comp_old; */
+
+
+	struct command *cmd;
+	struct commands *commands;
+	struct attrib *attrib;
+
+	//struct binding_list *binding_list;
 	struct s_select_finish *s_select_finish;
 	struct s_fetch_place 	*s_fetch_place;
 	struct s_fetch 	*s_fetch;
-	t_binding_comp_list *binding_comp_list;
-	struct s_cur_Def curDef;
-	struct list_of_integers *list_of_integers;
+	/* struct binding_comp_list *binding_comp_list; */
+	/* struct binding_comp *binding_comp; */
+	struct str_list *str_list;
+	struct manyoptions *manyoptions;
+	struct single_option *single_option;
+	struct convert *convert;
+	struct startrep *startrep;
+	struct pdf_startrep *pdf_startrep;
+	struct s_pair pair;
+	struct s_pair_expr pair_expr;
+	struct s_pair_expr_list pair_expr_list;
+	struct if_cond *if_cond;
+	struct if_conds *if_conds;
+	struct struct_if_cmd *struct_if_cmd;
+	struct vardets *vardets;
+	struct subscript *subscript;
+	/* variable_or_literal_list *vorl_list; */
+	user_details *user_details;
+	int e_boolean;
+	on_event *on_event;
+	on_events *on_events;
+	struct when *when;
+	struct whens *whens;
+	struct report_format_section_entry *report_format_section_entry;
+	struct report_format_section *report_format_section;
+	struct report_orderby_section *report_orderby_section;
+	struct cons_list *cons_list;
+	struct cons_list_entry *cons_list_entry;
+	struct module_entry *module_entry;
+	struct s_full_col s_full_col;
+	struct struct_update_cmd *update_cmd;
+	struct struct_insert_cmd *insert_cmd;
+	struct struct_delete_cmd *delete_cmd;
+	struct s_update_pair *upd_pair;
 	}
 
 /* ============================== 1.reqd ============================ */

@@ -5,19 +5,16 @@
 */
 
 
-for_cmd	:	KW_FOR variable EQUAL fgl_expr_c KW_TO fgl_expr_c for_step
-{
-add_feature("FOR");
-print_for_start($<str>2,$<ptr>4,$<ptr>6,$<ptr>7);
-push_blockcommand("FOR");
- lastlineno=yylineno;
-}
-commands 
-END_FOR { 
-	continue_blockcommand("FOR"); 
-	print_for_step($<str>2,$<ptr>4,$<ptr>6,$<ptr>7); 
-	pop_blockcommand("FOR"); 
-	print_for_end($<str>2,$<ptr>4,$<ptr>6,$<ptr>7); }
+for_cmd	:	KW_FOR atline variable_usage_expression EQUAL fgl_expr_c KW_TO fgl_expr_c for_step {
+				inc_var_assigned($<ptr>3);
+				add_feature("FOR");
+				push_blockcommand("FOR");
+ 				lastlineno=yylineno;
+				}
+		commands_as_list END_FOR { 
+				pop_blockcommand("FOR"); 
+				$<cmd>$=new_for_cmd($<ptr>3, chk_expr($<ptr>5), chk_expr($<ptr>7) ,chk_expr($<ptr>8), $<commands>10, $<integer_val>2);
+			}
 ;
 
 for_step :	{ $<ptr>$=get_for_default_step(); }

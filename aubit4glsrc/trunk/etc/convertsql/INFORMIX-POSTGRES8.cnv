@@ -111,6 +111,7 @@ REPLACE_SQLFUNC year = date_part('YEAR',%s::timestamp with time zone)
 REPLACE_SQLFUNC month = date_part('MONTH',%s::timestamp with time zone)
 REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)
 REPLACE_SQLFUNC dow = date_part('DOW',%s::timestamp with time zone)
+REPLACE_SQLFUNC weekday = date_part('DOW',%s::timestamp with time zone)
 
 REPLACE_SQLFUNC ascii = chr(%s)
 REPLACE_SQLFUNC ord = ascii(%s)

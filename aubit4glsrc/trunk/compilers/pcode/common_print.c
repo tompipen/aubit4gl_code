@@ -342,10 +342,10 @@ print_variable (int lvl, struct npvariable *v)
 static void
 print_command (long func_id, long pc, struct cmd *cmd)
 {
-  printf ("%04ld-%04ld %02d %-10s\n   ", func_id, pc, cmd->cmd_type,
-	  cmd_type_str[(int) cmd->cmd_type]);
+  printf ("%04ld-%04ld %02d %-10s\n   ", func_id, pc, cmd->npcode_cmd_type,
+	  cmd_type_str[(int) cmd->npcode_cmd_type]);
 
-  switch (cmd->cmd_type)
+  switch (cmd->npcode_cmd_type)
     {
     case CMD_BLOCK:
       print_block (cmd->cmd_u.c_block);
@@ -446,7 +446,7 @@ print_command (long func_id, long pc, struct cmd *cmd)
 
 
     default: 
-		printf("Unknown command : %d\n",cmd->cmd_type);
+		printf("Unknown command : %d\n",cmd->npcode_cmd_type);
 		exit(2);
     }
 

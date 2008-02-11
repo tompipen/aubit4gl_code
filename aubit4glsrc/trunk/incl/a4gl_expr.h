@@ -1,5 +1,6 @@
 #ifndef A4GL_EXPR_H
 #define A4GL_EXPR_H
+
 #include "dataio/fgl.xs.h"
 
 struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) ;
@@ -12,7 +13,8 @@ struct expr_str *A4GL_new_expr_field_touched(int sid, struct fh_field_list *fl,c
 struct expr_str *A4GL_new_expr_not_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
 struct expr_str *A4GL_new_expr_extend(struct expr_str *ptr,int to);
 struct expr_str *A4GL_new_literal_long_str (char *value);
-struct expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameters,int err_if_not_var) ;
+struct expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameters,int err_if_not_var,int err_if_whole_array) ;
+struct expr_str *A4GL_new_expr_form_is_compiled(char *formname, expr_str_list *params,char *mod,int line);
 struct expr_str * A4GL_new_translated_string (char *value);
 
 struct expr_str *A4GL_new_literal_long_long (long value);
@@ -54,14 +56,28 @@ struct expr_str *A4GL_new_expr_wordwrap(struct expr_str *ptr,struct expr_str *wr
 struct expr_str *A4GL_new_expr_pdf_fcall(char *function,struct expr_str_list *params,char *mod,int line,char *p_namespace);
 int A4GL_is_just_int_literal (expr_str * e, long val);
 struct expr_str *A4GL_new_variable_usage_with_asc_desc(struct expr_str *var_usage,char *Asc_Desc);
+
+struct str_list *new_str_list(char *str);
+struct str_list *add_str_list(struct str_list *n, char *str);
+char *expr_as_string(expr_str *s);
+struct expr_str *A4GL_new_expr_list_with_list (expr_str_list *list);
+char *A4GL_expr_is_single_string(struct expr_str_list *ptr);
+char *A4GL_expr_starts_with_single_string(struct expr_str_list *ptr);
+int A4GL_is_just_expr_clipped(char *v,struct expr_str_list *ptr);
+int get_variable_dtype_from_variable_expression(expr_str *ptr);
+struct expr_str *A4GL_new_quoted_string (char *value);
+struct expr_str *A4GL_new_select_list_item_expr(struct s_select_list_item *s) ;
+
 //struct expr_str *new_select_list_query(struct s_select *s1);
 #ifdef MOVED
 int input_funcname(char *rn, char **r, int isptr, int arr);
+
 int input_sql_ident(char *rn, char **r, int isptr, int arr);
 int input_str(char *rn, char **r, int isptr, int arr);
 int output_funcname(char *n, char *r, int isptr, int arr);
 int output_sql_ident(char *n, char *r, int isptr, int arr);
 int output_str(char *n, char * r, int isptr, int arr);
 #endif
+
 
 #endif

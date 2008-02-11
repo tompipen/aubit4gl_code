@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.136 2008-01-27 15:15:18 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.137 2008-02-11 17:13:11 mikeaubury Exp $
 #
 */
 
@@ -3956,7 +3956,10 @@ int A4GL_compile_time_convert(void) {
 int
 A4GL_new_escape_quote_owner (void)
 {
+return 0;
+
   if (A4GLSQLCV_check_requirement ("QUOTE_OWNER"))
+
     {
       return 1;
     }

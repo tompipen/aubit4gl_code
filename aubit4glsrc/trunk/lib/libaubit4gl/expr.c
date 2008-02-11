@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.23 2008-01-27 15:15:17 mikeaubury Exp $
+# $Id: expr.c,v 1.24 2008-02-11 17:13:11 mikeaubury Exp $
 #
 */
 
@@ -184,7 +184,26 @@ case ET_EXPR_VARIABLE_IDENTIFIER: return "ET_EXPR_VARIABLE_IDENTIFIER";
 //case ET_EXPR_PROMPT_RESULT: return "ET_EXPR_PROMPT_RESULT";
 case ET_EXPR_MODULE_FUNC: return "ET_EXPR_MODULE_FUNC";
 
-
+case ET_EXPR_TRANSLATED_STRING: return "ET_EXPR_TRANSLATED_STRING";
+case ET_EXPR_FORM_IS_COMPILED: return "ET_EXPR_FORM_IS_COMPILED";
+case ET_EXPR_FIELDNAME: return "ET_EXPR_FIELDNAME";
+case ET_EXPR_PARAMETER: return "ET_EXPR_PARAMETER";
+case ET_EXPR_VARIABLE_USAGE: return "ET_EXPR_VARIABLE_USAGE";
+case ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC: return "ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC";
+case ET_EXPR_SQLBLOCK: return "ET_EXPR_SQLBLOCK";
+case ET_EXPR_SQLBLOCK_TEXT: return "ET_EXPR_SQLBLOCK_TEXT";
+case ET_EXPR_SQLBLOCK_INTO: return "ET_EXPR_SQLBLOCK_INTO";
+case ET_EXPR_SELECT_LIST_ITEM: return "ET_EXPR_SELECT_LIST_ITEM";
+case ET_EXPR_BRACKET: return "ET_EXPR_BRACKET";
+case ET_E_V_OR_LIT_VAR: return "ET_E_V_OR_LIT_VAR";
+case ET_E_V_OR_LIT_INT: return "ET_E_V_OR_LIT_INT";
+case ET_E_V_OR_LIT_STRING: return "ET_E_V_OR_LIT_STRING";
+case ET_E_V_OR_LIT_VAR_AS_STRING: return "ET_E_V_OR_LIT_VAR_AS_STRING";
+case ET_E_V_OR_LIT_IDENT: return "ET_E_V_OR_LIT_IDENT";
+case ET_E_V_OR_LIT_NOVALUE: return "ET_E_V_OR_LIT_NOVALUE";
+case ET_EXPR_THROUGH: return "ET_EXPR_THROUGH";
+case ET_EXPR_WHERE_CURRENT_OF: return "ET_EXPR_WHERE_CURRENT_OF";
+case ET_EXPR_ASSOC: return "ET_EXPR_ASSOC";
 
 }
 PRINTF("Expression Type : %d\n",e);
@@ -372,7 +391,6 @@ struct expr_str *A4GL_new_expr_agg (char type,int nagg, expr_str *s1, expr_str *
   ptr=A4GL_new_expr_simple (ET_EXPR_AGGREGATE);
   ptr->expr_str_u.expr_agg=malloc(sizeof(struct s_expr_agg));
   ptr->expr_str_u.expr_agg->agg_type=type;
-	printf("nagg=%d\n",nagg);
   ptr->expr_str_u.expr_agg->expr_num=nagg;
   ptr->expr_str_u.expr_agg->in_group=in_group;
   ptr->expr_str_u.expr_agg->agg_expr=s1;
@@ -480,16 +498,38 @@ struct expr_str *A4GL_new_expr_simple (enum e_expr_type type)
 
 struct expr_str *A4GL_new_expr_push_variable(struct variable_usage *v) {
 //struct s_expr_push_variable *p;
-struct expr_str *p2;
-	//p=malloc(sizeof(struct s_expr_push_variable));
-        p2=A4GL_new_expr_simple (ET_EXPR_VARIABLE_USAGE);
-	//p->variable=v;
-	//p->var_dtype=dtype;
-	//p->scope=scope;
-	p2->expr_str_u.expr_variable_usage=v;
+struct expr_str *p2=0;
+char *s;
+if (v->next==0) {
+	s=v->variable_name;
+      if (A4GL_aubit_strcasecmp (s, "today") == 0)
+        {
+          p2 = A4GL_new_expr_simple (ET_EXPR_TODAY);
+        }
 
-	//inc_var_usage(v);
+      if (A4GL_aubit_strcasecmp (s, "time") == 0)
+        {
+          p2 = A4GL_new_expr_simple (ET_EXPR_TIME);
+        }
 
+      if (A4GL_aubit_strcasecmp (s, "pageno") == 0)
+        {
+          p2 = A4GL_new_expr_simple (ET_EXPR_PAGENO);
+        }
+
+      if (A4GL_aubit_strcasecmp (s, "lineno") == 0)
+        {
+          p2 = A4GL_new_expr_simple (ET_EXPR_LINENO);
+        }
+
+}
+
+if (p2==0) {
+        	p2=A4GL_new_expr_simple (ET_EXPR_VARIABLE_USAGE);
+		p2->expr_str_u.expr_variable_usage=v;
+	}
+
+	A4GL_assertion(p2==0,"p2 should not be null");
 	return p2;
 }
 
@@ -562,7 +602,7 @@ struct expr_str *p2;
 struct expr_str *A4GL_new_expr_pdf_fcall(char *function,struct expr_str_list *params,char *mod,int line,char *p_namespace) {
 struct s_expr_pdf_function_call *p;
 struct expr_str *p2;
-	p=malloc(sizeof(struct s_expr_function_call));
+	p=malloc(sizeof(struct s_expr_pdf_function_call));
         p2=A4GL_new_expr_simple (ET_EXPR_PDF_FCALL);
 	p->fname=acl_strdup(function);
 	p->parameters=params;
@@ -599,6 +639,20 @@ struct expr_str *p2;
 	return p2;
 }
 
+
+struct expr_str *A4GL_new_expr_form_is_compiled(char *formname, expr_str_list *params,char *mod,int line) {
+struct s_expr_form_is_compiled *p;
+struct expr_str *p2;
+	p=malloc(sizeof(struct s_expr_form_is_compiled));
+        p2=A4GL_new_expr_simple (ET_EXPR_FORM_IS_COMPILED);
+	p->formname=A4GL_new_expr_simple_string(formname,ET_EXPR_IDENTIFIER);
+	p->params=params;
+	p->module=mod;
+	p->line=line;
+	p2->expr_str_u.expr_form_is_compiled=p;
+	return p2;
+
+}
 
 struct expr_str *A4GL_new_expr_get_fldbuf(int sid, struct fh_field_list *fl,char *mod,int line) {
 struct s_expr_get_fldbuf *p;
@@ -897,7 +951,6 @@ A4GL_length_expr (struct expr_str *ptr)
     }
   return c;
 }
-#endif
 
 
 struct expr_str * 
@@ -915,6 +968,7 @@ A4GL_new_expr_obsol (char *value)
   A4GL_debug ("newexpr : %s -> %p\n", value, ptr);
   return ptr;
 }
+#endif
 
 
 
@@ -942,6 +996,7 @@ A4GL_is_just_int_literal (expr_str * e, long val)
 int get_variable_dtype_from_variable_expression(expr_str *ptr) {
 	//
 	A4GL_assertion(1,"NIY");
+	return 0;
 }
 
 int A4GL_is_just_expr_clipped(char *v,struct expr_str_list *ptr) {
@@ -1119,8 +1174,48 @@ A4GL_new_variable_usage_with_asc_desc (expr_str * e, char *asc_desc)
   return ptr;
 }
 
+
+struct expr_str *A4GL_new_expr_assoc(char *s, expr_str *subscript) {
+        struct expr_str *p;
+	char buff[2000];
+        p=A4GL_new_expr_simple (ET_EXPR_ASSOC);
+        p->expr_str_u.expr_assoc_subscript= malloc(sizeof(struct assoc_subscript));
+	strcpy(buff,s);
+	a4gl_upshift(buff);
+        p->expr_str_u.expr_assoc_subscript->subscript_string=strdup(buff);
+        p->expr_str_u.expr_assoc_subscript->subscript_value=subscript;
+	return p;
+}
+
+struct expr_str *A4GL_new_expr_list_with_list (expr_str_list *list) {
+        struct expr_str *p;
+        p=A4GL_new_expr_simple (ET_EXPR_EXPR_LIST);
+        p->expr_str_u.expr_list= list;
+        return p;
+}
+
+
 char *expr_as_string(expr_str *s) {
 //
 A4GL_assertion(1,"FIXME");
 return 0;
+}
+
+
+struct str_list *add_str_list(struct str_list *n, char *str) {
+    n->str_list_entry.str_list_entry_len=n->str_list_entry.str_list_entry_len+1;
+    n->str_list_entry.str_list_entry_val=realloc(n->str_list_entry.str_list_entry_val, sizeof(n->str_list_entry.str_list_entry_val[0]) * n->str_list_entry.str_list_entry_len);
+    n->str_list_entry.str_list_entry_val[n->str_list_entry.str_list_entry_len-1]=strdup(str);
+    return n;
+}
+
+struct str_list *new_str_list(char *str) {
+struct str_list *n;
+        n=malloc(sizeof(struct str_list));
+        n->str_list_entry.str_list_entry_len=0;
+        n->str_list_entry.str_list_entry_val=0;
+        if (str) {
+                add_str_list(n, str);
+        }
+        return n;
 }

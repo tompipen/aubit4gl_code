@@ -20,7 +20,8 @@ fgl_expr_c :
 	| builtin_expr
 	| pdf_expr
 	| literal_expr 
-	| variable_entry {$<ptr>$=$<ptr>1;}
+	| variable_entry {
+	}
 	| KW_MINUS fgl_expr_c %prec UMINUS	{ 
 		$<ptr>$=A4GL_new_expr_neg($<ptr>2); 
 	}
@@ -68,14 +69,14 @@ fgl_expr_c :
 	| fgl_expr_c UNITS_HOUR { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_HOUR); }
 	| fgl_expr_c UNITS_MINUTE { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_MINUTE); }
 	| fgl_expr_c UNITS_SECOND { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_SECOND); }
- 	| fgl_expr_c KW_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+ 	| fgl_expr_c KW_IN OPEN_BRACKET in_select_statement CLOSE_BRACKET {
 		add_feature("ET_EXPR_IN_SELECT");
-		$<ptr>$=A4GL_expr_in_sq($<ptr>1,1,$<sql_string>4,ibind,ibindcnt);
+		$<ptr>$=A4GL_expr_in_sq($<ptr>1,1,$<s_select>4);
 	}
- 	| fgl_expr_c NOT_IN OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+ 	| fgl_expr_c NOT_IN OPEN_BRACKET in_select_statement CLOSE_BRACKET {
 		add_feature("ET_EXPR_NOT_IN_SELECT");
 		add_feature("ET_EXPR_IN_SELECT");
-		$<ptr>$=A4GL_expr_in_sq($<ptr>1,0,$<sql_string>4,ibind,ibindcnt);
+		$<ptr>$=A4GL_expr_in_sq($<ptr>1,0,$<s_select>4);
 	}
  	| fgl_expr_c KW_IN OPEN_BRACKET inexpr_list CLOSE_BRACKET {
 		$<ptr>$=A4GL_expr_in($<ptr>1,1,$<ptr_list>4);
@@ -98,7 +99,7 @@ expr_escape : KW_ESCAPE CHAR_VALUE {
 
 
 op_fgl_expr_ret_list_v2: {$<ptr_list>$=0;} 
-	| fgl_expr_ret_list { $<ptr_list>$=$<ptr_list>1; }
+	| fgl_expr_ret_list { $<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); }
 ;
 
 
@@ -117,15 +118,17 @@ fgl_expr_list_ptr: fgl_expr_c {
 		| 	fgl_expr_list_ptr KW_COMMA fgl_expr_c { $<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3); }
 ;
 
-fgl_expr_concat : fgl_expr_list_ptr 
+expanded_fgl_expr_list_ptr: fgl_expr_list_ptr {
+			/* Can pass a whole array around */
+			$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1);
+	}
 ;
 
-fgl_expr_x:  fgl_expr_c {
-	A4GL_debug("Print expr (2)");
-	print_expr($<ptr>1);
-}
+fgl_expr_concat : fgl_expr_list_ptr  {
+		$<ptr_list>$=$<ptr_list>1;
+		dump_list($<ptr_list>1);
+	}
 ;
-
 
 
 /****************************************************************/
@@ -142,14 +145,14 @@ boolean_expr:
 	{
 		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_FALSE);
 	}
-	| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
-	| EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+	| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_BRACKET); }
+	| EXISTS OPEN_BRACKET in_select_statement CLOSE_BRACKET {
 		add_feature("ET_EXPR_EXISTS");
-		$<ptr>$=A4GL_expr_exists_sq(1,$<sql_string>3,ibind,ibindcnt);
+		$<ptr>$=A4GL_expr_exists_sq(1,$<s_select>3);
 	}
-	| NOT_EXISTS OPEN_BRACKET in_select_statement_ss CLOSE_BRACKET {
+	| NOT_EXISTS OPEN_BRACKET in_select_statement CLOSE_BRACKET {
 		add_feature("ET_EXPR_NOT_EXISTS");
-		$<ptr>$=A4GL_expr_exists_sq(0,$<sql_string>3,ibind,ibindcnt);
+		$<ptr>$=A4GL_expr_exists_sq(0,$<s_select>3);
 	}
 ;	
 
@@ -182,43 +185,50 @@ literal_expr:
 	| INT_VALUE {
 		$<ptr>$=A4GL_new_literal_long_str($<str>1);
 #ifdef LONG_MAX
-		if ($<ptr>$->u_data.expr_long==LONG_MAX) {
-			$<ptr>$=A4GL_new_literal_double_str($<str>1);
-		}
+                if ($<ptr>$->expr_str_u.expr_long==LONG_MAX) {
+                        $<ptr>$=A4GL_new_literal_double_str($<str>1);
+                }
 #endif
 	} 
 ;
 
 
-/*
-variable_entry_2 :
-	variable 
-	| variable THRU variable {
-		sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
-	}
+
+ensured_variable_usage_expression: variable_usage_expression  {
+	                char errbuff[256];
+                        $<ptr>$=ensure_variable(errbuff,$<ptr>1,1);
+                        if ($<ptr>$==0) {
+                                a4gl_yyerror(errbuff);
+                                YYERROR;
+                        }
+		}
 ;
-*/
+
 
 variable_entry : 
-	variable {
-			 $<ptr>$=A4GL_generate_variable_expr ($<str>1); 
-		}
-	| variable OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
-		char *p;
-		p=strrchr($<str>1,'.');
-		if (!p) {
-   			a4gl_yyerror("Not a member function");
-   			YYERROR;
-			$<ptr>$=0;
-		}
-		*p=0;
-		p++;
-		$<ptr>$=A4GL_new_expr_member_fcall($<str>1,p,$<ptr_list>3,infilename,lastlineno); 
+	variable_usage_expression {
+			char errbuff[256];
+			if ($<ptr>1->expr_type==ET_EXPR_VARIABLE_USAGE) {
+				$<ptr>$=ensure_variable(errbuff,$<ptr>1,1);
+			}
+			if ($<ptr>$==0) {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			}
 	}
-	| variable THRU variable {
-		char buff[2560];
-		sprintf(buff,"%s\n%s",$<str>1,$<str>3);
-		 $<ptr>$=A4GL_generate_variable_expr (buff); 
+	| variable_usage_expression OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
+		$<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1)); 
+	}
+	| variable_usage_expression THRU variable_usage_expression {
+		char errbuff[256];
+		$<ptr>$=A4GL_new_expr_list();
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+		$<ptr>$=ensure_variable(errbuff,$<ptr>$,1);
+		if ($<ptr>$==0) {
+			a4gl_yyerror(errbuff);
+			YYERROR;
+		}
 	}
 ;
 
@@ -398,28 +408,28 @@ function_call_expr:
 		sprintf(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
-	| FGL_SIZEOF OPEN_BRACKET variable CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_string($<str>3,ET_EXPR_FGL_SIZEOF);
+	| FGL_SIZEOF OPEN_BRACKET ensured_variable_usage_expression CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_FGL_SIZEOF);
 	}
-	| FGL_ADDRESSOF OPEN_BRACKET variable CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_string($<str>3,ET_EXPR_FGL_ADDRESSOF);
+	| FGL_ADDRESSOF OPEN_BRACKET ensured_variable_usage_expression CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_FGL_ADDRESSOF);
 	}
-	| FGL_ISDYNARR_ALLOCATED OPEN_BRACKET variable CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_string($<str>3,ET_EXPR_FGL_ISDYNARR_ALLOCATED);
+	| FGL_ISDYNARR_ALLOCATED OPEN_BRACKET variable_usage_expression CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_FGL_ISDYNARR_ALLOCATED);
 	}
-	| FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable KW_COMMA INT_VALUE CLOSE_BRACKET { 
+	| FGL_DYNARR_EXTENTSIZE OPEN_BRACKET variable_usage_expression KW_COMMA INT_VALUE CLOSE_BRACKET { 
 			$<ptr>$=A4GL_new_expr_simple(ET_EXPR_FGL_DYNARR_EXTENTSIZE);
-			$<ptr>$->u_data.expr_dynarr_extent=malloc(sizeof(struct expr_dynarr_extent));
-			$<ptr>$->u_data.expr_dynarr_extent->var=strdup($<str>3);
-			$<ptr>$->u_data.expr_dynarr_extent->n=atoi($<str>5);
+			$<ptr>$->expr_str_u.expr_dynarr_extent=malloc(sizeof(struct s_expr_dynarr_extent));
+			$<ptr>$->expr_str_u.expr_dynarr_extent->var=$<ptr>3;
+			$<ptr>$->expr_str_u.expr_dynarr_extent->n=atoi($<str>5);
 	}
 	| FIELDTOWIDGET OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_FIELDTOWIDGET);
-		$<ptr>$->u_data.expr_field_entry=$<field_entry>3;
+		$<ptr>$->expr_str_u.expr_field_entry=$<field_entry>3;
 	}
 	| ID_TO_INT OPEN_BRACKET field_name_as_struct CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_ID_TO_INT);
-		$<ptr>$->u_data.expr_field_entry=$<field_entry>3;
+		$<ptr>$->expr_str_u.expr_field_entry=$<field_entry>3;
 	}
 	| INFIELD OPEN_BRACKET field_name_list_or_char_as_struct CLOSE_BRACKET {
 
@@ -428,7 +438,7 @@ function_call_expr:
 		/* Informix allows this outside of a input/construct... */
 
 		if (isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
-			$<ptr>$=A4GL_new_expr_infield(get_sio_ids("ALL"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_infield(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
 		} else {
 			$<ptr>$=A4GL_new_expr_infield(-1,$<field_list>3,infilename,lastlineno);
 		}
@@ -441,7 +451,7 @@ function_call_expr:
    			YYERROR;
 		}
 
-			$<ptr>$=A4GL_new_expr_field_touched(get_sio_ids("ALL"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_field_touched(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
 
 	}
 	| NOT_FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
@@ -451,7 +461,7 @@ function_call_expr:
    			a4gl_yyerror("field_touched can only be used in an input or construct");
    			YYERROR;
 		}
-			$<ptr>$=A4GL_new_expr_not_field_touched(get_sio_ids("ALL"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_not_field_touched(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
 	}
 	| UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET { 
 			add_feature("ET_EXPR_UPSHIFT");
@@ -483,7 +493,8 @@ function_call_expr:
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
+		add_to_call_list_by_expr($<ptr>$);
 	}
 	| UI_WINDOW_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
@@ -494,7 +505,8 @@ function_call_expr:
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
+		add_to_call_list_by_expr($<ptr>$);
 	}
 	| UI_DOT_FORM_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
@@ -506,47 +518,32 @@ function_call_expr:
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno);
+		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
 	}
  	| identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		ADDMAP("Call",$<str>1);
-		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,infilename,lastlineno);
+		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,infilename,lastlineno, get_namespace($<str>1));
+		add_to_call_list_by_expr($<ptr>$);
 		map_call($<ptr>$);
 		}
-   	| KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
-		start_bind('i',$<str>3);
-                //$<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
-
-		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,ibindcnt,ibind,ibindcnt*sizeof(struct binding_comp),
-			ebindcnt,ebind,ebindcnt*sizeof(struct binding_comp));
+   	| KW_CHANNEL_READ OPEN_BRACKET fgl_expr_c KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,$<ptr>3, $<ptr_list>6, get_namespace("channel::read"));
+		add_to_call_list_by_expr($<ptr>$);
         }
-   	| KW_CHANNEL_READ OPEN_BRACKET char_or_var KW_COMMA ebind_var_list CLOSE_BRACKET  {
-		start_bind('i',$<str>3);
-		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,ibindcnt,ibind,ibindcnt*sizeof(struct binding_comp),
-			ebindcnt,ebind,ebindcnt*sizeof(struct binding_comp));
-
-                //$<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+   	| KW_CHANNEL_READ OPEN_BRACKET fgl_expr_c KW_COMMA ebind_var_list CLOSE_BRACKET  {
+		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,$<ptr>3 ,$<ptr_list>5 , get_namespace("channel::read"));
+		add_to_call_list_by_expr($<ptr>$);
         }
-
    	| identifier DOUBLE_COLON identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno); 
+		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno, get_namespace($<str>1)); 
+		add_to_call_list_by_expr($<ptr>$);
 	}
 
    	| SHARED identifier KW_IN identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno); 
+		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno, get_namespace($<str>2)); 
+		add_to_call_list_by_expr($<ptr>$);
 	}
 
-/*
-   	| identifier USE_MEMBER_FUNCTION identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
-		$<ptr>$=A4GL_new_expr_member_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno); 
-        }
-*/
-
-/*
-   	| MEMBER_FUNCTION_OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
-		$<ptr>$=A4GL_new_expr_member_fcall(get_idents(0),get_idents(1),$<ptr_list>2,infilename,lastlineno); 
-        }
-*/
 	| GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET {
 		add_feature("ET_EXPR_GET_FLDBUF");
 		if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
@@ -554,18 +551,18 @@ function_call_expr:
    			YYERROR;
 		}
 		if (isin_command("INPUT")) {
-			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_ids("INPUT"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("INPUT"),$<field_list>3,infilename,lastlineno);
 		} 
 		if (isin_command("CONSTRUCT")) {
 			
-			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_ids("CONSTRUCT"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("CONSTRUCT"),$<field_list>3,infilename,lastlineno);
 		} 
 
 	} 
-        | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_without_waiting {
+        | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port_eptr CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_without_waiting {
                         char fname[64];
-                char buff[256];
-                        sprintf(buff,"%s:%s(%p)",$<str>2,$<str>4,$<str>6);
+                	char buff[256];
+                        sprintf(buff,"%s:%s(%p)",$<str>2,$<str>4,$<ptr>6);
                         ADDMAP("External",buff);
 
                         if (strcmp($<str>11,"WITHOUT WAITING")==0) {
@@ -576,7 +573,8 @@ function_call_expr:
                                 strcat(fname,$<str>4);
                         }
 
-                        $<ptr>$=A4GL_new_expr_call_external($<str>2,$<str>4,$<str>6,$<ptr_list>9,$<integer_val>11,infilename,lastlineno);
+                        $<ptr>$=A4GL_new_expr_call_external($<str>2,$<str>4,$<ptr>6,$<ptr_list>9,$<integer_val>11,infilename,lastlineno,get_namespace($<str>4));
+		add_to_call_list_by_expr($<ptr>$);
 
                 }
 
@@ -687,8 +685,5 @@ s_curr_v: YEAR 		{$<integer_val>$=1;}
 
 
 
-opt_cw_func_call_args : opt_func_call_args {$<ptr_list>$=$<ptr_list>1;} |
-	OPEN_SQUARE opt_func_call_args CLOSE_SQUARE { $<ptr_list>$=$<ptr_list>2;}
-;
 
 /* ============================ expr.rule =========================== */
