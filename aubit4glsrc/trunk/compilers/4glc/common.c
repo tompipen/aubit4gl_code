@@ -21,6 +21,7 @@
 char namespace[256] = "aclfgl_";
 
 static void append_record_entries(struct record_variable *rec_var, struct variable_usage *parent, struct expr_str_list *rval) ;
+static int encode_size(int dtype, int dim1,int dim2) ;
 
 
 static int
@@ -514,7 +515,7 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 
 
 
-int A4GL_module_has_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr) {
+int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr) {
 int a;
 int b;
 static char buff[256];
@@ -534,7 +535,7 @@ for (a=0;a<module->imported_files.imported_files_len;a++) {
 return 0;
 }
 
-int encode_size(int dtype, int dim1,int dim2) {
+static int encode_size(int dtype, int dim1,int dim2) {
         switch (dtype) {
                 case DTYPE_CHAR:
                 case DTYPE_VCHAR:

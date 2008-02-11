@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.301 2008-02-11 17:13:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.302 2008-02-11 17:55:46 mikeaubury Exp $
 #
 */
 
@@ -1698,7 +1698,7 @@ int A4GL_conversion_ok(int a);
 
 #ifndef _NO_FORM_X_H_
 
-
+#ifndef NO_FGL_X /* Used to suppress reading these files when not required */
 #ifndef SIMPLIFIED
  #include "../common/dataio/form_x.x.h"        /* struct_form */
  #include "../common/dataio/fgl.x.h"        /* struct_form */
@@ -1706,6 +1706,8 @@ int A4GL_conversion_ok(int a);
  #include "form_x.x.h"       /* struct_form */
  #include "fgl.x.h"
 #endif
+#endif
+
 #endif
 
 
@@ -2495,6 +2497,7 @@ int output_funcname(char *n, char *r, int isptr, int arr);
 int output_sql_ident(char *n, char *r, int isptr, int arr);
 int output_str(char *n, char * r, int isptr, int arr);
 
+#ifndef _NO_FORM_X_H_
 #include "dataio/fgl.xs.h"
 
 typedef struct expr_str t_expr_str;
@@ -2567,6 +2570,8 @@ char *make_select_stmt_v2(char *upd_or_del_table, struct s_select *select, char 
 #define make_select_stmt ERROR ERROR ERROR
 void preprocess_sql_statement (struct s_select *select);
 
+
+
 void
 map_select_stmt (char *main_statement_type, struct s_select *select);
 void
@@ -2586,41 +2591,20 @@ int is_fake_rowid_column(char*s);
 int A4GL_last_was_ascii_null(void);
 char *A4GLSQLCV_check_colname_alias(char *alias,char *tabname, char *colname);
  
+struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a);
 
 int A4GLSQLPARSE_from_clause_collect_tables(struct s_select *select, struct s_table *t,struct s_table_list *tl);
 
 char * fix_delete_update_columns (char *table, struct s_select_list_item *i) ;
 char * get_select_list_item_list_ob (struct s_select *select, struct s_select_list_item_list *i);
 char * find_table (struct s_select *select, struct s_select_list_item *i);
-int A4GL_get_sql_conv (void);
-char *A4GL_get_esql_connection(void);
-void A4GL_set_esql_connection(char *s);
-int A4GL_copy_file(char *from,char *to);
-int A4GL_file_exists(char *fname);
-int A4GL_move_file(char *from,char *to);
-int A4GL_file_length(char *fname);
-int A4GL_delete_file(char *fname);
-void A4GL_status_ok(int sql_too);
-//void A4GL_set_sql_lineno(int n);
-void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
-int aclfgl_aclfgl_getcwd (int a);
-int aclfgl_aclfgl_replace_start(int nargs);
-int aclfgl_aclfgl_call_in_shared(int a) ;
-void add_int8_support(void);
-int A4GL_wcswidth(char *mbs);
-
-struct s_table_list *A4GLSQLPARSE_add_table_to_table_list(struct s_table_list *tl,char *t,char *a);
-
-int
-A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
-                                struct s_table *t, char *fill,
-                                struct s_table_list *tl);
+int A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left, struct s_table *t, char *fill, struct s_table_list *tl);
 int A4GLSQLPARSE_from_clause(struct s_select *select, struct s_table *t,char *fill,struct s_table_list *tl) ;
+int A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char *fill, struct s_table_list *tl);
+#include "a4gl_API_sql.h"
+#endif
 
-int
-A4GLSQLPARSE_from_clause_join (struct s_select *select,
-                               struct s_table *t, char *fill,
-                               struct s_table_list *tl);
+
 
 int A4GL_fgl_keyval (int _np);
 int A4GL_aubit_strcasestr(char *h,char *n);
@@ -2643,6 +2627,24 @@ void A4GL_free_malloc_context(void *s) ;
 void A4GL_clr_malloc_context(void ) ;
 
 void A4GL_dec_dec_ops(int op);
+
+
+int A4GL_get_sql_conv (void);
+char *A4GL_get_esql_connection(void);
+void A4GL_set_esql_connection(char *s);
+int A4GL_copy_file(char *from,char *to);
+int A4GL_file_exists(char *fname);
+int A4GL_move_file(char *from,char *to);
+int A4GL_file_length(char *fname);
+int A4GL_delete_file(char *fname);
+void A4GL_status_ok(int sql_too);
+//void A4GL_set_sql_lineno(int n);
+void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+int aclfgl_aclfgl_getcwd (int a);
+int aclfgl_aclfgl_replace_start(int nargs);
+int aclfgl_aclfgl_call_in_shared(int a) ;
+void add_int8_support(void);
+int A4GL_wcswidth(char *mbs);
 
 
 
@@ -2732,7 +2734,6 @@ int A4GL_get_attr_from_string (char *s);
 int A4GL_bad_identifiers(char *S);
 char *
 A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r);
-#include "a4gl_API_sql.h"
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

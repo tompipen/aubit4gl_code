@@ -159,6 +159,6 @@ struct s_select_list_item *convert_fgl_expr_to_sql_expr(expr_str *e) ;
 //expr_str *A4GL_new_select_list_item_expr(struct s_select_list_item *e) ;
 int is_valid_identifier(expr_str *l);
 int get_validate_list_cnt (void);
-
+char *cmds_get_variable_usage_as_string (struct variable_usage *var_usage);
 #endif
 

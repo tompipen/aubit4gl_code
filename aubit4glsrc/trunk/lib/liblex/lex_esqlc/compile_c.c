@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.389 2008-02-11 17:13:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.390 2008-02-11 17:55:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.389 2008-02-11 17:13:11 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.390 2008-02-11 17:55:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1851,7 +1851,7 @@ real_print_expr (struct expr_str *ptr)
 	      }
 	    else
 	      {
-		if (A4GL_module_has_has_function (current_module, ptr->expr_str_u.expr_function_call->fname, lib, 0))
+		if (A4GL_module_has_function (current_module, ptr->expr_str_u.expr_function_call->fname, lib, 0))
 		  {
 		    // Call shared...
 		    printc ("{");
@@ -2940,7 +2940,7 @@ real_print_func_call (t_expr_str * fcall)
       add_function_to_header (p->fname, p->namespace,1, 0);
 
 
-      if (A4GL_module_has_has_function (current_module, p->fname, lib, 0))
+      if (A4GL_module_has_function (current_module, p->fname, lib, 0))
 	{
 	  printc ("{int _retvars;\n");
   		if (is_in_report()) { set_doing_a_report_call(); }

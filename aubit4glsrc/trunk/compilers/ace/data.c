@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.38 2008-02-11 17:13:09 mikeaubury Exp $
+# $Id: data.c,v 1.39 2008-02-11 17:55:46 mikeaubury Exp $
 #*/
 
 /**
@@ -77,7 +77,7 @@ char *A4GL_decode_datatype (int dtype, int dim);
 void yyerror_sql (char *s);
 void print_variables (char *s);
 char *add_zero_rows_where (struct select_stmts *ptr);
-void add_fmt (int cat, struct expr *col, struct commands commands);
+void add_fmt (int cat, struct expr *col, struct acerep_commands commands);
 int decode_dtype (char *s);
 void dif_add_bind (void *list, void *dptr, int dtype, int size);
 
@@ -498,7 +498,7 @@ add_inputs (char *prompt, char *variable)
  * @todo Describe function
  */
 void
-add_fmt (int cat, struct expr *col, struct commands commands)
+add_fmt (int cat, struct expr *col, struct acerep_commands commands)
 {
   this_report.fmt.fmt_len++;
   this_report.fmt.fmt_val =
@@ -508,7 +508,7 @@ add_fmt (int cat, struct expr *col, struct commands commands)
   this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].category = cat;
   this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].column=col;
 
-  memcpy (&this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].commands, &commands, sizeof (struct commands));
+  memcpy (&this_report.fmt.fmt_val[this_report.fmt.fmt_len - 1].commands, &commands, sizeof (struct acerep_commands));
 
 
 

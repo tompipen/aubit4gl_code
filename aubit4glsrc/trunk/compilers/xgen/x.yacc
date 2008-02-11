@@ -7,6 +7,8 @@
 
 /* FIXME: this should be a4gl_xgen_int.h */
 #define NOSTRCPYMAP
+
+#define NO_FGL_X
 #include "a4gl_libaubit4gl.h"
 #include <ctype.h>
 #define YYDEBUG 1
