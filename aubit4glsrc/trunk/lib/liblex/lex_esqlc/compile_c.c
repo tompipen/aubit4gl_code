@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.390 2008-02-11 17:55:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.391 2008-02-11 21:27:38 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.390 2008-02-11 17:55:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.391 2008-02-11 21:27:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -120,7 +120,7 @@ int A4GL_get_nevents(void) ;
 //char *A4GL_get_important_from_clobber(char *s);
 //void add_class_function_to_header (char *identifier, int params,char* is_static);
 //void print_reset_state_after_call(int n);
-static void pr_nongroup_report_agg_clr (void);
+//static void pr_nongroup_report_agg_clr (void);
 //char *pdtype(int n) ;
 //int doing_report_print=0;
 //static struct expr_str_list *A4GL_rationalize_list_concat(struct expr_str_list *l) ;
@@ -128,7 +128,7 @@ char cmodname[256]="";
 //void A4GL_set_clobber(char *c);
 int curr_lineno=0;
 //int doing_a_report=0;
-static int find_slice(char *av, char *s, int w) ;
+//static int find_slice(char *av, char *s, int w) ;
 //void merge_files (void);
 char this_module_name[256];
 char filename_for_h[132];
@@ -159,6 +159,8 @@ struct variable_list * current_entry_variables=0;
 
 #include "field_handling.h"
 #include "compile_c.h"
+
+#include "cmd_funcs.h"
 #include "fgl_enums.h"
 /*
 int when_code[8] = { WHEN_STOP,
@@ -173,20 +175,21 @@ int when_code[8] = { WHEN_STOP,
 char when_to_tmp[64] = "";
 char when_to[8][128] = { "", "", "", "", "", "", "", "" };
 */
+int LEX_initlib(void) ;
 int dump_command(struct command_data *cd) ;
 //void print_variable_usage(expr_str *v) ;
 //char *local_expr_as_string(expr_str *s) ;
 //void print_push_variable_usage (expr_str *ptr);
 char *get_dbg_variable_name(expr_str *v) ;
-expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
-static void order_by_report_stack (int report_stack_cnt);
+//expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
+//static void order_by_report_stack (int report_stack_cnt);
 static void A4GL_internal_lex_printc (char *fmt, va_list * ap);
 //void A4GL_internal_lex_printh (char *fmt, va_list * ap);
 //void A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
 //void print_rep_ret (int report_cnt,int addit);
 //void dump_comments (int n);
 //int local_is_system_variable (struct variable *v);
-static void print_output_rep (struct rep_structure *rep, int report_cnt,char *curr_rep_name);
+//static void print_output_rep (struct rep_structure *rep, int report_cnt,char *curr_rep_name);
 void print_nullify (char type, variable_list * v);
 
 //void print_Constant_1 (char *name, struct constant_data *c);
@@ -205,8 +208,8 @@ extern int get_rep_no_orderby (void);
 //int print_bind_set_value_g (struct expr_str_list *bind,char type) ;
 //int print_bind_definition_g (struct expr_str_list *l,char i );
 //void print_event_list (struct on_events*  evtlist);
-static int gen_ord (char *s);
-int is_substring_variable_usage_in_expr(expr_str *v, expr_str **s, expr_str **e) ;
+//static int gen_ord (char *s);
+//int is_substring_variable_usage_in_expr(expr_str *v, expr_str **s, expr_str **e) ;
 void print_variable_usage_for_bind(expr_str *v) ;
 static void print_function_variable_init (variable_list * fvars);
 //char *get_variable_usage_as_string(struct variable_usage *u ) ;
@@ -287,21 +290,19 @@ dll_import struct pdf_rep_structure pdf_rep_struct;
 */
 
 //void printc (char *fmt, ...);
-static int print_field_bind (struct expr_str_list *bind);
-static int print_arr_bind_g (struct expr_str_list *bind,char type);
-static int print_constr (void);
-static int print_field_bind_constr (void);
-static int pr_when_do (char *when_str, int when_code, int l, char *f,
-		       char *when_to);
-static void pr_report_agg_clr (void);
-static void print_menu (int mn, int n, t_expr_str *mn_comment, t_expr_str *mn_style, t_expr_str *mn_image);
+//static int print_arr_bind_g (struct expr_str_list *bind,char type);
+//static int print_constr (void);
+//static int print_field_bind_constr (void);
+//static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
+//static void pr_report_agg_clr (void);
+//static void print_menu (int mn, int n, t_expr_str *mn_comment, t_expr_str *mn_style, t_expr_str *mn_image);
 /* char *make_sql_bind_expr_g (char *sql, struct expr_str_list *bind); */
 
 
 static void real_print_expr (struct expr_str *ptr);
 //void real_print_func_call ( t_expr_str *fcall);
-static void real_print_class_func_call (char *var, char *identifier, struct expr_str *args, int args_cnt,int yylineno);
-static void real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3,int yylineno);
+//static void real_print_class_func_call (char *var, char *identifier, struct expr_str *args, int args_cnt,int yylineno);
+//static void real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3,int yylineno);
 
 //void printh (char *fmt, ...);
 
@@ -339,6 +340,9 @@ static char buff[2000];
   return buff;
 }
 
+static int local_isGenStackInfo(void) {
+return current_module->genStackInfo==EB_TRUE;
+}
 int local_is_system_variable (struct variable *v) {
 	return v->user_system=='S';
 }
@@ -358,7 +362,7 @@ static void clr_doing_a_report_call(int n) {
 
 
 char *get_last_print_bind_dir_definition_g_rval(char dir) {
-	return last_print_bind_dir_definition_g_rval[dir];
+	return last_print_bind_dir_definition_g_rval[(int)dir];
 }
 
 
@@ -417,14 +421,14 @@ clr_nonewlines (void)
 }
 
 
-char *get_current_module_name() {
+char *get_current_module_name(void) {
 	return current_module->module_name;
 }
 
 // Returns a cleaned up module name
 // with no leading directory or .4gl 
 //
-char *get_current_module_name_clean() {
+char *get_current_module_name_clean(void) {
 	char *ptr;
 	static char buff[2000];
 	static char buff2[2000];
@@ -478,13 +482,13 @@ void print_copy_status_with_sql(int l) {
 }
 
 
-int
+static int
 dump_cmd (struct command *r)
 {
-  int a;
-  int cnt;
+  //int a;
+  //int cnt;
   int ok;
-  int need_err_chk = 1;
+  //int need_err_chk = 1;
   A4GL_assertion (r->module == 0, "No module");
   //printf ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
   A4GL_debug ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
@@ -520,6 +524,8 @@ dump_cmd (struct command *r)
   return ok;
 }
 
+
+#ifdef NOT_REQUIRED
 static int is_just_expr_clipped(struct expr_str *v,struct expr_str_list *ptr) {
 	struct expr_str *p;
 	if (ptr->list.list_len!=1) {
@@ -540,6 +546,9 @@ static int is_just_expr_clipped(struct expr_str *v,struct expr_str_list *ptr) {
 	return 0;
 
 }
+#endif
+
+#ifdef NOT_REQUIRED
 static char *starts_with_single_string(struct expr_str_list *ptr) {
         struct expr_str *p;
         int a;
@@ -587,6 +596,7 @@ static char *starts_with_single_string(struct expr_str_list *ptr) {
 
         return buff;
 }
+#endif
 
 static char *
 local_has_comment (int n, int c)
@@ -656,7 +666,7 @@ return ;
     }
 }
 
-
+#ifdef OBSOLETE
 static char *is_single_string(struct expr_str_list *ptr) {
 	struct expr_str *p;
 	int a;
@@ -703,13 +713,14 @@ static char *is_single_string(struct expr_str_list *ptr) {
 
 	return buff;
 }
+#endif
 
 
 
 
 
 static void
-open_outfile ()
+open_outfile (void)
 {
   char err[132];
   char *ptr;
@@ -1359,17 +1370,20 @@ pdf_print_output_rep (struct pdf_rep_structure *rep, int report_cnt,char * curr_
 }
 #endif
 
-static int print_field_bind (struct expr_str_list *bind) {
-}
-static void 
-pr_report_agg_clr (void)  {
+/*
+static void pr_report_agg_clr (void)  {
 A4GL_assertion(1,"FIXME");
 }
+*/
+
+/*
 static void
 pr_nongroup_report_agg_clr (void)
 {
 A4GL_assertion(1,"FIXME");
 }
+*/
+
 #ifdef NEEDS_REPLACING
 /**
  * Prints the generated C code that implements the AFTER GROUP(s) actions
@@ -1584,8 +1598,8 @@ print_clr_status (void)
 
 
 char *field_name_as_char(fh_field_entry *fh) {
-	char a[200];
-	char b[200];
+	//char a[200];
+	//char b[200];
 	if (fh->fieldsub) {
 	return A4GL_field_name_as_char(local_ident_as_string(fh->field,1), local_expr_as_string(fh->fieldsub));
 	} else {
@@ -2422,7 +2436,7 @@ void
 print_form_attrib_v2 (int iswindow, struct attrib *form_attrib)
 {
 int frm_attr;
-char buff[256];
+//char buff[256];
 
 if (form_attrib==0) {
 	printc("%d,255,255,255,255,0,255,255,(0xffff)", iswindow);
@@ -2605,7 +2619,7 @@ return 0;
 }
 
 
-char  *get_start_char_subscript (expr_str *e) {
+static char  *get_start_char_subscript (expr_str *e) {
 struct  variable_usage *u;
 static char buff[1024];
 switch (e->expr_type) {
@@ -2658,7 +2672,7 @@ switch (e->expr_type) {
 return 0;
 }
 
-char  *get_end_char_subscript (expr_str *e) {
+static char  *get_end_char_subscript (expr_str *e) {
 struct  variable_usage *u;
 static char buff[1024];
 switch (e->expr_type) {
@@ -2985,9 +2999,9 @@ real_print_func_call (t_expr_str * fcall)
 
 
   if (fcall->expr_type==ET_EXPR_MEMBER_FCALL)  {
-      struct s_expr_member_function_call *p;
-      struct expr_str_list *expr;
-      int nargs;
+      //struct s_expr_member_function_call *p;
+      //struct expr_str_list *expr;
+      //int nargs;
 	A4GL_assertion(1,"FIXME");
 /*
       p=fcall->expr_str_u.expr_member_function_call;
@@ -3102,7 +3116,7 @@ print_reset_state_after_call(0);
 #endif
 
 
-
+#ifdef NOT_YET
 static void real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3,int yylineno)
 {
   real_print_expr_list (args);
@@ -3120,6 +3134,7 @@ static void real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3,
   }
 
 }
+#endif
 
 
 
@@ -3866,8 +3881,8 @@ void print_start_record (int isstatic_extern, char *varname, char *arrsize, int 
  */
 void print_end_record (char *vname, struct variable *v, int level)
 {
-  int cnt;
-  int arrsizes[10];
+  //int cnt;
+  //int arrsizes[10];
   
   if (v->arr_subscripts.arr_subscripts_len == 0)
     {
@@ -4390,11 +4405,11 @@ print_event_list (struct on_events*events)
   int a;
   int n;
   int b;
-  int event_id;
-  char *event_dets;
+  //int event_id;
+  //char *event_dets;
   int *keys;
 //char comma=' ';
-  char **fields;
+  //char **fields;
 
   if (events==0) n=0; 
   else {
@@ -4518,7 +4533,7 @@ print_event_list (struct on_events*events)
 			
 
         	case EVENT_ON_ACTION: //str on_action; //A4GL_EVENT_ON_ACTION
-	    		printc ("{%d,%d,0,%s},", A4GL_EVENT_ON_ACTION, a + 1 ,  evt->evt_data.event_data_u.on_action);
+	    		printc ("{%d,%d,0,\"%s\"}, //", A4GL_EVENT_ON_ACTION, a + 1 ,  evt->evt_data.event_data_u.on_action);
 			break;
 			
 
@@ -4786,15 +4801,15 @@ print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char 
 	      set_suppress_lines ();
 	      ptr = make_sql_bind_g (lbind, lbind_type);
 
-	      if (last_print_bind_dir_definition_g_rval[lbind_type])
-		free (last_print_bind_dir_definition_g_rval[lbind_type]);
+	      if (last_print_bind_dir_definition_g_rval[(int)lbind_type])
+		free (last_print_bind_dir_definition_g_rval[(int)lbind_type]);
 	      if (ptr)
 		{
-		  last_print_bind_dir_definition_g_rval[lbind_type] = strdup (ptr);
+		  last_print_bind_dir_definition_g_rval[(int)lbind_type] = strdup (ptr);
 		}
 	      else
 		{
-		  last_print_bind_dir_definition_g_rval[lbind_type] = 0;
+		  last_print_bind_dir_definition_g_rval[(int)lbind_type] = 0;
 		}
 	      clr_suppress_lines ();
 	    }
@@ -5145,7 +5160,7 @@ void print_nullify (char type, variable_list * v)
   for (a = 0; a < v->variables.variables_len; a++)
     {
       char *name;
-      int print = 0;
+      //int print = 0;
       name = v->variables.variables_val[a]->names.names.names_val[0].name;
 
       //if (v->variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
@@ -5202,7 +5217,7 @@ make_arr_str (char *s, struct variable *v)
 }
 
 
-char *
+static char *
 local_rettype_integer (int n)
 {
   char s[200];
@@ -5617,7 +5632,7 @@ int get_whenever_style(int code, char*whento) {
 }
 
 
-char local_find_variable_scope(expr_str *e) {
+static char local_find_variable_scope(expr_str *e) {
 	A4GL_assertion(e->expr_type!=ET_EXPR_VARIABLE_USAGE,"Not a variable usage...");
 	return e->expr_str_u.expr_variable_usage->scope;
 }
@@ -5716,7 +5731,7 @@ void merge_files (void)
 
 
 
-void
+static void
 print_module_variable_init (variable_list * mvars)
 {
 set_suppress_lines() ;
@@ -5739,9 +5754,7 @@ clr_suppress_lines() ;
 
 
 
-int local_isGenStackInfo(void) {
-return current_module->genStackInfo==EB_TRUE;
-}
+
 
 
 void dump_commands(commands *c) {
@@ -5753,7 +5766,7 @@ int a;
         }
 }
 
-int
+static int
 dump_function (struct s_function_definition *function_definition, int ismain)
 {
 
@@ -5908,13 +5921,13 @@ expr_str_list *expanded_params;
 return 1;
 }
 
-int
+static int
 dump_formhandler (struct s_formhandler_definition *function_definition)
 {
 static int printed_gtk=0;
   int a;
 char *name;
-expr_str_list *expanded_params;
+//expr_str_list *expanded_params;
   printc ("#");
   printc ("#");
   printc ("#");
@@ -5986,9 +5999,9 @@ strcpy(this_module_name,m->module_name);
  current_module = m;
 	set_namespace(current_module->namespace);
 
-      open_outfile (this_module_name);
+      open_outfile () ; // this_module_name);
       if (outfile == 0)
-	return;
+	return 0;
   if (m->imported_global_variables.variables.variables_len)
     {
       for (a = 0; a < m->imported_global_variables.variables.variables_len; a++)
@@ -6148,7 +6161,7 @@ strcpy(buff,"");
 }
 
 
-int is_substring_variable_usage(variable_usage *u, expr_str **s, expr_str **e) {
+static int is_substring_variable_usage(variable_usage *u, expr_str **s, expr_str **e) {
 	*s=0;
 	*e=0;
 
@@ -6169,7 +6182,7 @@ return 0;
 
 
 
-int is_substring_variable_usage_in_expr(expr_str *v, expr_str **s, expr_str **e) {
+static int is_substring_variable_usage_in_expr(expr_str *v, expr_str **s, expr_str **e) {
 struct variable_usage *u=0;
 	if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
 		u=v->expr_str_u.expr_variable_usage;
@@ -6182,13 +6195,13 @@ struct variable_usage *u=0;
 }
 
 
-char *get_subscript_as_string(expr_str *u) {
+static char *get_subscript_as_string(expr_str *u) {
 static char buff[256];
 char smbuff[256];
 
 	if (u->expr_type==ET_EXPR_LITERAL_LONG) {
 			// We can make the 'long's look a little neater as we can subtract the 1..
-			sprintf(smbuff, "%d", u->expr_str_u.expr_long-1);
+			sprintf(smbuff, "%ld", u->expr_str_u.expr_long-1);
 	} else {
 			sprintf(smbuff, "(%s)-1", local_expr_as_string(u));
 	}
@@ -6312,7 +6325,7 @@ static char buff[2000];
 
 
 
-void print_variable_usage_gen(expr_str *v,int err_if_substring) {
+static void print_variable_usage_gen(expr_str *v,int err_if_substring) {
 struct variable_usage *u=0;
 int substring=0;
 expr_str *substring_start;
@@ -6402,6 +6415,7 @@ char *ispdf() {
 	}
 	A4GL_assertion(1,"ispdf called when not in a report");
 
+return ""; // Can't happen - keep gcc -Wall happy though..
 }
 
 
@@ -6540,13 +6554,13 @@ expr_str *substring_end;
 
 char *local_expr_as_string(expr_str *s) {
 static char rbuff[2000];
-char buff[2000];
+//char buff[2000];
 char buff_l[2000];
 char buff_r[2000];
 struct variable_usage *u;
-int substring=0;
-expr_str *substring_start;
-expr_str *substring_end;
+//int substring=0;
+//expr_str *substring_start;
+//expr_str *substring_end;
 
 switch (s->expr_type) {
 	case ET_EXPR_LITERAL_LONG: 
@@ -6616,14 +6630,14 @@ switch (s->expr_type) {
 
 		yylineno=line_for_cmd;
 		a4gl_yyerror("You can use a function requiring parameters in this context");
-		return;
+		return 0;
 		}
 		
 	default :
 	
 			yylineno=line_for_cmd;
 		a4gl_yyerror("this type of expression cannot be used in this place");
-		return ;
+		return  0;
 
 		A4GL_assertion(1,"this type of expression cannot be used in this place");
 	}
@@ -6901,7 +6915,7 @@ static char *get_select_list_item_list_with_separator (struct s_select *select, 
   int a;
   char *rval;
   if (slist == 0)
-    return;
+    return "";
 
   for (a = 0; a < slist->list.list_len; a++)
     {
@@ -6980,7 +6994,7 @@ get_insert_cmd (struct struct_insert_cmd *insertCmd,int *converted)
   if (insertCmd->value_list)
     {
 	char *p;
-	char *p2;
+	//char *p2;
 	p=get_select_list_item_list_with_separator (NULL, insertCmd->value_list, ",\n   ");
 	A4GL_assertion(p==0,"No values list!");
 	strcat(buff,"VALUES (\n   ");
@@ -7014,7 +7028,7 @@ char *get_update_cmd(struct struct_update_cmd *updateCmd, int *converted) {
 	char *rval;
 	//struct struct_update_cmd *u;
 	struct s_select fake_select;
-	struct s_select_list_item_list l;
+	//struct s_select_list_item_list l;
 	struct s_table t;
 	char *ptr;
 static char buff[64000];
@@ -7160,7 +7174,7 @@ char *ptr;
 
 	  if (deleteCmd->where_clause->expr_type == ET_EXPR_WHERE_CURRENT_OF)
 	    {
-		char buff[2000];
+		//char buff[2000];
 		if (deleteCmd->where_clause->expr_str_u.expr_expr->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
 			yylineno=line_for_cmd;
 			a4gl_yyerror("You cant use a variable id in this position...");

@@ -1,5 +1,9 @@
 
 #include "a4gl_libaubit4gl.h"
+#include "a4gl_lib_lex_esqlc_int.h"
+#include "field_handling.h"
+
+#include "compile_c.h"
 static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
 
 int when_code[8] = { WHEN_STOP,

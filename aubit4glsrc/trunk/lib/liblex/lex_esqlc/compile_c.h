@@ -253,3 +253,21 @@ char *get_last_print_bind_dir_definition_g_rval(char dir);
 char *escape_quotes_and_remove_nl(char *s) ;
 
 void print_conversions_g (expr_str_list *bind,char dir);
+char *get_str_list_as_string(str_list *list,char *sep);
+char * c_generation_trans_quote (char *s);
+
+char * A4GL_dtype_sz (int d, int s);
+void print_in_subquery(int i, struct s_expr_in_sq *e);
+int has_conversions_g (expr_str_list *bind,char dir);
+void print_exists_subquery(int i, struct s_expr_exists_sq *e) ;
+char *get_current_module_name(void);
+char *get_current_module_name_clean(void);
+int dump_report (struct s_report_definition *report_definition);
+int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr);
+int local_print_agg_defines(char t,int a);
+int dump_pdf_report (struct s_pdf_report_definition *report_definition);
+int dump_command(struct command_data *cd);
+int clr_rep_print_entry(void);
+void
+print_generation_copy_status (void);
+

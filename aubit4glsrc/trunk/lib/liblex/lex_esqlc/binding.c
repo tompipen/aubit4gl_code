@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.76 2008-02-11 17:13:11 mikeaubury Exp $
+# $Id: binding.c,v 1.77 2008-02-11 21:27:38 mikeaubury Exp $
 */
 
 /**
@@ -39,7 +39,7 @@
 #include "compile_c.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.76 2008-02-11 17:13:11 mikeaubury Exp $";
+		"$Id: binding.c,v 1.77 2008-02-11 21:27:38 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -65,8 +65,8 @@
 //char * make_sql_bind_expr (char *sql, char *type);
 
 static char *get_sql_type (int a, expr_str_list *bind,char type);
-void printc (char *fmt, ...);
-void printh (char *fmt, ...);
+//void printc (char *fmt, ...);
+//void printh (char *fmt, ...);
 //int esql_type (void);
 //void liblex_add_ibind(int dtype,char *var) ;
 static char* get_sql_type_infx (int a, expr_str_list *bind,char bind_type);
@@ -74,7 +74,7 @@ static char *get_sql_type_postgres (int a, expr_str_list *bind,char bind_type);
 static char *get_sql_type_sap (int a, expr_str_list *bind,char bind_type);
 static char *get_sql_type_ingres (int a, expr_str_list *bind,char bind_type);
 static char* get_sql_type_infoflex (int a, expr_str_list *bind,char bind_type);
-char * A4GL_dtype_sz (int d, int s);
+//char * A4GL_dtype_sz (int d, int s);
 //struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
 

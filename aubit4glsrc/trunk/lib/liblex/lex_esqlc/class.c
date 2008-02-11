@@ -2,8 +2,9 @@
 #include <string.h>
 
 #include "a4gl_lib_lex_esqlc_int.h"
-void printc (char *fmt, ...);
-void printcomment (char *fmt, ...);
+#include "compile_c.h"
+//void printc (char *fmt, ...);
+//void printcomment (char *fmt, ...);
 
 extern struct module_definition *current_module;
 

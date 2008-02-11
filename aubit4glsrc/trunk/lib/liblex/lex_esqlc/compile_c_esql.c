@@ -3,6 +3,7 @@
 #include "field_handling.h"
 #include "compile_c.h"
 #include "cmd_funcs.h"
+#include "fgl_enums.h"
 #define set_nonewlines() set_nonewlines_full(__LINE__)
 
 extern int line_for_cmd;
@@ -24,7 +25,7 @@ static char * get_ibind_usage (int a, char *context);
 char * get_ibind_usage_nl (int a, char *context) ; // Just the same but with a \n at the end...
 static char * get_obind_usage (int a, char *context);
 static char *get_esql_ident_as_string_for_function_calls(expr_str *ptr,int quote_string);
-
+int match_variable_usage(variable_usage *u1, variable_usage *u2);
 
 #define GET_SQL_VARIABLE_USAGE_STYLE_NORMAL 0
 #define GET_SQL_VARIABLE_USAGE_STYLE_QUERY_PLACEHOLDER 1
@@ -61,8 +62,9 @@ int doing_esql() {
 //    we can just use that...
 //
 struct insert_cursor_prep *insert_cursor_preps=0;
+
 int insert_cursor_preps_cnt=0;
-void add_insert_cursor_preps(char *cursorname, char *prepname,struct expr_str_list *l) {
+static void add_insert_cursor_preps(char *cursorname, char *prepname,struct expr_str_list *l) {
 struct expr_str_list *lnew;
 	insert_cursor_preps_cnt++;
 	insert_cursor_preps=realloc(insert_cursor_preps, sizeof(struct insert_cursor_prep)*insert_cursor_preps_cnt);
@@ -78,7 +80,7 @@ struct expr_str_list *lnew;
 	}
 }
 
-char *get_insert_cursor_preps_prepname(char *cursorname) {
+static char *get_insert_cursor_preps_prepname(char *cursorname) {
 int a;
 for (a=0;a<insert_cursor_preps_cnt;a++) {
 	if (strcmp(insert_cursor_preps[a].cursorname,cursorname)==0) {
@@ -88,7 +90,8 @@ for (a=0;a<insert_cursor_preps_cnt;a++) {
 return 0;
 }
 
-struct expr_str_list*get_insert_cursor_preps_binding(char *cursorname) {
+/*
+static struct expr_str_list*get_insert_cursor_preps_binding(char *cursorname) {
 int a;
 for (a=0;a<insert_cursor_preps_cnt;a++) {
 	if (strcmp(insert_cursor_preps[a].cursorname,cursorname)==0) {
@@ -96,7 +99,8 @@ for (a=0;a<insert_cursor_preps_cnt;a++) {
 	}
 }
 return 0;
-}
+} 
+*/
 
 
 
@@ -145,7 +149,7 @@ nm (int n)
 
 /********************************************************************************/
 
-void clr_bindings() {
+static void clr_bindings(void) {
 	if (input_bind) {
 		if (input_bind->list.list_val) free(input_bind->list.list_val);
 	} else {
@@ -168,8 +172,8 @@ void clr_bindings() {
 static void
 A4GL_save_sql_from_var (void)
 {
-  static int sqlcnt = 0;
-  int a;
+  //static int sqlcnt = 0;
+  //int a;
   if (A4GL_isyes (acl_getenv ("A4GL_EC_LOGSQL")))
     {
       printc ("A4GL_logsql(%d,_module_name,_sql);", line_for_cmd);
@@ -215,7 +219,7 @@ A4GL_save_sql (char *s, char *s2)
     }
 }
 
-void print_execute_g (expr_str *stmtname,int using_type,struct expr_str_list *using_bind,struct expr_str_list *into_bind) {
+static void print_execute_g (expr_str *stmtname,int using_type,struct expr_str_list *using_bind,struct expr_str_list *into_bind) {
 int started_with_aclfgli=0;
 char *stmt=0;
 struct expr_str_list empty;
@@ -285,7 +289,7 @@ empty.list.list_val=0;
       for (a = 0; a < into_bind->list.list_len; a++)
         {
           if (a) printc (",");
-	  printc("%s", get_obind_usage_nl(a,"EXECUTE"));
+	  printc("%s", get_obind_usage(a,"EXECUTE"));
         }
 
       printc (";");
@@ -342,7 +346,7 @@ empty.list.list_val=0;
 void print_exit_program (expr_str *s) {
 struct_exit_prog_cmd c;
 c.exit_val=s;
-print_exit_program_cmd(s);
+print_exit_prog_cmd(&c);
 
 }
 
@@ -491,7 +495,7 @@ int a;
 
 
 void
-print_generation_copy_status ()
+print_generation_copy_status (void)
 {
   printc ("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
   printc ("A4GLSQL_set_sqlerrd(sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);");
@@ -528,7 +532,7 @@ int
 print_connect_cmd (struct_connect_cmd * cmd_data)
 {
 char db[2000];
-char user_str[2000];
+//char user_str[2000];
 char connname[2000];
 int using_username=0;
   print_cmd_start ();
@@ -651,7 +655,7 @@ static void print_set_conn_from_str(char *conn) {
 }
 
 /******************************************************************************/
-void print_use_session(expr_str *con) {
+static void print_use_session(expr_str *con) {
   if (con==NULL) return ;
   printc ("{");
   printc("EXEC SQL BEGIN DECLARE SECTION;");
@@ -663,7 +667,7 @@ void print_use_session(expr_str *con) {
 
 /******************************************************************************/
 
-void print_undo_use(expr_str *con) {
+static void print_undo_use(expr_str *con) {
 if (con) {
 	  printc("EXEC SQL SET CONNECTION :_sav_cur_conn;}");
 }
@@ -672,15 +676,15 @@ if (con) {
 
 
 void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
-        int n;
+        //int n;
 	struct s_select *s;
-        expr_str_list l;
+        //expr_str_list l;
 	char *ptr;
 	char *sql;
-	char ibindstr[256];
+	//char ibindstr[256];
 	int converted=0;
 	static int ncnt=0;
-	char buff[200];
+	//char buff[200];
   	char cname[256];
 
         clr_bindings();
@@ -753,9 +757,9 @@ void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
 
 
 void print_in_subquery(int i, struct s_expr_in_sq *e) {
-        int n;
+        //int n;
 	struct s_select *s;
-        expr_str_list l;
+        //expr_str_list l;
 	char *ptr;
 	char *sql;
 	char ibindstr[256];
@@ -937,7 +941,7 @@ print_sql_transact_cmd (struct_sql_transact_cmd * cmd_data)
 
 
 
-int check_cursor_defined(expr_str *s) {
+static int check_cursor_defined(expr_str *s) {
 char *cname;
   cname=get_esql_ident_as_string(s);
   if (!A4GL_find_pointer(cname,CURCODE)) {
@@ -984,12 +988,13 @@ if (bind && bind->list.list_len==0) {
 	  printc ("printf (\"You cannot use a PUT with the target database\\n\"); ");
 	  printc ("A4GL_push_long(3);");
 	  print_exit_program (A4GL_new_literal_long_long (1));
+      return 1 ;
 	}
       else
 	{
 	  a4gl_yyerror ("You cannot use a PUT with the target database");
+      return 0 ;
 	}
-      return;
     }
 
 
@@ -1016,16 +1021,17 @@ if (bind && bind->list.list_len==0) {
 	  else
 	    {
 	      a4gl_yyerror ("Doing this isn't implemented yet (PUT without FROM)");
-	      return;
+	      return 0;
 	    }
 	}
       else
 	{
 	  // We should be ok...
 	  print_execute_g (A4GL_new_expr_simple_string(ptr, ET_EXPR_IDENTIFIER), 1,bind,0);
+      return 1;
 	}
       printc ("/* END OF FAKE PUT - USING EXECUTE */");
-      return;
+      return 1;
     }
 
   if (bind && bind->list.list_len) {
@@ -1050,7 +1056,7 @@ if (bind && bind->list.list_len) {
     {
 		int a;
 		static int bind_using_literals=0; // Switch this if we can bind using literals...
-		int b=0;
+		//int b=0;
 		tmp_ccnt++;
 	  	printc ("FROM ");
 		tmp_ccnt++;
@@ -1071,7 +1077,7 @@ if (bind && bind->list.list_len) {
 				printc("%s",get_ibind_usage (a,"PUT"));
 				break;
 			default:
-				printc("%s", local_esql_expr_as_string(bind->list.list_val[a]));
+				printc("%s", get_esql_ident_as_string(bind->list.list_val[a]));
 			}
 
 			if (a<n-1) printc(",");
@@ -1363,7 +1369,7 @@ char buff[256];
 int
 print_free_cmd (struct_free_cmd * cmd_data)
 {
-  static char *cname = 0;
+  //static char *cname = 0;
   //struct expr_str *cursorname;
   print_cmd_start ();
   print_use_session(cmd_data->connid);
@@ -1624,7 +1630,7 @@ int ll;
   if (strcmp (buff, "EMPTY") == 0)
     {
       a4gl_yyerror ("error calculating fetch instruction");
-      return;
+      return 0;
     }
 
 
@@ -1668,8 +1674,8 @@ int ll;
 int
 print_declare_cmd (struct_declare_cmd * cmd_data)
 {
-int forUpdate=0;   // when porting - this always seemed blank - it goes in the SQL statement instead...
-char * sid_string;
+//int forUpdate=0;   // when porting - this always seemed blank - it goes in the SQL statement instead...
+//char * sid_string;
 char cname[256];;
 struct s_cur_def *declare_dets;
 struct expr_str_list empty;
@@ -1725,7 +1731,7 @@ empty.list.list_len=0;
 		if (declare_dets->ident) {
 			// we dont need to do anything else - its already prepared...
 			add_insert_cursor_preps(cname, get_esql_ident_as_string(declare_dets->ident),0);
-			return;
+			return 1;
 	   	}
 
 		// We've got a real INSERT - so we'll need to prepare that instead...
@@ -1745,7 +1751,7 @@ empty.list.list_len=0;
 		printc("}");
 		add_insert_cursor_preps(cname, buff,input_bind);
 
-	  	return;		/* We don't really declare a cursor - remember - we're pretending :-) */
+	  	return 1;		/* We don't really declare a cursor - remember - we're pretending :-) */
 	    }
     }
 
@@ -1854,7 +1860,7 @@ var_prepname=0;
   if (output_bind->list.list_len && A4GLSQLCV_check_requirement ("NO_DECLARE_INTO"))
     {
       a4gl_yyerror ("You cannot use an INTO with a declare with the target database");
-      return;
+      return 0;
     }
 
 
@@ -1870,7 +1876,7 @@ var_prepname=0;
   printh ("static struct BINDING *acli_nboi_%s=0;\n", cname3);
 
   printh ("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n", cname3);
-  if (input_bind->list.list_len && has_conversions_g(input_bind->list.list_len,'I')) {
+  if (input_bind->list.list_len && has_conversions_g(input_bind,'I')) {
   	printh ("struct BINDING *ibind;\n");
   	printh ("struct BINDING *native_binding_i;\n");
   	printh ("struct BINDING *native_binding_i_ind;\n");
@@ -1975,8 +1981,8 @@ int
 print_execute_cmd (struct_execute_cmd * cmd_data,int already_doing_command)
 {
 // ---- 
-int ni;
-int no;
+////int ni;
+//int no;
 int using;
         //struct expr_str_list* inbind;
         //struct expr_str_list* outbind;
@@ -2028,7 +2034,7 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
       if (c == 'I')
 	{
 	  printc ("/* Ignore open cursor - faking insert cursor */");
-	  return;		/* We don't really open a cursor - remember - we're pretending :-) */
+	  return 1;		/* We don't really open a cursor - remember - we're pretending :-) */
 	}
     }
 
@@ -2090,9 +2096,9 @@ print_sql_block_cmd (struct_sql_block_cmd * cmd_data)
 int a;
 struct expr_str_list *into_list=0;
 char buff[20000]="";
-static int sqlblock;
-char tmpbuff[200];
-struct struct_execute_cmd exec_cmd;
+//static int sqlblock;
+//char tmpbuff[200];
+//struct struct_execute_cmd exec_cmd;
 int ni;
 int no;
   print_cmd_start ();
@@ -2178,7 +2184,7 @@ int no;
 
 
 
-void print_exec_sql_bound_g (char *s, int converted,expr_str_list *bind)
+static void print_exec_sql_bound_g (char *s, int converted,expr_str_list *bind)
 {
   int c;
   set_suppress_lines ();
@@ -2210,10 +2216,10 @@ print_unload_cmd (struct_unload_cmd * cmd_data)
 {
 int print_freesql;
 int converted=0;
-char ibindstr[200];
+//char ibindstr[200];
 char filename[256];
 int isvar=0;
-char delim_s[256];
+//char delim_s[256];
 char *sql;
 int doing_esql_unload = 0;
 // ---- 
@@ -2274,7 +2280,7 @@ int doing_esql_unload = 0;
 	    {
 	      a4gl_yyerror
 		("Cannot do an ESQL_UNLOAD for a prepared statement - try setting ESQL_UNLOAD_LIB_FALLBACK=Y if your sql driver allows it");
-	      return;
+	      return 0;
 	    }
 	}
     }
@@ -2364,8 +2370,8 @@ switch (cmd_data->sql->expr_type) {
   else
     {
       int ni=0;
-      int a;
-      char *ptr;
+      //int a;
+      //char *ptr;
 	char ibindstr[128];
       printc ("{ /* un3 */");
   	tmp_ccnt++;
@@ -2611,12 +2617,12 @@ print_select_cmd (struct_select_cmd * cmd_data)
 {
   int ni, no;
   int converted=0;
-  static char b2[60000];
-  int os;
+  //static char b2[60000];
+  //int os;
   char *sql;
   char *ptr;
-  char i[200];
-  char o[200];
+  //char i[200];
+  //char o[200];
 // ---- 
   print_cmd_start ();
   print_use_session(cmd_data->connid);
@@ -2841,7 +2847,7 @@ int issql=0;
       if (has_collist==0) {
         printc (" INSERT INTO %s;", cmd_data->tabname);
 	} else {
-          printc (" INSERT INTO %s (%s);", cmd_data->tabname, get_str_list_as_string(cmd_data->collist));
+          printc (" INSERT INTO %s (%s);", cmd_data->tabname, get_str_list_as_string(cmd_data->collist,","));
         }
     }
   else
@@ -2971,7 +2977,7 @@ printc("/*******************************************************************/");
       //char buff[256];
       //char buff2[256];
       struct s_fetch f;
-      char *s;
+      //char *s;
       struct struct_fetch_cmd fetch;
 
       printc ("{ /* Type F */");
@@ -3025,7 +3031,7 @@ printc("/*******************************************************************/");
       char sql[1024];
       int a;
       int b;
-      char *p;
+      //char *p;
 	struct expr_str *pname;
 	char cname_str[256];
 	char pname_str[256];
@@ -3138,7 +3144,7 @@ printc("/*******************************************************************/");
 
   if (type == 'E')
     {
-      char buff[256];
+      //char buff[256];
       char cname_str[256];
       struct struct_close_sql_cmd cmd_close;
       if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))

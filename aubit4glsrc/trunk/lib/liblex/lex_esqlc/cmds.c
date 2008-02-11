@@ -115,6 +115,7 @@ switch(cd->type) {
    case E_CMD_DISABLE_FORM_CMD     : ok=print_disable_form_cmd(&cd->command_data_u.disable_form_cmd); break;
    case E_CMD_PDF_CALL_CMD         : ok=print_pdf_call_cmd(&cd->command_data_u.pdf_call_cmd); break;
    case E_CMD_SET_SESSION_CMD      : ok=print_set_session_cmd(&cd->command_data_u.set_session_cmd); break;
+	case E_CMD_LAST: A4GL_assertion(1,"Shouldn't happen"); break;
 } /* end of switch */
 return ok;
 }

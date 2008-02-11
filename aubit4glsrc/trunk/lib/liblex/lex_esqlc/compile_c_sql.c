@@ -21,11 +21,11 @@ struct expr_str_list *output_bind=0;
 /******************************************************************************/
 /*                            HELPER  COMMANDS                                */
 /******************************************************************************/
-int doing_esql() {
+int doing_esql(void) {
 	return 0;
 }
 
-void clr_bindings() {
+static void clr_bindings(void) {
 	if (input_bind) {
 		if (input_bind->list.list_val) free(input_bind->list.list_val);
 	} else {
@@ -90,7 +90,7 @@ if (type=='M')
 
 
 /******************************************************************************/
-void print_use_session(expr_str *con) {
+static void print_use_session(expr_str *con) {
   	if (con==NULL) return ;
   	printc ("{char _sav_cur_conn[32];\n");
   	printc ("strcpy(_sav_cur_conn,A4GLSQL_get_curr_conn());\n");
@@ -99,7 +99,7 @@ void print_use_session(expr_str *con) {
 
 /******************************************************************************/
 
-void print_undo_use(expr_str *con) {
+static void print_undo_use(expr_str *con) {
 if (con) {
 	printc("A4GLSQL_set_conn(_sav_cur_conn);}");
 }
@@ -108,9 +108,9 @@ if (con) {
 
 
 void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
-        int n;
+        //int n;
 	struct s_select *s;
-        expr_str_list l;
+        //expr_str_list l;
 	char *ptr;
 	char *sql;
 	char ibindstr[256];
@@ -153,9 +153,9 @@ void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
 
 
 void print_in_subquery(int i, struct s_expr_in_sq *e) {
-        int n;
+        //int n;
 	struct s_select *s;
-        expr_str_list l;
+        //expr_str_list l;
 	char *ptr;
 	char *sql;
 	char ibindstr[256];

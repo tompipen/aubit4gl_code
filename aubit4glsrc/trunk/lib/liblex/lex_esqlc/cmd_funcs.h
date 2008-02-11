@@ -105,3 +105,4 @@ int print_validate_cmd(struct_validate_cmd *cmd_data);
 int print_whenever_cmd(struct_whenever_cmd *cmd_data);
 int print_while_cmd(struct_while_cmd *cmd_data);
 void print_cmd_start(void);
+int print_close_sql_cmd(struct_close_sql_cmd *cmd_data,int already_in_command);

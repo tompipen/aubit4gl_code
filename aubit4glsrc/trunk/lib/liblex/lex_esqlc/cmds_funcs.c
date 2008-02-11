@@ -16,8 +16,9 @@ static int rep_print_entry=0;
 
 
 
-int clr_rep_print_entry() {
+int clr_rep_print_entry(void) {
 	rep_print_entry=0;
+	return 1;
 }
 
 
@@ -1808,7 +1809,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
 {
   int cnt;
   int nevents;
-int a;
+//int a;
   int sio_id;
   struct variable *v;
 
@@ -2203,7 +2204,7 @@ print_input_array_cmd (struct_input_array_cmd * cmd_data)
 {
 int sio_id=-1;
 int nevents=-1;
-int ccc=-1;
+//int ccc=-1;
 int cnt=-1;
 int inp_flags=0;
  struct variable *v;
@@ -2946,7 +2947,7 @@ struct variable_usage *u;
 struct expr_str **subs;
 int nsubs;
 char *ptr;
-char *dim[5];
+//char *dim[5];
   //struct expr_str *variable;
   print_cmd_start ();
 
@@ -2991,10 +2992,10 @@ print_dealloc_arr_cmd (struct_dealloc_arr_cmd * cmd_data)
 
 struct variable_usage *u_bottom;
 struct variable_usage *u;
-struct expr_str **subs;
-int nsubs;
+//struct expr_str **subs;
+//int nsubs;
 char *ptr;
-char *dim[5];
+//char *dim[5];
   //struct expr_str *variable;
   print_cmd_start ();
 
@@ -3024,7 +3025,7 @@ struct variable_usage *u;
 struct expr_str **subs;
 int nsubs;
 char *ptr;
-char *dim[5];
+//char *dim[5];
   //struct expr_str *variable;
   print_cmd_start ();
 

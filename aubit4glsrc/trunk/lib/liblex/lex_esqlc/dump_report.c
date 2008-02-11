@@ -4,12 +4,12 @@
 #include "compile_c.h"
 #define set_nonewlines() set_nonewlines_full(__LINE__)
 extern int tmp_ccnt;
-expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
+//expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
 static int report_cnt=0;
 static int *ordbyfields = 0;
 static int ordbyfieldscnt = 0;
 
-
+/*
 static void
 add_to_ordbyfields (int n)
 {
@@ -24,6 +24,7 @@ add_to_ordbyfields (int n)
   ordbyfields[ordbyfieldscnt - 1] = n;
 
 }
+*/
 
 
 static int
@@ -53,7 +54,7 @@ pr_nongroup_report_agg_clr (struct expr_str_list *aggregates)
   int a;
   int t;
   int in_b;
-  char b[255];
+  //char b[255];
   for (z = 0; z < aggregates->list.list_len; z++)
     {
       	struct s_expr_agg *agg;
@@ -203,7 +204,7 @@ pr_report_agg_clr (struct expr_str_list *aggregates)
   int a;
   int t;
   int in_b;
-  char b[255];
+  //char b[255];
   for (z = 0; z < aggregates->list.list_len; z++)
 
     {
@@ -273,7 +274,7 @@ If we copy the ordbind, then reassemble the ordbind using these - we should be o
 
 static void order_by_report_stack (int report_cnt, int rord_type, report_format_section *rf, struct report_orderby_section *report_orderby_section)
 {
-  int a;
+  //int a;
   static int fiddle = 0;
 
 #ifdef CRAP
@@ -349,7 +350,7 @@ static void order_by_report_stack (int report_cnt, int rord_type, report_format_
 /**
  * Print the C implementation of the current report control block
  */
-void
+static void
 print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_type, report_format_section *rf, struct report_orderby_section *report_orderby_section, struct expr_str_list *aggregates)
 {
   int a;
@@ -676,7 +677,7 @@ struct startrep rep_default;
 
 
 
-char decode_whytype(report_block_data rb_block) {
+static char decode_whytype(report_block_data rb_block) {
 switch (rb_block.rb) {
 	case RB_FIRST_PAGE_HEADER:      return 'P';
         case RB_PAGE_HEADER:            return 'p';
@@ -692,7 +693,7 @@ A4GL_assertion(1,"Invalid");
 return '-';
 }
 
-char *decode_why(report_block_data rb_block,int varno) {
+static char *decode_why(report_block_data rb_block,int varno) {
 static char buff[256];
 switch (rb_block.rb) {
 	case RB_FIRST_PAGE_HEADER:      return "FIRST";
@@ -747,7 +748,7 @@ print_format_every_row (expr_str_list* bind,char *ispdf)
 
 
 
-void
+static void
 print_format_section (report_format_section * report_format_section, int report_cnt, int rep_type,expr_str_list *parameters)
 {
   int a;
@@ -796,7 +797,7 @@ print_format_section (report_format_section * report_format_section, int report_
 
 
 
-int dump_report_generic (char *namespace,char *funcname, int isstatic,int rep_type, 
+static int dump_report_generic (char *namespace,char *funcname, int isstatic,int rep_type, 
 expr_str_list *parameters,
 struct variable_list *variables,
 report_orderby_section *report_orderby_section, void *report_output_section , report_format_section *report_format_section, struct expr_str_list *aggregates
@@ -1052,12 +1053,12 @@ int z;
 
 
 int dump_report (struct s_report_definition *report_definition) {
-int a;
-int cnt;
-int order_by_type;
-char *asc_desc;
+//int a;
+//int cnt;
+//int order_by_type;
+//char *asc_desc;
 expr_str_list *parameters;
-char namespaced_report_name[256];
+//char namespaced_report_name[256];
 
 parameters=expand_parameters(&report_definition->variables, report_definition->parameters);
 
@@ -1074,12 +1075,12 @@ report_definition->report_orderby_section, report_definition->report_output_sect
 
 
 int dump_pdf_report (struct s_pdf_report_definition *report_definition) {
-int a;
-int cnt;
-int order_by_type;
-char *asc_desc;
+//int a;
+//int cnt;
+//int order_by_type;
+//char *asc_desc;
 expr_str_list *parameters;
-char namespaced_report_name[256];
+//char namespaced_report_name[256];
 
 parameters=expand_parameters(&report_definition->variables, report_definition->parameters);
 
