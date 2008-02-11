@@ -1,0 +1,42 @@
+/*
+=====================================================================
+                        Source: clear.rule
+=====================================================================
+*/
+
+
+op_to_defs :
+{ $<e_boolean>$=0;}
+| TO_DEFAULTS {$<e_boolean>$=1; }
+;
+
+clear_cmd       :       CLEARSCR {
+                                $<cmd>$=new_clear_cmd(E_CLR_SCREEN,NULL,0);
+                                add_feature("UI_CLEAR_SCREEN");
+                                map_ui("CLEARSCREEN");}
+                |       CLEARWIN win_name_p {
+                                $<cmd>$=new_clear_cmd(E_CLR_WINDOW,$<ptr>2,0);
+                                add_feature("UI_CLEAR_WINDOW");
+                                map_ui("CLEARWINDOW");
+                        }
+                |       CLEARSTAT win_name_p {
+                                $<cmd>$=new_clear_cmd(E_CLR_STATUS,$<ptr>2,0);
+                        }
+                |       CLEARFORM {
+                                $<cmd>$=new_clear_cmd(E_CLR_FORM,NULL,0);
+                                add_feature("UI_CLEAR_FORM");
+                                map_ui("CLEARFORM");
+                }
+                |       CLEARFORMTODEFAULTS {
+                                $<cmd>$=new_clear_cmd(E_CLR_FORM,NULL,1);
+                                map_ui("CLEARFORM");
+                }
+                |       CLEAR field_name_list_as_struct op_to_defs {
+                                $<cmd>$=new_clear_cmd(E_CLR_FIELDS,$<field_list>2,$<e_boolean>3);
+                                add_feature("UI_CLEAR_FIELD"); map_ui("CLEARFIELDS");
+                }
+;
+
+
+
+

@@ -1,0 +1,38 @@
+commands_as_list :  push_commands commands_as_list1 pop_commands {$<commands>$=$<commands>2;
+        /*
+        if ($<commands>$) {
+                printf("Block has : %d commands\n", $<commands>$->cmds.cmds_len);
+        } else {
+                printf("No block\n");
+        }
+        */
+}
+;
+
+push_commands : { dopush_commands(); } ;
+pop_commands : { dopop_commands(); } ;
+
+
+commands_as_list1: {$<commands>$=0; set_cmdlineno(yylineno); }
+        | commands_as_list_something {$<commands>$=$<commands>1;}
+;
+
+
+commands_as_list_something :
+        commands_all1  opt_semi {
+                $<commands>$=malloc(sizeof(commands));
+                $<commands>$->cmds.cmds_len=1;
+                $<commands>$->cmds.cmds_val=malloc(sizeof($<commands>$->cmds.cmds_val[0]) * $<commands>$->cmds.cmds_len);
+                $<commands>$->cmds.cmds_val[$<commands>$->cmds.cmds_len-1]=$<cmd>1;
+                lastlineno=yylineno;
+
+        }
+        |  commands_as_list_something commands_all1 opt_semi {
+                $<commands>$=$<commands>1;
+                $<commands>$->cmds.cmds_len=$<commands>1->cmds.cmds_len+1;
+                $<commands>$->cmds.cmds_val=realloc($<commands>1->cmds.cmds_val, sizeof($<commands>$->cmds.cmds_val[0]) * $<commands>$->cmds.cmds_len);
+                $<commands>$->cmds.cmds_val[$<commands>$->cmds.cmds_len-1]=$<cmd>2;
+                lastlineno=yylineno;
+        }
+;
+
