@@ -54,6 +54,7 @@ enum cmd_type {
 	E_CMD_CHECK_MENU_CMD,
 	E_CMD_CLEAR_CMD,
 	E_CMD_CLOSE_CMD,
+	E_CMD_CLOSE_SQL_CMD,
 	E_CMD_CODE_CMD,
 	E_CMD_CONNECT_CMD,
 	E_CMD_CONSTRUCT_CMD,
@@ -102,7 +103,6 @@ enum cmd_type {
 	E_CMD_OPEN_CURSOR_CMD,
 	E_CMD_OPEN_FORM_CMD,
 	E_CMD_OPEN_FORM_GUI_CMD,
-	E_CMD_OPEN_SESSION_CMD,
 	E_CMD_OPEN_STATUSBOX_CMD,
 	E_CMD_OPEN_WINDOW_CMD,
 	E_CMD_OPTIONS_CMD,
@@ -241,6 +241,7 @@ struct attrib {
 
 struct funcname_list {
 	funcname name<>;
+	str namespaces<>;
 };
 
 
@@ -291,10 +292,13 @@ struct struct_delete_cmd {
 
 /* ***************************************************** */
 
-enum e_close_type {
+enum e_close_type_nosql {
 	E_CT_WINDOW,
 	E_CT_FORM,
-	E_CT_STATUSBOX,
+	E_CT_STATUSBOX
+};
+
+enum e_close_type_withsql {
 	E_CT_DATABASE,
 	E_CT_SESSION,
 	E_CT_CURS_OR_PREP
@@ -303,11 +307,18 @@ enum e_close_type {
 
 /* ***************************************************** */
 struct struct_close_cmd {
-	enum e_close_type cl_type;
+	enum e_close_type_nosql cl_type;
 	struct expr_str * ident;
 };
 
+struct struct_close_sql_cmd {
+	enum e_close_type_withsql cl_type;
+	struct expr_str * ident;
+};
+
+
 struct struct_free_cmd {
+	struct expr_str *connid;
 	struct expr_str *cursorname;
 };
 
@@ -319,6 +330,7 @@ enum e_block_cmd {
 struct struct_continue_cmd {
 	enum e_block_cmd what;
 	int block_id;
+	int sio_id;
 };
 
 struct struct_ext_cmd {
@@ -372,6 +384,7 @@ struct struct_error_cmd {
 };
 
 struct struct_execute_cmd {
+	struct expr_str *connid;
 	struct expr_str_list* inbind;
 	struct expr_str_list* outbind;
 	struct expr_str *sql_stmtid;
@@ -488,12 +501,14 @@ struct struct_init_cmd {
 	struct expr_str_list* varlist;
 	/* struct expr_str_list* expanded_varlist; */
 	str_list* tablist;
+	struct expr_str_list *init_like_exprlist;
 };
 
 
 struct struct_next_field_cmd {
 	int rel;
 	struct fh_field_entry* nextfield;
+	int sio;
 };
 
 
@@ -564,6 +579,7 @@ struct struct_if_cmd {
 };
 
 struct struct_foreach_cmd {
+	struct expr_str *connid;
 	struct expr_str * cursorname;
 	struct expr_str_list* inputvals;
 	struct expr_str_list* outputvals;
@@ -693,6 +709,7 @@ struct s_fetch {
 };
 
 struct struct_fetch_cmd {
+	        struct expr_str * connid;
 	struct s_fetch* fetch;
 	 struct expr_str_list* outbind;
 };
@@ -765,11 +782,16 @@ union report_block_data switch (enum report_blocks rb) {
 struct report_format_section_entry {
 	report_block_data rb_block;
 	commands* rep_sec_commands;
+        int lineno;
+	int orderby_var_no;
 };
 
 typedef struct report_format_section_entry* report_format_section_entry_ptr;
 struct report_format_section {
 	report_format_section_entry_ptr entries<>;
+        int lines_in_header ;
+        int lines_in_first_header ;
+        int lines_in_trailer;
 };
 
 enum e_report_orderby {
@@ -801,6 +823,8 @@ struct struct_display_b_n_cmd { /* Gets converted to a display_cmd ? */
 
 
 struct struct_open_cursor_cmd {
+	char cursor_type;
+	struct expr_str *connid;
 	struct expr_str *cursorname;
 	struct expr_str_list* using_bind;
 };
@@ -830,6 +854,7 @@ struct struct_declare_cmd {
 	e_boolean with_hold;
 	e_boolean scroll;
 	e_boolean isstmt;
+	char cursor_type;
 };
 
 
@@ -837,7 +862,9 @@ struct struct_declare_cmd {
 
 struct  struct_validate_cmd {
 	struct expr_str_list*  list;
+	struct expr_str_list*  validate_list;
 	str_list* tablist;
+	
 };
 
 struct struct_while_cmd {
@@ -966,6 +993,7 @@ struct struct_whenever_cmd {
 
 
 struct struct_sql_block_cmd {
+	struct expr_str *connid;
 	struct expr_str_list* list;
 };
 
@@ -1110,6 +1138,9 @@ struct struct_menu_cmd {
 	struct on_events* events;
 	int sio;
 	int blockid;
+	struct expr_str *menu_attrib_comment;
+	struct expr_str *menu_attrib_style;
+	struct expr_str *menu_attrib_image;
 };
 
 
@@ -1131,6 +1162,7 @@ struct struct_display_array_cmd {
 	struct attrib *attributes;
         struct on_events* events;
 	struct fh_field_entry* scroll_using;
+	int helpno;
 	int sio;
 	int blockid;
 	str slice;
@@ -1168,12 +1200,12 @@ struct cons_list {
 struct struct_input_array_cmd {
 	struct expr_str *srec;
 	struct expr_str *arrayname;
-	struct attrib *attrib;
+	struct attrib *attributes;
 	struct on_events *events;
 	e_boolean without_defaults;
 	int helpno;
 	int sio;
-	int blk;
+	int blockid;
 	str slice;
 	int slice_start;
 	int slice_end;
@@ -1206,11 +1238,13 @@ struct struct_free_rep_cmd {
 	str namespace;
 };
 
+/*
 struct struct_open_session_cmd {
 	struct expr_str * connid;
 	struct expr_str* db;
 	user_details* userdets;
 };
+*/
 
 
 
@@ -1302,6 +1336,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_CANCEL_CMD: struct_cancel_cmd cancel_cmd;
 	case E_CMD_CASE_CMD: struct_case_cmd case_cmd;
 	case E_CMD_CLOSE_CMD: struct_close_cmd close_cmd;
+	case E_CMD_CLOSE_SQL_CMD: struct_close_sql_cmd close_sql_cmd;
 	case E_CMD_CODE_CMD: struct_code_cmd code_cmd;
 	case E_CMD_CONSTRUCT_CMD: struct_construct_cmd construct_cmd;
 	case E_CMD_DEFER_CMD: struct_defer_cmd defer_cmd;
@@ -1346,7 +1381,6 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_OPEN_STATUSBOX_CMD: struct_open_statusbox_cmd open_statusbox_cmd;
 	case E_CMD_OPEN_FORM_CMD: struct_open_form_cmd open_form_cmd;
 	case E_CMD_OPEN_FORM_GUI_CMD: struct_open_form_gui_cmd open_form_gui_cmd;
-	case E_CMD_OPEN_SESSION_CMD: struct_open_session_cmd open_session_cmd;
 	case E_CMD_OPEN_CURSOR_CMD: struct_open_cursor_cmd open_cursor_cmd;
 	case E_CMD_CONNECT_CMD: struct_connect_cmd connect_cmd;
 	case E_CMD_OPTIONS_CMD: struct_options_cmd options_cmd;
@@ -1483,6 +1517,13 @@ struct record_variable
 
 
 
+
+struct assoc_subscript {
+	str subscript_string;	
+	struct expr_str *subscript_value;
+};
+
+
 enum e_variable_type {
         VARIABLE_TYPE_SIMPLE   ,
         VARIABLE_TYPE_RECORD    ,
@@ -1566,10 +1607,13 @@ struct globals_definition {
 struct module_definition {
 	str mod_dbname;
 	str namespace;
+	str force_ui;
+	str debug_filename;
 	str external_datatypes<>;
 	struct comment comment_list<>;
 	struct file_description imported_files<>;
 	enum e_boolean schema_only;
+	enum e_boolean genStackInfo;
 	str module_name;
 	long compiled_time;
 	struct str_list *global_files;
@@ -1664,6 +1708,12 @@ struct s_expr_get_fldbuf {
         int line;
 };
 
+struct s_expr_form_is_compiled {
+	struct expr_str *formname;
+	struct expr_str_list *params;
+        str module;
+        int line;
+};
 
 struct s_expr_field_touched {
         long sio_id;
@@ -1863,6 +1913,7 @@ enum e_expr_type {
                 ET_EXPR_REDUCED,
                 ET_EXPR_EXTERNAL,
                 ET_EXPR_GET_FLDBUF,
+                ET_EXPR_FORM_IS_COMPILED,
                 ET_EXPR_WORDWRAP,
                 /* ET_EXPR_SUBSTRING, */
                 ET_EXPR_NOT_EXISTS_SUBQUERY,
@@ -1917,6 +1968,7 @@ enum e_expr_type {
 	ET_E_V_OR_LIT_NOVALUE,
                 ET_EXPR_THROUGH,
 		ET_EXPR_WHERE_CURRENT_OF, 
+		ET_EXPR_ASSOC,
 
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 };
@@ -1955,8 +2007,6 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_FGL_ADDRESSOF:
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_FGL_SIZEOF:
-                /*! str                                    expr_string; !*/
-	case ET_EXPR_FGL_ISDYNARR_ALLOCATED:
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_REPORT_EMAIL:
                 /*! str                                    expr_string; !*/
@@ -2043,6 +2093,8 @@ ET_EXPR_PROMPT_RESULT  */
 
 	case ET_EXPR_GET_FLDBUF:
                 struct s_expr_get_fldbuf                  *expr_get_fldbuf;
+	case ET_EXPR_FORM_IS_COMPILED:
+                struct s_expr_form_is_compiled                  *expr_form_is_compiled;
 	case ET_EXPR_INFIELD:
                 struct s_expr_infield                     *expr_infield;
 	case ET_EXPR_WORDWRAP:
@@ -2098,6 +2150,10 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_FIELDTOWIDGET:
                 struct fh_field_entry                   *expr_field_entry;
 
+	case ET_EXPR_ASSOC:
+		struct assoc_subscript *expr_assoc_subscript;
+	case ET_EXPR_FGL_ISDYNARR_ALLOCATED:
+                /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_BRACKET:
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_TIME_FUNC:
@@ -2198,6 +2254,7 @@ struct variable_usage {
         expr_str *substrings_end;
         int variable_id;
 	int datatype;
+	int datatype_length;
         int scope;
         struct variable_usage *next;
 };
@@ -2303,7 +2360,8 @@ enum e_sli {
         E_SLI_VAR_REPLACE,
         E_SLI_BUILTIN_CONST_TIME,
         E_SLI_BUILTIN_CONST_NULL,
-	E_SLI_VARIABLE_USAGE
+	E_SLI_VARIABLE_USAGE,
+	E_SLI_VARIABLE_USAGE_LIST
 
 };
 
@@ -2652,6 +2710,11 @@ union s_select_list_item_data switch (enum e_sli type) {
 
 	case E_SLI_VARIABLE_USAGE : 
 		struct variable_usage *var_usage;
+
+	case E_SLI_VARIABLE_USAGE_LIST: 
+		/* used for record.* */
+		struct s_select_list_item_list *var_usage_list; 
+
 };
 
 struct s_select_list_item {
@@ -2676,6 +2739,7 @@ struct s_function_definition {
 };
 
 
+
 struct s_report_definition {
 	str funcname;
 	str namespace;
@@ -2686,11 +2750,13 @@ struct s_report_definition {
 	startrep *report_output_section;
 	report_orderby_section *report_orderby_section;
 	report_format_section *report_format_section;
+	struct expr_str_list aggregates;
 	str module;
 	int lineno;
 	int colno;
 	int lastlineno;
 	call_list call_list;
+
 	lint_warning extra_warnings<>;
 };
 
@@ -2705,6 +2771,7 @@ struct s_pdf_report_definition {
 	pdf_startrep *report_output_section;
 	report_orderby_section *report_orderby_section;
 	report_format_section *report_format_section;
+	struct expr_str_list aggregates;
 	str module;
 	int lineno;
 	int colno;
