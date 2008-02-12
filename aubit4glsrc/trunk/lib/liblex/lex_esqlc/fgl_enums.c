@@ -511,6 +511,7 @@ char *decode_e_sli(enum e_sli value) {
  case E_SLI_BUILTIN_CONST_TIME: return "E_SLI_BUILTIN_CONST_TIME";
  case E_SLI_BUILTIN_CONST_NULL: return "E_SLI_BUILTIN_CONST_NULL";
  case E_SLI_VARIABLE_USAGE: return "E_SLI_VARIABLE_USAGE";
+ case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST: return "E_SLI_VARIABLE_USAGE_IN_SELECT_LIST";
  default: return "Unhandled";
  } /* end of switch */
 }

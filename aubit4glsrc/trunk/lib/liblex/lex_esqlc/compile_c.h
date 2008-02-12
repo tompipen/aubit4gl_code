@@ -268,6 +268,5 @@ int local_print_agg_defines(char t,int a);
 int dump_pdf_report (struct s_pdf_report_definition *report_definition);
 int dump_command(struct command_data *cd);
 int clr_rep_print_entry(void);
-void
-print_generation_copy_status (void);
-
+void print_generation_copy_status (void);
+int chk_ibind_select(struct s_select *s);

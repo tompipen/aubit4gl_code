@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.136 2007-12-17 18:10:37 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.137 2008-02-12 17:01:07 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.136 2007-12-17 18:10:37 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.137 2008-02-12 17:01:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2501,6 +2501,7 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
 		struct s_screenio *s;
 		s=sio;
 		A4GL_set_fields_sio(s);
+		 //pos_form_cursor (s->currform->form);
       }
 
 }

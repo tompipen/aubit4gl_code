@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.392 2008-02-12 12:46:59 mikeaubury Exp $
+# $Id: compile_c.c,v 1.393 2008-02-12 17:01:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.392 2008-02-12 12:46:59 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.393 2008-02-12 17:01:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -87,6 +87,7 @@ char * local_rettype (char *s);
 //
 int tmp_ccnt=0;
 
+int set_dont_use_indicators=0;
 
 extern int yylineno;
 
@@ -241,47 +242,13 @@ static FILE *hfile = 0;
 //char *expr_name(enum e_expr_type e);
 
 
-dll_import struct rep_structure rep_struct;
+//dll_import struct rep_structure rep_struct;
 
 
 //extern struct pdf_rep_structure pdf_rep_struct;
-dll_import struct pdf_rep_structure pdf_rep_struct;
-//extern struct form_attr form_attrib;
-//extern int menu_cnt;
-//extern int ccnt;					/**< Block counter - defined in lexer.c */
-//extern char mmtitle[132][132];		/** Menu titles */
-//extern int report_stack_cnt;
-//extern int report_cnt;
-//extern int rep_type;
-//extern int sreports_cnt;
-//extern char when_to_tmp[64];
-//extern int ordbindcnt;
-//extern int ibindcnt;
-//extern int nullbindcnt;
-//extern int obindcnt;
-//extern int ebindcnt;
-//extern int fbindcnt;
-//extern int constr_cnt;
+//dll_import struct pdf_rep_structure pdf_rep_struct;
 
 
-//dll_import int when_code[8];
-//dll_import struct s_report sreports[1024];
-//dll_import struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-//dll_import struct binding_comp *ibind;
-//dll_import struct binding_comp *nullbind;
-//dll_import struct binding_comp *obind;
-//dll_import struct binding_comp *ebind;
-//dll_import struct binding_comp *fbind;
-//dll_import struct binding_comp *ordbind;
-//dll_import struct s_constr_buff constr_buff[256];
-//dll_import char when_to[8][128];
-//int doing_esql (void);
-/*long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr);*/
-//int split_arrsizes (char *s, int *arrsizes);
-//int esql_type (void);
-//static void order_by_report_stack (void);
-//void real_print_expr_list (struct expr_str_list *l);
-//void A4GL_print_expr_list_concat (struct expr_str_list *l);
 
 /*
 =====================================================================
@@ -289,31 +256,8 @@ dll_import struct pdf_rep_structure pdf_rep_struct;
 =====================================================================
 */
 
-//void printc (char *fmt, ...);
-//static int print_arr_bind_g (struct expr_str_list *bind,char type);
-//static int print_constr (void);
-//static int print_field_bind_constr (void);
-//static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to);
-//static void pr_report_agg_clr (void);
-//static void print_menu (int mn, int n, t_expr_str *mn_comment, t_expr_str *mn_style, t_expr_str *mn_image);
-/* char *make_sql_bind_expr_g (char *sql, struct expr_str_list *bind); */
-
 
 static void real_print_expr (struct expr_str *ptr);
-//void real_print_func_call ( t_expr_str *fcall);
-//static void real_print_class_func_call (char *var, char *identifier, struct expr_str *args, int args_cnt,int yylineno);
-//static void real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3,int yylineno);
-
-//void printh (char *fmt, ...);
-
-//void add_function_to_header (char *identifier, char *namespace, int parms,char *is_static);
-//char *get_namespace (char *s);
-//void print_init_var_from_expr (struct expr_str *v, char *prefix, int alvl,int explicit);
-//void print_init_var (struct variable *v, char *prefix, int alvl,int explicit,int prefixIncludesName);
-//void printcomment (char *fmt, ...);
-//char *field_name_list_as_char(struct fh_field_list *fl);
-//void print_onaction_2 (void);
-//int is_builtin_func (char *s);
 
 /*
 =====================================================================
@@ -2599,6 +2543,9 @@ switch (e->expr_type) {
 		A4GL_assertion(u->datatype<0,"Invalid datatype") ;
 		return u->datatype;
 
+	case ET_EXPR_LITERAL_EMPTY_STRING:
+		return DTYPE_CHAR+ENCODE_SIZE(1);
+
 	case ET_E_V_OR_LIT_STRING:
 	case ET_EXPR_LITERAL_STRING:
 		// Can happen on a PUT  - but its never a substring...
@@ -2660,6 +2607,7 @@ switch (e->expr_type) {
 		return buff;
 
 	case ET_EXPR_NULL:
+	case ET_EXPR_LITERAL_EMPTY_STRING:
 	case ET_EXPR_LITERAL_STRING:
 	case ET_EXPR_LITERAL_LONG:
 	case ET_E_V_OR_LIT_STRING:
@@ -2709,6 +2657,7 @@ switch (e->expr_type) {
 		return buff;
 
 
+	case ET_EXPR_LITERAL_EMPTY_STRING:
 	case ET_EXPR_NULL:
 	case ET_EXPR_LITERAL_STRING:
 	case ET_EXPR_LITERAL_LONG:
@@ -4869,6 +4818,12 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 				clr_nonewlines();
 				break;
 
+			case ET_EXPR_LITERAL_EMPTY_STRING:
+				printh("static char a4gl_putval_%d[]=\"\"; // ****\n",putvalcnt);
+          			printc ("ibind[%d].ptr= &a4gl_putval_%d;", a, putvalcnt);
+				putvalcnt++;
+				break;
+
 			case ET_EXPR_LITERAL_STRING:
 				printh("static char a4gl_putval_%d[]=%s; // ****\n",putvalcnt, local_expr_as_string(bind->list.list_val[a]));
           			printc ("ibind[%d].ptr= &a4gl_putval_%d;", a, putvalcnt);
@@ -6899,11 +6854,20 @@ search_sql_variables (struct s_select_list_item_list *l,char dir)
     return;
   for (a = 0; a < l->list.list_len; a++)
     {
+
       if (l->list.list_val[a]->data.type == E_SLI_VARIABLE_USAGE)
         {
           l->list.list_val[a]->data.type = E_SLI_VARIABLE;
           l->list.list_val[a]->data.s_select_list_item_data_u.expression = strdup(get_sql_variable_usage (l->list.list_val[a]->data.s_select_list_item_data_u.var_usage,dir));
         }
+      if (l->list.list_val[a]->data.type == E_SLI_VARIABLE_USAGE_IN_SELECT_LIST)
+        {
+          l->list.list_val[a]->data.type = E_SLI_VARIABLE;
+	  set_dont_use_indicators=1;
+          l->list.list_val[a]->data.s_select_list_item_data_u.expression = strdup(get_sql_variable_usage (l->list.list_val[a]->data.s_select_list_item_data_u.var_usage,dir));
+	  set_dont_use_indicators=0;
+        }
+
     }
 }
 
@@ -6926,6 +6890,64 @@ static char *get_select_list_item_list_with_separator (struct s_select *select, 
 	}
     }
     return rval;
+}
+
+
+
+
+//
+// This function checks for the usage of variables in the select list
+// eg
+//
+// DEFINE a INTEGER
+//
+//   SELECT a*b FROM sometab
+//
+//   this isn't portable and causes issues with some esql/c generation..
+//
+int chk_ibind_select_internal(struct s_select *s) {
+int a;
+int ok=1;
+struct s_select snew;
+struct s_select_list_item_list *slist;
+struct s_select_list_item *ptr;
+
+memcpy(&snew,s,sizeof(snew));
+snew.where_clause=0;
+snew.having=0;
+snew.group_by=0;
+
+if (snew.next) {
+	if (!chk_ibind_select(snew.next)) {
+		ok=0;
+	}
+}
+
+for (a=0;a<snew.list_of_items.list.list_len;a++) {
+	ptr=snew.list_of_items.list.list_val[a];
+
+	if (ptr->data.type==E_SLI_VARIABLE_USAGE) {
+		ptr->data.type=E_SLI_VARIABLE_USAGE_IN_SELECT_LIST;
+
+		return 0;
+	}
+
+}
+
+return ok;
+}
+
+
+int chk_ibind_select(struct s_select *s) {
+	if (!chk_ibind_select_internal(s)) {
+        	if (!A4GL_isno(acl_getenv("NOSELECTVARWARNING"))) {
+                	a4gl_yyerror("You can't SELECT a variable (perhaps you could rename the variable, or prefix the column in the SELECT list ?)");
+        	} else {
+                	A4GL_warn("Selecting a variable in a select list is not portable");
+        	}
+	return 0;
+	}
+        return 1;
 }
 
 

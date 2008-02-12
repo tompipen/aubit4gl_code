@@ -1996,7 +1996,7 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_TIME_EXPR: /*! void; !*/
 	case ET_EXPR_MENU_ALL: /*! void; !*/
 	case ET_E_V_OR_LIT_NOVALUE: /*!		void; !*/
-	case ET_EXPR_MODULE_FUNC:
+	case ET_EXPR_MODULE_FUNC: /*!         void; !*/
 	case ET_EXPR_LAST:
 		void;
 
@@ -2031,6 +2031,8 @@ ET_EXPR_PROMPT_RESULT  */
 
 
 	case ET_EXPR_SQLBLOCK:		
+                /*! struct expr_str_list                    *expr_list; !*/
+
 	case ET_EXPR_SQLBLOCK_INTO:		
                 /*! struct expr_str_list                    *expr_list; !*/
 	case ET_EXPR_THROUGH:
@@ -2365,6 +2367,7 @@ enum e_sli {
         E_SLI_BUILTIN_CONST_TIME,
         E_SLI_BUILTIN_CONST_NULL,
 	E_SLI_VARIABLE_USAGE,
+	E_SLI_VARIABLE_USAGE_IN_SELECT_LIST,
 	E_SLI_VARIABLE_USAGE_LIST
 
 };
@@ -2711,6 +2714,9 @@ union s_select_list_item_data switch (enum e_sli type) {
 
         case E_SLI_SUBQUERY_EXPRESSION:
 		struct s_select_list_item_sq_expression sq_expression;
+
+	case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST : 
+		/*! struct variable_usage *var_usage; !*/
 
 	case E_SLI_VARIABLE_USAGE : 
 		struct variable_usage *var_usage;

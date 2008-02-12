@@ -122,6 +122,7 @@ void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
 	strcpy(ibindstr,"NULL,0");
 
   			preprocess_sql_statement (s);
+  chk_ibind_select(s);
   			search_sql_variables (&s->list_of_items,'i');
   			sql=get_select (s, "");
 
@@ -168,6 +169,7 @@ void print_in_subquery(int i, struct s_expr_in_sq *e) {
 	strcpy(ibindstr,"NULL,0");
 
   			preprocess_sql_statement (s);
+  chk_ibind_select(s);
   			search_sql_variables (&s->list_of_items,'i');
   			sql=get_select (s, "");
 
@@ -599,6 +601,7 @@ switch (cmd_data->sql->expr_type) {
   			clr_bindings();
 
   			preprocess_sql_statement (s);
+  			chk_ibind_select(s);
   			search_sql_variables (&s->list_of_items,'i');
   			sql=get_select (s, "");
 
@@ -862,6 +865,8 @@ print_select_cmd (struct_select_cmd * cmd_data)
   clr_bindings();
 
   preprocess_sql_statement (cmd_data->sql);
+  chk_ibind_select(cmd_data->sql);
+
   search_sql_variables (&cmd_data->sql->list_of_items,'i');
   sql=get_select (cmd_data->sql, cmd_data->forupdate);
   output_bind=cmd_data->sql->into;
@@ -1032,6 +1037,7 @@ static char buff[64000];
 
 			// Preprocessing will collect all the variables..
   			preprocess_sql_statement (s);
+  			chk_ibind_select(s);
 
 			// Now convert the variables to '?'
   			search_sql_variables (&s->list_of_items,'i');

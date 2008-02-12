@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.61 2008-02-11 17:13:11 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.62 2008-02-12 17:01:06 mikeaubury Exp $
 #
 */
 
@@ -742,6 +742,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
     case E_SLI_VARIABLE: 
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
+    case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST: 
     case E_SLI_VARIABLE_USAGE: 
 		A4GL_assertion(1,"These should all have been removed by now...");
 	return "";
@@ -2508,6 +2509,10 @@ get_sli_type (enum e_sli type)
       return "E_SLI_VAR_REPLACE";
  	case E_SLI_VARIABLE_USAGE:
 	return "E_SLI_VARIABLE_USAGE";
+ 	case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
+	return "E_SLI_VARIABLE_USAGE_IN_SELECT_LIST";
+
+
 case E_SLI_BUILTIN_CONST_NULL:
 	return "E_SLI_BUILTIN_CONST_NULL";
 	case E_SLI_QUERY:
