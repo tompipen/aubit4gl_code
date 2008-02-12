@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.393 2008-02-12 17:01:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.394 2008-02-12 20:52:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.393 2008-02-12 17:01:07 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.394 2008-02-12 20:52:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6210,7 +6210,7 @@ print_pop_usage (expr_str * v)
 	      for (a = 0; a < u->subscripts.subscripts_len; a++)
 		{
 		  if (a)
-		    printc (",");
+		    printc ("][");
 		  printc ("%s", get_subscript_as_string (u->subscripts.subscripts_val[a]));
 		  /*
 		     if (u->subscripts.subscripts_val[a]->expr_type==ET_EXPR_LITERAL_LONG) {      
@@ -6317,7 +6317,7 @@ expr_str *substring_end;
 			int a;
 			printc("[");
 			for (a=0;a<u->subscripts.subscripts_len;a++) { 
-				if (a) printc(",");
+				if (a) printc("][");
 				printc("%s", get_subscript_as_string(u->subscripts.subscripts_val[a]));
 				/*
 				if (u->subscripts.subscripts_val[a]->expr_type==ET_EXPR_LITERAL_LONG) {
@@ -6445,7 +6445,7 @@ expr_str *substring_end;
 				int a;
 				printc("[");
 				for (a=0;a<u->subscripts.subscripts_len;a++) { 
-					if (a) printc(",");
+					if (a) printc("][");
 					printc("%s", get_subscript_as_string(u->subscripts.subscripts_val[a]));
 					//printc("(%s)-1", local_expr_as_string(u->subscripts.subscripts_val[a]));
 				}
@@ -6490,7 +6490,7 @@ expr_str *substring_end;
 				int a;
 				strcat(buff, "[");
 				for (a=0;a<u->subscripts.subscripts_len;a++) { 
-					if (a) strcat(buff, ",");
+					if (a) strcat(buff, "][");
 					strcat(buff,  get_subscript_as_string(u->subscripts.subscripts_val[a]));
 					//strcat(buff, local_expr_as_string(u->subscripts.subscripts_val[a]));
 					//strcat(buff, "-1");
