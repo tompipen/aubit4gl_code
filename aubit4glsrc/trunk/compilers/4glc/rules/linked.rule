@@ -1,5 +1,5 @@
 linked_cmd :
-	SELECT_USING variable_usage_expression {
+	SELECT_USING ensured_variable_usage_expression {
 		$<cmd>$=print_linked_cmd('S',$<ptr>2);
 		if ($<cmd>$==NULL) {
 			a4gl_yyerror("Not a linked variable");
@@ -9,7 +9,7 @@ linked_cmd :
 ;
 
 linked_del_cmd :
-	DELETE_USING variable_usage_expression {
+	DELETE_USING ensured_variable_usage_expression {
 		$<cmd>$=print_linked_cmd('D',$<ptr>2);
 		if ($<cmd>$==NULL) {
 			a4gl_yyerror("Not a linked variable");
@@ -18,7 +18,7 @@ linked_del_cmd :
 ;
 
 linked_upd_cmd :
-	UPDATE_USING variable_usage_expression {
+	UPDATE_USING ensured_variable_usage_expression {
 		$<cmd>$=print_linked_cmd('U',$<ptr>2);
 		if ($<cmd>$==NULL) {
 			a4gl_yyerror("Not a linked variable");

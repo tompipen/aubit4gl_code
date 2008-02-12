@@ -204,9 +204,9 @@ input_array_attributes: input_array_attributes_int
 input_array_attributes_int : 
 	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 			{ curr_attrib.currentrowdisplay=acl_strdup($<str>2); }
 	| COUNT EQUAL INT_VALUE 				{ curr_attrib.count=new_variable_or_literal( ET_E_V_OR_LIT_INT, $<str>3); }
-	| COUNT EQUAL variable_usage_expression 		{ curr_attrib.count=$<ptr>3; }
+	| COUNT EQUAL ensured_variable_usage_expression 		{ curr_attrib.count=$<ptr>3; }
 	| MAXCOUNT EQUAL INT_VALUE 				{ curr_attrib.maxcount=new_variable_or_literal( ET_E_V_OR_LIT_INT, $<str>3); }
-	| MAXCOUNT EQUAL variable_usage_expression 		{ curr_attrib.maxcount=$<ptr>3; }
+	| MAXCOUNT EQUAL ensured_variable_usage_expression 		{ curr_attrib.maxcount=$<ptr>3; }
 	| INSERT_ROW_EQUAL_TRUE 		{ curr_attrib.allow_insert=EB_TRUE; }
 	| INSERT_ROW_EQUAL_FALSE 		{ curr_attrib.allow_insert=EB_FALSE; }
 	| DELETE_ROW_EQUAL_TRUE 		{ curr_attrib.allow_delete=EB_TRUE; }

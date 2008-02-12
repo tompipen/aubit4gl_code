@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.391 2008-02-11 21:27:38 mikeaubury Exp $
+# $Id: compile_c.c,v 1.392 2008-02-12 12:46:59 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.391 2008-02-11 21:27:38 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.392 2008-02-12 12:46:59 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -176,7 +176,7 @@ char when_to_tmp[64] = "";
 char when_to[8][128] = { "", "", "", "", "", "", "", "" };
 */
 int LEX_initlib(void) ;
-int dump_command(struct command_data *cd) ;
+//int dump_command(struct command_data *cd) ;
 //void print_variable_usage(expr_str *v) ;
 //char *local_expr_as_string(expr_str *s) ;
 //void print_push_variable_usage (expr_str *ptr);

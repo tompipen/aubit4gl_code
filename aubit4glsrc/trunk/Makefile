@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.48 2008-02-11 17:12:56 mikeaubury Exp $
+# $Id: Makefile,v 1.49 2008-02-12 12:46:57 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -796,6 +796,7 @@ install.core: install.tree
 	${CP} $(TOBIN) $(BIN_DEST)
 	$(CP) $(TOROOT) $(ROOT_DEST)
 	$(CP) $(TOINCL) $(INCL_DEST)
+	$(CP) $(TODATAIOINCL) $(DATAIOINCL_DEST)
 	$(CP) $(TOLIB) $(LIB_DEST)
 	$(CP) $(TOPLUGIN) $(PLUGIN_DEST)
 	@echo Aubit 4gl core compiler files installed
@@ -872,6 +873,7 @@ install.tree:
 	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) $(FGLPC_SETTINGS_DEST) \
 	${PLUGIN_DEST} \
 	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST) ${CONVSQL_DEST} ${IMPORT_DEST}
+	${MKPATH} $(INCL_DEST)/dataio
 	@echo "Aubit 4gl compiler instalation tree created"
 #FIXME: we need to chown installation tree to something, since installation has 
 #to be run as root - or use "install" utility?

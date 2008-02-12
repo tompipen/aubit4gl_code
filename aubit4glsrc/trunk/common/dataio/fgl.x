@@ -1330,6 +1330,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_PAUSE_SCREEN_ON_CMD: void;
 	case E_CMD_PAUSE_SCREEN_OFF_CMD: void;
 	case E_CMD_SKIP_TO_TOP_CMD: void;
+	case E_CMD_LAST: void;
 	
 	case E_CMD_START_RPC_CMD: struct_start_rpc_cmd start_rpc_cmd;
 	case E_CMD_CALL_CMD: struct_call_cmd call_cmd;
@@ -1996,8 +1997,11 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_MENU_ALL: /*! void; !*/
 	case ET_E_V_OR_LIT_NOVALUE: /*!		void; !*/
 	case ET_EXPR_MODULE_FUNC:
+	case ET_EXPR_LAST:
 		void;
 
+	case ET_EXPR_TRANSLATED_STRING:
+                /*! str                                    expr_string; !*/
 	case ET_EXPR_LITERAL_DOUBLE_STR:
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_QUOTED_STRING:

@@ -3186,7 +3186,7 @@ printc("/*******************************************************************/");
       for (a = 0; a < c; a++)
 	{
 	  char dtype_char[256];
-	  char dtype_char2[256];;
+	  char dtype_char2[256];
 	int dt;
 	  if (a)
 	    {

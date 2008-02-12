@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.17 2006-11-14 21:25:13 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.18 2008-02-12 12:46:58 mikeaubury Exp $
 }
 
 {**
@@ -45,7 +45,7 @@ code
 	#define CHANNEL_OUT		'M'
 	#define CHANNEL_DELIM		'N'
 	#define CHANNEL_PIPE		'P'
-
+ void A4GL_exitwith (char *s);
 void *A4GL_find_pointer (const char *pname, char t);
 //int A4GL_has_pointer (const char *pname, char t);
 long A4GL_has_pointer (const char *pname, char t);

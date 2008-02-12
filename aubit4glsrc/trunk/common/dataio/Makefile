@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.1 2008-02-11 15:45:36 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2008-02-12 12:46:58 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -200,6 +200,8 @@ form_x_xdr.o: form_x_xdr.c
 
 menu_x_xdr.o: menu_x_xdr.c
 	${CC} ${CFLAGS} ${WARN_NONOUSED} -c menu_x_xdr.c -o menu_x_xdr.o
+fgl_xdr.o: fgl_xdr.c
+	${CC} ${CFLAGS} ${WARN_NONOUSED} -c fgl_xdr.c -o fgl_xdr.o
 
 report_xdr.o: report_xdr.c
 	${CC} ${CFLAGS} ${WARN_NONOUSED} -c report_xdr.c -o report_xdr.o

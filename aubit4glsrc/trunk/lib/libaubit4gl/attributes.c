@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.42 2007-11-09 09:46:47 mikeaubury Exp $
+# $Id: attributes.c,v 1.43 2008-02-12 12:46:59 mikeaubury Exp $
 #*/
 
 /**
@@ -181,7 +181,7 @@ struct s_all_attributes
 };
 */
 
-int A4GL_get_attr_from_string (char *s);
+//int A4GL_get_attr_from_string (char *s);
 
 struct s_std_attr *A4GL_determine_attribute_as_std_attr (int cmd_type,
 							 struct s_std_attr

@@ -792,9 +792,9 @@ output_command :
 | PAGE_LENGTH INT_VALUE 		{rep_struct.page_length=atoi($<str>2);}
 | REPORT_TO_PRINTER  			{rep_struct.output_mode='R';rep_struct.output_loc=A4GL_new_expr_simple(ET_EXPR_REPORT_PRINTER);}
 | REPORT_TO CHAR_VALUE 			{rep_struct.output_mode='F';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2)); }
-| REPORT_TO variable_usage_expression 	{rep_struct.output_mode='F';rep_struct.output_loc=$<ptr>2; }
+| REPORT_TO ensured_variable_usage_expression 	{rep_struct.output_mode='F';rep_struct.output_loc=$<ptr>2; }
 | REPORT_TO_PIPE CHAR_VALUE 		{rep_struct.output_mode='P';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));} 
-| REPORT_TO_PIPE variable_usage_expression 	{rep_struct.output_mode='P';rep_struct.output_loc=$<ptr>2;}
+| REPORT_TO_PIPE ensured_variable_usage_expression 	{rep_struct.output_mode='P';rep_struct.output_loc=$<ptr>2;}
 | TOP_OF_PAGE CHAR_VALUE 		{strcpy(rep_struct.top_of_page,$<str>2);}
 ;
 

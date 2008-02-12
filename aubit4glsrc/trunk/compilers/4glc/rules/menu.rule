@@ -82,7 +82,7 @@ opt_name	:	 ALL {
                         			$<ptr>$=A4GL_new_literal_string($<str>1);
                 			}
 			}
-		 	| variable_usage_expression  {
+		 	| ensured_variable_usage_expression  {
 				$<ptr>$=$<ptr>1;
 			}
 	

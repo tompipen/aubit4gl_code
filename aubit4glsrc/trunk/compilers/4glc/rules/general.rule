@@ -10,7 +10,7 @@ line_no		:
 	| KW_FIRST KW_PLUS INT_VALUE 		{$<ptr>$=A4GL_new_literal_long_long(atoi($<str>3)+1);}
 	| KW_FIRST 				{$<ptr>$=A4GL_new_literal_long_long(1);}
 	| INT_VALUE 				{$<ptr>$=A4GL_new_literal_long_str($<str>1);}
-	| variable_usage_expression 		{$<ptr>$=$<ptr>1;}
+	| ensured_variable_usage_expression 		{$<ptr>$=$<ptr>1;}
 	| KW_OFF 				{$<ptr>$=A4GL_new_literal_long_long(0);}
 ;
 
@@ -172,7 +172,7 @@ ident_p2_sql : NAMED {
 ;
 
 
-cvariable : variable_usage_expression  {
+cvariable : ensured_variable_usage_expression  {
 		char errbuff[256];
 		int dtype;
 		dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1)&DTYPE_MASK; //@FIXME

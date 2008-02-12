@@ -44,7 +44,7 @@ extern char currftag[256];
 extern char *outputfilename;
 extern char *tablist[];
 int A4GL_get_dtype_size(void) ;
-int A4GL_get_attr_from_string (char *s);
+//int A4GL_get_attr_from_string (char *s);
 
 struct local_expr_list {
 	listitem *expr_list;
@@ -62,7 +62,7 @@ char *rm_dup_quotes(char *s) ;
 */
 
 char *chk_alias(char *s);
-int A4GL_wcswidth(char *mbs);	/* utf8 */
+//int A4GL_wcswidth(char *mbs);	/* utf8 */
 
 /*
 =====================================================================

@@ -5,7 +5,7 @@
 */
 
 prompt_cmd	:
-	PROMPT prompt_title opt_attributes KW_FOR opt_char variable_usage_expression opt_help_no_i opt_attributes {
+	PROMPT prompt_title opt_attributes KW_FOR opt_char ensured_variable_usage_expression opt_help_no_i opt_attributes {
 		map_ui_block("PROMPT");
                 push_blockcommand("PROMPT");
 		$<integer_val>$=get_sio_id("PROMPT");

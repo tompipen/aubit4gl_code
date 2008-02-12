@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.223 2008-02-11 17:13:10 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.224 2008-02-12 12:46:58 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1301,6 +1301,7 @@ ETC_DEST   	=$(INSTALL_DIR)/${ETC_PATH}
 HOME_DEST   =$(HOME)
 ROOT_DEST	=$(INSTALL_DIR)
 INCL_DEST	=$(INSTALL_DIR)/${INCL_PATH}
+DATAIOINCL_DEST	=$(INSTALL_DIR)/${INCL_PATH}/dataio
 IDE_DEST   	=$(INSTALL_DIR)/${IDE_PATH}
 CONVSQL_DEST=$(INSTALL_DIR)/${CONVSQL_PATH}
 IMPORT_DEST=$(INSTALL_DIR)/${IMPORT_PATH}
@@ -1447,7 +1448,8 @@ IMPORT_FILES 	=@IMPORT_FILES@
 AMAKE_INCL_FILES	=@AMAKE_INCL_FILES@
 INCL_HEADERS 		=@ALL_INC@ 
 INCL_MAKE   		=@INCL_MAKE@
-INCL_FILES	=${INCL_MAKE} ${AMAKE_INCL_FILES} ${INCL_HEADERS}
+INCL_FILES	=${INCL_MAKE} ${AMAKE_INCL_FILES} ${INCL_HEADERS} 
+DATAIO_INCLFILES=report.xs.h npcode.xs.h form_x.xs.h fgl.xs.h
 
 ## ==================================================================
 ##                    To Aubit binary installation root directory
@@ -1486,6 +1488,7 @@ TOETC		=$(addprefix $(ETC_DIR)/,		$(ETC_FILES))
 TOHOME		=$(addprefix $(HOME_DIR)/,		$(HOME_FILES))
 TOROOT		=$(addprefix $(ROOT_DIR)/,		$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,		$(INCL_FILES))
+TODATAIOINCL	=$(addprefix $(INCL_DIR)/dataio/,	$(DATAIO_INCLFILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,		$(IDE_FILES))
 TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
 TOSETTINGS   =$(addprefix $(FGLPC_SETTINGS_DIR)/,	$(FGLPC_SETTINGS_FILES))

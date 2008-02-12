@@ -64,7 +64,7 @@ op_returning_msg :  {$<ptr>$=0;}
         | gm_returning_msg {$<ptr>$=$<ptr>1;}
 ;
 
-gm_returning_msg: RETURNING variable_usage_expression {
+gm_returning_msg: RETURNING ensured_variable_usage_expression {
 			$<ptr>$=$<ptr>2;
 	}
 ;

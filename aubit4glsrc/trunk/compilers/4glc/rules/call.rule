@@ -51,7 +51,7 @@ call_ext: function_call_expr opt_return {
 
 	
    | pdf_functions {$<cmd>$=$<cmd>1;}
-   | variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
+   | ensured_variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
                 $<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1));
    		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>5);
      }
