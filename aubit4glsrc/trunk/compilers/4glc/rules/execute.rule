@@ -6,33 +6,39 @@
 
 
 
-execute_cmd : opt_use2_p EXECUTE stmt_id_p {
-                $<cmd>$=new_execute_cmd($<ptr>1, 0,0, $<ptr>3);
+execute_cmd : opt_use2_p EXECUTE atline stmt_id_p {
+		    set_cmdlineno($<integer_val>3);
+                $<cmd>$=new_execute_cmd($<ptr>1, 0,0, $<ptr>4);
                 add_feature("EXECUTE");
                 }
-        | opt_use2_p EXECUTE stmt_id_p KW_USING expanded_ibind_var_list {
-                $<cmd>$=new_execute_cmd($<ptr>1, $<ptr_list>5,NULL, $<ptr>3);
+        | opt_use2_p EXECUTE atline stmt_id_p KW_USING expanded_ibind_var_list {
+		set_cmdlineno($<integer_val>3);
+                $<cmd>$=new_execute_cmd($<ptr>1, $<ptr_list>6,NULL, $<ptr>4);
                 add_feature("EXECUTE_USING");
                 add_feature("EXECUTE");
         }
-        | opt_use2_p EXECUTE stmt_id_p INTO expanded_obind_var_list {
+        | opt_use2_p EXECUTE atline stmt_id_p INTO expanded_obind_var_list {
+		    set_cmdlineno($<integer_val>3);
                 add_feature("EXECUTE_INTO");
-                $<cmd>$=new_execute_cmd($<ptr>1, NULL, $<ptr_list>5, $<ptr>3);
+                $<cmd>$=new_execute_cmd($<ptr>1, NULL, $<ptr_list>6, $<ptr>4);
                 add_feature("EXECUTE");
         }
-        | opt_use2_p EXECUTE stmt_id_p INTO expanded_obind_var_list KW_USING expanded_ibind_var_list {
+        | opt_use2_p EXECUTE atline stmt_id_p INTO expanded_obind_var_list KW_USING expanded_ibind_var_list {
+		    set_cmdlineno($<integer_val>3);
                 add_feature("EXECUTE_INTO_USING");
-                $<cmd>$=new_execute_cmd($<ptr>1, $<ptr_list>7, $<ptr_list>5, $<ptr>3);
+                $<cmd>$=new_execute_cmd($<ptr>1, $<ptr_list>8, $<ptr_list>6, $<ptr>4);
                 add_feature("EXECUTE");
         }
-        | opt_use2_p EXECUTE stmt_id_p KW_USING expanded_ibind_var_list INTO expanded_obind_var_list {
+        | opt_use2_p EXECUTE atline stmt_id_p KW_USING expanded_ibind_var_list INTO expanded_obind_var_list {
+		    set_cmdlineno($<integer_val>3);
                 add_feature("EXECUTE_INTO_USING");
-                $<cmd>$=new_execute_cmd($<ptr>1, $<ptr_list>5, $<ptr_list>7, $<ptr>3);
+                $<cmd>$=new_execute_cmd($<ptr>1, $<ptr_list>6, $<ptr_list>8, $<ptr>4);
                 add_feature("EXECUTE");
         }
-        | opt_use2_p EXECUTE_IMMEDIATE char_or_var_vl {
+        | opt_use2_p EXECUTE_IMMEDIATE atline char_or_var_vl {
+		    set_cmdlineno($<integer_val>3);
                 add_feature("EXECUTE_IMMEDIATE");
-                $<cmd>$=new_execute_immediate_cmd($<ptr>1, $<ptr>3);
+                $<cmd>$=new_execute_immediate_cmd($<ptr>1, $<ptr>4);
                 add_feature("EXECUTE");
         }
 ;

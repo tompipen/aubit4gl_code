@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.115 2008-02-11 17:13:06 mikeaubury Exp $
+# $Id: compile.c,v 1.116 2008-02-12 18:25:56 mikeaubury Exp $
 #*/
 
 /**
@@ -1712,7 +1712,7 @@ a4gl_yyerror (char *s)
   SPRINTF1 (errfile, "%s.err", outputfile);
   a = 0;
 
-  if (fpos!=ld) {
+  if (fpos!=ld ) {
 	char buff[512];
 	int ln=0;
 	// We've read the file completely - this is a post parse error...

@@ -93,7 +93,7 @@ struct expr_str_list *get_variable_usage_for_record(struct variable_usage *vu, i
 
 struct module_definition this_module;
 
-expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) ;
+//expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) ;
 //char * rettype_integer (int n);
 //char tmpbuff[1024] = "";
 
@@ -2350,7 +2350,8 @@ v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 if (v==0) {
 	if (strlen(errbuff)==0) { 
 		// No specific error - so put in something...
-		sprintf(errbuff, "%s is not a variable", expr_as_string_when_possible(ptr));
+		set_yytext(expr_as_string_when_possible(ptr));
+		sprintf(errbuff, "'%s' does not represent a defined variable", expr_as_string_when_possible(ptr));
 	}
 	return 0; // Error condition
 }
@@ -2484,7 +2485,7 @@ char *get_variable_bottom_level_name(struct variable_usage *vu ) {
 
 
 void A4GL_new_append_ptr_list_with_expand(expr_str_list *l,struct expr_str *e) {
-struct expr_str_list *vlist=0;
+//struct expr_str_list *vlist=0;
 struct variable_usage *vu_top;
 struct variable_usage *vu_last;
 struct variable *v_top;
@@ -2492,6 +2493,9 @@ int nsubscripts_expected,nsubscripts_got;
 char errbuff[256];
 int c1,c2,c3;
 char scope;
+
+//printf("Here length=%d\n",l->list.list_len);
+//printf("-->%s\n",expr_as_string_when_possible(e));
 
 	if (e->expr_type!=ET_EXPR_VARIABLE_USAGE) {
 		A4GL_new_append_ptr_list(l,e);
@@ -2501,7 +2505,12 @@ char scope;
 	vu_top=e->expr_str_u.expr_variable_usage;
 
 	vu_last=vu_top;
-	while (vu_last->next) vu_last=vu_last->next;
+	while (vu_last->next) {
+		if (strcmp(vu_last->next->variable_name,"*")==0) {
+			break;
+		}
+		vu_last=vu_last->next;
+	}
 	v_top=find_variable_vu_ptr(errbuff, vu_top, &scope, 0);
 
 	// Is it an array ? 
@@ -2561,8 +2570,9 @@ char scope;
 				for (c1=0;c1<v_top->arr_subscripts.arr_subscripts_val[0];c1++) {
 					for (c2=0;c1<v_top->arr_subscripts.arr_subscripts_val[1];c2++) {
 						for (c3=0;c3<v_top->arr_subscripts.arr_subscripts_val[2];c3++) {
-				vu_new=clone_variable_usage(vu_top);
+								vu_new=clone_variable_usage(vu_top);
 								vu_next=vu_new;
+
 								while (vu_next->next!=0) { vu_next=vu_next->next; }
 								vu_next->subscripts.subscripts_len=3;
 								vu_next->subscripts.subscripts_val=malloc(sizeof(expr_str *)*3);
@@ -2670,6 +2680,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 				}
 				v1=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v1==0) {
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
@@ -2713,6 +2724,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 				vu1=new_variable_usage(0,parameters->list.list_val[a]->expr_str_u.expr_string,0);
 				v=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v==0) {
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
@@ -2771,6 +2783,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 				strcpy(buff2,"");
 				v1=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v1==0) {
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
@@ -2780,6 +2793,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 				}
 				v2=find_variable_vu_ptr(errbuff, vu2, &scope, err_if_whole_array);
 				if (v2==0) {
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {

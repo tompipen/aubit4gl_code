@@ -130,11 +130,36 @@ ibind_var_list: ibind_var  {
 	}
 ;
 
+e_ibind_var_list: e_ibind_var  {
+		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+	}
+        |       e_ibind_var_list KW_COMMA e_ibind_var  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
 
-expanded_ibind_var_list: ibind_var_list {
+
+e_ibind_var : ibind_var {
+                char errbuff[256];
+		struct expr_str *p;
+		p=$<ptr>1;
+		if (p->expr_type==ET_EXPR_VARIABLE_USAGE) {
+			if (!ensure_variable(errbuff,p,0))  {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			}
+		}
+	}
+;
+
+expanded_ibind_var_list: e_ibind_var_list {
 		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); 
 	}
 ;
+
+
+
+
 expanded_obind_var_list: obind_var_list {
 		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,1,1); 
 	}

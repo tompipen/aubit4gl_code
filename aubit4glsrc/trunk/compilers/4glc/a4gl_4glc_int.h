@@ -725,6 +725,7 @@ int attributes_as_int (struct attrib *a);
 struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l);
 struct expr_str_list *fully_expand_variables_in_expr_str_list(expr_str_list *l);
 expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
+void A4GL_new_append_ptr_list_with_expand(expr_str_list *l,struct expr_str *e);
 #endif   //ifndef _A4GL_4GLC_INT_H_
 
 /* ============================= EOF ================================= */
