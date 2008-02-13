@@ -1745,7 +1745,7 @@ print_init_cmd (struct_init_cmd * cmd_data)
 	      if (u_bottom->subscripts.subscripts_len == 0)
 		{
 		  // We need to null the whole variable
-		  print_init_var (v, generation_get_variable_usage_as_string (u), 0, 1, 1);
+		  print_init_var (v, generation_get_variable_usage_as_string (u), 0, 1, 1,1);
 		}
 	      else
 		{
@@ -1770,8 +1770,9 @@ print_init_cmd (struct_init_cmd * cmd_data)
 				}
 			}
 		  }
+
 		  if (!printed) {
-		 	print_init_var (v, generation_get_variable_usage_as_string (u), 0, 1, 1);
+		 	print_init_var (v, generation_get_variable_usage_as_string (u), 0, 1, 1,0);
 		  }
 		}
 	    }
@@ -1790,7 +1791,7 @@ print_init_cmd (struct_init_cmd * cmd_data)
 			char *s;
 			s=generation_get_variable_usage_as_string(u);
 	      		// Its not an array..
-	      		print_init_var (v, s, 0, 1, 1);
+	      		print_init_var (v, s, 0, 1, 1,1);
 		}
 	    }
 

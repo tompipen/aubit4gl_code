@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.396 2008-02-13 16:02:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.397 2008-02-13 19:39:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.396 2008-02-13 16:02:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.397 2008-02-13 19:39:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3158,7 +3158,7 @@ A4GL_assertion(1,"FIXME");
 }
 
 void
-print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int PrefixIncludesName)
+print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int PrefixIncludesName,int expand_array)
 {
   char buff[1000];
   char prefix2[1000];
@@ -3173,16 +3173,14 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
   int size;
   int a;
   char buff_id[200];
+  
 
-
-  if (v->arr_subscripts.arr_subscripts_len)
+  if (v->arr_subscripts.arr_subscripts_len && expand_array)
     {
-
 	if (v->arr_subscripts.arr_subscripts_val[0]==-1) {
 			// dynamic array 
 			if (!explicit) return;
 	}
-
 
       printc ("{");
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
@@ -3221,9 +3219,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 		// need to get it from the dimensions...?
 		size=v->var_data.variable_data_u.v_simple.dimensions[0];
 	}
-	if (explicit == 0
-	    && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT || d1 == DTYPE_DECIMAL
-		|| d1 == DTYPE_MONEY))
+	if (explicit == 0 && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY))
 	  {
 	    if (d1 == DTYPE_INT || d1 == DTYPE_SMINT)
 	      {
@@ -3244,7 +3240,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 	  }
 	else
 	  {
-	    printc ("A4GL_setnull(%d,&%s,0x%x);\n", d1, prefix2, size);
+	    printc ("A4GL_setnull(%d,&%s,0x%x); /*1 */ \n", d1, prefix2, size);
 	  }
       }
       break;
@@ -3254,7 +3250,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 	int a;
 		strcat(prefix2,".");
 	for (a=0;a<v->var_data.variable_data_u.v_record.variables.variables_len;a++) {
-		print_init_var (v->var_data.variable_data_u.v_record.variables.variables_val[a], prefix2,  alvl,  explicit,0);
+		print_init_var (v->var_data.variable_data_u.v_record.variables.variables_val[a], prefix2,  alvl,  explicit,0,1);
 	}
       }
 	break;
@@ -3265,10 +3261,10 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 		if (v->var_data.variable_data_u.v_record.variables.variables_len) { // Its a record
 			strcat(prefix2,".");
 			for (a=0;a<v->var_data.variable_data_u.v_assoc.variables.variables_len;a++) {
-				print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[a], prefix2,  alvl,  explicit,0);
+				print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[a], prefix2,  alvl,  explicit,0,1);
 			}
 		} else {
-			print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[0], prefix2,  alvl,  explicit,1);
+			print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[0], prefix2,  alvl,  explicit,1,1);
 		}
 		}
 		break;
@@ -3279,7 +3275,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 
     }
 
-  if (v->arr_subscripts.arr_subscripts_len)
+  if (v->arr_subscripts.arr_subscripts_len && expand_array)
     {
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	{
@@ -5120,7 +5116,7 @@ void print_nullify (char type, variable_list * v)
 
       //if (v->variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
         //{
-          print_init_var ( v->variables.variables_val[a], "", 0, 0,0);
+          print_init_var ( v->variables.variables_val[a], "", 0, 0,0,1);
           //continue;
         //}
 

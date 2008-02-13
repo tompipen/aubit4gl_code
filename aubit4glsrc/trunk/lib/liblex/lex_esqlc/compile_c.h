@@ -73,7 +73,7 @@ void print_if_else(void);
 void print_if_end(void);
 int split_arrsizes(char *s, int *arrsizes);
 void print_init_var_from_expr(struct expr_str *v, char *prefix, int alvl, int explicit);
-void print_init_var(struct variable  *v, char *prefix, int alvl, int explicit,int prefixIncludesName);
+void print_init_var(struct variable  *v, char *prefix, int alvl, int explicit,int prefixIncludesName, int expand_array);
 void print_init_g(struct expr_str_list *bind, int explicit);
 void A4GL_generate_or(char *out, char *in1, char *in2);
 void print_next_field(char *s);

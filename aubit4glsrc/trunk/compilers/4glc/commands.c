@@ -1288,6 +1288,7 @@ struct command *c;
 }
 
 
+
 struct command *new_construct_cmd(e_boolean byname, expr_str* p_constr_var,cons_list* p_columns,fh_field_list* p_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio) {
 
 struct command *c;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.311 2008-02-11 17:13:06 mikeaubury Exp $
+# $Id: mod.c,v 1.312 2008-02-13 19:39:13 mikeaubury Exp $
 #
 */
 
@@ -2438,6 +2438,70 @@ start_arr_bind (char i, char *var)
 }
 
 #endif
+
+
+
+
+cons_list* append_constr_col_list(struct cons_list *c ,struct cons_list_entry *new_entry) {
+	if (c==0) {
+                c=malloc(sizeof(cons_list));
+		c->list.list_len=0;
+		c->list.list_val=0;
+        }
+
+	if (strcmp(new_entry->colname,"*")==0) {
+  		int rval;
+  		int isize = 0;
+  		int idtype = 0;
+  		char colname[256] = "";
+  		/*char csize[20]; */
+  		/*char cdtype[20]; */
+  		char buff[300];
+  		char *ccol;
+		struct cons_list_entry *generated_new_entry;
+
+  		A4GL_debug ("push_construct_table()");
+  		A4GL_debug ("Calling get_columns : %s\n", new_entry->tabname);
+  		rval = A4GLSQL_get_columns (new_entry->tabname, colname, &idtype, &isize);
+  		A4GL_debug ("rval = %d", rval);
+  		if (rval == 0 && new_entry->tabname) {
+      			SPRINTF1 (buff, "%s does not exist in the database", new_entry->tabname);
+      			a4gl_yyerror (buff);
+      			A4GLSQL_end_get_columns ();
+      			return 1;
+    		}
+  		A4GL_debug ("Rval !=0");
+
+  		while (1) {
+      			colname[0] = 0;
+
+      			rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+			
+      			strcpy (colname, ccol);
+      			A4GL_trim (colname);
+      			/*
+         			warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+         			we are sending char ARRAY to function expecting char POINTER !!!!
+       			*/
+			
+      			if (rval == 0)
+				break;
+			generated_new_entry=malloc(sizeof(struct cons_list_entry));
+			generated_new_entry->tabname=new_entry->tabname;
+			generated_new_entry->colname=strdup(colname);
+      			append_constr_col_list (c, generated_new_entry);
+    			}
+  		A4GLSQL_end_get_columns ();
+
+	} else {
+		c->list.list_len++;
+		c->list.list_val=realloc( c->list.list_val, sizeof(c->list.list_val[0])* c->list.list_len);
+		c->list.list_val[c->list.list_len-1]=new_entry;
+	}
+
+	return c;
+}
+
 
 
 /**

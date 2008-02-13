@@ -50,17 +50,11 @@ end_constr :  {$<on_events>$=0;}
 ;
 
 constr_col_list : constr_col  {
-		$<cons_list>$=malloc(sizeof(cons_list));
-		$<cons_list>$->list.list_len=1;
-		$<cons_list>$->list.list_val=malloc(sizeof($<cons_list>$->list.list_val[0]) * $<cons_list>$->list.list_len);
-		$<cons_list>$->list.list_val[$<cons_list>$->list.list_len-1]=$<cons_list_entry>1;
+		$<cons_list>$=append_constr_col_list(0,$<cons_list_entry>1);
 
 	}
 	| constr_col_list KW_COMMA constr_col {
-		$<cons_list>$=$<cons_list>1;
-		$<cons_list>$->list.list_len=$<cons_list>1->list.list_len+1;
-		$<cons_list>$->list.list_val=realloc($<cons_list>1->list.list_val, sizeof($<cons_list>$->list.list_val[0]) * $<cons_list>$->list.list_len);
-		$<cons_list>$->list.list_val[$<cons_list>$->list.list_len-1]=$<cons_list_entry>3;
+		$<cons_list>$=append_constr_col_list($<cons_list>1,$<cons_list_entry>3);
 	}
 ;
 
