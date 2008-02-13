@@ -705,8 +705,8 @@ void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
 
 	s=e->subquery;
 
-  preprocess_sql_statement (s);
-  chk_ibind_select(s);
+  	chk_ibind_select(s);
+  	preprocess_sql_statement (s);
   			search_sql_variables (&s->list_of_items,'i');
   			sql=get_select (s, "");
 
@@ -789,8 +789,8 @@ void print_in_subquery(int i, struct s_expr_in_sq *e) {
 		s=e->subquery;
 		strcpy(ibindstr,"NULL,0");
 
-  			preprocess_sql_statement (s);
   chk_ibind_select(s);
+  			preprocess_sql_statement (s);
   			search_sql_variables (&s->list_of_items,'i');
   			sql=get_select (s, "");
 
@@ -1771,8 +1771,8 @@ empty.list.list_len=0;
 			clr_bindings();
                         s=declare_dets->select; // just a shortcut to save typing..
                         // Preprocessing will collect all the variables..
-                        preprocess_sql_statement (s);
   chk_ibind_select(s);
+                        preprocess_sql_statement (s);
                         // Now convert the variables to '?'
                         search_sql_variables (&s->list_of_items,'i');
                         // generate the SQL string..
@@ -2326,8 +2326,8 @@ switch (cmd_data->sql->expr_type) {
 			if (!doing_esql_unload) {
 				get_sql_variable_usage_style=GET_SQL_VARIABLE_USAGE_STYLE_QUERY_PLACEHOLDER;
 			}
-  			preprocess_sql_statement (s);
   chk_ibind_select(s);
+  			preprocess_sql_statement (s);
   			search_sql_variables (&s->list_of_items,'i');
   			selectsql=get_select (s, "");
 			get_sql_variable_usage_style=GET_SQL_VARIABLE_USAGE_STYLE_NORMAL;
@@ -2640,8 +2640,8 @@ print_select_cmd (struct_select_cmd * cmd_data)
         //str forupdate;
   clr_bindings();
 
-  preprocess_sql_statement (cmd_data->sql);
   chk_ibind_select(cmd_data->sql);
+  preprocess_sql_statement (cmd_data->sql);
   search_sql_variables (&cmd_data->sql->list_of_items,'i');
   sql=get_select (cmd_data->sql, cmd_data->forupdate);
   output_bind=cmd_data->sql->into;

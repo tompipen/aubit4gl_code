@@ -86,7 +86,10 @@ echo "No testing..."
 exit
 fi
 
-
+cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_write
+make
+cd /home/aubit4gl/aubit4glsrc/lib/libui/ui_xml
+make
 
 cd /home/aubit4gl/aubit4glsrc/tools/test_rep
 4glpc report.4gl -o report

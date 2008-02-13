@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.72 2007-07-12 10:43:26 mikeaubury Exp $
+# $Id: calldll.c,v 1.73 2008-02-13 16:02:06 mikeaubury Exp $
 #
 */
 
@@ -372,6 +372,7 @@ if (aplugins) {
 }
 #endif
 
+A4GL_debug("Looking for library : %s", buff);
 
 #ifdef USE_SHL
   dllhandle = shl_load(buff,BIND_IMMEDIATE+BIND_NONFATAL,0);
