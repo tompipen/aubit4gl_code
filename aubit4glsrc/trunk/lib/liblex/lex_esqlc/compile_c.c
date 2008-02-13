@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.394 2008-02-12 20:52:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.395 2008-02-13 15:53:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.394 2008-02-12 20:52:50 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.395 2008-02-13 15:53:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6913,6 +6913,8 @@ struct s_select_list_item_list *slist;
 struct s_select_list_item *ptr;
 
 memcpy(&snew,s,sizeof(snew));
+snew.list_of_items.list.list_len=0;
+snew.list_of_items.list.list_val=0;
 snew.where_clause=0;
 snew.having=0;
 snew.group_by=0;
