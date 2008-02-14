@@ -1843,11 +1843,14 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
 
 
 int
-UILIB_A4GL_prompt_loop_v2 (void *prompt, int timeout, void *evt_list)
+UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
 {
 long context;
+struct s_prompt *prompt;
 long ln;
 int rval;
+prompt=vprompt;
+
 ln = (long) prompt;
 
 if (startingPrompt) {
@@ -1866,8 +1869,30 @@ while (1) {
 	A4GL_push_long(context);
 	uilib_prompt_loop(0);
 	rval=A4GL_pop_long();
-	printf("%d\n",rval);
-	sleep (1);
+	if (rval>0) {
+		prompt->mode = 2;
+		return rval;
+	}
+	if (rval==-100) {
+		char *rvalstr;
+		if (last_attr->sync.nvalues) {
+                	int b;
+                	A4GL_push_int(context);
+                	uilib_input_get_values(1);
+			rvalstr=A4GL_char_pop();
+        	} else {
+			rvalstr=strdup("");
+		}
+
+		A4GL_push_char(rvalstr);
+		free(rvalstr);
+		prompt->mode = 2;
+	}
+
+	if (rval==-101) {
+		prompt->mode = 2;
+	  	int_flag=1;
+	}
 }
 
 return 1;

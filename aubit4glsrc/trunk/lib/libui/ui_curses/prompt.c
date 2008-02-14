@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.69 2007-11-22 14:23:36 mikeaubury Exp $
+# $Id: prompt.c,v 1.70 2008-02-14 17:43:09 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.69 2007-11-22 14:23:36 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.70 2008-02-14 17:43:09 mikeaubury Exp $";
 #endif
 
 /**
@@ -76,7 +76,7 @@ static int A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
  * @todo Describe function
  */
 int
- UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h_helpno, int af)
 {
   char *promptstr;
   int promptline;
@@ -93,7 +93,7 @@ int
   int field_cnt=0;
   A4GL_chkwin();
   prompt = vprompt;
-  A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
+  A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h_helpno, af);
   prompt_last_key=0;
   memset (buff, ' ', 255);
   promptline = A4GL_getprompt_line ();
@@ -131,7 +131,7 @@ int
 	A4GL_dobeep();
   }
   prompt->mode = -1;
-  prompt->h = h;
+  prompt->h = h_helpno;
   prompt->insmode=0;
   prompt->charmode = c;
   prompt->promptstr = promptstr;
