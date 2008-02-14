@@ -18,6 +18,7 @@ struct s_windows
 struct s_windows *win_stack[MAXWIN];
 int win_stack_cnt = 0;
 int XML_A4GL_assertion (int n, char *s);
+int startingPrompt=0;
 
 static int get_inc_quotes(int a) ;
 
@@ -1844,16 +1845,60 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
 int
 UILIB_A4GL_prompt_loop_v2 (void *prompt, int timeout, void *evt_list)
 {
-  int rval;
-  niy ();
-  return rval;
+long context;
+long ln;
+int rval;
+ln = (long) prompt;
+
+if (startingPrompt) {
+	startingPrompt=0;
+	  dump_events (evt_list);
+	uilib_prompt_initialised(0);
+}
+
+A4GL_push_char ("XML");
+
+A4GL_push_int (ln);
+uilib_get_context (2);
+context = A4GL_pop_long ();
+
+while (1) {
+	A4GL_push_long(context);
+	uilib_prompt_loop(0);
+	rval=A4GL_pop_long();
+	printf("%d\n",rval);
+	sleep (1);
+}
+
+return 1;
 }
 
 int
 UILIB_A4GL_start_prompt (void *prompt, int ap, int c, int h, int af)
 {
   int rval;
-  niy ();
+  char *promptstr;
+  static long ln = 0;
+  long context;
+  ln = (long) prompt;
+  promptstr=A4GL_char_pop();
+
+
+  A4GL_push_char ("XML");
+  A4GL_push_int (ln);
+  uilib_get_context (2);
+  context = A4GL_pop_long ();
+  A4GL_push_char ("XML");
+  A4GL_push_int (ln);
+  A4GL_push_char(promptstr);
+  A4GL_push_long(ap); // attribute for prompt
+  A4GL_push_long(af); // attribute for prompt
+  A4GL_push_long(c);
+  A4GL_push_long(h);
+  startingPrompt++;
+  uilib_prompt_start(7);
+
+  rval=1;
   return rval;
 }
 
@@ -2121,6 +2166,7 @@ UILIB_A4GL_add_menu_timeout (void *menu, char timeout_type, int timeoutlen,
   A4GL_push_int (ln);
   uilib_get_context (2);
   context = A4GL_pop_long ();
+
   mn_id++;
   send_to_ui
     ("<MENUTIMEOUT CONTEXT=\"%d\" ID=\"%d\" CMD_NO=\"%d\" TYPE=\"%c\" TIMEOUT=\"%d\" />",

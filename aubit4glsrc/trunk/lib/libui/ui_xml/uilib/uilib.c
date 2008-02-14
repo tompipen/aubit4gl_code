@@ -712,7 +712,11 @@ uilib_prompt_start (int n)
   char *field_attr;
   int ln;
   char *mod;
+  int helpno;
+  int charmode;
 
+  helpno=POPint();
+  charmode=POPint();
   field_attr = charpop ();
   prompt_attr = charpop ();
   promptstr = charpop ();
@@ -722,7 +726,7 @@ uilib_prompt_start (int n)
 
   cprompt = new_context (UIPROMPT,mod,ln);
   suspend_flush (1);
-  send_to_ui ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\">", cprompt, prompt_attr, field_attr, promptstr);
+  send_to_ui ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\" CHARMODE=\"%d\" HELPNO=\"%d\" >", cprompt, prompt_attr, field_attr, promptstr, charmode, helpno);
   free (field_attr);
   free (prompt_attr);
   free (promptstr);
