@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.371 2008-02-11 21:29:24 fortiz Exp $
+dnl # $Id: configure.in,v 1.372 2008-02-15 15:35:15 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.371 2008-02-11 21:29:24 fortiz Exp $)
+AC_REVISION($Id: configure.in,v 1.372 2008-02-15 15:35:15 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -2433,7 +2433,7 @@ ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MSG_NATIVE UI_CONSOL
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_report \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA \
 		SQLPARSE_NONE SQLPARSE_INFORMIX DATA_module_definition \
-		XDRPACKER_module_definition $LIBLOGICAL_BUILD"
+		$LIBLOGICAL_BUILD"
 #UI_HLGENERIC
 
 #libaubit4gl should be first, to avoid dependency chase
@@ -10174,14 +10174,14 @@ PLUGIN_NO_LINKABLE=
 	fi
 
 	if test "$HAVE_RPCLIB" != "0"; then
-		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+		PLUGIN_YES="$PLUGIN_YES RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module XDRPACKER_module_definition"
 	else
 		if test "$GCC_MINGW" != "yes"; then
 			#SUN RPC does not exist for MinGW anyway
-			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+			PLUGIN_NO="$PLUGIN_NO RPC_XDR FORM_XDR XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module XDRPACKER_module_definition"
 			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sunrpc"
 		else
-			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR  XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module"
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS RPC_XDR FORM_XDR  XDRPACKER_report XDRPACKER_struct_form PACKER_XDR XDRPACKER_module XDRPACKER_module_definition"
         fi
 	fi
 
@@ -11042,7 +11042,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.371 2008-02-11 21:29:24 fortiz Exp $
+| $Id: configure.in,v 1.372 2008-02-15 15:35:15 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

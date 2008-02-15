@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.5 2008-02-15 15:26:14 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2008-02-15 15:35:15 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -150,6 +150,7 @@ ${PLUGINDIR}/libXDRPACKER_module${SO_EXT}:  		npcode_xdr.o
 ${PLUGINDIR}/libXDRPACKER_module_definition${SO_EXT}:  		fgl_xdr.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
 
+
 #FIXME: why not use this, or is it obsolete?
 ${PLUGINDIR}/libDATA_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o npcode.xio.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
@@ -220,6 +221,7 @@ ${XGENEXE}:
 report.xi.o: form_x.x.h
 form_x.xi.c fgl.xi.c : ${XGENEXE}
 
+rpc:$(RPC)
 ${LIBROOT}/libaubit4gl.${SO_EXT}: form_x.x.h fgl.x.h
 	${MAKE} -C${LIBROOT}/libaubit4gl
 
