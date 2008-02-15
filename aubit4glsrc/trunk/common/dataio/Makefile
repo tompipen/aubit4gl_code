@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.4 2008-02-15 14:35:44 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2008-02-15 15:26:14 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -182,7 +182,7 @@ npcode.xo.c npcode.xi.c npcode.xio.c: npcode.x
 	${XGENEXE} $< module
 	cp npcode.xs.h $(ROOT)/incl/dataio/npcode.xs.h
 
-fgl.xo.c fgl.xi.c fgl.xio.c: fgl.x
+fgl.xo.c fgl.xi.c fgl.xio.c fgl.x.h: fgl.x
 	${XGENEXE} $< module_definition globals_definition
 	cp fgl.xs.h $(ROOT)/incl/dataio/fgl.xs.h
 
