@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.15 2008-02-11 17:13:13 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.16 2008-02-15 16:09:58 mikeaubury Exp $
 #*/
 
 /**
@@ -296,6 +296,7 @@ int
 A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
 {
   A4GL_pr1 ();
+if (val==0) val="";
   if (isarr >= 0)
     fprintf (outfile, "%d=>\'%s\'", isarr, A4GL_escape_str (val, '\'', '\\'));
   else

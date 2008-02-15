@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.30 2008-02-11 17:13:13 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.31 2008-02-15 16:09:58 mikeaubury Exp $
 #*/
 
 /**
@@ -434,6 +434,7 @@ A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
   int a;
 //char buff[10];
   print_level ();
+  if (val==0) val="";
   A4GL_debug ("in output_string() outfile=%p\n", outfile);
 
   fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"STRING\"%s>", name,

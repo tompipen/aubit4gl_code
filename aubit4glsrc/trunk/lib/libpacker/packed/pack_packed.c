@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.37 2008-02-11 17:13:12 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.38 2008-02-15 16:08:40 mikeaubury Exp $
 #*/
 
 /**
@@ -324,8 +324,8 @@ int
 A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
 {
   int a;
-  A4GL_debug ("Output string - length first (%d) pos=%d", strlen (val),
-	 ftell (outfile));
+  if (val==0) val="";
+  A4GL_debug ("Output string - length first (%d) pos=%d", strlen (val), ftell (outfile));
   A4GLPacker_output_long (name, strlen (val), ptr, isarr);
   A4GL_debug ("outputing string itself (%s)", val);
   a = fwrite (val, 1, strlen (val), outfile);
