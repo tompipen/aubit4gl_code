@@ -6,11 +6,18 @@ include ${ROOT}/incl/Makefile-common
 
 ALL             =${PLUGINDIR}/libLEX_WRITE${SO_EXT}
 
+ifneq "${COMSPEC}" ""
+	LINKDEPS    =
+	LINKLIBS	+=-L${LIBROOT} -l${AUBITLIBFULL} -l4glc
+endif
+
 all: $(ALL)
 clean:
 	rm ${PLUGINDIR}/libLEX_WRITE${SO_EXT}
 
 ${PLUGINDIR}/libLEX_WRITE${SO_EXT}: write.c
-	 ${LD} ${SO_LDFLAGS}  -I$(ROOT)/incl -o $@ $<
+	 ${LD} ${SO_LDFLAGS}  -I$(ROOT)/incl -o $@ $< $(LINKLIBS)
+
+
 
 
