@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.win32,v 1.5 2007-12-13 22:19:45 mikeaubury Exp $
+# $Id: Makefile.win32,v 1.6 2008-02-15 17:20:44 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -68,6 +68,7 @@ else
 endif
 
 LINKLIBS	=-L${LIBROOT} -Lc:/gnu/pdc27_ming_w32 -L$(ROOT)/tools/cygwin/libform -lform_g c:/gnu/pdc27_ming_w32/panel.a c:/gnu/pdc27_ming_w32/pdcurses.a  -l${AUBITLIBFULL} 
+#LINKLIBS	=-L${LIBROOT} -Lc:/gnu/pdc27_ming_w32 -L$(ROOT)/tools/cygwin/libform -lform_g -lncurses  -l${AUBITLIBFULL} 
 
 
 ## ==================================================================
