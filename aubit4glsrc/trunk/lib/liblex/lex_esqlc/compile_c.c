@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.397 2008-02-13 19:39:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.398 2008-02-15 20:19:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.397 2008-02-13 19:39:13 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.398 2008-02-15 20:19:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4870,10 +4870,18 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 
           if (doing_esql()) {
                 if ((get_binding_dtype(bind->list.list_val[a])&DTYPE_MASK)==DTYPE_BYTE) {
-                        printc("A4GL_init_out_byte(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
+			if (type=='o') {
+                        	printc("A4GL_init_out_byte(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
+			} else {
+                        	printc("A4GL_init_out_byte(obind_dup[%d].ptr,native_binding_o[%d].ptr);",a,a);
+			}
                 }
                 if ((get_binding_dtype(bind->list.list_val[a])&DTYPE_MASK)==DTYPE_TEXT) {
+			if (type=='o') {
                         printc("A4GL_init_out_text(obind[%d].ptr,native_binding_o[%d].ptr);",a,a);
+			} else {
+                        printc("A4GL_init_out_text(obind_dup[%d].ptr,native_binding_o[%d].ptr);",a,a);
+			}
                 }
           }
         }
