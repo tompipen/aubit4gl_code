@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.29 2008-02-15 17:20:44 mikeaubury Exp $
+# $Id: Makefile,v 1.30 2008-02-15 17:36:46 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -297,7 +297,7 @@ clean.rules:
 	${MAKE} -C rules clean
 
 
-extra: reload reload_static fgllint calltree fglsplit
+extra: reload reload_static fgllint fglcalltree fglsplit
 
 reload: reload.c API_lex.c
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex.c -o reload -L$(AUBITDIR)/lib -laubit4gl  
@@ -311,9 +311,10 @@ fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	cp fgllint $(AUBITDIR)/bin
 
-calltree: calltree.o API_lex.o  linearise.o calltree_expr.o
+fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
-	cp calltree $(AUBITDIR)/bin
+	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	cp fglcalltree $(AUBITDIR)/bin
 
 fglsplit: split.o API_lex.o  linearise.o
 	$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
