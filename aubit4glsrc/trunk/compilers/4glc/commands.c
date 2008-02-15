@@ -1654,6 +1654,8 @@ struct command *c;
 
 struct command *new_locate_cmd(expr_str_list* p_variables,locate_pos *p_where) {
 struct command *c;
+int dtype;
+char errbuff[256];
 int a;
    c=new_command(E_CMD_LOCATE_CMD);
    for (a=0;a<p_variables->list.list_len;a++) {
@@ -1661,7 +1663,9 @@ int a;
 			a4gl_yyerror("Not a variable");
 			return 0;
 		}
-		switch (p_variables->list.list_val[a]->expr_str_u.expr_variable_usage->datatype&DTYPE_MASK) {
+		dtype=get_variable_dtype_from_variable_usage_expression(errbuff, p_variables->list.list_val[a]) & DTYPE_MASK;
+//printf("--->%d\n", p_variables->list.list_val[a]->expr_str_u.expr_variable_usage->datatype);
+		switch (dtype) {
 			case DTYPE_TEXT:
 			case DTYPE_BYTE: break;
 			default:
