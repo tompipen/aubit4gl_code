@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nopdf.c,v 1.11 2006-07-17 14:09:23 mikeaubury Exp $
+# $Id: nopdf.c,v 1.12 2008-02-15 14:56:27 mikeaubury Exp $
 #*/
 
 /**
@@ -94,6 +94,16 @@ libPDF_NOPDF_is_dll (void)
 int
 A4GLPDFREP_EXREPORT_initlib(void)
 {
+printf("If you see this message then your system is not set up for PDF reporting,\n");
+printf("but you are trying to run a PDF report\n");
+printf("\n");
+printf("If you are using a precompiled binary, please make sure you have 'A4GL_PDFTYPE=pdf' set\n");
+printf("and have the pdflib libraries in a place where they can be loaded \n");
+printf("(eg. on the LD_LIBRARY_PATH for linux, and PATH for windows)\n");
+printf("If you've compiled from source, then you probably dont have the pdflib library\n");
+printf("installed, or it was not found when Aubit4GL was ./configure'd\n");
+
+exit(3);
   /* Does nothing */
 	return 1;
 }

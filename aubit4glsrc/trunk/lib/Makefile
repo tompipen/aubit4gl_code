@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.21 2008-02-11 17:13:10 mikeaubury Exp $
+# $Id: Makefile,v 1.22 2008-02-15 14:56:26 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -521,9 +521,12 @@ ${PLUGINDIR}/libEXDTYPE_mpz${SO_EXT}: ${LIBEXDATA_DEPS}
 ##############
 #libDATA_ & libXDRPACKER_
 
-${PLUGINDIR}/libDATA_struct_form${SO_EXT} ${PLUGINDIR}/libDATA_report${SO_EXT}\
-${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT}  \
-${PLUGINDIR}/libXDRPACKER_report${SO_EXT}: ${LIBDATA_DEPS}
+${PLUGINDIR}/libDATA_struct_form${SO_EXT}  \
+	${PLUGINDIR}/libDATA_report${SO_EXT} \
+	${PLUGINDIR}/libDATA_module_definition${SO_EXT} \
+	${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT}  \
+	${PLUGINDIR}/libXDRPACKER_report${SO_EXT} \
+	${PLUGINDIR}/libXDRPACKER_module_definition${SO_EXT}: ${LIBDATA_DEPS}
 	${MAKE} -C ${LIBDATA_PATH}
 
 
