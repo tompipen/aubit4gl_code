@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.302 2008-02-11 17:55:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.303 2008-02-15 14:35:47 mikeaubury Exp $
 #
 */
 
@@ -2490,12 +2490,12 @@ int A4GL_sqlid_from_aclfile(char *dbname,char *uname,char *passwd);
 
 char *A4GL_confirm_colname(char *t,char *c);
 
-int input_funcname(char *rn, char **r, int isptr, int arr);
-int input_sql_ident(char *rn, char **r, int isptr, int arr);
-int input_str(char *rn, char **r, int isptr, int arr);
-int output_funcname(char *n, char *r, int isptr, int arr);
-int output_sql_ident(char *n, char *r, int isptr, int arr);
-int output_str(char *n, char * r, int isptr, int arr);
+//int input_funcname(char *rn, char **r, int isptr, int arr);
+//int input_sql_ident(char *rn, char **r, int isptr, int arr);
+//int input_str(char *rn, char **r, int isptr, int arr);
+//int output_funcname(char *n, char *r, int isptr, int arr);
+//int output_sql_ident(char *n, char *r, int isptr, int arr);
+//int output_str(char *n, char * r, int isptr, int arr);
 
 #ifndef _NO_FORM_X_H_
 #include "dataio/fgl.xs.h"

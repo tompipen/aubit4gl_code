@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.27 2008-02-11 17:13:06 mikeaubury Exp $
+# $Id: Makefile,v 1.28 2008-02-15 14:35:44 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -305,7 +305,7 @@ reload: reload.c API_lex.c
 
 
 reload_static: reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c
-	cc -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o reload -L$(AUBITDIR)/lib -laubit4gl -lz -L/home/aubit4gl/aubit4glsrc.new/plugins-1.10Dev_73 -lLEX_C
+	cc -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o reload -L$(AUBITDIR)/lib -laubit4gl -lz -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
 fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c
 	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.3 2008-02-15 10:26:37 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2008-02-15 14:35:44 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -218,7 +218,7 @@ ${XGENEXE}:
 ## ==================================================================
 
 report.xi.o: form_x.x.h
-form_x.xi.c: ${XGENEXE}
+form_x.xi.c fgl.xi.c : ${XGENEXE}
 
 ${LIBROOT}/libaubit4gl.${SO_EXT}: form_x.x.h fgl.x.h
 	${MAKE} -C${LIBROOT}/libaubit4gl

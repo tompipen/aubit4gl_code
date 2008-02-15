@@ -2290,7 +2290,7 @@ void set_report_orderby(struct variable_list *v, struct expr_str_list*params, st
 
 
 
-
+/*
 
 int input_str(char *rn,char **r,int isptr,int arr) {
         return input_string(rn,r,isptr,arr);
@@ -2302,6 +2302,7 @@ int output_str(char *n, char *r,int isptr,int arr) {
 	if (r==0) r="";
  	return output_string(n,r,isptr,arr);
 }
+*/
 
 int set_bind_var_dtype(char *type, char *errbuff,struct expr_str_list *bindlist) {
 int a;

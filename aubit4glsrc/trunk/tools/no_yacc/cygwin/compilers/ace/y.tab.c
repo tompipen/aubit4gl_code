@@ -452,7 +452,7 @@ void *memdup(void *p,int l);
 =====================================================================
 */
 
-void add_fmt (int cat, struct expr *col, struct commands commands);
+void add_fmt (int cat, struct expr *col, struct acerep_commands commands);
 
 /*
 =====================================================================
@@ -503,12 +503,12 @@ typedef union YYSTYPE
 #line 74 "ace.yacc"
 {
 	char   str[30000];
-	struct command cmd;
+	struct acerep_command cmd;
 	struct expr expr;
 	struct expr *exprptr;
-	struct commands commands;
+	struct acerep_commands commands;
 	struct agg_val agg_val;
-	struct var_usage *var_usage;
+	struct acerep_var_usage *var_usage;
 }
 /* Line 187 of yacc.c.  */
 #line 515 "y.tab.c"
@@ -3273,7 +3273,7 @@ yyreduce:
   case 64:
 #line 394 "ace.yacc"
     {
-		struct commands cmd;
+		struct acerep_commands cmd;
 		cmd.commands.commands_len=0;
 		cmd.commands.commands_val=0;
 		add_fmt(FORMAT_EVERY_ROW,NULL,cmd);
@@ -3332,7 +3332,7 @@ yyreduce:
   case 77:
 #line 441 "ace.yacc"
     {
-		(yyval.var_usage)=malloc(sizeof(struct var_usage));
+		(yyval.var_usage)=malloc(sizeof(struct acerep_var_usage));
 		(yyval.var_usage)->subscript1=DUP((yyvsp[(3) - (6)].expr));
 		(yyval.var_usage)->subscript2=DUP((yyvsp[(5) - (6)].expr));
 		(yyval.var_usage)->varname=strdup((yyvsp[(1) - (6)].str));
@@ -3346,7 +3346,7 @@ yyreduce:
   case 78:
 #line 451 "ace.yacc"
     {
-		(yyval.var_usage)=malloc(sizeof(struct var_usage));
+		(yyval.var_usage)=malloc(sizeof(struct acerep_var_usage));
 		(yyval.var_usage)->subscript1=DUP((yyvsp[(3) - (4)].expr));
 		(yyval.var_usage)->subscript2=NULL;
 		(yyval.var_usage)->varname=strdup((yyvsp[(1) - (4)].str));
@@ -3361,7 +3361,7 @@ yyreduce:
 #line 461 "ace.yacc"
     {
 		
-		(yyval.var_usage)=malloc(sizeof(struct var_usage));
+		(yyval.var_usage)=malloc(sizeof(struct acerep_var_usage));
 		(yyval.var_usage)->subscript1=NULL;
 		(yyval.var_usage)->subscript2=NULL;
 		(yyval.var_usage)->varname=strdup((yyvsp[(1) - (1)].str));
@@ -4024,7 +4024,7 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1004 "ace.yacc"
     {
 		(yyval.commands).commands.commands_len=1;
-		(yyval.commands).commands.commands_val=acl_malloc2(sizeof(struct command));
+		(yyval.commands).commands.commands_val=acl_malloc2(sizeof(struct acerep_command));
 		COPY((yyval.commands).commands.commands_val[0],(yyvsp[(1) - (1)].cmd));
 		}
     break;
@@ -4036,7 +4036,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.commands).commands.commands_len++;
 		(yyval.commands).commands.commands_val=realloc(
 		(yyval.commands).commands.commands_val,
-		(yyval.commands).commands.commands_len*sizeof(struct command));
+		(yyval.commands).commands.commands_len*sizeof(struct acerep_command));
 		COPY((yyval.commands).commands.commands_val[ (yyval.commands).commands.commands_len-1 ],(yyvsp[(2) - (2)].cmd));
 	}
     break;
@@ -4045,8 +4045,8 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1031 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_BLOCK;
-		(yyval.cmd).command_u.commands.commands.commands_val=(yyvsp[(2) - (3)].commands).commands.commands_val;
-		(yyval.cmd).command_u.commands.commands.commands_len=(yyvsp[(2) - (3)].commands).commands.commands_len;
+		(yyval.cmd).acerep_command_u.acerep_commands.commands.commands_val=(yyvsp[(2) - (3)].commands).commands.commands_val;
+		(yyval.cmd).acerep_command_u.acerep_commands.commands.commands_len=(yyvsp[(2) - (3)].commands).commands.commands_len;
 	}
     break;
 
@@ -4054,11 +4054,11 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1068 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_CALL;
-		(yyval.cmd).command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
-                (yyval.cmd).command_u.cmd_call.fcall->fname=acl_strdup((yyvsp[(2) - (5)].str));
+		(yyval.cmd).acerep_command_u.cmd_call.fcall=acl_malloc2(sizeof(struct expr_call));
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->fname=acl_strdup((yyvsp[(2) - (5)].str));
 	
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(4) - (5)].expr).expr_u.lexpr;
-		print_lexpr( (yyval.cmd).command_u.cmd_call.fcall->lexpr);
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(4) - (5)].expr).expr_u.lexpr;
+		print_lexpr( (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr);
 }
     break;
 
@@ -4066,11 +4066,11 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1086 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_FOR;
-		(yyval.cmd).command_u.cmd_for.varid=find_variable((yyvsp[(2) - (9)].str));
-		COPY((yyval.cmd).command_u.cmd_for.start,(yyvsp[(4) - (9)].expr));
-		COPY((yyval.cmd).command_u.cmd_for.finish,(yyvsp[(6) - (9)].expr));
-		COPY((yyval.cmd).command_u.cmd_for.step,(yyvsp[(7) - (9)].expr));
-		(yyval.cmd).command_u.cmd_for.command=(struct command *)DUP((yyvsp[(9) - (9)].cmd));
+		(yyval.cmd).acerep_command_u.cmd_for.varid=find_variable((yyvsp[(2) - (9)].str));
+		COPY((yyval.cmd).acerep_command_u.cmd_for.start,(yyvsp[(4) - (9)].expr));
+		COPY((yyval.cmd).acerep_command_u.cmd_for.finish,(yyvsp[(6) - (9)].expr));
+		COPY((yyval.cmd).acerep_command_u.cmd_for.step,(yyvsp[(7) - (9)].expr));
+		(yyval.cmd).acerep_command_u.cmd_for.command=(struct acerep_command *)DUP((yyvsp[(9) - (9)].cmd));
 	}
     break;
 
@@ -4088,9 +4088,9 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1101 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_IF;
-	COPY((yyval.cmd).command_u.cmd_if.condition,(yyvsp[(2) - (5)].expr));
-	(yyval.cmd).command_u.cmd_if.command=(struct command *)DUP((yyvsp[(4) - (5)].cmd));
-	(yyval.cmd).command_u.cmd_if.elsecommand=(struct command *)DUP((yyvsp[(5) - (5)].cmd));
+	COPY((yyval.cmd).acerep_command_u.cmd_if.condition,(yyvsp[(2) - (5)].expr));
+	(yyval.cmd).acerep_command_u.cmd_if.command=(struct acerep_command *)DUP((yyvsp[(4) - (5)].cmd));
+	(yyval.cmd).acerep_command_u.cmd_if.elsecommand=(struct acerep_command *)DUP((yyvsp[(5) - (5)].cmd));
 }
     break;
 
@@ -4098,7 +4098,7 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1109 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_NULL;
-		(yyval.cmd).command_u.null=1;
+		(yyval.cmd).acerep_command_u.null=1;
 	}
     break;
 
@@ -4113,10 +4113,10 @@ sprintf((yyval.str),"%s %s %s %s",
 		int v;
 		(yyval.cmd).cmd_type=CMD_LET;
 		v=find_variable((yyvsp[(2) - (4)].str));
-		(yyval.cmd).command_u.cmd_let.varid=v;
-		(yyval.cmd).command_u.cmd_let.value=DUP((yyvsp[(4) - (4)].expr));
-		(yyval.cmd).command_u.cmd_let.sub1=0;
-		(yyval.cmd).command_u.cmd_let.sub2=0; 
+		(yyval.cmd).acerep_command_u.cmd_let.varid=v;
+		(yyval.cmd).acerep_command_u.cmd_let.value=DUP((yyvsp[(4) - (4)].expr));
+		(yyval.cmd).acerep_command_u.cmd_let.sub1=0;
+		(yyval.cmd).acerep_command_u.cmd_let.sub2=0; 
 	}
     break;
 
@@ -4126,10 +4126,10 @@ sprintf((yyval.str),"%s %s %s %s",
 		int v;
 		(yyval.cmd).cmd_type=CMD_LET;
 		v=find_variable((yyvsp[(2) - (7)].str));
-		(yyval.cmd).command_u.cmd_let.varid=v;
-		(yyval.cmd).command_u.cmd_let.value=DUP((yyvsp[(7) - (7)].expr));
-		(yyval.cmd).command_u.cmd_let.sub1=DUP((yyvsp[(4) - (7)].expr)); 
-		(yyval.cmd).command_u.cmd_let.sub2=0;
+		(yyval.cmd).acerep_command_u.cmd_let.varid=v;
+		(yyval.cmd).acerep_command_u.cmd_let.value=DUP((yyvsp[(7) - (7)].expr));
+		(yyval.cmd).acerep_command_u.cmd_let.sub1=DUP((yyvsp[(4) - (7)].expr)); 
+		(yyval.cmd).acerep_command_u.cmd_let.sub2=0;
 	}
     break;
 
@@ -4139,10 +4139,10 @@ sprintf((yyval.str),"%s %s %s %s",
 		int v;
 		(yyval.cmd).cmd_type=CMD_LET;
 		v=find_variable((yyvsp[(2) - (9)].str));
-		(yyval.cmd).command_u.cmd_let.varid=v;
-		(yyval.cmd).command_u.cmd_let.value=DUP((yyvsp[(9) - (9)].expr));
-		(yyval.cmd).command_u.cmd_let.sub1=DUP((yyvsp[(4) - (9)].expr)); 
-		(yyval.cmd).command_u.cmd_let.sub2=DUP((yyvsp[(6) - (9)].expr)); 
+		(yyval.cmd).acerep_command_u.cmd_let.varid=v;
+		(yyval.cmd).acerep_command_u.cmd_let.value=DUP((yyvsp[(9) - (9)].expr));
+		(yyval.cmd).acerep_command_u.cmd_let.sub1=DUP((yyvsp[(4) - (9)].expr)); 
+		(yyval.cmd).acerep_command_u.cmd_let.sub2=DUP((yyvsp[(6) - (9)].expr)); 
 	}
     break;
 
@@ -4171,7 +4171,7 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1171 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_NEED;
-	(yyval.cmd).command_u.cmd_need.nlines=atoi((yyvsp[(2) - (3)].str));
+	(yyval.cmd).acerep_command_u.cmd_need.nlines=atoi((yyvsp[(2) - (3)].str));
 }
     break;
 
@@ -4179,7 +4179,7 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1177 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PAUSE;
-	(yyval.cmd).command_u.cmd_pause.message=acl_strdup((yyvsp[(2) - (2)].str));
+	(yyval.cmd).acerep_command_u.cmd_pause.message=acl_strdup((yyvsp[(2) - (2)].str));
 }
     break;
 
@@ -4187,8 +4187,8 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1184 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PRINT;
-	(yyval.cmd).command_u.cmd_print.printnl=atoi((yyvsp[(3) - (3)].str));
-	(yyval.cmd).command_u.cmd_print.print=(yyvsp[(2) - (3)].expr);
+	(yyval.cmd).acerep_command_u.cmd_print.printnl=atoi((yyvsp[(3) - (3)].str));
+	(yyval.cmd).acerep_command_u.cmd_print.print=(yyvsp[(2) - (3)].expr);
 }
     break;
 
@@ -4206,7 +4206,7 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1195 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PRINTFILE;
-	(yyval.cmd).command_u.cmd_printfile.filename=acl_strdup((yyvsp[(2) - (2)].str));
+	(yyval.cmd).acerep_command_u.cmd_printfile.filename=acl_strdup((yyvsp[(2) - (2)].str));
 }
     break;
 
@@ -4214,7 +4214,7 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1201 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_SKIP;
-		(yyval.cmd).command_u.cmd_skip.nlines=atoi((yyvsp[(2) - (3)].str));
+		(yyval.cmd).acerep_command_u.cmd_skip.nlines=atoi((yyvsp[(2) - (3)].str));
 
 	}
     break;
@@ -4223,7 +4223,7 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1206 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_SKIP;
-		(yyval.cmd).command_u.cmd_skip.nlines=-1;
+		(yyval.cmd).acerep_command_u.cmd_skip.nlines=-1;
 	}
     break;
 
@@ -4231,8 +4231,8 @@ sprintf((yyval.str),"%s %s %s %s",
 #line 1213 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_WHILE;
-		COPY((yyval.cmd).command_u.cmd_while.condition,(yyvsp[(2) - (4)].expr));
-		(yyval.cmd).command_u.cmd_while.command=(struct command *)DUP((yyvsp[(4) - (4)].cmd));
+		COPY((yyval.cmd).acerep_command_u.cmd_while.condition,(yyvsp[(2) - (4)].expr));
+		(yyval.cmd).acerep_command_u.cmd_while.command=(struct acerep_command *)DUP((yyvsp[(4) - (4)].cmd));
 }
     break;
 
@@ -4486,7 +4486,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("DATE");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4496,7 +4496,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("MONTH");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4506,7 +4506,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("YEAR");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4516,7 +4516,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("DAY");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4526,7 +4526,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup((yyvsp[(1) - (4)].str));
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4649,7 +4649,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("DATE");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4659,7 +4659,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("MONTH");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4669,7 +4669,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("YEAR");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4679,7 +4679,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup("DAY");
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 
@@ -4689,7 +4689,7 @@ sprintf((yyval.str),"%s %s %s %s",
 		(yyval.expr).type=EXPRTYPE_FCALL; 
 		(yyval.expr).expr_u.fcall=acl_malloc2(sizeof(struct expr_call));
 		(yyval.expr).expr_u.fcall->fname=acl_strdup((yyvsp[(1) - (4)].str));
-                (yyval.cmd).command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
+                (yyval.cmd).acerep_command_u.cmd_call.fcall->lexpr=(yyvsp[(3) - (4)].expr).expr_u.lexpr;
 	}
     break;
 

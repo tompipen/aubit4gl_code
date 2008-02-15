@@ -471,7 +471,19 @@ typedef_elem:
 	}
 	| INT NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
 	| LONG NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
-	| STRING NAMED LESS_THAN GREATER_THAN {fprintf(hsf,"typedef char *%s;\n",$<str>2);}
+	| STRING NAMED LESS_THAN GREATER_THAN {
+			fprintf(hsf,"typedef char *%s;\n",$<str>2);
+			fprintf(hf,"int input_%s(char *rn,char **r,int isptr,int arr);\n",$<str>2,$<str>2);
+			fprintf(cfi,"int input_%s(char *rn,char **r,int isptr,int arr) {\n",$<str>2,$<str>2);
+			fprintf(cfi,"return input_string(rn,r,isptr,arr);\n");
+			fprintf(cfi,"}\n");
+			
+			fprintf(hf,"int output_%s(char *rn,char *r,int isptr,int arr);\n",$<str>2,$<str>2);
+			fprintf(cfo,"int output_%s(char *rn,char *r,int isptr,int arr) {\n",$<str>2,$<str>2);
+			fprintf(cfo,"if (rn==0) rn=\"\";\n");
+			fprintf(cfo,"return output_string(rn,r,isptr,arr);\n");
+			fprintf(cfo,"}\n");
+		}
 ;
 
 enum: ENUM NAMED {
