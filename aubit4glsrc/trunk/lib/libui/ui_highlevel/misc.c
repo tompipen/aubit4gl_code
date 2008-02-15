@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.62 2007-11-29 13:48:06 mikeaubury Exp $";
+  "$Id: misc.c,v 1.63 2008-02-15 15:13:00 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1219,7 +1219,8 @@ UILIB_A4GL_finish_screenio (void *sio, char *siotype)
 void *
 UILIB_A4GL_create_menu (void *m, char *id, int mode, void *handler)
 {
-  return A4GL_LL_create_menu (m, id, mode, handler);
+A4GL_assertion(1,"Function has been depreciated..");
+  //return A4GL_LL_create_menu (m, id, mode, handler);
 
 }
 
