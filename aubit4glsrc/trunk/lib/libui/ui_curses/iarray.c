@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.140 2008-01-24 20:06:13 mikeaubury Exp $
+# $Id: iarray.c,v 1.141 2008-02-16 14:49:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.140 2008-01-24 20:06:13 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.141 2008-02-16 14:49:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -62,6 +62,11 @@ void A4GL_make_window_with_this_form_current (void *form);
 int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int init, void *vevt);
 
 int A4GL_double_chk_arr_line (struct s_inp_arr *s, int ln, char why);
+
+// Nicked from form.priv.h : 
+#define Field_Is_Not_Selectable(f) (((unsigned)((f)->opts) & O_SELECTABLE)!=O_SELECTABLE)
+#define O_SELECTABLE (O_ACTIVE | O_VISIBLE)
+
 
 #define CONTROL_STACK_LENGTH 10
 
@@ -1515,9 +1520,12 @@ void
 A4GL_mja_pos_form_cursor (FORM * form)
 {
   int a;
-  A4GL_debug ("mja_pos_form_cursor called with form=%p field would be %p",
-	      form, current_field (form));
+  A4GL_debug ("mja_pos_form_cursor called with form=%p field would be %p", form, current_field (form));
 
+  if ( current_field (form)==0) return;
+
+//mvwprintw(currwin, 1, 1, "%p", form);
+//printf("!"); fflush(stdout);
   a = pos_form_cursor (form);
   if (a != E_OK)
     {
@@ -1532,8 +1540,20 @@ void
 A4GL_mja_set_current_field (FORM * form, FIELD * field)
 {
   int a;
+  //mvwprintw(currwin, 2, 1, "%p", field);
+
+//mvwprintw(currwin, 1, 12, "  ", form);
   A4GL_set_curr_infield ((void *) field);
   a = set_current_field (form, field);
+/*
+  if (form!=field->form) {
+		A4GL_assertion(1,"Field is not on form");
+	}
+if (Field_Is_Not_Selectable(field)) {
+		A4GL_assertion(1,"Field is not selectable");
+	}
+*/
+  
   if (a != E_OK)
     {
       A4GL_debug ("MJA Error in mja_set_current_field: %p %p", form, field);
@@ -2800,7 +2820,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 
 
 	  A4GL_comments (fprop);
-	  pos_form_cursor (arr->currform->form);
+	  A4GL_mja_pos_form_cursor (arr->currform->form);
 	  A4GL_debug ("Clearing fprop flag -1 BEFORE FIELD for %d %d (%p) zz9pa",
 		      arr->scr_line - 1, arr->curr_attrib,arr->currentfield);
 

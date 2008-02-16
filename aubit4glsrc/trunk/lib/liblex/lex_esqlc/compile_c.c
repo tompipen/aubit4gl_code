@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.398 2008-02-15 20:19:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.399 2008-02-16 14:49:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.398 2008-02-15 20:19:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.399 2008-02-16 14:49:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2380,26 +2380,39 @@ void
 print_form_attrib_v2 (int iswindow, struct attrib *form_attrib)
 {
 int frm_attr;
-//char buff[256];
-
+char *buffer[20];
 if (form_attrib==0) {
 	printc("%d,255,255,255,255,0,255,255,(0xffff)", iswindow);
 	return;
 }
 
+buffer[0]=strdup(form_attrib->form_line?local_expr_as_string(form_attrib->form_line):"255");
+buffer[1]=strdup(form_attrib->error_line?local_expr_as_string(form_attrib->error_line):"255");
+buffer[2]=strdup(form_attrib->prompt_line?local_expr_as_string(form_attrib->prompt_line):"255");
+buffer[3]=strdup(form_attrib->menu_line?local_expr_as_string(form_attrib->menu_line):"255");
+buffer[4]=strdup(form_attrib->comment_line?local_expr_as_string(form_attrib->comment_line):"255");
+buffer[5]=strdup(form_attrib->message_line?local_expr_as_string(form_attrib->message_line): "255");
+
+
 	frm_attr=attributes_as_int(form_attrib);
 
   printc ("%d,%s,%s,%s,%s,%d,%s,%s,%d",
 	  iswindow,
-	  form_attrib->form_line? local_expr_as_string(form_attrib->form_line):"255",
-	  form_attrib->error_line?local_expr_as_string(form_attrib->error_line):"255",
-	  form_attrib->prompt_line?local_expr_as_string(form_attrib->prompt_line):"255",
-	  form_attrib->menu_line?local_expr_as_string(form_attrib->menu_line):"255",
+	buffer[0],
+	buffer[1],
+	buffer[2],
+	buffer[3],
 	  form_attrib->border==EB_TRUE,
-	  form_attrib->comment_line?local_expr_as_string(form_attrib->comment_line):"255",
-	  form_attrib->message_line?local_expr_as_string(form_attrib->message_line): "255",
+	buffer[4],
+	buffer[5],
 	frm_attr
 	);
+free(buffer[0]);
+free(buffer[1]);
+free(buffer[2]);
+free(buffer[3]);
+free(buffer[4]);
+free(buffer[5]);
 #ifdef DEBUG
   A4GL_debug ("Printing attributes\n");
   A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,%s", form_attrib->iswindow,

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.50 2007-02-17 10:00:43 mikeaubury Exp $
+# $Id: array.c,v 1.51 2008-02-16 14:49:29 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.50 2007-02-17 10:00:43 mikeaubury Exp $";
+		"$Id: array.c,v 1.51 2008-02-16 14:49:29 mikeaubury Exp $";
 #endif
 
 
@@ -950,8 +950,8 @@ int orig_set=0;
 		//int was_disabled=0;
 
 		set_current_field (formdets->form, field_list[a]);
-		pos_form_cursor(formdets->form);
-		A4GL_mja_wrefresh (currwin);
+		A4GL_mja_pos_form_cursor(formdets->form);
+		//A4GL_mja_wrefresh (currwin);
 		if (orig_set) local_set_field_opts(field_list[0],orig_set);
 	}
 

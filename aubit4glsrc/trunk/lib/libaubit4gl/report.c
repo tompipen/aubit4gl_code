@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.156 2008-02-11 17:13:11 mikeaubury Exp $
+# $Id: report.c,v 1.157 2008-02-16 14:49:29 mikeaubury Exp $
 #
 */
 
@@ -2581,6 +2581,7 @@ void *agg;
 					}
 					A4GL_pop_var2(agg,(*agg_type)&DTYPE_MASK, DECODE_SIZE((*agg_type)));
 				}
+				A4GL_drop_param();
 				/* But - we count it anyway */
 				(*aggused)++;
 				break;
@@ -2598,6 +2599,7 @@ void *agg;
 					A4GL_pop_var2(agg,d1,s1);
 					(*aggused)++;
 				}
+				A4GL_drop_param();
 				break;
 				
 		case 'N':  /* MIN */
@@ -2619,6 +2621,7 @@ void *agg;
 						A4GL_pop_var2(agg,(d1&DTYPE_MASK),s1);
 					}
 				}
+				A4GL_drop_param();
 				break;
 		case 'X':  /* MAX */
 				if (!A4GL_isnull(d1,ptr1)) {
@@ -2639,6 +2642,7 @@ void *agg;
 						A4GL_pop_var2(agg,(d1&DTYPE_MASK),s1);
 					}
 				}
+				A4GL_drop_param();
 				break;
 				
 				

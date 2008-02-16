@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.137 2008-02-12 17:01:07 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.138 2008-02-16 14:49:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.137 2008-02-12 17:01:07 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.138 2008-02-16 14:49:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -969,9 +969,9 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			A4GL_assertion(1,"Unable to set current tield...");
 			}
 	  sio->currform->currentfield = sio->currentfield;
-	  pos_form_cursor (sio->currform->form);
+	  A4GL_mja_pos_form_cursor (sio->currform->form);
 	  A4GL_debug ("Processed after users 'BEFORE FIELD'");
-	  pos_form_cursor (sio->currform->form);
+	  A4GL_mja_pos_form_cursor (sio->currform->form);
 	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 
 
@@ -2297,8 +2297,8 @@ strcpy(newfieldval,"");
 
 moved=0;
         while (looping) {
-		pos_form_cursor(f);
-      		A4GL_mja_refresh ();
+	A4GL_mja_pos_form_cursor(f);
+      		//A4GL_mja_refresh ();
 		while (1) {
 			a=A4GL_real_getch_swin (drwin);
 			if (a) break;
@@ -2499,8 +2499,15 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
 
       if (strcmp(siotype, "s_screenio")==0) {
 		struct s_screenio *s;
+		FIELD *f;
 		s=sio;
+		f=s->field_list[s->curr_attrib];
 		A4GL_set_fields_sio(s);
+
+		s->currform->currentfield=f;
+		s->currentfield=f;
+		A4GL_mja_set_current_field(s->currform->form, f);
+		
 		 //pos_form_cursor (s->currform->form);
       }
 

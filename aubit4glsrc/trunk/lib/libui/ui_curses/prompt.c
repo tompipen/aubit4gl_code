@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.70 2008-02-14 17:43:09 mikeaubury Exp $
+# $Id: prompt.c,v 1.71 2008-02-16 14:49:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.70 2008-02-14 17:43:09 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.71 2008-02-16 14:49:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -425,7 +425,7 @@ int was_aborted=0;
 
 
 
-  	pos_form_cursor (mform);
+  	A4GL_mja_pos_form_cursor (mform);
 	abort_pressed=0;
 	was_aborted=0;
         A4GL_debug("Timeout : %d\n",timeout);

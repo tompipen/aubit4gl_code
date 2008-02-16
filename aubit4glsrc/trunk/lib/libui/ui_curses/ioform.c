@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.189 2007-12-14 21:44:17 mikeaubury Exp $
+# $Id: ioform.c,v 1.190 2008-02-16 14:49:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.189 2007-12-14 21:44:17 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.190 2008-02-16 14:49:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -853,7 +853,7 @@ A4GL_start_form (struct s_form_dets *s)
 
   A4GL_int_form_driver (s->form, REQ_FIRST_PAGE);
   A4GL_int_form_driver (s->form, REQ_FIRST_FIELD);
-  pos_form_cursor (s->form);
+  A4GL_mja_pos_form_cursor (s->form);
 
   s->form_details.insmode = 0;
 
@@ -2783,7 +2783,7 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
   if (fprop != 0)
     A4GL_comments (fprop);
 
-  pos_form_cursor (mform);
+  A4GL_mja_pos_form_cursor (mform);
   A4GL_debug_print_stack ();
   A4GL_debug ("form_field_constr returning %d", flg);
   return flg;
@@ -2854,7 +2854,7 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   A4GL_debug ("Setting %p %d to %s (%d)", field, nbuff, buff2, xerrno);
   A4GL_debug ("field buffer set to '%s'", field_buffer (field, 0));
   A4GL_debug ("Currwin=%p", currwin);
-  pos_form_cursor (field->form);
+  A4GL_mja_pos_form_cursor (field->form);
   if (currwin > (WINDOW *) 1)
     {
 
