@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.137 2008-02-11 17:13:11 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.138 2008-02-18 16:48:52 mikeaubury Exp $
 #
 */
 
@@ -2215,7 +2215,7 @@ A4GL_strwscmp (char *a, char *b)
 	A4GL_trim(o1);
 	A4GL_trim(o2);
 
-  if (strstr(o2,"%s")) {
+  if (strstr(o2,"%S")) {
 	int r;
 	int chars=0;
 	char buff[2000];
