@@ -2658,7 +2658,7 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
 	  switch (evt->evt_data.event_type)
 	    {
 	    case EVENT_ON_ACTION:
-	      printc ("A4GL_add_menu_action(m_%d, %s,%d);\n", menu_no, evt->evt_data.event_data_u.on_action, a);
+	      printc ("A4GL_add_menu_action(m_%d, \"%s\",%d);\n", menu_no, evt->evt_data.event_data_u.on_action, a);
 	      break;
 
 	    case EVENT_MENU_COMMAND:
