@@ -2725,6 +2725,7 @@ int ni;
   //int block_id;
   struct struct_open_cursor_cmd open_cursor;
 
+	open_cursor.cursor_type='S';
 	open_cursor.connid=NULL;
 	open_cursor.cursorname=cmd_data->cursorname;
  	open_cursor.using_bind=cmd_data->inputvals;
