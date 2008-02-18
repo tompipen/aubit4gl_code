@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.62 2008-02-12 17:01:06 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.63 2008-02-18 16:25:10 mikeaubury Exp $
 #
 */
 
@@ -61,6 +61,7 @@ int dont_set_for_single_table = 0;
 int set_sql_lineno=0;
 int has_columns_cnt=0;
 
+static char * convstrsql (char *s);
 //char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
 //char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;
 static char *get_select_list_item_i (struct s_select *select,
@@ -628,7 +629,7 @@ get_select_list_item_list_ob (struct s_select *select,
 
 
 
-char *get_nl() {
+static char *get_nl(void) {
 	if (nonewline) {
 		return acl_strdup("");
 	} else {
@@ -829,26 +830,35 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 							complex_expr.right), kw_cb, NULL);
 
     case E_SLI_LITERAL:
+	{
+	char *ptr;
+	ptr=p->data.s_select_list_item_data_u.expression;
+	if (ptr[0] == '\"') {
+		if (A4GLSQLCV_check_requirement ("DOUBLE_TO_SINGLE_QUOTES")) {
+			ptr=convstrsql(ptr);
+		}
+	}
+
       if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DATE"))
 	{
-	  if (p->data.s_select_list_item_data_u.expression[0] == '\'')
+	  if (ptr[0] == '\'')
 	    {
 	      char buff[256];
-	      if (isdigit (p->data.s_select_list_item_data_u.expression[1]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[2]) &&
-		  p->data.s_select_list_item_data_u.expression[3] == '/' &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[4]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[5]) &&
-		  p->data.s_select_list_item_data_u.expression[6] == '/' &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[7]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[8]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[9]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[10]))
+	      if (isdigit (ptr[1]) &&
+		  isdigit (ptr[2]) &&
+		  ptr[3] == '/' &&
+		  isdigit (ptr[4]) &&
+		  isdigit (ptr[5]) &&
+		  ptr[6] == '/' &&
+		  isdigit (ptr[7]) &&
+		  isdigit (ptr[8]) &&
+		  isdigit (ptr[9]) &&
+		  isdigit (ptr[10]))
 		{		// Well - it looks like a date..
 
 			
 		  SPRINTF1 (buff, "Cast(%s as DateTime)",
-			   p->data.s_select_list_item_data_u.expression);
+			   ptr);
 		  return acl_strdup_With_Context (buff);
 
 		}
@@ -857,34 +867,34 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
       if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DMY"))
 	{
-	  if (p->data.s_select_list_item_data_u.expression[0] == '\'')
+	  if (ptr[0] == '\'')
 	    {
 	      char buff[256];
-	      if (isdigit (p->data.s_select_list_item_data_u.expression[1]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[2]) &&
-		  p->data.s_select_list_item_data_u.expression[3] == '/' &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[4]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[5]) &&
-		  p->data.s_select_list_item_data_u.expression[6] == '/' &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[7]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[8]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[9]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[10]))
+	      if (isdigit (ptr[1]) &&
+		  isdigit (ptr[2]) &&
+		  ptr[3] == '/' &&
+		  isdigit (ptr[4]) &&
+		  isdigit (ptr[5]) &&
+		  ptr[6] == '/' &&
+		  isdigit (ptr[7]) &&
+		  isdigit (ptr[8]) &&
+		  isdigit (ptr[9]) &&
+		  isdigit (ptr[10]))
 		{		// Well - it looks like a date..
 			char *dbdate;
 		dbdate=A4GL_get_dbdate();
 		if (dbdate[0]=='D'||dbdate[0]=='d') {
 		  SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)", 
-								p->data.s_select_list_item_data_u.expression[1], p->data.s_select_list_item_data_u.expression[2],
-				  				decode_month(p->data.s_select_list_item_data_u.expression[4], p->data.s_select_list_item_data_u.expression[5]), 
-				  				p->data.s_select_list_item_data_u.expression[7], p->data.s_select_list_item_data_u.expression[8], p->data.s_select_list_item_data_u.expression[9], p->data.s_select_list_item_data_u.expression[10]
+								ptr[1], ptr[2],
+				  				decode_month(ptr[4], ptr[5]), 
+				  				ptr[7], ptr[8], ptr[9], ptr[10]
 								);
 		  return acl_strdup_With_Context (buff);
 		} else {
 		  SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)", 
-								p->data.s_select_list_item_data_u.expression[4], p->data.s_select_list_item_data_u.expression[5],
-				  				decode_month(p->data.s_select_list_item_data_u.expression[1], p->data.s_select_list_item_data_u.expression[2]), 
-				  				p->data.s_select_list_item_data_u.expression[7], p->data.s_select_list_item_data_u.expression[8], p->data.s_select_list_item_data_u.expression[9], p->data.s_select_list_item_data_u.expression[10] 
+								ptr[4], ptr[5],
+				  				decode_month(ptr[1], ptr[2]), 
+				  				ptr[7], ptr[8], ptr[9], ptr[10] 
 								);
 		  return acl_strdup_With_Context (buff);
 		}
@@ -895,31 +905,31 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
       if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_YMD"))
 	{
-	  if (p->data.s_select_list_item_data_u.expression[0] == '\'')
+	  if (ptr[0] == '\'')
 	    {
 	      char buff[256];
-	      if (isdigit (p->data.s_select_list_item_data_u.expression[1]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[2]) &&
-		  p->data.s_select_list_item_data_u.expression[3] == '/' &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[4]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[5]) &&
-		  p->data.s_select_list_item_data_u.expression[6] == '/' &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[7]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[8]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[9]) &&
-		  isdigit (p->data.s_select_list_item_data_u.expression[10]))
+	      if (isdigit (ptr[1]) &&
+		  isdigit (ptr[2]) &&
+		  ptr[3] == '/' &&
+		  isdigit (ptr[4]) &&
+		  isdigit (ptr[5]) &&
+		  ptr[6] == '/' &&
+		  isdigit (ptr[7]) &&
+		  isdigit (ptr[8]) &&
+		  isdigit (ptr[9]) &&
+		  isdigit (ptr[10]))
 		{		// Well - it looks like a date..
 			char *dbdate;
 		dbdate=A4GL_get_dbdate();
 		if (dbdate[0]=='D'||dbdate[0]=='d') {
-		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", p->data.s_select_list_item_data_u.expression[7], p->data.s_select_list_item_data_u.expression[8],
-				  	p->data.s_select_list_item_data_u.expression[9], p->data.s_select_list_item_data_u.expression[10], p->data.s_select_list_item_data_u.expression[4],
-				  	p->data.s_select_list_item_data_u.expression[5], p->data.s_select_list_item_data_u.expression[1], p->data.s_select_list_item_data_u.expression[2]);
+		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", ptr[7], ptr[8],
+				  	ptr[9], ptr[10], ptr[4],
+				  	ptr[5], ptr[1], ptr[2]);
 		  return acl_strdup_With_Context (buff);
 		} else {
-		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", p->data.s_select_list_item_data_u.expression[7], p->data.s_select_list_item_data_u.expression[8], p->data.s_select_list_item_data_u.expression[9], p->data.s_select_list_item_data_u.expression[10], 
-				  		p->data.s_select_list_item_data_u.expression[1], p->data.s_select_list_item_data_u.expression[2], 
-						p->data.s_select_list_item_data_u.expression[4], p->data.s_select_list_item_data_u.expression[5]);
+		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", ptr[7], ptr[8], ptr[9], ptr[10], 
+				  		ptr[1], ptr[2], 
+						ptr[4], ptr[5]);
 		  return acl_strdup_With_Context (buff);
 		}
 
@@ -927,7 +937,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    }
 	}
 
-      return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
+      return acl_strdup_With_Context (ptr);
+	}
 
     case E_SLI_REGEX_MATCHES:
       {
@@ -2837,3 +2848,50 @@ int A4GL_has_column (char *t, char *c)
 //			A4GLSQL_set_status(0,0);
   return found;
 }
+
+
+
+
+/**
+ *  *  *
+ *   *   *
+ *    *    * @param
+ *     *     */
+char * convstrsql (char *s)
+{
+  static char buff[64000];
+  int a;
+  int b = 0;
+  A4GL_debug ("Convstrsql ... %s", s);
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] == '"')
+        {
+          if (a == 0 || (s[0]=='"' && a==strlen(s)-1)) {
+            buff[b++] = '\'';
+          }
+          else
+            {
+              if (s[a - 1] != '\\')
+                {
+                  buff[b++] = '\'';
+                } else {
+                  buff[b++] = '"';
+                }
+            }
+          continue;
+        }
+      if (s[a] == '\'')
+        {
+          buff[b++] = '\'';
+          buff[b++] = '\'';
+          continue;
+        }
+      buff[b++] = s[a];
+
+    }
+  A4GL_debug ("Convstrsql ... %s => %s", s, buff);
+  return buff;
+}
+
+

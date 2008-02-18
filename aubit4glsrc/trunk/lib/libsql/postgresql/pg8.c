@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.19 2008-01-23 18:17:29 mikeaubury Exp $
+# $Id: pg8.c,v 1.20 2008-02-18 16:25:11 mikeaubury Exp $
 #*/
 
 
@@ -118,7 +118,7 @@ int curr_colno = 0;
 */
 
 
-PGconn *con;
+PGconn *current_con=0;
 PGresult *resGC = 0;
 char *pghost = "";
 char *pgport = NULL;
@@ -296,8 +296,8 @@ A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
   if (p)
     A4GL_debug ("passwd=%s", p);
 
-  con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, u,p);
-  if (con == NULL)
+  current_con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, u,p);
+  if (current_con == NULL)
     {
 
       A4GL_set_errm (dbName);
@@ -305,10 +305,10 @@ A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
       return -1;
     }
 
-  if (PQstatus (con) == CONNECTION_BAD)
+  if (PQstatus (current_con) == CONNECTION_BAD)
     {
-      if (PQerrorMessage (con))
-	SPRINTF2 (buff2, "%s - %s", PQerrorMessage (con), dbName);
+      if (PQerrorMessage (current_con))
+	SPRINTF2 (buff2, "%s - %s", PQerrorMessage (current_con), dbName);
       else
 	SPRINTF1 (buff2, "%s - No explanation from the backend", dbName);
 
@@ -317,15 +317,15 @@ A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
       return -1;
 
     }
-  PQsetNoticeProcessor (con, defaultNoticeProcessor, 0);
+  PQsetNoticeProcessor (current_con, defaultNoticeProcessor, 0);
   CanUseSavepoints = 0;
-  if (con)
+  if (current_con)
     {
       PGresult *res = 0;
       PGresult *res2 = 0;
 
 #if  ( PG_VERSION_NUM > 80100 )
-      currServerVersion = PQserverVersion (con);
+      currServerVersion = PQserverVersion (current_con);
       if (currServerVersion >= 80100)
 	{
 	  if (!A4GL_isyes (acl_getenv ("DISABLESAVEPOINTS")))
@@ -335,10 +335,10 @@ A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
 	}
 #else
       // work it out by trying it..
-      res2 = PQexec (con, "BEGIN WORK");
+      res2 = PQexec (current_con, "BEGIN WORK");
       PQclear (res2);
-      res = PQexec (con, "SAVEPOINT pr1");
-      res2 = PQexec (con, "COMMIT WORK");
+      res = PQexec (current_con, "SAVEPOINT pr1");
+      res2 = PQexec (current_con, "COMMIT WORK");
       PQclear (res2);
       if (PQresultStatus (res) == PGRES_COMMAND_OK)
 	{
@@ -351,7 +351,7 @@ A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
     }
 
 
-  A4GL_add_pointer ("default", SESSCODE, con);
+  A4GL_add_pointer ("default", SESSCODE, current_con);
   return 0;
 }
 
@@ -374,14 +374,16 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   PGconn *con=0;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-
+//printf("Closed connection\n"); fflush(stdout);
   con = (PGconn *) A4GL_find_pointer (sessname, SESSCODE);
 
   if (con)
     {
-      PQfinish (con);
+        PQfinish (con);
   	A4GL_del_pointer (sessname, SESSCODE);
     }
+
+  
   return 1;
 
 }
@@ -430,9 +432,9 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
-  if (con == 0)
+  if (current_con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
       return 0;
@@ -443,7 +445,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum",
 	    tabname);
 
-  resGC = PQexec (con, buff);
+  resGC = PQexec (current_con, buff);
 
 
 
@@ -494,9 +496,9 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
-  if (con == 0)
+  if (current_con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
       return 0;
@@ -752,7 +754,7 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
 	    "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
 	    acl_getenv ("A4GL_SYSCOL_VAL"), tabname, colname);
   A4GL_debug ("buff=%s", buff);
-  res2 = PQexec (con, buff);
+  res2 = PQexec (current_con, buff);
 
   switch (PQresultStatus (res2))
     {
@@ -1036,10 +1038,10 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
 
-  if (con == 0)
+  if (current_con == 0)
     {
       A4GL_exitwith_sql ("Database not open");
       return;
@@ -1082,7 +1084,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 
 
 
-  res2 = PQexec (con, sqlStr);
+  res2 = PQexec (current_con, sqlStr);
 
   switch (PQresultStatus (res2))
     {
@@ -1099,7 +1101,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
     case PGRES_NONFATAL_ERROR:
     case PGRES_FATAL_ERROR:
       A4GL_debug ("Got : %d (%s)", PQresultStatus (res2),
-		  PQerrorMessage (con));
+		  PQerrorMessage (current_con));
       SetErrno (res2);
       //A4GL_exitwith_sql ("Unexpected postgres return code3\n");
       free (fname);
@@ -1245,11 +1247,11 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
 
 
-  if (!con)
+  if (!current_con)
     {
       // no connection..
       if (last_msg)
@@ -1316,15 +1318,15 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
   switch (PQresultStatus (res))
     {
     case PGRES_BAD_RESPONSE:
-      A4GL_debug ("Bad response %s\n", PQerrorMessage (con));
+      A4GL_debug ("Bad response %s\n", PQerrorMessage (current_con));
       //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
       return 0;
     case PGRES_NONFATAL_ERROR:
-      A4GL_debug ("nonfatal error %s \n", PQerrorMessage (con));
+      A4GL_debug ("nonfatal error %s \n", PQerrorMessage (current_con));
       //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
       return 0;
     case PGRES_FATAL_ERROR:
-      A4GL_debug ("fatal error %s\n", PQerrorMessage (con));
+      A4GL_debug ("fatal error %s\n", PQerrorMessage (current_con));
       //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
       return 0;
     }
@@ -1462,10 +1464,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
 
-  if (!con)
+  if (!current_con)
     {
       // no connection..
       if (last_msg)
@@ -1524,7 +1526,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
     }
   A4GL_debug ("%s ni=%d\n", sql, n->ni);
 
-  res = PQexec (con, sql);
+  res = PQexec (current_con, sql);
    n->last_result=res;
 
   A4GL_debug ("::: %s - %d\n", n->sql, PQresultStatus (res));
@@ -1544,7 +1546,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       break;
 
     default:
-      A4GL_debug ("Bad : %s ", PQerrorMessage (con));
+      A4GL_debug ("Bad : %s ", PQerrorMessage (current_con));
       SetErrno (res);
       ok = 0;
     }
@@ -1632,7 +1634,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		  char sql[2000];
 		  A4GL_convlower (s);
 		  SPRINTF2 (sql, "SELECT * FROM %s WHERE OID=%ld", s, oid);
-		  res2 = PQexec (con, sql);
+		  res2 = PQexec (current_con, sql);
 
 
 		  if (PQresultStatus (res2) == PGRES_TUPLES_OK)
@@ -1801,9 +1803,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
-  if (!con)
+  if (!current_con)
     {
       // no connection..
       if (last_msg)
@@ -1836,7 +1838,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
       sql = replace_ibind (sql, n->ni, n->ibind,1);
     }
 
-  res = PQexec (con, sql);
+  res = PQexec (current_con, sql);
   n->last_result=res;
   A4GL_debug ("res=%p\n", res);
   A4GL_set_a4gl_sqlca_errd (0, PQntuples (res));
@@ -1960,13 +1962,13 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
     "SELECT d.datname , u.usename FROM pg_catalog.pg_database d LEFT JOIN pg_catalog.pg_user u ON d.datdba = u.usesysid ORDER BY 1;";
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
-  if (!con)
+  if (!current_con)
     {
       A4GLSQLLIB_A4GLSQL_init_connection_internal ("template1");
 
-      if (!con)
+      if (!current_con)
 	{
 	  return 0;		// no connection
 	}
@@ -1995,8 +1997,8 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
 
   if (fake_db)
     {
-      PQfinish (con);
-      con = 0;
+      PQfinish (current_con);
+      current_con = 0;
     }
 
   return cnt;
@@ -2035,9 +2037,9 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
-  if (con == 0)
+  if (current_con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
       return 0;
@@ -2175,9 +2177,9 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
-  if (con == 0)
+  if (current_con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
       return 0;
@@ -2328,10 +2330,10 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
     }
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
 
-  if (!con)
+  if (!current_con)
     {
       // no connection..
       if (last_msg)
@@ -2349,14 +2351,14 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       		char buff[256];
       		A4GL_debug ("DEALLOCATE %s", cursname);
       		SPRINTF1 (buff, "DEALLOCATE %s", cursname);
-      		PQexec (con, buff);
+      		PQexec (current_con, buff);
       		cid->mode -= 0x1000;
     		}
   	if (cid->mode & 0x7000)
     {
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", cursname);
-      PQexec (con, buff);
+      PQexec (current_con, buff);
       cid->mode -= 0x7000;
 	}
 	free(cid);
@@ -2386,7 +2388,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       else
 	{
 	  int ttype;
-	  ttype = PQtransactionStatus (con);
+	  ttype = PQtransactionStatus (current_con);
 	  if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS)
 	    {
 	      SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR FOR %s", cursname,
@@ -2409,7 +2411,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       else
 	{
 	  int ttype;
-	  ttype = PQtransactionStatus (con);
+	  ttype = PQtransactionStatus (current_con);
 	  if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS)
 	    {
 	      SPRINTF2 (buff, " DECLARE %s CURSOR FOR %s", cursname,
@@ -2440,7 +2442,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	}
     }
   free (ptr);
-  //PQexec(con, buff);
+  //PQexec(current_con, buff);
   return cid;
 
 
@@ -2495,10 +2497,10 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
-      con = A4GL_esql_dbopen_connection ();
+      current_con = A4GL_esql_dbopen_connection ();
     }
 
-  if (!con)
+  if (!current_con)
     {
       // no connection..
       if (last_msg)
@@ -2526,7 +2528,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
     {
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", s);
-      PQexec (con, buff);
+      PQexec (current_con, buff);
       cid->mode -= 0x7000;
     }
 
@@ -2536,7 +2538,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
       char buff[256];
 
       SPRINTF1 (buff, "DEALLOCATE %s", s);
-      PQexec (con, buff);
+      PQexec (current_con, buff);
       cid->mode -= 0x1000;
     }
 
@@ -2559,7 +2561,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
 
   buff2 = replace_ibind (cid->DeclareSql, ni, ibind,1);
   A4GL_debug ("cid->DeclareSql=%s buff2=%s\n", cid->DeclareSql, buff2);
-  cid->hstmt = PQexec (con, buff2);
+  cid->hstmt = PQexec (current_con, buff2);
 
   switch (PQresultStatus (cid->hstmt))
     {
@@ -2569,7 +2571,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
       break;
 
     default:
-      A4GL_debug ("Bad prepare %s", PQerrorMessage (con));
+      A4GL_debug ("Bad prepare %s", PQerrorMessage (current_con));
       SetErrno (cid->hstmt);
       //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
       return 0;
@@ -2651,7 +2653,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
 
   A4GL_debug ("Executing :%s\n", buff);
 
-  res = PQexec (con, buff);
+  res = PQexec (current_con, buff);
   A4GL_debug ("%s - %d \n", buff, PQresultStatus (res));
 
   if (cid->statement) {
@@ -2668,7 +2670,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
       break;
 
     default:
-      A4GL_debug ("Bad %s", PQerrorMessage (con));
+      A4GL_debug ("Bad %s", PQerrorMessage (current_con));
       SetErrno (res);
       //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
       A4GL_exitwith_sql ("Unexpected postgres return code1\n");
@@ -2727,7 +2729,7 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
     {
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", currname);
-      PQexec (con, buff);
+      PQexec (current_con, buff);
       ptr->mode -= 0x7000;
       //A4GL_free_associated_mem (ptr->DeclareSql);
     }
@@ -2753,7 +2755,7 @@ pgescape_str (char *s)
     }
 #ifdef USE_ESCAPE_STRING_CONN
   // this is documented - but doesn't seem to exist!
-  PQescapeStringConn (con, buff, s, sl, &err);
+  PQescapeStringConn (current_con, buff, s, sl, &err);
 #else
   err = 0;
   PQescapeString (buff, s, sl);
@@ -2933,7 +2935,7 @@ Execute (char *s, int freeit)
 {
   PGresult *res;
   A4GL_debug ("EXECUTE %s", s);
-  res = PQexec (con, s);
+  res = PQexec (current_con, s);
   chk_res (res);
 
   if (freeit)
@@ -2960,7 +2962,7 @@ chk_res (PGresult * res)
       break;
 
     default:
-      A4GL_debug ("Bad %s", PQerrorMessage (con));
+      A4GL_debug ("Bad %s", PQerrorMessage (current_con));
       if (res)
 	{
 	  SetErrno (res);
@@ -2977,7 +2979,7 @@ int
 inTransaction ()
 {
   int ttype;
-  ttype = PQtransactionStatus (con);
+  ttype = PQtransactionStatus (current_con);
   if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS)
     return 1;
 

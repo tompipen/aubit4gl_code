@@ -356,7 +356,7 @@ print_exit_prog_cmd(&c);
 char * get_ibind_usage (int a, char *context)
 {
   static char smbuff[256];
-  if (!A4GLSQLCV_check_requirement ("USE_INDICATOR") || strcmp(context,"OPEN")==0)
+  if (!A4GLSQLCV_check_requirement ("USE_INDICATOR") || strcmp(context,"OPEN")==0 || set_dont_use_indicators)
     {
 
       SPRINTF1 (smbuff, ":_vi_%d", a);
@@ -385,7 +385,7 @@ char * get_ibind_usage (int a, char *context)
 
 char * get_obind_usage(int a,char *context) {
   static char smbuff[256];
-          if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
+          if (!A4GLSQLCV_check_requirement ("USE_INDICATOR") || set_dont_use_indicators)
             {
               sprintf (smbuff,":_vo_%d", a);
             }
@@ -2007,7 +2007,16 @@ int using;
   if (cmd_data->inbind && cmd_data->inbind->list.list_len) using +=1;
   if (cmd_data->outbind && cmd_data->outbind->list.list_len) using +=2;
 
+  if (esql_type()==E_DIALECT_POSTGRES) {
+	// Postgres's ecpg doesn't like indicators on an EXECUTE
+ 	set_dont_use_indicators++;
+  }
+
   print_execute_g (cmd_data->sql_stmtid,using,cmd_data->inbind,cmd_data->outbind) ;
+
+  if (esql_type()==E_DIALECT_POSTGRES) {
+ 	set_dont_use_indicators--;
+  }
 
   if (!already_doing_command) {
   	print_copy_status_with_sql (0);
@@ -2180,7 +2189,10 @@ int no;
   print_bind_set_value_g (into_list,'o');
   print_conversions_g (input_bind,'i');
   A4GL_save_sql (buff, 0);
-  printc ("\nEXEC SQL %s;", buff);
+  A4GL_trim(buff);
+  if (strlen(buff)) {
+  	printc ("\nEXEC SQL %s;", buff);
+  }
   print_conversions_g (into_list ,'o');
   printc ("}");
   clr_suppress_lines ();
@@ -2198,7 +2210,7 @@ static void print_exec_sql_bound_g (char *s, int converted,expr_str_list *bind)
 {
   int c;
   set_suppress_lines ();
-
+char *buff;
   A4GL_save_sql (s, 0);
 
 if (bind && bind->list.list_len) {
@@ -2208,7 +2220,12 @@ if (bind && bind->list.list_len) {
   print_bind_set_value_g (bind,'i');
   print_conversions_g (bind,'i');
 }
-  printc ("\nEXEC SQL %s; /* exec_sql_bound */\n", s);
+  buff=strdup(s);
+  A4GL_trim(buff);
+  if (strlen(buff)) {
+    printc ("\nEXEC SQL %s; /* exec_sql_bound */\n", buff);
+  }
+  free(buff);
 
 if (bind && bind->list.list_len) {
   printc ("}\n");
@@ -2572,6 +2589,7 @@ int
 print_sql_cmd (struct_sql_cmd * cmd_data)
 {
   char *ptr;
+char *p;
   int converted = 0;
 // ---- 
   print_cmd_start ();
@@ -2586,12 +2604,16 @@ print_sql_cmd (struct_sql_cmd * cmd_data)
       ptr = cmd_data->sql;
     }
 
+  p=strdup(ptr);
+  A4GL_trim(p);
+  if (strlen(p)) {
   set_suppress_lines ();
 	// No variables used...
-  printc ("\nEXEC SQL %s;\n", ptr);
+  printc ("\nEXEC SQL %s;\n", p);
   clr_suppress_lines ();
+	}
 
-
+A4GL_trim(p);
 
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
