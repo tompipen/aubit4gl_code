@@ -2639,7 +2639,7 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
       printc ("free(_comment);");
       printc ("free(_style);");
       printc ("free(_image);");
-      printc ("free(_mn_title);");
+      printc ("free(_mntitle);");
       printc ("}");
     }
   else
