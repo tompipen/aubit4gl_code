@@ -6,7 +6,7 @@
 
 
 arr_expr_e :
-	OPEN_BRACKET arr_expr_e CLOSE_BRACKET  		{ $<ptr>$=$<ptr>2;}
+	OPEN_BRACKET arr_expr_e CLOSE_BRACKET  		{ $<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_BRACKET);}
 	| arr_expr_e KW_PLUS arr_expr_e 		{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_ADD,0);  }
 	| arr_expr_e KW_MINUS arr_expr_e 		{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_SUB,0);  }
 	| arr_expr_e KW_MULTIPLY arr_expr_e 		{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MULT,0);  }
