@@ -187,6 +187,7 @@ print_case_cmd (struct_case_cmd * cmd_data)
   tmp_ccnt++;
   for (a = 0; a < cmd_data->whens->whens.whens_len; a++)
     {
+      line_for_cmd=cmd_data->whens->whens.whens_val[a]->lineno;
       dump_comments (cmd_data->whens->whens.whens_val[a]->lineno);
       print_when (cmd_data->case_expr != 0, cmd_data->whens->whens.whens_val[a]->when_expr);
       dump_commands (cmd_data->whens->whens.whens_val[a]->when_commands);

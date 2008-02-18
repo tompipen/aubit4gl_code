@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.400 2008-02-18 15:27:14 mikeaubury Exp $
+# $Id: compile_c.c,v 1.401 2008-02-18 15:38:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.400 2008-02-18 15:27:14 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.401 2008-02-18 15:38:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6054,7 +6054,8 @@ switch (s->expr_type) {
 		}
 
 		yylineno=line_for_cmd;
-		a4gl_yyerror("You can use a function requiring parameters in this context");
+		set_yytext(fcall->fname);
+		a4gl_yyerror("You can't use a function requiring parameters in this context");
 		return 0;
 		}
 		
