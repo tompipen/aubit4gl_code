@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.116 2008-02-12 18:25:56 mikeaubury Exp $
+# $Id: compile.c,v 1.117 2008-02-18 14:51:59 mikeaubury Exp $
 #*/
 
 /**
@@ -1273,12 +1273,15 @@ static char local_pass_options[1024] = "";
 	if (yydebug) { PRINTF ("Closing map : %d\n", yyparse_ret); }
 	dump_gvars ();
 	closemap ();
-	if (A4GL_db_used()) {
-		A4GL_close_database();
-	}
+
+
 	if (!only_doing_globals()) {
 	  A4GL_write_generated_code(&this_module);
         }
+	if (A4GL_db_used()) {
+		A4GL_close_database();
+	}
+
 	#ifdef DEBUG
 		A4GL_debug ("after closemap");
 	#endif
