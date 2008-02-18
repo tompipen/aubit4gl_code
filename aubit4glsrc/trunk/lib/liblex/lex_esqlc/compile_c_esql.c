@@ -1625,7 +1625,11 @@ int ll;
           		SPRINTF1 (buff, "\nEXEC SQL FETCH %s", sqcname);
 			break;
 		case -1:
-          		SPRINTF1 (buff, "\nEXEC SQL FETCH PREVIOUS %s", sqcname);
+			if (esql_type () == E_DIALECT_INFORMIX) {
+          			SPRINTF1 (buff, "\nEXEC SQL FETCH PREVIOUS %s", sqcname);
+			} else {
+          			SPRINTF1 (buff, "\nEXEC SQL FETCH RELATIVE -1 %s ",  sqcname);
+			}
 			break;
 		default: 
           		SPRINTF1 (buff, "\nEXEC SQL FETCH RELATIVE :_fp %s ",  sqcname);
