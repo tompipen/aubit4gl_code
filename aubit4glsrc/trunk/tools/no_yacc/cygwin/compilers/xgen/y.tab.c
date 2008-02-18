@@ -867,14 +867,14 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   408,   408,   408,   411,   412,   413,   414,   415,   416,
-     421,   425,   439,   450,   461,   472,   473,   474,   477,   477,
-     514,   514,   517,   535,   558,   564,   564,   564,   564,   564,
-     567,   567,   605,   605,   608,   614,   620,   626,   632,   638,
-     646,   651,   652,   654,   655,   656,   657,   658,   659,   660,
-     661,   667,   675,   679,   686,   698,   686,   759,   759,   762,
-     762,   766,   766,   786,   786,   790,   809,   809,   813,   824,
-     825,   827,   827,   831,   831,   834,   834,   835,   835,   836,
-     839,   844
+     421,   425,   439,   450,   461,   472,   473,   474,   489,   489,
+     526,   526,   529,   547,   570,   576,   576,   576,   576,   576,
+     579,   579,   617,   617,   620,   626,   632,   638,   644,   650,
+     658,   663,   664,   666,   667,   668,   669,   670,   671,   672,
+     673,   679,   687,   691,   698,   710,   698,   771,   771,   774,
+     774,   778,   778,   798,   798,   802,   821,   821,   825,   836,
+     837,   839,   839,   843,   843,   846,   846,   847,   847,   848,
+     851,   856
 };
 #endif
 
@@ -1960,11 +1960,23 @@ yyreduce:
 
   case 17:
 #line 474 "x.yacc"
-    {fprintf(hsf,"typedef char *%s;\n",(yyvsp[(2) - (4)].str));}
+    {
+			fprintf(hsf,"typedef char *%s;\n",(yyvsp[(2) - (4)].str));
+			fprintf(hf,"int input_%s(char *rn,char **r,int isptr,int arr);\n",(yyvsp[(2) - (4)].str),(yyvsp[(2) - (4)].str));
+			fprintf(cfi,"int input_%s(char *rn,char **r,int isptr,int arr) {\n",(yyvsp[(2) - (4)].str),(yyvsp[(2) - (4)].str));
+			fprintf(cfi,"return input_string(rn,r,isptr,arr);\n");
+			fprintf(cfi,"}\n");
+			
+			fprintf(hf,"int output_%s(char *rn,char *r,int isptr,int arr);\n",(yyvsp[(2) - (4)].str),(yyvsp[(2) - (4)].str));
+			fprintf(cfo,"int output_%s(char *rn,char *r,int isptr,int arr) {\n",(yyvsp[(2) - (4)].str),(yyvsp[(2) - (4)].str));
+			fprintf(cfo,"if (rn==0) rn=\"\";\n");
+			fprintf(cfo,"return output_string(rn,r,isptr,arr);\n");
+			fprintf(cfo,"}\n");
+		}
     break;
 
   case 18:
-#line 477 "x.yacc"
+#line 489 "x.yacc"
     {
 	cu_cnt++;
 	strcpy(cu[cu_cnt],"");
@@ -1993,7 +2005,7 @@ yyreduce:
     break;
 
   case 19:
-#line 501 "x.yacc"
+#line 513 "x.yacc"
     {
 	fprintf(cfo,"return 1;\n}\n\n");
 	fprintf(cfi,"   if (!input_enum(rn, name,(int *)r)) return 0;\nreturn 1;\n}\n\n");
@@ -2008,7 +2020,7 @@ yyreduce:
     break;
 
   case 22:
-#line 517 "x.yacc"
+#line 529 "x.yacc"
     {
 		fprintf(cfo,"if (r==%d) {\n", enumv);
 		//fprintf(cfo,"  if (!output_enum(name,\"%s\",%d)) return 0;\n",$<str>1,enumv);
@@ -2030,7 +2042,7 @@ yyreduce:
     break;
 
   case 23:
-#line 535 "x.yacc"
+#line 547 "x.yacc"
     {
 		enumv=atoi((yyvsp[(3) - (3)].str));
 		fprintf(cfo,"if (r==%d) {\n", enumv);
@@ -2054,14 +2066,14 @@ yyreduce:
     break;
 
   case 24:
-#line 558 "x.yacc"
+#line 570 "x.yacc"
     {
 	fprintf(hsf,"#define %s %s\n",(yyvsp[(2) - (5)].str),(yyvsp[(4) - (5)].str));
 	}
     break;
 
   case 30:
-#line 567 "x.yacc"
+#line 579 "x.yacc"
     {
 	cu_cnt++;
 	strcpy(cu[cu_cnt],"");
@@ -2094,7 +2106,7 @@ yyreduce:
     break;
 
   case 31:
-#line 595 "x.yacc"
+#line 607 "x.yacc"
     {
 	fprintf(cfo,"if (!output_end_struct(\"%s\",rn)) return 0;\n",(yyvsp[(2) - (7)].str));
 	fprintf(cfo,"return 1;\n}\n\n");
@@ -2106,7 +2118,7 @@ yyreduce:
     break;
 
   case 34:
-#line 608 "x.yacc"
+#line 620 "x.yacc"
     {
 		(yyval.mode).pointer=0;
 		(yyval.mode).type=0;
@@ -2116,7 +2128,7 @@ yyreduce:
     break;
 
   case 35:
-#line 614 "x.yacc"
+#line 626 "x.yacc"
     {
 		(yyval.mode).pointer=0;
 		(yyval.mode).type=1;
@@ -2126,7 +2138,7 @@ yyreduce:
     break;
 
   case 36:
-#line 620 "x.yacc"
+#line 632 "x.yacc"
     {
 		(yyval.mode).pointer=0;
 		(yyval.mode).type=2;
@@ -2136,7 +2148,7 @@ yyreduce:
     break;
 
   case 37:
-#line 626 "x.yacc"
+#line 638 "x.yacc"
     {
 		(yyval.mode).pointer=1;
 		(yyval.mode).type=0;
@@ -2146,7 +2158,7 @@ yyreduce:
     break;
 
   case 38:
-#line 632 "x.yacc"
+#line 644 "x.yacc"
     {
 		(yyval.mode).pointer=1;
 		(yyval.mode).type=1;
@@ -2156,7 +2168,7 @@ yyreduce:
     break;
 
   case 39:
-#line 638 "x.yacc"
+#line 650 "x.yacc"
     {
 		(yyval.mode).pointer=1;
 		(yyval.mode).type=2;
@@ -2166,57 +2178,57 @@ yyreduce:
     break;
 
   case 41:
-#line 651 "x.yacc"
+#line 663 "x.yacc"
     { print_elem("enum",(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].mode)); }
     break;
 
   case 42:
-#line 652 "x.yacc"
+#line 664 "x.yacc"
     { print_elem("struct",(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].mode)); }
     break;
 
   case 43:
-#line 654 "x.yacc"
+#line 666 "x.yacc"
     { print_elem("istypedefed",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 44:
-#line 655 "x.yacc"
+#line 667 "x.yacc"
     { print_elem("bool","bool",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 45:
-#line 656 "x.yacc"
+#line 668 "x.yacc"
     { print_elem("int","int",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 46:
-#line 657 "x.yacc"
+#line 669 "x.yacc"
     { print_elem("long","long",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 47:
-#line 658 "x.yacc"
+#line 670 "x.yacc"
     { print_elem("short","short",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 48:
-#line 659 "x.yacc"
+#line 671 "x.yacc"
     { print_elem("string","string",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 49:
-#line 660 "x.yacc"
+#line 672 "x.yacc"
     { print_elem("opaque","opaque",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 50:
-#line 661 "x.yacc"
+#line 673 "x.yacc"
     { print_elem("double","double",(yyvsp[(2) - (2)].mode)); }
     break;
 
   case 51:
-#line 667 "x.yacc"
+#line 679 "x.yacc"
     {
 
 
@@ -2228,7 +2240,7 @@ yyreduce:
     break;
 
   case 52:
-#line 675 "x.yacc"
+#line 687 "x.yacc"
     {
                 sprintf(sw_elem,"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
                 strcpy((yyval.str),(yyvsp[(2) - (2)].str));
@@ -2236,7 +2248,7 @@ yyreduce:
     break;
 
   case 53:
-#line 679 "x.yacc"
+#line 691 "x.yacc"
     {
                 strcpy((yyval.str),(yyvsp[(3) - (3)].str));
                 sprintf(sw_elem,"%s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -2245,7 +2257,7 @@ yyreduce:
     break;
 
   case 54:
-#line 686 "x.yacc"
+#line 698 "x.yacc"
     {
 	cu_cnt++;
 	sprintf(cu[cu_cnt],"%s_u.",(yyvsp[(2) - (4)].str));
@@ -2262,7 +2274,7 @@ yyreduce:
     break;
 
   case 55:
-#line 698 "x.yacc"
+#line 710 "x.yacc"
     {
 	add_as_union((yyvsp[(2) - (7)].str));
 
@@ -2305,7 +2317,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 56:
-#line 736 "x.yacc"
+#line 748 "x.yacc"
     {
 	fprintf(cfo,"} /* switch */\n");
 	//fprintf(cfo,"if (!output_end_union(\"%s\",rn)) return 0;\n",$<str>2);
@@ -2330,7 +2342,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 61:
-#line 766 "x.yacc"
+#line 778 "x.yacc"
     {
 	if (dumping_command_data) {
 		char buff[200];
@@ -2350,7 +2362,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 65:
-#line 790 "x.yacc"
+#line 802 "x.yacc"
     {
 	if (dumping_command_data) {
 		fprintf(cmd_file,"); break;\n");
@@ -2371,7 +2383,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 68:
-#line 813 "x.yacc"
+#line 825 "x.yacc"
     {
 	char *ptr;
 	ptr=acl_strdup((yyvsp[(1) - (1)].str));
@@ -2385,7 +2397,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
 
 
 /* Line 1267 of yacc.c.  */
-#line 2389 "y.tab.c"
+#line 2401 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2599,7 +2611,7 @@ yyreturn:
 }
 
 
-#line 850 "x.yacc"
+#line 862 "x.yacc"
 
 
 

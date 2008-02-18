@@ -10700,7 +10700,7 @@ yyreduce:
 
   case 10:
 #line 1634 "fgl.infx.yacc"
-    { (yyval.ptr)=(yyvsp[(2) - (3)].ptr);}
+    { (yyval.ptr)=A4GL_new_expr_simple_expr((yyvsp[(2) - (3)].ptr),ET_EXPR_BRACKET);}
     break;
 
   case 11:
