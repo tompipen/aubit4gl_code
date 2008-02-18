@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.399 2008-02-16 14:49:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.400 2008-02-18 15:27:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.399 2008-02-16 14:49:29 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.400 2008-02-18 15:27:14 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -308,6 +308,8 @@ static void clr_doing_a_report_call(int n) {
 char *get_last_print_bind_dir_definition_g_rval(char dir) {
 	return last_print_bind_dir_definition_g_rval[(int)dir];
 }
+
+
 
 
 /**
@@ -1202,332 +1204,6 @@ void print_report_2_1() {
 	// Does nothing in this output module - needed by API
 }
 
-
-#ifdef MOVED
-/**
- * Called by print_report_2() generate the C code taht implements the 
- * assignments that should be done when an output to report is executed.
- *
- * This implementation is specific for text only reports.
- *
- * @param rep The report control structure.
- */
-static void print_output_rep (struct rep_structure *rep, int report_cnt,char *curr_rep_name)
-{
-  printc ("output_%d:\n", report_cnt);
-  printc ("_rep.lines_in_header=-1;\n");
-  printc ("_rep.lines_in_trailer=-1;\n");
-  printc ("_rep.lines_in_first_header=-1;\n");
-  printc ("_rep.print_section=0;\n");
-  printc ("_rep.top_margin= A4GL_set_report_dim_int(\"TOP MARGIN\",%d);\n", rep->top_margin);
-  printc ("_rep.bottom_margin= A4GL_set_report_dim_int(\"BOTTOM MARGIN\",%d);\n", rep->bottom_margin);
-  printc ("_rep.left_margin= A4GL_set_report_dim_int(\"LEFT MARGIN\",%d);\n", rep->left_margin);
-  printc ("_rep.right_margin= A4GL_set_report_dim_int(\"RIGHT MARGIN\",%d);\n", rep->right_margin);
-
-  printc ("_rep.page_length= A4GL_set_report_dim_int(\"PAGE LENGTH\",%d);\n", rep->page_length);
-
-  if (rep->top_of_page &&strlen(rep->top_of_page)) {
-	  printc ("strcpy(_rep.top_of_page, %s);", rep->top_of_page); 
-  } else {
-	  printc ("strcpy(_rep.top_of_page, \"\");", rep->top_of_page); 
-  }
-
-  printc ("_rep.header=0;\n");
-  printc ("_rep.finishing=0;\n");
-  printc ("_rep.nblocks=0;\n");
-  printc ("_rep.blocks=0;\n");
-  printc ("_rep.repName=_reportName;\n");
-  printc ("_rep.modName=_module_name;\n");
-  printc ("_rep.page_no=%d;\n", rep->page_no);
-  printc ("_rep.printed_page_no=%d;\n", rep->printed_page_no);
-  printc ("_rep.line_no=%d;\n", rep->line_no);
-  printc ("_rep.col_no=%d;\n", rep->col_no);
-  printc ("if (strlen(_rout2)==0)\n");
-  printc ("strcpy(_rep.output_loc_str,%s);\n", rep->output_loc);
-  printc ("else strcpy(_rep.output_loc_str,_rout2);\n");
-  printc ("if (strlen(_rout1)==0)\n");
-  printc ("_rep.output_mode='%c';\n", rep->output_mode);
-  printc ("else _rep.output_mode=_rout1[0];\n");
-  if (A4GL_doing_pcode()) {
-  	printc ("_rep.report=0;\n", curr_rep_name );
-  } else {
-  	printc ("_rep.report=(void *)&%s;\n", curr_rep_name );
-  }
-  printc ("A4GL_trim(_rep.output_loc_str);");
-  printc ("A4GL_%srep_print(&_rep,-1,-1,-1,-1);",ispdf());
-  print_rep_ret (report_cnt,0);
-}
-#endif
-
-
-#ifdef MOVED
-/**
- * Called by print_report_2() generate the C code taht implements the
- * assignments that should be done when an output to report is executed.
- *
- * This implementation is specific for pdf reports only.
- *
- * @param rep The report control structure.
- */
-static void
-pdf_print_output_rep (struct pdf_rep_structure *rep, int report_cnt,char * curr_rep_name)
-{
-  printc ("output_%d:\n", report_cnt);
-  printc ("strcpy(_rep.font_name,%s);\n", rep->font_name);
-  printc ("_rep.font_size=%f;\n", rep->font_size);
-  printc ("_rep.paper_size=%d;\n", rep->paper_size);
-  printc ("_rep.header=0;\n");
-  printc ("_rep.lines_in_header=-1;\n");
-  printc ("_rep.lines_in_trailer=-1;\n");
-  printc ("_rep.lines_in_first_header=-1;\n");
-  printc ("_rep.print_section=0;\n");
-  printc ("_rep.finishing=0;\n");
-  printc ("_rep.nblocks=0;\n");
-  printc ("_rep.blocks=0;\n");
-  printc ("_rep.repName=_reportName;\n");
-  printc ("_rep.modName=_module_name;\n");
-
-  printc ("_rep.top_margin=A4GL_pdf_size(%f,'l',&_rep);\n", rep->top_margin);
-  printc ("_rep.bottom_margin=A4GL_pdf_size(%f,'l',&_rep);\n",
-	  rep->bottom_margin);
-  printc ("_rep.page_length=A4GL_pdf_size(%f,'l',&_rep);\n", rep->page_length);
-  printc ("_rep.left_margin=A4GL_pdf_size(%f,'c',&_rep);\n", rep->left_margin);
-  printc ("_rep.right_margin=A4GL_pdf_size(%f,'c',&_rep);\n",
-	  rep->right_margin);
-  printc ("_rep.page_width=A4GL_pdf_size(%f,'c',&_rep);\n", rep->page_width);
-
-  printc ("_rep.page_no=%d;\n", rep->page_no);
-  printc ("_rep.printed_page_no=%d;\n", rep->printed_page_no);
-
-  printc ("_rep.line_no=%f;\n", rep->line_no);
-  printc ("_rep.col_no=%f;\n", rep->col_no);
-
-  printc ("if (strlen(_rout2)==0)\n");
-  printc ("strcpy(_rep.output_loc_str,%s);\n", rep->output_loc);
-  printc ("else strcpy(_rep.output_loc_str,_rout2);\n");
-  printc ("if (strlen(_rout1)==0)\n");
-  printc ("_rep.output_mode='%c';\n", rep->output_mode);
-  printc ("else _rep.output_mode=_rout1[0];\n");
-  printc ("_rep.report=(void *)&%s;\n", curr_rep_name );
-  printc ("A4GL_trim(_rep.output_loc_str);");
-  print_rep_ret (report_cnt,0);
-}
-#endif
-
-/*
-static void pr_report_agg_clr (void)  {
-A4GL_assertion(1,"FIXME");
-}
-*/
-
-/*
-static void
-pr_nongroup_report_agg_clr (void)
-{
-A4GL_assertion(1,"FIXME");
-}
-*/
-
-#ifdef NEEDS_REPLACING
-/**
- * Prints the generated C code that implements the AFTER GROUP(s) actions
- */
-static void
-pr_report_agg (int sreports_cnt)
-{
-  int z;
-  int a;
-  int t;
-/*
-  char s1[5024];
-  char s2[5024];
-*/
-
-
-  for (z = 0; z < sreports_cnt; z++)
-    {
-
-      /*strcpy (s2, sreports[z].rep_cond);*/
-      /*strcpy (s1, sreports[z].rep_expr);*/
-
-      a = sreports[z].a;
-      t = sreports[z].t;
-
-#ifdef DEBUG
-      A4GL_debug ("pr_report_agg - %c %d z=%d\n", t, a, z);
-#endif
-
-
-      if (t == 'C') /* Count */
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) _g%d++;\n", a);
-	}
-
-      if (t == 'P') /* Percent */
-	{
-	  printc ("_gpc%d++;", a);
-	  print_expr (sreports[z].rep_where_expr);
-	  printc (" if (A4GL_pop_bool()) _g%d++; \n", a);
-	}
-
-      if (t == 'S') /* SUM */
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  print_expr (sreports[z].rep_cond_expr);
-  	  printc ("A4GL_set_agg('S',&_gt_%d,&_g%d,&_g%dused);",a,a,a);
-	  printc("}");
-		/*
- 	  	if (A4GL_doing_pcode()) {
-	 		printc ("A4GL_pop_into_double_null_as_zero(&_res);");
-	  	} else {
-	  		printc ("_res=A4GL_pop_double_null_as_zero();");
-	  	}
-		*/
-
-	  //printc ("_g%dused++; _g%d+=_res;}\n ", a,a);
-	}
-
-      if (t == 'A') /* Average */
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {");
-	  print_expr (sreports[z].rep_cond_expr);
-  	  printc ("A4GL_set_agg('A',&_gt_%d,&_g%d,&_gavg%d);",a,a,a);
-	  printc("}");
-	  //printc ("if (!A4GL_isnull(3,&_res)) { _g%d+=_res;_g%d++;}}\n", a, a + 1);
-	}
-
-      if (t == 'N') /* Min */
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  print_expr (sreports[z].rep_cond_expr);
-  	  printc ("A4GL_set_agg('N',&_gt_%d,&_g%d,&_g%dused);",a,a,a);
-	  printc("}");
-
-	/*
- 	  if (A4GL_doing_pcode()) {
-	  	printc ("A4GL_pop_double_into(&_res); ");
-	  } else {
-	  	printc ("_res=A4GL_pop_double();");
-	  }
-	  printc ("if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
-	*/
-	}
-
-      if (t == 'X') /* Max */
-	{
-	  print_expr (sreports[z].rep_where_expr);
-	  printc ("if (A4GL_pop_bool()) {double _res;");
-	  print_expr (sreports[z].rep_cond_expr);
-  	  printc ("A4GL_set_agg('X',&_gt_%d,&_g%d,&_g%dused);",a,a,a);
-	  printc("}");
-	/*
- 	  if (A4GL_doing_pcode()) {
-	  	printc ("A4GL_pop_double_into(&_res); ");
-	  } else {
-	  	printc ("_res=A4GL_pop_double();");
-	  }
-	  printc ("if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
-		*/
-	}
-
-    }
-}
-
-static void
-pr_nongroup_report_agg_clr (void)
-{
-  int z;
-  int a;
-  int t;
-  int in_b;
-  char b[255];
-  for (z = 0; z < sreports_cnt; z++)
-    {
-      a = sreports[z].a;
-      t = sreports[z].t;
-      SPRINTF1(b,"%d",sreports[z].in_b);
-      in_b = gen_ord(b);
-      
-      if (in_b == 0)
-	{
-	  if (t == 'C' || t == 'N' || t == 'X' || t == 'S')
-	    {
-	      printc ("_g%d=0;\n", a);
-	    }
-
-	  if (t == 'N' || t == 'X' || t=='S')
-	    {
-	      printc ("_g%dused=0;\n", a);
-	    }
-
-	  if (t == 'P' ) { printc ("_g%d=0;_gpc%d=0;\n", a , a); }
-	  if (t == 'A') { printc ("_g%d=0;_gavg%d=0;\n", a , a); }
-	}
-    }
-}
-
-
-/**
- * Generate the C code to clear the report agregate conditions.
- */ 
-static void 
-pr_report_agg_clr (void) 
-{
-  int z;
-  int a;
-  int t;
-  int in_b;
-  char b[255];
-  for (z = 0; z < sreports_cnt; z++)
-    
-    {
-      a = sreports[z].a;
-      t = sreports[z].t;
-      SPRINTF1 (b, "%d", sreports[z].in_b);
-      in_b = gen_ord (b);
-      if (in_b > 0)
-	
-	{
-	  printc ("if (_nargs==-%d&&acl_ctrl==REPORT_AFTERGROUP) {\n", in_b);
-
-	  if (t == 'C' || t == 'N' || t == 'X' || t == 'S')
-	    
-	    {
-	      if (t == 'C') 
-		{
-		  printc ("_g%d=0;\n", a, a);
-		} else {
-		  printc ("A4GL_init_agg(&_g%d,_gt_%d);\n", a, a);
-		}
-	    }
-
-	  if (t == 'N' || t == 'X' || t == 'S')
-	    
-	    {
-	      printc ("_g%dused=0;\n", a);
-	    }
-
-	  if (t == 'P')
-	    {
-	      printc ("_gpc%d=0;", a );
-	      printc ("_g%d=0;\n", a);
-	    }
-
-	  if (t == 'A')
-	    {
-	      printc ("A4GL_init_agg(&_g%d,_gt_%d);\n", a, a);
-	      printc ("_gavg%d=0;", a );
-	    }
-
-	  printc ("}\n");
-	}
-    }
-}
-#endif
 
 
 /**
@@ -3054,28 +2730,6 @@ real_print_func_call (t_expr_str * fcall)
 }
 
 
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-static void real_print_class_func_call (char *var, char *identifier, struct expr_str *args, int args_cnt,int yylineno)
-{
-  printcomment ("/* printing parameters */");
-  if (args) real_print_expr (args);
-  printcomment ("/* done printing parameters */");
-  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-	  if (A4GL_doing_pcode()) {
-  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
-	  } else {
-  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-	  }
-
-  printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", var, scan_variable (var), identifier, args_cnt);
-print_reset_state_after_call(0);
-
-}
-#endif
 
 
 #ifdef NOT_YET
@@ -3304,27 +2958,6 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 }
 
 
-#ifdef OBSOLETE
-/**
- * Print in the generated output file the C implementation of the 
- * INITIALIZE <variable_list> TO NULL 4gl statement.
- */
-void
-print_init_g (struct expr_str_list *bind, int explicit)
-{
-  int cnt;
-  printc ("{\n");
-
-
-  for (cnt = 0; cnt < bind->list.list_len; cnt++)
-    {
-      print_init_var_from_expr (bind->list.list_val[cnt], "", 0,explicit);
-    }
-
-  printc ("}\n");
-}
-#endif
-
 
 #ifdef SHOULD_BE_MOVED_TO_COMPILER
 /**
@@ -3410,170 +3043,6 @@ print_validate_g (struct expr_str_list *bind,char *tablist)
         printc("A4GL_pushop(OP_IN);");
 	printc("if (!A4GL_pop_bool()) {A4GLSQL_set_status(-1321,0);}");
   }
-}
-#endif
-
-#ifdef MOVED
-/**
- * Called in the middle of the REPORT definition after the parser found
- * the optional output and (or) order external by.
- * @param pdf :
- *   - 0 : Its not a PDF report.
- *   - 1 : Its a PDF report.
- * @param repordby
- */
-void
-print_report_2_g (int pdf, char *repordby,char *asc_desc,struct expr_str_list *bind, struct expr_str_list *orderbind, int report_cnt, char *curr_rep_name)
-{
-  int cnt;
-  int a;
-  if (pdf) {
-  	//doing_a_report=2;
-    printc ("static struct pdf_rep_structure _rep;\n");
-  } else {
-  	//doing_a_report=1;
-    printc ("static struct rep_structure _rep;\n");
-  }
-
-  printc ("static char _rout1[256];\n");
-  printc ("static char _rout2[256];\n");
-  printc ("static int _useddata=0;\n");
-  printc ("static int _started=0;\n");
-  printc ("static int _assigned_ordbind=0;\n");
-
-
-  cnt = print_param_g ('r',"report",bind);
-
-
-if (!A4GL_doing_pcode()) {
-  printc ("init_module_variables();");
-}
-  printc(" if (_assigned_ordbind==0) { _assigned_ordbind=1;"); print_bind_set_value_g(orderbind,'O'); printc("}");
-
-  printc ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
-  printc ("    A4GLSQL_set_status(-5555,0);\n");
-  printc ("    return;\n");
-  printc ("    }\n");
-  printc ("if (_nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
-  printc
-    ("A4GL_fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(_nargs);return ;}\n");
-  printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
-  printc
-    ("   if (_useddata) {for (_p=acl_rep_ordcnt;_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
-     curr_rep_name );
-  printc ("}\n");
-
-  if (last_orderby_type == 1)
-    {
-      printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
-      for (a = 0; a < cnt; a++)
-	{
-	  printc
-	    ("A4GL_setnull(_rbind[%d].dtype,_rbind[%d].ptr,_rbind[%d].size);", a,
-	     a, a);
-	}
-      printc ("A4GL_pop_params(_rbind,%d);", cnt);
-      print_report_table (mv_repname, 'R', cnt,asc_desc,bind,orderbind);
-      printc ("return;");
-      printc("}");
-    }
-
-  printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
-  printc ("   int _g;int _p;\n");
-
-
-  /* This was put in to force a page header if*/
-  /* data was sent - but not used..*/
-  /* But this prints too early here...*/
-  /*printc ("   A4GL_rep_print(&_rep,0,1,0,-1);");*/
-
-
-  printc ("   _g=A4GL_chk_params(_rbind,%d,_ordbind,acl_rep_ordcnt);\n", cnt);
-  printc
-    ("   if (_g>0&&_useddata) {for (_p=acl_rep_ordcnt;_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
-     curr_rep_name );
-  printc ("   A4GL_pop_params(_rbind,%d);\n", cnt);
-  printc ("               %s(0,REPORT_AFTERDATA);", curr_rep_name );
-  printc ("   if (_useddata==0) {_g=1;}\n");
-  printc ("   if (_g>0) {");
-  printc ("    A4GL_%srep_print(&_rep,0,1,0,-1);\n",ispdf()); // Mantis ID 573
-  printc ("        _useddata=1;");
-  printc ("        for (_p=_g;_p<=acl_rep_ordcnt;_p++) ");
-  printc ("               %s(_p,REPORT_BEFOREGROUP);", curr_rep_name );
-  printc ("   }");
-
-
-  printc ("   _useddata=1;\n");
-
-  print_rep_ret (report_cnt,0);
-  printc ("}\n\n");
-  printc ("if (acl_ctrl==REPORT_FINISH) {\n");
-
-  if (last_orderby_type == 1)
-    {
-
-      printc ("    if (fgl_rep_orderby==1) {\n");
-      printc ("        struct BINDING *reread;\n");
-      printc ("        fgl_rep_orderby=-1;\n");
-      printc ("        A4GL_push_char(_rout1);\n");
-      printc ("        A4GL_push_char(_rout2);\n");
-      printc ("        %s(2,REPORT_RESTART);\n", curr_rep_name );
-
-      /*printc ("        A4GL_init_report_table(_rbind,%d,_ordbind,acl_rep_ordcnt,&reread);\n", cnt);*/
-      print_report_table (mv_repname, 'I', cnt,asc_desc,bind,orderbind);
-
-      /*printc ("        while (A4GL_report_table_fetch(reread,%d,_rbind))",cnt);*/
-      print_report_table (mv_repname, 'F', cnt,asc_desc,bind,orderbind);
-
-      printc ("                    %s(%d,REPORT_SENDDATA);\n",
-	      curr_rep_name , cnt);
-      printc (" }");
-      printc ("        %s(0,REPORT_FINISH);\n", curr_rep_name );
-
-      /*printc ("        A4GL_end_report_table(_rbind,%d,reread);",cnt);*/
-      print_report_table (mv_repname, 'E', cnt,asc_desc,bind,orderbind);
-
-      printc ("        return;");
-      printc ("    }\n");
-
-    }
-
-  printc ("}\n");
-
-
-
-  printc (" ");
-  printc("if (acl_ctrl==REPORT_CONVERT) {");
-  printc("char *_f; char *_o; char *_l; int _to_pipe; _l=A4GL_char_pop(); _o=A4GL_char_pop(); _f=A4GL_char_pop(); _to_pipe=A4GL_pop_int();\n");
-  printc("A4GL_convert_report(&_rep,_f,_o,_l,_to_pipe);");
-  printc("return ;");
-  printc("}");
-  printc("if (acl_ctrl==REPORT_FREE) {");
-  printc("A4GL_free_report(&_rep);");
-  printc("return ;");
-  printc("}");
-  printc ("if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {\n");
-  printc ("   A4GL_pop_char(_rout2,254);A4GL_trim(_rout2);\n");
-  printc ("   A4GL_pop_char(_rout1,254);A4GL_trim(_rout1);\n");
-  if (last_orderby_type == 1)
-    {
-      printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
-      printc ("   if (fgl_rep_orderby==1) {");
-      print_report_table (mv_repname, 'M', cnt,asc_desc,bind,orderbind);
-      printc ("       return;");
-      printc ("   }\n");
-    }
-
-
-  printc ("   _useddata=0;\n");
-  printc ("   _started=1;\n");
-  printc ("goto output_%d;\n", report_cnt);
-  printc ("}\n\n");
-  print_rep_ret (report_cnt,0);
-  if (pdf)
-    pdf_print_output_rep (&pdf_rep_struct,report_cnt, curr_rep_name);
-  else
-    print_output_rep (&rep_struct ,report_cnt, curr_rep_name);
 }
 #endif
 
@@ -3891,25 +3360,6 @@ void print_end_record (char *vname, struct variable *v, int level)
 }
 
 
-#ifdef MOVED
-/**
- *
- * @todo Describe function
- */
-int
-doing_esql ()
-{
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
-    {
-      return 1;
-    }
-
-
-  return 0;
-}
-#endif
-
-
 /**
  *
  * @todo Describe function
@@ -3944,6 +3394,9 @@ enum e_dialect esql_type ()
 
   return E_DIALECT_INFORMIX;			/* Assume informix*/
 }
+
+
+
 
 /**
  *
@@ -6920,7 +6373,7 @@ static char *get_select_list_item_list_with_separator (struct s_select *select, 
 //
 //   SELECT a*b FROM sometab
 //
-//   this isn't portable and causes issues with some esql/c generation..
+//   as this isn't portable and causes issues with some esql/c generation..
 //
 int chk_ibind_select_internal(struct s_select *s) {
 int a;
