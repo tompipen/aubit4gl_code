@@ -3,6 +3,7 @@
 #include "uilib.h"
 #include "pipe.h"
 #include "uilib/xml/attr.h"
+#include "a4gl_API_ui_lib.h"
 extern struct s_attr *last_attr;
 #include <stdarg.h>
 int mn_id = 0;
@@ -997,7 +998,19 @@ dump_events (struct aclfgl_event_list *e)
 	  uilib_event (3);
 	  continue;
 	}
+
+
+
+	if (e[a].field==0) {
+		  A4GL_push_int (a + 1);
+		  A4GL_push_char (decode_event_id (e[a].event_type));
+		  A4GL_push_char ("");
+		  uilib_event (3);
+			continue;
+	} 
+
       fields = get_field_codes (e[a].field);
+
       for (b = 0; fields[b]; b++)
 	{
 	  if (strlen (fields[b]) != 0)
