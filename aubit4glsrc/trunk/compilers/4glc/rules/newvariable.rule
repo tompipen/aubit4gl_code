@@ -20,11 +20,9 @@ var_ident_vl: variable_usage_expression {
 		char errbuff[256];
 		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1) { 
 			// Its not a variable - so we dont care about any errors..
-			if (is_valid_identifier($<ptr>1)) {
-				char *ident;
-				ident=get_id_from_variable_usage_expression($<ptr>1);
-				$<ptr>$=A4GL_new_expr_simple_string(ident, ET_EXPR_IDENTIFIER);
-			} else {
+			$<ptr>$=generate_sql_expr($<ptr>1); 
+		
+			if ($<ptr>$ ==0 ) {
 				a4gl_yyerror("Invalid identifier");
 				YYERROR;
 			}

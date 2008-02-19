@@ -2049,6 +2049,10 @@ struct variable_usage *usage_bottom_level( variable_usage *u) {
 struct s_select_list_item *convert_fgl_expr_to_sql_expr(expr_str *e) {
 struct s_select_list_item *rval=NULL;
 
+	if (e->expr_type== ET_EXPR_SELECT_LIST_ITEM) {
+		rval=e->expr_str_u.sl_item;
+	}
+
 	if (e->expr_type==ET_EXPR_IDENTIFIER) {
 		rval=new_select_list_item_column_from_transform(e->expr_str_u.expr_string);
 	}

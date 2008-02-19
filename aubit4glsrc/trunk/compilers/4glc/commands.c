@@ -2299,6 +2299,71 @@ int is_valid_identifier(expr_str *l) {
 	return 1;
 }
 
+static struct ilist *generate_ilist_from_variable_usage(struct variable_usage *u) {
+	struct ilist *ilist=0;
+	if (u->subscripts.subscripts_len) {
+		int a;
+		ilist=malloc(sizeof(struct ilist));
+		ilist->i0=u->subscripts.subscripts_len; ilist->i1=-1; ilist->i2=-1; ilist->i3=-1; ilist->i4=-1; ilist->i5=-1;
+		for (a=0;a<u->subscripts.subscripts_len;a++) {
+			long l;
+			A4GL_assertion(u->subscripts.subscripts_val[a]==0,"Expecting an expression");
+			if (u->subscripts.subscripts_val[a]->expr_type!=ET_EXPR_LITERAL_LONG) {
+				a4gl_yyerror("You can only use a literal number in this context");
+				return 0;
+			}
+			l=u->subscripts.subscripts_val[a]->expr_str_u.expr_long;
+			switch (a) {
+				case 0 : ilist->i1=l; break;
+				case 1 : ilist->i2=l; break;
+				case 2 : ilist->i3=l; break;
+				case 3 : ilist->i4=l; break;
+				case 4 : ilist->i5=l; break;
+			}
+		}
+	//printf("%d %d %d %d %d\n", ilist->i0,ilist->i1,ilist->i2,ilist->i3,ilist->i4);
+	}
+	return ilist;
+}
+
+
+struct expr_str *generate_sql_expr(struct expr_str *p) {
+char *ident;
+char buff[2000];
+struct variable_usage *u;
+struct expr_str *rval=0;
+if (!is_valid_identifier(p))  return 0;
+A4GL_assertion(p->expr_type!=ET_EXPR_VARIABLE_USAGE,"Expecting a variable usage") ;
+u=p->expr_str_u.expr_variable_usage;
+
+if (u->next==0) { // Looks simple enough..
+	struct s_select_list_item *i;
+	i=new_select_list_item_col("", u->variable_name, generate_ilist_from_variable_usage(u));
+	rval=A4GL_new_select_list_item_expr(i);
+}
+if (u->next!=0 && u->next->next==0) {  // Table.column 
+	struct s_select_list_item *i;
+	struct variable_usage *tab;
+	struct variable_usage *col;
+	tab=u;
+	col=u->next;
+	if (tab->subscripts.subscripts_len) {
+		a4gl_yyerror("You cant use subscripts here");
+		return 0;
+	}
+	i=new_select_list_item_col(tab->variable_name, col->variable_name, generate_ilist_from_variable_usage(col));
+	rval=A4GL_new_select_list_item_expr(i);
+}
+
+
+if (rval==0) {
+	ident=get_id_from_variable_usage_expression(p);
+	rval=A4GL_new_expr_simple_string(ident, ET_EXPR_IDENTIFIER);
+}
+return rval;
+}
+
+
 
 /*
 static char *get_expr_list_as_string(struct expr_str_list *l) {
