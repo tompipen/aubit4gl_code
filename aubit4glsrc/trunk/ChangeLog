@@ -1,4 +1,67 @@
 ---------------------------
+Tue Feb 19 12:56:48 GMT 2008
+---------------------------
+1.10RC_1 Released
+---------------------------
+	
+	***********  Parser upgrade *************
+	The parser has had a massive upgrade to generate an in memory
+	structure which is then processed, rather than generating code as its
+	parses the 4gl code. This means that all of the code generation has
+	been rewritten as well as the parser itself..
+
+	Code cleanup (remove sprintfs) and some minor patches
+	
+	Fix for 'exit case'
+	
+	Postgresql fixups
+	
+	Small fixup to move when we close the database connection until
+	after we've written the code out (so the libLEX_.. can use the
+	connection if required...)
+	
+	Fixup for build test 1671
+	
+	Fixup for build test 1672
+	
+	win32 & other minor fixups
+	
+	Small XML fixups
+	
+	Fixup for prompt
+	
+	fix for build test 1669
+	
+	Minor fixups
+	
+	make install fixups
+	
+	Add missing plugins
+	
+	Warning fixups
+	
+	missing structure to 'make'
+	
+	1102: HL_TUI: CLEAR FORM erases part of ERROR LINE (3) if switched
+	CURRENT WINDOW
+	
+	slightly change the way debugs are handled (uses GCC specific
+	syntax)
+	
+	Add extra info for packer library
+	
+	Add  extra info for packer library
+	
+	MID 1099: ERROR in a INPUT ARRAY goes to next line
+	
+	New build (added changelog to 'make commit')
+	
+	MID 1096: runforms.4ae enhancement Add A4GL_ASQLERRLOG &
+	A4GL_RUNFORMERRLOG to be filenames of ERRLOG files (if set.)
+	
+	Small fixups for memory problems and substrings on nulls
+	
+---------------------------
 Tue Jan 22 14:39:41 GMT 2008
 ---------------------------
 1.00_72 Released
