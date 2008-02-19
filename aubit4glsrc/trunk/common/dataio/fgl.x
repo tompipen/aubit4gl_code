@@ -898,6 +898,7 @@ struct struct_case_cmd  {
 	struct expr_str* case_expr;
 	struct whens *whens;
 	commands *otherwise;
+	int block_id;
 };
 
 struct struct_output_cmd {

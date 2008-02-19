@@ -201,6 +201,7 @@ print_case_cmd (struct_case_cmd * cmd_data)
   printc ("break;");
   tmp_ccnt--;
   printc ("} /* end of the while for the case */");
+  printc ("END_BLOCK_%d: ;", cmd_data->block_id);
 
   if (cmd_data->case_expr)
     {

@@ -1,23 +1,29 @@
-CFLAGS+=-I$(AUBITDIR)/incl
-libUI_XML.so: xml.c libuilib.a proxy
-	gcc -g -Wall -I$(AUBITDIR)/incl -I. -Iuilib  -shared -o libUI_XML.so xml.c -Bstatic  -Luilib -luilib
-	cp *.so `aubit-config DEFAULT_PLUGINDIR`
+ROOT=../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+
+CFLAGS+=-I$(AUBITDIR)/incl -I. -Iuilib
+
+
+all: libUI_XML${SO_EXT} proxy
+
+libUI_XML${SO_EXT}: xml.o uilib/libuilib.a 
+	${LD} ${SO_LDFLAGS}  -o $@  xml.o -Bstatic  -Luilib -luilib
+	cp $@ `aubit-config DEFAULT_PLUGINDIR`
+
 proxy: proxy.o pipe.o debug.o
-	gcc -g -o proxy proxy.o pipe.o debug.o
+	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o
 
 noproxy: noproxy.o pipe.o debug.o
-	gcc -g -o noproxy noproxy.o pipe.o debug.o
+	${CC} ${CFLAGS_NO_PEDANTIC} -g -o noproxy noproxy.o pipe.o debug.o
 
-libuilib.a: 
+uilib/libuilib.a: 
 	cd uilib && make -f Makefile.libaubit4gl libuilib.a
 
 
-update : 
-	cp /home/aubitv2/aubit4glsrc/proxy/debug.[ch] .
-	cp /home/aubitv2/aubit4glsrc/proxy/pipe.[ch] .
-	cp -r /home/aubitv2/aubit4glsrc/proxy/uilib .
-
 clean: 
-	rm libUI_XML.so `aubit-config DEFAULT_PLUGINDIR`/libUI_XML.so 
+	rm libUI_XML${SO_EXT} `aubit-config DEFAULT_PLUGINDIR`/libUI_XML${SO_EXT}
 	cd uilib && make clean
 	cd uilib/xml && make clean

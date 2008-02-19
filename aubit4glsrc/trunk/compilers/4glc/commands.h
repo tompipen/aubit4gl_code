@@ -114,7 +114,7 @@ struct command *new_return_cmd(expr_str_list *p_retvals);
 struct command *new_execute_cmd(expr_str *connid, expr_str_list* p_inbind, expr_str_list* p_outbind, expr_str *p_sql_stmtid);
 struct command *new_sql_block_cmd( expr_str *connid, expr_str_list* p_list);
 struct command *new_let_cmd(expr_str_list* p_vars, expr_str_list *p_vals);
-struct command *new_case_cmd(expr_str* p_case_expr, struct whens *p_whens, commands *p_otherwise);
+struct command *new_case_cmd(expr_str* p_case_expr, struct whens *p_whens, commands *p_otherwise,int block_id);
 struct command *new_validate_cmd(expr_str_list* p_list, str_list* p_tablist);
 struct command *new_display_b_n_cmd(expr_str_list* p_vars, attrib *p_attributes);
 struct command *new_foreach_cmd(expr_str *connid, expr_str * p_cursorname, expr_str_list* p_inputvals, expr_str_list* p_outputvals, commands *p_cmds);

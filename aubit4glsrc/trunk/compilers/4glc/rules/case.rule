@@ -13,12 +13,13 @@ case_cmd	: CASE atline op_case_fgl_expr_c  {
 			setinc(1);
 			setinc(1);
 		} when_unit op_otherwise_command end_case_command {
-			
+			int blk;
+			blk=get_sio_ids("CASE");
 			/*print_after_when(0); */
 			//continue_blockcommand("CASE");
 			pop_blockcommand("CASE");
 			set_cmdlineno($<integer_val>2);
-			$<cmd>$=new_case_cmd(chk_expr($<ptr>3), $<whens>5, $<commands>6);
+			$<cmd>$=new_case_cmd(chk_expr($<ptr>3), $<whens>5, $<commands>6,blk);
 		}
 ;
 

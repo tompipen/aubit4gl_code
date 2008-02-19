@@ -1162,12 +1162,13 @@ int a;
    return c;
 }
 
-struct command *new_case_cmd(expr_str* p_case_expr,struct whens *p_whens,commands *p_otherwise) {
+struct command *new_case_cmd(expr_str* p_case_expr,struct whens *p_whens,commands *p_otherwise,int block_id) {
 struct command *c;
    c=new_command(E_CMD_CASE_CMD);
    c->cmd_data.command_data_u.case_cmd.case_expr=p_case_expr;
    c->cmd_data.command_data_u.case_cmd.whens=p_whens;
    c->cmd_data.command_data_u.case_cmd.otherwise=p_otherwise;
+   c->cmd_data.command_data_u.case_cmd.block_id=block_id;
    return c;
 }
 
