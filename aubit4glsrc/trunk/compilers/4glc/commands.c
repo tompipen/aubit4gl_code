@@ -845,7 +845,7 @@ extern int nullbindcnt;
 char errbuff[256];
 int a;
    c=new_command(E_CMD_INIT_CMD);
-
+//printf("p_varlist->list.list_len=%d\n", p_varlist->list.list_len);
 	p_varlist=expand_variables_in_expr_str_list(p_varlist,1,0);
 
 	for (a=0;a<p_varlist->list.list_len;a++) {

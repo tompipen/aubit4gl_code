@@ -24,18 +24,6 @@ locate_cmd : LOCATE expanded_obind_var_list IN_MEMORY {
 	struct locate_pos p;
 	add_feature("LOCATE_FILE");
      
-	// @FIXME - add in this check later...
-	/*
-
-	for (a=0;a<get_bind_cnt('o');a++) {
-		vtype=scan_variable(get_bind_varname('o',a))&DTYPE_MASK;
-		if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
-			printf("vtype=%d (%x)\n",vtype,vtype);
-			a4gl_yyerror("Only Byte & Text may be located...");
-			YYERROR;
-		}
-	}
-	*/
 	p.where=E_LOC_FILE;
 	p.locate_pos_u.filename=$<ptr>4;
 	$<cmd>$=new_locate_cmd($<ptr_list>2,&p);

@@ -54,7 +54,7 @@ win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET { clr_attrib(&curr_attrib); }
 ;
 
 wattribs_sec	: 	wattribute {strcpy($<str>$,$<str>1);}
-		| 	wattribs_sec KW_COMMA wattribute {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+		| 	wattribs_sec KW_COMMA wattribute {SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 wattribute	: attribute  

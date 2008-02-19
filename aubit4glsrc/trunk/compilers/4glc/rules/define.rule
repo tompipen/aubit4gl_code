@@ -102,7 +102,7 @@ constant_value :
 	|	CHAR_VALUE
 	|	real_number
 	|	KW_MINUS INT_VALUE {
-		     sprintf($<str>$,"-%p",$<str>2);
+		     SPRINTF1($<str>$,"-%p",$<str>2);
 		   
 		} 
 ;
@@ -189,11 +189,11 @@ number_arr_assoc :
 
 number_arr_list :
 		number_value_arr KW_COMMA number_value_arr KW_COMMA number_value_arr {
-		   sprintf($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5);
+		   SPRINTF3($<str>$,"%s][%s][%s",$<str>1,$<str>3,$<str>5);
 		    A4GL_debug("Triplet");
 		} 
 	|	number_value_arr KW_COMMA number_value_arr {
-		   sprintf($<str>$,"%s][%s",$<str>1,$<str>3);
+		   SPRINTF2($<str>$,"%s][%s",$<str>1,$<str>3);
 		    A4GL_debug("double");
 		} 
 	|	number_value_arr {
@@ -211,11 +211,11 @@ number_value_arr :
 define_table_name :
 		define_ident
 	|	define_ident COLON define_ident {
-		     sprintf($<str>$,"%s:%s",$<str>1,$<str>3);
+		     SPRINTF2($<str>$,"%s:%s",$<str>1,$<str>3);
 		   
 		} 
 	|	define_ident ATSIGN define_ident COLON define_ident {
-		     sprintf($<str>$,"%s@%s:%s",$<str>1,$<str>3,$<str>5);
+		     SPRINTF3($<str>$,"%s@%s:%s",$<str>1,$<str>3,$<str>5);
 		   
 		} 
 ;
@@ -263,7 +263,7 @@ record_variable :
 link_to_pk_list :
 		link_to_pk
 	|	link_to_pk_list KW_COMMA link_to_pk {
-		    sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+		    SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);
 		   
 		} 
 ;
@@ -418,42 +418,42 @@ dtype :
 		} 
 	|	KW_DECIMAL {
 		    char buff[256];
-		       sprintf(buff,"%d",16*256+2);
+		       SPRINTF1(buff,"%d",16*256+2);
 		       push_type("fgldecimal",buff,0);
 			add_feature("DEFINE_DECIMAL");
 		       
 		} 
 	|	KW_DECIMAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		       char buff[256];
-		       sprintf(buff,"%d",atoi($<str>3)*256+2);
+		       SPRINTF1(buff,"%d",atoi($<str>3)*256+2);
 		       push_type("fgldecimal",buff,0);
 			add_feature("DEFINE_DECIMAL");
 		   
 		} 
 	|	KW_DECIMAL OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   char buff[256];
-		   sprintf(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
+		   SPRINTF1(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
 		   push_type("fgldecimal",buff,0);
 			add_feature("DEFINE_DECIMAL");
 		   
 		} 
 	|	MONEY {
 		      char buff[256];
-		      sprintf(buff,"%d",16*256+2);
+		      SPRINTF1(buff,"%d",16*256+2);
 		      push_type("fglmoney",buff,0);
 			add_feature("DEFINE_MONEY");
 		   
 		} 
 	|	MONEY OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 		     char buff[256];
-		   sprintf(buff,"%d",atoi($<str>3)*256+2);
+		   SPRINTF1(buff,"%d",atoi($<str>3)*256+2);
 		      push_type("fglmoney",buff,0);
 			add_feature("DEFINE_MONEY");
 		   
 		} 
 	|	MONEY OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
 		   char buff[256];
-		   sprintf(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
+		   SPRINTF1(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
 		   push_type("fglmoney",buff,0);
 			add_feature("DEFINE_MONEY");
 		   
@@ -549,12 +549,12 @@ op_prec :
 like_var :
 		LIKE define_table_name KW_DOT col_name {
 			add_feature("DEFINE_LIKE");
-		   sprintf($<str>$,"%s.%s",$<str>2,$<str>4);
+		   SPRINTF2($<str>$,"%s.%s",$<str>2,$<str>4);
 		    A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
 		   
 		} 
 		| LIKE CHAR_VALUE KW_DOT define_table_name KW_DOT col_name {
-		   	sprintf($<str>$,"%s.%s",$<str>4,$<str>6);
+		   	SPRINTF2($<str>$,"%s.%s",$<str>4,$<str>6);
 		}
 ;
 
@@ -574,7 +574,7 @@ datetime_qual :
 		   
 		} 	|	dtime_start KW_TO dtime_end {
 		   A4GL_debug("Real datetime %s to %s\n",$<str>1,$<str>3);
-		   sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
+		   SPRINTF1($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
 		    
 		} 
 ;
@@ -582,7 +582,7 @@ datetime_qual :
 
 interval_qual :
 		int_start KW_TO int_end {
-		    sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
+		    SPRINTF1($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
 		    
 		} 
 ;
@@ -626,7 +626,7 @@ dtime_val :
 		} 
 	|	FRACTION opt_frac {
 		   A4GL_debug("opt_frac returns %s",$<str>2);
-		   sprintf($<str>$,"%d",atoi($<str>2)+6);
+		   SPRINTF1($<str>$,"%d",atoi($<str>2)+6);
 		    
 		} 
 ;
@@ -684,7 +684,7 @@ int_start :
 		 {
 		   
 		} int_start_unit opt_unit_size {
-		    sprintf($<str>$,"%d",atoi($<str>3)*16+atoi($<str>2));
+		    SPRINTF1($<str>$,"%d",atoi($<str>3)*16+atoi($<str>2));
 		   
 		} 
 ;
@@ -717,7 +717,7 @@ int_start_unit :
 		} 
 	|	FRACTION opt_frac {
 		   A4GL_debug("opt_frac returns %s",$<str>2);
-		   sprintf($<str>$,"%d",atoi($<str>2)+6);
+		   SPRINTF1($<str>$,"%d",atoi($<str>2)+6);
 		    
 		} 
 ;

@@ -248,7 +248,7 @@ convert_cmd : 	CONVERT_REPORT rep_name conv_rep_conv {
 
 via_functionname: identifier {
 		char buff[256];
-		sprintf(buff,"%s%s", get_namespace($<str>1),$<str>1);
+		SPRINTF2(buff,"%s%s", get_namespace($<str>1),$<str>1);
 		$<ptr>$=A4GL_new_literal_string(buff);
 	}
 ;
@@ -465,13 +465,13 @@ format_action :
 		
 		a=scan_orderby(current_orderby, $<ptr>2);
 		if (a<0) {
-   			sprintf(buff,"%s is not in the order by list",get_variable_as_string_from_variable_usage_expression($<ptr>2)); //@FIXME
+   			SPRINTF1(buff,"%s is not in the order by list",get_variable_as_string_from_variable_usage_expression($<ptr>2)); //@FIXME
    			a4gl_yyerror(buff);
 			YYERROR;
 		}
 		
 		add_feature("REPORT_BEFORE_GROUP");
-		sprintf(buff,"%d",a+1);
+		SPRINTF1(buff,"%d",a+1);
 		push_report_block(buff,'B',$<str>2);
 		set_curr_block(a+1);
 		 } atline commands_as_list {
@@ -489,13 +489,13 @@ format_action :
 		
 		a=scan_orderby(current_orderby, $<ptr>2);
 		if (a<0) {
-   			sprintf(buff,"%s is not in the order by list",get_variable_as_string_from_variable_usage_expression($<ptr>2));
+   			SPRINTF1(buff,"%s is not in the order by list",get_variable_as_string_from_variable_usage_expression($<ptr>2));
    			a4gl_yyerror(buff);
 			YYERROR;
 		}
 		
 		
-		sprintf(buff,"%d",a+1);
+		SPRINTF1(buff,"%d",a+1);
 		push_report_block(buff,'A',$<str>2);
 		set_curr_block(a+1);
 		} atline  commands_as_list {
@@ -801,10 +801,10 @@ output_command :
 pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_command;
 
 
-nval: nval_number KW_POINTS {sprintf($<str>$,"-%f",atof($<str>1));}
-	| nval_number INCHES {sprintf($<str>$,"-%f",atof($<str>1)*72.0); }
-	| nval_number MM     {sprintf($<str>$,"-%f",atof($<str>1)*2.83465);}
-	| nval_number        {sprintf($<str>$,"%f",atof($<str>1));} 
+nval: nval_number KW_POINTS {SPRINTF1($<str>$,"-%f",atof($<str>1));}
+	| nval_number INCHES {SPRINTF1($<str>$,"-%f",atof($<str>1)*72.0); }
+	| nval_number MM     {SPRINTF1($<str>$,"-%f",atof($<str>1)*2.83465);}
+	| nval_number        {SPRINTF1($<str>$,"%f",atof($<str>1));} 
 ;
 
 nval_number: real_number | INT_VALUE
@@ -898,7 +898,7 @@ report_def : rep_or_localrep
 	OPEN_BRACKET
 	{
 		inc_report_cnt();
-		sprintf(curr_func,"%s",$<str>3);
+		SPRINTF1(curr_func,"%s",$<str>3);
 		ADDMAP_MODULE("Define Report",curr_func);
 		map_report_start(curr_func);
 		variable_action(-1,$<str>3,"","","add_function");
@@ -973,7 +973,7 @@ pdf_report_def : pdf_rep_or_localrep {
 		{
 		inc_report_cnt();
 		variable_action(-1,$<str>3,"","","add_function");
-		sprintf(curr_func,"%s",$<str>3);
+		SPRINTF1(curr_func,"%s",$<str>3);
 		ADDMAP_MODULE("Define PDF Report",curr_func);
 		set_curr_rep_name($<str>3);
 		push_blockcommand("REPORT");

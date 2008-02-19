@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.117 2008-02-18 14:51:59 mikeaubury Exp $
+# $Id: compile.c,v 1.118 2008-02-19 12:53:43 mikeaubury Exp $
 #*/
 
 /**
@@ -1129,8 +1129,24 @@ char type;
 //static FILE *filep = 0;
 char ext[256];
 static char local_pass_options[1024] = "";
+static int compiled_4gl=0;
 
 
+if (compiled_4gl) {
+	// we've already compiled a 4gl module..
+	fprintf(stderr,"Error : Invalid Usage!!!\n\n");
+	fprintf(stderr,"'4glc' can only compile a single 4gl module at a time.\n");
+	fprintf(stderr,"You should probably be using 4glpc rather than 4glc if you want to compile more than\n");
+	fprintf(stderr,"one module in a single command line\n");
+	fprintf(stderr,"Eg. \n");
+	fprintf(stderr,"$ 4glpc -o prog.4ae  mod1.4gl mod2.4gl\n\n");
+	fprintf(stderr,"If you really want to use 4glc use : \n");
+	fprintf(stderr,"$ 4glc -c mod1.4gl\n");
+	fprintf(stderr,"$ 4glc -c mod2.4gl\n");
+	fprintf(stderr,"$ 4glc -o prog.4ae mod1.ao mod2.ao\n");
+	exit(2);
+}
+compiled_4gl++;
 	remove_file(fgl_basename,".err");
 	/*
 	filep = fopen (buff, "r");

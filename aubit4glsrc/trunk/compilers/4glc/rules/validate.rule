@@ -28,11 +28,11 @@ validate_tab_list : validate_tab  {
 
 
 validate_tab : table_name KW_DOT column_name {
-		sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
+		SPRINTF2($<str>$,"%s.%s",$<str>1,$<str>3);
 		push_validate($<str>$);
 	}
 	| table_name KW_DOT KW_MULTIPLY {
-		sprintf($<str>$,"%s.*",$<str>1);
+		SPRINTF1($<str>$,"%s.*",$<str>1);
 		push_validate($<str>$);
 	}
 ;

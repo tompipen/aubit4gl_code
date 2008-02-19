@@ -26,7 +26,7 @@ menu_item_list:
 ;
 
 menu_item:  identifier {
-        sprintf($<str>$,"%s",$<str>1);
+        SPRINTF1($<str>$,"%s",$<str>1);
 }
 ;
 

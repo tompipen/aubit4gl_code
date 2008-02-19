@@ -109,7 +109,7 @@ set_clause_list_uc:
     }
     | XSET_MULTIPLY_EQUAL identifier KW_DOT KW_MULTIPLY  {
 		char buff[200];
-		sprintf(buff,"%s.*", $<str>2);
+		SPRINTF1(buff,"%s.*", $<str>2);
 #ifdef SQLCOMPILER
 		$<sql_string>$=strdup("IMPOSSIBLE") ;
 #else
@@ -124,7 +124,7 @@ set_clause_list_uc:
 	}
     | XSET_ident_DOT_MULTIPLY_EQUAL identifier KW_DOT KW_MULTIPLY  {
 		char buff[200];
-		sprintf(buff,"%s.*", $<str>2);
+		SPRINTF1(buff,"%s.*", $<str>2);
 #ifdef SQLCOMPILER
 		$<sql_string>$=strdup("IMPOSSIBLE") ;
 #else
@@ -182,9 +182,9 @@ upd_column_name_specific: identifier op_col_arr {
                         strcpy($<str>$,$<str>3);
                 } else {
                         if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>3));
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>3));
                         } else {
-                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3));
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3));
                         }
                 }
 
@@ -199,9 +199,9 @@ upd_column_name_specific: identifier op_col_arr {
                         strcpy($<str>$,$<str>5);
                 } else {
                         if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>5));
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>5));
                         } else {
-                                sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5));
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5));
                         }
                 }
 
@@ -214,9 +214,9 @@ upd_column_name_specific: identifier op_col_arr {
                         strcpy($<str>$,"*");
                 } else {
                 if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
-                        sprintf($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
+                        SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
                 } else {
-                        sprintf($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),"*"));
+                        SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),"*"));
                 }
                 }
 

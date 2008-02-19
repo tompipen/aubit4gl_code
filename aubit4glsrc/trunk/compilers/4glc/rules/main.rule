@@ -136,7 +136,7 @@ func_def	: ldeffunction {
 				// We don't export static functions
 				variable_action(-1,$<str>3,"","","add_function");
 			}
-  			sprintf(curr_func,"%s",$<str>3);
+  			SPRINTF1(curr_func,"%s",$<str>3);
 			map_function_start(curr_func);
   			ADDMAP_MODULE("Declare Function",curr_func);
   			cnt=0;
@@ -184,13 +184,14 @@ main_def:
   { 
 				A4GL_clr_extra_warnings();
     		if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
-		if (token_read_on_line<$<integer_val>2) {
-			$<integer_val>2=token_read_on_line;
-		}
+	
+		/* if (token_read_on_line<$<integer_val>2) {
+			$<integer_val>$=token_read_on_line; 
+		} */
     		lastlineno=token_read_on_line;
-		$<integer_val>$=token_read_on_line;
+		/* $<integer_val>$=token_read_on_line; */
     		variable_action(-1,$<str>1,"","","add_function");
-    		sprintf(curr_func,"MAIN");
+    		strcpy(curr_func,"MAIN");
     		clr_variable(); 
   				clr_function_constants (); 
 		clr_call_list();
@@ -204,7 +205,6 @@ main_def:
     	A4GL_chk_and_clr_labels();
 	map_function_end();
 	A4GL_lex_printcomment("/*end main */\n");
-	//printf("iv2=%d iv3=%d\n", $<integer_val>2, $<integer_val>3);
 	$<module_entry>$=new_main_definition($<commands>5,$<integer_val>2);
 	set_variables(&$<module_entry>$->module_entry_u.function_definition.variables,'L');
 } 
@@ -227,7 +227,7 @@ return_cmd : KW_RETURN atline op_fgl_expr_ret_list_v2 {
 			// There could be trouble ahead....
 			if (A4GL_isyes(acl_getenv("ERROR_ON_NVALS"))) {
 				char buff[256];
-				sprintf(buff,"%d!=%d",nreturn_values,nreturn);
+				SPRINTF2(buff,"%d!=%d",nreturn_values,nreturn);
 				set_yytext(buff);
 				a4gl_yyerror("Different number of return values");
 			} else {

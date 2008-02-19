@@ -1,11 +1,4 @@
 commands_as_list :  push_commands commands_as_list1 pop_commands {$<commands>$=$<commands>2;
-        /*
-        if ($<commands>$) {
-                printf("Block has : %d commands\n", $<commands>$->cmds.cmds_len);
-        } else {
-                printf("No block\n");
-        }
-        */
 }
 ;
 

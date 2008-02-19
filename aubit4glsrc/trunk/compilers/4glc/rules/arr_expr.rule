@@ -15,7 +15,7 @@ arr_expr_e :
 	| INT_VALUE 					{ $<ptr>$=A4GL_new_literal_long_str($<str>1);}
 	| arr_int_sign INT_VALUE {
 		if ($<integer_val>1==ET_EXPR_OP_SUB) {
-			sprintf($<str>$,"-%s",$<str>2);
+			SPRINTF1($<str>$,"-%s",$<str>2);
 		}
 		$<ptr>$=A4GL_new_literal_long_str($<str>$);
 	}

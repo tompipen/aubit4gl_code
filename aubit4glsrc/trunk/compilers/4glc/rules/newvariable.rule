@@ -122,6 +122,7 @@ var_ident_ibind_sli: var_ident_vl  {
 ;
 
 /* Ibinds are slightly different - because we can have literals too */
+/*
 ibind_var_list: ibind_var  {
 		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
 	}
@@ -129,6 +130,7 @@ ibind_var_list: ibind_var  {
 		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
 	}
 ;
+*/
 
 e_ibind_var_list: e_ibind_var  {
 		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
@@ -211,12 +213,6 @@ func_def_var:
 		identifier {
 			$<ptr>$=A4GL_new_expr_simple_string($<str>1, ET_EXPR_PARAMETER);
 		}
-	/*
-		| identifier KW_DOT identifier {
-			sprintf($<str>$,"%s.%s",$<str>1,$<str>2);
-			$<ptr>$=A4GL_new_expr_simple_string($<str>$, ET_EXPR_PARAMETER);
-		}
-	*/
 ;
 
 var_ident_qchar_e :
@@ -238,7 +234,7 @@ var_ident_qchar_e :
 	}
 	| variable_usage_expression ATSIGN identifier {
 		char buff[300];
-		sprintf(buff,"%s@%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3);
+		SPRINTF2(buff,"%s@%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3);
                 $<ptr>$=A4GL_new_literal_string(buff);
 	}
         | CHAR_VALUE  {

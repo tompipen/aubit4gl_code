@@ -23,6 +23,6 @@ c_code : c_code_part  {
 
 ;
 
-c_code_part  : CLINE { sprintf($<str>$,"%s\n",$<str>1); 
+c_code_part  : CLINE { SPRINTF1($<str>$,"%s\n",$<str>1); 
 }
 ;

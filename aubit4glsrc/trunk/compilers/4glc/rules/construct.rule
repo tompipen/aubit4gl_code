@@ -7,7 +7,7 @@
 construct_cmd	:	CONSTRUCT {
 		add_feature("UI_CONSTRUCT");
 		push_blockcommand("CONSTRUCT");
-		 $<integer_val>$=get_sio_id("CONSTRUCT");
+		 /*$<integer_val>$=get_sio_id("CONSTRUCT"); */
 		map_ui_block("CONSTRUCT");
 		A4GL_new_events();
 		} 

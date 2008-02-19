@@ -15,6 +15,6 @@ goto_cmd : GOTO label_goto {
 ;
 
 label_goto      :       identifier
-                |       COLON identifier {sprintf($<str>$,"%s",$<str>2);}
+                |       COLON identifier {SPRINTF1($<str>$,"%s",$<str>2);}
 ;
 

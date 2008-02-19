@@ -124,12 +124,9 @@ BY_NAME expanded_ibind_var_list opt_defs opt_help_no_i input_attributes
 
 idm_input_array :identifier KW_DOT KW_MULTIPLY {
 				$<ptr>$=A4GL_new_expr_simple_string($<str>1,ET_EXPR_IDENTIFIER);
-				/* sprintf($<str>$,"\"%s\"",$<str>1); */
 		}
 	| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
 				$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3, ET_EXPR_VARIABLE_IDENTIFIER);
-
-				/* sprintf($<str>$,"A4GL_var_for_inp_array(%s)",$<str>3); */
 	}
 ;
 
@@ -145,11 +142,11 @@ scroll_cmd :
 
 up_or_down :
 	 KWUP_BY INT_VALUE {
-			sprintf($<str>$,"%s",$<str>2);
+			SPRINTF1($<str>$,"%s",$<str>2);
 			$<ptr>$=A4GL_new_literal_long_str($<str>$);
 	}
 	| KWDOWN_BY INT_VALUE {
-			sprintf($<str>$,"-%s",$<str>2);
+			SPRINTF1($<str>$,"-%s",$<str>2);
 			$<ptr>$=A4GL_new_literal_long_str($<str>$);
 	}
 	| KWUP {
@@ -217,7 +214,7 @@ input_array_attributes_int :
 
 opt_slice : {strcpy($<str>$,"");}
         | SLICE OPEN_BRACKET identifier THRU identifier CLOSE_BRACKET {
-                        sprintf($<str>$,"%s:%s",$<str>3,$<str>5);
+                        SPRINTF2($<str>$,"%s:%s",$<str>3,$<str>5);
         }
 ;
 

@@ -41,17 +41,17 @@ key_value_list_sl : key_value  {
 
 
 key_value_list : key_value | key_value_list KW_COMMA key_value {
-	sprintf($<str>$,"%s||%s",$<str>1,$<str>3);
+	SPRINTF2($<str>$,"%s||%s",$<str>1,$<str>3);
 }
 ;
 
 key_value : key_value_1 
 ;
 
-key_value_1 : 	KW_FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
-	| 	KW_CTRL_KEY /* {strcpy($<str>$,"^A");}*/
-	| 	KW_INTERRUPT /* {strcpy($<str>$,"interrupt");}*/
-	| 	KW_ACCEPT /* {strcpy($<str>$,"accept");}*/
+key_value_1 : 	KW_FKEY 
+	| 	KW_CTRL_KEY 
+	| 	KW_INTERRUPT 
+	| 	KW_ACCEPT 
 	|       KW_SINGLE_KEY {strcpy($<str>$,$<str>1);}
         |       KW_ESCAPE {strcpy($<str>$,"escape");}
         |       KWUP {strcpy($<str>$,"up");}

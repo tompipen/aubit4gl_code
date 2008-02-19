@@ -22,7 +22,6 @@ template_list : template_item
 
 template_item : 
 		identifier EQUAL template_value { 
-	printf("Copy %s to %s",$<str>3,$<str>1);
 list_copy($<str>3,$<str>1); 
 }
 	| 	identifier OPEN_SQUARE CLOSE_SQUARE EQUAL template_value { list_copy($<str>3,$<str>1); }

@@ -48,11 +48,11 @@ opt_allopts 	: COMMENT_LINE line_no 		{ $<single_option>$=new_option_expr('C',$<
 		| INPUT_ATTR_WINDOW      	{ $<single_option>$=new_option('Y',"2",0); map_ui("OPTIONS_INPUT_ATTR_WINDOW");}
 		| KW_DISPLAY attributes_def 	{ 
 						char buff[200];
-						sprintf(buff,"%d", attributes_as_int($<attrib>2));
+						SPRINTF1(buff,"%d", attributes_as_int($<attrib>2));
 						$<single_option>$=new_option('d', buff,0);  map_ui("OPTIONS_DISPLAY_ATTR");}
 		| KW_INPUT attributes_def   	{ 
 						char buff[200];
-						sprintf(buff,"%d", attributes_as_int($<attrib>2));
+						SPRINTF1(buff,"%d", attributes_as_int($<attrib>2));
 						$<single_option>$=new_option('i',buff,0);  map_ui("OPTIONS_INPUT_ATTR");}
 		| INPUT_WRAP 			{ $<single_option>$=new_option('W',"1",0); map_ui("OPTIONS_INPUT_WRAP");}
 		| INPUT_NO_WRAP 		{ $<single_option>$=new_option('W',"0",0); map_ui("OPTIONS_INPUT_NOWRAP");}

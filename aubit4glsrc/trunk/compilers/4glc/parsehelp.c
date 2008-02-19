@@ -2567,7 +2567,7 @@ char scope;
 				// We're all done - any adding would have been done in the calls...
 				return;
 			case 3:
-				vu_new=clone_variable_usage(vu_top);
+				//vu_new=clone_variable_usage(vu_top);
 				for (c1=0;c1<v_top->arr_subscripts.arr_subscripts_val[0];c1++) {
 					for (c2=0;c1<v_top->arr_subscripts.arr_subscripts_val[1];c2++) {
 						for (c3=0;c3<v_top->arr_subscripts.arr_subscripts_val[2];c3++) {
@@ -2679,6 +2679,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 				} else {
 				vu1=parameters->list.list_val[a]->expr_str_u.expr_variable_usage_with_asc_desc->var_usage;
 				}
+				A4GL_debug("Got : %s %d \n", cmds_get_variable_usage_as_string(vu1), err_if_whole_array);
 				v1=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v1==0) {
 					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
@@ -2691,26 +2692,37 @@ for (a=0;a<parameters->list.list_len;a++) {
 				}
 
 				if (strcmp(get_variable_bottom_level_name(vu1),"*")==0 || v1->var_data.variable_type==VARIABLE_TYPE_RECORD)  {
-					int a;
 					struct variable_usage *vu_top;
 					struct variable_usage *vu_next;
-					vu_top=clone_variable_usage(vu1);
-					vu_next=vu_top;
-					last_vu=vu_next;
-					while (vu_next->next) {
+
+						vu_top=clone_variable_usage(vu1);
+						vu_next=vu_top;
 						last_vu=vu_next;
-						vu_next=vu_next->next;
-					}
-					last_vu->next=0;
+						while (vu_next->next) {
+							last_vu=vu_next;
+							vu_next=vu_next->next;
+						}
+						last_vu->next=0;
 
-					vlist=get_variable_usage_for_record(vu_top, err_if_whole_array );
-					A4GL_assertion (vlist==0,"Expecting a list");
-					for (a=0;a<vlist->list.list_len;a++) {
-						A4GL_new_append_ptr_list(n,vlist->list.list_val[a]);
-					}
+						A4GL_debug("Got to here.. %d %d\n", v1->arr_subscripts.arr_subscripts_len, last_vu->subscripts.subscripts_len);
 
-
-
+						if (v1->arr_subscripts.arr_subscripts_len && last_vu->subscripts.subscripts_len!=v1->arr_subscripts.arr_subscripts_len) {
+							// Its also an array..
+							if (err_if_whole_array) {
+								a4gl_yyerror("You cant use this variable here because its an array");
+								return 0;
+							} else {
+								// Just leave it as is...
+								A4GL_new_append_ptr_list(n,parameters->list.list_val[a]);
+							} 
+						} else {
+							int a;
+							vlist=get_variable_usage_for_record(vu_top, err_if_whole_array );
+							A4GL_assertion (vlist==0,"Expecting a list");
+							for (a=0;a<vlist->list.list_len;a++) {
+								A4GL_new_append_ptr_list(n,vlist->list.list_val[a]);
+							}
+						}
 				} else {
 					A4GL_new_append_ptr_list(n,parameters->list.list_val[a]);
 				}

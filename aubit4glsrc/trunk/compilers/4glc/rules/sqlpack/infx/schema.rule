@@ -12,7 +12,7 @@ drops_c : DROP_TABLE table_name_not_for_column_prefix {
 			}
 			add_feature("DROP_TABLE");
 		}
-	| DROP_VIEW table_name_not_for_column_prefix 		{sprintf($<str>$,"%s %s ",$<str>1,$<str>2);
+	| DROP_VIEW table_name_not_for_column_prefix 		{SPRINTF2($<str>$,"%s %s ",$<str>1,$<str>2);
 			add_feature("DROP_VIEW");
 }
 	| DROP_INDEX idx_name 		{SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);
@@ -85,28 +85,28 @@ cr_index_extra_entry :
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_IN")) {
                                 strcpy($<str>$,"");
                         } else {
-                                sprintf($<str>$," IN %s",$<str>2); add_feature("INDEX_IN");
+                                SPRINTF1($<str>$," IN %s",$<str>2); add_feature("INDEX_IN");
                         }
         }
         | FILLFACTOR INT_VALUE {
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_FILLFACTOR")) {
                                 strcpy($<str>$,"");
                         } else {
-                                sprintf($<str>$,"FILLFACTOR %s",$<str>2); add_feature("INDEX_FILLFACTOR");
+                                SPRINTF1($<str>$,"FILLFACTOR %s",$<str>2); add_feature("INDEX_FILLFACTOR");
                         }
         }
         | USING_BTREE {
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
                                 strcpy($<str>$,"");
                         } else {
-                                sprintf($<str>$,"USING BTREE"); add_feature("INDEX_BTREE");
+                                strcpy($<str>$,"USING BTREE"); add_feature("INDEX_BTREE");
                         }
         }
         | USING_RTREE {
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
                                 strcpy($<str>$,"");
                         } else {
-                                sprintf($<str>$,"USING RTREE"); add_feature("INDEX_RTREE");
+                                strcpy($<str>$,"USING RTREE"); add_feature("INDEX_RTREE");
                         }
         }
 ;

@@ -8,36 +8,36 @@ table_name: table_name_i  {
 
 
 table_name_i:
-        CHAR_VALUE KW_DOT identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
-	     ADDMAP("Use Table",$<str>$);
-        }
-        | CHAR_VALUE {
-	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, A4GL_strip_quotes($<str>1)));
+        CHAR_VALUE {
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, A4GL_strip_quotes($<str>1)));
              ADDMAP("Use Table",$<str>$);
         }
+        | CHAR_VALUE KW_DOT identifier {
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
+	     ADDMAP("Use Table",$<str>$);
+        }
         | identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
 	     ADDMAP("Use Table",$<str>$);
 	}
         | identifier COLON identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, NULL, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, NULL, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
 	     ADDMAP("Use Table",$<str>$);
 	}
         | identifier COLON CHAR_VALUE KW_DOT identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, NULL, A4GLSQLCV_ownerize_tablename($<str>3,$<str>5)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, NULL, A4GLSQLCV_ownerize_tablename($<str>3,$<str>5)));
 	     ADDMAP("Use Table",$<str>$);
         }
         | identifier ATSIGN identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_db_tablename(NULL,$<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename(NULL,$<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
 	     ADDMAP("Use Table",$<str>$);
 	}
         | identifier ATSIGN identifier COLON identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, $<str>3, A4GLSQLCV_ownerize_tablename(NULL, $<str>5)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, $<str>3, A4GLSQLCV_ownerize_tablename(NULL, $<str>5)));
 	     ADDMAP("Use Table",$<str>$);
 	}
         | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier{
-	     sprintf($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7)));
 	     ADDMAP("Use Table",$<str>$);
         }
 ;
@@ -56,40 +56,40 @@ table_name_not_for_column_prefix: table_name_not_for_column_prefix_i  {
 table_name_not_for_column_prefix_i:
          CHAR_VALUE KW_DOT identifier {
 
-	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
 	     ADDMAP("Use Table",$<str>$);
         }
         | identifier KW_DOT identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
 	     ADDMAP("Use Table",$<str>$);
         }
         | CHAR_VALUE {
-	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, A4GL_strip_quotes($<str>1)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, A4GL_strip_quotes($<str>1)));
 	     ADDMAP("Use Table",$<str>$);
         }
         | identifier {
-             sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
+             SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
 	     ADDMAP("Use Table",$<str>$);
 	}
         | identifier COLON identifier {
-             sprintf($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1,NULL, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
+             SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1,NULL, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
 	     ADDMAP("Use Table",$<str>$);
 	}
         | identifier COLON CHAR_VALUE KW_DOT identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, NULL,A4GLSQLCV_ownerize_tablename($<str>3, $<str>5)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, NULL,A4GLSQLCV_ownerize_tablename($<str>3, $<str>5)));
 	     ADDMAP("Use Table",$<str>$);
         }
 
 	| identifier ATSIGN identifier {
-             sprintf($<str>$,"%s", A4GLSQLCV_db_tablename(NULL, $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
+             SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename(NULL, $<str>1, A4GLSQLCV_ownerize_tablename(NULL, $<str>3)));
 	     ADDMAP("Use Table",$<str>$);
 	}
 	| identifier ATSIGN identifier COLON identifier {
-            sprintf($<str>$,"%s", A4GLSQLCV_db_tablename( $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename(NULL, $<str>5)));
+            SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename( $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename(NULL, $<str>5)));
 	    ADDMAP("Use Table",$<str>$);
 	}
 	| identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7)));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_db_tablename($<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7)));
 	     ADDMAP("Use Table",$<str>$);
         }
 
@@ -97,24 +97,24 @@ table_name_not_for_column_prefix_i:
 
 idx_name:
          CHAR_VALUE KW_DOT identifier {
-	     sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
+	     SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3));
         }
         | CHAR_VALUE {
-	        sprintf($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
+	        SPRINTF1($<str>$,"%s", A4GLSQLCV_ownerize_tablename(NULL, $<str>1));
                 ADDMAP("Use Index",$<str>$);
         }
 
         | identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
-        | identifier COLON identifier { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); }
+        | identifier COLON identifier { SPRINTF3($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3); ADDMAP("Use Index",$<str>$); }
         | identifier COLON CHAR_VALUE KW_DOT identifier {
-	     sprintf($<str>$,"%s:%s", $<str>1, A4GLSQLCV_ownerize_tablename($<str>3, $<str>5));
+	     SPRINTF2($<str>$,"%s:%s", $<str>1, A4GLSQLCV_ownerize_tablename($<str>3, $<str>5));
              ADDMAP("Use Index",$<str>$);
         }
 
         | identifier ATSIGN identifier {strcpy($<str>$,$<str>1); ADDMAP("Use Index",$<str>1); }
-        | identifier ATSIGN identifier COLON identifier { sprintf($<str>$,"%s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Index",$<str>$); }
+        | identifier ATSIGN identifier COLON identifier { SPRINTF4($<str>$,"%s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); ADDMAP("Use Index",$<str>$); }
         | identifier ATSIGN identifier COLON CHAR_VALUE KW_DOT identifier {
-	     sprintf($<str>$,"%s@%s:%s", $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7));
+	     SPRINTF3($<str>$,"%s@%s:%s", $<str>1, $<str>3, A4GLSQLCV_ownerize_tablename($<str>5, $<str>7));
              ADDMAP("Use Index",$<str>$);
         }
 

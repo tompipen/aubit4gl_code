@@ -5,23 +5,6 @@
 
 alloc_arr_cmd :
 	ALLOCATE_ARRAY dyn_variable_usage_expression {
-		/*
-		char buff[256];
-		char *s;
-		add_feature("ALLOCATE_ARRAY");
-		strcpy(buff,$<str>2);
-		s=strchr(buff,'[');
-		if (!s) {
-			printf("Got : %s\n", buff);
-			a4gl_yyerror("Expecting an array and size");
-			YYERROR;
-		}
-		*s=0;
-		s++;
-
-		$<cmd>$=new_alloc_arr_cmd(make_bind(buff),s);
-		*/
-		
 		$<cmd>$=new_alloc_arr_cmd($<ptr>2);
 		if ($<cmd>$==0) {
 			a4gl_yyerror("Expecting an array and size");
@@ -51,19 +34,6 @@ dyn_variable_usage_expression: variable_usage_expression {
 
 resize_arr_cmd :
 	RESIZE_ARRAY dyn_variable_usage_expression  {
-		/*
-			char buff[256];
-			char *s;
-			add_feature("RESIZE_ARRAY");
-			strcpy(buff,$<str>2);
-			s=strchr(buff,'[');
-			if (!s) {
-				a4gl_yyerror("Expecting an array and size");
-				YYERROR;
-			}
-			*s=0;
-			s++;
-		*/
 		$<cmd>$=new_resize_arr_cmd($<ptr>2);
 		if ($<cmd>$==0) {
 			a4gl_yyerror("Expecting an array and size");

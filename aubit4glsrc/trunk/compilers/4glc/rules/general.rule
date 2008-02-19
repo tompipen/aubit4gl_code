@@ -45,12 +45,12 @@ field_name_as_struct	:
 		}
 		| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
 				char buff[256];
-				sprintf(buff,"int_to_id(%s)",$<str>3);
+				SPRINTF1(buff,"int_to_id(%s)",$<str>3);
 				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),NULL,0); 
 		}
 		| identifier KW_DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
 				char buff[256];
-				sprintf(buff,"int_to_id(%s.%s)",$<str>1,$<str>5); 
+				SPRINTF2(buff,"int_to_id(%s.%s)",$<str>1,$<str>5); 
 				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),NULL,0); 
 		}
 		| identifier OPEN_SQUARE arr_expr_e CLOSE_SQUARE {
@@ -58,24 +58,24 @@ field_name_as_struct	:
 		}
 		| identifier KW_DOT KW_MULTIPLY {
 				char buff[256];
-				sprintf(buff,"%s.*",$<str>1);
+				SPRINTF1(buff,"%s.*",$<str>1);
 				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER), NULL,1);
 				add_feature("SRECDOTSTAR");
 		}
 		| identifier OPEN_SQUARE arr_expr_e CLOSE_SQUARE KW_DOT KW_MULTIPLY {
 				char buff[256];
-				sprintf(buff,"%s.*",$<str>1);
+				SPRINTF1(buff,"%s.*",$<str>1);
 				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),$<ptr>3,1);
 				add_feature("SRECDOTSTAR");
 		}
 		| identifier KW_DOT identifier 	{
 				char buff[256];
-				sprintf(buff,"%s.%s",$<str>1,$<str>3);
+				SPRINTF2(buff,"%s.%s",$<str>1,$<str>3);
 				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),NULL,1);
 		}
 		| identifier OPEN_SQUARE arr_expr_e CLOSE_SQUARE KW_DOT identifier {
 				char buff[256];
-				sprintf(buff,"%s.%s",$<str>1,$<str>6);
+				SPRINTF2(buff,"%s.%s",$<str>1,$<str>6);
 				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),$<ptr>3,1);
 		}
 		| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
@@ -89,7 +89,7 @@ field_name_as_struct	:
 field_name_or_char_as_struct: field_name_as_struct {$<field_entry>$=$<field_entry>1;}
 	| CHAR_VALUE { 
                  char buff[256];
-                 sprintf(buff,"%s",$<str>1);
+                 SPRINTF1(buff,"%s",$<str>1);
                  $<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_E_V_OR_LIT_STRING),NULL,0);
 	}
 ;
@@ -194,7 +194,7 @@ conn_id_p : ident_or_var_sql_p;
 
 
 real_number : NUMBER_VALUE | KW_DOT INT_VALUE {
-		sprintf($<str>$,".%s",$<str>2);
+		SPRINTF1($<str>$,".%s",$<str>2);
 };
 
 

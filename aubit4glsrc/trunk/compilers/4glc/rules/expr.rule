@@ -120,11 +120,11 @@ fgl_expr_list_ptr: fgl_expr_c {
 
 expanded_fgl_expr_list_ptr: fgl_expr_list_ptr {
 			/* Can pass a whole array around */
-			$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1);
+			$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,0);
 	}
 ;
 
-fgl_expr_concat : fgl_expr_list_ptr  {
+fgl_expr_concat : expanded_fgl_expr_list_ptr  {
 		$<ptr_list>$=$<ptr_list>1;
 		dump_list($<ptr_list>1);
 	}
@@ -305,107 +305,107 @@ function_call_expr:
 
 	| DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"%s",$<str>3);
+		SPRINTF1(buff,"%s",$<str>3);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>5);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s\"",$<str>3);
+		SPRINTF1(buff,"\"%s\"",$<str>3);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>5);
 	}
 	| DATETIME OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s\"",$<str>3);
+		SPRINTF1(buff,"\"%s\"",$<str>3);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>5);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s:%s\"",$<str>3,$<str>5);
+		SPRINTF2(buff,"\"%s:%s\"",$<str>3,$<str>5);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>7);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s:%s\"",$<str>3,$<str>5);
+		SPRINTF2(buff,"\"%s:%s\"",$<str>3,$<str>5);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>7);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s:%s:%s\"",$<str>3,$<str>5,$<str>7);
+		SPRINTF3(buff,"\"%s:%s:%s\"",$<str>3,$<str>5,$<str>7);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>9);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s:%s:%s\"",$<str>3,$<str>5,$<str>7);
+		SPRINTF3(buff,"\"%s:%s:%s\"",$<str>3,$<str>5,$<str>7);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>9);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s:%s\"",$<str>3,$<str>4);
+		SPRINTF2(buff,"\"%s:%s\"",$<str>3,$<str>4);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>6);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s %s:%s\"",$<str>3,$<str>4,$<str>6);
+		SPRINTF3(buff,"\"%s %s:%s\"",$<str>3,$<str>4,$<str>6);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>8);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s %s:%s:%s\"",$<str>3,$<str>4,$<str>6,$<str>8);
+		SPRINTF4(buff,"\"%s %s:%s:%s\"",$<str>3,$<str>4,$<str>6,$<str>8);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>10);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s %s:%s:%s\"",$<str>3,$<str>4,$<str>6,$<str>8);
+		SPRINTF4(buff,"\"%s %s:%s:%s\"",$<str>3,$<str>4,$<str>6,$<str>8);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>10);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s\"",$<str>3,$<str>5);
+		SPRINTF2(buff,"\"%s-%s\"",$<str>3,$<str>5);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>7);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s-%s\"",$<str>3,$<str>5,$<str>7);
+		SPRINTF3(buff,"\"%s-%s-%s\"",$<str>3,$<str>5,$<str>7);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>9);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE  INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s %s\"",$<str>3,$<str>5,$<str>6);
+		SPRINTF3(buff,"\"%s-%s %s\"",$<str>3,$<str>5,$<str>6);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>8);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s-%s %s\"",$<str>3,$<str>5,$<str>7,$<str>8);
+		SPRINTF4(buff,"\"%s-%s-%s %s\"",$<str>3,$<str>5,$<str>7,$<str>8);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>10);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s-%s %s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10);
+		SPRINTF5(buff,"\"%s-%s-%s %s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
+		SPRINTF6(buff,"\"%s-%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>14);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
+		SPRINTF6(buff,"\"%s-%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>7,$<str>8,$<str>10,$<str>12);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>14);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s %s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8);
+		SPRINTF4(buff,"\"%s-%s %s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>10);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
+		SPRINTF5(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
 	| DATETIME OPEN_BRACKET INT_VALUE KW_MINUS INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
-		sprintf(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
+		SPRINTF5(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
 	| FGL_SIZEOF OPEN_BRACKET ensured_variable_usage_expression CLOSE_BRACKET {
@@ -486,10 +486,10 @@ function_call_expr:
 /*************************************************************************/
 	| UI_INTERFACE_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
-		sprintf(buff,"aclfgl_ui_interface_%s",downshift($<str>2));
+		SPRINTF1(buff,"aclfgl_ui_interface_%s",downshift($<str>2));
 		if (!A4GL_is_internal_class_function("ui_interface",$<str>2)) {
 			char buff[256];
-			sprintf(buff,"%s is not a member of the UI.Interface class",$<str>2);
+			SPRINTF1(buff,"%s is not a member of the UI.Interface class",$<str>2);
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
@@ -498,10 +498,10 @@ function_call_expr:
 	}
 	| UI_WINDOW_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
-		sprintf(buff,"aclfgl_ui_window_%s",downshift($<str>2));
+		SPRINTF1(buff,"aclfgl_ui_window_%s",downshift($<str>2));
 		if (!A4GL_is_internal_class_function("ui_window",$<str>2)) {
 			char buff[256];
-			sprintf(buff,"%s is not a member of the UI.Window class",$<str>2);
+			SPRINTF1(buff,"%s is not a member of the UI.Window class",$<str>2);
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
@@ -511,10 +511,10 @@ function_call_expr:
 	| UI_DOT_FORM_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
 		
-		sprintf(buff,"aclfgl_ui_form_%s",downshift($<str>2));
+		SPRINTF1(buff,"aclfgl_ui_form_%s",downshift($<str>2));
 		if (!A4GL_is_internal_class_function("ui_form",$<str>2)) {
 			char buff[256];
-			sprintf(buff,"%s is not a member of the UI.Form class",$<str>2);
+			SPRINTF1(buff,"%s is not a member of the UI.Form class",$<str>2);
    			a4gl_yyerror(buff);
    			YYERROR;
 		}
@@ -562,7 +562,7 @@ function_call_expr:
         | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port_eptr CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_without_waiting {
                         char fname[64];
                 	char buff[256];
-                        sprintf(buff,"%s:%s(%p)",$<str>2,$<str>4,$<ptr>6);
+                        SPRINTF3(buff,"%s:%s(%p)",$<str>2,$<str>4,$<ptr>6);
                         ADDMAP("External",buff);
 
                         if (strcmp($<str>11,"WITHOUT WAITING")==0) {
@@ -623,28 +623,28 @@ interval_func_params :
 	;
 
 numeric_time_interval:
-		KW_MINUS numeric_time_interval {sprintf($<str>$,"-%s",$<str>2);}
-		| numeric_time_unit_big	{sprintf($<str>$,"\"%s\"",$<str>1);}
-		| numeric_time_unit_small	{sprintf($<str>$,"\"%s\"",$<str>1);}
+		KW_MINUS numeric_time_interval {SPRINTF1($<str>$,"-%s",$<str>2);}
+		| numeric_time_unit_big	{SPRINTF1($<str>$,"\"%s\"",$<str>1);}
+		| numeric_time_unit_small	{SPRINTF1($<str>$,"\"%s\"",$<str>1);}
 	;
 
 numeric_time_unit_small : 
-		INT_VALUE INT_VALUE 			{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}		/* DD HH */
-		| INT_VALUE INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s %s:%s",$<str>1,$<str>2,$<str>4);}		/* DD HH:MM */
-		| INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE 	 {sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH:MM:SS*/
-		| INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH MM SS.FFFF*/
-		| INT_VALUE COLON INT_VALUE 			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);} /* HH MM */
-		| INT_VALUE COLON INT_VALUE COLON INT_VALUE 	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS*/
-		| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{sprintf($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
-		| INT_VALUE COLON NUMBER_VALUE			{sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
-		| NUMBER_VALUE					{sprintf($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
-		| KW_DOT INT_VALUE {sprintf($<str>$,"0.%s",$<str>2);}
+		INT_VALUE INT_VALUE 			{SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);}		/* DD HH */
+		| INT_VALUE INT_VALUE COLON INT_VALUE 	{SPRINTF3($<str>$,"%s %s:%s",$<str>1,$<str>2,$<str>4);}		/* DD HH:MM */
+		| INT_VALUE INT_VALUE COLON INT_VALUE COLON INT_VALUE 	 {SPRINTF4($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH:MM:SS*/
+		| INT_VALUE INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{SPRINTF4($<str>$,"%s %s:%s:%s",$<str>1,$<str>2,$<str>4,$<str>6);} /* DD HH MM SS.FFFF*/
+		| INT_VALUE COLON INT_VALUE 			{SPRINTF2($<str>$,"%s:%s",$<str>1,$<str>3);} /* HH MM */
+		| INT_VALUE COLON INT_VALUE COLON INT_VALUE 	{SPRINTF3($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS*/
+		| INT_VALUE COLON INT_VALUE COLON NUMBER_VALUE	{SPRINTF3($<str>$,"%s:%s:%s",$<str>1,$<str>3,$<str>5);} /* HH MM SS.FFFF*/
+		| INT_VALUE COLON NUMBER_VALUE			{SPRINTF2($<str>$,"%s:%s",$<str>1,$<str>3);}	/* MM SS.FFFF*/
+		| NUMBER_VALUE					{SPRINTF1($<str>$,"%s",$<str>1);}		/* SS.FFFF*/
+		| KW_DOT INT_VALUE {SPRINTF1($<str>$,"0.%s",$<str>2);}
 	;
 
 numeric_time_unit_big:
 		INT_VALUE
 		| INT_VALUE KW_MINUS INT_VALUE {
-			sprintf($<str>$,"%s-%s",$<str>1,$<str>3);
+			SPRINTF2($<str>$,"%s-%s",$<str>1,$<str>3);
 		}
 	;
 

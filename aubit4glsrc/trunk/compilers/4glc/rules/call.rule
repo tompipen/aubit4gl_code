@@ -27,7 +27,7 @@ call_ext: function_call_expr opt_return {
 	}
    | DIALOG_DOT NAMED OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
-		sprintf(buff,"fgl_dialog_%s",downshift($<str>2));
+		SPRINTF1(buff,"fgl_dialog_%s",downshift($<str>2));
 		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff) );
    		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
 		//start_bind('i',0);
@@ -88,11 +88,11 @@ func_arg :	fgl_expr_c  {$<ptr>$=$<ptr>1;}
 	| KW_NULL 		{$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);}
 ;
 
-remote_host_name : CHAR_VALUE | identifier { sprintf($<str>$,"\"%s\"",$<str>1); }
+remote_host_name : CHAR_VALUE | identifier { SPRINTF1($<str>$,"\"%s\"",$<str>1); }
 ;
 
-remote_func_name : identifier 			{ sprintf($<str>$,"\"%s\"",$<str>1); } 
-		|  identifier KW_DOT identifier 	{ sprintf($<str>$,"\"%s.%s\"",$<str>1,$<str>3); }
+remote_func_name : identifier 			{ SPRINTF1($<str>$,"\"%s\"",$<str>1); } 
+		|  identifier KW_DOT identifier 	{ SPRINTF2($<str>$,"\"%s.%s\"",$<str>1,$<str>3); }
 ;
 
 
