@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.63 2008-02-18 16:25:10 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.64 2008-02-19 21:13:08 mikeaubury Exp $
 #
 */
 
@@ -2019,6 +2019,7 @@ find_tabname_for_alias (struct s_select *select, char *alias)
 {
   int a;
 
+  if (alias==0) return 0;
 
   if (!select)
     return alias;
