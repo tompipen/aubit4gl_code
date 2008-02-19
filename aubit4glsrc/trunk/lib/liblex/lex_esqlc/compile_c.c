@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.401 2008-02-18 15:38:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.402 2008-02-19 14:29:49 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.401 2008-02-18 15:38:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.402 2008-02-19 14:29:49 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4187,11 +4187,14 @@ print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char 
 	  else
 	    {
 
-	      printc ("{NULL,%d,%d,%s,%s,0}%c",
+	      printc ("{NULL,%d,%d,0,0,0}%c /* MJA */",
 		      (int) get_binding_dtype (lbind->list.list_val[a]) & 0xffff,
 		      (int) get_binding_dtype (lbind->list.list_val[a]) >> 16,
+		/*
 		      get_start_char_subscript (lbind->list.list_val[a]),
-		      get_end_char_subscript (lbind->list.list_val[a]), (a < lbind->list.list_len - 1) ? ',' : ' ');
+		      get_end_char_subscript (lbind->list.list_val[a]), 
+		*/
+			(a < lbind->list.list_len - 1) ? ',' : ' ');
 	}} printc ("\n}; \n");
 
 
@@ -4241,6 +4244,8 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 {
   int a;
   struct expr_str_list empty;
+	char *start_chr;
+	char *end_chr;
   empty.list.list_len=0;
   empty.list.list_val=0;
   if (bind==0) {
@@ -4270,6 +4275,16 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 				print_variable_usage_for_bind(bind->list.list_val[a]);
 				printc(";");
 				clr_nonewlines();
+		      		start_chr=get_start_char_subscript (bind->list.list_val[a]);
+				if (start_chr && strcmp(start_chr,"0")!=0) {
+					printc("ibind[%d].start_char_subscript=%s;\n", a, start_chr);
+				}
+		      		end_chr=get_end_char_subscript (bind->list.list_val[a]); 
+				if (end_chr && strcmp(end_chr,"0")!=0) {
+					printc("ibind[%d].end_char_subscript=%s;\n", a, end_chr);
+				}
+
+
 				break;
 
 			case ET_EXPR_VARIABLE_USAGE: 
@@ -4278,6 +4293,16 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 				print_variable_usage_for_bind(bind->list.list_val[a]);
 				printc(";");
 				clr_nonewlines();
+
+		      		start_chr=get_start_char_subscript (bind->list.list_val[a]);
+				if (start_chr && strcmp(start_chr,"0")!=0) {
+					printc("ibind[%d].start_char_subscript=%s;\n", a, start_chr);
+				}
+		      		end_chr=get_end_char_subscript (bind->list.list_val[a]); 
+				if (end_chr && strcmp(end_chr,"0")!=0) {
+					printc("ibind[%d].end_char_subscript=%s;\n", a, end_chr);
+				}
+
 				break;
 
 			case ET_EXPR_LITERAL_EMPTY_STRING:
