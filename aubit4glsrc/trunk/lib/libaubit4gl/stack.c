@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.200 2008-02-11 17:13:11 mikeaubury Exp $
+# $Id: stack.c,v 1.201 2008-02-20 07:23:31 mikeaubury Exp $
 #
 */
 
@@ -1513,7 +1513,7 @@ A4GL_debug("51 Have data");
     case OP_NOT:
       if (A4GL_chknull (1, n1, n2,dn1,dn2)) {
       			i1 = A4GL_pop_int ();
- 		A4GL_push_int (1);
+ 		A4GL_push_int (0);
 		call_list--;
 	      		return;
       }
