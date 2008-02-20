@@ -1,0 +1,3 @@
+i = NULL
+IF i -> FALSE
+IF NOT i -> FALSE
