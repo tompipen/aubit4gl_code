@@ -124,13 +124,26 @@ FILE *f;
       break;
 
     case ET_EXPR_LITERAL_LONG:
-
       {
         static char smbuff[200];
         sprintf (smbuff, "%d", e->expr_str_u.expr_long);
         return smbuff;
       }
       break;
+
+    case ET_EXPR_BRACKET:
+      {
+        static char smbuff[1024];
+	char *ptr;
+	ptr=strdup(expr_as_string_when_possible(e->expr_str_u.expr_expr));
+        sprintf (smbuff, "(%s)", ptr);
+	free(ptr);
+        return smbuff;
+      }
+      break;
+
+
+
     case ET_EXPR_OP_USING:
       return "?";               // a date or a number - we dont care...
       break;
