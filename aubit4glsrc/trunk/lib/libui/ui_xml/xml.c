@@ -159,6 +159,7 @@ A4GL_XML_opening_form (char *formfile, char *formname)
     }
   else
     {
+	fprintf(stderr, "Unable to open file '%s'\n", buff);
       return 0;
     }
 }

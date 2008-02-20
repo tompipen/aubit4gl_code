@@ -110,3 +110,16 @@ trim (char *p)
     }
 }
 
+
+/**
+ *  * Trim the spaces at the rigth side of a string
+ *   *
+ *    * @param p The string to be trimmed.
+ *     */
+void
+A4GL_trim (char *p)
+{
+	trim(p);
+}
+
+

@@ -173,10 +173,11 @@ for (a=0;a<l;a++) {
                         for (z1=0;z1<strlen(buff2);z1++) {
                                 buff[b++]=buff2[z1];
                         }
+			continue;
                 }
 	buff[b++]=s[a];
 }
-
+A4GL_assertion(b>=last_len,"XML escape buffer too small");
 buff[b]=0;
 return buff;
 }
