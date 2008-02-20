@@ -13,6 +13,7 @@ DEFINE w RECORD
 	END RECORD
 
 START REPORT cliracti_report TO "paso"
+LOCATE w.obse IN MEMORY
 OUTPUT TO REPORT cliracti_report(w.*)
 FINISH REPORT cliracti_report
 END MAIN
