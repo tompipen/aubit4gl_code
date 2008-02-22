@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.127 2007-12-19 08:27:11 mikeaubury Exp $
+# $Id: ops.c,v 1.128 2008-02-22 16:31:10 mikeaubury Exp $
 #
 */
 
@@ -149,6 +149,19 @@ void A4GL_double_in_ops (int op);
 
 */
 
+static int isCompare(int op) {
+		switch(op) {
+    			case OP_LESS_THAN:
+    			case OP_GREATER_THAN:
+    			case OP_LESS_THAN_EQ:
+    			case OP_GREATER_THAN_EQ:
+    			case OP_EQUAL:
+    			case OP_NOT_EQUAL:
+					return 1;
+		}
+	return 0;
+}
+
 
 double a4gl_local_trunc(double d) {
 	if (d<0) return ceil(d);
@@ -218,9 +231,9 @@ int d;
   A4GL_pop_var2(&b,5,0x4020);
   A4GL_pop_var2(&a,5,0x4020);
 A4GL_debug("dec_dec_ops");
-  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
-      || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
+  if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -312,6 +325,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -404,6 +418,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -496,6 +511,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -588,6 +604,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -680,6 +697,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -772,6 +790,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -864,6 +883,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -956,6 +976,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1049,6 +1070,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1141,6 +1163,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1234,6 +1257,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1327,6 +1351,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1419,6 +1444,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1511,6 +1537,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1603,6 +1630,7 @@ int d;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a)
       || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -1696,6 +1724,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1788,6 +1817,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1880,6 +1910,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -1972,6 +2003,7 @@ int d;
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a)
       || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_MONEY, 0);
       return;
     }
@@ -2069,6 +2101,7 @@ A4GL_debug("%f %f\n",a,b);
       || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
       A4GL_debug ("smflot_smfloat- one is null");
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_SMFLOAT, 0);
       return;
     }
@@ -2149,6 +2182,7 @@ A4GL_debug("%f %f\n",a,b);
   return;
 }
 
+
 /******************************************************************************/
 
 static void A4GL_char_char_ops (int op)
@@ -2193,9 +2227,13 @@ char *ptr2;
 
   if (A4GL_isnull (DTYPE_CHAR, (void *) a) || A4GL_isnull (DTYPE_CHAR, (void *) b)) {
 		A4GL_debug("One of them is null...");
-		A4GL_push_null (DTYPE_CHAR, 0);
-		free(a); free(b);
-		return;
+		if (isCompare(op)) {
+					free(a); free(b);
+					A4GL_push_int(0);
+					return;
+		} else {
+			A4GL_push_null (DTYPE_CHAR, 0);
+		}
 	}
 
   else {
@@ -2306,6 +2344,7 @@ A4GL_debug("%f %f\n",a,b);
       || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
       A4GL_debug ("float_smallflt - one is null");
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_SMFLOAT, 0);
       return;
     }
@@ -2408,6 +2447,7 @@ A4GL_debug("%f %f\n",a,b);
       || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
       A4GL_debug ("smfloat_float - one is null");
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_SMFLOAT, 0);
       return;
     }
@@ -3544,6 +3584,7 @@ A4GL_int_int_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("int_int - one is null");
 #endif
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
@@ -3668,6 +3709,7 @@ A4GL_date_date_ops (int op)
       || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
       A4GL_debug ("date_date - one is null");
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
@@ -3780,6 +3822,7 @@ char buff[256];
     {
       free(ptr);
       A4GL_debug ("int_date - one is null");
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
@@ -3909,6 +3952,7 @@ A4GL_date_int_ops (int op)
       || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
       A4GL_debug ("int_date - one is null");
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
@@ -4018,6 +4062,7 @@ A4GL_int_date_ops (int op)
       || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
       A4GL_debug ("int_int - one is null");
+		if (isCompare(op)) { A4GL_push_int(0); return; }
       A4GL_push_null (DTYPE_INT, 0);
       return;
     }
