@@ -58,7 +58,7 @@ int process_module (module_definition *loaded_module_definition) {
         for (a=0;a<loaded_module_definition->comment_list.comment_list_len;a++) {
                         loaded_module_definition->comment_list.comment_list_val[a].printed=0;
         }
-
+	A4GL_debug("Generating code...");
         A4GL_write_generated_code(loaded_module_definition);
 
         return 1;

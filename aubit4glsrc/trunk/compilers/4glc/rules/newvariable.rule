@@ -18,7 +18,7 @@ variable
 
 var_ident_vl: variable_usage_expression {
 		char errbuff[256];
-		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1) { 
+		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1 || ignore_var_usage_for_builtin_variable($<ptr>1)) { 
 			// Its not a variable - so we dont care about any errors..
 			$<ptr>$=generate_sql_expr($<ptr>1); 
 		

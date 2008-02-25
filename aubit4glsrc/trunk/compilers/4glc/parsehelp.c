@@ -2917,6 +2917,18 @@ int a;
 	return 1;
 }
 
+
+
+int ignore_var_usage_for_builtin_variable(expr_str *str ) {
+if (str->expr_type!=ET_EXPR_VARIABLE_USAGE) return 0;
+if (A4GL_isyes(acl_getenv("A4GL_STATUSASCOL"))) {
+	if (strcmp(str->expr_str_u.expr_variable_usage->variable_name,"a4gl_status")==0) return 1;
+
+}
+return 0;
+}
+
+
 #ifdef MOVED
 
 expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) {

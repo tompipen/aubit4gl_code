@@ -85,6 +85,18 @@ FILE *f;
       return e->expr_str_u.expr_string;
       break;
 
+    case ET_EXPR_BRACKET:
+      {
+        static char smbuff[1024];
+        char *ptr;
+        ptr=strdup(expr_as_string_when_possible(e->expr_str_u.expr_expr));
+        sprintf (smbuff, "(%s)", ptr);
+        free(ptr);
+        return smbuff;
+      }
+      break;
+
+
 
     case ET_EXPR_VARIABLE_USAGE:
 

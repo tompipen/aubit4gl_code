@@ -727,6 +727,7 @@ struct expr_str_list *fully_expand_variables_in_expr_str_list(expr_str_list *l);
 expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
 void A4GL_new_append_ptr_list_with_expand(expr_str_list *l,struct expr_str *e);
 cons_list* append_constr_col_list(struct cons_list *c ,struct cons_list_entry *new_entry);
+int ignore_var_usage_for_builtin_variable(expr_str *str );
 #endif   //ifndef _A4GL_4GLC_INT_H_
 
 /* ============================= EOF ================================= */

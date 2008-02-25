@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.31 2008-02-15 17:57:03 mikeaubury Exp $
+# $Id: Makefile,v 1.32 2008-02-25 10:13:23 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -299,13 +299,13 @@ clean.rules:
 
 extra: reload reload_static fgllint fglcalltree 
 
-reload: reload.c API_lex.c
-	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex.c -o reload -L$(AUBITDIR)/lib -laubit4gl  
+reload: reload.c API_lex.c common.c ../../lib/generated/std_funcs.c
+	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex.c common.c ../../lib/generated/std_funcs.c -o reload -L$(AUBITDIR)/lib -laubit4gl  
 
 
 
 reload_static: reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c
-	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o reload -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
+	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o reload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
 fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl

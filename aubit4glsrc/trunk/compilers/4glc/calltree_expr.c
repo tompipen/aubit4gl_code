@@ -63,6 +63,19 @@ FILE *f;
         return expr_get_variable_usage_as_string(e->expr_str_u.expr_variable_usage);
 	break;
 
+    case ET_EXPR_BRACKET:
+      {
+        static char smbuff[1024];
+        char *ptr;
+        ptr=strdup(expr_as_string_when_possible(e->expr_str_u.expr_expr));
+        sprintf (smbuff, "(%s)", ptr);
+        free(ptr);
+        return smbuff;
+      }
+      break;
+
+
+
     case ET_EXPR_LITERAL_LONG:
 
       {
