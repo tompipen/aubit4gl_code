@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.138 2008-02-18 16:48:52 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.139 2008-03-09 12:13:00 mikeaubury Exp $
 #
 */
 
@@ -1129,8 +1129,9 @@ A4GLSQLCV_dtype_alias (char *s)
   if (strchr (s, '('))
     {
       static char buff[256];
-      char *ptr;
+      static char *ptr=0;
       char *ptr2;
+	if (ptr) free(ptr);
       ptr = acl_strdup (s);
       ptr2 = strchr (ptr, '(');
       *ptr2 = 0;

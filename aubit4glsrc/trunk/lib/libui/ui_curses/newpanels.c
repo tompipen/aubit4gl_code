@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.151 2008-02-11 17:13:13 mikeaubury Exp $
+# $Id: newpanels.c,v 1.152 2008-03-09 12:13:06 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.151 2008-02-11 17:13:13 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.152 2008-03-09 12:13:06 mikeaubury Exp $";
 #endif
 
 /**
@@ -1724,7 +1724,7 @@ void
 int nattr;
 int lastpos;
 WINDOW *wot;
-char *ptr;
+char *ptr=0;
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,attr,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",attr);
   ptr=strdup(s);
@@ -1737,6 +1737,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	}
       printf ("%s\n", s);
       fflush (stdout);
+	free(ptr);
     }
   else
     {

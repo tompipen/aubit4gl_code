@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.138 2008-02-16 14:49:29 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.139 2008-03-09 12:13:01 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.138 2008-02-16 14:49:29 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.139 2008-03-09 12:13:01 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1169,7 +1169,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	if (A4GL_fprop_flag_get( sio->currentfield, FLAG_FIELD_TOUCHED)) {
 
 	      A4GL_trim (buff);
-
+	A4GL_debug("Buff=%s",buff);
+	
 	      if (strlen (buff))
 		{
 	          char buff2[10024];
@@ -1245,7 +1246,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
           		return -1;
 		}
 
-		A4GL_debug("It would appear that %s could be put into my variable... type=%d size=%d",buff,sio->vars[field_no].dtype,sio->vars[field_no].size);
+		A4GL_debug("It would appear that '%s' could be put into my variable... type=%d size=%d",buff,sio->vars[field_no].dtype,sio->vars[field_no].size);
 
 	      A4GL_push_char (buff);
 

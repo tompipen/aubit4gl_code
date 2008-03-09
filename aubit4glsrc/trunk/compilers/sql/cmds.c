@@ -214,7 +214,7 @@ strcpy(buff,"");
                 rval = get_select_list_item (0, updateCmd->value_list->list.list_val[a]);
                 sprintf (smbuff, "%s=%s", updateCmd->column_list->str_list_entry.str_list_entry_val[a], rval);
                 strcat(buff,smbuff);
-                free (rval);
+                acl_free (rval);
               }
           }
         else
@@ -235,7 +235,7 @@ strcpy(buff,"");
                 }
                 rval = get_select_list_item (0, updateCmd->value_list->list.list_val[a]);
                 strcat(buff,rval);
-                free (rval);
+                acl_free (rval);
               }
                 strcat(buff,")");
 

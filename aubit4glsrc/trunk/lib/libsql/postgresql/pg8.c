@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.20 2008-02-18 16:25:11 mikeaubury Exp $
+# $Id: pg8.c,v 1.21 2008-03-09 12:13:01 mikeaubury Exp $
 #*/
 
 
@@ -347,6 +347,7 @@ A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
 	      CanUseSavepoints = 1;
 	    }
 	}
+      PQclear (res);
 #endif
     }
 
@@ -1302,6 +1303,12 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
 
   if (A4GL_has_pointer (uniqid, PREPAREPG))
     {
+  struct s_prepare *a;
+        a=A4GL_find_pointer_val(uniqid, PREPAREPG);
+	if (a && a->sql) free(a->sql);
+	if (a && a->name) free(a->name);
+	free(a);
+	A4GL_del_pointer(uniqid, PREPAREPG);
       //SPRINTF1 (buff, "DEALLOCATE %s", n->name);
       //PQexec (con, buff);
     }
@@ -1453,8 +1460,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   int setSavepoint = 0;
   char *isInsert;
   int use_insert_return = 0;
-  PGresult *res;
-
+  PGresult *res=0;
+  if (res) PQclear(res);
   A4GL_debug ("Execute\n");
 
   if (vsid == 0)
@@ -1592,9 +1599,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	  if (oid != InvalidOid)
 	    {
 	      PGresult *res2;
-	      char *s;
+	      static char *s=0;
 	      char *p;
 	      int l;
+		if(s) free(s);
 	      s = strdup (n->sql);
 	      A4GL_convupper (s);
 	      l = strlen (s);
@@ -1660,6 +1668,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		      A4GL_set_a4gl_sqlca_errd (1, 0);
 		    }
 		  free (s);
+		s=0;
 		}
 	      A4GL_set_a4gl_sqlca_errd (5, oid);
 	    }
@@ -1676,7 +1685,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	      Execute ("RELEASE SAVEPOINT preExec", 1);
 	    }
 	}
-
+ 	if (res) { PQclear(res); res=0; }
       return 0;
     }
 
@@ -1687,6 +1696,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	  Execute ("ROLLBACK TO SAVEPOINT preExec", 1);
 	}
     }
+ 	if (res) { PQclear(res); res=0; }
   return 1;
 }
 
@@ -1876,8 +1886,12 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
       if (singleton)
 	{
-	  free (n->name);
-	  free (n->sql);
+	   A4GL_del_pointer(n->name, PREPAREPG);
+	   free (n->name);
+	   free (n->sql);
+	   n->name=0;
+	   n->sql=0;
+
 	  A4GL_free_associated_mem (n);
 	  //free(n);
 	}

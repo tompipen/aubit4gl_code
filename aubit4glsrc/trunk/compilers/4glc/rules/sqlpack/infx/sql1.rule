@@ -391,7 +391,9 @@ ct_column_definiton_ss:
                 }
                 if (strlen($<sql_string>4)) {
                         $<sql_string>$=make_sql_string_and_free($<sql_string>$, kw_space,acl_strdup($<sql_string>4),NULL);
-                }
+                } else {
+			free($<sql_string>4);
+		}
 
 
 	}
