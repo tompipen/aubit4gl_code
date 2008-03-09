@@ -1,4 +1,26 @@
 ---------------------------
+Sun Mar  9 14:46:58 GMT 2008
+---------------------------
+1.10RC_1 Released
+---------------------------
+	
+	Small memory leak fixups
+	
+	1114: 1.1 RC1 (win32bin) - 'status' in SQL statements
+	
+	fix nasty null comparison bug
+	
+	Add ET_EXPR_BRACKET to	expr_when_possible
+	
+	NOT(NULL) fixup
+	
+	patch for returning into a substring of a character string variable
+	
+	Code cleanup (remove sprintfs) and some minor patches
+	
+	Fix for 'exit case'
+	
+---------------------------
 Tue Feb 19 12:56:48 GMT 2008
 ---------------------------
 1.10RC_1 Released
