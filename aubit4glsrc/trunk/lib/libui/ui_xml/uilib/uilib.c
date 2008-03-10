@@ -141,6 +141,7 @@ int c;
 int a;
 int l;
 int b;
+int allocated;
 c=0;
 if (strchr(s,'&')) c++;
 if (strchr(s,'<')) c++;
@@ -153,8 +154,10 @@ if (c==0) {
 }
 
 l=strlen(s);
+allocated=l*5+1;
+
 if (l>last_len) {
-	buff=realloc(buff, l*5+1);
+	buff=realloc(buff, allocated);
 	last_len=l;
 }
 
@@ -177,7 +180,7 @@ for (a=0;a<l;a++) {
                 }
 	buff[b++]=s[a];
 }
-A4GL_assertion(b>=last_len,"XML escape buffer too small");
+A4GL_assertion(b>=allocated,"XML escape buffer too small");
 buff[b]=0;
 return buff;
 }
