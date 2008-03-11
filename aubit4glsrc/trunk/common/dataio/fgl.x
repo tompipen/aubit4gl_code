@@ -1443,7 +1443,7 @@ union command_data switch (enum cmd_type type) {
 };
 
 
-struct comment {
+struct fgl_comment {
 	int lineno;
 	int colno;
 	int printed;
@@ -1612,7 +1612,7 @@ struct module_definition {
 	str force_ui;
 	str debug_filename;
 	str external_datatypes<>;
-	struct comment comment_list<>;
+	struct fgl_comment comment_list<>;
 	struct file_description imported_files<>;
 	enum e_boolean schema_only;
 	enum e_boolean genStackInfo;

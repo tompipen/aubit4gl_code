@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.93 2008-02-11 17:13:07 mikeaubury Exp $
+# $Id: variables.c,v 1.94 2008-03-11 10:31:44 mikeaubury Exp $
 #
 */
 
@@ -3615,7 +3615,7 @@ int inc_var_usage(expr_str *s) {
 struct variable *v;
 struct variable_usage *u;
 struct variable_usage *utop;
-if (s->expr_type!=ET_EXPR_VARIABLE_USAGE) return;
+if (s->expr_type!=ET_EXPR_VARIABLE_USAGE) return 0 ;
 u=s->expr_str_u.expr_variable_usage;
 
 utop=u;
@@ -3831,8 +3831,7 @@ describe_variable (struct variable *v)
   switch (v->var_data.variable_type)
     {
     case VARIABLE_TYPE_SIMPLE:
-      sprintf (buff, "{%d:%d}%s", v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK,
-	       v->var_data.variable_data_u.v_simple.dimensions[0]);
+      sprintf (buff, "{%d:%d}", v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK, v->var_data.variable_data_u.v_simple.dimensions[0]);
       break;
 
     case VARIABLE_TYPE_OBJECT:
@@ -3862,7 +3861,7 @@ describe_variable (struct variable *v)
       return 0;
 
     case VARIABLE_TYPE_FUNCTION_DECLARE:
-      sprintf (buff, "");
+      strcpy (buff, "");
       break;
     }
 
@@ -3907,7 +3906,7 @@ char *describe_variable_usage(variable_usage *u) {
 	v=find_variable_vu_ptr(errbuff,u,&scope,0);
 	if (v==0) return 0;
 	
-
+return " ";
 }
 
 /* 

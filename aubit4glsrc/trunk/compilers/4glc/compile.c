@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.118 2008-02-19 12:53:43 mikeaubury Exp $
+# $Id: compile.c,v 1.119 2008-03-11 10:31:19 mikeaubury Exp $
 #*/
 
 /**
@@ -1206,7 +1206,7 @@ compiled_4gl++;
                 this_module.comment_list.comment_list_len=0;
         } else {
                 this_module.comment_list.comment_list_len=ncomm;
-                this_module.comment_list.comment_list_val=malloc(sizeof(struct comment)* ncomm);
+                this_module.comment_list.comment_list_val=malloc(sizeof(struct fgl_comment)* ncomm);
                 for (cnt=0;cnt<ncomm;cnt++) {
                         A4GL_GetComment(cnt, &s,&lineno,&colno,&type);
                         this_module.comment_list.comment_list_val[cnt].lineno=lineno;
