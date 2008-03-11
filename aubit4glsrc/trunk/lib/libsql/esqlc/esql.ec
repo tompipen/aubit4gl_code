@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.200 2007-12-05 14:08:15 mikeaubury Exp $
+# $Id: esql.ec,v 1.201 2008-03-11 10:23:56 mikeaubury Exp $
 #
 */
 
@@ -107,6 +107,7 @@ $include sqlca;
 #include "a4gl_incl_4gldef.h"
 char unloadBuffer[BUFSIZ];
 //static void A4GL_quick_trim(char *s) ;
+#define PRECODEEC '|'
 
 //extern sqlca_struct a4gl_sqlca;
 dll_export sqlca_struct a4gl_sqlca;
@@ -191,7 +192,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.200 2007-12-05 14:08:15 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.201 2008-03-11 10:23:56 mikeaubury Exp $";
 #endif
 
 
@@ -932,6 +933,14 @@ getConnectionForDatabase (char *databaseName)
 }
 
 
+static void freeStatement(struct s_sid *sid) {
+	A4GL_del_pointer(sid->statementName, PRECODEEC);
+        if (sid->select) {
+                       free(sid->select);
+        }
+       free(sid);
+}
+
 /**
  * Create an sql statement structure.
  *
@@ -945,6 +954,7 @@ getConnectionForDatabase (char *databaseName)
 static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *uniqid)
 {
   struct s_sid *sid = acl_malloc2 (sizeof (struct s_sid));
+
 
   sid->select = strdup (s);
   sid->ibind = ibind;
@@ -961,6 +971,20 @@ static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDIN
   sid->inputDescriptorName = 0;
   sid->outputDescriptorName = 0;
   sid->extra_info = 0;
+  
+  if (A4GL_has_pointer(uniqid, PRECODEEC)) {
+		struct s_sid *sidold;
+		sidold=A4GL_find_pointer(uniqid, PRECODEEC);
+		if (sidold) {
+			freeStatement(sidold);
+		}
+  	A4GL_del_pointer(uniqid, PRECODEEC);
+  } else {
+	A4GL_debug("Not there %s\n", uniqid);
+  }
+  A4GL_debug("add_pointer : %s\n", uniqid);
+  A4GL_add_pointer(uniqid, PRECODEEC, sid);
+
   return sid;
 }
 
@@ -1011,9 +1035,12 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
   if (isSqlError ())
     {
-      free (sid);
+	freeStatement(sid);
+
       //A4GLSQL_del_prepare(sid->statementName);
       A4GLSQL_set_status (sqlca.sqlcode, 1);
+
+
       return (struct s_sid *) 0;
     }
 
@@ -2772,7 +2799,12 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 	  EXEC SQL FREE:cursorName;
 	  A4GL_del_pointer (s, PRECODE);
 	  A4GL_del_pointer (s, PRECODE_R);
+	  if (statementIdentification->select) {
+	  	free(statementIdentification->select);
+	  	statementIdentification->select=0;
+	  }
 	  free (statementIdentification);
+	A4GL_del_pointer (s, PRECODEEC);
 	  return;
 	}
     }

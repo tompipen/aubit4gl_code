@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.141 2008-02-16 14:49:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.142 2008-03-11 10:23:57 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.141 2008-02-16 14:49:29 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.142 2008-03-11 10:23:57 mikeaubury Exp $";
 #endif
 
 /**
@@ -2094,7 +2094,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
 
   a = arr->fcntrl_cnt - 1;
-  A4GL_debug ("arr->fcntrl_cnt=0x%x a=0x%x %s", arr->fcntrl_cnt, a);
+  A4GL_debug ("arr->fcntrl_cnt=0x%x a=0x%x", arr->fcntrl_cnt, a);
 // Should already have been handled...
 
   if (a > 10 || a < 0)

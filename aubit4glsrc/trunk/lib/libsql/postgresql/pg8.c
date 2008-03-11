@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.21 2008-03-09 12:13:01 mikeaubury Exp $
+# $Id: pg8.c,v 1.22 2008-03-11 10:23:56 mikeaubury Exp $
 #*/
 
 
@@ -1238,13 +1238,6 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
   char buff[20000];
   int a;
   int ccnt = 1;
-  n = malloc (sizeof (struct s_prepare));
-  n->ni = ni;
-  n->no = no;
-  n->ibind = ibind;
-  n->obind = obind;
-  n->last_result=0;
-  //n->hstmt=0;
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
@@ -1262,6 +1255,14 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
       return 0;
     }
+
+
+  n = malloc (sizeof (struct s_prepare));
+  n->ni = ni;
+  n->no = no;
+  n->ibind = ibind;
+  n->obind = obind;
+  n->last_result=0;
 
 
   l = strlen (s);
@@ -1301,19 +1302,26 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
       n->data_area_out = A4GL_alloc_associated_mem (n, sizeof (void *) * no);
     }
 
+A4GL_debug("uniqid=%s", uniqid);
   if (A4GL_has_pointer (uniqid, PREPAREPG))
     {
-  struct s_prepare *a;
+        struct s_prepare *a;
+	A4GL_debug("Exists");
         a=A4GL_find_pointer_val(uniqid, PREPAREPG);
 	if (a && a->sql) free(a->sql);
 	if (a && a->name) free(a->name);
-	free(a);
+	if (a) {
+		A4GL_debug("Freeing...");
+		free(a);
+	}
 	A4GL_del_pointer(uniqid, PREPAREPG);
-      //SPRINTF1 (buff, "DEALLOCATE %s", n->name);
-      //PQexec (con, buff);
-    }
+	  A4GL_free_associated_mem (a);
+    } else {
+	A4GL_debug("Not there");
+	}
 
   A4GL_add_pointer (uniqid, PREPAREPG, n);
+A4GL_debug("Added\n");
 
 
   // Might have prepared it before - so get rid...
@@ -1792,6 +1800,15 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 
 
 
+static void free_prepare(struct s_prepare *n) {
+	   A4GL_del_pointer(n->name, PREPAREPG);
+	   free (n->name);
+	   free (n->sql);
+	   n->name=0;
+	   n->sql=0;
+	   A4GL_free_associated_mem (n);
+	   free(n);
+}
 
 int
 A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
@@ -1802,8 +1819,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   int nfields;
   int setSavepoint = 0;
   char *sql;
-  PGresult *res;
-
+  static PGresult *res=0;
+  if (res) {PQclear(res); res=0;}
   n = vsid;
 
   if (n == 0)
@@ -1886,19 +1903,23 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
       if (singleton)
 	{
+	/*
 	   A4GL_del_pointer(n->name, PREPAREPG);
 	   free (n->name);
 	   free (n->sql);
 	   n->name=0;
 	   n->sql=0;
-
-	  A4GL_free_associated_mem (n);
+	   A4GL_free_associated_mem (n);
+	   free(n);
+	*/
 	  //free(n);
 	}
 
       if (nrows > 1)
 	{
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-284);	// A subquery has returned not exactly one row.
+		if (singleton) { free_prepare(n); }
+
 	  return 1;
 	}
 
@@ -1916,6 +1937,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	      Execute ("RELEASE SAVEPOINT preExecSelect", 1);
 	    }
 	}
+	if (singleton) { free_prepare(n); }
 
       return 0;
     }
@@ -1927,6 +1949,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	  Execute ("ROLLBACK TO SAVEPOINT preExecSelect", 1);
 	}
     }
+	if (singleton) { free_prepare(n); }
   return 1;
 }
 

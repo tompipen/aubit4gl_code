@@ -13,10 +13,19 @@
 #SOURCES="$a $b $c"
 
 if test "$COMSPEC" != ""; then 
-	SOURCES=`/bin/find ../.. -name "*.c"`
+	SOURCES_X=`/bin/find ../.. -name "*.c"`
 else
-	SOURCES=`find ../.. -name "*.c"`
+	SOURCES_X=`find ../.. -name "*.c"`
 fi
+
+SOURCES=""
+for a in $SOURCES_X
+do
+	if [ -r $a ]
+	then
+		SOURCES="$SOURCES $a"
+	fi
+done
 
 cp mkerrors2.out current_errs
 

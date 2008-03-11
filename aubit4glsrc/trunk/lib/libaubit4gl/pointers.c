@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.48 2007-11-14 15:18:41 mikeaubury Exp $
+# $Id: pointers.c,v 1.49 2008-03-11 10:23:56 mikeaubury Exp $
 #
 */
 
@@ -326,8 +326,8 @@ A4GL_del_pointer (char *pname, char t)
 
       DELETE_X (buff);
       free (anode);
-      free (buff);
-    }
+    } 
+    free (buff);
 }
 
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.18 2007-09-13 08:10:06 mikeaubury Exp $
+# $Id: Makefile.in,v 1.19 2008-03-11 10:23:57 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -49,6 +49,11 @@ CFLAGS		:=@CURSES_INC_PATH@ -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/
 
 ifneq "@HAVE_CURSES@" "0"
 	ALL			=${PLUGINDIR}/libUI_TUI${SO_EXT}
+endif
+
+
+ifeq "@HAVE_WIDE_NCURSES@" "1"
+	ALL			+=${PLUGINDIR}/libUI_TUI_wide${SO_EXT}
 endif
 
 #TODO: We will need to explicitly specify ncusrses or pdcurses when both are
