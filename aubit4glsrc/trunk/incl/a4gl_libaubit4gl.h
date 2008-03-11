@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.303 2008-02-15 14:35:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.304 2008-03-11 15:20:23 mikeaubury Exp $
 #
 */
 
@@ -89,9 +89,9 @@
 	#define u_int unsigned int
 
 	#include <limits.h> /* SHRT_MIN SHRT_MAX */
-	
 
 #endif
+
 
   /* if WIN32 is still defined, that means that __CYGWIN__was not defined */
 #if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
@@ -133,6 +133,9 @@
 
 #endif
 
+#ifdef __sun__
+#include <limits.h>
+#endif
 
 #include "a4gl_memhandling.h"
   /* ======================= from a4gl_constats.h ================== */
