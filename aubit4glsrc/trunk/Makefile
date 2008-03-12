@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.49 2008-02-12 12:46:57 mikeaubury Exp $
+# $Id: Makefile,v 1.50 2008-03-12 08:40:22 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -509,7 +509,7 @@ clean.distclean:
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
-		clean.swig clean.project clean.liblogical clean.perl
+		clean.swig clean.project clean.liblogical clean.perl clean.makefiles
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
 	$(MAKE) -C lib/libui/ui_console clean
@@ -593,7 +593,7 @@ clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
 
 clean.makefiles:
-	${RM} compilers/4glc/rules/Makefile \
+	${RM} -f compilers/4glc/rules/Makefile \
 	compilers/fcompile/Makefile compilers/helpcompile/Makefile \
 	incl/Makefile-common \
     lib/libui/ui_console/Makefile lib/libpdf/Makefile \
@@ -602,11 +602,14 @@ clean.makefiles:
     lib/extra_libs/string/Makefile lib/libui/ui_curses/Makefile \
     tools/test/db/Makefile tools/test/lang/Makefile \
 	tools/test/regression/Makefile tools/test/db/Makefile \
+	lib/liblex/lex_4gl/Makefile \
+	lib/libpacker/mempacked/Makefile \
+	tools/test/ace/Makefile \
     tools/misql/Makefile tools/adbload/Makefile \
     tools/ide/Makefile \
     tools/odbctest/Makefile \
     tools/test/gui/Makefile \
-	common/dataio/Makefile compilers/ace/Makefile \
+	compilers/ace/Makefile \
 	lib/libform/form_xdr/Makefile lib/libform/noform/Makefile \
 	lib/libmsg/msg_native/Makefile lib/libpacker/packed/Makefile \
 	lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile \
