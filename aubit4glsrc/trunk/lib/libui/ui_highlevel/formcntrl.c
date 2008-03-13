@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.66 2008-03-13 11:49:14 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.67 2008-03-13 16:38:07 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.66 2008-03-13 11:49:14 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.67 2008-03-13 16:38:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -748,7 +748,13 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 		      construct_not_moved = 1;
 		    }
 		  this_place = A4GL_LL_get_carat (sio->currform->form);
-		  if (this_place!=last_place) {
+
+
+		// Have we moved position ?
+		// If we're doing a construct - act like we have because it'll
+		// be handled separately...
+		  if (this_place!=last_place || sio->mode == MODE_CONSTRUCT) {
+
 			input_moved=1;
 		  }
 		  
