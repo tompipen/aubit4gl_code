@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.50 2008-03-12 08:40:22 mikeaubury Exp $
+# $Id: Makefile,v 1.51 2008-03-13 13:35:42 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -509,7 +509,7 @@ clean.distclean:
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
-		clean.swig clean.project clean.liblogical clean.perl clean.makefiles
+		clean.swig clean.project clean.liblogical clean.perl 
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
 	$(MAKE) -C lib/libui/ui_console clean
