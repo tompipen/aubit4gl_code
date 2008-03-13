@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.64 2008-02-19 21:13:08 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.65 2008-03-13 12:24:47 mikeaubury Exp $
 #
 */
 
@@ -1615,10 +1615,12 @@ char * find_table (struct s_select *select, struct s_select_list_item *i)
 	    }
 	}
 
+     if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
 	if (set_sql_lineno>0) {
       		FPRINTF (stderr, "Can't find table %s in FROM clause @ line %d\n", i->data.s_select_list_item_data_u.column.tabname,set_sql_lineno);
         } else {
       		FPRINTF (stderr, "Can't find table %s in FROM clause\n", i->data.s_select_list_item_data_u.column.tabname);
+	}
 	}
       return i->data.s_select_list_item_data_u.column.tabname;
     }
