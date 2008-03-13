@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.129 2008-03-13 08:09:52 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.130 2008-03-13 11:13:50 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2197,6 +2197,9 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 				// Well there wasn't - so it is required....
 				A4GL_error_nobox (acl_getenv
 						  ("FIELD_REQD_MSG"), 0);
+                                  A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+
 				A4GL_LL_set_current_field (mform,
 							   form->
 							   currentfield);
@@ -2223,6 +2226,9 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 				  ("X2222 Check for include has null...");
 				A4GL_error_nobox (acl_getenv
 						  ("FIELD_INCL_MSG"), 0);
+                                A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                                A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+
 				return -4;
 			      }
 			  }
@@ -2268,6 +2274,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    if (!pprval)
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+                        A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                        A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
 
 			if (A4GL_isyes
 			    (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
@@ -2334,6 +2342,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		  {
 		    A4GL_debug ("Not in include list");
 		    A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+                        A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                        A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
 		    A4GL_LL_set_current_field (mform, form->currentfield);
 		    return -4;
 		  }
@@ -2367,6 +2377,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			  {
 			    A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"),
 					      0);
+                        A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+                        A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
 			    A4GL_LL_set_current_field (mform,
 						       form->currentfield);
 			    return -4;
@@ -2508,6 +2520,8 @@ local_chk_field (struct s_form_dets *form, void *f)
 			{
 			  // Well there wasn't - so it is required....
 			  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
+                     A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                     A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
 			  //A4GL_LL_set_current_field (mform, form->currentfield);
 			  return -4;
 			}
@@ -2530,6 +2544,8 @@ local_chk_field (struct s_form_dets *form, void *f)
 			{
 			  A4GL_debug ("X2222 Check for include has null...");
 			  A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+                     A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                     A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
                                   if (fprop != 0)
                                     A4GL_comments (fprop);
 
@@ -2556,6 +2572,8 @@ local_chk_field (struct s_form_dets *form, void *f)
 		  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
                           if (fprop != 0)
                             A4GL_comments (fprop);
+                     A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                     A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
 
 		  if (A4GL_isyes (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
 		    {
@@ -2565,8 +2583,10 @@ local_chk_field (struct s_form_dets *form, void *f)
 		    {
 		      if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
 			{
-			  A4GL_LL_int_form_driver (mform,
-						   AUBIT_REQ_BEG_FIELD);
+                         A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                         A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+
+			  A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);
 			}
 
 		    }
@@ -2618,6 +2638,10 @@ local_chk_field (struct s_form_dets *form, void *f)
 	       fprop->datatype) == 0)
 	    {
 	      A4GL_debug ("Not in include list");
+                                  A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+                                  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+			  A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);
+
 	      A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 	      //A4GL_LL_set_current_field (mform, form->currentfield);
 	      return -4;
@@ -3003,6 +3027,9 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	       A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
 	       fprop->datatype) == 0)
 	    {
+             A4GL_fprop_flag_clear(sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+             A4GL_fprop_flag_set(sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+
 	      A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 	      A4GL_LL_set_current_field (mform, sio->currform->currentfield);
 	    }
@@ -3039,6 +3066,8 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	      if (ptr == 0)
 		{
 		  A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
+		A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+
 		  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
                   A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);
 

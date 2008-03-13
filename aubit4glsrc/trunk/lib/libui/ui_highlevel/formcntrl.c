@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.64 2007-11-29 13:48:05 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.65 2008-03-13 11:13:50 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.64 2007-11-29 13:48:05 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.65 2008-03-13 11:13:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2538,6 +2538,8 @@ A4GL_fprop_flag_get (void *f, int flag)
 {
   struct struct_scr_field *fprop;
   fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
+
+        A4GL_debug("getting flag to %d", fprop->flags);
   if (fprop->flags & flag)
     return 1;
   return 0;
@@ -2548,7 +2550,10 @@ A4GL_fprop_flag_set (void *f, int flag)
 {
   struct struct_scr_field *fprop;
   fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
+
+
   fprop->flags |= flag;
+A4GL_debug("Setting flag to %d", fprop->flags);
   return fprop->flags;
 }
 
@@ -2558,6 +2563,7 @@ A4GL_fprop_flag_clear (void *f, int flag)
   struct struct_scr_field *fprop;
   fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
   fprop->flags -= (fprop->flags & flag);
+        A4GL_debug("clearing flag to %d", fprop->flags);
   return fprop->flags;
 }
 

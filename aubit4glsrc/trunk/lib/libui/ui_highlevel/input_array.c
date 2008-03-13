@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.60 2008-01-24 20:06:14 mikeaubury Exp $
+# $Id: input_array.c,v 1.61 2008-03-13 11:13:50 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.60 2008-01-24 20:06:14 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.61 2008-03-13 11:13:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2333,6 +2333,7 @@ int nv;
 		    || arr->fcntrl[a].extent == 1
 		    || arr->fcntrl[a].extent == 4)))
 		{
+		
 
 		  //debug_print_flags(arr,"testing flags for currentfield");
 		  if ((A4GL_fprop_flag_get( arr->currentfield, FLAG_MOVED_IN_FIELD)) == 0)
@@ -2424,7 +2425,10 @@ int nv;
 				 picture);
 		}
 	      A4GL_debug ("Setting BF flag for current field");
+if (a_isprint(arr->fcntrl[a].extent) && arr->fcntrl[a].extent!='\n'&&arr->fcntrl[a].extent!='\t') {
+
 		A4GL_fprop_flag_set(  arr->currentfield, FLAG_MOVED_IN_FIELD);
+	}
 	    }
 	  rval = -1;
 	}
@@ -2475,8 +2479,6 @@ int nv;
       int attr;
 
 
-
-
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
@@ -2489,9 +2491,9 @@ int nv;
 
 	  arr->currentfield =
 	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
-	  fprop =
-	    (struct struct_scr_field
-	     *) (A4GL_ll_get_field_userptr (arr->currentfield));
+	  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (arr->currentfield));
+
+
 
 	  //if (field_opts(arr->currentfield)&AUBIT_O_AUTOSKIP) {
 	  //field_opts_off(arr->currentfield,AUBIT_O_AUTOSKIP); // We'll do the autoskiping here...
@@ -2659,7 +2661,7 @@ int nv;
 	  A4GL_LL_set_carat (arr->currform->form);
 	  A4GL_debug ("Clearing fprop flag -1 BEFORE FIELD for %d %d",
 		      arr->scr_line - 1, arr->curr_attrib);
-       A4GL_fprop_flag_clear(arr->currentfield, FLAG_MOVED_IN_FIELD);
+        A4GL_fprop_flag_clear(arr->currentfield, FLAG_MOVED_IN_FIELD);
         A4GL_fprop_flag_set(arr->currentfield, FLAG_MOVING_TO_FIELD);
 
 	  //if ((fprop->flags & 1)) fprop->flags -= 1;
