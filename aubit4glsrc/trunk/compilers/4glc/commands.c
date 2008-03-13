@@ -2351,7 +2351,11 @@ u=p->expr_str_u.expr_variable_usage;
 
 if (u->next==0) { // Looks simple enough..
 	struct s_select_list_item *i;
-	i=new_select_list_item_col(0, u->variable_name, generate_ilist_from_variable_usage(u));
+	char *s;
+	s=u->variable_name;
+	if (strcmp(s,"a4gl_status")==0) { s="status"; }
+	if (strcmp(s,"a4gl_sqlca")==0) { s="sqlca"; }
+	i=new_select_list_item_col(0, s, generate_ilist_from_variable_usage(u));
 	rval=A4GL_new_select_list_item_expr(i);
 }
 if (u->next!=0 && u->next->next==0) {  // Table.column 

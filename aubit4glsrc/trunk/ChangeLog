@@ -1,4 +1,27 @@
 ---------------------------
+Thu Mar 13 12:24:12 GMT 2008
+---------------------------
+1.10RC_AUBITBUILD Released
+---------------------------
+	
+	1106: HL_TUI: AUTONEXT not working
+	
+	MID 1099: ERROR in a INPUT ARRAY goes to next line
+	
+	MID 1104: Nested INPUTs, cursor in second input not returning to
+	first input
+	
+	Solaris fixup
+	
+	Rename "struct comment"
+	
+	Minor memory leak fixups Small error number fixup (make sure all
+	files are readable) Small DEBUG error message fix when using input
+	arrays
+	
+	Small memory leak fixups
+	
+---------------------------
 Sun Mar  9 14:46:58 GMT 2008
 ---------------------------
 1.10RC_2 Released
