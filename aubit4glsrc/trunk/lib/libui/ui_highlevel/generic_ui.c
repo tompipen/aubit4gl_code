@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.128 2008-02-11 17:13:13 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.129 2008-03-13 08:09:52 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3687,8 +3687,14 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 
       if (strcmp(siotype, "s_screenio")==0) {
                 struct s_screenio *s;
+		void *f;
                 s=sio;
+		f=s->field_list[s->curr_attrib];
                 A4GL_set_fields_sio(s);
+                s->currform->currentfield=f;
+                s->currentfield=f;
+                A4GL_mja_set_current_field(s->currform->form, f);
+
       }
 
 
