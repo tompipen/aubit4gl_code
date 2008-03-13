@@ -433,14 +433,18 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 	  vu->variable_id = a;
 	  vu->datatype = -2;	// RECORD...
 
-
-	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array) 
+	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array ) 
 		{
 			set_yytext(var_section);
 		      sprintf (errbuff, "'%s' subscript count mismatch (2)", var_section);
 		      return 0;
 		}
 			
+	if (v->arr_subscripts.arr_subscripts_len && vu->subscripts.subscripts_len!=v->arr_subscripts.arr_subscripts_len && next) {
+			set_yytext(var_section);
+		      sprintf (errbuff, "'%s' is an array and cant be used like this without selecting a subscript", var_section);
+		      return 0;
+	}
 
 	  if (next == 0)
 	    {

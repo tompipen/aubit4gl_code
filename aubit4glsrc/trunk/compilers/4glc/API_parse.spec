@@ -19,6 +19,9 @@ HEADER_FILE "API_parse_int.h"
 #undef DEBUG
 #endif
 
+#ifdef DEBUG_SPEC
+#undef DEBUG_SPEC
+#endif
 
 doparse -> int 
 A4GL_compiled_sqlpack -> char*

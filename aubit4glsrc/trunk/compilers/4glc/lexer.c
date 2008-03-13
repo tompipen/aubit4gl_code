@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.129 2008-02-11 17:13:06 mikeaubury Exp $
+# $Id: lexer.c,v 1.130 2008-03-13 19:35:24 mikeaubury Exp $
 #*/
 
 /**
@@ -849,7 +849,7 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
 	      return 0;
 	    }
 	}
-      A4GL_debug ("Allowing %d : %d %s '%s'\n", pos, kwords[cnt].id, kwords[cnt].name,p);
+      //A4GL_debug ("Allowing %d : %d %s '%s'\n", pos, kwords[cnt].id, kwords[cnt].name,p);
     }
 
 

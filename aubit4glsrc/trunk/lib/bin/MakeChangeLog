@@ -21,7 +21,7 @@ if [ $autorun = 1 ]
 then
 	AUBITVER=`cat $AUBITDIR/tools/project/version` 
 	AUBITBUILD=`cat $AUBITDIR/tools/project/build`
-	A4GL_VERSION_STRING="$AUBITVER"_"AUBITBUILD"
+	A4GL_VERSION_STRING="$AUBITVER"_"$AUBITBUILD"
 	odir=Changelogs/$A4GL_VERSION_STRING
 	mkdir -p $odir
 	ofile=$odir/ChangeLog.`date +%s`
