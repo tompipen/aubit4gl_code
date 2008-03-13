@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.65 2008-03-13 11:13:50 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.66 2008-03-13 11:49:14 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.65 2008-03-13 11:13:50 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.66 2008-03-13 11:49:14 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -55,6 +55,7 @@ int construct_last_key;
 //void A4GL_set_infield_from_parameter (long a);
 int construct_not_added = 0;
 int construct_not_moved = 0;
+int input_moved = 0;
 
 void A4GL_debug_print_field_opts (void *a);
 static int A4GL_local_get_curr_window_attr (void);
@@ -711,6 +712,7 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 		  int k;
 		  construct_not_added = 0;
 		  construct_not_moved = 0;
+		  input_moved = 0;
 
 		  k = fcntrl.extent;
 		  strcpy (fb, A4GL_LL_field_buffer (sio->currentfield, 0));
@@ -741,10 +743,15 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 			}
 		    }
 
-		  if (this_place == last_place)
+		  if (0 == last_place)
 		    {
 		      construct_not_moved = 1;
 		    }
+		  this_place = A4GL_LL_get_carat (sio->currform->form);
+		  if (this_place!=last_place) {
+			input_moved=1;
+		  }
+		  
 
 		  A4GL_debug ("construct_not_added=%d construct_not_moved=%d", construct_not_added, construct_not_moved);
 		}
@@ -785,13 +792,11 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 	  if (fcntrl.extent >= 28 && fcntrl.extent <= 255)
 	    {
 	      fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
-
 	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT) && !A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP))
 		{
 		  void *curses_form;
 		  curses_form = sio->currform->form;
-		  A4GL_debug ("CARAT=%d", A4GL_LL_get_carat (curses_form));
-		  if ((void *) A4GL_LL_current_field (curses_form) != sio->currentfield || A4GL_LL_get_carat (curses_form) == 0)
+		  if ((void *) A4GL_LL_current_field (curses_form) != sio->currentfield || A4GL_LL_get_carat (curses_form) == 0 || input_moved==0)
 		    {
 
 		      if (A4GL_get_dbscr_inputmode () == 0 && A4GL_curr_metric_is_used_last_s_screenio (sio, sio->currentfield))
@@ -864,7 +869,7 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 		    }
 		  cf = sio->currentfield;
 
-		  this_place = A4GL_LL_get_carat (sio->currform->form) + construct_not_moved;
+		  this_place = A4GL_LL_get_carat (sio->currform->form) + construct_not_moved; //@ FIXME - I'm not sure construct_not_moved is set properly - might need to check...
 		  //A4GL_error_nobox("CONSTRUCT BY KEY",0);
 		  f =
 		    A4GL_LL_construct_large (rbuff, (void *) evt,
