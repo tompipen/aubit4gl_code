@@ -1,4 +1,21 @@
 ---------------------------
+Fri Mar 14 09:46:15 GMT 2008
+---------------------------
+1.10RC_4 Released
+---------------------------
+	
+	Refix 1031 - broken because of the AUTONEXT fixup...  1031: HL_TUI:
+	Construct type a long value should go to last line to continue
+	typing
+	
+	1106: HL_TUI: AUTONEXT not working
+	
+	MID 1099: ERROR in a INPUT ARRAY goes to next line
+	
+	MID 1104: Nested INPUTs, cursor in second input not returning to
+	first input
+	
+---------------------------
 Thu Mar 13 12:24:12 GMT 2008
 ---------------------------
 1.10RC_3 Released
