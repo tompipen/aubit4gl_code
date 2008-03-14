@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.63 2007-11-22 15:06:43 mikeaubury Exp $
+# $Id: helper.c,v 1.64 2008-03-14 16:51:53 mikeaubury Exp $
 #
 */
 
@@ -609,10 +609,18 @@ int_get_info_window (char *ptr, char *info)
   switch (a)
     {
     case 1:
-      A4GL_push_int (p->h);
+	if (strcmp(ptr,"screen")==0) {
+      		A4GL_push_int (p->h+1);
+	} else {
+      		A4GL_push_int (p->h);
+	}
       break;
     case 2:
-      A4GL_push_int (p->w);
+	if (strcmp(ptr,"screen")==0) {
+      		A4GL_push_int (p->w+1);
+	} else {
+      		A4GL_push_int (p->w);
+	}
       break;
     case 3:
       A4GL_push_int (p->x);
