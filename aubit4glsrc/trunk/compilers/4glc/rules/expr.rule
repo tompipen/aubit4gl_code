@@ -221,9 +221,15 @@ variable_entry :
 	}
 	| variable_usage_expression THRU variable_usage_expression {
 		char errbuff[256];
+                $<ptr>$=A4GL_new_expr_list();
+                $<ptr>$->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+/*
 		$<ptr>$=A4GL_new_expr_list();
                 A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
                 A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+*/
 		$<ptr>$=ensure_variable(errbuff,$<ptr>$,1);
 		if ($<ptr>$==0) {
 			a4gl_yyerror(errbuff);

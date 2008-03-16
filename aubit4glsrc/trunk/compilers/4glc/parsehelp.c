@@ -2344,6 +2344,15 @@ if (ptr->expr_type==ET_EXPR_PAGENO) return 1;
 if (ptr->expr_type==ET_EXPR_LINENO) return 1;
 
 if (ptr->expr_type==ET_EXPR_THROUGH) return 1;
+if (ptr->expr_type==ET_EXPR_EXPR_LIST) {
+	int a;
+	for (a=0;a<ptr->expr_str_u.expr_list->list.list_len;a++) {
+		if (!set_var_dtype(errbuff, ptr->expr_str_u.expr_list->list.list_val[a], err_if_whole_array)) {
+			return 0;
+		}
+	}
+	return 1;
+}
 if (ptr->expr_type!=ET_EXPR_VARIABLE_USAGE) {
 	strcpy(errbuff, "Not a simple variable expression");
 	return 0; // Error condition

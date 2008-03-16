@@ -34,6 +34,7 @@ then
 	echo $A4GL_VERSION_STRING Released >> /tmp/changes
 	echo "---------------------------" >> /tmp/changes
 	cat $ofile | sed 's/^/	/g' >> /tmp/changes
+	cat /tmp/changes  | mail -s "New version released : $A4GL_VERSION_STRING" aubit4gl-developers@lists.sourceforge.net
 	cat $AUBITDIR/ChangeLog >> /tmp/changes
 	mv  /tmp/changes $AUBITDIR/ChangeLog
 else
