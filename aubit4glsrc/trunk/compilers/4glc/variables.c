@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.94 2008-03-11 10:31:44 mikeaubury Exp $
+# $Id: variables.c,v 1.95 2008-03-16 14:28:47 mikeaubury Exp $
 #
 */
 
@@ -1062,14 +1062,14 @@ add_to_scope (int record_cnt, int unroll)
 	  variable_holder = &list_module;
 	  counter = &list_module_cnt;
 	  alloc = &list_module_alloc;
-		/*
 		if (chk_already_defined(curr_v[record_cnt]->names.names.names_val[0].name,scope)) {
-
 				char buff[256];
-				sprintf(buff, "Coding Standards: Module variable (%s) hides a Global variable", curr_v[record_cnt]->names.names.names_val[0].name);
-				A4GL_lint(buff); // COMMENTED OUT
+			        set_yytext(curr_v[record_cnt]->names.names.names_val[0].name);
+				sprintf(buff, "Module variable hides a Global variable");
+	      			A4GL_exitwith (buff);
+	      			a4gl_yyerror (buff);
 		}
-		*/
+		
 	}
 
       if (scope == 'R')
