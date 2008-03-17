@@ -1,4 +1,24 @@
 ---------------------------
+Mon Mar 17 08:35:18 GMT 2008
+---------------------------
+1.10RC_5 Released
+---------------------------
+	
+	Small input/display array fixup for ATTRIBUTE handling
+	
+	Minor fixups :	error if masking a global variable with a module
+	variable	       (otherwise the C compiler complains)    Fix
+	"variable 'THRU' variable" for certain commands
+	
+	Added "Module variable hides a Global variable" to stop static
+	declaration of XXXX follows non-static declaration
+	
+	1101: row count function - fix the screen width and height returned
+	from a4gl_get_info
+	
+	New build
+	
+---------------------------
 Fri Mar 14 09:46:15 GMT 2008
 ---------------------------
 1.10RC_4 Released
