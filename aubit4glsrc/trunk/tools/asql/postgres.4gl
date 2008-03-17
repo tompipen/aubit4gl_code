@@ -244,13 +244,20 @@ fetch c_qli1 into l_tabid
    IF sqlca.sqlcode !=0 THEN
 	IF sqlca.sqlcode=100 THEN
 		ERROR "Table ", l_tabname clipped," was not found.."
+		RETURN 0
 	END IF
 
-        IF  check_and_report_error() THEN
+        IF check_and_report_error() THEN
       	   RETURN  0
         END IF
    END IF
 close c_qli1
+
+
+IF l_tabid IS NULL THEN
+	ERROR "Table ", l_tabname clipped," was not found.."
+	RETURN 0
+END IF
 
 
 let lv_query=" SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod) ",
