@@ -8,6 +8,8 @@ to reside, and then set
 	$ export PATH=$PATH:$AUBITDIR/bin
 	$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
 
-	
+
+You should then check your etc/aubitrc file and make sure that everything is setup
+as you require.
 
 

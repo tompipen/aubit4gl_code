@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.142 2008-03-11 10:23:57 mikeaubury Exp $
+# $Id: iarray.c,v 1.143 2008-03-17 08:22:07 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.142 2008-03-11 10:23:57 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.143 2008-03-17 08:22:07 mikeaubury Exp $";
 #endif
 
 /**
@@ -54,7 +54,7 @@
 void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 void A4GL_set_curr_infield (void *a);
 void debug_print_flags (void *sv, char *txt);
-int A4GL_get_attr_from_string (char *s);
+//int A4GL_get_attr_from_string (char *s);
 char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop,
 				   char *fld_data);
 void A4GL_clr_field (FIELD * f);
@@ -2710,7 +2710,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 	  if (arr->curr_display)
 	    {
 	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
-	      attr = A4GL_get_attr_from_string (arr->curr_display);
+	      attr = A4GL_strattr_to_num (arr->curr_display);
 	    }
 
 	  if (attr != 0)
@@ -2969,7 +2969,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 	  if (arr->curr_display)
 	    {
 	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
-	      attr = A4GL_get_attr_from_string (arr->curr_display);
+	      attr = A4GL_strattr_to_num (arr->curr_display);
 	    }
 
 
@@ -3198,7 +3198,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 	  if (arr->curr_display)
 	    {
 	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
-	      da = A4GL_get_attr_from_string (arr->curr_display);
+	      da = A4GL_strattr_to_num (arr->curr_display);
 	    }
 	}
 

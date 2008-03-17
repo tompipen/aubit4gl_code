@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.51 2008-02-16 14:49:29 mikeaubury Exp $
+# $Id: array.c,v 1.52 2008-03-17 08:22:07 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.51 2008-02-16 14:49:29 mikeaubury Exp $";
+		"$Id: array.c,v 1.52 2008-03-17 08:22:07 mikeaubury Exp $";
 #endif
 
 
@@ -52,7 +52,7 @@
 int set_scrline_da (int np);
 int set_arrline_da (int np);
 char *a_strchr(char *s,char c);
-int A4GL_get_attr_from_string (char *s);
+//int A4GL_get_attr_from_string (char *s);
 
 /*
 =====================================================================
@@ -927,7 +927,8 @@ int orig_set=0;
 
         if (disp->curr_display ) {
 	         if (iscurr) {
-	                 	nattr = A4GL_get_attr_from_string (disp->curr_display);
+				nattr=A4GL_strattr_to_num(disp->curr_display);
+	                 	//nattr = A4GL_get_attr_from_string (disp->curr_display);
 	                 	if (attr&AUBIT_ATTR_REVERSE) {
                             	if (nattr&AUBIT_ATTR_REVERSE)   nattr=nattr-AUBIT_ATTR_REVERSE;
                             	else                            nattr=nattr+AUBIT_ATTR_REVERSE;
