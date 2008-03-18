@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.120 2008-03-18 09:08:56 mikeaubury Exp $
+# $Id: compile.c,v 1.121 2008-03-18 13:07:19 mikeaubury Exp $
 #*/
 
 /**
@@ -1708,7 +1708,7 @@ a4gl_yyerror (char *s)
   A4GL_debug("errbuff=%s\n",errbuff);
   A4GL_debug("yytext=%s\n",yytext);
   if (strstr(s,matchstr)) {
-	char buff[1024];
+	static char buff[1024];
 	char *ptr;
 	strcpy(buff,s);
 	ptr=strstr(s,matchstr);
@@ -1734,7 +1734,7 @@ a4gl_yyerror (char *s)
   a = 0;
 
   if (fpos!=ld ) {
-	char buff[512];
+	static char buff[512];
 	int ln=0;
 	// We've read the file completely - this is a post parse error...
 	rewind(yyin);
