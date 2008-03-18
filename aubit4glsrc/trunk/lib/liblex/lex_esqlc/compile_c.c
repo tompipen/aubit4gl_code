@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.402 2008-02-19 14:29:49 mikeaubury Exp $
+# $Id: compile_c.c,v 1.403 2008-03-18 09:10:12 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.402 2008-02-19 14:29:49 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.403 2008-03-18 09:10:12 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6221,10 +6221,12 @@ if (strcmp(u->variable_name,v->names.names.names_val[0].name)!=0) {
 if (u->next) {
 	// We're expecting the variable to be a record...
 	A4GL_assertion (v->var_data.variable_type!=VARIABLE_TYPE_RECORD,"Expecting a record");
-	u=u->next;
-	A4GL_assertion(u->variable_id<0,"Variable not ensured...");
-	A4GL_assertion(u->variable_id>v->var_data.variable_data_u.v_record.variables.variables_len,"Variable out of range");
-	v=v->var_data.variable_data_u.v_record.variables.variables_val[u->variable_id];
+	while (u->next) {
+		u=u->next;
+		A4GL_assertion(u->variable_id<0,"Variable not ensured...");
+		A4GL_assertion(u->variable_id>v->var_data.variable_data_u.v_record.variables.variables_len,"Variable out of range");
+		v=v->var_data.variable_data_u.v_record.variables.variables_val[u->variable_id];
+	}
 	
 }
 

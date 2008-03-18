@@ -1729,7 +1729,8 @@ print_init_cmd (struct_init_cmd * cmd_data)
 	  struct variable_usage *u;
 	  struct variable_usage *u_bottom;
 	  struct variable *v;
-		printed=0;
+	printed=0;
+
 	  A4GL_assertion (cmd_data->varlist->list.list_val[a]->expr_type != ET_EXPR_VARIABLE_USAGE, "Expecting a variable usage");
 	  u = cmd_data->varlist->list.list_val[a]->expr_str_u.expr_variable_usage;
 
@@ -1738,11 +1739,13 @@ print_init_cmd (struct_init_cmd * cmd_data)
 	  u_bottom = u;
 
 	  while (u_bottom->next) {
-	    u_bottom = u_bottom->next;
+	    	u_bottom = u_bottom->next;
 	   }
+
 
 	  if (v->arr_subscripts.arr_subscripts_len)
 	    {
+
 	      // The variable is an array..
 	      if (u_bottom->subscripts.subscripts_len == 0)
 		{
