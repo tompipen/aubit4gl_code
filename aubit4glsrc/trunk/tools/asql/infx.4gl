@@ -1930,6 +1930,11 @@ let lv_last=-1
 
 		CALL set_exec_mode(0)
 
+                if not table_exists(lv_tabname) then
+                        error "Table does not exist"
+                        continue while
+                end if
+
 
 
                 let lv_txt="INFO - ",lv_tabname
@@ -3448,5 +3453,17 @@ end foreach
 
 call finish_table_nocol()
 end function
+
+
+function table_exists(lv_tabname)
+define lv_tabname char(256)
+	select * from systables where tabname=lv_tabname
+	if sqlca.sqlcode!=0 then
+		return FALSE
+	else
+		return TRUE
+	end if
+end function
+
 
 

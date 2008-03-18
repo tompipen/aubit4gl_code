@@ -1278,6 +1278,11 @@ define lv_option integer
 
 		call set_info_text(lv_txt)
 
+		if not table_exists(lv_tabname) then
+			error "Table does not exist"
+			continue while
+		end if
+
 		while true
 			case info_menu(lv_option)
 
@@ -1801,4 +1806,30 @@ END FOR
 ERROR "Strange : Couldn't find server PGHOSTS"
 RETURN  NULL,NULL,NULL,NULL
 
+end function
+
+
+
+function table_exists(l_tabname)
+define l_tabname char(512)
+define lv_query char(512)
+define lv_found  smallint
+let lv_query=" SELECT c.oid FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE pg_catalog.pg_table_is_visible(c.oid) AND c.relname ='",l_tabname clipped,"'"
+
+prepare p_exists from lv_query
+declare c_exists cursor for p_exists
+let lv_found=FALSE
+if sqlca.sqlcode=0 then
+	open c_exists
+	if sqlca.sqlcode=0 then
+		fetch c_exists
+		if sqlca.sqlcode=0 then
+			let lv_found=TRUE
+		else
+			let lv_found=FALSE
+		end if
+		close c_exists
+	end if
+end if
+return lv_found
 end function
