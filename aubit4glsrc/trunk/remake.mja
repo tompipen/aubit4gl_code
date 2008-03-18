@@ -19,7 +19,8 @@ then
 	make cleanall
 	export CFLAGS=-g 
 	rm /home/aubit4gl/aubit4gl/bin/aubit-config
-	./configure  --with-unixodbc=/usr/local/unixODBC --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4glbin  --with-pgodbc=/usr/local  --without-curl
+	#./configure  --with-unixodbc=/usr/local/unixODBC --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4glbin  --with-pgodbc=/usr/local  --without-curl
+	./configure  --with-unixodbc=/usr/local/unixODBC --with-pgsqleng=/usr/local/pg8.3 --with-pgsql=/usr/local/pg8.3 --with-ecpg=/usr/local/pg8.3 --without-sapdb  --prefix=/home/aubit4gl/aubit4glbin  --with-pgodbc=/usr/local  --without-curl
 
 
 #--with-curses=/usr/local/widec

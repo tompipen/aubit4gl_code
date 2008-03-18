@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.70 2008-01-23 18:17:29 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.71 2008-03-18 09:12:46 mikeaubury Exp $
 #
 */
 
@@ -116,51 +116,63 @@ strcpy(dbName,dbname);
 
 
 #ifdef DIALECT_POSTGRES
-#include "pg_config.h"
-#if PG_VERSION_NUM < 80300
-struct connection
-{
-        char       *name;
-        PGconn     *connection;
-        bool            committed;
-        int                     autocommit;
-        struct ECPGtype_information_cache *cache_head;
-        struct connection *next;
-};
+  #include "pg_config.h"
 
-#define ECPG_GC_CALL ECPGget_connection
-#else
-struct connection
-{
-        char       *name;
-        PGconn     *connection;
-        bool        committed;
-        int     autocommit;
-        struct ECPGtype_information_cache *cache_head;
-        struct prepared_statement *prep_stmts;
-        struct connection *next;
-};
+  #if HAVE_ECPGGET_PGCONN 
 
-#define ECPG_GC_CALL ecpg_get_connection
-#endif
+    static void *local_get_connection(void ) {
+	return (void *) ECPGget_PGconn(NULL);
+    }
 
 
+  #else
+    #if PG_VERSION_NUM < 80300
+       struct connection
+       {
+             char       *name;
+           PGconn     *connection;
+           bool            committed;
+           int                     autocommit;
+           struct ECPGtype_information_cache *cache_head;
+           struct connection *next;
+	   };
 
-struct connection * ECPG_GC_CALL(char *);
-#endif
+       #define ECPG_GC_CALL ECPGget_connection
+    #else
+	struct connection
+	{
+        	char       *name;
+        	PGconn     *connection;
+        	bool        committed;
+        	int     autocommit;
+        	struct ECPGtype_information_cache *cache_head;
+        	struct prepared_statement *prep_stmts;
+        	struct connection *next;
+	};
+	
+	#define ECPG_GC_CALL ecpg_get_connection
+    #endif
+
+
+    struct connection * ECPG_GC_CALL(char *);
+
+    static void *local_get_connection(void ) {
+        struct connection *ret = NULL;
+        ret=ECPG_GC_CALL((char *)0);
+        if (ret) {
+                ptr=ret->connection;
+        } else {
+                ptr=0;
+        }
+
+    }
+   #endif /* HAVE_ECPGGET_PGCONN */
+#endif /* DIALECT_POSTGRES */
 
 void* ESQLAPI_A4GL_db_connected(char *dbname) {
 void *ptr=0;
 #ifdef DIALECT_POSTGRES
-{
-	struct connection *ret = NULL;
-	ret=ECPG_GC_CALL((char *)0);
-	if (ret) {
-		ptr=ret->connection;
-	} else {
-		ptr=0;
-	}
-}
+	ptr=local_get_connection();
 #endif
 return ptr;
 }
