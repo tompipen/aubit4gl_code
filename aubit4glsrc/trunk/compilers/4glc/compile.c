@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.119 2008-03-11 10:31:19 mikeaubury Exp $
+# $Id: compile.c,v 1.120 2008-03-18 09:08:56 mikeaubury Exp $
 #*/
 
 /**
@@ -1704,7 +1704,9 @@ a4gl_yyerror (char *s)
   long ld;
   char a;
   const char *matchstr="unexpected NAMED_GEN";
-  
+  A4GL_debug("s=%s\n",s);
+  A4GL_debug("errbuff=%s\n",errbuff);
+  A4GL_debug("yytext=%s\n",yytext);
   if (strstr(s,matchstr)) {
 	char buff[1024];
 	char *ptr;
@@ -1752,7 +1754,7 @@ a4gl_yyerror (char *s)
   f = A4GL_write_errfile (yyin, errfile, ld, yylineno);
 
 
-  fprintf (f, "| %s%s (%s)", s, errbuff, yytext,fpos,ld);
+  fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
 
   if (atoi(acl_getenv("RUNNING_TEST"))) {
         char buff[256];

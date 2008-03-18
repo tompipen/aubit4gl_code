@@ -175,11 +175,12 @@ ident_p2_sql : NAMED {
 cvariable : ensured_variable_usage_expression  {
 		char errbuff[256];
 		int dtype;
-		dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1)&DTYPE_MASK; //@FIXME
+		dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1);
 		if (dtype==-1) {
 			a4gl_yyerror(errbuff);
 			YYERROR;
 		} else {
+		dtype=dtype &DTYPE_MASK;
 		if (dtype!=DTYPE_CHAR && dtype!=DTYPE_VCHAR) {
 			a4gl_yyerror("Only a character variable can be used for this");
 			YYERROR;
@@ -204,11 +205,12 @@ char_or_var_vl : CHAR_VALUE {
 		| variable_usage_expression {
 		char errbuff[256];
 			int dtype;
-			dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1)&DTYPE_MASK; //@FIXME
+			dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1);
 			if (dtype==-1) {
 				a4gl_yyerror(errbuff);
 				YYERROR;
 			} else {
+				dtype=dtype&DTYPE_MASK; 
                 		if (dtype!=DTYPE_CHAR&&dtype!=DTYPE_VCHAR) {
 					a4gl_yyerror("Variable must be of type charr..");YYERROR; 
 				}

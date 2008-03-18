@@ -686,11 +686,12 @@ img_types :
 blob_var :  variable_usage_expression {
 			int vtype;
 			char errbuff[256];
-			vtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1) & DTYPE_MASK;
+			vtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1) ;
 			if (vtype==-1) {
 				a4gl_yyerror(errbuff);
 				YYERROR;
 			} else {
+			vtype=vtype&DTYPE_MASK;
 			if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
 				a4gl_yyerror("Only Blobs may be printed...");
 				YYERROR;

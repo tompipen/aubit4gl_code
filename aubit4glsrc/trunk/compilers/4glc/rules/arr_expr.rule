@@ -22,11 +22,12 @@ arr_expr_e :
 	| variable_usage_expression {
   			int a;
 			char errbuff[256];
-  			a=get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)&DTYPE_MASK;
+  			a=get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1);
 			if (a==-1) {
 				a4gl_yyerror(errbuff);
 				YYERROR;
-			} else {
+			} else {		
+				a=a&DTYPE_MASK;
   					if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
     					a4gl_yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
     					YYERROR;

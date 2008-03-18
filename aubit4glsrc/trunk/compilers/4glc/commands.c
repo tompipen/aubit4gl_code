@@ -252,6 +252,8 @@ FILE *f;
 
         case ET_EXPR_OP_SPACES:
                 return " ";
+	case ET_EXPR_PARAMETER:
+		return e->expr_str_u.expr_string;
 
         case ET_EXPR_TIME_EXPR: return "TIME";
         case ET_EXPR_TODAY: return "TODAY";
@@ -303,6 +305,8 @@ FILE *f;
         return p;
       }
       break;
+
+	
 
     default:
                 f=fopen("/tmp/bad_expr","a");

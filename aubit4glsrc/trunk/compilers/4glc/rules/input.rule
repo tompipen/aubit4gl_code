@@ -160,11 +160,12 @@ up_or_down :
 	| KWUP_BY variable_usage_expression {
   		int a;
 		char errbuff[256];
-  		a=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>2)&DTYPE_MASK;
+  		a=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>2);
 		if (a==-1) {
 			a4gl_yyerror(errbuff);
 			YYERROR;
 		} else {
+				a=a&DTYPE_MASK; 
   		if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
     			a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
     			YYERROR;
@@ -176,11 +177,12 @@ up_or_down :
 	| KWDOWN_BY variable_usage_expression {
   		int a;
 		char errbuff[256];
-  		a=get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>2)&DTYPE_MASK;
+  		a=get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>2);
 		if (a==-1) {
 			a4gl_yyerror(errbuff);
 			YYERROR;
 		} else {
+				a=a&DTYPE_MASK; 
   		if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
     			a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
     			YYERROR;

@@ -2168,6 +2168,7 @@ struct variable_usage *p;
 struct variable *v;
 char scope;
 
+strcpy(errbuff,"");
 if (ptr==0)  {
 	strcpy(errbuff, "No expression");
 	return -1;
@@ -2182,7 +2183,13 @@ p=ptr->expr_str_u.expr_variable_usage;
 scope='-';
 v=find_variable_vu_ptr(errbuff, p,&scope,1);
 
-if (v==0) return -1;
+if (v==0) {
+	if (strlen(errbuff)==0) {
+		set_yytext(expr_as_string_when_possible(ptr));
+		strcpy(errbuff,"Variable has not defined");
+	}
+	return -1;
+}
 
 while (p) {
 	
