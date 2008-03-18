@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.71 2008-03-18 09:12:46 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.72 2008-03-18 10:17:44 mikeaubury Exp $
 #
 */
 
@@ -158,12 +158,14 @@ strcpy(dbName,dbname);
 
     static void *local_get_connection(void ) {
         struct connection *ret = NULL;
+	void *ptr=0;
         ret=ECPG_GC_CALL((char *)0);
         if (ret) {
                 ptr=ret->connection;
         } else {
                 ptr=0;
         }
+	return ptr;
 
     }
    #endif /* HAVE_ECPGGET_PGCONN */
