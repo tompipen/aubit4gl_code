@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.22 2008-03-11 10:23:56 mikeaubury Exp $
+# $Id: pg8.c,v 1.23 2008-03-19 10:16:26 mikeaubury Exp $
 #*/
 
 
@@ -2600,10 +2600,12 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   A4GL_debug ("cid->DeclareSql=%s buff2=%s\n", cid->DeclareSql, buff2);
   cid->hstmt = PQexec (current_con, buff2);
 
+  A4GL_set_a4gl_sqlca_errd(2,0);
+  cid->nrows=0;
   switch (PQresultStatus (cid->hstmt))
     {
     case PGRES_COMMAND_OK:
-    case PGRES_TUPLES_OK:
+    case PGRES_TUPLES_OK:	
       A4GL_debug ("Ok");
       break;
 
@@ -2616,6 +2618,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
 
   cid->mode |= 0x7000;
   cid->mode |= 0x1000;
+
 
   return 1;
 }
@@ -2698,11 +2701,14 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
 		n= (struct s_prepare *) cid->statement;
 		n->last_result=res;
   }
+	 A4GL_set_a4gl_sqlca_errd(2,0);
 
   switch (PQresultStatus (res))
     {
     case PGRES_COMMAND_OK:
     case PGRES_TUPLES_OK:
+  	cid->nrows++;
+	 A4GL_set_a4gl_sqlca_errd(2,cid->nrows);
       A4GL_debug ("Good");
       break;
 
