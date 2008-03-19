@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.23 2008-03-19 10:16:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.24 2008-03-19 14:25:30 mikeaubury Exp $
 #*/
 
 
@@ -1815,7 +1815,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 {
   struct s_prepare *n;
   int ok;
-  int nrows;
+  int nrows=0;
   int nfields;
   int setSavepoint = 0;
   char *sql;
@@ -1877,9 +1877,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   switch (PQresultStatus (res))
     {
     case PGRES_COMMAND_OK:
+		A4GL_debug("OK");
       ok = 1;
       break;
     case PGRES_TUPLES_OK:
+		A4GL_debug("OK");
       ok = 1;
       break;
 
@@ -1894,7 +1896,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     {
       nrows = PQntuples (res);
       nfields = PQnfields (res);
-
+	A4GL_debug("nrows=%d nfields=%d", nrows, nfields);
       if (nrows == 0)
 	{
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);

@@ -1,15 +1,3 @@
-
-
-Notes
------
-
-In order to get informix style serial numbers (where you can insert a 0 etc)
-
-
-
-Try installing the following postgres function :
-
-
 CREATE OR REPLACE FUNCTION next_seq_id() RETURNS trigger AS $$
 
     my ($col,$seq)=@_;
@@ -29,56 +17,12 @@ CREATE OR REPLACE FUNCTION next_seq_id() RETURNS trigger AS $$
 $$ LANGUAGE plperl;
 
 
-You'll need to ensure you've got plperl installed as part of your postgres installation - and you may need to install it 
-into your database : 
 
-$ createlang -d somedb  plperl
-
-$ psql somedb
-somedb=# CREATE LANGUAGE plperl;
-
-
-(This is probably *not* compiled up by default. - you may need to reconfigure postgres with '--with-perl' )
-
-
-You'll need to enable this procedure on your tables with something like : 
-
-	CREATE TRIGGER sometrigname BEFORE INSERT ON tabname FOR EACH ROW EXECUTE PROCEDURE  next_seq_id('sercol','tabname_sercol_seq');
-
-
-		where sercol is the name of the serial column in your table
-		and tabname_sercol_seq is the name of the sequence generated for the serial column
-		This is normally called 'tablename_columnname_seq'
-
-You'll need to create one of these triggers for all the tables with a serial column...
-
-
-
-
-
-Sample MDY function:
-
-	CREATE OR REPLACE FUNCTION mdy(m integer, d integer, y integer) RETURNS date AS $$
-	BEGIN
-		RETURN to_date(m||' '||d||' '||y, 'MM DD YYYY');
-	END;
-	$$ LANGUAGE plpgsql;
-
-
-You'll need to ensure you've got plpgsql installed as part of your postgres installation - and you may need to install it 
-into your database : 
-
-$ createlang -d somedb  plpgsql
-$ psql somedb
-somedb=# CREATE LANGUAGE plpgsql;
-
-
-
-
-Sample 'CURRENT' function 
--------------------------
-
-The default convertsql rules will map the CURRENT expression to a function call 'dt_as_char' - here is a sample implementation for that function : 
+CREATE OR REPLACE FUNCTION mdy(m integer, d integer, y integer) RETURNS date AS $$
+BEGIN
+                RETURN to_date(m||' '||d||' '||y, 'MM DD YYYY');
+END;
+$$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION dt_as_char (dt timestamp with time zone, starttime integer,endtime integer) RETURNS text AS $$
