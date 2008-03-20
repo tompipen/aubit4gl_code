@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.34 2007-06-19 17:59:10 mikeaubury Exp $
+# $Id: Makefile,v 1.35 2008-03-20 18:24:13 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -158,16 +158,13 @@ ifeq "${TARGET_OS}" "solaris"
 	CFLAGS+=-DSOLARIS
 endif
 
-ifneq "${TARGET_OS}" "hpux"
-	ifneq "${TARGET_OS}" "cygwin"
-		ifneq "${GCC_MINGW}" "yes"
-            #all platforms except HP-UX, CygWin and MinGW:
-			DL_LINK_LIBS           =-ldl
-		endif
-	endif
-else
-            #HP-UX only:
-			DL_LINK_LIBS           =-lcl
+
+ifeq "${USE_LIBDL}" "1"
+        DL_LINK_LIBS=-ldl
+endif
+
+ifeq "${TARGET_OS}" "hpux"
+	DL_LINK_LIBS           =-lcl
 endif
 
 #rpclib dependency - Its already gone...
