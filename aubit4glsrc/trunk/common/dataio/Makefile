@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.6 2008-02-15 15:35:15 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2008-03-20 10:29:03 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -175,7 +175,7 @@ report_xdr.c: report.x
 fgl_xdr.c: fgl.x
 	${RPCGEN_FGL}
 
-form_x.xs.h form_x.xo.c form_x.xi.c form_x.xio.c form_x.x.h: form_x.x
+form_x.xs.h form_x.xo.c form_x.xi.c form_x.xio.c form_x.x.h: form_x.x 
 	${XGENEXE} $< struct_form
 	cp form_x.xs.h $(ROOT)/incl/dataio/form_x.xs.h
 
@@ -219,7 +219,7 @@ ${XGENEXE}:
 ## ==================================================================
 
 report.xi.o: form_x.x.h
-form_x.xi.c fgl.xi.c : ${XGENEXE}
+form_x.xi.c fgl.xi.c fgl.x.h form.x.h : ${XGENEXE}
 
 rpc:$(RPC)
 ${LIBROOT}/libaubit4gl.${SO_EXT}: form_x.x.h fgl.x.h
