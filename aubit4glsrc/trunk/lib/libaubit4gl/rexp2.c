@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.43 2007-10-04 19:26:13 mikeaubury Exp $
+# $Id: rexp2.c,v 1.44 2008-03-20 12:35:11 mikeaubury Exp $
 #
 */
 
@@ -408,15 +408,17 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
       A4GL_debug ("constr_size = %d\n", constr_size);
       for (zz = 0; zz < constr_size; zz++)
 	{
+	 A4GL_debug ("constr_bits[zz]='%s'\n", constr_bits[zz]);
+	  
 	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0
 	      || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
 	    {
 
-	      char *eptr;
+	      char *eptr=0;
 	      k = 1;
 	      strtod (constr_bits[zz], &eptr);
 	      //strtol(constr_bits[zz], &eptr,10);
-	      A4GL_debug ("eptr=%p *eptr=%p\n", eptr, *eptr);
+	      A4GL_debug ("eptr=%p *eptr=%p constr_bits[zz]='%s'\n", eptr, *eptr,constr_bits[zz]);
 	      if (eptr == 0)
 		k = 0;
 	      if (eptr)
@@ -427,11 +429,11 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 		    }
 		}
 
-	      if (k || k2);
+	      if (k || k2|| strlen(constr_bits[zz])==0);
 	      else
 		{
 		  /* error in numeric */
-		  A4GL_debug ("error in numeric");
+		  A4GL_debug ("error in numeric k=%d k2=%d",k,k2);
 		  return 0;
 		}
 	    }
@@ -673,6 +675,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
     {
       if (z == RANGE)
 	{
+	  if (strlen(quote)==0) { return 0; }
 	  SPRINTF2 (buff3, "(%s between '' and %s", colname, quote);
 	  for (zz = 1; zz < constr_size; zz++)
 	    {
@@ -684,22 +687,31 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	}
       else
 	{
-	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote,
-		    constr_bits[0], quote);
+	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote, constr_bits[0], quote);
+		A4GL_debug("..");
 	  if (constr_size >= 2)
 	    {
+		if (constr_size==2 && strlen(quote)==0) {
+			return 0;
+		}
+		A4GL_debug(".2 %d ", constr_size);
 	      strcat (buff3, quote);
+		
 	      for (zz = 2; zz < constr_size; zz++)
 		{
 		  ptr = A4GL_escape_single (constr_bits[zz]);
+		A4GL_debug("ptr=%s",ptr);
 		  A4GL_assertion (ptr == 0, "No returned pointer");
 		  strcat (buff3, ptr);
 		  free (ptr);
 		}
 	      strcat (buff3, quote);
+		A4GL_debug(".3");
 	    }
-	  else
-	    strcat (buff3, "''");
+	  else {
+	  	if (strlen(quote)==0) { return 0; }
+	    	strcat (buff3, "''");
+		}
 	}
       strcat (buff3, "");
     }
