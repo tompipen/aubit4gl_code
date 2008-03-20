@@ -22772,7 +22772,7 @@ add_feature("DDL_PRIMARY_KEY");
 
   case 1786:
 #line 10082 "fgl.infx.yacc"
-    {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
+    {strcpy((yyval.str),A4GLSQLCV_datetime_value((yyvsp[(1) - (1)].str)));}
     break;
 
   case 1787:
@@ -22782,12 +22782,12 @@ add_feature("DDL_PRIMARY_KEY");
 
   case 1788:
 #line 10087 "fgl.infx.yacc"
-    {SPRINTF1((yyval.str),"%s",A4GLSQLCV_datetime_value((yyvsp[(1) - (1)].str)));}
+    {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 1789:
 #line 10091 "fgl.infx.yacc"
-    {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
+    {strcpy((yyval.str),A4GLSQLCV_interval_value((yyvsp[(1) - (1)].str)));}
     break;
 
   case 1790:
@@ -22806,7 +22806,7 @@ add_feature("DDL_PRIMARY_KEY");
 
   case 1792:
 #line 10101 "fgl.infx.yacc"
-    {SPRINTF1((yyval.str),"%s",A4GLSQLCV_interval_value((yyvsp[(1) - (1)].str)));}
+    {SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str));}
     break;
 
   case 1793:
