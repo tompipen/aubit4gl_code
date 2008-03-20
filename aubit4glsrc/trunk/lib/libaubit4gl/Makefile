@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.41 2008-01-27 15:15:17 mikeaubury Exp $
+# $Id: Makefile,v 1.42 2008-03-20 10:10:31 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -273,7 +273,10 @@ debug.o: debug.c
 	${CC} ${CFLAGS_API_C} -c -o $@ $^
 
 ${ROOT}/common/dataio/form_x.x.h:
-	${MAKE} -C ${ROOT}/common/dataio
+	${MAKE} -C ${ROOT}/common/dataio form_x.x.h
+
+${ROOT}/common/dataio/fgl.x.h:
+	${MAKE} -C ${ROOT}/common/dataio fgl.x.h
 
 ## ==================================================================
 ##                        Dependencies
@@ -282,8 +285,8 @@ ${ROOT}/common/dataio/form_x.x.h:
 error.c : ${LIBROOT}/generated/tmperrs.h
 array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
 builtin.o API_ui.c: ${ROOT}/compilers/fcompile/form_x.h
-${COMMONSRC}: api ${ROOT}/common/dataio/form_x.x.h
-${CMODS_API}: ${ROOT}/common/dataio/form_x.x.h
+${COMMONSRC}: api ${ROOT}/common/dataio/form_x.x.h ${ROOT}/common/dataio/fgl.x.h
+${CMODS_API}: ${ROOT}/common/dataio/form_x.x.h ${ROOT}/common/dataio/fgl.x.h
 
 ${LIBROOT}/resource/resource.o:
 	${MAKE} -C ${LIBROOT}/resource resource.o 
@@ -311,7 +314,7 @@ api: ${OBJS_API} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
 
 ###############
 #Target to crate all API headers files
-api.headers: $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
+api.headers: $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h}) ${ROOT}/common/dataio/fgl.x.h
 	@echo "Sucessfuly created API headers"
 
 ################
@@ -325,7 +328,7 @@ API_%.c: API_%.spec ${INCL_PATH}/a4gl_API_%.h
 
 ################
 #Rule to make API header from .spec file:
-${INCL_PATH}/a4gl_API_%.h: API_%.spec
+${INCL_PATH}/a4gl_API_%.h: API_%.spec 
 	${SH} ${DLMAGIC} $^ -h > $@
 	${SH} ${DLMAGIC} $^ -H > ${@:.h=_lib.h}
 
