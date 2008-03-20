@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2007-09-13 08:10:06 mikeaubury Exp $
+# $Id: Makefile,v 1.16 2008-03-20 15:14:02 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -38,12 +38,13 @@ include ${ROOT}/incl/Makefile-common
 
 #FIXME: why do we need fcompile headers and RPC lib includes here?
 #-I${LIBROOT}/compilers/fcompile
-C_LOCAL_IFLAGS  		=-I..
+C_LOCAL_IFLAGS  		=-I.. -I/usr/local/include
 CFLAGS					+=${C_LOCAL_IFLAGS}
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
 CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)
 LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
 OBJECTS					=sql.o sqlex.o array.o
+LINK_ALL	=-L/usr/local/lib
 #LD_RUN_PATH 			=${INFORMIXDIR}/lib/esql
 
 CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
@@ -130,38 +131,38 @@ ${PLUGINDIR}/libSQL_odbc32${SO_EXT} : ${OBJECTS}
 #Aubit ODBC plug-in code linked with iODBC ODBC manager library
 ${PLUGINDIR}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC  ${IODBC_INCLUDE} ${IODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${PLUGINDIR}/libSQL_iodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ ${IODBC_LIBS} ${IODBC_LFLAGS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ ${IODBC_LIBS} ${IODBC_LFLAGS} ${LINK_ALL}
 
 ################################
 #Aubit ODBC plug-in code linked with unixODBC ODBC manager library
 ${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: CFLAGS:=-DUNIXODBC ${UNIXODBC_LFLAGS} ${UNIXODBC_INCLUDE} ${CFLAGS}
 ${PLUGINDIR}/libSQL_unixodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ ${UNIXODBC_LIBS} ${UNIXODBC_LFLAGS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ ${UNIXODBC_LIBS} ${UNIXODBC_LFLAGS} ${LINK_ALL}
 
 ################################
 #Aubit ODBC plug-in code linked with (Informix) ODBC driver library, for use without ODBC manager
 ${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: CFLAGS:=-DIFXODBC  -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
 ${PLUGINDIR}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -lifdmr -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -lifdmr -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${LINK_ALL}
 
 ################################
 #Aubit ODBC plug-in code linked with (PG) ODBC driver library, for use without ODBC manager
 ${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC -DSQLHDBC=HDBC  -DINCLUDEDATASOURCES ${PGODBC_INCLUDE} ${PGODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${PLUGINDIR}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -l${PGODBC_LIBNAME} ${PGODBC_LFLAGS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ -l${PGODBC_LIBNAME} ${PGODBC_LFLAGS} ${LINK_ALL}
 
 ################################
 #Aubit ODBC plug-in code linked with (SAPDB) ODBC driver library, for use without ODBC manager
 ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC ${SAPODBC_INCLUDE} ${SAPODBC_LFLAGS} ${CFLAGS_NOREDUND}
 ${PLUGINDIR}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ ${SAPDB_ODBC_ADDLIBS} -lsqlod ${SAPODBC_LFLAGS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ ${SAPDB_ODBC_ADDLIBS} -lsqlod ${SAPODBC_LFLAGS} ${LINK_ALL}
 
 ###############################
 #Aubit ODBC plug-in linked with SQLite ODBC driver for use without ODBC manager
 #${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbctest/incl
 ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-I${ROOT}/tools/odbctest/incl  ${CFLAGS_SQLITE}
 ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -L${SQLITE_ODBC_LIBDIR} -l${SQLITE_ODBC_LIBNAME_SHARED}
+	${LD} ${SO_LDFLAGS} $^ -o $@ -L${SQLITE_ODBC_LIBDIR} ${LINK_ALL}  -l${SQLITE_ODBC_LIBNAME_SHARED} 
 
 ###############################
 #SQLite plug-in dynamically linked with SQLite library/engine:
@@ -169,7 +170,7 @@ ${PLUGINDIR}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 #a private copy of in Aubit CVS, and 3) SQLite engine library 
 ${PLUGINDIR}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}  -DSQLITE_DIRECT
 ${PLUGINDIR}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
-	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} -l${SQLITE_LIBNAME} ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} ${LINK_ALL} -l${SQLITE_LIBNAME} ${LINKLIBS}
 
 ################################	
 #Same as above, but with SQLite VERSION 3
@@ -177,7 +178,7 @@ libSQL_sqlite3${SO_EXT}: ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}
 ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}  -DSQLITE_DIRECT
 ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 
-	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} ${SQLITE_FLAGS} -l${SQLITE_LIBNAME} ${LINKLIBS} > link.log 2>&1
+	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} ${SQLITE_FLAGS} ${LINK_ALL} -l${SQLITE_LIBNAME} ${LINKLIBS} > link.log 2>&1
 #ifdef COMSPEC
 	@echo "Should NOT be empty: '`cygcheck $@ | grep -v libSQL_ | grep ${SQLITE_LIBNAME}.dll`'"
 #endif
