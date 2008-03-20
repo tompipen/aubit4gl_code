@@ -2,15 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if (defined(__CYGWIN__)) || defined(__MINGW32__)
-	/* missing from rpcgen generated .h on CygWin: */
-#define bool_t int
+
+#if HAVE_U_INT 
+/* already defined... */
+#else
+//#define bool_t int
 #define u_int unsigned int
 #endif
 
-#if defined(SOLARIS)
-#define u_int unsigned int
-#endif
 
 #ifdef RPCGEN_HEADERS
 	#include "npcode.h"
