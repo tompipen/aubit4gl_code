@@ -197,7 +197,7 @@ strcpy(buff,"");
         A4GLSQLPARSE_from_clause_collect_tables (&fake_select, fake_select.first, &fake_select.table_elements);
         preprocess_sql_statement (&fake_select);
         search_sql_variables (&fake_select.list_of_items,'i');
-        sprintf(buff,"UPDATE %s SET ",updateCmd->table);
+        SPRINTF1(buff,"UPDATE %s SET ",updateCmd->table);
 
         A4GL_assertion (updateCmd->column_list == 0, "No column list");
         A4GL_assertion (updateCmd->value_list == 0, "No value list");
@@ -207,12 +207,13 @@ strcpy(buff,"");
             // Same length..
             for (a = 0; a < updateCmd->value_list->list.list_len; a++)
               {
+	char *rval2=0;
                 if (a)
                   {
                         strcat(buff,",");
                   }
                 rval = get_select_list_item (0, updateCmd->value_list->list.list_val[a]);
-                sprintf (smbuff, "%s=%s", updateCmd->column_list->str_list_entry.str_list_entry_val[a], rval);
+                SPRINTF2 (smbuff, "%s=%s", updateCmd->column_list->str_list_entry.str_list_entry_val[a], rval);
                 strcat(buff,smbuff);
                 acl_free (rval);
               }
@@ -234,12 +235,19 @@ strcpy(buff,"");
                         strcat(buff,",");
                 }
                 rval = get_select_list_item (0, updateCmd->value_list->list.list_val[a]);
+
                 strcat(buff,rval);
                 acl_free (rval);
+
+
+
+
               }
                 strcat(buff,")");
 
           }
+
+
         if (updateCmd->where_clause)
           {
             if (updateCmd->where_clause->expr_type == ET_EXPR_WHERE_CURRENT_OF)
@@ -261,7 +269,6 @@ strcpy(buff,"");
 
 
       ptr = A4GLSQLCV_check_sql (buff, converted);
-
 return strdup(ptr);
 }
 

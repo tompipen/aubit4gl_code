@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.201 2008-02-20 07:23:31 mikeaubury Exp $
+# $Id: stack.c,v 1.202 2008-03-20 09:42:20 mikeaubury Exp $
 #
 */
 
@@ -237,6 +237,7 @@ int dif_pop_bind_dec (struct bound_list *list);
 int dif_pop_bind_money (struct bound_list *list);
 void A4GL_set_escape (char *s);
 int aclfgl_aclfgl_byte_as_str(int n);
+int aclfgl_aclfgl_text_as_str(int n);
 
 /*
 =====================================================================
@@ -3022,6 +3023,70 @@ if (p->where=='F' || p->where=='M') return 1;
 return 0;
 }
 
+int aclfgl_aclfgl_text_as_str(int n) {
+	fglbyte b;
+        static char *buff=0;
+	A4GL_pop_param(&b,DTYPE_TEXT,0);
+	if (b.where=='F') {
+		long l;
+		FILE *f;
+                f=fopen(b.filename,"r");
+                if (f==0) {
+                        A4GL_exitwith("Unable to load blob file");
+			A4GL_push_char("");
+                        return 1;
+                }
+                fseek(f,0,SEEK_END);
+                l=ftell(f);
+                buff=malloc(l+1);
+                memset(buff,0,l+1);
+                rewind(f);
+                fread(buff,1,l,f);
+		fclose(f);
+		A4GL_push_char(buff);
+		free(buff);
+		buff=0;
+                return 1;
+	}
+	
+	if (b.ptr) A4GL_push_char(b.ptr);
+	else A4GL_push_char("NULL");
+
+	//A4GL_push_long(1);
+	return 1;
+}
+
+
+void A4GL_get_blob_data(fglbyte *b,char **buffer, long *buffer_len) {
+        char *buff=0;
+
+	if (b->where=='F') {
+		long l;
+		FILE *f;
+                f=fopen(b->filename,"r");
+                if (f==0) {
+                        A4GL_exitwith("Unable to load blob file");
+				*buffer=strdup(""); *buffer_len=0;
+                        return ;
+                }
+                fseek(f,0,SEEK_END);
+                l=ftell(f);
+		*buffer_len=l;
+                buff=malloc(l+1);
+		*buffer=buff;
+                memset(buff,0,l+1);
+                rewind(f);
+                fread(buff,1,l,f);
+		fclose(f);
+                return ;
+	}
+	
+	if (b->ptr) {*buffer=A4GL_memdup(b->ptr,b->memsize); *buffer_len=b->memsize;}
+	else {*buffer=strdup(""); *buffer_len=0;}
+
+
+}
+
 
 int aclfgl_aclfgl_byte_as_str(int n) {
 	fglbyte b;
@@ -3043,7 +3108,7 @@ int aclfgl_aclfgl_byte_as_str(int n) {
                 rewind(f);
                 fread(buff,1,l,f);
 		fclose(f);
-		if (b.ptr) A4GL_push_char(buff);
+		A4GL_push_char(buff);
 		free(buff);
 		buff=0;
                 return 1;

@@ -1140,16 +1140,16 @@ share_or_exclusive :
 
 
 datetime_value_qualified :
-	datetime_value {strcpy($<str>$,$<str>1);}
+	datetime_value {strcpy($<str>$,A4GLSQLCV_datetime_value($<str>1));}
 	| datetime_value s_curr KW_TO e_curr {strcpy($<str>$,A4GLSQLCV_make_dtime_extend($<str>1,$<str>2,$<str>4,0));}
 ;
 
 datetime_value:
-	DATETIME_VALUE  {SPRINTF1($<str>$,"%s",A4GLSQLCV_datetime_value($<str>1));}
+	DATETIME_VALUE  {strcpy($<str>$,$<str>1);}
 ;
 
 interval_value_qualified :
-	interval_value {strcpy($<str>$,$<str>1);}
+	interval_value {strcpy($<str>$,A4GLSQLCV_interval_value($<str>1));}
 	| interval_value s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET KW_TO e_curr {
 			strcpy($<str>$,A4GLSQLCV_make_ival_extend($<str>1,$<str>2,$<str>4,$<str>7,0));
 		}
@@ -1159,7 +1159,7 @@ interval_value_qualified :
 ;
 
 interval_value:
-	INTERVAL_VALUE  {SPRINTF1($<str>$,"%s",A4GLSQLCV_interval_value($<str>1));}
+	INTERVAL_VALUE  {SPRINTF1($<str>$,"%s",$<str>1);}
 ;
 
 

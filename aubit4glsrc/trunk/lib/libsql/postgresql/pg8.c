@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.24 2008-03-19 14:25:30 mikeaubury Exp $
+# $Id: pg8.c,v 1.25 2008-03-20 09:42:20 mikeaubury Exp $
 #*/
 
 
@@ -1790,8 +1790,27 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 		      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 		    }
 		}
-	      A4GL_push_char (ptr);
-	      A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
+
+		if (obind[b].dtype == DTYPE_TEXT || obind[b].dtype ==DTYPE_BYTE) {
+			struct fgl_int_loc *a4gl;
+			a4gl=obind[b].ptr;
+
+
+			if (strlen(ptr)) a4gl->isnull='N';
+
+			if (a4gl->where=='F') {
+				FILE *f;
+				f=fopen(a4gl->filename,"w");
+				fwrite( ptr, 1, strlen(ptr), f);
+				fclose(f);
+			} else {
+				a4gl->memsize=strlen(ptr)+1;
+				a4gl->ptr=A4GL_memdup(ptr, a4gl->memsize);
+			}
+		} else {
+	      		A4GL_push_char (ptr);
+	      		A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
+		}
 	    }
 	}
     }
@@ -2786,13 +2805,13 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 
 
 char *
-pgescape_str (char *s)
+pgescape_str (char *s,int sl)
 {
   int err;
   static int l = 0;
-  int sl;
+  //int sl;
   static char *buff = 0;
-  sl = strlen (s);
+  //sl = strlen (s);
   if (l < sl || l == 0 || buff == 0)
     {
       l = sl;
@@ -2818,7 +2837,10 @@ char *
 replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 {
   static char buff2[64000];
+  long bloblen;
+	char *blobptr;
   char buff3[200];
+  int nret;
   if (ni)
     {
       int a;
@@ -2880,7 +2902,7 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      str = A4GL_char_pop ();
 		      strcat (buff2, "'");
 		      A4GL_trim (str);
-		      strcat (buff2, pgescape_str (str));
+		      strcat (buff2, pgescape_str (str,strlen(str)));
 		      strcat (buff2, "'");
 		      free (str);
 		      break;
@@ -2889,7 +2911,7 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
 		      str = A4GL_char_pop ();
 		      strcat (buff2, "'");
-		      strcat (buff2, pgescape_str (str));
+		      strcat (buff2, pgescape_str (str,strlen(str)));
 		      strcat (buff2, "'");
 		      free (str);
 		      break;
@@ -2900,7 +2922,7 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 				       ENCODE_SIZE (ibind[param].size));
 		      str = A4GL_char_pop ();
 		      A4GL_lrtrim (str);
-		      strcat (buff2, pgescape_str (str));
+		      strcat (buff2, pgescape_str (str,strlen(str)));
 		      free (str);
 		      break;
 
@@ -2923,13 +2945,30 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      strcat (buff2, "','YYYY-MM-DD')");
 		      break;
 
+		    case DTYPE_BYTE:
+			A4GL_get_blob_data(ibind[param].ptr, &blobptr,&bloblen);
+		      	strcat (buff2, "'");
+		      	strcat (buff2, pgescape_str (blobptr,bloblen));
+		      	strcat (buff2, "'");
+			free(blobptr);
+			break;
+
+		    case DTYPE_TEXT:
+			A4GL_get_blob_data(ibind[param].ptr, &blobptr,&bloblen);
+		      	strcat (buff2, "'");
+		      	strcat (buff2, pgescape_str (blobptr,bloblen));
+		      	strcat (buff2, "'");
+			free(blobptr);
+			break;
+			
+
 		    default:
 		      A4GL_push_param (ibind[param].ptr,
 				       ibind[param].dtype +
 				       ENCODE_SIZE (ibind[param].size));
 		      str = A4GL_char_pop ();
 		      A4GL_trim (str);
-		      strcat (buff2, pgescape_str (str));
+		      strcat (buff2, pgescape_str (str,strlen(str)));
 		      free (str);
 		      break;
 

@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.8 2007-10-12 21:20:04 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2008-03-20 09:42:19 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -99,7 +99,7 @@ else
 	@echo "No lex (${LEX}) Using ${LEX_YY_C}"
 endif
 
-y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h ../4glc/fix_insert.c
+y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h ../4glc/fix_insert.c cmds.c
 	${CC} ${CFLAGS} -c $< -o $@
 	
 ## ==================================================================

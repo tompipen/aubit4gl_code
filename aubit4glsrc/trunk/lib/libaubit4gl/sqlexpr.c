@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.65 2008-03-13 12:24:47 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.66 2008-03-20 09:42:20 mikeaubury Exp $
 #
 */
 
@@ -1271,6 +1271,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
 
     case E_SLI_EXTEND:
+		return strdup( A4GLSQLCV_make_dtime_extend ( get_select_list_item (select, p->data.s_select_list_item_data_u.extend.  expr) , p->data.s_select_list_item_data_u.extend.from, p->data.s_select_list_item_data_u.extend.to, 1));
+/*
       return make_sql_string_and_free (acl_strdup_With_Context ("EXTEND ("),
 				       get_select_list_item (select, p->data.s_select_list_item_data_u.extend.  expr),
 				       acl_strdup_With_Context (","), 
@@ -1278,6 +1280,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				       acl_strdup_With_Context (" TO "),
 				       acl_strdup_With_Context (p->data.s_select_list_item_data_u.extend.to), kw_cb,
 				       NULL);
+*/
 
     case E_SLI_QUERY_PLACEHOLDER:
       if (A4GL_isyes (acl_getenv ("DOING_CM")))

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.304 2008-03-11 15:20:23 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.305 2008-03-20 09:42:19 mikeaubury Exp $
 #
 */
 
@@ -2735,6 +2735,7 @@ int A4GL_GetComment(int a, char **s, int *l, int *c, char *type);
 int A4GL_is_meaningful_in_decfmt(s_decfmt fmt, char c);
 int A4GL_get_attr_from_string (char *s);
 int A4GL_bad_identifiers(char *S);
+void A4GL_get_blob_data(fglbyte *b,char **buffer, long *buffer_len);
 char *
 A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r);
 

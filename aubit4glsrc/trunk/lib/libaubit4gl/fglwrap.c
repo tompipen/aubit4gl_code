@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.129 2008-02-11 17:13:11 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.130 2008-03-20 09:42:19 mikeaubury Exp $
 #
 */
 
@@ -1524,7 +1524,6 @@ int  A4GL_aubit_strcasestr (char *h, char *n) {
         l2=strlen(s2);
         for (a=0;a<l1;a++) { s1[a]=toupper(h[a]); }
         for (a=0;a<l2;a++) { s2[a]=toupper(n[a]); }
-
         if (strstr(s1,s2)) rval=1;
         else rval=0;
 

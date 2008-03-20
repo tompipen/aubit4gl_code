@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.139 2008-03-09 12:13:00 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.140 2008-03-20 09:42:19 mikeaubury Exp $
 #
 */
 
@@ -66,6 +66,8 @@ static void load_table_mappings_i (char *ptr);
 char fake_rowid_column[256];
 static int loaded_columns = 0;
 void chk_loaded_mappings(void) ;
+static char * A4GLSQLCV_datetime_value_internal (char *s,char *from, char*to);
+static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to);
 
 
 static char *cvsql_names[] = {
@@ -77,6 +79,7 @@ static char *cvsql_names[] = {
   "CVSQL_REPLACE_SQLFUNC",
   "CVSQL_DOUBLE_TO_SINGLE",
   "CVSQL_TRIMSQLLIKEVAL",
+  "CVSQL_MATCHES_VAR_FUNC",
   "CVSQL_MATCHES_TO_LIKE",
   "CVSQL_MATCHES_TO_REGEX",
   "CVSQL_MATCHES_TO_REGEXP",
@@ -202,6 +205,7 @@ enum cvsql_type
   CVSQL_REPLACE_SQLFUNC,
   CVSQL_DOUBLE_TO_SINGLE,
   CVSQL_TRIMSQLLIKEVAL,
+  CVSQL_MATCHES_VAR_FUNC,
   CVSQL_MATCHES_TO_LIKE,
   CVSQL_MATCHES_TO_REGEX,
   CVSQL_MATCHES_TO_REGEXP,
@@ -1244,9 +1248,8 @@ A4GLSQLCV_check_expr (char *s)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_EXPR)
 	{
-
-	  if (A4GL_aubit_strcasestr (buff, current_conversion_rules[b].data.from) !=
-	      0)
+	
+	  if (A4GL_aubit_strcasestr (buff, current_conversion_rules[b].data.from) != 0)
 	    {
 	      char *to;
 	      if (current_conversion_rules[b].data.to[0] == '$')
@@ -1601,6 +1604,9 @@ A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_DOUBLE_TO_SINGLE;
   if (match_strncasecmp (p, "TRIMSQLLIKEVAL", len) == 0)
     return CVSQL_TRIMSQLLIKEVAL;
+
+  if (match_strncasecmp (p, "MATCHES_VAR_FUNC", len) == 0)
+    return CVSQL_MATCHES_VAR_FUNC;
   if (match_strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
     return CVSQL_MATCHES_TO_LIKE;
   if (match_strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)
@@ -1991,6 +1997,22 @@ CV_matches (char *type, char *string, char *esc)
 	return string;
   }
 
+  if (strcmp(string,"?")==0) {
+	int hr;
+	hr = A4GLSQLCV_check_requirement ("MATCHES_VAR_FUNC");
+	if (hr) {
+		if (strcmp(esc,"?")!=0) {
+			sprintf(buff,"%s(?,'%s')",current_conversion_rules[hr - 1].data.from,esc);
+		} else {
+			//@ FIXME
+			sprintf(buff,"%s(?,'?')",current_conversion_rules[hr - 1].data.from);
+		}
+		return buff;
+	}
+		
+
+  }
+
 
   if (string[0] != '\'')
     {
@@ -2267,17 +2289,22 @@ A4GLSQLCV_make_ival_extend (char *ival, char *from, char *from_len, char *to,
   static char buff[256];
   int hr;
   char *xx;
+char *ival2;
+
+  ival2=A4GLSQLCV_interval_value_internal(ival,NULL,NULL);
+
   hr = A4GLSQLCV_check_requirement ("INTERVAL_EXTEND_FUNCTION");
   if (hr)
     {
       xx = current_conversion_rules[hr - 1].data.from;
+      ival2=A4GLSQLCV_interval_value_internal(ival,from,to);
       if (from_len == 0)
 	{
-	  SPRINTF4 (buff, "%s(%s,'%s',0,'%s')", xx, ival, from, to);
+	  SPRINTF4 (buff, "%s(%s,'%s',0,'%s')", xx, ival2, from, to);
 	}
       else
 	{
-	  SPRINTF5 (buff, "%s(%s,'%s',%s,'%s')", xx, ival, from, from_len,
+	  SPRINTF5 (buff, "%s(%s,'%s',%s,'%s')", xx, ival2, from, from_len,
 		    to);
 	}
 
@@ -2288,23 +2315,23 @@ A4GLSQLCV_make_ival_extend (char *ival, char *from, char *from_len, char *to,
 	{			// The pointer not the value :-)
 	  if (extend)
 	    {
-	      SPRINTF3 (buff, "EXTEND(%s,%s TO %s)", ival, from, to);
+	      SPRINTF3 (buff, "EXTEND(%s,%s TO %s)", ival2, from, to);
 	    }
 	  else
 	    {
-	      SPRINTF3 (buff, "%s %s TO %s", ival, from, to);
+	      SPRINTF3 (buff, "%s %s TO %s", ival2, from, to);
 	    }
 	}
       else
 	{
 	  if (extend)
 	    {
-	      SPRINTF4 (buff, "EXTEND(%s,%s(%s) TO %s)", ival, from, from_len,
+	      SPRINTF4 (buff, "EXTEND(%s,%s(%s) TO %s)", ival2, from, from_len,
 			to);
 	    }
 	  else
 	    {
-	      SPRINTF4 (buff, "%s %s(%s) TO %s", ival, from, from_len, to);
+	      SPRINTF4 (buff, "%s %s(%s) TO %s", ival2, from, from_len, to);
 	    }
 	}
     }
@@ -2318,22 +2345,26 @@ A4GLSQLCV_make_dtime_extend (char *dval, char *from, char *to, int extend)
   static char buff[256];
   int hr;
   char *xx;
+  char *dval2;
+
+  dval2=A4GLSQLCV_datetime_value(dval);
 
   hr = A4GLSQLCV_check_requirement ("DATETIME_EXTEND_FUNCTION");
   if (hr)
     {
+      dval2=A4GLSQLCV_datetime_value_internal(dval, from,to);
       xx = current_conversion_rules[hr - 1].data.from;
-      SPRINTF4 (buff, "%s(%s,'%s','%s')", xx, dval, from, to);
+      SPRINTF4 (buff, "%s(%s,'%s','%s')", xx, dval2, from, to);
     }
   else
     {
       if (extend)
 	{
-	  SPRINTF3 (buff, "EXTEND(%s,%s TO %s)", dval, from, to);
+	  SPRINTF3 (buff, "EXTEND(%s,%s TO %s)", dval2, from, to);
 	}
       else
 	{
-	  SPRINTF3 (buff, "%s %s TO %s", dval, from, to);
+	  SPRINTF3 (buff, "%s %s TO %s", dval2, from, to);
 	}
     }
   return buff;
@@ -2341,14 +2372,13 @@ A4GLSQLCV_make_dtime_extend (char *dval, char *from, char *to, int extend)
 
 
 
-char *
-A4GLSQLCV_datetime_value (char *s)
+static char * A4GLSQLCV_datetime_value_internal (char *s,char *from,char *to)
 {
   static char buff[256];
   int hr;
   if (strncasecmp (s, "DATETIME(", 9) == 0)
     {
-      if (s[9] != '"')
+      if (1)
 	{
 	  hr = A4GLSQLCV_check_requirement ("CHAR_TO_DATETIME");
 	  if (hr)
@@ -2358,7 +2388,11 @@ A4GLSQLCV_datetime_value (char *s)
 	      xx = current_conversion_rules[hr - 1].data.from;
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
-	      SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
+		if (from==NULL) {
+	      		SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
+		} else {
+	      		SPRINTF4 (buff, "%s_extended(\'%s\','%s','%s')", xx, ptr,from,to);
+		}
 	      acl_free (ptr);
 	      return buff;
 
@@ -2370,13 +2404,19 @@ A4GLSQLCV_datetime_value (char *s)
 }
 
 char *
-A4GLSQLCV_interval_value (char *s)
+A4GLSQLCV_datetime_value (char *s)
+{
+	return A4GLSQLCV_datetime_value_internal(s,NULL,NULL);
+}
+
+
+static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to)
 {
   static char buff[256];
   int hr;
   if (strncasecmp (s, "INTERVAL(", 9) == 0)
     {
-      if (s[9] != '"')
+      if (1)
 	{
 	  hr = A4GLSQLCV_check_requirement ("CHAR_TO_INTERVAL");
 	  if (hr)
@@ -2386,7 +2426,11 @@ A4GLSQLCV_interval_value (char *s)
 	      xx = current_conversion_rules[hr - 1].data.from;
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
-	      SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
+		if (from==NULL) {
+	      		SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
+		} else {
+	      		SPRINTF4 (buff, "%s_extended(\'%s\','%s','%s')", xx, ptr,from,to);
+		}
 	      acl_free (ptr);
 	      return buff;
 	    }
@@ -2397,6 +2441,11 @@ A4GLSQLCV_interval_value (char *s)
 }
 
 
+char *
+A4GLSQLCV_interval_value (char *s)
+{
+	return A4GLSQLCV_interval_value_internal(s,NULL,NULL);
+}
 
 
 void
