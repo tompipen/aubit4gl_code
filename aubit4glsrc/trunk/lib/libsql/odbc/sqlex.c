@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.27 2007-05-19 08:42:52 mikeaubury Exp $
+# $Id: sqlex.c,v 1.28 2008-03-20 09:48:50 mikeaubury Exp $
 #
 */
 
@@ -105,7 +105,7 @@ char *getres (char *s);
 int add_userptr (void *ptr);
 long A4GL_set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
 int A4GL_set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob);
-long A4GL_get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
+long A4GL_odbc_get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
 int A4GL_alloc_find_ptr (void *ptr);
 
 int A4GL_ctol (char s);
@@ -115,7 +115,7 @@ void A4GL_init_mem (void);
 int A4GL_alloc_find_parent (void *ptr, int start);
 void A4GL_dealloc_mem (void *ptr);
 int A4GL_new_rescnt (void);
-int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+int A4GL_odbc_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
 int A4GL_set_blob_data (HSTMT hstmt);
 
 /*
@@ -682,7 +682,7 @@ A4GL_new_rescnt (void)
  * @param colno the column number.
  */
 int
-A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
+A4GL_odbc_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 {
   int cnt;
 
@@ -711,7 +711,7 @@ A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 	    }
 	}
 	blob->isnull=0;
-      cnt = A4GL_get_blob_data_int (blob->f, hstmt, colno, 0);
+      cnt = A4GL_odbc_get_blob_data_int (blob->f, hstmt, colno, 0);
 
       fclose (blob->f);
       blob->f = 0;
@@ -723,7 +723,7 @@ A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 	{
 	  free (blob->ptr);
 	}
-      cnt = A4GL_get_blob_data_int (0, hstmt, colno, (char **) &blob->ptr);
+      cnt = A4GL_odbc_get_blob_data_int (0, hstmt, colno, (char **) &blob->ptr);
 	blob->isnull=0;
 
     }
@@ -748,7 +748,7 @@ A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
  * @param cptr 
  */
 long
-A4GL_get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
+A4GL_odbc_get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
 {
   char buff[64000];
   char *ptr = 0;
@@ -756,7 +756,7 @@ A4GL_get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
   int rc;
   SDWORD i;
 
-  A4GL_debug ("In get_blob_data_int");
+  A4GL_debug ("In odbc_get_blob_data_int");
 
   if (blob)
     rewind (blob);

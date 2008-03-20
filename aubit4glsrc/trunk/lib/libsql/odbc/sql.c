@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.202 2008-02-11 17:13:13 mikeaubury Exp $
+# $Id: sql.c,v 1.203 2008-03-20 09:48:49 mikeaubury Exp $
 #
 */
 
@@ -461,8 +461,7 @@ RETCODE SQL_API SQLDataSources (HENV henv, SQLUSMALLINT fDirection,
 
 /* in sqlex.c */
 extern int A4GL_set_blob_data (SQLHSTMT hstmt);
-extern int A4GL_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt,
-                               int colno);
+extern int A4GL_odbc_get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
 
 /*
 =====================================================================
@@ -4266,7 +4265,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
         if (use_binding[bind_counter].dtype == DTYPE_BYTE
                 || use_binding[bind_counter].dtype == DTYPE_BYTE)
         {
-            A4GL_get_blob_data (use_binding[bind_counter].ptr, hstmt,
+            A4GL_odbc_get_blob_data (use_binding[bind_counter].ptr, hstmt,
                                 bind_counter);
             continue;
         }

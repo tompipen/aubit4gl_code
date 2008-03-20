@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.305 2008-03-20 09:42:19 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.306 2008-03-20 09:48:49 mikeaubury Exp $
 #
 */
 
@@ -75,6 +75,7 @@
    */
 
 
+#include <limits.h> /* SHRT_MIN SHRT_MAX */
 
 #if (defined(__CYGWIN__))
   /* we do not want code to behave as native Windows code if we are
