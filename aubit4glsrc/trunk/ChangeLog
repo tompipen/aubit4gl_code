@@ -1,4 +1,45 @@
 ---------------------------
+Sat Mar 22 18:03:39 GMT 2008
+---------------------------
+1.10RC_6 Released
+---------------------------
+	
+	Small varchar fixups Fix for wordwrap
+	
+	u_int detection added
+	
+	Freebsd  fixups
+	
+	construct fixup for ':5', '5:' in an integer field..
+	
+	Makefile fixups
+	
+	Postgresql fixups
+	
+	'CURRENT' compatibility fixups
+	
+	Added dt_as_char stuff
+	
+	populate sqlerrd[3]
+	
+	1119: dbaccess screen flow is different from old version on
+	sco/informix
+	
+	Postgres 8.3 fixups
+	
+	"Initialize" fixup
+	
+	Small fixups :	Fix "variable not found" errors in some places
+	
+	Added some extra debugging info..
+	
+	belt and braces check for finding a table..
+	
+	New Build
+	
+	Small input/display array fixup for ATTRIBUTE handling
+	
+---------------------------
 Mon Mar 17 08:35:18 GMT 2008
 ---------------------------
 1.10RC_5 Released
