@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.202 2008-03-20 09:42:20 mikeaubury Exp $
+# $Id: stack.c,v 1.203 2008-03-22 16:54:10 mikeaubury Exp $
 #
 */
 
@@ -571,7 +571,7 @@ A4GL_pop_char (char *z, int size)
 int dtype_alloc_char_size[] = {
   /*datatypes
      0  1  2  3 4 5  6  7  8  9 10 11 12 13 14 15 */
-  0, 6, 11, 14, 14, 16, 12, 10, 16, 0, 40, 40, 40, 40, 40, 40
+  0, 6, 11, 14, 14, 16, 12, 10, 16, 0, 40, 40, 40, 255, 40, 40
 };
 
 
@@ -588,12 +588,12 @@ char *
 A4GL_char_pop_size (int *sz)
 {
   int a;
-  char *s=0;
-	char *s2=0;
+  char *s = 0;
+  char *s2 = 0;
   int f;
 
 #ifdef DEBUG
-  A4GL_debug("A4GL_char_pop...");
+  A4GL_debug ("A4GL_char_pop...");
 #endif
   if (params_cnt <= 0)
     {
@@ -608,65 +608,91 @@ A4GL_char_pop_size (int *sz)
 
       if (A4GL_has_datatype_function_i (f, ">STRING"))
 	{
-	  char *(*function) (void *, int , char *, int);
+	  char *(*function) (void *, int, char *, int);
 	  A4GL_debug ("Calling >STRING for datatype");
 	  function = A4GL_get_datatype_function_i (f, ">STRING");
-	  s = function (params[params_cnt - 1].ptr, params[params_cnt - 1].size,0, 0);
+	  s = function (params[params_cnt - 1].ptr, params[params_cnt - 1].size, 0, 0);
 	  A4GL_drop_param ();
 	}
       else
 	{
 	  s2 = A4GL_new_string (dtype_alloc_char_size[f]);
-	if (f==DTYPE_DATE) {
-		static int len=0;
-		if (len==0) {
-			if (strchr(A4GL_get_dbdate(),'4')) {
-				len=10;
-			} else {
-				len=8;
-			}
+	  if (f == DTYPE_DATE)
+	    {
+	      static int len = 0;
+	      if (len == 0)
+		{
+		  if (strchr (A4GL_get_dbdate (), '4'))
+		    {
+		      len = 10;
+		    }
+		  else
+		    {
+		      len = 8;
+		    }
 		}
-	  	A4GL_pop_char (s2, len);
-	} else {
-	  	A4GL_pop_char (s2, dtype_alloc_char_size[f]);
-	}
-	  if (dtype_alloc_char_size[f]==40) {A4GL_trim(s2);}
-		s=s2;
+	      A4GL_pop_char (s2, len);
+	    }
+	  else
+	    {
+		int d;
+		d=dtype_alloc_char_size[f];
+
+		if (f == DTYPE_VCHAR) {
+			if (params[params_cnt - 1].ptr) {
+				d=strlen(params[params_cnt - 1].ptr);
+			} else {
+				d=1;
+			}
+			if (d>params[params_cnt - 1].size) {
+					d=params[params_cnt - 1].size;
+			}
+			
+		}
+	      A4GL_pop_char (s2, d);
+	    }
+
+	  if (dtype_alloc_char_size[f] == 40  || f == DTYPE_VCHAR) //@FIXME - shouldnt need to trim VARCHARs
+	    {
+	      A4GL_trim (s2);
+	    }
+	  s = s2;
 	}
 
       //trim (s);
 #ifdef DEBUG
-      A4GL_debug ("8 char_pop - pushing char : '%s'", A4GL_null_as_null(s));
+      A4GL_debug ("8 char_pop - pushing char : '%s'", A4GL_null_as_null (s));
 #endif
       A4GL_push_char (s);
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
-	if (s2) free(s2);
+      if (s2)
+	free (s2);
     }				/* if last entry is not a character string make it one */
   else
     {
 #ifdef DEBUG
-	    A4GL_debug("Looks like it was a string..'%s'",A4GL_null_as_null(params[params_cnt - 1].ptr));
+      A4GL_debug ("Looks like it was a string..'%s'", A4GL_null_as_null (params[params_cnt - 1].ptr));
 #endif
-	if (params[params_cnt - 1].ptr)
-      		params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
+      if (params[params_cnt - 1].ptr)
+	params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }
 
 
   a = params[params_cnt - 1].size;
   s = A4GL_new_string (a);
 #ifdef DEBUG
-  A4GL_debug("a=%d\n",a);
+  A4GL_debug ("a=%d\n", a);
 #endif
-  if (a==0) s[1]=1;
-  *sz=a;
+  if (a == 0)
+    s[1] = 1;
+  *sz = a;
   A4GL_pop_param (s, DTYPE_CHAR, a);
 #ifdef DEBUG
-  A4GL_debug("A4GL_char_pop - returning '%s' (%s)\n",s,(A4GL_isnull(DTYPE_CHAR,s)?"null":"not null"));
+  A4GL_debug ("A4GL_char_pop - returning '%s' (%s)\n", s, (A4GL_isnull (DTYPE_CHAR, s) ? "null" : "not null"));
 #endif
 
   return s;
 }
-
 /**
  *
  *

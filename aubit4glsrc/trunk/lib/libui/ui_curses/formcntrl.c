@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.139 2008-03-09 12:13:01 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.140 2008-03-22 16:54:10 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.139 2008-03-09 12:13:01 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.140 2008-03-22 16:54:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -221,7 +221,7 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
   sio->fcntrl_cnt = 0;
 }
 
-static void A4GL_trim_trailing_in_wordwrap_field_on_stack(int width) {
+static void A4GL_trim_trailing_in_wordwrap_field_on_stack(int width,char *buff_src) {
 char *a;
 char **buff=0;
 int n;
@@ -229,6 +229,7 @@ int c=0;
 int l;
 int l2;
 char *a2;
+int last_ended_in_spaces=0;
 
 a=A4GL_char_pop();
 
@@ -263,18 +264,26 @@ for (c=0;c<=n;c++) {
 
 		if (c<=n) {
 			ptr=buff[c];
-			if (ptr[0]!=' ') {
- 				strcat(a," ");
-			}
+			//if (ptr[0]!=' ' ) {
+				//if (a[strlen(a)-1]!=' ') {
+ 					//strcat(a," ");
+				//}
+			//}
+			if (last_ended_in_spaces) strcat(a," ");
 		} else  {
  			strcat(a," ");
 		}
 	}
 	strcat(a,buff[c]);
+	if (strlen(buff[c])==width) last_ended_in_spaces=0;
+	else last_ended_in_spaces=1;
 	A4GL_debug("%s\n", buff[c]);
 	free(buff[c]);
 }
 A4GL_debug("--->%s",a);
+if (buff_src) {
+	strcpy(buff_src,a);
+}
 A4GL_push_char(a);
 free(buff);
 }
@@ -1096,6 +1105,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       struct struct_scr_field *fprop;
       int attr;
 
+//A4GL_pause_execution();
 	A4GL_debug("AFTER FIELD - mode=%d (construct=%d)",sio->mode,MODE_CONSTRUCT);
 
       if (sio->mode != MODE_CONSTRUCT)
@@ -1193,13 +1203,16 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
                 if ((sio->vars[field_no].dtype& DTYPE_MASK)==DTYPE_CHAR || (sio->vars[field_no].dtype& DTYPE_MASK)==DTYPE_VCHAR) {
                         fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
                         if (A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP)) {
-                                        A4GL_trim_trailing_in_wordwrap_field_on_stack(A4GL_get_field_width_w(sio->currentfield,0));
+					if (!A4GL_isno(acl_getenv("TRIMWORDWRAP"))) {
+                                        	A4GL_trim_trailing_in_wordwrap_field_on_stack(A4GL_get_field_width_w(sio->currentfield,0), buff);
+					}
                         }
                 }
 
 	        A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
 
-		if (sio->vars[field_no].dtype==0) {
+
+		if ((sio->vars[field_no].dtype & DTYPE_MASK)==DTYPE_CHAR) {
 			A4GL_debug("sio->vars[field_no].ptr=%s",sio->vars[field_no].ptr);
 		}
 
@@ -1250,8 +1263,10 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 	      A4GL_push_char (buff);
 
-	      A4GL_debug ("Calling display_field_contents");
+	      A4GL_debug ("Calling display_field_contents before : %s",field_buffer(sio->currform->currentfield,0));
 	      A4GL_display_field_contents (sio->currentfield, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size), sio->vars[field_no].size, sio->vars[field_no].ptr);	// MJA 2306
+	      A4GL_debug ("Calling display_field_contents after  : %s",field_buffer(sio->currform->currentfield,0));
+
 
 	      fprop =
 		(struct struct_scr_field

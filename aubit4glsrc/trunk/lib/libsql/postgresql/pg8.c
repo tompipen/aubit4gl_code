@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.25 2008-03-20 09:42:20 mikeaubury Exp $
+# $Id: pg8.c,v 1.26 2008-03-22 16:54:10 mikeaubury Exp $
 #*/
 
 
@@ -2825,9 +2825,9 @@ pgescape_str (char *s,int sl)
   PQescapeString (buff, s, sl);
 #endif
 
-  if (err == 0)
+  if (err == 0) {
     return buff;		// Everything is ok...
-
+}
 // Some error...
   return s;
 }
@@ -2927,12 +2927,12 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      break;
 
 		    case DTYPE_SMFLOAT:
-		      sprintf (buff3, "%16.8f", *(float *) ibind[param].ptr);
+		      SPRINTF1 (buff3, "%16.8f", *(float *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 		      break;
 
 		    case DTYPE_FLOAT:
-		      sprintf (buff3, "%16.8lf",
+		      SPRINTF1 (buff3, "%16.8lf",
 			       *(double *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 		      break;
