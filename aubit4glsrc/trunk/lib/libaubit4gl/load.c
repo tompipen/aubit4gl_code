@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.44 2007-09-19 06:13:52 mikeaubury Exp $
+# $Id: load.c,v 1.45 2008-03-26 18:30:33 mikeaubury Exp $
 #
 */
 
@@ -101,16 +101,17 @@ find_delims (char delim)
 {
   int cnt = 1;
   int a;
-#ifndef LOAD_ORIG
   int ml;
-#endif
-  colptr[0] = &loadbuff[0];
-#ifdef LOAD_ORIG
-  for (a = 0; a < strlen(loadbuff); a++)
-#else
+
   ml=strlen(loadbuff);
+	/* Convert to unix format - if its msdos */
+  if (loadbuff[ml-2]=='\r' && loadbuff[ml-1]=='\n') {
+		ml--;
+		loadbuff[ml-2]='\n';
+		loadbuff[ml-1]=0;
+	}
+  colptr[0] = &loadbuff[0];
   for (a = 0; a < ml; a++)
-#endif
     {
       if (loadbuff[a] == delim || loadbuff[a] == 0)
 	{
@@ -190,6 +191,20 @@ stripnlload (char *s, char delim)
 {
   int a;
   a = strlen (s);
+  if (strchr(s,'\r')) {
+	int a;
+	char *p;
+	int b=0;
+	p=strdup(s);
+	for (a=0;a<strlen(s);a++) {
+		if (s[a]!='\r') {
+			p[b++]=s[a];
+		} 
+	}
+	p[b]=0;
+	strcpy(s,p);
+	free(p);
+  }
   if (s[a - 1] == '\n')
     {
       if (s[a - 2] != delim)
