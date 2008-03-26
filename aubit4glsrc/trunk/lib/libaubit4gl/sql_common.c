@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.49 2008-01-27 15:15:18 mikeaubury Exp $
+# $Id: sql_common.c,v 1.50 2008-03-26 18:29:54 mikeaubury Exp $
 #
 */
 
@@ -182,7 +182,8 @@ A4GLSQL_set_sqlerrm (char *m, char *p)
       A4GL_debug ("Nullpointer, doing nothing!");
       return;
     }
-  strcpy (a4gl_sqlca.sqlerrm, m);
+  strncpy (a4gl_sqlca.sqlerrm, m,sizeof(a4gl_sqlca.sqlerrm));
+  a4gl_sqlca.sqlerrm[sizeof(a4gl_sqlca.sqlerrm)]=0;
   strncpy (a4gl_sqlca.sqlerrp, p, 8);
   a4gl_sqlca.sqlerrp[8] = 0;
 }
@@ -1202,6 +1203,17 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
   A4GL_sqlid_encrypt();
 
   ptr = acl_getenv_not_set_as_0 ("A4GL_SQLACL");
+	if (ptr) {
+		if (!A4GL_file_exists(ptr)) ptr=0;
+	}
+
+  if (ptr==0) {
+		ptr = acl_getenv_not_set_as_0 ("A4GL_ACLFILE");
+		if (ptr) {
+			if (!A4GL_file_exists(ptr)) ptr=0;
+		}
+  }
+
   if (ptr == 0)
     {
 #if defined( __MINGW32__ ) || defined(MSVC)
@@ -1450,6 +1462,9 @@ A4GL_sqlid_encrypt (void)
 
   if (unlink(fname)==0) { // All good!
   	rename("encrypted.aclfile",fname);
+  } else {
+	A4GL_exitwith("Unable to remove original ACL file");
+	return 0;
   }
 
   return 1;
