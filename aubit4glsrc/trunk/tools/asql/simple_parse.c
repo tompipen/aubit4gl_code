@@ -100,7 +100,9 @@ int in_create_procedure;
 				need_fname=0;
 				continue;
 			}
-			printf("Unknown a when looking for filename %d\n",a);
+			A4GL_debug("Unknown 'a' when looking for filename %d\n",a);
+			//A4GL_assertion(1,"Bad filename");
+			return 0;
 		}
 
 

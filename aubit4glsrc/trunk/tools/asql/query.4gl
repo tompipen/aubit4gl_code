@@ -173,6 +173,19 @@ extern int list_cnt;
 asql_yyin=get_curr_mvfin("SQL");
 clr_stmt();
 a=my_pretend_yyparse();
+endcode
+
+if a=0 then
+	if get_exec_mode()=0 then
+		error "Error in SQL"
+	else
+		display "Error in SQL"
+	end if
+	return
+end if
+
+code
+
 a=list_cnt;
 }
 endcode
@@ -301,7 +314,21 @@ extern struct element *list;
 extern int list_cnt;
 asql_yyin=(FILE *)get_curr_mvfin("SQL");
 clr_stmt();
+
 a=my_pretend_yyparse();
+endcode
+
+
+if a=0 then
+	if get_exec_mode()=0 then
+		error "Error in SQL"
+	else
+		display "Error in SQL"
+	end if
+	return 0
+end if
+
+code
 a=list_cnt;
 }
 endcode

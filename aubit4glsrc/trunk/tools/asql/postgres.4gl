@@ -1406,6 +1406,14 @@ asql_yyin=(FILE *)get_curr_mvfin("SQL");
 clr_stmt();
 
 a=my_pretend_yyparse();
+endcode
+
+if a=0 then
+	return 
+end if
+
+
+code
 a=list_cnt;
 endcode
 call close_tmpfile("SQL")
