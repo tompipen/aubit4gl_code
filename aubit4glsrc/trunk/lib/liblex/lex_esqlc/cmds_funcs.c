@@ -291,11 +291,22 @@ print_display_cmd (struct_display_cmd * cmd_data)
   print_clr_status ();
   switch (cmd_data->where->dttype)
     {
+
     case DT_DISPLAY_TYPE_LINE:
       real_print_expr_list (cmd_data->exprs);
       printc ("A4GL_push_int(-1);");
       printc ("A4GL_push_int(-1);");
-      printc ("A4GL_display_at(%d,0x%x);", cmd_data->exprs->list.list_len, attributes_as_int (cmd_data->attributes));
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{ int _attr;char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+      		printc ("A4GL_display_at(%d,_attr);", cmd_data->exprs->list.list_len);
+		printc("}");
+	} else {
+      		printc ("A4GL_display_at(%d,0x%x);", cmd_data->exprs->list.list_len, attributes_as_int (cmd_data->attributes));
+	}
       break;
 
 
@@ -308,7 +319,19 @@ print_display_cmd (struct_display_cmd * cmd_data)
       set_nonewlines ();
       print_expr (cmd_data->where->dt_display_u.x_y.x);
       clr_nonewlines ();
-      printc ("A4GL_display_at(%d,0x%x);", cmd_data->exprs->list.list_len, attributes_as_int (cmd_data->attributes));
+
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{ int _attr;char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+      		printc ("A4GL_display_at(%d,_attr);", cmd_data->exprs->list.list_len);
+		printc("}");
+
+	} else {
+      		printc ("A4GL_display_at(%d,0x%x);", cmd_data->exprs->list.list_len, attributes_as_int (cmd_data->attributes));
+	}
       break;
 
 

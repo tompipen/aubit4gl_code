@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.403 2008-03-18 09:10:12 mikeaubury Exp $
+# $Id: compile_c.c,v 1.404 2008-03-27 16:42:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.403 2008-03-18 09:10:12 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.404 2008-03-27 16:42:57 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6344,28 +6344,125 @@ void print_fgllib_start (char *db, int is_schema,char *force_ui, char *debug_fil
 
 
 
+
+static void check_for_variable(struct s_select_list_item *l,char dir) {
+switch (l->data.type)  {
+ 	case E_SLI_VARIABLE_USAGE:
+          l->data.type = E_SLI_VARIABLE;
+          l->data.s_select_list_item_data_u.expression = strdup(get_sql_variable_usage (l->data.s_select_list_item_data_u.var_usage,dir));
+	  return;
+      case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
+          l->data.type = E_SLI_VARIABLE;
+	  set_dont_use_indicators=1;
+          l->data.s_select_list_item_data_u.expression = strdup(get_sql_variable_usage (l->data.s_select_list_item_data_u.var_usage,dir));
+	  set_dont_use_indicators=0;
+	  return;
+
+       case E_SLI_OP:
+      		check_for_variable (l->data.s_select_list_item_data_u.complex_expr.left,dir),
+                check_for_variable(l->data.s_select_list_item_data_u.complex_expr.right,dir);
+		return;
+
+    case E_SLI_NOT_IN_SELECT:
+    case E_SLI_IN_SELECT:
+      	check_for_variable (l->data.s_select_list_item_data_u.complex_expr.left,dir);
+	return;
+
+    case E_SLI_NOT_IN_VALUES:
+    case E_SLI_IN_VALUES:
+      check_for_variable (l->data.s_select_list_item_data_u.slil_expr.left,dir);
+      search_sql_variables (l->data.s_select_list_item_data_u.slil_expr.right_list,dir);
+      break;
+
+    case E_SLI_REGEX_MATCHES:
+    case E_SLI_REGEX_NOT_MATCHES:
+    case E_SLI_REGEX_LIKE:
+    case E_SLI_REGEX_NOT_LIKE:
+    case E_SLI_REGEX_ILIKE:
+    case E_SLI_REGEX_NOT_ILIKE:
+      check_for_variable (l->data.s_select_list_item_data_u.regex.val,dir);
+      check_for_variable (l->data.s_select_list_item_data_u.regex.regex,dir);
+      break;
+
+    case E_SLI_ISNULL:
+    case E_SLI_ISNOTNULL:
+    case E_SLI_ASC:
+    case E_SLI_DESC:
+    case E_SLI_NOT:
+    case E_SLI_BRACKET_EXPR:
+    case E_SLI_UNITS_YEAR:
+    case E_SLI_UNITS_MONTH:
+    case E_SLI_UNITS_DAY:
+    case E_SLI_UNITS_HOUR:
+    case E_SLI_UNITS_MINUTE:
+    case E_SLI_UNITS_SECOND:
+      check_for_variable (l->data.s_select_list_item_data_u.expr,dir);
+      break;
+
+    case E_SLI_BUILTIN_FUNC_YEAR:
+    case E_SLI_BUILTIN_FUNC_MONTH:
+    case E_SLI_BUILTIN_FUNC_DAY:
+    case E_SLI_BUILTIN_FUNC_DOW:
+    case E_SLI_BUILTIN_FUNC_WEEKDAY:
+    case E_SLI_BUILTIN_FUNC_MDY:
+    case E_SLI_BUILTIN_FUNC_DATE:
+      search_sql_variables ( l->data.s_select_list_item_data_u.builtin_fcall.params,dir);
+      break;
+
+
+    case E_SLI_BUILTIN_AGG_AVG:
+    case E_SLI_BUILTIN_AGG_MAX:
+    case E_SLI_BUILTIN_AGG_MIN:
+    case E_SLI_BUILTIN_AGG_SUM:
+    case E_SLI_BUILTIN_AGG_COUNT:
+      check_for_variable (l->data.s_select_list_item_data_u.agg_expr.expr,dir);
+      break;
+
+    case E_SLI_NOT_BETWEEN:
+    case E_SLI_BETWEEN:
+      check_for_variable (l->data.s_select_list_item_data_u.between_expr.val,dir);
+      check_for_variable (l->data.s_select_list_item_data_u.between_expr.from,dir);
+      check_for_variable (l->data.s_select_list_item_data_u.between_expr.to,dir);
+      break;
+
+
+    case E_SLI_FCALL:
+      search_sql_variables (l->data.s_select_list_item_data_u.fcall.params,dir);
+      break;
+
+
+    case E_SLI_EXTEND:
+      check_for_variable (l->data.s_select_list_item_data_u.extend.expr,dir);
+      break;
+
+    case E_SLI_SUBQUERY_EXPRESSION:
+      check_for_variable (l->data.s_select_list_item_data_u.sq_expression.sq,dir);
+      break;
+
+
+
+
+
+    default: break;
+
+}
+
+
+}
+
+
+// This function is used by INSERT,UPDATE And DELETE to find any embedded variables usages (E_SLI_VARIABLE_USAGE)
+// and replace them with proper variable subsitutions as required...
 void
 search_sql_variables (struct s_select_list_item_list *l,char dir)
 {
   int a;
   if (l == 0)
     return;
+
   for (a = 0; a < l->list.list_len; a++)
     {
-
-      if (l->list.list_val[a]->data.type == E_SLI_VARIABLE_USAGE)
-        {
-          l->list.list_val[a]->data.type = E_SLI_VARIABLE;
-          l->list.list_val[a]->data.s_select_list_item_data_u.expression = strdup(get_sql_variable_usage (l->list.list_val[a]->data.s_select_list_item_data_u.var_usage,dir));
-        }
-      if (l->list.list_val[a]->data.type == E_SLI_VARIABLE_USAGE_IN_SELECT_LIST)
-        {
-          l->list.list_val[a]->data.type = E_SLI_VARIABLE;
-	  set_dont_use_indicators=1;
-          l->list.list_val[a]->data.s_select_list_item_data_u.expression = strdup(get_sql_variable_usage (l->list.list_val[a]->data.s_select_list_item_data_u.var_usage,dir));
-	  set_dont_use_indicators=0;
-        }
-
+	check_for_variable(l->list.list_val[a],dir);
     }
 }
 
