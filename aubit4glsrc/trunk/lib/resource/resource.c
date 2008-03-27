@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.144 2008-03-13 19:35:25 mikeaubury Exp $
+# $Id: resource.c,v 1.145 2008-03-27 21:15:32 mikeaubury Exp $
 #
 */
 
@@ -1084,7 +1084,10 @@ A4GL_build_user_resources (void)
 {
 char buff[1024];
 FILE *resourcefile = 0;
-
+int read_from_cnt=0;
+char read_from[20][2000];
+int tried_to_read_from_cnt=0;
+char tried_to_read_from[20][2000];
 
 	#ifdef DEBUG
 		A4GL_debug ("Loading resources");
@@ -1107,11 +1110,13 @@ FILE *resourcefile = 0;
   */
 
 	sprintf(buff, "/etc/opt/aubit4gl/%s", "aubitrc");
+	strcpy(tried_to_read_from[tried_to_read_from_cnt++],buff);
 	resourcefile = fopen (buff, "r");
 	if (resourcefile != 0) {
 		#ifdef DEBUG
 			A4GL_debug ("0:From %s", buff);
 		#endif
+		strcpy(read_from[read_from_cnt++], buff);
 		add_resources_in (resourcefile);
 		fclose (resourcefile);
     } else {
@@ -1133,10 +1138,12 @@ FILE *resourcefile = 0;
 
 	sprintf(buff, "%s/%s", acl_getenv ("AUBITETC"), "aubitrc");
 	resourcefile = fopen (buff, "r");
+	strcpy(tried_to_read_from[tried_to_read_from_cnt++],buff);
 	if (resourcefile != 0) {
 		#ifdef DEBUG
 			A4GL_debug ("1:From %s", buff);
 		#endif
+		strcpy(read_from[read_from_cnt++], buff);
 		add_resources_in (resourcefile);
 		fclose (resourcefile);
     } else {
@@ -1172,10 +1179,12 @@ FILE *resourcefile = 0;
 
    	sprintf (buff, "%s/etc/%s", acl_getenv ("AUBITDIR"), "aubitrc");
   	resourcefile = fopen (buff, "r");
+	strcpy(tried_to_read_from[tried_to_read_from_cnt++],buff);
   	if (resourcefile != 0) {
 		#ifdef DEBUG
       		A4GL_debug ("2:From %s", buff);
 		#endif
+		strcpy(read_from[read_from_cnt++], buff);
 		add_resources_in (resourcefile);
 		fclose (resourcefile);
 		#ifdef DEBUG
@@ -1194,7 +1203,9 @@ FILE *resourcefile = 0;
   if (acl_getenv_not_set_as_0("HOME")) {
   	sprintf (buff, "%s/%s", acl_getenv ("HOME"), ".aubit4gl/aubitrc");
   	resourcefile = fopen (buff, "r");
+	strcpy(tried_to_read_from[tried_to_read_from_cnt++],buff);
   	if (resourcefile != 0) {
+		strcpy(read_from[read_from_cnt++], buff);
 			#ifdef DEBUG
 				A4GL_debug ("3:From %s", buff);
 			#endif
@@ -1211,7 +1222,9 @@ FILE *resourcefile = 0;
 
   sprintf (buff, "./%s", ".aubitrc");
   resourcefile = fopen (buff, "r");
+	strcpy(tried_to_read_from[tried_to_read_from_cnt++],buff);
   	if (resourcefile != 0) {
+		strcpy(read_from[read_from_cnt++], buff);
 		#ifdef DEBUG
      	 A4GL_debug ("4:From %s", buff);
 		#endif
@@ -1228,10 +1241,12 @@ FILE *resourcefile = 0;
   sprintf (buff, "%s", acl_getenv ("A4GL_INIFILE"));
   if (strlen (buff)) {
       resourcefile = fopen (buff, "r");
+	strcpy(tried_to_read_from[tried_to_read_from_cnt++],buff);
       if (resourcefile != 0) {
 		  #ifdef DEBUG
 			A4GL_debug ("5:From A4GL_INIFILE:%s", buff);
 		  #endif
+		strcpy(read_from[read_from_cnt++], buff);
 		  add_resources_in (resourcefile);
 		  fclose (resourcefile);
 	  } else {
@@ -1266,6 +1281,44 @@ FILE *resourcefile = 0;
   #ifdef DEBUG
   	A4GL_debug ("Finished reading configuration");
   #endif
+
+
+        if (strcmp(acl_getenv("DEFAULT_AUBITRCFILE_HAS_BEEN_EDITED"),"N")==0) {
+		int a;
+		fprintf(stderr," *********** ERROR IN BINARY BUILD CONFIGURATION ***********\n");
+                fprintf(stderr,"You seem to be running with an unedited AUBITRC file normally distributed\n");
+		fprintf(stderr,"with a binary build.\n");
+
+                fprintf(stderr,"Please ensure you've adjusted the values to reflect your environment\n");
+                fprintf(stderr,"Once you're happy - make sure you remove the like 'DEFAULT_AUBITRCFILE_HAS_BEEN_EDITED=N'\n\n");
+		if (read_from_cnt==1) {
+			fprintf(stderr, "DEFAULT_AUBITRCFILE_HAS_BEEN_EDITED will be set in this file:\n");
+		} else {
+			fprintf(stderr, "DEFAULT_AUBITRCFILE_HAS_BEEN_EDITED will be set in one of these:\n");
+		}
+		for (a=0;a<read_from_cnt;a++) {
+			fprintf(stderr, "   %s\n", read_from[a]);
+		}
+		
+		fprintf(stderr, "\n");
+		exit(2);
+        }
+
+	if (read_from_cnt==0 ) {
+		int a;
+		fprintf(stderr," *********** ERROR IN CONFIGURATION ***********\n");
+		fprintf(stderr,"No aubitrc file has been found on your system\n");
+		fprintf(stderr,"I tried these files :\n");
+		for (a=0;a<tried_to_read_from_cnt;a++) {
+			fprintf(stderr,"   %s\n", tried_to_read_from[a]);
+		}
+		fprintf(stderr,"\n\nIf you really dont want to use any settings in the AUBITRC,\nthen just create an empty file.\n\n");
+		
+		
+		exit(2);
+		
+	}
+
   return build_resource;
 }
 
