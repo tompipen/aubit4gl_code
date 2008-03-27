@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.130 2008-03-20 09:42:19 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.131 2008-03-27 21:15:58 mikeaubury Exp $
 #
 */
 
@@ -221,7 +221,6 @@ char *p;
 
 	A4GL_debug("isprint(pound)=%d\n",isprint(0xa3));
 	A4GL_debug("isprint(umlaut)=%d\n",isprint(220));
-
 
 	#ifdef DEBUG
 	    A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);
