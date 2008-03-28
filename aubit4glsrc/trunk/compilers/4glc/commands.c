@@ -891,7 +891,8 @@ int a;
 			col=p+1;
         		rstring=A4GLSQL_syscolval_expr(tab,col,"DEFAULT");
 			if (rstring) {
-			ptr=A4GL_new_literal_string(rstring);
+	
+				ptr=A4GL_new_literal_string(A4GL_strip_quotes(rstring));
 			}
 		}
 		c->cmd_data.command_data_u.init_cmd.init_like_exprlist->list.list_val[a]=ptr;
