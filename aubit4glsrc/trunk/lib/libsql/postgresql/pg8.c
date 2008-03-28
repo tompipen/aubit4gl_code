@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.26 2008-03-22 16:54:10 mikeaubury Exp $
+# $Id: pg8.c,v 1.27 2008-03-28 10:11:01 mikeaubury Exp $
 #*/
 
 
@@ -443,7 +443,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
 // This is nicked from psql ...
   SPRINTF1 (buff,
-	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum",
+	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid and pg_table_is_visible(b.oid) AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum",
 	    tabname);
 
   resGC = PQexec (current_con, buff);
@@ -2245,7 +2245,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
   A4GL_trim (tabname);
 
   SPRINTF1 (buff,
-	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum , a.atttypid, a.atttypmod FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum",
+	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum , a.atttypid, a.atttypmod FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' and pg_table_is_visible(b.oid) ORDER BY a.attnum",
 	    tabname);
 
   res = Execute (buff, 0);
