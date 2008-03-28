@@ -1274,6 +1274,7 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
   int a;
   if (!connect_ui ())
     {
+	fprintf(stderr,"Unable to connect to the client\n");
       return 0;
     }
 
