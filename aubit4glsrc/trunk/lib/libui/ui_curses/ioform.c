@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.191 2008-03-28 14:15:03 mikeaubury Exp $
+# $Id: ioform.c,v 1.192 2008-03-28 16:08:13 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.191 2008-03-28 14:15:03 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.192 2008-03-28 16:08:13 mikeaubury Exp $";
 #endif
 
 /**
@@ -1562,7 +1562,7 @@ static int pad_char;
 
   sio = vsio;
 	if (has_pad_char==-1) {
-		@env PADCHAR sets the padding attribute (normally blank) 
+		// @env PADCHAR sets the padding attribute (normally blank) 
 		if (acl_getenv_not_set_as_0("PADCHAR")==0) {
 			has_pad_char=0;
 		} else {
