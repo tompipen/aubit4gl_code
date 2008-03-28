@@ -71,6 +71,11 @@ a=substr(a,index(a,"\"")+1)
 a=substr(a,1,index(a,"\"")-1)
 
 if (errors[a]=="") {
+		if (a=="\"\"") {
+			print "INTERNAL ERROR : variable (a) is blank in " FILENAME
+			print $0
+			exit 
+		}
 		errcnt++;
 		errors[a]=errcnt
 }

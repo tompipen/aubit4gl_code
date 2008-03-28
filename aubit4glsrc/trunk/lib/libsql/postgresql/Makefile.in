@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2007-06-19 07:54:06 mikeaubury Exp $
+# $Id: Makefile.in,v 1.17 2008-03-28 16:17:04 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -54,7 +54,8 @@ SRC		=simple.c
 
 OBJS	=${SRC:.c=.o}
 CPPOBJS	=${CPPSRC:.cpp=.o}
-CFLAGS	+=-I.. ${PGSQL_INCLUDE} 
+CFLAGS	+=-I.. ${PGSQL_INCLUDE} -I${POSTGRESDIR}/include
+
 CXXFLAGS=$(CFLAGS)
 
 ALL		=${PLUGINDIR}/libSQL_pg${SO_EXT} ${PLUGINDIR}/libSQL_pg8${SO_EXT}
