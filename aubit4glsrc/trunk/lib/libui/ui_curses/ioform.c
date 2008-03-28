@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.190 2008-02-16 14:49:29 mikeaubury Exp $
+# $Id: ioform.c,v 1.191 2008-03-28 14:15:03 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.190 2008-02-16 14:49:29 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.191 2008-03-28 14:15:03 mikeaubury Exp $";
 #endif
 
 /**
@@ -1557,8 +1557,19 @@ int changed=0;
   FORM *mform;
   int attr;
   FIELD *was_current;
+static int has_pad_char=-1;
+static int pad_char;
 
   sio = vsio;
+	if (has_pad_char==-1) {
+		@env PADCHAR sets the padding attribute (normally blank) 
+		if (acl_getenv_not_set_as_0("PADCHAR")==0) {
+			has_pad_char=0;
+		} else {
+			has_pad_char=1;
+			pad_char=atoi(acl_getenv("PADCHAR"));
+		}
+	}
 
   wid = 0;
   if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS
@@ -1729,6 +1740,11 @@ int changed=0;
 
       if (attr != 0)
 	A4GL_set_field_attr_with_attr (field_list[a], attr, FGL_CMD_INPUT);
+
+
+if (has_pad_char) {
+	set_field_pad(field_list[a],pad_char);
+}
 
       set_field_status (field_list[a], 0);
 	A4GL_fprop_flag_clear(field_list[a],0xff); // ALL
@@ -2532,6 +2548,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 {
   int field_width;
   int has_format;
+int has_wordwrap;
   int ignore_formatting = 0;
   struct struct_scr_field *f;
   char *ff;
@@ -2544,6 +2561,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
   ff = acl_malloc2  (field_width+1);
 
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
+  has_wordwrap = A4GL_has_bool_attribute (f, FA_B_WORDWRAP);
   A4GL_debug ("Has format : %d  ", has_format);
 
 // 'Format' is valid for a lot of datatypes -
@@ -2628,6 +2646,18 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
   }
 
   A4GL_debug ("set_field_contents : '%s'", ff);
+
+
+  if (has_wordwrap) {
+	 if (!(field_opts(field)&O_WRAP)) {
+		A4GL_debug( "FIELD WRAPPING OFF");
+	} else {
+		A4GL_debug( "FIELD WRAPPING ON");
+	}
+  } 
+
+
+
   A4GL_mja_set_field_buffer (field, 0, ff);
   acl_free (ff);
 
@@ -2829,7 +2859,7 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   a = strlen (buff2);
   b = A4GL_get_field_width_w (field,1);
   A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff, buff2, a, b);
-  if (a < A4GL_get_field_width_w (field,1))
+  if (a < A4GL_get_field_width_w (field,1) && (!(field_opts(field)&O_WRAP)))
     {
       A4GL_debug ("Adding padding");
       A4GL_pad_string (buff2, A4GL_get_field_width_w (field,1));
@@ -2843,8 +2873,13 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 	  	buff2[b]=0;
 		A4GL_debug("Trimmed");
   }
+  if (field_opts(field)&O_WRAP) {
+		A4GL_debug("Extra trim for the wordwrap");
+		A4GL_trim(buff2);
+  }
 
   A4GL_debug("setting field buffer to %s",buff2);
+  
 
   xerrno = set_field_buffer (field, nbuff, buff2);
 
