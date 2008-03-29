@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.156 2007-12-05 14:08:13 mikeaubury Exp $
+# $Id: conv.c,v 1.157 2008-03-29 09:33:20 mikeaubury Exp $
 #
 */
 
@@ -232,6 +232,7 @@ void A4GL_set_setdtype (int dtype, void *ptr);
 int A4GL_dectod (void *zz, void *aa, int sz_ignore);
 int A4GL_d_to_dt(void *a,void *b,int size) ;
 int A4GL_dt_to_d(void *a,void *b,int size) ;
+int A4GL_dttovc (void *a, void *b, int size) ;
 
 
 /* Varchar handling */
@@ -317,7 +318,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
   { A4GL_dtos, A4GL_dtoi, A4GL_dtol, A4GL_dtof, A4GL_dtosf, A4GL_dtodec, A4GL_dtof, A4GL_ltol, A4GL_dtomdec, NO, A4GL_d_to_dt, NO, NO, A4GL_dtovc, NO} ,
   { A4GL_mdectos, A4GL_mdectoi, A4GL_mdectol, A4GL_mdectof, A4GL_mdectosf, A4GL_mdectodec, A4GL_mdectol, NO, A4GL_mdectomdec, NO, NO, NO, NO, A4GL_mdectovc, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO} ,
-  { A4GL_dttoc, NO, NO, NO, NO, NO, NO, A4GL_dt_to_d, NO,NO,A4GL_dttodt, NO, NO, NO, NO,NO} ,
+  { A4GL_dttoc, NO, NO, NO, NO, NO, NO, A4GL_dt_to_d, NO,NO,A4GL_dttodt, NO, NO, A4GL_dttovc, NO,NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO} ,
   { A4GL_vctoc, A4GL_vctoi, A4GL_vctol, A4GL_vctof, A4GL_vctosf, A4GL_vctodec, A4GL_vctol, A4GL_vctod, A4GL_vctomdec, NO, A4GL_vctodt, NO, NO, A4GL_vctovc, A4GL_vctoint} ,
@@ -884,6 +885,19 @@ A4GL_dttoc (void *a, void *b, int size)
 
   strcpy (b, buff);
   return 1;
+}
+
+
+int A4GL_dttovc (void *a, void *b, int size) {
+	char buff[256];
+	int z;
+	memset(buff,' ',sizeof(buff));
+	z=A4GL_dttoc(a,b,size);
+	if (z) {
+		A4GL_trim(b);
+		return 1;
+	}
+	return 0;
 }
 
 /* 
