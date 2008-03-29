@@ -151,7 +151,7 @@ ident_p2 : NAMED {
 		//@ FIXME
 			strcpy($<str>$,downshift($<str>1));
 			strcpy(last_var,$<str>$);
-			strcpy($<str>$,do_clobbering(clobber,downshift($<str>1))) ;
+			strcpy($<str>$,do_clobbering(&this_module, clobber,downshift($<str>1))) ;
 			$<ptr>$=A4GL_new_expr_simple_string($<str>$, ET_EXPR_IDENTIFIER);
 	} 
 	| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
@@ -162,7 +162,7 @@ ident_p2 : NAMED {
 
 
 ident_p2_sql : NAMED { 
-			strcpy($<str>$,do_clobbering_sql(clobber,downshift($<str>1))) ;
+			strcpy($<str>$,do_clobbering_sql(&this_module, clobber,downshift($<str>1))) ;
 			strcpy(last_var,downshift($<str>$));
 			$<ptr>$=A4GL_new_expr_simple_string($<str>$, ET_EXPR_IDENTIFIER);
 	} 

@@ -574,7 +574,7 @@ void A4GL_cursor_is_insert(void);
 void A4GL_cursor_is_select(void);
 void A4GL_load_features(void);
 void A4GL_lex_printh(char* fmt,... );
-void emulate_insert(char *s);
+void emulate_insert(module_definition *mod, char *s);
 char A4GL_cursor_type(struct expr_str *s);
 char *A4GL_print_start_to_is_expr(struct expr_str *ptr) ;
 long get_variable_dets_arr3 (char *s, int *type, int *arrsize1,int *arrsize2,int *arrsize3, int *size, int *level, char *arr);
@@ -677,7 +677,12 @@ struct expr_str_list *make_fgl_expr_list(expr_str_list *p);
 struct expr_str *chk_expr(struct expr_str *p);
 //void add_module_entry(module_entry *m);
 //struct command *set_whenever_from_store_cmd(void);
-char *A4GL_get_important_from_clobber (char *s);
+char *A4GL_get_important_from_clobber (module_definition *mod, char *s);
+char * A4GL_get_clobber_from_orig (module_definition *mod, char *s);
+char * do_clobbering (module_definition *mod, char *f, char *s);
+char * do_clobbering_sql (module_definition *mod, char *f, char *s);
+
+
 int inc_var_assigned(expr_str *s);
 int inc_var_usage(expr_str *s);
 //void debug_func(struct module_entry *e);

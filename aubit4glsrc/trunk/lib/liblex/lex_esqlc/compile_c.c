@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.404 2008-03-27 16:42:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.405 2008-03-29 11:42:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.404 2008-03-27 16:42:57 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.405 2008-03-29 11:42:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -104,6 +104,7 @@ char *last_print_bind_dir_definition_g_rval[255];
 
 //char *get_debug_filename(void);
 int class_cnt=0;
+int need_cursorname=0;
 struct module_definition *current_module;
 int assoc_write=0;
 int daylight=0;
@@ -1997,6 +1998,13 @@ real_print_expr (struct expr_str *ptr)
 	case ET_EXPR_VARIABLE_IDENTIFIER:
 		print_expr(ptr->expr_str_u.expr_expr);
 		break;
+
+	case ET_EXPR_CURSOR_NAME_FUNCTION:
+		need_cursorname++;
+		print_expr(ptr->expr_str_u.expr_expr);
+		printc("acl_get_cursorname();");
+		break;
+		
 		
 	      default: 
 					       	
@@ -5540,6 +5548,26 @@ strcpy(this_module_name,m->module_name);
         return 0;
 	}
 
+    }
+
+	/* if the code includes the 'CURSOR_NAME' function with a variable - we
+		need to be able to look up the new name from the original name
+		we do this by searching through the clobberings as a list and returning that
+	*/
+    if ( need_cursorname) {
+		int a;
+		printh("static void acl_get_cursorname(void);\n");
+		printc("/* Automatically generated function called by CURSOR_NAME(..) */");
+		printc("static void acl_get_cursorname(void) {");
+		printc("char *s; char *p; s=A4GL_char_pop();");
+		printc("p=s;");
+		printc("A4GL_trim(s);");
+		for (a=0;a<m->clobberings.clobberings_len;a++) {
+			printc("if (strcmp(s,\"%s\")==0) p=\"%s\";",  m->clobberings.clobberings_val[a].important,  m->clobberings.clobberings_val[a].new);
+		}
+		printc("A4GL_push_char(p);");
+		printc("free(s);");
+		printc("}");
     }
 
   dump_comments (1000000);

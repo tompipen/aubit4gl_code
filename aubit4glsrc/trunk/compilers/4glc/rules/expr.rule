@@ -549,7 +549,14 @@ function_call_expr:
 		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno, get_namespace($<str>2)); 
 		add_to_call_list_by_expr($<ptr>$);
 	}
-
+	| CURSOR_NAME_FUNCTION OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
+		if ($<ptr>3->expr_type!=ET_EXPR_LITERAL_STRING)  {
+ 			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_CURSOR_NAME_FUNCTION);
+		} else {
+			// We can do it here...
+			$<ptr>$=A4GL_new_literal_string(do_clobbering_sql(&this_module, clobber,downshift(A4GL_strip_quotes($<ptr>3->expr_str_u.expr_string)))) ;
+		}
+	}
 	| GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET {
 		add_feature("ET_EXPR_GET_FLDBUF");
 		if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
@@ -565,6 +572,7 @@ function_call_expr:
 		} 
 
 	} 
+	
         | EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port_eptr CLOSE_SQUARE OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_without_waiting {
                         char fname[64];
                 	char buff[256];

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.312 2008-02-13 19:39:13 mikeaubury Exp $
+# $Id: mod.c,v 1.313 2008-03-29 11:42:08 mikeaubury Exp $
 #
 */
 
@@ -165,7 +165,6 @@ int A4GL_findex (char *str, char c);
 char *get_curr_report_stack_why (void);
 //char find_variable_scope (char *s_in);
 //char *A4GL_get_important_from_clobber (char *s);
-char *A4GL_get_clobber_from_orig (char *s);
 //char *A4GLSQLCV_check_sql(char *s) ;
 int get_rep_no_orderby (void);
 //int get_validate_list_cnt (void);
@@ -402,8 +401,6 @@ static void push_validate_column (char *tabname, char *colname);
 
 //char *get_namespace (char *s);
 char *make_sql_string_and_free (char *first, ...);
-char *do_clobbering (char *f, char *s);
-char *do_clobbering_sql (char *f, char *s);
 char *pg_make_sql_string_and_free (char *first, ...);
 
 /*
@@ -2468,7 +2465,7 @@ cons_list* append_constr_col_list(struct cons_list *c ,struct cons_list_entry *n
       			SPRINTF1 (buff, "%s does not exist in the database", new_entry->tabname);
       			a4gl_yyerror (buff);
       			A4GLSQL_end_get_columns ();
-      			return 1;
+      			return 0;
     		}
   		A4GL_debug ("Rval !=0");
 
@@ -3682,200 +3679,6 @@ get_blk_no_1 (void)
 }
 
 
-struct s_exchange_clobber
-{
-  char *orig;
-  char *new;
-  char *important;
-};
-
-struct s_exchange_clobber *clob_arr = 0;
-int clob_arr_cnt = 0;
-
-static int
-has_clobber (char *s)
-{
-  int a;
-  if (clob_arr_cnt == 0)
-    return 0;
-  for (a = 0; a < clob_arr_cnt; a++)
-    {
-      if (strcmp (clob_arr[a].orig, s) == 0)
-	{
-	  return 1;
-	}
-    }
-  return 0;
-}
-
-
-static char *
-get_clobber (char *s)
-{
-  int a;
-  if (clob_arr_cnt == 0)
-    return s;
-  for (a = 0; a < clob_arr_cnt; a++)
-    {
-      if (strcmp (clob_arr[a].orig, s) == 0)
-	{
-	  return clob_arr[a].new;
-	}
-    }
-  return s;
-}
-
-char *
-A4GL_get_important_from_clobber (char *s)
-{
-  int a;
-  if (clob_arr_cnt == 0)
-    return s;
-  for (a = 0; a < clob_arr_cnt; a++)
-    {
-      if (strcmp (clob_arr[a].orig, s) == 0)
-	{
-	  return clob_arr[a].important;
-	}
-    }
-  return s;
-}
-
-
-
-char *
-A4GL_get_clobber_from_orig (char *s)
-{
-  int a;
-  if (clob_arr_cnt == 0)
-    return s;
-  for (a = 0; a < clob_arr_cnt; a++)
-    {
-      if (strcmp (clob_arr[a].new, s) == 0)
-	{
-	  return clob_arr[a].orig;
-	}
-    }
-  return s;
-}
-
-
-static char *
-add_clobber (char *buff_orig, char *important)
-{
-  static char buff_new[256];
-  static int p = 0;
-  char b1[256];
-
-  strcpy (buff_new, buff_orig);
-
-  if (has_clobber (buff_orig))
-    return get_clobber (buff_orig);
-
-  clob_arr_cnt++;
-  clob_arr =
-    acl_realloc (clob_arr, sizeof (struct s_exchange_clobber) * clob_arr_cnt);
-  if (clob_arr == 0)
-    {
-      a4gl_yyerror ("Unable to allocate buffer...");
-      return 0;
-    }
-
-
-
-  if (strlen (buff_orig) <= 20)
-    {				/* Extra 2 for the quotes... */
-      clob_arr[clob_arr_cnt - 1].orig = acl_strdup (buff_orig);
-      clob_arr[clob_arr_cnt - 1].new = acl_strdup (buff_new);
-      clob_arr[clob_arr_cnt - 1].important = acl_strdup (important);
-      return buff_orig;
-    }
-
-  strcpy (b1, important);
-  b1[9] = 0;
-  SPRINTF2 (buff_new, "a4gl_%03d_%s", p++, b1);
-  clob_arr[clob_arr_cnt - 1].orig = acl_strdup (buff_orig);
-  clob_arr[clob_arr_cnt - 1].new = acl_strdup (buff_new);
-  clob_arr[clob_arr_cnt - 1].important = acl_strdup (important);
-  return buff_new;
-}
-
-char *
-do_clobbering (char *f, char *s)
-{
-  static char buff[256];
-
-  if (A4GL_isyes (acl_getenv ("A4GL_NOCLOBBER")))
-    {
-      SPRINTF1 (buff, "%s", s);
-      if (!has_clobber (buff))
-	{
-	  add_clobber (buff, s);
-	}
-      return buff;
-    }
-
-  if (strlen(f)) {
-  SPRINTF2 (buff, "%s_%s", f, s);
-  } else {
-  SPRINTF1 (buff, "%s",  s);
-  }
-
-  if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSCLOBBER")))
-    {
-      if (!has_clobber (buff))
-	{
-	  add_clobber (buff, s);
-	}
-      return buff;
-    }
-
-  if (has_clobber (buff))
-    {
-      return get_clobber (buff);
-    }
-  return add_clobber (buff, s);
-}
-
-char *
-do_clobbering_sql (char *f, char *s)
-{
-  static char buff[256];
-
-  if (A4GL_isyes (acl_getenv ("A4GL_NOSQLCLOBBER")))
-    {
-      SPRINTF1 (buff, "%s", s);
-      if (!has_clobber (buff))
-	{
-	  add_clobber (buff, s);
-	}
-      return buff;
-    }
-
-  if (strlen(f)) {
-  SPRINTF2 (buff, "%s_%s", f, s);
-  } else {
-  SPRINTF1 (buff, "%s",  s);
-  }
-
-  if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSSQLCLOBBER")))
-    {
-      if (!has_clobber (buff))
-	{
-	  add_clobber (buff, s);
-	}
-      return buff;
-    }
-
-  if (has_clobber (buff))
-    {
-      return get_clobber (buff);
-    }
-  return add_clobber (buff, s);
-}
-
-
-
 char *
 fgl_add_scope (char *s, int n)
 {
@@ -4321,10 +4124,10 @@ A4GL_set_sql_features (void)
 }
 
 void
-emulate_insert (char *s)
+emulate_insert (module_definition *mod, char *s)
 {
 char buff[256];
-	strcpy(buff,do_clobbering_sql(clobber,downshift(s)));
+	strcpy(buff,do_clobbering_sql(mod, clobber,downshift(s)));
   	A4GL_cursor_defined (A4GL_new_expr_simple_string(buff, ET_EXPR_IDENTIFIER), 'I');
 }
 

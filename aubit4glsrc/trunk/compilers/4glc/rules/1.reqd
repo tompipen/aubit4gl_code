@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.89 2008-02-11 17:13:07 mikeaubury Exp $
+# $Id: 1.reqd,v 1.90 2008-03-29 11:42:10 mikeaubury Exp $
 #
 */
 
@@ -234,8 +234,8 @@ extern char *order_asc_desc;
 char *		make_sql_string_and_free(char *first,...);
 //char *		get_namespace (char *s);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
-char *do_clobbering(char *f,char *s);
-char *do_clobbering_sql (char *f, char *s);
+//char *do_clobbering(char *f,char *s);
+//char *do_clobbering_sql (char *f, char *s);
 void print_expr_list_concat (struct expr_str_list *l);
 
 

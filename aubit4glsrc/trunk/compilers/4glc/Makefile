@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.32 2008-02-25 10:13:23 mikeaubury Exp $
+# $Id: Makefile,v 1.33 2008-03-29 11:41:58 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -68,7 +68,7 @@ CMODS_EXE       =4glc.c
 #--- KEEP IN APLPABETIC ORDER ---
 CMODS_LIB       =\
 				API_lex.c API_parse_self.c  \
-				compile.c class.c \
+				compile.c class.c clobber.c \
 				dim.c \
 				field_handling.c \
 				globals.c \

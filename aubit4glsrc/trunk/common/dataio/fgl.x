@@ -32,6 +32,15 @@ struct s_full_col {
 
 
 
+struct s_exchange_clobber
+{
+  string orig<>;
+  string new<>;
+  string important<>;
+};
+
+
+
 union dt_display switch ( enum dt_display_type dttype) {
 		case DT_DISPLAY_TYPE_LINE: void;
 		case DT_DISPLAY_TYPE_AT: x_y x_y;
@@ -1619,6 +1628,7 @@ struct module_definition {
 	str module_name;
 	long compiled_time;
 	struct str_list *global_files;
+	struct s_exchange_clobber clobberings<>;
 	variable_list module_variables;
 	variable_list exported_global_variables;
 	variable_list imported_global_variables;
@@ -1972,6 +1982,7 @@ enum e_expr_type {
 		ET_EXPR_WHERE_CURRENT_OF, 
 		ET_EXPR_ASSOC,
 
+		ET_EXPR_CURSOR_NAME_FUNCTION,
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 };
 
@@ -2172,6 +2183,8 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_YEAR_FUNC:
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_UPSHIFT:
+                /*! struct expr_str                         *expr_expr; !*/
+	case ET_EXPR_CURSOR_NAME_FUNCTION:
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_DOWNSHIFT:
                 /*! struct expr_str                         *expr_expr; !*/

@@ -29,6 +29,7 @@ struct expr_str *A4GL_expr_in(struct expr_str *expr, int invert,struct expr_str_
 char *expr_name(enum e_expr_type e);
 
 struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
+struct expr_str *A4GL_new_expr_assoc(char *s, expr_str *subscript);
 
 struct expr_str *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
 struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line, char *p_namespace);

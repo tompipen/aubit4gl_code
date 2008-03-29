@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.121 2008-03-18 13:07:19 mikeaubury Exp $
+# $Id: compile.c,v 1.122 2008-03-29 11:42:07 mikeaubury Exp $
 #*/
 
 /**
@@ -1268,11 +1268,16 @@ compiled_4gl++;
   this_module.exported_global_variables.variables.variables_len = 0;
   this_module.exported_global_variables.variables.variables_val = 0;
 
+
   this_module.imported_global_variables.variables.variables_len = 0;
   this_module.imported_global_variables.variables.variables_val = 0;
 
   this_module.external_datatypes.external_datatypes_len = 0;
   this_module.external_datatypes.external_datatypes_val = 0;
+
+
+  this_module.clobberings.clobberings_val=0;
+  this_module.clobberings.clobberings_len=0;
 
 	yyparse_ret = doparse ();		/* we core A4GL_dump here on Darwin */
 	#ifdef DEBUG
