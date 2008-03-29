@@ -2014,11 +2014,9 @@ struct module_entry *new_import_function_definition(char * p_funcname,int p_npar
 struct module_entry *c;
 char buff[256];
    c=new_module_entry(E_MET_IMPORT_FUNCTION_DEFINITION);
-	if (strlen(get_namespace(p_funcname))){
-	sprintf(buff,"%s%s", get_namespace(p_funcname), p_funcname);
-	} else {
+	// These are C functions so wont be namespaced...
 		strcpy(buff, p_funcname);
-	}
+
    c->module_entry_u.import_function_definition.funcname=strdup(buff);
    c->module_entry_u.import_function_definition.nparam=p_nparam;
    c->module_entry_u.import_function_definition.module=A4GL_compiling_module_basename();
