@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.405 2008-03-29 11:42:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.406 2008-03-30 14:36:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.405 2008-03-29 11:42:36 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.406 2008-03-30 14:36:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6197,6 +6197,18 @@ static char buff[2000];
 	return generation_get_variable_usage_as_string(ptr->expr_str_u.expr_variable_usage);
     }
 
+  if (ptr->expr_type ==ET_EXPR_SELECT_LIST_ITEM) {
+		if (ptr->expr_str_u.sl_item->data.type==E_SLI_COLUMN) {
+			if (ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.tabname==0) {
+				sprintf(buff,"\"%s\"", ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.colname);
+				return  buff;
+			} else {
+				sprintf(buff,"\"%s.%s\"", ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.tabname,
+			  		ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.colname);
+				return buff;
+			}
+		}
+  }
 
   A4GL_assertion (1, "get_ident_as_string not implemented for this expression type yet");
   return 0;
