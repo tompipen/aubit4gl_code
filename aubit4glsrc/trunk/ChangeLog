@@ -1,4 +1,53 @@
 ---------------------------
+Sun Mar 30 16:18:14 BST 2008
+---------------------------
+1.10RC_7 Released
+---------------------------
+	
+	Small rename in order to avoid conflicts for get_ident_as_string
+	
+	Small fixup for detecting a 'postgres' executable rather (or in
+	addition to) than postmaster
+	
+	small fixup for hello_db.4ae test program (SESSION related)
+	
+	Fixup to allow CURSOR_NAME function
+	
+	Small IMPORT fixup
+	
+	allow datetime->varchar conversion
+	
+	Display a message when we cant connect to the client.
+	
+	Cleanup the default binary aubitrc file
+	
+	Make DATETIME YEAR TO SECOND a timestamp
+	
+	Add PADCHAR env variable (useful when debugging) Some minor
+	debugging stuff added for WORDWRAP
+	
+	Add strip_quotes for INITIALIZE LIKE
+	
+	Small fixup for temp tables in postgres - add  the
+	pg_table_is_visible to ensure that two user sessions with the same
+	temp table name do not conflict
+	
+	Check an aubitrc file has been read (any aubitrc file will do) Also
+	- check for DEFAULT_AUBITRCFILE_HAS_BEEN_EDITED which will be set
+	in an unedited aubitrc for a binary build
+	
+	Small fixup to detect a bad filename for a load
+	
+	Small fixup for UPDATE/INSERT/DELETE when updating using an
+	operator on variables Small fixup for variable attributes
+	
+	Small load fixup to remove trailing CR when used with a LF..
+	
+	Add A4GL_ACLFILE as a fallback for A4GL_SQLACL
+	
+	Small varchar fixups Fix for wordwrap
+	
+---------------------------
 Sat Mar 22 18:03:39 GMT 2008
 ---------------------------
 1.10RC_6 Released

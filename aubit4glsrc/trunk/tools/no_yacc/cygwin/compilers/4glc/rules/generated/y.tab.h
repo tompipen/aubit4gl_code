@@ -39,7 +39,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2154,
+     NAME = 2155,
      KW_COMMA = 1698,
      KW_WORDWRAP = 1479,
      KW_USING = 1630,
@@ -69,22 +69,22 @@
      KW_DIVIDE = 1644,
      KW_MOD = 1712,
      KW_POWER = 1617,
-     UMINUS = 2155,
+     UMINUS = 2156,
      COMMAND = 1490,
-     NUMBER_VALUE = 2156,
-     CHAR_VALUE = 2157,
-     CHAR_VALUE_TRANSLATED = 2158,
-     INT_VALUE = 2159,
-     NAMED_GEN = 2160,
-     CLINE = 2161,
-     SQLLINE = 2162,
-     KW_CSTART = 2163,
-     KW_CEND = 2164,
-     USER_DTYPE_ORIG = 2165,
-     USER_DTYPE_NEW = 2166,
-     SQL_TEXT = 2167,
-     KW_WHENEVER_SET = 2168,
-     COMMENT = 2169,
+     NUMBER_VALUE = 2157,
+     CHAR_VALUE = 2158,
+     CHAR_VALUE_TRANSLATED = 2159,
+     INT_VALUE = 2160,
+     NAMED_GEN = 2161,
+     CLINE = 2162,
+     SQLLINE = 2163,
+     KW_CSTART = 2164,
+     KW_CEND = 2165,
+     USER_DTYPE_ORIG = 2166,
+     USER_DTYPE_NEW = 2167,
+     SQL_TEXT = 2168,
+     KW_WHENEVER_SET = 2169,
+     COMMENT = 2170,
      ON_CLOSE_APPLICATION_STOP = 1000,
      DIALOGSETCURRLINE = 1001,
      DIALOGKEYSETLABEL = 1002,
@@ -1207,11 +1207,12 @@
      FORCE_UI = 2149,
      FGL_MODULE = 2150,
      VIA = 2151,
-     SLICE = 2152
+     SLICE = 2152,
+     CURSOR_NAME_FUNCTION = 2153
    };
 #endif
 /* Tokens.  */
-#define NAME 2154
+#define NAME 2155
 #define KW_COMMA 1698
 #define KW_WORDWRAP 1479
 #define KW_USING 1630
@@ -1241,22 +1242,22 @@
 #define KW_DIVIDE 1644
 #define KW_MOD 1712
 #define KW_POWER 1617
-#define UMINUS 2155
+#define UMINUS 2156
 #define COMMAND 1490
-#define NUMBER_VALUE 2156
-#define CHAR_VALUE 2157
-#define CHAR_VALUE_TRANSLATED 2158
-#define INT_VALUE 2159
-#define NAMED_GEN 2160
-#define CLINE 2161
-#define SQLLINE 2162
-#define KW_CSTART 2163
-#define KW_CEND 2164
-#define USER_DTYPE_ORIG 2165
-#define USER_DTYPE_NEW 2166
-#define SQL_TEXT 2167
-#define KW_WHENEVER_SET 2168
-#define COMMENT 2169
+#define NUMBER_VALUE 2157
+#define CHAR_VALUE 2158
+#define CHAR_VALUE_TRANSLATED 2159
+#define INT_VALUE 2160
+#define NAMED_GEN 2161
+#define CLINE 2162
+#define SQLLINE 2163
+#define KW_CSTART 2164
+#define KW_CEND 2165
+#define USER_DTYPE_ORIG 2166
+#define USER_DTYPE_NEW 2167
+#define SQL_TEXT 2168
+#define KW_WHENEVER_SET 2169
+#define COMMENT 2170
 #define ON_CLOSE_APPLICATION_STOP 1000
 #define DIALOGSETCURRLINE 1001
 #define DIALOGKEYSETLABEL 1002
@@ -2380,6 +2381,7 @@
 #define FGL_MODULE 2150
 #define VIA 2151
 #define SLICE 2152
+#define CURSOR_NAME_FUNCTION 2153
 
 
 
@@ -2474,7 +2476,7 @@ typedef union YYSTYPE
 	struct s_update_pair *upd_pair;
 	}
 /* Line 1489 of yacc.c.  */
-#line 2478 "y.tab.h"
+#line 2480 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

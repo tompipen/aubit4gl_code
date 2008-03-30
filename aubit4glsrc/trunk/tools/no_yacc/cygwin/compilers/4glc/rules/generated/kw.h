@@ -1157,3 +1157,4 @@ struct s_kw {
 #define FGL_MODULE 2150
 #define VIA 2151
 #define SLICE 2152
+#define CURSOR_NAME_FUNCTION 2153
