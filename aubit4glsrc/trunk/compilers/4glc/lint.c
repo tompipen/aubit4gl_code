@@ -1342,7 +1342,7 @@ local_is_valid_vname (struct variable *v, char scope)
   return 1;
 }
 
-char * get_ident_as_string (struct expr_str *ptr)
+char * lint_get_ident_as_string (struct expr_str *ptr)
 {
 
 static char buff[2000];
@@ -1363,7 +1363,7 @@ static char buff[2000];
     }
 
 
-  A4GL_assertion (1, "get_ident_as_string not implemented for this expression type yet");
+  A4GL_assertion (1, "lint_get_ident_as_string not implemented for this expression type yet");
   return 0;
 }
 
@@ -1536,9 +1536,9 @@ int b;
 			// Prepares can be used for DECLARE or for EXECUTE
 			if ( all_cmds->cmds.cmds_val[b]->cmd_data.type==E_CMD_EXECUTE_CMD) {
 				if (A4GL_aubit_strcasecmp(
-				get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid )
+				lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid )
 					, 
-				get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.execute_cmd.sql_stmtid)
+				lint_get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.execute_cmd.sql_stmtid)
 					)==0) {
 					used++;
 				}
@@ -1547,9 +1547,9 @@ int b;
 			if ( all_cmds->cmds.cmds_val[b]->cmd_data.type==E_CMD_DECLARE_CMD) {
 				if(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.declare_cmd.declare_dets->ident==NULL) continue;
 				if (A4GL_aubit_strcasecmp(
-					get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid)
+					lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid)
 					, 
-					get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.declare_cmd.declare_dets->ident)
+					lint_get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.declare_cmd.declare_dets->ident)
 						)==0) {
 					used++;
 				}
@@ -1561,7 +1561,7 @@ int b;
 			//char buff[256];
 			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
 			A4GL_lint (0, all_cmds->cmds.cmds_val[a]->lineno, "PREPARENOTUSED", "Prepared statement is not used",  
-				A4GL_strip_quotes(get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid)));
+				A4GL_strip_quotes(lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid)));
 			
 			//sprintf(buff,"Prepared statement (%s) is not used", A4GL_strip_quotes(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid));
 			//A4GL_lint(buff);
@@ -1579,8 +1579,8 @@ int b;
 			// Prepares can be used for DECLARE or for EXECUTE
 			if ( all_cmds->cmds.cmds_val[b]->cmd_data.type==E_CMD_OPEN_CURSOR_CMD) {
 				if (A4GL_aubit_strcasecmp(
-	get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname), 
-		get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_cursor_cmd.cursorname)
+	lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname), 
+		lint_get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_cursor_cmd.cursorname)
 		)==0) {
 					used++;
 				}
@@ -1589,9 +1589,9 @@ int b;
 
 			if ( all_cmds->cmds.cmds_val[b]->cmd_data.type==E_CMD_FOREACH_CMD) {
 				if (A4GL_aubit_strcasecmp(
-get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname)
+lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname)
 , 
-get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.foreach_cmd.cursorname)
+lint_get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.foreach_cmd.cursorname)
 )==0) {
 					used++;
 				}
@@ -1602,7 +1602,7 @@ get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.foreach_
 			//char buff[256];
 			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
 			A4GL_lint (0, all_cmds->cmds.cmds_val[a]->lineno, "DECLARENOTUSED", "Cursor is DECLAREd but not OPENed",   A4GL_strip_quotes(
-get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname)
+lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname)
 ));
 			//sprintf(buff,"Cursor (%s) is DECLAREd but not OPENed", A4GL_strip_quotes(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname));
 			//A4GL_lint(buff);
@@ -2659,9 +2659,9 @@ if (fname)  {
 			// Prepares can be used for DECLARE or for EXECUTE
 			if ( all_cmds->cmds.cmds_val[b]->cmd_data.type==E_CMD_DISPLAY_FORM_CMD) {
 				if (A4GL_aubit_strcasecmp(
-					get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname)
+					lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname)
 					, 
-					get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.display_form_cmd.formname)
+					lint_get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.display_form_cmd.formname)
 					)==0) {
 					used++;
 				}
@@ -2670,7 +2670,7 @@ if (fname)  {
 
 		if (!used) {
 			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
-			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "FORMNOTDISP", "FORM is OPENed but not DISPLAYed",get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname));
+			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "FORMNOTDISP", "FORM is OPENed but not DISPLAYed",lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname));
 			//sprintf(buff,"FORM (%s) is OPENed but not DISPLAYed", A4GL_strip_quotes(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname));
 		}
 	}
@@ -2682,17 +2682,17 @@ if (fname)  {
 	char *cwindow="undefined";
 	char *action="undefined";
 	if (all_cmds->cmds.cmds_val[a]->cmd_data.type==E_CMD_CURRENT_WIN_CMD) {
-				if (A4GL_aubit_strcasecmp(get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname),"screen")!=0) {
+				if (A4GL_aubit_strcasecmp(lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname),"screen")!=0) {
 					// CURRENT WINDOW IS SCREEN should always be ok :-)
 					found_something++;
-					cwindow=get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname);
+					cwindow=lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname);
 					action="has been made CURRENT";
 				}
 	}
 	if (all_cmds->cmds.cmds_val[a]->cmd_data.type==E_CMD_CLOSE_CMD) {
 			if (all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.cl_type==E_CT_WINDOW) {
 				found_something++;
-				cwindow=get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident);
+				cwindow=lint_get_ident_as_string(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident);
 				action="has been CLOSEd";
 			}
 	}
@@ -2702,7 +2702,7 @@ if (fname)  {
 		int used=0;
 		for (b=0;b<all_cmds->cmds.cmds_len;b++) {
 			if ( all_cmds->cmds.cmds_val[b]->cmd_data.type==E_CMD_OPEN_WINDOW_CMD) {
-				if (A4GL_aubit_strcasecmp(cwindow, get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_window_cmd.windowname))==0) {
+				if (A4GL_aubit_strcasecmp(cwindow, lint_get_ident_as_string(all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_window_cmd.windowname))==0) {
 					used++;
 				}
 			}
