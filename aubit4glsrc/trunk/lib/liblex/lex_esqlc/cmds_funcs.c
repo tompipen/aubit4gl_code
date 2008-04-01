@@ -70,7 +70,7 @@ int
 print_pause_screen_on_cmd (void)
 {
   print_cmd_start ();
-  printc ("A4GL_screen_mode(1);");
+  printc ("A4GL_screen_mode(0);");
   print_copy_status_not_sql (0);
   return 1;
 }
