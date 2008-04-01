@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.27 2007-11-07 10:19:19 mikeaubury Exp $
+# $Id: string.c,v 1.28 2008-04-01 14:54:13 mikeaubury Exp $
 #
 */
 
@@ -233,4 +233,70 @@ A4GL_strnullcmp (char *s1, char *s2)
 
 
 
-/* =================================== EOF ============================ */
+
+
+
+static void insert_character(char *string, int pos, char c) {
+char *buff;
+char smbuff[2];
+buff=malloc(strlen(string)+2);
+
+if (pos>0) {
+	strncpy(buff,string,pos);
+	buff[pos]=0;
+} else {
+	strcpy(buff,"");
+}
+smbuff[0]=c;
+smbuff[1]=0;
+strcat(buff,smbuff);
+strcat(buff,&string[pos]);
+strcpy(string,buff);
+free(buff);
+}
+
+
+int A4GL_wordwrap_text(char *in, char *out,int width, int maxsize) {
+char buff[10000];
+int lines=0;
+int cnt;
+
+cnt=width;
+strcpy(buff,in);
+A4GL_trim(buff);
+while (cnt<strlen(buff)) {
+	int a;
+	int have_blanked=0;
+	if (buff[cnt-1]==' '|| buff[cnt]==' ')  {
+		cnt+=width;
+	}
+	// Need to pad out...
+	for (a=1;a<width;a++) {
+		if (isblank(buff[cnt-a-1])) {
+			int b;
+			for (b=0;b<a;b++) {
+				insert_character(buff,cnt-a-1,'!');
+				
+			}
+			have_blanked++;
+			break;
+		} 
+	}
+	if (!have_blanked) {
+		break;
+	}
+	cnt+=width;
+}
+A4GL_trim(buff);
+if (strlen(buff)>maxsize) {
+		A4GL_debug("Too large to fit... %s (%d) %d",buff,strlen(buff),maxsize);
+		strcpy(out,in);
+		return 0; // We're too long to fit...
+}
+
+A4GL_debug("fits %s",buff);
+strcpy(out,buff);
+return 1;
+}
+
+/* ============================= EOF ================================ */

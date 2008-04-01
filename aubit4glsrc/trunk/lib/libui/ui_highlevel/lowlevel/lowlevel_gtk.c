@@ -21,7 +21,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.128 2007-10-04 19:24:51 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.129 2008-04-01 14:54:14 mikeaubury Exp $";
 #endif
 
 
@@ -1480,7 +1480,7 @@ A4GL_which_key_aubit (int gdk_key)
 void
 A4GL_LL_gui_run_til_no_more (void)
 {
-  //A4GL_debug("A4GL_LL_gui_run_til_no_more");
+  A4GL_debug("A4GL_LL_gui_run_til_no_more pause mode = %d", A4GL_LL_pause_mode (-1));
   if (A4GL_LL_pause_mode (-1))
     {
       while (gtk_events_pending ())
@@ -4400,12 +4400,16 @@ A4GL_LL_pause_mode (int a)
 
   if (a == smode)
     return smode;
+
   if (a == 0)
     {
       smode = 0;
+	A4GL_debug("Turning on pause mode");
       return smode;
     }
   smode = 1;
+
+	A4GL_debug("Turning off pause mode");
   A4GL_LL_screen_refresh();
   //A4GL_zrefresh ();
   return smode;

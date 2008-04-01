@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.73 2008-01-23 18:17:28 mikeaubury Exp $
+# $Id: ui.c,v 1.74 2008-04-01 14:54:13 mikeaubury Exp $
 #
 */
 
@@ -1690,5 +1690,7 @@ KeyCallbacks[nKeyCallbacks-1].keycode=keyCode;
 int A4GL_is_event_close(void *event) {
 	return 0;
 }
+
+
 
 /* ============================= EOF ================================ */

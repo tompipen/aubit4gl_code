@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.192 2008-03-28 16:08:13 mikeaubury Exp $
+# $Id: ioform.c,v 1.193 2008-04-01 14:54:14 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.192 2008-03-28 16:08:13 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.193 2008-04-01 14:54:14 mikeaubury Exp $";
 #endif
 
 /**
@@ -2652,7 +2652,16 @@ int has_wordwrap;
 	 if (!(field_opts(field)&O_WRAP)) {
 		A4GL_debug( "FIELD WRAPPING OFF");
 	} else {
-		A4GL_debug( "FIELD WRAPPING ON");
+		char *tmp;
+  		tmp = acl_malloc2  (field_width+1);
+		
+		A4GL_debug( "FIELD WRAPPING ON width=%d", A4GL_get_field_width_w (field, 0));
+		if (A4GL_wordwrap_text(ff,tmp,A4GL_get_field_width_w (field, 0),field_width)) {
+			free(ff);
+			ff=tmp;
+		} else {
+			free(tmp);
+		}
 	}
   } 
 
