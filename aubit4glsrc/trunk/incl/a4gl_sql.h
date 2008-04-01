@@ -47,6 +47,7 @@ extern "C"
     int nrows;				/** number of rows in the dataset */
     char *DeclareSql;
     void *extra_info;			/**< A space for sql driver specific info */
+    int isScroll;
   };
 
         /** A better name to the cursor descriptor */

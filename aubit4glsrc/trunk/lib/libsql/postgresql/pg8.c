@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.27 2008-03-28 10:11:01 mikeaubury Exp $
+# $Id: pg8.c,v 1.28 2008-04-01 16:03:12 mikeaubury Exp $
 #*/
 
 
@@ -2427,6 +2427,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   cid->statement = (void *) sid;
   cid->hstmt = 0;
   cid->mode = upd_hold + (scroll * 256);
+  cid->isScroll=scroll;
   cid->o_ibind = 0;
   cid->o_obind = 0;
   cid->o_ni = 0;
@@ -2749,6 +2750,48 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
       A4GL_debug ("No rows found..");
       A4GL_set_a4gl_sqlca_errd (2, 0);
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
+      if (cid->isScroll) { // SCROLL cursor
+	if (fetch_mode==FETCH_RELATIVE) {
+		// Postgresql will go past the first and last entries so the next
+		// fetch previous/fetch next will reread the last one at that point..
+		// eg :
+		//     create temp table sometab ( a integer);
+		//     insert into sometab values(1);
+		//     insert into sometab values(2);
+		//     insert into sometab values(3);
+		//     begin work;
+		//
+		//     declare c1 scroll cursor for select * from sometab;
+		//     fetch next from c1;
+		//     fetch next from c1;
+		//     fetch next from c1;
+		//     fetch next from c1;
+		//     fetch prior from c1;
+		//     fetch prior from c1;
+		//     fetch prior from c1;
+		//     fetch next from c1;
+		//
+		//     would return 1,2,3, (notfound), 3,2,1,(notfound),1,
+		//     Informix would return 1,2,3,(notfound),2,1,(notfound),2
+		// 
+		// So - in order to emulate that - if we've got a 100 (notfound) on a scroll cursor
+		// then refetch the first or last to reposition the cursor...
+		
+		if (fetch_when==1) { // We were doing a FETCH NEXT - so we must be at the end of the list
+  			PGresult *res;
+	  		SPRINTF1 (buff, "FETCH LAST FROM %s", cursor_name);
+  			res = PQexec (current_con, buff);
+			// We dont care if these work - we're just trying to emulate informix...
+      			if (res) {PQclear (res);}
+		} else {
+  			PGresult *res;
+	  		SPRINTF1 (buff, "FETCH FIRST FROM %s", cursor_name);
+			// We dont care if these work - we're just trying to emulate informix...
+  			res = PQexec (current_con, buff);
+      			if (res) {PQclear (res);}
+		}
+	}
+      }
       return 0;
     }
   else
