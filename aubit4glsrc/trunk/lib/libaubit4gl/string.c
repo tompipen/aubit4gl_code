@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.28 2008-04-01 14:54:13 mikeaubury Exp $
+# $Id: string.c,v 1.29 2008-04-02 09:53:36 mikeaubury Exp $
 #
 */
 
@@ -275,7 +275,7 @@ while (cnt<strlen(buff)) {
 		if (isblank(buff[cnt-a-1])) {
 			int b;
 			for (b=0;b<a;b++) {
-				insert_character(buff,cnt-a-1,'!');
+				insert_character(buff,cnt-a-1,' ');
 				
 			}
 			have_blanked++;
