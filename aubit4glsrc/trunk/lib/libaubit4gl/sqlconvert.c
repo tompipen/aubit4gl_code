@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.140 2008-03-20 09:42:19 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.141 2008-04-02 07:02:54 mikeaubury Exp $
 #
 */
 
@@ -2190,7 +2190,7 @@ A4GL_cv_delchstr (char *str, int n)
 
 
 static void remove_ws_and_upshift(char *s) {
-char p[10000];
+char p[64000];
 int a;
 int c=0;
 strcpy(p,s);
@@ -2221,8 +2221,8 @@ A4GL_strwscmp (char *a, char *b)
 {
   int a_i;
   int b_i;
-  char o1[10000];
-  char o2[10000];
+  char o1[64000];
+  char o2[64000];
   int lastWasWs;
   char fieldData[256]="";
   b_i = 0;
