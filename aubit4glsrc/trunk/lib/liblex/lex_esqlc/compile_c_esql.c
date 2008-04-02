@@ -1699,6 +1699,7 @@ int block_started=0;
 char *cname3;
 int intprflg;
 
+int force_with_hold=0;
 
 empty.list.list_val=0;
 empty.list.list_len=0;
@@ -1847,7 +1848,29 @@ var_prepname=0;
       strcat (buff, " SCROLL");
     }
   strcat (buff, " CURSOR");
-  if (cmd_data->with_hold==EB_TRUE || esql_type () == E_DIALECT_POSTGRES)	/* All postgres cursors should be with hold */
+
+
+  if (esql_type () == E_DIALECT_POSTGRES && ! A4GLSQLCV_check_requirement ("FORCE_HOLD_ALWAYS")  && ! A4GLSQLCV_check_requirement ("FORCE_HOLD_EXCEPT_UPDATE")) {
+		force_with_hold=1;
+  }
+
+  if (A4GLSQLCV_check_requirement ("FORCE_HOLD_ALWAYS")) {
+		force_with_hold=1;
+  }
+
+  if (A4GLSQLCV_check_requirement ("FORCE_HOLD_NEVER")) {
+		force_with_hold=0;
+  }
+
+  if (A4GLSQLCV_check_requirement ("FORCE_HOLD_EXCEPT_UPDATE")) {
+		if (strstr(stmt," FOR UPDATE ") || strstr(stmt," for update ") ) {
+		force_with_hold=0;
+		} else {
+		force_with_hold=1;
+		}
+  }
+
+  if (cmd_data->with_hold==EB_TRUE || force_with_hold)	/* All postgres cursors should be with hold */
     {
       strcat (buff, " WITH HOLD");
     }

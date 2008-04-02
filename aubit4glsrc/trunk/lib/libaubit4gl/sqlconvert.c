@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.141 2008-04-02 07:02:54 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.142 2008-04-02 21:07:46 mikeaubury Exp $
 #
 */
 
@@ -180,7 +180,10 @@ static char *cvsql_names[] = {
   "CVSQL_NO_UPDATE_TABLE",
   "CVSQL_NEVER_CONVERT",
   "CVSQL_NEVER_CONVERT_COLUMN",
-  "CVSQL_ADD_WITH_OIDS"
+  "CVSQL_ADD_WITH_OIDS",
+	"CVSQL_FORCE_HOLD_ALWAYS",
+	"CVSQL_FORCE_HOLD_NEVER",
+	"CVSQL_FORCE_HOLD_EXCEPT_UPDATE",
 };
 
 /*
@@ -303,7 +306,10 @@ enum cvsql_type
   CVSQL_NO_UPDATE_TABLE,
   CVSQL_NEVER_CONVERT,
   CVSQL_NEVER_CONVERT_COLUMN,
-  CVSQL_ADD_WITH_OIDS
+  CVSQL_ADD_WITH_OIDS,
+	CVSQL_FORCE_HOLD_ALWAYS,
+	CVSQL_FORCE_HOLD_NEVER,
+	CVSQL_FORCE_HOLD_EXCEPT_UPDATE
 };
 
 
@@ -1812,6 +1818,16 @@ A4GL_cv_str_to_func (char *p, int len)
 
   if (match_strncasecmp (p, "ADD_WITH_OIDS", len) == 0)
     return CVSQL_ADD_WITH_OIDS;
+
+
+  if (match_strncasecmp (p, "FORCE_HOLD_ALWAYS", len) == 0)
+    return CVSQL_FORCE_HOLD_ALWAYS;
+
+  if (match_strncasecmp (p, "FORCE_HOLD_NEVER", len) == 0)
+    return CVSQL_FORCE_HOLD_NEVER;
+
+  if (match_strncasecmp (p, "FORCE_HOLD_EXCEPT_UPDATE", len) == 0)
+    return CVSQL_FORCE_HOLD_EXCEPT_UPDATE;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 
