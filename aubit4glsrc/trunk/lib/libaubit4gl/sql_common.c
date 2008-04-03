@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.50 2008-03-26 18:29:54 mikeaubury Exp $
+# $Id: sql_common.c,v 1.51 2008-04-03 08:38:26 mikeaubury Exp $
 #
 */
 
@@ -1343,6 +1343,12 @@ A4GL_sqlid_encrypt (void)
   FILE *fout;
   ptr = acl_getenv_not_set_as_0 ("A4GL_SQLACL");
 
+  if (ptr==0) {
+		ptr = acl_getenv_not_set_as_0 ("A4GL_ACLFILE");
+		if (ptr) {
+			if (!A4GL_file_exists(ptr)) ptr=0;
+		}
+  }
 
 
 
