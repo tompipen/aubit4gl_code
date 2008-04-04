@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.71 2008-02-16 14:49:29 mikeaubury Exp $
+# $Id: prompt.c,v 1.72 2008-04-04 16:27:08 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.71 2008-02-16 14:49:29 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.72 2008-04-04 16:27:08 mikeaubury Exp $";
 #endif
 
 /**
@@ -145,7 +145,7 @@ int
 	sarr[field_cnt++] = (FIELD *) A4GL_make_label (0, 0, promptstr);
   	prompt->label = sarr[field_cnt-1];
   }
-  if (width<=0) {
+  if (width<0) {
 	  A4GL_exitwith("Prompt message is too long to fit in the window.");
 	  return 0;
   }
