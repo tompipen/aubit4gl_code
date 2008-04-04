@@ -871,6 +871,7 @@ IF lv_from="4GL"  THEN
 
 				if mv_keep=0 then
 					call remove_file_of_type(lv_base,"EC")
+					call remove_file_of_type(lv_base,"C")
 				end if
 			ELSE
 				call make_into(lv_fname,"4GL","C")
