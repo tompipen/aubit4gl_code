@@ -25,7 +25,7 @@ start_cmd :
 			struct expr_str *p;
 		set_cmdlineno($<integer_val>3);
 			$<startrep>$=$<startrep>5;
-			$<startrep>$->towhat='@';
+			$<startrep>$->towhat='M';
 			p=A4GL_new_expr_simple_string($<str>2,ET_EXPR_REPORT_EMAIL);
 			$<startrep>$->s1=chk_expr(p);
 			add_feature("USE_REPORT");

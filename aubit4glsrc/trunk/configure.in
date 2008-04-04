@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.376 2008-03-30 14:41:55 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.377 2008-04-04 17:19:46 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.376 2008-03-30 14:41:55 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.377 2008-04-04 17:19:46 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -1834,6 +1834,7 @@ USE_PDF=no
 PDFBUILD=no
 HAVE_POPLIB=no
 HAVE_SMTPLIB=no
+HAVE_SMTPLIB_PART_END=0
 PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
@@ -4819,6 +4820,7 @@ AC_ARG_WITH(smtp,
 		fi
 		#AC_CHECK_LIB([glib],[g_string_new])
 		AC_CHECK_LIB([smtp], [libsmtp_session_initialize])
+		AC_CHECK_LIB([smtp], [libsmtp_part_end])
 		AC_CHECK_HEADERS([ libsmtp.h ])
 		AC_MSG_CHECKING(if we can use SMTP)
 		
@@ -4833,6 +4835,9 @@ AC_ARG_WITH(smtp,
 		else
 			if test "$ac_cv_lib_smtp_libsmtp_session_initialize" = "yes"; then
 				HAVE_SMTPLIB=1
+				if test "$ac_cv_lib_smtp_libsmtp_part_end" = "yes"; then
+					AC_DEFINE(HAVE_SMTPLIB_PART_END)
+				fi
 				AC_MSG_RESULT(yes)
 			else
 				AC_MSG_RESULT(no)
@@ -11073,7 +11078,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.376 2008-03-30 14:41:55 mikeaubury Exp $
+| $Id: configure.in,v 1.377 2008-04-04 17:19:46 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

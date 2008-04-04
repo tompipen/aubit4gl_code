@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2006-10-10 05:45:46 afalout Exp $
+# $Id: Makefile,v 1.5 2008-04-04 17:19:47 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -44,7 +44,7 @@ GLIB_LFLAGS	=${shell pkg-config --libs glib-2.0}
 4GLC_FLAGS	=--verbose
 4GLC_CFLAGS	+= -I. ${SMTP_INC_FLAGS} ${GLIB_CFLAGS}
 
-CFLAGS		+= -I. ${SMTP_INC_FLAGS} ${GLIB_CFLAGS}
+CFLAGS		+= -I. ${SMTP_INC_FLAGS} ${GLIB_CFLAGS} 
 LINKLIBS	=-l${AUBITLIBFULL} -lsmtp -lsmtp_mime ${GLIB_LFLAGS}
 LFLAGS		=-L$(smtpdir)/lib -L${ROOT}/lib
 

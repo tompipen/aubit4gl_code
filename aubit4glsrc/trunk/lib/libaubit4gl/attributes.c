@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.43 2008-02-12 12:46:59 mikeaubury Exp $
+# $Id: attributes.c,v 1.44 2008-04-04 17:19:47 mikeaubury Exp $
 #*/
 
 /**
@@ -265,12 +265,12 @@ A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
 {
   int col_int=0;
 
-  A4GL_debug ("30 Attr=%x\n", attr);
+  A4GL_debug ("Attr=%x\n", attr);
   strcpy (col_str, "WHITE");
   strcpy (attr_str, "");
 
   col_int = (attr & 0xf00);
-  A4GL_debug ("30 col_int=%x\n", col_int);
+  A4GL_debug ("col_int=%x\n", col_int);
   /* Work out the colours first */
   switch (col_int)
     {

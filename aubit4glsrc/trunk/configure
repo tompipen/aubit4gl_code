@@ -22764,6 +22764,7 @@ USE_PDF=no
 PDFBUILD=no
 HAVE_POPLIB=no
 HAVE_SMTPLIB=no
+HAVE_SMTPLIB_PART_END=0
 PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
@@ -30886,6 +30887,77 @@ _ACEOF
 fi
 
 
+{ echo "$as_me:$LINENO: checking for libsmtp_part_end in -lsmtp" >&5
+echo $ECHO_N "checking for libsmtp_part_end in -lsmtp... $ECHO_C" >&6; }
+if test "${ac_cv_lib_smtp_libsmtp_part_end+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsmtp  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char libsmtp_part_end ();
+int
+main ()
+{
+return libsmtp_part_end ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_smtp_libsmtp_part_end=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_smtp_libsmtp_part_end=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_smtp_libsmtp_part_end" >&5
+echo "${ECHO_T}$ac_cv_lib_smtp_libsmtp_part_end" >&6; }
+if test $ac_cv_lib_smtp_libsmtp_part_end = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBSMTP 1
+_ACEOF
+
+  LIBS="-lsmtp $LIBS"
+
+fi
+
+
 for ac_header in  libsmtp.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -31046,6 +31118,12 @@ echo "${ECHO_T}no" >&6; }
 		else
 			if test "$ac_cv_lib_smtp_libsmtp_session_initialize" = "yes"; then
 				HAVE_SMTPLIB=1
+				if test "$ac_cv_lib_smtp_libsmtp_part_end" = "yes"; then
+					cat >>confdefs.h <<\_ACEOF
+#define HAVE_SMTPLIB_PART_END 1
+_ACEOF
+
+				fi
 				{ echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }
 			else
@@ -50127,11 +50205,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:50130: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:50208: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:50134: \$? = $ac_status" >&5
+   echo "$as_me:50212: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -50231,11 +50309,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:50234: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:50312: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:50238: \$? = $ac_status" >&5
+   echo "$as_me:50316: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -54148,7 +54226,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 54151 "configure"' > conftest.$ac_ext
+  echo '#line 54229 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -55196,7 +55274,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 55199 "configure"
+#line 55277 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -55296,7 +55374,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 55299 "configure"
+#line 55377 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -61857,7 +61935,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.402 2008-03-30 14:40:41 mikeaubury Exp $
+| $Id: configure,v 1.403 2008-04-04 17:19:38 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

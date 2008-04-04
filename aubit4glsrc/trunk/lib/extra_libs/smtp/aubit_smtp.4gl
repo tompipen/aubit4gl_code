@@ -7,6 +7,21 @@ code
 #include <stdio.h>
 #include "libsmtp.h"
 #include "libsmtp_mime.h"
+#if HAVE_SMTPLIB_PART_END == 0
+#include <glib.h>
+#define g_string_sprintf        g_string_printf
+
+int libsmtp_part_end (struct libsmtp_session_struct *libsmtp_session)
+{
+   	GString * boundary;
+	boundary = g_string_sized_new(1000);
+	g_string_assign(boundary, "\r\n\r\n\r\n------_=_libsmtp_Nextpart__000_000007DA.3B95D19_1--\r\n");
+
+
+   	return libsmtp_int_send(boundary, libsmtp_session, 1);
+ }
+#endif
+
 endcode
 
 define mv_counter integer
@@ -500,13 +515,3 @@ call fgl_smtp::disconnect(lv_message)
 end function
 
 
-
-code
-#ifdef libsmtp_part_end
-int libsmtp_part_end (struct libsmtp_session_struct *libsmtp_session)
-{
-   GString * boundary = g_string_new("\r\n\r\n\r\n------_=_libsmtp_Nextpart__000_000007DA.3B95D19_1--\r\n");
-   return libsmtp_int_send(boundary, libsmtp_session, 1);
- }
-#endif
-endcode

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.157 2008-02-16 14:49:29 mikeaubury Exp $
+# $Id: report.c,v 1.158 2008-04-04 17:19:47 mikeaubury Exp $
 #
 */
 
@@ -663,6 +663,9 @@ void A4GL_close_report_file(struct rep_structure *rep) {
 			fflush(rep->output); 
 			if (rep->output!=stdout) {
 				fclose(rep->output);
+				if (rep->output_mode=='M') {
+					email_report(rep->output_loc_str,0);
+				}
 			}
 			rep->output=0;
 		}
