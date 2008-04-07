@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.28 2008-04-01 16:03:12 mikeaubury Exp $
+# $Id: pg8.c,v 1.29 2008-04-07 18:25:49 mikeaubury Exp $
 #*/
 
 
@@ -804,202 +804,43 @@ A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
 char *
 A4GLSQLLIB_A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
 {
-  return 0;
+static char buff[2000];
+char *cptr;
+PGresult *res2;
+int nrows=-1;
+
+cptr=acl_getenv("A4GL_SYSCOL_VAL");
+
+if (cptr==0) return 0;
+if (strlen(cptr)==0) return 0;
+if (strcmp(cptr,"NONE")==0) return 0;
+
+   SPRINTF4(buff,"select attrval from %s where attrname='%s' and tabname='%s' and colname='%s'", cptr ,typ,tabname,colname);
+
+   res2 = PQexec (current_con, buff);
+
+  switch (PQresultStatus (res2))
+    {
+    case PGRES_COMMAND_OK:
+    case PGRES_TUPLES_OK:
+      nrows = PQntuples (res2);
+      break;
+	default: break;
+    }
+
+if (nrows<=1) return 0;
+
+strcpy(buff,"");
+
+if (!PQgetisnull(res2,0,0)) {
+	strcpy(buff, PQgetvalue (res2, 0, 0));
+	A4GL_trim(buff);
+}
+
+return buff;
 }
 
 
-#ifdef NDEF
-int
-printField (FILE * outputFile, int idx, char *descName)
-{
-  EXEC SQL BEGIN DECLARE SECTION;
-  int dataType;
-  int index;
-  short indicator;
-  char buffer[32000] = "";
-  int length;
-  int COUNT;
-  int INTVAR, BOOLVAR;
-  int INDICATOR;
-  int TYPE, LENGTH, OCTET_LENGTH, PRECISION, SCALE, NULLABLE,
-    RETURNED_OCTET_LENGTH;
-  int DATETIME_INTERVAL_CODE;
-  char NAME[120];
-  char STRINGVAR[1024];
-  float FLOATVAR;
-  double DOUBLEVAR;
-  EXEC SQL END DECLARE SECTION;
-  char buff[255];
-  char fmt[255];
-  int rc = 0;
-  index = idx;
-
-  A4GL_debug ("Getting details for index %d", index);
-exec sql get descriptor descExec value:index:TYPE = type,: LENGTH = length,: OCTET_LENGTH = octet_length,: RETURNED_OCTET_LENGTH = returned_octet_length,: PRECISION = precision,: SCALE = scale,: NULLABLE = nullable,: NAME = name,:INDICATOR =
-    indicator;
-  cp_sqlca ();
-
-  A4GL_debug ("%2d\t%s (type: %d length: %d precision: %d scale: %d\n"
-	      "\toctet_length: %d returned_octet_length: %d nullable: %d)\n\t= ",
-	      index, NAME, TYPE, LENGTH, PRECISION, SCALE, OCTET_LENGTH,
-	      RETURNED_OCTET_LENGTH, NULLABLE);
-  if (INDICATOR == -1)
-    SPRINTF (buffer, "");
-  else
-    switch (TYPE)
-      {
-      case SQL3_BOOLEAN:
-      exec sql get descriptor descExec value: index:BOOLVAR = data;
-	cp_sqlca ();
-	if (display_mode != DISPLAY_UNLOAD)
-	  {
-	    SPRINTF1 (buffer, "%s", BOOLVAR ? "true" : "false");
-	  }
-	else
-	  {
-	    SPRINTF1 (buffer, "%d", BOOLVAR);
-	  }
-	break;
-
-
-      case SQL3_NUMERIC:
-      case SQL3_DECIMAL:
-	if (SCALE == 0)
-	  {
-	    exec sql get descriptor descExec value:index:INTVAR = data;
-	    cp_sqlca ();
-	    if (display_mode == DISPLAY_DOWN)
-	      {
-		SPRINTF1 (buffer, "%d", INTVAR);
-	      }
-	    else
-	      {
-		SPRINTF1 (buffer, "%*d", columnWidths[idx - 1], INTVAR);
-	      }
-	    if (display_mode == DISPLAY_UNLOAD)
-	      ltrim (buffer);
-	  }
-	else
-	  {
-
-	    exec sql get descriptor descExec value:index:FLOATVAR = data;
-	    cp_sqlca ();
-
-	    if (display_mode == DISPLAY_DOWN)
-	      {
-		SPRINTF1 (buffer, "%f", FLOATVAR);
-	      }
-	    else
-	      {
-		SPRINTF1 (buffer, "%*f", columnWidths[idx - 1], FLOATVAR);
-	      }
-	    if (display_mode == DISPLAY_UNLOAD)
-	      ltrim (buffer);
-	  }
-	break;
-      case SQL3_INTEGER:
-      case SQL3_SMALLINT:
-      exec sql get descriptor descExec value: index:INTVAR = data;
-	cp_sqlca ();
-
-
-	if (display_mode == DISPLAY_DOWN)
-	  {
-	    SPRINTF1 (buffer, "%d", INTVAR);
-	  }
-	else
-	  {
-	    SPRINTF1 (buffer, "%*d", columnWidths[idx - 1], INTVAR);
-	  }
-	if (display_mode == DISPLAY_UNLOAD)
-	  ltrim (buffer);
-	break;
-      case SQL3_FLOAT:
-      case SQL3_REAL:
-      exec sql get descriptor descExec value: index:FLOATVAR = data;
-	cp_sqlca ();
-	SPRINTF1 (buffer, "%.*f", PRECISION, FLOATVAR);
-	if (display_mode == DISPLAY_UNLOAD)
-	  ltrim (buffer);
-	break;
-      case SQL3_DOUBLE_PRECISION:
-      exec sql get descriptor descExec value: index:DOUBLEVAR = data;
-	cp_sqlca ();
-	SPRINTF1 (buffer, "%.*f", PRECISION, DOUBLEVAR);
-	if (display_mode == DISPLAY_UNLOAD)
-	  ltrim (buffer);
-	break;
-      case SQL3_DATE_TIME_TIMESTAMP:
-      exec sql get descriptor descExec value: index: DATETIME_INTERVAL_CODE = datetime_interval_code,:STRINGVAR =
-	  data;
-	cp_sqlca ();
-	SPRINTF1 (buffer, "%s", STRINGVAR);
-	break;
-      case SQL3_INTERVAL:
-      exec sql get descriptor descExec value: index:STRINGVAR = data;
-	cp_sqlca ();
-	SPRINTF1 (buffer, "%s", STRINGVAR);
-	break;
-      case SQL3_CHARACTER:
-      case SQL3_CHARACTER_VARYING:
-      exec sql get descriptor descExec value: index:STRINGVAR = data;
-	cp_sqlca ();
-	SPRINTF1 (buffer, "%s", STRINGVAR);
-	A4GL_trim (buffer);
-	break;
-      default:
-      exec sql get descriptor descExec value: index:STRINGVAR = data;
-	cp_sqlca ();
-	SPRINTF1 (buffer, "%s", STRINGVAR);
-	if (display_mode == DISPLAY_UNLOAD)
-	  A4GL_trim (buffer);
-	break;
-      }
-
-  A4GL_debug ("BUFFER=%s", buffer);
-
-  if (INDICATOR != -1 && strlen (buffer) == 0
-      && display_mode == DISPLAY_UNLOAD)
-    {
-      strcpy (buffer, " ");
-    }
-  if (display_mode == DISPLAY_DOWN)
-    {
-      SPRINTF2 (fmt, "%%-%d.%ds %%s\n", colnamesize + 1, colnamesize + 1);
-
-      if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
-	{
-	  FPRINTF (outputFile, fmt, columnNames[idx - 1], buffer);
-	}
-      else
-	{
-	  FPRINTF (exec_out, fmt, columnNames[idx - 1], buffer);
-	}
-      outlines++;
-    }
-
-  if (display_mode == DISPLAY_UNLOAD)
-    {
-      FPRINTF (unloadFile, "%s%s", escape_delim (buffer), delim);
-    }
-
-  if (display_mode == DISPLAY_ACROSS)
-    {
-      if (get_exec_mode_c () == EXEC_MODE_INTERACTIVE)
-	{
-
-	  A4GL_debug ("EXECO '%s' '%20s' '%-20s'", buffer, buffer, buffer);
-	  FPRINTF (outputFile, "%-*s", columnWidths[idx - 1], buffer);
-	}
-      else
-	FPRINTF (exec_out, "%-*s", columnWidths[idx - 1], buffer);
-    }
-
-
-  return 0;
-}
-
-#endif
 
 /**
  * Unload the data to a file acording to SQL statemement with
@@ -1329,132 +1170,11 @@ A4GL_debug("Added\n");
   A4GL_debug ("-->%s\n", n->sql);
   A4GL_debug ("Prepare : %s\n", n->sql);
 
-#ifdef Lah
-  switch (PQresultStatus (res))
-    {
-    case PGRES_BAD_RESPONSE:
-      A4GL_debug ("Bad response %s\n", PQerrorMessage (current_con));
-      //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
-      return 0;
-    case PGRES_NONFATAL_ERROR:
-      A4GL_debug ("nonfatal error %s \n", PQerrorMessage (current_con));
-      //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
-      return 0;
-    case PGRES_FATAL_ERROR:
-      A4GL_debug ("fatal error %s\n", PQerrorMessage (current_con));
-      //A4GL_exitwith_sql ("Unexpected postgres return code4\n");
-      return 0;
-    }
-#endif
   A4GL_debug ("OK..\n");
   return n;
 }
 
 
-#ifdef OBSOLETE
-static int
-setParams (struct s_prepare *p)
-{
-  int a;
-  int d, m, y;
-  char *c;
-  for (a = 0; a < p->ni; a++)
-    {
-
-      if (A4GL_isnull (p->ibind[a].dtype, p->ibind[a].ptr))
-	{
-	  p->paramvals[a] = 0;
-	  continue;
-	}
-
-      switch (p->ibind[a].dtype & DTYPE_MASK)
-	{
-	case DTYPE_CHAR:
-	  p->paramvals[a] = p->ibind[a].ptr;
-	  p->paramform[a] = 0;
-	  break;
-	case DTYPE_VCHAR:
-	  p->paramvals[a] = p->ibind[a].ptr;
-	  p->paramlen[a] = strlen (p->ibind[a].ptr);
-	  p->paramform[a] = 0;
-	  break;
-	case DTYPE_INT:
-	  p->paramvals[a] = A4GL_alloc_associated_mem (p, 20);
-	  SPRINTF1 (p->paramvals[a], "%d", *(int *) p->ibind[a].ptr);
-	  p->paramlen[a] = 4;
-	  p->paramform[a] = 0;
-	  break;
-	case DTYPE_SMINT:
-	  p->paramvals[a] = A4GL_alloc_associated_mem (p, 20);
-	  SPRINTF1 (p->paramvals[a], "%d", *(short *) p->ibind[a].ptr);
-	  p->paramlen[a] = strlen (p->paramvals[a]);
-	  p->paramform[a] = 0;
-	  break;
-
-	case DTYPE_SMFLOAT:
-	  p->paramvals[a] = p->ibind[a].ptr;
-	  SPRINTF1 (p->paramvals[a], "%16.8f", *(float *) p->ibind[a].ptr);
-	  p->paramlen[a] = strlen (p->paramvals[a]);
-	  p->paramform[a] = 0;
-	  break;
-
-	case DTYPE_FLOAT:
-	  p->paramvals[a] = p->ibind[a].ptr;
-	  SPRINTF1 (p->paramvals[a], "%16.8lf", *(double *) p->ibind[a].ptr);
-	  p->paramlen[a] = strlen (p->paramvals[a]);
-	  p->paramform[a] = 0;
-	  break;
-
-	case DTYPE_DECIMAL:
-	  p->paramvals[a] = p->ibind[a].ptr;
-	  A4GL_push_dec (p->ibind[a].ptr, 0, p->ibind[a].size);
-	  c = A4GL_char_pop ();
-	  strcpy (p->paramvals[a], c);
-	  free (c);
-
-	  p->paramlen[a] = strlen (p->paramvals[a]);
-	  p->paramform[a] = 0;
-	  break;
-
-	case DTYPE_MONEY:
-	  p->paramvals[a] = p->ibind[a].ptr;
-	  A4GL_push_dec (p->ibind[a].ptr, 1, p->ibind[a].size);
-	  c = A4GL_char_pop ();
-	  strcpy (p->paramvals[a], c);
-	  free (c);
-	  p->paramlen[a] = strlen (p->paramvals[a]);
-	  p->paramform[a] = 0;
-	  break;
-
-	case DTYPE_DATE:
-	  p->paramvals[a] = A4GL_alloc_associated_mem (p, 20);
-	  A4GL_get_date (*(long *) p->ibind[a].ptr, &d, &m, &y);
-	  SPRINTF3 (p->paramvals[a], "%04d-%02d-%02d", y, m, d);
-	  p->paramlen[a] = strlen (p->paramvals[a]);
-	  p->paramform[a] = 0;
-	  break;
-
-	case DTYPE_DTIME:
-	  p->paramvals[a] = A4GL_alloc_associated_mem (p, 20);
-
-	  A4GL_push_dtime (p->ibind[a].ptr);
-	  c = A4GL_char_pop ();
-	  strcpy (p->paramvals[a], c);
-	  free (c);
-
-	  p->paramlen[a] = strlen (p->paramvals[a]);
-	  p->paramform[a] = 0;
-	  break;
-
-	default:
-	  A4GL_assertion (1, "Unhandled datatype");
-	}
-
-
-    }
-  return 0;
-}
-#endif
 
 int
 A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
