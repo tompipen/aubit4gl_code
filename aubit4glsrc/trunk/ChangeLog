@@ -1,4 +1,32 @@
 ---------------------------
+Mon Apr  7 19:30:05 BST 2008
+---------------------------
+1.10RC_8 Released
+---------------------------
+	
+	syscolval update
+	
+	'FORCE_HOLD_ALWAYS', 'FORCE_HOLD_NEVER', and
+	'FORCE_HOLD_EXCEPT_UPDATE' update for Postgres Esql/c generation
+	
+	increase size of some buffers (see build test 1499)
+	
+	Small pg8 fixup to fix SCROLL CURSOR traversal
+	
+	Small wordwrap fixup Fixup for SET PAUSE MODE ON
+	
+	Fix SET PAUSE MODE ON
+	
+	new build
+	
+	Small rename in order to avoid conflicts for get_ident_as_string
+	
+	Small fixup for detecting a 'postgres' executable rather (or in
+	addition to) than postmaster
+	
+	small fixup for hello_db.4ae test program (SESSION related)
+	
+---------------------------
 Sun Mar 30 16:18:14 BST 2008
 ---------------------------
 1.10RC_7 Released

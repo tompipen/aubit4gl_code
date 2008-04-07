@@ -17547,7 +17547,7 @@ ADDMAP("Call Formhandler",(yyvsp[(1) - (1)].str));
 			struct expr_str *p;
 		set_cmdlineno((yyvsp[(3) - (5)].integer_val));
 			(yyval.startrep)=(yyvsp[(5) - (5)].startrep);
-			(yyval.startrep)->towhat='@';
+			(yyval.startrep)->towhat='M';
 			p=A4GL_new_expr_simple_string((yyvsp[(2) - (5)].str),ET_EXPR_REPORT_EMAIL);
 			(yyval.startrep)->s1=chk_expr(p);
 			add_feature("USE_REPORT");
