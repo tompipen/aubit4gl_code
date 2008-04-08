@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.142 2008-04-02 21:07:46 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.143 2008-04-08 13:29:34 mikeaubury Exp $
 #
 */
 
@@ -2079,6 +2079,7 @@ CV_matches (char *type, char *string, char *esc)
 	  {
 	    strcat (buff, "\\");
 	  }
+
 	if (type[0] != '~' && (string[a] == '%' || string[a] == '_'))
 	  {
 		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
@@ -2088,11 +2089,19 @@ CV_matches (char *type, char *string, char *esc)
 		}
 	  }
 
+
+	
+        if (type[0]=='~' && string[a]=='\'') { 
+			if (strstr(buff,".*")) {
+				strcat(buff,"$"); 
+			}
+	}
 	smallvar[0] = string[a];
 	smallvar[1] = 0;
 	strcat (buff, smallvar);
       }
-    }
+  }
+
   return buff;
 }
 

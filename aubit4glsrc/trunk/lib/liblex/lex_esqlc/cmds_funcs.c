@@ -2892,11 +2892,18 @@ int a;
 		struct expr_str *e;
 		e=cmd_data->print_expr->list.list_val[a];
 		if (e->expr_type == ET_EXPR_WORDWRAP) {
+			printc("{int _wordwrap;");
+			if (e->expr_str_u.expr_wordwrap->wrap_at->expr_type == ET_EXPR_LITERAL_LONG && e->expr_str_u.expr_wordwrap ->wrap_at->expr_str_u.expr_long == 0) {
+				printc("_wordwrap=_rep.right_margin;");
+			} else {
+				print_expr(e->expr_str_u.expr_wordwrap->wrap_at);
+				printc("_wordwrap=A4GL_pop_int();");
+			}
 			// We're not printing the WORDWRAP - we need to decode the
 			// wordwrap and change our print accordingly...
 			print_expr(e->expr_str_u.expr_wordwrap->expr);
-			
-    			printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", ispdf (),local_expr_as_string(e->expr_str_u.expr_wordwrap->wrap_at),rep_print_entry++);
+    			printc ("A4GL_%srep_print(&_rep,1,1,_wordwrap,%d);\n", ispdf (),rep_print_entry++);
+			printc("}");
 		} else {
 			print_expr(e);
     			printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", ispdf (), wrap,rep_print_entry++);

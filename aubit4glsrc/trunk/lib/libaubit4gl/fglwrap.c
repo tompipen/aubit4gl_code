@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.131 2008-03-27 21:15:58 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.132 2008-04-08 13:29:34 mikeaubury Exp $
 #
 */
 
@@ -1360,14 +1360,14 @@ char id[132];
 int a;
 
   	if (strcmp (arg1, "-v") == 0) {
-		PRINTF ("(c) 1997-2006 Aubit project\n%s\n\n", program);
+		PRINTF ("(c) 1997-2008 Aubit project\n%s\n\n", program);
 		PRINTF ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 		A4GL_fgl_die (0);
 	}
 
 	if (strcmp (arg1, "-vfull") == 0) {
-		PRINTF ("(c) 1997-2006 Aubit project\n%s\n\n", program);
+		PRINTF ("(c) 1997-2008 Aubit project\n%s\n\n", program);
 		PRINTF ("Version       %s\nBuild Level   %d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 		for (a = 0;; a++) {
@@ -1381,7 +1381,7 @@ int a;
     }
 
   	if (strcmp (arg1, "") == 0) {
-		PRINTF ("%s (c) 1997-2006 Aubit project - ", program);
+		PRINTF ("%s (c) 1997-2008 Aubit project - ", program);
 		PRINTF ("Version %s-%d\n",
 	      	A4GL_internal_version (), A4GL_internal_build ());
 

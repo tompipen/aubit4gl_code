@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.158 2008-04-04 17:19:47 mikeaubury Exp $
+# $Id: report.c,v 1.159 2008-04-08 13:29:34 mikeaubury Exp $
 #
 */
 
@@ -775,6 +775,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 
 
 	init_col=rep->col_no;
+
 	if (no_param!=1) {
 		A4GL_assertion(1,"Expecting single variable for wordwrap margin");
 	}
@@ -792,7 +793,13 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 		return ;
 	}
 
-	right_margin-=init_col;
+	if (init_col==0) {
+		right_margin-=rep->left_margin;
+	} else {
+		right_margin-=init_col;
+	}
+
+
 
 	while (1) {
 		A4GL_debug_print_stack();
@@ -867,12 +874,17 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 				int psize;
 				// it'll fit...
 				strcpy(buff,ptr);
+
 			
-				psize=right_margin-rep->left_margin+1;
-				if (init_col==0) psize--;
+				if (init_col) {
+					psize=right_margin-rep->left_margin+1;
+				} else {
+					psize=orig_r-rep->left_margin+1;
+					if (init_col==0) psize--;
+				}
 				if (psize>0) {
-					A4GL_assertion(psize>sizeof(buff),"Buffer to small for padspace");
-					A4GL_pad_string(buff,psize);
+						A4GL_assertion(psize>sizeof(buff),"Buffer to small for padspace");
+						A4GL_pad_string(buff,psize);
 				}
 				A4GL_push_char(buff);
 				A4GL_rep_print(rep,1,dontwant_nl,0,entry);

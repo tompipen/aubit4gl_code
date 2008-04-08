@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.193 2008-04-01 14:54:14 mikeaubury Exp $
+# $Id: ioform.c,v 1.194 2008-04-08 13:29:37 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.193 2008-04-01 14:54:14 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.194 2008-04-08 13:29:37 mikeaubury Exp $";
 #endif
 
 /**
@@ -2585,7 +2585,7 @@ int has_wordwrap;
 
   if (has_format && ignore_formatting)
     {
-      A4GL_debug ("Which I'm going to ignore..");
+      A4GL_debug ("Which I'm going to ignore - %x", d1);
     }
 
   if (has_format && !ignore_formatting)
