@@ -12,7 +12,10 @@ define w_sald int,
 let w_sald = -174
 let w_prom = 375.0
 let w_dias = w_sald / w_prom
-if w_dias = 0 then  display "ok" exit program 0
-else   display "bad" exit program 1
+if w_dias = 0 then  
+	display "ok" exit program 0
+else   
+	display "bad:", w_dias
+	 exit program 1
 end if
 end main

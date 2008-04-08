@@ -6,6 +6,7 @@ display ".......................................................................
 end for
 open window w2 at 10,10 with 10 rows,20 columns attribute(border)
 call aclfgl_dump_screen("sizing.out");
+sleep 3
 for y=1 to 24
 display "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" at y,1
 end for

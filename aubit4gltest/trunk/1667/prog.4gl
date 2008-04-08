@@ -68,12 +68,9 @@ FOR i_mes = 1 TO 13
 	        FOR a_nubo = i_nubo + 1 TO 26
 	            IF ma_mes[i_mes, i_nubo, i_line].peso <
 		       ma_mes[i_mes, a_nubo, i_line].peso THEN
-		        LET ma_mes[i_mes, 31,i_line].* =
-		            ma_mes[i_mes, a_nubo,i_line].*
-		        LET ma_mes[i_mes, a_nubo,i_line].* =
-		            ma_mes[i_mes, i_nubo,i_line].*
-		        LET ma_mes[i_mes, i_nubo,i_line].* =
-		            ma_mes[i_mes, 31,i_line].*
+		        LET ma_mes[i_mes, 31,i_line].* = ma_mes[i_mes, a_nubo,i_line].*
+		        LET ma_mes[i_mes, a_nubo,i_line].* = ma_mes[i_mes, i_nubo,i_line].*
+		        LET ma_mes[i_mes, i_nubo,i_line].* = ma_mes[i_mes, 31,i_line].*
 	            END IF
 	        END FOR
             END FOR

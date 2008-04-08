@@ -226,6 +226,20 @@ MAIN
      #aIntervalFF INTERVAL FRACTION TO FRACTION,
      #aIntervalFFScale INTERVAL FRACTION TO FRACTION(3),
 }
+
+
+
+	   aCharacter CHARACTER,
+	   aCharacterWithSize CHARACTER(20),
+	   aNChar NCHAR,
+	   aChar CHAR,
+	   aCharWithSize CHARACTER(20),
+	   aNCharWithSize NCHAR(10),
+	   aVarchar VARCHAR(20),
+	   aNVarchar NVARCHAR(20),
+	   aVarcharWithReserve VARCHAR(20,10),
+	   aNVarcharWithRes NVARCHAR(20,10)
+{
 	   aCharacter CHARACTER,
 	   aCharacterWithSz CHARACTER(30),
 	   aChar CHAR,
@@ -236,6 +250,7 @@ MAIN
 	   aVarcharWithRes VARCHAR(20,10),
 	   aNVarchar NVARCHAR(20),
 	   aNVarcharWithRes NVARCHAR(20,10)
+}
 	)
 	CREATE TABLE table_with_ser (
 		 aSerialWithStart SERIAL(20)

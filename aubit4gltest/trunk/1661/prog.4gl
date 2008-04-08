@@ -14,5 +14,6 @@ INPUT BY NAME w_b WITHOUT DEFAULTS
 ERROR "This should survive a clear form "
 CURRENT WINDOW v_f1
 CLEAR FORM
+sleep 2
 {! call aclfgl_dump_screen("out") !}
 END MAIN

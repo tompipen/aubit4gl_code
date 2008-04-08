@@ -124,9 +124,12 @@ ORDER EXTERNAL BY r.cade, r.npec, r.sucu, r.foli
 
 FORMAT
     AFTER GROUP OF r.foli
-	PRINT COLUMN 20, "Total",
+	PRINT COLUMN 20, "Total"
+
+,
 	      COLUMN 40, group sum(r.cant) USING "###,##&"  ,
 	      COLUMN 50, group sum(r.cant2) USING "###,##&"  ,
 	      COLUMN 60, group sum(r.cant - r.cant2) USING "###,##&"
+
 
 END REPORT

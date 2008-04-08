@@ -25,6 +25,7 @@ foreach curs into chr, smint
    let cnt = cnt + 1
 end foreach
 if sqlca.sqlcode=0 then
+	display "Bad - it should have errored.."
 	exit program 1
 else
 	display "Found an error - which is good for a change!"

@@ -42,7 +42,6 @@ FUNCTION Form1()
                  NEXT KEY F36,
                  PREVIOUS KEY F36,
                  INPUT WRAP    
-
     INPUT BY NAME head.* WITHOUT DEFAULTS
 	ON KEY (INTERRUPT,ESCAPE,F10)
 	    LET int_flag = 0
@@ -73,7 +72,7 @@ END FUNCTION
 FUNCTION Form2()
     INPUT BY NAME sub_form.* WITHOUT DEFAULTS
 	ON KEY (INTERRUPT,ESCAPE,F10)
-	    LET int_flag = 0
+	   LET int_flag = 0
 	    EXIT INPUT
     END INPUT
 END FUNCTION

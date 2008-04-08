@@ -74,8 +74,7 @@ progname${TARGET_EXT}: ${MODULES}
 #Synonim to invoke compilation of the test by using uniform target name
 #Change "progname" to real program name (if different) <<<<<<<<<<<<<<<<<<<<<<(4)
 #Add more "progname${TARGET_EXT}" items if test uses more then one program <<(5)
-compile: progname${TARGET_EXT} ${FORMS} ${HELP} m1.menu
-	mcompile m1.menu
+compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 
 ################
 #Run the compiled test
@@ -111,7 +110,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Tests the menu compilers and decompiler"
+	@echo "test removed..."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 

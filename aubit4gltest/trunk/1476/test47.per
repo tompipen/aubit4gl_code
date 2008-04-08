@@ -1,0 +1,37 @@
+database formonly
+screen
+{
+==============================================================================
+
+
+                     Display Loads by DRIVER or TRACTOR
+                    ------------------------------------
+
+
+          Driver:[s1   ]       Tractor:[s2   ]       Load #[s3      ]
+
+
+          Date:[s4        ]  Leave date blank to start from today OR
+               (mm/dd/yyyy)  Enter a date to start load display from   
+
+
+
+
+
+ CNTRL-E => Exit Program.
+}
+
+attributes
+
+s1  = formonly.drvnbr type integer, format = "#####",  reverse, autonext,
+       comments = "Enter driver number you want to display load for.";
+s2 = formonly.trknbr type integer, format = "#####", reverse, autonext,
+       comments = "Enter tractor number you want to display load for.";
+s3  = formonly.ldnbr type integer, format = "########", reverse, autonext,
+       comments = "Enter load number you want to display.";
+s4  = formonly.shpdt type date, format = "mm/dd/yyyy", reverse, autonext,
+       comments = "Enter ship date you want to start from.";
+end
+
+instructions
+delimiters "  "

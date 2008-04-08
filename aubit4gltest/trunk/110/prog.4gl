@@ -31,7 +31,7 @@ define
 		whenever error stop
 		
 		create temp table tmp_tmp ( text_line char(180) )
-
+{
 	if db_dialect() = 4 then #POSTGRES
 		display "Performing PostgreSQL compatible load"
 		#Informix 4GL has a problem with this:
@@ -54,6 +54,7 @@ define
 		#Invalid delimiter. Do not use '\\' or hex digits (0-9, A-F, a-f).
 		let done_load = 1
 	end if	
+}
 	if db_dialect() = 1 then #INFORMIX
 		display "Performing Informix compatible load"
 		#This works fine on Informix, but fails on PostgreSQL with:
@@ -73,6 +74,7 @@ define
 		
 		#must be 1 since there is only one 4gl file in this directory
 		if cnt = 1 then 
+			display "1 row found"
 			exit program (0)
 		else
 			display cnt, " rows found in file"

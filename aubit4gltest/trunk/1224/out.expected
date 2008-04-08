@@ -1,7 +1,7 @@
 Start
-Err:Program stopped at 'prog.4gl', line number 9.
+Err:Program ./progname.4ae stopped at 'prog.4gl', line number 9.
 Error status number -3002.
 Wrong number of parameters passed to function.
 
 4gl function call stack :
-    prog.4gl (Line 6) calls MAIN
+    prog.4gl (Line 1) calls MAIN

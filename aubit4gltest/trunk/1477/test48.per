@@ -1,0 +1,33 @@
+database formonly
+screen
+{
+=============================================================================
+
+                        Delivery Date:[a         ]
+                             Terminal:[b ]
+                                  Mfg:[d ]
+                       Exclusion Type:[c]
+
+
+
+
+
+}
+end
+
+attributes
+
+a = formonly.dlvdt type date, required, comments =
+ " Enter in the date range for this report.";
+b = formonly.otrm, required, comments =
+ " Enter the Terminal number for this report";
+d = formonly.shptomfg, upshift, required, comments =
+ " Enter the Mfg Code for this report";
+c = formonly.exclude_typ type smallint, required, comments =
+ " 0 = no exclusions, 1 = Weekends, 2 = Holidays, 3 = Weekends and Holidays";
+
+instructions
+
+delimiters "  "
+
+end
