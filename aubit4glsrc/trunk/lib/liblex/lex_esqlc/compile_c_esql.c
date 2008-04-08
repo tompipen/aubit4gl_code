@@ -1863,10 +1863,10 @@ var_prepname=0;
   }
 
   if (A4GLSQLCV_check_requirement ("FORCE_HOLD_EXCEPT_UPDATE")) {
-		if (strstr(stmt," FOR UPDATE ") || strstr(stmt," for update ") ) {
-		force_with_hold=0;
+		if (strstr(stmt,"FOR UPDATE") || strstr(stmt,"for update") ) {
+			force_with_hold=0;
 		} else {
-		force_with_hold=1;
+			force_with_hold=1;
 		}
   }
 
