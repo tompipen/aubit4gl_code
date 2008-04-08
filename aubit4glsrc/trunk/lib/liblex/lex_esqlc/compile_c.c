@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.406 2008-03-30 14:36:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.407 2008-04-08 19:06:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.406 2008-03-30 14:36:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.407 2008-04-08 19:06:52 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -801,6 +801,9 @@ open_outfile (void)
       exit (3);
     }
 
+  if (acl_getenv_not_set_as_0("A4GL_TARGETDIALECT")) {
+  	FPRINTF (hfile, "#define TARGETDIALECT \"%s\"\n", acl_getenv_not_set_as_0("A4GL_TARGETDIALECT"));
+  }
 
   outfile = A4GL_mja_fopen (filename_for_c, "w");
   if (outfile == 0)
