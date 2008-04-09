@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.29 2008-04-07 18:25:49 mikeaubury Exp $
+# $Id: pg8.c,v 1.30 2008-04-09 06:58:45 mikeaubury Exp $
 #*/
 
 
@@ -2252,10 +2252,11 @@ A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
 
 
 int
-A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
+A4GLSQLLIB_A4GLSQL_open_cursor (char *s1, int ni, void *vibind)
 {
   struct s_cid *cid;
   struct BINDING *ibind;
+	char s[2000];
   //int nresultcols;
   //int copy_out_n;
   //int nrows;
@@ -2264,6 +2265,9 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   char *buff2;
 //struct s_prepare *nnew;
   struct s_prepare *n;
+
+	strcpy(s,s1);
+	A4GL_trim(s);
 
   // Here - we'll bind the inputs
   // and then execute the statement...
@@ -2388,7 +2392,7 @@ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
 
 /*****************************************************************************/
 int
-A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
+A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name_s, int fetch_mode,
 				 int fetch_when, int nobind, void *vobind)
 {
   struct BINDING *obind;
@@ -2397,7 +2401,10 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
   //int nresultcols;
   //int copy_out_n;
   char buff[256];
+char cursor_name[2000];
   PGresult *res;
+  strcpy(cursor_name, cursor_name_s);
+A4GL_trim(cursor_name);
 
   obind = vobind;
 
