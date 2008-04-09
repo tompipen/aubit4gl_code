@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.51 2008-04-03 08:38:26 mikeaubury Exp $
+# $Id: sql_common.c,v 1.52 2008-04-09 16:15:16 mikeaubury Exp $
 #
 */
 
@@ -1527,4 +1527,70 @@ void A4GL_ESQL_set_cursor_is_closed(char *s) {
 }
 
 
-/* =============================== EOF ============================== */
+
+
+
+
+
+
+
+char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr) {
+      static int cntsql_0 = 0;
+      char cname[256];
+      static char tmpvar[256];
+	int tmpvar_i;
+      char tmpSql[2000];
+	char syscolatt[2000];
+	int cnt=0;
+
+
+      struct BINDING ibind_str[] = {
+	{&tmpvar, 0, 255,0,0,0}
+      };			/* end of binding */
+      struct BINDING ibind_int[] = {
+	{&tmpvar_i, 2, 0,0,0,0}
+      };			/* end of binding */
+
+	strcpy(syscolatt, acl_getenv("A4GL_SYSCOL_ATT"));
+
+      SPRINTF1 (cname, "chkscatt_%d", cntsql_0++);
+      sprintf(tmpSql,"select %s.%s from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno",syscolatt, attr,syscolatt,tabname,colname);
+
+      A4GLSQL_declare_cursor (0,(void *) A4GLSQL_prepare_select (NULL, 0, NULL, 0, tmpSql,"__internal_stack",1,0,0), 0, cname);
+      
+      if (a4gl_status != 0)
+	{
+		return 0;
+	}
+      A4GLSQL_set_sqlca_sqlcode (0);
+      A4GLSQL_open_cursor (cname,0,0);
+      if (a4gl_status != 0)
+	{
+	return 0;
+	}
+	cnt=0;
+
+      while (1)
+	{
+		strcpy(tmpvar,"");
+		if (strcmp(attr,"color")==0) {
+	  		A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_int);
+		} else {
+	  		A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_str);
+		}
+	  	if (a4gl_status != 0) break;
+	  	if (cnt==seq) {
+			A4GL_trim(tmpvar);
+			if (strcmp(attr,"color")==0) {
+				sprintf(tmpvar,"%d",tmpvar_i);
+			}
+			//printf("%s-->%s\n",attr, tmpvar);
+			return tmpvar;
+		}
+	  cnt++;
+	}
+
+      return 0;
+    }
+
+// ================================ EOF ================================

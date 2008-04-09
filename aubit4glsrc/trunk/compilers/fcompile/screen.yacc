@@ -470,6 +470,7 @@ field_type op_att
 }
 op_field_desc
 {
+	int cnt;
 	if (A4GL_has_str_attribute(fld,FA_S_FORMAT)) {
 		int dtype;
 		dtype=fld->datatype & DTYPE_MASK;
@@ -483,9 +484,132 @@ op_field_desc
 		    dtype!=DTYPE_MONEY) {
 	        		yyerror("A FORMAT cannot be applied to this fields because of the datatype");
 	        		YYERROR;
-				printf("X1\n");
+		}
+	} else {
+		char *format;
+		cnt=0;
+		while (1) {
+			if (strcmp(the_form.dbname,"formonly")==0) {
+				format=0;
+			} else {
+				format=A4GL_get_syscolatt(fld->tabname, fld->colname,cnt++,"def_format");
+			}
+			if (format==0) break;
+			if (format && strlen(format)) {
+				// Looks like we've found one in syscolatt instead...
+				A4GL_trim(format);
+				if (strlen(format)) {
+					A4GL_add_str_attr(fld,FA_S_FORMAT,format);
+				}
+				break;
+			}
 		}
 	}
+	
+	cnt=0;
+	if (strcmp(the_form.dbname,"formonly")!=0) {
+	while (1) {
+		char *att_color;
+		char *att_inverse;
+		char *att_underline;
+		char *att_blink;
+		char *att_left;
+		char *att_condition;
+		int attr=0;
+		int used=0;
+
+		// format has already been handled...
+		att_color=A4GL_get_syscolatt(fld->tabname, fld->colname,cnt,"color");
+
+		if (att_color) {
+			used++;
+			att_color=strdup(att_color);
+			A4GL_trim(att_color);
+			if (strlen(att_color)>0) {
+				attr+=atoi(att_color);
+			}
+			free(att_color);
+		}
+
+		att_inverse=A4GL_get_syscolatt(fld->tabname, fld->colname,cnt,"inverse");
+		if (att_inverse) {
+			used++;
+			att_inverse=strdup(att_inverse);
+			A4GL_trim(att_inverse);
+			if (strlen(att_inverse)) {
+				if (strcmp(att_inverse,"y")==0) {
+					attr+=A4GL_get_attr_from_string("REVERSE");
+				}
+			}
+		}
+
+		att_underline=A4GL_get_syscolatt(fld->tabname, fld->colname,cnt,"underline");
+		if (att_underline) {
+			used++;
+			att_underline=strdup(att_underline);
+			A4GL_trim(att_underline);
+			if (strlen(att_underline)) {
+				if (strcmp(att_underline,"y")==0) {
+					attr+=A4GL_get_attr_from_string("UNDERLINE");
+				}
+			}
+		}
+
+		att_blink=A4GL_get_syscolatt(fld->tabname, fld->colname,cnt,"blink");
+		if (att_blink) {
+			used++;
+			att_blink=strdup(att_blink);
+			if (strlen(att_blink)) {
+				if (strcmp(att_blink,"y")==0) {
+					attr+=A4GL_get_attr_from_string("BLINK");
+				}
+			}
+		}
+
+		att_left=A4GL_get_syscolatt(fld->tabname, fld->colname,cnt,"left");
+		if (att_left) {
+			used++;
+			att_left=strdup(att_left);
+			A4GL_trim(att_left);
+			if (strlen(att_left)) {
+				if (strcmp(att_left,"y")==0) {
+					attr+=A4GL_get_attr_from_string("LEFT");
+				}
+			}
+
+		}
+
+		att_condition=A4GL_get_syscolatt(fld->tabname, fld->colname,cnt,"condition");
+		if (att_condition) {
+			used++;
+			att_condition=strdup(att_condition);
+			A4GL_trim(att_condition);
+			if (strlen(att_condition)) {
+				A4GL_assertion(1,"Conditions in upscol are not handled yet");
+			}
+		}
+		if (!used) {
+				break;
+		}
+
+		if (attr) {
+		        int a;
+                        struct  u_expression *e_true;
+                        e_true=create_int_expr(1);
+                        fld->colours.colours_len++;
+                        a=fld->colours.colours_len;
+                        fld->colours.colours_val=realloc(fld->colours.colours_val,a*sizeof(struct colours ) );
+                        fld->colours.colours_val[a-1].colour=attr;
+                        fld->colours.colours_val[a-1].whereexpr=e_true;
+
+		}
+
+		cnt++;
+	}
+	}
+	
+
+
 
 	if (fld->datatype==90&&!(A4GL_has_str_attribute(fld,FA_S_DEFAULT)))
 	{
@@ -506,6 +630,7 @@ op_field_desc
 			//printf("Setting field picture from syscolval (%s)\n",p);
 		}
 	}
+
 	a4gl_status=0;
 	A4GL_set_field(currftag,fld);
 	if (a4gl_status!=0) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.203 2008-03-22 16:54:10 mikeaubury Exp $
+# $Id: stack.c,v 1.204 2008-04-09 16:15:16 mikeaubury Exp $
 #
 */
 
@@ -3817,6 +3817,7 @@ int t;
 	t=A4GL_pop_long();
 	return t;
 }
+
 
 
 
