@@ -947,6 +947,8 @@ ECPG_LIBDIR
 ECPG_LFLAGS
 ECPG_IFLAGS
 ECPG_HAVE_ECPGGET_PGCONN
+ECPG_HAVE_ECPG_GET_CONNECTION
+ECPG_HAVE_ECPGGET_CONNECTION
 POSTGRESDIR
 HAVE_PGSQL_LIB
 PG_ESQLC_HASV3
@@ -6509,7 +6511,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6512 "configure"' > conftest.$ac_ext
+  echo '#line 6514 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9020,11 +9022,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9023: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9025: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9027: \$? = $ac_status" >&5
+   echo "$as_me:9029: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9310,11 +9312,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9313: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9315: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9317: \$? = $ac_status" >&5
+   echo "$as_me:9319: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9414,11 +9416,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9417: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9419: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9421: \$? = $ac_status" >&5
+   echo "$as_me:9423: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11776,7 +11778,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11779 "configure"
+#line 11781 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11876,7 +11878,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11879 "configure"
+#line 11881 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14296,11 +14298,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14299: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14301: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14303: \$? = $ac_status" >&5
+   echo "$as_me:14305: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14400,11 +14402,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14403: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14405: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14407: \$? = $ac_status" >&5
+   echo "$as_me:14409: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15975,11 +15977,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15978: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15980: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15982: \$? = $ac_status" >&5
+   echo "$as_me:15984: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16079,11 +16081,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16082: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16084: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16086: \$? = $ac_status" >&5
+   echo "$as_me:16088: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18279,11 +18281,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18282: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18284: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18286: \$? = $ac_status" >&5
+   echo "$as_me:18288: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18569,11 +18571,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18572: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18574: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18576: \$? = $ac_status" >&5
+   echo "$as_me:18578: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18673,11 +18675,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18676: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18678: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18680: \$? = $ac_status" >&5
+   echo "$as_me:18682: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -21442,6 +21444,8 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 #PG ESQL
+
+
 
 
 
@@ -37204,6 +37208,148 @@ _ACEOF
 fi
 
 
+{ echo "$as_me:$LINENO: checking for ecpg_get_connection in -lecpg" >&5
+echo $ECHO_N "checking for ecpg_get_connection in -lecpg... $ECHO_C" >&6; }
+if test "${ac_cv_lib_ecpg_ecpg_get_connection+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lecpg  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char ecpg_get_connection ();
+int
+main ()
+{
+return ecpg_get_connection ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_ecpg_ecpg_get_connection=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_ecpg_ecpg_get_connection=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_ecpg_ecpg_get_connection" >&5
+echo "${ECHO_T}$ac_cv_lib_ecpg_ecpg_get_connection" >&6; }
+if test $ac_cv_lib_ecpg_ecpg_get_connection = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBECPG 1
+_ACEOF
+
+  LIBS="-lecpg $LIBS"
+
+fi
+
+
+{ echo "$as_me:$LINENO: checking for ECPGget_connection in -lecpg" >&5
+echo $ECHO_N "checking for ECPGget_connection in -lecpg... $ECHO_C" >&6; }
+if test "${ac_cv_lib_ecpg_ECPGget_connection+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lecpg  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char ECPGget_connection ();
+int
+main ()
+{
+return ECPGget_connection ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_ecpg_ECPGget_connection=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_ecpg_ECPGget_connection=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_ecpg_ECPGget_connection" >&5
+echo "${ECHO_T}$ac_cv_lib_ecpg_ECPGget_connection" >&6; }
+if test $ac_cv_lib_ecpg_ECPGget_connection = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBECPG 1
+_ACEOF
+
+  LIBS="-lecpg $LIBS"
+
+fi
+
+
 { echo "$as_me:$LINENO: checking for main in -lpgtypes" >&5
 echo $ECHO_N "checking for main in -lpgtypes... $ECHO_C" >&6; }
 if test "${ac_cv_lib_pgtypes_main+set}" = set; then
@@ -37355,6 +37501,26 @@ echo "$as_me: WARNING: ecpg has ECPGGET_PGCONN" >&2;}
 				ECPG_HAVE_ECPGGET_PGCONN=1
 				cat >>confdefs.h <<\_ACEOF
 #define HAVE_ECPGGET_PGCONN 1
+_ACEOF
+
+			fi
+			if test "$ac_cv_lib_ecpg_ecpg_get_connection" = "yes"
+			then
+			    	{ echo "$as_me:$LINENO: WARNING: ecpg has ecpg_get_connection" >&5
+echo "$as_me: WARNING: ecpg has ecpg_get_connection" >&2;}
+				ECPG_HAVE_ECPG_GET_CONNECTION=1
+				cat >>confdefs.h <<\_ACEOF
+#define HAVE_ECPG_GET_CONNECTION 1
+_ACEOF
+
+			fi
+			if test "$ac_cv_lib_ecpg_ECPGget_connection" = "yes"
+			then
+			    	{ echo "$as_me:$LINENO: WARNING: ecpg has ecpgget_connection" >&5
+echo "$as_me: WARNING: ecpg has ecpgget_connection" >&2;}
+				ECPG_HAVE_ECPGGET_CONNECTION=1
+				cat >>confdefs.h <<\_ACEOF
+#define HAVE_ECPGGET_CONNECTION 1
 _ACEOF
 
 			fi
@@ -50205,11 +50371,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:50208: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:50374: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:50212: \$? = $ac_status" >&5
+   echo "$as_me:50378: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -50309,11 +50475,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:50312: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:50478: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:50316: \$? = $ac_status" >&5
+   echo "$as_me:50482: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -54226,7 +54392,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 54229 "configure"' > conftest.$ac_ext
+  echo '#line 54395 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -55274,7 +55440,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 55277 "configure"
+#line 55443 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -55374,7 +55540,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 55377 "configure"
+#line 55543 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -59534,6 +59700,8 @@ ECPG_LIBDIR!$ECPG_LIBDIR$ac_delim
 ECPG_LFLAGS!$ECPG_LFLAGS$ac_delim
 ECPG_IFLAGS!$ECPG_IFLAGS$ac_delim
 ECPG_HAVE_ECPGGET_PGCONN!$ECPG_HAVE_ECPGGET_PGCONN$ac_delim
+ECPG_HAVE_ECPG_GET_CONNECTION!$ECPG_HAVE_ECPG_GET_CONNECTION$ac_delim
+ECPG_HAVE_ECPGGET_CONNECTION!$ECPG_HAVE_ECPGGET_CONNECTION$ac_delim
 POSTGRESDIR!$POSTGRESDIR$ac_delim
 HAVE_PGSQL_LIB!$HAVE_PGSQL_LIB$ac_delim
 PG_ESQLC_HASV3!$PG_ESQLC_HASV3$ac_delim
@@ -59560,8 +59728,6 @@ RPCGEN!$RPCGEN$ac_delim
 RPCLIB_INCLUDE!$RPCLIB_INCLUDE$ac_delim
 RPCLIB_LFLAGS!$RPCLIB_LFLAGS$ac_delim
 RPCLIB_NAME!$RPCLIB_NAME$ac_delim
-USE_RPCGEN!$USE_RPCGEN$ac_delim
-HAVE_RPCLIB!$HAVE_RPCLIB$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59603,6 +59769,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+USE_RPCGEN!$USE_RPCGEN$ac_delim
+HAVE_RPCLIB!$HAVE_RPCLIB$ac_delim
 XML_RPC!$XML_RPC$ac_delim
 XMLRPC_C_CONFIG!$XMLRPC_C_CONFIG$ac_delim
 XMLRPC_LFLAGS!$XMLRPC_LFLAGS$ac_delim
@@ -59698,8 +59866,6 @@ SQLITE_ROOT!$SQLITE_ROOT$ac_delim
 SQLITE_ODBC!$SQLITE_ODBC$ac_delim
 SQLITE_ODBC_VER!$SQLITE_ODBC_VER$ac_delim
 SQLITE_ODBC_LIBNAME_SHARED!$SQLITE_ODBC_LIBNAME_SHARED$ac_delim
-SQLITE_ODBC_LIBNAME_STATIC!$SQLITE_ODBC_LIBNAME_STATIC$ac_delim
-SQLITE_ODBC_LIBDIR!$SQLITE_ODBC_LIBDIR$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59741,6 +59907,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+SQLITE_ODBC_LIBNAME_STATIC!$SQLITE_ODBC_LIBNAME_STATIC$ac_delim
+SQLITE_ODBC_LIBDIR!$SQLITE_ODBC_LIBDIR$ac_delim
 Q_ESQLC!$Q_ESQLC$ac_delim
 AUBIT_LICENSE!$AUBIT_LICENSE$ac_delim
 AUBIT_COPYRIGHT_MSG!$AUBIT_COPYRIGHT_MSG$ac_delim
@@ -59836,8 +60004,6 @@ RPMFILE_18!$RPMFILE_18$ac_delim
 RPMFILE_19!$RPMFILE_19$ac_delim
 RPMFILE_20!$RPMFILE_20$ac_delim
 RPMFILE_21!$RPMFILE_21$ac_delim
-RPMFILE_22!$RPMFILE_22$ac_delim
-RPMFILE_23!$RPMFILE_23$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -59879,6 +60045,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+RPMFILE_22!$RPMFILE_22$ac_delim
+RPMFILE_23!$RPMFILE_23$ac_delim
 RPMFILE_24!$RPMFILE_24$ac_delim
 RPMFILE_25!$RPMFILE_25$ac_delim
 RPMFILE_26!$RPMFILE_26$ac_delim
@@ -59974,8 +60142,6 @@ IS_THIRDPARTY_15!$IS_THIRDPARTY_15$ac_delim
 IS_THIRDPARTY_16!$IS_THIRDPARTY_16$ac_delim
 IS_THIRDPARTY_17!$IS_THIRDPARTY_17$ac_delim
 IS_THIRDPARTY_18!$IS_THIRDPARTY_18$ac_delim
-IS_THIRDPARTY_19!$IS_THIRDPARTY_19$ac_delim
-IS_THIRDPARTY_20!$IS_THIRDPARTY_20$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60017,6 +60183,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+IS_THIRDPARTY_19!$IS_THIRDPARTY_19$ac_delim
+IS_THIRDPARTY_20!$IS_THIRDPARTY_20$ac_delim
 IS_THIRDPARTY_21!$IS_THIRDPARTY_21$ac_delim
 IS_THIRDPARTY_22!$IS_THIRDPARTY_22$ac_delim
 IS_THIRDPARTY_23!$IS_THIRDPARTY_23$ac_delim
@@ -60112,8 +60280,6 @@ ISLIBFILE_12!$ISLIBFILE_12$ac_delim
 ISLIBFILE_13!$ISLIBFILE_13$ac_delim
 ISLIBFILE_14!$ISLIBFILE_14$ac_delim
 ISLIBFILE_15!$ISLIBFILE_15$ac_delim
-ISLIBFILE_16!$ISLIBFILE_16$ac_delim
-ISLIBFILE_17!$ISLIBFILE_17$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60155,6 +60321,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISLIBFILE_16!$ISLIBFILE_16$ac_delim
+ISLIBFILE_17!$ISLIBFILE_17$ac_delim
 ISLIBFILE_18!$ISLIBFILE_18$ac_delim
 ISLIBFILE_19!$ISLIBFILE_19$ac_delim
 ISLIBFILE_20!$ISLIBFILE_20$ac_delim
@@ -60250,8 +60418,6 @@ ISEXEFILE_9!$ISEXEFILE_9$ac_delim
 ISEXEFILE_10!$ISEXEFILE_10$ac_delim
 ISEXEFILE_11!$ISEXEFILE_11$ac_delim
 ISEXEFILE_12!$ISEXEFILE_12$ac_delim
-ISEXEFILE_13!$ISEXEFILE_13$ac_delim
-ISEXEFILE_14!$ISEXEFILE_14$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60293,6 +60459,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISEXEFILE_13!$ISEXEFILE_13$ac_delim
+ISEXEFILE_14!$ISEXEFILE_14$ac_delim
 ISEXEFILE_15!$ISEXEFILE_15$ac_delim
 ISEXEFILE_16!$ISEXEFILE_16$ac_delim
 ISEXEFILE_17!$ISEXEFILE_17$ac_delim
@@ -60388,8 +60556,6 @@ INCFILE_16!$INCFILE_16$ac_delim
 INCFILE_17!$INCFILE_17$ac_delim
 INCFILE_18!$INCFILE_18$ac_delim
 INCFILE_19!$INCFILE_19$ac_delim
-INCFILE_20!$INCFILE_20$ac_delim
-INCFILE_21!$INCFILE_21$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60431,6 +60597,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+INCFILE_20!$INCFILE_20$ac_delim
+INCFILE_21!$INCFILE_21$ac_delim
 INCFILE_22!$INCFILE_22$ac_delim
 INCFILE_23!$INCFILE_23$ac_delim
 INCFILE_24!$INCFILE_24$ac_delim
@@ -60526,8 +60694,6 @@ EXAMPFILE_43!$EXAMPFILE_43$ac_delim
 EXAMPFILE_44!$EXAMPFILE_44$ac_delim
 EXAMPFILE_45!$EXAMPFILE_45$ac_delim
 EXAMPFILE_46!$EXAMPFILE_46$ac_delim
-EXAMPFILE_47!$EXAMPFILE_47$ac_delim
-EXAMPFILE_48!$EXAMPFILE_48$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60569,6 +60735,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+EXAMPFILE_47!$EXAMPFILE_47$ac_delim
+EXAMPFILE_48!$EXAMPFILE_48$ac_delim
 EXAMPFILE_49!$EXAMPFILE_49$ac_delim
 EXAMPFILE_50!$EXAMPFILE_50$ac_delim
 EXAMPFILE_51!$EXAMPFILE_51$ac_delim
@@ -60664,8 +60832,6 @@ MAKEFILE_20!$MAKEFILE_20$ac_delim
 ISMAKEFILE_1!$ISMAKEFILE_1$ac_delim
 ISMAKEFILE_2!$ISMAKEFILE_2$ac_delim
 ISMAKEFILE_3!$ISMAKEFILE_3$ac_delim
-ISMAKEFILE_4!$ISMAKEFILE_4$ac_delim
-ISMAKEFILE_5!$ISMAKEFILE_5$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60707,6 +60873,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ISMAKEFILE_4!$ISMAKEFILE_4$ac_delim
+ISMAKEFILE_5!$ISMAKEFILE_5$ac_delim
 ISMAKEFILE_6!$ISMAKEFILE_6$ac_delim
 ISMAKEFILE_7!$ISMAKEFILE_7$ac_delim
 ISMAKEFILE_8!$ISMAKEFILE_8$ac_delim
@@ -60802,8 +60970,6 @@ ISCONFFILE_17!$ISCONFFILE_17$ac_delim
 ISCONFFILE_18!$ISCONFFILE_18$ac_delim
 ISCONFFILE_19!$ISCONFFILE_19$ac_delim
 ISCONFFILE_20!$ISCONFFILE_20$ac_delim
-CONVFILE_1!$CONVFILE_1$ac_delim
-CONVFILE_2!$CONVFILE_2$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60845,6 +61011,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+CONVFILE_1!$CONVFILE_1$ac_delim
+CONVFILE_2!$CONVFILE_2$ac_delim
 CONVFILE_3!$CONVFILE_3$ac_delim
 CONVFILE_4!$CONVFILE_4$ac_delim
 CONVFILE_5!$CONVFILE_5$ac_delim
@@ -60940,8 +61108,6 @@ IMPORTFILE_14!$IMPORTFILE_14$ac_delim
 IMPORTFILE_15!$IMPORTFILE_15$ac_delim
 IMPORTFILE_16!$IMPORTFILE_16$ac_delim
 IMPORTFILE_17!$IMPORTFILE_17$ac_delim
-IMPORTFILE_18!$IMPORTFILE_18$ac_delim
-IMPORTFILE_19!$IMPORTFILE_19$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -60983,6 +61149,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+IMPORTFILE_18!$IMPORTFILE_18$ac_delim
+IMPORTFILE_19!$IMPORTFILE_19$ac_delim
 IMPORTFILE_20!$IMPORTFILE_20$ac_delim
 ISIMPORTFILE_1!$ISIMPORTFILE_1$ac_delim
 ISIMPORTFILE_2!$ISIMPORTFILE_2$ac_delim
@@ -61078,8 +61246,6 @@ SWIG!$SWIG$ac_delim
 SH!$SH$ac_delim
 LDD!$LDD$ac_delim
 LCLINTEXE2!$LCLINTEXE2$ac_delim
-PROG_SENDMAIL!$PROG_SENDMAIL$ac_delim
-IKSPERF!$IKSPERF$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -61121,6 +61287,8 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+PROG_SENDMAIL!$PROG_SENDMAIL$ac_delim
+IKSPERF!$IKSPERF$ac_delim
 LIBWWW_CONFIG!$LIBWWW_CONFIG$ac_delim
 PDFLIB_CONFIG!$PDFLIB_CONFIG$ac_delim
 MAKECINT!$MAKECINT$ac_delim
@@ -61160,7 +61328,7 @@ CYGCHECK!$CYGCHECK$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 37; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 39; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -61935,7 +62103,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.403 2008-04-04 17:19:38 mikeaubury Exp $
+| $Id: configure,v 1.404 2008-04-09 17:52:47 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

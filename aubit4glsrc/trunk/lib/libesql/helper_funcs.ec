@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.72 2008-03-18 10:17:44 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.73 2008-04-09 17:53:40 mikeaubury Exp $
 #
 */
 
@@ -123,10 +123,8 @@ strcpy(dbName,dbname);
     static void *local_get_connection(void ) {
 	return (void *) ECPGget_PGconn(NULL);
     }
-
-
   #else
-    #if PG_VERSION_NUM < 80300
+    #if HAVE_ECPGGET_CONNECTION 
        struct connection
        {
              char       *name;
@@ -139,8 +137,9 @@ strcpy(dbName,dbname);
 
        #define ECPG_GC_CALL ECPGget_connection
     #else
-	struct connection
-	{
+	#if HAVE_ECPG_GET_CONNECTION
+		struct connection
+		{
         	char       *name;
         	PGconn     *connection;
         	bool        committed;
@@ -148,14 +147,23 @@ strcpy(dbName,dbname);
         	struct ECPGtype_information_cache *cache_head;
         	struct prepared_statement *prep_stmts;
         	struct connection *next;
-	};
+		};
 	
-	#define ECPG_GC_CALL ecpg_get_connection
-    #endif
+		#define ECPG_GC_CALL ecpg_get_connection
+	#else
+		/* nothing we can use... */
+
+		static void *local_get_connection(void) {
+			return 0;
+		}
+	#endif /* HAVE_ECPG_GET_CONNECTION */
+    #endif /* HAVE_ECPGGET_CONNECTION */
+#endif /* HAVE_ECPGGET_PGCONN */
 
 
+
+#ifdef ECPG_GC_CALL 
     struct connection * ECPG_GC_CALL(char *);
-
     static void *local_get_connection(void ) {
         struct connection *ret = NULL;
 	void *ptr=0;
@@ -166,9 +174,11 @@ strcpy(dbName,dbname);
                 ptr=0;
         }
 	return ptr;
-
     }
-   #endif /* HAVE_ECPGGET_PGCONN */
+
+#endif
+
+
 #endif /* DIALECT_POSTGRES */
 
 void* ESQLAPI_A4GL_db_connected(char *dbname) {
