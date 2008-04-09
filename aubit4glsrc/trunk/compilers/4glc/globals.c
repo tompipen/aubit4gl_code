@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.42 2008-02-11 17:13:06 mikeaubury Exp $
+# $Id: globals.c,v 1.43 2008-04-09 16:16:35 mikeaubury Exp $
 #
 */
 
@@ -210,7 +210,12 @@ dump_gvars (void)
   g->exported_global_variables.variables.variables_len=this_module.exported_global_variables.variables.variables_len;
   g->exported_global_variables.variables.variables_val=this_module.exported_global_variables.variables.variables_val;
 
-  A4GL_write_data_to_file_generic("module_definition", "globals_definition",g,ii);
+	if (g->mod_dbname==0) g->mod_dbname="";
+
+  	if (!A4GL_write_data_to_file_generic("module_definition", "globals_definition",g,ii)) {
+		printf("Unable to write GLOBALs data\n");
+		exit(2);
+	}
 
 /*
   f = A4GL_mja_fopen (ii, "w");

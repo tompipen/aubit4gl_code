@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.72 2008-02-11 17:13:06 mikeaubury Exp $
+# $Id: 4glc.c,v 1.73 2008-04-09 16:16:35 mikeaubury Exp $
 #
 */
 
@@ -126,6 +126,9 @@ main (int argc, char *argv[])
   if (strlen(dialect)==0) {
 	dialect=0;
   }
+	if (strcmp(acl_getenv("PACKER"),"XDR")==0) {
+		A4GL_setenv ("A4GL_PACKER", "PACKED", 1);
+	}
 
 
   if (dialect) {
