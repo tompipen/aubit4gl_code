@@ -21,7 +21,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.130 2008-04-09 10:32:24 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.131 2008-04-09 16:07:47 mikeaubury Exp $";
 #endif
 
 
@@ -3823,6 +3823,7 @@ if (oldi==0 && i==0) { 	// No images :-)
 		if (l) {
 			free(current);
 			gtk_label_set_text(GTK_LABEL(l),txt);
+			/* gtk_label_set_pattern(l,"_"); */
 			gtk_object_set_data (GTK_OBJECT (b), "TEXT",strdup(txt));
 			return;
 		}
@@ -3877,6 +3878,9 @@ if (isdiff) {
       	gtk_object_set_data(GTK_OBJECT(b),	"TEXT",strdup(txt));
 	
       	gtk_label_set_text(GTK_LABEL (l), txt);
+
+	/* gtk_label_set_pattern(l,"_"); */
+
       //gtk_button_set_image(GTK_BUTTON (b), i);
 }
 }
