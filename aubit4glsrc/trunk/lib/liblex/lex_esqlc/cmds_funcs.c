@@ -337,10 +337,17 @@ print_display_cmd (struct_display_cmd * cmd_data)
 
     case DT_DISPLAY_TYPE_FIELD_LIST:
       real_print_expr_list (cmd_data->exprs);
-
-      printc ("A4GL_disp_fields(%d,0x%x,%s,NULL);",
-	      cmd_data->exprs->list.list_len,
-	      attributes_as_int (cmd_data->attributes), local_field_name_list_as_char (cmd_data->where->dt_display_u.field_list));
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{ int _attr;char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+      		printc ("A4GL_disp_fields(%d,_attr,%s,NULL);", cmd_data->exprs->list.list_len, local_field_name_list_as_char (cmd_data->where->dt_display_u.field_list));
+		printc("}");
+	} else {
+      		printc ("A4GL_disp_fields(%d,0x%x,%s,NULL);", cmd_data->exprs->list.list_len, attributes_as_int (cmd_data->attributes), local_field_name_list_as_char (cmd_data->where->dt_display_u.field_list));
+	}
 
       break;
     case DT_DISPLAY_TYPE_MENUITEM:
@@ -375,9 +382,22 @@ print_display_form_cmd (struct_display_form_cmd * cmd_data)
 {
   print_cmd_start ();
   set_nonewlines ();
-  printc ("A4GL_disp_form(");
-  print_ident (cmd_data->formname);
-  printc (",%d);\n", attributes_as_int (cmd_data->attributes));
+
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{ int _attr;char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+  		printc ("A4GL_disp_form(");
+  		print_ident (cmd_data->formname);
+  		printc (",_attr);\n");
+		printc("}");
+	} else {
+  		printc ("A4GL_disp_form(");
+  		print_ident (cmd_data->formname);
+  		printc (",%d);\n", attributes_as_int (cmd_data->attributes));
+	}
   clr_nonewlines ();
   print_copy_status_not_sql (0);
   return 1;
@@ -389,8 +409,21 @@ int
 print_error_cmd (struct_error_cmd * cmd_data)
 {
   print_cmd_start ();
-  A4GL_print_expr_list_concat (cmd_data->expr_list);
-  printc ("A4GL_display_error(%d,%d);\n", attributes_as_int (cmd_data->attributes), cmd_data->wait_for_key==EB_TRUE);
+
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{ int _attr;char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+  		A4GL_print_expr_list_concat (cmd_data->expr_list);
+  		printc ("A4GL_display_error(_attr,%d);\n",  cmd_data->wait_for_key==EB_TRUE);
+		printc("}");
+	} else {
+  		A4GL_print_expr_list_concat (cmd_data->expr_list);
+  		printc ("A4GL_display_error(%d,%d);\n", attributes_as_int (cmd_data->attributes), cmd_data->wait_for_key==EB_TRUE);
+	}
+
   print_copy_status_not_sql (0);
   return 1;
 }
@@ -1041,7 +1074,17 @@ print_message_cmd (struct_message_cmd * cmd_data)
 		wait=0;
 	}
 
-  printc ("aclfgli_pr_message(%d,%d,%d);\n", attributes_as_int (cmd_data->attributes), wait, exprs);
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{ int _attr;char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+  		printc ("aclfgli_pr_message(_attr,%d,%d);\n", wait, exprs);
+		printc("}");
+	} else {
+  		printc ("aclfgli_pr_message(%d,%d,%d);\n", attributes_as_int (cmd_data->attributes), wait, exprs);
+	}
 
   print_copy_status_not_sql (0);
   return 1;
@@ -1870,7 +1913,8 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
   printcomment ("/* Display array */\n");
   printc ("{");
 	tmp_ccnt++;
-  printc ("int _fld_dr;int _exec_block= 0;\nchar *_curr_win=0;char _sio_%d[%d];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id, sizeof (struct s_disp_arr) + 10,sio_id);
+  printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes)); 
+  printc ("int _fld_dr; int _exec_block= 0;\nchar *_curr_win=0;char _sio_%d[%d];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id, sizeof (struct s_disp_arr) + 10,sio_id);
   print_event_list(cmd_data->events);
 
 
@@ -1964,6 +2008,15 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
 /* Now onto the rest of it... */
 
   printc ("_curr_win=A4GL_get_currwin_name();\n");
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{");
+		printc("char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+		printc("}");
+	}
   printc ("SET(\"s_disp_arr\",_sio_%d,\"no_arr\",A4GL_get_count());\n",sio_id);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"binding\",obind);\n",sio_id);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"nbind\",%d);\n",sio_id, cnt);
@@ -2005,7 +2058,7 @@ if (cmd_data->events) {
   print_variable_usage(cmd_data->arrayname);
   printc(",");
   print_ident(cmd_data->srec);
-  printc(",%d,", attributes_as_int(cmd_data->attributes));
+  printc(",_attr,");
   if (cmd_data->scroll_using) {
   	print_field(cmd_data->scroll_using);
   } else {
@@ -2084,21 +2137,31 @@ struct expr_str_list *li;
 
 
   sio_id=cmd_data->sio;
+  printc("int _attr=%d;", attributes_as_int(cmd_data->attributes)); 
   printc ("int _fld_dr= -100;int _exec_block= 0;char *_fldname;int _sf;");
   printc("char _sio_%d[%d]; char *_curr_win=0; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", sio_id,sizeof (struct s_screenio) + 10,sio_id);
   printc ("int _forminit=1;\n");
 print_event_list(cmd_data->events);
    local_print_bind_set_value_g (li,1,0,'i');
+  
   printc ("while(_fld_dr!=0){\n");
   tmp_ccnt++;
   printc ("if (_exec_block == 0) {\n");
   tmp_ccnt++;
   printc ("_curr_win=A4GL_get_currwin_name();\n");
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{");
+		printc("char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+		printc("}");
+	}
   printc ("SET(\"s_screenio\",_sio_%d,\"vars\",ibind);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"novars\",%d);\n", sio_id,ccc);
-  printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",%d);\n", sio_id,attributes_as_int(cmd_data->attributes));
-  printc
-    ("SET(\"s_screenio\",_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
+  printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",_attr);\n", sio_id);
+  printc ("SET(\"s_screenio\",_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"currentfield\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"currentmetrics\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"constr\",constr_flds);\n",sio_id);
@@ -2165,6 +2228,7 @@ int ccc;
   print_cmd_start ();
 
   printc ("{\nint _fld_dr= -100;\nint _exec_block= 0;\nchar *_fldname;char *_curr_win;int _sf;\n");
+   printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes)); 
   ccc=cmd_data->variables->list.list_len;
   print_bind_dir_definition_g (cmd_data->variables,1,'i');
   printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
@@ -2179,10 +2243,28 @@ int ccc;
   printc ("/* input by name */");
   local_print_bind_set_value_g (cmd_data->variables,1,0,'i');
   printc ("_curr_win=A4GL_get_currwin_name();\n");
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{");
+		printc("char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+		printc("}");
+	}
   printc ("SET(\"s_screenio\",&_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("if (GET_AS_INT(\"s_screenio\",&_sio_%d,\"currform\")==0) break;\n",sio_id);
   printc ("SET(\"s_screenio\",&_sio_%d,\"vars\",ibind);\n",sio_id);
-  printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",%d);\n",sio_id, attributes_as_int(cmd_data->attributes) );
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{");
+		printc("char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+		printc("}");
+	}
+  printc ("SET(\"s_screenio\",&_sio_%d,\"attrib\",_attr);\n",sio_id );
   printc ("SET(\"s_screenio\",&_sio_%d,\"novars\",%d);\n",sio_id, ccc);
   printc ("SET(\"s_screenio\",&_sio_%d,\"help_no\",%d);\n",sio_id, cmd_data->helpno);
 
@@ -2270,6 +2352,7 @@ int inp_flags=0;
 
   printc ("{");
   tmp_ccnt++;
+  printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes));
   printc("int _fld_dr= -100;int _exec_block= 0;\nchar *_fldname;char *_curr_win; \nint _forminit=1;int _tmp_int=0;");
   printc ("char _sio_%d[%d];char _inp_io_type='A';char *_sio_kw_%d=\"s_inp_arr\";\n",sio_id, sizeof (struct s_inp_arr) + 10,sio_id);
   print_event_list(cmd_data->events);
@@ -2404,6 +2487,16 @@ clr_nonewlines();
   printc ("SET(\"s_inp_arr\",_sio_%d,\"mode\",%d);\n",sio_id, MODE_INPUT+ (cmd_data->without_defaults==EB_TRUE));
 
 
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("{");
+		printc("char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+		printc("}");
+	}
+
    if (cmd_data->attributes && cmd_data->attributes->currentrowdisplay && strlen(cmd_data->attributes->currentrowdisplay))
     printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",%s);\n",sio_id, cmd_data->attributes->currentrowdisplay);
   else
@@ -2476,7 +2569,7 @@ print_event_actions ("_exec_block", cmd_data->events);
 set_nonewlines();
   printc ("_exec_block= A4GL_inp_arr_v2(&_sio_%d,%d,", sio_id, cmd_data->without_defaults==TRUE);
   print_ident(cmd_data->srec);
-  printc(",%d,_forminit,_sio_evt);_forminit=0;\n",attributes_as_int(cmd_data->attributes));
+  printc(",_attr,_forminit,_sio_evt);_forminit=0;\n");
 clr_nonewlines();
 
 
@@ -2522,10 +2615,31 @@ print_prompt_cmd (struct_prompt_cmd * cmd_data)
   print_cmd_start ();
   printc ("{");
   tmp_ccnt++;
+	printc("int _attr_prompt=%d;", attributes_as_int (cmd_data->prompt_str_attrib));
+	printc("int _attr_field=%d;", attributes_as_int (cmd_data->prompt_fld_attrib));
   printc("char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n", cmd_data->sio, sizeof (struct s_prompt), cmd_data->sio, timeout);
   print_event_list (cmd_data->events);
   A4GL_print_expr_list_concat (cmd_data->prompt_str);
-  printc ("if (A4GL_start_prompt(&_sio_%d,%d,%d,%d,%d)) {\n", cmd_data->sio, attributes_as_int (cmd_data->prompt_str_attrib), cmd_data->for_char==EB_TRUE, cmd_data->helpno, attributes_as_int (cmd_data->prompt_fld_attrib));
+
+	if (cmd_data->prompt_str_attrib  && cmd_data->prompt_str_attrib->var_attrib) {
+		printc("{");
+		printc("char *_s;");
+		print_expr(cmd_data->prompt_str_attrib->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr_prompt=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+		printc("}");
+	}
+	if (cmd_data->prompt_fld_attrib  && cmd_data->prompt_fld_attrib->var_attrib) {
+		printc("{");
+		printc("char *_s;");
+		print_expr(cmd_data->prompt_fld_attrib->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr_field=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+		printc("}");
+	}
+  printc ("if (A4GL_start_prompt(&_sio_%d,_attr_prompt,%d,%d,_attr_field)) {\n", cmd_data->sio,  cmd_data->for_char==EB_TRUE, cmd_data->helpno);
   tmp_ccnt++;
   printc ("while (1) {");
   tmp_ccnt++;
