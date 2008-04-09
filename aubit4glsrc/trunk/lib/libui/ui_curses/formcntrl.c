@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.140 2008-03-22 16:54:10 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.141 2008-04-09 08:35:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.140 2008-03-22 16:54:10 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.141 2008-04-09 08:35:48 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -953,7 +953,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
     {
       struct struct_scr_field *fprop;
       int attr;
-      A4GL_debug ("FORM_BEFORE_FIELD - state=%d", sio->fcntrl[a].state);
+      A4GL_debug ("FORM_BEFORE_FIELD - state=%d fieldname=%s", sio->fcntrl[a].state, sio->fcntrl[a].field_name);
       if (sio->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
@@ -1064,7 +1064,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 	      else
 		{
-		  A4GL_set_init_value (sio->currentfield,
+		  A4GL_set_init_value (sio->currentfield, 
 				       sio->vars[sio->curr_attrib].ptr,
 				       sio->vars[sio->curr_attrib].dtype +
 				       ENCODE_SIZE (sio->

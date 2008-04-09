@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.194 2008-04-08 13:29:37 mikeaubury Exp $
+# $Id: ioform.c,v 1.195 2008-04-09 08:35:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.194 2008-04-08 13:29:37 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.195 2008-04-09 08:35:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -526,8 +526,6 @@ A4GL_default_attributes (FIELD * f, int dtype)
     }
 
 
-  //set_field_fore (f, A4GL_colour_code (7));
-  //set_field_back (f, A4GL_colour_code (7));
 }
 
 
@@ -563,7 +561,9 @@ A4GL_set_field_attr (FIELD * field)
     {
       A4GL_debug ("Invisible ***");
       A4GL_debug ("ZZZZ - SET OPTS");
-      local_field_opts_off (field, O_PUBLIC);
+	if (!use_invisible_as_color_9()) {
+      			local_field_opts_off (field, O_PUBLIC);
+	}
     }
 
   if (f->dynamic == 0) {
@@ -690,6 +690,11 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
   if (!(colour & AUBIT_ATTR_REVERSE) && do_reverse == 1)
     {;
     }				// Maybe we should warn on these
+
+  if (A4GL_has_bool_attribute (f, FA_B_INVISIBLE) && use_invisible_as_color_9()) { 
+		set_field_fore (field, 9<<8); set_field_back (field, 9<<8); 
+		return; }
+	
 
   fg = A4GL_decode_aubit_attr (colour, 'f');
   bg = A4GL_decode_aubit_attr (colour, 'B');

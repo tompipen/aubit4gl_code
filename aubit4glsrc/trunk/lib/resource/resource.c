@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.145 2008-03-27 21:15:32 mikeaubury Exp $
+# $Id: resource.c,v 1.146 2008-04-09 08:35:49 mikeaubury Exp $
 #
 */
 
@@ -323,6 +323,8 @@ struct str_resource builtin_resource[] = {
   {"COLOR_TUI_YELLOW","6"},
   {"COLOR_TUI_WHITE","7"},
 #endif
+  {"COLOR_TUI_INVISIBLE_BG","7"},
+  {"COLOR_TUI_INVISIBLE_FG","7"},
 
 #ifdef A4GL_C_COMP
   {"A4GL_C_COMP", A4GL_C_COMP},

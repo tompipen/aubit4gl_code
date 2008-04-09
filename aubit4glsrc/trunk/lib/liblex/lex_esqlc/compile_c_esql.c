@@ -1308,13 +1308,20 @@ print_prepare_cmd (struct_prepare_cmd * cmd_data,int already_doing_cmd)
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
   printc ("char *_sql;\n");
   printc ("char *_s;\n");
+  printc ("char *_p;\n");
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
   clr_suppress_lines ();
   print_expr(cmd_data->sql);
   printc("_sql=A4GL_char_pop();");
   printc ("_s=strdup(CONVERTSQL_LN(_sql,%d));\n", line_for_cmd);
   printc("A4GL_set_err_txt(_s);");
-  printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", get_esql_ident_as_string(cmd_data->stmtid));
+	
+  if (cmd_data->stmtid->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
+	printc("_p=%s;\n", get_esql_ident_as_string(cmd_data->stmtid));
+  	printc ("\nEXEC SQL PREPARE _p FROM :_s;\n");
+  } else {
+  	printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", get_esql_ident_as_string(cmd_data->stmtid));
+  }
   A4GL_save_sql_from_var ();
   printc ("free(_s);\n");
   printc ("free(_sql);\n");
@@ -1378,8 +1385,17 @@ print_free_cmd (struct_free_cmd * cmd_data)
   //struct expr_str *cursorname;
   print_cmd_start ();
   print_use_session(cmd_data->connid);
-
-  printc ("\nEXEC SQL FREE %s;\n", get_esql_ident_as_string(cmd_data->cursorname));
+ 
+  if (cmd_data->cursorname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
+	printc("{");
+	printc("EXEC SQL BEGIN DECLARE SECTION;");
+	printc("char *_c;");
+	printc("_c=%s;\n", get_esql_ident_as_string(cmd_data->cursorname));
+  	printc ("\nEXEC SQL FREE _c;\n");
+	printc("}");
+  } else {
+  	printc ("\nEXEC SQL FREE %s;\n", get_esql_ident_as_string(cmd_data->cursorname));
+  }
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
   return 1;

@@ -71,7 +71,7 @@ IF lv_pos<0 THEN
 	ERROR "Some error getting unique ID"
 	RETURN
 end if
-
+whenever error stop
 
 LET lv_c="c_get_row",lv_tabno using "<<<<"
 
@@ -80,16 +80,19 @@ IF gv_prepared[lv_tabno] IS NULL OR gv_prepared[lv_tabno]=0 THEN
 		let lv_p="p_get_row",lv_tabno using "<<<<"
 		PREPARE _variable(lv_p) FROM lv_sql
 		DECLARE _variable(lv_c) CURSOR FOR _variable(lv_p)
-
 		LET gv_prepared[lv_tabno]=1
 END IF
 
 
+#whenever error continue
 OPEN   _variable(lv_c) using lv_id
 
 if sqlca.sqlcode<0 then
 	error "Some error opening cursor"
+	return
 end if
+#whenever error stop
+
 
 let sqlca.sqlcode=0
 

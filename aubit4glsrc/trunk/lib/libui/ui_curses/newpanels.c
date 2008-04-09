@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.152 2008-03-09 12:13:06 mikeaubury Exp $
+# $Id: newpanels.c,v 1.153 2008-04-09 08:35:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.152 2008-03-09 12:13:06 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.153 2008-04-09 08:35:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -2437,6 +2437,14 @@ A4GL_debug("Colours - BKG=%d\n",bkgcolor);
   init_pair (7, colors[6], bkgcolor);
   init_pair (8, colors[7], bkgcolor);
 
+if (use_invisible_as_color_9()) {
+	int fg;
+	int bg;
+	fg=atoi(acl_getenv("COLOR_TUI_INVISIBLE_FG"));
+	bg=atoi(acl_getenv("COLOR_TUI_INVISIBLE_BG"));
+	
+  	init_pair (9, fg,bg);
+}
 
 A4GL_debug("Assume default colors : %d %d",bkgcolor,fg);
 #ifndef PDCURSES
@@ -3319,6 +3327,23 @@ int A4GL_get_currwinno(void) {
 
 
 
+int use_invisible_as_color_9() {
+static int yes=-1;
+if (yes>=0) return yes;
+if (COLOR_PAIRS>8) {
+		//@env INVISIBLEASCOLOR 
+		//  use extended colors to define INVISIBLE with color attributes
+		//  rather than removing the O_PUBLIC attribute (which may cause blanking of DISPLAYed data)
+	if (A4GL_isno(acl_getenv("INVISIBLEASCOLOR"))) {
+		yes=0;
+	} else {
+		yes=1;
+	}
+} else {
+	yes=0;
+}
+return yes;
+}
 
 
 /* =============================== EOF =============================== */
