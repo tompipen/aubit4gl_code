@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.8 2007-12-12 13:38:02 mikeaubury Exp $
+# $Id: makefile,v 1.9 2008-04-09 16:04:44 mikeaubury Exp $
 #
 
 # Currently Informix only
@@ -54,7 +54,7 @@ include ${ROOT}/incl/a4gl.mk
 
 #4GLC=${FGLPCEXEC} ${VERBOSE_FLAG}
 #FGLPC_VERBOSE_FLAG=-V5
-4GLC			=4glpc -t C ${FGLPC_VERBOSE_FLAG}
+4GLC			=4glpc -g -t C ${FGLPC_VERBOSE_FLAG}
 
 
 ALL=${ROOT}/bin/aupscol

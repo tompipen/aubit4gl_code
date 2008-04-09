@@ -312,12 +312,18 @@ define lv_str char(2000)
 whenever error continue
 	let lv_str="select * from ",fgl_getenv("A4GL_SYSCOL_ATT")," where 1=0"
 	prepare ptstatt from lv_str
-	declare ctstatt cursor for ptstatt
-	open ctstatt
-	fetch ctstatt
+	if sqlca.sqlcode=0 then
+		declare ctstatt cursor for ptstatt
+		if sqlca.sqlcode=0 then
+			open ctstatt
+			if sqlca.sqlcode=0 then
+				fetch ctstatt
+			end if
+		end if
+	end if
 whenever error stop
 
-	if sqlca.sqlcode!=0 then
+	if sqlca.sqlcode<0 then
 		MENU "Create Attribute Table ?"
 		COMMAND "Yes"
 

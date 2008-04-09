@@ -146,9 +146,20 @@ menu "ATTRIBUTE"
 			prepare p_ins_att from lv_str
 			execute p_ins_att using lv_rec.*
 		else
-			let lv_str="UPDATE ",fgl_getenv("A4GL_SYSCOL_ATT")," set (color,inverse,underline,blink,left,def_format,condition)=(?,?,?,?,?,?,?) where ",get_rowid()," = ",lv_rid
+			whenever error continue
+			let lv_str="UPDATE ",fgl_getenv("A4GL_SYSCOL_ATT")," set color=?, inverse=?, underline=?,blink=?,left=?,def_format=?,condition=? where ",get_rowid()," = ",lv_rid
 			prepare p_ins_att from lv_str
 			execute p_ins_att using lv_rec.color,lv_rec.inverse,lv_rec.blink,lv_rec.underline,lv_rec.left,lv_rec.def_format,lv_rec.condition
+			if sqlca.sqlcode<0 then
+				# Sometimes left is a reserved word - try with quotes...
+				let lv_str="UPDATE ",fgl_getenv("A4GL_SYSCOL_ATT")," set color=?, inverse=?, underline=?,blink=?,\"left\"=?,def_format=?,condition=? where ",get_rowid()," = ",lv_rid
+				prepare p_ins_att from lv_str
+				execute p_ins_att using lv_rec.color,lv_rec.inverse,lv_rec.blink,lv_rec.underline,lv_rec.left,lv_rec.def_format,lv_rec.condition
+				if sqlca.sqlcode<0 then
+					error "Some error updating the database"
+				end if
+			end if
+			whenever error stop
 		end if
 		exit menu
 end menu
