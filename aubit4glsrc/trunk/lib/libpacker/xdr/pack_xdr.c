@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.13 2008-01-27 14:51:24 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.14 2008-04-09 16:13:15 mikeaubury Exp $
 #*/
 
 /**
@@ -150,7 +150,9 @@ process_xdr (char dir, char *name, void *s, char *filename)
   FILE *fxx;
   void *libptr;
   char buff[256];
+int result;
   XDR xdrp;
+
 
   sprintf (buff, "xdr_%s", name);
 
@@ -185,17 +187,20 @@ process_xdr (char dir, char *name, void *s, char *filename)
     xdrstdio_create (&xdrp, fxx, XDR_DECODE);
 
   A4GL_pack_xdr_func = (void *) A4GL_find_func (libptr, buff);
-  if (A4GL_pack_xdr_func == 0)
+  if (A4GL_pack_xdr_func == 0) {
+		A4GL_debug("No packing function!!!");
     return 0;
+  }
 
-  A4GL_pack_xdr_func (&xdrp, s);
+ result=A4GL_pack_xdr_func (&xdrp, s);
+
   /*
    too many arguments to function - changed the prototype - see above
   */
 
   xdr_destroy (&xdrp);
   fclose (fxx);
-  return 1;
+  return result;
 }
 
 
