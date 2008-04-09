@@ -1096,8 +1096,18 @@ print_message_cmd (struct_message_cmd * cmd_data)
 int
 print_open_window_cmd (struct_open_window_cmd * cmd_data)
 {
-  set_nonewlines ();
   print_cmd_start ();
+  printc("{");
+  printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes)); 
+	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+		printc("char *_s;");
+		print_expr(cmd_data->attributes->var_attrib);
+		printc("_s=A4GL_char_pop();");
+		printc("_attr=A4GL_strattr_to_num(_s);");
+		printc("free(_s);");
+	}
+  set_nonewlines ();
+
   if (cmd_data->wt.wintype == EWT_ROWSCOLS)
     {
       print_expr (cmd_data->y);
@@ -1121,6 +1131,7 @@ print_open_window_cmd (struct_open_window_cmd * cmd_data)
 
 
   print_form_attrib_v2 (1, cmd_data->attributes);
+
   if (cmd_data->attributes && cmd_data->attributes->style && strlen(cmd_data->attributes->style))
     {
       printc (",%s", cmd_data->attributes->style);
@@ -1140,6 +1151,7 @@ print_open_window_cmd (struct_open_window_cmd * cmd_data)
   printc (");\n");
 
   clr_nonewlines ();
+  printc("}");
   print_copy_status_not_sql (0);
   return 1;
 }

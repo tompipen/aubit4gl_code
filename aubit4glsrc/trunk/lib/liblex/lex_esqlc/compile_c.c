@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.407 2008-04-08 19:06:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.408 2008-04-09 19:42:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.407 2008-04-08 19:06:52 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.408 2008-04-09 19:42:14 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2081,9 +2081,9 @@ buffer[4]=strdup(form_attrib->comment_line?local_expr_as_string(form_attrib->com
 buffer[5]=strdup(form_attrib->message_line?local_expr_as_string(form_attrib->message_line): "255");
 
 
-	frm_attr=attributes_as_int(form_attrib);
+	//frm_attr=attributes_as_int(form_attrib);
 
-  printc ("%d,%s,%s,%s,%s,%d,%s,%s,%d",
+  printc ("%d,%s,%s,%s,%s,%d,%s,%s,_attr",
 	  iswindow,
 	buffer[0],
 	buffer[1],
@@ -2091,8 +2091,7 @@ buffer[5]=strdup(form_attrib->message_line?local_expr_as_string(form_attrib->mes
 	buffer[3],
 	  form_attrib->border==EB_TRUE,
 	buffer[4],
-	buffer[5],
-	frm_attr
+	buffer[5]
 	);
 free(buffer[0]);
 free(buffer[1]);
