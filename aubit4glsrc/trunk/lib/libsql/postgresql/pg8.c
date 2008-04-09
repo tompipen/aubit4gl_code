@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.30 2008-04-09 06:58:45 mikeaubury Exp $
+# $Id: pg8.c,v 1.31 2008-04-09 16:11:03 mikeaubury Exp $
 #*/
 
 
@@ -1776,6 +1776,7 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
   if (fake_db)
     {
       PQfinish (current_con);
+  	A4GL_del_pointer ("default", SESSCODE);
       current_con = 0;
     }
 

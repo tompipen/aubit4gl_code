@@ -43,6 +43,7 @@ somedb=# CREATE LANGUAGE plperl;
 
 You'll need to enable this procedure on your tables with something like : 
 
+	CREATE SEQUENCE tabname_sercol_seq;
 	CREATE TRIGGER sometrigname BEFORE INSERT ON tabname FOR EACH ROW EXECUTE PROCEDURE  next_seq_id('sercol','tabname_sercol_seq');
 
 
