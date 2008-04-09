@@ -21,7 +21,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.129 2008-04-01 14:54:14 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.130 2008-04-09 10:32:24 mikeaubury Exp $";
 #endif
 
 
@@ -2390,7 +2390,7 @@ int prompt_last_key = 0;
  * @param af The attributes.
  */
 int
-A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
+A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int charmode, int h,
 		      int af, int curr_width, int iscurrborder,
 		      int prompt_line, void *currwin, int prompt_mode)
 {
@@ -2404,7 +2404,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int c, int h,
   int field_cnt = 0;
   GtkWidget **widgets;
   list_of_fields lof;
-  A4GL_debug ("In start prompt %d %d %d %d", ap, c, h, af);
+  A4GL_debug ("In start prompt %d %d %d %d", ap, charmode, h, af);
   last_prompt_mode = prompt_mode;
 
 A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------------------------------
@@ -2501,6 +2501,9 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
 
   A4GL_LL_set_new_page (widgets[field_cnt - 1], 1);
 
+  if (charmode) {
+		width=1;
+  }
   widgets[field_cnt++] =
     (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0,0,
 				      0, 0,"","");
