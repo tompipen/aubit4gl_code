@@ -797,6 +797,7 @@ uilib_prompt_loop (int n)
 }
 
 
+
 int
 uilib_get_prompt_result (int nargs)
 {
@@ -2022,9 +2023,18 @@ int uilib_save_file(char *id, char *s) {
 }
 
 
+int uilib_last_received_key() {
+	PUSHquote(last_attr->lastkey);
+	return 1;
+}
+
 
 int uilib_lastkey( int nargs) {
-	PUSHquote(mLastKey);
+	if (mLastKey) {
+		PUSHquote(mLastKey);
+	} else {
+		PUSHquote("");
+	}
 	return 1;
 }
 

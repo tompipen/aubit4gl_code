@@ -2303,10 +2303,125 @@ int UILIB_UI_initlib() {
 }
 
 
+int
+UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
+{
+  int rval=0;
+  int context;
+  char *argp;
+  int infield;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) inp) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+	A4GL_push_int(context);
+	A4GL_push_char(argp);
+	uilib_infield(2);
+	infield=A4GL_pop_long();
+	if (infield) {rval=1; break;}
+    }
+
+  return rval;
+}
+
+int
+UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
+{
+  int rval=0;
+  int context;
+  char *argp;
+  int infield;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) inp) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+	A4GL_push_int(context);
+	A4GL_push_char(argp);
+	uilib_infield(2);
+	infield=A4GL_pop_long();
+	if (infield) {rval=1; break;}
+    }
+
+  return rval;
+}
+
+void
+UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
+{
+  char *field_list;
+  UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap);
+  printf("<CLEAR todefault=\"%d\">%s</CLEAR>",to_defaults,field_list);
+}
+
+int
+UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
+{
+  int context;
+  char *argp;
+  int n;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) inp) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+
+  A4GL_push_int(context);
+  n=1;
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+	A4GL_push_char(argp);
+		n++;
+    }
+  n=uilib_getfldbuf(n);
+  return n;
+}
+
+int
+UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
+{
+  int context;
+  char *argp;
+  int n;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) inp) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+
+  A4GL_push_int(context);
+  n=1;
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+	A4GL_push_char(argp);
+		n++;
+    }
+  n=uilib_getfldbuf(n);
+  return n;
+}
+
+
 void
 UILIB_A4GL_disp_h_menu (void *menu)
 {
-//niy();
+
+// Doesn't need to do anything...
+
 }
 
 // NIY ----------------------------------------------------------------------------------
@@ -2344,22 +2459,6 @@ UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
   return rval;
 }
 
-int
-UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
-{
-  int rval;
-
-  return rval;
-}
-
-int
-UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
 
 int
 UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
@@ -2375,29 +2474,7 @@ UILIB_A4GL_clr_form_fields (int to_defaults, char *defs)
   niy ();
 }
 
-void
-UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
-{
-  char *field_list;
-   UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap);
-  printf("<CLEAR todefault='%d'>%s</CLEAR>",to_defaults,field_list);
-}
 
-int
-UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
-UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
 
 void
 UILIB_A4GL_gui_run_til_no_more ()
@@ -2409,9 +2486,10 @@ UILIB_A4GL_gui_run_til_no_more ()
 int
 UILIB_aclfgl_a4gl_set_page (int n)
 {
-  int rval;
-  niy ();
-  return rval;
+int b;
+  b = A4GL_pop_int ();
+  send_to_ui ("<SETPAGE=\%d\"/>",b);
+return 0;
 }
 
 int
@@ -2486,9 +2564,26 @@ UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
 int
 UILIB_A4GL_get_key (int timeout)
 {
-  int rval;
-  niy ();
-  return rval;
+  char buff[2000];
+int a;
+char *s;
+  send_to_ui ("<GETKEY/><WAITFOREVENT/>");
+  flush_ui ();
+  a = get_event_from_ui ();
+  uilib_last_received_key(0);
+  s=A4GL_char_pop();
+  if (s) {
+
+	if (strlen(s)==0) {
+		a=0; 
+	} else {
+  		a=atoi(s);
+		free(s);
+	}
+  }  else {
+	a=0;
+  }
+  return a;
 }
 
 void *
@@ -2503,17 +2598,19 @@ UILIB_A4GL_create_menu (void *m, char *id, int mode, void *handler)
 int
 UILIB_aclfgl_fgl_set_arrline (int nparam)
 {
-  int rval;
-  niy ();
-  return rval;
+  int b;
+  b = A4GL_pop_int ();
+  send_to_ui ("<SETARRLINE=\%d\"/>",b);
+  return 0;
 }
 
 int
 UILIB_aclfgl_fgl_set_scrline (int nparam)
 {
-  int rval;
-  niy ();
-  return rval;
+  int b;
+  b = A4GL_pop_int ();
+  send_to_ui ("<SETSCRLINE=\%d\"/>",b);
+  return 0;
 }
 
 void
