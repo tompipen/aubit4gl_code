@@ -979,11 +979,11 @@ struct struct_skip_cmd {
 };
 
 struct struct_skip_by_cmd {
-	double lines;
+	struct expr_str *skip_amt;
 };
 
 struct struct_skip_to_cmd {
-	double lines;
+	struct expr_str *skip_amt;
 };
 
 struct struct_sql_transact_cmd {

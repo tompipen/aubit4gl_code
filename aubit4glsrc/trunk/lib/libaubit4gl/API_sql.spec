@@ -2,7 +2,7 @@ LIBRARY SQL
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_SQLTYPE
 LIB_PREFIX A4GLSQLLIB_
-
+#define structexpr_str_list  struct expr_str_list*
 * Driver data
 A4GLSQL_dbms_dialect -> char*
 A4GLSQL_dbms_name -> char*
@@ -19,7 +19,7 @@ A4GLSQL_next_column_detailed char** colname int* dtype int* size int* prec int* 
 
 * A4GLSQL_read_columns char* tabname char* colname int* dtype int* size -> int
 
-A4GLSQL_get_validation_expr char* tabname char* colname -> expr_str_list*
+A4GLSQL_get_validation_expr char* tabname char* colname -> structexpr_str_list
 A4GLSQL_syscolval_expr char* tabname char* colname char* typ -> char*
 
 

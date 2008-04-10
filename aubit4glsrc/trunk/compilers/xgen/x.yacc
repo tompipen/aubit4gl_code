@@ -472,7 +472,6 @@ typedef_elem:
 	| INT NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
 	| LONG NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
 	| STRING NAMED LESS_THAN GREATER_THAN {
-			fprintf(hsf,"typedef char *%s;\n",$<str>2);
 			fprintf(hf,"int input_%s(char *rn,char **r,int isptr,int arr);\n",$<str>2,$<str>2);
 			fprintf(cfi,"int input_%s(char *rn,char **r,int isptr,int arr) {\n",$<str>2,$<str>2);
 			fprintf(cfi,"return input_string(rn,r,isptr,arr);\n");
@@ -483,6 +482,7 @@ typedef_elem:
 			fprintf(cfo,"if (rn==0) rn=\"\";\n");
 			fprintf(cfo,"return output_string(rn,r,isptr,arr);\n");
 			fprintf(cfo,"}\n");
+			fprintf(hsf,"typedef char *%s;\n",$<str>2);
 		}
 ;
 
@@ -609,7 +609,10 @@ struct: STRUCT NAMED {
 	fprintf(cfo,"return 1;\n}\n\n");
 	fprintf(cfi,"if (!input_end_struct(\"%s\",rn)) return 0;\n",$<str>2);
 	fprintf(cfi,"return 1;\n}\n\n");
-	fprintf(hsf,"};\ntypedef struct %s %s;\n\n",$<str>2,$<str>2);
+	fprintf(hsf,"};\n");
+		fprintf(hsf,"#ifndef OMIT_TYPEDEFS\n");
+	fprintf(hsf,"typedef struct %s %s; /* XX */\n\n",$<str>2,$<str>2);
+		fprintf(hsf,"#endif\n");
 	cu_cnt--;
 }
 

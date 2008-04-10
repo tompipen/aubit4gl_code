@@ -1472,17 +1472,17 @@ struct command *c;
    return c;
 }
  
-struct command *new_skip_by_cmd(double p_lines) { //!
+struct command *new_skip_by_cmd(expr_str *p_lines) { //!
 struct command *c;
    c=new_command(E_CMD_SKIP_BY_CMD);
-   c->cmd_data.command_data_u.skip_by_cmd.lines=p_lines;
+   c->cmd_data.command_data_u.skip_by_cmd.skip_amt=p_lines;
    return c;
 }
  
-struct command *new_skip_to_cmd(double p_lines) { //!
+struct command *new_skip_to_cmd(expr_str *p_lines) { //!
 struct command *c;
    c=new_command(E_CMD_SKIP_TO_CMD);
-   c->cmd_data.command_data_u.skip_to_cmd.lines=p_lines;
+   c->cmd_data.command_data_u.skip_to_cmd.skip_amt=p_lines;
    return c;
 }
  

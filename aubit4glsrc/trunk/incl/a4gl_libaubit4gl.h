@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.307 2008-04-09 16:22:16 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.308 2008-04-10 18:53:11 mikeaubury Exp $
 #
 */
 
@@ -2742,6 +2742,7 @@ A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r);
 char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr);
 int A4GL_get_single_int_returned_from_call(int n);
 int A4GL_islocated(struct fgl_int_loc *p);
+int A4GL_wordwrap_text(char *in, char *out,int width, int maxsize);
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

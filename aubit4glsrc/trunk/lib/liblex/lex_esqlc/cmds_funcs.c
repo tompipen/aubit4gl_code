@@ -2989,7 +2989,11 @@ int print_skip_cmd(struct_skip_cmd *cmd_data) {
 /******************************************************************************/
 int print_skip_by_cmd(struct_skip_by_cmd *cmd_data) {
   print_cmd_start ();
-  printc ("A4GL_pdf_skip_by(&_rep,%f);\n", cmd_data->lines);
+  printc("{double _d;");
+  print_expr(cmd_data->skip_amt);
+  printc("_d=A4GL_pop_double();");
+  printc ("A4GL_pdf_skip_by(&_rep,_d);\n");
+  printc("}");
   print_copy_status_not_sql (0);
   return 1;
 }
@@ -2997,7 +3001,11 @@ int print_skip_by_cmd(struct_skip_by_cmd *cmd_data) {
 /******************************************************************************/
 int print_skip_to_cmd(struct_skip_to_cmd *cmd_data) {
   print_cmd_start ();
-  printc ("A4GL_pdf_skip_to(&_rep,%f);\n", cmd_data->lines);
+  printc("{double _d;");
+  print_expr(cmd_data->skip_amt);
+  printc("_d=A4GL_pop_double();");
+  printc ("A4GL_pdf_skip_to(&_rep,_d);\n");
+  printc("}");
   print_copy_status_not_sql (0);
   return 1;
 }

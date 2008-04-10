@@ -537,7 +537,7 @@ skip_cmd :
 				if (rep_type!=REP_TYPE_PDF) { 
 					a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; 
 				} 
-				$<cmd>$=new_skip_by_cmd(n);
+				$<cmd>$=new_skip_by_cmd(A4GL_new_literal_double_str($<str>2));
 			}
 	}
 	;
@@ -548,25 +548,25 @@ skip_to_top_cmd :
 ;
 
 
-skip_by_cmd :  SKIP_BY nval {
-		double n;
-			n=atof($<str>2);
+skip_by_cmd :  SKIP_BY pdf_expr {
+		//double n;
+			//n=atof($<str>2);
 			if (rep_type!=REP_TYPE_PDF) {
 				a4gl_yyerror("SKIP BY is only in PDF reports");
 				YYERROR;
 			}
-			$<cmd>$=new_skip_by_cmd(n);
+			$<cmd>$=new_skip_by_cmd($<ptr>2);
 		}
 ;
 
-skip_to_cmd : SKIP_TO nval {
-			double n;
-			n=atof($<str>2);
+skip_to_cmd : SKIP_TO pdf_expr {
+			//double n;
+			//n=atof($<str>2);
 			if (rep_type!=REP_TYPE_PDF) {
 				a4gl_yyerror("SKIP TO is only in PDF reports");
 				YYERROR;
 			}
-			$<cmd>$=new_skip_to_cmd(n);
+			$<cmd>$=new_skip_to_cmd($<ptr>2);
 		}
 
 

@@ -175,6 +175,7 @@ char * A4GL_type_id_to_name(int type_id);
 
 #include "a4gl_lib_sql_int.h"
 #include "a4gl_API_sql_lib.h"
+#include "a4gl_expr.h"
 
     /*  -------------- in sql.c ------------------ */
 

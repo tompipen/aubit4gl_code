@@ -1,6 +1,7 @@
 #ifndef A4GL_EXPR_H
 #define A4GL_EXPR_H
 
+#define Blah
 #include "dataio/fgl.xs.h"
 
 struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right, enum e_expr_type type, struct expr_str *escape) ;
