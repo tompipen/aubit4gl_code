@@ -535,11 +535,6 @@ UILIB_A4GL_finish_create_menu (void *menu)
   uilib_menu_initialised (1);
 }
 
-void
-UILIB_A4GL_disp_h_menu (void *menu)
-{
-//niy();
-}
 
 int
 UILIB_A4GL_menu_loop_v2 (void *menu, void *evt)
@@ -1639,37 +1634,7 @@ UILIB_A4GL_iscurrborder ()
   return win_stack[win_stack_cnt - 1]->border;
 }
 
-int
-UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv,
-				      void *listv)
-{
-  int rval;
-  niy ();
-  return rval;
-}
 
-long
-UILIB_A4GL_get_option_value_for_current_window (char type)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
-UILIB_A4GL_widget_name_match (void *w, char *name)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-int
-UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
 
 
 int
@@ -1841,23 +1806,6 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 }
 
 int
-UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
-{
-  int rval;
-
-  return rval;
-}
-
-int
-UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-
-int
 UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
 {
 long context;
@@ -1942,168 +1890,13 @@ UILIB_A4GL_start_prompt (void *prompt, int ap, int c, int h, int af)
   return rval;
 }
 
-int
-UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-void
-UILIB_A4GL_clr_form_fields (int to_defaults, char *defs)
-{
-  niy ();
-}
-
-void
-UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
-{
-  niy ();
-}
-
-int
-UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
-UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-void
-UILIB_A4GL_gui_run_til_no_more ()
-{
-  niy ();
-}
-
-
-int
-UILIB_aclfgl_a4gl_set_page (int n)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
-UILIB_aclfgl_a4gl_get_page (int n)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
-UILIB_aclfgl_a4gl_run_gui (int nargs)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-void
-UILIB_A4GL_set_infield_from_stack ()
-{
-  niy ();
-}
-
-int
-UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-
-void *
-UILIB_A4GL_make_pixmap_gw (char *filename)
-{
-  void *rval;
-  niy ();
-  return rval;
-}
-
-
-
-void
-UILIB_A4GL_init_color (int n, int r, int g, int b)
-{
-  niy ();
-}
-
-int
-UILIB_A4GL_fgl_fieldtouched_input_ap (void *input, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-int
-UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *input, va_list * ap)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-void
-UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
-{
-  niy ();
-}
-
-int
-UILIB_A4GL_get_key (int timeout)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-void *
-UILIB_A4GL_create_menu (void *m, char *id, int mode, void *handler)
-{
-  void *rval;
-  niy ();
-  return rval;
-}
 
 void
 UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 {
 }
 
-int
-UILIB_aclfgl_fgl_set_arrline (int nparam)
-{
-  int rval;
-  niy ();
-  return rval;
-}
 
-int
-UILIB_aclfgl_fgl_set_scrline (int nparam)
-{
-  int rval;
-  niy ();
-  return rval;
-}
-
-void
-UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
-{
-  niy ();
-}
 
 
 int
@@ -2508,3 +2301,224 @@ static int get_inc_quotes(int a) {
 int UILIB_UI_initlib() {
 	return 1;
 }
+
+
+void
+UILIB_A4GL_disp_h_menu (void *menu)
+{
+//niy();
+}
+
+// NIY ----------------------------------------------------------------------------------
+
+
+int
+UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv,
+				      void *listv)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+long
+UILIB_A4GL_get_option_value_for_current_window (char type)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_A4GL_widget_name_match (void *w, char *name)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+int
+UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
+{
+  int rval;
+
+  return rval;
+}
+
+int
+UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+
+int
+UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+void
+UILIB_A4GL_clr_form_fields (int to_defaults, char *defs)
+{
+  niy ();
+}
+
+void
+UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
+{
+  char *field_list;
+   UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap);
+  printf("<CLEAR todefault='%d'>%s</CLEAR>",to_defaults,field_list);
+}
+
+int
+UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+void
+UILIB_A4GL_gui_run_til_no_more ()
+{
+  niy ();
+}
+
+
+int
+UILIB_aclfgl_a4gl_set_page (int n)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_aclfgl_a4gl_get_page (int n)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_aclfgl_a4gl_run_gui (int nargs)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+void
+UILIB_A4GL_set_infield_from_stack ()
+{
+  niy ();
+}
+
+int
+UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+
+void *
+UILIB_A4GL_make_pixmap_gw (char *filename)
+{
+  void *rval;
+  niy ();
+  return rval;
+}
+
+
+
+void
+UILIB_A4GL_init_color (int n, int r, int g, int b)
+{
+  niy ();
+}
+
+int
+UILIB_A4GL_fgl_fieldtouched_input_ap (void *input, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *input, va_list * ap)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+void
+UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
+{
+  niy ();
+}
+
+int
+UILIB_A4GL_get_key (int timeout)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+void *
+UILIB_A4GL_create_menu (void *m, char *id, int mode, void *handler)
+{
+  void *rval;
+  niy ();
+  return rval;
+}
+
+
+int
+UILIB_aclfgl_fgl_set_arrline (int nparam)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+int
+UILIB_aclfgl_fgl_set_scrline (int nparam)
+{
+  int rval;
+  niy ();
+  return rval;
+}
+
+void
+UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
+{
+  niy ();
+}
+
