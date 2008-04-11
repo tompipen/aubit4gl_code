@@ -922,6 +922,7 @@ print_return_cmd (struct_return_cmd * cmd_data)
 		  parent_stack[z]->cmd_data.command_data_u.input_array_cmd.sio,
 		  parent_stack[z]->cmd_data.command_data_u.input_array_cmd.sio);
 	  break;
+
 	case E_CMD_INPUT_CMD:
 	  printc ("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",
 		  parent_stack[z]->cmd_data.command_data_u.input_cmd.sio, parent_stack[z]->cmd_data.command_data_u.input_cmd.sio);
@@ -940,6 +941,9 @@ print_return_cmd (struct_return_cmd * cmd_data)
 	  printc ("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",
 		  parent_stack[z]->cmd_data.command_data_u.prompt_cmd.sio, parent_stack[z]->cmd_data.command_data_u.prompt_cmd.sio);
 		break;
+	case E_CMD_MENU_CMD:
+	  printc ("A4GL_free_menu(m_%d);", parent_stack[z]->cmd_data.command_data_u.menu_cmd.blockid);
+	  break;
 	default:
 		// We dont care about other commands
 		break;

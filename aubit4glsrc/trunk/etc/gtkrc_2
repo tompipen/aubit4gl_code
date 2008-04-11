@@ -3,8 +3,11 @@
 # This is the definition file used by Aubit4gl
 # when in HL_GTK mode.
 
+# If any user-changes are made to this file (and they should be!),
+# then the changed file should be saved somewhere safe, and the environmental variable A4GL_GTKRC set to point to it.
 
-# NOTES =============================================================
+
+# NOTES ===========================================================================
 
 # The system relies on a series of styles
 # most are generic
@@ -41,23 +44,50 @@
 #   Error      default error style
 
 # colours must exist in /usr/lib/X11/rgb.txt
-# they may be specified either in hex notation
-# or by their name in the above rgb.txt
-# or as a colour triplet {x,y,z}, where x,y,z are either integers or decimal floats 0-1.0
+# Colours may be specified either in hex notation ("#rrrgggbbb")
+# - all 3 colour specs must have the same number of digits, 1,2,3,or 4.
+# or by their colour-name in /usr/lib/X11/rgb.txt
+# or as a colour triplet {x,y,z}, where x,y,z are either integers (0-65535) or decimal floats (0.0-1.0)
+# or as an expression
+# - mix(factor,col1,col2)    eg mix(0.5,"red","blue") factor between 0 and 1 (0.5 mixes colours equally)
+# - shade(factor,colour)     eg shade(1.5, "red") to give a lighter red
+# - lighter(colour)          an abbreviation for shade(1.3,colour)
+# - darker(colour)           an abbreviation for shade(0.7,colour)
+# or (if you really want to) as an unholy mix of expression
+# eg shade(1.5,mix(0.3,"#0abbc0",{ 0.3, 0.5, 0.9 }))
+
+# note that bg[STATE] is only the character background
+# - it is useful if you want a ribbon effect
+#   and really useful when you want colour reversal
+# - if it is not set, then the text appears against the inherited object background setting (colour or pixmap)
 
 # "#dfdfdf" appears liberally in the body of this file.  
-# It seems only to 'work' by doing nothing (it is not found in the above rgb.txt table)
-# - system theme colours appear to be used where this hex code is given, at least for bg[] definitions.
+# It is a nice light gray, and may not be at all visible against an inherited light system background colour
+# - be warned!
 
 # font_name must be a "Pango font name"
-# - that's not very helpful, and no obvious documentation has yet come to light
+# - that's not very helpful, and documentation is scarce.
 #   experimentation and web-searching is the order of the day.
+#   - try something interesting like font_name = "book antiqua, bold italic, 9"
 # - 4GL attribute(underline) is not very GUI-ish.
 #   font_name="monospace ITALIC 8" might be a way forward in any style involving UNDERLINE...
 
-# see (eg) 
+# RESOURCES =======================================================================
+# web resources - see (eg) 
 # http://library.gnome.org/devel/gtk/unstable/gtk-Resource-Files.html
 # http://ruby-gnome.sourceforge.net/programming/gtkrc.html
+# http://people.redhat.com/otaylor/pango-mirror/xfonts.shtml
+# http://www.gnu.org/software/emacs/manual/html_node/emacs/GTK-styles.html
+
+# program resources
+# gnome-specimen   gives a useful listing and preview of fonts on the system
+# - it also gives easy access to a handy colour wheel
+# fc_list          gives a more arcane listing of the fonts on the system
+# xlsfonts         lists only the X-fonts
+
+# also look for (but do not touch) files called "pangox*aliases"
+# - these may be pangox.aliases, in /etc/pango and /var/lib/defoma/pango.d
+#   but they have been referred to as pangox_aliases ...
 
 
 # WORKING CODE STARTS HERE ========================================================
@@ -76,6 +106,7 @@ style "0" {  # Black
 	# and applied if no attributes are applied.
   	bg[NORMAL]       = "#dfdfdf"
   	font_name = "@font_name"		#"monospace 8"
+	#font_name = "book antiqua, bold italic, 9"
 }
 
 style "1" { #RED 
