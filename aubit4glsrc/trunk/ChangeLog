@@ -1,4 +1,53 @@
 ---------------------------
+Sat Apr 12 13:50:10 BST 2008
+---------------------------
+1.10RC_10 Released
+---------------------------
+	
+	Add FIRSTASLIMIT, ALLOWTABLELESS Add ':' as a synonym for $ in
+	prefixing variables in SQL statements
+	
+	Minor fixups Removed decimal separator when converting from a
+	string Add --neverconvert to 4glpc options Use --neverconvert when
+	compiling asql_i.4ae to    avoid forcing a connection to the
+	database
+	
+	Fix NEXT FIELD so it does an implicit CONTINUE INPUT
+	
+	Minor menu fixup
+	
+	remove the fgl.xs.h from the runtime (generated) files
+	
+	minor XML UI fixups
+	
+	Fixup for variable attributes on windows
+	
+	Postgresql ecpg fixup
+	
+	New build
+	
+	added new function prototypes
+	
+	Force non XDR packer when compiling a 4GL module with PACKER=XDR
+	set (used for reading/writing the globals file)
+	
+	initial syscolatt implementation
+	
+	return success or failure correctly when using the XDR packer
+	
+	Minor Postgres fixups
+	
+	syscolatt/A4GL_SYSCOL_ATT fixups
+	
+	_variable(...) attributes fixup
+	
+	make prompt field for a "FOR CHAR" in GTK much smaller
+	
+	'INVISIBLE' attribute cleanup for form fields (alternative method
+	not using O_PUBLIC) Small fixup for _variable(id) in ESQL/C
+	generation
+	
+---------------------------
 Wed Apr  9 17:22:08 BST 2008
 ---------------------------
 1.10RC_9 Released
