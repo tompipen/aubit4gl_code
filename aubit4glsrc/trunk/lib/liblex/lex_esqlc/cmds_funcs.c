@@ -763,6 +763,7 @@ print_if_cmd (struct_if_cmd * cmd_data)
 int
 print_next_field_cmd (struct_next_field_cmd * cmd_data)
 {
+int z;
   print_cmd_start ();
   set_nonewlines ();
 
@@ -785,8 +786,37 @@ print_next_field_cmd (struct_next_field_cmd * cmd_data)
     }
 
   clr_nonewlines ();
-
   printc ("_fld_dr= -1;_exec_block= -1;\n");
+
+
+  for (z = parent_stack_cnt-1; z>=0; z--)
+    {
+	int done=0;
+      // If we're returning - we need to close out any outstanding screen IO
+      switch (parent_stack[z]->cmd_data.type)
+	{
+	case E_CMD_INPUT_ARRAY_CMD:
+  			printc ("goto CONTINUE_BLOCK_%d;", parent_stack[z]->cmd_data.command_data_u.input_array_cmd.blockid);
+			done++;
+	  break;
+
+	case E_CMD_INPUT_CMD:
+  			printc ("goto CONTINUE_BLOCK_%d;", parent_stack[z]->cmd_data.command_data_u.input_cmd.blockid);
+			done++;
+		break;
+	case E_CMD_CONSTRUCT_CMD:
+  			printc ("goto CONTINUE_BLOCK_%d;", parent_stack[z]->cmd_data.command_data_u.construct_cmd.blockid);
+			done++;
+		break;
+	default:
+		// We dont care about other commands
+		break;
+	}
+	if (done) {
+		break;
+	}
+    }
+
   print_copy_status_not_sql (0);
   return 1;
 }
