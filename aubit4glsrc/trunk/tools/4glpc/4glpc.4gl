@@ -78,6 +78,8 @@ define lv_pack char(256)
 define use_indicators integer
 
 	let mv_versioned=1
+
+
 	if mv_verbose>=4 then display "Reading packs" end if
 	let lv_pack=mv_lextype
 	call read_pack(lv_pack)
@@ -322,8 +324,14 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "--lexdialect"		let a=a+1 let mv_lexdialect=arg_val(a) 
   							call aclfgl_setenv("A4GL_LEXDIALECT",mv_lexdialect clipped)
 							continue for
+
+		WHEN "--neverconvert"	
+					CALL aclfgl_setenv("A4GL_NEVERCONVERT","Y")
+					continue for
 	END CASE
   END FOR
+
+
   if mv_lextype="EC" and (mv_lexdialect is null  or mv_lexdialect matches " " ) THEN
 		CALL aclfgl_setenv("A4GL_LEXDIALECT","INFORMIX")
 		LET mv_lexdialect="INFORMIX"
@@ -503,6 +511,7 @@ endcode
 		WHEN "--globals"		let mv_make_globals=1 continue for
 		WHEN "-G"			let mv_make_globals=1 continue for
 	
+		WHEN "-N"		let a=a+1 let mv_namespace=arg_val(a) continue for
 		WHEN "--namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
 		WHEN "-namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
 
@@ -558,6 +567,9 @@ endcode
 
 		WHEN "-d"			let a=a+1 let mv_db=arg_val(a) continue for
 		WHEN "--database"		let a=a+1 let mv_db=arg_val(a) continue for
+
+		WHEN "--neverconvert"		continue for
+
 
 		WHEN "-C"			let a=a+1 let mv_sqltype=arg_val(a) call aclfgl_setenv("A4GL_SQLTYPE",mv_sqltype clipped) continue for
 		WHEN "--sqltype"		let a=a+1 let mv_sqltype=arg_val(a) call aclfgl_setenv("A4GL_SQLTYPE",mv_sqltype clipped) continue for

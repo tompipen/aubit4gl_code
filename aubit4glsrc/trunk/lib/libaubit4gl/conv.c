@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.157 2008-03-29 09:33:20 mikeaubury Exp $
+# $Id: conv.c,v 1.158 2008-04-12 08:18:12 mikeaubury Exp $
 #
 */
 
@@ -1236,6 +1236,7 @@ A4GL_dectodec (void *a, void *z, int size)
 int
 A4GL_stodec (void *a, void *z, int size)
 {
+  char buff[1024];
   fgldecimal *eptr;
   int h;
   int t;
@@ -1244,7 +1245,47 @@ A4GL_stodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
+
+  if (a) {
+	char *ptr;
+	int dot=-1;
+	int comma=-1;
+	int cnt;
+	ptr=a;
+  	for (cnt=0;cnt<strlen(ptr);cnt++) {
+		if (ptr[cnt]==',' && comma==-1) comma=cnt;
+		if (ptr[cnt]=='.' && dot==-1) dot=cnt;
+	}
+
+	A4GL_debug("Starting with : %s",a);
+	if ((a4gl_convfmts.ui_decfmt.thsep==',' || a4gl_convfmts.ui_decfmt.thsep==0) && comma>=0) {
+		if (dot==-1 || dot>comma) {
+			int c=0;
+			// remove comma separators...
+			for (cnt=0;cnt<strlen(ptr);cnt++) {
+				if (ptr[cnt]==',') continue;
+				buff[c++]=ptr[cnt];
+			}
+			buff[c]=0;
+			a=buff;
+		}
+	}
+	if (a4gl_convfmts.ui_decfmt.thsep=='.' && dot>=0) {
+		if (comma==-1 || comma>dot) {
+			int c=0;
+			// remove dot thousand separators...
+			for (cnt=0;cnt<strlen(ptr);cnt++) {
+				if (ptr[cnt]=='.') continue;
+				buff[c++]=ptr[cnt];
+			}
+			buff[c]=0;
+			a=buff;
+		}
+	}
+	
+  }
+
+  A4GL_debug ("converting '%s' to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   (void)A4GL_init_dec (z, h, t);
 
   A4GL_debug ("After init\n");
@@ -1262,14 +1303,16 @@ A4GL_stodec (void *a, void *z, int size)
   		if (eptr) { A4GL_debug("eptr..."); return 1; }
 	}
 
-	A4GL_debug("Didn't work... %c %c\n", a4gl_convfmts.printf_decfmt.decsep,a4gl_convfmts.posix_decfmt.decsep);
+	A4GL_debug("Didn't work... '%c' '%c'\n", a4gl_convfmts.printf_decfmt.decsep,a4gl_convfmts.posix_decfmt.decsep);
   	if (a4gl_convfmts.printf_decfmt.decsep!=a4gl_convfmts.posix_decfmt.decsep ){
 		char buff[300];
 		strcpy(buff,a);
  		A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, 32);
   		eptr = A4GL_str_to_dec (buff, z);
   		if (eptr) { return 1; }
-  	}
+  	} 
+
+	
   }
   return 0;
 }
@@ -1556,7 +1599,6 @@ int rval;
 	rval=1;
   } else {
 	char *ptr;
-	char buff2[2000];
 	prepend_0_if_required(buff_dectol);
 	ptr=strchr(buff_dectol,a4gl_convfmts.scanf_decfmt.decsep); if (ptr) *ptr=0;
 	ptr=strchr(buff_dectol,a4gl_convfmts.posix_decfmt.decsep); if (ptr) *ptr=0;

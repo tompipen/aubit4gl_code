@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.50 2007-01-15 19:52:58 mikeaubury Exp $
+# $Id: Makefile,v 1.51 2008-04-12 08:18:13 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -147,6 +147,7 @@ VERBOSE_FLAG	=--verbose
 #4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
 #FGLPC_VERBOSE_FLAG=-V5
 4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}
+IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG}
 
 ################
 #4gl compiler flags
@@ -202,7 +203,7 @@ all : ${ALL} install
 ################
 #Target to make asql Informix version
 asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
-	${4GLPC} -t EC -td INFORMIX ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
+	${IFX4GLPC} -t EC -td INFORMIX ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|           Successfuly compiled Informix version of asql            |"
@@ -264,7 +265,7 @@ lex.asql_yy.c: parse.l
 ################
 #Rule to make objects from 4GL file - Informix version
 ifx_%${A4GL_OBJ_EXT}: %.4gl
-	${COMP4GL} -t EC -td INFORMIX -DSTATIC_LIBAUBIT4GL
+	${COMP4GL} --neverconvert -t EC -td INFORMIX -DSTATIC_LIBAUBIT4GL
 
 gen_%${A4GL_OBJ_EXT}: %.4gl
 	${4GLPC} -t C -o $@ ${4GLPCFLAGS} -c $^ 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.74 2008-04-01 14:54:13 mikeaubury Exp $
+# $Id: ui.c,v 1.75 2008-04-12 08:18:12 mikeaubury Exp $
 #
 */
 
@@ -1439,12 +1439,18 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
         A4GL_debug("Pushing '%s'",s);
       A4GL_push_char (s);
       A4GL_pop_param (&buff[0], dtype, dim);
+
+
       ptr1 = buff;
 
         if (dtype==1) { A4GL_debug("Popped ptr1 : %d",*(int *)ptr1); }
         A4GL_debug("Pushing '%s'",ptr);
       A4GL_push_char (ptr);
       A4GL_pop_param (&buff2[0], dtype, dim);
+
+      if (A4GL_isnull(dtype+ENCODE_SIZE(dim),buff)) {
+			A4GL_debug("GOT NULL !!!");
+	}
       ptr2 = buff2;
         if (dtype==1) { A4GL_debug("Popped ptr2 : %d",*(int *)ptr2); }
 
@@ -1478,10 +1484,6 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
                 }
         }
 
-        if (dtype==1) {
-                A4GL_debug("%x %x",*(int *)ptr1,*(int *)ptr2);
-        }
-
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
@@ -1503,9 +1505,6 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
     }
   else
     {
-      if(dtype==1||dtype==2) {
-      A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
-        }
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
