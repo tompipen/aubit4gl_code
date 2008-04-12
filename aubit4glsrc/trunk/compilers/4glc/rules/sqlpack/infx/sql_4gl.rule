@@ -326,20 +326,6 @@ in_select_statement: select_statement_ss_select {
 	$<s_select>$=$<s_select>1;
 }
 
-/*
-        KW_SELECT op_ad select_list_slil table_expression_2_select sel_p2_select  {
-		 struct s_select *s1;
-		s1=new_empty_select();
-                s1->modifier=acl_strdup($<str>2);
-                s1->into=0;
-                s1->select_list=$<s_select_list_item_list>3;
-                s1->next=$<s_select>5;
-                A4GL_set_sql_lineno(yylineno);
-                $<s_select>$=s1;
-}
-;
-*/
-
 
 set_database_cmd :
        DATABASE var_ident_qchar_e op_db_exclusive {

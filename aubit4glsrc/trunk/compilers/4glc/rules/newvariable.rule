@@ -92,6 +92,9 @@ bind_var :
 	| DOLLAR bind_var_2 {
 		$<ptr>$=$<ptr>2;
 	}
+	| COLON bind_var_2 {
+		$<ptr>$=$<ptr>2;
+	}
 ;
 	
 

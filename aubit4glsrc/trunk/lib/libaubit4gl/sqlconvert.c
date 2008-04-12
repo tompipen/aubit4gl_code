@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.143 2008-04-08 13:29:34 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.144 2008-04-12 12:51:18 mikeaubury Exp $
 #
 */
 
@@ -109,11 +109,9 @@ static char *cvsql_names[] = {
   "CVSQL_IGNORE_CLOSE_ERROR",
   "CVSQL_OMIT_INDEX_CLUSTER",
   "CVSQL_OMIT_INDEX_ORDER",
-
   "CVSQL_OMIT_INDEX_IN",
   "CVSQL_OMIT_INDEX_FILLFACTOR",
   "CVSQL_OMIT_INDEX_USING",
-
   "CVSQL_ESQL_UNLOAD",
   "CVSQL_ESQL_UNLOAD_FULL_PATH",
   "CVSQL_ESQL_AFTER_INSERT",
@@ -155,7 +153,6 @@ static char *cvsql_names[] = {
   "CVSQL_ESQL_UNLOAD_STRING",
   "CVSQL_ESQL_UNLOAD_LIB_FALLBACK",
   "CVSQL_CLOSE_CURSOR_BEFORE_OPEN",
-
   "CVSQL_DTIME_AS_CHAR",
   "CVSQL_DATE_AS_ISO_DATE_STRING",
   "CVSQL_SELECT_INTO_TEMP_INTO_TEMP_HASH",
@@ -176,7 +173,7 @@ static char *cvsql_names[] = {
   "CVSQL_FAKE_ROWID_NAME",
   "CVSQL_EXPAND_COLUMNS",
   "CVSQL_DTYPE_ALIAS",
-  "CVSQL_ODBC_LONGVARCHAR_AS_CHAR"
+  "CVSQL_ODBC_LONGVARCHAR_AS_CHAR",
   "CVSQL_NO_UPDATE_TABLE",
   "CVSQL_NEVER_CONVERT",
   "CVSQL_NEVER_CONVERT_COLUMN",
@@ -184,6 +181,13 @@ static char *cvsql_names[] = {
 	"CVSQL_FORCE_HOLD_ALWAYS",
 	"CVSQL_FORCE_HOLD_NEVER",
 	"CVSQL_FORCE_HOLD_EXCEPT_UPDATE",
+	"CVSQL_FIRSTASLIMIT",
+	"CVSQL_ALLOWTABLELESS",
+
+
+
+
+	"ENDOFLIST" 
 };
 
 /*
@@ -309,7 +313,9 @@ enum cvsql_type
   CVSQL_ADD_WITH_OIDS,
 	CVSQL_FORCE_HOLD_ALWAYS,
 	CVSQL_FORCE_HOLD_NEVER,
-	CVSQL_FORCE_HOLD_EXCEPT_UPDATE
+	CVSQL_FORCE_HOLD_EXCEPT_UPDATE,
+	CVSQL_FIRSTASLIMIT,
+	CVSQL_ALLOWTABLELESS,
 };
 
 
@@ -742,8 +748,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 	{
 	  A4GL_debug ("Loaded convertion ---> %d %s\n",
 		      conversion_rules[conversion_rules_cnt - 1].type,
-		      cvsql_names[conversion_rules[conversion_rules_cnt - 1].
-				  type]);
+		      cvsql_names[conversion_rules[conversion_rules_cnt - 1].  type]);
 	}
       A4GL_trim (t);
       /* get the argument list, A4GL_strip off leading = sign */
@@ -1828,6 +1833,13 @@ A4GL_cv_str_to_func (char *p, int len)
 
   if (match_strncasecmp (p, "FORCE_HOLD_EXCEPT_UPDATE", len) == 0)
     return CVSQL_FORCE_HOLD_EXCEPT_UPDATE;
+
+  if (match_strncasecmp (p, "FIRSTASLIMIT", len) == 0)
+    return CVSQL_FIRSTASLIMIT;
+
+  if (match_strncasecmp (p, "ALLOWTABLELESS", len) == 0) {
+    return CVSQL_ALLOWTABLELESS;
+  }
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 

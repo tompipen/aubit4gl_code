@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.66 2008-03-20 09:42:20 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.67 2008-04-12 12:51:18 mikeaubury Exp $
 #
 */
 
@@ -2101,6 +2101,18 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   A4GL_debug ("buff=%s", buff);
 
 
+  if (select->limit.start!=-1) {
+		char smbuff[2000];
+		if (select->limit.start!=1) {
+			A4GL_assertion(1,"START offset must be 1 - nothing else implemented yet");
+		}
+  		if (!A4GLSQLCV_check_runtime_requirement("FIRSTASLIMIT")) {
+			sprintf(smbuff,"FIRST %d ",select->limit.end);
+			strcat(buff,smbuff);
+		}
+  }
+
+
   if (select->modifier)
     {
       A4GL_debug ("buff=%s", buff);
@@ -2182,39 +2194,44 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
 
 
+  if (select->table_elements.tables.tables_len) {
+  	strcat (buff, "\n FROM ");
+  	A4GL_debug ("buff=%s", buff);
+  	strcat (buff, buff_from);
 
-  strcat (buff, "\n FROM ");
+  	A4GL_debug ("buff=%s", buff);
+  	if (select->where_clause)
+    	{
+      		char *ptr;
+      		ptr = get_select_list_item (select, select->where_clause);
+      		strcat (buff, "\n WHERE ");
+      		strcat (buff, ptr);
+      		acl_free_With_Context (ptr);
+    	}
+	
+  	A4GL_debug ("buff=%s", buff);
+  	if (select->group_by)
+    	{
+      		char *ptr;
+      		strcat (buff, "\n GROUP BY ");
+      		ptr = get_select_list_item_list (select, select->group_by);
+      		strcat (buff, ptr);
+    	}
+  	A4GL_debug ("buff=%s", buff);
+	
+  	if (select->having)
+    	{
+      		char *ptr;
+      		strcat (buff, "\n HAVING ");
+      		ptr = get_select_list_item (select, select->having);
+      		strcat (buff, ptr);
+    	}
 
-  A4GL_debug ("buff=%s", buff);
-  strcat (buff, buff_from);
-
-  A4GL_debug ("buff=%s", buff);
-  if (select->where_clause)
-    {
-      char *ptr;
-      ptr = get_select_list_item (select, select->where_clause);
-      strcat (buff, "\n WHERE ");
-      strcat (buff, ptr);
-      acl_free_With_Context (ptr);
-    }
-
-  A4GL_debug ("buff=%s", buff);
-  if (select->group_by)
-    {
-      char *ptr;
-      strcat (buff, "\n GROUP BY ");
-      ptr = get_select_list_item_list (select, select->group_by);
-      strcat (buff, ptr);
-    }
-  A4GL_debug ("buff=%s", buff);
-
-  if (select->having)
-    {
-      char *ptr;
-      strcat (buff, "\n HAVING ");
-      ptr = get_select_list_item (select, select->having);
-      strcat (buff, ptr);
-    }
+  } else {
+      	if (!A4GLSQLCV_check_runtime_requirement ("ALLOWTABLELESS")) {
+		strcat(buff," FROM systables WHERE tabid=1");
+      	}
+  }
 
   A4GL_debug ("buff=%s", buff);
 
@@ -2315,6 +2332,18 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	}
 
     }
+
+  if (select->limit.start!=-1) {
+		char smbuff[2000];
+		if (select->limit.start!=1) {
+			A4GL_assertion(1,"START offset must be 1 - nothing else implemented yet");
+		}
+  		if (A4GLSQLCV_check_runtime_requirement("FIRSTASLIMIT")) {
+			sprintf(smbuff," LIMIT %d",select->limit.end);
+			strcat(buff,smbuff);
+		}
+  }
+
   A4GL_debug ("buff=%s", buff);
 
 

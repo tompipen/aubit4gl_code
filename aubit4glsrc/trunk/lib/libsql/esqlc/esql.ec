@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.201 2008-03-11 10:23:56 mikeaubury Exp $
+# $Id: esql.ec,v 1.202 2008-04-12 12:51:19 mikeaubury Exp $
 #
 */
 
@@ -192,7 +192,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.201 2008-03-11 10:23:56 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.202 2008-04-12 12:51:19 mikeaubury Exp $";
 #endif
 
 
@@ -528,10 +528,10 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 {
   static int have_connected = 0;
   char buff[1000];
-
   EXEC SQL BEGIN DECLARE SECTION;
   char *db;
   EXEC SQL END DECLARE SECTION;
+
 
   strcpy (buff, dbName);
   A4GL_trim (buff);

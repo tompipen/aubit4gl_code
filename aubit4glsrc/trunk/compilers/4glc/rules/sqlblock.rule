@@ -26,6 +26,9 @@ sql_block_entry:
 	| DOLLAR ensured_variable_usage_expression { 
 			$<ptr>$=$<ptr>2;
 	}
+	| COLON ensured_variable_usage_expression { 
+			$<ptr>$=$<ptr>2;
+	}
 	| sql_block_text {
 		$<ptr>$=A4GL_new_expr_simple_string($<sql_string>1, ET_EXPR_SQLBLOCK_TEXT);
 		free($<sql_string>1);

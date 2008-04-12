@@ -3,51 +3,61 @@
 
 
 select_statement_ss_select : 
-	KW_SELECT op_ad { 
+	KW_SELECT op_first op_ad { 
 		//start_bind('i',0);
 		 set_ignore_indicators();} select_list_slil  { clr_ignore_indicators();}
         opt_into_sel 
-	table_expression_2_select
-        sel_p2_select sel_finish_sf {
+	table_expression_2_select sel_p2_select sel_finish_sf {
 
 
-		$<s_select>$=$<s_select>7;
-		$<s_select>$->modifier=acl_strdup($<str>2);
-		$<s_select>$->into=$<ptr_list>6;
-		$<s_select>$->select_list=$<s_select_list_item_list>4;
-		$<s_select>$->next=$<s_select>8;
-		$<s_select>$->sf=$<s_select_finish>9;
+		$<s_select>$=$<s_select>8;
+		if ($<integer_val>2!=-1) {
+			$<s_select>$->limit.start=1;
+			$<s_select>$->limit.end=$<integer_val>2;
+		}
+		$<s_select>$->modifier=acl_strdup($<str>3);
+		$<s_select>$->into=$<ptr_list>7;
+		$<s_select>$->select_list=$<s_select_list_item_list>5;
+		$<s_select>$->next=$<s_select>9;
+		$<s_select>$->sf=$<s_select_finish>10;
 }
 ;
 
 
 union_select_statement2_ss: 
-	KW_SELECT op_ad select_list_slil
-	table_expression_2_select
-        sel_p2_select  {
-	        $<s_select>$=$<s_select>4;
-                $<s_select>$->modifier=acl_strdup($<str>2);
+	KW_SELECT op_first op_ad select_list_slil
+	table_expression_2_select sel_p2_select  {
+	        $<s_select>$=$<s_select>5;
+                $<s_select>$->modifier=acl_strdup($<str>3);
+		if ($<integer_val>2!=-1) {
+			$<s_select>$->limit.start=1;
+			$<s_select>$->limit.end=$<integer_val>2;
+		}
                 $<s_select>$->into=0;
-                $<s_select>$->select_list=$<s_select_list_item_list>3;
-		$<s_select>$->next=$<s_select>5;
+                $<s_select>$->select_list=$<s_select_list_item_list>4;
+		$<s_select>$->next=$<s_select>6;
 	}
 ;
 
 
 uu_select_statement21_select:
-	KW_SELECT op_ad select_list_slil table_expression_2_select sel_p2_select sel_ordby_unload_slil {
+	KW_SELECT op_first op_ad select_list_slil table_expression_2_select sel_p2_select sel_ordby_unload_slil {
 		struct s_select_finish *sf;
                struct s_select *s1;
-               s1=$<s_select>4;
-               s1->modifier=acl_strdup($<str>2);
+               s1=$<s_select>5;
+               s1->modifier=acl_strdup($<str>3);
                s1->into=0; 
-               s1->select_list=$<s_select_list_item_list>3;
-               s1->next=$<s_select>5;
+               s1->select_list=$<s_select_list_item_list>4;
+               s1->next=$<s_select>6;
+		if ($<integer_val>2!=-1) {
+			s1->limit.start=1;
+			s1->limit.end=$<integer_val>2;
+		}
 		sf=acl_malloc2(sizeof(struct s_select_finish));
 		sf->into_temp=0;
 		sf->nolog=0;
 		sf->insert_into=0;
-		sf->order_by=$<s_select_list_item_list>6;
+		sf->order_by=$<s_select_list_item_list>7;
 		s1->sf=sf;
 		A4GL_set_sql_lineno(yylineno);
 		map_select_stmt("SELECT",$<s_select>$);
@@ -106,20 +116,38 @@ tmp_tabname: identifier;
 
 
 query_specification_select:
-	KW_SELECT op_ad select_list_slil table_expression_2_select {
-		$<s_select>$=$<s_select>4;
-		$<s_select>$->modifier=acl_strdup($<str>2);
-		$<s_select>$->select_list=$<s_select_list_item_list>3;
+	KW_SELECT op_first op_ad select_list_slil table_expression_2_select {
+		$<s_select>$=$<s_select>5;
+		if ($<integer_val>2!=-1) {
+			$<s_select>$->limit.start=1;
+			$<s_select>$->limit.end=$<integer_val>2;
+		}
+		$<s_select>$->modifier=acl_strdup($<str>3);
+		$<s_select>$->select_list=$<s_select_list_item_list>4;
 	}
 ;
 
 subquery_sli:
-	OPEN_BRACKET KW_SELECT op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
-		$<s_select>$=$<s_select>5;
-		$<s_select>$->modifier=acl_strdup($<str>3);
-		$<s_select>$->select_list=$<s_select_list_item_list>4;
+	OPEN_BRACKET KW_SELECT op_first op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
+		$<s_select>$=$<s_select>6;
+		if ($<integer_val>3!=-1) {
+			$<s_select>$->limit.start=1;
+			$<s_select>$->limit.end=$<integer_val>3;
+		}
+		$<s_select>$->modifier=acl_strdup($<str>4);
+		$<s_select>$->select_list=$<s_select_list_item_list>5;
 		$<s_select_list_item>$=new_select_list_subquery($<s_select>$);
 	}
+;
+
+
+op_first : 
+	{$<integer_val>$=-1;}
+	|
+	 KW_FIRST INT_VALUE {
+		$<integer_val>$=atol($<str>2);
+	} 
+	
 ;
 
 op_ad: {strcpy($<str>$,"");}
@@ -129,10 +157,6 @@ op_ad: {strcpy($<str>$,"");}
 		add_feature("SELECT_UNIQUE");
 		ansi_violation("Use DISTINCT not UNIQUE",0);
 		strcpy($<str>$,"DISTINCT");
-	}
-	| KW_FIRST INT_VALUE {
-		add_feature("FIRST");
-		SPRINTF1($<str>$,"FIRST %s",$<str>2);
 	}
 
 ;
