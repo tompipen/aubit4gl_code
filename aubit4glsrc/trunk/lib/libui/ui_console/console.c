@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.36 2007-10-15 17:11:31 mikeaubury Exp $
+# $Id: console.c,v 1.37 2008-04-14 09:46:34 mikeaubury Exp $
 #*/
 
 /**
@@ -686,7 +686,7 @@ void UILIB_A4GL_reset_state_for(void* sio,char* siotype) NOPE
 void UILIB_A4GL_set_infield_from_stack(void ) NOPE
 void UILIB_A4GL_show_window(char* winname) NOPE
 
-void UILIB_A4GL_ui_exit(void) {
+void UILIB_A4GL_ui_exit(int n) {
 	// Does nothing - required by the API
 }
 
