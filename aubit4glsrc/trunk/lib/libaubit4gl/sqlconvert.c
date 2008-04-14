@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.144 2008-04-12 12:51:18 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.145 2008-04-14 18:19:41 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,8 @@ void chk_loaded_mappings(void) ;
 static char * A4GLSQLCV_datetime_value_internal (char *s,char *from, char*to);
 static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to);
 
+int if_stack[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int if_stack_cnt=0;
 
 static char *cvsql_names[] = {
   "CVSQL_NONE",
@@ -366,7 +368,7 @@ int ncolumn_mappings = 0;
 */
 
 static void A4GL_cv_fnlist (char *source, char *target, char *name);
-int A4GL_cv_str_to_func (char *p, int len);
+int A4GL_cv_str_to_func (char *p, int len,int warnifnotfound);
 int A4GL_strwscmp (char *a, char *b);
 //int A4GL_strcasestr (char *h, char *n);
 static void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
@@ -694,6 +696,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
   FILE *fh;
   char *t;
   int len;
+int line=0;
   struct cvsql_data *conversion_rules = 0;
   int conversion_rules_cnt = 0;
 
@@ -731,17 +734,99 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
    */
   while (fgets (buff, 200, fh))
     {
+	line++;
       if ((t = A4GL_cv_next_token (buff, &len, 0)) == NULL)
 	continue;
       if (*t == '#')
 	continue;
 
-      conversion_rules_cnt++;
-      conversion_rules =
-	acl_realloc (conversion_rules,
-		 sizeof (*conversion_rules) * conversion_rules_cnt);
+//printf("t=%s len=%d\n",t,len);
+	if (strncmp(t,"IF",len)==0) {
+			char ptest[200]="<notset>";
+			char pval[200]="<notset>";
+			char *p1;
+			char *cond=0;
+			int ok=0;
+			t+=len;
+			while (*t==' ') {
+					t++;
+			}
+			// Lets split the IF into its component parts..
+       			p1=A4GL_cv_next_token (t, &len, 0);
+			if (p1==0) {
+				A4GL_assertion(1,"Invalid condition in convertion file IF");
+			}
+			strncpy(ptest,p1,len); ptest[len]=0;
+			t+=len;
+			while (*t==' ') t++;
+      			t = A4GL_cv_next_token (t, &len, 0);
+      			if (t && len == 1 && strncmp(t,"=",1)==0) {
+				cond="=";
+	  			p1 = A4GL_cv_next_token ((t + len), &len, 0);
+			} 
+      			if (t && len == 2 && (strncmp(t,"!=",1)==0 || strncmp(t,"<>",1)==0)) {
+				cond="!=";
+	  			p1 = A4GL_cv_next_token ((t + len), &len, 0);
+			} 
 
-      conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len);
+			if (cond==0) {
+				A4GL_assertion(1,"No condition when reading conversion file");
+			}
+			strncpy(pval,p1,len); pval[len]=0;
+
+			if (strcmp(pval,"<notset>")==0) {
+				A4GL_assertion(1,"Invalid condition in convertion file IF");
+			}
+
+			// Test for equality ...
+			if (A4GL_cv_str_to_func(ptest,strlen(ptest),0) && A4GLSQLCV_check_requirement (ptest)) {
+				if (A4GL_isyes(pval)) {
+					ok=1;
+				} else {
+					ok=0;
+				}
+			} else {
+				if (strcmp(acl_getenv(ptest),pval)==0) {
+					ok=1;
+				} else {
+					ok=0;
+				}
+			}
+
+			// Now - If we're doing a != - just invert our equality test...
+			if (strcmp(cond,"!=")==0) {
+				ok=!ok;
+			}
+			A4GL_debug("%s %s %s, %d",ptest,cond,pval,ok);
+			// Add it to our if stack...
+			if_stack[if_stack_cnt++]=ok;
+			continue;
+	} 
+
+	if (strncmp(t,"ELSE",len)==0) {
+		if_stack[if_stack_cnt-1]=!if_stack[if_stack_cnt-1];
+		continue;
+	}
+
+	if (strncmp(t,"ENDIF",len)==0) {
+		if_stack_cnt--;
+		A4GL_assertion(if_stack_cnt<0,"IF stack confused while reading conversion file");
+		continue;
+	} 
+	
+	if (if_stack_cnt>0) {
+		int a;
+		int ok=1;
+		for (a=0;a<if_stack_cnt;a++) {
+			if (if_stack[a]==0) {ok=0; break;}
+		}
+		if (!ok) continue; // Get the next line - we're not processing this one..
+	}
+      conversion_rules_cnt++;
+      conversion_rules = acl_realloc (conversion_rules, sizeof (*conversion_rules) * conversion_rules_cnt);
+
+
+      conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len,1);
       conversion_rules[conversion_rules_cnt - 1].data.from = 0;
       conversion_rules[conversion_rules_cnt - 1].data.to = 0;
       if (t)
@@ -794,11 +879,15 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 		  conversion_rules[conversion_rules_cnt - 1].data.to = 0;
 		}
 	      A4GL_trim (left);
-	      conversion_rules[conversion_rules_cnt - 1].data.from =
-		acl_strdup (left);
+	      conversion_rules[conversion_rules_cnt - 1].data.from = acl_strdup (left);
 	    }
 	}
+
+
     }
+if ( if_stack_cnt!=0) {
+	A4GL_assertion(1,"IF stack corrupted");
+ }
 
   fclose (fh);
 
@@ -1345,7 +1434,7 @@ static int check_requirement_i (char *s)
     }
 
 
-  a = A4GL_cv_str_to_func (s, strlen (s));
+  a = A4GL_cv_str_to_func (s, strlen (s),1);
   A4GL_debug ("Checking for a type %d\n", a);
 
   if (a == 0)
@@ -1599,7 +1688,7 @@ return 1;
 }
 
 int
-A4GL_cv_str_to_func (char *p, int len)
+A4GL_cv_str_to_func (char *p, int len,int warnifnotfound)
 {
   if (match_strncasecmp (p, "REPLACE", len) == 0)
     return CVSQL_REPLACE;
@@ -1842,8 +1931,9 @@ A4GL_cv_str_to_func (char *p, int len)
   }
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
-
-  PRINTF ("Unknown : %s\n", p);
+  if (warnifnotfound) {
+  		PRINTF ("Unknown : %s\n", p);
+	}
   return 0;
 }
 
