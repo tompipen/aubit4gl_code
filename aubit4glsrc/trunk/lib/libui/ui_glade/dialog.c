@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.8 2007-05-02 18:34:06 mikeaubury Exp $
+# $Id: dialog.c,v 1.9 2008-04-14 17:55:04 mikeaubury Exp $
 #*/
 
 /**
@@ -327,7 +327,7 @@ long UILIB_A4GL_get_option_value_for_current_window (char type) {
 }
 
 void
-UILIB_A4GL_ui_exit(void) {
+UILIB_A4GL_ui_exit(int exitcode) {
         // Does nothing - required by the API
 }
 
