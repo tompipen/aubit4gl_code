@@ -14,7 +14,7 @@ static int asserting=0;
       A4GL_debug ("%s", A4GL_null_as_null(s));
 
 	if (A4GL_isyes(acl_getenv("DOING_CM"))) {
-      		FPRINTF (stderr,"%s\n", A4GL_null_as_null(s));
+      		FPRINTF (A4GL_get_stderr(),"%s\n", A4GL_null_as_null(s));
 	}
 
       if (A4GL_isyes(acl_getenv("CORE_ON_ASSERT"))) {
@@ -26,7 +26,7 @@ static int asserting=0;
 	A4GL_gotolinemode();
       A4GL_set_lasterrorstr(s);
       A4GL_exitwith ("Assertion failed");
-      FPRINTF (stderr, "Assertion failed: %s\n", A4GL_null_as_null(s));
+      FPRINTF (A4GL_get_stderr(), "Assertion failed: %s\n", A4GL_null_as_null(s));
 
 
       A4GL_chk_err (0, "Unknown");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.75 2008-04-12 08:18:12 mikeaubury Exp $
+# $Id: ui.c,v 1.76 2008-04-14 09:23:45 mikeaubury Exp $
 #
 */
 
@@ -1316,10 +1316,10 @@ strcpy(s,s_x);
 }
 // We're quitting - so close down any UI specific stuff
 // before we go...
-void A4GL_stop_ui(void) {
+void A4GL_stop_ui(int exitstatus) {
 	static int  stopping=0;
 	if (!stopping) {
-    		A4GL_ui_exit();
+    		A4GL_ui_exit(exitstatus);
 	}
 
 	stopping++;

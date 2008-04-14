@@ -122,7 +122,7 @@ write_callback(char *buffer,
         newbuff=realloc(url->buffer,url->buffer_len + (size - rembuff));
         if(newbuff==NULL)
         {
-            fprintf(stderr,"callback buffer grow failed\n");
+            fprintf(A4GL_get_stderr(),"callback buffer grow failed\n");
             size=rembuff;
         }
         else

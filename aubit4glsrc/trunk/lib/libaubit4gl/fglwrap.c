@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.132 2008-04-08 13:29:34 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.133 2008-04-14 09:23:45 mikeaubury Exp $
 #
 */
 
@@ -137,7 +137,7 @@ A4GL_fgl_die (1);
 void
 A4GL_fgl_end ()
 {
-A4GL_stop_ui();
+A4GL_stop_ui(0);
 
 A4GL_debug("Close db");
   A4GL_close_database ();
@@ -541,7 +541,7 @@ static int dying=0;
 	}
 
       A4GL_debug ("%s",s);
-      FPRINTF (stderr, "Err:%s", s);
+      FPRINTF (A4GL_get_stderr(), "Err:%s", s);
 
       if (atoi(acl_getenv("RUNNING_TEST"))) {
 	char buff[256];

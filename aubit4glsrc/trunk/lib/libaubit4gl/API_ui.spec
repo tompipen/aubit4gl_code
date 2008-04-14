@@ -100,7 +100,7 @@ aclfgl_fgl_set_scrline int nparam -> int
 A4GL_reset_delims void* vformdets void* field char* delims -> void
 A4GLUI_set_intr -> void
 A4GL_screen_mode int sm -> int
-A4GL_ui_exit  -> void
+A4GL_ui_exit int exitstatus  -> void
 A4GL_ui_fgl_winquestion char* title char* text char* def char* pos char* icon int danger int winbutton -> char*
 A4GL_direct_to_ui char* what char* string -> void 
 aclfgl_aclfgl_add_to_toolbar int nparam -> int 

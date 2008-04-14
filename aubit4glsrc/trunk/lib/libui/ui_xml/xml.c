@@ -5,6 +5,10 @@
 #include "uilib/xml/attr.h"
 #include "a4gl_API_ui_lib.h"
 extern struct s_attr *last_attr;
+FILE *def_stderr=NULL;
+char stderr_fname[2000];
+
+
 #include <stdarg.h>
 int mn_id = 0;
 struct s_windows
@@ -159,7 +163,7 @@ A4GL_XML_opening_form (char *formfile, char *formname)
     }
   else
     {
-	fprintf(stderr, "Unable to open file '%s'\n", buff);
+	fprintf(def_stderr, "Unable to open file '%s'\n", buff);
       return 0;
     }
 }
@@ -200,7 +204,7 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
 
   if (w == 0)
     {
-      FPRINTF (stderr, "**** WINDOW NOT FOUND *****");
+      FPRINTF (def_stderr, "**** WINDOW NOT FOUND *****");
       return 0;
     }
 
@@ -1280,8 +1284,12 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
 
   add_window ("screen", 80, 24, 0);
 
-  send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\"/>", argv[0],
-	      get_ui_id ('r'));
+  send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\"/>", argv[0], get_ui_id ('r'));
+   tmpnam(stderr_fname);
+   def_stderr=fopen(stderr_fname,"w");
+   if (def_stderr) {
+		A4GL_set_stderr(def_stderr);
+   }
   flush_ui ();
   return 1;
 }
@@ -1410,14 +1418,33 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       return;
     }
 
-  FPRINTF (stderr, "unhandled direct to ui call\n");
+  FPRINTF (def_stderr, "unhandled direct to ui call\n");
 
 }
 
 void
-UILIB_A4GL_ui_exit ()
+UILIB_A4GL_ui_exit (int exitstatus)
 {
-  send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", 0, get_ui_id ('r'));
+#define MAX_LINE_LEN 256
+  if (def_stderr) {
+	fclose(def_stderr);
+	def_stderr=fopen(stderr_fname,"r");
+
+  	send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\">", exitstatus, get_ui_id ('r'));
+	if (def_stderr) {
+		char buf[MAX_LINE_LEN+1]; 
+    		while (fgets(buf, MAX_LINE_LEN+1, def_stderr)) {
+			if (feof(def_stderr)) break;
+			A4GL_trim(buf);
+			send_to_ui("<line>%s</line>",buf);
+    		}
+	}
+	send_to_ui("</PROGRAMSTOP>");
+	
+  } else {
+  	send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", exitstatus, get_ui_id ('r'));
+  }
+  
   flush_ui ();
 }
 
@@ -1940,7 +1967,7 @@ XML_A4GL_assertion (int n, char *s)
 {
   if (!n)
     return 0;
-  FPRINTF (stderr, "************ ASSERTION FAILED %s\n", s);
+  FPRINTF (def_stderr, "************ ASSERTION FAILED %s\n", s);
   fflush (stdout);
   exit (4);
 }

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.130 2008-03-13 11:13:50 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.131 2008-04-14 09:26:37 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -4046,7 +4046,7 @@ UILIB_A4GL_screen_mode (int a)
 
 
 void
-UILIB_A4GL_ui_exit (void)
+UILIB_A4GL_ui_exit (int exit_status)
 {
   A4GL_LL_ui_exit ();
 }

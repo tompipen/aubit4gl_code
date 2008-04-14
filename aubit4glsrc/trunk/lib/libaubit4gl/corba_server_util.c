@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.31 2007-06-01 15:04:09 gyver309 Exp $
+# $Id: corba_server_util.c,v 1.32 2008-04-14 09:23:45 mikeaubury Exp $
 #
 */
 
@@ -108,6 +108,7 @@ call A4GLSQLCV_convert_sql()---->	A4GLSQLCV_convert_sql() in API_sqlparse.c ----
 	#include <assert.h>
 #endif
 
+FILE *default_stderr=NULL;
 /*
 =====================================================================
                     Functions prototypes
@@ -131,6 +132,8 @@ call A4GLSQLCV_convert_sql()---->	A4GLSQLCV_convert_sql() in API_sqlparse.c ----
  * CORBA_NO_EXCEPTION, CORBA_USER_EXCEPTION, CORBA_SYSTEM_EXCEPTION:/
 */
 #define etk_exception_type(ev) (ev->_major)
+
+
 
 /** 
  * test @ev for any exception 
@@ -340,6 +343,16 @@ char *A4GL_strcat(char *dest,char *src,char *f,int l,int sd) {
 	return dest;
 }
 
+void A4GL_set_stderr(FILE *errfile) {
+	default_stderr=errfile;
+}
+
+FILE *A4GL_get_stderr() {
+	
+	if (default_stderr) return default_stderr;
+	return stderr;
+
+}
 
 int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) {
 char buff[256];
@@ -371,7 +384,7 @@ We can end up with problems with overlapping - eg
 	      x=VSNPRINTF(c,sdest,fmt,args);
 	      if (x>=sdest) {
                 	sprintf(buff,"sprintf trying to exceed allocated space @ %s (line %d)",f,l);
-			FPRINTF(stderr, "-->%s (%d>=%d)",fmt,x,(int)sdest);
+			FPRINTF(A4GL_get_stderr(), "-->%s (%d>=%d)",fmt,x,(int)sdest);
 			A4GL_assertion(1,buff);
 	      }
 	      strcpy(dest,c);
