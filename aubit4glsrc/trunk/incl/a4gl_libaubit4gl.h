@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.308 2008-04-10 18:53:11 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.309 2008-04-14 09:28:17 mikeaubury Exp $
 #
 */
 
@@ -2328,8 +2328,10 @@ int a4gl_islower(int n);
 void A4GL_log_sql_prepared(char *s);
 char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql );
 int A4GL_strattr_to_num (char *s);
-void A4GL_stop_ui(void);
+void A4GL_stop_ui(int exitcode);
 int aclfgl_aclfgl_set_color (int _nargs);
+FILE *A4GL_get_stderr(void) ;
+
 char *A4GL_not_set_empty_string(void);
 char *A4GL_tea_string_decipher(char *s);
 char *A4GL_tea_string_encipher(char *s);
@@ -2562,7 +2564,7 @@ struct s_select_list_item *new_select_list_item_regex (enum e_sli type, struct s
 struct s_select_list_item_list *add_select_list_item_list(struct s_select_list_item_list *p,struct s_select_list_item *i);
 struct s_select_list_item *new_select_list_subquery(struct s_select *s);
 struct s_select_list_item *new_select_list_item_fcall (char *fname, struct s_select_list_item_list *params);
-struct s_table *A4GLSQLPARSE_append_tablename(struct s_table *t1,struct s_table *t2, int is_outer);
+struct s_table *A4GLSQLPARSE_append_tablename(struct s_table *t1,struct s_table *t2, e_outer_type is_outer, s_select_list_item *join_condition);
 struct s_table *A4GLSQLPARSE_new_tablename(char *tname,char *alias);
 struct s_select *new_empty_select (void);
 struct s_select_list_item *new_select_list_item_variable (char *s);

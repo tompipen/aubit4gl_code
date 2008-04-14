@@ -2435,11 +2435,21 @@ struct s_table_list {
 	struct s_table_list_element tables<>;
 };
 
+enum e_outer_type {
+	E_OUTER_NONE,
+	E_OUTER_NORMAL,
+	E_OUTER_LEFT_OUTER,
+	E_OUTER_RIGHT_OUTER
+};
+
 struct s_table {
                 str tabname;
                 str alias;
                 struct s_table *next;
+
+		e_outer_type outer_type;
                 struct s_table *outer_next;
+	 	struct s_select_list_item *outer_join_condition;
 };
 
 

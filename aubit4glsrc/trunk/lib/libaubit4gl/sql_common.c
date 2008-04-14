@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.52 2008-04-09 16:15:16 mikeaubury Exp $
+# $Id: sql_common.c,v 1.53 2008-04-14 09:25:55 mikeaubury Exp $
 #
 */
 
@@ -931,6 +931,8 @@ A4GLSQLPARSE_new_tablename (char *tname, char *alias)
     }
   ptr->next = 0;
   ptr->outer_next = 0;
+  ptr->outer_type = E_OUTER_NONE;
+  ptr->outer_join_condition = NULL;
   return ptr;
 }
 
@@ -938,8 +940,7 @@ A4GLSQLPARSE_new_tablename (char *tname, char *alias)
 
 /* Add a table structure to a structure representing the FROM clause of a select */
 struct s_table *
-A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2,
-			       int is_outer)
+A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2, e_outer_type is_outer,struct s_select_list_item *outer_join_condition)
 {
   struct s_table *p;
   struct s_table *o;
@@ -949,6 +950,8 @@ A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2,
     {
       o = A4GLSQLPARSE_new_tablename ("@", "@");
       o->outer_next = t2;
+	o->outer_type=is_outer;
+	o->outer_join_condition=outer_join_condition;
       o->next = 0;
       t2 = o;
     }
@@ -956,6 +959,7 @@ A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2,
   while (t1->next)
     t1 = t1->next;
   t1->next = t2;
+  t1->outer_type=E_OUTER_NONE;
 
 
   return p;
@@ -1100,8 +1104,7 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
 
 /* Generate the string representing the FROM clause for a SELECT */
 int
-A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t,
-			  char *fill, struct s_table_list *tl)
+A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill, struct s_table_list *tl)
 {
   char buff[2000];
   char lastt[2000];
@@ -1132,15 +1135,48 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t,
 
       if (t->outer_next)
 	{
-	  char outer[2000];
-	  if (a)
-	    strcat (buff, ",");
-	  a++;
-	  strcpy (outer, "");
-	  A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
-	  strcat (buff, " OUTER (");
-	  strcat (buff, outer);
-	  strcat (buff, ")");
+	  switch (t->outer_type) {
+		case E_OUTER_NONE:
+			break;
+		
+	    case E_OUTER_NORMAL:
+	    {
+	      char outer[2000];
+	      if (a)
+		strcat (buff, ",");
+	      a++;
+	      strcpy (outer, "");
+	      A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
+	      strcat (buff, " OUTER (");
+	      strcat (buff, outer);
+	      strcat (buff, ")");
+	  break;
+	    }
+
+	    case E_OUTER_LEFT_OUTER:
+	    {
+	      char outer[2000];
+		char *ptr;
+	      if (a)
+		strcat (buff, ",");
+	      a++;
+	      strcpy (outer, "");
+	      A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
+	      strcat (buff, " LEFT OUTER ");
+	      strcat (buff, outer);
+	      strcat (buff, " ON (");
+      		ptr = get_select_list_item (select, t->outer_join_condition);
+		strcat(buff,ptr);
+		acl_free(ptr);
+
+	      strcat (buff,")");
+	  break;
+	    }
+
+	default:
+		A4GL_assertion(1,"OUTER JOIN situtation not handled");
+
+	}
 	}
       strcpy (lastt, t->tabname);
       t = t->next;
@@ -1148,7 +1184,6 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t,
   strcpy (fill, buff);
   return 1;
 }
-
 
 
 int

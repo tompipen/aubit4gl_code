@@ -138,6 +138,29 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	    }
 
 
+
+	switch (t->outer_type) {
+	case E_OUTER_LEFT_OUTER:
+		{
+			char buff2[2000];
+	      		SPRINTF2 (buff2, " LEFT OUTER JOIN %s ON ( %s )", alias_buff, get_select_list_item (select, t->outer_join_condition));
+			strcat(buff,buff2);
+		}
+		break;
+
+	case E_OUTER_RIGHT_OUTER:
+		{
+			char buff2[2000];
+	      		SPRINTF2 (buff2, " RIGHT OUTER JOIN %s ON ( %s )", alias_buff, get_select_list_item (select, t->outer_join_condition));
+			strcat(buff,buff2);
+		}
+		break;
+
+
+	case E_OUTER_NONE:
+	case E_OUTER_NORMAL:
+
+	
 	  for (b = 0; b < select->list_of_items.list.list_len; b++)
 	    {
 	      struct s_select_list_item *p;
@@ -192,7 +215,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 			anyfound=0;
 		}
 	}
-
+	}
 
       t = t->next;
     }
