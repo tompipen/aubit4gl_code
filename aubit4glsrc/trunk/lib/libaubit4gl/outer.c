@@ -113,6 +113,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	  char *outer_table;
 	  char alias_buff[255];
 	  int b;
+	  int anyfound=0;
 
 
 	  t2 = t->outer_next;
@@ -167,19 +168,29 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 		  if (strcmp (rt, main_table) == 0
 		      && strcmp (lt, outer_table) == 0)
 		    found = 1;
+
 		  if (found)
 		    {
 		      char buff2[256];
-		      SPRINTF2 (buff2, " LEFT OUTER JOIN %s ON %s", alias_buff,
-			       get_select_list_item (select,
-						     select->list_of_items.
-						     list.list_val[b]));
+			if (anyfound==0) {
+		      		SPRINTF2 (buff2, " LEFT OUTER JOIN %s ON ( %s", alias_buff,
+			       		get_select_list_item (select,
+						     	select->list_of_items.
+						     	list.list_val[b]));
+				anyfound++;
+			} else {
+		      		SPRINTF1 (buff2, " AND %s", get_select_list_item (select, select->list_of_items.  list.list_val[b]));
+			}
 		      select->list_of_items.list.list_val[b]->data.type = E_SLI_LITERAL;
 		      p->data.s_select_list_item_data_u.expression = acl_strdup ("(1=1)");
 		      strcat (buff, buff2);
 		    }
 		}
 	    }
+		if (anyfound) {
+			strcat(buff,")");
+			anyfound=0;
+		}
 	}
 
 
