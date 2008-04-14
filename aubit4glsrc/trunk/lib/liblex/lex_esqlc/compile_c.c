@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.409 2008-04-10 18:53:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.410 2008-04-14 17:45:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.409 2008-04-10 18:53:11 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.410 2008-04-14 17:45:44 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1970,11 +1970,12 @@ real_print_expr (struct expr_str *ptr)
 		  ptr->expr_str_u.expr_get_fldbuf->sio_id,
 	  	local_field_name_list_as_char (ptr->expr_str_u.expr_get_fldbuf->field_list)
 		  );
-
+		
 	  printc
 	    ("if (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}",
 	     ptr->expr_str_u.expr_get_fldbuf->line,
 	     ptr->expr_str_u.expr_get_fldbuf->module);
+		
 
 	  printc ("}");
 	  break;
@@ -2687,12 +2688,13 @@ real_print_func_call (t_expr_str * fcall)
 	p=fcall->expr_str_u.expr_get_fldbuf;
 	printc("{");
 	printc("   int _retvars;");
-	printc("   _retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,NULL,0);",p->sio_id,
-					local_field_name_list_as_char(p->field_list));
+	printc("   _retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,NULL,0);",p->sio_id, local_field_name_list_as_char(p->field_list));
+	/* 
 	printc("   if (_retvars != 1 ) {");
 	printc("      A4GLSQL_set_status(-3001,0);");
 	printc("      A4GL_chk_err(%d,\"%s\");",p->line,p->module);
   	printc("   }");
+	*/
         print_reset_state_after_call(0);
 	return;
   }
