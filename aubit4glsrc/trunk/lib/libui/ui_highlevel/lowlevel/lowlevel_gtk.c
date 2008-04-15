@@ -21,7 +21,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.131 2008-04-09 16:07:47 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.132 2008-04-15 13:52:09 mikeaubury Exp $";
 #endif
 
 
@@ -1534,10 +1534,14 @@ A4GL_run_gtkrc (void)
       gtkrc = buff2;
     }
 
-#if GTK_CHECK_VERSION(2,0,0)
-  SPRINTF1 (buff, "%s_2", gtkrc);
-#else
+
   SPRINTF1 (buff, "%s", gtkrc);
+
+#if GTK_CHECK_VERSION(2,0,0)
+ SPRINTF1 (buff, "%s_2", gtkrc);
+  if (!A4GL_file_exists(buff))  {
+  	SPRINTF1 (buff, "%s", gtkrc);
+  }
 #endif
 
   A4GL_debug ("Reading RC File (gtk_rc_parse('%s')", buff);
