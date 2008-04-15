@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.410 2008-04-14 17:45:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.411 2008-04-15 06:36:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.410 2008-04-14 17:45:44 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.411 2008-04-15 06:36:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2898,7 +2898,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 		// need to get it from the dimensions...?
 		size=v->var_data.variable_data_u.v_simple.dimensions[0];
 	}
-	if (explicit == 0 && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY))
+	if (explicit == 0 && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT)) //  || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY))
 	  {
 	    if (d1 == DTYPE_INT || d1 == DTYPE_SMINT)
 	      {
