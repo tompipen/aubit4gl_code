@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.123 2008-01-22 09:11:33 mikeaubury Exp $
+# $Id: builtin.c,v 1.124 2008-04-15 20:40:58 mikeaubury Exp $
 #
 */
 
@@ -718,10 +718,16 @@ aclfgl_err_get (int n)
 {
   int a;
   static char buff[200];
+  char *ptr;
   a = A4GL_pop_int ();
   /* A4GLSQL_set_status(-3001,0); */
-  SNPRINTF (buff,200, "Error : %d ", a);
-  A4GL_push_char (buff);
+  ptr=A4GL_get_errmsg_from_helpfiles(a);
+  if (ptr) {
+  	A4GL_push_char (ptr);
+	acl_free(ptr);
+  } else {
+	A4GL_push_char("Unknown Error");
+  }
   return 1;
 }
 
@@ -734,8 +740,9 @@ aclfgl_err_get (int n)
 int
 aclfgl_err_print (int statusnumber)
 {
-
-  /*  A4GLSQL_set_status(-3001,0); */
+  //
+  aclfgl_err_get(statusnumber); 
+  A4GL_display_error(-1,0);
   return 0;
 }
 

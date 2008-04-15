@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.42 2008-03-20 10:10:31 mikeaubury Exp $
+# $Id: Makefile,v 1.43 2008-04-15 20:40:58 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -59,7 +59,7 @@ COMMONSRC= \
 	mapm/mapmutil.c mapm/mapmutl1.c mapm/mapmutl2.c mapm/mapm_add.c mapm/mapm_div.c mapm/mapm_mul.c \
 	mapm/mapm_rnd.c mapm/mapmcnst.c mapm/mapmstck.c mapm/mapm_fft.c mapm/mapm_set.c mapm/mapm_fpf.c mapm/mapmfmul.c \
 	mapm/mapmistr.c mapm/mapm_flr.c mapm/mapm_rcp.c mapm/mapmgues.c \
-	fglwrap.c funcs_d.c function_call_stack.c file.c \
+	fglwrap.c finderr.c funcs_d.c function_call_stack.c file.c \
 	gtime.c gen_stack.c gui_io.c gui.c \
 	helper.c \
 	io.c interval.c \
