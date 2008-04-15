@@ -540,11 +540,21 @@ table_reference_list:
 		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>5,E_OUTER_NORMAL,NULL);
 		add_feature("SELECT_OUTER");
 	}
+/*
 	| table_reference_list LEFT_JOIN tname KW_ON OPEN_BRACKET search_condition_sli CLOSE_BRACKET  {
 		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,E_OUTER_LEFT_OUTER, $<s_select_list_item>6);
 		add_feature("SELECT_OUTER");
 	}
+*/
+	| table_reference_list LEFT_JOIN op_bracket_table_reference_list KW_ON search_condition_sli   {
+		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,E_OUTER_LEFT_OUTER, $<s_select_list_item>5);
+		add_feature("SELECT_OUTER");
+	}
 
+;
+
+op_bracket_table_reference_list: table_reference_list
+	| OPEN_BRACKET table_reference_list CLOSE_BRACKET {$<u_table>$=$<u_table>2;}
 ;
 
 

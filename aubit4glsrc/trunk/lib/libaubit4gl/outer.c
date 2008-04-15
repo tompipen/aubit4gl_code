@@ -35,6 +35,7 @@ can_outer (struct s_select *select,
 {
   int has_outer = 0;
 
+
   while (t)
     {
       /* A tablename of '@' is a placeholder for an outer - so we don't need
@@ -55,7 +56,7 @@ can_outer (struct s_select *select,
 	  //char alias_buff[255];
 	  //int b;
 	  has_outer++;
-
+	A4GL_pause_execution();
 
 	  t2 = t->outer_next;
 	  if (t2->next == 0 && t2->outer_next == 0);
@@ -82,8 +83,13 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
   struct s_table *last_t=0;
   int a = 0;
   strcpy (buff, "");
-  if (!can_outer (select, t, fill, tl))
+
+/*(
+  if (!can_outer (select, t, fill, tl)) {
     return 0;
+  }
+*/
+
 
 
 
@@ -111,22 +117,18 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	  struct s_table *t2;
 	  char *main_table;
 	  char *outer_table;
-	  char alias_buff[255];
+	  char alias_buff[255]="";
 	  int b;
 	  int anyfound=0;
 
 
 	  t2 = t->outer_next;
-	  if (t2->next == 0 && t2->outer_next == 0);
-	  else
-	    {
-	      return 0;
-	    }
+
 
 	  main_table = last_t->alias;
-	  if (!main_table)
-	    main_table = last_t->tabname;
+	  if (!main_table) main_table = last_t->tabname;
 	  outer_table = t2->alias;
+	  if (t2->next == 0 && t2->outer_next == 0) {
 	  if (!outer_table)
 	    {
 	      outer_table = t2->tabname;
@@ -136,6 +138,17 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select,
 	    {
 	      SPRINTF2 (alias_buff, "%s As %s", t2->tabname, t2->alias);
 	    }
+		}
+	  else
+	    {
+			char outer[2000];
+		outer_table=t2->tabname;
+		if (A4GLSQLPARSE_from_clause_join (select, t2, outer, tl)==0) return 0;
+		sprintf(alias_buff," (%s)",outer);
+		//printf("Got %s\n",outer);
+	    } 
+
+
 
 
 

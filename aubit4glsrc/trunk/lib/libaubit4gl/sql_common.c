@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.53 2008-04-14 09:25:55 mikeaubury Exp $
+# $Id: sql_common.c,v 1.54 2008-04-15 08:57:54 mikeaubury Exp $
 #
 */
 
@@ -959,7 +959,7 @@ A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2, e_outer_t
   while (t1->next)
     t1 = t1->next;
   t1->next = t2;
-  t1->outer_type=E_OUTER_NONE;
+  //t1->outer_type=E_OUTER_NONE;
 
 
   return p;
@@ -1102,6 +1102,28 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
   return 1;
 }
 
+
+
+// Debugging routing to print the where clause out...
+static void A4GL_print_from_clause(struct s_table *t,int lvl) {
+int a;
+for (a=0;a<lvl;a++) { printf("   "); }
+printf("%s\n", t->tabname);
+if (t->outer_next) {
+	for (a=0;a<lvl;a++) { printf("   "); }
+	
+	printf("=>");
+	A4GL_print_from_clause(t->outer_next,lvl+1);
+}
+if (t->next) {
+	for (a=0;a<lvl;a++) { printf("   "); }
+	printf("->");
+	A4GL_print_from_clause (t->next,lvl+1);
+}
+printf("\n");
+}
+
+
 /* Generate the string representing the FROM clause for a SELECT */
 int
 A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill, struct s_table_list *tl)
@@ -1113,6 +1135,10 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
   if (A4GLSQLCV_check_requirement ("FIX_OUTER_JOINS"))
     {
       a = A4GLSQLPARSE_from_clause_join (select, t, fill, tl);
+ 	if (a==0) {
+			printf("Cant do :\n");
+			A4GL_print_from_clause(t,0);
+	}
     }
 
   if (a)
@@ -1135,48 +1161,62 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
 
       if (t->outer_next)
 	{
-	  switch (t->outer_type) {
-		case E_OUTER_NONE:
-			break;
-		
-	    case E_OUTER_NORMAL:
+	  switch (t->outer_type)
 	    {
-	      char outer[2000];
-	      if (a)
-		strcat (buff, ",");
-	      a++;
-	      strcpy (outer, "");
-	      A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
-	      strcat (buff, " OUTER (");
-	      strcat (buff, outer);
-	      strcat (buff, ")");
-	  break;
-	    }
+	    case E_OUTER_NONE:	
+		{
+		char outer[2000];
+		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
+			strcat(buff,outer);
+		}
+	      break;
+
+	    case E_OUTER_NORMAL:
+	      {
+		char outer[2000];
+		if (a)
+		  strcat (buff, ",");
+		a++;
+		strcpy (outer, "");
+		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
+		strcat (buff, " OUTER (");
+		strcat (buff, outer);
+		strcat (buff, ")");
+		break;
+	      }
 
 	    case E_OUTER_LEFT_OUTER:
-	    {
-	      char outer[2000];
+	      {
+		char outer[2000];
 		char *ptr;
+/*
 	      if (a)
 		strcat (buff, ",");
-	      a++;
-	      strcpy (outer, "");
-	      A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
-	      strcat (buff, " LEFT OUTER ");
-	      strcat (buff, outer);
-	      strcat (buff, " ON (");
-      		ptr = get_select_list_item (select, t->outer_join_condition);
-		strcat(buff,ptr);
-		acl_free(ptr);
+*/
 
-	      strcat (buff,")");
-	  break;
+		a++;
+		strcpy (outer, "");
+		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
+		strcat (buff, " LEFT OUTER JOIN (");
+		strcat (buff, outer);
+		ptr = get_select_list_item (select, t->outer_join_condition);
+		if (t->outer_join_condition->data.type==E_SLI_BRACKET_EXPR) {
+			strcat (buff, ") ON ");
+			strcat (buff, ptr);
+	
+		} else {
+			strcat (buff, ") ON (");
+			strcat (buff, ptr);
+			strcat (buff, ")");
+		}
+			acl_free (ptr);
+		break;
+	      }
+
+	    default:
+	      A4GL_assertion (1, "OUTER JOIN situtation not handled");
+
 	    }
-
-	default:
-		A4GL_assertion(1,"OUTER JOIN situtation not handled");
-
-	}
 	}
       strcpy (lastt, t->tabname);
       t = t->next;
@@ -1184,7 +1224,6 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
   strcpy (fill, buff);
   return 1;
 }
-
 
 int
 A4GLSQL_read_columns (char *tabname, char *xcolname, int *dtype, int *size)
