@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.67 2008-04-12 12:51:18 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.68 2008-04-15 06:33:38 mikeaubury Exp $
 #
 */
 
@@ -1433,8 +1433,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_CASE:
       return
-	make_sql_string_and_free (A4GLSQLCV_make_case
-				  (select, &p->data.s_select_list_item_data_u.sqlcase), NULL);
+	make_sql_string_and_free (acl_strdup_With_Context(A4GLSQLCV_make_case
+				  (select, &p->data.s_select_list_item_data_u.sqlcase)), NULL);
 
     case E_SLI_CASE_ELEMENT:
       A4GL_assertion (1, "Elements shouldn't be printed in isolation...");
